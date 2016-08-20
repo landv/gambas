@@ -1,0 +1,65 @@
+dist_gblib_DATA = $(COMPONENT).component
+gblib_DATA = $(COMPONENT).component
+
+install-data-hook:
+	@$(INSTALL) -d $(DESTDIR)$(gbdatadir)/info
+	@rm -f $(DESTDIR)$(gblibdir)/$(COMPONENT).gambas;
+	@if test -d $(COMPONENT) && test -e $(COMPONENT)/.project ; then \
+		echo; \
+		echo "Compiling the $(COMPONENT) project..."; \
+		( \
+			$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) $(COMPONENT); \
+			cd $(COMPONENT); \
+			$(DESTDIR)$(bindir)/gbc$(GAMBAS_VERSION) -ag -r $(DESTDIR)$(prefix); \
+			if test $$? -eq 0; then \
+				$(DESTDIR)$(bindir)/gba$(GAMBAS_VERSION); \
+				rm -rf .gambas; \
+				$(INSTALL) $(COMPONENT).gambas $(DESTDIR)$(gblibdir); \
+			else \
+				echo "|| Unable to compile $(COMPONENT)" >> ../../../warnings.log; \
+			fi \
+		) \
+	fi
+	@if test -d data; then \
+		echo "Installing the $(COMPONENT) extra data files..."; \
+		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/$(COMPONENT); \
+		$(INSTALL) data/* $(DESTDIR)$(gbdatadir)/$(COMPONENT); \
+	fi
+	@echo "Installing the $(COMPONENT) control icons if needed...";
+	@rm -rf $(DESTDIR)$(gbdatadir)/control/$(COMPONENT);
+	@if test -d control; then \
+		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/control; \
+		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/control/$(COMPONENT); \
+		$(INSTALL) control/*.png $(DESTDIR)$(gbdatadir)/control/$(COMPONENT); \
+	fi
+	@if test -d $(COMPONENT)/.hidden/control; then \
+		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/control; \
+		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/control/$(COMPONENT); \
+		$(INSTALL) $(COMPONENT)/.hidden/control/*.png $(DESTDIR)$(gbdatadir)/control/$(COMPONENT); \
+	fi
+	@echo "Creating the information files for $(COMPONENT) component..."
+	@if test "$(EXTRACT_HELP)" = "1"; then \
+		$(DESTDIR)$(bindir)/gbh$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) -c $(COMPONENT); \
+	fi
+	@$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) > /dev/null
+	@echo
+
+uninstall-hook:
+	@if test -d $(COMPONENT); then \
+		rm -f $(DESTDIR)$(gblibdir)/$(COMPONENT).gambas; \
+	fi
+	@rm -rf $(DESTDIR)$(gblibdir)$(COMPONENT).component
+	@rm -rf $(DESTDIR)$(gbdatadir)/info/$(COMPONENT).info
+	@rm -rf $(DESTDIR)$(gbdatadir)/info/$(COMPONENT).list
+	@rm -rf $(DESTDIR)$(gbdatadir)/control/$(COMPONENT);
+	@rm -rf $(DESTDIR)$(gbdatadir)/$(COMPONENT);
+
+dist-hook:
+	@if test -d $(COMPONENT); then \
+		( \
+			cp -pR $(COMPONENT) $(distdir)/$(COMPONENT); \
+			cd $(distdir)/$(COMPONENT); \
+			rm -rf .gambas .action .xvpics */.xvpics */*/.xvpics *~ */*~ */*/*~ *.out .*.out .lang/*.pot *.gambas core.* .svn */.svn */*/.svn */*/*/.svn; \
+		) \
+	fi
+	@rm -f $(distdir)/moc_*.cpp

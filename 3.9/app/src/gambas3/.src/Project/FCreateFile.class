@@ -1,0 +1,333 @@
+' Gambas class file
+
+Private $sPath As String
+Private $sDir As String
+Private $sType As String
+Private $bDoNotSetName As Boolean
+
+Public Sub Run(sPath As String, sDir As String, sType As String)
+  
+  $sPath = sPath
+  $sDir = sDir
+  $sType = sType
+  If Not Me.ShowModal() Then Return
+  
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close  
+
+End
+
+Public Sub UpdateLayout()
+
+  Dim sPrefix As String
+  Dim hChild As Control
+  Dim bOpt As Boolean
+ 
+  sPrefix = $sType
+  For Each hChild In panOption.Children
+    If Not hChild.Tag Then Continue
+    hChild.Visible = Split(hChild.Tag, ",").Exist(sPrefix)
+    bOpt = bOpt Or hChild.Visible
+  Next
+  
+  lblOption.Visible = bOpt
+  
+  If Not $bDoNotSetName Then   
+    sPrefix = UCase(Left(sPrefix)) & Mid(sPrefix, 2)
+    Object.Lock(txtName)
+    Select Case LCase(sPrefix)
+      Case "text", "image", "html", "css", "js"
+        txtName.Text = Project.GetNewName(sPrefix, $sDir)
+      Case Else
+        txtName.Text = Project.GetNewName(sPrefix)
+    End Select
+    'txtName.SelectAll
+    Object.Unlock(txtName)
+  Endif 
+  
+  txtName.SelectAll
+  txtName.SetFocus
+  
+End
+
+Public Sub Form_Open()
+
+  Dim hPict As Picture
+
+  $bDoNotSetName = False
+  
+  Settings.Read(Me)
+  
+  If Project.IsSourceDir($sDir) Then
+
+    hPict = Project.MakeModuleIcon($sType, 64).Picture
+  
+  Else
+  
+    Select Case $sType
+      Case "css"
+        hPict = Picture["icon:/64/html"]
+      Case "js"
+        hPict = Picture["icon:/64/script"]
+      Case Else
+        Try hPict = Picture["icon:/64/" & $sType]
+        If Error Then hPict = Picture["icon:/64/text"]
+    End Select
+  
+  Endif
+  
+  picFile.Picture = hPict
+  
+  cmbParent.List = Project.GetClassesOnly()
+  cmbParent.Add(("(No parent)"), 0)
+  If Project.IsSourcePath($sPath) Then
+    cmbParent.Text = Project.GetParentClass($sPath)
+  Endif
+  If cmbParent.Index < 0 Then cmbParent.Index = 0
+  
+  If Not $sType Then $sType = "module"
+  UpdateLayout
+
+End
+
+Public Sub txtWidth_Change()
+
+  If btnLinked.Value Then txtHeight.Value = txtWidth.Value  
+
+End
+
+Public Sub txtHeight_Change()
+
+  If btnLinked.Value Then txtWidth.Value = txtHeight.Value    
+
+End
+
+Public Sub txtName_Change()
+
+  $bDoNotSetName = txtName.Text  
+
+End
+
+Private Sub CreateFile() As Boolean
+  
+  Dim sType As String = $sType
+  Dim sName As String = Trim(txtName.Text)
+  Dim sMsg As String
+  Dim sTemp As String
+  Dim hImage As Image
+
+  Select Case sType
+  
+    Case "text", "image", "html", "css", "js"
+    
+      If sName And If chkExt.Value Then
+        If sType = "image" Then 
+          sName = File.SetExt(sName, LCase(cmbImageType.Text))
+        Else If sType = "html" Or If sType = "css" Or If sType = "js" Then
+          sName = File.SetExt(sName, sType)
+        Endif
+      Endif
+    
+      sMsg = Project.CheckFileName(sName, $sDir)
+      If sMsg Then 
+        txtName.SetFocus
+        Balloon.Warning(sMsg, txtName)
+        Return True
+      Endif
+  
+    Case Else
+
+      sMsg = Project.CheckClassName(sName, True)
+      If sMsg Then 
+        txtName.SetFocus
+        Balloon.Warning(sMsg, txtName)
+        Return True
+      Endif
+  
+  End Select 
+  
+  Select Case sType
+  
+    Case "module"
+    
+      sTemp = "' Gambas module file\n\n"
+      
+      Project.InsertSource(sName, sType, $sDir, sTemp)
+  
+    Case "class"
+    
+      sTemp = "' Gambas class file\n\n"
+      
+      If chkExport.Value Then sTemp &= "Export\n"
+      
+      If chkCreateStatic.Value Then
+        sTemp &= "Create Static\n"
+      Else If chkCreatePrivate.Value Then
+        sTemp &= "Create Private\n"
+      Endif
+      
+      If cmbParent.Index > 0 Then sTemp &= "Inherits " & cmbParent.Text & "\n"
+      sTemp = RTrim(sTemp) & "\n"
+      
+      Project.InsertSource(sName, sType, $sDir, sTemp)
+  
+    Case "form", "report", "webform"
+    
+      sTemp = "' Gambas class file\n\n"
+      
+      If sType = "webform" Then
+        sTemp &= "Export\n\n"
+      Endif
+      
+      If chkDialog.Value Then 
+        sTemp &= "Public Sub Run() As Boolean\n\n"
+                 "\tReturn Not Me.ShowModal()\n\n"
+                 "End\n\n"
+                 "Public Sub btnOK_Click()\n\n"
+                 "\tMe.Close(TRUE)\n\n"
+                 "End\n\n"
+                 "Public Sub btnCancel_Click()\n\n"
+                 "\tMe.Close\n\n"
+                 "End\n\n" 
+        sTemp = Replace(sTemp, "\t", Space$(Project.TabSize))
+      Endif
+      
+      Project.InsertSource(sName, "class", $sDir, sTemp, True, True)
+      
+      sTemp = Project.FORM_MAGIC & "\n\n" &   
+              "{ " & sName & " " & CFamily.Get(sType).Name & "\n"
+      
+      If sType = "form" Then
+      
+        sTemp &= "  MoveScaled(0,0,64,64)\n"
+        
+        If chkDialog.Value Then
+          sTemp &= "  Resizable = False\n"
+                   "  Arrangement = Arrange.Vertical\n"
+                   "  Spacing = True\n"
+                   "  Margin = True\n"
+          sTemp &= "{ HBox1 HBox\n"
+                   "  MoveScaled(1,59,62,4)\n"
+                   "  Spacing = True\n"
+                   "  { Panel1 Panel\n"
+                   "    MoveScaled(4,0,4,4)\n"
+                   "    Expand = True\n"
+                   "  }\n"
+                   "  { btnOK Button\n"
+                   "    MoveScaled(29,0,16,4)\n"
+                   "    Text = (\"OK\")\n"
+                   "    Default = True\n"
+                   "  }\n"
+                   "  { btnCancel Button\n"
+                   "    MoveScaled(46,0,16,4)\n"
+                   "    Text = (\"Cancel\")\n"
+                   "    Cancel = True\n"
+                   "  }\n"
+                   "}\n"
+        Endif
+        
+      Else
+        
+        sTemp &= "  #MoveScaled(0,0,64,91)\n"
+        
+      Endif
+      
+      sTemp &= "}\n"
+      
+      Project.InsertSource(sName, sType, $sDir, sTemp)
+      
+    Case "webpage"
+
+      Project.InsertSource(sName, "class", $sDir, "' Gambas class file\n\n", True, True)
+      Project.InsertSource(sName, "webpage", $sDir, "<html>\n<body>\n<%\nPrint \"<h1>Gambas</h1>\";\n%>\n</body>\n</html>\n")
+      
+    Case "text"
+    
+      File.Save($sDir &/ sName, "")
+      Inc FMain.NoMessage
+      Project.InsertFile(sName, $sDir)
+      Dec FMain.NoMessage
+  
+    Case "html"
+    
+      File.Save($sDir &/ sName, "<html>\n\n<head>\n</head>\n\n<body>\n</body>\n\n</html>\n")
+      Project.InsertFile(sName, $sDir)
+  
+    Case "css"
+    
+      File.Save($sDir &/ sName, "BODY\n{\n}\n")
+      Project.InsertFile(sName, $sDir)
+  
+    Case "js"
+    
+      File.Save($sDir &/ sName, "// " & sName & "\n\nfunction foo()\n{\n}\n")
+      Project.InsertFile(sName, $sDir)
+  
+    Case "image"
+    
+      hImage = New Image(txtWidth.Value, txtHeight.Value)
+      If cmbImageType.Text = "JPEG" Then
+        hImage.Fill(Color.White)
+      Else
+        hImage.Fill(Color.Transparent)
+      Endif
+      hImage.Save($sDir &/ sName)
+
+      Project.InsertFile(sName, $sDir)
+  
+  End Select  
+  
+End
+
+Public Sub btnOK_Click()
+
+  If CreateFile() Then Return
+  Me.Close(True)
+
+Catch 
+
+  FMain.NoMessage = 0
+  FMain.ShowError(("Cannot add file.") & "\n\n" & Error.Text & "\n" & Error.Where)
+  
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)  
+  
+End
+
+
+Public Sub panType_Arrange()
+
+  Dim hPictureBox As PictureBox = Last.Children[0]
+  hPictureBox.W = hPictureBox.H
+
+End
+
+Public Sub panOption_Arrange()
+
+  Dim hChild As Control
+  Dim H As Integer
+
+  For Each hChild In panOption.Children
+    If hChild.Visible Then H = Max(H, hChild.Y + hChild.H)
+  Next
+  panNewFile.H = H + Desktop.Scale * 2
+
+End
+
+Public Sub chkCreatePrivate_Click()
+
+  If chkCreatePrivate.Value Then chkCreateStatic.Value = False
+
+End
+
+Public Sub chkCreateStatic_Click()
+
+  If chkCreateStatic.Value Then chkCreatePrivate.Value = False
+
+End

@@ -1,0 +1,188 @@
+' Gambas class file
+
+Public Struct UndoCommand
+  Command As String
+  Arg As Variant[]
+End Struct
+
+Private Const DEBUG_ME As Boolean = False
+
+Private Enum CONTEXT_NONE, CONTEXT_UNDO, CONTEXT_REDO
+
+Private $aUndo As New UndoCommand[]
+Private $aRedo As New UndoCommand[]
+Private $iLevelUndo As Integer
+Private $iLevelRedo As Integer
+Private $iDisabled As Integer
+Private $iContext As Integer
+
+Private Const CMD_BEGIN As String = "[["
+Private Const CMD_END As String = "]]"
+
+Private Sub Dump(hCmd As UndoCommand)
+  
+  Dim I As Integer
+
+  With hCmd
+    Print .Command; ": ";
+    If .Arg Then
+      For I = 0 To .Arg.Max
+        Print .Arg[I];;
+      Next
+    Endif
+  End With
+  
+  Print
+  
+End
+
+Public Sub Add(sCommand As String, Optional aArg As Variant[])
+  
+  Dim hCommand As New UndoCommand
+  
+  If $iDisabled Then Return
+  
+  hCommand.Command = sCommand
+  hCommand.Arg = aArg
+  
+  If $iContext = CONTEXT_UNDO Then
+    $aRedo.Add(hCommand)
+    If DEBUG_ME Then Print "Add REDO: ";
+  Else
+    $aUndo.Add(hCommand)
+    If DEBUG_ME Then Print "Add UNDO: ";
+    If $iContext = CONTEXT_NONE Then $aRedo.Clear
+  Endif
+  
+  If DEBUG_ME Then Dump(hCommand)
+  
+End
+
+Public Sub Begin()
+  
+  If $iDisabled Then Return
+  
+  If $iContext = CONTEXT_UNDO Then
+    Inc $iLevelRedo
+    If $iLevelRedo > 1 Then Return
+  Else
+    Inc $iLevelUndo
+    If $iLevelUndo > 1 Then Return
+  Endif
+  
+  Add(CMD_END)
+  
+End
+
+Public Sub End()
+  
+  Dim aCmd As UndoCommand[]
+
+  If $iDisabled Then Return
+  
+  If $iContext = CONTEXT_UNDO Then
+    Dec $iLevelRedo
+    If $iLevelRedo > 0 Then Return
+    aCmd = $aRedo
+  Else
+    Dec $iLevelUndo
+    If $iLevelUndo > 0 Then Return
+    aCmd = $aUndo  
+  Endif
+  
+  If aCmd.Count And If aCmd[aCmd.Max].Command = CMD_END Then
+    aCmd.Remove(aCmd.Max)
+    If DEBUG_ME Then Print "Remove last command"
+    Return
+  Endif
+  
+  Add(CMD_BEGIN)
+  
+End
+
+
+Public Sub Undo(hEditor As Object, Optional bRedo As Boolean)
+  
+  Dim iLevel As Integer
+  Dim aCmd As UndoCommand[]
+  
+  If $iDisabled Then Return
+  If $iContext Then Return
+
+  If bRedo Then
+    aCmd = $aRedo
+    $iContext = CONTEXT_REDO
+  Else
+    aCmd = $aUndo  
+    $iContext = CONTEXT_UNDO
+  Endif
+  
+  Begin()
+  
+  While aCmd.Count
+    
+    With aCmd[aCmd.Max]
+      
+      If .Command = CMD_BEGIN Then
+        Inc iLevel
+      Else If .Command = CMD_END Then
+        Dec iLevel
+      Else
+        With aCmd[aCmd.Max]
+          If DEBUG_ME Then 
+            Print "Exec ";
+            Dump(aCmd[aCmd.Max])
+          Endif
+          Object.Call(hEditor, .Command, .Arg)
+        End With
+      Endif
+      
+    End With
+    
+    aCmd.Remove(aCmd.Max)
+    If iLevel = 0 Then Break
+    
+  Wend
+  
+  End()
+  
+  $iContext = CONTEXT_NONE
+  
+End
+
+Public Sub Redo(hEditor As Object)
+  
+  If $iDisabled Then Return
+  If $iContext Then Return
+  Undo(hEditor, True)
+  
+End
+
+
+Public Sub Clear()
+  
+  $aUndo.Clear
+  $aRedo.Clear
+  $iLevelUndo = 0
+  $iLevelRedo = 0
+  
+End
+
+Public Sub Disable()
+  
+  Inc $iDisabled
+  
+End
+
+Public Sub Enable()
+  
+  Dec $iDisabled
+  
+End
+
+Public Sub IsDisabled() As Boolean
+  
+  Return $iDisabled
+  
+End
+

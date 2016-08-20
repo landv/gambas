@@ -1,0 +1,40 @@
+' Gambas class file
+
+Export
+Property Read Height As Integer
+Property Read Width As Integer
+Public _Index As Integer
+Event Foo
+Private Function Height_Read() As Integer
+
+  Return GetParent()._GetItemHeight(_Index)
+
+End
+
+Private Function Width_Read() As Integer
+
+  Return GetParent().GetItemWidth(_Index)
+
+End
+
+
+Private Function GetParent() As DocumentView
+  
+  Return Object.Parent(Me)
+  
+End
+
+
+Public Sub EnsureVisible()
+  
+  GetParent().Goto(_Index)
+  
+End
+
+
+Public Function IsVisible() As Boolean
+  
+  Return GetParent()._IsVisible(_Index)
+  
+End
+

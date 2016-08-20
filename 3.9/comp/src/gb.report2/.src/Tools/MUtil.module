@@ -1,0 +1,24 @@
+' Gambas module file
+
+Private Dash As Float[] = [2.0, 1.0]
+Private Dot As Float[] = [1.0, 1.0]
+Private DashDot As Float[] = [2.0, 1.0, 1.0, 1.0]
+Private DashDotDot As Float[] = [2.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+
+
+Public Sub GetBorder(iStyle As Integer) As Float[]
+
+  Select Case iStyle
+
+    Case Line.Dash
+      Return Dash
+    Case Line.Dot
+      Return Dot
+    Case Line.DashDot
+      Return DashDot
+    Case Line.DashDotDot
+      Return DashDotDot
+  End Select
+
+End
+

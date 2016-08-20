@@ -1,0 +1,159 @@
+' Gambas class file
+
+Create Static
+
+
+Static Private aAreas As New Integer[][]
+Static Private $iScrWidth As Integer
+Static Private $iScrHeight As Integer
+
+Static Private $aWindows As New Window[]
+Static Private $hScreenRect As New Rect
+Static Private $aRefreshArea As New Rect
+Static Private $bNeedRefreshArea As Boolean
+Static Private $hRenderArea As New Rect
+
+
+Static Public Sub _init()
+
+  Dim i As Integer
+  Dim hAreaLine As Integer[]
+  
+  For i = 0 To 30
+    
+    hAreaLine = New Integer[120]
+    aAreas.Add(hAreaLine)
+  Next
+  
+  $hScreenRect.Width = aAreas[0].Count
+  $hScreenRect.Height = aAreas.Count
+  _RefreshAreas($hScreenRect)
+End
+
+Public Sub _Add(hWin As Window)
+  
+  $aWindows.Add(hWin)
+  Print hWin.Tag
+  
+End
+
+Static Public Sub _RefreshAreas(hRect As Rect)
+  
+  $aRefreshArea = $aRefreshArea.Union(hRect)
+  $hRenderArea = $hRenderArea.Union(hRect)
+  $bNeedRefreshArea = True
+  
+End
+
+
+
+
+Static Private Sub DoRefreshAreas()
+  Dim hChild As Control
+  Dim hInRect As Rect
+  
+  If Not $bNeedRefreshArea Then Return
+  
+  For Each hChild In $aWindows
+    If hChild.Visible = False Then Continue
+    'C'est la zone visible de la fenêtre si visible
+    hInRect = $hScreenRect.Intersection($aRefreshArea)
+    If Not hInRect Then Continue
+    RefreshChild(hChild, hInRect)
+  Next
+  
+  $bNeedRefreshArea = False
+  $aRefreshArea = New Rect
+End
+
+Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
+
+  
+  Dim iLeft, iRight, iTop, iBottom As Integer
+ 
+  Dim L As Integer
+  Dim C As Integer
+  Dim hObj As Object
+  Dim hInRect As Rect
+  
+  hInRect = hRect.Intersection(hChild._GetScreenRect())
+  
+  If Not hInRect Then Return
+
+ 
+  For L = hInRect.Top To hInRect.Bottom - 1
+    
+    For C = hInRect.Left To hInRect.Right - 1
+      aAreas[L][C] = hChild.Id
+    Next
+  Next
+  
+  If hChild Is Container Then
+    
+    For Each hObj In hChild.children
+      RefreshChild(hObj, hRect)
+    Next
+    
+  Endif
+  
+End
+
+Public Sub Render()
+  
+   Dim a As Integer[]
+   Dim i As Integer
+  ' ' 
+  Dim hCont As Control
+  Dim iRow As Integer
+  Dim iCol As Integer
+  Dim hAttr As New Attr
+  Dim hLine As CLine
+  Dim aAttr As Integer[]
+  Dim hCAttr As Attr
+  Dim cCol As Integer
+   DoRefreshAreas()
+  $hRenderArea = $hScreenRect.Intersection($hRenderArea)
+  For iRow = $hRenderArea.Top To $hRenderArea.Bottom - 1
+    Print "\e[" & iRow & ";0H"
+    For iCol = $hRenderArea.Left To $hRenderArea.Right - 1
+      If aAreas[iRow][iCol] = 0 Then
+        hAttr.Background = Color.yellow
+        hAttr.Send
+        Print " ";
+      Else
+  
+        i = aAreas[iRow][iCol]
+        hCont = Control._IdToControl[i]
+        hLine = hCont._Content[iRow - hCont.ScreenY]
+        aAttr = hLine.GetAttr()
+        cCol = iCol - hCont.ScreenX
+        Try hAttr.FillFrom(aAttr[Min(aAttr.Max, cCol)])
+        
+        hAttr.Send
+        If cCol < hLine.Length Then
+          Print Mid(hLine.Text, cCol + 1, 1);
+        Else
+          hAttr.Background = hCont.Background
+          hAttr.Send
+          Print " ";
+        Endif
+        
+        
+        
+        
+        
+      Endif
+    Next
+  Next
+  
+  
+  
+  
+  ' For Each a In aAreas
+  '   For i = 0 To a.Max
+  '     Print a[i];
+  '   Next
+  '   Print
+  ' Next
+End
+

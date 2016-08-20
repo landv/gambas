@@ -1,0 +1,487 @@
+' Gambas module file
+
+Private Const IDENT_CAR As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$"
+Private Const IDENT_CAR_CSS As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.#"
+Private Const SUBST_CAR As String = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+Private $aExt As String[] = ["js", "css", "html"]
+
+Private $cKeyword As Collection
+Private $cSubst As Collection
+Private $cIdent As Collection
+Private $iSubst As Integer
+Private $iDoNotCompress As Integer
+
+Public Sub CanCompress(sPath As String) As Boolean
+  
+  Dim sFile As String
+  
+  If IsDir(sPath) Then
+    For Each sFile In Dir(sPath)
+      If Left(sFile) = "." Then Continue
+      If CanCompress(sPath &/ sFile) Then Return True
+    Next
+    Return False
+  Endif
+  
+  Return $aExt.Exist(File.Ext(sPath))
+  
+End
+
+
+Private Sub InitJavascriptKeywords()
+  
+  Dim sStr As String
+  
+  $cKeyword = New Collection
+  
+  For Each sStr In ["break", "case", "catch", "const", "continue", "debugger", "default", "delete", "do", "else", "finally", "for",
+    "function", "if", "in", "instanceof", "new", "return", "switch", "throw", "try", "typeof", "var", "void", "while", "with"]
+    $cKeyword[sStr] = 0
+  Next
+
+  For Each sStr In ["false", "null", "this", "true"]
+    $cKeyword[sStr] = 1
+  Next
+  
+End
+
+Private Sub SubstIdent(sIdent As String)
+
+  Dim sSubst As String
+  Dim iIndex As Integer
+  
+  If $iDoNotCompress Then Return
+  If $cSubst.Exist(sIdent) Then Return
+  
+  Repeat 
+    
+    Inc $iSubst
+    iIndex = $iSubst
+    sSubst = ""
+    
+    Repeat
+      sSubst = Mid$(SUBST_CAR, 1 + iIndex Mod Len(SUBST_CAR), 1) & sSubst
+      iIndex \= Len(SUBST_CAR)
+    Until iIndex = 0
+  
+  Until Not $cIdent.Exist(sSubst)
+  
+  $cSubst[sIdent] = sSubst
+
+End
+
+Private Sub GetSubstIdent(sIdent As String) As String
+
+  Return $cSubst[sIdent]
+
+End
+
+Public Sub Javascript(sText As String) As String
+  
+  Dim sRes As String
+  Dim iPos As Integer
+  Dim sCar As String
+  Dim sCar2 As String
+  Dim bComment As Boolean
+  Dim bOneLineComment As Boolean
+  Dim sString As String
+  Dim iLen As Integer
+  Dim iLastNewLine As Integer
+  Dim sIdent As String
+  Dim sSubst As String
+  Dim iFunction As Integer
+  Dim bVar As Boolean
+  Dim iLevel As Integer
+  Dim bKeyword As Boolean
+  Dim iPosMem As Integer
+  
+  If Not $cKeyword Then InitJavascriptKeywords
+
+  $cIdent = New Collection
+
+  $cSubst = New Collection
+  $iSubst = 0
+  $iDoNotCompress = 0
+  
+  iLen = Len(sText)
+  sText &= "  "
+  
+  ' Identifiers used
+  
+  For iPos = 1 To iLen
+    
+    sCar = Mid$(sText, iPos, 1)
+    sCar2 = Mid$(sText, iPos, 2)
+    
+    If bComment Then
+      If sCar2 = "*/" Then
+        bComment = False
+        Inc iPos
+      Endif
+      Continue
+    Else If bOneLineComment Then
+      If sCar = "\n" Then
+        bOneLineComment = False
+        Dec iPos
+      Endif
+      Continue
+    Else If sString Then
+      If sCar = "\\" Then
+        sCar = Right(sCar2)
+        If sCar = "x" Then
+          iPos += 3
+          Continue
+        Else If sCar = "u" Then
+          iPos += 5
+          Continue
+        Else
+          Inc iPos
+          Continue
+        Endif
+      Else If sCar = sString Then
+        sString = ""
+      Endif
+      Continue
+    Endif
+    
+    If sCar2 = "/*" Then
+      bComment = True
+      Inc iPos
+      Continue
+    Else If sCar2 = "//" Then
+      bOneLineComment = True
+      Inc iPos
+      Continue
+    Endif
+    
+    If InStr(IDENT_CAR, sCar) Then
+      sIdent &= sCar
+      Continue
+    Else
+      If sIdent And If Len(sIdent) <= 4 Then
+        If Not IsDigit(Left(sIdent)) And If Not $cKeyword.Exist(sIdent) And If Not $cIdent.Exist(sIdent) Then 
+          'Print sIdent
+          $cIdent[sIdent] = True
+        Endif
+      Endif
+      sIdent = ""
+    Endif
+    
+    If sCar = "\"" Or If sCar = "'" Then
+      sString = sCar
+    Endif
+    
+  Next
+
+  ' Compression
+
+  For iPos = 1 To iLen
+    
+    sCar = Mid$(sText, iPos, 1)
+    sCar2 = Mid$(sText, iPos, 2)
+    
+    If bComment Then
+      If sCar2 = "*/" Then
+        bComment = False
+        Inc iPos
+      Endif
+      Continue
+    Else If bOneLineComment Then
+      If sCar = "\n" Then
+        bOneLineComment = False
+        If Mid$(sText, iPosMem, iPos - iPosMem) == "// <VERBATIM>" Then 
+          Inc $iDoNotCompress
+        Else If Mid$(sText, iPosMem, iPos - iPosMem) == "// </VERBATIM>" Then 
+          If $iDoNotCompress > 0 Then Dec $iDoNotCompress
+        Endif
+        Dec iPos
+      Endif
+      Continue
+    Else If sString Then
+      If sCar = "\\" Then
+        sCar = Right(sCar2)
+        If sCar = "x" Then
+          sRes &= Mid$(sText, iPos, 4)
+          iPos += 3
+          Continue
+        Else If sCar = "u" Then
+          sRes &= Mid$(sText, iPos, 6)
+          iPos += 5
+          Continue
+        Else
+          sRes &= sCar2
+          Inc iPos
+          Continue
+        Endif
+      Else If sCar = sString Then
+        sString = ""
+      Endif
+      sRes &= sCar
+      Continue
+    Endif
+    
+    If sCar2 = "/*" Then
+      bComment = True
+      Inc iPos
+      Continue
+    Else If sCar2 = "//" Then
+      bOneLineComment = True
+      iPosMem = iPos
+      Inc iPos
+      Continue
+    Endif
+    
+    If InStr(IDENT_CAR, sCar) Then
+      sIdent &= sCar
+      Continue
+    Else
+      If Len(sIdent) >= 2
+        bKeyword = $cKeyword.Exist(sIdent)
+        If Not IsDigit(Left(sIdent)) And If Not bKeyword Then 
+          If iFunction = 1 Then
+            iFunction = 2
+          Else 
+            If bVar And If iLevel > 0 Then
+              SubstIdent(sIdent)
+            Else If iFunction = 3 Then
+              SubstIdent(sIdent)
+            Else
+              If Right(sRes) = "." Then Goto NO_SUBST
+              If Left(RTrim(Mid$(sText, iPos))) = ":" And InStr(",{", Right(RTrim(sRes))) Then Goto NO_SUBST
+            Endif
+            
+            sSubst = GetSubstIdent(sIdent)
+            If sSubst Then 
+              'Print sIdent; " -> "; sSubst
+              sIdent = sSubst
+            Endif
+          Endif
+        Else If bKeyword Then
+          bVar = False
+          If sIdent = "function" Then
+            iFunction = 1
+          Else If sIdent = "var" Then
+            bVar = True
+          Endif
+        Endif
+      Endif
+      
+    NO_SUBST:
+      sRes &= sIdent
+      sIdent = ""
+      
+      If bVar Then
+        If InStr(" ,\n", sCar) = 0 Then bVar = False
+      Endif
+      
+    Endif
+    
+    If sCar = "\"" Or If sCar = "'" Then
+      sString = sCar
+    Else If sCar = "{" Then
+      Inc iLevel
+    Else If sCar = "}" Then
+      Dec iLevel
+      If iLevel = 0 Then
+        $iSubst = 0
+        $cSubst.Clear
+      Endif
+      #If True
+      If Right(sRes) = "\n" Then sRes = Left(sRes, -1)
+    Else If InStr(" \t\n", sCar) Then
+      
+      If Len(sRes) = 0 Then Continue
+      If InStr(" \t\n", Right(sRes)) Then Continue
+      
+      If sCar = "\n" Then
+        'Print Right(sRes, 40)
+        'If InStr(Right(sRes, 40), "left") Then Stop
+        If InStr(";{+-*/=,[(:", Right(sRes)) = 0 Then
+          sRes &= sCar
+          iLastNewLine = Len(sRes)
+          Continue
+        Endif
+      Endif
+      sCar = " "
+      If InStr("=", Right(sCar2)) = 0 Then
+        If (Len(sRes) - iLastNewLine) > 76 Or If Mid$(sText, iPos + 1) Begins "function " Then 
+          sRes &= "\n"
+          iLastNewLine = Len(sRes)
+        Endif
+      Endif
+      If Right(sRes) = "}" And If IsLetter(Right(sCar2)) Then 
+        sCar = "\n"
+        iLastNewLine = Len(sRes) + 1
+      Else
+        If InStr(IDENT_CAR, Right(sRes)) = 0 And If Right(sRes) <> "}" Then Continue
+        If InStr(IDENT_CAR, Right$(sCar2)) = 0 Then Continue
+      Endif
+      #Endif
+    Else If sCar = "(" Then
+      If iFunction > 0 Then iFunction = 3
+    Else If sCar = ")" Then
+      If iFunction Then iFunction = 0
+    Endif
+    
+    sRes &= sCar
+    
+  Next
+  
+  Return sRes
+  
+End
+
+Public Sub Css(sText As String) As String
+  
+  Dim sRes As String
+  Dim iPos As Integer
+  Dim sCar As String
+  Dim sCar2 As String
+  Dim bComment As Boolean
+  Dim bOneLineComment As Boolean
+  Dim sString As String
+  Dim iLen As Integer
+  
+  iLen = Len(sText)
+  sText = sText & "  "
+  
+  For iPos = 1 To iLen
+    
+    sCar = Mid$(sText, iPos, 1)
+    sCar2 = Mid$(sText, iPos, 2)
+    
+    If bComment Then
+      If sCar2 = "*/" Then
+        bComment = False
+        Inc iPos
+      Endif
+      Continue
+    Else If bOneLineComment Then
+      If sCar = "\n" Then
+        bOneLineComment = False
+        Dec iPos
+      Endif
+      Continue
+    Else If sString Then
+      If sCar = "\\" Then
+        sRes &= sCar2
+        Inc iPos
+        Continue
+      Else If sCar = sString Then
+        sString = ""
+      Endif
+      sRes &= sCar
+      Continue
+    Endif
+    
+    If sCar2 = "/*" Then
+      bComment = True
+      Inc iPos
+      Continue
+    Else If sCar2 = "//" Then
+      bOneLineComment = True
+      Inc iPos
+      Continue
+    Endif
+    
+    If sCar = "\"" Or If sCar = "'" Then
+      sString = sCar
+    Else If sCar = "}" Then
+      sRes &= "}\n"
+      Continue
+    Else If sCar = "c" And If Mid$(sText, iPos, 5) = "calc(" Then
+      sString = ")"
+    Else If InStr(" \t\n", sCar) Then
+      
+      If Len(sRes) = 0 Then Continue
+      If InStr(" \t\n", Right(sRes)) Then Continue
+      
+      sCar = " "
+      
+      If InStr(IDENT_CAR_CSS, Right(sRes)) = 0 Then Continue
+      If InStr(IDENT_CAR_CSS, Right$(sCar2)) = 0 Then Continue
+    Endif
+    
+    sRes &= sCar
+    
+  Next
+  
+  Return sRes
+  
+End
+
+Public Sub Html(sText As String) As String
+  
+  Dim sRes As String
+  Dim iPos As Integer
+  Dim sCar As String
+  Dim bComment As Boolean
+  Dim sString As String
+  Dim iLen As Integer
+  Dim bMarkup As Boolean
+  Dim iNewLine As Integer
+  
+  iNewLine = 256
+  iLen = Len(sText)
+  sText = sText & "  "
+  
+  For iPos = 1 To iLen
+    
+    sCar = Mid$(sText, iPos, 1)
+    
+    If bComment Then
+      If Mid$(sText, iPos, 3) = "-->" Then
+        bComment = False
+        iPos += 2
+      Endif
+      Continue
+    Else If sString Then
+      If sCar = "\\" Then
+        sRes &= Mid$(sText, iPos, 2)
+        Inc iPos
+        Continue
+      Else If sCar = sString Then
+        sString = ""
+      Endif
+      sRes &= sCar
+      Continue
+    Endif
+    
+    If Mid$(sText, iPos, 4) = "<!--" Then
+      bComment = True
+      iPos += 3
+      Continue
+    Endif
+    
+    If sCar = "<" Then
+      bMarkup = True
+    Else If sCar = ">" Then
+      bMarkup = False
+    Else If sCar = "\"" Or If sCar = "'" Then
+      If bMarkup Then sString = sCar
+    Else If sCar = " " Or If sCar = "\n" Then
+      
+      If Len(sRes) = 0 Then Continue
+      If Right(sRes) = " " Or If Right$(sRes) = "\n" Then Continue
+      
+      sCar = " "
+      
+      If Not bMarkup And If Not sString Then
+        If Len(sRes) >= iNewLine Then
+          sCar = "\n"
+          iNewLine = (Len(sRes) + 255) And Not 255
+        Endif
+      Endif
+    
+      'If InStr(IDENT_CAR_CSS, Right(sRes)) = 0 Then Continue
+      'If InStr(IDENT_CAR_CSS, Right$(sCar2)) = 0 Then Continue
+    Endif
+    
+    sRes &= sCar
+    
+  Next
+  
+  Return sRes
+  
+End

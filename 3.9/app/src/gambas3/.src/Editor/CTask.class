@@ -1,0 +1,89 @@
+' Gambas class file
+
+Public Const TYPE_NOTE As Integer = 0
+Public Const TYPE_FIXME As Integer = 1
+Public Const TYPE_TODO As Integer = 2
+
+Public Type As Integer
+Public (Class) As String
+Public Name As String
+Public (Line) As Integer
+Public Text As String
+
+Public Sub _compare(hOther As CTask) As Integer
+  
+  Dim iComp As Integer
+  
+  iComp = Sgn(Type - hOther.Type)
+  If iComp Then Return iComp
+  
+  iComp = Comp({Class}, hOther.Class)
+  If iComp Then Return iComp
+  
+  iComp = Sgn({Line} - hOther.Line)
+  If iComp Then Return iComp
+  
+End
+
+Static Public Sub ScanFile(sPath As String) As CTask[]
+  
+  Dim aTask As New CTask[]
+  Dim sLine As String
+  Dim hTask As CTask
+  Dim iLine As Integer
+  Dim iPos As Integer
+  Dim sType As String
+  Dim iType As Integer
+  Dim hModule As Object
+  Dim aLine As String[]
+  
+  hModule = Project.Files[sPath]
+  
+  If hModule Then
+    aLine = Split(hModule.GetText(), "\n")
+  Else
+    If Not Exist(sPath) Then Return aTask
+    aLine = Split(File.Load(sPath), "\n")
+  Endif
+  
+  For Each sLine In aLine
+    Inc iLine
+    sLine = Highlight.Purge(sLine, True)
+    iPos = InStr(sLine, "'")
+    If iPos Then
+      If Mid$(sLine, iPos + 1, 1) = "'" Then Inc iPos
+      sLine = Trim(Mid$(sLine, iPos + 1))
+      iPos = InStr(sLine, ":")
+      If iPos Then
+        
+        sType = Trim(Left(sLine, iPos - 1))
+        
+        Select Case sType
+          Case "NOTE"
+            iType = TYPE_NOTE
+          Case "FIXME"
+            iType = TYPE_FIXME
+          Case "TODO"
+            iType = TYPE_TODO
+          Default
+            Continue
+        End Select
+        
+        hTask = New CTask
+        With hTask
+          .Type = iType
+          .Name = File.Name(sPath)
+          .Class = File.BaseName(sPath)
+          .Line = iLine
+          .Text = Trim(Mid$(sLine, iPos + 1))
+        End With
+        aTask.Add(hTask)
+        
+      Endif
+    Endif
+  Next
+  
+  Return aTask
+  
+End
+

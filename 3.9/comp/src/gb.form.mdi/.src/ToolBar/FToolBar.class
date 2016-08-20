@@ -1,0 +1,1656 @@
+' Gambas class file
+
+Public Enum ICON_SMALL, ICON_MEDIUM, ICON_LARGE, ICON_HUGE
+
+Public ToolbarKey As String
+Public $bDesign As Boolean
+
+Static Private $cRegister As New Collection
+Static Private $hExpanderBg As Picture
+
+Private Const SEPARATOR_SIZE As Integer = 5
+
+Private $hObserverParent As Observer
+Private $bLock As Boolean
+Private $bHidden As Boolean
+Private $bVertical As Boolean
+Private $bReallyVertical As Boolean
+Private $bAutoResize As Boolean
+Private $bConfigure As Boolean
+Private $bInside As Boolean
+Private $bPressed As Boolean
+Private $sDropAction As String
+Private $iIconSize As Integer
+Private $iButtonWidth As Integer
+Private $nRow As Integer
+
+Private $bOpened As Boolean
+
+Private $iHandleSize As Integer
+
+Private $iLock As Integer
+
+Private $aHidden As Control[]
+
+Public Sub _new()
+  
+  $iHandleSize = 1 'Max(4, Desktop.Scale)
+  $iButtonWidth = Desktop.Scale * 2 + GetRealIconSize()
+  dwgHandle.Width = $iHandleSize
+  $hObserverParent = New Observer(Me.Parent.Parent) As "Container"
+  $bAutoResize = True
+  UpdateHandle
+  
+End
+
+Private Sub GetToolBar() As ToolBar
+
+  Return Me.Parent
+
+End
+
+Public Sub IsVertical() As Boolean
+  
+  Return $bReallyVertical
+  
+End
+
+Public Sub SetVertical(bVertical As Boolean)
+  
+  $bReallyVertical = bVertical
+  Update
+  
+End
+
+Public Function GetContainer() As Container
+  
+  Return panToolBar
+  
+End
+
+Private Function GetToolBarWidth(Optional (bPadding) As Boolean) As Integer
+  
+  Dim hCtrl As Control
+  Dim W As Integer
+  Dim WH As Integer
+  
+  If $bReallyVertical Then 
+  
+    ' For Each hCtrl In panToolBar.Children
+    '   If Not hCtrl.Visible Then Continue
+    '   W = Max(W, hCtrl.W)
+    ' Next
+    ' 
+    ' W = Max(W, $iButtonWidth)
+    
+    W = $iButtonWidth
+    
+  Else 
+  
+    If dwgHandle.Visible Then WH = dwgHandle.W
+  
+    For Each hCtrl In panToolBar.Children
+      If hCtrl.Visible Then 
+        If hCtrl.Expand Then Return GetFreeWidth() - WH
+        W += hCtrl.W
+      Endif
+    Next
+    
+  Endif
+  
+  'If bPadding Then W += panToolBar.Padding * 2 
+  Return W
+  
+End
+
+Private Sub GetToolBarHeight(Optional WW As Integer, (bPadding) As Boolean) As Integer
+  
+  Dim hCtrl As Control
+  Dim X, W, H As Integer
+  Dim SH As Integer
+
+  If $bReallyVertical Then
+  
+    If dwgHandle.Visible Then SH = dwgHandle.H
+  
+    For Each hCtrl In panToolBar.Children
+      If hCtrl.Visible Then 
+        If hCtrl.Expand Then Return GetFreeHeight() - SH
+        H += hCtrl.H
+      Endif
+    Next
+    
+  Else
+  
+    If dwgHandle.Visible Then SH = dwgHandle.W
+  
+    'If ToolBarKey = "image" Then Debug ToolBarKey;; "WW =";; WW
+  
+    $nRow = 1
+    X = SH
+    For Each hCtrl In panToolBar.Children
+      If hCtrl.Visible Then 
+        'If ToolBarKey = "image" Then Debug ToolbarKey;; $nRow;; hCtrl.Name;; X;; hCtrl.W;; If(hCtrl.Expand, "E", "")
+        W = hCtrl.W
+        If hCtrl.Expand Then W = Desktop.Scale
+        If (X + W) > WW Then
+          X = SH
+          Inc $nRow
+        Endif
+        X += W
+      Endif
+    Next
+
+    H = $iButtonWidth * $nRow
+    'If ToolBarKey = "image" Then Debug ToolBarKey;; $nRow
+    
+  Endif
+  
+  'If bPadding Then H += panToolBar.Padding * 2
+
+  'If ToolBarKey = "image" Then Debug ToolBarKey;; "H = "; H
+  Return H
+  
+End
+
+' Private Sub GetMaxWidth() As Integer
+'   
+'   Dim W As Integer = Me.Parent.Width
+'   If sepToolbar.Visible Then Dec W
+'   Return W
+'   
+' End
+
+
+Private Function GetFreeWidth() As Integer
+  
+  Return Me.Parent.Parent.ClientW
+  
+End
+
+Private Function GetFreeHeight() As Integer
+  
+  Return Me.Parent.Parent.ClientH
+  
+End
+
+Private Sub GetParentArrangement() As Integer
+
+  Dim hObject As Object = GetToolBar().Parent
+  Dim iArrange As Integer
+
+  Try iArrange = hObject.Arrangement
+  If Not Error Then Return iArrange
+  If hObject Is VBox Then
+    Return Arrange.Vertical
+  Else If hObject Is HBox Then
+    Return Arrange.Horizontal
+  Endif
+
+End
+
+Private Sub SetArrangement()
+  
+  Dim hToolbar As ToolBar = GetToolBar()
+  Dim SH As Integer
+  Dim X, Y, W, NX, WT As Integer
+  Dim hCtrl As Control
+  
+  If $bDesign Then Return
+  'If $bInSetArrangement Then Return
+  
+  'If ToolbarKey = "image" Then Debug ToolBarKey;; panToolBar.W; " x "; panToolBar.H;; "["; hToolbar.Arrangement; "]"
+  
+  If Not $bReallyVertical Then
+    
+    If dwgHandle.Visible Then SH = dwgHandle.W
+  
+    If $nRow = 1 Then
+      For Each hCtrl In panToolBar.Children
+        If hCtrl.Visible Then 
+          If hCtrl.Expand Then
+            'Debug ToolbarKey;; "Expand";; hCtrl.Name
+            Inc NX
+          Else
+            WT += hCtrl.W
+          Endif
+        Endif
+      Next
+      WT = Max(0, panToolBar.W - WT)
+      'Debug ToolBarKey;; "WT = "; WT;; NX
+    Endif
+  
+    X = If(System.RightToLeft, panToolBar.W - SH, SH)
+    For Each hCtrl In panToolBar.Children
+      If Not hCtrl.Visible Then Continue
+      
+      W = hCtrl.W
+      If hCtrl.Expand Then
+        If $nRow = 1 Then
+          If NX And If WT > 0 Then
+            W = WT \ NX
+            WT -= W
+            Dec NX
+          Else
+            W = Desktop.Scale
+          Endif
+        Else
+          If hCtrl.Next Then
+            W = Desktop.Scale
+          Else
+            W = Max(Desktop.Scale, panToolBar.W - X)
+          Endif
+        Endif
+      Endif
+      
+      If System.RightToLeft Then
+      
+        X -= W
+        If X < 0 Then
+          X = panToolBar.W - SH
+          Y += $iButtonWidth
+          If hCtrl.Expand And If Not hCtrl.Next Then W = X 'panToolBar.W - X
+        Endif
+        'If ToolbarKey = "editor" Then Debug ToolBarKey;; hCtrl.Name;; X;; Y;; W
+        hCtrl.Move(X, Y, W, $iButtonWidth)
+        
+      Else
+        
+        If (X + W) > panToolBar.W Then
+          X = SH
+          Y += $iButtonWidth
+          If hCtrl.Expand And If Not hCtrl.Next Then W = panToolBar.W - X
+        Endif
+        'If ToolbarKey = "editor" Then Debug ToolBarKey;; hCtrl.Name;; X;; Y;; W
+        hCtrl.Move(X, Y, W, $iButtonWidth)
+        X += W
+        
+      Endif
+      
+    Next
+
+  Else
+    
+    If $nRow = 1 Then
+      hToolbar.Arrangement = If($bReallyVertical, Arrange.Vertical, Arrange.Horizontal)
+    Else
+      hToolbar.Arrangement = If($bReallyVertical, Arrange.Vertical, Arrange.Row) 'Arrange.Row 'If($bVertical, Arrange.Column, Arrange.Row)
+    Endif
+  
+  Endif
+  
+  'If ToolbarKey = "image" Then Debug "==>";; ToolBarKey;; panToolBar.W; " x "; panToolBar.H;; "["; hToolbar.Arrangement; "]"
+  
+End
+
+Private Sub Update()
+
+  Dim W, H As Integer
+  Dim XH, YH, WH, HH As Integer 
+  Dim XP, YP As Integer 
+  Dim hToolbar As ToolBar = GetToolBar()
+
+  If Not Object.IsValid(hToolbar) Then Return
+  If Not Object.IsValid(hToolbar.Parent) Then Return
+  If $iLock Then Return
+  If $bLock Then Return
+  $bLock = True
+  
+  'If ToolBarKey = "image" Then Debug System.Backtrace.Join(" ")
+  
+  'hToolbar.Arrangement = Arrange.None
+  CheckSeparators
+
+  If Not $bReallyVertical Then
+  
+    If System.RightToLeft Then
+      XH = Me.W - $iHandleSize
+      YH = 0
+      XP = 0
+    Else
+      XH = 0
+      YH = 0
+      XP = $iHandleSize
+    Endif
+    YP = 0
+    WH = $iHandleSize
+    HH = Me.H
+    
+  Else
+  
+    XH = 0
+    YH = 0
+    WH = Me.W
+    HH = $iHandleSize
+    XP = 0
+    YP = $iHandleSize
+  
+  Endif
+  
+  If Not dwgHandle.Visible Then
+    WH = 0
+    HH = 0
+    XP = 0
+    YP = 0
+  Endif
+
+  If $bDesign Then
+  
+    If dwgHandle.Visible Then
+      dwgHandle.Move(XH, YH, WH, HH)
+      If Not $bReallyVertical Then
+        panToolBar.Move(XP, YP, Me.W - WH, Me.H)
+      Else
+        panToolBar.Move(XP, YP, Me.W, Me.H - HH)
+      Endif
+    Else
+      panToolBar.Move(XP, YP, Me.W, Me.H)
+    Endif
+    
+  Else
+
+    panToolBar.Show
+    
+    If Not $bReallyVertical Then
+      If $bAutoResize Then
+        W = Max($iHandleSize, Min(GetToolBarWidth() + WH, GetFreeWidth()))
+        'H = Max(GetToolBarHeight(True), panToolBar.H)
+      Else 
+        W = Max($iHandleSize, GetToolBarWidth() + WH)
+      Endif
+      If GetParentArrangement() = Arrange.Vertical Then W = Max(W, GetToolBar().Parent.ClientW)
+      H = GetToolBarHeight(W, True)
+    Else
+      If $bAutoResize Then
+        'W = Max(GetToolBarWidth(True), GetMaxWidth())
+        H = Max($iHandleSize, Min(GetToolBarHeight() + HH, GetFreeHeight()))
+      Else 
+        'W = GetToolBarWidth(True)
+        H = Max($iHandleSize, GetToolBarHeight() + HH)
+      Endif
+      W = GetToolBarWidth(True)
+    Endif
+    'W += $iHandleSize
+    
+    If dwgHandle.Visible Then dwgHandle.Move(XH, YH, WH, HH)
+    If Not $bReallyVertical Then
+      panToolBar.Move(XP, YP, W - WH, H)
+    Else
+      panToolBar.Move(XP, YP, panToolBar.W, H - HH)
+    Endif
+    'If ToolBarKey = "image" Then Debug ToolBarKey;; panToolBar.W; " x "; panToolBar.H;; "(";; H;; HH; ")"
+
+  Endif
+  
+  If Not $bReallyVertical Then
+    sepToolbar.Move(0, Me.H - 1, Me.W, 1)
+  Else
+    sepToolbar.Move(Me.W - 1, 0, 1, Me.H)
+  Endif
+  
+  'dwgHandle.Refresh
+  
+  $bLock = False
+
+  If sepToolbar.Visible Then 
+    If $bReallyVertical Then
+      Inc W
+    Else
+      Inc H
+    Endif
+  Endif
+  
+  'Debug panToolBar.X;; panToolBar.Y;; panToolBar.W;; panToolBar.H;; "/";; W;; H
+  'If panToolBar.Children.Count Then Debug "=>";; panToolBar.Children[0].X;; panToolBar.Children[0].Y;; panToolBar.Children[0].W;; panToolBar.Children[0].H
+  
+  If Not $bDesign Then 
+    Me.Resize(W, H)
+    Me.Parent.Resize(W, H)
+  Endif
+  
+  SetArrangement
+  
+End
+
+Public Sub Form_Resize()
+  
+  Update
+  
+End
+
+ 
+Public Sub Container_Arrange()
+  
+  Update
+  
+End
+
+
+Public Sub panToolbar_BeforeArrange()
+
+  If $bDesign Then Return
+  
+  'If ToolbarKey = "image" And If panToolBar.H = 630 Then Debug System.Backtrace.Join(" ")
+  
+  Update
+  SetArrangement
+
+End
+
+Public Function IsHidden() As Boolean
+  
+  Return $bHidden
+  
+End
+
+Public Sub SetHidden(bHidden As Boolean)
+  
+  If bHidden = $bHidden Then Return
+  $bHidden = bHidden
+  Update
+  Action.Raise(Me.Parent)
+  
+End
+
+' PUBLIC SUB dwgHandle_DblClick()
+' <
+'   SetHidden(NOT $bHidden)
+' 
+' END
+
+Public Sub dwgHandle_Draw()
+
+  Dim iFlag As Integer
+
+  If $bInside Then iFlag += Draw.Hover
+  If Not Me.Enabled Then iFlag += Draw.Disabled
+
+  'Draw.Style.Button(1, 1, dwgHandle.W - 2, dwgHandle.H - 2, $bPressed And $bInside, Not Me.Enabled)
+  'Draw.Style.Handle(1, 1, dwgHandle.W - 2, dwgHandle.H - 2, Not $bVertical, iFlag)
+  'If $bInside Then
+  If $bInside Or If $bConfigure Then
+    Draw.FillRect(0, 0, dwgHandle.W, dwgHandle.H, Color.Merge(Color.LightForeground, Color.TextBackground, 0.3))
+  Else
+    Draw.FillRect(0, 0, dwgHandle.W, dwgHandle.H, Color.LightForeground)
+  Endif
+  'Endif
+  'Draw.Style.Separator(0, 0, dwgHandle.W, dwgHandle.H, $bVertical, Not Me.Enabled)
+  'Draw.FillX = 0
+  'Draw.FillY = 0
+  'Draw.Style.Separator(1, 1, dwgHandle.W - 2, dwgHandle.H - 2, $bVertical, Not Me.Enabled)
+  
+End
+
+Private Sub UpdateHandle()
+  
+  'If $bInside Or If $bConfigure Then
+  '  dwgHandle.Background = Color.Merge(Color.Background, Color.Foreground, 0.3)
+  'Else
+  '  dwgHandle.Background = Color.Default
+  'Endif
+  dwgHandle.Refresh
+  
+End
+
+
+Public Sub dwgHandle_Enter()
+
+  If $bDesign Then Return
+  $bInside = True
+  UpdateHandle
+
+End
+
+Public Sub dwgHandle_Leave()
+
+  If $bDesign Then Return
+  $bInside = False
+  UpdateHandle
+
+End
+
+Public Sub dwgHandle_MouseDown()
+
+  If $bDesign Then Return
+  $bPressed = True
+  dwgHandle.Refresh
+  'SetHidden(NOT $bHidden)
+
+End
+
+Public Sub dwgHandle_MouseUp()
+
+  If $bDesign Then Return
+  $bPressed = False
+  If $bInside Then 
+    dwgHandle.Refresh
+    If ToolbarKey Then Action._ConfigureToolbar(Me.Parent)
+  Endif
+  'SetHidden(NOT $bHidden)
+
+End
+
+Public Sub IsAutoResize() As Boolean
+  
+  Return $bAutoResize
+  
+End
+
+Public Sub SetAutoResize(bAutoResize As Boolean)
+  
+  $bAutoResize = bAutoResize
+  Update
+  
+End
+
+Private Sub SetObserverOn(hCtrl As Control)
+  
+  Dim hObs As Observer
+  Dim hCont As Container
+  
+  hObs = New Observer(hCtrl) As "Item"
+  If Not hCtrl Is Container Then Return
+  
+  hCont = hCtrl
+  For Each hCtrl In hCont.Children
+    SetObserverOn(hCtrl)
+  Next
+  
+End
+
+
+Private Sub InitToolbar()
+  
+  Dim hCtrl As Control
+  Dim sAction As String
+  Dim aList As String[]
+  Dim aReparent As Control[]
+  
+  If Not ToolBarKey Then Return
+  
+  aList = GetDefaultConfig()
+  If Not aList Then Return
+  
+  ' Debug panToolBar.Children.Count
+  ' Debug System.Backtrace.Join("\n")
+  
+  aReparent = New Control[]
+  For Each hCtrl In panToolBar.Children
+    If hCtrl.Action Or If hCtrl Is Separator Then
+      SetObserverOn(hCtrl)
+      sAction = hCtrl.Action
+      If sAction Then
+        If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
+        If Not aList.Exist(sAction) Then aReparent.Add(hCtrl)
+      Endif
+    Endif
+  Next
+  
+  For Each hCtrl In aReparent
+    hCtrl.Reparent(panHide)
+    hCtrl.Show
+  Next
+  
+End
+
+Public Sub FindControl(sAction As String, Optional bHiddenOnly As Boolean) As Control
+
+  Dim hCtrl As Control
+  
+  If Not bHiddenOnly Then 
+  
+    For Each hCtrl In panToolBar.Children
+      If hCtrl.Action = sAction Or If hCtrl.Action = ("." & sAction) Then Return hCtrl
+    Next
+  
+  Endif
+  
+  For Each hCtrl In panHide.Children
+    If hCtrl.Action = sAction Or If hCtrl.Action = ("." & sAction) Then Return hCtrl
+  Next
+  
+End
+
+
+Public Sub Form_Open()
+
+  'Debug panToolBar.Children.Count
+
+  If Not $bDesign Then
+    $bOpened = True
+    InitToolbar
+    RegisterToolbar
+    'If ToolBarKey = "main" Then System._Breakpoint()
+    LoadConfig(True)
+  Endif
+
+End
+
+' Public Sub panToolBar_Menu()
+' 
+'   Debug "Toolbar menu"
+' 
+' End
+' 
+' Public Sub Item_Menu()
+'   
+'   Debug "Item menu"
+'   
+' End
+
+Private Sub FindToolbar() As CToolbar
+  
+  Dim hToolbar As CToolbar
+  
+  MAction.InitAction
+  
+  hToolbar = MAction.Toolbars[ToolbarKey]
+  
+  If Not hToolbar Then
+    hToolbar = New CToolbar(ToolBarKey, Null)
+    hToolbar.DefaultConfig = GetCurrentConfig()
+    MAction.Toolbars[ToolbarKey] = hToolbar
+  Endif
+  
+  Return hToolbar
+  
+End
+
+Private Sub GetCurrentConfig() As String[]
+  
+  Dim aConfig As New String[]
+  Dim hCtrl As Control
+  Dim sAction As String
+  
+  For Each hCtrl In panToolBar.Children
+    If hCtrl.Action Then
+      sAction = hCtrl.Action
+      If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
+      aConfig.Add(sAction)
+    Else If hCtrl Is Separator
+      aConfig.Add("|")
+    Else If hCtrl Is ToolBarExpander Then
+      aConfig.Add("~")
+    Else If hCtrl Is Panel And If Panel(hCtrl).Children.Count = 0 Then
+      aConfig.Add("-")
+    Else If hCtrl.Visible Then
+      aConfig.Add("$" & hCtrl.Name)
+    Endif
+  Next
+  
+  Return aConfig
+  
+End
+
+
+Private Sub GetDefaultConfig() As String[]
+  
+  Dim aConfig As String[]
+  
+  aConfig = FindToolbar().DefaultConfig
+  If aConfig Then Return aConfig
+  
+End
+
+
+
+Public Sub SetConfigureMode(bConfigure As Boolean)
+
+  Dim hChild As Control
+
+  If $bConfigure = bConfigure Then Return
+  
+  $bConfigure = bConfigure
+  
+  ' For Each hChild In panToolBar.Children
+  '   hChild.Drop = $bConfigure
+  ' Next
+  ' For Each hChild In panHide.Children
+  '   hChild.Drop = $bConfigure
+  ' Next
+  Me.Drop = $bConfigure
+  
+  'panToolBar.Enabled = Not $bConfigure
+  'Me.Parent.Enabled = Not $bConfigure
+  If $bConfigure Then
+    'hColor = Color[Color.LightBackground]
+    'hColor.Saturation /= 2
+    'Me.Background = dwgHandle.Background 'hColor.Color
+  Else
+    'Me.Background = Color.Default
+  Endif
+  UpdateHandle
+  'dwgHandle.Enabled = Not $bConfigure
+
+  Lock()
+  If $bConfigure Then
+    $aHidden = New Control[]
+    For Each hChild In panToolBar.Children
+      If hChild Is Separator Then Continue
+      If Not hChild.Visible Then 
+        $aHidden.Add(hChild)
+        hChild.Show
+      Endif
+    Next
+    ' For Each hChild In panHide.Children
+    '   If hChild Is Separator Then Continue
+    '   If Not hChild.Visible Then 
+    '     $aHidden.Add(hChild)
+    '     'hChild.Show
+    '   Endif
+    ' Next
+  Else
+    For Each hChild In $aHidden
+      hChild.Hide
+    Next
+    $aHidden = Null
+    SaveConfig
+    'panToolBar.Refresh
+  Endif
+  Unlock()
+  
+  panToolBar.Refresh
+  
+End
+
+Public Sub Form_Drag()
+  
+  If Not $bConfigure Or If Drag.Format <> MAction.MIME Then
+    HideWhere(True)
+    Stop Event
+    Return
+  Endif
+  
+End
+
+Private Sub WaitALittle(iCount As Integer)
+  
+  Dim eTime As Float
+  Dim eWait As Float
+
+  eTime = Timer
+  'Wait
+  eWait = (0.01 / iCount) - (eTime - Timer)
+  If eWait > 0 Then Sleep eWait
+  
+End
+
+
+Private Sub HideWhere(bAnim As Boolean)
+  
+  Dim D As Integer
+  
+  If Not panWhere.Visible Then Return
+  
+  If $bVertical Then
+    D = panWhere.H
+  Else
+    D = panWhere.W
+  Endif
+  
+  'panWhere.Border = Border.None
+  If bAnim Then
+    For D = D - 1 To 1 Step -2
+      If $bVertical Then
+        panWhere.H = D
+      Else
+        panWhere.W = D
+      Endif
+      WaitALittle(D)
+    Next
+  Endif
+  panWhere.Hide
+  
+End
+
+Private Sub ShowWhere(sAction As String, bAnim As Boolean, Optional hCtrl As Control)
+
+  Dim D As Integer
+  Dim DM As Integer
+  Dim W, H As Integer
+  
+  If Not hCtrl Then
+    If sAction And If Not FToolBarConfig.IsSpecialAction(sAction) Then
+      hCtrl = FindControl(sAction)
+      If Not hCtrl Then Return
+    Endif
+  Endif
+  
+  If hCtrl Then
+    W = hCtrl.W
+    H = hCtrl.H
+    panWhere.Move(hCtrl.X, hCtrl.Y)
+  Else
+    If $bVertical Then
+      W = GetToolBarHeight()
+      H = If(sAction = "-", Desktop.Scale, SEPARATOR_SIZE)
+    Else
+      W = If(sAction = "-", Desktop.Scale, SEPARATOR_SIZE)
+      H = GetToolBarHeight()
+    Endif
+  Endif
+  
+  If $bVertical Then
+    DM = H
+    panWhere.W = W
+  Else
+    DM = W
+    panWhere.H = H
+  Endif  
+  
+  panWhere.Show
+  If bAnim Then
+    For D = 1 To DM - 1 Step 2
+    'For D = DM To DM
+      If $bVertical Then
+        panWhere.H = D
+      Else
+        panWhere.W = D
+      Endif
+      WaitALittle(DM)
+    Next
+  Endif
+  If $bVertical Then
+    panWhere.H = DM
+  Else
+    panWhere.W = DM
+  Endif
+  'panWhere.Border = Border.Plain
+  
+  'Debug panWhere.X;; panWhere.Y;; panWhere.W;; panWhere.H;; panWhere.Visible;; panWhere.Parent.Name
+  
+End
+
+Public Sub Form_DragMove()
+  
+  Dim hCtrl As Control
+  Dim bBefore As Boolean
+  Dim bAnim As Boolean
+  Dim X, Y As Integer
+  
+  If Not $bConfigure Or If Drag.Format <> MAction.MIME Then
+    HideWhere(True)
+    Stop Event
+    Return
+  Endif
+
+  hCtrl = panToolBar.FindChild(Drag.X - panToolBar.X, Drag.Y - panToolBar.Y)
+  If Not hCtrl Then
+    Stop Event
+    Return
+  Endif
+  
+  While hCtrl.Parent <> panToolBar
+    hCtrl = hCtrl.Parent
+  Wend
+
+  If hCtrl = panWhere Then Return
+  
+  X = Drag.X - panToolBar.X - hCtrl.X
+  Y = Drag.Y - panToolBar.Y - hCtrl.Y
+  
+  If $bVertical Then
+  
+    bBefore = Y <= (hCtrl.H \ 2)
+    'If Not bBefore And If Drag.Y > ((hCtrl.H * 2) \ 3) Then Return
+    
+  Else
+  
+    bBefore = X <= (hCtrl.W \ 2)
+    'If Not bBefore And If Drag.X > ((hCtrl.W * 2) \ 3) Then Return
+    
+  Endif
+  
+  If bBefore Then
+    If panWhere.Next = hCtrl Then Return
+  Else
+    If hCtrl.Next = panWhere Then Return
+  Endif
+  
+  bAnim = Not panWhere.Visible
+  'panWhere.Hide
+  'HideWhere(False)
+  
+  If bBefore Then
+    panWhere.Next = hCtrl
+  Else
+    panWhere.Next = hCtrl.Next
+    hCtrl.Next = panWhere
+  Endif
+  
+  ShowWhere(Drag.Paste(MAction.MIME), bAnim)
+  
+End
+
+Private Sub GetControlAction(hCtrl As Control) As String
+  
+  Dim sAction As String
+  
+  sAction = hCtrl.Action
+  If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
+  If Not sAction Then
+    If hCtrl Is ToolBarExpander Then
+      sAction = "~"
+    Else If hCtrl Is Separator
+      sAction = "|"
+    Else If hCtrl Is Panel And If Panel(hCtrl).Children.Count = 0 Then
+      sAction = "-"
+    Endif
+  Endif
+  
+  Return sAction
+  
+End
+
+
+Private Sub OnMouseDrag(hCtrl As Control)
+  
+  Dim sAction As String
+  
+  While hCtrl.Parent <> panToolBar
+    hCtrl = hCtrl.Parent
+    'Debug "-> "; hCtrl
+  Wend
+  
+  If Not $bConfigure Then Return
+  
+  sAction = GetControlAction(hCtrl)
+  If Not sAction Then Return
+
+  $bLock = True
+  'Lock()
+  DragStart(True)
+  panWhere.Next = hCtrl.Next
+  hCtrl.Next = panWhere
+  ShowWhere(sAction, False, hCtrl)
+  hCtrl.Hide
+  'Unlock()
+  
+  ' Debug "----------------"
+  ' ' Debug System.Backtrace.Join(" ")
+  ' For Each hCtrl In panToolBar.Children
+  '   Debug hCtrl.Name;; hCtrl.Visible;; hCtrl.X;; hCtrl.Y;; hCtrl.W;; hCtrl.H
+  ' Next
+  ' ' Debug "----------------"
+  
+  FToolBarConfig.DragAction(hCtrl, sAction)
+  $bLock = False
+  
+End
+
+Public Sub Item_KeyPress()
+  
+  If $bConfigure Then Stop Event
+  
+End
+
+
+Public Sub Item_MouseDown()
+  
+  If $bConfigure Then Stop Event
+  
+End
+
+' Public Sub Item_Enter()
+'   
+'   $iBackground = Last.Background
+'   
+'   If $bConfigure Then 
+'     Last.Background = panWhere.Background
+'     Stop Event
+'   Endif
+'   
+' End
+' 
+' Public Sub Item_Leave()
+'   
+'   If $bConfigure Then 
+'     'If InStr("~-|", GetControlAction(Last)) Then
+'       Last.Background = $iBackground
+'     'Endif
+'     Stop Event
+'   Endif
+'   
+' End
+
+Public Sub Item_Menu()
+  
+  If $bConfigure Then 
+    Stop Event
+  Else
+    If Not Application.ActiveControl Is TextBox Then
+      FToolBarConfig.OpenMenu(Me.Parent)
+      Stop Event
+    Endif
+  Endif
+  
+End
+
+Public Sub Item_MouseDrag()
+  
+  OnMouseDrag(Last)
+  
+End
+
+Public Sub Form_Drop()
+
+  panWhere_Drop
+
+End
+
+Public Sub DragStart(bOutside As Boolean)
+  
+  $sDropAction = ""
+  If bOutside Then
+    panWhere.Resize(SEPARATOR_SIZE, SEPARATOR_SIZE)
+    'Debug
+    panWhere.Reparent(panToolBar)
+  Endif
+  
+End
+
+
+Public Sub DragEnd(bAnim As Boolean)
+  
+  Dim hCtrl As Control
+  
+  If $sDropAction Then
+  
+    If $sDropAction = "|" Then
+      AddSeparator(panWhere)
+    Else If $sDropAction = "~" Then
+      AddExpander(panWhere)
+    Else If $sDropAction = "-" Then
+      AddSpace(panWhere)
+    Else
+      hCtrl = FindControl($sDropAction)
+      If hCtrl Then 
+        ShowControl(hCtrl)
+        hCtrl.Show
+        hCtrl.Next = panWhere.Next
+      Endif
+    Endif
+    Update
+    
+  Endif
+
+  HideWhere(bAnim)
+  'Debug
+  panWhere.Reparent(Me)
+  
+End
+
+Public Sub panWhere_Drag()
+
+  If Not $bConfigure Or If Drag.Format <> MAction.MIME Then
+    Stop Event
+    Return
+  Endif
+
+End
+
+Private Sub AddSeparator(Optional hNext As Control)
+  
+  Dim hSep As Separator
+  Dim hObs As Observer
+  Dim W, H As Integer
+
+  Lock()
+  
+  If $bVertical Then
+    W = GetToolBarHeight()
+    H = SEPARATOR_SIZE
+  Else
+    W = SEPARATOR_SIZE
+    H = GetToolBarHeight()
+  Endif
+
+  hSep = New Separator(panToolBar)
+  hSep.Next = hNext
+  
+  hSep.Resize(W, H)
+  hSep.Drop = True
+  hObs = New Observer(hSep) As "Item"
+  
+  Unlock()
+  
+End
+
+Private Sub AddSpace(Optional hNext As Control)
+  
+  Dim hSpace As Panel
+  Dim hObs As Observer
+  Dim W, H As Integer
+
+  Lock()
+  
+  If $bVertical Then
+    W = GetToolBarHeight()
+    H = Desktop.Scale
+  Else
+    W = Desktop.Scale
+    H = GetToolBarHeight()
+  Endif
+
+  hSpace = New Panel(panToolBar)
+  hSpace.Next = hNext
+  
+  hSpace.Resize(W, H)
+  hSpace.Drop = True
+  hObs = New Observer(hSpace) As "Item"
+  
+  Unlock()
+  
+End
+
+Public Sub ToolBarExpander_Draw()
+  
+  If $bConfigure Then
+    If Not $hExpanderBg Then $hExpanderBg = Picture["img/expander.png"]
+    Draw.Tile($hExpanderBg, 0, (Last.H - $hExpanderBg.H) / 2, Last.W, $hExpanderBg.H)
+  Endif
+  
+End
+
+
+Private Sub AddExpander(Optional hNext As Control)
+  
+  Dim hExp As ToolBarExpander
+  Dim hObs As Observer
+  Dim W, H As Integer
+
+  Lock()
+  
+  If $bVertical Then
+    W = GetToolBarHeight()
+    H = SEPARATOR_SIZE
+  Else
+    W = SEPARATOR_SIZE
+    H = GetToolBarHeight()
+  Endif
+
+  hExp = New ToolBarExpander(panToolBar) As "ToolBarExpander"
+  hExp.Next = hNext
+  hExp.Resize(W, H)
+  hExp.Drop = True
+  hObs = New Observer(hExp) As "Item"
+  
+  Unlock()
+  
+End
+
+
+Public Sub panWhere_Drop()
+  
+  'Debug
+  $sDropAction = Drag.Paste(MAction.MIME)
+  
+End
+
+Public Sub SetText(sText As String)
+  
+  Me.Text = sText
+  If $bDesign Then Return
+  If sText Then
+    dwgHandle.ToolTip = Subst$(("Configure &1 toolbar"), sText)
+  Else
+    dwgHandle.ToolTip = ("Configure main toolbar")
+  Endif
+  
+End
+
+Private Sub RegisterToolbar()
+  
+  Dim aSlot As FToolBar[]
+  
+  If Not ToolbarKey Then Return
+  
+  'Debug ToolbarKey
+
+  If Not $cRegister.Exist(ToolbarKey) Then
+    $cRegister[ToolbarKey] = New FToolbar[]
+  Endif
+  
+  aSlot = $cRegister[ToolbarKey]
+  If Not aSlot.Exist(Me) Then 
+    aSlot.Add(Me)
+  Endif
+  
+End
+
+Private Sub UnregisterToolbar()
+  
+  Dim aSlot As FToolBar[]
+  Dim iInd As Integer
+
+  If Not ToolbarKey Then Return
+
+  'Debug ToolbarKey
+
+  aSlot = $cRegister[ToolbarKey]
+  If aSlot Then
+    iInd = aSlot.Find(Me)
+    If iInd >= 0 Then 
+      aSlot.Remove(iInd)
+    Endif
+  Endif
+  
+End
+
+
+Public Sub SetKey(sKey As String)
+  
+  If ToolbarKey = sKey Then Return
+  
+  If $bOpened Then UnregisterToolbar
+  ToolbarKey = sKey
+  If $bOpened Then 
+    InitToolbar
+    RegisterToolbar
+  Endif
+  'dwgHandle.Visible = ToolbarKey
+  Update
+  
+End
+
+
+Public Sub Form_Close()
+
+  UnregisterToolbar
+
+End
+
+Private Sub CalcIconSize(iIconSize As Integer) As Integer
+  
+  Select Case iIconSize
+    Case ICON_HUGE
+      Return Stock.GetSize("huge")
+    Case ICON_MEDIUM
+      Return Stock.GetSize("medium")
+    Case ICON_LARGE
+      Return Stock.GetSize("large")
+    Case ICON_HUGE
+      Return Stock.GetSize("huge")
+    Default
+      Return Stock.GetSize("small")
+  End Select
+  
+End
+
+Private Sub GetIcon(hAction As CAction) As Picture
+  
+  Dim aIcon As String[]
+  Dim hIcon As Picture
+  Dim iSize As Integer
+  Dim sIcon As String
+  
+  iSize = CalcIconSize($iIconSize)
+  
+  sIcon = hAction.IconPath
+  
+  If sIcon Begins "icon:/" Then
+    aIcon = Split(sIcon, "/")
+    aIcon[1] = iSize
+    hIcon = Picture[aIcon.Join("/")]
+  Else
+    hIcon = hAction.Icon
+    If hIcon Then
+      hIcon = hIcon.Image.Stretch(iSize, iSize).Picture
+    Endif
+  Endif
+  
+  Return hIcon
+  
+End
+
+Private Sub ResizeControl(hCtrl As Control, iDim As Integer)
+  
+  Dim hToolButton As Object
+  Dim sAction As String
+  Dim hAction As CAction
+
+  If $bReallyVertical Then
+    hCtrl.W = iDim
+  Else
+    hCtrl.H = iDim
+  Endif
+  
+  If hCtrl Is ToolButton Or If hCtrl Is MenuButton 
+    If hCtrl.Action Then  
+      hToolButton = hCtrl
+      If Not hToolButton.Text Then 
+        If hCtrl Is ToolButton Then
+          hCtrl.Resize(iDim, iDim)
+        Else
+          hCtrl.Resize(iDim + Desktop.Scale * 2, iDim)
+        Endif
+      Endif
+      sAction = hCtrl.Action
+      If Left$(sAction) = "." Then sAction = Mid$(sAction, 2)
+      hAction = MAction.Actions[sAction]
+      If hAction And If hAction.IconPath Then
+        hToolButton.Picture = GetIcon(hAction)
+      Endif
+    Endif
+  Endif
+  
+End
+
+Private Sub CheckSeparators()
+  
+  Dim hLast As Control
+  Dim hChild As Control
+  
+  If $bDesign Then Return
+  
+  For Each hChild In panToolBar.Children
+    If hChild Is Separator Then 
+      hChild.Resize(SEPARATOR_SIZE, SEPARATOR_SIZE)
+      If FToolBarConfig.WillBeDeleted(hChild) Then Continue
+      hChild.Show
+    Endif
+  Next
+
+  If $bConfigure Then Return
+
+  For Each hChild In panToolBar.Children
+  
+    If Not hChild.Visible Then Continue
+    If Not hLast Or If hLast Is Separator Then 
+      If hChild Is Separator Then
+        hChild.Hide
+        Continue
+      Else If hLast And If hChild.Expand Then
+        hLast.Hide
+      Endif
+    Endif
+    hLast = hChild
+  
+  Next
+  
+  If hLast And If hLast Is Separator Then hLast.Hide
+  
+End
+
+
+Public Sub LoadConfig(Optional bInit As Boolean)
+  
+  Dim hToolbar As ToolBar = GetToolBar()
+  Dim hCtrl As Control
+  Dim aConfig As String[]
+  Dim sAction As String
+  Dim iInd As Integer
+  Dim bEnabled As Boolean
+  Dim iDim As Integer
+  
+  If Not ToolbarKey Then Return
+  If $bDesign Then Return
+  
+  'Debug Me; ": Loading config for";; ToolbarKey
+  
+  MAction.InitAction
+
+  Select Case Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"]
+    Case "Huge"
+      $iIconSize = ICON_HUGE
+      iDim = 12
+    Case "Medium"
+      $iIconSize = ICON_MEDIUM
+      iDim = 12
+    Case "Large"
+      $iIconSize = ICON_LARGE
+      iDim = 12
+    Case "Huge"
+      $iIconSize = ICON_HUGE
+      iDim = 12
+    Case Else
+      $iIconSize = ICON_SMALL
+      iDim = 12
+  End Select
+  iDim += Max(Me.Font.Height, GetRealIconSize())
+  $iButtonWidth = iDim
+  
+  aConfig = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Layout"]
+  If Not aConfig Then 
+    'If $iIconSize = ICON_SMALL Then
+    '  If bInit Then Goto RAISE_CONFIGURE
+    'Endif
+    aConfig = GetDefaultConfig()
+    If Not aConfig Then Goto RAISE_CONFIGURE
+  Endif
+  
+  bEnabled = panToolBar.Enabled
+  panToolBar.Enabled = True
+  panToolBar.Hide
+  Lock()
+  
+  iInd = 0
+  While iInd < panToolBar.Children.Count
+    hCtrl = panToolBar.Children[iInd]
+    ResizeControl(hCtrl, iDim)
+    If hCtrl.Action Then
+      hCtrl.Reparent(panHide)
+    Else If FToolBarConfig.IsSpecialAction(GetControlAction(hCtrl)) Then 
+      hCtrl.Delete
+    Else
+      Inc iInd
+    Endif
+  Wend
+  
+  For Each hCtrl In panHide.Children
+    ResizeControl(hCtrl, iDim)
+  Next
+
+  For Each sAction In aConfig
+    
+    'Print "Action "; sAction
+    If sAction = "|" Then
+      'Print "--> AddSeparator()"
+      AddSeparator()
+    Else If sAction = "~" Then
+      AddExpander()
+    Else If sAction = "-" Then
+      AddSpace()
+    Else If Left(sAction) = "$" Then
+      hCtrl = Me[Mid$(sAction, 2)]
+      If hCtrl And If Object.IsValid(hCtrl) Then
+        'Print "--> Reparent to panToolbar"
+        hCtrl.Reparent(panToolBar)
+        hCtrl.Raise
+      Endif
+    Else
+      hCtrl = FindControl(sAction)
+      If hCtrl Then
+        'Print "--> Reparent to panToolbar"
+        'bVisible = hCtrl.Visible
+        hCtrl.Reparent(panToolBar)
+        hCtrl.Raise
+        If bInit Then hCtrl.Show
+        'If hCtrl.Visible <> bVisible Then Debug "**** VISIBLE CHANGED FOR "; sAction
+      Endif
+    Endif
+    
+  Next
+  
+  ' For Each hCtrl In panToolBar.Children
+  '   If hCtrl Is Separator Then Continue
+  '   If hCtrl.Action Then Continue
+  '   hCtrl.Raise
+  ' Next
+  
+  panToolBar.Enabled = bEnabled
+  panToolBar.Show
+  
+  Unlock()
+
+RAISE_CONFIGURE:  
+  
+  If Not $bConfigure Then hToolbar._RaiseConfigure
+  
+End
+
+Public Sub SaveConfig(Optional bReset As Boolean)
+  
+  Dim aConfig As String[]
+  Dim aOldConfig As String[]
+  Dim hForm As FToolBar
+  Dim bChange As Boolean
+  Dim sVal As String
+  Dim aDefaultConfig As String[]
+  
+  If Not ToolbarKey Then Return
+  If $bDesign Then Return
+  If Not Object.IsValid(Me.Parent.Parent) Then Return
+
+  If Not bReset Then
+    aConfig = GetCurrentConfig()
+    aDefaultConfig = GetDefaultConfig()
+    If aConfig.Join(",") = aDefaultConfig.Join(",") Then aConfig = Null
+  Endif
+  
+  ' Print Me; ": Saving config for "; ToolbarKey; ": ";
+  ' If aConfig Then
+  '   Print aConfig.Join(",")
+  ' Else
+  '   Print "NULL"
+  ' Endif
+  'Print "Default config is ";; FindToolbar().DefaultConfig.Join(",")
+
+  sVal = Choose($iIconSize + 1, "", "Medium", "Large", "Huge")
+  If sVal <> Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"] Then
+    Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"] = sVal
+    bChange = True
+  Endif
+  
+  If Not bChange Then
+    bChange = True
+    aOldConfig = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Layout"]
+    If Not aOldConfig And If Not aConfig Then
+      bChange = False
+    Else If aOldConfig And If aConfig And If aOldConfig.Join(",") = aConfig.Join(",") Then 
+      bChange = False
+    Endif
+  Endif
+  
+  If Not bChange Then Return
+  
+  Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Layout"] = aConfig
+  Settings.Save
+  
+  For Each hForm In $cRegister[ToolbarKey]
+  
+    If Not bReset And If hForm = Me Then Continue
+    hForm.LoadConfig
+  
+  Next
+  
+End
+
+Private Sub Lock()
+  
+  Inc $iLock
+  
+End
+
+Private Sub Unlock()
+  
+  If $iLock <= 0 Then Return
+  Dec $iLock
+  If $iLock = 0 Then
+    Update
+  Endif
+  
+End
+
+Public Sub HideControl(hCtrl As Control)
+  
+  'panToolBar.Enabled = True
+  hCtrl.Reparent(panHide)
+  'panToolBar.Enabled = False
+  
+End
+
+Public Sub ShowControl(hCtrl As Control)
+  
+  'panToolBar.Enabled = True
+  hCtrl.Reparent(panToolBar)
+  'panToolBar.Enabled = False
+  
+End
+
+Public Sub SetDesign()
+  
+  $bDesign = True
+  dwgHandle.ToolTip = ""
+  dwgHandle.Mouse = Mouse.Default
+  
+End
+
+Public Sub GetIconSize() As Integer
+
+  Return $iIconSize
+  
+End
+
+Public Sub GetRealIconSize() As Integer
+  
+  Return CalcIconSize(GetIconSize())
+  
+End
+
+
+Public Sub SetIconSize(iSize As Integer)
+
+  If $iIconSize = iSize Then Return
+  $iIconSize = iSize
+  UpdateSize
+  
+End
+
+Private Sub UpdateSize()
+
+  Inc Application.Busy
+  SaveConfig
+  LoadConfig
+  Dec Application.Busy
+  
+End
+
+
+Public Sub HasSeparator() As Boolean
+  
+  Return sepToolbar.Visible
+  
+End
+
+Public Sub SetSeparator(bVisible As Boolean)
+  
+  If sepToolbar.Visible = bVisible Then Return
+  sepToolbar.Visible = bVisible
+  Update
+  
+End
+
+
+Public Sub Form_Menu()
+
+  FToolBarConfig.OpenMenu(Me.Parent)
+
+End
+
+Public Sub panToolbar_Draw()
+
+  If $bConfigure Then
+    Draw.Foreground = panWhere.Background
+    'Draw.LineStyle = Line.Solid
+    Draw.Rect(0, 0, panToolBar.W, panToolBar.H)
+    Draw.Rect(1, 1, panToolBar.W - 2, panToolBar.H - 2)
+  Endif
+
+End
+
+Public Sub Form_Font()
+
+  If $bOpened Then UpdateSize
+
+End

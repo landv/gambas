@@ -1,0 +1,38 @@
+' Gambas module file
+
+' Gambas module file
+
+Public Sub Main()
+
+  Dim i As Integer
+  Dim j As Integer
+  console.SetTitle("C'est mon test")
+Console.Attr.ColorMode = Attr.Color256
+For i = 0 To 255
+  For j = 0 To 255
+    Console.Attr.Foreground = i
+    Console.Attr.Background = j
+    Console.Print(i & "/" & j)
+  Next
+  Console.Attr.Reset
+  console.Print("\n\n")
+Next
+
+
+
+Console.Attr.Bold = True
+Console.Attr.Reverse = True
+Console.Print("C'est Finit !!!!\n") 
+console.Attr.Reverse = False
+
+console.Attr.ColorMode = Attr.ColorRGB
+
+Console.Attr.Background = &HFFF505
+
+console.Print("Sans reverse")
+
+
+
+Console.Goto(8, 25)
+Console.Reset
+End

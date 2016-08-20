@@ -1,0 +1,117 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,114,77)
+  Text = ("Select a project")
+  Icon = Picture["icon:/32/open"]
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { tabProject TabPanel
+    MoveScaled(1,1,110,69)
+    Expand = True
+    Arrangement = Arrange.Vertical
+    Count = 3
+    Index = 0
+    Text = ("Open")
+    Picture = Picture["icon:/small/open"]
+    { pchProject ProjectChooser
+      MoveScaled(2,1,98,59)
+      Expand = True
+      ShowButton = True
+    }
+    Index = 1
+    Text = ("Recent")
+    Picture = Picture["icon:/small/open-recent"]
+    { Panel5 VBox
+      MoveScaled(2,2,91,56)
+      Background = Color.TextBackground
+      Expand = True
+      Spacing = True
+      Margin = True
+      { HBox2 HBox
+        MoveScaled(0,0,78,4)
+        Spacing = True
+        { Panel2 Panel
+          MoveScaled(1,0,25,4)
+          Expand = True
+          Arrangement = Arrange.Fill
+          Border = Border.Plain
+          { txtFilter ButtonBox
+            MoveScaled(0,0,24,4)
+            Foreground = Color.LightForeground
+            Picture = Picture["icon:/small/clear"]
+            Border = False
+          }
+        }
+        { radSortByDate RadioButton radSort
+          Name = "radSortByDate"
+          MoveScaled(29,0,16,4)
+          Tag = "0"
+          AutoResize = True
+          Text = ("Sort by date")
+          Value = True
+        }
+        { radSortByName RadioButton radSort
+          Name = "radSortByName"
+          MoveScaled(45,0,16,4)
+          Tag = "1"
+          AutoResize = True
+          Text = ("Sort by name")
+        }
+        { radSortByPath RadioButton radSort
+          Name = "radSortByPath"
+          MoveScaled(61,0,16,4)
+          Tag = "2"
+          AutoResize = True
+          Text = ("Sort by path")
+        }
+      }
+      { lstRecent ScrollView
+        MoveScaled(2,12,73,43)
+        Background = Color.TextBackground
+        Expand = True
+        Arrangement = Arrange.Row
+        Spacing = True
+        Border = False
+        ScrollBar = Scroll.Vertical
+      }
+    }
+    Index = 2
+    Text = ("Examples")
+    Picture = Picture["icon:/small/help"]
+    { Panel3 VBox
+      MoveScaled(1,1,92,60)
+      Background = Color.TextBackground
+      Expand = True
+      Spacing = True
+      Margin = True
+      { HBox3 HBox
+        MoveScaled(2,2,78,4)
+        { Panel4 Panel
+          MoveScaled(1,0,25,4)
+          Expand = True
+          Arrangement = Arrange.Fill
+          Border = Border.Plain
+          { txtFilterExample ButtonBox
+            MoveScaled(0,0,24,4)
+            Foreground = Color.LightForeground
+            Picture = Picture["icon:/small/clear"]
+            Border = False
+          }
+        }
+      }
+      { lstExample ScrollView
+        MoveScaled(4,13,73,43)
+        Background = Color.TextBackground
+        Expand = True
+        Arrangement = Arrange.Row
+        Spacing = True
+        Border = False
+        ScrollBar = Scroll.Vertical
+      }
+    }
+    Index = 0
+  }
+}

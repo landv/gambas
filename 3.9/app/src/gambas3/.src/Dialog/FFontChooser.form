@@ -1,0 +1,32 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(7.1429,38,67,56)
+  Text = ("Select a font")
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { dlgFont FontChooser
+    MoveScaled(2,2,63,48)
+    Expand = True
+  }
+  { Panel2 HBox
+    MoveScaled(6,51,49,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(0,0,8,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(11,0,15,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(27,0,15,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

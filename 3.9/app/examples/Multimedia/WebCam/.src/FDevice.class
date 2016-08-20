@@ -1,0 +1,306 @@
+' Gambas class file
+
+'
+' This form / class is created for each webcam found on the system.
+'
+Private $device As VideoDevice
+Private $date_format As String
+Private $index As Integer
+Private $fps As Integer
+Private $fps_now As Date
+
+Public Sub Save()
+  
+  Dim key As String = Subst("Camera_&1", $index)
+
+  Settings[key & "/top"] = Me.Top
+  Settings[key & "/left"] = Me.Left
+  Settings[key & "/refrate"] = refrate.Value
+  Settings[key & "/size"] = picture_size.Index + 1
+  Settings[key & "/brightness"] = slider_bright.Value
+  Settings[key & "/contrast"] = slider_contrast.Value
+  Settings[key & "/color"] = slider_colour.Value
+  Settings[key & "/hue"] = slider_hue.Value
+  Settings[key & "/whiteness"] = slider_whiteness.Value
+  
+End
+
+Public Sub _new(dev As VideoDevice, i As Integer)
+
+  $index = i
+  $device = dev
+  $date_format = "ddd, d mmm  hh:nn:ss"
+  $fps_now = Now()
+  $fps = 0
+   
+  slider_bright.MinValue = $device.BrightMin
+  slider_bright.MaxValue = $device.BrightMax
+  slider_contrast.MinValue = $device.ContrastMin
+  slider_contrast.MaxValue = $device.ContrastMax
+  slider_colour.MinValue = $device.ColorMin
+  slider_colour.MaxValue = $device.ColorMax
+  slider_hue.MinValue = $device.HueMin
+  slider_hue.MaxValue = $device.HueMax
+  slider_whiteness.MinValue = $device.WhitenessMin
+  slider_whiteness.MaxValue = $device.WhitenessMax
+
+End
+
+Public Sub ResizeDevice()
+  
+  Dim $spacing As Integer
+  
+  $spacing = 2
+  
+  pic.Width = $device.Width
+  pic.Height = $device.Height
+  
+  If pic.Width < 220 Then pic.Width = 220
+  If pic.Height < 140 Then pic.Height = 140
+  
+  title.Left = $spacing
+  title.top = $spacing
+  title.Width = pic.Width 
+  
+  devName.Width = pic.Width - buttonSettings.Width - buttonSettings.Left - $spacing * 6
+  currentTime.Width = devName.Width
+  
+  container.top = $spacing * 2
+  container.left = $spacing * 2
+  container.width = pic.Width + 4
+  container.Height = pic.Height + $spacing * 3 + title.Height
+
+  pic.Left = 2
+  pic.Top = title.top + title.Height + $spacing
+    
+  devName.Text = $device.Card
+  currentTime.Text = Format(Now(), $date_format)
+
+  outer.Left = 0
+  outer.Top = 0
+  outer.Width = container.Width + $spacing * 4
+  outer.Height = container.Height + $spacing * 4
+  
+  If tools.Visible Then
+    outer.Height = outer.Height + tools.Height + 2
+    tools.Width = container.Width
+    tools.Left = $spacing * 2
+    tools.Top = $spacing * 4 + pic.Top + pic.Height
+    picture_size.Width = tools.Width - picture_size.Left - $spacing * 4
+    slider_bright.Width = tools.Width - slider_bright.Left - $spacing * 6
+    slider_contrast.Width = tools.Width - slider_contrast.Left - $spacing * 6
+    slider_colour.Width = tools.Width - slider_colour.Left - $spacing * 6
+    slider_hue.Width = tools.Width - slider_hue.Left - $spacing * 6
+    slider_whiteness.Width = tools.Width - slider_whiteness.left - $spacing * 6
+    refrate.Width = tools.Width - refrate.Left - $spacing * 6
+  
+  Endif
+  
+  Me.Width = outer.Width
+  Me.Height = outer.Height
+  
+End
+
+Public Sub Form_Show()
+
+  Dim key As String = Subst("Camera_&1", $index)
+
+  Me.Left = Settings[key & "/left", $index * 100]
+  Me.Top = settings[key & "/top", 0]
+  
+  Refresh.Delay = refrate.Value
+  Refresh.Start
+
+End
+
+Public Sub Form_Open()
+
+  Dim key As String = Subst("Camera_&1", $index)
+
+  Me.Left = Settings[key & "/left", $index * 100]
+  Me.Top = settings[key & "/top", 0]
+
+  picture_size.Index = Settings[key & "/size", 1] - 1
+  picture_size_Click()
+  ResizeDevice()
+  Wait 0.1
+  
+  slider_bright.Value = Settings[key & "/brightness", $device.Bright]
+  slider_contrast.Value = Settings[key & "/contrast", $device.Contrast]
+  slider_colour.Value = Settings[key & "/color", $device.Color]
+  slider_hue.Value = Settings[key & "/hue", $device.Hue]
+  slider_whiteness.Value = Settings[key & "/whiteness", $device.Whiteness]
+  refrate.Value = Settings[key & "/refrate", 100]
+  
+  $device.Bright = slider_bright.Value
+  $device.Contrast = slider_contrast.Value
+  $device.Color = slider_colour.Value
+  $device.Hue = slider_hue.Value
+  $device.Whiteness = slider_whiteness.Value
+  
+End
+
+Public Sub Refresh_Timer()
+
+  Dim when As Date
+  Dim at As Date
+  
+  at = Now()  
+  Refresh.Stop
+
+  $fps += 1
+  when = at - $fps_now
+  If Second(when) >= 3 Then
+    frame_rate.Text = Format($fps / 3, "#.00 fps")
+    $fps = 0
+    $fps_now = at
+  Endif
+  
+  currentTime.Text = Format(at, $date_format)
+  Try pic.Picture = $device.Image.Picture
+  If Error Then
+    Message("Can't recover picture from Camera!")
+  Else
+    Wait
+    Try Refresh.Delay = refrate.Value
+    Try Refresh.Start
+  Endif
+  
+End
+
+Public Sub picture_size_Click()
+  
+  Select picture_size.Index
+    Case 0
+      $device.Resize(160, 120)
+    Case 1
+      $device.Resize(320, 240)
+    Case 2
+      $device.Resize(640, 480)
+  
+  End Select
+  ResizeDevice()
+  
+End
+
+Public Sub slider_bright_Change()
+  
+  $device.Bright = slider_bright.Value
+  
+End
+
+Public Sub slider_contrast_Change()
+  
+  $device.Contrast = slider_contrast.Value
+  
+End
+
+Public Sub slider_colour_Change()
+  
+  $device.Color = slider_colour.Value
+  
+End
+
+Public Sub hue_Change()
+  
+  $device.Hue = slider_hue.Value
+  
+End
+
+Public Sub whiteness_Change()
+  
+  $device.Whiteness = slider_whiteness.Value
+  
+End
+
+Public Sub refrate_Change()
+  
+  Refresh.Stop
+  Refresh.Delay = refrate.Value
+  Refresh.Start
+  
+End
+
+Public Sub button_hide_Click()
+
+  tools.Hide()
+  ResizeDevice()
+
+End
+
+Public Sub button_close_Click()
+
+  button_hide_Click()
+  Refresh.Stop
+  Wait 0.2
+  Refresh.Stop
+  Me.Hide
+
+End
+
+Public Sub button_pause_Click()
+
+  button_pause.Hide
+  button_play.Show
+  Refresh.Stop
+  Wait
+  Refresh.Stop
+  frame_rate.Text = "** Paused **"
+
+End
+
+Public Sub button_play_Click()
+
+  button_pause.Show
+  button_play.Hide
+  Refresh.Start
+
+End
+
+Public Sub button_snap_Click()
+
+  Dialog.Filter = ["*", "All files", "*.desktop", "Desktop files"]
+
+  If Dialog.SaveFile() Then Return
+  $device.Save(Dialog.Path)
+  Message("Saved as (" & Dialog.Path & ")")
+
+End
+
+Public Sub buttonSettings_Click()
+
+  If tools.Visible Then 
+    tools.Hide
+  Else 
+    tools.Show
+  Endif
+  ResizeDevice()
+  
+  Select $device.Width
+      Case 160
+        picture_size.Index = 0
+      Case 320
+        picture_size.Index = 1
+      Case 640
+        picture_size.Index = 2
+  End Select
+
+End
+
+Public Sub button_reset_Click()
+
+  slider_colour.Value = $device.ColorDefault
+  slider_bright.Value = $device.BrightDefault
+  slider_contrast.Value = $device.ContrastDefault
+  slider_whiteness.Value = $device.WhitenessDefault
+  slider_hue.Value = $device.HueDefault
+
+End
+
+Public Sub Form_Close()
+
+  Refresh.Stop
+  $device.Close
+  $device = Null
+
+End

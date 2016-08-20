@@ -1,0 +1,141 @@
+' Gambas class file
+
+Property Count As Integer
+Property Read Max As Integer
+Property Read Height, H As String
+Property Resizable As Boolean
+Property Width, W As String
+Property Sort As Integer
+Property Ascending As Boolean
+
+Public _Width As Float
+Public _Height As Float
+
+
+Private $iCount As Integer
+Private $sHeight As String
+Private $bResizable As String
+Private $sWidth As String = "2cm"
+Private $iSort As Integer
+Private $bAscendig As Boolean
+
+Private $aColumns As New _ReportGridViewColumn[]
+
+
+
+
+Public Sub _NormalizeUnits()
+
+  Dim i As Integer
+  
+  For i = 0 To $aColumns.Max
+    $aColumns[i]._NormalizeUnits()
+  Next
+  
+  _Width = ReportSizeParser[$sWidth].GetValue()
+  _Height = ReportSizeParser[$sHeight].GetValue()
+End
+
+
+
+Private Function Count_Read() As Integer
+
+  Return $aColumns.Count
+
+End
+
+Private Sub Count_Write(Value As Integer)
+
+  Dim iOldCount As Integer = $aColumns.Count
+  Dim i As Integer
+  Dim hCol As _ReportGridViewColumn
+  
+  If Value = iOldCount Then Return
+  
+  Try $aColumns.Resize(Value)
+  If Error Then Error.Raise("Bad argument")
+  
+  If Value > iOldCount Then
+   
+    For i = iOldCount To Value - 1
+      hcol = New _ReportGridViewColumn
+      hcol.Width = "1cm"
+      $aColumns[i] = hcol
+    Next
+    
+  Endif
+  
+  For i = iOldCount To Value
+    
+  Next
+  
+
+End
+
+Private Function Max_Read() As Integer
+
+  Return $aColumns.Max
+
+End
+
+Private Function Height_Read() As String
+
+  Return $sHeight
+
+End
+
+Private Function Resizable_Read() As Boolean
+
+  Return $bResizable
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  $bResizable = Value
+
+End
+
+Private Function Width_Read() As String
+
+  Return $sWidth
+
+End
+
+Private Sub Width_Write(Value As String)
+
+  $sWidth = Value
+
+End
+
+Private Function Sort_Read() As Integer
+
+  Return $iSort 
+
+End
+
+Private Sub Sort_Write(Value As Integer)
+
+  $iSort = Value
+
+End
+
+Private Function Ascending_Read() As Boolean
+
+  Return $bAscendig
+
+End
+
+Private Sub Ascending_Write(Value As Boolean)
+
+  $bAscendig = Value
+
+End
+
+Private Function GetView() As ReportGridView
+  
+  Return Object.Parent(Me)
+  
+End
+
+

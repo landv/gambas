@@ -1,0 +1,384 @@
+' Gambas class file
+
+Event Finished
+
+Public Enum PROGRESS_NONE, PROGRESS_UPLOAD, PROGRESS_DOWNLOAD
+
+Public Farm As String
+Public ErrorText As String
+Public Result As Collection
+Public ResultFile As String
+
+Private $sTitle As String
+Private $hForm As HttpForm
+Private $iProgress As Integer
+Private $bFile As Boolean
+Private $bFinished As Boolean
+
+Static Public Sub GetFarms() As String[]
+
+  Dim aFarm As String[]
+  
+  aFarm = FarmIdentity.FarmList
+  If Not aFarm Then aFarm = New String[]
+  If Not aFarm.Exist(FarmIdentity.DEFAULT_FARM) Then
+    aFarm.Add(FarmIdentity.DEFAULT_FARM, 0)
+  Endif
+  Return aFarm
+  
+End
+
+
+Static Public Sub GetDate(sDate As String) As Date
+  
+  Dim dDate As Date
+
+  If Len(sDate) = 14 Then
+    Try dDate = Date(CInt(Mid(sDate, 1, 4)), CInt(Mid(sDate, 5, 2)), CInt(Mid(sDate, 7, 2)), CInt(Mid$(sDate, 9, 2)), CInt(Mid$(sDate, 11, 2)), CInt(Mid$(sDate, 13, 2)))
+  Else If Len(sDate) = 8 Then
+    Try dDate = Date(CInt(Mid(sDate, 1, 4)), CInt(Mid(sDate, 5, 2)), CInt(Mid(sDate, 7, 2)))
+  Endif
+
+  Return dDate
+  
+End
+
+
+Public Sub _new(sFarm As String)
+  
+  Dim hIdentity As FarmIdentity
+  
+  Farm = sFarm
+  
+  hIdentity = FarmIdentity.Get(sFarm)
+  $hForm = New HttpForm As "Request"
+  $hForm["login"] = hIdentity.Login
+  $hForm["password"] = hIdentity.Password
+  
+End
+
+Public Sub _free()
+  
+  If ResultFile Then Try Kill ResultFile
+  
+End
+
+
+Public Sub Request_Error()
+
+  ErrorText = $hForm.ErrorText
+  Result = Null
+  ResultFile = ""
+  $bFinished = True
+  Raise Finished
+  
+End
+
+Public Sub Request_Cancel()
+  
+  ErrorText = ""
+  Result = Null
+  ResultFile = ""
+  $bFinished = True
+  Raise Finished
+  
+End
+
+Public Sub Request_Finished()
+  
+  Dim aResult As String[]
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sResult As String
+  Dim sHeader As String
+  Dim sName As String
+  
+  $bFinished = True
+  
+  If $bFile Then
+    ResultFile = $hForm.TargetFile
+    If $hForm.Headers Then
+      For Each sHeader In $hForm.Headers
+        If sHeader Begins "Content-Disposition:" Then
+          iPos = InStr(sHeader, "filename=")
+          If iPos Then
+            sName = File.SetName(ResultFile, UnQuote(Mid$(sHeader, iPos + 9)))
+            Try Kill sName
+            Move ResultFile To sName
+            ResultFile = sName
+            Break
+          Endif
+        Endif
+      Next
+    Endif
+    Raise Finished
+    Return
+  Endif
+  
+  sResult = $hForm.Peek()
+  aResult = Split(sResult, "\r\n", "", True)
+  If aResult.Count = 0 Or If aResult[0] <> "10 OK" Then
+    If aResult.Count Then
+      iPos = InStr(aResult[0], " ")
+      ErrorText = Replace(Mid$(sResult, iPos + 1), "\r", "")
+    Else
+      ErrorText = ("No answer.")
+    Endif
+    Result = Null
+    Raise Finished
+    Return
+  Endif
+  
+  ErrorText = ""
+  Result = New Collection
+  aResult.Remove(0)
+  For Each sLine In aResult
+    iPos = InStr(sLine, "=")
+    If iPos = 0 Then Continue
+    Result[Trim(Left(sLine, iPos - 1))] = Trim(Mid$(sLine, iPos + 1))
+  Next
+  
+  Raise Finished
+  
+End
+
+
+
+Static Public Sub GetCheckSum(sPath As String) As String
+  
+  Dim sChecksum As String
+  Dim iPos As Integer
+  
+  Exec ["sha256sum", sPath] To sChecksum
+  iPos = InStr(sChecksum, " ")
+  sChecksum = Left(sChecksum, iPos - 1)
+  Return sChecksum
+  
+Catch
+  
+  Error.Raise("Unable to compute checksum")
+  
+End
+
+Public Sub RegisterUser(sLogin As String, sPassword As String, sEmail As String)
+  
+  $sTitle = ("Register user")
+  $iProgress = PROGRESS_NONE
+  
+  $hForm.URL = "http://" & Farm &/ "farm/register"
+  $hForm.Add("login", sLogin)
+  $hForm.Add("password", sPassword)
+  $hForm.Add("email", sEmail)
+  
+  FarmRequestManager.Add($hForm)
+  
+  '$sGoodMsg = ("You have been successfully registered.\n\nYou will receive a confirmation e-mail soon.")
+  '$sBadMsg = ("Unable to register user.")
+
+End
+
+Public Sub HasFailed() As Boolean
+  
+  Return If($bFile, IsNull(ResultFile), IsNull(Result))
+  
+End
+
+
+Public Sub WaitFor(Optional sGood As String, sBad As String, Optional bNoWindow As Boolean) As Boolean
+  
+  Dim bFail As Boolean
+  
+  If bNoWindow Then
+    Inc Application.Busy
+    Do
+      Sleep 0.05
+      If $bFinished Then Break
+      Wait
+    Loop
+    Dec Application.Busy
+  Else
+    FFarmRequest.Run($hForm, $sTitle, $iProgress)
+    $iProgress = PROGRESS_NONE
+  Endif
+  
+  bFail = HasFailed()
+  
+  If bFail Then
+    If sBad And If ErrorText Then Message.Error(sBad & "\n\n" & ErrorText)
+  Else
+    If sGood Then Message(sGood)
+  Endif
+  Return bFail
+  
+End
+
+Private Sub AddLanguageTag(aTag As String[], sLang As String)
+
+  sLang = Language.ToEnglishName(sLang)
+  If Not sLang Then Return
+  If Not aTag.Exist(sLang) Then aTag.Add(sLang)
+
+End
+
+Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVersion As String, aTag As String[], aRequire As String[], sURL As String, sDesc As String)
+
+  Dim sSource As String
+  Dim sIcon As String
+  Dim sChecksum As String
+  Dim sComp As String
+  Dim sLang As String
+  Dim sSave As String
+  
+  $sTitle = ("Publish project")
+  $iProgress = PROGRESS_UPLOAD
+  
+  sSource = Temp$()
+  sSource = File.Dir(sSource) &/ File.BaseName(sSource) & ".tar.bz2" 'Project.GetDefaultArchiveBaseName() & ".tar.bz2"
+  Project.MakeSourcePackageTo(sSource)
+  
+  sChecksum = GetCheckSum(sSource)
+  
+  If Project.Icon Then sIcon = Project.Dir &/ Project.Icon
+  If Not sIcon Or If Not Exist(sIcon) Then
+    sIcon = "img/logo/project.png"
+  Endif
+  
+  If Not Exist(sIcon) Then sIcon = ""
+  
+  '$sGoodMsg = ("The project has been successfully published.")
+  '$sBadMsg = ("Unable to publish project.")
+
+  For Each sComp In Project.Components
+    If Not aTag.Exist(sComp) Then aTag.Add(sComp)
+  Next
+
+  sSave = System.Language
+  System.Language = "C"
+
+  If Project.Localize Then  
+    For Each sLang In Language.GetAll()
+      If Project.HasTranslation(sLang) Then AddLanguageTag(aTag, sLang)
+    Next
+  Endif
+  
+  If Project.Language Then AddLanguageTag(aTag, Project.Language)
+  
+  System.Language = sSave
+
+  $hForm.URL = "http://" & Farm &/ "/farm/publish"
+  '$hForm.Add("login", Login)
+  '$hForm.Add("password", Password)
+  $hForm.Add("name", Project.Name)
+  $hForm.Add("vendor", sVendor)
+  $hForm.Add("version", CStr(Project.MajorVersion) & "." & CStr(Project.MinorVersion))
+  $hForm.Add("release", Project.ReleaseVersion)
+  $hForm.Add("desc", sDesc)
+  $hForm.Add("gambas", sGambasVersion)
+  $hForm.Add("checksum", sChecksum)
+  $hForm.AddFile("icon", sIcon, "icon.png")
+  $hForm.AddFile("source", sSource, Project.GetDefaultArchiveBaseName() & ".tar.bz2")
+  $hForm.Add("tags", aTag.Join(","))
+  $hForm.Add("dependencies", aRequire.Join(","))
+  $hForm.Add("url", sURL)
+  
+  If sScreenshot Then 
+    If sScreenshot = "*" Then
+      $hForm.Add("screenshot", sScreenshot)
+    Else
+      $hForm.AddFile("screenshot", sScreenshot, "screenshot." & File.Ext(sScreenshot))
+    Endif
+  Endif
+
+  FarmRequestManager.Add($hForm)
+  
+End
+
+Public Sub GetSoftware(iId As Integer)
+  
+  $hForm.URL = "http://" & Farm &/ "farm/get"
+  $hForm.Add("id", CStr(iId))
+  FarmRequestManager.Add($hForm)
+  
+End
+
+Public Sub GetSoftwareIcon(iId As Integer)
+
+  $hForm.URL = "http://" & Farm &/ "farm/get?icon"
+  $hForm.Add("id", CStr(iId))
+  $hForm.TargetFile = Temp$()
+  $bFile = True
+  FarmRequestManager.Add($hForm)
+
+End
+
+Public Sub SearchSoftware(sSort As String, sVendor As String, sFilter As String, aTag As String[])
+  
+  $hForm.URL = "http://" & Farm &/ "farm/search"
+  $hForm["sort"] = sSort
+  $hForm["vendor"] = sVendor
+  $hForm["filter"] = sFilter
+  $hForm["tags"] = aTag.Join()
+  FarmRequestManager.Add($hForm)
+  
+End
+
+Public Sub CheckAuth(sLogin As String, sPassword As String)
+  
+  $hForm.URL = "http://" & Farm &/ "farm/ident"
+  $hForm["login"] = sLogin
+  $hForm["password"] = sPassword
+  FarmRequestManager.Add($hForm)
+  
+End
+
+Public Sub VoteForSoftware(iId As Integer, iVote As Integer)
+  
+  $hForm.URL = "http://" & Farm &/ "farm/vote"
+  $hForm["id"] = CStr(iId)
+  $hForm["vote"] = CStr(iVote)
+  FarmRequestManager.Add($hForm)
+  
+End
+
+Public Sub Abort()
+  
+  FarmRequestManager.Remove($hForm)
+  
+End
+
+Public Sub DownloadSoftware(iId As Integer)
+
+  $sTitle = ("Download software")
+  $iProgress = PROGRESS_DOWNLOAD
+
+  $hForm.URL = "http://" & Farm &/ "farm/download"
+  $hForm.Add("id", CStr(iId))
+  $hForm.TargetFile = Temp$()
+  $bFile = True
+  FarmRequestManager.Add($hForm)
+
+End
+
+Public Sub DownloadScreenshot(iId As Integer)
+
+  '$sTitle = ("Download screenshot")
+  '$iProgress = PROGRESS_DOWNLOAD
+
+  $hForm.URL = "http://" & Farm &/ "farm/get?screenshot"
+  $hForm.Add("id", CStr(iId))
+  $hForm.TargetFile = Temp$()
+  $bFile = True
+  FarmRequestManager.Add($hForm)
+
+End
+
+Public Sub DeleteSoftware(iId As Integer)
+
+  $sTitle = ("Delete software")
+
+  $hForm.URL = "http://" & Farm &/ "farm/remove"
+  $hForm.Add("id", CStr(iId))
+  FarmRequestManager.Add($hForm)
+
+End
+

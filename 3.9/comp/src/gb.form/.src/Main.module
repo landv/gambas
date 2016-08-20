@@ -1,0 +1,238 @@
+' Gambas module file
+
+'Class DesktopMime
+
+Private $cArrow As New Collection
+
+Public Sub GetArrow(iType As Integer, iSize As Integer) As Image
+  
+  Dim sKey As String
+  Dim hPict As Picture
+  Dim hImage As Image
+  
+  Select Case iType
+    Case Align.Top
+      sKey = "top"
+    Case Align.Bottom
+      sKey = "bottom"
+    Case Align.Left
+      sKey = "left"
+    Case Align.Right
+      sKey = "right"
+  End Select
+
+  sKey = sKey & "-" & iSize
+
+  hImage = $cArrow[sKey]
+  If Not hImage Then 
+    hPict = New Picture(16, 16)
+    hPict.Fill(Color.White)
+    Draw.Begin(hPict)
+    Draw.Style.Arrow(0, 0, 16, 16, iType)
+    Draw.End
+    hImage = hPict.Image
+    hImage.Erase()
+    hImage = hImage.Stretch(iSize, iSize)
+    'hPict = hImage.Picture
+    $cArrow[sKey] = hImage
+  Endif
+  Return hImage
+  
+End
+
+Public Sub GetFileSize(iSize As Long, Optional nDigit As Integer = 1) As String
+
+  Dim sFormat As String
+  
+  sFormat = "0." & String$(nDigit, "#")
+  
+  If iSize < 1024 Then
+    Return Subst(("&1 B"), CStr(iSize))
+  Else If iSize < 1048576 Then
+    Return Subst(("&1 KiB"), Format(iSize / 1024, sFormat))
+  Else If iSize < 1073741824 Then
+    Return Subst(("&1 MiB"), Format(iSize / 1048576, sFormat))
+  Else
+    Return Subst(("&1 GiB"), Format(iSize / 1073741824, sFormat))
+  Endif
+  
+End
+
+Private Sub FindMenuChild(hMenu As Menu, sMenu As String) As Menu
+  
+  For Each hMenu In hMenu.Children
+    If hMenu.Name == sMenu Then Return hMenu
+    hMenu = FindMenuChild(hMenu, sMenu)
+    If hMenu Then Return hMenu
+  Next
+  
+End
+
+Private Sub FindMenuWindow(hWindow As Window, sMenu As String) As Menu
+  
+  Dim hMenu As Menu
+  
+  For Each hMenu In hWindow.Menus
+    If hMenu.Name == sMenu Then Return hMenu
+    hMenu = FindMenuChild(hMenu, sMenu)
+    If hMenu Then Return hMenu
+  Next
+  
+End
+
+Public Sub FindMenu(hCtrl As Control, sMenu As String) As Menu
+  
+  Dim hWindow As Window
+  Dim hMenu As Menu
+  
+  hWindow = hCtrl.Window
+  Do
+    hMenu = FindMenuWindow(hWindow, sMenu)
+    If hMenu Then Break
+    Try hWindow = hWindow.Parent.Window
+    If Error Then Return
+  Loop
+  
+  Return hMenu
+  
+End
+
+Public Sub PaintColor(X As Integer, Y As Integer, W As Integer, H As Integer, iColor As Integer)
+  
+  Dim I, J, C As Integer
+  
+  If iColor And &HFF000000 Then 
+  
+    Paint.Save
+    Paint.Rectangle(X, Y, W, H)
+    Paint.Clip
+    
+    For J = 0 To W + 7 Step 8
+      For I = 0 To H + 7 Step 8
+      
+        If ((I + J) \ 8) And 1 Then 
+          C = Color.Blend(iColor, &H808080)
+        Else 
+          C = Color.Blend(iColor, &HC0C0C0)
+        Endif
+      
+        Paint.FillRect(X + I, Y + J, 8, 8, C)
+        
+      Next 
+    Next
+    
+    Paint.Restore
+  
+  Else 
+    
+    Paint.FillRect(X, Y, W, H, iColor)
+    
+  Endif
+  
+  
+End
+
+
+
+#If False
+Private Sub AddUnique(aStr As String[], sVal As String)
+  
+  If Not aStr.Exist(sVal) Then aStr.Add(sVal)
+  
+End
+
+Private Sub MakeMap()
+  
+  Dim aKey As New String[]
+  Dim sPath As String
+  Dim sLine As String
+  Dim hFile As File
+  Dim aLine As String[]
+  Dim sKey As String
+  Dim sIcon As String
+  Dim aIcon As String[]
+  Dim cIcon As New Collection
+  
+  For Each sPath In ["map/gnome.map", "map/kde4.map"]
+    
+    hFile = Open sPath
+    For Each sLine In hFile.Lines
+      
+      If Left(sLine) = ";" Then Continue
+      
+      aLine = Split(sLine, " ", "", True)
+      sKey = Trim(aLine[0])
+      AddUnique(aKey, sKey)
+      
+      If Not cIcon.Exist(sKey) Then cIcon[sKey] = New String[]
+      If aLine.Count >= 2 Then
+        aIcon = cIcon[sKey]
+        For Each sIcon In Split(Trim(aLine[1]), ";")
+          AddUnique(aIcon, sIcon)
+        Next
+      Endif
+      
+    Next
+    
+  Next
+  
+  hFile = Open Application.Path &/ "map/icon.map" For Create
+  aKey.Sort
+  For Each sKey In aKey
+    Print #hFile, sKey; Space$(Max(1, 24 - Len(sKey))); cIcon[sKey].Join(";")
+  Next
+  Close #hFile
+  
+End
+#Endif
+
+Public Sub MkDir(Path As String)
+
+  Dim sElt As String
+  Dim sMake As String = "/"
+
+  For Each sElt In Split(Path, "/")
+    sMake &/= sElt
+    If IsDir(sMake) Then Continue
+    Try Mkdir sMake
+  Next
+
+End
+
+Public Sub Main()
+
+  Dim msg As String
+
+  msg = "This is a a very very very very very very very very very very " &
+    "a very very very very very very very very very very " &
+    "a very very very very very very very very very very " &
+    "moderate message. "
+  InputBox(String(4, msg), "This is the ill inputbox", "Default Text")
+  
+End
+
+Public Sub Task_Read(sData As String)
+
+  Debug sData
+  
+End
+
+Public Sub Task_Error(Data As String)
+  
+  Debug Data
+  
+End
+
+
+Public Sub Task_Kill()
+
+  Dim sStr As String
+  Try sStr = Last.Value
+  If Error Then 
+    Debug Error.Text
+  Else
+    Debug "->";; sStr
+  Endif
+  
+  
+End

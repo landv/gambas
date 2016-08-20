@@ -1,0 +1,28 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,81,7)
+  { dwgHandle DrawingArea
+    MoveScaled(1,1,3,3)
+    Visible = False
+    Mouse = Mouse.Pointing
+  }
+  { panWhere Panel
+    MoveScaled(30,5,3,1)
+    Visible = False
+    Background = &HFF7F7F&
+    Drop = True
+  }
+  { panHide Panel
+    MoveScaled(46,9,24,5)
+    Visible = False
+  }
+  { sepToolbar Separator
+    MoveScaled(54,4,9,1)
+    Visible = False
+    Ignore = True
+  }
+  { panToolbar DrawingArea
+    MoveScaled(6,1,45,3)
+  }
+}

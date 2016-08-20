@@ -1,0 +1,68 @@
+' Gambas class file
+
+Export
+
+Static Public Sub _call(Value As Variant) As String
+  
+  Dim sStr As String
+  Dim iPos As Integer
+  Dim cCol As Collection
+  
+  Select Case TypeOf(Value)
+    
+    Case gb.Null
+      Return "null"
+    
+    Case gb.Boolean
+      If Value Then
+        Return "true"
+      Else
+        Return "false"
+      Endif
+    
+    Case gb.Byte, gb.Short, gb.Integer, gb.Long, gb.Float
+      Return CStr(Value)
+    
+    Case gb.Date
+      Return "'" & CStr(Value) & "'"
+    
+    Case gb.String
+      sStr = Quote(Value)
+      sStr = "'" & Replace(Mid$(sStr, 2, -1), "'", "\\'") & "'"
+      Do
+        iPos = InStr(sStr, "\\", iPos + 1)
+        If iPos = 0 Then Break
+        If Mid$(sStr, iPos + 1, 1) = "x" Then
+          Mid$(sStr, iPos, 4) = "\\u00" & Mid$(sStr, iPos + 2, 2)
+        Else
+          Inc iPos
+        Endif
+      Loop
+      Return sStr
+    
+    Case Else
+      If Value Is Array Then
+        sStr = "["
+        For iPos = 0 To Value.Max
+          If iPos Then sStr &= ", "
+          sStr &= _call(Value[iPos])
+        Next
+        sStr &= "]"
+        Return sStr
+      Else If Value Is Collection Then
+        cCol = Value
+        sStr = "{"
+        For Each Value In cCol
+          If iPos Then sStr &= ", "
+          sStr &= _call(cCol.Key)
+          sStr &= ": "
+          sStr &= _call(Value)
+          Inc iPos
+        Next
+        sStr &= "}"
+        Return sStr
+      Endif
+    
+  End Select
+  
+End

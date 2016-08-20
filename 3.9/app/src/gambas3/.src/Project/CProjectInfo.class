@@ -1,0 +1,260 @@
+' Gambas class file
+
+Property Read Name As String
+Property Read Path As String
+Property Read Title As String
+Property Read Version As String
+Property Read Description As String
+Property Read Authors As String[]
+Property Read Icon As String
+Property Read Startup As String
+Property Read Components As String[]
+
+Public Type As Integer
+Public Translate As Boolean
+Public ControlPublic As Boolean
+Public ModulePublic As Boolean
+Public CreateMenu As Boolean
+
+Private $sName As String
+Private $sPath As String
+Private $sTitle As String
+Private $sVersion As String
+Private $sDescription As String
+Private $aAuthors As New String[]
+Private $sIcon As String
+Private $sStartup As String
+Private $aComponents As New String[]
+Private $bRead As Boolean
+
+Private $sTranslatedTitle As String
+Private $sTranslatedDescription As String
+
+Private Sub GetProjectPath(sPath As String) As String
+  
+  Do
+    If Exist(sPath &/ ".project") Then Return sPath
+    sPath = File.Dir(sPath)
+    If sPath = "/" Then Break
+  Loop
+  
+Catch
+  
+End
+
+Private Sub ReadProject()
+
+  Dim hFile As File
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sKey As String
+  Dim sVal As String
+  
+  If $bRead Then Return
+  $bRead = True
+  
+  If Not $sPath Then Return
+  
+  $aComponents = New String[]
+    
+  hFile = Open $sPath &/ ".project"
+  
+  For Each sLine In hFile.Lines
+    sLine = Trim(sLine)
+    If Not sLine Then Continue 
+    If Left(sLine) = "#" Then Continue
+
+    iPos = InStr(sLine, "=")
+    If iPos = 0 Then Continue
+
+    sKey = Lower$(Trim(Left$(sLine, iPos - 1)))
+    sVal = Trim(Mid$(sLine, iPos + 1))
+
+    Select Case sKey
+    
+      Case "title"
+        $sTitle = sVal
+
+      Case "version"
+        $sVersion = sVal
+        
+      Case "description"
+        $sDescription = Trim(UnQuote(sVal))
+
+      Case "authors"
+        $aAuthors = Split(UnQuote(sVal), "\n")
+
+      Case "icon"
+        $sIcon = sVal
+        
+      Case "startup"
+        $sStartup = sVal
+        
+      Case "component"
+        $aComponents.Add(sVal)
+        
+      Case "translate"
+        Translate = CInt(sVal)
+        
+      Case "controlpublic"
+        ControlPublic = CInt(sVal)
+        
+      Case "modulepublic"
+        ModulePublic = CInt(sVal)
+        
+      Case "createmenu"
+        CreateMenu = CInt(sVal)
+
+      Case "type"
+        Select LCase(sVal)
+          Case "library"
+            Type = Project.TYPE_LIBRARY
+          Case "component"
+            Type = Project.TYPE_COMPONENT
+        End Select
+
+    End Select
+  
+  Next
+  
+  Close #hFile
+
+End
+
+Public Sub _new(sPath As String)
+  
+  $sPath = GetProjectPath(sPath)
+  $sName = File.Name(sPath)
+
+End
+
+Public Sub GetTitle() As String
+  
+  If $sTitle Then Return $sTitle
+  Return $sName
+  
+End
+
+' Public Sub GetIcon(Optional iSize As Integer) As Image
+'   
+'   Dim hImage As Image = Image.Load(Icon)
+'   
+'   If iSize Then hImage = hImage.Stretch(iSize, iSize)
+'   Return hImage
+'   
+' End
+
+Private Function Name_Read() As String
+
+  Return $sName
+
+End
+
+Private Function Path_Read() As String
+
+  Return $sPath
+
+End
+
+Private Function Title_Read() As String
+
+  ReadProject
+  Return $sTitle
+
+End
+
+Private Function Version_Read() As String
+
+  ReadProject
+  Return $sVersion
+
+End
+
+Private Function Description_Read() As String
+
+  ReadProject
+  Return $sDescription
+
+End
+
+Private Function Authors_Read() As String[]
+
+  ReadProject
+  Return $aAuthors
+
+End
+
+Private Function Icon_Read() As String
+
+  ReadProject
+  Return $sIcon
+
+End
+
+Private Function Startup_Read() As String
+
+  ReadProject
+  Return $sStartup
+
+End
+
+Private Function Components_Read() As String[]
+
+  ReadProject
+  Return $aComponents
+
+End
+
+Public Sub GetIconPath() As String
+  
+  ReadProject
+  If $sIcon Then
+    Return $sPath &/ $sIcon
+  Else
+    Return "img/logo/project.png"
+  Endif  
+  
+End
+
+Private Sub GetTranslation(sStr As String) As String
+
+  Dim sLang As String
+  Dim sPath As String
+  Dim aTrans As String[]
+  Dim iPos As Integer
+  Dim sTrans As String
+  
+  sLang = Language.Find(System.Language)  
+  sPath = $sPath &/ ".lang" &/ sLang & ".po"
+  If Not Exist(sPath) Then Return sStr
+  
+  aTrans = Split(File.Load(sPath), "\n")
+  iPos = aTrans.Find("msgid " & Quote(sStr))
+  If iPos < 0 Then Return sStr
+  
+  sTrans = aTrans[iPos + 1]
+  If sTrans Not Begins "msgstr " Then Return sStr
+  
+  Return UnQuote(Mid$(sTrans, 8))
+  
+End
+
+Public Sub GetTranslatedTitle() As String
+  
+  If Not $sTranslatedTitle Then
+    ReadProject
+    $sTranslatedTitle = GetTranslation($sTitle)
+  Endif
+  Return $sTranslatedTitle
+  
+End
+
+Public Sub GetTranslatedDescription() As String
+  
+  If Not $sTranslatedDescription Then
+    ReadProject
+    $sTranslatedDescription = GetTranslation($sDescription)
+  Endif
+  Return $sTranslatedDescription
+  
+End

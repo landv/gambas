@@ -1,0 +1,59 @@
+' Gambas class file
+
+Private $sPath As String
+
+Public Sub Run(sPath As String) As String
+  
+  $sPath = sPath
+  If Me.ShowModal() Then Return $sPath
+  
+End
+
+
+Public Sub Form_Open()
+
+  Settings.Read(Me)
+  Settings.Read(fchExec, "fchExec")
+
+  fchExec.Filter = ["*.gambas", ("Gambas applications")]
+  fchExec.SelectedPath = $sPath
+  fchExec.SetFocus
+  
+  chkDebug.Value = Project.KeepDebugInfo
+  chkShortcut.Value = Project.CreateShortcut
+  ' If Project.CreateComponent Then 
+  '   chkShortcut.Text = ("Install in the user component directory")
+  ' Else
+  '   chkShortcut.Text = ("Create a shortcut on the desktop")
+  ' Endif
+  chkShortcut.Visible = Project.Type = Project.TYPE_NORMAL
+  txtCommand.Text = Project.RunAfterMakingExec
+  
+  panExtension.Reparent(fchExec.Extension)
+  
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(fchExec, "fchExec")
+  Settings.Write(Me)
+
+End
+
+Public Sub fchExec_Activate()
+
+  $sPath = fchExec.SelectedPath
+  Project.KeepDebugInfo = chkDebug.Value
+  Project.CreateShortcut = chkShortcut.Value
+  Project.RunAfterMakingExec = Trim(txtCommand.Text)
+  Project.WriteProject(True)
+  Me.Close(True)
+
+End
+
+Public Sub fchExec_Cancel()
+  
+  Me.Close
+  
+End
+

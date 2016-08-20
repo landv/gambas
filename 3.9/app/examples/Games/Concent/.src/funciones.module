@@ -1,0 +1,162 @@
+' Gambas module file
+
+'Arreglos para guardar info de las imagenes a cargar y el estado de los botones
+'................................................................................
+'Arrays for save images information to load.
+Private botones_numero_foticos As New Integer[64] 'Almacena el numero de foto (indice) que llevara cada botoncito al descubrirse
+                                              'Almacenate the image number (index).
+Private boton_lleno As New Boolean[64] 'para especificar si un boton ya recibio asignacion de fotico
+                                   'Specify if a button have a image asigned       
+
+'Variables de juego
+Public jugadas As Integer 'contador del numero de jugadas durante una partida (counter for number of movements)
+Public tiempo As Integer 'contador del numero de segundos durante una partida (counter for game time)
+Public aciertos As Integer 'Contar el numero de aciertos del jugador, es decir, cada vez que el jugador logra en una misma
+                           'jugada encontrar dos botones con el mismo dibujito
+                           '..............................................................................................
+                           'Count the acerts for player.
+Public num_movimiento_actual As Integer 'Siempre tendra valor de 0, o 1. se usa para saber si el jugador ya destapo un boton el turno actual
+                                         'es decir, una jugada consta de dos movimientos
+                                         '..................................................................................
+                                         'Controle the set of button moved in a movement
+
+Public Sub distrib(tam_tablero As Integer, tam_botones As Integer)
+  Dim i As Integer
+  Dim j As Integer
+  Dim izq As Integer
+  Dim arr As Integer
+  Dim pos As Integer
+  
+  izq = (principal.Width - tam_botones * tam_tablero) / 2
+  arr = (principal.Height - tam_botones * tam_tablero) / 2
+  
+  pos = 0
+  
+  For I = 0 To tam_tablero - 1
+    For J = 0 To tam_tablero - 1
+      principal.botones[pos].visible = True
+      principal.botones[pos].width = tam_botones
+      principal.botones[pos].height = tam_botones
+      principal.botones[pos].x = izq
+      principal.botones[pos].y = arr
+      principal.botones[pos].picture = principal.initialPicture 'cada vez que se distribuye el tablero, se tapas los botone
+                                                                  'con el dibujito del signo de interrogacion 
+                                                                  '........................................................
+                                                                  'Restore the buttons to initial state, when the game is
+                                                                  'restarted
+      'principal.botones[pos].enabled=TRUE
+      izq = izq + tam_botones
+      pos = pos + 1        
+    Next
+    arr = arr + tam_botones
+    izq = (principal.Width - tam_botones * tam_tablero) / 2
+    
+  Next
+  
+  'Se ocultan los botones que no sean necesarios de acuerdo al nivel
+  'de juego, esto pasa cuando se ha jugado en un nivel superior y
+  'luego se vuelve hacia un nivel inferior
+  '..................................................................
+  'The not necesary button are oculted
+  For I = tam_tablero * tam_tablero To 63
+    principal.botones[pos].visible = False
+    pos = pos + 1
+  Next
+  
+  'se asigna false al array boton_lleno para iniciar una nueva asignacion de foticos
+  '..................................................................................
+  'The state for each button is restored, it is for permit movement with each button
+  For I = 0 To 63
+    boton_lleno[I] = False
+  Next
+  
+  'Se cargan las imagenes en cada botoncito
+  '.........................................
+  'Load image for each button
+  repartir(tam_tablero * tam_tablero)
+
+End
+
+
+'Este procedimiento busca en el directorio imagenes para capturar los
+'nombres de los dibujitos que se van a mostrar en los botones, esta
+'funcionalidad permite que el usuario incluya luego sus propias imagenes
+'PUBLIC SUB cargar_imagenes(Directory AS String)
+
+  'DIM File AS String
+  'DIM indice AS Integer  
+  'indice=0
+
+  'FOR EACH File IN Dir(Directory, "an*.gif")
+    'imagenes[indice]=File    
+    'indice=indice+1    
+  'NEXT  
+
+'END
+
+Public Sub repartir(tam_tablero As Integer)
+    Dim i As Integer
+    Dim j As Integer
+    Dim aleatorio As Integer
+    Dim aleatorio1 As Integer
+    Dim listo As Boolean 'Bandera para informar cuando se encuentre un boton libre para asignacion
+                         'Variable for controlate the flow in nex loop
+    
+    'Ciclar la mitad de la dimension para ubicar las imagenes en cada boton, se cicla la mitad ya que cada imagen
+    'escogida en un ciclo se asigna a una pareja de botoncitos, la imagen escogida se representa como un numero
+    'entero, que es utilizado luego como indice del array botones_foticos[] para copiar la propiedad picture, este
+    'numero se guarda en el arreglo botones_numero_foticos[64].
+    '..............................................................................................................
+    'This For loop permit locate the images in each button
+     For i = 0 To Int(tam_tablero - 1) / 2
+       aleatorio = Int(Rnd() * 40) 'se obtiene un numero entre (0, 39) que es el rango de indices del array botones_foticos
+                               'Obtain a random number in 0-39 range (there is 40 images for use)
+       'IF aleatorio = 40 THEN  message ("salio un numero malo")
+       'en cada ciclo se ubica dos veces la misma fotico en dos cuadros aleatorios
+       '..........................................................................
+       'For each loop a image is locate at two times
+       For j = 0 To 1
+         listo = False
+         While listo = False 'se anida este ciclo para forzar la busqueda de dos cuadritos que no hayan sido asignados
+                           'This loop is nested for force the search
+           aleatorio1 = Int(Rnd() * tam_tablero) 'se busca un indice en el rango (0, tam_tablero)
+                                             'An index in 0,tam_table range is searched
+           If (boton_lleno[aleatorio1]) = False Then 'se verifica que el boton no tenga fotico asignada 
+                                                   'Verify the button for stablish it is free            
+             botones_numero_foticos[aleatorio1] = aleatorio
+             boton_lleno[aleatorio1] = True
+             listo = True             
+             'ACTIVAR LA LINEA SIGUIENTE PARA DEPURACION, ENTONCES SE PODRA VER LA IMAGEN OCULTA DE LOS BOTONES
+             'principal.botones[aleatorio1].picture=principal.botones_foticos[aleatorio].picture
+           End If           
+         Wend
+         
+       Next
+       
+     Next 
+     
+     'Se inicializan las variables de juego
+     '....................................
+     'Initialize game variables
+      jugadas = 0
+      tiempo = 0
+      aciertos = 0
+      num_movimiento_actual = 0
+      
+End
+
+'Se hace necesario este metodo para notificar al formulario principal sobre cual imagen debe colocar en un botoncito
+'al ser descubierto, esto debido a que el arreglo botones_numero_foticos[] es pridado en este modulo
+Public Function devolver_indice_defotico(tag As Integer) As Integer
+   Return botones_numero_foticos[tag]
+End
+
+'Devuelve un valor booleano indicando si los dos movimientos de una jugada son validos
+Public Function comparar_botones_jugados(btjugado1 As Integer, btjugado2 As Integer) As Boolean
+  Return botones_numero_foticos[btjugado1] = botones_numero_foticos[btjugado2]
+End
+
+
+
+
+

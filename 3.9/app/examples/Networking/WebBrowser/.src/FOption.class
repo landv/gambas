@@ -1,0 +1,67 @@
+' Gambas class file
+
+Static Public Type As Integer
+Static Public Host As String
+Static Public Port As Integer
+Static Public User As String
+Static Public Password As String
+
+Public Sub Run() As Boolean
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  Select Case cmbType.Index
+    Case 0
+      Type = WebSettings.NoProxy
+    Case 1
+      Type = WebSettings.HttpProxy
+    Case 2
+      Type = WebSettings.Socks5Proxy
+  End Select
+
+  Host = Trim(txtHost.Text)
+  Port = txtPort.Value
+  User = Trim(txtUser.Text)
+  Password = txtPassword.Text
+
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub cmbType_Click()
+
+  txtHost.Enabled = cmbType.Index > 0
+  txtPassword.Enabled = cmbType.Index > 0
+  txtPort.Enabled = cmbType.Index > 0
+  txtUser.Enabled = cmbType.Index > 0
+
+End
+
+Public Sub Form_Open()
+
+  Select Type
+    Case WebSettings.NoProxy
+      cmbType.Index = 0
+    Case WebSettings.HttpProxy
+      cmbType.Index = 1
+    Case WebSettings.Socks5Proxy
+      cmbType.Index = 2
+  End Select
+  
+  txtHost.Text = Host
+  txtPort.Value = Port
+  txtUser.Text = User
+  txtPassword.Text = Password
+
+End

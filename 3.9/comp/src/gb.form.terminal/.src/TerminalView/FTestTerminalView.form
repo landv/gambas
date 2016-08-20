@@ -1,0 +1,46 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,150,97)
+  Icon = Picture["terminalview.png"]
+  Arrangement = Arrange.Vertical
+  { TerminalView1 TerminalView
+    MoveScaled(6,1,59,52)
+    Font = Font["Gambas,10"]
+    Expand = True
+    Border = False
+    Limit = 0
+  }
+  { Panel1 HBox
+    MoveScaled(2,55,82,5)
+    Visible = False
+    { TextBox1 TextBox
+      MoveScaled(1,0,43,5)
+      Expand = True
+    }
+    { Button1 ToggleButton
+      MoveScaled(49,0,5,5)
+      Text = ("B")
+    }
+    { Button2 ToggleButton
+      MoveScaled(54,0,5,5)
+      Text = ("U")
+    }
+    { Button3 ToggleButton
+      MoveScaled(59,0,5,5)
+      Text = ("R")
+    }
+    { Button4 ToggleButton
+      MoveScaled(64,0,5,5)
+      Text = ("D")
+    }
+    { Button5 ToggleButton
+      MoveScaled(69,0,5,5)
+      Text = ("b")
+    }
+  }
+  { Timer1 #Timer
+    #MoveScaled(117,17)
+    Delay = 50
+  }
+}

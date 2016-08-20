@@ -1,0 +1,317 @@
+' Gambas class file
+
+Export
+
+Private $iStartLine As Integer
+Private $iStartColumn As Integer
+Private $iEndLine As Integer
+Private $iEndColumn As Integer
+
+Private $hLabel As TextLabel
+Private $hLabelTimer As Timer
+Private $hObserver As Observer
+
+Public Sub _new()
+  
+  $hObserver = New Observer(Me) As "Editor"
+  
+End
+
+Public Sub ReadConfig()
+
+  Project.SetEditorFont(Me)
+
+  MTheme.InitEditor(Me)
+
+  Me.ShowPosition = True
+  Me.ShowLimit = Settings["/Editor/ProcedureLimit", True]
+  Me.ShowModified = Settings["/Editor/ShowChange", True]
+  Me.ShowLineNumber = Settings["/Editor/ShowLineNumbers", False]
+  Me.ShowCurrent = Settings["/Editor/ShowCurrent", True]
+  Me.ShowExpand = Settings["/Editor/ShowExpand", True]
+  Me.ShowSpaces = Settings["/Editor/ShowSpaces", True]
+  Me.ShowIndent = Settings["/Editor/ShowIndent", True]
+  'Me.Flags[Editor.NoFolding] = Not Settings["/Editor/ShowFolding", True]
+  Me.ShowBraces = True
+  
+  'Me.KeywordsUseUpperCase = Settings["/Editor/KeywordsUseUpperCase"]
+  
+End
+
+Public Sub GetPosition() As Integer
+  
+  Dim iLine, iColumn, iInd, iPos As Integer
+  
+  iLine = Me.Line
+  iColumn = Me.Column
+  If Me.Selected Then 
+    If Me.SelectionLine = Me.Line Then
+      iColumn = Min(iColumn, Me.SelectionColumn)
+    Else If Me.SelectionLine < Me.Line Then
+      iLine = Me.SelectionLine
+      iColumn = Me.SelectionColumn
+    Endif
+  Endif
+      
+  For iInd = 0 To iLine - 1
+    iPos += Len(Me[iInd].Text) + 1
+  Next
+  iPos += Len(String.Left(Me[iLine].Text, iColumn))
+  
+  Return iPos
+  
+End
+
+Public Sub SetPosition(hFindResult As CFindResult, bJustCheck As Boolean) As Boolean
+  
+  Dim iLine, iColumn As Integer
+  Dim iLen As Integer
+  Dim sLine As String
+  Dim iPos As Integer
+  
+  ' If hFindResult.Line Or If hFindResult.Column Then
+  ' 
+  '   iLine = hFindResult.Line
+  '   iColumn = hFindResult.Column
+  '   sLine = Me.Lines[iLine].Text
+  ' 
+  ' Else
+  
+    iPos = hFindResult.Pos
+    While iLine < Me.Count
+    
+      iLen = Len(Me[iLine].Text)
+      If iPos <= iLen Then Break
+      iPos -= iLen + 1
+      Inc iLine
+      
+    Wend
+  
+    sLine = Me[iLine].Text
+    iColumn = String.Len(Left$(sLine, iPos))
+    
+  'Endif
+  
+  If Me.Highlight Then
+    If InStr(String.Mid$(Me[iLine].Purge(Not FSearch.IgnoreComments, Not FSearch.IgnoreStrings, Chr$(1)), iColumn + 1, hFindResult.Length), Chr$(1)) Then Return True
+  Endif
+  
+  hFindResult.Line = iLine
+  hFindResult.Column = iColumn
+  
+  If bJustCheck Then 
+    If iColumn >= 40 And If Me[iLine].Length > 80 Then
+      sLine = "…" & Html(String.Mid$(sLine, iColumn - 31, 32)) & "<u>" & Html(String.Mid$(sLine, iColumn + 1, hFindResult.Length)) & "</u>" & Html(String.Mid$(sLine, iColumn + hFindResult.Length + 1, 160))
+    Else
+      sLine = Html(String.Left(sLine, iColumn)) & "<u>" & Html(String.Mid$(sLine, iColumn + 1, hFindResult.Length)) & "</u>" & Html(String.Mid$(sLine, iColumn + hFindResult.Length + 1, 160))
+    Endif
+    sLine = Replace(sLine, " ", "&nbsp;")
+    hFindResult.Text = "<nobr>" & sLine
+  Else
+    ' TODO Me[iLine].Expanded = True
+    Me.GotoCenter(iColumn, iLine)
+    Me.Goto(iColumn + hFindResult.Length, iLine, True)
+  Endif
+  
+End
+
+Public Sub Replace(sReplace As String)
+  
+  Dim iLine, iColumn As Integer
+  
+  If Not Me.Selected Then Return
+  
+  iLine = Me.SelectionLine
+  iColumn = Me.SelectionColumn
+  Me.Begin
+  Me.Insert(sReplace)
+  Me.Goto(iColumn, iLine)
+  Me.Goto(iColumn + String.Len(sReplace), iLine, True)
+  Me.End  
+  
+End
+
+Public Sub GetSelection() As String
+  
+  If Me.Selected And If Me.SelectionLine = Me.Line Then
+    Return Me.SelectedText
+  Endif
+  
+End
+
+Static Public Sub GetIndent(sLine As String) As Integer
+  
+  Return Len(sLine) - Len(LTrim(sLine))
+  
+End
+
+
+Public Sub StoreSelection(Optional bNoFullLines As Boolean)
+
+  With Me
+    
+    $iStartLine = .SelectionLine
+    $iStartColumn = .SelectionColumn
+    $iEndLine = .Line
+    $iEndColumn = .Column
+    
+    If Not bNoFullLines Then 
+      If $iEndLine >= $iStartLine Then
+        If $iEndColumn > 0 Or Not .Selected Then 
+          Inc $iEndLine
+          $iEndColumn = 0
+          $iStartColumn = 0
+          RecallSelection
+        Endif
+      Else
+        If $iStartColumn > 0 Or Not .Selected Then 
+          Inc $iStartLine
+          $iStartColumn = 0
+          $iEndColumn = 0
+          RecallSelection
+        Endif
+      Endif
+    Endif
+    
+  End With
+  
+
+End
+
+Public Sub RecallSelection()
+
+  Me.Goto($iStartColumn, $iStartLine)
+  Me.Goto($iEndColumn, $iEndLine, True)
+
+End
+
+Public Sub LabelTimer_Timer()
+
+  If $hLabel.Visible Then
+    $hLabel.Hide
+    $hLabelTimer.Stop
+  Endif
+
+End
+
+Public Sub Label_MouseDown()
+
+  LabelTimer_Timer
+
+End
+
+
+Public Sub ShowMessageLabel(sStr As String, Optional X As Integer, Y As Integer, iStyle As Integer)
+
+  Dim hParent As Container
+
+  If Not $hLabel Then
+    
+    hParent = Me.Parent
+    If hParent Is HSplit Or If hParent Is VSplit Then hParent = hParent.Parent
+    
+    $hLabel = New TextLabel(hParent) As "Label"
+    $hLabel.Ignore = True
+    $hLabel.AutoResize = True
+    $hLabel.Border = If(IsMissing(Y), Border.None, Border.Plain)
+    $hLabel.Padding = 2
+    $hLabel.Wrap = False
+    $hLabelTimer = New Timer As "LabelTimer"
+    $hLabelTimer.Delay = 10000
+    
+  Endif
+  
+  $hLabel.Foreground = Me.Styles[Highlight.Normal].Color
+  If IsMissing(iStyle) Then iStyle = Highlight.Highlight
+  $hLabel.Background = Color.Merge(Me.Styles[iStyle].Color, Style.BackgroundOf(Me), 0.3)
+  $hLabel.Text = "&nbsp;&nbsp;" & Replace(Replace(sStr, "<p>", " "), "<br>", " ") & "&nbsp;&nbsp;"
+
+  If IsMissing(X) Then X = 0
+  If IsMissing(Y) Then Y = Container(Me.Proxy).ClientH - $hLabel.H
+
+  X = Me.ScreenX + X - $hLabel.Parent.ScreenX
+  Y = Me.ScreenY + Y - $hLabel.Parent.ScreenY
+  
+  If (Y + $hLabel.H) > $hLabel.Parent.ClientH Then Y -= $hLabel.H + Me.LineHeight
+  $hLabel.Move(X, Y)
+  
+  $hLabel.Show
+  $hLabel.Raise
+  $hLabelTimer.Stop
+  $hLabelTimer.Start
+  Me.SetFocus
+
+End
+
+Public Sub Editor_Cursor()
+  
+  Try $hLabel.Hide
+  
+End
+
+
+Public Sub Editor_Scroll()
+  
+  Try $hLabel.Hide
+  
+End
+
+Public Sub HideMessageLabel()
+  
+  Try $hLabel.Hide
+  
+End
+
+Private Sub ToggleAroundCurrentWord(sIdentCar As String, sBraces As String)
+
+  Dim sLine As String
+  Dim X1, X2 As Integer
+  Dim iLen As Integer
+  
+  sLine = Me.Current.Text
+  iLen = Me.Current.Length
+  
+  X1 = Me.Column
+  While X1 > 0
+    If InStr(sIdentCar, String.Mid$(sLine, X1, 1)) = 0 Then Break
+    Dec X1
+  Wend
+  
+  X2 = Me.Column
+  While X2 < iLen
+    If InStr(sIdentCar, String.Mid$(sLine, X2 + 1, 1)) = 0 Then Break
+    Inc X2
+  Wend
+  
+  If X1 = X2 Then Return
+  
+  If X1 >= 1 And If String.Mid$(sLine, X1, 1) = Left(sBraces) And If X2 < iLen And If String.Mid$(sLine, X2 + 1, 1) = Right(sBraces) Then
+    sLine = String.Left(sLine, X1 - 1) & String.Mid$(sLine, X1 + 1, X2 - X1) & String.Mid$(sLine, X2 + 2)
+    X1 = Me.Column - 1
+  Else
+    sLine = String.Left(sLine, X1) & Left(sBraces) & String.Mid$(sLine, X1 + 1, X2 - X1) & Right$(sBraces) & String.Mid$(sLine, X2 + 1)
+    X1 = Me.Column + 1
+  Endif
+  
+  Me[Me.Line].Text = sLine
+  Me.Goto(X1, Me.Line)
+  
+End
+
+Public Sub Editor_KeyPress()
+  
+  Dim sBraces As String
+  
+  If Key.Alt Then
+  
+    For Each sBraces In ["()", "{}", "[]", "<>"]
+      If InStr(sBraces, Key.Text) Then
+        ToggleAroundCurrentWord(FEditor.IDENT_CAR, sBraces)
+        Stop Event
+        Return
+      Endif
+    Next
+    
+  Endif
+  
+End

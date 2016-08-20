@@ -1,0 +1,163 @@
+' Gambas module file
+
+Public Const USER_GUEST As Integer = 0
+Public Const USER_WRITER As Integer = 1
+Public Const USER_ADMIN As Integer = 2
+
+Property Read Current As _User
+Private $oUser As _User
+
+Public Function _get(sUsername As String) As _User
+
+  Return Get(sUsername)
+
+End
+
+Public Sub LoadCurrent()
+
+  If $oUser Then Return
+
+  If Not Session["username"] Then
+    $oUser = MakeGuest()
+  Else
+    $oUser = Get(Session["username"])
+  Endif
+
+End
+
+Public Function Get(sUsername As String, Optional bReadOnly As Boolean = True) As _User
+
+  Dim rUser As Result
+
+  Dim oTemp As _User
+
+  rUser = Find(sUsername, bReadOnly)
+
+  If Not rUser Then Return
+
+  oTemp = New _User(rUser, bReadOnly)
+
+  Return oTemp
+
+End
+
+Public Function Find(sValue As String, Optional bReadOnly As Boolean = True, Optional bEmail As Boolean) As Result
+
+  Dim rUser As Result
+
+  If bReadOnly Then
+    rUser = DB.Find(DBScheme.TABLE_USERS, IIf(bEmail, DBScheme.USER_EMAIL, DBScheme.USER_USERNAME) & "= &1", sValue)
+  Else
+    rUser = DB.Edit(DBScheme.TABLE_USERS, IIf(bEmail, DBScheme.USER_EMAIL, DBScheme.USER_USERNAME) & "= &1", sValue)
+  Endif
+
+  If rUser.Available Then
+    Return rUser
+  Endif
+
+End
+
+Public Sub Login(sUsername As String, sPassword As String)
+
+  Dim rUser As Result
+
+  'If Me.Current Then Return
+
+  rUser = DB.Find(DBScheme.TABLE_USERS, DBScheme.USER_USERNAME & "= &1 AND " & DBScheme.USER_PASSWORD & "= &2", sUsername, sPassword)
+
+  If Not rUser.Available Then Return
+
+  Session["uid"] = rUser[DBScheme.USER_ID]
+
+  Session["username"] = rUser[DBScheme.USER_USERNAME]
+
+  Session["expiration"] = DateAdd(Now, 1, gb.Day)
+
+  $oUser = New _User(rUser)
+
+End
+
+Public Function Create(sUsername As String) As _User
+
+  Dim rUser As Result
+
+  Dim oTemp As _User
+
+  If Find(sUsername) Then Return
+
+  rUser = Main.hConn.Create(DBScheme.TABLE_USERS)
+
+  oTemp = New _User(rUser, False)
+
+  Return oTemp
+
+End
+
+Public Sub Delete(sUsername As String)
+
+  Dim rUser As Result
+
+  rUser = Find(sUsername, False)
+
+  If Not rUser Then Return
+
+  rUser.Delete()
+
+End
+
+Public Sub Logout()
+
+  Session.Abandon()
+
+End
+
+' Public Function Edit(sUsername As String, sPassword As String, sEmail As String) As Integer
+'
+'   Dim rUser As Result
+'
+'   rUser = Main.hConn.Edit(DBScheme.TABLE_USERS, "&1 = &2", DBScheme.USER_USERNAME, sUsername)
+'
+'   rUser[DBScheme.USER_PASSWORD] = sPassword
+'   rUser[DBScheme.USER_EMAIL] = sEmail
+'
+'   rUser.Update()
+'
+'   Return rUser[DBScheme.USER_ID]
+'
+' End
+
+Public Function List() As String[]
+
+  Dim rUser As Result
+
+  Dim sUsers As New String[]
+
+  rUser = DB.Exec(Subst("SELECT &1 FROM &2 ORDER BY &1 DESC", DBScheme.USER_USERNAME, DBScheme.TABLE_USERS))
+
+  For Each rUser
+
+    If rUser.Available Then sUsers.Add(rUser[DBScheme.USER_USERNAME])
+
+  Next
+
+  Return sUsers
+
+End
+
+Private Function MakeGuest() As _User
+
+  Dim oTemp As _User
+
+  oTemp = New _User(Null, Null, True)
+
+  Return oTemp
+
+End
+
+Private Function Current_Read() As _User
+
+  LoadCurrent()
+
+  Return $oUser
+
+End

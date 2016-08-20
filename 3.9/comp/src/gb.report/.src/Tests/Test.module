@@ -1,0 +1,9 @@
+' Gambas module file
+
+ Public Sub Main()
+'
+  Dim hreport As New Report9
+  Dim hprinter As New Printer
+  hprinter.OutputFile = User.Home &/ "sortie.pdf"
+  hreport.Print(hprinter)
+ End

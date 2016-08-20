@@ -1,0 +1,117 @@
+' Gambas class file
+
+Property Count As Integer
+Property Read max As Integer
+
+Property Width As String
+Private $sWidth As String
+Property Height As String
+Private $sHeight As String
+Public _Height As Float
+Private $aColumns As New _ReportGridViewColumn[]
+Event _Foo
+
+
+
+
+
+Public Sub _SetUnifiedValues()
+  Dim hCol As _ReportGridViewColumn
+  If $sHeight Then 
+  _Height = TSizeParse[$sHeight].ToCm()
+  Else
+  _Height = ReportUnits._PixelsToReportUnits(GetView().Font.TextHeight(""))
+  Endif
+  
+  For Each hcol In $aColumns
+    
+    If hcol.Width Then
+      hcol._Width = TSizeParse[hcol.Width].ToCm()
+    Else
+      'TODO: Calcul de la largeur des colonnes
+      hcol._Width = 2    
+    Endif
+  Next
+  
+  
+  
+  
+End
+
+
+
+
+
+
+
+
+Private Function Count_Read() As Integer
+
+  Return $aColumns.Max
+
+End
+
+Public Function _get(Index As Integer) As _ReportGridViewColumn
+  
+  Return $aColumns[Index]
+  
+End
+
+
+
+Private Sub Count_Write(Value As Integer)
+Dim hRow As _ReportGridViewColumn
+Dim i As Integer
+  If Value = $aColumns.Count Then Return
+  If Value > $aColumns.Count Then
+    For i = $aColumns.Count To Value 
+      hRow = New _ReportGridViewColumn
+      $aColumns.Add(hRow)
+    Next
+    
+  Else
+    
+    $aColumns.Remove(Value, $aColumns.Count - Value)
+    
+  Endif
+
+End
+
+Private Function max_Read() As Integer
+
+  Return $aColumns.Max
+
+End
+
+Private Function Width_Read() As String
+
+  If $aColumns.Count Then 
+    Return $aColumns[0].Width
+  Endif
+  
+End
+
+Private Sub Width_Write(Value As String)
+  Dim hCol As _ReportGridViewColumn
+  For Each hcol In $aColumns
+    hcol.Width = Value
+  Next
+End
+
+Private Function Height_Read() As String
+
+  Return $sHeight
+
+End
+
+Private Sub Height_Write(Value As String)
+
+  $sHeight = Value
+
+End
+
+Private Sub GetView() As ReportGridView
+  
+  Return Object.Parent(Me)
+  
+End

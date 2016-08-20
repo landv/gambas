@@ -1,0 +1,20 @@
+' Gambas class file
+
+Public Sub _new()
+
+  ReportHBox1.DataCount = 300
+
+End
+
+Public Sub ReportLabel1_Data(Index As Integer)
+
+  'Print "coucou"
+  Last.data = Index
+
+End
+
+Public Sub ReportLabel2_Data(Index As Integer)
+
+  Last.data = Index
+
+End

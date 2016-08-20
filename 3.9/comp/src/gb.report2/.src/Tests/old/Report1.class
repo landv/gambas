@@ -1,0 +1,43 @@
+' Gambas class file
+
+
+Public Sub Report_Open()
+Dim hBox As ReportHBox
+Dim i As Integer
+'Report.Debug = True
+'Me.Spacing = "1cm"
+   ReportHBox1.Margin.Bottom = "2cm"
+  'Report.Debug = True
+  'ReportHBox2.Margin.Top = "2cm"
+  ' ReportHBox1.BoxShadow.Blur = "0.5mm"
+  ' ReportHBox1.BoxShadow.XOffset = "1mm"
+  ' ReportHBox1.BoxShadow.YOffset = "1mm"
+  ' 'ReportHBox1.BoxShadow.Spread = "0.5mm"
+  ' ReportHBox1.BoxShadow.Color = Color.Gray
+  
+  For i = 0 To 14
+    hbox = New Reporthbox(ReportVBox1)
+    HBox.Height = "1cm"
+    HBox.Border.Width = "2px"
+    HBox.Margin.Top = "5mm"
+    HBox.Margin.Bottom = "3mm"
+    HBox.Margin.Left = "1cm"
+    HBox.Margin.Right = "2mm"
+  Next
+  hBox = New ReportHBox(ReportVBox1)
+  HBox.BackGround = ReportBrush.Color(Color.Green)
+  HBox.Height = "3cm"
+  HBox.Margin.Top = "1cm"
+  
+    For i = 0 To 4
+    hbox = New Reporthbox(ReportHBox2)
+    HBox.Width = "1cm"
+    HBox.Border.Width = "2px"
+    HBox.Margin.Left = "3mm"
+    HBox.Margin.Right = "8mm"
+    HBox.Expand = True
+    HBox.Margin.Top = "3mm"
+    HBox.Margin.Bottom = "3px"
+  Next
+    ReportHBox2.Padding = ReportPadding["2mm"]
+End

@@ -1,0 +1,286 @@
+' Gambas class file
+
+Property Top, Row As Integer
+Property Left, Column As Integer
+Property Width As Integer
+Property Height As Integer
+Property Tag As Variant
+Property Read Parent As Container
+Property Read Id As Integer
+Property Read ScreenX As Integer
+Property Read ScreenY As Integer
+Property Read Window As Window
+Property Background As Integer
+Property Foreground As Integer
+Property Read _Rect As Rect
+Property Visible As Boolean
+' Private $iRow As Integer
+' Private $iColumn As Integer
+' Private $iWidth As Integer
+' Private $iHeight As Integer
+Private $vTag As Variant
+
+Public _Content As New CLine[]
+
+Private $iParent As Integer = -1
+Private $iId As Integer
+Private $iWindow As Integer = -1
+Private $iScreenX As Integer
+Private $iScreenY As Integer
+Private $iBackground As Integer
+Private $iForeground As Integer = Color.white
+Private $iVisible As Boolean = True
+
+Private $hRect As New Rect
+Static Private $iLastId As Integer = 1
+Static Public _IdToControl As New Collection
+
+Static Public _RecalcPos As Boolean = True
+
+Public Sub _new(Optional hParent As Container)
+
+  $iId = $iLastId
+  Inc $iLastId
+  If hParent Then
+    $iParent = hParent.Id
+    hParent._Add(Me)
+    GetWindow
+  Else
+    If Me Is Window Then
+      Windows._Add(Me)
+    Endif
+  Endif
+
+  _IdToControl[$iId] = Me
+
+End
+
+Private Function Top_Read() As Integer
+
+  Return $hRect.Top
+
+End
+
+Private Sub Top_Write(Value As Integer)
+
+  Windows._RefreshAreas(_GetScreenRect())
+  Control._RecalcPos = True
+  $hRect.Top = Value
+  Windows._RefreshAreas(_GetScreenRect())
+
+End
+
+Private Function Left_Read() As Integer
+
+  Return $hRect.Left
+
+End
+
+Private Sub Left_Write(Value As Integer)
+
+  Windows._RefreshAreas(_GetScreenRect())
+  Control._RecalcPos = True
+  $hRect.Left = Value
+  Windows._RefreshAreas(_GetScreenRect())
+
+End
+
+Private Function Width_Read() As Integer
+
+  Return $hRect.Width
+
+End
+
+Private Sub Width_Write(Value As Integer)
+
+  Windows._RefreshAreas(_GetScreenRect())
+  $hRect.Width = Value
+  Windows._RefreshAreas(Me._Rect)
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return $hRect.Height
+
+End
+
+Private Sub Height_Write(Value As Integer)
+
+  Dim i As Integer
+  
+  Windows._RefreshAreas(_GetScreenRect())
+  _Content = New CLine[Value]
+  
+  For i = 0 To _Content.Max
+    _Content[i] = New CLine
+  Next
+  
+  
+  $hRect.Height = Value
+  Windows._RefreshAreas(Me._Rect)
+
+End
+
+Private Function Tag_Read() As Variant
+
+  Return $vTag
+
+End
+
+Private Sub Tag_Write(Value As Variant)
+
+  $vTag = Value
+
+End
+
+Private Function Parent_Read() As Container
+
+  Return _IdToControl[$iParent]
+
+End
+
+Private Function Id_Read() As Integer
+
+  Return $iId
+
+End
+
+Private Function ScreenX_Read() As Integer
+
+  If Control._RecalcPos Then ComputeScreenXY
+
+  Return $iScreenX
+
+End
+
+Private Function ScreenY_Read() As Integer
+
+  If Control._RecalcPos Then ComputeScreenXY
+
+  Return $iScreenY
+
+End
+
+Private Sub GetWindow()
+
+  Dim hCont As Object = Me.Parent
+
+  Do
+    If hCont.Parent = Null Then
+      $iWindow = hCont.Id
+      Break
+    Endif
+    hCont = hCont.Parent
+  Loop
+
+End
+
+Private Function Window_Read() As Window
+
+  Return _IdToControl[$iWindow]
+
+End
+
+Private Sub ComputeScreenXY()
+
+  Dim hC As Control = Me.Parent
+
+  If hC Then
+    $iScreenX = hC.Left + $hRect.Left
+    $iScreenY = hC.Top + $hRect.Top
+  Else
+    $iScreenX = $hRect.Left
+    $iScreenY = $hRect.Top
+  Endif
+  '_RecalcPos = False
+
+End
+
+Public Sub Move(Top As Integer, Left As Integer, Optional Width As Integer, Optional Height As Integer)
+
+  Me.Left = Left
+  Me.Top = Top
+
+  If Not IsMissing(Width) Then Me.Width = Width
+  If Not IsMissing(Height) Then Me.Height = Height
+
+End
+
+Public Sub _Render()
+
+  Dim hAttr As New Attr
+  Dim hLine As CLine
+  Dim i As Integer
+  'Fill The widget BackGround
+
+  hAttr.Background = $iBackground
+  hAttr.Foreground = $iForeground
+
+  For i = 0 To _Content.Max
+
+    hLine = _Content[i]
+    If Not hLine Then hLine = New CLine
+    hLine.Text = String($hRect.Width, " ")
+    hLine.SetAttr(hAttr, 0, $hRect.Width)
+    hLine.Length = $hRect.Width
+
+    _Content[i] = hLine
+
+  Next
+
+End
+
+Private Function Foreground_Read() As Integer
+
+  Return $iForeground
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  $iForeground = Value
+
+End
+
+Private Function Background_Read() As Integer
+
+  Return $iBackground
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  $iBackground = Value
+
+End
+
+Private Function _Rect_Read() As Rect
+
+  Return $hRect
+
+End
+
+Public Function _GetScreenRect() As Rect
+
+  Dim hRet As New Rect
+
+  hRet.Left = Me.ScreenX
+  hRet.Top = Me.ScreenY
+  hRet.Width = $hRect.Width
+  hRet.Height = $hRect.Height
+  Return hRet
+
+End
+
+Private Function Visible_Read() As Boolean
+
+  Return $iVisible
+
+End
+
+Private Sub Visible_Write(Value As Boolean)
+
+  $iVisible = Value
+
+End

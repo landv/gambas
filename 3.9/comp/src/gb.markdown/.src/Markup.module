@@ -1,0 +1,1026 @@
+' Gambas module file
+
+Class TextHighlighter
+
+Public Struct MarkupList
+  sType As String
+  iIndent As Integer
+End Struct
+
+Public EnableCode As Integer
+Public Verbatim As Integer
+
+Private $aMarkup As String[]
+Private $cLink As Collection
+Private $aIndex As String[]
+Private $aTable As String[]
+Private $aTableClass As String[]
+Private $aTablePos As Integer[]
+Private $hMarkdown As Markdown
+Private $hLink As New MarkdownLink
+Private $bComment As Boolean
+
+Private Sub GetIndent(sLine As String) As Integer
+  
+  Return Len(sLine) - Len(LTrim(sLine))
+  
+End
+
+Public Sub Convert(sMarkup As String, hMarkdown As Markdown) As String
+  
+  $hMarkdown = hMarkdown
+  $cLink = New Collection
+  $aIndex = New String[]
+  EnableCode = 0
+
+  Return ConvertMarkup(Split(sMarkup, "\n"))
+  
+End
+
+Private Sub IsWordLimit(sCar As String) As Boolean
+
+  If IsLetter(sCar) Or If IsDigit(sCar) Or If Len(sCar) >= 2 Then Return
+  Return True
+
+End
+
+Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) As String
+  
+  Dim iLine As Integer
+  Dim aResult As String[]
+  Dim sLine As String
+  Dim I As Integer
+  Dim bCode As Boolean
+  Dim iBlockQuote As Integer
+  Dim sCar As String
+  Dim bInsidePar As Boolean
+  Dim bIgnorePar As Boolean
+  Dim bAddPar As Boolean
+  Dim iIndent, iCurrentIndent As Integer
+  Dim hMarkupList As MarkupList
+  Dim bJustList As Boolean
+  Dim sLink As String
+  Dim iPos As Integer
+  Dim aList As New MarkupList[]
+  Dim sTable As String
+  Dim iIndexPos As Integer = -1
+  Dim aCommand As String[]
+  Dim aSaveMarkup As String[]
+  Dim aSaveTable As String[]
+  Dim aSaveTablePos As Integer[]
+  Dim aSaveTableClass As String[]
+  Dim sClass As String
+  Dim sList As String
+  Dim bSaveComment As Boolean
+  Dim aTemp As String[]
+  
+  aResult = New String[]
+  
+  aSaveMarkup = $aMarkup
+  $aMarkup = New String[]
+  aSaveTable = $aTable
+  $aTable = New String[]
+  aSaveTableClass = $aTableClass
+  $aTableClass = New String[]
+  aSaveTablePos = $aTablePos
+  $aTablePos = New Integer[]
+  bSaveComment = $bComment
+  
+  ' iLine = 0
+  ' Do
+  '   If iLine >= aLine.Count Then Break
+  '   sLine = LTrim(aLine[iLine])
+  '   If Left(sLine) = "%" Then
+  '     If sLine Begins "%IF " Then
+  '     Else If sLine Begins "%ELSE " Then
+  '     
+  '     Endif
+  '   Endif
+  '   Inc iLine
+  ' Loop
+  
+  For iLine = 0 To aLine.Max
+    
+    sLine = LTrim(aLine[iLine])
+    If Not sLine Then Continue
+    If Left(sLine) <> "[" Then Continue
+    I = InStr(sLine, "]:")
+    If I = 0 Then Continue
+    If I >= 3 Then
+      sLink = Trim(Mid$(sLine, I + 2))
+      $cLink[Mid$(sLine, 2, I - 2)] = sLink
+      If Left(sLink) = "#" Then
+        iPos = InStr(sLink, " ")
+        If iPos Then sLink = Left(sLink, iPos - 1)
+        aLine[iLine] = "<a name=\"" & Html$(sLink) & "\"></a>"
+        Continue
+      Endif
+    Endif
+    aLine[iLine] = ""
+    
+  Next
+    
+  iLine = -1
+  While iLine < aLine.Max
+    
+    Inc iLine
+    sLine = aLine[iLine]
+    
+    If Not bDoNotSetLine Then 
+      $hMarkdown.Line = iLine
+      $hMarkdown.Current = sLine
+    Endif
+    
+    'If $aMarkup.Count Then
+    '  aResult.Add(ConvertLine(sLine))
+    '  Continue
+    'Endif
+    
+    sLine = RTrim(sLine)
+
+    If Verbatim Then
+      If sLine <> "]]" Then
+        aResult.Add(aLine[iLine])
+        Continue
+      Endif
+    Endif
+    
+    If Not sLine Then sLine = aLine[iLine]
+  
+    If $bComment Then
+      iPos = InStr(sLine, "-->")
+      If iPos = 0 Then Continue
+      $bComment = False
+      sLine = Mid$(sLine, iPos + 4)
+    Endif
+  
+    ' Special command
+    
+    If Left(sLine, 2) = "@{" And If Right(sLine) = "}" Then
+      If sLine = "@{index}" Then 
+        iIndexPos = aResult.Count
+        aResult.Add(sLine)
+      Else
+        aCommand = $hMarkdown.Command(Mid$(sLine, 3, -1))
+        If aCommand And If aCommand.Count Then
+          If $hMarkdown.Reinterpret Then
+            aLine.Insert(aCommand, iLine + 1)
+          Else
+            aResult.Insert(aCommand)
+          Endif
+          $hMarkdown.Reinterpret = True
+        Endif
+      Endif
+      Continue
+    Endif
+    
+    ' Blockquote
+    
+    I = 0
+    Do
+      If Left(sLine) <> ">" Then Break
+      sCar = Mid$(sLine, 2, 1)
+      If sCar <> " " And If sCar <> gb.Tab Then Break
+      Inc I
+      sLine = LTrim(Mid$(sLine, 3))
+    Loop
+    
+    If I > iBlockQuote Then
+      While I > iBlockQuote
+        aResult.Add("<blockquote>")
+        Inc iBlockQuote
+      Wend
+    Else If I < iBlockQuote Then
+      While I < iBlockQuote
+        aResult.Add("</blockquote>")
+        Dec iBlockQuote
+      Wend
+    Endif
+    
+    ' Lists
+    
+    If Trim(sLine) Then
+    
+      iIndent = GetIndent(sLine)
+      GoSub CLOSE_LIST
+    
+      sLine = Mid$(sLine, iCurrentIndent + 1)
+      
+      ' Horizontal lines
+      
+      ' If Left(sLine) = "*" And If Right(sLine) = "*" Then
+      '   sText = Replace(sLine, " ", "")
+      '   If Len(sText) >= 3 And If sText = String$(Len(sText), "*") Then
+      '     GoSub CLOSE_PARA
+      '     aResult.Add("<hr />")
+      '     Continue
+      '   Endif
+      ' Endif
+  
+      If Left(sLine) = "-" And If Right(sLine) = "-" Then
+        'sText = Replace(sLine, " ", "")
+        If Len(sLine) >= 3 And If sLine = String$(Len(sLine), "-") Then
+          GoSub CLOSE_PARA
+          aResult.Add("<hr />")
+          Continue
+        Endif
+      Endif
+      
+      iPos = InStr(sLine, " ")
+      If iPos Then 
+        sList = Left(sLine, iPos - 1)
+      Else
+        sList = ""
+      Endif
+      
+      If sList = "*" Or If sList = "-" Then
+        
+        hMarkupList = New MarkupList
+        hMarkupList.sType = "ul"
+        hMarkupList.iIndent = iIndent + 1 + GetIndent(Mid$(sLine, 2))
+        aList.Add(hMarkupList)
+        bJustList = True
+        If aResult.Count And If Trim(aResult[aResult.Max]) = "</ul>" Then
+          If Not Trim(aLine[iLine - 1]) Then
+            If iLine < aLine.Max And If GetIndent(aLine[iLine + 1]) >= hMarkupList.iIndent Then
+              bJustList = False
+            Endif
+            aResult[aResult.Max - 1] = "<p></p>\n" & aResult[aResult.Max - 1]
+          Endif
+          aResult.Remove(aResult.Max)
+        Else
+          GoSub CLOSE_PARA
+          aResult.Add(Space$(iCurrentIndent) & "<ul>")
+        Endif
+        iCurrentIndent = hMarkupList.iIndent
+        aResult.Add(Space$(iCurrentIndent) & "<li>")
+        sLine = Mid$(sLine, 3)
+        
+      Else If sList = "+" Or If Right(sList) = "." And IsDigit(Left(sList, -1)) Then
+        
+        hMarkupList = New MarkupList
+        hMarkupList.sType = "ol"
+        hMarkupList.iIndent = iIndent + 1 + GetIndent(Mid$(sLine, 2))
+        aList.Add(hMarkupList)
+        bJustList = True
+        If aResult.Count And If Trim(aResult[aResult.Max]) = "</ol>" Then
+          If Not Trim(aLine[iLine - 1]) Then
+            If iLine < aLine.Max And If GetIndent(aLine[iLine + 1]) >= hMarkupList.iIndent Then
+              bJustList = False
+            Endif
+            aResult[aResult.Max - 1] = "<p></p>\n" & aResult[aResult.Max - 1]
+          Endif
+          aResult.Remove(aResult.Max)
+        Else
+          GoSub CLOSE_PARA
+          aResult.Add(Space$(iCurrentIndent) & "<ol>")
+        Endif
+        iCurrentIndent = hMarkupList.iIndent
+        aResult.Add(Space$(iCurrentIndent) & "<li>")
+        sLine = Mid$(sLine, 3)
+      Endif
+      
+    Endif
+    
+    ' Blockquote again!
+    
+    I = iBlockQuote
+    Do
+      If Left(sLine) <> ">" Then Break
+      sCar = Mid$(sLine, 2, 1)
+      If sCar <> " " And If sCar <> gb.Tab Then Break
+      Inc I
+      sLine = LTrim(Mid$(sLine, 3))
+    Loop
+    
+    If I > iBlockQuote Then
+      While I > iBlockQuote
+        aResult.Add("<blockquote>")
+        Inc iBlockQuote
+      Wend
+    Else If I < iBlockQuote Then
+      While I < iBlockQuote
+        aResult.Add("</blockquote>")
+        Dec iBlockQuote
+      Wend
+    Endif
+    
+    If sLine = "[[" Or If sLine Begins "[[ " Then
+      
+      GoSub CLOSE_PARA
+      iIndent = GetIndent(sLine)
+      GoSub CLOSE_LIST
+      GoSub CLOSE_CODE
+      
+      $aTable.Push("[[")
+      sLine = Trim(Mid$(sLine, 3))
+      $aTableClass.Push(sLine)
+      $aTablePos.Push(aResult.Count)
+      If sLine Then
+        If sLine Begins "code " Then
+          Inc Verbatim
+        Else
+          aCommand = $hMarkdown.Enter(sLine)
+          If aCommand Then aResult.Insert(aCommand)
+        Endif
+      Endif
+      'aResult.Add("<tr><th>")
+      bIgnorePar = False
+      bInsidePar = False
+      Continue
+      
+    Endif
+    
+    If $aTable.Count Then
+      
+      If sLine = "]]" Then
+        
+        GoSub CLOSE_PARA
+        iIndent = GetIndent(sLine)
+        GoSub CLOSE_LIST
+        GoSub CLOSE_CODE
+        
+        sTable = $aTable.Pop()
+        sClass = $aTableClass.Pop()
+        iPos = $aTablePos.Pop()
+        
+        aCommand = aResult.Extract(iPos, -1)
+        
+        If Left(sClass) <> " " Then
+          aResult.Add("<div><div class=\"" & sClass & "\">")
+          If sClass Begins "code " Then
+            aTemp = ProcessCode(sClass, aCommand)
+          Else
+            aTemp = $hMarkdown.Process(sClass, aCommand)
+          Endif
+          If aTemp Then aCommand = aTemp
+          aResult.Insert(aCommand)
+          aResult.Add("</div></div>")
+        Else
+          sClass = Trim(sClass)
+          If Not sClass Then sClass = "table"
+          aResult.Add("<table class=\"" & sClass & "\">")
+          If aCommand.Count And If aCommand[0] = "</th></tr>" Then
+            aCommand.Remove(0)
+          Else
+            aResult.Add("<tr><th>")
+          Endif
+          aResult.Insert(aCommand)
+          aResult.Add("</td></tr>")
+          aResult.Add("</table>")
+        Endif
+        
+        If sClass Begins "code " Then
+          Dec Verbatim
+        Else If sClass Then
+          aCommand = $hMarkdown.Leave(sClass)
+          If aCommand Then aResult.Insert(aCommand)
+        Endif
+        
+        Continue
+      
+      Else If sLine = "--" Then
+        
+        GoSub CLOSE_PARA
+        iIndent = GetIndent(sLine)
+        GoSub CLOSE_LIST
+        GoSub CLOSE_CODE
+        
+        sTable = $aTable[$aTable.Max]
+        If sTable = "[[" Then
+          aResult.Add("</th><th>")
+        Else
+          aResult.Add("</td><td>")
+        Endif
+        bIgnorePar = True
+        bInsidePar = True
+        $aTableClass[$aTableClass.Max] = " " & Trim($aTableClass[$aTableClass.Max])
+        Continue
+        
+      Else If sLine = "==" Then
+        
+        GoSub CLOSE_PARA
+        iIndent = GetIndent(sLine)
+        GoSub CLOSE_LIST
+        GoSub CLOSE_CODE
+        
+        sTable = $aTable[$aTable.Max]
+        If sTable = "[[" Then
+          aResult.Add("</th></tr>")
+        Else
+          aResult.Add("</td></tr>")
+        Endif
+        aResult.Add("<tr><td>")
+        $aTable[$aTable.Max] = "=="
+        $aTableClass[$aTableClass.Max] = " " & Trim($aTableClass[$aTableClass.Max])
+        bIgnorePar = True
+        bInsidePar = True
+        Continue
+        
+      Endif
+      
+    Endif
+    
+    If sLine Begins "==" And If sLine = String$(Len(sLine), "=") Then
+      sLine = aResult[aResult.Max]
+      If sLine Not Begins "<h" Then
+        If sLine Begins "<p>" Then
+          sLine = Mid$(sLine, 4)
+          bInsidePar = False
+        Endif
+        GoSub CLOSE_PARA
+        aResult[aResult.Max] = "<h1>" & sLine & "</h1>"
+      Endif
+      Continue
+    Endif
+    
+    If sLine Begins "--" And If sLine = String$(Len(sLine), "-") And If bInsidePar Then
+      sLine = Trim(aResult[aResult.Max])
+      If sLine Then
+        If sLine Not Begins "<h" Then
+          If sLine Begins "<p>" Then
+            sLine = Mid$(sLine, 4)
+            bInsidePar = False
+          Endif
+          GoSub CLOSE_PARA
+          aResult[aResult.Max] = "<h2>" & sLine & "</h2>"
+        Endif
+        Continue
+      Endif
+    Endif
+    
+    ' Code
+    
+    If EnableCode >= 0 Then
+      If sLine Begins "    " Or If sLine Begins gb.Tab Then
+      
+        If Left(sLine) = gb.Tab Then
+          sLine = Mid$(sLine, 2)
+        Else
+          sLine = Mid$(sLine, 5)
+        Endif
+        If sLine = "----" Then
+          sLine = "<hr/>"
+        Else
+          sLine = Html$(sLine)
+        Endif
+        If Not bCode Then
+          GoSub CLOSE_PARA
+          bCode = True
+          sLine = "<div><pre><code>" & sLine
+        Endif
+        aResult.Add(sLine)
+        Continue
+        
+      Endif
+    Endif
+    
+    GoSub CLOSE_CODE
+  
+    ' Title
+    
+    If Left(sLine) = "#" Then
+      I = InStr(sLine, " ")
+      If I <= 7 Then
+        Dec I
+        If Left(sLine, I) = String$(I, "#") Then
+          sLine = Mid$(sLine, I + 2)
+          While sLine Ends "#"
+            sLine = Left(sLine, -1)
+          Wend
+          sLine = RTrim(sLine)
+          If Left(sLine) = "[" And If Right(sLine) = "]" Then
+            sLine = ConvertLine(Mid$(sLine, 2, -1))
+            $aIndex.Add(String$(I - 1, "  ") & "- [" & sLine & "] (#t" & CStr($aIndex.Count + 1) & ")")
+            sLine = "<a name=\"t" & CStr($aIndex.Count) & "\"></a>" & "<h" & CStr(I) & ">" & sLine & "</h" & CStr(I) & ">"
+          Else
+            sLine = "<h" & CStr(I) & ">" & ConvertLine(sLine) & "</h" & CStr(I) & ">"
+          Endif
+          GoSub CLOSE_PARA
+          aResult.Add(sLine)
+          Continue
+        Endif
+      Endif
+    Endif
+      
+    If Trim(sLine) Then
+      If Not bInsidePar And If LTrim(sLine) Not Begins "<h" Then
+        If bIgnorePar Then
+          bIgnorePar = False
+        Else 'If Not bJustList Then
+          bAddPar = True
+        'Else
+        '  bAddPar = Not Trim(aLine[iLine - 1])
+        Endif
+      Endif
+    Else
+      bJustList = False
+      GoSub CLOSE_PARA
+      Continue
+    Endif
+    
+    sLine = ConvertLine(sLine)
+    
+    If bAddPar Then
+      sLine = Left(sLine, GetIndent(sLine)) & "<p>" & LTrim(sLine)
+      bInsidePar = True
+      bAddPar = False
+    Endif
+    
+    aResult.Add(sLine)
+    
+  Wend
+  
+  GoSub CLOSE_PARA
+  GoSub CLOSE_CODE
+  GoSub CLOSE_BLOCKQUOTE
+  iIndent = 0
+  GoSub CLOSE_LIST
+  'If $aMarkup.Count Then Error.Raise("Missing markup: " & $aMarkup[$aMarkup.Max])
+  
+  If $aIndex.Count And If iIndexPos >= 0 Then
+    iIndent = GetIndent($aIndex[0])
+    For I = 1 To $aIndex.Max
+      iIndent = Min(iIndent, GetIndent($aIndex[I]))
+    Next
+    If iIndent Then
+      For I = 0 To $aIndex.Max
+        $aIndex[I] = Mid$($aIndex[I], iIndent + 1)
+      Next
+    Endif
+    aResult[iIndexPos] = "<div class=\"index\">\n" & ConvertMarkup($aIndex) & "</div>\n"
+  Endif
+  
+  $bComment = bSaveComment
+  $aMarkup = aSaveMarkup
+  $aTable = aSaveTable
+  $aTableClass = aSaveTableClass
+  $aTablePos = aSaveTablePos
+  Return aResult.Join("\n")
+  
+CLOSE_CODE:
+
+  If bCode Then
+    aResult.Add("</code></pre></div>")
+    bCode = False
+  Endif
+  Return
+  
+CLOSE_BLOCKQUOTE:
+
+  While iBlockQuote
+    aResult.Add("</blockquote>")
+    Dec iBlockQuote
+  Wend
+  Return
+
+CLOSE_LIST:
+
+  While iIndent < iCurrentIndent
+    GoSub CLOSE_PARA
+    GoSub CLOSE_CODE
+    aResult.Add(Space$(iCurrentIndent) & "</li>")
+    bJustList = False
+    aResult.Add(Space$(aList[aList.Max].iIndent) & "</" & aList[aList.Max].sType & ">")
+    aList.Remove(aList.Max)
+    If aList.Count Then
+      iCurrentIndent = aList[aList.Max].iIndent
+    Else
+      iCurrentIndent = 0
+    Endif
+  Wend
+  Return
+
+CLOSE_PARA:
+
+  If bInsidePar Then
+    If Not bIgnorePar Then aResult[aResult.Max] &= "</p>"
+    'aResult.Add("")
+    bInsidePar = False
+    bIgnorePar = False
+  'Else If iLine > 0 And If aResult[aResult.Max] Then
+  '  'aResult.Add("")
+  Endif
+  Return
+  
+'Catch
+  
+'  Error.Raise("Line " & CStr(iLine + 1) & ": " & Error.Text)
+
+End
+
+
+Private Sub ConvertLine(sLine As String) As String
+  
+  Dim sResult As String
+  Dim I, L As Integer
+  Dim sCar As String
+  Dim I1, I2 As Integer
+  Dim sPattern As String
+  Dim bCode As Boolean
+  Dim bEmph As Boolean
+  Dim bStrong As Boolean
+  Dim sText, sTitle, sLink As String
+  Dim bBlank As Boolean
+  Dim bUnderline As Boolean
+  Dim bLimitBefore, bLimitAfter As Boolean
+  Dim iLen As Integer
+  
+  iLen = String.Len(sLine)
+  
+MAIN_LOOP:
+    
+  If I >= iLen Then 
+    If bEmph Then 
+      sResult &= "</em>"
+    Else If bStrong Then 
+      sResult &= "</strong>"
+    Endif
+    If bCode Then sResult &= "</code>"
+    Return sResult
+  Endif
+  
+  GoSub NEXT_CAR
+  
+  If sCar = "\\" Then
+    If I = iLen Then
+      sResult &= "<br>"
+    Else
+      GoSub NEXT_CAR
+      sResult &= Html(sCar)
+    Endif
+    Goto MAIN_LOOP
+  Endif
+  
+  If sCar = "<" Then Goto ENTER_MARKUP
+  
+  'If $aMarkup.Count = 0 Then
+  
+    If sCar = "&" Then Goto ENTER_AMPERSAND
+    
+    If sCar = "[" And If String.Mid$(sLine, I + 1, 1) <> " " Then Goto ENTER_LINK
+    
+  'Endif
+  
+  If I = 1 Or If IsWordLimit(String.Mid$(sLine, I - 1, 1)) Then
+    bLimitBefore = True
+  Else
+    bLimitBefore = False
+  Endif
+  
+  If IsWordLimit(String.Mid$(sLine, I + 1, 1)) Then
+    bLimitAfter = True
+  Else
+    bLimitAfter = False
+  Endif
+  
+  If bLimitBefore Or If bLimitAfter Then
+    If sCar = "`" And If Not bCode Then Goto ENTER_CODE
+    If sCar = "'" Then Goto ENTER_LIGHT_CODE
+    If sCar = "*" Then Goto ENTER_STAR
+    If sCar = "~" Then Goto ENTER_UNDERLINE
+  Endif
+  
+  If sCar = ">" Then 
+    sCar = "&gt;"
+  Endif
+  
+  sResult &= sCar
+  
+  Goto MAIN_LOOP
+  
+NEXT_CAR:
+
+  If I >= iLen Then
+    I = iLen + 1
+    sCar = ""
+  Else
+    Inc I
+    sCar = String.Mid$(sLine, I, 1)
+  Endif
+  Return
+  
+LOOK_CAR:
+
+  sCar = String.Mid$(sLine, I + 1, 1)
+  Return
+  
+ENTER_MARKUP:
+
+  If String.Mid$(sLine, I, 4) = "<!--" Then
+    I = iLen
+    $bComment = True
+    Goto MAIN_LOOP
+  Endif
+  
+  I1 = I
+  GoSub NEXT_CAR
+  
+  If sCar <> "/" And If Not IsLetter(sCar) Then
+    sResult &= "&lt;"
+    Dec I
+    Goto MAIN_LOOP
+  Endif
+  
+  Repeat
+    GoSub NEXT_CAR
+    If sCar = "" Then
+      sResult &= "<div class=\"error\">" & Html("Non terminated markup") & "</div>"
+      Return sResult
+    Endif
+  Until sCar = ">" 
+  sPattern = String.Mid$(sLine, I1 + 1, I - I1 - 1)
+  
+  If sPattern = "script" Or If sPattern Begins "script " Then
+    sResult &= "<div class=\"error\">" & Html("<script> is forbidden") & "</div>"
+    Return sResult
+  Else If sPattern = "iframe" Or If sPattern Begins "iframe " Then
+    sResult &= "<div class=\"error\">" & Html("<iframe> is forbidden") & "</div>"
+    Return sResult
+  Else If sPattern Begins "img " Then
+    I1 = InStr(sPattern, "src=\"")
+    If I1 Then
+      I2 = InStr(sPattern, "\"", I1 + 5)
+      If I2 Then
+        sLink = Mid$(sPattern, I1 + 5, I2 - I1 - 5)
+        sPattern = Left(sPattern, I1 - 1) & "src=\"" & $hMarkdown.CheckURL(sLink, "img") & "\"" & Mid$(sPattern, I2 + 1)
+      Endif
+    Endif
+  Else If sPattern Begins "a " Then
+    I1 = InStr(sPattern, "href=\"")
+    If I1 Then
+      I2 = InStr(sPattern, "\"", I1 + 6)
+      If I2 Then
+        sLink = Mid$(sPattern, I1 + 6, I2 - I1 - 6)
+        sPattern = Left(sPattern, I1 - 1) & "href=\"" & $hMarkdown.CheckURL(sLink, "a") & "\"" & Mid$(sPattern, I2 + 1)
+      Endif
+    Endif
+  Endif
+  
+  'sPattern = LCase(sPattern)
+  
+  If Left$(sPattern) = "/" Then
+    sPattern = Mid$(sPattern, 2)
+    If Not ["img", "hr", "br"].Exist(sPattern) Then 
+      
+      Do
+        
+        If $aMarkup.Count = 0 Then 
+          sResult &= "<div class=\"error\">" & Html("Mismatched markup: </" & sPattern & ">") & "</div>"
+          Break
+        Endif
+        
+        If LCase($aMarkup[$aMarkup.Max]) = LCase(sPattern) Then 
+          sResult &= "</" & sPattern & ">"
+          $aMarkup.Remove($aMarkup.Max)
+          Break
+        Endif
+
+        If LCase($aMarkup[$aMarkup.Max]) = "p" Then
+          sResult &= "</p>"
+          $aMarkup.Remove($aMarkup.Max)
+          Continue
+        Endif
+
+        sResult &= "</" & $aMarkup[$aMarkup.Max] & ">"
+        sResult &= "<div class=\"error\">" & Html("Mismatched markup: </" & sPattern & "> against <" & $aMarkup[$aMarkup.Max] & ">") & "</div>"
+        Break
+        
+      Loop
+        
+    Endif
+  Else
+    sResult &= "<" & sPattern & ">"
+    If Right$(sPattern) <> "/" Then
+      I1 = InStr(sPattern, " ")
+      If I1 Then sPattern = Left(sPattern, I1 - 1)
+      If Not ["img", "hr", "br"].Exist(sPattern) Then $aMarkup.Add(sPattern)
+    Endif
+  Endif
+  Goto MAIN_LOOP
+  
+ENTER_AMPERSAND:
+
+  For I1 = I To I + 6
+    sCar = String.Mid$(sLine, I1, 1)
+    If sCar = ";" Then
+      sResult &= String.Mid$(sLine, I, I1 - I + 1)
+      I = I1
+      Goto MAIN_LOOP
+    Else If sCar = "\n" Then 
+      Break
+    Endif
+  Next
+  sResult &= "&amp;"
+  Goto MAIN_LOOP
+  
+ENTER_CODE:
+
+  sResult &= "<code style=\"white-space:nowrap;\">"
+  Do
+    GoSub NEXT_CAR
+    If sCar = "" Then
+      sResult &= "</code><div class=\"error\">Missing closing '`'</div>"
+      Return sResult
+    Endif
+    If sCar = "`" Then 
+      GoSub LOOK_CAR
+      If sCar <> "`" Then Break
+      Inc I
+    Endif
+    sResult &= Html(sCar)
+  Loop
+  
+  sResult &= "</code>"
+  Goto MAIN_LOOP
+  
+ENTER_LIGHT_CODE:
+  
+  If bCode And If bLimitAfter Then
+    sResult &= "</code>"
+    bCode = False
+  Else If bLimitBefore Then
+    sResult &= "<code style=\"white-space:nowrap;\">"
+    bCode = True
+  Else
+    sResult &= "'"
+  Endif
+  
+  Goto MAIN_LOOP
+  
+ENTER_STAR:
+
+  GoSub LOOK_CAR
+  If sCar = "*" Then 
+    Inc I
+    Goto ENTER_STRONG
+  Endif
+  
+  If bEmph And If bLimitAfter Then
+    sResult &= "</em>"
+    bEmph = False
+  Else If Not bStrong And If bLimitBefore Then
+    sResult &= "<em>"
+    bEmph = True
+  Else
+    sResult &= "*"
+  Endif
+  Goto MAIN_LOOP
+
+ENTER_STRONG:
+
+  If bStrong And If bLimitAfter Then
+    sResult &= "</strong>"
+    bStrong = False
+  Else If Not bEmph And If bLimitBefore Then
+    sResult &= "<strong>"
+    bStrong = True
+  Else
+    sResult &= "**"
+  Endif
+  Goto MAIN_LOOP
+  
+ENTER_UNDERLINE:
+
+  If bUnderline And If bLimitAfter Then
+    sResult &= "</u>"
+    bUnderline = False
+  Else If bLimitBefore Then
+    sResult &= "<u>"
+    bUnderLine = True
+  Else
+    sResult &= "~"
+  Endif
+  Goto MAIN_LOOP
+  
+ENTER_LINK:
+
+  I1 = I
+  L = 0
+  Do
+    Inc I1
+    sCar = String.Mid$(sLine, I1, 1)
+    If Not sCar Then
+      sResult &= "["
+      Goto MAIN_LOOP
+    Endif
+    If sCar = "[" Then
+      Inc L
+    Else If sCar = "]" Then
+      If L = 0 Then Break
+      Dec L
+    Endif
+  Loop
+
+  If I1 = (I + 1) Then
+    sResult &= "[]"
+    Inc I
+    Goto MAIN_LOOP
+  Endif
+  
+  sLink = ""
+  sTitle = ""
+  sText = String.Mid$(sLine, I + 1, I1 - I - 1)
+  I = I1
+  I2 = I
+  Do
+    GoSub LOOK_CAR
+    If Not sCar Then Break
+    Inc I
+    If Len(sCar) >= 2 Or If Asc(sCar) > 32 Then Break
+  Loop
+  If sCar = "(" Then
+    I1 = String.InStr(sLine, ")", I + 1)
+    If I1 > 0 Then
+      sLink = String.Mid$(sLine, I + 1, I1 - I - 1)
+      I = I1
+    Endif
+  Else If sCar = "[" Then
+    I1 = String.InStr(sLine, "]", I + 1)
+    If I1 > 0 Then
+      sLink = $cLink[String.Mid$(sLine, I + 1, I1 - I - 1)]
+      I = I1
+    Endif
+  Else
+    I = I2
+  Endif
+  
+  If sLink Then
+    
+    I1 = String.InStr(sLink, Chr$(34))
+    If I1 And If String.Right(sLink) = Chr$(34) Then
+      sTitle = String.Mid$(sLink, I1 + 1, -1)
+      sLink = Trim(String.Left$(sLink, I1 - 1))
+    Else
+      sTitle = ""
+      sLink = Trim$(sLink)
+    Endif
+    
+  Endif
+  
+  If Not sLink And If InStr(sText, "/") Then
+    sLink = sText
+    sText = ""
+  Endif
+  
+  $hLink.Link = sLink
+  $hLink.Text = sText
+  $hLink.Title = sTitle
+  $hLink.Html = ""
+  $hLink.Query = ""
+  $hLink.Blank = False
+  
+  $hMarkdown.Link($hLink)
+  
+  If $hLink.Html Then
+    sResult &= $hLink.Html
+    Goto MAIN_LOOP
+  Endif
+  
+  sLink = $hLink.Link
+  sText = $hLink.Text
+  sTitle = $hLink.Title
+  
+  If Not sText Then sText = sLink
+  
+  If sLink Then
+    
+    If $hLink.Query Then sLink &= "?" & $hLink.Query
+    
+    bBlank = $hLink.Blank
+    'If sLink Begins "http://" Or If sLink Begins "https://" Then bBlank = True
+    
+    sResult &= "<a href=\"" & Html$(sLink) & "\""
+    If sTitle Then sResult &= " title=\"" & Html$(sTitle) & "\""
+    If bBlank Then sResult &= " target=\"_blank\""
+    sResult &= ">" & sText & "</a>"
+    
+  Endif
+    
+  Goto MAIN_LOOP
+  
+Catch
+  
+  Return "<div><div class=\"error\"><b>" & Html$(Error.Text) & ":</b><br>" & Html$(sLine) & "</div></div>"
+
+End
+
+Private Sub ProcessCode(sClass As String, aLines As String[]) As String[]
+
+  Dim sLang As String
+  Dim hTextHighlighter As TextHighlighter
+  
+  Try sLang = Scan(sClass, "code *")[0]
+  If Not sLang Then Return
+  
+  Component.Load("gb.eval")
+  Component.Load("gb.eval.highlight")
+  
+  hTextHighlighter = TextHighlighter[sLang]
+  Return [hTextHighlighter.ToHTML(aLines.Join("\n"))]
+  
+Catch
+  
+  Return ["<div class=\"error\">" & Html(Error.Text) & "</div>"]
+
+End

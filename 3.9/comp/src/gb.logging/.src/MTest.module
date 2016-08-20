@@ -1,0 +1,33 @@
+' Gambas module file
+
+Public Sub Main()
+
+  Dim aHandler, bHandler As LogHandler
+
+  Dim bLogger As ComplexLogger
+
+  Dim cLogger As Logger
+
+  aHandler = New ConsoleHandler(ConsoleHandler.STDOUT)
+  bHandler = New FileHandler("~/Desktop")
+
+  bLogger = New ComplexLogger(Null, aHandler)
+
+  bLogger.Begin()
+
+  bLogger.Log("This goes to the stdout stream")
+
+  bLogger.addHandler(bHandler)
+  bHandler.Open
+
+  bLogger.Log("I can read this in the console or at a file stored in my Desktop folder.")
+
+  ComplexLogger.Log("There is no need to use handlers. You can use the Logger anonymously.")
+
+  cLogger = New Logger(LogLevel.Error, Null, Logger.Stdout)
+
+  cLogger.Begin()
+
+  cLogger.Log("Using the old logger interface", LogLevel.Critical)
+
+End

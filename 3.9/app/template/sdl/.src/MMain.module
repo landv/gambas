@@ -1,0 +1,40 @@
+' Gambas module file
+
+Private $hWindow As Window
+
+Public Sub Main()
+
+  $hWindow = New Window As "Window"
+
+  With $hWindow
+    .Resize(640, 480)
+    .Resizable = False
+    .Show
+    .FrameRate = 60
+  End With 
+
+End
+
+Public Sub Window_Draw()
+  
+  Dim H As Integer
+  
+  H = Font.DefaultHeight * 4
+  
+  Draw.Clear
+  Draw.Font.Size = H
+  Draw.Text("Gambas", 0, 0)
+  Draw.Text(CStr($hWindow.FrameCount), 0, H)
+  
+End
+
+Public Sub Window_KeyPress()
+  
+  Select Case Key.Code
+    Case Key.F1
+      $hWindow.FullScreen = Not $hWindow.FullScreen
+    Case Key.Esc
+      $hWindow.Close
+  End Select
+  
+End

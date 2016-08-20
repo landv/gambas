@@ -1,0 +1,674 @@
+' Gambas module file
+
+Export
+
+' 
+'   GB_STATIC_METHOD("Push", NULL, CDRAW_push, NULL),
+'   GB_STATIC_METHOD("Pop", NULL, CDRAW_pop, NULL),
+' 
+
+Public Const Normal As Integer = 0
+Public Const Disabled As Integer = 1
+Public Const Focus As Integer = 2
+Public Const Hover As Integer = 4
+
+Property Read Clip As _Draw_Clip
+Property Read Style As _Draw_Style
+
+Property Read Device As Object
+Property Read Width, W As Integer
+Property Read Height, H As Integer
+Property ClipRect As Rect
+Property Background As Integer
+Property Foreground As Integer
+Property Invert As Boolean
+Property Transparent As Boolean
+Property Font As Font
+Property LineWidth As Integer
+Property LineStyle As Integer
+Property FillColor As Integer
+Property FillStyle As Integer
+Property FillX As Integer
+Property FillY As Integer
+
+Public Struct DrawInfo
+  Foreground As Integer
+  Background As Integer
+  Transparent As Boolean
+  LineStyle As Integer
+  Stack As DrawInfo[]
+  FillColor As Integer
+  FillStyle As Integer
+  ClipRect As Rect
+End Struct
+
+Private Enum DRAW_CIRCLE, DRAW_ELLIPSE, DRAW_ARC
+
+Private $hPattern As New Image[15]
+
+Public Sub _GetInfo() As DrawInfo
+  
+  Dim hInfo As DrawInfo = Paint._Tag
+  
+  If Not hInfo Then
+    hInfo = New DrawInfo
+    hInfo.Foreground = Color.Foreground
+    Try hInfo.Foreground = Paint.Device.Foreground
+    hInfo.LineStyle = Line.Solid
+    hInfo.FillStyle = Fill.None
+    hInfo.ClipRect = Paint.ClipRect
+    Paint._Tag = hInfo
+  Endif
+  
+  Return hInfo
+  
+End
+
+Private Sub GetStrokeOffset() As Float
+  
+  'Paint.Antialias = False
+  Return If(Paint.AntiAlias, 0, -0.5)
+  
+End
+
+
+Public Sub Begin(Device As Object)
+  
+  Paint.Begin(Device)
+  Paint.LineWidth = 1
+  Paint.AntiAlias = False
+  Paint.LineCap = Paint.LineCapButt
+  Paint.LineJoin = Paint.LineJoinRound
+  
+End
+
+Public Sub End()
+  
+  Paint.AntiAlias = True
+  Paint.End
+  
+End
+
+Public Sub Save()
+  
+  Dim hInfo As DrawInfo = _GetInfo()
+  Dim hSave As DrawInfo
+  
+  Paint.Save
+  
+  If Not hInfo.Stack Then hInfo.Stack = New DrawInfo[]
+  hSave = New DrawInfo
+  hSave.Foreground = hInfo.Foreground
+  hSave.Background = hInfo.Background
+  hSave.Transparent = hInfo.Transparent
+  hSave.LineStyle = hInfo.LineStyle
+  hSave.FillColor = hInfo.FillColor
+  hSave.FillStyle = hInfo.FillStyle
+  If hInfo.ClipRect Then hSave.ClipRect = hInfo.ClipRect.Copy()
+  hInfo.Stack.Push(hSave)
+  
+End
+
+Public Sub Restore()
+  
+  Dim hInfo As DrawInfo = _GetInfo()
+  Dim hSave As DrawInfo
+
+  Paint.Restore
+
+  hSave = hInfo.Stack.Pop()
+  Draw.Foreground = hSave.Foreground
+  Draw.Background = hSave.Background
+  Draw.Transparent = hSave.Transparent
+  Draw.LineStyle = hSave.LineStyle
+  Draw.FillColor = hSave.FillColor
+  Draw.FillStyle = hSave.FillStyle
+  Draw.ClipRect = hSave.ClipRect
+  
+End
+
+Private Function Device_Read() As Object
+
+  Return Paint.Device
+
+End
+
+Private Function Width_Read() As Integer
+
+  Return Paint.Width
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return Paint.Height
+
+End
+
+
+Private Function ClipRect_Read() As Rect
+
+  Try Return _GetInfo().ClipRect.Copy()
+
+End
+
+Private Sub ClipRect_Write(Value As Rect)
+
+  If Value Then
+    _GetInfo().ClipRect = Value.Copy()
+  Else
+    _GetInfo().ClipRect = Null
+  Endif
+  
+  Paint.ClipRect = Value
+
+End
+
+
+Private Function Background_Read() As Integer
+
+  Return _GetInfo().Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  _GetInfo().Background = Value
+  Paint.Background = Value
+
+End
+
+Private Function Foreground_Read() As Integer
+
+  Return _GetInfo().Foreground
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  _GetInfo().Foreground = Value
+
+End
+
+
+Private Function Invert_Read() As Boolean
+
+  Return Paint._Invert
+
+End
+
+Private Sub Invert_Write(Value As Boolean)
+
+  Paint._Invert = Value
+
+End
+
+Private Function Transparent_Read() As Boolean
+
+  Return _GetInfo().Transparent
+
+End
+
+Private Sub Transparent_Write(Value As Boolean)
+
+  _GetInfo().Transparent = Value
+
+End
+
+Private Function Font_Read() As Font
+
+  Return Paint.Font
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  Paint.Font = Value
+
+End
+
+Private Function LineWidth_Read() As Integer
+
+  Return Paint.LineWidth
+
+End
+
+Private Sub LineWidth_Write(Value As Integer)
+
+  Paint.LineWidth = Value
+
+End
+
+Private Function LineStyle_Read() As Integer
+
+  Return _GetInfo().LineStyle
+
+End
+
+Private Sub LineStyle_Write(Value As Integer)
+
+  Select Case Value
+    Case Line.None
+      
+    Case Line.Solid
+      Paint.Dash = Null
+    Case Line.Dash
+      Paint.Dash = [3, 2]
+    Case Line.Dot
+      Paint.Dash = [1, 2]
+    Case Line.DashDot
+      Paint.Dash = [3, 2, 1, 2]
+    Case Line.DashDotDot
+      Paint.Dash = [3, 2, 1, 2, 1, 2]
+    Default
+      Return
+  End Select
+
+  _GetInfo().LineStyle = Value
+
+End
+
+Private Function FillColor_Read() As Integer
+
+  Return _GetInfo().FillColor
+
+End
+
+Private Sub FillColor_Write(Value As Integer)
+
+  _GetInfo().FillColor = Value
+
+End
+
+Public Sub Clear()
+  
+  Dim iColor As Integer
+  
+  Try iColor = Paint.Device.Background
+  If Error Then iColor = Color.White
+  Paint.FillRect(0, 0, Paint.W, Paint.H, iColor)
+  
+End
+
+' Private Sub GetBackground() As Integer
+' 
+'   Dim iBg As Integer = _GetInfo().Background
+'   
+'   If iBg = Color.Default Then
+'     Try iBg = Paint.Device.Background
+'     If Error Then iBg = Color.White
+'   Endif
+'   
+'   Return iBg
+' 
+' End
+
+Private Sub GetForeground() As Integer
+
+  Dim iFg As Integer = _GetInfo().Foreground  
+  
+  If iFg = Color.Default Then
+    Try iFg = Paint.Device.Foreground
+    If iFg = Color.Default Then iFg = Color.TextForeground
+  Endif
+  
+  Return iFg
+
+End
+
+Public Sub Point(X As Integer, Y As Integer)
+  
+  Paint.FillRect(X, Y, 1, 1, GetForeground())
+  
+End
+
+Public Sub Line(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
+  
+  Dim fOffset As Float
+  Dim hBrush As PaintBrush 
+  Dim LW As Float
+  Dim iStyle As Integer = LineStyle_Read()
+  
+  If iStyle = Line.None Then Return
+  
+  If iStyle = Line.Solid Then
+    If X1 = X2 Then
+      LW = Paint.LineWidth
+      If Y2 < Y1 Then Swap Y1, Y2
+      Paint.FillRect(X1 - Int(LW / 2), Y1, LW, Y2 - Y1 + 1, GetForeground())
+      Return
+    Else If Y1 = Y2 Then
+      LW = Paint.LineWidth
+      If X2 < X1 Then Swap X1, X2
+      Paint.FillRect(X1, Y1 - Int(LW / 2), X2 - X1 + 1, LW, GetForeground())
+      Return
+    Endif
+  Endif
+  
+  hBrush = Paint.Brush  
+  Paint.Background = GetForeground()
+  fOffset = GetStrokeOffset()
+  Paint.MoveTo(X1 + fOffset, Y1 + fOffset)
+  Paint.LineTo(X2 + fOffset, Y2 + fOffset)
+  Paint.Stroke
+  Paint.Brush = hBrush
+  
+End
+
+Private Sub HasFillStyle(hInfo As DrawInfo) As Boolean
+
+  Dim hImage As Image
+  
+  Select Case hInfo.FillStyle
+    
+    Case Fill.None
+      Return False
+      
+    Case Fill.Solid
+      Paint.Background = hInfo.FillColor
+    
+    Case Fill.Dense94 To Fill.CrossDiagonal
+      If IsNull($hPattern[hInfo.FillStyle]) Then $hPattern[hInfo.FillStyle] = Image.Load("pattern/" & hInfo.FillStyle & ".png")
+      hImage = $hPattern[hInfo.FillStyle].Copy()
+      If hInfo.Transparent Then hImage.Replace(Color.White, Color.Transparent)
+      hImage.Replace(Color.Black, hInfo.FillColor)
+      Paint.Brush = Paint.Image(hImage)
+    
+    Default
+      Return
+    
+  End Select
+
+  Return True
+
+End
+
+Public Sub Rect(X As Integer, Y As Integer, Width As Integer, Height As Integer)
+  
+  Dim hInfo As DrawInfo = _GetInfo()
+  Dim iBg As Integer
+  
+  If HasFillStyle(hInfo) Then
+    Paint.Rectangle(X, Y, Width, Height)  
+    Paint.Fill
+  Endif
+  
+  If hInfo.LineStyle Then
+    iBg = GetForeground()
+    Paint.FillRect(X, Y, Width, 1, iBg)
+    Paint.FillRect(X, Y + Height - 1, Width, 1, iBg)
+    If Height > 2 Then
+      Paint.FillRect(X, Y + 1, 1, Height - 2, iBg)
+      Paint.FillRect(X + Width - 1, Y + 1, 1, Height - 2, iBg)
+    Endif
+  Endif
+  
+End
+
+Public Sub FillRect(X As Integer, Y As Integer, Width As Integer, Height As Integer, (Color) As Integer)
+  
+  Dim hBrush As PaintBrush = Paint.Brush
+  Paint.Background = Color
+  Paint.Rectangle(X, Y, Width, Height)
+  Paint.Fill
+  Paint.Brush = hBrush
+  'Paint.FillRect(X, Y, Width, Height, Color)
+  
+End
+
+Private Function FillStyle_Read() As Integer
+
+  Return _GetInfo().FillStyle
+
+End
+
+Private Sub FillStyle_Write(Value As Integer)
+
+  _GetInfo().FillStyle = Value
+
+End
+
+Private Function FillX_Read() As Integer
+
+  Return Paint.BrushOrigin.X
+
+End
+
+Private Sub FillX_Write(Value As Integer)
+
+  Dim hPoint As PointF = Paint.BrushOrigin
+  
+  hPoint.X = Value
+  Paint.BrushOrigin = hPoint
+
+End
+
+Private Function FillY_Read() As Integer
+
+  Return Paint.BrushOrigin.Y
+
+End
+
+Private Sub FillY_Write(Value As Integer)
+
+  Dim hPoint As PointF = Paint.BrushOrigin
+  
+  hPoint.Y = Value
+  Paint.BrushOrigin = hPoint
+
+End
+
+Private Sub DrawEllipse(iAction As Integer, X As Float, Y As Float, W As Float, H As Float, Start As Float, ({End}) As Float)
+  
+  Dim hInfo As DrawInfo
+  Dim Angle As Float
+  Dim fOffset As Float
+  
+  If W <= 0 Or If H <= 0 Then Return
+  
+  hInfo = _GetInfo()
+  
+  If Start = 0 And If {End} = 0 Then
+    Paint.Ellipse(X, Y, W - 1, H - 1, Angle, Pi(2), False)
+  Else
+    Paint.Ellipse(X, Y, W - 1, H - 1, Start, {End} - Start, True)
+  Endif
+  
+  If iAction <> DRAW_ARC And If HasFillStyle(hInfo) Then
+    Paint.Fill(hInfo.LineStyle)
+  Endif
+  
+  If hInfo.LineStyle Then
+    Paint.Background = GetForeground()
+    fOffset = GetStrokeOffset()
+    Paint.Translate(fOffset, fOffset)
+    Paint.Stroke
+    Paint.Translate(- fOffset, - fOffset)
+  Endif
+  
+End
+
+
+Public Sub Circle(X As Integer, Y As Integer, Radius As Integer, Optional Start As Float, ({End}) As Float)
+  
+  DrawEllipse(DRAW_CIRCLE, X - Radius, Y - Radius, Radius * 2, Radius * 2, Start, {End})
+  
+End
+
+Public Sub Arc(X As Integer, Y As Integer, Width As Integer, Height As Integer, Optional Start As Float, ({End}) As Float)
+  
+  DrawEllipse(DRAW_ARC, X, Y, Width, Height, Start, {End})
+  
+End
+
+Public Sub Ellipse(X As Integer, Y As Integer, Width As Integer, Height As Integer, Optional Start As Float, ({End}) As Float)
+  
+  DrawEllipse(DRAW_ELLIPSE, X, Y, Width, Height, Start, {End})
+  
+End
+
+Public Sub Text((Text) As String, X As Integer, Y As Integer, Optional Width As Integer = -1, Height As Integer = -1, Alignment As Integer = -1)
+  
+  Paint.Background = GetForeground()
+  If Width < 0 And If Height < 0 Then Y += Paint.Font.Ascent
+  Paint.DrawText(Text, X, Y, Width, Height, Alignment)
+  
+End
+
+Public Sub TextWidth((Text) As String) As Integer
+  
+  Return Ceil(Paint.TextSize(Text).Width)
+  
+End
+
+Public Sub TextHeight((Text) As String) As Integer
+  
+  Return Ceil(Paint.TextSize((Text)).Height)
+  
+End
+
+Public Sub RichText((Text) As String, X As Integer, Y As Integer, Optional Width As Integer = -1, Height As Integer = -1, Alignment As Integer = -1)
+  
+  Paint.Background = GetForeground()
+  If Width < 0 And If Height < 0 Then Y += Paint.Font.Ascent
+  Paint.DrawRichText(Text, X, Y, Width, Height, Alignment)
+  
+End
+
+Public Sub RichTextWidth((Text) As String) As Integer
+  
+  Return Ceil(Paint.RichTextSize(Text).Width)
+  
+End
+
+Public Sub RichTextHeight((Text) As String, Optional Width As Integer = -1) As Integer
+  
+  Return Ceil(Paint.RichTextSize(Text, Width).Height)
+  
+End
+
+Public Sub PolyLine(Points As Integer[])
+
+  Dim hInfo As DrawInfo
+  Dim I As Integer
+  Dim fOffset As Float
+  
+  If Not Points Or If Points.Count < 4 Then Return
+  
+  hInfo = _GetInfo()
+  
+  If hInfo.LineStyle = Line.None Then Return
+  
+  Paint.Background = hInfo.Foreground
+  
+  Paint.MoveTo(Points[0], Points[1])
+  
+  For I = 2 To Points.Max Step 2
+    Paint.LineTo(Points[I], Points[I + 1])
+  Next
+  
+  fOffset = GetStrokeOffset()
+  Paint.Translate(fOffset, fOffset)
+  Paint.Stroke
+  Paint.Translate(- fOffset, - fOffset)
+
+End
+
+Public Sub Polygon(Points As Integer[])
+
+  Dim hInfo As DrawInfo
+  Dim fOffset As Float
+  
+  If Not Points Or If Points.Count < 4 Then Return
+
+  hInfo = _GetInfo()
+
+  Paint.Polygon(Points)
+
+  fOffset = GetStrokeOffset()
+  
+  If HasFillStyle(hInfo) Then
+    
+    Paint.Fill(hInfo.LineStyle <> Line.None)
+    
+  Endif
+  
+  If hInfo.LineStyle Then
+    
+    Paint.Background = GetForeground()
+    Paint.Translate(fOffset, fOffset)
+    Paint.Stroke
+    Paint.Translate(- fOffset, - fOffset)
+    
+  Endif
+  
+End
+
+Public Sub Reset()
+  
+  Paint.Reset
+  
+End
+
+Public Sub Translate(DX As Float, DY As Float)
+  
+  Paint.Translate(DX, DY)
+  
+End
+
+Public Sub Scale(SX As Float, SY As Float)
+  
+  Paint.Scale(SX, SY)
+  
+End
+
+Public Sub Zoom((Image) As Image, (Zoom) As Integer, X As Integer, Y As Integer, Optional SrcX As Integer, SrcY As Integer, SrcWidth As Integer, SrcHeight As Integer)
+
+  Dim hInfo As DrawInfo = _GetInfo()
+  Dim hRect As Rect
+
+  If SrcWidth > 0 And If SrcHeight > 0 Then hRect = New Rect(SrcX, SrcY, SrcWidth, SrcHeight)
+  Paint.ZoomImage(Image, Zoom, X, Y, If(hInfo.LineStyle = Line.None, Color.Default, GetForeground()), hRect)
+  
+End
+
+Public Sub Image((Image) As Image, X As Integer, Y As Integer, Optional Width As Integer = -1, Height As Integer = -1, SrcX As Integer, SrcY As Integer, SrcWidth As Integer, SrcHeight As Integer)
+  
+  Dim hRect As Rect
+  If SrcWidth > 0 And If SrcHeight > 0 Then hRect = New Rect(SrcX, SrcY, SrcWidth, SrcHeight)
+  Paint.DrawImage(Image, X, Y, Width, Height, 1.0, hRect)
+  
+End
+
+Public Sub Picture((Picture) As Picture, X As Integer, Y As Integer, Optional Width As Integer = -1, Height As Integer = -1, SrcX As Integer, SrcY As Integer, SrcWidth As Integer, SrcHeight As Integer)
+
+  Dim hRect As Rect
+  If SrcWidth > 0 And If SrcHeight > 0 Then hRect = New Rect(SrcX, SrcY, SrcWidth, SrcHeight)
+  Paint.DrawPicture(Picture, X, Y, Width, Height, hRect)
+  
+End
+
+Public Sub Tile((Picture) As Picture, X As Integer, Y As Integer, W As Integer, H As Integer)
+  
+  Dim hBrush As PaintBrush = Paint.Brush
+  
+  Paint.Brush = Paint.Image(Picture.Image, X, Y)
+  Paint.Rectangle(X, Y, W, H)
+  Paint.Fill
+  
+  Paint.Brush = hBrush
+  
+End
+
+
+Private Function Clip_Read() As _Draw_Clip
+
+  Return _Draw_Clip
+
+End
+
+Private Function Style_Read() As _Draw_Style
+
+  Return _Draw_Style
+
+End

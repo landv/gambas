@@ -1,0 +1,127 @@
+#!/usr/bin/env gbs3
+
+Private Sub RunScript(sScript As String, sRun As String, bGambasOnly As Boolean) As Float
+
+  Dim sResult As String
+  Dim fTime As Float
+  
+  If bGambasOnly Then
+    Print "Running benchmark: '"; sRun; " "; sScript; "'"
+  Else
+    Print "<!-- Running benchmark: '"; sRun; " "; sScript; "' -->"
+  Endif
+  
+  Shell "/usr/bin/time -v " & sRun & " " & sScript & " 2>&1 >/dev/null" To sResult
+  If Not sResult Then Error.Raise("Script '" & sRun & " " & sScript & "' failed!")
+  For Each sResult In Split(sResult, "\n")
+    sResult = Trim(sResult)
+    If sResult Begins "User time" Or If sResult Begins "System time" Then
+      fTime += CFloat(Mid$(sResult, InStr(sResult, ":") + 2))
+    Endif
+  Next
+  
+  Return fTime
+
+End
+
+Private Sub FormatResult(cResult As Collection, sLang As String) As String
+
+  Dim bBetter As Boolean = True
+  Dim sFormat As String
+  Dim sTest As String
+
+  For Each sTest In ["python", "perl", "gambas"]
+    If cResult[sTest] < cResult[sLang] Then
+      bBetter = False
+      Break
+    Endif
+  Next
+
+  sFormat = Format(cResult[sLang], "0.00")
+  If bBetter Then sFormat = "<b>" & sFormat & "</b>"
+  Return sFormat
+
+End
+
+Dim sBenchmark As String
+Dim cResult As Collection
+Dim aResult As New Collection[]
+Dim sLang As String 
+Dim sResult As String
+Dim iPos As Integer
+Dim bGambasOnly As Boolean
+Dim sBenchmarkOnly As String
+Dim I As Integer
+
+For I = 1 To Args.Max
+
+  If Args[I] = "-gambas" Then
+    bGambasOnly = True
+  Else
+    sBenchmarkOnly = Args[I]
+  Endif
+
+Next
+
+For Each sBenchmark In Dir(Application.Dir, "*.gbs")
+
+  sBenchmark = File.BaseName(sBenchmark)
+  If sBenchmark = "benchmark" Then Continue
+  If sBenchmarkOnly And If sBenchmark <> sBenchmarkOnly Then Continue
+
+  cResult = New Collection
+  aResult.Add(cResult)
+  
+  cResult!name = sBenchmark
+  If Not bGambasOnly Then cResult!gambasjit = RunScript(sBenchmark & ".gbs", "gbs3 -f -c", bGambasOnly)
+  cResult!gambas = RunScript(sBenchmark & ".gbs", "gbs3 -c", bGambasOnly)
+  If Not bGambasOnly Then cResult!python = RunScript(sBenchmark & ".py", "python", bGambasOnly)
+  If Not bGambasOnly Then cResult!perl = RunScript(sBenchmark & ".pl", "perl", bGambasOnly)
+
+Next
+
+' Print "<div style=\"border:solid 1px gray;padding:8px;display:inline-table;background:\">"
+' 
+' Exec ["uname", "-srv"] To sResult
+' Print "<b>Kernel:</b> ";Html(sResult);"<br>"
+'
+' Exec ["cat", "/proc/cpuinfo"] To sResult
+' For Each sResult In Split(sResult, "\n")
+'   If sResult Begins "model name" Then
+'     iPos = Instr(sResult, ":")
+'     If iPos Then
+'       Print "<b>CPU:</b> ";Html(Mid$(sResult, iPos+1));"<br>"
+'     Endif
+'     Break
+'   Endif
+' Next
+' 
+' Print "</div>"
+
+If bGambasOnly Then
+
+  For Each cResult In aResult
+    Print cResult!name; Space$(20 - Len(cResult!name)); ": "; Format(cResult!gambas, "0.00")
+  Next
+
+Else
+
+  Print "<table class=\"table\">"
+  Print "<tr>\n<th>Benchmark</th>"
+  For Each sLang In ["Python", "Perl", "Gambas", "Gambas + JIT"]
+    Print "<th style=\"width:12em;\">"; Html(sLang); "</th>"
+  Next
+  Print "</tr>"
+  For Each cResult In aResult
+    Print "<tr>"
+    Print "<td><tt>"; cResult!name; "</tt></td>"
+    Print "<td align=\"right\">"; FormatResult(cResult, "python"); "&nbsp;</td>"
+    Print "<td align=\"right\">"; FormatResult(cResult, "perl"); "&nbsp;</td>"
+    Print "<td align=\"right\">"; FormatResult(cResult, "gambas"); "&nbsp;</td>"
+    Print "<td align=\"right\">"; Format(cResult!gambasjit, "0.00"); "&nbsp;</td>"
+    Print "</tr>"
+  Next
+  Print "</table>"
+  
+Endif
+

@@ -1,0 +1,1359 @@
+' Gambas class file
+
+Static Private $aTheme As String[] = ["amethyst", "amber", "emerald", "gambas", "ruby", "sapphire", "visual", "obsidian", "quest", "quick", "blues", "zen", "pastel"]
+Static Private $aThemeName As String[] = [("Amethyst"), ("Amber"), ("Emerald"), ("Gambas"), ("Ruby"), ("Sapphire"), ("Visual"), ("Obsidian"), ("Quest"), ("Quick"), ("Blues"), ("Zen"), ("Pastel")]
+Static Private $aBrowser As String[] = ["konqueror", "rekonq", "firefox", "iceweasel", "epiphany", "seamonkey", "opera", "chromium"]
+Static Private $aTerminal As String[] = ["konsole", "gnome-terminal", "Terminal", "lxterminal", "xterm"]
+'Static Private $aImageEditor As String[] = ["gimp", "kolourpaint", "krita"]
+
+Private $cLast As Collection
+Private $cCurrent As Collection
+Private $bNoChange As Boolean
+Private $aConfig As Variant[][]
+Private $sStyle As String
+Private $hDraw As DrawingArea
+
+Private Sub ReadConfig()
+  
+  Dim aParam As Variant[]
+  Dim hCtrl As Object
+  Dim vVal As Variant
+  
+  For Each aParam In $aConfig
+  
+    hCtrl = aParam[0]
+    vVal = Settings[aParam[1], aParam[2]]
+    
+    Select Case Object.Type(hCtrl)
+    
+      Case "FontChooser"
+        hCtrl.SelectedFont = vVal
+      Case "ComboBox"
+        If hCtrl.ReadOnly Then
+          If TypeOf(vVal) = gb.Boolean Then 
+            hCtrl.Index = If(vVal, 1, 0)
+          Else
+            hCtrl.Index = vVal
+          Endif
+        Else
+          hCtrl.Text = vVal
+        Endif
+      Case "SpinBox"
+        hCtrl.Value = vVal
+      Case "ButtonBox"
+        hCtrl.Text = vVal
+      Case "SwitchButton"
+        hCtrl.Value = vVal
+      Case "TextBox", "MaskBox"
+        hCtrl.Text = vVal
+      Case "FontBox"
+        hCtrl.Value = vVal
+      Default 
+        Debug "Unmanaged type: "; Object.Type(hCtrl)
+    
+    End Select
+  
+  Next
+  
+End
+
+Private Sub LoadIgnoreFiles()
+
+  Dim aIgnore As String[]
+  Dim iInd As Integer
+
+  aIgnore = Project.GetIgnoreFiles()
+  tvwIgnore.Rows.Count = aIgnore.Count
+  For iInd = 0 To aIgnore.Max
+    tvwIgnore[iInd, 0].Text = aIgnore[iInd]
+  Next
+
+End
+
+Public Sub _new()
+
+  Dim iInd As Integer
+  Dim hHBox As HBox
+  Dim hColor As DrawingArea
+  Dim hButton As Button
+  Dim aColors As Integer[]
+
+  cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
+  cmbTheme.Add(("Custom"), 0)
+  
+  cmbIconTheme.List = [("Desktop"), "Gambas", "Gnome", "KDE", "Trinity", "KDE4", "KDE5", "LXDE", "Mate", "XFCE"].Insert(Stock.Themes)
+  cmbBrowser.List = [("(Default)"), "Konqueror", "Rekonq", "Firefox", "Iceweasel", "Epiphany", "SeaMonkey", "Opera", "Chromium"]
+  cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "lxterminal", "XTerm"]
+  txtEditorFont.Default = Project.DEFAULT_FONT
+  txtConsoleFont.Default = Project.DEFAULT_FONT
+  
+  $cLast = MTheme.ReadSettings(Settings, "/Highlight", True)
+  $cCurrent = MTheme.Copy($cLast)
+  
+  $aConfig = [
+    [txtEditorFont, "/Editor/Font", ""],
+    [txtConsoleFont, "/ConsoleFont", ""],
+    [txtGlobalFont, "/Font", ""],
+    [cmbProjectFontSize, "/ProjectFontSize", 0],
+    [cmbTitleFontSize, "/TitleFontSize", 0],
+    [cmbToolbox, "/ToolboxSize", 0],
+    [btnSortProperty, "/SortProperties", 1],
+    [txtTabSize, "/DefaultTabSize", 2],
+    [btnShowLimit, "/Editor/ProcedureLimit", 1],
+    [btnShowLineNumber, "/Editor/ShowLineNumbers", 0],
+    [btnShowChange, "/Editor/ShowChange", 1],
+    [btnShowCurrent, "/Editor/ShowCurrent", 1],
+    [btnShowSpaces, "/Editor/ShowSpaces", 1],
+    [btnShowIndent, "/Editor/ShowIndent", 1],
+    [btnFold, "/Editor/ShowExpand", 1],
+    [btnFoldProc, "/Editor/CollapseByDefault", 0],
+    [btnWrapText, "/Editor/WrapTextByDefault", 0],
+    [btnOutput, "/QuietExternalCommands", 0],
+    [btnUtility, "/UseUtilityWindows", 1],
+    [btnStartupLoad, "/RestoreFiles", 1],
+    [btnOptional, "/AlwaysDisplayOptionalMessages", 0],
+    [btnOfflineHelp, "/UseOfflineHelp", 0],
+    [btnTooltip, "/ShowTooltip", 0],
+    [btnShowFileInTitle, "/ShowFileInTitle", 1],
+    [btnIntegratedHelp, "/PropertyHelp", 1],
+    [btnHelpCompletion, "/ShowHelpInPopup", 1],
+    [btnMinimize, "/MinimizeOnRun", 0],
+    [btnUpperCaseKeywords, "/Editor/KeywordsUseUpperCase", 0],
+    [btnControlStructCompletion, "/Editor/ControlStructCompletion", 1],
+    [btnLocalVarDecl, "/Editor/LocalVariableDeclaration", 0],
+    [btnComment, "/Editor/AutoComment", 1],
+    [btnIndentDim, "/FormatCode/IndentLocal", 1],
+    [btnRemoveSpace, "/FormatCode/RemoveSpaces", 0],
+    [btnKeepVoidLine, "/FormatCode/KeepVoidLines", 0],
+    [btnFormatOnLoad, "/FormatCode/FormatOnLoad", 0],
+    [btnCodeSnippet, "/Editor/CodeSnippets", 1],
+    [txtName, "/Identity/Name", User.Name],
+    [txtMail, "/Identity/Mail", User.Name & "@" & System.Host],
+    [txtVendor, "/Packager/Vendor", ""],
+    [txtVendorPrefix, "/Packager/VendorPrefix", ""],
+    [txtLicense, "/Packager/License", "General Public License"],
+    [txtURL, "/Packager/URL", "www.endoftheinternet.com"],
+    [cmbPrefix, "/Packager/UsePrefix", 0]]
+  
+  $bNoChange = True
+  
+  ReadConfig
+  
+  cmbIconTheme.Index = Max(0, cmbIconTheme.List.Find(Settings["/Theme"]))
+  cmbBrowser.Index = $aBrowser.Find(Settings["/Browser"]) + 1
+  cmbTerminal.Index = $aTerminal.Find(Settings["/Terminal"]) + 1
+  
+  iInd = $aTheme.Find(Settings["/Editor/Theme"])
+  If iInd >= 0 Then
+    cmbTheme.Text = $aThemeName[iInd]
+  Else
+    cmbTheme.Index = 0
+  Endif
+  chkInvertTheme.Value = Settings["/Editor/InvertTheme", 0]
+  
+  panDownloadHelp.Visible = btnOfflineHelp.Value
+  
+  UpdateFont(txtGlobalFont.Value)
+  
+  $bNoChange = False
+  
+  For iInd = 0 To MTheme.ColorKeys.Max
+  
+    hHBox = New HBox(svwTheme)
+    hHBox.Tag = MTheme.ColorKeys[iInd]
+    hHBox.Height = 4 * Desktop.Scale
+    hHBox.Spacing = 4
+    hColor = New DrawingArea(hHBox) As "dwgStyle"
+    hColor.Expand = True
+    hColor.Border = Border.Plain
+    hButton = New Button(hHBox) As "btnStyle"
+    hButton.Text = ("Define...")
+    hButton.Width = Desktop.Scale * 16
+    
+  Next
+  
+  RefreshStyle
+  
+  gvwSnippet.Columns.Count = 2
+  gvwSnippet.Columns[0].Width = Desktop.Scale * 8
+  
+  tvwIgnore.Columns.Count = 1
+  LoadIgnoreFiles
+  
+  aColors = [Color.White, &H808080]
+  For iInd = 0 To 359 Step 30
+    aColors.Add(Color.HSV(iInd, 255, 255))
+  Next
+  choBackgroundColor.Colors = aColors
+  choBackgroundColor.Current = Project.GetBackgroundColor()
+  
+  Me.Utility = Settings["/UseUtilityWindows", 1]
+  
+End
+
+Public Sub Form_KeyPress()
+  
+  If Key.Code = Key.Escape Then Me.Close
+  
+End
+
+Public Sub cmbTheme_Click()
+
+  Dim iTheme As Integer
+
+  iTheme = $aThemeName.Find(cmbTheme.Text)
+
+  If iTheme < 0 Then 
+    Settings["/Editor/Theme"] = ""
+    Return
+  Endif
+
+  Settings["/Editor/Theme"] = $aTheme[iTheme]
+  $cCurrent = MTheme.ReadFile($aTheme[iTheme])
+  RefreshEditor
+  
+End
+
+Public Sub btnExport_Click()
+
+  Dialog.Path = Settings["/FOption/ThemePath", User.Home &/ User.Name & ".gambas.theme"]
+  Dialog.Filter = ["*.gambas.theme", ("Gambas highlight theme files")]
+  Dialog.Title = ("Export a theme file")
+  Dialog.AutoExt = True
+  If Dialog.SaveFile() Then Return
+  Settings["/FOption/ThemePath"] = Dialog.Path
+  
+  MTheme.WriteFile(Dialog.Path, $cCurrent)
+  
+End
+
+Private Sub RefreshStyle()
+  
+  Dim hHBox As HBox
+  
+  'panTheme.Background = CStyle[$cCurrent["Background"]].Foreground
+  
+  For Each hHBox In svwTheme.Children
+    hHBox.Children[0].Refresh
+  Next  
+  
+End
+
+
+
+Private Sub RefreshEditor()
+  
+  Dim hFile As Object
+
+  If $bNoChange Then Return
+
+  RefreshStyle
+  
+  MTheme.WriteSettings(Settings, "Highlight", $cCurrent)
+  Settings["/Editor/Font"] = txtEditorFont.Value
+  
+  Project.RefreshBreakpointPicture
+  
+  For Each hFile In Project.Files
+    Try hFile.ReadConfig()
+  Next  
+  
+  FSearch.ReadConfig
+  FMain.ReadConfig
+  FProperty.ReadConfig
+  FFormStack.ReadConfig
+  FOutput.ReadConfig
+  FProfile.ReadConfig
+
+End
+
+Private Sub RefreshConsole()
+  
+  If $bNoChange Then Return
+  
+  Settings["/ConsoleFont"] = txtConsoleFont.Value
+  FOutput.ReadConfig
+  Project.InitWebView
+  
+End
+
+
+Public Sub btnUndo_Click()
+
+  $cCurrent = MTheme.Copy($cLast)
+  cmbTheme.Index = 0
+  RefreshEditor
+
+End
+
+Private Sub RefreshWindow()
+  
+  Dim hFile As Object
+  
+  If $bNoChange Then Return
+
+  FProperty.ReadConfig
+  FMain.ReadConfig
+  FDebugInfo.ReadConfig
+  FSearch.ReadConfig
+  FFormStack.ReadConfig
+  FToolBox.ReadConfig
+  FDebugExpr.ReadConfig
+  FOutput.ReadConfig
+  FHelpBrowser.ReadConfig
+  FImageProperty.ReadConfig
+  For Each hFile In Project.Files
+    Try hFile.ReadConfig
+  Next
+
+End
+
+Public Sub cmbProjectFontSize_Click()
+
+  Settings["/ProjectFontSize"] = cmbProjectFontSize.Index
+  RefreshWindow
+
+End
+
+Public Sub cmbTitleFontSize_Click()
+
+  Settings["/TitleFontSize"] = cmbTitleFontSize.Index
+  RefreshWindow
+
+End
+
+Public Sub btnTooltip_Click()
+
+  Settings["/ShowTooltip"] = btnTooltip.Value
+  Application.ShowTooltips = btnTooltip.Value
+  
+End
+
+Public Sub btnShowFileInTitle_Click()
+
+  Settings["/ShowFileInTitle"] = btnShowFileInTitle.Value
+  Project.ShowFileInTitle = btnShowFileInTitle.Value
+  Project.UpdateTitle
+
+End
+
+Public Sub txtTabSize_Change()
+
+  Settings["/DefaultTabSize"] = txtTabSize.Value
+
+End
+
+Public Sub btnShowLimit_Click()
+
+  Settings["/Editor/ProcedureLimit"] = btnShowLimit.Value
+  RefreshEditor
+
+End
+
+Public Sub btnShowLineNumber_Click()
+
+  Settings["/Editor/ShowLineNumbers"] = btnShowLineNumber.Value
+  RefreshEditor
+
+End
+
+Public Sub btnShowChange_Click()
+
+  Settings["/Editor/ShowChange"] = btnShowChange.Value
+  RefreshEditor
+
+End
+
+Public Sub btnShowCurrent_Click()
+
+  Settings["/Editor/ShowCurrent"] = btnShowCurrent.Value
+  RefreshEditor
+
+End
+
+Public Sub btnShowSpaces_Click()
+
+  Settings["/Editor/ShowSpaces"] = btnShowSpaces.Value
+  RefreshEditor
+
+End
+
+Public Sub btnShowIndent_Click()
+
+  Settings["/Editor/ShowIndent"] = btnShowIndent.Value
+  RefreshEditor
+
+End
+
+' Public Sub cmbCompletion_Click()
+' 
+'   Settings["/Editor/Completion"] = cmbCompletion.Index = 1
+'   RefreshEditor
+' 
+' End
+
+Public Sub btnImport_Click()
+
+  Dialog.Path = Settings["/FOption/ThemePath", User.Home]
+  Dialog.Filter = ["*.gambas.theme", ("Gambas highlight theme files")]
+  Dialog.Title = ("Select a theme file")
+  If Dialog.OpenFile() Then Return
+  
+  'Enhanced Dialog.OpenFile() is buggy 
+  If Not Dialog.Path Or If IsDir(Dialog.Path) Then Return
+  
+  Settings["/FOption/ThemePath"] = Dialog.Path 
+  
+  $cCurrent = MTheme.ReadFile(Dialog.Path)
+  cmbTheme.Index = 0
+  RefreshEditor
+
+End
+
+Public Sub btnSortProperty_Click()
+
+  Settings["/SortProperties"] = btnSortProperty.Value
+  FProperty.ReadConfig
+
+End
+
+Private Sub NeedRestart(hCtrl As Control)
+  
+  Balloon.Warning(("You need to restart the application to see your changes."), hCtrl)  
+  
+End
+
+
+Public Sub cmbIconTheme_Click()
+
+  If cmbIconTheme.Index > 0
+    Settings["/Theme"] = cmbIconTheme.Text
+  Else 
+    Settings["/Theme"] = ""
+  Endif
+  
+  NeedRestart(cmbIcontheme)
+  
+End
+
+Public Sub cmbBrowser_Click()
+
+  If cmbBrowser.Index > 0 Then 
+    Settings["/Browser"] = $aBrowser[cmbBrowser.Index - 1]
+  Else   
+    Settings["/Browser"] = ""
+  Endif
+  
+  Project.Browser = ""
+
+End
+
+Public Sub cmbTerminal_Click()
+
+  If cmbTerminal.Index > 0 Then 
+    Settings["/Terminal"] = $aTerminal[cmbTerminal.Index - 1]
+  Else   
+    Settings["/Terminal"] = ""
+  Endif
+  
+End
+
+' Public Sub cmbImageEditor_Click()
+' 
+'   If cmbImageEditor.Index > 0 Then 
+'     Settings["/ImageEditor"] = $aImageEditor[cmbImageEditor.Index - 1]
+'   Else   
+'     Settings["/ImageEditor"] = ""
+'   Endif
+'   
+' End
+
+' PUBLIC SUB cmbImageEditor_Click()
+' 
+'   IF cmbImageEditor.Index > 0 THEN 
+'     Settings["/ImageEditor"] = LCase(cmbImageEditor.Text)
+'   ELSE   
+'     Settings["/ImageEditor"] = ""
+'   ENDIF
+'   
+'   Project.ImageEditor = ""
+' 
+' END
+
+Public Sub cmbToolbox_Click()
+
+  Settings["/ToolboxSize"] = cmbToolbox.Index
+  FToolBox.ReadConfig
+
+End
+
+Public Sub btnOutput_Click()
+
+  Settings["/QuietExternalCommands"] = btnOutput.Value
+
+End
+
+Public Sub btnUtility_Click()
+
+  Settings["/UseUtilityWindows"] = btnUtility.Value
+  NeedRestart(btnUtility)
+
+End
+
+Public Sub btnStartupLoad_Click()
+
+  Settings["/RestoreFiles"] = btnStartupLoad.Value
+
+End
+
+Public Sub btnOptional_Click()
+
+  Settings["/AlwaysDisplayOptionalMessages"] = btnOptional.Value
+
+End
+
+Public Sub btnOfflineHelp_Click()
+
+  Settings["/UseOfflineHelp"] = btnOfflineHelp.Value
+  MHelp.ReadConfig
+  panDownloadHelp.Visible = btnOfflineHelp.Value
+  UpdateDocumentationState
+  FHelpBrowser.GotoHome
+
+End
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End
+
+' Public Sub cmbMessage_Click()
+' 
+'   Settings["/ShowMessages"] = cmbMessage.Index
+'   FMain.ReadConfig
+' 
+' End
+
+Public Sub btnIntegratedHelp_Click()
+
+  Settings["/PropertyHelp"] = btnIntegratedHelp.Value
+  FProperty.CheckIntegratedHelpSetting
+  
+End
+
+Public Sub btnHelpCompletion_Click()
+
+  Settings["/ShowHelpInPopup"] = btnHelpCompletion.Value
+  
+End
+
+Public Sub btnMinimize_Click()
+
+  Settings["/MinimizeOnRun"] = btnMinimize.Value
+  
+End
+
+Public Sub dwgStyle_Draw()
+  
+  Dim hDraw As DrawingArea = Last
+  Dim sKey As String = hDraw.Parent.Tag
+  Dim hStyle As CStyle = CStyle[$cCurrent[sKey]]
+  Dim sName As String
+  Dim iForeground As Integer
+  Dim iBackground As Integer
+  Dim bInvert As Boolean
+  Dim iBg As Integer
+
+  sName = MTheme.ColorNames[MTheme.ColorKeys.Find(sKey)]
+  bInvert = Settings["/Editor/InvertTheme", 0]
+  If bInvert Then 
+    iBg = CStyle[$cCurrent["Background"]].Foreground
+    If Color[iBg].Value < 128 Then bInvert = False
+  Endif
+
+  Paint.Font = Font[txtEditorFont.Value]
+  If hStyle.Underline Then Paint.Font.Underline = True
+  
+  If MTheme.IsBackgroundStyle(sKey) Then
+    iBackground = hStyle.Foreground
+    iForeground = CStyle[$cCurrent["Normal"]].Foreground
+    If bInvert Then 
+      iBackground = MTheme.InvertColor(iBackground, sKey)
+      iForeground = MTheme.InvertColor(iForeground, "Normal")
+    Endif
+  Else
+    iBackground = CStyle[$cCurrent["Background"]].Foreground
+    iForeground = hStyle.Foreground
+    If bInvert Then 
+      iBackground = MTheme.InvertColor(iBackground, "Background")
+      iForeground = MTheme.InvertColor(iForeground, sKey)
+    Endif
+  Endif
+  
+  
+  Paint.FillRect(0, 0, hDraw.W, hDraw.H, iBackground)
+  If hStyle.Bold Then
+    Paint.Background = Color.SetAlpha(iForeground, 128)
+    Paint.DrawText(sName, 5, 0, hDraw.Width - 8, hDraw.Height, Align.Normal)
+  Endif
+  Paint.Background = iForeground
+  Paint.DrawText(sName, 4, 0, hDraw.Width - 8, hDraw.Height, Align.Normal)
+  
+End
+
+Public Sub btnStyle_Click()
+
+  $hDraw = Last.Parent.Children[0]
+  $sStyle = Last.Parent.Tag  
+  mnuPopup.Popup
+  
+End
+
+Public Sub mnuPopup_Show()
+  
+  With CStyle[$cCurrent[$sStyle]]
+  
+    mnuBold.Checked = .Bold
+    mnuUnderline.Checked = .Underline
+
+  End With 
+  
+End
+
+Private Sub UpdateStyle()
+  
+  Dim hStyle As New CStyle($cCurrent[$sStyle])
+  
+  With hStyle
+    .Bold = mnuBold.Checked
+    .Underline = mnuUnderline.Checked
+  End With
+  
+  $cCurrent[$sStyle] = hStyle.ToString()
+  cmbTheme.Index = 0
+  RefreshEditor
+  
+End
+
+Public Sub mnuBold_Click()
+  
+  mnuBold.Checked = Not mnuBold.Checked
+  UpdateStyle
+  
+End
+
+Public Sub mnuUnderline_Click()
+  
+  mnuUnderline.Checked = Not mnuUnderline.Checked
+  UpdateStyle
+  
+End
+
+Public Sub mnuColor_Click()
+  
+  Dim hStyle As New CStyle($cCurrent[$sStyle])
+  Dim iColor As Integer = hStyle.Foreground
+  
+  If FColorChooser.Run("&H" & Hex$(iColor, 6) & "&") Then Return
+  
+  hStyle.Foreground = FColorChooser.Value
+  $cCurrent[$sStyle] = hStyle.ToString()
+  cmbTheme.Index = 0
+  RefreshEditor
+  
+End
+
+Public Sub btnUpperCaseKeywords_Click()
+
+  Settings["/Editor/KeywordsUseUpperCase"] = btnUpperCaseKeywords.Value
+  RefreshEditor
+
+End
+
+Public Sub btnControlStructCompletion_Click()
+
+  Settings["/Editor/ControlStructCompletion"] = btnControlStructCompletion.Value
+  FEditor.StructControlCompletion = btnControlStructCompletion.Value
+
+End
+
+Public Sub btnLocalVarDecl_Click()
+
+  Settings["/Editor/LocalVariableDeclaration"] = btnLocalVarDecl.Value
+  FEditor.LocalVariableDeclaration = btnLocalVarDecl.Value
+
+End
+
+Public Sub btnComment_Click()
+
+  Settings["/Editor/AutoComment"] = btnComment.Value
+  FEditor.AutoComment = btnComment.Value
+
+End
+
+Public Sub btnFold_Click()
+
+  Settings["/Editor/ShowExpand"] = btnFold.Value
+  RefreshEditor
+
+End
+
+Public Sub btnFoldProc_Click()
+
+  Settings["/Editor/CollapseByDefault"] = btnFoldProc.Value
+
+End
+
+Public Sub btnWrapText_Click()
+
+  Settings["/Editor/WrapTextByDefault"] = btnWrapText.Value
+
+End
+
+Public Sub Form_Open()
+
+  Me.Center
+
+End
+
+
+Public Sub btnClearCache_Click()
+
+  Dim sErr As String
+  
+  If Message.Question(("Do you really want to clear the documentation cache?"), ("Clear"), ("Cancel")) <> 1 Then Return
+  Inc Application.Busy
+  WebSettings.Cache.Clear()
+  Dec Application.Busy
+  
+Catch
+  
+  sErr = Error.Text
+  Application.Busy = 0
+  Message.Error(("Unable to clear documentation cache.") & "\n\n" & sErr)
+
+End
+
+Public Sub txtEditorFont_Change()
+
+  RefreshEditor
+
+End
+
+Public Sub txtConsoleFont_Change()
+
+  RefreshConsole
+
+End
+
+Private Sub UpdateFont(sFont As String)
+  
+  If sFont <> Settings["/Font"] Then
+    Settings["/Font"] = sFont
+    If sFont Then
+      Application.Font = Font[Settings["/Font"]]
+    Else
+      Application.Font = Font[Project.DESKTOP_FONT]
+    Endif
+    Project.InitWebView
+    RefreshWindow
+  Endif
+
+End
+
+
+Public Sub txtGlobalFont_Change()
+
+  UpdateFont(txtGlobalFont.Value)
+
+End
+
+' Public Sub svwOption_Arrange()
+' 
+'   panOption.Width = svwOption.ClientWidth - Desktop.Scale
+' 
+' End
+
+Private Sub RefreshSnippet()
+  
+  CSampleCode.Init
+  gvwSnippet.Rows.Count = CSampleCode.All.Count
+  gvwSnippet.Rows.Height = Font[txtEditorFont.Value].Height + 8
+  gvwSnippet.Refresh
+  
+End
+
+
+' Public Sub tabOption_Click()
+' 
+'   If tabOption.Index = 2 Then
+'     If gvwSnippet.Rows.Count = 0 Then
+'       RefreshSnippet
+'       UpdateSnippet
+'     Endif
+'   Endif
+' 
+' End
+
+Private Sub GetSnippet(Optional iRow As Integer = -1) As CSampleCode
+
+  Dim hSampleCode As CSampleCode
+  
+  If iRow < 0 Then 
+    iRow = gvwSnippet.Row
+    If iRow < 0 Then Return
+    If Not gvwSnippet.Rows[iRow].Selected Then Return
+  Endif
+  Try hSampleCode = CSampleCode.All[CSampleCode.List[iRow]]
+  Return hSampleCode
+
+End
+
+Public Sub gvwSnippet_Data(Row As Integer, Column As Integer)
+
+  Dim hSampleCode As CSampleCode = GetSnippet(Row)
+  
+  If Not hSampleCode Then Return
+  
+  With gvwSnippet
+    .Data.Padding = 4
+    .Data.Font = Font[txtEditorFont.Value]
+    If Column = 0 Then
+      .Data.Text = hSampleCode.Trigger
+      If hSampleCode.Default Then .Data.Font.Italic = True
+    Else
+      .Data.Text = Mid$(Quote(hSampleCode.Pattern), 2, -1)
+    Endif
+  End With
+
+End
+
+Private Sub UpdateSnippet()
+
+  Dim hSampleCode As CSampleCode = GetSnippet()
+  
+  If Not hSampleCode Then
+    btnRemoveSnippet.Enabled = False
+    btnEditSnippet.Enabled = False
+  Else
+    btnRemoveSnippet.Enabled = Not hSampleCode.Default
+    btnEditSnippet.Enabled = True 'Not hSampleCode.Default
+  Endif
+
+End
+
+Public Sub gvwSnippet_Select()
+
+  UpdateSnippet
+
+End
+
+Public Sub btnCodeSnippet_Click()
+
+  Settings["/Editor/CodeSnippet"] = btnCodeSnippet.Value
+
+End
+
+Public Sub btnInsertSnippet_Click()
+
+  If FSnippet.Run() Then Return
+  RefreshSnippet
+  CSampleCode.Save
+  gvwSnippet.Row = CSampleCode.List.Find(FSnippet.NewTrigger)
+
+End
+
+Public Sub btnEditSnippet_Click()
+
+  Dim hSampleCode As CSampleCode = GetSnippet()
+  
+  If Not hSampleCode Then Return
+  If FSnippet.Run(hSampleCode.Trigger) Then Return
+  RefreshSnippet
+  CSampleCode.Save
+
+End
+
+Public Sub gvwSnippet_Activate()
+
+  btnEditSnippet.Value = True
+
+End
+
+Public Sub btnRemoveSnippet_Click()
+
+  Dim hSampleCode As CSampleCode = GetSnippet()
+  
+  If Not hSampleCode Then Return
+
+  If Message.Warning(("Do you really want to delete this snippet?"), ("Delete"), ("Cancel")) = 2 Then Return
+
+  hSampleCode.Delete
+  RefreshSnippet
+  CSampleCode.Save
+
+End
+
+' Public Sub btnUndoSnippet_Click()
+' 
+'   If Message.Warning(("Do you really want to reset snippets to their default value?"), ("Reset"), ("Cancel")) = 2 Then Return
+'   
+'   CSampleCode.Reset
+'   RefreshSnippet
+' 
+' End
+
+' Public Sub expOption_Show()
+' 
+'   Dim hLast As Expander = Last
+'   Dim hOther As Expander
+'   
+'   For Each hOther In svwOption.Children
+'     If hOther <> hLast Then hOther.Hidden = True
+'   Next
+' 
+' End
+
+Private Sub RefreshBackground()
+
+  Dim hBg As CBackground
+  Dim sBackground As String
+  Dim hImage As Image
+  Dim iColor As Integer
+  
+  Inc Application.Busy
+  
+  iColor = FColorChooser.FromString(Settings["/BackgroundColor", "#FFFFFF"])
+  
+  svwBackground.Children.Clear
+  
+  hBg = New CBackground(svwBackground) As "Background"
+  hBg.Tag = "void"
+  hImage = New Image(16, 16, Color.LightForeground)
+  hBg.Image = hImage.Colorize(iColor)
+  
+  For Each sBackground In Split(File.Load("img/background/list"), "\n", "", True)
+    hBg = New CBackground(svwBackground) As "Background"
+    hBg.Image = Image.Load("img/background" &/ sBackground & ".png").Colorize(iColor)
+    hBg.Tag = sBackground
+  Next
+  
+  sBackground = Settings["/Background", "tawhid"]
+  For Each hBg In svwBackground.Children
+    If hBg.Tag = sBackground Then 
+      hBg.Selected = True
+      svwBackground.EnsureVisible(hBg.X, hBg.Y, hBg.W, hBg.H)
+    Endif
+  Next
+  
+  Dec Application.Busy
+
+End
+
+Public Sub ipnOption_Click()
+
+  If ipnOption.Text = ("Code snippets") Then
+    
+    If gvwSnippet.Rows.Count = 0 Then
+      RefreshSnippet
+      UpdateSnippet
+    Endif
+    
+  Else If ipnOption.Text = ("Background") Then
+    
+    If svwBackground.Children.Count = 0 Then
+      RefreshBackground
+    Endif
+    
+  Else If ipnOption.Text = ("Help & applications") Then
+    
+    UpdateDocumentationState
+    
+  Endif
+  
+End
+
+Public Sub btnIndentDim_Click()
+
+  Settings["/FormatCode/IndentLocal"] = btnIndentDim.Value
+
+End
+
+Public Sub btnRemoveSpace_Click()
+
+  Settings["/FormatCode/RemoveSpaces"] = btnRemoveSpace.Value
+
+End
+
+Public Sub btnKeepVoidLine_Click()
+
+  Settings["/FormatCode/KeepVoidLines"] = btnKeepVoidLine.Value
+
+End
+
+Public Sub btnFormatOnLoad_Click()
+
+  Settings["/FormatCode/FormatOnLoad"] = btnFormatOnLoad.Value
+
+End
+
+Public Sub tvwIgnore_Click()
+
+  tvwIgnore.Edit
+
+End
+
+Public Sub tvwIgnore_Save(Row As Integer, Column As Integer, Value As String)
+
+  Value = Trim(Value)
+  If Not Value Then
+    tvwIgnore.Rows.Remove(Row)
+  Else
+    tvwIgnore[Row, Column].Text = Value
+  Endif
+  SaveIgnoreFiles
+
+End
+
+Public Sub tvwIgnore_Insert()
+
+  btnInsertIgnore_Click
+
+End
+
+Public Sub btnInsertIgnore_Click()
+
+  If tvwIgnore.Rows.Count = 0 Or If Trim(tvwIgnore[tvwIgnore.Rows.Max, 0].Text) Then 
+    Inc tvwIgnore.Rows.Count
+  Endif
+  
+  tvwIgnore.MoveTo(tvwIgnore.Rows.Max, 0)
+  tvwIgnore.Edit
+
+End
+
+Public Sub btnRemoveIgnore_Click()
+
+  If tvwIgnore.Row < 0 Then Return
+  tvwIgnore.Save
+  tvwIgnore.Rows.Remove(tvwIgnore.Row)
+  SaveIgnoreFiles
+  tvwIgnore.Edit
+
+End
+
+Public Sub tvwIgnore_Change()
+
+  While tvwIgnore.Rows.Count 
+    If Trim(tvwIgnore[tvwIgnore.Rows.Max, 0].Text) Or tvwIgnore.Row = tvwIgnore.Rows.Max Then Return
+    Dec tvwIgnore.Rows.Count
+  Wend
+
+End
+
+Private Sub SaveIgnoreFiles()
+  
+  Dim aIgnore As New String[]
+  Dim I As Integer
+  Dim sIgnore As String
+  
+  For I = 0 To tvwIgnore.Rows.Max
+    sIgnore = Trim(tvwIgnore[I, 0].Text)
+    If Not sIgnore Then Continue
+    aIgnore.Add(sIgnore)
+  Next
+  
+  Settings["/IgnoreFiles"] = aIgnore
+  
+End
+
+
+Public Sub btnResetIgnore_Click()
+
+  If Message.Warning(("Do you really want to reset the list to its default value?"), ("Cancel"), ("Reset")) = 1 Then Return
+
+  Settings["/IgnoreFiles"] = Null
+  LoadIgnoreFiles
+
+End
+
+Public Sub btnProxy_Click()
+
+  With FProxy
+    .Type = Settings["/Proxy/Type", 0]
+    .Host = Settings["/Proxy/Host"]
+    .Port = Settings["/Proxy/Port", 0]
+    .User = Settings["/Proxy/User"]
+  End With
+
+  If FProxy.Run() Then Return
+
+  With FProxy
+     Settings["/Proxy/Type"] = .Type
+     Settings["/Proxy/Host"] = .Host
+     Settings["/Proxy/Port"] = .Port
+     Settings["/Proxy/User"] = .User
+  End With
+
+  MHelp.LoadProxyConfig
+
+End
+
+Public Sub txtName_LostFocus()
+
+  Settings["/Identity/Name"] = txtName.Text
+
+End
+
+Public Sub txtMail_LostFocus()
+
+  Settings["/Identity/Mail"] = txtMail.Text
+
+End
+
+Public Sub txtVendor_LostFocus()
+
+  Settings["/Packager/Vendor"] = txtVendor.Text
+
+End
+
+Public Sub txtVendorPrefix_LostFocus()
+
+  Settings["/Packager/VendorPrefix"] = txtVendorPrefix.Text
+
+End
+
+Public Sub txtLicense_LostFocus()
+
+  Settings["/Packager/License"] = txtLicense.Text
+
+End
+
+Public Sub txtURL_LostFocus()
+
+  Settings["/Packager/URL"] = txtURL.Text
+
+End
+
+Public Sub cmbPrefix_Click()
+
+  Settings["/Packager/UsePrefix"] = cmbPrefix.Index = 1
+
+End
+
+
+Public Sub btnInstallFont_Click()
+
+  Dim sDir As String = "~/.fonts"
+  Dim sConf As String
+  Dim sData As String
+  Dim sFont As String
+
+  If Message.Question(("Do you really want to install the Gambas font to your personal font directory?"), ("Install"), ("Cancel")) <> 1 Then Return
+  
+  If Not Exist(sDir) Then Mkdir sDir
+  
+  For Each sFont In ["GambasMedium-12.bdf", "GambasBold-12.bdf", "GambasMedium-13.bdf", "GambasBold-13.bdf"]
+    Try Kill sDir &/ sFont
+    Try Copy "font" &/ sFont To sDir &/ sFont
+  Next
+  
+  Project.MakeDir("~/.config/fontconfig")
+  sConf = "~/.config/fontconfig/fonts.conf"
+  'If Not Exist(sConf) Then sConf = "~/.config/fontconfig/.fonts.conf"
+  
+  If Not Exist(sConf) Then
+    Try Copy "font/font.conf" To sConf
+  Endif
+  
+  sData = File.Load(sConf)
+  If InStr(sData, "<patelt name=\"family\"><string>Gambas</string></patelt>") = 0 Then
+    sData = Replace(sData, "</fontconfig>", RTrim(File.Load("font/font.allow")) & "\n</fontconfig>")
+    File.Save(sConf, sData)
+  Endif
+  
+  NeedRestart(btnInstallFont)
+
+End
+
+Public Sub Background_MouseDown()
+  
+  Dim hBg As CBackground
+  
+  For Each hBg In svwBackground.Children
+    hBg.Selected = hBg = Last
+  Next
+  
+  hBg = Last
+  svwBackground.EnsureVisible(hBg.X, hBg.Y, hBg.W, hBg.H)
+  Project.SetBackground(hBg.Tag)
+  
+End
+
+Public Sub btnShortcut_Click()
+
+  Action.Configure
+
+End
+
+
+' Public Sub txtOfflineHelp_Click()
+' 
+'   Dialog.Title = ("Select the offline help directory")
+'   Dialog.Path = Project.UntildePath(txtOfflineHelp.Text)
+'   If Dialog.SelectDirectory() Then Return
+'   
+'   txtOfflineHelp.Text = Project.TildePath(Dialog.Path)  
+'   MHelp.ReadConfig
+'   
+' End
+
+' Public Sub txtOfflineHelp_Change()
+'   
+'   Settings["/OfflineHelpDir"] = txtOfflineHelp.Text
+' 
+' End
+' 
+' Public Sub txtOfflineHelp_KeyPress()
+' 
+'   If Key.Code = Key.Delete Or Key.Code = Key.Backspace Then
+'     txtOfflineHelp.Clear
+'   Endif
+' 
+' End
+
+Public Sub btnDownloadHelp_Click()
+
+  Dim sMsg As String
+  Dim sFile As String
+  Dim sDir As String
+  Dim sTimestamp As String
+  Dim sParentDir As String
+
+  Inc Application.Busy
+  
+  sMsg = Project.RequireProgram(["wget", "tar"])
+  If sMsg Then Goto FAIL
+  
+  ' Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp
+  ' sTimestamp = Trim(sTimestamp)
+  ' If Not sTimestamp Then 
+  '   sMsg = ("The documentation is not available at the moment. Try again later.")
+  '   Goto FAIL
+  ' Endif
+  ' 
+  ' Try dDate = Stat(MHelp.GetOfflineDir()).LastModified
+  ' If dDate And If Format(dDate, "yyyymmdd") >= sTimestamp Then
+  '   sMsg = ("The documentation is up to date.")
+  '   Goto FAIL
+  ' Endif
+  
+  sDir = MHelp.GetOfflineDir()
+  sParentDir = File.Dir(sDir)
+  
+  Project.MakeDir(sParentDir)
+  sFile = sParentDir &/ "wiki.tar.bz2"
+  Try Kill sFile
+  
+  Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp
+  
+  Exec ["wget", "-q", "-O", sFile, "http://gambaswiki.org/gambas-wiki.tar.bz2"] Wait
+  If Not Exist(sFile) Then
+    sMsg = ("Unable to download documentation.")
+    Goto FAIL
+  Endif
+  
+  Shell "rm -rf " & Shell(sParentDir &/ "gambas") Wait
+  
+  Shell "cd " & Shell$(sParentDir) & " && tar xfj " & Shell$(File.Name(sFile)) Wait
+  
+  If Not IsDir(sParentDir &/ "gambas") Then
+    Shell "rm -rf " & Shell(sDir) & " " & Shell$(sFile) Wait
+    sMsg = ("Unable to uncompress documentation.")
+    Goto FAIL
+  Endif
+
+  If IsDir(sDir & "~") Then Shell "rm -rf " & Shell(sDir & "~") Wait
+  If IsDir(sDir) Then Try Move sDir To sDir & "~"
+  Try Move sParentDir &/ "gambas" To sDir
+  
+  If Not IsDir(sDir) Then
+    sMsg = ("Unable to install documentation.")
+    Goto FAIL
+  Endif
+  
+  File.Save(sDir &/ "timestamp", sTimestamp)
+  
+  UpdateDocumentationState
+  Dec Application.Busy
+  Return
+  
+FAIL:
+
+  Dec Application.Busy
+  Message.Warning(sMsg)
+  Return
+
+End
+
+Private Sub UpdateDocumentationState()
+
+  If Not panDownloadHelp.Visible Then Return
+
+  Select Case MHelp.GetOfflineState()
+    
+    Case MHelp.OFFLINE_NO_NETWORK
+      lblDocumentation.Text = ("Network is not available.")
+      lblDocumentation.Foreground = Color.Foreground
+      btnDownloadHelp.Enabled = False
+    
+    Case MHelp.OFFLINE_UP_TO_DATE
+      lblDocumentation.Text = ("Documentation is up to date.")
+      lblDocumentation.Foreground = Color.Foreground
+      btnDownloadHelp.Enabled = False
+    
+    Case MHelp.OFFLINE_NO_WGET
+      lblDocumentation.Text = ("'wget' is not found.")
+      lblDocumentation.Foreground = Color.Foreground
+      btnDownloadHelp.Enabled = False
+    
+    Case MHelp.OFFLINE_NEW_AVAILABLE
+      lblDocumentation.Text = ("A new documentation is available!")
+      lblDocumentation.Foreground = Color.Red
+      btnDownloadHelp.Enabled = True
+      
+    Case Else
+      lblDocumentation.Text = ("Documentation is not available.")
+      lblDocumentation.Foreground = Color.Foreground
+      btnDownloadHelp.Enabled = False
+      
+  End Select
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Save
+
+End
+
+Public Sub choBackgroundColor_Click()
+
+  Project.SetBackgroundColor("#" & Hex$(choBackgroundColor.Current, 6))
+  RefreshBackground
+
+End
+
+Public Sub Form_Activate()
+
+  ipnOption_Click
+
+End
+
+Public Sub chkInvertTheme_Click()
+
+  Settings["/Editor/InvertTheme"] = chkInvertTheme.Value
+  RefreshEditor
+
+End

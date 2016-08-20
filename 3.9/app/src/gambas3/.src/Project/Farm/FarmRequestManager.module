@@ -1,0 +1,97 @@
+' Gambas module file
+
+Property Read Count As Integer
+
+Private $aRequest As New HttpForm[]
+Private Const MAX_REQUEST As Integer = 3
+
+Public Sub Add(hRequest As HttpForm)
+  
+  Dim hObs As Observer
+  
+  'hRequest.Debug = True
+  hObs = New Observer(hRequest) As "Request"
+  $aRequest.Add(hRequest)
+  'Debug "Add "; hRequest
+  If $aRequest.Count <= MAX_REQUEST Then
+    'Debug "Submit "; hRequest
+    hRequest.Submit
+  Endif
+  
+End
+
+Public Sub Remove(hRequest As HttpForm)
+
+  Dim iPos As Integer
+  
+  'Debug "Remove "; hRequest
+  iPos = $aRequest.FindByRef(hRequest)
+  If iPos >= 0 Then
+    If iPos = 0 Then 
+      'Debug "Stop "; hRequest
+      hRequest.Stop
+    Else
+      $aRequest.Remove(iPos)
+    Endif
+  Endif
+  
+End
+
+
+Public Sub Request_Finished()
+  
+  Dim iPos As Integer
+  
+  'Debug "Finished "; Last
+  
+  If $aRequest.Count = 0 Then Return
+  
+  'Debug "Remove "; Last
+  iPos = $aRequest.FindByRef(Last)
+  If iPos >= 0 Then 
+    $aRequest.Remove(iPos)
+    If $aRequest.Count >= MAX_REQUEST Then
+    'Debug "Submit "; $aRequest[MAX_REQUEST - 1]
+      $aRequest[MAX_REQUEST - 1].Submit
+    Endif
+  Endif
+  
+End
+
+Public Sub Request_Error()
+  
+  Request_Finished
+  
+End
+
+Public Sub Request_Cancel()
+  
+  Request_Finished
+  
+End
+
+Public Sub Clear()
+
+  Dim aClear As HttpForm[]
+  Dim I As Integer
+  
+  If $aRequest.Count = 0 Then Return
+
+  aClear = $aRequest.Copy()
+  $aRequest.Clear
+  'Debug "Clear"
+
+  For I = 0 To Min(aClear.Max, MAX_REQUEST)
+    'Debug "Stop "; aClear[I]
+    aClear[I].Stop
+  Next
+  
+End
+
+
+
+Private Function Count_Read() As Integer
+
+  Return $aRequest.Count
+
+End

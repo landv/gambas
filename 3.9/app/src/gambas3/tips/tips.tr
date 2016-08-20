@@ -1,0 +1,278 @@
+[WELCOME]
+
+<p><b>Gambas</b>'a Hoş Geldiniz !</p>
+
+<p><b>Gambas</b> gelişmiş bir <i>Basic</i> yorumlayıcısı
+üzerine kurulu grafiksel bir geliştirme ortamıdır.</p>
+
+<p><b>Gambas</b> sizin kolay ve hızlı bir şekilde
+güçlü programlar yapabilmenizi amaçlar. Ama düzgün programlar
+sizin <i>kendi</i> sorumluluğunuzda kalır...</p>
+
+<p>Eğlenmenize bakın !</p>
+
+<p align=right>Beno&icirc;t Minisini<br>
+<u>gambas@users.sourceforge.net</u></p>
+
+
+[STARTUP]
+
+<p>Her proje bir <i>başlangıç sınıfı</i> içermelidir. Bu başlangıç
+sınıfı, programınızın başlangıç yöntemi olarak davranacak, parametre
+almayan <i>Main</i> adlı durağan (static) ve genel (public) bir
+yöntem tanımlamalıdır.</p>
+
+<p>Proje ağacında sağ fare tuşuyla üzerine tıklayarak ve açılan
+menüden <i>Başlangıç sınıfı</i>'nı seçerek başlangıç sınıfını
+tanımlayabilirsiniz.</p>
+
+<p>Bir başlangıç formunda <i>Main</i> yöntemi tanımlamanıza gerek yoktur;
+çünkü formlar zaten öntanımlı bir yönteme sahiptir.</p>
+
+<p>Bu öntanımlı başlangıç yöntemi formu örnekler ve gösterir. Aynı
+<i>Visual Basic&trade;</i>'de olduğu gibi.</p>
+
+
+[OPEN]
+
+<p><b>Gambas</b>'ın <b>OPEN</b> yönergesi <i>Visual Basic</i>'deki
+gibi çalışmaz. Dosyayı bir tamsayı (integer) yerine <i>File</i>
+nesnesi olarak döndürür.</p>
+
+<p>Yani, şu şekilde yazmak yerine :</p>
+
+<pre>DIM handle AS Integer
+...
+OPEN "myfile" FOR READ AS #handle</pre>
+
+<p>aşağıdaki gibi yazmalısınız :</p>
+
+<pre>DIM handle AS File
+...
+handle = OPEN "myfile" FOR READ</pre>
+
+
+[CATDIR]
+
+<p>Dizin ve dosya adlarını <b><tt>&/</tt></b> işleciyle
+birleştirebileceğinizi biliyor muydunuz ? Bu işleç eğik
+çizgilerle ilgilenir. Böylece sonuçta oluşacak yol adı
+kusursuz olur.</p>
+
+<p>Örneğin:</p
+
+<pre>PRINT "/home/gambas" &/ ".bashrc"
+/home/gambas/.bashrc
+
+PRINT "/home/gambas/" &/ "/tmp" &/ "foo.bar"
+/home/gambas/tmp/foo.bar
+</pre>
+
+<p>Harika değil mi ?</p>
+
+
+[EXEC]
+
+<p>Projenizin tümünden çalışabilir bir dosya oluşturabilirsiniz.
+Bunun için <i>Proje</i> menüsünden <i>Çalışabilir dosyayı oluştur</i>
+seçeneğini tıklayınız.</p>
+
+<p><b>Gambas</b> çalışabilir bir dosya oluşturduğunda, sonucu doğrudan
+projenizin dizinine koyar. Bu dosya projenizle aynı adı alır.</p>
+
+
+[PATH]
+<p>
+Göreceli yol adlarının <b>Gambas</i>'da özel bir anlamı vardır.
+Bu yollar her zaman projenizdeki dosyaları gösterir.
+<p>
+<i>Geçerli dizin</i> kavramı yoktur, ve değiştirmek için
+<tt>CHDIR</tt> gibi anahtar bir sözcük de yoktur.
+<p>
+<b>Dikkatli olun:</b> göreceli yol adlarını sadece proje dosyalarına
+erişmek için kullanın, çünkü çalışabilir dosya oluştuğunda tam yollar
+çalışmayacaktır.
+
+
+[GLOBAL]
+
+<b><i>Gambas</i></b>'da <u>global değişkenler yoktur</u>!
+<p>
+Mümkünse, bu değişkenleri ana modülünüze koyun ve onları
+<tt>PUBLIC</tt> olarak bildirin.
+<p>
+Eğer projenizde bir ana modül değil de bir ana form varsa,
+<tt>STATIC PUBLIC</tt> olarak bildirin.
+<p>
+Bu değişkenlere erişmek için, ana modülün veya formun adını
+kullanmalısınız: <tt>MyMainModule.MyGlobalVariable</tt> veya
+<tt>MyMainForm.MyGlobalVariable</tt>.
+
+
+[EMPTY]
+
+<p>Bir dizgenin boş olup olmadığını öğrenmek için, <b>Len()</b>
+işlevini kullanmak zorunda değilsiniz. Doğrudan boş bir dizge
+<b>FALSE</b> ve dolu bir dizge <b>TRUE</b> olarak sınanabilir.</p>
+
+<p>Örneğin, şu şekilde yapmak yerine :</p>
+
+<pre>IF Len(MyString) > 0 THEN ...
+IF Len(MyString) = 0 THEN ...</pre>
+
+<p>Şöyle yapabilirsiniz :</p>
+
+<pre>IF MyString THEN ...
+IF NOT MyString THEN ...</pre>
+
+
+[EVENT]
+
+<p>Olay meydana getiren her denetim ve nesnenin, bir
+<i>olay gözlemcisi</i> ve bir olay <i>grup adı</i> vardır.</p>
+
+<p>Olay gözlemcisi oluşan her olayı yakalar. Olay grup adı ise
+olayı yöneten yordamın önekidir.</p>
+
+<p>Öntanımlı olarak, bu olay gözlemcisi denetimi oluşturduğunuz
+nesnedir ve grup adı da o denetimin adıdır.</p>
+
+<p>Böylece bir form, üzerinde oluşturulan denetimlerden
+gelen tüm olayları alır.</p>
+
+<pre>' Gambas form
+DIM hButton AS Button
+
+PUBLIC SUB _new()
+&nbsp;&nbsp;hButton = NEW Button(ME) AS "MyButton"
+END
+
+PUBLIC SUB MyButton_Click()
+&nbsp;&nbsp;PRINT "You have clicked MyButton !"
+END
+</pre>
+
+
+[FORM]
+
+<p><b><i>Gambas</i></b>'da, bir form kendi olay gözlemcisidir. Böylece
+tüm form olaylarını (<i>Resize</i>, <i>Activate</i>, vb...) kendi
+sınıf kodundan yönetebilirsiniz.</p>
+
+<p>Bu sayede, <i>Visual Basic</i>'den gelen yeni kullanıcılar
+yolunu şaşırmaz :-).</p>
+
+
+[EMBED]
+
+<p><b><i>Gambas</i></b> ile bir formu diğer formların içine gömebilirsiniz
+&nbsp;!</p>
+
+<p>Böyle güçlü bir şey yapmak için, sadece yapıcı işlevin son argümanı
+olarak bir sahip kap (container) vererek formu örnekleyin.</p>
+
+<p>Örneğin&nbsp;:</p>
+<p><tt>DIM hForm AS MyDialog<br>
+DIM hSuperControl AS MyForm<br><br>
+' Bir iletişim penceresi oluştur<br>
+hForm = NEW MyDialog<br>
+' Bu iletişim penceresine bir form yerleştir<br>
+' Unutmayın, bu form kaptan önce iki parametre daha alır<br>
+hSuperControl = NEW MyForm(Param1, Param2, MyDialog)<br>
+' Formu taşır ve yeniden boyutlandırır<br>
+hSuperControl.Move(8, 8, 128, 64)<br>
+</tt></p>
+
+<p>Dikkatli olun: başka bir form içine gömülen bir form hala formdur ve
+bundan dolayı kendi olay gözlemcisine sahiptir.</p>
+
+
+[GROUP]
+
+<p>Her denetim bir <i>(Group)</i> özelliğine sahiptir. Bu özellik
+girildiğinde, olay yöneticisinin adı denetim adı yerine grup adını
+önek olarak alır.</p>
+
+<p>Diyelim ki <b>btnAction</b> adında bir <i>Button</i> nesneniz var.
+Bu nesneye ait <i>Click</i> olayının yöneticisi de aşağıdaki gibi olsun :</p>
+
+<pre>PUBLIC SUB btnAction_Click()</pre>
+
+<p>Eğer <b>btnAction</b> nesnesinin <i>(Group)</i> özelliğini
+<i>MyGroup</i> olarak değiştirirseniz, bu butondan olayları alacak
+olay yöneticisi şöyle olur :</p>
+
+<pre>PUBLIC SUB MyGroup_Click()</pre>
+
+<p>Bu özellik tek bir işlevde değişik denetimlerin olaylarını yönetmenize
+olanak sağlar. Bu denetimlerin aynı türden olmaları da gerekmez !</p>
+
+<p><b>Not :</b> Eski <i>Visual Basic</i> emektarları
+<i>denetim dizisi (control array)</i> kavramını hatırlayabilir,
+ancak bu daha güçlü bir uygulama. :-)</p>
+
+
+[TAG]
+
+<p>Her denetim bir <i>Tag</i> özelliğine sahiptir. Bu özellik
+programcı içindir ve ilgili bulduğunuz herhangi bir veriyi içerebilir.</p>
+
+<p>Bu yöntem, bir olay yöneticisinde aynı grupta yer alan denetimleri
+ayırt etmek için çok kullanışlıdır.</p>
+
+
+
+[LAST]
+
+<p><b>LAST</b> anahtar sözcüğü bir olay algılayan en son denetimi
+döndürür. Bu, herhangi bir denetim adından bağımsız bir olay yöneticisi
+yazmak istediğinizde çok kullanışlıdır.</p>
+
+<p>Örneğin, diyelim ki bir hesap makinesi programı yapmak istiyorsunuz.
+Her rakam için bir tane olacak şekilde on tane tuş tanımladınız ve hepsi
+"Digit" <i>grubunda</i> yer alsın. Her denetimin <i>Tag</i> özelliği
+tuşta yer alan rakamı içersin. Olay yöneticiniz şunun gibi olacaktır :</p>
+
+<p><tt>PUBLIC SUB Digit_Click()<br><br>
+&nbsp;&nbsp;Display = Display & LAST.Tag<br>
+&nbsp;&nbsp;RefreshDisplay<br><br>
+END</tt></p>
+
+
+[LEFT]
+
+<p>Çok bilinen <i>BASIC</i> işlevleri <b>Left$</b>, <b>Right$</b> ve
+<b>Mid$</b> <b><i>Gambas</i></b>'da çok kullanışlı davranışlar gösterir</p>
+
+<p><b>Left$</b> ve <b>Right$</b> işlevlerinin ikinci parametreleri
+seçimliktir ve biri öntanımlıdır.</p>
+
+<p><tt>Left$("Gambas")</tt> --> <tt>"G"</tt> değerini,<br>
+<tt>Right$("Gambas")</tt> --> <tt>"s"</tt> değerini döndürür.</p>
+
+<p>İkinci parametre negatif olabilir ve bu ayıklanmayan
+karakterlerin sayısını verir.</p>
+
+<p><tt>Left$("Gambas", -2)</tt> --> <tt>"Gamb"</tt><br>
+<tt>Right$("Gambas", -2)</tt> --> <tt>"mbas"</tt></p>
+
+<p>Aynı şekilde, <b>Mid$</b> işlevinin üçüncü parametresi negatif
+olabilir ve bu değer dizge sonundan itibaren ayıklanmayan
+karakter sayısını verir.</p>
+
+<p><tt>Mid$("Gambas", 2, -2)</tt> --> <tt>"amb"</tt>
+
+
+[END]
+
+<p>Tüm ipuçlarını okudunuz. Umarım şimdi bir <b>Gambas</b> uzmanı
+olmuşsunuzdur ! :-)</p>
+
+<p>Eğer katkıda bulunmak istiyorsanız, aşağıdaki adrese yeni ipuçları
+gönderin&nbsp;:</p>
+<p><u>gambas@users.sourceforge.net</u></p>
+
+<p>Şimdiden teşekkürler !</p>
+
+
+

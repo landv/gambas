@@ -1,0 +1,79 @@
+TODO list: always incomplete :-)
+--------------------------------
+
+COMPILER
+
+- Compilation error must always indicate the column, not sometimes only the line.
+
+INTERPRETER
+
+- A special syntax to make variable writable once only (for controls variables).
+- Add global parameters for each component. Or no, a global configuration repository, to
+  tell, for example, which socket the mysql component must use...
+- Make objects printable, with a "_print" hidden method or something else.
+- Make objects writable and readable to streams.
+- Type mismatch error: print the mismatched values.
+- Special runtime debugging commands for dumping all the variables for example.
+- A new debugging compilation option to only put line number information in the output files.
+- If project compilation version < compiler version then => compile all
+- Catch kill signal to remove temporary files.
+- Sorting two or more arrays at the same time.
+- MOD with floats.
+- Make the error information associated with the current stack frame.
+- Timer.TimeLeft.
+- OPEN ... LOCK. True lock while reading/writing a file.
+- select() system call can fail if a watched file descriptor is in error. But how can I know
+  the offending file descritor? Maybe by using poll() instead.
+- Find a way to optimize the &= operator.
+
+DEBUGGER
+
+- Add/Remove a breakpoint without pausing the program!
+
+DEVELOPMENT ENVIRONMENT
+
+- Manage Object properties in IDE.
+- Make a visual control clipboard.
+- Generates an index control->component to suggest components for missing controls.
+- Be able to open a .tar.gz project, and compress it back when the project is closed.
+- Conditional breakpoints.
+- Define a control order somewhere for the toolbox.
+- An option to interpret "." and "," when reading float in a CSV import.
+- Class template files.
+- Redesign the source code navigator (F2 and SHIFT+F2).
+
+GUI RELATED STUFF
+
+- Deleting a currently expanding item in TreeView crashes.
+- ValueBox.Value should be visible in the IDE.
+- Moveable tabs.
+- ListView and GridView selection interface should be the same.
+- More clever vertical toolbar.
+
+DESKTOP COMPONENT
+
+- Detect an already running application.
+
+DATABASE COMPONENT
+
+- Add Views support in database component.
+- Changeable client Charset in database driver.
+- Returns the number of records affected by a query.
+- A new database driver model.
+- Copy a result line into another one.
+- Use SAVEPOINT in postgresql to simulate nested transactions.
+
+DOCUMENTATION WIKI
+
+- Mass rename command.
+- Fix last changes: only those in one language.
+- A documentation page to explain the Gambas syntax.
+- User comments on documentation pages.
+
+NETWORK COMPONENT
+
+- Do a big cleanup.
+
+COMPONENTS
+
+- Put version number in *.component files, and use it when making dependencies in the IDE.

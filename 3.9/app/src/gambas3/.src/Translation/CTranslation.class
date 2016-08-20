@@ -1,0 +1,140 @@
+' Gambas class file
+
+Public Header As String
+Public Keys As New String[]
+Public Translations As New Collection
+Public Comments As New Collection
+
+Private Const MODE_NONE As Integer = 0
+Private Const MODE_MSGID As Integer = 1
+Private Const MODE_MSGSTR As Integer = 2
+
+Public Sub _new(sLang As String)
+  
+  LoadTranslation(sLang)
+  
+End
+
+Static Public Sub SubstHeader(sHeader As String, Optional sLang As String) As String
+
+  Dim sDate As String
+  
+  sDate = Format(DateAdd(Now, gb.Second, System.TimeZone), "yyyy-mm-dd hh:nn UTC")
+  
+  sHeader = Replace(sHeader, "$(PACKAGE)", Project.Name)
+  sHeader = Replace(sHeader, "$(VERSION)", Project.FullVersion)
+  sHeader = Replace(sHeader, "$(NOW)", sDate)
+  sHeader = Replace(sHeader, "$(DATE)", sDate)
+  sHeader = Replace(sHeader, "$(NAME)", Settings["/Identity/Name", User.Name])
+  sHeader = Replace(sHeader, "$(MAIL)", Settings["/Identity/Mail", User.Name & "@" & System.Host])
+  sHeader = Replace(sHeader, "$(LANG)", sLang)
+  
+  Return sHeader
+  
+End
+
+
+Private Sub LoadTranslation(sLang As String) 
+  
+  Dim sPath As String
+  Dim hFile As File
+  Dim sLine As String
+  Dim sMsgId As String
+  Dim sMsgStr As String
+  Dim sMsgComment As String
+  Dim iMode As Integer
+  Dim bFuzzy As Boolean
+  Dim iPos As Integer
+  
+  sPath = Language.GetPath(sLang, "po")
+  If Not Exist(sPath) Then Return 
+  
+  hFile = Open sPath 
+
+  While Not Eof(hFile)
+    Line Input #hFile, sLine
+    If Not sLine Then Break
+    Header &= sLine & "\n"
+  Wend
+
+  iPos = InStr(Header, "#, fuzzy")
+  If iPos = 0 Then iPos = InStr(Header, "#,fuzzy")
+  If iPos Then Header = Left(Header, iPos - 1)
+
+  Header &= SubstHeader(File.Load("po-header.txt"), sLang)
+
+  Do
+
+    If Not Eof(hFile) Then
+
+      Line Input #hFile, sLine
+
+      If Left$(sLine) = "#" Then
+
+        If Left$(sLine, 2) = "#:" Then
+          sMsgComment = Trim(Mid$(sLine, 3))
+          Continue
+        Endif
+
+        If Left$(sLine, 2) = "#," Then
+          If InStr(sLine, "fuzzy") Then
+            bFuzzy = True
+            Continue
+          Endif
+        Endif
+
+      Endif
+
+      If Left$(sLine, 6) = "msgid " Then
+        sMsgId = Mid$(sLine, 8, -1)
+        iMode = MODE_MSGID
+        Continue
+      Endif
+
+      If Left$(sLine, 7) = "msgstr " Then
+        sMsgStr = Mid$(sLine, 9, -1)
+        iMode = MODE_MSGSTR
+        Continue
+      Endif
+
+      If Left$(sLine) = Chr$(34) Then
+        If iMode = MODE_MSGID Then
+          sMsgId = sMsgId & Mid$(sLine, 2, -1)
+        Else If iMode = MODE_MSGSTR Then
+          sMsgStr = sMsgStr & Mid$(sLine, 2, -1)
+        Endif
+        Continue
+      Endif
+
+    Endif
+
+    If Trim(sMsgId) Then
+
+      'Inc iIndex
+      Keys.Add(sMsgId)
+
+      If sMsgStr = "-\\n" Then sMsgStr = "-"
+      
+      'sMsgId = UnQuoteTranslation(sMsgId)
+      'sMsgStr = UnQuoteTranslation(sMsgStr)
+
+      'cvwTranslate.Add(iIndex, sMsgId)
+      If bFuzzy Then
+        bFuzzy = False
+      Else
+        Translations[sMsgId] = sMsgStr
+      Endif
+      Comments[sMsgId] = sMsgComment
+      sMsgId = ""
+      sMsgComment = ""
+      sMsgStr = ""
+
+    Endif
+
+    If Eof(hFile) Then Break
+
+  Loop
+  
+  Close #hFile
+  
+End

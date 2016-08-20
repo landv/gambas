@@ -1,0 +1,258 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+
+Property Value As Date
+Property Year As Integer
+Property Month As Integer
+Property Day As Integer
+Property Font As Font
+Property Read Colors As _DateChooser_Colors
+Property Mode As Integer
+Property Read Data As _DateChooser_Data
+Property Border As Boolean
+Property MinValue As Date
+Property MaxValue As Date
+
+Public Const DateOnly As Integer = 0
+Public Const DateTime As Integer = 1
+Public Const TimeOnly As Integer = 2
+
+Event Change
+Event Activate
+Event Cancel
+Event Data({Date} As Date)
+
+Public Const _Properties As String = "*,Border=True,Mode{DateChooser.*}=DateOnly"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "40,28"
+Public Const _Group As String = "Chooser"
+
+Private $hCal As FCalendar
+Private $cData As New Collection
+Private $hData As _DateChooser_Data
+Private $dDateMin As Date
+Private $dDateMax As Date
+
+Public Sub _new()
+  
+  $hCal = New FCalendar(Me)
+  
+End
+
+Private Function Value_Read() As Date
+
+  Return $hCal.GetValue()
+
+End
+
+Private Sub Value_Write(Value As Date)
+
+  $hCal.SetValue(Value)
+
+End
+
+Public Sub _Change()
+  
+  Raise Change
+  
+End
+
+Public Sub _Activate()
+  
+  Raise Activate
+  
+End
+
+Public Sub _Cancel()
+  
+  Raise Cancel
+  
+End
+
+Private Function Year_Read() As Integer
+
+  Return Year(Value_Read())
+
+End
+
+Private Sub Year_Write(Value As Integer)
+
+  Dim dDate As Date = Value_Read()
+  
+  dDate = Date(Value, Month(dDate), Day(dDate))
+  Value_Write(dDate)
+
+End
+
+Private Function Month_Read() As Integer
+
+  Return Month(Value_Read())  
+
+End
+
+Private Sub Month_Write(Value As Integer)
+
+  Dim dDate As Date = Value_Read()
+  
+  dDate = Date(Year(dDate), Value, Day(dDate))
+  Value_Write(dDate)  
+
+End
+
+Private Function Day_Read() As Integer
+
+  Return Day(Value_Read())
+
+End
+
+Private Sub Day_Write(Value As Integer)
+
+  Dim dDate As Date = Value_Read()
+  
+  dDate = Date(Year(dDate), Month(dDate), Value)
+  Value_Write(dDate)
+
+End
+
+Private Function Font_Read() As Font
+
+  Return Super.Font  
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  Super.Font = Value
+  $hCal.UpdateFont
+  
+End
+
+Private Function Colors_Read() As _DateChooser_Colors
+
+  _DateChooser_Colors._Calendar = $hCal
+  Return _DateChooser_Colors
+
+End
+
+
+Public Sub SetFocus()
+  
+  $hCal.SetFocus
+  
+End
+
+Private Function Mode_Read() As Integer
+
+  If $hCal.GetShowDate() Then
+    If $hCal.GetShowTime() Then
+      Return DateTime
+    Else
+      Return DateOnly
+    Endif
+  Else
+    Return TimeOnly
+  Endif
+
+End
+
+Private Sub Mode_Write(Value As Integer)
+
+  Select Case Value
+    Case DateOnly
+      $hCal.SetShowDate(True)
+      $hCal.SetShowTime(False)
+    Case DateTime
+      $hCal.SetShowDate(True)
+      $hCal.SetShowTime(True)
+    Case TimeOnly
+      $hCal.SetShowTime(True)
+      $hCal.SetShowDate(False)
+  End Select
+
+End
+
+Public Sub _get({Date} As Date) As _DateChooser_Date
+  
+  Dim hDate As _DateChooser_Date
+  
+  hDate = New _DateChooser_Date
+  hDate._Date = {Date}
+  hDate._View = Me
+  Return hDate
+  
+End
+
+Private Sub GetKey(dDate As Date) As String
+  
+  Return CStr(Date(dDate))
+  
+End
+
+
+Public Sub _GetData(dDate As Date, Optional bCreate As Boolean) As _DateChooser_Data
+
+  Dim hData As _DateChooser_Data
+
+  hData = $cData[GetKey(dDate)]
+  If Not hData Then
+    If bCreate Then
+      hData = New _DateChooser_Data
+      hData.Font = Me.Font
+      $cData[GetKey(dDate)] = hData
+    Else
+      $hData = New _DateChooser_Data
+      $hData.Font = Me.Font
+      Raise Data(dDate)
+      hData = $hData
+    Endif
+  Endif
+  
+  Return hData
+  
+End
+
+Private Function Data_Read() As _DateChooser_Data
+
+  Return $hData
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hCal.HasBorder()
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hCal.SetBorder(Value)
+
+End
+
+Private Function MinValue_Read() As Date
+
+  Return $dDateMin
+
+End
+
+Private Sub MinValue_Write(Value As Date)
+
+  $dDateMin = Value
+  $hCal.UpdateValue()
+
+End
+
+Private Function MaxValue_Read() As Date
+
+  Return $dDateMax
+
+End
+
+Private Sub MaxValue_Write(Value As Date)
+
+  $dDateMax = Value
+  $hCal.UpdateValue()
+
+End

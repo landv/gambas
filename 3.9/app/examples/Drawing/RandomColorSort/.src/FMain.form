@@ -1,0 +1,59 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,74,85)
+  Text = ("Random Colors, Sorted By Hue")
+  Icon = Picture["icon:/32/fill"]
+  Resizable = False
+  { daColorChart DrawingArea
+    MoveScaled(1,1,26,26)
+    Background = &HFFFFFF&
+    Border = Border.Plain
+  }
+  { pnlControls Panel
+    MoveScaled(28,1,14,66)
+    Background = &HFFFFFF&
+    Border = Border.Plain
+    { btnSave Button
+      MoveScaled(2,55,10,4)
+      ToolTip = ("Create PNG File of Current Image")
+      Text = ("Save")
+    }
+    { chkAxes CheckBox
+      MoveScaled(3,2,8,3)
+      Text = ("Hues")
+    }
+    { btnQuit Button
+      MoveScaled(2,60,10,4)
+      ToolTip = ("Esc Key Exits Too")
+      Text = ("Exit")
+      Cancel = True
+    }
+    { btnReDo Button
+      MoveScaled(2,50,10,4)
+      ToolTip = ("Redraw the Colors")
+      Text = ("Repeat")
+    }
+    { Label1 Label
+      MoveScaled(4,10,6,3)
+      Text = ("Count")
+      Alignment = Align.Center
+    }
+    { lblColorCount Label
+      MoveScaled(4,46,6,3)
+      Text = ("2")
+      Alignment = Align.Center
+    }
+    { chkDelay CheckBox
+      MoveScaled(3,5,8,3)
+      Text = ("Slow")
+    }
+    { scrColorCount Slider
+      MoveScaled(5,13,4,33)
+      ToolTip = ("Change the Number of Colors")
+      MinValue = 1
+      MaxValue = 15
+      PageStep = 1
+    }
+  }
+}

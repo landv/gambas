@@ -1,0 +1,29 @@
+' Gambas class file
+
+Export
+Inherits DBusVariant
+
+Public Const Signature As String = "a(iiay)"
+
+Public Sub _new(hPict As Picture)
+
+  Dim hImage As Image
+  Dim hFile As File
+  Dim hData As Byte[]
+  
+  If Not hPict Then
+    Me.Value = []
+  Else
+    hImage = hPict.Image
+    hImage.Format = "ARGB"
+    
+    hFile = Open Memory hImage.Data
+    hData = New Byte[hImage.W * hImage.H * 4]
+    hData.Read(hFile)
+    hFile.Close
+    
+    Me.Value = [[hImage.W, hImage.H, hData]]
+  Endif
+  
+End
+

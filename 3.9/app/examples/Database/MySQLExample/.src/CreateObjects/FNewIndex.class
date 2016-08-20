@@ -1,0 +1,79 @@
+' Gambas class file
+
+Private $sTable As String
+Private $sIndex As String
+Private $bEdit As Boolean = False
+
+Public Sub _new(Table As String, Optional Index As String)
+
+  If Index Then
+    $sIndex = Index
+    $bEdit = True
+  Endif
+  $sTable = Table
+  cmbFields.List = modMain.$Connection.MySQL.Table.Fields(Table)
+  If Index = "PRIMARY" Then chkPrimaryKey.Value = True
+
+End
+
+Public Sub Form_Open()
+
+  Dim sField As String
+
+  If $bEdit Then
+    Me.Text = ("Edit Index")
+    lblTitle.Text = Me.Text
+    If $sIndex <> "PRIMARY" Then txtName.Enabled = False
+    txtName.Text = $sIndex
+    For Each sField In modMain.$Connection.MySQL.Index.Columns($sTable, $sIndex)
+      lstFields.Add(sField)
+    Next
+  Endif
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close()
+
+End
+
+Public Sub tbnOK_Click()
+
+  If $bEdit Then
+    If chkPrimaryKey.Value Then
+      modMain.$Connection.MySQL.Index.Delete($sTable, "PRIMARY")
+      modMain.$Connection.MySQL.Index.PrimaryKey($sTable, lstFields.List)
+    Else
+      modMain.$Connection.MySQL.Index.Modify(txtName.Text, lstFields.List, $sTable)
+    Endif
+  Else
+    If chkPrimaryKey.Value Then
+      modMain.$Connection.MySQL.Index.PrimaryKey($sTable, lstFields.List)
+    Else
+      modMain.$Connection.MySQL.Index.Add(txtName.Text, lstFields.List, $sTable)
+    Endif
+  Endif
+  Me.Close()
+  Catch
+    modMain.Error()
+
+End
+
+Public Sub cmbFields_Click()
+
+  lstFields.Add(cmbFields.Text)
+
+End
+
+Public Sub lstFields_Menu()
+
+  mnuDelete.Popup()
+
+End
+
+Public Sub Action_Activate(Name As String) As Boolean
+
+  If Name = "Delete" Then lstFields.Remove(lstFields.Index)
+
+End

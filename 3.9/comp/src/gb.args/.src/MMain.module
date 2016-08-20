@@ -1,0 +1,16 @@
+' Gambas module file
+
+Public Sub Main()
+
+  Dim iStack As Integer
+  
+  Args.Begin() '"Usage: gbx3 <options> <project>\n       gbx3 -e <expression>")
+  
+  Args.Has("k", "no-unload", "Do not unload shared libraries")
+  Args.Get("p", "profile", "Activate profiling mode", "path")
+  iStack = Args.GetInteger("s", "stack-size", "Stack size [256]", "kilobytes", 256)
+  
+  Print Args.End().Join(",")
+  Print iStack
+
+End

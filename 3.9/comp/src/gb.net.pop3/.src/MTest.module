@@ -1,0 +1,54 @@
+' Gambas module file
+
+' This program is free software: you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation, either version 2 of the License, or
+' (at your option) any later version.
+
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+
+Public Sub Main()
+
+  Dim msg As New Pop3Client
+  Dim message As _Pop3Client_Message
+  Dim hMsg As MimeMessage
+
+  msg.Debug = True
+
+  msg.User = ""
+  msg.Password = ""
+
+  msg.Host = ""
+  msg.Encrypt = Net.None
+
+  msg.Open()
+
+  ' Print msg.List().Join("\n")
+  ' Print
+  ' Print msg.ListUniqueID().Join("\n")
+
+  ' Print msg[0].Sender
+  ' Print msg[0].Part[0].ContentEncodin
+
+  'msg[2].Delete
+
+  ' Print msg.Stat()[0]
+
+  '
+
+  For Each message In msg
+    Print message.Index;; message.Size
+    hMsg = message.Message
+    Try Print hMsg.Sender
+  Next
+
+  msg.Reset()
+
+  'Print msg.List().Join("\n")
+
+  msg.Close()
+
+End

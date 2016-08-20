@@ -1,0 +1,199 @@
+' Gambas class file
+
+' ==================================================================
+' @Class: TestSuite
+' @Author: R Morgan <rmorgan62@gmail.com>
+' @Date: 03/01/2012
+' @Ver: 0.01
+' @Desc: A framework for running unit and regression tests.
+' ==================================================================
+Public Name As String       ' Name of test, usually the function or method name.
+Public msgError As String   ' Error Message if any
+Public hasError As Boolean = False ' True is we find an error
+Public Expected As Variant  ' Expected Value
+Public Result As Variant    ' Result value
+Public ExpType As String    ' Expected Datatype
+Public ResType As String    ' Result Datatype
+Public Note As String       ' Note on test
+
+'-------------------------------------------------------------------
+'@Sub: AddError
+'@Desc: This method simply adds the passed error string to the 
+'error message array.
+'@Ver:0.01
+'@First: 03/01/2012
+'@Returns: Void
+'@Param msg - A string containing the error message 
+'-------------------------------------------------------------------
+Public Sub AddError(msg As String)
+  
+ Me.msgError = msg
+ Me.hasError = True
+  
+End
+
+
+'-------------------------------------------------------------------
+'@Func; TypeError
+'@Desc: This method creates an error message for a type error 
+'@Ver:0.01
+'@First: 03/01/2012
+'@Returns: A string containing the type error message.
+'@Param msg - A string containing the type as a string.
+'-------------------------------------------------------------------
+Public Function TypeError(gotType As String, expectedType As String) As String
+  
+  Dim msg As String
+  
+  msg = "Type error :<<< Expected type: " & expectedType & " Got type: " & gotType & " >>>"
+  
+  Return msg
+   
+End
+
+
+'-------------------------------------------------------------------
+'@Desc: This method simply adds the passed error string to the 
+'error message array.
+'@Ver:0.01
+'@First: 03/01/2012
+'@Returns: Void
+'@Param: msg - A string containing the error message 
+'-------------------------------------------------------------------
+Public Function ValueError(gotValue As Variant, expectedValue As Variant) As String
+  
+  Dim msg As String
+  
+  msg = "Value error: <<< Expected: " & Str(expectedValue) & " Got: " & Str(gotValue) & " >>>"
+  Return msg
+  
+End
+
+
+'-------------------------------------------------------------------
+'@Desc: This method simply adds the passed error string to the
+'error message array.
+'@Ver:0.01
+'@First: 03/17/2012
+'@Returns: Void
+'@Params: msg - A string contianing the error message.
+'-------------------------------------------------------------------
+Public Function LengthError(result As Integer, expected As Integer) As String
+  Dim msg As String
+  
+  msg = "Length error: <<< Expected a length of " & Str(expected) & " Got: " & Str(expected) & " >>>"
+  Return msg
+  
+End
+
+
+'-------------------------------------------------------------------
+'@Desc: This method simply adds the passed error string to the 
+'error message array.
+'@Ver:0.01
+'@First: 03/01/2012
+'@Returns: Void
+'@Param msg - A string containing the error message 
+'-------------------------------------------------------------------
+Public Function getTypeString(p As Variant) As String
+  
+  Select Case TypeOf(p)
+    Case gb.NULL 
+      Return "NULL"
+    Case gb.Boolean
+      Return "Boolean"
+    Case gb.Byte
+      Return "Byte"
+    Case gb.Class
+      Return "Class"
+    Case gb.Date
+      Return "Date"
+    Case gb.Float
+      Return "Float"
+    Case gb.Integer
+      Return "Integer"
+    Case gb.Long
+      Return "Long"
+    Case gb.Object
+      Return "Object"
+    Case gb.Pointer
+      Return "Pointer"
+    Case gb.Short
+      Return "Short"
+    Case gb.Single
+      Return "Single"
+    Case gb.String
+      Return "String"
+    Case gb.Variant
+      Return "Variant"
+    Default 
+      Return "Unknown"  
+  End Select
+
+End
+
+
+'-------------------------------------------------------------------
+'Compare two value for equality
+'-------------------------------------------------------------------
+Public Function IsEqual(result As Variant, expected As Variant) As Boolean
+  Dim err As Boolean = False
+  Dim i As Integer = 0
+
+  If TypeOf(result) <> TypeOf(expected) Then
+    AddError(TypeError(Me.ResType, Me.ExpType))
+    Me.hasError = True
+  Else
+    If IsObject(result) And result Is Array And expected Is Array Then
+      If result.len <> expected.len Then
+       Me.hasError(LengthError(result.len, expected.len))
+      Else
+        For i = 0 To result.len - 1
+          If result[i] <> expected[i] Then
+            Me.hasError = True
+          Endif
+        Next
+      Endif
+      
+    Else
+      If result <> expected Then
+        AddError(ValueError(Me.Result, Me.Expected))
+        Me.hasError = True
+      Endif
+    Endif
+  Endif
+  
+  Return Me.hasError
+  
+End
+
+
+
+'-------------------------------------------------------------------
+'@Desc: This method tests the given values for equality in both
+' type and value.
+'@Ver:0.01
+'@First: 03/01/2012
+'@Returns:
+'@Param: func - A string containing the function that was tested.
+'@Param: result - A variant value containing the actual result of
+' the test.
+'@Param: expected - A variant value containing the expected result
+ 'value for the test.
+'-------------------------------------------------------------------
+Public Sub Run(func As String, result As Variant, expected As Variant, Optional note As String) As Boolean
+  
+  Dim err As Boolean = False
+  
+  Me.Name = func
+  Me.Note = note
+  
+  Me.Expected = expected
+  Me.ExpType = getTypeString(expected) 
+  
+  Me.Result = result
+  Me.ResType = Me.getTypeString(result)
+  
+  Return IsEqual(result, expected)
+  
+End

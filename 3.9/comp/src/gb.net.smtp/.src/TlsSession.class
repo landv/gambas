@@ -1,0 +1,68 @@
+' Gambas class file
+
+Inherits SmtpSession
+
+Property Read Connected As Boolean
+
+Private $hProcess As Process
+Private $bConnected As Boolean
+Private $sError As String
+
+Public Sub Connect(hClient As SmtpClient, sHost As String, iPort As Integer)
+
+  If Not sHost Then sHost = "localhost"
+  If iPort = 0 Then iPort = 465
+  
+  Super.Connect(hClient, sHost, iPort)
+
+  $hProcess = Exec [SmtpSession.GetOpenSSLPath(), "s_client", "-quiet", "-starttls", "smtp", "-connect", sHost & ":" & iPort] For Read Write As "Client"
+  $hProcess.Blocking = True
+  $hProcess.EndOfLine = gb.Windows
+  
+  $bConnected = False
+  Repeat
+    Wait 0.1
+    If Not $hProcess Then
+      If $sError Then 
+        Error.Raise(Trim(Split($sError, "\n")[0]))
+      Else
+        Error.Raise("TLS session has stopped unexpectedly")
+      Endif
+    Endif
+  Until $bConnected 
+  
+  Me.Stream = $hProcess
+
+End
+
+Public Sub Disconnect()
+
+  $hProcess.Kill()
+
+End
+
+Public Sub Client_Error(Text As String)
+  
+  $sError &= Text
+  
+End
+
+Public Sub Client_Read()
+  
+  $bConnected = True
+  
+End
+
+
+Public Sub Client_Kill()
+
+  Super.Disconnect
+  $hProcess = Null
+
+End
+
+Private Function Connected_Read() As Boolean
+
+  If $hProcess And If $hProcess.State = Process.Running Then Return True
+
+End

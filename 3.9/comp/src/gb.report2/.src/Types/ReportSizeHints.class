@@ -1,0 +1,26 @@
+' Gambas class file
+
+Export
+Public Width As Float
+Public Height As Float
+Public NotFinished As Boolean
+
+Static Public Function _call(Width As Float, Height As Float, Optional NotFinished As Float) As ReportSizeHints
+  Dim hSH As New ReportSizeHints
+  hSH.Width = Width
+  hSH.Height = Height
+  hSH.NotFinished = NotFinished
+  Return hSH
+End
+
+Static Public Function FromString(Width As String, Height As String, Optional NotFinished As Boolean) As ReportSizeHints
+  
+  Dim hSH As New ReportSizeHints
+  hSH.Width = TSizeParse[Width].ToInch()
+  hSH.Height = TSizeParse[Height].ToInch()
+  hSH.NotFinished = NotFinished
+  Return hSH
+  
+End
+
+

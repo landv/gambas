@@ -1,0 +1,78 @@
+' Gambas class file
+
+Export
+Public Name As String
+Private $bVisible As Boolean = True
+Property Visible As Boolean
+Public Copyright As String 
+Public $aStack As New String[]
+Property Opacity As Float
+Private $fOpaciy As Float = 1
+Property Read Loading As Boolean
+
+
+
+Event Refresh
+
+Public Sub _Draw() '(Optional bRefresh As Boolean = True)
+  
+  
+  
+End
+
+
+Private Function Visible_Read() As Boolean
+
+  Return $bVisible
+
+End
+
+Private Sub Visible_Write(Value As Boolean)
+
+  $bVisible = Value
+  Me.Load
+  Raise Refresh
+End
+
+
+
+Public Sub Load()
+  
+  
+  
+End
+
+
+Public Sub Refresh()
+  
+  
+  
+End
+
+Public Function CountActiveClients() As Integer
+  
+  
+  
+End
+
+
+Private Function Opacity_Read() As Float
+
+  Return $fOpaciy 
+
+End
+
+Private Sub Opacity_Write(Value As Float)
+
+  $fOpaciy = Min(1, Max(0, Value))
+
+End
+
+Private Function Loading_Read() As Boolean
+
+  
+
+End
+
+
+

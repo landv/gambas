@@ -1,0 +1,83 @@
+' Gambas class file
+
+Public Sub _new()
+
+  WebContainer2.Style["background-color"] = "#BFDFFF"
+  WebHTML2.Style["font-size"] = "200%"
+  WebHTML2.Style["font-weight"] = "bold"
+
+End
+
+Public Sub WebButton3_Click()
+
+  Last.Text = "Gambas rules!"
+
+End
+
+Public Sub WebForm_Open()
+
+  WebForm.Print("Form is opened")
+
+End
+
+Public Sub WebButton2_Click()
+
+  WebButton2.Parent.Border = Not WebButton2.Parent.Border
+
+End
+
+
+Public Sub WebButton1_Click()
+
+  Randomize
+  WebHTML2.Style["font-size"] = "100%"
+  WebHTML2.Html &= "<span style=\"color:#" & Hex$(Rand(0, &HFFFFFF&), 6) & ";margin-left:1em;\">Hello world!</span>"
+
+End
+
+Public Sub WebForm_Event()
+
+  WebContainer2.Refresh
+
+End
+
+Public Sub WebButton4_Click()
+
+  WebButton4.Text = CStr(CInt(WebButton4.Text) + 1)
+
+End
+
+Public Sub WebButton5_Click()
+
+  WebHTML2.Style["font-size"] = "200%"
+  WebHTML2.Html = "Header"
+
+End
+
+Public Sub WebButton6_Click()
+
+  WebButton4.Enabled = Not WebButton4.Enabled
+
+End
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End
+
+Public Sub WebTextBox1_Change()
+
+  Dim sText As String
+
+  sText = Last.Text
+  
+  If sText Then
+    WebHtml1.Text = Html("You have entered: « " & sText & " ».")
+    WebHtml1.Visible = True
+  Else
+    WebHtml1.Text = Html("You have entered nothing.")
+    WebHtml1.Visible = False
+  Endif
+
+End

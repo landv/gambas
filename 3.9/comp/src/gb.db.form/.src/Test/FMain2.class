@@ -1,0 +1,74 @@
+' Gambas class file
+
+'PRIVATE $hConn AS NEW Connection
+
+Public Sub Form_Open()
+
+  'DB.Debug = True
+  'DataSource2.Connection = DB.Current
+  
+End
+
+Public Sub DataControl6_Validate(Value As Variant)
+
+  If IsNull(Value) Then Return
+  If Value < 0 Or Value > 10000 Then
+    Stop Event
+  Endif
+
+End
+
+' Public Sub DataCombo2_Click()
+' 
+'   DataSource1.Filter = DataCombo2.GetFilter()
+' 
+' End
+
+
+Public Sub Button1_Click()
+
+  Dim hConn As New Connection
+  
+  hConn.Type = "sqlite"
+  hConn.Host = "/home/benoit"
+  hConn.Name = "test"
+  
+  DataSource2.Connection = hConn
+
+End
+
+Public Sub DataBrowser1_Data((Row) As Integer, Column As Integer, Value As Variant)
+
+  If IsNull(Value) Then Return
+
+  Select Case Column
+    
+    Case 3
+      DataBrowser1.Data.Font.Bold = True
+
+    Case 4
+      DataBrowser1.Data.Text = Format(Value, "$0.00")
+  
+  End Select
+  
+End
+
+Public Sub DataSource1_BeforeSave(Data As Result)
+
+  If DataSource2["color"] Then Data["color"] = DataSource2["color"]
+
+End
+
+Public Sub DataSource1_BeforeDelete(Keys As Variant[])
+
+  Dim vVal As Variant
+
+  Print "Before delete: ";
+  For Each vVal In Keys
+    Print vVal;;
+  Next
+  Print
+  
+  Stop Event
+
+End

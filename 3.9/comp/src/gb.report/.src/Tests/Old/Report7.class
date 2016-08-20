@@ -1,0 +1,29 @@
+' Gambas class file
+
+Public Sub _new()
+
+  'Report.Debug = True
+  ' ReportPanel2.Border.RoundCorner.TopLeft = "5mm/5mm"
+  ' ReportPanel2.Border.RoundCorner.BottomLeft = "5mm/5mm"
+  ' ReportPanel2.Border.RoundCorner.TopRight = "5mm/5mm"
+  ' ReportPanel2.Border.RoundCorner.BottomRight = "5mm/5mm"
+
+End
+
+Public Sub ReportImage1_Data(Index As Integer)
+
+  Last.Data = Picture["icon:/32/directory"].Image
+
+End
+
+Public Sub ReportImage2_Data(Index As Integer)
+
+  Last.Data = Picture["icon:/32/directory"].Image
+
+End
+
+Public Sub ReportImage3_Data(Index As Integer)
+
+  Last.Data = Picture["icon:/32/directory"].Image
+
+End

@@ -1,0 +1,97 @@
+' Gambas class file
+
+Export
+Inherits ReportFrame
+
+Public Const _Properties As String = "*,Text,Alignment{Align.*}"
+Public Const _Similar As String = "ReportControl"
+Public Const _DefaultEvent As String = "Data"
+Property Text As String
+Property Alignment As Integer
+
+Private $sText As String
+Private $iAlignment As Integer = Align.TopNormal
+
+
+Public Data As String
+Event Data(Index As Integer)
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return $iAlignment
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  $iAlignment = Value
+
+End
+
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
+
+  Dim hMyHints As New TSizeHint
+  Dim fTextHeight As Float
+  Dim sTmp As String
+
+  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalWidth, DataIndex)
+
+  If Me.Autoresize Or If (Me._Width = 0 And Me._Height = 0) Then
+    If Not $sText Then
+      Raise Data(DataIndex)
+      sTmp = Data
+    Else
+      sTmp = $sText
+    Endif
+    'La largeur est fixée par l'utilisateur
+    'Calcule de la hauteur
+    If Not IsNull(Me.Font) Then Paint.Font = Me.Font
+    fTextHeight = ReportUnits._PixelsToReportUnits(Paint.RichTextExtents(sTmp, ReportUnits._ReportUnitsToPixels(hMyHints.Width)).Height)
+    hMyHints.Height = Max(hMyHints.Height, Me.Border._Top + Me.Padding._Top + fTextHeight + Me.Padding._Bottom + Me.Border._Bottom)
+  Endif
+
+  Return hMyHints
+
+End
+
+Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, DataIndex As Integer)
+
+  Dim iX, iY, iW, iH As Integer
+  Dim sTmp As String
+
+  Paint.Brush = Me._GetActualBrush(iX, iY, iX + hControl.RealWidth, iY + hControl.RealHeight)
+
+  If Not $sText Then
+    Raise Data(DataIndex)
+    sTmp = Data
+  Else
+    sTmp = $sText
+  Endif
+
+  'Set the Font if it is initialized
+  If Not IsNull(Me.Font) Then Paint.Font = Me.Font
+
+  iX = (x + hControl.RealLeft + ReportUnits._ReportUnitsToPixels(Me.Padding._Left + Me.Border._Left))
+  iY = (y + hControl.RealTop + ReportUnits._ReportUnitsToPixels(Me.Padding._Top + Me.Border._Top))
+  iW = (hControl.RealWidth - ReportUnits._ReportUnitsToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
+  iH = (hControl.RealHeight - ReportUnits._ReportUnitsToPixels(Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom))
+
+  'Paint.Rectangle(iX, iY, iW, iH)
+  'Paint.Clip
+  Paint.RichText(sTmp, iX, iY, iW, iH, $iAlignment)
+  Paint.Fill
+  'Paint.ResetClip
+
+End

@@ -1,0 +1,30 @@
+' Gambas class file
+
+
+Public Sub ReportDrawingArea_Layout()
+  
+  
+  
+End
+
+
+Public Sub ReportDrawingArea1_Layout(Width As Float, Height As Float, Index As Integer)
+
+  Last.SizeHints = ReportSizeHints.FromString("3cm", "4cm", False)
+  
+End
+
+
+Public Sub ReportDrawingArea1_Draw(Width As Float, Height As Float, Index As Integer)
+
+'Print "Largeur passée = " & Width
+'Print "Paint.Width = " & Paint.Width
+  Draw.line(0, 0, Paint.Width, Paint.Height)
+  
+End
+
+Public Sub Report_Open()
+
+  
+
+End

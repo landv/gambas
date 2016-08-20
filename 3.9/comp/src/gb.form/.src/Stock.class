@@ -1,0 +1,771 @@
+' Gambas class file
+
+Export
+
+Static Property Debug As Boolean
+Static Property Read List As String[]
+Static Property Read Themes As String[]
+Static Property Read Icons As String[]
+
+Static Private $bInit As Boolean
+'Static Private $sTheme As String
+Static Private $aIconPath As String[]
+Static Private $cIconMap As Collection
+Static Private $aList As String[]
+Static Private $aSizeDec As Integer[] = [256, 128, 64, 48, 32, 24, 22, 16]
+Static Private $aSizeInc As Integer[] = [16, 22, 24, 32, 48, 64, 128, 256]
+Static Private $bDebug As Boolean
+'Static Private $bDebugLoad As Boolean
+
+Class _DefaultStock
+
+' Static Private Sub GetDesktop() As String
+'   
+'   Dim sOutput As String
+'   
+'   If Env["KDE_FULL_SESSION"] Then
+'     If Env["KDE_SESSION_VERSION"] = "4" Then
+'       Return "KDE4"
+'     Else If Env["KDE_SESSION_VERSION"] = "5" Then
+'       Return "KDE5"
+'     Else
+'       Return "KDE"
+'     Endif
+'   Else If Env["GNOME_DESKTOP_SESSION_ID"] Then
+'     Return "GNOME"
+'   Else If Env["MATE_DESKTOP_SESSION_ID"] Or If Env["MATECORBA_SOCKETDIR"] Then
+'     Return "MATE"
+'   Else If Env["E_BIN_DIR"] And If Env["E_LIB_DIR"] Then
+'     Return "ENLIGHTENMENT"
+'   Else If Env["WMAKER_BIN_NAME"] Then
+'     Return "WINDOWMAKER"
+'   Else If Env["DESKTOP_SESSION"] = "LXDE" Then
+'     Return "LXDE"
+'   Else
+'     Shell "xprop -root XFCE_DESKTOP_WINDOW" To sOutput
+'     If sOutput Then Return "XFCE"
+'   Endif
+'   
+'   Select Case Env["XDG_CURRENT_DESKTOP"]
+'     Case "LXDE"
+'       Return "LXDE"
+'   End Select
+'   
+'   Return ""
+'   
+' Catch
+'   
+' End
+
+Static Private Sub SearchDesktop()
+  
+  Dim sDesktop As String
+  If Application.Theme Then Return
+  sDesktop = Desktop.Type
+  If $bDebug Then Error "gb.form: desktop is " & sDesktop
+  Application.Theme = LCase(sDesktop)
+  
+End
+
+Static Private Sub LoadMap()
+  
+  Dim hFile As File
+  Dim sLig As String
+  Dim iPos As Integer
+  Dim sKey As String
+  Dim sIcon As String
+  
+  $cIconMap = New Collection
+  $aList = New String[]
+  
+  hFile = Open "map" &/ "icon.map"
+  For Each sLig In hFile.Lines
+    sLig = Trim(sLig)
+    If InStr("';#", Left(sLig)) Then Continue
+    
+    iPos = InStr(sLig, " ")
+    If iPos Then
+      sIcon = Trim(Mid$(sLig, iPos + 1))
+      sKey = Left(sLig, iPos - 1)
+    Else
+      sIcon = ""
+      sKey = sLig
+    Endif
+    
+    $cIconMap[sKey] = sIcon
+    $aList.Add(sKey)
+    
+  Next
+  
+  $aList.Sort
+  
+End
+
+Static Private Sub AddPath(sMap As String, sPath As String, Optional sPattern As String)
+  
+  Dim aDir As String[]
+  Dim iPos As Integer
+  
+  If Not Exist(sPath) Then Return
+  
+  If Not sPattern Then
+    
+    sPattern = "*"
+    
+    aDir = Dir(sPath, "*", gb.Directory) 
+    If aDir.Count Then
+      If aDir[0] Like "*[1-9]x[1-9]*" Then
+          sPattern = "&1x&1!&2"
+      Else If IsDigit(aDir[0]) Or If Exist(sPath &/ "scalable") Then
+        sPattern = "&1!&2"
+      Else
+        aDir = Dir(sPath &/ aDir[0], "*", gb.Directory)
+        If aDir.Count Then
+          If aDir[0] Like "*[1-9]x[1-9]*" Then
+            sPattern = "&2!&1x&1"
+          Else If IsDigit(aDir[0]) Or If Exist(sPath &/ "scalable") Then
+            sPattern = "&2!&1"
+          Endif
+        Endif
+      Endif
+    Endif
+  Endif
+  
+  sPath &/= sPattern
+  
+  If sMap Then sPath = sMap & ":" & sPath
+  If Not $aIconPath.Exist(sPath) Then 
+    $aIconPath.Add(sPath)
+    If $bDebug Then 
+      iPos = InStr(sPath, ":")
+      If iPos Then sPath = Mid$(sPath, iPos + 1)
+      Error "gb.form: add icon path: "; sPath
+    Endif
+  Endif
+  
+End
+
+Static Private Sub FindInConfigFile(aPath As String[], sPattern As String, Optional sFindFirst As String) As String[]
+  
+  Dim hFile As File
+  Dim sLine As String
+  Dim sPath As String
+  
+  For Each sPath In aPath
+  
+    If Not Exist(sPath) Then Continue
+    
+    hFile = Open sPath
+    For Each sLine In hFile.Lines
+      If sFindFirst Then
+        If sLine = sFindFirst Then
+          sFindFirst = ""
+        Else
+          Continue
+        Endif
+      Endif
+      If sLine Like sPattern Then Return Scan(sLine, sPattern)
+    Next
+    
+  Next
+  
+End
+
+' TODO: Vérifier les thèmes
+' FIXME: Mettre à jour
+
+
+
+Static Private Sub SearchTheme(sDesktop As String)
+  
+  'Dim hFile As File
+  'Dim sLig As String
+  Dim sIconPath As String
+  Dim sPath As String
+  Dim sTheme As String
+  Dim aFind As String[]
+  Dim sDefaultTheme As String
+  Dim sProg As String
+
+  sDesktop = LCase(sDesktop)
+  
+  Select sDesktop
+      
+    Case "gnome"
+      
+      If Not sTheme Then Try Exec ["gconftool-2", "-g", "/desktop/gnome/interface/icon_theme"] To sTheme
+      
+      If sTheme Then 
+        sTheme = Trim(sTheme)
+        GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
+      Endif
+      
+      AddPath("gnome", "/usr/share/icons/gnome")
+      AddPath("gnome", "/usr/share/icons/hicolor")
+      'AddPath("gnome", "/usr/X11R6/share/icons/hicolor")
+      
+    Case "mate"
+      
+      If Not sTheme Then Try Exec ["mateconftool-2", "-g", "/desktop/mate/interface/icon_theme"] To sTheme
+      
+      If sTheme Then 
+        sTheme = Trim(sTheme)
+        GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
+      Endif
+      
+      AddPath("gnome", "/usr/share/icons/mate")
+      AddPath("gnome", "/usr/share/icons/gnome")
+      AddPath("gnome", "/usr/share/icons/hicolor")
+      'AddPath("gnome", "/usr/X11R6/share/icons/hicolor")
+      
+    Case "kde", "kde4", "kde5", "trinity"
+      
+      Select Case sDesktop
+        Case "kde"
+          sProg = "kde-config"
+        Case "trinity"
+          sProg = "tde-config"
+        Case "kde4"
+          sProg = "kde4-config"
+        Case "kde5" ' ??? How do you get KDE5 paths ???
+          sProg = ""
+      End Select
+      
+      If sProg Then
+        Try Exec [sProg, "--path", "icon"] To sIconPath
+        sIconPath = Trim(sIconPath)
+      Endif
+      
+      If Not sIconPath Then sIconPath = "/usr/share/icons"
+        
+      If Not sTheme Then
+    
+        aFind = FindInConfigFile(["~/." & sDesktop & "/share/config/kdeglobals", "~/.kde/share/config/kdeglobals", "~/.config/kdeglobals"], "Theme=*", "[Icons]")
+        If aFind Then sTheme = aFind[0]
+        
+      Endif
+      
+      If sTheme Then GetAllThemePath(sDesktop, Split(sIconPath, ":"), sTheme)
+      
+      Select Case sDesktop
+        Case "kde", "trinity"
+          sDefaultTheme = "crystalsvg"
+        Case "kde4"
+          sDefaultTheme = "oxygen"
+        Case "kde5"
+          sDefaultTheme = "breeze"
+      End Select
+      
+      For Each sPath In Split(sIconPath, ":")
+        AddPath(sDesktop, sPath &/ sDesktop)
+      Next
+      
+    Case "xfce"
+      
+      If Not sTheme Then
+        aFind = FindInConfigFile(["~/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml", "~/.config/xfce4/mcs_settings/gtk.xml"], "*<property name=\"IconThemeName\" type=\"string\" value=\"*\"/>*")
+        If aFind Then sTheme = Trim(aFind[1])
+      Endif
+      
+      If sTheme Then GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
+      'GetAllThemePath("gnome", "/usr/X11R6/share/icons", sTheme)
+      
+      AddPath("gnome", "/usr/share/icons/gnome")
+    
+    Case "lxde"
+      
+      If Not sTheme Then
+        aFind = FindInConfigFile(["~/.config/lxsession/LXDE/desktop.conf", "/etc/xdg/lxsession/LXDE/desktop.conf", "~/.config/lxde/config", "/usr/share/lxde/config"], "sNet/IconThemeName=*")
+        If aFind Then sTheme = Trim(aFind[0])
+      Endif
+      
+      If sTheme Then GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
+    
+      AddPath("gnome", "/usr/share/icons/gnome")
+      
+    'Case "gambas"
+    Case Else
+      
+      If sDesktop <> "gambas" Then
+        GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], Application.Theme)
+      Endif
+      
+  End Select 
+  
+  AddPath("", "stock", "&1")
+  $aIconPath.Add("#")
+  
+End
+
+
+Static Private Sub InitTheme()
+  
+  If Not $bDebug Then
+    If Env["GB_STOCK_DEBUG"] = "1" Or If Env["GB_STOCK"] Then $bDebug = True
+  Endif
+  
+  $aIconPath = New String[]
+  LoadMap
+  
+  If $bDebug Then Error "gb.form: init stock with application theme: '"; Application.Theme; "'"
+  
+  SearchDesktop
+  
+  SearchTheme(Application.Theme)
+  
+  $bInit = True
+  
+End
+
+Static Public Function GetSize(Size As String) As Integer
+  
+  Dim iSize As Integer
+  
+  Select Case Size
+    Case "small"
+      iSize = (CInt(Desktop.Scale * 2.5) \ 4) * 4 '16 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 4
+    Case "medium"
+      iSize = (CInt(Desktop.Scale * 2.5) \ 4) * 5.5  '22 'CInt(Desktop.Scale * 5 / 8 * 1.5 + 0.5) * 4 
+    Case "large"
+      iSize = (CInt(Desktop.Scale * 2.5) \ 4) * 8  '32 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 8
+    Case "huge"
+      iSize = (CInt(Desktop.Scale * 2.5) \ 4) * 12  '48 'CInt(Desktop.Scale * 5 / 8 * 1.5 + 0.5) * 8
+    Case Else 
+      Try iSize = CInt(Size)
+  End Select
+  
+  Return iSize
+  
+End
+
+Static Private Sub GetScalablePath(sPath As String) As String
+  
+  If InStr(sPath, "&1x&1") Then Return Replace(sPath, "&1x&1", "scalable")
+  If InStr(sPath, "&1") Then Return Replace(sPath, "&1", "scalable")
+  
+End
+
+Static Private Sub DoLoadIcon(sPath As String, iSize As Integer, iRealSize As Integer) As Picture
+
+  Dim sName As String
+  Dim sDir As String
+  Dim hPict As Picture
+  Dim hImage As Image
+  
+  sName = File.Name(sPath)
+  sDir = File.Dir(sPath)
+  
+  'Error "{";; sPath
+  
+  'If $bDebugLoad Then Error "-> "; sDir &/ sName
+  
+  If iRealSize Then
+    
+    sName = sName & ".svg" 'File.SetExt(sName, "svg")  'Warning this change is for files than have a point in the name
+    Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iRealSize)
+    If Not Error Then Goto RETURN_PICT
+    
+    sName = File.SetExt(sName, "svgz")
+    Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iRealSize)
+    If Not Error Then Goto RETURN_PICT
+    
+    sName = File.SetExt(sName, "png")
+    Try hImage = Image.Load(sDir &/ sName)
+    If Not Error Then 
+      hPict = hImage.Stretch(iRealSize, iRealSize).Picture
+      Goto RETURN_PICT
+    Endif
+    
+  Else
+    
+    sName = sName & ".png" 'File.SetExt(sName, "png")  'Warning this change is for files than have a point in the name
+    Try hImage = Image.Load(sDir &/ sName)
+    If Not Error Then 
+      hPict = hImage.Picture
+      Goto RETURN_PICT
+    Endif
+    
+    sName = File.SetExt(sName, "svg")
+    Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iSize)
+    If Not Error Then Goto RETURN_PICT
+    
+    sName = File.SetExt(sName, "svgz")
+    Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iSize)
+    If Not Error Then Goto RETURN_PICT
+    
+  Endif
+  
+  hPict = Null
+  
+RETURN_PICT:
+
+  'Error "}"
+  Return hPict
+  
+End
+
+
+Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integer, Optional iRealSize As Integer) As Picture
+  
+  Dim hPict As Picture
+  Dim sPath As String
+  Dim sTest As String
+  Dim iPos As Integer
+  Dim sTheme As String
+  Dim sDir As String
+  Dim sSubDir As String
+  Dim sMime As String
+  Dim bBreak As Boolean
+  
+  For Each sFile In Split(sFile, ";")
+    
+    If Left(sFile) = "[" Then
+      iPos = InStr(sFile, "]")
+      If iPos Then
+        sTheme = LCase(Mid$(sFile, 2, iPos - 2))
+        If sTheme Begins "+" Then
+          If iSize <= 32 Then Continue
+          sTheme = Mid$(sTheme, 2)
+        Else If sTheme Begins "-" Then
+          If iSize > 32 Then Continue
+          sTheme = Mid$(sTheme, 2)
+        Endif
+        If File.Dir(sTemplate) Not Like "*/" & sTheme & "/*" Then Continue
+        sFile = Mid$(sFile, iPos + 1)
+        bBreak = True
+      Endif
+    Endif
+    
+    If System.RightToLeft Then
+      If sFile Ends "-ltr" Then
+        sFile = Left(sFile, -4) & "-rtl"
+      Else If sFile Ends "-rtl" Then
+        sFile = Left(sFile, -4) & "-ltr"
+      Endif
+    Endif
+    
+    If sFile Begins "$(mime)/" Then
+      
+      'Debug sTemplate;; sFile;; iSize;; iRealSize
+      
+      If Not sMime Then
+        
+        For Each sTest In ["mimetypes", "mimes"]
+          If sTemplate Ends "/*" Then
+            sPath = File.Dir(sTemplate) &/ sTest
+          Else
+            sPath = Subst(sTemplate, CStr(iSize), sTest)
+          Endif
+          If IsDir(sPath) Then 
+            sMime = sTest
+            Break
+          Endif
+        Next
+        
+        If Not sMime Then Return
+        
+      Endif
+      
+      sFile = sMime &/ Mid$(sFile, 9)
+      
+    Endif
+    
+    If sTemplate Ends "/*" Then
+      sDir = File.Dir(sTemplate) &/ File.Dir(sFile)
+      If IsDir(sDir) Then
+        For Each sSubDir In Dir(sDir, "*", gb.Directory).Sort()
+          sPath = sDir &/ sSubDir &/ File.Name(sFile)
+          hPict = DoLoadIcon(sPath, iSize, iRealSize)
+          If hPict Then Return hPict
+        Next
+        sPath = sDir &/ File.Name(sFile)
+        hPict = DoLoadIcon(sPath, iSize, iRealSize)
+        If hPict Then Return hPict
+      Endif
+    Else
+      sPath = Subst(sTemplate, CStr(iSize), File.Dir(sFile)) &/ File.Name(sFile)
+      hPict = DoLoadIcon(sPath, iSize, iRealSize)
+      If hPict Then Return hPict
+    Endif
+    
+    If bBreak Then Break
+    
+  Next
+  
+End
+
+Static Public Function _get((Key) As String, Optional {Default} As String) As Picture
+  
+  Dim sPath As String
+  Dim hPict As Picture
+  Dim iPos As Integer
+  Dim iSize As Integer
+  Dim sSize As String
+  Dim iTry As Integer
+  Dim sTemplate As String
+  Dim sFile As String
+  Dim sMap As String
+  Dim sDirPattern As String
+  'Dim sCache As String
+  
+  If Not $bInit Then 
+    InitTheme
+  Endif
+  
+  If $bDebug Then Error "gb.form: load stock icon: "; Key
+  
+  iSize = 16
+  iPos = InStr(Key, "/")
+  If iPos Then 
+    sSize = Left$(Key, iPos - 1)
+    Key = Mid$(Key, iPos + 1)
+    iSize = GetSize(sSize)
+  Endif
+  
+  'hPict = Picture[CStr(iSize) &/ Key]
+  'If hPict Then Return hPict
+  
+  ' sCache = User.Home &/ ".cache/gambas3/gb.form/theme/" &/ LCase(Application.Theme) &/ CStr(iSize) &/ Key & ".png"
+  ' If Exist(sCache) Then
+  '   Try hPict = Picture.Load(sCache)
+  '   If hPict Then Goto __RETURN
+  ' Endif
+ 
+  For Each sPath In $aIconPath
+    
+    If sPath = "#" Then
+      
+      If Key Begins "$(mime)/" Then
+        Key = Mid$(Key, 9)
+      Else If Not Stock.Icons.Exist(Key) Then 
+        Break
+      Endif
+      
+      Try Component.Load("gb.form.stock")
+      If Error Then
+        Error "gb.form: warning: unable to load gb.form.stock component"
+        Goto __RETURN
+      Endif
+      
+      sFile = Key
+      
+      'If Key = "tools" Then Error "Using default stock"
+      
+      Try hPict = _DefaultStock.LoadImage(Key, iSize).Picture
+      If Not Error Then Goto __RETURN
+      Try hPict = PictureFromSvg(_DefaultStock.LoadSvgImage(Key), iSize)
+      If Not Error Then Goto __RETURN
+      
+      'If Key = "tools" Then Error "...failed"
+      
+    Else
+      
+      iPos = InStr(sPath, ":")
+      If iPos Then 
+        sMap = Left$(sPath, iPos - 1)
+        If Left(Key) <> "." Then
+          sFile = $cIconMap[Key]
+          If Not sFile Then sFile = Key
+        Else
+          sFile = Mid$(Key, 2)
+        Endif
+        sPath = Mid$(sPath, iPos + 1)
+      Else 
+        sFile = Key
+        If Left(sFile) = "." Then sFile = Mid$(sFile, 2)
+      Endif
+      
+      ' If Key = "tools" Then 
+      '   $bDebugLoad = True
+      ' Else
+      '   $bDebugLoad = False
+      ' Endif
+      
+      If sFile = "#" Then Continue
+      
+      sDirPattern = Replace(File.Name(sPath), "!", "/")
+      
+      sPath = File.Dir(sPath)
+      If sPath Begins "~/" Then sPath = User.Home &/ Mid$(sPath, 3)
+      If Not Exist(sPath) Then Continue
+      
+      If Left(sPath) = "/" Then   
+        sTemplate = sPath &/ sDirPattern
+      Else 
+        sTemplate = sPath &/ "&1"
+      Endif 
+      
+      hPict = LoadIcon(sTemplate, sFile, iSize)
+      If hPict Then Goto __RETURN
+      
+      hPict = LoadIcon(GetScalablePath(sTemplate), sFile, iSize)
+      If hPict Then Goto __RETURN
+      
+      If sFile Ends ";#" Then Continue
+      
+      For Each iTry In $aSizeInc
+        If iTry < iSize Then Continue
+        hPict = LoadIcon(sTemplate, sFile, iTry, iSize)
+        If hPict Then Goto __RETURN
+      Next
+      
+      For Each iTry In $aSizeDec
+        If iTry >= iSize Then Continue
+        hPict = LoadIcon(sTemplate, sFile, iTry, iSize)
+        If hPict Then Goto __RETURN
+      Next
+        
+    Endif
+    
+  Next
+  
+__RETURN:
+
+  If Not hPict Then
+    
+    If {Default} Then Return _get({Default})
+    
+    If $bDebug Then
+      Error "gb.form: warning: unable to load "; CStr(iSize) &/ Key
+      'hPict = PictureFromSvg(SvgImage.Load("img/unknown.svg"), iSize)
+    Endif
+    
+  Endif
+
+  If hPict Then
+    ' Main.MkDir(File.Dir(sCache))
+    ' Try hPict.Save(sCache)
+    'Picture[CStr(iSize) &/ Key] = hPict
+    Return hPict
+  Endif
+  
+End
+
+Static Private Function List_Read() As String[]
+  
+  Error "gb.form: warning: Stock.List is deprecated. Use Stock.Icons instead"
+  Return Icons_Read()
+
+End
+
+Static Private Sub GetInheritance(aPath As String[], sTheme As String) As String[]
+  
+  Dim aInheritance As String[] = [sTheme]
+  Dim sPath As String
+  Dim sLine As String
+  Dim sChildTheme As String
+  
+  For Each sPath In aPath
+  
+    If Exist(sPath &/ sTheme &/ "index.theme") Then 
+    
+      For Each sLine In Split(File.Load(sPath &/ sTheme &/ "index.theme"), "\n")
+        
+        If InStr(sLine, "Inherits") Then 
+          For Each sChildTheme In Split(Scan(sLine, "*=*")[1])
+            If sChildTheme = sTheme Then Continue
+            If aInheritance.Exist(sChildTheme) Then Continue
+            aInheritance.Insert(GetInheritance(aPath, sChildTheme))
+          Next
+          Break
+        Endif
+        
+      Next
+      
+      Break
+      
+    Endif
+    
+  Next
+  
+  Return aInheritance
+  
+End
+
+Static Private Sub GetAllThemePath(sMap As String, aPath As String[], sTheme As String)
+  
+  Dim sPath As String
+  
+  For Each sTheme In GetInheritance(aPath, sTheme)
+    For Each sPath In aPath
+      AddPath(sMap, sPath &/ sTheme)
+    Next
+  Next
+  
+End
+
+Static Private Function PictureFromSvg(hSvg As SvgImage, iSize As Integer) As Picture
+  
+  Dim hImage As Image
+  
+  hImage = New Image(iSize, iSize, Color.Transparent)
+  Paint.Begin(hImage)
+  Paint.Scale(iSize / hSvg.Width, iSize / hSvg.Height)
+  hSvg.Paint()
+  Paint.End
+  
+  Return hImage.Picture
+  
+End
+
+Static Private Function Debug_Read() As Boolean
+
+  Return $bDebug
+
+End
+
+Static Private Sub Debug_Write(Value As Boolean)
+
+  $bDebug = Value
+
+End
+
+Static Public Sub Refresh()
+
+  InitTheme
+  Picture.Flush
+
+End
+
+Static Private Function Themes_Read() As String[]
+
+  Dim aTheme As New String[]
+  Dim sDir As String
+  Dim sPath As String
+  Dim sTheme As String
+  
+  If IsDir("~/.icons") Then
+    For Each sDir In Dir("~/.icons", "*", gb.Directory)
+      sPath = "~/.icons" &/ sDir
+      GoSub ADD_THEME
+    Next
+  Endif
+  
+  For Each sDir In Dir("/usr/share/icons", "*", gb.Directory)
+    sPath = "/usr/share/icons" &/ sDir
+    GoSub ADD_THEME
+  Next
+  
+  aTheme.Sort(gb.IgnoreCase)
+  Return aTheme
+  
+ADD_THEME:
+  
+  If Exist(sPath &/ "cursors") Then Return
+  sPath &/= "index.theme"
+  If Not Exist(sPath) Then Return
+  If Stat(sPath).Type = gb.Link Then Return
+  Try sTheme = File.Load(sPath)
+  If Error Then Return
+  If InStr(sTheme, "\nHidden=True") Then Return
+  aTheme.Add(sDir)
+  Return
+  
+End
+
+Static Private Function Icons_Read() As String[]
+
+  If Not $aList Then LoadMap
+  Return $aList  
+  
+End

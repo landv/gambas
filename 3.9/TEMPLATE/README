@@ -1,0 +1,34 @@
+COMPONENT DIRECTORY TEMPLATE
+
+Here you will find the 'make-component' script, that creates a initial 
+component source directory from a configuration file located in the 
+'conf' directory.
+
+BE CAREFUL! This template only works inside the complete gambas source 
+package structure.
+
+For example, let suppose you want to make a component named 'gb.test',
+based on the well known 'test' library:
+
+1) Copy the file 'TEMPLATE.conf' in the 'conf' directory, and rename it
+   as 'gb.test.conf'
+   
+2) Open a terminal, with the current directory being the one where
+   the 'make-component' script is located. This is important, because
+   otherwise the script won't work.
+   
+3) Edit the file 'gb.test.conf', and replaces the value of each
+   '#define' directive by the appropriate ones. Each directive has
+   a commentary that explains its role.
+   
+4) Once done, run './make-component gb.test'.
+
+5) If everything is ok, you will find a new component directory in the
+   parent directory named gb.test, with all needed files and symbolic
+   links ready to be build: configure.ac, Makefile.am, ...
+   
+If something is weird, tell me on the gambas developer mailing-list!
+
+Benoît.
+
+   

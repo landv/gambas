@@ -1,0 +1,146 @@
+Net Advanced Component
+----------------------
+
+WARNING :READ THIS DOCUMENT CAREFULLY AS IT CONTAINS IMPORTANT
+INFORMATION ABOUT NET AND NET-ADVENCED COMPONENTS
+
+
+New network structure for Gambas
+--------------------------------
+
+ Previous versions of 'net' component (included from Gambas-0.73 to
+Gambas 0.80) were a simple package in which there was the following 
+classes:
+
+- Socket
+- ServerSocket
+- UdpSocket
+- SerialPort
+- DnsClient
+- HttpClient
+
+ 1) The first five classes listed, could be considered the basic stuff
+or low-level stuff to manage communications, but HttpClient is in the
+next floor,(levels 4-5) according to ISO/OSI model.
+ 2) In the future there will be new classes : FtpClient, TelnetClient...
+ 3) HTTP, FTP , TELNET , etc protocols, have a lot of features, and
+it is hard to implement all stuff using just standard Unix C libraries,
+so it would take a lot of time to implement it.
+ 4) The answer to that problem is libcurl ( http://curl.haxx.se/ ), which
+can manage a lot of protocols, and is designed to be multi-platform.
+ 5) So, the new implementation of 'net' is the following:
+
+'Net' class:
+
+- Socket
+- ServerSocket
+- UdpSocket
+- SerialPort
+- DnsClient
+
+ This class does not need libcurl to work, as it uses just Unix C libraries,
+if you don't need to manage HTTP, FTP, etc, you don't need more.
+
+'Net Advanced' class:
+
+- HttpClient
+... (more in the future)
+
+ It uses libcurl to perform its work, so you need to download and install
+libcurl in your computer to use it. You'll need binary libraries, and, if
+you want to compile it, you'll need also devel stuff, that contains headers
+and config tools to compile a program that uses libcurl.
+
+ You'll need at least 7.10.8 version from libcurl and Gambas 0.80 (previous
+versions from both programs probably won't work or even compile).
+
+You have to ways to install libcurl:
+
+* You can compile it from sources, once copiled it will provide you both
+binaries and headers.
+* You can download it in binary format, but remember you have to select
+a version of binary package that contains all devel stuff.
+
+You can find both sources and binaries from:
+
+http://curl.haxx.se/download.html
+
+it is almost sure that your O.S. will be supported!
+
+Remember also, that if you want SSL support, libcurl uses OpenSSL, so you
+need also to download and install that package: http://www.openssl.org/ is
+tha main page, but probably you will find packages for you own distribution,
+and even for Windows.
+
+COMPILING THE COMPONENTS
+------------------------
+
+You need gambas-0.80 source package, download and uncompress it.
+
+- Go to [Sources]/src/lib, delete the old 'net' folder, and place the new
+'net' folder instead.
+- Go to [Sources] root, delete the old 'configure.in' file, and place
+the new 'configure.in' that is in current folder with this document.
+- Into [Sources] root, type:
+
+./reconf
+
+- Now, type
+
+./configure
+
+(adding all parameters you need, as usual, for example:)
+
+./configure --prefix=/opt --disable-mysql-driver 
+
+To compile all Gambas package type:
+
+make
+
+and then, to install
+
+make install
+
+If you just want to compile the new 'net' and 'net advanced' components,
+
+go to [Sources]/src/lib/net
+
+and type
+
+./make
+
+to compile them and
+
+./make install
+
+to install it
+
+Probably you will need to do also:
+
+gbi gb.net > /opt/lib/info/gb.net.info
+
+gbi gb.net.advanced > /opt/lib/info/gb.net.advanced.info 
+
+(if you installed Gambas in other prefix different than /opt,
+you have to select the right folder, for instance, for /usr/local
+as prefix, type gbi gb.net > /usr/local/info/gb.net.info ...)
+
+
+
+KNOWN PROBLEMS
+--------------
+
+
+- This is an Alpha component, and sure this is a problem! :)
+
+- Actuallly (7.10.8) libcurl does not perform DNS requests in asynchronous mode,
+so your Gambas application will not respond to events until this part
+of the connection process has finished (they say they will correct it in
+future versions)
+
+- The rest of bugs listed in http://curl.haxx.se/docs/knownbugs.html
+
+- The bugs added by me to adding libcurl to Gambas!
+
+
+ 

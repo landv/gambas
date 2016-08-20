@@ -1,0 +1,61 @@
+' Gambas class file
+
+Static Public Value As String
+
+
+Static Public Function Run(sText As String) As Boolean
+
+  Dim hForm As Form
+
+  Value = sText
+  hForm = New FText
+
+  Return Not hForm.ShowModal()
+
+End
+
+
+Public Sub Form_Open()
+
+  txtText.Text = Value
+  txtText.SetFocus
+
+  'Config.LoadWindow(ME, "/FText")
+  Settings.Read(Me)
+  chkFont.Value = Settings["/FText/UseFixedFont", False]
+  
+End
+
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnOK_Click()
+
+  Value = txtText.Text
+  Me.Close(True)
+
+End
+
+Public Sub Form_Close()
+
+  'Config.SaveWindow(ME, "/FText")
+  Settings.Write(Me)
+  Settings["/FText/UseFixedFont"] = chkFont.Value
+
+End
+
+
+Public Sub chkFont_Click()
+
+  If chkFont.Value Then
+    txtText.Font = Font[Project.DEFAULT_FONT]
+  Else
+    txtText.Font = Null
+  Endif
+
+End
+

@@ -1,0 +1,89 @@
+<<Page>>
+
+<%If Not Request.Exist("show")%>
+<style type="text/css" media="print">
+body {
+  background: white;
+  margin: 0;
+  padding: 0;
+}
+
+@page {
+  <%_PageLayout%>
+}
+
+TR.light:hover {
+  background: none;
+}
+
+TR.dark:hover {
+  background: #E5EAEE;
+}
+
+#print {
+  display: none;
+}
+
+.print {
+  <%_PrintSize%>
+  padding: 0;
+  }
+
+.page {
+  <%_PageSize%>
+  padding: 0;
+}
+
+.page-break {
+  page-break-after: always;
+}
+</style>
+
+<style type="text/css" media="screen">
+body {
+  background: white;
+}
+
+@page {
+  <%_PageLayout%>
+}
+
+.print {
+  <%_PrintSize%>
+  padding: 0.5cm;
+  margin: 8px;
+  margin-top: 40px;
+  border: solid gray 1px;
+  box-shadow: 0px 0px 8px #808080;
+  }
+
+.page {
+  <%_PageSize%>
+  padding: 0.5cm;
+}
+
+.page-break {
+  border-top: dotted gray 1px;
+  margin-left: -0.5cm;
+  margin-right: -0.5cm;
+}
+</style>
+
+<button id="print" class="button button-small" style="position:absolute;left:8px;top:8px;" onclick="window.print();">
+<%Print Main.Icon("print", 16)%>
+Imprimer...
+</button>
+
+<div class="print">
+<%_Print()%>
+</div>
+<%Else
+  _Show()
+Endif%>
+
+<</Page>>
+
+?toto
+?titi
+
+

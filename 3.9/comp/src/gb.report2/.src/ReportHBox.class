@@ -1,0 +1,21 @@
+' Gambas class file
+
+Export
+
+Inherits ReportContainer
+
+Public Const _Properties As String = "*"
+Public Const _Similar As String = "ReportVBox"
+Public Const _DefaultArrangement As String = "H"
+
+Public Sub _new()
+
+  Super._Arrangement = Arrange.Horizontal
+
+End
+
+Public Sub _Free()
+
+  Super._Free
+
+End

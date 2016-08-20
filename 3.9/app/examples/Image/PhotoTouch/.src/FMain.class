@@ -1,0 +1,1117 @@
+' Gambas class file
+
+Private CACHE_ROOT As String = "~/.cache/PhotoTouch"
+Private CACHE_DIR As String
+
+Private $aPath As String[]
+Private $sPath As String
+Private $sDir As String
+Private $iIndex As Integer
+Private $hImage As Image
+Private $hZoom As Image
+Private $hTemp As Image
+Private $fZoom As Float = 1
+'Private $sInfo As String
+Private $sMode As String
+Private $bModify As Boolean
+Private $cButton As New Collection
+Private $bFilm As Boolean = True
+Private $bReloadFilm As Boolean
+Private $cShortcut As New Collection
+Private $hSave As Image
+Private $hUndoStack As Image[]
+
+Private $MX As Integer
+Private $MY As Integer
+
+Private btnPrev As CButton
+Private btnNext As CButton
+Private dwgPath As DrawingArea
+
+Private Sub UpdateSaveIcon()
+  
+  $cButton["save"].Visible = Exist(CACHE_DIR &/ File.Name($sPath)) Or $bModify
+  
+End
+
+Private Sub UpdateFilmMode()
+  
+  Dim sTag As String
+  Dim hCtrl As Control
+  
+  If $bFilm Then
+    'ivwImage.IconSize = 128
+    svwImage.Hide
+    panToolbar.Hide
+    panBrowser.Show
+    panToolbarBrowser.Show
+    ivwImage.SetFocus
+  Else
+    svwImage.Show
+    panToolbar.Show
+    panBrowser.Hide
+    panToolbarBrowser.Hide
+    $cButton["film"].Opacity = CButton.MAX_OPACITY
+    svwImage.SetFocus
+  Endif
+
+  btnPrev.Visible = Not $bFilm
+  btnNext.Visible = Not $bFilm
+  
+  If $bFilm Then
+    $hImage = Null
+    FillImageBrowser
+  Else
+    Try $iIndex = CInt(ivwImage.Key)
+    LoadImage
+  Endif
+  
+End
+
+Private Sub GetImage(Optional bReset As Boolean) As Boolean
+  
+  Dim hImage As Image
+
+  If Not bReset Then
+    Try $sPath = CACHE_DIR &/ $aPath[$iIndex]
+    If Exist($sPath) Then Try hImage = Image.Load($sPath)
+  Endif
+  
+  If Not hImage Then
+    Try $sPath = $sDir &/ $aPath[$iIndex]
+    If $sPath Then Try hImage = Image.Load($sPath)
+  Endif
+  
+  $hImage = hImage
+  
+End
+
+
+Private Sub LoadImage(Optional bReset As Boolean) As Boolean
+
+  Inc Application.Busy
+  
+  Me.End
+  SaveImage
+
+  GetImage(bReset)
+
+  If $hImage Then
+    svwImage.ResizeContents($hImage.W, $hImage.H)
+    svwImage.Show
+    lblError.Hide
+  Else 
+    svwImage.Hide
+    lblError.Show
+    If $aPath.Count = 0 Then      
+      lblError.Text = ("No image in directory")
+    Else
+      lblError.Text = ("Unable to load image")
+    Endif
+  Endif
+  
+  $bModify = False
+  $hUndoStack = New Image[]
+  SetZoom(0)
+  UpdateSaveIcon
+  dwgInfo.Raise
+  dwgInfo.Refresh
+  Me.Refresh
+  
+  Dec Application.Busy
+
+End
+
+Private Sub CreateButtons(aButton As String[], cTooltip As Collection, hParent As Container)
+  
+  Dim sKey As String
+  Dim sImg As String
+  Dim hPanel As Panel
+  Dim hButton As CButton
+  Dim iPos As Integer
+  
+  For Each sKey In aButton
+    
+    If sKey = "<->" Then
+      hPanel = New Panel(hParent)
+      hPanel.Expand = True
+      hPanel.Resize(8, 48)
+    Else If sKey = "-" Then
+      hPanel = New Panel(hParent)
+      hPanel.Resize(8, 48)
+    Else
+      
+      sImg = sKey
+      iPos = InStr(sImg, "#")
+      If iPos Then sImg = Left(sImg, iPos - 1)
+      
+      hButton = New CButton(hParent) As "Button"
+      hButton.Resize(48, 48)
+      hButton.Image = Image.Load(sImg & ".png")
+      hButton.Tag = sKey
+      hButton.Tooltip = cTooltip[sImg]
+      hButton.Shortcut = $cShortcut[sImg]
+      $cButton[hButton.Tag] = hButton
+    Endif
+  Next
+  
+End
+
+
+Public Sub _new()
+  
+  Dim hCtrl As Control
+  Dim sImg As String
+  Dim hButton As CButton
+  Dim cTooltip As Collection
+  Dim aButton As String[]
+
+  Application.MainWindow = Me
+  
+  Try Mkdir File.Dir(File.Dir(CACHE_ROOT))
+  Try Mkdir File.Dir(CACHE_ROOT)
+  Try Mkdir CACHE_ROOT
+  
+  cTooltip = [
+    "film": ("Browse photos"),
+    "photo": ("Show photo"),
+    "usb": ("Select photo directory"),
+    "zoom-in": ("Zoom in"),
+    "zoom-out": ("Zoom out"),
+    "zoom-original": ("Zoom 100%"),
+    "zoom-fit": ("Fit to window"),
+    "hflip": ("Flip horizontally"),
+    "vflip": ("Flip vertically"),
+    "rotate-left": ("Rotate left"),
+    "rotate-right": ("Rotate right"),
+    "magic": ("Automatic correction"),
+    "invert": ("Invert"),
+    "blur": ("Blur"),
+    "sharpen": ("Sharpen"),
+    "normalize": ("Normalize"),
+    "despeckle": ("Remove speckles"),
+    "oil": ("Oil painting effect"),
+    "scissors": ("Crop image"),
+    "balance": ("Balance"),
+    "resize": ("Resize"),
+    "save": ("Save"),
+    "save-all": ("Save all"),
+    "undo": ("Undo all changes"),
+    "quit": ("Quit")]
+    
+  $cShortcut = [
+    "usb": "!",
+    "zoom-in": "+",
+    "zoom-out": "-",
+    "zoom-original": "1",
+    "zoom-fit": "0",
+    "hflip": ("H"),
+    "vflip": ("V"),
+    "rotate-left": "(",
+    "rotate-right": ")",
+    "magic": ("M"),
+    "invert": ("I"),
+    "blur": ("B"),
+    "sharpen": ("N"),
+    "normalize": ("E"),
+    "despeckle": ("D"),
+    "oil": ("O"),
+    "scissors": ("/"),
+    "resize": ("R"),
+    "balance": ("*"),
+    "save": ("S")]
+
+  aButton = ["film", "-", "zoom-in", "zoom-out", "zoom-original", "zoom-fit", "-", "hflip", "vflip", "rotate-left", "rotate-right", "-", 
+    "magic", "invert", "blur", "sharpen", "normalize", "despeckle", "oil", "-", "scissors", "resize", "balance", "<->", "save", "undo", "quit"]
+  CreateButtons(aButton, cTooltip, panToolbar)
+    
+  aButton = ["photo", "usb", "save-all", "-"]
+  CreateButtons(aButton, cTooltip, panToolbarBrowser)
+  
+  dwgPath = New DrawingArea(panToolbarBrowser) As "dwgPath"
+  dwgPath.Expand = True
+  dwgPath.Font = Font["Bold,+5"]
+  
+  aButton = ["hflip#2", "vflip#2", "rotate-left#2", "rotate-right#2", "-", "save#2", "undo#2", "quit#2"]
+  CreateButtons(aButton, cTooltip, panToolbarBrowser)
+    
+  btnPrev = New CButton(Me) As "Button"
+  btnPrev.Resize(64, 64)
+  btnPrev.Ignore = True
+  btnPrev.Tag = "previous"
+  btnPrev.Image = Image.Load("previous.png")
+
+  btnNext = New CButton(Me) As "Button"
+  btnNext.Resize(64, 64)
+  btnNext.Ignore = True
+  btnNext.Tag = "next"
+  btnNext.Image = Image.Load("next.png")
+
+  panToolbar.Raise
+  panToolbarBrowser.Raise
+
+End
+
+
+Public Sub svwImage_Draw()
+
+  Dim X As Integer
+  Dim Y As Integer
+  Dim XR As Integer
+  Dim YR As Integer
+  Dim SX, SX2 As Integer
+  Dim SY, SY2 As Integer
+  Dim DX As Integer
+  Dim DY As Integer
+  Dim C As Integer
+  Dim SW, SH As Integer
+  Dim hZoom As Image
+  Dim iZoom As Integer
+
+  If Not $hImage Then Return
+
+  If $fZoom > 1 Then
+
+    iZoom = $fZoom
+
+    Draw.LineStyle = Line.None
+    Draw.FillStyle = Fill.Solid
+  
+    DX = Max(0, (Me.W - $hImage.W * iZoom) / 2)
+    DY = Max(0, (Me.H - $hImage.H * iZoom) / 2)
+  
+    SX = (Draw.Clip.X - DX) \ iZoom
+    SY = (Draw.Clip.Y - DY) \ iZoom
+    SX2 = (Draw.Clip.X - DX + Draw.Clip.W - 1) \ iZoom
+    SY2 = (Draw.Clip.Y - DY + Draw.Clip.H - 1) \ iZoom
+  
+    SX = Max(0, SX)
+    SX2 = Min($hImage.Width - 1, SX2)
+    SW = SX2 - SX + 1
+  
+    SY = Max(0, SY)
+    SY2 = Min($hImage.Height - 1, SY2)
+    SH = SY2 - SY + 1
+  
+    'If $fZoom > 5 Then
+    '  Draw.LineStyle = Line.Solid
+    '  Draw.Foreground = &H989898
+    'Else
+    '  Draw.LineStyle = Line.None
+    'Endif
+  
+    Draw.Zoom($hImage, iZoom, SX * iZoom + DX, SY * iZoom + DY, SX + svwImage.ScrollX \ iZoom, SY + svwImage.ScrollY \ iZoom, SW, SH)
+    
+  Else If $fZoom = 1 Then
+    
+    If $hImage.W < Me.W Then 
+      X = (Me.W - $hImage.W) / 2
+    Else
+      X = - svwImage.ScrollX
+    Endif
+    
+    If $hImage.H < Me.H Then 
+      Y = (Me.H - $hImage.H) / 2
+    Else
+      Y = - svwImage.ScrollY
+    Endif
+    
+    Draw.Image($hImage, X, Y)
+
+  Else
+    
+    If $hZoom.W < Me.W Then 
+      X = (Me.W - $hZoom.W) / 2
+    Else
+      X = - svwImage.ScrollX
+    Endif
+    
+    If $hZoom.H < Me.H Then 
+      Y = (Me.H - $hZoom.H) / 2
+    Else
+      Y = - svwImage.ScrollY
+    Endif
+    
+    Draw.Image($hZoom, X, Y)
+    
+  Endif
+  
+End
+
+Public Sub Form_Resize()
+
+  panToolbar.Move(0, 0, Me.W, 48 + Desktop.Scale * 2)
+  panToolbarBrowser.Move(0, 0, Me.W, 48 + Desktop.Scale * 2)
+  panMargin.H = panToolbar.H 
+  dwgInfo.Move(8, Me.H - dwgInfo.H, Me.W, dwgInfo.H)
+  btnPrev.Move(8, (Me.H - btnPrev.H) / 2)
+  btnNext.Move(Me.W - 8 - btnNext.W, (Me.H - btnNext.H) / 2)
+  
+End
+
+Public Sub Button_Click()
+  
+  Action(Last.Tag)
+  
+End
+
+Private Sub UpdateZoom()
+  
+  Dim X, Y As Float
+  
+  If Not $hImage Then Return
+  
+  If $fZoom < 1 Then
+    $hZoom = $hImage.Stretch($hImage.W * $fZoom, $hImage.H * $fZoom)
+  Else
+    $hZoom = Null
+  Endif
+  
+  X = (svwImage.ScrollX + svwImage.ClientW / 2) / svwImage.ScrollW
+  Y = (svwImage.ScrollY + svwImage.ClientH / 2) / svwImage.ScrollH
+  
+  svwImage.ResizeContents($hImage.W * $fZoom, $hImage.H * $fZoom)
+  svwImage.Scroll(X * svwImage.ScrollW - svwImage.ClientW / 2, Y * svwImage.ScrollH - svwImage.ClientH / 2)
+  
+  dwgInfo.Refresh
+  Me.Refresh
+  
+End
+
+Private Sub SetZoom(fZoom As Float)
+
+  If Not $hImage Then Return
+  
+  If fZoom = 0 Then
+    $fZoom = 0
+    fZoom = Min(Me.W / $hImage.W, Me.H / $hImage.H)
+    fZoom = Min(1, fZoom)
+  Endif
+
+  fZoom = Max(1 / 32, Min(32, fZoom))
+  If fZoom = $fZoom Then Return
+  If fZoom <> 1 Then
+    If ($hImage.W * fZoom) < 96 Or If ($hImage.H * fZoom) < 96 Then Return
+  Endif
+  
+  $fZoom = fZoom
+  UpdateZoom
+
+End
+
+Public Sub SetMode(sMode As String)
+  
+  If $sMode Then
+    $cButton[$sMode].Highlight = False
+    Cancel
+    Select Case $sMode
+      Case "balance"
+        FBrightness.Close
+      Case "scissors"
+        FScissors.Close
+      Case "resize"
+        FResize.Close
+    End Select
+  Endif
+    
+  If sMode = $sMode Then 
+    $sMode = ""
+    Return
+  Endif
+    
+  If sMode Then 
+  
+    $cButton[sMode].Highlight = True
+
+    Select Case sMode
+      Case "balance"
+        FBrightness.Show
+      Case "scissors"
+        FScissors.Show
+      Case "resize"
+        FResize.Show
+    End Select
+    
+  Endif
+    
+  $sMode = sMode
+  
+End
+
+
+Private Sub Action(sAction As String)
+  
+  Dim iPos As Integer
+  
+  Select Case sAction
+    
+    Case "usb"
+      SetMode("")
+      Dialog.Title = ("Select photo directory")
+      Dialog.Path = $sDir
+      If Dialog.SelectDirectory() Then Return
+    
+  End Select
+  
+  Inc Application.Busy
+        
+  iPos = RInStr(sAction, "#")
+  If iPos Then sAction = Left(sAction, iPos - 1)
+  
+  Select Case sAction
+    
+    Case "film"
+      Me.End
+      SaveImage
+      $bFilm = True
+      UpdateFilmMode
+    
+    Case "photo"
+      If $aPath.Count Then
+        $bFilm = False
+        UpdateFilmMode
+      Endif
+    
+    Case "previous"
+      Dec $iIndex
+      If $iIndex < 0 Then $iIndex = $aPath.Max
+      LoadImage
+    
+    Case "next"
+      Inc $iIndex
+      If $iIndex > $aPath.Max Then $iIndex = 0
+      LoadImage
+    
+    Case "zoom-in"
+      SetZoom(2 ^ Int(Log2($fZoom)) * 2)
+    
+    Case "zoom-out"
+      SetZoom(2 ^ Int(Log2($fZoom) - 0.001))
+    
+    Case "zoom-original"
+      SetZoom(1)
+      
+    Case "zoom-fit"
+      SetZoom(0)
+      
+    Case "quit"
+      SetMode("")
+      SaveImage
+      Me.Close
+      
+    Case "balance", "scissors", "resize"
+      'If Not $hImage Then Return
+      SetMode(sAction)
+      
+    Case "usb"
+      SetDir(Dialog.Path)
+      
+    Case "undo"
+      
+      If Not $hImage Then
+        
+        ivwImage.MoveFirst
+        While ivwImage.Available
+          If ivwImage.Item.Selected Then
+            $iIndex = CInt(ivwImage.Item.Key)
+            GetImage
+            RemoveImage
+          Endif
+          ivwImage.MoveNext
+        Wend
+      
+        FillImageBrowser(True)
+        $hImage = Null
+        
+      Else
+      
+        SetMode("")
+        If $hUndoStack.Count Then
+          $hImage = $hUndoStack[$hUndoStack.Max]
+          $hUndoStack.Remove($hUndoStack.Max)
+          $bModify = $hUndoStack.Count > 0
+          If Not $bModify Then RemoveImage
+          UpdateZoom
+        Else
+          LoadImage(True)
+          RemoveImage
+        Endif
+        
+      Endif
+      
+    Case "save"
+      
+      If Not $hImage Then 
+        
+        $iIndex = CInt(ivwImage.Key)
+        $sPath = CACHE_DIR &/ File.Name($aPath[$iIndex])
+        If Exist($sPath) Then
+          SaveImageDefinitely
+          FillImageBrowser(True)
+        Endif
+        $hImage = Null
+        
+      Else
+        
+        SetMode("")
+        SaveImageDefinitely
+        
+      Endif
+    
+    Case "save-all"
+      
+      ivwImage.MoveFirst
+      While ivwImage.Available
+        'If ivwImage.Item.Selected Then
+        $iIndex = CInt(ivwImage.Item.Key)
+        GetImage
+        SaveImageDefinitely
+        'Endif
+        ivwImage.MoveNext
+      Wend
+    
+      FillImageBrowser(True)
+      $hImage = Null
+        
+    Case Else
+      
+      If Not $hImage Then 
+      
+        ivwImage.MoveFirst
+        While ivwImage.Available
+          If ivwImage.Item.Selected Then
+            $iIndex = CInt(ivwImage.Item.Key)
+            GetImage
+            Select Case sAction
+              Case "hflip"
+                $hImage.Mirror(True, False)
+              Case "vflip"
+                $hImage.Mirror(False, True)
+              Case "rotate-left"
+                $hImage = $hImage.Rotate(Pi(0.5))
+              Case "rotate-right"
+                $hImage = $hImage.Rotate(Pi(-0.5))
+            End Select
+            $bModify = True
+            SaveImage
+          Endif
+          ivwImage.MoveNext
+        Wend
+      
+        FillImageBrowser(True)
+        $hImage = Null
+      
+      Else
+        
+        SetMode("")
+        
+        Select Case sAction
+          Case "hflip"
+            PushUndo()
+            $hImage.Mirror(True, False)
+          Case "vflip"
+            PushUndo()
+            $hImage.Mirror(False, True)
+          Case "rotate-left"
+            PushUndo()
+            $hImage = $hImage.Rotate(Pi(0.5))
+          Case "rotate-right"
+            PushUndo()
+            $hImage = $hImage.Rotate(Pi(-0.5))
+          Case "oil"
+            PushUndo()
+            $hImage = ImageMagick("-paint " & CStr(Max(3, Min($hImage.W, $hImage.H) \ 256)))
+          Case "magic"
+            PushUndo()
+            $hImage = ImageMagick("-auto-gamma -auto-level")
+          Case "invert"
+            PushUndo()
+            $hImage.Invert()
+          'Case "equalize"
+          '  $hImage = ImageMagick("-equalize")
+          Case "despeckle"
+            PushUndo()
+            $hImage = ImageMagick("-despeckle")
+          Case "normalize"
+            PushUndo()
+            $hImage = ImageMagick("-normalize")
+          Case "blur"
+            PushUndo()
+            $hImage = ImageMagick("-blur 8") '$hImage.OilPaint()
+          Case "sharpen"
+            PushUndo()
+            $hImage = ImageMagick("-sharpen 8") '$hImage.OilPaint()
+        
+        End Select
+        
+        $bModify = True
+        UpdateSaveIcon
+        UpdateZoom
+        
+      Endif
+    
+  End Select
+  
+  Dec Application.Busy
+  
+End
+
+Public Sub svwImage_MouseDown()
+
+  $MX = Mouse.X + svwImage.ScrollX
+  $MY = Mouse.Y + svwImage.ScrollY
+  'Debug $MX;; $MY
+  
+End
+
+Public Sub svwImage_MouseMove()
+  
+  If Mouse.Left Then 
+    'Debug Mouse.X - $MX;; Mouse.Y - $MY
+    svwImage.Scroll($MX - Mouse.X, $MY - Mouse.Y)
+  Endif
+  
+End
+
+Private Sub PaintOutlineText(sText As String, X As Float, Y As Float, W As Float, H As Float)
+  
+  ' Dim I, J As Integer
+  ' 
+  ' Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 128))
+  ' For I = -1 To 1
+  '   For J = -1 To 1
+  '     Paint.DrawRichText(sText, X + I + 2, Y + J + 2, 4096, H - 4, Align.Left)
+  '   Next
+  ' Next
+  
+  Paint.Brush = Paint.Color(Color.Black)
+  Paint.DrawRichTextShadow(sText, X + 2, Y + 2, 4096, H - 4, Align.Left, 4)
+  Paint.Brush = Paint.Color(Color.White)
+  Paint.DrawRichText(sText, X + 2, Y + 2, 4096, H - 4, Align.Left)
+  
+End
+
+
+Public Sub dwgInfo_Draw()
+  
+  Dim sText As String
+  Dim sSpace As String
+  
+  If Not $hImage Then Return
+  
+  With Stat($sPath)
+    sSpace = String$(6, "&nbsp;")
+    sText = "<b>" & Html(File.Name($sPath)) & "</b>" & sSpace & Html(Format(.LastModified, gb.LongDate)) 
+    sText &= sSpace & $hImage.W & " x " & $hImage.H & " (" & Format($fZoom, "0%") & ")"
+  End With
+  
+  PaintOutlineText(sText, 0, 0, dwgInfo.W, dwgInfo.H)
+  
+End
+
+Public Sub Form_KeyPress()
+
+  Dim sShortcut As String
+
+  Select Case Key.Code
+    
+    Case Key.Esc
+      If $sMode Then
+        SetMode("")
+      Else
+        Action("quit")
+      Endif
+      Stop Event
+      Return
+      
+    Case Key.BackSpace
+      Action("undo")
+      Stop Event
+      Return
+      
+  End Select
+  
+  If Key.Text Then
+    For Each sShortcut In $cShortcut
+      If String.UCase(Key.Text) = sShortcut Then
+        If $cButton[$cShortcut.Key].Parent.Visible Then
+          Action($cShortcut.Key)
+          Stop Event
+          Return
+        Endif
+      Endif
+    Next
+  Endif
+
+End
+
+Public Sub Begin()
+  
+  $hTemp = $hImage.Copy()
+  
+End
+
+Public Sub End()
+  
+  $hTemp = Null
+  UpdateZoom
+  SetMode("")
+  'SaveImage
+  Me.Refresh
+  
+End
+
+Public Sub Apply()
+  
+  $hTemp = $hImage
+  {End}
+  
+End
+
+Public Sub Cancel()
+  
+  If Not $hTemp Then Return
+  $hImage = $hTemp.Copy()
+  UpdateZoom
+  Me.Refresh
+  
+End
+
+Public Sub GetCurrentImage() As Image
+  
+  Return $hImage
+  
+End
+
+Public Sub Balance(iBrightness As Integer, iContrast As Integer, iGamma As Integer)
+  
+  $hImage = $hTemp.Copy()
+  $hImage.Balance((iBrightness - 50) / 50, (iContrast - 50) / 50, (iGamma - 50) / 50)
+  $bModify = True
+  UpdateZoom
+  Me.Refresh
+  
+End
+
+Public Sub Cut()
+  
+  Dim X, Y, W, H As Integer
+  Dim hRect As Rect
+  
+  W = FScissors.W / $fZoom
+  H = FScissors.H / $fZoom
+  X = (svwImage.ScrollX + FScissors.X) / $fZoom
+  Y = (svwImage.ScrollY + FScissors.Y) / $fZoom
+  
+  If $hImage.W * $fZoom <= Me.W Then X -= (Me.W / $fZoom - $hImage.W) / 2
+  If $hImage.H * $fZoom <= Me.H Then Y -= (Me.H / $fZoom - $hImage.H) / 2
+  
+  hRect = Rect(X, Y, W, H)
+  hRect = hRect.Intersection(Rect(0, 0, $hImage.W, $hImage.H))
+  
+  If Not hRect Then Return
+  
+  $hImage = $hImage.Copy(hRect.X, hRect.Y, hRect.W, hRect.H)
+  $bModify = True
+  $hTemp = $hImage
+  Me.End
+  SetZoom(0)
+  
+End
+
+Public Sub Stretch(W As Integer, H As Integer)
+  
+  Inc Application.Busy
+  $hImage = $hImage.Stretch(W, H)
+  $bModify = True
+  $hTemp = $hImage
+  Me.End
+  SetZoom(0)
+  Dec Application.Busy
+  
+End
+
+
+Public Sub Form_Activate()
+  
+  If $sDir = "" Then SetDir(Settings["Directory", User.Home])
+  
+End
+
+
+Private Sub SetDir(sDir As String)
+
+  Inc Application.Busy
+    
+  'Shell "cd " & Shell(CACHE_DIR) & "; rm -f *" Wait
+
+  CACHE_DIR = CACHE_ROOT &/ Replace(sDir, "/", ":")
+  
+  $sDir = sDir
+  Settings["Directory"] = $sDir
+  $aPath = New String[]
+  Try $aPath = Dir(sDir, "*.{jpg,JPG,jpeg,JPEG,png,PNG,bmp,BMP,gig,GIF}").Sort()
+  $iIndex = 0
+  $bReloadFilm = True
+  UpdateFilmMode
+  
+  Dec Application.Busy
+  
+End
+
+Private Sub SaveImage() As String
+  
+  If Not $hImage Then Return
+  If Not $bModify Then Return
+  
+  Try Mkdir CACHE_DIR
+  Try Kill CACHE_DIR &/ ".thumb." & File.Name($sPath)
+  $bReloadFilm = True
+  $hImage.Save(CACHE_DIR &/ File.Name($sPath), 80)
+  $bModify = False
+  UpdateSaveIcon
+  Return CACHE_DIR &/ File.Name($sPath)
+  
+Catch
+  
+  Message.Error(Error.Text)
+  
+End
+
+Private Sub RemoveImage()
+  
+  Try Kill CACHE_DIR &/ File.Name($sPath)
+  Try Kill CACHE_DIR &/ ".thumb." & File.Name($sPath)
+  $bReloadFilm = True
+  If Dir(CACHE_DIR).Count = 0 Then Rmdir CACHE_DIR
+  UpdateSaveIcon
+  
+Catch
+  
+  Message.Error(Error.Text)
+  
+End
+
+Private Sub SaveImageDefinitely()
+  
+  Dim sPath As String
+  
+  SaveImage
+  If Exist(CACHE_DIR &/ File.Name($sPath)) Then
+    sPath = $sDir &/ File.Name($sPath)
+    Try Kill sPath & "~"
+    Move sPath To sPath & "~"
+    Copy CACHE_DIR &/ File.Name($sPath) To sPath
+    RemoveImage
+  Endif
+  
+Catch
+  
+  Message.Error(Error.Text)
+  
+End
+
+
+Private Sub ImageMagick(sCommand As String) As Image
+  
+  Dim sPath, sPath2 As String
+  Dim hImage As Image
+  
+  Inc Application.Busy
+  
+  sPath = File.SetExt(Temp$("image"), File.Ext($sPath))
+  sPath2 = File.SetExt(Temp$("image2"), File.Ext($sPath))
+  
+  $hImage.Save(sPath, 100)
+  
+  Shell "convert " & Shell(sPath) & " " & sCommand & " " & Shell(sPath2) Wait
+  hImage = Image.Load(sPath2)
+  Kill sPath
+  Kill sPath2
+  
+  Dec Application.Busy
+  UpdateSaveIcon
+  
+  Return hImage
+  
+End
+
+Private Sub GetThumb(sPath As String) As Image
+  
+  Dim sName As String
+  Dim sThumb As String
+  Dim hImage As Image
+  Dim bModified As Boolean
+  
+  sName = File.Name(sPath)
+  
+  If Exist(CACHE_DIR &/ sName) Then 
+    sPath = CACHE_DIR &/ sName
+    bModified = True
+  Endif
+  
+  sThumb = CACHE_DIR &/ ".thumb." & sName
+  If Exist(sThumb) Then
+    'If Stat(sThumb).LastModified >= Stat(sPath).LastModified Then
+      hImage = Image.Load(sThumb)
+    'Endif
+  Endif
+  
+  If Not hImage Then
+    hImage = Image.Load(sPath)
+    If hImage.W > 256 Or If hImage.H > 256 Then
+      If hImage.W > hImage.H Then
+        hImage = hImage.Stretch(256, 256 * hImage.H / hImage.W)
+      Else
+        hImage = hImage.Stretch(256 * hImage.W / hImage.H, 256)
+      Endif
+    Endif
+    Paint.Begin(hImage)
+    Paint.Rectangle(0, 0, hImage.W, hImage.H)
+    Paint.LineWidth = 0.5
+    Paint.Brush = Paint.Color(Color.Black)
+    Paint.Stroke
+    If bModified Then
+      If Not $hSave Then $hSave = Image.Load("save.png").Stretch(24, 24)
+      Paint.DrawImage($hSave, Paint.W - 24 - 8, 8)
+    Endif
+    Paint.End
+    Try Kill sThumb
+    hImage.Save(sThumb)
+  Endif
+  
+  Return hImage
+  
+End
+
+Private Sub GetSize(iSize As Long) As String
+  
+  Dim sSize As String
+  
+  If iSize < 1024 Then Return iSize & " b"
+  Return Format(iSize \ 1024, "#,##0") & " K"
+  
+End
+
+
+Private Sub FillImageBrowser(Optional bNoWait As Boolean)
+  
+  Dim I As Integer
+  Dim hImage As Image
+  Dim sText As String
+  Dim fLastTime As Float
+  Dim sKey As String
+  
+  If $bReloadFilm Then
+  
+    Inc Application.Busy
+    
+    fLastTime = Timer
+    
+    Try Mkdir CACHE_DIR
+    
+    sKey = ivwImage.Key
+    
+    ivwImage.Clear
+    ivwImage.GridSize = 280 \ Desktop.Scale
+    
+    For I = 0 To $aPath.Max
+      
+      Try hImage = GetThumb($sDir &/ $aPath[i])
+      If Error Then
+        Error Error.Where; ": "; Error.Text
+        hImage = Picture["icon:/256/image"].Image
+      Endif
+      With Stat($sDir &/ $aPath[I])
+        sText = "<b>" & Html(File.Name($aPath[I])) & "</b><br>" & Format(.LastModified, gb.LongDate) & "<br>" & GetSize(.Size)
+      End With
+      ivwImage.Add(I, "", hImage.Picture).RichText = sText
+      If (Timer - fLastTime) > 1 Then
+        fLastTime = Timer
+        Wait
+      Endif
+    Next
+  
+    Try ivwImage.Key = sKey
+  
+    Dec Application.Busy
+    $bReloadFilm = False
+    
+  Endif
+  
+  If ivwImage.Count Then
+    ivwImage.Key = $iIndex
+    ivwImage[$iIndex].EnsureVisible
+    panBrowser.Show
+    '$cButton["photo"].Show
+  Else
+    '$cButton["photo"].Hide
+    panBrowser.Hide
+    lblError.Text = ("No image in directory")
+    lblError.Show
+  Endif
+  
+End
+
+Public Sub ivwImage_KeyPress()
+  
+  If Key.Code = Key.Enter Or If Key.Code = Key.Return Then ivwImage_Activate
+  
+End
+
+
+Public Sub ivwImage_Activate()
+
+  $bFilm = False
+  $iIndex = CInt(ivwImage.Key)
+  UpdateFilmMode
+
+End
+
+Public Sub Form_Close()
+
+  CAnimation.Exit
+
+End
+
+Public Sub svwImage_KeyPress()
+
+  Select Case Key.Code
+    
+    Case Key.Up
+      svwImage.Scroll(svwImage.ScrollX, svwImage.ScrollY - 64)
+    
+    Case Key.Down
+      svwImage.Scroll(svwImage.ScrollX, svwImage.ScrollY + 64)
+    
+    Case Key.Left
+      svwImage.Scroll(svwImage.ScrollX - 64, svwImage.ScrollY)
+    
+    Case Key.Right
+      svwImage.Scroll(svwImage.ScrollX + 64, svwImage.ScrollY)
+      
+    Case Key.PageUp
+      Action("previous")
+    
+    Case Key.PageDown
+      Action("next")
+    
+    Case Key.Enter, Key.Return
+      Action("film")
+    
+  End Select
+
+End
+
+Public Sub PushUndo()
+  
+  $hUndoStack.Add($hImage.Copy())
+  
+End
+
+Public Sub dwgPath_Draw()
+  
+  'Debug Paint.Font.ToString()
+  PaintOutlineText($sDir, 0, 0, Paint.W, Paint.H)
+  
+End

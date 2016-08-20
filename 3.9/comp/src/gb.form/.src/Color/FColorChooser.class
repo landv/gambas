@@ -1,0 +1,584 @@
+' Gambas class file
+
+Private $iColor As Integer
+Private $iOldColor As Integer
+
+'PRIVATE $sSystem AS String
+
+Private $iHue As Integer
+Private $iSat As Integer
+Private $iVal As Integer
+
+Private $bLock As Boolean
+
+Static Private $hImage As Image
+Static Private $hCross As Image
+Static Private $hValue As Image
+
+Private $hMap As Picture
+Private $hValueMap As Image
+
+Private $bHide As Boolean
+Private $X As Integer
+Private $Y As Integer
+
+Private $nStdColor As Integer
+
+Private $hZoom As Picture
+Private Const ZOOM_FACTOR As Integer = 6
+
+Private $bSnap As Boolean 
+
+Private $bNormal As Boolean
+
+Private $iNoCustomColor As Integer
+
+Public Sub _new()
+
+  If Not $hImage Then
+    $hImage = Image.Load("img/colormap.png")
+    $hCross = Image.Load("img/cross.png")
+    $hValue = Image.Load("img/valuemap.png")
+  Endif
+
+  SetAlpha(False)
+
+End
+
+Private Sub GetParent() As ColorChooser
+  
+  Return Me.Parent
+  
+End
+
+
+Private Sub MoveCross()
+
+  $bHide = True
+  dwgColorMap.Refresh($X - 7, $Y - 7, 16, 16)
+  $bHide = False
+  If $iHue = 0 Then
+    $X = 0
+  Else
+    $X = (360 - $iHue) * dwgColorMap.ClientW / 360
+  Endif
+  $Y = (256 - $iSat) * dwgColorMap.ClientH / 256
+  dwgColorMap.Refresh($X - 7, $Y - 7, 16, 16)
+
+End
+
+
+Private Sub RefreshColor(Optional bRGB As Boolean = True, Optional bHSV As Boolean = True)
+
+  $bLock = True
+
+  If bHSV Then
+    $iHue = Color[$iColor].Hue
+    $iSat = Color[$iColor].Saturation
+    $iVal = Color[$iColor].Value
+    txtH.Value = $iHue
+    txtS.Value = $iSat
+    txtV.Value = $iVal
+  Else
+    $iHue = txtH.Value
+    $iSat = txtS.Value
+    $iVal = txtV.Value
+  Endif
+
+  If bRGB Then
+    txtR.Value = Color[$iColor].Red
+    txtG.Value = Color[$iColor].Green
+    txtB.Value = Color[$iColor].Blue
+    txtA.Value = Color[$iColor].Alpha
+  Endif
+
+  MoveCross
+
+  'sldValue.Value = $iVal
+  dwgValue.Refresh
+  If panAlpha.Visible Then
+    sldAlpha.Value = txtA.Value
+    txtHexa.Text = Hex$($iColor, 8)
+  Else 
+    txtHexa.Text = Hex$($iColor, 6)
+  Endif
+
+  'panColor.Background = $iColor
+  panColor.Refresh
+  dwgValue.Refresh
+
+  palColor.Current = $iColor
+
+  $bLock = False
+
+  If $iColor <> $iOldColor Then
+    $iOldColor = $iColor
+    Inc $iNoCustomColor
+    GetParent()._RaiseChange()
+    Dec $iNoCustomColor
+  Endif
+
+End
+
+Public Sub SetColor(iColor As Integer)
+
+  If iColor = $iColor Then Return
+  
+  $iColor = iColor
+  RefreshColor
+
+End
+
+Public Function GetColor() As Integer
+
+  If $iNoCustomColor = 0 Then
+    If GetCustom() Then AddCustomColor($iColor)
+  Endif
+  
+  Return $iColor
+
+End
+
+Public Sub Form_Arrange()
+
+  $hMap = $hImage.Stretch(dwgColorMap.Width, dwgColorMap.Height).Picture
+  $hValueMap = $hValue.Stretch(dwgValue.W - 6, dwgValue.H - 2)
+  MoveCross
+
+  $nStdColor = 24
+  Repeat
+    If (dwgStdColor.W \ $nStdColor) >= Desktop.Scale * 3 Then Break
+    $nStdColor \= 2
+  Until $nStdColor = 3
+  dwgStdColor.Refresh
+
+End
+
+
+Public Sub txtRGB_Change()
+
+  If $bLock Then Return
+  $iColor = Color.RGB(txtR.Value, txtG.Value, txtB.Value, txtA.Value)
+  RefreshColor(False, True)
+
+End
+
+Public Sub txtHSV_Change()
+
+  If $bLock Then Return
+  $iColor = Color.HSV(txtH.Value, txtS.Value, txtV.Value, txtA.Value)
+  RefreshColor(True, False)
+
+End
+
+Public Sub dwgColorMap_Draw()
+
+  If Not $hMap Then Return
+
+  Draw.Picture($hMap, 0, 0)
+  If $bHide Then Return
+  Draw.Image($hCross, $X - 7, $Y - 7)
+
+End
+
+Public Sub dwgColorMap_MouseMove()
+
+  Dim H, S As Integer
+  Dim bChange As Boolean
+
+  $bLock = True
+  H = 359 - (Mouse.ScreenX - Last.ScreenX) * 360 / dwgColorMap.ClientW
+  S = 255 - (Mouse.ScreenY - Last.ScreenY) * 256 / dwgColorMap.ClientH
+  If Not (Mouse.Shift Xor $bSnap) Then
+    
+    'iCol = Color.HSV($aHue[I], 192 - (J - 5) * 32, 255, iAlpha)
+    ' iMax = $aHue.Count - 2
+    ' For I = 0 To iMax
+    '   If I = 0 Then
+    '     If H < (($aHue[0] + $aHue[1]) / 2) Or If H > (($aHue[iMax] + $aHue[iMax + 1]) / 2) Then Break
+    '   'Else If I = iMax Then
+    '   '  Break
+    '   Else
+    '     If H >= (($aHue[I] + $aHue[I - 1]) / 2) And If H < (($aHue[I] + $aHue[I + 1]) / 2) Then Break
+    '   Endif
+    ' Next
+    'H = $aHue[I]
+    'If H = 360 Then H = 0
+    
+    H = ((H + 7) \ 15) * 15
+    If H = 360 Then H = 0
+    S = ((S + 15) \ 32) * 32
+    
+  Endif
+  If H <> txtH.Value Or If S <> txtS.Value Then
+    txtH.Value = H
+    txtS.Value = S
+    bChange = True
+  Endif
+  $bLock = False
+  
+  If bChange Then txtHSV_Change
+
+End
+
+Private Sub ChangeSliderValue(hSlider As Slider, hSpinBox As SpinBox)
+  
+  Dim iVal As Integer
+
+  iVal = hSlider.Value
+  If $bNormal Then
+    If hSlider.Value < 255 Then
+      iVal = (hSlider.Value \ hSlider.PageStep) * hSlider.PageStep
+    Endif
+    $bNormal = False
+  Endif
+
+  hSpinBox.Value = iVal
+  If hSlider.Value <> iVal Then hSlider.Value = iVal
+
+End
+
+
+
+' Public Sub sldValue_Change()
+' 
+'   ChangeSliderValue(sldValue, txtV)
+' 
+' End
+
+Public Sub dwgColorMap_DblClick()
+
+  GetParent()._RaiseActivate()
+
+End
+
+Public Sub dwgColorMap_MouseDown()
+
+  dwgColorMap_MouseMove
+
+End
+
+Private Sub LoadCustomColors()
+
+  palColor.Colors = Settings["gb.form/CustomColors"]
+
+End
+
+Private Sub SaveCustomColors()
+
+  Settings["gb.form/CustomColors"] = palColor.Colors
+  Settings.Save
+
+End
+
+Private Sub AddCustomColor(iColor As Integer)
+
+  palColor.AddFirst(iColor)
+  SaveCustomColors
+  
+End
+
+
+Public Sub Form_Open()
+
+  RefreshColor
+  'txtHexa.SetFocus
+
+End
+
+
+' PUBLIC SUB lstSystem_DblClick()
+' 
+'   RAISE Confirm
+' 
+' END
+' 
+' PUBLIC SUB lstSystem_Click()
+' 
+'   $sSystem = lstSystem.Text
+' 
+' END
+' 
+' PUBLIC SUB tabColor_Click()
+' 
+'   IF tabColor.Index = 0 THEN Form_Resize
+' 
+' END
+
+Public Sub panColor_DblClick()
+
+  GetParent()._RaiseActivate()
+
+End
+
+
+
+Public Sub panColor_Draw()
+
+  Dim X, Y As Integer
+  Dim W, H As Integer
+  
+  If $hZoom Then
+  
+    W = (panColor.W + 3) \ ZOOM_FACTOR
+    H = (panColor.H + 3) \ ZOOM_FACTOR
+
+    Draw.LineStyle = Line.None
+    Draw.Zoom($hZoom.Image, ZOOM_FACTOR, 0, 0)
+    Draw.LineStyle = Line.Solid
+    X = ((W \ 2)) * ZOOM_FACTOR
+    Y = ((H \ 2)) * ZOOM_FACTOR
+    Draw.Foreground = Color.LightForeground
+    Draw.Rect(X - 2, Y - 2, ZOOM_FACTOR + 4, ZOOM_FACTOR + 4)
+    Draw.Foreground = Color.Background
+    Draw.Rect(X - 1, Y - 1, ZOOM_FACTOR + 2, ZOOM_FACTOR + 2)
+    'Draw.Rect(X, Y, ZOOM_FACTOR, ZOOM_FACTOR)
+    Return
+  
+  Endif
+  
+  Main.PaintColor(0, 0, Paint.W, Paint.H, $iColor)
+
+End
+
+Public Sub GetAlpha() As Boolean
+  
+  Return panAlpha.Visible
+  
+End
+
+Public Sub SetAlpha(Value As Boolean)
+  
+  Dim H As Integer
+
+  panAlpha.Visible = Value
+  If Not Value Then txtA.Value = 0
+
+  H = panAlpha.H * 3 + Desktop.Scale * 2
+  If panAlpha.Visible Then H += panAlpha.H + Desktop.Scale
+  panInfo.H = H
+
+  RefreshColor(False, False)
+
+End
+
+Public Sub txtHexa_Change()
+
+  Dim iColor As Integer
+
+  If $bLock Then Return
+  If panAlpha.Visible Then 
+    If txtHexa.Length <> 8 Then Return 
+  Else 
+    If txtHexa.Length <> 6 Then Return 
+  Endif
+  Try iColor = Val("&H" & txtHexa.Text & "&")
+  If Error Then Return
+  If iColor = $iColor Then Return
+  $iColor = iColor
+  RefreshColor(True, True)
+
+End
+
+Public Sub sldAlpha_Change()
+
+  ChangeSliderValue(sldAlpha, txtA)
+
+End
+
+' Public Sub panInfoColor_Arrange()
+' 
+'   panColor.H = Min(panInfoColor.W, panInfoColor.H - txtHexa.Y - txtHexa.H - Desktop.Scale)
+' 
+' End
+
+' Public Sub sldValue_MouseMove()
+' 
+'   If Mouse.Normal Then
+'     sldValue.Step = 16
+'   Else
+'     sldValue.Step = 1
+'   Endif
+' 
+' End
+
+' Public Sub sldValue_MouseMove()
+' 
+'   $bNormal = Mouse.Normal
+' 
+' End
+
+Public Sub sldAlpha_MouseMove()
+
+  $bNormal = Mouse.Normal
+
+End
+
+Public Sub dwgStdColor_Draw()
+
+  Dim X, H, W, iStep As Integer
+  
+  If $nStdColor = 0 Then Return
+  iStep = 360 \ $nStdColor
+  Draw.Foreground = Color.Gray
+  For H = 0 To 359 Step iStep
+    X = dwgStdColor.W * H / 360
+    W = Min(dwgStdColor.W * (H + iStep) / 360, dwgStdColor.W - 1) - X
+    Draw.FillRect(X + 1, 1, W, dwgStdColor.H - 2, Color.HSV(360 - H, 255, 255))
+    Draw.Line(X, 0, X, dwgStdColor.H - 1)
+  Next
+
+End
+
+Public Sub dwgStdColor_MouseMove()
+
+  Dim iStep As Integer
+  iStep = 360 \ $nStdColor
+  SetColor(Color.HSV(360 - Int(Max(0, Min(dwgStdColor.W - 1, Mouse.X)) / dwgStdColor.W * 360 / iStep) * iStep, 255, 255))
+
+End
+
+Public Sub dwgStdColor_MouseDown()
+
+  dwgStdColor_MouseMove
+
+End
+
+Public Sub dwgValue_Draw()
+
+  Dim Y As Integer
+  Dim hImage As Image
+
+  hImage = $hValueMap.Copy()
+  hImage.Colorize(Color.HSV($iHue, $iSat, 255))
+  Draw.Image(hImage, 3, 1)
+  Draw.Foreground = Color.LightForeground
+  Draw.Rect(2, 0, dwgValue.W - 4, dwgValue.H)
+  Y = (256 - $iVal) / 256 * dwgValue.H
+  Y = Max(0, Min(dwgValue.H - 15, Y - 8))
+  Draw.Rect(0, Y, dwgValue.W, 15)
+  Draw.Rect(1, Y + 1, dwgValue.W - 2, 13)
+  Draw.Rect(2, Y + 2, dwgValue.W - 4, 11)
+
+End
+
+Public Sub dwgValue_MouseDown()
+
+  dwgValue_MouseMove
+
+End
+
+Public Sub dwgValue_MouseMove()
+
+  Dim V As Integer
+  
+  V = Mouse.Y / dwgValue.H * 256
+  If Not (Mouse.Shift Xor $bSnap) Then V = Int((V + 16) / 32) * 32
+  V = 255 - Min(255, Max(0, V))
+  If V = $iVal Then Return
+  txtV.Value = V
+
+End
+
+Public Sub txtHexa_Click()
+
+  panGrab.Mouse = Mouse.Cross
+  'panGrab.Cursor = New Cursor(txtHexa.Picture, 0, txtHexa.Picture.H - 1)
+  panGrab.Show
+  panGrab_MouseMove
+  panGrab.Grab
+  $hZoom = Null
+  panColor.Refresh 'SetColor(hPict.Image[0, 0])
+  panGrab.Hide
+
+End
+
+Public Sub panGrab_MouseMove()
+
+  Dim W, H As Integer
+  
+  W = (panColor.W + 3) \ ZOOM_FACTOR
+  H = (panColor.H + 3) \ ZOOM_FACTOR
+
+  $hZoom = Desktop.Screenshot(Mouse.ScreenX - W \ 2, Mouse.ScreenY - H \ 2, W, H)
+  panColor.Refresh 'SetColor(hPict.Image[0, 0])
+
+End
+
+Public Sub panGrab_MouseUp()
+
+  Dim hPict As Picture = Desktop.Screenshot(Mouse.ScreenX, Mouse.ScreenY, 1, 1)
+  SetColor(hPict.Image[0, 0])
+
+End
+
+Public Sub btnSnap_Click()
+
+  $bSnap = Not btnSnap.Value
+
+End
+
+Public Sub GetColorMap() As Boolean
+  
+  Return dwgColorMap.Visible
+  
+End
+
+
+Public Sub SetColorMap(bShow As Boolean)
+  
+  dwgColorMap.Visible = bShow
+  panColorMapSide.Visible = bShow
+  
+End
+
+Public Sub dwgStdColor_DblClick()
+
+  GetParent()._RaiseActivate()
+
+End
+
+Public Sub HasBorder() As Boolean
+  
+  Return panBorder.Border <> Border.None
+  
+End
+
+Public Sub SetBorder(bBorder As Boolean)
+  
+  panBorder.Border = If(bBorder, Border.Plain, Border.None)
+  panBorder.Margin = bBorder
+  
+End
+
+Public Sub GetCustom() As Boolean
+  
+  Return palColor.Visible
+  
+End
+
+Public Sub SetCustom(bCustom As Boolean)
+  
+  If bCustom Then LoadCustomColors
+  palColor.Visible = bCustom
+  
+End
+
+
+Public Sub palColor_Click()
+
+  SetColor(palColor.Current)
+
+End
+
+Public Sub palColor_Activate()
+
+  GetParent()._RaiseActivate()
+
+End
+
+Public Sub panValue_Arrange()
+
+  txtA.W = txtR.W
+
+End

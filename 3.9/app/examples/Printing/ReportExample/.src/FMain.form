@@ -1,0 +1,72 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,66,32)
+  Text = ("Report example")
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { HBox1 HBox
+    MoveScaled(1,1,52,4)
+    Spacing = True
+    { Label1 Label
+      MoveScaled(0,0,22,4)
+      AutoResize = True
+      Text = ("Choose database server")
+    }
+    { cmbServer ComboBox
+      MoveScaled(26,0,24,4)
+      Expand = True
+      ReadOnly = True
+      List = [("MySQL"), ("PostgreSQL"), ("SQLite")]
+    }
+  }
+  { Separator1 Separator
+    MoveScaled(15,6,7,1)
+  }
+  { HBox2 HBox
+    MoveScaled(1,8,63,15)
+    Expand = True
+    Spacing = True
+    { VBox1 VBox
+      MoveScaled(1,1,32,14)
+      AutoResize = True
+      { btnReport Button
+        MoveScaled(0,0,31,7)
+        Expand = True
+        AutoResize = True
+        Text = ("See Report Example 1") & "..."
+        Picture = Picture["icon:/32/print"]
+      }
+      { btnReport2 Button
+        MoveScaled(0,6,31,7)
+        Visible = False
+        Expand = True
+        AutoResize = True
+        Text = ("See Report Example 2") & "..."
+        Picture = Picture["icon:/32/print"]
+      }
+    }
+  }
+  { HBox3 HBox
+    MoveScaled(1,25,64,6)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(4,1,20,3)
+      Expand = True
+    }
+    { btnAbout Button
+      MoveScaled(31,0,15,6)
+      AutoResize = True
+      Text = ("About") & "..."
+      Picture = Picture["icon:/32/info"]
+    }
+    { btnClose Button
+      MoveScaled(47,0,15,6)
+      AutoResize = True
+      Text = ("Close")
+      Picture = Picture["icon:/32/close"]
+    }
+  }
+}

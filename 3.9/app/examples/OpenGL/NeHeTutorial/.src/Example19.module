@@ -1,0 +1,295 @@
+' Gambas module file
+
+'tutorial based on tutorial from NeHe Productions site at http://nehe.gamedev.net/
+'visit the page for more info on OpenGL
+'
+'Lesson 19 - particle engine
+'Keys:
+'z - accelerate particles
+'x - decelerate particles
+'TAB - burst
+'space - change color
+'cursor keys - change direction
+
+'Fast
+
+Const MAX_PARTICLES As Integer = 1000         'Number OF Particles TO CREATE
+
+'to replace structure "particle" I use 2-dimensional array and constatnts as indicators
+'in this case call to particle[n].life becomes particle[n,life]
+
+Const life As Integer = 0                      'Particle Life
+Const fade As Integer = 1                      'Fade Speed
+Const r As Integer = 2                         'Red Value
+Const g As Integer = 3                         'Green Value
+Const b As Integer = 4                         'Blue Value
+Const x As Integer = 5                         'X Position
+Const y As Integer = 6                         'Y Position
+Const z As Integer = 7                         'Z Position
+Const xi As Integer = 8                        'X Direction
+Const yi As Integer = 9                        'Y Direction
+Const zi As Integer = 10                       'Z Direction
+Const xg As Integer = 11                       'X Gravity
+Const yg As Integer = 12                       'Y Gravity
+Const zg As Integer = 13                       'Z Gravity
+
+Private screen As New Window(True) As "Screen"
+Private xrot As Float                         'X Rotation( NEW )
+Private yrot As Float                         'Y Rotation( NEW )
+Private zrot As Float                         'Z Rotation( NEW )
+Private textures As New Integer[1]
+Private keys As New Boolean[512]
+Private active As Boolean = True                 'Window Active Flag Set TO TRUE By DEFAULT
+Private rainbow As Boolean = True                'Rainbow Mode?
+Private sp As Boolean                            'Spacebar Pressed?
+Private rp As Boolean                            'Enter Key Pressed?
+Private key_Down As Boolean = False
+Private key_Left As Boolean = False
+Private key_Right As Boolean = False
+Private key_up As Boolean = False
+
+Private slowdown As Float = 0.5                  'Slow Down Particles
+Private xspeed As Float                          'Base X Speed( TO Allow Keyboard Direction OF Tail)
+Private yspeed As Float                          'Base Y Speed( TO Allow Keyboard Direction OF Tail)
+Private zoom As Float = -40.0                    'Used TO Zoom Out
+
+Private lop As Integer                            'Misc LOOP Variable
+Private col As Integer                            'Current Color Selection
+Private delay As Integer                          'Rainbow Effect Delay
+Private lcon As Integer
+
+Private activ As New Boolean[MAX_PARTICLES + 1]
+Private particle As New Float[MAX_PARTICLES + 1, 14]
+Private colors As New Float[12, 3]              'Rainbow Of Colors
+
+Public Sub Main()
+
+  load_colors()
+  With screen
+    .Width = 640
+    .Height = 480
+    .Title = MMain.Title
+    .Show()
+  End With
+
+End
+
+Public Sub load_colors()
+
+  Dim color_file As File
+  Dim rgb As String
+  Dim hline As String
+  Dim rain As String[]
+  Dim i, p As Integer
+
+  color_file = Open "rainbow.txt" For Input
+  For p = 1 To 12
+    i = 0
+    Line Input #color_file, hline
+    rain = Split(hline, ",")
+    For Each rgb In rain
+      colors[p - 1, i] = CFloat(Trim(rgb))
+      i = i + 1
+    Next
+  Next
+  Close color_file
+
+End
+
+Public Sub load_texture()
+
+  Dim part As Image
+
+  part = Image.Load("Star.png")
+  textures = Gl.GenTextures(1)
+  Gl.BindTexture(Gl.TEXTURE_2D, textures[0])
+  Gl.TexImage2D(part)
+  Glu.Build2DMipmaps(part)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR_MIPMAP_NEAREST)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
+
+End
+
+Public Sub Screen_Open()
+
+  Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
+  gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
+  gl.MatrixMode(gl.PROJECTION)
+  gl.LoadIdentity()                     'Reset The Projection Matrix
+  glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
+  gl.MatrixMode(gl.MODELVIEW)
+  init()
+
+End
+
+Public Sub Screen_resize()
+
+  Gl.Viewport(0, 0, Screen.Width, Screen.Height)
+
+  Gl.MatrixMode(Gl.PROJECTION)
+  Gl.LoadIdentity()                     'Reset The Projection Matrix
+  glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
+  Gl.MatrixMode(Gl.MODELVIEW)
+
+End
+
+Public Sub init()
+
+  Dim l As Integer
+
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
+  load_texture()
+  gl.ShadeModel(gl.SMOOTH)                     ' Enable Smooth Shading
+  gl.ClearColor(0.0, 0.0, 0.0, 0.0)               ' Black Background
+  gl.ClearDepth(1.0)                              ' Depth Buffer Setup
+  gl.Disable(gl.DEPTH_TEST)                    ' Disable Depth Testing
+  gl.Enable(gl.BLEND)                          ' Enable Blending
+  gl.BlendFunc(gl.SRC_ALPHA, gl.ONE)                   ' Type OF Blending TO Perform
+  gl.Hint(gl.PERSPECTIVE_CORRECTION_HINT, gl.NICEST)                     ' Really Nice Perspective Calculations
+  gl.Hint(gl.POINT_SMOOTH_HINT, gl.NICEST)  ' Really Nice Point Smoothing
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping
+  gl.BindTexture(gl.TEXTURE_2D, textures[0])    ' SELECT Our Texture
+
+  For l = 0 To MAX_PARTICLES - 1                 ' Initials All The Textures
+    activ[L] = True                              ' Make All The Particles Active
+    particle[L, life] = 1.0                       ' Give All The Particles Full Life
+    particle[L, fade] = Rnd(100) / 1000.0 + 0.003 ' Random Fade Speed
+    particle[L, r] = colors[(L + 1) / (MAX_PARTICLES / 12) - 1, 0]  ' SELECT Red Rainbow Color
+    particle[L, g] = colors[(L + 1) / (MAX_PARTICLES / 12) - 1, 1]  ' SELECT Green Rainbow Color
+    particle[L, b] = colors[(L + 1) / (MAX_PARTICLES / 12) - 1, 2]  ' SELECT Blue Rainbow Color
+    particle[L, xi] = (Rnd(50) - 26.0) * 10.0     ' Random Speed On X Axis
+    particle[L, yi] = (Rnd(50) - 25.0) * 10.0     ' Random Speed On Y Axis
+    particle[L, zi] = (Rnd(50) - 25.0) * 10.0     ' Random Speed On Z Axis
+    particle[L, xg] = 0.0                         ' Set Horizontal Pull TO Zero
+    particle[L, yg] = -0.8                        ' Set Vertical Pull Downward
+    particle[L, zg] = 0.0                         ' Set Pull On Z Axis TO Zero
+  Next
+
+End
+
+Public Sub Screen_draw()
+
+  Dim l As Integer
+  Dim xq, yq, zq As Float
+
+  gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)  ' Clear Screen AND Depth Buffer
+  gl.LoadIdentity()                                           ' Reset The ModelView Matrix
+
+  For l = 0 To MAX_PARTICLES - 1                              'Loop Through All The Particles
+    lcon = l
+    If (activ[l] = True) Then                                       'IF The Particle IS Active
+      xq = particle[l, x]                                      ' Grab Our Particle X Position
+      yq = particle[l, y]                                      ' Grab Our Particle Y Position
+      zq = particle[l, z] + zoom                               ' Particle Z Pos + Zoom
+
+      '      Draw The Particle Using Our RGB Values, Fade The Particle Based On It 's Life 
+      gl.Color4f(particle[l, r], particle[l, g], particle[l, b], particle[l, life])
+
+      gl.Begin(gl.TRIANGLE_STRIP)                      'Build Quad FROM A Triangl.e Strip
+      gl.TexCoord2i(1, 1)
+      gl.Vertex3f(xq + 0.5, yq + 0.5, zq)              ' Top Right
+      gl.TexCoord2i(0, 1)
+      gl.Vertex3f(xq - 0.5, yq + 0.5, zq)              ' Top Left
+      gl.TexCoord2i(1, 0)
+      gl.Vertex3f(xq + 0.5, yq - 0.5, zq)              ' Bottom Right
+      gl.TexCoord2i(0, 0)
+      gl.Vertex3f(xq - 0.5, yq - 0.5, zq)              ' Bottom Left
+      gl.End()                                            ' Done Building Triangl.e Strip
+
+      particle[l, x] += particle[l, xi] / (slowdown * 1000) 'MOVE On The X Axis By X Speed
+      particle[l, y] += particle[l, yi] / (slowdown * 1000) ' MOVE On The Y Axis By Y Speed
+      particle[l, z] += particle[l, zi] / (slowdown * 1000) ' MOVE On The Z Axis By Z Speed
+
+      particle[l, xi] += particle[l, xg]                ' Take Pull On X Axis Into Account
+      particle[l, yi] += particle[l, yg]                ' Take Pull On Y Axis Into Account
+      particle[l, zi] += particle[l, zg]                ' Take Pull On Z Axis Into Account
+      particle[l, life] -= particle[l, fade]            ' Reduce Particles Life By 'Fade'
+
+      If (particle[l, life] < 0.0) Then                 ' IF Particle IS Burned Out
+        particle[l, life] = 1.0                         ' Give It NEW Life
+        particle[l, fade] = Rnd(100) / 1000.0 + 0.003   ' Random Fade Value
+        particle[l, x] = 0.0                            ' Center On X Axis
+        particle[l, y] = 0.0                            ' Center On Y Axis
+        particle[l, z] = 0.0                            ' Center On Z Axis
+        particle[l, xi] = xspeed + (Rnd(60) - 32.0)    ' X Axis Speed AND Direction
+        particle[l, yi] = yspeed + (Rnd(60) - 30.0)    ' Y Axis Speed AND Direction
+        particle[l, zi] = (Rnd(60) - 30.0)             ' Z Axis Speed AND Direction
+        particle[l, r] = colors[col, 0]                 ' SELECT Red FROM Color Table
+        particle[l, g] = colors[col, 1]                 ' SELECT Green FROM Color Table
+        particle[l, b] = colors[col, 2]                 ' SELECT Blue FROM Color Table
+      Endif
+      If ((key_up = True) And (particle[l, yg] < 1.5)) Then particle[l, yg] += 0.1
+      If ((key_Down = True) And (particle[l, yg] > -1.5)) Then particle[l, yg] -= 0.1
+      If ((key_Right = True) And (particle[l, xg] < 1.5)) Then particle[l, xg] += 0.1
+      If ((key_Left = True) And (particle[l, xg] > -1.5)) Then particle[l, xg] -= 0.1
+
+    Endif
+  Next
+
+End
+
+Public Sub burst()
+
+  Dim l As Integer
+
+  For l = 0 To MAX_PARTICLES - 1
+    particle[L, x] = 0.0 'f; / / Center On X Axis
+    particle[L, y] = 0.0 'f; / / Center On Y Axis
+    particle[L, z] = 0.0 'f; / / Center On Z Axis
+    particle[L, xi] = (Rnd(50) - 26.0) * 10.0 ';  // Random Speed On X Axis
+    particle[L, yi] = (Rnd(50) - 25.0) * 10.0 ';  // Random Speed On Y Axis
+    particle[L, zi] = (Rnd(50) - 25.0) * 10.0 '  // Random Speed On Z Axis
+  Next
+
+End
+
+Public Sub screen_KeyRelease()
+
+  key_Down = False
+  key_Left = False
+  key_Right = False
+  key_up = False
+
+  rp = False
+  sp = False
+
+End
+
+Public Sub Screen_keyPress()
+
+  Dim l As Integer
+
+  l = lcon
+  If (key.code = key.F1) Then screen.Fullscreen = Not screen.Fullscreen
+  If (key.Code = key.Esc) Then Screen.Close()
+  If (key.code = key.up) Then key_up = True
+  If (key.code = key.Down) Then key_Down = True
+  If (key.code = key.Right) Then key_Right = True
+  If (key.code = key.Left) Then key_Left = True
+  If (key.code = Key.Tab) Then burst()   ' Tab Key Causes A Burst
+
+  If ((key.Text = "z") And (slowdown > 0.0)) Then slowdown -= 0.1
+  If ((key.Text = "x") And (slowdown < 4.0)) Then slowdown += 0.1 ' Slow Down Particles
+
+  If (key.code = key.PageUp) Then zoom += 0.5                     ' Zoom IN
+  If (key.Code = key.PageDown) Then zoom -= 0.5                   ' Zoom Out
+
+  If ((key.Code = key.Return) And (rp = False)) Then    ' RETURN Key Pressed
+    rp = True                                           ' Set Flag Telling Us It 's Pressed
+    rainbow = Not rainbow                               ' Toggle Rainbow Mode On / Off
+  Endif
+
+  If ((((key.Code = key.Space) And sp = False) Or (rainbow = True And (delay > 25)))) Then
+    If (key.Code = key.Space) Then rainbow = False ' IF Spacebar IS Pressed Disable Rainbow Mode
+    sp = True                                       'Set Flag Telling Us Space IS Pressed
+    delay = 0                                       ' Reset The Rainbow Color Cycling Delay
+    col += 1                                        ' Change The Particle Color
+    If (col > 11) Then col = 0                      ' IF Color IS To High Reset It
+  Endif
+
+  delay += 1                             'Increase Rainbow Mode Color Cycling Delay Counter
+
+End

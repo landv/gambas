@@ -1,0 +1,886 @@
+' Gambas class file
+
+''' This class is the parent class of every web controls.
+
+Export
+Create Private
+
+Public Const _IsControl As Boolean = True
+Public Const _Properties As String = "Class,Width{WebCoord},Height{WebCoord},Visible=True,Enabled=True,Tag,Expand,Ignore,Background{Color},Foreground{Color},Tooltip"
+Public Const _Family As String = "WebForm"
+Public Const _DefaultEvent As String = "Render"
+
+Event Render
+Event Message(Source As WebControl, Action As String)
+Event Dialog(Dialog As WebForm, Result As Variant)
+
+'' Return the server control identifier.
+Property Read Id As Integer
+
+'' Return the name of the control, used as an identifier on the client side.
+Property Read Name As String
+
+'' Returns or sets the control tag.
+''
+'' This property is intended for the programmer and is never used by the component. It can contain any [/lang/type/variant] value.
+Property Tag As Variant
+
+'' Return the parent container of the control.
+Property Read Parent As WebContainer
+
+'' Return or set if the control should expand its size according to its parent arrangement mode.
+Property Expand As Boolean
+
+'' Return or set if the control is visible.
+Property Visible As Boolean
+
+'' Return a virtual object that allows to define specific style sheet elements of the control.
+Property Read Style As WebControlStyle
+
+'' Return the web form that control belongs to.
+Property Read Form As WebForm
+
+'' Return or set the explicit width of the control.
+''
+'' This property can take any valid CSS size. If not set, the control will have its default width.
+Property Width, W As String
+
+'' Return or set the explicit height of the control.
+''
+'' This property can take any valid CSS size. If not set, the control will have its default height.
+Property Height, H As String
+
+'' Return or set if the control must be ignored by its parent container in automatic arrangement mode.
+Property Ignore As Boolean
+
+'' Return or set if the control is enabled.
+Property Enabled As Boolean
+
+'' Return or set the background color of the control.
+Property Background As Integer
+
+'' Return or set the foreground color of the control.
+Property Foreground As Integer
+
+'' Return or set if the control has a border.
+Property Border As Boolean
+
+'' Return or set a specific CSS class added to the control.
+Property Class As String
+
+'' Return or set the tooltip displayed when the mouse cursor hovers the control.
+Property Tooltip As String
+
+Static Private $iLastId As Integer
+Static Private $iLastFormId As Integer
+Static Private $cFromId As New Collection
+Static Private $cFromName As New Collection
+
+Static Private $aStyleSheet As String[]
+
+Static Public _NextName As String
+
+Public _Refresh As Boolean
+Public _EventName As String
+Public _Extra As Boolean
+Public _Proxy As String
+Public _NoRefresh As Integer
+Public _Naked As Boolean
+
+Private $iId As Integer
+Private $iParentId As Integer
+Private $iFormId As Integer
+Private $sName As String
+Private $vTag As Variant
+
+Private $iStyleSheet As Integer
+Private $hStyle As WebControlStyle
+
+Private $iBackground As Integer = Color.Default
+Private $iForeground As Integer = Color.Default
+
+Private $bExpand As Boolean
+Private $bIgnore As Boolean
+Private $bDisabled As Boolean
+Private $bHidden As Boolean
+Private $bNoBorder As Boolean
+Private $sClass As String
+Private $sTooltip As String
+
+
+Public Sub _new(Optional Parent As WebContainer)
+  
+  Dim sName As String
+  
+  Inc $iLastId
+  $iId = $iLastId
+  
+  If _NextName Then
+    sName = _NextName
+    _NextName = ""
+  Endif
+  
+  If Me Is WebForm Then
+    Object.Attach(Me, Me, "WebForm")
+    $iFormId = $iId
+    Inc $iLastFormId
+    If Not sName Then sName = "@" & CStr($iLastFormId)
+  Else
+    _EventName = Param.EventName
+    Try $iFormId = Parent.Form.Id
+    If Not sName Then sName = Param.EventName
+    If Not sName Then sName = "$" & CStr($iId)
+  Endif
+  
+  SetName(sName)
+  
+  $cFromId[$iId] = Me
+  
+  Parent_Write(Parent)
+  
+  'Debug Object.Type(Me);; $sName;; $iId
+  
+End
+
+Private Sub SetName(Optional sName As String)
+  
+  Dim iSuffix As Integer
+  Dim sNameSuffix As String
+  Dim hParent As WebContainer
+  
+  If Left(sName) <> "@" Then sName = Form_Read().Name & "." & sName
+
+  If sName = $sName Then Return
+
+  If $sName Then $cFromName[$sName] = Null
+
+  Do
+    If iSuffix = 0 Then
+      sNameSuffix = sName
+    Else
+      sNameSuffix = sName & "-" & CStr(iSuffix + 1)
+    Endif
+    If Not $cFromName.Exist(sNameSuffix) Then 
+      sName = sNameSuffix
+      Break
+    Endif
+    Inc iSuffix
+  Loop
+  
+  hParent = Parent_Read()
+  If hParent Then hParent._UpdateChildName($sName, sName)
+  
+  $cFromName[sName] = $iId
+  $sName = sName
+  
+End
+
+Public Sub _SetForm(hForm As WebForm)
+  
+  $iFormId = hForm.Id
+  
+End
+
+Private Function Id_Read() As Integer
+
+  Return $iId
+
+End
+
+Static Public Sub FromId(Id As Integer) As WebControl
+  
+  Return $cFromId[Id]
+  
+End
+
+Static Public Sub FromName(Name As String) As WebControl
+  
+  Try Return $cFromId[$cFromName[Name]]
+  
+End
+
+Private Function Parent_Read() As WebContainer
+
+  Dim hParent As WebContainer
+  
+  If $iParentId = 0 Then Return
+  
+  hParent = $cFromId[$iParentId]
+'  If hParent.Parent And If hParent.Parent._Container = hParent Then hParent = hParent.Parent
+  
+  Return hParent
+
+End
+
+Private Sub Parent_Write(Value As WebContainer)
+
+  Dim hParent As WebContainer
+  Dim sParent As String
+  
+  hParent = Parent_Read()
+  
+  If Value = hParent Then Return
+
+  If hParent Then hParent._Remove(Me)
+  
+  If Value Then
+    If Value._Container Then Value = Value._Container
+    $iParentId = Value.Id
+    $iFormId = Value.Form.Id
+    Value._Add(Me)
+    sParent = Value.Name
+  Else 
+    $iParentId = 0
+  Endif
+  
+  '_SetProperty("#parent", sParent)
+
+End
+
+Private Function Name_Read() As String
+
+  Return $sName
+
+End
+
+Private Function Tag_Read() As Variant
+
+  Return $vTag
+
+End
+
+Private Sub Tag_Write(Value As Variant)
+
+  $vTag = Value
+  _SetProperty("Tag", Value)
+
+End
+
+Public Sub _GetClassId(Optional sClass As String) As String
+
+  Dim sResult As String
+  
+  If Not sClass Then sClass = "gw-" & LCase(Mid$(Object.Type(Me), 4))
+  If $bNoBorder Then sClass &= " gw-noborder"
+  If Not Me.Enabled Then sClass &= " gw-disabled"
+  If $sClass Then sClass &= " " & $sClass
+  If $bHidden Then sClass &= " gw-hidden"
+  sResult = " class=\"" & sClass & "\" id=\"" & $sName & "\""
+  If $sTooltip Then sResult &= " title=\"" & Replace($sTooltip, Chr$(34), "&quot;") & "\""
+  Return sResult
+  
+End
+
+
+Public Sub _BeforeRender()
+  
+  Print "<div"; _GetClassId();
+  Me._RenderStyleSheet()
+  Print ">";
+  
+End
+
+Public Sub _Render()
+  
+End
+
+Public Sub _AfterRender()
+  
+  Raise Render
+  Print "</div>"
+  
+End
+
+Public Sub _RenderStyleSheet()
+  
+  Dim hParent As WebContainer
+  
+  _StartStyleSheet
+  
+  If $bIgnore Then
+    
+    _AddStyleSheet("position:absolute;")
+    
+  Else
+  
+    If Me Is WebContainer Then _AddStyleSheet("position:relative;")
+  
+    If $bExpand Then 
+      _AddStyleSheet("flex-grow:1;")
+    Else
+      _AddStyleSheet("flex-shrink:0;")
+    Endif
+    
+    hParent = Me.Parent
+    If hParent Then
+      Select Case hParent.Arrangement
+        Case Arrange.Vertical
+          'If bInline Then _AddStyleSheet("display:block;")
+          If hParent.Spacing And If Not hParent._IsFirstVisibleChild(Me) Then _AddStyleSheet("margin-top:0.5rem;")
+        Case Arrange.Horizontal
+          '_AddStyleSheet("display: block;")
+          If hParent.Spacing And If Not hParent._IsFirstVisibleChild(Me) Then _AddStyleSheet("margin-left:0.5rem;")
+        Case Arrange.Column, Arrange.Row
+          _AddStyleSheet("display:inline-block;")
+          If hParent.Spacing Then _AddStyleSheet("margin-right:0.5rem;margin-bottom:0.5rem;")
+      End Select
+    Endif
+    
+  Endif
+  
+  If $iBackground <> Color.Default Then _AddStyleSheet("background-color:" & _GetColor($iBackground) & ";")
+  If $iForeground <> Color.Default Then _AddStyleSheet("color:" & _GetColor($iForeground) & ";")
+  
+  If $hStyle And If Not $hStyle.IsVoid() Then $aStyleSheet.Insert($hStyle._GetStyleSheet())
+  
+  _EndStyleSheet
+  
+End
+
+Public Sub _StartStyleSheet()
+  
+  Inc $iStyleSheet
+  If $iStyleSheet = 1 Then $aStyleSheet = New String[]
+  
+End
+
+Public Sub _AddStyleSheet(sStyle As String)
+  
+  $aStyleSheet.Add(sStyle)
+  
+End
+
+Public Sub _RemoveStyleSheet(sStyle As String)
+  
+  Try $aStyleSheet.Remove($aStyleSheet.Find(sStyle))
+  
+End
+
+
+Public Sub _EndStyleSheet()
+  
+  Dec $iStyleSheet
+  If $iStyleSheet Then Return
+  
+  If $aStyleSheet.Count Then
+    'Print "#"; Me.Name; " {"
+    'Print "  "; $aStyleSheet.Join("\n  ")
+    'Print "}"
+    Print " style=\""; $aStyleSheet.Join(""); "\"";
+    $aStyleSheet.Clear
+  Endif
+  
+End
+
+
+
+Private Function Expand_Read() As Boolean
+
+  Return $bExpand
+
+End
+
+Private Sub Expand_Write(Value As Boolean)
+
+  If $bExpand = Value Then Return
+  $bExpand = Value
+  _SetProperty("Expand", Value)
+  Try Me.Parent.Refresh
+
+End
+
+Private Function Style_Read() As WebControlStyle
+
+  If Not $hStyle Then $hStyle = New WebControlStyle As "Style"
+  Return $hStyle
+
+End
+
+Private Function Form_Read() As WebForm
+
+  Try Return $cFromId[$iFormId]
+
+End
+
+Public Sub _SetProperty(sProp As String, vValue As Variant)
+
+  Dim cProp As Collection
+
+  If Me.Form._Loaded Then
+    
+    If WebForm._InExec Then Me.Refresh
+    
+    If TypeOf(vValue) = gb.Object And If vValue Is WebControl Then 
+      sProp = "@" & sProp
+      vValue = vValue.Name
+    Endif
+    
+    cProp = Session[$sName]
+    If Not cProp Then cProp = New Collection
+    cProp[sProp] = vValue
+    Session[$sName] = cProp
+    
+  Endif
+  
+End
+
+Public Sub _InitSpecialProperty((sProp) As String, (vVal) As Variant)
+  
+End
+
+Public Sub _InitProperties()
+
+  Dim cProp As Collection
+  Dim vVal As Variant
+  Dim sProp As String
+  
+  If Not Session.Id Then Return
+  
+  Try cProp = Session[$sName]
+  If Not cProp Then Return
+  
+  Object.Lock(Me)
+  For Each vVal In cProp
+    sProp = cProp.Key
+    'WebForm.Print("set " & sProp)
+    If Left(sProp) = "#" Then
+      If sProp = "#style" Then
+        $hStyle = New WebControlStyle
+        $hStyle._Style = vVal
+      ' Else If sProp = "#parent" Then
+      '   Parent_Write(FromName(vVal))
+      Else
+        Me._InitSpecialProperty(sProp, vVal)
+      Endif
+    Else If Left(sProp) = "@" Then
+      Object.SetProperty(Me, Mid$(sProp, 2), WebControl.FromName(vVal))
+    Else
+      Try Object.SetProperty(Me, sProp, vVal)
+    Endif
+  Next
+  Object.Unlock(Me)
+  
+End
+
+Public Sub Style_Change()
+  
+  _SetProperty("#style", $hStyle._Style)
+  
+End
+
+Public Sub IsHidden() As Boolean
+  
+  Dim hCtrl As WebControl
+  
+  hCtrl = Me
+  While hCtrl
+    If Not hCtrl.Visible Then Return True
+    hCtrl = hCtrl.Parent
+  Wend
+  
+End
+
+Public Sub _CanRefresh() As Boolean
+  
+  If Not Me.Form._Loaded Then Return
+  If WebForm._InExec = 0 Then Return
+  If WebForm._DisableRefresh Then Return
+  If _NoRefresh Then Return
+  If IsHidden() Then Return
+  Return True
+  
+End
+
+
+Public Sub Refresh()
+  
+  If WebForm._DisableRefresh Then Return
+  If _NoRefresh Then Return
+  If IsHidden() Then Return
+  If WebForm._InExec Then
+    _Refresh = True
+    WebForm._HasRefresh = True
+  Endif
+  
+End
+
+Public Sub _RefreshReply() As Boolean
+  
+  Dim hFile As File
+  Dim sResult As String
+  
+  If _Refresh Then 
+    
+    hFile = Open String For Write
+    Output To #hFile
+    
+    If Not _Naked Then Me._BeforeRender()
+    Me._Render()
+    If Not _Naked Then Me._AfterRender()
+    
+    sResult = Close #hFile
+    Output To Default
+    
+    'WebForm._AddRefresh("$(" & JS(Me.Name) & ").outerHTML = " & JS(sResult) & ";")
+    
+    If _Naked Then
+      Print "gw.setInnerHtml("; JS(Me.Name); ","; JS(sResult); ");"
+    Else
+      Print "gw.setOuterHtml("; JS(Me.Name); ","; JS(sResult); ");"
+      'Print "$("; JS(Me.Name); ").outerHTML = "; JS(sResult); ";"
+    Endif
+    
+    _Refresh = False
+    Return True
+    
+  Endif
+  
+End
+
+Public Sub _GetEventJS(sProp As String, sEvent As String, Optional sArg As String) As String
+  
+  Dim sStr As String
+  
+  If Not Object.CanRaise(Me, sEvent) Then Return
+  
+  sStr = " " & sProp & "=\"gw.raise(" '& JS(Me.Form.Name) & "," 
+  If Me Is WebForm Then
+    sStr &= "null"
+  Else
+    sStr &= JS($sName)
+  Endif
+  sStr &= "," & JS(sEvent)
+  If sArg Then sStr &= "," & sArg
+  sStr &= ");"
+  sStr &= "\""
+  
+  Return sStr
+  
+End
+
+Public Sub _GetUpdateJS(sEvent As String, sProp As String, Optional sGetValue As String = "null", Optional sMore As String) As String
+  
+  Dim sStr As String
+  
+  sStr = " " & sEvent & "=\"gw.update(" '& JS(Me.Form.Name) & "," 
+  'If Me Is WebForm Then
+  '  sStr &= "null"
+  'Else
+    sStr &= JS($sName)
+  'Endif
+  sStr &= "," & JS(sProp) & "," & sGetValue & ");"
+  If sMore Then sStr &= sMore
+  sStr &= "\""
+  
+  Return sStr
+  
+End
+
+Public Sub _UpdateProperty((sProp) As String, (vValue) As Variant)
+  
+End
+
+Private Function Width_Read() As String
+
+  If $hStyle Then Return $hStyle["width"]
+
+End
+
+Private Sub Width_Write(Value As String)
+
+  Style_Read()["width"] = Value
+
+End
+
+Private Function Height_Read() As String
+
+  If $hStyle Then Return $hStyle["height"]
+
+End
+
+Private Sub Height_Write(Value As String)
+
+  Style_Read()["height"] = Value
+
+End
+
+Private Function Visible_Read() As Boolean
+
+  Return Not $bHidden
+  
+  ' If Not $hStyle Then Return True
+  ' Return $hStyle["display"] <> "none"
+
+End
+
+Private Sub Visible_Write(Value As Boolean)
+
+  Dim bCanRefresh As Boolean
+  
+  If $bHidden <> Value Then Return
+  
+  $bHidden = False
+  bCanRefresh = _CanRefresh()
+  $bHidden = Not Value
+  
+  Inc _NoRefresh
+  _SetProperty("Visible", Value)
+  Dec _NoRefresh
+  If bCanRefresh Then 
+    WebForm._AddJavascript("gw.setVisible(" & JS(Me.Name) & "," & JS(Not $bHidden) & ")")
+  Endif
+  'Me.Parent.Refresh
+  
+  ' If Value Then
+  '   If $hStyle Then Style_Read()["display"] = ""
+  ' Else
+  '   Style_Read()["display"] = "none"
+  ' Endif
+
+End
+
+Private Function Ignore_Read() As Boolean
+
+  Return $bIgnore
+
+End
+
+Private Sub Ignore_Write(Value As Boolean)
+
+  If $bIgnore = Value Then Return
+  $bIgnore = Value
+  _SetProperty("Ignore", Value)
+  Me.Parent.Refresh
+
+End
+
+Public Sub SetFocus(Optional Highlight As Boolean)
+
+  Dim sName As String
+  
+  sName = $sName
+  If _Proxy Then sName &= _Proxy
+  
+  WebForm._AddReply("gw.setFocus(" & JS(sName) & ")")
+  If Highlight Then WebForm._AddReply("gw.highlightMandatory(" & JS(sName) & ")")
+  
+End
+
+Private Function Enabled_Read() As Boolean
+
+  If $bDisabled Then Return
+  If $iParentId = 0 Then Return True
+  Return Parent_Read().Enabled
+
+End
+
+Private Sub Enabled_Write(Value As Boolean)
+
+  If $bDisabled <> Value Then Return
+  $bDisabled = Not Value
+  Me._SetProperty("Enabled", Value)
+
+End
+
+Private Function Background_Read() As Integer
+
+  Return $iBackground
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  If $iBackground = Value Then Return
+  $iBackground = Value
+  Me._SetProperty("Background", Value)
+
+End
+
+Private Function Foreground_Read() As Integer
+
+  Return $iForeground
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  If $iForeground = Value Then Return
+  $iForeground = Value
+  Me._SetProperty("Foreground", Value)
+  
+
+End
+
+Static Public Sub _GetColor(iCol As Integer) As String
+
+  Dim A As Integer
+  Dim R As Integer
+  Dim G As Integer
+  Dim B As Integer
+
+  A = Lsr(iCol, 24)
+  R = Lsr(iCol, 16) And 255
+  G = Lsr(iCol, 8) And 255
+  B = iCol And 255
+  
+  If A Then
+    Return "rgba(" & CStr(R) & "," & CStr(G) & "," & CStr(B) & "," & CStr(Round(A / 255, -2)) & ")"
+  Else
+    Return "#" & Hex$(R, 2) & Hex$(G, 2) & Hex$(B, 2)
+  Endif
+
+End
+
+Public Sub Raise()
+
+  Dim hParent As WebContainer
+  
+  hParent = Parent_Read()
+  If hParent Then hParent._Raise($sName)
+  
+End
+
+Public Sub Lower()
+
+  Dim hParent As WebContainer
+  
+  hParent = Parent_Read()
+  If hParent Then hParent._Lower($sName)
+  
+End
+
+Static Public Sub _GetNames() As String
+  
+  Dim aKey As New String[]
+  
+  For Each $cFromName
+    aKey.Add($cFromName.Key)
+  Next
+  
+  Return aKey.Join(",")
+  
+End
+
+Public Sub Delete()
+
+  Dim hParent As WebContainer
+  
+  hParent = Parent_Read()
+  If hParent Then hParent._Remove(Me)
+  
+  Session[$sName] = Null
+  Session[$sName & ":data"] = Null
+  
+  $cFromName[$sName] = Null
+  $cFromId[$iId] = Null
+  'Debug $sName;; $iId;; System.Backtrace.Join(" ")
+  
+End
+
+Public Sub Show()
+  
+  Me.Visible = True
+  
+End
+
+Public Sub Hide()
+  
+  Me.Visible = False
+  
+End
+
+Public Sub _get(Key As String) As Variant
+  
+  Dim cData As Collection
+  
+  If Not Key Then Error.Raise("Void key")
+  
+  cData = Session[$sName & ":data"]
+  If cData Then Return cData[Key]
+  
+End
+
+Public Sub _put(Value As Variant, Key As String)
+  
+  Dim cData As Collection
+  
+  If Not Key Then Error.Raise("Void key")
+  cData = Session[$sName & ":data"]
+  If Not cData Then cData = New Collection
+  cData[Key] = Value
+  Session[$sName & ":data"] = cData
+  
+End
+
+Public Sub Reset()
+  
+  Session[$sName & ":data"] = Null
+  
+End
+
+
+' Public Sub _GetBaseName() As String
+' 
+'   Dim iPos As Integer
+'   
+'   iPos = InStr($sName, ".")
+'   If iPos Then
+'     Return Mid$($sName, iPos + 1)
+'   Else
+'     Return $sName
+'   Endif
+'   
+' End
+
+Private Function Border_Read() As Boolean
+
+  Return $bNoBorder
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  If $bNoBorder <> Value Then Return
+  $bNoBorder = Not Value
+  Me._SetProperty("Border", Value)
+
+End
+
+Private Function Class_Read() As String
+
+  Return $sClass
+
+End
+
+Private Sub Class_Write(Value As String)
+
+  If $sClass = Value Then Return
+  $sClass = Value
+  Me._SetProperty("Class", Value)
+
+End
+
+Private Function Tooltip_Read() As String
+
+  Return $sTooltip
+
+End
+
+Private Sub Tooltip_Write(Value As String)
+
+  If $sTooltip = Value Then Return
+  $sTooltip = Value
+  Me._SetProperty("Tooltip", Value)
+
+End
+
+Public Sub _GetImageLink(sImage As String) As String
+
+  If Left(sImage) = "/" Then
+    Return Application.Root &/ "img:" & Me.Name & "?z=" & Base64(Format(Now, "hhnnssuuu"))
+  Else
+    Return Application.Root &/ sImage
+  Endif
+  
+End
+

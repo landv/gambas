@@ -1,0 +1,218 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,103,91)
+  Icon = Picture["img/16/database.png"]
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  AutoResize = True
+  Spacing = True
+  Margin = True
+  { HBox7 HBox
+    MoveScaled(1,1,84,4)
+    { Label7 Label
+      MoveScaled(0,0,18,4)
+      Text = ("Name")
+    }
+    { txtName TextBox
+      MoveScaled(27,0,22,4)
+      Expand = True
+    }
+  }
+  { HBox2 HBox
+    MoveScaled(1,6,68,4)
+    { Label1 Label
+      MoveScaled(0,0,18,4)
+      Text = ("Type")
+    }
+    { cmbType ComboBox
+      MoveScaled(27,0,25,4)
+      #Translate = False
+      ReadOnly = True
+      List = ["MySQL", "PostgreSQL", "SQLite", "ODBC"]
+    }
+  }
+  { panHost HBox
+    MoveScaled(1,11,68,4)
+    { Label2 Label
+      MoveScaled(0,0,18,4)
+      Text = ("Host")
+    }
+    { txtHost TextBox
+      MoveScaled(27,0,23,4)
+      Expand = True
+    }
+    { Label11 Label
+      MoveScaled(50,0,2,4)
+      #Translate = False
+      Text = ":"
+      Alignment = Align.Center
+    }
+    { txtPort TextBox
+      MoveScaled(55,0,10,4)
+    }
+  }
+  { panPath HBox
+    MoveScaled(1,16,68,4)
+    Visible = False
+    { Label5 Label
+      MoveScaled(0,0,18,4)
+      Text = ("Path")
+    }
+    { txtPath ButtonBox
+      MoveScaled(27,0,23,4)
+      Expand = True
+    }
+  }
+  { panLogin VBox
+    MoveScaled(1,21,96,9)
+    Spacing = True
+    { HBox4 HBox
+      MoveScaled(0,0,68,4)
+      { Label3 Label
+        MoveScaled(0,0,18,4)
+        Text = ("User")
+      }
+      { txtUser TextBox
+        MoveScaled(27,0,23,4)
+        Expand = True
+      }
+    }
+    { HBox5 HBox
+      MoveScaled(0,5,79,4)
+      Spacing = True
+      { Label4 Label
+        MoveScaled(0,0,17,4)
+        Text = ("Password")
+      }
+      { txtPassword TextBox
+        MoveScaled(27,0,23,4)
+        Expand = True
+        Password = True
+      }
+      { chkRememberPassword CheckBox
+        MoveScaled(53,0,24,4)
+        Expand = True
+        AutoResize = True
+        Text = ("Remember password")
+      }
+    }
+  }
+  { panDatabase VBox
+    MoveScaled(1,35,96,47)
+    AutoResize = True
+    Spacing = True
+    { HBox6 HBox
+      MoveScaled(0,0,96,4)
+      { Label6 Label
+        MoveScaled(0,0,18,4)
+        Text = ("Database")
+      }
+      { txtDatabase ButtonBox
+        MoveScaled(27,0,23,4)
+        Expand = True
+        Picture = Picture["icon:/small/view-detail"]
+      }
+    }
+    { panChooseDatabase HBox
+      MoveScaled(0,5,95,30)
+      Visible = False
+      { Label8 Label
+        MoveScaled(0,0,18,3)
+      }
+      { VBox1 VBox
+        MoveScaled(27,0,66,18)
+        Expand = True
+        Spacing = True
+        { lvwDatabase ListView
+          MoveScaled(0,0,31,11)
+          Expand = True
+        }
+        { panDatabaseAction HBox
+          MoveScaled(0,12,65,4)
+          Spacing = True
+          { btnCreateDatabase Button
+            MoveScaled(0,0,14,4)
+            AutoResize = True
+            Picture = Picture["icon:/small/new"]
+          }
+          { btnDeleteDatabase Button
+            MoveScaled(15,0,14,4)
+            AutoResize = True
+            Picture = Picture["icon:/small/delete"]
+          }
+          { panCreateFrom HBox
+            MoveScaled(30,0,30,4)
+            Expand = True
+            Spacing = True
+            { chkCreateFrom CheckBox
+              MoveScaled(0,0,9,4)
+              AutoResize = True
+              Text = ("From")
+            }
+            { cmbCreateFrom ComboBox
+              MoveScaled(9,0,20,4)
+              Enabled = False
+              Expand = True
+              ReadOnly = True
+            }
+          }
+        }
+      }
+    }
+    { HBox3 HBox
+      MoveScaled(0,36,68,3)
+      { Label10 Label
+        MoveScaled(0,0,18,3)
+      }
+      { chkIgnoreCharset CheckBox
+        MoveScaled(27,0,24,3)
+        Expand = True
+        Text = ("Ignore database charset")
+      }
+    }
+    { HBox8 HBox
+      MoveScaled(0,40,68,3)
+      { Label12 Label
+        MoveScaled(0,0,18,3)
+      }
+      { chkDisplayMetadata CheckBox
+        MoveScaled(27,0,24,3)
+        Expand = True
+        Text = ("Display metadata")
+      }
+    }
+    { HBox10 HBox
+      MoveScaled(0,44,68,3)
+      { Label13 Label
+        MoveScaled(0,0,18,3)
+      }
+      { chkRememberTemplate CheckBox
+        MoveScaled(27,0,35,3)
+        Expand = True
+        Text = ("Remember database structure")
+      }
+    }
+  }
+  { Panel2 Panel
+    MoveScaled(38,83,6,1)
+  }
+  { HBox1 HBox
+    MoveScaled(1,86,68,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(4,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(27,0,17,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(47,0,17,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

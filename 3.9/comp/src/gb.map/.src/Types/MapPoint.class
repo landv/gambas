@@ -1,0 +1,180 @@
+' Gambas class file
+
+Export
+Public Lat As Float
+Public Lon As Float
+
+Public Sub _new(Optional Latitude As Float, Longitude As Float)
+  
+  Lat = Latitude
+  Lon = Longitude
+  
+End
+
+Static Public Function _Call(Latitude As Float, Longitude As Float) As MapPoint
+  
+  Dim hLatLon As New MapPoint(Latitude, Longitude)
+
+  Return hLatLon
+  
+End
+
+'' Calculate geodesic distance (in m) between two points specified by latitude / longitude (in numeric degrees).
+''
+'' from: Vincenty inverse formula - T Vincenty, "Direct and Inverse Solutions of Geodesics on the
+'' Ellipsoid with application of nested equations", Survey Review, vol XXII no 176, 1975
+'' [http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf]
+''
+'' © 2002-2008 Chris Veness [http://www.movable-type.co.uk/scripts/latlong-vincenty.html]
+''
+Public Sub Distance(PointA As MapPoint, PointB As MapPoint) As Float
+  
+  Dim eLon1 As Float = PointA.Lon
+  Dim eLat1 As Float = PointA.Lat
+  Dim eLon2 As Float = PointB.Lon
+  Dim eLat2 As Float = PointB.Lat
+  
+  ' WGS 84 ellipsoid
+  Dim A As Float = 6378137
+  Dim B As Float = 6356752.3142
+  Dim F As Float = 1 / 298.257223563
+  
+  Dim L As Float = Rad(eLon2 - eLon1)
+  Dim U1 As Float = ATan((1 - F) * Tan(Rad(eLat1)))
+  Dim U2 As Float = ATan((1 - F) * Tan(Rad(eLat2)))
+  Dim SinU1 As Float = Sin(U1), CosU1 As Float = Cos(U1)
+  Dim SinU2 As Float = Sin(U2), CosU2 As Float = Cos(U2)
+  
+  Dim Lambda As Float = L, LambdaP As Float = Pi(2)
+  Dim IterLimit As Integer = 20
+  
+  Dim SinLambda, CosLambda As Float
+  Dim Sigma, SinSigma, CosSigma, Cos2SigmaM As Float
+  Dim SinAlpha, CosSqAlpha As Float
+  Dim C As Float
+  
+  Dim USq, AA, BB, DeltaSigma, S As Float
+  
+  While Abs(Lambda - LambdaP) > 1e-12
+    
+    Dec IterLimit
+    If IterLimit < 0 Then Break 
+    
+    SinLambda = Sin(Lambda)
+    CosLambda = Cos(Lambda)
+    SinSigma = Sqr((CosU2 * SinLambda) * (CosU2 * SinLambda) + (CosU1 * SinU2 - SinU1 * CosU2 * CosLambda) * (CosU1 * SinU2 - SinU1 * CosU2 * CosLambda))
+    
+    ' co-incident points
+    If (SinSigma = 0) Then Return 0
+    
+    CosSigma = SinU1 * SinU2 + CosU1 * CosU2 * CosLambda
+    Sigma = ATan2(SinSigma, CosSigma)
+    SinAlpha = CosU1 * CosU2 * SinLambda / SinSigma
+    CosSqAlpha = 1 - SinAlpha * SinAlpha
+    If CosSqAlpha = 0 Then
+      Cos2SigmaM = 0
+    Else
+      Cos2SigmaM = CosSigma - 2 * SinU1 * SinU2 / CosSqAlpha
+    Endif
+    
+    C = F / 16 * CosSqAlpha * (4 + F * (4 - 3 * CosSqAlpha))
+    LambdaP = Lambda
+    Lambda = L + (1 - C) * F * sinAlpha * (Sigma + C * SinSigma * (Cos2SigmaM + C * CosSigma * (-1 + 2 * Cos2SigmaM * Cos2SigmaM)))
+  
+  Wend
+  
+  If (IterLimit < 0) Then Return 0 'NaN - formula failed TO converge
+
+  USq = CosSqAlpha * (A * A - B * B) / (B * B)
+  AA = 1 + USq / 16384 * (4096 + USq * (-768 + USq * (320 - 175 * USq)))
+  BB = USq / 1024 * (256 + USq * (-128 + USq * (74 - 47 * USq)))
+  DeltaSigma = BB * SinSigma * (Cos2SigmaM + BB / 4 * (CosSigma * (-1 + 2 * Cos2SigmaM * Cos2SigmaM) - BB / 6 * Cos2SigmaM * (-3 + 4 * SinSigma * SinSigma) * (-3 + 4 * Cos2SigmaM * Cos2SigmaM)))
+  S = B * AA * (Sigma - DeltaSigma)
+  Return S
+  
+End
+
+'' Calculate destination point given starting point lat / long (numeric degrees), 
+'' bearing (numeric degrees) & distance (in m).
+''
+'' from: Vincenty direct formula - T Vincenty, "Direct and Inverse Solutions of Geodesics on the 
+'' Ellipsoid with application of nested equations", Survey Review, vol XXII no 176, 1975"
+'' [http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf]
+''
+'' © 2002-2008 Chris Veness [http://www.movable-type.co.uk/scripts/latlong-vincenty-direct.html]
+''
+Static Public Sub From(Point As MapPoint, (Bearing) As Float, (Distance) As Float) As MapPoint
+  
+  Dim eLon1 As Float = Point.Lon
+  Dim eLat1 As Float = Point.Lat
+  
+  ' WGS 84 ellipsoid
+  Dim A As Float = 6378137
+  Dim B As Float = 6356752.3142
+  Dim F As Float = 1 / 298.257223563
+  
+  Dim S As Float = Distance
+  Dim Alpha1 As Float = Rad(Bearing)
+  Dim SinAlpha1 As Float = Sin(Alpha1), CosAlpha1 As Float = Cos(Alpha1)
+  
+  Dim TanU1 As Float = (1 - F) * Tan(Rad(eLat1))
+  Dim CosU1 As Float = 1 / Sqr((1 + TanU1 * TanU1))
+  Dim SinU1 As Float = TanU1 * CosU1
+  Dim Sigma1 As Float = ATan2(TanU1, CosAlpha1)
+  Dim SinAlpha As Float = CosU1 * SinAlpha1
+  Dim CosSqAlpha As Float = 1 - SinAlpha * SinAlpha
+  Dim USq As Float = CosSqAlpha * (A * A - B * B) / (B * B)
+  Dim AA As Float = 1 + USq / 16384 * (4096 + USq * (-768 + USq * (320 - 175 * USq)))
+  Dim BB As Float = USq / 1024 * (256 + USq * (-128 + USq * (74 - 47 * USq)))
+  
+  Dim Sigma As Float = S / (B * AA)
+  Dim SigmaP As Float = Pi(2)
+  
+  Dim Cos2SigmaM, SinSigma, CosSigma, DeltaSigma As Float
+  Dim Tmp, Lambda, C, L, Lat2 As Float
+  
+  While (Abs(Sigma - SigmaP) > 1e-12)
+  
+    Cos2SigmaM = Cos(2 * Sigma1 + Sigma)
+    SinSigma = Sin(Sigma)
+    CosSigma = Cos(Sigma)
+    DeltaSigma = BB * SinSigma * (Cos2SigmaM + BB / 4 * (CosSigma * (-1 + 2 * Cos2SigmaM * Cos2SigmaM) - BB / 6 * Cos2SigmaM * (-3 + 4 * SinSigma * SinSigma) * (-3 + 4 * Cos2SigmaM * Cos2SigmaM)))
+    SigmaP = Sigma
+    Sigma = S / (B * AA) + DeltaSigma
+  
+  Wend
+
+  Tmp = SinU1 * SinSigma - CosU1 * CosSigma * CosAlpha1
+  Lat2 = ATan2(SinU1 * CosSigma + CosU1 * SinSigma * CosAlpha1, (1 - F) * Sqr(SinAlpha * SinAlpha + Tmp * Tmp))
+  Lambda = ATan2(SinSigma * SinAlpha1, CosU1 * CosSigma - SinU1 * SinSigma * CosAlpha1)
+  C = F / 16 * CosSqAlpha * (4 + F * (4 - 3 * CosSqAlpha))
+  L = Lambda - (1 - C) * F * SinAlpha * (Sigma + C * SinSigma * (Cos2SigmaM + C * CosSigma * (-1 + 2 * Cos2SigmaM * Cos2SigmaM)))
+  'RevAz = ATan2(SinAlpha, - Tmp) ??
+
+  Return MapPoint(Deg(Lat2), eLon1 + Deg(L))
+  
+End
+
+'' Calculate the initial bearing (in degrees) that leads from one point to another point
+'' specified by latitude / longitude.
+'' 
+Static Public Sub Bearing(({From}) As MapPoint, {To} As MapPoint) As Float
+  
+  Dim eLon1 As Float = From.Lon
+  Dim eLat1 As Float = From.Lat
+  Dim eLon2 As Float = To.Lon
+  Dim eLat2 As Float = To.Lat
+ 
+  Dim DLon, X, Y, B As Float
+  
+  eLat1 = Rad(eLat1)
+  eLat2 = Rad(eLat2)
+  DLon = Rad(eLon2 - eLon1)
+  
+  Y = Sin(DLon) * Cos(eLat2)
+  X = Cos(eLat1) * Sin(eLat2) - Sin(eLat1) * Cos(eLat2) * Cos(DLon)
+  B = Deg(ATan2(Y, X))
+  If B < 0 Then B += 360
+  Return B
+  
+End

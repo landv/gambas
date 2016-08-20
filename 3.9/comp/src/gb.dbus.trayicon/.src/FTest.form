@@ -1,0 +1,70 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,64)
+  Persistent = True
+  { Menu1 Menu
+    Text = ("Menu1")
+    { Menu2 Menu
+      Text = ("Menu2")
+      Picture = Picture["icon:/small/add"]
+    }
+    { Menu3 Menu
+      Text = ("Menu3")
+      Picture = Picture["icon:/small/computer"]
+      { Menu6 Menu
+        Text = ("Menu6")
+        Radio = True
+      }
+      { Menu7 Menu
+        Text = ("Menu7")
+        Radio = True
+      }
+      { Menu8 Menu
+        Text = ("Menu8")
+        Radio = True
+      }
+    }
+    { Menu4 Menu
+    }
+    { Menu5 Menu
+      Text = ("Menu5")
+      Toggle = True
+      Checked = True
+    }
+    { Menu9 Menu
+      Text = ("Quit")
+    }
+  }
+  { Menu13 Menu
+    Text = ("Menu13")
+    Visible = False
+    { Menu10 Menu
+      Text = ("Menu10")
+    }
+    { Menu11 Menu
+      Text = ("Menu11")
+    }
+    { Menu12 Menu
+      Text = ("Menu12")
+    }
+  }
+  { TrayIcon1 #TrayIcon
+    #MoveScaled(22,14)
+    Visible = True
+    PopupMenu = "Menu1"
+    Tooltip = ("Hello tooltip !")
+  }
+  { Button1 Button
+    MoveScaled(5,4,16,4)
+    Text = ("Toggle")
+  }
+  { Button2 Button
+    MoveScaled(23,4,16,4)
+    Text = ("Picture")
+  }
+  { Button3 Button
+    MoveScaled(32,12,16,4)
+    Text = ("Menu5")
+  }
+}

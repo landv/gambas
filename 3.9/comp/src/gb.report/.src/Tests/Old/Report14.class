@@ -1,0 +1,32 @@
+' Gambas class file
+
+'Static Public Type As String
+
+Public Sub _new(Optional sType As String = "mysql")
+
+  Dim hResult As Result
+  Dim Rlbl As ReportLabel
+  Dim hConn As Connection
+
+  hConn = Connections["Connection1"]
+  hConn.Type = sType
+  If hConn.Type = "sqlite" Then hConn.Host = User.Home
+  Try hConn.Open
+  If Not hConn.Opened Then
+    Message.Error(" You have to create the test database with the <b>Database</b> example.")
+    Return
+  Endif
+
+  hResult = db.Limit(200).Find("test")
+  If Not hResult.Available Then Return
+
+  For Each hResult
+
+    Rlbl = New ReportLabel(RVBCont)
+    Rlbl.Autoresize = True
+    Rlbl.Text = hResult!name & " " & hResult!firstname
+    Rlbl.Border.bottom.Width = "1px"
+
+  Next
+
+End

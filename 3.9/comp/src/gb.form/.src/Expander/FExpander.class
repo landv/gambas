@@ -1,0 +1,221 @@
+' Gambas class file
+
+Private $bHidden As Boolean
+Private $H As Integer
+Private $bInside As Boolean
+Private $bAnim As Boolean
+
+Private Const HIDE_TIME As Float = 0.1
+
+Public Sub _new()
+  
+  'UpdatePicture
+  UpdateTitle
+  
+End
+
+
+Private Sub GetParent() As Expander
+  
+  Return Me.Parent
+  
+End
+
+
+Public Sub GetContainer() As Container
+  
+  Return panContainer
+  
+End
+
+Public Sub GetHidden() As Boolean
+  
+  Return Not panContainer.Visible
+  
+End
+
+' Private Sub UpdatePicture()
+'   
+'   If $bHidden Then 
+'     $hIcon = Picture["img/8/side-right.png"]
+'     $hIconVoid = Picture["img/8/side-right-void.png"]
+'   Else 
+'     $hIcon = Picture["img/8/side-bottom.png"]
+'     $hIconVoid = Picture["img/8/side-bottom-void.png"]
+'   Endif
+' 
+'   'If $bInside Then  
+'     btnExpand.Picture = $hIcon
+'   'Else
+'   '  btnExpand.Picture = $hIconVoid
+'   'Endif
+'   
+' End
+
+
+Public Sub SetHidden(bHidden As Boolean)
+
+  Dim DY As Integer
+  Dim eTime As Float
+
+  If Me.Parent.Design Then Return
+  If bHidden = $bHidden Then Return 
+  
+  $bHidden = bHidden
+  btnExpand.Refresh
+  
+  If $bHidden Then 
+
+    $H = Me.Parent.H
+
+    If $bAnim Then     
+      eTime = Timer
+      DY = $H - panTitle.H
+      While Timer < (eTime + HIDE_TIME)
+        Me.Parent.H = $H - ((Timer - eTime) / HIDE_TIME) * DY
+        Wait
+      Wend
+    Endif
+
+    Me.Parent.H = panTitle.H
+
+    panContainer.Hide
+    GetParent()._Hide()
+    
+  Else 
+  
+    GetParent()._Show()
+    panContainer.Show
+    
+    If $bAnim Then 
+      eTime = Timer
+      DY = $H - panTitle.H
+      While Timer < (eTime + HIDE_TIME)
+        Me.Parent.H = panTitle.H + ((Timer - eTime) / HIDE_TIME) * DY
+        Wait
+      Wend
+    Endif
+
+    Me.Parent.H = $H
+  Endif
+  
+End
+
+
+Public Sub GetText() As String
+  
+  Return lblTitle.Text
+  
+End
+
+Public Sub SetText(sText As String)
+  
+  lblTitle.Text = sText
+  UpdateTitle
+  
+End
+
+Public Sub GetFont() As Font
+  
+  Return lblTitle.Font
+  
+End
+
+Public Sub SetFont(hFont As Font)
+  
+  lblTitle.Font = hFont
+  UpdateTitle
+  
+End
+
+
+
+Public Sub btnExpand_Enter()
+
+  $bInside = True
+  btnExpand.Refresh
+
+End
+
+Public Sub btnExpand_Leave()
+
+  $bInside = False
+  btnExpand.Refresh
+
+End
+
+Public Sub btnExpand_MouseDown()
+
+  If Not Me.Enabled Then Return
+  SetHidden(Not $bHidden)
+
+End
+
+Public Sub GetAnimated() As Boolean
+  
+  Return $bAnim
+  
+End
+
+Public Sub SetAnimated(bAnim As Boolean)
+  
+  $bAnim = bAnim
+  
+End
+
+Private Sub UpdateTitle()
+  
+  panTitle.H = Desktop.Scale + Max(Desktop.Scale * 2, ((lblTitle.Font.Height + Desktop.Scale - 1) \ Desktop.Scale) * Desktop.Scale)
+  btnExpand.W = Desktop.Scale * 2
+  
+End
+
+Public Sub btnExpand_Draw()
+
+  Dim iFlag As Integer
+  Dim Y, W As Integer
+  
+  W = Desktop.Scale * 3 / 2
+  Y = (btnExpand.H - W) / 2
+  
+  If Not Me.Enabled Then iFlag += Draw.Disabled
+  If $bInside And If Me.Enabled Then 
+    iFlag += Draw.Hover
+    'Draw.Style.Button(0, Y, W, W, False, iFlag, True)
+  Endif
+
+  Draw.Style.Arrow(0, Y, W, W, If($bHidden, Align.Right, Align.Bottom), iFlag)
+  'Draw.Rect(0, Y, W, W)
+
+End
+
+Public Sub panTitle_Enter()
+
+  panTitle.Background = Color.Merge(Color.Background, Color.TextBackground)
+
+End
+
+Public Sub panTitle_Leave()
+
+  panTitle.Background = Color.Default
+
+End
+
+Public Sub panTitle_MouseDown()
+
+  SetHidden(Not $bHidden)
+
+End
+
+Public Sub GetBorder() As Boolean
+  
+  Return panContainer.Border <> Border.None
+  
+End
+
+Public Sub SetBorder(bBorder As Boolean)
+  
+  panContainer.Border = If(bBorder, Border.Plain, Border.None)
+  
+End
+

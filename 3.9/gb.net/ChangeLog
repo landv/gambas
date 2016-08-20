@@ -1,0 +1,241 @@
+0.4.3 (net - STABLE / curl - ALPHA - compiles on Gambas 0.94)
+
+* Fixed a "segmentation fault", when changing user name or password in both HttpClient and FtpClient
+
+0.4.2 (net - STABLE / curl - ALPHA - compiles on Gambas 0.93b)
+
+* FtpClient external interface stabilized.
+
+* Finished 'Curl' class code, and code sharing between 'HttpClient' and 'FtpClient'.
+
+0.4.1 (net - STABLE / curl - ALPHA - compiles on Gambas 0.93b)
+
+* Added a new class 'Curl', that is the base for the rest of classes in this component
+
+* Now HttpClient and FtpClient inherits from 'Curl', so they share a lot of code
+
+0.4.0 (net - STABLE / curl - ALPHA - compiles on Gambas 0.93b)
+
+*  HttpClient : some code improvements so now it is faster,smaller and wastes less memory.
+
+*  Added 'FtpClient' class.  
+
+0.3.1 (net - STABLE / curl - ALPHA - compiles on Gambas 0.93)
+
+ * Added two new properties to Socket class. They are read/write, the first is called 'Port'. if
+   value is zero (Net.Local), connection will try to stablish a Local socket, else a TCP connection
+   will be stablished. The second, 'HostOrPath' can be a Host or a local path.
+ 
+ * Socket constructor has now no parameters.
+ 
+ * Conect method has now two optional parameters. The first can override 'HostOrPath' property, and the
+ second overrides 'Port' property
+
+0.3.0 (net - STABLE / curl - ALPHA - compiles on Gambas 0.93)
+
+* Added code to let the IDE show icons for all net classes.
+* Removed lots of code to make the component lighter and faster. 
+
+0.2.3 (net - STABLE / curl - ALPHA - compiles on Gambas 0.90)
+
+* Fixed a bug in UdpClient : segmentation fault when reading or writing data
+* Fixed a bug in UDPServerClient example : trying to use CLOSE when UdpClient is not active
+* <sys/types.h> defined before <sys/socket.h> to allow compile on FreeBSD  
+
+0.2.2 (ALPHA - compiles on Gambas 0.81)
+
+* 'NetCode' and 'AdvancedCode' classes changed to 'Net'
+* Proxy properties from 'HttpClient' has been added into a new class called 'Proxy'
+* 'ReturnCode' and 'ReturnString' properties are now called 'Code' and 'Reason'
+* This version should compile now using libcurl 7.10.3, 7.10.4, 7.10.5, 7.10.6, 7.10.7, 7.10.8 and 7.11.0
+* <netinet/in.h> now is after <sys/types.h> in all files to allow compile it on FreeBSD
+
+0.2.1 (ALPHA - compiles on Gambas 0.81)
+
+* Examples Updated
+* New HttpClient interface defined
+* 'AdvancedCode' class provides constants for 'Net.Advanced' component
+
+0.2.0 (ALPHA - compiles on Gambas 0.80)
+
+* Examples updated
+* Modifications in configuration scripts to detect libcurl
+* 'NetCode' provide the constants needed to work with all network classes
+* 'Net advanced' includes not : CHttpClient, and will include other classes using libcurl
+* 'Net' includes now : Socket, SerialPort,ServerSocket,UdpSocket,DnsClient and NetCode,
+  that is, basic networking stuff
+* 'Net' component splitted it two components: 'Net' and 'Advanced net'
+
+0.1.4 (STABLE - Gambas 0.80)
+
+BM - Changes to allow the component compile on systems without MSG_NOSIGNAL flag
+
+0.1.3 (Gambas 0.74)
+
+BM - 20 Dec 2003 - Let component compile with gcc 2.95
+
+0.1.2
+
+* Added HTTP proxy support for 'HttpClient' class
+
+0.1.1 (Gambas 0.73)
+
+* Corrected bug in 'HttpClient' class that didn't convert correctly
+  document query to HTTP codification
+* Added support for Solaris
+
+0.1.0
+
+* Added 'HttpClient.Local' constant as sinonym of 'HttpClient.Unix'
+* Changed 'HttpClient.Inet' constant to 'HttpClient.Internet'
+
+0.1.0pre7
+
+* Using sys/un.h instead of linux/un.h in 'Socket' and 'ServerSocket'
+  classes
+* Added option 'SO_REUSEADDR' to socket in 'ServerSocket' class
+* 'ServerSocket' example fixed
+* Documentation fixed
+
+
+0.1.0pre6
+
+* Memory allocation bug fixed in 'Socket' class
+* Memory allocation bug fixed in 'SerialPort' class
+* Lots of internal code reorganization
+* Some memory optimizations in 'Socket' and 'ServerSocket'
+* UDPServerClient example fixed
+* ServerSocket example fixed
+
+0.1.0pre5
+
+* Constant names changed in all classes to be more simple
+* Parameters in methods and events does not include its type
+  as a prefix now
+* 'ConnectUnix' and 'ConnectSocket' methods merged in one
+  method : 'Connect'
+* 'ServerSocket' 'SocketType' property changed to 'Type'
+* 'ConnectionRequest' event in 'ServerSocket' changed to 'Connection'
+* 'Accept' method from 'ServerSocket' does not take any parameter
+  now
+* 'HostFound' events from 'Socket' and 'HttpClient' changed to 'Found'
+* Datagram class now inherits from '.Stream'
+* Removed 'DataPacket' class
+* New properties 'SourceHost', 'SourcePort', 'TargetHost', 'TargetPort'
+  in 'Datagram' class
+* New method 'Peek' in 'Datagram' class
+* Removed methods 'Stop','Receive' and 'Send' from 'Datagram' class
+* 'Start' method from 'Datagram' Changed to 'Bind'
+* 'Datagram' class changed its name to 'UdpSocket'
+* Documentation updated
+* Examples updated
+
+
+
+0.1.0pre4
+
+* Removed Close() method from 'Socket' and 'SerialPort' classes,
+  translated to standard stream methods
+* 'LookingHostIP' constant in 'Socket' and 'HttpClient' classes,
+  changed to 'LookingUpHostIP'
+* Examples updated
+* Documentation updated
+
+
+0.1.0pre3
+
+
+* 'Accept' method from 'ServerSocket' changed its way to
+  act. Now it returns a new 'Socket' and accpets an optional
+  Event Handler
+* Old method 'Receive' from HttpClient, splitted
+  in two new methods : 'Receive' and 'Peek'
+* Now 'Socket' class inherits from '.Stream'
+* Now 'SerialPort' class inherits from 'Stream'
+* Removed 'Send' and 'Receive' methods from 'Socket'
+* Removed 'Send' and 'Receive' methods from 'SerialPort'
+* Added 'Peek' method to 'Socket'
+* Adaptations from generic stream methods to 'Socket' characteristics
+* Adaptations from generic stream methods to 'SerialPort' characteristics
+* Documentation updated
+* Examples updated
+
+
+0.1.0pre2
+
+* Added 0.0.17 = 0.1.0pre1 to CHANGELOG file
+* 'SocketError' event from Socket and Datagram now is called 'Error'
+* 'Error' codes are now negative values in Status property
+* 'Error' events from classes which support it, now takes
+  zero parameters
+* References to class names removed from 'GB.Error()' messages
+* Class 'ClientSocket' changed its name to 'Socket'
+* 'RemoteHostIP' and 'LocalHostIP' properties from 'Socket'
+  class changed its name to 'RemoteHost' and 'LocalHost'
+* Constants from ServerSocket changed its name "TypeTCP"->"iNet",
+  "TypeUnix"->"Unix"
+* 'DataAvailable' event changed its name to 'Read' in all classes
+   which supports it.
+* 'Wait' method from ServerSocket changed to 'Pause'
+* 'Path' property from 'Socket' class now returns IP:Port when
+  connected using TCP sockets.
+* 'CloseSocket' method from 'Socket' class changed to 'Close'
+* 'Socket' Class has a new constructor. You can both use no
+  parameters, or pass a string as parameter, which can be :
+  'HostName:Port' or 'HostIP:Port' for TCP connections, or
+  'Absolute_Path' for Unix connections.
+* 'ServerSocket' Class has a new constructor. You can both use no
+  parameters, or pass a string and a number as parameter, which can be :
+  ':Port' for TCP connections, or 'Absolute_Path' for Unix connections.
+* 'Datagram' Class has a new constructor. You can both use no
+  parameters, or pass an integer as Port value to start its
+  work.
+* 'MaxConn' parameter from 'Listen' method if ServerSocket class
+  now is optional.
+* 'SendData' and 'ReceiveData' changed to 'Send' and 'Receive' in all
+ classes containing that methods.
+
+
+0.0.17 = 0.1.0pre1
+
+* Removed prefix 'Is' in constats beginning with that prefix.
+* 'GetData' method changed its name to 'ReceiveData' is some
+  classes
+* 'Connected' event from 'ClientSocket' changed its name
+  to 'Connect'.
+* Examples updated.
+* HttpClient class finished.
+* HttpClient documentation added.
+
+
+0.0.16
+
+* Added CHANGELOG file.
+* Changed component name from 'networking' to 'net'.
+* Changed 'sData' property from DataPacket to 'Data'.
+* Documentation updated for DataPacket class.
+* Changed example names.
+* Constant names and values have changed in ClientSocket, some
+  new constants have been added.
+* ConnectSocket and ConnectUnix methods from ClientSocket
+  have changed, now they not return any value, as error
+  codes are managed by "SocketError" event.
+* Documentation updated for ClientSocket class.
+* Example "ClientSocket" updated.
+* DnsClient has two new constants.
+* Documentation updated for DnsClient class.
+* Some ServerSocket constants have changed its name.
+* New Constants added to ServerSocket.
+* A new static property 'UnixMaxPath' added to ServerSocket.
+* ServerSocket 'Listen' method does not return any value now.
+* ServerSocket example updated.
+* Documentation updated for ServerSocket class.
+* Datagram  class has new constants.
+* Datagram 'Start' method does not return any value now.
+* Datagram 'SocketError' event implemented.
+* Documentation updated for Datagram class.
+* Example "UDPServerClient" updated.
+* SerialPort 'GetData' method now is called 'ReceiveData'.
+* Added constants to SerialPort class.
+* Documentation updated for SerialPort class.
+* SerialPort Example updated.

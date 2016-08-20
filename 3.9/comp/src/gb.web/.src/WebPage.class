@@ -1,0 +1,104 @@
+' Gambas class file
+
+Export
+Create Static
+
+Static Private $aParent As New WebPage[]
+Static Private $iLevel As Integer
+
+Property Buffered As Boolean
+Property Read Parent As Object
+
+Private $bBuffered As Boolean
+
+Static Public Sub Main()
+  
+  Dim hObject As WebPage
+
+  Try hObject = Application.Startup.AutoCreate()
+  If Not hObject Then Return
+  hObject.Render()
+  
+End
+
+Public Sub _Render(Optional (_Arg) As Collection)
+  
+End
+
+Public Sub __Render(Optional (_Arg) As Collection = New Collection)
+  
+  $aParent.Push(Me)
+  Me._Render(_Arg)
+  $aParent.Pop()
+  
+End
+
+Public Sub _RenderEnd()
+  
+End
+
+Public Sub __RenderEnd()
+  
+  $aParent.Push(Me)
+  Me._RenderEnd()
+  $aParent.Pop()
+  
+End
+
+Public Sub Render()
+  
+  If $iLevel = 0 Then
+    Response.Buffered = $bBuffered
+    Response.Begin
+  Endif
+  
+  Inc $iLevel
+  Me.__Render()
+  
+'Finally
+  
+  Dec $iLevel
+  
+  If $iLevel = 0 Then
+    Response.End
+  Endif
+  
+End
+
+Public Sub ToString() As String
+  
+  Dim hFile As File
+  Dim sResult As String
+  
+  Inc $iLevel
+  
+  hFile = Open String For Write
+  Output To #hFile
+  Me.__Render()
+  Output To Default
+  sResult = Close #hFile
+  
+Finally
+  
+  Dec $iLevel
+  Return sResult
+  
+End
+
+Private Function Buffered_Read() As Boolean
+
+  Return $bBuffered
+
+End
+
+Private Sub Buffered_Write(Value As Boolean)
+
+  $bBuffered = Value
+
+End
+
+Private Function Parent_Read() As Object
+
+  If $aParent.Count >= 2 Then Return $aParent[$aParent.Max - 1]
+
+End

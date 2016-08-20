@@ -1,0 +1,43 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,72,68)
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { HBox1 HBox
+    MoveScaled(6,1,55,4)
+    { txtPadding SpinBox
+      MoveScaled(3,0,8,4)
+    }
+    { Button1 Button
+      MoveScaled(18,0,14,4)
+    }
+    { Button2 Button
+      MoveScaled(34,0,16,4)
+      Text = ("Border")
+    }
+  }
+  { gvwInfo GridView
+    MoveScaled(8,11,51,31)
+    Foreground = Color.Orange
+    Expand = True
+    Border = False
+    Mode = Select.Multiple
+    ShowCursor = True
+    Header = GridView.Both
+    Sorted = True
+  }
+  { TextBox1 TextBox
+    MoveScaled(11,47,24,4)
+    Visible = False
+    Text = ("TextBox1")
+    Border = False
+  }
+  { TextArea1 TextArea
+    MoveScaled(10,57,25,10)
+    Visible = False
+    Text = ("TextArea1")
+    Border = False
+  }
+}

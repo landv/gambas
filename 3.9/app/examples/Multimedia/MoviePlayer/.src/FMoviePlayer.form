@@ -1,0 +1,42 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(33.1429,15,51,45)
+  Text = ("Movie player")
+  Icon = Picture["video.png"]
+  { txtAbout TextLabel
+    MoveScaled(2,1,46,20)
+    Text = ("<h1>Gambas Movie Player</h1>\n\n<p>This example is based on the MPlayer movie player and was made by Benoît Minisini</p>")
+  }
+  { panButton Panel
+    MoveScaled(2,35,46,6)
+    { btnPlay Button
+      MoveScaled(1,1,4,4)
+      Enabled = False
+      Picture = Picture["icon:/small/play"]
+    }
+    { btnPause Button
+      MoveScaled(6,1,4,4)
+      Enabled = False
+      Picture = Picture["icon:/small/pause"]
+    }
+    { btnStop Button
+      MoveScaled(11,1,4,4)
+      Enabled = False
+      Picture = Picture["icon:/small/stop"]
+    }
+    { btnOpen Button
+      MoveScaled(16,1,4,4)
+      Picture = Picture["icon:/small/open"]
+    }
+  }
+  { timShow #Timer
+    #MoveScaled(32,17)
+    Delay = 500
+  }
+  { embPlayer Embedder
+    MoveScaled(7,20,23,13)
+    Visible = False
+    Background = &H000000&
+  }
+}

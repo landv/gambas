@@ -1,0 +1,103 @@
+' Gambas class file
+
+Export 
+Private $arsValues As New String[]
+Property Count As Integer
+Property Values As String[]
+Private $sidChart As String
+
+Public Sub _New(sidChart As String)
+  
+  $sidChart = sidChart
+  
+End
+
+Private Function Count_Read() As Integer
+
+  Return $arsValues.Count
+
+End
+
+Private Sub count_Write(Value As Integer)
+  Dim cnt As Integer
+  Dim i As Integer
+  Dim hSeries As _CSerie
+  If Value < 1 Then 
+    'Message.Error(("The Values count must be up than 1"))
+    Return 
+  Endif 
+  
+  If $arsValues.Count < Value Then 
+    For i = 0 To Value - $arsValues.Count
+      $arsValues.Add(0)
+    Next
+  Else If $arsValues.Count > Value Then 
+    cnt = $arsValues.Count - Value
+    $arsValues.Remove($arsValues - cnt, cnt)
+  Endif
+  
+  
+  'Resize all the Series to match with the Labels Count
+  For Each hSeries In Chart._$ColChart[$sidChart]
+     
+     hSeries._SetCount(Value, Chart._$ColChart[$sidChart].id)
+   
+  Next 
+  
+End
+
+Public Sub Add(Value As String)
+  'Ajoute la Valeur
+  $arsValues.Add(Value)
+  'Force L'adaptation des serie
+  Me.Count = $arsValues.Count
+  
+End
+
+Public Sub _Put(Index As Integer, Value As String[])
+  
+  $arsValues[Index] = Value
+  
+End
+
+Public Sub _Get(Index As Integer) As String
+  
+  Return $arsValues[Index]
+  
+End
+
+
+
+
+Public Function _Next() As String
+  If enum.Index = Null Then enum.Index = -1
+  
+  If enum.Index = $arsValues.max Then 
+    enum.Stop
+    Return 
+  Endif
+  Inc enum.Index
+  Return $arsValues[enum.Index]
+  
+End
+
+Private Function Values_Read() As String[]
+
+  Return $arsValues
+
+End
+
+Private Sub Values_Write(Value As String[])
+
+  If Value = Null Then 
+    Message.Error(("An array can't be NULL"))
+    Return 
+  Endif 
+  ' IF Value.Count < 1 THEN 
+  '   Message.Error((""))
+  '   RETURN 
+  ' ENDIF 
+  
+  $arsValues = Value
+  Me.Count = $arsValues.Count
+End

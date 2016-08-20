@@ -1,0 +1,301 @@
+' Gambas class file
+
+Inherits UserControl
+
+Event Ready
+'Event Install
+'Event Vote
+Event Click
+
+Static Private $hVote As Image
+Static Private $hVoteOff As Image
+Static Private $hInstall As Image
+
+Property Read Id As Integer
+Property Read Software As CSoftware
+
+Private $hDrawingArea As DrawingArea
+Private $hSoft As CSoftware
+Private $hSpinner As Spinner
+Private $sFarm As String
+Private $iId As Integer
+Private $bHighlight As Boolean
+Private $bInit As Boolean
+
+
+Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword As String)
+  
+  If Not $hVote Then
+    $hVote = Picture["icon:/16/bookmark"].Image
+    $hVoteOff = $hVote.Copy().Desaturate()
+    $hInstall = Picture["icon:/16/download"].Image
+  Endif
+  
+  Me.Foreground = Color.TextForeground
+  
+  $sFarm = sFarm
+  $iId = iId
+  
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  $hDrawingArea.Mouse = Mouse.Pointing
+  $hDrawingArea.Focus = True
+  $hDrawingArea.Tracking = True
+  
+  $hSpinner = New Spinner($hDrawingArea)
+  $hSpinner.Hide
+  
+  ' panAction = New Panel($hDrawingArea)
+  ' panAction.Spacing = True
+  ' panAction.Invert = True
+  ' panAction.Ignore = True
+  ' panAction.ResizeScaled(21, 5)
+  ' panAction.Arrangement = Arrange.Horizontal
+  ' 
+  ' btnInstall = New ToolButton(panAction) As "btnInstall"
+  ' btnInstall.ResizeScaled(10, 5)
+  ' btnInstall.Font.Grade = 1
+  ' btnInstall.AutoResize = True
+  ' 
+  ' btnVote = New ToolButton(panAction) As "btnVote"
+  ' btnVote.ResizeScaled(10, 5)
+  ' 'btnVote.Font.Bold = True
+  ' btnVote.Font.Grade = 1
+  ' btnVote.AutoResize = True
+
+  $hSoft = CSoftware.Get($sFarm, $iId)
+  Object.Attach($hSoft, Me, "Software")
+  
+End
+
+Public Sub Load()
+  
+  $bInit = True
+  If $hSoft.State <> CSoftware.STATE_READY Then 
+    Reload
+  Else
+    Raise Ready
+  Endif
+  
+End
+
+
+Public Sub Software_Change()
+  
+  $hDrawingArea.Refresh
+  
+  If $hSoft.IsFinished() Then 
+    
+    $hSpinner.Hide
+    
+    ' If $hSoft.State = CSoftware.STATE_READY Then
+    '   
+    '   'UpdateButtons
+    '   
+    ' Endif
+    
+    Raise Ready
+    
+  Endif
+  
+End
+
+Public Sub DrawingArea_Arrange()
+  
+  $hSpinner.Move($hDrawingArea.W \ 2 - 16, $hDrawingArea.H \ 2 - 16, 32, 32)
+  
+  'panAction.Move($hDrawingArea.W - Desktop.Scale - panAction.W, Desktop.Scale)
+  
+End
+
+Public Sub DrawingArea_Enter()
+  
+  $bHighlight = True
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub DrawingArea_Leave()
+  
+  $bHighlight = False
+  $hDrawingArea.Refresh
+  
+End
+
+
+Public Sub DrawingArea_Draw()
+  
+  Dim X, Y, W, H As Integer
+  Dim P As Integer
+  Dim iCol As Integer
+  Dim sText As String
+  Dim HN As Integer
+  
+  If Not $bInit Then Load
+  
+  W = Paint.W
+  H = Paint.H
+  P = Desktop.Scale
+  
+  ' If $hSoft.IsInstalled() Then
+  '   If $hSoft.CanUpgrade() Then
+  '     iCol = &HDF6B00&
+  '   Else
+  '     iCol = &H3398C3&
+  '   Endif
+  ' Else
+  '   iCol = Color.LightForeground
+  ' Endif
+
+  'Paint.Brush = Paint.RadialGradient(X, Y, Desktop.Scale * 24, X, Y, [Color.Merge(iCol, Color.TextBackground, 0.6), Color.TextBackground], [0.0, 1.0])
+  'Paint.Rectangle(0, 0, W, H)
+  'Paint.Fill
+  
+  Paint.AntiAlias = False
+  Paint.Rectangle(X + 1, Y + 1, W - 3, H - 3)
+  
+  'Paint.Background = Color.Merge(Color.TextForeground, Color.TextBackground, 0.97)
+  'Paint.Fill(True)
+  
+  If $hDrawingArea.HasFocus Or If $bHighlight Then
+    Paint.Background = Color.LightBackground
+    Paint.LineWidth = 2
+  Else
+    Paint.Background = Color.LightForeground
+  Endif
+  
+  Paint.Stroke
+  Paint.AntiAlias = True
+  
+  If Not $hSoft Then Return
+  
+  If $hSoft.IsInstalled() Then
+    If $hSoft.CanUpgrade() Then
+      iCol = &HDF6B00&
+    Else
+      iCol = &H3398C3&
+    Endif
+    Paint.Polygon([Paint.W - 2, Paint.H - P * 3 - 2, Paint.W - 2, Paint.H - 2, Paint.W - 2 - P * 3, Paint.H - 2])
+    Paint.Background = Color.SetAlpha(iCol, 128)
+    Paint.Fill
+  Endif
+  
+  X += P
+  Y += P
+  W -= P * 2
+  H -= P * 2
+  
+  If $hSoft.State = CSoftware.STATE_ERROR Then
+    Paint.Font.Italic = True
+    Paint.Background = Color.Gray
+    Paint.DrawText($hSoft.ErrorText, X, Y, W, H, Align.TopLeft)
+    Return
+  Endif
+
+  Paint.Save
+  
+  Paint.Rectangle(X, Y, W, H)
+  Paint.Clip
+  
+  With $hSoft
+  
+    If .Icon Then 
+      Paint.DrawImage(.Icon, X, Y)
+      X += .Icon.W + P
+    Else
+      X += CSoftware.IconSize + P
+    Endif
+    
+    Paint.Font.Grade = 2
+    HN = $hSoft.PaintName(X, Y)
+      
+    X = P '-= CSoftware.ICON_SIZE + P
+    
+    sText = .Description
+    Paint.Font.Grade = -1
+    
+    W = Paint.W - X - P * 2
+    H = Paint.H - Y - CSoftware.IconSize - P * 2
+    If .URL Then H -= Desktop.Scale
+    
+    Paint.Background = Color.TextForeground
+    Paint.DrawText(Paint.TrimText(sText, W, H), X, Y + Max(CSoftware.IconSize, HN) + P, W, H)
+    
+    PaintStat($hSoft)
+    
+  End With
+  
+  Paint.Restore
+  
+End
+
+Private Function Id_Read() As Integer
+
+  Return $hSoft.Id
+
+End
+
+Public Sub Reload()
+
+  $hSpinner.Show
+  $hSoft.Start
+  '$hDrawingArea.Refresh
+
+End
+
+Public Sub DrawingArea_MouseDown()
+  
+  Raise Click
+  
+End
+
+Private Function Software_Read() As CSoftware
+
+  Return $hSoft
+
+End
+
+Static Public Sub PaintStat(hSoft As CSoftware, Optional (bWithSize) As Boolean)
+
+  Dim sDownload As String
+  Dim X, Y As Integer
+  Dim P As Integer
+  
+  P = Desktop.Scale
+  
+  With hSoft
+  
+    sDownload = CStr(.DownloadCount)
+    If .FullDownloadCount <> .DownloadCount Then 
+      sDownload &= " / <b>" & CStr(.FullDownloadCount) & "</b>"
+    Endif
+    
+    Y = P
+    'W = Paint.Font.TextWidth(sVote)
+    
+    X = Paint.W - P - Paint.Font.RichTextWidth(sDownload) - 1 - $hInstall.W - P \ 2
+    
+    Paint.FillRect(X - P, 0, Paint.W - X + P * 2, $hInstall.H + P * 2, Color.TextBackground)
+    Paint.DrawImage($hInstall, X, Y)
+    X += $hInstall.W + P \ 2
+    Paint.DrawRichText(sDownload, X, Y, Paint.W - X, $hInstall.H, Align.Left)
+    
+    ' 'Paint.DrawImage(If(.YourVote = 1, $hVote, $hVoteOff), X, Y)
+    ' 
+    ' X += 20
+    ' Paint.DrawText(sVote, X, Y, Paint.W, 16, Align.Left)
+    ' 
+    ' X += W + 8
+    ' 
+    ' Paint.DrawImage($hInstall, X, Y)
+    ' 
+    ' X += 20
+    ' Paint.DrawText(sDownload, X, Y, Paint.W, 16, Align.Left)
+    ' 
+    ' If bWithSize Then
+    '   Y += 24
+    '   Paint.DrawText(Project.GetFileSize(.Size), P, Y, Paint.W - P * 2, 16, Align.Right)
+    ' Endif
+    
+  End With
+  
+End

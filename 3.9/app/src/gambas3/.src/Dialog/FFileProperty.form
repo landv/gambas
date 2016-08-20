@@ -1,0 +1,59 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,71,62)
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { panVersion Panel
+    MoveScaled(3,1,46,31)
+    Visible = False
+    Arrangement = Arrange.Fill
+    { lblVersioning TextLabel
+      MoveScaled(0,0,42,6)
+      Visible = False
+      Padding = 8
+    }
+    { edtChange TextEditor
+      MoveScaled(4,8,40,18)
+      Border = False
+      ReadOnly = True
+    }
+  }
+  { panStat Panel
+    MoveScaled(57,3,57,30)
+    Visible = False
+    Arrangement = Arrange.Fill
+    Margin = True
+    { gvwStat GridView
+      MoveScaled(3,3,51,24)
+      Background = Color.Background
+      Border = False
+      Grid = False
+    }
+  }
+  { fprInfo FileProperties
+    MoveScaled(10,16,36,37)
+    Expand = True
+  }
+  { HBox1 HBox
+    MoveScaled(1,57,51,4)
+    { btnRevert Button
+      MoveScaled(0,0,16,4)
+      Visible = False
+      Text = Shortcut(("Revert"), "R")
+      Picture = Picture["icon:/small/undo"]
+    }
+    { Panel3 Panel
+      MoveScaled(22,0,3,4)
+      Expand = True
+    }
+    { btnClose Button
+      MoveScaled(32,0,16,4)
+      Text = ("Close")
+      Picture = Picture["icon:/small/close"]
+      Default = True
+      Cancel = True
+    }
+  }
+}

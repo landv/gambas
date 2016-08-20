@@ -1,0 +1,262 @@
+' Gambas module file
+
+Private Name As New Collection
+Private EnglishName As New Collection
+
+Public Sub _init()
+
+  Name["af"] = ("Afrikaans (South Africa)")
+  EnglishName["af"] = "Afrikaans"
+
+  Name["ar"] = ("Arabic (Egypt)")
+  Name["ar_TN"] = ("Arabic (Tunisia)")
+  EnglishName["ar"] = "Arabic"
+
+  Name["az"] = ("Azerbaijani (Azerbaijan)")
+  EnglishName["az"] = "Azerbaijani"
+
+  Name["bg"] = ("Bulgarian (Bulgaria)")
+  EnglishName["bg"] = "Bulgarian"
+
+  Name["ca"] = ("Catalan (Catalonia, Spain)")
+  'Name["ca_ES"] = ("Catalan (Catalonia, Spain)")
+  EnglishName["ca"] = "Catalan"
+
+  Name["cy"] = ("Welsh (United Kingdom)")
+  EnglishName["cy"] = "Welsh"
+
+  Name["cs"] = ("Czech (Czech Republic)")
+  EnglishName["cs"] = "Czech"
+
+  Name["da"] = ("Danish (Denmark)")
+  EnglishName["da"] = "Danish"
+
+  Name["de"] = ("German (Germany)")
+  Name["de_BE"] = ("German (Belgium)")
+  EnglishName["de"] = "German"
+
+  Name["el"] = ("Greek (Greece)")
+  EnglishName["el"] = "Greek"
+
+  Name["en"] = ("English (common)")
+  Name["en_GB"] = ("English (United Kingdom)")
+  Name["en_US"] = ("English (U.S.A.)")
+  Name["en_AU"] = ("English (Australia)")
+  Name["en_CA"] = ("English (Canada)")
+  EnglishName["en"] = "English"
+
+  Name["eo"] = ("Esperanto (Anywhere!)")
+  EnglishName["eo"] = "Esperanto"
+
+  Name["es"] = ("Spanish (common)")
+  Name["es_ES"] = ("Spanish (Spain)")
+  Name["es_AR"] = ("Spanish (Argentina)")
+  EnglishName["es"] = "Spanish"
+
+  Name["et_EE"] = ("Estonian (Estonia)")
+  EnglishName["et"] = "Estonian"
+
+  Name["eu"] = ("Basque (Basque country)")
+  EnglishName["eu"] = "Basque"
+
+  Name["fa"] = ("Farsi (Iran)")
+  EnglishName["fa"] = "Farsi"
+
+  Name["fi"] = ("Finnish (Finland)")
+  EnglishName["fi"] = "Finnish"
+
+  Name["fr"] = ("French (France)")
+  Name["fr_BE"] = ("French (Belgium)")
+  Name["fr_CA"] = ("French (Canada)")
+  Name["fr_CH"] = ("French (Switzerland)")
+  EnglishName["fr"] = "French"
+
+  Name["gl_ES"] = ("Galician (Spain)")
+  EnglishName["gl"] = "Galician"
+
+  Name["he"] = ("Hebrew (Israel)")
+  EnglishName["he"] = "Hebrew"
+
+  Name["hi"] = ("Hindi (India)")
+  EnglishName["hi"] = "Hindi"
+
+  Name["hu"] = ("Hungarian (Hungary)")
+  EnglishName["hu"] = "Hungarian"
+
+  Name["hr"] = ("Croatian (Croatia)")
+  EnglishName["hr"] = "Croatian"
+
+  Name["id"] = ("Indonesian (Indonesia)")
+  EnglishName["id"] = "Indonesian"
+
+  Name["ir"] = ("Irish (Ireland)")
+  EnglishName["ir"] = "Irish"
+
+  Name["is"] = ("Icelandic (Iceland)")
+  EnglishName["is"] = "Icelandic"
+
+  Name["it"] = ("Italian (Italy)")
+  EnglishName["it"] = "Italian"
+
+  Name["ja"] = ("Japanese (Japan)")
+  EnglishName["ja"] = "Japanase"
+
+  Name["km"] = ("Khmer (Cambodia)")
+  EnglishName["km"] = "Khmer"
+
+  Name["ko"] = ("Korean (Korea)")
+  EnglishName["ko"] = "Korean"
+
+  Name["la"] = ("Latin")
+  EnglishName["la"] = "Latin"
+
+  Name["lt"] = ("Lithuanian (Lithuania)")
+  EnglishName["lt"] = "Lithuanian"
+
+  Name["ml"] = ("Malayalam (India)")
+  EnglishName["ml"] = "Malayalam"
+
+  Name["mk"] = ("Macedonian (Republic of Macedonia)")
+  EnglishName["mk"] = "Macedonian"
+
+  Name["nl"] = ("Dutch (Netherlands)")
+  Name["nl_BE"] = ("Dutch (Belgium)")
+  EnglishName["nl"] = "Dutch"
+
+  Name["no"] = ("Norwegian (Norway)")
+  EnglishName["no"] = "Norwegian"
+
+  Name["pa"] = ("Punjabi (India)")
+  EnglishName["pa"] = "Punjabi"
+
+  Name["pl"] = ("Polish (Poland)")
+  EnglishName["pl"] = "Polish"
+
+  Name["pt"] = ("Portuguese (Portugal)")
+  Name["pt_BR"] = ("Portuguese (Brazil)")
+  EnglishName["pt"] = "Portuguese"
+
+  Name["qcv_ES"] = ("Valencian (Valencian Community, Spain)")
+  EnglishName["qcv"] = "Valencian"
+
+  Name["ro"] = ("Romanian (Romania)")
+  EnglishName["ro"] = "Romanian"
+
+  Name["ru"] = ("Russian (Russia)")
+  EnglishName["ru"] = "Russian"
+
+  Name["sl"] = ("Slovenian (Slovenia)")
+  EnglishName["sl"] = "Slovenian"
+
+  Name["sq"] = ("Albanian (Albania)")
+  EnglishName["sq"] = "Albanian"
+
+  Name["sr"] = ("Serbian (Serbia & Montenegro)")
+  EnglishName["sr"] = "Serbian"
+
+  Name["sv"] = ("Swedish (Sweden)")
+  EnglishName["sv"] = "Swedish"
+
+  Name["tr"] = ("Turkish (Turkey)")
+  EnglishName["tr"] = "Turkish"
+
+  Name["uk"] = ("Ukrainian (Ukrain)")
+  EnglishName["uk"] = "Ukrainian"
+
+  Name["vi"] = ("Vietnamese (Vietnam)")
+  EnglishName["vi"] = "Vietnamese"
+
+  Name["wa"] = ("Wallon (Belgium)")
+  EnglishName["wa"] = "Wallon"
+
+  Name["zh"] = ("Simplified chinese (China)")
+  Name["zh_TW"] = ("Traditional chinese (Taiwan)")
+  EnglishName["zh"] = "Chinese"
+
+End
+
+Public Sub Find(Optional sLang As String, Optional cCol As Collection) As String
+
+  Dim iPos As Integer
+  Dim sOrg As String
+
+  If Not sLang Then sLang = System.Language
+  If Not cCol Then cCol = Name
+
+  sOrg = sLang
+
+  Do
+
+    If cCol.Exist(sLang) Then Return sLang
+
+    iPos = InStr(sLang, ".")
+    If iPos Then
+      sLang = Left$(sLang, iPos - 1)
+      Continue
+    Endif
+
+    iPos = InStr(sLang, "_")
+    If iPos Then
+      sLang = Left$(sLang, iPos - 1)
+      Continue
+    Endif
+
+    Return sOrg
+
+  Loop
+
+End
+
+Public Function ToName(Optional sLang As String) As String
+
+  Dim sName As String
+
+  sLang = Find(sLang)
+  sName = Name[sLang]
+
+  If sName Then
+    Return sName
+  Else
+    Return ("Unknown") & " (" & sLang & ")"
+  Endif
+
+End
+
+Public Function ToEnglishName(sLang As String) As String
+
+  Return EnglishName[Find(sLang, EnglishName)]
+
+End
+
+Public Function FromName(sName As String) As String
+
+  Dim sStr As String
+
+  'PRINT "sName = "; sName
+
+  For Each sStr In Name
+    If sStr = sName Then Return Name.Key
+  Next
+
+End
+
+Public Function GetAll() As String[]
+
+  Dim aLang As New String[]
+  Dim sStr As String
+
+  For Each sStr In Name
+    aLang.Add(Name.Key)
+  Next
+
+  aLang.Sort(gb.Language)
+
+  Return aLang
+
+End
+
+Public Sub GetPath(sLang As String, sExt As String) As String
+
+  Return Project.Dir &/ ".lang" &/ sLang & "." & sExt
+
+End

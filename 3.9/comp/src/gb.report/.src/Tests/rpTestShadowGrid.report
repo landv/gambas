@@ -1,0 +1,25 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,64,64)
+  Font = Font["+9"]
+  Padding = ReportPadding["Top:6cm;Bottom:6cm;Left:6cm;Right:6cm"]
+  Spacing = "1cm"
+  Index = 0
+  Text = ("")
+  { ReportLabel1 ReportLabel
+    #MoveScaled(3,2,58,9)
+    Height = "7cm"
+    Font = Font["Georgia,+12"]
+    AutoResize = True
+    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+    Text = ("coucou")
+    Rotate = -1
+  }
+  { ReportGridView1 ReportGridView
+    #MoveScaled(5,18,52,30)
+    Height = "5cm"
+    Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+  }
+  Index = 0
+}

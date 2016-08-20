@@ -1,0 +1,102 @@
+' Gambas class file
+
+Create Static
+
+Event Triumph
+Event GameOver
+
+Private $aEnemies As Enemy[]
+Private $hWnd As Window
+
+Public Sub _new()
+  $aEnemies = New Enemy[]
+End
+
+Public Sub Init(hWnd As Window, iNumber As Integer)
+  Dim iInd As Integer
+  Dim hEnemy As Enemy
+  Dim iShift As Integer = 0
+
+  For iInd = 1 To iNumber
+    hEnemy = New Enemy As "Enemy"
+    hEnemy.Init(hWnd, iShift)
+    iShift += hEnemy.Width
+    $aEnemies.Add(hEnemy)
+  Next
+  $hWnd = hWnd
+End
+
+Public Sub Move()
+  Dim iInd As Integer
+
+  ' Reverse order to not partly Undraw() a previously Draw()n ship
+  For iInd = $aEnemies.Max DownTo 0
+    $aEnemies[iInd].Move()
+  Next
+  If $aEnemies[$aEnemies.Max].Y = $hWnd.Height - 1 Then Raise GameOver
+  If Hit(MMain.X, MMain.Y) Then Raise GameOver
+End
+
+'' Return the enemy something at X/Y coordinates touches. Every Missile checks
+'' the result of this function at every move so we better make it fast.
+Public Function Hit(iX As Integer, iY As Integer) As Enemy
+  Dim iInd As Integer
+
+  ' Ships are in order, so we can bail out early in the most common case
+  If iY > $aEnemies[$aEnemies.Max].Y Or If iY < $aEnemies[0].Y Then Return Null
+  For iInd = 0 To $aEnemies.Max
+    If iY = $aEnemies[iInd].Y Then Break
+  Next
+  For iInd = iInd To $aEnemies.Max
+    If iY <> $aEnemies[iInd].Y Then Break
+    ' The ship look strings have spaces around them but a 'hit' is
+    ' only to hit the ship, not the spaces ;-)
+    If iX > $aEnemies[iInd].X And If iX < $aEnemies[iInd].X + $aEnemies[iInd].Width - 1 Then Return $aEnemies[iInd]
+  Next
+  Return Null
+End
+
+Public Sub Enemy_Destroyed()
+  Dim iInd, iJ As Integer
+  Dim iAdd As Integer
+  Dim hEnemy As Enemy
+  Dim iShift As Integer = 0
+
+  ' Higher level ships crumble into lower level ones >:-)
+  iInd = $aEnemies.FindByRef(Last)
+  $aEnemies.Remove(iInd)
+  Last.Undraw()
+  iAdd = Last.Type - 1
+  If Not iAdd Then Goto _Out
+  ' Insert the new ships directly where the destroyed one was
+  ' shifting all successors forward which is even more diabolic
+  For iJ = 0 To iAdd
+    hEnemy = New Enemy(Last.Type - 1) As "Enemy"
+    hEnemy.Init($hWnd, Last.Shifted + iShift)
+    $aEnemies.Add(hEnemy, iInd + iJ)
+    iShift += hEnemy.Width
+  Next
+  For iInd += iAdd + 1 To $aEnemies.Max
+    $aEnemies[iInd].Move(iShift - Last.Width)
+  Next
+_Out:
+  If $aEnemies.Count = 0 Then Raise Triumph
+End
+
+Public Sub Enemy_SuperDestroyed()
+  $aEnemies.Remove($aEnemies.FindByRef(Last))
+  Last.Undraw()
+  If $aEnemies.Count = 0 Then Raise Triumph
+End
+
+Public Sub PlayerDestroyed()
+  Raise GameOver
+End
+
+Public Sub Draw()
+  Dim hEnemy As Enemy
+
+  For Each hEnemy In $aEnemies
+    hEnemy.Draw()
+  Next
+End

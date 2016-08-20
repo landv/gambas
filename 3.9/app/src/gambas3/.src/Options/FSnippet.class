@@ -1,0 +1,79 @@
+' Gambas class file
+
+Static Public NewTrigger As String
+
+Private $sTrigger As String
+Private $hSampleCode As CSampleCode
+
+Public Sub Run(Optional sTrigger As String) As Boolean
+
+  $sTrigger = sTrigger
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  Dim sTrigger As String
+
+  sTrigger = String.LCase(Trim(txtTrigger.Text))
+  txtTrigger.Text = sTrigger
+  If Not sTrigger Then
+    Balloon.Warning(("Please enter a trigger string."), txtTrigger)
+    Return
+  Endif
+
+  If sTrigger <> $sTrigger Then
+    If CSampleCode.All.Exist(sTrigger) Then
+      Balloon.Warning(("This trigger string is already in use."), txtTrigger)
+      Return
+    Endif
+  Endif
+  
+  If $sTrigger Then
+    If sTrigger <> $sTrigger Then $hSampleCode.Rename(sTrigger)
+    $hSampleCode.Pattern = edtSnippet.Text
+  Else
+    $hSampleCode = New CSampleCode(sTrigger, edtSnippet.Text)
+    NewTrigger = sTrigger
+  Endif
+
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub Form_Open()
+
+  Settings.Read(Me)
+
+  txtTrigger.Text = $sTrigger
+  If $sTrigger Then
+    $hSampleCode = CSampleCode.All[$sTrigger]
+    edtSnippet.Text = $hSampleCode.Pattern
+    edtSnippet.ReadOnly = $hSampleCode.Default
+    txtTrigger.ReadOnly = $hSampleCode.Default
+    btnOK.Enabled = Not $hSampleCode.Default
+    Me.Title = ("Edit code snippet")
+    edtSnippet.SetFocus
+  Else
+    Me.Title = ("New code snippet")
+    txtTrigger.setFocus
+  Endif
+  
+  edtSnippet.ReadConfig
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)
+
+End

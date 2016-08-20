@@ -1,0 +1,37 @@
+' Gambas class file
+
+Inherits Container
+Property Text, Title As String
+
+Private $sText As String
+
+Public Sub _new()
+  
+  '_Render
+  
+End
+
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+  $sText = Value
+  _Render
+
+End
+
+
+Public Sub _Render()
+  
+  Dim hAttr As New Attr
+  
+  hAttr.Background = Color.Blue
+  hAttr.Foreground = Color.Yellow
+  Me._Content[0].SetAttr(hAttr, 0)
+  Me._Content[0].Text = " " & Me.Title & String(Me.Width - Len(Me.Title) - 1, " ") & "X"
+  Me._Content[0].Length = Len(Me._Content[0].Text)
+End

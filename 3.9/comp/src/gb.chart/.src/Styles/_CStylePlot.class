@@ -1,0 +1,94 @@
+' Gambas class file
+
+
+Private $iType As Integer
+Private $sidChart As String
+Public Sub _New(Value As Integer, sidChart As String)
+  
+  $iType = Value
+  $sidChart = sidChart
+  
+End
+
+Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)  
+  Dim oSerie As _CSerie
+
+  Dim fMaxVal As Float
+  Dim fMinVal As Float
+  Dim itmp As Float
+  Dim i, j As Integer
+  Dim f As Float
+  Dim YHeadersW As Integer
+  Dim iTwoLetterHeight As Integer = draw.Font.Height * 2 * Chart._$ColChart[$sidChart]._fProportionnal
+  Dim iTabPos As Integer
+  Dim iXUnit As Integer
+  Dim iYUnit As Integer
+  Dim ariPolyLine As New Integer[]
+  Dim aroPolyLines As New Object[]
+  Dim iStaticSpace As Integer = 5 * Chart._$ColChart[$sidChart]._fProportionnal
+  Dim hRect As New CRect
+  Dim hUnits As CPoint
+  'draw.Font.Size = 11 * Chart._fProportionnal
+  
+  Select Case $iType
+    Case ChartType.Plots
+      If Chart._$ColChart[$sidChart].YAxe.AutoScale Then
+        fMaxVal = MTools.GetChartMaxValue($sidChart)
+        fMinVal = 0
+      Else
+        fMaxVal = Chart._$ColChart[$sidChart].YAxe.MaxValue
+        fMinVal = Chart._$ColChart[$sidChart].YAxe.MinValue
+      Endif
+  End Select
+
+    'Get the max width needed for draw the Y labels
+
+    YHeadersW = CX + iStaticSpace * 2
+
+  
+  'Set the graph square position value
+
+    hRect.Top = CY '+ iTwoLetterHeight
+    hRect.Bottom = CY + CH '- iStaticSpace * 3
+  hRect.Left = YHeadersW
+  hRect.Right = CX + CW - YHeadersW / 2
+  
+  
+  
+  hUnits = MTools.DrawChartAxes($sidChart, hRect, fMinVal, fMaxVal)
+  draw.Clip(hRect.Left, hRect.Top, hRect.Right - hRect.Left, hRect.Bottom - hRect.Top)
+ If Chart._$ColChart[$sidChart].Count < 2 Then Return 
+  Draw.FillStyle = Fill.Solid
+  
+  
+  
+  For i = 0 To Chart._$ColChart[$sidChart].Count - 1
+  f = 0
+  fMaxVal = 0  
+    For j = 0 To Chart._$ColChart[$sidChart].CountDataSets - 1
+      fMaxVal += Chart._$ColChart[$sidChart][j][i]
+    Next
+    For j = 0 To Chart._$ColChart[$sidChart].CountDataSets - 1
+      Select Case $iType
+        Case ChartType.LinesPercent
+          f += Chart._$ColChart[$sidChart][j][i] / fMaxVal * 100
+        Case ChartType.LinesStacked
+          f += Chart._$ColChart[$sidChart][j][i]
+        Case Else
+          f = Chart._$ColChart[$sidChart][j][i]
+      End Select 
+      'aroPolyLines[j][i * 2] = hRect.Left + (hUnits.X * i)
+      'aroPolyLines[j][i * 2 + 1] = hRect.Bottom - f * hUnits.Y + (hUnits.Y * fMinVal)
+      Draw.FillColor = Chart._$ColChart[$sidChart].Colors[j]
+      Draw.ForeGround = Color.DarkGray
+      MTools.DrawSymbol($sidChart, j, hRect.Left + (hUnits.X * i), hRect.Bottom - f * hUnits.Y + (hUnits.Y * fMinVal))
+    Next
+    
+
+  Next
+  
+  
+  
+  Draw.Clip.Enabled = False
+End
+' Gambas class file

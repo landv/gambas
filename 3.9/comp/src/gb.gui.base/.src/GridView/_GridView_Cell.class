@@ -1,0 +1,244 @@
+' Gambas class file
+
+Export
+
+Event _Foo
+
+Property Text As String
+Property RichText As String
+Property Picture As Picture
+Property Font As Font
+Property Alignment As Integer
+Property WordWrap As Boolean
+Property Background As Integer
+Property Foreground As Integer
+Property Padding As Integer
+Property RowSpan As Integer
+Property ColumnSpan As Integer
+Property Border As Border
+
+Property Read X, {Left} As Integer
+Property Read Y, {Top} As Integer
+Property Read Width, W As Integer
+Property Read Height, H As Integer
+
+Public _Row As Integer
+Public _Column As Integer
+Public _View As GridView
+
+Private Sub GetData(bCreate As Boolean) As _GridView_Data
+
+  _View._CheckCell(_Row, _Column)
+  If bCreate Then _View.Refresh  
+  Return _View._GetCellData(_Row, _Column, bCreate)
+  
+End
+
+
+Private Function Text_Read() As String
+
+  Return GetData(False).Text
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  GetData(True).Text = Value
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return GetData(False).Picture
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  GetData(True).Picture = Value
+
+End
+
+
+Private Function X_Read() As Integer
+
+  Return _View.Columns[_Column].X + _View.Proxy.Proxy.X
+
+End
+
+Private Function Y_Read() As Integer
+
+  Return _View.Rows[_Row].Y
+
+End
+
+Private Function Width_Read() As Integer
+  
+  Dim W As Integer = _View._GetCellWidth(_Row, _Column)
+  If _View.Grid Then Dec W
+  Return W
+
+End
+
+Private Function Height_Read() As Integer
+
+  Dim H As Integer = _View._GetCellHeight(_Row, _Column)
+  If _View.Grid Then Dec H
+  Return H
+
+End
+
+Private Function RichText_Read() As String
+
+  Return GetData(False).RichText
+
+End
+
+Private Sub RichText_Write(Value As String)
+
+  GetData(True).RichText = Value
+
+End
+
+Private Function Font_Read() As Font
+
+  Return GetData(False).Font
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  GetData(True).Font = Value
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return GetData(False).Alignment
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  GetData(True).Alignment = Value
+
+End
+
+Private Function WordWrap_Read() As Boolean
+
+  Return GetData(False).WordWrap
+
+End
+
+Private Sub WordWrap_Write(Value As Boolean)
+
+  GetData(True).WordWrap = Value
+
+End
+
+Private Function Background_Read() As Integer
+
+  Return GetData(False).Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  GetData(True).Background = Value
+
+End
+
+Private Function Foreground_Read() As Integer
+
+  Return GetData(False).Foreground
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  GetData(True).Foreground = Value
+
+End
+
+Public Sub Clear()
+  
+  _View._ClearCell(_Row, _Column)
+  
+End
+
+Public Sub EnsureVisible()
+  
+  _View._EnsureVisible(_Row, _Column)
+  
+End
+
+Public Sub Refresh()
+  
+  _View.Refresh
+  
+End
+
+
+Private Function Padding_Read() As Integer
+
+  Return GetData(False).Padding
+
+End
+
+Private Sub Padding_Write(Value As Integer)
+
+  GetData(True).Padding = Value
+
+End
+
+Private Function RowSpan_Read() As Integer
+
+  Dim S As Integer = _View._GetSpan(_Row, _Column)[0]
+  If S >= 0 Then Return S + 1
+  Return S
+
+End
+
+Private Sub RowSpan_Write(Value As Integer)
+
+  Dim S As Integer = _View._GetSpan(_Row, _Column)[1]
+
+  If S < 0 Then Return
+  If Value < 1 Or If Value > 32767 Then Return
+  
+  _View._SetSpan(_Row, _Column, Value - 1, S)
+  _View.Refresh
+
+End
+
+Private Function ColumnSpan_Read() As Integer
+
+  Dim S As Integer = _View._GetSpan(_Row, _Column)[1]
+  If S >= 0 Then Return S + 1
+  Return S
+
+End
+
+Private Sub ColumnSpan_Write(Value As Integer)
+
+  Dim S As Integer = _View._GetSpan(_Row, _Column)[0]
+
+  If S < 0 Then Return
+  If Value < 1 Or If Value > 32767 Then Return
+  
+  _View._SetSpan(_Row, _Column, S, Value - 1)
+  _View.Refresh
+
+End
+
+Private Function Border_Read() As Border
+
+  Return GetData(False).Border
+
+End
+
+Private Sub Border_Write(Value As Border)
+
+  GetData(True).Border = Value
+
+End

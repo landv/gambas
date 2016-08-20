@@ -1,0 +1,34 @@
+' Gambas class file
+
+
+Public Sub DrawingArea1_Draw()
+
+  'Paint.Debug = True
+
+  Paint.ResetClip  
+  Paint.Rectangle(55, 50, 431, 400)
+  Paint.Clip
+  Paint.MoveTo(75, 446)
+  Paint.LineTo(165, 446)
+  Paint.LineTo(165, 487)
+  Paint.LineTo(75, 487)
+  Paint.CurveTo(66.163444, 59, 487, 479.836556, 59, 471)
+  Paint.LineTo(59, 462)
+  Paint.CurveTo(59, 66.163444, 453.163444, 446, 75, 446)
+  Paint.LineTo(75, 446)
+  Paint.Clip()
+  Paint.MoveTo(59, 446)
+  Paint.LineTo(112, 499)
+  Paint.LineTo(112, 450)
+  Paint.LineTo(165, 450)
+  Paint.LineTo(165, 446)
+  Paint.LineTo(59, 446)
+  Paint.Clip()
+  
+  'Paint.Debug = False
+  
+  Paint.Background = Color.Red
+  Paint.Rectangle(0, 0, Paint.W, Paint.H)
+  Paint.Fill
+
+End

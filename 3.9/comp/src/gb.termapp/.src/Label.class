@@ -1,0 +1,35 @@
+' Gambas class file
+
+Inherits Control
+
+Property Text As String
+
+Private $sText As String
+
+Private Function Text_Read() As String
+
+  Return $sText
+  
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  Me._Render
+End
+
+Public Sub _Render()
+  
+  Dim hLine As CLine
+  Dim hattr As New Attr
+  Super._Render
+  
+  hLine = Me._Content[0]
+  hattr.Background = Me.Background
+  hattr.Foreground = Me.Foreground
+  hattr.Bold = True
+  hLine.SetAttr(hattr, 0, 5)
+  hLine.Text = $sText
+  hLine.Length = Len(hLine.Text)
+  
+End

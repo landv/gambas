@@ -1,0 +1,32 @@
+' Gambas class file
+
+Export Optional
+
+Public Const Default As Integer = -1
+Public Const Black As Integer = &H000000&
+Public Const White As Integer = &HFFFFFF&
+Public Const Gray As Integer = &H808080&
+Public Const LightGray As Integer = &HC0C0C0&
+Public Const DarkGray As Integer = &H404040&
+Public Const Blue As Integer = &HFF&
+Public Const Green As Integer = &HFF00&
+Public Const Red As Integer = &HFF0000&
+Public Const Yellow As Integer = &HFFFF00&
+Public Const Magenta As Integer = &HFF00FF&
+Public Const Cyan As Integer = &H00FFFF&
+Public Const Orange As Integer = &HFF7F00&
+Public Const Violet As Integer = &H7F00FF&
+Public Const RoyalBlue As Integer = &H007FFF&
+Public Const Pink As Integer = &HFF80FF&
+
+Static Public Sub SetAlpha(Color As Integer, Alpha As Integer) As Integer
+  
+  Return Color Or Lsl(Alpha, 24)
+  
+End
+
+Static Public Sub RGB((Red) As Integer, (Green) As Integer, (Blue) As Integer, Optional Alpha As Integer) As Integer
+  
+  Return Blue Or Lsl(Green, 8) Or Lsl(Red, 16) Or Lsl(Alpha, 24)
+  
+End

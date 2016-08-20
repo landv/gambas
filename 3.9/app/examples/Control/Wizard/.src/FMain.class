@@ -1,0 +1,65 @@
+' Gambas class file
+
+Public Sub _new()
+  Me.Center
+End
+
+Public Sub Wizard1_Cancel()   ' user clicks abort
+
+  Me.Close
+
+End
+
+Public Sub Wizard1_Change()   ' user clicks next
+
+  Select Case Wizard1.Index   ' be aware that the index starts with 0!
+
+    Case 1
+      vbCode.setFocus
+      
+    Case 3
+      txaAddress.SetFocus
+    
+    Case 5
+      
+      txlOrder.Text = vbCode.Text & "  " & lblCode.Text & "<br>" & vbFrozen.Text & "  " & lblFrozen.Text & "<br>" & vbImg.Text & "  " & lblImg.Text
+      txlAddress.Text = Replace(txaAddress.Text, "\n", "<br>")
+
+  End Select
+
+End
+
+Public Sub Wizard1_Close()  ' user clicks ok on the last page
+
+  Message.Info(("Your order was submitted successfully.\nThe wizard will close now."))
+  Me.Close
+  
+End
+
+Public Sub chbTerms_Click()   ' user wants (not) to read "terms & conditions"
+  
+  Wizard1[2].Enabled = chbTerms.Value   ' step 3 is visible or not, according to this decision
+  
+End
+
+Public Sub chbSave_Click()    ' user wants (not) to save
+
+  Wizard1[4].Enabled = chbSave.Value    ' step 5 is visible or not, according to this decision
+  
+End
+
+Public Sub Wizard1_BeforeChange()
+
+  Select Case Wizard1.Index
+    
+    Case 4
+    
+      If txaAddress.Text = "" Then
+        Message.Error(("You didn't enter your address.\nYour order can't be submitted."))
+        Wizard1.Index = 3   ' move back to step 4
+        Stop Event
+      Endif
+      
+  End Select
+
+End

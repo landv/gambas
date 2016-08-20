@@ -1,0 +1,30 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+Dim hreport As New Report4
+  ReportView1.Report = hreport
+Slider1.Value = ReportView1.Scale * 100
+
+End
+
+Public Sub Slider1_Change()
+
+  ReportView1.Scale = Last.value / 100
+  ReportView1.Refresh
+
+End
+
+Public Sub ReportView1_Change()
+
+  Object.Lock(Slider1)
+  Slider1.Value = Last.Scale * 100
+  If ReportView1.ScaleMode = ReportView.Custom Then lblCustom.Value = True
+  Object.Unlock(Slider1)
+End
+
+Public Sub Radio_Click()
+
+  ReportView1.ScaleMode = Last.tag
+
+End

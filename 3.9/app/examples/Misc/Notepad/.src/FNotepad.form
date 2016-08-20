@@ -1,0 +1,93 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(12.5714,12.5714,50,50)
+  Text = ("Little notepad")
+  Icon = Picture["notepad.png"]
+  Arrangement = Arrange.Fill
+  { mnuFile Menu
+    Text = Shortcut(("File"), "F")
+    { mnuOpen Menu
+      Text = Shortcut(("Open"), "O") & "..."
+      Picture = Picture["icon:/16/new"]
+      Shortcut = "Ctrl+O"
+    }
+    { mnuClose Menu
+      Text = ("Close")
+      Picture = Picture["icon:/16/close"]
+      Shortcut = "Ctrl+W"
+    }
+    { Menu1 Menu
+    }
+    { mnuSave Menu
+      Text = Shortcut(("Save"), "S")
+      Picture = Picture["icon:/16/save"]
+      Shortcut = "Ctrl+S"
+    }
+    { mnuSaveAs Menu
+      Text = Shortcut(("Save As"), "a") & "..."
+      Shortcut = "Ctrl+Shift+S"
+    }
+    { Menu2 Menu
+    }
+    { mnuQuit Menu
+      Text = Shortcut(("Quit"), "Q")
+      Picture = Picture["icon:/16/quit"]
+      Shortcut = "Ctrl+Q"
+    }
+  }
+  { mnuEdit Menu
+    Text = Shortcut(("Edit"), "E")
+    { mnuCopy Menu
+      Text = Shortcut(("Copy"), "C")
+      Picture = Picture["icon:/16/copy"]
+      Shortcut = "Ctrl+C"
+    }
+    { mnuCut Menu
+      Text = Shortcut(("Cut"), "u")
+      Picture = Picture["icon:/16/cut"]
+      Shortcut = "Ctrl+X"
+    }
+    { mnuPaste Menu
+      Text = Shortcut(("Paste"), "P")
+      Picture = Picture["icon:/16/paste"]
+      Shortcut = "Ctrl+V"
+    }
+    { Menu3 Menu
+    }
+    { mnuUndo Menu
+      Text = Shortcut(("Undo"), "U")
+      Picture = Picture["icon:/16/undo"]
+      Shortcut = "Ctrl+Z"
+    }
+    { mnuRedo Menu
+      Text = Shortcut(("Redo"), "R")
+      Picture = Picture["icon:/16/redo"]
+      Shortcut = "Ctrl+Y"
+    }
+    { Menu4 Menu
+    }
+    { mnuFont Menu
+      Text = Shortcut(("Choose Font"), "F") & "..."
+    }
+    { mnuWrap Menu
+      Text = Shortcut(("Wrap text"), "W")
+      Picture = Picture["icon:/16/text-fill"]
+      Checked = True
+    }
+  }
+  { mnuHelp Menu
+    Text = Shortcut(("?"), "?")
+    { mnuAbout Menu
+      Text = Shortcut(("About"), "A") & "..."
+    }
+  }
+  { txtNotepad TextArea
+    MoveScaled(1,1,35,26)
+    Font = Font["Liberation Mono,9"]
+    Expand = True
+    Text = ("txtNotepad")
+    Wrap = True
+    Border = False
+  }
+}

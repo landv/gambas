@@ -1,0 +1,51 @@
+' Gambas class file
+
+Private $oMem As Memcached
+
+Public Sub Form_Open()
+
+  Me.Center
+
+  $oMem = New Memcached
+
+  $oMem.Open()
+
+End
+
+Public Sub btnSet_Click()
+
+  If Not tbKey.Text Or Not tbValue.Text Then Return
+
+  Inc Application.Busy
+
+  $oMem[tbKey.Text].Value = tbValue.Text
+
+  Dec Application.Busy
+
+End
+
+Public Sub btnSet2_Click()
+
+  Inc Application.Busy
+
+  tbValue2.Text = $oMem[tbKey2.Text].Value
+
+  Dec Application.Busy
+
+End
+
+Public Sub Form_Close()
+
+  $oMem.Close()
+
+End
+
+Public Sub btnSet3_Click()
+
+  If $oMem[tbKey3.Text].Delete() Then
+    tbKey4.Text = "Deleted"
+  Else
+    tbKey4.Text = "Not Found"
+  Endif
+
+End

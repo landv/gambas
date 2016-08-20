@@ -1,0 +1,28 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(35.7143,18.5714,67,17)
+  Text = ("Object ")
+  Icon = Picture["object.png"]
+  Resizable = False
+  { btnCreateThing Button
+    MoveScaled(1,1,21,4)
+    Text = ("create the Thing !")
+  }
+  { btnCheckThing Button
+    MoveScaled(23,1,21,4)
+    Text = ("check the Thing !")
+  }
+  { txtCheckResult TextBox
+    MoveScaled(1,7,65,4)
+    Visible = False
+  }
+  { btnDestroy Button
+    MoveScaled(45,1,21,4)
+    Text = ("destroy the Thing !")
+  }
+  { Label1 Label
+    MoveScaled(1,12,26,4)
+    Text = (" by juergen@zdero.com")
+  }
+}

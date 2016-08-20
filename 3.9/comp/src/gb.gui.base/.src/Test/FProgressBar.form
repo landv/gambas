@@ -1,0 +1,23 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,62,20)
+  Margin = True
+  { Timer1 #Timer
+    #MoveScaled(45,11)
+    Enabled = True
+    Delay = 250
+  }
+  { Button1 Button
+    MoveScaled(3,13,16,4)
+    Text = ("Button1")
+  }
+  { Panel1 Panel
+    MoveScaled(3,3,57,5)
+    Arrangement = Arrange.Fill
+    { ProgressBar1 ProgressBar
+      MoveScaled(0,0,56,4)
+      Font = Font["Bold,Italic"]
+    }
+  }
+}

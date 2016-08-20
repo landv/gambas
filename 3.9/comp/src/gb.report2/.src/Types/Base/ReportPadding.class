@@ -1,0 +1,94 @@
+' Gambas class file
+
+Export
+
+'>>>>>>>>>>>>>>>>>>>>>>  PUBLIC VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>>
+Public {Left} As String
+Public Right As String
+Public Top As String
+Public Bottom As String
+Public _Left As Float
+Public _Right As Float
+Public _Top As Float
+Public _Bottom As Float
+
+'>>>>>>>>>>>>>>>>>>>>>>>>>>  PROPERTIES  >>>>>>>>>>>>>>>>>>>>>>>>>>>
+Property Read _Width As Float
+Property Read _Height As Float
+
+'>>>>>>>>>>>>>>>>>>>>>>  PRIVATE VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>
+
+'#####################  PUBLIC PROCEDURES  #########################
+Public Sub IsActive() As Boolean
+
+  If {Left} Or If Top Or If Right Or If Bottom Then Return True
+  Return False
+
+End
+
+Static Public Sub _Get(Value As String) As ReportPadding
+
+  Dim hPadding As New ReportPadding
+  Dim hSize As TSizeParse
+  Dim s As String
+  Dim ars As String[]
+
+  For Each s In Split(Value, ";")
+    ars = Scan(s, "*:*")
+    If ars.count > 1 Then
+      Select Case LCase(ars[0])
+        Case "left"
+          hPadding.Left = ars[1]
+        Case "top"
+          hPadding.top = ars[1]
+        Case "bottom"
+          hPadding.bottom = ars[1]
+        Case "right"
+          hPadding.Right = ars[1]
+        Case Else
+
+      End Select
+    Else
+      Try hSize = New TSizeParse(s)
+      If hSize <> Null Then
+        hPadding.Left = s
+        hPadding.Right = s
+        hPadding.Bottom = s
+        hPadding.Top = s
+      Endif
+    Endif
+
+  Next
+  Return hPadding
+
+End
+
+Public Sub _NormalizeUnits()
+
+  Dim hSizeParse As TSizeParse
+
+  hSizeParse = TSizeParse[{Left}]
+  _Left = hSizeParse.ToInch()
+  hSizeParse = TSizeParse[Top]
+  _Top = hSizeParse.ToInch()
+  hSizeParse = TSizeParse[Right]
+  _Right = hSizeParse.ToInch()
+  hSizeParse = TSizeParse[Bottom]
+  _Bottom = hSizeParse.ToInch()
+
+End
+
+'#####################  PRIVATE PROCEDURES  ########################
+
+'########################  PROPERTIES  #############################
+Private Function _Width_Read() As Float
+
+  Return _Left + _Right
+
+End
+
+Private Function _Height_Read() As Float
+
+  Return _top + _Bottom
+
+End

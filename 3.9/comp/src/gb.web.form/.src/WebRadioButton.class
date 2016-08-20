@@ -1,0 +1,81 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,Text,Value"
+Public Const _DrawWith As String = "RadioButton"
+Public Const _DefaultSize As String = "24,4"
+Public Const _Similar As String = "WebButton"
+Public Const _DefaultEvent As String = "Click"
+
+Event Click
+
+Property Value, Checked As Boolean
+Property Text As String
+
+Private $sText As String
+Private $bChecked As Boolean
+
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  If $sText = Value Then Return
+  $sText = Value
+  Me._SetProperty("Text", Value)
+
+End
+
+Public Sub _Render()
+
+  If $sText Then Print "<label class=\"gw-radiobutton-label\" id=\""; Me.Name; "\">";
+  Print "<input class=\"gw-radiobutton-toggle\" type=\"radio\""; Me._GetUpdateJS("onchange", "value", "this.checked"); " name=\""; Me.Parent.Name; "\"";
+  If Not Me.Enabled Then Print " disabled";
+  If $bChecked Then Print " checked";
+  Print ">";
+  If $sText Then Print $sText; "</label>";
+  Print
+  
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  If sProp = "value" Then Try Value_Write(vValue)
+  
+End
+
+
+Private Function Value_Read() As Boolean
+
+  Return $bChecked
+
+End
+
+Private Sub Value_Write(Value As Boolean)
+
+  Dim hCtrl As WebControl
+  Dim hRadio As WebRadioButton
+  
+  If $bChecked <> Value Then 
+    $bChecked = Value
+    Me._SetProperty("Value", Value)
+  Endif
+  
+  If $bChecked Then
+    For Each hCtrl In Me.Parent.Children
+      If hCtrl Is WebRadioButton And If hCtrl <> Me Then
+        hRadio = hCtrl
+        hRadio.Value = False
+      Endif
+    Next
+  Endif
+  
+  Raise Click
+
+End

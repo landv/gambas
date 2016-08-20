@@ -1,0 +1,316 @@
+' Gambas class file
+
+Export
+
+Property Read X As Integer
+Property Read Y As Integer
+Property Read Width, W As Integer
+Property Read Height, H As Integer
+Property Read Name As String
+Property Read VisibleName As String
+Property Desktop As Integer
+'Property Read State As Integer[]
+Property Read Id As Integer
+Property Read Icon As Image
+Property Read Geometry As Rect
+Property Read Frame As Rect
+
+Property Minimized As Boolean
+Property Maximized As Boolean
+Property FullScreen As Boolean
+Property SkipTaskbar As Boolean
+Property Sticky As Boolean
+
+Private $iId As Integer
+Private $hGeom As Rect
+Private $hFrame As Rect
+
+Public Sub _new((Window) As Integer)
+  
+  $iId = Window
+  
+End
+
+Public Sub Refresh()
+  
+  $hGeom = Null
+  $hFrame = Null
+  
+End
+
+Private Sub GetDimensions()
+  
+  Dim aDim As Integer[]
+  Dim aExt As Integer[]
+  
+  If Not $hGeom Then 
+    aDim = X11.GetWindowGeometry($iId)
+    aExt = X11.GetWindowProperty($iId, Atom["_NET_FRAME_EXTENTS"])
+    $hGeom = Rect(aDim[0], aDim[1], aDim[2], aDim[3])
+    $hFrame = $hGeom.Copy()
+    If aExt Then $hFrame.Adjust(- aExt[0], - aExt[2], - aExt[1], - aExt[3])
+  Endif
+  
+End
+
+
+Private Function X_Read() As Integer
+
+  GetDimensions
+  Return $hGeom.X
+
+End
+
+Private Function Y_Read() As Integer
+
+  GetDimensions
+  Return $hGeom.Y
+
+End
+
+Private Function Width_Read() As Integer
+
+  GetDimensions
+  Return $hGeom.W
+
+End
+
+Private Function Height_Read() As Integer
+
+  GetDimensions
+  Return $hGeom.H
+
+End
+
+Public Sub Close()
+  
+  X11.SendClientMessageToRootWindow(Atom["_NET_CLOSE_WINDOW"], [X11.CurrentTime, 2], $iId)
+  
+End
+
+Public Sub Move(X As Integer, Y As Integer, Optional Width As Integer, Optional Height As Integer)
+  
+  If Width > 0 And Height > 0 Then
+    X11.SendClientMessageToRootWindow(Atom["_NET_MOVERESIZE_WINDOW"], [&X10111100000000, X, Y, Width, Height], $iId)
+  Else
+    X11.SendClientMessageToRootWindow(Atom["_NET_MOVERESIZE_WINDOW"], [&X10001100000000, X, Y], $iId)
+  Endif
+  X11.Flush
+  Refresh
+  
+End
+
+Public Sub Resize(Width As Integer, Height As Integer)
+  
+  X11.SendClientMessageToRootWindow(Atom["_NET_MOVERESIZE_WINDOW"], [&X10110000000000, 0, 0, Width, Height], $iId)
+  X11.Flush
+  Refresh
+  
+End
+
+Private Function Name_Read() As String
+
+  Try Return X11.GetWindowProperty($iId, Atom["_NET_WM_NAME"])[0]
+
+End
+
+Private Function VisibleName_Read() As String
+
+  Dim sName As String
+
+  Try sName = X11.GetWindowProperty($iId, Atom["_NET_WM_VISIBLE_NAME"])[0]
+  If Not sName Then Return Name_Read()
+
+End
+
+Private Function Desktop_Read() As Integer
+
+  Try Return X11.GetWindowProperty($iId, Atom["_NET_WM_DESKTOP"])[0]
+
+End
+
+Private Sub Desktop_Write(Value As Integer)
+
+  X11.SendClientMessageToRootWindow(Atom["_NET_WM_DESKTOP"], [Value, 2], $iId)
+
+End
+
+Private Function GetState() As String[]
+
+  Return X11.GetWindowProperty($iId, Atom["_NET_WM_STATE"])
+
+End
+
+Private Sub SetState(State As String, Optional State2 As String)
+  
+  X11.SendClientMessageToRootWindow(Atom["_NET_WM_STATE"], [1, Atom[State], Atom[State2], 2], $iId)
+  
+End
+
+Private Sub ClearState(State As String, Optional State2 As String)
+  
+  X11.SendClientMessageToRootWindow(Atom["_NET_WM_STATE"], [0, Atom[State], Atom[State2], 2], $iId)
+  
+End
+
+' Private Sub ToggleState(State As String, Optional State2 As String)
+'   
+'   X11.SendClientMessageToRootWindow(Atom["_NET_WM_STATE"], [Atom["_NET_WM_STATE_TOGGLE"], Atom[State], Atom[State2], 2], $iId)
+'   
+' End
+
+Private Function Id_Read() As Integer
+
+  Return $iId  
+
+End
+
+Private Function Icon_Read() As Image
+
+  Dim aIcon As Integer[]
+
+  aIcon = X11.GetWindowProperty($iId, Atom["_NET_WM_ICON"])
+  If aIcon Then Return X11.MakeIcon(aIcon) 
+
+End
+
+Private Function Minimized_Read() As Boolean
+
+  Dim aProp As Integer[]
+
+  aProp = X11.GetWindowProperty($iId, Atom["WM_STATE"])
+  If aProp And If aProp[0] = 3 Then Return True
+
+End
+
+Private Sub Minimized_Write(Value As Boolean)
+
+  X11.MinimizeWindow($iId, Value)
+
+End
+
+Private Function Maximized_Read() As Boolean
+
+  Dim aState As String[] = GetState()
+
+  If aState Then
+    Return aState.Find("_NET_WM_STATE_MAXIMIZED_VERT") >= 0 And aState.Find("_NET_WM_STATE_MAXIMIZED_HORZ") >= 0
+  Endif
+
+End
+
+Private Sub Maximized_Write(Value As Boolean)
+
+  If Value Then
+    SetState("_NET_WM_STATE_MAXIMIZED_VERT", "_NET_WM_STATE_MAXIMIZED_HORZ")
+  Else
+    ClearState("_NET_WM_STATE_MAXIMIZED_VERT", "_NET_WM_STATE_MAXIMIZED_HORZ")
+  Endif
+  
+End
+
+Private Function FullScreen_Read() As Boolean
+
+  Dim aState As String[] = GetState()
+
+  If aState Then
+    Return aState.Find("_NET_WM_STATE_FULLSCREEN") >= 0 
+  Endif
+
+End
+
+Private Sub FullScreen_Write(Value As Boolean)
+
+  If Value Then
+    SetState("_NET_WM_STATE_FULLSCREEN")
+  Else
+    ClearState("_NET_WM_STATE_FULLSCREEN")
+  Endif
+
+End
+
+Private Function SkipTaskbar_Read() As Boolean
+
+  Dim aState As String[] = GetState()
+
+  If aState Then
+    Return aState.Find("_NET_WM_STATE_SKIP_TASKBAR") >= 0 
+  Endif  
+
+End
+
+Private Sub SkipTaskbar_Write(Value As Boolean)
+
+  If Value Then
+    SetState("_NET_WM_STATE_SKIP_TASKBAR")
+  Else
+    ClearState("_NET_WM_STATE_SKIP_TASKBAR")
+  Endif
+
+End
+
+Private Function Sticky_Read() As Boolean
+
+  Dim aState As String[] = GetState()
+
+  If aState Then
+    Return aState.Find("_NET_WM_STATE_STICKY") >= 0 
+  Endif  
+
+End
+
+Private Sub Sticky_Write(Value As Boolean)
+
+  If Value Then
+    SetState("_NET_WM_STATE_STICKY")
+  Else
+    ClearState("_NET_WM_STATE_STICKY")
+  Endif
+
+End
+
+Public Sub GetIcon(Width As Integer, Height As Integer) As Image
+  
+  Dim aIcon As Integer[]
+  Dim hImage As Image
+
+  aIcon = X11.GetWindowProperty($iId, Atom["_NET_WM_ICON"])
+  If Not aIcon Then Return
+  
+  hImage = X11.MakeIcon(aIcon, Width, Height)
+  If hImage Then Return hImage.Stretch(Width, Height)
+  
+End
+
+Public Sub Activate()
+  
+  Desktop.ActiveWindow = $iId
+  
+End
+
+Private Function Frame_Read() As Rect
+
+  GetDimensions
+  Return $hFrame.Copy()
+
+End
+
+Private Function Geometry_Read() As Rect
+
+  GetDimensions
+  Return $hGeom.Copy()
+
+End
+
+Public Sub GetScreenshot(Optional WithoutFrame As Boolean) As Picture
+
+  Dim hRect As Rect
+  
+  hRect = If(WithoutFrame, Geometry_Read(), Frame_Read())
+  
+  hRect = hRect.Intersection(Rect(Desktop.X, Desktop.Y, Desktop.W, Desktop.H))
+  If Not hRect Then Return
+  
+  Return Desktop.Screenshot(hRect.X, hRect.Y, hRect.W, hRect.H)
+  
+End

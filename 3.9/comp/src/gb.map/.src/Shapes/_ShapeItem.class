@@ -1,0 +1,79 @@
+' Gambas class file
+
+Export
+Public Bounds As New MapBounds
+Public {Color} As Integer
+Property Read Key As String
+Public Type As Integer
+Public Points As Object
+Public Center As MapPoint
+Private $bSelected As Boolean
+Property Selected As Boolean
+Private $sKey As String
+
+Public Image As Image
+Event Select
+Public Sub _New(Key As String)
+  
+  $sKey = Key
+  
+End
+
+
+
+Public Function Contains(hMapPoint As MapPoint) As Boolean
+  
+  If Bounds.Lon < hMapPoint.Lon And Bounds.lon2 > hMapPoint.Lon Then
+    If Bounds.Lat > hMapPoint.Lat And Bounds.Lat2 < hMapPoint.Lat Then
+      Return True
+    Endif
+  Endif
+  Return False
+  
+End
+
+Public Function Near(hMapPoint As MapPoint, iZoom As Integer, Padding As Integer) As Boolean
+  
+  Dim hTLPoint, hBRPoint As Point
+  Dim hPoint As Point = Geo.MapPointToPixel(hMapPoint, iZoom)
+  
+  hTLPoint = Geo.MapPointToPixel(Bounds.TopLeft, iZoom)
+  hTLPoint.X -= Padding
+  hTLPoint.Y -= Padding
+  
+  hBRPoint = Geo.MapPointToPixel(Bounds.BottomRight, iZoom)
+  hBRPoint.X += Padding
+  hBRPoint.Y += Padding
+  
+  Return Rect(hTLPoint.X, hTLPoint.Y, hBRPoint.x, hBRPoint.Y).Contains(hPoint.X, hPoint.Y)
+  
+End
+
+
+
+' Public Sub Delete()
+'   
+'   Dim hParent As _MapShape = Object.Parent(Me)
+'   
+'   hParent.Remove(Key)
+'   
+' End
+
+Private Function Selected_Read() As Boolean
+
+  Return $bSelected
+
+End
+
+Private Sub Selected_Write(Value As Boolean)
+
+  $bSelected = Value
+  Raise Select
+
+End
+
+Private Function Key_Read() As String
+
+  Return $sKey  
+
+End

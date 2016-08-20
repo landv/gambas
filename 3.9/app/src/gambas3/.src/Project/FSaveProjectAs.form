@@ -1,0 +1,62 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,68,72)
+  Text = ("Save project as")
+  Icon = Picture["icon:/small/save-as"]
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { Label2 Label
+    MoveScaled(1,1,30,3)
+    Font = Font["Bold"]
+    Text = ("New project parent directory")
+  }
+  { dchProject DirChooser
+    MoveScaled(1,5,64,43)
+    Expand = True
+  }
+  { Label1 Label
+    MoveScaled(1,49,19,3)
+    Font = Font["Bold"]
+    Text = ("New project name")
+  }
+  { txtName TextBox
+    MoveScaled(1,52,41,4)
+  }
+  { Label3 Label
+    MoveScaled(1,57,76,2)
+    Font = Font["Italic,-1"]
+    Text = ("The project name is the name of the project directory.")
+  }
+  { Panel1 HBox
+    MoveScaled(1,60,74,2)
+    Spacing = True
+    { Label16 Label
+      MoveScaled(0,0,23,2)
+      Font = Font["Italic,-1"]
+      AutoResize = True
+      Text = ("The project final directory is :")
+    }
+    { lblFinalDir Label
+      MoveScaled(24,0,39,2)
+      Font = Font["Bold,-1"]
+      Expand = True
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(1,65,66,4)
+    Spacing = True
+    Invert = True
+    { btnCancel Button
+      MoveScaled(48,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+    { btnOK Button
+      MoveScaled(31,0,16,4)
+      Text = Shortcut(("Save"), "S")
+      Default = True
+    }
+  }
+}

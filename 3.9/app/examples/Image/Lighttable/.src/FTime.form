@@ -1,0 +1,58 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,71,40)
+  Text = ("Time correction")
+  Resizable = False
+  { SpinDay SpinBox
+    MoveScaled(2,25,8,4)
+    MaxValue = 365
+  }
+  { SpinHrs SpinBox
+    MoveScaled(19,25,7,4)
+    MaxValue = 23
+  }
+  { SpinMins SpinBox
+    MoveScaled(36,25,7,4)
+    MaxValue = 59
+  }
+  { cmbPlusMinus ComboBox
+    MoveScaled(54,25,15,4)
+    ReadOnly = True
+    List = [("earlier"), ("later")]
+    Text = ("later")
+  }
+  { btnOK Button
+    MoveScaled(54,34,15,4)
+    Text = ("&OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(37,34,15,4)
+    Text = ("&Cancel")
+    Cancel = True
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(2,3,67,15)
+    Background = &HFFFCCC&
+    Padding = 7
+    Text = ("This function will correct all date/time informations in the EXIF section of <b> all</b> .jp(e)g files in the folder.<br>A backup of the files will be made with file names like 'MyPicture.jpg_original'.<br>If there are no EXIF date/time informations in a file, nothing will be done.")
+    Border = Border.Etched
+  }
+  { Label1 Label
+    MoveScaled(2,21,60,4)
+    Text = ("Set the original time of all pictures to")
+  }
+  { Label2 Label
+    MoveScaled(10,25,9,4)
+    Text = ("day(s)")
+  }
+  { Label3 Label
+    MoveScaled(26,25,10,4)
+    Text = ("hour(s)")
+  }
+  { Label4 Label
+    MoveScaled(43,25,11,4)
+    Text = ("minute(s)")
+  }
+}

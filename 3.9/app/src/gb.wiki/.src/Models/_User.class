@@ -1,0 +1,162 @@
+' Gambas class file
+
+Property Read IsAdmin As Boolean
+Property Read IsGuest As Boolean
+Property Username As String
+Property Password As String
+Property Email As String
+Property Type As Integer
+
+Private $rUser As Result
+Private $bReadOnly As Boolean
+
+Private $bIsGuest As Boolean
+
+Public Sub _new(Optional rTemp As Result, Optional bReadOnly As Boolean = True, Optional bIsGuest As Boolean = False)
+
+  If rTemp Then $rUser = rTemp
+
+  $bReadOnly = bReadOnly
+
+  $bIsGuest = bIsGuest
+
+End
+
+Private Function Type_Read() As Integer
+
+  If $bIsGuest Then Return Users.USER_GUEST
+
+  If Not $rUser Then Return
+
+  If Not $rUser.Available Then Return
+
+  Return $rUser[DBScheme.USER_TYPE]
+
+End
+
+Private Sub Type_Write(Value As Integer)
+
+  If $bReadOnly Or $bIsGuest Then IsReadonly()
+
+  If Value < 1 Or Value > 3 Then Return
+
+  If Not $rUser Then Return
+
+  If Not $rUser.Available Then Return
+
+  $rUser[DBScheme.USER_TYPE] = Value
+
+End
+
+Private Function Username_Read() As String
+
+  'If $bIsGuest Then Return "guest"
+
+  If Not $rUser Then Return
+
+  If Not $rUser.Available Then Return
+
+  Return $rUser[DBScheme.USER_USERNAME]
+
+End
+
+Private Sub Username_Write(Value As String)
+
+  If $bReadOnly Or $bIsGuest Then IsReadonly()
+
+  If Not $rUser Then Return
+
+  If Not $rUser.Available Then Return
+
+  If Not Users.Find(Value) Then
+    $rUser[DBScheme.USER_USERNAME] = Value
+  Endif
+
+End
+
+Private Function Password_Read() As String
+
+  If Not $rUser Then Return
+
+  If Not $rUser.Available Or $bIsGuest Then Return
+
+  Return $rUser[DBScheme.USER_PASSWORD]
+
+End
+
+Private Sub Password_Write(Value As String)
+
+  If $bReadOnly Or $bIsGuest Then IsReadonly()
+
+  If Not $rUser Then Return
+
+  If Not $rUser.Available Then Return
+
+  $rUser[DBScheme.USER_PASSWORD] = Value
+
+End
+
+Private Function Email_Read() As String
+
+  If Not $rUser Then Return
+
+  If Not $rUser.Available Or $bIsGuest Then Return
+
+  Return $rUser[DBScheme.USER_EMAIL]
+
+End
+
+Private Sub Email_Write(Value As String)
+
+  If $bReadOnly Or $bIsGuest Then IsReadonly()
+
+  If Not $rUser Then Return
+
+  If Not $rUser.Available Then Return
+
+  If Not Users.Find(Value,, True) Then
+    $rUser[DBScheme.USER_EMAIL] = Value
+  Endif
+
+End
+
+Private Function IsAdmin_Read() As Boolean
+
+  Return Me.Type = Users.USER_ADMIN
+
+End
+
+Public Sub Reload()
+
+  If $bIsGuest Then Return
+
+  $rUser = Users.Find(Me.Username, $bReadOnly)
+
+End
+
+Public Sub Update()
+
+  If $bReadOnly Or $bIsGuest Then IsReadonly()
+
+  If Not $rUser Then Return
+
+  $rUser.Update()
+
+End
+
+Private Function IsGuest_Read() As Boolean
+
+  Return Me.Type = Users.USER_GUEST
+
+End
+
+Private Sub IsReadonly()
+
+  Dim sText As String
+
+  sText = "Trying to modify a readonly or guest user instance!<br /><br />"
+  sText &= System.Backtrace.Join("<br />")
+
+  Main.ThrowError(sText)
+
+End

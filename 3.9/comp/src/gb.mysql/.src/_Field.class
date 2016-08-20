@@ -1,0 +1,94 @@
+' Gambas class file
+
+Export
+Create Static
+
+Private $sTmp As String
+
+Public Procedure PrimaryKey(Fields As String[])
+
+  modMain.$PrimaryKey = ", PRIMARY KEY (" & modMain.ArrayToString(Fields, True) & ")"
+
+End
+
+Public Procedure Add(Field As String, DataType As String, Optional AceptNull? As Boolean, Optional DefaultValue As Variant, Optional AutoIncrement? As Boolean, Optional OnUpdate As String, Optional Comment As String)
+
+ $sTmp = "`" & Field & "` " & DataType
+  If Not AceptNull? Then $sTmp &= " NOT NULL"
+  If DefaultValue <> Null Then
+    Select (DefaultValue)
+      Case True
+        $sTmp &= " DEFAULT '1'"
+      Case False
+        $sTmp &= " DEFAULT '0'"
+      Case "CURRENT_TIMESTAMP"
+        $sTmp &= " DEFAULT CURRENT_TIMESTAMP"
+       Case _DataTypes.Null
+        $sTmp &= _DataTypes.Null
+      Default
+        $sTmp &= " DEFAULT '" & DefaultValue & "'"
+    End Select
+  Endif    
+  If AutoIncrement? Then $sTmp &= " AUTO_INCREMENT"
+  If OnUpdate Then $sTmp &= " ON UPDATE " & OnUpdate
+  If Comment Then $sTmp &= " COMMENT '" & Comment & "'"
+  modMain.$FieldDefinition.Add($sTmp)
+
+End
+
+Public Procedure Index(Index As String, Field As String)
+
+  modMain.$Index.Add("INDEX `" & Index & "` (`" & Field & "`)")
+
+End
+
+Public Procedure ForeignKey(Field As String, RefTable As String, RefField As String, Optional OnDelete As String, Optional OnUpdate As String)
+
+ $sTmp = "FOREIGN KEY (`" & Field & "`) REFERENCES `" & RefTable & "`(`" & RefField & "`)"
+ If OnDelete Then $sTmp &= " ON DELETE " & OnDelete
+ If OnUpdate Then $sTmp &= " ON UPDATE " & OnUpdate
+ modMain.$ForeignKey.Add($sTmp)
+
+End
+
+Public Function Info(Table As String, Field As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT `COLUMN_KEY`, `COLUMN_NAME`, `COLUMN_TYPE`, `IS_NULLABLE`, `COLUMN_DEFAULT`, `EXTRA`, `COLUMN_COMMENT` FROM `information_schema`.`COLUMNS` WHERE `TABLE_NAME` = '" & Table & "' AND `TABLE_SCHEMA` = '" & Database & "' AND `COLUMN_NAME` = '" & Field & "'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  $sTmp &= "Field:   " & modMain.$hResult!COLUMN_NAME & GB.NewLine
+  $sTmp &= "Type:    " & modMain.$hResult!COLUMN_TYPE & GB.NewLine
+  $sTmp &= "Null:    " & modMain.$hResult!IS_NULLABLE & GB.NewLine
+  $sTmp &= "Key:     " & modMain.$hResult!COLUMN_KEY & GB.NewLine
+  $sTmp &= "Default: " & modMain.$hResult!COLUMN_DEFAULT & GB.NewLine
+  $sTmp &= "Extra:   " & modMain.$hResult!EXTRA & GB.NewLine
+  $sTmp &= "Comment: " & modMain.$hResult!COLUMN_COMMENT
+  Return $sTmp
+
+End
+
+Public Function Definition(Table As String, Field As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT `COLUMN_TYPE`, `IS_NULLABLE`, `COLUMN_DEFAULT`, `EXTRA`, `COLUMN_COMMENT` FROM `information_schema`.`COLUMNS` WHERE `TABLE_NAME` = '" & Table & "' AND `TABLE_SCHEMA` = '" & Database & "' AND `COLUMN_NAME` = '" & Field & "'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  $sTmp = modMain.$hResult!COLUMN_TYPE
+  If modMain.$hResult!IS_NULLABLE = "NO" Then $sTmp &= " NOT NULL"
+  If modMain.$hResult!COLUMN_DEFAULT Then $sTmp &= " DEFAULT " & modMain.$hResult!COLUMN_DEFAULT
+  If modMain.$hResult!EXTRA Then $sTmp &= " " & modMain.$hResult!EXTRA
+  If modMain.$hResult!COLUMN_COMMENT Then $sTmp &= " COMMENT '" & modMain.$hResult!COLUMN_COMMENT & "'"
+  Return $sTmp
+
+End
+
+Public Procedure Rename(Table As String, Field As String, NewField As String, Optional Database As String = modMain.$Connection.Name)
+
+  modMain.$Query = "ALTER TABLE `" & Database & "`.`" & Table & "` CHANGE COLUMN `" & Field & "` `" & NewField & "` " & Definition(Table, Field, Database)
+  modMain.$Connection.Exec(modMain.$Query)
+
+End
+
+Public Procedure FieldEspecifications(Field As String, Table As String, Optional Database As String = modMain.$Connection.Name) As _FieldEspecifications
+
+  Dim hFieldEspecifications As New _FieldEspecifications(Field, Table, Database)
+  Return hFieldEspecifications
+
+End

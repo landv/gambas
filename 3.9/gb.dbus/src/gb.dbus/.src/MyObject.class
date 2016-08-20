@@ -1,0 +1,32 @@
+' Gambas class file
+
+Inherits DBusObject
+
+Event org_freedesktop_StatusNotifierItem_IconChanged
+Event org_freedesktop_StatusNotifierItem_NewStatus(sStatus As String)
+
+Property Read org_freedesktop_StatusNotifierItem_Category As String
+Property Read org_freedesktop_StatusNotifierItem_IconPixmap As MyValue
+
+Public Sub org_freedesktop_StatusNotifierItem_Activate(X As Integer, Y As Integer)
+  
+  
+  
+End
+
+
+Private Function org_freedesktop_StatusNotifierItem_Category_Read() As String
+
+  
+
+End
+
+Private Function org_freedesktop_StatusNotifierItem_IconPixmap_Read() As MyValue
+
+  
+
+End
+
+'Private Function org_freedesktop_StatusNotifierItem_IconPixmap_Read() As Image
+'
+'End

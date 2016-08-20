@@ -1,0 +1,17 @@
+' Gambas class file
+
+Public Sub _new()
+  'Report.Debug = True
+  ' Me.Width = "5cm"
+  ' Me.Height = "10cm"
+  ReportPanel1.DataCount = 100
+End
+
+Public Sub Report_Open()
+
+ReportPanel1.BoxShadow.XOffset = "1mm"
+ReportPanel1.BoxShadow.YOffset = "1mm"
+  'ReportPanel1.BoxShadow.Spread = "2mm"
+  ReportPanel1.BoxShadow.Blur = "4mm"
+  Me.Clear
+End

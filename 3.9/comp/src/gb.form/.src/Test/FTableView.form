@@ -1,0 +1,22 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,88,69)
+  Arrangement = Arrange.Fill
+  Margin = True
+  { Panel1 HSplit
+    MoveScaled(5,16,68,34)
+    { tvwMain TableView
+      MoveScaled(0,0,29,27)
+      Expand = True
+      Mode = Select.Single
+      Header = GridView.Horizontal
+    }
+    { tvwMain2 TableView
+      MoveScaled(35,2,29,27)
+      Expand = True
+      Mode = Select.Single
+      Header = GridView.Horizontal
+    }
+  }
+}

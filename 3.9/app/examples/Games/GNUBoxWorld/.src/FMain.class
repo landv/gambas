@@ -1,0 +1,274 @@
+' Gambas class file
+
+'
+' GNUBoxWorld
+' This is another version of the popular game Box World. Contains 16 levels, all are possible to resolve. 
+' Level designs are taken From Box It game For mobile phones.
+' 
+' Copyright (C) Pablo Mileti from Buenos Aires, Argentina.
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 3 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, see http://www.gnu.org/licenses
+'
+
+Public Game As GameBoard
+Public level As Integer
+Public PicturesBoxes As New PictureBox[10, 11]
+Public PictureBoxPlayer As PictureBox
+Public PictureBoxMover As PictureBox
+Public DesX As Integer
+Public DesY As Integer
+Public XPosMove As Integer
+Public YPosMove As Integer
+Public IgnoreKeys As Boolean
+
+Public Sub Form_Open()
+
+  Dim iInd As Integer
+  Dim hMenu As Menu
+  
+  For iInd = 1 To GameBoard.NUM_LEVELS
+    hMenu = New Menu(mnuLevel) As "mnuLevel"
+    hMenu.Text = Subst("Level &1", iInd)
+    hMenu.Tag = iInd
+  Next
+
+  level = 1
+  ignorekeys = False
+  newGame
+  Me.h = 64 * 10
+  Me.w = 64 * 11
+  btnClear.X = (Me.W / 2) - (btnClear.W / 2)
+  Me.Window.Center
+End
+
+Public Sub btnClear_KeyPress()
+  If Key.code <> Key.up And Key.code <> Key.down And Key.code <> Key.left And Key.code <> Key.Right Then Return
+   Select Case Key.code
+   Case Key.Right
+    PictureBoxPlayer.Picture = picture["derecha.png"]
+   Case Key.Left
+    PictureBoxPlayer.Picture = picture["izquierda.png"]
+   Case Key.Up
+    PictureBoxPlayer.Picture = picture["arriba.png"]
+   Case Key.Down
+    PictureBoxPlayer.Picture = picture["abajo.png"]
+  End Select
+  If Game.ValidateMover(Key.code) And Not IgnoreKeys Then
+    Move(Key.code, Game.GetCell(Key.code, 1).Movable)
+  End If
+  If Game.isDone() Then 
+    Inc level
+    If level > GameBoard.NUM_LEVELS Then
+      btnClear.Visible = False
+      MnuClear.Enabled = False
+      PictureBoxPlayer.X = 64
+      PictureBoxPlayer.Y = 64
+      PictureBoxPlayer.W = 560
+      PictureBoxPlayer.H = 482
+      PictureBoxPlayer.Picture = Picture["ganador.png"]
+      PictureBoxPlayer.SetFocus
+      Me.Title = ("GNUBoxWorld - Congratulation! You're very clever!")
+    Else
+     Message.Info(("Next level") & gb.NewLine & ("Good Luck!"))
+     newGame
+    End If
+  End If
+End
+
+Public Sub btnClear_Click()
+  newGame()
+End
+
+Private Sub Move(direction As Integer, desplace As Boolean)
+  Dim i As Integer
+   Select Case direction
+   Case Key.Right
+    DesX = 1
+    DesY = 0
+    PictureBoxPlayer.Picture = picture["derecha.png"]
+   Case Key.Left
+    DesX = -1
+    DesY = 0
+    PictureBoxPlayer.Picture = picture["izquierda.png"]
+   Case Key.Up
+    DesX = 0
+    DesY = -1
+    PictureBoxPlayer.Picture = picture["arriba.png"]
+   Case Key.Down
+    DesX = 0
+    DesY = 1
+    PictureBoxPlayer.Picture = picture["abajo.png"]
+  End Select
+  If desplace Then
+    PictureBoxMover.Picture = WhoMove(direction)
+    PictureBoxMover.X = XPosMove
+    PictureBoxMover.Y = YPosMove
+    PictureBoxMover.Raise
+    'here will walk on
+    If Game.cells[Game.RowPlayer + DesY, Game.ColPlayer + DesX].Type = Cell.gbMovable Then
+       PicturesBoxes[Game.RowPlayer + DesY, Game.ColPlayer + DesX].picture = Picture["piso.png"]
+    End If
+    If Game.cells[Game.RowPlayer + DesY, Game.ColPlayer + DesX].Type = Cell.gbMovableOnTarget Then
+      PicturesBoxes[Game.RowPlayer + DesY, Game.ColPlayer + DesX].picture = Picture["destino.png"]
+    End If
+  End If
+  IgnoreKeys = True
+  For i = 1 To 64
+     PictureBoxPlayer.Move(PictureBoxPlayer.x + Desx, PictureBoxPlayer.y + DesY)
+     If desplace Then PictureBoxmover.Move(PictureBoxmover.x + Desx, PictureBoxmover.y + DesY)
+     Wait 0.003
+  Next
+  IgnoreKeys = False
+  'here i was
+  'cambio el contenido de la celda donde deje de estar
+  If Game.cells[Game.RowPlayer, Game.ColPlayer].Target Then
+     Game.cells[Game.RowPlayer, Game.ColPlayer] = New Cell(Cell.gbTarget)
+  Else
+     Game.cells[Game.RowPlayer, Game.ColPlayer] = New Cell(Cell.gbFloor)
+  End If
+  Game.RowPlayer = Game.RowPlayer + DesY
+  Game.ColPlayer = Game.ColPlayer + DesX
+  'here i go
+  'donde termino parado
+  If Not Game.cells[Game.RowPlayer, Game.ColPlayer].Target Then
+    Game.cells[Game.RowPlayer, Game.ColPlayer] = New Cell(Cell.gbFloor)
+  Else
+    Game.cells[Game.RowPlayer, Game.ColPlayer] = New Cell(Cell.gbTarget)
+  End If
+  If desplace Then 'here move obstacle
+    If Game.cells[Game.RowPlayer + desy, Game.ColPlayer + desX].Target Then 'go on target
+       Game.cells[Game.RowPlayer + desy, Game.ColPlayer + desX] = New Cell(Cell.gbMovableOnTarget)
+    Else   'go on floor
+       Game.cells[Game.RowPlayer + desy, Game.ColPlayer + desX] = New Cell(Cell.gbMovable)
+    End If
+  End If
+  ShowGameBoard
+  PictureBoxmover.Lower
+End
+
+Private Function WhoMove(direction As Integer) As Picture
+  Dim row As Integer
+  Dim col As Integer
+  Select Case direction
+    Case Key.Up
+      row = Game.RowPlayer - 1
+      col = Game.ColPlayer
+    Case Key.Down
+      row = Game.RowPlayer + 1
+      col = Game.ColPlayer
+    Case Key.left
+      row = Game.RowPlayer
+      col = Game.ColPlayer - 1
+    Case Key.right
+      row = Game.RowPlayer
+      col = Game.ColPlayer + 1
+  End Select
+  XPosMove = PicturesBoxes[row, col].X
+  YPosMove = PicturesBoxes[row, col].Y
+  Return PicturesBoxes[row, col].Picture.Copy()
+End
+
+Public Sub ShowGameBoard()
+
+  Dim row As Integer
+  Dim col As Integer
+  For row = 0 To 9
+    For col = 0 To 10
+      PicturesBoxes[row, col].Picture = Game.Cells[row, col].Pic
+    Next
+  Next
+  
+End
+
+Public Sub MakePictureBoxes()
+  Dim row As Integer
+  Dim col As Integer
+  For row = 0 To 9
+    For col = 0 To 10
+      PicturesBoxes[row, col] = New PictureBox(Me)
+      PicturesBoxes[row, col].h = 64
+      PicturesBoxes[row, col].w = 64
+      PicturesBoxes[row, col].Stretch = True
+      PicturesBoxes[row, col].top = (row * 64)
+      PicturesBoxes[row, col].left = (col * 64)
+      PicturesBoxes[row, col].Lower
+    Next
+  Next
+  PictureBoxPlayer = New PictureBox(Me)
+  PictureBoxMover = New PictureBox(Me)
+  PictureBoxmover.w = 64
+  PictureBoxmover.h = 64
+  PictureBoxPlayer.Picture = picture["derecha.png"]
+  PictureBoxPlayer.h = 64
+  PictureBoxPlayer.w = 64
+  PictureBoxPlayer.left = PicturesBoxes[Game.RowPlayer, Game.ColPlayer].left
+  PictureBoxPlayer.top = PicturesBoxes[Game.RowPlayer, Game.ColPlayer].top
+End
+
+Private Sub newGame()
+  
+  Dim hMenu As Menu
+  
+  Me.Title = ("GNUBoxWorld - Level ") & level
+  Game = New GameBoard(level)
+  destroyPicturesBoxes
+  MakePictureBoxes
+  PictureBoxPlayer.left = PicturesBoxes[Game.RowPlayer, Game.ColPlayer].left
+  PictureBoxPlayer.top = PicturesBoxes[Game.RowPlayer, Game.ColPlayer].top
+  ShowGameBoard
+  
+  For Each hMenu In mnuLevel.Children
+    hMenu.Checked = hMenu.Tag = level
+  Next
+  
+End
+
+Public Sub destroyPicturesBoxes()
+  Dim control As Object
+  For Each control In Me.Children
+    If Object.Type(control) = "PictureBox" Then
+      control.delete
+    End If
+  Next
+End
+
+Public Sub MnuAbout_Click()
+  FrmAbout.Show
+End
+
+Public Sub MnuQuit_Click()
+  Me.close
+End
+
+Public Sub Form_Close()
+  If Message.Question(("Are you sure?"), ("Yes"), ("No")) = 2 Then
+    Stop Event
+  End If
+End
+
+Public Sub MnuClear_Click()
+  newGame()
+End
+
+Public Sub MnuHelpPlay_Click()
+  FrmAbout.TabStrip1.index = 2
+  FrmAbout.Show
+End
+
+Public Sub mnuLevel_Click()
+  
+  level = Last.Tag
+  newGame
+  
+End

@@ -1,0 +1,151 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,63,74)
+  Text = ("New file")
+  Icon = Picture["icon:/small/new"]
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  AutoResize = True
+  Spacing = True
+  Margin = True
+  { panNewFile Panel
+    MoveScaled(1,1,60,67)
+    Arrangement = Arrange.Horizontal
+    Spacing = True
+    { picFile PictureBox
+      MoveScaled(2,1,9,9)
+    }
+    { panOption VBox
+      MoveScaled(13,1,42,63)
+      Expand = True
+      Spacing = True
+      { Label9 Label
+        MoveScaled(0,0,25,3)
+        Font = Font["Bold"]
+        Text = ("Name")
+      }
+      { txtName TextBox
+        MoveScaled(0,3,26,4)
+      }
+      { lblOption Label
+        MoveScaled(0,7,25,3)
+        Font = Font["Bold"]
+        Text = ("Options")
+      }
+      { panImageOption Panel
+        MoveScaled(0,11,32,14)
+        Tag = "image"
+        { Label7 Label
+          MoveScaled(0,0,12,4)
+          Text = ("Width")
+        }
+        { txtWidth SpinBox
+          MoveScaled(13,0,10,4)
+          MinValue = 1
+          MaxValue = 1024
+          Step = 8
+          Value = 8
+        }
+        { Label8 Label
+          MoveScaled(0,5,12,4)
+          Text = ("Height")
+        }
+        { txtHeight SpinBox
+          MoveScaled(13,5,10,4)
+          MinValue = 1
+          MaxValue = 1024
+          Step = 8
+          Value = 8
+        }
+        { btnLinked ToggleButton
+          MoveScaled(28,0,3,9)
+          Picture = Picture["img/32/linked.png"]
+          Value = True
+        }
+        { Label11 Label
+          MoveScaled(0,10,11,4)
+          Text = ("Type")
+        }
+        { cmbImageType ComboBox
+          MoveScaled(13,10,18,4)
+          #Translate = False
+          ReadOnly = True
+          List = ["PNG", "JPEG", "XPM", "GIF"]
+        }
+        { Label13 Label
+          MoveScaled(24,0,4,4)
+          #Translate = False
+          Text = "px"
+        }
+        { Label14 Label
+          MoveScaled(24,5,4,4)
+          #Translate = False
+          Text = "px"
+        }
+      }
+      { panFormOption VBox
+        MoveScaled(0,28,41,4)
+        Tag = "form"
+        { chkDialog CheckBox
+          MoveScaled(0,0,30,4)
+          Text = ("Dialog box management")
+        }
+      }
+      { Panel2 HPanel
+        MoveScaled(0,33,42,17)
+        Tag = "class"
+        Spacing = True
+        { Label10 Label
+          MoveScaled(0,0,15,4)
+          AutoResize = True
+          Text = ("Parent class")
+        }
+        { cmbParent ComboBox
+          MoveScaled(17,0,25,4)
+          Expand = True
+          ReadOnly = True
+        }
+        { chkExport CheckBox
+          MoveScaled(0,5,39,3)
+          Expand = True
+          Text = ("Exported")
+        }
+        { chkCreateStatic CheckBox
+          MoveScaled(0,9,39,3)
+          Expand = True
+          Text = ("Automatic instance")
+        }
+        { chkCreatePrivate CheckBox
+          MoveScaled(0,13,39,3)
+          Expand = True
+          Text = ("Not creatable")
+        }
+      }
+      { Panel3 VBox
+        MoveScaled(0,55,41,4)
+        Tag = "image,html,css,js"
+        { chkExt CheckBox
+          MoveScaled(0,0,36,4)
+          Text = ("Automatic extension")
+          Value = CheckBox.True
+        }
+      }
+    }
+  }
+  { HBox6 HBox
+    MoveScaled(1,69,60,4)
+    Spacing = True
+    Invert = True
+    { btnCancel Button
+      MoveScaled(45,0,15,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+    { btnOK Button
+      MoveScaled(29,0,15,4)
+      Text = ("OK")
+      Default = True
+    }
+  }
+}

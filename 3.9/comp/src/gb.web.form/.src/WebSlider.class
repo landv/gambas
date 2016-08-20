@@ -1,0 +1,21 @@
+' Gambas class file
+
+Export
+Inherits WebSpinBox
+
+Public Const _DrawWith As String = "Slider"
+Public Const _DefaultSize As String = "24,4"
+
+Public Sub _BeforeRender()
+  
+  Print "<input type=\"range\""; Me._GetClassId(); Me._GetUpdateJS("onchange", "value", "this.value");
+  Me._RenderStyleSheet()
+  If Not Me.Enabled Then Print " disabled";
+  'If $bReadOnly Then Print " readonly";
+  Print " value=\""; CStr(Me.Value); "\"";
+  Print " min=\""; CStr(Me.MinValue); "\"";
+  Print " max=\""; CStr(Me.MaxValue); "\"";
+  If Me.Step > 1 Then Print " step=\""; CStr(Me.Step); "\"";
+  Print ">"
+  
+End

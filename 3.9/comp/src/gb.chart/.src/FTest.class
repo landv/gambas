@@ -1,0 +1,510 @@
+' Gambas class file
+Private $oLastChild As Object
+Public Sub _new()
+' 'Set the number of DataSets (the default is already 1)
+' Chart.CountDataSets = 5
+' 'Set the Data headers
+' Chart.Headers.Values = ["tic", "tac", "Toes", "tata"]
+' 'Put Datas in the set
+' Chart[0].Text = "Set 1"
+' Chart[0].Values = [1.0, 2.0, 3., 4.0]
+' Chart[1].Text = "Set 2"
+' Chart[1].Values = [1.0, 6.0, 8.0, 8.0]
+' Chart[2].Text = "Set 3"
+' Chart[2].Values = [1.0, 5.0, 3.0, 9]
+' Chart[3].Text = "Set 4"
+' Chart[3].Values = [1.0, 6.0, 8.0, 2.0]
+' Chart[4].Text = "Set 5"
+' Chart[4].Values = [1.0, 8.0, 3.0, 5]
+
+  Debug Desktop.Scale
+'Chart.XAxe.Arrange = Chart.XAxe.Steps
+Chart.Legend.Title = "Legend"
+Chart.Legend.Visible = True
+
+'Chart.Title.Visible = True
+Chart.Title.Text = "A Gambas Chart"
+
+Chart.BackGround = Color.LightBackGround
+'Chart.YAxe.MinValue = 30
+txtLegend.Text = Chart.Legend.Title
+txtChart.Text = Chart.Title.Text
+
+
+btnLegFont.Tag = Chart.Legend.Font
+btnTitleFont.Tag = Chart.Title.Font
+btnXFont.Tag = Chart.XAxe.Font
+btnYFont.Tag = Chart.YAxe.Font
+
+
+tvdata.Columns.Count = 3
+tvData.Rows.Count = 4
+tvData.Header = tvData.Both
+tvdata.Columns[0].Text = "Headers"
+tvdata.Columns[1].Text = "Set 1"
+tvData[0, 0].Text = "Tic"
+tvData[1, 0].Text = "Tac"
+tvData[2, 0].Text = "Toe"
+tvData[3, 0].Text = "Tata"
+
+tvData[0, 1].Text = "10"
+tvData[1, 1].Text = "2"
+tvData[2, 1].Text = "30"
+tvData[3, 1].Text = "45"
+
+tvdata.Columns[2].Text = "Set 2"
+tvData[0, 2].Text = "5"
+tvData[1, 2].Text = "23"
+tvData[2, 2].Text = "10"
+tvData[3, 2].Text = "25"
+SetChartValues
+End
+
+Public Sub Form_Open()
+
+  Dim hClass As Class
+  Dim s As String
+  Dim hPicBox As ToggleButton
+  Dim hPic As Picture
+  hClass = class.Load("ChartType")
+For Each s In hClass.Symbols
+
+  If hClass[s].Kind <> Class.Constant Then Continue
+  
+  Select Case hClass[s].Value 
+    Case 0, 10, 20, 30, 40, 50
+      hPicBox = New ToggleButton(ScrollView1) As "MyPicBox"
+      hPic = Picture["img" &/ LCase(s) & ".png"]
+      Try hPicBox.Picture = hPic
+      hPicBox.Visible = True
+      hPicBox.BackGround = Color.Black
+      hPicBox.Resize(hPic.Width, hPic.Height)
+      hPicBox.Tag = hClass[s].Value
+      hPicBox.Radio = True
+      
+  End Select 
+  
+  
+Next
+
+spMax.Value = Chart.YAxe.MaxValue
+spMin.Value = Chart.YAxe.MinValue
+spStep.Value = Chart.YAxe.Step
+
+ColorButton1.Color = Chart.BackGround
+'LAST = ScrollView1.Children[1]
+'MyPicBox_MouseUp
+End
+
+Public Sub MyPicBox_Click()
+  
+  Dim hClass As Class
+  Dim s As String
+  Dim hPicBox As ToggleButton
+  Dim hPic As Picture
+  Dim i As Integer
+  Dim o As Control
+  hClass = class.Load("ChartType")
+  For Each o In ScrollView2.Children
+    o.Delete
+  Next
+For Each s In hClass.Symbols
+
+  If hClass[s].Kind <> Class.Constant Then Continue
+  i = hClass[s].Value - Last.Tag 
+  'PRINT hClass[s].Value, "-", LAST.tag, i
+  If i >= 0 And i < 5 Then
+      hPicBox = New ToggleButton(ScrollView2) As "MyPicBox2"
+      If i = 0 Then 
+        hPic = Picture["img" &/ LCase(s) & "normal.png"]
+      Else 
+        hPic = Picture["img" &/ LCase(s) & ".png"]
+      Endif
+        'IF IsNull(hpic) THEN hpic = NEW Picture(58, 51, TRUE)
+      hPicBox.Picture = hPic
+      hPicBox.Visible = True
+      hPicBox.BackGround = Color.Black
+      Try hPicBox.Resize(hPic.Width, hPic.Height)
+      hPicBox.Tag = hClass[s].Value
+      hPicBox.Radio = True
+  Endif
+  
+  
+Next
+  
+End
+
+Private Function GetConstNameByValue(Value As Integer) As String
+  
+  Dim hClass As Class
+  Dim s As String
+  hClass = Class.Load("ChartType")
+  
+  For Each s In hClass.Symbols
+    If hClass[s].Kind <> Class.Constant Then Continue 
+    If hClass[s].Value = Value Then Return s
+  Next
+  
+End
+
+Public Sub MyPicBox_Enter()
+  Label1.Text = GetConstNameByValue(Last.tag)
+End
+  
+Public Sub MyPicBox_Leave()
+  Label1.Text = ""
+End
+
+Public Sub MyPicBox2_Enter()
+  Label1.Text = GetConstNameByValue(Last.tag)
+End
+  
+Public Sub MyPicBox2_Leave()
+  Label1.Text = ""
+End
+
+Public Sub MyPicBox2_Click()
+  
+  Chart.Type = Last.Tag
+  Chart.Title.Text = "Type: " & GetConstNameByValue(Last.tag)
+  DrawingArea1.Refresh
+  
+End
+
+Public Sub DrawingArea1_Draw()
+  Chart.Width = DrawingArea1.Width
+  Chart.Height = DrawingArea1.Height
+  Chart.Draw()
+  
+End
+
+
+Public Sub CheckBox2_Click()
+
+  Chart.Title.Visible = Last.Value
+  DrawingArea1.Refresh
+End
+
+Public Sub CheckBox1_Click()
+
+  Chart.Legend.Visible = Last.Value
+  DrawingArea1.Refresh
+End
+
+Private Sub SetChartValues()
+  
+  Dim ars As New String[]
+  Dim arf As New Float[]
+  Dim i As Integer
+  Dim j As Integer
+  Chart.CountDataSets = tvData.Columns.Count - 1
+  
+  For i = 0 To tvdata.Rows.Count - 1
+    ars.Add(tvdata[i, 0].Text)
+  Next
+  For j = 0 To tvData.Columns.Count - 2
+    arf = New Float[]
+    For i = 0 To tvdata.Rows.Count - 1
+      Try arf.Add(CFloat(tvdata[i, J + 1].Text))
+      If Error Then arf.Add(0)
+    Next
+    Chart.Headers.Values = ars
+    Chart[J].Values = arf
+    Chart[J].Text = tvdata.Columns[J + 1].Text
+  Next
+  
+ 
+  
+  
+  
+  
+  
+End
+
+
+
+Public Sub tvdata_Click()
+
+  tvdata.Edit
+
+End
+
+
+Public Sub tvdata_Change()
+
+  
+
+End
+
+Public Sub tvdata_Save(Row As Integer, Column As Integer, Value As String)
+
+  tvData[Row, Column].Text = Value
+  SetChartValues
+  DrawingArea1.Refresh
+  
+
+End
+
+Public Sub Button4_Click()
+
+  If tvdata.Columns.Count > 2 Then Dec Chart.CountDataSets
+  SetChartValues
+  DrawingArea1.Refresh
+
+End
+
+Public Sub Button3_Click()
+  Dim s As String
+  'FInput.Value = ""
+  s = InputBox("Dataset Name", "New DataSet")
+  If Not IsNull(s) Then 
+    Inc tvData.Columns.Count
+    tvData.Columns[tvData.Columns.Count - 1].Text = s
+  Endif
+    SetChartValues
+  DrawingArea1.Refresh
+End
+
+Public Sub Button1_Click()
+
+  Inc tvdata.Rows.Count
+    SetChartValues
+  DrawingArea1.Refresh
+End
+
+Public Sub Button2_Click()
+
+  If tvData.Rows.Count > 1 Then Dec tvData.Rows.Count
+    SetChartValues
+  DrawingArea1.Refresh
+End
+
+Public Sub tvdata_ColumnClick(Column As Integer)
+
+    Dim s As String
+    If Column = 0 Then Return 
+  'FInput.Value = ""
+  s = InputBox("Dataset Name", "Set DataSet Name")
+  If Not IsNull(s) Then 
+    tvData.Columns[Column].Text = s
+  Endif
+  SetChartValues
+  DrawingArea1.Refresh
+  
+End
+
+Public Sub CheckBox3_Click()
+
+  Chart.XAxe.Visible = CheckBox3.Value
+  DrawingArea1.Refresh
+
+End
+
+Public Sub CheckBox4_Click()
+
+  Chart.YAxe.Visible = CheckBox4.Value
+  DrawingArea1.Refresh
+
+End
+
+Public Sub ComboBox1_Click()
+
+  Select Case ComboBox1.Text
+  
+    Case "Right"
+      Chart.Legend.Position = Align.Right
+    Case "Bottom"
+      Chart.Legend.Position = Align.Bottom
+    End Select
+    DrawingArea1.Refresh
+End
+
+Public Sub ColorButton1_Change()
+  ' Dialog.Color = ColorButton1.Color
+  ' If Not Dialog.SelectColor() Then 
+  '   ColorButton1.Color = Dialog.Color
+  '   Chart.BackColor = Dialog.Color
+  'Endif
+  Chart.BackGround = ColorButton1.Color
+  DrawingArea1.Refresh
+End
+
+Public Sub CheckBox5_Click()
+
+  Chart.YAxe.ShowIntervalLines = CheckBox5.Value
+  DrawingArea1.Refresh
+
+End
+
+Public Sub CheckBox6_Click()
+
+  Chart.Colors.Style = IIf(CheckBox6.Value, Chart.Colors.Auto, Chart.Colors.Custom)
+  DrawingArea1.Refresh
+End
+
+Public Sub Button5_Click()
+
+  Dim hBut As ColorButton
+  
+  hBut = New ColorButton(ScrollView3) As "BtnColors"
+  hBut.Height = hBut.Height * 2
+  hBut.Visible = True
+  hBut.Refresh
+  'Chart.Colors.Style = Chart.Colors.Custom
+  CheckBox6.Value = False
+  RefreshCustomColors
+  CheckBox6_Click
+  'RefreshCustomColors
+
+End
+
+Public Sub RefreshCustomColors()
+  Dim o As ColorButton
+  Chart.Colors.Values.Clear
+  For Each o In ScrollView3.Children
+  
+    Chart.Colors.Values.Add(o.Color)
+    
+  Next
+  $oLastChild = o
+  DrawingArea1.Refresh
+  
+End
+
+Public Sub BtnColors_Change()
+  
+  RefreshCustomColors
+  
+End
+
+Public Sub Button6_Click()
+
+  If Not IsNull($oLastChild) Then 
+    $oLastChild.delete
+    Wait
+    If ScrollView3.Children.Count = 0 Then 
+      CheckBox6.Value = True
+      CheckBox6_Click
+    Endif
+    RefreshCustomColors
+    
+  Endif
+Catch
+RefreshCustomColors
+End
+
+Public Sub CheckBox7_Click()
+
+  Chart.Border = CheckBox7.Value
+  DrawingArea1.Refresh
+
+End
+
+Public Sub txtLegend_Change()
+
+  Chart.Legend.Title = txtLegend.Text
+  DrawingArea1.Refresh
+
+End
+
+
+Public Sub txtChart_Change()
+
+  Chart.Title.Text = txtChart.Text
+  DrawingArea1.Refresh
+
+
+End
+
+Public Sub btnTitleFont_Click()
+  Dialog.Font = Last.tag
+  If Not Dialog.SelectFont() Then
+    Last.tag = Dialog.Font
+    Chart.Title.Font = Last.tag
+    DrawingArea1.Refresh
+  Endif
+  
+  
+  
+End
+
+Public Sub btnLegFont_Click()
+
+    Dialog.Font = Last.tag
+  If Not Dialog.SelectFont() Then
+    Last.tag = Dialog.Font
+    Chart.Legend.Font = Last.tag
+    DrawingArea1.Refresh
+  Endif
+
+End
+
+Public Sub btnXFont_Click()
+
+  
+  Dialog.Font = Last.Tag
+  If Not Dialog.SelectFont() Then
+    Last.tag = Dialog.Font
+    Chart.XAxe.Font = Last.tag
+    DrawingArea1.Refresh
+  Endif
+
+
+End
+
+Public Sub btnYFont_Click()
+
+      Dialog.Font = Last.Tag
+  If Not Dialog.SelectFont() Then
+    Last.tag = Dialog.Font
+    Chart.YAxe.Font = Last.tag
+    DrawingArea1.Refresh
+  Endif
+
+End
+
+Public Sub CheckBox8_Click()
+
+  Chart.Proportionnal = CheckBox8.Value
+  DrawingArea1.Refresh
+End
+
+Public Sub CheckBox9_Click()
+
+  Chart.XAxe.Arrange = IIf(Last.Value, Chart.XAxe.Steps, Chart.XAxe.Normal)
+  DrawingArea1.Refresh
+End
+
+Public Sub CheckBox10_Click()
+  Chart.YAxe.AutoScale = True
+  DrawingArea1.Refresh
+
+End
+
+Public Sub spMin_Change()
+
+  Chart.YAxe.MinValue = Last.Value
+  DrawingArea1.Refresh
+
+End
+
+Public Sub spMax_Change()
+
+    Chart.YAxe.MaxValue = Last.Value
+  DrawingArea1.Refresh
+
+End
+
+Public Sub spStep_Change()
+
+      Chart.YAxe.Step = Last.Value
+  DrawingArea1.Refresh
+
+End
+
+Public Sub CheckBox11_Click()
+
+  Chart.ShowLabels = Last.Value
+  DrawingArea1.Refresh
+
+End

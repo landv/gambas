@@ -1,0 +1,87 @@
+' Gambas class file
+
+' 
+Export
+Property Read _strProj As String
+
+Private $strProj As String
+Private LastTransformString As String
+'Private hprocess As Process
+Public Sub _new(sInit As String)
+  
+  $strProj = sInit
+  
+End
+
+Static Public Function _call(sInit As String) As Proj
+  
+  Dim hProj As New Proj(sInit)
+  Return hProj
+  
+End
+
+
+
+Public Function TransformPF(ProjTo As Proj, PF As PointF) As PointF
+  Dim sCom, sRes As String
+  Dim a As String[]
+  
+  If ProjTo._strProj <> LastTransformString Then
+    LastTransformString = ProjTo._strProj
+    
+  Endif
+  
+  sCom = Subst("cs2cs -f \"%f\" +init=&1 +to +init=&2<<EOF\n", $strProj, ProjTo._strProj)
+  sCom &= Pf.y & " " & pf.x & "\nEOF"
+  Shell sCom To sRes
+  a = Split(Left(sRes, InStr(sRes, " ") - 1), Chr(9))
+  Return PointF(a[1], a[0])
+End
+
+Public Function TransformMPoint(ProjTo As Proj, MP As MapPoint) As MapPoint
+  
+  Dim sCom, sRes As String
+  Dim a As String[]
+  
+  If ProjTo._strProj <> LastTransformString Then
+    LastTransformString = ProjTo._strProj
+    
+  Endif
+  
+  sCom = Subst("cs2cs -f \"%f\" +init=&1 +to +init=&2<<EOF\n", $strProj, ProjTo._strProj)
+  sCom &= mp.lon & " " & mp.lat & "\nEOF"
+  Shell sCom To sRes
+  a = Split(Left(sRes, InStr(sRes, " ") - 1), Chr(9))
+  Return MapPoint(a[1], a[0])
+  
+End
+
+Public Function TransformMBounds(ProjTo As Proj, MB As MapBounds) As MapBounds
+  
+  Dim sCom, sRes As String
+  Dim a, b As String[]
+  Dim l As String[]
+  ' If ProjTo._strProj <> LastTransformString Then
+  '   LastTransformString = ProjTo._strProj
+  '   
+  ' Endif
+  ' 
+  ' sCom = Subst("cs2cs -f \"%f\" +init=&1 +to +init=&2<<EOF\n", $strProj, ProjTo._strProj)
+  ' sCom &= MB.Lat & " " & MB.Lon & "\n"
+  ' scom &= MB.Lat2 & " " & MB.Lon2 & "\nEOF"
+  ' Shell sCom To sRes
+  ' l = Split(sRes, "\n")
+  ' a = Split(Left(l[0], InStr(l[0], " ") - 1), Chr(9))
+  ' b = Split(Left(l[1], InStr(l[1], " ") - 1), Chr(9))
+  ' Return MapBounds(MapPoint(a[0], a[1]), MapPoint(b[0], b[1]))
+  
+  Return MapBounds(Me.TransformMPoint(ProjTo, mb.TopLeft), Me.TransformMPoint(ProjTo, mb.BottomRight))
+  'Print sRes
+End
+
+
+Private Function _strProj_Read() As String
+
+  Return $strProj
+
+End

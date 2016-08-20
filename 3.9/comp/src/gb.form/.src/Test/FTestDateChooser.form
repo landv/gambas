@@ -1,0 +1,25 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  Move(0,0,651,336)
+  #Scaled = False
+  Spacing = True
+  Margin = True
+  { DateBox1 DateBox
+    Move(112,63,126,35)
+    Mode = DateChooser.TimeOnly
+  }
+  { DateChooser1 DateChooser
+    Move(287,42,357,238)
+  }
+  { DateBox2 DateBox
+    Move(63,140,168,28)
+  }
+  { txtYear SpinBox
+    Move(112,238,63,28)
+    MinValue = 1600
+    MaxValue = 9999
+    Value = 2015
+    Border = False
+  }
+}

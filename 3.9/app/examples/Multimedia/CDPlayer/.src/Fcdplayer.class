@@ -1,0 +1,139 @@
+' Gambas class file
+
+' Simple CDplayer
+' Carlier Laurent - (c) 2005
+' Under GNU GPL V2 or Later
+'
+' Done for Testing the sdl component
+' CDROM part
+
+Static mycd As CDRom
+Static HaveCD As Boolean
+
+Public Sub Form_open()
+  If CDRoms.Count > 0 Then
+    Try mycd = New CDRom
+    If Not IsNull(mycd) Then
+      Volume.Value = Abs(mycd.Volume - Volume.MaxValue)
+      TrackPos.Value = 0
+      Me.Center
+      Timer1.Enabled = True
+        Else
+      Message.Warning(("I Could not load cd-rom drive"))
+      Me.Close
+    Endif
+      Else
+    Message.Warning(("Your PC doen not have cd-rom drive"))
+    Me.Close
+  Endif
+  
+End
+
+Public Sub SButton_Click()
+  
+  mycd.Stop()
+  PButton.Text = "&Play"
+  TrackPos.Value = 0
+  
+End
+
+Public Sub PTButton_Click()
+  
+  If Not HaveCD Then
+    Return
+  Endif
+  
+  mycd.Tracks[TrackInfo.Index + 1].Play()
+  
+End
+
+Public Sub Timer1_Timer()
+  
+  Dim trckloop As Integer
+  Dim string1 As String
+  Dim string2 As String
+  
+  If Not mycd.Ready Then
+    TrackInfo.Clear()
+    TextBox1.Text = "No CD in Drive"
+    HaveCD = False
+    Return
+  Endif
+  
+  If mycd.Stopped Then
+    string1 = mycd.Tracks.Count & " Tracks"
+    string2 = "Total Length : " & ToTime(mycd.Length)
+    TextBox1.Text = string1 & Space$(41 - (Len(string1) + Len(string2))) & string2
+    TrackPos.Value = 0
+  Endif
+  
+  If mycd.Playing Or mycd.Paused Then
+    TrackPos.Value = (mycd.Tracks[mycd.Tracks.Current].Position) / mycd.Tracks[mycd.Tracks.Current].length
+    TextBox1.Text = "Playing Track " & mycd.Tracks.Current
+  Endif
+  
+  If HaveCD Then
+    Return
+  Endif
+  
+  TrackInfo.Clear()
+  For trckloop = 1 To mycd.Tracks.Count
+    string1 = "Track " & trckloop
+    string2 = "<" & ToTime(mycd.Tracks[trckloop].Length) & ">"
+    TrackInfo.Add(string1 & Space$(49 - (Len(string1) + Len(string2))) & string2)
+  Next
+  
+  Volume.Value = Abs(mycd.Volume - 255)
+  HaveCD = True
+  
+End
+
+Public Function ToTime(length As Integer) As String
+  
+  Dim myString As String
+  
+  mystring = Format$(length \ 60, "00") & ":" & Format$((length Mod 60), "00")
+  Return myString
+  
+End
+
+Public Sub Volume_Change()
+  
+  mycd.Volume = Abs(Volume.Value - Volume.MaxValue)
+  
+End
+
+Public Sub PButton_Click()
+  
+  If Not HaveCD Then
+    PButton.Text = "&Play"
+    Return
+  Endif
+  
+  If mycd.Stopped Then
+    mycd.Play()
+    PButton.Text = "&Pause"
+    Return
+  Endif
+  
+  If mycd.Playing Then
+    mycd.Pause()
+    PButton.Text = "&Resume"
+    Return
+  Endif
+  
+  If mycd.Paused Then
+    mycd.Resume()
+    PButton.Text = "&Pause"
+  Endif
+  
+End
+
+Public Sub EButton_Click()
+  
+  Try mycd.Eject
+  HaveCD = False
+  PButton.Text = "&Play"
+  TrackPos.Value = 0
+  
+End

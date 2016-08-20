@@ -1,0 +1,161 @@
+' Gambas class file
+
+Public bcHeight As Integer
+Public barThickness As Integer
+'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Public Sub SizeForScreen()
+    'set up typical defaults for barcode size on screen
+    txtPosX.Text = "60"
+    txtPosY.text = "8"
+    txtHeight.Text = "150"
+    txtWidth.Text = "5"
+End
+'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Public Sub SizeForPrinter()
+    'set up typical defaults for barcode size on printer
+    txtPosX.Text = "500"
+    txtPosY.text = "400"
+    txtHeight.Text = "250"
+    txtWidth.Text = "7"
+End
+'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Public Sub ChkInput()
+  
+  ' make sure only valid characters
+  Select Key.Code
+    Case Key.BackSpace, Key.Tab, Key.Delete, Key.Enter, Key.Return, Key.Escape
+    Default 
+      If Key.Text And If InStr("0123456789", Key.Text) = 0 Then Stop Event
+  End Select
+  
+End
+'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
+Public Sub Form_Open()
+   'DrawingArea1.Cached = TRUE
+   txtBarcode.SetFocus
+   SizeForScreen
+   txtBarcode.Text = "8711577011208" 'sample barcode (so what's it for then?)
+   txtBarcode.Select
+End
+'-------------------------------------------------------------------
+Public Sub btnExit_Click()
+  
+  FMain.Close
+End
+
+Private Sub DrawBarCode(Optional bPrinter As Boolean)
+
+  If Not bPrinter Then
+  
+    'DrawingArea1.Refresh
+    'Draw.Begin(DrawingArea1)
+    Draw.Clear
+    modCrBcode.PrintBarcode(txtBarcode.Text, Val(txtPosX.text), Val(txtPosY.text), Val(txtHeight.text), Val(txtWidth.text), True)
+    'Draw.End()
+  
+  Else  
+
+    Draw.Begin(printer)
+    modCrBcode.PrintBarcode(txtBarcode.Text, Val(txtPosX.text), Val(txtPosY.text), Val(txtHeight.text), Val(txtWidth.text), False)
+    Draw.End()
+
+  Endif 
+  
+End
+
+
+Public Sub btnRun_Click()
+  
+  If Len(txtBarcode.Text) <> 13 Then 
+    Message.Error(("Please enter a valid 13 digit EAN-13 number"))
+  Else 
+    If Val(txtPosX.Text) = 0 Then 
+      If rbutScreen Then 
+        txtPosX.Text = "40"
+      Else 
+        txtPosX.Text = "500"
+      Endif 
+    Endif 
+    If Val(txtPosY.Text) = 0 Then 
+      If rbutScreen Then 
+        txtPosY.Text = "0"
+      Else 
+        txtPosY.Text = "300"
+      Endif 
+    Endif 
+    If Val(txtHeight.Text) = 0 Then 
+      If rbutScreen Then
+        txtHeight.Text = "150"
+      Else 
+        txtHeight.Text = "250"
+      Endif 
+    Endif 
+    If Val(txtWidth.Text) = 0 Then 
+      If rbutScreen Then
+        txtWidth.Text = "5"
+      Else 
+        txtWidth.Text = "7"
+      Endif 
+    Endif 
+
+    'DrawBarCode
+    DrawingArea1.Refresh
+
+  Endif 
+  
+End
+'-------------------------------------------------------------------
+Public Sub rbutPrinter_Click()
+  SizeForPrinter
+End
+'-------------------------------------------------------------------
+Public Sub rbutScreen_Click()
+  SizeForScreen
+End
+'-------------------------------------------------------------------
+Public Sub txtPosX_KeyPress()
+  ChkInput
+End
+'-------------------------------------------------------------------
+Public Sub txtBarcode_KeyPress()
+  ChkInput
+End
+'-------------------------------------------------------------------
+Public Sub txtPosY_KeyPress()
+  ChkInput
+End
+'-------------------------------------------------------------------
+Public Sub txtHeight_KeyPress()
+  ChkInput
+End
+'-------------------------------------------------------------------
+Public Sub txtWidth_KeyPress()
+  ChkInput
+End
+'-------------------------------------------------------------------
+
+' PUBLIC SUB Form_Resize()
+' 
+'   DrawBarCode
+' 
+' END
+
+Public Sub btnPrint_Click()
+
+  DrawBarCode(True)
+
+End
+
+Public Sub btnAbout_Click()
+
+  Message.Info(("This program was made by Charles Guerin and\nmodified by Benoît Minisini."))
+
+End
+
+Public Sub DrawingArea1_Draw()
+
+  DrawBarCode
+
+End

@@ -1,0 +1,67 @@
+' Gambas class file
+
+Export
+Create Private
+
+Inherits UserControl
+
+Property Text As String
+Property RichText As String
+Property Picture As Picture
+Property Visible As Boolean
+Property Read Container As Container
+
+
+Private Function Text_Read() As String
+
+  
+
+End
+
+Private Sub Text_Write((Value) As String)
+
+  
+
+End
+
+Private Function RichText_Read() As String
+
+  
+
+End
+
+Private Sub RichText_Write((Value) As String)
+
+  
+
+End
+
+Private Function Picture_Read() As Picture
+
+  
+
+End
+
+Private Sub Picture_Write((Value) As Picture)
+
+  
+
+End
+
+Private Function Visible_Read() As Boolean
+
+  
+
+End
+
+Private Sub Visible_Write((Value) As Boolean)
+
+  
+
+End
+
+Private Function Container_Read() As Container
+
+  Return Me
+
+End

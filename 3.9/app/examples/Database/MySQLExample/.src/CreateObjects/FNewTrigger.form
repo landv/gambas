@@ -1,0 +1,64 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,73,55)
+  Text = ("Create Trigger")
+  Icon = Picture["icons/16/Trigger.png"]
+  Resizable = False
+  { lblTitle Label
+    MoveScaled(1,1,71,5)
+    Font = Font["+4"]
+    Background = Color.LightBackground
+    Text = ("Create Trigger")
+    Alignment = Align.Center
+    Border = Border.Sunken
+  }
+  { lblName Label
+    MoveScaled(1,8,11,3)
+    Font = Font["+1"]
+    Text = ("Name:")
+  }
+  { txtName TextBox
+    MoveScaled(13,8,59,3)
+  }
+  { lblTime Label
+    MoveScaled(1,13,11,3)
+    Font = Font["+1"]
+    Text = ("Time:")
+  }
+  { cmbTime ComboBox
+    MoveScaled(13,13,15,3)
+    ReadOnly = True
+    List = []
+  }
+  { lblEvent Label
+    MoveScaled(30,13,11,3)
+    Font = Font["+1"]
+    Text = ("Event:")
+  }
+  { cmbEvent ComboBox
+    MoveScaled(42,13,15,3)
+    ReadOnly = True
+    List = []
+  }
+  { btnClue Button
+    MoveScaled(1,50,5,4)
+    ToolTip = ("Show a clue")
+    Picture = Picture["icon:/22/help"]
+  }
+  { tbnOK Button
+    MoveScaled(44,50,13,4)
+    Text = ("&Ok")
+    Picture = Picture["icon:/16/ok"]
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(59,50,13,4)
+    Text = ("&Cancel")
+    Picture = Picture["icon:/16/cancel"]
+    Cancel = True
+  }
+  { txtData TextArea
+    MoveScaled(1,17,71,32)
+  }
+}

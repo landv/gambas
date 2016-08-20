@@ -1,0 +1,145 @@
+' Gambas module file
+
+Private $hOut As File
+Private $bLastPrint As Boolean
+Private $iLenPrint As Integer
+
+Private Sub PrintHTML(sStr As String)
+
+  If Len(sStr) Then 
+    $iLenPrint += Len(sStr)
+    If $iLenPrint > 32000 Then $bLastPrint = False
+    If Not $bLastPrint Then 
+      $iLenPrint = Len(sStr)
+      Print #$hOut, "PRINT ";
+    Else 
+      Print #$hOut, " ";
+    Endif
+    Print #$hOut, Quote(sStr);
+    $bLastPrint = True
+  Endif
+  
+End
+
+Private Sub PrintSemiColon()
+  
+  If $bLastPrint Then Print #$hOut, ";"
+  $bLastPrint = False
+  
+End
+
+
+
+Public Sub Make(sPath As String) As String
+
+  Dim sData As String = File.Load(sPath)
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim sCar As String
+  Dim sWait As String
+    
+  sPath = Temp$("gs")
+  $hOut = Open sPath For Create 
+  
+  Print #$hOut, "USE \"gb.web\""
+  
+  Print #$hOut, "PUBLIC SUB Main()\n"
+    "  Response.Buffered = TRUE\n"
+    "  Response.Begin\n"
+    "  _PrintPage()\n"
+    "  Response.End\n"
+    "END"
+  
+  Print #$hOut, "\nPRIVATE SUB _PrintPage()"
+  
+  If sData Like "#!/*" Then 
+    iPos = InStr(sData, "\n")
+    If iPos = 0 Then iPos = Len(sData)
+  Endif
+  
+  Do
+    
+    iPos2 = InStr(sData, "<%", iPos + 1)
+    If iPos2 = 0 Then 
+      PrintHTML(Mid$(sData, iPos + 1))
+      Break 
+    Else
+      PrintHTML(Mid$(sData, iPos + 1, iPos2 - iPos - 1))
+      iPos = iPos2
+    Endif
+    
+    'If Mid$(sData, iPos, 2) = "<%" Then 
+      
+      ' Search for closing "%>" by jumping Gambas syntax
+      Do
+        Inc iPos2
+        If iPos2 > Len(sData) Then Break
+        sCar = Mid$(sData, iPos2, 1)
+        If sWait Then 
+          If sCar = "\\" Then 
+            Inc iPos2
+          Else If sCar = sWait Then 
+            sWait = ""
+          Endif
+        Else If sCar = Chr$(34) Then 
+          sWait = Chr$(34)
+        Else If Mid$(sData, iPos2, 2) = "%>" Then 
+          Break
+        Endif
+      Loop
+
+      PrintSemiColon
+      
+      If Mid$(sData, iPos, 3) = "<%=" Then 
+        If (iPos2 - iPos - 3) > 0 Then
+          Print #$hOut, "PRINT HTML(Str("; Trim(Mid$(sData, iPos + 3, iPos2 - iPos - 3)); "));"
+        Endif
+      Else 
+        Print #$hOut, Trim(Mid$(sData, iPos + 2, iPos2 - iPos - 2))
+      Endif
+
+      iPos = iPos2 + 1
+    
+    ' Else If Mid$(sData, iPos, 3) = "<--" Then
+    ' 
+    '   ' Search for closing "-->"
+    '   iPos2 = InStr(sData, "-->", iPos + 3)
+    '   
+    '   PrintHTML(Mid$(sData, iPos, iPos2 - iPos + 3))
+    '   
+    '   iPos = iPos2 + 2
+    ' 
+    ' Else 
+    '   
+    '   ' Search for closing ">" by jumping markup syntax
+    '   Do
+    '     Inc iPos2
+    '     If iPos2 > Len(sData) Then Break
+    '     sCar = Mid$(sData, iPos2, 1)
+    '     If sWait Then 
+    '       If sCar = sWait Then sWait = ""
+    '     Else If sCar = ">" Then 
+    '       Break
+    '     Else If sCar = Chr$(34) Then 
+    '       sWait = Chr$(34)
+    '     Else If sCar = "'" Then 
+    '       sWait = "'"
+    '     Endif
+    '   Loop
+    '   
+    '   PrintHTML(Mid$(sData, iPos, iPos2 - iPos + 1))
+    '   
+    '   iPos = iPos2
+    ' 
+    ' Endif
+  
+  Loop
+  
+  PrintSemiColon
+  Print #$hOut, "END"
+  
+  Close #$hOut
+  Return sPath
+  
+End
+

@@ -1,0 +1,53 @@
+' Gambas class file
+
+Inherits Panel
+
+Property Text As String
+Property Alignment As Integer
+
+Private $hTextArea As TextArea
+
+Public Sub _new(iPadding As Integer)
+
+  Me.Padding = Max(0, iPadding - 1)
+  Me.Arrangement = Arrange.Fill
+  Me.Ignore = True
+  Me.Border = Border.Plain
+  Me.Background = Color.TextBackground
+  
+  $hTextArea = New TextArea(Me)
+  $hTextArea.ScrollBar = Scroll.None
+  $hTextArea.Wrap = True
+  $hTextArea.Border = False
+  $hTextArea.Background = Color.TextBackground
+  
+  Me.Proxy = $hTextArea
+
+End
+
+
+Private Function Text_Read() As String
+
+  Return $hTextArea.Text
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $hTextArea.Font = Me.Parent.Font
+  $hTextArea.Text = Value
+  $hTextArea.SelectAll
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return $hTextArea.Alignment
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  $hTextArea.Alignment = Value
+
+End

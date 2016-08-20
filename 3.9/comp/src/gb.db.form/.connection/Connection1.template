@@ -1,0 +1,179 @@
+# Gambas Database Template File 3.0
+{ Table
+  Name="Client"
+  PrimaryKey=["idClient"]
+  { Field
+    Name="idClient"
+    Type=db.Serial
+  }
+  { Field
+    Name="idTypeClient"
+    Type=db.Integer
+  }
+  { Field
+    Name="NomClient"
+    Type=db.String
+    Length=32
+  }
+  { Field
+    Name="TelephoneClient"
+    Type=db.String
+    Length=32
+  }
+  { Field
+    Name="ContactClient"
+    Type=db.String
+    Length=32
+  }
+  { Field
+    Name="AdresseClient"
+    Type=db.String
+    Length=32
+  }
+  { Field
+    Name="CPClient"
+    Type=db.Integer
+  }
+  { Field
+    Name="VilleClient"
+    Type=db.String
+    Length=32
+  }
+  { Field
+    Name="idTarif"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="EnteteCommande"
+  PrimaryKey=["idCommande"]
+  { Field
+    Name="idCommande"
+    Type=db.Serial
+  }
+  { Field
+    Name="NumeroCommande"
+    Type=db.String
+    Length=8
+  }
+  { Field
+    Name="idClient"
+    Type=db.Integer
+  }
+  { Field
+    Name="DateCommande"
+    Type=db.Date
+  }
+}
+{ Table
+  Name="Fabrications"
+  PrimaryKey=["idFabrication"]
+  { Field
+    Name="idFabrication"
+    Type=db.Serial
+  }
+  { Field
+    Name="Nom"
+    Type=db.String
+    Length=16
+  }
+  { Field
+    Name="StadeAffinage"
+    Type=db.String
+    Length=16
+  }
+}
+{ Table
+  Name="LigneCommande"
+  PrimaryKey=["IdLigneCommande"]
+  { Field
+    Name="IdLigneCommande"
+    Type=db.Serial
+  }
+  { Field
+    Name="idCommande"
+    Type=db.Integer
+  }
+  { Field
+    Name="Fabrication"
+    Type=db.String
+    Length=16
+  }
+  { Field
+    Name="Rayon"
+    Type=db.String
+    Length=16
+  }
+  { Field
+    Name="Quantite"
+    Type=db.Integer
+  }
+  { Field
+    Name="NumeroLot"
+    Type=db.String
+    Length=16
+  }
+}
+{ Table
+  Name="StockClient"
+  PrimaryKey=["idStockClient"]
+  { Field
+    Name="idStockClient"
+    Type=db.Serial
+  }
+  { Field
+    Name="Date"
+    Type=db.Date
+  }
+  { Field
+    Name="idClient"
+    Type=db.Integer
+  }
+  { Field
+    Name="Nom"
+    Type=db.String
+  }
+  { Field
+    Name="QteStock"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="StockFabrications"
+  PrimaryKey=["idStock"]
+  { Field
+    Name="idStock"
+    Type=db.Serial
+  }
+  { Field
+    Name="DateStock"
+    Type=db.Date
+  }
+  { Field
+    Name="Fabrication"
+    Type=db.String
+    Length=16
+  }
+  { Field
+    Name="NumeroLot"
+    Type=db.String
+    Length=16
+  }
+  { Field
+    Name="NbreEnStock"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="TypeClient"
+  PrimaryKey=["idTypeClient"]
+  { Field
+    Name="idTypeClient"
+    Type=db.Serial
+  }
+  { Field
+    Name="NomTypeClient"
+    Type=db.String
+    Length=32
+  }
+}

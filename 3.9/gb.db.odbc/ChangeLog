@@ -1,0 +1,37 @@
+gambas ODBC component
+
+
+Tue, 29 Aug 2006 Andrea Bortolan <andrea_bortolan@yahoo.it>
+fixed some bugs using PostgreSQL and Easysoft Oracle ODBC Driver
+
+
+Thu, 17 Nov 2005 Andrea Bortolan <andrea_bortolan@yahoo.it>
+added the BIGINT (64 bit integer) datatype support
+
+
+Tue, 08 Nov 2005 Andrea Bortolan <andrea_bortolan@yahoo.it>
+
+moved the SQLFetchScroll test function in the connection section in order to be executed only at the connection time
+
+
+Thu, 03 Nov 2005 Andrea Bortolan <andrea_bortolan@yahoo.it>
+
+add a check in order to call the ODBC API Fetch instead of FetchScroll when the driver doesn't support it
+
+
+Fri, 15 Apr 2005 Andrea Bortolan <andrea_bortolan@yahoo.it>
+
+no more "printf" in the code
+
+all the function not implemented by the odbc standard return without rise GB.Error(s)
+
+
+Thu, 14 Apr 2005 Andrea Bortolan <andrea_bortolan@yahoo.it>
+
+implementation of many new functions - primary keys - index ecc.
+
+
+Fri, 18 Mar 2005 Andrea Bortolan <andrea_bortolan@yahoo.it>
+
+fixed the segfault problem - changed the do_query function    
+ 

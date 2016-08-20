@@ -1,0 +1,106 @@
+' Gambas class file
+
+
+
+Public Sub Form_Open()
+
+  Settings.Read(FMain)
+
+  FSettings.ShowModal()
+
+  MailClient.Debug = True
+
+  'Connect()
+
+  If Not MailClient.User Then Me.Close
+
+End
+
+Public Sub btnSettings_Click()
+
+  If MailClient.Status <> Net.Connected Then
+    FSettings.ShowModal()
+  Endif
+
+End
+
+Public Sub btnConnect_Click()
+
+  Connect()
+
+End
+
+Private Sub Connect()
+
+  'Wait 0.5
+
+  Inc Application.Busy
+
+  If MailClient.Host Then
+    btnSettings.Enabled = False
+    MailClient.Open()
+  Endif
+
+  If MailClient.Status = Net.Connected Then
+    LoadInbox()
+    btnDisconnect.Enabled = True
+  Else
+    btnSettings.Enabled = True
+    Message.Warning("Login failed!")
+  Endif
+
+  Dec Application.Busy
+
+End
+
+Private Sub LoadInbox()
+
+  Dim oMail As _Pop3Client_Message
+
+  If MailClient.Status <> Net.Connected Then Return
+
+  For Each oMail In MailClient
+
+    If oMail.Index = 3 Then Return
+
+    lvInbox.Add(oMail.Index, Subst("&1 &2", oMail.Message.Sender, oMail.Message.Subject))
+
+    Wait
+
+  Next
+
+End
+
+Public Sub btnDisconnect_Click()
+
+  If MailClient.Status <> Net.Connected Then Return
+
+  lvInbox.Clear()
+
+  MailClient.Close()
+
+  btnDisconnect.Enabled = False
+
+  btnSettings.Enabled = True
+
+End
+
+Public Sub lvInbox_Select()
+
+  ''Please note that this is not an example of the gb.mime component!!!
+  txtContent.Text = MailClient[lvInbox.Key].Message.Body[0].ToString()
+
+  ''THIS SHOULD WORK!!!
+  'txtContent.Text = Mime.Decode(MailClient[lvInbox.Key].Message.Body[0].ToString(), MailClient[lvInbox.Key].Message.Body[0].ContentEncoding)
+
+End
+
+Public Sub Form_Close()
+
+  If btnDisconnect.Enabled Then
+    MailClient.Close()
+  Endif
+
+  Settings.Write(FMain)
+
+End

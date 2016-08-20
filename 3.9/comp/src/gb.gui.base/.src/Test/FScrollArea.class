@@ -1,0 +1,22 @@
+' Gambas class file
+
+Public Sub Form_Open()
+
+  Print System.RightToLeft
+  Print Style.ScrollbarSize
+  Print Style.ScrollbarSpacing
+  
+  ScrollArea1.ResizeContents(400, 400)
+
+End
+
+Public Sub ScrollArea1_Draw()
+
+  Draw.Translate(- ScrollArea1.ScrollX, - ScrollArea1.ScrollY)
+  Draw.Fillstyle = Fill.Dense6
+  Draw.FillColor = Color.Red
+  'Draw.Transparent = True
+  'Draw.Ellipse(55, 78, 190, 300)
+  Draw.Ellipse(0, 0, 400, 400)
+
+End

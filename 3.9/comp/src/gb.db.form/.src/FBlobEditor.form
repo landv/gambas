@@ -1,0 +1,49 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,77,64)
+  Text = ("Blob contents")
+  Arrangement = Arrange.Vertical
+  { HBox1 HBox
+    MoveScaled(3,3,56,4)
+    { btnSave ToolButton
+      MoveScaled(0,0,9,4)
+      AutoResize = True
+      Text = ("Save...")
+      Picture = Picture["icon:/small/save-as"]
+    }
+    { btnLoad ToolButton
+      MoveScaled(11,0,10,4)
+      AutoResize = True
+      Text = ("Load...")
+      Picture = Picture["icon:/small/open"]
+    }
+    { btnClear ToolButton
+      MoveScaled(22,0,9,4)
+      AutoResize = True
+      Text = ("Clear")
+      Picture = Picture["icon:/small/delete"]
+    }
+    { lblSize Label
+      MoveScaled(35,0,18,4)
+      Expand = True
+      Alignment = Align.Right
+    }
+  }
+  { Separator1 Separator
+    MoveScaled(17,8,15,0)
+  }
+  { gvwPreview GridView
+    MoveScaled(5,11,47,40)
+    Font = Font["Monospace"]
+    Mouse = Mouse.Pointing
+    Expand = True
+    Border = False
+    Grid = False
+    ScrollBar = Scroll.Vertical
+  }
+  { Separator2 Separator
+    MoveScaled(5,53,15,0)
+    Visible = False
+  }
+}

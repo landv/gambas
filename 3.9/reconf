@@ -1,0 +1,7 @@
+#!/bin/sh
+
+rm -f config.cache
+rm -f acconfig.cache
+
+autoreconf -v --install $@
+

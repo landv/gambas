@@ -1,0 +1,272 @@
+' Gambas class file
+
+Public ButtonPanel As Panel
+Public DataView As DataView
+
+Private $hSrc As DataSource
+'PRIVATE $iIndex AS Integer
+Private $iOrientation As Integer
+Private $W As Integer
+Private $bCanCreate As Boolean = True
+Private $bCanDelete As Boolean = True
+
+Public Sub _new()
+  
+  ButtonPanel = panBrowser
+  DataView = dvwBrowser
+  dvwBrowser.Header = GridView.Both
+  $W = btnNew.W
+  SetOrientation(Align.Bottom)
+  Update
+  
+End
+
+
+Public Sub btnPrev_Click()
+
+  'DIM hSrc AS DataSource = Common.GetSource(ME)
+  'IF NOT hSrc THEN RETURN
+  If $hSrc.MovePrevious() Then Return
+  dvwBrowser.MovePrevious
+  'DEC $iIndex
+
+End
+
+Public Sub btnFirst_Click()
+
+  'DIM hSrc AS DataSource = Common.GetSource(ME)
+  'IF NOT hSrc THEN RETURN
+  If $hSrc.MoveFirst() Then Return
+  dvwBrowser.MoveFirst
+  '$iIndex = 0
+
+End
+
+Public Sub btnNext_Click()
+
+  'DIM hSrc AS DataSource = Common.GetSource(ME)  
+  'IF NOT hSrc THEN RETURN
+  If $hSrc.MoveNext() Then Return
+  dvwBrowser.MoveNext
+  'INC $iIndex
+
+End
+
+Public Sub btnLast_Click()
+
+  'DIM hSrc AS DataSource = Common.GetSource(ME)
+  'IF NOT hSrc THEN RETURN
+  If $hSrc.MoveLast() Then Return
+  dvwBrowser.MoveLast
+  '$iIndex = dvwBrowser.Count - 1
+
+End
+
+Public Sub btnSave_Click()
+
+  dvwBrowser.Save
+  $hSrc.Save
+
+End
+
+Public Sub _OnDatabaseChange()
+  
+  dvwBrowser._OnDatabaseChange
+  
+End
+
+Private Sub UpdateControls()
+
+  Dim bEnabled As Boolean  
+  Dim bVisible As Boolean
+  
+  If $hSrc Then
+    bEnabled = True '$hSrc.Index >= 0
+    bVisible = Not $hSrc.ReadOnly
+  Else If Me.Parent.Design Then
+    bVisible = True
+  Endif
+
+  btnFirst.Enabled = bEnabled
+  btnNext.Enabled = bEnabled
+  btnPrev.Enabled = bEnabled
+  btnLast.Enabled = bEnabled
+  btnSave.Enabled = bEnabled
+  btnRemove.Enabled = bEnabled
+  btnReload.Enabled = bEnabled
+  btnNew.Enabled = $hSrc
+  
+  btnSave.Visible = bVisible
+  btnNew.Visible = bVisible And $bCanCreate
+  btnRemove.Visible = bVisible And $bCanDelete
+
+End
+
+Public Sub Update()
+
+  If Me.Parent.Design Then
+    $hSrc = Null
+  Else
+    $hSrc = Common.GetSource(Me)
+  Endif
+  
+  UpdateControls
+  dvwBrowser.Update
+  
+  'If $hSrc And If $hSrc.ReadOnly Then btnFirst_Click
+  
+End
+
+Public Sub btnReload_Click()
+
+  'DIM hSrc AS DataSource = Common.GetSource(ME)  
+  'IF NOT hSrc THEN RETURN
+  dvwBrowser.Cancel
+  $hSrc.Cancel
+
+End
+
+Public Sub btnNew_Click()
+
+  'DIM hSrc AS DataSource = Common.GetSource(ME)  
+  'IF NOT hSrc THEN RETURN
+  dvwBrowser.Create
+  $hSrc.Create
+  '$iIndex = -1
+
+End
+
+Private Sub UpdateSeparator()
+  
+  sepBrowser.Visible = panBrowser.Visible And dvwBrowser.Visible
+  
+End
+
+
+Public Sub Form_Resize()
+
+  dvwBrowser.Visible = Me.Height > 48
+  panBrowser.Expand = Not dvwBrowser.Visible
+  UpdateSeparator
+
+End
+
+Public Sub dvwBrowser_Activate()
+
+  'Debug dvwBrowser.Index
+  If $hSrc.MoveTo(dvwBrowser.Index) Then
+    dvwBrowser.MoveTo($hSrc.Index)
+  Endif
+
+End
+
+Public Sub btnRemove_Click()
+
+  If Not dvwBrowser.Editable Then $hSrc.Remove
+  dvwBrowser.Remove
+
+End
+
+Public Sub GetOrientation() As Integer
+  
+  Return $iOrientation
+  
+End
+
+Public Sub SetOrientation(iOrientation As Integer)
+  
+  If $iOrientation = iOrientation Then Return 
+  
+  panBrowser.Arrangement = Arrange.None
+  panBorder.Arrangement = Arrange.None
+  
+  Select Case iOrientation
+    Case Align.Top
+      sepBrowser.H = 1
+      'panBrowser.Raise
+      'sepBrowser.Raise
+      'dvwBrowser.Raise
+      panBrowser.H = $W
+      panBrowser.Arrangement = Arrange.Horizontal
+      panBorder.Invert = True
+      panBorder.Arrangement = Arrange.Vertical
+    Case Align.Bottom
+      sepBrowser.H = 1
+      'dvwBrowser.Raise
+      'sepBrowser.Raise
+      'panBrowser.Raise
+      panBrowser.H = $W
+      panBrowser.Arrangement = Arrange.Horizontal
+      panBorder.Invert = False
+      panBorder.Arrangement = Arrange.Vertical
+    Case Align.Left
+      sepBrowser.W = 1
+      'panBrowser.Raise
+      'sepBrowser.Raise
+      'dvwBrowser.Raise
+      panBrowser.W = $W
+      panBrowser.Arrangement = Arrange.Vertical
+      panBorder.Invert = True
+      panBorder.Arrangement = Arrange.Horizontal
+    Case Align.Right
+      sepBrowser.W = 1
+      'dvwBrowser.Raise
+      'sepBrowser.Raise
+      'panBrowser.Raise
+      panBrowser.W = $W
+      panBrowser.Arrangement = Arrange.Vertical
+      panBorder.Invert = False
+      panBorder.Arrangement = Arrange.Horizontal
+    Default 
+      Return
+  End Select
+  
+  $iOrientation = iOrientation
+  
+End
+
+Public Sub SetControl(bVisible As Boolean)
+  
+  panBrowser.Visible = bVisible  
+  UpdateSeparator
+  
+End
+
+Public Sub SetBorder(bBorder As Boolean)
+  
+  panBorder.Border = If(bBorder, Border.Plain, Border.None)
+  
+End
+
+Public Sub HasBorder() As Boolean
+  
+  Return panBorder.Border <> Border.None
+  
+End
+
+Public Sub GetCanCreate() As Boolean
+  
+  Return $bCanCreate
+  
+End
+
+Public Sub GetCanDelete() As Boolean
+  
+  Return $bCanDelete
+  
+End
+
+Public Sub SetCanCreate(bCanCreate As Boolean)
+  
+  $bCanCreate = bCanCreate
+  UpdateControls
+  
+End
+
+Public Sub SetCanDelete(bCanDelete As Boolean)
+  
+  $bCanDelete = bCanDelete
+  UpdateControls
+  
+End
+

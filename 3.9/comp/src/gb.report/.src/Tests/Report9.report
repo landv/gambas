@@ -1,0 +1,22 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,64,64)
+  Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
+  Index = 0
+  Text = ("")
+  { ReportVPanel1 ReportVPanel
+    #MoveScaled(4,1,58,51)
+    Padding = ReportPadding["Top:5mm;Bottom:5mm;Left:5mm;Right:5mm"]
+    Expand = True
+    Spacing = "1cm"
+    { ReportPanel1 ReportPanel
+      #MoveScaled(12,6,15,16)
+      Width = "6cm"
+      Height = "6cm"
+      Background = ReportBrush["#FFFFFF"]
+      OnePiece = True
+    }
+  }
+  Index = 0
+}

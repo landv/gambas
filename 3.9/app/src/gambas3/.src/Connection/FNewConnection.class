@@ -1,0 +1,398 @@
+' Gambas class file
+
+Private $sPath As String
+Private $bAskPassword As Boolean
+Private $hConn As New Connection
+
+Public Sub Run(Optional sPath As String, Optional bAskPassword As Boolean) As Boolean
+
+  $sPath = sPath
+  $bAskPassword = bAskPassword
+  Return Not Me.ShowModal() 
+
+End
+
+Private Sub LoadConnection()
+  
+  Dim hConfig As Settings
+  Dim iInd As Integer  
+  Dim sType As String
+  
+  hConfig = New Settings($sPath, Trim(Mid$(Project.CONNECTION_MAGIC, 2)))
+  
+  sType = LCase(hConfig["Connection/Type"])
+
+  txtHost.Text = hConfig["Connection/Host"] 
+  txtPort.Text = hConfig["Connection/Port"] 
+  txtUser.Text = hConfig["Connection/User"] 
+  txtPath.Text = hConfig["Connection/Path"] 
+  chkRememberPassword.Value = If(hConfig["Connection/RememberPassword"], 1, 0)
+  chkIgnoreCharset.Value = If(hConfig["Connection/IgnoreCharset"], 1, 0)
+  chkDisplayMetadata.Value = If(hConfig["Connection/DisplayMetadata"], 1, 0)
+  chkRememberTemplate.Value = If(hConfig["Connection/RememberTemplate"], 1, 0)
+
+  For iInd = 0 To cmbType.Count - 1
+    If LCase(cmbType[iInd].Text) = sType Then
+      cmbType.Index = iInd
+      Break
+    Endif
+  Next
+
+  If MConnection.NeedPassword(sType) Then
+    txtPassword.Text = MConnection.LoadPassword(txtName.Text, chkRememberPassword.Value)
+  Endif
+  txtDatabase.Text = hConfig["Connection/Database"] 
+  
+End
+
+Private Sub FillConfig(hConfig As Object)
+  
+  hConfig["Connection/Type"] = LCase(cmbType.Text)
+  hConfig["Connection/Host"] = txtHost.Text
+  hConfig["Connection/Port"] = txtPort.Text
+  hConfig["Connection/User"] = txtUser.Text
+  hConfig["Connection/Path"] = txtPath.Text
+  hConfig["Connection/RememberPassword"] = CBool(chkRememberPassword.Value)
+  hConfig["Connection/IgnoreCharset"] = CBool(chkIgnoreCharset.Value)
+  hConfig["Connection/DisplayMetadata"] = CBool(chkDisplayMetadata.Value)
+  hConfig["Connection/RememberTemplate"] = CBool(chkRememberTemplate.Value)
+  hConfig["Connection/Database"] = txtDatabase.Text
+  
+End
+
+
+Private Sub UpdateConnection() As Boolean
+  
+  Dim sMsg As String
+  Dim sName As String
+  Dim sDir As String
+  Dim sPath As String
+  Dim hConfig As Settings
+  Dim bCreate As Boolean
+  Dim hEditor As FConnectionEditor
+
+  sName = txtName.Text & ".connection"
+  sDir = Project.Dir &/ ".connection"
+  sPath = sDir &/ sName
+
+  If Not Exist(sPath) Then 
+    bCreate = True
+    sMsg = Project.CheckFileName(sName, sDir)
+    If sMsg Then 
+      txtName.SetFocus
+      Balloon.Warning(sMsg, txtName)
+      Return True
+    Endif
+    If Not Exist(sDir) Then Project.InsertDirectory(sDir)
+  Endif
+
+  If Not Trim(txtDatabase.Text) Then
+    Balloon.Warning(("Please enter the name of the database."), txtDatabase)
+    txtDatabase.SetFocus
+    Return True
+  Endif
+
+  hConfig = New Settings(sPath, Trim(Mid$(Project.CONNECTION_MAGIC, 2)))
+  FillConfig(hConfig)
+  hConfig.Save
+  
+  If MConnection.NeedPassword(cmbType.Text) Then
+    MConnection.SavePassword(txtName.Text, txtPassword.Text, chkRememberPassword.Value)
+  Endif
+  
+  If bCreate Then 
+    Project.InsertFile(sName, sDir)
+  Else
+    Try hEditor = Project.Files[sPath]
+    If hEditor Then hEditor.Reload
+  Endif
+  
+End
+
+
+Public Sub btnOK_Click()
+
+  If UpdateConnection() Then Return
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub Form_Open()
+
+  If $sPath Then
+    If $bAskPassword Then
+      Me.Title = ("Please enter password")
+    Else
+      Me.Title = ("Connection properties")
+    Endif
+    'Me.Icon = Picture["icon:/small/info"]
+    txtName.Text = File.BaseName($sPath)
+    txtName.ReadOnly = True
+    LoadConnection
+    If $bAskPassword Then
+      txtPassword.SetFocus
+    Else
+      cmbType.SetFocus
+    Endif
+  Else
+    Me.Title = ("New connection")
+    'Me.Icon = Picture["icon:/small/new"]
+    txtName.Text = Project.GetNewName("Connection", Project.Dir &/ ".connection")
+    txtName.SetFocus
+  Endif
+
+End
+
+Private Sub ResetDatabase()
+  
+  panChooseDatabase.Hide
+  $hConn.Close
+  txtDatabase.Text = ""
+  
+End
+
+Public Sub txtPath_Click()
+
+  Dialog.Path = txtPath.Text
+  Dialog.Title = ("Select a directory")
+  If Dialog.SelectDirectory() Then Return
+  txtPath.Text = Dialog.Path
+  ResetDatabase
+
+End
+
+Public Sub cmbType_Click()
+
+  Select LCase(cmbType.Text)
+
+    Case "sqlite" 
+      panPath.Show
+      panHost.Hide
+      panLogin.Hide
+      txtPath.SetFocus
+      chkRememberPassword.Value = 0
+      txtUser.Text = ""
+      txtPassword.Text = ""
+      panDatabase.Show
+      
+    Case "template"
+      panPath.Hide
+      panHost.Hide
+      panDatabase.Hide
+      panLogin.Hide
+      
+    Default
+      panPath.Hide
+      panHost.Show
+      panLogin.Show
+      txtHost.SetFocus
+      panDatabase.Show
+    
+  End Select
+    
+  ResetDatabase
+
+End
+
+Private Sub UpdateCreateDatabase()
+  
+  Dim sDatabase As String
+  
+  If Not $hConn.Opened Then Return
+  
+  sDatabase = Trim(txtDatabase.Text)
+  If sDatabase Then
+  
+    If Not $hConn.Databases.Exist(sDatabase) Then
+      
+      btnCreateDatabase.Text = ("Create database")
+      
+      btnCreateDatabase.Show
+      btnDeleteDatabase.Hide
+      
+      cmbCreateFrom.List = MConnection.GetTemplates()
+      panCreateFrom.Visible = cmbCreateFrom.Count
+      chkCreateFrom.Value = False
+      cmbCreateFrom.Enabled = False
+      
+    Else
+      
+      btnDeleteDatabase.Text = ("Delete database")
+      
+      btnCreateDatabase.Hide
+      panCreateFrom.Hide
+      btnDeleteDatabase.Show
+    
+    Endif
+    
+    panDatabaseAction.Show
+  
+  Else
+  
+    panDatabaseAction.Hide
+  
+  Endif
+  
+  Try lvwDatabase[sDatabase].Selected = True
+  Try lvwDatabase.Current.EnsureVisible
+  'If Error Then Try lvwDatabase.Current.Selected = False
+  
+End
+
+Private Sub FillDatabaseList()
+  
+  Dim aName As New String[]
+  Dim hDatabase As Database
+  Dim sName As String
+  
+  For Each hDatabase In $hConn.Databases
+    aName.Add(hDatabase.Name)
+  Next
+  aName.Sort(gb.Language + gb.Natural)
+
+  lvwDatabase.Clear
+  For Each sName In aName
+    lvwDatabase.Add(sName, sName, Picture["img/16/database.png"]).Selected = sName = Trim(txtDatabase.Text)
+  Next
+  Try lvwDatabase[Trim(txtDatabase.Text)].Selected = True
+  UpdateCreateDatabase
+  
+End
+
+
+Public Sub txtDatabase_Click()
+
+  Dim hConfig As New Collection
+
+  If Not panChooseDatabase.Visible Then
+  
+    Inc Application.Busy
+    lvwDatabase.Clear
+    FillConfig(hConfig)
+    MConnection.InitFrom($hConn, hConfig, txtName.Text,, txtPassword.Text)
+    $hConn.Open
+    FillDatabaseList
+    panChooseDatabase.Show
+    
+    Dec Application.Busy
+  
+  Else
+  
+    panChooseDatabase.Hide
+    $hConn.Close
+  
+  Endif
+
+Catch
+
+  Application.Busy = 0
+  Balloon.Error(Error.Text, txtDatabase)
+
+End
+
+Public Sub lvwDatabase_Select()
+
+  txtDatabase.Text = lvwDatabase.Current.Text
+
+End
+
+Public Sub txtHost_Change()
+
+  ResetDatabase
+
+End
+
+Public Sub txtPort_Change()
+
+  ResetDatabase
+
+End
+
+Public Sub txtUser_Change()
+
+  ResetDatabase
+
+End
+
+Public Sub txtPassword_Change()
+
+  ResetDatabase
+
+End
+
+Public Sub lvwDatabase_Activate()
+
+  panChooseDatabase.Hide
+
+End
+
+Public Sub Form_Close()
+
+  Try $hConn.Close
+
+End
+
+Public Sub txtDatabase_Change()
+
+  UpdateCreateDatabase
+
+End
+
+Public Sub btnCreateDatabase_Click()
+
+  Dim hConn As Connection
+  Dim sName As String
+  
+  Inc Application.Busy
+  sName = Trim(txtDatabase.Text)
+  $hConn.Databases.Add(sName)
+  FillDatabaseList
+  If chkCreateFrom.Value Then
+    hConn = $hConn.Copy()
+    hConn.Name = sName
+    hConn.Open
+    hConn.ApplyTemplate(File.Load(Project.Dir &/ ".connection" &/ cmbCreateFrom.Text & ".template"))
+    hConn.Close
+  Endif
+  Dec Application.Busy
+  
+Catch
+
+  Application.Busy = 0
+  Balloon.Error(("Unable to create database.") & "\n\n" & Error.Text, btnCreateDatabase)
+  txtDatabase.SetFocus
+
+End
+
+Public Sub btnDeleteDatabase_Click()
+
+  Dim sDatabase As String = lvwDatabase.Current.Text
+
+  If Message.Warning(Subst(("Do you really want to delete the database '&1'?"), sDatabase), ("Delete"), ("Cancel")) = 2 Then Return
+  
+  Inc Application.Busy
+  $hConn.Databases.Remove(sDatabase)
+  txtDatabase.Clear
+  FillDatabaseList
+  Dec Application.Busy
+  
+Catch
+
+  Application.Busy = 0
+  Balloon.Error(("Unable to delete database.") & "\n\n" & Error.Text, btnDeleteDatabase)
+  txtDatabase.SetFocus
+
+End
+
+Public Sub chkCreateFrom_Click()
+
+  cmbCreateFrom.Enabled = chkCreateFrom.Value
+
+End

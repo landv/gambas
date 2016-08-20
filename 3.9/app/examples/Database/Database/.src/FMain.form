@@ -1,0 +1,117 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(43.5714,25,63,79)
+  Text = ("Database example")
+  Icon = Picture["database.png"]
+  Resizable = False
+  { Frame1 Frame
+    MoveScaled(1,1,61,40)
+    Text = ("Connection")
+    { Label5 Label
+      MoveScaled(2,19,14,4)
+      Text = ("Database")
+    }
+    { Label1 Label
+      MoveScaled(2,4,15,4)
+      Text = ("Type")
+    }
+    { Label2 Label
+      MoveScaled(2,9,15,4)
+      Text = ("Host")
+    }
+    { Label3 Label
+      MoveScaled(2,24,14,4)
+      Text = ("User")
+    }
+    { Label4 Label
+      MoveScaled(2,29,14,4)
+      Text = ("Password")
+    }
+    { btnConnect Button
+      MoveScaled(46,4,13,4)
+      Text = ("Connect")
+    }
+    { cmbType ComboBox
+      MoveScaled(18,4,24,4)
+      List = [("postgresql"), ("mysql"), ("sqlite3"), ("odbc")]
+      Text = (" ")
+    }
+    { txtHost TextBox
+      MoveScaled(18,9,24,4)
+    }
+    { txtName TextBox
+      MoveScaled(18,19,24,4)
+      Text = ("test")
+    }
+    { txtUser TextBox
+      MoveScaled(18,24,24,4)
+      MaxLength = 16
+    }
+    { txtPassword TextBox
+      MoveScaled(18,29,24,4)
+      Password = True
+    }
+    { chkCreate CheckBox
+      MoveScaled(2,34,56,4)
+      Text = ("Create database if it does not exist")
+    }
+    { chkDebug CheckBox
+      MoveScaled(46,9,13,4)
+      Text = ("Debug")
+    }
+    { Label7 Label
+      MoveScaled(2,14,15,4)
+      Text = ("Port")
+    }
+    { txtPort TextBox
+      MoveScaled(18,14,24,4)
+    }
+  }
+  { frmDatabase Frame
+    MoveScaled(1,42,61,15)
+    Enabled = False
+    Text = ("Tables 'test' && 'color'")
+    { btnCreate Button
+      MoveScaled(2,4,12,4)
+      Text = ("Create")
+    }
+    { btnDelete Button
+      MoveScaled(2,9,12,4)
+      Text = ("Delete")
+    }
+    { btnFill Button
+      MoveScaled(18,4,16,4)
+      Text = ("&Fill with")
+    }
+    { txtCount SpinBox
+      MoveScaled(18,9,11,4)
+      MinValue = 10
+      MaxValue = 100000
+      Step = 1000
+      Value = 10000
+    }
+    { btnTest Button
+      MoveScaled(41,4,18,9)
+      Text = ("Bound controls\nexample...")
+    }
+    { Label6 Label
+      MoveScaled(30,9,10,4)
+      Text = ("Records")
+    }
+  }
+  { frmRequest Frame
+    MoveScaled(1,58,61,20)
+    Enabled = False
+    Text = ("SQL request")
+    { btnRun Button
+      MoveScaled(49,4,11,4)
+      Text = ("Run...")
+      Default = True
+    }
+    { txtRequest TextArea
+      MoveScaled(2,4,46,15)
+      Wrap = True
+    }
+  }
+}

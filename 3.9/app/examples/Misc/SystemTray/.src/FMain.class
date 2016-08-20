@@ -1,0 +1,64 @@
+' Gambas class file
+
+'Private $hImage As Image
+
+Public Sub _new()
+
+  'Me.Background = &H007FFF 'Color.SetAlpha(&H007FFF, 192)
+
+End
+
+Public Sub Form_Open()
+
+  X11Systray.Show(dwgSystemTray.Handle)
+  
+End
+
+Static Public Sub X11Systray_Arrange()
+
+  FMain.ArrangeTray
+  
+End
+
+Public Sub ArrangeTray()
+
+  Dim I As Integer
+  Dim X, Y, H As Integer
+  
+  Debug
+  X = 2
+  Y = 2
+  For I = 0 To X11Systray.Count - 1
+    With X11Systray[I]
+      Debug I;; .IconW;; .IconH
+      If (X + .IconW) >= (Me.ClientW - 2) Then
+        X = 2
+        Y += H + 2
+        H = 0
+      Endif
+      .Move(X, Y, .IconW, .IconH)
+      H = Max(H, .IconH)
+      X += .IconW + 2
+    End With
+  Next
+  
+End
+
+' Public Sub DrawingArea1_Draw()
+' 
+'   Paint.DrawImage($hImage, 0, 0)
+' 
+' End
+
+Public Sub Form_Resize()
+  
+  ' Dim DH As Integer
+  ' 
+  ' Paint.Begin(draSystemTray)
+  ' DH = 1 + draSystemTray.H / $hImage.H
+  ' Paint.DrawImage($hImage, 0, - DH, draSystemTray.W, draSystemTray.H + DH * 2)
+  ' Paint.End
+  ArrangeTray
+
+End
+

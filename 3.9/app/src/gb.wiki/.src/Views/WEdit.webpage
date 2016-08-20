@@ -1,0 +1,27 @@
+<<WHeader>>
+
+<%
+If Actions.Image Then
+%>
+<form action="<%=Path.Path%>" method="post" name="edit" enctype="multipart/form-data" >
+<p/><input type="text" name="sTitle" size="64" maxlength="64" value="<%=Pages.Current.Title%>"></input>&nbsp;&nbsp;
+
+<input type="submit" name="command" accesskey="S" value="<%=("Save")%>"></input>&nbsp;&nbsp;
+<input type="submit" name="command" value="<%=("Delete")%>"></input>
+
+<p/><input type="file" name="sData" size="64"></input>
+</form>
+<%
+Else
+%>
+<form action="<%=Path.Path%>" method="post" name="edit">
+<p/><input type="text" name="sTitle" size="64" maxlength="64" value="<%=Pages.Current.Title%>" ></input>&nbsp;&nbsp;
+<input type="submit" name="command" accesskey="S" value="<%=("Save")%>"></input>&nbsp;&nbsp;
+<input type="submit" name="command" value="<%=("Delete")%>"></input>
+<p/><textarea style="width:100%" rows="40" name="sDesc"><%=Pages.Current.Content%></textarea>
+</form>
+<%
+Endif
+%>
+
+<</WHeader>>

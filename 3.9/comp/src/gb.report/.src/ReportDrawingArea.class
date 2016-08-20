@@ -1,0 +1,63 @@
+' Gambas class file
+
+Export
+Inherits ReportFrame
+Public Const _Properties As String = "*,Cached"
+Public Const _Similar As String = "ReportImage"
+Public Const _DefaultEvent As String = "Draw"
+
+Property Cached As Boolean
+
+Private $bCached As Boolean
+Private $iOldResolution As Integer
+
+Event Layout(Width As Integer, Height As Integer, Index As Integer)
+Event Draw(Width As Integer, Height As Integer, Index As Integer)
+
+Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, DataIndex As Integer)
+  
+  Dim hRect As Rect
+  Dim iX, iY, iW, iH As Integer
+  Dim hImg As Image
+
+  iX = (x + hControl.RealLeft + ReportUnits._ReportUnitsToPixels(Me.Padding._Left + Me.Border._Left))
+  iY = (y + hControl.RealTop + ReportUnits._ReportUnitsToPixels(Me.Padding._Top + Me.Border._Top))
+  iW = (hControl.RealWidth - ReportUnits._ReportUnitsToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
+  iH = (hControl.RealHeight - ReportUnits._ReportUnitsToPixels(Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom))
+  Paint.Save
+
+  
+  If $bCached Then 
+    If $iOldResolution <> Paint.ResolutionX Or If hControl.Cache = Null Then
+      $iOldResolution = Paint.ResolutionX
+      hImg = New Image(iW, iH, Color.Transparent)
+      Paint.Begin(hImg)
+      Raise Draw(iW, iH, DataIndex)
+      Paint.End 
+      hControl.Cache = himg
+    Else
+      If hControl.cache = Null Then Stop
+      hImg = hControl.Cache
+    Endif
+    Draw.Image(hImg, iX, iy)
+  Else
+    
+    Paint.Translate(iX, iY)
+    Raise Draw(iW, iH, DataIndex)
+    Paint.Translate(- iX, - iY)
+  Endif
+  Paint.Restore
+  
+End
+
+Private Function Cached_Read() As Boolean
+  
+  Return $bCached
+  
+End
+
+Private Sub Cached_Write(Value As Boolean)
+  
+  $bCached = Value
+  
+End

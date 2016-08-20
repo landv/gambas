@@ -1,0 +1,142 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,71,97)
+  Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
+  Spacing = "2cm"
+  Count = 3
+  Index = 0
+  Text = ("First Page")
+  { ReportVBox2 ReportVBox
+    #MoveScaled(2,3,51,11)
+    Expand = True
+  }
+  { ReportLabel9 ReportLabel
+    #MoveScaled(4,16,48,13)
+    Font = Font["Bitstream Charter,Bold,+9"]
+    Padding = ReportPadding["Top:6mm;Bottom:6mm;Left:6mm;Right:6mm"]
+    AutoResize = True
+    Border = ReportBorder["Top:2mm LinearGradient(0,0,1,1,[#00FF00,#FFFFFF,#FF0000],[0,1,0.59]);Bottom:2mm LinearGradient(0,0,1,1,[#00FF00,#FFFFFF,#FF0000],[0,1,0.59]);Left:2mm LinearGradient(0,0,1,1,[#00FF00,#FFFFFF,#FF0000],[0,1,0.59]);Right:2mm LinearGradient(0,0,1,1,[#00FF00,#FFFFFF,#FF0000],[0,1,0.59]);TopLeftCorner:8mm;TopRightCorner:8mm;BottomRightCorner:8mm;BottomLeftCorner:8mm"]
+    Text = ("Report About")
+    Alignment = Align.Center
+  }
+  { ReportLabel10 ReportLabel
+    #MoveScaled(6,35,43,7)
+    Font = Font["Bitstream Charter,+9"]
+    AutoResize = True
+    Border = ReportBorder["Top:4mm #FFAF5F;Bottom:4mm #FFAF5F;Left:4mm #FFAF5F;Right:4mm #FFAF5F;TopLeftCorner:4mm;TopRightCorner:4mm;BottomRightCorner:4mm;BottomLeftCorner:4mm"]
+    Text = ("All my friends")
+    Alignment = Align.Center
+  }
+  { ReportVBox3 ReportVBox
+    #MoveScaled(2,47,52,11)
+    Expand = True
+    Border = ReportBorder["Top:2px #000000;Bottom:2px #000000;Left:2px #000000;Right:2px #000000"]
+  }
+  Index = 1
+  Text = ("Friend Table")
+  { ReportLabel11 ReportLabel
+    #MoveScaled(5,3,57,2)
+    Height = "15mm"
+    Brush = ReportBrush["#BFBFBF"]
+    Fixed = True
+    Text = ("Report about all my frends")
+    Alignment = Align.TopRight
+  }
+  { ReportLabel2 ReportLabel
+    #MoveScaled(5,6,45,5)
+    Height = "3cm"
+    Font = Font["Bitstream Charter,+7"]
+    Text = ("Test Database")
+    Alignment = Align.Center
+  }
+  { ReportVBox1 ReportVBox
+    #MoveScaled(5,13,45,38)
+    Expand = True
+    AutoResize = True
+    Tag = "Boite 1"
+    { ReportVBox4 ReportVBox
+      #MoveScaled(3,12,41,24)
+      AutoResize = True
+      Tag = "Boite 2"
+      { ReportHBox2 ReportHBox
+        #MoveScaled(0,0,37.7143,5.1429)
+        Height = "15mm"
+        Fixed = True
+        AutoResize = True
+        { ReportLabel3 ReportLabel
+          #MoveScaled(1,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "10mm"
+          Font = Font["Bitstream Charter,Bold,16"]
+          AutoResize = True
+          Text = ("Name")
+          Alignment = Align.Center
+        }
+        { ReportLabel4 ReportLabel
+          #MoveScaled(12,1,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "10mm"
+          Font = Font["Bitstream Charter,Bold,16"]
+          Padding = ReportPadding["0.2 mm"]
+          AutoResize = True
+          Text = ("FirstName")
+          Alignment = Align.Center
+        }
+        { ReportLabel5 ReportLabel
+          #MoveScaled(24.8571,0.8571,10.2857,3.4286)
+          Width = "5 cm"
+          Height = "10mm"
+          Font = Font["Bitstream Charter,Bold,16"]
+          Padding = ReportPadding["0.2 mm"]
+          Expand = True
+          AutoResize = True
+          Text = ("Birth")
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox1 ReportHBox
+        #MoveScaled(1,8,38,4)
+        Height = "10mm"
+        Tag = "Boite 3"
+        { ReportLabel1 ReportLabel
+          #MoveScaled(0,0,10.2857,3.4286)
+          Width = "5 cm"
+          Font = Font["12"]
+          Padding = ReportPadding["0.2 mm"]
+          Alignment = Align.Center
+          UseField = True
+        }
+        { ReportLabel6 ReportLabel
+          #MoveScaled(11,0,10.2857,3.4286)
+          Width = "5 cm"
+          Font = Font["12"]
+          Padding = ReportPadding["0.2 mm"]
+          Alignment = Align.Center
+        }
+        { ReportLabel7 ReportLabel
+          #MoveScaled(24,0,10.2857,3.4286)
+          Width = "5 cm"
+          Font = Font["12"]
+          Padding = ReportPadding["2.2mm"]
+          Expand = True
+          Format = "dd/mm/aaaa"
+          Alignment = Align.Right
+        }
+      }
+    }
+  }
+  { ReportLabel8 ReportLabel
+    #MoveScaled(2,51,46,3)
+    Height = "6mm"
+    Fixed = True
+    Padding = ReportPadding["2mm"]
+    AutoResize = True
+    Text = ("$PAGE/$NPAGE")
+    Alignment = Align.Right
+    UseField = True
+  }
+  Index = 2
+  Text = ("")
+  Index = 0
+}

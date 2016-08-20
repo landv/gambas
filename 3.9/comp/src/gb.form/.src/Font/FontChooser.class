@@ -1,0 +1,153 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+
+Event Change
+Event Activate
+
+Public Const _Properties As String = "*,Border=True,FixedOnly,ShowStyle=True,ShowPreview=True,ShowRelative=True"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "36,36"
+Public Const _Group As String = "Chooser"
+
+Property SelectedFont As String
+Property Value As String
+Property FixedOnly As Boolean
+Property ShowStyle As Boolean
+Property ShowPreview As Boolean
+Property ShowLabel As Boolean '' Deprecated
+Property ShowRelative As Boolean
+Property Border As Boolean
+
+Private frmChooser As FFontChooser
+
+Public Sub _new()
+
+  frmChooser = New FFontChooser(Me)
+  'Object.Attach(frmChooser, ME, "frmChooser")
+
+End
+
+Public Sub _Change()
+
+  Raise Change
+
+End
+
+' PUBLIC SUB frmChooser_Open()
+' 
+'   frmChooser.Form_Open
+' 
+' END
+' 
+' PUBLIC SUB frmChooser_Resize()
+' 
+'   frmChooser.Form_Resize
+' 
+' END
+
+
+Private Function SelectedFont_Read() As String
+
+  Return frmChooser.GetFont()
+
+End
+
+Private Sub SelectedFont_Write(sFont As String)
+
+  frmChooser.SetFont(sFont)
+
+End
+
+Public Sub _Activate()
+
+  Raise Activate
+
+End
+
+
+Private Function FixedOnly_Read() As Boolean
+
+  Return frmChooser.ShowFixed
+
+End
+
+Private Sub FixedOnly_Write(bFixedOnly As Boolean)
+
+  frmChooser.ShowFixed = bFixedOnly
+  frmChooser.RefreshFamily
+
+End
+
+Private Function ShowStyle_Read() As Boolean
+
+  Return frmChooser.StylePanel.Visible
+
+End
+
+Private Sub ShowStyle_Write(Value As Boolean)
+
+  frmChooser.StylePanel.Visible = Value
+
+End
+
+Private Function Value_Read() As String
+
+  Return frmChooser.GetFont()  
+
+End
+
+Private Sub Value_Write(Value As String)
+
+  frmChooser.SetFont(Value)
+
+End
+
+Private Function ShowPreview_Read() As Boolean
+
+  Return frmChooser.Preview.Visible
+
+End
+
+Private Sub ShowPreview_Write(Value As Boolean)
+
+  frmChooser.Preview.Visible = Value
+
+End
+
+Private Function ShowLabel_Read() As Boolean
+
+  Return frmChooser.IsShowLabel()  
+
+End
+
+Private Sub ShowLabel_Write(Value As Boolean)
+
+  frmChooser.SetShowLabel(Value)
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return frmChooser.HasBorder()
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  frmChooser.SetBorder(Value)
+
+End
+
+Private Function ShowRelative_Read() As Boolean
+
+  Return frmChooser.GetShowRelative()
+
+End
+
+Private Sub ShowRelative_Write(Value As Boolean)
+
+  frmChooser.SetShowRelative(Value)
+
+End

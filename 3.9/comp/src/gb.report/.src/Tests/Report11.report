@@ -1,0 +1,29 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,64,64)
+  Padding = ReportPadding["Top:3cm;Bottom:3cm;Left:3cm;Right:3cm"]
+  Spacing = "2cm"
+  Index = 0
+  Text = ("")
+  { ReportLabel1 ReportLabel
+    #MoveScaled(7,1,54,8)
+    Font = Font["Bold,+12"]
+    AutoResize = True
+    Text = ("C'est la maison !")
+    Alignment = Align.Center
+  }
+  { ReportPanel1 ReportPanel
+    #MoveScaled(6,12,53,31)
+    Padding = ReportPadding["Top:1cm;Bottom:1cm;Left:1cm;Right:1cm"]
+    AutoResize = True
+    { ReportDrawingArea1 ReportDrawingArea
+      #MoveScaled(5,6,52,30)
+      Width = "7mm"
+      Height = "6cm"
+      Border = ReportBorder["Top:2mm #000000;Bottom:2mm #000000;Left:2mm #000000;Right:2mm #000000;TopLeftCorner:1mm;TopRightCorner:1mm;BottomRightCorner:1mm;BottomLeftCorner:1mm"]
+      Cached = True
+    }
+  }
+  Index = 0
+}

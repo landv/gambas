@@ -1,0 +1,45 @@
+' Gambas class file
+Private Chart1 As New Chart
+Private Chart2 As New Chart
+Private Chart3 As New Chart
+
+
+Public Sub Form_Open()
+
+  'Simple Chart
+  Chart1.Headers.Values = ["tic", "tac", "toe"]
+  Chart1[0].Values = [1.0, 2.0, 2.0]
+  
+  Chart2.Headers.Values = ["tic", "tac", "toe"]
+  Chart2[0].Values = [1.0, 2.0, 3.0]
+  Chart2[0].Text = "Serie 1"
+  Chart2.Type = ChartType.Lines
+  Chart2.Legend.Visible = True
+    Chart3.Headers.Values = ["tic", "tac", "toe"]
+  Chart3[0].Values = [1.0, 2.0, 4.0]
+End
+
+Public Sub DrawingArea1_Draw()
+Chart1.Resize(DrawingArea1.Width, DrawingArea1.Height)
+
+Chart1.Draw
+  
+
+End
+
+
+Public Sub DrawingArea2_Draw()
+Chart2.Resize(DrawingArea1.Width, DrawingArea1.Height)
+
+Chart2.Draw
+  
+
+End
+
+Public Sub DrawingArea3_Draw()
+Chart3.Resize(DrawingArea1.Width, DrawingArea1.Height)
+
+Chart3.Draw
+  
+
+End

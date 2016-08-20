@@ -1,0 +1,18 @@
+' Gambas class file
+
+Private hMap As New Map
+Private hImage As Image
+Public Sub Form_Open()
+  hMap.AddTile("gg", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "145"]).SubDomains = ["0", "1", "2"]
+  
+  himage = hMap.Grab(hMap.Bounds, 200, 200, 17)
+
+End
+
+
+Public Sub DrawingArea1_Draw()
+
+  
+  Draw.Image(himage, 0, 0)
+
+End

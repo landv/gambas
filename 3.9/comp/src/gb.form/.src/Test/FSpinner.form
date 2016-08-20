@@ -1,0 +1,17 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,64)
+  Background = &HFFFFFF&
+  Arrangement = Arrange.Fill
+  { Spinner1 Spinner
+    MoveScaled(17,19,18.2857,18.2857)
+    Border = Border.Plain
+    Label = True
+  }
+  { Timer1 #Timer
+    #MoveScaled(46,8)
+    Enabled = True
+    Delay = 70
+  }
+}

@@ -1,0 +1,32 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,Text"
+Public Const _DrawWith As String = "TextLabel"
+'Public Const _DrawWith As String = "Button"
+
+Property Html, Text As String
+
+Private $sHTML As String
+
+
+Private Function Html_Read() As String
+
+  Return $sHTML
+
+End
+
+Private Sub Html_Write(Value As String)
+
+  $sHTML = Value
+  Me._SetProperty("Text", Value)
+
+End
+
+Public Sub _Render()
+  
+  Print $sHTML;
+  
+End

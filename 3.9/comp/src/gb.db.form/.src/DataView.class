@@ -1,0 +1,1265 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+
+Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Editable,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns{Field[]},Labels,Border=True,Sorted=True"
+Public Const _DrawWith As String = "GridView"
+Public Const _Group As String = "Data"
+
+Event Activate
+Event Data(Row As Integer, Column As Integer, Value As Variant)
+
+Property Mode As Integer 
+Property Header As Integer
+Property Grid As Boolean
+Property Highlight As Boolean
+Property Border As Boolean
+Property Editable As Boolean
+Property Sorted As Boolean
+
+Property Columns As String[]
+Property Labels As String[]
+Property Current As Variant[]
+Property Read Count As Integer
+Property Read Index As Integer
+Property Read View As TableView
+Property Font As Font
+Property Background As Integer
+Property Read Data As _GridView_Data
+
+'Property Read Column As _DataView_Columns
+
+Private Const NEW_RECORD As String = "*"
+Private Const MAX_LENGTH As Integer = 65536
+
+'PRIVATE $hConn AS Connection
+Private $hCtrl As TableView
+'PRIVATE $sTable AS String
+'PRIVATE $sFilter AS String
+Private $hTable As DataTable
+Private $bAllColumns As Boolean
+Private $aColumns As String[]
+Private $aLabels As String[]
+Private $aType As DataField[]
+Private $aColumnsIndex As Integer[]
+
+Private $bCreate As Boolean = True
+Private $iMode As Integer
+
+'Private $bRefreshColumn As Boolean
+Private $iNoActivate As Integer
+Private $iHighlight As Integer
+Private $bHighlight As Boolean
+
+Private $hObserver As Observer
+Private $iLastSize As Integer
+'Private $hTimer As Timer
+Private $hCreateTimer As Timer
+
+Private $bAdjust As Boolean
+Private $iLastRow As Integer = -1
+
+Private $sCharset As String
+
+Private $hTextArea As TextArea
+Private $hComboBox As MenuButton
+Private $hButtonBox As ButtonBox
+
+Private $bEditable As Boolean
+Private $aNewRecord As Variant[]
+Private $bNewRecordModified As Boolean
+Private $iRowNewRecord As Integer = -1
+
+Private $iNoRefresh As Integer
+
+Public Sub _new()
+  
+  $hCtrl = New TableView(Me) As "TableView"
+  Me.Proxy = $hCtrl
+  
+  '$hColumns = New _DataView_Columns As "Columns"
+  
+  '$hTimer = New Timer As "TableView"
+  $hCreateTimer = New Timer As "CreateTimer"
+  $hCtrl.Header = TableView.Both
+  $hCtrl.Grid = False
+  $hCtrl.Sorted = True
+  $hCtrl.Columns.Sort = -1
+  $bAllColumns = True
+  Update
+  Create()
+  
+  $bHighlight = True
+  UpdateHighlightColor
+  
+End
+
+' Public Sub _attach(Parent As Object, EventName As String)
+'   
+'   If Not EventName Then
+'     $bFormat = False
+'   Else
+'     $bFormat = Object.CanRaise(Me, "Format")
+'   Endif
+'   Debug $bFormat
+'   
+' End
+
+
+Private Sub UpdateHighlightColor()
+  
+  $iHighlight = Me.Background
+  If $iHighlight = Color.Default Then $iHighlight = Color.TextBackground
+  $iHighlight = Color.Merge(Color.LightForeground, $iHighlight, 0.9)
+  $hCtrl.Refresh
+  
+End
+
+
+' Private Sub GetDefaultRowHeight() As Integer
+' 
+'   Return $hCtrl.Rows.Height
+' 
+' End
+
+
+Private Sub GetSource() As DataSource
+  
+  Dim hSrc As DataSource
+  
+  hSrc = Common.GetSource(Me)
+  If Not hSrc Then Return
+  If hSrc._Check() Then Return
+  Return hSrc
+  
+End
+
+Private Sub RefreshLabels()
+
+  Dim hSrc As DataSource
+  Dim iInd As Integer
+
+  hSrc = GetSource()
+  If Not hSrc Then Return
+  If Not $hTable Then Return
+
+  For iInd = 0 To $aColumns.Max
+    With $hTable.GetFieldInfo($aColumns[iInd])
+      Try $hCtrl.Columns[iInd].Text = $aLabels[iInd]
+      If Error Then $hCtrl.Columns[iInd].Text = .Name
+      $hCtrl.Columns[iInd].Width = .GetWidth($hCtrl, True)
+    End With
+  Next
+
+End
+
+Private Sub RefreshColumns()
+  
+  Dim iInd As Integer
+  Dim sTable As String
+  Dim aFields As String[]
+  Dim hSrc As DataSource
+  
+  hSrc = GetSource()
+  If Not hSrc Then Return
+  If Not $hTable Then Return
+  
+  sTable = $hTable.Name
+  
+  aFields = $hTable.GetFields()
+  
+  If $bAllColumns Then $aColumns = aFields
+
+  $aColumnsIndex = New Integer[$aColumns.Count]
+  $aType = New DataField[$aColumns.Count]
+  For iInd = 0 To $aColumns.Max
+    $aColumnsIndex[iInd] = aFields.Find($aColumns[iInd])
+    $aType[iInd] = $hTable.GetFieldInfo($aColumns[iInd])
+  Next
+  
+  'Object.Lock($hCtrl)
+  Inc $iNoActivate 
+  $hCtrl.Columns.Count = $aColumns.Count
+  RefreshLabels
+  '$hCtrl.AutoResize = False
+  '$hCtrl.AutoResize = True
+  Dec $iNoActivate
+  'Object.Unlock($hCtrl)
+  
+End
+
+Private Sub UpdateObserver()
+  
+  If Not $bAdjust Then Return
+  $hObserver = New Observer($hTable) As "Table"
+  
+End
+
+
+Private Sub Load()
+  
+  Dim hSrc As DataSource
+  Dim hTable As DataTable
+  Dim bReset As Boolean
+  
+  hSrc = GetSource()
+  If Not hSrc Then Return
+  
+  If hSrc._GetDB().IgnoreCharset
+    $sCharset = ""
+  Else
+    $sCharset = hSrc._GetDB().Charset
+  Endif
+  
+  If CanEdit() Then $hCtrl.Cancel
+    
+  'If hSrc Then
+    hTable = hSrc._GetTable()
+    If hTable <> $hTable Then
+      $hTable = hTable
+      bReset = True
+      UpdateObserver
+      $hCtrl.Rows.Count = 0
+      $hCtrl.Columns.Count = 0
+      If $hTable Then RefreshColumns
+    Endif
+  'Endif
+
+  If Not $hTable Then Return
+  
+  Inc $iNoRefresh 
+  'Object.Lock($hCtrl)
+  Inc $iNoActivate
+  $hCtrl.Clear
+  $hCtrl.Rows.Count = $hTable.Count
+  $iRowNewRecord = -1
+  '$hCtrl.Rows.H = GetDefaultRowHeight()
+  Dec $iNoActivate
+  'Object.Unlock($hCtrl)
+  
+  $hCtrl.Refresh
+
+  If hSrc.Index < 0 Then 
+    SetCreate(True)
+    If bReset Then 
+      Inc $iNoActivate
+      $hCtrl.MoveTo(0, 0)
+      '$hCtrl.Row = -1
+      Dec $iNoActivate
+    Endif
+  Else
+    $hCtrl.Row = hSrc.Index
+    $hCtrl.Rows[$hCtrl.Row].Selected = True
+  Endif
+  
+  'Try $hCtrl.Rows[$iRowNewRecord].Text = "" '$iRowNewRecord + 1
+  If CanEdit() Then
+    CreateNewRecord
+    Inc $iNoActivate
+    If hSrc.Index < 0 Then $hCtrl.Row = $iRowNewRecord
+    Dec $iNoActivate
+  Endif
+
+  Dec $iNoRefresh 
+  $hCtrl.Refresh
+
+  EnsureRowVisible(Max(0, $hCtrl.Row))
+  UpdateCurrentRowHeight
+
+End
+
+
+Public Sub Update()
+  
+  Load
+  
+End
+
+
+Private Function Columns_Read() As String[]
+  
+  Return $aColumns.Copy()
+  
+End
+
+Private Sub Columns_Write(aCol As String[])
+  
+  If Not aCol Then
+    $aColumns = Null
+    $bAllColumns = True
+  Else
+    $aColumns = aCol.Copy()
+    $bAllColumns = $aColumns.Count = 0
+  Endif
+
+  RefreshColumns
+  
+End
+
+' Private Sub IsRowVisible(Row As Integer) As Boolean
+'   
+'   Dim Y As Integer 
+'   Dim H As Integer 
+'   Dim HH As Integer
+'   
+'   Y = $hCtrl.Rows[Row].Y - $hCtrl.ScrollY
+'   H = $hCtrl.Rows[Row].H
+'   HH = $hCtrl.Columns.H
+'   
+'   Return (Y + H) >= 0 And Y < $hCtrl.ClientHeight
+' 
+' Catch
+'   
+' End
+
+Private Sub EnsureRowVisible(Row As Integer)
+  
+  Dim Y As Integer 
+  Dim H As Integer 
+  Dim HH As Integer
+  
+  If Row < 0 Or If Row >= $hCtrl.Rows.Count Then Return
+  
+  Y = $hCtrl.Rows[Row].Y
+  H = $hCtrl.Rows[Row].H
+  HH = $hCtrl.Columns.H
+  
+  If Y < $hCtrl.ScrollY Then
+    $hCtrl.ScrollY = Y
+  Else If (Y > ($hCtrl.ScrollY + $hCtrl.ClientH + HH - H)) Then
+    $hCtrl.ScrollY += Y - ($hCtrl.ClientH + HH - H)
+  Endif
+  
+  '$hCtrl[Row, $hCtrl.Column].EnsureVisible
+  
+End
+
+Public Sub TableView_Scroll()
+  
+  Balloon.Hide($hCtrl)
+  
+End
+
+' Private Sub AdjustRow(iRow As Integer, H As Integer)
+'   
+'   Dim H As Integer
+' 
+'   'If $iLastRow >= 0 Then
+'   '  Try $hCtrl.Rows[$iLastRow].H = GetDefaultRowHeight()
+'   'Endif
+'   If $bEditable Then H += 4
+'   H = Max(Min(256, H), GetDefaultRowHeight())
+'   $hCtrl.Rows[iRow].H = H
+'   
+'   '$iLastRow = iRow
+'   
+' End
+
+
+' Public Sub TableView_Timer()
+'   
+'   Dim iRow As Integer
+'   Dim iHeight As Integer
+'   Dim bVisible As Boolean
+'   
+'   $hTimer.Stop
+' 
+'   Try bVisible = IsRowVisible($hCtrl.Row)
+'   'Debug $hCtrl.Row;; bVisible
+'   
+'   If bVisible Then
+'     $aAdjust.Push($hCtrl.Row)
+'   Endif
+'   
+'   $bAdjust = True
+'   While $aAdjust.Count
+'     iRow = $aAdjust.Pop()
+'     ' TODO: gb.gtk does not auto adjusting row height => the timer is raised again and again!
+'     Try $hCtrl.Rows[iRow].H = -1
+'     If Not Error Then
+'       iHeight = Min(256, $hCtrl.Rows[iRow].H)
+'       $hCtrl.Rows[iRow].H = iHeight
+'     Endif
+'   Wend
+'   
+'   If bVisible Then EnsureRowVisible($hCtrl.Row)
+'   
+'   $bAdjust = False
+'   $bTimer = False
+'   
+' End
+
+Public Sub TableView_Data(Row As Integer, Column As Integer)
+  
+  Dim iIndex As Integer
+  Dim iType As Integer
+  Dim vVal As Variant
+  'Dim hFont As Font
+  
+  If $iNoRefresh Then Return
+  
+  With $hCtrl.Data
+    
+    iIndex = $aColumnsIndex[Column]
+
+    If $bHighlight And If Row And 1 Then .Background = $iHighlight
+    
+    iType = $aType[Column].Type
+    If iType = db.Blob Then
+      .Text = "Blob"
+      .Foreground = Color.LightForeground
+      Return
+    Else If iType = db.Integer Or If iType = db.Float Then
+      .Alignment = Align.Right
+    Endif
+
+    If Row = $iRowNewRecord Then
+      vVal = $aNewRecord[Column]
+    Else
+      vVal = $hTable[Row][iIndex]
+    Endif
+    
+    Select Case iType
+      
+      Case db.String
+        If Not $sCharset Then
+          .Text = Left(vVal, MAX_LENGTH)
+        Else
+          Try .Text = Conv$(Left(vVal, MAX_LENGTH), $sCharset, Desktop.Charset)
+        Endif
+        If $aType[Column].Length = 0 Then .Alignment = Align.TopNormal
+        
+      Case db.Integer, db.Float
+        .Text = Str(vVal)
+        
+      Case Else
+        Try .Text = Left(Str(vVal), MAX_LENGTH)
+        
+    End Select
+    
+  End With
+  
+  If Draw.Device Then Raise Data(Row, Column, vVal)
+    
+  ' If Not $bAdjust Then
+  '   If Not $aAdjust.Exist(Row) Then $aAdjust.Push(Row)
+  '   If Not $bTimer Then 
+  '     $bTimer = True
+  '     $hTimer.Trigger
+  '   Endif
+  ' Endif
+  
+  Return
+  
+  $hCtrl.Data.Text = If(1, ("True"), ("False"))
+  
+Catch
+
+  $hCtrl.Data.Background = Color.HSV(360, 128, 255)
+  $hCtrl.Data.Text = Error.Where & ": " & Error.Text
+  
+End
+
+' PUBLIC SUB GridView_Click()
+' 
+'   GridView_Change
+'     
+' END
+
+Private Sub CanEdit() As Boolean
+  
+  Dim hSrc As DataSource
+  
+  If Not $bEditable Then Return False
+  If Not $hTable Then Return False
+  
+  hSrc = GetSource()
+  If hSrc.ReadOnly Then Return False
+  
+  Return True
+  
+End
+
+' Private Sub InitComboBox()
+'   
+'   Dim hMenu As Menu
+'   
+'   $hComboBox = New MenuButton(Me.Window)
+'   $hComboBox.Ignore = True
+'   $hComboBox.Border = False
+'   $hComboBox.Background = Color.TextBackground
+'   $hComboBox.MenuOnly = True
+'   $hComboBox.Hide
+'   
+'   $hComboBoxMenu = New Menu(Me.Window, True )
+'   $hComboBoxMenu.Name = "mnuComboBox"
+'   
+'   hMenu = New Menu($hComboBoxMenu) As "mnuComboBox"
+'   hMenu.Text = " "
+'   
+'   hMenu = New Menu($hComboBoxMenu) As "mnuComboBox"
+'   hMenu.Text = ("False")
+'   hMenu.Tag = False
+'   
+'   hMenu = New Menu($hComboBoxMenu) As "mnuComboBox"
+'   hMenu.Text = ("True")
+'   hMenu.Tag = True
+'   
+'   $hComboBox.Menu = "mnuComboBox"
+'   
+' End
+
+
+
+Public Sub TableView_Click()
+  
+  Dim hField As DataField
+  
+  If $iNoActivate Then Return
+  If $hCtrl.Rows.Count = 0 Then Return
+  If $hCtrl.Row < 0 Then Return
+  'If Not $bCreate Then Return  
+
+  TableView_Change
+  
+  hField = $aType[$hCtrl.Column]
+  
+  If hField.Type = db.Blob Then
+    
+    If Not InNewRecord() Then
+      If Not $hButtonBox Then
+        $hButtonBox = New ButtonBox(Me.Window) As "ButtonBox"
+        $hButtonBox.Border = False
+        $hButtonBox.ReadOnly = True
+        $hButtonBox.Text = "Blob"
+        $hButtonBox.Foreground = Color.LightForeground
+      Endif
+      '$hBlobEditor.Init($hTable, $hCtrl.Row, $hCtrl.Column, hField.Name, CanEdit())
+      $hCtrl.EditWith($hButtonBox)
+    Endif
+    
+    Return
+    
+  Endif
+  
+  If Not CanEdit() Then Return
+    
+  ' Key fields must not be read-only during creation, except Serial fields
+  If hField.ReadOnly 
+    If Not InNewRecord() Then Return
+    If hField.Serial Then Return
+  Endif
+  
+  Select Case hField.Type
+    Case db.Serial
+      Return
+      
+    Case db.Boolean
+      'If Not $hComboBox Then InitComboBox
+      '$hComboBoxMenu.Children[0].Visible = IsNull(hField.Default)
+      If IsNull(hField.Default) Then
+        $hCtrl.Edit(["", ("False"), ("True")], True)
+      Else
+        $hCtrl.Edit([("False"), ("True")], True)
+      Endif
+      '$hCtrl.EditWith($hComboBox)
+    
+    Case db.String
+      If hField.Length = 0 Then
+        If Not $hTextArea Then 
+          $hTextArea = New TextArea(Me.Window)
+          $hTextArea.Ignore = True
+          $hTextArea.Border = False
+          $hTextArea.Hide
+        Endif
+        $hCtrl.EditWith($hTextArea)
+      Else  
+        $hCtrl.Edit
+      Endif
+    
+    Case Else
+      $hCtrl.Edit
+      
+  End Select
+  
+End 
+
+Private Sub UpdateCurrentRowHeight()
+
+  Dim I, H As Integer
+  
+  If $hCtrl.Row < 0 Then Return
+  
+  If $bEditable Then
+    For I = 0 To $hCtrl.Columns.Count - 1
+      H = Max(H, $hCtrl.Font.TextHeight($hCtrl[$hCtrl.Row, I].Text))
+    Next
+    H += 4
+    If H > $hCtrl.Rows.H Then
+      $hCtrl.Rows[$hCtrl.Row].H = H
+    Else
+      $hCtrl.Rows[$hCtrl.Row].H = -1
+    Endif
+  Endif
+  
+End
+
+
+Public Sub TableView_Change()
+
+  If $iNoActivate Then Return
+  
+  If HasNewRecord() And If $hCtrl.Row = $hCtrl.Rows.Max Then 
+    SetCreate(True)
+  Else If $hCtrl.Row < 0 Then
+    SetCreate(True)
+  Else
+    SetCreate(False)
+  Endif
+  
+  If $hCtrl.Row <> $iLastRow Then
+    
+    If $iLastRow >= 0 Then $hCtrl.Rows[$iLastRow].H = -1
+    UpdateCurrentRowHeight
+    $iLastRow = $hCtrl.Row
+    
+  Endif
+  
+  Inc $iNoActivate
+  Raise Activate
+  Dec $iNoActivate
+  
+End
+
+Private Sub _Warning(sTitle As String, Optional sMsg As String, Optional bError As Boolean)
+  
+  Dim X, Y As Integer
+  
+  If Right(sTitle) <> "." Then sTitle &= "."
+  If sMsg Then sMsg = "<p>" & sMsg
+  sMsg = "<b>" & sTitle & "</b>" & sMsg
+  
+  X = $hCtrl.Rows.Width - $hCtrl.ScrollX + $hCtrl.ClientX
+  Y = $hCtrl.Columns.Height - $hCtrl.ScrollY + $hCtrl.ClientY
+  
+  With $hCtrl[$hCtrl.Row, $hCtrl.Column]
+    If bError Then
+      Balloon.Error(sMsg, $hCtrl, X + .X + .W \ 2, Y + .Y + .H \ 2) 
+    Else
+      Balloon.Warning(sMsg, $hCtrl, X + .X + .W \ 2, Y + .Y + .H \ 2) 
+    Endif
+  End With
+
+Catch
+  
+  'Debug Error.Where; ": "; Error.Text
+  Error "gb.db.form: "; Me.Name; ": warning: "; Replace(sMsg, "\n", " ")
+  
+End
+
+
+Public Sub TableView_Save(Row As Integer, Column As Integer, Value As String)
+  
+  Dim hSrc As DataSource
+  Dim rData As Result
+  Dim vVal As Variant
+  Dim hField As DataField
+  Dim bPrintError As Boolean
+  Dim iRow, iCol As Integer
+  
+  If Not CanEdit() Then Return
+  
+  hSrc = GetSource()
+  If Not hSrc Then Return
+  
+  iRow = $hCtrl.Row
+  iCol = $hCtrl.Column
+  
+  If hSrc.MoveTo(Row) Then Return
+  
+  If Row <> $iRowNewRecord Then
+    rData = hSrc._EditCurrent()
+    If Not rData.Available Then Return
+  Endif
+  
+  hField = $aType[Column]
+  
+  Select Case hField.Type
+
+    Case db.Integer
+      If Trim(Value) Then vVal = CInt(Value)
+    
+    Case db.Long
+      If Trim(Value) Then vVal = CLong(Value)
+    
+    Case db.Float
+      If Trim(Value) Then vVal = CFloat(Val(Value))
+    
+    Case db.Date
+      If Trim(Value) Then
+        vVal = Val(Value)
+        If TypeOf(vVal) <> gb.Date Then Error.Raise("Bad date")
+      Endif
+    
+    Case db.Boolean
+      If Value = ("False") Then
+        vVal = False
+      Else If Value = ("True") Then
+        vVal = True
+      Endif
+        
+    Case db.String
+      vVal = Value
+      
+    Case db.Blob
+      vVal = Value
+      
+  End Select
+  
+  bPrintError = True
+  
+  If Row = $iRowNewRecord Then
+    $aNewRecord[Column] = vVal
+    $bNewRecordModified = True
+  Else
+    rData[hField.Name] = vVal
+    hSrc._UpdateCurrent(rData)
+  Endif
+
+  $hCtrl.MoveTo(iRow, iCol)
+  UpdateCurrentRowHeight
+   
+Catch
+
+  If bPrintError Then
+    _Warning(("Unable to save value."), Error.Text)
+  Else
+    _Warning(("Incorrect value."))
+  Endif
+  Stop Event
+
+End
+
+
+Private Function Mode_Read() As Integer
+  
+  Return $iMode
+  
+End
+
+Private Sub Mode_Write(iMode As Integer)
+  
+  $iMode = iMode
+  UpdateMode
+  
+End
+
+Private Function Header_Read() As Integer
+  
+  Return $hCtrl.Header
+  
+End
+
+Private Sub Header_Write(iHeader As Integer)
+  
+  $hCtrl.Header = iHeader
+  
+End
+
+Private Function Current_Read() As Variant[]
+  
+  Return $hTable.GetKeys($hCtrl.Row)
+  
+End
+
+
+Private Sub Current_Write(Value As Variant[])
+
+  $hCtrl.Row = $hTable.SetKeys(Value)
+
+End
+
+Public Sub MoveFirst()
+
+  MoveTo(0)
+  
+End
+
+Public Sub MoveLast()
+  
+  MoveTo(Max(0, $hCtrl.Rows.Count - If(HasNewRecord(), 2, 1)))
+  
+End
+
+Public Sub MoveNext()
+  
+  If $bCreate Then
+    MoveFirst
+    Return
+  Endif
+  If $hCtrl.Row >= $hCtrl.Rows.Max Then Return
+  If $hCtrl.Row < 0 Then Return
+  Inc $hCtrl.Row
+  $hCtrl.Rows[$hCtrl.Row].Selected = True
+  
+End
+
+Public Sub MovePrevious()
+  
+  If $bCreate Then
+    MoveFirst
+    Return
+  Endif
+  If $hCtrl.Row <= 0 Then Return
+  Dec $hCtrl.Row
+  $hCtrl.Rows[$hCtrl.Row].Selected = True
+  
+End
+
+Public Sub MoveTo(Index As Integer)
+  
+  SetCreate(False)
+  $hCtrl.Row = Index
+  $hCtrl.Rows[$hCtrl.Row].Selected = True
+  
+End
+
+Private Sub HasNewRecord() As Boolean
+  
+  If Not $bEditable Then Return
+  If $hCtrl.Rows.Count = 0 Then Return
+  If $iRowNewRecord = -1 Then Return
+  'If $hCtrl.Rows[$hCtrl.Rows.Count - 1].Text <> NEW_RECORD Then Return
+  Return True
+  
+End
+
+Private Sub InNewRecord() As Boolean
+  
+  If Not $bEditable Then Return
+  If Not HasNewRecord() Then Return
+  Return $hCtrl.Row = $hCtrl.Rows.Max
+  
+End
+
+Private Sub ShowNewRecord()
+  
+  If Not HasNewRecord() Then 
+    Inc $iNoActivate
+    Inc $hCtrl.Rows.Count
+    Dec $iNoActivate
+    $iRowNewRecord = $hCtrl.Rows.Max
+    $hCtrl.Rows[$iRowNewRecord].Text = NEW_RECORD
+  Else
+    $hCtrl.Refresh
+  Endif
+  
+End
+
+Private Sub HideNewRecord()
+  
+  If Not HasNewRecord() Then Return
+  Dec $hCtrl.Rows.Count
+  $iRowNewRecord = -1
+  
+End
+
+Private Sub CreateNewRecord()
+  
+  If Not $aType Then Return
+  $aNewRecord = New Variant[$aType.Count]
+  $bNewRecordModified = False
+  ShowNewRecord
+  
+End
+
+Private Sub SaveNewRecord(Optional bNoMessage As Boolean) As Boolean
+  
+  Dim hSrc As DataSource
+  Dim rData As Result
+  Dim iInd As Integer
+  
+  If Not HasNewRecord() Then Return
+  
+  hSrc = GetSource()
+  If Not hSrc Then Return
+  
+  If Not $bNewRecordModified Then Return
+  
+  rData = hSrc._CreateCurrent()
+  
+  For iInd = 0 To $aType.Max
+    With $aType[iInd]
+      If $aNewRecord[iInd] Then rData[.Name] = $aNewRecord[iInd]
+    End With
+  Next
+  
+  hSrc._UpdateCurrent(rData)
+  
+Catch
+
+  If Not bNoMessage Then _Warning(("Unable to save record."), Error.Text, True) 
+  Return True
+  
+End
+
+Public Sub Save() As Boolean
+  
+  If Not CanEdit() Then Return
+  
+  If InNewRecord() Then
+    If $hCtrl.Save() Then Return True
+    Return SaveNewRecord()
+  Else
+    Return $hCtrl.Save()
+  Endif
+  
+End
+
+Public Sub CreateTimer_Timer()
+  
+  TableView_Click
+  
+End
+
+Private Sub UpdateMode()
+  
+  If $bCreate And If HasNewRecord() Then
+    $hCtrl.Mode = Select.None
+  Else
+    $hCtrl.Mode = $iMode
+  Endif
+  
+End
+
+
+Private Sub SetCreate(bCreate As Boolean)
+  
+  If bCreate = $bCreate Then Return
+  $bCreate = bCreate
+  UpdateMode
+  
+End
+
+
+Public Sub Create()
+  
+  SetCreate(True)
+  If Not CanEdit() Then Return
+    
+  If $hCtrl.Save() Then Goto _EDIT
+  
+  If InNewRecord() Then
+    $hCtrl.MoveTo($hCtrl.Rows.Max, 0)
+    If SaveNewRecord() Then Goto _EDIT
+  Endif
+    
+  CreateNewRecord()
+  SetCreate(False)
+  $hCtrl.MoveTo($hCtrl.Rows.Max, 0)
+  Try $hCtrl.Current.EnsureVisible
+
+_EDIT:
+
+  'Wait
+  $hCreateTimer.Trigger
+  
+End
+
+Public Sub Cancel()
+  
+  $hCtrl.Cancel
+  If InNewRecord() Then
+    CreateNewRecord()
+  Endif
+  
+End
+
+
+Public Sub TableView_Insert()
+  
+  If InNewRecord() Then
+    If SaveNewRecord() Then Return
+  Endif
+  Create()
+  
+End
+
+
+Private Function Count_Read() As Integer
+  
+  If HasNewRecord() Then
+    Return $hCtrl.Rows.Count - 1
+  Else
+    Return $hCtrl.Rows.Count
+  Endif
+  
+End
+
+Private Function Index_Read() As Integer
+
+  If $bCreate Then
+    Return -1
+  Else  
+    Return $hCtrl.Row
+  Endif
+  
+End
+
+
+Public Function Remove() As Boolean
+  
+  Dim hSrc As DataSource
+  Dim iRow As Integer
+  Dim aDelete As Integer[]
+  Dim bRollback As Boolean
+  
+  If CanEdit() Then
+    
+    If $hCtrl.Mode = Select.Single Then
+    
+      iRow = $hCtrl.Row
+      If iRow = $iRowNewRecord Then 
+        Create()
+        Return
+      Endif
+  
+      hSrc = GetSource()
+      If Not hSrc Then Return
+      If hSrc.MoveTo(iRow) Then Return
+      
+      ' Dec $hCtrl.Rows.Count
+      ' If $iRowNewRecord >= 0 Then
+      '   Dec $iRowNewRecord
+      '   $hCtrl.Rows[$iRowNewRecord].Text = NEW_RECORD
+      ' Endif
+  
+      hSrc.Remove()
+      'hSrc.MoveTo(iRow)
+      $hCtrl.Row = iRow
+      
+    Else If $hCtrl.Mode = Select.Multiple
+    
+      hSrc = GetSource()
+      If Not hSrc Then Return
+
+      aDelete = New Integer[]
+      For iRow = 0 To $hCtrl.Rows.Max
+        If $hCtrl.Rows[iRow].Selected Then aDelete.Add(iRow)
+      Next
+      aDelete.Reverse
+      
+      hSrc._GetDB().Begin
+      bRollback = True
+      For Each iRow In aDelete
+        hSrc.MoveTo(iRow)
+        hSrc._DeleteCurrent()
+      Next
+      hSrc._GetDB().Commit
+      hSrc.Create(True)
+    
+    Endif
+    
+  Endif
+    
+  'UnSelect
+  
+Catch
+
+  _Warning(("Unable to delete record."), Error.Text, True) 
+  If bRollback Then hSrc._GetDB().Rollback
+  Return True
+  
+End
+
+Public Sub TableView_ColumnClick(Column As Integer)
+  
+  Dim hSrc As DataSource
+  
+  hSrc = GetSource()
+  If Not hSrc Then Return
+  
+  If Not $hCtrl.Sorted Then Return
+  
+  If hSrc.Sort <> $aColumns[Column] Then
+    hSrc.Sort = $aColumns[Column]
+    $hCtrl.Columns.Sort = Column
+    $hCtrl.Columns.Ascending = True
+  Else If Not hSrc.Ascending Then
+    hSrc.Sort = ""
+    $hCtrl.Columns.Sort = -1
+  Else
+    hSrc.Ascending = False
+    $hCtrl.Columns.Ascending = False
+  Endif
+  
+  $iLastSize = 0
+  $hCtrl.Refresh
+  
+  Stop Event
+
+End
+
+' Public Sub TableView_RowClick(Row As Integer)
+'   
+'   If Row = $iRowNewRecord And If InNewRecord() Then
+'     SaveNewRecord
+'   Endif
+'   
+' End
+
+
+Private Function Grid_Read() As Boolean
+
+  Return $hCtrl.Grid
+
+End
+
+Private Sub Grid_Write(Value As Boolean)
+
+  $hCtrl.Grid = Value
+
+End
+
+Private Function Highlight_Read() As Boolean
+
+  Return $bHighlight
+
+End
+
+Private Sub Highlight_Write(Value As Boolean)
+
+  $bHighlight = Value
+
+End
+
+Private Function View_Read() As TableView
+
+  Return $hCtrl
+
+End
+
+Public Sub _OnDatabaseChange()
+  
+  Update
+  
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hCtrl.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hCtrl.Border = Value
+
+End
+
+Private Function Editable_Read() As Boolean
+
+  Return $bEditable
+
+End
+
+Private Sub Editable_Write(Value As Boolean)
+
+  If $bEditable = Value Then Return
+  Try $hCtrl.Cancel
+  If Not Value Then HideNewRecord
+  $bEditable = Value
+  $hCtrl.ShowCursor = $bEditable
+  'If Value Then 
+    'CreateNewRecord
+   Create()
+  'Endif
+
+End
+
+Private Function Font_Read() As Font
+
+  Return Super.Font
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  Super.Font = Value
+  $hCtrl.Font = Value
+  '$hCtrl.Rows.H = GetDefaultRowHeight()
+  'AdjustRow()
+
+End
+
+Private Function Labels_Read() As String[]
+
+  If Not $aLabels Then Return Null
+  Return $aLabels.Copy
+
+End
+
+Private Sub Labels_Write(Value As String[])
+
+  If Value And If Value.Count Then
+    $aLabels = Value.Copy()
+  Else
+    $aLabels = Null
+  Endif
+  RefreshLabels
+
+End
+
+Private Function Background_Read() As Integer
+
+  Return Super.Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  Super.Background = Value
+  If $bHighlight Then UpdateHighlightColor
+
+End
+
+Public Sub mnuComboBox_Click()
+  
+  $hComboBox.Text = Last.Text
+  
+End
+
+Private Function Data_Read() As _GridView_Data
+
+  Return $hCtrl.Data
+
+End
+
+Private Function Sorted_Read() As Boolean
+
+  Return $hCtrl.Sorted
+
+End
+
+Private Sub Sorted_Write(Value As Boolean)
+
+  $hCtrl.Sorted = Value
+
+End
+
+Public Sub ButtonBox_Click()
+  
+  If FBlobEditor.Run($hTable[$hCtrl.Row][$aColumnsIndex[$hCtrl.Column]].Data, $aColumns[$hCtrl.Column], CanEdit()) Then Return
+  Inc Application.Busy
+  TableView_Save($hCtrl.Row, $hCtrl.Column, FBlobEditor.Data)
+  FBlobEditor.Data = ""
+  Dec Application.Busy
+  
+End
+
+Public Sub ButtonBox_DblClick()
+  
+  ButtonBox_Click
+  
+End

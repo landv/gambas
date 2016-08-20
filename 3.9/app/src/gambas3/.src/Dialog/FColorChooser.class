@@ -1,0 +1,269 @@
+' Gambas class file
+
+Static Public (Color) As String
+Static Public Value As Integer
+Static Public Prefix As String
+
+Static Private $sColor As String
+Static Private $bAlpha As Boolean
+'Static Private $aDefaultColors As String[] = ["Background", "Foreground", "SelectedBackground", "SelectedForeground", "LightBackground", "LightForeground", "TextBackground", "TextForeground", "ButtonBackground", "ButtonForeground", "TooltipBackground", "TooltipForeground", "LinkForeground", "VisitedForeground"]
+Static Private $aColorName As String[]
+Static Private $aPict As Picture[]
+Static Private $sTitle As String
+Static Private $aPrefix As String[]
+
+Private Const DEFAULT_COLOR As String = "-"
+
+Static Private Sub GetColor(sName As String) As Integer
+  
+  Dim hClass As CClassInfo
+  Dim hSym As CSymbolInfo
+  
+  hClass = Project.Documentation.Classes["Color"]
+  hSym = hClass.Symbols[sName]
+  If hSym.Kind = "C" And If hSym.Type = "i" Then Return CInt(hSym.Value)
+  Try Return Object.GetProperty(Classes["Color"], sName)
+  Return -1
+  
+End
+
+
+
+Static Public Sub FromString(sColor As String) As Integer
+  
+  If sColor == "None" Then Return -1
+  If IsLetter(Left(sColor)) Then Return GetColor(sColor)
+  If Left(sColor) = "#" Then Return Val("&H" & Mid$(sColor, 2))
+  If Left(sColor) = "&" Then Return Val(sColor)
+  
+Catch
+  
+  Return -1
+  
+End
+
+
+
+Static Public Function Run(Optional sColor As String, Optional bAlpha As Boolean, Optional sTitle As String, Optional aPrefix As String[]) As Boolean
+
+  $sColor = sColor
+  $bAlpha = bAlpha
+  $sTitle = sTitle
+  $aPrefix = aPrefix
+
+  Return Not FColorChooser.ShowModal() 
+
+End
+
+
+
+Public Sub btnOK_Click()
+
+  If $aPrefix And If $aPrefix.Count Then
+    Prefix = $aPrefix[cmbPrefix.Index]
+  Else
+    Prefix = ""
+  Endif
+  
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub Form_Open()
+
+  Dim hClass As CClassInfo
+  Dim hSym As CSymbolInfo
+  Dim sColor As String
+  Dim iIndex As Integer
+  
+  Settings.Read(Me)
+
+  cmbPrefix.List = $aPrefix
+  If $aPrefix Then
+    cmbPrefix.Show
+  Else
+    cmbPrefix.Hide
+  Endif
+
+  $aColorName = New String[]
+  
+  hClass = Project.Documentation.Classes["Color"]
+  If hClass Then
+    
+    For Each hSym In hClass.Symbols
+      sColor = hSym.Name
+      If sColor = "Default" Then Continue
+      If InStr("RC", hSym.Kind) And If hSym.Type = "i" And If Not $aColorName.Exist(sColor) Then
+        $aColorName.Add(sColor)
+      Endif
+    Next
+    
+    $aColorName.Sort()
+    
+    $aPict = New Picture[$aColorName.Count]
+  
+    gvwColor.Columns.Count = 2
+    gvwColor.Mode = Select.Single
+    gvwColor.Columns[0].W = 24
+    gvwColor.Columns[0].Alignment = Align.Center
+    gvwColor.Rows.Count = $aColorName.Count + 1
+    
+  Endif
+
+  If Not IsNull(Val($sColor)) Then
+    gvwColor.Row = 0
+    dlgColor.SelectedColor = Val($sColor)
+    iIndex = 1
+  Else
+    If $sColor Then
+      gvwColor.Row = $aColorName.Find($sColor) + 1
+    Else
+      gvwColor.Row = 0
+    Endif
+    iIndex = 0
+  Endif
+  
+  If Not hClass Then
+    iIndex = 1
+    tabColor[0].Visible = False
+  Endif
+  
+  tabColor.Index = iIndex
+  
+  dlgColor.ShowAlpha = $bAlpha
+  
+  If $sTitle Then
+    Me.Title = $sTitle
+  Else
+    $sTitle = ("Select a color")
+  Endif
+  
+  UpdateColor
+
+End
+
+
+Public Sub dlgColor_Activate()
+
+  btnOK.Value = True
+
+End
+
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)  
+
+End
+
+Private Sub UpdateColor()
+
+  Dim sColor As String
+  Dim iSel As Integer
+  Dim I As Integer
+
+  If tabColor.Index = 0 Then
+    If gvwColor.Row = 0 Then
+      sColor = ""
+    Else
+      sColor = $aColorName[gvwColor.Row - 1]
+    Endif
+  Else
+    sColor = CStr(dlgColor.Value)
+  Endif
+
+  If Not sColor Then
+    Color = ""
+    Value = -1
+    sColor = "FFFFFF"
+  Else If IsLetter(Left(sColor)) Then
+    Color = sColor
+    Value = GetColor(sColor)
+    sColor = Hex$(Value, 6)
+  Else
+    Value = Val(sColor)
+    If $bAlpha Then
+      Color = "&H" & Hex$(Value, 8) & "&"
+      sColor = Hex$(Value, 8)
+    Else
+      Color = "&H" & Hex$(Value, 6) & "&"
+      sColor = Hex$(Value, 6)
+    Endif
+  Endif
+
+  If $aPrefix Then
+    iSel = cmbPrefix.Index
+    For I = 0 To $aPrefix.Max
+      cmbPrefix[I].Text = $aPrefix[I] & sColor
+    Next
+  Endif
+
+End
+
+Public Sub gvwColor_Select()
+
+  UpdateColor
+
+End
+
+Public Sub dlgColor_Change()
+
+  UpdateColor
+
+End
+
+Public Sub tabColor_Click()
+
+  UpdateColor
+
+End
+
+Public Sub gvwColor_Data(Row As Integer, Column As Integer)
+
+  Dim hPict As Picture
+  Dim hImage As Image
+  
+  With gvwColor.Data
+
+    Select Case Column
+      
+      Case 0
+        If Row = 0 Then
+          hPict = Picture["img/16/tile.png"]
+        Else
+          hPict = $aPict[Row - 1]
+        Endif
+        If Not hPict Then
+          hImage = New Image(16, 16, 0)
+          Paint.Begin(hImage)
+          Paint.FillRect(1, 1, 14, 14, GetColor($aColorName[Row - 1]))
+          Paint.End
+          hPict = hImage.Picture
+          $aPict[Row - 1] = hPict
+        Endif
+        .Picture = hPict
+      
+      Case 1
+        If Row = 0 Then
+          .Text = "None"
+        Else
+          .Text = $aColorName[Row - 1]
+        Endif
+        
+    End Select
+    
+  End With
+
+End
+
+Public Sub gvwColor_Activate()
+
+  btnOK.Value = True
+
+End

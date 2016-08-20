@@ -1,0 +1,16 @@
+' Gambas class file
+
+Public Sub _new()
+Dim hLabel As New ReportLabel(Report)
+hLabel.Text = "Test"
+Report.Padding = ReportPadding["1cm"]
+hLabel.Border = ReportBorder["border:1px;toprightcorner:5mm 1cm"]
+hLabel.BackGround = ReportBrush["image(icon.png)"]
+Report.Preview()
+End
+
+Public Sub Form_Open()
+GridView1.Columns.Count = 6
+GridView1.Columns[0].Text = "titi"
+GridView1.Rows.Count = 6
+End

@@ -1,0 +1,185 @@
+' Gambas class file
+
+Static Private $aOrder As New String[]
+
+Static Private $iTip As Integer
+
+Static Public Sub Run()
+
+  Dim hForm As Form
+
+  hForm = New FTips
+  hForm.ShowModal
+
+End
+
+Static Public Sub _init()
+
+  Dim hFic As File
+  Dim sLig As String
+
+  hFic = Open "tips/tips.en"
+
+  While Not Eof(hFic)
+    Line Input #hFic, sLig
+    If Left$(sLig) = "[" Then
+      $aOrder.Add(Mid$(Trim$(sLig), 2, -1))
+    Endif
+  Wend
+
+End
+
+Public Sub Form_Open()
+
+  txtTip.Background = Me.Background
+
+  $iTip = Settings["/LastTip", 0]
+  chkShowTip.Value = Settings["/ShowTipOnStartup", True]
+
+  ShowNextTip
+
+End
+
+Private Sub ShowNextTip(Optional bPrev As Boolean)
+
+  txtTip.Text = GetNextTip(bPrev)
+  lblTitle.Text = Subst(("Tip of the day #&1"), CStr($iTip))
+
+End
+
+Private Function GetNextTip(Optional bPrev As Boolean) As String
+
+  Dim sTip As String
+  Dim sFile As String
+  Dim sLang As String
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+
+  If bPrev Then
+    Dec $iTip
+    If $iTip < 1 Then $iTip = 1
+  Else
+    If $iTip >= $aOrder.Count Then
+      $iTip = 1
+    Else
+      Inc $iTip
+    Endif
+  Endif
+
+  sLang = System.Language
+  iPos = RInStr(sLang, ".")
+  If iPos Then sLang = Left(sLang, iPos - 1)
+
+  sFile = "tips/tips." & sLang
+  If Not Exist(sFile) Then
+    iPos = InStr(sLang, "_")
+    If iPos Then
+      sLang = Left$(sLang, iPos - 1)
+      sFile = "tips/tips." & sLang
+    Endif
+  Endif
+  If Not Exist(sFile) Then
+    sFile = "tips/tips.en"
+  Endif
+
+  sTip = File.Load(sFile)
+  iPos = InStr(sTip, "[" & $aOrder[$iTip - 1] & "]")
+  If iPos = 0 Then
+    sTip = File.Load("tips/tips.en")
+  Endif
+  iPos = InStr(sTip, "[" & $aOrder[$iTip - 1] & "]")
+  If iPos = 0 Then Return
+
+  iPos = InStr(sTip, "\n", iPos)
+  If iPos = 0 Then Return
+  Inc iPos
+
+  iPos2 = InStr(sTip, "\n[", iPos)
+  If iPos2 = 0 Then iPos2 = Len(sTip) + 1
+
+  Return Mid$(sTip, iPos, iPos2 - iPos)
+
+Catch
+
+  Message.Error(("Unable to read tip of the day !") & "\n\n" & Error.Text)
+
+End
+
+Public Sub chkShowTip_Click()
+
+  Settings["/ShowTipOnStartup"] = chkShowTip.Value
+
+End
+
+Public Sub btnNext_Click()
+
+  ShowNextTip
+
+End
+
+' PUBLIC SUB Form_Resize()
+'
+'   lblTitle.Width = Max(ME.ClientWidth, 512)
+'   panBottom.Y = ME.ClientH - panBottom.Height - 8
+'   panBottom.W = Max(256, ME.ClientW - 16)
+'   btnClose.X = panBottom.W - btnClose.W
+'   btnNext.X = btnClose.X - btnNext.W - 8
+'   btnPrev.X = btnNext.X - btnPrev.W - 8
+'   chkShowTip.W = btnPrev.X - chkShowTip.X - 8
+'
+'   txtTip.Resize(ME.ClientWidth - txtTip.X * 2, ME.ClientH - panBottom.H - txtTip.Y - 8)
+'
+'
+'   'imgCorner.Move(ME.ClientW - imgCorner.W,ME.ClientH - imgCorner.H)
+'
+' END
+
+Public Sub btnClose_Click()
+
+  Settings["/LastTip"] = $iTip
+  Me.Close
+
+End
+
+Public Sub btnPrev_Click()
+
+  ShowNextTip(True)
+
+End
+
+Private Sub PaintRoundedRect(X As Integer, Y As Integer, W As Integer, H As Integer, R As Float)
+
+  Dim fArcToBezier As Float = 0.55228475
+  Dim fRadiusX, fRadiusY, c1, c2 As Float
+
+  fRadiusX = R
+  fRadiusY = R
+
+  If fRadiusX > W - fRadiusX Then fRadiusX = W / 2
+  If fRadiusY > H - fRadiusY Then fRadiusY = H / 2
+
+  '#approximate(quite Close )the arc using a bezier curve
+  c1 = fArcToBezier * fRadiusX
+  c2 = fArcToBezier * fRadiusY
+
+  Paint.NewPath()
+  Paint.MoveTo(x + fRadiusX, y)
+  Paint.RelLineTo(w - 2 * fRadiusX, 0.0)
+  Paint.RelCurveTo(c1, 0.0, fRadiusX, c2, fRadiusX, fRadiusY)
+  Paint.RelLineTo(0, h - 2 * fRadiusY)
+  Paint.RelCurveTo(0.0, c2, c1 - fRadiusX, fRadiusY, - fRadiusX, fRadiusY)
+  Paint.RelLineTo(- w + 2 * fRadiusX, 0)
+  Paint.RelCurveTo(- c1, 0, - fRadiusX, - c2, - fRadiusX, - fRadiusY)
+  Paint.RelLineTo(0, - h + 2 * fRadiusY)
+  Paint.RelCurveTo(0.0, - c2, fRadiusX - c1, - fRadiusY, fRadiusX, - fRadiusY)
+  Paint.ClosePath()
+
+End
+
+Public Sub dwgBackground_Draw()
+
+  Paint.Brush = Paint.Color(Color.LightBackground)
+  PaintRoundedRect(0, 0, dwgBackground.W, dwgBackground.H, 8)
+  Paint.Fill
+
+End

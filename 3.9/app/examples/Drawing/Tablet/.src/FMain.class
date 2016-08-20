@@ -1,0 +1,178 @@
+' Gambas class file
+
+Private Const MAX_LINE_WIDTH As Float = 20
+
+Private $hBuffer As Picture
+Private $X As Float
+Private $Y As Float
+Private $aCoord As Float[]
+Private $iColor As Integer
+Private $hBound As Rect
+Private $fPressure As Float
+
+Public Sub _new()
+
+  Dim sLabel As String
+  Dim Y As Integer
+  
+  $hBuffer = New Picture(1024, 768)
+  $hBuffer.Fill(Color.White)
+  dwgDraw.ResizeContents($hBuffer.Width, $hBuffer.Height)
+
+End
+
+Public Sub Form_Open()
+
+End
+
+Private Sub PaintStroke(hDest As Picture)
+  
+  Dim I As Integer
+  Dim hTemp As Image
+  
+  If Not $aCoord Then Return
+  If $aCoord.Count < 6 Then Return
+  
+  hTemp = New Image($hBound.W, $hBound.H, Color.Transparent)
+  
+  Paint.Begin(hTemp)
+  Paint.LineCap = Paint.LineCapRound
+  Paint.Brush = Paint.Color($iColor)
+  Paint.Translate(- $hBound.X, - $hBound.Y)
+  
+  For I = 0 To $aCoord.Max - 3 Step 3
+    
+    Paint.MoveTo($aCoord[I], $aCoord[I + 1])
+    Paint.LineTo($aCoord[I + 3], $aCoord[I + 4])
+    Paint.LineWidth = Max(0.5, $aCoord[I + 2] * MAX_LINE_WIDTH)
+    Paint.Stroke
+    
+  Next
+  
+  Paint.End
+  
+  'hTemp.Opacity(0.5)
+  Paint.Begin(hDest)
+  Paint.DrawImage(hTemp, $hBound.X, $hBound.Y,,, 0.5)
+  Paint.End
+  
+End
+
+
+Public Sub dwgDraw_Draw()
+
+  Dim hDraw As Picture
+  
+  hDraw = $hBuffer.Copy()
+  PaintStroke(hDraw)
+
+  Draw.Picture(hDraw, - dwgDraw.ScrollX, - dwgDraw.ScrollY)
+
+End
+
+Private Sub UpdateInfo(Optional bUp As Boolean)
+  
+  Dim iColUp, iColDown As Integer
+  
+  Select Case Pointer.Type
+    Case Pointer.Cursor
+      lblType.Text = "Cursor"
+    Case Pointer.Eraser
+      lblType.Text = "Eraser"
+    Case Pointer.Mouse
+      lblType.Text = "Mouse"
+    Case Pointer.Pen
+      lblType.Text = "Pen"
+  End Select
+
+  lblX.Text = Format($X, "0.000")
+  lblY.Text = Format($Y, "0.000")
+  lblXTilt.Text = Pointer.XTilt
+  lblYTilt.Text = Pointer.YTilt
+  lblPressure.Text = Pointer.Pressure
+  lblRotation.Text = Pointer.Rotation
+  
+  iColUp = Color.Default
+  iColDown = Color.LightForeground
+  
+  If bUp Then
+    If Mouse.Left Then panButton1.Background = iColUp
+    If Mouse.Middle Then panButton2.Background = iColUp
+    If Mouse.Right Then panButton3.Background = iColUp
+  Else
+    panButton1.Background = If(Mouse.Left, iColDown, iColUp)
+    panButton2.Background = If(Mouse.Middle, iColDown, iColUp)
+    panButton3.Background = If(Mouse.Right, iColDown, iColUp)
+  Endif
+  
+End
+
+
+Public Sub dwgDraw_MouseDown()
+
+  $X = dwgDraw.ScrollX + Pointer.X
+  $Y = dwgDraw.ScrollY + Pointer.Y
+  $fPressure = 0.1
+  
+  UpdateInfo
+  timScroll.Start
+  
+  If Not Mouse.Left Then Return
+  
+  $hBound = New Rect($X - MAX_LINE_WIDTH, $Y - MAX_LINE_WIDTH, MAX_LINE_WIDTH * 2, MAX_LINE_WIDTH * 2)
+  
+  $aCoord = [$X, $Y, If(Pointer.Type = Pointer.Mouse, $fPressure, Pointer.Pressure)]
+
+End
+
+Public Sub dwgDraw_MouseMove()
+
+  $X = dwgDraw.ScrollX + Pointer.X
+  $Y = dwgDraw.ScrollY + Pointer.Y
+  
+  UpdateInfo
+  
+  If Not Mouse.Left Then Return
+  
+  $fPressure = Min($fPressure + 0.01, 1)
+  
+  $aCoord.Add($X)
+  $aCoord.Add($Y)
+  $aCoord.Add(If(Pointer.Type = Pointer.Mouse, $fPressure, Pointer.Pressure))
+  
+  $hBound = $hBound.Union(Rect($X - MAX_LINE_WIDTH, $Y - MAX_LINE_WIDTH, MAX_LINE_WIDTH * 2, MAX_LINE_WIDTH * 2))
+  
+  'Debug $X;; $Y
+    
+  dwgDraw.View.Refresh($hBound.X - dwgDraw.ScrollX, $hBound.Y - dwgDraw.ScrollY, $hBound.W, $hBound.H)
+
+End
+
+Public Sub dwgDraw_MouseUp()
+
+  UpdateInfo(True)
+  timScroll.Stop
+  
+  PaintStroke($hBuffer)
+  $aCoord.Clear
+
+End
+
+Public Sub timScroll_Timer()
+
+  dwgDraw.EnsureVisible($X - 16, $Y - 16, 32, 32)
+
+End
+
+Public Sub btnClear_Click()
+
+  $hBuffer.Fill(Color.White)
+  dwgDraw.View.Refresh
+
+End
+
+Public Sub btnColor_Click()
+
+  $iColor = Last.Background
+
+End

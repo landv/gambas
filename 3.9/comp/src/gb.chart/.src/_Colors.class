@@ -1,0 +1,65 @@
+' Gambas class file
+
+
+Public Const Custom As Integer = 0
+Public Const Auto As Integer = 1
+
+Private $ariCustomColors As New Integer[]
+Private $ariColors As Integer[] = [&hff6f00,
+&h800080, &h666666, &h6B4794, &h290099, &h7da647,
+&he6e64c, &hff9966, &h000080, &hfff0ff, &h00ffff, &h9999ff]
+Private $iMode As Integer = Auto
+
+Property Values As Integer[]
+Property Style As Integer
+
+
+Private Function Values_Read() As Integer[]
+
+  Return $ariCustomColors
+
+End
+
+Private Sub Values_Write(Value As Integer[])
+
+  $ariCustomColors = Value
+  $iMode = Custom
+
+End
+
+Public Function _Get(Index As Integer) As Integer
+  
+  Dim ariTmp As Integer[]
+  Dim i As Integer
+  If $iMode = Auto Then 
+    
+    ariTmp = $ariColors
+  Else 
+    If IsNull($ariCustomColors) Or $ariCustomColors.Count = 0 Then 
+      ariTmp = $ariColors
+    Else
+      ariTmp = $ariCustomColors
+    Endif
+  Endif
+  
+  If Index > ariTmp.Max Then 
+    i = Index Mod ariTmp.Count
+    Return ariTmp[i]
+  Else 
+    Return ariTmp[Index]
+  Endif  
+  
+End
+
+
+Private Function Style_Read() As Integer
+
+  Return $iMode   
+
+End
+
+Private Sub Style_Write(Value As Integer)
+
+  $iMode = Value
+
+End

@@ -1,0 +1,9 @@
+' Gambas class file
+
+' each row is stored as a number between 0-1023 (inc)
+' each column numbered in 2^ and the row is the sum of the active columns
+' leftmost column is 512, rightmost is 1
+Public Name As String       ' Board desidn name
+Public Row As New Byte[]    ' Board layout
+Public Placed As New Byte[] ' The cells with balls on them
+Public Finish As Byte       ' The cell that the last ball must be on

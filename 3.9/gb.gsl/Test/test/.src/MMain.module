@@ -1,0 +1,247 @@
+' Gambas module file
+
+Private ts As New TestSuite
+
+'------------------------------------------------------------------
+'Creates a new test object and adds it to the test suite
+'------------------------------------------------------------------
+Public Function AddTest(name As String, result As Variant, expected As Variant, Optional note As String) As Test
+  
+  Dim t As New Test
+  
+  ts.AddTest(t)
+  t.Run(name, result, expected, note)
+  
+End
+
+
+'-----------------------------------------------------------------
+'Test All GSL Class Methods
+'-----------------------------------------------------------------
+Public Sub testGslMethods()
+  Dim result As Variant
+  
+  AddTest("GSL.Acosh(45)", GSL.Acosh(45), ACosh(45))
+  AddTest("GSL.Asinh(45)", GSL.Asinh(45), ASinh(45))
+  AddTest("GSL.Atanh(0.45)", GSL.Atanh(0.45), ATanh(0.45))
+  AddTest("GSL.Expm1(45)", GSL.Expm1(45), Expm(45))
+  AddTest("GSL.Fcmpb(-0.3, 0.2, 0.1)", GSL.Fcmpb(-0.3, 0.2, 0.1), GSL.Fcmpb(-0.3, 0.2, 0.1))
+  AddTest("GSL.Fcmpi(-0.3, 0.2, 0.1)", GSL.Fcmpi(1.3, 2.2, -1.1), 1)
+  result = GSL.Frexp(0.45)
+  AddTest("GSL.Frexp(0.45)", result, result)
+  AddTest("GSL.Hypot(10.27, 7.45)", GSL.Hypot(10.27, 7.45), GSL.Hypot(10.27, 7.45))
+  AddTest("GSL.Hypot3(10.27, 7.45, 6.78125)", GSL.Hypot3(10.27, 7.45, 6.78125), GSL.Hypot3(10.27, 7.45, 6.78125))
+  AddTest("GSL.IntPow(2.0, 8)", GSL.IntPow(2.0, 8), 256.00)
+  AddTest("GSL.IntPow2(8)", GSL.IntPow2(8), GSL.IntPow2(8))
+  AddTest("GSL.IntPow3(8)", GSL.IntPow3(8), GSL.IntPow3(8))
+  AddTest("GSL.IntPow4(8)", GSL.IntPow4(8), GSL.IntPow4(8))
+  AddTest("GSL.IntPow5(8)", GSL.IntPow5(8), GSL.IntPow5(8))
+  AddTest("GSL.IntPow6(8)", GSL.IntPow6(8), GSL.IntPow6(8))
+  AddTest("GSL.IntPow7(8)", GSL.IntPow7(8), GSL.IntPow7(8))
+  AddTest("GSL.IntPow8(8)", GSL.IntPow8(8), GSL.IntPow8(8))
+  AddTest("GSL.IntPow9(8)", GSL.IntPow9(8), GSL.IntPow9(8))
+  AddTest("GSL.IsEven(2)", GSL.IsEven(2), True)
+  AddTest("GSL.IsFinite(25)", GSL.IsFinite(25), True)
+  AddTest("GSL.IsInf(0)", GSL.IsInf(0), False)
+  AddTest("GSL.IsNan(0)", GSL.IsNan(0), False)
+  AddTest("GSL.IsOdd(3)", GSL.IsOdd(3), True)
+  AddTest("GSL.IsPos(0)", GSL.IsPos(0), True)
+  AddTest("GSL.Ldexp(17.63, 3)", GSL.Ldexp(17.63, 3), 141.04)
+  AddTest("GSL.Log1p(12.36)", GSL.Log1p(12.36), GSL.Log1p(12.36))
+  AddTest("GSL.MaxFloat(2.0123, 2.01234)", GSL.MaxFloat(2.0123, 2.01234), 2.01234)
+  AddTest("GSL.MaxInt(1,3)", GSL.MaxInt(1, 3), 3)
+  AddTest("GSL.MinFLoat(0.001, 0.0011)", GSL.MinFLoat(0.001, 0.0011), 0.001)
+  AddTest("GSL.MinInt(1,3)", GSL.MinInt(1, 3), 1)
+  
+  End
+  
+  
+'----------------------------------------------------------------
+'Test GSL Class constance
+'----------------------------------------------------------------
+Public Sub testGslConstance()
+  ' Constance
+  AddTest("GSL.M_1_PI", GSL.M_1_PI, 0.31830988618379067153776752675)
+  AddTest("GSL.M_2_PI", GSL.M_2_PI, 0.63661977236758134307553505349)
+  AddTest("GSL.M_2_SQRTPI", GSL.M_2_SQRTPI, 1.12837916709551257389615890312)
+  AddTest("GSL.M_E", GSL.M_E, 2.71828182845904523536028747135)
+  AddTest("GSL.M_EULER", GSL.M_EULER, 0.57721566490153286060651209008)
+  AddTest("GSL.M_LN2", GSL.M_LN2, 0.69314718055994530941723212146)
+  AddTest("GSL.M_LN10", GSL.M_LN10, 2.30258509299404568401799145468)
+  AddTest("GSL.M_LNPI", GSL.M_LNPI, 1.14472988584940017414342735135)
+  AddTest("GSL.M_LOG10E", GSL.M_LOG10E, 0.43429448190325182765112891892)
+  AddTest("GSL.M_LOGE", GSL.M_LOGE, 1.44269504088896340735992468100)
+  AddTest("GSL.M_PI", GSL.M_PI, 3.14159265358979323846264338328)
+  AddTest("GSL.M_PI_2", GSL.M_PI_2, 1.57079632679489661923132169164)
+  AddTest("GSL.M_PI_4", GSL.M_PI_4, 0.78539816339744830961566084582)
+  AddTest("GSL.M_SQRT1_2", GSL.M_SQRT1_2, 0.70710678118654752440084436210)
+  AddTest("GSL.M_SQRT2", GSL.M_SQRT2, 1.41421356237309504880168872421)
+  AddTest("GSL.M_SQRT3", GSL.M_SQRT3, 1.73205080756887729352744634151)
+  AddTest("GSL.M_SQRTPI", GSL.M_SQRTPI, 1.77245385090551602729816748334) 
+  
+End
+
+
+
+'------------------------------------------------------------------
+'Test Complex Class Methods
+'------------------------------------------------------------------
+Public Sub AddComplexTest(name As String, result As Variant, expected As Variant, Optional note As String) 
+  
+  Dim t As New TestComplex
+  
+  ts.AddTest(t)
+  t.Run(name, result, expected, note)
+  
+End
+
+
+'-------------------------------------------------------------------
+'Test Complex Class Methods
+'-------------------------------------------------------------------
+Public Sub testComplexMethods()
+  Dim c As New Complex
+  Dim z1 As New Complex
+  Dim z2 As New Complex
+  Dim z3 As Complex
+  
+  z1.Set(1, 1)
+  z2.Set(2, 2)
+  
+  AddComplexTest("z1.Abs()", z1.Abs(), z1.Abs(), ("z1 = " & z1.ToString()))
+  AddComplexTest("z1.Abs2()", z1.Abs2(), z1.Abs2(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Add(z2)", z1.Add(z2), z1.Add(z2), "z1 = " & z1.ToString())
+  AddComplexTest("z1.AddImag(1)", z1.AddImag(1), z1.AddImag(1), "z1 = " & z1.ToString())
+  AddComplexTest("z1.AddReal(1)", z1.AddReal(1), z1.AddReal(1), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Arccos()", z1.Arccos(), z1.Arccos(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Arccosh()", z1.Arccosh(), z1.Arccosh(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.ArccoshReal(5.45)", z1.ArccoshReal(5.45), z1.ArccoshReal(5.45), "z1 = " & z1.ToString())
+  AddComplexTest("z1.ArccosReal(3.25)", z1.ArccosReal(3.25), z1.ArccosReal(3.25), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Arccot()", z1.Arccot(), z1.Arccot(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Arccoth()", z1.Arccoth(), z1.Arccoth(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Arccsc()", z1.Arccsc(), z1.Arccsc(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Arccsch()", z1.Arccsch(), z1.Arccsch(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.ArccscReal(3.45)", z1.ArccscReal(3.45), z1.ArccscReal(3.45), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Arcsec()", z1.Arcsec(), z1.Arcsec(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Arcsech()", z1.Arcsech(), z1.Arcsech(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.ArcsecReal(3.45)", z1.ArcsecReal(3.45), z1.ArcsecReal(3.45), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Arcsin()", z1.Arcsin(), z1.Arcsin(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Arcsinh()", z1.Arcsinh(), z1.Arcsinh(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.ArcsinReal(3.45)", z1.ArcsinReal(3.45), z1.ArcsinReal(3.45), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Arctan()", z1.Arctan(), z1.Arctan(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Arctanh()", z1.Arctanh(), z1.Arctanh(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.ArctanhReal(3.45)", z1.ArctanhReal(3.45), z1.ArctanhReal(3.45), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Arg()", z1.Arg(), z1.Arg(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Copy()", z1.Copy(), z1.Copy(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Cos()", z1.Cos(), z1.Cos(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Cosh()", z1.Cosh(), z1.Cosh(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Cot()", z1.Cot(), z1.Cot(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Coth()", z1.Coth(), z1.Coth(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Csc()", z1.Csc(), z1.Csc(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Csch()", z1.Csch(), z1.Csch(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Csch()", z1.Csch(), z1.Csch(), "z1 = [" & z1.ToString() & "] z2 = [" & z2.ToString() & "]")
+  AddComplexTest("z1.DivImag(3.45)", z1.DivImag(3.45), z1.DivImag(3.45), "z1 = " & z1.ToString())
+  AddComplexTest("z1.DivReal(3.45)", z1.DivReal(3.45), z1.DivReal(3.45), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Exp()", z1.Exp(), z1.Exp(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Log()", z1.Log(), z1.Log(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Log10()", z1.Log10(), z1.Log10(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.LogAbs()", z1.LogAbs(), z1.LogAbs(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Logb(z2)", z1.Logb(z2), z1.Logb(z2), "z1 = [" & z1.ToString() & "] z2 = [" & z2.ToString() & "]")
+  AddComplexTest("z1.Mul(z2)", z1.Mul(z2), z1.Mul(z2), "z1 = [" & z1.ToString() & "] z2 = [" & z2.ToString() & "]")
+  AddComplexTest("z1.MulImag(3.45)", z1.MulImag(3.45), z1.MulImag(3.45), "z1 = " & z1.ToString())
+  AddComplexTest("z1.MulReal(3.45)", z1.MulReal(3.45), z1.MulReal(3.45), "z1 = " & z1.ToString())
+  z1.Polar(5, 2)
+  AddComplexTest("z1.Polar(5,2)", z1.Copy(), z1.Copy(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Pow(z2)", z1.Pow(z2), z1.Pow(z2), "z1 = [" & z1.ToString() & "] z2 = [" & z2.ToString() & "]")
+  AddComplexTest("z1.PowReal(2) ", z1.PowReal(2), z1.PowReal(2), "z1 = [" & z1.ToString() & "] z2 = [" & z2.ToString() & "]")
+  z1.Rect(1, 1)
+  AddComplexTest("z1.Rect(1,1)", z1.Copy(), z1.Copy(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Sec()", z1.Sec(), z1.Sec(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Sech()", z1.Sech(), z1.Sech(), "z1 = " & z1.ToString())
+  z1.Set(2, 2)
+  AddComplexTest("z1.Set(2,2)", z1.Copy(), z1.Copy(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Sin()", z1.Sin(), z1.Sin(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Sinh()", z1.Sinh(), z1.Sinh(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Sqrt()", z1.Sqrt(), z1.Sqrt(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.SqrtReal(3.45)", z1.SqrtReal(3.45), z1.SqrtReal(3.45), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Sub(z2)", z1.Sub(z2), z1.Sub(z2), "z1 = [" & z1.ToString() & "] z2 = [" & z2.ToString() & "]")
+  AddComplexTest("z1.SubImag(1.321)", z1.SubImag(1.321), z1.SubImag(1.321), "z1 = " & z1.ToString())
+  AddComplexTest("z1.SubReal(2.125)", z1.SubReal(2.125), z1.SubReal(2.125), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Tan()", z1.Tan(), z1.Tan(), "z1 = " & z1.ToString())
+  AddComplexTest("z1.Tanh()", z1.Tanh(), z1.Tanh(), "z1 = " & z1.ToString())
+    
+End
+
+
+'-------------------------------------------------------------------
+' Add Polynomial Tests
+'-------------------------------------------------------------------
+Public Sub AddPolynomialTest(name As String, result As Variant, expected As Variant, Optional note As String) 
+  
+  Dim t As New TestPolynomial
+  
+  ts.AddTest(t)
+  t.Run(name, result, expected, note)
+  
+End
+
+
+'-------------------------------------------------------------------
+' Polynomial Tests
+'-------------------------------------------------------------------
+Public Sub testPolynomialMethods()
+  Dim c As New Complex
+  Dim p1 As New Polynomial
+  Dim p2 As New Polynomial
+  Dim p3 As Polynomial
+  Dim f1 As Float
+  Dim f2 As Float
+  
+  p1.AddCoef(0.565)
+  p1.AddCoef(1.738)
+  p1.AddCoef(3.1465)
+  
+  AddPolynomialTest("p1.AddCoef(0.565)", p1.AddCoef(0.565), 1, p1.ToString())
+  AddPolynomialTest("p1.AddCoef(1.738)", p1.AddCoef(1.738), 2, p1.ToString())
+  AddPolynomialTest("p1.AddCoef(3.1465)", p1.AddCoef(3.1465), 3, p1.ToString())
+  
+
+End Sub
+
+
+
+
+
+
+'-------------------------------------------------------------------
+'Run all tests
+'-------------------------------------------------------------------
+Public Sub Main()
+  
+  ' Setup test suite
+  ts.Name = "GSL Component"
+  ts.HeaderChar = "="
+  ts.HeaderWidth = 40
+  ts.TestHeaderChar = "-"
+  ts.TestHeaderWidth = 40
+  ts.Note = "This test suite was developed for use\n"
+            "with GSL Component development. However,\n"
+            "it may be useful in other projects."
+  ts.ShowTestNotes = True
+  
+  'Run our GSL Class Tests
+  testGslMethods()
+  testGslConstance 
+  
+  'Run Complex Class Test
+  testComplexMethods()
+  
+  'Run Polynomial Class Test
+  testPolynomialMethods()
+  
+  
+  ' Finnish by showing test results
+  ts.ShowTests()
+End
+
+

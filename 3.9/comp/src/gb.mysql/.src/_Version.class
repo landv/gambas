@@ -1,0 +1,34 @@
+' Gambas class file
+
+Export
+Create Static
+
+Public Function Version() As String
+
+  Return modMain.$Connection.Exec("SELECT VERSION() AS `Version`")!"Version"
+
+End
+
+Public Function MayorVersion() As String
+
+  Return modMain.$Connection.Exec("SELECT LEFT(VERSION(), 1) AS `Version`")!"Version"
+
+End
+
+Public Function MinorVersion() As String
+
+  Return modMain.$Connection.Exec("SELECT MID(VERSION(), 3, 1) AS `Version`")!"Version"
+
+End
+
+Public Function Release() As String
+
+  Return modMain.$Connection.Exec("SELECT SUBSTRING(VERSION(), 5)  AS `Version`")!"Version"
+
+End
+
+Public Function VersionComment() As String
+
+  Return modMain.$Connection.Exec("SELECT `VARIABLE_VALUE` FROM `information_schema`.`GLOBAL_VARIABLES` WHERE `VARIABLE_NAME` = 'VERSION_COMMENT'")!"VARIABLE_VALUE"
+
+End

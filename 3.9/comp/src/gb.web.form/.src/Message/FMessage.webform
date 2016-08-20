@@ -1,0 +1,43 @@
+# Gambas Form File 3.0
+
+{ WebForm WebForm
+  #MoveScaled(0,0,77,36)
+  Arrangement = Arrange.Vertical
+  Margin = True
+  Spacing = True
+  { WebContainer1 WebHBox
+    #MoveScaled(1,1,75,19)
+    Expand = True
+    Spacing = True
+    { WebContainer2 WebVBox
+      #MoveScaled(1,1,17,17)
+      { imgIcon WebImage
+        #MoveScaled(1,1,15,10)
+      }
+    }
+    { txtMessage WebHtml
+      #MoveScaled(19,1,33,17)
+      Expand = True
+    }
+  }
+  { panButton WebHBox
+    #MoveScaled(1,21,75,7)
+    Spacing = True
+    { WebContainer3 WebContainer
+      #MoveScaled(1,1,5,5)
+      Expand = True
+    }
+    { btnButton3 WebButton
+      #MoveScaled(7,1,17,5)
+      Visible = False
+    }
+    { btnButton2 WebButton
+      #MoveScaled(25,1,17,5)
+      Visible = False
+    }
+    { btnButton1 WebButton
+      #MoveScaled(43,1,17,5)
+      Text = ("OK")
+    }
+  }
+}

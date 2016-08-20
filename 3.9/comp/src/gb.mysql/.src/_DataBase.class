@@ -1,0 +1,153 @@
+' Gambas class file
+
+Export
+Create Static
+
+Public Sub Process_Error(sError As String) 'Raises an error if the Dump fails
+
+  Error.Raise(Error.Text)
+
+End
+
+Public Procedure Modify(Optional Database As String = modMain.$Connection.Name, Optional Charset As String = modMain.$Connection.MySQL.Charset, Optional Collation As String = modMain.$Connection.MySQL.Collation)
+
+  modMain.RunQuery("ALTER DATABASE `" & Database & "` DEFAULT CHARACTER SET = " & Charset & " DEFAULT COLLATE " & Collation)
+
+End
+
+Public Procedure Delete(Optional Database As String = modMain.$Connection.Name, Optional IfExists As Boolean = False)
+
+  modMain.$Query = "DROP DATABASE "
+  If IfExists Then modMain.$Query &= "IF EXISTS "
+  modMain.$Query &= "`" & Database & "`"
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure Add(Database As String, Optional Charset As String = modMain.$Connection.MySQL.Charset, Optional Collation As String = modMain.$Connection.MySQL.Collation)
+
+  modMain.RunQuery("CREATE DATABASE `" & Database & "` DEFAULT CHARACTER SET = " & Charset & " DEFAULT COLLATE " & Collation)
+
+End
+
+Public Procedure Dump(Optional Database As String = modMain.$Connection.Name, Optional Tables As String[], Optional File As String, Optional Options As String[], Optional {Replace} As Boolean)
+
+  Dim sTmp As String
+  Dim iCounter As Integer
+
+  If Not File Then File = User.Home &/ "Dump_" & Database & ".sql"
+  sTmp = "mysqldump "
+  If Options Then
+    For iCounter = 0 To Options.Count - 1
+      sTmp &= Options[iCounter] & " "
+    Next
+  Else
+    sTmp &= "--force --no-autocommit --routines "
+  Endif
+  sTmp &= "-u " & modMain.$Connection.User & " -h " & modMain.$Connection.Host
+  If modMain.$Connection.Port Then sTmp &= " -P " & modMain.$Connection.Port
+  sTmp &= " --password='" & modMain.$Connection.Password & "' -B " & Database & " "
+  If Tables Then
+    sTmp &= "--tables "
+    For iCounter = 0 To Tables.Count - 1
+      sTmp &= Tables[iCounter] & " "
+    Next
+  Endif
+  If Not {Replace} Then sTmp &= ">"
+  sTmp &= "> " & File
+  Shell sTmp Wait For Read
+
+End
+
+Public Function Info(Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SHOW CREATE DATABASE `" & Database & "`"
+  Return modMain.$Connection.Exec(modMain.$Query)!"Create Database"
+
+End
+
+Public Function Tables(Optional Database As String = modMain.$Connection.Name) As String[]
+
+  Dim asTables As New String[]
+
+  modMain.$Query = "SELECT `TABLE_NAME` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND TABLE_TYPE = 'BASE TABLE'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    asTables.Add(modMain.$hResult!TABLE_NAME)
+  Next
+  Return asTables
+
+End
+
+Public Function Views(Optional Database As String = modMain.$Connection.Name) As String[]
+
+  Dim asViews As New String[]
+
+  modMain.$Query = "SELECT `TABLE_NAME` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND TABLE_TYPE = 'VIEW'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    asViews.Add(modMain.$hResult!TABLE_NAME)
+  Next
+  Return asViews
+
+End
+
+Public Function Triggers(Optional Database As String = modMain.$Connection.Name) As String[]
+
+  Dim asTriggers As New String[]
+
+  modMain.$Query = "SELECT `TRIGGER_NAME` FROM `information_schema`.`TRIGGERS` WHERE `TRIGGER_SCHEMA` = '" & Database & "'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    asTriggers.Add(modMain.$hResult!TRIGGER_NAME)
+  Next
+  Return asTriggers
+
+End
+
+Public Function Routines(Optional Database As String = modMain.$Connection.Name) As String[]
+
+  Dim asRoutines As New String[]
+
+  modMain.$Query = "SELECT `name` FROM `mysql`.`proc` WHERE `db` = '" & Database & "'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    asRoutines.Add(modMain.$hResult!name)
+  Next
+  Return asRoutines
+
+End
+
+Public Function Events(Optional Database As String = modMain.$Connection.Name) As String[]
+
+  Dim asRoutines As New String[]
+
+  modMain.$Query = "SELECT `name` FROM `mysql`.`event` WHERE `db` = '" & Database & "'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    asRoutines.Add(modMain.$hResult!name)
+  Next
+  Return asRoutines
+
+End
+
+Public Function Charset(Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT `DEFAULT_CHARACTER_SET_NAME` FROM `information_schema`.`SCHEMATA` WHERE `SCHEMA_NAME` = '" & Database & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!DEFAULT_CHARACTER_SET_NAME
+
+End
+
+Public Function Collation(Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT `DEFAULT_COLLATION_NAME` FROM `information_schema`.`SCHEMATA` WHERE `SCHEMA_NAME` = '" & Database & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!DEFAULT_COLLATION_NAME
+
+End
+
+' Public Function Engine(Optional DataBase As String) As String
+' 
+'   If Not Database Then Database = modMain.$Connection.Name
+'   Return "" 'I don't know how to retrive the database engine
+' 
+' End

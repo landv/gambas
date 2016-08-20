@@ -1,0 +1,90 @@
+' Gambas module file
+
+'tutorial based on tutorial from NeHe Productions site at http://nehe.gamedev.net/
+'visit the page for more info on OpenGL
+'
+'In this tutorial we add rotation to our objects from tutorial 3
+
+Private screen As New Window(True) As "Screen"
+Private rtri As Float           'Angle FOR The Triangle( NEW )
+Private rquad As Float          'Angle FOR The Quad( NEW )
+
+Public Sub Main()
+
+  With screen
+    .Width = 640
+    .Height = 480
+    .Title = MMain.Title
+    .Show()
+  End With
+
+End
+
+Public Sub Screen_Open()
+
+  Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
+  gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
+  gl.MatrixMode(gl.PROJECTION)
+  gl.LoadIdentity()                     'Reset The Projection Matrix
+  glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
+  gl.MatrixMode(gl.MODELVIEW)
+
+End
+
+Public Sub Screen_resize()
+
+  Gl.Viewport(0, 0, Screen.Width, Screen.Height)
+
+  Gl.MatrixMode(Gl.PROJECTION)
+  Gl.LoadIdentity()                     'Reset The Projection Matrix
+  glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
+  Gl.MatrixMode(Gl.MODELVIEW)
+
+End
+
+Public Sub init()
+
+End
+
+Public Sub Screen_Draw()
+
+  gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)    ' Clear The Screen And The Depth Buffer
+  gl.LoadIdentity()                                           'Reset The View
+  gl.translatef(-1.5, 0.0, -6.0)                             ' MOVE Left 1.5 Units AND Into The Screen 6.0
+  gl.Rotatef(rtri, 0.0, 1.0, 0.0)                       'Rotate The Triangle On The Y axis( NEW )
+
+  gl.Begin(gl.TRIANGLES)                             'Drawing Using Triangles
+  gl.Color3f(1.0, 0.0, 0.0)                           'Set The Color TO Red
+  gl.Vertex3f(0.0, 1.0, 0.0)                          'Top
+  gl.Color3f(0.0, 1.0, 0.0)                           'Set The Color TO Green
+  gl.Vertex3f(-1.0, -1.0, 0.0)                        'Bottom Left
+  gl.Color3f(0.0, 0.0, 1.0)                           'Set The Color TO Blue
+  gl.Vertex3f(1.0, -1.0, 0.0)                         'Bottom Right
+  gl.End()                                               'Finished Drawing The Triangle
+
+  gl.LoadIdentity()                                     'Reset The Current Modelview Matrix
+  gl.translatef(1.5, 0.0, -6.0)                        'Move Right 1.5 Units And Into The Screen 6.0
+  gl.Rotatef(rquad, 1.0, 0.0, 0.0)                      'Rotate The Quad On The X axis( NEW )
+
+  gl.Color3f(0.5, 0.5, 1.0)                             'Set The Color TO Blue One Time Only
+  gl.Begin(gl.QUADS)                                 'Draw A Quad
+  gl.Vertex3f(-1.0, 1.0, 0.0)                         'Top Left
+  gl.Vertex3f(1.0, 1.0, 0.0)                          'Top Right
+  gl.Vertex3f(1.0, -1.0, 0.0)                         'Bottom Right
+  gl.Vertex3f(-1.0, -1.0, 0.0)                        'Bottom Left
+  gl.End()                                               'Done Drawing The Quad
+
+  rtri += 0.2               'Increase The Rotation Variable FOR The Triangle( NEW )
+  rquad -= 0.15             'Decrease The Rotation Variable FOR The Quad( NEW )
+
+End
+
+Public Sub Screen_keyPress()
+
+  If (key.code = key.F1) Then screen.Fullscreen = Not screen.Fullscreen
+  If (key.Code = key.Esc) Then Screen.Close()
+
+End

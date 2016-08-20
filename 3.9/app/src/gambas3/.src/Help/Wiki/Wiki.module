@@ -1,0 +1,883 @@
+' Gambas module file
+
+Public Const DEFAULT_LANG As String = "en"
+
+Public Languages As String[] = [DEFAULT_LANG, "fr", "de", "es", "it", "nl", "pl", "pt", "pt_BR", "mk", "sq", "ca", 
+    "hu", "cs", "tr", "ar", "fa", "id", "vi", "ko", "ja", "ru", "zh", "zh_TW", "eo"]
+
+Public SystemLanguages As String[] = ["C", "fr_FR.UTF-8", "de_DE.UTF-8", "es_ES.UTF-8", "it_IT.UTF-8", "nl_NL.UTF-8", "pl_PL.UTF-8", "pt_PT.UTF-8", "pt_BR.UTF-8", "mk_MK.UTF-8", "sq_AL.UTF-8", "ca_ES.UTF-8", 
+    "hu_HU.UTF-8", "cs_CZ.UTF-8", "tr_TR.UTF-8", "ar_AE.UTF-8", "fa_IR.UTF-8", "id_ID.UTF-8", "vi_VN.UTF-8", "ko_KR.UTF-8", "ja_JP.UTF-8", "ru_RU.UTF-8", "zh_CN.UTF-8", "zh_TW.UTF-8", "eo.UTF-8"]
+
+
+Public WikiRoot As String = "wiki://"
+Public Root As String
+Public InfoDir As String
+Public Lang As String
+Public Path As String
+Public Exist As Boolean
+Public Edit As Boolean
+Public (Image) As Boolean
+Public LinkSuffix As String
+Public History As Integer
+Public UserName As String
+
+Public (Component) As String
+Public (Class) As String
+Public Symbol As String
+
+Public Documentation As New CDocumentation("wiki")
+
+Private Sub AddLinkSuffix(sReq As String)
+
+  If LinkSuffix Then
+    LinkSuffix &= "&"
+  Else
+    LinkSuffix = "?"
+  Endif
+  LinkSuffix &= sReq
+
+End
+
+Public Sub SetLanguage(sLang As String)
+
+  Dim iLang As Integer
+  
+  Lang = sLang
+  
+  If Not Lang Then Lang = DEFAULT_LANG 
+  
+  iLang = Languages.Find(Lang)
+  If iLang >= 0 Then
+    System.Language = SystemLanguages[iLang]
+  Else
+    Lang = DEFAULT_LANG
+  Endif
+
+  If Lang <> DEFAULT_LANG Then AddLinkSuffix("l=" & sLang)
+  
+End
+
+Public Sub GetPagePath(Optional bSuffix As Boolean) As String
+
+  Dim sPath As String
+  
+  sPath = Root &/ "data" &/ Lang &/ Path &/ "~page"
+  If bSuffix Then sPath &= "." & Format(Now, "yyyymmddhhnnssuu") & "." & UserName
+  Return sPath
+  
+End
+
+Public Sub GetPagePathFrom(sPath As String, Optional sLang As String) As String
+  
+  If Not sLang Then sLang = Lang
+  Return Root &/ "data" &/ sLang &/ sPath &/ "~page"
+  
+End
+
+
+Public Sub MakeDir(sDir As String)
+
+  Dim sPath As String
+  Dim sElt As String
+
+  For Each sElt In Split(sDir, "/")
+    sPath &/= sElt
+    'Shell "echo MKDIR: " & Shell$(sPath) & " >> /tmp/session.log" Wait
+    Try Mkdir "/" & sPath
+  Next
+
+  'If Not Exist(sDir) Or If Not IsDir(sDir) Then Return True
+
+End
+
+' Public Sub Main()
+' 
+'   Dim sMsg As String
+'   Dim aPage As String[]
+'   Dim sDir As String
+'   Dim aPath As String[]
+'   Dim sLang As String
+'   Dim hUser As CUser
+'   Dim sData As String
+'   Dim sPath As String
+'   
+'   'CGI["SCRIPT_NAME"] = "/wiki" ' Fix web server bug
+'   Root = User.Home &/ "wiki/gambas"
+'   InfoDir = User.Home &/ "wiki/info"
+'   If Not Exist(InfoDir) Then InfoDir = ""
+' 
+'   ' The url path is directly converted to a relative directory path inside the "data" directory located in the root directory.
+'   ' The page contents is stored inside a "~page" file located in that directory.
+'   ' Consequently, no "~" character is allowed in the url path.
+'   ' Each page modification is archived in a "~page.<date>.<user>" file, allowing changes to be undone.
+'   
+'   Path = "" 'Request.Path
+'   If Right(Path) = "/" Then Path = Left(Path, -1)
+'   
+'   ' Handle resource files: images, style sheet...
+'   
+'   If File.Name(Path) = "style.css" Then
+'     Response.ContentType = "text/css"
+'     Response.Begin
+'     Print Replace(File.Load(".public/style.css"), "<%/%>", Application.Root);
+'     Response.End
+'     Return
+'   Else If Path And If Exist(".public" &/ Path) Then
+'     Response.SendFile(".public" &/ Path)
+'     Return
+'   Endif
+'   
+'   If Path = "/~register" Then
+'     If Request.Exist("cancel") Then
+'       Response.Redirect(Application.Root)
+'       Return
+'     Else If Request.Exist("confirm") Then
+'       If RegisterUser() Then Return
+'     Endif
+'     Register.Render
+'     If Session.Id And If Session["login"] = "" Then Session.Abandon
+'     Return
+'   Endif
+'   
+'   If Path = "/~confirm" Then
+'     Confirm.Render
+'     Return
+'   Endif
+'   
+'   If Path = "/~stat" Then
+'     HttpStat.Render
+'     Return
+'   Endif
+'   
+'   ' Reject pages whose url includes a "~" character.
+'   
+'   If InStr(Path, "~") Then
+'     Response.Status = "404 Not Found"
+'     Response.Begin
+'     Print "<h1>404 Not Found</h1>"
+'     Response.End
+'     Return
+'   Endif
+'   
+'   If Request.Exist("lang") Then
+'     sLang = Request["lang"]
+'     If sLang = DEFAULT_LANG Then sLang = ""
+'     If sLang <> Request["l"] Then
+'       If sLang Then
+'         Redirect("l=" & sLang)
+'       Else
+'         Redirect
+'       Endif
+'     Endif
+'   Endif
+' 
+'   SetLanguage(Request["l"])
+'   If Request.Exist("v") Then AddLinkSuffix("v")
+'   If Request.Exist("nh") Then AddLinkSuffix("nh")
+'   If Request.Exist("w") Then AddLinkSuffix("w")
+'     
+'   If Request.Exist("logout") Then
+'     
+'     Session.Abandon
+'     
+'   Else If Request.Exist("register") Then
+'     
+'     Response.Redirect(Application.Root &/ "~register")
+'     Return
+'    
+'   Else If Request["login"] And If Request["password"] Then
+'     
+'     Session.Abandon
+'     
+'     For Each hUser In CUser.Load()
+'       If hUser.Login = Request["login"] And If hUser.Password = Request["password"] And If Not hUser.Confirm Then
+'         Session["login"] = hUser.Login
+'         Break
+'       Endif
+'     Next
+'     
+'   Endif
+' 
+'   UserName = Session["login"]
+'   {Exist} = Wiki.ExistPage(Path)
+'   Image = IsImage(Path)
+'   Try History = CInt(Request["h"])
+'   
+'   ' Analyze component path
+'   If Path Begins "/comp/gb" Then
+'     
+'     CComponent.Init
+'     aPath = Split(Path, "/", "", True)
+'     Component = aPath[1]
+'     If aPath.Count >= 3 Then {Class} = aPath[2]
+'     If aPath.Count >= 4 Then 
+'       Symbol = aPath[3]
+'       If Left(Symbol) = "." Then Symbol = ":" & Mid$(Symbol, 2)
+'     Endif
+'     
+'   Endif
+' 
+'   If Session.Id Then
+'   
+'     If Request.Exist("save") Then
+'     
+'       If Request.Exist("page") Then
+'         MakeDir(File.Dir(GetPagePath()))
+'         LockPage
+'         sData = Replace(Request["page"], "\r", "")
+'         sPath = GetPagePath()
+'         If Not Exist(sPath) Or If sData <> File.Load(sPath) Then
+'           File.Save(sPath, sData)
+'           Copy sPath To GetPagePath(True)
+'           Wiki.Log(Wiki.Path & " (" & Wiki.Lang & ")")
+'         Endif
+'         Redirect
+'         Return
+'       Else If Request.Exist("file") And If Image Then
+'         sPath = GetPagePath()
+'         MakeDir(File.Dir(sPath))
+'         LockPage
+'         Try Kill sPath
+'         Copy Request.Files["file"] To sPath
+'         Copy sPath To GetPagePath(True)
+'         Wiki.Log(Wiki.Path & " (" & Wiki.Lang & ")")
+'         Redirect
+'         Return
+'       Endif
+'       
+'     Else If Request.Exist("delete") Then
+'       
+'       If {Exist} Then
+'         sPath = GetPagePath()
+'         LockPage
+'         File.Save(sPath, "")
+'         Copy sPath To GetPagePath(True)
+'         Wiki.Log("Delete " & Wiki.Path & " (" & Wiki.Lang & ")")
+'       Endif
+'       Redirect
+'       Return
+'       
+'     Else If Request.Exist("undo") Then
+'       
+'       sPath = GetPagePath()
+'       sDir = File.Dir(sPath)
+'       aPage = Dir(sDir, "~page.*").Sort(gb.Descent)
+'       If aPage.Count >= 2 Then
+'         LockPage
+'         Try Kill sDir &/ aPage[0]
+'         Try Kill sPath
+'         Try Copy sDir &/ aPage[1] To sPath
+'         Wiki.Log("Undo " & Wiki.Path & " (" & Wiki.Lang & ")")
+'       Endif
+'       Redirect
+'       Return
+'       
+'     Else If Request.Exist("create") Or If Request.Exist("edit") Then
+'       
+'       Edit = True
+'       
+'     Else If Request.Exist("historic") Then
+' 
+'       Redirect("h=1")
+'     
+'     Else If Request.Exist("prev") Then
+'       
+'       History = Max(0, History + 1)
+'       Redirect("h=" & CInt(History))
+'     
+'     Else If Request.Exist("next") Then
+'       
+'       History = Max(0, History - 1)
+'       If History Then
+'         Redirect("h=" & CInt(History))
+'       Else
+'         Redirect
+'       Endif
+'       
+'     Else If Request.Exist("exit") Then
+'     
+'       Redirect()
+' 
+'     Endif
+'     
+'   Endif
+' 
+'   If Image Then
+'     If Not Session.Id Or If Request.Exist("v") Then
+'       Response.SendFile(GetPagePath(), GetContentTypeFrom(Path))
+'       Return
+'     Endif
+'   Endif
+' 
+'   Wiki.Render
+'   CComponent.Exit
+'   
+' Catch
+'   
+'   sMsg = Error.Where & ": " & Error.Text & "\n" & Error.Backtrace.Join("\n")
+'   Response.Begin
+'   Response.ContentType = "text/plain;charset=utf-8"
+'   Print "<pre>"; sMsg; "</pre>"
+'   Response.End
+' 
+' End
+
+Public Sub SolvePath(sPath As String) As String
+  
+  Dim sData As String
+  
+  Do
+  
+    If Not Wiki.ExistPage(sPath) Then Return sPath
+    
+    sData = File.Load(Wiki.GetPagePathFrom(sPath))
+    If sData Begins "-->" Then
+      sPath = MakeAbsolute(Trim$(Mid$(sData, 4)), sPath)
+    Else
+      Return sPath
+    Endif
+    
+  Loop
+  
+End
+
+
+Public Sub GetPageTitle(sPath As String) As String
+  
+  Dim sFile As String
+  Dim iPos As Integer
+  Dim bComp As Boolean
+  Dim sRealPath As String
+  
+  sPath = SolvePath(sPath)
+  bComp = sPath Begins "/comp/"
+  
+  If bComp Then
+    If sPath Like "/comp/*/*/?*" Then Return GetSymbolTitle(sPath)
+    If sPath Like "/comp/*/?*" Then Return GetClassTitle(sPath)
+  Endif
+  
+  sRealPath = Root &/ "data" &/ Lang &/ sPath &/ "~page"
+  If Not Exist(sRealPath) Then sRealPath = Root &/ "data" &/ DEFAULT_LANG &/ sPath &/ "~page"
+  If Not Exist(sRealPath) Then Return
+  
+  sFile = LTrim(File.Load(sRealPath))
+  
+  If sFile Begins "# " Then
+    iPos = InStr(sFile, "\n")
+    If iPos = 0 Then iPos = Len(sFile) + 1
+    sFile = Trim(Mid$(sFile, 3, iPos - 3))
+    If Not bComp Then sFile = String.UCaseFirst(sFile)
+    Return sFile
+  Endif
+  
+End
+
+Public Sub IsImage(sPath As String) As Boolean
+
+  Dim sExt As String
+  
+  sExt = File.Ext(sPath)
+  Return ["png", "jpg", "jpeg", "gif"].Exist(sExt)
+  
+End
+
+' Private Sub GetContentTypeFrom(sPath As String) As String
+'   
+'   Select Case Lower(File.Ext(sPath))
+'     Case "css"
+'       Return "text/css"
+'     Case "jpg", "jpeg", "jpe", "thumb"
+'       Return "image/jpeg"
+'     Case "png"
+'       Return "image/png"
+'     Case "gif"
+'       Return "image/gif"
+'     Case "tiff", "tif"
+'       Return "image/tiff"
+'     Case "odt"
+'       Return "application/vnd.oasis.opendocument.text"
+'     Case "doc"
+'       Return "application/msword"
+'     Case "ods"
+'       Return "application/vnd.oasis.opendocument.spreadsheet"
+'     Case "xls"
+'       Return "application/msexcel"
+'     Case "pdf"
+'       Return "application/pdf"
+'     Case "zip"
+'       Return "application/zip"
+'     Case "html", "htm"
+'       Return "text/html"
+'     Case "txt"
+'       Return "text/plain"
+'     Case "avi"
+'       Return "video/x-msvideo"
+'     Case "mpg", "mpeg"
+'       Return "video/mpeg"
+'     Case "ps"
+'       Return "application/postscript"
+'     Case "dwg"
+'       Return "application/acad"
+'     Case "wav"
+'       Return "audio/x-wav"
+'     Case "ogg"
+'       Return "application/ogg"
+'     Case "jar"
+'       Return "application/x-jar"
+'     'Case "xml", "kml"
+'     '  Return "text/plain"
+'     Case Else 
+'       Return "application/octet-stream"
+'   End Select
+'   
+' End
+
+Public Sub ExistPage(sPath As String, Optional sLang As String) As Boolean
+
+  Dim iSize As Long
+  
+  Try iSize = Stat(GetPagePathFrom(sPath, sLang)).Size
+  Return iSize > 0
+  
+End
+
+
+Public Function GetSymbolLink(hClass As CClassInfo, sSym As String, Optional sMyTitle As String, Optional sMyStaticTitle As String) As String
+
+  Dim hSym As CSymbolInfo
+  Dim sRes As String
+  Dim sComp As String
+  Dim sPath As String
+
+  hSym = hClass.Symbols[sSym]
+  If Not hSym Then Return
+
+  ' If $cCompRedirect Then
+  '   sComp = hSym.Component
+  '   While $cCompRedirect.Exist(sComp)
+  '     sComp = $cCompRedirect[sComp]
+  '   Wend
+  ' Endif
+  If Not sComp Then sComp = hSym.Component
+
+  If hSym.IsStatic() And If sMyStaticTitle Then sMyTitle = sMyStaticTitle
+  
+  'sPath = GetSymbolPath(hSym)
+  sPath = "/comp" &/ LCase(sComp &/ hSym.Class &/ Replace(hSym.Name, ":", "."))
+  If sMyTitle Then
+    sRes &= "[" & sMyTitle & "] (" & sPath & ")"
+  Else
+    sRes &= "[" & sPath & "]"
+  Endif
+  
+  'If hSym.IsStatic() Then sRes &= "**"
+
+  Return sRes
+
+End
+
+Public Function GetClassLinkFromName(sClass As String) As String
+
+  Dim sComp As String = Wiki.Component
+
+  If IsNull(Documentation.Get(sComp)[sClass]) Then
+    sComp = Documentation.Classes[sClass].Component
+  Endif
+
+  Return "<a href=\"" & WikiRoot &/ LCase("comp" &/ sComp &/ sClass) & "\">" & Html(sClass) & "</a>"
+
+Catch
+
+  Return sClass
+
+End
+
+Public Sub GetStat() As String[]
+  
+  Dim nClass As Integer
+  Dim nSym As Integer
+  Dim sFile As String
+  Dim aFile As String[]
+  Dim iCpt As Integer
+  Dim sLine As String
+  Dim aIgnore As String[]
+  Dim sDir As String
+
+  sDir = Wiki.InfoDir
+
+  aIgnore = ["gb.gui.info", "gb.gtk.info", "gb.gtk3.info", "gb.gui.opengl.info", "gb.gtk.opengl.info", "gb.gui.base", "gb.geom"]
+
+  For Each sFile In Dir(sDir, "*.info")
+    If aIgnore.Find(sFile) >= 0 Then Continue
+    aFile = Split(File.Load(sDir &/ sFile), "\n", "", True)
+    iCpt = 0
+    For Each sLine In aFile
+      If Left(sLine) = "#" Then Inc iCpt
+    Next
+    nClass += iCpt
+    nSym += (aFile.Count - iCpt * 3) / 4
+  Next
+
+  Return [Subst(("There are &1 classes and &2 symbols in all Gambas components."), nClass, nSym)]
+
+Catch
+
+  Return ["`" & Error.Where & ": " & Error.Text & "`"]
+
+End
+
+Public Sub GetClassTitle(Optional sPath As String) As String
+  
+  Dim hClass As CClassInfo
+  Dim sComponent As String
+  Dim sClass As String
+  Dim aPath As String[]
+  Dim hComp As CComponent
+  
+  If Not sPath Then
+    sComponent = Wiki.Component
+    sClass = Wiki.Class
+   Else
+    aPath = Split(sPath, "/", "", True)
+    sComponent = aPath[1]
+    sClass = aPath[2]
+  Endif
+  
+  Try hComp = Documentation.Get(sComponent)
+  Try hClass = hComp[sClass]
+  
+  If hClass Then
+    If sPath Then Return hClass.Name
+    Return hClass.Name & " (" & sComponent & ")"
+  Else
+    If sPath Then Return sClass
+    Return sClass & " (" & sComponent & ")"
+  Endif
+  
+End
+
+
+Public Sub GetSymbolTitle(Optional sPath As String) As String
+
+  Dim hSym As CSymbolInfo
+  Dim sTitle As String
+  Dim sComponent As String
+  Dim sClass As String
+  Dim sSymbol As String
+  Dim aPath As String[]
+  
+  If Not sPath Then
+    sComponent = Wiki.Component
+    sClass = Wiki.Class
+    sSymbol = Wiki.Symbol
+  Else
+    aPath = Split(sPath, "/", "", True)
+    sComponent = aPath[1]
+    sClass = aPath[2]
+    sSymbol = aPath[3]
+    If Left(sSymbol) = "." Then sSymbol = ":" & Mid$(sSymbol, 2)
+  Endif
+  
+  Try hSym = Documentation.Get(sComponent)[sClass].Symbols[sSymbol]
+  
+  If sPath Then
+    If Not hSym Then Return sSymbol & " ?"
+    If InStr("e:", hSym.Kind) Then
+      Return Mid$(hSym.Name, 2)
+    Else
+      Return hSym.Name
+    Endif
+  Endif
+  
+  If Not hSym Then Return sClass & "." & sSymbol & " (" & sComponent & ")?"
+
+  Select Case Wiki.Symbol
+    Case "_new"
+      sTitle = "New " & hSym.Class
+    Case "_put"
+      sTitle = hSym.Class & "[] = ..."
+    Case "_get"
+      sTitle = hSym.Class & "[]"
+    Case "_call"
+      sTitle = hSym.Class & "()"
+    Case "_next"
+      sTitle = "For Each " & hSym.Class
+    Default
+      If InStr(":e", hSym.Kind) Then
+        sTitle = "Event " & hSym.Class & "." & Mid$(hSym.Name, 2)
+      Else
+        sTitle = hSym.Class & "." & hSym.Name
+      Endif
+  End Select
+
+  Return sTitle & " (" & hSym.Component & ")"
+  
+End
+
+Public Sub MakeAbsolute(sPath As String, sRoot As String) As String
+  
+  sPath = Trim(sPath)
+  
+  ' Fix incorrect symbolic links
+  If sPath Begins "comp/gb" Then Return "/" &/ sPath
+  
+  If sPath Begins "/" Then Return sPath
+
+  If sPath Begins "./" Then
+    If Not sRoot Then sRoot = "/"
+    Return sRoot &/ Mid$(sPath, 3)
+  Endif
+
+  While sPath Begins "../"
+    
+    sRoot = File.Dir(sRoot)
+    sPath = Mid(sPath, 4)
+    
+  Wend
+  
+  If Not sRoot Then sRoot = "/"
+  Return sRoot &/ sPath
+  
+End
+
+' Public Sub GetToDo() As String[]
+'   
+'   Dim hComp As CComponent
+'   Dim hClass As CClassInfo
+'   Dim hSymbol As CSymbolInfo
+'   Dim bPrintComponent As Boolean
+'   Dim bPrintClass As Boolean
+'   Dim sClass As String
+'   Dim sComp As String
+'   Dim sName As String
+'   Dim iCpt As Integer
+'   Dim aIgnore As String[] = ["gb.gui", "gb.gtk", "gb.gtk.opengl", "gb.gtk3", "gb.gtk3.opengl", "gb.gui.opengl", "gb.gui.base", "gb.qt5", "gb.qt5.opengl", "gb.qt5.webkit"]
+'   Dim aAllow As String[] = ["_new", "_put", "_get", "_call", "_next"]
+'   Dim sPath As String
+'   Dim aResult As New String[]
+' 
+'   $hDoc.Reset
+' 
+'   For Each sComp In 
+'     
+'     hComp = CComponent.Get(sComp)
+'     hComp.Load
+'     bPrintComponent = True
+' 
+'     For Each sClass In hComp.ClassList
+'   
+'       If sClass = "." Then Continue
+'       If InStr(sClass, "*") Then Continue
+'       
+'       hClass = hComp[sClass]
+'   
+'       bPrintClass = True
+'   
+'       'If $cCompRedirect And If $cCompRedirect.Exist(sComp) Then Continue
+'       If aIgnore.Find(sComp) >= 0 Then Continue
+'   
+'       For Each hSymbol In hClass.Symbols
+'   
+'         If hSymbol.Class <> hClass.Name Or If hSymbol.Component <> hClass.Component Then Continue
+'         
+'         sName = hSymbol.Name
+'         
+'         If hSymbol.Kind = "C" Then
+'           
+'           If Left(sName) = "_" Then Continue
+'           
+'         Else
+'         
+'           If LCase(sName) = "_free" Then Continue
+'           If LCase(sName) = "_new" Then
+'             If Not hClass.Creatable Or If hClass.IsVirtual() Then Continue
+'           Endif
+'           
+'           If InStr(sName, "_") Then
+'             If Left(sName) <> "_" Or If aAllow.Find(sName) < 0 Then Continue
+'           Endif
+'           
+'         Endif
+'         
+'         sPath = "/comp" &/ LCase(sComp &/ hSymbol.Class &/ Replace(hSymbol.Name, ":", "."))
+'         If Not ExistPage(sPath) Then
+'           
+'           If bPrintComponent Then
+'             aResult.Add("## [" & sComp & "] (/comp" &/ sComp & ")")
+'             bPrintComponent = False
+'           Endif
+'           If bPrintClass Then
+'             aResult.Add("* **[" & hClass.Name & "] (/comp" &/ sComp &/ LCase(hClass.Name) & ")**")
+'             bPrintClass = False
+'           Endif
+'           aResult.Add("  * [" & sPath & "]")
+'           Inc iCpt
+'         Endif
+'       Next
+'     Next
+'   
+'   Next
+' 
+'   aResult.Insert([Subst("There are &1 symbols to document yet.", CStr(iCpt)), ""], 0)
+'   Return aResult
+'   
+' End
+
+' Private Sub MakeLink(sLink As String, sLang As String) As String
+' 
+'   If Not sLang Then sLang = "en"
+'   If Not sLink Then sLink = "/"
+'   Return "[" & sLink & " (" & sLang & ")] (" & sLink & "?l=" & sLang & ")"
+' 
+' End
+
+' Public Sub Log(sText As String, Optional sUser As String)
+' 
+'   Dim sLog As String = Wiki.Root &/ "wiki.log"
+'   Dim hFile As File
+' 
+'   If Exist(sLog) And If Stat(sLog).Size > 50000000 Then
+'     Try Kill sLog & ".old"
+'     Try Move sLog To sLog & ".old"
+'     Try Kill sLog
+'   Endif
+'   
+'   If Not sUser Then sUser = UserName
+'   sUser = Left(sUser, 24)
+'   sUser &= Space$(24 - Len(sUser))
+'   
+'   Try hFile = Open sLog For Append
+'   If hFile Then
+'     For Each sText In Split(sText, "\n")
+'       Print #hFile, Format(Now, "mm\\/dd\\/yyyy hh\\:nn\\:ss"); " | "; sUser; " | "; sText
+'     Next
+'     Close #hFile
+'   Endif
+' 
+' End
+
+Public Sub PrintTitle()
+
+  If Wiki.Path Then
+    Print Html(Wiki.Path);
+  Else
+    Print "/";
+  Endif
+
+End
+
+Public Sub PrintLink()
+
+  Dim aPath As String[]
+  Dim sElt As String
+  Dim sPath As String
+  
+  aPath = Split(Wiki.Path, "/", "", True)
+  For Each sElt In aPath
+    sPath &= "/" & sElt
+    Print "<a href=\""; "wiki://" &/ sPath; Wiki.LinkSuffix; "\">"; "/"; sElt; "</a>";
+  Next
+  
+End
+
+Public Sub PrintPage()
+
+  Dim sPath As String
+  Dim sData As String
+  Dim iPos As Integer
+
+  If Wiki.Image Then
+    Print "<img src=\"" & WikiRoot &/ Wiki.Path & "?v\" />";
+    Return
+  Endif
+  
+  sPath = Wiki.SolvePath(Wiki.Path)
+  
+  If Not Wiki.ExistPage(sPath) Then
+    If Wiki.Lang = Wiki.DEFAULT_LANG Then
+      Print "<div class=\"unknown\">"; ("This page does not exist."); "</div>"
+    Else
+      Print "<div class=\"unknown\">"; ("This page does not exist in that language."); "</div>"
+    Endif
+    If Not Wiki.ExistPage(sPath, Wiki.DEFAULT_LANG) Then Return
+    Wiki.Lang = Wiki.DEFAULT_LANG
+  Endif
+  
+  ' If Wiki.Lang <> Wiki.DEFAULT_LANG Then
+  '   hStat = Stat(Wiki.GetPagePathFrom(Wiki.Path))
+  '   hStatDef = Stat(Wiki.GetPagePathFrom(Wiki.Path, Wiki.DEFAULT_LANG))
+  '   If hStat And If hStatDef And If hStatDef.LastModified > hStat.LastModified Then
+  '     Print "<div><i><a target=\"_blank\" href=\"" & Html(URL.UnsetQuery("http://" & Application.Host &/ Application.Root &/ Request.Path & Wiki.LinkSuffix, "l")) & "\">" & Html(("The english page is more recent.")) & "</a></i></div>"
+  '   Endif
+  ' Endif
+  
+  If Wiki.Component And If Not Documentation[Wiki.Component].Loaded Then Documentation.Reset
+  
+  sData = LTrim(File.Load(Wiki.GetPagePathFrom(sPath)))
+  If Wiki.Class Then
+    If sData Begins "# " Then
+      iPos = InStr(sData, "\n")
+      If iPos = 0 Then iPos = Len(sData)
+      sData = Mid$(sData, iPos + 1)
+    Endif
+    'sData = "# <a href=\"" & Application.Root &/ File.Dir(Wiki.Path) & "\" class=\"symbol\">" & Html(Wiki.GetSymbolTitle()) & "</a>\n" & sData
+    If Wiki.Symbol Then
+      sData = "# " & Wiki.GetSymbolTitle() & "\n" & sData
+    Else
+      sData = "# " & Wiki.GetClassTitle() & "\n" & sData
+    Endif
+  Endif
+
+  Print WikiMarkdown.ToHTML(sData)
+  
+Catch
+  
+  Print "<pre>"; Html(Error.Text); " at line #"; WikiMarkdown.Line + 1; ":\n\n"; Html(WikiMarkdown.Current); "\n\nStack backtrace:\n\n"; Error.Backtrace.Join("\n"); "</pre>";
+
+End
+
+Public Sub PrintParent() As String
+
+  Print Html("wiki://" & Wiki.LinkSuffix);
+
+End
+
+Public Sub PrintLang()
+
+  ' Dim sLang As String
+  ' 
+  ' Print "<select id=\"lang\" name=\"lang\" onchange=\"document.form.submit();\">"
+  ' 
+  ' For Each sLang In Wiki.Languages.Copy().Sort()
+  '   Print "<option value=\""; sLang; "\"";
+  '   If sLang = Wiki.Lang Then Print " selected";
+  '   Print ">"; Html(sLang); "</option>"
+  ' Next
+  ' 
+  ' Print "</select>"  
+
+End
+
+
+Public Sub AnalyzePath()
+  
+  Dim aPath As String[]
+  
+  Component = ""
+  Symbol = ""
+  {Class} = ""
+    
+  If Path Begins "/comp/gb" Then
+    
+    aPath = Split(Path, "/", "", True)
+    Component = aPath[1]
+    If aPath.Count >= 3 Then {Class} = aPath[2]
+    If aPath.Count >= 4 Then 
+      Symbol = aPath[3]
+      If Left(Symbol) = "." Then Symbol = ":" & Mid$(Symbol, 2)
+    Endif
+    
+  Endif
+  
+End

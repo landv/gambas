@@ -1,0 +1,154 @@
+' Gambas class file
+
+Class DesktopMime
+
+Static Private $cCache As New Collection
+
+Private $sDir As String
+Private $aList As String[]
+Private $dDate As Date
+Private $cStat As New Collection
+Private $cIcon As New Collection
+Private $cIsDir As New Collection
+Private $iLock As Integer
+
+Static Public Sub _get(sDir As String) As DirCache
+  
+  Dim hCache As DirCache
+  
+  If Right(sDir) <> "/" Then sDir &= "/"
+  
+  hCache = $cCache[sDir]
+  If Not hCache Then
+    hCache = New DirCache(sDir)
+    $cCache[sDir] = hCache
+  Endif
+  
+  Return hCache
+  
+End
+
+Static Public Sub Exit()
+  
+  $cCache = Null
+  
+End
+
+
+Public Sub _new(sDir As String)
+  
+  $sDir = sDir
+  
+End
+
+Public Sub Clear()
+  
+  $dDate = Null
+  
+End
+
+
+Private Sub CheckValid() As Boolean
+  
+  Dim dNewDate As Date 
+  
+  If $iLock Then Return
+  
+  dNewDate = Stat($sDir).LastModified
+  
+  If IsNull($dDate) Or If dNewDate > $dDate Then
+    $dDate = dNewDate
+    $cStat.Clear
+    $aList = Null
+  Endif
+  
+End
+
+Public Sub Invalidate()
+  
+  $dDate = Null
+  
+End
+
+
+Public Sub GetInfo(sFile As String) As Stat
+  
+  Dim hInfo As Stat
+  
+  If CheckValid() Then Return
+  
+  If sFile = "" Then sFile = "/"
+  hInfo = $cStat[sFile]
+  If Not hInfo Then
+    
+    'Debug sFile
+    hInfo = Stat($sDir &/ sFile)
+    $cStat[sFile] = hInfo
+    
+  Endif
+  
+  Return hInfo
+  
+End
+
+Public Sub IsDir(sFile As String) As Boolean
+  
+  If CheckValid() Then Return
+  
+  If sFile = "" Then sFile = "/"
+
+  If Not $cIsDir.Exist(sFile) Then
+    
+    $cIsDir[sFile] = IsDir($sDir &/ sFile)
+    
+  Endif
+  
+  Return $cIsDir[sFile]
+  
+End
+
+
+Public Sub GetMimeIcon(sFile As String, iSize As Integer) As Image
+  
+  Dim hIcon As Image
+  
+  If CheckValid() Then Return
+  
+  hIcon = $cIcon[sFile & ":" & CStr(iSize)]
+  If Not hIcon Then
+    Try hIcon = DesktopMime.FromFile($sDir &/ sFile).GetIcon(iSize)
+    $cIcon[sFile & ":" & CStr(iSize)] = hIcon
+  Endif
+  
+  Return hIcon
+  
+End
+
+
+Public Sub GetFiles() As String[]
+  
+  If CheckValid() Then Return New String[]
+  
+  If Not $aList Then 
+    'Debug
+    $aList = Dir($sDir).Sort(gb.Natural)
+  Endif
+  
+  Return $aList
+  
+End
+
+
+Public Sub Lock()
+  
+  If $iLock = 0 Then CheckValid
+  Inc $iLock
+  
+End
+
+Public Sub Unlock()
+  
+  Dec $iLock
+  
+End
+

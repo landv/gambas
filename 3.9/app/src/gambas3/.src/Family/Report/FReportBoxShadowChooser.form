@@ -1,0 +1,79 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,60,39)
+  Text = ("Configure shadow")
+  { btnCancel Button
+    MoveScaled(43,34,16,4)
+    Text = ("Cancel")
+    Cancel = True
+  }
+  { btnOK Button
+    MoveScaled(26,34,16,4)
+    Text = ("OK")
+    Default = True
+  }
+  { TabStrip1 TabStrip
+    MoveScaled(1,1,32,32)
+    Index = 0
+    Text = ("Shadow")
+    { panBorder Panel
+      MoveScaled(1,1,28,26)
+      { crdBlur CoordBox crdBrush
+        Name = "crdBlur"
+        MoveScaled(9,10,18,4)
+      }
+      { Label4 Label
+        MoveScaled(0,10,9,4)
+        #Translate = False
+        Text = "Blur"
+      }
+      { crdX CoordBox crdBrush
+        Name = "crdX"
+        MoveScaled(9,0,18,4)
+      }
+      { Label3 Label
+        MoveScaled(0,0,9,4)
+        #Translate = False
+        Text = "X offset"
+      }
+      { Label5 Label
+        MoveScaled(0,5,9,4)
+        #Translate = False
+        Text = "Y offset"
+      }
+      { crdY CoordBox crdBrush
+        Name = "crdY"
+        MoveScaled(9,5,18,4)
+      }
+      { Label1 Label
+        MoveScaled(0,20,9,5)
+        #Translate = False
+        Text = "Color"
+      }
+      { btnColor ColorButton crdBrush
+        Name = "btnColor"
+        MoveScaled(9,20,18,5)
+      }
+      { Label6 Label
+        MoveScaled(0,15,9,4)
+        #Translate = False
+        Text = "Spread"
+      }
+      { crdSpread CoordBox crdBrush
+        Name = "crdSpread"
+        MoveScaled(9,15,18,4)
+      }
+    }
+    Index = 0
+  }
+  { Panel1 Panel
+    MoveScaled(34,5,25,27)
+    Arrangement = Arrange.Fill
+    Border = Border.Plain
+    { dwgBorder DrawingArea
+      MoveScaled(1,1,16,19)
+      Background = Color.SelectedForeground
+    }
+  }
+}

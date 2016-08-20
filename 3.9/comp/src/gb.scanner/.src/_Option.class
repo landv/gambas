@@ -1,0 +1,124 @@
+' Gambas class file
+
+Property Read Group As String      ''Return the group option name
+Property Read IsRange As Boolean   ''Indicate if the option give a range between too value
+Property Read MaxValue As Float    ''Return the range max value
+Property Read MinValue As Float    ''Return the range min value
+Property Value As Variant          ''Return the current value of the option
+Property Read List As String[]     ''If the value is a string return the list of the available values
+Property Read IsActive As Boolean  ''Return if this option is activate
+Property Read Info As String       ''Return some info about the option
+Property Read Name As String       ''Return the option name
+Property Read Unit As String       ''Return the Unit if option is numbers
+Property Read Steps As Integer     ''Return Steps
+Property Read Modified As Boolean  ''Return if the current value have been modified
+
+Private $bModified As Boolean
+
+Public _Group As String
+Public _IsRange As Boolean
+Public _MaxValue As Float
+Public _MinValue As Float
+Public _Value As Variant
+Public _List As String[]
+Public _IsActive As Boolean = True
+Public _Info As String
+Public _Name As String
+Public _Command As String
+Public _Unit As String
+Public _Steps As Integer
+
+
+Private Function Group_Read() As String
+  
+  Return _Group
+  
+End
+
+Private Function IsRange_Read() As Boolean
+  
+  Return _IsRange
+  
+End
+
+Private Function MaxValue_Read() As Float
+  
+  Return _MaxValue
+  
+End
+
+Private Function MinValue_Read() As Float
+  
+  Return _MinValue
+  
+End
+
+Private Function Value_Read() As Variant
+  
+  Return _Value
+  
+End
+
+Private Sub Value_Write(Value As Variant)
+  Dim iFind As Integer
+  _Value = Value
+  If Me.IsRange Then 
+    If TypeOf(Value) <> gb.Integer And If TypeOf(Value) <> gb.Float Then Error.Raise("This option require a number value")
+    _Value = Max(Min(Me.MaxValue, _Value), Me.MinValue)
+    If _Value <> Value Then Error "Warning: Option: '" & Me.Name & "' -> Value out of range... change to : " & _Value
+  Else
+    If Not _List.Exist(Value) Then 
+      
+      Error "Warning: Option '" & Me.Name & "' -> Value not in the list..."
+      iFind = _List.Find(Value & "*", gb.Like)
+      If iFind > 0 Then 
+        _Value = _List[iFind]
+        Error "Warning: Option '" & Me.Name & "' -> Near value found: Set to '" & _Value & "'"
+      Endif
+    Endif
+  Endif
+  $bModified = True
+  
+End
+
+Private Function List_Read() As String[]
+  
+  Return _List
+  
+End
+
+Private Function IsActive_Read() As Boolean
+  
+  Return _IsActive
+  
+End
+
+Private Function Info_Read() As String
+  
+  Return _Info
+  
+End
+
+Private Function Name_Read() As String
+  
+  Return _Name
+  
+End
+
+Private Function Unit_Read() As String
+  
+  Return _Unit
+  
+End
+
+Private Function Steps_Read() As Integer
+  
+  Return _Steps
+  
+End
+
+Private Function Modified_Read() As Boolean
+  
+  Return $bModified
+  
+End

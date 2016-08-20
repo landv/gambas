@@ -1,0 +1,17 @@
+' Gambas class file
+
+Public Data As Variant
+Public Prio As Integer
+
+Public Sub _new(vData As Variant, iPrio As Integer)
+  Data = vData
+  Prio = iPrio
+End
+
+Public Sub _compare(hOther As _PrioSet_Entry) As Integer
+  Return Sgn(Prio - hOther.Prio)
+End
+
+Public Sub _identity() As Variant
+  Return Data
+End

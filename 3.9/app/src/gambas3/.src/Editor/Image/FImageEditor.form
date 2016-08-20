@@ -1,0 +1,812 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,175,90)
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  { mnuEditor Menu
+    { mnuUndo Menu btnUndo
+      Name = "mnuUndo"
+      Action = ".undo"
+      Text = ("Undo")
+      Picture = Picture["icon:/small/undo"]
+      Shortcut = "Ctrl+Z"
+    }
+    { mnuRedo Menu btnRedo
+      Name = "mnuRedo"
+      Action = ".redo"
+      Text = ("Redo")
+      Picture = Picture["icon:/small/redo"]
+      Shortcut = "Ctrl+Y"
+    }
+    { mnuSep2 Menu
+    }
+    { mnuCut Menu btnCut
+      Name = "mnuCut"
+      Action = ".cut"
+      Text = ("Cut")
+      Picture = Picture["icon:/small/cut"]
+      Shortcut = "Ctrl+X"
+    }
+    { mnuCopy Menu btnCopy
+      Name = "mnuCopy"
+      Action = ".copy"
+      Text = ("Copy")
+      Picture = Picture["icon:/small/copy"]
+      Shortcut = "Ctrl+C"
+    }
+    { mnuPaste Menu
+      Action = ".paste"
+      Text = ("Paste")
+      Picture = Picture["icon:/small/paste"]
+      Shortcut = "Ctrl+V"
+    }
+    { mnuAction Menu
+      Text = ("Action")
+      { mnuCrop Menu btnCrop
+        Name = "mnuCrop"
+        Action = ".crop"
+        Text = ("Crop")
+        Picture = Picture["img/draw/crop.png"]
+        Shortcut = "Ctrl+K"
+      }
+      { mnuFlipH Menu btnFlipH
+        Name = "mnuFlipH"
+        Action = ".flip-h"
+        Text = ("Horizontal flip")
+        Picture = Picture["img/draw/hflip.png"]
+      }
+      { mnuFlipV Menu btnFlipV
+        Name = "mnuFlipV"
+        Action = ".flip-v"
+        Text = ("Vertical flip")
+        Picture = Picture["img/draw/vflip.png"]
+      }
+      { mnuRotateL Menu btnRotateL
+        Name = "mnuRotateL"
+        Action = ".rotate-left"
+        Text = ("Rotate counter-clockwise")
+        Picture = Picture["img/draw/rotate-left.png"]
+        Shortcut = "Ctrl+<"
+      }
+      { mnuRotateR Menu btnRotateR
+        Name = "mnuRotateR"
+        Action = ".rotate-right"
+        Text = ("Rotate clockwise")
+        Picture = Picture["img/draw/rotate-right.png"]
+        Shortcut = "Ctrl+>"
+      }
+      { Menu3 Menu
+      }
+      { mnuResize Menu btnResize
+        Name = "mnuResize"
+        Action = ".resize"
+        Text = ("Resize") & "..."
+        Picture = Picture["img/draw/resize.png"]
+      }
+      { mnuRotate Menu btnRotate
+        Name = "mnuRotate"
+        Action = ".rotate"
+        Text = ("Rotate") & "..."
+        Picture = Picture["img/draw/rotate.png"]
+      }
+    }
+    { Menu2 Menu
+    }
+    { mnuSelectAll Menu
+      Action = ".select-all"
+      Text = Shortcut(("Select All"), "A")
+      Shortcut = "Ctrl+A"
+    }
+    { mnuHideSelection Menu
+      Action = ".hide"
+      Text = ("Hide selection")
+      Picture = Picture["img/draw/hide.png"]
+      Shortcut = "Esc"
+    }
+    { mnuSelection Menu
+      Text = ("Selection")
+      { mnuInvert Menu btnInvert
+        Name = "mnuInvert"
+        Action = ".invert"
+        Text = ("Invert selection")
+        Picture = Picture["img/draw/invert.png"]
+        Shortcut = "Ctrl+I"
+      }
+      { mnuDuplicate Menu btnDuplicate
+        Name = "mnuDuplicate"
+        Action = ".duplicate"
+        Text = ("Duplicate selection")
+        Picture = Picture["img/draw/duplicate.png"]
+        Shortcut = "Ctrl+D"
+      }
+      { mnuOffset Menu btnOffset
+        Name = "mnuOffset"
+        Action = ".offset"
+        Text = ("Offset selection")
+        Picture = Picture["img/draw/offset.png"]
+        Shortcut = "Ctrl+*"
+      }
+      { Menu5 Menu
+      }
+      { mnuUnion Menu btnUnion
+        Name = "mnuUnion"
+        Text = ("Union")
+        Picture = Picture["img/draw/union.png"]
+      }
+      { mnuDifference Menu btnDifference
+        Name = "mnuDifference"
+        Text = ("Difference")
+        Picture = Picture["img/draw/difference.png"]
+      }
+      { mnuIntersection Menu btnIntersection
+        Name = "mnuIntersection"
+        Text = ("Intersection")
+        Picture = Picture["img/draw/intersection.png"]
+      }
+      { mnuExclusive Menu btnExclusive
+        Name = "mnuExclusive"
+        Text = ("Exclusive or")
+        Picture = Picture["img/draw/exclusive.png"]
+      }
+    }
+    { Menu4 Menu
+    }
+    { mnuShapeGrid Menu
+      Text = ("Shape grid")
+      Picture = Picture["img/draw/shgrid.png"]
+      Visible = False
+      { mnuDivide2 Menu mnuDivide
+        Name = "mnuDivide2"
+        #Translate = False
+        Text = "2 × 2"
+        Checked = True
+        Tag = "2"
+        Shortcut = "Ctrl+2"
+      }
+      { mnuDivide3 Menu mnuDivide
+        Name = "mnuDivide3"
+        #Translate = False
+        Text = "3 × 3"
+        Tag = "3"
+        Shortcut = "Ctrl+3"
+      }
+      { mnuDivide4 Menu mnuDivide
+        Name = "mnuDivide4"
+        #Translate = False
+        Text = "4 × 4"
+        Tag = "4"
+        Shortcut = "Ctrl+4"
+      }
+      { mnuDivide5 Menu mnuDivide
+        Name = "mnuDivide5"
+        #Translate = False
+        Text = "5 × 5"
+        Tag = "5"
+        Shortcut = "Ctrl+5"
+      }
+    }
+    { mnuSep4 Menu
+    }
+    { mnuZoom Menu
+      Text = ("View")
+      { mnuZoomIn Menu btnZoomIn
+        Name = "mnuZoomIn"
+        Action = ".zoom-in"
+        Text = ("Zoom in")
+        Picture = Picture["icon:/small/zoom-in"]
+        Shortcut = "Ctrl++"
+      }
+      { mnuZoomOut Menu btnZoomOut
+        Name = "mnuZoomOut"
+        Action = ".zoom-out"
+        Text = ("Zoom out")
+        Picture = Picture["icon:/small/zoom-out"]
+        Shortcut = "Ctrl+-"
+      }
+      { mnuZoomNormal Menu btnZoomNormal
+        Name = "mnuZoomNormal"
+        Action = ".zoom-normal"
+        Text = ("Zoom normal")
+        Picture = Picture["icon:/small/zoom-normal"]
+        Shortcut = "Ctrl+0"
+      }
+      { mnuZoomFit Menu btnZoomFit
+        Name = "mnuZoomFit"
+        Action = ".zoom-fit"
+        Text = ("Zoom fit")
+        Picture = Picture["icon:/small/zoom-fit"]
+      }
+    }
+    { Menu1 Menu
+    }
+    { mnuLocked Menu
+      Action = ".locked"
+      Text = ("Locked")
+      Picture = Picture["icon:/small/lock"]
+      Toggle = True
+    }
+    { mnuReload Menu btnReload
+      Name = "mnuReload"
+      Action = ".reload"
+      Text = ("Reload")
+      Picture = Picture["icon:/small/revert"]
+    }
+    { mnuSave Menu btnSave
+      Name = "mnuSave"
+      Action = ".save"
+      Text = ("Save")
+      Picture = Picture["icon:/small/save"]
+      Shortcut = "Ctrl+S"
+    }
+    { mnuClose Menu
+      Action = ".close"
+      Text = ("Close")
+      Picture = Picture["icon:/small/close"]
+      Shortcut = "Ctrl+W"
+    }
+  }
+  { mnuFormat Menu
+    #Translate = False
+    { mnuFormatJPEG Menu mnuSaveAs
+      Name = "mnuFormatJPEG"
+      Text = ("Save as JPEG")
+      Tag = "jpeg"
+    }
+    { mnuFormatPNG Menu mnuSaveAs
+      Name = "mnuFormatPNG"
+      Text = ("Save as PNG")
+      Tag = "png"
+    }
+    { mnuFormatBMP Menu mnuSaveAs
+      Name = "mnuFormatBMP"
+      Text = ("Save as BMP")
+      Tag = "bmp"
+    }
+    { mnuFormatTIFF Menu mnuSaveAs
+      Name = "mnuFormatTIFF"
+      Action = "tiff"
+      Text = ("Save as TIFF")
+    }
+  }
+  { tlbMain ToolBar
+    MoveScaled(0,0,168,4)
+    Key = "image"
+    Text = ("Image editor")
+    { btnSave MenuButton
+      MoveScaled(0,0,6,4)
+      ToolTip = ("Save")
+      Action = ".save"
+      Picture = Picture["icon:/small/save"]
+      Border = False
+      Menu = "mnuFormat"
+    }
+    { btnReload ToolButton
+      MoveScaled(5,0,4,4)
+      ToolTip = ("Reload")
+      Action = ".reload"
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { ToolButton7 ToolButton
+      MoveScaled(8,0,4,4)
+      ToolTip = ("Lock / unlock file")
+      Action = ".locked"
+      Picture = Picture["icon:/small/lock"]
+      Toggle = True
+    }
+    { btnUndo ToolButton
+      MoveScaled(12,0,4,4)
+      ToolTip = ("Undo")
+      Action = ".undo"
+      Picture = Picture["icon:/small/undo"]
+    }
+    { btnRedo ToolButton
+      MoveScaled(15,0,4,4)
+      ToolTip = ("Redo")
+      Action = ".redo"
+      Picture = Picture["icon:/small/redo"]
+    }
+    { Separator3 Separator
+      MoveScaled(18,0,1.1429,4)
+    }
+    { btnZoomIn ToolButton
+      MoveScaled(19,0,4,4)
+      ToolTip = ("Zoom in")
+      Action = ".zoom-in"
+      Picture = Picture["icon:/small/zoom-in"]
+    }
+    { cmbZoom ComboBox
+      MoveScaled(22,0,9,4)
+      #Translate = False
+      ToolTip = "Zoom level"
+      Action = ".zoom"
+      ReadOnly = True
+      List = ["32×", "24×", "16×", "12×", "10×", "8×", "6×", "5x", "4×", "3×", "2×", "1×", "0.5×", "0.33×", "0.25×"]
+    }
+    { btnZoomOut ToolButton
+      MoveScaled(31,0,4,4)
+      ToolTip = ("Zoom out")
+      Action = ".zoom-out"
+      Picture = Picture["icon:/small/zoom-out"]
+    }
+    { btnZoomNormal ToolButton
+      MoveScaled(34,0,4,4)
+      ToolTip = ("Zoom normal")
+      Action = ".zoom-normal"
+      Picture = Picture["icon:/small/zoom-normal"]
+    }
+    { btnZoomFit ToolButton
+      MoveScaled(37,0,4,4)
+      ToolTip = ("Zoom fit")
+      Action = ".zoom-fit"
+      Picture = Picture["icon:/small/zoom-fit"]
+    }
+    { btnGrid ToolButton
+      MoveScaled(40,0,4,4)
+      ToolTip = ("Drawing grid")
+      Action = ".grid"
+      AutoResize = True
+      Picture = Picture["img/draw/grid.png"]
+      Toggle = True
+    }
+    { btnResize ToolButton
+      MoveScaled(43,0,11,4)
+      Visible = False
+      ToolTip = ("Resize or stretch image")
+      Action = ".resize"
+      AutoResize = True
+      Text = ("Resize") & "..."
+      Picture = Picture["img/draw/resize.png"]
+    }
+    { btnRotate ToolButton
+      MoveScaled(53,0,11,4)
+      Visible = False
+      ToolTip = ("Rotate image")
+      Action = ".rotate"
+      AutoResize = True
+      Text = ("Rotate") & "..."
+      Picture = Picture["img/draw/rotate.png"]
+    }
+    { Separator4 Separator
+      MoveScaled(64,0,1.1429,4)
+    }
+    { btnCopy ToolButton
+      MoveScaled(65,0,4,4)
+      ToolTip = ("Copy")
+      Action = ".copy"
+      Picture = Picture["icon:/small/copy"]
+    }
+    { btnCut ToolButton
+      MoveScaled(68,0,4,4)
+      ToolTip = ("Cut")
+      Action = ".cut"
+      Picture = Picture["icon:/small/cut"]
+    }
+    { btnPaste ToolButton btnTool
+      Name = "btnPaste"
+      MoveScaled(71,0,4,4)
+      Tag = "paste"
+      ToolTip = ("Paste")
+      Action = ".tool-paste"
+      Picture = Picture["icon:/small/paste"]
+      Toggle = True
+    }
+    { Separator2 Separator
+      MoveScaled(75,0,1.1429,4)
+    }
+    { btnMove ToolButton btnTool
+      Name = "btnMove"
+      MoveScaled(77,0,4,4)
+      Tag = "move"
+      ToolTip = ("Move")
+      Action = ".tool-move"
+      Picture = Picture["img/draw/scroll.png"]
+      Toggle = True
+      Value = True
+    }
+    { btnDraw ToolButton btnTool
+      Name = "btnDraw"
+      MoveScaled(80,0,4,4)
+      Tag = "draw"
+      ToolTip = ("Draw")
+      Action = ".tool-draw"
+      Picture = Picture["icon:/small/pen"]
+      Toggle = True
+    }
+    { btnErase ToolButton btnTool
+      Name = "btnErase"
+      MoveScaled(83,0,4,4)
+      Tag = "erase"
+      ToolTip = ("Erase")
+      Action = ".tool-erase"
+      Picture = Picture["icon:/small/erase"]
+      Toggle = True
+    }
+    { btnLine ToolButton btnTool
+      Name = "btnLine"
+      MoveScaled(86,0,4,4)
+      Tag = "line"
+      ToolTip = ("Line")
+      Action = ".tool-line"
+      Picture = Picture["img/draw/line.png"]
+      Toggle = True
+    }
+    { btnRectangle ToolButton btnTool
+      Name = "btnRectangle"
+      MoveScaled(89,0,4,4)
+      Tag = "rectangle"
+      ToolTip = ("Rectangle")
+      Action = ".tool-rectangle"
+      Picture = Picture["img/draw/rectangle.png"]
+      Toggle = True
+    }
+    { btnEllipse ToolButton btnTool
+      Name = "btnEllipse"
+      MoveScaled(92,0,4,4)
+      Tag = "ellipse"
+      ToolTip = ("Ellipse")
+      Action = ".tool-ellipse"
+      Picture = Picture["img/draw/ellipse.png"]
+      Toggle = True
+    }
+    { btnText ToolButton btnTool
+      Name = "btnText"
+      MoveScaled(95,0,4,4)
+      Tag = "text"
+      ToolTip = ("Text")
+      Action = ".tool-text"
+      Picture = Picture["img/draw/text.png"]
+      Toggle = True
+    }
+    { btnMagic ToolButton btnTool
+      Name = "btnMagic"
+      MoveScaled(99,0,4,4)
+      Tag = "magic"
+      ToolTip = ("Magic wand")
+      Action = ".tool-magic"
+      Picture = Picture["img/draw/magic.png"]
+      Toggle = True
+    }
+    { btnHide ToolButton
+      MoveScaled(102,0,4,4)
+      ToolTip = ("Hide selection")
+      Action = ".hide"
+      Picture = Picture["img/draw/hide.png"]
+    }
+    { btnEditSelection ToolButton btnTool
+      Name = "btnEditSelection"
+      MoveScaled(106,0,4,4)
+      Tag = "change"
+      ToolTip = ("Edit selection")
+      Action = ".tool-change"
+      Picture = Picture["img/draw/move.png"]
+      Toggle = True
+    }
+    { Separator8 Separator
+      MoveScaled(110,0,1,4)
+    }
+    { btnUnion ToolButton
+      MoveScaled(111,0,4,4)
+      Visible = False
+      ToolTip = ("Union")
+      Action = ".union"
+      Picture = Picture["img/draw/union.png"]
+    }
+    { btnDifference ToolButton
+      MoveScaled(114,0,4,4)
+      Visible = False
+      ToolTip = ("Difference")
+      Action = ".difference"
+      Picture = Picture["img/draw/difference.png"]
+    }
+    { btnIntersection ToolButton
+      MoveScaled(117,0,4,4)
+      Visible = False
+      ToolTip = ("Intersection")
+      Action = ".intersection"
+      Picture = Picture["img/draw/intersection.png"]
+    }
+    { btnExclusive ToolButton
+      MoveScaled(120,0,4,4)
+      Visible = False
+      ToolTip = ("Exclusive or")
+      Action = ".exclusive"
+      Picture = Picture["img/draw/exclusive.png"]
+    }
+    { btnInvert ToolButton
+      MoveScaled(124,0,4,4)
+      ToolTip = ("Invert selection")
+      Action = ".invert"
+      Picture = Picture["img/draw/invert.png"]
+    }
+    { btnDuplicate ToolButton
+      MoveScaled(127,0,4,4)
+      ToolTip = ("Duplicate selection")
+      Action = ".duplicate"
+      Picture = Picture["img/draw/duplicate.png"]
+    }
+    { btnOffset ToolButton
+      MoveScaled(131,0,4,4)
+      ToolTip = ("Offset selection")
+      Action = ".offset"
+      Picture = Picture["img/draw/offset.png"]
+    }
+    { Separator5 Separator
+      MoveScaled(135,0,1,4)
+    }
+    { btnCrop ToolButton
+      MoveScaled(136,0,4,4)
+      ToolTip = ("Crop")
+      Action = ".crop"
+      Picture = Picture["img/draw/crop.png"]
+    }
+    { btnFlipH ToolButton
+      MoveScaled(139,0,4,4)
+      ToolTip = ("Horizontal flip")
+      Action = ".flip-h"
+      Picture = Picture["img/draw/hflip.png"]
+    }
+    { btnFlipV ToolButton
+      MoveScaled(142,0,4,4)
+      ToolTip = ("Vertical flip")
+      Action = ".flip-v"
+      Picture = Picture["img/draw/vflip.png"]
+    }
+    { btnRotateR ToolButton
+      MoveScaled(145,0,4,4)
+      ToolTip = ("Rotate clockwise")
+      Action = ".rotate-r"
+      Picture = Picture["img/draw/rotate-right.png"]
+    }
+    { btnRotateL ToolButton
+      MoveScaled(148,0,4,4)
+      ToolTip = ("Rotate counter-clockwise")
+      Action = ".rotate-l"
+      Picture = Picture["img/draw/rotate-left.png"]
+    }
+  }
+  { Separator1 Separator
+    MoveScaled(68,9,18,0)
+  }
+  { HBox2 HBox
+    MoveScaled(2,13,141,74)
+    Expand = True
+    { panBackground Panel
+      MoveScaled(9,6,62,37)
+      Expand = True
+      Arrangement = Arrange.Fill
+      { dwgBackground DrawingArea
+        MoveScaled(30,6,24,24)
+        Background = Color.LightForeground
+      }
+      { imvImage ImageView
+        MoveScaled(3,2,31,30)
+        Tracking = True
+        Border = False
+        UseMouse = False
+      }
+      { dwgInfo DrawingArea
+        MoveScaled(34,23,17,5)
+        Background = Color.ButtonBackground
+        Ignore = True
+      }
+    }
+    { timSelect #Timer
+      #MoveScaled(108,20)
+      Delay = 400
+    }
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action close
+    Text = "Close"
+    Shortcut = "Ctrl+W"
+    Picture = "icon:/small/close"
+  }
+  { Action copy
+    Text = "Copy"
+    Shortcut = "Ctrl+C"
+    Picture = "icon:/small/copy"
+  }
+  { Action crop
+    Text = "Crop"
+    Shortcut = "Ctrl+K"
+    Picture = "img/draw/crop.png"
+  }
+  { Action cut
+    Text = "Cut"
+    Shortcut = "Ctrl+X"
+    Picture = "icon:/small/cut"
+  }
+  { Action difference
+    Text = "Difference"
+    Picture = "img/draw/difference.png"
+  }
+  { Action duplicate
+    Text = "Duplicate selection"
+    Shortcut = "Ctrl+D"
+    Picture = "img/draw/duplicate.png"
+  }
+  { Action exclusive
+    Text = "Exclusive or"
+    Picture = "img/draw/exclusive.png"
+  }
+  { Action flip-h
+    Text = "Horizontal flip"
+    Shortcut = ""
+    Picture = "img/draw/hflip.png"
+  }
+  { Action flip-v
+    Text = "Vertical flip"
+    Shortcut = ""
+    Picture = "img/draw/vflip.png"
+  }
+  { Action grid
+    Text = "Drawing grid"
+    Picture = "img/draw/grid.png"
+  }
+  { Action hide
+    Text = "Hide selection"
+    Shortcut = "Esc"
+    Picture = "img/draw/hide.png"
+  }
+  { Action intersection
+    Text = "Intersection"
+    Picture = "img/draw/intersection.png"
+  }
+  { Action invert
+    Text = "Invert selection"
+    Shortcut = "Ctrl+I"
+    Picture = "img/draw/invert.png"
+  }
+  { Action locked
+    Text = "Locked"
+    Shortcut = ""
+    Picture = "icon:/small/lock"
+  }
+  { Action offset
+    Text = "Offset selection"
+    Shortcut = "Ctrl+*"
+    Picture = "img/draw/offset.png"
+  }
+  { Action paste
+    Text = "Paste"
+    Shortcut = "Ctrl+V"
+    Picture = "icon:/small/paste"
+  }
+  { Action redo
+    Text = "Redo"
+    Shortcut = "Ctrl+Y"
+    Picture = "icon:/small/redo"
+  }
+  { Action reload
+    Text = "Reload"
+    Shortcut = ""
+    Picture = "icon:/small/refresh"
+  }
+  { Action resize
+    Text = "Resize"
+    Shortcut = ""
+    Picture = "img/draw/resize.png"
+  }
+  { Action rotate
+    Text = "Rotate"
+    Shortcut = ""
+    Picture = "img/draw/rotate.png"
+  }
+  { Action rotate-l
+    Text = "Rotate counter-clockwise"
+    Picture = "img/draw/rotate-left.png"
+  }
+  { Action rotate-left
+    Text = "Rotate counter-clockwise"
+    Shortcut = "Ctrl+<"
+    Picture = "img/draw/rotate-left.png"
+  }
+  { Action rotate-r
+    Text = "Rotate clockwise"
+    Picture = "img/draw/rotate-right.png"
+  }
+  { Action rotate-right
+    Text = "Rotate clockwise"
+    Shortcut = "Ctrl+>"
+    Picture = "img/draw/rotate-right.png"
+  }
+  { Action save
+    Text = "Save"
+    Shortcut = "Ctrl+S"
+    Picture = "icon:/small/save"
+  }
+  { Action select-all
+    Text = "Select All"
+    Shortcut = "Ctrl+A"
+  }
+  { Action tiff
+    Text = "Save as TIFF"
+    Shortcut = ""
+  }
+  { Action tool-change
+    Text = "Edit selection"
+    Picture = "img/draw/move.png"
+  }
+  { Action tool-draw
+    Text = "Draw"
+    Picture = "icon:/small/pen"
+  }
+  { Action tool-ellipse
+    Text = "Ellipse"
+    Picture = "img/draw/ellipse.png"
+  }
+  { Action tool-erase
+    Text = "Erase"
+    Picture = "icon:/small/erase"
+  }
+  { Action tool-line
+    Text = "Line"
+    Picture = "img/draw/line.png"
+  }
+  { Action tool-magic
+    Text = "Magic wand"
+    Picture = "img/draw/magic.png"
+  }
+  { Action tool-move
+    Text = "Move"
+    Picture = "img/draw/scroll.png"
+  }
+  { Action tool-paste
+    Text = "Paste"
+    Picture = "icon:/small/paste"
+  }
+  { Action tool-rectangle
+    Text = "Rectangle"
+    Picture = "img/draw/rectangle.png"
+  }
+  { Action tool-text
+    Text = "Text"
+    Picture = "img/draw/text.png"
+  }
+  { Action undo
+    Text = "Undo"
+    Shortcut = "Ctrl+Z"
+    Picture = "icon:/small/undo"
+  }
+  { Action union
+    Text = "Union"
+    Picture = "img/draw/union.png"
+  }
+  { Action zoom
+    Text = "Zoom level"
+    Picture = "$ComboBox"
+  }
+  { Action zoom-fit
+    Text = "Zoom fit"
+    Shortcut = ""
+    Picture = "icon:/small/zoom-fit"
+  }
+  { Action zoom-in
+    Text = "Zoom in"
+    Shortcut = "Ctrl++"
+    Picture = "icon:/small/zoom-in"
+  }
+  { Action zoom-normal
+    Text = "Zoom normal"
+    Shortcut = "Ctrl+0"
+    Picture = "icon:/small/zoom-normal"
+  }
+  { Action zoom-out
+    Text = "Zoom out"
+    Shortcut = "Ctrl+-"
+    Picture = "icon:/small/zoom-out"
+  }
+}
+
+{ Toolbars
+  { Toolbar image
+    Text = "Image editor"
+    List = "save,reload,locked,undo,redo,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,resize,rotate,copy,cut,tool-paste,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,union,difference,intersection,exclusive,invert,duplicate,offset,crop,flip-h,flip-v,rotate-r,rotate-l"
+    Default = "save,reload,locked,undo,redo,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,copy,cut,tool-paste,|,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,|,invert,duplicate,offset,|,crop,flip-h,flip-v,rotate-r,rotate-l"
+  }
+}

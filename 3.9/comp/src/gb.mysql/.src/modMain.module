@@ -1,0 +1,67 @@
+' Gambas module file
+
+Public $Query As String
+Public $FieldDefinition As New String[]
+Public $Index As New String[]
+Public $ForeignKey As New String[]
+Public $PrimaryKey As String
+Public $Connection As New Connection
+Public $Process As Process
+Public $hResult As Result
+
+' There varibales are used by the _Result class
+Public $asData As String[]
+Public $asFields As New String[]
+Public $asKeyFields As New String[]
+Public $sResultDatabase As String
+Public $sResultTable As String
+
+Public Sub SetConnection(hCon As Connection)
+
+  If hCon.Type <> "mysql" Then Error.Raise("Current connection is not a MySQL connection")
+  $Connection = hCon
+
+End
+
+Public Function ArrayToString(Array As String[], {Quote} As Boolean) As String
+
+  Dim iCounter As Integer
+  Dim Tmp As String
+
+  For iCounter = 0 To Array.Count - 1
+    If {Quote} Then
+      Tmp &= "`" & (Array[iCounter]) & "`, "
+    Else
+      Tmp &= Array[iCounter] & ", "
+    Endif
+  Next
+  Tmp = Mid(Tmp, 1, Len(Tmp) - 2) 'Strips the last two characters
+  Return Tmp
+
+End
+
+Public Procedure RunQuery(Query As String)
+
+  modMain.$Query = Query
+  $Connection.Exec(Query)
+  Catch
+    Error.Raise("MySQL: " & Error.Text)
+
+End
+
+Public Sub Main()
+
+  Dim hCon As New Connection
+
+  'DB.Debug = True
+  hCon.Type = "mysql"
+  hCon.Port = "3306"
+  hCon.Host = "localhost"
+  hCon.User = "root"
+  hCon.Password = "david123"
+  hCon.Name = "MAS"
+  hCon.Open()
+
+  Print hCon.MySQL.CharsetCollations("UTF8")
+
+End

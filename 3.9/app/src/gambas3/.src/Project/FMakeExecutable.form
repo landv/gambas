@@ -1,0 +1,48 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,111,75)
+  Text = ("Make executable")
+  Icon = Picture["icon:/small/exec"]
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { fchExec FileChooser
+    MoveScaled(1,1,102,57)
+    Expand = True
+    ShowButton = True
+  }
+  { panExtension VBox
+    MoveScaled(2,60,87,9)
+    Spacing = True
+    { HBox2 HBox
+      MoveScaled(0,0,68,4)
+      Spacing = True
+      { Label1 Label
+        MoveScaled(0,0,24,4)
+        AutoResize = True
+        Text = ("Run this command after")
+      }
+      { txtCommand TextBox
+        MoveScaled(26,0,24,4)
+        ToolTip = ("<b>$(FILE)</b> will be replaced by the path of the executable")
+        Expand = True
+      }
+    }
+    { HBox1 HBox
+      MoveScaled(0,5,85,4)
+      Spacing = True
+      { chkDebug CheckBox
+        MoveScaled(0,0,42,4)
+        AutoResize = True
+        Text = ("Keep debugging information in executable")
+      }
+      { chkShortcut CheckBox
+        MoveScaled(41,0,35,4)
+        AutoResize = True
+        Text = ("Create a shortcut on the desktop")
+      }
+    }
+  }
+}

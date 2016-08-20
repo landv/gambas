@@ -1,0 +1,39 @@
+' Gambas class file
+
+Private $sFic As String
+
+Public Sub Run(sFic As String) As String
+
+  $sFic = sFic
+  If Not Me.ShowModal() Then Return
+  Return $sFic
+
+End
+
+Public Sub btnOK_Click()
+
+  $sFic = Mid$(fchFile.SelectedPath, Len(fchFile.Root) + 1)
+  If Left($sFic) = "/" Then $sFic = Mid$($sFic, 2)
+  If Not $sFic Then Return
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+  
+  Me.Close
+  
+End
+
+Public Sub Form_Open()
+
+  fchFile.Root = Project.Dir &/ ".hidden"
+  fchFile.SelectedPath = Project.Dir &/ ".hidden" &/ $sFic
+
+End
+
+Public Sub fchFile_Activate()
+
+  btnOK.Value = True
+
+End

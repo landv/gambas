@@ -1,0 +1,108 @@
+' Gambas class file
+
+Public Sub TextBox1_Activate()
+
+  Try TerminalView1.Exec(Split(TextBox1.Text, " ", Chr$(34)))
+  If Error Then
+    Debug Error.Text
+  Else
+    TerminalView1.SetFocus
+  Endif
+  
+End
+
+Public Sub Timer1_Timer()
+
+  TerminalView1.Insert(CStr(Int(Timer * 10)))
+  TerminalView1.NewLine
+
+End
+
+Public Sub Button1_Click()
+
+  TerminalView1.Attr.Bold = Last.Value
+
+End
+
+Public Sub Form_Open()
+
+  TerminalView1.Exec(["bash"])
+
+End
+
+Public Sub Button2_Click()
+
+  TerminalView1.Attr.Underscore = Last.Value
+
+End
+
+Public Sub Button3_Click()
+
+  TerminalView1.Attr.Reverse = Last.Value
+
+End
+
+Public Sub Button5_Click()
+
+  TerminalView1.Attr.Foreground = Rand(0, 7)
+
+End
+
+Public Sub Form_Close()
+
+  TerminalView1.Kill
+
+End
+
+Public Sub TerminalView1_Kill()
+
+  Me.Close
+
+End
+
+Public Sub TerminalView1_Title(Title As String)
+
+  If Title Then Title &= " - "
+  Me.Title = Title & "Gambas Terminal Emulator"
+
+End
+
+' Public Sub Form_Activate()
+' 
+'   Dim I As Integer
+'   Dim J As Integer
+'   Dim B As Integer
+' 
+'   For B = 0 To 1
+'     If B = 0 Then
+'       TerminalView1.Print("\e[m")
+'     Else
+'       TerminalView1.Print("\e[1m")
+'     Endif
+'     For I = &H2500 To &H259F Step 16
+'       TerminalView1.Print(Hex$(I, 4) & ": ")
+'       For J = I To I + 15
+'         TerminalView1.Print(String.Chr$(J) & " ")
+'       Next
+'       TerminalView1.Print("\n\n")
+'     Next
+'   Next
+'   
+'   TerminalView1.Print("\e[m")
+'   TerminalView1.Print(String$(4, String$(20, String.Chr$(&H2572)) & "\n"))
+'   
+'   For B = 0 To 1
+'     If B = 0 Then
+'       TerminalView1.Print("\e[m")
+'     Else
+'       TerminalView1.Print("\e[1m")
+'     Endif
+'     For I = 256 To 1024
+'       TerminalView1.Print(String.Chr$(I))
+'     Next
+'     TerminalView1.Print("\n\n")
+'   Next
+'   
+'   TerminalView1.Print("\e[m")
+' 
+' End

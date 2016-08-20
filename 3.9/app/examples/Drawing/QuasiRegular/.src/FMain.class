@@ -1,0 +1,87 @@
+' Gambas class file
+
+Private $hImage As Image
+
+Private Const GRID_SIZE As Integer = 64
+
+Fast Private Sub Compute()
+  
+  Dim hImage As New Image(3840, 2160, Color.White)
+  Dim I, J As Integer
+  Dim X, Y, XR, YR As Float
+  Dim CA, SA As Float
+  Dim bBlack As Boolean
+  Dim D As Float
+  
+  D = Sqr(2) / 2
+  CA = D 'Cos(Rad(30))
+  SA = D 'Sin(Rad(30))
+  
+  For J = 0 To hImage.H - 1
+    For I = 0 To hImage.W - 1
+      
+      bBlack = False
+      
+      X = Frac(I / GRID_SIZE)
+      Y = Frac(J / GRID_SIZE)
+      
+      GoSub ADD_COLOR
+    
+      XR = CA * I + SA * J
+      YR = CA * J - SA * I
+      
+      X = Frac((XR + 1024) / GRID_SIZE)
+      Y = Frac((YR + 1024) / GRID_SIZE)
+      
+      GoSub ADD_COLOR
+
+      ' XR = CA * I - SA * J
+      ' YR = CA * J + SA * I
+      ' 
+      ' X = Frac((XR + 1024) / GRID_SIZE)
+      ' Y = Frac((YR + 1024) / GRID_SIZE)
+      ' 
+      ' GoSub ADD_COLOR
+
+      If bBlack Then hImage[I, J] = Color.Black
+      
+    Next
+  Next
+  
+  $hImage = hImage
+  Return
+  
+ADD_COLOR:
+
+  If X < 0.5 Then bBlack = Not bBlack
+  If Y < 0.5 Then bBlack = Not bBlack
+  Return
+  
+  
+End
+
+Public Sub Form_Open()
+
+  UpdateTitle  
+  Compute
+  imvImage.Image = $hImage
+  
+End
+
+Private Sub UpdateTitle()
+
+  Me.Title = "QuasiRegular (" & Format(imvImage.Zoom, "0%") & ")"
+
+End
+
+Public Sub imvImage_MouseWheel()
+
+  If Mouse.Forward Then
+    imvImage.Zoom = Min(32, imvImage.Zoom * Sqr(2))
+  Else
+    imvImage.Zoom = Max(0.25, imvImage.Zoom / Sqr(2))
+  Endif
+  
+  UpdateTitle
+  
+End

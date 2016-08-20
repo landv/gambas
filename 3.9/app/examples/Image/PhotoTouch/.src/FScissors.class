@@ -1,0 +1,260 @@
+' Gambas class file
+
+Private $aScissors As Panel[]
+
+Private Enum S_N, S_S, S_W, S_E, S_NW, S_NE, S_SW, S_SE
+Private HANDLE_SIZE As Integer
+
+Private $aMouse As Integer[]
+Private $aOpacity As Integer[]
+
+Private $MX As Integer
+Private $MY As Integer
+Private $hRect As Rect
+Private $bResize As Boolean
+
+Private btnCut As CButton
+
+Public Sub Form_Resize()
+  
+  $aScissors[S_NW].Move(0, 0, HANDLE_SIZE, HANDLE_SIZE)
+  $aScissors[S_NE].Move(Me.W - HANDLE_SIZE, 0, HANDLE_SIZE, HANDLE_SIZE)
+  $aScissors[S_SW].Move(0, Me.H - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE)
+  $aScissors[S_SE].Move(Me.W - HANDLE_SIZE, Me.H - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE)
+  $aScissors[S_N].Move(HANDLE_SIZE, 0, Me.W - HANDLE_SIZE * 2, HANDLE_SIZE)
+  $aScissors[S_S].Move(HANDLE_SIZE, Me.H - HANDLE_SIZE, Me.W - HANDLE_SIZE * 2, HANDLE_SIZE)
+  $aScissors[S_W].Move(0, HANDLE_SIZE, HANDLE_SIZE, Me.H - HANDLE_SIZE * 2)
+  $aScissors[S_E].Move(Me.W - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, Me.H - HANDLE_SIZE * 2)
+  
+  btnCut.Move(Me.W - btnCut.W - Desktop.Scale * 3, Desktop.Scale * 3)
+  
+  dwgNW.Move(HANDLE_SIZE, HANDLE_SIZE)
+  dwgNE.Move(Me.W - HANDLE_SIZE - dwgNE.W, dwgNW.Y)
+  dwgSE.Move(dwgNE.X, Me.H - HANDLE_SIZE - dwgSE.H)
+  dwgSW.Move(dwgNW.X, dwgSE.Y)
+  
+End
+
+
+Public Sub Form_Open()
+
+  Dim I As Integer
+
+  $aMouse = [Mouse.SizeN, Mouse.SizeS, Mouse.SizeW, Mouse.SizeE, Mouse.SizeNW, Mouse.SizeNE, Mouse.SizeSW, Mouse.SizeSE]
+  HANDLE_SIZE = Desktop.Scale 
+
+  $aScissors = New Panel[8]
+  
+  For I = 0 To 7
+    $aScissors[I] = New Panel(Me) As "Panel"
+    With $aScissors[I]
+      .Mouse = $aMouse[I]
+      .Background = Color.White 'IIf(I >= S_NW, Color.RGB(192, 192, 192), Color.White)
+      .Tag = I
+    End With
+  Next
+  
+  btnCut = New CButton(Me) As "btnCut"
+  btnCut.Resize(48, 48)
+  btnCut.Image = Image.Load("scissors.png")
+  
+  Me.Move(FMain.ClientW \ 4, FMain.ClientH \ 4, FMain.ClientW \ 2, FMain.ClientH \ 2)
+  'Form_Resize
+
+End
+
+Public Sub Panel_MouseDown()
+  
+  $MX = Mouse.ScreenX
+  $MY = Mouse.ScreenY
+  $hRect = Rect(Me.X, Me.Y, Me.W, Me.H)
+  
+End
+
+Public Sub Panel_MouseMove()
+  
+  Dim X, Y As Integer
+  Dim iTag As Integer = Last.Tag
+  Dim MIN_HEIGHT As Integer = btnCut.W + Desktop.Scale * 6
+  Dim MIN_WIDTH As Integer = btnCut.H + Desktop.Scale * 6
+  
+  Select Case Last.Tag
+    
+    Case S_N
+      Y = $hRect.Y + Mouse.ScreenY - $MY
+      Y = Min($hRect.Bottom - MIN_HEIGHT, Max(0, Y))
+      Me.Move(Me.X, Y, Me.W, $hRect.H + $hRect.Y - Y)
+      
+    Case S_S
+      Y = $hRect.H + Mouse.ScreenY - $MY
+      Y = Min(FMain.H - $hRect.Y, Max(MIN_HEIGHT, Y))
+      Me.Move(Me.X, Me.Y, Me.W, Y)
+
+    Case S_W
+      X = $hRect.X + Mouse.ScreenX - $MX
+      X = Min($hRect.Right - MIN_WIDTH, Max(0, X))
+      Me.Move(X, Me.Y, $hRect.W + $hRect.X - X, Me.H)
+      
+    Case S_E
+      X = $hRect.W + Mouse.ScreenX - $MX
+      X = Min(FMain.W - $hRect.X, Max(MIN_WIDTH, X))
+      Me.Move(Me.X, Me.Y, X, Me.H)
+      
+    Case S_NW
+      Y = $hRect.Y + Mouse.ScreenY - $MY
+      Y = Min($hRect.Bottom - MIN_HEIGHT, Max(0, Y))
+      X = $hRect.X + Mouse.ScreenX - $MX
+      X = Min($hRect.Right - MIN_WIDTH, Max(0, X))
+      Me.Move(X, Y, $hRect.W + $hRect.X - X, $hRect.H + $hRect.Y - Y)
+      
+    Case S_NE
+      Y = $hRect.Y + Mouse.ScreenY - $MY
+      Y = Min($hRect.Bottom - MIN_HEIGHT, Max(0, Y))
+      X = $hRect.W + Mouse.ScreenX - $MX
+      X = Min(FMain.W - $hRect.X, Max(MIN_WIDTH, X))
+      Me.Move(Me.X, Y, X, $hRect.H + $hRect.Y - Y)
+      
+    Case S_SW
+      Y = $hRect.H + Mouse.ScreenY - $MY
+      Y = Min(FMain.H - $hRect.Y, Max(MIN_HEIGHT, Y))
+      X = $hRect.X + Mouse.ScreenX - $MX
+      X = Min($hRect.Right - MIN_WIDTH, Max(0, X))
+      Me.Move(X, Me.Y, $hRect.W + $hRect.X - X, Y)
+      
+    Case S_SE
+      Y = $hRect.H + Mouse.ScreenY - $MY
+      Y = Min(FMain.H - $hRect.Y, Max(MIN_HEIGHT, Y))
+      X = $hRect.W + Mouse.ScreenX - $MX
+      X = Min(FMain.W - $hRect.X, Max(MIN_WIDTH, X))
+      Me.Move(Me.X, Me.Y, X, Y)
+
+  End Select
+  
+  'Form_Resize
+  
+End
+
+
+Public Sub Form_MouseDown()
+
+  $MX = Mouse.ScreenX
+  $MY = Mouse.ScreenY
+  $hRect = Rect(Me.X, Me.Y, Me.W, Me.H)
+
+End
+
+Public Sub Form_MouseMove()
+  
+  Dim X, Y As Integer
+  
+  X = Min(Max($hRect.X + Mouse.ScreenX - $MX, 0), FMain.W - $hRect.W)
+  Y = Min(Max($hRect.Y + Mouse.ScreenY - $MY, 0), FMain.H - $hRect.H)
+  Me.Move(X, Y)
+  
+End
+
+Public Sub btnCut_Click()
+  
+  FMain.Cut
+  
+End
+
+Public Sub dwgCorner_Draw()
+
+  Dim hCtrl As DrawingArea = Last
+
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 192))
+
+  Select Case Last.Tag
+    
+    Case "NW"
+      
+      If Not $bResize Then Paint.Brush = Paint.Color(Color.White)
+      
+      Paint.MoveTo(2, 2)
+      Paint.LineTo(hCtrl.W - 2, 2)
+      Paint.LineTo(2, hCtrl.H - 2)
+      
+    Case "NE"
+
+      Paint.MoveTo(hCtrl.W - 2, 2)
+      Paint.LineTo(hCtrl.W - 2, hCtrl.H - 2)
+      Paint.LineTo(2, 2)
+      
+    Case "SW"
+      
+      Paint.MoveTo(2, hCtrl.H - 2)
+      Paint.LineTo(2, 2)
+      Paint.LineTo(hCtrl.W - 2, hCtrl.H - 2)
+      
+    Case "SE"
+    
+      If $bResize Then Paint.Brush = Paint.Color(Color.White)
+
+      Paint.MoveTo(hCtrl.W - 2, hCtrl.H - 2)
+      Paint.LineTo(2, hCtrl.H - 2)
+      Paint.LineTo(hCtrl.W - 2, 2)
+
+  End Select
+  
+  Paint.Fill
+
+End
+
+Public Sub Form_KeyPress()
+  
+  Dim MIN_HEIGHT As Integer = btnCut.W + Desktop.Scale * 6
+  Dim MIN_WIDTH As Integer = btnCut.H + Desktop.Scale * 6
+  Dim X, Y, W, H As Integer
+  
+  X = Me.X
+  Y = Me.Y
+  W = Me.W
+  H = Me.H
+  
+  Select Case Key.Code
+    Case Key.Up
+      If $bResize Then
+        H = Max(MIN_HEIGHT, H - 16)
+      Else
+        Y = Max(0, Y - 16)
+      Endif
+    Case Key.Down
+      If $bResize Then
+        H = Min(FMain.H - Me.Y, H + 16)
+      Else
+        Y = Min(FMain.H - Me.H, Y + 16)
+      Endif
+    Case Key.Left
+      If $bResize Then
+        W = Max(MIN_WIDTH, W - 16)
+      Else
+        X = Max(0, X - 16)
+      Endif
+    Case Key.Right
+      If $bResize Then
+        W = Min(FMain.W - Me.X, W + 16)
+      Else
+        X = Min(FMain.W - Me.W, X + 16)
+      Endif
+    Case Key.Space
+      $bResize = Not $bResize
+      dwgNW.Refresh
+      dwgSE.Refresh
+      Stop Event
+      Return
+    Case Key.Return, Key.Enter
+      btnCut_Click
+      Stop Event
+      Return
+  End Select
+  
+  If X <> Me.X Or If Y <> Me.Y Or If W <> Me.W Or If H <> Me.H Then
+    Me.Move(X, Y, W, H)
+    Stop Event
+    Return
+  Endif
+  
+  FMain.Form_KeyPress
+  
+End

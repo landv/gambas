@@ -1,0 +1,126 @@
+' Gambas class file
+
+'
+' WebCam
+' Demo program to show off the Gambas V4L module
+' (c) Gareth Bult, Encryptec Ltd 2009
+'
+' License: as-is
+'
+Private $windows As Form[]
+
+Public Sub ScanDevices()
+
+  Dim i As Integer
+  Dim dev As VideoDevice
+  Dim myWin As Form
+  Dim count As Integer
+  Dim item As Menu
+  Dim status As String
+  Dim sDevice As String
+    
+  $windows = New Form[]
+  count = 0
+  Me.Show
+
+  status = "Searching: "
+  For i = 0 To 20
+    sDevice = "/dev/video" & Str(i)
+    Print sDevice
+    Try dev = New VideoDevice(sDevice)
+    If Not Error Then
+      status &= "!"
+      myWin = New FDevice(dev, count)
+      $windows.Add(myWin)
+      item = New Menu(tooltray_popup) As "Camera"
+      item.Text = dev.Card
+      item.Picture = Picture["icon:/16/camera"]
+      item.Tag = i
+      count += 1
+    Else
+      status &= "."
+    Endif
+    Wait 0.1
+    text_status.Text = status
+  Next
+  text_status.Text = "Found (" & Str($windows.Count) & ") devices"
+  Wait 2
+  Me.Hide
+  
+  For Each myWin In $windows
+    myWin.Show
+  Next
+  
+End
+
+Public Sub menu_scan_Click()
+
+  Dim item As Menu
+  Dim items As Menu[]
+  
+  While $windows.Count > 0
+    $windows.Pop().Close
+  Wend
+  $windows.Clear
+  
+  items = New Menu[]
+  For Each item In tooltray_popup.Children
+    If item.Tag <> "X"
+      items.Add(item)
+    Endif
+  Next
+  
+  For Each item In items
+    item.Delete
+  Next
+    
+  ScanDevices()
+  
+End
+
+Public Sub Camera_Click()
+  
+  $windows[Last.Tag].Show
+  $windows[Last.Tag].SetFocus
+
+End
+
+Public Sub tooltray_Menu()
+
+  tooltray_popup.Popup
+
+End
+
+Public Sub menu_quit_Click()
+  
+  While $windows.Count > 0
+    $windows.Pop().Close
+  Wend
+  Me.Close
+  tooltray.Hide
+  
+End
+
+Public Sub menu_save_Click()
+  
+  Dim mywin As FDevice
+  
+  For Each myWin In $windows
+    myWin.Save()
+  Next 
+  Settings.Save
+  Message("Settings Saved!")
+  
+End
+
+Public Sub Form_Open()
+
+  Me.Center
+
+End
+
+Public Sub Form_Activate()
+
+  If Not $windows Then ScanDevices
+
+End

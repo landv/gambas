@@ -1,0 +1,42 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,64,64)
+  Paper = Printer.A3
+  Index = 0
+  Text = ("")
+  { ReportHBox2 ReportHBox
+    #MoveScaled(1,1,61,7)
+    Height = "18mm"
+    Fixed = True
+    Background = ReportBrush["#FFFF00"]
+  }
+  { ReportHBox1 ReportHBox
+    #MoveScaled(1,9,59,6)
+    Height = "15mm"
+    { ReportLabel1 ReportLabel
+      #MoveScaled(0,1,26,5)
+      Expand = True
+    }
+    { ReportLabel2 ReportLabel
+      #MoveScaled(28,0,30,6)
+      Font = Font["Bold,+5"]
+      Expand = True
+      Alignment = Align.Center
+    }
+  }
+  { ReportPanel1 ReportPanel
+    #MoveScaled(1,16,60,4)
+    Fixed = True
+    Expand = True
+    Background = ReportBrush["#00FF00"]
+    Arrangement = Arrange.None
+  }
+  { ReportHBox3 ReportHBox
+    #MoveScaled(0,21,61,7)
+    Height = "18mm"
+    Fixed = True
+    Background = ReportBrush["#FFFF00"]
+  }
+  Index = 0
+}

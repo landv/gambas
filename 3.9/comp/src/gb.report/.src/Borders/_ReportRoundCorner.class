@@ -1,0 +1,136 @@
+' Gambas class file
+
+Public _Active As Boolean = False
+Private $sTopLeft As String = "0cm"
+Private $sTopRight As String = "0cm"
+Private $sBottomLeft As String = "0cm"
+Private $sBottomRight As String = "0cm"
+
+Property TopLeft As String
+Property TopRight As String
+Property BottomLeft As String
+Property BottomRight As String
+
+Public _TopLeft1 As Float
+Public _TopLeft2 As Float
+Public _TopRight1 As Float
+Public _TopRight2 As Float
+Public _BottomLeft1 As Float
+Public _BottomLeft2 As Float
+Public _BottomRight1 As Float
+Public _BottomRight2 As Float
+
+Private Function TopLeft_Read() As String
+
+  Return $sTopLeft
+
+End
+
+Private Sub TopLeft_Write(Value As String)
+
+  $sTopLeft = Value
+  _Active = True
+
+End
+
+Private Function TopRight_Read() As String
+
+  Return $sTopRight
+
+End
+
+Private Sub TopRight_Write(Value As String)
+
+  $sTopRight = Value
+  _Active = True
+
+End
+
+Private Function BottomLeft_Read() As String
+
+  Return $sBottomLeft
+
+End
+
+Private Sub BottomLeft_Write(Value As String)
+
+  $sBottomLeft = Value
+  _Active = True
+
+End
+
+Private Function BottomRight_Read() As String
+
+  Return $sBottomRight
+
+End
+
+Private Sub BottomRight_Write(Value As String)
+
+  $sBottomRight = Value
+  _Active = True
+
+End
+
+Public Sub _SetUnifiedValues()
+
+  Dim aEl As String[]
+
+  Dim hSizeParse As TSizeParse
+
+
+  ael = Split($sTopLeft, " ")
+  If ael.Count = 1 Then
+    hSizeParse = New TSizeParse(ael[0])
+    _TopLeft1 = hSizeParse.GetValue()
+    _TopLeft2 = _TopLeft1
+  Else
+    If ael.Count = 2 Then
+      hSizeParse = New TSizeParse(ael[0])
+      _TopLeft1 = hSizeParse.GetValue()
+      hSizeParse = New TSizeParse(ael[1])
+      _TopLeft2 = hSizeParse.GetValue()
+    Endif
+  Endif
+
+  ael = Split($sTopRight, " ")
+  If ael.Count = 1 Then
+    hSizeParse = New TSizeParse(ael[0])
+    _TopRight1 = hSizeParse.GetValue()
+    _TopRight2 = _TopRight1
+  Else
+    If ael.Count = 2 Then
+      hSizeParse = New TSizeParse(ael[0])
+      _TopRight1 = hSizeParse.GetValue()
+      hSizeParse = New TSizeParse(ael[1])
+      _TopRight2 = hSizeParse.GetValue()
+    Endif
+  Endif
+  ael = Split($sBottomRight, " ")
+  If ael.Count = 1 Then
+    hSizeParse = New TSizeParse(ael[0])
+    _BottomRight1 = hSizeParse.GetValue()
+    _BottomRight2 = _BottomRight1
+  Else
+    If ael.Count = 2 Then
+      hSizeParse = New TSizeParse(ael[0])
+      _BottomRight1 = hSizeParse.GetValue()
+      hSizeParse = New TSizeParse(ael[1])
+      _BottomRight2 = hSizeParse.GetValue()
+    Endif
+  Endif
+  ael = Split($sBottomLeft, " ")
+  If ael.Count = 1 Then
+    hSizeParse = New TSizeParse(ael[0])
+    _BottomLeft1 = hSizeParse.GetValue()
+    _BottomLeft2 = _BottomLeft1
+  Else
+    If ael.Count = 2 Then
+      hSizeParse = New TSizeParse(ael[0])
+      _BottomLeft1 = hSizeParse.GetValue()
+      hSizeParse = New TSizeParse(ael[1])
+      _BottomLeft2 = hSizeParse.GetValue()
+    Endif
+  Endif
+
+End

@@ -1,0 +1,3600 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<link rel="stylesheet" href="style.css"><head>
+<base target="arch">
+</head>
+<body>
+<table border=0 bordercolor=#43C7FF cellspacing=0 cellpadding=6 width=100%>
+<tr><th><font size=+2><b>
+ChangeLog
+</b></font></th></tr></table>
+
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.19 - 16 Jul 2007</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>NEW: Russian translation made by Sergey Irupin.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Fixed a crash when displaying an error while reading the .project
+file.
+  </ul>
+  <font><b>Gb.db.mysql Component</b></font>
+  <ul>
+  <li>BUG: Fixed memory leaks.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.18 - 28 May 2007</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>NEW: Support for Estonian language.
+  <li>BUG: Do not use LINE INPUT to read the output of the debugged project.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Catching an error in a function call on the number or type of
+arguments does not corrupt interpreter stack anymore.
+  <li>BUG: Date() now correctly converts its argument to a date.
+  <li>BUG: Static arrays should not be freed twice and so crash the interpreter
+anymore.
+  <li>BUG: The interpreter native event loop has been fixed.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: The number of dimensions of an array is correctly limited now.
+  <li>BUG: Using a parameter as loop variable now correctly raises an error.
+  </ul>
+  <font><b>Gb.eval Component</b></font>
+  <font><b>Gb.qt Component</b></font>
+  <ul>
+  <li>BUG: Filling the picture cache explicitely does not leak memory anymore.
+  </ul>
+  <font><b>Gb.qt.ext Component</b></font>
+  <ul>
+  <li>BUG: TableView correctly refreshes its contents when its number of rows
+or columns has changed.
+  </ul>
+  <font><b>Gb.db Component</b></font>
+  <ul>
+  <li>BUG: Pseudo-collections now always work correctly when being accessed.
+  </ul>
+  <font><b>Gb.db.sqlite Component</b></font>
+  <ul>
+  <li>BUG: Float values stored in the database are not truncated anymore.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.17 - 22 Jul 2006</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: Closing the translation dialog now correctly saves the translation
+even if the project path include spaces.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: The error management does not leak stack anymore. So functions doing
+a lot of TRY do not crash the interpreter anymore.
+  <li>BUG: Dir() now works correctly with archives (i.e. executables).
+  <li>BUG: Reading and writing a string into a stream without specifying the
+length now work correctly.
+  </ul>
+  <font><b>Gb.eval Component</b></font>
+  <ul>
+  <li>BUG: Eval() does not modify its string expression anymore.
+  </ul>
+  <font><b>Gb.qt Component</b></font>
+  <ul>
+  <li>BUG: Drawing.Width and Drawing.Height should always return an accurate
+value now.
+  <li>BUG: Replacing a picture in the Picture cache with another one with the
+same key does not crash the interpreter anymore.
+  <li>BUG: Changing the background color of a window now works correctly.
+  </ul>
+  <font><b>Gb.db Component</b></font>
+  <ul>
+  <li>BUG: Void table, index or field names are correctly handled now, and do
+not crash the interpreter anymore.
+  <li>BUG: Drivers functions that test the existence of a user, an index, a
+field, and so on, now correctly return FALSE if an error occurs.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.16 - 02 May 2006</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: Czech language ISO code was fixed.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Subst() works correctly again.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: Tooltips now work correctly on view controls.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.15 - 24 Mar 2006</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: Component description translations are correcly used now.
+  <li>BUG: Opening the translation dialog when there are no strings to translate
+does not crash the IDE anymore.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Integer constants are endianness neutral now.
+  <li>BUG: The Subst() instruction now interprets the '&&' sequence as a
+single '&'.
+  <li>BUG: INPUT now works correctly with more than one argument.
+  <li>BUG: The debugger now prints string expressions without corrupting
+memory anymore.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: Integer constants are endianness neutral now.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>BUG: Tables with more than about 30 fields do not crash the interpreter
+anymore.
+  <li>BUG: The Result Move methods now return TRUE if there is no record anymore, like
+before.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: Picture.Flush() does not crash the interpreter anymore.
+  </ul>
+  <font><b>Kde Component</b></font>
+  <ul>
+  <li>BUG: The current locale is correctly defined now.
+  </ul>
+  <font><b>Networking Component</b></font>
+  <ul>
+  <li>BUG: Now ServerSocket can accept more than five connections without
+crashing anymore.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.14 - 21 Jan 2006</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: The translation is automatically saved if you close the translation
+dialog with the window close button.
+  <li>NEW: Translation of the tips of the day in swedish.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Many fixes in the support of classes and archives compiled on
+big-endian CPUs.
+  <li>BUG: Object.GetProperty and Object.SetProperty were fixed.
+  <li>BUG: Up to 4096 string constants in the same class are supported now.
+  <li>BUG: You can call SHELL and EXEC several times without freezing the
+interpreter anymore.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: An error is raised now if you try to use something that is not an
+identifier as local variable name.
+  <li>BUG: You cannot use the same local variable in several imbricated loops
+anymore.
+  <li>BUG: Instructions or expressions written on several lines do not
+disturb the debugger anymore.
+  <li>BUG: Raising an event now correctly returns if the event was canceled
+or not.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>BUG: 8 bytes integer fields are now interpreted as Float in the
+PostgreSQL driver.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: The dialog size grip ignores the arrangement property of its window.
+  <li>BUG: The Clear method of the cell of a GridView now works correctly.
+  <li>BUG: Drag & Drop of TreeView, ListView, ColumnView, IconView and
+ScrollView controls was fixed, and should work as expected.
+  <li>BUG: You can rename a TreeView item with the Rename method now.
+  </ul>
+  <font><b>Gambas Editor Component</b></font>
+  <ul>
+  <li>NEW: The editor now handles correctly the middle mouse button for pasting
+selected text.
+  </ul>
+  <font><b>Sdl Component</b></font>
+  <ul>
+  <li>BUG: An interpreter crash does not wake up the SDL crash handler anymore.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.13 - 11 Nov 2005</font></th></tr>
+  <tr><td>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: The conversion between string and integer was fixed. Val, Str$ and CInt
+should work correctly with any integer number now.
+  <li>BUG: The interpreter does not crash anymore when the localisation is not set.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: The component does not crash anymore when printing an internal warning
+message.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.12 - 07 Nov 2005</font></th></tr>
+  <tr><td>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Looping with a Byte or Short variable now works correctly.
+  <li>BUG: Formatting a date with AM/PM now displays an hour value between 1 and 12,
+and not 0 and 11 as before.
+  <li>BUG: Displaying numbers in decimal now is more accurate, and should not display
+things like 123,00000000001 anymore.
+  <li>BUG: INPUT and LINE INPUT deal with non-ASCII characters correctly now.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>BUG: Field names are case unsensitive now in the table edition window.
+  <li>BUG: Errors while saving a table does not mix up the database manager any longer.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>WARNING: The DblClick event is now posted, and not raised immediately as before.
+  </ul>
+  <font><b>Gambas Editor Component</b></font>
+  <ul>
+  <li>BUG: X11 input methods are correctly managed.
+  </ul>
+  <font><b>Sdl Component</b></font>
+  <ul>
+  <li>BUG: Fixed a memory leak in the sound management.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>NEW: A database user can have '@' and '%' characters inside its name.
+  <li>BUG: Database object names accept only ASCII characters now.
+  <li>BUG: MySQL driver returns if an index is unique correctly now.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.11 - 01 Sep 2005</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>NEW: Swedish translation made by Peter Landgren.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>NEW: Swedish translation made by Peter Landgren.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: ToolButtons now display their labels correctly.
+  <li>BUG: Drawing on void Pictures is not allowed anymore.
+  <li>BUG: Control.Next and Control.Previous really work now.
+  </ul>
+  <font><b>Kde Component</b></font>
+  <ul>
+  <li>BUG: ColorBox does not corrupt memory anymore, and so memory leaks
+disappear.
+  <li>BUG: Program arguments are now correctly handled, as language changes.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.10 - 13 Aug 2005</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: Clicking on the component list in the project property dialog should
+not abort the IDE anymore.
+  <li>BUG: No position shift anymore when inserting controls in a TabStrip.
+  <li>BUG: Creating a menu with a void name in the menu editor does not abort the IDE
+anymore.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>NEW: You can select and delete several lines at once in the data sheet.
+  </ul>
+  <font><b>Examples</b></font>
+  <ul>
+  <li>NEW: A new little game made by Jairo Bedoya.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Enumeration and array operators can be used with anonymous object
+references without crashing the interpreter anymore.
+  <li>BUG: Now strings are implicitely converted to floats with arithmetic operators,
+and not to booleans anymore.
+  <li>BUG: Hex$() and Bin$() now correctly display negative values.
+  <li>BUG: Trim$(), LTrim$() and RTrim$() do not remove non-ASCII characters in some
+cases anymore.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: Container.Children is accurate, and counts only Gambas child controls.
+  <li>BUG: Control.Parent now returns a Container, and not a Control anymore.
+  <li>BUG: The DrawingArea draws its border correctly again.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>BUG: Result can manage tables whose primary keys are not the first fields
+of the table.
+  <li>BUG: You can use variant values with functions that use substitution.
+  <li>BUG: Result.Fields.Exist() now returns FALSE if a field does not exist, and
+do not raise an error anymore.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.9 - 19 Jul 2005</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>This version compiles with gcc 4.0 without errors.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: The packager now keeps the case of the project name everywhere.
+  <li>BUG: Fix a bug in the file selector with symbolic link to directories.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>Now text fields with no text limit are edited with a multiline TextArea control.
+  <li>Now the rename table dialog box displays the table type for MySQL databases.
+  </ul>
+  <font><b>Examples</b></font>
+  <ul>
+  <li>BUG: In the Notepad example, the 'modified' flag now displays correctly in the
+window title.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: The date functions do not ignore the part of the date smaller than the
+second anymore. CStr(Now) prints something like that: '07/18/2005 11:35:30.746'
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>DrawingArea paint events were optimized.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>BUG: When you create a record with DB.Create(), the fields take their default
+value now.
+  <li>BUG: The milliseconds part of date fields is correctly handled now, and the
+value of date fields is correctly returned!
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.8 - 11 Jul 2005</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>'Mandrake' has been replaced by 'Mandriva'.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>BUG: Errors during table creation or modification are now correctly handled.
+  <li>BUG: Fields names are now case unsensitive in the table edition window.
+  <li>BUG: Deleting fields that are used in an index is not allowed anymore.
+  <li>BUG: Deleting fields in the index tableview now works as expected.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Format$() has been fixed.
+  <li>BUG: CLOSE should not crash anymore.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: Unminimizing windows now always give them the focus.
+  <li>BUG: Fix a potential crash is menu management.
+  <li>BUG: If a modal window is already displayed, calling Show() on another window calls
+ShowModal() instead.
+  </ul>
+  <font><b>Mysql Driver</b></font>
+  <ul>
+  <li>BUG: Creating indexes on text fields with no size limit is not case sensitive
+anymore.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.7 - 02 Jul 2005</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>README.REDHAT has been updated.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>New Czech translation made by Peter Cernoch.
+  <li>BUG: Constants are correctly displayed in autocompletion.
+  <li>BUG: Default desktop font size is better respected.
+  <li>BUG: Fix a crash in file selector.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>New Japanese translation made by Kazutaka Harada.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Process management has been backported from development version.
+  <li>BUG: Raising events now works for class whose parent already has events.
+  <li>BUG: Calling native functions cannot badly free the return value anymore.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: Fix memory leak in string conversion to UTF-8.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>BUG: You can use string constants inside requests now.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.6 - 03 May 2005</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>The source package now uses Automake 1.9.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: OPEN ... DIRECT now correctly works.
+  <li>BUG: Opening a file with CREATE flag now always implies READ flag.
+  <li>BUG: SEEK and READ now always work on files opened in DIRECT mode.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: I finally got rid of the spurious warning generated by the TableView control.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>BUG: Result methods now always return an error when the result is not available.
+  <li>BUG: Now tables whose primary key fields are not necessarily the first ones work.
+  <li>BUG: The PostgreSQL driver has been fixed. Now it works for any version greater
+or equal than 7.3.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.5 - 19 Apr 2005</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>A new configure flag, '--disable-qt-translation', prevents the qt component for
+using qt translation files, in the hope of helping to solve the 'freeze' problem
+with distributions like SuSE.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>New Japanese translation made by Kazutaka Harada.
+  <li>New Hungarian translation made by Balazs Barany.
+  <li>BUG: You cannot assign a null name to a control anymore.
+  <li>BUG: Package version requirements were fixed in the packager wizard.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: The Seek() function should work now.
+  <li>BUG: A file descriptor leak was fixed in an internal function used by the Settings
+class.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>An error is raised now when trying to use WAIT with FOR READ/WRITE in the
+SHELL and EXEC instructions.
+  <li>BUG: A file descriptor leak was fixed in an internal function used by the compiler
+to load the source files.
+  </ul>
+  <font><b>Network Component</b></font>
+  <ul>
+  <li>BUG: The DTR and RTS properties of the SerialPort class were fixed.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.4 - 09 Mar 2005</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: The pattern for searching all files in the file dialog has been fixed.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: The Tabstrip.Tab property now really returns a tab virtual object, and
+not an integer anymore.
+  <li>BUG: The DrawingArea control does not crash anymore when it is cached and its
+width and height are zero.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>BUG: Some fixes in the postgresql driver for PostgreSQL version greater than 7.4.
+  <li>The code source of the sqlite driver was backported from the development version.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: The File.Perm.* properties now work correctly.
+  <li>BUG: The constant gb.Sunday has the correct value now.
+  <li>BUG: Subst() now works correctly when there is a single '&' character in the
+pattern string.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.3 - 01 Feb 2005</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Pressing ENTER when the autocompletion is displayed does not insert a new line
+anymore.
+  <li>BUG: the version numbers used by the packages generated by the IDE are correct now.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: Qt dialogs are now translated!
+  <li>BUG: No memory leak anymore when using user-defined cursors.
+  <li>BUG: Setting Dialog.Font to NULL does not crash the interpreter anymore.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.2 - 12 Jan 2005</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: Don't crash when INHERITS is used by mistake.
+  <li>BUG: Don't display void folders opened in the project treeview.
+  <li>BUG: Never open autocompletion inside a comment.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: Using INHERITS twice now raises an error message.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: The [] operator has been fixed for Byte and Short arrays.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: Changing the width of all rows or the height of all columns now works correctly.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0.1 - 03 Jan 2005</font></th></tr>
+  <tr><td>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Preloading now loads QT and KDE libraries only if necessary!
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: TextBox.Select.All() works now.
+  <li>BUG: TextBox.Pos was fixed, and can receive incorrect values without crashing now.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">1.0 - 01 Jan 2005</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: Fix the label in the hierarchy window.
+  <li>The IDE can take a project path to open as parameter.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Array.Copy takes two extra paramters to copy only a subpart of the array.
+  <li>BUG: Now you can use the auto-creatable instance inside its constructor without
+filling the stack.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>BUG: A syntax error in code generation was fixed.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.99.RC6 - 26 Dec 2004</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>The IDE can now deals with date properties.
+  <li>BUG: External programs (rpmbuild, konqueror, ...) are correctly detected again.
+  <li>BUG: Saving a picture from the icon editor when something is selected don't
+destroy the picture anymore.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>Now a crypting key is asked at each startup. This key is used for crypting
+database password in the configuration file.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: Now creating a cursor from a null object raises an error.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.99.RC5 - 20 Dec 2004</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>The package was updated with autoconf 2.59, automake 1.8.5 and libtool 1.5.6.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: the file type combo-box is now displayed correctly with GUI styles like
+Keramik.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Converting negative floating point numbers to date/time values now works
+correctly.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: The archiver now can handle correctly project whose name include point
+characters.
+  <li>BUG: Now the compiler can handle forms imbricated up to 32 levels.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: TableView headers do not resize anymore when inserting or removing rows
+or columns.
+  <li>The WAIT instruction now handles mouse and keyboard events when its duration
+parameter is greater than zero.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.99.RC4 - 28 Nov 2004</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Some Labels were replaced by TextLabels so that text wraps correctly.
+  <li>Virtual classes are not displayed anymore in the help browser treeview.
+  <li>BUG: Fixed a race condition that crashed the IDE when quitting.
+  </ul>
+  <font><b>Examples</b></font>
+  <ul>
+  <li>BUG: Rewrite examples so that public controls in forms are not necessary
+anymore. This was necessary because examples are compiled without any flags by
+the installation script.
+  <li>BUG: Fixed a crash in the DNS example.
+  <li>BUG: Remove pending .lock files.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Two 'virtual' components were created in the ./configure script, so that
+the interpreter can be compiled with external i18n libraries on systems
+like Solaris.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: The Button Alignment property was fixed.
+  </ul>
+  <font><b>Xml Component</b></font>
+  <ul>
+  <li>BUG: once a XmlReader was opened, the EOF flag was set to
+TRUE at the end of the document, even if Open() method was used again.
+  <li>A new method, XMLReader.Decode(). This method allows to decode both
+base64 and BinHex encoded strings. That way, Gambas can manage binary data
+stored in a XML file.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.99.RC3 - 21 Nov 2004</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: The form editor don't remove void functions anymore when saving. This feature
+was buggy.
+  <li>BUG: The ~/.rpmmacros file is not destroyed by the packager wizard anymore.
+  <li>BUG: If the $BROWSER environment variable is not defined, then the IDE tries the
+following web browsers, in this order: konwueror, firefox, mozilla-firefox,
+mozilla, and opera.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Now the Process Kill event is raised after all pending Read event are flushed.
+  <li>BUG: The debugger now correctly detects global class symbols.
+  <li>BUG: Calling the default class method (implemented by the _call hidden method)
+does not fill the stack anymore.
+  <li>BUG: Calling Stat() with an unknown path does not leak memory anymore.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: now the compiler accepts 'END SUB', 'END PROCEDURE' and 'END FUNCTION'
+in place of the 'END' keyword.
+  </ul>
+  <font><b>Gambas Editor Component</b></font>
+  <ul>
+  <li>BUG: The highlighting process now ignores string contents.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>BUG: the sqlite driver now uses 'double' instead of 'float' datatypes.
+  </ul>
+  <font><b>Networking Component</b></font>
+  <ul>
+  <li>BUG: the gb.net.curl component was fixed.
+  </ul>
+  <font><b>Vb Component</b></font>
+  <ul>
+  <li>A new VB.Round() function that imitates the behaviour of the VB Round() function.
+  </ul>
+  <font><b>Xml Component</b></font>
+  <ul>
+  <li>BUG: Fix a bug in XmlReader and some memory leaks.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.99.RC2 - 07 Nov 2004</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: the editor don't crash anymore when there is a keyword like 'PUBLIC' alone
+on a line.
+  <li>The About box show who has made a donation to the project.
+  <li>BUG: the check box that hides beta components was buggy, so it was removed.
+  <li>BUG: if 'rpmbuild' is not found, the packager wizard try to use 'rpm'.
+  <li>Now you can open a project whose components are missing.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>BUG: Some tooltips were fixed.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Now translations are correctly loaded again.
+  <li>BUG: the interpreter don't crash anymore when the COPY instruction fails.
+  <li>A replacement for getdomainname() was made for systems like Solaris that
+don't have it.
+  </ul>
+  <font><b>Kde Component</b></font>
+  <ul>
+  <li>BUG: The system language now is used in KDE dialogs.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>A new method in the Connection class: Quote, that allows to quote an identifier
+according to the underlying DBMS.
+  </ul>
+  <font><b>Networking Component</b></font>
+  <ul>
+  <li>A new method, Net.Format(), to format a string including an IP address.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.99.RC1 - 25 Oct 2004</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>The GB_FIND() macro in configure.in can search for directories instead of files.
+  <li>The config.guess and config.sub files were updated with more recent versions.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: fixes in the auto-completion.
+  <li>Some optimizations in the help viewer.
+  <li>BUG: selecting a project in the right part of the file selector now works.
+  <li>BUG: some fixes in the Debian part of package generation.
+  <li>A new check-box in the project property dialog to display or hide components
+in beta version.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: Fix a bug in the reader while reading numbers.
+  <li>BUG: Now when the '.' or '!' operators are not followed by an identifier,
+an error is raised.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>A new property, Class.Instance, returns the instance of an auto-creatable class.
+  <li>BUG: Format$() now works with numbers that are lower than 1 but are rounded to 1.
+  <li>BUG: Dir$() has no memory leaks anymore when the system encoding is UTF-8.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>Dialog.Title is now reset after the use of a default dialog.
+  <li>BUG: Fonts are now forced to 96 DPI only when drawing to the screen. Not when
+drawing to a printer!
+  <li>BUG: The cache of a DrawingArea is now correctly resized when calling the
+DrawingArea.Move() method.
+  <li>BUG: An invisible DrawingArea don't crash the interpreter anymore.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>BUG: You can use reserved keywords as database, table and index names. But not
+as field names yet.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.99 - 06 Sep 2004</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Unneeded sub-directories were removed from the help directory.
+  <li>I modified and included the ltdl.c and ltdl.h files from libtool 1.5.
+  <li>A new example on drag and drop.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Automatic completion now manages class inheritance.
+  <li>BUG: error messages are correctly displayed now.
+  <li>BUG: some fixes in the automatic completion.
+  <li>A new editor theme, ruby.
+  <li>BUG: Typing mistake ('ProjectQuote' instead of 'Project.Quote') has been fixed.
+  <li>BUG: some fixes in the Debian package generation.
+  <li>BUG: Running the first form of a newly created project does not freeze the IDE
+anymore.
+  <li>The tips of the day were translated in turkish.
+  <li>BUG: Searching text is now UTF-8 aware.
+  <li>BUG: Searching backward now works in all cases.
+  <li>You can use the Find dialog with the text editor now.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>When pasting tables or databases, strings are converted from the source database
+charset to the destination database charset.
+  <li>The RETURN key now creates new lines while editing table contents.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: Now the '.' operator is checked to be used only with identifiers.
+  <li>There is no implicit class declaration anymore. A class that is not declared by the
+project or by any project component raises an error.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: native methods with a variable number of arguments now work correctly. This
+fix, for example, the problem with the Edit() method in the database component.
+  <li>BUG: now trying to open a file for writing in the project directory raises the
+correct error.
+  <li>BUG: UTF-8 methods of the String class now should work correctly.
+  <li>A new method, String.Index(), that is the contrary of String.Pos().
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>Labels now always print their text one one line. If you need automatic line
+break, use a TextLabel.
+  <li>BUG: Draw.Font and Application.Font now work like Control.Font.
+  <li>BUG: Many fixes in window destruction management.
+  <li>BUG: Fixed the two splitter classes that sometimes could crash.
+  </ul>
+  <font><b>Gambas Editor Component</b></font>
+  <ul>
+  <li>Now the left border of modified lines can be highlighted.
+  <li>BUG: '?' is replaced by 'PRINT' everywhere in the line now.
+  <li>BUG: Keyword detection and displaying works correctly now with Turkish language.
+  <li>BUG: Some fixes in syntax highlighting.
+  </ul>
+  <font><b>Kde Component</b></font>
+  <ul>
+  <li>BUG: Dialog.Filter has been fixed.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>Creating a table without primary key is allowed now, but you won't be able to use
+it with the Edit() method.
+  <li>BUG: some fixes in the SQLite database driver. See the ChangeLog file for more
+details.
+  </ul>
+  <font><b>Sdl Component</b></font>
+  <ul>
+  <li>Two new properties, Channel.Volume and Music.Volume, to respectively change the
+volume of a channel, or the volume of the music track.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.98 - 24 Aug 2004</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Many bug fixes in automatic completion.
+  <li>The signature of the [] operator is displayed now.
+  <li>You can run until the current line in the debugger, by pressing SHIFT F5.
+  <li>Debug window is now integrated into the project window.
+  <li>Menus and buttons are hidden as much as possible when they are useless in a
+given context.
+  <li>Pressing F2 now works on reserved keywords.
+  <li>The selection tool has been redesigned in the icon editor.
+  <li>You can change the location of the executable.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>Functions that are generated by the compiler do not include breakpoints in the
+compile code anymore. This speeds up, for example, the loading of a form being
+debugged in the IDE.
+  <li>The Error() subroutine has been replaced by a keyword, ERROR, that is FALSE
+when Error.Code is zero, and TRUE if not.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>Control fonts now works like the early versions of Gambas: changing a property of
+a control font actually changes the font used for drawing the control.
+  <li>A new method, TreeView.MoveBack(), that moves to the last position of the
+internal cursor. This is useful if one Move*() method fails, and you want to
+return to the last position to try another Move*() method.
+The same method exists for the ColumnView control.
+  <li>The way windows, forms and controls are destroyed were redesigned, to prevent
+possible crashes in the QT library. Now, every control and window objects are
+not destroyed immediately, but at the return of the event loop, at the same
+level the objects were created.
+  <li>Two new control properties, Previous and Next, that return the previous and
+next control in the stack order.
+  </ul>
+  <font><b>Gambas Editor Component</b></font>
+  <ul>
+  <li>Current line is highlighted now.
+  <li>BUG: some fixes in the pattern analyzer.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>When setting the table primary key, field names are checked for existence now.
+  <li>SQLite database driver accepts UTF-8 charset now.
+  </ul>
+  <font><b>Debug Component</b></font>
+  <ul>
+  <li>BUG: fix for a race condition that leads sometime to an interpreter crash when
+stopping a debugging session.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.97 - 14 Aug 2004</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Gambas is now compiled with gcc 3.4
+  <li>A new turkish translation made by Fatih Asici.
+  <li>A new traditional chinese translation made by Chuen Chilin.
+  <li>The 'Util' Gambas archive has been removed.
+  <li>Tips were translated in Slovenian by Miha Ambroz.
+  <li>A new example, TreeView made by Craig Packard.
+  <li>A new example, MusicPlayer, made by me.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Hidden menus are not visible anymore in the form editor.
+  <li>Project arguments are correctly managed.
+  <li>New option to show or hide the procedure separator line.
+  <li>New option to use embossed text for displaying keywords in the source code editor.
+  <li>F2 allows to find a symbol definition, and SHIFT-F2 allows to go back to the
+initial cursor emplacement.
+  <li>The browser option has been removed. Now Gambas uses the contents of the $BROWSER
+environment variable.
+  <li>BUG: Automatic container arrangement at form save has been fixed.
+  <li>New option to display or not display class files of a form in the project window.
+If form class files are not displayed, you can open them by pressing CTRL when
+you double-click on the form icon in the project window.
+  <li>A new syntax highlighting color theme, 'Emerald'.
+  <li>Editing commands are disabled in the code editor while debugging.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>The divide operator now returns the true result of the division as a floating
+point number. Now, 1/3 will return 0.333333.
+Use the backslash divide operator to get the integer quotient of two numbers.
+  <li>A new class, Settings, allows you to store and retrieve configuration data
+for a configuration file. By default, the configuration file has the name of
+the project with the '.conf' extension, and is stored in the ~/.gambas
+directory.
+  <li>BUG: fixed a memory leak when using [] operator on a auto-creatable object.
+  <li>Now using CLOSE on a process object closes the pipe used for sending data
+to the process. The pipe used for retrieving process output remains opened.
+  <li>A new class, String, provides a set of static functions for manipulating
+UTF-8 strings: String.Len(), String.Mid(), String.Left(), String.Right(),
+String.Upper() and String.Lower().
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: fix many potential crashes when destroying a window. Now windows are
+never deleted inside an event handler. The deleting process is delayed
+until all imbricated event handlers are terminated.
+  </ul>
+  <font><b>Gambas Editor Component</b></font>
+  <ul>
+  <li>Braces and brackets highlighting have improved.
+  <li>Two new properties: ShowProc and UseRelief, and the implementation of the
+corresponding options described above.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.96 - 02 Aug 2004</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>A new simplified chinese translation made by Yizhou He.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Cosmetic changes in the welcome dialog.
+  <li>Hidden menus are visible in form editor.
+  <li>Saving a module or a class now removes void procedures and trailing spaces.
+  <li>You can create directories in the file selection dialog.
+  <li>BUG: when creating a new project, the title given in the wizard is correctly saved.
+  <li>Keyboard shortcuts in the translation dialog. F3 to search in the translations, and
+F4 to find the next untranslated string.
+  <li>BUG: the packager wizard does not use the undocumented '-C' option of
+'/usr/bin/install' anymore.
+  <li>Make an executable now removes every backup files from the project.
+  <li>Making a package does not increase the release number anymore.
+  <li>Project icons are now displayed in the welcome dialog and in the main menu.
+  <li>The title and the description of the project are now translatable.
+  <li>BUG: Read-only projects are correctly detected now.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>You can copy databases or tables.
+  <li>You can generate Gambas code for initializing your database. This process can
+be automatic.
+  <li>BUG: user management has been fixed.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>A new internal class allows components to easily manage collections of sub-objects.
+  <li>The title and the description of the project are now translatable.
+  <li>BUG: Using TRY and Error.Raise() in the CATCH part of a function is safe now.
+  <li>BUG: Handle exception in constructors correctly with auto-creatable classes.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: the number of imbricated calls to Draw.Begin() is correctly checked now.
+  <li>BUG: predefined dialogs are globally modal again.
+  <li>BUG: item events of TreeView and IconView controls are coherent now.
+  <li>Key.Meta and Mouse.Meta now return if the META key is pressed.
+  <li>Key.Normal and Mouse.Normal return if no special key is pressed.
+  </ul>
+  <font><b>Gambas Editor Component</b></font>
+  <ul>
+  <li>Imbricated brackets, square brackets and braces are automatically highlighted.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>The interface has been redesigned to get rid of the pseudo-collections. It is
+more intuitive now. All pseudo-collections (Database, User, Field...) have been
+replaced by true collections (Databases, Users, Fields...)
+  <li>You can access the result fields by number now.
+  <li>The TINY field type is more intelligently managed by the MySQL database driver.
+  <li>BUG: Fields with '.' inside are now correctly managed by the MySQL database driver.
+  <li>BUG: Database schema changes are correctly managed in the SQLite database driver.
+  </ul>
+  <font><b>Visual Basic Component</b></font>
+  <ul>
+  <li>Two new methods: Vb.DateAdd() and Vb.DateDiff().
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.95 - 19 Jul 2004</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>The source package installation process has been modified, so that creating
+RPM package of Gambas does not need patching anymore.
+  <li>The IDE packager wizard relies on one package for each component. So, distributing
+Gambas applications depends on the distributions packagers. A Mandrake '.spec' file
+is provided in the source package, that build all needed packages for the
+MandrakeLinux distribution.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Containers control that layout their children now automatically sort them
+when the form is saved.
+  <li>The grid snap is now the same horizontally and vertically.
+  <li>Many fixes in the file selector.
+  <li>The automatic completion does not use its own window anymore, but a child
+control in the editor window. This way, it will display correctly whatever
+the window manager is.
+  <li>The debug window is now a toolbar integrated in the project window.
+  <li>The three debug information windows were unified in one window with tabs.
+  <li>You can use a smaller font for the project and properties window.
+  <li>The packager wizard now manage the SuSE distribution.
+  <li>The control icons were redesigned.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>The interface has been redesigned. It does not use the Workspace control anymore.
+  <li>You can export the result of a SQL request to a file or directly to the clipboard.
+The format is comma separated values.
+  <li>You can choose the table type when creating a table in a MySQL database.
+  <li>Server connections are automatically saved and restores.
+  <li>User management seems to be broken.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: Hexadecimal constants with the 31th bit set does not raise a syntax error
+anymore.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: The interpreter has its own case unsensitive string comparison functions,
+that are not localization aware. These functions are exported to the components
+by the Gambas API. This was necessary, because, for example, in Turkish,
+UCase$("i") <> "I".
+  <li>All array classes got a new method named Copy, that return a deep copy of the array.
+  <li>BUG: calling methods on an inherited class now works correctly.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>New layout controls: HBox, VBox, HPanel, VPanel.
+  <li>Many controls now can automatically layout their children: Form, TabStrip, Panel,
+HBox, VBox, HPanel, VPanel. The layout is controlled by the following properties:
+Arrangement, Padding, Spacing, AutoResize.
+  <li>The Arrangement property gives the way the child controls are arranged.
+  <li>Padding gives how many pixels is not used in the border of the container.
+  <li>Spacing gives how many pixels separate the child controls.
+  <li>AutoResize tells that the container should resize so that all its children
+are visible.
+  <li>All controls have a new property: Expand. This property is used only if the control
+container has an automatic arrangement. It tells that the control can automatically
+grow to take the space not used by the other sibbling controls.
+  <li>A new kind of mesage box: Message.Delete.
+  <li>Now panel and label frames follow the global widget style.
+  <li>Now you can have a icon in each tab of a TabStrip control.
+  <li>The TextArea control has a new method, EnsureVisible. This method scrolls the
+TextArea so that the character under the cursor is visible on the screen.
+  <li>The Adjust method of the ColumnView control has been replaced by an AutoResize
+property.
+  <li>Form.Load() now takes an optional parameter, which is a parent control the form will
+be embedded into when shown.
+  <li>Dialog and message boxes are now centered on the screen, and do not appear in the
+task bar anymore.
+  </ul>
+  <font><b>Qt Extended Component</b></font>
+  <ul>
+  <li>The Splitter control has been replaced by two layout controls: HSplit and VSplit.
+  <li>BUG: The Layout property of HSplit and VSplit now work correcly.
+  <li>A MovieBox control, that can display animated GIF and MNG.
+  </ul>
+  <font><b>Gambas Editor Component</b></font>
+  <ul>
+  <li>BUG: GambasEditor.TabLength now works correctly.
+  </ul>
+  <font><b>Kde Component</b></font>
+  <ul>
+  <li>More QT/KDE datatypes are now translated in a DCOP method call: QPixmap, QImage,
+QCursor, QPoint, QSize, QRect, QFont and KURL::List.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>All changes made by Nigel Gerrard should have been merged.
+  <li>You can specify a talbe type when creating a table. This is used by the MySQL
+driver.
+  <li>You can get the version of the database backend.
+  <li>When a request is a join between two tables with identical fields, the field
+names are prefixed with the table name.
+  <li>BUG: many fixes in the SQLite database driver.
+  <li>You can create a database directly in memory with the SQLite driver. Just
+specify ':memory:' as database name.
+  <li>The SQLite databases are now stored by default in /tmp/gambas.${UID}/sqlite,
+where ${UID} is your user id.
+  <li>BUG: reading field information now works correctly. A buggy mysql function
+is not used anymore.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.94 - 22 Jun 2004</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>A new Slovenian translation by Miha Ambroz.
+  <li>The 'gbi' program now creates a '*.list' file for each component that contains the
+name of each class declared by the component. This way, the IDE doesn't need to
+provide a class list to the compiler anymore. And compiling with 'gbc' directly
+from the command line is now completely equivalent than doing that from the IDE.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>A new wizard allows you to create RPM packages for your Gambas projects.
+Creating packages for Debian is possible, provided that the 'alien' program
+is installed on your system.
+  <li>The IDE now can manage other graphical components than gb.qt.
+  <li>You can change the tab length of the editor. This is a property associated with
+the project.
+  <li>You can indent and unindent code from the editor toolbar.
+  <li>The event menu in the form editor now shows the implemented event handlers with
+a check mark.
+  <li>BUG: The mascot border is now Border.None.
+  <li>Some little interface changes.
+  <li>BUG: file selector now starts correctly in the specified initial directory.
+  <li>Projects now have a text description and an icon.
+  <li>You can now use a fixed font when editing a text property.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>When compiling the project, the classes included in the project components
+are automatically declared by using the '*.list' files made by the 'gbi'
+program.
+  <li>BUG: Writing an assignment without anything after the equal sign now leads
+to a syntax error and not a compiler crash.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Two new properties: System.Host returns the system host name, and System.Domain
+the system domain name.
+  <li>Application.Home and Application.User are renamed as System.Home and
+System.User, because they are not related to the application.
+  <li>Object.Lock() locks an object. A locked object does not raise events anymore.
+  <li>Object.Unlock() unlocks a previously locked object.
+  <li>Object.IsLocked() returns if an object was locked.
+  <li>BUG: enumeration (FOR EACH) should not crash the interpreter anymore.
+  <li>Changing the value of System.Language now changes the localization, and the
+translation file being used for displaying messages.
+  <li>The interpreter stack size is now 16K by default.
+  <li>Improved memory leak detection when debugging.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The Control.Delete event was removed, because it was too easy to crash everything
+with it.
+  <li>BUG: Many fixes in the Menu classes that avoid crashes.
+  <li>BUG: Picture.Copy() now works correctly with transparent pictures.
+  <li>BUG: message boxes should be correctly centered now.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>BUG: the mysql driver is now case insensitive when searching for field names.
+  <li>BUG: mysql TEXT fields now have a length of 65535 and not zero.
+  <li>BUG: you can create a result with no field without crashing.
+  <li>BUG: fixed a memory leak in the database charset management.
+  </ul>
+  <font><b>Network Component</b></font>
+  <ul>
+  <li>A new version of the gb.net.curl component. See the Changelog file included
+in the ./src/lib/net directory for more details.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.93 - 15 May 2004</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>A new Welsh translation from Kevin Donnelly.
+  <li>The installation directories have changed. A gambas subdirectory was added in the
+lib and share directories. The info files were moved under the share directory.
+  <li>The documentation has been updated.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>The IDE now manages virtual controls: virtual controls are just normal classes
+having an icon, and that can be put on a form.
+  <li>The welcome dialog show the complete path of projects in tooltips.
+  <li>BUG: Some fixes in the autocompletion.
+  <li>BUG: Using project names with non-ASCII characters should work now.
+  <li>A new window displays the control hierarchy of forms. It is useful, as the focus
+order follows this hierarchy.
+  <li>The project creation dialog has been rewritten. Now, you can create a new project
+by copying an already existing one.
+  <li>BUG: modifying a form menu now always sets the modified flag of the form.
+  <li>BUG: Some fixes in the file selection dialog.
+  <li>BUG: Do not store the lock file in the project source archive!
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>Some changes to manage virtual controls.
+  <li>The identifier after INHERITS is not interpreted as a keyword anymore.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Application.Title returns the title of the application as defined in the IDE.
+  <li>System.Path returns where Gambas is installed.
+  <li>The Class class was cleaned.
+  <li>BUG: LIKE now works with pattern that ends with a square bracket.
+  <li>BUG: some bad object referencements were fixed.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The management of font has changed. Now font sizes are automatically scaled as
+if the screen resolution was always 96 DPI. This value can be changed with the
+Font.Resolution property.
+  <li>Desktop.Resolution returns the screen resolution in DPI.
+  <li>A new class, Fonts, returns all font families installed on the system.
+  <li>Font got new properties like Style and Fixed that give some information about
+a specific font family.
+  <li>Image.Pixels has been removed. Now, to get or set image pixels, just use the Image
+object directly as an array.
+  <li>Now you can create a Menu that is hidden by default.
+  <li>Message boxes now uses the application title as window title.
+  <li>Application.Tooltip as been renamed as Application.Tooltip.Enabled.
+  <li>Application.Tooltip.Font allows changing the font used for displaying tooltip.
+  <li>You can use the Cursor class to create custom mouse cursors, and you can
+assign it to any control with the new Cursor property. This was not tested!
+  <li>A new event, DragMove, that is raised while the mouse moves on a control during
+a drag & drop process.
+  <li>Window.TopOnly and Window.SkipTaskbar now should work correctly.
+  <li>Now you can use the SetFocus method even if the window is not yet visible.
+  <li>ColumnView.Columns[].Align has been renamed as Alignment.
+  <li>TextBox and TextArea Selection property got a synonymous, Select.
+  </ul>
+  <font><b>Qt Extended Component</b></font>
+  <ul>
+  <li>BUG: LCDNumber.Border property has been fixed.
+  <li>TextView got two new properties, TextWidth and TextHeight, to get the dimension
+of the text displayed in the control.
+  </ul>
+  <font><b>Network Component</b></font>
+  <ul>
+  <li>SerialPort, Socket, UDPSocket and ServerSocket were converted into a virtual
+control. Their interface slightly changed.
+  </ul>
+  <font><b>Examples</b></font>
+  <ul>
+  <li>A new clock example made by Fabien Bodard.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.92 - 03 Apr 2004</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Forms are now (almost) read-only when you are in debugging mode.
+  <li>BUG: Many bug fixes in automatic completion.
+  <li>The source code editor allows you to cancel all modifications and reload the file.
+  <li>The console uses the editor color theme now.
+  <li>BUG: clicking on the watch expressions button does not crash the IDE anymore.
+  <li>BUG: The Backspace shortcut now works in the explorer window.
+  <li>A new search list in the find dialog. It was made by Ronald Onstenk.
+  <li>BUG: fix the layout save in the file selector dialog.
+  <li>A new button in the translation dialog to directly find the next untranslated string.
+It was made by Wojciech Saltarski.
+  <li>Opening a project now uses a lock file, so that opening it twice displays a warning
+message.
+  </ul>
+  <font><b>Examples</b></font>
+  <ul>
+  <li>BUG: some fixes in the SerialPort example.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: fix the support for control names that are reserved keywords.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>The object reference counting is now the same for all classes. This implies that
+all gambas objects must have a reference counter, but referencing and dereferencing
+is faster.
+  <li>Because of the previous change, the Symbol class has been replaced by a virtual
+class you must access from the Class class.
+  <li>A new method Object.IsValid() to know if an object is valid or not.
+  <li>Now the File object has got a property for the three file modification times:
+LastAccess, LastChange and LastUpdate.
+  <li>The days of the week have their own constant now in the gb class.
+  <li>BUG: The Process class has been fixed, so that the interpreter does not crash
+anymore when the process object is freed.
+  <li>BUG: Floating point number that are about 1.0 are displayed correctly now.
+  <li>BUG: Displaying arrays in the debugger does not crash the interpreter anymore.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The Font class became a true class. Consequently, Control.Font.Bold = TRUE does not
+change the control font anymore. You must use an intermediate Font variable:
+DIM hFont as Font
+hFont = MyControl.Font
+hFont.Bold = TRUE
+MyControl.Font = hFont
+  <li>BUG: TabStrip.Children does not crash anymore.
+  <li>BUG: The Window class has been fixed so that dialogs are displayed correctly on the
+center of the screen. This problem depended on the QT 3.2 / KDE 3.2 combination.
+  </ul>
+  <font><b>Qt Extended Component</b></font>
+  <ul>
+  <li>BUG: Accessing TableView items properties should not crash anymore.
+  </ul>
+  <font><b>Gambas Editor Component</b></font>
+  <ul>
+  <li>BUG: the editor should redraw correctly in any case.
+  <li>The editor has recovered his left margin.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.91 - 14 Mar 2004</font></th></tr>
+  <tr><td>
+  <font><b>This Release Is Dedicated To The Victims Of Terrorism And War. Most Of These People</b></font>
+  <font><b>Never Made Weapons, Never Sold Them, Never Used Them. And They Died.</b></font>
+  <ul>
+  <li>The communication process between the interpreter and a debugged program was
+rewritten. It is build on the new gb.debug component.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>The automatic completion feature was terminated and should be usable now.
+  <li>Debugger was partly rewritten.
+  <li>The help browser got a shortcut: the Backspace key goes backward in the history.
+  <li>You can ignore comments when you do a search now.
+  <li>BUG: the compiler is now warned of newly added or removed forms.
+  <li>BUG: the file selector displays image preview correctly again.
+  <li>The welcome dialog is now resizable.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>BUG: The refresh entry is not visible anymore when a database is not yet opened.
+  </ul>
+  <font><b>Examples</b></font>
+  <ul>
+  <li>A new database example from Rizky Tahara Shita.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Some optimizations in case convertion, thanks to valgrind!
+  <li>BUG: Boolean, Byte and Short static arrays should work correctly now.
+  <li>BUG: The process output is not lost when it terminates.
+  <li>BUG: localizations written entirely in uppercase should work now.
+  <li>The internal debugger now uses fifo instead of the standard input/output.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>A new SQLite experimental driver from Nigel Gerrard.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: Window.ClientW and Window.ClientH should return the correct values now.
+  <li>BUG: TopOnly property works now. I fixed that by bypassing the Qt library, that
+is not freedesktop.org standard compliant!
+  <li>Window.SkipTaskbar is a new property that prevents a window from being displayed
+in the taskbar.
+  </ul>
+  <font><b>Gambas Editor Component</b></font>
+  <ul>
+  <li>BUG: TRUE and FALSE are now displayed in uppercase again.
+  <li>BUG: Many fixes in text redraw and cursor management.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.90 - 25 Feb 2004</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Now Gambas is developed with QT 3.2 and KDE 3.2
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>The _Properties control constant can now describe the default value of the
+properties.
+  <li>Automatic completion after typing "NEW", "AS", or the point operator.
+Displaying function syntax is not yet implemented.
+  <li>You can choose the color of the Gambas editor selected text.
+  <li>The editor toolbar and its menu allow defining breakpoints.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>A fix from Charlie Reinl to prevent a crash when database charset is unknown.
+  <li>Some mySQL related fixes from Nigel Gerrard.
+  </ul>
+  <font><b>Examples</b></font>
+  <ul>
+  <li>KateBrowser example has been updated for KDE 3.2
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>The File.Access method has been removed, and replaced by the three properties
+File.Perm.User, File.Perm.Group and File.Perm.Other that return the related file
+permissions as a string. This string contains a 'r' for a read permission, a 'w'
+for a write permission, and a 'x' for an execute permission.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>The compiler now automatically declares the project file names as classes.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>Some fixes from Nigel Gerrard in the mySQL database driver.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>new methods in ListView, TreeView and ColumnView: MovePrevious, MoveCurrent and
+MoveLast.
+  <li>Window stack management was reworked. Now all top-level windows are independent, to
+prevent a strange activation behaviour, like message box displaying behind windows.
+  </ul>
+  <font><b>Gambas Editor Component</b></font>
+  <ul>
+  <li>The editor is now based on a QGridView, and not on the old QT 2.x QtTableView.
+  <li>The editor now displays an horizontal line between each function.
+  <li>New methods and properties to help the automatic completion feature.
+  </ul>
+  <font><b>Kde Html Component</b></font>
+  <ul>
+  <li>Now the WebBrowser raises the following events:
+- Click, when the user clicks on a link. Stopping the event prevents the browser
+from following the link.
+- Link, when the mouse cursor moves over a link.
+- Change, when loading an URL is completed.
+  <li>New property WebBrowser.Zoom.
+  <li>New property, WebBrowser.Link, that returns the link of a Click or a Link event.
+  <li>New property, WebBrowser.JavaScript, to enable or disable the JavaScript support
+in the browser.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.84 - 12 Feb 2004</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>The interpreter is compiled with threading support on FreeBSD.
+  <li>You can disable any component at compile time by passing a "--disable-XXX" option
+to the configure script.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: changing DataType color highlighting works now.
+  <li>The "Invert colors" button has been replaced by two predefined syntax
+highlighting themes. The default one has a white background now.
+  <li>BUG: You can't translate a void project anymore.
+  <li>BUG: the IDE does not abort anymore in the translation dialog after a click
+on the save button.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Stat() works differently now. It returns a File object. To get information about
+the file, use the same properties as before, except that now they are not static
+anymore.
+  <li>Stat() now returns ownership and right information.
+  <li>File.User returns the owner of a file.
+  <li>File.Group returns the group of a file.
+  <li>File.Access(gb.User / gb.Group / gb.Other, gb.Read / gb.Write / gb.Exec) returns
+the specified file permission.
+  <li>File.SetUID, File.SetGID and File.Sticky returns the specified file attributes.
+  <li>LINK "Path" TO "Target" creates a symbolic link to "Target" named "Path".
+  <li>Access("Path", gb.Read / gb.Write / gb.Exec) checks what your program can do
+with a specified file.
+  <li>A new hook to display error messages.
+  <li>Array.Insert is a new method to insert an array into another one.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>The Dir$() function has been removed as it returns a String array. Use Dir() only.
+  <li>New keyword: LINK
+  <li>New subroutine: Access()
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>Draw.Tile now uses Draw.FillX and Draw.FillY as drawing offset.
+  <li>Form.Load creates the auto-instanciated form.
+  <li>Error messages are now displayed in a message box.
+  <li>Application.MainWindow returns the main window of your application. This is the
+first one you opened, and it is the default parent window or every other window
+you create in your application.
+  </ul>
+  <font><b>Qt Extended Component</b></font>
+  <ul>
+  <li>TableView.ScrollX and TableView.ScrollY return the scroll offset of the table.
+  <li>TableView.RowAt and TableView.ColumnAt return the row and the column located under
+a specified relative mouse position.
+  </ul>
+  <font><b>Kde Component</b></font>
+  <ul>
+  <li>DatePicker has now a minimum size, so that it does not crash anymore.
+  </ul>
+  <font><b>Kde Html Component</b></font>
+  <ul>
+  <li>This is a new component that provides you a WebBrowser control! Be careful, this
+is beta version.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.83 - 08 Feb 2004</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>All interpreter and compiler source files has been renamed, in the aim of avoiding
+conflict with standard C/C++ compiler include files.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>The source editor has an optional toolbar now.
+  <li>Comment and uncomment actions are cleaner now.
+  <li>You can align controls in the form editor now.
+  <li>A new tool in the icon editor to swap colors.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The Picture class has been splitted between three classes: Picture, Image and
+Drawing. The interface of these three classes has been revised.
+  <li>Image control has been renamed as PictureBox.
+  <li>A new control, ToolButton. Use it for making toolbars.
+  <li>BUG: you can't remove project files from the file selector anymore.
+  <li>Application.Tooltip allows you to globally disable tooltips.
+  <li>The Draw class now knows how to draw on transparent Picture.
+  </ul>
+  <font><b>Kde Component</b></font>
+  <ul>
+  <li>BUG: Dialog.Font now works correctly.
+  </ul>
+  <font><b>Network Component</b></font>
+  <ul>
+  <li>Updated to the version 0.2.2 made by Daniel Campos.
+  </ul>
+  <font><b>Examples</b></font>
+  <ul>
+  <li>The examples can be stored in subdirectories of the example directory.
+  <li>The AnalogClock example compiles now.
+  <li>The MoviePlayer example should rework now.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.82 - 24 Jan 2004</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>You can hit the Control key with the up & down arrows in the code editor to move
+to the previous or the next method.
+  <li>Change Help Browser shortcut from F2 to F1.
+  <li>New forms, classes and modules have now names like "Form1", "Class2", "Module3".
+  <li>Translation dialog is now resizable.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Auto instanciable classes should work now.
+  <li>BUG: SIGCHLD interpreter signal handler has been fixed so that the KDE one
+is not removed. The KDE file dialog will not freeze anymore.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The Expand and Collapse events do not take the item key as parameter anymore.
+You must check your TreeViews and your ColumnViews!
+  <li>BUG: TreeView, ColumnView and ListView were fixed.
+  <li>BUG: showing forms should not raise X errors anymore.
+  </ul>
+  <font><b>Kde Component</b></font>
+  <ul>
+  <li>Three new controls: DatePicker, URLLabel and ColorBox.
+  <li>DatePicker works only because I did an ugly hack to workaround a KDE bug.
+This bug seems to be corrected since KDE 3.1.5.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.81 - 17 Jan 2004</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Some optimizations when controls are resized.
+  <li>BUG: initial path now reworks in file selector.
+  <li>BUG: deleting a directory in project window should work now.
+  <li>You have a menu entry to select all the text in the editor.
+  <li>The tips files changed. Now there is one tips file by language.
+  <li>The help browser has a new heading for each language help page.
+  <li>You can resize the buttons of the toolbox.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>Now you can connect to a server by specifying a username.
+  <li>You can load and save SQL scripts to a file. These SQL scripts file are just text
+file containing SQL requests separated by semicolons.
+  <li>BUG: deleting a table closes table windows correctly now.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Two new array classes: Byte[] and Short[].
+  <li>Arrays now have a Read and a Write method to read and write their contents on a stream.
+  <li>Support for auto-instanciable classes.
+  <li>BUG: converting Boolean, Short and Byte numbers to Integer numbers works now.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The Form class is now auto-creatable. This means that you can have a form named
+'FDialog', and use it as in Visual Basic: FDialog.Show directly shows the form,
+without the need to create an instance !
+  <li>Iconview has a new method Find(), to find an icon item from a point.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.80 - 01 Jan 2004</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Gambas can be installed in /usr/bin now. I don't know if it really works !
+  <li>The configure script now should find the QT meta-object compiler (moc) even if
+it is not located in the QT directory.
+  <li>There is a very alpha new component: gb.vb. This is a Visual Basic compatibility
+component: it provide static functions that simulate the behaviour of some Visual
+Basic functions that differ from the Gambas ones.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Support for displaying in form editor controls that are not in the gb.qt and
+gb.qt.ext component.
+  <li>BUG: error during a save operation will not crash the IDE anymore.
+  <li>Dependencies between components are now managed by the project property dialog.
+  <li>Number of untranslated strings is now permanently updated in the translation
+dialog.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Declaring a class twice in a component now raises a panic error, and do not
+crash the interpreter anymore.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>Putting an identifier between braces prevents the compiler from interpreting it
+as a reserved keyword or subroutine name.
+  <li>You can insert any character in a string with the \xHH syntax, where HH is the
+hexadecimal code of the caracter. For example, "\x0A" is a newline.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>Window and Panel controls have a new property, Arrangement. When this property is
+set, then the control children are automatically moved and/or resized.
+  <li>Dialog.Filter now is an array of strings, each string being a filter. Now, instead of
+doing:
+Dialog.Filter = "Text files (*.txt);;All files (*.*)"
+You do:
+Dialog.Filter = [ "Text files (*.txt)", "All files (*.*)" ]
+  <li>Drag.X and Drag.Y are two new properties that return the mouse position of a drop.
+  <li>TreeView, ListView and ColumnView got a new method Find(), that find an item from the
+mouse coordinates.
+  <li>Control.Window is a new property that returns the window containing a control.
+  </ul>
+  <font><b>Network Component</b></font>
+  <ul>
+  <li>Support for OS not having the MSG_NOSIGNAL option for some system calls.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.74 - 20 Dec 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Somes fixes to let the interpreter and the network component compile with gcc 2.95
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>You can return from the current function in the debugger.
+  <li>BUG: the file selector should not lose its layout anymore.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Dir$() now returns a string array, that contains each file located in the browsed
+directory. Its new syntax is: Dir$ ( Path , [ Filter ] )
+  <li>You can return from the current function in the debugger.
+  <li>NEW: Arrays have a new method, Reverse(), that reverse their contents.
+  <li>NEW: You can dynamically call object methods with the Object.Call() static method.
+  <li>BUG: Using READ with a negative length on a void stream does not corrupt memory
+anymore.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>NEW: ListView, TreeView, ColumnView and IconView have a new property named 'Key'
+that returns the key of the current item, or a null string if there is no current
+item.
+  <li>BUG: Key.Control, Key.Shift and Key.Alt now return the correct value in a KeyPress
+event, if Control, Shift or Alt are pressed alone.
+  <li>BUG: Window masks are not shifted one pixel down anymore.
+  <li>When drawing on a picture that has a mask, the mask is recalculated when Draw.End
+is called. Be careful: the recalculation is done with a QT method based on a
+trivial heuristic, and so may fail !
+  <li>BUG: Color.RGB() does not return negative values anymore.
+  <li>BUG: Some fixes related to the UTF-8 filenames in the Dialog class.
+  <li>BUG: DrawingArea with Cached = FALSE does not repaint its background anymore.
+  <li>NEW: Drag & Drop support, with a new class, Drag, a new method, Control.Drag(), a
+new property, Control.Drop, and two new control events: Drag and... Drop !
+Use Control.Drag() to drag something from a control, in a MouseMove event for
+example, and set Control.Drop to TRUE if you want a control to accept drops.
+The Drag class has properties that give you information about the object being
+dragged, like the Clipboard class. Use them inside Drag and Drop event handlers
+in the following way:
+- Cancel the Drag event with STOP EVENT if you don't want the object.
+- Use Drag.Data in the Drop event handler to get the dragged object.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.73 - 06 Dec 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>There are many fixes for gcc 3.3, Cygwin and Solaris.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: the name of controls and groups are checked. You cannot enter a control name
+or a group name with a space inside anymore, for example.
+  <li>BUG: a workaround in the File selector, so that it does not crash anymore when
+displaying void directories.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>A new property Application.Env[] that allow reading and modifying the process
+environment.
+  <li>The internal debugger does not stop anymore inside archives loaded with the
+USE instruction.
+  <li>Files instructions like OPEN, KILL, MKDIR, etc. now convert automatically the
+file name from UTF-8 to system charset. This implies that gambas source code files
+must be written in UTF-8 and nothing else !
+  <li>BUG: the inequality comparison operators now should be definitively fixed :-)
+  </ul>
+  <font><b>Network Component</b></font>
+  <ul>
+  <li>See the Changelog file in ./src/lib/net
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>Allow the component to compile with QT 3.2
+  <li>BUG: Window.Show() reworks now on MDI child windows. An internal change in the QT
+library caused that regression.
+  </ul>
+  <font><b>Sdl Component</b></font>
+  <ul>
+  <li>The property Music.Pos now returns the position of the music, and can be set to
+play the music from a specified time.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.72 - 20 Nov 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>The network component made by Daniel Campos has been integrated !
+  <li>./configure script works better on non-Linux systems.
+  <li>Some fixes in program examples.
+  <li>Some source files and many symbols in them were renamed so that Gambas compiles
+under Cygwin. But it does not work yet...
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: A class can inherit another class having no symbols in its description without
+crashing.
+  <li>Posted routines are now executed in the order they were posted: posted the first,
+executed the first.
+  <li>BUG: CLOSE now works with streams that are not File objects.
+  <li>BUG: Array() and [...] now create correctly String[] arrays.
+  <li>BUG: the inequality comparison operators now behave correctly with NULL.
+  <li>BUG: The internal interpreter event loop now call posted routines correctly.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>Buttons have now a minimum height, like ComboBox, according its font.
+  <li>The right mouse button does nothing anymore in ListBox controls.
+  <li>BUG: Showing windows was fixed, so that closed windows does not reappear suddenly,
+like in the IDE.
+  <li>The QUIT hook does not crash anymore.
+  </ul>
+  <font><b>Gambas Editor Component</b></font>
+  <ul>
+  <li>If a line begins with a question mark, the question mark is replaced by 'PRINT',
+like in the old Basics.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.71 - 01 Nov 2003</font></th></tr>
+  <tr><td>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>A new instruction, STOP EVENT, to stop an event in an event handler. You can return
+TRUE still.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Process class and File class now inherit the Stream virtual class. Consequently,
+you can use PRINT, READ, INPUT, ... on a process object.
+  <li>Process.Send has been removed.
+  <li>'Write' event Process has been replaced by 'Read' event Process, and do not take
+any argument anymore. Use READ, LINE INPUT or INPUT instead. The 'Error' event
+did not change.
+  <li>Shared libraries are preloaded with the library version added to the file name:
+'libqt-mt.so.3' instead of 'libqt-mt.so'.
+  <li>BUG: String.Sort[] does not crash anymore while trying to sort void strings.
+  <li>Using QUIT instruction does not display the 'Unknown error' message anymore.
+  <li>BUG: reading and writing now correctly manage interrupted system calls.
+  <li>By specifying a negative value as third argument to READ, you can read up to
+N characters:
+READ #hStream, sString, 255   ' reads a 255 characters length string
+READ #hStream, sString, -255  ' reads a string up to 255 characters
+  <li>WAIT does not need the QT component to work now.
+  <li>New properties Application.Handle and Process.Handle that will replace
+Application.Id and Process.Id in a next version.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>Key.Cancel has been removed. Use STOP EVENT instead.
+  <li>New properties Window.Handle and Control.Handle that will replace Window.Id and
+Control.Id in a next version.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.70 - 19 Sep 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>./configure were reworked, so that adding component and managing differences
+between systems is easier.
+  <li>A new experimental component: gb.sdl, that allow using SDL to play sounds and music.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>The file selector of Fabien Bodard has been merged.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: you can define objects greater than 32K now ! And so declare arrays as large as
+you want.
+  <li>A new property Application.Version that returns the version of the project.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The Keyboard and Mouse event handlers do not take any parameters anymore! They must use
+new static fields of the Key and Mouse classes that replace the old parameters.
+As for the Keyboard events:
+- Ascii -> Key.Text
+- Code -> Key.Code
+- State -> Key.Shift, Key.Control, Key.Alt
+As for the Mouse events:
+- X -> Mouse.X
+- Y -> Mouse.Y
+- Button -> Mouse.Left, Mouse.Middle, Mouse.Right, Mouse.Shift, Mouse.Control, Mouse.Alt
+- Orientation -> Mouse.Orientation
+- Delta -> Mouse.Delta
+The old Mouse.X and Mouse.Y were renamed as Mouse.ScreenX and Mouse.ScreenY.
+  <li>A new property Iconview.Scrollbar.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.65 - 29 Aug 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Gambas should compile and run on FreeBSD.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Help browser search now display page titles instead of file names. The vertical
+position in the page is memorized when you click on the backward and forward
+buttons.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Shared libraries preloading has been reworked, so that LD_PRELOAD can be defined
+by the user.
+  <li>BUG: a bug with LD_PRELOAD defined to a void string has been fixed.
+  <li>Support for systems having no setenv() and unsetenv() system functions, like
+Solaris.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>Splitter.Pos property has been replaced by Splitter.Layout that returns a string
+and not an integer array.
+  </ul>
+  <font><b>Qt Extended Component</b></font>
+  <ul>
+  <li>TextView has two new properties: TextView.ScrollX and TextView.ScrollY. They
+returned the position of the visible part of the displayed HTML page.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.64 - 10 Aug 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>If the KDE component is not compiled, then its libraries are not preloaded.
+Yes, it is logical ! But sometimes I'm not :-)
+  <li>There is no one sole component description file anymore, but one description file
+for each component now.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>A menu entry allows you closing all opened windows.
+  <li>The IDE now tells the compiler which classes use the project. You need not use the
+CLASS keyword anymore.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>The database manager now deals with database specific encodings.
+  <li>It saves its configuration in ~/.gambas/gambas-database-manager.conf now.
+  <li>Circular references were found and destroy :-)
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>The syntax to raise event has changed. Instead of simply calling the event like
+a function, you must use the RAISE keyword now:
+RAISE Event AS ReturnValue
+  <li>The compiler now can receive a list of pre-declared classes in a file. If so, then
+an identifier beginning with an uppercase character is not supposed to be class.
+It must have been specified in the class list file.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>The Component.Controls property is useless now, it has been removed.
+  <li>The QUIT instruction, that immediately stops a program, has been implemented.
+  <li>BUG: temporary files are now correctly deleted.
+  <li>A new Gambas API: GB.System.Charset(), that returns the charset used by the
+localization.
+  <li>BUG: the LIKE instruction should work correctly now.
+  <li>BUG: the debugger now shoud display local variable values correctly now.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>Database charset management.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>ListView, TreeView and ColumnView Rename events are now posted instead of
+being raised immediately, so that you can do what you want during the
+event handler without crashing the QT library.
+  </ul>
+  <font><b>Qt Extended Component</b></font>
+  <ul>
+  <li>BUG: TableView.Refresh didn't work. It was replaced internally by a Hide()
+followed by a Show(). This is an awful workaround, but I found no other solution.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.63 - 01 Aug 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>KDE libraries are all preloaded when using the KDE components.
+  <li>Global destructors are now called when unloading C++ components like the QT one.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Bug fixes into the debugger : you can safely trace a class located in another
+project, and trace code using static arrays (static arrays are arrays declared
+this way: DIM iTab[200] AS Integer).
+  <li>The new project/file/icon selector made by Fabien Bodard has been integrated.
+Be careful : this is beta code !
+  <li>The IDE warns you when you want to import a translation different from the
+current language in the translation dialog.
+  <li>Arabic, Croatian, Indonesian and Spanish translations were integrated.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>A new keyword PROPERTY to declare properties in your class.
+You declare the property this way: PROPERTY [ READ ] <Name> AS <Type>
+Then you must write a function to read the property, and, if the property is
+not read-only, a function to write it. The function names are PropertyName_Read()
+and PropertyName_Write().
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>PROPERTY keyword management.
+  <li>BUG: fixed a memory leak in Dir$() when browsing archive contents.
+  <li>BUG: the debugger can display all types of local variables.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>Draw.Text() syntax has changed. The new method can draw multi-line text aligned
+inside a rectangle.
+  <li>Setting DrawingArea.Enabled to FALSE prevents the control to draw anything on the
+screen, even its background.
+  <li>NEW: Font.Ascent and Font.Descent.
+  <li>Printer.Command has been replaced by Printer.Name.
+  <li>NEW: Printer.MinPage and Printer.MaxPage.
+  <li>ComboBoxes automatically adjust their height to its font size.
+  <li>NEW: Control.Id that returns the control window handle.
+  <li>NEW: TextView.Clear() clears the textview.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.62 - 14 Jul 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>The IDE configuration file has changed. Now the IDE uses a shared class named
+Config that is stored in the Util archive library.
+This class stores configuration files into the '~/.gambas' directory and gives
+them the name of the application by default : for example, the IDE configuration
+file is '~/.gambas/gambas.conf'.
+The format of these configuration files follows the Window .INI file format.
+The old '~/.gambas' file will be removed by the installation process.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Portuguese (Brazilian) translation by Nelson Ferraz.
+  <li>An internet link in the help browser now runs mozilla by default, or any other
+internet browser defined in the preferences dialog.
+  <li>The icon editor toolbox has now its own window. This window is common for all
+opened icon editors.
+  <li>Files in the project tree can now be copied, cutted and pasted, i.e. moved and
+copied. They now have their own properties window.
+  <li>Welcome dialog icons were redesigned.
+  <li>Project properties dialog were redesigned and simplified.
+  <li>BUG: translation search and check were fixed. Some messages were not examined
+by the algorithm.
+  <li>The project tree is sorted with directories first.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>A new keyword, COPY, to copy files.
+  <li>A new routine, IsDir(), to know if a file is a directory.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>A new keyword, COPY, to copy files.
+  <li>A new routine, IsDir(), to know if a file is a directory.
+  <li>BUG: The file search between archives has been fixed. You can use USE safely now :-)
+  <li>Operators can now have up to 63 operands.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The QT component should compile fine now with QT 3.0.
+  <li>The Window.State property now works correctly. Bugs in QT and/or KDE window manager
+were gone round.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.61 - 05 Jul 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>./configure got a new option, --disable-preloading, to prevent the gambas programs
+to preload shared libraries. It seems that preloading don't work on some systems
+for unknown reasons.
+  <li>Now you can use other gambas archive (executable) as libraries !
+  <li>The examples are copied into the gambas installation path. They can be directly
+opened from the IDE menu.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>The welcome dialog was reworked.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>The Library class has been renamed as Component.
+  <li>Application.Charset and Application.Language has been moved to the new System
+class.
+  <li>Endianness management. Class compiled on a big-endian architecture can be loaded
+on a little-endian architecture. And conversely.
+  <li>You can use the BIG or the LITTLE keyword with the OPEN instruction, to specify
+that the READ and WRITE instructions will read big-endian or little-endian data.
+Example:
+OPEN "./image.bmp" FOR READ LITTLE AS #hFile
+This will read a BMP file, that is known to be stored in little endian format
+(Tell me if I'm wrong).
+  <li>The USE "path" keyword tells the interpreter to search classes in the specified
+Gambas archive. If the path is relative, the archive is search on the same
+directory where the project is, and then in the executable path of gambas if needed
+(/opt/gambas/bin by default).
+You can use USE (!) for several archives if you need.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>TreeView, ListView and ColumnView classes : The Click event is raised only if the
+mouse is used.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.60 - 25 Jun 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>WARNING: Older Gambas project must be recompiled to work with this version.
+  <li>Component information is now completely stored in one unique text file located
+in /opt/gambas/lib. This file is named 'components'. It contains component names
+that can be translated.
+  <li>The old *.help files were removed. They are replaced by the Wiki contents.
+  <li>The format of the *.info files generated by the 'gbi' command has changed.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>The Component Explorer has been replaced by a new Help Browser based on the
+Gambas Wiki made by Rob.
+  <li>The ToolBar has been reworked.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>The preloaded shared libraries now contain the library version number, so that
+systems that do not have the symbolic link "*.so" can use Gambas.
+  <li>The OPEN keyword has changed. You can pass a new option WATCH to watch files.
+A watched file calls the "File_Read" and "File_Write" event handlers as needed.
+  <li>BUG: you can safely set breakpoints on classes that have a static constructor.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: Containers that has been explicitely destroyed by the Delete method are
+nowdetected. Adding controls to them does not crash anymore, but raise an error
+instead.
+  <li>The WAIT instruction now process only redraw events, and block user input during
+its execution.
+  </ul>
+  <font><b>Gambas Editor Component</b></font>
+  <ul>
+  <li>Strings with escape characters are now correctly colorized.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.58 - 14 Jun 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>The QT library and KDE core library are now preloaded when the corresponding
+components are used. This is a workaround to make Gambas work on Gentoo, SuSE,
+RedHat, and X11 using NVidia driver. This was achieved by using the LD_PRELOAD
+environment variable.
+  <li>KDE libraries are now detected using 'kde-config'. KDE includes are detected by
+browsing KDE prefix returned by this command.
+  <li>QT includes are detected using qptrlist.h, a file that exists only in QT 3.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>You can arrange controls horizontally and verticaly in the form editor. The tab
+order follows this arrangement.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>BUG: Default user password is void now.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Support for preloading shared libraries that don't like not to be loaded at
+program startup.
+  <li>BUG: Imbricated posted event are correctly managed now.
+  <li>BUG: Rol(), Ror(), Shl() and Shr() functions now work as expected on byte and
+short integers.
+  <li>BUG: Trying to do an impossible object conversion cannot lead to a crash
+anymore.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The Flat property of Button and ToggleButton controls were renamed as Border.
+  <li>ScrollBar and Border properties are added to many view controls.
+  <li>Control.Grab() grabs the contents of a control into a picture.
+  <li>Desktop.Grab() grabs the contents of the desktop into a picture.
+  <li>Printer.PageSize is now a string and not an integer constant anymore.
+  <li>New property Printer.Command to set the system command used for printing.
+  <li>New property Printer.File to create a postcript file instead of printing.
+  <li>Many other new properties in the Printer class: Resolution, ColorMode, FromPage,
+ToPage, Copies.
+  <li>BUG: changing Border property of a window having no icon does not crash anymore.
+  </ul>
+  <font><b>Qt Extension Component</b></font>
+  <ul>
+  <li>New control TextView, to display an HTML page and follow the links clicked by
+the user.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>BUG: mysql driver does not crash anymore when enumerating a result.
+  <li>BUG: mysql 4.0 workaround
+  <li>BUG: Database.Name and Database.System are now read-only property.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.57 - 25 May 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Gambas now is developed on a Mandrake 9.1, and so should compile fine on it.
+The postgresql library is correctly detected.
+  <li>The font sizes used in gambas application now depends on the last version of the
+XFree86 font system, fontconfig v2. They will be too small on older Linux systems
+that uses fontconfig v1.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>A new window for displaying local variables during a debugging session.
+  <li>BUG: inserting controls in a ScrollView now works in all cases.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>The database manager has a MDI interface now.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>A new option for VB users to make form controls public.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>Forms are now self-executable. Thus, you can define a form as startup class in
+the IDE, without being obliged to define a static public function Main() that
+instanciates and shows it.
+  <li>New methods, Draw.Polygon() and Draw.Polyline() to draw... polygons and polylines.
+  </ul>
+  <font><b>Qt Extension Component</b></font>
+  <ul>
+  <li>A new control, Workspace, which can be used for creating MDI applications.
+  <li>A new property, Splitter.Pos, that returns an array of integers that define
+the relative widths of each control inside the splitter.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.56 - 11 May 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>The code specific to QT 3.1 is not compiled anymore when using QT 3.0.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>The debugging interface has been redesigned. There is now a console that allows
+the user to evaluate any expression, during debugging or not.
+  <li>BUG: creating controls inside ScrollView works correctly now.
+  <li>Tips of the day are stored in separate files, each file containing only one tip
+and all its translations.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>Many changes and bug fixes.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>Parsing numbers is now much more flexible and tolerant :-)
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: many race conditions were removed in the Process management routines.
+Everything should work correctly now.
+  <li>BUG: Using the debugger does not interfer with the error management of the
+debugged program anymore.
+  <li>BUG: calling a static method on an object reference works now.
+  <li>BUG: accessing files into executable archives should work in all cases now.
+Consequently, translations will be used when lauching an executable.
+  <li>The subroutine Eval() has been implemented.
+  <li>BUG: Using void strings with some string operators don't crash the interpreter
+anymore.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The Splitter control has been removed, and replaced by a new one in the QT
+extension component.
+  <li>The DrawingArea control has been optimized when cached, by directly using
+Xlib methods instead of QT ones. The refresh seems to be twice faster !
+  <li>BUG: Window.Visible now works.
+  </ul>
+  <font><b>Qt Extension Component</b></font>
+  <ul>
+  <li>The new Splitter control is now a container directly based on the QSplitter
+widget.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>Many changes and many bug fixes in the database component and its interface.
+  <li>The slowness of seeking into SQL request with the mysql driver has been fixed.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.55 - 05 May 2003</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Licence text is now separated from the authors list, so that translators can
+translate it.
+  <li>You can run the gambas database manager directly from the "Tools" menu.
+  <li>Some fixes and changes in the file/project/image selector.
+  </ul>
+  <font><b>Database Manager</b></font>
+  <ul>
+  <li>The database manager is now usable and almost terminated.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>A new subroutine Array() that returns a array. The type of the array depends on
+the type of the first argument.
+  <li>A syntax shortcut for the previous subroutine is the use of square brackets.
+See the EXEC example below.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>The EXEC instruction has been replaced by two instructions: EXEC and SHELL.
+SHELL works like the old EXEC, by calling "/bin/sh" in the background.
+EXEC runs the specified process directly, and takes all its arguments in
+a string array.
+Example:
+EXEC [ "/usr/bin/ls", "-la" ] WAIT
+  <li>A new method on string arrays: Join(), that catenate each string in the array,
+by adding an optional separator between the strings.
+Example:
+PRINT [ "a", "b", "c" ].Join("-")
+a-b-c
+  <li>BUG: process management has been fixed, so that you can launch several processes
+without blocking.
+  <li>A new property Process.State, that returns the state of a process: Stopped, Running
+or Crashed.
+  <li>A new property Process.Value to get the value returned by a process, or the signal
+that was raised by a crash.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>New methods Font.Width() and Font.Height() to get the dimensions of a text
+displayed with a specified font.
+  <li>New property IconView.WordWrap.
+  <li>Shortcut management now works with QT 3.1 - until the next version of QT ;-)
+  <li>New control Splitter.
+  </ul>
+  <font><b>Qt Extension Component</b></font>
+  <ul>
+  <li>A new control, TableView, to display large tables by extracting data on demand.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>MySQL driver is almost completed. There are some problems with user management
+and large result sets yet.
+  <li>Many bug fixes. There are some problems yet:
+- Don't use table names in uppercase with postgresql.
+- Don't use user management with mysql.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.54 - 21 Apr 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>BUG: I have fixed the bug in the gbi program that made the database driver
+disappear !
+  <li>A preview version of a new tool: the Gambas Database Manager. You can find
+it in the app/gbdbmgr directory.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>When you import a translation, it is now merged with the current one, instead of
+replacing it.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: the interprer could enter in an infinite loop at the end of a program
+when releasing the loaded classes. The new algorithm do not loop anymore, but
+there are problems yet.
+  <li>New method Object[].Find()
+  <li>BUG: calling functions with a variable number of arguments was broken in the
+last version.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>A new control: TableView
+  <li>New property TabStrip.Orientation, to define the tab position.
+  <li>New method TreeView.Item.Clear, to clear all children of an item.
+  <li>A new event to manage the wheel mouse: MouseWheel
+  <li>A new event to manage the context menu: Menu. You should use it instead of
+the Click event with a test on the mouse button.
+  <li>A new event in GridView: Scroll, raised when the GridView has scrolled.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>A new API to manage databases and users. This API is subject to change,
+depending on what the MySQL driver needs.
+  <li>You can access table definition with a real class named Table.
+  <li>New method Result.MoveTo()
+  <li>If you don't specify a database name in the Connection object, a default
+database is opened in the PostgreSQL driver.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.53 - 14 Apr 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Translations were integrated: French, Italian and Dutch.
+  <li>In the configure scripts, the *.info files are generated in a way compatible with
+systems having only /bin/sh.
+  <li>Use of "const char *" instead of "char *" in the interpreter and compiler source
+code, in the hope of helping the compiler to optimize the code.
+  <li>Component descriptions are now stored in a unique file (/opt/gambas/lib/components)
+These descriptions can be translated inside this file !
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>A few new tips of the day.
+  <li>BUG: bug fixes in the translation dialog, and new functions.
+  <li>BUG: selecting controls inside a ScrollView works now.
+  <li>BUG: Menu editor displays menus list correctly now.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>Many changes to help porting on Solaris.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Many changes to help porting on Solaris.
+  <li>A new property Application.Charset to get the charset used by the system.
+  <li>Collection now returns their elements in the order they have been inserted.
+  <li>BUG: the stack was corrupted when calling destructors, that lead to a crash when you
+clicked on a form in the IDE just after having deleted a control.
+  <li>BUG: the locale management were fixed.
+  <li>BUG: The end of file is correctly detected in buffered streams now.
+  <li>BUG: The Conv$() now really works.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The QT component is compatible with QT 3.1 now.
+  <li>TopOnly, a new Window property to compel a window to stay on top of the others.
+  <li>Fonts full name are now separated by commas and not spaces anymore.
+  <li>Picture.Pixels[] returns a useful color when dealing with alpha channel now.
+It blends the opaque pixel color with a white background.
+  </ul>
+  <font><b>Gambas Editor Component</b></font>
+  <ul>
+  <li>Datatypes coloring.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>A new API for manipulating the database structure, and its corresponding
+implementation in the postgresql driver. Do not use this new API with mysql,
+or everything will crash !
+This API is still in beta version, and subject to change.
+  <li>The Database class has been renamed to Connection.
+  </ul>
+  <font><b>Examples</b></font>
+  <ul>
+  <li>Examples were recompiled, and corrected.
+  <li>The Console example were fix to deal with the different charsets.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.52 - 30 Mar 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Some Solaris specific stuffs are being integrated.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: Loading a form containing a unknown control class does not crash the IDE
+anymore. The unknown control is simply replaced by a frame.
+  <li>Some little changes in the icon editor.
+  <li>Some fixes in the translation dialog.
+  <li>You can make source archives from the 'Project -> Make source archive...' menu.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>Object fields are reordered so that they are correctly aligned in memory,
+because processors like SPARC cannot access 16 bits data at odd addresses,
+for example.
+  <li>BUG: Translation file modification time are correctly managed now, so that they
+are compiled if the source file has changed.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Manage temporary files. All temporary files are located into '/tmp/gambas'.
+  <li>The new subroutine Temp$() returns a unique temporary file name.
+  <li>BUG: Language detection works on SuSE now.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: The use of QSizeGrip widget do not crash anymore on SuSE.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.51 - 22 Mar 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>./configure script detects correctly KDE 3 now.
+  <li>You can disable MySQL and/or PostgreSQL database drivers.
+  <li>Gambas is compiled without creating *.pot files owned by root user.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Reworked translation dialog box.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Errors raised into native methods could lead to memory leaks.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>TreeView, ListView and ColumnView items are now displayed by default in the order
+they have been added.
+  <li>Resizable modal dialogs have an automatic resize grip now.
+  <li>BUG: when a modal dialog is displayed, you cannot close other windows anymore.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>MySQL driver optimizations.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.50 - 16 Mar 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>WARNING: New projects are not compatible with older versions !
+  <li>Gambas projects are now translatable. This implied internal changes like using
+UTF-8 charset, and so:
+  <li>Translations are stored into the '.lang' directory of the project.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>A new dialog used for translating projects.
+  <li>The entire IDE source code is translatable now.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>Non-ascii characters are not allowed in identifiers anymore. The '' character
+has been replaced by the '$' character.
+  <li>You mark strings that must be translated by enclosing them between braces.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Internationalization management routines.
+  <li>Conv$(), a new subroutine for converting strings between different charsets.
+  <li>BUG: some bug that led to segfaults in class destructors were fixed.
+  <li>BUG: Dir$(), Exist() and Stat() work with relative paths now.
+  <li>Printing a positive number with PRINT does not print a space before anymore.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>Replacing latin1 charset by UTF-8 charset.
+  <li>BUG: setting an IconView item picture works now.
+  <li>BUG: RadioButtons should work correctly now.
+  <li>BUG: Menus stay disabled when you change their caption.
+  <li>A new ScrollBar property for TreeView, ListView and ColumnView controls.
+  </ul>
+  <font><b>Kde Component</b></font>
+  <ul>
+  <li>Optimizations in DCOP call marshaling.
+  <li>KDE application are automatically launched on a DCOP request if necessary.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>A new MySQL driver made by Nigel Gerrard. This is a beta version.
+  <li>BUG: You can use Find, Edit and Create with tables whose primary index is not
+on the first fields of the table.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.45 - 23 Feb 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Gambas now compiles on RedHat 8.0 ! It was just a matter of linking with libgcc_s,
+which is automatic on other distributions. Hum...
+  <li>There is a database component now ! It can only manage PostgreSQL at the moment.
+  <li>You can script KDE applications with Gambas ! This feature is based on DCOP.
+There is an example named "Scripting" in the example directory, that let you
+change wallpaper periodically.
+  </ul>
+  <font><b>Archiver</b></font>
+  <ul>
+  <li>BUG: the .project file is now always putted first in the archive, so that
+loading libraries at startup works.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Native classes can intercept calls to unknown symbols. This is used by the KDE
+component for DCOP calls.
+  <li>BUG: calling methods on objets created and returned by a function does not crash
+anymore. Example: PRINT Split("a,b,c").Find("b")
+  <li>Native methods can have a variable number of arguments.
+  <li>BUG: Application.Path always returns a absolute path now.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>TODO: there are bugs in menu management that will be corrected in the next
+version.
+  </ul>
+  <font><b>Kde Component</b></font>
+  <ul>
+  <li>New classes to manage DCOP calls. See the Scripting example for more information.
+  </ul>
+  <font><b>Database Component</b></font>
+  <ul>
+  <li>Hello world ! I'm looking for a guy who can write the MySQL driver...
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.44 - 02 Feb 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>QT moc files are not distributed anymore, so that Gambas compiles with new versions
+of the QT library.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>A new file selection dialog made by Fabien Bodard has been integrated.
+  <li>Many dialogs to create forms, classes, modules, icons, directories and text files.
+  <li>Examples programs has been modified to use the new Array implementation.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: now you can define two labels with the same name in two different functions.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: evaluating expressions should work now.
+  <li>Constructor calling algorithm has been modified. Now each inherited class consumes
+the arguments passed to the constructor. The child class gets the first arguments,
+and the parent classes gets the following arguments not consumed by the previous
+classes.
+But note that the parent constructors are always called first !
+  <li>BUG: Trying to open a directory raises an error now.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: Labels have the correct alignment at creation now.
+  <li>Now you can embed forms into forms ! In other words, you can use forms like controls.
+To embed a form, just adds the parent form to the constructor of the embedded form.
+For example, if your form has a constructor with two arguments A and B, you embed it
+by calling NEW MyForm(A, B, ParentForm)
+  <li>You can modify the internal picture cache, with Picture[Name] = ...
+  <li>You can flush the internal picture cache with the Picture.Flush() method.
+  <li>New event 'Cursor' for the TextArea control. It is raised when the cursor position
+is changed.
+  <li>BUG: now ComboBox controls do not intercept key shortcuts anymore in the form editor.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.43 - 19 Jan 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>The optimization flag is now -Os. It seems that an interpreter compiled with -Os
+is about 15% faster than an interpreter compiled without optimization.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Changes in the icon editor.
+  <li>BUG: the mascot shows as specified at startup now.
+  <li>BUG: the debugger now intercepts errors raised during the initialization of a class
+and before entering then Main() function.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Calling convention between interpreter and component have been rewritten. It is
+now faster and has less memory footprint.
+  <li>The Array class has been replaced by faster specialized versions : Integer[],
+String[], Date[], Object[] and Variant[].
+  <li>The String[] class Sort method accept an argument that specifies the algorithm
+used for comparing data: binary, case insensitive, or locale aware comparison.
+  <li>The FromString method of the Array class has been removed. Split() must be used
+instead.
+  <li>Some changes and clean-ups in the Gambas Component API. The GB.Collection and
+GB.Array methods have been written.
+  <li>Collection constructor accepts an optional argument to specify if the key matching
+algorithm is case sensitive or not.
+  </ul>
+  <font><b>Qt Gambas Editor</b></font>
+  <ul>
+  <li>The Editor is now a control.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.42 - 10 Jan 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Package uses "maintainer-mode" so that automake-1.4 is not required.
+  <li>KDE component is optional now. It is disabled by default, and you enable it
+with the "--enable-kde-component" configure option.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Some cosmetics changes in the component explorer.
+  <li>Some work and bug fixes in the icon editor.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: command-line interpretation is correct now.
+  <li>Memory management routines were reworked: GNU GLibC mcheck() and mtrace()
+were used to verify that there is no memory leaks in the interpreter and the
+compiler.
+  <li>BUG: don't declare small functions inside functions anymore, as some compilers
+don't like that.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>New properties: Draw.FillX and Draw.FillY, to specify the origin of the
+brushes used to paint.
+  <li>New Methods: Picture.Flip, Picture.Rotate and Picture.Stretch to flip, rotate
+and stretch pictures.
+  <li>BUG: You can close the last window during the execution of the Main() function
+with no strange side effects anymore.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.41 - 01 Jan 2003</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>A new tool named 'gbi' has been created. It creates component information files
+for the new component explorer.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: Some fixes in the debugger for components very long to load.
+  <li>A completely reworked component explorer.
+  <li>BUG: Mascot shows and hides correctly now.
+  <li>An internal icon editor. It have some bugs... ;-)
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: you cannot put instructions between SELECT and the first CASE, nor have a
+void SELECT statement anymore.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>New classes Libraries and Classes, and some virtual classes has been renamed.
+  <li>Component can be preloaded at startup. Alas, it does not change many things.
+KDE shared libraries cannot be loaded with RTLD_LAZY without crashing.
+  <li>Default class method can be dynamic now.
+  <li>BUG: Split() does not modify its string argument anymore.
+  <li>New property Id in class Process.
+  <li>BUG: There was a stack leak in the array operator.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The component is almost completely documented.
+  <li>Text selection interfaces are uniform now.
+  <li>Completely reworked Picture class: it can manage Pixmaps, Images and Metafiles now.
+  <li>New method HSV in class Color.
+  <li>DrawingArea redraws are automatically cached in a pixmap before being displayed,
+reducing flickering.
+  <li>Many virtual classes has been renamed.
+  <li>In class TabStrip, properties Index and Current are distinct now.
+  <li>BUG: events Expand and Collapse were forgotten in ColumnView.
+  <li>HTML text in TextLabel can access files inside Gambas archives with a relative
+path.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.40 - 22 Dec 2002</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>An animated logo.
+  <li>You can configure the size of the handles in the form editor.
+  <li>BUG: Adding an icon to a menu works now.
+  <li>A toolbar on the main window.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: "Symbol already declared" error message corrected.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: calling an method on an anonymous object reference returns
+a variant now, so that no optimization occurs, and consequently
+no interpreter crash !
+  <li>BUG: The EXEC instruction does not hang anymore in some cases.
+  <li>BUG: WAIT waits the right duration now.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The IconView control.
+  <li>Reworked interface in TreeView, ListView and ColumnView.
+  <li>BUG: TextBox.Align works correctly now.
+  <li>You can rename nodes in TreeView, ListView and ColumnView.
+  <li>BUG: Window.X and Window.Y properties return the right value even
+if the window is hidden.
+  <li>Quitting the application syncs with the X server now, so that pending
+request are processed without displaying X11 error messages.
+  <li>BUG: Form close event is raised in every situation.
+  </ul>
+  <font><b>Qt Extension Component</b></font>
+  <ul>
+  <li>Two new widgets in gb.qt.ext: ScrollBar and Slider.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.39 - 02 Nov 2002</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Gambas is now developed under a Mandrake 9.0 with gcc 3.2
+  <li>configure script can now find QT stuff on a Gentoo distribution.
+  <li>Many common routines are really shared now, by using template files in the
+"./src/share" source directory.
+  <li>The horrible Qt-3.0 hack has been definitely removed, thanks to the spontaneous()
+method of the QEvent QT class.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Toolbox has been rewritten so that it can handle controls added by components.
+  <li>Debugger has been completely rewritten. It can watch expressions now !
+  <li>Project properties dialog has been redrawn, and has a "Apply" button.
+  <li>Form editor can display a grid.
+  <li>Property dialog can handle FLOAT properties.
+  <li>IDE now works when a project path contains spaces.
+  <li>Control icons are now stored in gambas installation directory.
+By default: /opt/gambas/lib/control
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: Corrected a bug in buffer management routines that lead to a crash when a
+string constant was too long (more than 255 characters)
+  <li>BUG: Corrected a bug in symbol table management routines that prevent the compiler
+to store strings greater than 255 characters in output files.
+  <li>You can instanciate classes dynamically now, with the following syntax:
+sClassName = "Button"
+MyCollection = NEW(sClassName, hParent)
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>New property: Application.Id
+  <li>BUG: WAIT now works as expected.
+  <li>Debugger can evaluate expressions.
+  <li>One can instanciate classes dynamically.
+  <li>BUG: a bug has been fixed in inheritance management.
+  <li>BUG: a bug has been fixed in function signature management.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>Clipping management in Draw class.
+  <li>New property: TextArea.Wrap
+  <li>Reworked Control.Mouse property.
+  <li>New property: Window.Mask. With this property, windows can have any shape !
+  <li>Reworked TextBox, ComboBox and TextArea interface.
+  </ul>
+  <font><b>Qt Gambas Editor</b></font>
+  <ul>
+  <li>Cosmetic changes in the editor.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.38 - 04 Sep 2002</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>The "Snap to grid" is now a property of the project.
+  <li>New welcome dialog.
+  <li>Many nice little icons in every menu.
+  <li>"Tips of the day" dialog.
+  <li>New dialogs for creating modules, classes and forms.
+  <li>A new dialog for editing the values of ListBox and ComboBox controls.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: the error messages are correct now.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: sometimes exceptions could crash the interpreter by incorrectly releasing
+the return value of functions. Corrected.
+  <li>CStr(0.0) now returns "0" and not "0.E+" anymore.
+  <li>You can always cast objects to their real types now.
+  <li>BUG: Events raised by a user class define the LAST keyword now.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>Reworking of many widgets interfaces. This rework is not complete yet !
+  <li>A new widget: TextLabel, that is a Label displaying rich text.
+  <li>The Key class can transform key name into key code with the array operator.
+  <li>Menu can have icons.
+  <li>Buttons with a picture and no text center their picture now.
+  <li>SaveFile dialog now accepts a file name. The bug of Qt 2.X have been corrected !
+  <li>The Picture class can manage SVG files now ! Its interface has gained a Type property
+and behaves a bit differently.
+  <li>ListBox have a Sorted property instead of a Sort method.
+  <li>ListBox and ComboBox have a Find method.
+  <li>ColumnView has a Header property to show or hide its header.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.37 - 10 Oct 2002</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>The QT component have been ported to QT 3.0.x ! Because of internal changes in
+event management, the port was very difficult. I was compeled to make an HORRIBLE
+hack for that to work. This hack is the "my_qobject.h" file in ./src/lib/qt :-(
+and the new MyApplication methods in ./src/lib/qt/main.cpp
+  <li>There is a new component: gb.eval. This component is used to evaluate expressions
+at execution time. There is an example name "Evaluator" in ./examples
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: The component explorer shows the classes of the components used by the
+project only.
+  <li>BUG: The help for inherited methods or properties now display correctly.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>A new method Array.Find, to find the position of an element in an array of strings.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>When you do not specify the family name in a font, the default font family is used.
+It is the same for the font size.
+  <li>The ProgressBar widget interface has changed.
+  <li>The TextArea widget has lost some of its properties, due to the QT 3.0.x port.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.36 - 28 Jul 2002</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>This package uses GNU libtool and libltdl now to compile plug-ins. The consequences
+are the following :
+- The plug-in file names have the ".la" extension instead of ".so", and begin with
+"lib.". For example, "gb.qt.so" is now "lib.gb.qt.la".
+- The plug-in system should work on many other unices than Linux.
+- The package is bigger.
+  <li>Adrian Schroeter, from SuSE, sent me a patch to fix some problems with gcc 3.1,
+automake 1.6 and 64 bits architectures. Everything was integrated, except the removal
+of the PACKED directive, that broke the class loader.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: Now you can change a source editor color to black.
+  <li>BUG: code editor repaints when resizing are correct again.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>The Message() subroutine has been removed.
+  <li>You can pass a size when you create an Array. For example, you can do
+MyArray = NEW Array(12) to get a array with 12 empty slots.
+  <li>Internal class values are automatically converted to class objects if needed.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>The Message() subroutine has been removed.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: the bug that prevented the button to appear in the IDE property sheet has benn
+fixed.
+  <li>As the Message() subroutine has been removed, there is a new class, Message, to display
+message boxes.
+  <li>The Clipboard interface has been completely rewritten.
+  <li>The Printer class. This class is experimental, as the QPrinter class of QT 2 has some
+problems. Everything will be solved when the QT component will be converted to QT 3 !
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.35 - 23 Jul 2002</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Component classes and symbols can now be described by a text file.
+- This file must have the name of the shared library, with the extension ".help"
+instead of ".so".
+- They are placed in the "/lib/help" directory of the installation.
+- They can be translated. A translated file must be placed in a sub-directory of
+"/lib/help". The name of the subdirectory must be then name of the language.
+For example, a french translated help file will be placed under "/lib/help/fr".
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Control handles are now visible on a black background in the form editor.
+  <li>Comment / uncomment blocks in the code editor.
+  <li>Cut/Copy/Paste/Undo/Redo now works in code editor popup menu.
+  <li>Reworked component explorer.
+  <li>Clicking with the right mouse button in the form editor now select widgets.
+  <li>Reworked project properties form.
+  <li>BUG: Changing grid property now works (it was the Val() bug fault).
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Two new functions: LTrim$() and RTrim$().
+  <li>The Library class, used to load components and get information about them.
+  <li>New property: Application.User.
+  <li>BUG: Val() should work correctly now (at last !).
+  <li>Reworked constructor calling with inherited classes.
+  <li>BUG: Open() really likes the TRY instruction now !
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>Mkdir() and Rmdir() are now instructions.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>A new widget: ColumnView (a listview with columns).
+  <li>FIX: X and Y properties of hidden windows are now correct.
+  <li>Window.Border property can be "None" now. Not very well tested.
+  <li>New property: Window.State, to show the window normal, minimized, maximized,
+or even in full-screen mode. Not very well tested too :-(
+  <li>New property: DrawingArea.TrackMouse, to get mouse move events even if no
+mouse button is pressed.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.34 - 13 Jul 2002</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Examples are located in their own directory.
+  <li>Three example programs : a notepad, an image viewer and a console.
+  <li>Components are now located in their own directory (/lib).
+  <li>A new option in ./configure to enable profiling.
+  <li>All project files are now named ".project". The name of the project comes from the
+name of its directory.
+  <li>You must pass the project directory to gbc, gba and gbx now, not the project file.
+  <li>If no project directory is passed to gbc, gba or gbx, the current directory is
+used.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>A new event in the Gambas editor, in order to show cursor coordinates.
+  <li>BUG: Replace should work correctly now.
+  <li>Reworked interface for creating and opening projects.
+  <li>A nice (?) dialog at program starting.
+  <li>BUG: Menu editor should not crash anymore.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>File.Name ignores a trailing slash on its path parameter. In other words,
+File.Name("/home/benoit") == File.Name("/home/benoit/")
+  <li>A process does not send Write or Error events anymore, when it has been stopped by
+the Kill method.
+  <li>A killed process detach itself from its parent.
+  <li>BUGS: Many bugs corrected in the Val() function.
+  <li>BUG: Chr$() could crash the interpreter. Fixed.
+  <li>BUG: OPEN supports being TRY-ied now, without memory leaks.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>The SWAP instruction : it swaps two variables by using the stack.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The DrawingArea widget, with a pretty Cached property.
+  <li>The ProgressBar widget.
+  <li>Headers were rewritten so that warnings are avoided in other compilers than mine.
+  <li>Border property were rewritten, so that Border.Sunken and Border.Raised look nicer
+(in my own opinion).
+  <li>BUG: corrected something in Menu widget, so that menu editor in IDE does not crash
+anymore.
+  <li>Picture.Save method. Not tested !
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.33 - 27 Jun 2002</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Use -O2 instead of -O3 for optimized compilation. I do not trust -O3...
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: Class explorer was broken by class List changes of 0.32. Corrected.
+  <li>BUG: "Replace All" in Find dialog works correctly now.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>The error management instructions TRY, CATCH, FINALLY should work correctly
+now. They should not left pending references to objects.
+  <li>The object referencement has been completly rewritten to deal with error
+management.
+  <li>The string allocation routines has been completly rewritten for the same
+goal.
+  <li>The class Error was completed with new properties and methods.
+  <li>New property Application.Name that returns the name of the project.
+  <li>BUG: instanciate static classes correctly raises errors now.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>FIX: Message boxes uses the application Name now.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.32 - 14 Jun 2002</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>BUG: setting a breakpoint was broken in 0.31. Corrected.
+  <li>BUG: menu editor was broken in 0.31. Corrected.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Native classes can be overloaded. For example, the gb.qt component
+overload the built-in Application class, and adds it three properties.
+  <li>BUG: strings generated by Replace() and Subst() were not null terminated.
+  <li>BUG: loop management was buggy in 0.31.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>ListBox and ComboBox interface has been redesigned.
+  <li>New List property that allows to define each element of a ListBox or a ComboBox.
+  <li>Screen class has been replaced by Desktop class and a overloaded Application class.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.31 - 12 Jun 2002</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Should compile under system where both QT2 and QT3 are installed.
+  </ul>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>You can stop (not pause !) a debugged program anytime.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Completly reworked string management.
+  <li>SEEK can takes a negative parameter for seeking from the end of the file.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>BUG: SEEK instruction compiles now.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: ScrollView does not crash anymore when you removed its last child.
+  <li>BUG: Menu events are posted rather than immediately sent. So, the form editor
+does not crash anymore when you delete a container from the popup menu !
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.30 - 31 May 2002</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Project configuration and IDE configuration.
+  <li>IDE windows save their position and size.
+  <li>Opening recent files.
+  <li>BUG: Breakpoint management is almost correct.
+  <li>BUG: Text properties can contain special characters.
+  <li>Clicking on a menu in the IDE opens the source editor in an event procedure.
+  <li>You can open any event procedure via the popup menu in the form editor.
+  <li>Deleting project files.
+  <li>Renaming project files.
+  <li>BUG: Check that the startup class is defined before running the project.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>New instructions: QUIT, STOP, EXEC.
+  <li>New subroutines: Split(), If(), Choose(), Replace$().
+  <li>New property Collection.Key, that gives the key of the last extracted collection
+element.
+  <li>Process management routines reworked.
+  <li>Components can register 'post routines' executed as soon as possible by the event
+loop. Very practical in signal handlers, because interpreters routines are not
+reentrant.
+  <li>BUG: "read-only property" error message corrected.
+  <li>Project stack size is used.
+  <li>BUG: NOT works with variants now.
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>New instructions: QUIT, STOP, EXEC, INC, DEC.
+  <li>Some subroutines become instructions: RENAME, KILL
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>BUG: CheckBox raises Click event in all cases now.
+  <li>New ScrollView container.
+  <li>New method TreeView.Exist.
+  <li>The event loop quits when there is no opened windows nor running process left now.
+  <li>New ToolTip property for every control.
+  <li>BUG: modal windows do not send Close event twice anymore.
+  </ul>
+  <font><b>Qt Gambas Editor</b></font>
+  <ul>
+  <li>Optimizations in syntax colouring.
+  <li>Some code cleanup. (There is a lot to do yet)
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.25 - 19 May 2002</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>Debugger should be usable now ! :-p
+  <li>Double-clicking on a control automatically opens the source editor in
+an event procedure.
+  <li>Some little bugs corrected.
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>BUG: Date management routines where buggy ! Corrected.
+  <li>BUG: conversion from variant to date works now.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The first created window becomes the "main" window now. The main window
+receives automatically menu shortcuts from every other non-modal window.
+  <li>BUG: Reading Text property from a TextArea is safe now.
+  <li>New properties in TextArea control : Cut, Copy, Paste, Undo & Redo.
+Same thing must be done with the TextBox control.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.24 - 14 May 2002</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>The Debugger, and many other things...
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>Complete debugging information
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>Internal debugger
+  <li>Process Management class
+  <li>BUG: Hex$() and Bin$() with no precision specified work now
+  <li>BUG: Objects that raise events now detach automatically at the end of the program.
+This removes the circular dependancy with their parent, and so memory is freed.
+  <li>Do not save stack frames with local variables. So the virtual machine register PP
+is no more useful.
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>The Node class is renamed as Item.
+  <li>The ListView class.
+  <li>BUG: the "after" parameter of TreeView.Add works now.
+  <li>BUG: deleting item in TreeView works now.
+  <li>The TreeView.Mode property has constants now.
+  <li>The TreeView.Sorted property
+  <li>BUG: TreeView raises the Click event in all circumstance now.
+  <li>BUG: Window raises the first Move and Raise events when shown.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.23 - 07 Apr 2002</font></th></tr>
+  <tr><td>
+  <font><b>Development Environment</b></font>
+  <ul>
+  <li>New "About" dialog
+  <li>The "Find" dialog is finished, but the regular expression
+  <li>More shortcuts to the Menu editor.
+  <li>The Timer control
+  </ul>
+  <font><b>Archiver</b></font>
+  <ul>
+  <li>Archiver is verbose only if the -v option is specified
+  </ul>
+  <font><b>Compiler</b></font>
+  <ul>
+  <li>Subroutines names can be used as class names
+  <li>An undeclared symbol is supposed to be a class when its first character is an
+uppercase letter
+  <li>You can write expressions on several lines, provided that each line break directly
+follows an operator
+  </ul>
+  <font><b>Interpreter</b></font>
+  <ul>
+  <li>"List" class renamed as "Array"
+  <li>A class can be used as a function, if it has a public method named "_call"
+  <li>Rewritten stack management routine. The old one was totally broken. The new
+one is a simple fixed size memory allocation.
+  <li>The NOT operator can deal with String and Object datatypes
+  <li>Instr() and RInstr() work now.
+  <li>BUG: Many string subroutines freed their string parameters before using them
+  </ul>
+  <font><b>Qt Component</b></font>
+  <ul>
+  <li>Buttons can have pixmap AND text now.
+  <li>The Timer control
+  <li>Every container has a ClientX and ClientY property.
+  <li>Image has a Alignment property.
+  <li>Menubar with no menu disappears now.
+  <li>Screen has a Busy property.
+  <li>BUG: new Control event management filter, that deals with objects being destroyed.
+  <li>A Center method, to center windows on screen.
+  <li>Correct bugs in undo/redo text indents.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.22 - 18 Mar 2002</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>New algorithm to search QT libraries. Should work under SuSE 7.3
+  <li>The Font property can be resetted to its default value.
+  <li>Windows can have an icon now.
+  <li>New property "Home" to the App class that returns the user home
+directory.
+  <li>New icons for project files.
+  <li>BUG: correct a bug that sometimes freed return values twice.
+  <li>BUG: correct a bug that crashed the interpreter when a null value
+was passed to a string management routine.
+  <li>The Button and ToggleButton classes are now totally distinct.
+  <li>BUG: go round a bug in QT Table widget that caused infinite loops
+in interpreter event management.
+  <li>Modal dialog windows can return a integer or boolean value to ShowModal()
+by passing it as parameter to the Close() method.
+  <li>BUG: correct a bug in QT interface declaration that randomly crashed
+the interpreter.
+  <li>Many changes in development environment (open project dialog, save file
+dialog, etc.)
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.21 - 04 Mar 2002</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Remove the absolute path of a library in the gambas.project file, so that
+not installing Gambas under "/opt/gambas" is possible.
+  <li>BUG: correct a bug that sometime crashed the compiler when you use long
+integer constant (like a color in a form).
+  <li>Add ToggleButton to development environment.
+  <li>Standardize interface of TextBox, GambasEditor and ComboBox controls.
+  <li>Project properties dialog is working.
+One can define the startup class of the project.
+  <li>The "Default" property of a Button control works now.
+  <li>Add a "Cancel" property to the Button control.
+  <li>Remove useless "Format" property from the Clipboard class.
+  </ul>
+</td></tr>
+</table>
+<div class="space"></div>
+
+<table cellspacing=0 cellpadding=6 width=100% valign=top>
+  <tr><th><font size="+1">0.20 - 28 Feb 2002</font></th></tr>
+  <tr><td>
+  <ul>
+  <li>Yeah ! First public release !
+  </ul>
+</td></tr>
+</table>
+
+</body>
+</html>
+

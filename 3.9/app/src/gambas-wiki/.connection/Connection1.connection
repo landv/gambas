@@ -1,0 +1,9 @@
+[Connection]
+Type="mysql"
+RememberPassword=False
+IgnoreCharset=False
+DisplayMetadata=False
+Database="wiki"
+User="root"
+Requests=["select * from page where sHtml like 'Content-Type: image/%'"]
+

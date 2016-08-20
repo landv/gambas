@@ -1,0 +1,20 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,100,75)
+  Text = ("Import files")
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { fchExisting FileChooser
+    MoveScaled(3,2,76,48)
+    Expand = True
+    Multi = True
+    ShowButton = True
+    ReadOnly = True
+  }
+  { chkLink CheckBox
+    MoveScaled(3,52,56,3)
+    Text = ("Create symbolic links")
+  }
+}

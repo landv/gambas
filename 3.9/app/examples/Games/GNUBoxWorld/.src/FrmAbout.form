@@ -1,0 +1,45 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,79,39)
+  Text = ("About...")
+  Resizable = False
+  { !TabStrip1 TabStrip
+    MoveScaled(2,2,50,35)
+    #Public = True
+    Count = 3
+    Index = 0
+    Text = ("Author")
+    { TextLabel1 TextLabel
+      MoveScaled(2,2,45,21)
+      Text = ("Author: Pablo Mileti.<br> <br>You can submit your questions, suggestions, bugs, etc, to the following E-Mail address:\n<a href=\"mailto:pablomileti@gmail.com\"> pablomileti@gmail.com</a>")
+      Alignment = Align.Justify
+    }
+    Index = 1
+    Text = ("License")
+    { TextArea1 TextArea
+      MoveScaled(1,1,46,25)
+      Text = ("\n    Copyright (C) 2010. Author: Pablo Mileti  \n\nThis program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.")
+      ReadOnly = True
+      Wrap = True
+      ScrollBar = Scroll.Vertical
+    }
+    Index = 2
+    Text = ("How to play?")
+    { TextLabel2 TextLabel
+      MoveScaled(2,1,45,27)
+      Text = ("<b>Aim</b><br>\nThe shrimp has to push the movable boxes to the marked positions.<br><br>\n<b>Move</b><br>\nTo move around the game board, use the arrow keys: up, down, left and right.<br><br>\n<b>Clear</b><br>\nTo restart the level, press the spacebar key.")
+      Alignment = Align.Justify
+    }
+    Index = 0
+  }
+  { Button1 Button
+    MoveScaled(59,30,14,6)
+    Text = ("&Close")
+  }
+  { PictureBox1 PictureBox
+    MoveScaled(54,5,22.7143,22.7143)
+    Picture = Picture["logo.png"]
+    Stretch = True
+  }
+}

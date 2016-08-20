@@ -1,0 +1,454 @@
+' Gambas class file
+
+Public Family As String
+Public Bold As Boolean
+Public Italic As Boolean
+Public Underline As Boolean
+Public Strikeout As Boolean
+Public Size As Integer
+Public Grade As Integer
+Public ShowFixed As Boolean
+
+Public StylePanel As Container
+Public Preview As Control
+
+Private $bNoChange As Boolean
+Private $bNoRefresh As Boolean
+Private $sLast As String
+Private $bShowLabel As Boolean
+
+Public Sub _new()
+
+  $bNoChange = True
+  $bNoRefresh = True
+  
+  'lstSize.List = ["6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "18", "20", "24", "28", "32", "36", "40", "48", "56", "64", "72", "80", "96", "112", "128"]
+  
+  StylePanel = panStyle
+  Preview = txtExample
+  
+  SetFont("")
+
+  $bNoChange = False
+
+End
+
+
+Public Sub Form_Open()
+
+  $bNoRefresh = False
+  RefreshFamily
+  UpdateRelative
+  txtSize_Change
+
+End
+
+' Private Sub RefreshGrade()
+' 
+'   Dim iInd As Integer
+'   Dim H As Integer
+'   Dim hFont As Font
+'   Dim sGrade As String
+' 
+'   If $bNoRefresh Then Return
+'   If chkSize.Value Then Return
+' 
+'   Inc Application.Busy
+' 
+'   For iInd = 0 To NBR_GRADE - 1
+'     sGrade = Trim(Format(FIRST_GRADE + iInd, "+#"))
+'     hFont = Font[GetFont(sGrade)]
+'     H = hFont.Height + 4
+'     With $hGrade[iInd]
+'       .Font = hFont
+'       .Height = H
+'       .Text = " " & sGrade & " " & Family
+'       .Tag = FIRST_GRADE + iInd
+'       If .Tag = Grade Then 
+'         lstGrade.Select($hGrade[iInd])
+'       Endif
+'     End With
+'   Next
+' 
+'   Dec Application.Busy
+' 
+' End
+
+Public Sub RefreshFamily()
+
+  Dim hFont As Font
+  Dim sFamily As String
+  Dim sKey As String
+  Dim bExist As Boolean
+
+  If $bNoRefresh Then Return
+
+  sKey = Family 'lstFamily.Current.Key
+
+  $bNoChange = True
+
+  If lstFamily.Visible Then
+
+    lstFamily.Clear
+    
+    For Each sFamily In Fonts
+      hFont = Font[sFamily]
+      If ShowFixed And Not hFont.Fixed Then Continue
+      'IF NOT hFont.Scalable THEN CONTINUE
+      lstFamily.Add(sFamily, sFamily) ', Picture[If(hFont.Fixed, "img/fixed.png", "img/scalable.png")])
+      If sFamily = sKey Then bExist = True
+    Next
+  
+    If bExist Then
+      lstFamily[sKey].Selected = True
+    Else
+      lstFamily.MoveFirst
+      lstFamily.Item.Selected = True
+    Endif
+    
+    Family = lstFamily.Current.Key
+    Try lstFamily[Family].EnsureVisible
+    
+  Else
+    
+    cmbFamily.Clear
+    
+    For Each sFamily In Fonts
+      hFont = Font[sFamily]
+      If ShowFixed And Not hFont.Fixed Then Continue
+      cmbFamily.Add(sFamily)
+      If sFamily = sKey Then bExist = True
+    Next
+  
+    If bExist Then
+      cmbFamily.Text = sKey
+    Else
+      cmbFamily.Index = 0
+    Endif
+    
+    Family = cmbFamily.Text
+    
+  Endif
+
+  $bNoChange = False
+
+  RefreshExample
+
+End
+
+
+Public Sub SetFont(sFont As String)
+
+  Dim hFont As Font = Font[sFont]
+  Dim bRelative As Boolean
+  Dim sElt As String
+
+  bRelative = True
+
+  For Each sElt In Split(sFont, ",")
+    sElt = Trim(sElt)
+    If InStr("0+-", Left(sElt)) = 0 And If IsDigit(Left(sElt)) Then
+      bRelative = False
+      Break
+    Endif
+  Next
+
+  Family = hFont.Name
+  Bold = hFont.Bold
+  Italic = hFont.Italic
+  Underline = hFont.Underline
+  StrikeOut = hFont.StrikeOut
+  Size = hFont.Size
+  Grade = hFont.Grade
+
+  btnRelative.Value = bRelative
+
+  Try lstFamily[Family].Selected = True
+  Try lstFamily[Family].EnsureVisible
+
+  btnBold.Value = Bold
+  btnItalic.Value = Italic
+  btnUnderline.Value = Underline
+  btnStrikeout.Value = StrikeOut
+
+  'chkUnderline.Value = UnderLine
+  'chkStrikeout.Value = StrikeOut
+
+  If bRelative Then
+    txtSize.Value = Grade
+  Else
+    txtSize.Value = Size
+  Endif
+  
+  txtExample.Text = ("How quickly daft jumping zebras vex") & "\n0123456789 àéîöùÀÉÎÖÙ"
+
+  RefreshExample
+
+End
+
+Public Function GetFont() As String
+
+  Dim sFont As String
+
+  sFont = Family
+  If Bold Then sFont &= ",Bold"
+  If Italic Then sFont &= ",Italic"
+  If Underline Then sFont &= ",Underline"
+  If Strikeout Then sFont &= ",Strikeout"
+  If btnRelative.Value Then
+    If Grade Then sFont &= "," & Trim(Format(Grade, "+#"))
+  Else
+    sFont &= "," & Size
+  Endif
+
+  Return sFont
+
+End
+
+
+Private Sub GetParent() As Object
+  
+  Return Me.Parent
+  
+End
+
+
+Private Sub RefreshExample()
+
+  Dim sFont As String = GetFont()
+
+  If $bNoRefresh Then Return
+  
+  If sFont = $sLast And If txtExample.Expand = cmbFamily.Visible Then Return
+  
+  If txtExample.Visible Then
+    txtExample.Font = Font[GetFont()]
+    txtExample.H = Max(Desktop.Scale * 4, Min(Desktop.Scale * 16, txtExample.Font.Height * 3))
+    txtExample.Expand = cmbFamily.Visible
+  Endif
+  
+  Size = Font[sFont].Size
+  Grade = Font[sFont].Grade
+  
+  sldSize.Value = txtSize.Value
+
+  If Not $bNoChange Then GetParent()._Change
+  If Not txtExample.Visible Then GetParent()._Activate
+
+  $sLast = sFont
+  
+  lblFont.Text = sFont
+
+End
+
+
+Public Sub lstFamily_Select()
+
+  Family = lstFamily.Current.Key
+  RefreshExample
+
+End
+
+Public Sub cmbFamily_Click()
+
+  Family = cmbFamily.Text
+  RefreshExample
+
+End
+
+Public Sub btnBold_Click()
+  
+  Bold = btnBold.Value
+  RefreshExample
+  
+End
+
+Public Sub btnItalic_Click()
+
+  Italic = btnItalic.Value  
+  RefreshExample
+  
+End
+
+
+Public Sub txtSize_Change()
+
+  If btnRelative.Value Then
+    Grade = txtSize.Value
+  Else
+    Size = txtSize.Value
+  Endif
+  sldSize.Value = txtSize.Value
+  RefreshExample
+
+End
+
+
+Public Sub lstFamily_DblClick()
+
+  GetParent()._Activate
+
+End
+
+Private Sub UpdateRelative()
+
+  Object.Lock(txtSize)
+  Object.Lock(sldSize)
+  If btnRelative.Value Then
+    txtSize.MinValue = -8
+    txtSize.MaxValue = 24
+    txtSize.Value = Grade
+    sldSize.PageStep = 1
+  Else
+    txtSize.MinValue = 1
+    txtSize.MaxValue = 256
+    txtSize.Value = Size
+    sldSize.PageStep = 4
+  Endif
+  
+  sldSize.MinValue = txtSize.MinValue
+  sldSize.MaxValue = txtSize.MaxValue
+
+  Object.Unlock(txtSize)
+  Object.Unlock(sldSize)
+  txtSize_Change
+
+End
+
+Public Sub btnRelative_Click()
+
+  UpdateRelative
+  txtSize.SetFocus
+  
+End
+
+
+' Public Sub chkUnderline_Click()
+' 
+'   Underline = chkUnderline.Value
+'   RefreshExample
+' 
+' End
+' 
+' 
+' Public Sub chkStrikeout_Click()
+' 
+'   Strikeout = chkStrikeout.Value
+'   RefreshExample
+' 
+' End
+
+
+Public Sub SetShowLabel(bVisible As Boolean)
+  
+  ' lblFamily.Visible = bVisible
+  ' lblSize.Visible = bVisible
+  ' lblStyle.Visible = bVisible
+  $bShowLabel = bVisible
+  
+End
+
+Public Sub IsShowLabel() As Boolean
+  
+  Return $bShowLabel
+  
+End
+
+
+Public Sub sldSize_Change()
+
+  txtSize.Value = sldSize.Value
+
+End
+
+Public Sub panFont_Arrange()
+
+  If (panFont.W - txtSize.W - txtSize.X) < 64 Then
+    sldSize.Hide
+  Else
+    sldSize.Show
+  Endif
+
+End
+
+Public Sub HasBorder() As Boolean
+  
+  Return panBorder.Border
+  
+End
+
+Public Sub SetBorder(bBorder As Boolean)
+  
+  panBorder.Border = If(bBorder, Border.Plain, Border.None)
+  
+End
+
+
+Public Sub btnUnderline_Click()
+
+  Underline = btnUnderline.Value  
+  RefreshExample
+
+End
+
+Public Sub btnStrikeout_Click()
+
+  Strikeout = btnStrikeout.Value
+  RefreshExample
+
+End
+
+Public Sub panBorder_BeforeArrange()
+
+  If panBorder.H < (Desktop.Scale * 20) Then
+  
+    If txtExample.Visible Then
+      lstFamily.Hide
+      sepFamily.Hide
+      lblFont.Hide
+      sepToolbar.Hide
+      cmbFamily.Show
+      cmbFamily.Lower
+      RefreshFamily
+    Endif
+  
+    If panBorder.H < (Desktop.Scale * 14) Then
+      txtExample.Hide
+      sepExample.Hide
+    Else
+      txtExample.Show
+      sepExample.Show
+    Endif
+    
+  Else
+  
+    If cmbFamily.Visible Then
+      cmbFamily.Hide
+      txtExample.Show
+      sepExample.Show
+      lstFamily.Show
+      sepFamily.Show
+      lblFont.Show
+      sepToolbar.Show
+      lblFont.Lower
+      RefreshFamily
+    Endif
+  
+  Endif
+
+  RefreshExample
+  
+End
+
+Public Sub SetShowRelative(bRelative As Boolean)
+  
+  btnRelative.Visible = bRelative
+  If Not bRelative Then btnRelative.Value = False
+  
+End
+
+Public Sub GetShowRelative() As Boolean
+  
+  Return btnRelative.Visible
+  
+End

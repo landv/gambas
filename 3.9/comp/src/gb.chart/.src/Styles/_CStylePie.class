@@ -1,0 +1,106 @@
+' Gambas class file
+
+
+Private $iType As Integer
+Private $sidChart As String
+Public Sub _New(Value As Integer, sidChart As String)
+  
+  $iType = Value
+  $sidChart = sidChart
+  
+End
+Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
+  
+  Dim i, J As Integer
+  Dim s As String
+  Dim fCumul As Float
+  Dim fRapport As Float
+  Dim f As Float
+  Dim iMaxTextWidth As Integer
+  Dim fNewPos As Float
+  Dim fTextPos As Float
+  Dim fRayon As Float
+  Dim fMaxRayon As Float
+  Dim fRayonUnit As Float
+  Dim tmpX, tmpY As Integer
+  'Obtenir la valeur cumulée:
+  For Each s In Chart._$ColChart[$sidChart].Headers
+    If draw.TextWidth(s) > iMaxTextWidth Then iMaxTextWidth = draw.TextWidth(s)
+  Next
+  If cw <= ch Then 
+    fMaxRayon = cw / 2 - iMaxTextWidth
+  Else
+    fMaxRayon = CH / 2 - iMaxTextWidth
+  Endif
+  
+  
+  
+  
+  fRayonUnit = fMaxRayon / (Chart._$ColChart[$sidChart].CountDataSets + 1)
+  For j = 0 To Chart._$ColChart[$sidChart].CountDataSets - 1
+    If J = 1 And $iType <> ChartType.PieRings Then Break 
+    i = 0
+    fCumul = 0
+    For i = 0 To Chart._$ColChart[$sidChart].Count - 1
+        fCumul += Chart._$ColChart[$sidChart][j][i]
+        
+    Next
+    fNewPos = 0
+    fRapport = 360 / fCumul
+    fCumul = Rad(90)
+    fRayon = fRayonUnit * ((Chart._$ColChart[$sidChart].CountDataSets + 1) - J)
+   
+    For i = 0 To Chart._$ColChart[$sidChart].Count - 1
+    f = Chart._$ColChart[$sidChart][j][i]
+    Draw.ForeGround = color.DarkGray
+    draw.FillColor = Chart._$ColChart[$sidChart].Colors[i]
+    draw.FillStyle = fill.Solid
+    fNewPos = fCumul + Rad(f * frapport)
+    fTextPos = fCumul + Rad(f * frapport) / 2
+    
+
+    If (i = 0 And $iType = ChartType.PieOffSet1) Or $iType = ChartType.PieOffSet2 Then
+       draw.Circle(CX + CW / 2 + (Cos(fTextPos) * 10), CY + Ch / 2 + (Sin(fTextPos - Rad(180)) * 10), fRayon, fCumul, fNewPos)
+     Else
+       draw.Circle(CX + CW / 2, CY + Ch / 2, fRayon, fCumul, fNewPos)
+    Endif
+    tmpX = CX + CW / 2 + Cos(fTextPos) * (fRayon + draw.TextWidth(Chart._$ColChart[$sidChart].Headers[i]) + (30 * Chart._$ColChart[$sidChart]._fProportionnal)) - draw.TextWidth(Chart._$ColChart[$sidChart].Headers[i]) / 2
+    tmpY = CY + Ch / 2 + Sin(fTextPos - Rad(180)) * (fRayon + draw.TextWidth(Chart._$ColChart[$sidChart].Headers[i]) + 30 * Chart._$ColChart[$sidChart]._fProportionnal)
+    
+    '<--Text
+    If Chart._$ColChart[$sidChart].ShowLabels Then 
+      draw.Text(Chart._$ColChart[$sidChart].Headers[i], tmpX, tmpY)
+  
+      'If tmpY < CY + CH / 2 Then 
+        tmpY += draw.TextHeight(Chart._$ColChart[$sidChart].Headers[i]) / 2
+      If tmpX < CX + CW / 2 Then
+        tmpX += draw.TextWidth(Chart._$ColChart[$sidChart].Headers[i]) + 5 * Chart._$ColChart[$sidChart]._fProportionnal
+        draw.Line(tmpX + 10 * Chart._$ColChart[$sidChart]._fProportionnal, tmpY, tmpX, tmpY)
+        tmpX += 10 * Chart._$ColChart[$sidChart]._fProportionnal
+      Else
+        draw.Line(tmpX - 10 * Chart._$ColChart[$sidChart]._fProportionnal, tmpY, tmpX, tmpY)
+        tmpX -= 10 * Chart._$ColChart[$sidChart]._fProportionnal
+      Endif
+
+      draw.Line(CX + CW / 2 + Cos(fTextPos) * (fRayon - 10 * Chart._$ColChart[$sidChart]._fProportionnal), CY + Ch / 2 + Sin(fTextPos - Rad(180)) * (fRayon - 10 * Chart._$ColChart[$sidChart]._fProportionnal), tmpX, tmpY)
+    Endif
+    '-->
+    
+    
+    'draw.Text(Chart[i].Label, Cos(fTextPos) * (fRayon) + CX + CW / 2, Sin((fTextPos) - Rad(180)) * (fRayon) + CY + fRayon - draw.Font.Height)
+    
+    fCumul += Rad(f * frapport)
+    
+    Next
+    If $iType = ChartType.PieRings Then 
+      Draw.FillColor = Draw.Device.BackGround
+      fRayon = fRayonUnit
+      draw.Circle(CX + CW / 2, CY + Ch / 2, fRayon)
+    Endif
+    
+    
+  Next
+  
+  
+  'draw.Text("test", (Cos(Rad(180)) * (fRayon + iMaxTextWidth)) + CX + CW / 2, (Sin(Rad(180)) * (fRayon + iMaxTextWidth)) + CY + fRayon)
+End

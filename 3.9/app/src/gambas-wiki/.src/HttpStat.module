@@ -1,0 +1,118 @@
+' Gambas module file
+
+Class Image
+Class Color
+Class Cairo
+
+Public Sub Render()
+  
+  Dim dDate As Date
+  Dim aStat As Short[]
+  Dim hImage As Image
+  Dim I As Integer
+  Dim H As Integer
+  Dim hFile As File
+  Dim sFile As String
+  Dim sDate As String
+
+  Component.Load("gb.image")
+  Component.Load("gb.image.io")
+  Component.Load("gb.cairo")
+
+  sDate = Request["date"]
+  If sDate Then Try dDate = Date(CInt(Mid$(sDate, 5, 4)), CInt(Mid$(sDate, 3, 2)), CInt(Mid$(sDate, 1, 2)))
+  If IsNull(dDate) Then dDate = Date()
+
+  hImage = New Image(1440, 128, Color.White)
+  
+  Cairo.Begin(hImage)
+  Cairo.AntiAlias = Cairo.AntiAliasNone
+  Cairo.LineWidth = 1
+
+  If Year(dDate) = Year(Now) Then
+    
+    aStat = New Short[1440]
+    Try hFile = Open "/var/log/thttpd/stat.log" For Read
+    If hFile Then 
+      Seek #hFile, 1440 * DateDiff(Date(Year(dDate), 1, 1), dDate, gb.Day) * SizeOf(gb.Short)
+      aStat.Read(hFile)
+      Close #hFile
+      For I = 0 To aStat.Max
+        H = Min(128, (aStat[I] * 10) \ 60)
+        If H > 0 Then hImage.FillRect(I, 128 - H, 1, H, &HA0D0FF&)
+        'DH = aStat[I] Mod 10
+        'If DH > 0 Then hImage[I, 127 - H] = Color.SetAlpha(&HA0D0FF&, Max(0, 255 - DH * 10))
+      Next
+    Endif
+  
+    Cairo.Source = Cairo.ColorPattern(Color.SetAlpha(Color.Black, &HE0))
+
+    I = hImage.H
+    While I > 0
+      Cairo.MoveTo(0, I)
+      Cairo.LineTo(1440, I)
+      Cairo.Stroke
+      I -= 10
+    Wend
+    
+    Cairo.Source = Cairo.ColorPattern(Color.SetAlpha(Color.Black, &H80))
+
+    Cairo.Font.Size = 16
+    For I = 0 To 23
+      Cairo.MoveTo(I * 60 + 16, 20)
+      Cairo.DrawText(Format(I, "00"))
+    Next
+
+    Cairo.Source = Cairo.ColorPattern(Color.SetAlpha(Color.Black, &H40))
+
+    Cairo.Font.Size = 8
+    I = hImage.H
+    H = 0
+    While H <= 4
+      If H Then
+        Cairo.MoveTo(4, I + 8)
+        Cairo.DrawText(CStr(H) & "0 req./s")
+      Endif
+      I -= 100
+      Inc H
+    Wend
+    
+    Cairo.MoveTo(4, hImage.H - 8)
+    Cairo.DrawText(Format$(dDate, "d mmm yyyy"))
+    
+    Cairo.Source = Cairo.ColorPattern(Color.SetAlpha(Color.Black, &H80))
+
+    I = hImage.H
+    While I > 20
+      Cairo.MoveTo(0, I)
+      Cairo.LineTo(1440, I)
+      Cairo.Stroke
+      I -= 100
+    Wend
+    
+    For I = 0 To 23
+      Cairo.MoveTo(I * 60, 0)
+      Cairo.LineTo(I * 60, 255)
+      Cairo.Stroke
+    Next
+    
+    Cairo.Rectangle(1, 1, hImage.W - 1, hImage.H - 1)
+    Cairo.Stroke
+    
+  Else
+    
+    Cairo.MoveTo(10, 20)
+    Cairo.DrawText("Seule l'année " & CStr(Year(Now)) & " est archivée.")
+    Cairo.Source = Cairo.ColorPattern(Color.SetAlpha(Color.Black, &H80))
+    Cairo.Rectangle(1, 1, hImage.W - 1, hImage.H - 1)
+    Cairo.Stroke
+    
+  Endif
+  
+  Cairo.End
+    
+  sFile = File.SetExt(Temp$("stat"), "png")
+  hImage.Save(sFile, 9)
+  Response.SendFile(sFile, "image/png")
+  
+End

@@ -1,0 +1,108 @@
+' Gambas class file
+
+Export
+
+Create Static
+
+Property Level As Integer
+Property Format As String
+Property Enabled As Boolean
+Property Read Output As String
+
+Static Public Const DefaultFormat As String = "[$(now)] [$(levelname)] [$(callLocation)] $(message)"
+
+Private $cLogger As ComplexLogger
+
+'' This is only here for compatibility and is now deprecated, please use LogLevel instead.
+Public Enum Critical, {Error}, Warning, Info, {Debug}
+
+Static Public Const Stdout As String = ":stdout"
+Static Public Const Stderr As String = ":stderr"
+
+Public Sub _new(Optional iMinLevel As Integer = LogLevel.Info, Optional sFormat As String = DefaultFormat, Optional sOutput As String)
+
+  Dim tmpHandler As LogHandler
+
+  If sOutput = Stdout Then
+    tmpHandler = New ConsoleHandler(ConsoleHandler.STDOUT, iMinLevel)
+  Else If sOutput = Stderr Then
+    tmpHandler = New ConsoleHandler(ConsoleHandler.STDERR, iMinLevel)
+  Else
+    tmpHandler = New FileHandler(sOutput, iMinLevel)
+  Endif
+
+  $cLogger = New ComplexLogger(sFormat, tmpHandler)
+
+End
+
+Public Sub Begin()
+
+  $cLogger.Begin()
+
+End
+
+Public Function isEnabledFor(iLevel As Integer) As Boolean
+
+  Return $cLogger.Handlers[0].isEnabledFor(iLevel)
+
+End
+
+Public Sub Log(sMessage As String, Optional iLevel As Integer = LogLevel.Info)
+
+  $cLogger.Log(sMessage, iLevel)
+
+End
+
+Public Sub _call(sMessage As String, Optional iLevel As Integer = LogLevel.Info)
+
+  Me.Log(sMessage, iLevel)
+
+End
+
+Public Sub _free()
+
+  If $cLogger Then $cLogger.Close()
+
+End
+
+Private Function Level_Read() As Integer
+
+  Return $cLogger.Handlers[0].Level
+
+End
+
+Private Sub Level_Write(Value As Integer)
+
+  $cLogger.Handlers[0].Level = Value
+
+End
+
+Private Function Format_Read() As String
+
+  Return $cLogger.Format
+
+End
+
+Private Sub Format_Write(Value As String)
+
+  $cLogger.Format = Value
+
+End
+
+Private Function Enabled_Read() As Boolean
+
+  Return $cLogger.Enabled
+
+End
+
+Private Sub Enabled_Write(Value As Boolean)
+
+  $cLogger.Enabled = Value
+
+End
+
+Private Function Output_Read() As String
+
+  Return $cLogger.Handlers[0].GetOutput()
+
+End

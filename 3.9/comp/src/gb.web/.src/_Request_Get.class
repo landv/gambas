@@ -1,0 +1,48 @@
+' Gambas class file
+
+Export
+Create Static
+
+Property Read Fields As String[]
+
+Static Private $cVal As Collection
+Static Private $aField As New String[]
+
+Private Sub Decode()
+  
+  If $cVal Then Return
+  $cVal = New Collection
+  Main.DecodeURL(CGI["QUERY_STRING"], $aField, $cVal)
+  
+End
+
+
+Public Sub _get(Key As String) As String
+  
+  Decode
+  Return $cVal[Key]
+  
+End
+
+Private Function Fields_Read() As String[]
+
+  Decode
+  Return $aField
+
+End
+
+Public Sub Exist(Field As String) As Boolean
+  
+  Decode
+  Return $aField.Exist(Field)
+  
+End
+
+Public Sub _Reload()
+  
+  If Not $cVal Then Return
+  
+  $cVal = Null
+  Decode
+  
+End

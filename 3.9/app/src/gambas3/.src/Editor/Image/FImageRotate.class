@@ -1,0 +1,39 @@
+' Gambas class file
+
+Static Public Angle As Integer
+
+Static Private $hEditor As FImageEditor
+
+Public Sub Run(hEditor As FImageEditor) As Boolean
+  
+  $hEditor = hEditor
+  Return Not Me.ShowModal()
+  
+End
+
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnOK_Click()
+
+  Angle = slbAngle.Value
+  Me.Close(True)
+
+End
+
+Public Sub slbAngle_Change()
+
+  $hEditor.UpdateRotation(slbAngle.Value)
+
+End
+
+Public Sub Form_Close()
+
+  $hEditor.UpdateRotation(0)
+  $hEditor = Null
+
+End

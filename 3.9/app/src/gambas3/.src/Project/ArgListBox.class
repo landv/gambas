@@ -1,0 +1,142 @@
+' Gambas class file
+
+Inherits DrawingArea
+
+Event Activate
+Event Cancel
+
+Property Text As String
+
+Static Private $hComp As FileCompletion
+
+Private $hTextBox As TextBox
+
+Public Sub _new()
+
+  $hTextBox = New TextBox(Me) As "TextBox"
+  $hTextBox.Border = False
+  AutoResize
+  
+  Me.Proxy = $hTextBox
+  
+End
+
+Private Sub AutoResize()
+
+  Me.Resize(Me.Font.TextWidth($hTextBox.Text) + Desktop.Scale + 2, Desktop.Scale * 3)
+  $hTextBox.Move(1, 1, Me.W - 2, Me.H - 2)
+
+End
+
+
+Private Function Text_Read() As String
+
+  Return $hTextBox.Text
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $hTextBox.Text = Value
+
+End
+
+Public Sub TextBox_Change()
+  
+  AutoResize
+  
+End
+
+Public Sub TextBox_GotFocus()
+
+  If Not $hComp Then 
+    $hComp = New FileCompletion(Last)
+  Else
+    $hComp.Editor = Last
+  Endif
+  
+  Me.Border = Border.Plain
+  
+End
+
+Public Sub TextBox_LostFocus()
+
+  Me.Border = Border.None
+  
+End
+
+Public Sub TextBox_KeyPress()
+  
+  Dim hArg As ArgListBox
+  
+  If Key.Normal Then
+  
+    If Key.Code = Key.Left Then
+      
+      If $hTextBox.Pos = 0 Then
+        hArg = Me.Previous
+        If hArg And If Object.IsValid(hArg) Then
+          hArg.SetFocus
+          hArg.MoveEnd
+          Stop Event
+        Endif
+      Endif
+      
+    Else If Key.Code = Key.Right Then
+      
+      If $hTextBox.Pos = $hTextBox.Length Then
+        hArg = Me.Next
+        If hArg Then
+          hArg.SetFocus
+          hArg.MoveBegin
+          Stop Event
+        Endif
+      Endif
+      
+    Else If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
+      
+      Raise Activate
+      Stop Event
+      
+    Else If Key.Code = Key.Delete Then
+      
+      If $hTextBox.Length = 0 Then
+        Me.Delete
+        Stop Event
+      Endif
+      
+    Else If Key.Code = Key.Backspace Then
+      
+      If $hTextBox.Length = 0 Then
+        hArg = Me.Previous
+        Me.Delete
+        If hArg And If Object.IsValid(hArg) Then
+          hArg.SetFocus
+          hArg.MoveEnd
+        Endif
+        Stop Event
+      Endif
+      
+    Else If Key.Code = Key.Escape Then
+      
+      Raise Cancel
+      Stop Event
+      
+    Endif
+    
+  Endif
+  
+End
+
+Public Sub MoveBegin()
+  
+  $hTextBox.Pos = 0
+  
+End
+
+Public Sub MoveEnd()
+  
+  $hTextBox.Pos = $hTextBox.Length
+  
+End
+

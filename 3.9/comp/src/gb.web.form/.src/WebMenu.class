@@ -1,0 +1,133 @@
+' Gambas class file
+
+Export
+Inherits WebContainer
+
+Public Const _Group As String = "Container"
+Public Const _Properties As String = "*,-Arrangement,-Margin,-Spacing,-Border,Text,Image{WebImage)"
+Public Const _DefaultArrangement As String = "V"
+Public Const _DefaultEvent As String = "Click"
+
+Event Click(Target As WebControl)
+
+Property Text, Title As String
+Property Image As String
+
+Private $sText As String
+Private $sImage As String
+
+Public Sub _new()
+  
+  Me.Arrangement = Arrange.Vertical
+  
+End
+
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  Me._SetProperty("Text", Value)
+
+End
+
+Public Sub _BeforeRender()
+  
+  If Me.Parent Is WebMenu Then
+  
+    Print "<div class=\"gw-menuitem\">";
+    Print "<div class=\"gw-menuitem-icon\">";
+    If $sImage Then Print "<img class=\"gw-menuitem-icon\" src=\""; Html(Application.Root &/ $sImage); "\">";
+    Print "</div>";
+    Print "<div class=\"gw-menuitem-text\">"; Html($sText); "</div>";
+    Print "<div></div>";
+    
+  Endif
+  
+  Super._BeforeRender
+  
+End
+
+
+Public Sub _Render()
+  
+  Dim hChild As WebControl
+  
+  If Not Me.Parent Is WebMenu Then
+  
+    Print "<div class=\"gw-menu-title\">"; 
+    If $sImage Then
+      Print "<img class=\"gw-menu-icon\" src=\""; Html(Application.Root &/ $sImage); "\">";
+    Endif
+    If $sText Then
+      Print Html($sText);
+    Else
+      Print "&nbsp;";
+    Endif
+    Print "</div>"
+    Print "<div class=\"gw-menu-tape\"></div>"
+    
+  Endif
+  
+  'Print "<div class=\"gw-submenu\""; Me._GetUpdateJS("onclick", "#click", "gw.getTargetId(event.target)", "gw.hideMenu(this);"); ">"
+  Print "<div class=\"gw-submenu\" onclick=\"gw.menu.click(" & JS(Me.Name) & ",event);gw.menu.hide(this);\">"
+  
+  For Each hChild In Me.Children
+    With hChild
+      If Not .Visible Then Continue
+      ._BeforeRender()
+      ._Render()
+      ._AfterRender()
+    End With
+  Next
+  
+  Print "</div>";
+  
+End
+
+Public Sub _AfterRender()
+  
+  Super._AfterRender
+  
+  If Me.Parent Is WebMenu Then
+    
+    Print "</div>";
+    
+  Endif
+  
+End
+
+
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  Dim hControl As WebControl
+  
+  If sProp = "#click" Then
+    Try hControl = WebControl.FromName(vValue)
+    If hControl And If hControl <> Me Then 
+      Raise Click(hControl)
+      Object.Raise(hControl, "Click")
+    Endif
+  Endif
+  
+End
+
+
+Private Function Image_Read() As String
+
+  Return $sImage
+
+End
+
+Private Sub Image_Write(Value As String)
+
+  $sImage = Value
+  Me._SetProperty("Image", Value)
+
+End

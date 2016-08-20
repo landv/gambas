@@ -1,0 +1,13 @@
+' Gambas class file
+
+Public (Image) As Image
+Public Thumb As Picture
+Public Text As String
+
+Public Sub MakeThumb(Optional hImage As Image)
+  
+  If Not hImage Then hImage = Image
+  If Not hImage Then hImage = Picture["icon:/128/paste"].Image
+  Thumb = hImage.Stretch(-1, Desktop.Scale * 6).Picture
+  
+End

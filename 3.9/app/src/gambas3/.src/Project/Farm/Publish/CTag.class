@@ -1,0 +1,78 @@
+' Gambas class file
+
+Inherits UserControl
+
+Property Text As String
+
+Private $hButton As ToolButton
+Private $hDraw As DrawingArea
+Private $sText As String
+
+Public Sub _new()
+  
+  $hDraw = New DrawingArea(Me) As "DrawingArea"
+  $hDraw.Arrangement = Arrange.Horizontal
+  $hDraw.Mouse = Mouse.Pointing
+  
+  $hButton = New ToolButton($hDraw) As "Button"
+  $hButton.Picture = Picture["img/16/white-close.png"]
+  $hButton.Resize(Desktop.Scale * 3, Desktop.Scale * 3)
+  $hButton.Border = False
+  $hButton.Show
+  
+  Me.Font.Bold = True
+  
+End
+
+Private Sub UpdateSize()
+
+  Me.Resize(Desktop.Scale * 4 + Me.Font.TextWidth($sText), Me.Font.Height + Desktop.Scale)
+
+End
+
+Public Sub DrawingArea_Draw()
+  
+  Dim X As Integer
+  
+  'Paint.Rectangle(0.5, 0.5, Paint.W - 1, Paint.H - 1, 3)
+  'Paint.Background = Color.LightForeground
+  'Paint.Stroke
+  
+  Paint.FillRect(0, 0, Paint.W, Paint.H, If($sText Begins "gb.", &HDF6B00&, &H3398C3&))
+  
+  Paint.Background = Color.White
+  X = Desktop.Scale * 3
+  Paint.DrawText($sText, X, 0, Paint.W - X, Paint.H, Align.Left)
+  
+End
+
+Public Sub DrawingArea_Font()
+  
+  UpdateSize
+  
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  If InStr(Value, ".") = 0 Then Value = UCase(Left(Value)) & Mid$(Value, 2)
+
+  $sText = Value
+  $hDraw.Refresh
+  UpdateSize
+
+End
+
+Public Sub Button_Click()
+  
+  Dim hParent As CTagEditor = Me.Parent.Parent.Parent
+  
+  Me.Delete
+  hParent._RaiseChange()
+  
+End

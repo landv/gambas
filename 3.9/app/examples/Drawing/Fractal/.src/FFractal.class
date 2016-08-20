@@ -1,0 +1,245 @@
+' Gambas class file
+
+Private $hRose As Image
+Private $fScale As Float = 0.0078125
+Private ITER_MAX As Integer = 128
+Private $aColor As New Integer[64]
+Private $XC As Float
+Private $YC As Float
+Private $MX As Integer
+Private $MY As Integer
+Private $XX As Float
+Private $YY As Float
+Private $bFast As Boolean 
+Private $bRect As Boolean
+
+Private NTASK As Integer = 8
+Private $aTask As New FractalTask[NTASK]
+Private $aResult As New Image[NTASK]
+
+Public Sub FractalTask_Kill()
+  
+  Dim hTask As FractalTask = Last
+  Dim aResult As Integer[]
+  Dim hImage As Image
+  
+  'Print hTask.Index; ": *KILL*"
+  Try aResult = hTask.Value
+  If aResult Then
+    hImage = New Image(hTask.Width, hTask.Height)
+    hImage.Pixels = aResult
+    $aResult[hTask.Index] = hImage
+    dwgFractal.Refresh
+  Endif
+  
+End
+
+' Public Sub FractalTask_Read(Data As String)
+'   
+'   Dim hTask As FractalTask = Last
+'   Print hTask.Index; ": "; Data
+'   
+' End
+' 
+' Public Sub FractalTask_Error(Data As String)
+'   
+'   Dim hTask As FractalTask = Last
+'   Print hTask.Index; "= "; Data
+'   
+' End
+
+Public Sub dwgFractal_Draw()
+
+  Dim hImage As Image
+  Dim X, Y, I, J As Float
+  Dim YT As Integer
+  Dim HT As Integer
+  Dim H As Integer
+  
+  'hImage = New Image(Draw.Clip.W, Draw.Clip.H)
+  For I = 0 To Paint.W Step $hRose.W
+    For J = 0 To Paint.H Step $hRose.H
+      'hImage.DrawImage($hRose, I, J)
+      Paint.DrawImage($hRose, I, J)
+    Next
+  Next
+  
+  X = $XC - (dwgFractal.W / 2) * $fScale
+  Y = $YC - (dwgFractal.H / 2) * $fScale
+  
+  'If $bFast Then
+    
+  '  FastDrawFractalRect(hImage, X, Y, $fScale, 0, 0, hImage.W, hImage.H)
+  '  Draw.Image(hImage, Draw.Clip.X, Draw.Clip.Y)
+    
+  'Else
+
+    'Draw.Image(hImage, Draw.Clip.X, Draw.Clip.Y)
+    HT = CInt(Paint.H) \ NTASK
+    For I = 0 To NTASK - 1
+      If $aResult[I] Then
+        If I < (NTASK - 1) Then
+          H = HT
+        Else
+          H = Paint.H - YT
+        Endif
+        Paint.DrawImage($aResult[I], 0, YT, Paint.W, H)
+      Endif
+      'RunTask(0, X, Y, 0, YT, hImage.W, HT)
+      'Y += HT * $fScale
+      YT += HT
+    Next
+    'RunTask(I, X, Y, 0, YT, hImage.W, hImage.H - HT)
+    'DrawFractalRect(hImage, X, Y, $fScale, 0, 0, hImage.W, hImage.H)
+  'Endif
+  
+  
+  Paint.Background = Color.SetAlpha(Color.White, 128)
+  Paint.Rectangle(4, 4, Draw.Font.Height * 26, Draw.Font.Height * 3 + 32)
+  Paint.Fill
+  
+  YT = 12
+  
+  If $bFast Then
+    Draw.Text(("Press F to deactivate Just-In-Time compilation"), 12, YT)
+  Else
+    Draw.Text(("Press F to activate Just-In-Time compilation"), 12, YT)
+  Endif
+  
+  YT += Draw.Font.Height + 8
+  If $bRect Then
+    Draw.Text(("Press R to hide rectangle optimization"), 12, YT)
+  Else
+    Draw.Text(("Press R to show rectangle optimization"), 12, YT)
+  Endif
+  
+  YT += Draw.Font.Height + 8
+  Draw.Text(("Zoom") & ": " & CStr((Log2($fScale) + 6) * 8) & "    " & ("Speed") & ": " & If($bFast, ("Fast"), ("Slow")) & "   " & ("Max") & ": " & ITER_MAX & "   " & ("Tasks") & ": " & NTASK, 12, YT)
+
+End
+
+Public Sub dwgFractal_MouseWheel()
+
+  Dim fNewScale As Float
+
+  If Mouse.Delta < 0 Then
+    If Log2($fScale) >= -6 Then Return
+    fNewScale = $fScale * Sqr(Sqr(Sqr(2)))
+    ITER_MAX -= 4
+  Else
+    If Log2($fScale) < -50 Then Return
+    fNewScale = $fScale / Sqr(Sqr(Sqr(2)))
+    ITER_MAX += 4
+  Endif
+  
+  $XC += $fScale * (Mouse.X - dwgFractal.W / 2)
+  $YC += $fScale * (Mouse.Y - dwgFractal.H / 2)
+  
+  $fScale = fNewScale
+  
+  $XC -= $fScale * (Mouse.X - dwgFractal.W / 2)
+  $YC -= $fScale * (Mouse.Y - dwgFractal.H / 2)
+  
+  If timRedraw.Enabled Then Return
+  timRedraw.Start
+
+End
+
+Public Sub Form_Open()
+
+  Dim I As Integer
+  
+  $hRose = Image.Load("rose.jpg")
+  For I = 0 To $aColor.Max
+    $aColor[I] = Color.HSV(360 * I / $aColor.Max, 255, 255)
+  Next
+  
+  Me.Center
+
+End
+
+Public Sub dwgFractal_MouseDown()
+
+  $MX = Mouse.X
+  $MY = Mouse.Y
+  $XX = $XC
+  $YY = $YC
+
+End
+
+Public Sub dwgFractal_MouseMove()
+  
+  $XC = $XX + ($MX - Mouse.X) * $fScale
+  $YC = $YY + ($MY - Mouse.Y) * $fScale
+
+  If timRedraw.Enabled Then Return
+  timRedraw.Start
+  
+End
+
+
+Public Sub dwgFractal_KeyPress()
+
+  If UCase(Key.Text) = "F" Then
+    $bFast = Not $bFast
+    If $bFast Then
+      FractalTask.FastDrawFractalRect(Null, 0, 0, 0, 0, 0, 0, 0)
+    Endif
+    Redraw(False)
+  Else If UCase(Key.Text) = "R" Then
+    $bRect = Not $bRect
+    Redraw(False)
+  Else If Key.Code = Key.Esc Then
+    Me.Close
+  Endif
+
+End
+
+Private Sub Redraw(bClear As Boolean)
+
+  Dim I As Integer
+  Dim XO As Float
+  Dim YO As Float
+  Dim HT As Integer
+
+  XO = $XC - (Me.ClientW / 2) * $fScale
+  YO = $YC - (Me.ClientH / 2) * $fScale
+  
+  HT = Me.ClientH \ NTASK
+  
+  For I = 0 To $aTask.Max
+
+    If $aTask[I] Then Try $aTask[I].Stop
+    If bClear Then $aResult[I] = Null
+    
+    If I = $aTask.Max Then HT = Me.ClientH - HT * $aTask.Max
+    
+    $aTask[I] = New FractalTask(XO, YO, $fScale, Me.ClientW, HT, ITER_MAX, $aColor, $bFast, $bRect) As "FractalTask"
+    $aTask[I].Index = I
+    
+    YO += HT * $fScale
+    
+  Next
+  
+  dwgFractal.Refresh
+
+End
+
+Public Sub Form_Resize()
+
+  Redraw(False) '(True)
+
+End
+
+Public Sub timRedraw_Timer()
+
+  Dim I As Integer
+
+  For I = 0 To $aTask.Max
+    If $aTask[I].Running Then Return
+  Next
+  
+  Redraw(False)
+  timRedraw.Stop
+
+End

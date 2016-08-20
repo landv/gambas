@@ -1,0 +1,124 @@
+' Gambas class file
+
+Export
+
+Inherits HttpClient
+
+Public Const _IsControl As Boolean = False
+
+Private $cVal As New Collection
+Private $aField As New String[]
+Private $cFile As New Collection
+
+Public Sub Add(Field As String, Value As String)
+  
+  If Not $aField.Exist(Field) Then $aField.Add(Field)
+  $cVal[Field] = Value
+  
+End
+
+Public Sub AddFile(Field As String, Path As String, Optional Name As String)
+  
+  If Left(Path) <> "/" Then Path = ".." &/ Path
+  If Not Exist(Path) Then Error.Raise("Path does not exist")
+  If IsDir(Path) Then Error.Raise("Path is a directory")
+    
+  If Not Name Then Name = File.Name(Path)
+  Add(Field, Name)
+  $cFile[Field] = Path
+  
+End
+
+Public Sub Remove(Field As String)
+
+  Dim iPos As Integer
+  
+  iPos = $aField.Find(Field)
+  If iPos < 0 Then Return
+  
+  $aField.Remove(iPos)
+  $cVal.Remove(Field)
+  $cFile.Remove(Field)
+  
+End
+
+Public Sub _get(Field As String) As String
+  
+  Return $cVal[Field]
+  
+End
+
+Public Sub _put(Value As String, Field As String)
+  
+  Add(Field, Value)
+  
+End
+
+Public Sub Clear()
+  
+  $cVal.Clear
+  $aField.Clear
+  
+End
+
+
+Public Sub Submit()
+  
+  Dim sBoundary As String
+  Dim sPath As Variant
+  Dim I As Integer
+  Dim sPost As String
+  Dim hPost As File
+  Dim sField As String
+  
+  Do
+    
+    sBoundary = "------"
+    For I = 1 To 4
+      sBoundary &= Hex$(Int(Rnd(65536)), 4)
+    Next
+    
+    For Each sPath In $cFile
+      If InStr(File.Load(sPath), sBoundary) Then Continue
+    Next
+    
+    Break
+    
+  Loop
+  
+  sPost = Temp$()
+  
+  hPost = Open sPost For Create
+  hPost.EndOfLine = gb.Windows
+  
+  For Each sField In $aField
+
+    Print #hPost, "--"; sBoundary
+    
+    sPath = $cFile[sField]
+    
+    If sPath Then
+      
+      Print #hPost, "Content-Disposition: form-data; name=\""; sField; "\"; filename=\""; $cVal[sField]; "\""
+      Print #hPost, "Content-Type: application/octet-stream"
+      Print #hPost
+      Print #hPost, File.Load(sPath)
+
+    Else
+    
+      Print #hPost, "Content-Disposition: form-data; name=\""; sField; "\""
+      Print #hPost, "Content-Type: text/plain; charset=\"utf-8\""
+      Print #hPost
+      Print #hPost, $cVal[sField]
+      
+    Endif
+
+  Next
+  
+  Print #hPost, "--"; sBoundary; "--"
+
+  hPost.Close
+  
+  Me.PostFile("multipart/form-data; boundary=" & sBoundary, sPost, ["Content-Length: " & CStr(Stat(sPost).Size)])
+  
+End

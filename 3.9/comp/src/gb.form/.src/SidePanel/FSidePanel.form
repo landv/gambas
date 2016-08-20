@@ -1,0 +1,25 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(8,16,50,50)
+  Resizable = False
+  { panSide Panel
+    MoveScaled(7,10,35,33)
+  }
+  { panMove Panel
+    MoveScaled(1,5,46,4)
+    { btnSide DrawingArea
+      MoveScaled(10,0,6,4)
+      Mouse = Mouse.Pointing
+    }
+    { btnSide2 DrawingArea btnSide
+      Name = "btnSide2"
+      MoveScaled(18,0,6,4)
+      Mouse = Mouse.Pointing
+    }
+  }
+  { sepSide Separator
+    MoveScaled(0,0,6,3)
+    Visible = False
+  }
+}

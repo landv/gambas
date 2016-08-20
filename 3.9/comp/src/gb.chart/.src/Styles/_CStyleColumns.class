@@ -1,0 +1,113 @@
+' Gambas class file
+
+Private $iType As Integer
+Private $sidChart As String
+Public Sub _New(Value As Integer, sidChart As String)
+  
+  $iType = Value
+  $sidChart = sidChart
+  
+End
+
+
+Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
+  Dim oSerie As _CSerie
+
+  Dim fMaxVal, fMinVal As Float
+  Dim itmp As Float
+  Dim i, j As Integer
+  Dim f As Float
+  Dim YHeadersW As Integer
+  Dim iTwoLetterHeight As Integer = draw.Font.Height * 2 * Chart._$ColChart[$sidChart]._fProportionnal
+  Dim fTabPos As Float
+  Dim iXUnit As Float
+  Dim iStaticSpace As Integer = 5 * Chart._$ColChart[$sidChart]._fProportionnal
+  Dim hRect As New CRect
+  Dim hUnits As CPoint
+  Dim fCumul As Float
+  Dim fPrevCumul As Float
+  'Get the maxValue for Y Labels width and value
+  
+  ' FOR i = 0 TO Chart.DataSet[0].Data.Max
+  '   itmp = Chart.DataSet[0].Data[i]
+  '   IF fMaxVal < itmp THEN fMaxVal = itmp
+  '   IF cnt < draw.TextWidth(itmp & "  ") THEN cnt = draw.TextWidth(itmp & "  ")
+  ' NEXT 
+  'draw.Font.Size = 11 * Chart._fProportionnal
+  
+  Select Case $iType
+    Case ChartType.Columns, ChartType.ColumnsLineCombination
+      If Chart._$ColChart[$sidChart].YAxe.AutoScale Then
+        fMaxVal = MTools.GetChartMaxValue($sidChart)
+        fMinVal = 0
+      Else
+        fMaxVal = Chart._$ColChart[$sidChart].YAxe.MaxValue
+        fMinVal = Chart._$ColChart[$sidChart].YAxe.MinValue
+      Endif
+    Case ChartType.ColumnsStacked
+      fMaxVal = MTools.GetChartMaxCumulate($sidChart)
+    Case ChartType.ColumnsPercent
+      fMaxVal = 100
+  End Select
+  If fMaxVal = 0 Then Return 
+
+    'Get the max width needed for draw the Y labels
+
+    YHeadersW = CX + iStaticSpace * 2
+
+  
+  'Set the graph square position value
+
+    hRect.Top = CY '+ iTwoLetterHeight
+    hRect.Bottom = CY + CH '- iStaticSpace * 2
+
+  hRect.Left = YHeadersW
+  hRect.Right = CX + CW - YHeadersW / 2
+
+  
+  hUnits = MTools.DrawChartAxes($sidChart, hRect, fMinVal, fMaxVal, Align.Center)
+  draw.Clip(hRect.Left, hRect.Top, hRect.Right - hRect.Left, hRect.Bottom - hRect.Top)
+  Select Case $iType
+    Case ChartType.Columns
+      fTabPos = hRect.Left + hUnits.x / 2
+      For Each oSerie In Chart._$ColChart[$sidChart]
+        For i = 0 To Chart._$ColChart[$sidChart].Count - 1
+          draw.ForeGround = Color.DarkGray
+          Draw.FillStyle = Fill.Solid
+          Draw.FillColor = Chart._$ColChart[$sidChart].Colors[i]
+          draw.Rect(fTabPos + i * (hUnits.X - 1), hRect.Bottom + (fMinVal * hUnits.y), hUnits.X, oSerie[i] * - hUnits.y)
+        Next
+        fTabPos += i * hUnits.x + hUnits.x
+      Next
+    Case ChartType.ColumnsStacked, ChartType.ColumnsPercent
+      hUnits.X = (hRect.Right - hRect.Left) / (Chart._$ColChart[$sidChart].CountDataSets * 2)
+      fTabPos = hRect.Left + hUnits.x / 2
+      For Each oSerie In Chart._$ColChart[$sidChart]
+        fCumul = hRect.Bottom + 1
+        If $iType = ChartType.ColumnsPercent Then 
+          fMaxVal = 0
+          For i = 0 To Chart._$ColChart[$sidChart].Count - 1
+            fMaxVal += oSerie[i]
+          Next
+        Endif
+        If fMaxVal = 0 Then Return 
+        For i = 0 To Chart._$ColChart[$sidChart].Count - 1 
+          If $iType = ChartType.ColumnsPercent Then             
+            f = ((oSerie[i] / fMaxVal * 100) * - hUnits.y) - 1
+          Else 
+            f = (oSerie[i] * - hUnits.y) - 1
+          Endif
+          draw.ForeGround = Color.DarkGray
+          Draw.FillStyle = Fill.Solid
+          Draw.FillColor = Chart._$ColChart[$sidChart].Colors[i]
+          draw.Rect(fTabPos, fCumul, hUnits.X, f)
+          fCumul += f + 1
+          
+        Next
+        'fPrevCumul = fCumul * hUnits.Y
+        fTabPos += hUnits.x * 2
+      Next
+  End Select
+  Draw.Clip.Enabled = False
+  'MTools.DrawSymbol(5, 15, 15)
+End

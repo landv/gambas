@@ -1,0 +1,500 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+'Public Const _Properties As String = "*,AutoResize,Text,Picture,Border,Radio,Toggle,Value"
+Public Const _Properties As String = "*,Action,AutoResize,Text,Picture,Arrow=True,Border=True,Menu,MenuOnly"
+Public Const _DefaultSize As String = "6,4"
+Public Const _Similar As String = "Button"
+Public Const _DefaultEvent As String = "Click"
+
+Event Click
+' Event MouseDown
+' Event MouseUp
+' Event MouseWheel
+' Event MouseDrag
+
+Property Picture As Picture
+Property Text As String
+Property Menu As String
+Property Arrow As Boolean
+Property MenuOnly As Boolean
+'Property Action As String
+Property Value As Boolean
+Property AutoResize As Boolean
+Property Border As Boolean
+
+Private $hDrawingArea As DrawingArea
+Private $hPicture As Picture
+Private $sText As String
+Private $bBorder As Boolean
+Private $sMenu As String
+Private $hButton As Button
+Private $iShortcutPos As Integer
+
+Private $bInside As Boolean
+Private $bInsideArrow As Boolean
+Private $bPressed As Boolean
+Private $bArrow As Boolean
+Private $bAutoResize As Boolean
+Private $bMenuOnly As Boolean
+
+Static Private $hCurrent As MenuButton
+Static Private $hCurrentMenu As Menu
+
+Public Sub _new()
+  
+  'Dim hObs As Observer
+  
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  $hDrawingArea.Focus = True
+  
+  $bBorder = True
+  $bArrow = True
+
+  Me.Proxy = $hDrawingArea
+  'hObs = New Observer($hDrawingArea)
+  'Object.Attach(hObs, Me.Parent, sEventName)   
+  
+End
+
+' Public Sub Watcher_Resize()
+'   
+'   $hArrow.Move(Me.W - $hArrow.W, 0, $hArrow.W, Me.H)
+'   
+' End
+
+
+Private Function Picture_Read() As Picture
+
+  Return $hPicture
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  $hPicture = Value
+  UpdateSize
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  Dim iPos As Integer
+
+  $sText = Value
+  $iShortcutPos = 0
+  
+  Do
+    iPos = String.InStr($sText, "&", iPos + 1)
+    If iPos = 0 Then Break
+    If String.Mid$($sText, iPos + 1, 1) = "&" Then
+      Inc iPos
+      Continue
+    Endif
+    If Not $hButton Then
+      $hButton = New Button(Me) As "Button"
+      $hButton.Ignore = True
+      $hButton.Move(-16, -16, 8, 8)
+    Endif
+    $hButton.Text = String.Mid$($sText, iPos, 2)
+    $iShortcutPos = iPos
+    Break
+  Loop
+  
+  UpdateSize
+
+End
+
+Private Function Menu_Read() As String
+
+  Return $sMenu
+
+End
+
+Private Sub Menu_Write(Value As String)
+
+  $sMenu = Value
+
+End
+
+Public Sub Button_GotFocus()
+  
+  $hDrawingArea.SetFocus
+  
+End
+
+
+Public Sub Button_Click()
+  
+  If Not $bMenuOnly Then
+    Action.Raise(Me)
+    Raise Click
+  Else
+    Arrow_Click
+  Endif
+  
+End
+
+Public Sub WatchTimer_Timer()
+  
+  Dim hMenuButton As MenuButton
+  Dim X As Integer
+  Dim Y As Integer
+  
+  X = Mouse.ScreenX - Me.Parent.ScreenX
+  Y = Mouse.ScreenY - Me.Parent.ScreenY
+  
+  'Debug X;; Y
+  
+  If X < 0 Or If Y < 0 Or If X >= Me.Parent.W Or If Y >= Me.Parent.H Then Return
+  
+  Try hMenuButton = Me.Parent.FindChild(X, Y)
+  If hMenuButton And If hMenuButton <> $hCurrent Then
+    If Main.FindMenu(hMenuButton, hMenuButton.Menu) Then
+      $hCurrentMenu.Close
+      $hCurrent.Refresh
+      $hCurrent = hMenuButton
+    Endif
+  Endif
+  
+End
+
+Static Private Sub HandleMenu(hCurrent As MenuButton)
+  
+  Dim hMenu As Menu
+  Dim hWatch As Timer
+  
+  hWatch = New Timer As "WatchTimer"
+  hWatch.Delay = 50
+  hWatch.Start
+  
+  Do
+    
+    hMenu = Main.FindMenu(hCurrent, hCurrent.Menu)
+    
+    $hCurrent = hCurrent
+    $hCurrentMenu = hMenu
+    
+    hMenu.Popup(hCurrent.ScreenX, hCurrent.ScreenY + hCurrent.H)
+    
+    If $hCurrent = hCurrent Then Break
+    hCurrent = $hCurrent
+    
+  Loop
+  
+  $hCurrent.Refresh
+  hWatch.Stop
+  hWatch = Null
+  $hCurrent = Null
+  $hCurrentMenu = Null
+  
+End
+
+
+
+Private Sub Arrow_Click()
+
+  If Not $sMenu Then
+    Raise Click
+    Return
+  Endif
+
+  If Not Main.FindMenu(Me, $sMenu) Then
+    Raise Click
+    Return
+  Endif
+  
+  HandleMenu(Me)
+  
+End
+
+' Public Sub ShowMenu()
+'   
+'   $hTimer = New Timer As "ShowMenuTimer"
+'   $hTimer.Trigger
+'   
+' End
+' 
+' Public Sub ShowMenuTimer_Timer()
+'   
+'   Arrow_Click
+'   $hTimer = Null
+'   
+' End
+
+Private Function Value_Read() As Boolean
+
+  Return False
+
+End
+
+Private Sub Value_Write(Value As Boolean)
+
+  If Value Then Print "Click"
+
+End
+
+Private Function Arrow_Read() As Boolean
+
+  Return $bArrow
+
+End
+
+Private Sub Arrow_Write(Value As Boolean)
+
+  $bArrow = Value
+  UpdateSize
+
+End
+
+Private Sub UpdateSize()
+  
+  Dim W As Integer
+  
+  If $bAutoResize Then 
+    If $sText Then W = Me.Font.TextWidth($sText) + Desktop.Scale
+    If $hPicture Then W += $hPicture.W + Desktop.Scale
+    If $bArrow Then W += Desktop.Scale * 2
+    W += Desktop.Scale
+    Me.W = W
+  Endif
+  
+  $hDrawingArea.Refresh
+  
+End
+
+
+Private Function AutoResize_Read() As Boolean
+
+  Return $bAutoResize
+
+End
+
+Private Sub AutoResize_Write(Value As Boolean)
+
+  $bAutoResize = Value
+  UpdateSize
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $bBorder = Value
+  UpdateSize
+
+End
+
+Public Sub DrawingArea_GotFocus()
+  
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub DrawingArea_LostFocus()
+  
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub DrawingArea_Enter()
+  
+  $bInside = True
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub DrawingArea_Leave()
+  
+  $bInside = False
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub DrawingArea_MouseDown()
+  
+  If Not Mouse.Left Then Return
+  If Not Me.Enabled Then Return
+  
+  $bPressed = True
+  If $bArrow Then
+    $bInsideArrow = Mouse.X > (Me.W - Desktop.Scale * 3 + 3)
+  Else
+    $bInsideArrow = $sMenu ' if the arrow is hidden, the all button will popup the menu
+  Endif
+  $hDrawingArea.SetFocus
+  $hDrawingArea.Refresh
+  
+  If $bInsideArrow Or $bMenuOnly Then
+    Arrow_Click
+    DrawingArea_MouseUp
+    'If Not Mouse.Inside($hDrawingArea) Then DrawingArea_Leave
+  Endif
+  
+End
+
+Public Sub DrawingArea_MouseMove()
+  
+  Dim bPressed As Boolean
+  
+  If Not Me.Enabled Then Return
+  bPressed = Mouse.Inside($hDrawingArea)
+  
+  If $bPressed <> bPressed Then
+    $bPressed = bPressed
+    $hDrawingArea.Refresh
+  Endif
+  
+End
+
+
+Public Sub DrawingArea_MouseUp()
+  
+  If Not Mouse.Left Then Return
+  If Not Me.Enabled Then Return
+  If Not $bPressed Then Return
+
+  $bPressed = False
+  $hDrawingArea.Refresh
+  
+  If Not ($bInsideArrow Or $bMenuOnly) Then Button_Click
+
+End
+
+Public Sub DrawingArea_Draw()
+  
+  Dim X, X2, Y As Integer
+  Dim iFlag As Integer
+  Dim sText As String
+  Dim bFlat As Boolean
+  Dim bDrawArrow As Boolean
+  
+  iFlag = Style.StateOf(Last)
+  
+  If $hCurrent Then
+    If $hCurrent = Me Then iFlag = iFlag Or Draw.Hover
+  Else
+    If $bInside Then iFlag = iFlag Or Draw.Hover
+  Endif
+  'If $bInside And If Me.Enabled And If Not Me.Design Then iFlag += Draw.Hover
+  'If Not Me.Enabled Then iFlag += Draw.Disabled
+  'If $hDrawingArea.HasFocus Then iFlag += Draw.Focus
+  
+  bDrawArrow = $bArrow And (Me.W > Desktop.Scale * 4)
+  
+  '' TODO: System.RightToLeft
+
+  bFlat = Not $bBorder 'And Not $bInside
+
+  If $bInsideArrow Or If $bMenuOnly Then
+    Style.PaintButton(0, 0, Me.W, Me.H, False, iFlag, bFlat)
+    'Draw.Save
+    'Draw.Clip(Me.W - Desktop.Scale * 3 + 3, 0, Desktop.Scale * 3 - 3, Me.H)
+    'Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag, Not $bBorder)
+    'Draw.Restore
+  Else
+    Style.PaintButton(0, 0, Me.W, Me.H, $bPressed, iFlag, bFlat)
+  Endif
+  
+  ' If bFlat And If Not $bPressed And If $hDrawingArea.HasFocus Then
+  '   Paint.AntiAlias = False
+  '   Paint.Rectangle(2, 2, Me.W - 4, Me.H - 4)
+  '   Paint.Background = Color.SelectedBackground
+  '   Paint.Stroke
+  '   Paint.AntiAlias = True
+  ' Endif
+  
+  X = Desktop.Scale
+  
+  If $hPicture Then
+    If Me.Enabled Then
+      Paint.DrawPicture($hPicture, X, (Me.H - $hPicture.H) / 2)
+    Else
+      Paint.DrawImage($hPicture.Image.Desaturate(), X, (Me.H - $hPicture.H) / 2)
+    Endif
+    X += $hPicture.H + Desktop.Scale
+  Endif
+  
+  If $sText Then 
+    If Me.Enabled Then 
+      Draw.Foreground = Color.ButtonForeground
+    Else
+      Draw.Foreground = Color.Merge(Color.ButtonBackground, Color.ButtonForeground)
+    Endif
+    sText = $sText
+    If $iShortcutPos Then sText = String.Left($sText, $iShortcutPos - 1) & String.Mid$($sText, $iShortcutPos + 1)
+    If Not $hPicture And If Not $bArrow Then
+      X = (Me.W - Draw.Font.TextWidth(sText)) \ 2
+    Endif
+    Draw.Text(sText, X, 0, Me.W - X, Me.H, Align.Left)
+    If $iShortcutPos Then
+      X2 = X + Draw.Font.TextWidth(String.Left(sText, $iShortcutPos))
+      X += Draw.Font.TextWidth(String.Left(sText, $iShortcutPos - 1))
+      Y = (Me.H - Draw.Font.Height) / 2 + Draw.Font.Ascent + 1
+      Draw.Line(X, Y, X2, Y)
+    Endif
+  Endif
+  
+  If bDrawArrow Then
+    'If $bBorder Or If $bInside Then Draw.Style.Separator(Me.W - Desktop.Scale * 3, 3, 3, Me.H - 6, True)
+    Style.PaintArrow(Me.W - Desktop.Scale * 2, 0, Desktop.Scale, Me.H, Align.Bottom, iFlag)
+  Endif
+  
+End
+
+Public Sub DrawingArea_KeyPress()
+  
+  If Key.Code = Key.Space Then 
+    $bPressed = True
+    $hDrawingArea.Refresh
+  Else If Key.Code = Key.Tab Then
+    If $hButton Then
+      Try Me.Next.SetFocus
+      Stop Event
+    Endif
+  Endif
+  
+End
+
+Public Sub DrawingArea_KeyRelease()
+  
+  If Key.Code = Key.Space Then 
+    $bPressed = False
+    $hDrawingArea.Refresh
+    Wait
+    Button_Click
+  Endif
+  
+End
+
+Private Function MenuOnly_Read() As Boolean
+
+  Return $bMenuOnly
+
+End
+
+Private Sub MenuOnly_Write(Value As Boolean)
+
+  $bMenuOnly = Value
+
+End
+
+Public Sub DrawingArea_Font()
+  
+  UpdateSize
+  
+End

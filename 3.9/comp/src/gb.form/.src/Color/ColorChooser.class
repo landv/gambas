@@ -1,0 +1,113 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+
+Event Change
+Event Activate
+
+Public Const _Properties As String = "*,Border=True,ShowAlpha,ShowColorMap=True,ShowCustom"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "36,36"
+Public Const _Group As String = "Chooser"
+'PUBLIC CONST _DrawWith AS String = "-"
+
+Property SelectedColor As Integer
+Property Value As Integer
+Property ShowAlpha As Boolean
+Property ShowColorMap As Boolean
+Property ShowCustom As Boolean
+Property Border As Boolean
+
+Private frmChooser As FColorChooser
+
+Public Sub _new()
+
+  frmChooser = New FColorChooser(Me) 'As "frmChooser"
+  'Object.Attach(frmChooser, Me, "frmChooser")
+
+End
+
+Public Sub _RaiseChange()
+
+  Raise Change
+
+End
+
+Private Function SelectedColor_Read() As Integer
+
+  Return frmChooser.GetColor()
+
+End
+
+Private Sub SelectedColor_Write(iColor As Integer)
+
+  frmChooser.SetColor(iColor)
+
+End
+
+Public Sub _RaiseActivate()
+
+  Raise Activate
+
+End
+
+Private Function Value_Read() As Integer
+
+  Return frmChooser.GetColor()  
+
+End
+
+Private Sub Value_Write(Value As Integer)
+
+  frmChooser.SetColor(Value)  
+
+End
+
+Private Function ShowAlpha_Read() As Boolean
+
+  Return frmChooser.GetAlpha()  
+
+End
+
+Private Sub ShowAlpha_Write(Value As Boolean)
+
+  frmChooser.SetAlpha(Value)
+
+End
+
+Private Function ShowColorMap_Read() As Boolean
+
+  Return frmChooser.GetColorMap()
+
+End
+
+Private Sub ShowColorMap_Write(Value As Boolean)
+
+  frmChooser.SetColorMap(Value)
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return frmChooser.HasBorder()
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  frmChooser.SetBorder(Value)
+
+End
+
+Private Function ShowCustom_Read() As Boolean
+
+  Return frmChooser.GetCustom()
+
+End
+
+Private Sub ShowCustom_Write(Value As Boolean)
+
+  frmChooser.SetCustom(Value)
+
+End

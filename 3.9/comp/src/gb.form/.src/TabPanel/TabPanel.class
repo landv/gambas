@@ -1,0 +1,962 @@
+' Gambas class file
+
+Export
+Inherits UserContainer
+
+Public Const _Properties As String = "*,Border=True,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom}=Top,Closable,CloseButton,Moveable,Highlight"
+Public Const _Similar As String = "TabStrip"
+Public Const _IsMultiContainer As Boolean = True
+Public Const _DefaultEvent As String = "Click"
+
+Event Click
+Event Close(Index As Integer)
+Event Move(Source As Integer, Target As Integer)
+Event CloseAll
+
+Property Count As Integer
+Property Index As Integer
+Property Text As String
+Property Picture As Picture
+Property Font As Font
+Property TextFont As Font
+Property Border As Boolean
+Property Orientation As Integer
+Property Highlight As Boolean
+Property Closable As Boolean
+Property Read Current As _TabPanelContainer
+Property Background As Integer
+Property Moveable As Boolean
+Property CloseButton As Boolean
+
+Private $hTabBar As DrawingArea
+Private $hTabBarContainer As DrawingArea
+'Private $hLeftArrow As DrawingArea
+'Private $hRightArrow As DrawingArea
+Private $X As Integer
+'Private $bArrow As Boolean
+
+Private $aCont As New _TabPanelContainer[]
+Private $aButton As New _TabPanelButton[]
+Private $iOrientation As Integer = Align.Top
+Private $bBorder As Boolean = True
+Private $bHighlight As Boolean
+Private $bClosable As Boolean
+Private $iCurrent As Integer = -1
+Private $hPanel As DrawingArea
+
+Private $hTimerEnsureVisible As Timer
+Private $hTimerRepeat As Timer
+Private $iRepeatInc As Integer
+Private $iRepeatStart As Integer
+
+Private Const ARROW_WIDTH As Integer = 12
+
+Private $hRightArrow As DrawingArea
+Private $hLeftArrow As DrawingArea
+Private $bMoveable As Boolean
+Private $hCloseAll As ToolButton
+Private $hClosePanel As DrawingArea
+Private $hObserver As Observer
+
+Public Sub _new()
+
+  $hTabBar = New DrawingArea(Me) As "TabBar"
+  '$hTabBar.Arrangement = Arrange.Fill
+  
+  ' $hLeftArrow = New DrawingArea($hTabBar) As "Arrow"
+  ' $hLeftArrow.Ignore = True
+  ' $hLeftArrow.Hide
+  ' 
+  ' $hRightArrow = New DrawingArea($hTabBar) As "Arrow"
+  ' $hRightArrow.Ignore = True
+  ' $hRightArrow.Hide
+
+  $hTabBarContainer = New DrawingArea($hTabBar) As "TabBarContainer"
+  $hTabBarContainer.Name = Me.Name & "_TabBarContainer"
+  $hTabBarContainer.Focus = True
+  
+  $hRightArrow = New DrawingArea($hTabBar) As "Arrow"
+  $hRightArrow.Ignore = True
+  $hRightArrow.Mouse = Mouse.Pointing
+  $hRightArrow.Name = Me.Name & "_RightArrow"
+  $hLeftArrow = New DrawingArea($hTabBar) As "Arrow"
+  $hLeftArrow.Ignore = True
+  $hLeftArrow.Mouse = Mouse.Pointing
+  $hLeftArrow.Name = Me.Name & "_LeftArrow"
+  
+  $hPanel = New DrawingArea(Me) As "Panel"
+  $hPanel.Expand = True
+  $hPanel.Name = Me.Name & "_Panel"
+  '$hPanel.Arrangement = Arrange.Fill
+  '$hPanel.Padding = 1
+  
+  $hObserver = New Observer(Me) As "TabPanel"
+
+  Me.Count = 1
+  Me.Arrangement = Arrange.None
+  
+  UpdateLayout
+
+End
+
+Public Sub _EnsureCurrentVisible()
+  
+  If $hTimerEnsureVisible Then Return
+  $hTimerEnsureVisible = New Timer As "EnsureCurrentVisible"
+  $hTimerEnsureVisible.Trigger
+  
+End
+
+
+Public Sub EnsureCurrentVisible_Timer()
+  
+  Dim X, W As Integer
+  Dim iLeftIndex, iRightIndex As Integer
+  
+  $hTimerEnsureVisible = Null
+  
+  If $iCurrent < 0 Or If $iCurrent > $aButton.Max Then Return
+  If Not $aButton[$iCurrent].Visible Then Return
+  
+  If System.RightToLeft Then
+    
+    $X = 0
+    
+    If $iCurrent = 0 Then
+      W = Me.W
+    Else
+      With $aButton[$iCurrent]
+        
+        X = .X
+        W = $hTabBarContainer.W
+        
+        If X < ARROW_WIDTH Then
+          W += ARROW_WIDTH - X
+        Else If X >= ($hTabBar.W - .W - ARROW_WIDTH) Then
+          W -= X - ($hTabBar.W - .W - ARROW_WIDTH)
+        Endif
+        
+        'M = .X + W - $hTabBar.W + ARROW_WIDTH
+        'If $iCurrent < $aButton.Max Then M += ARROW_WIDTH
+        '$X = Max($X, - M)
+        
+      End With
+    Endif
+    
+    W = Max(Me.W, W)
+    
+    '$X = Max($hTabBar.W - $hTabBarContainer.W, $X)
+    '$X = Min(ARROW_WIDTH, $X)
+    
+  Else
+    
+    If Me.W <= ($aButton[$iCurrent].W + ARROW_WIDTH) Then 
+  
+      $X = - $aButton[$iCurrent].X
+      
+    Else
+  
+      If $iCurrent = 0 Then
+        $X = 0
+      Else
+        With $aButton[$iCurrent]
+          
+          X = $hTabBarContainer.X + .X
+          W = .W
+          
+          If X < ARROW_WIDTH Then 
+            $X = $X + ARROW_WIDTH - X
+            X = $X + .X
+          Endif
+          
+          If X >= ($hTabBar.W - W - ARROW_WIDTH) Then
+            $X = $X - (X - ($hTabBar.W - W))
+            'If $iCurrent < $aButton.Max Then 
+            $X -= ARROW_WIDTH
+          Endif
+          
+        End With
+    
+      Endif
+      
+      $X = Max($hTabBar.W - ($aButton[$aButton.Max].X + $aButton[$aButton.Max].W), $X)
+      $X = Min(0, $X)
+      
+    Endif
+    
+    W = Me.W - $X
+  
+  Endif
+  
+  '$bArrow = False
+  
+  ' If $bArrow Then
+  '   W -= ARROW_WIDTH
+  '   If System.RightToLeft Then $X += ARROW_WIDTH
+  ' Endif
+
+  $hTabBarContainer.Move($X, 0, W, $hTabBar.H)
+  
+  If $hTabBar.W >= (ARROW_WIDTH * 3) And If $aButton.Count Then
+    If System.RightToLeft Then
+      iLeftIndex = GetLastIndex()
+      iRightIndex = _GetFirstIndex()
+    Else
+      iLeftIndex = _GetFirstIndex()
+      iRightIndex = GetLastIndex()
+    Endif
+    $hLeftArrow.Visible = $X < (- $aButton[iLeftIndex].X) '+ $aButton[iIndex].X + $aButton[iIndex].W) > $hTabBar.W
+    $hRightArrow.Visible = ($X + $aButton[iRightIndex].X + $aButton[iRightIndex].W) > $hTabBar.W
+  Else
+    $hLeftArrow.Hide
+    $hRightArrow.Hide
+  Endif
+  
+  CheckMouse
+  
+End
+
+Private Sub CheckMouse()
+
+  Dim hButton As _TabPanelButton
+  
+  If Not $bClosable Then Return
+  
+  For Each hButton In $aButton
+    hButton.Update
+  Next
+
+End
+
+
+Private Sub UpdateLayout()
+  
+  Dim hCtrl As _TabPanelButton
+  Dim W As Integer
+  Dim H As Integer
+  Dim X As Integer
+  
+  $hTabBar.Height = $hTabBar.Font.Height + Desktop.Scale * 2
+  
+  W = Me.W
+  H = $hTabBar.H
+  
+  If Not $hClosePanel Or If W < H * 3 Then
+    H = 0
+    If $hClosePanel Then $hClosePanel.Hide
+  Else
+    X = If(System.RightToLeft, H, 0)
+    W -= H
+    $hClosePanel.Show
+    $hClosePanel.Raise
+  Endif
+  
+  Me._Arrangement = Arrange.None
+  
+  Select Case $iOrientation
+    Case Align.Top
+      $hTabBar.Move(X, 0, W, $hTabBar.H)
+      If H And If $hClosePanel Then $hClosePanel.Move(If(System.RightToLeft, 0, W), 0, H, H)
+      $hPanel.Move(0, $hTabBar.H, Me.W, Me.H - $hTabBar.H)
+      '$hTabBar.Next = $hPanel
+    Case Align.Bottom
+      $hTabBar.Move(X, Me.H - $hTabBar.H, W, $hTabBar.H)
+      If H And If $hClosePanel Then $hClosePanel.Move(If(System.RightToLeft, 0, W), $hTabBar.Y, H, H)
+      $hPanel.Move(0, 0, Me.W, Me.H - $hTabBar.H)
+      'Me._Arrangement = Arrange.Vertical
+      '$hPanel.Next = $hTabBar
+  End Select
+  
+  For Each hCtrl In $aButton
+    If hCtrl.Visible Then
+      hCtrl.Orientation = $iOrientation
+      hCtrl.UpdateLayout
+      hCtrl.Refresh
+      hCtrl.Raise
+    Endif
+  Next
+  
+  'Debug Me.Name;; $hTabBar.Font.Height;; "'"; $hTabBar.Font.ToString(); "'"
+  
+  $hTabBarContainer.Arrangement = Arrange.Horizontal
+  _EnsureCurrentVisible
+  
+End
+
+Public Sub TabBar_Arrange()
+  
+  _EnsureCurrentVisible
+  
+  $hRightArrow.Move($hTabBar.W - ARROW_WIDTH, 0, ARROW_WIDTH, $hTabBar.H)
+  $hLeftArrow.Move(0, 0, ARROW_WIDTH, $hTabBar.H)
+  
+End
+
+Public Sub Arrow_Enter()
+
+  Last.Refresh
+
+End
+
+Public Sub Arrow_Leave()
+
+  Last.Refresh
+  $hTimerRepeat = Null
+
+End
+
+Public Sub Arrow_Draw()
+
+  If $iOrientation = Align.Top Then
+    Paint.FillRect(0, 0, Paint.W, Paint.H - 1, _GetBackground())
+  Else
+    Paint.FillRect(0, 1, Paint.W, Paint.H - 1, _GetBackground())
+  Endif
+  Style.PaintArrow(0, 0, Paint.W, Paint.H, If(Last = $hLeftArrow, Align.Left, Align.Right), Style.StateOf(Last))
+  
+End
+
+Public Sub Arrow_MouseDown()
+  
+  If Mouse.Left Then
+    
+    If Last = $hRightArrow Xor System.RightToLeft Then
+      Try _MoveNext()
+      $iRepeatInc = 1
+    Else
+      Try _MovePrevious()
+      $iRepeatInc = -1
+    Endif
+    
+    $hTimerRepeat = New Timer As "TimerRepeat"
+    $hTimerRepeat.Delay = 100
+    $hTimerRepeat.Start
+    $iRepeatStart = 0
+    
+  Endif
+  
+End
+
+Public Sub Arrow_MouseUp()
+  
+  $hTimerRepeat = Null
+  
+End
+
+Public Sub TimerRepeat_Timer()
+  
+  If $iRepeatStart < 3 Then
+    Inc $iRepeatStart
+  Else
+    If $iRepeatInc > 0 Then
+      Try _MoveNext()
+    Else
+      Try _MovePrevious()
+    Endif
+    If Error Then $hTimerRepeat = Null
+  Endif
+  
+End
+
+
+Public Sub Arrow_DblClick()
+  
+  If Mouse.Left Then
+    If Last = $hRightArrow Then
+      Try Me.Index = GetLastIndex()
+    Else
+      Try Me.Index = _GetFirstIndex()
+    Endif
+  Endif
+  
+End
+
+
+
+Private Function Count_Read() As Integer
+
+  Return $aCont.Count
+
+End
+
+
+Private Sub Count_Write(iCount As Integer)
+
+  Dim iInd As Integer
+  Dim hTab As _TabPanelContainer
+  Dim hButton As _TabPanelButton
+  Dim iCurrent As Integer
+  Dim bLocked As Boolean
+
+  If iCount < 1 Then Error.Raise("Bad argument")
+  If iCount = $aCont.Count Then Return
+
+  iCurrent = $iCurrent
+  
+  bLocked = Object.IsLocked(Me)  
+  If Not bLocked Then Object.Lock(Me)
+  
+  If iCount < $aCont.Count Then
+
+    For iInd = $aCont.Max To iCount Step -1
+      hTab = $aCont[iInd]
+      If hTab.Children.Count Then Error.Raise("TabPanel container is not empty")
+    Next
+
+    For iInd = $aCont.Max To iCount Step -1
+      $aCont[iInd]._Delete
+      $aButton[iInd].Delete
+      If iInd <= iCurrent Then Dec iCurrent
+    Next
+
+    $aCont.Remove(iCount, -1)
+    $aButton.Remove(iCount, -1)
+    
+  Else
+
+    For iInd = $aCont.Count To iCount - 1
+      hTab = New _TabPanelContainer($hPanel) As "_TabPanelContainer"
+      $aCont.Add(hTab)
+      hButton = New _TabPanelButton($hTabBarContainer) As "_TabPanelButton"
+      $aButton.Add(hButton)
+      hButton.Orientation = $iOrientation
+    Next
+    'ME.Container = hCont
+
+  Endif
+  
+  UpdateLayout
+
+  $iCurrent = -1
+  If iCurrent < 0 Then iCurrent = $aCont.Max
+  
+  If Not bLocked Then Object.Unlock(Me)
+  
+  Try Index_Write(iCurrent)
+
+End
+
+Private Function Index_Read() As Integer
+
+  Return $iCurrent
+
+End
+
+Private Sub Index_Write(iIndex As Integer)
+
+  If iIndex < 0 Or iIndex >= $aCont.Count Then Error.Raise("Bad index")
+
+  If iIndex = $iCurrent Then Return
+
+  If $iCurrent >= 0 Then $aButton[$iCurrent].Selected = False
+  $iCurrent = iIndex
+  If $iCurrent >= 0 Then $aButton[$iCurrent].Selected = True
+
+  UpdateContainer
+
+  Me._Container = $aCont[$iCurrent]
+  _EnsureCurrentVisible
+  
+  Raise Click
+
+End
+
+Private Sub UpdateCurrentContainer()
+  
+  If $iCurrent < 0 Then Return
+  
+  If $bBorder Then
+    If $iOrientation = Align.Top Then
+      $aCont[$iCurrent].Move(1, 0, $hPanel.W - 2, $hPanel.H - 1)
+    Else
+      $aCont[$iCurrent].Move(1, 1, $hPanel.W - 2, $hPanel.H - 1)
+    Endif
+  Else
+    $aCont[$iCurrent].Move(0, 0, $hPanel.W, $hPanel.H)
+  Endif
+  
+End
+
+
+Private Sub UpdateContainer()
+
+  Dim iInd As Integer
+
+  For iInd = 0 To $aCont.Max
+
+    With $aCont[iInd]
+      If iInd = $iCurrent Then
+        UpdateCurrentContainer
+        .Show
+        '.Raise
+      Else If .Visible Then
+        .Hide
+        '.Move(0, - $hPanel.H)
+      Endif
+    End With
+
+  Next
+
+End
+
+Private Function Text_Read() As String
+
+  Return $aCont[$iCurrent].Text
+
+End
+
+Private Sub Text_Write(sText As String)
+
+  $aCont[$iCurrent].Text = sText
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $aCont[$iCurrent].Picture
+
+End
+
+Private Sub Picture_Write(hPict As Picture)
+
+  $aCont[$iCurrent].Picture = hPict
+
+End
+
+Public Function _get(Index As Integer) As _TabPanelContainer
+
+  If Index < 0 Or Index >= $aCont.Count Then Error.Raise("Bad index")
+  Return $aCont[Index]
+
+End
+
+Private Function Font_Read() As Font
+
+  Return Super.Font
+
+End
+
+Private Sub Font_Write(hFont As Font)
+
+  Super.Font = hFont
+  UpdateLayout
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
+
+End
+
+Private Sub Border_Write(bBorder As Boolean)
+
+  Dim hButton As _TabPanelButton
+
+  $bBorder = bBorder
+  
+  'Panel_Arrange
+  UpdateCurrentContainer
+  
+  $hPanel.Refresh
+  
+  For Each hButton In $aButton
+    hButton.Refresh
+  Next
+
+End
+
+Private Function TextFont_Read() As Font
+
+  Return $hTabBar.Font
+
+End
+
+Private Sub TextFont_Write(Value As Font)
+
+  $hTabBar.Font = Value
+  UpdateLayout
+  
+End
+
+' Public Sub _GetIconView() As IconView
+'   
+'   Return $hIconView
+'   
+' End
+
+Public Sub _GetIndex(hCont As Control) As Integer
+ 
+  If hCont Is _TabPanelContainer Then Return $aCont.Find(hCont)
+  If hCont Is _TabPanelButton Then Return $aButton.Find(hCont)
+  Return -1
+
+End
+
+' Public Sub IconView_Select()
+'   
+'   If Not $hIconView.Key Then Return
+'   Index_Write(CInt($hIconView.Key))
+'   
+' End
+
+' Public Sub IconView_MouseWheel()
+'   
+'   If Mouse.Delta < 0 And If $iCurrent < $aCont.Max Then
+'     Index_Write($iCurrent + 1)
+'   Else If Mouse.Delta > 0 And If $iCurrent > 0 Then
+'     Index_Write($iCurrent - 1)
+'   Endif
+'   
+' End
+
+Public Sub _GetButton(iIndex As Integer) As _TabPanelButton
+  
+  Return $aButton[iIndex]
+  
+End
+
+Public Sub TabBarContainer_Draw()
+  
+  Dim hLast As _TabPanelButton
+  
+  Try hLast = $aButton[GetLastIndex()]
+  If Error Then Return
+  
+  Draw.Foreground = Color.LightForeground
+  Select Case $iOrientation
+    Case Align.Top
+      If System.RightToLeft Then
+        Draw.Line(0, $hTabBarContainer.H - 1, hLast.X - 1, $hTabBar.H - 1)
+      Else
+        Draw.Line(hLast.X + hLast.W, $hTabBarContainer.H - 1, $hTabBarContainer.W, $hTabBar.H - 1)
+      Endif
+    Case Align.Bottom
+      If System.RightToLeft Then
+        Draw.Line(0, 0, hLast.X - 1, 0)
+      Else
+        Draw.Line(hLast.X + hLast.W, 0, $hTabBarContainer.W, 0)
+      Endif
+  End Select
+  
+End
+
+Public Sub Panel_Draw()
+  
+  If $bBorder Then
+    Draw.Foreground = Color.LightForeground
+    Select Case $iOrientation
+      Case Align.Top
+        Draw.Line(0, 0, 0, $hPanel.H - 1)
+        Draw.Line(0, $hPanel.H - 1, $hPanel.W - 1, $hPanel.H - 1)
+        Draw.Line($hPanel.W - 1, $hPanel.H - 1, $hPanel.W - 1, 0)
+      Case Align.Bottom
+        Draw.Line(0, $hPanel.H - 1, 0, 0)
+        Draw.Line(0, 0, $hPanel.W - 1, 0)
+        Draw.Line($hPanel.W - 1, 0, $hPanel.W - 1, $hPanel.H - 1)
+    End Select
+  Endif
+  
+End
+
+Public Sub Panel_Arrange()
+  
+  UpdateCurrentContainer
+  
+End
+
+
+
+Private Function Orientation_Read() As Integer
+
+  Return $iOrientation
+
+End
+
+Private Sub Orientation_Write(Value As Integer)
+
+  $iOrientation = Value
+  UpdateLayout
+
+End
+
+Private Function Current_Read() As _TabPanelContainer
+
+  Try Return $aCont[$iCurrent]
+
+End
+
+Public Sub Remove(Index As Integer)
+  
+  Dim iCurrent As Integer
+  Dim hTab As _TabPanelContainer
+  
+  If Index < 0 Or Index > $aCont.Max Then Error.Raise("Bad index")
+  If $aCont.Count = 1 Then Return
+  
+  hTab = $aCont[Index]
+  If hTab.Children.Count Then Error.Raise("TabPanel container is not empty")
+  $aButton[Index].Delete
+  $aButton.Remove(Index)
+  $aCont.Remove(Index)
+  If $iCurrent = Index Then
+    $iCurrent = -1
+    iCurrent = Min($aCont.Max, Index)
+    Index_Write(iCurrent)
+  Else If $iCurrent > Index Then
+    Dec $iCurrent
+  Endif
+  UpdateLayout
+  hTab._Delete()
+  
+End
+
+Public Sub _SetVisible(Index As Integer, bVisible As Boolean)
+  
+  If Not bVisible And If Index = $iCurrent Then
+    Try _MoveNext()
+    If Error Then Try _MovePrevious()
+  Endif
+  $aButton[Index].Visible = bVisible
+  UpdateLayout
+  
+End
+
+Public Sub _IsVisible(Index As Integer) As Boolean
+  
+  Return $aButton[Index].Visible
+  
+End
+
+Private Sub GetPreviousIndex(iIndex As Integer) As Integer
+  
+  Dim I As Integer
+  
+  For I = iIndex - 1 DownTo 0
+    If $aButton[I].Visible Then Return I
+  Next
+  Return -1
+  
+End
+
+Private Sub GetNextIndex(iIndex As Integer) As Integer
+  
+  Dim I As Integer
+  
+  For I = iIndex + 1 To $aButton.Max
+    If $aButton[I].Visible Then Return I
+  Next
+  Return -1
+  
+End
+
+Public Sub _GetFirstIndex() As Integer
+  
+  Return GetNextIndex(-1)
+  
+End
+
+Private Sub GetLastIndex() As Integer
+  
+  Return GetPreviousIndex($aButton.Count)
+  
+End
+
+Public Sub _MovePrevious()
+  
+  Me.Index = GetPreviousIndex($iCurrent)
+  
+End
+
+Public Sub _MoveNext()
+  
+  Me.Index = GetNextIndex($iCurrent)
+  
+End
+
+
+Private Function Highlight_Read() As Boolean
+
+  Return $bHighlight
+
+End
+
+Private Sub Highlight_Write(Value As Boolean)
+
+  $bHighlight = Value
+  UpdateLayout
+
+End
+
+Private Function Closable_Read() As Boolean
+
+  Return $bClosable
+
+End
+
+Private Sub Closable_Write(Value As Boolean)
+
+  $bClosable = Value
+  UpdateLayout
+
+End
+
+Public Sub _Close(Index As Integer)
+  
+  Raise Close(Index)
+  
+End
+
+Public Sub _GetBackground() As Integer
+  
+  Return Color.Gradient(If(Me.Background = Color.Default, Color.Background, Me.Background), Color.LightForeground)  
+  
+End
+
+Public Sub TabBarContainer_KeyPress()
+  
+  If $aCont.Count = 0 Then Return
+  
+  Select Case Key.Code
+    
+    Case Key.Left, Key.PageUp
+      If System.RightToLeft Then
+        Try Inc Me.Index
+      Else
+        Try Dec Me.Index
+      Endif
+      Stop Event
+      
+    Case Key.Right, Key.PageDown
+      If System.RightToLeft Then
+        Try Dec Me.Index
+      Else
+        Try Inc Me.Index
+      Endif
+      Stop Event
+      
+    Case Key.Home
+      Me.Index = 0
+      Stop Event
+      
+    Case Key.End
+      Me.Index = $aCont.Max
+      Stop Event
+    
+  End Select
+  
+End
+
+Private Function Background_Read() As Integer
+
+  Return Super.Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  Super.Background = Value
+  $hTabBar.Refresh
+
+End
+
+Public Sub _MoveTab(hSrc As _TabPanelButton, hDst As _TabPanelButton, bAfter As Boolean)
+  
+  Dim S, T As Integer
+  Dim hSrcPanel As Control
+  Dim bLocked As Boolean
+  
+  If hSrc = hDst Then Return
+
+  bLocked = Object.IsLocked(Me)
+  If Not bLocked Then Object.Lock(Me)
+  
+  S = _GetIndex(hSrc)
+  $aButton.Remove(S)
+  hSrcPanel = $aCont[S]
+  $aCont.Remove(S)
+  
+  T = _GetIndex(hDst)
+  If bAfter Then Inc T
+  $aButton.Add(hSrc, T)
+  $aCont.Add(hSrcPanel, T)
+  
+  UpdateLayout
+  
+  If Not bLocked Then Object.Unlock(Me)
+  
+  Raise Move(S, T)
+  
+  Index_Write(T)
+  
+End
+
+Private Function Moveable_Read() As Boolean
+
+  Return $bMoveable
+
+End
+
+Private Sub Moveable_Write(Value As Boolean)
+
+  $bMoveable = Value
+
+End
+
+Private Function CloseButton_Read() As Boolean
+
+  Return $hClosePanel
+
+End
+
+Private Sub CloseButton_Write(Value As Boolean)
+
+  Dim hSave As Container
+  
+  If Value = CloseButton_Read() Then Return
+  
+  If Value Then
+    
+    hSave = Me._Container
+    Me._Container = Null
+    
+    $hClosePanel = New DrawingArea(Me) As "ClosePanel"
+    $hClosePanel.Arrangement = Arrange.Fill
+    $hCloseAll = New ToolButton($hClosePanel) As "CloseAll"
+    $hCloseAll.Picture = Picture["icon:/small/close"]
+    $hCloseAll.Show
+    
+    Me._Container = hSave
+    
+  Else
+    $hClosePanel.Delete
+    $hClosePanel = Null
+    $hCloseAll = Null
+  Endif
+  
+  TabBar_Arrange
+
+End
+
+Public Sub TabPanel_Arrange()
+  
+  UpdateLayout
+  
+End
+
+Public Sub ClosePanel_Draw()
+  
+  Select Case $iOrientation
+    Case Align.Top
+      Paint.FillRect(0, Paint.H - 1, Paint.W, 1, Color.LightForeground)
+    Case Align.Bottom
+      Paint.FillRect(0, 0, Paint.W, 1, Color.LightForeground)
+  End Select
+  
+End
+
+Public Sub CloseAll_Click()
+  
+  Raise CloseAll
+  
+End

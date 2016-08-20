@@ -1,0 +1,75 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,69,47)
+  Text = ("Gambas interpreter crash")
+  Icon = Picture["img/64/atari.png"]
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { Panel6 HBox
+    MoveScaled(1,1,67,22)
+    { Panel7 VBox
+      MoveScaled(1,0,13,21)
+      { picCrash PictureBox
+        MoveScaled(0,0,12,12)
+        Picture = Picture["img/64/atari.png"]
+        Alignment = Align.Center
+      }
+    }
+    { Panel2 VBox
+      MoveScaled(15,0,51,21)
+      Expand = True
+      { lblMessage TextLabel
+        MoveScaled(2,1,32,9)
+        Expand = True
+        Alignment = Align.Normal
+      }
+      { Panel5 Panel
+        MoveScaled(2,10,48,8)
+        Arrangement = Arrange.Vertical
+        { chkSend CheckBox
+          MoveScaled(0,0,45,4)
+          Text = ("Send a bug report by mail")
+        }
+        { chkNoProject CheckBox
+          MoveScaled(0,4,43,4)
+          Enabled = False
+          Text = ("Don't join the project to the mail")
+        }
+      }
+    }
+  }
+  { txtDesc TextArea
+    MoveScaled(1,25,67,11)
+    Visible = False
+    Expand = True
+  }
+  { Panel3 Panel
+    MoveScaled(19,37,22,1)
+  }
+  { panButton HBox
+    MoveScaled(3,39,58,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(6,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(12,0,16,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(31,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+    { Panel4 Panel
+      MoveScaled(52,0,4,4)
+      Visible = False
+      Expand = True
+    }
+  }
+}

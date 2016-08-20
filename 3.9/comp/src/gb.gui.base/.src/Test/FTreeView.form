@@ -1,0 +1,65 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,88,84)
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { mnuPopup Menu
+    Text = ("Menu1")
+    Visible = False
+    { Menu2 Menu
+      Text = ("Menu2")
+    }
+    { Menu3 Menu
+      Text = ("Menu3")
+    }
+    { Menu4 Menu
+      Text = ("Menu4")
+    }
+    { Menu5 Menu
+      Text = ("Menu5")
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(1,9,84,4)
+    { Button1 Button
+      MoveScaled(0,0,16,4)
+      Text = ("Delete")
+    }
+    { Button2 Button
+      MoveScaled(17,0,16,4)
+      Text = ("Border")
+    }
+    { Button3 Button
+      MoveScaled(34,0,16,4)
+      Text = ("Drag")
+    }
+    { Button4 Button
+      MoveScaled(51,0,16,4)
+      Text = ("Reparent")
+    }
+    { Button5 Button
+      MoveScaled(68,0,16,4)
+      Text = ("Select")
+    }
+  }
+  { Separator1 Separator
+    MoveScaled(29,19,12,0)
+  }
+  { tvwTest ColumnView
+    MoveScaled(13,22,42,26)
+    Drop = True
+    Expand = True
+    Mode = Select.Multiple
+    Sorted = True
+    Editable = True
+    Resizable = True
+  }
+  { GridView1 GridView
+    MoveScaled(20,51,37,27)
+    Expand = True
+    ShowCursor = True
+    Header = GridView.Both
+  }
+}

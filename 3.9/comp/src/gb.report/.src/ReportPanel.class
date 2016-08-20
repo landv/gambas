@@ -1,0 +1,25 @@
+' Gambas class file
+
+Export
+Inherits ReportContainer
+Public Const _Properties As String = "*,Arrangement{Arrange.None;Vertical;Horizontal;Column;Fill}=Vertical"
+Public Const _Similar As String = "ReportVBox"
+Property Arrangement As Integer
+
+Public Sub _new()
+
+  Super._Arrangement = Arrange.Vertical
+
+End
+
+Private Function Arrangement_Read() As Integer
+
+  Return Super._Arrangement
+
+End
+
+Private Sub Arrangement_Write(Value As Integer)
+
+  Super._Arrangement = Value
+
+End

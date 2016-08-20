@@ -1,0 +1,47 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,83,64)
+  Text = ("Export to CSV file")
+  Arrangement = Arrange.Fill
+  Spacing = True
+  Margin = True
+  { fchExport FileChooser
+    MoveScaled(2,2,74,38)
+    ShowButton = True
+  }
+  { panOption HPanel
+    MoveScaled(2,42,75,19)
+    Spacing = True
+    { Label2 Label
+      MoveScaled(0,0,28,3)
+      Text = ("Delimiter character")
+    }
+    { cmbDelim ComboBox
+      MoveScaled(29,0,31,4)
+      #Translate = False
+      Expand = True
+      List = ["Tab", "Space", ",", ";", ":"]
+    }
+    { Label3 Label
+      MoveScaled(0,5,28,3)
+      Text = ("Enclose character")
+    }
+    { cmbEscape ComboBox
+      MoveScaled(29,5,31,4)
+      #Translate = False
+      Expand = True
+      List = ["", "'", "\""]
+    }
+    { chkName CheckBox
+      MoveScaled(0,10,38,4)
+      Expand = True
+      Text = ("Export field names")
+    }
+    { chkSelection CheckBox
+      MoveScaled(0,14,40,4)
+      Expand = True
+      Text = ("Export selected records only")
+    }
+  }
+}

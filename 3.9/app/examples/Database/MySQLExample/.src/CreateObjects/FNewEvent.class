@@ -1,0 +1,51 @@
+' Gambas class file
+
+Private $sEvent As String
+Private $bEdit As Boolean = False
+
+Public Sub _new(Optional {Event} As String)
+
+  If {Event} Then
+    $sEvent = {Event}
+    $bEdit = True
+  Endif
+
+End
+
+Public Sub Form_Open()
+
+  If $bEdit Then
+    txtName.Enabled = False
+    Me.Text = ("Edit Event")
+    lblTitle.Text = Me.Text
+    txtName.Text = $sEvent
+    txtSchedule.Text = modMain.$Connection.MySQL.Event.Schedule($sEvent)
+    txtData.Text = modMain.$Connection.MySQL.Event.Definition($sEvent)
+  Else
+   txtData.Text = "BEGIN\n  \nEND"
+  Endif
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close()
+
+End
+
+Public Sub tbnOK_Click()
+
+  modMain.$Connection.MySQL.Event.Add(txtName.Text, txtSchedule.Text, txtData.Text, IIf($bEdit, True, False))
+  Me.Close()
+  Catch
+    modMain.Error()
+
+End
+
+Public Sub btnClue_Click()
+
+  txtName.Text = "FooEvent"
+  txtSchedule.Text = "EVERY 1 DAY STARTS NOW()"
+  txtData.Text = "BEGIN\n  SELECT `User` FROM `mysql`.`user`;\nEND"
+
+End

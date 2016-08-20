@@ -1,0 +1,92 @@
+' Gambas class file
+
+Export
+
+Static Property Read List As String[]
+
+Static Private $aWindow As New Window[]
+Static Private $iId As Integer
+
+
+Static Public Sub Configure() As Boolean
+
+  MAction.InitAction
+  Return FShortcut.Run()
+
+End
+
+Static Public Sub _ConfigureToolbar(hToolbar As ToolBar) 
+  
+  MAction.InitAction
+  FToolBarConfig.Run(hToolbar)
+  
+End
+
+
+Static Private Function List_Read() As String[]
+
+  Dim aList As New String[]
+  Dim hAction As CAction
+  
+  MAction.InitAction
+  
+  For Each hAction In MAction.Actions
+    aList.Add(MAction.Actions.Key)
+  Next
+  aList.Sort
+  Return aList
+
+End
+
+Static Public Sub _Register(Control As Object, Old As String, (Key) As String)
+  
+  Dim hObs As Observer
+  Dim hWin As Window
+  
+  Super._Register(Control, Old, Key)
+  
+  If Key Then
+    If Control Is Menu Then
+      hWin = Control.Window
+      If Not $aWindow.Exist(hWin) Then
+        $aWindow.Add(hWin)
+        Inc $iId
+        hObs = New Observer(hWin) As "Window"
+      Endif
+    Endif
+  Endif
+  
+End
+
+Static Private Sub SetShortcut(hMenu As Menu)
+  
+  Dim sShortcut As String
+  
+  If hMenu.Action Then 
+    sShortcut = MAction.GetShortcut(hMenu.Action)
+    If sShortcut Then hMenu.Shortcut = sShortcut
+  Endif
+
+  For Each hMenu In hMenu.Children
+    SetShortcut(hMenu)
+  Next
+  
+End
+
+
+Static Public Sub Window_Open()
+  
+  Dim hWin As Window = Last
+  Dim hMenu As Menu
+  
+  For Each hMenu In hWin.Menus
+    SetShortcut(hMenu)
+  Next
+  
+End
+
+Static Public Sub Window_Close()
+  
+  Try $aWindow.Remove($aWindow.Find(Last))
+  
+End

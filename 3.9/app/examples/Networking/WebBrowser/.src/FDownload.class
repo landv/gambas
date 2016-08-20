@@ -1,0 +1,50 @@
+' Gambas class file
+
+Private $hDownload As WebDownload
+
+Public Sub Init(hDownload As WebDownload)
+  
+  $hDownload = hDownload
+  Redraw
+  
+End
+
+
+Public Sub Redraw()
+  
+  Dim sTitle As String
+  Dim sStatus As String
+  
+  If Not $hDownload Then Return
+  
+  With $hDownload
+    
+    sTitle = .Url
+    If .Status = .Cancelled Then
+      sStatus = "Cancelled"
+    Else If .Status = .Finished Then
+      sStatus = "Finished"
+    Else If .Status = .Error Then
+      sStatus = "Error: " & .ErrorText
+    Else
+      sStatus = "Downloading..."
+    Endif
+    lblTitle.Text = sTitle
+    lblStatus.Text = sStatus
+    
+    pgbDownload.Value = .Progress
+    
+  End With
+  
+End
+
+Public Sub btnAbort_Click()
+
+  If $hDownload.Status = WebDownload.Downloading Then
+    $hDownload.Cancel
+  Else
+    $hDownload.Delete
+    Me.Delete
+  Endif
+
+End

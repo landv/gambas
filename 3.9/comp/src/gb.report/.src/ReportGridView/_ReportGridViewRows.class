@@ -1,0 +1,160 @@
+' Gambas class file
+
+Property Count As Integer
+Property Read Max As Integer
+
+Private $cHeight As Collection
+Private $aHeight As Integer[]
+Private $cText As Collection
+Private $nRows As Integer
+
+Property Height As String
+Property Width As String
+
+Private $sHeight As String
+Private $sWidth As String
+
+Private $fWidth As Float
+Private $fHeight As Float
+Property Read _Height As Float
+Property Read _Width As Float
+
+
+
+Event _Foo
+
+Public Sub _SetUnifiedValues()
+  Dim hView As ReportGridView = GetView()
+  If $sHeight Then
+    $fHeight = TSizeParse[$sHeight].ToCm()
+  Else
+    $fHeight = ReportUnits._PixelsToReportUnits(hView.Font.Height + 4)
+  Endif
+  
+  If $sWidth Then
+    $fWidth = TSizeParse[$sWidth].ToCm()
+    
+  Else
+    $fWidth = ReportUnits._PixelsToReportUnits(hView.Font.TextWidth("9") * (1 + CInt(Log10(Max(1, $nRows)))) + 8)
+  Endif
+  
+  
+End
+
+Public Sub _GetHeight() As Float
+  
+  Return $fHeight
+  
+End
+
+
+
+Public Sub _GetRowText(iRow As Integer) As String
+  
+  Dim sText As String
+  
+  If $cText Then sText = $cText[iRow]
+  If Not sText Then sText = CStr(iRow + 1)
+  Return sText
+  
+End
+
+Public Sub _SetRowText(iRow As Integer, sText As String)
+  
+  Dim W As Float
+  
+  If Not $cText Then $cText = New Collection
+  $cText[iRow] = sText
+  If sText Then
+    W = ReportUnits._PixelsToReportUnits(GetView().Font.TextWidth(sText) + 8)
+    If W > _Width_Read() Then $fWidth = W
+  Endif
+  
+End
+
+
+
+Public Function _get(Index As Integer) As _ReportGridViewRow
+  Dim hRow As New _ReportGridViewRow As "Row"
+  hRow._Row = Index
+  Return hRow
+  
+End
+
+
+Private Function Count_Read() As Integer
+
+  Return $nRows
+
+End
+
+Private Sub Count_Write(Value As Integer)
+Dim hView As ReportGridView = GetView()
+  Dim iRow As Integer
+  
+  If Value = $nRows Then Return
+  
+  $nRows = Value
+  
+  If $aHeight Then
+    While $aHeight.Count
+      If $aHeight[$aHeight.Max] < $nRows Then Break
+      iRow = $aHeight[$aHeight.Max]
+      $cHeight.Remove(iRow)
+      $aHeight.Remove($aHeight.Max)
+      'If hView.Mode = Select.Multiple Then $hSel.UnSelect(iRow)
+    Wend
+  Endif
+
+End
+
+Private Function Max_Read() As Integer
+
+  Return $nRows - 1
+
+End
+
+Private Sub GetView() As ReportGridView
+  
+  Return Object.Parent(Me)
+  
+End
+
+Private Function Height_Read() As String
+   
+  Return $sHeight
+  
+End
+
+Private Sub Height_Write(Value As String)
+
+  $sHeight = Value
+
+End
+
+Private Function _Height_Read() As Float
+
+  
+  Return $fHeight
+
+End
+
+Private Function _Width_Read() As Float
+
+  Return $fWidth
+
+End
+
+
+Private Function Width_Read() As String
+
+  Return $sWidth
+
+End
+
+Private Sub Width_Write(Value As String)
+
+  $sWidth = value
+
+End
+

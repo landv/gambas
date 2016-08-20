@@ -1,0 +1,145 @@
+' Gambas class file
+
+'EXPORT
+Inherits UserControl
+
+Public Const _Properties As String = "*,Mode=None,Field,TextField,ParentField,IconField"
+Public Const _DrawWith As String = "TreeView"
+
+Event Activate
+
+Property Field As String
+Property TextField As String
+Property ParentField As String
+Property IconField As String
+
+Property Mode As Integer "<TreeView,None,Single,Multi,Extended>"
+
+'PROPERTY Connection AS Connection
+'PROPERTY Table AS String
+'PROPERTY Filter AS String
+Property Read Current As Variant[]
+Property Read Count As Integer
+Property Read Index As Integer
+Property Read TreeView As TreeView
+
+Private $hCtrl As TreeView
+Private $hTable As DataTable
+Private $sField As String
+Private $sText As String
+Private $sParent As String
+Private $sIcon As String
+
+Public Sub _new()
+  
+  $hCtrl = New TreeView(Me)
+  
+End
+
+
+Public Sub Refresh()
+  
+  Dim hSrc As DataSource
+  
+  If Common.CheckDB() Then Return
+  
+  hSrc = Common.GetSource(Me)
+  If hSrc Then
+    $hTable = hSrc._GetTable()
+  Endif
+
+  $hCtrl.Clear
+
+  If Not $hTable Then Return
+
+  ' Remplir avec les éléments de niveau le plus haut
+    
+End
+
+
+
+Private Function IconField_Read() As String
+
+  Return $sIcon
+
+End
+
+Private Sub IconField_Write(Value As String)
+
+  $sIcon = Value
+
+End
+
+
+Private Function Field_Read() As String
+
+  Return $sField  
+
+End
+
+Private Sub Field_Write(Value As String)
+
+  $sField = Value
+
+End
+
+Private Function ParentField_Read() As String
+
+  Return $sParent  
+
+End
+
+Private Sub ParentField_Write(Value As String)
+
+  $sParent = Value
+
+End
+
+Private Function Mode_Read() As Integer
+
+  Return $hCtrl.Mode  
+
+End
+
+Private Sub Mode_Write(Value As Integer)
+
+  $hCtrl.Mode = Value
+
+End
+
+Private Function Current_Read() As Variant[]
+
+  'TRY RETURN $hTable.GetKeys(??)
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return $hCtrl.Count
+
+End
+
+Private Function Index_Read() As Integer
+
+  
+
+End
+
+Private Function TreeView_Read() As TreeView
+
+  Return $hCtrl  
+
+End
+
+Private Function TextField_Read() As String
+
+  Return $sText  
+
+End
+
+Private Sub TextField_Write(Value As String)
+
+  $sText = Value  
+
+End
+

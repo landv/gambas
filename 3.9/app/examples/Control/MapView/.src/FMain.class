@@ -1,0 +1,141 @@
+' Gambas class file
+
+Private hMap As New Map As "LensMap"
+
+Private $aNames As New String[]
+
+Private $iMX As Integer
+Private $iMY As Integer
+Private $bLens As Boolean
+Private hPicture As Picture
+
+Public Sub _new()
+
+  Dim o As Object
+  
+
+  hPicture = New Picture(200, 200)
+  
+  MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "167"]).SubDomains = ["0", "1", "2"]
+  MapView1.Map["GoogleMap"].Visible = False
+  MapView1.Map.AddTile("OpenStreetMap", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null).Copyright = "© OpenStreetMap contributors"
+  
+  
+  'Map for lens
+  hmap.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "167"]).SubDomains = ["0", "1", "2"]
+  'hmap.Padding = 256
+  hmap.Resize(200, 200)
+  
+  'Manage the list of layers
+  For Each o In MapView1.Map
+    $aNames.Add(o.Name)
+  Next
+  GridView1.Rows.count = $aNames.Count
+  GridView1.Columns.Count = 2
+  GridView1.Columns[0].Width = 32
+  GridView1.Rows.Height = 32
+  
+End
+
+Public Sub Form_Open()
+  Me.Center
+End
+
+Public Sub MapView1_MouseDown()
+  
+  If Mouse.Control Then 
+    
+    hmap.Zoom = MapView1.map.Zoom + SpinBox1.Value
+    $bLens = True
+    hbLens.Visible = True
+    hmap.Center = Geo.PixelToMapPoint(Point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom)
+    MapView1.Lock = True
+    MapView1.Refresh
+  Endif
+
+End
+
+Public Sub MapView1_MouseMove()
+  
+  $iMX = Mouse.X
+  $iMY = Mouse.Y
+  If $bLens Then
+    hmap.Center = Geo.PixelToMapPoint(Point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom)
+    
+  Endif
+  
+  MapView1.Refresh
+
+End
+
+Public Sub MapView1_MouseUp()
+  
+  If $bLens Then
+    $bLens = False
+    MapView1.Lock = False
+    MapView1.Refresh
+  Endif
+  
+End
+
+Public Sub MapView1_Draw()
+
+  If $bLens Then
+    Paint.Begin(Draw.Device)
+    'Draw the lens temporary picture
+    Draw.Begin(hPicture)
+      Draw.FillRect(0, 0, hPicture.Width, hPicture.Height, Color.DarkGray)
+      hmap.Draw
+    Draw.End
+    'And put it in a circle with a blue border
+    Paint.Brush = Paint.Image(hPicture.Image, $iMX - 100, $iMY - 100)
+    Paint.Arc($iMX, $iMY, 100)
+    Paint.Fill(True)
+    Paint.Brush = Paint.Color(Color.Blue)
+    Paint.Stroke
+    Paint.End
+  Endif
+
+End
+
+Public Sub GridView1_Data(Row As Integer, Column As Integer)
+  
+  Select Case Column
+    Case 0
+      Last.Data.Picture = IIf(MapView1.Map[$aNames[row]].Visible, Picture["icon:/22/ok"], Picture["icon:/22/cancel"])
+      
+    Case 1
+      Last.Data.Text = $aNames[row]
+  End Select
+  
+  Last.Data.Padding = 4
+  
+End
+
+Public Sub GridView1_MouseUp()
+  
+  If Last.column = 0 Then MapView1.Map[GridView1[Last.row, 1].Text].Visible = Not MapView1.Map[GridView1[Last.row, 1].Text].Visible
+  GridView1.Refresh
+
+End
+
+
+Public Sub LensMap_Refresh()
+  'Resfresh the view when the Lensmap say it need to be refreshed
+  'This call the MapViewer_Draw Event then so the lens is refreshed too
+  MapView1.Refresh
+  
+End
+
+
+Public Sub SpinBox1_Change()
+  'Change the lens zoom
+  hmap.Zoom = MapView1.map.Zoom + SpinBox1.Value
+
+End
+
+Public Sub btnAbout_Click()
+
+   Balloon.Info(("A simple MapViewer and Map example by\nFabien Bodard (gambix@users.sourceforge.net)\n\nEnjoy it !   :-)"), Last)
+
+End

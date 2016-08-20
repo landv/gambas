@@ -1,0 +1,184 @@
+' Gambas class file
+
+Private hEditor As Editor
+Private $bIgnore As Boolean
+Private $bModified As Boolean
+
+Public Sub Form_Open()
+
+  $bIgnore = True
+  Editor1.Text = File.Load("download.html")
+
+  Editor1.Flags[Editor.HighlightBraces] = True
+  Editor1.Styles[Highlight.Operator].Color = Color.DarkGreen
+  Editor1.Styles[Highlight.Operator].Bold = True
+  Editor1.Styles[Highlight.String].Color = Color.DarkRed
+  Editor1.Flags[Editor.ShowLineNumbers] = True
+  Editor1.Flags[Editor.NoFolding] = True
+  Editor1.Flags[Editor.ShowCurrentLine] = True
+
+  Editor2.Flags[Editor.HighlightBraces] = True
+  Editor2.Styles[Highlight.Operator].Color = Color.DarkGreen
+  Editor2.Styles[Highlight.Operator].Bold = True
+  Editor2.Styles[Highlight.String].Color = Color.DarkRed
+
+  VSplit1.Layout = [1, 0]
+  mnuImmediately_Click
+
+End
+
+Public Sub Editor1_Highlight()
+
+  Dim iState As Integer
+  Dim iNextState As Integer
+  Dim iInd As Integer
+  Dim J As Integer
+  Dim sText As String
+  Dim sCar As String
+  Dim iPos As Integer
+  Dim bMarkup As Boolean
+
+  iState = Highlight.State
+  sText = Highlight.Text
+
+  'PRINT "Highlight:";; iState;; sText
+
+  For iInd = 1 To String.Len(sText)
+
+    iNextState = iState
+    sCar = String.Mid$(sText, iInd, 1)
+
+    If bMarkup Then
+
+      If sCar = ">" Then
+        bMarkup = False
+        iState = Highlight.Keyword
+        iNextState = Highlight.Normal
+      Else If sCar = " " Then
+        iNextState = Highlight.Operator
+      Else If sCar = "=" Then
+        iNextState = Highlight.String
+      Endif
+
+    Else
+
+      Select Case iState
+        Case Highlight.Normal
+          If sCar = "<" Then
+            If String.Mid$(sText, iInd, 4) = "<!--" Then
+              iState = Highlight.Comment
+              iNextState = Highlight.Comment
+            Else
+              iState = Highlight.Keyword
+              iNextState = Highlight.Keyword
+              bMarkup = True
+            Endif
+          Else If sCar = "&" Then
+            iPos = String.InStr(sText, ";", iInd)
+            If iPos = 0 Or iPos = iInd + 1 Then
+              iState = Highlight.Error
+            Else
+              For J = iInd + 1 To iPos - 1
+                sCar = String.Mid$(sText, J, 1)
+                If IsLetter(sCar) Then Continue
+                If IsDigit(sCar) Then Continue
+                If InStr("_#", sCar) Then Continue
+                Break
+              Next
+              If J = iPos Then
+                Highlight.Add(Highlight.Number, iPos - iInd + 1)
+                iInd = iPos
+                Continue
+              Else
+                iState = Highlight.Error
+              Endif
+            Endif
+          Endif
+        Case Highlight.Comment
+          If sCar = ">" And If iInd > 2 And If String.Mid$(sText, iInd - 2, 2) = "--" Then
+            iNextState = Highlight.Normal
+          Endif
+      End Select
+
+    Endif
+
+    Highlight.Add(iState)
+    iState = iNextState
+
+  Next
+
+  If iNextState <> Highlight.Comment Then
+    iNextState = Highlight.Normal
+  Endif
+
+  Highlight.State = iNextState
+  Highlight.ShowLimit = False
+
+End
+
+Public Sub Editor1_Menu()
+
+  hEditor = Editor1
+  mnuImmediately.Checked = hEditor.Flags[Editor.HighlightImmediately]
+  mnuPopup.Popup
+
+End
+
+Public Sub Editor2_Menu()
+
+  hEditor = Editor2
+  mnuImmediately.Checked = hEditor.Flags[Editor.HighlightCurrent]
+  mnuPopup.Popup
+
+End
+
+Public Sub mnuHighlight_Click()
+
+  mnuHighlight.Checked = Not mnuHighlight.Checked
+  If mnuHighlight.Checked Then
+    hEditor.Highlight = Highlight.Custom
+  Else
+    hEditor.Highlight = Highlight.None
+  Endif
+
+End
+
+Public Sub mnuImmediately_Click()
+
+  mnuImmediately.Checked = Not mnuImmediately.Checked
+  Editor1.Flags[Editor.HighlightImmediately] = mnuImmediately.Checked
+  Editor2.Flags[Editor.HighlightImmediately] = mnuImmediately.Checked
+
+End
+
+
+Public Sub mnuQuit_Click()
+
+  Me.Close
+
+End
+
+
+
+Public Sub Editor1_Change()
+
+  If $bIgnore Then
+    $bIgnore = False
+    Return
+  Endif
+  If Not $bModified Then
+    $bModified = True
+    Me.Title &= " [modified]"
+  Endif
+
+End
+
+Public Sub VSplit1_Resize()
+
+  If Editor2.H < 8 Then
+    If Editor2.View Then Editor2.View = Editor2
+  Else
+    If Editor2.View = Editor2 Then Editor2.View = Editor1
+  Endif
+
+End

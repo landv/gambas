@@ -1,0 +1,190 @@
+' Gambas class file
+
+Property Title As String
+Private $sTitle As String
+
+Property Warning As String
+Private $sWarning As String
+
+Private Sub PrintPath()
+
+  Dim sComponent As String
+
+  Dim aComponents As New String[]
+
+  Print "<div class=\"path\"" & IIf(System.RightToLeft, "dir=\"rtl\"", "") & ">"
+  Print "<a class=\"flag\" href=\"" & Main.EncodeLink(Path.Path) & "\" >"
+
+  Print "<img class=\"flag\" align=\"top\" src=\"" & Path.Static("img/lang/" & Main.Language & ".png") & "\" alt=\"" & ("Home") & "\" />"
+
+  Print "</a>"
+
+  If Request.Path Like "/help/*" Then
+
+    'aComponents.Add("help")
+    Print "&nbsp;<b>&gt;</b>&nbsp;"; "<a href=\"/help\" >Home</a>";
+
+    For Each sComponent In Path.Components
+
+      If Not sComponent Then Continue
+
+      aComponents.Add(sComponent)
+
+      If Actions.Help Then
+        Print "&nbsp;<b>&gt;</b>&nbsp;"; "<a href=\"/help" &/ Path.Build(aComponents) & "\">" & sComponent & "</a>"
+      Else
+        Print "&nbsp;<b>&gt;</b>&nbsp;"; sComponent
+      Endif
+
+    Next
+
+  Else
+
+    Print "&nbsp;<b>&gt;</b>&nbsp;"; "<a href=\"/help\" >Home</a>"; "&nbsp;<b>&gt;</b>&nbsp;"; WHeader.Title
+
+  Endif
+
+  Print "</div>"
+
+End
+
+Private Sub PrintDivLang()
+
+  If Main.Version Then
+    Print "<div class=\"lang"; Main.Version; "0\">";
+  Else
+    Print "<div class=\"lang\">";
+  Endif
+
+End
+
+Private Sub PrintVersion()
+
+  If Main.IsWget Then Return
+
+  Print "<div class=\"path\">"
+  Print "<select id=\"version\" onchange=\"window.location.href='"; Request.Path; "?ver=' + this.value.substr(0,1);\">"
+  Print "<option"; IIf(Main.Version = 2, " selected=\"selected\"", ""); ">2.0</option>"
+  Print "<option"; IIf(Main.Version = 3, " selected=\"selected\"", ""); ">3.0</option>"
+  Print "</select></div>";
+
+End
+
+Private Sub PrintTab(sText As String, bOn As Boolean, sClass As String, sPath As String, Optional sLink As String)
+
+  If bOn Then
+    Print "<td class=\"tabon\" width=\"1\"><font size=\"-1\"><b>"; sText; "</b></font></td>"
+  Else
+    Print "<td class=\"taboff\" width=\"1\"><div style=\"height: 4px;\"></div>"
+    Print "<table cellspacing=\"0\"><tr><td class=\""; sClass; "\">";
+    Print "<font size=\"-1\">";
+
+    If sPath Then
+      Print "<a href=\"" & sPath & "\" >" & sText
+    Else
+      Print "<a href=\""; Main.EncodeLink(sLink); "\">"; sText
+    Endif
+
+    Print "</a></font>";
+    Print "</td></tr></table>"
+    Print "</td>"
+  Endif
+
+End
+
+Private Function GetTitle(sPath As String, Optional bVersion As Boolean) As String
+
+  Dim rPage As Result
+  ' Dim sNewPath As String
+  ' Dim sTitle As String
+  ' Dim iPos As Integer
+  ' Dim sVer As String
+  ' Dim aVer As String[]
+
+  rPage = FindPage(sPath)
+  Return "asdasd" 'rPage!sTitle
+
+  ' If rPage.Available Then
+  '   'IF sPath LIKE "/comp/*/*/*" THEN
+  '   '  RETURN GetTitle(File.Dir(sPath)) & "." & rPage!sTitle
+  '   'ELSE
+  '   sTitle = rPage!sTitle
+  '   iPos = RInStr(sTitle, "#")
+  '   If iPos > 1 Then
+  '     sVer = Mid$(sTitle, iPos + 1)
+  '     sTitle = Left(sTitle, iPos - 1)
+  '     If bVersion Then
+  '       aVer = Split(sVer, ",")
+  '       If aVer.Find(CStr(Main.Version) & ".0") < 0 And If aVer.Find(CStr(Main.Version)) < 0 Then
+  '         sTitle = ""
+  '       Endif
+  '     Endif
+  '   Endif
+  '   Return sTitle
+  ' Else
+  '   sNewPath = SubstitutePath(sPath)
+  '   If sNewPath <> sPath Then Return GetTitle(sNewPath)
+  '   'Print "<pre>GetTitle: " & $sPath & " " & sPath & " ?</pre>"
+  '   'ENDIF
+  ' Endif
+
+End
+
+'TODO: Deprecate
+Private Function FindPage(sPath As String, Optional bNoLink As Boolean) As Result
+
+  Dim rPage As Result
+
+  rPage = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, Main.Language)
+  If Not rPage.Available Then
+    rPage = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, Main.DEFAULT_LANG)
+  Endif
+
+  Return rPage
+
+End
+
+Private Function SubstitutePath(sPath As String) As String
+
+  ' If Actions.OnlineHelp Then
+  '
+  '   If sPath Like "/comp/gb.qt4*" Then
+  '     If sPath = $sPath Then AddRedirect("/comp/gb.qt", "/comp/gb.qt4")
+  '     sPath = Replace(sPath, "/comp/gb.qt4", "/comp/gb.qt")
+  '   Else If sPath Like "/comp/gb.gtk*" Then
+  '     If sPath = $sPath Then AddRedirect("/comp/gb.qt4", "/comp/gb.gtk")
+  '     sPath = Replace(sPath, "/comp/gb.gtk", "/comp/gb.qt4")
+  '   Else If sPath Like "/comp/gb.gui*" Then
+  '     If sPath = $sPath Then AddRedirect("/comp/gb.qt4", "/comp/gb.gui")
+  '     sPath = Replace(sPath, "/comp/gb.gui", "/comp/gb.qt4")
+  '   Endif
+  '
+  ' Endif
+
+  Return sPath
+
+End
+
+Private Function Title_Read() As String
+
+  Return $sTitle
+
+End
+
+Private Sub Title_Write(Value As String)
+
+  $sTitle = Value
+
+End
+
+Private Function Warning_Read() As String
+
+  Return $sWarning
+
+End
+
+Private Sub Warning_Write(Value As String)
+
+  $sWarning = Value
+
+End

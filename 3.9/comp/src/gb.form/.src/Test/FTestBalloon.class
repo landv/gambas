@@ -1,0 +1,19 @@
+' Gambas class file
+
+Public Sub Form_Move()
+
+  Debug Me.X;; Me.Y
+
+End
+
+Public Sub Button1_Click()
+
+  Balloon("Ceci est un message\nsur deux lignes.", TextBox1)
+
+End
+
+Public Sub Form_Open()
+
+  Me.Center
+
+End

@@ -1,0 +1,64 @@
+' Gambas class file
+
+'Export
+
+Inherits ComboBox
+
+Property List As Collection
+Property Sorted As Boolean
+
+
+Public Sub Add(Item As String, (Key) As Variant, Optional Index As Integer)
+  
+  
+  
+End
+
+Public Sub Clear()
+  
+  
+  
+End
+
+Public Sub Remove(Index As Integer)
+  
+  
+  
+End
+
+Public Sub FindKey(Key As Variant) As Integer
+  
+  
+  
+End
+
+Public Sub _get(Index As Integer) As _TagComboBox_Item
+  
+  Return New _TagComboBox_Item(Index) As "Item"
+  
+End
+
+
+Private Function List_Read() As Collection
+
+  
+
+End
+
+Private Sub List_Write(Value As Collection)
+
+  
+
+End
+
+Private Function Sorted_Read() As Boolean
+
+  
+
+End
+
+Private Sub Sorted_Write(Value As Boolean)
+
+  
+
+End

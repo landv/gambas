@@ -1,0 +1,420 @@
+' Gambas class file
+
+Export
+Inherits _MapLayer
+
+Public Const {Point} As Integer = 1
+Public Const MultiPoint As Integer = 8
+Public Const Polyline As Integer = 3
+Public Const Polygon As Integer = 5
+
+Private $aShapes As New _ShapeItem[]
+Private $himgPoint As Image
+'Property Points As Shapes
+Property {Color} As Integer
+Private $icolor As Integer
+Private $colKeyShape As New Collection
+Property Read Count As Integer
+Property Image As Image
+Property Read Max As Integer
+Private $sLastKey As String
+Property Read Key As String
+Private $aInView As New Integer[]
+
+Public Sub _new()
+  
+  $himgPoint = Image.Load("point.png")
+  
+End
+
+Public Sub Load()
+  
+  Dim hMap As Map = GetMap()
+  Dim i As Integer
+  Dim pt1, pt2 As Point
+  
+  $aInView.Clear
+  For i = 0 To $aShapes.Max
+    If Not $aShapes[i].Type = Me.Point Then
+      pt1 = Geo.MapPointToPixel($aShapes[i].Bounds.TopLeft, hMap.Zoom)
+      pt2 = Geo.MapPointToPixel($aShapes[i].Bounds.BottomRight, hMap.Zoom)
+      If pt2.x - pt1.x < 10 And If pt2.y - pt1.y < 10 Then Continue
+    Endif
+    With $aShapes[i].Bounds
+      If .Lon2 > hMap.Bounds.Lon Then 
+        If .lon < hMap.Bounds.lon2
+          If .lat2 < hMap.Bounds.Lat Then
+            
+            If .Lat > hMap.Bounds.Lat2 Then
+              
+              $aInView.Add(i)
+            Endif
+          Endif
+        Endif
+      Endif
+    End With
+  Next
+  'Debug "Nombre d'élément affiché : " & $aInView.Count
+  
+End
+
+Public Sub AddPoint(Key As String, Points As MapPoint)
+  
+  Dim hItem As _ShapeItem
+  
+  If $colKeyShape.Exist(Key) Then Error.Raise("This key already exist")
+  hItem = New _ShapeItem(Key) As "Item"
+  hItem.Type = Me.Point
+  hItem.Center = Points
+  hItem.Points = Points
+  hItem.Bounds = MapBounds(Points, Points)
+  $aShapes.Add(hItem)
+  $colKeyShape[Key] = $aShapes.Max
+  
+End
+
+Public Sub AddMultipoint(Key As String, Points As MapPoint[])
+  
+  Dim hItem As _ShapeItem
+  
+  If $colKeyShape.Exist(Key) Then Error.Raise("This key already exist")
+  hItem = New _ShapeItem(Key) As "Item"
+  hItem.MultiPoint = MultiPoint
+  hItem.Center = GetCenter(Points)
+  hItem.Points = Points
+  hItem.Bounds = GetPointBounds(Points)
+  $aShapes.Add(hItem)
+  $colKeyShape[Key] = $aShapes.Max
+  
+End
+
+Public Sub AddPolyLine(Key As String, Points As MapPoint[])
+  
+  Dim hItem As _ShapeItem
+  
+  If $colKeyShape.Exist(Key) Then Error.Raise("This key already exist")
+  hItem = New _ShapeItem(Key) As "Item"
+  hItem.Type = Polyline
+  hItem.Center = GetCenter(Points)
+  hItem.Bounds = GetPointBounds(Points)
+  hItem.Points = Points
+  $aShapes.Add(hItem)
+  $colKeyShape[Key] = $aShapes.Max
+  
+End
+
+Public Sub AddPolygon(Key As String, Points As MapPoint[][])
+  
+  Dim hItem As _ShapeItem
+  
+  If $colKeyShape.Exist(Key) Then Error.Raise("This key already exist")
+  hItem = New _ShapeItem(Key) As "Item"
+  hItem.Type = Polygon
+  hItem.Center = GetCenter(Points[0])
+  hItem.Bounds = GetPointBounds(Points[0])
+  hItem.Points = Points
+  $aShapes.Add(hItem)
+  $colKeyShape[Key] = $aShapes.Max
+  
+End
+
+Public Sub _Draw()
+  
+  Dim i, j As Integer
+  Dim pt As Point
+  Dim hMap As Map = GetMap()
+  Dim hPoly As Integer[]
+  Dim iColor As Integer
+  Dim hShape As _ShapeItem
+  
+  If $aShapes.Count = 0 Then Return
+  Paint.LineWidth = 2
+  For i = 0 To $aInView.Max
+    
+    hShape = $aShapes[$aInView[i]]
+    iColor = Color.SetAlpha(IIf(hShape.Color, hShape.Color, Me.Color), 255 - 255 * Me.Opacity)
+    If hShape.Selected Then icolor = Color.White
+    Select Case hShape.Type
+      Case Me.Point
+        pt = Geo.MapPointToPixel(hShape.Points, hMap.zoom)
+        Paint.Brush = Paint.Color(Color.Green)
+        'Paint.Arc(pt.X - hMap.PixelBox.X, pt.Y - hMap.PixelBox.Y, 5)
+        If hShape.Image Then
+          Paint.DrawImage(hShape.Image, pt.X - hMap.PixelBox.X - 16, pt.Y - hMap.PixelBox.Y - 32)
+        Else
+          Paint.DrawImage($himgPoint, pt.X - hMap.PixelBox.X - 16, pt.Y - hMap.PixelBox.Y - 32)
+        Endif
+      Case MultiPoint
+        For j = 0 To hShape.Points.Max
+          pt = Geo.MapPointToPixel(hShape.Points[j], hMap.zoom)
+          Paint.DrawImage($himgPoint, pt.X - hMap.PixelBox.X - 16, pt.Y - hMap.PixelBox.Y - 32)
+        Next
+        
+      Case Polygon
+        hPoly = New Integer[]
+        For j = 0 To hShape.Points[0].Max
+          pt = Geo.MapPointToPixel(hShape.Points[0][j], hMap.zoom)
+          hPoly.Add(pt.x - hMap.PixelBox.X)
+          hPoly.Add(pt.y - hMap.PixelBox.Y)
+        Next
+        'Paint.LineWKeyth = 2
+        Paint.Brush = Paint.Color(Color.SetAlpha(icolor, 125))
+        Paint.Polygon(hPoly)
+        Paint.fill(True)
+        Paint.Brush = Paint.Color(icolor)
+        Paint.Stroke
+        ' If hShape.Center Then 
+        '   pt = Geo.MapPointToPixel(hShape.Center, hMap.Zoom)
+        '   'Print hShape.Center.Lat
+        '   Paint.Brush = Paint.Color(Color.White)
+        '   Paint.Fill
+        ' Endif
+        
+      Case Me.Polyline
+        For j = 0 To hShape.Points.Max
+          pt = Geo.MapPointToPixel(hShape.Points[0][j], hMap.zoom)
+          hPoly.Add(pt.x - hMap.PixelBox.X)
+          hPoly.Add(pt.y - hMap.PixelBox.Y)
+        Next
+        Paint.LineWKeyth = 2
+        'Paint.Brush = Paint.Color(Color.SetAlpha(Color.red, 125))
+        Paint.Polygon(hPoly)
+        'Paint.fill(True)
+        Paint.Brush = Paint.Color(icolor)
+        Paint.Stroke
+        
+    End Select
+    
+    '  Paint.Brush = Paint.Color(Color.red)
+    '  pt = Geo.MapPointToPixel(hShape.Bounds.TopLeft, hMap.Zoom)
+    ' Paint.Rectangle(pt.x - hMap.PixelBox.x, pt.Y - hMap.PixelBox.Y, 5, 5)
+    '  Paint.Fill()
+    '  
+    '  Paint.Brush = Paint.Color(Color.Blue)
+    '  pt = Geo.MapPointToPixel(hShape.Bounds.BottomRight, hMap.Zoom)
+    '  Paint.Rectangle(pt.x - hMap.PixelBox.x, pt.Y - hMap.PixelBox.Y, 5, 5)
+    '  Paint.Fill()
+    
+  Next
+  
+End
+
+Public Function _get(Key As String) As _ShapeItem
+  Dim iRet As Integer
+  
+  If $colKeyShape[Key] = Null Then
+    iRet = 0
+  Else
+    iRet = $colKeyShape[Key] 
+  Endif
+  
+  
+  Return $aShapes[iRet]
+  
+End
+
+Private Function GetMap() As Map
+  
+  Return Object.Parent(Me)
+  
+End
+
+Private Function Color_Read() As Integer
+  
+  Return $icolor
+  
+End
+
+Private Sub Color_Write(Value As Integer)
+  
+  $icolor = Value
+  
+End
+
+Static Public Function GetCenter(hPoints As MapPoint[]) As MapPoint
+  'Dim PCenter As New FPoint[]
+  
+  Dim tmpA, A, Gx, Gy As Float
+  Dim j, k As Integer
+  'calcul du centre
+  'fp = New FPoint
+  A = 0
+  gx = 0
+  Gy = 0
+  For k = 0 To hPoints.Max
+    j = IIf(k + 1 <= hPoints.Max, k + 1, 0)
+    tmpA = (hPoints[k].Lon * hPoints[j].Lat) - (hPoints[j].Lon * hPoints[k].Lat)
+    A += tmpA
+    Gx += tmpA * (hPoints[k].Lon + hPoints[j].Lon)
+    Gy += tmpA * (hPoints[k].Lat + hPoints[j].Lat)
+  Next
+  A = A / 2
+  gx = gx / (6 * A) 
+  gy = gy / (6 * A) 
+  
+  Return MapPoint(GY, GX)
+Catch
+  
+End
+
+Private Function GetPointBounds(hMapPoints As MapPoint[]) As MapBounds
+  
+  Dim hPoint As MapPoint
+  Dim X, Y, X2, Y2 As Float
+  
+  X = hMapPoints[0].Lon
+  Y = hMapPoints[0].Lat
+  X2 = X
+  Y2 = Y
+  For Each hPoint In hMapPoints
+    X = Min(hPoint.lon, X)
+    Y2 = Min(hPoint.lat, Y2)
+    X2 = Max(hPoint.lon, X2)
+    Y = Max(hPoint.lat, Y)
+  Next
+  Return MapBounds(MapPoint(Y, X), MapPoint(Y2, X2))
+  
+End
+
+Private Function Count_Read() As Integer
+  
+  Return $aShapes.Count
+  
+End
+
+Public Sub Remove(Key As String)
+  
+  $aShapes.Remove($colKeyShape[Key])
+  $colKeyShape.Remove(Key)
+  
+End
+
+Public Sub Exist(Key As String) As Boolean
+  
+  Return $colKeyShape.Exist(Key)
+  
+End
+
+Private Function Image_Read() As Image
+  
+  Return $himgPoint
+  
+End
+
+Private Sub Image_Write(Value As Image)
+  
+  $himgPoint = Value
+  
+End
+
+Public Sub Refresh()
+  
+  Dim hItem As _ShapeItem
+  
+  For Each hItem In $aShapes
+    Select Case hItem.Type
+        
+      Case Me.Point
+        hItem.Center = hItem.Points
+        hItem.Bounds = MapBounds(hItem.Points, hItem.Points)
+      Case Polyline, MultiPoint
+        hItem.Center = GetCenter(hItem.Points)
+        hItem.Bounds = GetPointBounds(hItem.Points)
+      Case Polygon
+        hItem.Center = GetCenter(hItem.Points[0])
+        hItem.Bounds = GetPointBounds(hItem.Points[0])
+    End Select
+  Next
+  
+End
+
+Private Function Max_Read() As Integer
+  
+  Return $aShapes.Max
+  
+End
+
+Public Function GetSelected() As _ShapeItem[]
+  
+  Dim aShapeItem As New _ShapeItem[]
+  Dim i As Integer
+  
+  For i = 0 To $aShapes.Max
+    If $aShapes[i].Selected Then aShapeItem.Add($aShapes[i])
+  Next
+  
+  Return aShapeItem
+  
+End
+
+Public Sub UnselectAll()
+  
+  Dim i As Integer
+  
+  For i = 0 To $aShapes.Max
+    $aShapes[i].Selected = False
+  Next
+  
+End
+
+Public Sub SelectAll()
+  
+  Dim i As Integer
+  
+  For i = 0 To $aShapes.Max
+    $aShapes[i].Selected = True
+  Next
+  
+End
+
+Public Sub Item_Select()
+  
+  If $sLastKey <> Last.key Then 
+    Try $aShapes[$colKeyShape[$sLastKey]].Selected = False
+    
+    $sLastKey = Last.Key
+  Endif
+  
+End
+
+Private Function Key_Read() As String
+  
+  Return $sLastKey
+  
+End
+
+Public Function Find(hMp As MapPoint) As _ShapeItem
+
+  Dim i As Integer
+  Dim hShape As _ShapeItem
+  Dim hMap As Map = GetMap()
+  'Optimize by just looking in the view zone
+  If hMap.Bounds.InBounds(hMp) Then 
+    For i = 0 To $aInView.Max
+      hShape = $aInView[i]
+      If hShape.Type = Me.Point Then
+        If hShape.Near(hMp, hMap.Zoom, 10) Then Return hShape
+      Else
+        If hShape.Contains(hMp) Then Return hShape
+      Endif
+    Next
+  Else
+    For i = 0 To $aShapes.Max
+      hShape = $aShapes[i]
+      If hShape.Type = Me.Point Then
+        If hShape.Near(hMp, hMap.Zoom, 10) Then Return hShape
+      Else
+        If hShape.Contains(hMp) Then Return hShape
+      Endif
+    Next
+    
+  Endif
+  
+End
+
+Public Sub Clear()
+  
+  $aShapes.Clear
+  $colKeyShape.Clear
+  
+End

@@ -1,0 +1,94 @@
+' Gambas class file
+
+' CXMLRPC.class
+' Built-in XML-RPC server.
+
+Property HTTPPort As Integer
+Property MaxConn As Integer
+
+Private iHTTPPort As Integer
+Private iMaxConn As Integer
+Private bXMLRPCDebug As Boolean
+
+Public hXMLRPC As RpcServer
+
+Public Function Connect() As Boolean
+
+  Dim hRpcFunc As RpcFunction
+
+  hXMLRPC = New RpcServer As "hXMLRPC"
+
+  hRpcFunc = New RpcFunction("calendar.getplanning", Null, XmlRpc.xArray)
+  hRpcFunc.Help = ("set global variable param1 to param2.")
+  hXMLRPC.Register(hRpcFunc)
+
+  Try hXMLRPC.Listen(9009, 10)
+  If Not hXMLRPC.Listening Then
+    Return False
+  Endif
+  Return True
+
+End
+
+' shutdown our xmlrpc server
+Public Sub Disconnect()
+
+  hXMLRPC.Stop()
+
+End
+
+Public Sub hXMLRPC_RemoteCall(sName As String, sData As Variant[])
+
+  Dim vValue As Variant
+  Dim aArray As New RpcArray
+  Dim sParam As String
+  Dim iParam As Integer
+
+  'Main.hXMLRPC.hXMLRPC.SetReply(aArray)
+
+  Print "Get a RemoteCall for method " & sName
+
+  Select Case sName
+    Case "calendar.getplanning"
+      hXMLRPC.SetReply(aArray)
+    Default
+      Return
+  End Select
+
+End
+
+Private Function HTTPPort_Read() As Integer
+
+  Return iHTTPPort
+
+End
+
+Private Sub HTTPPort_Write(Value As Integer)
+
+  iHTTPPort = Value
+
+End
+
+Private Function MaxConn_Read() As Integer
+
+  Return iMaxConn
+
+End
+
+Private Sub MaxConn_Write(Value As Integer)
+
+  iMaxConn = Value
+
+End
+
+Private Function XMLRPCDebug_Read() As Boolean
+
+  Return bXMLRPCDebug
+
+End
+
+Private Sub XMLRPCDebug_Write(Value As Boolean)
+
+  bXMLRPCDebug = Value
+
+End

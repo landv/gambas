@@ -1,0 +1,63 @@
+' Gambas module file
+
+Private Srv As RpcServer
+
+
+
+
+Private Sub GetStateName(Number As Integer)
+
+  Srv.SetReply("Alabama")
+
+End
+
+Private Sub Ping()
+
+  Srv.SetReply(Now())
+
+End
+
+
+Public Sub Srv_RemoteCall(Name As String, Data As Variant[])
+
+  Select Case Name
+    Case "pepe"
+      Print Data.Count
+    Case "examples.ping"
+      Ping()
+    Case "examples.getStateName"
+      GetStateName(Data[0])
+    Default
+      Return
+  End Select
+
+End
+
+
+' Public Sub Main()
+' 
+'   Dim Bucle As Integer
+'   Dim B2 As Integer
+'   Dim Rpc As RpcFunction
+'   Dim myFunc As RpcClient
+'   Dim mySig As RpcClient
+'   Dim Arr As New RpcArray
+'   Dim Arr2 As RpcArray
+'   Dim hVar As New Variant[]
+' 
+' 
+'   Rpc = New RpcFunction("queryTitle", [XmlRpc.xString], XmlRpc.xArray)
+'   mySig = New RpcClient(Rpc)
+'   mySig.URL = "http://127.0.0.1:9000"
+'   mySig.Mode = RpcClient.httpAsync
+' 
+' End
+
+Public Sub Main()
+
+  Dim hRpcServer As RpcServer
+  
+  hRpcServer = New RpcServer As "RpcServer"
+  hRpcServer.Listen(9009, 1)
+
+End

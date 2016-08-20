@@ -1,0 +1,212 @@
+' Gambas class file
+
+' (C) 2013, 2014 Tobias Boege <tobias@gambas-buch.de>
+
+'' Represent a patch hunk
+Public Struct Hunk
+  Command As String '' Hunk command
+  FromFile As String
+  ToFile As String
+  LineInfo As String  '' Line information
+  Active As Boolean
+  Text As String
+End Struct
+
+'' Get the number of hunks
+Property Read Count As Integer
+
+Private $hHunks As Hunk[]
+Static Private $sIgnoreFile As String
+
+Static Public Sub _init()
+
+  $sIgnoreFile = "/tmp/gambas-patch-ignore" ' Prevent UID/PID leakage
+  File.Save($sIgnoreFile, "")
+  Chmod $sIgnoreFile To "rw-------"
+  File.Save($sIgnoreFile, ".settings\n.action\n.info\n.list\n.startup\n.pot\n")
+
+End
+
+Static Private Function PrepareOldSource(sOldSource As String) As String
+
+  Dim sOld As String = File.SetExt(Temp$("a"), "")
+  Dim sOldArchive As String = Temp$("source-archive") & ".tar.gz"
+  Dim sType As String
+
+  If IsDir(sOldSource) Then
+    If Not Exist(sOldSource &/ ".project") Then
+      Error.Raise(("The directory is not a Gambas project"))
+      Return Null
+    Endif
+    Project.MakeSourcePackageFromTo(sOldSource, sOldArchive)
+    sOldSource = sOldArchive
+  Endif
+
+  If Right$(sOldSource, 3) = ".gz" Then
+    sType = "z"
+  Else If Right$(sOldSource, 4) = ".bz2" Then
+    sType = "j"
+  Else If Right$(sOldSource, 3) = ".xz" Then
+    sType = "J"
+  Else
+    Error.Raise(("Unsupported source archive format"))
+    Return Null
+  Endif
+  
+  Mkdir sOld
+  Shell Subst$("tar -&1xf &2 -C &3 --strip-components=1", sType, Shell$(sOldSource), sOld) Wait
+  If Exist(sOldArchive) Then Kill sOldArchive
+  Return sOld
+
+End
+
+Static Private Function PrepareNewSource() As String
+
+  Dim sNew As String = File.SetExt(Temp$("b"), "")
+  Dim sNewArchive As String = Temp$("source-archive") & ".tar.gz"
+
+  Project.MakeSourcePackageTo(sNewArchive)
+  Mkdir sNew
+  Shell Subst$("tar -zxf &1 -C &2 --strip-components=1", sNewArchive, sNew) Wait
+  Kill sNewArchive
+  Return sNew
+
+End
+
+'' Generate a patch for the old source archive or directory to ascend to the current project's state
+Static Public Function GenerateForOld(sOldSource As String) As String
+
+  Dim sOld As String
+  Dim sNew As String
+  Dim sCmd As String
+  Dim sPatch As String
+
+  sOld = PrepareOldSource(sOldSource)
+  sNew = PrepareNewSource()
+
+  sCmd = Subst$("cd &1; ", File.Dir(sOld))
+  sCmd &= Subst$("diff -urNaX &1 &2 &3", $sIgnoreFile, File.Name(sOld), File.Name(sNew))
+  Shell sCmd To sPatch
+  Shell Subst$("rm -r &1 &2", sOld, sNew)
+  Return sPatch
+
+End
+
+Public Sub _new(Optional sPath As String)
+
+  $hHunks = New Hunk[]
+  If Not sPath Then Return
+  Parse(File.Load(sPath))
+
+End
+
+'' Parse the patch and add its hunks to the current object
+Public Sub Parse(sText As String)
+
+  Dim aLines As String[]
+  Dim iInd As Integer
+  Dim hHunk As Hunk
+  Dim bFirst As Boolean = True
+  Dim bInHeader As Boolean = False
+
+  hHunk = New Hunk
+  hHunk.Active = True
+  aLines = Split(sText, "\n")
+  For iInd = 0 To aLines.Count - 1
+    If Left$(aLines[iInd], 4) = "diff" Then
+      GoSub ADD_HUNK
+      bInHeader = True
+      hHunk.Command = aLines[iInd]
+    Else If Left$(aLines[iInd], 3) = "---" Then
+      GoSub ADD_HUNK
+      bInHeader = True
+      hHunk.FromFile = aLines[iInd]
+    Else If Left$(aLines[iInd], 3) = "+++" And If bInHeader Then
+      hHunk.ToFile = aLines[iInd]
+    Else If Left$(aLines[iInd]) = "@" Then
+      GoSub ADD_HUNK
+      bInHeader = True
+      hHunk.LineInfo = aLines[iInd]
+    Else If aLines[iInd] = "" Then
+      Continue
+    Else
+      bInHeader = False
+    Endif
+    hHunk.Text &= aLines[iInd] & "\n"
+  Next
+
+ADD_HUNK:
+  If Not bInHeader Then
+    If Not bFirst Then
+      $hHunks.Add(hHunk)
+      hHunk = New Hunk
+      hHunk.Active = True
+    Endif
+    bFirst = False
+  Endif
+  Return
+
+End
+
+'' Generate a patch file from all activated hunks
+Public Function MakeText() As String
+
+  Dim iInd As Integer
+  Dim sText As String
+
+  For iInd = 0 To $hHunks.Count - 1
+    If Not $hHunks[iInd].Active Then Continue
+    sText &= $hHunks[iInd].Text
+  Next
+  Return sText
+
+End
+
+Private Sub DoPatch(Optional sOpt As String = "")
+
+  Dim sCmd As String
+  Dim sTemp As String = Temp$("current-patch")
+  Dim sBackup As String = Temp$("backup") & "/"
+  Dim sRes As String
+
+  File.Save(sTemp, MakeText())
+  Try Mkdir sBackup
+  sCmd = Subst$("cd &1; patch &2 -B &3 -r - ", Shell$(Project.Dir), sOpt, sBackup)
+  sCmd &= Subst$("-bsNp1 <&1", Shell$(sTemp))
+  Shell sCmd To sRes
+  If Process.LastValue Then
+    If Dir(sBackup).Count Then Shell Subst$("cp -r &1 &2", Dir(sBackup).Join(" "), Shell$(Project.Dir)) Wait
+    Message.Error(("Patch didn't apply:\n") & sRes)
+  Else
+    Project.ReloadAll()
+  Endif
+  Shell "rm -r " & sBackup
+
+End
+
+'' Apply this patch
+Public Sub Apply()
+
+  DoPatch()
+
+End
+
+'' Revert this patch
+Public Sub Revert()
+
+  DoPatch("-R")
+
+End
+
+'' Get a hunk from this patch
+Public Sub _get(iIndex As Integer) As Hunk
+
+  Return $hHunks[iIndex]
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return $hHunks.Count
+
+End

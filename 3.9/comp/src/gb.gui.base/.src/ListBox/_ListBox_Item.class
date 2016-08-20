@@ -1,0 +1,47 @@
+' Gambas class file
+
+Export
+
+Property Text As String
+Property Selected As Boolean
+
+Private $iIndex As Integer
+
+Event _Refresh
+
+Private Sub GetList() As ListBox
+  
+  Return Object.Parent(Me)
+  
+End
+
+Public Sub _new(iIndex As Integer)
+  
+  $iIndex = iIndex
+  
+End
+
+Private Function Text_Read() As String
+
+  Return GetList()._GetText($iIndex)
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  GetList()._SetText($iIndex, Value)
+
+End
+
+Private Function Selected_Read() As Boolean
+
+  Return GetList()._IsSelected($iIndex)
+
+End
+
+Private Sub Selected_Write(Value As Boolean)
+
+  GetList()._SetSelected($iIndex, Value)
+
+End
+

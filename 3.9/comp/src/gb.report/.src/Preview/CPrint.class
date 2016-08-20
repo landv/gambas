@@ -1,0 +1,54 @@
+' Gambas class file
+
+Create Static
+Private hPrinter As New Printer As "Printer"
+Private $hPrint As Report
+
+Public Sub PrintReport(hReport As Report, Optional MyPrinter As Printer)
+
+  Dim hSizeParse As TSizeParse
+  $hPrint = hReport
+  '$hPrint = hReport.Clone()
+  If MyPrinter Then 
+    hPrinter = MyPrinter
+  Else
+    hPrinter = New Printer
+  Endif
+    Object.Attach(hPrinter, Me, "Printer")
+  
+  hPrinter.Paper = $hPrint.Paper
+  hPrinter.Orientation = $hPrint.Orientation
+  If $hPrint.Paper = Printer.Custom Then
+    hSizeParse = New TSizeParse($hPrint.Width)
+    hPrinter.PaperWidth = hSizeParse.ToCm() * 10
+    hSizeParse = New TSizeParse($hPrint.Height)
+    hPrinter.PaperHeight = hSizeParse.ToCm() * 10
+  Endif
+  If Not MyPrinter Then
+    If Not hPrinter.Configure() Then
+      hPrinter.Print
+    Endif
+  Else
+    hPrinter.Print
+  Endif
+End
+
+Public Sub Printer_Draw()
+
+  $hPrint.Paint(hPrinter.Page)
+
+End
+
+Public Sub Printer_Begin()
+
+  'Debug Object.Type($hReport)
+  $hPrint.Layout
+  hPrinter.Count = $hPrint.PageCount
+
+End
+
+Public Sub Printer_End()
+
+  $hPrint = Null
+
+End

@@ -1,0 +1,167 @@
+' Gambas class file
+
+Export ' Gambas class file
+
+
+Private $aroValues As New Float[]
+Private $iCount As Integer
+Private $sText As String
+Private $iLineStyle As Integer
+Private $iLineWidth As Integer
+Private $iColor As Integer
+Private $iBackGround As Integer
+Private $iTile As Picture
+
+Property Count As Integer
+Property Text As String
+Property Values As Float[]
+Property LineStyle As Integer
+Property LineWidth As Integer
+Property Color As Integer
+Property BackGround As Integer
+Private $sidChart As String
+
+
+Public Sub _new(sidChart As String)
+    
+  $sidChart = sidChart
+  '$aroValues.Add(0)
+  'ME.Count = 1
+End
+
+Private Function Count_Read() As Integer
+
+  Return $aroValues.Count
+
+End
+
+Private Sub count_Write(Value As Integer)
+
+ Chart._$ColChart[$sidChart].Labels.Count = Value
+ 
+End
+
+Public Sub _SetCount(Value As Integer, sidChart As String)
+  Dim cnt As Integer
+  Dim i As Integer
+   $sidChart = sidChart
+  If Value < 1 Then 
+    Message.Error(("The values count must be up than 1"))
+    Return 
+  Endif 
+  
+  If $aroValues.Count < Value Then 
+    For i = 0 To Value - $aroValues.Count
+      $aroValues.Add(0)
+    Next
+  Else If $aroValues.Count > Value Then 
+    cnt = $aroValues.Count - Value
+    $aroValues.Remove($aroValues.Count - cnt, cnt)
+  Endif
+  'PRINT aroRows.Count
+End
+
+Public Function _get(Index As Integer) As Float
+  
+  Return $aroValues[index]
+  
+End
+
+ Public Sub _Put(Value As Integer, Index As Variant)
+  'PRINT aroRows.Count
+  If $aroValues.Max < Index Then Me.Count += Index - $aroValues.Max
+  $aroValues[Index] = Value
+ End
+
+
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+
+End
+
+
+Public Function _Next() As Float
+  If enum.Index = Null Then enum.Index = -1
+  
+  If enum.Index = $aroValues.max Then 
+    enum.Stop
+    Return 
+  Endif
+  Inc enum.Index
+  Return $aroValues[enum.Index]
+  
+End
+
+Private Function Values_Read() As Float[]
+
+  Return $aroValues
+
+End
+
+Private Sub Values_Write(Value As Float[])
+
+  If Value = Null Then 
+    Message.Error(("An array can't be NULL"))
+    Return 
+  Endif 
+  $aroValues = Value
+  Chart._$ColChart[$sidChart].Headers.Count = Chart._$ColChart[$sidChart].Headers.Count
+
+End
+
+Private Function LineStyle_Read() As Integer
+
+  
+
+End
+
+Private Sub LineStyle_Write(Value As Integer)
+
+  
+
+End
+
+Private Function LineWidth_Read() As Integer
+
+  
+
+End
+
+Private Sub LineWidth_Write(Value As Integer)
+
+  
+
+End
+
+Private Function Color_Read() As Integer
+
+  
+
+End
+
+Private Sub Color_Write(Value As Integer)
+
+  
+
+End
+
+Private Function BackGround_Read() As Integer
+
+  
+
+End
+
+Private Sub BackGround_Write(Value As Integer)
+
+  
+
+End

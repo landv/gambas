@@ -1,0 +1,14 @@
+' Gambas module file
+
+Public Sub Main()
+
+  Dim sResult As String
+    
+  Shell "date +%s" To sResult
+  
+  Print Date.ToUnixTime(Now);; sResult
+  
+  Print Date.FromUnixTime(Date.ToUnixTime(Now));; Now
+  
+  
+End

@@ -1,0 +1,114 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+
+Public Const _Properties As String = "*,Action,Border=True"
+Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "32,4"
+Public Const _Similar As String = "TextBox"
+Public Const _Group As String = "Chooser"
+
+Event Click
+Event Change
+
+Property Value As String
+Property Border As Boolean
+Property Default As String
+
+Private $hButtonBox As ButtonBox
+Private $bDefault As Boolean
+Private $sDefault As String
+
+Public Sub _new()
+  
+  $sDefault = Application.Font.ToString()
+  
+  $hButtonBox = New ButtonBox(Me) As "ButtonBox"
+  Me.Proxy = $hButtonBox
+  $hButtonBox.Picture = Picture["icon:/small/font"]
+  $hButtonBox.ReadOnly = True
+  $hButtonBox.ClearButton = True
+  
+  UpdateFont("", True)
+  
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hButtonBox.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hButtonBox.Border = Value
+
+End
+
+Private Function Value_Read() As String
+
+  If $bDefault Then Return
+  Return $hButtonBox.Text
+
+End
+
+Private Sub UpdateFont(sFont As String, Optional bForce As Boolean)
+
+  If sFont = Value_Read() And If Not bForce Then Return
+  If Not sFont Then
+    $hButtonBox.Text = $sDefault
+    $hButtonBox.Foreground = Color.LightForeground
+    $bDefault = True
+  Else
+    $hButtonBox.Text = sFont
+    $hButtonBox.Foreground = Color.Foreground
+    $bDefault = False
+  Endif
+  Raise Change
+
+End
+
+Private Sub Value_Write(Value As String)
+
+  UpdateFont(Value)
+
+End
+
+Public Sub ButtonBox_Click()
+  
+  Dialog.Font = Font[$hButtonBox.Text]
+  If Dialog.SelectFont() Then Return
+  
+  UpdateFont(Dialog.Font.ToString())
+  Raise Click
+  
+End
+
+Public Sub ButtonBox_Clear()
+  
+  UpdateFont("", True)
+  Raise Click
+  
+End
+
+Public Sub ButtonBox_KeyPress()
+  
+  If Key.Code = Key.Delete Or Key.Code = Key.Backspace Then
+    UpdateFont("")
+  Endif
+  
+End
+
+Private Function Default_Read() As String
+
+  Return $sDefault
+
+End
+
+Private Sub Default_Write(Value As String)
+
+  $sDefault = Value
+  If $bDefault Then $hButtonBox.Text = $sDefault
+
+End

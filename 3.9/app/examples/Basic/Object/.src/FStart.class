@@ -1,0 +1,44 @@
+' Gambas class file
+
+Public myThing As CThing
+
+Public Sub btnCreateThing_Click()
+
+  myThing = New CThing
+
+  With mything
+    .Name = "Dummy-Thing"
+    .X = 11
+    .Y = 22
+    .ID = 33
+  End With
+
+  txtCheckResult.Visible = True
+
+End
+
+Public Sub btnCheckThing_Click()
+
+  If myThing Then
+
+    With mything
+      txtCheckResult.Text = Subst("&1, X= &2, Y= &3, ID= &4", .Name, .X, .Y, .ID)
+    End With
+
+  Else
+    Message.Warning(("You need to create the Thing first!"))
+  Endif
+
+End
+
+Public Sub btnDestroy_Click()
+
+  If Not mything Then
+    Message.Warning(("You need to create the Thing first!"))
+    Return
+  Endif
+
+  myThing = Null
+  txtCheckResult.Visible = False
+
+End

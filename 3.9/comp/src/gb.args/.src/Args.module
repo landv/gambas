@@ -1,0 +1,208 @@
+' Gambas module file
+
+Export
+
+Private $cArg As Collection
+Private $aRest As Integer[]
+Private $aHelp As String[]
+Private $sUsage As String
+
+Private Sub Abort(sErr As String)
+  
+  Error Application.Name; ": "; sErr
+  Quit 1
+  
+End
+
+
+Public Sub Begin(Optional Usage As String)
+
+  Dim I As Integer
+  Dim sArg As String
+  Dim sKey As String
+  Dim J As Integer
+  
+  $sUsage = Usage
+  
+  $cArg = New Collection
+  $aRest = New Integer[]
+  $aHelp = New String[]
+  
+  For I = 1 To Args.Count - 1
+    
+    sArg = Args[I]
+    
+    If sArg = "--" Then
+      Inc I
+      While I < Args.Count
+        $aRest.Add(I)
+        Inc I
+      Wend
+      Break
+    Endif
+    
+    If sArg Begins "--" Then
+      sKey = sArg
+      $cArg[sKey] = True
+      Continue
+    Endif
+    
+    If Len(sArg) > 1 And If Left(sArg) = "-" Then
+      For J = 2 To Len(sArg)
+        sKey = "-" & Mid$(sArg, J, 1) 
+        $cArg[sKey] = True
+      Next
+      Continue
+    Endif
+    
+    $aRest.Add(I)
+    If Not sKey Then Continue
+    
+    $cArg[sKey] = I
+    sKey = ""
+    
+  Next
+  
+End
+
+Public Sub End() As String[]
+  
+  Dim aRest As New String[]
+  Dim I As Integer
+  
+  If Has("V", "version", ("Display version")) Then
+    Print Application.Version
+    Quit
+  Endif
+  
+  If Has("h", "help", ("Display this help")) Then
+    If $sUsage Then
+      Print $sUsage
+    Else
+      Print Subst(("Usage: &1 <options> <arguments>"), Application.Title)
+    Endif
+    Print
+    Print ("Options:")
+    Print $aHelp.Join("\n")
+    Quit
+  Endif
+  
+  If $cArg.Count Then
+    For Each $cArg
+      Abort(Subst(("unknown option: &1"), $cArg.Key))
+    Next
+  Endif
+  
+  For Each I In $aRest
+    aRest.Add(Args[I])
+  Next
+  
+  Return aRest
+  
+End
+
+Private Sub GetKey(ShortName As String, LongName As String) As String
+  
+  Dim sKey As String
+
+  If ShortName Then sKey &= "-" & ShortName
+  If LongName Then sKey &= " --" & LongName
+  Return Trim(sKey)
+  
+End
+
+
+Private Sub AddHelp(ShortName As String, LongName As String, Description As String, Optional ArgName As String) As Boolean
+
+  Dim sKey As String = GetKey(ShortName, LongName)
+  Dim sHelp As String
+  
+  If Not sKey Then Return
+  If Not Description Then Return
+  
+  sHelp = " " & sKey
+  If ArgName Then sHelp &= " <" & ArgName & ">"
+  sHelp &= Space$(Max(4, 40 - Len(sHelp))) & Description
+  
+  $aHelp.Add(sHelp)
+  
+End
+
+Public Sub Has(ShortName As String, LongName As String, Optional Description As String) As Boolean
+  
+  Dim vShort, vLong As Variant
+  
+  AddHelp(ShortName, LongName, Description)
+  
+  vShort = $cArg["-" & ShortName]
+  vLong = $cArg["--" & LongName]
+  
+  If IsNull(vShort) And If IsNull(vLong) Then Return False
+  
+  $cArg["-" & ShortName] = Null
+  $cArg["--" & LongName] = Null
+  
+  Return True
+  
+End
+
+Public Sub Get(ShortName As String, LongName As String, Optional Description As String, Optional ArgName As String) As String
+  
+  Dim sKey As String = GetKey(ShortName, LongName)
+  Dim vShort, vLong As Variant
+  
+  If Not sKey Then Return
+  AddHelp(ShortName, LongName, Description, ArgName)
+  
+  vShort = $cArg["-" & ShortName]
+  vLong = $cArg["--" & LongName]
+  
+  If IsNull(vShort) And If IsNull(vLong) Then Return ""
+
+  If TypeOf(vShort) = gb.Boolean Then Abort(Subst("argument missing for option -&1", ShortName))
+  If TypeOf(vLong) = gb.Boolean Then Abort(Subst("argument missing for option --&1", LongName))
+  
+  If vShort And If vLong Then Abort(Subst("argument specified twice for option -&1", ShortName))
+  
+  $cArg["-" & ShortName] = Null
+  $cArg["--" & LongName] = Null
+
+  If vShort Then
+    Try $aRest.Remove($aRest.Find(vShort))
+    Return Args[vShort]
+  Endif
+  If vLong Then 
+    Try $aRest.Remove($aRest.Find(vLong))
+    Return Args[vLong]
+  Endif
+  
+End
+
+Public Sub GetInteger(ShortName As String, LongName As String, Optional Description As String, Optional ArgName As String, Optional {Default} As Integer) As Integer
+   
+  Dim sVal As String = Get(ShortName, LongName, Description, ArgName)
+  Dim iVal As Integer
+   
+  If Not sVal Then Return {Default}
+  If sVal Begins "0x" And If Len(sVal) > 2 Then
+    Try iVal = Val("&H" & sVal)
+    If Not Error Then Return iVal
+  Endif
+  If Not IsInteger(sVal) Then Abort(Subst("option &1 needs an integer argument"), GetKey(ShortName, LongName))
+  Return CInt(sVal)
+   
+End
+ 
+Public Sub GetFloat(ShortName As String, LongName As String, Optional Description As String, Optional ArgName As String, Optional {Default} As Float) As Float
+  
+  Dim sVal As String = Get(ShortName, LongName, Description, ArgName)
+  Dim fVal As Float
+   
+  If Not sVal Then Return {Default}
+  Try fVal = CFloat(sVal)
+  If Error Then Abort(Subst("option &1 needs a floating point number argument"), GetKey(ShortName, LongName))
+  Return fVal
+   
+End
+ 
+

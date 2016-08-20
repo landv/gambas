@@ -1,0 +1,378 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,Picture,ReadOnly,Border=True,Button=True,ClearButton,Filter,FilterMenu{Menu}"
+Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "24,4"
+Public Const _Similar As String = "TextBox"
+
+Event Click
+Event Change
+Event Activate
+Event Clear
+Event Filter
+
+Property Picture As Picture
+Property Text As String
+Property Pos As Integer
+Property Read Length As Integer
+Property ReadOnly As Boolean
+Property Border As Boolean
+Property Read Editor As MaskBox
+Property Button As Boolean
+Property Alignment As Integer
+Property ClearButton As Boolean
+Property Filter As Boolean
+Property FilterMenu As String
+
+'Private $hPanel As Panel
+Private $hBackground As DrawingArea
+Private $bBorder As Boolean
+Private $hTextBox As MaskBox
+Private $hButton As ToolButton
+Private $hClearButton As ToolButton
+Private $sMenu As String
+Private $bFilter As Boolean
+Private $hFilter As PictureBox
+Private $hTimer As Timer
+'Private $hObserver As Observer
+
+Public Sub _new()
+  
+  $hBackground = New DrawingArea(Me) As "Background"
+  '$hBackground.Arrangement = Arrange.Horizontal
+
+  $hTextBox = New MaskBox($hBackground) As "TextBox"
+  $hTextBox.Border = False
+  $hTextBox.Expand = True
+  
+  Me.Proxy = $hTextBox
+  
+  $hButton = New ToolButton($hBackground) As "Button"
+  $hButton.W = Desktop.Scale * 3
+  $hButton.Picture = Picture["./img/select.png"]
+  '$hButton.Hide
+  
+  Border_Write(True)
+  
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $hButton.Picture
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  If Not Value Then Value = Picture["./img/select.png"]
+  $hButton.Picture = Value
+
+End
+
+Private Function Text_Read() As String
+
+  Return $hTextBox.Text
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $hTextBox.Text = Value
+
+End
+
+Public Sub Button_Click()
+  
+  $hTextBox.SetFocus
+  Raise Click
+  
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $hTextBox.ReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $hTextBox.ReadOnly = Value
+
+End
+
+Public Sub Background_GotFocus()
+  
+  $hTextBox.SetFocus
+
+End
+
+Public Sub Clear()
+  
+  $hTextBox.Clear
+  
+End
+
+Private Function Length_Read() As Integer
+
+  Return $hTextBox.Length
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $bBorder = Value
+  '$hBackground.Padding = If(Value, Style.TextBoxFrameWidth, 0)
+  '$hBackground.Margin = Value
+  'Debug $hBackground.Padding
+  Background_Arrange
+  $hBackground.Refresh
+
+End
+
+Public Sub Background_Draw()
+  
+  'Dim FW, FH As Integer
+  Dim iBg As Integer = Color.TextBackground
+  
+  If Me.Background <> Color.Default Then iBg = Me.Background
+  
+  If $bBorder Then 
+    Style.PaintBox(0, 0, Me.W, Me.H, Style.StateOf($hTextBox), iBg)
+  Else
+    Paint.FillRect(0, 0, Me.W, Me.H, iBg)
+  Endif
+  
+End
+
+Private Function Editor_Read() As MaskBox
+
+  Return $hTextBox
+
+End
+
+
+Private Function Button_Read() As Boolean
+
+  Return $hButton.Visible
+
+End
+
+Private Sub Button_Write(Value As Boolean)
+
+  $hButton.Visible = Value
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return $hTextBox.Alignment
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  $hTextBox.Alignment = Value
+
+End
+
+Public Sub TextBox_GotFocus()
+  
+  $hBackground.Refresh
+  
+End
+
+Public Sub TextBox_LostFocus()
+  
+  $hBackground.Refresh
+  
+End
+
+
+Public Sub TextBox_Activate()
+  
+  Raise Activate
+  
+End
+
+Public Sub TextBox_Change()
+  
+  If $bFilter Then $hTimer.Start
+  Raise Change
+  
+End
+
+Public Sub Background_Arrange()
+  
+  Dim FW, FH As Integer
+  Dim hCtrl As Control
+  Dim aCtrl As New Control[]
+  Dim X, H As Integer
+  
+  FW = If($bBorder, Style.FrameWidth, 0)
+  FH = If($bBorder, Style.FrameWidth, 0)
+  
+  For Each hCtrl In $hBackground.Children
+    If hCtrl Is ToolButton And If hCtrl.Visible Then aCtrl.Add(hCtrl)
+  Next
+  
+  H = Me.H - FH * 2
+  
+  If System.RightToLeft Then
+    X = FW
+    For Each hCtrl In aCtrl
+      hCtrl.W = Desktop.Scale * 3
+      hCtrl.Move(X, FH, hCtrl.W, H)
+      X += hCtrl.W
+    Next
+    If $hFilter Then
+      $hTextBox.Move(X, FH, Me.W - FW - X - H, H)
+      $hFilter.Move(Me.W - H - FW, FH, H, H)
+    Else
+      $hTextBox.Move(X, FH, Me.W - FW - X, H)
+    Endif
+  Else
+    X = Me.W - FW
+    For Each hCtrl In aCtrl
+      hCtrl.W = Desktop.Scale * 3
+      X -= hCtrl.W
+      hCtrl.Move(X, FH, hCtrl.W, H)
+    Next
+    If $hFilter Then 
+      $hFilter.Move(FW, FH, H, H)
+      $hTextBox.Move(FW + H, FH, X - FW - H, H)
+    Else
+      $hTextBox.Move(FW, FH, X - FW, H)
+    Endif
+  Endif
+  
+End
+
+Public Sub _AddButton(hButton As ToolButton)
+  
+  hButton.Reparent($hBackground)
+  
+End
+
+Private Function Pos_Read() As Integer
+
+  Return $hTextBox.Pos
+
+End
+
+Private Sub Pos_Write(Value As Integer)
+
+  $hTextBox.Pos = Value
+
+End
+
+Private Function ClearButton_Read() As Boolean
+
+  If $hClearButton Then Return True
+
+End
+
+Private Sub ClearButton_Write(Value As Boolean)
+
+  If Value = ClearButton_Read() Then Return
+  
+  If Not Value Then
+    $hClearButton.Delete
+    $hClearButton = Null
+  Else
+    $hClearButton = New ToolButton($hBackground) As "ClearButton"
+    $hClearButton.Picture = Picture["icon:/small/clear"]
+  Endif
+  
+  Background_Arrange
+
+End
+
+Public Sub ClearButton_Click()
+  
+  $hTextBox.Clear
+  Raise Clear
+  
+End
+
+Private Function Filter_Read() As Boolean
+
+  Return $bFilter
+
+End
+
+Private Sub UpdateFilterPicture()
+
+  $hFilter.Picture = Picture[If($sMenu, "img/32/filter-menu.png", "img/32/filter.png")]
+  $hFilter.Mouse = If($sMenu, Mouse.Pointing, Mouse.Default)
+
+End
+
+Private Sub Filter_Write(Value As Boolean)
+
+  If $bFilter = Value Then Return
+  
+  $bFilter = Value
+  
+  If $bFilter Then
+    $hFilter = New PictureBox($hBackground) As "FilterPictureBox"
+    $hFilter.Stretch = True
+    $hFilter.Padding = 2
+    UpdateFilterPicture
+    $hTimer = New Timer As "FilterTimer"
+    $hTimer.Delay = 500
+  Else
+    $hFilter.Delete
+  Endif
+  
+  Background_Arrange
+
+End
+
+Private Function FilterMenu_Read() As String
+
+  Return $sMenu
+
+End
+
+Private Sub FilterMenu_Write(Value As String)
+  
+  $sMenu = Value
+  UpdateFilterPicture
+
+End
+
+Public Sub FilterTimer_Timer()
+  
+  $hTimer.Stop
+  Raise Filter
+  
+End
+
+Public Sub FilterPictureBox_MouseDown()
+
+  Dim hMenu As Menu
+  
+  If Not $sMenu Then Return
+
+  hMenu = Main.FindMenu(Me, $sMenu)
+  If hMenu Then hMenu.Popup($hFilter.ScreenX, $hFilter.ScreenY + $hFilter.H)
+
+End
+
+Public Sub FilterNow()
+  
+  If Not $bFilter Then Return
+  'If Not $hTimer.Enabled Then Return
+  FilterTimer_Timer
+  
+End

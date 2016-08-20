@@ -1,0 +1,237 @@
+' Gambas class file
+
+Export
+Create Private
+
+Inherits UserContainer
+
+'Public Const _Properties As String = "*,Count{Range:1;256}=1,Index,Text,Picture"
+'Public Const _Similar As String = "TabStrip"
+'Public Const _IsMultiContainer As Boolean = True
+'Public Const _DefaultEvent As String = "Click"
+
+Event Click
+
+Property Count As Integer
+Property Index As Integer
+Property Text As String
+Property Picture As Picture
+Property Read Current As _MultiContainerTab
+
+Private $aCont As New _MultiContainerTab[]
+Private $iCurrent As Integer = -1
+
+' Public Sub _new()
+' 
+'   Me.Count = 1
+'   Me.Arrangement = Arrange.None
+'   
+' End
+
+Private Function Count_Read() As Integer
+
+  Return $aCont.Count
+
+End
+
+Public Sub _SetCount((iCount) As Integer)
+  
+End
+
+
+Private Sub Count_Write(iCount As Integer)
+
+  Dim iCurrent As Integer
+
+  If iCount < 1 Then Error.Raise("Bad argument")
+  If iCount = $aCont.Count Then Return
+
+  iCurrent = $iCurrent
+    
+  Object.Lock(Me)
+  
+  Me._SetCount(iCount)
+  
+  $iCurrent = -1
+  If iCurrent < 0 Then iCurrent = $aCont.Max
+  
+  Object.Unlock(Me)
+  
+  Try Index_Write(iCurrent)
+
+End
+
+Private Function Index_Read() As Integer
+
+  Return $iCurrent
+
+End
+
+Public Sub _SetIndex((iIndex) As Integer)
+  
+  
+  
+End
+
+
+Private Sub Index_Write(iIndex As Integer)
+
+  If iIndex < 0 Or iIndex >= $aCont.Count Then Error.Raise("Bad index")
+
+  If iIndex = $iCurrent Then Return
+
+  Me._SetIndex(iIndex)
+  $iCurrent = iIndex
+
+  UpdateContainer
+
+  Me._Container = $aCont[$iCurrent]
+  
+  Raise Click
+
+End
+
+Public Sub _UpdateContainer((hCont) As Container)
+  
+  
+  
+End
+
+
+Private Sub UpdateContainer()
+
+  Dim iInd As Integer
+
+  For iInd = 0 To $aCont.Max
+
+    With $aCont[iInd]
+      If iInd = $iCurrent Then
+        Me._UpdateContainer($aCont[iInd])
+        .Show
+        '.Raise
+      Else If .Visible Then
+        .Hide
+        '.Move(0, - $hPanel.H)
+      Endif
+    End With
+
+  Next
+
+End
+
+Private Function Text_Read() As String
+
+  Return $aCont[$iCurrent].Text
+
+End
+
+Private Sub Text_Write(sText As String)
+
+  $aCont[$iCurrent].Text = sText
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $aCont[$iCurrent].Picture
+
+End
+
+Private Sub Picture_Write(hPict As Picture)
+
+  $aCont[$iCurrent].Picture = hPict
+
+End
+
+Public Function _get(Index As Integer) As Container
+
+  If Index < 0 Or Index >= $aCont.Count Then Error.Raise("Bad index")
+  Return $aCont[Index]
+
+End
+
+Private Function Current_Read() As _MultiContainerTab
+
+  Try Return $aCont[$iCurrent]
+
+End
+
+Public Sub _Remove((iIndex) As Integer)
+  
+  
+  
+End
+
+Public Sub Remove(Index As Integer)
+  
+  Dim iCurrent As Integer
+  Dim hTab As _MultiContainerTab
+  
+  If Index < 0 Or Index > $aCont.Max Then Error.Raise("Bad index")
+  If $aCont.Count = 1 Then Return
+  
+  hTab = $aCont[Index]
+  If hTab.Children.Count Then Error.Raise("TabPanel container is not empty")
+  
+  Me._Remove(Index)
+  
+  $aCont.Remove(Index)
+  If $iCurrent = Index Then
+    $iCurrent = -1
+    iCurrent = Min($aCont.Max, Index)
+    Index_Write(iCurrent)
+  Else If $iCurrent > Index Then
+    Dec $iCurrent
+  Endif
+  
+  hTab._Delete()
+  
+End
+
+' Private Sub GetPreviousIndex(iIndex As Integer) As Integer
+'   
+'   Dim I As Integer
+'   
+'   For I = iIndex - 1 DownTo 0
+'     If $aButton[I].Visible Then Return I
+'   Next
+'   Return -1
+'   
+' End
+' 
+' Private Sub GetNextIndex(iIndex As Integer) As Integer
+'   
+'   Dim I As Integer
+'   
+'   For I = iIndex + 1 To $aButton.Max
+'     If $aButton[I].Visible Then Return I
+'   Next
+'   Return -1
+'   
+' End
+' 
+' Public Sub _GetFirstIndex() As Integer
+'   
+'   Return GetNextIndex(-1)
+'   
+' End
+' 
+' Private Sub GetLastIndex() As Integer
+'   
+'   Return GetPreviousIndex($aButton.Count)
+'   
+' End
+' 
+' Public Sub _MovePrevious()
+'   
+'   Me.Index = GetPreviousIndex($iCurrent)
+'   
+' End
+' 
+' Public Sub _MoveNext()
+'   
+'   Me.Index = GetNextIndex($iCurrent)
+'   
+' End
+
+

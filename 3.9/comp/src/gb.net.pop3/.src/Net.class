@@ -1,0 +1,18 @@
+' Gambas class file
+
+Export
+
+Public Const None As Integer = 0
+Public Const SSL As Integer = 1
+
+' Constants coming from gb.net
+' Pop3.Disconnected is replaced by Net.Inactive
+' Pop3.Authorization has been removed, as the user will never see it.
+' Pop3.Transaction is replaced by Net.Connected
+' Pop3.Update has been removed too. QUIT state is stored internally. 
+' More state would be needed if Pop3Client was completely asynchronous.
+
+'Public Const WrongUsername As Integer = 4
+'Public Const WrongPassword As Integer = 5
+'Net.CannotAuthenticate is used instead
+

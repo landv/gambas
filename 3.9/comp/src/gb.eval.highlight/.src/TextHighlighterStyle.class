@@ -1,0 +1,20 @@
+' Gambas class file
+
+Export
+
+Public (Color) As Integer
+Public Bold As Boolean
+'Public Italic As Boolean
+Public Underline As Boolean
+
+Static Public Sub _call((Color) As Integer, Optional (Bold) As Boolean, (Underline) As Boolean) As TextHighlighterStyle
+
+  Dim hStyle As New TextHighlighterStyle
+  
+  hStyle.Color = Color
+  hStyle.Bold = Bold
+  hStyle.Underline = Underline
+  
+  Return hStyle
+  
+End

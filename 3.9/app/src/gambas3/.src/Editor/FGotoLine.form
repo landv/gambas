@@ -1,0 +1,31 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(7.1429,8,33,12)
+  Text = ("Go to line")
+  Resizable = False
+  { btnOK Button
+    MoveScaled(1,7,15,4)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(17,7,15,4)
+    Text = ("Cancel")
+    Cancel = True
+  }
+  { HBox1 HBox
+    MoveScaled(1,1,31,4)
+    Spacing = True
+    { Label1 Label
+      MoveScaled(0,0,11,4)
+      AutoResize = True
+      Text = ("Go to line")
+    }
+    { txtLine TextBox
+      MoveScaled(13,0,15,4)
+      Expand = True
+      Alignment = Align.Right
+    }
+  }
+}

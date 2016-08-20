@@ -1,0 +1,152 @@
+' Gambas class file
+
+'***********Analog Clock Example Program************************
+'***********By: Ahmad Kamal <eng_ak@Link.net>******************
+'***********Written for Gambas: gambas.sourceforge.net**********
+'***********V1.0: 22-July-2003***************************************
+'***********V1.1: 24-July-2003  Optimized by Benoit himself ;)*****
+
+Private $iLast As Integer
+Private $dNow As Date
+
+' Fixed coordinate system
+' We use the transformation matrix for scaling
+Private Const W As Integer = 1024
+Private Const H As Integer = 1024
+
+Public Sub TimerClk_Timer()
+
+  If Second(Now) = $iLast Then Return
+  $dNow = Now
+
+  dwgArea.Refresh
+
+End
+
+' Main routine that updates the clock
+
+Public Sub DrawClock()
+
+  Dim angle As Float
+  Dim dNow As Date
+  Dim eScale As Float
+  Dim sTime As String
+  
+  eScale = Min(dwgArea.Width / W, dwgArea.Height / H)
+
+  Paint.Translate(dwgArea.W / 2, dwgArea.H / 2)
+  Paint.Scale(eScale, eScale)
+
+  dNow = $dNow
+  $iLast = Second(dNow)
+
+  Paint.Brush = Paint.Color(&HDCDCDC&)    'Light gray color
+  Paint.Arc(0, 0, W / 2)
+  Paint.Fill
+  Paint.Brush = Paint.Color(dwgArea.Background)
+  Paint.Arc(0, 0, W / 2 * 0.9)
+  Paint.Fill
+  
+  sTime = Format(dNow, "hh:nn:ss")
+  
+  Paint.Font.Bold = True
+  Paint.Font.Size = 60
+  Paint.Brush = Paint.Color(Color.Black)
+  Paint.Text(sTime, - W / 2, - H * 0.4, W, H * 0.1, Align.Top)
+  Paint.Fill
+
+  ' Draw seconds
+  angle = Second(dNow) / 60 * Pi(2) - Pi(0.5)   'The angle that the arm makes, with a line from clock center to 12O'clock
+  
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.Red, 128))
+  Paint.LineWidth = 6
+  Paint.MoveTo(0, 0)
+  Paint.LineTo(Cos(angle) * W / 2, Sin(angle) * H / 2)
+  Paint.Stroke
+  
+  ' Draw minutes
+  angle = CFloat(Time(dNow)) * 24 * Pi(2) - Pi(0.5)
+  
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 128))
+  Paint.MoveTo(Cos(angle) * W * 0.45, Sin(angle) * H * 0.45)
+  Paint.LineTo(Sin(angle) * W * 0.05, - Cos(angle) * H * 0.05)
+  Paint.LineTo(- Sin(angle) * W * 0.05, Cos(angle) * H * 0.05)
+  Paint.Fill
+  
+  ' Draw hours
+  angle = CFloat(Time(dNow)) * 2 * Pi(2) - Pi(0.5)
+  
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 128))
+  Paint.MoveTo(Cos(angle) * W * 0.35, Sin(angle) * H * 0.35)
+  Paint.LineTo(Sin(angle) * W * 0.05, - Cos(angle) * H * 0.05)
+  Paint.LineTo(- Sin(angle) * W * 0.05, Cos(angle) * H * 0.05)
+  Paint.Fill
+  
+  ' Draw circle on the center of the clock to hide the arms intersection
+  
+  Paint.Brush = Paint.Color(Color.Black)
+  Paint.Arc(0, 0, 0.1 * W)
+  Paint.Fill
+  
+  DrawFrame
+  
+End
+
+' Draw the clock frame
+
+Public Sub DrawFrame()
+
+  Dim I As Integer
+  Dim angle As Float
+  
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 64))
+  
+  For I = 0 To 59
+    If I % 5 = 0 Then
+      Paint.LineWidth = 12
+    Else
+      Paint.LineWidth = 2
+    Endif
+    angle = Pi(2) * I / 60
+    Paint.MoveTo(Cos(angle) * 0.45 * W, Sin(angle) * 0.45 * H)
+    Paint.LineTo(Cos(angle) * W / 2, Sin(angle) * H / 2)
+    Paint.Stroke
+  Next
+
+End
+
+
+Public Sub MenuAbout_Click()
+
+  Dim AboutMessage As String
+  AboutMessage = "Analog Clock Example Program for Gambas\nWritten by: Ahmad Kamal <eng_ak@Link.Net> and Benoît Minisini"
+  
+  Message.info(AboutMessage)
+
+End
+
+
+Public Sub MenuExit_Click()
+
+  Me.Close  
+
+End
+
+
+Public Sub DwgArea_Menu()
+
+  MenuPopUp.popup
+
+End
+
+Public Sub DwgArea_Draw()
+
+  DrawClock
+
+End
+
+Public Sub Form_Open()
+
+  TimerClk_Timer
+
+End

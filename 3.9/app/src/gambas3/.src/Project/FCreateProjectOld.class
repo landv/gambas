@@ -1,0 +1,289 @@
+' Gambas class file
+
+Static Public InAnotherWindow As Boolean
+
+Static Private $sPath As String
+
+Static Private $cVar As New Collection(gb.IgnoreCase)
+Static Private $bRepository As Boolean
+Static Private $bAnother As Boolean
+
+Static Public Sub Run(Optional bAnother As Boolean) As String
+  
+  $bAnother = bAnother
+  Inc Application.Busy
+  If Me.ShowModal() Then Return $sPath
+
+End
+
+Public Sub Form_Open()
+
+  'dchProject.SelectedPath = Settings["/FCreateProject/Path", System.User.Home]
+  Settings.Read(Me)
+  lstType.Select(panDefaultType)
+  wizProject.Index = 0
+  edtOutput.ReadConfig
+  edtOutput.Text = ""
+  chkOther.Visible = $bAnother
+  Settings.Read(dchProject, "dchProject")
+      
+  Dec Application.Busy
+
+End
+
+Private Sub GetTest(sTest As String) As Boolean
+  
+  Return Eval(sTest, $cVar)
+  
+End
+
+Private Sub JumpFile(hFile As File, sBegin As String, sEnd As String, Optional sSearch As String)
+  
+  Dim sLine As String
+  Dim iLevel As Integer
+
+  While Not Eof(hFile)
+    Line Input #hFile, sLine
+    sLine = Trim(sLine)
+    
+    If sSearch And If sLine = sSearch Then 
+      If iLevel = 0 Then Return 
+      Continue
+    Endif
+    
+    If sLine Begins sBegin & " " Then 
+      Inc iLevel
+    Else If sLine = sEnd Then 
+      If iLevel = 0 Then Return
+      Dec iLevel
+    Endif
+  
+  Wend
+  
+End
+
+
+Private Sub GetFile(sPath As String) As String
+  
+  Dim hFile As File
+  Dim sLine As String
+  Dim sTrim As String
+  Dim sResult As String
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  
+  hFile = Open sPath
+  While Not Eof(hFile)
+    Line Input #hFile, sLine
+    sTrim = Trim(sLine)
+    
+    If Left(sTrim, 4) = "@IF " Then 
+      If Not GetTest(Mid$(sTrim, 5)) Then 
+        JumpFile(hFile, "@IF", "@ENDIF", "@ELSE")
+      Endif 
+    Else If sTrim = "@ELSE" Then 
+      JumpFile(hFile, "@IF", "@ENDIF")
+    Else If Left(sTrim) <> "@" Then 
+    
+      iPos = 1
+      Do
+        iPos = InStr(sLine, "$(", iPos)
+        If iPos = 0 Then Break
+        iPos2 = InStr(sLine, ")", iPos)
+        sLine = Left(sLine, iPos - 1) & CStr($cVar[Mid$(sLine, iPos + 2, iPos2 - iPos - 2)]) & Mid(sLine, iPos2 + 1)
+      Loop
+    
+      sResult &= sLine & "\n"
+      
+    Endif
+    
+  Wend 
+  
+  Return sResult
+  
+End
+
+
+Private Sub CreateProject() As Boolean
+  
+  Dim sDir As String
+  Dim sName As String
+  Dim hCtrl As Object
+  Dim sPath As String 
+  Dim sDest As String
+  Dim bErr As Boolean
+  'DIM hIcon AS Picture
+
+  If $bRepository Then 
+  
+    sPath = Trim(txtRepository.Text)
+    If Right(sPath) = "/" Then sPath = Left(sPath, -1)
+    
+    sDir = dchProject.SelectedPath 
+    edtOutput.ReadOnly = False
+    bErr = VersionControl.CheckoutSVN(sPath, sDir, edtOutput)
+    edtOutput.ReadOnly = True
+    
+    If bErr Then Error.Raise(("Project checkout has failed."))
+    
+    sDir &/= File.Name(sPath)
+
+  Else
+  
+    sName = Trim(txtName.Text)
+    sDir = dchProject.SelectedPath &/ sName
+    
+    $cVar["NAME"] = sName
+    
+    $cVar["TITLE"] = Trim(txtTitle.Text)
+    If Not $cVar["TITLE"] Then $cVar["TITLE"] = sName
+    $cVar["LANGUAGE"] = System.Language
+  
+    For Each hCtrl In lstType.Children
+      If hCtrl.Tag Then $cVar[hCtrl.Tag] = False
+    Next
+    $cVar[lstType.Current.Tag] = True
+    
+    For Each hCtrl In svwOption.Children
+      If hCtrl.Tag Then $cVar[hCtrl.Tag] = hCtrl.Value
+    Next
+    
+    $cVar["GRAPHIC"] = $cVar["QT"] Or $cVar["GTK"] Or $cVar["GUI"]
+    
+    Try Rmdir sDir
+    
+    Mkdir sDir
+    Mkdir sDir &/ ".src"
+    Mkdir sDir &/ ".hidden"
+    
+    For Each sPath In Split(GetFile("template/list"), "\n", "", True)
+      
+      sDest = sPath
+      If Left(sDest) = "_" Then sDest = "." & Mid(sDest, 2)
+      
+      If InStr(sDest, "/") Then 
+        Try Mkdir sDir &/ File.Dir(sDest)
+      Else If CModule.Ext.Exist(File.Ext(sDest))
+        sDest = ".src" &/ sDest
+      Endif
+      
+      If File.Ext(sPath) = "png" Then 
+        Copy "template" &/ File.Name(sPath) To sDir &/ sDest
+      Else
+        File.Save(sDir &/ sDest, GetFile("template" &/ File.Name(sPath)))
+      Endif
+      
+    Next
+    
+    Project.MakeDirectoryIcon(sDir)
+
+  Endif
+  
+  $sPath = sDir
+  Return False
+
+Catch
+
+  Message.Error(("Cannot create project!") & "\n\n" & Error.Text)
+  Return True
+  
+End
+
+
+Public Sub Form_Close()
+
+  Settings.Write(dchProject, "dchProject")
+  Settings.Write(Me)
+
+End
+
+Public Sub dchProject_Icon(Path As String)
+
+  If Exist(Path &/ ".project") Then 
+    dchProject.Icon = Project.GetIcon(Path, 16)
+  Endif  
+
+End
+
+Public Sub wizProject_BeforeChange()
+  
+  Select Case wizProject.Index
+    
+    Case 1
+      panRepository.Visible = $bRepository
+      panIdent.Visible = Not $bRepository
+      If $bRepository Then  
+        txtRepository.SetFocus
+      Else 
+        txtName.SetFocus
+        txtName_Change
+      Endif
+      
+  End Select
+  
+End
+
+
+Public Sub wizProject_Close()
+
+  Dim sMsg As String
+
+  If $bRepository Then 
+  
+    If Not Trim(txtRepository.Text) Then
+      txtRepository.SetFocus
+      Balloon.Warning(("Please enter the location of the repository."), txtRepository)
+      Return
+    Endif
+  
+  Else
+
+    sMsg = Project.CheckProjectName(txtName.Text, dchProject.SelectedPath) 
+    If sMsg
+      txtName.SetFocus
+      txtName.SelectAll
+      Balloon.Warning(sMsg, txtName)
+      Return
+    Endif  
+
+  Endif
+
+  ' IF NOT dchProject.SelectedPath THEN 
+  '   dchProject.SetFocus
+  '   'tabProject.Index = 1
+  '   Balloon.Warning(("Choose the project parent directory."), dchProject)
+  '   RETURN
+  ' ENDIF
+
+  If CreateProject() Then Return
+  
+  Message(("The project has been successfully created."))
+  
+  InAnotherWindow = chkOther.Value
+  
+  Me.Close(True)
+
+End
+
+Public Sub wizProject_Cancel()
+
+  Me.Close  
+
+End
+
+Public Sub lstType_Click()
+
+  $bRepository = Left(lstType.Current.Tag) = "!"
+  svwOption.Enabled = Not $bRepository
+
+End
+
+Public Sub txtName_Change()
+
+  If Trim(txtName.Text) Then
+    lblFinalDir.Text = dchProject.SelectedPath &/ Trim(txtName.Text)
+  Else
+    lblFinalDir.Text = dchProject.SelectedPath &/ "..."
+  Endif
+
+End

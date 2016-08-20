@@ -1,0 +1,17 @@
+' Gambas class file
+
+Export
+Inherits _TreeView
+
+Public Const _Properties As String = "*,Mode{Select.*}=Single,Sorted,Editable,Border=True,ScrollBar{Scroll.*}=Both"
+Public Const _Group As String = "View"
+Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "16,16"
+Public Const _Similar As String = "ListView"
+
+Public Sub Add((Key) As String, Text As String, Optional (Picture) As Picture, Optional Parent As String, Optional After As String) As _TreeView_Item
+  
+  Return Super._Add(Key, Text, Picture, Parent, After)
+  
+End
+

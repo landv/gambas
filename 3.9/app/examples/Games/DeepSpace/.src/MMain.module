@@ -1,0 +1,348 @@
+' Gambas module file
+
+'
+'   Copyright (C) 2004, Michael Isaac.  All rights reserved. 
+'
+
+Public Obj As Object[]
+Public Bullet As Object[]
+
+Public Canvas As DrawingArea
+
+Public BULLET_SIZE As Float
+Public BULLET_SPEED As Float
+
+Public KEY_LEFT As Boolean
+Public KEY_RIGHT As Boolean
+Public KEY_UP As Boolean
+Public KEY_DOWN As Boolean
+
+Public KEY_FIRE As Boolean
+Public KEY_FIRESTATE As Boolean
+
+Public SCREEN_WIDTH As Integer
+Public SCREEN_HEIGHT As Integer
+
+Public BOT_SPACE As Integer 'Which Obj[] is the bot
+
+Public FPS_TIME As Float
+Public FPS_COUNTER As Integer
+Public FPS_COUNT As Integer
+
+Public ShowObjectLabel As Boolean
+
+Public Sub Main()
+
+    System.Profile = False
+    MMath.InitializeSineTable()
+    ShowObjectLabel = False
+
+    Obj = New Object[]
+    Bullet = New Object[]
+
+    FPS_TIME = Timer
+
+    BULLET_SIZE = 7
+    BULLET_SPEED = 15
+
+    SCREEN_WIDTH = FMain.ClientW
+    SCREEN_HEIGHT = FMain.ClientH
+
+    LoadObjectList()
+
+    FMain.Show()
+End
+
+Public Sub Exit()
+    Obj = Null
+    Bullet = Null
+    Canvas = Null
+End
+
+Sub LoadObjectList()
+    Dim I As Integer
+    Dim J As Integer
+    Dim sData As String
+    Dim tmpO As CObject
+
+    'DIM F AS File
+
+    Dim V As New String[]
+    Dim aLine As New String[]
+
+    sData = File.Load(Application.Path &/ "object.data/main.lst")
+
+    'OPEN Application.Path &/ "object.data/main.lst" FOR READ AS #F
+    'READ #F, sData, Lof(F)
+
+    'Split this into an array and remove the CR character
+    aLine = Split(Replace(sData, Chr$(13), Null), "\n")
+
+    For I = 0 To aLine.Count - 1
+        If (Not (Left$(aLine[I], 1) = "'")) And (Not (aLine[I] = "")) Then
+            V = Split(aLine[I], ",")
+            If V.Count = 4 Then
+                For j = 1 To If(v[1] = "Object1", 100, 1)
+                tmpO = New CObject
+                tmpO.Load2DObject(V[0], V[1], CInt(V[2]), CInt(V[3]))
+                Obj.Add(tmpO)
+                Next
+            End If
+        End If
+    Next
+
+    'CLOSE #F
+End
+
+Sub ApplyPhysics()
+    Dim I As Integer
+    Dim U As Integer
+    Dim Ob As CObject
+
+    If Obj = Null Then Return
+
+    For Each Ob In Obj
+        With Ob
+            .Direction = .Direction + Rad(.Torque)
+
+            If .TurnLeft = True Then .Direction = .Direction + Rad(.Agility)
+            If .TurnRight = True Then .Direction = .Direction - Rad(.Agility)
+
+            If .Direction > Rad(360) Then .Direction = Rad(0)
+            If .Direction < Rad(0) Then .Direction = Rad(360)
+
+            If .Thrust = True Then
+                .MX = .MX + ((Sin(.Direction)) * .Acceleration)
+                .MY = .MY + ((Cos(.Direction)) * .Acceleration)
+            End If
+
+            If (.MX <> 0) Or (.MY <> 0) Then
+                .X = .X + (.MX / 20)
+                .Y = .Y + (.MY / 20)
+            End If
+
+            If .Attack Then
+                AddBullet(CInt(.X), CInt(.Y), .Direction, .ID, 10)
+            End If
+        End With
+    Next
+End
+
+Function IsObjectCollision(O1 As CObject, O2 As CObject) As Boolean
+    If GetDistance(O1.X, O1.Y, O2.X, O2.Y) <= O2.Size Then
+        Return True
+    End If
+End Function
+
+Function IsBulletCollision(O As CObject, B As CBullet) As Boolean
+    If GetDistance(O.X, O.Y, B.X, B.Y) <= O.Size Then
+        Return True
+    End If
+End Function
+
+Sub CollisionHandler()
+
+    Dim I As Integer
+    Dim J As Integer
+    Dim hBullet As CBullet
+    Dim hObj As CObject
+
+    If Obj = Null Then Return
+    If Bullet = Null Then Return
+
+    For I = 0 To Obj.Count - 1
+        For J = 0 To Bullet.Count - 1
+
+            If J > Bullet.Count - 1 Then Break
+            If I > Obj.Count - 1 Then Break
+
+            hObj = Obj[I]
+            hBullet = Bullet[J]
+
+            If Not (hBullet.Owner = hObj.ID) Then
+                If IsBulletCollision(hObj, hBullet) Then
+
+                    hObj.Hull = hObj.Hull - hBullet.Damage
+                    Bullet.Remove(J)
+
+                    If hObj.Hull <= 0 Then
+                        If I = 0 Then
+                            'Message("Player was just killed.")
+                        Else
+                            Obj.Remove(I)
+                        End If
+                    End If
+                End If
+            End If
+        Next
+    Next
+
+'     FOR J = 0 TO (Obj.Count - 1)
+'         FOR I = 0 TO (Obj.Count - 1)
+'             IF I <> J THEN 
+'                 IF IsObjectCollision(Obj[J], Obj[I]) THEN 
+'                     'This is where Objects collide, and we need
+'                     'calculate forces here.
+'                 END IF 
+'             END IF 
+'         NEXT
+'     NEXT
+End
+
+Public Sub AddBullet(CX As Integer, CY As Integer, D As Float, OwnMe As String, Dmg As Integer)
+    Dim B As New CBullet
+
+    With B
+        .X = CX
+        .Y = CY
+        .Direction = D
+        .Owner = OwnMe
+        .Damage = Dmg
+    End With
+
+    Bullet.Add(B)
+End
+
+Sub MoveBullets()
+    Dim I As Integer
+
+    If Bullet = Null Then Return
+
+    For I = 0 To Bullet.Count - 1
+        If I > Bullet.Count - 1 Then Break
+
+        With Bullet[I]
+            .X = .X + ((Sin(.Direction)) * BULLET_SPEED)
+            .Y = .Y + ((Cos(.Direction)) * BULLET_SPEED)
+        End With
+
+        If ((Bullet[I].X > SCREEN_WIDTH) Or (Bullet[I].X < 0)) Or ((Bullet[I].Y > SCREEN_HEIGHT) Or (Bullet[I].Y < 0)) Then
+            Bullet.Remove(I)
+        End If
+    Next
+End
+
+Sub RenderBullets()
+    Dim B As CBullet
+
+    Draw.Foreground = Color.Cyan
+    Draw.FillColor = Color.Blue
+    Draw.FillStyle = 1
+
+    Randomize
+
+    For Each B In Bullet
+        Draw.Ellipse(B.X, B.Y, BULLET_SIZE, BULLET_SIZE)
+    Next
+End
+
+Public Sub RenderObjects()
+    Dim I, J As Integer
+    Dim Ob As CObject
+    Dim Size As Integer
+    Dim aPoint As Integer[]
+    Dim A, D As Float
+    Dim Tag As String
+
+    Draw.Foreground = Color.Cyan
+    For Each Ob In Obj
+        With Ob
+            Size = .Degree.Count
+
+            aPoint = .Points
+            
+            aPoint.Resize(Size * 2)
+
+            J = 0
+            For I = 0 To Size - 1
+                A = .Direction + Rad(.Degree[I])
+                D = .Distance[I]
+                aPoint[J] = .X + (Sin(A) * D)
+                Inc J
+                aPoint[J] = .Y + (Cos(A) * D)
+                Inc J
+            Next
+
+            Draw.Polygon(aPoint)
+        End With
+    Next
+
+    If ShowObjectLabel Then
+        Draw.Foreground = Color.Green
+        For Each Ob In Obj
+            With Ob
+                Tag = .ID & " " & .Hull & "%"
+                Draw.Text(Tag, .X - (Draw.TextWidth(Tag) / 2), .Y - (35))
+            End With
+        Next
+    Endif
+End
+
+Sub CheckObjectWarp()
+    Dim Ob As CObject
+
+    For Each Ob In Obj
+        With Ob
+            If .Y > SCREEN_HEIGHT Then .Y = 0
+            If .Y < 0 Then .Y = SCREEN_HEIGHT
+
+            If .X > SCREEN_WIDTH Then .X = 0
+            If .X < 0 Then .X = SCREEN_WIDTH
+        End With
+    Next
+End
+
+Public Sub MainLoop()
+
+    Dim eTime As Float
+
+    ApplyPhysics()
+    CollisionHandler()
+
+    MoveBullets()
+
+    If Canvas = Null Then Return
+
+    CheckObjectWarp()
+
+    'Canvas.Clear()
+
+    Draw.Begin(Canvas)
+    Draw.FillRect(0, 0, Draw.W, Draw.H, Draw.Background)
+
+    eTime = Timer
+    If (eTime - FPS_TIME) > 1 Then
+        FPS_TIME = eTime
+        FPS_COUNT = FPS_COUNTER
+        FPS_COUNTER = 0
+    Else
+        Inc FPS_COUNTER
+    Endif
+
+    RenderObjects()
+    RenderBullets()
+
+    Draw.Foreground = Color.Red
+
+    Draw.Font.Bold = True
+    Draw.Text("Object Count: " & Obj.Count, 1, 0)
+    Draw.Text("Bullet Count: " & Bullet.Count, 1, Draw.Font.Height * 1)
+    Draw.Text("FPS         : " & FPS_COUNT, 1, Draw.Font.Height * 2)
+
+    Draw.End()
+End
+
+Function GetDistance(X1 As Float, Y1 As Float, X2 As Float, Y2 As Float) As Float
+    'DIM A AS Integer
+    'DIM B AS Integer
+
+    'A = (X1 - X2)
+    'B = (Y1 - Y2)
+
+    'I'm not sure about gambas, but in VB the ^ operator
+    'makes calculations we dont really need.  This might speed up
+    'the process.  And we need as much speed as we can get.
+
+    'RETURN Sqr((A * A) + (B * B))
+    Return Hyp(X1 - X2, Y1 - Y2)
+End

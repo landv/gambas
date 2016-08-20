@@ -1,0 +1,22 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,29,9)
+  Background = Color.TextBackground
+  Arrangement = Arrange.Fill
+  { Panel1 Panel
+    MoveScaled(1,1,26,6)
+    Background = Color.TextBackground
+    Arrangement = Arrange.Horizontal
+    Padding = 2
+    { lblShortcut Label
+      MoveScaled(3,1,17,4)
+      Background = Color.TextBackground
+      Expand = True
+    }
+    { btnClear ToolButton
+      MoveScaled(21,1,4,4)
+      Picture = Picture["icon:/small/clear"]
+    }
+  }
+}

@@ -1,0 +1,103 @@
+' Gambas class file
+
+Static Public Sub Encode(Path As String) As String
+  
+  Dim iInd As Integer
+  Dim sRes As String
+  Dim sCar As String
+  
+  For iInd = 1 To Len(Path)
+    sCar = Mid$(Path, iInd, 1)
+    If sCar = " " Then 
+      sCar = "+"
+    Else If IsLetter(sCar) Or If IsDigit(sCar) Or If InStr("-._~,$!/[]", sCar) Then 
+    Else 
+      sCar = "%" & Hex$(Asc(sCar), 2)
+    Endif
+    sRes &= sCar
+  Next
+
+  Return sRes
+  
+End
+
+Static Public Sub Decode(Path As String) As String
+  
+  Dim iInd As Integer
+  Dim sRes As String
+  Dim sCar As String
+  
+  For iInd = 1 To Len(Path)
+    sCar = Mid$(Path, iInd, 1)
+    If sCar = "%" Then 
+      sCar = Chr$(Val("&H" & Mid$(Path, iInd + 1, 2)))
+      iInd += 2
+    Else If sCar = "+" Then 
+      sCar = " "
+    Endif
+    sRes &= sCar
+  Next
+
+  Return sRes  
+  
+End
+
+Static Private Sub HandleQuery(URL As String, bClear As Boolean, Field As String, Value As String) As String
+  
+  Dim I, iPos As Integer
+  Dim sElt As String
+  Dim aQuery As String[]
+  
+  iPos = InStr(URL, "?")
+  If iPos = 0 Then 
+    If bClear Then
+      Return URL
+    Else
+      Return URL & "?" & Encode(Field) & "=" & Encode(Value)
+    Endif
+  Endif
+  
+  aQuery = Split(Mid$(URL, iPos + 1), "&")
+  URL = Left$(URL, iPos - 1)
+  
+  Field = Encode(Field)
+  Value = Encode(Value)
+  
+  For I = 0 To aQuery.Max
+    sElt = aQuery[I]
+    If sElt = Field Or If sElt Begins Field & "=" Then
+      aQuery.Remove(I)
+      Break
+    Endif
+  Next
+  
+  If Not bClear Then
+    If Value Then
+      aQuery.Add(Field & "=" & Value)
+    Else
+      aQuery.Add(Field)
+    Endif
+  Endif
+  
+  If aQuery.Count Then
+    Return URL & "?" & aQuery.Join("&")
+  Else
+    Return URL
+  Endif
+  
+End
+
+
+Static Public Sub SetQuery(URL As String, Field As String, Optional Value As String) As String
+  
+  Return HandleQuery(URL, False, Field, Value)
+  
+End
+
+Static Public Sub UnsetQuery(URL As String, Field As String) As String
+  
+  Return HandleQuery(URL, True, Field, "")
+  
+End
+
+

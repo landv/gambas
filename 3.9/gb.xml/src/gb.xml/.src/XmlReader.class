@@ -1,0 +1,104 @@
+' Gambas class file
+
+Export
+Inherits _XmlReader
+
+Property InputStream As Stream
+Property Read Eof As Boolean
+Property Read State As Integer
+
+Private $stream As Stream
+Private $state As Integer = 0
+Private $DataBuffer As String
+Private $posBuffer As Integer
+Private $lenBuffer As Integer
+
+Private Function InputStream_Read() As Stream
+
+  Return $stream
+
+End
+
+Private Sub InputStream_Write(Value As Stream)
+
+  $stream = Value
+
+End
+
+Public Sub FromString(data As String)
+  
+  If Not data Then Error.Raise(("Data buffer is empty."))
+  $DataBuffer = data
+  $posBuffer = 0
+  $lenBuffer = Len(data)
+  
+End
+
+
+Public Function Read() As Integer
+  
+  Dim sBuf As String
+  
+  If $DataBuffer Then
+    
+    If $posBuffer = $lenBuffer Then Return XmlReaderNodeType.EndStream
+    
+    Do
+      Inc $posBuffer
+      sBuf = Mid($DataBuffer, $posBuffer, 1)
+      $state = Me._ReadChar(sBuf)
+    Loop Until ($state <> 0 And Me.ReadFlags[$state]) Or $posBuffer = $lenBuffer
+  
+    If $posBuffer = $lenBuffer Then Return XmlReaderNodeType.EndStream
+    Return $state
+  
+  Endif
+  
+  If Not $stream Then Return 0
+  If Eof($stream) Then Return XmlReaderNodeType.EndStream
+  
+  Do
+    sBuf = Read #$stream, 1
+    $state = Me._ReadChar(sBuf)
+  Loop Until ($state <> 0 And Me.ReadFlags[$state]) Or Eof($stream)
+  
+  If Eof($stream) And $state = 0 Then Return XmlReaderNodeType.EndStream
+  Return $state
+  
+End
+
+Public Sub Open(path As String)
+  
+  Dim fichier As File
+  If Left(Path) <> "/" Then Path = ".." &/ Path
+  fichier = Open path For Input
+  Me.InputStream = fichier
+  
+End
+
+Public Sub Close()
+  
+  If $stream Then 
+    Close #$stream
+  Endif
+  
+  $posBuffer = 0
+  Me._Close()
+  
+End
+
+
+
+Private Function Eof_Read() As Boolean
+
+  If $DataBuffer Then Return $posBuffer = $lenBuffer
+  If Not $stream Then Return False
+  Return Eof($stream)
+
+End
+
+Private Function State_Read() As Integer
+
+  Return $state
+
+End

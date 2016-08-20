@@ -1,0 +1,41 @@
+' Gambas class file
+
+Static Private $sFont As String
+Static Private $bShowFixed As Boolean
+
+Static Public Function Run(Optional sFont As String, Optional bShowFixed As Boolean) As String
+
+  $sFont = sFont
+  $bShowFixed = bShowFixed
+  If FFontChooser.ShowModal() Then
+    Return $sFont
+  Endif
+
+End
+
+
+Public Sub btnOK_Click()
+
+  $sFont = dlgFont.SelectedFont
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub Form_Open()
+
+  dlgFont.FixedOnly = $bShowFixed
+  dlgFont.SelectedFont = $sFont
+
+End
+
+Public Sub dlgFont_Activate()
+
+  btnOK.Value = True
+
+End

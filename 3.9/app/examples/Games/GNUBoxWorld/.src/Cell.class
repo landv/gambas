@@ -1,0 +1,78 @@
+' Gambas class file
+
+'    Copyright(C)2010. Autor: Pablo Mileti  
+
+'This program Is free software: you can redistribute it And / Or modify it under the terms Of the GNU General Public License As published by the Free Software Foundation, either version 3 Of the License, Or (at your option)any later version.
+
+'This program Is distributed In the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty Of MERCHANTABILITY Or FITNESS For A PARTICULAR PURPOSE.See the GNU General Public License For more details.
+
+'You should have received a Copy Of the GNU General Public License along With this program.IfNot, see < http: / / www.gnu.org / licenses / > .
+
+Public Const gbFloor As Integer = 0
+Public Const gbMovable As Integer = 1
+Public Const gbMovableOnTarget As Integer = 2
+Public Const gbTarget As Integer = 3
+Public Const gbObstacle As Integer = 4
+
+Public Busy As Boolean
+Public Movable As Boolean
+Public Target As Boolean
+Public Pic As Picture
+Public Type As Integer
+
+Public Sub _new(type As Integer)
+  Select Case type
+
+  Case 0
+      Me.Type = Me.gbFloor
+      Me.Busy = False
+      Me.Movable = False
+      Me.Pic = Picture["piso.png"]
+      Me.Target = False
+
+  Case 1
+      Me.Type = Me.gbMovable
+      Me.Busy = True
+      Me.Movable = True
+      Me.Pic = Picture["movible.png"]
+      Me.Target = False
+
+  Case 2
+      Me.Type = Me.gbMovableOnTarget
+      Me.Busy = True
+      Me.Movable = True
+      Me.Pic = Picture["movibleendestino.png"]
+      Me.Target = True
+
+  Case 3
+      Me.Type = Me.gbTarget
+      Me.Busy = False
+      Me.Movable = False
+      Me.Pic = Picture["destino.png"]
+      Me.Target = True
+
+  Case 4
+      Me.Type = Me.gbObstacle
+      Me.Busy = True
+      Me.Movable = False
+      Me.Pic = Picture["obstaculo.png"]
+      Me.Target = False
+
+End Select
+
+End
+
+Public Sub FixObstaculo(hLeft As Cell, hRight As Cell)
+  
+  Dim sSuffix As String
+  
+  If Me.Type <> gbObstacle Then Return
+  
+  If Not hLeft Or If hLeft.Type <> gbObstacle Then sSuffix &= "l"
+  If Not hRight Or If hRight.Type <> gbObstacle Then sSuffix &= "r"
+  
+  If Not sSuffix Then Return
+  
+  Pic = Picture["obstaculo-" & sSuffix & ".png"]
+  
+End

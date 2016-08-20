@@ -1,0 +1,90 @@
+' Gambas class file
+
+''' A SpinBox used for entering angles in degrees.
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Action,Value"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "24,4"
+
+Event Change
+
+Property Value As Float
+Property Read Text As String
+
+Private spnAngle As SpinBox
+Private btnReset As ToolButton
+Private btnLeft As ToolButton
+Private btnRight As ToolButton
+
+Public Sub _new()
+  
+  Me._Arrangement = Arrange.Horizontal
+  
+  spnAngle = New SpinBox(Me) As "spnAngle"
+  spnAngle.Border = False
+  spnAngle.Expand = True
+  spnAngle.MinValue = -359
+  spnAngle.MaxValue = 359
+  
+  btnReset = New ToolButton(Me) As "btnReset"
+  btnReset.Picture = Picture["icon:/small/clear"]
+  btnReset.W = 24
+  
+  btnLeft = New ToolButton(Me) As "btnLeft"
+  btnLeft.Picture = Picture["icon:/small/rotate-left"]
+  btnLeft.W = 24
+  
+  btnRight = New ToolButton(Me) As "btnRight"
+  btnRight.Picture = Picture["icon:/small/rotate-right"]
+  btnRight.W = 24
+  
+  Me.Proxy = spnAngle
+  
+End
+
+
+Private Function Value_Read() As Float
+
+  Return spnAngle.Value
+
+End
+
+Private Sub Value_Write(Value As Float)
+
+  spnAngle.Value = CInt(Value) Mod 360
+
+End
+
+Public Sub btnLeft_Click()
+  
+  spnAngle.Value = (spnAngle.Value + 90) Mod 360
+  
+End
+
+Public Sub btnRight_Click()
+  
+  spnAngle.Value = (spnAngle.Value - 90) Mod 360
+  
+End
+
+Public Sub spnAngle_Change()
+  
+  Raise Change
+  
+End
+
+Private Function Text_Read() As String
+
+  Return CStr(Value_Read())
+
+End
+
+Public Sub btnReset_Click()
+  
+  spnAngle.Value = 0
+  
+End

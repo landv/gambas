@@ -1,0 +1,130 @@
+' Gambas class file
+
+Export
+
+Property Value As Variant
+Property CasID As Integer
+
+Private $oMemcached As Memcached
+
+Private $sKey As String
+Private $iCasID As Integer
+
+' Public Function Append(sKey As String, vData As String) As Integer
+'
+'   'FIXME: workaround for storing the string size, retrieve and store again
+'
+'   If $bDebug Then _PrintDebug(Subst("Appending &1 => &2", sKey, vData))
+'
+'   Return Store("append", sKey, vData)
+'
+' End
+'
+' Public Function Prepend(sKey As String, vData As String) As Integer
+'
+'   If $bDebug Then _PrintDebug(Subst("Prepending &1 => &2", sKey, vData))
+'
+'   Return Store("prepend", sKey, vData)
+'
+' End
+
+Public Function Increment(Optional iStep As Integer = 1) As Integer
+
+  Dim sResponse As String
+
+  sResponse = $oMemcached.Exec(Subst("incr &1 &2", $sKey, iStep),, True)
+
+  If sResponse <> "NOT_FOUND" Then
+    Return Val(sResponse)
+  Endif
+
+End
+
+Public Function Decrement(Optional iStep As Integer = 1) As Integer
+
+  Dim sResponse As String
+
+  sResponse = $oMemcached.Exec(Subst("decr &1 &2", $sKey, iStep),, True)
+
+  If sResponse <> "NOT_FOUND" Then
+    Return Val(sResponse)
+  Endif
+
+End
+
+Public Function Delete() As Boolean
+
+  Return $oMemcached.Exec("delete " & $sKey) = Memcached.Deleted
+
+End
+
+Public Function Touch(iExpire As Integer) As Boolean
+
+  Return $oMemcached.Exec(Subst("touch &1 &2", $sKey, iExpire)) = Memcached.Touched
+
+End
+
+Public Sub _new(sKey As String, oClient As Memcached)
+
+  $sKey = sKey
+
+  $oMemcached = oClient
+
+End
+
+Private Function Value_Read() As Variant
+
+  Return $oMemcached.Retrieve($sKey, $iCasID)[$sKey]
+
+End
+
+Private Sub Value_Write(Value As Variant)
+
+  Store("set", $sKey, Value)
+
+End
+
+Public Sub _free()
+
+  $oMemcached = Null
+
+End
+
+Public Function Cas(sData As String) As Boolean
+
+  Return Not Store("set", $sKey, sData,,, $iCasID) = Memcached.Exists
+
+End
+
+Private Function CasID_Read() As Integer
+
+  Return $iCasID
+
+End
+
+Private Sub CasID_Write(Value As Integer)
+
+  $iCasID = Value
+
+End
+
+Private Function Store(sCommand As String, sKey As String, vData As Variant, Optional iExpire As Integer = 0, Optional sFlags As Integer = 0, Optional iCas As Integer) As Integer
+
+  Dim iLen As Integer
+
+  If $oMemcached.Status <> Net.Connected Then
+    Error.Raise(("Not connected"))
+  Endif
+
+  iLen = Len(Str(vData))
+
+  If iCas Then
+    sCommand = "cas"
+    sCommand = Subst("&1 &2 &3 &4 &5 &6\r\n", sCommand, sKey, sFlags, iExpire, iLen, iCas)
+  Else
+    sCommand = Subst("&1 &2 &3 &4 &5\r\n", sCommand, sKey, sFlags, iExpire, iLen)
+  Endif
+
+  Return $oMemcached.Exec(sCommand, vData)
+
+End

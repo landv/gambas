@@ -1,0 +1,417 @@
+[WELCOME]
+
+<p>Willkommen zu <b>Gambas</b>!</p>
+
+<p><b>Gambas</b> ist eine graphische IDE, die auf einem modernen <i>Basic</i>-Interpreter basiert.</p>
+
+<p><b>Gambas</b> möchte Sie in die Lage versetzen, schnell und einfach komplexe Programme zu schreiben.
+Sauberes Programmieren bleibt natürlich <i>Ihr</i> Verantwortungsbereich...</p>
+
+<p>Viel Spaß damit!</p>
+
+<p align=right>Beno&icirc;t Minisini<br>
+<u>gambas@users.sourceforge.net</u></p>
+
+
+[STARTUP]
+
+<p>Jedes Projekt braucht eine <i>Startklasse</i>. Diese muss eine 
+gemeinsame (statische) Methode namens <i>Main</i> ohne Argumente definieren,
+die dann als Startpunkt für die Anwendung fungiert.</p>
+
+<p>Sie können die Startklasse definieren, indem Sie im Projektfenster mit der rechten Maustaste
+darauf klicken und <i>Startklasse</i> im Popupmenü auswählen.</p>
+
+<p>Wenn die Startklasse ein Formular ist, muss sie keine Methode <i>Main</i> besitzen,
+da ein Formular bereits eine vorgefertigte mitbringt.</p>
+
+<p>Diese vordefinierte Methode tut dasselbe wie es in <i>Visual
+Basic&trade;</i> Standard ist: Das Formular wird instanziert und
+angezeigt.</p>
+
+
+[OPEN]
+
+<p>Die <b>OPEN</b>-Anweisung von <b>Gambas</b> funktioniert nicht
+wie die in <i>Visual Basic&trade;</i>. Sie liefert keine Dateinummer zurück,
+sondern ein <i>File</i>-Objekt.</p>
+
+<p>Also, anstatt</p>
+
+<pre>DIM handle AS Integer
+...
+OPEN "myfile" FOR READ AS #handle</pre>
+
+<p>schreiben Sie:</p>
+
+<pre>DIM handle AS File
+...
+handle = OPEN "myfile" FOR READ</pre>
+
+
+[CATDIR]
+
+<p>Wussten Sie, dass Sie Verzeichnis- und Dateinamen mit dem
+<b><tt>&/</tt></b>-Operator
+zusammenhängen können? Dieser Operator kümmert sich automatisch um die
+Schrägstriche, sodass
+im Ergebnis weder welche fehlen noch doppelt vorhanden sind.</p>
+
+<p>Zum Beispiel:</p>
+
+<pre>PRINT "/home/gambas" &/ ".bashrc"
+/home/gambas/.bashrc
+
+PRINT "/home/gambas/" &/ "/tmp" &/ "foo.bar"
+/home/gambas/tmp/foo.bar
+</pre>
+
+<p>Ist das nicht praktisch?</p>
+
+
+[EXEC]
+
+<p>Sie können eine ausführbare Datei aus Ihrem gesamten Projekt machen.
+Wählen Sie <i>Ausführbare Datei erstellen</i> aus dem Menü <i>Projekt</i>.</p>
+
+<p>Wenn <b>Gambas</b> eine ausführbare Datei erstellt, legt es das Ergebnis
+direkt im Verzeichnis Ihres Projekts ab. Der Name der Datei ist der des Projekts.</p>
+
+
+[PATH]
+<p>
+Relative Pfade haben in <b>Gambas</b> eine spezielle Bedeutung.
+Sie verweisen immer auf Dateien innerhalb Ihrer Projekte.
+<p>
+Es gibt kein Konzept von <i>current directory</i>, und keinen Befehl wie
+<tt>CHDIR</tt>, um es zu ändern.
+<p>
+<b>Vorsicht:</b> um Projektdateien zu öffnen, dürfen Sie nur relative
+Pfadangaben verwenden, weil absolute Pfadangaben nicht mehr vorhanden sind,
+wenn Sie eine ausführbare Datei erstellt haben.
+
+
+[GLOBAL]
+
+In <b>Gambas</b> gibt es <u>keine globalen Variablen</u>!
+<p>
+Hilfsweise können Sie solche Variablen im Modul Main definieren und als
+<tt>PUBLIC</tt> deklarieren.
+<p>
+Wenn Sie in Ihrem Projekt kein Modul Main haben, sondern ein Formular
+Main, dann deklarieren Sie sie dort als <tt>STATIC PUBLIC</tt>.
+<p>
+Um diese Variablen zu verwenden, müssen Sie den Namen des Moduls/Formulars
+Main angeben: <tt>MyMainModule.MyGlobalVariable</tt> oder
+<tt>MyMainForm.MyGlobalVariable</tt>.
+
+
+[EMPTY]
+
+<p>Wenn Sie prüfen wollen, ob ein String leer ist, müssen Sie nicht die
+<b>Len()</b>-Funktion verwenden. Sie können den String direkt mit <b>IF</b>
+testen, da ein leerer String <b>FALSE</b> und ein nicht-leerer <b>TRUE</b>
+ergibt.</p>
+
+<p>Also, anstatt</p>
+
+<pre>IF Len(MyString) > 0 THEN ...
+IF Len(MyString) = 0 THEN ...</pre>
+
+<p>sollten Sie schreiben:</p>
+
+<pre>IF MyString THEN ...
+IF NOT MyString THEN ...</pre>
+
+
+[TRANSLATE]
+
+<p>Gambas-Anwendungen sind übersetzbar, vorausgesetzt Sie geben an, welche
+Ausdrücke übersetzt werden sollen und welche nicht.</p>
+<p>Um Ausdrücke zum Übersetzen zu markieren, setzen Sie sie einfach in
+Klammern:<p>
+
+<pre>PRINT ("Übersetze mich")
+PRINT "Aber mich nicht übersetzen!"</pre>
+
+
+[EVENT]
+
+<p>Jedes Steuerelement und jedes Objekt kann Events auslösen. Es besitzt
+einen <i>Event-Observer</i> und einen <i>Event-Gruppennamen</i>.</p>
+
+<p>Der Event-Observer fängt jedes vom Objekt ausgelöste Event auf, und
+der Event-Gruppenname ist das Präfix des Methodennamens, der beim Auslösen
+des Events aufgerufen wird.</p>
+
+<p>Standardmäßig ist der Event-Observer das Objekt, in dem Sie das Steuerelement
+erstellt haben, und der Gruppenname ist der Name des Elements.</p>
+
+<p>Auf diese Art und Weise erhält ein Formular die Events aller seiner
+Steuerelemente.</p>
+
+<pre>' Gambas form
+DIM hButton AS Button
+
+PUBLIC SUB _new()
+&nbsp;&nbsp;hButton = NEW Button(ME) AS "MyButton"
+END
+
+PUBLIC SUB MyButton_Click()
+&nbsp;&nbsp;PRINT "Sie haben auf MyButton geklickt!"
+END
+</pre>
+
+
+[FORM]
+
+<p>In <b><i>Gambas</i></b> ist ein Formular sein eigener Event-Observer,
+sodass Sie seine Events (wie <i>Resize</i>, <i>Activate</i> etc.) im 
+Code der Klasse selbst managen können.</p>
+
+<p>Auf diese Weise werden auch Umsteiger von <i>Visual Basic&trade;</i> 
+nicht orientierungslos :-).</p>
+
+
+[EMBED]
+
+<p>Sie können jedes Formular in andere Formulare mit <b><i>Gambas</i></b>
+einbetten!</p>
+
+<p>Um so etwas mächtiges zu tun, erstellen Sie einfach eine Instanz des Formulars,
+wobei Sie als letztes Argument für den Konstruktor den Container für die Form angeben.</p>
+
+<p>Zum Beispiel:</p>
+<p><tt>DIM hForm AS MyDialog<br>
+DIM hSuperControl AS MyForm<br><br>
+' Dialog erstellen<br>
+hForm = NEW MyDialog<br>
+' Formular in den Dialog einfügen<br>
+' Achtung: Diese Form hat zwei Konstruktorargumente vor dem Containerargument<br>
+hSuperControl = NEW MyForm(Param1, Param2, MyDialog)<br>
+' Die Form auf die richtige Größe bringen<br>
+hSuperControl.Move(8, 8, 128, 64)<br>
+</tt></p>
+
+<p>Achtung: Eine eingebettete Form ist immer noch ihr eigener Event-Observer und
+erhält damit ihre Events selbst!</p>
+
+
+[GROUP]
+
+<p>Jedes Steuerelement hat eine <i>(Group)</i>-Eigenschaft. Wenn diese Eigenschaft
+gesetzt ist, ist das Präfix des Eventhandlers eben dieser Gruppenname und nicht
+der Namen des Elements.</p>
+
+<p>Nehmen wir an, Sie haben einen <i>Button</i> namens <b>btnAction</b> mit
+folgendem <i>Click</i>-Eventhandler:</p>
+
+<pre>PUBLIC SUB btnAction_Click()</pre>
+
+<p>Wenn Sie die <i>(Group)</i>-Eigenschaft auf <i>MyGroup</i> setzen, sieht der
+Eventhandler, der die Events des Buttons erhält, so aus:</p>
+
+<pre>PUBLIC SUB MyGroup_Click()</pre>
+
+<p>Dadurch können Sie die Events von verschiedenen Steuerelementen in einer
+einzelnen Funktion behandeln. Die Steuerelemente einer Gruppe müssen nicht vom
+selben Typ sein!</p>
+
+<p><b>Bemerkung:</b> Der <i>Visual Basic&trade;</i>-Veteran mag das Konzept der
+<i>Control Arrays</i> wiedererkennen, aber in einer leistungsfähigeren Implementation. :-)</p>
+
+
+[TAG]
+
+<p>Jedes Steuerelement hat eine <i>Tag</i>-Eigenschaft, genau wie in
+<i>Visual Basic&trade;</i>. Sie erfüllt für das Objekt selbst keinen Zweck,
+sondern kann vom Programmierer benutzt werden, um irgendwelche <b>VARIANT</b>-Daten
+zu speichern, die er für nützlich hält.</p>
+
+<p>Das ist zum Beispiel praktisch, wenn Sie mehrere Steuerelemente derselben Gruppe
+in einem Eventhandler unterscheiden wollen.</p>
+
+
+[LAST]
+
+<p>Das <b>LAST</b>-Schlüsselwort gibt das letzte Steuerelement zurück,
+das ein Event ausgelöst hat. Dies ist sehr nützlich, wenn Sie einen Eventhandler
+schreiben wollen, der vom Namen eines Elements unabhängig ist.</p>
+
+<p>Zum Beispiel, wenn Sie einen Taschenrechner schreiben wollen, können Sie zehn
+Buttons erstellen, einen für jede Ziffer, und jeden in derselben <i>Gruppe</i> namens "Digit".
+Angenommen, Sie setzen die <i>Tag</i>-Eigenschaft von jedem Button auf die Ziffer, die er
+repräsentiert, dann können Sie folgenden Eventhandler schreiben:</p>
+
+<p><tt>PUBLIC SUB Digit_Click()<br><br>
+&nbsp;&nbsp;Display = Display & LAST.Tag<br>
+&nbsp;&nbsp;RefreshDisplay<br><br>
+END</tt></p>
+
+
+[LEFT]
+
+<p>Die bekannten <i>BASIC</i>-Routinen <b>Left$</b>, <b>Right$</b>
+und <b>Mid$</b> sind in <b><i>Gambas</i></b> verbessert:</p>
+
+<p>Der zweite Parameter von <b>Left$</b> und <b>Right$</b> ist optional, und
+standardmäßig 1.</p>
+
+<p><tt>Left$("Gambas")</tt> ergibt <tt>"G"</tt><br>
+<tt>Right$("Gambas")</tt> ergibt <tt>"s"</tt></p>
+
+<p>Er kann auch negativ sein und gibt so die Anzahl Zeichen an, die nicht
+zurückgegeben werden sollen.</p>
+
+<p><tt>Left$("Gambas", -2)</tt> ergibt <tt>"Gamb"</tt><br>
+<tt>Right$("Gambas", -2)</tt> ergibt <tt>"mbas"</tt></p>
+
+<b>Genauso kann das dritte Argument von <b>Mid$</b> negativ sein und gibt
+dann die Anzahl an Zeichen vom Ende des Strings an, die nicht zurückgegeben werden sollen.</p>
+
+<p><tt>Mid$("Gambas", 2, -2)</tt> ergibt <tt>"amb"</tt>
+
+
+[OBSERVER]
+
+<p>Die <b>Observer</b>-Klasse erlaubt es, alle Ereignisse eines Objekts
+abzufangen, bevor sie tatsächlich gesendet werden.</p>
+
+<pre>MyTextBox = NEW TextBox(ME) AS "MyTextBox"
+MyObserver = NEW Observer(MyTextBox) AS "MyObserver"
+...
+PUBLIC SUB MyObserver_KeyPress()
+  DEBUG "Got it first"
+END
+
+PUBLIC SUB MyTextBox_KeyPress()
+  DEBUG "Got it next"
+END</pre>
+
+Der Observer kann ein Ereignis abbrechen, um zu vermeiden, dass ein
+Objekt es überhaupt auslöst.
+
+
+[STRING]
+
+<p>Gambas verwendet den <b>UTF-8</b>-Zeichensatz, um Ausdrücke im
+Arbeitsspeicher zu verwalten.</p>
+
+<p>Aber alle standardmäßigen Stringfunktionen von Gambas verwenden
+<b>ASCII</b>: 
+<tt>Left</tt>, <tt>Mid</tt>, <tt>Right</tt>, <tt>UCase</tt>...
+
+<p>Wenn Sie UTF-8-Ausdrücke bearbeiten wollen, müssen Sie die Methoden der
+statischen <b>String</b>-Klasse verwenden, die den gleichen Namen haben wie
+ihre standardmäßigen Entsprechungen.
+
+<pre>PRINT Len("bébé");; Left$("bébé", 3)
+6 bé
+PRINT String.Len("bébé");; String.Left("bébé", 3)
+4 béb</pre>
+
+
+[ASSIGNMENT]
+
+<p>Gambas hat die Zuweisungs-Abkürzungen eingebaut, die C/C++ Programmierer
+gewohnt sind.
+
+<p><tt>MyVariable += 2</tt> ist gleichbedeutend mit <tt>MyVariable =
+MyVariable + 2</tt>
+
+<p><tt>MyVariable &= "Great"</tt> ist dasselbe wie 
+<tt>MyVariable = MyVariable & "Great"</tt>
+
+<p>Und so weiter...
+
+
+[DEBUG]
+
+<p>Sie können die <b>DEBUG</b>-Anweisung benützen, um Debug-Meldungen auf
+der Konsole auszugeben (vor allem die standardmäßigen Fehlerausgaben). Das
+funktioniert genau so wie die <tt>PRINT</tt>-Anweisung.
+
+<p>Bei diesen Meldungen wird die Klasse, Methode und Zeilennummer der
+<tt>DEBUG</tt>-Anweisung vorangestellt.
+
+<p>Die Debug-Meldungen werden automatisch gelöscht, wenn eine ausführbare
+Datei ohne Debug-Informationen erstellt wird.
+
+
+[TRY]
+
+<p>Die Fehlerbehandlung wird in Gambas mit folgenden Befehlen ausgeführt:
+<b><tt>TRY</tt></b>, <b><tt>ERROR</tt></b>, <tt>CATCH</tt>, und
+<tt>FINALLY</tt>.
+
+<p><tt>TRY</tt> versucht, einen Befehl auszuführen, ohne einen Fehler
+auszulösen. Die Anweisung <tt>ERROR</tt> wird direkt danach verwendet, um
+zu prüfen, ob der Befehl korrekt ausgeführt werden konnte.
+
+<pre>TRY MyFile = OPEN "/etc/password" FOR WRITE
+IF ERROR THEN PRINT "Ich kann nicht!"</pre>
+
+
+[CATCH]
+
+<p>Die Fehlerbehandlung wird in Gambas mit folgenden Befehlen ausgeführt:
+<b><tt>TRY</tt></b>, <b><tt>ERROR</tt></b>, <tt>CATCH</tt>, und
+<tt>FINALLY</tt>.
+
+<p><tt>CATCH</tt> zeigt den Beginn einer Fehlerbehandlungsroutine in einer
+Funktion oder Prozedur an.
+Dieser Befehl wird ans Ende des Codes gestellt.
+
+<p>Die CATCH-Anweisung wird ausgeführt, wenn ein Fehler zwischen dem Anfang
+und dem Ende der Funktion oder Prozedur auftritt.
+
+<p>Wenn während der Verarbeitung der CATCH-Anweisung ein Fehler auftritt,
+wird er er normal angezeigt.
+
+<pre>SUB ProcessFile(FileName AS STRING)
+  ...
+  OPEN FileName FOR READ AS #hFile
+  ...
+  CLOSE #hFile
+CATCH ' wird nur ausgeführt, wenn ein Fehler auftritt
+  PRINT "Kann Datei nicht laden "; FileName
+END</pre>
+
+
+[FINALLY]
+
+<p>Die Fehlerbehandlung wird in Gambas mit folgenden Befehlen ausgeführt:
+<b><tt>TRY</tt></b>, <b><tt>ERROR</tt></b>, <tt>CATCH</tt>, und
+<tt>FINALLY</tt>.
+
+<p><tt>FINALLY</tt> leitet den Code am Ende der Funktion ein, der
+ausgeführt wird, selbst wenn ein Fehler in der Funktion aufgetreten ist.
+
+<p>Der Abschnitt FINALLY ist nicht obligatorisch. Wenn in der Funktion eine
+CATCH-Anweisung vorkommt, muss FINALLY davor stehen.
+ 
+<p>Wenn im FINALLY-Abschnitt ein Fehler auftritt, wird er normal angezeigt.
+
+<pre>SUB ProcessFile(FileName AS STRING)
+  ...
+  OPEN FileName FOR READ AS #hFile
+  ...
+FINALLY ' wird immer ausgeführt, auch wenn ein Fehler auftritt
+  CLOSE #hFile
+CATCH ' wird nur bei einem Fehler ausgeführt
+  PRINT "Kann die Datei nicht ausgeben "; FileName
+END</pre>
+
+
+[END]
+
+<p>Jetzt haben Sie alle Tipps des Tages gelesen. Ich hoffe, Sie sind jetzt ein
+<b>Gambas</b>-Experte geworden! :-)</p>
+
+<p>Wenn Sie neue Tipps beisteuern wollen, senden Sie sie an folgende Adresse:</p>
+<p><u>gambas@users.sourceforge.net</u></p>
+
+<p>Danke im Voraus!</p>
+
+<p>Deutsche Übersetzung der Tipps: Georg Brandl, <i>g.brandl@gmx.net</i></p>
+

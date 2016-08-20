@@ -1,0 +1,42 @@
+' Gambas module file
+
+Public Sub Main()
+  
+  Dim hImage As New Image(2288, 1280, Color.Transparent)
+  Dim fAngle As Float
+  Dim fWidth As Float
+  
+  Paint.Begin(hImage)
+  
+  For fAngle = 0 To Pi(2) Step 0.02
+
+    Paint.Brush = Paint.Color(Color.SetAlpha(&H3398C3&, 245))
+    
+    For fWidth = 10 DownTo 7
+      Paint.LineWidth = fWidth
+    
+      Paint.MoveTo(hImage.W / 2 - 700, hImage.H - 250)
+      Paint.RelLineTo(hImage.W * Cos(fAngle), - hImage.W * Sin(fAngle))
+      Paint.Stroke
+    Next
+    
+    fAngle += Pi(0.02)
+  Next
+  
+  For fAngle = 0 To Pi(2) Step 0.02
+
+    Paint.Brush = Paint.Color(Color.SetAlpha(&HFFFFFF&, 192))
+    Paint.LineWidth = 6
+    
+    Paint.MoveTo(hImage.W / 2 - 700, hImage.H - 250)
+    Paint.RelLineTo(hImage.W * Cos(fAngle), - hImage.W * Sin(fAngle))
+    Paint.Stroke
+    
+    fAngle += Pi(0.02)
+  Next
+  
+  Paint.End
+  
+  hImage.Save("~/beam.png")
+  
+End

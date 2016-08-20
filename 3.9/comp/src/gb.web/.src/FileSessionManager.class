@@ -1,0 +1,316 @@
+' Gambas class file
+
+Inherits SessionManager
+
+Private $sPath As String
+Private $hLock As File
+
+Private $eStartup As Float
+
+Private $cVal As Collection
+
+Private Sub GetPath(Optional sId As String) As String
+  
+  Return "/tmp/gambas." & System.User.Id &/ "session" &/ sId 
+  
+End
+
+Public Sub _new(sId As String)
+  
+  $sPath = GetPath(sId) '"/tmp/gambas." & System.User.Id &/ "session" &/ $sId
+  
+End
+
+Private Sub LockSession() 
+  
+  Dim iInd As Integer
+  
+  For iInd = 1 To 10
+    Try $hLock = Lock $sPath & ".lock"
+    If Not Error Then Return
+    Sleep 0.1
+  Next
+  
+  Main.Log("LockSession: unable to lock session")
+  
+End
+
+Private Sub UnlockSession()
+  
+  Try Unlock #$hLock
+  
+End
+
+Private Sub CheckSession() As Boolean
+  
+  'Main.Log("TimeOut: " & CStr(CDate($eTimeOut)) & " Startup: " & CStr(CDate($eStartup)) & " Now: " & CStr(Now))
+  Return (CFloat(Now) - $eStartup) >= Me.Timeout
+  
+End
+
+Public Sub Load() As Boolean
+  
+  Dim hFile As File
+
+  Main.Log("LoadSession: " & $sPath)
+  ' Main.Log("System.Language = " & System.Language)
+  ' Main.Log("System.Charset = " & System.Charset)
+  ' Main.Log(System.Backtrace.Join(" "))
+
+  If Not Exist($sPath) Then Goto _ABANDON
+  
+  'Main.Log("LoadSession: #2")
+  
+  LockSession
+  hFile = Open $sPath
+  
+  Me.Size = Lof(hFile)
+  
+  Input From #hFile
+
+  'IF ReadValue() = 1 THEN GOTO _ABANDON
+  $eStartup = Read As Float
+  Me.Timeout = Read As Float
+  If CheckSession() Then 
+    Main.Log("LoadSession: timeout: " & CStr(CDate(Me.TimeOut)) & " Startup: " & CStr(CDate($eStartup)) & " Now: " & CStr(Now))
+    Goto _ABANDON
+  Endif
+  
+  $cVal = Read #hFile As Variant 
+  Try Session.CookiePath = Read #hFile As String
+  '$cVal = ReadValue()
+  Me.Modified = False
+  Close #hFile
+  Input From Default
+  UnlockSession
+  
+  '$cNew = New Collection
+  
+  Main.Log("LoadSession: OK")
+  Return  
+
+Catch
+
+  Main.Log("LoadSession: " & Session.Id & ": " & Error.Where & ": " & Error.Text)
+  'Try File.Save(File.Dir($sPath) &/ "session.error", Error.Where & ": " & Error.Text & "\n")
+  'Try Kill $sPath & ".error"
+  'Try Copy $sPath To $sPath & ".error"
+
+_ABANDON:
+
+  Main.Log("LoadSession: abandon")
+
+  'Main.Log("LoadSession: #4")
+
+  If hFile Then
+    Close #hFile
+    Input From Default 
+    UnlockSession
+  Endif
+  
+  Session.Abandon
+  Return True
+  
+End
+
+Public Sub Save()
+  
+  Dim hFile As File
+  Dim sTemp As String
+  Dim eNow As Float
+
+  'PRINT "<h2>Save session</h2>"
+  'PRINT "<p>"; $sId; "<br>"; $bModify; "<br>"; $sPath; "<br>"; $cVal.Count
+  
+  'Startup time is always modified
+  If Not Me.Modified Then 
+  
+    eNow = Now
+    If (eNow - $eStartup) < (1 / 86400) Then Return
+  
+    Try Main.Log("SaveSession: " & Session.Id & ": update timestamp")
+
+    LockSession
+    
+    'Main.Log("SaveSession: " & $sPath & ": Just update time stamp : " & Exist($sPath))
+    hFile = Open $sPath For Write 
+    Write #hFile, Now As Float
+    Close #hFile
+    
+    UnlockSession
+
+  Else
+  
+    sTemp = Temp$()
+
+    Try Main.Log("SaveSession: " & Session.Id)
+    
+    LockSession
+    
+    ' hFile = Open $sPath
+    ' Seek #hFile, SizeOf(gb.Float) * 2
+    ' $cVal = Read #hFile As Variant
+    ' Close #hFile
+    ' 
+    ' For Each vVal In $cNew
+    '   sKey = $cNew.Key
+    '   If TypeOf(vVal) = gb.Object And If vVal = $cNew Then
+    '     $cVal[sKey] = Null
+    '   Else
+    '     $cVal[sKey] = vVal
+    '   Endif
+    ' Next
+    
+    'Main.Log("SaveSession: " & $sPath & ": Save all session : " & Exist($sPath))
+    hFile = Open sTemp For Output Create 
+
+    Write #hFile, Now As Float
+    Write #hFile, Me.Timeout As Float
+
+    'Output To #hFile
+    'WriteValue($cVal)
+    Write #hFile, $cVal As Variant
+    Write #hFile, Session.CookiePath As String
+    'Output To Default
+    
+    Me.Size = Lof(hFile)
+    Close #hFile
+    
+    Try Kill $sPath
+    Move sTemp To $sPath
+    
+    UnlockSession
+    
+    Me.Modified = False
+    
+  Endif
+    
+  Try Main.Log("SaveSession: OK")
+
+  ' If Exist($sPath) Then
+  '   Main.Log("SaveSession: " & $sPath & " (" & Stat($sPath).Size & ")")
+  ' Else
+  '   Main.Log("SaveSession: " & $sPath & " NOT FOUND!")
+  ' Endif
+  
+Catch
+  
+  Try Main.Log("SaveSession: " & Error.Where & ": " & Error.Text)
+  
+End
+
+Public Sub CheckUnique()
+  
+  Dim hLock As File
+  Dim sPrefix As String
+  Dim aKill As String[]
+  Dim sKill As String
+  Dim sDir As String
+  
+  If Session.Prefix Then
+    sPrefix = Session.Prefix
+  Else
+    sPrefix = CGI["REMOTE_ADDR"]
+  Endif
+  
+  sDir = GetPath()
+    
+  If Session.Unique Then 
+  
+    Try hLock = Lock GetPath(".unique.lock")
+    If Error Then Return
+    
+    Do
+      aKill = Dir(sDir, sPrefix & ":*")
+      If aKill.Count = 0 Then Break
+      For Each sKill In aKill
+        Try Kill sDir &/ sKill
+      Next
+    Loop
+    
+    Unlock #hLock
+  
+  Else
+
+    ' dNow = Now
+    ' For Each sFile In Dir(sDir, sPrefix & ":*")
+    '   Try hStat = Stat(sDir &/ sFile)
+    '   If Error Then Continue
+    '   If DateDiff(hStat.LastModified, dNow, gb.Hour) >= 24 Then
+    '     Try Kill sDir &/ sFile
+    '   Endif
+    ' Next
+    
+  Endif
+  
+End
+
+
+Public Sub Create()
+  
+  Dim sPrefix As String
+  
+  sPrefix = "/tmp/gambas." & System.User.Id
+  
+  Repeat 
+    Session._MakeId()
+    $sPath = GetPath(Session.Id) 'sPrefix &/ "session" &/ $sId  
+  Until Not Exist($sPath)
+  
+  'TRY MKDIR $sPrefix
+  Try Mkdir GetPath() 'sPrefix &/ "session"
+  
+  CheckUnique
+  
+  $cVal = New Collection
+  $eStartup = Now
+  
+End
+
+Public Sub Abandon()
+
+  $sPath = ""
+  $cVal = Null
+  
+  Try Kill $sPath
+  Try Kill $sPath & ".lock"
+
+End
+
+Public Sub _get(Key As String) As Variant
+  
+  If $cVal Then Return $cVal[Key]
+  
+End
+
+Public Sub Exist(Key As String) As Boolean
+  
+  If $cVal Then Return $cVal.Exist(Key)
+  
+End
+
+
+Public Sub _put(Value As Variant, Key As String)
+
+  'If Not $cVal Then CreateSession
+  $cVal[Key] = Value
+  Me.Modified = True
+    
+End
+
+Public Sub GetKeys() As String[]
+
+  Dim aKey As New String[]
+
+  For Each $cVal
+    aKey.Add($cVal.Key)
+  Next
+  Return aKey
+
+End
+
+Public Sub Exit()
+  
+  Save()
+  
+End

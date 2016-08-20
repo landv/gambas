@@ -1,0 +1,121 @@
+' Gambas module file
+
+Public Const FORM As String = "text/x-gambas-form"
+Public Const CONTROL As String = "text/x-gambas-control"
+Public Const FILE As String = "text/x-gambas-file"
+Public Const URI As String = "text/uri-list"
+Public Const DATA As String = "text/x-gambas-data"
+Public Const CLASS As String = "text/x-gambas-class"
+Public Const LIST As String = "text/x-gambas-list"
+Public Const MENU As String = "text/x-gambas-menu"
+Public Const TABLE As String = "text/x-gambas-table"
+
+Private $cFormat As New Collection
+
+Public Sub _init()
+  
+  $cFormat["text/plain"] = ("Plain text")
+  $cFormat["text/html"] = ("HTML text")
+  $cFormat[FORM] = ("Gambas form data")
+  $cFormat[MENU] = ("Gambas menu data")
+  $cFormat[FILE] = ("Gambas project file path")
+  $cFormat[URI] = ("URI list")
+  
+End
+
+Public Sub GetName(sFormat As String) As String
+  
+  Dim sName As String = $cFormat[sFormat]
+  
+  If sName Then 
+    Return sName
+  Else
+    Return ("Unknown format") & " (" & sFormat & ")"
+  Endif
+  
+End
+
+Public Sub UnEscapeURI(URL As String) As String
+  
+  Dim iInd As Integer
+  Dim sRes As String
+  Dim sCar As String
+  
+  For iInd = 1 To Len(URL)
+    sCar = Mid$(URL, iInd, 1)
+    If sCar = "%" Then 
+      sCar = Chr$(Val("&H" & Mid$(URL, iInd + 1, 2)))
+      iInd += 2
+    Else If sCar = "+" Then 
+      sCar = " "
+    Endif
+    sRes &= sCar
+  Next
+
+  Return sRes  
+  
+End
+
+Public Sub GetMime(sPath As String) As String
+  
+  Select Case Lower(File.Ext(sPath))
+    Case "css"
+      Return "text/css"
+    Case "jpg", "jpeg", "jpe"
+      Return "image/jpeg"
+    Case "png"
+      Return "image/png"
+    Case "svg"
+      Return "image/svg+xml"
+    Case "gif"
+      Return "image/gif"
+    Case "tiff", "tif"
+      Return "image/tiff"
+    Case "js"
+      Return "text/javascript"
+    Case "odt"
+      Return "application/vnd.oasis.opendocument.text"
+    Case "doc"
+      Return "application/msword"
+    Case "ods"
+      Return "application/vnd.oasis.opendocument.spreadsheet"
+    Case "xls"
+      Return "application/msexcel"
+    Case "pdf"
+      Return "application/pdf"
+    Case "zip"
+      Return "application/zip"
+    Case "html", "htm"
+      Return "text/html"
+    Case "txt", "", "am", "in", "sh", "m4"
+      Return "text/plain"
+    Case "avi"
+      Return "video/x-msvideo"
+    Case "mpg", "mpeg"
+      Return "video/mpeg"
+    Case "ps"
+      Return "application/postscript"
+    Case "dwg"
+      Return "application/acad"
+    Case "wav"
+      Return "audio/x-wav"
+    Case "ogg"
+      Return "application/ogg"
+    Case "jar"
+      Return "application/x-jar"
+    Case "kml"
+      Return "text/kml"
+    Case "xml"
+      Return "text/xml"
+    'Case "sfd"
+    '  Return "application/vnd.font-fontforge-sfd"
+    'Case "bdf"
+    '  Return "application/x-font-bdf"
+    Case Else 
+      Try Return DesktopMime.FromFile(sPath).Type
+  End Select
+  
+End
+  
+  
+

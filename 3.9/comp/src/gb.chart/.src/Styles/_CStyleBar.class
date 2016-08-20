@@ -1,0 +1,109 @@
+' Gambas class file
+
+Private $iType As Integer
+Private $sidChart As String
+Public Sub _New(Value As Integer, sidChart As String)
+  
+  $iType = Value
+  $sidChart = sidChart
+  
+End
+
+
+Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
+  Dim oSerie As _CSerie
+  Dim cnt As Integer
+  Dim fMaxVal As Float
+  Dim itmp As Float
+  Dim i, j As Integer
+  Dim f As Float
+  Dim YHeadersW As Integer
+  Dim iTwoLetterHeight As Integer = draw.Font.Height * 2 * Chart._$ColChart[$sidChart]._fProportionnal
+  Dim fTabPos As Float
+  Dim iXUnit As Float
+  Dim iStaticSpace As Integer = 5 * Chart._$ColChart[$sidChart]._fProportionnal
+  Dim hRect As New CRect
+  Dim hUnits As CPoint
+  Dim fCumul As Float
+  Dim fPrevCumul As Float
+  'Get the maxValue for Y Labels width and value
+  
+  ' FOR i = 0 TO Chart.DataSet[0].Data.Max
+  '   itmp = Chart.DataSet[0].Data[i]
+  '   IF fMaxVal < itmp THEN fMaxVal = itmp
+  '   IF cnt < draw.TextWidth(itmp & "  ") THEN cnt = draw.TextWidth(itmp & "  ")
+  ' NEXT 
+  'draw.Font.Size = 11 * Chart._fProportionnal
+  
+  Select Case $iType
+    Case ChartType.Bars
+      fMaxVal = MTools.GetChartMaxValue($sidChart)
+    Case ChartType.BarsStacked
+     fMaxVal = MTools.GetChartMaxCumulate($sidChart)
+    Case ChartType.BarsPercent
+      fMaxVal = 100
+  End Select
+  If fMaxVal = 0 Then Return 
+  
+
+    YHeadersW = CX + iStaticSpace * 2
+
+  
+  'Set the graph square position value
+
+    hRect.Top = CY '+ iTwoLetterHeight
+    hRect.Bottom = CY + CH '- iStaticSpace * 2
+
+  hRect.Left = YHeadersW
+  hRect.Right = CX + CW - YHeadersW / 2
+  
+  
+  
+  
+  
+  hUnits = MTools.DrawVertChartAxes($sidChart, hRect, 0, fMaxVal, Align.Center)
+  'fTabPos = hRect.Top
+  Select Case $iType
+    Case ChartType.Bars
+      fTabPos = hRect.Top + hUnits.x / 2
+      For Each oSerie In Chart._$ColChart[$sidChart]
+        For i = 0 To Chart._$ColChart[$sidChart].Count - 1
+          draw.ForeGround = Color.DarkGray
+          Draw.FillStyle = Fill.Solid
+          Draw.FillColor = Chart._$ColChart[$sidChart].Colors[i]
+          draw.Rect(hRect.Left, fTabPos + i * (hUnits.x - 1), oSerie[i] * hUnits.y, hUnits.x)
+        Next
+        fTabPos += i * hUnits.x + hUnits.x
+      Next
+    Case ChartType.BarsStacked, ChartType.BarsPercent
+      hUnits.X = (hRect.Bottom - hRect.Top) / (Chart._$ColChart[$sidChart].CountDataSets * 2)
+      fTabPos = hRect.Top + hUnits.x / 2
+      For Each oSerie In Chart._$ColChart[$sidChart]
+        fCumul = hRect.Left + 1
+        If $iType = ChartType.BarsPercent Then 
+          fMaxVal = 0
+          For i = 0 To Chart._$ColChart[$sidChart].Count - 1
+            fMaxVal += oSerie[i]
+          Next
+        Endif
+        If fMaxVal = 0 Then Return 
+        For i = 0 To Chart._$ColChart[$sidChart].Count - 1 
+          If $iType = ChartType.BarsPercent Then             
+            f = ((oSerie[i] / fMaxVal * 100) * hUnits.y) + 1
+          Else 
+            f = (oSerie[i] * hUnits.y) + 1
+          Endif
+          draw.ForeGround = Color.DarkGray
+          Draw.FillStyle = Fill.Solid
+          Draw.FillColor = Chart._$ColChart[$sidChart].Colors[i]
+          draw.Rect(fCumul, fTabPos, f, hUnits.X)
+          fCumul += f - 1
+          
+        Next
+        'fPrevCumul = fCumul * hUnits.Y
+        fTabPos += hUnits.x * 2
+      Next
+  End Select
+  Draw.Clip.Enabled = False
+  'MTools.DrawSymbol(5, 15, 15)
+End

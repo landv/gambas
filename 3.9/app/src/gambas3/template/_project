@@ -1,0 +1,108 @@
+# Gambas Project File 3.0
+Title=$(TITLE)
+@
+@IF CONSOLE OR GAME OR WEB
+  @IF COMPONENT
+Startup=MTest
+  @ELSE
+Startup=MMain
+  @ENDIF
+@ENDIF
+@IF GRAPHIC
+  @IF COMPONENT
+Startup=FTest
+  @ELSE
+Startup=FMain
+  @ENDIF
+@ENDIF
+@
+@IF DATABASE
+Component=gb.db
+@ENDIF
+@
+@IF NETWORK
+Component=gb.net
+Component=gb.net.curl
+Component=gb.net.smtp
+@ENDIF
+@
+@IF REGEXP
+Component=gb.pcre
+@ENDIF
+@
+@IF SETTINGS
+Component=gb.settings
+@ENDIF
+@
+@IF SCIENCE
+Component=gb.gsl
+@ENDIF
+@
+@IF VISUAL
+Component=gb.vb
+@ENDIF
+@
+@IF XML
+Component=gb.xml
+Component=gb.xml.xslt
+@ENDIF
+@
+@IF OPENGL
+Component=gb.opengl
+@ENDIF
+@IF GRAPHIC
+Component=gb.image
+  @IF GTK
+Component=gb.gtk
+Component=gb.form
+    @IF OPENGL
+Component=gb.gtk.opengl
+    @ENDIF
+  @ENDIF
+  @IF QT
+Component=gb.qt4
+Component=gb.qt4.ext
+Component=gb.form
+    @IF OPENGL
+Component=gb.qt4.opengl
+    @ENDIF
+  @ENDIF
+  @IF GUI
+Component=gb.gui
+Component=gb.form
+    @IF OPENGL
+Component=gb.gui.opengl
+    @ENDIF
+  @ENDIF
+  @IF DATABASE
+Component=gb.db.form
+  @ENDIF
+@ENDIF
+@
+@IF IMAGE
+Component=gb.image.effect
+@ENDIF
+@
+@IF GAME
+Component=gb.image
+Component=gb.image.io
+Component=gb.sdl
+Component=gb.sdl.sound
+@ENDIF
+@
+@IF WEB
+Component=gb.web
+@ENDIF
+@
+@IF TRANSLATE
+Translate=1
+Language=$(LANGUAGE)
+@ENDIF
+@IF VISUAL
+ControlPublic=1
+ModulePublic=1
+@ENDIF
+@IF COMPONENT
+MakeComponent=1
+@ENDIF
+

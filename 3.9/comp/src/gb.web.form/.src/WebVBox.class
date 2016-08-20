@@ -1,0 +1,15 @@
+' Gambas class file
+
+Export
+
+Inherits WebContainer
+
+Public Const _Properties As String = "*,-Arrangement"
+Public Const _DefaultArrangement As String = "V"
+Public Const _Similar As String = "WebContainer"
+
+Public Sub _new()
+  
+  Me.Arrangement = Arrange.Vertical
+  
+End

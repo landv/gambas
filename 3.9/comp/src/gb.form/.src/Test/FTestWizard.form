@@ -1,0 +1,30 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,71,64)
+  Arrangement = Arrange.Fill
+  Margin = True
+  { Wizard1 Wizard
+    MoveScaled(4,4,64,54)
+    Count = 4
+    Border = False
+    Animated = True
+    Index = 0
+    Text = ("Étape n°1")
+    { Button1 Button
+      MoveScaled(19,22,17,6)
+      Text = ("Button1")
+    }
+    Index = 1
+    Text = ("Étape n°2")
+    { LCDLabel1 LCDLabel
+      MoveScaled(8,9,44,16)
+      Text = ("LCDLabel1")
+    }
+    Index = 2
+    Text = ("Étape n°3")
+    Index = 3
+    Text = ("Étape n°4")
+    Index = 0
+  }
+}

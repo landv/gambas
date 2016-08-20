@@ -1,0 +1,72 @@
+' Gambas class file
+
+Private $hStream As Stream
+
+Public Sub SetStream(hStream As Stream)
+  
+  $hStream = hStream
+  
+End
+
+
+Public Sub Disconnect()
+
+End
+
+Public Sub Connect((Host) As String, (Port) As Integer)
+
+End
+
+''Send data to the OpenSSL process, this is then
+''sent to the server.
+Public Function Send(Data As String, Multiline As Boolean) As String
+
+  Print #$hStream, Data
+
+  If Multiline Then
+    Return GetResponse()
+  Else
+    Return GetLine()
+  Endif
+
+End
+
+''Get data from the stream until the EOL is reached
+Public Function GetLine() As String
+
+  Dim sLine As String
+
+  Line Input #$hStream, sLine
+
+  ' If sLine Not Begins "+" Then
+  '   Error.Raise("Invalid POP response: " & sLine)
+  ' Endif
+
+  Return sLine
+
+End
+
+''Get data from the stream until the EOF as defined
+''by the specifications is reached.
+Public Function GetResponse() As String
+
+  Dim Response As String
+  Dim sLine As String
+
+  Do
+
+    Line Input #$hStream, sLine
+    If sLine = "." Then Break
+    If Not Response And If sLine Begins "-ERR" Then
+      Response = sLine
+      Break
+    Endif
+    Response &= sLine & "\n"
+
+  Loop
+
+  'Print Response
+
+  Return Response
+
+End

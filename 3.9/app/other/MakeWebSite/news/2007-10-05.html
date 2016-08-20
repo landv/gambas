@@ -1,0 +1,16 @@
+Release of Gambas 1.9.90
+<p>
+This release is the last one before the first <b>release candidate</b> of Gambas 2.
+<p>
+This is mainly a bug fixes release:
+<ul>
+  <li>An old bug was fixed in the interpreter that made the debugger
+      display the value of global variables incorrectly.
+  <li>Class names used as functions now are cast operators, unless they have a <tt>_call</tt>
+      special method defined.
+  <li>An old bug was fixed in the Settings class, that made the interpreter stops without
+      printing any error message.
+  <li>The <tt>gb.ldap</tt> component was removed: apparently it does not work, and its develor
+      does not maintain it anymore.
+</ul>      
+See the <a href="changelog2.html">ChangeLog</a> for the other bug fixes.

@@ -1,0 +1,124 @@
+' Gambas module file
+
+Export 
+
+Private $cCache As New Collection
+Private $cKey As New Collection
+
+Private $aDay As String[] 
+Private $aMonth As String[] 
+
+Public Sub FormatDate(dDate As Date) As String
+  
+  dDate -= Frac(Date(Now)) ' Go to GMT
+
+  If Not $aDay Then 
+    $aDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    $aMonth = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  Endif
+  
+  Return $aDay[WeekDay(dDate)] & ", " & Format(Day(dDate), "00") & " " & $aMonth[Month(dDate) - 1] & " " & Year(dDate) & " " & Format(Time(dDate), "hh:nn:ss") & " GMT"
+  
+End
+
+Public Function _get(sVar As String) As String
+
+  Dim sVal As String
+
+  sVal = $cCache[sVar]
+  If Not sVal And If Not $cKey.Exist(sVar) Then
+    sVal = Application.Env[sVar]
+    $cCache[sVar] = sVal
+  Endif
+  Return sVal
+
+End
+
+Public Sub _put(sVal As String, sVar As String)
+
+  $cCache[sVar] = sVal
+  $cKey[sVar] = True
+
+End
+
+Public Sub Encode(Path As String) As String
+  
+  Return URL.Encode(Path)
+  
+End
+
+Public Sub Decode(Path As String) As String
+  
+  Return URL.Decode(Path)
+  
+End
+
+Public Sub _init()
+  
+  Dim sRoot As String
+  Dim sPath As String
+  
+  'DIM sLang AS String
+  'sLang = Trim(Split(_get("HTTP_ACCEPT_LANGUAGE"), ",")[0])
+  'IF System.Charset = "UTF-8" THEN sLang &= ".UTF-8"
+  'System.Language = sLang
+  
+  ' Compatibility with Gambas <= 3.6
+  Class.Load("URL")
+  Component.Load("gb.util.web")
+  
+  File.In.EndOfLine = gb.Windows
+  File.Out.EndOfLine = gb.Windows
+  
+  sRoot = CGI["SCRIPT_NAME"]
+  
+  If CGI["SERVER_SOFTWARE"] Begins "thttpd/2.25b" Then
+    If sRoot Ends "/" Then
+      sRoot = Left$(sRoot, -1)
+      sPath = CGI["PATH_INFO"]
+      If sRoot Ends sPath Then
+        sRoot = Left(sRoot, Len(sRoot) - Len(sPath))
+      Endif
+    Endif
+  Endif
+  
+  If sRoot Ends "/" Then sRoot = Left$(sRoot, -1)
+  If Not sRoot Then sRoot = "/."
+  CGI["SCRIPT_NAME"] = sRoot
+  
+End
+
+Public Sub Dump()
+  
+  Dim sName As String
+  
+  Output To Default
+
+  Response.Buffered = False
+  Response.Begin
+  Print "<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"></head><body>"
+  Print "<h1>CGI environment</h1>"
+  Print "<table border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><th>Name</th><th>Value</th></tr>"
+  For Each sName In Application.Env
+    Print "<tr><td><tt>"; Html(sName); "</tt></td><td><tt>"; Html(CGI[sName]); "</tt></td></tr>"
+  Next
+  Print "</table></body>"
+  Response.End
+  Quit 
+  
+End
+
+
+Public Sub Error(Text As String)
+  
+  Output To Default
+
+  Response.Buffered = False
+  Response.Begin
+  Print "<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"></head><body>"
+  Print "<h1>"; ("Error in CGI script"); "</h1>"
+  Print "<pre>"; Text; "</pre></body>"
+  Response.End
+  Quit 
+  
+End

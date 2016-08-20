@@ -1,0 +1,124 @@
+' Gambas class file
+
+Event foo
+Private $colSprite As New Collection
+Private $bMouseDown As Boolean
+Private $memZoom As Integer
+Private $bInCursor As Boolean
+
+Public Sub _new()
+  
+  Dim hMv As MapView = GetMapView()
+  Dim hPlus As Sprite = New Sprite(Image.Load("plus.png"))
+  
+  hPlus.Move(30, 70)
+  
+  $colSprite!bar = New Sprite(Image.Load("bar.png"))
+  $colSprite!bar.Move(hplus.X + (hPlus.Width - $colSprite!bar.Width) / 2, hplus.Rect.Bottom - hplus.Height / 3)
+  $colSprite!bar.Height = 150 + hplus.height / 3
+  
+  $colSprite!plus = hplus
+  
+  $colSprite!minus = New Sprite(Image.Load("minus.png"))
+  $colSprite!minus.Move($colSprite!plus.X, $colSprite!bar.Rect.Bottom - hPlus.Height / 3)
+  
+  $colSprite!cursor = New Sprite(Image.Load("cursor.png"))
+  $colSprite!cursor.Move($colSprite!plus.X, $colSprite!minus.y - $colSprite!cursor.Height - (150 / hMv.Map.MaxZoom * hMv.Map.Zoom))
+  $memZoom = hMv.Map.Zoom
+  
+End
+
+Public Sub _Draw()
+  
+  Dim hSpr As Sprite
+  Dim hMv As MapView = GetMapView()
+  
+  If $memZoom <> hMv.Map.Zoom Then 
+    $colSprite!cursor.Move($colSprite!plus.X, $colSprite!minus.y - (150 / hMv.Map.MaxZoom * hMv.Map.Zoom))
+    $memZoom = hMv.Map.Zoom
+  Endif
+  For Each hSpr In $colSprite
+    
+    hSpr.Draw
+    
+  Next
+  
+End
+
+Private Function GetMapView() As MapView
+  
+  Return Object.Parent(Me)
+  
+End
+
+Public Sub _MouseMove()
+  
+  Dim hMv As MapView = GetMapView()
+  Dim iZoom As Integer
+  
+  'hMv.Mouse = Mouse.Default
+  If $colSprite!plus.Rect.Contains(Mouse.X, Mouse.Y) Then
+    hMv.Mouse = Mouse.Pointing
+    Return
+  Endif
+  If $colSprite!cursor.Rect.Contains(Mouse.X, Mouse.Y) Then
+    hMv.Mouse = Mouse.SizeV
+    
+    Return
+  Endif
+  If $colSprite!minus.Rect.Contains(Mouse.X, Mouse.Y) Then
+    hMv.Mouse = Mouse.Pointing
+  Else
+    
+    hMv.Mouse = Mouse.Default
+  Endif
+  If $bInCursor Then 
+    $colSprite!cursor.Y = Max($colSprite!plus.Rect.bottom, Min($colSprite!minus.Y - $colSprite!cursor.Height / 2, Mouse.y - $colSprite!cursor.Height / 2))
+    iZoom = hMv.Map.MaxZoom / 150 * ($colSprite!minus.Y - Mouse.y)
+    If iZoom <> hMv.Map.Zoom Then 
+      hMv.Map.Zoom = iZoom
+      $memZoom = iZoom
+    Endif
+    hMv.Refresh
+  Endif
+  
+End
+
+Public Sub _MouseDown()
+  
+  Dim hMv As MapView = GetMapView()
+
+  If Mouse.Left Then 
+    $bMouseDown = True
+    
+    If $colSprite!plus.Rect.Contains(Mouse.X, Mouse.Y) Then 
+      hMv._ZoomUp(hMv.ClientW / 2, hMv.ClientH / 2)
+      hMv.Refresh
+      hMv.Lock = True
+    Endif
+    If $colSprite!minus.Rect.Contains(Mouse.X, Mouse.Y) Then 
+      hMv._ZoomDown(hMv.ClientW / 2, hMv.ClientH / 2)
+      hMv.Refresh
+      hMv.Lock = True
+    Endif
+    If $colSprite!cursor.Rect.Contains(Mouse.X, Mouse.Y) Then 
+      $bInCursor = True
+      hMv.Refresh
+      hMv.Lock = True
+    Endif
+    
+  Endif
+  
+End
+
+Public Sub _MouseUp()
+  
+  Dim hMv As MapView = GetMapView()
+
+  hMv.Lock = False
+  $bInCursor = False
+  $bMouseDown = False
+  
+End
+
+

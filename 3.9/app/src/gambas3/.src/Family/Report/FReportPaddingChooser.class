@@ -1,0 +1,97 @@
+' Gambas class file
+
+Static Public Value As String
+
+
+Private Enum BORDER_TOP, BORDER_BOTTOM, BORDER_LEFT, BORDER_RIGHT
+
+Private $aCoordBox As New CoordBox[4]
+Private $aBrush As New CReportBrush[4]
+Private $aBorder As String[] = ["Top", "Bottom", "Left", "Right"]
+
+Public Sub Run(sPadding As String) As Boolean
+  
+  Value = sPadding
+  Return Not Me.ShowModal()
+  
+End
+
+
+Public Sub chkSynchro_Click()
+
+  Dim hCtrl As Control
+
+  For Each hCtrl In [crdBottom, crdLeft, crdRight]
+    hCtrl.Enabled = chkSynchro.Value = False
+  Next
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub btnOK_Click()
+ Dim sBorder As String
+  Dim iBorder As Integer
+  Dim iUse As Integer
+  
+  For iBorder = 0 To 3
+    
+    iUse = If(chkSynchro.Value, BORDER_TOP, iBorder)
+    
+    If Not $aCoordBox[iUse].Value Then Continue
+    If sBorder Then sBorder &= ";"
+    sBorder &= $aBorder[iBorder] & ":"
+    sBorder &= $aCoordBox[iUse].Value '& " " & $aBrush[iUse].ToString()
+    
+  Next
+  
+  Value = sBorder
+  Me.Close(True)
+End
+
+
+Public Sub Form_Open()
+
+  Dim sBorder As String
+  Dim aScan As String[]
+  Dim iBorder As Integer
+  Dim aComp As New String[4]
+  
+  $aCoordBox[BORDER_TOP] = crdTop
+  $aCoordBox[BORDER_BOTTOM] = crdBottom
+  $aCoordBox[BORDER_LEFT] = crdLeft
+  $aCoordBox[BORDER_RIGHT] = crdRight
+  
+  For iBorder = 0 To 3
+    $aCoordBox[iBorder].Clear
+    $aBrush[iBorder] = New CReportBrush
+  Next
+  
+  For Each sBorder In Split(Value, ";")
+    
+    aScan = Scan(sBorder, "*:*")
+    If aScan.Count <> 2 Then Continue
+    iBorder = $aBorder.Find(aScan[0], gb.IgnoreCase)
+    If iBorder < 0 Then Continue
+    
+    aComp[iBorder] = aScan[1]
+    
+   
+        Try $aCoordBox[iBorder].Value = aScan[1]
+  
+      
+  
+  Next
+  
+  If aComp[0] = aComp[1] And If aComp[0] = aComp[2] And If aComp[0] = aComp[3] Then
+    chkSynchro.Value = True
+  Else
+    chkSynchro.Value = False
+  Endif
+
+End

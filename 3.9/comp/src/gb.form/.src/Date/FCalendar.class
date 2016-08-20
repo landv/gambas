@@ -1,0 +1,909 @@
+' Gambas class file
+
+Private $dDate As Date
+Private $dTime As Date
+Private $dStart As Date
+Private $dMonth As Date
+Private $dLast As Date
+Private $iDisabledColor As Integer
+Private $cDateColor As New Collection
+Private $bShort As Boolean
+
+Private $iCurrentTime As Integer = -1
+Private $dCurrentDate As Date
+Private $iMonthWidth As Integer
+
+'Private mnuMonth As Menu
+
+Private Sub CalcMonthWidth()
+
+  Dim W As Integer
+  Dim iMonth As Integer
+  
+  For iMonth = 1 To 12
+    W = Max(W, cmbMonth.Font.TextWidth(DConv(Format(Date(1972, iMonth, 1), "mmmm"))))
+  Next
+  
+  $iMonthWidth = W + cmbMonth.Height
+  
+End
+
+Private Sub FillMonth(bShort As Boolean)
+  
+  Dim iMonth As Integer
+  Dim sFormat As String
+  Dim iIndex As Integer
+  
+  If bShort = $bShort And If cmbMonth.Count Then Return
+  
+  sFormat = If(bShort, "mmm", "mmmm")
+  
+  iIndex = cmbMonth.Index
+  Object.Lock(cmbMonth)
+  cmbMonth.Clear
+  For iMonth = 1 To 12
+    cmbMonth.Add(String.UCaseFirst(DConv(Format(Date(1972, iMonth, 1), sFormat))))
+  Next 
+  cmbMonth.Index = iIndex
+  Object.Unlock(cmbMonth)
+  
+  $bShort = bShort
+  
+End
+
+Private Sub GetTimeFormat() As String
+
+  Dim sFormat As String  
+  
+  sFormat = Format(Time(11, 22, 33), gb.ShortTime)
+  sFormat = Replace(sFormat, "11", "hh")
+  sFormat = Replace(sFormat, "22", "nn")
+  
+  Return sFormat
+  
+End
+
+
+Public Sub _new()
+  
+  panTime.W = Desktop.Scale * 16
+  
+  FillMonth(False)
+  
+  $dDate = Now  
+  SetDate()
+  SetTime(Time($dDate))
+  
+  $iDisabledColor = GetDisabledColor()
+  
+  UpdateFont
+  
+End
+
+Private Sub GetDisabledColor() As Integer
+
+  Dim H, S, V As Integer
+  
+  H = Color[Color.Foreground].Hue
+  S = 0 'Color[Color.Foreground].Saturation
+  V = Color[Color.Foreground].Value
+  
+  If V < 128 Then
+    V = 255 - (255 - Color[Color.Foreground].Value) / 4
+  Else 
+    V /= 4
+  Endif 
+  
+  Return Color.HSV(H, S, V)
+
+End
+
+
+
+Private Sub GetParent() As DateChooser
+  
+  Return Me.Parent
+  
+End
+
+Private Sub CheckDate(dDate As Date) As Date
+  
+  Dim dMin, dMax As Date
+  
+  With GetParent()
+    dMin = .MinValue
+    dMax = .MaxValue
+  End With
+  
+  If dMin And If dDate < dMin Then Return dMin
+  If dMax And If dDate > dMax Then Return dMax
+  
+  Return dDate
+  
+End
+
+
+Private Sub SetDate(Optional iYear As Integer, Optional iMonth As Integer, Optional iDay As Integer)
+  
+  Dim dMonth As Date
+  Dim dDate As Date
+
+  If iYear = 0 And If iMonth = 0 And If iDay = 0 Then
+    $dDate = CheckDate($dDate)
+  Endif
+
+  If iYear <= 0 Then iYear = Year($dDate)
+  If iMonth <= 0 Then iMonth = Month($dDate)
+  If iDay <= 0 Then iDay = Day($dDate)
+  
+  Do  
+    Try dDate = Date(iYear, iMonth, iDay)
+    If Not Error Then Break 
+    Dec iDay
+    If iDay < 28 Then 
+      dDate = Null
+      Break
+    Endif
+  Loop
+
+  If dDate And If CheckDate(dDate) <> dDate Then dDate = Null
+  
+  If dDate Then
+    $dDate = dDate
+    dMonth = Date(Year(dDate), Month(dDate), 1)
+  Else
+    dMonth = $dMonth
+    $dMonth = Null
+  Endif
+  
+  If dMonth <> $dMonth Then
+  
+    $dMonth = dMonth
+    
+    cmbMonth.Index = Month($dMonth) - 1
+    txtYear.Value = Year($dMonth)
+    
+  Endif
+    
+  iDay = WeekDay($dMonth) - System.FirstDayOfWeek
+  If iDay < 1 Then iDay += 7
+  $dStart = $dMonth - iDay
+    
+  dwgMonth.Refresh
+  
+  If $dDate <> $dLast Then 
+    $dLast = $dDate
+    GetParent()._Change    
+  Endif
+  
+  dwgMonth.SetFocus
+  
+End
+
+Public Sub UpdateValue()
+  
+  SetDate()
+  
+End
+
+
+Public Sub SetValue(dDate As Date)
+  
+  SetTime(Time(dDate))
+  SetDate(Year(dDate), Month(dDate), Day(dDate))
+  
+End
+
+Public Sub GetValue() As Date
+  
+  If panTime.Visible Then
+    Return Date($dDate) + $dTime
+  Else
+    Return Date($dDate)
+  Endif
+  
+End
+
+
+Public Sub dwgMonth_Draw()
+
+  Dim I, J As Integer
+  Dim X, Y, W, H As Integer
+  Dim XD, YD As Integer
+  Dim dDate As Date
+  Dim iForeground As Integer
+  Dim iBackground As Integer
+  Dim sKey As String
+  Dim bToday As Boolean
+  Dim hDate As _DateChooser_Date
+  Dim fSize As Float
+  
+  iForeground = dwgMonth.Foreground 'Draw.Foreground
+  iBackground = dwgMonth.Background 'Draw.Background
+  
+  W = dwgMonth.ClientW / 7
+  H = dwgMonth.ClientH / 7
+  
+  If W = 0 Or H = 0 Then Return
+  
+  XD = 0 '(Draw.W - W * 7) / 2
+  YD = dwgMonth.ClientH - H * 6
+  
+  Draw.FillStyle = Fill.Solid
+  Draw.LineStyle = Line.None
+  
+  Draw.Font = dwgMonth.Font
+  fSize = Draw.Font.Size * H / Draw.Font.Height * 0.7
+  Draw.Font.Size = fSize
+  Draw.Font.Bold = True
+
+  X = XD
+  Y = 0
+  For I = 0 To 6
+    Select Case WeekDay($dStart + I)
+      Case 0, 6
+        Draw.FillColor = iBackground
+        Draw.Foreground = Color.SelectedBackground
+      Default
+        Draw.FillColor = Color.SelectedBackground
+        Draw.Foreground = Color.SelectedForeground
+    End Select
+    Draw.Rect(X, Y, W, YD)
+    Draw.Text(Format(CDate($dStart + I), "ddd"), X, Y, W, YD, Align.Center)
+    X += W
+  Next  
+  
+  Draw.LineStyle = Line.Solid
+  Draw.Foreground = Color.LightForeground
+  Draw.Line(XD, YD - 1, XD + Draw.W - 1, YD - 1)
+  Draw.LineStyle = Line.None
+
+  dDate = $dStart
+  Y = YD
+  For J = 0 To 5
+    X = XD
+    For I = 0 To 6
+
+      If CheckDate(dDate) <> dDate Then 
+        Draw.FillRect(X, Y, W, H, Color.Merge(Color.LightForeground, dwgMonth.Background))
+        Goto NEXT_DATE
+      Endif
+      
+      hDate = GetParent()[dDate]
+      
+      iForeground = hDate.Foreground
+      If iForeground = Color.Default Then iForeground = dwgMonth.Foreground
+      iBackground = hDate.Background
+      If iBackground = Color.Default Then iBackground = dwgMonth.Background
+      
+      Draw.Font = hDate.Font
+      Draw.Font.Size = fSize
+
+      If CInt(dDate) = CInt($dDate) Then
+        Draw.FillColor = If(dwgMonth.HasFocus, Color.SelectedBackground, Color.LightForeground)
+        Draw.Foreground = Color.SelectedForeground
+      Else 
+        If Month(dDate) <> Month($dMonth) Then 
+          Draw.FillColor = iBackground
+          Draw.Foreground = Color.Merge(iForeground, dwgMonth.Background)
+        Else
+          Draw.FillColor = iBackground
+          Draw.Foreground = iForeground
+        Endif
+        sKey = CStr(Date(dDate))
+        If $cDateColor.Exist(sKey) Then 
+          If Draw.Foreground = $iDisabledColor Then 
+            Draw.FillColor = Color.Merge(Draw.Foreground, $cDateColor[sKey])
+          Else 
+            Draw.FillColor = $cDateColor[sKey]
+          Endif
+        Endif
+      Endif
+
+      Draw.Rect(X + 1, Y + 1, W - 2, H - 2)
+
+      bToday = CInt(Date(Now)) = CInt(Date(dDate))
+      Draw.Font.Bold = bToday
+      Draw.Font.Underline = hDate.Text
+
+      Draw.Text(Day(dDate), X, Y, W, H, Align.Center)
+      
+      If dDate = $dCurrentDate Then
+        Draw.LineStyle = Line.Solid
+        Draw.FillStyle = Fill.None
+        Draw.Foreground = Color.LightForeground
+        Draw.Rect(X, Y, W, H)
+        Draw.FillStyle = Fill.Solid
+        Draw.LineStyle = Line.None
+      Else If bToday Then 
+        Draw.LineStyle = Line.Solid
+        Draw.FillStyle = Fill.None
+        Draw.Foreground = iForeground
+        Draw.Rect(X, Y, W, H)
+        Draw.FillStyle = Fill.Solid
+        Draw.LineStyle = Line.None
+      Endif
+
+    NEXT_DATE:
+
+      X += W
+      Inc dDate
+      
+    Next 
+    Y += H
+  Next
+
+End
+
+Public Sub cmbMonth_Click()
+
+  SetDate(0, cmbMonth.Index + 1)
+
+End
+
+Public Sub btnPrevMonth_Click()
+
+  If Month($dMonth) = 1 Then 
+    SetDate(Year($dMonth) - 1, 12)
+  Else 
+    SetDate(0, Month($dMonth) - 1)
+  Endif  
+
+End
+
+Public Sub btnNextMonth_Click()
+
+  If Month($dMonth) = 12 Then 
+    SetDate(Year($dMonth) + 1, 1)
+  Else 
+    SetDate(0, Month($dMonth) + 1)
+  Endif  
+
+End
+
+Public Sub txtYear_Change()
+
+  SetDate(txtYear.Value)
+
+End
+
+Public Sub btnPrevYear_Click()
+
+  SetDate(Year($dMonth) - 1)
+
+End
+
+Public Sub btnNextYear_Click()
+
+  SetDate(Year($dMonth) + 1)
+
+End
+
+Public Sub dwgMonth_KeyPress()
+
+  Select Case Key.Code
+  
+    Case Key.Left
+      Dec $dDate
+      SetDate
+      Stop Event
+  
+    Case Key.Right
+      Inc $dDate
+      SetDate
+      Stop Event
+  
+    Case Key.Up
+      $dDate -= 7
+      SetDate
+      Stop Event
+  
+    Case Key.Down
+      $dDate += 7
+      SetDate
+      Stop Event
+      
+    Case Key.Space, Key.Enter, Key.Return
+      dwgMonth_DblClick
+      
+  End Select   
+
+End
+
+Private Sub CalcCurrentDate() As Boolean
+  
+  Dim hDate As _DateChooser_Date
+  Dim W, H As Integer
+  Dim XD, YD As Integer
+  Dim dDate As Date
+  
+  $dCurrentDate = Null
+  
+  W = dwgMonth.ClientW / 7
+  H = dwgMonth.ClientH / 7
+  
+  If W = 0 Or H = 0 Then Return True
+  
+  XD = 0 '(Draw.W - W * 7) / 2
+  YD = dwgMonth.ClientH - H * 6
+
+  If Mouse.Y < YD Then Return True
+  
+  dDate = $dStart + Min(6, Mouse.X \ W) + ((Mouse.Y - YD) \ H) * 7
+  If CheckDate(dDate) <> dDate Then Return True
+  $dCurrentDate = dDate
+  
+  hDate = GetParent()[$dCurrentDate]
+  dwgMonth.Tooltip = hDate.Text
+  
+End
+
+
+Public Sub dwgMonth_MouseDown()
+
+  CalcCurrentDate
+  If Not $dCurrentDate Then Return
+  
+  $dDate = $dCurrentDate
+  SetDate
+
+End
+
+Public Sub btnReload_Click()
+
+  $dDate = Now
+  SetDate
+
+End
+
+Public Sub dwgMonth_DblClick()
+
+  GetParent()._Activate
+
+End
+
+Public Sub UpdateFont()
+
+  cmbMonth.Height = Desktop.Scale * 4
+  panToolbar.H = cmbMonth.Height
+  CalcMonthWidth
+  Form_Resize
+  
+End
+
+Public Sub ClearColors()
+  
+  $cDateColor.Clear
+  dwgMonth.Refresh
+  
+End
+
+
+Public Sub SetColor(dDate As Date, iColor As Integer)
+  
+  Dim sKey As String = CStr(Date(dDate))
+  
+  If iColor = Color.Default Then 
+    $cDateColor.Remove(sKey)
+  Else 
+    $cDateColor[sKey] = iColor
+  Endif
+  dwgMonth.Refresh
+  
+End
+
+Public Sub GetColor(dDate As Date) As Integer
+  
+  Dim sKey As String = CStr(Date(dDate))
+  Dim iColor As Integer
+  
+  Try iColor = $cDateColor[sKey]
+  If Error Then iColor = Color.Default
+  Return iColor
+  
+End
+
+
+Public Sub Form_Resize()
+
+  If panDate.Width < (Desktop.Scale * 36) Then
+    btnNextMonth.Hide
+    btnPrevMonth.Hide
+    If panDate.Width < (Desktop.Scale * 24) Then
+      panSepMonth.Hide
+      btnReload.Hide
+    Else
+      panSepMonth.Show
+      btnReload.Show
+    Endif
+  Else
+    btnNextMonth.Show
+    btnPrevMonth.Show
+  Endif
+  
+  FillMonth(cmbMonth.Width < $iMonthWidth)
+
+End
+
+Public Sub Form_KeyPress()
+
+  If Key.Code = Key.Escape Then GetParent()._Cancel
+
+End
+
+Public Sub SetFocus()
+  
+  dwgMonth.SetFocus
+  
+End
+
+Public Sub dwgTime_Draw()
+  
+  Dim dTime, dNextTime As Date
+  Dim iInd As Integer
+  Dim X, Y, DX, DY, DW, DH As Integer
+  Dim SW, SH As Float
+  Dim sFormat As String = GetTimeFormat()
+  Dim sTime As String
+  
+  DW = dwgTime.W \ 4
+  DH = dwgTime.H \ 12
+  DX = (dwgTime.W - DW * 4) \ 2
+  DY = (dwgTime.H - DH * 12) \ 2
+  
+  SH = (DH - 2) / Draw.Font.Height
+  sTime = GetTimeFormat()
+  sTime = Replace(sTime, "h", "0")
+  sTime = Replace(sTime, "n", "0")
+  SW = (DW - 6) / Draw.Font.TextWidth(sTime)
+  Draw.Font.Size *= Min(SH, SW)
+  
+  Draw.FillColor = Color.ButtonBackground
+  Draw.FillStyle = Fill.Solid
+  Draw.LineStyle = Line.None
+  Draw.Rect(dwgTime.W \ 2, 0, dwgTime.W - dwgTime.W \ 2, dwgTime.H)
+  
+  dTime = Time(0, 0, 0)
+  
+  X = DX
+  Y = DY
+  
+  For iInd = 0 To 47
+    
+    dNextTime = TimeAdd(dTime, 30)
+    If IsNull(dNextTime) Then dNextTime = 1
+    
+    If $dTime >= dTime And If $dTime < dNextTime Then
+      If $dTime = dTime Then
+        Draw.FillColor = Color.SelectedBackground
+      Else
+        Draw.FillColor = Color.LightBackground
+      Endif
+      If Not dwgTime.HasFocus Then
+        Draw.FillColor = Color.LightForeground
+      Endif
+      Draw.Foreground = Color.SelectedForeground
+      Draw.FillStyle = Fill.Solid
+      Draw.Rect(X, Y, DW, DH)
+    Else 
+      Draw.FillColor = dwgTime.Background
+      Draw.Foreground = dwgTime.Foreground
+    Endif
+      
+    Draw.Text(Format$(dTime, sFormat), X, Y, DW, DH, Align.Center)
+    
+    If iInd = $iCurrentTime Then
+      Draw.Foreground = Color.LightForeground
+      Draw.FillStyle = Fill.None
+      Draw.LineStyle = Line.Solid
+      Draw.Rect(X, Y, DW, DH)
+    Endif
+    
+    Y += DH
+    If (Y + DH) > dwgTime.H Then
+      X += DW
+      Y = DY
+    Endif
+    
+    dTime = dNextTime
+    
+  Next
+  
+End
+
+Private Sub CalcCurrentTime()
+  
+  Dim X, Y, DX, DY, DW, DH As Integer
+  
+  DW = dwgTime.W \ 4
+  DH = dwgTime.H \ 12
+  DX = (dwgTime.W - DW * 4) \ 2
+  DY = (dwgTime.H - DH * 12) \ 2
+  
+  $iCurrentTime = -1
+  
+  X = Mouse.X - DX
+  If X < 0 Then Return
+  Y = Mouse.Y - DY
+  If Y < 0 Then Return
+  
+  X = (X - DX) \ DW
+  Y = (Y - DY) \ DH
+  
+  If X > 3 Or If Y > 11 Then Return
+
+  $iCurrentTime = 6 * X * 2 + Y
+  
+End
+
+
+Public Sub dwgTime_MouseDown()
+
+  CalcCurrentTime
+  If $iCurrentTime >= 0 Then
+    SetTime(Time($iCurrentTime \ 2, 30 * ($iCurrentTime Mod 2), 0))
+  Endif
+
+End
+
+Public Sub dwgTime_DblClick()
+
+  GetParent()._Activate
+
+End
+
+Private Sub TimeAdd(dTime As Date, iAdd As Integer) As Date
+  
+  dTime = Date(1972, 9, 6, Hour(dTime), If(Minute(dTime) < 30, 0, 30))
+  dTime = DateAdd(dTime, gb.Minute, iAdd)
+  Return Time(dTime)
+  
+End
+
+Private Sub SetTime(dTime As Date)
+  
+  $dTime = dTime
+  dwgTime.Refresh
+  
+  txtHour.Text = Format(Hour($dTime), "00")
+  txtMinute.Text = Format(Minute($dTime), "00")
+  
+End
+
+
+Public Sub dwgTime_KeyPress()
+
+  Select Case Key.Code
+  
+    Case Key.Up
+      If Time($dTime) < Time(0, 30, 0) Then
+        Dec $dDate
+        SetDate
+      Endif
+      SetTime(TimeAdd($dTime, -30))
+      Stop Event
+  
+    Case Key.Down
+      If Time($dTime) >= Time(23, 30, 0) Then
+        Inc $dDate
+        SetDate
+      Endif
+      SetTime(TimeAdd($dTime, 30))
+      Stop Event
+  
+    Case Key.Left
+      If Time($dTime) < Time(6, 0, 0) Then
+        Dec $dDate
+        SetDate
+      Endif
+      SetTime(TimeAdd($dTime, -30 * 12))
+      Stop Event
+  
+    Case Key.Right
+      If Time($dTime) >= Time(18, 0, 0) Then
+        Inc $dDate
+        SetDate
+      Endif
+      SetTime(TimeAdd($dTime, 30 * 12))
+      Stop Event
+      
+    Case Key.Space, Key.Enter, Key.Return
+      dwgTime_DblClick
+      
+  End Select   
+
+End
+
+Public Sub SetShowTime(bShowTime As Boolean)
+  
+  If Not GetShowDate() And Not bShowTime Then Error.Raise("Bad argument")
+  panTime.Visible = bShowTime
+  sepTime.Visible = GetShowTime() And GetShowDate()
+  
+End
+
+Public Sub GetShowTime() As Boolean
+
+  Return dwgTime.Visible
+
+End
+
+Public Sub SetShowDate(bShowDate As Boolean)
+  
+  If Not GetShowTime() And Not bShowDate Then Error.Raise("Bad argument")
+  panDate.Visible = bShowDate
+  sepTime.Visible = GetShowTime() And GetShowDate()
+  
+End
+
+Public Sub GetShowDate() As Boolean
+
+  Return panDate.Visible
+
+End
+
+Public Sub dwgTime_MouseMove()
+
+  Dim iLast As Integer = $iCurrentTime
+  
+  CalcCurrentTime
+
+  If $iCurrentTime < 0 Then
+    dwgTime.Mouse = Mouse.Default
+  Else
+    dwgTime.Mouse = Mouse.Pointing
+  Endif
+  
+  If $iCurrentTime <> iLast Then 
+    dwgTime.Refresh
+  Endif
+
+End
+
+Public Sub dwgMonth_MouseMove()
+
+  If CalcCurrentDate() Then
+    dwgMonth.Mouse = Mouse.Default
+  Else
+    dwgMonth.Mouse = Mouse.Pointing
+  Endif
+  
+  dwgMonth.Refresh
+
+End
+
+Public Sub dwgMonth_Leave()
+
+  $dCurrentDate = Null
+  dwgMonth.Tooltip = ""
+  dwgMonth.Refresh
+
+End
+
+Public Sub dwgTime_Leave()
+
+  $iCurrentTime = -1
+  dwgTime.Refresh
+
+End
+
+Public Sub HasBorder() As Boolean
+  
+  Return panBorder.Border <> Border.None
+  
+End
+
+Public Sub SetBorder(bBorder As Boolean)
+  
+  panBorder.Border = If(bBorder, Border.Plain, Border.None)
+  
+End
+
+
+Public Sub txtHour_GotFocus()
+
+  txtHour.SelectAll
+
+End
+
+Public Sub txtMinute_GotFocus()
+
+  txtMinute.SelectAll
+
+End
+
+Public Sub txtHour_MouseWheel()
+
+  Dim iHour As Integer = Hour($dTime)
+
+  If Mouse.Forward Then
+    iHour = Min(iHour + 1, 23)
+  Else
+    iHour = Max(iHour - 1, 0)
+  Endif
+  
+  SetTime(Time(iHour, Minute($dTime), 0))
+
+End
+
+Public Sub txtMinute_MouseWheel()
+
+  Dim iMinute As Integer = Minute($dTime)
+
+  If Mouse.Forward Then
+    Inc iMinute
+    If iMinute > 59 Then iMinute = 0
+  Else
+    Dec iMinute
+    If iMinute < 0 Then iMinute = 59
+  Endif
+  
+  SetTime(Time(Hour($dTime), iMinute, 0))
+
+End
+
+Public Sub txtHour_LostFocus()
+
+  Dim iHour As Integer
+  'Dim iPos As Integer
+  
+  Try iHour = CInt(Trim(txtHour.Text))
+  If Not Error And If iHour >= 0 And If iHour <= 23 Then 
+    SetTime(Time(iHour, Minute($dTime), 0))
+  Endif
+
+End
+
+Public Sub txtMinute_LostFocus()
+
+  Dim iMinute As Integer
+  
+  Try iMinute = CInt(Trim(txtMinute.Text))
+  If Not Error And If iMinute >= 0 And If iMinute <= 59 Then 
+    SetTime(Time(Hour($dTime), iMinute, 0))
+  Endif
+
+End
+
+Public Sub txtHour_Activate()
+
+  txtMinute.SetFocus
+
+End
+
+Public Sub txtMinute_Activate()
+
+  dwgTime_DblClick
+  
+End
+
+Public Sub btnOK_Click()
+
+  dwgTime_DblClick
+
+End
+
+
+Public Sub btnMonth_MouseWheel()
+
+  If Mouse.Forward Then
+    btnPrevMonth_Click
+  Else
+    btnNextMonth_Click
+  Endif
+
+End
+
+Public Sub dwgMonth_MouseWheel()
+
+  Dim dDate As Date
+  
+  If Mouse.Forward Then
+    dDate = DateAdd($dDate, gb.Day, -1)
+  Else
+    dDate = DateAdd($dDate, gb.Day, 1)
+  Endif
+  
+  SetDate(Year(dDate), Month(dDate), Day(dDate))
+
+End

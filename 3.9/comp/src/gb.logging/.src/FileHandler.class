@@ -1,0 +1,65 @@
+' Gambas class file
+
+Export
+
+Inherits LogHandler
+
+'' Holds the path of the file
+Private $sPath As String
+
+'' Holds a stram to the log file
+Private $sLogFile As Stream
+
+Public Sub _new(sPath As String, Optional iMinLevel As Integer = LogLevel.Info)
+
+  $sPath = sPath
+
+  Me.Level = iMinLevel
+
+End
+
+Public Sub Open()
+
+  If Me.Step > 0 Then Error.Raise("Handler already initialized!")
+
+  If IsDir($sPath) Then
+    $sPath = $sPath &/ Application.Name & ".log"
+  Endif
+
+  If Not Access(File.Dir($sPath), gb.Write) Then Error.Raise("Log file not writable.")
+
+  If Exist($sPath) Then
+    $sLogFile = Open $sPath For Write Append
+  Else
+    $sLogFile = Open $sPath For Write Create
+  Endif
+
+  Me.Step = 1
+
+End
+
+Public Sub Write(sMessage As String, Optional iLevel As Integer)
+
+  If Me.Step <> 1 Then Error.Raise("Uninitialized or already closed handler!")
+
+  If Not Me.isEnabledFor(iLevel) Then Return
+
+  Print #$sLogFile, sMessage
+
+End
+
+Public Sub Close()
+
+  If Me.Step <> 1 Then Error.Raise("Uninitialized or already closed handler!")
+
+  Inc Me.Step
+
+  Close $sLogFile
+
+End
+
+Public Function GetOutput() As String
+
+  Return $sPath
+
+End

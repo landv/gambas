@@ -1,0 +1,144 @@
+' Gambas class file
+
+Public Const DEFAULT_FARM As String = "gambasfarm.org"
+
+Static Property FarmList As String[]
+Static Property RememberPassword As Boolean
+Static Property LastFarm As String
+
+Property Login As String
+Property Password As String
+Property Read Farm As String
+
+Static Private $hSettings As Settings
+Static Private $cPassword As New Collection
+Static Private $cCache As New Collection
+
+Private $sFarm As String
+
+Static Public Sub _init()
+  
+  $hSettings = New Settings("gambas3-farm")
+  
+End
+
+Static Public Sub Get(sFarm As String) As FarmIdentity
+
+  Dim hIdentity As FarmIdentity
+  
+  If Not sFarm Then sFarm = DEFAULT_FARM
+  
+  hIdentity = $cCache[sFarm]
+  If Not hIdentity Then
+    hIdentity = New FarmIdentity(sFarm)
+    $cCache[sFarm] = hIdentity
+  Endif
+  
+  Return hIdentity
+  
+End
+
+Static Public Sub Exit()
+  
+  $cCache = Null
+  
+End
+
+
+Public Sub _new(sFarm As String)
+  
+  $sFarm = sFarm
+  
+End
+
+Private Function Login_Read() As String
+
+  Return $hSettings[$sFarm &/ "Login"]
+
+End
+
+Private Sub Login_Write(Value As String)
+
+  $hSettings[$sFarm &/ "Login"] = Value
+  $hSettings.Save
+  
+End
+
+Static Private Function RememberPassword_Read() As Boolean
+
+  Return $hSettings["/RememberPassword", False]
+
+End
+
+Static Private Sub RememberPassword_Write(Value As Boolean)
+
+  $hSettings["/RememberPassword"] = Value
+  $hSettings.Save
+
+End
+
+Private Function Password_Read() As String
+
+  If Not $cPassword[$sFarm] Then
+    If $hSettings["/RememberPassword", False] Then Try $cPassword[$sFarm] = Desktop.Passwords["/Farm" &/ $sFarm]
+  Endif
+  Return $cPassword[$sFarm]
+
+End
+
+Private Sub Password_Write(Value As String)
+
+  $cPassword[$sFarm] = Value
+  If $hSettings["/RememberPassword", False] Then Try Desktop.Passwords["/Farm" &/ $sFarm] = Value
+
+End
+
+Static Private Function FarmList_Read() As String[]
+
+  Dim aDefault As New String[]
+  
+  Return $hSettings["/FarmList", aDefault]
+
+End
+
+Static Private Sub FarmList_Write(Value As String[])
+
+  $hSettings["/FarmList"] = Value
+  $hSettings.Save
+
+End
+
+Static Public Sub SaveSettings()
+  
+  $hSettings.Save
+  
+End
+
+Static Private Function LastFarm_Read() As String
+
+  Return $hSettings["/LastFarm", DEFAULT_FARM]
+
+End
+
+Static Private Sub LastFarm_Write(Value As String)
+
+  $hSettings["/LastFarm"] = Value
+  $hSettings.Save
+
+End
+
+Public Sub Init(hLabel As TextLabel)
+  
+  If Me.Login And If Me.Password Then
+    hLabel.Text = "<b>" & Me.Login & "@" & Me.Farm & "</b>"
+  Else
+    hLabel.Text = "<i>" & ("Anonymous") & "</i>@<b>" & Me.Farm & "</b>"
+  Endif
+  
+End
+
+Private Function Farm_Read() As String
+
+  Return $sFarm
+
+End

@@ -1,0 +1,22 @@
+' Gambas class file
+
+Export 
+Inherits _CAxes
+Private $bShowIntervalLines As Boolean = True
+
+
+
+Property ShowIntervalLines As Boolean
+
+
+Private Function ShowIntervalLines_Read() As Boolean
+
+  Return $bShowIntervalLines
+
+End
+
+Private Sub ShowIntervalLines_Write(Value As Boolean)
+
+  $bShowIntervalLines = Value
+
+End

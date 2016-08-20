@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="$(LANG)" lang="$(LANG)" dir="$(LANGDIR)">
+
+<head>
+  <link rel="stylesheet" href="$(STYLE)">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+</head>
+
+<body>
+
+<div class="title">
+Compilation
+</div>
+
+<img src="gambas-6.png" align=right hspace=16 border=0>
+
+<h3>How to compile and install <b><i>Gambas</i></b>&nbsp;?</h3>
+
+<p>Before <u>all</u>, read <a href="distribution.html">this</a> to know if you can
+compile <b><i>Gambas</i></b> successfully on your own system, and then the
+<a href="http://gambasdoc.org/help/readme">
+important notes</a>&nbsp;!</p>
+
+<p>Then, open a terminal window. For example <i>xterm</i>, or
+<i>Konsole</i> if you are using <i>KDE</i>.</p>
+
+<p>Remember that you must install the following development packages&nbsp;:
+<i>X11</i>, <i>QT3</i>, <i>KDE3</i>, <i>PostgreSQL</i>, <i>MySQL</i>.
+The way to do that depends on your distribution.</p>
+
+<p>Then, you must <a href="download.html">download</a> the
+<b><i>Gambas</i></b> source package on your machine. For example,
+you can use <tt>wget</tt> in the terminal:</p>
+
+<pre>[linux@home ~]$ wget http://gambas.sourceforge.net/gambas-2.23.0.tar.bz2
+</pre>
+
+<p>Then, you must unpack the downloaded archive in a well chosen place.
+For example, in your home directory.</p>
+
+<pre>[linux@home ~] cd ~
+
+[linux@home ~]$ bunzip2 gambas-2.23.0.tar.bz2
+
+[linux@home ~]$ tar xf gambas-2.23.0.tar
+
+[linux@home ~]$ ls
+... gambas-2.23.0 ...
+</pre>
+
+<p>A <i>gambas</i> directory has been created with the contents of the
+archive. Enter it&nbsp;!</p>
+
+<pre>[linux@home ~]$ cd gambas-2.23.0
+</pre>
+
+<p>Then you can launch the compilation of the sources with the two following
+magic commands : <tt>configure</tt> and <tt>make</tt>.</p>
+
+<p>The first command is <tt>configure</tt>. This command is used to analyze your
+system in order to adapt the compilation process. It is a script located in
+the source directory, so you could be obliged to add "./" before the command
+name to launch it.</p>
+
+<pre>[linux@home gambas-2.23.0]$ ./configure
+...
+</pre>
+
+<p><b>Note:&nbsp;</b>if you want to compile a development version, type:</p>
+
+<pre>[linux@home gambas-2.99.1]$ ./configure -C</pre>
+
+<p>Many messages scroll before you get the prompt. If something wrong happens,
+you get an error message, and must go to the <a href="troubleshooting.html">
+troubleshooting</a> page to identify your configuration problem,
+before continuing.</p>
+
+<p>If you have problems, you can disable component compilation by passing the
+following options to <i>configure</i>&nbsp;:</p>
+
+<ul>
+  <li><i>--disable-kde-component</i> to disable the compilation of the <i>KDE</i>
+  component.</li>
+  <li><i>--disable-db-component</i> to disable the compilation of the database
+  component.</li>
+  <li>And so on... Type <i>./configure --help</i> to get the complete list of
+  options.</li>
+</ul>
+
+<p>For example&nbsp;:</p>
+
+<pre>[linux@home gambas-2.23.0]$ ./configure --disable-db-component
+</pre>
+
+<p>Note that if you forgot to install a development package, the components that
+need it will be automatically disabled. You will see a warning message in the
+output of the <tt>configure</tt> command.</p>
+
+<p>When <tt>configure</tt> ends without any error, you can launch the compilation
+with <tt>make</tt>.</p>
+
+<pre>[linux@home gambas-2.23.0]$ make
+...
+</pre>
+
+<p>If something wrong happens during the compilation, you get an error message.
+It may be a configuration problem that the <tt>configure</tt> script should have
+detected, or an incompatibility with your system and/or compiler. I suggest
+to you to go to the mailing-list to carefully expose your problem with
+<i>every</i> detail.</p>
+
+<p>Once compilation is terminated without problems, you can install
+<i><b>Gambas</b></i>. To do that, you must be <i>root</i>. So we are going
+to use the <i>su</i> command&nbsp;:</p>
+
+<pre>[linux@home gambas-2.23.0]$ su -c "make install"
+Password:
+...
+</pre>
+
+<p>Type the root password, and the installation proceeds. Everything is
+installed under <tt>/opt/gambas</tt> by default. If you want to specify another
+installation directory, you must use the <tt>--prefix</tt> configure option.
+Read the <tt>INSTALL</tt> file in the source directory for more details.</p>
+
+<p>For example, to install <b><i>Gambas</i></b> under <tt>/usr</tt>, just
+type the following:</p>
+
+<pre>[linux@home gambas-2.23.0]$ ./configure --prefix=/usr
+</pre>
+
+<p>Note that symbolic links are created in the <tt>/usr/bin</tt> folder so that
+<b><i>Gambas</i></b> programs are always in your path, and can be easily
+located by the development environment.</p>
+
+<p>Of course, if you install <b><i>Gambas</i></b> directly in <tt>/usr</tt>, these
+symbolic links are not created.</p>
+
+<p>Once everything is done, you can launch the development environment.</p>
+
+<pre>[linux@home gambas-2.23.0]$ gambas
+</pre>
+
+<p>Or for the development version:</p>
+
+<pre>[linux@home gambas-2.99.1]$ gambas2
+</pre>
+
+<p>You are now entering the warp zone... ;-)</p>
+
+</body>
+</html>

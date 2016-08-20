@@ -1,0 +1,64 @@
+' Gambas class file
+
+Export
+
+Property Level As Integer
+Property Step As Integer
+
+'' Holds the minimum level the Logger will write
+Private $iLevel As Integer = LogLevel.Info
+
+'' Describes the status of the logger. A status of 0 means uninitialized, a status of 1 means ready, and a status
+'' greater than 1 means it is already closed.
+Private $iStep As Integer = 0
+
+'' Opens the log handler and prepares it for writing
+Public Sub Open()
+
+End
+
+'' Write the sMessage with optional level iLevel to the log handler
+Public Sub Write(sMessage As String, Optional iLevel As Integer)
+
+End
+
+'' Closes the log handler. No further writing is allowed
+Public Sub Close()
+
+End
+
+Public Function isEnabledFor(iLevel As Integer) As Boolean
+
+  Return (iLevel <= $iLevel)
+
+End
+
+Private Function Level_Read() As Integer
+
+  Return $iLevel
+
+End
+
+Private Sub Level_Write(Value As Integer)
+
+  If Value < 0 Then Error.Raise("Invalid logging level.")
+
+  $iLevel = Value
+
+End
+
+Private Function Step_Read() As Integer
+
+  Return $iStep
+
+End
+
+Private Sub Step_Write(Value As Integer)
+
+  $iStep = Value
+
+End
+
+Public Function GetOutput() As String
+
+End

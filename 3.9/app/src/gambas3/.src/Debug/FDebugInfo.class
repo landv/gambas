@@ -1,0 +1,1550 @@
+' Gambas class file
+
+Public Shown As Boolean
+
+Private Const TAB_CONSOLE As Integer = 0
+Private Const TAB_LOCAL As Integer = 1
+Private Const TAB_ME As Integer = 2
+Private Const TAB_WATCH As Integer = 3
+Private Const TAB_BREAK As Integer = 4
+Private Const TAB_COMPILATION As Integer = 5
+Private Const TAB_TASK As Integer = 6
+Private Const TAB_SEARCH As Integer = 7
+
+Private $cRefreshBreakpoint As New Collection
+
+Private $cRefreshTask As New Collection
+Private $aTask As CTask[]
+
+Private $aLocal As New String[] ' keys
+Private $aValLocal As New String[]
+Private $cLocal As New Collection ' key -> row
+'Private $bSortLocal As Boolean
+
+Private $aObject As New String[]
+Private $aValObject As New String[]
+Private $cObject As New Collection
+'Private $bSortObject As Boolean
+
+Private $hForm As FEditor
+Private $iX As Integer
+Private $iY As Integer
+
+Public Sub _new()
+  
+  With tbvObject
+    .Columns.Count = 2
+    .Columns[0].Width = 192
+    .Columns[0].Text = ("Name")
+    .Columns[1].Text = ("Value")
+  End With
+
+  With cvwWatch
+    .Columns.Count = 2
+    .Columns[0].Width = 192
+    .Columns[0].Text = ("Expression")
+    .Columns[1].Text = ("Value")
+  End With
+  
+  With cvwBreak
+    .Columns.Count = 3
+    .Columns[0].Text = ("Class")
+    .Columns[0].Width = Desktop.Scale * 16
+    .Columns[1].Text = ("Function")
+    .Columns[1].Width = Desktop.Scale * 16
+    .Columns[2].Text = ("Line")
+    .Columns[2].Width = Desktop.Scale * 6
+  End With
+  
+  With gvwFind
+    .Columns.Count = 5
+    .Columns[0].Width = Desktop.Scale * 16
+    .Columns[0].Text = ("File")
+    .Columns[1].Width = Desktop.Scale * 16
+    .Columns[1].Text = ("Procedure")
+    .Columns[2].Width = Desktop.Scale * 6
+    .Columns[2].Text = ("Line")
+    .Columns[3].Width = Desktop.Scale * 6
+    .Columns[3].Text = ("Col.")
+    .Columns[4].Width = 32
+    .Columns[4].Text = ("Text")
+  End With
+  
+  With gvwTask
+    .Columns.Count = 4
+    .Columns[0].Width = Desktop.Scale * 6
+    .Columns[0].Text = ("Type")
+    .Columns[1].Width = 32
+    .Columns[1].Text = ("Text")
+    .Columns[1].Expand = True
+    .Columns[2].Width = Desktop.Scale * 16
+    .Columns[2].Text = ("Class")
+    .Columns[3].Width = Desktop.Scale * 6
+    .Columns[3].Text = ("Line")
+  End With
+  
+  With gvwCompilation
+    .Columns.Count = 3
+    .Columns[0].Width = Desktop.Scale * 16
+    .Columns[0].Text = ("Class")
+    .Columns[1].Width = Desktop.Scale * 6
+    .Columns[1].Text = ("Line")
+    .Columns[2].Text = ("Message")
+  End With
+  
+  HideTab(TAB_COMPILATION)
+  'wizDebug[TAB_SEARCH].Closable = True
+  
+  ReadConfig
+  UpdateLocal
+  
+End
+
+
+Public Sub Form_Open()
+
+  FOutput.Load(panConsole)
+  HideTab(TAB_SEARCH)
+  UpdateView
+  'GotoConsole
+
+End
+
+Private Sub ClearView(hView As TableView)
+  
+  hView.Rows.Count = 0
+  'hView.Clear
+  If hView = tbvLocal Then
+    $cLocal.Clear
+    $aLocal.Clear
+    $aValLocal.Clear
+  Else
+    $cObject.Clear
+    $aObject.Clear
+    $aValObject.Clear
+  Endif
+  
+End
+
+Public Sub Clear()
+
+  ClearView(tbvLocal)
+  tbvLocal.Tag = ""
+  ClearView(tbvObject)
+  tbvObject.Tag = ""
+
+  lvwStack.Clear
+  cvwWatch.Clear
+  $cRefreshBreakpoint.Clear
+
+End
+
+Public Sub ClearBreakpoints()
+  
+  cvwBreak.Clear
+  
+End
+
+
+
+Public Sub EnableStack(bOn As Boolean)
+
+  lvwStack.Enabled = bOn
+
+End
+
+
+Public Sub FillStack(aPos As String[]) As Boolean
+
+  Dim sPos As String
+  Dim iInd As Integer
+  Dim sKey As String
+
+  Object.Lock(lvwStack)
+
+  If lvwStack.Count And If aPos[0] = lvwStack[0].Text Then
+    sKey = lvwStack.Key
+  Else
+    sKey = 0
+  Endif
+  
+  lvwStack.Clear
+
+  For Each sPos In aPos
+    If sPos = "?" Then
+      lvwStack.Add(iInd, "(" & ("native code") & ")")
+    Else
+      lvwStack.Add(iInd, sPos)
+    Endif
+    Inc iInd
+  Next
+  
+  If lvwStack.Exist(sKey) Then
+    lvwStack[sKey].Selected = True
+    lvwStack[sKey].EnsureVisible
+  Endif
+  Object.Unlock(lvwStack)
+  
+  Return lvwStack.Key = "0"
+
+End
+
+
+Public Sub lvwStack_Click()
+
+  Dim sLoc As String
+
+  Design.Command("@" & lvwStack.Key)
+  FDebugExpr.RefreshAll
+  RefreshAllWatch
+
+  sLoc = lvwStack.Current.Text
+  If InStr(sLoc, "(") Then Return
+
+  Project.Goto(sLoc)
+
+Catch
+
+End
+
+Private Sub SortVariable(aVar As String[])
+  
+  Dim iStart As Integer
+  Dim iEnd As Integer
+  Dim iPos As Integer
+  
+  Do
+    
+    If iPos > aVar.Max Or If Right(aVar[iPos]) = ":" Then
+      iEnd = iPos
+      If iEnd > iStart Then
+        aVar.Insert(aVar.Extract(iStart, iEnd - iStart).Sort(), iStart)
+      Endif
+      iStart = iPos + 1
+    Endif
+    
+    If iPos > aVar.Max Then Break
+    Inc iPos
+    
+  Loop
+  
+End
+
+
+Private Sub DefineVar(hView As TableView, sList As String, sCmd As String, iIndex As Integer)
+
+  Dim sVar As String
+  Dim aVar As String[]
+  Dim bFill As Boolean
+  Dim iPos As Integer
+  Dim cCol As Collection
+  Dim bSort As Boolean
+
+  If sList <> "*" Then
+
+    aVar = Split(sList, " ")
+  
+    If sList <> hView.Tag Then 
+  
+      hView.Tag = sList
+      bFill = True
+      
+    Endif
+  
+  Else 
+  
+    aVar = Split(hView.Tag, " ")
+    
+    bFill = True
+    
+  Endif
+    
+  If bFill Then
+    
+    ClearView(hView)
+    
+    If hView = tbvLocal Then
+      $aLocal = aVar
+      $aValLocal = New String[$aLocal.Count]
+      cCol = $cLocal
+      bSort = True 'chkSortLocal.Value
+    Else
+      $aObject = aVar
+      $aValObject = New String[$aObject.Count]
+      cCol = $cObject
+      bSort = True 'chkSortObject.Value
+    Endif
+    
+    While iPos <= aVar.Max
+      sVar = aVar[iPos]
+      If Right(sVar) = ":" Then 
+        If iPos = aVar.Max Or If Right(aVar[iPos + 1]) = ":" Then
+          aVar.Remove(iPos)
+          Continue
+        Endif
+      Endif
+      Inc iPos
+    Wend
+    
+    If bSort Then SortVariable(aVar)
+    
+    If hView = tbvLocal Then
+      UpdateLocal
+    Else
+      hView.Rows.Count = aVar.Count
+    Endif
+
+    For iPos = 0 To aVar.Max
+      cCol[aVar[iPos]] = iPos
+      If Right(aVar[iPos]) = ":" Then hView[iPos, 0].ColumnSpan = 2
+    Next
+    
+  Endif
+  
+  If wizDebug.Index <> iIndex Then Return
+  
+  For Each sVar In aVar
+    If Right(sVar) = ":" Then Continue
+    Design.Command("&" & sCmd & sVar & "\t" & sVar)
+  Next
+    
+End
+
+Public Sub AddVar(hView As TableView, sVar As String, sValue As String)
+
+  Dim cCol As Collection
+  Dim aVal As String[]
+  Dim iRow As Integer
+
+  If hView = tbvLocal Then
+    cCol = $cLocal
+    aVal = $aValLocal
+  Else
+    cCol = $cObject
+    aVal = $aValObject
+  Endif
+  
+  Try iRow = cCol[sVar]
+  If Error Then Return
+  
+  If aVal[iRow] <> sValue Then
+    aVal[iRow] = sValue
+    hView[iRow, 1].Refresh
+  Endif
+  
+End
+
+Public Sub DefineLocal(Optional sList As String = "*")
+  
+  DefineVar(tbvLocal, sList, "L", TAB_LOCAL)
+  
+End
+
+Public Sub AddLocal(sVar As String, sValue As String, Optional bAssign As Boolean)
+
+  Dim iRow As Integer
+  Dim iCol As Integer
+  Dim nRow As Variant
+    
+  If bAssign Then
+    If Left(sValue) = "!" Then
+      Try iRow = $cLocal[sVar]
+      
+      If btnLocalLayout.Value Then
+        nRow = Max(1, tbvLocal.ClientH \ tbvLocal.Rows.Height)
+        iCol = 0
+        While iRow >= nRow
+          iRow -= nRow
+          iCol += 2
+        Wend
+      Endif
+      
+      If Not Error Then
+        With tbvLocal[iRow, iCol + 1]
+          Balloon.Error(Mid$(sValue, 2), tbvLocal, .X + .W / 2, .Y + .H / 2)
+        End With
+      Endif
+    Else
+      Design.Command("&L" & sVar & "\t" & sVar)
+    Endif
+  Else
+    AddVar(tbvLocal, sVar, sValue)
+  Endif
+  
+End
+
+Public Function LocalExists(sExpr As String) As Boolean
+  
+  If Not sExpr Then Return
+  Return $cLocal.Exist(sExpr)
+
+End
+
+Public Sub DefineObject(Optional sList As String = "*")
+  
+  DefineVar(tbvObject, sList, "O", TAB_ME)
+  
+End
+
+Public Sub AddObject(sVar As String, sValue As String, Optional bAssign As Boolean)
+  
+  Dim iRow As Integer
+  
+  If bAssign Then
+    If Left(sValue) = "!" Then
+      Try iRow = $cObject[sVar]
+      If Not Error Then
+        With tbvObject[iRow, 1]
+          Balloon.Error(Mid$(sValue, 2), tbvObject, .X + .W / 2, .Y + .H / 2)
+        End With
+      Endif
+    Else
+      Design.Command("&O" & sVar & "\t" & sVar)
+    Endif
+  Else
+    AddVar(tbvObject, sVar, sValue)
+  Endif
+  
+End
+
+
+' PUBLIC SUB RefreshAllLocal()
+' 
+'   DIM sVar AS String
+' 
+'   FOR EACH sVar IN $aLocal
+'     Design.Command("l" & sVar, TRUE,, "L")
+'   NEXT
+' 
+' END
+
+
+
+Public Sub AddResultWatch(sCmd As String, sRes As String, Optional bInstant As Boolean)
+
+  Dim sVal As String
+  
+  'IF Left$(sRes, 1) = "=" THEN
+  '  sVal = Mid$(sRes, 2)
+  'ELSE
+  '  sVal = "** " & sRes
+  'ENDIF
+  sVal = sRes
+
+  If bInstant Then 
+    If Right(sCmd) = ":" Then
+      
+      If FDebugExpr.Exist(Left(sCmd, Len(sCmd) - 1)) Then Return 
+      
+      'ShowAsBalloon(sVal)
+      If $hForm Then 
+        $hForm.ShowWatchResult(sVal, $iX, $iY)
+        $hForm = Null
+      Else
+        FOutput.Insert(sVal)
+      Endif
+    
+    Else 
+      Design.Command("#X" & sCmd & "\t" & sCmd)  
+    Endif 
+  Else  
+    Try cvwWatch.Add(sCmd, sCmd)
+    If Left(sVal) = "!" Then sVal = Mid$(sVal, 2)
+    cvwWatch[sCmd][1] = sVal
+  
+  Endif
+
+End
+
+' Private Sub ShowAsBalloon(sMsg As String)
+' 
+'   Dim hIcon As Picture
+'   Dim iInd As Integer
+'   Dim iPos As Integer
+' 
+'   If Left(sMsg) = "!" Then
+'     sMsg = Design.MakeErrorMessage(Mid$(sMsg, 2))
+'     hIcon = Picture["icon:/32/error"]
+'   Else
+'     hIcon = Picture["icon:/32/info"]
+'   Endif 
+'   
+'   sMsg = Replace(sMsg, "&", "&amp;")
+'   sMsg = Replace(sMsg, "<", "&lt;")
+'   sMsg = Replace(sMsg, ">", "&gt;")
+'   
+'   iPos = 0
+'   While iInd < String.Len(sMsg)
+'     Inc iInd
+'     If InStr(" -\n\t", Mid$(sMsg, iInd, 1)) Then
+'       iPos = iInd
+'     Else If (iInd - iPos) >= 32 Then
+'       sMsg = String.Left$(sMsg, iInd) & " <br>" & String.Mid$(sMsg, iInd + 1)
+'       iInd += 4
+'       iPos = iInd
+'     Endif
+'   Wend
+' 
+'   'sMsg = Replace(sMsg, "\t", "\n")
+'   'sMsg = Replace(sMsg, "    ", "&nbsp;")
+'   Balloon(sMsg, Design.BalloonControl, hIcon, Design.BalloonX, Design.BalloonY)
+' 
+' End
+
+Public Sub RefreshAllWatch()
+
+  If Not cvwWatch.MoveFirst() Then
+
+    Do
+
+      Design.Command("?W" & cvwWatch.Item.Text & "\t" & cvwWatch.Item.Text)
+      If cvwWatch.MoveNext() Then Return
+
+    Loop
+
+  Endif
+
+End
+
+
+Public Sub AddWatch(sExpr As String)
+
+  If cmbWatch.Find(sExpr) < 0 Then
+    cmbWatch.Add(sExpr)
+  Endif
+
+  Design.Command("?W" & sExpr & "\t" & sExpr)
+  SelectTab(TAB_WATCH)
+
+End
+
+Public Sub InstantWatch(sExpr As String, hForm As FEditor, X As Integer, Y As Integer)
+  
+  If Not sExpr Then Return
+  
+  $hForm = hForm
+  $iX = X
+  $iY = Y
+  Design.Command("?I" & sExpr & "\t" & sExpr)
+  
+End
+
+
+
+Public Sub cmbWatch_Activate()
+
+  Dim sExpr As String
+
+  sExpr = Trim(cmbWatch.Text)
+  If Not sExpr Then Return
+
+  AddWatch(sExpr)
+
+End
+
+
+Public Sub btnAddWatch_Click()
+
+  cmbWatch_Activate
+
+End
+
+
+Public Sub btnKillWatch_Click()
+
+  Try cvwWatch.Remove(cvwWatch.Key)
+
+End
+
+Public Sub btnKillAllWatch_Click()
+
+  If Message.Question(("Do you want to clear the expression list ?"), ("Clear"), ("Cancel")) = 2 Then Return
+
+  cvwWatch.Clear
+
+End
+
+Public Sub cmbWatch_Click()
+
+  btnAddWatch_Click
+
+End
+
+Private Sub WatchExpression(sText As String)
+  
+  Design.Command("#X" & sText & "\t" & sText)  
+  
+End
+
+Public Sub cvwWatch_Click()
+  
+  cmbWatch.Text = cvwWatch.Current.Text
+  
+End
+
+
+Public Sub cvwWatch_Activate()
+
+  Dim sText As String = cvwWatch.Item.Text
+
+  If Right(sText) = ":" Then Return
+  If Left(cvwWatch.Item[1]) = "(" Then
+    WatchExpression(sText)
+  Endif
+
+End
+
+Public Sub ClearWatchpoint()
+  
+  cmbWatch.Clear
+  
+End
+
+
+Public Sub ReadConfig()
+
+  'Dim hButton As ToolButton
+  Dim hCtrl As Control
+
+  Settings.Read(panStack)
+  wizDebug.TextFont = Project.GetSmallFont()
+  
+  Project.SetSmallFont(tbvLocal)
+  tbvObject.Font = tbvLocal.Font
+  lvwStack.Font = tbvLocal.Font
+  cvwWatch.Font = tbvLocal.Font
+  cvwBreak.Font = tbvLocal.Font
+  gvwTask.Font = tbvLocal.Font
+  gvwCompilation.Font = tbvLocal.Font
+  panBacktrace.Font = tbvLocal.Font
+  
+  FDebugButton.ReadConfig
+  
+  For Each hCtrl In [panBreakpoint, panSearch, panWatch, panLocal]
+    Project.SetSmallFont(hCtrl)
+  Next
+
+  btnLocalLayout.Value = Settings["/FDebugInfo/LocalColumnView", 0]
+  
+End
+
+Public Sub AddBreakpoint(sName As String, sProc As String, iLine As Integer, bOn As Boolean)
+  
+  Dim sText As String
+  Dim bExist As Boolean
+
+  sText = sName & "." & sProc & "." & CStr(iLine)
+  bExist = cvwBreak.Exist(sText) 
+  
+  If bOn Then
+    If Not bExist Then
+      cvwBreak.Add(sText, sName)
+      cvwBreak.Item[1] = sProc
+      cvwBreak.Item[2] = iLine + 1
+    Endif
+  Else
+    If bExist Then
+      cvwBreak.Remove(sText)
+    Endif 
+  Endif
+  
+  'cvwBreak.Columns[0].Width = -1
+  'cvwBreak.Columns[1].Width = -1
+
+End
+
+Public Sub btnRemoveBreak_Click()
+
+  Dim aText As String[]
+  Dim sText As String
+  
+  sText = cvwBreak.Key
+  If Not sText Then Return
+  
+  aText = Scan(sText, "*.*.*")
+  Design.SetBreakpoint(aText[0], CInt(aText[2]), False)
+
+End
+
+Public Sub btnClearBreak_Click()
+
+  If Project.Running Then Return
+  
+  While cvwBreak.Count
+    cvwBreak.MoveFirst
+    cvwBreak.Item.Selected = True
+    btnRemoveBreak_Click
+  Wend  
+
+End
+
+Public Sub cvwBreak_Activate()
+
+  Dim aText As String[]
+  
+  aText = Scan(cvwBreak.Key, "*.*.*")
+  Project.OpenFile(aText[0], CInt(aText[2]) + 1)
+
+Catch
+
+End
+
+Public Sub wizDebug_Click()
+
+  If Design.IsRunning() Then 
+    Select Case wizDebug.Index
+      Case TAB_CONSOLE
+        FOutput.SetFocus
+    End Select
+    Return
+  Endif
+
+  Select Case wizDebug.Index
+    Case TAB_LOCAL
+      DefineLocal
+    Case TAB_ME
+      DefineObject
+    Case TAB_CONSOLE
+      If FMain.IsDebugVisible() Then FOutput.SetFocus
+    Case TAB_BREAK
+      timBreakpoint_Timer
+    Case TAB_COMPILATION
+    Case TAB_TASK
+      If Not $aTask Then
+        UpdateTask
+      Else
+        timTask_Timer
+      Endif
+    Case TAB_SEARCH
+      FSearch.RefreshBrowse
+  End Select   
+
+End
+
+Public Sub tbvLocal_Activate()
+
+  Dim hTable As TableView = Last
+  Dim sExpr As String 
+  Dim sVal As String 
+  Dim iCol As Integer
+
+  If hTable[hTable.Row, 0].ColumnSpan >= 2 Then Return
+  
+  iCol = hTable.Column And Not 1
+  sExpr = hTable[hTable.Row, iCol].Text
+  sVal = hTable[hTable.Row, iCol + 1].Text
+  
+  If Left(sVal) = "(" Then 
+    Design.Command("#X" & sExpr & "\t" & sExpr)
+  Else
+    hTable.Column = iCol + 1 
+    hTable.Edit
+  Endif
+
+End
+
+Public Sub IsEditing() As Boolean
+  
+  Return Not IsNull(tbvLocal.Editor)
+  
+End
+
+
+Public Sub tbvObject_Activate()
+
+  tbvLocal_Activate
+
+End
+
+Public Sub WriteWatchSettings()
+
+  Dim iInd As Integer
+  Dim sFlag As String
+
+  sFlag = "/Watches"
+  iInd = 0
+  Project.Config.Clear(sFlag)
+
+  Project.Config[sFlag &/ "Count"] = cvwWatch.Count
+  If Not cvwWatch.MoveFirst() Then
+
+    Do
+      Inc iInd
+      Project.Config[sFlag &/ "Watch[" & CStr(iInd) & "]"] = cvwWatch.item.Text
+      If cvwWatch.MoveNext() Then Break 
+
+    Loop
+
+  Endif
+
+End
+
+Public Sub ReadWatchSettings()
+
+  Dim iCount As Integer
+  Dim iInd As Integer
+  Dim sString As String
+  Dim sFlag As String
+
+  sFlag = "/Watches"
+  iInd = 0
+  iCount = Project.Config[sFlag &/ "Count", "0"]
+  ClearWatchpoint()
+  For iInd = 1 To iCount
+    sString = Project.Config[sFlag &/ "Watch[" & CStr(iInd) & "]"]
+    'IF sString THEN 
+      'IF cmbWatch.Find(sString) < 0 THEN
+        'cmbWatch.Add(sString)
+      Try cvwWatch.Add(sString, sString)
+      'ENDIF
+    'ENDIF 
+  Next
+  
+End
+
+Public Sub UpdateView()
+  
+  Dim bUndock As Boolean = Settings["/FOutput/Undock"]
+  Dim bVisible As Boolean
+  
+  If bUndock Then  
+    If FOutput.Parent Then 
+      FOutput.Reparent(Null)
+      FOutput.Enabled = True
+      'DEBUG "Read: "; Settings["/FOutput/Geometry"][0];; Settings["/FOutput/Geometry"][1]
+      Settings.Read(FOutput)
+      FOutput.OnProjectDebug
+      FOutput.Show
+      FMain.ShowDebug(False)
+      'DEBUG FOutput.X;; FOutput.Y
+      'Action["console"].Visible = TRUE
+      'If Not Project.Running Then FMain.ShowDebug(False)
+    Endif
+    'FOutput.Stacking = If(Project.Running, Window.Above, Window.Normal)
+  Endif
+
+  ShowTab(TAB_CONSOLE, Not bUndock)
+  ShowTab(TAB_LOCAL, Project.Running)
+  ShowTab(TAB_ME, Project.Running)
+  ShowTab(TAB_WATCH, Project.Running)
+  ShowTab(TAB_BREAK)
+  
+  If panStack.Visible <> Project.Running Then
+    If Project.Running Then
+      panStack.Visible = True
+      Settings.Read(panStack)
+      'Settings.Read(splDebug,, [4, 1])
+    Else 
+      Settings.Write(panStack)
+      'Settings.Write(splDebug)
+      panStack.Visible = False
+    Endif
+  Endif 
+        
+  If Not bUndock Then 
+    If Not FOutput.Parent Then 
+      bVisible = FOutput.Visible
+      'DEBUG "Write: "; FOutput.X;; FOutput.Y
+      Settings.Write(FOutput)
+      FOutput.Reparent(panConsole, 0, 0)
+      FOutput.Show
+      'Action["console"].Value = TRUE
+      'Action["console"].Visible = FALSE
+      'If bVisible Then FMain.ShowDebug(True)
+    Endif
+    
+    SelectTab(TAB_CONSOLE)
+    FOutput.SetFocus
+    
+  Endif 
+  
+  FDebugButton.UpdateView
+  FMain.UpdateConsoleAction()
+  
+End
+
+
+Public Sub btnShowMe_Click()
+
+  WatchExpression("Me")
+
+End
+
+Public Sub RefreshBreakpoint(sClass As String)
+  
+  $cRefreshBreakpoint[sClass] = sClass
+  If wizDebug.Index = TAB_BREAK Then 
+    timBreakpoint.Stop
+    timBreakpoint.Start
+  Endif
+  'timBreakpoint.Start
+  
+End
+
+Public Sub timBreakpoint_Timer()
+
+  Dim sClass As String
+  Dim iInd As Integer
+  Dim hEditor As FEditor
+  Dim sKey As String
+  Dim sProc As String
+  Dim sText As String
+  
+  For Each sClass In $cRefreshBreakpoint
+    
+    cvwBreak.MoveFirst
+    While cvwBreak.Available
+      sKey = cvwBreak.Item.Key
+      sText = cvwBreak.Item.Text
+      cvwBreak.MoveNext
+      If sText = sClass Then cvwBreak.Remove(sKey)
+    Wend
+    
+    hEditor = Project.Files[Project.FindPath(sClass)]
+    If Not hEditor Then Continue
+    For Each iInd In hEditor.GetBreakpoints()
+      sProc = hEditor.GetProcAt(iInd)
+      cvwBreak.Add(sClass & "." & sProc & "." & CStr(iInd), sClass)
+      cvwBreak.Item[1] = sProc
+      cvwBreak.Item[2] = CStr(iInd + 1)
+    Next
+    
+  Next
+  
+  'cvwBreak.Columns[0].Width = -1
+  'cvwBreak.Columns[1].Width = -1
+  
+  $cRefreshBreakpoint.Clear
+  timBreakpoint.Stop
+
+End
+
+Public Sub GetBreakpoints() As String[]
+
+  Dim aBreak As String[]
+  Dim aBreakPoint As New String[]
+  Dim hEditor As FEditor
+  Dim sClass As String
+  Dim aClass As New String[]
+
+  timBreakpoint_Timer
+  
+  cvwBreak.MoveFirst
+  While cvwBreak.Available
+    aBreak = Split(cvwBreak.Item.Key, "*.*.*")
+    If sClass <> aBreak[0] Then
+      sClass = aBreak[0]
+      aClass.Add(sClass)
+    Endif
+    cvwBreak.MoveNext
+  Wend
+  
+  For Each sClass In aClass
+    hEditor = Project.Files[Project.FindPath(sClass)]
+    hEditor.CheckBreakpoints
+  Next
+  
+  cvwBreak.MoveFirst
+  While cvwBreak.Available
+    aBreak = Split(cvwBreak.Item.Key, "*.*.*")
+    aBreakPoint.Add(aBreak[0] & "." & CStr(CInt(aBreak[2]) + 1))
+    cvwBreak.MoveNext
+  Wend
+  
+  Return aBreakPoint
+  
+End
+
+
+Public Sub tbvLocal_Data(Row As Integer, Column As Integer)
+
+  Dim hView As TableView = Last
+  Dim aVar As String[]
+  Dim aValue As String[]
+  Dim sVar As String
+
+  If hView = tbvLocal Then
+    aVar = $aLocal
+    aValue = $aValLocal
+  Else
+    aVar = $aObject
+    aValue = $aValObject
+  Endif
+
+  If hView = tbvLocal And If btnLocalLayout.Value Then
+    While Column >= 2 
+      Column -= 2
+      Row += hView.Rows.Count
+    Wend
+  Endif
+
+  Try sVar = aVar[Row]
+  If Not sVar Then Return
+  
+  With hView.Data
+  
+    If Column = 0 Then
+      If Right(sVar) = ":" Then
+        .Font.Bold = True
+        .Font.Underline = True
+        .Text = If(UCase(sVar) = "S:", ("Static variables"), ("Dynamic variables"))
+      Else
+        .Text = sVar
+        .Foreground = Color.Gradient(Color.TextBackground, Color.TextForeground, 0.7)
+      Endif
+    Else
+      Try .Text = aValue[Row]
+    Endif
+    
+  End With
+
+End
+
+Public Sub tbvObject_Data(Row As Integer, Column As Integer)
+
+  tbvLocal_Data(Row, Column)
+
+End
+
+Public Sub tbvLocal_Save(Row As Integer, (Column) As Integer, Value As String)
+
+  Dim sVar As String 
+  Dim iCol As Integer
+  
+  iCol = Column And Not 1
+  sVar = tbvLocal[Row, iCol].Text
+  With tbvLocal[Row, iCol + 1]
+    Design.SetBalloon(tbvLocal, .X + .W / 2, .Y + .H / 2)
+  End With
+  Design.Command("=L" & sVar & "\t" & sVar & " = " & Value)
+
+End
+
+Public Sub tbvObject_Save(Row As Integer, (Column) As Integer, Value As String)
+
+  Dim sVar As String = tbvObject[Row, 0].Text
+  Design.Command("=O" & sVar & "\t" & sVar & " = " & Value)
+  With tbvObject[Row, 1]
+    Design.SetBalloon(tbvObject, .X + .W / 2, .Y + .H / 2)
+  End With
+  Design.Command("&O" & sVar & "\t" & sVar)
+
+End
+
+Public Sub tbvLocal_Scroll()
+
+  Balloon.Hide(Last)
+
+End
+
+Public Sub tbvLocal_Select()
+
+  Balloon.Hide(Last)
+
+End
+
+Public Sub tbvObject_Scroll()
+
+  Balloon.Hide(Last)
+
+End
+
+Public Sub tbvObject_Select()
+
+  Balloon.Hide(Last)
+
+End
+
+Public Sub ShowWatchTab()
+  
+  SelectTab(TAB_WATCH)
+  
+End
+
+Public Sub btnShow_Click()
+
+  Dim sText As String = Trim(cmbWatch.Text)
+  
+  If Not sText Then Return
+  WatchExpression(sText)
+
+End
+
+Public Sub GetSearchList() As Control
+  
+  Return gvwFind
+  
+End
+
+Public Sub ShowSearchList()
+  
+  FMain.ShowDebug(True)
+  gvwFind.Show
+  lblNotFound.Hide
+  'lblBrowse.Hide
+  ShowTab(TAB_SEARCH)
+  SelectTab(TAB_SEARCH)
+  
+End
+
+Public Sub HideSearchList()
+  
+  gvwFind.Hide
+  lblNotFound.Show
+  
+End
+
+Public Sub SetSearchListInfo(Optional sText As String)
+  
+  lblBrowse.Text = sText
+  gvwFind.Visible = sText
+  lblNotFound.Visible = Not sText
+  'lblBrowse.Show
+  
+End
+
+Public Sub btnShowSearch_Click()
+
+  FSearch.WakeUp(False, True)
+
+End
+
+Public Sub btnRefreshSearch_Click()
+
+  FSearch.BrowseAgain
+
+End
+
+Private Sub DisableRec(hCtrl As Control, aExcept As Control[], bOn As Boolean)
+  
+  Dim hCont As Container
+  Dim iCount As Integer
+  Dim hMulti As Object
+  Dim iInd As Integer
+  
+  If Not aExcept.Exist(hCtrl) Then
+    hCtrl.Enabled = bOn
+    Return
+  Endif
+  
+  If Not hCtrl Is Container Then Return
+  
+  hCont = hCtrl
+  hMulti = hCtrl
+  
+  Try iCount = hMulti.Count
+  If Not Error Then
+    For iInd = 0 To iCount - 1
+      If iInd <> hMulti.Index Then
+        hMulti[iInd].Enabled = bOn
+      Endif
+    Next
+  Endif
+  
+  For Each hCtrl In hCont.Children
+    DisableRec(hCtrl, aExcept, bOn)
+  Next
+  
+End
+
+
+Private Sub DisableEverything(bOn As Boolean)
+  
+  Dim aCtrl As New Control[]
+  Dim hCtrl As Control
+  Dim hWin As Window
+  
+  For Each hWin In Windows
+    If hWin = FMain.Window Or If hWin = FSearch.Window Then Continue
+    hWin.Enabled = bOn
+  Next
+  
+  hCtrl = btnCancelSearch
+  While hCtrl
+    aCtrl.Add(hCtrl)
+    hCtrl = hCtrl.Parent
+  Wend
+  aCtrl.Add(lblBrowse)
+  
+  DisableRec(FMain.Window, aCtrl, bOn)
+  
+  aCtrl.Clear
+  aCtrl.Add(FSearch.Window)
+  
+  DisableRec(FSearch.Window, aCtrl, bOn)
+  
+End
+
+Public Sub EnableGUI(bOn As Boolean)
+  
+  'lblBrowse.Visible = Not bOn
+  btnCancelSearch.Visible = Not bOn
+  DisableEverything(bOn)
+  
+End
+
+Public Sub btnCancelSearch_Click()
+
+  FSearch.Cancel()
+
+End
+
+Public Sub IsSearchListVisible() As Boolean
+  
+  Return wizDebug.Index = TAB_SEARCH And FMain.IsDebugVisible()
+  
+End
+
+Private Sub GotoConsole()
+  
+  If IsNull(FOutput.Parent) Then
+    SelectTab(TAB_BREAK)
+  Else
+    SelectTab(TAB_CONSOLE)
+  Endif
+  
+End
+
+
+' Public Sub btnClearSearch_Click()
+' 
+'   FSearch.ResetBrowse
+'   GotoConsole
+'   tabDebug[TAB_SEARCH].Visible = False
+' 
+' End
+
+Public Sub OnVisibilityChange()
+  
+  If IsSearchListVisible() Then FSearch.RefreshBrowse
+  
+End
+
+Public Sub ShowConsole()
+
+  If FOutput.Parent Then FDebugButton.SelectButton(TAB_CONSOLE)
+  FOutput.SetFocus
+
+End
+
+Public Sub RefreshTabs(sPath As String, sName As String)
+  
+  RefreshBreakpoint(sName)
+  RefreshTask(sPath)
+  
+End
+
+
+Public Sub RefreshTask(sPath As String)
+  
+  $cRefreshTask[sPath] = sPath
+  If wizDebug.Index = TAB_TASK Then
+    timTask.Stop
+    timTask.Start
+  Endif
+  
+End
+
+Public Sub UpdateTask()
+  
+  Dim sPath As String
+  
+  If wizDebug.Index <> TAB_TASK Then Return
+  
+  Inc Application.Busy
+  
+  $aTask = New CTask[]
+  For Each sPath In Project.Sources
+    $aTask.Insert(CTask.ScanFile(sPath))
+  Next
+  
+  $aTask.Sort
+  $cRefreshTask.Clear
+  gvwTask.Rows.Count = $aTask.Count
+  gvwTask.Refresh
+  
+  Dec Application.Busy
+
+End
+
+
+Public Sub timTask_Timer()
+
+  Dim sPath As String
+  Dim sClass As String
+  Dim I As Integer
+
+  If Not $aTask Then Return
+  If $cRefreshTask.Count = 0 Then Return
+
+  For Each sPath In $cRefreshTask
+    
+    sClass = File.BaseName(sPath)
+    
+    I = 0
+    While I < $aTask.Count
+      If $aTask[I].Class = sClass Then
+        $aTask.Remove(I)
+      Else
+        Inc I
+      Endif
+    Wend
+    
+    $aTask.Insert(CTask.ScanFile(sPath))
+    
+  Next
+  
+  $aTask.Sort
+  $cRefreshTask.Clear
+  gvwTask.Rows.Count = $aTask.Count
+  gvwTask.Refresh
+  
+  timTask.Stop
+
+End
+
+Public Sub gvwTask_Data(Row As Integer, Column As Integer)
+
+  Dim hTask As CTask
+  
+  If Not $aTask Then Return
+  hTask = $aTask[Row]
+
+  With gvwTask.Data
+
+    Select Case hTask.Type
+      Case CTask.TYPE_NOTE
+        .Foreground = Color.Default
+      Case CTask.TYPE_FIXME
+        .Foreground = Color.Gradient(Color.Red, Color.TextForeground)
+      Case CTask.TYPE_TODO
+        .Foreground = Color.Gradient(Color.Green, Color.TextForeground)
+    End Select
+    
+    Select Case Column
+      
+      Case 2
+        .Text = hTask.Class
+        
+      Case 3
+        .Text = CStr(hTask.Line)
+        
+      Case 0
+        Select Case hTask.Type
+          Case CTask.TYPE_NOTE
+            .Text = "NOTE"
+          Case CTask.TYPE_FIXME
+            .Text = "FIXME"
+          Case CTask.TYPE_TODO
+            .Text = "TODO"
+        End Select
+        
+      Case 1
+        .Text = hTask.Text
+      
+    End Select
+    
+  End With
+
+End
+
+Public Sub gvwTask_Activate()
+
+  Dim hTask As CTask = $aTask[gvwTask.Row]
+
+  Project.OpenFile(hTask.Name, hTask.Line)
+
+Catch  
+
+End
+
+Public Sub OnProjectChange()
+  
+  $aTask = Null
+  UpdateTask
+  SetCompilation
+  CloseSearch
+  
+End
+
+Public Sub ShowError(sMsg As String)
+  
+  If Me.Visible Then
+    Balloon(sMsg, lvwStack, Picture["icon:/32/error"], 8, 8)
+  Else
+    sMsg = Replace(sMsg, "\n", "<br>")
+    Message.Error(sMsg)
+  Endif
+  
+End
+
+Public Sub SetCompilation(Optional sOutput As String)
+  
+  Dim aOutput As String[]
+  Dim sLine As String
+  Dim aLine As String[]
+  Dim I As Integer
+  
+  gvwCompilation.Clear
+  If Not sOutput Then 
+    HideTab(TAB_COMPILATION)
+    GotoConsole
+    Return
+  Endif
+  
+  aOutput = Split(Trim(sOutput), "\n")
+  gvwCompilation.Rows.Count = aOutput.Count
+  
+  For Each sLine In aOutput
+    
+    aLine = Scan(sLine, "*:*: warning: *")
+    If aLine.Count <> 3 Then Continue
+    
+    gvwCompilation[I, 0].Text = Trim(File.BaseName(aLine[0]))
+    gvwCompilation[I, 1].Text = CStr(CInt(aLine[1]) + 1)
+    gvwCompilation[I, 2].Text = String.UCaseFirst(Project.TranslateMessage(Trim(aLine[2])))
+    gvwCompilation[I, 2].Font = Project.GetEditorFont()
+    Inc I
+    
+  Next
+  
+  gvwCompilation.Rows.Count = I
+  gvwCompilation.Columns[0].Width = -1
+  gvwCompilation.Columns[1].Width = -1
+  
+  ShowTab(TAB_COMPILATION)
+  'wizDebug[TAB_COMPILATION].Text = ("Warnings") & " (" & gvwCompilation.Rows.Count & ")"
+  
+  Action["console"].Value = True
+  SelectTab(TAB_COMPILATION)
+  
+End
+
+Public Sub gvwCompilation_Select()
+
+  Dim I As Integer = gvwCompilation.Row
+  
+  Project.OpenFile(gvwCompilation[I, 0].Text, CInt(gvwCompilation[I, 1].Text) - 1)
+
+Catch  
+
+End
+
+Public Sub GotoFirstWarning()
+  
+  If gvwCompilation.Rows.Count = 0 Then Return
+  gvwCompilation.Row = 0
+  'gvwCompilation_Activate
+  
+End
+
+Public Sub btnCopy_Click()
+
+  Try Clipboard.Copy(cvwWatch.Current[1])
+
+End
+
+Public Sub btnLocalCopy_Click()
+
+  Dim sText As String
+  Dim I As Integer
+  
+  For I = 0 To $aLocal.Max
+    sText &= $aLocal[I] & " = " & $aValLocal[I] & "\n"
+  Next
+  
+  Clipboard.Copy(sText)
+
+End
+
+Private Sub UpdateLocal()
+
+  Dim nCol As Integer
+  Dim I As Integer
+  Dim nRow As Integer
+
+  With tbvLocal
+    
+    If btnLocalLayout.Value Then
+      nRow = Max(1, .ClientH \ .Rows.Height)
+      nCol = Max(1, ($aLocal.Count + nRow - 1) \ nRow)
+      If nCol = 1 Then nRow = $aLocal.Count
+    Else
+      nRow = $aLocal.Count
+      nCol = 1
+    Endif
+    
+    .Columns.Count = nCol * 2
+    For I = 0 To nCol - 1
+      .Columns[1 + I * 2].Expand = True
+    Next
+    
+    .Rows.Count = nRow
+    For I = 0 To nCol - 1
+      .Columns[I * 2].W = -1
+    Next
+    
+  End With
+
+End
+
+Public Sub btnLocalLayout_Click()
+
+  UpdateLocal
+  Settings["/FDebugInfo/LocalColumnView"] = btnLocalLayout.Value 
+
+End
+
+Public Sub wizDebug_Arrange()
+
+  If wizDebug.Index = TAB_LOCAL Then UpdateLocal
+
+End
+
+Private Sub CloseSearch()
+
+  FSearch.ResetBrowse
+  GotoConsole
+  HideTab(TAB_SEARCH)
+
+End
+
+Public Sub SelectTab(iTab As Integer)
+
+  If wizDebug.Index = iTab Then Return
+  
+  wizDebug.Index = iTab
+  FDebugButton.SelectButton(iTab)
+  
+End
+
+Private Sub ShowTab(iTab As Integer, Optional bShow As Boolean = True)
+  
+  If bShow Then
+    wizDebug[iTab].Enabled = True
+    FDebugButton.ShowButton(iTab, True)
+  Else
+    HideTab(iTab)
+  Endif
+  
+End
+
+Private Sub HideTab(iTab As Integer)
+  
+  wizDebug[iTab].Enabled = False
+  FDebugButton.ShowButton(iTab, False)
+  
+End
+
+Public Sub GetCurrentTab() As Integer
+  
+  Return wizDebug.Index
+  
+End
+
+Public Sub btnCloseSearch_Click()
+
+  CloseSearch
+  FMain.ShowDebug(False)
+
+End

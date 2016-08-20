@@ -1,0 +1,93 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,List,Border=True,Moveable=True"
+Public Const _DefaultSize As String = "24,32"
+Public Const _Similar As String = "ListBox"
+Public Const _Group As String = "View"
+
+Property List As String[]
+Property Border As Boolean
+Property Text As String
+Property Moveable As Boolean
+Property Read Editor As Control
+
+Event Select
+Event Change
+
+Private $hForm As FListEditor
+
+Public Sub _new()
+  
+  $hForm = New FListEditor(Me)
+  
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hForm.GetBorder()
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hForm.SetBorder(Value)
+
+End
+
+Private Function List_Read() As String[]
+
+  Return $hForm.GetList()
+
+End
+
+Private Sub List_Write(Value As String[])
+
+  $hForm.SetList(Value)
+
+End
+
+Public Sub _RaiseSelect()
+  
+  Raise Select
+  
+End
+
+Public Sub _RaiseChange()
+  
+  Raise Change
+  
+End
+
+Private Function Text_Read() As String
+
+  Return $hForm.GetText()
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $hForm.SetText(Value)
+
+End
+
+Private Function Moveable_Read() As Boolean
+
+  Return $hForm.GetMoveable()
+
+End
+
+Private Sub Moveable_Write(Value As Boolean)
+
+  $hForm.SetMoveable(Value)
+
+End
+
+Private Function Editor_Read() As Control
+
+  Return $hForm.GetEditor()
+
+End

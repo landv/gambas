@@ -1,0 +1,253 @@
+' Gambas module file
+
+Public Const DEFAULT_LANG As String = "en"
+Public Const DEFAULT_VERSION As Integer = 3
+
+Property Language As String
+Property Version As Integer
+Property Read IsWget As Boolean
+
+Public hConn As New Connection
+Public Langs As String[] = [DEFAULT_LANG, "fr", "de", "es", "it", "nl", "pl", "pt", "pt_BR", "mk", "sq", "ca", "hu", "cs", "tr", "ar", "fa", "id", "vi", "ko", "ja", "ru", "zh", "zh_TW", "eo"]
+
+Private $sLanguage As String
+Private $iVersion As Integer
+
+Public Sub Main()
+
+  ' Request.Debug = True
+  'Session.Unique = True
+
+  'Response.Buffered = True
+
+  Session.CookiePath = "/"
+
+  Session.Load()
+
+  'WHeader.Render()
+
+  If Request.Path = "/favicon.ico" Then
+    Response.SendFile(".icon.png")
+    Return
+  Endif
+
+  SetLang()
+
+  SetVer()
+
+  'Session["username"] = "sebikul"
+
+  'Response.Begin()
+
+  OpenDatabase()
+
+  'db.Debug = True
+
+  'Users.Create("asd1", "asd1", "asd2")
+  '
+  ' Users.Edit("asd1", "jajajaj", "holaa")
+
+  Select Case Path.Section
+
+    Case Path.PATH_ADMIN
+      Response.ContentType = "text/html;charset=UTF-8"
+      Admin.Main()
+      ' Print "DEBUG: Admin.Main()<br />"
+
+    Case Path.PATH_WIKI
+      Response.ContentType = "text/html;charset=UTF-8"
+      Wiki.Page()
+      ' Print "DEBUG: Wiki.Page()<br />"
+
+    Case Path.PATH_ACCOUNT
+      Response.ContentType = "text/html;charset=UTF-8"
+      UserManage.Account()
+      '   Print "DEBUG: UserManage.Account()<br />"
+
+    Case Path.PATH_LOGIN
+      Response.ContentType = "text/html;charset=UTF-8"
+      UserManage.Login()
+      '   Print "DEBUG: UserManage.Login()<br />"
+
+    Case Path.PATH_LOGOUT
+      Response.ContentType = "text/html;charset=UTF-8"
+      UserManage.Logout()
+      '   Print "DEBUG: UserManage.Logout()<br />"
+
+    Case Path.PATH_IMAGE
+      Image.Send()
+      '  Print "DEBUG: Image.Send()<br />"
+
+    Case Path.PATH_404, Path.PATH_MAIN
+      Response.ContentType = "text/html;charset=UTF-8"
+      Response.Redirect("/help")
+      Return
+
+  End Select
+
+  Debug()
+
+  ' Response.End()
+  '
+  Session.Save()
+
+Catch
+
+  Response.ContentType = "text/html;charset=UTF-8"
+
+  Print "<html><body><h2>Unexpected error while displaying this page.</h2>"
+  Print "<pre>"; Error.Text, Error.Code
+  Print "<b>"; Error.Where; "</b>"
+  Print "<p>"; Error.Backtrace.Join("<br />"); "</p>"
+
+  Debug()
+
+  Print "</pre></body>"
+
+End
+
+Private Sub OpenDatabase()
+
+  hConn.Type = "mysql"
+  hConn.Login = "gbwiki"
+  hConn.Password = ""
+
+  hConn.Name = "gambas"
+
+  Try hConn.Open()
+
+  If Error Then
+    CGI.Error(Error.Text)
+  Endif
+
+End
+
+''TODO: Implement
+Public Function PrintTitle(sTitle As String) As String
+
+  Return sTitle
+
+End
+
+Private Function Language_Read() As String
+
+  Return $sLanguage
+
+End
+
+Private Sub Language_Write(Value As String)
+
+  If Not Langs.Exist(Value) Then Return
+
+  $sLanguage = Value
+
+End
+
+Public Function EncodeLink(sLink As String) As String
+
+  Return Replace$(sLink, "&", "&amp;")
+
+End
+
+Public Function GetImage(sImg As String, Optional sAdd As String, Optional sAlign As String = "center") As String
+
+  If sAdd Then sAdd = " " & sAdd
+  Return "<img" & sAdd & " border=\"0\" src=\"http://gambasdoc.org/img/" & sImg & ".png\" align=\"" & sAlign & "\" />"
+
+End
+
+Private Function Version_Read() As Integer
+
+  Return $iVersion
+
+End
+
+Private Sub Version_Write(Value As Integer)
+
+  If Value < 2 Or Value > 3 Then Return
+
+  $iVersion = CInt(Value)
+
+End
+
+Private Function IsWget_Read() As Boolean
+
+  Return Application.Env["HTTP_USER_AGENT"] Like "WGet*"
+
+End
+
+Private Sub SetLang()
+
+  If Request.Get.Exist("lang") Then
+    Session["lang"] = Request.Get["lang"]
+    Response.Redirect(Path.Path)
+    Quit
+  Endif
+
+  If Session["lang"] Then
+    Me.Language = Session["lang"]
+  Else
+    Me.Language = DEFAULT_LANG
+  Endif
+
+  'System.Language = Me.Language
+
+End
+
+Private Sub SetVer()
+
+  If Request.Get.Exist("ver") Then
+    Session["ver"] = Request.Get["ver"]
+    Response.Redirect(Path.Path)
+    Quit
+  Endif
+
+  If Session["ver"] Then
+    Me.Version = Session["ver"]
+  Else
+    Me.Version = DEFAULT_VERSION
+  Endif
+
+End
+
+Public Sub ThrowError(sError As String)
+
+  'TODO: Set rendering as buffered
+  'TODO: Clear buffer if executed and print Me.Error
+
+  CGI.Error(sError)
+
+  ' Print Me.Error
+
+End
+
+Private Sub Debug()
+
+  Print "<br />"
+  Print "<br />"
+  Print "Application.Root: " & Application.Root & "<br />"
+  Print "Application.Host: " & Application.Host & "<br />"
+  Print "Application.Request: " & Application.Request & "<br />"
+  Print "Request.Path: " & Request.Path & "<br />"
+  Print "Path.Page: " & Path.Page & "<br />"
+  Print "Language: " & Me.Language & "<br /><br />"
+
+  Print "Users.Current.Username: " & Users.Current.Username & "<br />"
+  Print "Users.Current.IsAdmin: " & Users.Current.IsAdmin & "<br />"
+  Print "Users.Current.Type: " & Users.Current.Type & "<br /><br />"
+
+  Print "Session.Username: " & Session["username"] & "<br />"
+  Print "Session.uid: " & Session["uid"] & "<br /><br />"
+
+  Print "Actions.Parsed: " & Actions.Parsed & "<br />"
+  Print "Actions.Show: " & Actions.Show & "<br />"
+  Print "Actions.View: " & Actions.View & "<br />"
+  Print "Actions.Edit: " & Actions.Edit & "<br />"
+  Print "Actions.Help: " & Actions.Help & "<br />"
+  Print "Actions.OnlineHelp: " & Actions.OnlineHelp & "<br />"
+  Print "Actions.Image: " & Actions.Image & "<br />"
+  Print "Path.Section: " & Path.Section & "<br /><br />"
+
+  Print "Wget: " & Main.IsWget & "<br />"
+
+End

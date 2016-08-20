@@ -1,0 +1,58 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,64)
+  Arrangement = Arrange.Fill
+  { panBorder Panel
+    MoveScaled(3,3,58,55)
+    Arrangement = Arrange.Vertical
+    Border = Border.Plain
+    { panViewer Panel
+      MoveScaled(11,2,43,30)
+      Background = &H000000&
+      Expand = True
+      Arrangement = Arrange.Fill
+      { dwgVideo DrawingArea
+        MoveScaled(0,0,24,24)
+        Background = &H000000&
+        Expand = True
+      }
+    }
+    { dwgTime DrawingArea
+      MoveScaled(9,37,36,3)
+      Mouse = Mouse.Pointing
+    }
+    { panControl HBox
+      MoveScaled(0,45,57,4)
+      { btnPlay ToolButton
+        MoveScaled(0,0,4,4)
+        Picture = Picture["icon:/small/play"]
+      }
+      { btnPause ToolButton
+        MoveScaled(4,0,4,4)
+        Picture = Picture["icon:/small/pause"]
+      }
+      { btnStop ToolButton
+        MoveScaled(8,0,4,4)
+        Picture = Picture["icon:/small/stop"]
+      }
+      { Panel1 Panel
+        MoveScaled(13,0,3,4)
+        Expand = True
+      }
+      { btnVolume ToolButton
+        MoveScaled(26,0,4,4)
+        Picture = Picture["icon:/small/volume"]
+      }
+      { sldVolume Slider
+        MoveScaled(32,0,20,4)
+        ToolTip = ("100%")
+        Value = 100
+      }
+    }
+  }
+  { timTime #Timer
+    #MoveScaled(4,11)
+    Delay = 150
+  }
+}

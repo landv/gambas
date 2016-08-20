@@ -1,0 +1,144 @@
+' Gambas class file
+
+Fast
+
+Public Text As String
+Public Length As Integer
+
+Private Attr As New Integer[]
+
+Private $bCompressed As Boolean
+
+Private Enum FLAG_BG, FLAG_FG, FLAG_BOLD, FLAG_DIM, FLAG_REV, FLAG_UND, FLAG_BLK
+
+Private Sub Uncompress()
+
+  Dim I As Integer
+  Dim iAttr As Integer
+  Dim iCount As Integer
+  Dim aAttr As New Integer[]
+  Dim aTemp As Integer[]
+
+  For I = 0 To Attr.Max
+    iAttr = Attr[I]
+    iCount = (Lsr(iAttr, 8) And 255) + 1
+    iAttr = iAttr And &HFFFF00FF
+    aTemp = New Integer[iCount]
+    aTemp.Fill(iAttr)
+    aAttr.Insert(aTemp)
+  Next
+  
+  'If aAttr.Count > String.Len(Text) Then Stop
+  
+  Attr = aAttr
+  $bCompressed = False
+
+End
+
+Private Sub Compress()
+  
+  Dim I As Integer
+  Dim iAttr As Integer
+  Dim iOldAttr As Integer
+  Dim iCount As Integer
+  Dim aAttr As New Integer[]
+  
+  For I = 0 To Attr.Max
+    
+    iAttr = Attr[I]
+    If iAttr = iOldAttr And If iCount < 256 Then
+      Inc iCount
+      Continue
+    Endif
+    
+    If iCount Then aAttr.Add(iOldAttr Or Lsl(iCount - 1, 8))
+    iCount = 1
+    iOldAttr = iAttr
+    
+  Next
+  
+  If iCount Then aAttr.Add(iOldAttr Or Lsl(iCount - 1, 8))
+  
+  Attr = aAttr
+  $bCompressed = True
+  
+End
+
+
+' Public Sub GetAttr(hAttr As TerminalAttr, X As Integer)
+'   
+'   Dim iAttr As Integer
+'   
+'   Try iAttr = Attr[X]
+'   
+'   If BTst(iAttr, FLAG_BG) Then
+'     hAttr.Background = Lsr(iAttr, 16) And 255
+'   Else
+'     hAttr.Background = Color.Default
+'   Endif
+' 
+'   If BTst(iAttr, FLAG_FG) Then
+'     hAttr.Foreground = Lsr(iAttr, 24) And 255
+'   Else
+'     hAttr.Foreground = Color.Default
+'   Endif
+'   
+'   hAttr.Bold = BTst(iAttr, FLAG_BOLD)
+'   hAttr.Dim = BTst(iAttr, FLAG_DIM)
+'   hAttr.Reverse = BTst(iAttr, FLAG_REV)
+'   hAttr.Underscore = BTst(iAttr, FLAG_UND)
+'   hAttr.Blink = BTst(iAttr, FLAG_BLK)
+'   
+' End
+' 
+Public Sub SetAttr(hAttr As TerminalAttr, X As Integer, Optional L As Integer = 1, Optional bInsert As Boolean)
+  
+  Dim iAttr As Integer
+  Dim aAttr As Integer[]
+  Dim aTemp As Integer[]
+  
+  If hAttr.Background <> Color.Default Then iAttr = BSet(iAttr, FLAG_BG) + Lsl(hAttr.Background And 255, 16)
+  If hAttr.Foreground <> Color.Default Then iAttr = BSet(iAttr, FLAG_FG) + Lsl(hAttr.Foreground And 255, 24)
+  
+  If hAttr.Bold Then iAttr = BSet(iAttr, FLAG_BOLD)
+  If hAttr.Dim Then iAttr = BSet(iAttr, FLAG_DIM)
+  If hAttr.Reverse Then iAttr = BSet(iAttr, FLAG_REV)
+  If hAttr.Underscore Then iAttr = BSet(iAttr, FLAG_UND)
+  If hAttr.Blink Then iAttr = BSet(iAttr, FLAG_BLK)
+  
+  If $bCompressed Then Uncompress()
+  
+  aAttr = Attr
+  
+  If iAttr = 0 And If X >= aAttr.Count Then
+    'aAttr.Resize(X)
+  Else
+    If bInsert Then
+      If aAttr.Count < X Then aAttr.Resize(X)
+      aTemp = New Integer[L]
+      aTemp.Fill(iAttr)
+      aAttr.Insert(aTemp, X)
+    Else
+      If aAttr.Count < X + L Then aAttr.Resize(X + L)
+      aAttr.Fill(iAttr, X, L)
+    Endif
+  Endif
+  
+End
+
+Public Sub GetAttr() As Integer[]
+  
+  If Not $bCompressed Then Compress()
+  Return Attr
+  
+End
+
+
+Public Sub Clear()
+  
+  Text = ""
+  Length = 0
+  Attr.Clear
+  $bCompressed = False
+  
+End

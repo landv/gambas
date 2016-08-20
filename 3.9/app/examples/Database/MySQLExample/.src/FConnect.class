@@ -1,0 +1,46 @@
+' Gambas class file
+
+Public Sub btnCancel_Click()
+
+  Me.Close(True)
+
+End
+
+Public Sub btnConnect_Click()
+
+  modMain.$Host = txtServer.Text
+  modMain.$Password = txtPassword.Text
+  modMain.$Port = txtPort.Text
+  modMain.$User = txtUser.Text
+  Me.Close(False)
+  Catch
+    Message.Error(Error.Text)
+
+End
+
+Public Sub btnClear_Click()
+
+  txtPassword.Text = Null
+  txtPort.Text = Null
+  txtServer.Text = Null
+  txtUser.Text = Null
+  txtPassword.SetFocus()
+
+End
+
+Public Sub Form_Open()
+
+  txtServer.Text = Settings["/Conecction/Host", "localhost"]
+  txtUser.Text = Settings["/Conecction/User", "root"]
+  txtPort.Text = Settings["/Conecction/Port", "3306"]
+  txtPassword.SetFocus()
+
+End
+
+Public Sub Form_Close()
+
+  If txtServer.Text Then Settings["/Conecction/Host"] = txtServer.Text
+  If txtUser.Text Then Settings["/Conecction/User"] = txtUser.Text
+  If txtPort.Text Then Settings["/Conecction/Port"] = txtPort.Text
+
+End

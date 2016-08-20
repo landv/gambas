@@ -1,0 +1,150 @@
+' Gambas class file
+
+Event Previous
+Event {Next}
+Event Cancel
+
+Public Sub btnPrevious_Click()
+
+  Raise Previous
+
+End
+
+Public Sub btnNext_Click()
+
+  Raise {Next}
+
+End
+
+Public Sub btnCancel_Click()
+
+  Raise Cancel
+
+End
+
+Public Function GetContainer() As Container
+
+  Return panWizard
+
+End
+
+Private Sub UpdateTitle()
+  
+  Dim H As Integer
+  Dim hPict As Picture
+
+  H = panTitle.Font.Height
+  hPict = picTitle.Picture
+
+  If hPict Then
+    H = Max(H, hPict.Height)
+    picTitle.Width = hPict.Width
+    panTitle.Indent = False
+  Else
+    panTitle.Indent = True
+  Endif
+
+  H += panTitle.Padding * 2 + 4
+  panTitle.Height = H
+  
+End
+
+
+Public Sub SetTitle(sText As String, hPict As Picture)
+
+  lblTitle.Text = sText
+  picTitle.Picture = hPict
+  picTitle.Visible = hPict
+  
+  UpdateTitle
+
+End
+
+Public Sub UpdateActionButton()
+  
+  Dim hWizard As Wizard = Me.Parent
+
+  If hWizard.ActionPicture Then
+    btnNext.Picture = hWizard.ActionPicture
+  Else
+    btnNext.Picture = Null
+  Endif
+  
+  If hWizard.ActionText Then
+    btnNext.Text = hWizard.ActionText
+  Else
+    btnNext.Text = ("OK")
+  Endif
+
+  btnNext.Default = True
+  
+End
+
+
+Public Sub SetPosition((iPos) As Integer, bPrevious As Boolean, bNext As Boolean)
+
+  btnPrevious.Enabled = bPrevious
+  If bNext Then
+    btnNext.Text = ("&Next")
+    btnNext.Picture = Picture["icon:/small/forward"]
+    btnNext.Default = False
+  Else
+    UpdateActionButton
+  Endif
+
+  btnNext.AutoResize = True
+  btnNext.AutoResize = False
+  btnNext.W = Max(btnNext.W, btnCancel.W)
+
+End
+
+Public Sub SetShowTitle(bShow As Boolean)
+  
+  panTitle.Visible = bShow
+  
+End
+
+Public Sub GetShowTitle() As Boolean
+  
+  Return panTitle.Visible
+  
+End
+
+Public Sub SetBorder(bOn As Boolean)
+  
+  panWizard.Border = If(bOn, Border.Plain, Border.None)
+  'panWizard.Padding = If(bOn, 2, 0)
+  
+End
+
+Public Sub GetBorder() As Boolean
+  
+  Return panWizard.Border <> Border.None
+  
+End
+
+Public Sub GetTextFont() As Font
+  
+  Return panTitle.Font
+  
+End
+
+Public Sub SetTextFont(hFont As Font)
+  
+  panTitle.Font = hFont
+  UpdateTitle
+  
+End
+
+Public Sub SetShowButton(bShow As Boolean)
+  
+  panButton.Visible = bShow
+  
+End
+
+Public Sub GetShowButton() As Boolean
+  
+  Return panButton.Visible
+  
+End
+

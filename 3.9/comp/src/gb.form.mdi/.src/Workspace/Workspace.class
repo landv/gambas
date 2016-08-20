@@ -1,0 +1,241 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Orientation{Align.Top;Bottom}=Top,Image,Border=True"
+Public Const _DefaultEvent As String = "Activate"
+Public Const _Group As String = "Special"
+
+Event Activate
+Event Close({Window} As Window)
+Event Attach({Window} As Window)
+Event Detach({Window} As Window)
+
+Property ActiveWindow As Window
+Property Read Windows As Window[]
+Property Read Count As Integer
+Property Font As Font
+Property Background As Integer
+Property Orientation As Integer
+Property Border As Boolean
+Property Image As Image
+Property Picture As Picture
+
+Static Private $bPictureWarning As Boolean
+
+Private $hWorkspace As FWorkspace
+Private $hPicture As Picture
+
+Public Sub _new()
+  
+  'SUPER.Background = Color.Yellow
+  $hWorkspace = New FWorkspace(Me)
+  'ME.Container = $hWorkspace.Container
+  
+End
+
+Public Sub Add(hWindow As Window, Optional Resizable As Boolean) 
+  
+  $hWorkspace.Add(hWindow, Resizable)
+  
+End
+
+Public Sub Remove(hWindow As Window)
+  
+  $hWorkspace.Remove(hWindow)
+  
+End
+
+Public Sub Exist(hWindow As Window) As Boolean
+  
+  Return $hWorkspace.Exist(hWindow)
+  
+End
+
+
+Public Sub Detach(hWindow As Window)
+  
+  $hWorkspace.Detach(hWindow)
+  
+End
+
+Public Sub Attach(hWindow As Window)
+  
+  $hWorkspace.Attach(hWindow)
+  
+End
+
+
+
+Public Sub Lock()
+  
+  $hWorkspace.Lock
+  
+End
+
+Public Sub Unlock()
+  
+  $hWorkspace.UnLock
+  
+End
+
+' PUBLIC SUB SetResizable(Window AS Window, Resizable AS Boolean, OPTIONAL Grid AS Integer)
+'   
+'   $hWorkspace.SetResizable(Window, Resizable, Grid)
+'   
+' END
+
+
+Private Function ActiveWindow_Read() As Window
+
+  Return $hWorkspace.GetActiveWindow()
+
+End
+
+Private Sub ActiveWindow_Write(Value As Window)
+
+  $hWorkspace.ActivateWindow(Value)
+
+End
+
+Private Function Windows_Read() As Window[]
+
+  Return $hWorkspace.GetWindows()
+
+End
+
+Public Sub _Activate()
+  
+  Raise Activate
+  
+End
+
+Public Sub _RaiseClose(hWindow As Window) As Boolean
+
+  Dim bCancel As Boolean
+  
+  bCancel = Raise Close(hWindow)
+  Return bCancel
+  
+End
+
+Public Sub _RaiseAttach(hWindow As Window)
+  
+  Raise Attach(hWindow)
+  
+End
+
+Public Sub _RaiseDetach(hWindow As Window)
+  
+  Raise Detach(hWindow)
+  
+End
+
+
+' Private Function ShowTitle_Read() As Boolean
+' 
+'   Return $hWorkspace.IsShowTitle()
+' 
+' End
+' 
+' Private Sub ShowTitle_Write(Value As Boolean)
+' 
+'   $hWorkspace.SetShowTitle(Value)
+' 
+' End
+
+Private Function Font_Read() As Font
+
+  Return $hWorkspace.GetFont()
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  $hWorkspace.SetFont(Value)
+
+End
+
+Private Function Background_Read() As Integer
+
+  Return $hWorkspace.GetBackground()
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  $hWorkspace.SetBackground(Value)
+
+End
+
+Private Function Orientation_Read() As Integer
+
+  Return $hWorkspace.GetOrientation()  
+
+End
+
+Private Sub Orientation_Write(Value As Integer)
+
+  If Value = Align.Top Or If Value = Align.Bottom Then $hWorkspace.SetOrientation(Value)
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hWorkspace.HasBorder()
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hWorkspace.SetBorder(Value)
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $hPicture
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  If Not $bPictureWarning Then
+    $bPictureWarning = True
+    Error "gb.form.mdi: warning: Workspace.Picture property is deprecated. Use Workspace.Image instead"
+  Endif
+  
+  $hPicture = Value
+  If Value Then
+    $hWorkspace.SetImage($hPicture.Image)
+  Else
+    $hWorkspace.SetImage(Null)
+  Endif
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return $hWorkspace.GetCountWindows()
+
+End
+
+Private Function Image_Read() As Image
+
+  Return $hWorkspace.GetImage()
+
+End
+
+Private Sub Image_Write(Value As Image)
+
+  $hWorkspace.SetImage(Value)
+
+End
+
+Public Sub CloseAll()
+
+  $hWorkspace.CloseAll
+
+End

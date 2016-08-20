@@ -1,0 +1,22 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,53,13)
+  Text = ("Gambas 3 project conversion")
+  Resizable = False
+  Spacing = True
+  Margin = True
+  { PictureBox1 PictureBox
+    MoveScaled(1,1,11,11)
+    Picture = Picture["icon:/128/wizard"]
+    Stretch = True
+  }
+  { lblConvert TextLabel
+    MoveScaled(14,1,38,7)
+    Font = Font["Bold,+3"]
+    Expand = True
+  }
+  { pgbConvert ProgressBar
+    MoveScaled(14,9,38,3)
+  }
+}

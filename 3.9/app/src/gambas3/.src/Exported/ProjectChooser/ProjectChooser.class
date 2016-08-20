@@ -1,0 +1,113 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Border,ShowButton"
+Public Const _DefaultEvent As String = "Activate"
+Public Const _DefaultSize As String = "36,36"
+Public Const _Group As String = "Chooser"
+
+Event Activate
+Event Open(Path As String, Extern As Boolean)
+Event Cancel
+
+Property Settings As Variant[]
+Property Path As String
+Property Border As Boolean
+Property ShowButton As Boolean
+Property ShowAnother As Boolean
+
+Private $hForm As FProjectChooser
+
+Public Sub _new()
+  
+  $hForm = New FProjectChooser(Me)
+  
+End
+
+Private Function Settings_Read() As Variant[]
+
+  Return $hForm.GetSettings()
+
+End
+
+Private Sub Settings_Write(Value As Variant[])
+
+  $hForm.SetSettings(Value)
+
+End
+
+Public Sub _RaiseActivate()
+  
+  Raise Activate
+  
+End
+
+Public Sub _RaiseChange(sPath As String)
+  
+  Raise Change(sPath)
+  
+End
+
+Private Function Path_Read() As String
+
+  Return $hForm.GetPath()
+
+End
+
+Private Sub Path_Write(Value As String)
+
+  $hForm.SetPath(Value)
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hForm.GetBorder()
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hForm.SetBorder(Value)
+
+End
+
+Private Function ShowButton_Read() As Boolean
+
+  Return $hForm.GetShowButton()
+
+End
+
+Private Sub ShowButton_Write(Value As Boolean)
+
+  $hForm.SetShowButton(Value)
+
+End
+
+Private Function ShowAnother_Read() As Boolean
+
+  Return $hForm.GetShowAnother()
+
+End
+
+Private Sub ShowAnother_Write(Value As Boolean)
+
+  $hForm.SetShowAnother(Value)
+
+End
+
+Public Sub _RaiseOpen(sPath As String, bExtern As Boolean)
+  
+  Raise Open(sPath, bExtern)
+  
+End
+
+Public Sub _RaiseCancel()
+  
+  Raise Cancel
+  
+End
+

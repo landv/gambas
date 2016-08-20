@@ -1,0 +1,64 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,78,76)
+  Text = ("NeHe Tutorials")
+  Icon = Picture["icon.png"]
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { HBox1 HBox
+    MoveScaled(1,1,64,20)
+    { Panel1 Panel
+      MoveScaled(3,4,1,7)
+      Expand = True
+    }
+    { Panel3 Panel
+      MoveScaled(12,1,42,18)
+      { PictureBox1 PictureBox
+        MoveScaled(6,0,37,18)
+        Picture = Picture["nehe.png"]
+      }
+      { PictureBox2 PictureBox
+        MoveScaled(0,2,17,20)
+        Picture = Picture["icon:/128/gambas"]
+      }
+    }
+    { Panel2 Panel
+      MoveScaled(62,6,1,7)
+      Expand = True
+    }
+  }
+  { Label1 TextLabel
+    MoveScaled(1,21,76,4)
+    Text = ("Choose a tutorial and click on the <b>Run</b> button!")
+    Alignment = Align.Center
+  }
+  { cmbTutorial ComboBox
+    MoveScaled(1,25,76,4)
+    ReadOnly = True
+  }
+  { txtCode TextArea
+    MoveScaled(1,29,76,22)
+    Font = Font["Monospace,-1"]
+    Expand = True
+    ReadOnly = True
+  }
+  { HBox2 HBox
+    MoveScaled(1,67,75,7)
+    { btnRun Button
+      MoveScaled(0,0,19,7)
+      Text = ("Run")
+      Picture = Picture["icon:/32/play"]
+    }
+    { Panel4 Panel
+      MoveScaled(31,2,5,4)
+      Expand = True
+    }
+    { btnQuit Button
+      MoveScaled(57,0,19,7)
+      Text = ("Exit")
+      Picture = Picture["icon:/32/quit"]
+    }
+  }
+}

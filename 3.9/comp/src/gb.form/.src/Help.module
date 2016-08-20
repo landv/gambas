@@ -1,0 +1,73 @@
+' Gambas module file
+
+
+Public Sub GotoNext(hCtrl As Control, Optional bSelect As Boolean)
+
+  Dim hTextBox As TextBox
+
+  hCtrl = hCtrl.Next
+  If hCtrl And If Object.Type(hCtrl) <> "TextBox" Then
+    hCtrl = hCtrl.Next
+  Endif
+
+  If hCtrl Then
+    hTextBox = hCtrl
+    hCtrl.SetFocus
+    hCtrl.Pos = 0
+    If bSelect Then hCtrl.SelectAll
+  Endif
+
+End
+
+
+Public Sub GotoPrevious(hCtrl As Control, Optional bSelect As Boolean)
+
+  Dim hTextBox As TextBox
+
+  hCtrl = hCtrl.Previous
+  If hCtrl And If Object.Type(hCtrl) <> "TextBox" Then
+    hCtrl = hCtrl.Previous
+  Endif
+
+  If hCtrl Then
+    hTextBox = hCtrl
+    hCtrl.SetFocus
+    hCtrl.Pos = hCtrl.Length
+    If bSelect Then hCtrl.SelectAll
+  Endif
+
+End
+
+Public Sub ManageKeyPress(sCar As String, aTextBox As Object[])
+
+  Dim hLast As TextBox = Last
+
+  If Asc(Key.Text) >= 32 And Asc(Key.Text) < 127 Then
+    If Not IsDigit(Key.Text) Then
+      If InStr(sCar, Key.Text) Then
+        Help.GotoNext(Last)
+      Endif
+      Stop Event
+      Return
+    Endif
+  Else If Key.Code = Key.Home Then
+    aTextBox[0].SelectAll
+    aTextBox[0].SetFocus
+    Stop Event
+  Else If Key.Code = Key.End Then
+    aTextBox[2].SelectAll
+    aTextBox[2].SetFocus
+    Stop Event
+  Else If Key.Code = Key.Left Then
+    If hLast.Pos = 0 Then GotoPrevious(Last)
+  Else If Key.Code = Key.Right Then
+    If hLast.Pos = hLast.Length Then GotoNext(Last)
+  Endif
+
+End
+
+Public Sub CheckFileName(sName As String) As String
+
+  If InStr(sName, "/") Then Return ("The '/' character is forbidden inside file or directory names.")
+  
+End

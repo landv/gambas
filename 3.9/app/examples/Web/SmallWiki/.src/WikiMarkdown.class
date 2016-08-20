@@ -1,0 +1,31 @@
+' Gambas class file
+
+Inherits Markdown
+
+Public Sub Link(hLink As MarkdownLink)
+  
+  Dim sPath As String
+  
+  If hLink.Link Begins "/" Then
+    sPath = Mid$(hLink.Link, 2)
+  Else If hLink.Link Begins "./" Then
+    sPath = Request.Path &/ Mid$(hLink.Link, 3)
+  Else
+    Return
+  Endif
+  
+  If Not hLink.Text Then
+    
+    If Main.IsImage(sPath) Then
+      hLink.Html = "<img src=\"" & Application.Root &/ sPath & "?show\" />"
+      Return
+    Endif
+  
+    hLink.Text = Main.GetPageTitle(sPath)
+    
+  Endif
+  
+  hLink.Link = Application.Root &/ sPath
+  
+End
+

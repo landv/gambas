@@ -1,0 +1,59 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,64,64)
+  Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
+  Index = 0
+  Text = ("")
+  { ReportPanel1 ReportHBox
+    #MoveScaled(0,5,61,10)
+    Height = "4cm"
+    Padding = ReportPadding["Top:2mm;Bottom:2mm;Left:2mm;Right:2mm"]
+    { ReportPanel3 ReportPanel
+      #MoveScaled(1,2,9,8)
+      Expand = True
+    }
+    { ReportPanel2 ReportPanel
+      #MoveScaled(10,0,41,10)
+      Width = "10cm"
+      AutoResize = True
+      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000;TopLeftCorner:1cm;TopRightCorner:1cm;BottomRightCorner:1cm;BottomLeftCorner:1cm"]
+      Arrangement = Arrange.Horizontal
+      { ReportImage1 ReportImage
+        #MoveScaled(1,0,11,9)
+        Width = "3cm"
+        Height = "6mm"
+        Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+        Alignment = Align.Center
+      }
+      { ReportImage3 ReportImage
+        #MoveScaled(26,0,11,9)
+        Width = "3cm"
+        Height = "6mm"
+        Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+        Border = ReportBorder["Left:1mm #000000"]
+        Alignment = Align.Center
+      }
+      { ReportImage2 ReportImage
+        #MoveScaled(14,0,11,9)
+        Width = "3cm"
+        Height = "6mm"
+        Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+        Border = ReportBorder["Left:1mm #000000"]
+        Alignment = Align.Center
+      }
+    }
+    { ReportPanel4 ReportPanel
+      #MoveScaled(52,1,9,9)
+      Expand = True
+    }
+  }
+  { ReportLabel1 ReportLabel
+    #MoveScaled(5,18,57,13)
+    Height = "2cm"
+    Font = Font["Bold,+6"]
+    Text = ("coucou")
+    Alignment = Align.Center
+  }
+  Index = 0
+}

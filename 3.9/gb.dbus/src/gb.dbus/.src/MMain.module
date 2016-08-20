@@ -1,0 +1,120 @@
+' Gambas module file
+
+Public Sub Main2()
+
+  Dim aVal As Variant[]
+  Dim hSignal As DBusSignal
+
+  'DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry = [0, 24, 1024, 768] '.Get("", "rect")
+  'aRect = DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1", "com.trolltech.Qt.QWidget"].geometry
+  'Get("com.trolltech.Qt.QWidget", "rect")
+
+  'DBus.Session._Introspect("org.kde.kmail", "/kmail/kmail_mainwindow_1")
+  ' aRect = DBus.Session.CallMethod("org.kde.kmail", "/kmail/kmail_mainwindow_1", "", "Get", "ss", "(iiii)", ["com.trolltech.Qt.QWidget", "rect"])
+  ' For iInd = 0 To aRect.Max
+  '   Error aRect[iInd];;
+  ' Next
+  ' Error
+
+  'Print DBus["org.kde.kmail"]["/kmail/kmail_mainwindow_1"].geometry  '"turlutu"
+  'Debug aRect
+  'Print DBus["system://org.freedesktop.Hal"]["/org/freedesktop/Hal/Manager", "org.freedesktop.Hal.Manager"].GetAllDevices().Join("\n")
+  'Print DBus["org.kde.krunner"]["/"].Children.Join("\n")
+  'Print DBus["org.kde.krunner"]["/"]._Introspection
+
+  'Print DBus.Session._Name
+  'Dim hTest As CTest = CTest
+  
+  ' 
+  ' Debug DBus.Session.Applications.Join("\n")
+  ' 
+  'DBus.Debug = True
+  'DBus.Session.Register(CTest, "/Test", ["org.mpris.MediaPlayer2", "org.mpris.MediaPlayer2.Player"])
+  
+  'DBus.Name = "org.mpris.MediaPlayer2.xt7"
+  'DBus.Session.Register(CTest2, "/org/mpris/MediaPlayer2", ["org.mpris.MediaPlayer2", "org.mrpris.MediaPlayer2.Player"])
+
+  'Wait 10
+  '
+    
+  'aVal = DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].GetServerInformation()
+  'Print aVal[0];; aVal[1];; aVal[2]
+  'Print DBus["system://org.freedesktop.UDisks"]["/"].Children
+  
+  'hSignal = New DBusSignal(DBus.Session, "org.freedesktop.DBus") As "MySignal"
+  ' hSignal = New DBusSignal(DBus.Session, "", True) As "MySignal"
+  'Wait 30
+
+  'DBus.Session.Unregister(CTest)
+  
+  Dim o As Object
+  Dim s As String
+  'Dim cInts As Collection = ["image_path": "/usr/share/icons/gnome/48x48/actions/add.png"]
+  
+  'DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].Notify("MyApp", 0, "", "PoissonTChat", "Fabien: Chu la ! <a href=\"http://gambaslinux.forumactif.net\">ici</a>", ["test"], cInts, 1000)
+
+  'Print "BUG 1"
+  'Print "Try DBus[\"system://org.freedesktop.UDisks\"][\"/org/freedesktop/UDisks\"].Uninhibit(\"fake_cookie\")"
+  's = "AuxArmes!"
+  Error "---------------------------"
+  Try Print DBus["system://org.freedesktop.UDisks"]["/org/freedesktop/UDisks"].Uninhibit("AuxArmes!")
+  Error "---------------------------"
+  Print Error.Text
+  'Try DBus["system://org.freedesktop.UDisks"]["/org/freedesktop/UDisks"].Uninhibit("fake_cookie")
+  Return
+  
+  ' If Error Then
+  '   Print "NO BUG. Error message:";; Error.Text
+  ' Else
+  '   Print "BUG! No error message"
+  ' End If
+  ' 
+  ' Print "BUG 2"
+  ' Print "Try DBus[\"system://org.freedesktop.UDisks\"][\"/org/freedesktop/UDisks\"].FindDeviceByDeviceFile(\"/fake_device\")"
+  ' Try o = DBus["system://org.freedesktop.UDisks"]["/org/freedesktop/UDisks"].FindDeviceByDeviceFile("/fake_device")
+  ' If Error Then
+  '   If Error.Text = "Unable to call method" Then
+  '     Print "BUG! No detailed error message: ";; Error.Text
+  '   Else
+  '     Print "NO BUG. Error message is detailed:";; Error.Text
+  '   End If
+  ' Else
+  '   Print "No error. Strange"
+  ' End If
+  
+End
+
+Public Sub MySignal_Signal(Method As String, Arguments As Variant[])
+  
+  Debug Method
+  
+End
+
+Public Sub Main()
+
+  Dim vVal As Variant
+
+  Print DBus._HasSystemTray()
+  
+  'Print DBus.Null
+  'Print DBus.Null
+   
+  'DBus.Session.Register(hObject, "/StatusNotifierItem", ["org.freedesktop.StatusNotifierItem"])
+  'DBus.Session._RequestName("org.freedesktop.StatusNotifierItem-" & CStr(Application.Handle) & "-1", True)
+
+  ' Wait 5
+  ' 
+  ' DBus.Session.Raise(hObject, "org.freedesktop.StatusNotifierItem.IconChanged")
+  ' DBus.Session.Raise(hObject, "org.freedesktop.StatusNotifierItem.NewStatus", ["Chuck!"])
+  ' 
+  ' Wait 30
+  ' 
+  ' DBus.Session.Unregister(hObject)
+
+End
+
+' Public Sub Main()
+' 
+'   DBus["org.kde.StatusNotifierItem-3527-1"]["/StatusNotifierItem", "org.kde.StatusNotifierItem"].ContextMenu(0, 0)
+' 
+' End

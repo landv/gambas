@@ -1,0 +1,101 @@
+' Gambas class file
+
+Export 
+
+Inherits UserContainer
+
+Public Const _Properties As String = "*,Border=True,Text,TextFont,Animated,Hidden"
+Public Const _DefaultEvent As String = "Show"
+Public Const _Similar As String = "Panel"
+
+Event Show
+Event Hide
+
+Property Hidden As Boolean
+Property Text As String
+Property TextFont As Font
+Property Animated As Boolean
+Property Border As Boolean
+
+Private frmExpander As FExpander
+
+Public Sub _new()
+  
+  frmExpander = New FExpander(Me)
+  Me._Container = frmExpander.GetContainer()
+  
+End
+
+Public Sub _Show()
+  
+  Raise Show
+  
+End
+
+Public Sub _Hide()
+  
+  Raise Hide
+  
+End
+
+
+Private Function Hidden_Read() As Boolean
+
+  Return frmExpander.GetHidden()
+
+End
+
+Private Sub Hidden_Write(Value As Boolean)
+
+  frmExpander.SetHidden(Value)
+
+End
+
+Private Function Text_Read() As String
+
+  Return frmExpander.GetText()
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  frmExpander.SetText(Value)
+
+End
+
+Private Function TextFont_Read() As Font
+
+  Return frmExpander.GetFont()
+
+End
+
+Private Sub TextFont_Write(Value As Font)
+
+  frmExpander.SetFont(Value)
+
+End
+
+Private Function Animated_Read() As Boolean
+
+  Return frmExpander.GetAnimated()
+  
+End
+
+Private Sub Animated_Write(Value As Boolean)
+
+  frmExpander.SetAnimated(Value)
+
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return frmExpander.GetBorder()
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  frmExpander.SetBorder(Value)
+
+End

@@ -1,0 +1,184 @@
+' Gambas module file
+
+'tutorial based on tutorial from NeHe Productions site at http://nehe.gamedev.net/
+'visit the page for more info on OpenGL
+'
+'In this tutorial we add texture to the box
+
+' Gambas module file
+Private screen As New Window(True) As "Screen"
+Private xrot As Float    'X Rotation( NEW )
+Private yrot As Float    'Y Rotation( NEW )
+Private zrot As Float    'Z Rotation( NEW )
+Private textures As New Integer[1]
+
+Public Sub Main()
+
+  With screen
+    .Width = 640
+    .Height = 480
+    .Title = MMain.Title
+    .Show()
+  End With
+
+End
+
+Public Sub Screen_Open()
+
+  Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
+  gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
+  gl.MatrixMode(gl.PROJECTION)
+  gl.LoadIdentity()                     'Reset The Projection Matrix
+  glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
+  gl.MatrixMode(gl.MODELVIEW)
+  init()
+
+End
+
+Public Sub Screen_resize()
+
+  Gl.Viewport(0, 0, Screen.Width, Screen.Height)
+  Gl.MatrixMode(Gl.PROJECTION)
+  Gl.LoadIdentity()                     'Reset The Projection Matrix
+  glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
+  Gl.MatrixMode(Gl.MODELVIEW)
+
+End
+
+Public Sub init()
+
+  Dim logo As Image
+
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
+  logo = Image.Load("NeHe.png")
+  textures = Gl.GenTextures(1)
+  Gl.BindTexture(Gl.TEXTURE_2D, textures[0])
+  Gl.TexImage2D(logo)
+  Glu.Build2DMipmaps(logo)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR_MIPMAP_NEAREST)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
+  gl.ShadeModel(gl.SMOOTH)                     ' Enable Smooth Shading
+  gl.ClearColor(0.3, 0.0, 0.3, 0.5)               ' Black Background
+  gl.ClearDepth(1.0)                              ' Depth Buffer Setup
+  gl.Enable(gl.DEPTH_TEST)                     ' Enables Depth Testing
+  gl.DepthFunc(gl.LEQUAL)                      ' The Type OF Depth Testing TO DO
+  gl.Hint(gl.PERSPECTIVE_CORRECTION_HINT, gl.NICEST)      ' Really Nice Perspective Calculations
+
+End
+
+Public Sub Screen_draw()
+
+  gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)         ' Clear Screen AND Depth Buffer
+  gl.LoadIdentity()         ' Reset The Current Matrix
+  gl.Translatef(0.0, 0.0, -5.0)         ' MOVE Into The Screen 5 Units
+
+  gl.Rotatef(xrot, 1.0, 0.0, 0.0)         ' Rotate On The X Axis
+  gl.Rotatef(yrot, 0.0, 1.0, 0.0)         ' Rotate On The Y Axis
+  gl.Rotatef(zrot, 0.0, 0.0, 1.0)         ' Rotate On The Z Axis
+
+  gl.BindTexture(gl.TEXTURE_2D, textures[0])         ' SELECT Our Texture
+
+  Gl.Begin(Gl.QUADS)
+  Gl.Colorf(1.0, 1.0, 1.0, 0.5)
+  ' front face
+  ' Bottom Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 1.0)
+  Gl.Vertexf(-1.0, -1.0, 1.0)
+  ' Bottom Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 1.0)
+  Gl.Vertexf(1.0, -1.0, 1.0)
+  ' Top Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 0.0)
+  Gl.Vertexf(1.0, 1.0, 1.0)
+  ' Top Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 0.0)
+  Gl.Vertexf(-1.0, 1.0, 1.0)
+
+  ' Back face
+  ' Bottom Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 1.0)
+  Gl.Vertexf(-1.0, -1.0, -1.0)
+  ' Top Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 0.0)
+  Gl.Vertexf(-1.0, 1.0, -1.0)
+  ' Top Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 0.0)
+  Gl.Vertexf(1.0, 1.0, -1.0)
+  ' Bottom Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 1.0)
+  Gl.Vertexf(1.0, -1.0, -1.0)
+
+  ' Top face
+  ' Top Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 0.0)
+  Gl.Vertexf(-1.0, 1.0, -1.0)
+  ' Bottom Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 1.0)
+  Gl.Vertexf(-1.0, 1.0, 1.0)
+  ' Bottom Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 1.0)
+  Gl.Vertexf(1.0, 1.0, 1.0)
+  ' Top Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 0.0)
+  Gl.Vertexf(1.0, 1.0, -1.0)
+
+  ' Bottom Face
+  ' Top Right OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 1.0)
+  Gl.Vertexf(-1.0, -1.0, -1.0)
+  ' Top Left OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 1.0)
+  Gl.Vertexf(1.0, -1.0, -1.0)
+  ' Bottom Left OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 0.0)
+  Gl.Vertexf(1.0, -1.0, 1.0)
+  ' Bottom Right OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 0.0)
+  Gl.Vertexf(-1.0, -1.0, 1.0)
+
+  ' Right face
+  ' Bottom Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 1.0)
+  Gl.Vertexf(1.0, -1.0, -1.0)
+  ' Top Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 0.0)
+  Gl.Vertexf(1.0, 1.0, -1.0)
+  ' Top Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 0.0)
+  Gl.Vertexf(1.0, 1.0, 1.0)
+  ' Bottom Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 1.0)
+  Gl.Vertexf(1.0, -1.0, 1.0)
+
+  ' Left face
+  ' Bottom Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 1.0)
+  Gl.Vertexf(-1.0, -1.0, -1.0)
+  ' Bottom Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 1.0)
+  Gl.Vertexf(-1.0, -1.0, 1.0)
+  ' Top Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 0.0)
+  Gl.Vertexf(-1.0, 1.0, 1.0)
+  ' Top Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 0.0)
+  Gl.Vertexf(-1.0, 1.0, -1.0)
+
+  Gl.End()
+
+  xrot += 0.09          ' X Axis Rotation
+  yrot += 0.08          ' Y Axis Rotation
+  zrot += 0.12          ' Z Axis Rotation
+
+End
+
+Public Sub Screen_keyPress()
+
+  If (key.code = key.F1) Then screen.Fullscreen = Not screen.Fullscreen
+  If (key.Code = key.Esc) Then Screen.Close()
+
+End

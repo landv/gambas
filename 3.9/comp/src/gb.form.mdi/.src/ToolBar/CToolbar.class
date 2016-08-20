@@ -1,0 +1,18 @@
+' Gambas class file
+
+Public (Key) As String
+Public Text As String
+Public DefaultConfig As String[]
+Public List As String[]
+
+Public Sub _new(sKey As String, cSlot As Collection)
+  
+  Key = sKey
+  
+  If cSlot Then
+    Text = cSlot["Text"]
+    DefaultConfig = Split(cSlot["Default"], ",")
+    List = Split(cSlot["List"], ",")
+  Endif
+  
+End

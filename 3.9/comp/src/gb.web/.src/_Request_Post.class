@@ -1,0 +1,230 @@
+' Gambas class file
+
+Export
+Create Static
+
+Property Read Fields As String[]
+Property Read Files As Collection
+Property Read Contents As String
+
+Static Private $cVal As Collection
+Static Private $cFiles As Collection
+Static Private $aField As New String[]
+
+Static Private $iMaxLength As Integer
+Static Private $sBuffer As String
+Static Private $bEOF As Boolean
+
+Static Private $sContents As String
+
+Private Sub ReadLine() As String
+  
+  Dim iPos As Integer
+  Dim sLine As String
+  Dim sData As String
+
+  Do
+
+    iPos = InStr($sBuffer, "\r\n")
+    If iPos Then 
+      sLine = Left($sBuffer, iPos - 1)
+      $sBuffer = Mid$($sBuffer, iPos + 2)
+      Break
+    Endif
+    
+    If $iMaxLength = 0 Then
+      $bEOF = True
+      sLine = $sBuffer
+      $sBuffer = ""
+      Break
+    Endif
+    
+    sData = Read Min(4096, $iMaxLength)
+    $iMaxLength -= Len(sData)
+    $sBuffer &= sData
+    If Request.Debug And If Not $sContents Then $sContents = sData
+    
+  Loop
+
+  Return sLine
+  
+End
+
+Private Sub Decode()
+  
+  Dim sStr As String
+  Dim sType As String
+  Dim sLine As String
+  Dim aElt As String[]
+  Dim sElt As String
+  Dim sName As String
+  Dim sFileName As String
+  Dim sValue As String
+  Dim bFile As Boolean
+  Dim bFirst As Boolean
+  Dim hFile As File
+  Dim iPos As Integer
+  Dim sCharset As String
+  
+  If $cVal Then Return
+
+  $cVal = New Collection
+  $cFiles = New Collection
+  
+  If CGI["REQUEST_METHOD"] <> "POST" Then Return
+
+  File.In.EndOfLine = gb.Windows
+  
+  sType = CGI["CONTENT_TYPE"]
+  $iMaxLength = 0
+  Try $iMaxLength = CInt(CGI["CONTENT_LENGTH"])
+  
+  iPos = InStr(sType, ";")
+  If iPos Then
+    sElt = Trim(Mid$(sType, iPos + 1))
+    sType = Left$(sType, iPos - 1)
+    If sElt Begins "charset=" Then sCharset = Mid$(sElt, 9)
+  Endif
+  
+  If sType = "application/x-www-form-urlencoded" Then 
+    sStr = Read $iMaxLength
+    If Request.Debug Then $sContents = sStr
+    If sCharset Then Try sStr = Conv(sStr, sCharset, "UTF-8")
+    'LINE INPUT sStr
+    Main.DecodeURL(sStr, $aField, $cVal)
+    Return
+  Endif
+    
+  If Not (sType Begins "multipart/form-data") Then Return
+  
+  'SHELL "echo MaxLength = " & CStr($iMaxLength) & " >> /var/log/thttpd/debug.log" WAIT
+  'sType = Scan(sType, "*boundary=*")[1]
+  
+  $sContents = ""
+  
+  sType = ReadLine()
+  'IF sLine <> sType THEN RETURN
+  
+  While Not $bEOF
+  
+    sLine = ReadLine()
+    
+    If sLine Begins "Content-Disposition:" Then 
+      bFile = False
+      sFileName = ""
+      aElt = Split(sLine, ";", Chr$(34))
+      For Each sElt In aElt
+        sElt = Trim(sElt)
+        'SHELL "echo " & Quote.Shell(sElt) & " >> /var/log/thttpd/debug.log" WAIT
+        If sElt Begins "name=" Then 
+          sName = Split(sElt, "=", Chr$(34))[1]
+        Else If sElt Begins "filename=" Then
+          bFile = True
+          sFileName = Split(sElt, "=", Chr$(34))[1]
+        Endif
+      Next
+      Continue
+    Endif
+    
+    If sLine Then Continue
+
+    If bFile Then 
+    
+      sValue = sFileName
+      If sValue Then
+        sFileName = Temp$()
+        $cFiles[sName] = sFileName
+        
+        hFile = Open sFileName For Create
+  
+        bFirst = True    
+        Do
+          sLine = ReadLine()
+          If sLine Begins sType Then Break
+          If Not bFirst Then Print #hFile, "\r\n";
+          Print #hFile, sLine;
+          bFirst = False
+        Loop
+        
+        Close #hFile
+      Else
+        Do
+          sLine = ReadLine()
+          If sLine Begins sType Then Break
+        Loop
+      Endif
+
+      'SHELL "echo filename = " & Quote.Shell(sFileName) & " >> /var/log/thttpd/debug.log" WAIT
+
+    Else
+    
+      sValue = ""
+      Do
+        sLine = ReadLine()
+        If sLine Begins sType Then Break
+        If sValue Then sValue &= "\r\n"
+        sValue &= sLine
+      Loop
+      
+      'SHELL "echo value = " & Quote.Shell(sValue) & " >> /var/log/thttpd/debug.log" WAIT
+
+    Endif
+    
+    If sName Then 
+      If Not $aField.Exist(sName) Then 
+        $aField.Add(sName)
+        $cVal[sName] = sValue
+      Else 
+        ' IF TypeOf($cVal[sName]) = gb.String THEN 
+        '   $cVal[sName] = [CStr($cVal[sName]), sValue]
+        ' ELSE  
+        '   $cVal[sName].Add(sValue)
+        ' ENDIF
+        $cVal[sName] &= "\n" & sValue
+      Endif
+    Endif
+      
+    If Right(sLine, 2) = "--" Then Break
+
+  Wend 
+    
+  'SHELL "echo =DONE= >> /var/log/thttpd/debug.log" WAIT
+
+End
+
+
+Public Sub _get(Key As String) As String
+  
+  Decode
+  Return $cVal[Key]
+  
+End
+
+Private Function Fields_Read() As String[]
+
+  Decode
+  Return $aField
+
+End
+
+
+Private Function Files_Read() As Collection
+
+  Decode
+  Return $cFiles
+
+End
+
+Public Sub Exist(Field As String) As Boolean
+  
+  Decode
+  Return $aField.Exist(Field)
+  
+End
+
+Private Function Contents_Read() As String
+  
+  Decode
+  Return $sContents
+
+End

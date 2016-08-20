@@ -1,0 +1,373 @@
+' Gambas class file
+
+Private Const WIDTH As Integer = 40
+
+Private $cToolBar As New Collection
+Private $sToolBar As String
+Private $sLastToolBar As String
+Private $sFamily As String
+
+Private $sLastLib As String
+Private $iSize As Integer
+'PRIVATE $bAnimate AS Boolean
+
+Private $aOrder As New String[]
+
+' Public Sub _new()
+'   
+'   Settings.Read(Me)
+'   
+' End
+
+
+Public Sub Form_Open()
+
+  $aOrder = ["Form", "View", "Report", "WebForm", "Dialog", "Chooser", "Container", "Data", "Network", "Special"]
+
+  ReadConfig
+  SetTool
+  'MoveToolBar
+
+End
+
+
+Private Function AddToolBar(sToolBar As String, sType As String) As FToolPanel
+
+  Dim hToolBar As FToolPanel
+
+  If Not $cToolBar.Exist(sToolBar) Then
+
+    If $cToolBar.Count Then Inc tabTool.Count
+    tabTool.Index = tabTool.Count - 1
+    'Debug tabTool.Count;; tabTool.Index
+    tabTool.Text = sToolBar
+
+    hToolBar = New FToolPanel(sToolBar, sType, tabTool) As "ToolBar"
+    $cToolBar[sToolBar] = hToolBar
+
+    If Not $sToolbar Then $sToolbar = sToolBar
+
+  Endif
+
+  Return $cToolBar[sToolBar]
+
+End
+
+
+' PRIVATE SUB MoveToolbar(OPTIONAL bAnim AS Boolean)
+' 
+'   DIM hToolBar AS FToolBar
+'   DIM Y AS Integer
+'   DIM H AS Integer
+'   DIM iInd AS Integer
+'   DIM bCurrent AS Boolean
+' 
+'   RETURN
+' 
+'   FOR EACH hToolBar IN $cToolBar
+' 
+'     bCurrent = $cToolBar.Key = $sToolBar
+'     hToolBar.ShowToolBar(TRUE)
+' 
+'     IF bAnim AND $bAnimate THEN
+'       IF ((hToolBar.Y < Y) AND $cToolBar.Key = $sLastToolBar) OR ((hToolBar.Y > Y) AND bCurrent) THEN
+'         FOR iInd = hToolBAR.Y TO Y STEP 8 * Sgn(Y - hToolBAR.Y)
+'           hToolBar.Y = iInd
+'           WAIT 0.001
+'         NEXT
+'       ENDIF
+'     ENDIF
+' 
+'     IF $cToolBar.Key = $sToolBar THEN
+'       H = ME.ClientH - $cToolBar.Count * FToolBar.HEIGHT + FToolBar.HEIGHT
+'     ELSE
+'       H = FToolBar.HEIGHT
+'     ENDIF
+' 
+'     hToolBar.Move(0, Y, ME.ClientW, H)
+'     Y += H
+' 
+'   NEXT
+' 
+'   FOR EACH hToolBar IN $cToolBar
+' 
+'     bCurrent = $cToolBar.Key = $sToolBar
+'     hToolBar.ShowToolBar(bCurrent)
+' 
+'   NEXT
+' 
+' END
+
+Public Sub RefreshToolbar(Optional bForce As Boolean)
+
+  Dim hToolBar As FToolPanel
+  Dim sLib As String
+  Dim sCtrl As String
+  Dim sNewLib As String
+  Dim hComp As CComponent
+  Dim hClass As CClassInfo
+  Dim sGroup As String
+  Dim aToolBar As New String[]
+  Dim cToolBar As New Collection
+  Dim iOrder As Integer
+  Dim iLast As Integer
+  Dim bExist As Boolean
+  Dim sOldTab As String
+  Dim cHidden As Collection
+  
+  'Dim sType As String
+
+  If Project.Components Then
+
+    For Each sLib In Project.Components
+      sNewLib = sNewLib & sLib & " "
+    Next
+    sNewLib = Trim(sNewLib)
+
+  Endif
+
+  If Not bForce Then
+    If $sLastLib Then
+      If sNewLib = $sLastLib Then Return
+    Endif
+  Endif
+
+  tabTool.Hide
+  
+  sOldTab = tabTool.Text
+
+  For Each hToolBar In $cToolBar
+    hToolBar.Hide
+    hToolBar.Reparent(Me)
+    hToolBar.Delete
+  Next
+  
+  $cToolBar.Clear
+  'Debug tabTool.Index
+  tabTool.Count = 1
+  'Debug "->";; tabTool.Index
+
+  $sToolBar = ""
+  $sFamily = ""
+
+  'AddTool(SELECT_TOOL)
+  'SetTool()
+
+  If Project.Components Then
+
+    ' Get all toolbars
+    
+    cHidden = New Collection
+
+    For Each hComp In Project.Documentation.Components
+
+      With hComp
+
+        If Not hComp.UsedByProject() Then Continue
+
+        For Each sCtrl In .Hiddens
+          cHidden[sCtrl] = True
+        Next
+
+        For Each sCtrl In .Controls
+          sGroup = Project.Documentation.Classes[sCtrl].Group
+          cToolBar[sGroup] = sGroup
+        Next
+
+      End With
+
+    Next
+    
+    iLast = $aOrder.Count
+    For Each sGroup In cToolBar
+      iOrder = $aOrder.Find(sGroup)
+      If iOrder < 0 Then
+        iOrder = iLast
+        Inc iLast
+      Endif
+      aToolBar.Add(Format(iOrder, "00") & sGroup)
+    Next
+    
+    aToolBar.Sort
+    
+    For Each sGroup In aToolBar
+      AddToolBar(Mid$(sGroup, 3), "Not yet implemented")
+    Next
+    
+    For Each hComp In Project.Documentation.Components
+
+      With hComp
+
+        If Not hComp.UsedByProject() Then Continue
+
+        For Each sCtrl In .Controls
+          If cHidden.Exist(sCtrl) Then Continue
+          hClass = Project.Documentation.Classes[sCtrl]
+          sGroup = hClass.Group
+          bExist = False
+          For Each hToolBar In $cToolBar
+            If hToolBar.Exist(sCtrl) Then 
+              bExist = True
+              Break
+            Endif
+          Next
+          If Not bExist Then 
+            If $cToolBar[sGroup] Then 
+              $cToolBar[sGroup].Add(sCtrl, hComp.Key, hClass.Family)
+            Else
+              Error "gambas3: warning: unknown control group: "; sGroup
+            Endif
+          Endif
+        Next
+
+      End With
+
+    Next
+
+    'Try SelectToolbar($sToolBar)
+    'tabTool.Index = 0
+    'IF ERROR THEN MoveToolbar
+
+  Endif
+
+  tabTool.Index = 0
+  
+  ' For iInd = 0 To tabTool.Count - 1
+  '   If tabTool[iInd].Text = sOldTab Then 
+  '     tabTool.Index = iInd
+  '     Break 
+  '   Endif
+  ' Next
+  
+  OnProjectActivate
+  
+  tabTool.Show
+
+  $sLastLib = sNewLib
+
+End
+
+
+Private Sub ClearToolBar()
+
+  $sLastLib = ""
+  RefreshToolBar
+
+End
+
+
+
+' Public Sub Form_Close()
+' 
+'   'Config.SaveWindow(ME, "/FToolBox")
+'   'DEBUG ME.x;; ME.y
+'   Settings.Write(Me)
+' 
+' End
+
+Private Sub SelectToolBar(sToolBar As String)
+
+  If Not $cToolBar.Exist(sToolBar) Then Return
+  $sLastToolBar = $sToolBar
+  $sToolBar = sToolBar
+  SetTool
+  'MoveToolBar(ME.Visible)
+
+End
+
+Public Function GetTool() As String
+
+  If Not $sToolBar Then Return
+  Return $cToolBar[$sToolBar].GetTool()
+
+End
+
+
+Public Sub SetTool()
+
+  If Not $sToolBar Then Return
+  $cToolBar[$sToolBar].SetTool()
+
+End
+
+
+' PUBLIC SUB ToolBar_Change()
+'
+'   PRINT "ToolBar_Change: "; LAST.Name
+'
+' END
+
+
+Public Sub ReadConfig()
+
+  Dim iSize As Integer
+
+  tabTool.TextFont = Project.GetSmallFont()
+
+  Select Case Settings["/ToolboxSize", 0]
+    Case 0
+      iSize = 32
+    Case 1
+      iSize = 24
+    Case 2
+      iSize = 48
+  End Select
+  
+  If iSize <> $iSize Then
+    $iSize = iSize
+    ClearToolBar
+  Endif
+
+  '$bAnimate = Settings["/Toolbar/Animate", TRUE]
+
+End
+
+Public Sub tabTool_Click()
+
+  SelectToolbar(tabTool.Text)
+
+End
+
+Public Sub OnProjectActivate()
+
+  Dim hForm As FForm
+  Dim iTab As Integer
+  Dim nVisible As Integer
+  Dim hCtrl As Control
+  Dim sType As String
+  Dim sTitle As String
+  Dim sOldTab As String
+  Dim iIndex As Integer
+  
+  Try hForm = Project.ActiveForm
+  If Not hForm Then Return
+  
+  If $sFamily = hForm.Family Then Return
+  
+  $sFamily = hForm.Family
+  sOldTab = tabTool.Text
+  iIndex = -1
+  
+  For iTab = 0 To tabTool.Count - 1
+  
+    nVisible = 0
+    sTitle = tabTool[iTab].Text
+    For Each hCtrl In $cToolBar[sTitle].Container.Children
+    
+      sType = hCtrl.Tag[1]
+      hCtrl.Visible = sType = "*" Or sType = $sFamily
+      If hCtrl.Visible Then Inc nVisible
+    
+    Next
+    
+    tabTool[iTab].Visible = nVisible > 1
+    If tabTool[iTab].Visible Then
+      If iIndex < 0 Then iIndex = iTab
+      If sTitle = sOldTab Then iIndex = iTab
+    Endif
+  
+  Next
+  
+  tabTool.Index = iIndex
+  
+End

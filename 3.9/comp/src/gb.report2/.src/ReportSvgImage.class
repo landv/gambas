@@ -1,0 +1,200 @@
+' Gambas class file
+
+Export
+Inherits ReportFrame
+
+Private $hPic As SvgImage
+Private $iStretchMode As Integer = Report.Proportional
+Private $iAlignment As Integer = Align.Normal
+'Private $sPath As String
+Public Const _Properties As String = "*,Stretch{Report.None;Proportional;Fill}=Proportional,Alignment{Align.*},Image{SvgImage}"
+Public Const _Similar As String = "ReportTextLabel"
+Public Data As SvgImage
+Property Image As SvgImage
+Property Stretch As Integer
+Property Alignment As Integer
+Event Data(Index As Integer)
+
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As ReportSizeHints
+  
+  Dim hMyHints As New ReportSizeHints
+  Dim fRatio As Float
+  'Dim h As Float = IIf(Me._Height > AvailableH, AvailableH, Me._Height)
+  'Dim w As Float = IIf(Me._Width > AvailableW, AvailableW, Me._Width)
+  
+  Dim hPic As SvgImage
+  
+  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalWidth, DataIndex)
+  
+  If Me.Autoresize Or If (Me._Width = 0 And Me._Height = 0) Then
+    If $hpic Then
+      hpic = $hpic
+    Else
+      Raise Data(DataIndex)
+      hpic = Data
+    Endif
+    
+    If hpic Then
+      If Me.Stretch = Report.Proportional Then
+        If hpic.Width > hpic.Height Then
+          fRatio = hpic.Height / hpic.Width
+          
+          hMyHints.Width = Min(Report.UnitToInch(hpic.Width, "px"), AvailableW)
+          hMyHints.Height = ((hMyHints.Width - (Me.Border._Width + Me.Padding._Width)) * fRatio) + (Me.Padding._Height + Me.Border._Height)
+        Else
+          fRatio = hpic.Width / hpic.Height
+          hMyHints.Height = Min(Report.UnitToInch(hpic.Height, "px"), AvailableH)
+          hMyHints.Width = ((hMyHints.Height - (Me.Border._Height + Me.Padding._Height)) * fRatio) + (Me.Border._Width + Me.Padding._Width)
+        Endif
+      Else
+        hMyHints.Width = Max(hMyHints.Width, Me.Padding._Left + Report.UnitToInch(hpic.Width, "px") + Me.Padding._Right) 'Report.UnitToInch(hpic.Width, "px") + Me.Padding._Right)
+        hMyHints.Height = Max(hMyHints.Height, Me.Padding._Top + Report.UnitToInch(hpic.Height, "px") + Me.Padding._Bottom) 'Report.UnitToInch(hpic.Height, "px") + Me.Padding._Bottom)
+      Endif
+      
+    Endif
+  Endif
+  
+  Return hMyHints
+  
+End
+
+Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, DataIndex As Integer)
+  
+  Dim ix, iy As Float
+  'Dim hBrush As PaintBrush
+  Dim hPic As SvgImage
+  
+  Dim w, h As Float
+  
+  ix = x + hControl.RealLeft '+ Me.Report._ToPixels(Me.Padding._Left)
+  iy = y + hControl.RealTop '+ Me.Report._ToPixels(Me.Padding._Top)
+  
+  If Not $hpic Then
+    Raise Data(DataIndex)
+    hpic = Data
+    If Not hPic Then Return
+  Else
+    hPic = $hpic
+  Endif
+  Paint.Save
+  Paint.Rectangle(ix, iy, hControl.RealWidth, hControl.RealHeight)
+  Paint.Clip
+  '$hPic = $hPic.Stretch(hControl.RealWidth, hControl.RealHeight)
+  
+  'hBrush = Paint.Image(hpic)
+  
+  If $iStretchMode = Report.Fill Then
+    iX += Me.Report._ToPixels(Me.Padding._Left + Me.Border._Left)
+    iY += Me.Report._ToPixels(Me.Padding._Top + Me.Border._Top)
+    w = (hControl.RealWidth - Me.Report._ToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
+    h = (hControl.RealHeight - Me.Report._ToPixels(Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom))
+    ' hBrush.Translate(ix, iy - 1)
+    'hBrush.Scale(w / hPic.Width, h / hPic.Height)
+    'Paint.Brush = hBrush
+    hpic.Width = w
+    hpic.Height = h
+    Paint.MoveTo(ix, iy)
+    hpic.Paint
+    'Paint.Rectangle(ix, iy, w, h)
+  Else
+    
+    If $iStretchMode = Report.Proportional Then
+      'on détermine la partie prédominante
+      If hPic.Width >= hPic.Height
+        'C'est la largeur
+        'on détermine une hauteur en fonction de la largeur connue
+        w = hControl.RealWidth - Me.Report._ToPixels(Me.Padding._Width)
+        h = hPic.Height / hPic.Width * w
+        'si h> a la place disponible alors on adapte en fonction de h en faite
+        If h > (hControl.RealHeight - Me.Report._ToPixels(Me.Padding._Height)) Then
+          h = (hControl.RealHeight - Me.Report._ToPixels(Me.Padding._Height))
+          w = hPic.Width / hPic.Height * h
+        Endif
+        
+      Else
+        'C'est la hauteur
+        h = (hControl.RealHeight - Me.Report._ToPixels(Me.Padding._Height))
+        w = hPic.Width / hPic.Height * h
+        'si w>  la place disponible alors on adapte en fonction de w en faite
+        If w > (hControl.RealWidth - Me.Report._ToPixels(Me.Padding._Width)) Then
+          w = hControl.RealWidth - Me.Report._ToPixels(Me.Padding._Width)
+          h = hPic.Height / hPic.Width * w
+        Endif
+      Endif
+      
+    Else
+      w = hPic.Width
+      h = hPic.Height
+      
+    Endif
+    
+    Select Case $iAlignment
+      Case Align.Normal, Align.TopLeft, Align.Left, Align.BottomLeft
+        'Gauche
+        ix += Me.Report._ToPixels(Me.Padding._Left)
+      Case Align.Bottom, Align.Center, Align.Top
+        'centrée
+        ix += (hControl.RealWidth - w) / 2
+        
+      Case Align.TopRight, Align.Right, Align.BottomRight
+        'Droite
+        ix += hControl.RealWidth - Me.Report._ToPixels(Me.Padding._Right) - w
+    End Select
+    
+    Select Case $iAlignment
+      Case Align.TopLeft, Align.Top, Align.TopRight
+        'Haut
+        iy += Me.Report._ToPixels(Me.Padding._Top)
+      Case Align.Left, Align.Center, Align.Right
+        'Milieu
+        iy += (hControl.RealHeight - h) / 2
+      Case Align.BottomLeft, Align.Bottom, Align.BottomRight
+        iY += hControl.RealHeight - Me.Report._ToPixels(Me.Padding._Bottom) - h
+    End Select
+    'hBrush.Translate(ix, iy - 1)
+    hpic.Width = W
+    hPic.Height = H
+    Paint.MoveTo(iX, iY)
+    hpic.Paint
+    'hBrush.Scale(w / hPic.Width, h / hPic.Height)
+    'Paint.Brush = hBrush
+    'Paint.Rectangle(ix, iy, w, h - 1)
+  Endif
+  Paint.Restore
+End
+
+Private Function Image_Read() As SvgImage
+  
+  Return $hPic
+  
+End
+
+Private Sub Image_Write(Value As SvgImage)
+  
+  $hPic = Value
+  
+End
+
+Private Function Stretch_Read() As Integer
+  
+  Return $iStretchMode
+  
+End
+
+Private Sub Stretch_Write(Value As Integer)
+  
+  $iStretchMode = Value
+  
+End
+
+Private Function Alignment_Read() As Integer
+  
+  Return $iAlignment
+  
+End
+
+Private Sub Alignment_Write(Value As Integer)
+  
+  $iAlignment = Value
+  
+End

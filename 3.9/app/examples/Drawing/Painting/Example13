@@ -1,0 +1,16 @@
+Public Sub Example13()
+  
+  Paint.MoveTo(50, 75)
+  Paint.LineTo(200, 75)
+  
+  Paint.MoveTo(50, 125)
+  Paint.LineTo(200, 125)
+  
+  Paint.MoveTo(50, 175)
+  Paint.LineTo(200, 175)
+  
+  Paint.LineWidth = 30
+  Paint.LineCap = Paint.LineCapRound
+  Paint.Stroke
+  
+End

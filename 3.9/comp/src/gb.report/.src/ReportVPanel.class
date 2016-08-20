@@ -1,0 +1,336 @@
+' Gambas class file
+
+Export
+Inherits ReportContainer
+Public Const _Properties As String = "*"
+Public Const _Similar As String = "ReportVBox"
+
+Public Sub _new()
+  
+  Super._Arrangement = Arrange.Column
+  
+End
+
+Public Sub _Free()
+  
+  Super._Free
+  
+End
+
+Public Sub _SetCChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, TCont As TControl, bInFixed As Boolean)
+  
+  Dim aPageColumns As New TPageColumn[]
+  Dim PageColumn As New TPageColumn
+  Dim fMaxWidth As Float
+  Dim fColPos As Float
+  
+  Dim aPageItems As New TControl[] ''Éléments contenu par cette page
+  Dim hChildHints As TSizeHint ''Besoins en hauteur/largeur de l'enfant
+  Dim hChild As ReportControl  ''Un enfant reportcontrol
+  Dim fTH As Float ''Hauteur restante
+  Dim fSpc As Float ''Taille d'un espace
+  'Dim X, Y As Float  ''Position Haut gauche de départ
+  Dim hTItem As TControl ''Un objet virtuel
+  Dim oChild As Object  ''Un objet gambas générique
+  Dim fExp As Float ''taille des objets étendus
+  Dim iNExp As Integer ''Nombre d'objets étendus
+  Dim ftmpHeight As Float ''Tampon pour le calcul de la taille répartie
+  Dim ftmpY As Float  ''Curseur temporaire de position haute
+  Dim fX, fY As Float  ''Tampon de position
+  Dim i, j As Integer  ''Des indexs
+  Dim bExitLoop As Boolean ''Flag de sortie de traitement
+  'Dim iPrevIndex As Integer
+  Dim bForceNewPage As Boolean ''Flag d'anticipation de sortie 1 par page
+  Dim iPreIndex As Integer
+  'Détermination de la taille d'un espace
+  'et prise en compte de la taille relative
+  fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing)
+  
+  'Retrait du padding et des bordures de la hauteur de travail
+  H = H - Me.Padding._Top - Me.Border._Top - Me.Border._Bottom - Me.Padding._Bottom
+  
+  'Retrait du padding et des bordures a la largeur de travail
+  W = W - Me.Padding._Left - Me.Border._Left - Me.Border._Right - Me.Padding._Right
+  
+  'Positioinnement du curseur en haut a gauche
+  X = Me.Padding._Left + Me.Border._Left
+  Y = Me.Padding._Top + Me.Border._Top
+  
+  'La hauteur restante est initialisée avec la hauteur de travail
+  fTH = H
+  fColPos = X
+  'aColX.Add(fNextColPos)
+  '*****************************************************************************************
+  'On enumere tous les enfants a la recherche des éléments fixes
+  'Si des éléments fixes sont trouvés alors leur taille est déduite de la taille restante.
+  For i = 0 To Me.Children.Max
+    'On récupère l'enfant
+    hchild = Me.Children[i]
+    'Si l'enfant est fixe alors on le traite.
+    If hchild.Fixed Then
+      ' hchild._Index = TCont.Index
+      'on commence par récupérer la taille de l'objet
+      hChildHints = hchild._GetSizeHints(W, fTH, W, H, TCont.Index)
+      'On retire la taille de l'objet a la hau'teur restante
+      'si l'objet n'est pas ignoré par l'agencement
+      If Not hchild.Ignore Then fTH = fTH - hChildHints.Height - fSpc
+        
+      
+      'Si l'énumération n'est pas encore arrivée a l'index sauvegardé 
+      'alors on ajoute directement l'élément a la page
+      If i < Me._CurItem Then
+        'Génération de l'objet virtuel
+        hTItem = New TControl
+        'Lier l'objet
+        hTItem.Ctrl = hchild
+        'Associer sa taille
+        hTItem.SizeHint = hChildHints
+        
+        hTItem.Index = TCont.Index
+        'L'ajouter a la page
+        PageColumn.TCtrls.Add(hTItem)
+        
+        'Si l'objet est étendu alors on en tient compte 
+        'sauf si celui-ci est ignoré par l'arrangement
+        If hchild.Expand And If Not hchild.Ignore Then
+          fExp += hChildHints.Height
+          Inc iNExp
+        Endif
+      Endif
+    Endif
+  Next
+  
+  
+  
+  
+  '*********************************************************************************
+  'On parcour a présent le reste des éléments
+  For i = Me._CurItem To Me.Children.Max
+    'On récupère l'enfant
+    hChild = Me.Children[i]
+    'Je traite ici la boucle de clonage
+    'On définit le point de départ
+    'If ContPage = 1 And hchild.Tag = "**" Then Stop
+    j = hChild._DataIndex
+    Do
+      '## Début boucle répétition
+      
+      'On fixe l'index de données des enfants si
+      'on est le duplicateur
+      If hChild._IsContainer And If hChild._count > 1 Then
+        iPreIndex = j
+      Else
+        iPreIndex = TCont.Index
+      Endif
+      'If hchild.tag = "**" Then Print iPreIndex
+      'If iPreIndex = 9 Then Stop
+      'on récupère la taille de l'enfant
+      
+      hChildHints = hchild._GetSizeHints(W, fTH, fMaxWidth, H, iPreIndex)
+      fMaxWidth = Min(Max(fMaxWidth, hChildHints.Width), W)
+      'Les éléments fixes ont déja été traités on ne tient donc pas compte de leur hauteur
+      'car elle a déja été déduite de l'espace restant. De meme on ignore les objets flottants (ignore=true)
+      If Not hchild.Fixed And If Not hchild.Ignore Then
+        
+        'Si l'élément ne loge pas dans la place restante ou
+        'si la place restante est insuffisante
+        'on provoque la sortie en fin de boucle
+        If (fTH - hChildHints.Height) < 0 Or If fTH <= 0 Or bForceNewPage Then
+          '  If hchild.Tag = "*" Then Stop
+          
+
+            aPageColumns.Add(PageColumn)
+            PageColumn.Exp = fExp
+            PageColumn.NExp = iNExp
+            PageColumn.X = fColPos
+            fColPos += fMaxWidth + fspc
+            PageColumn.TH = fTh
+            
+            iNExp = 0
+            fExp = 0
+            
+            fTH = H
+            PageColumn = New TPageColumn
+
+          'Si la nouvelle colonne ne loge pas on arrête la
+          If fColPos + fMaxWidth > x + W Then
+            bForceNewPage = False
+            hchild._DataIndex = j
+            
+            'If Not bForceNewPage Then 
+            bExitLoop = True
+          Break
+          Else
+          Continue
+          End If
+        Endif
+        
+        'On déduit la taille de l'objet courant (et l'espace suivant)
+        fTH = fTH - hChildHints.Height - fspc
+        
+      Endif
+      'L'objet loge dans la page, on génère donc une représentation de celui-ci
+      'c'est a dire un objet virtuel pointant vers celui-ci
+      'et apportant les informations nécéssaire au layout final
+      'on génère l'objet virtuel
+
+      hTItem = New TControl
+      'On associe le controle
+      hTItem.Ctrl = hchild
+      'On associe sa taille
+      hTItem.SizeHint = hChildHints
+      'If hchild.Tag = "head" Then Stop
+      'On associe l'index de donnée
+      hTItem.Index = iPreIndex
+      'TItem.Index = IIf(hchild._count > 0, j, TCont.Index)
+      'On l'ajoute a la page
+      PageColumn.TCtrls.Add(hTItem)
+      
+      'Si l'objet est étendu alors on tien compte de sa taille
+      'pour le calcul de l'espace réparti
+      If hchild.Expand Then
+        fExp += hChildHints.Height
+        Inc iNExp
+      Endif
+      
+      'If hChildHints.NotFinished Then hchild._DataIndex = j
+      'un élément fixe ou ignore ne peut être répété
+      If hchild.Fixed Or hchild.Ignore Then Break
+      
+      'Sachant que hChild._count peut être à -1 on le considère dans ce cas la comme étant a 0
+      'si j est égale au compte alors on quitte la boucle
+      If j >= Max(hchild._Count - 1, 0) Then 
+        If Not hChildHints.NotFinished Then hChild._DataIndex = 0
+        Break
+      Endif
+      
+      'sinon on incrémente le compte a condition que le dernier enfant aie finit d'afficher ses enfants
+      If Not hChildHints.NotFinished Then Inc j
+      
+      'On prévoie une sortie de boucle si l'enfant demande un affichage 1 par page
+      If hchild.ForceNewPage Then bForceNewPage = True
+      
+    Loop
+    'Next '## fin de la boucle de répétition
+    'Si la sortie anticipé est demandée alors on sort de la boucle
+    If bExitLoop Then Break
+    If i < Me.Children.Max Then
+      If Me.Children[i + 1] Is ReportPageBreak Then 
+        bForceNewPage = True
+        Inc Me._CurItem
+        Inc i
+      Endif
+    Endif
+    'Tout les objets on été répété alors on remet l'index à 0
+    'hchild._DataIndex = 0
+    'On incrémente le compteur des éléments traités
+    Inc Me._CurItem
+  Next
+  
+  If (H - fTH) > 0 Then
+    fTH += fspc         'Heu??????
+  Endif
+  
+  '***************************************************************************
+  'Pour tous les éléments fixes jusqu'à la fin du document
+  For i = Max(Me._CurItem, 0) To Me.Children.Max
+    hchild = Me.Children[i]
+    If hchild.Fixed Then
+      hChildHints = hchild._GetSizeHints(W, fTH, W, H, iPreIndex)
+      'fNextColPos = Max(fNextColPos, fNextColPos + hChildHints.Width)
+      'on génère l'objet virtuel
+      hTItem = New TControl
+      'On associe le controle
+      hTItem.Ctrl = hchild
+      'On associe sa taille
+      hTItem.SizeHint = hChildHints
+      'On l'ajoute a la page
+      PageColumn.TCtrl.Add(hTItem)
+      
+      'Si l'objet est étendu alors on tien compte de sa taille
+      'pour le calcul de l'espace réparti
+      If hchild.Expand Then
+        fExp += hChildHints.Height
+        Inc iNExp
+      Endif
+    Endif
+  Next
+  PageColumn.Exp = fExp
+  PageColumn.Nexp = iNExp
+  PageColumn.TH = fTH
+  aPageColumns.Add(PageColumn)
+  PageColumn.X = fColPos
+  '******************************************************************************
+  'A présent tous les éléments pouvant être placé sur la page ont été marqué.
+  'On peut donc procéder a la mise en forme de ceux-ci
+  'k = 0
+  For Each PageColumn In aPageColumns
+    ftmpY = Y  'On définit la position de départ
+    If PageColumn.NExp Then
+      fExp = (PageColumn.Exp + PageColumn.TH) / PageColumn.NExp
+    Endif
+    
+    For i = 0 To PageColumn.TCtrls.Max
+      'on récupère l'objet virtuel
+      hTItem = PageColumn.TCtrls[i]
+      'on récupère l'instance de l'objet réel
+      ochild = hTItem.Ctrl
+      
+      'Si l'objet est étendu alors on calcul sa hauteur
+      'Un objet flottant ne peut pas être étendu
+      If Not oChild.Ignore And If ochild.Expand Then
+        'Calcul de la taille répartie
+        ftmpHeight = fExp
+      Else
+        'Si l'objet n'est pas étendu alors sa taille est celle demandée par celui-ci
+        ftmpHeight = hTItem.SizeHint.Height
+      Endif
+      'oChild._Index = hTItem.Index
+      'Traitement des objets ignoré
+      'Les propriété de taille sont celle fournie par l'objet
+      If oChild.Ignore Then
+        'Calcul de la position de l'objet
+        'si sa position est relative (%) alors on fait le ratio a partir de la largeur ou de la hauteur
+        'sinon on utilise la position fournie par l'objet
+        fX = X + IIf(oChild._RelativeLeft, W * oChild._Left / 100, oChild._Left)
+        fY = Y + IIf(oChild._RelativeTop, H * oChild._Top / 100, oChild._Top)
+        'Fixer la position de l'objet
+        hTItem._SetGeometry(fX, fY, hTItem.SizeHint.Width, ftmpHeight)
+        'L'objet flottant peut être un conteneur il faut donc demander aussi a ses enfants de s 'organiser
+        oChild._SetChildGeometry(fX, fY, hTItem.SizeHint.Width, ftmpHeight, ContPage, hTItem, bInFixed Or Me.Fixed)
+        
+      Else
+        
+        'Fixer la position de l'objet
+        hTItem._SetGeometry(PageColumn.X, fTmpY, fMaxWidth, ftmpHeight)
+        'L'objet flottant peut être un conteneur il faut donc demander aussi a ses enfants de s 'organiser
+        oChild._SetChildGeometry(PageColumn.X, fTmpY, fMaxWidth, ftmpHeight, ContPage, hTItem, bInFixed Or Me.Fixed)
+        'on incrémente la position verticale de l'objet
+        'pour définir sa place sur la page relativement aux autres éléments
+        fTmpY += ftmpHeight + fspc
+        
+      Endif
+      
+      'Si l'objet est un conteneur alors il faut vérifier si il a finit d'être traité
+      
+      If oChild Is ReportContainer Then
+        'If oChild._NotFinished Then Me.NotFinished = True
+        'Si son traitement n'est pas terminé alors on trouve
+        'sa position dans la liste des enfant et on l'assigne a l'index de traitement
+        'si sa position est > a l'index courant
+        If ochild._CurItem <= oChild.Children.Max Then
+          j = Me.Children.Find(oChild)
+          Me._CurItem = Min(Me._CurItem, j)
+        Endif
+        'Si on est dans la lignée d'un conteneur fixe on incrémente pas la lecture des enfants
+        'En clair ce sont toujours les mêmes éléments qui apparaitrons
+        If bInFixed Then ochild._CurItem = 0
+      Endif
+    Next
+    'Inc k
+    aPageItems.Insert(PageColumn.TCtrls)
+  Next
+  'On ajoute cette page au dossier du conteneur
+  TCont._PageChildren[ContPage] = aPageItems
+  
+End

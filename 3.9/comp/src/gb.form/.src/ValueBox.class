@@ -1,0 +1,379 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Action,Text,Type{ValueBox.*}=Number,ReadOnly,Border=True"
+Public Const _DefaultSize As String = "24,4"
+Public Const _Similar As String = "TextBox"
+
+Event Change
+
+Property Type As Integer
+Property Value As Variant
+Property Border As Boolean
+Property ReadOnly As Boolean
+Property Text As String
+
+Public Enum {Number}, {Date}, {Time}, Currency, DateTime, IPAddress
+
+Private $iType As Integer
+Private $hCtrl As Control
+Private $hTextBox As TextBox
+Private $hDateBox As DateBox
+Private $hMaskBox As MaskBox
+
+Private $sDecimalSep As String
+Private $sLastText As String
+
+Public Sub _new()
+  
+  UpdateType
+  
+End
+
+Private Function Type_Read() As Integer
+
+  Return $iType
+
+End
+
+Private Sub Type_Write(Value As Integer)
+  
+  If Value = $iType Then Return
+
+  $iType = Value
+  UpdateType
+
+End
+
+Private Sub UpdateType()
+  
+  Dim sMask As String
+  Dim bBorder As Boolean = True
+  Dim bReadOnly As Boolean
+  
+  If $hCtrl Then 
+    bBorder = Border_Read()
+    bReadOnly = ReadOnly_Read()
+    Me.Proxy = Null
+    $hCtrl.Delete
+    $hCtrl = Null
+    $hTextBox = Null
+    $hDateBox = Null
+    $hMaskBox = Null
+  Endif
+  
+  Select Case $iType
+  
+    Case {Number}
+      $hTextBox = New TextBox(Me) As "NumberBox"
+      $hCtrl = $hTextBox
+      $hTextBox.Alignment = Align.Right
+      $hTextBox.Text = "0"
+      $sDecimalSep = Left$(Format$(0, ".0"))
+      
+    Case {Date}
+      $hDateBox = New DateBox(Me) As "DateBox"
+      $hCtrl = $hDateBox
+      
+    Case {Time}
+      $hDateBox = New DateBox(Me) As "DateBox"
+      $hDateBox.Mode = DateChooser.TimeOnly
+      $hCtrl = $hDateBox
+    
+    Case Currency
+      $hMaskBox = New MaskBox(Me) As "CurrencyBox"
+      $hCtrl = $hMaskBox
+      $hMaskBox.Alignment = Align.Right
+      $sDecimalSep = Left$(Format$(0, ".0"))
+      sMask = Replace(Format(10, "$#0.00"), "1", "########")
+      $hMaskBox.Mask = Replace(sMask, $sDecimalSep, "<!" & $sDecimalSep)
+      If Not $hMaskBox.Font.Fixed Then $hMaskBox.Font.Name = "Monospace"
+      
+    Case DateTime
+      $hDateBox = New DateBox(Me) As "DateBox"
+      $hDateBox.Mode = DateChooser.DateTime
+      $hCtrl = $hDateBox
+      
+    Case IpAddress
+      $hMaskBox = New MaskBox(Me) As "IpAddressBox"
+      $hCtrl = $hMaskBox
+      $hMaskBox.Alignment = Align.Right
+      $hMaskBox.Mask = "##0<.##0<.##0<.##0<"
+      If Not $hMaskBox.Font.Fixed Then $hMaskBox.Font.Name = "Monospace"
+  
+  End Select
+  
+  If Me.Design Then $hCtrl.Design = True
+  
+  Me.Proxy = $hCtrl
+  
+  Border_Write(bBorder)
+  ReadOnly_Write(bReadOnly)
+  
+  $hCtrl.Show
+  
+End
+
+Public Sub NumberBox_KeyPress()
+
+  Dim iPos As Integer = $hTextBox.Pos
+  Dim iSep As Integer
+  
+  Select Case Key.Code
+    
+    Case Key.Left, Key.Right, Key.BackSpace, Key.Delete, Key.Enter, Key.Return, Key.Escape, Key.Home, Key.End, Key.Tab, Key.BackTab
+      Return
+      
+  End Select
+  
+  Select Case Key.Text
+    
+    Case "0" To "9"
+      Return
+    
+    Case ".", ","
+      iSep = String.InStr($hTextBox.Text, $sDecimalSep)
+      If iSep = 0 Then
+        $hTextBox.Text = $hTextBox.Text & $sDecimalSep
+        $hTextBox.Pos = $hTextBox.Length
+      Else
+        $hTextBox.Pos = Max($hTextBox.Pos, iSep)
+      Endif
+      Stop Event
+      
+    Case "-"
+      If InStr($hTextBox.Text, "-") = 0 Then
+        $hTextBox.Text = "-" & $hTextBox.Text
+        $hTextBox.Pos = iPos + 1
+      Else
+        $hTextBox.Text = Mid$($hTextBox.Text, 2)
+        $hTextBox.Pos = Max(0, iPos - 1)
+      Endif
+      Stop Event
+      
+    Case "+"
+      If InStr($hTextBox.Text, "-") = 1 Then
+        $hTextBox.Text = Mid$($hTextBox.Text, 2)
+        $hTextBox.Pos = Max(0, iPos - 1)
+      Endif
+      Stop Event
+      
+    Case Else
+      Stop Event
+    
+  End Select
+  
+End
+
+Public Sub NumberBox_Change()
+  
+  Dim iPos As Integer = $hTextBox.Pos
+  Dim sText As String = $hTextBox.Text
+  Dim bNeg As Boolean
+  
+  If Left(sText) = "-" Then 
+    bNeg = True
+    sText = Mid$(sText, 2)
+  Endif
+  
+  While Left(sText) = "0"
+    sText = Mid$(sText, 2)
+    Dec iPos
+  Wend
+  
+  If Not sText Then
+    sText = "0"
+    iPos = 1
+  Else
+    If Left(sText) = $sDecimalSep Then 
+      sText = "0" & sText
+      Inc iPos
+    Endif
+  Endif
+  sText = If(bNeg, "-", "") & sText
+  
+  Object.Lock($hTextBox)
+  If sText <> $hTextBox.Text Then
+    $hTextBox.Text = sText
+  Endif
+  $hTextBox.Pos = Max(If(bNeg, 1, 0), iPos)
+  Object.Unlock($hTextBox)
+  
+  If $hTextBox.Text <> $sLastText Then
+    $sLastText = $hTextBox.Text
+    Raise Change
+  Endif
+  
+End
+
+Private Function Value_Read() As Variant
+
+  Select Case $iType
+    
+    Case {Number}
+      Return Val($hTextBox.Text)
+      
+    Case {Date}, {DateTime}, {Time}
+      Return $hDateBox.Value
+    
+    Case {Currency}
+      Return Val(Trim(Replace($hMaskBox.Text, GetCurrency(), "")))
+      
+    Case IpAddress
+      Return Replace($hMaskBox.Text, " ", "")
+    
+  End Select
+
+End
+
+Private Sub Value_Write(Value As Variant)
+
+  Dim sText As String
+  Dim sVal As String
+  Dim iVal As Integer
+  Dim aText As String[]
+
+  Select Case $iType
+    
+    Case {Number}
+      If TypeOf(Value) = gb.String Then
+        Try Value = CFloat(Value)
+      Endif
+      If TypeOf(Value) > gb.Boolean And If TypeOf(Value) <= gb.Float Then
+        Value = CFloat(Value)
+        $hTextBox.Text = Str(Value)
+        $hTextBox.Pos = $hTextBox.Length
+      Else
+        $hTextBox.Text = ""
+      Endif
+      
+    Case {Date}, {DateTime}, {Time}
+      $hDateBox.Value = Value
+      
+    Case {Currency}
+      If TypeOf(Value) = gb.String Then
+        Try Value = CFloat(Value)
+      Endif
+      If TypeOf(Value) > gb.Boolean And If TypeOf(Value) <= gb.Float Then
+        Value = CFloat(Value)
+      Else
+        Value = 0
+      Endif
+      $hMaskBox.Text = Format(Value, "$########0.00")
+      $hMaskBox.Pos = $hMaskBox.Length - 2
+      
+    Case IpAddress
+      If TypeOf(Value) = gb.String Or If IsNull(Value) Then
+        aText = Split(Value, ".")
+        While aText.Count < 4
+          aText.Add("0")
+        Wend
+        aText.Resize(4)
+        For Each sVal In aText
+          Try iVal = CInt(sVal)
+          If Error Then Return
+          If iVal < 0 Or If iVal > 255 Then Return
+          If sText Then sText &= "."
+          sText &= Format(iVal, "##0")
+        Next
+        $hMaskBox.Text = sText
+      Endif
+      
+  End Select
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Dim hCtrl As Object = $hCtrl
+  Try Return hCtrl.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  Dim hCtrl As Object = $hCtrl
+  Try hCtrl.Border = Value
+
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Dim hCtrl As Object = $hCtrl
+  Try Return hCtrl.ReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  Dim hCtrl As Object = $hCtrl
+  Try hCtrl.ReadOnly = Value
+
+End
+
+Private Function Text_Read() As String
+
+  Dim hCtrl As Object = $hCtrl
+  Return hCtrl.Text
+
+End
+
+Private Sub GetCurrency() As String
+  
+  Return Trim(Replace(Format(1, "$#"), "1", ""))
+  
+End
+
+Private Sub Text_Write(Value As String)
+
+  Select Case $iType
+    
+    Case {Number}
+      If IsNumber(Value) Then 
+        Value_Write(Val(Value))
+      Else
+        Value_Write(0)
+      Endif
+      
+    Case {Date}, {Time}, DateTime
+      If IsDate(Value) Then 
+        Value_Write(Val(Value))
+      Else
+        Value_Write(Null)
+      Endif
+      
+    Case Currency
+      Value = Trim(Replace(Value, GetCurrency(), ""))
+      If IsNumber(Value) Then 
+        Value_Write(Val(Value))
+      Else
+        Value_Write(0)
+      Endif
+      
+    Case IPAddress
+      Value_Write(Value)
+    
+  End Select
+
+End
+
+Public Sub DateBox_Change()
+  
+  Raise Change
+  
+End
+
+Public Sub CurrencyBox_Change()
+  
+  Raise Change
+  
+End
+
+Public Sub IpAddressBox_Change()
+  
+  Raise Change
+  
+End

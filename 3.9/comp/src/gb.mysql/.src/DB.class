@@ -1,0 +1,12 @@
+' Gambas class file
+
+Export
+
+Static Property Read MySQL As _MySQL
+
+Static Private Sub MySQL_Read() As _MySQL
+
+  modMain.SetConnection(DB.Current)
+  Return _MySQL
+
+End

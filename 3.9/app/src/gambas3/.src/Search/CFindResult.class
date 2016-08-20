@@ -1,0 +1,29 @@
+' Gambas class file
+
+Public Path As String
+Public (File) As String
+Public (Line) As Integer
+Public Pos As Integer
+Public Column As Integer
+Public Text As String
+Public Bytes As Integer
+Public Length As Integer
+Public Dark As Boolean
+Public Control As String
+Public {Property} As String
+
+Private $sProc As String
+
+Public Sub GetProcedure() As String
+  
+  Dim hFile As FEditor
+  
+  If Not Project.IsSourcePath(Path) Then Return
+  If $sProc Then Return $sProc
+  
+  $sProc = "-"
+  Try hFile = Project.LoadFile(Path)
+  If hFile Then $sProc = hFile.GetProcAt({Line})
+  Return $sProc
+  
+End

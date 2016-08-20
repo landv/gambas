@@ -1,0 +1,143 @@
+' Gambas class file
+
+Export
+Property Left, Lon, Est As Float
+Property Right, Lon2, West As Float
+Property Top, Lat, North As Float
+Property Bottom, Lat2, South As Float
+
+Private $mpTopLeft As New MapPoint
+Private $mpBottomRight As New MapPoint
+Property TopLeft, NorthEast As MapPoint
+Property BottomRight, SouthWest As MapPoint
+
+Private Function Left_Read() As Float
+
+  Return $mpTopLeft.Lon
+
+End
+
+Private Sub Left_Write(Value As Float)
+
+  $mpTopLeft.Lon = Value
+
+End
+
+Private Function Right_Read() As Float
+
+  Return $mpBottomRight.Lon
+
+End
+
+Private Sub Right_Write(Value As Float)
+
+  $mpBottomRight.Lon = Value
+
+End
+
+Private Function Top_Read() As Float
+
+  Return $mpTopLeft.Lat
+
+End
+
+Private Sub Top_Write(Value As Float)
+
+  $mpTopLeft.Lat = Value
+
+End
+
+Private Function Bottom_Read() As Float
+
+  Return $mpBottomRight.Lat
+
+End
+
+Private Sub Bottom_Write(Value As Float)
+
+  $mpBottomRight.Lat = Value
+
+End
+
+
+Private Function TopLeft_Read() As MapPoint
+
+  Return $mpTopLeft
+  
+End
+
+Private Function BottomRight_Read() As MapPoint
+
+  Return $mpBottomRight
+
+End
+
+Public Function InBounds(P As MapPoint) As Boolean
+  
+  If p.Lon > $mpTopLeft.Lon And If p.Lon < $mpBottomRight.Lon Then
+    If p.Lat > $mpTopLeft.Lat And If p.Lat < $mpBottomRight.Lat Then
+      Return True
+    Endif
+  Endif
+  
+End
+
+Public Function Contain(Bound As MapBounds) As Boolean
+  
+  If Bound.Lon > $mpTopLeft.Lon And If Bound.Lon2 < $mpBottomRight.Lon Then
+    If Bound.Lat > $mpTopLeft.Lat And If Bound.Lat2 < $mpBottomRight.Lat Then
+      Return True
+    Endif
+  Endif
+  
+End
+
+Public Function Merge(Bound As MapBounds) As MapBounds
+  Dim hBound As New MapBounds
+  hBound.Lon = Min($mpTopLeft.Lon, Bound.Lon)
+  hBound.Lon2 = Max($mpBottomRight.Lon, Bound.Lon2)
+  hBound.Lat = Min($mpTopLeft, Bound.Lat)
+  hBound.Lat2 = Max($mpBottomRight.Lat, Bound.Lat2)
+  Return hBound
+  
+End
+
+
+Public Sub Collide(Bound As MapBounds) As Boolean
+  
+  'If Abs(Me.Left - Bound.Left) < (Abs((Me.Right - Me.Left) + (Bound.Right - Bound.Left)) / 2) And Abs(Me.Top - Bound.top) < (Abs(Me.Bottom - Me.Top + Bound.Bottom - Bound.Top) / 2) Then
+Dim xIntersect, yIntersect As Boolean
+    If Not (Min(Me.Left, Me.Right) > Max(Bound.Left, Bound.Right) Or Max(Me.Left, Me.Right) < Min(Bound.Left, Bound.Right)) Then xIntersect = True
+    If Not (Min(Me.Top, Me.Bottom) > Max(Bound.Top, Bound.Bottom) Or Max(Me.Top, Me.Bottom) < Min(Bound.Top, Bound.Bottom)) Then yIntersect = True
+    Return xIntersect And yIntersect 
+  
+End
+
+
+Private Sub TopLeft_Write(Value As MapPoint)
+
+  $mpTopLeft = Value
+
+End
+
+Private Sub BottomRight_Write(Value As MapPoint)
+
+  $mpBottomRight = Value
+
+End
+
+Static Public Function _Call(NorthEast As MapPoint, SouthWest As MapPoint) As MapBounds
+  
+  Dim hBounds As New MapBounds
+
+    hBounds.TopLeft = NorthEast
+    hBounds.BottomRight = SouthWest
+  Return hBounds
+End
+  
+Public Function ToString() As String
+  Dim as As String[] = [Me.lat, Me.lon, Me.lat2, Me.lon2]
+  Return as.join()
+  
+End
+

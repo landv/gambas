@@ -1,0 +1,372 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Border=True,ReadOnly"
+Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "36,4"
+Public Const _Group As String = "Chooser"
+
+Event Click
+Event Activate
+
+Property Border As Boolean
+Property Colors As Integer[]
+Property Index As Integer
+Property Current As Integer
+Property ReadOnly As Boolean
+
+Private mnuPopup As Menu
+Private mnuRemove As Menu
+Private mnuRemoveAll As Menu
+Private mnuSort As Menu
+
+Private $aColors As Integer[] = [Color.Blue, Color.Green, Color.Red, &H808080&, Color.Black, Color.White]
+
+Private $hView As ScrollArea
+Private Const CUSTOM_D As Integer = 6
+Private CUSTOM_W As Integer
+Private $iIndex As Integer = -1
+Private $iCurrent As Integer = -1
+Private $bReadOnly As Boolean
+Private $iLastIndex As Integer
+
+Public Sub _new()
+  
+  $hView = New ScrollArea(Me) As "View"
+  $hView.ScrollBar = Scroll.None
+  $hView.Tracking = True
+  $hView.Mouse = Mouse.Pointing
+  'Me.Background = Color.TextBackground
+  
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hView.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hView.Border = If(Value, Border.Plain, Border.None)
+
+End
+
+Private Sub UpdateColors()
+
+  $hView.ResizeContents($aColors.Count * (CUSTOM_W + CUSTOM_D) + CUSTOM_D, $hView.H)
+  $hView.Refresh
+
+End
+
+Private Function Colors_Read() As Integer[]
+
+  Return $aColors.Copy()
+
+End
+
+Private Sub Colors_Write(Value As Integer[])
+
+  If Not Value Then
+    $aColors.Clear
+  Else
+    $aColors = Value.Copy()
+  Endif
+  UpdateColors
+
+End
+
+Public Sub Clear()
+  
+  $aColors.Clear
+  UpdateColors
+  
+End
+
+
+
+Public Sub Add((Color) As Integer)
+
+  Dim iPos As Integer
+  
+  Do
+    iPos = $aColors.Find(Color)
+    If iPos < 0 Then Break
+    $aColors.Remove(iPos)
+  Loop
+  
+  $aColors.Add(Color)
+  If $aColors.Count > 32 Then $aColors.Remove(0, $aColors.Count - 32)
+  
+  UpdateColors
+  
+End
+
+Public Sub AddFirst((Color) As Integer)
+
+  Dim iPos As Integer
+  
+  Do
+    iPos = $aColors.Find(Color)
+    If iPos < 0 Then Break
+    $aColors.Remove(iPos)
+  Loop
+  
+  $aColors.Add(Color, 0)
+  If $aColors.Count > 32 Then $aColors.Remove(32, $aColors.Count - 32)
+  
+  UpdateColors
+  
+End
+
+Public Sub Exist((Color) As Integer) As Boolean
+  
+  Return $aColors.Exist(Color)
+  
+End
+
+
+Public Sub View_Draw()
+
+  Dim X, Y, W, H As Integer
+  Dim I As Integer
+  Dim iColor As Integer
+  Dim iCurrent As Integer
+  
+  'If Me.Background <> Color.Default Then Paint.FillRect(0, 0, Paint.W, Paint.H, Me.Background)
+  
+  If $aColors.Count = 0 Then
+    Paint.Background = Color.SetAlpha(Color.TextForeground, 192)
+    Paint.Font.Grade = 5
+    Paint.DrawText(("Last colors"), Desktop.Scale, 0, Paint.W, Paint.H, Align.Left)
+    Return
+  Endif
+  
+  Paint.LineWidth = 0.5
+  Paint.LineJoin = Paint.LineJoinMiter
+  Paint.LineCap = Paint.LineCapButt
+  
+  X = CUSTOM_D
+  Y = CUSTOM_D
+  W = CUSTOM_W
+  H = W
+  
+  'Paint.Rectangle(X - 1, Y - 3, Paint.W - X * 2 + 2, Paint.H - Y * 2 + 5)
+  'Paint.Clip
+  
+  X -= $hView.ScrollX
+  
+  iCurrent = $iCurrent
+  
+  For I = 0 To $aColors.Max 
+    iColor = $aColors[I]
+    
+    Main.PaintColor(X + 2, Y + 2, W - 4, H - 4, iColor)
+    
+    If I = $iIndex Or If I = iCurrent Then
+      Paint.Rectangle(X - 0.5, Y - 0.5, W + 1, H + 1)
+      Paint.LineWidth = 3
+    Else
+      Paint.Rectangle(X + 0.5, Y + 0.5, W - 1, H - 1)
+      Paint.LineWidth = 1
+    Endif
+    Paint.Background = If(I = iCurrent, Color.TextForeground, Color.LightForeground)
+    Paint.Stroke
+    
+    X += W + CUSTOM_D
+    If X >= Paint.W Then Break
+    
+  Next
+
+End
+
+Public Sub View_MouseDown()
+
+  'Debug Mouse.Left;; $iIndex
+  If Not Mouse.Left Or If $iIndex < 0 Then Return
+  
+  $iCurrent = $iIndex
+  $hView.Refresh
+  
+  Raise Click
+
+End
+
+Public Sub View_MouseMove()
+
+  Dim I As Integer
+  Dim sColor As String
+
+  I = ((Mouse.ScreenX - $hView.ScreenX + $hView.ScrollX - (CUSTOM_D \ 2)) \ (CUSTOM_W + CUSTOM_D))
+  If I < 0 Or If I > $aColors.Max Then I = -1
+  
+  If I = $iIndex Then Return
+  
+  $iIndex = I
+  'Debug I
+  $iLastIndex = $iIndex
+  
+  If I >= 0 Then
+    sColor = Hex$($aColors[I], 8)
+    If sColor Begins "00" Then sColor = Mid$(sColor, 3)
+    $hView.Tooltip = "#" & sColor
+  Else
+    $hView.Tooltip = ""
+  Endif
+  
+  $hView.Refresh
+
+End
+
+' mnuCustom,0,"",,,,T,,,,T,,,,"","",""
+' mnuRemove,1,"Remove color",,,T,T,,,,T,,,,"","icon:/small/delete",""
+' mnuRemoveAll,1,"Remove all colors",,,T,T,,,,T,,,,"","icon:/small/clear",""
+' mnuSort,1,"Sort colors",,,T,T,,,,T,,,,"","icon:/small/sort-ascent",""
+' 
+
+
+Public Sub View_Menu()
+  
+  If $bReadOnly Then Return
+  
+  If Not mnuPopup Then
+    
+    mnuPopup = New Menu(Me.Window, True)
+    
+    mnuRemove = New Menu(mnuPopup) As "mnuRemove"
+    mnuRemove.Text = ("Remove color")
+    mnuRemove.Picture = Picture["icon:/small/delete"]
+    
+    mnuRemoveAll = New Menu(mnuPopup) As "mnuRemoveAll"
+    mnuRemoveAll.Text = ("Remove all colors")
+    mnuRemoveAll.Picture = Picture["icon:/small/clear"]
+    
+    mnuSort = New Menu(mnuPopup) As "mnuSort"
+    mnuSort.Text = ("Sort colors")
+    mnuSort.Picture = Picture["icon:/small/sort-ascent"]
+    
+  Endif
+  
+  mnuPopup.Popup
+  
+End
+
+
+Public Sub View_DblClick()
+
+  Raise Activate
+
+End
+
+Public Sub View_Leave()
+
+  If $iIndex >= 0 Then
+    $iIndex = -1
+    'Debug -1
+    $hView.Refresh
+  Endif
+
+End
+
+Public Sub View_Scroll()
+
+  View_MouseMove
+
+End
+
+Public Sub View_Arrange()
+
+  CUSTOM_W = $hView.H - CUSTOM_D * 2
+  UpdateColors
+
+End
+
+Private Function Index_Read() As Integer
+
+  Return $iCurrent
+
+End
+
+Private Sub Index_Write(Value As Integer)
+
+  If Value < 0 Or If Value > $aColors.Max Then
+    Value = -1
+  Endif
+  
+  $iCurrent = Value
+  $hView.Refresh
+
+End
+
+Private Function Current_Read() As Integer
+
+  If $iCurrent < 0 Then
+    Return Color.Transparent
+  Else
+    Return $aColors[$iCurrent]
+  Endif
+
+End
+
+Private Sub Current_Write(Value As Integer)
+
+  $iCurrent = $aColors.Find(Value)
+  $hView.Refresh
+
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $bReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $bReadOnly = Value
+  $hView.Refresh
+
+End
+
+Public Sub mnuRemove_Click()
+  
+  If $iLastIndex >= 0 Then
+    $aColors.Remove($iLastIndex)
+    UpdateColors
+  Endif
+  
+End
+
+Public Sub mnuRemoveAll_Click()
+  
+  $aColors.Clear
+  UpdateColors
+  
+End
+
+Public Sub mnuSort_Click()
+
+  Dim aSort As New String[]
+  Dim iColor As Integer
+  Dim sColor As String
+  
+  If $aColors.Count <= 1 Then Return
+  
+  For Each iColor In $aColors
+    With Color[iColor]
+      aSort.Add(Format(.Alpha, "000") & Format(.Hue, "000") & Format(.Saturation, "000") & Format(.Value, "000") & ":" & CStr(iColor))
+    End With
+  Next
+  
+  aSort.Sort(gb.Descent)
+  $aColors.Clear
+  For Each sColor In aSort
+    $aColors.Add(CInt(Mid$(sColor, InStr(sColor, ":") + 1)))
+  Next
+
+  UpdateColors
+  
+End

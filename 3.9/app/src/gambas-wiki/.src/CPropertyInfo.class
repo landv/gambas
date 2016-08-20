@@ -1,0 +1,246 @@
+' Gambas class file
+
+Public Const EVENT_NAME As String = "(Group)"
+
+Static Private $cRedirect As New Collection
+Static Private $cTranslate As New Collection
+
+
+Public Name As String
+Public Type As String
+Public DefaultValue As Variant
+Public Coord As Boolean
+Public Required As Boolean
+Public Exclude As Boolean
+Public Hidden As Boolean
+Public DoNotApply As Boolean
+Public AlwaysRead As Boolean
+Public Virtual As Boolean
+Public Translate As Boolean
+
+Public ConstantClass As String
+Public ConstantList As Collection
+
+
+Static Public Sub _init()
+
+  $cRedirect["*.Visible"] = True
+  $cRedirect["*.Enabled"] = True
+  $cRedirect["*.Tag"] = True
+  $cRedirect["*.Password"] = True
+  $cRedirect["*.Mouse"] = True
+  $cRedirect["*.ToolTip"] = True
+
+  $cRedirect["*.List"] = True
+
+  $cRedirect["*.Arrangement"] = True
+
+  $cRedirect["Form.Persistent"] = True
+  $cRedirect["Form.Border"] = True
+  $cRedirect["Form.Text"] = True
+  $cRedirect["Form.Icon"] = True
+  $cRedirect["Form.State"] = True
+  $cRedirect["Form.Mask"] = True
+  $cRedirect["Form.TopOnly"] = True
+  $cRedirect["Form.SkipTaskbar"] = True
+
+  'Nein!
+  '$cRedirect["Button.Default"] = TRUE
+  '$cRedirect["Button.Cancel"] = TRUE
+
+  $cRedirect["Menu.Visible"] = False
+  $cRedirect["Menu.Enabled"] = True
+  $cRedirect["Menu.Shortcut"] = True
+
+  $cRedirect["DrawingArea.Cached"] = True
+
+  $cTranslate["Text"] = True
+  $cTranslate["Title"] = True
+  $cTranslate["List"] = True
+  $cTranslate["Caption"] = True
+  $cTranslate["ToolTip"] = True
+
+End
+
+
+Public Sub _new(sComponent As String, sClass As String, sName As String, hCtrl As Object, Optional bVirtual As Boolean, Optional bDoNotApply As Boolean, Optional sDefVal As String)
+
+  Dim sList As String
+  Dim cList As String[]
+  Dim hSym As CSymbolInfo
+  'DIM sDefVal AS String
+  Dim sSign As String
+
+  'iPos = Instr(sName, "=")
+  'IF iPos THEN
+  '  sDefVal = Trim(Mid$(sName, iPos + 1))
+  '  sName = Trim(Left$(sName, iPos - 1))
+  'ENDIF
+
+  'if (sClass & "." & sName) = "Menu.Text" then stop
+
+  Name = sName
+
+  If Name = EVENT_NAME Then
+    Type = "s"
+    Virtual = True
+    Exclude = True
+    DoNotApply = True
+    Return
+  Endif
+
+  If sComponent Then
+    Try hSym = CComponent.Classes[sComponent &/ sClass].Symbols[sName]
+    Type = hSym.Type
+    sSign = hSym.Signature
+  Else
+    If Name = "X" Or Name = "Y" Then
+      Type = "i"
+    Endif
+  Endif
+  'sClass = hSym.Class
+
+  If Len(Type) = 1 Then
+    If Name = "Visible" Then
+      DefaultValue = True
+    Else If Name = "X" Or Name = "Y" Or Name = "Width" Or Name = "Height" Or Name = "Text" Then
+      Required = True
+    Else If Name = "Tag" Then
+      Type = "s"
+    Else If Name = "List" Then
+      Type = "List"
+    Else If hCtrl Then
+      Try DefaultValue = Object.GetProperty(hCtrl, Name)
+    Else
+      Print sClass; "."; sName; " DefaultValue ?"
+    Endif
+  'ELSE IF Type = "Font" THEN
+  '  DefaultValue = "" 'Object.GetProperty(hCtrl, Name).ToString()
+  Else
+    DefaultValue = Null
+  Endif
+
+  If sDefVal Then
+    Select Case Type
+      Case "i"
+        DefaultValue = CInt(sDefVal)
+      Case "e"
+        DefaultValue = CFloat(sDefVal)
+      Case "b"
+        DefaultValue = LCase(sDefVal) <> "false"
+      Case "s"
+        DefaultValue = sDefVal
+    End Select
+  Endif
+
+  If Type = "i" Then
+
+    If Name = "Background" Or Name = "Foreground" Or InStr(Name, "Color") > 0 Then
+
+      Type = "Color"
+      'DefaultValue = NULL
+      'AlwaysRead = TRUE
+
+    Else If sSign Then
+
+      Type = "Constant"
+
+      ConstantList = New Collection
+
+      cList = Split(hSym.Signature)
+      ConstantClass = cList[0]
+      cList.Remove(0)
+
+      If cList.Count Then
+
+        For Each sList In cList
+
+          hSym = CComponent.Classes[ConstantClass].Symbols[sList]
+          ' Maybe the constant declared in the property don't really exist
+          Try ConstantList[CStr(hSym.Value)] = sList
+
+        Next
+
+      Else
+
+        For Each hSym In CComponent.Classes[ConstantClass].Symbols
+
+          If hSym.Kind = "C" Then
+            If Not hSym.IsHidden() Then
+              ConstantList[CStr(hSym.Value)] = hSym.Name
+            Endif
+          Endif
+
+        Next
+
+      Endif
+
+      sList = ConstantList[CStr(DefaultValue)]
+      'PRINT sClass & "." & sName; " : "; ConstantClass & "." & sList; " = "; DefaultValue; TypeOf(DefaultValue)
+      DefaultValue = sList
+
+      'PRINT sClass; "."; sName; " is constant"
+
+      'PRINT ConstantClass; " = ";
+      'FOR EACH sList IN ConstantList
+      '  PRINT sList; "("; CLASS[ConstantClass].Symbols[sList].Value; " ) ";
+      'NEXT
+      'PRINT
+
+    Endif
+
+  Else If Type = "s" Then
+
+    If InStr(Name, "Path") Then
+
+      Type = "Path"
+
+    Endif
+
+  Endif
+
+  Coord = Name = "X" Or Name = "Y" Or Name = "Width" Or Name = "Height"
+
+  'AlwaysRead = Name = "Font"
+
+  If bDoNotApply Then
+    DoNotApply = True
+  Else If $cRedirect.Exist(sClass & "." & Name) Then
+    DoNotApply = $cRedirect[sClass & "." & Name]
+  Else If $cRedirect.Exist("*." & Name) Then
+    DoNotApply = $cRedirect["*." & Name]
+  Endif
+
+  'IF DoNotApply THEN PRINT "DoNotApply: "; sClass; "."; Name
+
+  Select Case sClass
+
+    Case "RadioButton"
+      AlwaysRead = Name = "Value"
+
+    Case "Button"
+      AlwaysRead = Name = "Default" Or Name = "Cancel"
+
+    Case "TabStrip"
+      Exclude = Name = "Text" Or Name = "Index" Or Name = "Picture"
+      Hidden = Name = "Index"
+
+    Case "ProgressBar"
+      AlwaysRead = Name = "Value" Or Name = "Max"
+
+  End Select
+
+  Translate = $cTranslate.Exist(Name)
+
+  Virtual = bVirtual
+
+Catch
+
+  Print sComponent; ": "; sClass; "."; sName; ": "; Error.Text
+  'hSym = CComponent.Classes["System"].Symbols["Language"]
+
+  Type = "s"
+  DoNotApply = True
+  DefaultValue = Null
+
+End

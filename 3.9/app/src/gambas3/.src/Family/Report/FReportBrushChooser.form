@@ -1,0 +1,118 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,70,54)
+  Text = ("Configure brush")
+  Resizable = False
+  { btnCancel Button
+    MoveScaled(53,6,16,4)
+    Text = ("Cancel")
+    Cancel = True
+  }
+  { btnOK Button
+    MoveScaled(53,1,16,4)
+    Text = ("OK")
+    Default = True
+  }
+  { cmbType ComboBox
+    MoveScaled(1,1,50,4)
+    ReadOnly = True
+    List = [("Color"), ("Image"), ("Linear gradient"), ("Radial gradient")]
+  }
+  { panBrush Panel
+    MoveScaled(1,6,50,47)
+    Arrangement = Arrange.Fill
+    { cchColor ColorChooser
+      MoveScaled(0,0,47,42)
+      Tag = "0"
+    }
+    { pnlImage Panel
+      MoveScaled(0,0,47,42)
+      Tag = "1"
+      Arrangement = Arrange.Vertical
+      Spacing = True
+      { Label2 Label
+        MoveScaled(1,1,36,3)
+        Text = ("Select an image inside the project")
+      }
+      { txtImage ButtonBox
+        MoveScaled(1,5,43,4)
+        ReadOnly = True
+      }
+      { picImage PictureBox
+        MoveScaled(2,11,45,28)
+        Background = &HFFFFFF&
+        Expand = True
+        Border = Border.Plain
+      }
+    }
+    { pnlGradient Panel
+      MoveScaled(0,0,47,47)
+      Tag = "2,3"
+      Arrangement = Arrange.Vertical
+      Spacing = True
+      { Panel1 Panel
+        MoveScaled(0,0,47,12)
+        Arrangement = Arrange.Vertical
+        Border = Border.Plain
+        { dwgGradientColor DrawingArea
+          MoveScaled(0,0,47,6)
+          Expand = True
+          Focus = True
+        }
+        { Separator2 Separator
+          MoveScaled(23,7,12,0)
+        }
+        { HBox1 HBox
+          MoveScaled(0,8,47,4)
+          { btnAddGradient ToolButton
+            MoveScaled(0,0,4,4)
+            ToolTip = ("Add gradient stop")
+            Picture = Picture["icon:/small/add"]
+          }
+          { btnRemoveGradient ToolButton
+            MoveScaled(4,0,4,4)
+            ToolTip = ("Remove gradient stop")
+            Picture = Picture["icon:/small/remove"]
+          }
+          { btnColorGradient ToolButton
+            MoveScaled(8,0,4,4)
+            ToolTip = ("Select gradient stop color...")
+            Picture = Picture["icon:/small/color"]
+          }
+          { btnExchangeGradient ToolButton
+            MoveScaled(12,0,4,4)
+            ToolTip = ("Invert gradient")
+            Picture = Picture["icon:/small/flip-h"]
+          }
+          { panRadius HBox
+            MoveScaled(18,0,25,4)
+            Expand = True
+            Spacing = True
+            { Separator1 Separator
+              MoveScaled(0,0,1,4)
+            }
+            { Label1 Label
+              MoveScaled(2,0,8,4)
+              AutoResize = True
+              Text = ("Radius")
+            }
+            { sldRadius Slider
+              MoveScaled(9,0,16,3)
+              Expand = True
+              Value = 50
+            }
+          }
+        }
+      }
+      { Panel2 Panel
+        MoveScaled(0,13,47,32)
+        Expand = True
+        { dwgGradient DrawingArea
+          MoveScaled(0,0,34,34)
+          Border = Border.Plain
+        }
+      }
+    }
+  }
+}

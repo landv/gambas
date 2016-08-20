@@ -1,0 +1,186 @@
+' Gambas class file
+
+Export
+Inherits _TreeView
+
+Public Const _Properties As String = "*,Mode{Select.*}=Single,Sorted,Editable,Header=True,Resizable=False,AutoResize=True,Border=True,ScrollBar{Scroll.*}=Both"
+Public Const _Group As String = "View"
+Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "16,16"
+Public Const _Similar As String = "ListView"
+
+Property Header As Boolean
+Property Resizable As Boolean
+Property AutoResize As Boolean
+Property Read Columns As _ColumnView_Columns
+Property Settings As String
+
+Private $hView As GridView
+Private $hColumns As _ColumnView_Columns
+
+Public Sub _new()
+  
+  $hView = Me.Proxy
+  Me.Header = True
+  Me.Resizable = False
+  
+  $hColumns = New _ColumnView_Columns As "Columns"
+  
+End
+
+
+Public Sub Add((Key) As String, Text As String, Optional (Picture) As Picture, Optional Parent As String, Optional After As String) As _TreeView_Item
+  
+  Return Super._Add(Key, Text, Picture, Parent, After)
+  
+End
+
+
+Private Function Header_Read() As Boolean
+
+  Return $hView.Header
+
+End
+
+Private Sub Header_Write(Value As Boolean)
+
+  $hView.Header = If(Value, GridView.Horizontal, GridView.None)
+
+End
+
+Private Function Resizable_Read() As Boolean
+
+  Return $hView.Resizable
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  $hView.Resizable = Value
+
+End
+
+Private Function AutoResize_Read() As Boolean
+
+  Return $hView.AutoResize
+
+End
+
+Private Sub AutoResize_Write(Value As Boolean)
+
+  $hView.AutoResize = Value
+
+End
+
+Private Function Columns_Read() As _ColumnView_Columns
+
+  Return $hColumns
+
+End
+
+Private Function Settings_Read() As String
+
+  Dim sVal As String
+  Dim iCol As Integer
+
+  With Me
+
+    sVal = CStr(.Columns.Count)
+    
+    For iCol = 0 To .Columns.Count - 1
+      'sVal &= "," & "\"" & Quote(.Columns[iCol].Text) & "\""
+      sVal &= "," & CStr(Round(.Columns[iCol].Width / Desktop.Scale, -3))
+      Select Case .Columns[iCol].Alignment 
+        Case Align.Left
+          sVal &= ",<"
+        Case Align.Right
+          sVal &= ",>"
+      End Select
+      If .Columns.Sort = iCol Then 
+        If .Columns.Ascending Then 
+          sVal &= ",+"
+        Else 
+          sVal &= ",-"
+        Endif
+      Endif
+    Next    
+  
+  End With 
+  
+  'DEBUG sVal
+  
+  Return sVal
+  
+End
+
+Private Sub Settings_Write(Value As String)
+
+  Dim aVal As String[]
+  Dim iInd As Integer
+  Dim iCol As Integer
+  Dim eWidth As Float[]
+  Dim eSum As Float
+
+  'DEBUG sSettings
+
+  aVal = Split(Value, ",", "\"")
+  
+  With Me
+
+    .Columns.Count = CInt(aVal[0])
+    eWidth = New Float[.Columns.Count]
+    Inc iInd
+    While iCol < .Columns.Count
+      If iInd >= aVal.Count Then Break 
+      'DEBUG iCol;; "=";; CFloat(aVal[iInd])
+      eWidth[iCol] = CFloat(aVal[iInd]) * Desktop.Scale
+      eSum += eWidth[iCol]
+      Inc iInd
+      Do
+        If iInd >= aVal.Count Then Break 
+        Select Case aVal[iInd] 
+          Case "<"
+            .Columns[iCol].Alignment = Align.Left
+          Case ">"
+            .Columns[iCol].Alignment = Align.Right
+          Case "+"
+            .Columns.Sort = iCol
+            .Columns.Ascending = True
+          Case "-"
+            .Columns.Sort = iCol
+            .Columns.Ascending = False
+          Case Else 
+            Break 
+        End Select 
+        Inc iInd
+      Loop
+      Inc iCol
+    Wend
+    
+    iCol = 0
+    While iInd < aVal.Count And iCol < .Columns.Count
+      .Columns[iCol].Text = UnQuote(aVal[iInd])
+      Inc iCol
+      Inc iInd      
+    Wend
+    
+    If eSum > 0 Then
+      For iCol = 0 To .Columns.Count - 1
+        .Columns[iCol].Width = eWidth[iCol] * .ClientW / eSum
+      Next
+      ' ELSE
+      '   FOR iCol = 0 TO .Columns.Count - 1
+      '     .Columns[iCol].Width = eWidth[iCol]
+      '     'DEBUG iCol;; ":";; .Columns[iCol].Width / Desktop.Scale
+      '   NEXT
+    Endif
+    
+    'DEBUG sSettings;; "->";; hColumnView.Settings
+  
+  End With
+  
+Catch 
+
+  Debug Error.Where; ": "; Error.Text
+
+End

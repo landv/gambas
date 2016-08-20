@@ -1,0 +1,54 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(32.7143,25,84,60)
+  Text = ("Desktop application embedder")
+  Icon = Picture["embedder.png"]
+  Arrangement = Arrange.Vertical
+  { Panel1 Panel
+    MoveScaled(0,0,82,6)
+    Arrangement = Arrange.Horizontal
+    Spacing = True
+    Margin = True
+    { Label1 Label
+      MoveScaled(2,1,16,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Window title")
+    }
+    { txtTitle TextBox
+      MoveScaled(19,1,17,4)
+      ToolTip = ("Enter there the title of the window you want to embed.")
+      Expand = True
+    }
+    { btnEmbed Button
+      MoveScaled(37,1,14,4)
+      ToolTip = ("Click on the <b>Embed</b> button to search the window whose title \nis specified in the left field, and to embed it in the \nblue rectangle below.")
+      Text = ("&Embed")
+      Default = True
+    }
+    { btnDiscard Button
+      MoveScaled(52,1,14,4)
+      Enabled = False
+      ToolTip = ("Click on the <b>Discard</b> button to free the application window from its jail.")
+      Text = ("&Discard")
+    }
+    { lblID Label
+      MoveScaled(69,1,11,4)
+      Visible = False
+      Alignment = Align.Center
+      Border = Border.Sunken
+    }
+  }
+  { Panel2 Panel
+    MoveScaled(3,8,67,43)
+    Background = &H9FCFFF&
+    Expand = True
+    Arrangement = Arrange.Fill
+    Padding = 4
+    { embEmbedder Embedder
+      MoveScaled(8,8,35,25)
+      Expand = True
+    }
+  }
+}

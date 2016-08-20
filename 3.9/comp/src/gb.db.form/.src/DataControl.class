@@ -1,0 +1,385 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Event Validate(Value As Variant)
+
+'EVENT GotFocus
+'EVENT LostFocus
+
+Property Field As String
+Property Value As Variant
+Property Read Valid As Boolean
+Property Read Modified As Boolean
+Property Read Control As Control
+
+Public Const _Properties As String = "*,Field{Field}"
+Public Const _Group As String = "Data"
+Public Const _DrawWith As String = "TextBox"
+Public Const _DefaultSize As String = "24,4"
+
+Private $sKey As String
+Private $hCtrl As Object
+Private $hInfo As DataField
+Private $vVal As Variant
+Private $hSource As DataSource
+
+Private $hObs As Observer
+Private $sBlob As String
+
+Public Sub _new()
+  
+  Me._AutoResize = True
+  
+End
+
+Private Sub UpdateControl()
+
+  Dim bReadOnly As Boolean
+
+  bReadOnly = $hInfo.ReadOnly Or $hSource.ReadOnly
+  
+  If $hInfo.Type <> db.Blob Then
+    If $hCtrl Is ComboBox Then
+      $hCtrl.Enabled = Not bReadOnly
+    Else
+      Try $hCtrl.ReadOnly = bReadOnly
+    Endif
+  Endif
+  
+End
+
+Private Sub CreateControl()
+  
+  Dim hTextBox As TextBox
+  Dim hTextArea As TextArea
+  Dim hComboBox As ComboBox
+  Dim hDateBox As DateBox
+  Dim hButtonBox As ButtonBox
+  Dim sType As String
+  Dim bFocus As Boolean
+  
+  Select $hInfo.Type
+  
+    Case db.Integer, db.Long, db.Float
+      sType = "TextBox"
+      
+    Case db.Date
+      sType = "DateBox"
+    
+    Case db.Boolean
+      sType = "ComboBox"
+    
+    Case db.String
+      If $hInfo.Length > 0 And $hInfo.Length < 256 Then
+        sType = "TextBox"
+      Else
+        sType = "TextArea"
+      Endif
+      
+    Case db.Blob
+      sType = "ButtonBox"
+  
+  End Select
+  
+  If $hCtrl And If sType <> Object.Type($hCtrl) Then
+    bFocus = Application.ActiveControl = $hCtrl
+    $hCtrl.Delete
+    $hCtrl = Null
+  Endif
+
+  If Not $hCtrl Then 
+    $hCtrl = Object.New(sType, [Me])
+    'Object.Attach($hCtrl, Object.Parent(Me), $sEventName)
+    Me.Proxy = $hCtrl
+  Endif
+  
+  Select $hInfo.Type
+  
+    Case db.Integer, db.Long
+      hTextBox = $hCtrl
+    
+    Case db.Date
+      hDateBox = $hCtrl
+      hDateBox.Mode = DateChooser.DateTime
+    
+    Case db.Boolean
+      hComboBox = $hCtrl
+      hComboBox.ReadOnly = True
+      hComboBox.Clear
+      hComboBox.Add(("True"))
+      hComboBox.Add(("False"))
+      If IsNull($hInfo.Default) Then hComboBox.Add(("Unknown"))
+    
+    Case db.Float
+    
+    Case db.String
+      If $hInfo.Length > 0 And $hInfo.Length < 256 Then
+        hTextBox = $hCtrl
+        hTextBox.MaxLength = $hInfo.Length
+        'hTextBox.ReadOnly = $hInfo.ReadOnly
+      Else
+        hTextArea = $hCtrl
+        hTextArea.ScrollBar = Scroll.Vertical
+        'hTextArea.ReadOnly = $hInfo.ReadOnly
+      Endif
+      
+    Case db.Blob
+      hButtonBox = $hCtrl
+      hButtonBox.ReadOnly = True
+      'hButtonBox.Border = False
+      hButtonBox.Text = "Blob"
+      hButtonBox.Foreground = Color.LightForeground
+      
+      $hObs = New Observer(hButtonBox) As "ButtonBox"
+  
+  End Select
+  
+  If bFocus Then $hCtrl.SetFocus
+  
+  Me.Proxy = $hCtrl
+  
+End
+
+
+Public Sub Update()
+  
+  Dim hInfo As DataField
+  
+  If Not $sKey Then Return
+  
+  $hSource = Common.GetSource(Me)
+  If Not $hSource Then Return
+  If $hSource._Check() Then Return
+  
+  hInfo = $hSource._GetInfo($sKey)
+  If hInfo <> $hInfo Then
+    $hInfo = hInfo
+    CreateControl
+  Endif
+  
+  $vVal = $hSource[$sKey]
+  SetValue($vVal)
+  
+  UpdateControl
+  
+End
+
+
+' PRIVATE FUNCTION Source_Read() AS DataSource
+'   
+'   RETURN $hSource
+'   
+' END
+' 
+' PRIVATE SUB Source_Write(hSource AS DataSource)
+'   
+'   $hSource = hSource
+'   
+' END
+
+Private Function Modified_Read() As Boolean
+  
+  Dim vVal As Variant
+  
+  Try vVal = GetValue()
+  If Error Then Return
+  If TypeOf($vVal) = gb.Object And If $vVal Is Blob Then
+    If Len(vVal) <> $vVal.Length Then Return True
+    Return vVal <> $vVal.Data
+  Else
+    Return vVal <> $vVal  
+  Endif
+  
+End
+
+
+Private Function Valid_Read() As Boolean
+  
+  Dim vVal As Variant
+  Dim bCancel As Boolean
+  
+  Try vVal = GetValue()
+  If Error Then Return False
+  bCancel = Raise Validate(vVal)
+  Return Not bCancel
+  
+End
+
+
+
+Private Function Value_Read() As Variant
+
+  Dim vVal As Variant
+  
+  Try vVal = GetValue()
+  If Error Then Return $vVal
+  Return vVal
+  
+End
+
+Private Sub Value_Write(vVal As Variant)
+
+  If Not IsNull(vVal) Then
+    Select $hInfo.Type
+  
+      Case db.Integer
+        vVal = CInt(vVal)
+    
+      Case db.Long
+        vVal = CLong(vVal)
+    
+      Case db.Date
+        vVal = CDate(vVal)
+    
+      Case db.Boolean
+        vVal = CBool(vVal)
+        
+      Case db.Float
+        vVal = CFloat(vVal)
+    
+      Case db.Blob
+    
+      Case Else
+        vVal = CStr(vVal)
+  
+    End Select
+  Endif
+
+  SetValue(vVal)
+  
+Catch
+  
+End
+
+Private Function Field_Read() As String
+  
+  Return $sKey
+  
+End
+
+Private Sub Field_Write(sKey As String)
+  
+  If sKey = $sKey Then Return
+  $sKey = sKey
+  Update
+  
+End
+
+
+Private Sub SetValue(vVal As Variant)
+  
+  Select $hInfo.Type
+  
+    Case db.Integer, db.Long
+      $hCtrl.Text = Str(vVal)
+    
+    Case db.Date
+      $hCtrl.Value = vVal
+    
+    Case db.Boolean
+      If IsNull(vVal) Then
+        $hCtrl.Index = 2
+      Else If vVal Then
+        $hCtrl.Index = 0
+      Else
+        $hCtrl.Index = 1
+      Endif
+        
+    Case db.Float
+      $hCtrl.Text = Str(vVal)
+    
+    Case db.String
+      $hCtrl.Text = vVal
+      
+    Case db.Blob
+      If vVal Is Blob Then
+        $sBlob = vVal.Data
+      Else
+        $sBlob = vVal
+      Endif
+  
+  End Select
+  
+End
+
+Private Function GetValue() As Variant
+  
+  Select $hInfo.Type
+  
+    Case db.Integer
+      If Not Trim($hCtrl.Text) Then
+        Return Null
+      Else
+        Return CInt($hCtrl.Text)
+      Endif
+    
+    Case db.Long
+      If Not Trim($hCtrl.Text) Then
+        Return Null
+      Else
+        Return CLong($hCtrl.Text)
+      Endif
+    
+    Case db.Float
+      If Not Trim($hCtrl.Text) Then
+        Return Null
+      Else
+        Return CFloat(Val($hCtrl.Text))
+      Endif
+    
+    Case db.Date
+      Return $hCtrl.Value
+      ' If Not Trim($hCtrl.Text) Then
+      '   Return Null
+      ' Else
+      '   vVal = Val($hCtrl.Text)
+      '   If TypeOf(vVal) <> gb.Date Then Error.Raise("Bad date")
+      '   Return vVal
+      ' Endif
+    
+    Case db.Boolean
+      Return Choose($hCtrl.Index + 1, True, False, Null)
+        
+    Case db.String
+      Return $hCtrl.Text
+      
+    Case db.Blob
+      Return $sBlob
+  
+  End Select
+  
+End
+
+Public Sub SetFocus()
+  
+  If $hCtrl Then $hCtrl.SetFocus
+  
+End
+
+Public Sub ButtonBox_Click()
+  
+  If Not FBlobEditor.Run($sBlob, $sKey, Not $hInfo.ReadOnly) Then 
+    Inc Application.Busy
+    $sBlob = FBlobEditor.Data
+    FBlobEditor.Data = ""
+    Dec Application.Busy
+  Endif
+  
+  Stop Event
+  
+End
+
+Public Sub ButtonBox_DblClick()
+  
+  ButtonBox_Click
+  
+End
+
+Private Function Control_Read() As Control
+
+  Return $hCtrl
+
+End

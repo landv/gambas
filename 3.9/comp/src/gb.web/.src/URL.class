@@ -1,0 +1,62 @@
+' Gambas class file
+
+Export
+
+Static Private Sub HandleQuery(sURL As String, bClear As Boolean, Field As String, Value As String) As String
+  
+  Dim I, iPos As Integer
+  Dim sElt As String
+  Dim aQuery As String[]
+  
+  iPos = InStr(sURL, "?")
+  If iPos = 0 Then 
+    If bClear Then
+      Return sURL
+    Else
+      Return sURL & "?" & URL.Encode(Field) & "=" & URL.Encode(Value)
+    Endif
+  Endif
+  
+  aQuery = Split(Mid$(sURL, iPos + 1), "&")
+  sURL = Left$(sURL, iPos - 1)
+  
+  Field = URL.Encode(Field)
+  Value = URL.Encode(Value)
+  
+  For I = 0 To aQuery.Max
+    sElt = aQuery[I]
+    If sElt = Field Or If sElt Begins Field & "=" Then
+      aQuery.Remove(I)
+      Break
+    Endif
+  Next
+  
+  If Not bClear Then
+    If Value Then
+      aQuery.Add(Field & "=" & Value)
+    Else
+      aQuery.Add(Field)
+    Endif
+  Endif
+  
+  If aQuery.Count Then
+    Return sURL & "?" & aQuery.Join("&")
+  Else
+    Return sURL
+  Endif
+  
+End
+
+' TODO: Use IsMissing()
+
+Static Public Sub SetQuery(URL As String, Field As String, Value As String) As String
+  
+  Return HandleQuery(URL, False, Field, Value)
+  
+End
+
+Static Public Sub UnsetQuery(URL As String, Field As String) As String
+  
+  Return HandleQuery(URL, True, Field, "")
+  
+End

@@ -1,0 +1,71 @@
+' Gambas class file
+
+Export
+Create Static
+
+Public Function Analyze(Table As String, Optional Database As String = modMain.$Connection.Name, Optional Local As Boolean = False) As String
+
+  Dim sAlalyze As String
+
+  modMain.$Query = "ANALYZE "
+  If Local Then modMain.$Query &= "LOCAL "
+  modMain.$Query &= "TABLE `" & Database & "`.`" & Table & "`"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    sAlalyze &= "\n" & modMain.$hResult!Op & ": `" & Database & "`.`" & Table & "`, " & modMain.$hResult!Msg_type & ": " & modMain.$hResult!Msg_text
+  Next
+  Return Right(sAlalyze, -1)
+
+End
+
+Public Function Check(Table As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  Dim sAlalyze As String
+
+  modMain.$Query = "CHECK TABLE `" & Database & "`.`" & Table & "` EXTENDED"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    sAlalyze &= "\n" & modMain.$hResult!Op & ": `" & Database & "`.`" & Table & "`, " & modMain.$hResult!Msg_type & ": " & modMain.$hResult!Msg_text
+  Next
+  Return Right(sAlalyze, -1)
+
+End
+
+Public Function Checksum(Table As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  Dim sAlalyze As String
+
+  modMain.$Query = "CHECKSUM TABLE `" & Database & "`.`" & Table & "` EXTENDED"
+  Return "`" & Database & "`.`" & Table & "`, Checksum: " & modMain.$Connection.Exec(modMain.$Query)!Checksum
+
+End
+
+Public Function Optimize(Table As String, Optional Database As String = modMain.$Connection.Name, Optional Local As Boolean = False) As String
+
+  Dim sAlalyze As String
+
+  modMain.$Query = "OPTIMIZE "
+  If Local Then modMain.$Query &= "LOCAL "
+  modMain.$Query &= "TABLE `" & Database & "`.`" & Table & "`"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    sAlalyze &= "\n" & modMain.$hResult!Op & ": `" & Database & "`.`" & Table & "`, " & modMain.$hResult!Msg_type & ": " & modMain.$hResult!Msg_text
+  Next
+  Return Right(sAlalyze, -1)
+
+End
+
+Public Function Repair(Table As String, Optional Database As String = modMain.$Connection.Name, Optional Local As Boolean = False) As String
+
+  Dim sAlalyze As String
+
+  modMain.$Query = "REPAIR "
+  If Local Then modMain.$Query &= "LOCAL "
+  modMain.$Query &= "TABLE `" & Database & "`.`" & Table & "` EXTENDED"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    sAlalyze &= "\n" & modMain.$hResult!Op & ": `" & Database & "`.`" & Table & "`, " & modMain.$hResult!Msg_type & ": " & modMain.$hResult!Msg_text
+  Next
+  Return Right(sAlalyze, -1)
+
+End

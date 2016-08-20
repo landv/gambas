@@ -1,0 +1,56 @@
+' Gambas class file
+
+Private hResult1 As Result
+Private hResult2 As Result
+
+Public Sub _new()
+
+  Connections["Connection1"].Open
+  'Report.Debug = True
+  hResult1 = db.Exec("select distinct firstname from test")
+
+  ReportPanel1.DataCount = hResult1.Count
+  'ReportHBox1.DataCount = 4
+  'ReportHBox1.Border.RoundCorner.TopRight = "5mm 5mm"
+  'ReportHBox1.Border.RoundCorner.BottomRight = "5mm/5mm"
+'Report.Debug = True
+ReportLabel3.BoxShadow.XOffset = "1mm"
+ReportLabel3.BoxShadow.YOffset = "1mm"
+ReportLabel3.BoxShadow.Blur = "1mm"
+
+
+
+End
+
+Public Sub ReportLabel1_Data(Index As Integer)
+
+  hResult2.MoveTo(Index)
+  Last.data = hResult2!name
+  Print "FillData = " & hResult1!firstname
+End
+
+Public Sub ReportPanel1_BeforeData()
+If hResult1.Max < ReportPanel1.DataIndex Then 
+  Print "error" & ReportPanel1.DataIndex
+  Return
+Endif
+  hResult1.MoveTo(ReportPanel1.dataindex)
+ Print "BeforeData = " & hResult1!firstname
+  hResult2 = db.Exec("Select * From test where firstname=&1 LIMIT 1,20", hResult1!firstname)
+  ReportHBox1.DataCount = hResult2.Count
+
+End
+
+Public Sub ReportLabel2_Data(Index As Integer)
+  hResult1.MoveTo(Index)
+  Last.data = hResult1!firstname
+  
+  'Print hResult1!firstname, Index
+
+End
+
+Public Sub Report_Open()
+
+  
+
+End

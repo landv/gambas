@@ -1,0 +1,279 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+
+Public Const _Properties As String = "*,Action,Value,ReadOnly,Border=True,Mode{DateChooser.*}=DateOnly"
+'Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "24,4"
+Public Const _Similar As String = "TextBox"
+Public Const _Group As String = "Chooser"
+
+Event Activate
+Event Click
+Event Change
+
+Property Value As Date
+Property ReadOnly As Boolean
+Property Border As Boolean
+Property Mode As Integer
+
+Private $hButtonBox As ButtonBox
+Private $hPopup As Window
+Private $hChooser As DateChooser
+Private $bShowDate As Boolean = True
+Private $bShowTime As Boolean
+
+Private Sub GetDateFormat() As String
+  
+  Dim sFormat As String
+  
+  If $bShowDate Then
+    sFormat = Format(Date(3333, 11, 22), gb.ShortDate)
+    sFormat = Replace(sFormat, "3333", "yyyy")
+    sFormat = Replace(sFormat, "22", "dd")
+    sFormat = Replace(sFormat, "11", "mm")
+  Endif
+
+  If $bShowTime Then 
+    sFormat &= " " & Format(Time(11, 22, 33), gb.ShortTime)
+    sFormat = Replace(sFormat, "11", "hh")
+    sFormat = Replace(sFormat, "22", "nn")
+    sFormat = Replace(sFormat, "33", "ss")
+  Endif
+  
+  Return LTrim(sFormat)
+  
+End
+
+Private Sub GetNullDate() As String
+  
+  Dim sFormat As String
+  
+  If $bShowDate Then
+    sFormat = Format(Date(1111, 11, 11), gb.ShortDate)
+    sFormat = Replace(sFormat, "1", "0")
+  Endif
+
+  If $bShowTime Then 
+    sFormat &= " " & Format(Time(11, 11, 11), gb.ShortTime)
+    sFormat = Replace(sFormat, "1", "0")
+  Endif
+  
+  Return LTrim(sFormat)
+  
+End
+
+
+Private Sub UpdateMask()
+  
+  Dim sMask As String
+  Dim vVal As Date
+  
+  vVal = Value_Read()
+  
+  If $bShowDate Then sMask = Format(Date(1111, 11, 11), gb.ShortDate)
+  If $bShowTime Then sMask = LTrim(sMask & " " & Format(Time(11, 11, 11), gb.ShortTime))
+  
+  If $bShowDate Then
+    $hButtonBox.Picture = Picture["icon:/16/calendar"]
+  Else
+    $hButtonBox.Picture = Picture["icon:/16/clock"]
+  Endif
+  
+  $hButtonBox.Editor.Mask = Replace(sMask, "1", "0")
+  
+  Value_Write(vVal)
+  
+End
+
+
+Public Sub _new()
+  
+  Dim (hPanel) As Panel
+  
+  $hButtonBox = New ButtonBox(Me) As "ButtonBox"
+  $hButtonBox.Picture = Picture["icon:/small/calendar"]
+  $hButtonBox.Alignment = Align.Right
+  
+  $hPopup = New Window As "PopupWindow"
+  $hPopup.Persistent = True
+  $hPopup.Arrangement = Arrange.Fill
+  
+  hPanel = New Panel($hPopup)
+  hPanel.Arrangement = Arrange.Horizontal
+  hPanel.Border = Border.Plain
+  
+  $hChooser = New DateChooser(hPanel) As "DateChooser"
+  $hChooser.Expand = True
+  $hChooser.Border = False
+  
+  Me.Proxy = $hButtonBox
+  
+  UpdateMask
+  Value_Write(Null)
+  
+End
+
+Private Function Value_Read() As Date
+
+  Dim vVal As Variant
+  
+  If Not $bShowDate Then
+    vVal = Time(Val(Format(Date(1, 1, 1), "dd/mm/yyyy") & " " & $hButtonBox.Text))
+  Else
+    vVal = Val($hButtonBox.Text)
+  Endif
+  
+  If vVal And If TypeOf(vVal) = gb.Date Then Return vVal
+  
+End
+
+Private Sub Value_Write(Value As Date)
+
+  If IsNull(Value) Then 
+    $hButtonBox.Text = GetNullDate()
+  Else
+    $hButtonBox.Text = Format(Value, GetDateFormat())
+  Endif
+End
+
+Public Sub ButtonBox_Click()
+  
+  Dim X, Y, iPad As Integer
+  Dim dDate As Date
+  
+  If $bShowTime And $bShowDate Then
+    $hPopup.Resize(Desktop.Scale * 48 + 2, ((Desktop.Scale * 24) \ 12) * 12 + 2)
+  Else If $bShowDate
+    $hPopup.Resize(Desktop.Scale * 32 + 2, Desktop.Scale * 24)
+  Else
+    $hPopup.Resize(Desktop.Scale * 16 + 2, ((Desktop.Scale * 24) \ 12) * 12 + 2)
+  Endif
+
+  iPad = If($hButtonBox.Border, 3, 0)
+  X = $hButtonBox.ScreenX + $hButtonBox.W - $hPopup.W - iPad
+  Y = $hButtonBox.ScreenY + $hButtonBox.H - iPad
+  
+  If (Y + $hPopup.H) > Desktop.H Then
+    Y = $hButtonBox.ScreenY - $hPopup.H
+  Endif
+  
+  dDate = Me.Value
+  If dDate Then 
+    $hChooser.Value = dDate
+  Else
+    $hChooser.Value = Now
+  Endif
+  
+  $hPopup.ShowPopup(X, Y)
+  '$hPopup.ShowModal
+  
+End
+
+Public Sub ButtonBox_KeyPress()
+  
+  If Key.Code = Key.Space Then
+    ButtonBox_Click
+    Stop Event
+  ' Else If Key.Code = Key.BackSpace Or If Key.Code = Key.Delete Then
+  '   Debug
+  '   If $hButtonBox.Editor.Selection.Length = $hButtonBox.Editor.Length Then
+  '     Me.Value = Null
+  '     Stop Event
+  '   Endif
+  Endif
+  
+End
+
+Public Sub ButtonBox_Activate()
+  
+  Raise Activate
+  
+End
+
+Public Sub ButtonBox_Change()
+  
+  Raise Change
+  
+End
+
+Public Sub PopupWindow_Open()
+  
+  $hChooser.SetFocus
+  
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $hButtonBox.ReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $hButtonBox.ReadOnly = Value
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hButtonBox.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hButtonBox.Border = Value
+
+End
+
+Public Sub DateChooser_Activate()
+  
+  Me.Value = $hChooser.Value
+  $hPopup.Close
+  Raise Click
+  
+End
+
+Public Sub DateChooser_Cancel()
+  
+  $hPopup.Close
+  
+End
+
+Private Function Mode_Read() As Integer
+
+  If $bShowDate Then
+    If $bShowTime Then
+      Return DateChooser.DateTime
+    Else
+      Return DateChooser.DateOnly
+    Endif
+  Else
+    Return DateChooser.TimeOnly
+  Endif
+
+End
+
+Private Sub Mode_Write(Value As Integer)
+
+  Select Case Value
+    Case DateChooser.DateOnly
+      $bShowDate = True
+      $bShowTime = False
+    Case DateChooser.DateTime
+      $bShowDate = True
+      $bShowTime = True
+    Case DateChooser.TimeOnly
+      $bShowDate = False
+      $bShowTime = True
+    Default
+      Return
+  End Select
+
+  $hChooser.Mode = Value
+
+  UpdateMask
+
+End

@@ -1,0 +1,523 @@
+' Gambas class file
+
+' This program is free software: you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation, either version 2 of the License, or
+' (at your option) any later version.
+
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+
+''POP3 protocol implementation in Gambas
+'Author: sebikul <sebikul@gmail.com>
+'Protocol specifications: http://tools.ietf.org/html/rfc1939
+
+'Minimal Command Set:
+'    USER name         user(name)        DONE
+'    PASS string       pass_(string)     DONE
+'    STAT              stat()            DONE
+'    LIST [msg]        list(msg = None)  DONE
+'    RETR msg          retr(msg)         DONE
+'    DELE msg          dele(msg)         DONE
+'    NOOP              noop()            DONE
+'    RSET              rset()            DONE
+'    QUIT              quit()            DONE
+'
+'Optional Commands:
+'    RPOP name         rpop(name)
+'    APOP name digest  apop(name, digest)
+'    TOP msg n         top(msg, n)       DONE
+'    UIDL [msg]        uidl(msg = None)  DONE
+
+Export
+
+Public Const _IsControl As Boolean = True
+Public Const _IsVirtual As Boolean = True
+Public Const _Group As String = "Network"
+Public Const _Properties As String = "Host,Port,User,Password,Encrypt{Net.None;SSL},Debug"
+
+Private Const SERVER_POSITIVE_RESPONSE As String = "+OK"
+Private Const SERVER_NEGATIVE_RESPONSE As String = "-ERR"
+
+''Use plaintext or an ssl encrypted conenction
+Property Encrypt As Integer
+Private $iEncrypt As Integer
+
+''Returns the status of the client as defined by the POP3 class
+Property Read Status As Integer
+Private $iStatus As Integer
+
+''Used to store the client instance. Either TCPClient or SSLClient.
+''Both share the same API.
+Private $oClient As POPClient
+
+''Returns or sets the username used to authenticate to the server.
+''It cannot be modified after Open() is executed
+Property User As String
+Private $sUsername As String
+
+''Returns or sets the password used to authenticate to the server.
+''It cannot be modified after Open() is executed
+Property Password As String
+Private $sPassword As String
+
+''Returns or sets the server used to connect to the server.
+''It cannot be modified after Open() is executed
+Property Host As String
+Private $sServer As String
+
+''Returns or sets the port used to connect to the server.
+''It cannot be modified after Open() is executed
+Property Port As Integer
+Private $iPort As Integer
+
+''Returns the message count
+Property Read Count As Integer
+Private $iCount As Integer
+
+''Returns the size of the inbox in bytes
+Property Read Size As Integer
+Private $iSize As Integer
+
+''Welcome message returned by the server
+Property Read Welcome As String
+Private $sWelcome As String
+
+'' If debugging mode is activated for this client
+Property Debug As Boolean
+Private $bDebug As Boolean
+
+''Collection used to cache the request of single messages
+Private $msgCache As Collection
+
+'' If connection has been closed
+Private $bClosed As Boolean
+
+''Returns True if _Text_ begins with "+OK"
+Static Public Function _IsPositive(Text As String) As Boolean
+
+  Return (Text Begins SERVER_POSITIVE_RESPONSE)
+
+End
+
+''Returns True if _Text_ begins with "-ERR"
+Static Public Function _IsNegative(Text As String) As Boolean
+
+  Return Text Begins SERVER_NEGATIVE_RESPONSE
+
+End
+
+''Strips the +OK part of the response
+Static Public Function _StripOK(Text As String, Optional bMultiline As Boolean) As String
+
+  Dim iPos As Integer
+
+  If bMultiline Then
+    iPos = InStr(Text, "\n")
+    If iPos Then Return Mid$(Text, iPos + 1)
+  Endif
+
+  Return Trim(Mid(Text, 4))
+
+End
+
+Static Public Sub _PrintDebug(sMsg As String)
+
+  Error "gb.net.pop3: "; sMsg
+
+End
+
+Static Public Sub _CheckResponse(sResponse As String)
+
+  If sResponse Not Begins "+OK" Then
+    If sResponse Begins "-ERR" Then
+      sResponse = Mid$(sResponse, 5)
+    Endif
+    Error.Raise(Trim(sResponse))
+  Endif
+
+End
+
+Public Function _get(Index As Integer) As _Pop3Client_Message
+
+  Dim hMessage As _Pop3Client_Message
+
+  If Index < 0 Or If Index >= Me.Count Then
+    Error.Raise("Out of bounds")
+  Endif
+
+  hMessage = $msgCache[Index]
+  If Not hMessage Then
+
+    hMessage = New _Pop3Client_Message(Index, Me)
+    $msgCache[Index] = hMessage
+
+  Endif
+
+  Return hMessage
+
+End
+
+Public Function _next() As _Pop3Client_Message
+
+  Dim hMessage As _Pop3Client_Message
+
+  If IsNull(Enum.Index) Then Enum.Index = 0
+
+  If Enum.Index >= Me.Count Then
+    Enum.Stop()
+    Return
+  Endif
+
+  hMessage = _get(Enum.Index)
+  Inc Enum.Index
+
+  Return hMessage
+
+End
+
+''Establish a connection. Choose Client depending on Encrypt
+''Port defaults to 110 for TCPClient and 995 for SSLClient
+Public Function Open() As Boolean
+
+  Dim iPort As Integer
+
+  If Not $sServer Then
+    Error.Raise("Server not set")
+  Endif
+
+  If Not $sUsername Then
+    Error.Raise("Username not set")
+  Endif
+
+  If Not $sPassword Then
+    Error.Raise("Password not set")
+  Endif
+
+  If $bDebug Then _PrintDebug("Connecting to " & Me.Host)
+
+  iPort = $iPort
+
+  Select Case Me.Encrypt
+
+    Case Net.None
+      $oClient = New TCPClient
+      If iPort = 0 Then
+        iPort = 110
+        If $bDebug Then _PrintDebug("Port not specified, using 110")
+      Endif
+
+    Case Net.SSL
+      If iPort = 0 Then
+        iPort = 995
+        If $bDebug Then _PrintDebug("Port not specified, using 995")
+      Endif
+
+      $oClient = New SSLClient
+
+    Case Else
+      Error.Raise("Invalid connection type")
+
+  End Select
+
+  $oClient.Connect(Me.Host, iPort)
+
+  'Set welcome message
+  $sWelcome = Trim($oClient.GetLine())
+
+  If $bDebug Then _PrintDebug("Authenticating...")
+
+  If Not _User(Me.User) Then
+    $iStatus = Net.CannotAuthenticate
+    If $bDebug Then _PrintDebug("Bad username")
+  Else If Not _Pass(Me.Password) Then
+    $iStatus = Net.CannotAuthenticate
+    If $bDebug Then _PrintDebug("Bad password")
+  Else
+    $iStatus = Net.Connected
+    If $bDebug Then _PrintDebug("OK")
+    $bClosed = False
+    $msgCache = New Collection
+  Endif
+
+  If $iStatus <> Net.Connected Then
+    Try Abort()
+    Error.Raise("Cannot authenticate")
+  Endif
+
+End
+
+''Send Data to the server and wait for a response, then return it.
+Public Function Exec(Data As String, Optional Multiline As Boolean = False) As String
+
+  Dim Response As String
+  Dim iPos As Integer
+
+  If $bDebug Then
+    If Data Begins "PASS " Then
+      _PrintDebug("Sending: PASS ********")
+    Else
+      _PrintDebug("Sending: " & Data)
+    Endif
+  Endif
+  'Send the data
+  Response = $oClient.Send(Data, Multiline)
+
+  ' If Not Response Begins "+" Then
+  '   Error.Raise("Invalid POP response: " & Response)
+  ' Endif
+
+  If $bDebug Then
+    If Multiline Then
+      iPos = InStr(Response, "\n")
+      If iPos Then
+        _PrintDebug(RTrim(Left(Response, iPos - 1)) & "...")
+      Else
+        _PrintDebug(Response)
+      Endif
+    Else
+      _PrintDebug(Response)
+    Endif
+  Endif
+
+  Return Response
+
+End
+
+Public Sub Abort()
+
+  If $bDebug Then _PrintDebug("Aborting...")
+  $oClient.Disconnect()
+
+  $msgCache = Null
+
+  $bClosed = True
+
+End
+
+''Logout from the server and disconnect
+Public Function Close() As Boolean
+
+  Dim Response As String
+
+  If $iStatus <> Net.Connected Then
+    Error.Raise("Not connected")
+  Else If $bClosed Then
+    Error.Raise("Already in UPDATE state")
+  Endif
+
+  Response = Exec("QUIT")
+  _CheckResponse(Response)
+
+  If $bDebug Then _PrintDebug("Disconnecting...")
+  $oClient.Disconnect()
+
+  $msgCache = Null
+
+  $bClosed = True
+
+  $iStatus = Net.Inactive
+
+  Return Not _IsPositive(Response)
+
+End
+
+Public Function Stat() As Integer[]
+
+  Dim Response As String
+
+  Dim stat_data As String[]
+
+  Response = Exec("STAT", False)
+  _CheckResponse(Response)
+
+  Response = _StripOK(Response)
+  If Not Response Then Error.Raise("Void answer")
+  stat_data = Split(Response, " ")
+  Return [CInt(stat_data[0]), CInt(stat_data[1])]
+
+End
+
+''Returns a positive response if the Client is in Transaction state.
+''Can be used as a keep-alive feature
+Public Function Ping() As Boolean
+
+  Return Not _IsPositive(Exec("NOOP"))
+
+End
+
+Public Function Reset()
+
+  Dim hMsg As _Pop3Client_Message
+
+  _CheckResponse(Exec("RSET"))
+
+  ' Reset the deleted flag in each message
+  For Each hMsg In $msgCache
+    hMsg._Reset
+  Next
+
+End
+
+Private Function _User(Username As String) As Boolean
+
+  Return _IsPositive(Exec("USER " & Username))
+
+End
+
+Private Function _Pass(Password As String) As Boolean
+
+  Return _IsPositive(Exec("PASS " & Password))
+
+End
+
+Public Function List() As String[]
+
+  Dim Response As String
+
+  Response = Exec("LIST", True)
+  _CheckResponse(Response)
+
+  Response = _StripOK(Response, True)
+  Return Split(Trim(Response), "\n")
+
+End
+
+Public Function ListUniqueID() As String[]
+
+  Dim Response As String
+
+  Response = Exec("UIDL", True)
+  _CheckResponse(Response)
+
+  Response = _StripOK(Response)
+  Return Split(Trim(Response), "\n")
+
+End
+
+Private Function Count_Read() As Integer
+
+  If Not $iCount Then _Refresh()
+  Return $iCount
+
+End
+
+Private Function Size_Read() As Integer
+
+  If Not $iSize Then _Refresh()
+  Return $iSize
+
+End
+
+Private Function Encrypt_Read() As Integer
+
+  Return $iEncrypt
+
+End
+
+Private Sub Encrypt_Write(Value As Integer)
+
+  $iEncrypt = Value
+
+End
+
+Private Function Status_Read() As Integer
+
+  Return $iStatus
+
+End
+
+Private Function User_Read() As String
+
+  Return $sUsername
+
+End
+
+Private Sub User_Write(Value As String)
+
+  $sUsername = Value
+
+End
+
+Private Function Password_Read() As String
+
+  Return $sPassword
+
+End
+
+Private Sub Password_Write(Value As String)
+
+  $sPassword = Value
+
+End
+
+Private Function Host_Read() As String
+
+  Return $sServer
+
+End
+
+Private Sub Host_Write(Value As String)
+
+  $sServer = Value
+
+End
+
+Private Function Port_Read() As Integer
+
+  Return $iPort
+
+End
+
+Private Sub Port_Write(Value As Integer)
+
+  $iPort = Value
+
+End
+
+''Clears inbox and message cache
+Private Sub _Refresh()
+
+  Dim sResponse As Integer[]
+
+  If $bDebug Then _PrintDebug("Refreshing inbox cache")
+
+  $msgCache.Clear()
+
+  sResponse = Me.Stat()
+
+  $iCount = sResponse[0]
+  $iSize = sResponse[1]
+
+End
+
+Private Function Welcome_Read() As String
+
+  Return $sWelcome
+
+End
+
+Private Function Debug_Read() As Boolean
+
+  Return $bDebug
+
+End
+
+Private Sub Debug_Write(Value As Boolean)
+
+  $bDebug = Value
+
+End
+
+Public Sub Remove(Index As Integer)
+  
+  Me[Index].Delete
+  
+End
+
+' For documentation
+Public Sub _new()
+
+End

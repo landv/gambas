@@ -1,0 +1,16 @@
+' Gambas class file
+
+Static Private $cAtom As New Collection
+
+Static Public Sub _get(sAtom As String) As Integer
+  
+  Dim iAtom As Integer
+  
+  Try iAtom = $cAtom[sAtom]
+  If Error Then
+    iAtom = X11.InternAtom(sAtom, True)
+    $cAtom[sAtom] = iAtom
+  Endif
+  Return iAtom
+  
+End

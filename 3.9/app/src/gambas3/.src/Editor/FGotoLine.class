@@ -1,0 +1,36 @@
+' Gambas class file
+
+Static Private $iLine As Integer
+
+Static Public Function Run(iLine As Integer) As Integer
+
+  Dim hForm As FGotoLine
+
+  $iLine = iLine
+  hForm = New FGotoLine
+  If hForm.ShowModal() Then Return $iLine
+
+End
+
+Public Sub Form_Open()
+
+  txtLine.Text = CStr($iLine)
+  txtLine.SelectAll
+  txtLine.SetFocus
+
+End
+
+Public Sub btnOK_Click()
+
+  Try $iLine = Val(txtLine.Text)
+  If Error Then Return
+
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End

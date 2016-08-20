@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="$(LANG)" lang="$(LANG)" dir="$(LANGDIR)">
+
+<head>
+  <link rel="stylesheet" href="$(STYLE)">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <base target="arch">
+</head>
+
+<body>
+
+<div class="home">
+<div id="title">{Architecture}</div>
+
+<map name="arch">
+<area shape="rect" coords="27,27,103,417" href="$(WIKI:/doc/arch)#project" />
+<area shape="rect" coords="143,42,173,144" href="$(WIKI/doc/arch)#compiler" />
+<area shape="rect" coords="143,243,173,345" href="$(WIKI:/doc/arch)#archiver" />
+<area shape="rect" coords="213,27,274,160" href="$(WIKI:/doc/arch)#compiled" />
+<area shape="rect" coords="213,227,274,360" href="$(WIKI:/doc/arch)#archived" />
+<area shape="rect" coords="287,307,338,325" href="$(WIKI:/doc/arch)#mmap" />
+<area shape="rect" coords="355,358,821,390" href="$(WIKI:/doc/arch)#interpreter" />
+<area shape="rect" coords="371,77,447,209" href="$(WIKI:/doc/arch)#class" />
+<area shape="rect" coords="457,77,518,209" href="$(WIKI:/doc/arch)#subr" />
+<area shape="rect" coords="529,77,562,346" href="$(WIKI:/doc/arch)#interface" />
+<area shape="rect" coords="385,292,503,332" href="$(WIKI:/doc/arch)#debugger" />
+<area shape="rect" coords="371,220,519,346" href="$(WIKI:/doc/arch)#exec" />
+<area shape="rect" coords="572,77,618,346" href="$(WIKI:/doc/arch)#loader" />
+<area shape="rect" coords="657,271,806,346" href="$(WIKI:/doc/arch)#native" />
+<area shape="poly" coords="681,27,811,27,848,64,848,121,838,131,710,131,672,94,672,36" href="$(WIKI:/doc/arch)#components" />
+</map>
+
+<img src="architecture.png" usemap="#arch" border="0">
+
+<div style="height:16px;"></div>
+
+<div class="architecture-border">
+<iframe name="arch" src="$(WIKI:/doc/arch)#start" width="100%" height="200" scrolling="no" frameborder="0">
+Your browser must support frames.
+</iframe>
+</div>
+</div>
+</body>
+</html>

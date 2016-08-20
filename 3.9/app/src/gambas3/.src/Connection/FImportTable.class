@@ -1,0 +1,512 @@
+' Gambas class file
+
+Static Public Table As String
+Static Private $sPath As String 
+Static Private $hConn As Connection
+Static Private $aTable As String[]
+
+Private $sDelim As String
+Private $sEscape As String
+Private $sCharset As String
+Private $iEndOfLine As Integer
+Private $bStrip As Boolean
+Private $iIgnore As Integer
+
+Private $iLine As Integer
+Private $bImport As Boolean
+Private $bCancel As Boolean
+
+'Private Const REMOVE_ACC As String = "ÀÁÂÃÄÅàáâãäå[a]Ææ[ae]Çç[c]ÈÉÊËèéêë[e]ÌÍÎÏìíîï[i]Ññ[n]ÒÓÔÕÖòóôõö[o]ÙÚÛÜùúûü[u]Ýýÿ[y]ß[ss]°[]"
+
+Static Public Function Run(hConn As Connection, aTable As String[]) As Boolean
+  
+  $hConn = hConn
+  $aTable = aTable
+  Table = ""
+  
+  Return Not FImportTable.ShowModal()
+  
+End
+
+Public Sub wizImport_Close()
+
+  Project.Config["/FImportTable/Path"] = fchImport.SelectedPath
+  Project.Config["/FImportTable/Charset"] = cmbCharset.Text
+  Project.Config["/FImportTable/EndOfLine"] = cmbEndOfLine.Text 
+  Project.Config["/FImportTable/Delim"] = cmbDelim.Text 
+  Project.Config["/FImportTable/Escape"] = cmbEscape.Text 
+  Project.Config["/FImportTable/StripSpace"] = CBool(chkStrip.Value)
+  Project.Config["/FImportTable/Ignore"] = txtIgnore.Value
+
+  DoImport
+ 
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub Form_Open()
+
+  Settings.Read(Me)
+  Settings.Read(fchImport, "fchImport")
+  
+  spnImport.Stop
+  
+  fchImport.Filter = ["*.csv", ("CSV files"), "*", ("All files")]
+  fchImport.SelectedPath = Project.Config["/FImportTable/Path", User.home]
+
+  cmbTable.List = $aTable
+
+  txtPreview.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
+
+  gvwMessage.Columns.Count = 2
+  gvwMessage.Columns[0].Text = ("Line")
+  gvwMessage.Columns[0].Width = Desktop.Scale * 6
+  gvwMessage.Columns[1].Text = ("Message")
+  
+  
+End
+
+Public Sub chkFirstLine_Click()
+
+  cmbKey.Enabled = chkFirstLine.Value
+  UpdateKey
+
+End
+
+Private Sub UpdateDelim()
+  
+  If cmbDelim.Text = cmbDelim[0].Text Then
+    $sDelim = Chr$(9)
+  Else If cmbDelim.Text = cmbDelim[1].Text Then
+    $sDelim = " "
+  Else
+    $sDelim = cmbDelim.Text    
+  Endif
+  
+  $sEscape = cmbEscape.Text
+  $sCharset = cmbCharset.Text
+  $iEndOfLine = Choose(cmbEndOfLine.Index + 1, gb.Unix, gb.Windows, gb.Mac)
+  $bStrip = chkStrip.Value
+  $iIgnore = txtIgnore.Value
+  
+End
+
+Private Function Analyze(sLig As String, Optional sCharset As String = Desktop.Charset) As String[]
+  
+  Try sLig = Conv(sLig, $sCharset, sCharset)
+  Return Split(sLig, $sDelim, $sEscape)
+  
+End
+
+
+Private Sub UpdateKey()
+
+  Dim hFile As File
+  Dim sLig As String
+  Dim aData As String[]
+  Dim iLine As Integer
+  Dim sData As String
+
+  If wizImport.Index < 1 Then Return
+
+  UpdateDelim
+  
+  hFile = Open $sPath
+  sData = Read #hFile, -65536
+  If Not Eof(hFile) Then sData &= "..."
+  Close #hFile
+  
+  txtPreview.Text = Conv(sData, $sCharset, "UTF-8")
+  txtPreview.Pos = 0
+
+  If cmbKey.Enabled Then
+  
+    hFile = Open $sPath For Input
+    hFile.EndOfLine = $iEndOfLine
+    
+    While Not Eof(hFile)
+      sLig = hFile.ReadLine($sEscape)
+      Inc iLine
+      If iLine > $iIgnore Then Break
+    Wend
+  
+    If Not Eof(hFile) Then
+      aData = [("(Automatic key)")]
+      aData.Insert(MakeFields(Analyze(sLig)))
+      cmbKey.List = aData
+    Endif
+    
+    Close #hFile
+    
+  Endif
+
+Catch
+
+  Debug Error.Where; ":";; Error.Text
+  Try Close #hFile
+
+End
+
+Public Sub cmbDelim_Click()
+
+  UpdateKey
+
+End
+
+Public Sub cmbCharset_Click()
+
+  UpdateKey
+
+End
+
+Public Sub cmbCharset_Activate()
+
+  UpdateKey
+
+End
+
+Public Sub cmbEndOfLine_Click()
+
+  UpdateKey
+
+End
+
+Private Sub DoMessage(sMsg As String, Optional bNoLine As Boolean)
+  
+  Dim iRow As Integer = gvwMessage.Rows.Count
+  
+  gvwMessage.Rows.Count = iRow + 1
+  
+  If Not bNoLine Then gvwMessage[iRow, 0].Text = CStr($iLine)
+  If sMsg Begins "** " Then
+    gvwMessage[iRow, 1].Text = Mid$(sMsg, 3)
+    gvwMessage[iRow, 1].Foreground = Color.Red
+  Else
+    gvwMessage[iRow, 1].Text = sMsg
+  Endif
+
+  Wait
+  
+End
+
+
+Private Function TransformField(sName As String) As String
+
+  Dim iInd As Integer
+  
+  sName = Trim(sName) 
+   
+  For iInd = 1 To Len(sName)
+    If Asc(Mid(sName, iInd, 1)) <= 32 Or If InStr("-.", Mid(sName, iInd, 1)) Then 
+      sName = Left(sName, iInd - 1) & "_" & Mid(sName, iInd + 1)
+    Endif
+  Next
+  
+  ' For iInd = 1 To String.Len(sName)
+  '   sCar = String.Mid$(sName, iInd, 1)
+  '   iPos = InStr(REMOVE_ACC, sCar)
+  '   If iPos Then
+  '     iPosL = InStr(REMOVE_ACC, "[", iPos + 1)
+  '     iPosR = InStr(REMOVE_ACC, "]", iPos + 1)
+  '     If iPosL <> 0 And If iPosR <> 0 And If iPosL < iPosR Then 
+  '       sCar = Mid$(REMOVE_ACC, iPosL + 1, iPosR - iPosL - 1)
+  '     Endif 
+  '   Endif
+  '   sNewName &= sCar
+  ' Next
+  
+  Return Util.RemoveAccents(sName)
+  
+End
+
+' Private Sub CountChar(sLig As String, sChar As String) As Integer
+'   
+'   Dim iCount As Integer
+'   Dim iPos As Integer
+'   
+'   Do
+'     iPos = InStr(sLig, sChar, iPos + 1)
+'     If iPos = 0 Then Return iCount
+'     Inc iCount
+'   Loop  
+'   
+' End
+' 
+' Private Sub ReadLine(hFile As File) As String
+' 
+'   Dim sLine As String
+'   Dim nEsc As Integer
+'   Dim sPart As String
+'   
+'   If $sEscape Then
+'     Do
+'       Line Input #hFile, sPart
+'       sLine &= sPart
+'       nEsc += CountChar(sPart, $sEscape)
+'       If (nEsc And 1) = 0 Then Break
+'       sLine &= "\n"
+'     Loop
+'   Else 
+'     Line Input #hFile, sLine
+'   Endif
+'   
+'   Return sLine
+'   
+' End
+' 
+
+Private Sub MakeFields(aField As String[]) As String[]
+
+  Dim I As Integer
+  Dim iPos As Integer
+  Dim iCount As Integer
+  Dim sField As String
+  
+  If aField.Count > 1024 Then 
+    aField.Remove(1024, -1)
+  Endif
+  
+  For I = 0 To aField.Max
+    sField = TransformField(aField[I])
+    If Not sField Then 
+      sField = Subst(("Field_&1"), i + 1)
+    Else
+      iCount = 1
+      Do 
+        iPos = aField.Find(sField, gb.IgnoreCase)
+        If iPos < 0 Or If iPos >= I Then Break
+        Inc iCount
+        If iCount > 2 Then
+          sField = Left(sField, RInStr(sField, "_")) & CStr(iCount)
+        Else
+          sField &= "_" & CStr(iCount)
+        Endif
+      Loop
+    Endif
+    aField[I] = sField
+  Next
+
+  Return aField
+  
+End
+
+
+Private Sub DoImport()
+  
+  Dim hFile As File
+  Dim sLig As String
+  Dim aField As String[]
+  Dim aLine As String[]
+  Dim rData As Result
+  Dim hConn As Connection
+  Dim sTable As String
+  Dim bCreateTable As Boolean
+  Dim hTable As Table
+  Dim I As Integer
+  Dim sName As String
+  Dim sKey As String
+  Dim nImport As Integer
+  Dim sDestCharset As String
+
+  $bImport = True 
+  $bCancel = False
+  
+  gvwMessage.Rows.Count = 0
+  hConn = $hConn
+  sTable = Trim(cmbTable.Text)
+  bCreateTable = Not hConn.Tables.Exist(sTable)
+  
+  UpdateDelim
+  
+  spnImport.Start
+  
+  If hConn.IgnoreCharset Then
+    sDestCharset = "UTF-8"
+  Else
+    sDestCharset = hConn.Charset
+  Endif
+  
+  hConn.Begin
+  
+  hFile = Open $sPath For Input
+  $iLine = 0
+  
+  If chkFirstLine.Value Then
+    Inc $iLine
+    sLig = hFile.ReadLine($sEscape)
+    aField = MakeFields(Analyze(sLig))
+  Endif
+  
+  While Not Eof(hFile)
+    Inc $iLine
+    sLig = hFile.ReadLine($sEscape)
+    If $iLine <= $iIgnore Then Continue
+    
+    aLine = Analyze(sLig, sDestCharset)
+    
+    If bCreateTable Then
+      hTable = hConn.Tables.Add(sTable)
+      With hTable
+        If aField Then
+          If cmbKey.Index = 0 Then          
+            .Fields.Add("id", db.Serial)
+            sKey = "id"
+          Endif
+          For I = 0 To aField.Max
+            sName = aField[I]
+            Try .Fields.Add(sName, db.String)
+            If Error Then 
+              sName = ("Field") & CStr(I + 1)
+              .Fields.Add(sName, db.String)
+            Endif
+            aField[I] = sName
+            If cmbKey.Index = (I + 1) Then sKey = sName
+          Next
+        Else
+          .Fields.Add("id", db.Serial)
+          For I = 1 To aLine.Count
+            .Fields.Add(("Field") & CStr(I), db.String)
+          Next
+          sKey = "id"
+        Endif
+        .PrimaryKey = [sKey]
+        .Update
+      End With
+      bCreateTable = False
+    Endif
+
+    If $bStrip Then 
+      For I = 0 To aLine.Max
+        aLine[I] = Trim(aLine[I])
+      Next 
+    Endif
+  
+    rData = hConn.Create(sTable)
+    If aField Then
+      If aLine.Max < aField.Max Then
+        DoMessage(("Not enough values"))
+      Else If aLine.Max > aField.Max Then
+        DoMessage(("Too many values"))
+      Endif
+      For I = 0 To Min(aField.Max, aLine.Max)
+        sName = aField[I]
+        'PRINT sName; " := "; aLine[I]
+        Try rData[sName] = aLine[I]
+        If Error Then 
+          Try rData[sName] = MConnection.Convert(aLine[I], rData.Fields[sName].Type)
+          If Error Then DoMessage(Conv(sName, $sCharset, Desktop.Charset) & ": " & Error.Text)
+        Endif
+      Next
+    Else
+      For I = 0 To aLine.Max
+        Try rData[I + 1] = aLine[I]
+        If Error Then 
+          Try rData[I + 1] = MConnection.Convert(aLine[I], rData.Fields[I + 1].Type)
+          If Error Then DoMessage(("Field") & CStr(I) & ": " & Error.Text)
+        Endif
+      Next
+    Endif
+    rData.Update
+    
+    Inc nImport
+    spnImport.Value = Seek(hFile) / Lof(hFile)
+    spnImport.Wait
+    If $bCancel Then Error.Raise(("Cancelled by user"))
+    
+  Wend
+  
+  spnImport.Value = 1
+  hConn.Commit
+  spnImport.Stop
+
+  If nImport = 0 Then
+    DoMessage(("No record imported."))
+  Else If nImport = 1 Then
+    DoMessage(("One record imported."))
+  Else
+    DoMessage(Subst(("&1 records imported."), nImport))
+  Endif
+  
+  Table = sTable
+  
+Finally
+  
+  Close #hFile
+  spnImport.Stop
+  $bImport = False
+  
+Catch
+
+  hConn.Rollback
+  DoMessage("** " & Error.Text)
+  
+End
+
+Public Sub cmbEscape_Click()
+
+  UpdateKey  
+
+End
+
+Public Sub Form_Close()
+
+  If $bImport Then Stop Event
+  
+  Settings.Write(Me)
+  Settings.Write(fchImport)
+
+End
+
+Public Sub wizImport_BeforeChange()
+
+  Select Case wizImport.Index
+    
+    Case 0
+      $sPath = fchImport.SelectedPath
+      If Not Exist($sPath) Then Stop Event
+      
+      cmbCharset.Text = Project.Config["/FImportTable/Charset", "UTF-8"]
+      cmbEndOfLine.Text = Project.Config["/FImportTable/EndOfLine", "Unix"]
+      cmbDelim.Text = Project.Config["/FImportTable/Delim", ","]
+      cmbEscape.Text = Project.Config["/FImportTable/Escape", Chr$(34)]
+      chkStrip.Value = Project.Config["/FImportTable/StripSpace", False]
+      txtIgnore.Value = Project.Config["/FImportTable/Ignore", 0]
+      cmbTable.Text = File.BaseName($sPath)
+    
+  End Select
+
+End
+
+Public Sub wizImport_Cancel()
+
+  If $bImport Then
+    $bCancel = True
+  Else
+    Me.Close
+  Endif
+
+End
+
+Public Sub wizImport_Arrange()
+
+  spnImport.Move((wizImport.ClientW - spnImport.W) \ 2, (wizImport.ClientH - spnImport.H) \ 2)
+
+End
+
+Public Sub fchImport_Activate()
+
+  wizImport.MoveNext
+
+End
+
+Public Sub wizImport_Change()
+
+  If wizImport.Index = 1 Then
+    UpdateKey
+  Endif
+
+End

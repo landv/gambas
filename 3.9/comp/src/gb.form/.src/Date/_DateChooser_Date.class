@@ -1,0 +1,68 @@
+' Gambas class file
+
+Export
+
+Property Background As Integer
+Property Foreground As Integer
+Property Text As String
+Property Font As Font
+
+Public _Date As Date
+Public _View As DateChooser
+
+Private Sub GetData(bCreate As Boolean) As _DateChooser_Data
+
+  '_View._CheckCell(_Row, _Column)
+  If bCreate Then _View.Refresh  
+  Return _View._GetData(_Date, bCreate)
+  
+End
+
+
+Private Function Background_Read() As Integer
+
+  Return GetData(False).Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  GetData(True).Background = Value
+
+End
+
+Private Function Foreground_Read() As Integer
+
+  Return GetData(False).Foreground
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  GetData(True).Foreground = Value
+
+End
+
+Private Function Font_Read() As Font
+
+  Return GetData(False).Font
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  GetData(True).Font = Value
+  
+End
+
+Private Function Text_Read() As String
+
+  Return GetData(False).Text
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  GetData(True).Text = Value
+
+End

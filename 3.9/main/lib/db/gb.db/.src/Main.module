@@ -1,0 +1,16 @@
+' Gambas module file
+
+Public Sub Main()
+  
+  Dim hConn As New Connection
+  
+  hConn.Type = "sqlite"
+  'hConn.Host = "/home/benoit"
+  'hConn.Name = "test.db"
+  hConn.Open
+  
+  'Print hConn.SQL().Select("id", "color").From("test").Where("color like &1", "red").OrderBy("color")()
+  Print hConn.SQL().Select("COUNT(*) AS nRecord").From("test").Where("color like &1", "red").OrderBy("color")()
+  hConn.Close
+  
+End

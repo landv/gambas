@@ -1,0 +1,64 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(57.5,37.1667,82.6667,94.6667)
+  Text = ("Solitaire")
+  Icon = Picture["ball.png"]
+  Resizable = False
+  { mnuFile Menu
+    Text = ("&File")
+    { mnuNew Menu
+      Text = ("&New Game")
+    }
+    { mnuQuit Menu
+      Text = ("&Quit")
+    }
+  }
+  { mnuGame Menu
+    Text = ("&Game")
+    { mnuBoardSelect Menu
+      Text = ("&Select Board")
+    }
+  }
+  { mnuHelp Menu
+    Text = ("&Help")
+    { mnuAbout Menu
+      Text = ("&About")
+    }
+  }
+  { panToolBar Panel
+    MoveScaled(0,0,82.6667,4)
+    { tbtnNewGame ToolButton
+      MoveScaled(0,0,4,4)
+      ToolTip = ("New Game")
+      Text = ("")
+      Picture = Picture["new.png"]
+    }
+    { tbtnRestartGame ToolButton
+      MoveScaled(4,0,4,4)
+      Enabled = False
+      ToolTip = ("Restart")
+      Text = ("")
+    }
+    { tbtnUndo ToolButton
+      MoveScaled(4,0,4,4)
+      Enabled = False
+      ToolTip = ("Undo")
+      Text = ("")
+      Picture = Picture["undo.png"]
+    }
+    { tbtnRedo ToolButton
+      MoveScaled(8,0,4,4)
+      Enabled = False
+      ToolTip = ("Redo")
+      Text = ("")
+      Picture = Picture["redo.png"]
+    }
+    { tbtnQuit ToolButton
+      MoveScaled(12,0,4,4)
+      ToolTip = ("Quit")
+      Text = ("")
+      Picture = Picture["quit.png"]
+    }
+  }
+}

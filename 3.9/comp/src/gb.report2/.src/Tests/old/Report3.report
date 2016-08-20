@@ -1,0 +1,27 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,64,57)
+  Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
+  AutoResize = True
+  Spacing = "5mm"
+  Paper = Printer.A3
+  Index = 0
+  Text = ("")
+  { ReportLabel1 ReportLabel
+    #MoveScaled(6,0,52,7)
+    Font = Font["+14"]
+    BoxShadow = ReportBoxShadow["3mm 3mm 3mm 0mm #FF8000"]
+    Text = ("PARCELLAIRE $NPAGE")
+    Alignment = Align.Center
+    UseField = True
+  }
+  { ReportImage1 ReportImage
+    #MoveScaled(8,10,41,28)
+    Height = "14cm"
+    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+    BoxShadow = ReportBoxShadow["1mm 1mm 2px 2px #000000"]
+    Stretch = Report.None
+  }
+  Index = 0
+}

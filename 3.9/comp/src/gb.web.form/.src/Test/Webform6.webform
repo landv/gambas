@@ -1,0 +1,27 @@
+# Gambas Form File 3.0
+
+{ WebForm WebForm
+  #MoveScaled(0,0,64,91)
+  Arrangement = Arrange.Vertical
+  Margin = True
+  Spacing = True
+  { panStop WebContainer
+    #MoveScaled(1,1,62,6)
+    Background = Color.Red
+    Arrangement = Arrange.Horizontal
+    Spacing = True
+    { btnRadio WebButton
+      #MoveScaled(1,1,16,4)
+      Text = ("Stop radio")
+    }
+    { btnLogout WebButton
+      #MoveScaled(18,1,11,4)
+      Text = ("Logout") & "..."
+      Image = "favicon.png"
+    }
+  }
+  { WebTextBox1 WebTextBox
+    #MoveScaled(1,8,62,4)
+    Width = "16em"
+  }
+}

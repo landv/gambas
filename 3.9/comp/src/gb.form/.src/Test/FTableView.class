@@ -1,0 +1,46 @@
+' Gambas class file
+
+Public Sub Form_Open()
+
+  Dim aDir As String[]
+  Dim Y As Integer
+  
+  aDir = Dir("~/Musique/Arabe", "*.mp3").Sort()
+  
+  With tvwMain
+    .Columns.Count = 3
+    .Rows.Count = aDir.Count
+    .Rows.H = 24
+  End With
+  
+  tvwMain.Columns[0].Title = "Name"
+  tvwMain.Columns[1].Title = "Size"
+  tvwMain.Columns[2].Title = "Done"
+  
+  For Y = 0 To aDir.Max
+    tvwMain[Y, 0].Text = String.UCaseFirst(File.BaseName(aDir[Y]))
+    tvwMain[Y, 0].Padding = 4
+    tvwMain[Y, 1].Text = Stat("~/Musique/Arabe" &/ aDir[Y]).Size
+    tvwMain[Y, 1].Padding = 4
+  Next
+
+End
+
+Public Sub tvwMain_Click()
+
+  Select Case tvwMain.Column
+    Case 0
+      tvwMain.Edit
+    Case 1
+      tvwMain.Edit
+    Case 2
+      tvwMain.Edit(["True", "False", ""], True)
+  End Select
+
+End
+
+Public Sub tvwMain_Save(r As Integer, c As Integer, v As String)
+
+  tvwMain[r, c].Text = v
+
+End

@@ -1,0 +1,25 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,32,61)
+  Background = &H525252&
+  Icon = Picture["Phone,.png"]
+  Resizable = False
+  Utility = True
+  { tbNumber TextBox
+    MoveScaled(3,5,26,6)
+    Font = Font["Bold,+4"]
+    Background = &HBBBFB7&
+    Alignment = Align.Right
+    ReadOnly = True
+  }
+  { btnDial Button
+    MoveScaled(3,15,12,6)
+    ToolTip = ("Dial")
+    Picture = Picture["green.png"]
+  }
+  { btnClose Button
+    MoveScaled(17,15,12,6)
+    Picture = Picture["red.png"]
+  }
+}

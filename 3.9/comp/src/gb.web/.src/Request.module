@@ -1,0 +1,240 @@
+' Gambas module file
+
+Export 
+
+Property Read Fields As String[]
+Property Read Cookies As Collection
+Property Read Method As String
+Property Path As String
+Property Query As String
+Property Read Files As Collection
+Property Delimiter As String
+Property Read InternetExplorer As Integer
+Property Read Referer As String
+Property Read UserAgent As String
+Property Read Language As String
+
+Property Read Get As _Request_Get
+Property Read Post As _Request_Post
+Property Debug As Boolean
+
+Private $cCookies As Collection
+Private $cVal As Collection
+Private $cKey As Collection
+Private $aField As String[]
+Private $sDelimiter As String = "&"
+Private $iIE As Integer
+Private $bDecoded As Boolean
+Private $bPost As Boolean
+Private $bDebug As Boolean
+
+Private Sub Decode()
+
+  If $bDecoded Then Return
+  $bPost = CGI["REQUEST_METHOD"] = "POST"
+  $bDecoded = True
+  
+End
+
+Public Sub _init()
+  
+  Dim sAgent As String = CGI["HTTP_USER_AGENT"]
+  Dim aScan As String[] = Scan(sAgent, "*; MSIE *;*")
+  Try $iIE = Val(aScan[1])
+  
+End
+
+Public Sub _get(Key As String) As String
+
+  Dim sVal As String
+  
+  If $cKey And If $cKey.Exist(Key) Then Return $cVal[Key]
+  
+  Decode
+  
+  If $bPost Then
+    sVal = _Request_Post[Key]
+    If sVal Then Return sVal
+  Endif
+  
+  Return _Request_Get[Key]
+  
+End
+
+Public Sub _put(Value As String, Key As String)
+  
+  If Not $cVal Then
+    $cVal = New Collection
+    $cKey = New Collection
+  Endif
+  
+  $cVal[Key] = Value
+  $cKey[Key] = True
+  
+End
+
+Private Function Fields_Read() As String[]
+
+  Dim sField As String
+
+  Decode
+
+  If Not $aField Then
+    If Not $bPost Then
+      $aField = _Request_Get.Fields
+    Else
+      $aField = _Request_Get.Fields.Copy()
+      For Each sField In _Request_Post.Fields
+        If Not $aField.Exist(sField) Then $aField.Add(sField)
+      Next
+    Endif
+  Endif
+  
+  Return $aField
+
+End
+
+Private Function Cookies_Read() As Collection
+
+  Dim sCookie As String
+  Dim aCookie As String[]
+
+  If Not $cCookies Then
+    
+    $cCookies = New Collection
+    
+    For Each sCookie In Split(CGI["HTTP_COOKIE"], ";")
+      sCookie = Trim(sCookie)
+      aCookie = Split(sCookie, "=")
+      Try $cCookies[aCookie[0]] = aCookie[1]
+    Next
+ 
+  Endif
+
+  Return $cCookies
+
+End
+
+
+Private Function Method_Read() As String
+
+  Return CGI["REQUEST_METHOD"]  
+
+End
+
+Private Function Path_Read() As String
+
+  Return CGI["PATH_INFO"]  
+
+End
+
+Private Function Query_Read() As String
+
+  Return CGI["QUERY_STRING"]  
+
+End
+
+Private Function Files_Read() As Collection
+
+  Return _Request_Post.Files
+
+End
+
+Public Sub Exist(Field As String) As Boolean
+  
+  Fields_Read()
+  Return $aField.Exist(Field)
+  
+End
+
+
+Private Function Delimiter_Read() As String
+
+  Return $sDelimiter  
+
+End
+
+Private Sub Delimiter_Write(Value As String)
+
+  $sDelimiter = Value
+
+End
+
+Private Function InternetExplorer_Read() As Integer
+
+  Return $iIE  
+
+End
+
+Private Function Get_Read() As _Request_Get
+
+  Return _Request_Get
+
+End
+
+Private Function Post_Read() As _Request_Post
+
+  Return _Request_Post
+
+End
+
+Private Function Debug_Read() As Boolean
+
+  Return $bDebug
+
+End
+
+Private Sub Debug_Write(Value As Boolean)
+
+  $bDebug = Value
+
+End
+
+Private Sub Reload()
+  
+  _Request_Get._Reload
+  
+End
+
+
+Private Sub Path_Write(Value As String)
+
+  CGI["PATH_INFO"] = Value
+  Reload
+
+End
+
+Private Sub Query_Write(Value As String)
+
+  CGI["QUERY_STRING"] = Value
+  Reload
+
+End
+
+Private Function Referer_Read() As String
+
+  Return CGI["HTTP_REFERER"]
+
+End
+
+Private Function UserAgent_Read() As String
+
+  Return CGI["HTTP_USER_AGENT"]
+
+End
+
+Private Function Language_Read() As String
+
+  Dim aLang As String[]
+  Dim sLang As String
+  Dim iPos As Integer
+
+  aLang = Split(CGI["HTTP_ACCEPT_LANGUAGE"], ",")
+  If aLang.Count = 0 Then Return "C"
+  sLang = aLang[0]
+  iPos = InStr(sLang, ";")
+  If iPos Then sLang = Left(sLang, iPos - 1)
+  sLang = Replace(sLang, "-", "_")
+  Return sLang & ".UTF-8"
+
+End

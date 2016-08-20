@@ -1,0 +1,16 @@
+' Gambas class file
+
+Public Sub _New()
+  
+  ReportHBox1.DataCount = 100
+  ReportLabel1.BackGround = ReportBrush.Color(Color.Red)
+  ReportLabel1.Brush = ReportBrush.Color(Color.Yellow)
+  
+End
+
+
+Public Sub ReportLabel1_Data(Index As Integer)
+
+  Last.Data = Index
+
+End

@@ -1,0 +1,64 @@
+' Gambas class file
+
+Public Sub Run() As Boolean
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnRegister_Click()
+
+  Dim sLogin As String
+  Dim sPassword As String
+  Dim sConfirmPassword As String
+  Dim sEmail As String
+  Dim hReq As FarmRequest
+
+  sLogin = Trim(txtLogin.Text)
+  sPassword = Trim(txtPassword.Text)
+  
+  sEmail = Trim$(txtMail.Text)
+  If Not sEmail Or If InStr(sEmail, "@") = 0 Then
+    Balloon.Error(("Please enter a valid e-mail address."), txtMail)
+    Return
+  Endif
+  
+  sConfirmPassword = Trim(txtConfirmPassword.Text)
+  If sPassword <> sConfirmPassword Then
+    Balloon.Error(("Confirm password does not match."), txtConfirmPassword)
+    Return
+  Endif
+  
+  hReq = New FarmRequest(cmbFarm.Text)
+  hReq.RegisterUser(sLogin, sPassword, sEmail)
+  If Not hReq.WaitFor(("You have been successfully registered.\n\nYou will receive a confirmation e-mail soon."), ("Unable to register user.")) Then
+    btnCancel_Click
+  Endif
+
+End
+
+Private Sub InitFarms()
+
+  cmbFarm.List = FarmRequest.GetFarms()
+  cmbFarm.Text = FarmIdentity.LastFarm
+
+End
+
+Public Sub Form_Open()
+
+  InitFarms
+
+End
+
+Public Sub btnFarmConfig_Click()
+
+  If FFarmConfig.Run() Then Return
+  InitFarms
+
+End

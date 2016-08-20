@@ -1,0 +1,23 @@
+' Gambas class file
+
+Private $Map As New Map As "Map"
+Public Sub Form_Open()
+$Map.AddTile("OpenStreet", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null, "os")
+$Map.AddShape("MyShape")
+$Map!MyShape.AddPolygon("zone1", [[MapPoint(45.70534, -0.358086), MapPoint(45.709176, -0.314312), MapPoint(45.67968, -0.313454), MapPoint(45.674403, -0.36375), MapPoint(45.689634, -0.379372)]])
+$Map!MyShape!zone1.Color = Color.Red
+PictureBox1.Picture = $Map.Grab($Map!MyShape!zone1.Bounds, PictureBox1.Width, PictureBox1.Height, 0).Picture
+PictureBox2.Picture = $Map.Grab($Map!MyShape!zone1.Bounds, PictureBox2.Width, PictureBox2.Height, 0).Picture
+PictureBox3.Picture = $Map.Grab($Map!MyShape!zone1.Bounds, PictureBox3.Width, PictureBox3.Height, 0).Picture
+PictureBox4.Picture = $Map.Grab($Map!MyShape!zone1.Bounds, PictureBox4.Width, PictureBox4.Height, 0).Picture
+PictureBox5.Picture = $Map.Grab($Map!MyShape!zone1.Bounds, PictureBox5.Width, PictureBox5.Height, 0).Picture
+End
+
+
+Public Sub Map_Draw()
+  Dim hPoint As Point 
+  hPoint = Geo.MapPointToPixel($Map!MyShape!zone1.Center, $Map.Zoom)
+  Draw.Foreground = Color.Red
+  Draw.Text("Cognac", hPoint.x - $Map.PixelBox.x, hPoint.Y - $Map.PixelBox.Y)
+  
+End

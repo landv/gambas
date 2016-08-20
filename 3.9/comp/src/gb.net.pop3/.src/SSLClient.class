@@ -1,0 +1,76 @@
+' Gambas class file
+
+' This program is free software: you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation, either version 2 of the License, or
+' (at your option) any later version.
+
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+
+Inherits POPClient
+
+Private OpenSSLPath As String
+
+''Instance of the OpenSSL process
+Public sProcess As Process
+
+Public Sub _new()
+
+  OpenSSLPath = GetOpenSSLPath()
+
+End
+
+''Execute the OpenSSL process and connect to Host:Port
+Public Sub Connect(Host As String, Port As Integer)
+
+  'Debug "Executing OpenSSL"
+  sProcess = Exec [OpenSSLPath, "s_client", "-quiet", "-connect", Host & ":" & Port] For Read Write As "Client"
+
+  sProcess.Blocking = True
+  sProcess.EndOfLine = gb.Windows
+  
+  Me.SetStream(sProcess)
+
+End
+
+''Get the path of the OpenSSL binary
+''Taken from gb.net.smtp ;)
+Private Sub GetOpenSSLPath() As String
+
+  If Not OpenSSLPath Then
+    If Exist("/usr/bin/openssl") Then
+      OpenSSLPath = "/usr/bin/openssl"
+    Else If Exist("/bin/openssl") Then
+      OpenSSLPath = "/bin/openssl"
+    Else
+      Error.Raise("Unable to find openssl")
+    Endif
+  Endif
+
+  Return OpenSSLPath
+
+End
+
+''Send data to the OpenSSL process, this is then
+''sent to the server.
+Public Function Send(Data As String, Multiline As Boolean) As String
+
+  If sProcess.State = Process.Running Then Return Super.Send(Data, Multiline)
+
+End
+
+''Close the stream to the process and kill it.
+Public Sub Disconnect()
+
+  sProcess.Kill()
+
+End
+
+Public Sub Client_Kill()
+
+  sProcess = Null
+
+End

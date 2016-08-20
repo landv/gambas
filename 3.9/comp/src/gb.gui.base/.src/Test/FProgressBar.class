@@ -1,0 +1,21 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+  'ProgressBar1.Value = 0.5
+  'ProgressBar1.Pulse = True
+
+End
+
+Public Sub Timer1_Timer()
+
+  ProgressBar1.Value += 0.01
+
+End
+
+Public Sub Button1_Click()
+
+  ProgressBar1.Pulse = Not ProgressBar1.Pulse
+
+End

@@ -1,0 +1,238 @@
+' Gambas module file
+
+'tutorial based on tutorial from NeHe Productions site at http://nehe.gamedev.net/
+'visit the page for more info on OpenGL
+'
+'We introduce fog effect in this tutorial.  "f" key changes the density of the fog.
+
+Private screen As New Window(True) As "Screen"
+Private xrot As Float    'X Rotation( NEW )
+Private yrot As Float    'Y Rotation( NEW )
+Private xspeed As Float  'x rotation speed
+Private yspeed As Float  'y rotation speed
+Private textures As New Integer[3]
+Private LightAmbient As Float[]
+Private LightDiffuse As Float[]
+Private LightPosition As Float[]
+Private filter As Integer
+Private light As Integer = 0
+Private lp As Integer
+Private fp As Integer
+Private z As Float = -5.0
+Private gp As Boolean
+Private fogmode As New Float[3]
+Private fogfilter As Integer = 0
+Private fogcolor As Float[]
+
+Public Sub Main()
+
+  With screen
+    .Width = 640
+    .Height = 480
+    .Title = MMain.Title
+    .Show()
+  End With
+
+End
+
+Public Sub Screen_Open()
+
+  fogMode = [0.15, 0.35, 0.5]
+  fogColor = [0.5, 0.5, 0.5, 1.0]
+  LightAmbient = [0.2, 0.2, 0.2, 1.0]
+  LightDiffuse = [1.0, 1.0, 1.0, 1.0]
+  LightPosition = [0.0, 0.0, 2.0, 1.0]
+
+  Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
+  gl.ClearColor(0.5, 0.5, 0.5, 1.0)   'This Will Clear The Background Color To Grey
+  gl.Fogi(gl.FOG_MODE, gl.EXP)  'Fog Mode
+  gl.Fogfv(gl.FOG_COLOR, fogColor)         'Set Fog Color
+  gl.Fogf(gl.FOG_DENSITY, fogmode[fogfilter])            'How Dense Will The Fog Be
+  gl.Hint(gl.FOG_HINT, gl.DONT_CARE)    'Fog Hint Value
+  gl.Fogf(gl.FOG_START, 1.0)               'Fog Start Depth
+  gl.Fogf(gl.FOG_END, 5.0)                 'Fog END Depth
+  gl.Enable(gl.FOG)                        'Enables GL_FOG
+
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
+  init()
+
+End
+
+Public Sub Screen_resize()
+
+  Gl.Viewport(0, 0, Screen.Width, Screen.Height)
+
+  Gl.MatrixMode(Gl.PROJECTION)
+  Gl.LoadIdentity()                     'Reset The Projection Matrix
+  glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
+  Gl.MatrixMode(Gl.MODELVIEW)
+
+End
+
+Public Sub init()
+
+  Dim logo As Image
+  Dim egs As Boolean
+
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
+  logo = Image.Load("crate.jpeg")
+  textures = Gl.GenTextures(1)
+  Gl.BindTexture(Gl.TEXTURE_2D, textures[0])
+  Gl.TexImage2D(logo)
+  Glu.Build2DMipmaps(logo)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR_MIPMAP_NEAREST)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping( NEW )
+  gl.ShadeModel(gl.SMOOTH)                     ' Enable Smooth Shading
+  gl.ClearColor(0.5, 0.5, 0.5, 1.0)               ' Grey Background
+  gl.ClearDepth(2.0)                              ' Depth Buffer Setup
+  gl.Enable(gl.DEPTH_TEST)                     ' Enables Depth Testing
+  gl.DepthFunc(gl.LESS)                      ' The Type OF Depth Testing TO DO
+  gl.MatrixMode(gl.PROJECTION)
+  gl.LoadIdentity()                     'Reset The Projection Matrix
+  glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
+  gl.MatrixMode(gl.MODELVIEW)
+  gl.Lightfv(gl.LIGHT1, gl.AMBIENT, LightAmbient) ' add lighting.(ambient)
+  gl.Lightfv(gl.LIGHT1, gl.DIFFUSE, LightDiffuse) ' add lighting.(diffuse).
+  gl.Lightfv(gl.LIGHT1, gl.POSITION, LightPosition) ' set light position.
+  gl.Enable(gl.LIGHT1)
+  'gl.Enable(gl.LIGHTING)
+
+End
+
+Public Sub Screen_draw()
+
+  gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)         ' Clear Screen AND Depth Buffer
+  gl.LoadIdentity()         ' Reset The Current Matrix
+  gl.Translatef(0.0, 0.0, z)   'move z units out from the screen.
+
+  gl.Rotatef(xrot, 1.0, 0.0, 0.0)         ' Rotate On The X Axis
+  gl.Rotatef(yrot, 0.0, 1.0, 0.0)         ' Rotate On The Y Axis
+
+  gl.BindTexture(gl.TEXTURE_2D, textures[0])         ' SELECT Our Texture
+
+  Gl.Begin(Gl.QUADS)
+  gl.Normal3f(0.0, 0.0, 1.0)
+  ' front face
+  ' Bottom Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 1.0)
+  Gl.Vertexf(-1.0, -1.0, 1.0)
+  ' Bottom Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 1.0)
+  Gl.Vertexf(1.0, -1.0, 1.0)
+  ' Top Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 0.0)
+  Gl.Vertexf(1.0, 1.0, 1.0)
+  ' Top Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 0.0)
+  Gl.Vertexf(-1.0, 1.0, 1.0)
+
+  ' Back face
+  ' Bottom Right OF The Texture AND Quad
+  gl.Normal3f(0.0, 0.0, -1.0)
+  Gl.TexCoordf(1.0, 1.0)
+  Gl.Vertexf(-1.0, -1.0, -1.0)
+  ' Top Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 0.0)
+  Gl.Vertexf(-1.0, 1.0, -1.0)
+  ' Top Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 0.0)
+  Gl.Vertexf(1.0, 1.0, -1.0)
+  ' Bottom Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 1.0)
+  Gl.Vertexf(1.0, -1.0, -1.0)
+
+  ' Top face
+  ' Top Left OF The Texture AND Quad
+  gl.Normal3f(0.0, 1.0, 0.0)
+  Gl.TexCoordf(0.0, 0.0)
+  Gl.Vertexf(-1.0, 1.0, -1.0)
+  ' Bottom Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 1.0)
+  Gl.Vertexf(-1.0, 1.0, 1.0)
+  ' Bottom Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 1.0)
+  Gl.Vertexf(1.0, 1.0, 1.0)
+  ' Top Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 0.0)
+  Gl.Vertexf(1.0, 1.0, -1.0)
+
+  ' Bottom Face
+  ' Top Right OF The Texture AND Quad
+  gl.Normal3f(0.0, -1.0, 0.0)
+  Gl.TexCoordf(0.0, 1.0)
+  Gl.Vertexf(-1.0, -1.0, -1.0)
+  ' Top Left OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 1.0)
+  Gl.Vertexf(1.0, -1.0, -1.0)
+  ' Bottom Left OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 0.0)
+  Gl.Vertexf(1.0, -1.0, 1.0)
+  ' Bottom Right OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 0.0)
+  Gl.Vertexf(-1.0, -1.0, 1.0)
+
+  ' Right face
+  ' Bottom Right OF The Texture AND Quad
+  gl.Normal3f(1.0, 0.0, 0.0)
+  Gl.TexCoordf(1.0, 1.0)
+  Gl.Vertexf(1.0, -1.0, -1.0)
+  ' Top Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 0.0)
+  Gl.Vertexf(1.0, 1.0, -1.0)
+  ' Top Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 0.0)
+  Gl.Vertexf(1.0, 1.0, 1.0)
+  ' Bottom Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 1.0)
+  Gl.Vertexf(1.0, -1.0, 1.0)
+
+  ' Left face
+  ' Bottom Left OF The Texture AND Quad
+  gl.Normal3f(-1.0, 0.0, 0.0)
+  Gl.TexCoordf(0.0, 1.0)
+  Gl.Vertexf(-1.0, -1.0, -1.0)
+  ' Bottom Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 1.0)
+  Gl.Vertexf(-1.0, -1.0, 1.0)
+  ' Top Right OF The Texture AND Quad
+  Gl.TexCoordf(1.0, 0.0)
+  Gl.Vertexf(-1.0, 1.0, 1.0)
+  ' Top Left OF The Texture AND Quad
+  Gl.TexCoordf(0.0, 0.0)
+  Gl.Vertexf(-1.0, 1.0, -1.0)
+
+  Gl.End()
+
+  xrot += xspeed      ' Add xspeed TO xrot
+  yrot += yspeed      ' Add yspeed TO yrot
+  
+End
+
+Public Sub Screen_keyPress()
+
+  If (key.code = key.F1) Then screen.Fullscreen = Not screen.Fullscreen
+  If (key.Code = key.Esc) Then Screen.Close()
+  If (key.text = "l" Or key.Text = "L") Then
+    If lp = 0 Then gl.Enable(gl.LIGHTing)
+    If lp = 1 Then gl.Disable(gl.LIGHTing)
+    lp = 1 - lp
+  Endif
+  If (key.text = "F" Or key.text = "f") Then
+    gp = True                           'gp IS Set TO TRUE
+    fogfilter += 1                      'Increase fogfilter By One
+    Print (Str$(fogfilter))
+    If (fogfilter > 2) Then fogfilter = 0   'Is fogfilter Greater Than 2? IF So, Set fogfilter to Zero
+    gl.Fogf(gl.FOG_DENSITY, fogmode[fogfilter])  'Fog Mode
+    gp = False
+  Endif
+  If (key.code = key.PageUp) Then z -= 0.2     'MOVE the cube into the distance.
+  If (key.code = key.Pagedown) Then z += 0.2   'MOVE the cube closer.
+  If (key.code = key.UP) Then xspeed -= 0.01     'decrease x rotation speed;
+  If (key.code = key.DOWN) Then xspeed += 0.01    'increase x rotation speed;
+  If (key.code = key.LEFT) Then yspeed -= 0.01    'decrease y rotation speed;
+  If (key.code = key.RIGHT) Then yspeed += 0.01   'increase y rotation speed;
+
+End

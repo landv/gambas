@@ -1,0 +1,137 @@
+' Gambas class file
+
+Class PdfDocument
+
+Private hpdf As New PdfDocument
+
+Static Public Sub _init()
+  
+  Component.Load("gb.pdf")
+  
+End
+
+
+Public Sub Form_Open()
+  
+  hpdf.Open("/home/fabien/Downloads/Tuto, doc et RFC/05-005_Web_Map_Context_Documents_Implementation_Specification.pdf")
+  'hpdf.Open("~/René Guénon - 1945 - Caïn et Abel (Le Règne de la Quantité et les Signes des Temps).pdf")
+  DV.Count = hpdf.Count
+  DV2.Count = 0
+  DV2.DocHeight = hpdf[1].Height / 0.72
+  DV2.DocWidth = hpdf[1].Width / 0.72
+   DV.DocWidth = hpdf[1].Width / 0.72
+  DV.DocHeight = hpdf[1].Height / 0.72
+  'DocumentView31.Arrangement = Arrange.Horizontal
+  ComboBox1.Index = 5
+End
+
+Public Sub DV_Layout(Page As Integer)
+
+  Last.Layout.Height = hpdf[Page + 1].Height / 0.72
+ Last.Layout.Width = hpdf[Page + 1].Width / 0.72
+
+' Catch
+'   Last.Layout.Height = hpdf[1].Height / 0.72
+'   Last.Layout.Width = hpdf[1].Width / 0.72
+End
+
+Public Sub SpinBox3_Change()
+
+  DV.Spacing = Last.Value
+
+End
+
+Public Sub SpinBox2_Change()
+
+  DV.Padding = Last.Value
+
+End
+
+Public Sub CheckBox1_Click()
+
+  DV.ShowShadow = Last.Value
+
+End
+
+Public Sub DV_Draw(Page As Integer, (Width) As Integer, (Height) As Integer)
+
+  'Debug "Load image : " & Page & "   | " & Width & " | " & height
+  'Print Last.Zoom
+  
+  If Page > hpdf.Count - 1 Then Return
+  
+  hpdf.Zoom = Last.Zoom / 0.72
+  Draw.Image(hpdf[Page + 1].Image, 0, 0)
+  'Catch
+End
+
+Public Sub DV_Zoom()
+  'Print Last.Zoom
+ ' hpdf.Zoom = Last.Zoom / 0.72
+ 'Print "Zoom_Change " & Last.Zoom
+ Object.Lock(SliderBox1)
+ SliderBox1.Value = Last.Zoom * 100
+ Object.Unlock(SliderBox1)
+End
+
+Public Sub SliderBox1_Change()
+
+  DV.Zoom = Last.Value / 100
+
+End
+
+Public Sub ComboBox1_Click()
+
+  DV.Arrangement = Last.index
+
+End
+
+Public Sub TextBox1_Activate()
+
+  DV.Goto(Last.Text)
+
+End
+
+Public Sub DV2_Zoom()
+
+  
+
+End
+
+Public Sub DV2_Draw(Page As Integer, (Width) As Integer, (Height) As Integer)
+
+  hpdf.Zoom = Last.Zoom / 0.72
+  'Print Last.Zoom
+   Draw.Image(hpdf[Page + 1].Image, 0, 0)
+
+End
+
+Public Sub DV_MouseDown()
+
+  Print dv.Find(Mouse.x, Mouse.y)
+
+End
+
+Public Sub Button1_Click()
+
+  dv[30].EnsureVisible
+
+End
+
+' Public Sub Timer1_Timer()
+' 
+'   Inc dv.Count
+' 
+' End
+
+Public Sub SpinBox1_Change()
+
+  dv.Column = Last.Value
+  dv.Refresh
+End
+
+Public Sub CheckBox2_Click()
+
+  DV.AutoCenter = Last.Value
+
+End

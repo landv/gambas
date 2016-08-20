@@ -1,0 +1,75 @@
+' Gambas class file
+
+Export
+
+Static Public Sub _DoHtml()
+  
+  HighlightHTML.Run(Main.STYLE_HTML)
+  
+End
+
+Static Public Sub _DoCss()
+  
+  HighlightCSS.Run()
+  
+End
+
+Static Public Sub _DoWebPage()
+  
+  HighlightHTML.Run(Main.STYLE_WEB)
+  
+End
+
+Static Public Sub _DoDiff()
+  
+  HighlightDiff.Run
+  
+End
+
+Static Public Sub _DoJavascript()
+  
+  HighlightJavascript.Run
+  
+End
+
+Static Public Sub _DoC()
+  
+  HighlightC.Run
+  
+End
+
+Static Public Sub _DoCPlusPlus()
+  
+  HighlightCPlusPlus.Run
+  
+End
+
+Static Public Sub _DoSQL()
+  
+  HighlightSQL.Run
+  
+End
+
+Static Public Sub _GetKeywords((Style) As Integer) As String[]
+  
+  Dim aKeywords As String[]
+  
+  Select Case Style
+    
+    Case Highlight.C
+      aKeywords = HighlightC.GetKeywords()
+      
+    Case Highlight.CPlusPlus
+      aKeywords = HighlightCPlusPlus.GetKeywords()
+      
+    Case Highlight.CSS
+      aKeywords = HighlightCSS.GetKeywords()
+      
+    Case Highlight.JavaScript
+      aKeywords = HighlightJavascript.GetKeywords()
+    
+  End Select
+  
+  Return aKeywords
+  
+End

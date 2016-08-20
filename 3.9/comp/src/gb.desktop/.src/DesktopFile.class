@@ -1,0 +1,532 @@
+' Gambas class file
+
+Export
+
+Class Stock
+
+Static Private $aLang As String[]
+Static Private $aProgDir As String[]
+Static Private $cProgCache As New Collection
+Static Private $cMimeCache As New Collection
+Static Private $cIconCache As New Collection
+
+Property Read Path As String
+Property Name As String
+Property GenericName As String
+Property Comment As String
+Property Read ProgramName As String
+Property Exec As String
+Property Terminal As Boolean
+Property Hidden As Boolean
+Property Icon As String
+Property MimeTypes As String[]
+Property Categories As String[]
+
+Private $sPath As String
+Private $sName As String
+Private $sExec As String
+Private $bTerminal As Boolean
+Private $bHidden As Boolean
+Private $sIcon As String
+Private $aMimeTypes As String[]
+Private $aRest As String[]
+Private $aCategories As String[]
+Private $sGenericName As String
+Private $sComment As String
+
+Static Public Sub _init()
+
+  Dim sLang As String
+  Dim iPos As Integer
+  Dim sModifier As String
+  Dim sCountry As String
+  
+  $aLang = New String[]
+  
+  sLang = System.Language
+  iPos = RInStr(sLang, ".")
+  If iPos Then sLang = Left(sLang, iPos - 1)
+  
+  iPos = RInStr(sLang, "@")
+  If iPos Then
+    sModifier = Mid(sLang, iPos + 1)
+    sLang = Left(sLang, iPos - 1)
+  Endif
+  
+  iPos = RInStr(sLang, "_")
+  If iPos Then
+    sCountry = Mid$(sLang, iPos + 1)
+    sLang = Left$(sLang, iPos - 1)
+  Endif
+  
+  If sCountry And If sModifier Then $aLang.Add(sLang & "_" & sCountry & "@" & sModifier)
+  If sCountry Then $aLang.Add(sLang & "_" & sCountry)
+  If sModifier Then $aLang.Add(sLang & "@" & sModifier)
+  $aLang.Add(sLang)
+  
+End
+
+Public Sub _compare(hDesktopFile As DesktopFile) As Integer
+  
+  Return String.Comp($sName, hDesktopFile.Name)
+  
+End
+
+Public Sub _new(Path As String)
+  
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sLang As String
+  Dim iNameLevel As Integer
+  Dim iLevel As Integer
+  Dim bInDesktopEntry As Boolean
+  Dim sKey As String
+  Dim sValue As String
+  Dim aLine As String[]
+  Dim I As Integer
+  
+  $sPath = Path
+  
+  iNameLevel = $aLang.Count
+  
+  If Exist($sPath) Then
+  
+    $aRest = New String[]
+    aLine = Split(File.Load($sPath), "\n")
+    
+    For I = 0 To aLine.Max
+      
+      sLine = Trim(aLine[I])
+      
+      If Not bInDesktopEntry Then
+        If sLine = "[Desktop Entry]" Then
+          bInDesktopEntry = True
+        Endif
+        Continue
+      Endif
+      
+      If Left(sLine) = "[" Then Break
+      
+      iPos = InStr(sLine, "=")
+      If iPos = 0 Then Break
+
+      sLine = Replace(sLine, "\\s", " ")
+      sLine = Replace(sLine, "\\n", "\n")
+      sLine = Replace(sLine, "\\t", "\t")
+      sLine = Replace(sLine, "\\r", "\r")
+      sLine = Replace(sLine, "\\\\", "\\")
+      
+      sKey = Left(sLine, iPos - 1)
+      sValue = Mid$(sLine, iPos + 1)
+      
+      Select Case sKey
+      
+        Case Like "Name*"
+          
+          sLang = Mid$(sKey, 5)
+          If Not sLang Then
+            If iNameLevel = $aLang.Count Then $sName = sValue
+          Else If Left(sLang) = "[" And If Right(sLang) = "]" Then
+            iLevel = $aLang.Find(Mid$(sLang, 2, -1))
+            If iLevel >= 0 And If iLevel < iNameLevel Then
+              iNameLevel = iLevel
+              $sName = sValue
+            Endif
+          Endif
+          
+        Case "Exec"
+          $sExec = sValue
+          
+        Case "Terminal"
+          $bTerminal = sValue == "true"
+          
+        Case "Hidden"
+          $bHidden = sValue == "true"
+          
+        Case "Icon"
+          $sIcon = sValue
+        
+        Case "MimeType"
+          $aMimeTypes = Split(sValue, ";", "\\;")
+          
+        Case "Categories"
+          $aCategories = Split(sValue, ";", "\\;")
+          
+        Case "GenericName"
+          $sGenericName = sValue
+        
+        Case "Comment"
+          $sComment = sValue
+          
+        Case Else
+          $aRest.Add(sLine)
+        
+      End Select
+      
+    Next
+    
+    If I < aLine.Count Then $aRest.Insert(aLine.Copy(I, -1))
+    
+  Endif
+  
+End
+
+
+Public Sub Run(sPath As String) As Process
+  
+  Dim sExec As String = $sExec
+  Dim aExec As String[]
+  Dim I As Integer
+  Dim hProcess As Process
+  
+  aExec = Split(sExec, " ", Chr$(34))
+  
+  While I < aExec.Count
+    sExec = aExec[I]
+    sExec = Replace(sExec, "%U", sPath)
+    sExec = Replace(sExec, "%u", sPath)
+    sExec = Replace(sExec, "%F", sPath)
+    sExec = Replace(sExec, "%f", sPath)
+    '' TODO: implement %i, %c & %k
+    sExec = Replace(sExec, "%i", "")
+    sExec = Replace(sExec, "%c", $sName)
+    sExec = Replace(sExec, "%k", $sName)
+    If sExec Then
+      aExec[I] = sExec
+      Inc I
+    Else
+      aExec.Remove(I)
+    Endif
+  Wend
+  
+  If Not aExec.Exist(sPath) Then aExec.Add(sPath)
+  
+  hProcess = Exec aExec
+  Return hProcess
+  
+End
+
+Private Function Name_Read() As String
+
+  Return $sName
+
+End
+
+Private Function Exec_Read() As String
+
+  Return $sExec
+
+End
+
+Private Function Terminal_Read() As Boolean
+
+  Return $bTerminal
+
+End
+
+Private Function Hidden_Read() As Boolean
+
+  Return $bHidden
+
+End
+
+Private Function Path_Read() As String
+
+  Return $sPath
+
+End
+
+Private Function ProgramName_Read() As String
+
+  Dim iPos As Integer
+
+  iPos = InStr($sExec, " ")
+  If iPos = 0 Then
+    Return $sExec
+  Else
+    Return Left$($sExec, iPos - 1)
+  Endif
+
+End
+
+Static Private Sub GetDesktopFileDirectories() As String[]
+  
+  Dim sDir As String
+  Dim sRoot As String
+  
+  If Not $aProgDir Then
+    
+    $aProgDir = New String[]
+    For Each sRoot In Main.GetDataDir()
+      sRoot &/= "applications"
+      $aProgDir.Add(sRoot)
+      For Each sDir In RDir(sRoot, "*", gb.Directory)
+        $aProgDir.Add(sRoot &/ sDir)
+      Next
+    Next
+    
+  Endif
+  
+  Return $aProgDir
+  
+End
+
+
+Static Public Sub _get(Program As String) As DesktopFile
+  
+  Dim hProg As DesktopFile
+  Dim sDir As String
+  
+  If Program Not Ends ".desktop" Then Program &= ".desktop"
+  
+  hProg = $cProgCache[Program]
+  
+  If Not hProg Then
+    
+    For Each sDir In GetDesktopFileDirectories()
+      If Exist(sDir &/ Program) Then
+        hProg = New DesktopFile(sDir &/ Program)
+        $cProgCache[Program] = hProg
+        Break
+      Endif
+    Next
+    
+  Endif
+  
+  Return hProg
+  
+End
+  
+Static Private Sub FindInMimeInfoCache(sPath As String, sMime As String) As String
+  
+  Dim sData As String = "\n" & File.Load(sPath) & "\n"
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  
+  iPos = InStr(sData, "\n" & sMime & "=")
+  If iPos = 0 Then Return
+  
+  iPos2 = InStr(sData, "\n", iPos + 1)
+  iPos = InStr(sData, "=", iPos + 1)
+  Return Mid$(sData, iPos + 1, iPos2 - iPos - 1)
+  
+Catch
+  
+End
+
+Static Public Sub FindMime(MimeType As String) As DesktopFile[]
+  
+  Error "gb.desktop: warning: FindMime() is deprecated, use FromMime() instead."
+  Return FromMime(MimeType)
+  
+End
+
+
+Static Public Sub FromMime(MimeType As String) As DesktopFile[]
+  
+  Dim hProgList As DesktopFile[]
+  Dim hProg As DesktopFile
+  Dim sList As String
+  Dim aMime As String[]
+  Dim sMime As String
+  Dim sDir As String
+  Dim sFound As String
+  
+  hProgList = $cMimeCache[MimeType]
+  
+  If Not hProgList Then 
+  
+    hProgList = New DesktopFile[]
+    aMime = [MimeType]
+    If MimeType Begins "text/" And If MimeType <> "text/plain" Then aMime.Add("text/plain")
+    
+    For Each sMime In aMime
+      
+      sList = ""
+      
+      'Print "["; sMime; "]"
+      
+      For Each sDir In Main.GetDataDir()
+        sFound = FindInMimeInfoCache(sDir &/ "applications/mimeapps.list", sMime)
+        If sFound Then sList &= ";" & sFound
+      Next
+     
+      If Not sList Then
+        For Each sDir In Main.GetDataDir()
+          sFound = FindInMimeInfoCache(sDir &/ "applications/mimeinfo.cache", sMime)
+          If sFound Then sList &= ";" & sFound
+        Next
+      Endif
+      
+      'Print "--> "; sList
+     
+      For Each sList In Split(sList, ";", "", True)
+        hProg = DesktopFile[sList]
+        If Not hProg Then hProg = DesktopFile[Replace(sList, "-", "/")]
+        If Not hProg Then Continue
+        If hProg.Terminal Then Continue
+        If hProgList.Exist(hProg) Then Continue
+        hProgList.Add(hProg)
+      Next
+      
+    Next
+    
+    $cMimeCache[sMime] = hProgList
+  
+  Endif
+  
+  Return hProgList '.Sort()
+  
+End
+
+Static Public Sub _exit()
+  
+  $cProgCache = Null
+  $cMimeCache = Null
+  $cIconCache = Null
+  
+End
+
+Private Function Icon_Read() As String
+
+  Return $sIcon
+
+End
+
+Public Sub GetIcon(Optional Size As Integer = 16) As Image
+  
+  Dim sPath As String
+  Dim hImage As Image
+  Dim sKey As String
+  
+  sKey = Me.ProgramName & ":" & CStr(Size)
+  
+  hImage = $cIconCache[sKey]
+  If Not hImage Then
+    sPath = Subst("/usr/share/icons/hicolor/&1x&1/apps/&2.png", CStr(Size), $sIcon)
+    If Exist(sPath) Then Try hImage = Image.Load(sPath)
+  Endif
+  If Not hImage Then
+    sPath = Subst("/usr/share/pixmaps/&1.png", $sIcon)
+    If Exist(sPath) Then Try hImage = Image.Load(sPath).Stretch(Size, Size)
+  Endif
+  If Not hImage Then
+    Try hImage = Stock[CStr(Size) &/ ".apps/" & $sIcon, CStr(Size) &/ "program"].Image
+  Endif
+    
+  $cIconCache[sKey] = hImage
+  Return hImage
+  
+End
+
+Private Sub Name_Write(Value As String)
+
+  $sName = Value
+
+End
+
+Private Sub Exec_Write(Value As String)
+
+  $sExec = Value
+
+End
+
+Private Sub Terminal_Write(Value As Boolean)
+
+  $bTerminal = Value
+
+End
+
+Private Sub Hidden_Write(Value As Boolean)
+
+  $bHidden = Value
+
+End
+
+Private Sub Icon_Write(Value As String)
+
+  $sIcon = Value
+
+End
+
+Public Sub Save()
+
+  Dim hFile As File
+  
+  hFile = Open $sPath For Create
+  
+  Print #hFile, "[Desktop Entry]"
+  
+  Print #hFile, "Type=Application"
+  Print #hFile, "Name="; $sName
+  If $sGenericName Then Print #hFile, "GenericName="; $sGenericName
+  If $sComment Then Print #hFile, "Comment="; $sComment
+  Print #hFile, "Icon="; $sIcon
+  Print #hFile, "Exec="; $sExec
+  If $bTerminal Then Print #hFile, "Terminal=true"
+  If $bHidden Then Print #hFile, "Hidden=true"
+  If $aMimeTypes Then Print #hFile, "MimeType="; $aMimeTypes.Join(";", "\\;")
+  If $aCategories Then Print #hFile, "Categories="; $aCategories.Join(";", "\\;")
+  
+  If $aRest Then Print #hFile, $aRest.Join("\n")
+  
+  Close #hFile
+  
+End
+
+
+Private Function MimeTypes_Read() As String[]
+
+  If $aMimeTypes Then Return $aMimeTypes.Copy()
+
+End
+
+Private Sub MimeTypes_Write(Value As String[])
+
+  If Not Value Then
+    $aMimeTypes = Null
+  Else
+    $aMimeTypes = Value.Copy()
+  Endif
+
+End
+
+Private Function Categories_Read() As String[]
+
+  If $aCategories Then Return $aCategories.Copy()
+
+End
+
+Private Sub Categories_Write(Value As String[])
+
+  If Not Value Then
+    $aCategories = Null
+  Else
+    $aCategories = Value.Copy()
+  Endif
+
+End
+
+Private Function GenericName_Read() As String
+
+  Return $sGenericName
+
+End
+
+Private Sub GenericName_Write(Value As String)
+
+  $sGenericName = Value
+
+End
+
+Private Function Comment_Read() As String
+
+  Return $sComment
+
+End
+
+Private Sub Comment_Write(Value As String)
+
+  $sComment = Value
+
+End

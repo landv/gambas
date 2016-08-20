@@ -1,0 +1,201 @@
+' Gambas module file
+
+Public Const DEFAULT_THEME As String = "gambas"
+
+Public ColorKeys As String[] = ["Background", "Normal", "Keyword", "Datatype", "Function", "Operator", "Symbol", "Number", "String", "Comment", "Help", "Preprocessor", "Breakpoint", "Current", "Selection", "Highlight", "CurrentLine", "Error"]
+Public ColorNames As String[] = [("Background"), ("Normal text"), ("Keywords"), ("Data types"), ("Subroutines"), ("Operators"), ("Symbols"), ("Numbers"), ("Strings"), ("Comments"), ("Help"), ("Preprocessor"), ("Breakpoints"), ("Current line"), ("Selection"), ("Highlighting"), ("Editing line"), ("Errors")]
+
+Private $cDefault As Collection
+
+Public Sub _init()
+  
+  $cDefault = ReadFile(DEFAULT_THEME)
+  
+End
+
+Public Sub IsBackgroundStyle(sKey As String) As Boolean
+  
+  Return ["Background", "Selection", "CurrentLine", "Current", "Breakpoint", "Highlight"].Exist(sKey)
+  
+End
+
+Public Function ReadSettings(hSettings As Settings, sParent As String, Optional bDefault As Boolean) As Collection
+  
+  Dim cColor As New Collection
+  Dim sKey As String
+  Dim sColor As String
+  
+  For Each sKey In ColorKeys
+    If bDefault Then
+      sColor = hSettings[sParent &/ sKey, $cDefault[sKey]]
+    Else
+      sColor = hSettings[sParent &/ sKey]
+    Endif
+    cColor[sKey] = sColor
+  Next
+  
+  Return cColor
+  
+End
+
+Public Sub WriteSettings(hSettings As Settings, sParent As String, cColor As Collection)
+  
+  Dim sKey As String
+  
+  For Each sKey In ColorKeys
+    hSettings[sParent &/ sKey] = cColor[sKey]
+  Next
+  
+End
+
+Public Function ReadFile(sPath As String) As Collection
+  
+  Dim hSettings As Settings
+  Dim sTemp As String
+  
+  If Left(sPath) <> "/" Then
+    sPath = "theme" &/ sPath
+    sTemp = Temp$()
+    Copy sPath To sTemp
+    sPath = sTemp
+  Endif
+  
+  hSettings = New Settings(sPath)
+  If sTemp Then Kill sTemp
+  
+  Return ReadSettings(hSettings, "Theme")
+  
+End
+
+Public Sub WriteFile(sPath As String, cColor As Collection)
+  
+  Dim hSettings As Settings
+  
+  hSettings = New Settings(sPath)
+  WriteSettings(hSettings, "Theme", cColor)  
+  hSettings.Save
+  
+End
+
+Public Sub Copy(cColor As Collection) As Collection
+  
+  Dim cNew As New Collection
+  Dim sValue As String
+  
+  For Each sValue In cColor
+    cNew[cColor.Key] = sValue
+  Next
+  
+  Return cNew
+
+End
+
+Public Sub InvertColor(iCol As Integer, sKey As String) As Integer
+
+  ' Dim R, G, B As Integer
+  ' Dim Y, U, V As Float
+  ' 
+  ' With Color[iCol]
+  '   R = .Red
+  '   G = .Green
+  '   B = .Blue
+  ' End With
+  ' 
+  ' Y = 0.299 * R + 0.587 * G + 0.114 * B
+  ' U = 0.436 * (B - Y) / (1 - 0.114)
+  ' V = 0.615 * (R - Y) / (1 - 0.299)
+  ' 
+  ' R = Y + 1.14 * V
+  ' G = Y - 0.395 * U - 0.581 * V
+  ' B = Y + 2.033 * U
+  ' 
+  ' Return Color.RGB(R, G, B)
+  
+  Dim H, S, V, L As Integer
+  
+  With Color[iCol]
+    H = .Hue
+    S = .Saturation
+    V = .Value
+    L = .Luminance
+  End With
+  
+  If sKey = "CurrentLine" Then
+    If V > 128 Then
+      V *= 0.5
+      S = 255 - (255 - S) / 2
+    Endif
+  Else If S < 32 Or If sKey = "Background" Then 
+    V = 255 - V
+  Else If IsBackgroundStyle(sKey) Then
+    V *= 0.75
+  Endif
+  
+  Return Color.HSV(H, S, V)
+  
+End
+
+Public Sub InitEditor(hEditor As TextEditor, Optional bDesaturate As Boolean)
+  
+  Dim iInd As Integer  
+  Dim hStyle As New CStyle
+  Dim iStyle As Integer
+  Dim iCol As Integer
+  Dim iBg As Integer
+  Dim bInvert As Boolean
+  Dim sKey As String
+  
+  bInvert = Settings["/Editor/InvertTheme", 0]
+  For iInd = 0 To ColorKeys.Max
+    
+    sKey = ColorKeys[iInd]
+    
+    hStyle.FromString(Settings["Highlight" &/ sKey, $cDefault[sKey]])
+    iStyle = Object.GetProperty(Classes["Highlight"], sKey)
+    With hEditor.Styles[iStyle]
+      iCol = hStyle.Foreground
+      
+      If iInd = 0 Then 
+        iBg = iCol
+        If Color[iBg].Value < 128 Then bInvert = False
+      Endif
+      
+      If bInvert Then iCol = InvertColor(iCol, sKey)
+      
+      If bDesaturate Then iCol = Color.Desaturate(iCol)
+      
+      .Color = iCol
+      .Bold = hStyle.Bold
+      .Underline = hStyle.Underline
+      
+    End With
+    
+  Next
+  
+  hEditor.Background = hEditor.Styles[Highlight.Background].Color
+  hEditor.Foreground = hEditor.Styles[Highlight.Normal].Color
+  
+  hEditor.Refresh
+  
+End
+
+Public Sub GetColor(sStyle As String) As Integer
+  
+  Dim hStyle As New CStyle
+  
+  hStyle.FromString(Settings["Highlight" &/ sStyle, $cDefault[sStyle]])
+  Return hStyle.Foreground
+  
+End
+
+Public Sub InitControl(hControl As Control)
+
+  If Settings["/Editor/InvertTheme", 0] Then
+    hControl.Background = GetColor("Normal")
+    hControl.Foreground = GetColor("Foreground")
+  Else
+    hControl.Background = GetColor("Background")
+    hControl.Foreground = GetColor("Normal")
+  Endif
+  
+End

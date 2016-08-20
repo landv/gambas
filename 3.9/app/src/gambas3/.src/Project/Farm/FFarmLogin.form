@@ -1,0 +1,90 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,28)
+  Text = ("Login")
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { HBox2 HBox
+    MoveScaled(1,1,58,4)
+    Spacing = True
+    { Label5 Label
+      MoveScaled(0,0,23,4)
+      Text = ("Server")
+    }
+    { cmbFarm ComboBox
+      MoveScaled(33,0,20,4)
+      Expand = True
+      ReadOnly = True
+    }
+    { btnFarmConfig Button
+      MoveScaled(54,0,4,4)
+      Picture = Picture["icon:/small/options"]
+    }
+  }
+  { HBox3 HBox
+    MoveScaled(1,6,58,4)
+    Spacing = True
+    { Label1 Label
+      MoveScaled(0,0,23,4)
+      Text = ("User")
+    }
+    { txtLogin TextBox
+      MoveScaled(33,0,24,4)
+      Expand = True
+    }
+  }
+  { HBox4 HBox
+    MoveScaled(1,11,58,4)
+    Spacing = True
+    { Label2 Label
+      MoveScaled(0,0,23,4)
+      Text = ("Password")
+    }
+    { txtPassword TextBox
+      MoveScaled(33,0,24,4)
+      Expand = True
+      Password = True
+    }
+  }
+  { HBox6 HBox
+    MoveScaled(1,16,58,3)
+    Spacing = True
+    { Label4 Label
+      MoveScaled(0,0,23,3)
+    }
+    { chkRememberPassword CheckBox
+      MoveScaled(33,0,25,3)
+      Expand = True
+      Text = ("Remember password")
+    }
+  }
+  { Panel2 Panel
+    MoveScaled(26,20,7,2)
+    Expand = True
+  }
+  { HBox1 HBox
+    MoveScaled(1,23,62,4)
+    Spacing = True
+    { btnAnoymous Button
+      MoveScaled(1,0,18,4)
+      AutoResize = True
+      Text = ("Be anonymous")
+    }
+    { Panel1 Panel
+      MoveScaled(22,0,6,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(29,0,16,4)
+      Text = ("OK")
+    }
+    { btnCancel Button
+      MoveScaled(46,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

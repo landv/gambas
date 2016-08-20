@@ -1,0 +1,52 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(34.4286,25.4286,106,81)
+  Text = ("Simple Image Viewer")
+  Icon = Picture["image.png"]
+  Arrangement = Arrange.Vertical
+  { mnuFile Menu
+    Text = ("&File")
+    { mnuOpen Menu
+      Text = ("&Open...")
+      Shortcut = "Ctrl+O"
+    }
+    { Menu1 Menu
+    }
+    { mnuQuit Menu
+      Text = ("&Quit")
+      Shortcut = "Ctrl+Q"
+    }
+  }
+  { Menu3 Menu
+    Text = ("&Draw")
+    { mnuStart Menu
+      Text = ("&Start")
+    }
+  }
+  { Menu2 Menu
+    Text = ("&?")
+    { mnuAbout Menu
+      Text = ("&About...")
+    }
+  }
+  { Separator1 Separator
+    MoveScaled(42,1,33,0)
+  }
+  { svwImage ScrollView
+    MoveScaled(1,4,52,46)
+    Background = Color.LightForeground
+    Expand = True
+    Border = False
+    { dwgImage DrawingArea
+      MoveScaled(0,0,29,27)
+      Visible = False
+      Background = &H00AA7F&
+      Cached = True
+    }
+  }
+  { timDraw #Timer
+    #MoveScaled(51,10)
+    Delay = 50
+  }
+}

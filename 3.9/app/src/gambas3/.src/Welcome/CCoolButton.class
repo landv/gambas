@@ -1,0 +1,228 @@
+' Gambas class file
+
+Property Enabled As Boolean
+Property ToolTip As String
+Property Foreground As Integer
+Property Background As Integer
+Property Highlight As Integer
+
+Public Tag As Variant
+
+Private $hPanel As DrawingArea
+Private $hPict As Picture
+Private $sText As String
+Private $iBackground As Integer = Color.Default
+Private $bInside As Boolean
+Private $iHighlight As Integer = Color.SelectedBackground
+
+Event Click
+
+Public Sub _new(hContainer As Container, W As Integer, H As Integer, sText As String, vIcon As Variant, Optional sFont As String)
+
+  $hPanel = New DrawingArea(hContainer) As "Panel"
+  $hPanel.Resize(W, H)
+  $hPanel.Mouse = Mouse.Pointing
+  $hPanel.Arrangement = Arrange.Horizontal
+  $hPanel.Spacing = True
+  $hPanel.Focus = True
+
+  If TypeOf(vIcon) = gb.String Then
+    $hPict = Picture[vIcon]
+  Else
+    $hPict = vIcon
+  Endif
+  
+  $sText = sText
+
+  If sFont Then $hPanel.Font = Font[sFont]
+
+End
+
+Private Sub UpdateBorder()
+  
+  '$hPanel.Border = If($bInside Or $hPanel.HasFocus, Border.Plain, Border.None)
+  $hPanel.Refresh
+  
+End
+
+Public Sub Panel_Draw()
+  
+  If $iBackground <> Color.Default Then
+    Paint.FillRect(0, 0, Paint.W, Paint.H, $iBackground)
+  Endif
+  
+  Paint.DrawPicture($hPict, 16, ($hPanel.H - $hPict.H) \ 2)
+  'If $bInside Then Draw.Foreground = Color.Gradient($hPanel.Foreground, $iHighlight)
+  Paint.Background = $hPanel.Foreground
+  Paint.DrawTextShadow($sText, $hPict.W + 24, 0, $hPanel.W - $hPict.W - 32, $hPanel.H, Align.Normal)
+  Paint.DrawText($sText, $hPict.W + 24, 0, $hPanel.W - $hPict.W - 32, $hPanel.H, Align.Normal)
+  
+  ' If $bArrow Then
+  '   Draw.Picture(Picture["img/16/white-arrow.png"], Draw.W - 24, (Draw.H - 16) \ 2)
+  '   'Draw.Style.Arrow(Draw.W - 32, (Draw.H - 32) \ 2, 32, 32, Align.Right)
+  ' Endif
+  
+  If $hPanel.HasFocus Then
+    Paint.AntiAlias = False
+    Paint.LineWidth = 2
+    Paint.Background = Color.SetAlpha($iHighlight, 128)
+    Paint.Rectangle(2, 2, Paint.W - 4, Paint.H - 4)
+    Paint.Stroke
+    Paint.AntiAlias = True
+  Endif
+  
+  If $bInside Then
+    Paint.FillRect(0, 0, Paint.W, Paint.H, Color.SetAlpha($iHighlight, 192))
+  Endif
+  
+End
+
+
+Public Sub Panel_Enter()
+
+  '$hPanel.Background = $iHighlight 'Color.LightBackground '&88D5FF&
+  $bInside = True
+  UpdateBorder
+
+End
+
+Public Sub Panel_Leave()
+
+  '$hPanel.Background = Color.Default 'Last.Parent.Background
+  $bInside = False
+  UpdateBorder
+
+End
+
+Public Sub Panel_GotFocus()
+  
+  UpdateBorder
+  
+End
+
+Public Sub Panel_LostFocus()
+  
+  UpdateBorder
+  
+End
+
+' Public Sub Panel_KeyPress()
+'   
+'   If Key.Code = Key.Space Then Pressed(True)
+'   
+' End
+
+Public Sub Panel_KeyRelease()
+  
+  If Key.Code = Key.Space Then
+    'Pressed(False)
+    Panel_Leave
+    Raise Click
+  Endif
+  
+End
+
+Public Sub Panel_MouseDown()
+
+  If Not Mouse.Left Then Return
+  'Pressed(True)
+
+End
+
+
+Public Sub Panel_MouseUp()
+
+  Dim X As Integer
+  Dim Y As Integer
+
+  If Not Mouse.Left Then Return
+
+  'Pressed(False)
+
+  X = Mouse.X
+  Y = Mouse.Y
+
+  Raise Click
+  Stop Event
+
+End
+
+
+Private Function Enabled_Read() As Boolean
+
+  Return $hPanel.Enabled
+
+End
+
+Private Sub Enabled_Write(bEnabled As Boolean)
+
+  $hPanel.Enabled = bEnabled
+
+End
+
+
+Public Sub Move(X As Integer, Y As Integer)
+
+  $hPanel.Move(X, Y)
+
+End
+
+
+Public Sub Resize(W As Integer, H As Integer)
+
+  $hPanel.Resize(W, H)
+  '$hLabel.Resize(W - ($hImage.X + $hImage.W + 8) - 8, H - 8)
+
+End
+
+Private Function ToolTip_Read() As String
+
+  Return $hPanel.ToolTip
+
+End
+
+Private Sub ToolTip_Write(sToolTip As String)
+
+  $hPanel.ToolTip = sToolTip
+  '$hImage.ToolTip = sToolTip
+  '$hLabel.ToolTip = sToolTip
+
+End
+
+
+Private Function Foreground_Read() As Integer
+
+  Return $hPanel.Foreground
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  $hPanel.Foreground = Value
+
+End
+
+Private Function Highlight_Read() As Integer
+
+  Return $iHighlight
+
+End
+
+Private Sub Highlight_Write(Value As Integer)
+
+  $iHighlight = Value
+
+End
+
+Private Function Background_Read() As Integer
+
+  Return $iBackground
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  $iBackground = Value
+  $hPanel.Refresh
+
+End

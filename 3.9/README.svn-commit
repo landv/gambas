@@ -1,0 +1,53 @@
+STANDARD FORMAT FOR COMMIT MESSAGES
+-----------------------------------
+
+This message is for Laurent, Daniel, and all people that will have a write 
+access to the svn repository in the future.
+
+I want to have a standard way to write commit messages, so that ChangeLog can 
+be almost automatically generated.
+
+The format is the following:
+
+* A ChangeLog slot, between '[' & ']'
+* A ChangeLog modification: a '*', a space, the word 'BUG','NEW' or 'OPT', a 
+colon, a space, and the text.
+
+'BUG' for a fix, 'NEW' for a new feature, and 'OPT' for an optimization.
+
+Slots are the name of the component, in uppercase if possible, or some other 
+slots like [INTERPRETER], [COMPILER]...
+
+All lines lengths must be lower or equal than 76 characters.
+
+If a changelog modification is more than one line, you must use a two space 
+indent.
+
+Void lines are ignored.
+
+All other lines won't go into the changelog.
+
+For example:
+
+--8<-----------
+I did this thing, and this won't go into the changelog.
+
+[GB.QT]
+* BUG: I fixed this bug.
+* NEW: I made this very long modification....
+  and it takes more than one line to write it.
+
+This won't go into the changelog too.
+
+[GB.SDL]
+* BUG: What an awful bug!
+
+[GB.GTK]
+* NEW: I finally finished the component :-)
+
+--8<-----------
+
+It would be cool to follow this scheme. I will start at my next commit.
+
+-- 
+Benoit.

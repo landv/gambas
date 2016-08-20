@@ -1,0 +1,36 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(7.4286,17.7143,72.4286,66.7143)
+  Text = ("HTML Highlighting Editor")
+  Icon = Picture["editor.png"]
+  Arrangement = Arrange.Fill
+  { mnuPopup Menu
+    Text = ("Popup")
+    Visible = False
+    { mnuHighlight Menu
+      Text = ("Highlight HTML")
+      Checked = True
+    }
+    { mnuImmediately Menu
+      Text = ("Highlight immediately")
+    }
+    { Menu1 Menu
+    }
+    { mnuQuit Menu
+      Text = ("Quit")
+    }
+  }
+  { VSplit1 VSplit
+    MoveScaled(7,8,48,48)
+    { Editor1 Editor
+      MoveScaled(3,2,43,16)
+      Border = False
+      Highlight = Highlight.Custom
+    }
+    { Editor2 Editor
+      MoveScaled(2,22,43,15)
+      Highlight = Highlight.Custom
+    }
+  }
+}

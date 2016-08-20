@@ -1,0 +1,21 @@
+' Gambas module file
+
+Private hSCan As Scanner
+
+
+Public Sub main()
+  
+  
+  Dim s As String
+  
+  hSCan = New Scanner("v4l:/dev/video0")
+  
+  For Each s In hSCan
+    If hSCan[s].IsRange Then 
+      Print "IsRange : ", s, " ", "==>", "min : ", hSCan[s].MinValue, "Max :", hSCan[s].MaxValue, "Units : ", hSCan[s].Unit
+    Else
+      Print "IsList : ", s, " ", "==>", hSCan[s].List.Join()
+    Endif
+  Next
+  
+End
