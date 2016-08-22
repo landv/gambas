@@ -512,6 +512,7 @@ void gTextArea::clearRedoStack()
 
 gTextArea::~gTextArea()
 {
+	g_signal_handlers_disconnect_by_data(gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview)), this);
 	clearRedoStack();
 	clearUndoStack();
 }
