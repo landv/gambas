@@ -33,6 +33,8 @@ Public Sub RmDir(Path As String, Optional Force As Boolean)
     Endif
   Next
   
+  Rmdir Path
+  
 End
 
 Public Sub Move(Source As String, Destination As String)

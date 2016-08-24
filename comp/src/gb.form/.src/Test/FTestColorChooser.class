@@ -1,8 +1,7 @@
 ' Gambas class file
 
+Public Sub Form_Resize()
 
-Public Sub ColorChooser1_Activate()
-
-  Print Hex$(ColorChooser1.Value, 8)
+  Debug Me.W
 
 End

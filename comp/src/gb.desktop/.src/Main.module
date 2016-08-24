@@ -158,7 +158,8 @@ Public Sub Main()
   ' hMime = DesktopMime.FromFile("/bin/ls")
   ' Print hMime.Pattern
   ' Print hMime.Type
-  Print Desktop.Passwords["guygle.cgi/Connection/IndexMySQL"]
+  'Print Desktop.Passwords["guygle.cgi/Connection/IndexMySQL"]
+  Desktop.OpenTerminal
   
 End
 
