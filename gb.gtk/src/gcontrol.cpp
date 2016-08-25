@@ -353,8 +353,8 @@ gControl::~gControl()
 
 	emit(SIGNAL(onFinish));
 
-	if (pr)
-		pr->remove(this);
+	/*if (pr)
+		pr->remove(this);*/
 	
 	if (win && win->focus == this)
 		win->focus = NULL;
@@ -1564,7 +1564,19 @@ static void type##_get_preferred_height_for_width(GtkWidget *widget, gint width,
 	} \
 	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
 	(*OLD_FUNC->get_preferred_height_for_width)(widget, width, minimum_size, natural_size); \
+} \
+static void type##_get_preferred_width_for_height(GtkWidget *widget, gint height, gint *minimum_size, gint *natural_size) \
+{ \
+	if (minimum_size && must_patch(widget)) \
+	{ \
+		*minimum_size = 0; \
+		*natural_size = 0; \
+		return; \
+	} \
+	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
+	(*OLD_FUNC->get_preferred_height_for_width)(widget, height, minimum_size, natural_size); \
 }
+
 #define PATCH_DECLARE_BASELINE(type) \
 static void type##get_preferred_height_and_baseline_for_width(GtkWidget *widget, gint width, gint *minimum, gint *natural, gint *minimum_baseline, gint *natural_baseline) \
 { \
@@ -1599,6 +1611,7 @@ if (G_OBJECT_TYPE(widget) == type) \
 		klass->get_preferred_width = type##_get_preferred_width; \
 		klass->get_preferred_height = type##_get_preferred_height; \
 		klass->get_preferred_height_for_width = type##_get_preferred_height_for_width; \
+		klass->get_preferred_width_for_height = type##_get_preferred_width_for_height; \
 	} \
 }
 

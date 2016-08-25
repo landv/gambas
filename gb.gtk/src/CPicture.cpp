@@ -36,12 +36,12 @@
 CPICTURE *CPICTURE_create(gPicture *picture)
 {
 	CPICTURE *pic;
+
 	pic = (CPICTURE *)GB.New(GB.FindClass("Picture"), 0, 0);
 	if (picture)
 	{
 		pic->picture->unref();
 		pic->picture = picture;
-		//picture->getPixmap();
 		picture->setTag(new gGambasTag((void *)pic));
 	}
 	return pic;
