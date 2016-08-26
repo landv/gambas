@@ -806,7 +806,7 @@ bool CLASS_unref(void *ob, bool can_free)
 		name, GET_ALLOC_ID(object), object->ref - 1);
 	#else
 	if (object->ref <= 0)
-		fprintf(stderr, "*** %p REF = %d !\n", object, object->ref);
+		fprintf(stderr, "*** %p REF = %ld !\n", object, object->ref);
 
 	fprintf(stderr, "%s, %s: unref(%s %p) -> %ld\n", OBJECT_ref_where,
 		DEBUG_get_current_position(),

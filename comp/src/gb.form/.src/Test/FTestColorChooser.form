@@ -1,11 +1,16 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,96,88)
-  Resizable = False
+  MoveScaled(0,0,61,58)
+  Expand = True
   Arrangement = Arrange.Vertical
   { ColorChooser1 ColorChooser
-    MoveScaled(4,2,79,56)
+    MoveScaled(0,0,36,36)
     Expand = True
+    ShowCustom = True
+  }
+  { Button1 Button
+    MoveScaled(3,50,16,4)
+    Text = ("Resizable")
   }
 }
