@@ -98,7 +98,7 @@ static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainW
 			y = event->y;
 		}
 		
-		//fprintf(stderr, "cb_configure: %s: (%d %d %d %d) -> (%d %d %d %d) window = %p resized = %d\n", data->name(), data->bufX, data->bufY, data->bufW, data->bufH, x, y, event->width, event->height, event->window, data->_resized);
+		//fprintf(stderr, "cb_configure: %s: (%d %d %d %d) -> (%d %d %d %d) window = %p resized = %d send_event = %d\n", data->name(), data->bufX, data->bufY, data->bufW, data->bufH, x, y, event->width, event->height, event->window, data->_resized, event->send_event);
 	
 		if (x != data->bufX || y != data->bufY)
 		{
@@ -109,6 +109,7 @@ static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainW
 		
 		if ((event->width != data->bufW) || (event->height != data->bufH) || (data->_resized) || !event->window)
 		{
+			//BREAKPOINT();
 			data->_resized = false;
 			data->bufW = event->width;
 			data->bufH = event->height;
@@ -235,6 +236,7 @@ void gMainWindow::initialize()
 	_utility = false;
 	_no_take_focus = false;
 	_moved = false;
+	_resizable = true;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -353,7 +355,11 @@ gMainWindow::gMainWindow(gContainer *par) : gContainer(par)
 	initialize();
 	g_typ = Type_gMainWindow;
 	
-	border = gtk_alignment_new(0,0,1,1); //gtk_fixed_new(); //gtk_event_box_new();
+#ifdef GTK3
+	border = gtk_fixed_new(); //gtk_event_box_new();
+#else
+	border = gtk_alignment_new(0, 0, 1, 1);
+#endif
 	widget = gtk_fixed_new();
 	
 	realize(false);
@@ -488,13 +494,12 @@ void gMainWindow::resize(int w, int h)
 {
 	if (w == bufW && h == bufH)
 		return;
-			
+		
 	_resized = true;
 		
 	if (isTopLevel())
 	{
-		//fprintf(stderr, "resize: %s: %d %d\n", name(), w, h);
-	
+		//fprintf(stderr, "gMainWindow::resize: %d %d %s\n", w, h, name());
 		//gdk_window_enable_synchronized_configure (border->window);
 		
 		bufW = w < 0 ? 0 : w;
@@ -510,7 +515,9 @@ void gMainWindow::resize(int w, int h)
 			if (isResizable())
 				gtk_window_resize(GTK_WINDOW(border), w, h);
 			else
+			{
 				gtk_widget_set_size_request(border, w, h);
+			}
 
 			if (visible)
 				gtk_widget_show(border);
@@ -908,7 +915,7 @@ bool gMainWindow::hasBorder()
 bool gMainWindow::isResizable()
 {
 	if (isTopLevel())
-		return gtk_window_get_resizable(GTK_WINDOW(border));
+		return _resizable;
 	else
 		return false;
 }
@@ -934,12 +941,8 @@ void gMainWindow::setResizable(bool b)
 	if (b == isResizable())
 		return;
 
-	gtk_window_set_resizable(GTK_WINDOW(border), b);
-
-	if (b)
-		gtk_widget_set_size_request(border, 1, 1);
-	else
-		gtk_widget_set_size_request(border, bufW, bufH);
+	_resizable = b;
+	setGeometryHints();
 }
 
 
@@ -1195,6 +1198,7 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		
 		bufX = bufY = 0;
 		move(x, y);
+		
 		gtk_widget_set_size_request(border, width(), height());
 		
 		// Hidden children are incorrectly shown. Fix that!
@@ -1579,20 +1583,33 @@ void gMainWindow::setGeometryHints()
 {
 	GdkGeometry geometry;
 
-	if (isTopLevel() && isResizable())
+	if (isTopLevel())
 	{
-		if (isModal())
+		if (isResizable())
 		{
-			geometry.min_width = _min_w;
-			geometry.min_height = _min_h;
+			if (isModal())
+			{
+				geometry.min_width = _min_w;
+				geometry.min_height = _min_h;
+			}
+			else
+			{
+				geometry.min_width = 0;
+				geometry.min_height = 0;
+			}
+
+			geometry.max_width = 32767;
+			geometry.max_height = 32767;
 		}
 		else
 		{
-			geometry.min_width = 0;
-			geometry.min_height = 0;
+			geometry.min_width = width();
+			geometry.min_height = height();
+			geometry.max_width = width();
+			geometry.max_height = height();
 		}
 
-		gtk_window_set_geometry_hints(GTK_WINDOW(border), NULL, &geometry, (GdkWindowHints)(GDK_HINT_MIN_SIZE | GDK_HINT_POS));
+		gtk_window_set_geometry_hints(GTK_WINDOW(border), NULL, &geometry, (GdkWindowHints)(GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE | GDK_HINT_POS));
 		//gdk_window_set_geometry_hints(gtk_widget_get_window(border), &geometry, (GdkWindowHints)(GDK_HINT_MIN_SIZE | GDK_HINT_POS));
 	}
 }

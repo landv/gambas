@@ -304,7 +304,7 @@ void MEMORY_free(void *p_ptr, const char *src)
 	#ifdef PROJECT_EXEC
   fprintf(MEMORY_log, "%s: ", DEBUG_get_current_position());
 	#endif
-  fprintf(MEMORY_log, "<%d> %s: MEMORY_free(%p) / %p\n", alloc->id, src, (char *)alloc + sizeof(ALLOC));
+  fprintf(MEMORY_log, "<%d> %s: MEMORY_free(%p) / %p\n", alloc->id, src, *((void **)p_ptr), (char *)alloc + sizeof(ALLOC));
   fflush(MEMORY_log);
   #endif
 
