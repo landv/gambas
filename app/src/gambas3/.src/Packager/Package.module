@@ -49,6 +49,7 @@ Private GTK3_SUPPORT_PACKAGES As String[] = ["gb.gtk3:gb.gui"] ', "gb.gtk.opengl
 
 Private Const DEBIAN_STANDARD As String = "3.9.6"
 Private Const DEBIAN_DEBHELPER_VERSION As String = "9"
+Private DEBIAN_ICON_SIZES As Integer[] = [16, 22, 32, 48, 64, 128, 256, 512, 1024]
 
 Public Sub CheckProgram()
   
@@ -775,10 +776,14 @@ Private Function MakeDebPackage(sSys As String)
   Dim hFile As File
   Dim sCmd As String
   Dim sIcon As String
+  Dim sIconDir As String
   Dim sArch As String
   Dim sPackageName As String
   Dim sPackagePath As String
   Dim sLine As String
+  Dim hImageStat As ImageStat
+  Dim iSize As Integer
+  Dim sPath As String
       
   Inc Application.Busy
   
@@ -791,7 +796,6 @@ Private Function MakeDebPackage(sSys As String)
   sPackageName = FormatDebPackageName($sUnsafePackageName)
   
   '$sName = Replace$($sName, "_", "-")
-  sIcon = sPackageName & ".xpm"
 
   ' Step 1. Create the build directory
 
@@ -807,10 +811,30 @@ Private Function MakeDebPackage(sSys As String)
   File.Save(sPackagePath &/ "debian/source/format", "1.0")
 
   sArch = sPackagePath &/ "src/raw.tar.gz"
-  ' FIXME: Don't write the icon inside the project! Find another solution!
-  Project.StretchIcon(Project.Dir &/ Project.Icon, 32).Save(Project.Dir &/ sIcon)
+  
+  ' Create icons
+    
+  sIconDir = Project.Dir &/ ".hidden/.icons"
+  Try Shell.RmDir(sIconDir)
+  Shell.MkDir(sIconDir)
+  
+  sIcon = sPackageName
+  
+  Project.StretchIcon(Project.Dir &/ Project.Icon, 32).Save(sIconDir &/ sIcon & ".xpm")
+  
+  hImageStat = ImageStat(Project.Dir &/ Project.Icon)
+  
+  For Each iSize In DEBIAN_ICON_SIZES
+    If hImageStat.Width >= iSize And If hImageStat.Height >= iSize Then
+      Mkdir sIconDir &/ CStr(iSize)
+      Project.StretchIcon(Project.Dir &/ Project.Icon, iSize).Save(sIconDir &/ CStr(iSize) &/ sIcon & ".png")
+    Endif
+  Next
   
   Project.MakeSourcePackageTo(sArch)
+  
+  ' Remove the icon dir from the project now it has been archived
+  Shell.RmDir(sIconDir)
   
   sCmd = "cd " & Shell$(sPackagePath &/ "src") & "; tar xzf raw.tar.gz >/dev/null" 
   Shell sCmd Wait 
@@ -825,7 +849,7 @@ Private Function MakeDebPackage(sSys As String)
   If Project.Type = Project.TYPE_NORMAL Then
     AddLog(("Creating desktop file..."))
     hFile = Open sPackagePath &/ "debian/" & sPackageName & ".desktop" For Create
-    PrintDesktopFile(hFile, "/usr/bin/" & $sName, "/usr/share/pixmaps/" & sIcon)
+    PrintDesktopFile(hFile, "/usr/bin/" & $sName, sIcon)
     Close #hFile
   Endif 
   
@@ -841,6 +865,8 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, "License:"
   Print #hFile
   Print #hFile, If(Project.License, Project.License, "GNU General Public License") 
+  Print #hFile
+  Print #hFile, "Created by: "; Project.Authors
   Close #hFile
   
   'debian/changelog
@@ -859,7 +885,7 @@ Private Function MakeDebPackage(sSys As String)
     Print #hFile, "?package("; sPackageName; "):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section=\""; Project.Menus[sSys]; "\"\\"
     Print #hFile, "title=\""; IIf(Project.Title, Project.Title, Project.Name); "\"\\" 
     Print #hFile, "command=\"/usr/bin/"; $sName; "\"\\"
-    Print #hFile, "icon=\"/usr/share/pixmaps/"; sIcon; "\""
+    Print #hFile, "icon=\"/usr/share/pixmaps/"; sIcon; ".xpm\""
     Close #hFile
   Endif 
   
@@ -876,6 +902,9 @@ Private Function MakeDebPackage(sSys As String)
       Print #hFile, "usr/bin"
       Print #hFile, "usr/share/applications"
       Print #hFile, "usr/share/pixmaps"
+      For Each iSize In DEBIAN_ICON_SIZES
+        Print #hFile, "usr/share/icons/hicolor/"; iSize; "x"; iSize; "/apps"
+      Next
   End Select
   Print #hFile, GetExtraFilesDir(sSys, "&1", True)
   Close #hFile
@@ -897,8 +926,13 @@ Private Function MakeDebPackage(sSys As String)
     Case Project.TYPE_NORMAL
     
       Print #hFile, "src/"; $sName; "/"; $sName; " usr/bin"
-      Print #hFile, "src/"; $sName; "/"; sIcon; " usr/share/pixmaps"
       Print #hFile, "debian/"; sPackageName; ".desktop usr/share/applications"
+
+      Print #hFile, "src/"; $sName; "/.hidden/.icons/"; sIcon; ".xpm usr/share/pixmaps"
+      For Each iSize In DEBIAN_ICON_SIZES
+        sPath = "src" &/ $sName &/ ".hidden/.icons" &/ CStr(iSize) &/ sIcon & ".png"
+        If Exist(sPackagePath &/ sPath) Then Print #hFile, sPath; " /usr/share/icons/hicolor/"; iSize; "x"; iSize; "/apps"
+      Next
 
   End Select
   

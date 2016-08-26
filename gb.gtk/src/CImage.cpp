@@ -147,7 +147,6 @@ BEGIN_PROPERTY(Image_Picture)
 	//GB.ReturnObject(THIS);
 	
 	CPICTURE *pic = CPICTURE_create(PICTURE->copy());
-	//pic->picture->getPixmap();
 	GB.ReturnObject(pic);
 
 END_PROPERTY

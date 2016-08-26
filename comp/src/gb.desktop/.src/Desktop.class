@@ -255,7 +255,7 @@ Static Public Sub OpenTerminal(Optional {Dir} As String) ', Optional Command As 
 
   Select Case sDesktop
 
-    Case "KDE", "KDE4", "KDE5 "
+    Case "KDE", "KDE4", "KDE5"
       aProg = ["konsole"]
     Case "GNOME", "UNITY"
       aProg = ["gnome-terminal"]

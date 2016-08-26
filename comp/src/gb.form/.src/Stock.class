@@ -703,7 +703,7 @@ Static Private Function PictureFromSvg(hSvg As SvgImage, iSize As Integer) As Pi
   Paint.Scale(iSize / hSvg.Width, iSize / hSvg.Height)
   hSvg.Paint()
   Paint.End
-  
+
   Return hImage.Picture
   
 End

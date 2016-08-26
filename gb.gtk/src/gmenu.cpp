@@ -71,7 +71,7 @@ static void patch_classes(void)
 	klass = (GtkWidgetClass *)g_type_class_peek(GTK_TYPE_MENU_SHELL);
 	if (klass->enter_notify_event != my_menu_shell_enter_notify)
 	{
-		fprintf(stderr, "patch_class: %p\n", klass->enter_notify_event);
+		//fprintf(stderr, "patch_class: %p\n", klass->enter_notify_event);
 		klass->_gtk_reserved6 = (void (*)())klass->enter_notify_event;
 		klass->enter_notify_event = my_menu_shell_enter_notify;
 	}
@@ -79,7 +79,7 @@ static void patch_classes(void)
 	klass = (GtkWidgetClass *)g_type_class_peek(GTK_TYPE_MENU_BAR);
 	if (klass->enter_notify_event != my_menu_shell_enter_notify)
 	{
-		fprintf(stderr, "patch_class: %p\n", klass->enter_notify_event);
+		//fprintf(stderr, "patch_class: %p\n", klass->enter_notify_event);
 		klass->_gtk_reserved6 = (void (*)())klass->enter_notify_event;
 		klass->enter_notify_event = my_menu_shell_enter_notify;
 	}
@@ -629,6 +629,9 @@ gMenu::~gMenu()
 	}
 		
 	_style = NOTHING;
+	
+	if (child)
+		gtk_widget_destroy(GTK_WIDGET(child));
 	
 	stop_signal = true;
 	

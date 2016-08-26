@@ -199,6 +199,7 @@ public:
 	unsigned _transparent : 1;
 	unsigned _no_take_focus : 1;
 	unsigned _moved : 1;
+	unsigned _resizable : 1;
 };
 
 #endif

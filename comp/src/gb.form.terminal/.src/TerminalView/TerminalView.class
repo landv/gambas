@@ -46,6 +46,7 @@ Private $hMouseTimer As Timer
 Private $bTermUseMouse As Boolean
 
 Private $hProcess As Process
+Private $fStart As Float
 
 Private $hFilter As TerminalFilter
 Public _DisableFilter As Integer
@@ -668,6 +669,8 @@ Public Sub Exec(Command As String[], Optional Environment As String[]) As Proces
   aEnv = ["TERM=xterm"]
   If Environment Then aEnv.Insert(Environment)
 
+  $fStart = Timer
+
   $hProcess = Exec Command With aEnv For Input Output As "Process"
   $hProcess.Term.Echo = True
   $hProcess.Term.Resize($hScreen.Width, $hScreen.Height)
@@ -685,6 +688,8 @@ Public Sub Shell(Command As String, Optional Environment As String[]) As Process
   aEnv = ["TERM=xterm"]
   If Environment Then aEnv.Insert(Environment)
   
+  $fStart = Timer
+
   $hProcess = Shell Command With aEnv For Input Output As "Process"
   $hProcess.Term.Echo = True
   $hProcess.Term.Resize($hScreen.Width, $hScreen.Height)
@@ -706,11 +711,10 @@ Public Sub Process_Read()
   Dim sData As String
 
   sData = Read #$hProcess, Lof($hProcess)
-  'Debug Quote(sData)
 
   $sBuffer &= sData
 
-  If Len($sBuffer) > 65536 Then
+  If Len($sBuffer) > 65536 Or If (Timer - $fStart) > 0.25 Then
     $hOutputTimer.Trigger
   Else
     $hOutputTimer.Restart
@@ -727,6 +731,7 @@ End
 
 Public Sub OutputTimer_Timer()
 
+  $fStart = Timer
   $hFilter.OutputTo(Me, $hScreen, $hProcess, $sBuffer)
   $sBuffer = ""
   $hOutputTimer.Stop
