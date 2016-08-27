@@ -52,7 +52,9 @@ End
 Public Sub SetPath(sPath As String)
   
   $sPath = sPath
+  $bPreview = False
   RefreshPath
+  tabInfo_Click
   
 End
 
@@ -65,68 +67,92 @@ Private Sub RefreshPath()
   Dim hLabel As Label
   Dim W As Integer
   Dim sAuth As String
+  Dim bShowImagePreview As Boolean
+  Dim bShowMediaPreview As Boolean
 
   If hParent Then hData = hParent._RaiseData()
 
   lblDir.Text = FormatPath(File.Dir($sPath))
   If String.Len(lblDir.Text) >= 32 Then lblDir.Tooltip = lblDir.Text
   
-  With DirCache[File.Dir($sPath)].GetInfo(File.Name($sPath))
-    
-    If hData Then
+  If Exist($sPath) Then
+  
+    With DirCache[File.Dir($sPath)].GetInfo(File.Name($sPath))
       
-      lblType.Text = hData.Type
-      picIcon.Picture = hData.Icon
+      If hData Then
+        
+        lblType.Text = hData.Type
+        picIcon.Picture = hData.Icon
+        
+      Else
       
-    Else
-    
-      If .Link Then
-        lblLabelType.Text = ("Symbolic link")
-        lblType.Text = .Link
-        lblType.Font.Italic = True
-        hMime = DesktopMime.FromFile($sPath)
-        Try picIcon.Picture = hMime.GetIcon(64).Picture
-      Else If IsDir($sPath) Then
-        picIcon.Picture = Picture["icon:/64/directory"]
-        lblType.Text = ("Directory")
-      Else If Component.IsLoaded("gb.desktop") Then
-        hMime = DesktopMime.FromFile($sPath)
-        If hMime Then
-          lblType.Text = String.UCaseFirst(hMime.GetComment())
-          Try picIcon.Picture = hMime.GetIcon(64).Picture
-          If Error Then Error "gb.form: unable to find icon for mimetype: "; hMime.GenericIcon
-          If hMime.Type Like "image/*" Then
-            tabInfo[TAB_IMAGE_PREVIEW].Visible = True
-          Else If $bMedia And If hMime.Type Like "audio/*" Then
-            tabInfo[TAB_MEDIA_PREVIEW].Visible = True
-          Endif
+        If .Link Then
+          lblLabelType.Text = ("Symbolic link")
+        Else
+          lblLabelType.Text = ("Type")
         Endif
-      Else If $aImgExt.Exist(File.Ext($sPath), gb.IgnoreCase) Then
-        picIcon.Picture = Picture["icon:/64/image"]
-        lblType.Text = ("Image")
-        tabInfo[TAB_IMAGE_PREVIEW].Visible = True
-      Else If $bMedia And If $aAudioExt.Exist(File.Ext($sPath), gb.IgnoreCase) Then
-        picIcon.Picture = Picture["icon:/64/audio"]
-        lblType.Text = ("Audio")
-        tabInfo[TAB_MEDIA_PREVIEW].Visible = True
+        
+        If .Link Then
+          lblType.Text = .Link
+          lblType.Font.Italic = True
+          hMime = DesktopMime.FromFile($sPath)
+          Try picIcon.Picture = hMime.GetIcon(64).Picture
+        Else If IsDir($sPath) Then
+          picIcon.Picture = Picture["icon:/64/directory"]
+          lblType.Text = ("Directory")
+        Else If Component.IsLoaded("gb.desktop") Then
+          hMime = DesktopMime.FromFile($sPath)
+          If hMime Then
+            lblType.Text = String.UCaseFirst(hMime.GetComment())
+            Try picIcon.Picture = hMime.GetIcon(64).Picture
+            If Error Then Error "gb.form: unable to find icon for mimetype: "; hMime.GenericIcon
+            If hMime.Type Like "image/*" Then
+              bShowImagePreview = True
+            Else If $bMedia And If hMime.Type Like "audio/*" Then
+              bShowMediaPreview = True
+            Endif
+          Endif
+        Else If $aImgExt.Exist(File.Ext($sPath), gb.IgnoreCase) Then
+          picIcon.Picture = Picture["icon:/64/image"]
+          lblType.Text = ("Image")
+          bShowImagePreview = True
+        Else If $bMedia And If $aAudioExt.Exist(File.Ext($sPath), gb.IgnoreCase) Then
+          picIcon.Picture = Picture["icon:/64/audio"]
+          lblType.Text = ("Audio")
+          bShowMediaPreview = True
+        Endif
+        
       Endif
       
-    Endif
+      If IsDir($sPath) Then $hTask = New CTaskDirSize($sPath) As "Task"
+      
+      $iSize = .Size
+      UpdateSize()
+      
+      lblLastModified.Text = Format(.LastModified, gb.GeneralDate)
+      
+      sAuth = .Auth
+      'sAuth = Left$(sAuth, 3) & " " & Mid$(sAuth, 4, 3) & " " & Right$(sAuth, 3)
+      lblAuth.Text = sAuth
+      lblUser.Text = .User
+      lblGroup.Text = .Group
+      
+    End With
     
-    If IsDir($sPath) Then $hTask = New CTaskDirSize($sPath) As "Task"
+  Else
     
-    $iSize = .Size
-    UpdateSize()
-    
-    lblLastModified.Text = Format(.LastModified, gb.GeneralDate)
-    
-    sAuth = .Auth
-    'sAuth = Left$(sAuth, 3) & " " & Mid$(sAuth, 4, 3) & " " & Right$(sAuth, 3)
-    lblAuth.Text = sAuth
-    lblUser.Text = .User
-    lblGroup.Text = .Group
-    
-  End With
+    lblLabelType.Text = ("Type")
+    lblType.Text = ""
+    lblLastModified.Text = ""
+    lblAuth.Text = ""
+    lblUser.Text = ""
+    lblGroup.Text = ""
+    lblSize.Text = ""
+
+  Endif
+  
+  tabInfo[TAB_IMAGE_PREVIEW].Visible = bShowImagePreview
+  tabInfo[TAB_MEDIA_PREVIEW].Visible = bShowMediaPreview
   
   For Each hLabel In panProperty.Children
     If hLabel.Expand Then Continue
@@ -300,7 +326,11 @@ Public Sub tabInfo_Click()
       
       $hPreview = Image.Load($sPath)
       imvPreview.Image = $hPreview
-      btnZoomFit.Value = True
+      If Not btnZoomFit.Value Then
+        btnZoomFit.Value = True
+      Else
+        btnZoomFit_Click
+      Endif
       
     Endif
     
@@ -310,12 +340,14 @@ Public Sub tabInfo_Click()
       
       $bPreview = True
       
-      Component.Load("gb.media.form")
+      If Not $hViewer Then
+        Component.Load("gb.media.form")
+        $hViewer = New MediaView(tabInfo)
+        $hViewer.Expand = True
+        $hViewer.Border = False
+        $hViewer.Lower
+      Endif
       
-      $hViewer = New MediaView(tabInfo)
-      $hViewer.Expand = True
-      $hViewer.Border = False
-      $hViewer.Lower
       $hViewer.URL = $sPath
       $hViewer.Play
       
