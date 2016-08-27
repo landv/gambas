@@ -4064,7 +4064,7 @@ Public Sub DeleteFile(sPath As String)
     Try Kill sPath
   Endif
 
-  VersionControl.RemoveFile(sPath)
+  If IsProjectPath(sPath) Then VersionControl.RemoveFile(sPath)
 
   If bProject Then
 
