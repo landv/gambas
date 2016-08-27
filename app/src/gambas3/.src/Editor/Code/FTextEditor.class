@@ -1488,7 +1488,11 @@ End
 
 Public Sub Form_Close()
 
-  Project.AddRecentFile(Me)
+  If $bConsole Then
+    Project.DeleteFile(Path)
+  Else
+    Project.AddRecentFile(Me)
+  Endif
 
 End
 
