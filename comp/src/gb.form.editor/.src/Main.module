@@ -2,13 +2,15 @@
 
 Public Sub Main()
 
-  Dim hImage As New Picture(512, 64) ', Color.White, Image.Premultiplied)
+  Dim hFile As File
+  Dim I As Integer
+
+  hFile = Open "~/test.txt" For Create
   
-  hImage.Fill(Color.White)
-  Paint.Begin(hImage)
-  Paint.DrawText("Gambas Already Means BASIC", 0, 32)
-  Paint.End
+  For I = 1 To 40000
+    Print #hFile, String$(80, CStr(I) & " ")
+  Next
   
-  hImage.Save("~/test.png")
+  hFile.Close
 
 End

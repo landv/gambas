@@ -4,7 +4,7 @@ C
 _Properties
 C
 s
-"*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL},ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces,ShowIndent"
+"*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces,ShowIndent"
 _DrawWith
 C
 s
@@ -233,10 +233,6 @@ Copy
 m
 
 
-TextWidth
-m
-i
-(sText)s
 _ClearCachePos
 m
 
@@ -564,6 +560,10 @@ m
 TimerCacheLine_Timer
 m
 
+
+_HasFolding
+m
+b
 
 #_TextEditor_Line
 
