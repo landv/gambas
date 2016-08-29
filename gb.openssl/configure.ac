@@ -9,7 +9,7 @@ AC_PROG_LIBTOOL
 
 GB_COMPONENT_PKG_CONFIG(
   openssl, OPENSSL, gb.openssl, [src],
-  libcrypto)
+  'openssl >= 1.0.0' libcrypto)
 
 AC_OUTPUT(Makefile src/Makefile)
 GB_PRINT_MESSAGES
