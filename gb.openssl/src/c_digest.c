@@ -139,6 +139,55 @@ GB_DESC CDigest[] = {
  * the behaviour described in their manpage.
  */
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
+/*
+ * Special treatment for OpenSSL 0.9.8*. The version hex below is 0.9.8zh.
+ * The *_new() and *_free() routines were called *_create() and *_destroy()
+ * there.
+ */
+#if OPENSSL_VERSION_NUMBER <= 0x0090821fL
+static int EVP_MD_CTX_cleanup(EVP_MD_CTX *ctx)
+{
+	/* Don't assume ctx->md_data was cleaned in EVP_Digest_Final,
+	 * because sometimes only copies of the context are ever finalised.
+	 */
+	if (ctx->digest && ctx->digest->cleanup
+	 && !M_EVP_MD_CTX_test_flags(ctx,EVP_MD_CTX_FLAG_CLEANED))
+		ctx->digest->cleanup(ctx);
+	if (ctx->digest && ctx->digest->ctx_size && ctx->md_data
+	  && !M_EVP_MD_CTX_test_flags(ctx, EVP_MD_CTX_FLAG_REUSE)) {
+		OPENSSL_cleanse(ctx->md_data,ctx->digest->ctx_size);
+		OPENSSL_free(ctx->md_data);
+	}
+#ifndef OPENSSL_NO_ENGINE
+	if(ctx->engine)
+		/* The EVP_MD we used belongs to an ENGINE, release the
+		 * functional reference we held for this reason. */
+		do_engine_finish(ctx->engine);
+#endif
+	memset(ctx,'\0',sizeof *ctx);
+	return 1;
+}
+
+static void EVP_MD_CTX_init(EVP_MD_CTX *ctx)
+{
+	memset(ctx, '\0', sizeof *ctx);
+}
+
+static EVP_MD_CTX *EVP_MD_CTX_new(void)
+{
+	EVP_MD_CTX *ctx = OPENSSL_malloc(sizeof *ctx);
+
+	if (ctx)
+		EVP_MD_CTX_init(ctx);
+	return ctx;
+}
+
+static void EVP_MD_CTX_free(EVP_MD_CTX *ctx)
+{
+	EVP_MD_CTX_cleanup(ctx);
+	OPENSSL_free(ctx);
+}
+#else /* Anything recent */
 static void OPENSSL_clear_free(void *str, size_t num)
 {
 	OPENSSL_cleanse(str, num);
@@ -190,6 +239,7 @@ static void EVP_MD_CTX_free(EVP_MD_CTX *ctx)
     EVP_MD_CTX_reset(ctx);
     OPENSSL_free(ctx);
 }
+#endif
 #endif
 
 /**G
