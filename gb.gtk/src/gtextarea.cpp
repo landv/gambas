@@ -180,6 +180,22 @@ void gtk_text_layout_validate (struct _GtkTextLayout *layout, gint max_pixels);
 }
 #endif
 
+#if !GLIB_CHECK_VERSION(2, 32, 0)
+/**
+ * g_signal_handlers_disconnect_by_data:
+ * @instance: The instance to remove handlers from
+ * @data: the closure data of the handlers' closures
+ *
+ * Disconnects all handlers on an instance that match @data.
+ *
+ * Returns: The number of handlers that matched.
+ *
+ * Since: 2.32
+ */
+#define g_signal_handlers_disconnect_by_data(instance, data) \
+  g_signal_handlers_disconnect_matched ((instance), G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL, (data))
+#endif
+
 // Undo/Redo actions
 
 enum { ACTION_VOID, ACTION_INSERT, ACTION_DELETE };
