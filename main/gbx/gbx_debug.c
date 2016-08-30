@@ -324,9 +324,11 @@ __FOUND:
 	CATCH
 	{
 		ret = GB_DEBUG_SET_ERROR;
-		EXEC_set_native_error(TRUE);
 	}
 	END_TRY
+
+	if (ret == GB_DEBUG_SET_ERROR)
+		EXEC_set_native_error(TRUE);
 
 	return ret;
 }

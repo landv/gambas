@@ -118,7 +118,7 @@ char *OBJECT_where_am_i(const char *file, int line, const char *func);
 	{ \
 		if (OBJECT_class(_object) == FREE_MARK) \
 		{ \
-			fprintf(stderr, "*ALREADY FREED* %p\n", (_object)); \
+			fprintf(stderr, "%s: **** ALREADY FREED **** %p\n", OBJECT_ref_where, (_object)); \
 			fflush(NULL); \
 			BREAKPOINT(); \
 		} \
@@ -133,7 +133,7 @@ char *OBJECT_where_am_i(const char *file, int line, const char *func);
 	{ \
 		if (OBJECT_class(_object) == FREE_MARK) \
 		{ \
-			fprintf(stderr, "*ALREADY FREED* %p\n", (_object)); \
+			fprintf(stderr, "%s: **** ALREADY FREED **** %p\n", OBJECT_ref_where, (_object)); \
 			fflush(NULL); \
 			BREAKPOINT(); \
 		} \
@@ -146,7 +146,7 @@ char *OBJECT_where_am_i(const char *file, int line, const char *func);
 { \
 	if (OBJECT_class(_object) == FREE_MARK) \
 	{ \
-		fprintf(stderr, "*ALREADY FREED* %p\n", (_object)); \
+			fprintf(stderr, "%s: **** ALREADY FREED **** %p\n", OBJECT_ref_where, (_object)); \
 		fflush(NULL); \
 		BREAKPOINT(); \
 	} \
@@ -160,7 +160,7 @@ char *OBJECT_where_am_i(const char *file, int line, const char *func);
 	{ \
 		if (OBJECT_class(_object) == FREE_MARK) \
 		{ \
-			fprintf(stderr, "*ALREADY FREED* %p\n", (_object)); \
+			fprintf(stderr, "%s: **** ALREADY FREED **** %p\n", OBJECT_ref_where, (_object)); \
 			fflush(NULL); \
 		} \
 		CLASS_unref(_object, FALSE); \
