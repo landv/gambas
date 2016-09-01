@@ -873,7 +873,10 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 	func_id--;
 
 	if (OBJECT_is_class(observer))
+	{
 		class = (CLASS *)observer; //OBJECT_class(object);
+		observer = NULL;
+	}
 	else
 		class = OBJECT_class(observer);
 
