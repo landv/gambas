@@ -34,7 +34,7 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 	int len, llen;
 	GdkPixbufLoader* loader = NULL;
 	GError *error = NULL;
-	gsize size;
+	int size;
 	int format;
 	GB_IMG *image;
 
@@ -62,9 +62,9 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 		while (llen > 0)
 		{
 			size = llen > LOAD_INC ? LOAD_INC : llen;
-			if (!gdk_pixbuf_loader_write(loader, (guchar*)laddr, size, &error))
+			if (!gdk_pixbuf_loader_write(loader, (guchar*)laddr, (gsize)size, &error))
 			{
-				fprintf(stderr, "error write: %" PRId64 "\n", size);
+				fprintf(stderr, "gb.image.io: error: cannot load %d image bytes\n", size);
 				GB.Error(error->message);
 				goto __END;
 			}
