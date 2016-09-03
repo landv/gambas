@@ -10,6 +10,12 @@ Private $aMode As New Boolean[13]
 'Private $aSavedMode As New Boolean[13]
 Private $sLeft As String
 
+Public Sub Reset()
+  
+  $aMode.Fill(False)
+  
+End
+
 
 Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess As Stream, sData As String)
   
