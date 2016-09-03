@@ -64,7 +64,7 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 			size = llen > LOAD_INC ? LOAD_INC : llen;
 			if (!gdk_pixbuf_loader_write(loader, (guchar*)laddr, size, &error))
 			{
-				fprintf(stderr, "error write: %ld\n", size);
+				fprintf(stderr, "error write: %" PRId64 "\n", size);
 				GB.Error(error->message);
 				goto __END;
 			}

@@ -251,7 +251,7 @@ void XML_Format(GB_VALUE *value, char* &dst, size_t &lenDst)
         break;
 
     case GB_T_LONG:
-        lenDst = sprintf(buffer, "%ld", VALUE((GB_LONG *)value));
+        lenDst = sprintf(buffer, "%" PRId64, VALUE((GB_LONG *)value));
         break;
 
     case GB_T_STRING:
