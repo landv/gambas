@@ -507,9 +507,9 @@ static int _raise_event_level = 0;
 	CATCH \
 	{ \
 		ret = TRUE; \
-		EXEC_set_native_error(TRUE); \
 	} \
 	END_TRY \
+	if (ret) EXEC_set_native_error(TRUE); \
 	return ret;
 
 #define CATCH_ERROR_INT \
@@ -520,9 +520,9 @@ static int _raise_event_level = 0;
 	CATCH \
 	{ \
 		ret = -1; \
-		EXEC_set_native_error(TRUE); \
 	} \
 	END_TRY \
+	if (ret < 0) EXEC_set_native_error(TRUE); \
 	return ret;
 
 bool GB_GetInterface(const char *name, int version, void *iface)
@@ -873,7 +873,10 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 	func_id--;
 
 	if (OBJECT_is_class(observer))
+	{
 		class = (CLASS *)observer; //OBJECT_class(object);
+		observer = NULL;
+	}
 	else
 		class = OBJECT_class(observer);
 
@@ -1848,11 +1851,13 @@ bool GB_LoadFile(const char *path, int lenp, char **addr, int *len)
 		if (*addr)
 			STREAM_unmap(*addr, *len);
 
-		EXEC_set_native_error(TRUE);
 		ret = TRUE;
 	}
 	END_TRY
 
+	if (ret)
+		EXEC_set_native_error(TRUE);
+	
 	return ret;
 }
 

@@ -134,7 +134,7 @@ void reportODBCError(char *fn,
 			ret = SQLGetDiagRecW(type, handle, ++i, state, &native, text, sizeof(text), &len);
 
 			if (SQL_SUCCEEDED(ret))
-				fprintf(stderr, "gb.db.odbc: %s:%d:%d:%s\n", (char *)state, i, native, (char *)text);
+				fprintf(stderr, "gb.db.odbc: %s:%d:%d:%s\n", (char *)state, (int)i, (int)native, (char *)text);
 		}
 		while (ret == SQL_SUCCESS);
 	}

@@ -551,7 +551,7 @@ BEGIN_PROPERTY(Curl_URL)
 	if (GB.Is(THIS, GB.FindClass("FtpClient")))
 	{
 		protocol = CURL_get_protocol(url, "ftp://");
-		if (strcmp(protocol, "ftp://"))
+		if (strcmp(protocol, "ftp://") && strcmp(protocol, "ftps://"))
 			goto UNKNOWN_PROTOCOL;
 	}
 	else if (GB.Is(THIS, GB.FindClass("HttpClient")))

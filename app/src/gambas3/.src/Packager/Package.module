@@ -784,6 +784,8 @@ Private Function MakeDebPackage(sSys As String)
   Dim hImageStat As ImageStat
   Dim iSize As Integer
   Dim sPath As String
+  Dim W As Integer
+  Dim H As Integer
       
   Inc Application.Busy
   
@@ -822,10 +824,17 @@ Private Function MakeDebPackage(sSys As String)
   
   Project.StretchIcon(Project.Dir &/ Project.Icon, 32).Save(sIconDir &/ sIcon & ".xpm")
   
-  hImageStat = ImageStat(Project.Dir &/ Project.Icon)
+  Try hImageStat = ImageStat(Project.Dir &/ Project.Icon)
+  If Error Then
+    W = 32
+    H = 32
+  Else
+    W = hImageStat.Width
+    H = hImageStat.Height
+  Endif
   
   For Each iSize In DEBIAN_ICON_SIZES
-    If hImageStat.Width >= iSize And If hImageStat.Height >= iSize Then
+    If W >= iSize And If H >= iSize Then
       Mkdir sIconDir &/ CStr(iSize)
       Project.StretchIcon(Project.Dir &/ Project.Icon, iSize).Save(sIconDir &/ CStr(iSize) &/ sIcon & ".png")
     Endif

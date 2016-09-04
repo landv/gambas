@@ -1089,6 +1089,8 @@ Private Sub GetCurrentProc(Optional iLine As Integer = $hEditor.Line) As String
   
   Dim sProc As String
   
+  If $bNoHighlight Then Return
+  
   While iLine >= 0
     
     If $hEditor[iLine].Limit Then 

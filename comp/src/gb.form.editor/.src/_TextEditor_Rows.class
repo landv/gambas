@@ -15,6 +15,7 @@ Private $iHeight As Integer
 
 Private $cCacheRowY As New Collection
 Private $cCacheRowFromPos As New Collection
+Private $iLastRow As Integer
 
 Private Sub GetView() As TextEditor
   
@@ -72,8 +73,33 @@ Public Sub _GetRowY(iRow As Integer) As Integer
   
   Try Return $cCacheRowY[iRow]
   
-  If $cHeight Then
+  If $cCacheRowY.Exist($iLastRow) And If iRow > Abs(iRow - $iLastRow) Then
     
+    If $iLastRow < iRow Then
+      
+      I = $iLastRow
+      While I < iRow
+        If hView._IsRowVisible(I) Then Try Y += CInt($cHeight[I]) - 1
+        Inc I
+      Wend
+      Y += iRow - $iLastRow
+      
+    Else
+      
+      I = $iLastRow
+      While I > iRow
+        Dec I
+        If hView._IsRowVisible(I) Then Try Y -= CInt($cHeight[I]) - 1
+      Wend
+      Y += iRow - $iLastRow
+
+    Endif
+    
+    Y *= DH
+    Y += $cCacheRowY[$iLastRow]
+    
+  Else
+  
     Y = iViewRow
   
     For Each I In $aHeight
@@ -86,9 +112,11 @@ Public Sub _GetRowY(iRow As Integer) As Integer
     Y *= DH
     
   Endif
-  
+    
   $cCacheRowY[iRow] = Y
   StripCache($cCacheRowY)
+  
+  $iLastRow = iRow
   
   Return Y
   
@@ -133,6 +161,7 @@ Public Sub _SetRowHeight(iRow As Integer, H As Integer)
   
   If Not $cHeight Then 
     $cHeight = New Collection
+    '$cHeight.Default = 1
     $aHeight = New Integer[]
   Endif
   

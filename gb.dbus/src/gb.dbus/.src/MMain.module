@@ -1,6 +1,6 @@
 ' Gambas module file
 
-Public Sub Main2()
+Public Sub Main()
 
   Dim aVal As Variant[]
   Dim hSignal As DBusSignal
@@ -28,8 +28,10 @@ Public Sub Main2()
   ' 
   ' Debug DBus.Session.Applications.Join("\n")
   ' 
-  'DBus.Debug = True
-  'DBus.Session.Register(CTest, "/Test", ["org.mpris.MediaPlayer2", "org.mpris.MediaPlayer2.Player"])
+  DBus.Debug = True
+  DBus.Session.Register(CTest, "/Test", ["org.mpris.MediaPlayer2", "org.mpris.MediaPlayer2.Player"])
+  
+  ' Wait 60
   
   'DBus.Name = "org.mpris.MediaPlayer2.xt7"
   'DBus.Session.Register(CTest2, "/org/mpris/MediaPlayer2", ["org.mpris.MediaPlayer2", "org.mrpris.MediaPlayer2.Player"])
@@ -47,8 +49,8 @@ Public Sub Main2()
 
   'DBus.Session.Unregister(CTest)
   
-  Dim o As Object
-  Dim s As String
+  ' Dim o As Object
+  ' Dim s As String
   'Dim cInts As Collection = ["image_path": "/usr/share/icons/gnome/48x48/actions/add.png"]
   
   'DBus["org.freedesktop.Notifications"]["/org/freedesktop/Notifications"].Notify("MyApp", 0, "", "PoissonTChat", "Fabien: Chu la ! <a href=\"http://gambaslinux.forumactif.net\">ici</a>", ["test"], cInts, 1000)
@@ -56,12 +58,12 @@ Public Sub Main2()
   'Print "BUG 1"
   'Print "Try DBus[\"system://org.freedesktop.UDisks\"][\"/org/freedesktop/UDisks\"].Uninhibit(\"fake_cookie\")"
   's = "AuxArmes!"
-  Error "---------------------------"
-  Try Print DBus["system://org.freedesktop.UDisks"]["/org/freedesktop/UDisks"].Uninhibit("AuxArmes!")
-  Error "---------------------------"
-  Print Error.Text
+  ' Error "---------------------------"
+  ' Try Print DBus["system://org.freedesktop.UDisks"]["/org/freedesktop/UDisks"].Uninhibit("AuxArmes!")
+  ' Error "---------------------------"
+  ' Print Error.Text
   'Try DBus["system://org.freedesktop.UDisks"]["/org/freedesktop/UDisks"].Uninhibit("fake_cookie")
-  Return
+  'Return
   
   ' If Error Then
   '   Print "NO BUG. Error message:";; Error.Text
@@ -90,28 +92,28 @@ Public Sub MySignal_Signal(Method As String, Arguments As Variant[])
   
 End
 
-Public Sub Main()
-
-  Dim vVal As Variant
-
-  Print DBus._HasSystemTray()
-  
-  'Print DBus.Null
-  'Print DBus.Null
-   
-  'DBus.Session.Register(hObject, "/StatusNotifierItem", ["org.freedesktop.StatusNotifierItem"])
-  'DBus.Session._RequestName("org.freedesktop.StatusNotifierItem-" & CStr(Application.Handle) & "-1", True)
-
-  ' Wait 5
-  ' 
-  ' DBus.Session.Raise(hObject, "org.freedesktop.StatusNotifierItem.IconChanged")
-  ' DBus.Session.Raise(hObject, "org.freedesktop.StatusNotifierItem.NewStatus", ["Chuck!"])
-  ' 
-  ' Wait 30
-  ' 
-  ' DBus.Session.Unregister(hObject)
-
-End
+' Public Sub Main()
+' 
+'   Dim vVal As Variant
+' 
+'   Print DBus._HasSystemTray()
+'   
+'   'Print DBus.Null
+'   'Print DBus.Null
+'    
+'   'DBus.Session.Register(hObject, "/StatusNotifierItem", ["org.freedesktop.StatusNotifierItem"])
+'   'DBus.Session._RequestName("org.freedesktop.StatusNotifierItem-" & CStr(Application.Handle) & "-1", True)
+' 
+'   ' Wait 5
+'   ' 
+'   ' DBus.Session.Raise(hObject, "org.freedesktop.StatusNotifierItem.IconChanged")
+'   ' DBus.Session.Raise(hObject, "org.freedesktop.StatusNotifierItem.NewStatus", ["Chuck!"])
+'   ' 
+'   ' Wait 30
+'   ' 
+'   ' DBus.Session.Unregister(hObject)
+' 
+' End
 
 ' Public Sub Main()
 ' 

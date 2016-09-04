@@ -116,12 +116,22 @@ Public Sub _new()
 
 End
 
-Public Sub Clear()
-
-  $hScreen.Clear
+Public Sub Reset()
+  
+  _Suspend(False)
+  _UseMouse(False)
+  $hFilter.Reset
   $hScreen.Reset
   UpdateFont
   Refresh
+  
+End
+
+
+Public Sub Clear()
+
+  $hScreen.Clear
+  Reset()
 
 End
 

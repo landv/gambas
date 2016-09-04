@@ -84,6 +84,8 @@ Private Sub SetState(iState As Integer)
   Dim bEnable As Boolean
 
   'PRINT "SetState:"; iState
+  
+  If iState = $iState Then Return
 
   bDebug = $iState <> STATE_STOP And $iState <> STATE_STARTING
 
@@ -1166,6 +1168,12 @@ End
 Public Function IsRunning() As Boolean
 
   Return $iState = STATE_RUNNING
+
+End
+
+Public Function IsStop() As Boolean
+
+  Return $iState = STATE_STOP
 
 End
 

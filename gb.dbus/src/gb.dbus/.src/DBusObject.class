@@ -111,7 +111,10 @@ Public Sub _Register(hConnection As DBusConnection, sFullPath As String, Optiona
   
   Inc $iRegister
   
-  If Not $sName Then $sName = DBus._RegisterApplication(hConnection)
+  If Not $sName Then 
+    $sName = DBus._RegisterApplication(hConnection)
+    If Not DBus.Unique Then $sName = Left($sName, - Len(CStr(Application.Id)) - 1)
+  Endif
   
   iPos = InStr(sFullPath, "/")
   If iPos = 0 Then Error.Raise("Bad object path")

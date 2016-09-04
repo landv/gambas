@@ -43,6 +43,9 @@ static bool _must_drop_vargs = FALSE;
 
 static TYPE _type[MAX_EXPR_LEVEL];
 static int _type_level = 0;
+static TYPE _last_type;
+
+static void trans_expression(bool check_statement);
 
 #if DEBUG
 
@@ -51,14 +54,23 @@ static void _push_type(TYPE type)
 	if (_type_level >= MAX_EXPR_LEVEL) // should have been detected by TRANS_tree()
 		THROW("Expression too complex");
 	
+	fprintf(stderr, "level = %d / %d\n", _type_level, MAX_EXPR_LEVEL);
 	_type[_type_level++] = type;
+}
+
+static void _drop_type(int n)
+{
+	_type_level -= n;
+	if (_type_level < 0)
+		ERROR_panic("Incorrect type analyze");
 }
 
 #define push_type(_type) fprintf(stderr, "push_type: %d in %s.%d\n", (_type).t.id, __func__, __LINE__), _push_type(_type)
 #define push_type_id(_id) fprintf(stderr, "push_type_id: %d in %s.%d\n", (_id), __func__, __LINE__), _push_type(TYPE_make_simple(_id))
-#define pop_type() fprintf(stderr, "pop type: in %s.%d\n", __func__, __LINE__),(_type[--_type_level])
-#define drop_type(_n) fprintf(stderr, "drop type: %d in %s.%d\n", (_n), __func__, __LINE__),(_type_level -= (_n))
-#define get_type(_i, _nparam) (fprintf(stderr, "get type(%d,%d): %d in %s.%d\n", (_i), (_nparam), (_type[_type_level + (_i) - (_nparam)].t.id), __func__, __LINE__),(_type[_type_level + (_i) - (_nparam)].t.id))
+#define pop_type() (fprintf(stderr, "pop_type: in %s.%d\n", __func__, __LINE__),(_type[--_type_level]))
+#define drop_type(_n) fprintf(stderr, "drop_type: %d in %s.%d\n", (_n), __func__, __LINE__),_drop_type(_n)
+#define get_type(_i, _nparam) (fprintf(stderr, "get_type(%d,%d): %d in %s.%d\n", (_i), (_nparam), (_type[_type_level + (_i) - (_nparam)].t.id), __func__, __LINE__),(_type[_type_level + (_i) - (_nparam)].t.id))
+#define dup_type() fprintf(stderr, "dup_type: in %s.%d\n", __func__, __LINE__),push_type(_type[_type_level - 1])
 
 #else
 
@@ -70,10 +82,17 @@ static void push_type(TYPE type)
 	_type[_type_level++] = type;
 }
 
+static void drop_type(int n)
+{
+	_type_level -= n;
+	if (_type_level < 0)
+		ERROR_panic("Incorrect type analyze");
+}
+
 #define push_type_id(_id) push_type(TYPE_make_simple(_id))
 #define pop_type() (_type[--_type_level])
-#define drop_type(_n) (_type_level -= (_n))
 #define get_type(_i, _nparam) (_type[_type_level + (_i) - (_nparam)].t.id)
+#define dup_type() push_type(_type[_type_level - 1])
 
 #endif
 
@@ -409,10 +428,14 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 
 		case OP_RSQR:
 			TRANS_subr(TS_SUBR_ARRAY, nparam);
+			if (nparam > MAX_PARAM_OP)
+				nparam--;
 			break;
 
 		case OP_COLON:
 			TRANS_subr(TS_SUBR_COLLECTION, nparam);
+			if (nparam > MAX_PARAM_OP)
+				nparam -= 2;
 			break;
 
 		case OP_MINUS:
@@ -500,10 +523,9 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 	uint64_t byref = 0;
 
 	pattern = NULL_PATTERN;
-	_type_level = 0;
 
 	#if DEBUG
-	fprintf(stderr, "-----------------------\n");
+	fprintf(stderr, "-------------------------------------------- %d\n", _type_level);
 	#endif
 
 	i = 0;
@@ -598,6 +620,7 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 		else if (PATTERN_is(pattern, RS_ERROR))
 		{
 			TRANS_subr(TS_SUBR_ERROR, 0);
+			push_type_id(T_BOOLEAN);
 		}
 		else if (PATTERN_is(pattern, RS_OPTIONAL))
 		{
@@ -638,6 +661,8 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 	__CONTINUE:
 		;
 	}
+	
+	_last_type = pop_type();
 }
 
 
@@ -760,7 +785,7 @@ void TRANS_new(void)
 }
 
 
-void TRANS_expression(bool check_statement)
+static void trans_expression(bool check_statement)
 {
 	TRANS_TREE *tree;
 	int tree_length;
@@ -867,7 +892,7 @@ bool TRANS_affectation(bool dup)
 	bool stat = FALSE;
 	int op = RS_NONE;
 	int id = RS_NONE;
-
+	
 	for(;;)
 	{
 		if (PATTERN_is_newline(*look)) // || PATTERN_is_end(*look))
@@ -939,21 +964,25 @@ bool TRANS_affectation(bool dup)
 
 	if (!stat)
 	{
+		TYPE type;
+		
 		if (op != RS_NONE)
 		{
 			JOB->current = left;
-			TRANS_expression(FALSE);
+			trans_expression(FALSE);
+			type = _last_type;
 		}
 
 		JOB->current = expr;
-		TRANS_expression(FALSE);
+		trans_expression(FALSE);
 		after = JOB->current;
 
 		if (op != RS_NONE)
 		{
-			/*if (op == RS_AMP)
-				CODE_string_add();*/
+			push_type(_last_type);
+			push_type(type);
 			trans_operation(op, 2, NULL_PATTERN);
+			pop_type();
 		}
 	}
 
@@ -988,4 +1017,10 @@ bool TRANS_affectation(bool dup)
 	return TRUE;
 }
 
+
+void TRANS_expression(bool check_statement)
+{
+	_type_level = 0;
+	trans_expression(check_statement);
+}
 

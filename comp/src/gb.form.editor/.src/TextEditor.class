@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL},ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces,ShowIndent"
+Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces,ShowIndent"
 Public Const _DrawWith As String = "-"
 Public Const _DefaultEvent As String = "Change"
 Public Const _Similar As String = "TextArea"
@@ -125,7 +125,6 @@ Private $iBackground As Integer
 Private $iForeground As Integer
 Private $iSelectedBackground As Integer
 Private $iLimitColor As Integer
-Private $iMultiLineColor As Integer
 Private $iIndentColor As Integer
 
 Private $iLineNumberOffset As Integer
@@ -176,6 +175,7 @@ Private $bUpdateHeightAllowed As Boolean
 
 Private $bPrint As Boolean
 Private $sPrintBuffer As String
+Private $iMarginColor As Integer
 
 Public Sub _new()
   
@@ -466,7 +466,7 @@ Private Sub DrawMatch(X As Integer, Y As Integer, H As Integer, XM As Integer, Y
   Dim WW As Integer
   
   XY = LinePos(YM, XM)
-  WW = TextWidth(String.Mid$($hDoc.Lines[YM], XM + 1, 1))
+  WW = TextWidth($hDoc.Lines[YM], XM + 1, 1)
   Paint.FillRect(X + XY.X, Y + XY.Y, WW, H, $hStyles[Highlight.Highlight].Color)
 
 End
@@ -608,7 +608,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
         If Not hImage Then
           
           W = X2 - XX
-          If W <= 0 Then W = TextWidth(sStr)
+          If W <= 0 Then W = TextWidth(sStr, 1, iLen)
           If hStyle.Bold Then Inc W
           hImage = New Image(W, H, Color.Transparent)
           
@@ -741,6 +741,11 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   
   ' Current line or stop line
   
+  Try aLayout = $cLineLayout[Row]
+  If Row = $Y And If aLayout Then
+    Paint.FillRect(X, Y, Width, Height, $iMarginColor)
+  Endif
+    
   If Row = $iStopLine Then
     Paint.FillRect(X, Y, Width, Height, $hStyles[Highlight.Current].Color)
   Else If $bShowCurrent And If Row = $Y Then
@@ -827,7 +832,6 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   
   ' Text
   
-  Try aLayout = $cLineLayout[Row]
   sText = $hDoc.Lines[Row]
     
   If hInfo.Colors Then
@@ -903,22 +907,6 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
     
   Endif
   
-  If Row = $Y And If aLayout Then
-    
-    Paint.FillRect($iWidth - $MW - 4, Y, 4, Height, $iMultiLineColor)
-    
-    ' Paint.Background = $iMultiLineColor
-    ' 
-    ' Paint.AntiAlias = False
-    ' Paint.MoveTo($iWidth - $MW - 5, Y + 1)
-    ' Paint.RelLineTo(3, 0)
-    ' Paint.RelLineTo(0, Height - 3)
-    ' Paint.RelLineTo(-3, 0)
-    ' Paint.Stroke
-    ' Paint.AntiAlias = True
-    
-  Endif
-    
   ' Cursor
   
   If Row = $Y And If $bShowCursor And If Me.HasFocus And If Not $bHideCursor Then
@@ -1050,22 +1038,24 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
   
 End
 
-Public Sub TextWidth(sText As String) As Integer
+Fast Private Sub TextWidth(sText As String, iStart As Integer, iLength As Integer) As Integer
 
   Dim aText As String[]
   Dim I As Integer
   Dim W As Float
   
-  If InStr(sText, "\t") = 0 Then
+  I = InStr(sText, "\t", iStart) - iStart
+  
+  If I < 0 Or If I >= iLength Then
     If $fCharWidth Then
-      Return $fCharWidth * String.Len(sText)
+      Return $fCharWidth * iLength
     Else
-      Return $hFont.TextWidth(sText)
+      Return $hFont.TextWidth(String.Mid$(sText, iStart, iLength))
     Endif
   Endif
   
-  If Not sText Then Return 0
-  aText = Split(sText, "\t")
+  If iLength <= 0 Then Return 0
+  aText = Split(String.Mid$(sText, iStart, iLength), "\t")
   
   If $fCharWidth Then
     
@@ -1112,7 +1102,7 @@ Private Sub LinePos(Y As Integer, Optional X As Integer = -1) As Point
         P += aLayout[I]
         X -= aLayout[I]
       Next
-      XX = TextWidth(String.Mid$($hDoc.Lines[Y], P + 1, X))
+      XX = TextWidth($hDoc.Lines[Y], P + 1, X)
       If I Then XX += LineStartPos(Y)
       hPos = Point(XX, I * $LH)
       Goto CACHE_POS
@@ -1121,9 +1111,9 @@ Private Sub LinePos(Y As Integer, Optional X As Integer = -1) As Point
 
   hPos = New Point
   If X < 0 Then
-    hPos.X = TextWidth($hDoc.Lines[Y])
+    hPos.X = TextWidth($hDoc.Lines[Y], 1, $hDoc.LineLength[Y])
   Else
-    hPos.X = TextWidth(String.Left($hDoc.Lines[Y], X))
+    hPos.X = TextWidth($hDoc.Lines[Y], 1, X)
   Endif
   
 CACHE_POS:
@@ -2509,7 +2499,7 @@ Public Sub View_Draw()
     $iSelectedBackground = $hStyles[Highlight.Selection].Color
     $iLimitColor = Color.Gradient($iBackground, $hStyles[Highlight.Comment].Color)
     $iIndentColor = Color.Gradient($iBackground, $iForeground)
-    $iMultiLineColor = Color.Gradient($iBackground, $iLimitColor)
+    $iMarginColor = Color.Merge($iLimitColor, $iBackground, 0.8)
     $bStyleChanged = False
   Endif
 
@@ -2593,7 +2583,7 @@ Public Sub View_Draw()
   
   W = $MW
   If $bShowModified Then W -= 4
-  If W > 0 Then Paint.FillRect(XX + $hView.ScrollX, hClip.Y, W, hClip.H, Color.Merge($iLimitColor, $iBackground, 0.8))
+  If W > 0 Then Paint.FillRect(XX + $hView.ScrollX, hClip.Y, W, hClip.H, $iMarginColor)
   
   If $MW Then
     
@@ -2749,7 +2739,7 @@ Private Sub ShowPosition_Write(Value As Boolean)
   If $bShowPosition Then
     If Not $hLabel Then
       $hLabelFrame = New Panel(Me)
-      $hLabelFrame.Background = Color.SetAlpha($hStyles[Highlight.Background].Color, 128)
+      $hLabelFrame.Background = Color.SetAlpha($hStyles[Highlight.Background].Color, 64)
       $hLabelFrame.Ignore = True
       $hLabel = New Label($hLabelFrame) ' TODO: NULL + gb.gtk => crash!
       $hLabel.AutoResize = True
@@ -4452,7 +4442,7 @@ Public Sub _UpdateLineHeight(Y As Integer)
   aLayout = New Integer[]
   
   S = 1
-  L = String.Len(sText)
+  L = $hDoc.LineLength[Y]
   
   Do
     
@@ -4462,7 +4452,7 @@ Public Sub _UpdateLineHeight(Y As Integer)
     While F > D + 1
       
       P = (D + F) \ 2
-      W = TextWidth(String.Mid(sText, S, P - S + 1))
+      W = TextWidth(sText, S, P - S + 1)
       If W > WMax Then
         F = P
       Else
@@ -4762,4 +4752,10 @@ Private Sub ClearCacheText()
   If $bRemoteDisplay Then Return
   $cCacheText.Clear
 
+End
+
+Public Sub _HasFolding() As Boolean
+  
+  If $aFold And If $aFold.Count Then Return True
+  
 End
