@@ -162,6 +162,8 @@ Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw
                     pos += curElement->lenTagName;
                     curElement = (Element*)(curElement->parent);
                     tag = (char*)memchr(pos, '>', endData - pos);//On cherche la fin du tag
+                    if (!tag)
+                        THROW(XMLParseException_New("Never-ending tag", data, lendata, pos - 1));
                     pos = tag + 1;//On avance à la fin du tag
 
                     continue;
