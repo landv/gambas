@@ -85,8 +85,6 @@ Private Sub SetState(iState As Integer)
 
   'PRINT "SetState:"; iState
   
-  If iState = $iState Then Return
-
   bDebug = $iState <> STATE_STOP And $iState <> STATE_STARTING
 
   $iState = iState
@@ -101,6 +99,7 @@ Private Sub SetState(iState As Integer)
   Action["stop"].Enabled = $iState <> STATE_STOP
   'btnInfo.Enabled = btnStop.Enabled
 
+  If iState = $iState Then Return
   FOutput.OnProjectDebugState
   
 End
