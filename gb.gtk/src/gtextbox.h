@@ -55,6 +55,7 @@ public:
 
 //"Methods"
 	virtual void clear();
+	virtual void setFocus();
 	void insert(char* txt,int len);
 	void selClear();
 	void select(int start,int len);

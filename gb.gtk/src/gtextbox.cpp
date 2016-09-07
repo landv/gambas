@@ -505,3 +505,14 @@ void gTextBox::getCursorPos(int *x, int *y, int pos)
 	*x = px + PANGO_PIXELS(rect.x);
 	*y = py + PANGO_PIXELS(rect.y + rect.height);
 }
+
+void gTextBox::setFocus()
+{
+	bool r = isReadOnly();
+	
+	if (!r)
+		setReadOnly(true);
+	gControl::setFocus();
+	if (!r)
+		setReadOnly(false);
+}
