@@ -3,17 +3,26 @@
 Public Sub Main()
 
   Dim hSettings As Settings
+  Dim b As New Boolean[]
 
-  hSettings = New Settings("~/test.conf")
+  ' hSettings = New Settings("~/test.conf")
+  ' hSettings["Cat1/Values"] = [False, False, False, False]
+  ' hSettings.Save
   
-  hSettings["localhost/Login"] = ""
-  hSettings["Charlie/Login"] = "Toto"
-  Dump(hSettings)
-  hSettings.Save()
-  ' clear and save it
-  hSettings.Clear("Charlie")   ' don't work, found, removed
-  Dump(hSettings)
-  hSettings.Save() ' on save reloaded by "Sub Load()" from file
+  hSettings = New Settings("~/test.conf")
+  b = hSettings["Cat1/Values"]
+  b[1] = True
+  hSettings["Cat1/Values"] = b
+  hSettings.Save
+  
+  ' Settings.Save hSettings["localhost/Login"] = ""
+  ' hSettings["Charlie/Login"] = "Toto"
+  ' Dump(hSettings)
+  ' hSettings.Save()
+  ' ' clear and save it
+  ' hSettings.Clear("Charlie")   ' don't work, found, removed
+  ' Dump(hSettings)
+  ' hSettings.Save() ' on save reloaded by "Sub Load()" from file
   
 End
 

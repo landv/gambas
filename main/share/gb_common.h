@@ -33,6 +33,7 @@
 
 #define _FILE_OFFSET_BITS 64
 
+#define __STDC_FORMAT_MACROS 1
 #define _ISOC9X_SOURCE	1
 #define _ISOC99_SOURCE	1
 #define __USE_ISOC99	1
