@@ -307,6 +307,8 @@ Public Sub Main()
     Endif
   Next
 
+  Try Component.Load("gb.inotify")
+  
   If Not Settings["/ShowMenus", True] Then Env["APPMENU_DISPLAY_BOTH"] = "1"
 
   Application.Theme = Settings["/Theme"]
