@@ -205,9 +205,9 @@ if(THIS->type != Node::ElementNode) return;
 
 Attribute *attr = XMLElement_GetAttribute((Element*)THIS, STRING(name), LENGTH(name));
 
-if(attr)
+if(attr && attr->attrValue && attr->lenAttrValue)
 {
-    GB.ReturnNewString(attr->attrValue ? : "", attr->lenAttrValue);
+    GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
 }
 else
 {
