@@ -2,15 +2,18 @@
 
 Private Sub Reload()
 
-  Dim I As Integer
+  'Dim I As Integer
   
-  System.Profile = False
-  'TextEditor1.Load("~/test.txt")
-  For I = 1 To 100
-    TextEditor1.Insert(String$(80, CStr(I) & " ") & "\n")
-  Next
-  System.Profile = True
+  ' System.Profile = False
+  ' 'TextEditor1.Load("~/test.txt")
+  ' For I = 1 To 100
+  '   TextEditor1.Insert(String$(80, CStr(I) & " ") & "\n")
+  ' Next
+  ' System.Profile = True
 
+  TextEditor1.Highlight = "gambas"
+  TextEditor1.Load("~/gambas/3.0/trunk/comp/src/gb.form.editor/.src/CLineInfo.class", True)
+  
 End
 
 Public Sub Form_Open()
