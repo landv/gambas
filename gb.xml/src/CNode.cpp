@@ -207,7 +207,7 @@ Attribute *attr = XMLElement_GetAttribute((Element*)THIS, STRING(name), LENGTH(n
 
 if(attr)
 {
-    GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
+    GB.ReturnNewString(attr->attrValue ? : "", attr->lenAttrValue);
 }
 else
 {
