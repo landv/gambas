@@ -20,6 +20,7 @@ Private mnuUncompress As Menu
 Private mnuRename As Menu
 Private mnuCopy As Menu
 Private mnuDelete As Menu
+Private mnuDeleteDir As Menu
 Private mnuProperty As Menu
 
 Private $bView As Boolean
@@ -1013,6 +1014,11 @@ Private Sub FillMenu()
   hMenu.Picture = Picture["icon:/small/delete"]
   mnuDelete = hMenu
   
+  hMenu = New Menu(mnuPopup) As "mnuDeleteDir"
+  hMenu.Text = ("&Delete")
+  hMenu.Picture = Picture["icon:/small/delete"]
+  mnuDeleteDir = hMenu
+  
   hMenu = New Menu(mnuPopup)
   
   hMenu = New Menu(mnuPopup) As "mnuUncompress"
@@ -1111,6 +1117,9 @@ Public Sub dvwChoose_Menu()
   mnuShowPreview.Hide
   mnuRename.Show
   mnuDelete.Hide
+  mnuDeleteDir.Hide
+  Try mnuDeleteDir.Visible = Dir(dvwChoose.Current).Count = 0
+  
 
   dvwChoose.SetFocus
   mnuPopup.Popup
@@ -1131,6 +1140,7 @@ Public Sub fvwChoose_Menu()
   mnuShowPreview.Show
   mnuRename.Visible = sFile
   mnuDelete.Visible = sFile
+  mnuDeleteDir.Hide
 
   mnuPopup.Popup
 
@@ -1372,6 +1382,24 @@ Public Sub mnuDelete_Click()
 Catch
   
   Message.Error(("Unable to delete file.") & "\n\n" & Error.Text)
+  
+End
+
+Public Sub mnuDeleteDir_Click()
+  
+  Dim sPath As String = dvwChoose.Current
+  
+  If Not sPath Then Return
+  
+  Message.Title = ("Delete directory")
+  If Message.Warning("<b>" & File.Name(sPath) & "</b><p>" & ("Do you really want to delete that directory?"), ("&Delete"), ("Cancel")) = 2 Then Return
+  
+  Rmdir sPath
+  mnuRefresh_Click
+  
+Catch
+  
+  Message.Error(("Unable to delete directory.") & "\n\n" & Error.Text)
   
 End
 
