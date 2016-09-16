@@ -37,6 +37,7 @@ Public ErrorText As String
 
 Static Private $cCache As New Collection
 
+Private $sVersion As String
 Private $sFarm As String
 Private $hRequest As FarmRequest
 Private $hRequestIcon As FarmRequest
@@ -126,7 +127,8 @@ Public Sub Request_Finished()
   cResult = hReq.Result
   
   Name = UnQuote(cResult["Name"])
-  Version = cResult["Version"] & "." & cResult["Release"]
+  $sVersion = cResult["Version"]
+  Version = $sVersion & "." & cResult["Release"]
   Vendor = UnQuote$(cResult["Vendor"])
   
   UploadDate = FarmRequest.GetDate(cResult["UploadDate"])
@@ -413,6 +415,11 @@ Public Sub Install(Optional bJustDownload As Boolean) As String
         End With
         hDesktopFile.Save
       Endif
+      
+    Else If hProjectInfo.Type = Project.TYPE_LIBRARY Then
+      
+      sErr = Project.InstallLibrary(sExecDir &/ sName & ".gambas", Vendor, $sVersion)
+      If sErr Then Error.Raise(sErr)
       
     Endif
     

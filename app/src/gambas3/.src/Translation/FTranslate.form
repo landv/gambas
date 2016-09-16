@@ -152,11 +152,8 @@
       { VBox2 VBox
         MoveScaled(3,21,85,21)
         Expand = True
-        { lblComment Label
-          MoveScaled(0,0,35,3)
-          Font = Font["Bold"]
-          Padding = 4
-          AutoResize = True
+        { panComment HBox
+          MoveScaled(7,0,11,4)
         }
         { Separator4 Separator
           MoveScaled(0,4,15,0)

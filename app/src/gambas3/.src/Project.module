@@ -3090,13 +3090,35 @@ BAD_VERSION:
 
 End
 
+Public Sub InstallLibrary(sExecPath As String, sVendor As String, sVersion As String) As String
+
+  Dim sDir As String
+  Dim sLink As String
+  
+  sDir = CLibraryInfo.UserPath
+  If sVendor Then 
+    sDir &/= LCase(sVendor)
+  Else
+    sDir &/= "(unknown)"
+  Endif
+  
+  MakeDir(sDir)
+  
+  sLink = sDir &/ File.BaseName(sExecPath) & ":" & sVersion & ".gambas"
+  
+  Try Kill sLink
+  Try Copy sExecPath To sLink
+  If Error Then Return Subst(("Cannot install library in &1."), "<tt>" & sDir & "</tt>") & "\n\n" & Error.Text
+  
+End
+
+
 Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bSilent As Boolean) As Boolean
 
   Dim sExec As String
   Dim sExecPath As String
   Dim bOK As Boolean
-  Dim sDir As String
-  Dim sLink As String
+  Dim sErr As String
 
   If CheckStartupClass() Then Return True
 
@@ -3150,25 +3172,10 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
     If Not VersionFile And If Not bDoNotIncVersion Then Inc ReleaseVersion
     WriteProject(True, True)
 
-    If Type = TYPE_LIBRARY Then
-      
-      sDir = CLibraryInfo.UserPath
-      If Vendor Then 
-        sDir &/= LCase(Vendor)
-      Else
-        sDir &/= "(unknown)"
-      Endif
-      
-      MakeDir(sDir)
-      
-      sLink = sDir &/ File.BaseName(sExecPath) & ":" & MajorVersion & "." & MinorVersion & ".gambas"
-      
-      Try Kill sLink
-      Try Copy sExecPath To sLink
-      If Error Then
-        FMain.ShowWarning(Subst(("Cannot install library in &1."), "<tt>" & sDir & "</tt>") & "\n\n" & Error.Text)
-      Endif
-      
+    If Type = TYPE_LIBRARY Then 
+      sErr = InstallLibrary(sExecPath, Vendor, CStr(MajorVersion) & "." & CStr(MinorVersion))
+      If sErr Then FMain.ShowWarning(sErr)
+
     Endif
 
     If RunAfterMakingExec Then

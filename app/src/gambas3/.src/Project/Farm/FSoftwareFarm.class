@@ -42,7 +42,7 @@ Public Sub Form_Open()
   aGroup.Add(CSoftwareGroup("Game", ("Games"), "game"))
   aGroup.Add(CSoftwareGroup("Development", ("Development"), "development"))
   aGroup.Add(CSoftwareGroup("Example", ("Examples"), "help"))
-  aGroup.Add(CSoftwareGroup("Education", ("Education"), "book"))
+  aGroup.Add(CSoftwareGroup("Education", ("Education"), "science"))
   aGroup.Add(CSoftwareGroup("Graphics", ("Graphics"), "color"))
   aGroup.Add(CSoftwareGroup("Audio", ("Audio"), "audio"))
   aGroup.Add(CSoftwareGroup("Video", ("Video"), "video"))
@@ -50,6 +50,7 @@ Public Sub Form_Open()
   aGroup.Add(CSoftwareGroup("Accessories", ("Accessories"), "tools"))
   aGroup.Add(CSoftwareGroup("Internet", ("Internet"), "internet"))
   aGroup.Add(CSoftwareGroup("System", ("System"), "computer"))
+  aGroup.Add(CSoftwareGroup("Library", ("Libraries"), "book"))
 
   aGroup.Sort
 
