@@ -96,15 +96,16 @@ Public Sub Form_Open()
   
   $hWelcome = New CWelcome(dwgWelcome)
   
-End
-
-
-Public Sub cvwRecent_Click()
-
-  $sPath = CRecentProject.All[Val(Last.Key)].Path
-  Me.Close
+  $hSoft.Fill
 
 End
+
+' Public Sub cvwRecent_Click()
+' 
+'   $sPath = CRecentProject.All[Val(Last.Key)].Path
+'   Me.Close
+' 
+' End
 
 
 ' PUBLIC SUB timMessage_Timer()
@@ -356,6 +357,24 @@ Public Sub ProjectItem_Click(Path As String, (Another) As Boolean)
 
 End
 
+Public Sub ProjectItem_Refresh()
+  
+  CRecentProject.Check()
+  $hRecent.Fill
+  $hExample.Fill
+  
+End
+
+Public Sub ProjectItem_Fill()
+  
+  If Last = $hSoft Then 
+    btnSoft.Enabled = Not $hSoft.IsVoid()
+    If Not btnSoft.Enabled And If $iRecent = LIST_SOFTWARE Then Toggle(LIST_RECENT)
+  Endif
+  
+End
+
+
 Public Sub btnAbout_Click()
   
   FAbout.Run
@@ -366,7 +385,9 @@ End
 Public Sub btnFarm_Click()
   
   FSoftwareFarm.Run
-  If $iRecent = LIST_EXAMPLE Then $hExample.Fill
+  
+  $hExample.Fill
+  $hSoft.Fill
   
 End
 

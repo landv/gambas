@@ -341,9 +341,9 @@ Public Sub Install(Optional bJustDownload As Boolean) As String
   ' Check the components
   
   For Each sComp In hProjectInfo.Components
-    'If Not Exist(Component.Path &/ sComp & ".component") Then
+    If Not Exist(Component.Path &/ sComp & ".component") Then
       aMissing.Add(sComp)
-    'Endif
+    Endif
   Next
   
   If aMissing.Count Then
@@ -465,35 +465,51 @@ LEAVE_INSTALL:
   
 End
 
-Public Sub Uninstall() As String
-
-  Dim sDir As String
+Static Public Sub UninstallFromPath(sDir As String) As String
   
-  If Not Me.IsInstalled() Then Return
+  Dim sVendor As String
+  Dim sName As String
   
   Inc Application.Busy
   
-  sDir = GetInstalledDir()
+  sName = File.Name(sDir)
+  sVendor = File.Name(File.Dir(sDir))
+  
   Exec ["rm", "-rf", sDir] Wait
   
-  Try Kill Desktop.DataDir &/ "gambas3/bin" &/ LCase(Vendor) &/ Name & ".gambas"
+  Try Kill Desktop.DataDir &/ "gambas3/bin" &/ LCase(sVendor) &/ sName & ".gambas"
   
-  Try Kill Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(Vendor) & "-" & Name & ".desktop"
+  Try Kill Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(sVendor) & "-" & sName & ".desktop"
   
-  If LCase(Vendor) <> "example" Then
-    Try Kill File.SetName(File.Dir(sDir), "example") &/ Name
+  If LCase(sVendor) <> "example" Then
+    Try Kill File.SetName(File.Dir(sDir), "example") &/ sName
   Endif
 
   Dec Application.Busy
-  
-  Inc InstallAge
-  Start
   
 Catch
   
   Dec Application.Busy 
   Return Error.Text
+  
+End
 
+
+Public Sub Uninstall() As String
+
+  Dim sDir As String
+  Dim sErr As String
+  
+  If Not Me.IsInstalled() Then Return
+  
+  sDir = GetInstalledDir()
+  
+  sErr = UninstallFromPath(sDir)
+  If sErr Then Return sErr
+  
+  Inc InstallAge
+  Start
+  
 End
 
 Public Sub DownloadScreenshot() As Boolean

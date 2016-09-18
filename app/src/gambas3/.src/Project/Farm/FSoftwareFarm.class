@@ -541,9 +541,9 @@ Public Sub btnInstall_Click()
       If Message.Question(Subst(("Do you really want to uninstall <b>&1</b>?"), sName), ("Uninstall"), ("Cancel")) = 1 Then
         sErr = $hSoft.Uninstall() 
         If sErr Then
-          Message.Error(Subst(("Unable to remove <b>&1</b>:"), sName) & "\n\n" & sErr)
+          Message.Error(Subst(("Unable to uninstall <b>&1</b>:"), sName) & "\n\n" & sErr)
         Else
-          Message(Subst(("<b>&1</b> has been successfully removed."), sName))
+          Message(Subst(("<b>&1</b> has been successfully uninstalled."), sName))
           Goto REFRESH
         Endif
       Endif

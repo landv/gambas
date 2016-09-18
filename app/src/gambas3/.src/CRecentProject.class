@@ -40,7 +40,7 @@ End
 
 Public Sub IsValid() As Boolean
   
-  Return Path
+  If Path And If Exist(Path) Then Return True
   
 End
 
@@ -210,6 +210,27 @@ Static Public Sub Remove(sPath As String)
   AddRemove(sPath, False)
 
 End
+
+Static Public Sub Check()
+
+  Dim I As Integer
+  Dim hRecent As CRecentProject
+  Dim bRemove As Boolean
+  
+  While I < All.Count
+    hRecent = All[I]
+    If hRecent.IsValid() Then
+      Inc I
+    Else
+      All.Remove(I)
+      bRemove = True
+    Endif
+  Wend
+  
+  If bRemove Then Save
+  
+End
+
 
 Static Public Sub Get(Optional iSort As Integer) As CRecentProject[]
   
