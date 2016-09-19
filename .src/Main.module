@@ -1,0 +1,34 @@
+' Gambas module file
+
+Public Sub Main()
+
+    Dim Container As TestContainer
+    Dim Suite As TestSuite
+    Dim Res As New TestResult
+    Dim Errs As TestErrors
+    Dim Fails As TestErrors
+    Dim Err As TestError
+    Dim Fail As TestError
+
+    Suite = New TestSuite
+    Container = New ExampleTestContainer
+
+    Suite.AddAllTestCases(Container)
+    Suite.Run(Res)
+
+    Print Suite.CountTestCases()
+    'TS.Run(Res)
+    Errs = Res.Errors
+    Fails = Res.Failures
+
+    For Each Err In Errs.Items
+        Debug "Error";; Err.Description
+        Debug "Error Source";; Err.Source
+    Next
+
+    For Each Fail In Fails.Items
+        Debug "Fail";; Fail.Description
+        Debug "Fail Source";; Fail.Source
+    Next
+
+End

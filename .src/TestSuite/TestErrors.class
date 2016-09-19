@@ -1,16 +1,18 @@
 ' Gambas class file
 
+Export
 ''' The TestErrors class is the collection class for TestError objects.
 ''' It holds the test case failures and errors that have been collected
 ''' by the TestResult object.
 
-Private $colErrors As Collection
-Private $iError As Integer
+Property Read Items As TestError[]
+
+Private $Errors As TestError[]
 
 '' Initialize variables
 Public Sub _new()
 
-    $colErrors = New Collection
+    $Errors = New TestError[]
 
 End Sub
 
@@ -30,8 +32,7 @@ Public Function Add(oTestCase As ITestCase, lNumber As Long, sSource As String, 
     End With
 
     'Add to the collection
-    $colErrors.Add(oNewError, $iError)
-    $iError += 1
+    $Errors.Add(oNewError)
 
     'Return New Error and cleanup
     Return oNewError
@@ -42,7 +43,7 @@ End Function
 '' Add a new TestError object to the collection.
 Sub AddError(oError As TestError)
 
-    $colErrors.Add(oError)
+    $Errors.Add(oError)
 
 End Sub
 
@@ -53,8 +54,8 @@ Function Item(iIndex As Integer) As TestError
     'Function Item_Read() As TestError
     'Attribute Item.VB_UserMemId = 0
 
-    If iIndex <= $colErrors.Count Then
-        Return $colErrors(iIndex)
+    If iIndex <= $Errors.Count Then
+        Return $Errors(iIndex)
     End If
 
 End
@@ -64,7 +65,7 @@ Property Read Count As Long
 
 Function Count_Read() As Long
 
-    Return $colErrors.Count
+    Return $Errors.Count
 
 End
 
@@ -78,6 +79,12 @@ End
 '
 ''     '' Attribute NewEnum.VB_UserMemId = -4
 ''     '' Attribute NewEnum.VB_MemberFlags = "40"
-''     Return $colErrors.[_NewEnum]
+''     Return $Errors.[_NewEnum]
 '
 '' End
+
+Private Function Items_Read() As TestError[]
+
+    Return $Errors
+
+End

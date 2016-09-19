@@ -1,5 +1,6 @@
 ' Gambas class file
 
+Export
 ''' The TestResult object collects the results from executing test cases. It is an
 ''' instance of the Collecting Parameter pattern.  When new failures or errors
 ''' are added to the TestResult or if a test case is started or finished, the
@@ -10,6 +11,18 @@
 ''' unanticipated problems signified by exceptions that are not generated
 ''' by the framework.  TestResult includes a set of Assert methods that simplify
 ''' the checking of test assertions.
+
+'' Gets the number of run tests.
+Property Read RunTests As Integer
+
+'' Returns a collection of failures
+Property Read Failures As TestErrors
+
+'' Returns a collection of errors
+Property Read Errors As TestErrors
+
+'' Set and Returns parameter collection
+Property Parameters As TestParameters
 
 '' Member Variables
 Private $colErrors As TestErrors
@@ -83,18 +96,6 @@ Public Sub AddTrace(sMessage As String)
     Raise AfterAddTrace(sMessage)
 
 End Sub
-
-'' Gets the number of run tests.
-Property Read RunTests As Integer
-
-'' Returns a collection of failures
-Property Read Failures As TestErrors
-
-'' Returns a collection of errors
-Property Read Errors As TestErrors
-
-'' Set and Returns parameter collection
-Property Parameters As TestParameters
 
 '' Asserts that a condition is true. If it isn't it raises a failure with the given message.
 '' bCondition: condition to be asserted

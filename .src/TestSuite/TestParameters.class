@@ -1,5 +1,6 @@
 ' Gambas class file
 
+Export
 ' The TestParameters class is the collection class for TestParameter objects.
 
 'Member variables
@@ -9,13 +10,6 @@ Private m_colParameters As Collection
 Public Sub _new()
 
     m_colParameters = New Collection
-
-End Sub
-
-'Cleanup references
-Private Sub Class_Terminate()
-
-    m_colParameters = Null
 
 End Sub
 

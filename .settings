@@ -1,9 +1,12 @@
 [Breakpoints]
 Count=1
-Breakpoint[1]="Main.17"
+Breakpoint[1]="ExampleTestContainer.34"
 
 [DebugWindow]
 Count=0
+
+[DebugWindow/$TestCaseNames]
+Geometry=[137,230,224,280]
 
 [DebugWindow/$colFailures]
 Geometry=[106,50,224,280]
@@ -11,11 +14,41 @@ Geometry=[106,50,224,280]
 [DebugWindow/$colTests]
 Geometry=[311,89,224,280]
 
+[DebugWindow/Container]
+Geometry=[118,131,433,280]
+
 [DebugWindow/Errs]
 Geometry=[311,89,224,280]
 
+[DebugWindow/Errs.Items]
+Geometry=[325,103,224,280]
+
+[DebugWindow/Errs.Items["0"]]
+Geometry=[339,117,224,280]
+
+[DebugWindow/Errs.Items[0]]
+Geometry=[339,117,381,280]
+
+[DebugWindow/Errs.Items[1]]
+Geometry=[339,117,224,280]
+
+[DebugWindow/ExampleTestContainer(Container).TestCaseNames]
+Geometry=[132,145,433,280]
+
+[DebugWindow/ExampleTestContainer(TestCase(Fail.TestCase).TestContainer).TestCaseNames]
+Geometry=[157,90,431,342]
+
+[DebugWindow/Fail]
+Geometry=[115,48,224,280]
+
+[DebugWindow/Fail.TestCase]
+Geometry=[129,62,431,342]
+
 [DebugWindow/Fails]
 Geometry=[311,89,224,280]
+
+[DebugWindow/Fails.Items]
+Geometry=[325,103,224,280]
 
 [DebugWindow/ITestCase]
 Geometry=[156,48,210,210]
@@ -29,17 +62,65 @@ Geometry=[311,89,545,280]
 [DebugWindow/Res.Errors]
 Geometry=[325,103,545,280]
 
+[DebugWindow/Res.Errors.Items]
+Geometry=[339,117,545,280]
+
 [DebugWindow/Res.Failures]
 Geometry=[325,103,545,280]
 
+[DebugWindow/Res.Failures.Items]
+Geometry=[339,117,545,280]
+
+[DebugWindow/Res.Failures.Items[0]]
+Geometry=[353,131,545,280]
+
+[DebugWindow/String]
+Geometry=[177,128,224,280]
+
+[DebugWindow/Suite]
+Geometry=[118,131,224,280]
+
 [DebugWindow/T1]
-Geometry=[311,89,224,280]
+Geometry=[311,89,548,280]
+
+[DebugWindow/T1.TestContainer]
+Geometry=[325,103,548,280]
+
+[DebugWindow/TCase]
+Geometry=[38,123,431,280]
+
+[DebugWindow/TCase.TestContainer]
+Geometry=[52,137,431,280]
+
+[DebugWindow/TCont]
+Geometry=[167,89,224,280]
+
+[DebugWindow/TContainer]
+Geometry=[167,89,224,280]
+
+[DebugWindow/TContainer.TestCaseNames]
+Geometry=[181,103,224,280]
 
 [DebugWindow/TS]
 Geometry=[311,89,224,280]
 
+[DebugWindow/TSuite]
+Geometry=[167,89,224,280]
+
 [DebugWindow/TestCase]
 Geometry=[106,50,224,280]
+
+[DebugWindow/TestCase(Fail.TestCase).TestContainer]
+Geometry=[143,76,431,342]
+
+[DebugWindow/TestContainer]
+Geometry=[118,131,224,280]
+
+[DebugWindow/TestContainer(T1.TestContainer).TestCaseNames]
+Geometry=[339,117,548,280]
+
+[DebugWindow/TestContainer(TCase.TestContainer).TestCaseNames]
+Geometry=[66,151,431,280]
 
 [DebugWindow/TestResult]
 Geometry=[311,89,224,280]
@@ -59,11 +140,20 @@ Geometry=[14,225,341,280]
 [DebugWindow/oTest]
 Geometry=[311,89,224,280]
 
+[DebugWindow/oTestCase]
+Geometry=[137,230,224,280]
+
+[DebugWindow/oTestContainer]
+Geometry=[167,89,224,280]
+
+[DebugWindow/oTestContainer.TestCaseNames]
+Geometry=[181,103,224,280]
+
 [DebugWindow/oTestResult]
-Geometry=[106,50,465,280]
+Geometry=[10,426,465,280]
 
 [DebugWindow/oTestResult.Errors]
-Geometry=[120,64,465,280]
+Geometry=[24,440,465,280]
 
 [DebugWindow/oTestResult.Failures]
 Geometry=[120,64,465,280]
@@ -74,18 +164,16 @@ Geometry=[106,50,224,280]
 [DebugWindow/test1]
 Geometry=[311,89,224,280]
 
+[Executable]
+Path="gb.deg.unit.gambas"
+
 [OpenFile]
-File[1]=".src/TestSuite/Main.module:8.15"
-File[2]=".src/TestSuite/TestSuite.class:68.34"
-File[3]=".src/testtests/Test1.class:0.7"
-File[4]=".src/testtests/Test2.class:35.8"
-File[5]=".src/TestSuite/ITestCase.class:0.0"
-Active=8
-Count=9
-File[6]=".src/TestSuite/TestResult.class:4.71"
-File[7]=".src/TestSuite/TestError.class:0.0"
-File[8]=".src/TestSuite/TestErrors.class:0.22"
-File[9]=".src/TestSuite/TestParameter.class:0.0"
+File[1]=".src/TestMyself/ExampleTestContainer.class:16.34"
+File[2]=".src/Main.module:7.21"
+File[3]=".src/TestSuite/TestResult.class:28.102"
+File[4]=".src/TestSuite/TestContainer.class:0.47"
+Active=4
+Count=4
 
 [Watches]
 Count=0

@@ -1,0 +1,104 @@
+' Gambas class file
+
+Export
+
+' This interface identifies TestContainer classes.  TestContainers are a
+' classes that hold different test case methods.
+
+' Return the name of the different test case methods in this test container
+Property TestCaseNames As String[]
+Private $TestCaseNames As String[]
+
+Property TestCase As ITestCase
+Property Result As TestResult
+
+Private $TestCase As ITestCase
+Private $Result As TestResult
+
+
+Public Sub _new()
+
+    Dim symbols As String[] 
+    Dim symbol As String
+    $TestCaseNames = New String[]
+    
+    symbols = Object.Class(Me).Symbols
+    
+    For Each symbol In symbols
+        If Left(symbol, 4) = "test" Then
+            $TestCaseNames.Add(symbol)
+        Endif
+    Next
+
+
+End
+
+' Run the specified test case methods in this test container
+Public Sub RunTestCase(oTestCase As ITestCase, oTestResult As TestResult)
+    Dim MethodName As String
+    Dim hClass As Class
+
+    Me.TestCase = oTestCase
+    Me.Result = oTestResult
+    
+    ' ------------------------------------------------- Thema
+    hClass = Object.Class(Me)
+    
+    For Each MethodName In $TestCaseNames
+        If hClass[MethodName].Kind = Class.Method Then
+            If MethodName = Me.TestCase.Name Then
+            Debug "Call";; MethodName
+            Object.Call(Me, MethodName)
+            Endif
+        Endif
+    Next
+
+End Sub
+
+'Initialize the test fixture
+Public Sub Setup()
+
+    Debug "No Setup"
+
+End Sub
+
+'Destroy the test fixture
+Public Sub TearDown()
+
+    Debug "No Teardown"
+
+End Sub
+
+Private Function TestCaseNames_Read() As String[]
+    Return $TestCaseNames
+End
+
+Private Sub TestCaseNames_Write(Value As String[])
+
+    $TestCaseNames = value
+
+End
+
+Private Function TestCase_Read() As ITestCase
+
+    Return $TestCase
+
+End
+
+Private Sub TestCase_Write(Value As ITestCase)
+
+    $TestCase = Value
+
+End
+
+Private Function Result_Read() As TestResult
+
+    Return $Result
+
+End
+
+Private Sub Result_Write(Value As TestResult)
+
+    $Result = Value
+
+End

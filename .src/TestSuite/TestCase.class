@@ -5,35 +5,35 @@
 ''' properties in the class.  The Run method will call the appropriate Setup
 ''' and TearDown methods for the test case as well as executing the test case
 ''' method itself.
-
+Export
 Inherits ITestCase
 
 '' Member variables
 Private $Name As String
-Private m_oTestContainer As ITestContainer
-Private TestCaseCount As Integer
-
-'' Initializes the TestCase.  Used in lieu of a constructor.
-Public Sub _new(sName As String, oTestContainer As ITestContainer)
-
-    $Name = sName
-    m_oTestContainer = oTestContainer
-
-End Sub
+Private $MyContainer As TestContainer
+Private $TestCaseCount As Integer
 
 '' Name of the test case
 Property Read Name As String
 
 '' Reference to the test container containing the test method to be executed.
-Property Read TestContainer As ITestContainer
+Property Read TestContainer As TestContainer
 
-'' Name of the test case
-Property Read ITestCase_Name As String
+'' Initializes the TestCase.  Used in lieu of a constructor.
+Public Sub _new(sName As String, oTestContainer As TestContainer)
+
+    $Name = sName
+    $MyContainer = oTestContainer
+
+End Sub
+
+' '' Name of the test case
+' Property Read Name As String
 
 '' Test container that the test case uses
-Property Read ITestCase_TestContainer As ITestContainer
+'Property Read TestContainer As TestContainer
 
-Function ITestCase_Read() As String
+Function Name_Read() As String
 
     Return $Name
 
@@ -41,29 +41,30 @@ End
 
 'Create the fixture, run the test and collect the results in TestResult
 Public Sub Run(oTestResult As TestResult)
-    '' Start test
+
+    Debug "Start test in TestCase"
 
     oTestResult.StartTest(Me)
 
     'On Error Resume Next
 
     '' Set up test fixture
-    Try m_oTestContainer.Setup
+    Try $MyContainer.Setup
 
     '' Run test
     '' Check for exceptions if Setup or Test method
-    If ( Error ) Then
+    If Error Then
         oTestResult.AddError(Error.Code, Error.Where & "::Setup", Error.Text)
         Error.Clear
     Else
-        m_oTestContainer.RunTestCase(Me, oTestResult)
+        $MyContainer.RunTestCase(Me, oTestResult)
     End If
 
     '' Tear down test fixture
     '' must ensure that test fixture is properly torn down if any failures have occurred
-    m_oTestContainer.TearDown
+    $MyContainer.TearDown
 
-    If ( Error ) Then
+    If Error Then
         oTestResult.AddError(Error.Code, Error.Where & "::TearDown", error.Text)
         Error.Clear
     End If
@@ -78,40 +79,8 @@ Public Function CountTestCases() As Integer
 
 End Function
 
-'' Interface methods
+Private Function TestContainer_Read() As TestContainer
 
-Private Sub ITest_Run(ByRef oTestResult As TestResult)
-
-    Run(oTestResult)
-
-End Sub
-
-Private Function ITest_CountTestCases() As Integer
-
-    Return TestCaseCount
-
-End Function
-
-Private Function Name_Read() As String
-
-    Return $Name
-
-End
-
-Private Function TestContainer_Read() As ITestContainer
-
-    Return m_oTestContainer
-
-End
-
-Function ITestCase_Name_Read() As String
-
-    Return $Name
-
-End
-
-Function ITestCase_TestContainer_Read() As ITestContainer
-
-    Return m_oTestContainer
+    Return $MyContainer
 
 End
