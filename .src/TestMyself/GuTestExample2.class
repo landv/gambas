@@ -3,14 +3,55 @@
 Inherits TestContainer
 Export
 
-Public Sub TestEmpty()
+Public Sub SetupContainer()
 
+    If Me.Debug Then
+        Print "Setup Container"
+    Endif
+
+End
+
+Public Sub TeardownContainer()
+
+    If Me.Debug Then
+        Print "GuTestExample2::Teardown Container"
+    Endif
+
+End
+
+Public Sub SetupEach()
+
+    If Me.Debug Then
+        Print "GuTestExample2::Setup Each"
+    Endif
+
+End
+
+Public Sub TeardownEach()
+
+    If Me.Debug Then
+        Print "GuTestExample2::Teardown Each"
+    Endif
+
+End
+
+Public Sub TestFirstTest()
+
+    Print "GuTestExample2::Test First Test"
     Me.Result.AssertEmpty("", "Empty")
 
 End
 
-Public Sub TestString()
+Public Sub TestThirdTest()
 
+    Print "GuTestExample2::Test Third Test"
+    Me.Result.AssertEqualsLong(200, 200)
+
+End
+
+Public Sub TestSecondTest()
+
+    Print "GuTestExample2::Test Second Test"
     Me.Result.AddTrace("Tracemessage")
 
 End

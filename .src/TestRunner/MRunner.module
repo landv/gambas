@@ -4,7 +4,11 @@ Export
 
 Public Sub Main()
 
-    RunAllTests(True)
+    Dim res As New TestResult
+
+    RunTests(res, "GuTestIntentionalError", Null, True)
+    'RunTests(res)
+    PrintResult(res)
 
 End
 
@@ -17,55 +21,69 @@ Public Sub ShowTestRunnerForm()
 
 End
 
-Public Sub RunAllTests(Optional ShowResultAsDebug As Boolean)
+Public Sub PrintResult(Res As TestResult)
 
     'Dim Container As TestContainer
-    Dim Suite As TestSuite
-    Dim Res As New TestResult
+    '     Dim Suite As TestSuite
+    '     Dim Res As New TestResult
     Dim Errs As TestErrors
     Dim Fails As TestErrors
     Dim Err As TestError
     Dim Fail As TestError
-    Dim C As Class
-
-    Suite = New TestSuite
-
-    For Each C In Classes
-        If Left(C.Name, 6) = "GuTest" Then
-            Suite.AddAllTestCases(Object.New(C.Name))
-        Endif
-    Next
-
-    Suite.Run(Res)
+    '     Dim C As Class
 
     'TS.Run(Res)
     Errs = Res.Errors
     Fails = Res.Failures
 
-    If ShowResultAsDebug = True Then
-        Debug "Number of test cases:";; Suite.CountTestCases()
+    Print "-------------------------------------------------  Test Results"
+    Print res.CountRunnedTests & " Test done"
+    Print "------------------------------------------------- "
+    If Errs.Count > 0 Then
+        For Each Err In Errs.Items
+            Print "Error in:";; Err.Source
+            Print "Error:";; Err.Description
+        Next
+    Else
+        Print "No Errors"
+    Endif
 
-        If Errs.Count > 0 Then
-            For Each Err In Errs.Items
-                Debug "Error in:";; Err.Source
-                Debug "Error:";; Err.Description
-            Next
-        Else
-            Debug "No Errors"
-        Endif
+    If Fails.Count > 0 Then
+        For Each Fail In Fails.Items
+            Print "Failure in:";; Fail.Source
+            Print "Failure:";; Fail.Description
+        Next
+    Else
+        Print "No Failures"
+    Endif
+    Print "-------------------------------------------------  End"
 
-        If Fails.Count > 0 Then
-            For Each Fail In Fails.Items
-                Debug "Failure in:";; Fail.Source
-                Debug "Failure:";; Fail.Description
+End
+
+'' Run all tests, optional limited by Container or TestCaseName. TestResult contains .
+
+Public Sub RunTests(Result As TestResult, Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean)
+
+    Dim Container As TestContainer
+    Dim Suite As New TestSuite
+
+    If ContainerName = Null Then
+        If CaseName = Null Then
+            For Each ContainerName In MRunner.GetAllTestContainerNames()
+                Container = Object.New(ContainerName)
+                Suite.AddAllTestCases(Container)
             Next
-        Else
-            Debug "No Failures"
         Endif
     Else
-        ' ------------------------------------------------- Show Result with form
-
+        Container = Object.New(ContainerName)
+        If CaseName = Null Then
+            Suite.AddAllTestCases(Container)
+        Else
+            Suite.AddNewTestCase(CaseName, Container)
+        Endif
     Endif
+
+    Suite.Run(Result, ShowDebug)
 
 End
 

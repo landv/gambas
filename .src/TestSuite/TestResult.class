@@ -13,7 +13,7 @@ Export
 ''' the checking of test assertions.
 
 '' Gets the number of run tests.
-Property Read RunTests As Integer
+Property Read CountRunnedTests As Integer
 
 '' Returns a collection of failures
 Property Read Failures As TestErrors
@@ -28,7 +28,7 @@ Property Parameters As TestParameters
 Private $colErrors As TestErrors
 Private $colFailures As TestErrors
 Private $colParameters As TestParameters
-Private $iRunTests As Integer
+Private $iCountRunnedTests As Integer
 Private $oCurrentTestCase As ITestCase
 
 '' Events
@@ -43,7 +43,7 @@ Public Sub _new()
 
     $colErrors = New TestErrors
     $colFailures = New TestErrors
-    $iRunTests = 0
+    $iCountRunnedTests = 0
 
 End Sub
 
@@ -62,7 +62,7 @@ End Sub
 Public Sub EndTest()
 
     $oCurrentTestCase = Null
-    $iRunTests = $iRunTests + 1
+    $iCountRunnedTests = $iCountRunnedTests + 1
     Raise AfterEndTest
 
 End Sub
@@ -218,16 +218,21 @@ Public Sub AssertNotNull(vVariant As Variant, Optional sMessage As String)
 End Sub
 
 '' Asserts that an error was thrown
-'' lError: error number to compare
-Public Sub AssertEqualsError(oError As Error, Optional lError As Long, Optional sMessage As String)
+'' Use it so:
+''
+'' Try DosomethingThatThrowserror()
+'' Catch
+'' AssertError(Error.Code, Error.Text)
 
-    If (lError = 0 And oError.Number = 0) Then
-        AddFailure(sMessage & " - Expected Error did not occur.")
-    Else If (lError <> 0 And oError.Number <> lError) Then
-        AddFailure(sMessage &
-            " - Expected Error (" & lError & ") but Error (" &
-            oError.Number & ") was thrown instead.  Description: " &
-            oError.Description)
+Public Sub AssertError(ErrorNumber As Long, ErrorMessage As String, Optional ErrorNumberExpected As Long, Optional Message As String)
+
+    If (ErrorNumberExpected = 0 And ErrorNumber = 0) Then
+        AddFailure(Message & " - Expected Error did not occur.")
+    Else If (ErrorNumberExpected <> 0 And ErrorNumber <> ErrorNumberExpected) Then
+        AddFailure(Message &
+            " - Expected Error (" & ErrorNumberExpected & ") but Error (" &
+            ErrorNumber & ") was thrown instead.  Description: " &
+            ErrorMessage)
     End If
     Error.Clear
 
@@ -246,9 +251,9 @@ Private Function WasSuccessful_Read() As Boolean
 
 End
 
-Private Function RunTests_Read() As Integer
+Private Function CountRunnedTests_Read() As Integer
 
-    Return $iRunTests
+    Return $iCountRunnedTests
 
 End
 

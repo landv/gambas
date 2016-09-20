@@ -48,7 +48,7 @@ Public Sub Run(oTestResult As TestResult, Optional ShowDebug As Boolean)
     'On Error Resume Next
 
     '' Set up test fixture
-    $MyContainer.SetupEach
+    Try $MyContainer.SetupEach
 
     '' Run test
     '' Check for exceptions if Setup or Test method
@@ -56,12 +56,12 @@ Public Sub Run(oTestResult As TestResult, Optional ShowDebug As Boolean)
         oTestResult.AddError(Error.Code, Error.Where & "::Setup", Error.Text)
         Error.Clear
     Else
-        $MyContainer.RunTestCase(Me, oTestResult)
+        $MyContainer.RunCase(Me, oTestResult)
     End If
 
     '' Tear down test fixture
     '' must ensure that test fixture is properly torn down if any failures have occurred
-    $MyContainer.TearDownEach
+    Try $MyContainer.TearDownEach
 
     If Error Then
         oTestResult.AddError(Error.Code, Error.Where & "::TearDown", error.Text)

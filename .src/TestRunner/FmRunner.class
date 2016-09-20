@@ -144,22 +144,6 @@ Sub RunTests()
         CaseName = CboTestCases.List[CboTestCases.Index]
     Endif
 
-    If ContainerName = Null Then
-        If CaseName = Null Then
-            For Each ContainerName In MRunner.GetAllTestContainerNames()
-                Container = Object.New(ContainerName)
-                Suite.AddAllTestCases(Container)
-            Next
-        Endif
-    Else
-        Container = Object.New(ContainerName)
-        If CaseName = Null Then
-            Suite.AddAllTestCases(Container)
-        Else
-            Suite.AddNewTestCase(CaseName, Container)
-        Endif
-    Endif
-
-    Suite.Run($Result, True)
+    MRunner.RunTests($Result, ContainerName, CaseName)
 
 End

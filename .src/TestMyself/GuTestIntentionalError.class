@@ -1,0 +1,19 @@
+' Gambas class file
+
+Inherits TestContainer
+Export
+Private $Result As TestResult
+
+Public Sub TestError()
+
+    Dim a As Long
+
+    Print "GuTestIntentionalError::TestError"
+
+    Try a = 3 / 0
+
+    If Error Then
+        Me.Result.AssertError(Error.Code, Error.Text)
+    Endif
+
+End

@@ -6,7 +6,7 @@ Export
 Public Sub SetupEach()
 
     If Me.Debug Then
-        Debug "I did my Setup"
+        Print "Setup Each"
     Endif
 
 End
@@ -14,19 +14,21 @@ End
 Public Sub TeardownEach()
 
     If Me.Debug Then
-        Debug "I did my Teardown"
+        Print "Teardown Each"
     Endif
 
 End
 
-Public Sub TestStringFailure()
+Public Sub TestStringNull()
 
+    Print "GuTestExample1::Test First Test"
     Me.Result.AssertEmpty(Null, "Diskussion ohne Ergebnis")
 
 End
 
 Public Sub TestStringOk()
 
+    Print "GuTestExample1::Test Second Test"
     Me.Result.AssertEqualsString("ja", "ja", "Diskussion")
 
 End
