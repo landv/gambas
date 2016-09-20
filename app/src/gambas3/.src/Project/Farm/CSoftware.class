@@ -478,7 +478,7 @@ Static Public Sub UninstallFromPath(sDir As String) As String
   Exec ["rm", "-rf", sDir] Wait
   
   Try Kill Desktop.DataDir &/ "gambas3/bin" &/ LCase(sVendor) &/ sName & ".gambas"
-  
+  Try Rmdir Desktop.DataDir &/ "gambas3/bin" &/ LCase(sVendor) 
   Try Kill Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(sVendor) & "-" & sName & ".desktop"
   
   If LCase(sVendor) <> "example" Then

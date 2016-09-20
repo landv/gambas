@@ -701,6 +701,8 @@ End
 
 Private Function MakePackage(sSys As String) As Boolean
 
+  Dim sErr As String
+  
   AddLog("\n" & String(78, "=") & "\n")
   AddLog(String.UCase(Subst(("Creating package for &1."), FMakeInstall.GetSystemName(sSys))))
   AddLog("\n")
@@ -733,8 +735,9 @@ Private Function MakePackage(sSys As String) As Boolean
   
 Catch
 
-  AddLog(("The package build has failed.") & "\n" & Error.Where & ": " & Error.Text)
-  FMakeInstall.ShowError(("The package build has failed."))
+  sErr = Error.Text
+  AddLog(("The package build has failed.") & "\n" & Error.Where & ": " & sErr)
+  FMakeInstall.ShowError("<b>" & ("The package build has failed.") & "</b><br>" & sErr)
   Application.Busy = 0
   Return True
 
@@ -2236,7 +2239,7 @@ Private Sub MakeAutotoolsPackage((sSys) As String)
   AddLog("")
 
   sPackage = Dir(sBuildDir, Project.Name & "*" & $sVersion & "*")[0]
-  MoveFile(sBuildDir &/ sPackage, Path &/ GetPackagePrefix($sVendor, $sVendorPrefix, Project.Prefix) & sPackage)
+  MoveFile(sBuildDir &/ sPackage, Path &/ GetPackagePrefix(Project.Type, $sVendor, $sVendorPrefix, Project.Prefix) & sPackage)
   AddLog(sPackage)
   
   ' Remove build dir
@@ -2583,28 +2586,26 @@ Public Sub Process_Error(sData As String)
 
 End
 
-Private Sub GetPackageName() As String
+Public Sub GetPackageName(sName As String) As String
 
-  Dim sName As String
-
-  sName = LCase(String.RemoveDiacritics(Project.Name))
+  sName = LCase(String.RemoveDiacritics(sName))
   sName = Replace(sName, ".", "-")
   Return sName
   
 End
 
-Private Sub GetPackagePrefix(sVendor As String, sVendorPrefix As String, bPrefix As Boolean) As String
+Public Sub GetPackagePrefix(iProjectType As Integer, sVendor As String, sVendorPrefix As String, bPrefix As Boolean) As String
 
   Dim sText As String
   Dim sPackage As String
   Dim sPrefix As String
   
-  If Project.Type = Project.TYPE_COMPONENT Then
+  If iProjectType = Project.TYPE_COMPONENT Then
 
     sPrefix = String.LCase(Trim(sVendorPrefix))
     If Not sPrefix Then sPrefix = "gb"
     
-    sPackage = GetPackageName()
+    sPackage = GetPackageName(Project.Name)
     If sPackage Begins sPrefix & "-" Or If sPackage = sPrefix Then 
       sPrefix = ""
     Else 
@@ -2637,7 +2638,7 @@ Public Sub GetPackageFullName(sVendor As String, sVendorPrefix As String, bPrefi
   
   Dim sText As String
   
-  sText = GetPackagePrefix(sVendor, sVendorPrefix, bPrefix) & GetPackageName()  
+  sText = GetPackagePrefix(Project.Type, sVendor, sVendorPrefix, bPrefix) & GetPackageName(Project.Name)
   If bWithVersion Then sText &= "-" & Project.FormatVersion()
   Return sText
   

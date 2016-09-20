@@ -106,9 +106,7 @@ Public Sub Form_Open()
   'InitSystemControls
   InitSystems
 
-  If Project.Type = Project.TYPE_COMPONENT Then
-    ' txtVendor.Text = Split(Project.Name, ".")[0]
-    ' txtVendor.Enabled = False
+  If Project.Type <> Project.TYPE_NORMAL Then
     chkPrefix.Value = True
     chkPrefix.Enabled = False
   Endif 
@@ -236,7 +234,7 @@ Private Sub InitSystemControls()
   Next
   
   If aMsg.Count Then
-    txtMessage.Text = aMsg.Join("<p>")
+    txtMessage.Text = aMsg.Join("<br>")
     txtMessage.Show
   Else
     txtMessage.Hide
@@ -261,12 +259,18 @@ Public Sub wizInstall_Close()
 
   Project.WriteProject
   
-  If Package.Make() Then Return
+  spnCreatePackage.Show
+  spnCreatePackage.Start
   
-  If Message.Warning(("The packages have been successfully created."), ("OK"), ("Quit")) = 1 Then Return
-  
-  Me.Close(True)
+  ShowMessage(("Creating packages..."))
 
+  If Not Package.Make() Then 
+    ShowMessage(("The packages have been successfully created."))
+  Endif
+  
+  spnCreatePackage.Stop
+  spnCreatePackage.Hide
+  
 End
 
 Private Function CheckSys(cCol As Collection) As Boolean
@@ -542,6 +546,7 @@ Public Sub wizInstall_Change()
       
     Case TAB_CREATE
       chkSignature.Value = Settings["/FMakeInstall/SignPackage", False]
+      panError.Hide
       
   End Select
 
@@ -1197,11 +1202,22 @@ Public Sub txtFileDest_Click()
 End
 
 Public Sub ShowError(sMsg As String)
-  
-  Balloon.Error(sMsg, Me,, 0)
+
+  txtError.Text = Replace(sMsg, "\n", "<br>")
+  txtError.Foreground = Color.Red
+  spnCreatePackage.H = Desktop.Scale
+  panError.Show
   
 End
 
+Public Sub ShowMessage(sMsg As String)
+  
+  txtError.Text = Replace(sMsg, "\n", "<br>")
+  txtError.Foreground = Color.TextForeground
+  spnCreatePackage.H = Desktop.Scale
+  panError.Show
+  
+End
 
 Public Sub txtVendor_KeyPress()
 
@@ -1226,5 +1242,11 @@ Public Sub chkSignature_Click()
   Settings["/FMakeInstall/SignPackage"] = CBool(chkSignature.Value)
   txtPassPhrase.Enabled = chkSignature.Value
   If txtPassPhrase.Enabled Then txtPassPhrase.SetFocus
+
+End
+
+Public Sub panError_Arrange()
+
+  spnCreatePackage.W = spnCreatePackage.H
 
 End
