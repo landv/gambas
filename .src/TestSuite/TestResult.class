@@ -73,7 +73,7 @@ Public Sub AddFailure(sDescription As String)
     Dim oNewError As TestError
     Dim source As String
 
-    source = Object.Class($oCurrentTestCase.TestContainer).Name &
+    source = Object.Class($oCurrentTestCase.Container).Name &
         "." & $oCurrentTestCase.Name
 
     'Failures use Error number 0
@@ -221,15 +221,14 @@ End Sub
 '' Use it so:
 ''
 '' Try DosomethingThatThrowserror()
-'' Catch
 '' AssertError(Error.Code, Error.Text)
 
-Public Sub AssertError(ErrorNumber As Long, ErrorMessage As String, Optional ErrorNumberExpected As Long, Optional Message As String)
+Public Sub AssertError(ErrorNumber As Long, ErrorMessage As String, Optional ErrorNumberExpected As Long, Optional StrMessage As String)
 
     If (ErrorNumberExpected = 0 And ErrorNumber = 0) Then
-        AddFailure(Message & " - Expected Error did not occur.")
+        AddFailure(StrMessage & " - Expected Error did not occur.")
     Else If (ErrorNumberExpected <> 0 And ErrorNumber <> ErrorNumberExpected) Then
-        AddFailure(Message &
+        AddFailure(StrMessage &
             " - Expected Error (" & ErrorNumberExpected & ") but Error (" &
             ErrorNumber & ") was thrown instead.  Description: " &
             ErrorMessage)

@@ -37,21 +37,27 @@ End
 
 Public Sub TestFirstTest()
 
-    Print "GuTestExample2::Test First Test"
+    If Me.Debug Then
+        Print "GuTestExample2::Test First Test"
+    Endif
     Me.Result.AssertEmpty("", "Empty")
 
 End
 
 Public Sub TestThirdTest()
 
-    Print "GuTestExample2::Test Third Test"
+    If Me.Debug Then
+        Print "GuTestExample2::Test Third Test"
+    Endif
     Me.Result.AssertEqualsLong(200, 200)
 
 End
 
 Public Sub TestSecondTest()
 
-    Print "GuTestExample2::Test Second Test"
-    Me.Result.AddTrace("Tracemessage")
+    If Me.Debug Then
+        Print "GuTestExample2::Test Second Test"
+    Endif
+    Me.Result.AddTrace("GuTestExample2::Test Second Test Intentional Tracemessage")
 
 End

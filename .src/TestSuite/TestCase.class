@@ -70,6 +70,8 @@ Public Sub Run(oTestResult As TestResult, Optional ShowDebug As Boolean)
 
     oTestResult.EndTest
 
+    $MyContainer = Null
+
 End Sub
 
 Public Function CountTestCases() As Integer

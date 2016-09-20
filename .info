@@ -225,6 +225,7 @@ Count
 r
 l
 
+'Return a TestError object from the collection by index - one-based
 'Return number of TestError objects in the collection.
 #TestParameter
 
@@ -426,11 +427,10 @@ m
 AssertError
 m
 
-(ErrorNumber)l(ErrorMessage)s[(ErrorNumberExpected)l(Message)s]
+(ErrorNumber)l(ErrorMessage)s[(ErrorNumberExpected)l(StrMessage)s]
 'Asserts that an error was thrown
 'Use it so:
 'Try DosomethingThatThrowserror()
-'Catch
 'AssertError(Error.Code, Error.Text)
 #TestSuite
 ITest

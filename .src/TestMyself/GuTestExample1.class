@@ -21,14 +21,18 @@ End
 
 Public Sub TestStringNull()
 
-    Print "GuTestExample1::Test First Test"
+    If Me.Debug Then
+        Print "GuTestExample1::Test First Test"
+    Endif
     Me.Result.AssertEmpty(Null, "Diskussion ohne Ergebnis")
 
 End
 
 Public Sub TestStringOk()
 
-    Print "GuTestExample1::Test Second Test"
+    If Me.Debug Then
+        Print "GuTestExample1::Test Second Test"
+    Endif
     Me.Result.AssertEqualsString("ja", "ja", "Diskussion")
 
 End

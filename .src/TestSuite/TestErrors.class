@@ -40,25 +40,25 @@ Public Function Add(oTestCase As ITestCase, lNumber As Long, sSource As String, 
 
 End Function
 
-'' Add a new TestError object to the collection.
-Sub AddError(oError As TestError)
-
-    $Errors.Add(oError)
-
-End Sub
+' '' Add a new TestError object to the collection.
+' Sub AddError(oError As TestError)
+'
+'     $Errors.Add(oError)
+'
+' End Sub
 
 '' Return a TestError object from the collection by index - one-based
 'Property Read Item(iIndex As Integer) As TestError
 
-Function Item(iIndex As Integer) As TestError
-    'Function Item_Read() As TestError
-    'Attribute Item.VB_UserMemId = 0
-
-    If iIndex <= $Errors.Count Then
-        Return $Errors(iIndex)
-    End If
-
-End
+' Function Item(iIndex As Integer) As TestError
+'     'Function Item_Read() As TestError
+'     'Attribute Item.VB_UserMemId = 0
+'
+'     If iIndex <= $Errors.Count Then
+'         Return $Errors(iIndex)
+'     End If
+'
+' End
 
 '' Return number of TestError objects in the collection.
 Property Read Count As Long

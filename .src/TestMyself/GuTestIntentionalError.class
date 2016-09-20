@@ -2,18 +2,19 @@
 
 Inherits TestContainer
 Export
-Private $Result As TestResult
 
 Public Sub TestError()
 
     Dim a As Long
 
-    Print "GuTestIntentionalError::TestError"
+    If Me.Debug Then
+        Print "GuTestIntentionalError::TestError"
+    Endif
 
     Try a = 3 / 0
+    Me.Result.AssertError(Error.Code, Error.Text)
 
-    If Error Then
-        Me.Result.AssertError(Error.Code, Error.Text)
-    Endif
+    Try a = 2 * 3
+    Me.Result.AssertError(Error.Code, Error.Text, 26, "Intentional Failure. If this is a failure, then all is ok.")
 
 End

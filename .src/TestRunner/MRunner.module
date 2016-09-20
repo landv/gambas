@@ -6,8 +6,8 @@ Public Sub Main()
 
     Dim res As New TestResult
 
-    RunTests(res, "GuTestIntentionalError", Null, True)
-    'RunTests(res)
+    'RunTests(res, "GuTestIntentionalError", Null, False)
+    RunTests(res, Null, Null, False)
     PrintResult(res)
 
 End
@@ -23,9 +23,6 @@ End
 
 Public Sub PrintResult(Res As TestResult)
 
-    'Dim Container As TestContainer
-    '     Dim Suite As TestSuite
-    '     Dim Res As New TestResult
     Dim Errs As TestErrors
     Dim Fails As TestErrors
     Dim Err As TestError
@@ -36,9 +33,9 @@ Public Sub PrintResult(Res As TestResult)
     Errs = Res.Errors
     Fails = Res.Failures
 
-    Print "-------------------------------------------------  Test Results"
+    Print "----------------------- Test Results ----------------------- "
     Print res.CountRunnedTests & " Test done"
-    Print "------------------------------------------------- "
+    Print "------------------------------------------------------------ "
     If Errs.Count > 0 Then
         For Each Err In Errs.Items
             Print "Error in:";; Err.Source
@@ -56,7 +53,12 @@ Public Sub PrintResult(Res As TestResult)
     Else
         Print "No Failures"
     Endif
-    Print "-------------------------------------------------  End"
+    Print "------------------------- Test End -------------------------"
+    If res.WasSuccessful = True Then
+        Print "Success!"
+    Else
+        Print "Not successful"
+    Endif
 
 End
 
