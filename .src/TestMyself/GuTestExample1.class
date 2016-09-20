@@ -1,0 +1,40 @@
+' Gambas class file
+
+Inherits TestContainer
+Export
+
+Public Sub SetupEach()
+
+    If Me.Debug Then
+        Debug "I did my Setup"
+    Endif
+
+End
+
+Public Sub TeardownEach()
+
+    If Me.Debug Then
+        Debug "I did my Teardown"
+    Endif
+
+End
+
+Public Sub TestStringFailure()
+
+    Me.Result.AssertEmpty(Null, "Diskussion ohne Ergebnis")
+
+End
+
+Public Sub TestStringOk()
+
+    Me.Result.AssertEqualsString("ja", "ja", "Diskussion")
+
+End
+
+' Public Sub TestError()
+'
+'     Error.Raise("Intentional error")
+' Catch
+'     Me.Result.AssertEqualsError( Error )
+'
+' End

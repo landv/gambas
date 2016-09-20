@@ -1,0 +1,165 @@
+' Gambas class file
+
+Property Suite As TestSuite
+Private $Suite As TestSuite
+Private $Result As TestResult
+
+Public Sub _new()
+
+    $Result = New Testresult As "Result"
+    FillForm()
+
+End
+
+Public Sub Result_AfterStartTest(oTestCase As ITestCase)
+
+    Debug "Test " & oTestCase.Name & " started"
+
+End
+
+Public Sub Result_AfterEndTest()
+
+    Debug "Test ended"
+
+End
+
+Sub FillForm()
+
+    FillCbos()
+
+End
+
+Sub FillCbos()
+
+    FillCboContainers()
+    FillCboTests()
+
+End
+
+Sub FillCboContainers()
+
+    Dim ContainerNames As New String[]
+    ' ------------------------------------------------- CboContainers
+    With ContainerNames
+        .Add("All Test Containers")
+        .Insert(MRunner.GetAllTestContainerNames())
+    End With
+
+    With Me.CboContainers
+        .List = ContainerNames
+        .Index = 0
+        .Show()
+    End With
+
+End
+
+Sub FillCboTests(Optional TestContainerName As String)
+
+    Dim ContainerNames As String[]
+    Dim TestNames As New String[]
+    Dim C As TestContainer
+    Dim i As Integer
+
+    TestNames.Add("All Test Cases")
+
+    If Not TestContainerName Then
+        'all Tests
+        ContainerNames = MRunner.GetAllTestContainerNames()
+
+    Else
+        'only tests from one container
+        ContainerNames = New String[]
+        ContainerNames.Add(TestContainerName)
+    Endif
+
+    For Each ContainerNames
+        C = Object.New(ContainerNames[i])
+        TestNames.Insert(C.CaseNames)
+        Inc i
+    Next
+
+    TestNames.Sort
+    With Me.CboTestCases
+        .List = TestNames
+        .Index = 0
+        .Show()
+    End With
+
+End
+
+Sub FillTabs()
+
+    Dim fmResult As FmRunnerResult
+
+    Me.TabPanel1.Count = 1
+    fmResult = New FmRunnerResult(Me.TabPanel1)
+    fmResult.show
+
+End
+
+Private Function Suite_Read() As TestSuite
+
+    Return $Suite
+
+End
+
+Private Sub Suite_Write(Value As TestSuite)
+
+    $Suite = Value
+    FillCbos()
+
+End
+
+Public Sub CboContainers_Change()
+
+    Dim ContainerName As String
+
+    If CboContainers.Index > 0 Then
+        ContainerName = MRunner.GetAllTestContainerNames()[CboContainers.Index - 1]
+    Endif
+
+    FillCboTests(ContainerName)
+
+End
+
+Public Sub BtRun_Click()
+
+    RunTests()
+
+End
+
+Sub RunTests()
+
+    Dim ContainerName, CaseName As String
+    Dim Suite As New TestSuite
+    Dim Container As TestContainer
+
+    ' ------------------------------------------------- Container name
+    If CboContainers.Index > 0 Then
+        ContainerName = CboContainers.List[CboContainers.Index]
+    Endif
+
+    ' ------------------------------------------------- Case name
+    If CboTestCases.Index > 0 Then
+        CaseName = CboTestCases.List[CboTestCases.Index]
+    Endif
+
+    If ContainerName = Null Then
+        If CaseName = Null Then
+            For Each ContainerName In MRunner.GetAllTestContainerNames()
+                Container = Object.New(ContainerName)
+                Suite.AddAllTestCases(Container)
+            Next
+        Endif
+    Else
+        Container = Object.New(ContainerName)
+        If CaseName = Null Then
+            Suite.AddAllTestCases(Container)
+        Else
+            Suite.AddNewTestCase(CaseName, Container)
+        Endif
+    Endif
+
+    Suite.Run($Result, True)
+
+End

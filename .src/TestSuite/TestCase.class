@@ -11,13 +11,13 @@ Inherits ITestCase
 '' Member variables
 Private $Name As String
 Private $MyContainer As TestContainer
-Private $TestCaseCount As Integer
+Private $Debug As Boolean
 
 '' Name of the test case
 Property Read Name As String
 
 '' Reference to the test container containing the test method to be executed.
-Property Read TestContainer As TestContainer
+Property Read Container As TestContainer
 
 '' Initializes the TestCase.  Used in lieu of a constructor.
 Public Sub _new(sName As String, oTestContainer As TestContainer)
@@ -40,16 +40,15 @@ Function Name_Read() As String
 End
 
 'Create the fixture, run the test and collect the results in TestResult
-Public Sub Run(oTestResult As TestResult)
+Public Sub Run(oTestResult As TestResult, Optional ShowDebug As Boolean)
 
-    Debug "Start test in TestCase"
-
+    $Debug = $MyContainer.Debug
     oTestResult.StartTest(Me)
 
     'On Error Resume Next
 
     '' Set up test fixture
-    Try $MyContainer.Setup
+    $MyContainer.SetupEach
 
     '' Run test
     '' Check for exceptions if Setup or Test method
@@ -62,7 +61,7 @@ Public Sub Run(oTestResult As TestResult)
 
     '' Tear down test fixture
     '' must ensure that test fixture is properly torn down if any failures have occurred
-    $MyContainer.TearDown
+    $MyContainer.TearDownEach
 
     If Error Then
         oTestResult.AddError(Error.Code, Error.Where & "::TearDown", error.Text)
@@ -79,7 +78,7 @@ Public Function CountTestCases() As Integer
 
 End Function
 
-Private Function TestContainer_Read() As TestContainer
+Private Function Container_Read() As TestContainer
 
     Return $MyContainer
 

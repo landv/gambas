@@ -10,6 +10,7 @@ Export
 Inherits ITest
 
 Private $Tests As ITest[]
+Private $Debug As Boolean
 
 Public Sub _new()
 
@@ -17,23 +18,34 @@ Public Sub _new()
 
 End Sub
 
-Private Sub Class_Terminate()
-
-    $Tests = Null
-
-End Sub
-
 '' Runs all tests contained within the collection and collects the result in the TestResult parameter.
-Public Sub Run(oTestResult As TestResult)
+Public Sub Run(oTestResult As TestResult, Optional ShowDebug As Boolean)
 
-    Dim oTest As ITest
+    Dim oTest As ITestCase
+    Dim CurrentContainer, LastContainer As TestContainer
 
     For Each oTest In $Tests
+        oTest.Container.Debug = ShowDebug
+        CurrentContainer = oTest.Container
+
+        If LastContainer Then
+            If LastContainer <> CurrentContainer Then
+                LastContainer.TearDownContainer
+                CurrentContainer.SetupContainer
+            Endif
+        Else
+            CurrentContainer.SetupContainer
+        Endif
+
         Try oTest.Run(oTestResult)
         If Error Then
             oTestResult.AddError(Error.Code, Error.Where, Error.Text)
+            Try oTest.TestContainer.TearDownEach()
+            Error.Clear
         Endif
+        LastContainer = CurrentContainer
     Next
+    LastContainer.TearDownContainer()
 
 End Sub
 
@@ -74,7 +86,7 @@ Public Function AddAllTestCases(oTestContainer As TestContainer)
     Dim sTests As Variant
     Dim i As Integer
 
-    sTests = oTestContainer.TestCaseNames
+    sTests = oTestContainer.CaseNames
 
     If sTests Then
         For i = 0 To sTests.Count - 1
@@ -83,11 +95,3 @@ Public Function AddAllTestCases(oTestContainer As TestContainer)
     Endif
 
 End
-
-'' Runs all tests contained within the collection and collects the result in a TestResult instance.
-
-' Private Sub Run(oTestResult As TestResult)
-'
-'     run(oTestResult)
-'
-' End

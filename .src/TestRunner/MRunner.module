@@ -1,0 +1,86 @@
+' Gambas module file
+
+Export
+
+Public Sub Main()
+
+    RunAllTests(True)
+
+End
+
+'' Show the Test Runner Form
+Public Sub ShowTestRunnerForm()
+
+    Dim fm As New FmRunner
+
+    fm.Show()
+
+End
+
+Public Sub RunAllTests(Optional ShowResultAsDebug As Boolean)
+
+    'Dim Container As TestContainer
+    Dim Suite As TestSuite
+    Dim Res As New TestResult
+    Dim Errs As TestErrors
+    Dim Fails As TestErrors
+    Dim Err As TestError
+    Dim Fail As TestError
+    Dim C As Class
+
+    Suite = New TestSuite
+
+    For Each C In Classes
+        If Left(C.Name, 6) = "GuTest" Then
+            Suite.AddAllTestCases(Object.New(C.Name))
+        Endif
+    Next
+
+    Suite.Run(Res)
+
+    'TS.Run(Res)
+    Errs = Res.Errors
+    Fails = Res.Failures
+
+    If ShowResultAsDebug = True Then
+        Debug "Number of test cases:";; Suite.CountTestCases()
+
+        If Errs.Count > 0 Then
+            For Each Err In Errs.Items
+                Debug "Error in:";; Err.Source
+                Debug "Error:";; Err.Description
+            Next
+        Else
+            Debug "No Errors"
+        Endif
+
+        If Fails.Count > 0 Then
+            For Each Fail In Fails.Items
+                Debug "Failure in:";; Fail.Source
+                Debug "Failure:";; Fail.Description
+            Next
+        Else
+            Debug "No Failures"
+        Endif
+    Else
+        ' ------------------------------------------------- Show Result with form
+
+    Endif
+
+End
+
+Public Function GetAllTestContainerNames() As String[]
+
+    Dim ret As New String[]
+    Dim C As Class
+
+    For Each C In Classes
+        If Left(C.Name, 6) = "GuTest" Then
+            ret.add(C.Name)
+        Endif
+    Next
+    ret.Sort()
+
+    Return ret
+
+End

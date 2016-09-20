@@ -1,0 +1,33 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,114,55)
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { HBoxTop HBox
+    MoveScaled(0,1,100,4)
+    Spacing = True
+    { CboContainers ComboBox
+      MoveScaled(1,0,40,4)
+    }
+    { CboTestCases ComboBox
+      MoveScaled(46,0,51,4)
+    }
+  }
+  { TabPanel1 TabPanel
+    MoveScaled(1,7,99,41)
+    Expand = True
+    Index = 0
+    Text = ("")
+    Index = 0
+  }
+  { HBoxBottom HBox
+    MoveScaled(2,50,100,4)
+    Invert = True
+    { BtRun Button
+      MoveScaled(82,0,16,4)
+      Text = ("Run Tests")
+    }
+  }
+}

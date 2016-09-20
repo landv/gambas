@@ -1,12 +1,29 @@
 [Breakpoints]
-Count=1
-Breakpoint[1]="ExampleTestContainer.34"
+Count=0
 
 [DebugWindow]
 Count=0
 
+[DebugWindow/$Result]
+Geometry=[59,354,255,280]
+
+[DebugWindow/$Result.Failures]
+Geometry=[202,70,224,280]
+
 [DebugWindow/$TestCaseNames]
 Geometry=[137,230,224,280]
+
+[DebugWindow/$Tests]
+Geometry=[188,56,450,280]
+
+[DebugWindow/$Tests[0]]
+Geometry=[202,70,450,280]
+
+[DebugWindow/$Tests[1]]
+Geometry=[202,70,450,280]
+
+[DebugWindow/$Tests[2]]
+Geometry=[202,70,450,280]
 
 [DebugWindow/$colFailures]
 Geometry=[106,50,224,280]
@@ -14,8 +31,20 @@ Geometry=[106,50,224,280]
 [DebugWindow/$colTests]
 Geometry=[311,89,224,280]
 
+[DebugWindow/$oCurrentTestCase]
+Geometry=[188,56,378,280]
+
+[DebugWindow/C]
+Geometry=[188,56,224,280]
+
+[DebugWindow/CboContainers]
+Geometry=[188,56,224,280]
+
 [DebugWindow/Container]
 Geometry=[118,131,433,280]
+
+[DebugWindow/CurrentContainer]
+Geometry=[188,56,224,280]
 
 [DebugWindow/Errs]
 Geometry=[311,89,224,280]
@@ -35,8 +64,26 @@ Geometry=[339,117,224,280]
 [DebugWindow/ExampleTestContainer(Container).TestCaseNames]
 Geometry=[132,145,433,280]
 
+[DebugWindow/ExampleTestContainer(TestCase($Tests[2]).TestContainer).TestCase]
+Geometry=[230,98,450,280]
+
+[DebugWindow/ExampleTestContainer(TestCase($oCurrentTestCase).TestContainer).TestCase]
+Geometry=[216,84,378,280]
+
+[DebugWindow/ExampleTestContainer(TestCase($oCurrentTestCase).TestContainer).TestCaseNames]
+Geometry=[216,84,378,280]
+
+[DebugWindow/ExampleTestContainer(TestCase(ExampleTestContainer(TestCase(oTest).TestContainer).TestCase).TestContainer).TestCase]
+Geometry=[367,145,368,280]
+
 [DebugWindow/ExampleTestContainer(TestCase(Fail.TestCase).TestContainer).TestCaseNames]
 Geometry=[157,90,431,342]
+
+[DebugWindow/ExampleTestContainer(TestCase(oTest).TestContainer).TestCase]
+Geometry=[339,117,368,280]
+
+[DebugWindow/ExampleTestContainer(test.TestContainer).TestCaseNames]
+Geometry=[134,78,441,280]
 
 [DebugWindow/Fail]
 Geometry=[115,48,224,280]
@@ -55,6 +102,9 @@ Geometry=[156,48,210,210]
 
 [DebugWindow/Main]
 Geometry=[722,71,224,280]
+
+[DebugWindow/Me]
+Geometry=[188,56,224,280]
 
 [DebugWindow/Res]
 Geometry=[311,89,545,280]
@@ -110,8 +160,23 @@ Geometry=[167,89,224,280]
 [DebugWindow/TestCase]
 Geometry=[106,50,224,280]
 
+[DebugWindow/TestCase($Tests[1]).TestContainer]
+Geometry=[216,84,450,280]
+
+[DebugWindow/TestCase($Tests[2]).TestContainer]
+Geometry=[216,84,450,280]
+
+[DebugWindow/TestCase($oCurrentTestCase).TestContainer]
+Geometry=[202,70,378,280]
+
+[DebugWindow/TestCase(ExampleTestContainer(TestCase(oTest).TestContainer).TestCase).TestContainer]
+Geometry=[353,131,368,280]
+
 [DebugWindow/TestCase(Fail.TestCase).TestContainer]
 Geometry=[143,76,431,342]
+
+[DebugWindow/TestCase(oTest).TestContainer]
+Geometry=[325,103,368,280]
 
 [DebugWindow/TestContainer]
 Geometry=[118,131,224,280]
@@ -141,10 +206,10 @@ Geometry=[14,225,341,280]
 Geometry=[311,89,224,280]
 
 [DebugWindow/oTestCase]
-Geometry=[137,230,224,280]
+Geometry=[21,356,360,280]
 
 [DebugWindow/oTestContainer]
-Geometry=[167,89,224,280]
+Geometry=[167,89,394,280]
 
 [DebugWindow/oTestContainer.TestCaseNames]
 Geometry=[181,103,224,280]
@@ -155,11 +220,23 @@ Geometry=[10,426,465,280]
 [DebugWindow/oTestResult.Errors]
 Geometry=[24,440,465,280]
 
+[DebugWindow/oTestResult.Errors.Items]
+Geometry=[38,454,465,280]
+
 [DebugWindow/oTestResult.Failures]
-Geometry=[120,64,465,280]
+Geometry=[24,440,465,280]
+
+[DebugWindow/sTests]
+Geometry=[188,56,224,280]
+
+[DebugWindow/symbols]
+Geometry=[71,368,280,479]
 
 [DebugWindow/test]
-Geometry=[106,50,224,280]
+Geometry=[106,50,441,280]
+
+[DebugWindow/test.TestContainer]
+Geometry=[120,64,441,280]
 
 [DebugWindow/test1]
 Geometry=[311,89,224,280]
@@ -168,12 +245,16 @@ Geometry=[311,89,224,280]
 Path="gb.deg.unit.gambas"
 
 [OpenFile]
-File[1]=".src/TestMyself/ExampleTestContainer.class:16.34"
-File[2]=".src/Main.module:7.21"
-File[3]=".src/TestSuite/TestResult.class:28.102"
-File[4]=".src/TestSuite/TestContainer.class:0.47"
-Active=4
-Count=4
+File[1]=".src/TestRunner/FmRunner.form"
+File[2]=".src/TestRunner/FmRunner.class:45.148"
+File[3]=".src/TestMyself/GuTestExample1.class:0.33"
+File[4]=".src/TestSuite/TestSuite.class:41.27"
+Active=8
+Count=8
+File[5]=".src/TestSuite/ITestCase.class:0.17"
+File[6]=".src/TestSuite/TestCase.class:31.44"
+File[7]=".src/TestSuite/ITest.class:35.13"
+File[8]=".src/TestRunner/MRunner.module:14.83"
 
 [Watches]
 Count=0

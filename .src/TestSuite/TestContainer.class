@@ -5,50 +5,58 @@ Export
 ' This interface identifies TestContainer classes.  TestContainers are a
 ' classes that hold different test case methods.
 
-' Return the name of the different test case methods in this test container
-Property TestCaseNames As String[]
-Private $TestCaseNames As String[]
+Property Read Name As String
 
-Property TestCase As ITestCase
+' Return the name of the different test case methods in this test container
+Property CaseNames As String[]
+Private $CaseNames As String[]
+
+Property Case As ITestCase
 Property Result As TestResult
 
-Private $TestCase As ITestCase
+Private $Case As ITestCase
 Private $Result As TestResult
+Property Debug As Boolean
 
+Private $Debug As Boolean
 
-Public Sub _new()
+Public Sub _new(Optional ShowDebug As Boolean)
 
-    Dim symbols As String[] 
+    Dim symbols As String[]
     Dim symbol As String
-    $TestCaseNames = New String[]
-    
+
+    $Debug = ShowDebug
+
+    ' ------------------------------------------------- Fill Cases by listing all Testmethods
+    $CaseNames = New String[]
     symbols = Object.Class(Me).Symbols
-    
+
     For Each symbol In symbols
-        If Left(symbol, 4) = "test" Then
-            $TestCaseNames.Add(symbol)
+        If Left(symbol, 4) = "Test" Then
+            $CaseNames.Add(symbol)
         Endif
     Next
-
 
 End
 
 ' Run the specified test case methods in this test container
-Public Sub RunTestCase(oTestCase As ITestCase, oTestResult As TestResult)
+Public Sub RunCase(oCase As ITestCase, oTestResult As TestResult)
+
     Dim MethodName As String
     Dim hClass As Class
 
-    Me.TestCase = oTestCase
+    Me.Case = oCase
     Me.Result = oTestResult
-    
-    ' ------------------------------------------------- Thema
+
+    ' ------------------------------------------------- Iterate through test methods
     hClass = Object.Class(Me)
-    
-    For Each MethodName In $TestCaseNames
+    For Each MethodName In $CaseNames
         If hClass[MethodName].Kind = Class.Method Then
-            If MethodName = Me.TestCase.Name Then
-            Debug "Call";; MethodName
-            Object.Call(Me, MethodName)
+            If MethodName = Me.Case.Name Then
+                If Me.Debug Then
+                    Debug "Call";; MethodName
+                Endif
+                Object.Call(Me, MethodName)
             Endif
         Endif
     Next
@@ -56,38 +64,62 @@ Public Sub RunTestCase(oTestCase As ITestCase, oTestResult As TestResult)
 End Sub
 
 'Initialize the test fixture
-Public Sub Setup()
+Public Sub SetupEach()
 
-    Debug "No Setup"
+    If Me.Debug Then
+        Debug "Setup single Test"
+    Endif
 
 End Sub
 
 'Destroy the test fixture
-Public Sub TearDown()
+Public Sub TearDownEach()
 
-    Debug "No Teardown"
+    If Me.Debug Then
+        Debug "Teardown single Test"
+    Endif
 
 End Sub
 
-Private Function TestCaseNames_Read() As String[]
-    Return $TestCaseNames
+'Initialize the test fixture for container
+Public Sub SetupContainer()
+
+    If Me.Debug Then
+        Debug "Setup Container " & Object.Class(Me).Name
+    Endif
+
+End Sub
+
+'Destroy the test fixture for container
+Public Sub TearDownContainer()
+
+    If Me.Debug Then
+        Debug "Teardown Container " & Object.Class(Me).Name
+    Endif
+
+End Sub
+
+Private Function CaseNames_Read() As String[]
+
+    Return $CaseNames
+
 End
 
-Private Sub TestCaseNames_Write(Value As String[])
+Private Sub CaseNames_Write(Value As String[])
 
-    $TestCaseNames = value
-
-End
-
-Private Function TestCase_Read() As ITestCase
-
-    Return $TestCase
+    $CaseNames = value
 
 End
 
-Private Sub TestCase_Write(Value As ITestCase)
+Private Function Case_Read() As ITestCase
 
-    $TestCase = Value
+    Return $Case
+
+End
+
+Private Sub Case_Write(Value As ITestCase)
+
+    $Case = Value
 
 End
 
@@ -100,5 +132,24 @@ End
 Private Sub Result_Write(Value As TestResult)
 
     $Result = Value
+
+End
+
+'' Returns the classname of the TestContainer
+Private Function Name_Read() As String
+
+    Return Object.Class(Me).Name
+
+End
+
+Private Function Debug_Read() As Boolean
+
+    Return $Debug
+
+End
+
+Private Sub Debug_Write(Value As Boolean)
+
+    $Debug = Value
 
 End

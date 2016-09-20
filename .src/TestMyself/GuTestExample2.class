@@ -1,0 +1,16 @@
+' Gambas class file
+
+Inherits TestContainer
+Export
+
+Public Sub TestEmpty()
+
+    Me.Result.AssertEmpty("", "Empty")
+
+End
+
+Public Sub TestString()
+
+    Me.Result.AddTrace("Tracemessage")
+
+End

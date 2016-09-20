@@ -71,9 +71,13 @@ End Sub
 Public Sub AddFailure(sDescription As String)
 
     Dim oNewError As TestError
+    Dim source As String
+
+    source = Object.Class($oCurrentTestCase.TestContainer).Name &
+        "." & $oCurrentTestCase.Name
 
     'Failures use Error number 0
-    oNewError = $colFailures.Add($oCurrentTestCase, 0, "", sDescription)
+    oNewError = $colFailures.Add($oCurrentTestCase, 0, source, sDescription)
     Raise AfterAddFailure(oNewError)
     oNewError = Null
 
@@ -186,7 +190,18 @@ End Sub
 Public Sub AssertNotEmpty(vVariant As Variant, Optional sMessage As String)
 
     If (vVariant = Null) Then
-        AddFailure(sMessage & " - Variant is Empty.")
+        AddFailure(sMessage & " - Variant is empty.")
+    End If
+
+End Sub
+
+'' Asserts that a variant is empty
+'' vVariant: variant to evaluate
+'' sMessage: the detail message to record if this assertion fails
+Public Sub AssertEmpty(vVariant As Variant, Optional sMessage As String)
+
+    If (vVariant <> Null) Then
+        AddFailure(sMessage & " - Variant is not empty.")
     End If
 
 End Sub
@@ -214,6 +229,7 @@ Public Sub AssertEqualsError(oError As Error, Optional lError As Long, Optional 
             oError.Number & ") was thrown instead.  Description: " &
             oError.Description)
     End If
+    Error.Clear
 
 End Sub
 
