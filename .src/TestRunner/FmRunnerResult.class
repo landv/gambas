@@ -1,1 +1,20 @@
 ' Gambas class file
+
+'' Store Runs[0] = number if done, Runs[1] = count of tests
+Property Runs As Integer[]
+
+Private Function Runs_Read() As Integer[]
+
+End
+
+Private Sub Runs_Write(Value As Integer[])
+
+    Dim all, done As Integer
+
+    done = Value[0]
+    all = Value[1]
+
+    Me.ProgressBar1.Value = done / all
+    Me.LblRuns.Text = "Runs: " & done & "/" & all
+
+End

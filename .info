@@ -1,59 +1,31 @@
-#GuTestExample1
-TestContainer
+#CRunner
+
 C
-SetupEach
+Suite
+p
+TestSuite
+
+_new
 m
 
 
-TeardownEach
+ShowRunnerForm
 m
 
 
-TestStringNull
+'Show the Test Runner Form
+PrintResult
 m
 
-
-TestStringOk
+(Res)TestResult;
+RunTests
 m
 
-
-#GuTestExample2
-TestContainer
-C
-SetupContainer
-m
-
-
-TeardownContainer
-m
-
-
-SetupEach
-m
-
-
-TeardownEach
-m
-
-
-TestFirstTest
-m
-
-
-TestThirdTest
-m
-
-
-TestSecondTest
-m
-
-
-#GuTestIntentionalError
-TestContainer
-C
-TestError
-m
-
+(Result)TestResult;[(ContainerName)s(CaseName)s(ShowDebug)b]
+'Run all tests, optional limited by Container or TestCaseName. TestResult contains .
+GetAllTestContainerNames
+M
+String[]
 
 #ITest
 
@@ -76,31 +48,6 @@ s
 Container
 r
 TestContainer
-
-#MRunner
-
-C
-Main
-M
-
-
-RunTests
-M
-
-(Result)TestResult;[(ContainerName)s(CaseName)s(ShowDebug)b]
-'Run all tests, optional limited by Container or TestCaseName. TestResult contains .
-PrintResult
-M
-
-(res)TestResult;
-ShowTestRunnerForm
-M
-
-
-'Show the Test Runner Form
-GetAllTestContainerNames
-M
-String[]
 
 #TestCase
 ITestCase
@@ -474,3 +421,67 @@ m
 
 (oTestContainer)TestContainer;
 'Create all test cases that are contained in the specified TestContainer and add them to the suite.
+#_GuTestErrorsAndFailures
+TestContainer
+C
+TestStringFailure
+m
+
+
+#_GuTestExample1
+TestContainer
+C
+SetupEach
+m
+
+
+TeardownEach
+m
+
+
+TestStringNull
+m
+
+
+TestStringOk
+m
+
+
+#_GuTestExample2
+TestContainer
+C
+SetupContainer
+m
+
+
+TeardownContainer
+m
+
+
+SetupEach
+m
+
+
+TeardownEach
+m
+
+
+TestFirstTest
+m
+
+
+TestThirdTest
+m
+
+
+TestSecondTest
+m
+
+
+#_GuTestIntentionalError
+TestContainer
+C
+TestError
+m
+
+

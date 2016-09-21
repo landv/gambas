@@ -1,0 +1,10 @@
+' Gambas class file
+
+Export
+Inherits TestContainer
+
+Public Sub TestStringFailure()
+
+    Me.Result.AssertEqualsString("Lisa", "Paul", "Strings should be equal")
+
+End

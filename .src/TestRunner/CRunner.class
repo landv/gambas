@@ -1,19 +1,23 @@
-' Gambas module file
+' Gambas class file
 
 Export
+Property Suite As TestSuite
+Private $Suite As TestSuite
 
-Public Sub Main()
+Public Sub _new()
 
-    Dim res As New TestResult
+    $Suite = New TestSuite
+    ' Dim res As New TestResult
+    ' 'RunTests(res, "GuTestIntentionalError", Null, False)
+    ' RunTests(res, Null, Null, False)
+    ' PrintResult(res)
 
-    'RunTests(res, "GuTestIntentionalError", Null, False)
-    RunTests(res, Null, Null, False)
-    PrintResult(res)
+    'ShowRunnerForm()
 
 End
 
 '' Show the Test Runner Form
-Public Sub ShowTestRunnerForm()
+Public Sub ShowRunnerForm()
 
     Dim fm As New FmRunner
 
@@ -67,40 +71,51 @@ End
 Public Sub RunTests(Result As TestResult, Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean)
 
     Dim Container As TestContainer
-    Dim Suite As New TestSuite
 
     If ContainerName = Null Then
         If CaseName = Null Then
-            For Each ContainerName In MRunner.GetAllTestContainerNames()
+            For Each ContainerName In CRunner.GetAllTestContainerNames()
                 Container = Object.New(ContainerName)
-                Suite.AddAllTestCases(Container)
+                $Suite.AddAllTestCases(Container)
             Next
         Endif
     Else
         Container = Object.New(ContainerName)
         If CaseName = Null Then
-            Suite.AddAllTestCases(Container)
+            $Suite.AddAllTestCases(Container)
         Else
-            Suite.AddNewTestCase(CaseName, Container)
+            $Suite.AddNewTestCase(CaseName, Container)
         Endif
     Endif
 
-    Suite.Run(Result, ShowDebug)
+    $Suite.Run(Result, ShowDebug)
 
 End
 
-Public Function GetAllTestContainerNames() As String[]
+Static Public Function GetAllTestContainerNames() As String[]
 
     Dim ret As New String[]
     Dim C As Class
 
     For Each C In Classes
-        If Left(C.Name, 6) = "GuTest" Then
+        If Left(C.Name, 7) = "_GuTest" Then
             ret.add(C.Name)
         Endif
     Next
     ret.Sort()
 
     Return ret
+
+End
+
+Private Function Suite_Read() As TestSuite
+
+    Return $Suite
+
+End
+
+Private Sub Suite_Write(Value As TestSuite)
+
+    $Suite = Value
 
 End

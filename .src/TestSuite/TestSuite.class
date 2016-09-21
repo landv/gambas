@@ -45,7 +45,9 @@ Public Sub Run(oTestResult As TestResult, Optional ShowDebug As Boolean)
         Endif
         LastContainer = CurrentContainer
     Next
-    LastContainer.TearDownContainer()
+    If LastContainer Then
+        LastContainer.TearDownContainer()
+    Endif
 
 End Sub
 

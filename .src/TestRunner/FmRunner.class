@@ -3,6 +3,7 @@
 Property Suite As TestSuite
 Private $Suite As TestSuite
 Private $Result As TestResult
+Private $FmResult As FmRunnerResult
 
 Public Sub _new()
 
@@ -19,13 +20,37 @@ End
 
 Public Sub Result_AfterEndTest()
 
-    Debug "Test ended"
+    UpdateProgress()
+
+End
+
+Public Sub Result_AfterAddTrace(sMessage As String)
+
+End
+
+Public Sub Result_AfterAddError(oError As TestError)
+
+End
+
+Public Sub Result_AfterAddFailure(oError As TestError)
+
+End
+
+Sub UpdateProgress()
+
+    Dim Runs As New Integer[]
+
+    Runs.Add($Result.CountRunnedTests)
+    Runs.Add($Suite.CountTestCases())
+    $FmResult.Runs = Runs
+    Wait 0.01
 
 End
 
 Sub FillForm()
 
     FillCbos()
+    FillTabs()
 
 End
 
@@ -42,7 +67,7 @@ Sub FillCboContainers()
     ' ------------------------------------------------- CboContainers
     With ContainerNames
         .Add("All Test Containers")
-        .Insert(MRunner.GetAllTestContainerNames())
+        .Insert(CRunner.GetAllTestContainerNames())
     End With
 
     With Me.CboContainers
@@ -64,7 +89,7 @@ Sub FillCboTests(Optional TestContainerName As String)
 
     If Not TestContainerName Then
         'all Tests
-        ContainerNames = MRunner.GetAllTestContainerNames()
+        ContainerNames = CRunner.GetAllTestContainerNames()
 
     Else
         'only tests from one container
@@ -89,11 +114,16 @@ End
 
 Sub FillTabs()
 
-    Dim fmResult As FmRunnerResult
-
     Me.TabPanel1.Count = 1
-    fmResult = New FmRunnerResult(Me.TabPanel1)
-    fmResult.show
+    Me.TabPanel1.Arrangement = Arrange.Fill
+
+    $FmResult = New FmRunnerResult(Me.TabPanel1)
+    With $FmResult
+        .Expand = True
+        .Show
+    End With
+    Me.TabPanel1.Show
+    Me.TabPanel1.Index = 0
 
 End
 
@@ -115,7 +145,7 @@ Public Sub CboContainers_Change()
     Dim ContainerName As String
 
     If CboContainers.Index > 0 Then
-        ContainerName = MRunner.GetAllTestContainerNames()[CboContainers.Index - 1]
+        ContainerName = CRunner.GetAllTestContainerNames()[CboContainers.Index - 1]
     Endif
 
     FillCboTests(ContainerName)
@@ -131,6 +161,9 @@ End
 Sub RunTests()
 
     Dim ContainerName, CaseName As String
+    Dim CRunner As New CRunner
+
+    $Suite = CRunner.Suite
 
     ' ------------------------------------------------- Container name
     If CboContainers.Index > 0 Then
@@ -142,6 +175,8 @@ Sub RunTests()
         CaseName = CboTestCases.List[CboTestCases.Index]
     Endif
 
-    MRunner.RunTests($Result, ContainerName, CaseName)
+    CRunner.RunTests($Result, ContainerName, CaseName)
+    CRunner.PrintResult($Result)
+    $Result = New Testresult As "Result"
 
 End
