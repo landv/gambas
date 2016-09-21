@@ -80,7 +80,7 @@ Public Sub _RunTests(Result As TestResult, Optional ContainerName As String, Opt
 
     If ContainerName = Null Then
         If CaseName = Null Then
-            For Each ContainerName In Runner.GetAllTestContainerNames()
+            For Each ContainerName In UnitTest.GetAllTestContainerNames()
                 Container = Object.New(ContainerName)
                 $Suite.AddAllTestCases(Container)
             Next

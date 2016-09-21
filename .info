@@ -49,39 +49,6 @@ TearDownContainer
 m
 
 
-#Runner
-
-C
-Suite
-p
-TestSuite
-
-_new
-m
-
-
-ShowTestForm
-m
-
-
-'Show the Test Runner Form
-Test
-m
-
-[(ContainerName)s(CaseName)s(ShowDebug)b]
-_RunTests
-m
-
-(Result)TestResult;[(ContainerName)s(CaseName)s(ShowDebug)b]
-'Run all tests, optional limited by Container or TestCaseName. TestResult contains .
-_PrintResult
-m
-
-(Res)TestResult;
-GetAllTestContainerNames
-M
-String[]
-
 #TestCase
 _ITestCase
 C
@@ -155,7 +122,62 @@ m
 
 (oTestContainer)ATestContainer;
 'Create all test cases that are contained in the specified TestContainer and add them to the suite.
-#_GuTestErrorsAndFailures
+#UnitTest
+
+C
+Suite
+p
+TestSuite
+
+_new
+m
+
+
+ShowTestForm
+m
+
+
+'Show the Test Runner Form
+Test
+m
+
+[(ContainerName)s(CaseName)s(ShowDebug)b]
+_RunTests
+m
+
+(Result)TestResult;[(ContainerName)s(CaseName)s(ShowDebug)b]
+'Run all tests, optional limited by Container or TestCaseName. TestResult contains .
+_PrintResult
+m
+
+(Res)TestResult;
+GetAllTestContainerNames
+M
+String[]
+
+#_ITest
+
+C
+Run
+m
+
+(Result)TestResult;[(ShowDebug)b]
+CountTestCases
+m
+i
+
+#_ITestCase
+_ITest
+C
+Name
+r
+s
+
+Container
+r
+ATestContainer
+
+#_MyselfGuTestErrorsAndFailures
 ATestContainer
 C
 TestStringFailure
@@ -174,7 +196,7 @@ TestAddTrace
 m
 
 
-#_GuTestExample1
+#_MyselfGuTestExample1
 ATestContainer
 C
 SetupEach
@@ -193,7 +215,7 @@ TestStringOk
 m
 
 
-#_GuTestExample2
+#_MyselfGuTestExample2
 ATestContainer
 C
 SetupContainer
@@ -224,32 +246,10 @@ TestSecondTest
 m
 
 
-#_GuTestIntentionalError
+#_MyselfGuTestIntentionalError
 ATestContainer
 C
 TestError
 m
 
-
-#_ITest
-
-C
-Run
-m
-
-(Result)TestResult;[(ShowDebug)b]
-CountTestCases
-m
-i
-
-#_ITestCase
-_ITest
-C
-Name
-r
-s
-
-Container
-r
-ATestContainer
 
