@@ -15,7 +15,7 @@ Property CaseNames As String[]
 Private $CaseNames As String[]
 
 '' The current test case
-Property Case As ITestCase
+'Property Case As ITestCase
 Property Result, R As TestResult
 
 ''Set true for debug messages
@@ -50,14 +50,14 @@ Public Sub RunCase(oCase As ITestCase, oTestResult As TestResult)
     Dim MethodName As String
     Dim hClass As Class
 
-    Me.Case = oCase
+    $Case = oCase
     Me.Result = oTestResult
 
     ' ------------------------------------------------- Iterate through test methods
     hClass = Object.Class(Me)
     For Each MethodName In $CaseNames
         If hClass[MethodName].Kind = Class.Method Then
-            If MethodName = Me.Case.Name Then
+            If MethodName = $Case.Name Then
                 If Me.Debug Then
                     Debug "Call";; MethodName
                 Endif
@@ -116,17 +116,17 @@ Private Sub CaseNames_Write(Value As String[])
 
 End
 
-Private Function Case_Read() As ITestCase
-
-    Return $Case
-
-End
-
-Private Sub Case_Write(Value As ITestCase)
-
-    $Case = Value
-
-End
+' Private Function Case_Read() As ITestCase
+'
+'     Return $Case
+'
+' End
+'
+' Private Sub Case_Write(Value As ITestCase)
+'
+'     $Case = Value
+'
+' End
 
 Private Function Result_Read() As TestResult
 
