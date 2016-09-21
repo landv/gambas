@@ -1,10 +1,28 @@
 ' Gambas class file
 
 Export
-Inherits TestContainer
+Inherits ATestContainer
 
 Public Sub TestStringFailure()
 
     Me.Result.AssertEqualsString("Lisa", "Paul", "Strings should be equal")
+
+End
+
+Public Sub TestLongFailure()
+
+    Me.Result.AssertEqualsLong(2, 3)
+
+End
+
+Public Sub TestAddError()
+
+    Me.Result.AddError(12333, Me.Name, "I wanted a TestAddError")
+
+End
+
+Public Sub TestAddTrace()
+
+    Me.Result.AddTrace("This is a trace message")
 
 End

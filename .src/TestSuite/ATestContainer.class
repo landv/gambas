@@ -2,8 +2,11 @@
 
 Export
 
-' This interface identifies TestContainer classes.  TestContainers are a
-' classes that hold different test case methods.
+''' This abstract class identifies TestContainer classes. TestContainers are a
+''' classes that hold different test case methods.
+'''
+''' A TestContainer class hast to inherit ATestContainer, its name has to start
+''' with "_GuTest"
 
 Property Read Name As String
 
@@ -11,13 +14,15 @@ Property Read Name As String
 Property CaseNames As String[]
 Private $CaseNames As String[]
 
+'' The current test case
 Property Case As ITestCase
-Property Result As TestResult
+Property Result, R As TestResult
+
+''Set true for debug messages
+Property Debug As Boolean
 
 Private $Case As ITestCase
 Private $Result As TestResult
-Property Debug As Boolean
-
 Private $Debug As Boolean
 
 Public Sub _new(Optional ShowDebug As Boolean)

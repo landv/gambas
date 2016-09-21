@@ -1,3 +1,57 @@
+#ATestContainer
+
+C
+'This abstract class identifies TestContainer classes. TestContainers are a
+'classes that hold different test case methods.
+Name
+r
+s
+
+CaseNames
+p
+String[]
+
+Case
+p
+ITestCase
+
+'The current test case
+Result
+p
+TestResult
+
+R
+p
+TestResult
+
+Debug
+p
+b
+
+_new
+m
+
+[(ShowDebug)b]
+RunCase
+m
+
+(oCase)ITestCase;(oTestResult)TestResult;
+SetupEach
+m
+
+
+TearDownEach
+m
+
+
+SetupContainer
+m
+
+
+TearDownContainer
+m
+
+
 #CRunner
 
 C
@@ -15,7 +69,7 @@ m
 
 'Show the Test Runner Form
 PrintResult
-m
+M
 
 (Res)TestResult;
 RunTests
@@ -47,7 +101,7 @@ s
 
 Container
 r
-TestContainer
+ATestContainer
 
 #TestCase
 ITestCase
@@ -64,13 +118,13 @@ s
 'Name of the test case
 Container
 r
-TestContainer
+ATestContainer
 
 'Reference to the test container containing the test method to be executed.
 _new
 m
 
-(sName)s(oTestContainer)TestContainer;
+(sName)s(oTestContainer)ATestContainer;
 'Initializes the TestCase.  Used in lieu of a constructor.
 Run
 m
@@ -79,53 +133,6 @@ m
 CountTestCases
 m
 i
-
-#TestContainer
-
-C
-Name
-r
-s
-
-CaseNames
-p
-String[]
-
-Case
-p
-ITestCase
-
-Result
-p
-TestResult
-
-Debug
-p
-b
-
-_new
-m
-
-[(ShowDebug)b]
-RunCase
-m
-
-(oCase)ITestCase;(oTestResult)TestResult;
-SetupEach
-m
-
-
-TearDownEach
-m
-
-
-SetupContainer
-m
-
-
-TearDownContainer
-m
-
 
 #TestError
 
@@ -414,22 +421,34 @@ m
 AddNewTestCase
 m
 
-(sName)s(oTestContainer)TestContainer;
+(sName)s(oTestContainer)ATestContainer;
 'Create a new test case and add it to the suite.
 AddAllTestCases
 m
 
-(oTestContainer)TestContainer;
+(oTestContainer)ATestContainer;
 'Create all test cases that are contained in the specified TestContainer and add them to the suite.
 #_GuTestErrorsAndFailures
-TestContainer
+ATestContainer
 C
 TestStringFailure
 m
 
 
+TestLongFailure
+m
+
+
+TestAddError
+m
+
+
+TestAddTrace
+m
+
+
 #_GuTestExample1
-TestContainer
+ATestContainer
 C
 SetupEach
 m
@@ -448,7 +467,7 @@ m
 
 
 #_GuTestExample2
-TestContainer
+ATestContainer
 C
 SetupContainer
 m
@@ -479,7 +498,7 @@ m
 
 
 #_GuTestIntentionalError
-TestContainer
+ATestContainer
 C
 TestError
 m

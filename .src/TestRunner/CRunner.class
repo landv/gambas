@@ -25,7 +25,7 @@ Public Sub ShowRunnerForm()
 
 End
 
-Public Sub PrintResult(Res As TestResult)
+Static Public Sub PrintResult(Res As TestResult)
 
     Dim Errs As TestErrors
     Dim Fails As TestErrors
@@ -70,7 +70,7 @@ End
 
 Public Sub RunTests(Result As TestResult, Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean)
 
-    Dim Container As TestContainer
+    Dim Container As ATestContainer
 
     If ContainerName = Null Then
         If CaseName = Null Then
