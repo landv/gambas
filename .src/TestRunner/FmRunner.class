@@ -154,7 +154,7 @@ Public Sub CboContainers_Change()
     Dim ContainerName As String
 
     If CboContainers.Index > 0 Then
-        ContainerName = $CRunner.GetAllTestContainerNames()[CboContainers.Index - 1]
+        ContainerName = CRunner.GetAllTestContainerNames()[CboContainers.Index - 1]
     Endif
 
     FillCboTests(ContainerName)

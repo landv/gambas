@@ -24,7 +24,7 @@ Public Sub TestStringNull()
     If Me.Debug Then
         Print "GuTestExample1::Test First Test"
     Endif
-    Me.Result.AssertEmpty(Null, "Diskussion ohne Ergebnis")
+    Me.R.AssertEmpty(Null, "Diskussion ohne Ergebnis")
 
 End
 
@@ -33,7 +33,7 @@ Public Sub TestStringOk()
     If Me.Debug Then
         Print "GuTestExample1::Test Second Test"
     Endif
-    Me.Result.AssertEqualsString("ja", "ja", "Diskussion")
+    Me.R.AssertEqualsString("ja", "ja", "Diskussion")
 
 End
 
@@ -41,6 +41,6 @@ End
 '
 '     Error.Raise("Intentional error")
 ' Catch
-'     Me.Result.AssertEqualsError( Error )
+'     Me.R.AssertEqualsError( Error )
 '
 ' End
