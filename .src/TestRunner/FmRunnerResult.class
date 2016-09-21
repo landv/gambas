@@ -32,21 +32,22 @@ Private Sub Result_Write(Res As TestResult)
     Dim Fail As TestError
     '     Dim C As Class
 
-    'TS.Run(Res)
-    Errs = Res.Errors
-    Fails = Res.Failures
+    If Res Then
+        Errs = Res.Errors
+        Fails = Res.Failures
 
-    Me.LblErrors.Text = "Errors: " & Errs.Count
-    Me.LblFailures.Text = "Failures: " & Fails.Count
+        Me.LblErrors.Text = "Errors: " & Errs.Count
+        Me.LblFailures.Text = "Failures: " & Fails.Count
 
-    FillGrid(Res)
+        FillGrid(Res)
 
-    If Errs.Count > 0 Or If Fails.Count > 0 Then
-        Me.LblTestName.Text = "No success!"
-    Else
-        Me.LblTestName.Text = "Success!"
+        If Errs.Count > 0 Or If Fails.Count > 0 Then
+            Me.LblTestName.Text = "No success!"
+        Else
+            Me.LblTestName.Text = "Success!"
+        Endif
+        Wait
     Endif
-    Wait
 
 End
 
@@ -72,9 +73,9 @@ Sub FillGrid(Res As TestResult)
         .Rows.Count = 0
         .Rows[0].H = rheight
         .Columns.Count = 3
-        .Columns[0].Width = 100
-        .Columns[1].Width = 200
-        .Columns[2].Width = 300
+        .Columns[0].Width = 80
+        .Columns[1].Width = 300
+        .Columns[2].Width = 600
         .Rows.Count = rowcount
 
         If Res.Failures Then
@@ -112,5 +113,12 @@ Sub FillGrid(Res As TestResult)
     ' GridView1[1, 0].Picture = Picture["image.png"]
 Catch
     Error.Clear
+
+End
+
+Public Sub Form_Close()
+
+    Me.GridViewTests = Null
+    Me.ProgressBar1 = Null
 
 End

@@ -12,12 +12,10 @@ Public Sub _new()
     ' RunTests(res, Null, Null, False)
     ' PrintResult(res)
 
-    'ShowRunnerForm()
-
 End
 
 '' Show the Test Runner Form
-Public Sub ShowRunnerForm()
+Public Sub ShowTestForm()
 
     Dim fm As New FmRunner
 
@@ -25,7 +23,16 @@ Public Sub ShowRunnerForm()
 
 End
 
-Static Public Sub PrintResult(Res As TestResult)
+Public Sub Test(Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean)
+
+    Dim Res As New TestResult
+
+    Me._RunTests(Res, ContainerName, CaseName, ShowDebug)
+    Me._PrintResult(Res)
+
+End
+
+Public Sub _PrintResult(Res As TestResult)
 
     Dim Errs As TestErrors
     Dim Fails As TestErrors
@@ -38,43 +45,42 @@ Static Public Sub PrintResult(Res As TestResult)
     Fails = Res.Failures
 
     Print "----------------------- Test Results ----------------------- "
-    Print res.CountRunnedTests & " Test done"
+    Print " " & res.CountRunnedTests & " Tests done"
     Print "------------------------------------------------------------ "
     If Errs.Count > 0 Then
         For Each Err In Errs.Items
-            Print "Error in:";; Err.Source
-            Print "Error:";; Err.Description
+            Print " Error in:";; Err.Source
+            Print " Error:";; Err.Description
         Next
     Else
-        Print "No Errors"
+        Print " No Errors"
     Endif
-
+    Print "\n"
     If Fails.Count > 0 Then
         For Each Fail In Fails.Items
-            Print "Failure in:";; Fail.Source
-            Print "Failure:";; Fail.Description
+            Print " Failure in:";; Fail.Source
+            Print " Failure:";; Fail.Description
         Next
     Else
-        Print "No Failures"
+        Print " No Failures"
     Endif
     Print "------------------------- Test End -------------------------"
     If res.WasSuccessful = True Then
-        Print "Success!"
+        Print " Success!"
     Else
-        Print "Not successful"
+        Print " Not successful"
     Endif
 
 End
 
 '' Run all tests, optional limited by Container or TestCaseName. TestResult contains .
-
-Public Sub RunTests(Result As TestResult, Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean)
+Public Sub _RunTests(Result As TestResult, Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean)
 
     Dim Container As ATestContainer
 
     If ContainerName = Null Then
         If CaseName = Null Then
-            For Each ContainerName In CRunner.GetAllTestContainerNames()
+            For Each ContainerName In Runner.GetAllTestContainerNames()
                 Container = Object.New(ContainerName)
                 $Suite.AddAllTestCases(Container)
             Next

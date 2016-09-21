@@ -1,6 +1,5 @@
 ' Gambas class file
 
-Export
 ''' The TestErrors class is the collection class for TestError objects.
 ''' It holds the test case failures and errors that have been collected
 ''' by the TestResult object.
@@ -17,7 +16,7 @@ Public Sub _new()
 End Sub
 
 '' Add a new error or failure to the error collection.
-Public Function Add(oTestCase As ITestCase, lNumber As Long, sSource As String, sDescription As String) As TestError
+Public Function Add(oTestCase As _ITestCase, lNumber As Long, sSource As String, sDescription As String) As TestError
 
     Dim oNewError As TestError
 
