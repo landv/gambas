@@ -15,6 +15,8 @@ A Gambas component for unittesting and test-driven programming. Forked and inspi
 
 It is a component. To make it work, you have to generate an installation package for your distribution and install it on your Linux system with Gambas3 (min. Version 3.8.). After that you can use it in your projects as a component.
 
+The following example you find also in [this simple Gambas project](unittesthelloworld-0.0.1.tar.gz).
+
 ### Example Test Class
 
 You should create a exported class with a name starting with "_GuTest", for example "_GuTestHelloWorld", it contains one or more public testmethod(s):
