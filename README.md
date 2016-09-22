@@ -1,19 +1,25 @@
 # gb.deg.unittest – A Gambas Unittest
 
-A Gambas component for unittesting and test-driven programming. Forked and inspired from a quite old program: [COMUnit](http://comunit.sourceforge.net) and mainly JUnit. Currently beta state. Scroll down to understand, how it works.
+A Gambas component for unittesting and test-driven programming. Forked and inspired from a quite old program: [COMUnit](http://comunit.sourceforge.net) and mainly JUnit. Currently beta state. With an unittest component one can develop software in a test-diven matter and is able to ensure that on refactoring the desired results of methods and classes stay the same.
+
+Scroll down to understand, how it works.
 
 ## Runner
+
+Here you can see the Unittest tests itself. The test classes have to produce some failures and one error, to prove, that all works ok. Usually the testclasses' names should start with "_GuTest" but for testing itself Unittest uses an alternate prefix ("_MyselfGuTest").
 
 ![Unittest Runner](runner-screen.png)
 
 ## Tracer
+
+The Trace tab gives a fast overview:
 
 ![Unittest Tracer](tracer-screen.png)
 
 
 ## How it works
 
-It is a component. To make it work, you have to generate an installation package for your distribution and install it on your Linux system with Gambas3 (min. Version 3.8.). After that you can use it in your projects as a component.
+It is a component. To make it work, you have to generate an installation package for your distribution with Gambas3 (min. Version 3.8.) and install it on your Linux system. After that you can use it in all your projects as a component.
 
 The following example you find also in [this simple Gambas project](unittesthelloworld-0.0.1.tar.gz).
 
@@ -89,12 +95,14 @@ If you did this all correctly and now Hit < F5 > on your keyboard, gambas will e
     
 ----
 
-Sooo ... and if you want to see the beautiful form, change the startclass (erm, module)
+Sooo ... and if you want to see the beautiful form, change the startclass (ah... startmodule)
+
 ----
     Public Sub Main()
     
       Dim U As New Unittest
-    
+      
+      'U.Test is now replaced by
       U.ShowTestForm
     
     End
