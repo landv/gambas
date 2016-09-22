@@ -39,7 +39,7 @@ Public Sub Run(oTestResult As TestResult, Optional ShowDebug As Boolean)
             CurrentContainer.SetupContainer
         Endif
 
-        oTest.Run(oTestResult)
+        oTest.Run(oTestResult, ShowDebug)
         If Error Then
             oTestResult.AddError(Error.Code, Error.Where, Error.Text)
             Try oTest.TestContainer.TearDownEach()

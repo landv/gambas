@@ -9,10 +9,12 @@ Private $Runner As UnitTest
 
 '' Deganius Formhelper Class
 Private $FH As DegFormHelper
+Private $AlternatePrefix As String
 
-Public Sub _new()
+Public Sub _new(Optional AlternatePrefix As String)
 
     $FH = New DegFormHelper(Me)
+    $AlternatePrefix = AlternatePrefix
     $Result = New Testresult As "Result"
     FillForm()
 
@@ -20,30 +22,37 @@ End
 
 Public Sub Result_AfterStartTest(oTestCase As ITestCase)
 
+    Wait
+    '$FmTrace.ResultEventAfterStartTest(oTestCase)
+
 End
 
 Public Sub Result_AfterEndTest()
 
     UpdateProgress()
     $FmResult.Result = $Result
+    Wait
 
 End
 
 Public Sub Result_AfterAddTrace(sMessage As String)
 
     $FmResult.Result = $Result
+    Wait
 
 End
 
 Public Sub Result_AfterAddError(oError As TestError)
 
     $FmResult.Result = $Result
+    Wait
 
 End
 
 Public Sub Result_AfterAddFailure(oError As TestError)
 
     $FmResult.Result = $Result
+    Wait
 
 End
 
@@ -78,7 +87,7 @@ Sub FillCboContainers()
     ' ------------------------------------------------- CboContainers
     With ContainerNames
         .Add("All Test Containers")
-        .Insert(UnitTest.GetAllTestContainerNames())
+        .Insert(UnitTest.GetAllTestContainerNames($AlternatePrefix))
     End With
 
     With Me.CboContainers
@@ -100,7 +109,7 @@ Sub FillCboTests(Optional TestContainerName As String)
 
     If Not TestContainerName Then
         'all Tests
-        ContainerNames = UnitTest.GetAllTestContainerNames()
+        ContainerNames = UnitTest.GetAllTestContainerNames($AlternatePrefix)
 
     Else
         'only tests from one container
@@ -126,11 +135,10 @@ End
 Sub FillTabs()
 
     ' ------------------------------------------------- FmResult
-    $FmResult = New FmRunnerResult(Me.TabPanel1)
+    $FmResult = New FmRunnerResult
 
     With $FmResult
         .Expand = True
-        .Show
     End With
 
     With Me.TabPanel1
@@ -138,10 +146,13 @@ Sub FillTabs()
         .Arrangement = Arrange.Fill
         .Index = 0
         .Text = "Results"
+        .Show()
     End With
 
+    $FmResult.Reparent(TabPanel1)
+
     ' ------------------------------------------------- FmTrace
-    $FmTrace = New FmTrace(Me.TabPanel1)
+    $FmTrace = New FmTrace
 
     With $FmTrace
         .Expand = True
@@ -154,6 +165,8 @@ Sub FillTabs()
         .Index = 1
         .Text = "Trace"
     End With
+
+    $FmTrace.Reparent(TabPanel1)
 
     ' ------------------------------------------------- Index 0
 
@@ -182,7 +195,7 @@ Public Sub CboContainers_Change()
     Dim ContainerName As String
 
     If CboContainers.Index > 0 Then
-        ContainerName = UnitTest.GetAllTestContainerNames()[CboContainers.Index - 1]
+        ContainerName = UnitTest.GetAllTestContainerNames($AlternatePrefix)[CboContainers.Index - 1]
     Endif
 
     FillCboTests(ContainerName)
@@ -200,7 +213,10 @@ Sub RunTests()
     Dim ContainerName, CaseName As String
 
     $Runner = New UnitTest
+    $Result = New Testresult As "Result"
+    $Runner.AlternatePrefix = $AlternatePrefix
 
+    $FmTrace.Result = $Result
     $Suite = $Runner.Suite
 
     ' ------------------------------------------------- Container name
@@ -213,9 +229,10 @@ Sub RunTests()
         CaseName = CboTestCases.List[CboTestCases.Index]
     Endif
 
-    $Runner._RunTests($Result, ContainerName, CaseName)
+    $Runner._RunTests($Result, ContainerName, CaseName, Null, $AlternatePrefix)
+
+    ' ------------------------------------------------- Also Print on Console
     $Runner._PrintResult($Result)
-    $Result = New Testresult As "Result"
 
 End
 

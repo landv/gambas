@@ -4,8 +4,17 @@ Count=0
 [DebugWindow]
 Count=0
 
+[DebugWindow/$MyContainer]
+Geometry=[30,98,345,280]
+
+[DebugWindow/$Obs]
+Geometry=[65,326,224,280]
+
+[DebugWindow/$Obs.Object]
+Geometry=[59,632,458,280]
+
 [DebugWindow/$Result]
-Geometry=[59,354,255,280]
+Geometry=[26,434,441,280]
 
 [DebugWindow/$Result.Failures]
 Geometry=[202,70,224,280]
@@ -103,8 +112,14 @@ Geometry=[311,89,224,280]
 [DebugWindow/Fails.Items]
 Geometry=[325,103,224,280]
 
+[DebugWindow/GridView(tvTrace.Children[0]).Columns]
+Geometry=[197,67,378,730]
+
 [DebugWindow/ITestCase]
 Geometry=[156,48,210,210]
+
+[DebugWindow/Key]
+Geometry=[155,25,303,343]
 
 [DebugWindow/Main]
 Geometry=[722,71,224,280]
@@ -138,6 +153,9 @@ Geometry=[339,117,545,280]
 
 [DebugWindow/Res.Failures.Items[0]]
 Geometry=[353,131,545,280]
+
+[DebugWindow/Result]
+Geometry=[31,369,445,298]
 
 [DebugWindow/Settings]
 Geometry=[154,32,224,280]
@@ -220,6 +238,9 @@ Geometry=[120,64,224,280]
 [DebugWindow/oCase]
 Geometry=[188,56,224,280]
 
+[DebugWindow/oError]
+Geometry=[155,25,224,280]
+
 [DebugWindow/oNewError]
 Geometry=[14,225,341,280]
 
@@ -227,7 +248,10 @@ Geometry=[14,225,341,280]
 Geometry=[311,89,224,280]
 
 [DebugWindow/oTestCase]
-Geometry=[21,356,360,280]
+Geometry=[62,131,360,280]
+
+[DebugWindow/oTestCase.Container]
+Geometry=[76,145,360,280]
 
 [DebugWindow/oTestContainer]
 Geometry=[167,89,394,280]
@@ -250,6 +274,12 @@ Geometry=[52,468,465,280]
 [DebugWindow/oTestResult.Failures]
 Geometry=[24,440,465,280]
 
+[DebugWindow/r]
+Geometry=[131,58,224,280]
+
+[DebugWindow/ret]
+Geometry=[131,58,224,280]
+
 [DebugWindow/sTests]
 Geometry=[188,56,224,280]
 
@@ -265,38 +295,29 @@ Geometry=[120,64,441,280]
 [DebugWindow/test1]
 Geometry=[311,89,224,280]
 
+[DebugWindow/tvTrace]
+Geometry=[155,25,378,730]
+
+[DebugWindow/tvTrace.Children]
+Geometry=[169,39,378,730]
+
+[DebugWindow/tvTrace.Children[0]]
+Geometry=[183,53,378,730]
+
+[DebugWindow/tvTrace.Item]
+Geometry=[169,39,378,730]
+
 [Executable]
 Path="gb.deg.unit.gambas"
 
 [OpenFile]
-File[1]=".src/TestRunner/UnitTest.class:46.82"
-File[2]=".src/TesteStartRunner.module:0.10"
-File[3]=".src/TestRunner/FmRunner.class:51.19"
-File[4]=".src/TestSuite/TestError.class:0.2"
-Active=26
-Count=26
-File[5]=".src/TestSuite/TestErrors.class:0.2"
-File[6]=".src/TestSuite/TestParameter.class:0.2"
-File[7]=".src/TestSuite/TestParameters.class:0.2"
-File[8]=".src/TestSuite/TestResult.class:4.100"
-File[9]=".src/TestRunner/DegFormHelper.class:36.3"
-File[10]=".src/TestRunner/FmRunnerResult.form"
-File[11]=".src/TestRunner/FmRunnerResult.class:9.64"
-File[12]=".src/TestSuite/ITestCase.class:47.16"
-File[13]=".src/TestSuite/TestCase.class:14.8"
-File[14]=".src/TestSuite/ATestContainer.class:22.23"
-File[15]=".src/TestSuite/TestSuite.class:22.25"
-File[16]=".src/TestSuite/ITest.class:72.8"
-File[17]=".src/TestMyself/_MyselfGuTestErrorsAndFailures.class:0.2"
-File[18]=".src/TestMyself/_MyselfGuTestExample1.class:0.2"
-File[19]=".src/TestMyself/_MyselfGuTestExample2.class:0.2"
-File[20]=".src/TestMyself/_MyselfGuTestIntentionalError.class:0.2"
-File[21]="OriginalFiles/Runner/source\\COMUnitRunner\\ctlLog.ctl:0.0"
-File[22]="OriginalFiles/Runner/source\\COMUnitRunner\\COMUnitRunner.vbp:0.0"
-File[23]="OriginalFiles/Runner/source\\COMUnitRunner\\ctlTrace.ctl:0.162"
-File[24]="OriginalFiles/Runner/source\\COMUnitRunner\\yellow.bmp"
-File[25]=".src/TestRunner/FmTrace.form"
-File[26]=".src/TestRunner/FmTrace.class:0.51"
+File[1]=".src/TestRunner/FmRunner.form"
+File[2]=".src/TestRunner/FmTrace.form"
+File[3]=".src/TestRunner/FmRunner.class:4.25"
+File[4]=".src/TestRunner/FmTrace.class:67.64"
+Active=4
+Count=5
+File[5]=".src/TesteStartRunner.module:30.6"
 
 [Watches]
 Count=0

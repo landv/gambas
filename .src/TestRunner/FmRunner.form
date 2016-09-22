@@ -6,13 +6,25 @@
   Spacing = True
   Margin = True
   { HBoxTop HBox
-    MoveScaled(0,1,100,4)
+    MoveScaled(0,1,112,4)
     Spacing = True
+    { Label1 Label
+      MoveScaled(0,0,12,4)
+      AutoResize = True
+      Text = ("Containers:")
+      Alignment = Align.Right
+    }
     { CboContainers ComboBox
-      MoveScaled(1,0,40,4)
+      MoveScaled(13,0,40,4)
+    }
+    { Label2 Label
+      MoveScaled(51,0,12,4)
+      AutoResize = True
+      Text = ("Tests:")
+      Alignment = Align.Right
     }
     { CboTestCases ComboBox
-      MoveScaled(46,0,51,4)
+      MoveScaled(64,0,48,4)
     }
   }
   { TabPanel1 TabPanel

@@ -4,7 +4,8 @@ Public Sub Main()
 
     Dim r As New UnitTest
 
-    r.Test
-    r.ShowTestForm
+    r.AlternatePrefix = "_MyselfGuTest"
+    'r.Test()
+    r.ShowTestForm()
 
 End

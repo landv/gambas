@@ -16,6 +16,15 @@ Private $sErrDescription As String
 '' Sets a reference to the test case where the error/failure was generated
 Property TestCase As ITestCase
 
+''Set the description of the error / failure
+Property Description As String
+
+'' Set the error number (used by test errors, not failures)
+Property ErrNumber As Long
+
+''Set the source of the error (used by test errors, not failures)
+Property Source As String
+
 Sub TestCase_write(oTestCase As ITestCase)
 
     $oTestCase = oTestCase
@@ -27,9 +36,6 @@ Function TestCase_Read() As ITestCase
     Return $oTestCase
 
 End
-
-'' Set the error number (used by test errors, not failures)
-Property ErrNumber As Long
 
 Function ErrNumber_Write(lErrNumber As Long)
 
@@ -44,9 +50,6 @@ Function ErrNumber_Read() As Long
 
 End
 
-''Set the source of the error (used by test errors, not failures)
-Property Source As String
-
 Sub Source_Write(sSource As String)
 
     $sSource = sSource
@@ -59,9 +62,6 @@ Function Source_Read() As String
     Return $sSource
 
 End
-
-''Set the description of the error / failure
-Property Description As String
 
 Sub Description_write(sSource As String)
 

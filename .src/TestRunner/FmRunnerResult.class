@@ -84,7 +84,7 @@ Sub FillGrid(Res As TestResult)
                 GridViewTests[i, 0].Text = "Failure"
                 GridViewTests[i, 1].Text = Res.Failures.Items[i].Source
                 GridViewTests[i, 2].Text = Res.Failures.Items[i].Description
-                GridViewTests[i, 0].Background = Color.Yellow
+                GridViewTests[i, 0].Background = &HFFFCCA
             Next
         End If
 
@@ -95,7 +95,7 @@ Sub FillGrid(Res As TestResult)
                 GridViewTests[i, 0].Foreground = Color.TextForeground
                 GridViewTests[i, 1].Text = Res.Errors.Items[j].Source
                 GridViewTests[i, 2].Text = Res.Errors.Items[j].Description
-                GridViewTests[i, 0].Background = Color.Red
+                GridViewTests[i, 0].Background = &HFF8F9A
                 Inc j
             Next
         Endif

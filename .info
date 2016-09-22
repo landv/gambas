@@ -110,16 +110,16 @@ p
 ITestCase
 
 'Sets a reference to the test case where the error/failure was generated
+Description
+p
+s
+
 ErrNumber
 p
 l
 
 'Set the error number (used by test errors, not failures)
 Source
-p
-s
-
-Description
 p
 s
 
@@ -414,6 +414,11 @@ Suite
 p
 TestSuite
 
+AlternatePrefix
+p
+s
+
+'Normal name for testclasses starts with _GuTest, here it can be redefined
 _new
 m
 
@@ -430,7 +435,7 @@ m
 _RunTests
 m
 
-(Result)TestResult;[(ContainerName)s(CaseName)s(ShowDebug)b]
+(Result)TestResult;[(ContainerName)s(CaseName)s(ShowDebug)b(AlternatePrefix)s]
 'Run all tests, optional limited by Container or TestCaseName. TestResult contains .
 _PrintResult
 m
@@ -439,7 +444,7 @@ m
 GetAllTestContainerNames
 M
 String[]
-
+[(AlternatePrefix)s]
 #_MyselfGuTestErrorsAndFailures
 ATestContainer
 C

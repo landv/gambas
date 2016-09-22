@@ -9,140 +9,162 @@
 ' ' a red ball.  The UnitTrace control is useful if detailed information on the running tests is
 ' ' required.
 '
-' ' Constants
-' Const cOkImage As Integer = 1
-' Const cFailureImage As Integer = 2
-' Const cErrorImage As Integer = 3
-'
-' Property Result As TestResult
-'
-' ' Member variables
-' Private $Result As TestResult
-'
-' Private m_oTestCase As ITestCase
-' Private m_objRoot As Node
-'
-' Public Sub _new()
-'
-' End
-'
-' ' Class destructor
-' Private Sub Class_Terminate()
-'
-'     Set $Result = Nothing
-'     Set m_oTestCase = Nothing
-'
-' End Sub
-'
-' ' Set the TestResult to be used for capturing the results of running the tests.
-' Public Property Set TestResult(oTestResult As TestResult)
-' Set $Result = oTestResult
-' End Property
-'
-' Private Sub UserControl_Resize()
-'
-'     tvTrace.Width = ScaleWidth
-'     tvTrace.Height = ScaleHeight
-'
-' End Sub
-'
-' ' Resets the UnitTrace control clearing the results of the last test run.
-' Public Sub Reset()
-'
-'     tvTrace.Clear
-'     tvTrace.Add("Root", "Tests")
-'     ' Set m_objRoot = tvTrace.Nodes.Add(Text: = "Tests", Image: = 4)
-'     ' m_objRoot.Expanded = True
-'
-' End Sub
-'
-' Private Sub Result_AfterStartTest(oTestCase As ITestCase)
-'
-'     Dim oNode As Node
-'
-'     Set oNode = tvTrace.Nodes.Add(m_objRoot.Index, tvwChild, TestName(oTestCase), TestName(oTestCase), cOkImage)
-'     tvTrace.Nodes.Add oNode.Index, tvwChild,, "Start Test Case", cOkImage
-'     Set m_oTestCase = oTestCase
-'     DoEvents
-'
-' End Sub
-'
-' Private Sub Result_AfterEndTest()
-'
-'     Dim oNode As Node
-'
-'     Set oNode = tvTrace.Nodes(TestName(m_oTestCase))
-'     tvTrace.Nodes.Add oNode.Index, tvwChild,, "End Test Case", cOkImage
-'
-'     ' change top node icon depending on trace events
-'     Dim oChildNode As Node, lImage As Long
-'
-'     Set oChildNode = oNode.Child
-'     While Not (oChildNode Is Nothing)
-'         If (CLng(oChildNode.Image) > lImage) Then
-'             lImage = CLng(oChildNode.Image)
-'         End If
-'         Set oChildNode = oChildNode.Next
-'     Wend
-'     oNode.Image = lImage
-'     DoEvents
-'
-' End Sub
-'
-' Private Sub Result_AfterAddError(oError As TestError)
-'
-'     Dim oNode As Node
-'
-'     Set oNode = tvTrace.Nodes(TestName(oError.TestCase))
-'     tvTrace.Nodes.Add oNode.Index, tvwChild,, "Error: " & GetErrorMsg(oError), cErrorImage
-'     DoEvents
-'
-' End Sub
-'
-' Private Sub Result_AfterAddFailure(oError As TestError)
-'
-'     Dim oNode As Node
-'
-'     Set oNode = tvTrace.Nodes(TestName(oError.TestCase))
-'     tvTrace.Nodes.Add oNode.Index, tvwChild,, "Failure: " & oError.Description, cFailureImage
-'     DoEvents
-'
-' End Sub
-'
-' Private Sub Result_AfterAddTrace(sMessage As String)
-'
-'     Dim oNode As Node
-'
-'     Set oNode = tvTrace.Nodes(TestName(m_oTestCase))
-'     tvTrace.Nodes.Add oNode.Index, tvwChild,, "Trace: " & sMessage, cOkImage
-'     DoEvents
-'
-' End Sub
-'
-' Private Function GetErrorMsg(oError As TestError)
-'
-'     GetErrorMsg = oError.Source & " (" & Trim(oError.ErrNumber) & "): " & oError.Description
-'
-' End Function
-'
-' Private Function TestName(oTestCase As TestCase) As String
-'
-'     If (oTestCase Is Nothing) Then
-'         TestName = ""
-'     Else
-'         TestName = TypeName(oTestCase.TestContainer) & "." & oTestCase.Name
-'     End If
-'
-' End Function
-'
-' Private Function Result_Read() As TestResult
-'
-'     Return $Result
-'
-' End
-'
-' Private Sub Result_Write(Value As TestResult)
-'
-'     $Result = Value
-'
-' End
+' Constants
+
+Property Result As TestResult
+
+' Member variables
+Private $Result As TestResult
+
+Private $oTestCase As ITestCase
+Private $RootKey As String
+Private $CurrentKey As String
+
+Private $Obs As Observer
+Private $Obs2 As Observer
+
+Private $ErrPosition As Integer
+Private $IsError As Boolean
+Private $IsFailure As Boolean
+
+Private $PictureOk As Picture
+Private $PictureError As Picture
+Private $PictureFail As Picture
+
+Public Sub _new()
+
+    Me.Reset()
+    $PictureError = Picture.Load("error.png")
+    $PictureFail = Picture.Load("failure.png")
+    $PictureOk = Picture.Load("ok.png")
+
+End
+
+' Class destructor
+Private Sub Class_Terminate()
+
+    $Result = Null
+    $oTestCase = Null
+
+End Sub
+
+Private Sub UserControl_Resize()
+
+    ' tvTrace.Width = ScaleWidth
+    ' tvTrace.Height = ScaleHeight
+
+End Sub
+
+' Resets the UnitTrace control clearing the results of the last test run.
+Public Sub Reset()
+
+    tvTrace.Clear
+    tvTrace.Add("Root", "All Tests")
+    $RootKey = "Root"
+    tvTrace[$RootKey].Expanded = True
+    $ErrPosition = 0
+
+End Sub
+
+Public Sub ResultEvent_AfterStartTest(oTestCase As ITestCase)
+
+    'Set oKey = tvTrace.Keys.Add($CurrentKey.Index, tvwChild, TestName(oTestCase), TestName(oTestCase), cOkImage)
+    $CurrentKey = TestName(oTestCase)
+    tvTrace["Root"].Picture = $PictureOk
+
+    tvTrace.Add($CurrentKey, TestName(oTestCase), $PictureOk, $RootKey)
+    tvTrace.Add(GetErrPosition(), "Test Started", $PictureOk, $CurrentKey)
+    $oTestCase = oTestCase
+
+End Sub
+
+Public Sub ResultEvent_AfterEndTest()
+
+    Dim Key As String, ChildKey As String, lImage As Long
+
+    tvTrace.Add(GetErrPosition(), "End Test Case", $PictureOk, $CurrentKey)
+    If tvTrace[$CurrentKey].Picture = $PictureOk Then
+        tvTrace[$CurrentKey].Expanded = False
+    Else
+        tvTrace[$CurrentKey].Expanded = True
+    Endif
+
+    $CurrentKey = "Root"
+    $ErrPosition = 0
+
+End Sub
+
+Public Sub ResultEvent_AfterAddError(oError As TestError)
+
+    Dim err, key As String
+
+    key = GetErrPosition()
+    err = "Error: " & GetErrorMsg(oError)
+    tvTrace.Add(key, err, $PictureError, $CurrentKey)
+    tvTrace[$CurrentKey].Picture = $PictureError
+    tvTrace["Root"].Picture = $PictureError
+
+End Sub
+
+Public Sub ResultEvent_AfterAddFailure(oError As TestError)
+
+    Dim fail As String
+
+    fail = "Failure: " & oError.Description
+    tvTrace.Add(GetErrPosition(), fail, $PictureFail, $CurrentKey)
+
+    If tvTrace[$CurrentKey].Picture = $PictureOk Then
+        tvTrace[$CurrentKey].Picture = $PictureFail
+    Endif
+    If tvTrace["Root"].Picture <> $PictureError Then
+        tvTrace["Root"].Picture = $PictureFail
+    Endif
+
+End Sub
+
+Public Sub ResultEvent_AfterAddTrace(sMessage As String)
+
+    Dim trace As String
+
+    trace = "Trace: " & sMessage
+    tvTrace.Add(GetErrPosition(), trace, Picture.Load("ok.png"), $CurrentKey)
+
+End Sub
+
+Public Function GetErrPosition() As String
+
+    Dim KeyName As String
+
+    KeyName = $CurrentKey & "-" & $ErrPosition
+    Inc $ErrPosition
+    Return KeyName
+
+End
+
+Private Function GetErrorMsg(oError As TestError) As String
+
+    Return oError.Source & " (" & oError.ErrNumber & "): " & oError.Description
+
+End Function
+
+Private Function TestName(oTestCase As TestCase) As String
+
+    If (oTestCase <> Null) Then
+        Return oTestCase.Container.Name & "." & oTestCase.Name
+    End If
+
+End Function
+
+Private Function Result_Read() As TestResult
+
+    Return $Result
+
+End
+
+Private Sub Result_Write(Value As TestResult)
+
+    Reset
+    $Result = Value
+    $Obs = New Observer($Result) As "ResultEvent"
+
+End

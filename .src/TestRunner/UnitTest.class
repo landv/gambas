@@ -4,6 +4,10 @@ Export
 Property Suite As TestSuite
 Private $Suite As TestSuite
 
+'' Normal name for testclasses starts with _GuTest, here it can be redefined
+Property AlternatePrefix As String
+Private $AlternatePrefix As String
+
 Public Sub _new()
 
     $Suite = New TestSuite
@@ -17,7 +21,7 @@ End
 '' Show the Test Runner Form
 Public Sub ShowTestForm()
 
-    Dim fm As New FmRunner
+    Dim fm As New FmRunner(Null, Me.AlternatePrefix)
 
     fm.Show()
 
@@ -27,7 +31,7 @@ Public Sub Test(Optional ContainerName As String, Optional CaseName As String, O
 
     Dim Res As New TestResult
 
-    Me._RunTests(Res, ContainerName, CaseName, ShowDebug)
+    Me._RunTests(Res, ContainerName, CaseName, ShowDebug, Me.AlternatePrefix)
     Me._PrintResult(Res)
 
 End
@@ -74,13 +78,13 @@ Public Sub _PrintResult(Res As TestResult)
 End
 
 '' Run all tests, optional limited by Container or TestCaseName. TestResult contains .
-Public Sub _RunTests(Result As TestResult, Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean)
+Public Sub _RunTests(Result As TestResult, Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean, Optional AlternatePrefix As String)
 
     Dim Container As ATestContainer
 
     If ContainerName = Null Then
         If CaseName = Null Then
-            For Each ContainerName In UnitTest.GetAllTestContainerNames()
+            For Each ContainerName In UnitTest.GetAllTestContainerNames(AlternatePrefix)
                 Container = Object.New(ContainerName)
                 $Suite.AddAllTestCases(Container)
             Next
@@ -98,13 +102,20 @@ Public Sub _RunTests(Result As TestResult, Optional ContainerName As String, Opt
 
 End
 
-Static Public Function GetAllTestContainerNames() As String[]
+Static Public Function GetAllTestContainerNames(Optional AlternatePrefix As String) As String[]
 
     Dim ret As New String[]
     Dim C As Class
+    Dim Prefix As String
+
+    Prefix = AlternatePrefix
+
+    If Not Prefix Then
+        Prefix = "_GuTest"
+    Endif
 
     For Each C In Classes
-        If Left(C.Name, 7) = "_GuTest" Then
+        If Left(C.Name, Len(Prefix)) = Prefix Then
             ret.add(C.Name)
         Endif
     Next
@@ -123,5 +134,17 @@ End
 Private Sub Suite_Write(Value As TestSuite)
 
     $Suite = Value
+
+End
+
+Private Function AlternatePrefix_Read() As String
+
+    Return $AlternatePrefix
+
+End
+
+Private Sub AlternatePrefix_Write(Value As String)
+
+    $AlternatePrefix = Value
 
 End
