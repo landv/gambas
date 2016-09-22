@@ -1,0 +1,148 @@
+' Gambas class file
+
+' ' Gambas class file
+'
+' ' The UnitTrace control is used to trace the progress and status of the executing test cases.
+' ' The control displays all trace messages associated with each executing test case and groups
+' ' them in a tree.  Test cases that execute successfully are identified with a green ball.
+' ' Test cases that contain failures receive a yellow ball, and test cases with errors receive
+' ' a red ball.  The UnitTrace control is useful if detailed information on the running tests is
+' ' required.
+'
+' ' Constants
+' Const cOkImage As Integer = 1
+' Const cFailureImage As Integer = 2
+' Const cErrorImage As Integer = 3
+'
+' Property Result As TestResult
+'
+' ' Member variables
+' Private $Result As TestResult
+'
+' Private m_oTestCase As ITestCase
+' Private m_objRoot As Node
+'
+' Public Sub _new()
+'
+' End
+'
+' ' Class destructor
+' Private Sub Class_Terminate()
+'
+'     Set $Result = Nothing
+'     Set m_oTestCase = Nothing
+'
+' End Sub
+'
+' ' Set the TestResult to be used for capturing the results of running the tests.
+' Public Property Set TestResult(oTestResult As TestResult)
+' Set $Result = oTestResult
+' End Property
+'
+' Private Sub UserControl_Resize()
+'
+'     tvTrace.Width = ScaleWidth
+'     tvTrace.Height = ScaleHeight
+'
+' End Sub
+'
+' ' Resets the UnitTrace control clearing the results of the last test run.
+' Public Sub Reset()
+'
+'     tvTrace.Clear
+'     tvTrace.Add("Root", "Tests")
+'     ' Set m_objRoot = tvTrace.Nodes.Add(Text: = "Tests", Image: = 4)
+'     ' m_objRoot.Expanded = True
+'
+' End Sub
+'
+' Private Sub Result_AfterStartTest(oTestCase As ITestCase)
+'
+'     Dim oNode As Node
+'
+'     Set oNode = tvTrace.Nodes.Add(m_objRoot.Index, tvwChild, TestName(oTestCase), TestName(oTestCase), cOkImage)
+'     tvTrace.Nodes.Add oNode.Index, tvwChild,, "Start Test Case", cOkImage
+'     Set m_oTestCase = oTestCase
+'     DoEvents
+'
+' End Sub
+'
+' Private Sub Result_AfterEndTest()
+'
+'     Dim oNode As Node
+'
+'     Set oNode = tvTrace.Nodes(TestName(m_oTestCase))
+'     tvTrace.Nodes.Add oNode.Index, tvwChild,, "End Test Case", cOkImage
+'
+'     ' change top node icon depending on trace events
+'     Dim oChildNode As Node, lImage As Long
+'
+'     Set oChildNode = oNode.Child
+'     While Not (oChildNode Is Nothing)
+'         If (CLng(oChildNode.Image) > lImage) Then
+'             lImage = CLng(oChildNode.Image)
+'         End If
+'         Set oChildNode = oChildNode.Next
+'     Wend
+'     oNode.Image = lImage
+'     DoEvents
+'
+' End Sub
+'
+' Private Sub Result_AfterAddError(oError As TestError)
+'
+'     Dim oNode As Node
+'
+'     Set oNode = tvTrace.Nodes(TestName(oError.TestCase))
+'     tvTrace.Nodes.Add oNode.Index, tvwChild,, "Error: " & GetErrorMsg(oError), cErrorImage
+'     DoEvents
+'
+' End Sub
+'
+' Private Sub Result_AfterAddFailure(oError As TestError)
+'
+'     Dim oNode As Node
+'
+'     Set oNode = tvTrace.Nodes(TestName(oError.TestCase))
+'     tvTrace.Nodes.Add oNode.Index, tvwChild,, "Failure: " & oError.Description, cFailureImage
+'     DoEvents
+'
+' End Sub
+'
+' Private Sub Result_AfterAddTrace(sMessage As String)
+'
+'     Dim oNode As Node
+'
+'     Set oNode = tvTrace.Nodes(TestName(m_oTestCase))
+'     tvTrace.Nodes.Add oNode.Index, tvwChild,, "Trace: " & sMessage, cOkImage
+'     DoEvents
+'
+' End Sub
+'
+' Private Function GetErrorMsg(oError As TestError)
+'
+'     GetErrorMsg = oError.Source & " (" & Trim(oError.ErrNumber) & "): " & oError.Description
+'
+' End Function
+'
+' Private Function TestName(oTestCase As TestCase) As String
+'
+'     If (oTestCase Is Nothing) Then
+'         TestName = ""
+'     Else
+'         TestName = TypeName(oTestCase.TestContainer) & "." & oTestCase.Name
+'     End If
+'
+' End Function
+'
+' Private Function Result_Read() As TestResult
+'
+'     Return $Result
+'
+' End
+'
+' Private Sub Result_Write(Value As TestResult)
+'
+'     $Result = Value
+'
+' End

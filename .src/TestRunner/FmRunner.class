@@ -4,6 +4,7 @@ Property Suite As TestSuite
 Private $Suite As TestSuite
 Private $Result As TestResult
 Private $FmResult As FmRunnerResult
+Private $FmTrace As FmTrace
 Private $Runner As UnitTest
 
 '' Deganius Formhelper Class
@@ -17,7 +18,7 @@ Public Sub _new()
 
 End
 
-Public Sub Result_AfterStartTest(oTestCase As _ITestCase)
+Public Sub Result_AfterStartTest(oTestCase As ITestCase)
 
 End
 
@@ -124,7 +125,9 @@ End
 
 Sub FillTabs()
 
+    ' ------------------------------------------------- FmResult
     $FmResult = New FmRunnerResult(Me.TabPanel1)
+
     With $FmResult
         .Expand = True
         .Show
@@ -133,9 +136,30 @@ Sub FillTabs()
     With Me.TabPanel1
         .Count = 1
         .Arrangement = Arrange.Fill
-        .Show
         .Index = 0
         .Text = "Results"
+    End With
+
+    ' ------------------------------------------------- FmTrace
+    $FmTrace = New FmTrace(Me.TabPanel1)
+
+    With $FmTrace
+        .Expand = True
+        .Show
+    End With
+
+    With Me.TabPanel1
+        .Count = 2
+        .Arrangement = Arrange.Fill
+        .Index = 1
+        .Text = "Trace"
+    End With
+
+    ' ------------------------------------------------- Index 0
+
+    With Me.TabPanel1
+        .Index = 0
+        .Show
     End With
 
 End

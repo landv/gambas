@@ -1,5 +1,6 @@
 ' Gambas class file
 
+Export
 '' The TestError class holds the information regarding a single error or failure
 '' that has occured during the executing of the test cases.  For errors, the
 '' class holds the error number, source and description as well as a reference to
@@ -7,21 +8,21 @@
 '' description of the failure as well as a reference to the test case which
 '' generated the failure.
 
-Private $oTestCase As _ITestCase
+Private $oTestCase As ITestCase
 Private $lErrNumber As Long
 Private $sSource As String
 Private $sErrDescription As String
 
 '' Sets a reference to the test case where the error/failure was generated
-Property TestCase As _ITestCase
+Property TestCase As ITestCase
 
-Sub TestCase_write(oTestCase As _ITestCase)
+Sub TestCase_write(oTestCase As ITestCase)
 
     $oTestCase = oTestCase
 
 End
 
-Function TestCase_Read() As _ITestCase
+Function TestCase_Read() As ITestCase
 
     Return $oTestCase
 

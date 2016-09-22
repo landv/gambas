@@ -7,21 +7,23 @@ Export
 ''' TestSuite will execute all test cases that it contains.  The TestSuite class also provides
 ''' methods for add all test cases contained in a test container object into the suite.
 
-Inherits _ITest
+Inherits ITest
 
-Private $Tests As _ITest[]
+Private $Tests As ITest[]
 Private $Debug As Boolean
+
+Property Read Tests As ITest[]
 
 Public Sub _new()
 
-    $Tests = New _ITest[]
+    $Tests = New ITest[]
 
 End Sub
 
 '' Runs all tests contained within the collection and collects the result in the TestResult parameter.
 Public Sub Run(oTestResult As TestResult, Optional ShowDebug As Boolean)
 
-    Dim oTest As _ITestCase
+    Dim oTest As ITestCase
     Dim CurrentContainer, LastContainer As ATestContainer
 
     For Each oTest In $Tests
@@ -59,14 +61,14 @@ Public Function CountTestCases() As Integer
 End Function
 
 '' Add a object implementing ITest (either a TestCase or TestSuite) to the suite.
-Public Sub AddTest(oTest As _ITest)
+Public Sub AddTest(oTest As ITest)
 
     $Tests.Add(oTest)
 
 End Sub
 
 '' Add a TestCase to the suite.
-Public Sub AddTestCase(oTestCase As _ITestCase)
+Public Sub AddTestCase(oTestCase As ITestCase)
 
     $Tests.Add(oTestCase, Object.Class(oTestCase).Name)
 
@@ -95,5 +97,11 @@ Public Function AddAllTestCases(oTestContainer As ATestContainer)
             AddNewTestCase(CStr(sTests[i]), oTestContainer)
         Next
     Endif
+
+End
+
+Private Function Tests_Read() As ITest[]
+
+    Return $Tests
 
 End

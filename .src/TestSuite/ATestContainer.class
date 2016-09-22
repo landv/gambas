@@ -21,7 +21,7 @@ Property Result, R As TestResult
 ''Set true for debug messages
 Property Debug As Boolean
 
-Private $Case As _ITestCase
+Private $Case As ITestCase
 Private $Result As TestResult
 Private $Debug As Boolean
 
@@ -45,7 +45,7 @@ Public Sub _new(Optional ShowDebug As Boolean)
 End
 
 ' Run the specified test case methods in this test container
-Public Sub RunCase(oCase As _ITestCase, oTestResult As TestResult)
+Public Sub RunCase(oCase As ITestCase, oTestResult As TestResult)
 
     Dim MethodName As String
     Dim hClass As Class

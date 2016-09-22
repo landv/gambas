@@ -1,5 +1,7 @@
 ' Gambas class file
 
+Export
+
 ''' The TestResult object collects the results from executing test cases. It is an
 ''' instance of the Collecting Parameter pattern.  When new failures or errors
 ''' are added to the TestResult or if a test case is started or finished, the
@@ -28,10 +30,10 @@ Private $colErrors As TestErrors
 Private $colFailures As TestErrors
 Private $colParameters As TestParameters
 Private $iCountRunnedTests As Integer
-Private $oCurrentTestCase As _ITestCase
+Private $oCurrentTestCase As ITestCase
 
 '' Events
-Event AfterStartTest(oTestCase As _ITestCase)
+Event AfterStartTest(oTestCase As ITestCase)
 Event AfterEndTest()
 Event AfterAddError(oError As TestError)
 Event AfterAddFailure(oError As TestError)
@@ -50,7 +52,7 @@ End Sub
 Property Read WasSuccessful As Boolean
 
 '' Informs the result that a test will be started.
-Public Sub StartTest(oTestCase As _ITestCase)
+Public Sub StartTest(oTestCase As ITestCase)
 
     $oCurrentTestCase = oTestCase
     Raise AfterStartTest(oTestCase)
@@ -106,6 +108,17 @@ End Sub
 Public Sub Assert(bCondition As Boolean, Optional sMessage As String)
 
     If Not bCondition Then
+        AddFailure(sMessage)
+    End If
+
+End Sub
+
+'' Asserts that a condition is false. If it isn't it raises a failure with the given message.
+'' bCondition: condition to be asserted
+'' sMessage: optional message describing the asserted condition
+Public Sub AssertFalse(bCondition As Boolean, Optional sMessage As String)
+
+    If bCondition Then
         AddFailure(sMessage)
     End If
 
