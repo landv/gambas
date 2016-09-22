@@ -40,11 +40,6 @@ Public Sub Run(oTestResult As TestResult, Optional ShowDebug As Boolean)
         Endif
 
         oTest.Run(oTestResult, ShowDebug)
-        If Error Then
-            oTestResult.AddError(Error.Code, Error.Where, Error.Text)
-            Try oTest.TestContainer.TearDownEach()
-            Error.Clear
-        Endif
         LastContainer = CurrentContainer
     Next
     If LastContainer Then

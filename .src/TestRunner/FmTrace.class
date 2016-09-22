@@ -62,7 +62,9 @@ Public Sub Reset()
     tvTrace.Add("Root", "All Tests")
     $RootKey = "Root"
     tvTrace[$RootKey].Expanded = True
+    tvTrace["Root"].Picture = $PictureOk
     $ErrPosition = 0
+    $CurrentKey = "Root"
 
 End Sub
 
@@ -70,8 +72,6 @@ Public Sub ResultEvent_AfterStartTest(oTestCase As ITestCase)
 
     'Set oKey = tvTrace.Keys.Add($CurrentKey.Index, tvwChild, TestName(oTestCase), TestName(oTestCase), cOkImage)
     $CurrentKey = TestName(oTestCase)
-    tvTrace["Root"].Picture = $PictureOk
-
     tvTrace.Add($CurrentKey, TestName(oTestCase), $PictureOk, $RootKey)
     tvTrace.Add(GetErrPosition(), "Test Started", $PictureOk, $CurrentKey)
     $oTestCase = oTestCase
@@ -88,9 +88,6 @@ Public Sub ResultEvent_AfterEndTest()
     Else
         tvTrace[$CurrentKey].Expanded = True
     Endif
-
-    $CurrentKey = "Root"
-    $ErrPosition = 0
 
 End Sub
 
@@ -116,7 +113,13 @@ Public Sub ResultEvent_AfterAddFailure(oError As TestError)
     If tvTrace[$CurrentKey].Picture = $PictureOk Then
         tvTrace[$CurrentKey].Picture = $PictureFail
     Endif
-    If tvTrace["Root"].Picture <> $PictureError Then
+
+    If tvTrace["Root"].Picture = $PictureOk Then
+
+        Debug "Root";; tvTrace["Root"].Picture
+        Debug "Error";; $PictureError
+        Debug "Fail";; $PictureFail
+        Debug "Set Fail"
         tvTrace["Root"].Picture = $PictureFail
     Endif
 
