@@ -19,7 +19,7 @@ The Trace tab gives a quick overview:
 
 ## How it works
 
-It is a component. To make it work, you have to generate an installation package for your distribution with Gambas3 (it is proved to work for Version 3.8 upwards) and install it on your Linux system. After that you can use it in all your projects as a component.
+It's a component. To make it work, you have to generate an installation package for your distribution with Gambas3 (it's proved to work for Version 3.8 upwards) and install it on your Linux system. After that you can use it in all your projects as a component.
 
 The following example you also find in [this simple Gambas project](unittesthelloworld-0.0.1.tar.gz).
 
@@ -96,7 +96,7 @@ If you did all this correctly and now hit < F5 >, Gambas will execute the startf
     
 ----
 
-Sooo ... and if you want to see the beautiful form, alter the startclass (ah... startmodule)
+Sooo ... and if you want to see the beautiful form, alter the startclass (erm ... startmodule)
 
 ----
     Public Sub Main()
@@ -109,7 +109,7 @@ Sooo ... and if you want to see the beautiful form, alter the startclass (ah... 
     End
 ----
 
-If you hit now < F5 > you see the Testform where you can choose and run your tests. When done, have a look at the Trace Tab:
+If you now hit < F5 > you'll see the testform where you can choose and run your tests. Afterwards have a look at the Trace tab:
 
 
 ![Unittest Tracer](trace-helloworld.png)
@@ -124,14 +124,14 @@ Dig it out!
 
 ## Test fixture
 
-Sometimes it is neccessary to create a "fixture", a special environment for a test or a couple of tests, and to destroy that environment after the test is done. For example a database connection shall be established, some tables for testing should be created and all this has to be reverted afterwards. This can be done with Setup... and Teardown... functions inside the TestContainer.
+Sometimes it is neccessary to create a "fixture", a special environment for a test or a couple of tests, and to destroy this environment after the test is done. For example a database connection should be established, some tables for testing should be created and this has to be reverted afterwards. This can be done with Setup... and Teardown... functions inside the TestContainer.
 
 ### Sub SetupEach() and Sub TeardownEach()
 
-You can create methods with these names to create an environment for each testmethod before is is invoked and to destroy it after. If you have five testmethods inside your TestContainer these functions will be invoked five times, SetupEach() before each testmethod, TeardownEach() after each testmethod. Got it?
+You can create methods with these names to create an environment for each testmethod before it is invoked and to destroy it afterwards. If you have five testmethods inside your TestContainer these functions will be invoked five times, SetupEach() before each testmethod, TeardownEach() after each testmethod. Got it?
 
 ### Sub SetupContainer() and Sub TeardownContainer()
 
-You can create methods with these names to create an environment for all testmethods inside a TestContainer, at start SetupContainer() is invoked and after all testmethods inside the testclass are done you can destroy the environment with TeardownContainer().
+You can create methods with these names to create an environment for all testmethods inside a TestContainer, in the beginning SetupContainer() is invoked and after all testmethods inside the testclass are done you can destroy the environment with TeardownContainer().
 
 
