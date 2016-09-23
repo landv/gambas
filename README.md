@@ -25,7 +25,7 @@ The following example you find also in [this simple Gambas project](unittesthell
 
 ### Example TestContainer
 
-You should create a class with a name starting with "_Test", for example "_TestHelloWorld", it contains one or more public testmethod(s). It has to inherit from ATestContainer and it has to be exported to ensure the unittest will recognize it. It is the so called TestContainer:
+Start by creating a class with a name like "_Test", for example "_TestHelloWorld". This class contains one or more public testmethod(s). It has to inherit from ATestContainer and it has to be exported to ensure that Unittest will recognize it. The trailing underscore ensures that the Gambas interpreter hides these classnames, even when they are exported. But you can take every other name for it. This class is the so called TestContainer:
 
 ----
     ' Gambas class file
@@ -82,7 +82,7 @@ The simple way to execute the Unittest is, to create another Module, name it "Te
 
 ----
 
-If you did this all correctly and now Hit < F5 > on your keyboard, gambas will execute the  startfunction in module Test, which works through the method(s) of our TestContainer and presents the test result in the console:
+If you did this all correctly and now Hit < F5 > on your keyboard, gambas will execute the startfunction in module Test, which works through the method(s) of our TestContainer and presents the test result in the console:
 
     ----------------------- Test Results ----------------------- 
      1 Tests done
@@ -96,7 +96,7 @@ If you did this all correctly and now Hit < F5 > on your keyboard, gambas will e
     
 ----
 
-Sooo ... and if you want to see the beautiful form, change the startclass (ah... startmodule)
+Sooo ... and if you want to see the beautiful form, alter the startclass (ah... startmodule)
 
 ----
     Public Sub Main()

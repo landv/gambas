@@ -39,8 +39,16 @@
     MoveScaled(2,50,100,4)
     Invert = True
     { BtRun Button
-      MoveScaled(82,0,16,4)
-      Text = ("Run Tests")
+      MoveScaled(76,0,22,4)
+      Text = ("Run Tests (Ctrl-r)")
+    }
+    { HBox1 HBox
+      MoveScaled(0,0,74,4)
+      Expand = True
+      { Label3 Label
+        MoveScaled(1,0,24,4)
+        Text = ("Press <Esc> to close")
+      }
     }
   }
 }

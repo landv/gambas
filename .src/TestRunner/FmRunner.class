@@ -255,3 +255,15 @@ Public Sub Form_Open()
     $FH.SizeLoad()
 
 End
+
+Public Sub Form_KeyPress()
+
+    If $FH.DetectControl(Key["r"]) Then
+        RunTests()
+    Endif
+
+    If $FH.DetectEscape() Then
+        Me.Close
+    Endif
+
+End

@@ -4,7 +4,8 @@ Public Sub Main()
 
     Dim r As New UnitTest
 
-    r.DoSelfTest = False
+    ' Do Selftest:
+    r.DoSelfTest = True
     'r.Test()
     r.ShowTestForm()
 
