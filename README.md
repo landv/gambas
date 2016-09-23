@@ -6,7 +6,7 @@ Scroll down to understand, how it works.
 
 ## Runner
 
-Here you can see the Unittest tests itself. The testclasses (here called TestContainer) have to produce some failures and one error, to prove, that all works ok. Usually the TestContainer's names should start with "_GuTest" but for testing itself Unittest uses an alternate prefix ("_MyselfGuTest").
+Here you can see the Unittest tests itself. The testclasses (here called TestContainer) have to produce some failures and one error, to prove, that all works ok.
 
 ![Unittest Runner](runner-screen.png)
 
@@ -25,11 +25,11 @@ The following example you find also in [this simple Gambas project](unittesthell
 
 ### Example TestContainer
 
-You should create a class with a name starting with "_GuTest", for example "_GuTestHelloWorld", it contains one or more public testmethod(s). It has to inherit from ATestContainer and it has to be exported to ensure the unittest will recognize it. It is the so called TestContainer:
+You should create a class with a name starting with "_Test", for example "_TestHelloWorld", it contains one or more public testmethod(s). It has to inherit from ATestContainer and it has to be exported to ensure the unittest will recognize it. It is the so called TestContainer:
 
 ----
     ' Gambas class file
-    ''' TestContainer _GuTestHelloWorld
+    ''' TestContainer _TestHelloWorld
     
     Export
     Inherits ATestContainer
@@ -64,7 +64,7 @@ To make it work, we need a funktion to test. So we create a function "World" in 
 
 ### Invite Unittest
 
-The simple way to execute the Unittest is, to create another Module, name it "Test" ore something more interesting and make it a a Gambas Startclass:
+The simple way to execute the Unittest is, to create another Module, name it "Test" ore something more interesting and make it a Gambas Startclass:
 
 ----
 
