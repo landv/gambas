@@ -9,12 +9,10 @@ Private $Runner As UnitTest
 
 '' Deganius Formhelper Class
 Private $FH As DegFormHelper
-Private $AlternatePrefix As String
 
-Public Sub _new(Optional AlternatePrefix As String)
+Public Sub _new()
 
     $FH = New DegFormHelper(Me)
-    $AlternatePrefix = AlternatePrefix
     $Result = New Testresult As "Result"
     FillForm()
 
@@ -87,7 +85,7 @@ Sub FillCboContainers()
     ' ------------------------------------------------- CboContainers
     With ContainerNames
         .Add("All Test Containers")
-        .Insert(UnitTest.GetAllTestContainerNames($AlternatePrefix))
+        .Insert(UnitTest.GetAllTestContainerNames())
     End With
 
     With Me.CboContainers
@@ -109,7 +107,7 @@ Sub FillCboTests(Optional TestContainerName As String)
 
     If Not TestContainerName Then
         'all Tests
-        ContainerNames = UnitTest.GetAllTestContainerNames($AlternatePrefix)
+        ContainerNames = UnitTest.GetAllTestContainerNames()
 
     Else
         'only tests from one container
@@ -195,7 +193,7 @@ Public Sub CboContainers_Change()
     Dim ContainerName As String
 
     If CboContainers.Index > 0 Then
-        ContainerName = UnitTest.GetAllTestContainerNames($AlternatePrefix)[CboContainers.Index - 1]
+        ContainerName = UnitTest.GetAllTestContainerNames()[CboContainers.Index - 1]
     Endif
 
     FillCboTests(ContainerName)
@@ -214,7 +212,6 @@ Sub RunTests()
 
     $Runner = New UnitTest
     $Result = New Testresult As "Result"
-    $Runner.AlternatePrefix = $AlternatePrefix
 
     $FmTrace.Result = $Result
     $Suite = $Runner.Suite
@@ -229,7 +226,7 @@ Sub RunTests()
         CaseName = CboTestCases.List[CboTestCases.Index]
     Endif
 
-    $Runner._RunTests($Result, ContainerName, CaseName, Null, $AlternatePrefix)
+    $Runner._RunTests($Result, ContainerName, CaseName, Null)
 
     ' ------------------------------------------------- Also Print on Console
     $Runner._PrintResult($Result)

@@ -5,8 +5,8 @@ Property Suite As TestSuite
 Private $Suite As TestSuite
 
 '' Normal name for testclasses starts with _GuTest, here it can be redefined
-Property AlternatePrefix As String
-Private $AlternatePrefix As String
+Property constSelfTest As Boolean
+Private $constSelfTest As Boolean
 
 Public Sub _new()
 
@@ -21,7 +21,7 @@ End
 '' Show the Test Runner Form
 Public Sub ShowTestForm()
 
-    Dim fm As New FmRunner(Null, Me.AlternatePrefix)
+    Dim fm As New FmRunner(Null, Me.constSelfTest)
 
     fm.Show()
 
@@ -32,7 +32,7 @@ Public Sub Test(Optional ContainerName As String, Optional CaseName As String, O
 
     Dim Res As New TestResult
 
-    Me._RunTests(Res, ContainerName, CaseName, ShowDebug, Me.AlternatePrefix)
+    Me._RunTests(Res, ContainerName, CaseName, ShowDebug, Me.constSelfTest)
     Me._PrintResult(Res)
 
 End
@@ -80,13 +80,13 @@ Public Sub _PrintResult(Res As TestResult)
 End
 
 '' Run all tests, optional limited by Container or TestCaseName. TestResult contains .
-Public Sub _RunTests(Result As TestResult, Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean, Optional AlternatePrefix As String)
+Public Sub _RunTests(Result As TestResult, Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean, Optional constSelfTest As Boolean)
 
     Dim Container As ATestContainer
 
     If ContainerName = Null Then
         If CaseName = Null Then
-            For Each ContainerName In UnitTest.GetAllTestContainerNames(AlternatePrefix)
+            For Each ContainerName In UnitTest.GetAllTestContainerNames(constSelfTest)
                 Container = Object.New(ContainerName)
                 $Suite.AddAllTestCases(Container)
             Next
@@ -104,26 +104,20 @@ Public Sub _RunTests(Result As TestResult, Optional ContainerName As String, Opt
 
 End
 
-Static Public Function GetAllTestContainerNames(Optional AlternatePrefix As String) As String[]
+Static Public Function GetAllTestContainerNames(Optional constSelfTest As Boolean) As String[]
 
     Dim ret As New String[]
     Dim C As Class
-    Dim Prefix As String
-
-    Prefix = AlternatePrefix
-
-    If Not Prefix Then
-        Prefix = "_GuTest"
-    Endif
 
     For Each C In Classes
-        If Left(C.Name, Len(Prefix)) = Prefix Then
-            ret.add(C.Name)
-        Endif
-    Next
-    ret.Sort()
 
-    Return ret
+        'If Left(C.Name, Len(Prefix)) = Prefix Then
+        ret.add(C.Name)
+    Endif
+Next
+ret.Sort()
+
+Return ret
 
 End
 
@@ -139,14 +133,14 @@ Private Sub Suite_Write(Value As TestSuite)
 
 End
 
-Private Function AlternatePrefix_Read() As String
+Private Function constSelfTest_Read() As String
 
-    Return $AlternatePrefix
+    Return $constSelfTest
 
 End
 
-Private Sub AlternatePrefix_Write(Value As String)
+Private Sub constSelfTest_Write(Value As String)
 
-    $AlternatePrefix = Value
+    $constSelfTest = Value
 
 End
