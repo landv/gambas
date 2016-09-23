@@ -1,31 +1,31 @@
 # gb.deg.unittest – A Gambas Unittest
 
-A Gambas component for unittesting and test-driven programming. Forked and inspired from a quite old program: [COMUnit](http://comunit.sourceforge.net) and mainly JUnit. Currently beta state. With an unittest component one can develop software in a test-driven matter and is able to ensure that on refactoring the desired results of methods and classes stay the same.
+A Gambas component for unittesting and test-driven programming. Forked and inspired from quite an old program: [COMUnit](http://comunit.sourceforge.net) and mainly JUnit. Currently beta state. With an unittest component one can develop software in a test-driven matter and is able to ensure that on refactoring the desired results of methods and classes stay the same.
 
-Scroll down to understand, how it works.
+Scroll down to understand how it works.
 
 ## Runner
 
-Here you can see the Unittest tests itself. The testclasses (here called TestContainer) have to produce some failures and one error, to prove, that all works ok.
+Here you can see the Unittest tests itself. The testclasses (here called TestContainer) have to produce some failures and one error, to prove all is working fine.
 
 ![Unittest Runner](runner-screen.png)
 
 ## Tracer
 
-The Trace tab gives a fast overview:
+The Trace tab gives a quick overview:
 
 ![Unittest Tracer](tracer-screen.png)
 
 
 ## How it works
 
-It is a component. To make it work, you have to generate an installation package for your distribution with Gambas3 (it is prooved to work for Version 3.8. upwards) and install it on your Linux system. After that you can use it in all your projects as a component.
+It is a component. To make it work, you have to generate an installation package for your distribution with Gambas3 (it is proved to work for Version 3.8 upwards) and install it on your Linux system. After that you can use it in all your projects as a component.
 
-The following example you find also in [this simple Gambas project](unittesthelloworld-0.0.1.tar.gz).
+The following example you also find in [this simple Gambas project](unittesthelloworld-0.0.1.tar.gz).
 
 ### Example TestContainer
 
-Start by creating a class with a name like "_Test", for example "_TestHelloWorld". This class contains one or more public testmethod(s). It has to inherit from ATestContainer and it has to be exported to ensure that Unittest will recognize it. The trailing underscore ensures that the Gambas interpreter hides these classnames, even when they are exported. But you can take every other name for it. This class is the so called TestContainer:
+Start by creating a class with a name like "_Test", for example "_TestHelloWorld". This class contains one or more public testmethod(s). It has to inherit from ATestContainer and it has to be exported to ensure that Unittest will recognize it. The trailing underscore ensures that the Gambas interpreter hides these classnames, even when they are exported. But you can take any other name for it. This class is the so called TestContainer:
 
 ----
     ' Gambas class file
@@ -64,7 +64,7 @@ To make it work, we need a funktion to test. So we create a function "World" in 
 
 ### Invite Unittest
 
-The simple way to execute the Unittest is, to create another Module, name it "Test" ore something more interesting and make it a Gambas Startclass:
+The simple way to execute the Unittest is to create another module, name it "Test" or something more interesting and make it a Gambas Startclass:
 
 ----
 
@@ -82,7 +82,7 @@ The simple way to execute the Unittest is, to create another Module, name it "Te
 
 ----
 
-If you did this all correctly and now Hit < F5 > on your keyboard, gambas will execute the startfunction in module Test, which works through the method(s) of our TestContainer and presents the test result in the console:
+If you did all this correctly and now hit < F5 >, Gambas will execute the startfunction in module Test, which works through the method(s) of our TestContainer and presents the test result in the console:
 
     ----------------------- Test Results ----------------------- 
      1 Tests done
