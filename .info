@@ -414,9 +414,9 @@ Suite
 p
 TestSuite
 
-AlternatePrefix
+DoSelfTest
 p
-s
+b
 
 'Normal name for testclasses starts with _GuTest, here it can be redefined
 _new
@@ -436,7 +436,7 @@ m
 _RunTests
 m
 
-(Result)TestResult;[(ContainerName)s(CaseName)s(ShowDebug)b(AlternatePrefix)s]
+(Result)TestResult;[(ContainerName)s(CaseName)s(ShowDebug)b(DoSelfTest)b]
 'Run all tests, optional limited by Container or TestCaseName. TestResult contains .
 _PrintResult
 m
@@ -446,10 +446,14 @@ m
 GetAllTestContainerNames
 M
 String[]
-[(AlternatePrefix)s]
+[(DoSelfTest)b]
 #_MyselfGuTestErrorsAndFailures
 ATestContainer
 C
+constDegUnittestSelftest
+C
+b
+T
 TestStringFailure
 m
 
@@ -469,6 +473,10 @@ m
 #_MyselfGuTestExample1
 ATestContainer
 C
+constDegUnittestSelftest
+C
+b
+T
 SetupEach
 m
 
@@ -488,6 +496,10 @@ m
 #_MyselfGuTestExample2
 ATestContainer
 C
+constDegUnittestSelftest
+C
+b
+T
 SetupContainer
 m
 
@@ -519,6 +531,10 @@ m
 #_MyselfGuTestIntentionalError
 ATestContainer
 C
+constDegUnittestSelftest
+C
+b
+T
 TestError
 m
 
