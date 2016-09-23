@@ -19,13 +19,13 @@ The Trace tab gives a fast overview:
 
 ## How it works
 
-It is a component. To make it work, you have to generate an installation package for your distribution with Gambas3 (min. Version 3.8.) and install it on your Linux system. After that you can use it in all your projects as a component.
+It is a component. To make it work, you have to generate an installation package for your distribution with Gambas3 (it is prooved to work for Version 3.8. upwards) and install it on your Linux system. After that you can use it in all your projects as a component.
 
 The following example you find also in [this simple Gambas project](unittesthelloworld-0.0.1.tar.gz).
 
 ### Example TestContainer
 
-You should create a class with a name starting with "_GuTest", for example "_GuTestHelloWorld", it contains one or more public testmethod(s). It has to inherit from ATestContainer. It is the TestContainer:
+You should create a class with a name starting with "_GuTest", for example "_GuTestHelloWorld", it contains one or more public testmethod(s). It has to inherit from ATestContainer and it has to be exported to ensure the unittest will recognize it. It is the so called TestContainer:
 
 ----
     ' Gambas class file
