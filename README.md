@@ -6,7 +6,7 @@ Scroll down to understand, how it works.
 
 ## Runner
 
-Here you can see the Unittest tests itself. The test classes have to produce some failures and one error, to prove, that all works ok. Usually the testclasses' names should start with "_GuTest" but for testing itself Unittest uses an alternate prefix ("_MyselfGuTest").
+Here you can see the Unittest tests itself. The testclasses (here called TestContainer) have to produce some failures and one error, to prove, that all works ok. Usually the TestContainer's names should start with "_GuTest" but for testing itself Unittest uses an alternate prefix ("_MyselfGuTest").
 
 ![Unittest Runner](runner-screen.png)
 
@@ -23,18 +23,17 @@ It is a component. To make it work, you have to generate an installation package
 
 The following example you find also in [this simple Gambas project](unittesthelloworld-0.0.1.tar.gz).
 
-### Example Test Class
+### Example TestContainer
 
-You should create a exported class with a name starting with "_GuTest", for example "_GuTestHelloWorld", it contains one or more public testmethod(s):
+You should create a class with a name starting with "_GuTest", for example "_GuTestHelloWorld", it contains one or more public testmethod(s). It has to inherit from ATestContainer. It is the TestContainer:
 
 ----
-
-    'Class _GuTestHelloWorld
-    'Test HelloWorld
+    ' Gambas class file
+    ''' TestContainer _GuTestHelloWorld
     
     Export
     Inherits ATestContainer
-    
+        
     Public Sub TestHelloWorld()
     
         Me.Result.AssertEqualsString("Hello World", Hello.World(), "Strings should be equal")
@@ -44,11 +43,13 @@ You should create a exported class with a name starting with "_GuTest", for exam
 
 ### Module(Function) to test:
 
-To make it work, a function "World" in a module "Hello" in your project must exist:
+To make it work, we need a funktion to test. So we create a function "World" in a module "Hello" in our project:
 
 ----
 
     ' Gambas module file
+    
+    ''' Module is named "Hello"
     
     Public Function World() As String
     
@@ -63,7 +64,7 @@ To make it work, a function "World" in a module "Hello" in your project must exi
 
 ### Invite Unittest
 
-The simple way to execute the Unittest is, to create another Module, name it Test and make it a a Gambas Startclass:
+The simple way to execute the Unittest is, to create another Module, name it "Test" ore something more interesting and make it a a Gambas Startclass:
 
 ----
 
@@ -81,7 +82,7 @@ The simple way to execute the Unittest is, to create another Module, name it Tes
 
 ----
 
-If you did this all correctly and now Hit < F5 > on your keyboard, gambas will execute the  startfunction in module Test and presents the test result in the console:
+If you did this all correctly and now Hit < F5 > on your keyboard, gambas will execute the  startfunction in module Test, which works through the method(s) of our TestContainer and presents the test result in the console:
 
     ----------------------- Test Results ----------------------- 
      1 Tests done
@@ -121,8 +122,16 @@ AddError AddFailure AddTrace Assert AssertEmpty AssertEqualsFloat AssertEqualsLo
 
 Dig it out!
 
+## Test fixture
 
+Sometimes it is neccessary to create a "fixture", a special environment for a test or a couple of tests, and to destroy that environment after the test is done. For example a database connection shall be established, some tables for testing should be created and and all this has to be reverted afterwards. This can be done with Setup... and Teardown... functions inside the TestContainer.
 
+### Sub SetupEach() and Sub TeardownEach()
 
+You can create methods with these names to create an environment for each testmethod before is is invoked and to destroy it after. If you have five testmethods inside your TestContainer these functions will be invoked five times, SetupEach() before each testmethod, TeardownEach() after each testmethod. Got it?
+
+### Sub SetupContainer() and Sub TeardownContainer()
+
+You can create methods with these names to create an environment for all testmethods inside a TestContainer, at start SetupContainer() is invoked and after all testmethods inside the testclass are done you can destroy the environment with TeardownContainer().
 
 

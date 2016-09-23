@@ -40,6 +40,7 @@ Public Sub Run(oTestResult As TestResult, Optional ShowDebug As Boolean)
         Endif
 
         oTest.Run(oTestResult, ShowDebug)
+
         LastContainer = CurrentContainer
     Next
     If LastContainer Then
