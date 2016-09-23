@@ -4,6 +4,9 @@
 Inherits ATestContainer
 Export
 
+' Signal, that this is a selftest
+Public Const constDegUnittestSelftest As Boolean = True
+
 Public Sub TestAssert()
 
     Me.R.Assert("True", "Shall be True")
