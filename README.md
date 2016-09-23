@@ -124,7 +124,7 @@ Dig it out!
 
 ## Test fixture
 
-Sometimes it is neccessary to create a "fixture", a special environment for a test or a couple of tests, and to destroy that environment after the test is done. For example a database connection shall be established, some tables for testing should be created and and all this has to be reverted afterwards. This can be done with Setup... and Teardown... functions inside the TestContainer.
+Sometimes it is neccessary to create a "fixture", a special environment for a test or a couple of tests, and to destroy that environment after the test is done. For example a database connection shall be established, some tables for testing should be created and all this has to be reverted afterwards. This can be done with Setup... and Teardown... functions inside the TestContainer.
 
 ### Sub SetupEach() and Sub TeardownEach()
 
