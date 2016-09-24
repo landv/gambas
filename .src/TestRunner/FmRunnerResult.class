@@ -4,6 +4,17 @@
 Property Runs As Integer[]
 Property Result As TestResult
 
+Public Sub Reset()
+
+    Me.ProgressBar1.Value = 0
+    Me.LblErrors.Text = Null
+    Me.LblFailures.Text = Null
+    Me.LblRuns.Text = Null
+    Me.LblTestName.Text = Null
+    Me.GridViewTests.Clear
+
+End
+
 Private Function Runs_Read() As Integer[]
 
 End

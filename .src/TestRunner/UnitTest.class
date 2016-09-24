@@ -1,5 +1,7 @@
 ' Gambas class file
 
+''' This class controls the unittesting.
+
 Export
 Property Suite As TestSuite
 Private $Suite As TestSuite
@@ -11,10 +13,6 @@ Private $DoSelfTest As Boolean
 Public Sub _new()
 
     $Suite = New TestSuite
-    ' Dim res As New TestResult
-    ' 'RunTests(res, "GuTestIntentionalError", Null, False)
-    ' RunTests(res, Null, Null, False)
-    ' PrintResult(res)
 
 End
 

@@ -2,6 +2,8 @@
 
 ''' Formhelper some methods for forms, for instance saving and loading of sizes
 ''' in settings, finding of controls
+'''
+''' copied from Deganius deglib
 
 '' Array mit den Feldern für
 '' JumpToNext und - Previous,
@@ -19,7 +21,6 @@ Private $Fields As String[]
 Public Sub _new(MyForm As Object)
 
     $Form = MyForm
-    'SearchFocusedControl($Form)
 
 End
 
