@@ -10,6 +10,9 @@ Private $sPath As String
 '' Holds a stram to the log file
 Private $sLogFile As Stream
 
+Private $bLogRotateEnabled As Boolean = False
+Private $lLogRotateSize As Long
+
 Public Sub _new(sPath As String, Optional iMinLevel As Integer = LogLevel.Info)
 
   $sPath = sPath
@@ -46,6 +49,17 @@ Public Sub Write(sMessage As String, Optional iLevel As Integer)
 
   Print #$sLogFile, sMessage
 
+  If $bLogRotateEnabled And LogRotator.shouldRotate($sPath, $lLogRotateSize) Then
+
+    Close $sLogFile
+
+    '' Should automatically rename the old files
+    LogRotator.Rotate($sPath)
+
+    $sLogFile = Open $sPath For Write Create
+
+  Endif
+
 End
 
 Public Sub Close()
@@ -61,5 +75,17 @@ End
 Public Function GetOutput() As String
 
   Return $sPath
+
+End
+
+Public Sub RotateAfter(lSize As Long)
+
+  If Me.Step > 0 Then Error.Raise("Handler already initialized!")
+
+  If lSize <= 0 Then Error.Raise("The LogRotate size must be greater than 0")
+
+  $bLogRotateEnabled = True
+
+  $lLogRotateSize = lSize
 
 End

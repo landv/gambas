@@ -2,32 +2,35 @@
 
 Public Sub Main()
 
-  Dim aHandler, bHandler As LogHandler
+  Dim aHandler As LogHandler
+  Dim bHandler As FileHandler
 
   Dim bLogger As ComplexLogger
 
-  Dim cLogger As Logger
+  Dim i As Integer = 0
 
   aHandler = New ConsoleHandler(ConsoleHandler.STDOUT)
   bHandler = New FileHandler("~/Desktop")
+  bHandler.RotateAfter(1024)
 
   bLogger = New ComplexLogger(Null, aHandler)
 
+  bLogger.addHandler(bHandler)
+
   bLogger.Begin()
 
-  bLogger.Log("This goes to the stdout stream")
+    bLogger.Log("I can read this in the console or at a file stored in my Desktop folder.")
 
-  bLogger.addHandler(bHandler)
-  bHandler.Open
+    For i = 0 To 100
 
-  bLogger.Log("I can read this in the console or at a file stored in my Desktop folder.")
+      bLogger("Log message " & i)
 
-  ComplexLogger.Log("There is no need to use handlers. You can use the Logger anonymously.")
+    Next
 
-  cLogger = New Logger(LogLevel.Error, Null, Logger.Stdout)
-
-  cLogger.Begin()
-
-  cLogger.Log("Using the old logger interface", LogLevel.Critical)
+    ' cLogger = New Logger(LogLevel.Error, Null, Logger.Stdout)
+    '
+    ' cLogger.Begin()
+    '
+    ' cLogger.Log("Using the old logger interface", LogLevel.Critical)
 
 End

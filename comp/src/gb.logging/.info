@@ -83,6 +83,10 @@ GetOutput
 m
 s
 
+RotateAfter
+m
+
+(lSize)l
 #Formatter
 
 C
@@ -152,6 +156,17 @@ isEnabledFor
 M
 b
 (iHandlerLevel)i(iLevel)i
+#LogRotator
+
+C
+shouldRotate
+M
+b
+(sPath)s(lMaxSize)l
+Rotate
+M
+
+(sPath)s
 #Logger
 
 CA

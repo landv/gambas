@@ -1,0 +1,65 @@
+' Gambas module file
+
+Export
+
+Public Function shouldRotate(sPath As String, lMaxSize As Long) As Boolean
+
+  Dim lSize As Long = Stat(sPath).Size
+
+  Return lSize > lMaxSize
+
+End
+
+Public Sub Rotate(sPath As String)
+
+  ''TODO Logica para renombrar los archivos
+
+  Dim sBasePath As String = File.Dir(sPath)
+  Dim sBaseName As String = File.BaseName(sPath)
+  Dim sExt As String = File.Ext(sPath)
+
+  Dim sOldFile, sNewFile As String
+
+  Dim i As Integer = 0
+
+  ''TODO Usar Format
+  While Exist(sBasePath &/ sBaseName & "." & i & "." & sExt)
+    Debug "File " & sBasePath &/ sBaseName & "." & i & "." & sExt & " already exists. Skipping"
+    Inc i
+  Wend
+
+  '' i tiene el numero del prox archivo
+
+  If i = 0 Then
+
+    sOldFile = sBasePath &/ sBaseName & "." & sExt
+    sNewFile = sBasePath &/ sBaseName & "." & i & "." & sExt
+
+    Debug "Moving file " & sOldFile & " to " & sNewFile
+
+    Move sOldFile To sNewFile
+
+  Else
+
+    Repeat
+
+      sOldFile = sBasePath &/ sBaseName & "." & (i - 1) & "." & sExt
+      sNewFile = sBasePath &/ sBaseName & "." & i & "." & sExt
+
+      Debug "Moving file " & sOldFile & " to " & sNewFile
+
+      Move sOldFile To sNewFile
+
+      Dec i
+    Until i = 0
+
+    sOldFile = sBasePath &/ sBaseName & "." & sExt
+    sNewFile = sBasePath &/ sBaseName & "." & i & "." & sExt
+
+    Debug "Moving file " & sOldFile & " to " & sNewFile
+
+    Move sOldFile To sNewFile
+
+  Endif
+
+End
