@@ -86,7 +86,7 @@ Sub FillCboContainers()
     Dim ContainerNames As New String[]
     ' ------------------------------------------------- CboContainers
     With ContainerNames
-        .Add("All Test Containers")
+        .Add(("All Test Containers"))
         .Insert(UnitTest.GetAllTestContainerNames($DoSelftest))
     End With
 
@@ -105,7 +105,7 @@ Sub FillCboTests(Optional TestContainerName As String)
     Dim C As ATestContainer
     Dim i As Integer
 
-    TestNames.Add("All Test Cases")
+    TestNames.Add(("All Test Cases"))
 
     If Not TestContainerName Then
         'all Tests
@@ -145,7 +145,7 @@ Sub FillTabs()
         .Count = 1
         .Arrangement = Arrange.Fill
         .Index = 0
-        .Text = "Results"
+        .Text = ("Results")
         .Show()
     End With
 
@@ -163,7 +163,7 @@ Sub FillTabs()
         .Count = 2
         .Arrangement = Arrange.Fill
         .Index = 1
-        .Text = "Trace"
+        .Text = ("Trace")
     End With
 
     $FmTrace.Reparent(TabPanel1)

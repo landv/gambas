@@ -50,31 +50,32 @@ Public Sub _PrintResult(Res As TestResult)
     Errs = Res.Errors
     Fails = Res.Failures
 
-    Print "----------------------- Test Results ----------------------- "
-    Print " " & res.CountRunnedTests & " Tests done"
-    Print "------------------------------------------------------------ "
+    Print ("--------------------------------- Test Result ----------------------------------")
+    Print " " & res.CountRunnedTests & " " & ("Tests done")
+    '80 Zeichen
+    Print ("--------------------------------------------------------------------------------")
     If Errs.Count > 0 Then
         For Each Err In Errs.Items
-            Print " Error in:";; Err.Source
-            Print " Error:";; Err.Description
+            Print " " & ("Error in:");; Err.Source
+            Print " " & ("Error:");; Err.Description
         Next
     Else
-        Print " No Errors"
+        Print " " & ("No Errors")
     Endif
     Print "\n"
     If Fails.Count > 0 Then
         For Each Fail In Fails.Items
-            Print " Failure in:";; Fail.Source
-            Print " Failure:";; Fail.Description
+            Print " " & ("Failure in:");; Fail.Source
+            Print " " & ("Failure:");; Fail.Description
         Next
     Else
-        Print " No Failures"
+        Print " " & ("No Failures")
     Endif
-    Print "------------------------- Test End -------------------------"
+    Print ("---------------------------------  Test End  -----------------------------------")
     If res.WasSuccessful = True Then
-        Print " Success!"
+        Print " " & ("Success!")
     Else
-        Print " Not successful"
+        Print " " & ("Not successful... :-(")
     Endif
 
 End
