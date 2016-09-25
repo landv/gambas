@@ -1,6 +1,6 @@
 # gb.deg.unittest – A Gambas Unittest
 
-A Gambas component for unittesting and test-driven programming. Forked and inspired from quite an old program: [COMUnit](http://comunit.sourceforge.net) and mainly JUnit. Currently beta state. With an unittest component one can develop software in a test-driven matter and is able to ensure that on refactoring the desired results of methods and classes stay the same.
+A Gambas component for unittesting and test-driven programming. Forked and inspired from quite an old program: [COMUnit](http://comunit.sourceforge.net) and mainly JUnit. Currently alpha state. With an unittest component one can develop software in a test-driven matter and is able to ensure that on refactoring the desired results of methods and classes stay the same.
 
 Scroll down to understand how it works.
 
