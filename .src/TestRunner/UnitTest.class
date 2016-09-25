@@ -12,16 +12,38 @@ Private $DoSelfTest As Boolean
 
 Public Sub _new()
 
-    $Suite = New TestSuite
+    If UnittestFileNotExist() = False Then
+        $Suite = New TestSuite
+    Endif
+
+End
+
+' returns cancel
+Sub UnittestFileNotExist() As Boolean
+
+    Dim cancel As Boolean = True
+
+    ' http://gambaswiki.org/wiki/cat/path
+    'If you need to access a file located in the main project from a component,
+    'it is possible! You must start your relative path by the ../ sequence.
+    If Exist(".." &/ "Unittests") Then
+        cancel = False
+    Else
+        Print "No Unittests defined"
+    Endif
+    Return cancel
 
 End
 
 '' Show the Test Runner Form
 Public Sub ShowTestForm()
 
-    Dim fm As New FmRunner(Null, Me.DoSelfTest)
+    Dim fm As FmRunner
 
-    fm.Show()
+    If UnittestFileNotExist() = False Then
+        fm = New FmRunner(Null, Me.DoSelfTest)
+        fm.Show()
+    Endif
 
 End
 '' Runs the Unittest and prints the result to the console. Optional limited to one testclass and/or one testmethod.
@@ -30,8 +52,10 @@ Public Sub Test(Optional ContainerName As String, Optional CaseName As String, O
 
     Dim Res As New TestResult
 
-    Me._RunTests(Res, ContainerName, CaseName, ShowDebug, Me.DoSelfTest)
-    Me._PrintResult(Res)
+    If UnittestFileNotExist() = False Then
+        Me._RunTests(Res, ContainerName, CaseName, ShowDebug, Me.DoSelfTest)
+        Me._PrintResult(Res)
+    Endif
 
 End
 
@@ -103,7 +127,7 @@ Public Sub _RunTests(Result As TestResult, Optional ContainerName As String, Opt
 
 End
 
-Static Public Function GetAllTestContainerNames(Optional DoSelfTest As Boolean) As String[]
+Static Public Function GetAllTestContainerNamesOld(Optional DoSelfTest As Boolean) As String[]
 
     Dim ret As New String[]
     Dim C As Class
@@ -122,6 +146,27 @@ Static Public Function GetAllTestContainerNames(Optional DoSelfTest As Boolean) 
     ret.Sort()
 
     Return ret
+
+End
+
+Static Public Function GetAllTestContainerNames(Optional DoSelfTest As Boolean) As String[]
+
+    Dim hFile As File
+    Dim sLine As String
+    Dim TestContainernames As New String[]
+
+    hFile = Open "../Unittests" For Input
+
+    While Not Eof(hFile)
+        Line Input #hFile, sLine
+        If Left(Trim(sLine), 1) <> "#" Then
+            TestContainernames.Add(sLine)
+        Endif
+    Wend
+
+    Return TestContainernames
+Catch
+    Message.Error(Error.Text)
 
 End
 

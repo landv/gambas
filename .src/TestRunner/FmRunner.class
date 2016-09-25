@@ -129,6 +129,8 @@ Sub FillCboTests(Optional TestContainerName As String)
         .Index = 0
         .Show()
     End With
+Catch
+    Message.Error(Error.Text)
 
 End
 
