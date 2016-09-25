@@ -127,27 +127,27 @@ Public Sub _RunTests(Result As TestResult, Optional ContainerName As String, Opt
 
 End
 
-Static Public Function GetAllTestContainerNamesOld(Optional DoSelfTest As Boolean) As String[]
-
-    Dim ret As New String[]
-    Dim C As Class
-
-    For Each C In Classes
-        If C.Parent Then
-            If C.Parent.Name = "ATestContainer" Then
-                If C.Exist("constDegUnittestSelftest") = True And DoSelfTest = True Then
-                    ret.add(C.Name)
-                Else If C.Exist("constDegUnittestSelftest") = False Then
-                    ret.add(C.Name)
-                Endif
-            Endif
-        Endif
-    Next
-    ret.Sort()
-
-    Return ret
-
-End
+' Static Public Function GetAllTestContainerNamesOld(Optional DoSelfTest As Boolean) As String[]
+'
+'     Dim ret As New String[]
+'     Dim C As Class
+'
+'     For Each C In Classes
+'         If C.Parent Then
+'             If C.Parent.Name = "ATestContainer" Then
+'                 If C.Exist("constDegUnittestSelftest") = True And DoSelfTest = True Then
+'                     ret.add(C.Name)
+'                 Else If C.Exist("constDegUnittestSelftest") = False Then
+'                     ret.add(C.Name)
+'                 Endif
+'             Endif
+'         Endif
+'     Next
+'     ret.Sort()
+'
+'     Return ret
+'
+' End
 
 Static Public Function GetAllTestContainerNames(Optional DoSelfTest As Boolean) As String[]
 
@@ -159,7 +159,8 @@ Static Public Function GetAllTestContainerNames(Optional DoSelfTest As Boolean) 
 
     While Not Eof(hFile)
         Line Input #hFile, sLine
-        If Left(Trim(sLine), 1) <> "#" Then
+        sLine = Trim(sLine)
+        If sLine <> "" And If Left(sLine, 1) <> "#" Then
             TestContainernames.Add(sLine)
         Endif
     Wend
