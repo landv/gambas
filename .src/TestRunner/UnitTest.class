@@ -153,17 +153,27 @@ Static Public Function GetAllTestContainerNames(Optional DoSelfTest As Boolean) 
 
     Dim hFile As File
     Dim sLine As String
+    Dim TestClass As Class
     Dim TestContainernames As New String[]
+    Dim strClassnames As String[]
+    Dim strName As String
 
-    hFile = Open "../Unittests" For Input
+    If DoSelfTest = False Then
+        strClassnames = Dir("../.gambas")
+    Else
+        strClassnames = Dir(".gambas")
+    Endif
 
-    While Not Eof(hFile)
-        Line Input #hFile, sLine
-        sLine = Trim(sLine)
-        If sLine <> "" And If Left(sLine, 1) <> "#" Then
-            TestContainernames.Add(sLine)
+    For Each strName In strClassnames
+
+        TestClass = Class.Load(strName)
+        If TestClass.Parent Then
+            If TestClass.Parent.Name = "ATestContainer" Then
+                'Debug strName
+                TestContainernames.Add(strName)
+            Endif
         Endif
-    Wend
+    Next
 
     Return TestContainernames
 Catch
