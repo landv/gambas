@@ -166,11 +166,14 @@ Static Public Function GetAllTestContainerNames(Optional DoSelfTest As Boolean) 
 
     For Each strName In strClassnames
 
-        TestClass = Class.Load(strName)
-        If TestClass.Parent Then
-            If TestClass.Parent.Name = "ATestContainer" Then
-                'Debug strName
-                TestContainernames.Add(strName)
+        Try TestClass = Class.Load(strName)
+        If TestClass Then
+            If TestClass.Parent Then
+                If TestClass.Parent.Name = "ATestContainer" Then
+                    strName = String.UCaseFirst(String.Lower(TestClass.Name))
+                    Debug "Add to testclasses: ";; strName
+                    TestContainernames.Add(strName)
+                Endif
             Endif
         Endif
     Next

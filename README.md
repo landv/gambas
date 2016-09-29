@@ -41,14 +41,6 @@ Start by creating a class with a name like "_Test", for example "_TestHelloWorld
     End
 ----
 
-### File Unittests
-In your project's path a file called "Unittests" must exist. This file contains one line per TestContainer with the TestContainer's name:
-
-    # File Unittests
-    _TestHelloWorld
-
-If it does not exist, the TestContainers are not found.
-
 ### Module(Function) to test:
 
 To make it work, we need a funktion to test. So we create a function "World" in a module "Hello" in our project:

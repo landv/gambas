@@ -2,7 +2,8 @@
 Count=0
 
 [DebugWindow]
-Count=0
+Count=1
+DebugWindow[1]="TestClass"
 
 [DebugWindow/$MyContainer]
 Geometry=[30,98,345,280]
@@ -229,6 +230,9 @@ Geometry=[339,117,548,280]
 [DebugWindow/TestContainer(TCase.TestContainer).TestCaseNames]
 Geometry=[66,151,431,280]
 
+[DebugWindow/TestContainernames]
+Geometry=[119,40,224,280]
+
 [DebugWindow/TestResult]
 Geometry=[311,89,224,280]
 
@@ -292,6 +296,9 @@ Geometry=[188,56,224,280]
 [DebugWindow/str]
 Geometry=[119,40,429,750]
 
+[DebugWindow/strClassnames]
+Geometry=[119,40,224,280]
+
 [DebugWindow/symbols]
 Geometry=[71,368,280,479]
 
@@ -328,7 +335,7 @@ Active=7
 Count=25
 File[5]=".src/TesteStartRunner.module:4.12"
 File[6]=".src/TestMyself/TestErrorsAndFailures.class:0.4"
-File[7]=".src/TestRunner/UnitTest.class:0.176"
+File[7]=".src/TestRunner/UnitTest.class:0.179"
 File[8]=".src/TestSuite/TestSuite.class:18.89"
 File[9]=".src/TestSuite/ITestCase.class:0.3"
 File[10]=".src/TestSuite/TestCase.class:0.7"
