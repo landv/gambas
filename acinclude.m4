@@ -81,7 +81,7 @@ AC_DEFUN([GB_INIT_AUTOMAKE],
   AC_DEFINE(GAMBAS_VERSION_STRING, "GB_VERSION_MAJOR", Gambas version string)
   AC_DEFINE(GAMBAS_FULL_VERSION_STRING, "GB_VERSION_MAJOR.GB_VERSION_MINOR", Gambas full version string)
 
-  AC_DEFINE(GAMBAS_FULL_VERSION, 0x03090001, [Full Gambas version])
+  AC_DEFINE(GAMBAS_FULL_VERSION, 0x03090002, [Full Gambas version])
   ## No bytecode change between 3.8 and 3.9
   AC_DEFINE(GAMBAS_PCODE_VERSION, 0x03080000, [Gambas bytecode version])
   AC_DEFINE(GAMBAS_PCODE_VERSION_MIN, 0x03000000, [Minimum Gambas bytecode version])
