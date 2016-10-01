@@ -442,13 +442,17 @@ Static Public Sub RunAsRoot(Command As String)
     
     Case "KDE", "KDE4", "KDE5"
       sExec = "kdesudo"
+      ' newer SuSE have no kdesudo, but a kdesu
+      If Not System.Exist(sExec) Then sExec = "kdesu"
     Case "LXDE"
       sExec = "lxde-sudo"
     Case Else
       sExec = "gksudo"
+      ' gksu with an argument raise a gksudo
+      If Not System.Exist(sExec) Then sExec = "gksu"
     
   End Select
-  
+    
   If Not System.Exist(sExec) Then Error.Raise("No graphical sudo program found")
   
   Exec [sExec, Command]

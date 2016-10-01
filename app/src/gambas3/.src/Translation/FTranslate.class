@@ -296,6 +296,45 @@ Public Sub btnOK_Click()
 
 End
 
+Private Sub FormatComment(sComment As String)
+
+  Dim sFile As String
+  Dim sPath As String
+  Dim iPos As Integer
+  Dim sSuffix As String
+  Dim hLabel As Label
+  Dim hSep As Separator
+
+  panComment.Children.Clear
+
+  For Each sFile In Split(sComment, " ")
+    
+    iPos = RInStr(sFile, ":")
+    If iPos Then
+      sSuffix = Mid$(sFile, iPos + 1)
+      sFile = Left$(sFile, iPos - 1)
+    Else
+      sSuffix = ""
+    Endif
+    sPath = Project.FindPath(sFile)
+    
+    sFile = Mid$(sPath, Len(Project.SourceDir) + 2)
+    If sSuffix Then sFile &= " (" & sSuffix & ")"
+    
+    If panComment.Children.Count Then
+      hSep = New Separator(panComment)
+      hSep.Resize(1, 1)
+    Endif
+    
+    hLabel = New Label(panComment)
+    hLabel.Text = " " & sFile & " "
+    hLabel.Padding = Desktop.Scale \ 2
+    hLabel.AutoResize = True
+    
+  Next
+  
+End
+
 Public Sub cvwTranslate_Select()
 
   With cvwTranslate
@@ -304,7 +343,7 @@ Public Sub cvwTranslate_Select()
     $bIgnore = True
     txtTranslate.Text = .Current[1]
     $bIgnore = False
-    lblComment.Text = .Current[2]
+    FormatComment(.Current[2])
 
   End With
 

@@ -151,18 +151,20 @@ Public Sub GetDependencyName() As String
   
   Dim sProject As String
   Dim sLine As String
-  Dim iPos As Integer
+  Dim sVendor As String
+  Dim sVendorPrefix As String
   
   Exec [System.Path &/ "bin/gba" & System.Version, "-x", Path, ".project"] To sProject
   
   For Each sLine In Split(sProject, "\n")
-    If sLine Begins "PackageName=" Then
-      sLine = Mid$(sLine, InStr(sLine, "=") + 1)
-      iPos = RInStr(sLine, "-")
-      If iPos Then sLine = Left(sLine, iPos - 1)
-      Return sLine
+    If sLine Begins "Vendor=" Then
+      sVendor = Mid$(sLine, InStr(sLine, "=") + 1)
+    Else If sLine Begins "Vendor=" Then
+      sVendorPrefix = Mid$(sLine, InStr(sLine, "=") + 1)
     Endif
   Next
+  
+  Return Package.GetPackagePrefix(Project.TYPE_LIBRARY, sVendor, sVendorPrefix, True) & Package.GetPackageName(Name)
   
 End
 

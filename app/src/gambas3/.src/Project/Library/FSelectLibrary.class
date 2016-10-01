@@ -119,8 +119,14 @@ End
 
 Public Sub btnRemove_Click()
 
+  Dim sPath As String
+  
   If Not cvwLibrary.Key Then Return
-  Try Kill CLibraryInfo.UserPath &/ cvwLibrary.Key & ".gambas"
+  
+  sPath = CLibraryInfo.UserPath &/ cvwLibrary.Key & ".gambas"
+  Try Kill sPath
+  Try Rmdir File.Dir(sPath)
+  
   RefreshLibraries
   cvwLibrary_Select
 

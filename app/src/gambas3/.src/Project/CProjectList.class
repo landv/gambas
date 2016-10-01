@@ -4,6 +4,8 @@ Public Enum TYPE_RECENT, TYPE_EXAMPLE, TYPE_SOFTWARE, TYPE_TEMPLATE
 
 Event Click(Path As String, Another As Boolean)
 Event DblClick(Path As String)
+Event Refresh
+Event Fill
 
 Property AllowOpenExtern As Boolean
 Property Current As ProjectBox
@@ -19,6 +21,7 @@ Private $dRecent As Date
 Private $sLastURL As String
 Private $hHelp As WebView
 Private $hCurrent As ProjectBox
+Private $iCount As Integer
 
 Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Optional iArrange As Integer = Arrange.Row)
   
@@ -90,6 +93,8 @@ Private Sub FillWithExample()
   $hList.Arrangement = Arrange.None
   
   aExamples = GetExamples()
+  $iCount = aExamples.Count
+    
   If aExamples.Count = 0 Then
     
     If Not $hHelp Then
@@ -178,6 +183,13 @@ Private Sub GetSoftwares() As String[]
 
 End
 
+Public Sub IsVoid() As Boolean
+  
+  Return $iCount = 0
+  
+End
+
+
 Private Sub FillWithSoftware()
 
   Dim hProjectItem As ProjectBox
@@ -193,6 +205,8 @@ Private Sub FillWithSoftware()
   $hList.Arrangement = Arrange.None
   
   aSoft = GetSoftwares()
+  $iCount = aSoft.Count
+  
   If aSoft.Count = 0 Then
     
   Else
@@ -228,9 +242,10 @@ Private Sub FillWithSoftware()
         hProjectItem.ResizeScaled(1, 9)
       Endif
       hProjectItem.ShowAuthors = True
+      hProjectItem.ShowRemove = True
       hProjectItem.Path = sSoft
       hProjectItem.Group = sGroup
-    
+      
     Next
   
     ApplyFilter($hFilter.Text)
@@ -282,6 +297,8 @@ Private Sub FillWithTemplate()
   $hList.Arrangement = Arrange.None
   
   aSoft = GetTemplates()
+  $iCount = aSoft.Count
+  
   If aSoft.Count Then
     
     Clear
@@ -339,6 +356,7 @@ Private Sub FillWithRecent(bClear As Boolean)
   Clear()
 
   aRecent = CRecentProject.Get($iSort)
+  $iCount = aRecent.Count
 
   For Each hRecent In aRecent
     
@@ -406,6 +424,8 @@ Public Sub Fill(Optional bClear As Boolean)
     Case TYPE_TEMPLATE
       FillWithTemplate
   End Select
+  
+  Raise Fill
   
 End
 
@@ -499,22 +519,38 @@ End
 
 Public Sub ProjectItem_RemoveClick()
   
-  Dim hItem As ProjectBox
+  Dim hItem As ProjectBox = Last
+  Dim sErr As String
   
-  If $iType <> TYPE_RECENT Then Return
-  hItem = Last
-  
-  CRecentProject.Remove(hItem.Path)
-  hItem.Delete
+  If $iType = TYPE_RECENT Then 
+    
+    CRecentProject.Remove(hItem.Path)
+    hItem.Delete
+    
+  Else If $iType = TYPE_SOFTWARE Then
+    
+    If Message.Question(("Do you really want to uninstall this software?"), ("Uninstall"), ("Cancel")) = 1 Then
+      sErr = CSoftware.UninstallFromPath(hItem.Path)
+      If sErr Then
+        Message.Error(("Unable to uninstall software:") & "\n\n" & sErr)
+      Else
+        Clear
+        Fill
+        Message(("The software has been successfully uninstalled."))
+        Raise Refresh
+      Endif
+    Endif
+    
+  Endif
   
 End
 
-Public Sub ProjectItem_preparePopUp(item As ProjectBox)
-
-  $hCurrent = item
-
-End
-
+' Public Sub ProjectItem_preparePopUp(item As ProjectBox)
+' 
+'   $hCurrent = item
+' 
+' End
+' 
 Public Sub GetFirst() As String
 
   Dim hChild As Control

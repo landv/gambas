@@ -3680,24 +3680,28 @@ Public Sub _ViewToReal(Y As Integer) As Integer
   Dim J As Integer
   Dim YO As Integer
   
+  YO = Y
+  
   If $aFold Then 
   
-    Try Return $cCacheView[Y]
+    Try Y = $cCacheView[Y]
+    If Error Then
   
-    M = $hDoc.Max
-    YO = Y
-    
-    For I = 0 To $aFold.Max Step 2
-      If Y <= $aFold[I] Then Break
-      J = I + 1
-      If $aFold[J] < M Then
-        Y += $aFold[J] - $aFold[I]
-      Else
-        Y = M + 1
-      Endif
-    Next
-    
-    $cCacheView[YO] = Y
+      M = $hDoc.Max
+      
+      For I = 0 To $aFold.Max Step 2
+        If Y <= $aFold[I] Then Break
+        J = I + 1
+        If $aFold[J] < M Then
+          Y += $aFold[J] - $aFold[I]
+        Else
+          Y = M + 1
+        Endif
+      Next
+      
+      $cCacheView[YO] = Y
+      
+    Endif
     
   Endif
   
@@ -3713,25 +3717,29 @@ Public Sub _RealToView(Y As Integer) As Integer
   Dim J As Integer
   Dim YO As Integer
   
+  YO = Y
+  
   If $aFold Then 
     
-    Try Return $cCacheView[- Y]
+    Try Y = $cCacheView[- Y]
+    If Error Then
   
-    YO = Y
-    YY = Y
-  
-    For I = 0 To $aFold.Max Step 2
-      If Y < $aFold[I] Then Continue
-      J = I + 1
-      If Y <= $aFold[J] Then
-        YY -= Y - $aFold[I]
-      Else
-        YY -= $aFold[J] - $aFold[I]
-      Endif
-    Next
+      YY = Y
     
-    Y = YY
-    $cCacheView[- YO] = Y
+      For I = 0 To $aFold.Max Step 2
+        If Y < $aFold[I] Then Continue
+        J = I + 1
+        If Y <= $aFold[J] Then
+          YY -= Y - $aFold[I]
+        Else
+          YY -= $aFold[J] - $aFold[I]
+        Endif
+      Next
+      
+      Y = YY
+      $cCacheView[- YO] = Y
+      
+    Endif
     
   Endif
   

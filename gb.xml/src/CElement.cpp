@@ -100,14 +100,15 @@ END_METHOD
 BEGIN_METHOD(CElement_getAttribute, GB_STRING attrName; GB_INTEGER mode)
 
 Attribute *attr = XMLElement_GetAttribute(THIS, STRING(attrName), LENGTH(attrName), VARG(mode));
-    if(attr)
-    {
-        GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
-    }
-    else
-    {
-        GB.ReturnNull();
-    }
+
+if(attr && attr->attrValue && attr->lenAttrValue)
+{
+    GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
+}
+else
+{
+    GB.ReturnNull();
+}
 
 END_METHOD
 

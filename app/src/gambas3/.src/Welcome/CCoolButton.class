@@ -53,7 +53,7 @@ Public Sub Panel_Draw()
   
   Paint.DrawPicture($hPict, 16, ($hPanel.H - $hPict.H) \ 2)
   'If $bInside Then Draw.Foreground = Color.Gradient($hPanel.Foreground, $iHighlight)
-  Paint.Background = $hPanel.Foreground
+  Paint.Background = If(Me.Enabled, $hPanel.Foreground, Color.Merge($hPanel.Foreground, $hPanel.Background))
   Paint.DrawTextShadow($sText, $hPict.W + 24, 0, $hPanel.W - $hPict.W - 32, $hPanel.H, Align.Normal)
   Paint.DrawText($sText, $hPict.W + 24, 0, $hPanel.W - $hPict.W - 32, $hPanel.H, Align.Normal)
   
@@ -71,7 +71,7 @@ Public Sub Panel_Draw()
     Paint.AntiAlias = True
   Endif
   
-  If $bInside Then
+  If $bInside And If Me.Enabled Then
     Paint.FillRect(0, 0, Paint.W, Paint.H, Color.SetAlpha($iHighlight, 192))
   Endif
   
@@ -114,6 +114,7 @@ End
 
 Public Sub Panel_KeyRelease()
   
+  If Not $hPanel.Enabled Then Return
   If Key.Code = Key.Space Then
     'Pressed(False)
     Panel_Leave
@@ -136,6 +137,7 @@ Public Sub Panel_MouseUp()
   Dim Y As Integer
 
   If Not Mouse.Left Then Return
+  If Not $hPanel.Enabled Then Return
 
   'Pressed(False)
 

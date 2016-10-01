@@ -5,6 +5,7 @@ Class MediaView
 
 Static Private $aImgExt As String[] = ["png", "jpg", "jpeg", "gif", "bmp", "xpm"]
 Static Private $aAudioExt As String[] = ["wav", "mp3", "ogg", "flac"]
+Static Private $aVideoExt As String[] = ["mp4", "mov", "avi", "mpg", "mpeg", "flv", "wmv", "mkv"]
 
 Private $sPath As String
 
@@ -108,6 +109,8 @@ Private Sub RefreshPath()
             If Error Then Error "gb.form: unable to find icon for mimetype: "; hMime.GenericIcon
             If hMime.Type Like "image/*" Then
               bShowImagePreview = True
+            Else If $bMedia And If hMime.Type Like "{video,audio}/*" Then
+              bShowMediaPreview = True
             Else If $bMedia And If hMime.Type Like "audio/*" Then
               bShowMediaPreview = True
             Endif
@@ -116,10 +119,16 @@ Private Sub RefreshPath()
           picIcon.Picture = Picture["icon:/64/image"]
           lblType.Text = ("Image")
           bShowImagePreview = True
-        Else If $bMedia And If $aAudioExt.Exist(File.Ext($sPath), gb.IgnoreCase) Then
-          picIcon.Picture = Picture["icon:/64/audio"]
-          lblType.Text = ("Audio")
-          bShowMediaPreview = True
+        Else If $bMedia Then
+          If $aAudioExt.Exist(File.Ext($sPath), gb.IgnoreCase) Then
+            picIcon.Picture = Picture["icon:/64/audio"]
+            lblType.Text = ("Audio")
+            bShowMediaPreview = True
+          Else If $aVideoExt.Exist(File.Ext($sPath), gb.IgnoreCase) Then
+            picIcon.Picture = Picture["icon:/64/video"]
+            lblType.Text = ("Video")
+            bShowMediaPreview = True
+          Endif
         Endif
         
       Endif

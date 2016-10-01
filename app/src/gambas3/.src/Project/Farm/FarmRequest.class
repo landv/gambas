@@ -220,6 +220,12 @@ Private Sub AddLanguageTag(aTag As String[], sLang As String)
 
 End
 
+Private Sub AddTag(aTag As String[], sTag As String)
+
+  If Not aTag.Exist(sTag) Then aTag.Add(sTag)
+
+End
+
 Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVersion As String, aTag As String[], aRequire As String[], sURL As String, sDesc As String)
 
   Dim sSource As String
@@ -249,7 +255,7 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
   '$sBadMsg = ("Unable to publish project.")
 
   For Each sComp In Project.Components
-    If Not aTag.Exist(sComp) Then aTag.Add(sComp)
+    AddTag(aTag, sComp)
   Next
 
   sSave = System.Language
@@ -262,6 +268,8 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
   Endif
   
   If Project.Language Then AddLanguageTag(aTag, Project.Language)
+  
+  If Project.Type = Project.TYPE_LIBRARY Then AddTag(aTag, "library")
   
   System.Language = sSave
 

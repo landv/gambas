@@ -42,6 +42,7 @@ Private $bWatch As Boolean
 Private $hRefreshTimer As Timer
 Private $bRefreshTimerTriggered As Boolean
 Private $hWatcher As Watcher
+Private $bRefreshAfterRename As Boolean
 
 Public Sub _new()
 
@@ -372,6 +373,11 @@ Private Sub RefreshView()
   Dim SX As Integer
   Dim SY As Integer
 
+  If $bInRename Then
+    $bRefreshAfterRename = True
+    Return
+  Endif
+
   SX = $hTreeView.ScrollX
   SY = $hTreeView.ScrollY
   
@@ -516,6 +522,8 @@ Public Sub TreeView_Rename()
   
   $bDeleteOnCancel = False
   
+  If $bRefreshAfterRename Then RefreshViewLater
+  
 Catch 
   
   $hTreeView[sKey].Text = File.Name(sKey)
@@ -539,6 +547,7 @@ Public Sub TreeView_Cancel()
   $hTreeView[sParent].Selected = True
 
   $bDeleteOnCancel = False
+  If $bRefreshAfterRename Then RefreshViewLater
   
 End
 
@@ -563,6 +572,7 @@ Public Sub NewFolder()
   AddDir(Current_Read(), sDir)
   $bDeleteOnCancel = True
   $bInRename = True
+  $bRefreshAfterRename = False
   $hTreeView[sPath].Rename
   
 Catch

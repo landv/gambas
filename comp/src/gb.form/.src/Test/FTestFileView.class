@@ -32,3 +32,9 @@ Public Sub FileChooser1_Change()
   FileProperties1.Path = FileChooser1.SelectedPath
 
 End
+
+Static Public Sub _init()
+
+  Component.Load("gb.inotify")
+
+End

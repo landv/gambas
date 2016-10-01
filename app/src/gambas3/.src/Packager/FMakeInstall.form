@@ -4,10 +4,11 @@
   MoveScaled(0,0,92,74)
   Text = ("Make installation package")
   Icon = Picture["icon:/large/package"]
-  Arrangement = Arrange.Fill
+  Arrangement = Arrange.Vertical
   Margin = True
   { wizInstall Wizard
     MoveScaled(1,1,89,72)
+    Expand = True
     Arrangement = Arrange.Vertical
     Spacing = True
     Count = 11
@@ -180,7 +181,9 @@
     { txtMessage TextLabel
       MoveScaled(0,0,86,6)
       Visible = False
-      Background = &HFFFFEF&
+      Font = Font["Italic,-1"]
+      Background = Color.TextBackground
+      Foreground = Color.TextForeground
       Padding = 8
       AutoResize = True
       Border = Border.Plain
@@ -664,9 +667,29 @@
       }
     }
     { edtLog TextEditor
-      MoveScaled(12,25,49,28)
+      MoveScaled(7,17,49,28)
       Expand = True
       ReadOnly = True
+    }
+    { panError Panel
+      MoveScaled(1,51,87,7)
+      Visible = False
+      Background = Color.TextBackground
+      Arrangement = Arrange.Horizontal
+      AutoResize = True
+      Margin = True
+      Border = Border.Plain
+      { txtError TextLabel
+        MoveScaled(5,0,64,6)
+        Font = Font["-1"]
+        Background = Color.TextBackground
+        Expand = True
+        AutoResize = True
+      }
+      { spnCreatePackage Spinner
+        MoveScaled(81,0,3,3)
+        Visible = False
+      }
     }
     Index = 0
   }
