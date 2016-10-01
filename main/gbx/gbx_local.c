@@ -633,7 +633,7 @@ void LOCAL_set_lang(const char *lang)
 	char *err;
 
 	#ifdef DEBUG_LANG
-	fprintf(stderr, "LOCAL_set_lang: %s\n", lang);
+	fprintf(stderr, "******** LOCAL_set_lang: %s ********\n", lang);
 	#endif
 
 	if (lang && *lang)
@@ -1532,7 +1532,7 @@ static void LOCAL_load_translation(ARCHIVE *arch)
 		domain = "gb";
 
 	#ifdef DEBUG_LANG
-	fprintf(stderr, "LOCAL_load_translation: domain: %s\n", domain);
+	fprintf(stderr, "LOCAL_load_translation: %s / domain = %s\n", arch ? arch->name : "NULL", domain);
 	#endif
 
 	lang_list = get_languages();
@@ -1557,8 +1557,12 @@ static void LOCAL_load_translation(ARCHIVE *arch)
 				*src = tolower(c);
 				src++;
 			}
-
-			dst = FILE_cat(".lang", test, NULL);
+			
+			if (!arch)
+				dst = FILE_cat("...", ".lang", test, NULL);
+			else
+				dst = FILE_cat(".lang", test, NULL);
+			
 			dst = FILE_set_ext(dst, "mo");
 
 			#ifdef DEBUG_LANG
@@ -1610,7 +1614,7 @@ static void LOCAL_load_translation(ARCHIVE *arch)
 	unlink(dst);
 
 	#ifdef DEBUG_LANG
-	fprintf(stderr, "Writing to %s\n", dst);
+	fprintf(stderr, "Writing to %s (%d bytes)\n", dst, len);
 	#endif
 
 	// No need to test previous system calls as the failure will be detected now
@@ -1674,26 +1678,25 @@ const char *LOCAL_gettext(const char *msgid)
 	if (!msgid)
 		return "";
 
-	//ARCHIVE_get_current(&arch);
-
 	if (!ARCHIVE_get_current(&arch))
 	{
+		#ifdef DEBUG_LANG
+		fprintf(stderr, "dgettext(\"%s\", \"%s\")\n", arch->domain, msgid);
+		#endif
 		if (!arch->translation_loaded)
 			LOCAL_load_translation(arch);
 		tr = dgettext(arch->domain, msgid);
-		#ifdef DEBUG_LANG
-		fprintf(stderr, "dgettext(\"%s\", \"%s\") -> \"%s\"\n", arch->domain, msgid, tr);
-		#endif
 	}
 
 	if (tr == msgid)
 	{
+		#ifdef DEBUG_LANG
+		fprintf(stderr, "dgettext(\"%s\", \"%s\")\n", "gb", msgid);
+		#endif
 		if (!_translation_loaded)
 			LOCAL_load_translation(NULL);
-		tr = gettext(msgid);
-		#ifdef DEBUG_LANG
-		fprintf(stderr, "gettext(\"%s\") -> \"%s\"\n", msgid, tr);
-		#endif
+		tr = dgettext("gb", msgid);
+		//tr = gettext(msgid);
 	}
 
 	/*printf("tr: %s -> %s\n", msgid, tr);*/
@@ -1701,6 +1704,10 @@ const char *LOCAL_gettext(const char *msgid)
 	if (!tr || tr[0] == 0 || (tr[0] == '-' && (tr[1] == 0 || (tr[1] == '\n' && tr[2] == 0))))
 		tr = msgid;
 
+	#ifdef DEBUG_LANG
+	fprintf(stderr, "--> \"%s\"\n", tr);
+	#endif
+	
 	return tr;
 }
 
