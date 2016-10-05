@@ -57,8 +57,6 @@ Public Sub com_canonical_dbusmenu_GetGroupProperties(IdList As Integer[], Proper
   Dim iId As Integer
   Dim hResult As _DBusMenuProperties
   
-  Debug
-  
   For Each iId In IdList
     aResult.Add([iId, GetProperties(iId, PropertyNames)])
   Next
