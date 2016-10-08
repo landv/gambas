@@ -5722,6 +5722,8 @@ Public Sub IsReadOnly(sPath As String) As Boolean
   If Not Exist(sPath) Then Return True
   If Not Access(sPath, gb.Write) Then Return True
 
+  If IsFake() Then Return ' Allow a file located in a linked directory to be modified only in "fake" mode, i.e. when opened alone.
+
   Do
     If sPath = Project.Dir Or If sPath = "/" Or If Not sPath Then Break
     If Stat(sPath).Type = gb.Link Then
