@@ -28,6 +28,9 @@ Private $aCollations As String[]
 Private $bMetadata As Boolean
 Private $bTemplate As Variant
 
+Private Const KEY_REQUEST As String = "$"
+Private $bInCheckCurrent As Boolean
+
 Public Sub _new(sPath As String)
   
   Path = sPath
@@ -94,7 +97,16 @@ End
 
 Private Sub LoadList(Optional sTable As String)
   
+  Dim sFirst As String
+  
   MConnection.FillViewWithTables(lvwTable, $hConn, $bShowSystem)
+  
+  lvwTable.MoveFirst
+  Try sFirst = lvwTable.Item.Key
+  
+  With lvwTable.Add(KEY_REQUEST, ("SQL requests"), Picture["icon:/16/find"])
+    If sFirst Then .MoveBefore(sFirst)
+  End With
   
   If sTable Then
     If lvwTable.Exist("T" & sTable) Or If lvwTable.Exist("S" & sTable) Then
@@ -104,7 +116,7 @@ Private Sub LoadList(Optional sTable As String)
     Endif
   Endif
   
-  btnRequest_Click
+  lvwTable[KEY_REQUEST].Selected = True
   
 End
 
@@ -277,11 +289,11 @@ Public Sub Reload() As Boolean
     datRequest.Connection = $hConn
     
     panData.Show
-    btnRequest.Show
+    'btnRequest.Show
   
   ' Endif
   
-  btnTitle.Text = $sTitle
+  btnTitle.Tooltip = $sTitle
     
   $bMetadata = hConfig["Connection/DisplayMetadata"]
   $bTemplate = hConfig["Connection/RememberTemplate"]
@@ -417,12 +429,26 @@ End
 
 Private Sub SelectTable(sTable As String)
   
-  Try lvwTable["T" & sTable].Selected = True
-  If Error Then Try lvwTable["S" & sTable].Selected = True
+  If lvwTable.Exist("T" & sTable) Then
+    lvwTable["T" & sTable].Selected = True
+    Return
+  Endif
+  
+  If lvwTable.Exist("S" & sTable) Then
+    lvwTable["S" & sTable].Selected = True
+    Return
+  Endif
+  
+  'Try lvwTable["T" & sTable].Selected = True
+  'If Error Then Try lvwTable["S" & sTable].Selected = True
   
 End
 
 Private Sub CheckCurrent() As Boolean
+
+  If $bInCheckCurrent Then Return
+  
+  $bInCheckCurrent = True
   
   If tbvField.Save() Then Goto CANCEL
   If tbvIndex.Save() Then Goto CANCEL
@@ -439,11 +465,13 @@ Private Sub CheckCurrent() As Boolean
     End Select
   Endif
   
+  $bInCheckCurrent = False
   Return
   
 CANCEL:
   
   SelectTable($sTable)
+  $bInCheckCurrent = False
   Return True
   
 End
@@ -551,6 +579,7 @@ Private Sub ReloadTable()
   
   splTable.Enabled = True
   
+  'btnRequest.Value = False
   panRequest.Hide
   tabTable.Show
   datRequest.Hide
@@ -591,22 +620,30 @@ Public Sub lvwTable_Select()
   Dim sKey As String 
   
   Try sKey = lvwTable.Current.Key
+  If Not sKey Then Return
+  
   If Left(sKey) = ">" Then 
     lvwTable.Current.Expanded = True
     Return
   Endif
   
-End
-
-Public Sub lvwTable_MouseUp()
+  If sKey = KEY_REQUEST Then
   
-  Dim sKey As String 
+    If CheckCurrent() Then Return
+    $sTable = ""
+    panRequest.Show
+    tabTable.Hide
+    datData.Hide
+    datRequest.Show
+    tlbData.Hide
+    SetReadOnly(True)
+    edtRequest.SetFocus
   
-  Try sKey = lvwTable.Current.Key
-  If Not sKey Then Return
-  If Left(sKey) = ">" Then Return
-  
-  If LoadTable(Mid$(sKey, 2)) Then Return
+  Else
+    
+    If LoadTable(Mid$(sKey, 2)) Then Return
+    
+  Endif
   
 End
 
@@ -1628,21 +1665,6 @@ Public Sub mnuRedo_Click()
   
 End
 
-Public Sub btnRequest_Click()
-  
-  If CheckCurrent() Then Return
-  Try lvwTable.Current.Selected = False
-  $sTable = ""
-  panRequest.Show
-  tabTable.Hide
-  datData.Hide
-  datRequest.Show
-  tlbData.Hide
-  SetReadOnly(True)
-  edtRequest.SetFocus
-  
-End
-
 Public Sub btnKill_Click()
   
   If Message.Warning(Subst(("Do you really want to delete table '&1'?"), $sTable), ("Delete"), ("Cancel")) = 2 Then Return
@@ -1653,7 +1675,7 @@ Public Sub btnKill_Click()
   'UpdateDefinition($sTable)
   lvwTable.Remove("T" & $sTable)
   datData.Reset
-  btnRequest_Click
+  lvwTable[KEY_REQUEST].Selected = True
   
 Catch
   
