@@ -683,6 +683,7 @@ Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule As Boole
     Endif
     
     If bBrace Then
+      If iInd + 1 > aSym.Max Then Continue
       If aSym[iInd + 1] = ")" Then Inc iInd
     Endif
     
