@@ -54,6 +54,8 @@ typedef
 	struct {
 		CMEDIAPIPELINE base;
 		int channel;
+		GMutex next_uri_mutex;
+		char *next_uri;
 	}
 	CMEDIAPLAYER;
 

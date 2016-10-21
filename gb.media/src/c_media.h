@@ -85,6 +85,10 @@ typedef
 		CMEDIACONTROL control;
 		GB_TIMER *watch;
 		int polling;
+		gint64 pos;
+		gint64 duration;
+		unsigned in_message : 1;
+		unsigned about_to_finish : 1;
 	}
 	CMEDIAPIPELINE;
 
@@ -99,7 +103,7 @@ typedef
 	struct {
 		GB_BASE ob;
 		GstMessage *message;
-                const char *lastKey;
+		const char *lastKey;
 	}
 	CMEDIAMESSAGE;
 	
@@ -126,5 +130,7 @@ void MEDIA_set_flag(void *element, char *property, int flag, bool value);
 void MEDIA_set_property(void *_object, const char *property, GB_VALUE *v);
 
 GB_IMG *MEDIA_get_image_from_sample(GstSample *sample, bool convert);
+
+void MEDIA_stop_pipeline(CMEDIACONTROL *_object);
 
 #endif /* __C_MEDIA_H */
