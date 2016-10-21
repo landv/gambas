@@ -13,11 +13,20 @@ _Properties
 C
 s
 "*,Border=True,ShowControl=True,URL{Path}"
+:AboutToFinish
+:
+
+
 URL
 p
 s
 
 'Return or set the path or the URL of the media file to play.
+NextURL
+p
+s
+
+'Return or set the path or the next URL of the media file to play.
 Border
 p
 b
@@ -57,3 +66,7 @@ m
 
 
 'Stop playing the media.
+_AboutToFinish
+m
+
+

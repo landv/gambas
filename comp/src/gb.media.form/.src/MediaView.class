@@ -8,7 +8,10 @@ Public Const _IsControl As Boolean = True
 Public Const _Group As String = "Media"
 Public Const _Properties As String = "*,Border=True,ShowControl=True,URL{Path}"
 
+Event AboutToFinish
+
 Property URL As String '' Return or set the path or the URL of the media file to play.
+Property NextURL As String '' Return or set the path or the next URL of the media file to play.
 Property Border As Boolean  '' Return or set if the control has a border.
 Property ShowControl As Boolean '' Return or set if the controls are visible.
 
@@ -17,6 +20,7 @@ Property Position As Float '' Return or set the current position inside the medi
 
 Private $hView As FMediaPlayer
 Private $sUrl As String
+Private $sNextUrl As String
 
 Public Sub _new()
   
@@ -114,5 +118,24 @@ End
 Private Sub Position_Write(Value As Float)
 
   $hView.SetPosition(Value)
+
+End
+
+Public Sub _AboutToFinish()
+  
+  Raise AboutToFinish
+  
+End
+
+Private Function NextURL_Read() As String
+
+  Return $sNextUrl
+
+End
+
+Private Sub NextURL_Write(Value As String)
+
+  $sNextUrl = Value
+  $hView.SetNextUrl(Value)
 
 End

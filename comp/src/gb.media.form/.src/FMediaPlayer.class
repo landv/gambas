@@ -4,8 +4,6 @@
 
 Private $hPlayer As MediaPlayer
 Private $hImage As MediaControl
-Private $fPos As Float
-Private $fLength As Float
 
 Private $hPause1 As Panel
 Private $hPause2 As Panel
@@ -14,6 +12,12 @@ Private $iMute As Integer
 Private $sName As String
 Private $bMutedIcon As Boolean
 Private $fStartupPos As Float
+
+Private Sub GetParent() As MediaView
+
+  Return Me.Parent
+
+End
 
 Private Sub MakeMediaPlayer()
   
@@ -86,6 +90,15 @@ Public Sub SetUrl(sUrl As String)
   
 End
 
+Public Sub SetNextUrl(sUrl As String)
+  
+  MakeMediaPlayer
+  If sUrl Not Like "*://*" Then sUrl = Media.URL(sUrl)
+  $hPlayer.NextURL = sUrl
+  
+End
+
+
 Public Sub btnPlay_Click()
 
   If Not $hPlayer Then Return
@@ -115,7 +128,6 @@ Public Sub btnStop_Click()
   If $hPlayer.State <> Media.Playing And If $hPlayer.State <> Media.Paused Then Return
   $hPlayer.Stop
   timTime.Stop
-  $fLength = 0
   HidePause
   dwgVideo.Refresh
   dwgTime.Refresh
@@ -167,35 +179,17 @@ Public Sub SetBorder(bBorder As Boolean) As Boolean
   
 End
 
-Private Sub UpdateTime()
-
-  Dim fPos As Float
-
-  fPos = $hPlayer.Position
-  If fPos = 0 Then Return
-  $fPos = fPos
-  If $fLength = 0 Then
-    $fLength = $hPlayer.Duration
-    If $fStartupPos Then
-      SetPosition($fStartupPos)
-      $fStartupPos = 0
-      Return
-    Endif
-  Endif
-  dwgTime.Refresh
-  
-End
-
-
 Public Sub timTime_Timer()
 
-  UpdateTime
+  dwgTime.Refresh
 
 End
 
 Public Sub dwgTime_Draw()
 
   Dim sText As String
+  Dim fPos As Float
+  Dim fLength As Float
   
   'Paint.Brush = Paint.LinearGradient(0, 0, Paint.W, 0, [Color.SetAlpha(Color.Foreground, 240), Color.Transparent], [0, 1])
   'Paint.Rectangle(0, 0, Paint.W, Paint.H)
@@ -204,31 +198,37 @@ Public Sub dwgTime_Draw()
   If Not $hPlayer Or If $hPlayer.State = Media.Null Then Return
   If dwgTime.H < 16 Then Return
   
-  If $fPos = 0 Then
+  fPos = $hPlayer.Position
+  fLength = $hPlayer.Duration
+  
+  If fPos = 0 Then
     sText = "00:00:00"
   Else
-    sText = Format(CDate(($fPos + 0.5) / 86400), "hh:nn:ss") '& " / " & Format(CDate($fLength / 86400), "hh:nn:ss")
+    sText = Format(CDate((fPos + 0.5) / 86400), "hh:nn:ss") '& " / " & Format(CDate($fLength / 86400), "hh:nn:ss")
   Endif
   
-  If $fLength > 0 Then
-    sText &= " / " & Format(CDate(($fLength + 0.5) / 86400), "hh:nn:ss")
+  
+  If fLength > 0 Then
+    sText &= " / " & Format(CDate((fLength + 0.5) / 86400), "hh:nn:ss")
   Else
     sText &= " / 00:00:00"
   Endif
   
-  Paint.Background = Color.Foreground
+  Paint.Background = Color.White
   Paint.DrawText(sText, 0, 0, dwgTime.W, dwgTime.H, Align.Right)
 
-  If $fLength > 0 Then Paint.FillRect(0, 7, dwgTime.W * Min(1, $fPos / $fLength), dwgTime.H - 14, Color.SetAlpha(Color.Foreground, 192))
+  If fLength > 0 Then Paint.FillRect(0, 9, dwgTime.W * Min(1, fPos / fLength), dwgTime.H - 18, Color.SetAlpha(Color.White, 128))
   
 End
 
 Private Sub SetPos(fPos As Float)
   
+  Dim fLength As Float
+  
   If $hPlayer.State = Media.Paused Or If $hPlayer.State = Media.Playing Then
-    If $fLength Then
-      $fPos = Max(0, Min($fLength, fPos * $fLength))
-      $hPlayer.Position = $fPos
+    fLength = $hPlayer.Duration
+    If fLength > 0 Then
+      $hPlayer.Position = Max(0, Min(fLength, fPos * fLength))
       dwgTime.Refresh
     Endif
   Endif
@@ -336,31 +336,35 @@ Public Sub panBorder_BeforeArrange()
 
   If panBorder.H < Desktop.Scale * 10 Then
     panViewer.Hide
-    dwgTime.Expand = True
+    dwgTime.Parent.Expand = True
   Else
     panViewer.Show
-    dwgTime.Expand = False
-    dwgTime.H = Desktop.Scale * 3
+    dwgTime.Parent.Expand = False
+    dwgTime.Parent.H = Desktop.Scale * 3
   Endif
 
 End
 
 Public Sub GetDuration() As Float
   
-  Return $fLength
+  Return $hPlayer.Duration
   
 End
 
 Public Sub GetPosition() As Float
   
-  Return $fPos
+  Return $hPlayer.Position
   
 End
 
 Public Sub SetPosition(fPos As Float)
+
+  Dim fLength As Float
   
-  If $fLength Then
-    SetPos(fPos / $fLength)
+  fLength = $hPlayer.Duration
+  
+  If fLength Then
+    SetPos(fPos / fLength)
   Else
     $fStartupPos = fPos
   Endif
@@ -381,4 +385,17 @@ Public Sub dwgVideo_MouseWheel()
 
   dwgTime_MouseWheel
 
+End
+
+Public Sub MediaPlayer_End()
+  
+  Stop()
+  
+End
+
+Public Sub MediaPlayer_AboutToFinish()
+  
+  'Debug $hPlayer.Position;; $hPlayer.Duration
+  GetParent()._AboutToFinish()
+  
 End
