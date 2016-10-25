@@ -230,7 +230,7 @@ Private Function Language_Read() As String
   Dim iPos As Integer
 
   aLang = Split(CGI["HTTP_ACCEPT_LANGUAGE"], ",")
-  If aLang.Count = 0 Then Return "C"
+  If aLang.Count = 0 Then Return System.Language
   sLang = aLang[0]
   iPos = InStr(sLang, ";")
   If iPos Then sLang = Left(sLang, iPos - 1)
