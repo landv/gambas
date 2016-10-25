@@ -1095,11 +1095,6 @@ gw = {
     new AutoComplete({
       selector: $(id),
       cache: false,
-      /*source: function(term, response) 
-        {
-          gw.raise(id, 'completion', [term]);
-          response($(id).gw_completion);
-        }*/
       source: function(term, response) {
         var xhr = $(id).gw_xhr;
         if (xhr)
@@ -1119,6 +1114,9 @@ gw = {
           }
         };
         xhr.send();
+      },
+      onSelect: function(e, term, item) {
+        gw.update(id, 'text', $(id).value);
       }
     });
   },
