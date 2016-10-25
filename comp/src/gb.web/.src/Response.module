@@ -222,8 +222,12 @@ Public Sub GetContentTypeFrom(Path As String) As String
       Return "application/ogg"
     Case "jar"
       Return "application/x-jar"
-    'Case "xml", "kml"
-    '  Return "text/plain"
+    Case "json"
+      Return "application/json;charset=utf-8"
+    Case "kml"
+      Return "application/vnd.google-earth.kml+xml"
+    Case "kmz"
+      Return "application/vnd.google-earth.kmz"
     Case Else 
       Return "application/octet-stream"
   End Select

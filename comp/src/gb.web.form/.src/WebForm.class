@@ -20,6 +20,8 @@ Static Private $aJavascript As New String[]
 Static Private $aRefresh As New String[]
 
 Static Private $cLibrary As New Collection
+
+Static Private $iDownload As Integer
 'Static Private $aPreload As String[]
 
 Event Open
@@ -55,6 +57,13 @@ Static Public Sub HandleRequest()
   
 End
 
+Static Public Sub _init()
+  
+  System.Language = Request.Language
+  
+End
+
+
 Static Public Sub Main()
 
   Dim sPath As String
@@ -69,8 +78,6 @@ Static Public Sub Main()
   
   Me.HandleRequest
   If Response.Done Then Return
-  
-  System.Language = Request.Language
   
   sPath = Mid$(Request.Path, 2)
   
@@ -97,6 +104,11 @@ Static Public Sub Main()
     
     Try sPath = Session[Mid$(sPath, 5)]["Image"]
     If Not Error Then Response.SendFile(sPath)
+    Return
+    
+  Else If sPath Begins "download:" Then
+    
+    If DownloadFile(Mid$(sPath, 10)) Then Goto NOT_FOUND
     Return
     
   Else If sPath = "~dump" Then
@@ -723,5 +735,37 @@ Public Sub AddJavascriptFile(sFile As String)
   If sFile Ends ".js" Then sFile = Left(sFile, -3)
   If Not $aJavascriptFiles Then $aJavascriptFiles = New String[]
   $aJavascriptFiles.Add(sFile)
+  
+End
+
+Static Public Sub Download(Path As String, Optional ContentType As String, Optional Remove As Boolean)
+
+  Dim cDownload As Collection
+  
+  '' TODO: Move file to /tmp/gambas.XXXX/download if it is a temp file
+  
+  cDownload = Session["download"]
+  If Not cDownload Then cDownload = New Collection
+  Inc $iDownload
+  cDownload[$iDownload] = [Path, ContentType, Remove]
+  Session["download"] = cDownload
+  
+  _AddJavascript("window.open(" & JS("/" &/ Application.Root &/ "download:" & CStr($iDownload) &/ File.Name(Path)) & ", '_blank');")
+  
+End
+
+Static Private Sub DownloadFile(sKey As String) As Boolean
+  
+  Dim aDownload As String[]
+  Dim iPos As Integer
+  
+  iPos = InStr(sKey, "/")
+  If iPos Then sKey = Left(sKey, iPos - 1)
+  
+  Try aDownload = Session["download"][sKey]
+  If Error Then Return True
+  Response.AddHeader("Content-Disposition", "attachment")
+  Response.SendFile(aDownload[0], aDownload[1])
+  If aDownload[2] Then Try Kill aDownload[0]
   
 End
