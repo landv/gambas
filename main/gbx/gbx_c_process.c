@@ -439,6 +439,9 @@ const char *CPROCESS_search_program_in_path(char *name)
 	char *p, *p2;
 	int len;
 	const char *path;
+	
+	if (!name)
+		return NULL;
 
 	if (strchr(name, '/'))
 	{
