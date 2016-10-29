@@ -23,6 +23,7 @@ Public Sub ApplyTemplate(Template As String)
   Dim hTable As Table
   Dim iLength As Integer
   Dim sErr As String
+  Dim sColl As String
   
   hFile = Open String Template
   
@@ -113,7 +114,9 @@ CREATE_TABLE:
     iLength = 0
     Try iLength = cField["Length"]
     'Print "create field: "; cField["Name"];; cField["Type"];; iLength;; cField["Default"];; cField["Collation"]
-    hTable.Fields.Add(cField["Name"], cField["Type"], iLength, cField["Default"], cField["Collation"])
+    sColl = cField["Collation"]
+    If sColl = "default" Then sColl = ""
+    hTable.Fields.Add(cField["Name"], cField["Type"], iLength, cField["Default"], sColl)
   Next
   
   'Print "primary key: "; cTable["PrimaryKey"].Join(",")
