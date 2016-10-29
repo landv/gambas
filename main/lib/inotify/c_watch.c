@@ -233,6 +233,9 @@ static bool destroy_watch(CWATCH *watch)
 	int i;
 	WATCH_LIST *list = (WATCH_LIST *)watch->root;
 
+	if (!list)
+		return FALSE;
+	
 #if DEBUG_ME
 	fprintf(stderr, "destroy_watch: %p %s\n", watch, list->path);
 #endif
@@ -482,6 +485,12 @@ BEGIN_METHOD(Watch_new, GB_STRING path; GB_BOOLEAN nofollow; GB_INTEGER events)
 	int i;
 	ushort events = VARGOPT(events, 0);
 
+	if (LENGTH(path) == 0)
+	{
+		GB.Error("Null path");
+		return;
+	}
+	
 	/* If this is the first watch, we need an inotify instance first.
 	 * We don't use the component's init function to set up _ino because
 	 * the inotify instance needs a GB.Watch() which would keep the
