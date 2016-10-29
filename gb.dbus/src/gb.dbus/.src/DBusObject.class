@@ -470,6 +470,7 @@ Private Sub GetAllProperties()
   Dim sProp As String
   Dim vVal As Variant
   Dim hObs As DBusObserver
+  Dim bComma As Boolean
   
   hObs = $hObserver
   
@@ -479,7 +480,7 @@ Private Sub GetAllProperties()
     
     hClass = Object.Class(Me)
     
-    'Debug "["
+    'Debug "[";; System.Backtrace.Join(" ")
     
     For Each sSymbol In hClass.Symbols
 
@@ -496,7 +497,7 @@ Private Sub GetAllProperties()
             sPrefix = ""
           Next
         Endif
-    
+        
         sProp = Mid$(sSymbol, Len(sPrefix) + 1)
         If InStr(sProp, "_") Then Continue
         
@@ -504,6 +505,8 @@ Private Sub GetAllProperties()
         
         If sInterface <> sWantInterface Then Continue
         
+        'Debug sSymbol; " @ "; sInterface
+    
         vVal = Object.GetProperty(Me, sSymbol)
         If IsNull(vVal) Then
           If TypeOf(vVal) = gb.String Then
@@ -520,13 +523,26 @@ Private Sub GetAllProperties()
     
     'Debug "]"
     
+    If DBus.Debug Then
+      Error "gb.dbus: GetAll("; Quote(sWantInterface); "): [";
+      For Each vVal In cVal
+        If bComma Then 
+          Error ", ";
+        Else
+          bComma = True
+        Endif
+        Error Quote(cVal.Key); ": "; vVal;
+      Next
+      Error "]"
+    Endif
+    
     hObs.Reply("a{sv}", [cVal])
     
   End With
   
 Catch
   
-  If DBus.Debug Then Error "gb.dbus: org.freedesktop.Properties.GetAll: error: "; Error.Text;; Error.Backtrace.Join(" ")
+  If DBus.Debug Then Error "gb.dbus: error: org.freedesktop.Properties.GetAll: "; Error.Text;; Error.Backtrace.Join(" ")
   hObs.Error(Error.Text)
   
 End

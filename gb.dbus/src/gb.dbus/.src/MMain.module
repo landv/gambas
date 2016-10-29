@@ -1,6 +1,6 @@
 ' Gambas module file
 
-Public Sub Main()
+Public Sub Main2()
 
   Dim aVal As Variant[]
   Dim hSignal As DBusSignal
@@ -120,3 +120,11 @@ End
 '   DBus["org.kde.StatusNotifierItem-3527-1"]["/StatusNotifierItem", "org.kde.StatusNotifierItem"].ContextMenu(0, 0)
 ' 
 ' End
+
+Public Sub Main()
+
+  DBus.Debug = True
+  DBus.Name = "org.mpris.MediaPlayer2.xt7"
+  DBus.Session.Register(mpris, "/org/mpris/MediaPlayer2", ["org.mpris.MediaPlayer2", "org.mpris.MediaPlayer2.Player", "org.mpris.MediaPlayer2.TrackList", "org.mpris.MediaPlayer2.Playlists", "org.freedesktop.Dbus.Properties", "org.freedesktop.Dbus.Introspectable"])
+
+End
