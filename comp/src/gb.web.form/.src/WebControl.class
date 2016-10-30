@@ -17,8 +17,8 @@ Event Dialog(Dialog As WebForm, Result As Variant)
 '' Return the server control identifier.
 Property Read Id As Integer
 
-'' Return the name of the control, used as an identifier on the client side.
-Property Read Name As String
+'' Return or set the name of the control, used as an identifier on the client side.
+Property Name As String
 
 '' Returns or sets the control tag.
 ''
@@ -884,3 +884,9 @@ Public Sub _GetImageLink(sImage As String) As String
   
 End
 
+
+Private Sub Name_Write(Value As String)
+
+  SetName(Value)
+
+End
