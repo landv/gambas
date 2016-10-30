@@ -592,7 +592,7 @@ BEGIN_METHOD(CWINDOW_menu_get, GB_INTEGER index)
 		return;
 	}
 	
-	GB.ReturnObject(gMenu::winChildMenu(WINDOW, index));
+	GB.ReturnObject(gMenu::winChildMenu(WINDOW, index)->hFree);
 
 END_METHOD
 
