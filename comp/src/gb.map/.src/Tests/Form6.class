@@ -1,0 +1,24 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+    Dim hPolyLine As New MapPoint[]
+  MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "702"]).SubDomains = ["0", "1", "2"]
+  MapView1.Map["GoogleMap"].Visible = True
+  
+  
+  With MapView1.Map.AddShape("Poly")
+    
+    hPolyLine = [MapPoint(48.457454, -4.638139), MapPoint(51.123363, 2.217329), MapPoint(48.921609, 8.106001), MapPoint(43.833550, 7.666547),
+    MapPoint(42.487303, 3.008345), MapPoint(43.324192, -1.825640)]
+
+
+    
+    .AddPolyLine("Section 1", hPolyLine)
+    .Color = Color.Red
+    
+  End With
+  
+
+End

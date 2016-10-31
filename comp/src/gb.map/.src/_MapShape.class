@@ -171,12 +171,13 @@ Public Sub _Draw()
         ' Endif
         
       Case Me.Polyline
+        hPoly = New Integer[]
         For j = 0 To hShape.Points.Max
-          pt = Geo.MapPointToPixel(hShape.Points[0][j], hMap.zoom)
+          pt = Geo.MapPointToPixel(hShape.Points[j], hMap.zoom)
           hPoly.Add(pt.x - hMap.PixelBox.X)
           hPoly.Add(pt.y - hMap.PixelBox.Y)
         Next
-        Paint.LineWKeyth = 2
+        Paint.LineWidth = 2
         'Paint.Brush = Paint.Color(Color.SetAlpha(Color.red, 125))
         Paint.Polygon(hPoly)
         'Paint.fill(True)
