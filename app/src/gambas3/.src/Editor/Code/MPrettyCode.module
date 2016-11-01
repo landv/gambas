@@ -292,14 +292,14 @@ Private Sub IndentLine(sLine As String) As String
           Else If sSym = "SELECT" Then
             $iLastSelect = $iLine
             iNextLevel = $iLevel + 2
-          Else If sFuncSym = "end" Then                     'Fabien : Add End function detecetion
-            Dec $iLevel
-            iNextLevel = $iLevel
-            If bLastWrap Then Inc $iLevel
-          Else If sFuncSym = "begin" Then                   'Fabien : Add Begin function detection
-            iNextLevel = $iLevel
-            Inc iNextLevel
-            If bLastWrap Then Inc $iLevel
+          ' Else If sFuncSym = "end" Then                     'Fabien : Add End function detecetion
+          '   Dec $iLevel
+          '   iNextLevel = $iLevel
+          '   If bLastWrap Then Inc $iLevel
+          ' Else If sFuncSym = "begin" Then                   'Fabien : Add Begin function detection
+          '   iNextLevel = $iLevel
+          '   Inc iNextLevel
+          '   If bLastWrap Then Inc $iLevel
           Else
             If $cClose.Exist(sSym) Then Dec $iLevel
             iNextLevel = $iLevel
