@@ -109,6 +109,7 @@ void CHANNEL_return(int channel, CSOUND *sound)
 {
 	CCHANNEL *ch = NULL;
 
+	
 	if (channel < 0 || channel >= _count)
 	{
 		if (sound)
@@ -126,7 +127,7 @@ void CHANNEL_return(int channel, CSOUND *sound)
 		ch = GB.New(CLASS_Channel, NULL, NULL);
 		_cache[channel] = ch;
 		ch->channel = channel;
-		GB.Ref(ch);
+		//GB.Ref(ch);
 	}
 
 	//free_channel(ch);
