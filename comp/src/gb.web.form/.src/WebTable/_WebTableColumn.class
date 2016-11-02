@@ -7,6 +7,7 @@ Property Expand As Boolean
 Property Alignment As Integer
 Property Wrap As Boolean
 Property Width As String
+Property Hidden As Boolean
 
 Event _Fake
 
@@ -17,6 +18,7 @@ Private $bExpand As Boolean
 Private $iAlignment As Integer
 Private $bNoWrap As Boolean
 Private $sWidth As String
+Private $bHidden As Boolean
 
 Private Sub GetTable() As WebTable
 
@@ -102,5 +104,18 @@ Private Sub Width_Write(Value As String)
 
   $sWidth = Value
   GetTable()._SetProperty("#[" & CStr(_Column) & "].width", Value)
+
+End
+
+Private Function Hidden_Read() As Boolean
+
+  Return $bHidden
+
+End
+
+Private Sub Hidden_Write(Value As Boolean)
+
+  $bHidden = Value
+  GetTable()._SetProperty("#[" & CStr(_Column) & "].hidden", Value)
 
 End
