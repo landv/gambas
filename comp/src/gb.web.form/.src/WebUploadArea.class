@@ -185,6 +185,16 @@ Public Sub Abort()
   
 End
 
+Public Sub Clear()
+  
+  If Me["path"] Then
+    Try Kill Me["path"]
+    Me["name"] = ""
+  Endif
+  
+End
+
+
 ' Private Function TempDir_Read() As String
 ' 
 '   Return $sTempDir

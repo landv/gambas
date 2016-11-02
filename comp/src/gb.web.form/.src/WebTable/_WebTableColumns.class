@@ -68,6 +68,7 @@ Public Sub _Render()
   Next
   
   For Each hCol In $aColumns
+    If hCol.Hidden Then Continue
     Print "<th";
     If hCol.Expand Then 
       Print " width=\""; 100 \ NX; "%\"";

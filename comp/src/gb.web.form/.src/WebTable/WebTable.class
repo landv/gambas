@@ -99,6 +99,8 @@ Private Sub PrintBody(iStart As Integer, iEnd As Integer)
     For iCol = 0 To $hColumns.Count - 1
       
       hCol = $hColumns[iCol]
+      If hCol.Hidden Then Continue
+      
       hData = New WebTableData
       Raise Data(iRow, iCol, hData)
       

@@ -628,6 +628,7 @@ Private Sub Visible_Write(Value As Boolean)
   Dec _NoRefresh
   If bCanRefresh Then 
     WebForm._AddJavascript("gw.setVisible(" & JS(Me.Name) & "," & JS(Not $bHidden) & ")")
+    If Me Is WebContainer Then Refresh
   Endif
   'Me.Parent.Refresh
   
