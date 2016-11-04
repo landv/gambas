@@ -199,6 +199,7 @@ End
 
 Private Sub Mode_Write(Value As Integer)
 
+  If $iMode = Value Then Return
   $iMode = Value
   Me._SetProperty("Mode", Value)
   SetSelection
@@ -229,10 +230,10 @@ Private Sub SetSelection()
   
   If $iMode = Select.None Then
     $hSelection = Null
-    Me._SetProperty("#selection", Null)
+    'Me._SetProperty("#selection", Null)
   Else
     If Not $hSelection Then $hSelection = New WebTableSelection As "TableSelection"
-    $hSelection.SetProperty()
+    '$hSelection.SetProperty()
   Endif
   
 End
