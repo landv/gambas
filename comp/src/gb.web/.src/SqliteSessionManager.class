@@ -338,7 +338,7 @@ Public Sub GetKeys() As String[]
   Dim rValue As Result
   Dim aKey As New String[]
 
-  rValue = DB.Find("values")
+  rValue = $hConn.Find("values")
   For Each rValue
     aKey.Add(rValue!sKey)
   Next

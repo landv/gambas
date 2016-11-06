@@ -238,6 +238,8 @@ Public Sub SendFile(Path As String, Optional ContentType As String)
   
   Dim sBuffer As String
 
+  $bDone = True
+
   If Left(Path) <> "/" Then Path = ".." &/ Path
 
   If Not Exist(Path) Then
