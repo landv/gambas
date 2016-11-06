@@ -28,7 +28,7 @@ Public Sub _Render()
   hattr.Background = Me.Background
   hattr.Foreground = Me.Foreground
   hattr.Bold = True
-  hLine.SetAttr(hattr, 0, 5)
+  hLine.SetAttr(hattr, 0, 1)
   hLine.Text = $sText
   hLine.Length = Len(hLine.Text)
   

@@ -50,9 +50,10 @@ Public Sub _new(Optional hParent As Container)
       Windows._Add(Me)
     Endif
   Endif
-
+  $hRect.Width = 5
+  $hRect.Height = 1
   _IdToControl[$iId] = Me
-
+  Windows._RefreshAll
 End
 
 Private Function Top_Read() As Integer
@@ -63,11 +64,11 @@ End
 
 Private Sub Top_Write(Value As Integer)
 
-  Windows._RefreshAreas(_GetScreenRect())
+  'Windows._RefreshAreas(_GetScreenRect())
   Control._RecalcPos = True
   $hRect.Top = Value
-  Windows._RefreshAreas(_GetScreenRect())
-
+  'Windows._RefreshAreas(_GetScreenRect())
+  'Windows.Render
 End
 
 Private Function Left_Read() As Integer
@@ -78,11 +79,11 @@ End
 
 Private Sub Left_Write(Value As Integer)
 
-  Windows._RefreshAreas(_GetScreenRect())
+  'Windows._RefreshAreas(_GetScreenRect())
   Control._RecalcPos = True
   $hRect.Left = Value
-  Windows._RefreshAreas(_GetScreenRect())
-
+  'Windows._RefreshAreas(_GetScreenRect())
+  'Windows.Render
 End
 
 Private Function Width_Read() As Integer
@@ -93,10 +94,10 @@ End
 
 Private Sub Width_Write(Value As Integer)
 
-  Windows._RefreshAreas(_GetScreenRect())
+  'Windows._RefreshAreas(_GetScreenRect())
   $hRect.Width = Value
-  Windows._RefreshAreas(Me._Rect)
-
+  'Windows._RefreshAreas(Me._Rect)
+  'Windows.Render
 End
 
 Private Function Height_Read() As Integer
@@ -109,7 +110,7 @@ Private Sub Height_Write(Value As Integer)
 
   Dim i As Integer
   
-  Windows._RefreshAreas(_GetScreenRect())
+  'Windows._RefreshAreas(_GetScreenRect())
   _Content = New CLine[Value]
   
   For i = 0 To _Content.Max
@@ -118,8 +119,8 @@ Private Sub Height_Write(Value As Integer)
   
   
   $hRect.Height = Value
-  Windows._RefreshAreas(Me._Rect)
-
+  'Windows._RefreshAreas(Me._Rect)
+  'Windows.Render
 End
 
 Private Function Tag_Read() As Variant
@@ -209,25 +210,25 @@ End
 
 Public Sub _Render()
 
-  Dim hAttr As New Attr
-  Dim hLine As CLine
-  Dim i As Integer
-  'Fill The widget BackGround
-
-  hAttr.Background = $iBackground
-  hAttr.Foreground = $iForeground
-
-  For i = 0 To _Content.Max
-
-    hLine = _Content[i]
-    If Not hLine Then hLine = New CLine
-    hLine.Text = String($hRect.Width, " ")
-    hLine.SetAttr(hAttr, 0, $hRect.Width)
-    hLine.Length = $hRect.Width
-
-    _Content[i] = hLine
-
-  Next
+  ' Dim hAttr As New Attr
+  ' Dim hLine As CLine
+  ' Dim i As Integer
+  ' 'Fill The widget BackGround
+  ' 
+  ' hAttr.Background = $iBackground
+  ' hAttr.Foreground = $iForeground
+  ' 
+  ' For i = 0 To _Content.Max
+  ' 
+  '   hLine = _Content[i]
+  '   If Not hLine Then hLine = New CLine
+  '   hLine.Text = String($hRect.Width, " ")
+  '   hLine.SetAttr(hAttr, 0, $hRect.Width)
+  '   hLine.Length = $hRect.Width
+  ' 
+  '   _Content[i] = hLine
+  ' 
+  ' Next
 
 End
 
@@ -263,13 +264,7 @@ End
 
 Public Function _GetScreenRect() As Rect
 
-  Dim hRet As New Rect
-
-  hRet.Left = Me.ScreenX
-  hRet.Top = Me.ScreenY
-  hRet.Width = $hRect.Width
-  hRet.Height = $hRect.Height
-  Return hRet
+  Return Rect(Me.ScreenX, Me.ScreenY, $hRect.Width, $hRect.Height)
 
 End
 

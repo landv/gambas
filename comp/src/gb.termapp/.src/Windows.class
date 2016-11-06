@@ -2,8 +2,9 @@
 
 Create Static
 
+Class Rect
 
-Static Private aAreas As New Integer[][]
+Static Private $aAreas As New Integer[][]
 Static Private $iScrWidth As Integer
 Static Private $iScrHeight As Integer
 
@@ -12,22 +13,34 @@ Static Private $hScreenRect As New Rect
 Static Private $aRefreshArea As New Rect
 Static Private $bNeedRefreshArea As Boolean
 Static Private $hRenderArea As New Rect
-
+Static Private $hObs As Observer
+Static $hFile As File
+Static hTimer As New Timer As "Tim"
 
 Static Public Sub _init()
 
   Dim i As Integer
   Dim hAreaLine As Integer[]
   
-  For i = 0 To 30
-    
-    hAreaLine = New Integer[120]
-    aAreas.Add(hAreaLine)
-  Next
+  Component.Load("gb.geom")
   
-  $hScreenRect.Width = aAreas[0].Count
-  $hScreenRect.Height = aAreas.Count
+  
+  File.Out.Term.Echo = False
+  Print "\e[?1002h\e[?1006h\e[?1049h\e[?25l\e[?2h";
+  
+  'hTimer.Delay = 500
+  'hTimer.Start
+  
+  Application_Resize
+  
+  File.In.Term.FlowControl = False
+  $hObs = New Observer(File.In) As "Application"
+  $hFile = Open File.In.Term.Name For Read Watch
+  
+  $hScreenRect = Rect(0, 0, File.Out.Term.Width, File.Out.Term.Height)
+  
   _RefreshAreas($hScreenRect)
+  
 End
 
 Public Sub _Add(hWin As Window)
@@ -84,7 +97,7 @@ Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
   For L = hInRect.Top To hInRect.Bottom - 1
     
     For C = hInRect.Left To hInRect.Right - 1
-      aAreas[L][C] = hChild.Id
+      $aAreas[L][C] = hChild.Id
     Next
   Next
   
@@ -98,7 +111,7 @@ Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
   
 End
 
-Public Sub Render()
+Static Public Sub Render()
   
    Dim a As Integer[]
    Dim i As Integer
@@ -114,15 +127,15 @@ Public Sub Render()
    DoRefreshAreas()
   $hRenderArea = $hScreenRect.Intersection($hRenderArea)
   For iRow = $hRenderArea.Top To $hRenderArea.Bottom - 1
-    Print "\e[" & iRow & ";0H"
+    Print "\e[" & iRow & ";0H";
     For iCol = $hRenderArea.Left To $hRenderArea.Right - 1
-      If aAreas[iRow][iCol] = 0 Then
+      If $aAreas[iRow][iCol] = 0 Then
         hAttr.Background = Color.yellow
         hAttr.Send
         Print " ";
       Else
   
-        i = aAreas[iRow][iCol]
+        i = $aAreas[iRow][iCol]
         hCont = Control._IdToControl[i]
         hLine = hCont._Content[iRow - hCont.ScreenY]
         aAttr = hLine.GetAttr()
@@ -148,12 +161,57 @@ Public Sub Render()
   
   
   
-  
-  ' For Each a In aAreas
+  Catch
+  ' For Each a In $aAreas
   '   For i = 0 To a.Max
   '     Print a[i];
   '   Next
   '   Print
   ' Next
 End
+
+
+Static Public Sub File_Read()
+  
+  Dim iByte As Byte
+  Dim s As String
+  s = Read #$hFile, Lof($hFile)
+  'Read #$hFile, iByte
+  Print Quote("s= " & s)
+  'If s <> "" Then Stop
+  'Quit
+End
+
+
+Static Public Sub Application_Resize()
+  Dim i As Integer
+  Dim hAreaLine As New Integer[]
+  $hScreenRect.Width = File.Out.Term.Width
+  $hScreenRect.Height = File.Out.Term.Height
+  
+  $aAreas = New Integer[][]
+  
+  For i = 0 To $hScreenRect.Height
+    
+    hAreaLine = New Integer[$hScreenRect.Width]
+    $aAreas.Add(hAreaLine)
+  Next
+  
+  _RefreshAreas($hScreenRect)
+  Render
+End
+
+Static Public Sub Tim_Timer()
+  
+  File_Read
+  
+End
+
+Static Public Sub _RefreshAll()
+  
+  _RefreshAreas($hScreenRect)
+  Render
+  
+End
+
 

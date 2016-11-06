@@ -86,7 +86,9 @@ End
 
 Private Sub Bold_Write(Value As Boolean)
 
-  If $bBold <> Value Then $aModified[FLAG_BOLD] = True
+  If $bBold <> Value Then 
+    $aModified[FLAG_BOLD] = True
+  Endif
   $bBold = Value
 
 End
@@ -207,7 +209,7 @@ Public Function _GetString() As String
   sValue = CSI & sValue & "m"
   
   $aModified = New Boolean[8]
-  
+  'Debug sValue
   Return sValue
   
 End
