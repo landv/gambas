@@ -1,0 +1,94 @@
+' Gambas class file
+
+Export
+Inherits Container
+Class Rect
+Property Text, Title As String
+Private $sText As String
+
+Property Maximized As Boolean
+
+Private $rectOldPos As Rect
+
+Private $bMaximized As Boolean
+
+Public Sub _Render()
+
+  Dim i As Integer
+  Dim hAttr As New Attr
+  Dim iAttr As Integer
+
+  Super._Render
+
+  If Not Me._NeedRender Then Return
+
+  hAttr.Background = Color.Red
+  hAttr.Foreground = Color.White
+  hAttr.Bold = True
+  iAttr = hAttr.GetInteger()
+
+  For i = 0 To Me.Width - 1
+    Me._Content[0][i] = Char(" ", iAttr)
+  Next
+  Me._Content[0][0].c = Asc("[")
+  Me._Content[0][1].c = Asc("]")
+  For i = 1 To Len($sText)
+    Me._Content[0][i + 2].c = Asc(Mid($sText, i, 1))
+  Next
+
+  Me._NeedRender = False
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  Me._NeedRender = True
+
+End
+
+Public Sub _Arrange()
+
+  Me._GetClientRect().Move(0, 1, Me.W - 1, Me.Height - 1)
+  Super._Arrange
+
+End
+
+
+
+Private Function Maximized_Read() As Boolean
+
+  Return $bMaximized
+
+End
+
+Private Sub Maximized_Write(Value As Boolean)
+  If $bMaximized = Value Then Return
+  $bMaximized = Value
+
+  If $bMaximized Then
+    $rectOldPos = Me._GetRect()
+    Me.Move(0, 0, Desktop.Width, Desktop.Height)
+    
+  Else
+    Me.Move($rectOldPos.Left, $rectOldPos.Top, $rectOldPos.Width, $rectOldPos.Height)
+  Endif
+
+
+End
+
+
+Public Sub _ScreenResize()
+  
+   If $bMaximized Then 
+      Me.Move(0, 0, Desktop.Width, Desktop.Height)
+     
+   Endif
+  
+End

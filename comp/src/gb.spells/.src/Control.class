@@ -1,0 +1,313 @@
+' Gambas class file
+
+Export
+Class Rect
+Static Public _IdToControl As New Collection
+Static Private $iLastId As Integer = 1
+
+Public _Content As Char[][]
+Public _NeedRender As Boolean
+
+Property Read id As Integer
+
+Property Read Parent As Container
+Property Height, H As Integer
+Property Read ScreenX As Integer
+Property Read ScreenY As Integer
+Property Read Window As Window
+
+Property Left, X, Column As Integer
+Property Top, Y, {Line} As Integer
+Property Width, W As Integer
+Property Background As Byte
+Property Foreground As Byte
+Property Tag As Variant
+Property HaveFocus As Boolean
+
+
+Private _RecalcPos As Boolean
+Private $hRect As New Rect
+Private $iId As Integer
+Private $iParent As Integer
+Private $iScreenX As Integer
+Private $iScreenY As Integer
+Private $iWindow As Integer
+Private $bBackground As Byte = Color.white
+Private $bForeground As Byte
+Private $vTag As Variant
+
+
+
+
+
+Public Sub _new(Optional hParent As Container)
+
+  $iId = $iLastId
+  Inc $iLastId
+  If hParent Then
+    $iParent = hParent.Id
+    hParent._Add(Me)
+    'GetWindow
+  Else
+    If Me Is Window Then
+      Windows._Add(Me)
+    Endif
+  Endif
+  $hRect.Width = 5
+  $hRect.Height = 1
+  _IdToControl[$iId] = Me
+  _RecalcPos = True
+  _NeedRender = True
+  'Windows._RefreshScreen
+
+End
+
+Public Sub Resize(Width As Integer, Height As Integer)
+
+  Dim i As Integer
+  Dim aLine As Char[]
+
+  _Content = New Char[][]
+  For i = 0 To Height
+    aLine = New Char[Width]
+    _Content.Add(aLine)
+  Next
+
+End
+
+Public Sub _Render()
+
+  Dim i, j As Integer
+  Dim hAttr As New Attr
+  Dim iAttr As Integer
+
+  If Not _Content Then Resize($hRect.Width, $hRect.Height)
+  hAttr.Background = Me.Background
+
+  iAttr = hAttr.GetInteger()
+
+  For i = 0 To _Content.Max
+    For j = 0 To _Content[0].Max
+      _Content[i][j] = Char(" ", iAttr)
+    Next
+  Next
+
+End
+
+Private Function id_Read() As Integer
+
+  Return $iId
+
+End
+
+Private Function Parent_Read() As Container
+
+  Return _IdToControl[$iParent]
+
+End
+
+Private Function Left_Read() As Integer
+
+  Return $hRect.X
+
+End
+
+Private Sub Left_Write(Value As Integer)
+
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
+  $hRect.X = Value
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
+  _RecalcPos = True
+
+End
+
+Private Function Top_Read() As Integer
+
+  Return $hRect.Y
+
+End
+
+Private Sub Top_Write(Value As Integer)
+
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
+  $hRect.Y = Value
+  _RecalcPos = True
+
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
+
+End
+
+Private Function Width_Read() As Integer
+
+  Return $hRect.Width
+
+End
+
+Private Sub Width_Write(Value As Integer)
+
+  If Value < 1 Then Return
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
+  $hRect.Width = Value
+
+  Resize($hRect.Width, $hRect.Height)
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
+  'If Me Is Container Then Me._SetClientRect()
+End
+
+Private Function Height_Read() As Integer
+
+  Return $hRect.Height
+
+End
+
+Private Sub Height_Write(Value As Integer)
+
+  If Value < 1 Then Return
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
+  $hRect.Height = Value
+  Resize($hRect.Width, $hRect.Height)
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
+  'If Me Is Container Then Me._SetClientRect()
+  
+End
+
+Private Function ScreenX_Read() As Integer
+
+  If $iParent > 0 Then
+    Return _IdToControl[$iParent].ScreenX + Me.Left
+  Else
+    Return Me.Left
+  Endif
+
+End
+
+Private Function ScreenY_Read() As Integer
+
+  If $iParent > 0 Then
+    Return _IdToControl[$iParent].ScreenY + Me.Top
+  Else
+    Return Me.Top
+  Endif
+
+End
+
+Private Sub GetWindow()
+
+  Dim hCont As Object = Me.Parent
+
+  Do
+    If hCont.Parent = Null Then
+      $iWindow = hCont.Id
+      Break
+    Endif
+    hCont = hCont.Parent
+  Loop
+
+End
+
+Private Sub ComputeScreenXY()
+
+  Dim hC As Control = Me.Parent
+
+  If Me Is Label Then Stop
+  If hC Then
+    $iScreenX = hC.ScreenX + $hRect.Left
+    $iScreenY = hC.ScreenY + $hRect.Top
+  Else
+    $iScreenX = $hRect.Left
+    $iScreenY = $hRect.Top
+  Endif
+  _RecalcPos = False
+
+End
+
+Private Function Window_Read() As Window
+
+  Return _IdToControl[$iWindow]
+
+End
+
+Public Function _GetScreenRect() As Rect
+
+  Return Rect(Me.ScreenX, Me.ScreenY, $hRect.width, $hRect.Height)
+
+End
+
+Public Function _GetRect() As Rect
+  
+  Return $hRect.Copy()
+  
+End
+
+
+Private Function Background_Read() As Byte
+
+  Return $bBackground
+
+End
+
+Private Sub Background_Write(Value As Byte)
+
+  $bBackground = Value
+
+End
+
+Private Function Foreground_Read() As Byte
+
+  Return $bForeground
+
+End
+
+Private Sub Foreground_Write(Value As Byte)
+
+  $bBackground = Value
+
+End
+
+Public Sub _GetChar(c As Integer, l As Integer) As Char
+  'If Me.Tag = "#" Then Stop
+  Return _Content[l - Me.ScreenY][c - Me.ScreenX]
+
+End
+
+Private Function Tag_Read() As Variant
+
+  Return $vTag
+
+End
+
+Private Sub Tag_Write(Value As Variant)
+
+  $vTag = Value
+
+End
+
+
+Private Function HaveFocus_Read() As Boolean
+
+  
+
+End
+
+Private Sub HaveFocus_Write(Value As Boolean)
+
+  
+
+End
+
+Public Sub _Arrange()
+  
+  
+  
+End
+
+Public Sub Move(Left As Integer, Top As Integer, Width As Integer, Height As Integer)
+  
+  Me.Left = Left
+  Me.Top = Top
+  Me.Width = Width
+  Me.Height = Height
+  
+End
+
+

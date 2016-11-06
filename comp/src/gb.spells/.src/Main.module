@@ -1,0 +1,76 @@
+' Gambas module file
+
+Private hTimer As New Timer As "Timer"
+Private hWin2 As Window
+Private hLabel As Label
+Private $i As Integer
+Private $iBal As Integer = 1
+
+Public Sub Main()
+
+  Dim hWin As New Window
+  Dim hLabel2 As Label
+  Dim i As Integer
+  
+  'Dim hLabel As New Label(hWin)
+  'Dim hWin2 As New Window
+  hLabel = New Label(hwin)
+ hTimer.delay = 5
+ hTimer.Start
+
+  hWin.Left = 3
+  hWin.Top = 0
+  hWin.Height = 20
+  hWin.Width = 70
+  hLabel.Left = 2
+  hLabel.Top = 2
+  hLabel.Width = 7
+  hLabel.Background = Color.Yellow
+  hLabel.Foreground = Color.Green
+  hLabel.Text = "Label 1"
+  hWin.Text = "Window 1"
+  hLabel = New Label(hWin)
+  hLabel.Width = 15
+  hLabel.Text = "Label 2"
+  hLabel.Tag = "#"
+  
+  
+  
+  hWin2 = New Window
+  hWin2.Background = Color.Black
+  hWin2.Width = 50
+  hWin2.Height = 8
+  hWin2.top = 7
+  hWin2.Left = 15
+  hWin2.Text = "Window 2" 
+  hLabel = New Label(hWin2)
+  hLabel.Width = 14
+  hLabel.Top = 2
+  hLabel.Left = 2
+  hLabel.Text = "Label on win 2"
+  
+  
+  For i = 0 To 30
+    hLabel2 = New Label(hWin2)
+    hLabel2.Text = "Label " & i
+    
+  Next
+  
+  'hWin2.Maximized = True
+  
+  Windows.Render
+End
+
+
+Public Sub Timer_Timer()
+  
+ hLabel.Text = $i
+ 'hWin2.Left += $iBal
+ 'If hWin2.Left > Desktop.Width Then $iBal = -1
+ 'If hWin2.Left < 2 Then $iBal = 1
+ 
+ Inc $i
+  Windows.Render
+  
+End
+

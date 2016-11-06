@@ -1,0 +1,211 @@
+' Gambas class file
+
+Export
+Create Static
+Class Rect
+Static Private Obs As Observer
+Static Private $aScreen As New Integer[]
+Static $hFile As File
+Static Private $RectRefreshArea As Rect
+Static Private $aChildren As New Window[]
+Static Private $hRect As Rect
+Static Private $RectRenderArea As Rect
+Static Public {Debug} As Boolean = True
+
+
+
+
+
+Static Public Sub _init()
+
+  Dim hRect As Rect
+
+  Component.Load("gb.geom")
+
+  hRect = New Rect(0, 0, 3, 3)
+  Print hRect.Width
+
+  Print File.Out.Term.W
+  obs = New Observer(File.In) As "Terminal"
+
+  File.In.Term.Echo = False
+
+  Print "\e[?1002h\e[?1006h\e[?1049h\e[?25l\e[?2h";
+
+  ResizeScreen(File.Out.Term.Width, File.Out.Term.Height)
+
+End
+
+Static Private Sub ResizeScreen(Width As Integer, Height As Integer)
+
+  $aScreen = New Integer[Height, Width]
+  $hRect = Rect(0, 0, Width, Height)
+  $RectRefreshArea = $hRect.Copy()
+
+End
+
+Public Sub _Add(hWin As Window)
+
+  $aChildren.Add(hWIn)
+
+End
+
+Static Public Sub _RefreshScreen()
+
+  $RectRefreshArea = $hRect.Copy()
+  Render
+
+End
+
+Static Public Sub DoRefreshArea()
+
+  Dim hChild As Window
+  Dim hRect As Rect
+
+  If Not $RectRefreshArea Then Return
+  DoArrange()
+  For Each hChild In $aChildren
+    hRect = $hRect.InterSection($RectRefreshArea)
+    RefreshChild(hChild, hRect)
+  Next
+
+  SetRenderArea($RectRefreshArea)
+  $RectRefreshArea = Null
+
+End
+
+Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
+
+  Dim iLeft, iRight, iTop, iBottom As Integer
+
+  Dim L As Integer
+  Dim C As Integer
+  Dim hObj As Object
+  Dim hInRect As Rect
+  'If hChild Is Window Then Stop
+  hInRect = hRect.Intersection(hChild._GetScreenRect())
+
+  If Not hInRect Then Return
+
+  For L = hInRect.Top To hInRect.Bottom - 1
+
+    For C = hInRect.Left To hInRect.Right - 1
+      $aScreen[l, C] = hChild.Id
+    Next
+  Next
+
+  If hChild Is Container Then
+    
+    For Each hObj In hChild.children
+      RefreshChild(hObj, hInRect)
+    Next
+
+  Endif
+
+End
+
+Static Public Sub Terminal_Resize()
+  Dim hWin As Window
+  ResizeScreen(File.Out.Term.Width, File.Out.Term.Height)
+  For Each hWin In $aChildren
+    hWin._ScreenResize
+  Next
+  Render
+
+End
+
+Static Public Sub _Read(sValue As String)
+
+  Write "ok" & sValue
+
+End
+
+Static Public Sub SetRenderArea(hRect As Rect)
+
+  If Not $RectRenderArea Then 
+    $RectRenderArea = hRect
+    Return
+  Endif
+    
+  $RectRenderArea = $RectRenderArea.Union(hRect)
+
+End
+
+Static Public Sub SetRefreshArea(hRect As Rect)
+
+  If Not $RectRefreshArea Then $RectRefreshArea = New Rect
+  $RectRefreshArea = $RectRefreshArea.Union(hRect)
+
+End
+
+Static Public Sub Render()
+
+  Dim c As Integer
+  Dim l As Integer
+  Dim hRect As Rect
+  Dim hAttr As New Attr
+  Dim hChar As Char
+  Dim hCont As Control
+  Dim sAttr As String 
+  Dim sDisplay As String
+  
+  DoRefreshArea()
+  RenderAll
+  hRect = $hRect.Intersection($RectRenderArea)
+  sAttr = hAttr._GetString(True)
+  Print sAttr;
+  For l = hRect.Y To hRect.Bottom - 1
+    'Debug "ligne " & l
+    sDisplay &= "\e[" & (l + 1) & ";" & (hRect.X + 1) & "H"
+    For c = hRect.X To hRect.Right - 1
+
+      ' hAttr.Background = $aScreen[l, c]
+      ' hAttr.Send
+      hCont = Control._IdToControl[$aScreen[l, c]]
+      If hCont Then
+        hChar = hCont._GetChar(c, l)
+        hAttr.FillFrom(hChar.Attr)
+        sAttr = hAttr._GetString()
+        sDisplay &= sAttr
+        sDisplay &= Chr(hChar.c)
+      Else
+        hAttr.FillFrom(Desktop.BackGround.Attr)
+        'hAttr.Background = 240
+        sAttr = hAttr._GetString()
+        sDisplay &= sAttr
+        sDisplay &= Chr(Desktop.BackGround.c)
+      Endif
+
+    Next
+  Next
+  Print sDisplay;
+  Catch
+  ' If Me.Debug = True Then 
+  ' Debug Replace(sDisplay, "\e", "&")
+  ' Endif
+  $RectRenderArea = Null
+  'Catch 
+End
+
+Static Private Sub RenderAll()
+
+  Dim hWin As Window
+
+  For Each hWin In $aChildren
+    hWin._Render
+  Next
+
+End
+
+Static Private Sub DoArrange()
+
+  Dim hChild As Window
+  
+  For Each hChild In $aChildren
+    hChild._Arrange()
+  Next
+  
+End
+
+
+

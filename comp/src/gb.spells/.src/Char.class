@@ -1,0 +1,14 @@
+' Gambas class file
+
+Export
+Public c As Byte
+Public Attr As Integer
+
+Static Public Sub _call(ch As String, iAttr As Integer) As Char
+
+  Dim hChar As New Char
+  hChar.c = Asc(ch)
+  hChar.Attr = iAttr
+  Return hChar
+
+End

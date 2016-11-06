@@ -1,0 +1,38 @@
+' Gambas class file
+
+Export
+Class Rect
+Inherits Control
+Property Text As String
+
+$sText As String
+
+
+Public Sub _Render()
+    Dim hAttr As New Attr
+  Dim iAttr As Integer
+  Dim i As Integer
+  If Not Me._NeedRender Then Return
+  Super._Render
+  hAttr.Background = Me.Background
+  hAttr.Foreground = Me.Foreground
+  iAttr = hAttr.GetInteger()
+  
+  For i = 1 To Min(Len($sText), Me._Content[0].count)
+      Me._Content[0][i - 1] = Char(Mid($sText, i, 1), iAttr)
+  Next
+  Me._NeedRender = False
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  Windows.SetRenderArea(rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
+  Me._NeedRender = True
+End

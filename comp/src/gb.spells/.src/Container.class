@@ -1,0 +1,121 @@
+' Gambas class file
+
+Export
+Inherits Control
+Class Rect
+
+Property Read Children As Control[]
+Property Read ClientWidth, CLientW As Integer
+Property Read ClientHeight, ClientH As Integer
+Property Spacing As Integer
+Property Padding As Integer
+
+Private $iSpacing As Integer = 1
+Private $iPadding As Integer
+
+Private $aChildren As New Object[]
+Private $iCLientH As Integer
+Private $iCLientW As Integer
+Private $rectClient As New Rect
+Public _Arrangement As Integer = Arrange.Vertical
+
+Public Sub _Add(hCtrl As Control)
+
+  $aChildren.Add(hCtrl)
+
+End
+
+Private Function Children_Read() As Control[]
+
+  If Not $aChildren Then $aChildren = New Control[]
+  Return $aChildren
+
+End
+
+Public Sub _Render()
+
+  Dim hChild As Control
+
+  If Me._NeedRender Then Super._Render
+
+  If Me Is Container Then
+    For Each hChild In Me.Children
+
+      hChild._Render
+
+    Next
+  Endif
+
+End
+
+Public Sub _Arrange()
+
+  Dim hChild As Object
+  Dim H As Integer
+
+  Select Case _Arrangement
+    Case Arrange.Vertical
+      H = $rectClient.Top
+      For Each hChild In $aChildren
+        hChild.X = $rectClient.Left
+        hChild.Y = H
+        hChild.Width = Me.ClientW
+        H += hChild.H + $iSpacing
+        hChild._Arrange()
+
+      Next
+    Case Arrange.Horizontal
+      H = $rectClient.Left
+      For Each hChild In $aChildren
+        hChild.X = H
+        hChild.Y = $rectClient.Top
+        hChild.Width = Me.ClientW
+        H += hChild.W + $iSpacing
+        hChild._Arrange()
+
+      Next
+  End Select
+
+End
+
+Public Sub _GetClientRect() As Rect
+
+  Return $rectClient
+
+End
+
+Private Function ClientWidth_Read() As Integer
+
+  Return $iCLientW
+
+End
+
+Private Function ClientHeight_Read() As Integer
+
+  Return $iCLientH
+
+End
+
+Private Function Spacing_Read() As Integer
+
+  Return $iSpacing
+
+End
+
+Private Sub Spacing_Write(Value As Integer)
+
+  $iSpacing = Value
+
+End
+
+Private Function Padding_Read() As Integer
+
+  Return $iPadding
+
+End
+
+Private Sub Padding_Write(Value As Integer)
+
+  $iPadding = Value
+
+End
