@@ -240,6 +240,7 @@ Public Function Scan() As Image
   'Dim sTemp As String = Temp
   Dim hImage As Image
   Dim hOption As _Option
+  If Not $aOptionsNames Then GetOptions
   $sImageStack.Clear
   $sCurImagePath = Temp
   For Each hOption In $aOptions
@@ -255,14 +256,14 @@ Public Function Scan() As Image
     Endif
     
   Next
-  sCommand = "scanimage " & $sDeviceName & " " & sOptions & "-p --format=tiff > " & $sCurImagePath
+  sCommand = "scanimage " & $sDeviceName & " " & sOptions & "--format=jpeg > " & $sCurImagePath
   If $bDebug Then Debug sCommand
   If Not $bASync Then 
-    Shell sCommand To ss 'Wait
+    Shell sCommand Wait
     'Print ss
     Try hImage = Image.Load($sCurImagePath)
     If Error Then 
-      Error.Raise("Can't get the image, something goes wrong")
+      Error.Raise("Can't get the image, something goes wrong" & Error.Text)
       Return
     Endif
     Return hImage

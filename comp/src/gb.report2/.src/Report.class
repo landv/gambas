@@ -681,7 +681,7 @@ Private Sub SetPaper()
   End Select
 
   
-  If $iOrientation = Printer.Landscape And Not ($iPaper = Printer.Custom) Then
+  If $iOrientation = Printer.Landscape Then
     sPrev = Me.Height
     SetHeight(Me.Width)
     SetWidth(sPrev)

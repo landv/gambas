@@ -1,0 +1,121 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,136,100)
+  Text = ("Agnostic Scan Tool")
+  Icon = Picture["scanner.png"]
+  Arrangement = Arrange.Vertical
+  { Menu1 Menu
+    Text = ("Menu1")
+    Visible = False
+    { mnuSave Menu
+      Action = "save"
+      Text = Shortcut(("Save"), "S")
+      Picture = Picture["icon:/small/save"]
+    }
+    { mnuSaveAs Menu
+      Action = "saveas"
+      Text = ("Save as") & "..."
+      Picture = Picture["icon:/small/save-as"]
+    }
+    { Menu2 Menu
+    }
+    { Properties Menu
+      Action = "properties"
+      Text = Shortcut(("Properties"), "P")
+      Picture = Picture["icon:/small/properties"]
+    }
+    { Menu3 Menu
+    }
+    { mnuQuit Menu
+      Action = "quit"
+      Text = Shortcut(("Quit"), "Q")
+      Picture = Picture["icon:/small/quit"]
+    }
+  }
+  { ToolBar1 ToolBar
+    MoveScaled(0,1,131,8)
+    Key = "toolbar"
+    { btnNew ToolButton
+      MoveScaled(2,0,8,7)
+      Action = "open"
+      Picture = Picture["icon:/small/new"]
+    }
+    { btnProperties ToolButton
+      MoveScaled(10,0,7,6)
+      Action = "properties"
+      Picture = Picture["icon:/small/properties"]
+    }
+    { btnSaveAs ToolButton
+      MoveScaled(77,0,5,5)
+      Action = "saveas"
+      Picture = Picture["icon:/small/save-as"]
+    }
+    { btnQuit ToolButton
+      MoveScaled(89,0,6,6)
+      Action = "quit"
+      Picture = Picture["icon:/small/quit"]
+    }
+    { MenuButton1 MenuButton
+      MoveScaled(25,2,27,4)
+      PopupMenu = "Menu1"
+      Text = ("Numériser Texte")
+      Picture = Picture["icon:/small/text"]
+    }
+    { btnSave ToolButton
+      MoveScaled(62,2,5,5)
+      Action = "save"
+      Picture = Picture["icon:/small/save"]
+    }
+    { Button1 Button
+      MoveScaled(99,2,18,3)
+    }
+  }
+  { Separator1 Separator
+    MoveScaled(2,8,124,0)
+  }
+  { MessageView1 MessageView
+    MoveScaled(3,10,126,4)
+  }
+  { View DocumentView
+    MoveScaled(3,16,52,42)
+    Expand = True
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action open
+    Text = ""
+    Picture = "icon:/small/new"
+  }
+  { Action properties
+    Text = "Properties"
+    Shortcut = ""
+    Picture = "icon:/small/properties"
+  }
+  { Action quit
+    Text = "Quit"
+    Shortcut = ""
+    Picture = "icon:/small/quit"
+  }
+  { Action save
+    Text = "Save"
+    Shortcut = ""
+    Picture = "icon:/small/save"
+  }
+  { Action saveas
+    Text = "Save as"
+    Shortcut = ""
+    Picture = "icon:/small/save-as"
+  }
+}
+
+{ Toolbars
+  { Toolbar toolbar
+    Text = ""
+    List = "open,properties,saveas,quit,save"
+    Default = "open,properties,saveas,quit,$MenuButton1,save,$Button1"
+  }
+}

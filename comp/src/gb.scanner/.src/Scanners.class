@@ -41,7 +41,7 @@ Public Sub Search(Optional bWait As Boolean)
   $aScannerNames = Null
   If Not bWait Then
     $ret = ""
-    hProcess = Exec ["scanimage", "--formatted-device-list", "%d|%v|%m|%t%n"]
+    hProcess = Exec ["scanimage", "--formatted-device-list", "%d|%v|%m|%t%n"] For Read As "Process"
   Else
     Exec ["scanimage", "--formatted-device-list", "%d|%v|%m|%t%n"] To sRet
     FillList(sRet)
@@ -133,11 +133,18 @@ Public Function _get(sDeviceName As String) As Scanner
   
 End
 
- Public Sub Process_Read()
+Public Sub Process_Read()
   
   $ret &= Read #hProcess, Lof(hProcess)
   
 End
+
+Public Sub Process_Error(sError As String)
+  
+  Print sError
+  
+End
+
 
 Public Sub Process_kill()
   
@@ -149,6 +156,12 @@ Public Sub Process_kill()
   
 End
 
+
+Static Public Sub Close()
+  
+  Try hProcess.Kill
+  
+End
 
 
 

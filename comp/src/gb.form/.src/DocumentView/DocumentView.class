@@ -3,7 +3,7 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Arrangement{Arrange.Row;Column;Vertical;Horizontal;Fill}=Row,Padding=10,Spacing=10,Column,AutoCenter,ShowShadow"
+Public Const _Properties As String = "*,Border,Arrangement{Arrange.Row;Column;Vertical;Horizontal;Fill}=Row,Padding=10,Spacing=10,Column,AutoCenter,ShowShadow"
 Public Const _Group As String = "View"
 Public Const _Similar As String = "GridView"
 
@@ -25,6 +25,7 @@ Property Read Item As _DocumentItem
 Property Read FirstVisibleDocument As Integer
 Property Read LastVisibleDocument As Integer
 Property AutoCenter As Boolean
+Property Border As Boolean
 
 Private $bAutoCenter As Boolean
 Private $iColumn As Integer 
@@ -966,4 +967,16 @@ Private Sub AutoCenter_Write(Value As Boolean)
   $bAutoCenter = Value
   $tmrRefresh.Trigger
   
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hView.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hView.Border = Value
+
 End
