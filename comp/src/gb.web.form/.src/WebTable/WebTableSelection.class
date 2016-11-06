@@ -285,7 +285,12 @@ End
 
 Public Sub GetCurrent() As Integer
   
-  If $aSel.Count = 2 Then Return $aSel[0]
+  Dim iCurrent As Integer
+  
+  If $aSel.Count = 2 Then 
+    iCurrent = $aSel[0]
+    If iCurrent < GetTable().Count Then Return iCurrent
+  Endif
   Return -1
   
 End

@@ -38,10 +38,13 @@ End
 Public Sub Load() As Boolean
   
   Dim rConf As Result
+  Dim hSave As Connection
 
   If Not Exist($sPath) Then Goto _ABANDON
   
   Me.Size = Stat($sPath).Size
+  
+  hSave = DB.Current
   
   $hConn = New Connection
   $hConn.Type = "sqlite"
@@ -49,6 +52,8 @@ Public Sub Load() As Boolean
   $hConn.Name = File.Name($sPath)
   
   $hConn.Open
+  
+  DB.Current = hSave
   
   rConf = $hConn.Find("config")
 

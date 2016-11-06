@@ -240,7 +240,7 @@ gw = {
       {
         xhr = new XMLHttpRequest();
         xhr.gw_command = command;
-        xhr.open('GET', $root + '/' + encodeURIComponent(gw.form) + '/x?c=' + encodeURIComponent(JSON.stringify(command)), true);
+        xhr.open('GET', $root + '/x?c=' + encodeURIComponent(JSON.stringify(command)), true);
         xhr.onreadystatechange = function() { gw.answer(xhr, after); };
         xhr.send(null);
         return;
@@ -881,7 +881,7 @@ gw = {
         if (current !== undefined)
         {
           if (current >= 0)
-            $(id + ':' + current).removeClass('gw-table-row-selected');
+            $(id + ':' + current) && $(id + ':' + current).removeClass('gw-table-row-selected');
           tr.addClass('gw-table-row-selected');
           elt.gw_current = row;
         }
@@ -1072,7 +1072,7 @@ gw = {
       xhr.gw_command = 'upload ' + id;
       xhr.gw_id = id;
         
-      xhr.open("POST", $root + '/' + encodeURIComponent(gw.form) + '/u', true);  
+      xhr.open("POST", $root + '/u', true);  
       
       xhr.onreadystatechange = function() 
         {
@@ -1104,7 +1104,7 @@ gw = {
         
         $(id).gw_xhr = xhr = new XMLHttpRequest();
         
-        xhr.open('GET', $root + '/' + encodeURIComponent(gw.form) + '/x?c=' + encodeURIComponent(JSON.stringify(['raise', id, 'completion', [term]])), true);
+        xhr.open('GET', $root + '/x?c=' + encodeURIComponent(JSON.stringify(['raise', id, 'completion', [term]])), true);
         xhr.onreadystatechange = function() {
           if (xhr.readyState == 4)
           {
