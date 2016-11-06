@@ -53,10 +53,6 @@ Private $sHeight As String
 Private $hWindowContainer As WebContainer
 'Private $bCentered As Boolean
 
-Static Public Sub HandleRequest()
-  
-End
-
 Static Public Sub _init()
   
   System.Language = Request.Language
@@ -67,109 +63,106 @@ End
 Static Public Sub Main()
 
   Dim sPath As String
-  Dim hClass As Class
   Dim hForm As WebForm
-  Dim iPos As Integer
-  Dim sClass As String
-  Dim hStat As ClassStat
   Dim aLib As String[]
   Dim sFile As String
   Dim sKey As String
   
-  Me.HandleRequest
+  Try Object.Call(Application.Startup, "HandleRequest")
   If Response.Done Then Return
   
   sPath = Mid$(Request.Path, 2)
-  
-  If Not sPath Then
-    
-    hForm = Application.Startup.AutoCreate()
-    
-  Else If sPath Begins "style:" And sPath Ends ".css" Then
-    
-    aLib = Split(Left(sPath, -4), ":")
-    If aLib.Count >= 3 Then sFile = aLib[1] & ".css"
-    RenderStyleSheet(sFile)
-    Return
-    
-  Else If sPath Begins "lib:" And sPath Ends ".js" Then
-    
-    aLib = Split(Left(sPath, -3), ":")
-    aLib.Remove(aLib.Max)
-    'If aLib.Count >= 3 Then sFile = aLib[1] & ".js"
-    RenderJavascript(aLib)
-    Return
-  
-  Else If sPath Begins "img:" Then
-    
-    Try sPath = Session[Mid$(sPath, 5)]["Image"]
-    If Not Error Then Response.SendFile(sPath)
-    Return
-    
-  Else If sPath Begins "download:" Then
-    
-    If DownloadFile(Mid$(sPath, 10)) Then Goto NOT_FOUND
-    Return
-    
-  Else If sPath = "~dump" Then
-    
-    If Session.Id Then
-      
-      Response.ContentType = "text/plain;charset=utf-8"
-      Response.Begin
 
-      For Each sKey In Session.Keys
-        Print sKey; " : "; JSON.Encode(Session[sKey])
-      Next
+  If sPath Then
+  
+    If sPath Begins "style:" And sPath Ends ".css" Then
       
-      Print
-      Print "size = "; Session.Size
-      
-      Response.End
+      aLib = Split(Left(sPath, -4), ":")
+      If aLib.Count >= 3 Then sFile = aLib[1] & ".css"
+      RenderStyleSheet(sFile)
       Return
       
-    Endif
+    Else If sPath Begins "lib:" And sPath Ends ".js" Then
+      
+      aLib = Split(Left(sPath, -3), ":")
+      aLib.Remove(aLib.Max)
+      'If aLib.Count >= 3 Then sFile = aLib[1] & ".js"
+      RenderJavascript(aLib)
+      Return
+    
+    Else If sPath Begins "img:" Then
+      
+      Try sPath = Session[Mid$(sPath, 5)]["Image"]
+      If Not Error Then Response.SendFile(sPath)
+      Return
+      
+    Else If sPath Begins "download:" Then
+      
+      If DownloadFile(Mid$(sPath, 10)) Then Goto NOT_FOUND
+      Return
+      
+    Else If sPath = "~dump" Then
+      
+      If Session.Id Then
+        
+        Response.ContentType = "text/plain;charset=utf-8"
+        Response.Begin
   
-  Else If Exist("../.public/" &/ sPath) Then
-    
-    Response.SendFile("../.public/" &/ sPath)
-    Return
-    
-  Else If Exist(".public/" &/ sPath) Then
-    
-    Response.SendFile(".public/" &/ sPath)
-    Return
-    
-  Else
-    
-    iPos = InStr(sPath, "/")
-    If iPos = 0 Then
-      sClass = sPath
-      sPath = ""
-    Else
-      sClass = Left(sPath, iPos - 1)
-      sPath = Mid$(sPath, iPos + 1)
+        For Each sKey In Session.Keys
+          Print sKey; " : "; JSON.Encode(Session[sKey])
+        Next
+        
+        Print
+        Print "size = "; Session.Size
+        
+        Response.End
+        Return
+        
+      Endif
+      
+    Else If Exist("../.public/" &/ sPath) Then
+      
+      Response.SendFile("../.public/" &/ sPath)
+      Return
+      
+    Else If Exist(".public/" &/ sPath) Then
+      
+      Response.SendFile(".public/" &/ sPath)
+      Return
+      
+    ' Else
+    '   
+    '   iPos = InStr(sPath, "/")
+    '   If iPos = 0 Then
+    '     sClass = sPath
+    '     sPath = ""
+    '   Else
+    '     sClass = Left(sPath, iPos - 1)
+    '     sPath = Mid$(sPath, iPos + 1)
+    '   Endif
+    '   
+    '   Try hStat = Class.Stat(".." &/ sClass)
+    '   If Not hStat Then 
+    '     Try hStat = Class.Stat(sClass)
+    '     If Not hStat Then Goto NOT_FOUND
+    '   Endif
+    '   
+    '   If LCase(hStat.Parent) <> "webform" Then Goto NOT_FOUND
+    '   
+    '   Try hClass = Class.Load(sClass)
+    '   If Not hClass Then 
+    '     Debug "Class.Load: "; Error.Text
+    '     Goto NOT_FOUND
+    '   Endif
+    '   
+    '   'Main.DumpSession
+    '   hForm = hClass.AutoCreate()
+    '   
     Endif
-    
-    Try hStat = Class.Stat(".." &/ sClass)
-    If Not hStat Then 
-      Try hStat = Class.Stat(sClass)
-      If Not hStat Then Goto NOT_FOUND
-    Endif
-    
-    If LCase(hStat.Parent) <> "webform" Then Goto NOT_FOUND
-    
-    Try hClass = Class.Load(sClass)
-    If Not hClass Then 
-      Debug "Class.Load: "; Error.Text
-      Goto NOT_FOUND
-    Endif
-    
-    'Main.DumpSession
-    hForm = hClass.AutoCreate()
     
   Endif
   
+  hForm = Application.Startup.AutoCreate()
   _Current = hForm
   
   If sPath = "x" Then

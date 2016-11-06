@@ -506,3 +506,23 @@ Private Sub ShowHeader_Write(Value As Boolean)
   Me._SetProperty("ShowHeader", Value)
 
 End
+
+Public Sub AddColumn(Text As String, Optional Width As String, Alignment As Integer = Align.Normal) As _WebTableColumn
+  
+  Dim hCol As _WebTableColumn
+  
+  Inc Me.Columns.Count
+  
+  hCol = Me.Columns[Me.Columns.Count - 1]
+  hCol.Text = Text
+  If Width = "*" Then
+    hCol.Expand = True
+  Else If Width Then
+    hCol.Width = Width
+  Endif
+  hCol.Alignment = Alignment
+  
+  Return hCol
+    
+  
+End
