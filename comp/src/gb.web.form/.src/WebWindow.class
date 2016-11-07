@@ -57,7 +57,10 @@ Public Sub _RenderStyleSheet()
     
   Endif
   
-  If $sWidth Then Me._AddStyleSheet("width:" & $sWidth & ";")
+  If $sWidth Then 
+    Me._AddStyleSheet("width:" & $sWidth & ";")
+    Me._AddStyleSheet("max-width:" & $sWidth & ";")
+  Endif
   If $sHeight Then Me._AddStyleSheet("height:" & $sHeight & ";")
   
   Me._EndStyleSheet

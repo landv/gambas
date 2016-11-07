@@ -588,6 +588,7 @@ Private Sub Resizable_Write(Value As Boolean)
 
   Dim hWindow As WebWindow = WebControl.FromId(_Window)
   $bResizable = Value
+  UpdateSize
   If hWindow Then hWindow.Resizable = Value
 
 End
@@ -619,6 +620,18 @@ Static Private Sub Debug_Write(Value As Boolean)
   
 End
 
+Private Sub UpdateSize()
+
+  If $bResizable Then
+    Me.Style["width"] = ""
+    Me.Style["height"] = ""
+  Else
+    Me.Style["width"] = Me.Style["min-width"]
+    Me.Style["height"] = Me.Style["min-height"]
+  Endif
+
+End
+
 Private Function Width_Read() As String
 
   Return Me.Style["min-width"]
@@ -628,6 +641,7 @@ End
 Private Sub Width_Write(Value As String)
 
   Me.Style["min-width"] = Value
+  UpdateSize
 
 End
 
@@ -640,6 +654,7 @@ End
 Private Sub Height_Write(Value As String)
 
   Me.Style["min-height"] = Value
+  UpdateSize
 
 End
 

@@ -565,7 +565,6 @@ gw = {
         $(last).removeClass('gw-deactivated');
         $(last + '-titlebar').removeClass('gw-deactivated');
       }
-        
     },
     
     raise: function(id, send)
