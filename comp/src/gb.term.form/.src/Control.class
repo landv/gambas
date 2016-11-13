@@ -23,10 +23,18 @@ Property Background As Byte
 Property Foreground As Byte
 Property Tag As Variant
 Property HaveFocus As Boolean
+Property Expand As Boolean
+Property _Shadow As Boolean
+Property _Border As Integer
+Property _Padding As Integer
 
+Private $iBorder As Integer
+
+Private $bShadow As Boolean
 
 Private _RecalcPos As Boolean
-Private $hRect As New Rect
+Private $rectControl As New Rect
+Private $rectDrawing As New Rect
 Private $iId As Integer
 Private $iParent As Integer
 Private $iScreenX As Integer
@@ -35,9 +43,10 @@ Private $iWindow As Integer
 Private $bBackground As Byte = Color.white
 Private $bForeground As Byte
 Private $vTag As Variant
-
-
-
+Private $bExpand As Boolean
+Private $yBorder As Byte
+Private $iPadding As Integer
+Private $rectClient As Rect
 
 
 Public Sub _new(Optional hParent As Container)
@@ -53,8 +62,8 @@ Public Sub _new(Optional hParent As Container)
       Windows._Add(Me)
     Endif
   Endif
-  $hRect.Width = 5
-  $hRect.Height = 1
+  $rectControl.Width = 5
+  $rectControl.Height = 1
   _IdToControl[$iId] = Me
   _RecalcPos = True
   _NeedRender = True
@@ -80,9 +89,16 @@ Public Sub _Render()
   Dim i, j As Integer
   Dim hAttr As New Attr
   Dim iAttr As Integer
-
-  If Not _Content Then Resize($hRect.Width, $hRect.Height)
-  hAttr.Background = Me.Background
+  Dim hRectC As Rect 
+  Dim iShadow As Integer = IIf($bShadow, 1, 0)
+  If Me Is Container Then
+    hRectC = $rectControl
+  Else
+    hRectC = $rectClient
+  Endif
+  
+  If Not _Content Then Resize(hRectC.Width, hRectC.Height)
+  hAttr.Background = $bBackground
 
   iAttr = hAttr.GetInteger()
 
@@ -91,6 +107,58 @@ Public Sub _Render()
       _Content[i][j] = Char(" ", iAttr)
     Next
   Next
+  
+  
+  
+    Select Case $iBorder
+      Case Border.Simple
+        hAttr.Background = $bBackground
+
+        iAttr = hAttr.GetInteger()
+        For j = 1 To hRectC.width - 2 '_Content[0].Max - 1
+          _Content[0][j] = Char(String.Chr(&h2500), iAttr)
+        Next
+        For j = 1 To hRectC.width - 2
+          _Content[hRectC.Height - 1 - iShadow][j] = Char(String.Chr(&h2500), iAttr)
+        Next
+        For i = 1 To hRectC.Height - 2 - iShadow
+
+          _Content[i][0] = Char(String.chr(&H2502), iAttr)
+          _Content[i][hRectC.Width - 1 - iShadow] = Char(String.chr(&H2502), iAttr)
+        Next
+        _Content[0][0] = Char(String.chr(&H250C), iAttr)
+        _Content[0][hRectC.Width - 1 - iShadow] = Char(String.chr(&H2510), iAttr)
+        _Content[hRectC.Height - 1 - iShadow][0] = Char(String.chr(&H2514), iAttr)
+        _Content[hRectC.Height - 1 - iShadow][hRectC.Width - 1 - iShadow] = Char(String.chr(&H2518), iAttr)
+
+      Case Else
+
+    End Select
+    
+    If $bShadow Then
+    hAttr.Foreground = Color.Black
+    If IsNull(Me.Parent) Then  
+      hAttr.Background = Color.Blue
+    Else
+      hAttr.Background = Me.Parent.Background
+    Endif
+    
+    iAttr = hAttr.GetInteger()
+    For i = 1 To _Content[0].Max
+      
+      _Content[_Content.Max - 1][i] = Char(String.chr(&H2580), iAttr)
+      
+    Next
+    For i = 1 To _Content.Max - 2
+      _Content[i][_Content[0].Max] = Char(String.chr(&H2588), iAttr)
+      
+    Next
+    'hAttr.Background = If(IsNull(Me.Parent), Desktop.BackGround, Me.Parent.Background)
+    _Content[0][_Content[0].Max] = Char(String.chr(&H2584), iAttr)
+    _Content[_Content.Max - 1][0] = Char(" ", iAttr)
+    
+    Endif 
+    
 
 End
 
@@ -108,65 +176,73 @@ End
 
 Private Function Left_Read() As Integer
 
-  Return $hRect.X
+  Return $rectControl.X
 
 End
 
 Private Sub Left_Write(Value As Integer)
 
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
-  $hRect.X = Value
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
+  $rectControl.X = Value
+  $rectDrawing.X = Value
+  Me._DefineRect
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
   _RecalcPos = True
 
 End
 
 Private Function Top_Read() As Integer
 
-  Return $hRect.Y
+  Return $rectControl.Y
 
 End
 
 Private Sub Top_Write(Value As Integer)
 
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
-  $hRect.Y = Value
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
+  $rectControl.Y = Value
+  $rectDrawing.Y = Value
+  Me._DefineRect
   _RecalcPos = True
 
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
 
 End
 
 Private Function Width_Read() As Integer
 
-  Return $hRect.Width
+  Return $rectControl.Width
 
 End
 
 Private Sub Width_Write(Value As Integer)
 
   If Value < 1 Then Return
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
-  $hRect.Width = Value
-
-  Resize($hRect.Width, $hRect.Height)
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
+  $rectControl.Width = Value
+  
+  '$rectDrawing.width = Value + IIf($bShadow, 1, 0)
+  Me._DefineRect
+  Resize($rectControl.Width, $rectControl.Height)
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   'If Me Is Container Then Me._SetClientRect()
 End
 
 Private Function Height_Read() As Integer
 
-  Return $hRect.Height
+  Return $rectControl.Height
 
 End
 
 Private Sub Height_Write(Value As Integer)
 
   If Value < 1 Then Return
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
-  $hRect.Height = Value
-  Resize($hRect.Width, $hRect.Height)
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
+  $rectControl.Height = Value
+  '$rectDrawing.Height = Value + IIf($bShadow, 1, 0)
+  Me._DefineRect
+  Resize($rectControl.Width, $rectControl.Height)
+  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   'If Me Is Container Then Me._SetClientRect()
   
 End
@@ -211,11 +287,11 @@ Private Sub ComputeScreenXY()
 
   If Me Is Label Then Stop
   If hC Then
-    $iScreenX = hC.ScreenX + $hRect.Left
-    $iScreenY = hC.ScreenY + $hRect.Top
+    $iScreenX = hC.ScreenX + $rectControl.Left
+    $iScreenY = hC.ScreenY + $rectControl.Top
   Else
-    $iScreenX = $hRect.Left
-    $iScreenY = $hRect.Top
+    $iScreenX = $rectControl.Left
+    $iScreenY = $rectControl.Top
   Endif
   _RecalcPos = False
 
@@ -229,13 +305,13 @@ End
 
 Public Function _GetScreenRect() As Rect
 
-  Return Rect(Me.ScreenX, Me.ScreenY, $hRect.width, $hRect.Height)
+  Return Rect(Me.ScreenX, Me.ScreenY, $rectControl.width, $rectControl.Height)
 
 End
 
 Public Function _GetRect() As Rect
   
-  Return $hRect.Copy()
+  Return $rectControl.Copy()
   
 End
 
@@ -311,3 +387,80 @@ Public Sub Move(Left As Integer, Top As Integer, Width As Integer, Height As Int
 End
 
 
+
+Private Function Expand_Read() As Boolean
+
+  Return $bExpand
+
+End
+
+Private Sub Expand_Write(Value As Boolean)
+
+  $bExpand = Value
+
+End
+
+Public Sub _Initialize()
+  
+  'Here generate the content Array to the right size
+  'Define the true size for the Client content
+  
+  
+  
+  
+End
+
+Public Sub _GetDrawingRect() As Rect
+  
+  Return $rectDrawing.Copy()
+  
+End
+
+
+Private Function _Shadow_Read() As Boolean
+
+  Return $bShadow
+
+End
+
+Private Sub _Shadow_Write(Value As Boolean)
+
+  $bShadow = Value
+
+End
+
+Public Sub _DefineRect()
+  
+  $rectClient = Rect($rectControl.Left + $iPadding + $yBorder, $rectControl.Top + $iPadding + $yBorder, $rectControl.Width - ($iPadding + $yBorder) * 2 - IIf($bShadow, 1, 0), $rectControl.Height - ($iPadding + $yBorder) * 2 - IIf($bShadow, 1, 0))
+  
+End
+
+
+Private Function _Border_Read() As Integer
+
+  Return $iBorder
+
+End
+
+Private Sub _Border_Write(Value As Integer)
+
+  $iBorder = Value
+  $yBorder = IIf($iBorder > Border.None, 1, 0)
+End
+
+Public Sub _GetClientRect() As Rect
+  
+  Return $rectClient.Copy()
+End
+
+Private Function _Padding_Read() As Integer
+
+  Return $iPadding
+
+End
+
+Private Sub _Padding_Write(Value As Integer)
+
+  $iPadding = Value
+
+End

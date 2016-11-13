@@ -1,12 +1,12 @@
 ' Gambas class file
 
 Export
-Class Rect
 Inherits Control
+Class Rect
 Property Text As String
 
-$sText As String
-
+Private $sText As String
+Private $iOldLen As Integer
 
 Public Sub _Render()
     Dim hAttr As New Attr
@@ -18,9 +18,15 @@ Public Sub _Render()
   hAttr.Foreground = Me.Foreground
   iAttr = hAttr.GetInteger()
   
-  For i = 1 To Min(Len($sText), Me._Content[0].count)
+  For i = 1 To Me._Content[0].count
+     If Me._Content[0][Me._Content[0].Max] And If i > Max($iOldLen, String.Len($sText)) Then Break
+      If i <= String.Len($sText) Then
       Me._Content[0][i - 1] = Char(Mid($sText, i, 1), iAttr)
+      Else
+        Me._Content[0][i - 1] = Char(" ", iAttr)
+      Endif
   Next
+
   Me._NeedRender = False
 End
 
@@ -31,8 +37,8 @@ Private Function Text_Read() As String
 End
 
 Private Sub Text_Write(Value As String)
-
+  $iOldLen = String.len($sText)
   $sText = Value
-  Windows.SetRenderArea(rect(Me.ScreenX, Me.ScreenY, Me.Width, Me.Height))
+  Windows.SetRenderArea(rect(Me.ScreenX, Me.ScreenY, Max($iOldLen, String.Len($sText)), Me.Height))
   Me._NeedRender = True
 End

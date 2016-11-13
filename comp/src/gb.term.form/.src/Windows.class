@@ -31,7 +31,7 @@ Static Public Sub _init()
   File.In.Term.Echo = False
 
   Print "\e[?1002h\e[?1006h\e[?1049h\e[?25l\e[?2h";
-
+  Print "\e[8;30;200";
   ResizeScreen(File.Out.Term.Width, File.Out.Term.Height)
 
 End
@@ -82,6 +82,7 @@ Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
   Dim C As Integer
   Dim hObj As Object
   Dim hInRect As Rect
+  Dim iMove, iResize As Integer
   'If hChild Is Window Then Stop
   hInRect = hRect.Intersection(hChild._GetScreenRect())
 
@@ -91,12 +92,16 @@ Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
 
     For C = hInRect.Left To hInRect.Right - 1
       $aScreen[l, C] = hChild.Id
+      'If hChild.id = 3 Then Debug l, C
     Next
   Next
 
   If hChild Is Container Then
-    
-    For Each hObj In hChild.children
+    imove = If(hChild.Border > 0, 1, 0) + hChild.Padding
+    iResize = iMove * 2 + If(hChild._Shadow, 1, 0)
+    hInRect.Move(hInRect.Left + iMove, hInRect.Top + imove, hInRect.Width - iResize, hInRect.Height - iResize)
+      For Each hObj In hChild.Children
+        
       RefreshChild(hObj, hInRect)
     Next
 
@@ -157,29 +162,36 @@ Static Public Sub Render()
   For l = hRect.Y To hRect.Bottom - 1
     'Debug "ligne " & l
     sDisplay &= "\e[" & (l + 1) & ";" & (hRect.X + 1) & "H"
+        'If l = 9 Then Stop
     For c = hRect.X To hRect.Right - 1
 
       ' hAttr.Background = $aScreen[l, c]
       ' hAttr.Send
       hCont = Control._IdToControl[$aScreen[l, c]]
+      'If $aScreen[l, c] = 3 And If l > 2 Then Stop
       If hCont Then
         hChar = hCont._GetChar(c, l)
         hAttr.FillFrom(hChar.Attr)
         sAttr = hAttr._GetString()
         sDisplay &= sAttr
-        sDisplay &= Chr(hChar.c)
+        sDisplay &= String.Chr(hChar.c) 
+        
+        'sDisplay &= Str($aScreen[l, c])
+        '  If Str($aScreen[l, c]) = "37" Then 
+        '   Debug Str($aScreen[l, c]), l
+        ' Endif
       Else
         hAttr.FillFrom(Desktop.BackGround.Attr)
         'hAttr.Background = 240
         sAttr = hAttr._GetString()
         sDisplay &= sAttr
-        sDisplay &= Chr(Desktop.BackGround.c)
+        sDisplay &= String.Chr(Desktop.BackGround.c)
       Endif
 
     Next
   Next
   Print sDisplay;
-  Catch
+  
   ' If Me.Debug = True Then 
   ' Debug Replace(sDisplay, "\e", "&")
   ' Endif

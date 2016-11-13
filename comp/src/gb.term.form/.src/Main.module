@@ -11,20 +11,25 @@ Public Sub Main()
   Dim hWin As New Window
   Dim hLabel2 As Label
   Dim i As Integer
-  
+  Dim hCont As VBox
+  Dim hCont2 As HBox
+  Dim hButton As Button
   'Dim hLabel As New Label(hWin)
   'Dim hWin2 As New Window
   hLabel = New Label(hwin)
  hTimer.delay = 5
- hTimer.Start
+ 'hTimer.Start
 
   hWin.Left = 3
-  hWin.Top = 0
+  hWin.Top = 1
   hWin.Height = 20
   hWin.Width = 70
+  hwin.Padding = 1
+  hwin.Border = Border.Simple
   hLabel.Left = 2
   hLabel.Top = 2
   hLabel.Width = 7
+  hLabel.tag = "*"
   hLabel.Background = Color.Yellow
   hLabel.Foreground = Color.Green
   hLabel.Text = "Label 1"
@@ -37,25 +42,56 @@ Public Sub Main()
   
   
   hWin2 = New Window
-  hWin2.Background = Color.Black
+  hWin2.Background = Color.Cyan
+  hWin2.Border = Border.Simple
   hWin2.Width = 50
-  hWin2.Height = 8
-  hWin2.top = 7
+  hWin2.Spacing = 1
+  hWin2.Height = 14
+  'hWin2._Shadow = True
+  hWin2.top = 6
   hWin2.Left = 15
+  'hWin2.Padding = 1
+  'hWin2.Maximized = True
   hWin2.Text = "Window 2" 
+  hWin2.Tag = "*"
+  'hCont.Top = 3
   hLabel = New Label(hWin2)
   hLabel.Width = 14
   hLabel.Top = 2
   hLabel.Left = 2
   hLabel.Text = "Label on win 2"
   
-  
-  For i = 0 To 30
-    hLabel2 = New Label(hWin2)
+  hCont = New VBox(hWin2)
+  hCont.Expand = True
+  hcont.Background = Color.Yellow
+  hcont.Border = Border.Simple
+  'hcont.Padding = 1
+  'hcont.Shadow = True
+  For i = 0 To 10
+    hLabel2 = New Label(hcont)
+    hLabel2.Background = Color.Yellow
     hLabel2.Text = "Label " & i
     
   Next
-  
+  hCont2 = New HBox(hWin2)
+  hCont2.Height = 2
+  hCont2.Spacing = 1
+  hCont2.Background = Color.Cyan
+  hCont2.Invert = True
+  hButton = New Button(hCont2)
+  hButton.Background = Color.Magenta
+  hButton.Text = "Ok"
+  hButton.W = 10
+  hButton.H = 2
+  hButton._Shadow = True
+  hButton.Alignment = Align.Center
+    hButton = New Button(hCont2)
+  hButton.Background = Color.Magenta
+  hButton.Text = "Cancel"
+  hButton.W = 10
+  hButton.H = 2
+  hButton._Shadow = True
+  hButton.Alignment = Align.Center
   'hWin2.Maximized = True
   
   Windows.Render

@@ -1,3 +1,54 @@
+#Align
+
+C
+Normal
+C
+i
+0
+Left
+C
+i
+1
+Right
+C
+i
+2
+Center
+C
+i
+3
+TopNormal
+C
+i
+16
+TopLeft
+C
+i
+17
+TopRight
+C
+i
+18
+Top
+C
+i
+19
+BottomNormal
+C
+i
+32
+BottomLeft
+C
+i
+33
+BottomRight
+C
+i
+34
+Bottom
+C
+i
+35
 #Arrange
 
 C
@@ -92,6 +143,21 @@ GetInteger
 m
 i
 
+#Border
+
+C
+None
+C
+i
+0
+Simple
+C
+i
+1
+Double
+C
+i
+2
 #Char
 
 C
@@ -185,6 +251,18 @@ Padding
 p
 i
 
+Border
+p
+i
+
+Shadow
+p
+b
+
+Invert
+p
+b
+
 _Arrangement
 v
 i
@@ -200,10 +278,6 @@ m
 _Arrange
 m
 
-
-_GetClientRect
-m
-Rect
 
 #Control
 
@@ -296,6 +370,22 @@ HaveFocus
 p
 b
 
+Expand
+p
+b
+
+_Shadow
+p
+b
+
+_Border
+p
+i
+
+_Padding
+p
+i
+
 _new
 m
 
@@ -305,6 +395,10 @@ m
 
 (Width)i(Height)i
 _Render
+m
+
+
+_DefineRect
 m
 
 
@@ -328,6 +422,18 @@ Move
 m
 
 (Left)i(Top)i(Width)i(Height)i
+_Initialize
+m
+
+
+_GetDrawingRect
+m
+Rect
+
+_GetClientRect
+m
+Rect
+
 #Desktop
 
 CA
@@ -355,6 +461,13 @@ _init
 M
 
 
+#HBox
+Container
+C
+_new
+m
+
+
 #Label
 Control
 C
@@ -372,6 +485,13 @@ C
 Arrangement
 p
 i
+
+#VBox
+Container
+C
+_new
+m
+
 
 #Window
 Container
@@ -397,6 +517,10 @@ m
 
 
 _ScreenResize
+m
+
+
+Center
 m
 
 

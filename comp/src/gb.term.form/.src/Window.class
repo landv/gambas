@@ -27,13 +27,13 @@ Public Sub _Render()
   hAttr.Bold = True
   iAttr = hAttr.GetInteger()
 
-  For i = 0 To Me.Width - 1
+  For i = 1 To Me.Width - 2
     Me._Content[0][i] = Char(" ", iAttr)
   Next
-  Me._Content[0][0].c = Asc("[")
-  Me._Content[0][1].c = Asc("]")
-  For i = 1 To Len($sText)
-    Me._Content[0][i + 2].c = Asc(Mid($sText, i, 1))
+  Me._Content[0][1].c = Asc("[")
+  Me._Content[0][2].c = Asc("]")
+  For i = 1 To String.Len($sText)
+    Try Me._Content[0][i + 3].c = Asc(Mid($sText, i, 1))
   Next
 
   Me._NeedRender = False
@@ -92,3 +92,10 @@ Public Sub _ScreenResize()
    Endif
   
 End
+
+Public Sub Center()
+
+  Me.Move((Desktop.Width - Me.Width) / 2, (Desktop.Height - Me.Height) / 2, Me.Width, Me.Height)
+  
+End
+

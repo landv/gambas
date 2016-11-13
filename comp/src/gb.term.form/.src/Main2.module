@@ -1,0 +1,34 @@
+' Gambas module file
+
+Public Sub Main()
+  
+  Dim hForm As New Form
+  Dim hCont As VBox
+  Dim hCont2 As HBox
+  Dim hButton As Button
+  Dim hLabel As New Label(hForm)
+
+
+  hLabel.Text = "Hello this is My first terminal window"
+
+  hForm.Padding = 1
+  hForm.Height = 15
+  hForm.Width = 50
+  hForm.Text = "Hi Gambasians"
+  hForm.Background = Color.White
+  hForm.Border = Border.Simple
+
+  hcont = New VBox(hForm)
+  hCont.Expand = True
+
+  hCont2 = New HBox(hForm)
+  hCont2.Invert = True
+
+  hButton = New Button(hCont2)
+  hButton.Width = 10
+  hButton.Text = "< Close >"
+
+  hForm.Center
+
+  Windows.Render
+End
