@@ -978,7 +978,7 @@ s
 _Properties
 C
 s
-"*,Title,Resizable"
+"*,Title,Resizable,Persistent"
 _DefaultEvent
 C
 s
@@ -1038,6 +1038,10 @@ b
 PopupParent
 r
 WebControl
+
+Persistent
+p
+b
 
 _DisableRefresh
 V
@@ -1119,6 +1123,10 @@ Close
 m
 
 [(ReturnValue)v]
+Hide
+m
+
+
 Show
 m
 

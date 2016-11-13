@@ -232,8 +232,14 @@ End
 
 Private Sub Child_Write(Value As WebForm)
 
+  Dim sType As String
+  
   $iFormId = Value.Id
-  Me._SetProperty("#child", [Object.Type(Value), Value.Name])
+  
+  sType = Object.Type(Value)
+  If Value = Object.Class(Value).Instance Then sType = "!" & sType
+  
+  Me._SetProperty("#child", [sType, Value.Name])
 
 End
 
@@ -242,12 +248,18 @@ Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
   
   Dim hChild As WebForm
   Dim aWindow As String[]
+  Dim sClass As String
   
   If sProp = "#child" Then
     
     aWindow = vVal
     WebControl._NextName = aWindow[1]
-    hChild = Object.New(aWindow[0])
+    sClass = aWindow[0]
+    If sClass Begins "!" Then
+      hChild = Class.Load(Mid$(sClass, 2)).AutoCreate()
+    Else
+      hChild = Object.New(sClass)
+    Endif
     hChild._Window = Me.Id
     $iFormId = hChild.Id
     
@@ -331,7 +343,9 @@ End
 
 Public Sub Close(Optional vReturnValue As Variant)
   
-  WebForm._AddReplyBefore("gw.window.close(" & JS(Me.Name) & ")")
+  If Not Me.Child.Persistent Then
+    WebForm._AddReplyBefore("gw.window.close(" & JS(Me.Name) & ")")
+  Endif
   WebForm._AddReplyBefore("gw.window.refresh()")
   
   If IsPopup() Then PopupControl_Read().SetFocus
