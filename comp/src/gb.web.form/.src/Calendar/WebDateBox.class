@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Border=True,ReadOnly=True"
+Public Const _Properties As String = "*,Border=True,ReadOnly=True,DateTime"
 Public Const _Group As String = "Chooser"
 Public Const _DrawWith As String = "ComboBox"
 Public Const _DefaultSize As String = "24,4"
@@ -16,9 +16,11 @@ Event Change
 Property Text As String
 Property Date, Value As Date
 Property ReadOnly As Boolean
+Property DateTime As Boolean
 
 Private $bReadOnly As Boolean = True
 Private $dDate As Date
+Private $bDateTime As Boolean
 
 Public Sub _new()
   
@@ -86,7 +88,11 @@ End
 
 Private Function Text_Read() As String
 
-  Return Format($dDate, gb.ShortDate)
+  If $bDateTime Then
+    Return Format($dDate, gb.GeneralDate)
+  Else
+    Return Format($dDate, gb.ShortDate)
+  Endif
 
 End
 
@@ -97,5 +103,18 @@ Private Sub Text_Write(Value As String)
   Else
     Error.Raise("Invalid date")
   Endif
+
+End
+
+Private Function DateTime_Read() As Boolean
+
+  Return $bDateTime
+
+End
+
+Private Sub DateTime_Write(Value As Boolean)
+
+  $bDateTime = Value
+  Me._SetProperty("DateTime", Value)
 
 End

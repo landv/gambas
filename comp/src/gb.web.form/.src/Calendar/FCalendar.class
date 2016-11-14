@@ -19,7 +19,7 @@ Public Sub dchChooser_Click()
   Dim hDateBox As WebDateBox
   
   hDateBox = Me.PopupParent
-  hDateBox.Date = Value_Read()
+  hDateBox.Date = Value_Read() + Time(hDateBox.Date)
   Me.Close
 
 End
