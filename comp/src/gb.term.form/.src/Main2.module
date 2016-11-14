@@ -1,13 +1,15 @@
 ' Gambas module file
 
+Private i As Integer
 Public Sub Main()
   
   Dim hForm As New Form
-  Dim hCont As VBox
+  Dim hCont As Frame
   Dim hCont2 As HBox
   Dim hButton As Button
   Dim hLabel As New Label(hForm)
-
+ Dim hCheck As CheckBox
+ Dim i As Integer
 
   hLabel.Text = "Hello this is My first terminal window"
 
@@ -16,19 +18,41 @@ Public Sub Main()
   hForm.Width = 50
   hForm.Text = "Hi Gambasians"
   hForm.Background = Color.White
-  hForm.Border = Border.Simple
-
-  hcont = New VBox(hForm)
+  hForm.Border = Border.Double
+   
+  hcont = New Frame(hForm)
   hCont.Expand = True
-
+  hCont.Text = "Choose an option"
   hCont2 = New HBox(hForm)
   hCont2.Invert = True
+  'hCont2.H = 2
 
   hButton = New Button(hCont2)
   hButton.Width = 10
   hButton.Text = "< Close >"
-
+  'hButton.Shadow = True
+   hcont.Background = Color.Cyan
+   hcont.Shadow = True
+   hcont.Border = Border.Simple
+  For i = 0 To 5
+  hCheck = New CheckBox(hcont)
+  
+  hCheck.Text = "Check me   " & i
+  hCheck.Value = Int(Rnd(-1, 2))
+  Next
+  hForm.Spacing = 1
   hForm.Center
-
+  hForm.Maximized = True
   Windows.Render
 End
+
+Public Sub Application_Read()
+  Dim s As String
+  s = Read #File.In, Lof(File.in)
+  Inc i 
+  Debug s,i
+  
+  
+  
+End
+

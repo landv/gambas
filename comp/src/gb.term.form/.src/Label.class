@@ -14,7 +14,7 @@ Public Sub _Render()
   Dim i As Integer
   If Not Me._NeedRender Then Return
   Super._Render
-  hAttr.Background = Me.Background
+  hAttr.Background = Me._GetBackGround()
   hAttr.Foreground = Me.Foreground
   iAttr = hAttr.GetInteger()
   

@@ -176,6 +176,10 @@ Char
 #Color
 
 C
+Transparent
+C
+i
+-1
 Black
 C
 i
@@ -390,13 +394,13 @@ _new
 m
 
 [(hParent)Container;]
-Resize
-m
-
-(Width)i(Height)i
 _Render
 m
 
+
+_GetBackGround
+m
+i
 
 _DefineRect
 m
@@ -459,6 +463,17 @@ Char
 
 _init
 M
+
+
+#Frame
+Panel
+C
+Text
+p
+s
+
+_Render
+m
 
 
 #HBox

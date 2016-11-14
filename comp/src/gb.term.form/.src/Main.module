@@ -51,7 +51,7 @@ Public Sub Main()
   hWin2.top = 6
   hWin2.Left = 15
   'hWin2.Padding = 1
-  'hWin2.Maximized = True
+  hWin2.Maximized = True
   hWin2.Text = "Window 2" 
   hWin2.Tag = "*"
   'hCont.Top = 3
@@ -78,6 +78,7 @@ Public Sub Main()
   hCont2.Spacing = 1
   hCont2.Background = Color.Cyan
   hCont2.Invert = True
+  hCont.Shadow = True
   hButton = New Button(hCont2)
   hButton.Background = Color.Magenta
   hButton.Text = "Ok"

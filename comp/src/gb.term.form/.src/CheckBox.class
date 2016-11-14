@@ -3,13 +3,13 @@
 Inherits Control
 Class Rect
 Property Text As String
-Property Shadow As Boolean
-Property Alignment As Integer
+Property Value As Integer
+Property Tristate As Boolean
 
 Private $sText As String
 Private $iOldLen As Integer
-Private $iAlignment As Integer
-
+Private $iValue As Integer
+Private $bTristate As Boolean
 
 
 Private Function Text_Read() As String
@@ -31,19 +31,17 @@ Public Sub _Render()
   Dim i As Integer
   Dim sALign As String
   Dim hRectC As Rect = Me._GetClientRect()
+  Dim sValue As String
+  Dim iBC As Integer
   If Not Me._NeedRender Then Return
   Super._Render
-  
-  Select Case $iAlignment
-  Case Align.Right
-    sALign = String(hRectC.Width - Len($sText), " ") & $sText
-  Case Align.Center
-    sALign = String(CInt(Ceil((hRectC.Width - Len($sText)) / 2)), " ") & $sText
-  Case Else
-    sALign = $sText
-  End Select
 
-  hAttr.Background = Me._GetBackGround()
+   sValue = Choose($iValue + 2, "x", " ", "/")
+
+  sALign = "[" & sValue & "] " & $sText
+  
+   iBC = Me._GetBackGround()
+  hAttr.Background = iBC
   hAttr.Foreground = Me.Foreground
   iAttr = hAttr.GetInteger()
   
@@ -62,27 +60,27 @@ End
 
 
 
-Private Function Shadow_Read() As Boolean
 
-  Return Super._Shadow
+Private Function Value_Read() As Integer
 
-End
-
-Private Sub Shadow_Write(Value As Boolean)
-
-  Super._Shadow = Value
+  Return $iValue
 
 End
 
-Private Function Alignment_Read() As Integer
-
-  Return $iAlignment 
+Private Sub Value_Write(Value As Integer)
   
+  $iValue = Max(Min(Value, 1), -1)
+
 End
 
-Private Sub Alignment_Write(Value As Integer)
+Private Function Tristate_Read() As Boolean
 
-  $iAlignment = Value
-  
+  Return $bTristate
+
+End
+
+Private Sub Tristate_Write(Value As Boolean)
+
+  $bTristate = Value
 
 End
