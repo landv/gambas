@@ -177,7 +177,7 @@ Static Private Sub HandleMenu(hCurrent As MenuButton)
   hWatch.Delay = 50
   hWatch.Start
   
-  Do
+  While hCurrent
     
     hMenu = Main.FindMenu(hCurrent, hCurrent.Menu)
     
@@ -189,9 +189,9 @@ Static Private Sub HandleMenu(hCurrent As MenuButton)
     If $hCurrent = hCurrent Then Break
     hCurrent = $hCurrent
     
-  Loop
+  Wend
   
-  $hCurrent.Refresh
+  Try $hCurrent.Refresh
   hWatch.Stop
   hWatch = Null
   $hCurrent = Null
