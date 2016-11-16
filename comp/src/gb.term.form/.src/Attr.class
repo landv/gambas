@@ -20,7 +20,7 @@ Private Enum FLAG_BG, FLAG_FG, FLAG_BOLD, FLAG_DIM, FLAG_REV, FLAG_UND, FLAG_BLK
 Private $aModified As New Boolean[8]
 Private $aValues As New Boolean[5]
 
-Private $iColorMode As Integer = Color.Default
+Private $iColorMode As Integer = TermColor.Default
 Private $iForeground As Integer
 Private $iBackGround As Integer
 Private $bBold As Boolean
@@ -34,8 +34,8 @@ Private $bBlink As Boolean
 
 Public Sub _new()
   
-  $iForeground = Color.Black
-  $iBackGround = Color.White
+  $iForeground = TermColor.Black
+  $iBackGround = TermColor.White
   
 End
 
@@ -177,22 +177,22 @@ Public Function _GetString(Optional Force As Boolean) As String
   
   If $aModified[FLAG_FG] Or Force Then
     Select Case $iColorMode
-      Case Color.Default
+      Case TermColor.Default
         sValue &= (30 + Max(Min($iForeground, 8), 0)) & ";"
-      Case Color.Mode256
+      Case TermColor.Mode256
          sValue &= "38;5;" & Max(Min($iForeground, 255), 0) & ";"
-      Case Color.ModeRGB
+      Case TermColor.ModeRGB
         sValue &= "38;2;" & Subst("&1;&2;&3;", GetRed($iForeGround), GetGreen($iForeground), GetBlue($iForeground))
     End Select
   Endif
   
   If $aModified[FLAG_BG] Or Force Then
     Select Case $iColorMode
-      Case Color.Default
+      Case TermColor.Default
         sValue &= (40 + Max(Min($iBackGround, 8), 0)) & ";"
-      Case Color.Mode256
+      Case TermColor.Mode256
          sValue &= "48;5;" & Max(Min($iBackGround, 255), 0) & ";"
-      Case Color.ModeRGB
+      Case TermColor.ModeRGB
         sValue &= "48;2;" & Subst("&1;&2;&3;", GetRed($iBackGround), GetGreen($iBackGround), GetBlue($iBackGround))
     End Select
   Endif

@@ -11,8 +11,8 @@ Static Private $hChar As New Char
 Static Public Sub _init()
   
   Dim hAttr As New Attr
-  'hAttr.ColorMode = Color.Mode256
-  hAttr.Background = Color.Blue
+  'hAttr.ColorMode = TermColor.Mode256
+  hAttr.Background = TermColor.Blue
   $hChar.Attr = hAttr.GetInteger()
   $hChar.c = Asc(" ")
   

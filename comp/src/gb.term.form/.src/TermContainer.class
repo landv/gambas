@@ -1,10 +1,10 @@
 ' Gambas class file
 
 Export
-Inherits Control
+Inherits TermControl
 Class Rect
 
-Property Read Children As Control[]
+Property Read Children As TermControl[]
 Property Read ClientWidth, CLientW As Integer
 Property Read ClientHeight, ClientH As Integer
 Property Spacing As Integer
@@ -19,22 +19,22 @@ Private $aChildren As New Object[]
 
 Public _Arrangement As Integer = Arrange.Vertical
 
-Public Sub _Add(hCtrl As Control)
+Public Sub _Add(hCtrl As TermControl)
 
   $aChildren.Add(hCtrl)
 
 End
 
-Private Function Children_Read() As Control[]
+Private Function Children_Read() As TermControl[]
 
-  If Not $aChildren Then $aChildren = New Control[]
+  If Not $aChildren Then $aChildren = New TermControl[]
   Return $aChildren
 
 End
 
 Public Sub _Render()
 
-  Dim hChild As Control
+  Dim hChild As TermControl
   Dim i, j As Integer
   Dim hAttr As New Attr
   Dim iAttr As Integer
@@ -71,7 +71,7 @@ Public Sub _Arrange()
         Else
           Inc iNExp
         Endif
-        'If Me Is VBox Then Stop
+        'If Me Is TermVBox Then Stop
         If iHExp >= (hrectClient.Height - iPadding * 2) Then Break
       Next
 
@@ -82,9 +82,10 @@ Public Sub _Arrange()
         iHExp = (hrectClient.Height - iHExp) / iNExp
       Endif
       
-      h = hrectClient.Top - Me.top
+      h = hrectClient.Top 
       For Each hChild In $aChildren
-        hChild.X = hrectClient.Left - Me.Left
+        'If hChild Is TermPictureBox Then Stop
+        hChild.X = hrectClient.Left
         hChild.Y = H
         hChild.Width = hrectClient.Width
         If hChild.Expand Then hChild.H = iHExp
@@ -101,7 +102,7 @@ Public Sub _Arrange()
         Else
           Inc iNExp
         Endif
-        'If Me Is VBox Then Stop
+        'If Me Is TermVBox Then Stop
         If iHExp >= (hrectClient.Width - iPadding * 2) Then Break
       Next
 
@@ -123,7 +124,7 @@ Public Sub _Arrange()
           
         
         
-        hChild.Y = hrectClient.Top - Me.Top
+        hChild.Y = hrectClient.Top 
         
         hChild.X = H
         hChild.Height = hrectClient.Height

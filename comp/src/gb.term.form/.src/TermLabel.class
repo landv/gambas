@@ -1,7 +1,7 @@
 ' Gambas class file
 
 Export
-Inherits Control
+Inherits TermControl
 Class Rect
 Property Text As String
 
@@ -39,6 +39,6 @@ End
 Private Sub Text_Write(Value As String)
   $iOldLen = String.len($sText)
   $sText = Value
-  Windows.SetRenderArea(rect(Me.ScreenX, Me.ScreenY, Max($iOldLen, String.Len($sText)), Me.Height))
+   TermWindows.SetRenderArea(rect(Me.ScreenX, Me.ScreenY, Max($iOldLen, String.Len($sText)), Me.Height))
   Me._NeedRender = True
 End

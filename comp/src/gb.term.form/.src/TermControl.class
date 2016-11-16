@@ -10,7 +10,7 @@ Public _NeedRender As Boolean
 
 Property Read id As Integer
 
-Property Read Parent As Container
+Property Read Parent As TermContainer
 Property Height, H As Integer
 Property Read ScreenX As Integer
 Property Read ScreenY As Integer
@@ -27,7 +27,8 @@ Property Expand As Boolean
 Property _Shadow As Boolean
 Property _Border As Integer
 Property _Padding As Integer
-
+Property _ColorMode As Integer
+Private $iColorMode As Integer
 Private $iBorder As Integer
 
 Private $bShadow As Boolean
@@ -48,7 +49,8 @@ Private $yBorder As Byte
 Private $iPadding As Integer
 Private $rectClient As Rect
 
-Public Sub _new(Optional hParent As Container)
+
+Public Sub _new(Optional hParent As TermContainer)
 
   $iId = $iLastId
   Inc $iLastId
@@ -58,15 +60,16 @@ Public Sub _new(Optional hParent As Container)
     'GetWindow
   Else
     If Me Is Window Then
-      Windows._Add(Me)
+       TermWindows._Add(Me)
     Endif
   Endif
   $rectControl.Width = 5
   $rectControl.Height = 1
+  _DefineRect
   _IdToControl[$iId] = Me
   _RecalcPos = True
   _NeedRender = True
-  'Windows._RefreshScreen
+  ' TermWindows._RefreshScreen
 
 End
 
@@ -93,11 +96,11 @@ Public Sub _Render()
   Dim hRectC As Rect
   Dim iShadow As Integer = IIf($bShadow, 1, 0)
   Dim iBC As Integer
-  If Me Is Container Then
+  'If Me Is TermContainer Then
     hRectC = $rectControl
-  Else
-    hRectC = $rectClient
-  Endif
+  'Else
+   ' hRectC = $rectClient
+  'Endif
 
   If Not _Content Then ResizeBuffer(hRectC.Width, hRectC.Height)
   iBC = _GetBackGround()
@@ -155,9 +158,9 @@ Public Sub _Render()
   End Select
 
   If $bShadow Then
-    hAttr.Foreground = Color.Black
+    hAttr.Foreground = TermColor.Black
     If IsNull(Me.Parent) Then
-      hAttr.Background = Color.Blue
+      hAttr.Background = TermColor.Blue
     Else
       hAttr.Background = Me.Parent.Background
     Endif
@@ -186,7 +189,7 @@ Private Function id_Read() As Integer
 
 End
 
-Private Function Parent_Read() As Container
+Private Function Parent_Read() As TermContainer
 
   Return _IdToControl[$iParent]
 
@@ -200,11 +203,11 @@ End
 
 Private Sub Left_Write(Value As Integer)
 
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
+   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
   $rectControl.X = Value
   $rectDrawing.X = Value
   Me._DefineRect
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
+   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
   _RecalcPos = True
 
 End
@@ -217,13 +220,13 @@ End
 
 Private Sub Top_Write(Value As Integer)
 
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
+   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
   $rectControl.Y = Value
   $rectDrawing.Y = Value
   Me._DefineRect
   _RecalcPos = True
 
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
+   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
 
 End
 
@@ -236,14 +239,14 @@ End
 Private Sub Width_Write(Value As Integer)
 
   If Value < 1 Then Return
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
+   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   $rectControl.Width = Value
 
   '$rectDrawing.width = Value + IIf($bShadow, 1, 0)
   Me._DefineRect
   ResizeBuffer($rectControl.Width, $rectControl.Height)
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
-  'If Me Is Container Then Me._SetClientRect()
+   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
+  'If Me Is TermContainer Then Me._SetClientRect()
 
 End
 
@@ -256,13 +259,13 @@ End
 Private Sub Height_Write(Value As Integer)
 
   If Value < 1 Then Return
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
+   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   $rectControl.Height = Value
   '$rectDrawing.Height = Value + IIf($bShadow, 1, 0)
   Me._DefineRect
   ResizeBuffer($rectControl.Width, $rectControl.Height)
-  Windows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
-  'If Me Is Container Then Me._SetClientRect()
+   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
+  'If Me Is TermContainer Then Me._SetClientRect()
 
 End
 
@@ -302,9 +305,9 @@ End
 
 Private Sub ComputeScreenXY()
 
-  Dim hC As Control = Me.Parent
+  Dim hC As TermControl = Me.Parent
 
-  If Me Is Label Then Stop
+  If Me Is TermLabel Then Stop
   If hC Then
     $iScreenX = hC.ScreenX + $rectControl.Left
     $iScreenY = hC.ScreenY + $rectControl.Top
@@ -436,8 +439,8 @@ Private Sub _Shadow_Write(Value As Boolean)
 End
 
 Public Sub _DefineRect()
-
-  $rectClient = Rect($rectControl.Left + $iPadding + $yBorder, $rectControl.Top + $iPadding + $yBorder, $rectControl.Width - ($iPadding + $yBorder) * 2 - IIf($bShadow, 1, 0), $rectControl.Height - ($iPadding + $yBorder) * 2 - IIf($bShadow, 1, 0))
+'If Me Is TermPictureBox Then Stop
+  $rectClient = Rect($iPadding + $yBorder, $iPadding + $yBorder, $rectControl.Width - ($iPadding + $yBorder) * 2 - IIf($bShadow, 1, 0), $rectControl.Height - ($iPadding + $yBorder) * 2 - IIf($bShadow, 1, 0))
 
 End
 
@@ -455,7 +458,8 @@ Private Sub _Border_Write(Value As Integer)
 End
 
 Public Sub _GetClientRect() As Rect
-
+'  If Me Is TermFrame Then Stop
+  '_DefineRect
   Return $rectClient.Copy()
 
 End
@@ -480,10 +484,22 @@ Public Sub _GetBackGround() As Integer
       i = Me.Parent._GetBackGround()
       Return i
     Else
-      Return Color.White
+      Return TermColor.White
     Endif
   Else
     Return $iBackGround
   Endif
+
+End
+
+Private Function _ColorMode_Read() As Integer
+
+  Return $iColorMode
+
+End
+
+Private Sub _ColorMode_Write(Value As Integer)
+
+  $iColorMode = Value
 
 End

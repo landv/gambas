@@ -1,7 +1,7 @@
 ' Gambas class file
 
 Export
-Inherits Container
+Inherits TermContainer
 Class Rect
 Property Text, Title As String
 Private $sText As String
@@ -22,8 +22,8 @@ Public Sub _Render()
 
   If Not Me._NeedRender Then Return
 
-  hAttr.Background = Color.Red
-  hAttr.Foreground = Color.White
+  hAttr.Background = TermColor.Red
+  hAttr.Foreground = TermColor.White
   hAttr.Bold = True
   iAttr = hAttr.GetInteger()
 

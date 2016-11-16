@@ -2,21 +2,21 @@
 
 Private hTimer As New Timer As "Timer"
 Private hWin2 As Window
-Private hLabel As Label
+Private hTermLabel As TermLabel
 Private $i As Integer
 Private $iBal As Integer = 1
 
 Public Sub Main()
 
   Dim hWin As New Window
-  Dim hLabel2 As Label
+  Dim hTermLabel2 As TermLabel
   Dim i As Integer
-  Dim hCont As VBox
-  Dim hCont2 As HBox
-  Dim hButton As Button
-  'Dim hLabel As New Label(hWin)
+  Dim hCont As TermVBox
+  Dim hCont2 As TermHBox
+  Dim hTermButton As TermButton
+  'Dim hTermLabel As New TermLabel(hWin)
   'Dim hWin2 As New Window
-  hLabel = New Label(hwin)
+  hTermLabel = New TermLabel(hwin)
  hTimer.delay = 5
  'hTimer.Start
 
@@ -26,23 +26,23 @@ Public Sub Main()
   hWin.Width = 70
   hwin.Padding = 1
   hwin.Border = Border.Simple
-  hLabel.Left = 2
-  hLabel.Top = 2
-  hLabel.Width = 7
-  hLabel.tag = "*"
-  hLabel.Background = Color.Yellow
-  hLabel.Foreground = Color.Green
-  hLabel.Text = "Label 1"
+  hTermLabel.Left = 2
+  hTermLabel.Top = 2
+  hTermLabel.Width = 7
+  hTermLabel.tag = "*"
+  hTermLabel.Background = TermColor.Yellow
+  hTermLabel.Foreground = TermColor.Green
+  hTermLabel.Text = "TermLabel 1"
   hWin.Text = "Window 1"
-  hLabel = New Label(hWin)
-  hLabel.Width = 15
-  hLabel.Text = "Label 2"
-  hLabel.Tag = "#"
+  hTermLabel = New TermLabel(hWin)
+  hTermLabel.Width = 15
+  hTermLabel.Text = "TermLabel 2"
+  hTermLabel.Tag = "#"
   
   
   
   hWin2 = New Window
-  hWin2.Background = Color.Cyan
+  hWin2.Background = TermColor.Cyan
   hWin2.Border = Border.Simple
   hWin2.Width = 50
   hWin2.Spacing = 1
@@ -55,59 +55,59 @@ Public Sub Main()
   hWin2.Text = "Window 2" 
   hWin2.Tag = "*"
   'hCont.Top = 3
-  hLabel = New Label(hWin2)
-  hLabel.Width = 14
-  hLabel.Top = 2
-  hLabel.Left = 2
-  hLabel.Text = "Label on win 2"
+  hTermLabel = New TermLabel(hWin2)
+  hTermLabel.Width = 14
+  hTermLabel.Top = 2
+  hTermLabel.Left = 2
+  hTermLabel.Text = "TermLabel on win 2"
   
-  hCont = New VBox(hWin2)
+  hCont = New TermVBox(hWin2)
   hCont.Expand = True
-  hcont.Background = Color.Yellow
+  hcont.Background = TermColor.Yellow
   hcont.Border = Border.Simple
   'hcont.Padding = 1
   'hcont.Shadow = True
   For i = 0 To 10
-    hLabel2 = New Label(hcont)
-    hLabel2.Background = Color.Yellow
-    hLabel2.Text = "Label " & i
+    hTermLabel2 = New TermLabel(hcont)
+    hTermLabel2.Background = TermColor.Yellow
+    hTermLabel2.Text = "TermLabel " & i
     
   Next
-  hCont2 = New HBox(hWin2)
+  hCont2 = New TermHBox(hWin2)
   hCont2.Height = 2
   hCont2.Spacing = 1
-  hCont2.Background = Color.Cyan
+  hCont2.Background = TermColor.Cyan
   hCont2.Invert = True
   hCont.Shadow = True
-  hButton = New Button(hCont2)
-  hButton.Background = Color.Magenta
-  hButton.Text = "Ok"
-  hButton.W = 10
-  hButton.H = 2
-  hButton._Shadow = True
-  hButton.Alignment = Align.Center
-    hButton = New Button(hCont2)
-  hButton.Background = Color.Magenta
-  hButton.Text = "Cancel"
-  hButton.W = 10
-  hButton.H = 2
-  hButton._Shadow = True
-  hButton.Alignment = Align.Center
+  hTermButton = New TermButton(hCont2)
+  hTermButton.Background = TermColor.Magenta
+  hTermButton.Text = "Ok"
+  hTermButton.W = 10
+  hTermButton.H = 2
+  hTermButton._Shadow = True
+  hTermButton.Alignment = Align.Center
+    hTermButton = New TermButton(hCont2)
+  hTermButton.Background = TermColor.Magenta
+  hTermButton.Text = "Cancel"
+  hTermButton.W = 10
+  hTermButton.H = 2
+  hTermButton._Shadow = True
+  hTermButton.Alignment = Align.Center
   'hWin2.Maximized = True
   
-  Windows.Render
+   TermWindows.Render
 End
 
 
 Public Sub Timer_Timer()
   
- hLabel.Text = $i
+ hTermLabel.Text = $i
  'hWin2.Left += $iBal
  'If hWin2.Left > Desktop.Width Then $iBal = -1
  'If hWin2.Left < 2 Then $iBal = 1
  
  Inc $i
-  Windows.Render
+   TermWindows.Render
   
 End
 

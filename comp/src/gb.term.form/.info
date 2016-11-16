@@ -173,7 +173,34 @@ _call
 M
 Char
 (ch)s(iAttr)i
-#Color
+#Desktop
+
+CA
+Width
+r
+i
+
+W
+r
+i
+
+Height
+r
+i
+
+H
+r
+i
+
+BackGround
+r
+Char
+
+_init
+M
+
+
+#TermColor
 
 C
 Transparent
@@ -224,12 +251,12 @@ ModeRGB
 C
 i
 2
-#Container
-Control
+#TermContainer
+TermControl
 C
 Children
 r
-Control[]
+TermControl[]
 
 ClientWidth
 r
@@ -274,7 +301,7 @@ i
 _Add
 m
 
-(hCtrl)Control;
+(hCtrl)TermControl;
 _Render
 m
 
@@ -283,7 +310,7 @@ _Arrange
 m
 
 
-#Control
+#TermControl
 
 C
 _IdToControl
@@ -304,7 +331,7 @@ i
 
 Parent
 r
-Container
+TermContainer
 
 Height
 p
@@ -390,10 +417,18 @@ _Padding
 p
 i
 
+_ColorMode
+p
+i
+
 _new
 m
 
-[(hParent)Container;]
+[(hParent)TermContainer;]
+_DefineRect
+m
+
+
 _Render
 m
 
@@ -401,10 +436,6 @@ m
 _GetBackGround
 m
 i
-
-_DefineRect
-m
-
 
 _GetScreenRect
 m
@@ -438,35 +469,8 @@ _GetClientRect
 m
 Rect
 
-#Desktop
-
-CA
-Width
-r
-i
-
-W
-r
-i
-
-Height
-r
-i
-
-H
-r
-i
-
-BackGround
-r
-Char
-
-_init
-M
-
-
-#Frame
-Panel
+#TermFrame
+TermPanel
 C
 Text
 p
@@ -476,15 +480,15 @@ _Render
 m
 
 
-#HBox
-Container
+#TermHBox
+TermContainer
 C
 _new
 m
 
 
-#Label
-Control
+#TermLabel
+TermControl
 C
 Text
 p
@@ -494,52 +498,36 @@ _Render
 m
 
 
-#Panel
-Container
+#TermPanel
+TermContainer
 C
 Arrangement
 p
 i
 
-#VBox
-Container
+#TermPictureBox
+TermControl
 C
+Image
+p
+Image
+
 _new
 m
 
-
-#Window
-Container
-C
-Text
-p
-s
-
-Title
-p
-s
-
-Maximized
-p
-b
 
 _Render
 m
 
 
-_Arrange
+#TermVBox
+TermContainer
+C
+_new
 m
 
 
-_ScreenResize
-m
-
-
-Center
-m
-
-
-#Windows
+#TermWindows
 
 CA
 Debug
@@ -582,3 +570,34 @@ SetRefreshArea
 M
 
 (hRect)Rect;
+#Window
+TermContainer
+C
+Text
+p
+s
+
+Title
+p
+s
+
+Maximized
+p
+b
+
+_Render
+m
+
+
+_Arrange
+m
+
+
+_ScreenResize
+m
+
+
+Center
+m
+
+
