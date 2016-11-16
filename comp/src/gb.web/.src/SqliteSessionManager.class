@@ -45,15 +45,14 @@ Public Sub Load() As Boolean
   Me.Size = Stat($sPath).Size
   
   hSave = DB.Current
-  
   $hConn = New Connection
+  DB.Current = hSave
+  
   $hConn.Type = "sqlite"
   $hConn.Host = File.Dir($sPath)
   $hConn.Name = File.Name($sPath)
   
   $hConn.Open
-  
-  DB.Current = hSave
   
   rConf = $hConn.Find("config")
 
@@ -134,6 +133,7 @@ Public Sub Save()
     $hConn.Commit
     
     $hConn.Close
+    
     $hConn.Open
 
     Me.Size = Stat($sPath).Size
@@ -201,6 +201,7 @@ Public Sub Create()
   Dim hConn As Connection
   Dim hTable As Table
   Dim rConf As Result
+  Dim hSave As Connection
   
   sPrefix = "/tmp/gambas." & System.User.Id
   
@@ -214,7 +215,10 @@ Public Sub Create()
   
   CheckUnique
 
+  hSave = DB.Current
   hConn = New Connection
+  DB.Current = hSave
+    
   hConn.Type = "sqlite"
   hConn.Host = File.Dir($sPath)
   
