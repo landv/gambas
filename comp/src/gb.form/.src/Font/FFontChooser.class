@@ -223,7 +223,7 @@ Private Sub RefreshExample()
   
   If txtExample.Visible Then
     txtExample.Font = Font[GetFont()]
-    txtExample.H = Max(Desktop.Scale * 4, Min(Desktop.Scale * 16, txtExample.Font.Height * 3))
+    txtExample.H = Max(Desktop.Scale * 4, Min(Desktop.Scale * 16, txtExample.Font.Size * 5))
     txtExample.Expand = cmbFamily.Visible
   Endif
   

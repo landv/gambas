@@ -1,12 +1,12 @@
 # Gambas Form File 3.0
 
 { WebForm WebForm
-  #MoveScaled(0,0,64,91)
+  #MoveScaled(0,0,74,91)
   Arrangement = Arrange.Vertical
   Margin = True
   Spacing = True
   { panStop WebContainer
-    #MoveScaled(1,1,62,6)
+    #MoveScaled(1,1,72,6)
     Background = Color.Red
     Arrangement = Arrange.Horizontal
     Spacing = True
@@ -21,7 +21,12 @@
     }
   }
   { WebTextBox1 WebTextBox
-    #MoveScaled(1,8,62,4)
-    Width = "16em"
+    #MoveScaled(1,8,72,4)
+    ShowClear = True
+  }
+  { WebComboBox1 WebComboBox
+    #MoveScaled(1,13,72,4)
+    List = [("Élément 1"), ("Élément 2"), ("Élément 3")]
+    ReadOnly = False
   }
 }

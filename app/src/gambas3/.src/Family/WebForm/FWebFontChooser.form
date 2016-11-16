@@ -1,0 +1,97 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,44,21)
+  Text = ("Select font")
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { Panel2 Panel
+    MoveScaled(1,1,42,14)
+    Arrangement = Arrange.Vertical
+    Border = Border.Plain
+    { lblFont Label
+      MoveScaled(0,0,43,2)
+      Expand = True
+      Padding = 4
+    }
+    { Separator1 Separator
+      MoveScaled(6,3,35,0)
+    }
+    { cmbFamily ComboBox
+      MoveScaled(1,4,24,4)
+      List = [(""), ("sans-serif"), ("serif"), ("monospace"), ("cursive"), ("fantasy")]
+      Border = False
+    }
+    { Separator2 Separator
+      MoveScaled(4,9,30,0)
+    }
+    { HBox2 HBox
+      MoveScaled(0,10,41,4)
+      { btnNormal ToolButton
+        MoveScaled(0,0,4,4)
+        Font = Font["+2"]
+        ToolTip = ("Normal")
+        Text = ("N")
+        Toggle = True
+      }
+      { btnBold ToolButton
+        MoveScaled(4,0,4,4)
+        Font = Font["Bold,+2"]
+        ToolTip = ("Bold")
+        Text = ("B")
+        Toggle = True
+      }
+      { btnItalic ToolButton
+        MoveScaled(8,0,4,4)
+        Font = Font["Italic,+2"]
+        ToolTip = ("Italic")
+        Text = ("I")
+        Toggle = True
+      }
+      { btnUnderline ToolButton
+        MoveScaled(12,0,4,4)
+        Font = Font["Underline,+2"]
+        ToolTip = ("Underline")
+        Text = ("U")
+        Toggle = True
+      }
+      { btnStrikeout ToolButton
+        MoveScaled(16,0,4,4)
+        Font = Font["Strikeout,+2"]
+        ToolTip = ("Strikeout")
+        Text = ("S")
+        Toggle = True
+      }
+      { Separator3 Separator
+        MoveScaled(20,0,0,4)
+      }
+      { crdSize CoordBox
+        MoveScaled(21,0,19,4)
+        Expand = True
+        Border = False
+        AllowRelative = True
+        AutoConvert = True
+      }
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(1,16,42,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(1,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(6,0,16,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(23,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

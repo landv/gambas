@@ -32,7 +32,7 @@ H1 { display: none; }
 <%If Request.Exist("v") Or If Request.Exist("nh") Then%>
 
   <style type="text/css">
-  BODY { letter-spacing: 1px; }
+  BODY { letter-spacing: 1px; line-height: 1.4em; }
   </style>
 
   <%If Not Request.Exist("nh") Then%>
@@ -52,7 +52,7 @@ H1 { display: none; }
   
   <%Else%>
   
-  <div class="page" style="top:0.5em;">
+  <div class="page" style="top:1em;">
 
   <%Endif%>
   

@@ -82,3 +82,9 @@ Public Sub _AfterRender()
   Print "</button>"
   
 End
+
+Public Sub Click()
+  
+  Object.Raise(Me, "Click")
+  
+End

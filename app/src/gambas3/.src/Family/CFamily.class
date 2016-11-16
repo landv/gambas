@@ -342,10 +342,22 @@ End
 
 Public Sub ActionDialog(sAction As String) As Boolean
 
-  If sAction Begins ".text-" Then Return
+  Dim sFont As String
   
-  Return True
+  Select Case sAction
+    
+    Case ".text-font"
+      sFont = FFontChooser.Run(FProperty.GetProperty("Font"))
+      If Not sFont Then Return True
+      Me.ActionValue = sFont
+    
+    Case Like ".text-*"
+      Return
+      
+    Case Else
+      Return True
   
+  End Select
 End
 
 Private Sub ToggleFont(sFont As String, sProp As String) As String
@@ -355,7 +367,7 @@ Private Sub ToggleFont(sFont As String, sProp As String) As String
   
   iPos = aFont.Find(sProp)
   If iPos < 0 Then
-    aFont.Add(sProp, 0)
+    aFont.Add(sProp)
   Else
     aFont.Remove(iPos)
   Endif
@@ -418,6 +430,27 @@ Private Sub ZoomFont(sFont As String, sAction As String) As String
   
 End
 
+Private Sub ToggleFamily(sFont As String, sFamily As String) As String
+
+  Dim aFont As String[]
+  Dim I As Integer
+
+  aFont = Split(sFont)
+  For I = 0 To aFont.Max
+    sFont = LCase(aFont[I])
+    If IsLetter(Left(sFont)) And If sFont <> "bold" And If sFont <> "italic" And If sFont <> "underline" And If sFont <> "strikeout" Then
+      If sFont == sFamily Then sFamily = ""
+      aFont.Remove(I)
+      Break
+    Endif
+  Next
+  
+  If sFamily Then aFont.Add(sFamily, 0)
+  
+  Return aFont.Join()
+
+End
+
 Public Sub ActionExec(hCtrl As CControl, sAction As String)
   
   Dim sFont As String
@@ -444,6 +477,12 @@ Public Sub ActionExec(hCtrl As CControl, sAction As String)
     
     Case ".text-zoom-normal"
       sFont = ZoomFont(sFont, "0")
+      
+    Case ".text-font"
+      sFont = Me.ActionValue
+      
+    Case ".text-set-font"
+      sFont = ToggleFamily(sFont, Me.ActionValue)
     
   End Select
   
@@ -561,5 +600,19 @@ GET_RECT:
   Endif
 
   Return
+  
+End
+
+Public Sub GetFonts() As String[]
+
+  Dim sFont As String
+  Dim aFont As New String[]
+  
+  For Each sFont In Fonts
+    aFont.Add(sFont)
+  Next
+  
+  aFont.Sort
+  Return aFont
   
 End

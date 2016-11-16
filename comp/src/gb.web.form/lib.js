@@ -55,6 +55,7 @@ gw = {
   loaded: {},
   uploads: {},
   autocompletion: [],
+  focus: false,
   
   log: function(msg)
   {
@@ -181,6 +182,7 @@ gw = {
       {
         gw.log('==> ' + xhr.gw_command);
         
+        gw.focus = false;
         var save = gw.saveFocus();
         
         /*if (gw.debug)
@@ -206,7 +208,8 @@ gw = {
          
         //eval(xhr.responseText);
         
-        gw.restoreFocus(save);
+        if (!gw.focus)
+          gw.restoreFocus(save);
         
         if (after)
           after();
@@ -315,13 +318,14 @@ gw = {
   
   setFocus: function(id)
   {
-    var elt = $(id);
+    var elt = $(id + ':entry') || $(id);
     
     if (elt)
     {
       elt.focus();
       gw.active = document.activeElement.id;
       gw.selection = undefined;
+      gw.focus = true;
     }
   },
   
@@ -1092,7 +1096,7 @@ gw = {
   autocomplete: function(id)
   {
     new AutoComplete({
-      selector: $(id),
+      selector: $(id + ':entry'),
       cache: false,
       source: function(term, response) {
         var xhr = $(id).gw_xhr;
@@ -1131,10 +1135,17 @@ gw = {
     setText: function(id, text)
     {
       gw.command(function() {
-        $(id).value = text;
-        gw.setSelection($(id), [text.length, text.length]);
+        $(id + ':entry').value = text;
+        gw.setSelection($(id + ':entry'), [text.length, text.length]);
         gw.update(id, 'text', text);
         });
+    },
+    
+    clear: function(id)
+    {
+      gw.textbox.setText(id, '');
+      gw.setFocus(id);
+      gw.raise(id, 'activate');
     }
   }
 }

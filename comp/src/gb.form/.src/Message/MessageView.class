@@ -3,7 +3,7 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Animated,Separator"
+Public Const _Properties As String = "*,Border,Animated,Separator"
 Public Const _DefaultSize As String = "32,6"
 Public Const _Group As String = "View"
 Public Const _DrawWith As String = "DrawingArea"
@@ -13,6 +13,7 @@ Event Close
 
 Property Animated As Boolean
 Property Separator As Boolean
+Property Border As Boolean
 
 Private $sText As String
 Private $hIcon As Picture
@@ -209,5 +210,17 @@ Private Sub Separator_Write(Value As Boolean)
 
   $bSeparator = Value
   $hView.Refresh
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hView.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hView.Border = If(Value, Border.Plain, Border.None)
 
 End

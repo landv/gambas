@@ -226,7 +226,7 @@ Private Sub Text_Write(Value As String)
     Me._SetProperty("Text", Value)
     Dec Me._NoRefresh
     
-    If Me._CanRefresh() Then WebForm._AddJavascript("$(" & JS(Me.Name) & ").value = " & JS($sText))
+    If Me._CanRefresh() Then WebForm._AddJavascript("$(" & JS(Me.Name & ":entry") & ").value = " & JS($sText))
     
     Raise Change
     

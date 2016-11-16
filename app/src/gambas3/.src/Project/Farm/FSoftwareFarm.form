@@ -69,16 +69,16 @@
     }
     Index = 1
     Text = ("")
-    { Panel1 VBox
-      MoveScaled(0,1,92,17)
-      AutoResize = True
+    { panFilterFrame VBox
+      MoveScaled(0,1,92,19)
       Spacing = True
       Margin = True
       { HBox1 HBox
-        MoveScaled(2,1,86,4)
+        MoveScaled(1,2,86,4)
         Spacing = True
         { Label1 Label
           MoveScaled(0,0,11,4)
+          AutoResize = True
           Text = ("Show")
         }
         { cmbSort ComboBox
@@ -87,15 +87,21 @@
           List = [("Most recent"), ("Most downloaded"), ("Installed")]
         }
         { chkShowFilter CheckBox
-          MoveScaled(48,0,24,4)
+          MoveScaled(48,0,17,4)
+          AutoResize = True
           Text = ("Show filters")
+        }
+        { chkShowAllVersion CheckBox
+          MoveScaled(64,0,20,4)
+          AutoResize = True
+          Text = ("Show old versions")
         }
       }
       { panFilter VBox
-        MoveScaled(2,6,89,10)
+        MoveScaled(1,7,89,10)
         Visible = False
         Spacing = True
-        { Panel4 HPanel
+        { panFilterTags HPanel
           MoveScaled(0,0,88,5)
           Spacing = True
           { Label3 Label
@@ -103,7 +109,7 @@
             Text = ("Tags")
           }
           { tagFarm CTagEditor
-            MoveScaled(15,0,72,5)
+            MoveScaled(15,0,69,5)
             Expand = True
           }
         }
@@ -115,7 +121,7 @@
             Text = ("Filter")
           }
           { Panel2 Panel
-            MoveScaled(54,0,34,4)
+            MoveScaled(28,0,34,4)
             Expand = True
             Arrangement = Arrange.Fill
             Border = Border.Plain

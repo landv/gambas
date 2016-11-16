@@ -8,7 +8,7 @@ Inherits UserControl
 
 Private Const MARGIN As Integer = 5
 
-Private $hView As ScrollView
+Private $hView As Panel
 Private $hEditor As MaskBox
 Private $hBorder As Panel
 Private $hCompletion As CTagCompletion
@@ -21,7 +21,7 @@ Public Sub _new()
   $hBorder.Mouse = Mouse.Text
   $hBorder.Background = Color.TextBackground
   
-  $hView = New ScrollView($hBorder) As "View"
+  $hView = New Panel($hBorder) As "View"
   $hView.Border = False
   $hView.Arrangement = Arrange.Row
   $hView.Margin = True
@@ -40,12 +40,17 @@ Public Sub SetFarm(sFarm As String)
   
 End
 
-
 Private Sub ResizeEditor()
+
+  If Not Object.IsValid($hEditor) Then Return
 
   $hEditor.Resize(MARGIN * 2 + Max(Desktop.Scale * 12, $hEditor.Font.TextWidth($hEditor.Text) + 8), $hEditor.Font.Height + MARGIN)
   $hEditor.Raise
-  $hView.EnsureVisible($hEditor.X, $hEditor.Y - MARGIN, $hEditor.W, $hEditor.H + MARGIN * 2)
+  
+  '$hView.EnsureVisible($hEditor.X, $hEditor.Y - MARGIN, $hEditor.W, $hEditor.H + MARGIN * 2)
+  With $hEditor
+    Me.H = .Y + .H + MARGIN + 2
+  End With
 
 End
 
@@ -171,5 +176,11 @@ End
 Public Sub Sort()
   
   SetTags(GetTags().Sort(gb.IgnoreCase))
+  
+End
+
+Public Sub View_Arrange()
+  
+  ResizeEditor
   
 End

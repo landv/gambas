@@ -11,6 +11,7 @@ Public Const _Properties As String = "*,Title,Resizable,Persistent"
 Public Const _DefaultEvent As String = "Open"
 
 Static Property Debug As Boolean
+Static Property Startup As String
 
 Static Public _InExec As Integer
 Static Public _Current As WebForm
@@ -164,7 +165,12 @@ Static Public Sub Main()
     
   Endif
   
-  hForm = Application.Startup.AutoCreate()
+  If Session.Id And If Session["startup"] Then
+    Try hForm = Class.Load(Session["startup"]).AutoCreate()
+  Endif
+  If Not hForm Then
+    hForm = Application.Startup.AutoCreate()
+  Endif
   _Current = hForm
   
   If sPath = "x" Then
@@ -367,6 +373,12 @@ End
 Static Public Sub Print(Text As String)
   
   $aJavascript.Add("console.log(" & JS(Text) & ")")
+  
+End
+
+Static Public Sub Exec(Javascript As String)
+  
+  $aJavascript.Add(Javascript)
   
 End
 
@@ -814,5 +826,21 @@ Private Sub Persistent_Write(Value As Boolean)
 
   $bPersistent = Value
   Me._SetProperty("Persistent", Value)
+
+End
+
+Static Private Function Startup_Read() As String
+
+  Dim sStartup As String
+
+  If Session.Id Then sStartup = Session["startup"]
+  If Not sStartup Then sStartup = Application.Startup.Name
+  Return sStartup
+
+End
+
+Static Private Sub Startup_Write(Value As String)
+
+  Session["startup"] = Value
 
 End

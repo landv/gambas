@@ -458,15 +458,11 @@ Public Sub HasProperty(sProp As String) As Boolean
 End
 
 
-Private Function GetRealValue(sProp As String, vVal As Variant) As Variant
+Private Function GetRealValue(hProp As CPropertyInfo, vVal As Variant) As Variant
   
   Dim vRealVal As Variant
-  Dim hProp As CPropertyInfo
   Dim vConstVal As Variant
   
-  Try hProp = Project.Documentation.Classes[Kind].Properties[sProp]
-  If IsNull(hProp) Then Return
-
   If IsNull(vVal) Then
     vRealVal = hProp.DefaultValue
   Else
@@ -482,6 +478,19 @@ Private Function GetRealValue(sProp As String, vVal As Variant) As Variant
       'IF NOT IsNull(vRealVal) THEN
       vRealVal = Font[vRealVal]
       'ENDIF
+      
+    Case "WebFont"
+      
+      Select Case vRealVal
+        Case "serif", "sans-serif", "monospace"
+          vRealVal = Font[vRealVal]
+        Case "cursive"
+          Try vRealVal = Font[""]
+        Case "fantasy"
+          Try vRealVal = Font[""]
+        Case Else
+          vRealVal = Font[""]
+      End Select
 
     Case "Color"
 
@@ -526,8 +535,15 @@ Private Function GetRealValue(sProp As String, vVal As Variant) As Variant
 End
 
 Public Function GetPropertyReal(sProp As String) As Variant
+
+  Dim hProp As CPropertyInfo
   
-  Return GetRealValue(sProp, $cValue[sProp])
+  With Project.Documentation.Classes[Kind]
+    Try hProp = .Properties[sProp]
+    If IsNull(hProp) Then Return ' La propriété n'existe pas, donc on PEUT changer sa valeur !!
+  End With
+  
+  Return GetRealValue(hProp, $cValue[sProp])
   
 End
 
@@ -556,7 +572,7 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
 
   ' valeur par défaut ?
 
-  'If sProp = "Background" Then Stop
+  If sProp = "Font" Then Stop
 
   If Not hProp.Required Then
     If Not IsNull(vDefault) Then
@@ -573,23 +589,21 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
     If hProp.Name = "Public" Then {Public} = vVal
     Goto _DO_NOT_APPLY
   Endif
+  
   If bDoNotApply Then Goto _DO_NOT_APPLY
+  
   If Unknown Then 
     hClass = Object.Class(Control)
     If Not hClass.Exist(sProp) Then Goto _DO_NOT_APPLY
     With hClass[sProp]
       If .Kind <> Class.Property Then Goto _DO_NOT_APPLY
       If .ReadOnly Then Goto _DO_NOT_APPLY
-      If .Type <> hSym.Type Then 
-        Goto _DO_NOT_APPLY
+      If hSym.Type <> "WebFont" Then
+        If .Type <> hSym.Type Then 
+          Goto _DO_NOT_APPLY
+        Endif
       Endif
     End With
-    'If Not Project.Documentation.Classes[Object.Type(Control)].Properties.Exist(sProp) Then Goto _DO_NOT_APPLY
-    ' If Not hProp.Coord Then 
-    '   If sProp <> "Background" And sProp <> "Foreground" Then 
-    '     Goto _DO_NOT_APPLY
-    '   Endif
-    ' Endif
   Endif
 
   If IsMultiContainer() Then
@@ -603,7 +617,7 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
     Endif
   Endif
 
-  vRealVal = GetRealValue(sProp, vVal)
+  vRealVal = GetRealValue(hProp, vVal)
 
   'PRINT "SetProperty: "; Object.Type(Control); "."; sProp; " = "; Str(vRealVal)
 
@@ -754,7 +768,7 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
 
       Return CStr(vVal)
 
-    Case "List", "Path", "Picture", "Font", "Table", "Menu", "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush", "Field", "WebCoord"
+    Case "List", "Path", "Picture", "Font", "Table", "Menu", "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush", "Field", "WebCoord", "WebFont"
 
       Return CStr(vVal)
       
@@ -894,6 +908,12 @@ Public Function GetForm() As FForm
 
 End
 
+' Private Function GetFamily() As CFamily
+' 
+'   Return GetForm().GetFamily()
+' 
+' End
+' 
 Private Sub GetUndo() As CUndo
   
   Return GetForm().GetUndo()
@@ -1685,7 +1705,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
           
     Select Case hProp.Type
 
-      Case "s", "v", "List", "Path", "WebImage", "Table", "Menu", "ReportCoord", "Field", "WebCoord"
+      Case "s", "v", "List", "Path", "WebImage", "Table", "Menu", "ReportCoord", "Field", "WebCoord", "WebFont"
 
         If bTranslate Then
           

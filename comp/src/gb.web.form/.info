@@ -215,6 +215,10 @@ _AfterRender
 m
 
 
+Click
+m
+
+
 #WebCheckBox
 WebControl
 C
@@ -467,7 +471,7 @@ T
 _Properties
 C
 s
-"Class,Width{WebCoord},Height{WebCoord},Visible=True,Enabled=True,Tag,Expand,Ignore,Background{Color},Foreground{Color},Tooltip"
+"Class,Width{WebCoord},Height{WebCoord},Visible=True,Enabled=True,Tag,Expand,Ignore,Background{Color},Foreground{Color},Tooltip,Font{WebFont}"
 _Family
 C
 s
@@ -582,12 +586,17 @@ Class
 p
 s
 
-'Return or set a specific CSS class added to the control.
+'Return or set the specific CSS classes added to the control.
 Tooltip
 p
 s
 
 'Return or set the tooltip displayed when the mouse cursor hovers the control.
+Font
+p
+s
+
+'Return or set the specific font of the control.
 _NextName
 V
 s
@@ -760,6 +769,14 @@ _GetImageLink
 m
 s
 (sImage)s
+AddClass
+m
+
+(sClass)s
+RemoveClass
+m
+
+(sClass)s
 #WebControlStyle
 
 C
@@ -783,6 +800,10 @@ IsVoid
 m
 b
 
+Exist
+m
+b
+(Property)s
 _GetStyleSheet
 m
 String[]
@@ -991,6 +1012,10 @@ Debug
 P
 b
 
+Startup
+P
+s
+
 _InExec
 V
 i
@@ -1119,6 +1144,10 @@ Print
 M
 
 (Text)s
+Exec
+M
+
+(Javascript)s
 _UpdateProperty
 m
 
@@ -1721,14 +1750,14 @@ _new
 m
 
 
-IsSelected
-m
-b
-(Row)i
 Select
 m
 
 (Row)i[(Length)i]
+IsSelected
+m
+b
+(Row)i
 _Render
 m
 
@@ -1845,7 +1874,7 @@ C
 _Properties
 C
 s
-"*,Border=True,ReadOnly,PlaceHolder,Text"
+"*,Border=True,ReadOnly,PlaceHolder,Text,Password,ShowClear"
 _DrawWith
 C
 s
@@ -1874,6 +1903,10 @@ s
 :
 
 
+:Clear
+:
+
+
 ReadOnly
 p
 b
@@ -1882,15 +1915,23 @@ PlaceHolder
 p
 s
 
+Password
+p
+b
+
+ShowClear
+p
+b
+
+_new
+m
+
+
 Clear
 m
 
 
-_BeforeRender
-m
-
-
-_AfterRender
+_Render
 m
 
 

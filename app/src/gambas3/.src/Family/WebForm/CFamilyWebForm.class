@@ -120,7 +120,7 @@ End
 Private Sub PaintButton(hCCtrl As CControl)
 
   Dim hRect As Rect
-  Dim F As Integer = Style.FrameWidth * 2
+  Dim F As Integer = Style.FrameWidth * 4
   
   Style.PaintButton(0, 0, Paint.W, Paint.H, False,, Not hCCtrl["Border"])
   
@@ -129,7 +129,7 @@ Private Sub PaintButton(hCCtrl As CControl)
   
   If hCCtrl["Image"] Then
     CFamily.PaintImage(hCCtrl, ".public", Align.Left, F)
-    hRect.Left += CFamily.LastRect.W + F
+    Try hRect.Left += CFamily.LastRect.W + F
   Endif
   
   If hCCtrl["Text"] Then Paint.DrawText(hCCtrl["Text"], hRect.X, hRect.Y, hRect.W, hRect.H, Align.Center)
@@ -169,12 +169,15 @@ End
 Public Sub ActionDialog(sAction As String) As Boolean
 
   Dim vColor As Variant
+  Dim sFont As String
   
   Select Case sAction
     
-    ' Case Like ".text-*"
-    '   Return Super.ActionDialog(sAction)
-      
+    Case ".text-font"
+      sFont = FWebFontChooser.Run(FProperty.GetProperty("Font"))
+      If Not sFont Then Return True
+      Me.ActionValue = sFont
+    
     Case Like ".format-*"
       If FColorChooser.Run(, True) Then Return True
       vColor = FColorChooser.Color
@@ -185,13 +188,49 @@ Public Sub ActionDialog(sAction As String) As Boolean
   
 End
 
+Private Sub ToggleFont(hCtrl As CControl, sElt As String)
+
+  Dim sFont As String
+  Dim aFont As String[]
+  Dim iPos As Integer
+
+  Try sFont = hCtrl.GetProperty("Font")
+  If Error Then Return
+  
+  aFont = Split(sFont)
+  iPos = aFont.Find(sElt)
+  If iPos >= 0 Then
+    aFont.Remove(iPos)
+  Else
+    aFont.Add(sElt)
+  Endif
+  
+  Try hCtrl.SetProperty("Font", aFont.Join())
+
+End
+
 Public Sub ActionExec(hCtrl As CControl, sAction As String)
   
   Select Case sAction
     
     ' Case Like ".text-*"
     '   Super.ActionExec(hCtrl, sAction)
+    
+    Case ".text-font"
+      Super.ActionExec(hCtrl, sAction)
       
+    Case ".text-set-font"
+      Super.ActionExec(hCtrl, sAction)
+    
+    Case ".text-bold"
+      ToggleFont(hCtrl, "bold")
+    
+    Case ".text-italic"
+      ToggleFont(hCtrl, "italic")
+    
+    Case ".text-underline"
+      ToggleFont(hCtrl, "underline")
+    
     Case ".format-background"
       If hCtrl.HasProperty("Background") Then hCtrl.SetProperty("Background", Me.ActionValue)
     
@@ -212,5 +251,11 @@ Static Public Sub InitCoord(hCtrl As CoordBox)
   
   hCtrl.Units = ["em", "px", "ex", "mm", "cm", "in", "pt", "pc", "rem", "vw", "vh", "vmin", "vmax"]
   hCtrl.DefaultUnit = "em"
+  
+End
+
+Public Sub GetFonts() As String[]
+  
+  Return ["sans-serif", "serif", "monospace", "cursive", "fantasy"].Sort()
   
 End

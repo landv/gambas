@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Border=True,ReadOnly,PlaceHolder,Text"
+Public Const _Properties As String = "*,Border=True,ReadOnly,PlaceHolder,Text,Password,ShowClear"
 Public Const _DrawWith As String = "TextBox"
 Public Const _DefaultSize As String = "24,4"
 Public Const _DefaultEvent As String = "Change"
@@ -11,16 +11,29 @@ Public Const _DefaultEvent As String = "Change"
 Event Change
 Event Completion(Text As String)
 Event Activate
+Event Clear
 
 Property Text As String
 Property ReadOnly As Boolean
 Property PlaceHolder As String
+Property Password As Boolean
+Property ShowClear As Boolean
+
 'Property Button As String
 
 Private $sText As String
 Private $bReadOnly As Boolean
 Private $sPlaceHolder As String
+Private $bPassword As Boolean
+Private $bShowClear As Boolean
 'Private $sButton As String
+
+Public Sub _new()
+  
+  Me._Proxy = ":entry"
+  
+End
+
 
 Private Function Text_Read() As String
 
@@ -38,7 +51,7 @@ Private Sub Text_Write(Value As String)
   Me._SetProperty("Text", Value)
   Dec Me._NoRefresh
   
-  If Me._CanRefresh() Then WebForm._AddJavascript("$(" & JS(Me.Name) & ").value = " & JS($sText))
+  If Me._CanRefresh() Then WebForm._AddJavascript("$(" & JS(Me.Name & ":entry") & ").value = " & JS($sText))
   
   Raise Change
 
@@ -51,14 +64,23 @@ Public Sub Clear()
 End
 
 
-Public Sub _BeforeRender()
+Public Sub _Render()
   
-  Print "<input type=\"text\""; Me._GetClassId(); Me._GetUpdateJS("onchange", "text", "this.value"); Me._GetUpdateJS("onblur", "text", "this.value");
+  If $bShowClear Then
+    If Object.CanRaise(Me, "Clear") Then
+      Print "<div class=\"gw-textbox-clear\" onclick=\"gw.raise("; JS(Me.Name); ",'clear')\"></div>";
+    Else
+      Print "<div class=\"gw-textbox-clear\" onclick=\"gw.textbox.clear("; JS(Me.Name); ")\"></div>";
+    Endif
+  Endif
+  
+  Print "<input id=\""; Me.Name; ":entry\"";
+  If $bShowClear Then Print " style=\"padding-right:2.25em;\"";
+  Print " type=\""; If($bPassword, "password", "text"); "\""; Me._GetUpdateJS("onchange", "text", "this.value"); Me._GetUpdateJS("onblur", "text", "this.value");
   If Object.CanRaise(Me, "Activate") Then
     Print " onkeypress=\"gw.textbox.onactivate("; JS(Me.Name); ",event);\""; 'WebForm._AddJavascript("gw.textbox.onactivate(" & JS(Me.Name) & ")")
   Endif
   
-  Me._RenderStyleSheet()
   If Not Me.Enabled Then Print " disabled";
   If $bReadOnly Then Print " readonly";
   If $sPlaceHolder Then Print " placeholder=\""; Html($sPlaceHolder); "\"";
@@ -68,14 +90,6 @@ Public Sub _BeforeRender()
   If Object.CanRaise(Me, "Completion") Then
     WebForm._AddJavascript("gw.autocomplete(" & JS(Me.Name) & ")")
   Endif
-  
-End
-
-
-Public Sub _AfterRender()
-  
-  'Raise Render
-  'Print "</input>"
   
 End
 
@@ -130,3 +144,29 @@ End
 '   Me._SetProperty("Button", Value)
 ' 
 ' End
+
+Private Function Password_Read() As Boolean
+
+  Return $bPassword
+
+End
+
+Private Sub Password_Write(Value As Boolean)
+
+  $bPassword = Value
+  Me._SetProperty("Password", Value)
+
+End
+
+Private Function ShowClear_Read() As Boolean
+
+  Return $bShowClear
+
+End
+
+Private Sub ShowClear_Write(Value As Boolean)
+
+  $bShowClear = Value
+  Me._SetProperty("ShowClear", Value)
+
+End

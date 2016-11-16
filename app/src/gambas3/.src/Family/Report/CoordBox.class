@@ -353,6 +353,7 @@ Public Sub ClearButton_Click()
   
   $hTextBox.Text = ""
   $hButton.Text = $sDefaultUnit
+  Raise Change
   
 End
 

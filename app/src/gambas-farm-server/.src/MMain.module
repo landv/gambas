@@ -658,8 +658,8 @@ Private Sub GetSoftware()
   Dim sDir As String
   Dim aDep As Integer[]
   Dim I As Integer
-  Dim rAllSoftware As Result
   Dim iDownload As Integer
+  Dim bLastVersion As Boolean
   
   OpenDatabase
   
@@ -717,15 +717,14 @@ Private Sub GetSoftware()
     If rUser.Available Then sOwner = rUser!login
     If Not sOwner Then sOwner = "?"
     
-    rAllSoftware = DB.Find("software", "vendor = &1 AND name = &2", rSoftware!vendor, rSoftware!name)
-    For Each rAllSoftware
-      iDownload += rAllSoftware!download
-    Next
+    iDownload = DB.Exec("SELECT SUM(download) FROM software WHERE vendor = &1 AND name = &2", rSoftware!vendor, rSoftware!name)[0]
+    bLastVersion = Not DB.Limit(1).Find("software", "vendor = &1 AND name = &2 AND version > &3", rSoftware!vendor, rSoftware!name, rSoftware!version).Available
     
     Print "10 OK"
     Print "Id="; rSoftware!id
     Print "Name="; Quote(rSoftware!name)
     Print "Version="; ToVersion(rSoftware!version)
+    Print "LastVersion="; If(bLastVersion, "1", "0")
     Print "Vendor="; Quote(rSoftware!vendor)
     Print "Release="; rSoftware!release
     Print "UploadDate="; Format(rSoftware!date, "yyyymmddhhnnss")
@@ -901,7 +900,7 @@ Private Sub SearchSoftware()
       Case "vote"
         If sFrom Then sReq = DB.Subst("(vote = &1 AND id > &2) OR (vote < &1)", CInt(sFrom), iFromId)
       Case "download"
-        If sFrom Then sReq = DB.Subst("(download = &1 AND id > &2) OR (download < &1)", CInt(sFrom), iFromId)
+        If sFrom Then sReq = DB.Subst("(fulldownload = &1 AND id > &2) OR (fulldownload < &1)", CInt(sFrom), iFromId)
       Case "size"
         If sFrom Then sReq = DB.Subst("(size = &1 AND id > &2) OR (size < &1)", CInt(sFrom), iFromId)
       Case Else
@@ -910,7 +909,13 @@ Private Sub SearchSoftware()
     End Select
     
     If sReq Then sReq = " WHERE " & sReq
-    rSoftware = DB.Limit(LIMIT_SOFTWARE).Exec("SELECT * FROM software" & sReq & " ORDER BY " & sSort & " DESC,id")
+    
+    If sSort = "download" Then
+      rSoftware = DB.Limit(LIMIT_SOFTWARE).Exec("SELECT * FROM (SELECT *,(SELECT SUM(download) FROM software WHERE vendor = s.vendor AND name = s.name) AS fulldownload FROM software AS s) t" & sReq & " ORDER BY t.fulldownload DESC,t.id DESC")
+      'If Error Then Break
+    Else
+      rSoftware = DB.Limit(LIMIT_SOFTWARE).Exec("SELECT * FROM software" & sReq & " ORDER BY " & sSort & " DESC,id DESC")
+    Endif
     
     sFrom = ""
     

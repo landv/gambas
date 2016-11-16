@@ -4134,3 +4134,24 @@ Public Sub GetPopupMenu() As Menu
   Return mnuForm
   
 End
+
+Public Sub mnuFont_Show()
+  
+  Dim sFont As String
+  Dim hMenu As Menu
+  
+  mnuFont.Children.Clear
+  
+  For Each sFont In $hFamily.GetFonts()
+    hMenu = New Menu(mnuFont) As "mnuSetFont"
+    hMenu.Text = sFont
+  Next
+  
+End
+
+Public Sub mnuSetFont_Click()
+
+  $hFamily.ActionValue = Last.Text  
+  DoAction(".text-set-font")
+  
+End

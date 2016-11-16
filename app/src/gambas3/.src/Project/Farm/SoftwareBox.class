@@ -134,7 +134,7 @@ Public Sub DrawingArea_Draw()
   
   W = Paint.W
   H = Paint.H
-  P = Desktop.Scale
+  P = Desktop.Scale * 2
   
   ' If $hSoft.IsInstalled() Then
   '   If $hSoft.CanUpgrade() Then
@@ -153,8 +153,8 @@ Public Sub DrawingArea_Draw()
   Paint.AntiAlias = False
   Paint.Rectangle(X + 1, Y + 1, W - 3, H - 3)
   
-  'Paint.Background = Color.Merge(Color.TextForeground, Color.TextBackground, 0.97)
-  'Paint.Fill(True)
+  Paint.Background = GetBackgroundColor()
+  Paint.Fill(True)
   
   If $hDrawingArea.HasFocus Or If $bHighlight Then
     Paint.Background = Color.LightBackground
@@ -168,12 +168,15 @@ Public Sub DrawingArea_Draw()
   
   If Not $hSoft Then Return
   
-  If $hSoft.IsInstalled() Then
-    If $hSoft.CanUpgrade() Then
-      iCol = &HDF6B00&
-    Else
-      iCol = &H3398C3&
-    Endif
+  If $hSoft.CanUpgrade() Then
+    iCol = &HDF6B00&
+  Else If $hSoft.IsReallyInstalled() Then
+    iCol = &H3398C3&
+  Else
+    iCol = 0
+  Endif
+  
+  If iCol Then
     Paint.Polygon([Paint.W - 2, Paint.H - P * 3 - 2, Paint.W - 2, Paint.H - 2, Paint.W - 2 - P * 3, Paint.H - 2])
     Paint.Background = Color.SetAlpha(iCol, 128)
     Paint.Fill
@@ -220,7 +223,7 @@ Public Sub DrawingArea_Draw()
     Paint.Background = Color.TextForeground
     Paint.DrawText(Paint.TrimText(sText, W, H), X, Y + Max(CSoftware.IconSize, HN) + P, W, H)
     
-    PaintStat($hSoft)
+    PaintStat($hSoft, GetBackgroundColor())
     
   End With
   
@@ -254,19 +257,27 @@ Private Function Software_Read() As CSoftware
 
 End
 
-Static Public Sub PaintStat(hSoft As CSoftware, Optional (bWithSize) As Boolean)
+Static Private Sub GetBackgroundColor() As Integer
+  
+  Return Color.Merge(Color.TextForeground, Color.TextBackground, 0.97)
+  
+End
+
+
+Static Public Sub PaintStat(hSoft As CSoftware, iBg As Integer, Optional (bWithSize) As Boolean)
 
   Dim sDownload As String
   Dim X, Y As Integer
   Dim P As Integer
   
-  P = Desktop.Scale
+  P = Desktop.Scale * 2
   
   With hSoft
   
-    sDownload = CStr(.DownloadCount)
     If .FullDownloadCount <> .DownloadCount Then 
-      sDownload &= " / <b>" & CStr(.FullDownloadCount) & "</b>"
+      sDownload = CStr(.DownloadCount) & " / <b>" & CStr(.FullDownloadCount) & "</b>"
+    Else
+      sDownload = "<b>" & CStr(.DownloadCount) & "</b>"
     Endif
     
     Y = P
@@ -274,7 +285,7 @@ Static Public Sub PaintStat(hSoft As CSoftware, Optional (bWithSize) As Boolean)
     
     X = Paint.W - P - Paint.Font.RichTextWidth(sDownload) - 1 - $hInstall.W - P \ 2
     
-    Paint.FillRect(X - P, 0, Paint.W - X + P * 2, $hInstall.H + P * 2, Color.TextBackground)
+    Paint.FillRect(X - P, 0, Paint.W - X + P * 2, $hInstall.H + P * 2, iBg)
     Paint.DrawImage($hInstall, X, Y)
     X += $hInstall.W + P \ 2
     Paint.DrawRichText(sDownload, X, Y, Paint.W - X, $hInstall.H, Align.Left)

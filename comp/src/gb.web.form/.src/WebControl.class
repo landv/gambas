@@ -6,7 +6,7 @@ Export
 Create Private
 
 Public Const _IsControl As Boolean = True
-Public Const _Properties As String = "Class,Width{WebCoord},Height{WebCoord},Visible=True,Enabled=True,Tag,Expand,Ignore,Background{Color},Foreground{Color},Tooltip"
+Public Const _Properties As String = "Class,Width{WebCoord},Height{WebCoord},Visible=True,Enabled=True,Tag,Expand,Ignore,Background{Color},Foreground{Color},Tooltip,Font{WebFont}"
 Public Const _Family As String = "WebForm"
 Public Const _DefaultEvent As String = "Render"
 
@@ -65,11 +65,14 @@ Property Foreground As Integer
 '' Return or set if the control has a border.
 Property Border As Boolean
 
-'' Return or set a specific CSS class added to the control.
+'' Return or set the specific CSS classes added to the control.
 Property Class As String
 
 '' Return or set the tooltip displayed when the mouse cursor hovers the control.
 Property Tooltip As String
+
+'' Return or set the specific font of the control.
+Property Font As String
 
 Static Private $iLastId As Integer
 Static Private $iLastFormId As Integer
@@ -445,7 +448,7 @@ Public Sub _InitProperties()
     'WebForm.Print("set " & sProp)
     If Left(sProp) = "#" Then
       If sProp = "#style" Then
-        $hStyle = New WebControlStyle
+        $hStyle = New WebControlStyle As "Style"
         $hStyle._Style = vVal
       ' Else If sProp = "#parent" Then
       '   Parent_Write(FromName(vVal))
@@ -889,5 +892,161 @@ End
 Private Sub Name_Write(Value As String)
 
   SetName(Value)
+
+End
+
+Public Sub AddClass(sClass As String)
+
+  Dim aClass As String[]
+  
+  sClass = Trim(sClass)
+  If Not sClass Then Return
+  
+  aClass = Split($sClass, " ")
+  
+  For Each sClass In Split(sClass, " ", "", True)
+  
+    If aClass.Exist(sClass) Then Continue
+    aClass.Add(sClass)
+    
+  Next
+  
+  Class_Write(aClass.Join(" "))
+  
+End
+
+Public Sub RemoveClass(sClass As String)
+  
+  Dim aClass As String[]
+  Dim iPos As Integer
+  
+  sClass = Trim(sClass)
+  If Not sClass Then Return
+  
+  aClass = Split($sClass, " ")
+  
+  For Each sClass In Split(sClass, " ", "", True)
+  
+    iPos = aClass.Find(sClass)
+    If iPos < 0 Then Continue
+  
+    aClass.Remove(iPos)
+  
+  Next
+  
+  Class_Write(aClass.Join(" "))
+  
+End
+
+Private Function Font_Read() As String
+
+  Dim aFont As New String[]
+  Dim sFamily As String
+  Dim sWeight As String
+  Dim sStyle As String
+  Dim sSize As String
+  Dim sDecoration As String
+
+  If Not $hStyle Then Return
+
+  sFamily = $hStyle["font-family"]
+  sWeight = $hStyle["font-weight"]
+  sStyle = $hStyle["font-style"]
+  sDecoration = $hStyle["font-decoration"]
+  sSize = $hStyle["font-size"]
+
+  If sFamily Then aFont.Add(sFamily)
+  
+  If sWeight = "normal" And If sStyle = "normal" And If sDecoration = "none" Then
+    
+    aFont.Add("normal")
+    
+  Else
+  
+    If sWeight Then
+      If sWeight <> "bold" Then sWeight = "weight:" & sWeight
+      aFont.Add(sWeight)
+    Endif
+    
+    If sStyle Then
+      If sStyle <> "italic" Then sStyle = "style:" & sStyle
+      aFont.Add(sStyle)
+    Endif
+    
+    If sDecoration Then
+      If sDecoration = "underline" Then
+        aFont.Add(sDecoration)
+      Else If sDecoration = "line-through" Then
+        aFont.Add("strikeout")
+      Else
+        aFont.Add("decoration:" & sDecoration)
+      Endif
+    Endif
+    
+  Endif
+  
+  If sSize Then 
+    If Not IsDigit(Left(sSize)) Then sSize = "size:" & sSize
+    aFont.Add(sSize)
+  Endif
+  
+  Return aFont.Join()
+
+End
+
+Private Sub Font_Write(Value As String)
+
+  Dim sElt As String
+
+  For Each sElt In Split(Value)
+    
+    sElt = Trim(sElt)
+    If Not sElt Then Continue
+    
+    If IsDigit(Left(sElt)) Then
+      Style_Read()["font-size"] = sElt
+      Continue
+    Endif
+    
+    If sElt Begins "weight:" Then
+      Style_Read()["font-weight"] = Mid$(sElt, InStr(sElt, ":") + 1)
+      Continue
+    Endif
+    
+    If sElt Begins "style:" Then
+      Style_Read()["font-style"] = Mid$(sElt, InStr(sElt, ":") + 1)
+      Continue
+    Endif
+    
+    If sElt Begins "decoration:" Then
+      Style_Read()["text-decoration"] = Mid$(sElt, InStr(sElt, ":") + 1)
+      Continue
+    Endif
+    
+    If sElt Begins "size:" Then
+      Style_Read()["font-size"] = Mid$(sElt, InStr(sElt, ":") + 1)
+      Continue
+    Endif
+    
+    Select Case sElt
+      Case "normal"
+        Style_Read()["font-weight"] = "normal"
+        Style_Read()["font-style"] = "normal"
+        Style_Read()["text-decoration"] = "none"
+      Case "bold"
+        Style_Read()["font-weight"] = sElt
+      Case "italic"
+        Style_Read()["font-style"] = sElt
+      Case "italic"
+        Style_Read()["font-style"] = sElt
+      Case "underline"
+        Style_Read()["text-decoration"] = sElt
+      Case "strikeout"
+        Style_Read()["text-decoration"] = "line-through"
+      Case Else
+        Style_Read()["font-family"] = sElt
+    End Select
+    
+  Next
 
 End

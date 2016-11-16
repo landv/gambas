@@ -257,6 +257,16 @@ Public Sub IsInstalled() As Boolean
   
 End
 
+Public Sub IsReallyInstalled() As Boolean
+
+  Dim sVersion As String
+  
+  sVersion = GetInstallVersion()
+  If Not sVersion Then Return
+  Return Comp(Version, sVersion, gb.Natural) = 0
+  
+End
+
 Public Sub CanUpgrade() As Boolean
 
   Dim sVersion As String
@@ -416,6 +426,11 @@ Public Sub Install(Optional bJustDownload As Boolean) As String
         hDesktopFile.Save
       Endif
       
+      If Tags.Exist("ide extension", gb.IgnoreCase) Then
+        Try Mkdir File.SetName(sExecDir, ".extensions")
+        Link ".." &/ File.Name(sExecDir) &/ sName & ".gambas" To File.SetName(sExecDir, ".extensions") &/ sName
+      Endif
+
     Else If hProjectInfo.Type = Project.TYPE_LIBRARY Then
       
       sErr = Project.InstallLibrary(sExecDir &/ sName & ".gambas", Vendor, $sVersion)
@@ -429,7 +444,7 @@ Public Sub Install(Optional bJustDownload As Boolean) As String
     Try Mkdir File.SetName(sSrcDir, "example")
     Link ".." &/ File.Name(sSrcDir) &/ sName To File.SetName(sSrcDir, "example") &/ sName
   Endif
-
+  
   Inc InstallAge
   Start
   Return
@@ -469,6 +484,7 @@ Static Public Sub UninstallFromPath(sDir As String) As String
   
   Dim sVendor As String
   Dim sName As String
+  Dim sExecDir As String
   
   Inc Application.Busy
   
@@ -477,14 +493,18 @@ Static Public Sub UninstallFromPath(sDir As String) As String
   
   Exec ["rm", "-rf", sDir] Wait
   
-  Try Kill Desktop.DataDir &/ "gambas3/bin" &/ LCase(sVendor) &/ sName & ".gambas"
-  Try Rmdir Desktop.DataDir &/ "gambas3/bin" &/ LCase(sVendor) 
+  sExecDir = Desktop.DataDir &/ "gambas3/bin" 
+  
+  Try Kill sExecDir &/ LCase(sVendor) &/ sName & ".gambas"
+  Try Rmdir sExecDir &/ LCase(sVendor) 
   Try Kill Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(sVendor) & "-" & sName & ".desktop"
   
   If LCase(sVendor) <> "example" Then
     Try Kill File.SetName(File.Dir(sDir), "example") &/ sName
   Endif
-
+  
+  Try Kill File.SetName(sExecDir, ".extensions") &/ sName
+  
   Dec Application.Busy
   
 Catch

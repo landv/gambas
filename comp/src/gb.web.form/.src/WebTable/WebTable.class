@@ -54,14 +54,70 @@ Private Function Columns_Read() As _WebTableColumns
 
 End
 
-Private Sub PrintBody(iStart As Integer, iEnd As Integer)
-  
-  Dim iRow As Integer
+Private Sub PrintRow(iRow As Integer)
+
   Dim iCol As Integer
   Dim hCol As _WebTableColumn
   Dim hData As WebTableData
   Dim sStyle As String
   Dim NX As Integer
+  
+  If $iMode And If Not $bNoCheck Then
+    Print "<td>";
+    If $iMode = Select.Single Then
+      Print "<input type=\"radio\" name=\""; Me.Name; "\""; 
+    Else
+      Print "<input type=\"checkbox\""; 
+    Endif
+    Print " id=\""; Me.Name & ":" & CStr(iRow); "\""
+    Print Me._GetUpdateJS("onchange", "!" & CStr(iRow), "this.checked"); 
+    If IsSelected(iRow) Then Print " checked";
+    Print ">";
+    Print "</td>";
+  Endif
+  
+  If $bNoHeader Then
+    For iCol = 0 To $hColumns.Count - 1
+      If $hColumns[iCol].Expand Then Inc NX
+    Next
+  Endif
+  
+  For iCol = 0 To $hColumns.Count - 1
+    
+    hCol = $hColumns[iCol]
+    If hCol.Hidden Then Continue
+    
+    hData = New WebTableData
+    Raise Data(iRow, iCol, hData)
+    
+    Print "<td";
+    hCol._PrintAlignment()
+    sStyle = ""
+    If $bNoHeader And If iCol = 0 Then
+      If hCol.Expand Then 
+        Print " width=\""; 100 \ NX; "%\"";
+      Else If hCol.Width Then
+        sStyle &= "min-width:" & hCol.Width & ";"
+      Endif
+    Endif
+    If hData.Background <> Color.Default Then sStyle &= "background-color:" & WebControl._GetColor(hData.Background) & ";"
+    If hData.Foreground <> Color.Default Then sStyle &= "color:" & WebControl._GetColor(hData.Foreground) & ";"
+    If sStyle Then Print " style=\""; sStyle; "\"";
+    Print ">";
+    If hData.Html Then
+      Print hData.Html;
+    Else
+      Print Html(hData.Text);
+    Endif
+    
+  Next
+  
+
+End
+
+Private Sub PrintBody(iStart As Integer, iEnd As Integer)
+  
+  Dim iRow As Integer
   
   Print "<tbody>"
   For iRow = iStart To iEnd
@@ -76,55 +132,8 @@ Private Sub PrintBody(iStart As Integer, iEnd As Integer)
     Endif
     Print ">";
     
-    If $iMode And If Not $bNoCheck Then
-      Print "<td>";
-      If $iMode = Select.Single Then
-        Print "<input type=\"radio\" name=\""; Me.Name; "\""; 
-      Else
-        Print "<input type=\"checkbox\""; 
-      Endif
-      Print " id=\""; Me.Name & ":" & CStr(iRow); "\""
-      Print Me._GetUpdateJS("onchange", "!" & CStr(iRow), "this.checked"); 
-      If IsSelected(iRow) Then Print " checked";
-      Print ">";
-      Print "</td>";
-    Endif
+    PrintRow(iRow)
     
-    If $bNoHeader Then
-      For iCol = 0 To $hColumns.Count - 1
-        If $hColumns[iCol].Expand Then Inc NX
-      Next
-    Endif
-    
-    For iCol = 0 To $hColumns.Count - 1
-      
-      hCol = $hColumns[iCol]
-      If hCol.Hidden Then Continue
-      
-      hData = New WebTableData
-      Raise Data(iRow, iCol, hData)
-      
-      Print "<td";
-      hCol._PrintAlignment()
-      sStyle = ""
-      If $bNoHeader And If iCol = 0 Then
-        If hCol.Expand Then 
-          Print " width=\""; 100 \ NX; "%\"";
-        Else If hCol.Width Then
-          sStyle &= "min-width:" & hCol.Width & ";"
-        Endif
-      Endif
-      If hData.Background <> Color.Default Then sStyle &= "background-color:" & WebControl._GetColor(hData.Background) & ";"
-      If hData.Foreground <> Color.Default Then sStyle &= "color:" & WebControl._GetColor(hData.Foreground) & ";"
-      If sStyle Then Print " style=\""; sStyle; "\"";
-      Print ">";
-      If hData.Html Then
-        Print hData.Html;
-      Else
-        Print Html(hData.Text);
-      Endif
-      
-    Next
     Print "</tr>"
   Next
   

@@ -23,6 +23,10 @@ H1,H2,H3,P {
   margin-bottom: 0.25rem;
 }
 
+IFRAME {
+  border: none;
+}
+
 /*UL, OL {
   padding-left: 2em;
   margin-bottom: 0;
@@ -39,7 +43,7 @@ P:first-child,UL:first-child,OL:first-child {
 .gw-button {
   padding: 0;
   font: inherit;
-  padding: 0.125em 0.25em;
+  padding: 0.125em 0.5em;
   min-height: 2em;
 }
 
@@ -148,13 +152,38 @@ P:first-child,UL:first-child,OL:first-child {
 }
 
 .gw-textbox {
+  display: inline-block;
+  position: relative;
   min-height: 2em;
-  /*box-sizing: border-box; firefox bug on refresh !*/
-  padding: 0 0.25em;
 }
 
 .gw-textbox.gw-noborder {
   border: none;
+}
+
+.gw-textbox INPUT {
+  width: 100%;
+  min-height: 2em;
+  box-sizing: border-box;
+  padding: 0 0.25em;
+  vertical-align: middle;
+}
+
+.gw-textbox-clear {
+  position: absolute;
+  right: 0;
+  display: inline-block;
+  z-index: 2;
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAQ0lEQVQYlWNmYGCwY2BgiGdgYDjIgArqGBgY/iMz6rBI1mETwKYBRRGKJBO6KlwArxV4HckMZTxgYGBoQlJwECp+AADQjhqXl5Xe2AAAAABJRU5ErkJggg==');
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 2rem;
+  width: 2rem;
+  /*margin-left: -2rem;*/
+  /*pointer-events: none;*/
+  vertical-align: middle;
+  border: none;
+  /*overflow: hidden;*/
 }
 
 .gw-combobox {
@@ -551,6 +580,11 @@ P:first-child,UL:first-child,OL:first-child {
   /*border-right: solid 1px #C0C0C0;*/
   padding: 0.1em 0.5em;
   vertical-align: top;
+  border-bottom: solid 1px #F0F0F0;
+}
+
+.gw-table > DIV > TABLE > TBODY > TR:hover {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQYlWNkYGDgYcADmPBJDh8FABV4ABwe4TuyAAAAAElFTkSuQmCC');
 }
 
 /*.gw-table > DIV > TABLE > TBODY > TR > TD:last-child {
@@ -561,9 +595,9 @@ P:first-child,UL:first-child,OL:first-child {
   border-bottom: solid 1px #C0C0C0;
 }*/
 
-.gw-table > DIV > TABLE > TBODY > TR:nth-child(even) {
+/*.gw-table > DIV > TABLE > TBODY > TR:nth-child(even) {
   background-color: #F8F8F8;
-}
+}*/
 
 .gw-table-more {
   position: absolute;

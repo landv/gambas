@@ -1,0 +1,126 @@
+' Gambas class file
+
+Static Private $sFont As String
+
+Static Public Sub Run(Optional sFont As String) As String
+
+  $sFont = sFont
+  If Me.ShowModal() Then Return $sFont
+
+End
+
+Public Sub btnOK_Click()
+
+  $sFont = lblFont.Text
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Private Sub SetFont()
+  
+  Dim aFont As New String[]
+  
+  If Trim(cmbFamily.Text) Then aFont.Add(Trim(cmbFamily.Text))
+  If btnNormal.Value Then aFont.Add("normal")
+  If btnBold.Value Then aFont.Add("bold")
+  If btnItalic.Value Then aFont.Add("italic")
+  If btnUnderline.Value Then
+    aFont.Add("underline")
+  Else If btnStrikeout.Value Then
+    aFont.Add("strikeout")
+  Endif
+  
+  If crdSize.Value Then aFont.Add(crdSize.Value)
+  
+  lblFont.Text = aFont.Join()
+  
+End
+
+
+Public Sub Form_Open()
+
+  Dim sElt As String
+
+  CFamilyWebForm.InitCoord(crdSize)
+
+  For Each sElt In Split($sFont)
+    
+    sElt = Trim(sElt)
+    If Not sElt Then Continue
+    
+    If IsDigit(Left(sElt)) Then
+      crdSize.Value = sElt
+      Continue
+    Endif
+    
+    Select Case sElt
+      Case "regular"
+      Case "bold"
+        btnBold.Value = True
+      Case "italic"
+        btnItalic.Value = True
+      Case "underline"
+        btnUnderline.Value = True
+      Case "strikeout"
+        btnStrikeout.Value = True
+      Case "normal"
+        btnNormal.Value = True
+      Case Else
+        cmbFamily.Text = sElt
+    End Select
+    
+  Next
+
+  SetFont
+
+End
+
+Public Sub btnUnderline_Click()
+
+  If btnUnderline.Value Then btnStrikeout.Value = False
+  SetFont
+
+End
+
+Public Sub btnStrikeout_Click()
+
+  If btnStrikeout.Value Then btnUnderline.Value = False
+  SetFont
+
+End
+
+Public Sub cmbFamily_Change()
+
+  SetFont
+
+End
+
+Public Sub crdSize_Change()
+
+  SetFont
+
+End
+
+Public Sub btnNormal_Click()
+
+  SetFont
+
+End
+
+Public Sub btnBold_Click()
+
+  SetFont
+
+End
+
+Public Sub btnItalic_Click()
+
+  SetFont
+
+End

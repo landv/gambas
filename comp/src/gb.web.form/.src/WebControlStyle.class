@@ -25,6 +25,13 @@ Public Sub IsVoid() As Boolean
   
 End
 
+Public Sub Exist({Property} As String) As Boolean
+  
+  Return _Style.Exist({Property})
+  
+End
+
+
 Public Sub _GetStyleSheet() As String[]
   
   Dim aStyle As New String[]

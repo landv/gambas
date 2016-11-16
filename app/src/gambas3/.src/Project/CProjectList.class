@@ -200,6 +200,7 @@ Private Sub FillWithSoftware()
   Dim sLastDir As String
   Dim hPanel As Panel
   Dim hDrawingArea As DrawingArea
+  Dim sTitle As String
   
   Inc Application.Busy
   $hList.Arrangement = Arrange.None
@@ -225,7 +226,13 @@ Private Sub FillWithSoftware()
         hDrawingArea = New DrawingArea($hList) As "dwgTitle"
         With hDrawingArea
           .Enabled = False
-          .Tag = String.UCaseFirst(File.Name(sDir))
+          sTitle = File.Name(sDir)
+          If sTitle = ".extension" Then
+            sTitle = ("IDE extensions")
+          Else
+            sTitle = String.UCaseFirst(sTitle)
+          Endif
+          .Tag = sTitle
           sGroup = .Tag
           '.Font = Font["Bold"]
           .H = .Font.Height

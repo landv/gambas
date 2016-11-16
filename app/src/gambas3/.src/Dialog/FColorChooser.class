@@ -169,11 +169,7 @@ Private Sub UpdateColor()
   Dim I As Integer
 
   If tabColor.Index = 0 Then
-    If gvwColor.Row = 0 Then
-      sColor = ""
-    Else
-      sColor = $aColorName[gvwColor.Row - 1]
-    Endif
+    Try sColor = $aColorName[gvwColor.Row - 1]
   Else
     sColor = CStr(dlgColor.Value)
   Endif
