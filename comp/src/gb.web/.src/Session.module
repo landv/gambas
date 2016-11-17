@@ -201,7 +201,7 @@ Private Sub Unique_Write(Value As Boolean)
 
   Init
   $bUnique = Value
-  $hManager.CheckUnique
+  If $hManager Then $hManager.CheckUnique
 
 End
 
