@@ -58,7 +58,7 @@ Public Sub _Render()
   
   If $sImage Then 
     Print "<div><img src=\""; Me._GetImageLink($sImage); "\"";
-    If $sText Then Print " class=\"gw-button-image\";"
+    If $sText Then Print " class=\"gw-button-image\"";
     If Me.Height Then
       Print " style=\"max-height:"; Me.Height; "\"";
     Else
