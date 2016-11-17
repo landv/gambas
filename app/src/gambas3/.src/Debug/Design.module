@@ -44,6 +44,7 @@ Private $sProfilePath As String
 Private $sPipeError As String
 Private $hPipeError As File
 Private $hBrowser As Process
+Private $iProcessId As Integer
 
 Public Sub Init()
  
@@ -118,7 +119,12 @@ End
 Public Sub Pause()
 
   If $iState <> STATE_RUNNING Then Return
-  $hProcess.Signal
+  
+  If Project.UseTerminal Then
+    If $iProcessId Then Signal.Send($iProcessId, Signal.SIGUSR1)
+  Else
+    Signal.Send($hProcess.Id, Signal.SIGUSR1)
+  Endif
 
 End
 
@@ -215,8 +221,6 @@ Public Sub Debug_Read(Data As String)
 
   If Not Data Then Return 
   
-  'Debug Data
-  
   If Data = "!" Then 
     Signal
     Return 
@@ -239,11 +243,13 @@ Public Sub Debug_Read(Data As String)
     
       ' Information, printed each time the debugger stops
       ' Format is: 
-      '   [0] * 
+      '   [0] *[pid] 
       '   [1] Error message
       '   [2] Stack trace
       '   [3] Local variables
       '   [4] Current object
+    
+      If $iProcessId = 0 Then Try $iProcessId = CInt(Scan(aData[0], "?[[]*]")[0])
     
       aPos = Split(Trim(aData[2]), " ")
   
@@ -789,6 +795,7 @@ Private Sub Start(sCmd As String)
 
   'PRINT "EXEC "; "gbx -gs " & File.Dir(Project.Path) & " -- " & Project.Arguments
 
+  $iProcessId = 0
   $sCmdStart = ""
   ' FDebugInfo.ClearBreakpoint
 

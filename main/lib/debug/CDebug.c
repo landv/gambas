@@ -286,7 +286,7 @@ GB_DESC CDebugDesc[] =
   GB_STATIC_METHOD("GetSignal", "s", Debug_GetSignal, "(Signal)i"),
 
   GB_STATIC_METHOD("Write", NULL, CDEBUG_write, "(Data)s"),
-
+  
   GB_EVENT("Read", NULL, "(Data)s", &EVENT_Read),
 
   GB_END_DECLARE

@@ -192,6 +192,13 @@ BEGIN_METHOD_VOID(Signal_exit)
 
 END_METHOD
 
+BEGIN_METHOD(Signal_Send, GB_INTEGER pid; GB_INTEGER sig)
+
+	if (kill(VARG(pid), VARG(sig)))
+		GB.Error("Unable to send signal: &1", strerror(errno));
+
+END_METHOD
+
 
 GB_DESC CSignalHandlerDesc[] =
 {
@@ -206,7 +213,7 @@ GB_DESC CSignalHandlerDesc[] =
 
 GB_DESC CSignalDesc[] =
 {
-	GB_DECLARE_VIRTUAL("Signal"),
+	GB_DECLARE_STATIC("Signal"),
 
 	GB_CONSTANT("SIGHUP", "i", SIGHUP),
 	GB_CONSTANT("SIGINT", "i", SIGINT),
@@ -246,6 +253,8 @@ GB_DESC CSignalDesc[] =
 	GB_STATIC_METHOD("_exit", NULL, Signal_exit, NULL),
 	
 	GB_STATIC_METHOD("_get", ".SignalHandler", Signal_get, "(Signal)i"),
+	
+	GB_STATIC_METHOD("Send", NULL, Signal_Send, "(Process)i(Signal)i"),
 
 	GB_END_DECLARE
 };
