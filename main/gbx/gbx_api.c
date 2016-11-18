@@ -215,8 +215,8 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_ReleaseValue,
 	(void *)COMPARE_variant,
 
-	(void *)DATE_split,
-	(void *)DATE_make,
+	(void *)GB_SplitDate,
+	(void *)GB_MakeDate,
 	(void *)DATE_from_time,
 	(void *)DATE_timer,
 
@@ -2061,6 +2061,17 @@ bool GB_Conv(GB_VALUE *arg, GB_TYPE type)
 		VALUE_conv((VALUE *)arg, (GB_TYPE)type);
 	}
 	END_CATCH_ERROR
+}
+
+
+DATE_SERIAL *GB_SplitDate(GB_VALUE *arg)
+{
+	return DATE_split((VALUE *)arg);
+}
+
+bool GB_MakeDate(DATE_SERIAL *date, GB_DATE *arg)
+{
+	return DATE_make(date, (VALUE *)arg);
 }
 
 

@@ -28,6 +28,7 @@
 #include "gbx_type.h"
 #include "gbx_stream.h"
 #include "gb_hash.h"
+#include "gbx_date.h"
 
 bool GB_GetInterface(const char *library, int version, void *iface);
 void *GB_Hook(int type, void *hook);
@@ -180,6 +181,9 @@ int GB_StringLength(const char *str);
 bool GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst);
 
 bool GB_Conv(GB_VALUE *, GB_TYPE);
+
+DATE_SERIAL *GB_SplitDate(GB_VALUE *);
+bool GB_MakeDate(DATE_SERIAL *, GB_DATE *);
 
 bool GB_NumberToString(int flag, double value, const char *format, char **str, int *len);
 

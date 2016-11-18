@@ -134,7 +134,7 @@ void DATE_init_local(void)
 }
 
 
-DATE_SERIAL *DATE_split(VALUE *value)
+DATE_SERIAL *DATE_split_local(VALUE *value, bool local)
 {
 	static int last_nday, last_nmsec;
 	static DATE_SERIAL last_date = { 0 };
@@ -145,7 +145,7 @@ DATE_SERIAL *DATE_split(VALUE *value)
 	nday = value->_date.date;
 	nmsec = value->_date.time;
 
-	if (nday > 0)
+	if (local && nday > 0)
 		nmsec += DATE_get_timezone() * 1000;
 
 	if (nmsec < 0)
@@ -207,7 +207,7 @@ DATE_SERIAL *DATE_split(VALUE *value)
 }
 
 
-bool DATE_make(DATE_SERIAL *date, VALUE *val)
+bool DATE_make_local(DATE_SERIAL *date, VALUE *val, bool local)
 {
 	short year;
 	int nday;
@@ -226,16 +226,19 @@ bool DATE_make(DATE_SERIAL *date, VALUE *val)
 		year = date_to_julian_year(date->year);
 
 		nday = year * 365;
-		year--;
-		nday += (year >>= 2);
-		nday -= (year /= 25);
-		nday += year >> 2;
+		if (year > 1)
+		{
+			year--;
+			nday += (year >>= 2);
+			nday -= (year /= 25);
+			nday += year >> 2;
+		}
 
 		nday += days_in_year[date_is_leap_year(date->year)][(short)date->month] + date->day;
 
 		/*nday -= DATE_NDAY_BC;*/
 
-		timezone = TRUE;
+		timezone = local;
 	}
 
 	val->_date.date = nday;
@@ -322,7 +325,7 @@ int DATE_to_string(char *buffer, VALUE *value)
 	if (value->_date.date == 0 && value->_date.time == 0)
 		return 0;
 
-	date = DATE_split(value);
+	date = DATE_split_local(value, FALSE);
 
 	if (value->_date.date == 0)
 		len = sprintf(buffer,"%02d:%02d:%02d", date->hour, date->min, date->sec);
@@ -571,7 +574,7 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 
 _OK:
 
-	if (DATE_make(&date, val))
+	if (DATE_make_local(&date, val, local))
 		return TRUE;
 
 	if (!has_date)

@@ -83,8 +83,13 @@ enum {
 void DATE_init(void);
 void DATE_init_local(void);
 int DATE_get_timezone(void);
-DATE_SERIAL *DATE_split(VALUE *value);
-bool DATE_make(DATE_SERIAL *date, VALUE *val);
+
+DATE_SERIAL *DATE_split_local(VALUE *value, bool local);
+#define DATE_split(_value) DATE_split_local(_value, TRUE)
+
+bool DATE_make_local(DATE_SERIAL *date, VALUE *val, bool local);
+#define DATE_make(_date, _value) DATE_make_local(_date, _value, TRUE)
+
 void DATE_from_time(time_t time, int usec, VALUE *val);
 void DATE_now(VALUE *val);
 
