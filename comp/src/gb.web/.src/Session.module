@@ -42,7 +42,7 @@ Private Sub CreateSession()
   
   Main.Log("CreateSession: " & $sId)
   Response.SetCookie("GBSESSIONID", $sId, "", GetCookiePath(),, True)
-  
+
 End
 
 
@@ -198,7 +198,6 @@ End
 
 Private Sub Unique_Write(Value As Boolean)
 
-  Init
   $bUnique = Value
   If $hManager Then $hManager.CheckUnique
 
