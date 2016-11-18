@@ -170,7 +170,7 @@ Public Sub CheckUnique()
     If Error Then Return
     
     Do
-      aKill = Dir(sDir, sPrefix & ":*")
+      aKill = Dir(sDir, sPrefix & "_*")
       If aKill.Count = 0 Then Break
       For Each sKill In aKill
         Try Kill sDir &/ sKill

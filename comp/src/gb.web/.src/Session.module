@@ -43,7 +43,6 @@ Private Sub CreateSession()
   Main.Log("CreateSession: " & $sId)
   Response.SetCookie("GBSESSIONID", $sId, "", GetCookiePath(),, True)
   
-  
 End
 
 
