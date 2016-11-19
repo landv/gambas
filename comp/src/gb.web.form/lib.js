@@ -56,6 +56,7 @@ gw = {
   uploads: {},
   autocompletion: [],
   focus: false,
+  lock: 0,
   
   log: function(msg)
   {
@@ -174,13 +175,48 @@ gw = {
     //  gw.active = document.activeElement.id;
   },
   
+  wait: function(lock) {
+    var elt;
+    
+    if (lock)
+    {
+      if (gw.lock == 0)
+      {
+        elt = $('gw-lock');
+        elt.style.zIndex = 1000;
+        elt.style.display = 'block';
+        
+        gw.lock_id = setTimeout(function() {
+          $('gw-lock').style.opacity = '1';
+          }, 500);
+      }
+      
+      gw.lock++;
+    }
+    else
+    {
+      gw.lock--;
+      if (gw.lock == 0)
+      {
+        if (gw.lock_id)
+        {
+          clearTimeout(gw.lock_id);
+          gw.lock_id = undefined;
+        }
+        elt = $('gw-lock');
+        elt.style.display = 'none';
+        elt.style.opacity = '0';
+      }
+    }
+  },
+  
   answer: function(xhr, after)
   {
     if (xhr.readyState == 4)
     {
       if (xhr.status == 200 && xhr.responseText)
       {
-        gw.log('==> ' + xhr.gw_command);
+        gw.log('==> ' + xhr.gw_command + '...');
         
         gw.focus = false;
         var save = gw.saveFocus();
@@ -211,14 +247,18 @@ gw = {
         if (!gw.focus)
           gw.restoreFocus(save);
         
-        if (after)
-          after();
-        
-        gw.log('answer done');
       }
+      
+      if (after)
+        after();
+        
+      gw.log('==> ' + xhr.gw_command + ' done.');
       
       gw.commands.splice(0, 2);
       gw.sendNewCommand();
+      
+      if (xhr.gw_command[4] == undefined)
+        gw.wait(false);
     }
   },
   
@@ -241,6 +281,9 @@ gw = {
     
       if (command)
       {
+        if (command[4] == undefined)
+          gw.wait(true);
+          
         xhr = new XMLHttpRequest();
         xhr.gw_command = command;
         xhr.open('GET', $root + '/x?c=' + encodeURIComponent(JSON.stringify(command)), true);
@@ -265,14 +308,14 @@ gw = {
       gw.sendNewCommand();
   },
 
-  raise: function(id, event, args)
+  raise: function(id, event, args, no_wait)
   {
-    gw.send(['raise', id, event, args]);
+    gw.send(['raise', id, event, args, no_wait]);
   },
   
   update: function(id, prop, value, after)
   {
-    gw.send(['update', id, prop, value], after);
+    gw.send(['update', id, prop, value, true], after);
   },
   
   command: function(action)
@@ -360,7 +403,7 @@ gw = {
   addTimer: function(id, delay)
   {
     gw.removeTimer(id);
-    gw.timers[id] = setInterval(function() { gw.raise(id, 'timer'); }, delay);
+    gw.timers[id] = setInterval(function() { gw.raise(id, 'timer', [], true); }, delay);
   },
   
   removeTimer: function(id)

@@ -285,6 +285,13 @@ Public Sub Render()
   
   Print "<div id=\"gw-preload\" style=\"display:none;\"></div>"
   Print "<div id=\"gw-modal\" onmousedown=\"gw.window.onDownModal();\"></div>"
+  Print "<div id=\"gw-lock\">"
+    "<div id=\"gw-lock-animation\">"
+    "<div id=\"gw-lock-1\" class=\"gw-lock-circle\"></div>"
+    "<div id=\"gw-lock-2\" class=\"gw-lock-circle\"></div>"
+    "<div id=\"gw-lock-3\" class=\"gw-lock-circle\"></div>"
+    "</div>"
+    "</div>"
   
   Me._BeforeRender()
   Me._Render()
@@ -732,13 +739,13 @@ End
 
 Public Sub _Upload(Id As String)
 
-  Dim hCtrl As Object
+  Dim hCtrl As WebUploadArea
   Dim iOldInExec As Integer = _InExec
   Dim sErr As String
   
   Inc _InExec
   
-  hCtrl = WebControl.FromName(Id)
+  Try hCtrl = WebControl.FromName(Id)
   If hCtrl Then hCtrl._UploadFinish
       
   _InExec = iOldInExec

@@ -37,19 +37,18 @@ End
 
 Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   
-  Dim hChild As WebControl
-  
   If sProp = "#progress" Then
     
-    If Me.Progress = 0 Then
-      For Each hChild In Me.Children
-        hChild.Enabled = False
-      Next
+    If vValue = 0 Then
       Me.Enabled = False
     Endif
-    
-    Me.Progress = vValue
-    Raise Progress
+    If Not Me.Enabled Then
+      Me.Progress = vValue
+      Raise Progress
+      If $fProgress = 1 Then
+        Me.Enabled = True
+      Endif
+    Endif
     
   Endif
   
@@ -101,17 +100,6 @@ Private Sub GetUploadDir() As String
 
 End
 
-Private Sub Finish()
-
-  Dim hChild As WebControl
-
-  For Each hChild In Me.Children
-    hChild.Enabled = True
-  Next
-  Me.Enabled = True
-  
-End
-
 Public Sub _UploadFinish()
 
   Dim sPath As String
@@ -121,8 +109,8 @@ Public Sub _UploadFinish()
   'Progress_Write(1)
   'Raise Progress
   
-  Session.Load
-  Me._InitProperties
+  'Session.Load
+  'Me._InitProperties
   
   If Me["path"] Then Try Kill Me["path"]
   Me["file"] = ""
@@ -141,9 +129,7 @@ Public Sub _UploadFinish()
     Break
   Next
   
-  Finish
-  
-  'Progress_Write(0)
+  Me.Enabled = True
   
 End
 
@@ -181,7 +167,7 @@ End
 Public Sub Abort()
   
   WebForm._AddReplyBefore("gw.file.abort(" & JS(Me.Name) & ")")  
-  Finish
+  Me.Enabled = True
   
 End
 
