@@ -27,6 +27,7 @@ End
 Public Sub WebTable1_Data(Row As Integer, Column As Integer, Data As WebTableData)
 
   Data.Text = "This is the " & CStr(Row) & ":" & CStr(Column) & " cell"
+  Data.Text = 1 / 0
 
 End
 

@@ -538,6 +538,11 @@ Public Sub _RefreshReply() As Boolean
     
   Endif
   
+Catch
+  
+  Output To Default
+  Error.Propagate()
+  
 End
 
 Public Sub _GetEventJS(sProp As String, sEvent As String, Optional sArg As String) As String

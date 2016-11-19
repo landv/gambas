@@ -70,6 +70,7 @@ Static Public Sub Main()
   Dim aLib As String[]
   Dim sFile As String
   Dim sKey As String
+  Dim sErr As String
   
   Try Object.Call(Application.Startup, "HandleRequest")
   If Response.Done Then Return
@@ -188,6 +189,18 @@ NOT_FOUND:
   Response.Status = "404 NotFound"
   Response.Begin
   Print "<html><body><h1>404 NotFound</h1></body></html>"
+  Response.End
+  
+Catch
+  
+  sErr = Error.Text & "\n" & Error.Backtrace.Join(" ")
+  
+  Response.Cancel
+  Response.Begin
+  Print "<html><body><script type\"text/javascript\">"
+  Print "console.log("; JS(sErr); ");"
+  Print "alert("; JS(sErr); ");"
+  Print "</script></body></html>"
   Response.End
   
 End
@@ -432,6 +445,7 @@ Public Sub _Exec(aCmd As Variant[])
   
   _InExec = iOldInExec
   
+  Response.Buffered = True
   Response.ContentType = "text/javascript;charset=utf-8"
   Response.Begin
   PrintJavascript
@@ -452,6 +466,7 @@ Catch
   sErr = Error.Text & "\n" & Error.Backtrace.Join(" ")
   _InExec = iOldInExec
   
+  Response.Cancel
   Response.Begin
   Print "console.log("; JS(aCmd); ");"
   Print "console.log("; JS(sErr); ");"

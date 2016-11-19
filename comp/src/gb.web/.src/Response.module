@@ -42,6 +42,7 @@ Public Sub Redirect(URL As String)
     AddHeader("Location", Main.GetAbsoluteURL(URL))
   Endif
   
+  Response.Buffered = False
   Response.Begin
   Response.End
   
@@ -98,6 +99,36 @@ Public Sub Begin()
   
 End
 
+Private Sub CloseTempFile()
+
+  Output To Default 
+  File.Out.EndOfLine = $hFile.EndOfLine
+  Close #$hFile
+  $hFile = Null
+  
+End
+
+Public Sub Cancel()
+  
+  If Not $bBuffered Then
+    If $iBegin Then Error.Raise("Response has been started")
+    Return
+  Endif
+  
+  If $bDone Then Error.Raise("Response has been sent")
+  
+  If $iBegin Then
+    $iBegin = 0
+    Try CloseTempFile
+    Try Kill Temp$("response")
+    $sHeader = ""
+    $sStatus = ""
+    $sContentType = "text/html;charset=utf-8"
+  Endif
+  
+End
+
+
 Private Sub ShouldCompress() As Boolean
   
   Return $sContentType Begins "text/"
@@ -131,9 +162,7 @@ Public Sub End()
 
   If $bBuffered Then
   
-    Output To Default 
-    File.Out.EndOfLine = $hFile.EndOfLine
-    Close #$hFile
+    CloseTempFile
     
     sFile = Temp$("response")
     
@@ -237,6 +266,7 @@ End
 Public Sub SendFile(Path As String, Optional ContentType As String)
   
   Dim sBuffer As String
+  Dim hFile As File
 
   $bDone = True
 
@@ -252,15 +282,15 @@ Public Sub SendFile(Path As String, Optional ContentType As String)
   Print "Content-Type: "; ContentType
   Print $sHeader;
   
-  $hFile = Open Path For Read 
+  hFile = Open Path For Read 
 
-  Print "Content-length: "; Lof($hFile)
+  Print "Content-length: "; Lof(hFile)
   Print
-  While Not Eof($hFile)
-    sBuffer = Read #$hFile, -1024
+  While Not Eof(hFile)
+    sBuffer = Read #hFile, -1024
     Print sBuffer;
   Wend
-  Close #$hFile
+  Close #hFile
   
 End
 
