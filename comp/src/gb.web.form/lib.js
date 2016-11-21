@@ -254,11 +254,11 @@ gw = {
         
       gw.log('==> ' + xhr.gw_command + ' done.');
       
-      gw.commands.splice(0, 2);
-      gw.sendNewCommand();
-      
       if (xhr.gw_command.length < 5 || xhr.gw_command[4] == undefined)
         gw.wait(false);
+        
+      gw.commands.splice(0, 2);
+      gw.sendNewCommand();
     }
   },
   
