@@ -216,7 +216,7 @@ gw = {
     {
       if (xhr.status == 200 && xhr.responseText)
       {
-        xhr_gw_command && gw.log('==> ' + xhr.gw_command + '...');
+        xhr.gw_command && gw.log('==> ' + xhr.gw_command + '...');
         
         gw.focus = false;
         var save = gw.saveFocus();
@@ -252,7 +252,7 @@ gw = {
       if (after)
         after();
         
-      xhr_gw_command && gw.log('==> ' + xhr.gw_command + ' done.');
+      xhr.gw_command && gw.log('==> ' + xhr.gw_command + ' done.');
       
       if (xhr.gw_command && xhr.gw_command.length < 5 || xhr.gw_command[4] == undefined)
         gw.wait(false);
