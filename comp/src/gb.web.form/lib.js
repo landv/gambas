@@ -216,7 +216,7 @@ gw = {
     {
       if (xhr.status == 200 && xhr.responseText)
       {
-        gw.log('==> ' + xhr.gw_command + '...');
+        xhr_gw_command && gw.log('==> ' + xhr.gw_command + '...');
         
         gw.focus = false;
         var save = gw.saveFocus();
@@ -252,9 +252,9 @@ gw = {
       if (after)
         after();
         
-      gw.log('==> ' + xhr.gw_command + ' done.');
+      xhr_gw_command && gw.log('==> ' + xhr.gw_command + ' done.');
       
-      if (xhr.gw_command.length < 5 || xhr.gw_command[4] == undefined)
+      if (xhr.gw_command && xhr.gw_command.length < 5 || xhr.gw_command[4] == undefined)
         gw.wait(false);
         
       gw.commands.splice(0, 2);
@@ -1115,7 +1115,7 @@ gw = {
         },
         false);
       
-      xhr.gw_command = 'upload ' + id;
+      xhr.gw_command = ['upload', id];
       xhr.gw_id = id;
         
       xhr.open("POST", $root + '/u', true);  
