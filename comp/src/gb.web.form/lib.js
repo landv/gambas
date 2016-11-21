@@ -257,7 +257,7 @@ gw = {
       gw.commands.splice(0, 2);
       gw.sendNewCommand();
       
-      if (xhr.gw_command[4] == undefined)
+      if (xhr.gw_command.length < 5 || xhr.gw_command[4] == undefined)
         gw.wait(false);
     }
   },
@@ -281,7 +281,7 @@ gw = {
     
       if (command)
       {
-        if (command[4] == undefined)
+        if (command.length < 5 || command[4] == undefined)
           gw.wait(true);
           
         xhr = new XMLHttpRequest();
@@ -1062,7 +1062,7 @@ gw = {
       gw.update(xhr.gw_id, '#progress', 1, function() {
         gw.answer(xhr); 
         gw.uploads[xhr.gw_id] = undefined;
-        gw.raise(xhr.gw_id, 'upload');
+        gw.raise(xhr.gw_id, 'upload', [], true);
         xhr.gw_id = undefined;
         });
     },
