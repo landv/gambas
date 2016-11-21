@@ -254,7 +254,7 @@ gw = {
         
       xhr.gw_command && gw.log('==> ' + xhr.gw_command + ' done.');
       
-      if (xhr.gw_command && xhr.gw_command.length < 5 || xhr.gw_command[4] == undefined)
+      if (xhr.gw_command && (xhr.gw_command.length < 5 || xhr.gw_command[4] == undefined))
         gw.wait(false);
         
       gw.commands.splice(0, 2);
