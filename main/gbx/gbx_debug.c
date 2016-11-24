@@ -544,6 +544,7 @@ void DEBUG_enum_keys(void *object, GB_DEBUG_ENUM_CB cb)
 	char *save_key;
 	int save_lkey;
 	GB_VALUE value;
+	void *prop_ob;
 
 	old = EXEC_enum;
 
@@ -553,14 +554,16 @@ void DEBUG_enum_keys(void *object, GB_DEBUG_ENUM_CB cb)
 		class = (CLASS *)object;
 		object = NULL;
 	}
+	
+	prop_ob = object ? object : class;
 
 	TRY
 	{
-		GB_GetProperty(object, "Key");
+		GB_GetProperty(prop_ob, "Key");
 		SUBR_get_string_len(&TEMP, &save_key, &save_lkey);
 		(*cb)(save_key, save_lkey);
 
-		cenum = CENUM_create(object ? object : class);
+		cenum = CENUM_create(prop_ob);
 
 		EXEC_enum = cenum;
 		EXEC_special(SPEC_FIRST, class, object, 0, TRUE);
@@ -584,7 +587,7 @@ void DEBUG_enum_keys(void *object, GB_DEBUG_ENUM_CB cb)
 				break;
 			}
 
-			GB_GetProperty(object, "Key");
+			GB_GetProperty(prop_ob, "Key");
 
 			SUBR_get_string_len(&TEMP, &str, &len);
 			(*cb)(str, len);
@@ -596,7 +599,7 @@ void DEBUG_enum_keys(void *object, GB_DEBUG_ENUM_CB cb)
 		value._string.value.addr = save_key;
 		value._string.value.start = 0;
 		value._string.value.len = save_lkey;
-		GB_SetProperty(object, "Key", &value);
+		GB_SetProperty(prop_ob, "Key", &value);
 
 		if (err)
 			OBJECT_UNREF(cenum);
