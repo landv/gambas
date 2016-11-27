@@ -61,8 +61,8 @@
 
 #include "gbx_c_process.h"
 
-#define DEBUG_ME
-#define DEBUG_CHILD
+//#define DEBUG_ME
+//#define DEBUG_CHILD
 
 char *CPROCESS_shell = NULL;
 
