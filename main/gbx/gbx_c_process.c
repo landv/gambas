@@ -61,8 +61,8 @@
 
 #include "gbx_c_process.h"
 
-//#define DEBUG_ME
-//#define DEBUG_CHILD
+#define DEBUG_ME
+#define DEBUG_CHILD
 
 char *CPROCESS_shell = NULL;
 
@@ -308,7 +308,7 @@ static void throw_last_child_error()
 static void stop_process_after(CPROCESS *_object)
 {
 	STREAM *stream;
-	bool do_exit_process = FALSE;
+	bool do_exit_process = THIS->in >= 0;
 
 	#ifdef DEBUG_ME
 	fprintf(stderr, "stop_process_after: %p  out = %d err = %d\n", _object, THIS->out, THIS->err);
