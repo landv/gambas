@@ -7,7 +7,7 @@ Inherits WebContainer
 
 Public Const _IsForm As Boolean = True
 Public Const _HiddenControls As String = "WebControl,WebForm,WebWindow,Timer"
-Public Const _Properties As String = "*,Title,Resizable"
+Public Const _Properties As String = "*,Title,Resizable,Persistent"
 Public Const _DefaultEvent As String = "Open"
 
 Static Property Debug As Boolean
@@ -34,6 +34,7 @@ Property Width, W As String
 Property Height, H As String
 Property Read Popup As Boolean
 Property Read PopupParent As WebControl
+Property Persistent As Boolean
 
 Static Public _DisableRefresh As Integer
 Static Public _HasRefresh As Boolean
@@ -51,6 +52,7 @@ Private $sWidth As String
 Private $sHeight As String
 
 Private $hWindowContainer As WebContainer
+Private $bPersistent As Boolean
 'Private $bCentered As Boolean
 
 Static Public Sub _init()
@@ -452,12 +454,20 @@ Public Sub Close(Optional ReturnValue As Variant)
     hWindow = WebControl.FromId(Me._Window)
     With hWindow
       .Close(ReturnValue)
-      .Delete
+      If $bPersistent Then 
+        .Hide
+      Else
+        .Delete
+      Endif
     End With
     
   Else
     
-    Me.Delete
+    If $bPersistent Then
+      Me.Hide
+    Else
+      Me.Delete
+    Endif
     _AddReply("window.location.reload(true)")
     
   Endif
@@ -478,11 +488,27 @@ End
 '   
 ' End
 
+Public Sub Hide()
+  
+  Dim hWindow As WebControl
+  
+  If _Window = 0 Then Return
+  
+  hWindow = WebControl.FromId(_Window)
+  If hWindow Then hWindow.Hide
+  
+End
+
+
 Public Sub Show()
   
   Dim hWindow As WebWindow
   
-  If _Window Then Return
+  If _Window Then 
+    hWindow = WebControl.FromId(_Window)
+    If hWindow Then hWindow.Show
+    Return
+  Endif
   
   hWindow = New WebWindow(WebForm._Current._GetWindowContainer())
   hWindow.Child = Me
@@ -776,4 +802,17 @@ Static Private Sub DownloadFile(sKey As String) As Boolean
   Response.SendFile(aDownload[0], aDownload[1])
   If aDownload[2] Then Try Kill aDownload[0]
   
+End
+
+Private Function Persistent_Read() As Boolean
+
+  Return $bPersistent
+
+End
+
+Private Sub Persistent_Write(Value As Boolean)
+
+  $bPersistent = Value
+  Me._SetProperty("Persistent", Value)
+
 End

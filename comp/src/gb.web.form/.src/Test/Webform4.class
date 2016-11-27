@@ -2,7 +2,7 @@
 
 Public Sub _new()
   
-  'WebForm.Debug = True
+  WebForm.Debug = True
   
 End
 
@@ -27,3 +27,15 @@ Public Sub WebUploadArea1_Upload()
 
 End
 
+
+Public Sub WebButton1_Click()
+
+  Webform5.Show
+
+End
+
+Public Sub WebButton2_Click()
+
+  Webform5.Hide
+
+End

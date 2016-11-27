@@ -446,7 +446,6 @@ END_PROPERTY
 
 //---- MediaPlayer -------------------------------------------------------
 
-DECLARE_EVENT(EVENT_AboutToFinish);
 DECLARE_EVENT(EVENT_AudioChanged);
 DECLARE_EVENT(EVENT_SubtitlesChanged);
 DECLARE_EVENT(EVENT_VideoChanged);
@@ -454,7 +453,13 @@ DECLARE_EVENT(EVENT_VideoChanged);
 
 static void cb_about_to_finish(void *playbin, void *_object)
 {
-	MEDIA_raise_event(THIS, EVENT_AboutToFinish);
+	g_mutex_lock(&THIS->next_uri_mutex);
+	if (THIS->next_uri)
+	{
+		set_string(THIS, "uri", THIS->next_uri);
+		GB.StoreString(NULL, &THIS->next_uri);
+	}
+	g_mutex_unlock(&THIS->next_uri_mutex);
 }
 
 static void cb_audio_changed(void *playbin, void *_object)
@@ -479,12 +484,23 @@ static void cb_video_changed(void *playbin, void *_object)
 
 BEGIN_METHOD_VOID(MediaPlayer_new)
 
+	g_mutex_init(&THIS->next_uri_mutex);
+
 	g_signal_connect(ELEMENT, "about-to-finish", G_CALLBACK(cb_about_to_finish), THIS);
 	g_signal_connect(ELEMENT, "audio-changed", G_CALLBACK(cb_audio_changed), THIS);
 	g_signal_connect(ELEMENT, "text-changed", G_CALLBACK(cb_text_changed), THIS);
 	g_signal_connect(ELEMENT, "video-changed", G_CALLBACK(cb_video_changed), THIS);
 	//g_signal_connect(ELEMENT, "source-setup", G_CALLBACK(cb_source_setup), THIS);
 
+END_METHOD
+
+BEGIN_METHOD_VOID(MediaPlayer_free)
+
+	g_mutex_lock(&THIS->next_uri_mutex);
+	GB.StoreString(NULL, &THIS->next_uri);
+	g_mutex_unlock(&THIS->next_uri_mutex);
+	g_mutex_clear(&THIS->next_uri_mutex);
+	
 END_METHOD
 
 BEGIN_PROPERTY(MediaPlayer_ConnectionSpeed)
@@ -508,7 +524,21 @@ BEGIN_PROPERTY(MediaPlayer_URL)
 		g_free(charset);
 	}
 	else
+	{
+		MEDIA_stop_pipeline(THIS_CONTROL);
 		set_string(THIS, "uri", GB.ToZeroString(PROP(GB_STRING)));
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(MediaPlayer_NextURL)
+
+	g_mutex_lock(&THIS->next_uri_mutex);
+	if (READ_PROPERTY)
+		GB.ReturnString(THIS->next_uri);
+	else
+		GB.StoreString(PROP(GB_STRING), &THIS->next_uri);
+	g_mutex_unlock(&THIS->next_uri_mutex);
 
 END_PROPERTY
 
@@ -601,6 +631,7 @@ GB_DESC MediaPlayerDesc[] =
 	GB_INHERITS("MediaPipeline"),
 	
 	GB_METHOD("_new", NULL, MediaPlayer_new, NULL),
+	GB_METHOD("_free", NULL, MediaPlayer_free, NULL),
 	
 	GB_PROPERTY_SELF("Audio", ".MediaPlayer.Audio"),
 	GB_PROPERTY_SELF("Video", ".MediaPlayer.Video"),
@@ -612,9 +643,9 @@ GB_DESC MediaPlayerDesc[] =
 	GB_PROPERTY("ProgressiveDownload", "b", MediaPlayer_ProgressiveDownload),
 	GB_PROPERTY("Buffering", "b", MediaPlayer_Buffering),
 	GB_PROPERTY("URL", "s", MediaPlayer_URL),
+	GB_PROPERTY("NextURL", "s", MediaPlayer_NextURL),
 	GB_PROPERTY_READ("Input", "MediaControl", MediaPlayer_Input),
 	
-	GB_EVENT("AboutToFinish", NULL, NULL, &EVENT_AboutToFinish),
 	GB_EVENT("AudioChanged", NULL, NULL, &EVENT_AudioChanged),
 	GB_EVENT("SubtitlesChanged", NULL, NULL, &EVENT_SubtitlesChanged),
 	GB_EVENT("VideoChanged", NULL, NULL, &EVENT_VideoChanged),

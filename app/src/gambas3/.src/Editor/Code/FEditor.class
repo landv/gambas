@@ -3406,6 +3406,8 @@ Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As S
         sType = GetSymbolType("ME")
       Else If aSym[I] = "SUPER" Then
         sType = GetSymbolType("SUPER")
+      Else If aSym[I] = "LAST" Then
+        sType = "o"
       Endif
       
     Else If aType[I] = Highlight.Symbol Then

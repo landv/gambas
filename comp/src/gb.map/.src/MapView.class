@@ -144,7 +144,7 @@ Public Sub View_MouseWheel()
     _ZoomUp(Mouse.X, Mouse.Y)
     $hMap.Center = Geo.PixelToMapPoint(Point($hMap.PixelBox.X + Mouse.X, $hMap.PixelBox.Y + Mouse.Y), $hmap.Zoom)
   Else
-    $hMap.Center = Geo.PixelToMapPoint(Point($hMap.PixelBox.X - Mouse.X, $hMap.PixelBox.Y - Mouse.Y), $hmap.Zoom)
+    '$hMap.Center = Geo.PixelToMapPoint(Point($hMap.PixelBox.X - Mouse.X, $hMap.PixelBox.Y - Mouse.Y), $hmap.Zoom)
     _ZoomDown(Mouse.X, Mouse.Y)
   Endif
   

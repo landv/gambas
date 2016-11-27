@@ -4,91 +4,83 @@
   MoveScaled(0,0,123,92)
   Arrangement = Arrange.Vertical
   { panToolBar ToolBar
-    MoveScaled(2,1,108,4)
+    MoveScaled(1,1,116,4)
     Key = "connection"
     Text = ("Connection editor")
     Separator = True
     { btnTitle ToolButton
       MoveScaled(0,0,4,4)
       Action = ".database"
-      AutoResize = True
       Picture = Picture["img/16/database.png"]
     }
+    { btnShowSystem ToolButton
+      MoveScaled(4,0,4,4)
+      ToolTip = ("Show system tables")
+      Action = ".show-system"
+      Picture = Picture["img/16/system-table.png"]
+      Toggle = True
+    }
     { Separator3 Separator
-      MoveScaled(4,0,0,4)
+      MoveScaled(8,0,0,4)
+    }
+    { btnNewTable ToolButton
+      MoveScaled(9,0,8,4)
+      ToolTip = ("New table")
+      AutoResize = True
+      Text = ("New table") & "..."
+      Picture = Picture["icon:/small/new"]
     }
     { btnSave ToolButton mnuSave
       Name = "btnSave"
-      MoveScaled(5,0,4,4)
+      MoveScaled(17,0,4,4)
       ToolTip = ("Save")
       Action = ".save"
       Picture = Picture["icon:/small/save"]
     }
     { btnReload ToolButton mnuReload
       Name = "btnReload"
-      MoveScaled(10,0,4,4)
+      MoveScaled(21,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
       Picture = Picture["icon:/small/refresh"]
     }
-    { btnShowSystem ToolButton
-      MoveScaled(13,0,4,4)
-      ToolTip = ("Show system tables")
-      Action = ".show-system"
-      Picture = Picture["img/16/system-table.png"]
-      Toggle = True
-    }
     { Separator4 Separator
-      MoveScaled(18,0,0,4)
-    }
-    { btnNewTable ToolButton
-      MoveScaled(20,0,4,4)
-      ToolTip = ("New table")
-      AutoResize = True
-      Text = ("New table") & "..."
-      Picture = Picture["icon:/small/new"]
+      MoveScaled(26,0,0,4)
     }
     { btnKill ToolButton
-      MoveScaled(25,0,7,4)
+      MoveScaled(27,0,11,4)
       ToolTip = ("Delete table")
       AutoResize = True
       Text = ("Remove")
       Picture = Picture["icon:/small/delete"]
     }
     { btnRename ToolButton
-      MoveScaled(34,0,9,4)
+      MoveScaled(39,0,11,4)
       ToolTip = ("Rename table")
       AutoResize = True
       Text = ("Rename") & "..."
       Picture = Picture["icon:/small/edit"]
     }
     { btnCopyTable ToolButton
-      MoveScaled(45,0,4,4)
+      MoveScaled(51,0,6,4)
       ToolTip = ("Copy table")
       AutoResize = True
       Text = ("Copy")
       Picture = Picture["icon:/small/copy"]
     }
     { btnPasteTable ToolButton
-      MoveScaled(50,0,4,4)
+      MoveScaled(58,0,4,4)
       ToolTip = ("Paste table")
       AutoResize = True
       Text = ("Paste") & "..."
       Picture = Picture["icon:/small/paste"]
     }
     { btnImport ToolButton
-      MoveScaled(56,0,12,4)
+      MoveScaled(64,0,12,4)
       ToolTip = ("Import text file")
       AutoResize = True
       Text = ("Import") & "..."
       Picture = Picture["icon:/small/open"]
-    }
-    { btnRequest ToolButton
-      MoveScaled(68,0,16,4)
-      ToolTip = ("SQL queries")
-      AutoResize = True
-      Text = ("SQL queries")
-      Picture = Picture["icon:/small/find"]
     }
   }
   { HBox1 HBox
@@ -100,9 +92,8 @@
       Orientation = Align.Left
       Separator = True
       { lvwTable TreeView
-        MoveScaled(2,5,22,26)
+        MoveScaled(2,18,22,26)
         Expand = True
-        Sorted = True
         Border = False
       }
     }
@@ -429,7 +420,7 @@
 { Toolbars
   { Toolbar connection
     Text = "Connection editor"
-    List = "database,save,reload,show-system"
-    Default = "database,|,save,reload,show-system,|,$btnNewTable,$btnKill,$btnRename,$btnCopyTable,$btnPasteTable,$btnImport,$btnRequest"
+    List = "database,show-system,save,reload"
+    Default = "database,show-system,|,$btnNewTable,save,reload,|,$btnKill,$btnRename,$btnCopyTable,$btnPasteTable,$btnImport"
   }
 }

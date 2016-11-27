@@ -26,7 +26,7 @@
 
 #define CHAR_ERROR 0xFFFD // �
 
-#ifdef OS_MACOSX
+#if defined(OS_MACOSX) || defined(__CYGWIN__)
 #include <string.h>
 void *memrchr(const char *s, int c, size_t n);
 #endif

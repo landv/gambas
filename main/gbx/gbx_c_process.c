@@ -308,7 +308,7 @@ static void throw_last_child_error()
 static void stop_process_after(CPROCESS *_object)
 {
 	STREAM *stream;
-	bool do_exit_process = FALSE;
+	bool do_exit_process = THIS->in >= 0;
 
 	#ifdef DEBUG_ME
 	fprintf(stderr, "stop_process_after: %p  out = %d err = %d\n", _object, THIS->out, THIS->err);
@@ -439,6 +439,9 @@ const char *CPROCESS_search_program_in_path(char *name)
 	char *p, *p2;
 	int len;
 	const char *path;
+	
+	if (!name)
+		return NULL;
 
 	if (strchr(name, '/'))
 	{

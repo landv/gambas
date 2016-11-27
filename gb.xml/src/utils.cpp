@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <memory.h>
 
-#ifdef OS_MACOSX
+#if defined(OS_MACOSX) || defined(__CYGWIN__)
 void *memrchr(const char *s, int c, size_t n)
 {
     const char *start=s,*end=(s+n-1);

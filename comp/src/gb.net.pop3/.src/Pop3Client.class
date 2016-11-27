@@ -493,6 +493,13 @@ Private Sub _Refresh()
 
 End
 
+Public Sub Refresh()
+  
+  _Refresh
+  
+End
+
+
 Private Function Welcome_Read() As String
 
   Return $sWelcome

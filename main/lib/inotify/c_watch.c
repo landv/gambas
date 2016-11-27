@@ -195,7 +195,7 @@ static void update_watch_list(WATCH_LIST *list)
 	{
 		int wd = inotify_add_watch(_ino.fd, list->path, mask);
 		
-		if (list->wd != wd)
+		if (wd >= 0 && list->wd != wd)
 		{
 #if DEBUG_ME
 		fprintf(stderr, "update_watch_list: add watch %d %08X\n", wd, mask);
@@ -233,6 +233,11 @@ static bool destroy_watch(CWATCH *watch)
 	int i;
 	WATCH_LIST *list = (WATCH_LIST *)watch->root;
 
+	if (!list)
+		return FALSE;
+	
+	watch->root = NULL;
+	
 #if DEBUG_ME
 	fprintf(stderr, "destroy_watch: %p %s\n", watch, list->path);
 #endif
@@ -394,8 +399,6 @@ static void callback(int fd, int flags, CINOTIFY *ino)
  **/
 BEGIN_METHOD_VOID(Watch_exit)
 
-	if (!_ino.watches)
-		return;
 	/* Free the remaining objects. destroy_watch() will then also take
 	 * care of calling INOTIFY_exit() to free bookkeeping data. */
 	exit_inotify();
@@ -482,6 +485,14 @@ BEGIN_METHOD(Watch_new, GB_STRING path; GB_BOOLEAN nofollow; GB_INTEGER events)
 	int i;
 	ushort events = VARGOPT(events, 0);
 
+	if (LENGTH(path) == 0)
+	{
+		GB.Error("Null path");
+		return;
+	}
+	
+	//fprintf(stderr, "Watch_new: %p\n", THIS);
+	
 	/* If this is the first watch, we need an inotify instance first.
 	 * We don't use the component's init function to set up _ino because
 	 * the inotify instance needs a GB.Watch() which would keep the
@@ -515,6 +526,8 @@ END_METHOD
  **/
 BEGIN_METHOD_VOID(Watch_free)
 
+	//fprintf(stderr, "Watch_free: %p\n", THIS);
+	
 	destroy_watch(THIS);
 
 END_METHOD

@@ -653,6 +653,8 @@ Public Sub _Raise(hConnection As DBusConnection, sSignal As String, aArg As Obje
   If iPos Then
     sInterface = Left(sSignal, iPos - 1)
     sSignal = Mid$(sSignal, iPos + 1)
+  Else
+    sInterface = $sInterface
   Endif
   
   iPos = InStr($sFullPath, "/")

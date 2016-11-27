@@ -603,7 +603,6 @@ static GB_IMG *get_last_image(void *_object)
 	return MEDIA_get_image_from_sample(sample, TRUE);
 }
 
-
 #if 0
 //---- MediaSignalArguments -----------------------------------------------
 
@@ -723,7 +722,7 @@ static CMEDIAMESSAGE *create_message(GstMessage *message)
 	
 	ob = GB.New(GB.FindClass("MediaMessage"), NULL, NULL);
 	ob->message = message;
-        ob->lastKey = NULL;
+	ob->lastKey = NULL;
 	return ob;
 }
 
@@ -1517,6 +1516,7 @@ END_METHOD
 
 //---- MediaPipeline ------------------------------------------------------
 
+DECLARE_EVENT(EVENT_Start);
 DECLARE_EVENT(EVENT_End);
 DECLARE_EVENT(EVENT_Message);
 DECLARE_EVENT(EVENT_Tag);
@@ -1524,6 +1524,7 @@ DECLARE_EVENT(EVENT_Event);
 DECLARE_EVENT(EVENT_Buffering);
 DECLARE_EVENT(EVENT_Duration);
 DECLARE_EVENT(EVENT_Progress);
+DECLARE_EVENT(EVENT_AboutToFinish);
 
 static int cb_message(CMEDIAPIPELINE *_object)
 {
@@ -1533,10 +1534,19 @@ static int cb_message(CMEDIAPIPELINE *_object)
 	GstBus *bus;
 	CMEDIACONTROL *control;
 	
+	if (THIS_PIPELINE->in_message)
+		return FALSE;
+	
+	THIS_PIPELINE->in_message = TRUE;
+	
 	bus = gst_pipeline_get_bus(PIPELINE);
 	
-	while((msg = gst_bus_pop(bus)) != NULL) 
+	for(;;)
 	{
+		msg = gst_bus_pop(bus);
+		if (msg == NULL)
+			break;
+
 		type = GST_MESSAGE_TYPE(msg);
 		control = MEDIA_get_control_from_element(GST_MESSAGE_SRC(msg), FALSE);
 		
@@ -1558,17 +1568,17 @@ static int cb_message(CMEDIAPIPELINE *_object)
 		}
 		else //if (GST_MESSAGE_SRC(msg) == GST_OBJECT(PIPELINE))
 		{
-                        if(GB.CanRaise(THIS, EVENT_Event))
-                        {
-                                CMEDIAMESSAGE *ob = create_message(msg);
-                                GB.Ref(ob);
-                                
-                                GB.Raise(THIS, EVENT_Event, 1, 
-                                        GB_T_OBJECT, ob);
-                                
-                                ob->message = NULL;
-                                GB.Unref(POINTER(&ob));
-                        }
+			if (GB.CanRaise(THIS, EVENT_Event))
+			{
+				CMEDIAMESSAGE *ob = create_message(msg);
+				GB.Ref(ob);
+				
+				GB.Raise(THIS, EVENT_Event, 1, GB_T_OBJECT, ob);
+				
+				ob->message = NULL;
+				GB.Unref(POINTER(&ob));
+			}
+			
 			switch (type)
 			{
 				case GST_MESSAGE_EOS:
@@ -1640,19 +1650,41 @@ static int cb_message(CMEDIAPIPELINE *_object)
 				case GST_MESSAGE_BUFFERING: GB.Raise(THIS, EVENT_Buffering, 0); break;
 				case GST_MESSAGE_DURATION: GB.Raise(THIS, EVENT_Duration, 0); break;
 				case GST_MESSAGE_PROGRESS: GB.Raise(THIS, EVENT_Progress, 0); break;
+				
+				case GST_MESSAGE_STREAM_START:
+					THIS_PIPELINE->about_to_finish = FALSE;
+					THIS_PIPELINE->pos = 0;
+					gst_element_query_duration(ELEMENT, GST_FORMAT_TIME, &THIS_PIPELINE->duration);
+					GB.Raise(THIS, EVENT_Start, 0);
+					break;
+						
 				default: break;
 			}
-			
-			gst_message_unref(msg);
 		}
+		
+		gst_message_unref(msg);
 	}
 	
 	gst_object_unref(bus);
 	
+	THIS_PIPELINE->in_message = FALSE;
+	
+	if (THIS->state == GST_STATE_PLAYING && !THIS->error)
+	{
+		gst_element_query_position(ELEMENT, GST_FORMAT_TIME, &THIS_PIPELINE->pos);
+		//fprintf(stderr, "%" PRId64 " / %" PRId64 "\n", THIS_PIPELINE->pos, THIS_PIPELINE->duration);
+		if (!THIS_PIPELINE->about_to_finish && THIS_PIPELINE->pos > (THIS_PIPELINE->duration - 2000000000))
+		{
+			THIS_PIPELINE->about_to_finish = TRUE;
+			GB.Raise(THIS, EVENT_AboutToFinish, 0);
+		}
+			
+	}
+	
 	return FALSE;
 }
 
-static void stop_pipeline(CMEDIACONTROL *_object)
+void MEDIA_stop_pipeline(CMEDIACONTROL *_object)
 {
 	int try;
 
@@ -1678,6 +1710,7 @@ static void stop_pipeline(CMEDIACONTROL *_object)
 	cb_message(THIS_PIPELINE);
 }
 
+
 BEGIN_METHOD(MediaPipeline_new, GB_INTEGER polling)
 	
 	if (!_from_element)
@@ -1699,7 +1732,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_free)
 
-	stop_pipeline(THIS);
+	MEDIA_stop_pipeline(THIS);
 	if (THIS_PIPELINE->watch)
 	{
 		//GB.Wait(THIS_PIPELINE->polling);
@@ -1718,7 +1751,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_Stop)
 
-	stop_pipeline(THIS);
+	MEDIA_stop_pipeline(THIS);
 
 END_METHOD
 
@@ -1743,12 +1776,7 @@ BEGIN_PROPERTY(MediaPipeline_Position)
 
 	if (READ_PROPERTY)
 	{
-		gint64 pos;
-		
-		if (THIS->state == GST_STATE_NULL || THIS->state == GST_STATE_READY || THIS->error || !gst_element_query_position(ELEMENT, GST_FORMAT_TIME, &pos))
-			GB.ReturnFloat(0);
-		else
-			GB.ReturnFloat((double)(pos / 1000) / 1E6);
+		GB.ReturnFloat((double)(THIS_PIPELINE->pos / 1000) / 1E6);
 	}
 	else
 	{
@@ -1764,12 +1792,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(MediaPipeline_Duration)
 
-	gint64 dur;
-	
-	if (THIS->state == GST_STATE_NULL || THIS->error || !gst_element_query_duration(ELEMENT, GST_FORMAT_TIME, &dur))
-		GB.ReturnFloat(0);
-	else
-		GB.ReturnFloat((double)(dur / 1000) / 1E6);
+	GB.ReturnFloat((double)(THIS_PIPELINE->duration / 1000) / 1E6);
 
 END_PROPERTY
 
@@ -1989,6 +2012,7 @@ GB_DESC MediaPipelineDesc[] =
 	GB_METHOD("Pause", NULL, MediaPipeline_Pause, NULL),
 	GB_METHOD("Close", NULL, MediaPipeline_Close, NULL),
 	
+	GB_EVENT("Start", NULL, NULL, &EVENT_Start),
 	GB_EVENT("End", NULL, NULL, &EVENT_End),
 	GB_EVENT("Message", NULL, "(Source)MediaControl;(Type)i(Message)s", &EVENT_Message),
 	GB_EVENT("Tag", NULL, "(TagList)MediaTagList;", &EVENT_Tag),
@@ -1996,6 +2020,7 @@ GB_DESC MediaPipelineDesc[] =
 	GB_EVENT("Buffering", NULL, NULL, &EVENT_Buffering),
 	GB_EVENT("Duration", NULL, NULL, &EVENT_Duration),
 	GB_EVENT("Progress", NULL, NULL, &EVENT_Progress),
+	GB_EVENT("AboutToFinish", NULL, NULL, &EVENT_AboutToFinish),
 	
 	GB_END_DECLARE
 };

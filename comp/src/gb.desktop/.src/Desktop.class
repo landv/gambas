@@ -265,6 +265,8 @@ Static Public Sub OpenTerminal(Optional {Dir} As String) ', Optional Command As 
       aProg = ["xfce4-terminal", "gnome-terminal"]
     Case "LXDE"
       aProg = ["lxterminal"]
+    Case "CYGWIN"
+      aProg = ["mintty.exe"] 
     Case Else
       aProg = New String[]
 

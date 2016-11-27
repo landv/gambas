@@ -128,7 +128,7 @@ Private Sub GetShortDesc(sText As String, Optional iMax As Integer) As String
   
   iPos = InStr(sText, ". ")
   If iPos = 0 Then iPos = Len(sText) + 1
-  sText = Trim(Left(sText, iPos))
+  sText = Trim(Replace(Left(sText, iPos), "\n", " "))
   
   If iMax And If Len(sText) > iMax Then
     sText = Left(sText, iMax - 3) & "..."

@@ -120,9 +120,15 @@ Private Sub AddHelp(ShortName As String, LongName As String, Description As Stri
   If Not sKey Then Return
   If Not Description Then Return
   
-  sHelp = " " & sKey
+  sHelp = " "
+  If ShortName Then
+    sHelp &= "-" & ShortName
+  Else
+    sHelp &= "  "
+  Endif
+  If LongName Then sHelp &= " --" & LongName
   If ArgName Then sHelp &= " <" & ArgName & ">"
-  sHelp &= Space$(Max(4, 40 - Len(sHelp))) & Description
+  sHelp &= Space$(Max(4, 40 - String.Len(sHelp))) & Description
   
   $aHelp.Add(sHelp)
   

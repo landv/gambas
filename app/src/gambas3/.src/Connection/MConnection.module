@@ -389,6 +389,9 @@ Public Sub FillViewWithTables(lvwTable As TreeView, hConn As Connection, bShowSy
     Endif
   Next
   
+  lvwTable.Sorted = True
+  lvwTable.Sorted = False
+  
 End
 
 Public Sub NeedPassword(sType As String) As Boolean
