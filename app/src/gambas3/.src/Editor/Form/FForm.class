@@ -4139,12 +4139,34 @@ Public Sub mnuFont_Show()
   
   Dim sFont As String
   Dim hMenu As Menu
+  Dim cMenu As New Collection
+  Dim aName As String[]
+  Dim I As Integer
+  Dim sParentFont As String
+  Dim hParent As Menu
   
   mnuFont.Children.Clear
   
-  For Each sFont In $hFamily.GetFonts()
-    hMenu = New Menu(mnuFont) As "mnuSetFont"
+  For Each sFont In $hFamily.GetFonts().Sort()
+    
+    hParent = Null
+    aName = Split(sFont, " ")
+    For I = aName.Max DownTo 1
+      sParentFont = aName.Copy(0, I).Join(" ")
+      hParent = cMenu[sParentFont]
+      If hParent Then Break
+    Next
+    If Not hParent Then hParent = mnuFont
+    
+    If hParent.Children.Count = 0 Then
+      hMenu = New Menu(hParent) As "mnuSetFont"
+      hMenu.Text = hParent.Text
+    Endif
+    
+    hMenu = New Menu(hParent) As "mnuSetFont"
     hMenu.Text = sFont
+    cMenu[sFont] = hMenu
+    
   Next
   
 End

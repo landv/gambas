@@ -2084,16 +2084,16 @@ Private Function GetExpressionSymbol(aExpr As String[], aType As Integer[]) As C
   $hSymbol = Null
   If aExpr.Count = 0 Then Return
 
-  sPattern = aExpr[aExpr.Count - 1]
+  sPattern = aExpr[aExpr.Max]
 
-  If InStr("[(", sPattern) Then
+  If InStr("[(.", sPattern) Then
     aType.Remove(aExpr.Count - 1)
     aExpr.Remove(aExpr.Count - 1)
   Endif
 
   If aExpr.Count >= 2 Then bNew = aExpr[aExpr.Count - 2] = "NEW"
 
-  sType = GetExpressionType(aExpr, aType, False)
+  sType = GetExpressionType(aExpr, aType, sPattern = ".")
   'IF NOT $hSymbol THEN
   'IF sPattern = "(" THEN
   If bNew Then
@@ -2299,6 +2299,8 @@ Private Sub FindDefinition() As Boolean
   Dim iLine As Integer
   Dim aSym As String[]
   Dim hForm As Object
+  Dim aSymbols As String[]
+  Dim bAfter As Boolean
 
   iLine = $hEditor.Line
   iCol = $hEditor.Column
@@ -2309,65 +2311,78 @@ Private Sub FindDefinition() As Boolean
 
   sLig = Highlight.Purge($hEditor[iLine].Text)
 
-  Repeat
-    Inc iCol
-    If iCol > Len(sLig) Then Break
-  Until InStr(IDENT_CAR, Mid$(sLig, iCol, 1)) = 0
-
-  If iCol < Len(sLig) Then
-    If InStr("[(", Mid$(sLig, iCol, 1)) Then
-      Inc iCol
-    Endif
-  Endif
-
-  sLig = Left$(sLig, iCol - 1)
-  If Right(sLig) = "[" Then sLig &= "]"
+  ' Repeat
+  '   Inc iCol
+  '   If iCol > Len(sLig) Then Break
+  ' Until InStr(IDENT_CAR, Mid$(sLig, iCol, 1)) = 0
+  ' 
+  ' If iCol < Len(sLig) Then
+  '   If InStr("[", Mid$(sLig, iCol, 1)) Then
+  '     Inc iCol
+  '   Endif
+  ' Endif
+  ' 
+  ' sLig = Left$(sLig, iCol - 1)
+  ' If Right(sLig) = "[" Then sLig &= "]"
   'Editor.ShowWord(iLine, iCol, 3)
-  Highlight.Analyze(sLig)
-
-  'IF IsCurrentProc() THEN RETURN
-
-  iCpt = Highlight.Types.Max
-  sKeyword = ""
-
+  Highlight.Analyze(sLig, True, $hEditor[iLine].InitialState.State)
+  
+  aSymbols = Highlight.Symbols
+  
+  For iCpt = 0 To aSymbols.Max
+    If Highlight.Types[iCpt] = Highlight.Keyword Then aSymbols[iCpt] = UCase(aSymbols[iCpt])
+    If Highlight.Positions[iCpt] > iCol Then Break
+  Next
+  Dec iCpt
+  
   If iCpt >= 0 Then
-    sKeyword = Highlight.Symbols[iCpt]
+    
+    sKeyword = aSymbols[iCpt]
+    Try bAfter = InStr("([.", aSymbols[iCpt + 1]) > 0
 
-    If IsKeyword(iCpt) Then
-
-      ' If iCpt > 0 Then
-      '   Dec iCpt
-      '   If IsKeyword(iCpt) Then
-      '     sKeyword2 = Highlight.Symbols[iCpt] & sKeyword
-      '   Endif
-      ' Endif
-      '
-      ' If sKeyword2 Then
-      '   MHelp.ShowWebViewWith(Null, MHelp.TYPE_KEYWORD, sKeyword2)
-      '   If FHelpBrowser.Error Then
-      '     MHelp.ShowWebViewWith(Null, MHelp.TYPE_KEYWORD, sKeyword)
-      '   Endif
-      ' Else
-      MHelp.ShowHelpBrowserWith(MHelp.TYPE_KEYWORD, sKeyword)
-      'Endif
-      Return
-
-    Else If Highlight.Types[iCpt] = Highlight.DataType Then
-
-      If System.Datatypes.Exist(sKeyword, gb.IgnoreCase) Then
-        MHelp.ShowHelpBrowserWith(MHelp.TYPE_NATIVE, sKeyword)
-      Else
-        hClass = Project.Documentation.Classes[sKeyword]
-        If hClass Then
-          'MHelp.GotoClass(hClass.Component, hClass.Name)
-          MHelp.ShowHelpBrowserWith(MHelp.TYPE_CLASS, hClass.Name)
+    If Not bAfter Then
+    
+      If IsKeyword(iCpt) Then
+  
+        ' If iCpt > 0 Then
+        '   Dec iCpt
+        '   If IsKeyword(iCpt) Then
+        '     sKeyword2 = Highlight.Symbols[iCpt] & sKeyword
+        '   Endif
+        ' Endif
+        '
+        ' If sKeyword2 Then
+        '   MHelp.ShowWebViewWith(Null, MHelp.TYPE_KEYWORD, sKeyword2)
+        '   If FHelpBrowser.Error Then
+        '     MHelp.ShowWebViewWith(Null, MHelp.TYPE_KEYWORD, sKeyword)
+        '   Endif
+        ' Else
+        MHelp.ShowHelpBrowserWith(MHelp.TYPE_KEYWORD, sKeyword)
+        'Endif
+        Return
+  
+      Else If Highlight.Types[iCpt] = Highlight.DataType Then
+  
+        If System.Datatypes.Exist(sKeyword, gb.IgnoreCase) Then
+          MHelp.ShowHelpBrowserWith(MHelp.TYPE_NATIVE, sKeyword)
+        Else
+          hClass = Project.Documentation.Classes[sKeyword]
+          If hClass Then
+            'MHelp.GotoClass(hClass.Component, hClass.Name)
+            MHelp.ShowHelpBrowserWith(MHelp.TYPE_CLASS, hClass.Name)
+          Endif
         Endif
+        Return
+        
       Endif
-      Return
-
-    Else If iCpt >= 1 And If Highlight.Types[iCpt] = Highlight.Symbol Then
       
-      If Highlight.Symbols[iCpt - 1] = "GOTO" Or If Highlight.Symbols[iCpt - 1] = "GOSUB" Then
+    Endif
+
+    If sKeyword Begins "{" And If sKeyword Ends "}" Then sKeyword = Mid$(sKeyword, 2, -1)
+    
+    If iCpt >= 1 And If Highlight.Types[iCpt] = Highlight.Symbol Then
+      
+      If aSymbols[iCpt - 1] = "GOTO" Or If aSymbols[iCpt - 1] = "GOSUB" Then
         
         While iLine > 0
           Dec iLine
@@ -2391,8 +2406,10 @@ Private Sub FindDefinition() As Boolean
     Endif
   Endif
 
-  'Editor.Analyze(Left$(sLig, iCol - 1))
-  hSymbol = GetExpressionSymbol(Highlight.Symbols, Highlight.Types)
+  If aSymbols.Count > (iCpt + 1) And If bAfter Then Inc iCpt
+
+  hSymbol = GetExpressionSymbol(aSymbols.Copy(0, iCpt + 1), Highlight.Types)
+  
   If Not hSymbol Then
     If sKeyword Then
       If Project.Documentation.Classes.Exist(sKeyword) Then

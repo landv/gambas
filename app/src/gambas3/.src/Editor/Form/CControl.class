@@ -572,8 +572,6 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
 
   ' valeur par défaut ?
 
-  If sProp = "Font" Then Stop
-
   If Not hProp.Required Then
     If Not IsNull(vDefault) Then
       If Not IsNull(vVal) Then
@@ -1420,6 +1418,7 @@ Public Procedure Panel_MouseMove()
   Dim hUndo As CUndo
   Dim sArr As String
   Dim sTag As String
+  Dim bIgnore As Boolean
 
   If Not $bMove Then Return
 
@@ -1441,16 +1440,28 @@ Public Procedure Panel_MouseMove()
   
   sTag = Mid$(hPanel.Tag, 2)
   
-  If $hFamily.AutomaticArrangement Then
+  Try bIgnore = Control.Ignore
+  If $hFamily.AutomaticArrangement And If Not bIgnore Then
     sArr = Parent.GetArrangement()
-    Select Case sArr
-      Case "H"
-        If Right(sTag) <> "E" Then Return
-      Case "V"
-        If Left(sTag) <> "S" Then Return
-      Case "R", "C"
-        If Left(sTag) = "N" Or If Right(sTag) = "W" Then Return
-    End Select
+    If Parent.IsArrangementInverted() Then
+      Select Case sArr
+        Case "H"
+          If Right(sTag) <> "W" Then Return
+        Case "V"
+          If Left(sTag) <> "N" Then Return
+        Case "R", "C"
+          If Left(sTag) = "S" Or If Right(sTag) = "E" Then Return
+      End Select
+    Else
+      Select Case sArr
+        Case "H"
+          If Right(sTag) <> "E" Then Return
+        Case "V"
+          If Left(sTag) <> "S" Then Return
+        Case "R", "C"
+          If Left(sTag) = "N" Or If Right(sTag) = "W" Then Return
+      End Select
+    Endif
   Endif
 
   Select Case sTag
@@ -2256,6 +2267,12 @@ Public Sub GetArrangement() As String
   Try sArr = Project.Documentation.Classes[Kind].Symbols["_DefaultArrangement"].Value
   If Not Error And If Left(sArr) = "F" Then Try sArr = Left(GetProperty("Arrangement"))
   Return sArr
+  
+End
+
+Public Sub IsArrangementInverted() As Boolean
+  
+  Return $cValue.Exist("Invert")
   
 End
 

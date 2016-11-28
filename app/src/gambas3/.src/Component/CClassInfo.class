@@ -249,7 +249,7 @@ Public Sub InitControl()
 
       If Family <> "Form" Then 
         If MultiContainer Then
-          bDoNotApply = Not CPropertyInfo.MULTI_CONTAINER_PROP.Exist(sProp)
+          bDoNotApply = Not CPropertyInfo.ALLOWED_MULTI_CONTAINER_PROP.Exist(sProp)
         Else
           bDoNotApply = Not CPropertyInfo.ALLOWED_CONTROL_PROP.Exist(sProp)
         Endif
