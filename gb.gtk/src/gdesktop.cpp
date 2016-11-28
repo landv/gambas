@@ -125,7 +125,7 @@ static gColor get_color(GType type, gColor default_color, GtkStateFlags state, b
 	static const char *sel_bg_names[] = { "selected_bg_color", "theme_selected_bg_color", NULL };
 	static const char *sel_fg_names[] = { "selected_fg_color", "theme_selected_fg_color", NULL };
 	static const char *tt_bg_names[] = { "tooltip_bg_color", "theme_tooltip_bg_color", NULL };
-	static const char *tt_fg_names[] = { "link_fg_color", "theme_tooltip_fg_color", NULL };
+	static const char *tt_fg_names[] = { "tooltip_fg_color", "link_fg_color", "theme_tooltip_fg_color", NULL };
 	static const char *link_fg_names[] = { "link_color", "theme_link_color", NULL };
 	static const char *visited_fg_names[] = { "visited_link_color", "theme_visited_link_color", NULL };
 
@@ -171,6 +171,9 @@ static gColor get_color(GType type, gColor default_color, GtkStateFlags state, b
 
 __OK:
 
+	if (rgba.alpha < 0.05)
+		rgba.alpha = 1;
+	
 	return gt_to_color(&rgba);
 }
 #else
@@ -240,14 +243,35 @@ gColor gDesktop::selbgColor()
 	return get_color(GTK_TYPE_ENTRY, 0x0000FF, STATE_SELECTED, false, true);
 }
 
+static int get_luminance(gColor col)
+{
+	int r, g, b;
+	gt_color_to_rgb(col, &r, &g, &b);
+	return (int)(0.299 * r + 0.587 * g + 0.114 * b);
+}
+
 gColor gDesktop::tooltipForeground()
 {
-	return get_color(GTK_TYPE_TOOLTIP, 0, STATE_NORMAL, true, false);
+	int r, g, b;
+	int h, s, v;
+	gColor fg = get_color(GTK_TYPE_TOOLTIP, 0, STATE_NORMAL, true, false);
+	gColor bg = gDesktop::tooltipBackground();
+	uint lfg = get_luminance(fg);
+	uint lbg = get_luminance(bg);
+	
+	if (abs(lfg - lbg) > 64)
+		return fg;
+	
+	gt_color_to_rgb(fg, &r, &g, &b);
+	gt_rgb_to_hsv(r, g, b, &h, &s, &v);
+	v = 255 - v;
+	gt_hsv_to_rgb(h, s, v, &r, &g, &b);
+	return gt_rgb_to_color(r, g, b);
 }
 
 gColor gDesktop::tooltipBackground()
 {
-	return get_color(GTK_TYPE_TOOLTIP, 0xC0C0C0, STATE_NORMAL, false, false);
+	return get_color(GTK_TYPE_TOOLTIP, 0xFFFFDF, STATE_NORMAL, false, false);
 }
 
 gColor gDesktop::linkForeground()

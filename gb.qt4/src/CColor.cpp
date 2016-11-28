@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  CColor.cpp
+	CColor.cpp
 
-  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -54,54 +54,54 @@ QColor CCOLOR_make(GB_COLOR color)
 
 static void return_color(QPalette::ColorRole role)
 {
-  GB.ReturnInteger(QApplication::palette().color(role).rgb() & 0xFFFFFF);
+	GB.ReturnInteger(QApplication::palette().color(role).rgb() & 0xFFFFFF);
 }
 
 BEGIN_PROPERTY(Color_Background)
 
-  return_color(QPalette::Window);
+	return_color(QPalette::Window);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Color_Foreground)
 
-  return_color(QPalette::WindowText);
+	return_color(QPalette::WindowText);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Color_TextBackground)
 
-  return_color(QPalette::Base);
+	return_color(QPalette::Base);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Color_TextForeground)
 
-  return_color(QPalette::Text);
+	return_color(QPalette::Text);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Color_SelectedBackground)
 
-  return_color(QPalette::Highlight);
+	return_color(QPalette::Highlight);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Color_SelectedForeground)
 
-  return_color(QPalette::HighlightedText);
+	return_color(QPalette::HighlightedText);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Color_ButtonBackground)
 
-  return_color(QPalette::Button);
+	return_color(QPalette::Button);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Color_ButtonForeground)
 
-  return_color(QPalette::ButtonText);
+	return_color(QPalette::ButtonText);
 
 END_PROPERTY
 
@@ -120,49 +120,62 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Color_TooltipBackground)
 
-  return_color(QPalette::ToolTipBase);
+	return_color(QPalette::ToolTipBase);
 
 END_PROPERTY
 
+static int get_luminance(QColor col)
+{
+	return (int)(0.299 * col.red() + 0.587 * col.green() + 0.114 * col.blue());
+}
+
 BEGIN_PROPERTY(Color_TooltipForeground)
 
-  return_color(QPalette::ToolTipText);
+	QColor bg = qApp->palette().color(QPalette::ToolTipBase);
+	QColor fg = qApp->palette().color(QPalette::ToolTipText);
+	uint lbg = get_luminance(bg);
+	uint lfg = get_luminance(fg);
+	
+	if (abs(lbg - lfg) <= 64)
+		fg.setHsv(fg.hue(), fg.saturation(), 255 - fg.value());
+		
+	GB.ReturnInteger(fg.rgb() & 0xFFFFFF);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Color_LinkForeground)
 
-  return_color(QPalette::Link);
+	return_color(QPalette::Link);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Color_VisitedForeground)
 
-  return_color(QPalette::LinkVisited);
+	return_color(QPalette::LinkVisited);
 
 END_PROPERTY
 
 GB_DESC CColorDesc[] =
 {
-  GB_DECLARE_STATIC("Color"),
+	GB_DECLARE_STATIC("Color"),
 
-  GB_STATIC_PROPERTY_READ("Background", "i", Color_Background),
-  GB_STATIC_PROPERTY_READ("SelectedBackground", "i", Color_SelectedBackground),
-  GB_STATIC_PROPERTY_READ("LightBackground", "i", Color_LightBackground),
-  GB_STATIC_PROPERTY_READ("TextBackground", "i", Color_TextBackground),
-  GB_STATIC_PROPERTY_READ("ButtonBackground", "i", Color_ButtonBackground),
-  GB_STATIC_PROPERTY_READ("TooltipBackground", "i", Color_TooltipBackground),
+	GB_STATIC_PROPERTY_READ("Background", "i", Color_Background),
+	GB_STATIC_PROPERTY_READ("SelectedBackground", "i", Color_SelectedBackground),
+	GB_STATIC_PROPERTY_READ("LightBackground", "i", Color_LightBackground),
+	GB_STATIC_PROPERTY_READ("TextBackground", "i", Color_TextBackground),
+	GB_STATIC_PROPERTY_READ("ButtonBackground", "i", Color_ButtonBackground),
+	GB_STATIC_PROPERTY_READ("TooltipBackground", "i", Color_TooltipBackground),
 
-  GB_STATIC_PROPERTY_READ("Foreground", "i", Color_Foreground),
-  GB_STATIC_PROPERTY_READ("LightForeground", "i", Color_LightForeground),
-  GB_STATIC_PROPERTY_READ("SelectedForeground", "i", Color_SelectedForeground),
-  GB_STATIC_PROPERTY_READ("TextForeground", "i", Color_TextForeground),
-  GB_STATIC_PROPERTY_READ("ButtonForeground", "i", Color_ButtonForeground),
-  GB_STATIC_PROPERTY_READ("TooltipForeground", "i", Color_TooltipForeground),
-  GB_STATIC_PROPERTY_READ("LinkForeground", "i", Color_LinkForeground),
-  GB_STATIC_PROPERTY_READ("VisitedForeground", "i", Color_VisitedForeground),
+	GB_STATIC_PROPERTY_READ("Foreground", "i", Color_Foreground),
+	GB_STATIC_PROPERTY_READ("LightForeground", "i", Color_LightForeground),
+	GB_STATIC_PROPERTY_READ("SelectedForeground", "i", Color_SelectedForeground),
+	GB_STATIC_PROPERTY_READ("TextForeground", "i", Color_TextForeground),
+	GB_STATIC_PROPERTY_READ("ButtonForeground", "i", Color_ButtonForeground),
+	GB_STATIC_PROPERTY_READ("TooltipForeground", "i", Color_TooltipForeground),
+	GB_STATIC_PROPERTY_READ("LinkForeground", "i", Color_LinkForeground),
+	GB_STATIC_PROPERTY_READ("VisitedForeground", "i", Color_VisitedForeground),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 
