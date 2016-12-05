@@ -653,16 +653,17 @@ static GB_ARRAY get_collations(DB_DATABASE *db)
 
 *****************************************************************************/
 
-static int format_value(GB_VALUE *arg, DB_FORMAT_CALLBACK add)
+static int format_value(GB_VALUE * arg, DB_FORMAT_CALLBACK add)
 {
-	int l;
+	char *s;
+	int i, l;
 	GB_DATE_SERIAL *date;
 
 	switch (arg->type)
 	{
 		case GB_T_BOOLEAN:
 /*Note this is likely to go to a tinyint  */
-			if (VALUE((GB_BOOLEAN *)arg))
+			if (VALUE((GB_BOOLEAN *) arg))
 				add("'1'", 3);
 			else
 				add("'0'", 3);
@@ -671,27 +672,41 @@ static int format_value(GB_VALUE *arg, DB_FORMAT_CALLBACK add)
 		case GB_T_STRING:
 		case GB_T_CSTRING:
 
-			return FALSE; // default
+			s = VALUE((GB_STRING *)arg).addr + VALUE((GB_STRING *)arg).start;
+			l = VALUE((GB_STRING *)arg).len;
+
+			add("'", 1);
+
+			for (i = 0; i < l; i++, s++)
+			{
+				add(s, 1);
+				if (*s == '\'')
+					add(s, 1);
+			}
+
+			add("'", 1);
+			
+			return TRUE;
 
 		case GB_T_DATE:
 
-			date = GB.SplitDate((GB_DATE *)arg);
+			date = GB.SplitDate((GB_DATE *) arg);
 
 			l = sprintf(_buffer, "'%04d-%02d-%02d %02d:%02d:%02d",
-					date->year, date->month, date->day,
-					date->hour, date->min, date->sec);
+									date->year, date->month, date->day,
+									date->hour, date->min, date->sec);
 
-					add(_buffer, l);
+			add(_buffer, l);
 
-					if (date->msec)
-					{
-						l = sprintf(_buffer, ".%03d", date->msec);
-						add(_buffer, l);
-					}
+			if (date->msec)
+			{
+				l = sprintf(_buffer, ".%03d", date->msec);
+				add(_buffer, l);
+			}
 
-					add("'", 1);
+			add("'", 1);
 
-					return TRUE;
+			return TRUE;
 
 		default:
 			return FALSE;
