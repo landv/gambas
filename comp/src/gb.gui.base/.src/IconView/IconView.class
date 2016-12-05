@@ -105,6 +105,7 @@ Private $sFindItem As String
 Private $fFindTime As Float
 
 Private $iLock As Integer
+Private $hArrangeTimer As Timer
 
 Public Sub _new()
   
@@ -225,9 +226,31 @@ Public Sub _UpdateIconSize((Picture) As Picture)
   If {Picture} And If Picture.Height > $iIconSize Then
     $iIconSize = Picture.Height
     ScrollArea_Arrange
+  Else If Not {Picture} Or If Picture.Height < $iIconSize Then
+    If Not $hArrangeTimer Then
+      $hArrangeTimer = New Timer As "ArrangeTimer"
+      $hArrangeTimer.Trigger
+    Endif
   Endif
   
 End
+
+Public Sub ArrangeTimer_Timer()
+
+  Dim hItem As _IconView_Item
+  Dim hPicture As Picture
+  
+  $iIconSize = 0
+  For Each hItem In $aItems
+    hPicture = hItem.Picture
+    If hPicture And If hPicture.Height > $iIconSize Then $iIconSize = hPicture.Height
+  Next
+  
+  ScrollArea_Arrange
+  $hArrangeTimer = Null
+  
+End
+
 
 Public Function Add((Key) As String, Text As String, Optional (Picture) As Picture, Optional After As String) As _IconView_Item
   
@@ -496,7 +519,7 @@ Public Sub ScrollArea_Draw()
     
   Endif
   
-  ' GTK+ bug
+  ' FIXME: GTK+ bug
   If $hRenameBox And If $hRenameBox.Visible Then $hRenameBox.Refresh
   
   'Debug ">>>"

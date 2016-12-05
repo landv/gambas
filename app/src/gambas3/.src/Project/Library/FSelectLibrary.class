@@ -45,7 +45,8 @@ Private Sub RefreshLibraries()
     If Not IsDir(sDir) Then Continue
 
     For Each sVendor In Dir(sDir, "*", gb.Directory).Sort(gb.Natural)
-      bParent = False
+      
+      bParent = cvwLibrary.Exist(sVendor)
       
       For Each sLib In Dir(sDir &/ sVendor, "*.gambas", gb.File).Sort(gb.Natural)
         

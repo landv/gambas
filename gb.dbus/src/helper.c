@@ -808,7 +808,8 @@ static bool define_arguments(DBusMessage *message, const char *signature, GB_ARR
 	DBusMessageIter iter;
 	DBusSignatureIter siter;
 	char *sign;
-	bool err;
+	char *arg_sign;
+	bool err = FALSE;
 	
 	if (arguments)
 	{
@@ -821,54 +822,64 @@ static bool define_arguments(DBusMessage *message, const char *signature, GB_ARR
 		type = GB_T_NULL;
 	}
 	
-	//fprintf(stderr, "define_arguments: %s %d %ld\n", signature, nparam, type);
+#ifdef DEBUG_ARG
+	fprintf(stderr, "define_arguments: %s %d %ld\n", signature, nparam, type);
+#endif
 	
-	if (signature && *signature)
+	if (!signature || !*signature)
 	{
-		dbus_message_iter_init_append(message, &iter);
-		
-		dbus_signature_iter_init(&siter, signature);
-		
-		for (n = 0; n < nparam; n++)
+		if (nparam > 0) 
 		{
-			value.type = type;
-			GB.ReadValue(&value, GB.Array.Get(arguments, n), type);
-			GB.BorrowValue(&value);
-
-			sign = dbus_signature_iter_get_signature(&siter);
-#ifdef DEBUG_ARG
-			fprintf(stderr, "[%d] %s: ", n, sign);
-#endif
-			err = append_arg(&iter, sign, &value);
-#ifdef DEBUG_ARG
-			fprintf(stderr, "\n");
-#endif
-			dbus_free(sign);
-			if (err) 
-				return TRUE;
-			
-			if (!dbus_signature_iter_next(&siter))
-			{
-				if (n < (nparam - 1))
-				{
-					GB.Error("Too many arguments");
-					return TRUE;
-				}
-				return FALSE;
-			}
+			GB.Error("Too many arguments");
+			return TRUE;
 		}
-		
-		GB.Error("Not enough arguments");
-		return TRUE;
-	}
-	else
-	{
-		if (nparam == 0) 
+		else
 			return FALSE;
-		
-		GB.Error("Too many arguments");
-		return TRUE;
 	}
+	
+	sign = GB.NewZeroString(signature);
+
+	dbus_message_iter_init_append(message, &iter);
+	
+	dbus_signature_iter_init(&siter, sign);
+	
+	for (n = 0; n < nparam; n++)
+	{
+		value.type = type;
+		GB.ReadValue(&value, GB.Array.Get(arguments, n), type);
+		GB.BorrowValue(&value);
+
+		arg_sign = dbus_signature_iter_get_signature(&siter);
+#ifdef DEBUG_ARG
+		fprintf(stderr, "[%d] %s: ", n, arg_sign);
+#endif
+		err = append_arg(&iter, arg_sign, &value);
+#ifdef DEBUG_ARG
+		fprintf(stderr, "\n");
+#endif
+		dbus_free(arg_sign);
+		
+		if (err) 
+			goto __RETURN;
+		
+		if (!dbus_signature_iter_next(&siter))
+		{
+			if (n < (nparam - 1))
+			{
+				GB.Error("Too many arguments");
+				err = TRUE;
+			}
+			goto __RETURN;
+		}
+	}
+	
+	GB.Error("Not enough arguments");
+	err = TRUE;
+	
+__RETURN:
+
+	GB.FreeString(&sign);
+	return err;
 }
 
 bool DBUS_call_method(DBusConnection *connection, const char *application, const char *path, const char *interface, const char *method, 

@@ -692,7 +692,8 @@ static GB_ARRAY get_collations(DB_DATABASE *db)
 
 static int format_value(GB_VALUE * arg, DB_FORMAT_CALLBACK add)
 {
-	int l;
+	char *s;
+	int i, l;
 	GB_DATE_SERIAL *date;
 
 	switch (arg->type)
@@ -708,7 +709,21 @@ static int format_value(GB_VALUE * arg, DB_FORMAT_CALLBACK add)
 		case GB_T_STRING:
 		case GB_T_CSTRING:
 
-			return FALSE;							// default
+			s = VALUE((GB_STRING *)arg).addr + VALUE((GB_STRING *)arg).start;
+			l = VALUE((GB_STRING *)arg).len;
+
+			add("'", 1);
+
+			for (i = 0; i < l; i++, s++)
+			{
+				add(s, 1);
+				if (*s == '\'')
+					add(s, 1);
+			}
+
+			add("'", 1);
+			
+			return TRUE;
 
 		case GB_T_DATE:
 

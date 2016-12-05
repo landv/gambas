@@ -7,7 +7,7 @@ CLEANFILES = trunk_version.h
 .PHONY: trunk_version.h
 trunk_version.h:
 	@if test -d ../.svn ; then \
-		if test ../.svn -nt trunk_version.h ; then \
+		if test ../.svn/wc.db -nt trunk_version.h ; then \
 			echo '#define TRUNK_VERSION "'`LC_ALL=C svn info 2>/dev/null | grep Revision | egrep -wo [0-9]+`'"' > trunk_version.h; \
 		fi \
 	else \
