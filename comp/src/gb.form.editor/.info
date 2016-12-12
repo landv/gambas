@@ -4,7 +4,7 @@ C
 _Properties
 C
 s
-"*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces,ShowIndent"
+"*,Border=True,ShowSideBar,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces,ShowIndent"
 _DrawWith
 C
 s
@@ -74,6 +74,10 @@ r
 s
 
 ReadOnly
+p
+b
+
+ShowSideBar
 p
 b
 
@@ -401,6 +405,10 @@ _GetRowHeight
 m
 i
 (Y)i
+Scroll
+m
+
+(X)i(Y)i
 View_Draw
 m
 
@@ -505,10 +513,6 @@ FindNextString
 m
 i
 (Search)s(Start)i
-Scroll
-m
-
-(X)i(Y)i
 Reset
 m
 
@@ -564,6 +568,50 @@ m
 _HasFolding
 m
 b
+
+SideBar_Draw
+m
+
+
+SideBar_MouseMove
+m
+
+
+SideBar_Leave
+m
+
+
+TimerSideBarMDHold_Timer
+m
+
+
+SideBar_MouseDown
+m
+
+
+SideBar_MouseUp
+m
+
+
+SideBar_MouseWheel
+m
+
+
+TimerRefreshBar_Timer
+m
+
+
+SideBar_Arrange
+m
+
+
+TimerShowSideBarViewer_Timer
+m
+
+
+SideBarViewer_MouseDown
+m
+
 
 #_TextEditor_Line
 
