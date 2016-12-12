@@ -400,11 +400,6 @@
     Background = Color.TextBackground
     Expand = True
     Arrangement = Arrange.Fill
-    { splHorizontal HSplit
-      MoveScaled(3,19,22,18)
-      Visible = False
-      Expand = True
-    }
     { splVertical VSplit
       MoveScaled(2,41,22,18)
       Visible = False
@@ -415,6 +410,12 @@
       MoveScaled(3,1,24,16)
       Expand = True
       Border = False
+      ShowSideBar = True
+    }
+    { splHorizontal HSplit
+      MoveScaled(3,19,22,18)
+      Visible = False
+      Expand = True
     }
   }
 }

@@ -382,156 +382,193 @@
       Font = Font["Bold"]
       Text = ("Editor")
     }
-    { HBox14 HBox
-      MoveScaled(1,4,66,4)
+    { ScrollView1 ScrollView
+      MoveScaled(1,4,66,50)
+      Expand = True
+      Arrangement = Arrange.Vertical
       Spacing = True
-      Indent = True
-      { Label40 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Default tab size")
-      }
-      { Panel3 HBox
-        MoveScaled(50,0,16,4)
+      Border = False
+      ScrollBar = Scroll.Vertical
+      { HBox14 HBox
+        MoveScaled(0,0,66,4)
         Spacing = True
-        { txtTabSize SpinBox
-          MoveScaled(0,0,6,4)
-          MinValue = 1
-          MaxValue = 16
-          Value = 2
-        }
-        { Label3 Label
-          MoveScaled(8,0,8,4)
+        Indent = True
+        { Label40 Label
+          MoveScaled(0,0,47,4)
           Expand = True
-          Text = ("space(s)")
+          Text = ("Default tab size")
+        }
+        { Panel3 HBox
+          MoveScaled(50,0,16,4)
+          Spacing = True
+          { txtTabSize SpinBox
+            MoveScaled(0,0,6,4)
+            MinValue = 1
+            MaxValue = 16
+            Value = 2
+          }
+          { Label3 Label
+            MoveScaled(8,0,8,4)
+            Expand = True
+            Text = ("space(s)")
+          }
         }
       }
-    }
-    { HBox18 HBox
-      MoveScaled(1,9,66,4)
-      Spacing = True
-      Indent = True
-      { Label5 Label
-        MoveScaled(0,0,46,4)
-        Expand = True
-        Text = ("Procedure separation")
+      { HBox18 HBox
+        MoveScaled(0,5,66,4)
+        Spacing = True
+        Indent = True
+        { Label5 Label
+          MoveScaled(0,0,46,4)
+          Expand = True
+          Text = ("Procedure separation")
+        }
+        { btnShowLimit SwitchButton
+          MoveScaled(50,0,16,4)
+          Animated = True
+        }
       }
-      { btnShowLimit SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
+      { HBox17 HBox
+        MoveScaled(0,10,66,4)
+        Spacing = True
+        Indent = True
+        { Label6 Label
+          MoveScaled(0,0,47,4)
+          Expand = True
+          Text = ("Highlight current line")
+        }
+        { btnShowCurrent SwitchButton
+          MoveScaled(50,0,16,4)
+          Animated = True
+        }
       }
-    }
-    { HBox17 HBox
-      MoveScaled(1,14,66,4)
-      Spacing = True
-      Indent = True
-      { Label6 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Highlight current line")
+      { HBox16 HBox
+        MoveScaled(0,15,66,4)
+        Spacing = True
+        Indent = True
+        { Label7 Label
+          MoveScaled(0,0,47,4)
+          Expand = True
+          Text = ("Highlight modified lines")
+        }
+        { btnShowChange SwitchButton
+          MoveScaled(50,0,16,4)
+          Animated = True
+        }
       }
-      { btnShowCurrent SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
+      { HBox15 HBox
+        MoveScaled(0,20,66,4)
+        Spacing = True
+        Indent = True
+        { Label8 Label
+          MoveScaled(0,0,47,4)
+          Expand = True
+          Text = ("Show line numbers")
+        }
+        { btnShowLineNumber SwitchButton
+          MoveScaled(50,0,16,4)
+          Animated = True
+        }
       }
-    }
-    { HBox16 HBox
-      MoveScaled(1,19,66,4)
-      Spacing = True
-      Indent = True
-      { Label7 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Highlight modified lines")
+      { HBox42 HBox
+        MoveScaled(0,25,66,4)
+        Spacing = True
+        Indent = True
+        { Label50 Label
+          MoveScaled(0,0,47,4)
+          Expand = True
+          Text = ("Procedure folding")
+        }
+        { btnFold SwitchButton
+          MoveScaled(50,0,16,4)
+          Animated = True
+        }
       }
-      { btnShowChange SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
+      { HBox4 HBox
+        MoveScaled(0,30,66,4)
+        Visible = False
+        Spacing = True
+        Indent = True
+        { Label17 Label
+          MoveScaled(0,0,47,4)
+          Expand = True
+          Text = ("Fold procedures by default")
+        }
+        { btnFoldProc SwitchButton
+          MoveScaled(50,0,16,4)
+          Animated = True
+        }
       }
-    }
-    { HBox15 HBox
-      MoveScaled(1,24,66,4)
-      Spacing = True
-      Indent = True
-      { Label8 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Show line numbers")
+      { HBox35 HBox
+        MoveScaled(0,35,66,4)
+        Spacing = True
+        Indent = True
+        { Label33 Label
+          MoveScaled(0,0,47,4)
+          Expand = True
+          Text = ("Automatic word wrap by default")
+        }
+        { btnWrapText SwitchButton
+          MoveScaled(50,0,16,4)
+          Animated = True
+        }
       }
-      { btnShowLineNumber SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
+      { HBox29 HBox
+        MoveScaled(0,40,66,4)
+        Spacing = True
+        Indent = True
+        { Label25 Label
+          MoveScaled(0,0,47,4)
+          Expand = True
+          Text = ("Show spaces at end of line with dots")
+        }
+        { btnShowSpaces SwitchButton
+          MoveScaled(50,0,16,4)
+          Animated = True
+        }
       }
-    }
-    { HBox42 HBox
-      MoveScaled(1,29,66,4)
-      Spacing = True
-      Indent = True
-      { Label50 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Procedure folding")
+      { HBox38 HBox
+        MoveScaled(0,45,66,4)
+        Spacing = True
+        Indent = True
+        { Label36 Label
+          MoveScaled(0,0,47,4)
+          Expand = True
+          Text = ("Show tabulations with vertical lines")
+        }
+        { btnShowIndent SwitchButton
+          MoveScaled(50,0,16,4)
+          Animated = True
+        }
       }
-      { btnFold SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
+      { HBox51 HBox
+        MoveScaled(0,50,66,4)
+        Spacing = True
+        Indent = True
+        { Label62 Label
+          MoveScaled(0,0,47,4)
+          Expand = True
+          Text = ("Show Side Bar")
+        }
+        { btnShowSideBar SwitchButton
+          MoveScaled(50,0,16,4)
+          Animated = True
+        }
       }
-    }
-    { HBox4 HBox
-      MoveScaled(1,34,66,4)
-      Visible = False
-      Spacing = True
-      Indent = True
-      { Label17 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Fold procedures by default")
-      }
-      { btnFoldProc SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
-      }
-    }
-    { HBox35 HBox
-      MoveScaled(1,39,66,4)
-      Spacing = True
-      Indent = True
-      { Label33 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Automatic word wrap by default")
-      }
-      { btnWrapText SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
-      }
-    }
-    { HBox29 HBox
-      MoveScaled(1,44,66,4)
-      Spacing = True
-      Indent = True
-      { Label25 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Show spaces at end of line with dots")
-      }
-      { btnShowSpaces SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
-      }
-    }
-    { HBox38 HBox
-      MoveScaled(1,49,66,4)
-      Spacing = True
-      Indent = True
-      { Label36 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Show tabulations with vertical lines")
-      }
-      { btnShowIndent SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
+      { HBox20 HBox
+        MoveScaled(0,55,66,4)
+        Visible = False
+        Spacing = True
+        Indent = True
+        { Label20 Label
+          MoveScaled(0,0,47,4)
+          Expand = True
+          Text = ("Keywords in upper case")
+        }
+        { btnUpperCaseKeywords SwitchButton
+          MoveScaled(50,0,16,4)
+          Animated = True
+        }
       }
     }
     { Label57 Label
@@ -547,21 +584,6 @@
         AutoResize = True
         Text = ("Configure shortcuts") & "..."
         Picture = Picture["icon:/small/shortcut"]
-      }
-    }
-    { HBox20 HBox
-      MoveScaled(46,59,66,4)
-      Visible = False
-      Spacing = True
-      Indent = True
-      { Label20 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Keywords in upper case")
-      }
-      { btnUpperCaseKeywords SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
       }
     }
     Index = 4

@@ -222,6 +222,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.9.90\n"
+"POT-Creation-Date: 2016-12-11 13:43 UTC\n"
 "PO-Revision-Date: 2016-11-16 08:51 UTC\n"
 "Last-Translator: Benoît Minisini <gambas@users.sourceforge.net>\n"
 "Language: fr\n"
@@ -405,6 +406,7 @@ msgstr "Classes"
 msgid "Class"
 msgstr "Classe"
 
+#: CComponent.class:1644 FConnectionEditor.class:307 FMakeInstall.form:291
 #: FProjectProperty.form:373 FPublish.form:126 FSoftwareFarm.form:316
 msgid "Description"
 msgstr "Description"
@@ -861,7 +863,7 @@ msgstr "ATTENTION ! Bibliothèque introuvable."
 msgid "Provides"
 msgstr "Fournit"
 
-#: CModule.class:28 FEditor.form:392 FForm.form:445 FMain.form:822
+#: CModule.class:28 FEditor.form:392 FForm.form:456 FMain.form:822
 msgid "Form"
 msgstr "Formulaire"
 
@@ -926,9 +928,28 @@ msgid "here"
 msgstr "ici"
 
 #: CProjectList.class:231
-msgid "IDE extentions"
-msgstr ""
+#, fuzzy
+msgid "IDE extensions"
+msgstr "Extension automatique"
 
+#: CProjectList.class:539 CWaitingAnimation.class:63 FColorChooser.form:76
+#: FComponentChooser.form:98 FConflict.class:209 FConnectionEditor.class:457
+#: FCrash.form:97 FCreateFile.form:198 FDebugExpr.form:46 FDebugInfo.form:274
+#: FExportData.class:126 FFarmConfig.form:38 FFarmLogin.form:126
+#: FFarmRegister.form:141 FFarmRequest.form:43 FFieldChooser.form:144
+#: FFileProperty.class:142 FFontChooser.form:40 FGotoLine.form:23
+#: FHelpBrowser.form:60 FImageOffsetSelection.form:33 FImageQuality.form:30
+#: FImageResize.form:49 FImageRotate.form:32 FList.form:128 FMain.class:227
+#: FMakeInstall.class:345 FMenu.form:404 FNewConnection.form:314
+#: FNewTable.form:86 FNewTranslation.form:21 FOption.class:725
+#: FPasteSpecial.form:86 FPasteTable.form:107 FProjectChooser.form:73
+#: FProjectProperty.form:1021 FProjectVersion.class:211 FProxy.form:57
+#: FPublish.class:271 FReportBorderChooser.form:48
+#: FReportBoxShadowChooser.form:27 FReportBrushChooser.form:36
+#: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
+#: FSaveProjectAs.form:76 FSearch.class:896 FSelectComponent.form:39
+#: FSelectExtraFile.form:43 FSelectIcon.form:87 FSelectLibrary.form:66
+#: FSnippet.form:57 FSoftwareFarm.class:538 FTableChooser.form:68 FText.form:41
 #: FTranslate.class:605 FWebFontChooser.form:129 Project.module:515
 msgid "Cancel"
 msgstr "Annuler"
@@ -949,6 +970,7 @@ msgstr "Impossible de désinstaller le logiciel :"
 msgid "The software has been successfully uninstalled."
 msgstr "Le logiciel a été désinstallé avec succès."
 
+#: CProjectTree.class:285 FHelpShortcut.form:22 FMain.form:389 FSearch.class:97
 #: FSelectIcon.form:31 Project.module:1881
 msgid "Project"
 msgstr "Projet"
@@ -1033,43 +1055,58 @@ msgstr "La police Gambas est publiée sous licence « SIL Open Font License »."
 msgid "This program is published under the GNU General Public License."
 msgstr "Ce programme est publié sous la « Licence Publique Générale GNU »."
 
-#: Design.module:189 Project.module:2359
+#: Design.module:195 Project.module:2359
 msgid "first"
 msgstr "premier"
 
-#: Design.module:191 Project.module:2361
+#: Design.module:197 Project.module:2361
 msgid "second"
 msgstr "deuxième"
 
-#: Design.module:193 Project.module:2363
+#: Design.module:199 Project.module:2363
 msgid "third"
 msgstr "troisième"
 
-#: Design.module:288 Project.module:2422
+#: Design.module:294 Project.module:2422
 msgid "in &1:&2."
 msgstr "dans &1:&2."
 
-#: Design.module:394
+#: Design.module:400
 msgid "The program has been interrupted by CTRL+C."
 msgstr "Le programme a été interrompu par CTRL+C."
 
-#: Design.module:398
+#: Design.module:404
 msgid "The program has been terminated."
 msgstr "Le programme a été terminé."
 
-#: Design.module:404
-msgid "The program has returned\nthe value: &1"
-msgstr "Le programme a retourné\nla valeur : &1"
+#: Design.module:410
+msgid ""
+"The program has returned\n"
+"the value: &1"
+msgstr ""
+"Le programme a retourné\n"
+"la valeur : &1"
 
+#: Design.module:476 FColorChooser.form:70 FConnectionEditor.class:674
+#: FCrash.form:91 FCreateFile.form:204 FFarmConfig.form:33 FFarmLogin.form:121
+#: FFieldChooser.form:138 FFontChooser.form:34 FGotoLine.form:17
+#: FImageOffsetSelection.form:27 FImageQuality.form:24 FImageResize.form:103
+#: FImageRotate.form:26 FList.form:122 FMenu.form:399 FNewConnection.form:308
+#: FNewTable.form:80 FNewTranslation.form:15 FPasteSpecial.form:80
+#: FProjectProperty.form:1015 FProxy.form:63 FReportBorderChooser.form:54
+#: FReportBoxShadowChooser.form:33 FReportBrushChooser.form:42
+#: FReportCoordChooser.form:32 FReportPaddingChooser.form:69
+#: FSelectComponent.form:34 FSelectExtraFile.form:37 FSelectIcon.form:82
+#: FSelectLibrary.form:60 FSnippet.form:51 FTableChooser.form:62 FText.form:35
 #: FWebFontChooser.form:123
 msgid "OK"
 msgstr "OK"
 
-#: Design.module:917
+#: Design.module:924
 msgid "Output terminal"
 msgstr "Terminal de sortie"
 
-#: Design.module:947
+#: Design.module:954
 msgid "No terminal emulator found."
 msgstr "Aucun émulateur de terminal n'a été trouvé."
 
@@ -1082,7 +1119,12 @@ msgid "About Gambas"
 msgstr "À propos de Gambas"
 
 #: FAbout.form:25
-msgid "<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
+msgid ""
+"<h2 align=center>Licence</h2>\n"
+"\n"
+"<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n"
+"\n"
+"<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
 msgstr "<h2 align=center>Licence</h2><p align=center>Ce programme est un LOGICIEL LIBRE. Vous pouvez le redistribuer ET/OU le modifier selon les termes de la Licence Publique Générale GNU telle qu'elle est publiée par la Free Software Foundation ; soit la version 2, ou bien n'importe quelle version ultérieure de votre choix.</p><p align=center>Ce programme est distribué en espérant qu'il soit utile MAIS SANS GARANTIE D'AUCUNE SORTE ; y compris les garanties implicites de COMMERCIABILITÉ ET DE CONFORMITÉ À UNE UTILISATION PARTICULIÈRE. Se reporter à la Licence Publique Générale GNU pour plus d'information.</p>\n"
 
 #: FColorChooser.form:16
@@ -1153,6 +1195,8 @@ msgstr "Choisissez un composant"
 msgid "Show deprecated components"
 msgstr "Afficher les composants dépréciés"
 
+#: FComponentChooser.form:104 FConnectionEditor.form:118 FEditor.form:344
+#: FForm.form:433 FHelpBrowser.form:66 FImageEditor.form:374 FMain.form:340
 #: FTextEditor.form:305 FTranslate.form:77 Project.module:792
 msgid "Reload"
 msgstr "Recharger"
@@ -1174,8 +1218,12 @@ msgid "&Edit"
 msgstr "&Éditer"
 
 #: FConflict.class:23
-msgid "This file is in conflict with the revision #&1.\nYou must resolve the conflict in order to use the file."
-msgstr "Ce fichier entre en conflit avec la révision #&1.\nVous devez résoudre le conflit pour pouvoir utiliser ce fichier de nouveau."
+msgid ""
+"This file is in conflict with the revision #&1.\n"
+"You must resolve the conflict in order to use the file."
+msgstr ""
+"Ce fichier entre en conflit avec la révision #&1.\n"
+"Vous devez résoudre le conflit pour pouvoir utiliser ce fichier de nouveau."
 
 #: FConflict.class:109
 msgid "Unable to load file:"
@@ -1185,13 +1233,18 @@ msgstr "Impossible de charger le fichier :"
 msgid "Text"
 msgstr "Texte"
 
+#: FConflict.class:153 FMain.form:853 FReportBrushChooser.form:49
 #: Project.module:230
 msgid "Image"
 msgstr "Image"
 
 #: FConflict.class:209
-msgid "The file has been modified.\nDo you really want to close the dialog?"
-msgstr "Le fichier a été modifié.\nDésirez-vous réellement fermer la boite de dialogue ?"
+msgid ""
+"The file has been modified.\n"
+"Do you really want to close the dialog?"
+msgstr ""
+"Le fichier a été modifié.\n"
+"Désirez-vous réellement fermer la boite de dialogue ?"
 
 #: FConflict.class:237
 msgid "Some conflicts are not yet resolved."
@@ -1202,8 +1255,12 @@ msgid "Unable to resolve the conflict."
 msgstr "Impossible de résoudre le conflit."
 
 #: FConflict.class:271
-msgid "The file has been modified.\nDo you really want to open another file?"
-msgstr "Le fichier a été modifié.\nDésirez-vous réellement ouvrir un autre fichier ?"
+msgid ""
+"The file has been modified.\n"
+"Do you really want to open another file?"
+msgstr ""
+"Le fichier a été modifié.\n"
+"Désirez-vous réellement ouvrir un autre fichier ?"
 
 #: FConflict.class:279
 msgid "Conflict files"
@@ -1213,38 +1270,54 @@ msgstr "Fichiers en conflits"
 msgid "Version conflict"
 msgstr "Conflit de version"
 
+#: FConflict.form:70 FConnectionEditor.form:375 FEditor.form:118 FForm.form:153
+#: FImageEditor.form:135 FMain.form:942 FMenu.form:111 FProjectVersion.form:234
 #: FTextEditor.form:111
 msgid "Cut"
 msgstr "Couper"
 
+#: FConflict.form:76 FConnectionEditor.form:147 FEditor.form:125 FForm.form:160
+#: FImageEditor.form:143 FList.form:99 FMain.form:949 FMakeInstall.form:902
+#: FMenu.form:117 FOutput.form:39 FProjectVersion.form:240 FSystemInfo.form:62
 #: FTextEditor.form:118
 msgid "Copy"
 msgstr "Copier"
 
+#: FConflict.form:82 FConnectionEditor.form:155 FEditor.form:132 FForm.form:173
+#: FImageEditor.form:150 FList.form:105 FMain.form:956 FMenu.form:123
+#: FOutput.form:46 FPasteTable.form:101 FProjectVersion.form:246
 #: FTextEditor.form:125
 msgid "Paste"
 msgstr "Coller"
 
+#: FConflict.form:88 FConnectionEditor.form:396 FEditor.form:101
+#: FFieldChooser.form:127 FForm.form:136 FImageEditor.form:116 FList.form:111
 #: FOption.form:924 FProjectVersion.form:252 FTextEditor.form:94
 msgid "Undo"
 msgstr "Annuler"
 
+#: FConflict.form:94 FConnectionEditor.form:403 FEditor.form:108 FForm.form:143
 #: FImageEditor.form:124 FProjectVersion.form:258 FTextEditor.form:101
 msgid "Redo"
 msgstr "Rétablir"
 
+#: FConflict.form:100 FEditor.form:513 FMenu.form:133 FProjectVersion.form:264
 #: FTextEditor.form:435
 msgid "Indent"
 msgstr "Indenter"
 
+#: FConflict.form:106 FEditor.form:521 FMenu.form:139 FProjectVersion.form:270
 #: FTextEditor.form:443
 msgid "Unindent"
 msgstr "Désindenter"
 
+#: FConflict.form:141 FMain.form:333 FOpenProject.form:35
 #: FProjectChooser.form:85
 msgid "Open"
 msgstr "Ouvrir"
 
+#: FConflict.form:149 FConnectionEditor.form:110 FEditor.form:350
+#: FForm.form:439 FImageEditor.form:381 FMain.form:349 FMenu.class:72
 #: FSaveProjectAs.form:82 FTextEditor.form:311
 msgid "Save"
 msgstr "Enregistrer"
@@ -1253,14 +1326,20 @@ msgstr "Enregistrer"
 msgid "Solve"
 msgstr "Résoudre"
 
+#: FConflict.form:166 FDebugInfo.form:281 FEditor.form:337
+#: FFileProperty.form:75 FForm.form:426 FImageEditor.form:388 FMain.form:366
+#: FPatch.form:88 FProjectVersion.form:322 FSystemInfo.form:68
 #: FTextEditor.form:318 FTips.form:83 FTranslate.form:306
 msgid "Close"
 msgstr "Fermer"
 
+#: FConnectionEditor.class:49 FCreateFile.form:61 FDebugInfo.class:38
+#: FMakeInstall.form:241 FNewConnection.form:69 FNewTable.form:33
 #: FOption.form:261
 msgid "Name"
 msgstr "Nom"
 
+#: FConnectionEditor.class:54 FCreateFile.form:112 FCreateProjectOld.form:98
 #: FDebugInfo.class:76 FNewConnection.form:83 FNewTable.form:48 FProxy.form:27
 msgid "Type"
 msgstr "Type"
@@ -1413,6 +1492,8 @@ msgstr "Nouvelle table"
 msgid "Delete table"
 msgstr "Supprimer la table"
 
+#: FConnectionEditor.form:131 FMain.form:1074 FMakeInstall.form:743
+#: FOption.form:1150 FProjectProperty.form:579 FPublish.form:269
 #: FSoftwareFarm.form:415
 msgid "Remove"
 msgstr "Supprimer"
@@ -1437,6 +1518,7 @@ msgstr "Copier la table"
 msgid "Import text file"
 msgstr "Importer un fichier texte"
 
+#: FConnectionEditor.form:163 FImportTable.form:48 FMain.form:889
 #: FOption.form:1136 FTranslate.form:326
 msgid "Import"
 msgstr "Importer"
@@ -1445,14 +1527,17 @@ msgstr "Importer"
 msgid "Fields"
 msgstr "Champs"
 
+#: FConnectionEditor.form:222 FMain.class:2118 FMakeInstall.form:737
 #: FOption.form:1373 FProjectProperty.form:666 FPublish.form:159
 msgid "Add"
 msgstr "Ajouter"
 
+#: FConnectionEditor.form:236 FList.form:77 FMakeInstall.form:755
 #: FPublish.form:281
 msgid "Down"
 msgstr "Descendre"
 
+#: FConnectionEditor.form:243 FList.form:71 FMakeInstall.form:749
 #: FPublish.form:275
 msgid "Up"
 msgstr "Monter"
@@ -1477,6 +1562,7 @@ msgstr "Exécuter la requête"
 msgid "New query"
 msgstr "Nouvelle requête"
 
+#: FConnectionEditor.form:354 FMain.form:791 FOption.form:1128
 #: FTranslate.form:72
 msgid "New"
 msgstr "Nouveau"
@@ -1485,10 +1571,13 @@ msgstr "Nouveau"
 msgid "Remove query"
 msgstr "Supprimer la requête"
 
+#: FConnectionEditor.form:368 FDebugInfo.class:561 FImageProperty.form:372
+#: FList.form:93 FMakeInstall.form:761 FOption.class:725 FOutput.form:53
 #: FPublish.form:171
 msgid "Clear"
 msgstr "Effacer"
 
+#: FConnectionEditor.form:440 FDebugExpr.form:28 FMain.form:381
 #: FOption.form:1143
 msgid "Edit"
 msgstr "Éditer"
@@ -1501,15 +1590,17 @@ msgstr "Exporter vers un fichier CSV"
 msgid "Export"
 msgstr "Exporter"
 
+#: FConnectionEditor.form:473 FForm.form:180 FList.form:65 FMain.form:970
+#: FMenu.form:101 FNewConnection.class:378 FOption.class:890
 #: FSoftwareFarm.class:640 FTranslate.form:82
 msgid "Delete"
 msgstr "Supprimer"
 
-#: FConnectionEditor.form:480 FForm.form:211
+#: FConnectionEditor.form:480 FForm.form:214
 msgid "Select all"
 msgstr "Sélectionner tout"
 
-#: FConnectionEditor.form:487 FForm.form:222
+#: FConnectionEditor.form:487 FForm.form:225
 msgid "Unselect all"
 msgstr "Déselectionner tout"
 
@@ -1557,6 +1648,7 @@ msgstr "Impossible d'ajouter le fichier."
 msgid "New file"
 msgstr "Nouveau fichier"
 
+#: FCreateFile.form:71 FCreateProjectOld.form:274 FImportTable.form:59
 #: FMakePatch.form:66 FProjectProperty.form:778 FSearch.form:100
 msgid "Options"
 msgstr "Options"
@@ -1649,6 +1741,7 @@ msgstr "Le titre du projet est le nom complet de l'application."
 msgid "Project is translatable"
 msgstr "Le projet est traduisible"
 
+#: FCreateProject.form:159 FCreateProjectOld.form:426 FProjectChooser.form:80
 #: ProjectBox.class:303
 msgid "Open in another window"
 msgstr "Ouvrir dans une nouvelle fenêtre"
@@ -1690,8 +1783,12 @@ msgid "CGI Web application"
 msgstr "Application Web CGI"
 
 #: FCreateProjectOld.form:259
-msgid "Application stored in a\nSubversion repository"
-msgstr "Application stockée dans un\nréférentiel Subversion"
+msgid ""
+"Application stored in a\n"
+"Subversion repository"
+msgstr ""
+"Application stockée dans un\n"
+"référentiel Subversion"
 
 #: FCreateProjectOld.form:288
 msgid "Internationalization"
@@ -1905,7 +2002,7 @@ msgstr "La chaîne recherchée est introuvable."
 msgid "Stack backtrace"
 msgstr "Pile d'appels"
 
-#: FEditor.class:2688 FTextEditor.class:1104
+#: FEditor.class:2705 FTextEditor.class:1104
 msgid "(Declarations)"
 msgstr "(Déclarations)"
 
@@ -2009,7 +2106,7 @@ msgstr "Ouvrir le formulaire"
 msgid "Run this class"
 msgstr "Exécuter cette classe"
 
-#: FEditor.form:330 FForm.form:416 FImageEditor.form:366 FTextEditor.form:298
+#: FEditor.form:330 FForm.form:419 FImageEditor.form:366 FTextEditor.form:298
 msgid "Locked"
 msgstr "Verrouillé"
 
@@ -2054,8 +2151,14 @@ msgid "&Overwrite"
 msgstr "&Remplacer"
 
 #: FExportData.class:126
-msgid "This file already exists.\n\nDo you want to overwrite it?"
-msgstr "Ce fichier existe déjà.\n\nDésirez-vous le remplacer ?"
+msgid ""
+"This file already exists.\n"
+"\n"
+"Do you want to overwrite it?"
+msgstr ""
+"Ce fichier existe déjà.\n"
+"\n"
+"Désirez-vous le remplacer ?"
 
 #: FExportData.form:31 FImportTable.form:102
 msgid "Delimiter character"
@@ -2089,10 +2192,12 @@ msgstr "S'identifier"
 msgid "Server"
 msgstr "Serveur"
 
+#: FFarmLogin.form:59 FFarmRegister.form:61 FNewConnection.form:141
 #: FProjectVersion.form:127 FProxy.form:42
 msgid "User"
 msgstr "Utilisateur"
 
+#: FFarmLogin.form:74 FFarmRegister.form:76 FNewConnection.form:156
 #: FProjectVersion.form:142 FProxy.form:47
 msgid "Password"
 msgstr "Mot de passe"
@@ -2118,8 +2223,14 @@ msgid "Unable to register user."
 msgstr "Impossible d'enregistrer l'utilisateur."
 
 #: FFarmRegister.class:40
-msgid "You have been successfully registered.\n\nYou will receive a confirmation e-mail soon."
-msgstr "Vous avez été enregistré avec succès.\n\nVous recevrez un courriel de confirmation bientôt."
+msgid ""
+"You have been successfully registered.\n"
+"\n"
+"You will receive a confirmation e-mail soon."
+msgstr ""
+"Vous avez été enregistré avec succès.\n"
+"\n"
+"Vous recevrez un courriel de confirmation bientôt."
 
 #: FFarmRegister.form:28 FPublish.form:320 FSoftwareFarm.form:114
 msgid "Register"
@@ -2134,8 +2245,14 @@ msgid "E-mail"
 msgstr "E-mail"
 
 #: FFarmRegister.form:121
-msgid "A confirmation mail will be sent to the specified e-mail address. Click on the link included in that mail to activate your account.\n<p>\n<b>Your e-mail will not be stored on the publishing server.</b>"
-msgstr "Un mail de confirmation sera envoyé à l'adresse spécifiée. Cliquez sur le lien contenu dans ce mail pour activer votre compte.\n<p>\n<b>Votre e-mail ne sera pas stocké sur le serveur de publication.</b>"
+msgid ""
+"A confirmation mail will be sent to the specified e-mail address. Click on the link included in that mail to activate your account.\n"
+"<p>\n"
+"<b>Your e-mail will not be stored on the publishing server.</b>"
+msgstr ""
+"Un mail de confirmation sera envoyé à l'adresse spécifiée. Cliquez sur le lien contenu dans ce mail pour activer votre compte.\n"
+"<p>\n"
+"<b>Votre e-mail ne sera pas stocké sur le serveur de publication.</b>"
 
 #: FFieldChooser.class:54 FTableChooser.class:66
 msgid "Unable to open connection."
@@ -2197,6 +2314,7 @@ msgstr "Le fichier n'est pas versionné, et doit être ajouté au référentiel.
 msgid "This file has not been modified since the last commit."
 msgstr "Ce fichier est inchangé depuis le dernier envoi vers le réferentiel."
 
+#: FFileProperty.class:142 FMakeInstall.class:345 FProjectVersion.class:211
 #: FSave.form:21 Project.module:3635
 msgid "Continue"
 msgstr "Continuer"
@@ -2237,191 +2355,196 @@ msgstr "Composant introuvable pour le contrôle &1"
 msgid "Cannot paste data."
 msgstr "Impossible de coller les données."
 
-#: FForm.form:164
+#: FForm.form:167
 msgid "Copy at the same place"
 msgstr "Copier au même emplacement"
 
-#: FForm.form:184
+#: FForm.form:187
 msgid "Delete container only"
 msgstr "Supprimer le conteneur uniquement"
 
-#: FForm.form:191
+#: FForm.form:194
 msgid "Embed into a container"
 msgstr "Imbriquer dans un conteneur"
 
-#: FForm.form:197
+#: FForm.form:200
 msgid "Change into"
 msgstr "Transformer en"
 
-#: FForm.form:205
+#: FForm.form:208
 msgid "Select"
 msgstr "Sélectionner"
 
-#: FForm.form:217
+#: FForm.form:220
 msgid "Select parent"
 msgstr "Sélectionner le parent"
 
-#: FForm.form:230
+#: FForm.form:233
 msgid "Arrangement"
 msgstr "Disposition"
 
-#: FForm.form:234
+#: FForm.form:237
 msgid "Bring to foreground"
 msgstr "Au premier plan"
 
-#: FForm.form:241
+#: FForm.form:244
 msgid "Send to background"
 msgstr "A l'arrière-plan"
 
-#: FForm.form:251
+#: FForm.form:254
 msgid "Horizontal"
 msgstr "Horizontal"
 
-#: FForm.form:258
+#: FForm.form:261
 msgid "Rows"
 msgstr "Lignes"
 
-#: FForm.form:264
+#: FForm.form:267
 msgid "Vertical"
 msgstr "Vertical"
 
-#: FForm.form:271
+#: FForm.form:274
 msgid "Columns"
 msgstr "Colonnes"
 
-#: FForm.form:280
+#: FForm.form:283
 msgid "Center horizontally"
 msgstr "Centrer horizontalement"
 
-#: FForm.form:286
+#: FForm.form:289
 msgid "Center vertically"
 msgstr "Centrer verticalement"
 
-#: FForm.form:292
+#: FForm.form:295
 msgid "Alignment"
 msgstr "Alignement"
 
-#: FForm.form:296
+#: FForm.form:299
 msgid "Align to left"
 msgstr "Aligner sur la gauche"
 
-#: FForm.form:302
+#: FForm.form:305
 msgid "Align to right"
 msgstr "Aligner sur la droite"
 
-#: FForm.form:308
+#: FForm.form:311
 msgid "Align to top"
 msgstr "Aligner sur le haut"
 
-#: FForm.form:314
+#: FForm.form:317
 msgid "Align to bottom"
 msgstr "Aligner sur le bas"
 
-#: FForm.form:323
+#: FForm.form:326
 msgid "Same width"
 msgstr "Même largeur"
 
-#: FForm.form:329
+#: FForm.form:332
 msgid "Same height"
 msgstr "Même hauteur"
 
-#: FForm.form:338
+#: FForm.form:341
 msgid "Show tab"
 msgstr "Afficher l'onglet"
 
-#: FForm.form:346
+#: FForm.form:349
 msgid "Move tab"
 msgstr "Déplacer l'onglet"
 
-#: FForm.form:351
+#: FForm.form:354
 msgid "First"
 msgstr "Début"
 
-#: FForm.form:358 FSearch.form:199 FTips.form:71
+#: FForm.form:361 FSearch.form:199 FTips.form:71
 msgid "Previous"
 msgstr "Précédent"
 
-#: FForm.form:365 FSearch.form:193 FTips.form:77
+#: FForm.form:368 FSearch.form:193 FTips.form:77
 msgid "Next"
 msgstr "Suivant"
 
-#: FForm.form:372
+#: FForm.form:375
 msgid "Last"
 msgstr "Fin"
 
-#: FForm.form:383 FMenu.form:68
+#: FForm.form:386 FMenu.form:68
 msgid "Menu editor"
 msgstr "Éditeur de menu"
 
-#: FForm.form:392
+#: FForm.form:395
 msgid "Event"
 msgstr "Evènement"
 
-#: FForm.form:399 FMain.form:909 FTextEditor.form:288
+#: FForm.form:402 FMain.form:909 FTextEditor.form:288
 msgid "Open code"
 msgstr "Ouvrir le code"
 
-#: FForm.form:406
+#: FForm.form:409
 msgid "Run this form"
 msgstr "Exécuter ce formulaire"
 
-#: FForm.form:451 FTextEditor.form:360
+#: FForm.form:449
+#, fuzzy
+msgid "Menu3"
+msgstr "Menus"
+
+#: FForm.form:462 FTextEditor.form:360
 msgid "Code"
 msgstr "Code"
 
-#: FForm.form:474
+#: FForm.form:485
 msgid "Lock / unlock form"
 msgstr "Vérrouiller  / déverrouiller le formulaire"
 
-#: FForm.form:551
+#: FForm.form:562
 msgid "Toggle grid"
 msgstr "Bascule l'affichage de la grille"
 
-#: FForm.form:670
+#: FForm.form:681
 msgid "Move tab first"
 msgstr "Déplacer l'onglet au début"
 
-#: FForm.form:677
+#: FForm.form:688
 msgid "Move tab left"
 msgstr "Déplacer l'onglet à gauche"
 
-#: FForm.form:684
+#: FForm.form:695
 msgid "Move tab right"
 msgstr "Déplacer l'onglet à droite"
 
-#: FForm.form:691
+#: FForm.form:702
 msgid "Move tab last"
 msgstr "Déplacer l'onglet à la fin"
 
-#: FForm.form:710 FOption.form:227 FWebFontChooser.form:69
+#: FForm.form:730 FOption.form:227 FWebFontChooser.form:69
 msgid "Bold"
 msgstr "Gras"
 
-#: FForm.form:718 FWebFontChooser.form:77
+#: FForm.form:738 FWebFontChooser.form:77
 msgid "Italic"
 msgstr "Italique"
 
-#: FForm.form:726 FOption.form:232 FWebFontChooser.form:85
+#: FForm.form:746 FOption.form:232 FWebFontChooser.form:85
 msgid "Underline"
 msgstr "Souligné"
 
-#: FForm.form:734
+#: FForm.form:754
 msgid "Bigger font"
 msgstr "Police plus grande"
 
-#: FForm.form:742
+#: FForm.form:762
 msgid "Smaller font"
 msgstr "Police plus petite"
 
-#: FForm.form:750 FOption.form:557
+#: FForm.form:770 FOption.form:557
 msgid "Default font"
 msgstr "Police par défaut"
 
-#: FForm.form:758 FOption.form:1157 MTheme.module:6
+#: FForm.form:778 FOption.form:1157 MTheme.module:6
 msgid "Background"
 msgstr "Arrière-plan"
 
-#: FForm.form:766
+#: FForm.form:786
 msgid "Foreground"
 msgstr "Avant-plan"
 
@@ -3050,8 +3173,14 @@ msgid "New folder"
 msgstr "Nouveau dossier"
 
 #: FMain.class:964
-msgid "The GNU translation tools are not installed on your system.\n\nPlease install them to be able to do the translation."
-msgstr "Les outils de traduction GNU ne sont pas installés sur votre système.\n\nVeuillez les installer pour pouvoir effectuer la traduction."
+msgid ""
+"The GNU translation tools are not installed on your system.\n"
+"\n"
+"Please install them to be able to do the translation."
+msgstr ""
+"Les outils de traduction GNU ne sont pas installés sur votre système.\n"
+"\n"
+"Veuillez les installer pour pouvoir effectuer la traduction."
 
 #: FMain.class:1678
 msgid "Unable to drop file into the project."
@@ -3086,8 +3215,14 @@ msgid "This file is located inside the project."
 msgstr "Le fichier est situé à l'intérieur du projet."
 
 #: FMain.class:2626 Project.module:792
-msgid "The file has been modified.\n\nAll your changes will be lost."
-msgstr "Le fichier a été modifié.\n\nToutes les modifications seront perdues."
+msgid ""
+"The file has been modified.\n"
+"\n"
+"All your changes will be lost."
+msgstr ""
+"Le fichier a été modifié.\n"
+"\n"
+"Toutes les modifications seront perdues."
 
 #: FMain.form:269 FWelcome.class:67
 msgid "Open project"
@@ -3686,8 +3821,12 @@ msgid "Mimetypes"
 msgstr "Types MIME"
 
 #: FMakeInstall.form:679
-msgid "Enter the mimetypes handled by your application there.\nPlease enter one mimetype by line.\n"
-msgstr "Saisissez les types MIME gérés par votre application.\nVeuillez saisir un type MIME par ligne.\n"
+msgid ""
+"Enter the mimetypes handled by your application there.\n"
+"Please enter one mimetype by line.\n"
+msgstr ""
+"Saisissez les types MIME gérés par votre application.\n"
+"Veuillez saisir un type MIME par ligne.\n"
 
 #: FMakeInstall.form:691
 msgid "Additional configuration"
@@ -3722,8 +3861,12 @@ msgid "Extra autoconf tests"
 msgstr "Tests autoconf supplémentaires"
 
 #: FMakeInstall.form:848
-msgid "Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
-msgstr "Ajout de tests supplémentaires au processus de configuration.\n<p><b>Laissez ce champ vide si vous n'en avez pas besoin, ou si vous ne connaissez rien aux scripts <i>autoconf</i>.</b>"
+msgid ""
+"Add extra tests for the configuration process.\n"
+"<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
+msgstr ""
+"Ajout de tests supplémentaires au processus de configuration.\n"
+"<p><b>Laissez ce champ vide si vous n'en avez pas besoin, ou si vous ne connaissez rien aux scripts <i>autoconf</i>.</b>"
 
 #: FMakeInstall.form:856
 msgid "Destination directory"
@@ -4533,7 +4676,7 @@ msgstr "Général"
 msgid "Component"
 msgstr "Composant"
 
-#: FProjectProperty.form:310 FSelectLibrary.class:100
+#: FProjectProperty.form:310 FSelectLibrary.class:101
 msgid "Library"
 msgstr "Bibliothèque"
 
@@ -4541,7 +4684,7 @@ msgstr "Bibliothèque"
 msgid "Vendor"
 msgstr "Fournisseur"
 
-#: FProjectProperty.form:329 FPublish.class:89 FSelectLibrary.class:102
+#: FProjectProperty.form:329 FPublish.class:89 FSelectLibrary.class:103
 msgid "Version"
 msgstr "Version"
 
@@ -5061,7 +5204,7 @@ msgstr "Sélectionnez une image"
 msgid "Stock"
 msgstr "Stock"
 
-#: FSelectLibrary.class:63
+#: FSelectLibrary.class:64
 msgid "unknown"
 msgstr "inconnu"
 
@@ -7102,8 +7245,14 @@ msgid "This project does not exist."
 msgstr "Ce projet n'existe pas."
 
 #: Project.module:496
-msgid "Unable to find Gambas IDE executable in directory:\n\n&1"
-msgstr "Impossible de trouver l'exécutable de l'EDI Gambas dans le répertoire :\n\n&1"
+msgid ""
+"Unable to find Gambas IDE executable in directory:\n"
+"\n"
+"&1"
+msgstr ""
+"Impossible de trouver l'exécutable de l'EDI Gambas dans le répertoire :\n"
+"\n"
+"&1"
 
 #: Project.module:509
 msgid "This is not a Gambas project."
@@ -7118,8 +7267,14 @@ msgid "Convert"
 msgstr "Convertir"
 
 #: Project.module:515
-msgid "This is a Gambas 2.0 project.\n\nDo you want to convert it?"
-msgstr "Ceci est un projet Gambas 2.0.\n\nDésirez-vous le convertir ?"
+msgid ""
+"This is a Gambas 2.0 project.\n"
+"\n"
+"Do you want to convert it?"
+msgstr ""
+"Ceci est un projet Gambas 2.0.\n"
+"\n"
+"Désirez-vous le convertir ?"
 
 #: Project.module:533
 msgid "Do not open"
@@ -7130,8 +7285,14 @@ msgid "Open after all"
 msgstr "Ouvrir malgré tout"
 
 #: Project.module:533
-msgid "This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."
-msgstr "Il semble que ce projet soit déjà ouvert.\n\nOuvrir le même projet deux fois peut provoquer des pertes de données."
+msgid ""
+"This project seems to be already opened.\n"
+"\n"
+"Opening the same project twice can lead to data loss."
+msgstr ""
+"Il semble que ce projet soit déjà ouvert.\n"
+"\n"
+"Ouvrir le même projet deux fois peut provoquer des pertes de données."
 
 #: Project.module:539
 msgid "It cannot be converted."
@@ -7214,8 +7375,12 @@ msgid "in &1."
 msgstr "dans &1."
 
 #: Project.module:2586
-msgid "Some project source files are in conflict.\nPlease solve them if you want to compile the project."
-msgstr "Certains fichiers sources du projet sont en conflit.\nVeuillez résoudre ces conflits pour pouvoir compiler le projet."
+msgid ""
+"Some project source files are in conflict.\n"
+"Please solve them if you want to compile the project."
+msgstr ""
+"Certains fichiers sources du projet sont en conflit.\n"
+"Veuillez résoudre ces conflits pour pouvoir compiler le projet."
 
 #: Project.module:2590
 msgid "Compiling project"
@@ -7440,4 +7605,3 @@ msgstr "Cette classe n'existe pas."
 #: WikiMarkdown.class:187
 msgid "This symbol does not exist."
 msgstr "Ce symbole n'existe pas."
-
