@@ -4940,8 +4940,10 @@ Public Sub SideBar_MouseMove()
         If $hSideBarViewer.Visible Then
           $hSideBarViewer.Move($hSideBar.Left - $hView.Width / 2, Min(Max(0, Mouse.y - ($hView.Height / 5) / 2), $hSideBar.Height - $hSideBarViewer.Height)) ', $hView.Width / 2, $hView.Height / 5)
           iCurLine = Min(Max(0, Floor(((Mouse.y - $iMD) - 21) / $fBarLineHeight)), $hDoc.Count)
-          'Print Min($hDoc.Count - 12, y + 6)
-          $hSideBarViewer.Text = $hDoc.GetText(0, Max(0, Min($hDoc.Count - 1, iCurLine - $iSideBarNBLines)), 100, Min($hDoc.Count - 1, iCurLine + $iSideBarNBLines))
+          If $hSideBarViewer.Tag <> iCurLine Then
+            $hSideBarViewer.Tag = iCurLine
+            $hSideBarViewer.Text = $hDoc.GetText(0, Max(0, Min($hDoc.Count - 1, iCurLine - $iSideBarNBLines)), 100, Min($hDoc.Count - 1, iCurLine + $iSideBarNBLines))
+          Endif
         Endif
       Endif
     Endif
@@ -5016,7 +5018,7 @@ Public Sub SideBar_MouseDown()
           If $hSideBarViewer.Visible Then $bSideBarLockViewer = Not $bSideBarLockViewer
         Else
           Y = Min(Max(0, Floor(((Mouse.y - $iMD) - 21) / $fBarLineHeight)), $hDoc.Count)
-          Me.GotoCenter(0, y) 
+          Me.GotoCenter(0, y)
         Endif
       Else
 
