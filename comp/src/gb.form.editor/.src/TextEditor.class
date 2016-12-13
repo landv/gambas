@@ -4814,7 +4814,7 @@ Private Sub DrawBarImage(fRowHeight As Float)
 
       Paint.MoveTo(x, y)
       Paint.RelLineTo(Len(s) * 60 / 100, 0)
-      If $hDoc.LinesInfo[i].Comment Then
+      If Not IsNull($hDoc.LinesInfo[i]) And If $hDoc.LinesInfo[i].Comment Then
         Paint.Background = Color.SetAlpha($hStyles[Highlight.Comment].Color, 180) 'Color.Lighter($hStyles[Highlight.Comment].Color)
       Else
         Paint.Background = Color.SetAlpha($hStyles[Highlight.Normal].Color, 180) 'Color.Lighter($hStyles[Highlight.Normal].Color)
