@@ -197,7 +197,6 @@ Private $iSideBarNBLines As Integer
 'Private System.RightToLeft As Boolean = True
 Private $bSideBarMouseDown As Boolean
 
-
 Public Sub _new()
 
   Dim sDisplay As String
@@ -4862,7 +4861,6 @@ Public Sub SideBar_Draw()
   Dim X, Y, W, H As Integer
   Dim iBorder As Integer = IIf(System.RightToLeft, 0, 1)
 
-
   NL = $hView.ClientH \ $hRows.H + 1
   Row = $hRows._FindRowFromPos($hView.ScrollY)
   $fBarLineHeight = Min(2, Paint.Height / $hDoc.Count)
@@ -4882,7 +4880,6 @@ Public Sub SideBar_Draw()
   Endif
   Paint.RelLineTo(0, Paint.Height)
   Paint.Stroke
-
 
   'Arrow Buttons
   If $iSideBarStyle > 0 Then
@@ -4948,37 +4945,36 @@ Public Sub SideBar_MouseMove()
     $hView.Scrolly = $hRows._GetRowY(Min(Max(0, Floor(((Mouse.y - $iMD)) / $fBarLineHeight)), $hDoc.Count))
   Endif
 
-  If Mouse.Y > $fBarLineHeight * $hDoc.Count Then 
-
-  If Not $bSideBarLockViewer Then $hSideBarViewer.Hide
-  Else
-  If $iMD > 0 Then
+  If Mouse.Y > $fBarLineHeight * $hDoc.Count Then
     If Not $bSideBarLockViewer Then $hSideBarViewer.Hide
   Else
-    If Not $bSideBarLockViewer Then
-      If Not $hSideBarViewer.Visible Then $hTimerSideBarViewer.Start
-      If $hSideBarViewer.Visible Then
-        X = IIf(System.RightToLeft, $hSideBar.Left + $hSideBar.Width, $hSideBar.Left - $hView.Width / 2)
-        $hSideBarViewer.Move(X, Min(Max(0, Mouse.y - ($hView.Height / 5) / 2), $hSideBar.Height - $hSideBarViewer.Height)) ', $hView.Width / 2, $hView.Height / 5)
-        iCurLine = Min(Max(0, Floor(((Mouse.y - $iMD)) / $fBarLineHeight)), $hDoc.Count)
-        If $hSideBarViewer.Tag <> iCurLine Then
-          $hSideBarViewer.Tag = iCurLine
-          $hSideBarViewer.Text = $hDoc.GetText(0, Max(0, Min($hDoc.Count - 1, iCurLine - $iSideBarNBLines)), 100, Min($hDoc.Count - 1, iCurLine + $iSideBarNBLines))
+    If $iMD > 0 Then
+      If Not $bSideBarLockViewer Then $hSideBarViewer.Hide
+    Else
+      If Not $bSideBarLockViewer Then
+        If Not $hSideBarViewer.Visible Then $hTimerSideBarViewer.Start
+        If $hSideBarViewer.Visible Then
+          X = IIf(System.RightToLeft, $hSideBar.Left + $hSideBar.Width, $hSideBar.Left - $hView.Width / 2)
+          $hSideBarViewer.Move(X, Min(Max(0, Mouse.y - ($hView.Height / 5) / 2), $hSideBar.Height - $hSideBarViewer.Height)) ', $hView.Width / 2, $hView.Height / 5)
+          iCurLine = Min(Max(0, Floor(((Mouse.y - $iMD)) / $fBarLineHeight)), $hDoc.Count)
+          If $hSideBarViewer.Tag <> iCurLine Then
+            $hSideBarViewer.Tag = iCurLine
+            $hSideBarViewer.Text = $hDoc.GetText(0, Max(0, Min($hDoc.Count - 1, iCurLine - $iSideBarNBLines)), 100, Min($hDoc.Count - 1, iCurLine + $iSideBarNBLines))
+          Endif
         Endif
       Endif
     Endif
-  Endif
 
-  $iMY = Mouse.Y
-  If Mouse.Left Then
-    $bSideBarMouseDown = True
-    If $iMD = 0 Then
-      If $rectSideBar.Contains(Mouse.x, Mouse.y) Then
-        If Not $bSideBarLockViewer Then $hSideBarViewer.Hide
-        $iMD = Mouse.y - $rectSideBar.Top
+    $iMY = Mouse.Y
+    If Mouse.Left Then
+      $bSideBarMouseDown = True
+      If $iMD = 0 Then
+        If $rectSideBar.Contains(Mouse.x, Mouse.y) Then
+          If Not $bSideBarLockViewer Then $hSideBarViewer.Hide
+          $iMD = Mouse.y - $rectSideBar.Top
+        Endif
       Endif
     Endif
-  Endif
 
   Endif
 
@@ -5137,11 +5133,6 @@ Private Sub ShowPreview_Write(Value As Boolean)
     $hSideBar.Background = $hStyles[Highlight.BackGround].Color
     $hSideBar.Tracking = True
     '$hSideBar.Visible = True
-    If System.RightToLeft Then
-      $hSideBar.Lower
-    Else
-      $hSideBar.Raise
-    Endif
     ScrollBar_Write($iScrollBar)
   Else
     If $hSideBar Then
