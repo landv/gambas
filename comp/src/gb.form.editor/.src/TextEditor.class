@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border=True,ShowSideBar,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces,ShowIndent"
+Public Const _Properties As String = "*,Border=True,ShowPreview,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces,ShowIndent"
 Public Const _DrawWith As String = "-"
 Public Const _DefaultEvent As String = "Change"
 Public Const _Similar As String = "TextArea"
@@ -25,7 +25,7 @@ Property Read SelectionColumn As Integer
 Property Read Selected As Boolean
 Property Read SelectedText As String
 Property ReadOnly As Boolean
-Property ShowSideBar As Boolean
+Property ShowPreview As Boolean
 Property Highlight As String
 Property LineNumberOffset As Integer
 Property TabSize As Integer
@@ -185,16 +185,18 @@ Private $hTimerSideBarMDHold As Timer
 Private $hTimerSideBarRefresh As Timer
 Private $rectSideBar As Rect
 Private $fBarLineHeight As Float
-Private $bShowSideBar As Float
+Private $bShowPreview As Float
 Private $hSideBarViewer As TextEditor
-'Private $TimerShowSideBarViewer As Timer
+
 Private $hTimerSideBarViewer As Timer
 Private $iScrollBar As Integer
 Private $iMD As Integer
 Private $iMY As Integer = -1
 Private $bSideBarLockViewer As Boolean
 Private $iSideBarNBLines As Integer
+'Private System.RightToLeft As Boolean = True
 Private $bSideBarMouseDown As Boolean
+
 
 Public Sub _new()
 
@@ -229,7 +231,7 @@ Public Sub _new()
   $hView.Tracking = True
   $hView.Mouse = Mouse.Text
   $hView.Expand = True
-  ' If $bShowSideBar Then
+  ' If $bShowPreview Then
   '   InitSideBar
   ' Endif
   Me.Proxy = $hView
@@ -347,7 +349,7 @@ Private Sub Text_Write(Value As String)
   Goto(0, 0)
   $hDoc.Text = Value
   Init
-  If $bShowSideBar Then $hTimerSideBarRefresh.Start
+  If $bShowPreview Then $hTimerSideBarRefresh.Start
 
 End
 
@@ -358,7 +360,7 @@ Public Sub Load(Path As String, Optional AddNewLine As Boolean)
   $hDoc.Load(Path, AddNewLine)
   Init
   Dec Application.Busy
-  If $bShowSideBar Then $hTimerSideBarRefresh.Start
+  If $bShowPreview Then $hTimerSideBarRefresh.Start
   'Catch
 
   '  Dec Application.Busy
@@ -2310,7 +2312,7 @@ End
 Private Sub Highlight_Write(Value As String)
 
   $hDoc.Highlight = Value
-  If $bShowSideBar Then $hSideBarViewer.Highlight = Value
+  If $bShowPreview Then $hSideBarViewer.Highlight = Value
 
 End
 
@@ -2462,16 +2464,16 @@ Private Sub ScrollBar_Write(Value As Integer)
 
     Case Scroll.None, Scroll.Horizontal
       $hView.ScrollBar = $iScrollBar
-      If $bShowSideBar Then $hSideBar.Hide
+      If $bShowPreview Then $hSideBar.Hide
     Case Scroll.Vertical
-      If $bShowSideBar Then
+      If $bShowPreview Then
         $hView.ScrollBar = ScrollBar.none
         $hSideBar.Show
       Else
         $hView.ScrollBar = $iScrollBar
       Endif
     Case Scroll.Both
-      If $bShowSideBar Then
+      If $bShowPreview Then
         $hView.ScrollBar = Scroll.Horizontal
         $hSideBar.Show
       Else
@@ -2721,7 +2723,7 @@ Public Sub View_Scroll()
     ClearCacheLine
     $iLastScrollX = $hView.ScrollX
   Endif
-  If $bShowSideBar Then $hSideBar.Refresh
+  If $bShowPreview Then $hSideBar.Refresh
   Raise Scroll
 
 End
@@ -2730,7 +2732,7 @@ Public Sub _RaiseChange()
 
   If $hTimerChange Then Return
   $hTimerChange = New Timer As "TimerChange"
-  If $bShowSideBar Then $hTimerSideBarRefresh.Start
+  If $bShowPreview Then $hTimerSideBarRefresh.Start
   $hTimerChange.Trigger
 
 End
@@ -4673,7 +4675,7 @@ Public Sub Styles_Change()
     $hLabelFrame.Background = $hStyles[Highlight.Background].Color
     $hLabel.Foreground = $hStyles[Highlight.Normal].Color
   Endif
-  If $bShowSideBar Then
+  If $bShowPreview Then
     $hSideBar.Background = $hStyles[Highlight.Background].Color
     SyncSideBarViewerStyles
     $hTimerSideBarRefresh.Start
@@ -4796,7 +4798,7 @@ Private Sub DrawBarImage(fRowHeight As Float)
   Dim x, y, j As Integer
   Dim aDash As Float[][] = [[1, 0.25, 1, 0.5], [2, 0.5, 1, 0.25], [1, 0.3, 2, 0.3]]
 
-  $imgSideBar = New Image(Paint.Width - 1, Paint.Height - 44, $hStyles[Highlight.Background].Color)
+  $imgSideBar = New Image(Paint.Width - 1, Paint.Height, $hStyles[Highlight.Background].Color)
   Paint.Begin($imgSideBar)
   Paint.Background = Color.Gray
   Paint.AntiAlias = True
@@ -4810,7 +4812,7 @@ Private Sub DrawBarImage(fRowHeight As Float)
     y = i * fRowHeight
     If Not LTrim(s) = "" Then
       Paint.Dash = aDash[j]
-      x = 7 + ((String.Len(s) - String.Len(LTrim(s)))) * 60 / 100
+      x = 6 + ((String.Len(s) - String.Len(LTrim(s)))) * 60 / 100
 
       Paint.MoveTo(x, y)
       Paint.RelLineTo(Len(s) * 60 / 100, 0)
@@ -4827,7 +4829,7 @@ Private Sub DrawBarImage(fRowHeight As Float)
       Paint.AntiAlias = False
       If $hDoc.LinesInfo[i].Modified Then
         Paint.Background = Color.Merge($iBackground, Color.Red, 0.2)
-        Paint.Rectangle(1, y, 3, fRowHeight + 1)
+        Paint.Rectangle(0, y, 3, fRowHeight + 1)
         Paint.Fill
       Endif
 
@@ -4838,13 +4840,14 @@ Private Sub DrawBarImage(fRowHeight As Float)
         Paint.Background = Color.yellow
         Paint.Stroke
       Endif
-
-      If $hDoc.Count <= 600 And If $hDoc.LinesInfo[i].Limit Then
-        Paint.LineWidth = 1
-        Paint.MoveTo(7, y - fRowHeight)
-        Paint.RelLineTo(Paint.Width - 7, 0)
-        Paint.Background = $iMarginColor
-        Paint.Stroke
+      If $bShowLimit Then
+        If $hDoc.Count <= 600 And If $hDoc.LinesInfo[i].Limit Then
+          Paint.LineWidth = 1.2
+          Paint.MoveTo(6, y - fRowHeight)
+          Paint.RelLineTo(Paint.Width - 6, 0)
+          Paint.Background = $iMarginColor
+          Paint.Stroke
+        Endif
       Endif
     Endif
   Next
@@ -4856,51 +4859,67 @@ End
 Public Sub SideBar_Draw()
 
   Dim NL, Row As Integer
-  Dim Y As Integer
-  'Dim fHRow As Float
+  Dim X, Y, W, H As Integer
+  Dim iBorder As Integer = IIf(System.RightToLeft, 0, 1)
+
 
   NL = $hView.ClientH \ $hRows.H + 1
   Row = $hRows._FindRowFromPos($hView.ScrollY)
-  $fBarLineHeight = Min(2, (Paint.Height - 40) / $hDoc.Count)
-  '$iDD = 21 + $fBarLineHeight * Row
+  $fBarLineHeight = Min(2, Paint.Height / $hDoc.Count)
+
   Paint.AntiAlias = False
+  'Barre Cache
+  If Not $imgSideBar Then DrawBarImage($fBarLineHeight)
+  Paint.DrawImage($imgSideBar, iBorder, 0)
 
   'Border Line
+  Paint.LineWidth = 1
   Paint.Background = $iMarginColor
-  Paint.MoveTo(0, 0)
+  If System.RightToLeft Then
+    Paint.MoveTo(Paint.Width - 1, 0)
+  Else
+    Paint.MoveTo(0, 0)
+  Endif
   Paint.RelLineTo(0, Paint.Height)
   Paint.Stroke
 
-  'Barre Cache
-  If Not $imgSideBar Then DrawBarImage($fBarLineHeight)
-  Paint.DrawImage($imgSideBar, 1, 22)
+
   'Arrow Buttons
-  Paint.Background = Color.Lighter(Color.Background)
-  Paint.Rectangle(1, 0, Paint.Width - 1, 20)
-  Paint.Rectangle(1, Paint.Height - 20, Paint.Width - 1, 20)
-  Paint.Fill
-  Style.PaintArrow(20, 0, 20, 20, Align.Top, If($iSideBarStyle = 1, Style.Hovered, 0))
-  Style.PaintArrow(20, Paint.Height - 20, 20, 20, Align.Bottom, If($iSideBarStyle = 2, Style.Hovered, 0))
+  If $iSideBarStyle > 0 Then
+    Paint.Background = Color.SetAlpha(Color.Background, 100)
+    Paint.Rectangle(iBorder, 0, Paint.Width - 1, 20)
+    Paint.Rectangle(iBorder, Paint.Height - 20, Paint.Width - 1, 20)
+    Paint.Fill
+    Style.PaintArrow(20, 0, 20, 20, Align.Top, If($iSideBarStyle = 1, Style.Hovered, 0))
+    Style.PaintArrow(20, Paint.Height - 20, 20, 20, Align.Bottom, If($iSideBarStyle = 2, Style.Hovered, 0))
+  Endif
 
   'ViewPort Rectangle
   Paint.LineWidth = 1
-  $rectSideBar = Rect(1, 20 + $fBarLineHeight * Row, Paint.Width - 2, $fBarLineHeight * NL)
-  Paint.Rectangle(2, 20 + $fBarLineHeight * Row, Paint.Width - 3, $fBarLineHeight * NL, 2)
+  $rectSideBar = Rect(iBorder, $fBarLineHeight * Row, Paint.Width - 1, $fBarLineHeight * NL)
+  Paint.Rectangle(iBorder, $fBarLineHeight * Row, Paint.Width - 1, $fBarLineHeight * NL)
   Paint.Background = Color.SetAlpha(Color.SelectedBackground, 200)
-  Paint.Fill(True)
+  Paint.Fill()
+  Paint.MoveTo(iBorder, $fBarLineHeight * Row)
+  Paint.RelLineTo(Paint.Width - 1, 0)
+  Paint.MoveTo(iBorder, $fBarLineHeight * Row + $fBarLineHeight * NL)
+  Paint.RelLineTo(Paint.Width - 1, 0)
   Paint.Background = Color.SelectedBackground
   Paint.Stroke
 
   'Draw the Tooltip
   If $bSideBarMouseDown Then
-    Y = IIf(Paint.Height - ($iMY + 20 + (Paint.Font.H * 3 + 6)) < 0, $iMY - (20 + (Paint.Font.H * 3 + 6)), $iMY + 20 - y)
     Paint.AntiAlias = True
     Paint.Background = Color.TooltipBackground
-    Paint.Rectangle(3, y, Paint.Font.TextWidth(Str(Row) & "00"), Paint.Font.H * 3 + 6, 5)
+    W = Paint.Font.TextWidth(Str(Row) & "00")
+    H = Paint.Font.H * 3 + 6
+    Y = IIf(Paint.Height - ($iMY + (Paint.Font.H * 3 + 6)) < 0, $iMY - ((Paint.Font.H * 3 + 6)), $iMY - y)
+    X = IIf(System.RightToLeft, Paint.Width - W - 3, 3)
+    Paint.Rectangle(X, Y, W, H, 5)
     Paint.Fill
     'Paint.Font.Grade = - 1
     Paint.Background = Color.TooltipForeground
-    Paint.DrawText((Row + 1) & "\n-\n" & Min((Row + NL), $hDoc.Count), 6, y + Paint.Font.H)
+    Paint.DrawText((Row + 1) & "\n-\n" & Min((Row + NL), $hDoc.Count), X + 3, y + 3, W - 6, H - 6, Align.Center)
   Endif
 
 End
@@ -4909,6 +4928,7 @@ Public Sub SideBar_MouseMove()
 
   Dim iCurLine As Integer
   Dim iStyle As Integer
+  Dim X As Integer
 
   If Mouse.Y < 20 Then
     iStyle = 1
@@ -4925,39 +4945,40 @@ Public Sub SideBar_MouseMove()
   Endif
 
   If $iMD > 0 Then
-    $hView.Scrolly = $hRows._GetRowY(Min(Max(0, Floor(((Mouse.y - $iMD) - 21) / $fBarLineHeight)), $hDoc.Count))
+    $hView.Scrolly = $hRows._GetRowY(Min(Max(0, Floor(((Mouse.y - $iMD)) / $fBarLineHeight)), $hDoc.Count))
   Endif
 
-  If Mouse.y < 21 Or If Mouse.Y > 21 + $fBarLineHeight * $hDoc.Count Then
+  If Mouse.Y > $fBarLineHeight * $hDoc.Count Then 
 
+  If Not $bSideBarLockViewer Then $hSideBarViewer.Hide
+  Else
+  If $iMD > 0 Then
     If Not $bSideBarLockViewer Then $hSideBarViewer.Hide
   Else
-    If $iMD > 0 Then
-      If Not $bSideBarLockViewer Then $hSideBarViewer.Hide
-    Else
-      If Not $bSideBarLockViewer Then
-        If Not $hSideBarViewer.Visible Then $hTimerSideBarViewer.Start
-        If $hSideBarViewer.Visible Then
-          $hSideBarViewer.Move($hSideBar.Left - $hView.Width / 2, Min(Max(0, Mouse.y - ($hView.Height / 5) / 2), $hSideBar.Height - $hSideBarViewer.Height)) ', $hView.Width / 2, $hView.Height / 5)
-          iCurLine = Min(Max(0, Floor(((Mouse.y - $iMD) - 21) / $fBarLineHeight)), $hDoc.Count)
-          If $hSideBarViewer.Tag <> iCurLine Then
-            $hSideBarViewer.Tag = iCurLine
-            $hSideBarViewer.Text = $hDoc.GetText(0, Max(0, Min($hDoc.Count - 1, iCurLine - $iSideBarNBLines)), 100, Min($hDoc.Count - 1, iCurLine + $iSideBarNBLines))
-          Endif
+    If Not $bSideBarLockViewer Then
+      If Not $hSideBarViewer.Visible Then $hTimerSideBarViewer.Start
+      If $hSideBarViewer.Visible Then
+        X = IIf(System.RightToLeft, $hSideBar.Left + $hSideBar.Width, $hSideBar.Left - $hView.Width / 2)
+        $hSideBarViewer.Move(X, Min(Max(0, Mouse.y - ($hView.Height / 5) / 2), $hSideBar.Height - $hSideBarViewer.Height)) ', $hView.Width / 2, $hView.Height / 5)
+        iCurLine = Min(Max(0, Floor(((Mouse.y - $iMD)) / $fBarLineHeight)), $hDoc.Count)
+        If $hSideBarViewer.Tag <> iCurLine Then
+          $hSideBarViewer.Tag = iCurLine
+          $hSideBarViewer.Text = $hDoc.GetText(0, Max(0, Min($hDoc.Count - 1, iCurLine - $iSideBarNBLines)), 100, Min($hDoc.Count - 1, iCurLine + $iSideBarNBLines))
         Endif
       Endif
     Endif
+  Endif
 
-    $iMY = Mouse.Y
-    If Mouse.Left Then
-      $bSideBarMouseDown = True
-      If $iMD = 0 Then
-        If $rectSideBar.Contains(Mouse.x, Mouse.y) Then
-          If Not $bSideBarLockViewer Then $hSideBarViewer.Hide
-          $iMD = Mouse.y - $rectSideBar.Top
-        Endif
+  $iMY = Mouse.Y
+  If Mouse.Left Then
+    $bSideBarMouseDown = True
+    If $iMD = 0 Then
+      If $rectSideBar.Contains(Mouse.x, Mouse.y) Then
+        If Not $bSideBarLockViewer Then $hSideBarViewer.Hide
+        $iMD = Mouse.y - $rectSideBar.Top
       Endif
     Endif
+  Endif
 
   Endif
 
@@ -5006,6 +5027,7 @@ Public Sub SideBar_MouseDown()
       'TimerSideBarMDHold_Timer
       $hTimerSideBarMDHold.Delay = 500
       $hTimerSideBarMDHold.Start
+      If Not $bSideBarLockViewer Then $hSideBarViewer.Hide
       Select Case $iSideBarStyle
         Case 1
           $hView.ScrollY -= $LH
@@ -5017,7 +5039,7 @@ Public Sub SideBar_MouseDown()
         If Mouse.Alt Then
           If $hSideBarViewer.Visible Then $bSideBarLockViewer = Not $bSideBarLockViewer
         Else
-          Y = Min(Max(0, Floor(((Mouse.y - $iMD) - 21) / $fBarLineHeight)), $hDoc.Count)
+          Y = Min(Max(0, Floor(((Mouse.y - $iMD)) / $fBarLineHeight)), $hDoc.Count)
           Me.GotoCenter(0, y)
         Endif
       Else
@@ -5038,6 +5060,15 @@ Public Sub SideBar_MouseDown()
 
       Endif
     Endif
+  Endif
+
+  If Mouse.Middle Then
+    If $hSideBarViewer.Visible Then $bSideBarLockViewer = Not $bSideBarLockViewer
+  Endif
+
+  If Mouse.Right Then
+    Y = Min(Max(0, Floor(((Mouse.y - $iMD)) / $fBarLineHeight)), $hDoc.Count)
+    Me.GotoCenter(0, y)
   Endif
 
 End
@@ -5074,20 +5105,20 @@ Public Sub SideBar_Arrange()
 
 End
 
-Private Function ShowSideBar_Read() As Boolean
+Private Function ShowPreview_Read() As Boolean
 
-  Return $bShowSideBar
+  Return $bShowPreview
 
 End
 
-Private Sub ShowSideBar_Write(Value As Boolean)
+Private Sub ShowPreview_Write(Value As Boolean)
 
-  If $bShowSideBar = Value Then Return
-  $bShowSideBar = Value
+  If $bShowPreview = Value Then Return
+  $bShowPreview = Value
   If Value Then
     $hTimerSideBarRefresh = New Timer As "TimerRefreshBar"
     $hTimerSideBarRefresh.Delay = 1000
-    $hTimerSideBarViewer = New Timer As "TimerShowSideBarViewer"
+    $hTimerSideBarViewer = New Timer As "TimerShowPreviewViewer"
     $hTimerSideBarViewer.Delay = 200
 
     $hSideBarViewer = New TextEditor($hPanel) As "SideBarViewer"
@@ -5106,7 +5137,11 @@ Private Sub ShowSideBar_Write(Value As Boolean)
     $hSideBar.Background = $hStyles[Highlight.BackGround].Color
     $hSideBar.Tracking = True
     '$hSideBar.Visible = True
-
+    If System.RightToLeft Then
+      $hSideBar.Lower
+    Else
+      $hSideBar.Raise
+    Endif
     ScrollBar_Write($iScrollBar)
   Else
     If $hSideBar Then
@@ -5138,10 +5173,12 @@ Private Sub SyncSideBarViewerStyles()
 
 End
 
-Public Sub TimerShowSideBarViewer_Timer()
+Public Sub TimerShowPreviewViewer_Timer()
 
   $hSideBarViewer.Move($hSideBar.Left - $hView.Width / 2, Min(Max(0, $iMY - ($hView.Height / 5) / 2), $hSideBar.Height - $hSideBarViewer.Height), $hView.Width / 2, $hView.Height / 5)
   $iSideBarNBLines = Ceil(($hSideBarViewer.ClientH / $hSideBarViewer.LineHeight) / 2)
+  $hSideBarViewer.Font = Me.Font.Copy()
+  $hSideBarViewer.Font.Grade -= 2
   $hSideBarViewer.Show
   $hTimerSideBarViewer.Stop
 
