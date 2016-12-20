@@ -72,6 +72,7 @@ Private $iSX As Integer
 Private $iSY As Integer
 Private $MX As Integer
 Private $MY As Integer
+Private $hObs As Observer
 
 Event Layout(Page As Integer)
 Event Draw(Page As Integer, Width As Integer, Height As Integer)
@@ -85,7 +86,7 @@ Public Sub _new()
   $tmrLoad.Delay = 1
   Me.Proxy = $hView
   $hDocItem = New _DocumentItem As "Doc"
-  
+  $hObs = New Observer($hView.View) As "Obs"
 End
 
 Public Sub tmrLoad_Timer()
@@ -703,6 +704,18 @@ Public Sub View_MouseWheel()
   $iSY = $hView.ScrollY
   
 End
+
+'WorkAround to lock Scrolling when contol key is pressed
+Public Sub Obs_MouseWheel()
+  
+  If Mouse.Control Then
+    $hView.UseMouse = False
+  Else
+    $hView.UseMouse = True
+  Endif
+  
+End
+
 
 Public Function Find(X As Integer, Y As Integer) As Integer
   
