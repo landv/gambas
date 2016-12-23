@@ -3681,6 +3681,7 @@ Public Sub Refresh()
 
   ClearCacheLine
   $hView.Refresh
+  If $bShowPreview Then $hTimerSideBarRefresh.Start
 
 End
 
@@ -4831,7 +4832,11 @@ Private Sub DrawBarImage(fRowHeight As Float)
         Paint.Rectangle(0, y, 3, fRowHeight + 1)
         Paint.Fill
       Endif
-
+      If $hDoc.LinesInfo[i].Saved Then
+        Paint.Background = Color.Merge($iBackground, Color.Green, 0.2)
+        Paint.Rectangle(0, y, 3, fRowHeight + 1)
+        Paint.Fill
+      Endif
       If $hDoc.LinesInfo[i].Bookmark Then
         Paint.MoveTo(0, y)
         Paint.RelLineTo(Paint.Width, 0)
