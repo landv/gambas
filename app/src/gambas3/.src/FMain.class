@@ -117,6 +117,7 @@ Public Sub Form_Close()
     ' are destroyed, and then the Settings.Save() method gets no TopLevel form anymore for generating the
     ' settings key !
     FProperty.Close
+    FOutput.Close
     FDebugInfo.Close
     
     Design.Exit
