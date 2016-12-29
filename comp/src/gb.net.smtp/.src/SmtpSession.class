@@ -15,6 +15,12 @@ Private $hClient As SmtpClient
 
 Public _Count As Integer
 
+Public Sub _new(bDebug As Boolean)
+  
+  _Debug = bDebug
+  
+End
+
 
 Static Public Sub GetOpenSSLPath() As String
 
@@ -73,6 +79,8 @@ Public Function GetLine(Optional bMulti As Boolean) As String
   Dim iPos As Integer
 
   If Not Me.Connected Then Return
+  
+  bMulti = True
 
   If bMulti Then
   
@@ -80,6 +88,7 @@ Public Function GetLine(Optional bMulti As Boolean) As String
       Line Input #$hStream, sLine
       sResponse &= sLine & "\n"
       If sLine Like "??? *" Then Break
+      If $hStream.EndOfFile Then Break
     Loop
     
   Else

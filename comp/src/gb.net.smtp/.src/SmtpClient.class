@@ -240,16 +240,16 @@ Private Sub BeginSession()
 
   Select Case $iEncrypt
     Case Net.None
-      $hSession = New TcpSession
+      $hSession = New TcpSession($bDebug)
     Case Net.SSL
-      $hSession = New SslSession
+      $hSession = New SslSession($bDebug)
     Case Net.TLS
-      $hSession = New TlsSession
+      $hSession = New TlsSession($bDebug)
     Case Else
       Error.Raise("Unknown encryption")
   End Select
   
-  $hSession._Debug = $bDebug
+  '$hSession._Debug = $bDebug
 
   If $sBody Then
   

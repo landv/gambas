@@ -10,17 +10,23 @@ Private $sError As String
 
 Public Sub Connect(hClient As SmtpClient, sHost As String, iPort As Integer)
 
+  Dim aExec As String[]
+  Dim I As Integer
+  
   If Not sHost Then sHost = "localhost"
-  If iPort = 0 Then iPort = 465
+  If iPort = 0 Then iPort = 587
   
   Super.Connect(hClient, sHost, iPort)
 
-  $hProcess = Exec [SmtpSession.GetOpenSSLPath(), "s_client", "-quiet", "-starttls", "smtp", "-connect", sHost & ":" & iPort] For Read Write As "Client"
+  aExec = [SmtpSession.GetOpenSSLPath(), "s_client", "-quiet", "-starttls", "smtp", "-connect", sHost & ":" & iPort]
+  If Me._Debug Then Error "gb.net.smtp: running: "; aExec.Join(" ")
+
+  $hProcess = Exec aExec For Read Write As "OpenSSL"
   $hProcess.Blocking = True
   $hProcess.EndOfLine = gb.Windows
   
   $bConnected = False
-  Repeat
+  For I = 1 To 10
     Wait 0.1
     If Not $hProcess Then
       If $sError Then 
@@ -29,7 +35,9 @@ Public Sub Connect(hClient As SmtpClient, sHost As String, iPort As Integer)
         Error.Raise("TLS session has stopped unexpectedly")
       Endif
     Endif
-  Until $bConnected 
+  Next
+  
+  $bConnected = True 
   
   Me.Stream = $hProcess
 
@@ -41,20 +49,21 @@ Public Sub Disconnect()
 
 End
 
-Public Sub Client_Error(Text As String)
+Public Sub OpenSSL_Error(Text As String)
   
+  If Me._Debug Then Error "openssl: "; Quote(Text)
   $sError &= Text
   
 End
 
-Public Sub Client_Read()
+Public Sub OpenSSL_Read()
   
   $bConnected = True
   
 End
 
 
-Public Sub Client_Kill()
+Public Sub OpenSSL_Kill()
 
   Super.Disconnect
   $hProcess = Null

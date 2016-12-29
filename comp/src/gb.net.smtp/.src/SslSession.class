@@ -7,16 +7,21 @@ Property Read Connected As Boolean
 Private $hProcess As Process
 Private $sError As String
 Private $bConnected As Boolean
+Private $bDisconnect As Boolean
 
 Public Sub Connect(hClient As SmtpClient, sHost As String, iPort As Integer)
 
+  Dim aExec As String[]
+  
   If Not sHost Then sHost = "localhost"
   If iPort = 0 Then iPort = 465
 
   Super.Connect(hClient, sHost, iPort)
 
-  'Debug "Executing OpenSSL"
-  $hProcess = Exec [SmtpSession.GetOpenSSLPath(), "s_client", "-quiet", "-connect", sHost & ":" & iPort] For Read Write As "Client"
+  aExec = [SmtpSession.GetOpenSSLPath(), "s_client", "-quiet", "-connect", sHost & ":" & iPort]
+  If Me._Debug Then Error "gb.net.smtp: running: "; aExec.Join(" ")
+  
+  $hProcess = Exec aExec For Read Write As "OpenSSL"
   $hProcess.Blocking = True
   $hProcess.EndOfLine = gb.Windows
   
@@ -38,24 +43,26 @@ End
 
 Public Sub Disconnect()
 
+  $bDisconnect = True
   $hProcess.Kill()
 
 End
 
-Public Sub Client_Error(Text As String)
+Public Sub OpenSSL_Error(Text As String)
   
+  If Me._Debug Then Error "openssl: "; Quote(Text)
   $sError &= Text
   
 End
 
-Public Sub Client_Read()
+Public Sub OpenSSL_Read()
   
   $bConnected = True
   
 End
 
 
-Public Sub Client_Kill()
+Public Sub OpenSSL_Kill()
 
   Super.Disconnect
   $hProcess = Null

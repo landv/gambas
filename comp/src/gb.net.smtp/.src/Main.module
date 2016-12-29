@@ -41,16 +41,15 @@ Public Sub Main()
   
   hMsg.Debug = True
   hMsg.To.Add("benoit@minisini.fr")
-  hMsg.Subject = "Test mail headers 5"
+  hMsg.Subject = "Test mail #2"
   hMsg.Add("Something" & "\n\n" & ("-- \nPowered by ") & Application.Name & "\n")
   hMsg.From = "benoit.minisini@gmail.com"
-  hMsg.Host = "smtp.free.fr"
-  'hMsg.Port = 465
-  'hMsg.Encrypt = Net.SSL
-  'hMsg.User = "benoit.minisini@gmail.com"
-  'Print "Password:"
-  'Line Input hMsg.Password
-  hMsg.MessageId = "BUG16@gambaswiki.org"
+  'hMsg.Host = "smtp.free.fr"
+  hMsg.Host = "smtp.gmail.com"
+  hMsg.Encrypt = Net.TLS
+  hMsg.User = "benoit.minisini@gmail.com"
+  hMsg.Password = "*****"
+  'hMsg.Port = 587
   
   Try hMsg.Send()
   If Not Error Then
