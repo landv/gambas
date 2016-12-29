@@ -893,14 +893,24 @@ gMenu* gMenu::winChildMenu(gMainWindow *par,int pos)
 gMenu *gMenu::findFromName(gMainWindow *win, const char *name)
 {
 	int i;
-	int count = winChildCount(win);
+	int count;
 	gMenu *menu;
 	
-	for (i = 0; i < count; i++)
+	for(;;)
 	{
-		menu = winChildMenu(win, i);
-		if (!strcasecmp(menu->name(), name))
-			return menu;
+		count = winChildCount(win);
+		for (i = 0; i < count; i++)
+		{
+			menu = winChildMenu(win, i);
+			if (!strcasecmp(menu->name(), name))
+				return menu;
+		}
+		
+		if (!win->parent())
+			break;
+		win = win->parent()->window();
+		if (!win)
+			break;
 	}
 	
 	return NULL;

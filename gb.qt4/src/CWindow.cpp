@@ -2853,15 +2853,28 @@ CMENU *CWindow::findMenu(CWINDOW *_object, const char *name)
 {
 	int i;
 	CMENU *menu;
+	CWIDGET *parent;
 
-	if (THIS->menuBar)
+	for(;;)
 	{
-		for (i = 0; i < THIS->menuBar->actions().count(); i++)
+		if (THIS->menuBar)
 		{
-			menu = CMenu::dict[THIS->menuBar->actions().at(i)];
-			if (menu && !strcasecmp(menu->widget.name, name))
-				return menu;
+			for (i = 0; i < THIS->menuBar->actions().count(); i++)
+			{
+				menu = CMenu::dict[THIS->menuBar->actions().at(i)];
+				if (!menu)
+					continue;
+				if (!strcasecmp(menu->widget.name, name))
+					return menu;
+			}
 		}
+		
+		parent = (CWIDGET *)CWIDGET_get_parent(THIS);
+		if (!parent)
+			break;
+		_object = CWidget::getWindow(parent);
+		if (!THIS)
+			break;
 	}
 
 	return NULL;
