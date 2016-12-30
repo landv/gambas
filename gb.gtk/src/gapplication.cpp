@@ -833,6 +833,7 @@ gApplication
 
 int appEvents;
 
+bool gApplication::_init = false;
 bool gApplication::_busy = false;
 char *gApplication::_title = NULL;
 int gApplication::_in_popup = 0;
@@ -1004,6 +1005,8 @@ void gApplication::init(int *argc, char ***argv)
 	klass->button_release_event = scrollbar_button_release;
 
 #endif*/
+
+	gApplication::_init = true;
 }
 
 void gApplication::exit()

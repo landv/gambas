@@ -34,6 +34,7 @@ class gApplication
 {
 public:
 	static void init(int *argc, char ***argv);
+	static bool isInit() { return _init; }
 	static void quit();
 	static void exit();
 	static bool mustQuit() { return _must_quit; }
@@ -97,6 +98,7 @@ public:
 	static void setButtonGrab(gControl *grab) { _button_grab = grab; }
 
 	//"Private"
+	static bool _init;
 	static bool _busy;
 	static bool _must_quit;
 	static char *_title;

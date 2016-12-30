@@ -257,6 +257,12 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent;)
 	CWIDGET *parent = NULL;
 	int plug = 0;
 
+	if (!gApplication::isInit())
+	{
+		GB.Error("GUI is not initialized");
+		return;
+	}
+	
 	if (!MISSING(parent) && VARG(parent))
 	{
 		CLASS_container = GB.FindClass("Container");
