@@ -319,8 +319,16 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Font_Styles)
 
-	stub("Font_Styles");
+	GB_ARRAY array;
+	
+	GB.Array.New(&array, GB_T_STRING, 0);
+	*(char **)GB.Array.Add(array) = GB.NewZeroString("Regular");
+	*(char **)GB.Array.Add(array) = GB.NewZeroString("Italic");
+	*(char **)GB.Array.Add(array) = GB.NewZeroString("Bold");
+	*(char **)GB.Array.Add(array) = GB.NewZeroString("Bold Italic");
 
+	GB.ReturnObject(array);
+	
 END_PROPERTY
 
 
