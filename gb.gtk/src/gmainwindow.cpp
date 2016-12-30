@@ -65,13 +65,30 @@ static gboolean cb_show(GtkWidget *widget, gMainWindow *data)
 	return false;
 }
 
+static gboolean cb_map(GtkWidget *widget, GdkEvent *event, gMainWindow *data)
+{
+	data->_unmap = false;
+	return cb_show(widget, data);
+}
+
 static gboolean cb_hide(GtkWidget *widget, gMainWindow *data)
 {
-	data->emit(SIGNAL(data->onHide));
-	data->_not_spontaneous = false;
+	if (!data->_unmap)
+	{
+		data->emit(SIGNAL(data->onHide));
+		data->_not_spontaneous = false;
+	}
+	
 	return false;
 	//if (data == gDesktop::activeWindow())
 	//	gMainWindow::setActiveWindow(NULL);
+}
+
+static gboolean cb_unmap(GtkWidget *widget, GdkEvent *event, gMainWindow *data)
+{
+	bool ret = cb_hide(widget, data);
+	data->_unmap = true;
+	return ret;
 }
 
 static gboolean cb_close(GtkWidget *widget,GdkEvent *event, gMainWindow *data)
@@ -200,29 +217,32 @@ void gMainWindow::initialize()
 {
 	//fprintf(stderr, "new window: %p in %p\n", this, parent());
 
-	opened = false;
-	sticky = false;
-	persistent = false;
 	stack = 0;
 	_type = 0;
-	_mask = false;
-	_masked = false;
-	_resized = false;
 	accel = NULL;
 	_default = NULL;
 	_cancel = NULL;
 	menuBar = NULL;
 	layout = NULL;
-	top_only = false;
 	_icon = NULL;
 	_picture = NULL;
 	focus = 0;
-	_closing = false;
 	_title = NULL;
-	_not_spontaneous = false;
-	_skip_taskbar = false;
 	_current = NULL;
 	_style = NULL;
+	_resize_last_w = _resize_last_h = -1;
+	_min_w = _min_h = 0;
+
+	opened = false;
+	sticky = false;
+	persistent = false;
+	_mask = false;
+	_masked = false;
+	_resized = false;
+	top_only = false;
+	_closing = false;
+	_not_spontaneous = false;
+	_skip_taskbar = false;
 	_xembed = false;
 	_activate = false;
 	_hidden = false;
@@ -230,13 +250,12 @@ void gMainWindow::initialize()
 	_showMenuBar = true;
 	_popup = false;
 	_maximized = _minimized = _fullscreen = false;
-	_resize_last_w = _resize_last_h = -1;
-	_min_w = _min_h = 0;
 	_transparent = false;
 	_utility = false;
 	_no_take_focus = false;
 	_moved = false;
 	_resizable = true;
+	_unmap = false;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -267,8 +286,10 @@ void gMainWindow::initWindow()
 	else
 	{
 		//g_signal_connect(G_OBJECT(border),"size-request",G_CALLBACK(cb_realize),(gpointer)this);
-		g_signal_connect(G_OBJECT(border), "show", G_CALLBACK(cb_show),(gpointer)this);
+		//g_signal_connect(G_OBJECT(border), "show", G_CALLBACK(cb_show),(gpointer)this);
 		g_signal_connect(G_OBJECT(border), "hide", G_CALLBACK(cb_hide),(gpointer)this);
+		g_signal_connect(G_OBJECT(border), "map-event", G_CALLBACK(cb_map),(gpointer)this);
+		g_signal_connect(G_OBJECT(border), "unmap-event", G_CALLBACK(cb_unmap),(gpointer)this);
 		g_signal_connect(G_OBJECT(border), "configure-event", G_CALLBACK(cb_configure),(gpointer)this);
 		g_signal_connect(G_OBJECT(border), "delete-event", G_CALLBACK(cb_close),(gpointer)this);
 		g_signal_connect(G_OBJECT(border), "window-state-event", G_CALLBACK(cb_frame),(gpointer)this);
