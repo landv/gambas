@@ -1014,24 +1014,33 @@ void EXEC_function_loop()
 				if (EXEC_debug && !STACK_has_error_handler())
 				{
 					ERROR_hook();
-					DEBUG.Main(TRUE);
+					for(;;)
+						DEBUG.Main(TRUE);
 
-					if (TP && TC)
+					/*if (TP && TC)
 					{
 						ERROR_lock();
 						while (BP > TP)
 						{
 							EXEC_leave_drop();
 							if (!PC)
-								STACK_pop_frame(&EXEC_current);
+								break;
 						}
 						while (SP > TP)
-							POP();
+							
+						if (!PC)
+						{
+							ERROR_unlock();
+							STACK_pop_frame(&EXEC_current);
+							PROPAGATE();
+						}
+							
+						POP();
 						PC = TC;
 						ERROR_unlock();
 					}
 
-					retry = TRUE;
+					retry = TRUE;*/
 				}
 				else
 				{

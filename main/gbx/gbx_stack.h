@@ -49,8 +49,6 @@ typedef
 		PCODE *pc;        // instruction
 		PCODE *ec;        // instruction if error
 		PCODE *et;        // TRY save
-		PCODE *tc;        // Last break in the function
-		VALUE *tp;        // Stack at the last break in the function
 		VALUE *gp;        // GOSUB stack pointer
 		}
 	STACK_CONTEXT;

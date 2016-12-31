@@ -3748,8 +3748,8 @@ static void _break(ushort code)
 {
 	if (EXEC_debug)
 	{
-		TC = PC + 1;
-		TP = SP;
+		/*TC = PC + 1;
+		TP = SP;*/
 
 		//fprintf(stderr, "%s\n", DEBUG_get_current_position());
 

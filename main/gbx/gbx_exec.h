@@ -139,10 +139,6 @@ extern EXEC_GLOBAL EXEC;
 #define EC EXEC_current.ec
 // Save register for TRY
 #define ET EXEC_current.et
-// Last break in the function
-#define TC EXEC_current.tc
-// Stack at the last break in the function
-#define TP EXEC_current.tp
 // GoSub stack
 #define GP EXEC_current.gp
 
