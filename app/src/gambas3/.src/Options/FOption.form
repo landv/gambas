@@ -279,6 +279,21 @@
         Animated = True
       }
     }
+    { Label57 Label
+      MoveScaled(1,51,63,3)
+      Font = Font["Bold"]
+      Text = ("Shortcuts")
+    }
+    { Panel2 HBox
+      MoveScaled(2,55,39,4)
+      Indent = True
+      { btnShortcut Button
+        MoveScaled(0,0,31,4)
+        AutoResize = True
+        Text = ("Configure shortcuts") & "..."
+        Picture = Picture["icon:/small/shortcut"]
+      }
+    }
     Index = 2
     Text = ("Fonts")
     Picture = Picture["icon:/medium/font"]
@@ -383,7 +398,7 @@
       Text = ("Editor")
     }
     { ScrollView1 ScrollView
-      MoveScaled(1,4,66,50)
+      MoveScaled(1,4,66,51)
       Expand = True
       Arrangement = Arrange.Vertical
       Spacing = True
@@ -569,21 +584,6 @@
           MoveScaled(50,0,16,4)
           Animated = True
         }
-      }
-    }
-    { Label57 Label
-      MoveScaled(1,55,63,3)
-      Font = Font["Bold"]
-      Text = ("Shortcuts")
-    }
-    { Panel2 HBox
-      MoveScaled(2,59,39,4)
-      Indent = True
-      { btnShortcut Button
-        MoveScaled(0,0,31,4)
-        AutoResize = True
-        Text = ("Configure shortcuts") & "..."
-        Picture = Picture["icon:/small/shortcut"]
       }
     }
     Index = 4
