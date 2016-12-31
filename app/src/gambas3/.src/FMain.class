@@ -1510,7 +1510,7 @@ Public Sub Action_Activate((Key) As String) As Boolean
       Project.UpdateAllForms
       
     Case "open-terminal"
-      Desktop.OpenTerminal(Project.Dir)  
+      Project.OpenTerminal(Project.Dir)  
       
     Case "browse-project"
       Desktop.Open(Project.Dir)

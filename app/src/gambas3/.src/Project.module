@@ -6417,3 +6417,9 @@ Public Sub ArgumentToString(aArg As String[]) As String
 
 End
 
+Public Sub OpenTerminal(sDir As String)
+  
+  Try Desktop.OpenTerminal(sDir)
+  If Error Then Message.Error(("Unable to run terminal.") & "\n\n" & Error.Text)
+  
+End
