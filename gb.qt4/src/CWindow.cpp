@@ -658,8 +658,22 @@ BEGIN_METHOD_VOID(Window_Raise)
 
 END_METHOD
 
+static bool check_opened(CWINDOW *_object, bool modal)
+{
+	if (THIS->toplevel && THIS->opened)
+	{
+		if (modal || WINDOW->isModal())
+			GB.Error("Window is already opened");
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
 
 BEGIN_METHOD_VOID(Window_Show)
+
+	if (check_opened(THIS, FALSE))
+		return;
 
 	if (emit_open_event(THIS))
 		return;
@@ -701,6 +715,9 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Window_ShowModal)
 
+	if (check_opened(THIS, TRUE))
+		return;
+
 	THIS->ret = 0;
 
 	if (!emit_open_event(THIS))
@@ -721,6 +738,9 @@ END_METHOD
 BEGIN_METHOD(Window_ShowPopup, GB_INTEGER x; GB_INTEGER y)
 
 	QPoint pos;
+
+	if (check_opened(THIS, TRUE))
+		return;
 
 	if (MISSING(x) || MISSING(y))
 		pos = QCursor::pos();

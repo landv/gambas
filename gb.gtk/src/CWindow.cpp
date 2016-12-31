@@ -349,9 +349,23 @@ BEGIN_METHOD_VOID(CWINDOW_raise)
 
 END_METHOD
 
+static bool check_closed(CWINDOW *_object, bool modal)
+{
+	if (WINDOW->isOpened())
+	{
+		if (modal || WINDOW->isModal())
+			GB.Error("Window is already opened");
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
 
 BEGIN_METHOD_VOID(CWINDOW_show_modal)
 
+	if (check_closed(THIS, TRUE))
+		return;
+	
 	THIS->ret = 0;
 	MODAL_windows++;
 	WINDOW->showModal();
@@ -363,6 +377,9 @@ END_METHOD
 
 BEGIN_METHOD(Window_ShowPopup, GB_INTEGER x; GB_INTEGER y)
 
+	if (check_closed(THIS, TRUE))
+		return;
+	
 	THIS->ret = 0;
 	MODAL_windows++;
 	if (!MISSING(x) && !MISSING(y))
@@ -377,6 +394,9 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CWINDOW_show)
 
+	if (check_closed(THIS, FALSE))
+		return;
+	
 	WINDOW->showActivate();
 
 END_METHOD
