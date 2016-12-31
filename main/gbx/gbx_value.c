@@ -890,7 +890,7 @@ __OBJECT:
 			goto __TYPE;
 		}
 
-		if (value->type == T_POINTER)
+		if (value->type == T_POINTER && type != T_OBJECT)
 		{
 			class = (CLASS *)type;
 
