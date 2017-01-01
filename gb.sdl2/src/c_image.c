@@ -70,6 +70,7 @@ static void *temp_image(GB_IMG *img)
 	
 	if (img && img->data)
 		surface = SDL_CreateRGBSurfaceFrom(img->data, img->width, img->height, 32, img->width * sizeof(int), RMASK, GMASK, BMASK, AMASK);
+
 	
 	return SDL_CreateImage(surface);
 }
@@ -157,6 +158,7 @@ BEGIN_METHOD(Image_Load, GB_STRING path)
 	char *addr;
 	int len;
 	SDL_Surface *surface;
+	SDL_Surface *csurface;
 
 	if (GB.LoadFile(STRING(path), LENGTH(path), &addr, &len))
 		return;
@@ -168,6 +170,13 @@ BEGIN_METHOD(Image_Load, GB_STRING path)
 	{
 		GB.Error("Unable to load image: &1", IMG_GetError());
 		return;
+	}
+	
+	if (surface->format->format != DEFAULT_SDL_IMAGE_FORMAT)
+	{
+		csurface = SDL_ConvertSurfaceFormat(surface, DEFAULT_SDL_IMAGE_FORMAT, 0);
+		SDL_FreeSurface(surface);
+		surface = csurface;
 	}
 	
 	GB.ReturnObject(IMAGE_create(SDL_CreateImage(surface)));
