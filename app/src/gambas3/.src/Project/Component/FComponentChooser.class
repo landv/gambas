@@ -6,6 +6,8 @@ Public Struct ComponentChooserItem
   Dependencies As String[]
 End Struct
 
+Static Private Const DEFAULT_ZOOM As Float = 0.8
+
 Static Private $aPict As Picture[]
 Static Private $hPictLocked As Picture
 
@@ -48,6 +50,8 @@ Public Sub _new()
   SetCheckable(False)
 
   RefreshList
+  
+  btnZoomNormal_Click
 
 End
 
@@ -57,6 +61,7 @@ Private Sub RefreshList()
   Dim hComp As CComponent
   Dim sComp As String
   Dim sFilter As String
+  Dim I As Integer
   
   sFilter = txtFilter.Text
   
@@ -75,14 +80,21 @@ Private Sub RefreshList()
         If $bShowCheckedOnly Then Continue
         If hComp.State = CComponent.DEPRECATED And If Not $bShowDeprecated Then Continue
       Endif
+      aComp.Add(If(IsChecked(sComp), "0", "1") & sComp)
     Else
       If hComp.State = CComponent.DEPRECATED And If Not $bShowDeprecated Then Continue
+      aComp.Add(sComp)
     Endif
     
-    aComp.Add(sComp)
   Next
   
-  aComp.Sort
+  aComp.Sort(gb.Natural)
+  
+  If $cComp Then
+    For I = 0 To aComp.Max
+      aComp[I] = Mid$(aComp[I], 2)
+    Next
+  Endif
   
   SetComponents(aComp)
   
@@ -133,7 +145,7 @@ End
 
 Public Sub btnZoomNormal_Click()
   
-  webAboutComponent.TextZoom = 1
+  webAboutComponent.TextZoom = DEFAULT_ZOOM
   
 End
 
@@ -442,7 +454,7 @@ Public Sub gvwComponent_Click()
     
   Else If gvwComponent.Column = 4 Then
     
-    MHelp.InitWebViewWith(webAboutComponent, MHelp.TYPE_COMPONENT, GetCurrent(),, "v&nh&l=" & MHelp.GetLanguage())
+    MHelp.InitWebViewWith(webAboutComponent, MHelp.TYPE_COMPONENT, GetCurrent(),, "v&nh")
     wizComponent.MoveNext
   
   Endif

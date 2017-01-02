@@ -1,8 +1,7 @@
 ' Gambas class file
 
-Static Private $bShowUsed As Boolean
+'Static Private $bShowUsed As Boolean
 Static Private $bShowLibraries As Boolean
-
 
 Private $sIcon As String
 
@@ -102,7 +101,7 @@ Public Sub Form_Open()
   choComponent.CheckedComponents = Project.Components
   choComponent.Libraries = $aLibraries
   
-  chkShowUsed.Value = $bShowUsed
+  'chkShowUsed.Value = $bShowUsed
   $bCanInitComponents = True
 
   ipnProject.Index = 0
@@ -444,12 +443,12 @@ End
 ' END
 
 
-Public Sub chkShowUsed_Click()
-
-  choComponent.ShowCheckedOnly = chkShowUsed.Value
-
-End
-
+' Public Sub chkShowUsed_Click()
+' 
+'   choComponent.ShowCheckedOnly = chkShowUsed.Value
+' 
+' End
+' 
 
 ' PRIVATE SUB FillLibrary(sLib AS String)
 ' 
@@ -587,10 +586,20 @@ End
 ' 
 ' END
 
-Public Sub btnUndo_Click()
+Public Sub btnReset_Click()
 
-  choComponent.CheckedComponents = Project.Components
-  choComponent.Libraries = $aLibraries
+  Select Case ipnProject.Text
+    
+    Case ("Components")
+      choComponent.CheckedComponents = Project.Components
+      choComponent.Libraries = $aLibraries
+      
+    Case ("Libraries")
+      $aLibraries = Project.Libraries.Copy()
+      RefreshLibraries
+  
+  End Select
+
 
 End
 
@@ -826,13 +835,6 @@ Public Sub btnMoveDownLib_Click()
 
 End
 
-Public Sub btnUndoLib_Click()
-
-  $aLibraries = Project.Libraries.Copy()
-  RefreshLibraries
-
-End
-
 Public Sub chkGetVersionFromFile_Click()
 
   txtMajor.Enabled = Not chkGetVersionFromFile.Value
@@ -853,12 +855,16 @@ End
 
 Public Sub ipnProject_Click()
 
+  btnReset.Hide
+
   Select Case ipnProject.Text
     Case ("Components") 
       choComponent.SetFocus
       choComponent.HideBrowser
+      btnReset.Show
     Case ("Libraries") 
       RefreshLibraries
+      btnReset.Show
     Case ("Options") 
       panHttpServer.Enabled = choComponent.IsChecked("gb.web") 'Project.Components.Exist("gb.web")
     Case ("Statistics") 
@@ -1122,7 +1128,7 @@ End
 
 Public Sub Form_Arrange()
 
-  btnUndo.Move(btnUndo.Parent.W - btnUndo.W - Desktop.Scale, Desktop.Scale)
+  btnReset.Move(btnReset.Parent.W - btnReset.W - Desktop.Scale, Desktop.Scale)
 
 End
 

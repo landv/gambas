@@ -376,22 +376,8 @@
     }
     Index = 2
     Text = ("Components")
-    { Panel3 HBox
-      MoveScaled(3,2,77,4)
-      Spacing = True
-      { chkShowUsed CheckBox
-        MoveScaled(1,0,46,3)
-        Expand = True
-        Text = ("Show only components used in project")
-      }
-      { btnUndo Button
-        MoveScaled(51,0,17,4)
-        Text = Shortcut(("Reset"), "R")
-        Picture = Picture["icon:/small/undo"]
-      }
-    }
     { choComponent ComponentChooser
-      MoveScaled(8,27,67,37)
+      MoveScaled(6,9,67,37)
       Expand = True
     }
     Index = 3
@@ -455,15 +441,6 @@
         MoveScaled(43,0,6,4)
         Enabled = False
         Picture = Picture["icon:/small/down"]
-      }
-      { Panel2 Panel
-        MoveScaled(50,0,12,4)
-        Expand = True
-      }
-      { btnUndoLib Button
-        MoveScaled(65,0,17,4)
-        Text = Shortcut(("Reset"), "R")
-        Picture = Picture["icon:/small/undo"]
       }
     }
     Index = 4
@@ -722,19 +699,25 @@
     Index = 0
   }
   { Panel10 HBox
-    MoveScaled(29,72,63,4)
+    MoveScaled(29,72,81,4)
     Spacing = True
     { Panel11 Panel
-      MoveScaled(2,1,19,3)
+      MoveScaled(0,1,14,3)
       Expand = True
     }
+    { btnReset Button
+      MoveScaled(19,0,17,4)
+      Visible = False
+      Text = Shortcut(("Reset"), "R")
+      Picture = Picture["icon:/small/undo"]
+    }
     { btnOK Button
-      MoveScaled(22,0,17,4)
+      MoveScaled(37,0,17,4)
       Text = ("OK")
       Default = True
     }
     { btnCancel Button
-      MoveScaled(40,0,18,4)
+      MoveScaled(55,0,18,4)
       Text = ("Cancel")
       Cancel = True
     }
