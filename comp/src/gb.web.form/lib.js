@@ -44,6 +44,17 @@ Element.prototype.removeClass = function(klass)
   }
 };
 
+/*Element.prototype.ensureVisible = function()
+{
+  var parent = this.offsetParent;
+  
+  while (parent && parent.clientHeight == parent.scrollHeight && parent.clientWidth == parent.scrollWidth)
+    parent = parent.offsetParent;
+  
+  if (parent)
+    gw.ensureVisible(this.offsetParent, this.offsetLeft, this.offsetTop, this.offsetWidth, this.offsetHeight);
+};*/
+
 gw = {
 
   version: '0',
@@ -453,6 +464,95 @@ gw = {
     
     return { found: found, left: left, top: top, width: width, height: height, right: left + width, bottom: top + height };
   },
+
+  /*ensureVisible: function(id, x, y, w, h)
+  {
+    var elt = typeof(id) == 'string' ? $(id) : id;
+    var pw, ph,cx, cy, cw, ch;
+    var xx, yy, ww, hh;
+  
+    // WW = W / 2
+    ww = w / 2;
+    //HH = H / 2
+    hh = h / 2;
+    // XX = X + WW
+    xx = x + ww
+    // YY = Y + HH
+    yy = y + hh;
+    
+    // PW = Me.ClientW 
+    // PH = Me.ClientH
+    pw = elt.clientWidth;
+    ph = elt.clientHeight;
+    
+    cx = - elt.scrollLeft;
+    cy = - elt.scrollTop;
+    cw = elt.scrollWidth;
+    ch = elt.scrollHeight;
+  
+    //If PW < (WW * 2) Then WW = PW / 2
+    //If PH < (HH * 2) Then HH = PH / 2
+    if (pw < (ww * 2)) ww = pw / 2;
+    if (ph < (hh * 2)) hh = ph / 2;
+  
+    //If CW <= PW Then
+    //  WW = 0
+    //  CX = 0
+    //Endif
+    if (cw <= pw) { ww = 0; cx = 0; }
+    
+    //If CH <= PH Then
+    //  HH = 0
+    //  CY = 0
+    //Endif
+    if (ch <= ph) { hh = 0; cy = 0 }
+  
+    //If XX < (- CX + WW) Then
+    //  CX = Ceil(- XX + WW)
+    //Else If XX >= (- CX + PW - WW) Then
+    //  CX = Floor(- XX + PW - WW)
+    //Endif
+    if (xx < (- cx + ww))
+      cx = - xx + ww;
+    else if (xx >= (- cx + pw - ww))
+      cx = - xx + pw - ww;
+    
+    //If YY < (- CY + HH) Then
+    //  CY = Ceil(- YY + HH)
+    //Else If YY >= (- CY + PH - HH) Then
+    //  CY = Floor(- YY + PH - HH)
+    //Endif
+    
+    if (yy < (- cy + hh))
+      cy = - yy + hh;
+    else if (yy >= (- cy + ph - hh))
+      cy = - yy + ph - hh;
+  
+    //If CX > 0
+    //  CX = 0
+    //Else If CX < (PW - CW) And If CW > PW Then
+    //  CX = PW - CW
+    //Endif
+    if (cx > 0)
+      cx = 0;
+    else if (cx < (pw - cw) && cw > pw)
+      cx = pw - cw;
+  
+    //If CY > 0 Then
+    //  CY = 0
+    //Else If CY < (PH - CH) And If CH > PH Then
+    //  CY = PH - CH
+    //Endif
+    if (cy > 0)
+      cy = 0;
+    else if (cy < (ph - ch) && ch > ph)
+      cy = ph - ch;
+  
+    //If $hHBar.Value = - CX And If $hVBar.Value = - CY Then Return True
+    //Scroll(- CX, - CY)
+    elt.scrollLeft = - cx;
+    elt.scrollTop = - cy;
+  },*/
 
   window: 
   {
@@ -1026,6 +1126,12 @@ gw = {
       }
       if (x != sw.scrollLeft || y != sw.scrollTop)
         gw.update(id, '#scroll', [sw.scrollLeft, sw.scrollTop]); 
+    },
+    
+    ensureVisible: function(id, row)
+    {
+      var sw = $(id).firstChild;
+      gw.table.scroll(id, sw.scrollLeft, $(id + ':' + row).offsetTop - sw.clientHeight / 2);
     }
   },
   
@@ -1162,7 +1268,7 @@ gw = {
         xhr.send();
       },
       onSelect: function(e, term, item) {
-        gw.update(id, 'text', $(id).value);
+        gw.textbox.setText(id, gw.textbox.getText(id));
       }
     });
   },
@@ -1171,8 +1277,14 @@ gw = {
   {
     onactivate: function(id, e)
     {
+      gw.log('textbox.onactivate');
       if (e.keyCode == 13)
-        setTimeout(function() { gw.raise(id, 'activate'); }, 50);
+        setTimeout(function() { gw.raise(id, 'activate', [], false); }, 50);
+    },
+    
+    getText: function(id)
+    {
+      return $(id + ':entry').value;
     },
     
     setText: function(id, text)
@@ -1188,7 +1300,7 @@ gw = {
     {
       gw.textbox.setText(id, '');
       gw.setFocus(id);
-      gw.raise(id, 'activate');
+      gw.raise(id, 'activate', [], false);
     }
   }
 }

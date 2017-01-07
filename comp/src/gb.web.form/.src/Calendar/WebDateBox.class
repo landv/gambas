@@ -83,6 +83,7 @@ Private Sub Date_Write(Value As Date)
 
   $dDate = Value
   Me._SetProperty("Date", Value)
+  Raise Change
 
 End
 

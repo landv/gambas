@@ -7,5 +7,6 @@
   <link rel="stylesheet" href="<%/%>/<%="style:" & Application.Version & ".css"%>">
   <link rel="icon" href="<%/%>/favicon.png" type="image/png">
   <script type="text/javascript" src="<%/%>/<%="lib" & GetJavascript() & ":" & Application.Version & ".js"%>"></script>
+  <%PrintJavascriptExternFiles()%>
   <title><%=GetTitle()%></title>
 </head>

@@ -44,6 +44,7 @@ Public _Loaded As Boolean
 Public _Window As Integer
 
 Private $aJavascriptFiles As String[]
+Private $aJavascriptExternfiles As String[]
 
 Private $sTitle As String
 Private $bResizable As Boolean
@@ -798,11 +799,22 @@ Public Sub _GetJavascriptFiles() As String[]
   
 End
 
+Public Sub _GetJavascriptExternFiles() As String[]
+  
+  Return $aJavascriptExternFiles
+  
+End
+
 Public Sub AddJavascriptFile(sFile As String)
   
-  If sFile Ends ".js" Then sFile = Left(sFile, -3)
-  If Not $aJavascriptFiles Then $aJavascriptFiles = New String[]
-  $aJavascriptFiles.Add(sFile)
+  If sFile Begins "http://" Or If sFile Begins "https://" Then
+    If Not $aJavascriptExternFiles Then $aJavascriptExternFiles = New String[]
+    $aJavascriptExternFiles.Add(sFile)
+  Else
+    If sFile Ends ".js" Then sFile = Left(sFile, -3)
+    If Not $aJavascriptFiles Then $aJavascriptFiles = New String[]
+    $aJavascriptFiles.Add(sFile)
+  Endif
   
 End
 

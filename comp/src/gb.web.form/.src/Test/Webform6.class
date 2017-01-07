@@ -1,22 +1,14 @@
 ' Gambas class file
 
 
-Public Sub WebTextBox1_Completion(Text As String)
-
-  Dim aList As String[]
-  Dim I As Integer
-
-  aList = New String[]
-  For I = 1 To 10
-    aList.Add(Text & "-" & Chr$(64 + I))
-  Next
-
-  WebTextBox1.CompleteWith(aList)
-
-End
-
 Public Sub WebForm_Open()
 
   WebForm.Debug = True
+
+End
+
+Public Sub WebComboBox1_Click()
+
+  Debug
 
 End

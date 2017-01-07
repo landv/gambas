@@ -19,5 +19,18 @@ Private Sub GetJavascript() As String
   aFiles = Form._GetJavascriptFiles()
   If aFiles And If aFiles.Count Then Return ":" & aFiles.Join(":")
   
+End
+
+Private Sub PrintJavascriptExternFiles()
+
+  Dim aFiles As String[]
+  Dim sFile As String
   
+  aFiles = Form._GetJavascriptExternFiles()
+  If aFiles Then
+    For Each sFile In aFiles
+      Print "<script type=\"text/javascript\" src=\""; Html(sFile); "\"></script>"
+    Next
+  Endif
+
 End

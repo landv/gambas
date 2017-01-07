@@ -38,7 +38,7 @@ Private $iScrollY As Integer
 Private $bNoScrolling As Boolean
 Private $bNoCheck As Boolean
 Private $bNoHeader As Boolean
-
+Private $iEnsureVisible As Integer = -1
 
 Public Sub _new()
   
@@ -170,7 +170,12 @@ Public Sub _Render()
   If $bNoScrolling Then
     $bNoScrolling = False
   Else
-    WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & ")")
+    If $iEnsureVisible > 0 Then
+      WebForm._AddJavascript("gw.table.ensureVisible(" & JS(Me.Name) & "," & CStr($iEnsureVisible) & ")")
+      $iEnsureVisible = -1
+    Else
+      WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & ")")
+    Endif
   Endif
   
   If $iMode = Select.Single Then WebForm._AddJavascript("$(" & JS(Me.Name) & ").gw_current = " & Current_Read())
@@ -532,6 +537,15 @@ Public Sub AddColumn(Text As String, Optional Width As String, Alignment As Inte
   hCol.Alignment = Alignment
   
   Return hCol
-    
+  
+End
+
+Public Sub EnsureVisible(Row As Integer)
+
+  If Row < 0 Or If Row >= $iCount Then Return
+
+  Me.Display = Min($iCount, Max($iStep, ((Row + $iStep - 1) \ $iStep) * $iStep))
+  Me.Refresh
+  $iEnsureVisible = Row
   
 End
