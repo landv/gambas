@@ -23,11 +23,21 @@
   }
   { URLLabel1 URLLabel
     MoveScaled(32,7,27,6)
-    Background = &HFFFF00&
-    AutoResize = True
-    Text = ("http://gambaswiki.org")
+    Link = "http://gambaswiki.org"
+    Border = True
+    Alignment = Align.TopNormal
   }
   { ValueBox1 ValueBox
     MoveScaled(44,23,24,6)
+  }
+  { Label1 Label
+    MoveScaled(44,33,11,5)
+    Background = Color.LinkForeground
+    Border = Border.Plain
+  }
+  { Label2 Label
+    MoveScaled(44,40,11,5)
+    Background = Color.VisitedForeground
+    Border = Border.Plain
   }
 }

@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Padding{Range:0;63},AutoResize,Link,Text"
+Public Const _Properties As String = "*,Padding{Range:0;63},AutoResize,Link,Text,Border,Alignment{Align.*}"
 Public Const _DefaultSize As String = "24,4"
 Public Const _DefaultEvent As String = "Click"
 
@@ -15,6 +15,8 @@ Property Link As String
 Property Visited As Boolean
 Property AutoResize As Boolean
 Property Padding As Integer
+Property Border As Boolean
+Property Alignment As Integer
 
 Private $hDraw As DrawingArea
 Private $sText As String
@@ -22,6 +24,8 @@ Private $bVisited As Boolean
 Private $bAutoResize As Boolean
 Private $iPadding As Integer
 Private $sLink As String
+Private $bBorder As Boolean
+Private $iAlign As Integer = Align.Normal
 
 Public Sub _new()
   
@@ -60,10 +64,12 @@ Public Sub DrawingArea_Draw()
   
   Dim sText As String
   
+  If $bBorder Then Style.PaintPanel(0, 0, Me.W, Me.H, Border.Plain)
+  
   Paint.Background = If($bVisited, Color.VisitedForeground, Color.LinkForeground)
   Paint.Font.Underline = True
   sText = GetText()
-  Paint.DrawText(sText, $iPadding, $iPadding, Paint.W - $iPadding * 2, Paint.H - $iPadding * 2, Align.Normal)
+  Paint.DrawText(sText, $iPadding, $iPadding, Paint.W - $iPadding * 2, Paint.H - $iPadding * 2, $iAlign)
   
 End
 
@@ -143,6 +149,32 @@ Private Sub Link_Write(Value As String)
 
   $sLink = Value
   Updatesize
+  $hDraw.Refresh
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return $iAlign
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  $iAlign = Value
+  $hDraw.Refresh
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $bBorder = Value
   $hDraw.Refresh
 
 End
