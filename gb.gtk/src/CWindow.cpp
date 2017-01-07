@@ -354,11 +354,13 @@ static bool check_closed(CWINDOW *_object, bool modal)
 	if (WINDOW->isOpened())
 	{
 		if (modal || WINDOW->isModal())
+		{
 			GB.Error("Window is already opened");
-		return TRUE;
+			return TRUE;
+		}
 	}
-	else
-		return FALSE;
+	
+	return FALSE;
 }
 
 BEGIN_METHOD_VOID(CWINDOW_show_modal)
