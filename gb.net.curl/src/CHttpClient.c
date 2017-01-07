@@ -54,6 +54,9 @@ static void http_parse_header(CHTTPCLIENT *_object)
 	char *p;
 	int ret;
 
+	if (THIS_HTTP->return_string)
+		return;
+	
 	if (!THIS_HTTP->headers || GB.Array.Count(THIS_HTTP->headers) == 0)
 		return;
 	
@@ -72,8 +75,11 @@ static void http_parse_header(CHTTPCLIENT *_object)
 		p++;
 	}
 	
+	
 	if (*p != ' ')
 		return;
+	
+	p++;
 	
 	THIS_HTTP->return_code = ret;
 	//GB.FreeString(&THIS_HTTP->return_string);
@@ -122,8 +128,7 @@ static size_t http_read_curl(void *ptr, size_t size, size_t nmemb, void *_object
 
 static int http_write_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 {
-	if (!THIS_HTTP->return_code) 
-		http_parse_header(THIS_HTTP);
+	http_parse_header(THIS_HTTP);
 
 	nmemb *= size;
 	
@@ -514,6 +519,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(HttpClient_ReturnCode)
 
+	http_parse_header(THIS_HTTP);
 	GB.ReturnInteger(THIS_HTTP->return_code);
 
 END_PROPERTY
@@ -521,6 +527,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(HttpClient_ReturnString)
 
+	http_parse_header(THIS_HTTP);
 	GB.ReturnString(THIS_HTTP->return_string);
 
 END_PROPERTY
@@ -528,6 +535,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(HttpClient_Headers)
 
+	http_parse_header(THIS_HTTP);
 	GB.ReturnObject(THIS_HTTP->headers);
 
 END_PROPERTY
