@@ -1147,6 +1147,7 @@ typedef
 			int (*Write)(GB_STREAM *stream, void *addr, int len);
 			int (*GetReadable)(GB_STREAM *stream, int *len);
 			bool (*Eof)(GB_STREAM *stream);
+			int (*Handle)(GB_STREAM *stream);
 			}
 		Stream;
 

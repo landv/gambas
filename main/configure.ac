@@ -123,6 +123,7 @@ lib/gui.trayicon/Makefile \
 lib/image/Makefile \
 lib/image.effect/Makefile \
 lib/signal/Makefile \
+lib/term/Makefile \
 lib/complex/Makefile \
 lib/data/Makefile \
 lib/clipper/Makefile \
