@@ -233,7 +233,14 @@ Private Sub WriteValue(vVal As Variant)
         Endif
       Loop
       Write #$hStream, sStr
-    
+      
+    Case gb.Pointer
+      If vVal = JSON.Null Then
+        Write #$hStream, "null"
+      Else
+        Write #$hStream, "undefined"
+      Endif
+      
     Case Else
       If vVal Is Array Then
         aArray = vVal
@@ -254,6 +261,8 @@ Private Sub WriteValue(vVal As Variant)
           Inc iPos
         Next
         Write #$hStream, "}"
+      Else
+        Write #$hStream, "undefined"
       Endif
     
   End Select
