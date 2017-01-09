@@ -96,7 +96,7 @@ static QT_COLOR_FUNC _after_set_color = NULL;
 
 #define HANDLE_PROXY(_ob) \
 	while (EXT(_ob) && EXT(_ob)->proxy) \
-		_ob = (typeof _ob)(EXT(_ob)->proxy);
+		_ob = (__typeof__ _ob)(EXT(_ob)->proxy);
 
 static CWIDGET_EXT *alloc_ext(CWIDGET *_object)
 {

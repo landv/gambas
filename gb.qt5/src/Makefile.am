@@ -8,7 +8,7 @@ gblib_LTLIBRARIES = gb.qt5.la
 
 gb_qt5_la_LIBADD = @THREAD_LIB@ @QT5_LIB@
 gb_qt5_la_LDFLAGS = -module @LD_FLAGS@ @QT5_LDFLAGS@
-gb_qt5_la_CXXFLAGS = @THREAD_INC@ -DGB_QT_COMPONENT $(AM_CXXFLAGS)
+gb_qt5_la_CXXFLAGS = @THREAD_INC@ -DGB_QT_COMPONENT $(AM_CXXFLAGS) -std=c++11
 gb_qt5_la_CPPFLAGS = @QT5_INC@ -I$(top_srcdir)/share/
 
 gb_qt5_la_SOURCES = \

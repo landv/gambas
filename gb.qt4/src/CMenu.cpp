@@ -59,7 +59,7 @@ static GB_FUNCTION _init_shortcut_func;
 
 #define HANDLE_PROXY(_ob) \
 	while (EXT(_ob) && EXT(_ob)->proxy) \
-		_ob = (typeof _ob)(EXT(_ob)->proxy);
+		_ob = (__typeof__ _ob)(EXT(_ob)->proxy);
 
 static CMENU_EXT *alloc_ext(CMENU *_object)
 {
