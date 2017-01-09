@@ -3,10 +3,20 @@
 Export
 Inherits TermControl
 Class Rect
+Class Image
+Class Color
 Private $hImage As Image '= Image.Load("all.png")
 Property Image As Image
-
-
+Property Stretch As Integer
+Property Alignment As Integer
+Private $iAlignment As Integer
+Private $iStretch As Integer
+'None: Do nothing
+'Proportional: Fit to one near border and adapt the other side
+'Cut/Zoom: Adapt to the far border and cut the rest
+'Fit: use the PictureBox content size
+'If Picture box.None is not set the the ALignment property is set to centered
+Public Enum None, Proportional, Cut, Fit
 Private $aTermColor As Integer[] = [
   &H000000, &H800000, &H008000, &H808000, &H000080, &H800080, &H008080, &Hc0c0c0,
   &H808080, &Hff0000, &H00ff00, &Hffff00, &H0000ff, &Hff00ff, &H00ffff, &Hffffff,
@@ -51,32 +61,45 @@ Private $aTermColor As Integer[] = [
   &H808080, &H8a8a8a, &H949494, &H9e9e9e, &Ha8a8a8, &Hb2b2b2,
   &Hbcbcbc, &Hc6c6c6, &Hd0d0d0, &Hdadada, &He4e4e4, &Heeeeee]
 'Private $aaImage As New Byte[][]
+Static Public Sub _init()
+
+  ' Component.Load(Component.Path &/ "gb.Image")
+  ' Component.Load(Component.Path &/ "gb.Image.io")
+  
+  
+End
+
+
+
 
 
 Public Sub _new()
 
-' Dim aLine As Byte[]
-' Dim yPix As Byte
-' Dim y As Integer
-' Dim x As Integer
-'   
-'   $hImage = $hImage.Stretch(150, 100)
-'   
-'   For y = 0 To $hImage.Height
-'     aline = New Byte[]
-'     For x = 0 To $hImage.Width
-'       aLine.Add(ConvTermColor(Color.SetAlpha($hImage[x, y], 0)))
-'     Next
-'     $aaImage.Add(aline)
-'   Next
-'   
-' 
-'   _Render
-Me._ColorMode = TermColor.Mode256
+  ' Dim aLine As Byte[]
+  ' Dim yPix As Byte
+  ' Dim y As Integer
+  ' Dim x As Integer
+  '
+  '   $hImage = $hImage.Stretch(150, 100)
+  '
+  '   For y = 0 To $hImage.Height
+  '     aline = New Byte[]
+  '     For x = 0 To $hImage.Width
+  '       aLine.Add(ConvTermColor(Color.SetAlpha($hImage[x, y], 0)))
+  '     Next
+  '     $aaImage.Add(aline)
+  '   Next
+  '
+  '
+  '   _Render
+  Me._ColorMode = TermColor.Mode256
+
 End
 
 Private Function Image_Read() As Image
+
   Return $hImage
+
 End
 
 Private Sub Image_Write(Value As Image)
@@ -91,37 +114,50 @@ Public Sub _Render()
   Dim x, y As Integer
   Dim fg, bg As Integer
   Dim hattr As New Attr
- Dim hClientRect As Rect
- Dim hChar As Char
- Dim hRect As Rect = Me._GetRect()
- If Not Me._NeedRender Then Return
+  Dim hClientRect As Rect
+  Dim hChar As Char
+  Dim hRect As Rect = Me._GetRect()
+
+  If Not Me._NeedRender Then Return
   Super._Render
   If $hImage = Null Then Return
   'Return
- hClientRect = Me._GetClientRect()
+  hClientRect = Me._GetClientRect()
   'img2 = $hImage.Copy()
   'hattr.ColorMode = TermColor.Mode256
-  img = $hImage.Stretch(hClientRect.Width, (hClientRect.Height) * 2)
-  
-  
-  
-  
-   For y = 0 To img.Height - 1 Step 2
-     For x = 0 To img.Width - 1
-       hChar = New Char
-       
-       fg = ConvTermColor(Color.SetAlpha(img[x, y], 0))
-       bg = ConvTermColor(Color.SetAlpha(img[x, y + 1], 0))
-       hattr.ColorMode = TermColor.Mode256
-       hattr.Foreground = fg
-       hattr.Background = bg
-       hChar.Attr = hattr.GetInteger()
-       hChar.c = &H2580
+  Select Case $iStretch
+    Case TermPictureBox.Cut
+    Case TermPictureBox.Fit
+      img = $hImage.Stretch(hClientRect.Width, (hClientRect.Height) * 2)
+
+    Case TermPictureBox.Proportional
+    Case Else
+      'AKA None
+      img = $hImage.Copy()
+  End Select
+
+  Select Case $iAlignment
+    Case Align.Right
+    Case Align.Center
+    Case Else
+      'AKA ALign.Left
+  End Select
+
+  For y = 0 To img.Height - 1 Step 2
+    For x = 0 To img.Width - 1
+      hChar = New Char
+
+      fg = ConvTermColor(Color.SetAlpha(img[x, y], 0))
+      bg = ConvTermColor(Color.SetAlpha(img[x, y + 1], 0))
+      hattr.ColorMode = TermColor.Mode256
+      hattr.Foreground = fg
+      hattr.Background = bg
+      hChar.Attr = hattr.GetInteger()
+      hChar.c = &H2580
       Try Me._Content[hClientRect.Top + y / 2][hClientRect.Left + x] = hChar
     Next
-   Next
-   
-   
+  Next
+
   'Print
   ' For y = 0 To $aaImage.Max Step 2
   '   For x = 0 To $aaImage[0].Max
@@ -133,12 +169,13 @@ Public Sub _Render()
   '     Print String.Chr(&H2580);
   '   Next
   '   Print
-  ' 
-  ' 
-  ' 
-  ' 
+  '
+  '
+  '
+  '
   ' Next
-Me._NeedRender = False
+  Me._NeedRender = False
+
 End
 
 Private Function ConvTermColor(iTermColor As Integer) As Integer
@@ -156,5 +193,29 @@ Private Function ConvTermColor(iTermColor As Integer) As Integer
     Endif
   Next
   Return iCur
+
+End
+
+Private Function Stretch_Read() As Integer
+
+  Return $iStretch
+
+End
+
+Private Sub Stretch_Write(Value As Integer)
+
+  $iStretch = Value
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return $iAlignment
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  $iAlignment = Value
 
 End

@@ -12,6 +12,15 @@ Private $rectOldPos As Rect
 
 Private $bMaximized As Boolean
 
+Public Sub _new()
+  
+  Me.Visible = False
+  
+End
+
+
+
+
 Public Sub _Render()
 
   Dim i As Integer
@@ -27,15 +36,15 @@ Public Sub _Render()
   hAttr.Bold = True
   iAttr = hAttr.GetInteger()
 
-  For i = 1 To Me.Width - 2
+  For i = 0 To Me.Width - 1 '- 2
     Me._Content[0][i] = Char(" ", iAttr)
   Next
-  Me._Content[0][1].c = Asc("[")
-  Me._Content[0][2].c = Asc("]")
+  Me._Content[0][0].c = Asc("[")
+  Me._Content[0][1].c = Asc("]")
   For i = 1 To String.Len($sText)
-    Try Me._Content[0][i + 3].c = Asc(Mid($sText, i, 1))
+    Try Me._Content[0][i + 2].c = Asc(Mid($sText, i, 1))
   Next
-
+  Me._Content[0][Me._Content[0].Max].c = Asc("X")
   Me._NeedRender = False
 
 End
@@ -98,4 +107,40 @@ Public Sub Center()
   Me.Move((Desktop.Width - Me.Width) / 2, (Desktop.Height - Me.Height) / 2, Me.Width, Me.Height)
   
 End
+
+Public Sub Close()
+  Dim hCont As TermControl
+  Me.Visible = False
+  TermWindows.Delete(Me)
+  
+End
+
+
+Public Sub _MouseUp()
+
+  
+  
+  If Mouse.ScreenY = Me.ScreenY Then
+    If Mouse.ScreenX = Me.ScreenX + Me.Width - 1 Then 
+      Me.Close
+      Return
+    Endif
+    If Mouse.X >= 0 And If Mouse.x <= 1 Then
+      Me.Maximized = Not Me.Maximized
+    Endif
+  Endif
+  Super._MouseUp
+  
+  
+End
+
+Public Sub _MouseMove()
+  If Mouse.Left Then
+  If Mouse.ScreenY = Me.ScreenY Then
+    
+  Endif
+  Endif
+  Super._MouseMove
+End
+
 

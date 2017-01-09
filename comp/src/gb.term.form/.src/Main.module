@@ -1,19 +1,22 @@
 ' Gambas module file
 
+
 Private hTimer As New Timer As "Timer"
-Private hWin2 As Window
+Private hWin2 As TermWindow
 Private hTermLabel As TermLabel
 Private $i As Integer
 Private $iBal As Integer = 1
 
-Public Sub Main()
+ Public Sub Main()
 
-  Dim hWin As New Window
+  Dim hWin As New TermForm
   Dim hTermLabel2 As TermLabel
   Dim i As Integer
   Dim hCont As TermVBox
   Dim hCont2 As TermHBox
   Dim hTermButton As TermButton
+  'TermWindows.Debug = True
+  
   'Dim hTermLabel As New TermLabel(hWin)
   'Dim hWin2 As New Window
   hTermLabel = New TermLabel(hwin)
@@ -41,7 +44,7 @@ Public Sub Main()
   
   
   
-  hWin2 = New Window
+  hWin2 = New TermWindow
   hWin2.Background = TermColor.Cyan
   hWin2.Border = Border.Simple
   hWin2.Width = 50
@@ -51,9 +54,9 @@ Public Sub Main()
   hWin2.top = 6
   hWin2.Left = 15
   'hWin2.Padding = 1
-  hWin2.Maximized = True
+  'hWin2.Maximized = True
   hWin2.Text = "Window 2" 
-  hWin2.Tag = "*"
+  
   'hCont.Top = 3
   hTermLabel = New TermLabel(hWin2)
   hTermLabel.Width = 14
@@ -79,14 +82,14 @@ Public Sub Main()
   hCont2.Background = TermColor.Cyan
   hCont2.Invert = True
   hCont.Shadow = True
-  hTermButton = New TermButton(hCont2)
+  hTermButton = New TermButton(hCont2) As "btnOk"
   hTermButton.Background = TermColor.Magenta
   hTermButton.Text = "Ok"
   hTermButton.W = 10
   hTermButton.H = 2
   hTermButton._Shadow = True
   hTermButton.Alignment = Align.Center
-    hTermButton = New TermButton(hCont2)
+    hTermButton = New TermButton(hCont2) As "btnCancel"
   hTermButton.Background = TermColor.Magenta
   hTermButton.Text = "Cancel"
   hTermButton.W = 10
@@ -94,9 +97,10 @@ Public Sub Main()
   hTermButton._Shadow = True
   hTermButton.Alignment = Align.Center
   'hWin2.Maximized = True
-  
-   TermWindows.Render
-End
+  hWin2.Show
+  hwin.Show
+   'TermWindows._Render
+ End
 
 
 Public Sub Timer_Timer()
@@ -107,7 +111,25 @@ Public Sub Timer_Timer()
  'If hWin2.Left < 2 Then $iBal = 1
  
  Inc $i
-   TermWindows.Render
+   TermWindows._Render
+  
+End
+' ' Public Sub Application_Read()
+'   
+'   Error "toto"
+'   
+' End
+
+Public Sub btnCancel_MouseUp()
+  
+  Last.Window.Visible = False
+  'TermWindows._Render
   
 End
 
+Public Sub btnOk_MouseUp()
+  
+  Message("Salut a tous !")
+  'TermWindows._Render
+  
+End

@@ -14,7 +14,7 @@ Property Read Parent As TermContainer
 Property Height, H As Integer
 Property Read ScreenX As Integer
 Property Read ScreenY As Integer
-Property Read Window As Window
+Property Read Window As TermWindow
 
 Property Left, X, Column As Integer
 Property Top, Y, {Line} As Integer
@@ -28,6 +28,7 @@ Property _Shadow As Boolean
 Property _Border As Integer
 Property _Padding As Integer
 Property _ColorMode As Integer
+Property Visible As Boolean
 Private $iColorMode As Integer
 Private $iBorder As Integer
 
@@ -48,6 +49,11 @@ Private $bExpand As Boolean
 Private $yBorder As Byte
 Private $iPadding As Integer
 Private $rectClient As Rect
+Private $iVisible As Boolean = True
+Event MouseDown
+Event MouseUp
+Event MouseWheel
+Event MouseMove
 
 
 Public Sub _new(Optional hParent As TermContainer)
@@ -57,10 +63,10 @@ Public Sub _new(Optional hParent As TermContainer)
   If hParent Then
     $iParent = hParent.Id
     hParent._Add(Me)
-    'GetWindow
+    GetWindow
   Else
-    If Me Is Window Then
-       TermWindows._Add(Me)
+    If Me Is TermWindow Then
+      TermWindows._Add(Me)
     Endif
   Endif
   $rectControl.Width = 5
@@ -97,9 +103,9 @@ Public Sub _Render()
   Dim iShadow As Integer = IIf($bShadow, 1, 0)
   Dim iBC As Integer
   'If Me Is TermContainer Then
-    hRectC = $rectControl
+  hRectC = $rectControl
   'Else
-   ' hRectC = $rectClient
+  ' hRectC = $rectClient
   'Endif
 
   If Not _Content Then ResizeBuffer(hRectC.Width, hRectC.Height)
@@ -203,30 +209,32 @@ End
 
 Private Sub Left_Write(Value As Integer)
 
-   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
+  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
   $rectControl.X = Value
   $rectDrawing.X = Value
   Me._DefineRect
-   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
+  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
   _RecalcPos = True
 
 End
 
 Private Function Top_Read() As Integer
 
+  'If Me.tag = "--" Then Stop
+  
   Return $rectControl.Y
 
 End
 
 Private Sub Top_Write(Value As Integer)
 
-   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
+  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
   $rectControl.Y = Value
   $rectDrawing.Y = Value
   Me._DefineRect
   _RecalcPos = True
 
-   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
+  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
 
 End
 
@@ -239,13 +247,13 @@ End
 Private Sub Width_Write(Value As Integer)
 
   If Value < 1 Then Return
-   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
+  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   $rectControl.Width = Value
 
   '$rectDrawing.width = Value + IIf($bShadow, 1, 0)
   Me._DefineRect
   ResizeBuffer($rectControl.Width, $rectControl.Height)
-   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
+  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   'If Me Is TermContainer Then Me._SetClientRect()
 
 End
@@ -259,12 +267,12 @@ End
 Private Sub Height_Write(Value As Integer)
 
   If Value < 1 Then Return
-   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
+  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   $rectControl.Height = Value
   '$rectDrawing.Height = Value + IIf($bShadow, 1, 0)
   Me._DefineRect
   ResizeBuffer($rectControl.Width, $rectControl.Height)
-   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
+  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   'If Me Is TermContainer Then Me._SetClientRect()
 
 End
@@ -319,7 +327,7 @@ Private Sub ComputeScreenXY()
 
 End
 
-Private Function Window_Read() As Window
+Private Function Window_Read() As TermWindow
 
   Return _IdToControl[$iWindow]
 
@@ -398,7 +406,7 @@ Public Sub Move(Left As Integer, Top As Integer, Width As Integer, Height As Int
   Me.Top = Top
   Me.Width = Width
   Me.Height = Height
-
+  TermWindows._Render
 End
 
 Private Function Expand_Read() As Boolean
@@ -439,7 +447,8 @@ Private Sub _Shadow_Write(Value As Boolean)
 End
 
 Public Sub _DefineRect()
-'If Me Is TermPictureBox Then Stop
+  'If Me Is TermPictureBox Then Stop
+
   $rectClient = Rect($iPadding + $yBorder, $iPadding + $yBorder, $rectControl.Width - ($iPadding + $yBorder) * 2 - IIf($bShadow, 1, 0), $rectControl.Height - ($iPadding + $yBorder) * 2 - IIf($bShadow, 1, 0))
 
 End
@@ -458,8 +467,9 @@ Private Sub _Border_Write(Value As Integer)
 End
 
 Public Sub _GetClientRect() As Rect
-'  If Me Is TermFrame Then Stop
+  '  If Me Is TermFrame Then Stop
   '_DefineRect
+
   Return $rectClient.Copy()
 
 End
@@ -479,6 +489,7 @@ End
 Public Sub _GetBackGround() As Integer
 
   Dim i As Integer
+
   If $iBackGround = -1 Then
     If $iParent > 0 Then
       i = Me.Parent._GetBackGround()
@@ -503,3 +514,59 @@ Private Sub _ColorMode_Write(Value As Integer)
   $iColorMode = Value
 
 End
+
+Public Sub _MouseDown()
+  If TermWindows.Debug Then Error "Mouse Down Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  Raise MouseDown
+End
+
+Public Sub _MouseUp()
+  If TermWindows.Debug Then Error "Mouse Up Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  Raise MouseUp
+End
+
+Public Sub _MouseMove()
+  If TermWindows.Debug Then Error "Mouse Move Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  Raise MouseMove
+End
+
+Public Sub _MouseWheel()
+  If TermWindows.Debug Then Error "Mouse Wheel Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  Raise MouseWheel
+End
+
+Private Function Visible_Read() As Boolean
+
+  Return $iVisible
+
+End
+
+Private Sub Visible_Write(Value As Boolean)
+  If $iVisible <> Value Then
+  $iVisible = Value
+  TermWindows.SetRefreshArea($rectControl)
+  TermWindows._Render
+  Endif
+End
+
+
+Public Sub Show()
+  
+  Me.Visible = True
+  
+End
+
+Public Sub Hide()
+  
+  Me.Visible = False
+  
+End
+
+Public Sub Resize(Width As Integer, Height As Integer)
+  
+  Me.Width = Width
+  Me.Height = Height
+  TermWindows._Render
+  
+End
+

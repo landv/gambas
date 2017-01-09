@@ -7,28 +7,31 @@ Static Private Obs As Observer
 Static Private $aScreen As New Integer[]
 Static $hFile As File
 Static Private $RectRefreshArea As Rect
-Static Private $aChildren As New Window[]
+Static Private $aChildren As New TermWindow[]
 Static Private $hRect As Rect
 Static Private $RectRenderArea As Rect
-Static Public {Debug} As Boolean = True
-
-
-
-
+Static Public {Debug} As Boolean '= True
+Static Private $Index As Integer
 
 Static Public Sub _init()
 
   Dim hRect As Rect
+  Dim hSetting As TerminalSettings
 
   Component.Load("gb.geom")
 
   hRect = New Rect(0, 0, 3, 3)
-  Print hRect.Width
+  'Error hRect.Width
 
-  Print File.Out.Term.W
+  'Error File.Out.Term.W
+
+  $hFile = Open File.In.Term.Name For Read Watch
   obs = New Observer(File.In) As "Terminal"
 
-  File.In.Term.Echo = False
+  hSetting = File.In.Term.GetAttr()
+  hSetting.ICANON = False
+  hSetting.ECHO = False
+  File.In.Term.SetAttr(Term.TCSANOW, hSetting)
 
   Print "\e[?1002h\e[?1006h\e[?1049h\e[?25l\e[?2h";
   Print "\e[8;30;200";
@@ -44,7 +47,7 @@ Static Private Sub ResizeScreen(Width As Integer, Height As Integer)
 
 End
 
-Public Sub _Add(hWin As Window)
+Public Sub _Add(hWin As TermWindow)
 
   $aChildren.Add(hWIn)
 
@@ -53,17 +56,20 @@ End
 Static Public Sub _RefreshScreen()
 
   $RectRefreshArea = $hRect.Copy()
-  Render
+  _Render
 
 End
 
 Static Public Sub DoRefreshArea()
 
-  Dim hChild As Window
+  Dim hChild As TermWindow
   Dim hRect As Rect
 
   If Not $RectRefreshArea Then Return
   DoArrange()
+  'refresh desktop
+  Try RefreshChild(Null, $hRect.InterSection($RectRefreshArea))
+  'Resfresh windows
   For Each hChild In $aChildren
     hRect = $hRect.InterSection($RectRefreshArea)
     Try RefreshChild(hChild, hRect)
@@ -84,24 +90,31 @@ Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
   Dim hInRect As Rect
   Dim iMove, iResize As Integer
   'If hChild Is Window Then Stop
-  hInRect = hRect.Intersection(hChild._GetScreenRect())
-
+  If Not (hChild = Null) Then
+    hInRect = hRect.Intersection(hChild._GetScreenRect())
+    If hChild.Visible = False Then Return
   If Not hInRect Then Return
-
+  Else
+    hInRect = hRect
+  Endif
   For L = hInRect.Top To hInRect.Bottom - 1
 
     For C = hInRect.Left To hInRect.Right - 1
-      $aScreen[l, C] = hChild.Id
+      If hChild = Null Then
+        $aScreen[l, C] = 0
+      Else
+        $aScreen[l, C] = hChild.Id
+      Endif
       'If hChild.id = 3 Then Debug l, C
     Next
   Next
-
+  If hChild = Null Then Return
   If hChild Is TermContainer Then
     imove = If(hChild.Border > 0, 1, 0) + hChild.Padding
     iResize = iMove * 2 + If(hChild._Shadow, 1, 0)
     hInRect.Move(hInRect.Left + iMove, hInRect.Top + imove, hInRect.Width - iResize, hInRect.Height - iResize)
-      For Each hObj In hChild.Children
-        
+    For Each hObj In hChild.Children
+
       RefreshChild(hObj, hInRect)
     Next
 
@@ -110,12 +123,81 @@ Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
 End
 
 Static Public Sub Terminal_Resize()
-  Dim hWin As Window
+
+  Dim hWin As TermWindow
   ResizeScreen(File.Out.Term.Width, File.Out.Term.Height)
   For Each hWin In $aChildren
     hWin._ScreenResize
   Next
-  Try Render
+  Try _Render
+
+End
+
+Static Public Sub File_Read()
+
+  Dim s As String
+  Dim ai As Integer[]
+  Dim hControl As TermControl
+  Dim R, C As Integer
+  s = Read #$hFile, Lof($hFile)
+  'Inc $index
+  If Me.Debug Then Error Replace(s, "\e", "!e")
+  For Each s In Split(s, "\e")
+    If s Begins "[<" Then
+
+      s = Right(s, -2)
+      'is a mouse event ?
+      If InStr(LCase(s), "m") Then
+
+        ai = Split(Left(s, -1), ";")
+        'Mouse._setstate(x,y,Left, middle, right,delta)
+        ai[2] -= 1
+        ai[1] -= 1
+        hControl = TermControl._IdToControl[$aScreen[ai[2], ai[1]]]
+        
+        Select Case ai[0]
+            'Mouse move with left button down
+          Case 32
+            Mouse._SetState(hControl, ai[1], ai[2], True,,, 0)
+            RaiseMouseEvent(hControl, "_MouseMove")
+            'Mouse move with right button down
+          Case 34
+            Mouse._SetState(hControl, ai[1], ai[2],,, True, 0)
+            RaiseMouseEvent(hControl, "_MouseMove")
+            'Button left down Or up
+          Case 0
+            Mouse._SetState(hControl, ai[1], ai[2], Right(s, 1) = "M",,, 0)
+            RaiseMouseEvent(hControl, IIf(Right(s, 1) = "M", "_MouseDown", "_MouseUp"))
+            'Button middle down Or up
+          Case 1
+            Mouse._SetState(hControl, ai[1], ai[2],, Right(s, 1) = "M",, 0)
+            RaiseMouseEvent(hControl, IIf(Right(s, 1) = "M", "_MouseDown", "_MouseUp"))
+            'Button right down or up
+          Case 2
+            Mouse._SetState(hControl, ai[1], ai[2],,, Right(s, 1) = "M", 0)
+            RaiseMouseEvent(hControl, IIf(Right(s, 1) = "M", "_MouseDown", "_MouseUp"))
+            'Mouse wheel up or down
+          Case 64, 65
+            Mouse._SetState(hControl, ai[1], ai[2],,,, IIf(ai[0] = 64, -1, 1))
+            RaiseMouseEvent(hControl, "_MouseWheel")
+        End Select
+
+      Endif
+
+    Else
+
+    Endif
+  Next
+
+End
+
+Static Private Sub RaiseMouseEvent(hControl As TermControl, sEvent As String)
+
+  'Dim hControl As TermControl
+
+  'hControl = TermControl._IdToControl[$aScreen[Mouse.Row, Mouse.Col]]
+  If hControl = Null Then Return
+  Object.Call(hControl, sEvent)
 
 End
 
@@ -127,11 +209,11 @@ End
 
 Static Public Sub SetRenderArea(hRect As Rect)
 
-  If Not $RectRenderArea Then 
+  If Not $RectRenderArea Then
     $RectRenderArea = hRect
     Return
   Endif
-    
+
   $RectRenderArea = $RectRenderArea.Union(hRect)
 
 End
@@ -143,7 +225,7 @@ Static Public Sub SetRefreshArea(hRect As Rect)
 
 End
 
-Static Public Sub Render()
+Static Public Sub _Render()
 
   Dim c As Integer
   Dim l As Integer
@@ -151,9 +233,9 @@ Static Public Sub Render()
   Dim hAttr As New Attr
   Dim hChar As Char
   Dim hCont As TermControl
-  Dim sAttr As String 
+  Dim sAttr As String
   Dim sDisplay As String
-  
+
   DoRefreshArea()
   RenderAll
   hRect = $hRect.Intersection($RectRenderArea)
@@ -162,7 +244,7 @@ Static Public Sub Render()
   For l = hRect.Y To hRect.Bottom - 1
     'Debug "ligne " & l
     sDisplay &= "\e[" & (l + 1) & ";" & (hRect.X + 1) & "H"
-        'If l = 9 Then Stop
+    'If l = 9 Then Stop
     For c = hRect.X To hRect.Right - 1
 
       ' hAttr.Background = $aScreen[l, c]
@@ -176,10 +258,10 @@ Static Public Sub Render()
         'Debug hAttr.Foreground
         sAttr = hAttr._GetString()
         sDisplay &= sAttr
-        sDisplay &= String.Chr(hChar.c) 
-        
+        sDisplay &= String.Chr(hChar.c)
+
         'sDisplay &= Str($aScreen[l, c])
-        '  If Str($aScreen[l, c]) = "37" Then 
+        '  If Str($aScreen[l, c]) = "37" Then
         '   Debug Str($aScreen[l, c]), l
         ' Endif
       Else
@@ -193,17 +275,18 @@ Static Public Sub Render()
     Next
   Next
   Print sDisplay;
-  
-  ' If Me.Debug = True Then 
+
+  ' If Me.Debug = True Then
   ' Debug Replace(sDisplay, "\e", "&")
   ' Endif
   $RectRenderArea = Null
-  'Catch 
+  'Catch
+
 End
 
 Static Private Sub RenderAll()
 
-  Dim hWin As Window
+  Dim hWin As TermWindow
 
   For Each hWin In $aChildren
     hWin._Render
@@ -213,13 +296,26 @@ End
 
 Static Private Sub DoArrange()
 
-  Dim hChild As Window
-  
+  Dim hChild As TermWindow
+
   For Each hChild In $aChildren
     hChild._Arrange()
   Next
-  
+
 End
 
-
+Static Public Sub Delete(hControl As TermControl)
+  
+  Dim hObj As Object = hControl
+  
+  If hObj Is TermWindow Then $aChildren.Delete($aChildren.Find(hObj))
+  TermControl._IdToControl[hObj.Id] = Null
+  If hObj Is TermContainer Then
+    For Each hControl In hObj.Children 
+      Delete(hControl)
+    Next
+  Endif
+  
+  
+End
 

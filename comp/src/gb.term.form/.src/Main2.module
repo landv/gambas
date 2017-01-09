@@ -4,7 +4,7 @@ Private i As Integer
 
 Public Sub Main()
 
-  Dim hForm As New Form
+  Dim hForm As New TermForm
   Dim hCont As TermFrame
   Dim hCont2 As TermHBox
   Dim hTermButton As TermButton
@@ -49,16 +49,17 @@ Public Sub Main()
 
   hForm.Spacing = 1
   hForm.Center
+  hForm.Show
   hForm.Maximized = True
-  TermWindows.Render
+  'TermWindows._Render
 
 End
 
-Public Sub Application_Read()
-
-  Dim s As String
-  s = Read #File.In, Lof(File.in)
-  Inc i
-  Debug s, i
-
-End
+  ' Public Sub Application_Read()
+  ' 
+  '   Dim s As String
+  '   s = Read #File.In, Lof(File.in)
+  '   Inc i
+  '   Debug s, i
+  ' 
+  ' End

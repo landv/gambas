@@ -1,0 +1,39 @@
+' Gambas class file
+
+Create Private
+
+
+Static Public Sub _call(Message As String)
+  
+  Dim hLabel As TermLabel
+  Dim hHbox As TermHBox
+  Dim hButton As TermButton
+  Dim $hForm As TermForm
+  $hForm = New TermForm
+  hLabel = New TermLabel($hForm)
+  hHbox = New TermHBox($hForm)
+  hButton = New TermButton(hHbox) As "btnOk"
+  
+  $hForm.resize(30, 5)
+  $hForm.Center
+  $hForm.Text = "Message Box"
+  $hForm._Arrangement = Arrange.Vertical
+  hHbox._Arrangement = Arrange.Horizontal
+  hHbox.Invert = True
+  hLabel.Expand = True
+  $hForm.Border = Border.Simple
+  hLabel.Text = Message
+  hButton.Text = "Ok"
+  'hButton._Shadow = True
+  hButton.Background = TermColor.Yellow
+  hButton.Alignment = Align.Center
+  $hForm.Show
+  
+End
+
+
+Static Public Sub btnOk_MouseUp()
+  
+  Last.window.Close
+  
+End
