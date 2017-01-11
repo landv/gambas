@@ -54,6 +54,7 @@ void SIGNAL_unregister(int signum, SIGNAL_CALLBACK *cb);
 int SIGNAL_get_fd(void);
 void SIGNAL_raise_callbacks(int fd, int type, void *data);
 void SIGNAL_exit(void);
+void SIGNAL_has_forked(void);
 
 #endif
 

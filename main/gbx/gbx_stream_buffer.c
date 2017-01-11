@@ -206,9 +206,9 @@ static int stream_lof(STREAM *stream, int64_t *len)
 {
 	struct stat info;
 
-	//if (!stream->common.available_now)
-	//	return TRUE;
-
+	if (!stream->common.available_now)
+		return TRUE;
+	
 	if (fstat(fileno(FD), &info) < 0)
 		return TRUE;
 

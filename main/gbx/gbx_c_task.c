@@ -98,6 +98,8 @@ static void has_forked(void)
 	stream->common.eol = 0;
 	STREAM_blocking(stream, TRUE);
 
+	SIGNAL_has_forked();
+	
 	task = _task_list;
 	while (task)
 	{
@@ -116,6 +118,10 @@ static void callback_child(int signum, intptr_t data)
 	CTASK *_object, *next;
 	int status;
 	
+	#if DEBUG_ME
+	fprintf(stderr, ">> callback_child\n");
+	#endif
+	
 	_object = _task_list;
 	while (_object)
 	{
@@ -127,6 +133,10 @@ static void callback_child(int signum, intptr_t data)
 		}
 		_object = next;
 	}
+
+	#if DEBUG_ME
+	fprintf(stderr, "<< callback_child\n");
+	#endif
 }
 
 static int get_readable(int fd)
@@ -287,12 +297,15 @@ static bool start_task(CTASK *_object)
 	if (pid == (-1))
 	{
 		stop_task(THIS);
-		sigprocmask(SIG_SETMASK, &old, &sig);
+		sigprocmask(SIG_SETMASK, &old, NULL);
 		goto __ERROR;
 	}
 
 	if (pid)
 	{
+		#if DEBUG_ME
+		fprintf(stderr, "start_task: %p %d\n", THIS, pid);
+		#endif
 		THIS->pid = pid;
 
 		if (has_read)
@@ -312,14 +325,14 @@ static bool start_task(CTASK *_object)
 			GB_Watch(THIS->fd_err, GB_WATCH_READ, (void *)callback_error, (intptr_t)THIS);
 		}
 
-		sigprocmask(SIG_SETMASK, &old, &sig);
+		sigprocmask(SIG_SETMASK, &old, NULL);
 	}
 	else // child task
 	{
 		THIS->child = TRUE;
 		THIS->pid = getpid();
 		
-		sigprocmask(SIG_SETMASK, &old, &sig);
+		sigprocmask(SIG_SETMASK, &old, NULL);
 		
 		if (has_read)
 		{
@@ -425,7 +438,9 @@ static void stop_task(CTASK *_object)
 	int len;
 	GB_RAISE_HANDLER handler;
 	
-	//printf("stop_task: %p\n", THIS); fflush(stdout);
+	#if DEBUG_ME
+	fprintf(stderr, "stop_task: %p %d\n", THIS, THIS->pid);
+	#endif
 	
 	THIS->stopped = TRUE;
 	

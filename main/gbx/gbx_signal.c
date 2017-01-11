@@ -39,7 +39,7 @@ void SIGNAL_install(SIGNAL_HANDLER *handler, int signum, void (*callback)(int, s
 {
 	struct sigaction action;
 	
-	#ifdef DEBUG_ME
+	#if DEBUG_ME
 	fprintf(stderr, "SIGNAL_install: %d %p\n", signum, callback);
 	#endif
 	
@@ -55,7 +55,7 @@ void SIGNAL_install(SIGNAL_HANDLER *handler, int signum, void (*callback)(int, s
 
 void SIGNAL_uninstall(SIGNAL_HANDLER *handler, int signum)
 {
-	#ifdef DEBUG_ME
+	#if DEBUG_ME
 	fprintf(stderr, "SIGNAL_uninstall: %d\n", signum);
 	#endif
 	
@@ -144,7 +144,7 @@ static void purge_callbacks(void)
 	if (_raising_callback)
 		return;
 	
-	#ifdef DEBUG_ME
+	#if DEBUG_ME
 	fprintf(stderr, ">> purge_callbacks\n");
 	#endif
 
@@ -155,7 +155,7 @@ static void purge_callbacks(void)
 		cb = _purge_handler->callbacks;
 		while (cb)
 		{
-			#ifdef DEBUG_ME
+			#if DEBUG_ME
 			fprintf(stderr, "purge_callbacks: cb = %p\n", cb);
 			#endif
 			next_cb = cb->next;
@@ -167,7 +167,7 @@ static void purge_callbacks(void)
 		}
 	}
 
-	#ifdef DEBUG_ME
+	#if DEBUG_ME
 	fprintf(stderr, "<< purge_callbacks\n");
 	#endif
 }
@@ -177,17 +177,32 @@ void SIGNAL_raise_callbacks(int fd, int type, void *data)
 	SIGNAL_HANDLER *handler;
 	SIGNAL_CALLBACK *cb;
 	char signum;
+	int ret;
 
 	/*old = signal(SIGCHLD, signal_child);*/
+	#if DEBUG_ME
+	fprintf(stderr, "SIGNAL_raise_callbacks: fd = %d blocking = %d\n", fd, (fcntl(fd, F_GETFL) & O_NONBLOCK) == 0);
+	#endif
 
-	if (read(fd, &signum, 1) != 1)
+	ret = read(fd, &signum, 1);
+	if (ret != 1)
+	{
+		#if DEBUG_ME
+		fprintf(stderr, "SIGNAL_raise_callbacks: read -> %d / errno = %d\n", ret, errno);
+		#endif
 		return;
+	}
 	
 	handler = find_handler(signum);
 	if (!handler)
+	{
+		#if DEBUG_ME
+		fprintf(stderr, "SIGNAL_raise_callbacks: no handler\n");
+		#endif
 		return;
+	}
 	
-	#ifdef DEBUG_ME
+	#if DEBUG_ME
 	fprintf(stderr, ">> SIGNAL_raise_callbacks (%d)\n", _raising_callback);
 	#endif
 
@@ -200,7 +215,7 @@ void SIGNAL_raise_callbacks(int fd, int type, void *data)
 		cb = handler->callbacks;
 		while (cb)
 		{
-			#ifdef DEBUG_ME
+			#if DEBUG_ME
 			fprintf(stderr, "SIGNAL_raise_callbacks: cb = %p cb->callback = %p\n", cb, cb->callback);
 			#endif
 			if (cb->callback)
@@ -211,14 +226,46 @@ void SIGNAL_raise_callbacks(int fd, int type, void *data)
 	}
 	END_ERROR
 	
-	#ifdef DEBUG_ME
+	#if DEBUG_ME
 	fprintf(stderr, "SIGNAL_raise_callbacks: purge_callbacks\n");
 	#endif
 	purge_callbacks();
 
-	#ifdef DEBUG_ME
+	#if DEBUG_ME
 	fprintf(stderr, "<< SIGNAL_raise_callbacks (%d)\n", _raising_callback);
 	#endif
+}
+
+static void create_pipe(void)
+{
+	if (pipe(_pipe) != 0)
+		ERROR_panic("Cannot create signal handler pipes: %s", strerror(errno));
+
+	if (_pipe[0] == 0)
+		BREAKPOINT();
+	
+	fcntl(_pipe[0], F_SETFD, FD_CLOEXEC);
+	fcntl(_pipe[1], F_SETFD, FD_CLOEXEC);
+	// Allows to read the signal pipe without blocking
+	fcntl(_pipe[0], F_SETFL, fcntl(_pipe[0], F_GETFL) | O_NONBLOCK);
+
+	GB_Watch(_pipe[0], GB_WATCH_READ, (void *)SIGNAL_raise_callbacks, 0);
+	
+	#if DEBUG_ME
+	fprintf(stderr, "create_pipe: fd = %d\n", _pipe[0]);
+	#endif
+}
+
+static void delete_pipe(void)
+{
+	#if DEBUG_ME
+	fprintf(stderr, "delete_pipe: fd = %d\n", _pipe[0]);
+	#endif
+	GB_Watch(_pipe[0], GB_WATCH_NONE, NULL, 0);
+	close(_pipe[0]);
+	close(_pipe[1]);
+	_pipe[0] = -1;
+	_pipe[1] = -1;
 }
 
 SIGNAL_CALLBACK *SIGNAL_register(int signum, void (*callback)(int, intptr_t), intptr_t data)
@@ -227,17 +274,7 @@ SIGNAL_CALLBACK *SIGNAL_register(int signum, void (*callback)(int, intptr_t), in
 	SIGNAL_CALLBACK *cb;
 	
 	if (!_count)
-	{
-		if (pipe(_pipe) != 0)
-			ERROR_panic("Cannot create signal handler pipes: %s", strerror(errno));
-
-		fcntl(_pipe[0], F_SETFD, FD_CLOEXEC);
-		fcntl(_pipe[1], F_SETFD, FD_CLOEXEC);
-		// Allows to read the signal pipe without blocking
-		fcntl(_pipe[0], F_SETFL, fcntl(_pipe[0], F_GETFL) | O_NONBLOCK);
-
-		GB_Watch(_pipe[0], GB_WATCH_READ, (void *)SIGNAL_raise_callbacks, 0);
-	}
+		create_pipe();
 	
 	_count++;
 	
@@ -259,11 +296,11 @@ SIGNAL_CALLBACK *SIGNAL_register(int signum, void (*callback)(int, intptr_t), in
 		cb->next->prev = cb;
 	handler->callbacks = cb;
 
-	#ifdef DEBUG_ME
+	#if DEBUG_ME
 	fprintf(stderr, "SIGNAL_register: %d -> %p (%p)\n", signum, cb, cb->callback);
 	#endif
 	
-	#ifdef DEBUG_ME
+	#if DEBUG_ME
 	fprintf(stderr, "handler->callbacks %p:", handler);
 	SIGNAL_CALLBACK *save = cb;
 	cb = handler->callbacks;
@@ -288,7 +325,7 @@ void SIGNAL_unregister(int signum, SIGNAL_CALLBACK *cb)
 	
 	if (_raising_callback)
 	{
-		#ifdef DEBUG_ME
+		#if DEBUG_ME
 		fprintf(stderr, "SIGNAL_unregister: disable %d %p (%p)\n", signum, cb, cb->callback);
 		#endif
 		cb->callback = NULL;
@@ -296,7 +333,7 @@ void SIGNAL_unregister(int signum, SIGNAL_CALLBACK *cb)
 		return;
 	}
 	
-	#ifdef DEBUG_ME
+	#if DEBUG_ME
 	fprintf(stderr, "SIGNAL_unregister: remove %d %p (%p)\n", signum, cb, cb->callback);
 	#endif
 	
@@ -314,15 +351,9 @@ void SIGNAL_unregister(int signum, SIGNAL_CALLBACK *cb)
 	_count--;
 	
 	if (_count == 0)
-	{
-		GB_Watch(_pipe[0], GB_WATCH_NONE, NULL, 0);
-		close(_pipe[0]);
-		close(_pipe[1]);
-		_pipe[0] = -1;
-		_pipe[1] = -1;
-	}
+		delete_pipe();
 	
-	#ifdef DEBUG_ME
+	#if DEBUG_ME
 	fprintf(stderr, "handler->callbacks %p:", handler);
 	cb = handler->callbacks;
 	while (cb)
@@ -354,4 +385,15 @@ void SIGNAL_exit(void)
 int SIGNAL_get_fd(void)
 {
 	return _pipe[0];
+}
+
+void SIGNAL_has_forked(void)
+{
+	if (!_count)
+		return;
+	
+	GB_Watch(_pipe[0], GB_WATCH_NONE, NULL, 0);
+	close(_pipe[0]);
+	close(_pipe[1]);
+	create_pipe();
 }

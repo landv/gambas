@@ -685,6 +685,8 @@ int WATCH_process(int fd_end, int fd_output, int timeout)
 			ret = select(fd_max + 1, &rfd, NULL, NULL, NULL);
 		}
 
+		//fprintf(stderr, "WATCH_process: select -> %d [%d] / fd_end -> %d\n", ret, errno, FD_ISSET(fd_end, &rfd));
+		
 		if (ret > 0)
 			break;
 		if (errno != EINTR)

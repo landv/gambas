@@ -126,10 +126,12 @@ static CFILE *create_default_stream(FILE *file, int mode)
 {
 	CFILE *ob;
 	STREAM stream;
+	bool tty = isatty(fileno(file));
 	
 	CLEAR(&stream);
 	stream.type = &STREAM_buffer;
-	stream.common.available_now = !isatty(fileno(file));
+	stream.common.available_now = !tty;
+	stream.common.no_read_ahead = tty;
 	stream.common.standard = TRUE;
 	stream.buffer.file = file;
 	STREAM_check_blocking(&stream);
