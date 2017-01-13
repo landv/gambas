@@ -3,7 +3,7 @@
   gkey.cpp
 
   (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
-  (c) 2015 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
