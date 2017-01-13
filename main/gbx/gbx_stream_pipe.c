@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_stream_pipe.c
+	gbx_stream_pipe.c
 
-  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -43,43 +43,42 @@
 
 static int stream_open(STREAM *stream, const char *path, int mode)
 {
-  int fd;
-  int fmode;
+	int fd;
+	int fmode;
 
-	if (mkfifo(path, 0666) != 0)
+	RESTART_SYSCALL(mkfifo(path, 0666))
 	{
 		if (errno != EEXIST)
 			return TRUE;
 	}
 
-  fmode = 0;
+	fmode = 0;
 
-  switch (mode & ST_MODE)
-  {
-    case ST_READ: fmode |= O_RDONLY; break;
-    case ST_WRITE: fmode |= O_WRONLY; break;
-    case ST_READ_WRITE: fmode |= O_RDWR; break;
-    default: fmode |= O_RDONLY;
-  }
+	switch (mode & ST_MODE)
+	{
+		case ST_READ: fmode |= O_RDONLY; break;
+		case ST_WRITE: fmode |= O_WRONLY; break;
+		case ST_READ_WRITE: fmode |= O_RDWR; break;
+		default: fmode |= O_RDONLY;
+	}
 
-  fd = open(path, fmode);
-  if (fd < 0)
-    return TRUE;
+	RESTART_SYSCALL(fd = open(path, fmode)) 
+		return TRUE;
 
-  stream->direct.size = 0;
+	stream->direct.size = 0;
 
-  FD = fd;
-  return FALSE;
+	FD = fd;
+	return FALSE;
 }
 
 
 static int stream_close(STREAM *stream)
 {
-  if (close(FD) < 0)
-    return TRUE;
+	if (close(FD) < 0)
+		return TRUE;
 
-  FD = -1;
-  return FALSE;
+	FD = -1;
+	return FALSE;
 }
 
 
@@ -99,7 +98,7 @@ static int stream_write(STREAM *stream, char *buffer, int len)
 
 static int stream_seek(STREAM *stream, int64_t pos, int whence)
 {
-  return TRUE;
+	return TRUE;
 }
 
 
@@ -111,7 +110,7 @@ static int stream_tell(STREAM *stream, int64_t *pos)
 
 static int stream_flush(STREAM *stream)
 {
-  return FALSE;
+	return FALSE;
 }
 
 
@@ -122,7 +121,7 @@ static int stream_flush(STREAM *stream)
 
 static int stream_handle(STREAM *stream)
 {
-  return FD;
+	return FD;
 }
 
 

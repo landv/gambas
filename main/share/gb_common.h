@@ -2,7 +2,7 @@
 
   gb_common.h
 
-  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -181,7 +181,7 @@ typedef
 	#define BREAKPOINT()	{ raise(SIGTRAP); }
 #endif	/* __i386__ */
 
-#define COPYRIGHT "(c) 2000-2016 Benoît Minisini\n\n" \
+#define COPYRIGHT "(c) 2000-2017 Benoît Minisini\n\n" \
 	"This program is free software; you can redistribute it and/or \n" \
 	"modify it under the terms of the GNU General Public License as \n" \
 	"published by the Free Software Foundation; either version 2, or \n" \
@@ -193,5 +193,13 @@ typedef
 #define UNLIKELY(_x) (_x)
 
 #define $(_x) _x
+
+#define RESTART_SYSCALL(_code) \
+	for(;;) \
+	{ \
+		errno = 0; \
+		if ((_code) >= 0 || (errno != EINTR)) \
+			break; \
+	} if (errno)
 
 #endif /* __COMMON_H */
