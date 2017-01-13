@@ -391,6 +391,7 @@ Public Sub ScrollArea_Draw()
   Dim hBottomRowBorder As Border
   Dim hRowBorderRect As Rect
   Dim hRectF As RectF
+  Dim iBgSel As Integer
   
   'Debug Me.Font.ToString();; Draw.Font.ToString()
   
@@ -401,6 +402,12 @@ Public Sub ScrollArea_Draw()
       iBg = $iBg
     Endif
     Paint.FillRect(0, 0, Paint.W, Paint.H, iBg)
+  Endif
+  
+  If $hView.HasFocus Then
+    iBgSel = Color.SetAlpha(Color.SelectedBackground, 192)
+  Else
+    iBgSel = Color.SetAlpha(Color.LightForeground, 192)
   Endif
   
   If $hColumns.Count = 0 And If $hRows.Count = 0 Then Return
@@ -719,7 +726,7 @@ Public Sub ScrollArea_Draw()
       If Not hRowBorder Then
         If $iMode And If Not _DoNotDrawSelection Then
           If _IsRowSelected(I) Then
-            Paint.FillRect(0, Y, Paint.W, H, Color.SetAlpha(Color.SelectedBackground, 192))
+            Paint.FillRect(0, Y, Paint.W, H, iBgSel)
           Endif
         Endif
       Endif
@@ -1289,15 +1296,23 @@ Public Sub ScrollArea_MouseUp()
   
 End
 
-Public Sub ScrollArea_LostFocus()
+Public Sub ScrollArea_DragLeave()
   
   AfterMouseUp
   
 End
 
-Public Sub ScrollArea_DragLeave()
+
+Public Sub ScrollArea_GotFocus()
+  
+  $hView.Refresh
+  
+End
+
+Public Sub ScrollArea_LostFocus()
   
   AfterMouseUp
+  $hView.Refresh
   
 End
 

@@ -426,9 +426,12 @@ Public Sub ScrollArea_Draw()
   Dim hClip, hSaveClip As Rect
   Dim bHover As Boolean
   Dim bRaiseDraw As Boolean
+  Dim bFocus As Boolean
   
   If $aItems.Count = 0 Then Return
   If $iLock Then Return
+  
+  bFocus = $hView.HasFocus
   
   hSaveClip = Paint.ClipRect
   
@@ -468,7 +471,7 @@ Public Sub ScrollArea_Draw()
       If hClip Then
         bHover = iPos = $iHover
         'If $iMode = Select.Multiple And If iPos = $iStart Then bHover = True
-        hItem._Draw(hRect, hClip, Me, $bHorizontal, False, bHover) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
+        hItem._Draw(hRect, hClip, Me, $bHorizontal, bFocus, bHover) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
         If bRaiseDraw Then
           Paint.Save
           Raise Draw(hRect.X, hRect.Y, hRect.W, hRect.H, hItem.Key)
@@ -508,9 +511,9 @@ Public Sub ScrollArea_Draw()
     If Y2 < Y1 Then Swap Y1, Y2
     
     Paint.Rectangle(X1, Y1, X2 - X1 + 1, Y2 - Y1 + 1)
-    Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
+    Paint.Background = Color.SetAlpha(Color.SelectedBackground, 192)
     Paint.Fill
-    Paint.Brush = Paint.Color(Color.SelectedBackground)
+    Paint.Background = Color.SelectedBackground
     Paint.Rectangle(X1 + 0.5, Y1 + 0.5, X2 - X1, Y2 - Y1)
     Paint.LineWidth = 1
     Paint.Stroke
@@ -1593,3 +1596,14 @@ Public Sub Scroll(X As Integer, Y As Integer)
   
 End
 
+Public Sub ScrollArea_GotFocus()
+  
+  $hView.Refresh
+  
+End
+
+Public Sub ScrollArea_LostFocus()
+  
+  $hView.Refresh
+  
+End

@@ -207,7 +207,7 @@ Public Sub _GetTextRect(hRect As Rect, bHorizontal As Boolean) As Rect
   
 End
 
-Private Sub GetBackground(hIconView As IconView, Optional bSelected As Boolean) As Integer
+Private Sub GetBackground(hIconView As IconView, Optional bSelected As Boolean, bFocus As Boolean) As Integer
 
   Dim iColor As Integer
   
@@ -215,7 +215,11 @@ Private Sub GetBackground(hIconView As IconView, Optional bSelected As Boolean) 
   If iColor = Color.Default Then iColor = Color.TextBackground
   
   If bSelected Then 
-    iColor = Color.Merge(Color.LightBackground, iColor)
+    If bFocus Then
+      iColor = Color.Merge(Color.LightBackground, iColor)
+    Else
+      iColor = Color.Merge(Color.LightForeground, iColor, 0.75)
+    Endif
   Endif
   
   If Not hIconView.Enabled Then iColor = Color.Desaturate(iColor)
@@ -250,7 +254,7 @@ Private Sub DrawText(sText As String, sRichText As String, X As Float, Y As Floa
 End
 
 
-Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizontal As Boolean, (bFocus) As Boolean, bHover As Boolean)
+Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizontal As Boolean, bFocus As Boolean, bHover As Boolean)
   
   Dim X, Y, W, H, HT, PW, PH As Integer
   Dim iColor As Integer
@@ -275,7 +279,7 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
   'If bHover Then iColor = Color.Merge(iColor, Color.LightBackground)
   
   bHighlight = $bSelected Or bHover
-  iColor = GetBackground(hIconView, bHighlight)
+  iColor = GetBackground(hIconView, bHighlight, bFocus)
 
   ' If bHover And Not $bSelected Then
   '   Paint.Begin(Draw.Device)
