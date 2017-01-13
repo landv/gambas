@@ -8,6 +8,8 @@ Public Line As Integer
 Public Current As String
 Public Reinterpret As Boolean = True
 
+Property Verbatim As Integer
+
 Public Sub ToHTML(Markdown As String) As String
   
   Return Markup.Convert(Markdown, Me)
@@ -49,4 +51,16 @@ Public Sub CheckURL({Url} As String, (Markup) As String) As String
   
   Return {Url}
   
+End
+
+Private Function Verbatim_Read() As Integer
+
+  Return Markup.Verbatim
+
+End
+
+Private Sub Verbatim_Write(Value As Integer)
+
+  Markup.Verbatim = Value
+
 End
