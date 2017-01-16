@@ -158,7 +158,7 @@ Public Sub WatchTimer_Timer()
   If X < 0 Or If Y < 0 Or If X >= Me.Parent.W Or If Y >= Me.Parent.H Then Return
   
   Try hMenuButton = Me.Parent.FindChild(X, Y)
-  If hMenuButton And If hMenuButton <> $hCurrent Then
+  If hMenuButton And If hMenuButton <> $hCurrent And If hMenuButton.Enabled Then
     If Main.FindMenu(hMenuButton, hMenuButton.Menu) Then
       $hCurrentMenu.Close
       $hCurrent.Refresh
