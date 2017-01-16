@@ -4109,7 +4109,7 @@ Private Sub ToggleRow(Y As Integer)
     _ExpandRow(Y)
   Endif
 
-  $hTimerSideBarRefresh.Start
+  If $bShowPreview Then $hTimerSideBarRefresh.Start
 
 End
 
