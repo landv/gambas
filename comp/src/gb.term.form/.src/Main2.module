@@ -3,8 +3,8 @@
 Private i As Integer
 
 Public Sub Main()
-
   Dim hForm As New TermForm
+
   Dim hCont As TermFrame
   Dim hCont2 As TermHBox
   Dim hTermButton As TermButton
@@ -28,7 +28,7 @@ Public Sub Main()
   hCont2 = New TermHBox(hForm)
   hCont2.Invert = True
 
-  hTermButton = New TermButton(hCont2)
+  hTermButton = New TermButton(hCont2) As "btnClose"
   hTermButton.Width = 10
   hTermButton.Text = "< Close >"
 
@@ -54,12 +54,8 @@ Public Sub Main()
   'TermWindows._Render
 
 End
-
-  ' Public Sub Application_Read()
-  ' 
-  '   Dim s As String
-  '   s = Read #File.In, Lof(File.in)
-  '   Inc i
-  '   Debug s, i
-  ' 
-  ' End
+Public Sub btnClose_MouseUp()
+  
+  Last.Window.Close
+  
+End

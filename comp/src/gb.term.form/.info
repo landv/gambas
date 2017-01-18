@@ -200,6 +200,153 @@ _init
 M
 
 
+#Key
+
+C
+Normal
+C
+i
+0
+F1
+C
+i
+1
+F2
+C
+i
+2
+F3
+C
+i
+3
+F4
+C
+i
+4
+F5
+C
+i
+5
+F6
+C
+i
+6
+F7
+C
+i
+7
+F8
+C
+i
+8
+F9
+C
+i
+9
+F10
+C
+i
+10
+F11
+C
+i
+11
+F12
+C
+i
+12
+BackSpace
+C
+i
+13
+Enter
+C
+i
+14
+Return
+C
+i
+15
+Tab
+C
+i
+16
+BackTab
+C
+i
+17
+Up
+C
+i
+18
+Down
+C
+i
+19
+Left
+C
+i
+20
+Right
+C
+i
+21
+Home
+C
+i
+22
+End
+C
+i
+23
+Insert
+C
+i
+24
+Delete
+C
+i
+25
+PageDown
+C
+i
+26
+PageUp
+C
+i
+27
+Menu
+C
+i
+28
+Shift
+R
+b
+
+Control
+R
+b
+
+Code
+R
+i
+
+Text
+R
+s
+
+Alt
+R
+b
+
+_SetKey
+M
+
+(sKey)s(Code)i(Alt)b(Control)b(Shift)b
+_Reset
+M
+
+
 #TermColor
 
 C
@@ -325,6 +472,10 @@ _NeedRender
 v
 b
 
+_UseFocus
+v
+b
+
 id
 r
 i
@@ -441,6 +592,14 @@ b
 :
 
 
+:Click
+:
+
+
+:KeyPress
+:
+
+
 _new
 m
 
@@ -476,7 +635,7 @@ m
 Move
 m
 
-(Left)i(Top)i(Width)i(Height)i
+(Left)i(Top)i[(Width)i(Height)i]
 _Initialize
 m
 
@@ -505,6 +664,10 @@ _MouseWheel
 m
 
 
+_Click
+m
+
+
 Show
 m
 
@@ -517,6 +680,14 @@ Resize
 m
 
 (Width)i(Height)i
+Refresh
+m
+
+
+_KeyPress
+m
+
+
 #TermFrame
 TermPanel
 C
@@ -605,7 +776,7 @@ m
 
 #TermWindow
 TermContainer
-C
+CA
 Text
 p
 s
@@ -618,8 +789,20 @@ Maximized
 p
 b
 
+Active
+r
+b
+
+Resizable
+p
+b
+
 _new
 m
+
+
+Main
+M
 
 
 _Render
@@ -646,7 +829,19 @@ _MouseUp
 m
 
 
+_MouseDown
+m
+
+
 _MouseMove
+m
+
+
+_tmrMove_Timer
+m
+
+
+Activate
 m
 
 
@@ -665,6 +860,10 @@ _Add
 m
 
 (hWin)TermWindow;
+SetRenderArea
+M
+
+(hRect)Rect;
 _RefreshScreen
 M
 
@@ -677,10 +876,6 @@ DoRefreshArea
 M
 
 
-SetRenderArea
-M
-
-(hRect)Rect;
 Terminal_Resize
 M
 
@@ -689,15 +884,23 @@ File_Read
 M
 
 
-_Read
-M
-
-(sValue)s
-SetRefreshArea
-M
-
-(hRect)Rect;
 Delete
 M
 
 (hControl)TermControl;
+_RaiseWindow
+M
+
+(hWin)TermWindow;
+SetRefreshArea
+M
+
+(hRect)Rect;
+_Read
+M
+
+(sValue)s
+GetActiveWindow
+M
+TermWindow
+

@@ -7,7 +7,7 @@ Static Private $iLastId As Integer = 1
 
 Public _Content As Char[][]
 Public _NeedRender As Boolean
-
+Public _UseFocus As Boolean
 Property Read id As Integer
 
 Property Read Parent As TermContainer
@@ -50,10 +50,13 @@ Private $yBorder As Byte
 Private $iPadding As Integer
 Private $rectClient As Rect
 Private $iVisible As Boolean = True
+Private $bLockRender As Boolean
 Event MouseDown
 Event MouseUp
 Event MouseWheel
 Event MouseMove
+Event Click
+Event KeyPress
 
 
 Public Sub _new(Optional hParent As TermContainer)
@@ -102,6 +105,7 @@ Public Sub _Render()
   Dim hRectC As Rect
   Dim iShadow As Integer = IIf($bShadow, 1, 0)
   Dim iBC As Integer
+  If Not Me._NeedRender Then Return
   'If Me Is TermContainer Then
   hRectC = $rectControl
   'Else
@@ -209,13 +213,13 @@ End
 
 Private Sub Left_Write(Value As Integer)
 
-  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
+  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   $rectControl.X = Value
   $rectDrawing.X = Value
   Me._DefineRect
-  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
+  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   _RecalcPos = True
-
+  If Not $bLockRender Then TermWindows._Render
 End
 
 Private Function Top_Read() As Integer
@@ -228,14 +232,14 @@ End
 
 Private Sub Top_Write(Value As Integer)
 
-  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
+  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   $rectControl.Y = Value
   $rectDrawing.Y = Value
   Me._DefineRect
   _RecalcPos = True
 
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
-
+If Not $bLockRender Then TermWindows._Render
 End
 
 Private Function Width_Read() As Integer
@@ -254,7 +258,7 @@ Private Sub Width_Write(Value As Integer)
   Me._DefineRect
   ResizeBuffer($rectControl.Width, $rectControl.Height)
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
-  'If Me Is TermContainer Then Me._SetClientRect()
+  If Not $bLockRender Then TermWindows._Render 'If Me Is TermContainer Then Me._SetClientRect()
 
 End
 
@@ -273,7 +277,7 @@ Private Sub Height_Write(Value As Integer)
   Me._DefineRect
   ResizeBuffer($rectControl.Width, $rectControl.Height)
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
-  'If Me Is TermContainer Then Me._SetClientRect()
+  If Not $bLockRender Then TermWindows._Render 'If Me Is TermContainer Then Me._SetClientRect()
 
 End
 
@@ -400,12 +404,13 @@ Public Sub _Arrange()
 
 End
 
-Public Sub Move(Left As Integer, Top As Integer, Width As Integer, Height As Integer)
-
+Public Sub Move(Left As Integer, Top As Integer, Optional Width As Integer, Height As Integer)
+  $bLockRender = True
   Me.Left = Left
   Me.Top = Top
-  Me.Width = Width
-  Me.Height = Height
+  If Not IsMissing(Width) Then Me.Width = Width
+  If Not IsMissing(Height) Then Me.Height = Height
+  $bLockRender = False
   TermWindows._Render
 End
 
@@ -517,6 +522,9 @@ End
 
 Public Sub _MouseDown()
   If TermWindows.Debug Then Error "Mouse Down Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  If Not Me.Window.Active Then 
+    Me.Window.Activate
+  Endif
   Raise MouseDown
 End
 
@@ -534,6 +542,12 @@ Public Sub _MouseWheel()
   If TermWindows.Debug Then Error "Mouse Wheel Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
   Raise MouseWheel
 End
+Public Sub _Click()
+  
+  If TermWindows.Debug Then Error "Mouse Click Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  Raise Click
+End
+
 
 Private Function Visible_Read() As Boolean
 
@@ -563,10 +577,26 @@ Public Sub Hide()
 End
 
 Public Sub Resize(Width As Integer, Height As Integer)
-  
+  $bLockRender = True 
   Me.Width = Width
   Me.Height = Height
+  $bLockRender = False
   TermWindows._Render
+  
+End
+
+
+Public Sub Refresh()
+  Me._NeedRender = True
+  TermWindows.SetRenderArea(Me._GetScreenRect())
+  TermWindows._Render
+  
+End
+
+
+Public Sub _KeyPress()
+  
+  Raise KeyPress
   
 End
 

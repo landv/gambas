@@ -11,6 +11,13 @@ Private $iOldLen As Integer
 Private $iAlignment As Integer
 
 
+Public Sub _new()
+  
+  Me._UseFocus = True
+  
+End
+
+
 
 Private Function Text_Read() As String
 

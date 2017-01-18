@@ -1,5 +1,6 @@
 ' Gambas class file
 
+Create Static
 Export
 Inherits TermContainer
 Class Rect
@@ -7,31 +8,47 @@ Property Text, Title As String
 Private $sText As String
 
 Property Maximized As Boolean
+Property Read Active As Boolean
+Property Resizable As Boolean
 
 Private $rectOldPos As Rect
 
 Private $bMaximized As Boolean
+Private $iInMove As Integer
+Private $tmrMove As Timer
+Private $iTmpCol As Integer
+Private $iTmpRow As Integer
+Private $bResizable As Boolean = True
+
 
 Public Sub _new()
-  
+
   Me.Visible = False
-  
+
 End
 
+Static Public Sub Main()
 
+  Dim hObject As Object
 
+  hObject = Application.Startup.AutoCreate()
+  'If Not hObject Is Report Then Return
+  'FPreview.Run(hObject)
+  TermWindows._Render
+
+End
 
 Public Sub _Render()
 
   Dim i As Integer
   Dim hAttr As New Attr
   Dim iAttr As Integer
+  Dim b As Boolean = Me._NeedRender
 
   Super._Render
+  If Not b Then Return
 
-  If Not Me._NeedRender Then Return
-
-  hAttr.Background = TermColor.Red
+  hAttr.Background = IIf(Me.Active, TermColor.Red, TermColor.Magenta)
   hAttr.Foreground = TermColor.White
   hAttr.Bold = True
   iAttr = hAttr.GetInteger()
@@ -47,6 +64,16 @@ Public Sub _Render()
   Me._Content[0][Me._Content[0].Max].c = Asc("X")
   Me._NeedRender = False
 
+  If Me.Resizable Then
+    
+    hAttr.Background = Me.Background
+    hAttr.Foreground = Me.Foreground
+    hAttr.Bold = False
+    iAttr = hAttr.GetInteger()
+    
+    Me._Content[Me._Content.Max - 1][Me._Content[0].Max].c = &h25E2
+    
+  Endif
 End
 
 Private Function Text_Read() As String
@@ -59,6 +86,8 @@ Private Sub Text_Write(Value As String)
 
   $sText = Value
   Me._NeedRender = True
+  TermWindows.SetRenderArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, 1))
+  TermWindows._Render
 
 End
 
@@ -69,8 +98,6 @@ Public Sub _Arrange()
 
 End
 
-
-
 Private Function Maximized_Read() As Boolean
 
   Return $bMaximized
@@ -78,50 +105,47 @@ Private Function Maximized_Read() As Boolean
 End
 
 Private Sub Maximized_Write(Value As Boolean)
+
   If $bMaximized = Value Then Return
   $bMaximized = Value
 
   If $bMaximized Then
     $rectOldPos = Me._GetRect()
     Me.Move(0, 0, Desktop.Width, Desktop.Height)
-    
+
   Else
     Me.Move($rectOldPos.Left, $rectOldPos.Top, $rectOldPos.Width, $rectOldPos.Height)
   Endif
 
-
 End
 
-
 Public Sub _ScreenResize()
-  
-   If $bMaximized Then 
-      Me.Move(0, 0, Desktop.Width, Desktop.Height)
-     
-   Endif
-  
+
+  If $bMaximized Then
+    Me.Move(0, 0, Desktop.Width, Desktop.Height)
+
+  Endif
+
 End
 
 Public Sub Center()
 
   Me.Move((Desktop.Width - Me.Width) / 2, (Desktop.Height - Me.Height) / 2, Me.Width, Me.Height)
-  
+
 End
 
 Public Sub Close()
+
   Dim hCont As TermControl
   Me.Visible = False
   TermWindows.Delete(Me)
-  
-End
 
+End
 
 Public Sub _MouseUp()
 
-  
-  
   If Mouse.ScreenY = Me.ScreenY Then
-    If Mouse.ScreenX = Me.ScreenX + Me.Width - 1 Then 
+    If Mouse.ScreenX = Me.ScreenX + Me.Width - 1 Then
       Me.Close
       Return
     Endif
@@ -129,18 +153,66 @@ Public Sub _MouseUp()
       Me.Maximized = Not Me.Maximized
     Endif
   Endif
+  $tmrMove = Null
+  $iInMove = 0
+
   Super._MouseUp
-  
-  
+
+End
+
+Public Sub _MouseDown()
+
+  If Mouse.Left
+    If Not Me.Active Then Termwindows._RaiseWindow(Me)
+    If Mouse.y = 0 Then
+      $iInMove = Mouse.Col
+      $tmrMove = New Timer As "_tmrMove"
+      $tmrMove.Delay = 100
+    Endif
+  Endif
+  Super._MouseDown
+
 End
 
 Public Sub _MouseMove()
-  If Mouse.Left Then
-  If Mouse.ScreenY = Me.ScreenY Then
-    
-  Endif
+
+  If $iInMove > 0 Then
+    $iTmpCol = Mouse.ScreenCol - $iInMove
+    $iTmpRow = Mouse.ScreenRow
+    $tmrMove.Start
+    'Me.Move(Mouse.ScreenX - $iInMove, Mouse.screeny)
   Endif
   Super._MouseMove
+
 End
 
+Private Function Active_Read() As Boolean
 
+  Return TermWindows.GetActiveWindow() = Me
+
+End
+
+Public Sub _tmrMove_Timer()
+
+  Me.Move($iTmpCol, $iTmpRow)
+  $tmrMove.Stop
+
+End
+
+Public Sub Activate()
+
+  TermWindows._RaiseWindow(Me)
+
+End
+
+Private Function Resizable_Read() As Boolean
+
+  Return $bResizable
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  $bResizable = Value
+
+End

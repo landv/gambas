@@ -10,6 +10,7 @@ Static Public Sub _call(Message As String)
   Dim hButton As TermButton
   Dim $hForm As TermForm
   $hForm = New TermForm
+  $hForm.Resizable = False
   hLabel = New TermLabel($hForm)
   hHbox = New TermHBox($hForm)
   hButton = New TermButton(hHbox) As "btnOk"

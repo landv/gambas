@@ -1,3 +1,37 @@
 ' Gambas class file
 
 Inherits TermWindow
+Private $iCurrentFocus As Integer
+
+
+Public Sub _SetFocusTo(hCtrl As TermControl)
+  Dim hCur As TermControl
+  hCur = TermControl._IdToControl[$iCurrentFocus]
+  $iCurrentFocus = hCtrl.id
+  If hcur Then
+    hCur._NeedRender = True
+    TermWindows.SetRenderArea(hCur._Getrect())
+    TermWindows._Render
+  Endif
+  hCtrl._NeedRender = True
+  TermWindows.SetRenderArea(hCtrl._Getrect())
+  TermWindows._Render
+  
+End
+
+Public Sub _MoveNextFocus()
+  
+  Dim hCur As Object
+  Dim i As Integer
+  hcur = TermControl._IdToControl[$iCurrentFocus]
+  If Not hcur Then Return
+  
+  i = hcur.Parent.Children.Find(hCur)
+  
+  Do
+    
+    
+  Loop
+  
+  
+End
