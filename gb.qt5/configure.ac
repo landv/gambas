@@ -15,11 +15,6 @@ GB_COMPONENT_PKG_CONFIG(
   'Qt5Core >= 5.3.0' Qt5Gui Qt5Widgets Qt5Svg Qt5PrintSupport Qt5X11Extras x11
 )
 
-## GB_COMPONENT_PKG_CONFIG(
-##   qt5ext, QT5EXT, gb.qt5.ext, [ext],
-##   'Qt5Core >= 5.4.0' Qt5Gui Qt5Widgets
-## )
-
 GB_COMPONENT_PKG_CONFIG(
   qt5webkit, QT5WEBKIT, gb.qt5.webkit, [webkit],
   'Qt5Core >= 5.3.0' Qt5Gui Qt5Widgets Qt5Network Qt5Xml Qt5WebKit Qt5WebKitWidgets Qt5PrintSupport x11
@@ -54,7 +49,5 @@ src/webkit/Makefile \
 src/opengl/Makefile \
 src/ext/Makefile \
 )
-
-## src/ext/Makefile \
 
 GB_PRINT_MESSAGES
