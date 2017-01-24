@@ -579,6 +579,15 @@ BEGIN_PROPERTY(Window_Border)
 END_PROPERTY
 #endif
 
+BEGIN_PROPERTY(Window_Grabbed)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(SDL_GetWindowGrab(WINDOW));
+	else
+		SDL_SetWindowGrab(WINDOW, VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
 //-------------------------------------------------------------------------
 
 GB_DESC WindowDesc[] =
@@ -614,7 +623,9 @@ GB_DESC WindowDesc[] =
 	
 	GB_PROPERTY("Text", "s", Window_Text),
 	GB_PROPERTY("Title", "s", Window_Text),
-	
+
+	GB_PROPERTY("Grabbed", "b", Window_Grabbed),
+
 	GB_EVENT("Open", NULL, NULL, &EVENT_Open),
 	GB_EVENT("Close", NULL, NULL, &EVENT_Close),
 	GB_EVENT("Show", NULL, NULL, &EVENT_Show),
@@ -645,7 +656,6 @@ GB_DESC WindowDesc[] =
 
 	GB_PROPERTY_READ("Handle", "i", CWINDOW_id),
 	GB_PROPERTY_READ("Id", "i", CWINDOW_id),
-	GB_PROPERTY("Grabbed", "b", Window_Grabbed),
 
 	GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
 	GB_EVENT("Deactivate", NULL, NULL, &EVENT_Deactivate),
