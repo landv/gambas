@@ -2469,7 +2469,7 @@ Private Sub ScrollBar_Write(Value As Integer)
       If $bShowPreview Then $hSideBar.Hide
     Case Scroll.Vertical
       If $bShowPreview Then
-        $hView.ScrollBar = ScrollBar.none
+        $hView.ScrollBar = Scroll.None
         $hSideBar.Show
       Else
         $hView.ScrollBar = $iScrollBar
@@ -5025,7 +5025,7 @@ Public Sub SideBar_MouseMove()
   Endif
 
   If $iMD > 0 Then
-    $hView.Scrolly = $hRows._GetRowY(_ViewToReal(Min(Max(0, Floor(((Mouse.y - $iMD)) / $fBarLineHeight)), iCount)))
+    $hView.Scrolly = $hRows._GetRowY(_ViewToReal(Min(Max(0, Floor((Mouse.Y - $iMD) / $fBarLineHeight)), iCount)))
   Endif
 
   If Mouse.Y > $fBarLineHeight * iCount Then
@@ -5040,11 +5040,12 @@ Public Sub SideBar_MouseMove()
           X = IIf(System.RightToLeft, $hSideBar.Left + $hSideBar.Width, $hSideBar.Left - $hView.Width / 2)
           $hSideBarViewer.Move(X, Min(Max(1, Mouse.Y - ($hView.Height / 5) / 2), $hSideBar.Height - $hSideBarViewer.Height))
           $hSideBarViewer.Raise
-          iCurLine = Min(Max(0, Floor(((Mouse.y - $iMD)) / $fBarLineHeight)), iCount)
-          If $hSideBarViewer.Tag <> iCurLine Then
+          'iCurLine = Min(Max(0, Floor(((Mouse.y - $iMD)) / $fBarLineHeight)), iCount)
+          iCurLine = _ViewToReal(Min(Max(0, Floor((Mouse.Y - $iMD) / $fBarLineHeight)), iCount))
+          'If $hSideBarViewer.Line <> iCurLine Then
             $hSideBarViewer.GotoCenter(0, iCurLine)
-            $hSideBarViewer.Tag = iCurLine
-          Endif
+            '$hSideBarViewer.Tag = iCurLine
+          'Endif
         Endif
       Endif
     Endif
@@ -5179,20 +5180,29 @@ Private Sub ShowPreview_Write(Value As Boolean)
   $bShowPreview = Value
   If Value Then
     $hTimerSideBarRefresh = New Timer As "TimerRefreshBar"
-    $hTimerSideBarRefresh.Delay = 1000
+    $hTimerSideBarRefresh.Delay = 500
     $hTimerSideBarViewer = New Timer As "TimerShowPreviewViewer"
     $hTimerSideBarViewer.Delay = 200
 
     $hSideBarViewer = New TextEditor(Me) As "SideBarViewer"
     $hSideBarViewer.Hide
     $hSideBarViewer.ReadOnly = True
+    SyncSideBarViewerStyles
     $hSideBarViewer.ShowCursor = False
     $hSideBarViewer.Ignore = True
-    $hSideBarViewer.Font.Grade = - 2
-    $hSideBarViewer.Highlight = "gambas"
     $hSideBarViewer.Enabled = False
-    SyncSideBarViewerStyles
     $hSideBarViewer.ScrollBar = Scroll.None
+
+    With $hSideBarViewer
+      .ShowExpand = Me.ShowExpand
+      .ShowIcon = Me.ShowIcon
+      .ShowIndent = Me.ShowIndent
+      .ShowLimit = Me.ShowLimit
+      .ShowLineNumber = Me.ShowLineNumber
+      .ShowModified = Me.ShowModified
+      .ShowSpaces = Me.ShowSpaces
+      .Highlight = Me.Highlight
+    End With
 
     $hSideBar = New DrawingArea($hPanel) As "SideBar"
     $hSideBar.Width = Desktop.Scale * 8
@@ -5226,7 +5236,7 @@ Private Sub SyncSideBarViewerStyles()
     $hSideBarViewer.Styles[i].Bold = $hStyles[i].Bold
     $hSideBarViewer.Styles[i].Color = $hStyles[i].Color
   Next
-
+  
 End
 
 Public Sub TimerShowPreviewViewer_Timer()
@@ -5236,6 +5246,7 @@ Public Sub TimerShowPreviewViewer_Timer()
   $hSideBarViewer.Font = Me.Font.Copy()
   $hSideBarViewer.Font.Grade -= 2
   $hSideBarViewer.View = Me
+  $hSideBarViewer._SyncFolding()
   $hSideBarViewer.Show
   '$hSideBarViewer.ShowExpand = True
   $hSideBarViewer.Raise
@@ -5254,4 +5265,22 @@ Public Sub SideBar_Menu()
 
   Stop Event
 
+End
+
+Public Sub _SyncFolding()
+
+  Dim I As Integer
+  Dim hSrc As TextEditor
+  
+  hSrc = Me.View
+  If hSrc = Me Then Return
+  
+  ExpandAll
+  Repeat
+    If Not hSrc[I].Expanded Then
+      _CollapseRow(I)
+    Endif
+    I = hSrc.FindNextLimit(I)
+  Until I < 0
+  
 End
