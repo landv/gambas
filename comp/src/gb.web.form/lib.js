@@ -265,7 +265,7 @@ gw = {
         
       xhr.gw_command && gw.log('==> ' + xhr.gw_command + ' done.');
       
-      if (xhr.gw_command && (xhr.gw_command.length < 5 || xhr.gw_command[4] == undefined))
+      if (xhr.gw_command && (xhr.gw_command.length < 5 || xhr.gw_command[4] == undefined || xhr.gw_command[4] == false))
         gw.wait(false);
         
       gw.commands.splice(0, 2);
@@ -292,7 +292,7 @@ gw = {
     
       if (command)
       {
-        if (command.length < 5 || command[4] == undefined)
+        if (command.length < 5 || command[4] == undefined || command[4] == false)
           gw.wait(true);
           
         xhr = new XMLHttpRequest();
