@@ -69,7 +69,7 @@ Private $iBal As Integer = 1
   hcont.Background = TermColor.Yellow
   hcont.Border = Border.Simple
   'hcont.Padding = 1
-  'hcont.Shadow = True
+  hcont.Shadow = True
   For i = 0 To 10
     hTermLabel2 = New TermLabel(hcont)
     hTermLabel2.Background = TermColor.Yellow
@@ -81,7 +81,7 @@ Private $iBal As Integer = 1
   hCont2.Spacing = 1
   hCont2.Background = TermColor.Cyan
   hCont2.Invert = True
-  hCont.Shadow = True
+  'hCont.Shadow = True
   hTermButton = New TermButton(hCont2) As "btnOk"
   hTermButton.Background = TermColor.Magenta
   hTermButton.Text = "Ok"
@@ -106,19 +106,13 @@ Private $iBal As Integer = 1
 Public Sub Timer_Timer()
   
  hTermLabel.Text = $i
- 'hWin2.Left += $iBal
- 'If hWin2.Left > Desktop.Width Then $iBal = -1
- 'If hWin2.Left < 2 Then $iBal = 1
+
  
  Inc $i
    TermWindows._Render
   
 End
-' ' Public Sub Application_Read()
-'   
-'   Error "toto"
-'   
-' End
+
 
 Public Sub btnCancel_MouseUp()
   
@@ -128,8 +122,9 @@ Public Sub btnCancel_MouseUp()
 End
 
 Public Sub btnOk_Click()
-  
-  Message("Salut a tous !")
-  'TermWindows._Render
+  Dim hattr As New Attr
+  hattr.Background = TermColor.Black
+  'Message("Salut a tous !")
+  Desktop.BackGround = Char(" ", hattr.GetInteger())
   
 End

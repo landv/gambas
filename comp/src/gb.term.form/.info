@@ -193,7 +193,7 @@ r
 i
 
 BackGround
-r
+p
 Char
 
 _init
@@ -484,14 +484,6 @@ Parent
 r
 TermContainer
 
-Height
-p
-i
-
-H
-p
-i
-
 ScreenX
 r
 i
@@ -533,6 +525,14 @@ p
 i
 
 W
+p
+i
+
+Height
+p
+i
+
+H
 p
 i
 
@@ -616,6 +616,10 @@ _GetBackGround
 m
 i
 
+_GetScreenClientRect
+m
+Rect
+
 _GetScreenRect
 m
 Rect
@@ -639,10 +643,6 @@ m
 _Initialize
 m
 
-
-_GetDrawingRect
-m
-Rect
 
 _GetClientRect
 m
@@ -797,6 +797,46 @@ Resizable
 p
 b
 
+Left
+p
+i
+
+X
+p
+i
+
+Column
+p
+i
+
+Top
+p
+i
+
+Y
+p
+i
+
+Line
+p
+i
+
+Width
+p
+i
+
+W
+p
+i
+
+Height
+p
+i
+
+H
+p
+i
+
 _new
 m
 
@@ -813,6 +853,10 @@ _Arrange
 m
 
 
+Move
+m
+
+(Left)i(Top)i[(Width)i(Height)i]
 _ScreenResize
 m
 
@@ -845,10 +889,18 @@ Activate
 m
 
 
+Resize
+m
+
+(Width)i(Height)i
 #TermWindows
 
 CA
 Debug
+V
+b
+
+bLock
 V
 b
 
@@ -900,6 +952,10 @@ _Read
 M
 
 (sValue)s
+RectToStr
+M
+s
+(hRect)Rect;
 GetActiveWindow
 M
 TermWindow

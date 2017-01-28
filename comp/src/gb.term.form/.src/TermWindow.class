@@ -19,6 +19,12 @@ Private $tmrMove As Timer
 Private $iTmpCol As Integer
 Private $iTmpRow As Integer
 Private $bResizable As Boolean = True
+Private $bInResize As Boolean
+
+Property Left, X, Column As Integer
+Property Top, Y, {Line} As Integer
+Property Width, W As Integer
+Property Height, H As Integer
 
 
 Public Sub _new()
@@ -65,15 +71,16 @@ Public Sub _Render()
   Me._NeedRender = False
 
   If Me.Resizable Then
-    
+
     hAttr.Background = Me.Background
     hAttr.Foreground = Me.Foreground
     hAttr.Bold = False
     iAttr = hAttr.GetInteger()
-    
-    Me._Content[Me._Content.Max - 1][Me._Content[0].Max].c = &h25E2
-    
+
+    If Not $bMaximized Then Me._Content[Me._Content.Max - 1][Me._Content[0].Max].c = &h25E2
+
   Endif
+
 End
 
 Private Function Text_Read() As String
@@ -107,16 +114,17 @@ End
 Private Sub Maximized_Write(Value As Boolean)
 
   If $bMaximized = Value Then Return
-  $bMaximized = Value
 
-  If $bMaximized Then
+  If Value Then
     $rectOldPos = Me._GetRect()
     Me.Move(0, 0, Desktop.Width, Desktop.Height)
-
+$bMaximized = Value
   Else
+    $bMaximized = Value
     Me.Move($rectOldPos.Left, $rectOldPos.Top, $rectOldPos.Width, $rectOldPos.Height)
   Endif
 
+  
 End
 
 Public Sub _ScreenResize()
@@ -137,6 +145,7 @@ End
 Public Sub Close()
 
   Dim hCont As TermControl
+
   Me.Visible = False
   TermWindows.Delete(Me)
 
@@ -155,7 +164,7 @@ Public Sub _MouseUp()
   Endif
   $tmrMove = Null
   $iInMove = 0
-
+  $bInResize = False
   Super._MouseUp
 
 End
@@ -168,6 +177,13 @@ Public Sub _MouseDown()
       $iInMove = Mouse.Col
       $tmrMove = New Timer As "_tmrMove"
       $tmrMove.Delay = 100
+    Endif
+    If Mouse.y = Me.Height - 1 And Mouse.x = Me.Width - 1 Then
+      If Me.Resizable And If Not Me.Maximized Then
+        $tmrMove = New Timer As "_tmrMove"
+        $tmrMove.Delay = 100
+        $bInResize = True
+      Endif
     Endif
   Endif
   Super._MouseDown
@@ -182,6 +198,12 @@ Public Sub _MouseMove()
     $tmrMove.Start
     'Me.Move(Mouse.ScreenX - $iInMove, Mouse.screeny)
   Endif
+
+  If $bInResize Then
+    $iTmpCol = Mouse.ScreenCol - Me.ScreenX
+    $iTmpRow = Mouse.ScreenRow - Me.ScreenY
+    $tmrMove.Start
+  Endif
   Super._MouseMove
 
 End
@@ -194,8 +216,13 @@ End
 
 Public Sub _tmrMove_Timer()
 
-  Me.Move($iTmpCol, $iTmpRow)
-  $tmrMove.Stop
+  If $bInResize Then
+    Me.Move(Me.Left, Me.Top, $iTmpCol, $iTmpRow)
+    $tmrMove.Stop
+  Else
+    Me.Move($iTmpCol, $iTmpRow)
+    $tmrMove.Stop
+  Endif
 
 End
 
@@ -216,3 +243,74 @@ Private Sub Resizable_Write(Value As Boolean)
   $bResizable = Value
 
 End
+
+
+
+
+
+Private Function Top_Read() As Integer
+
+  Return Super.Top
+
+End
+
+Private Sub Top_Write(Value As Integer)
+
+  If $bMaximized Then Return
+  Super.Top = Value
+
+End
+
+Private Function Left_Read() As Integer
+
+  Return Super.Left
+
+End
+
+Private Sub Left_Write(Value As Integer)
+
+  If $bMaximized Then Return
+  Super.Left = Value
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return Super.H
+
+End
+
+Private Sub Height_Write(Value As Integer)
+
+  If $bMaximized Then Return
+  Super.H = Value
+
+End
+
+Private Function Width_Read() As Integer
+
+  Return Super.W
+
+End
+
+Private Sub Width_Write(Value As Integer)
+
+  If $bMaximized Then Return
+  Super.Width = Value
+
+End
+
+Public Sub Move(Left As Integer, Top As Integer, Optional Width As Integer, Height As Integer)
+  
+  If $bMaximized Then Return
+  Super.Move(Left, Top, Width, Height)
+  
+End
+
+Public Sub Resize(Width As Integer, Height As Integer)
+  
+  If $bMaximized Then Return
+  Super.Resize(Width, Height)
+  
+End
+

@@ -4,7 +4,7 @@ Export
 Create Static
 Property Read Width, W As Integer
 Property Read Height, H As Integer
-Property Read BackGround As Char
+Property BackGround As Char
 
 Static Private $hChar As New Char
 
@@ -35,5 +35,11 @@ End
 Private Function BackGround_Read() As Char
 
   Return $hChar
+
+End
+
+Private Function BackGround_Write(Value As Char)
+
+  $hChar = Value
 
 End

@@ -61,13 +61,9 @@ Static Public Sub _SetState(hControl As TermControl, Col As Integer, Row As Inte
   If hControl = Null Then
     $iRow = $iScreenRow
     $iCol = $iScreenCol
-    'Error "hControl est null"
   Else
-    'Error "hControl Screeny" & hControl.ScreenY
-    'Error "Mouse ScreenY" & $iScreenRow
     $irow = $iScreenRow - hControl.ScreenY
     $iCol = $iScreenCol - hControl.ScreenX
-    'Error "Passe par ipos" & Object.Type(hControl)
   Endif
   
   

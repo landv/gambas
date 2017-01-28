@@ -16,6 +16,7 @@ Static Private $bThisIsTheEnd As Boolean
 Static Private $bInRender As Boolean
 Static Private $hCurControl As TermControl
 Static Private $iActiveWindow As Integer
+Static Public bLock As Boolean
 
 Static Public Sub _init()
 
@@ -25,9 +26,7 @@ Static Public Sub _init()
   Component.Load("gb.geom")
 
   hRect = New Rect(0, 0, 3, 3)
-  'Error hRect.Width
 
-  'Error File.Out.Term.W
 
   $hFile = Open File.In.Term.Name For Read Watch
   obs = New Observer(File.In) As "Terminal"
@@ -55,15 +54,15 @@ Public Sub _Add(hWin As TermWindow)
 
   Dim i As Integer
   Dim hCurACtive As TermWindow
+
   hCurActive = TermControl._IdToControl[$iActiveWindow]
   If hCurACtive Then
-  hCurACtive._NeedRender = True
-  SetRenderArea(hCurACtive._getrect())
+    hCurACtive._NeedRender = True
+    SetRenderArea(hCurACtive._getrect())
   Endif
   $aChildren.Add(hWIn)
   $iActiveWindow = hWin.id
-  
-  
+
   ' For i = 0 To $aChildren.Max - 1
   '   SetRenderArea($aChildren[i]._GetRect())
   '   $aChildren[i]._NeedRender = True
@@ -77,6 +76,7 @@ Static Public Sub _RefreshScreen()
 
 End
 
+'Recalculate the refresh zone
 Static Public Sub DoRefreshArea()
 
   Dim hChild As TermWindow
@@ -85,7 +85,7 @@ Static Public Sub DoRefreshArea()
   If Not $RectRefreshArea Then Return
   DoArrange()
   'refresh desktop
-  Try RefreshChild(Null, $hRect.InterSection($RectRefreshArea))
+  Try RefreshDesktop($hRect.InterSection($RectRefreshArea))
   'Resfresh windows
   For Each hChild In $aChildren
     hRect = $hRect.InterSection($RectRefreshArea)
@@ -97,47 +97,85 @@ Static Public Sub DoRefreshArea()
 
 End
 
-Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
+Static Private Sub RefreshDesktop(rectUpdate As Rect)
 
-  Dim iLeft, iRight, iTop, iBottom As Integer
+  Dim L, C As Integer
 
-  Dim L As Integer
-  Dim C As Integer
-  Dim hObj As Object
-  Dim hInRect As Rect
-  Dim iMove, iResize As Integer
-  'If hChild Is Window Then Stop
-  If Not (hChild = Null) Then
-    hInRect = hRect.Intersection(hChild._GetScreenRect())
-    If hChild.Visible = False Then Return
-    If Not hInRect Then Return
-  Else
-    hInRect = hRect
-  Endif
-  For L = hInRect.Top To hInRect.Bottom - 1
-
-    For C = hInRect.Left To hInRect.Right - 1
-      If hChild = Null Then
-        $aScreen[l, C] = 0
-      Else
-        $aScreen[l, C] = hChild.Id
-      Endif
-      'If hChild.id = 3 Then Debug l, C
+  For L = rectUpdate.Top To rectUpdate.Bottom - 1
+    For C = rectUpdate.Left To rectUpdate.Right - 1
+      $aScreen[l, C] = 0
     Next
   Next
-  If hChild = Null Then Return
+
+End
+
+Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
+
+  Dim rectUpdate As Rect
+  Dim L, C As Integer
+  Dim hObj As Object
+  'On définit la zone de
+  rectUpdate = hRect.InterSection(hChild._GetScreenRect())
+  'L 'objet est invisible alors fin
+  If Not hChild.Visible Then Return
+  'La zone n'existe pas alors fin
+  If Not rectUpdate Then Return
+
+  'Remplissage de la zone de calepinageavec l'id de l'objet
+
+  For L = rectUpdate.Top To rectUpdate.Bottom - 1
+    For C = rectUpdate.Left To rectUpdate.Right - 1
+      $aScreen[l, C] = hChild.Id
+    Next
+  Next
+
+  'L'objet est un conteneur ?
   If hChild Is TermContainer Then
-    imove = If(hChild.Border > 0, 1, 0) + hChild.Padding
-    iResize = iMove * 2 + If(hChild._Shadow, 1, 0)
-    hInRect.Move(hInRect.Left + iMove, hInRect.Top + imove, hInRect.Width - iResize, hInRect.Height - iResize)
+    'On applique la Client Zone
+    rectUpdate = hRect.InterSection(hChild._GetScreenClientRect())
     For Each hObj In hChild.Children
 
-      RefreshChild(hObj, hInRect)
+      RefreshChild(hObj, rectUpdate)
     Next
-
+    
   Endif
 
 End
+
+' Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
+' 
+'   Dim iLeft, iRight, iTop, iBottom As Integer
+' 
+'   Dim L As Integer
+'   Dim C As Integer
+'   Dim hObj As Object
+'   Dim rectUpdate As Rect
+'   Dim iMove, iResize As Integer
+'   'If hChild Is Window Then Stop
+' 
+'   rectUpdate = hRect.Intersection(hChild._GetScreenRect())
+'   If hChild.Visible = False Then Return
+'   If Not rectUpdate Then Return
+' 
+'   For L = rectUpdate.Top To rectUpdate.Bottom - 1
+'     For C = rectUpdate.Left To rectUpdate.Right - 1
+'       $aScreen[l, C] = hChild.Id
+'     Next
+'   Next
+' 
+' 
+'   If hChild Is TermContainer Then
+'     imove = If(hChild.Border > 0, 1, 0) + hChild.Padding
+'     iResize = iMove * 2 + If(hChild._Shadow, 1, 0)
+'     rectUpdate.Move(rectUpdate.Left + iMove, rectUpdate.Top + imove, rectUpdate.Width - iResize, rectUpdate.Height - iResize)
+'     For Each hObj In hChild.Children
+' 
+'       RefreshChild(hObj, rectUpdate)
+'     Next
+' 
+'   Endif
+' 
+' End
 
 Static Public Sub Terminal_Resize()
 
@@ -147,7 +185,7 @@ Static Public Sub Terminal_Resize()
   For Each hWin In $aChildren
     hWin._ScreenResize
   Next
-  'Try 
+  'Try
   _Render
 
 End
@@ -177,7 +215,6 @@ Static Public Sub File_Read()
   'Inc $index
 
   If s = "" Then Return
-  'If Me.Debug Then Error Replace(s, "\e", "!e")
   Do
     ss = Mid(s, iPos, 1)
     If ss = "\e" Then
@@ -382,7 +419,6 @@ Static Public Sub File_Read()
           bFound = True
       End Select
       If bFound Then
-        'Error "found2 " & aa[0]
         ipos = ipos2
       Endif
 
@@ -405,21 +441,11 @@ Static Public Sub File_Read()
 
       iPos += 1
     Endif
-    
-    
+
     RaiseKeyEvent()
     Key._Reset
-    
-    
-    
-    
+
   Loop Until iPos > Len(s)
-  
-  
-  
-  
-  
-  
 
   'This is the end
 
@@ -437,39 +463,39 @@ Static Private Sub RaiseMouseEvent(hControl As TermControl, sEvent As String, Co
   'Dim hControl As TermControl
 
   'hControl = TermControl._IdToControl[$aScreen[Mouse.Row, Mouse.Col]]
-  
-  
+
   If hControl = Null And If $hCurControl = Null Then Return
   If sEvent = "_MouseDown" Then $hCurControl = hControl
-  
-  Mouse._SetState($hCurControl, Col, Row, btnLeft, btnMiddle, btnRight, Delta)
-  
-  If sEvent = "_MouseUp" Then
-    If hControl = $hCurControl Then 
 
-  Object.Call($hCurControl, "_Click")
-  Object.Call($hCurControl, sEvent)
-  $hCurControl = Null
+  Mouse._SetState($hCurControl, Col, Row, btnLeft, btnMiddle, btnRight, Delta)
+
+  If sEvent = "_MouseUp" Then
+    If hControl = $hCurControl Then
+
+      Object.Call($hCurControl, "_Click")
+      Object.Call($hCurControl, sEvent)
+      $hCurControl = Null
     Endif
   Endif
-Try Object.Call($hCurControl, sEvent)
+  Try Object.Call($hCurControl, sEvent)
+
 End
 
 Static Private Sub RaiseKeyEvent()
-  
+
   Select Case Key.Code
     Case Key.Menu
       If Key.Alt Then
         Try _RaiseWindow($aChildren[$aChildren.max - 1])
       Endif
+    Case Key.Tab
+      bLock = True
   End Select
-  
+
 End
 
-
 Static Public Sub _RaiseWindow(hWin As TermWindow)
-  
-  
+
   Dim hLastActive As TermWindow
   'If $aChildren.Count = 1 Then Return
   'hWin = $aChildren[0]
@@ -481,12 +507,10 @@ Static Public Sub _RaiseWindow(hWin As TermWindow)
   SetRefreshArea(hWin._GetScreenRect())
   SetRenderArea(hLastActive._GetScreenRect())
   $iActiveWindow = hWin.id
-  
+
   _Render
-  
+
 End
-
-
 
 Static Public Sub _Read(sValue As String)
 
@@ -507,8 +531,16 @@ End
 
 Static Public Sub SetRefreshArea(hRect As Rect)
 
-  If Not $RectRefreshArea Then $RectRefreshArea = New Rect
+  If Not $RectRefreshArea Then $RectRefreshArea = hRect.Copy() 'New Rect
+  'If hRect.Top = 3 Then Stop
   $RectRefreshArea = $RectRefreshArea.Union(hRect)
+  'Error "RefreshARea : " & RectToStr($RectRefreshArea)
+
+End
+
+Static Public Sub RectToStr(hRect As Rect) As String
+
+  Error "Top: " & hRect.Top & "   Left: " & hRect.Left & "   Width: " & hRect.Width & "   Height: " & hRect.Height
 
 End
 
@@ -523,15 +555,16 @@ Static Public Sub _Render()
   Dim sAttr As String
   Dim sDisplay As String
 
+  If bLock Then Stop
   If $bInRender Then Return
   $bInRender = True
   DoRefreshArea()
   RenderAll
-  
+
   If Not IsNull($RectRenderArea) Then hRect = $hRect.Intersection($RectRenderArea)
-  If hRect = Null Then 
-  $bInRender = False
-  Return
+  If hRect = Null Then
+    $bInRender = False
+    Return
   Endif
   sAttr = hAttr._GetString(True)
   Print sAttr;
@@ -576,6 +609,7 @@ Static Public Sub _Render()
   $RectRenderArea = Null
   'Catch
   $bInRender = False
+
 End
 
 Static Private Sub RenderAll()
@@ -611,7 +645,7 @@ Static Public Sub Delete(hControl As TermControl)
     'hObj.Children.Clear
   Endif
 
-  If hObj Is TermWindow Then 
+  If hObj Is TermWindow Then
     $aChildren.Delete($aChildren.Find(hObj))
     Try _RaiseWindow($aChildren[$aChildren.Max])
   Endif
@@ -624,9 +658,8 @@ Static Public Sub Delete(hControl As TermControl)
 
 End
 
-
 Static Public Sub GetActiveWindow() As TermWindow
-  
+
   Return TermControl._IdToControl[$iActiveWindow]
-  
+
 End

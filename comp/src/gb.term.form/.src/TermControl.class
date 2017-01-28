@@ -11,7 +11,6 @@ Public _UseFocus As Boolean
 Property Read id As Integer
 
 Property Read Parent As TermContainer
-Property Height, H As Integer
 Property Read ScreenX As Integer
 Property Read ScreenY As Integer
 Property Read Window As TermWindow
@@ -19,6 +18,7 @@ Property Read Window As TermWindow
 Property Left, X, Column As Integer
 Property Top, Y, {Line} As Integer
 Property Width, W As Integer
+Property Height, H As Integer
 Property Background As Integer
 Property Foreground As Integer
 Property Tag As Variant
@@ -36,7 +36,6 @@ Private $bShadow As Boolean
 
 Private _RecalcPos As Boolean
 Private $rectControl As New Rect
-Private $rectDrawing As New Rect
 Private $iId As Integer
 Private $iParent As Integer
 Private $iScreenX As Integer
@@ -57,7 +56,6 @@ Event MouseWheel
 Event MouseMove
 Event Click
 Event KeyPress
-
 
 Public Sub _new(Optional hParent As TermContainer)
 
@@ -105,6 +103,7 @@ Public Sub _Render()
   Dim hRectC As Rect
   Dim iShadow As Integer = IIf($bShadow, 1, 0)
   Dim iBC As Integer
+
   If Not Me._NeedRender Then Return
   'If Me Is TermContainer Then
   hRectC = $rectControl
@@ -113,6 +112,7 @@ Public Sub _Render()
   'Endif
 
   If Not _Content Then ResizeBuffer(hRectC.Width, hRectC.Height)
+  
   iBC = _GetBackGround()
   hAttr.Background = iBC
 
@@ -168,6 +168,7 @@ Public Sub _Render()
   End Select
 
   If $bShadow Then
+    ' If Me Is TermButton Then Stop
     hAttr.Foreground = TermColor.Black
     If IsNull(Me.Parent) Then
       hAttr.Background = TermColor.Blue
@@ -213,33 +214,36 @@ End
 
 Private Sub Left_Write(Value As Integer)
 
+  If $rectControl.Left = Value Then Return
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   $rectControl.X = Value
-  $rectDrawing.X = Value
   Me._DefineRect
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   _RecalcPos = True
   If Not $bLockRender Then TermWindows._Render
+
 End
 
 Private Function Top_Read() As Integer
 
   'If Me.tag = "--" Then Stop
-  
+
   Return $rectControl.Y
 
 End
 
 Private Sub Top_Write(Value As Integer)
 
+  If $rectControl.Top = Value Then Return
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   $rectControl.Y = Value
-  $rectDrawing.Y = Value
+
   Me._DefineRect
   _RecalcPos = True
 
-  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectDrawing.Width, $rectDrawing.Height))
-If Not $bLockRender Then TermWindows._Render
+  TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
+  If Not $bLockRender Then TermWindows._Render
+
 End
 
 Private Function Width_Read() As Integer
@@ -250,6 +254,7 @@ End
 
 Private Sub Width_Write(Value As Integer)
 
+  If $rectControl.Width = Value Then Return
   If Value < 1 Then Return
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   $rectControl.Width = Value
@@ -270,6 +275,7 @@ End
 
 Private Sub Height_Write(Value As Integer)
 
+  If $rectControl.Height = Value Then Return
   If Value < 1 Then Return
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   $rectControl.Height = Value
@@ -334,6 +340,15 @@ End
 Private Function Window_Read() As TermWindow
 
   Return _IdToControl[$iWindow]
+
+End
+
+Public Function _GetScreenClientRect() As Rect
+
+  Dim iCorner As Integer = IIf($iBorder > 0, 1, 0) + $iPadding
+  Dim iSize As Integer = iCorner * 2 + IIf($bShadow, 1, 0)
+
+  Return rect(Me.ScreenX + iCorner, Me.ScreenY + iCorner, $rectControl.Width - iSize, $rectControl.Height - iSize)
 
 End
 
@@ -405,6 +420,7 @@ Public Sub _Arrange()
 End
 
 Public Sub Move(Left As Integer, Top As Integer, Optional Width As Integer, Height As Integer)
+
   $bLockRender = True
   Me.Left = Left
   Me.Top = Top
@@ -412,6 +428,7 @@ Public Sub Move(Left As Integer, Top As Integer, Optional Width As Integer, Heig
   If Not IsMissing(Height) Then Me.Height = Height
   $bLockRender = False
   TermWindows._Render
+
 End
 
 Private Function Expand_Read() As Boolean
@@ -433,12 +450,6 @@ Public Sub _Initialize()
 
 End
 
-Public Sub _GetDrawingRect() As Rect
-
-  Return $rectDrawing.Copy()
-
-End
-
 Private Function _Shadow_Read() As Boolean
 
   Return $bShadow
@@ -448,6 +459,7 @@ End
 Private Sub _Shadow_Write(Value As Boolean)
 
   $bShadow = Value
+  Me._NeedRender = True
 
 End
 
@@ -521,33 +533,42 @@ Private Sub _ColorMode_Write(Value As Integer)
 End
 
 Public Sub _MouseDown()
+
   If TermWindows.Debug Then Error "Mouse Down Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
-  If Not Me.Window.Active Then 
+  If Not Me.Window.Active Then
     Me.Window.Activate
   Endif
   Raise MouseDown
+
 End
 
 Public Sub _MouseUp()
+
   If TermWindows.Debug Then Error "Mouse Up Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
   Raise MouseUp
+
 End
 
 Public Sub _MouseMove()
+
   If TermWindows.Debug Then Error "Mouse Move Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
   Raise MouseMove
+
 End
 
 Public Sub _MouseWheel()
+
   If TermWindows.Debug Then Error "Mouse Wheel Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
   Raise MouseWheel
-End
-Public Sub _Click()
-  
-  If TermWindows.Debug Then Error "Mouse Click Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
-  Raise Click
+
 End
 
+Public Sub _Click()
+
+  If TermWindows.Debug Then Error "Mouse Click Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  Raise Click
+
+End
 
 Private Function Visible_Read() As Boolean
 
@@ -556,47 +577,47 @@ Private Function Visible_Read() As Boolean
 End
 
 Private Sub Visible_Write(Value As Boolean)
+
   If $iVisible <> Value Then
-  $iVisible = Value
-  TermWindows.SetRefreshArea($rectControl)
-  TermWindows._Render
+    $iVisible = Value
+    TermWindows.SetRefreshArea($rectControl)
+    TermWindows._Render
   Endif
+
 End
 
-
 Public Sub Show()
-  
+
   Me.Visible = True
-  
+
 End
 
 Public Sub Hide()
-  
+
   Me.Visible = False
-  
+
 End
 
 Public Sub Resize(Width As Integer, Height As Integer)
-  $bLockRender = True 
+
+  $bLockRender = True
   Me.Width = Width
   Me.Height = Height
   $bLockRender = False
   TermWindows._Render
-  
+
 End
 
-
 Public Sub Refresh()
+
   Me._NeedRender = True
   TermWindows.SetRenderArea(Me._GetScreenRect())
   TermWindows._Render
-  
-End
 
+End
 
 Public Sub _KeyPress()
-  
-  Raise KeyPress
-  
-End
 
+  Raise KeyPress
+
+End
