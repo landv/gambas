@@ -5042,16 +5042,8 @@ Public Sub SideBar_MouseMove()
           $hSideBarViewer.Raise
           iCurLine = Min(Max(0, Floor(((Mouse.y - $iMD)) / $fBarLineHeight)), iCount)
           If $hSideBarViewer.Tag <> iCurLine Then
+            $hSideBarViewer.GotoCenter(0, iCurLine)
             $hSideBarViewer.Tag = iCurLine
-            iLineStart = Max(0, Min($hDoc.Count - 1, iCurLine - $iSideBarNBLines))
-            iLineEnd = Min($hDoc.Count - 1, Max(iCurLine + $iSideBarNBLines, $iSideBarNBLines * 2))
-
-            For i = iLineStart To iLineEnd
-              Try sText &= $hDoc.Lines[_ViewToReal(i)] & "\n"
-            Next
-
-            $hSideBarViewer.Text = sText
-
           Endif
         Endif
       Endif
@@ -5112,7 +5104,6 @@ Public Sub SideBar_MouseDown()
   If Mouse.Left Then
     If $iSideBarStyle > 0 Then
       $hTimerSideBarMDHold = New Timer As "TimerSideBarMDHold"
-      'TimerSideBarMDHold_Timer
       $hTimerSideBarMDHold.Delay = 500
       $hTimerSideBarMDHold.Start
       If Not $bSideBarLockViewer Then $hSideBarViewer.Hide
@@ -5123,32 +5114,17 @@ Public Sub SideBar_MouseDown()
           $hView.ScrollY += $LH
       End Select
     Else
-      'If Mouse.Control Then
-      '  If Mouse.Alt Then
-      '    If $hSideBarViewer.Visible Then $bSideBarLockViewer = Not $bSideBarLockViewer
-      ' '  Else
-      '     Y = Min(Max(0, Floor(((Mouse.y - $iMD)) / $fBarLineHeight)), $hDoc.Count)
-      '     Me.GotoCenter(0, _ViewToReal(y))
-      'Endif
-      'Else
 
       If $rectSideBar.Contains(Mouse.x, Mouse.y) Then
         If Not $bSideBarLockViewer Then $hSideBarViewer.Hide
         $iMD = Mouse.y - $rectSideBar.Top
       Else
-        ' iNL = $hView.ClientH \ $hRows.H + 1
-        ' If Mouse.y < $rectSideBar.Top Then
-        '   $hView.Scrolly -= $hRows.H * iNL
-        ' Else If Mouse.Y > $rectSideBar.Bottom Then
-        '   $hView.Scrolly += $hRows.H * iNL
-        ' Endif
         Y = Min(Max(0, Floor(((Mouse.y - $iMD)) / $fBarLineHeight)), $hDoc.Count)
         Me.GotoCenter(0, _ViewToReal(y))
         $bSideBarMouseDown = True
         $iMY = Mouse.Y
       Endif
 
-      'Endif
     Endif
   Endif
 
@@ -5156,10 +5132,6 @@ Public Sub SideBar_MouseDown()
     If $hSideBarViewer.Visible Then $bSideBarLockViewer = Not $bSideBarLockViewer
   Endif
 
-  ' If Mouse.Right Then
-  '   Y = Min(Max(0, Floor(((Mouse.y - $iMD)) / $fBarLineHeight)), $hDoc.Count)
-  '   Me.GotoCenter(0, _ViewToReal(y))
-  ' Endif
 
 End
 
@@ -5226,7 +5198,6 @@ Private Sub ShowPreview_Write(Value As Boolean)
     $hSideBar.Width = Desktop.Scale * 8
     $hSideBar.Background = $hStyles[Highlight.BackGround].Color
     $hSideBar.Tracking = True
-    '$hSideBar.Visible = True
     ScrollBar_Write($iScrollBar)
   Else
     If $hSideBar Then
@@ -5264,9 +5235,9 @@ Public Sub TimerShowPreviewViewer_Timer()
   $iSideBarNBLines = Ceil(($hSideBarViewer.ClientH / $hSideBarViewer.LineHeight) / 2)
   $hSideBarViewer.Font = Me.Font.Copy()
   $hSideBarViewer.Font.Grade -= 2
-  '$hSideBarViewer.ShowLimit = $bShowLimit
-  '$hSideBarViewer.ShowExpand = $bShowExpand
+  $hSideBarViewer.View = Me
   $hSideBarViewer.Show
+  '$hSideBarViewer.ShowExpand = True
   $hSideBarViewer.Raise
   $hTimerSideBarViewer.Stop
 
