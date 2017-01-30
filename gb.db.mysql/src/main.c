@@ -1740,7 +1740,7 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 
 					break;
 
-				default: type = "TEXT"; break;
+				default: type = "MEDIUMTEXT"; break;
 			}
 
 			DB.Query.Add(" ");
