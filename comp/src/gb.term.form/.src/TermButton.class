@@ -49,8 +49,11 @@ Public Sub _Render()
   Case Else
     sALign = $sText
   End Select
-
-  hAttr.Background = Me._GetBackGround()
+  If Not Me.HaveFocus Then
+    hAttr.Background = Me._GetBackGround()
+  Else
+    hAttr.Background = TermColor.Yellow
+  Endif
   hAttr.Foreground = Me.Foreground
   iAttr = hAttr.GetInteger()
   
@@ -93,3 +96,12 @@ Private Sub Alignment_Write(Value As Integer)
   
 
 End
+
+Public Sub _KeyPress()
+  
+  If Key.Code = Key.Return Then Raise Click
+  
+  Super._KeyPress
+  
+End
+

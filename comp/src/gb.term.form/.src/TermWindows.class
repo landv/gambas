@@ -482,14 +482,14 @@ Static Private Sub RaiseMouseEvent(hControl As TermControl, sEvent As String, Co
 End
 
 Static Private Sub RaiseKeyEvent()
-
+  
   Select Case Key.Code
     Case Key.Menu
       If Key.Alt Then
         Try _RaiseWindow($aChildren[$aChildren.max - 1])
       Endif
-    Case Key.Tab
-      bLock = True
+    Case Else
+      TermControl._IdToControl[$iActiveWindow]._KeyPress()
   End Select
 
 End

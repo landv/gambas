@@ -22,13 +22,16 @@ Property Height, H As Integer
 Property Background As Integer
 Property Foreground As Integer
 Property Tag As Variant
-Property HaveFocus As Boolean
 Property Expand As Boolean
 Property _Shadow As Boolean
 Property _Border As Integer
 Property _Padding As Integer
 Property _ColorMode As Integer
 Property Visible As Boolean
+Property Read Next As TermControl
+Property Read Previous As TermControl
+Property Read HaveFocus As Boolean
+
 Private $iColorMode As Integer
 Private $iBorder As Integer
 
@@ -50,12 +53,16 @@ Private $iPadding As Integer
 Private $rectClient As Rect
 Private $iVisible As Boolean = True
 Private $bLockRender As Boolean
+Public _AllowFocus As Boolean = True
+Private $bHaveFocus As Boolean
 Event MouseDown
 Event MouseUp
 Event MouseWheel
 Event MouseMove
 Event Click
 Event KeyPress
+Event GotFocus
+Event LostFocus
 
 Public Sub _new(Optional hParent As TermContainer)
 
@@ -76,6 +83,7 @@ Public Sub _new(Optional hParent As TermContainer)
   _IdToControl[$iId] = Me
   _RecalcPos = True
   _NeedRender = True
+  _AllowFocus = True
   ' TermWindows._RefreshScreen
 
 End
@@ -112,8 +120,9 @@ Public Sub _Render()
   'Endif
 
   If Not _Content Then ResizeBuffer(hRectC.Width, hRectC.Height)
-  
+
   iBC = _GetBackGround()
+  If Me.HaveFocus Then iBC = TermColor.Yellow
   hAttr.Background = iBC
 
   iAttr = hAttr.GetInteger()
@@ -407,14 +416,6 @@ Private Sub Tag_Write(Value As Variant)
 
 End
 
-Private Function HaveFocus_Read() As Boolean
-
-End
-
-Private Sub HaveFocus_Write(Value As Boolean)
-
-End
-
 Public Sub _Arrange()
 
 End
@@ -619,5 +620,69 @@ End
 Public Sub _KeyPress()
 
   Raise KeyPress
+
+End
+
+Private Function Next_Read() As TermControl
+
+  Dim iPos As Integer
+  Dim hChildren As TermControl[]
+
+  hChildren = Me.Parent.Children
+  ipos = hChildren.Find(Me)
+  If ipos = hChildren.Max Then Return Null
+  Return hChildren[iPos + 1]
+
+End
+
+Private Function Previous_Read() As TermControl
+
+  Dim iPos As Integer
+  Dim hChildren As TermControl[]
+
+  hChildren = Me.Parent.Children
+  iPos = hChildren.Find(Me)
+  If iPos = 0 Then Return Null
+  Return hChildren[iPos - 1]
+
+End
+
+Public Sub SetFocus()
+
+  Dim hPrev As TermControl
+  If _AllowFocus Then
+    hPrev = TermControl._IdToControl[Me.Window._GetCurrentFocusId()]
+    hPrev._LostFocus
+    TermWindows.SetRenderArea(hPrev._GetScreenRect())
+    hPrev._NeedRender = True
+    TermWindows._Render
+    Me.Window._SetFocus(Me.id)
+    TermWindows.SetRenderArea(_GetScreenRect())
+    _NeedRender = True
+    Me._GotFocus
+    TermWindows._Render
+  Endif
+
+End
+
+Private Sub HaveFocus_Read() As Boolean
+
+  Return $bHaveFocus
+
+End
+
+Public Sub _LostFocus()
+
+  $bHaveFocus = False
+
+  Raise LostFocus
+
+End
+
+Public Sub _GotFocus()
+
+  $bHaveFocus = True
+
+  Raise GotFocus
 
 End

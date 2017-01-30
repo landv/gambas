@@ -14,7 +14,11 @@ Public Sub _Render()
   Dim i As Integer
   If Not Me._NeedRender Then Return
   Super._Render
+  If Me.HaveFocus Then
+  hAttr.Background = TermColor.Yellow
+  Else
   hAttr.Background = Me._GetBackGround()
+  Endif
   hAttr.Foreground = Me.Foreground
   iAttr = hAttr.GetInteger()
   

@@ -548,10 +548,6 @@ Tag
 p
 v
 
-HaveFocus
-p
-b
-
 Expand
 p
 b
@@ -576,6 +572,22 @@ Visible
 p
 b
 
+Next
+r
+TermControl
+
+Previous
+r
+TermControl
+
+HaveFocus
+r
+b
+
+_AllowFocus
+v
+b
+
 :MouseDown
 :
 
@@ -597,6 +609,14 @@ b
 
 
 :KeyPress
+:
+
+
+:GotFocus
+:
+
+
+:LostFocus
 :
 
 
@@ -685,6 +705,18 @@ m
 
 
 _KeyPress
+m
+
+
+SetFocus
+m
+
+
+_LostFocus
+m
+
+
+_GotFocus
 m
 
 
@@ -893,6 +925,26 @@ Resize
 m
 
 (Width)i(Height)i
+GetNextFocusedControl
+m
+TermControl
+(hCtrl)TermControl;[(bFirst)b]
+GetPrevFocusedControl
+m
+TermControl
+(hCtrl)TermControl;[(bFirst)b]
+_SetFocus
+m
+
+(id)i
+_GetCurrentFocusId
+m
+i
+
+_KeyPress
+m
+
+
 #TermWindows
 
 CA
