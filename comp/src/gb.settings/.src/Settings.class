@@ -381,14 +381,19 @@ Private Sub WriteWindow(hWindow As Window, sKey As String)
   'Dim D As Integer
   Dim aVal As Integer[]
   
-  'Dim hDesktopWin As DesktopWindow
-  
-  S = hWindow.Screen
-  
-  X = hWindow.X - Screens[S].AvailableX
-  Y = hWindow.Y - Screens[S].AvailableY
+  X = hWindow.X
+  Y = hWindow.Y
   W = hWindow.Width
   H = hWindow.Height
+
+  If hWindow.TopLevel Then
+  
+    S = hWindow.Screen
+    
+    X -= Screens[S].AvailableX
+    Y -= Screens[S].AvailableY
+    
+  Endif
   
   aVal = [X, Y, W, H, S]
   
