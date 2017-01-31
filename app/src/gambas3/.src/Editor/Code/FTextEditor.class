@@ -172,10 +172,10 @@ End
 Public Sub ReadConfig()
 
   Project.SetSmallFont(panToolbar)
-  edtEditor.ReadConfig
+  edtEditor.ReadConfig(True)
   'edtEditor.Parent.Background = edtEditor.Styles[Highlight.Background].Color
-  If $hEditor1 Then $hEditor1.ReadConfig
-  If $hEditor2 Then $hEditor2.ReadConfig
+  If $hEditor1 Then $hEditor1.ReadConfig(True)
+  If $hEditor2 Then $hEditor2.ReadConfig(True)
   $hCompletion.ReadConfig
 
 End
@@ -405,7 +405,7 @@ Private Sub RefreshBackground()
   
       If Not hEditor Then Continue
   
-      hEditor.ReadConfig
+      hEditor.ReadConfig(True)
       If Not hEditor.HasFocus Then
         If bHasFocus Then MTheme.InitEditor(hEditor, True)
         $hEditor.ShowCurrent = False
@@ -714,7 +714,7 @@ Private Sub InitEditor(hEditor As TextEditor)
     .TabSize = edtEditor.TabSize
     .Wrap = edtEditor.Wrap
   End With 
-  hEditor.ReadConfig
+  hEditor.ReadConfig(True)
   
 End
 
