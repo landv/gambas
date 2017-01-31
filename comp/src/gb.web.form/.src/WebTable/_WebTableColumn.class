@@ -8,6 +8,7 @@ Property Alignment As Integer
 Property Wrap As Boolean
 Property Width As String
 Property Hidden As Boolean
+Property Sortable As Boolean
 
 Event _Fake
 
@@ -19,6 +20,7 @@ Private $iAlignment As Integer
 Private $bNoWrap As Boolean
 Private $sWidth As String
 Private $bHidden As Boolean
+Private $bNotSortable As Boolean
 
 Private Sub GetTable() As WebTable
 
@@ -117,5 +119,18 @@ Private Sub Hidden_Write(Value As Boolean)
 
   $bHidden = Value
   GetTable()._SetProperty("#[" & CStr(_Column) & "].hidden", Value)
+
+End
+
+Private Function Sortable_Read() As Boolean
+
+  Return Not $bNotSortable
+
+End
+
+Private Sub Sortable_Write(Value As Boolean)
+
+  $bNotSortable = Not Value
+  GetTable()._SetProperty("#[" & CStr(_Column) & "].sortable", Value)
 
 End

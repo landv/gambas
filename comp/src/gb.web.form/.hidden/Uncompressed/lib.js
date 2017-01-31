@@ -44,15 +44,21 @@ Element.prototype.removeClass = function(klass)
   }
 };
 
-function replaceInnerHTML(oldDiv, html) {
-    var newDiv = oldDiv.cloneNode(false);
-    newDiv.innerHTML = html;
-    oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-};
+/*Element.prototype.ensureVisible = function()
+{
+  var parent = this.offsetParent;
+  
+  while (parent && parent.clientHeight == parent.scrollHeight && parent.clientWidth == parent.scrollWidth)
+    parent = parent.offsetParent;
+  
+  if (parent)
+    gw.ensureVisible(this.offsetParent, this.offsetLeft, this.offsetTop, this.offsetWidth, this.offsetHeight);
+};*/
 
 gw = {
 
   version: '0',
+  commands: [],
   timers: {},
   windows: [],
   form: '',
@@ -60,6 +66,8 @@ gw = {
   loaded: {},
   uploads: {},
   autocompletion: [],
+  focus: false,
+  lock: 0,
   
   log: function(msg)
   {
@@ -67,7 +75,7 @@ gw = {
     {
       if (gw.startTime == undefined)
         gw.startTime = Date.now();
-      console.log(((Date.now() - gw.startTime) / 1000) + ': ' + msg);
+      console.log(((Date.now() - gw.startTime) / 1000).toFixed(3) + ': ' + msg);
     }
   },
   
@@ -126,66 +134,204 @@ gw = {
       if (!elt)
         return;
     
-      console.log(id + " removed");
+      //console.log(id + " removed");
     
       elt.parentNode.removeChild(elt);
     //}
   },
   
-  answer: function(xhr)
+  insertElement : function(id, parent)
   {
-    if (xhr.readyState == 4 && xhr.status == 200 && xhr.responseText)
+    var elt = document.createElement('div');
+    elt.id = id;
+    
+    $(parent).appendChild(elt);
+  },
+
+  setVisible : function(id, visible)
+  {
+    var elt = $(id);
+    if (elt)
     {
-      gw.log('gw.answer (' + xhr.gw_command + ')');
-      
-      gw.active = document.activeElement.id;
-      if (gw.active)
-        gw.selection = gw.getSelection($(gw.active));
+      if (visible)
+        elt.removeClass('gw-hidden');
       else
-        gw.selection = undefined;
+        elt.addClass('gw-hidden');
+    }
+  },
+  
+  saveFocus: function() {
+    var active = document.activeElement.id;
+    var selection;
+    
+    if (active)
+      selection = gw.getSelection($(active));
       
-      if (gw.debug)
-        console.log('--> ' + xhr.responseText);
-        
-      eval(xhr.responseText);
-      
-      if (gw.active)
+    return [active, selection];
+  },
+  
+  restoreFocus: function(save) {
+    var elt;
+    
+    if (save[0])
+    {
+      elt = $(save[0])
+      if (elt) 
       {
-        gw.log('active: ' + gw.active);
-        if ($(gw.active))
-        {
-          $(gw.active).focus();
-          gw.setSelection($(gw.active), gw.selection);
-        }
-        else
-          gw.active = document.activeElement.id;
+        elt.focus();
+        gw.setSelection(elt, save[1]);
+      }
+    }
+    //else
+    //  gw.active = document.activeElement.id;
+  },
+  
+  wait: function(lock) {
+    var elt;
+    
+    if (lock)
+    {
+      if (gw.lock == 0)
+      {
+        elt = $('gw-lock');
+        elt.style.zIndex = 1000;
+        elt.style.display = 'block';
+        
+        gw.lock_id = setTimeout(function() {
+          $('gw-lock').style.opacity = '1';
+          }, 500);
       }
       
-      gw.log('answer done');
+      gw.lock++;
+    }
+    else
+    {
+      gw.lock--;
+      if (gw.lock == 0)
+      {
+        if (gw.lock_id)
+        {
+          clearTimeout(gw.lock_id);
+          gw.lock_id = undefined;
+        }
+        elt = $('gw-lock');
+        elt.style.display = 'none';
+        elt.style.opacity = '0';
+      }
+    }
+  },
+  
+  answer: function(xhr, after)
+  {
+    if (xhr.readyState == 4)
+    {
+      if (xhr.status == 200 && xhr.responseText)
+      {
+        xhr.gw_command && gw.log('==> ' + xhr.gw_command + '...');
+        
+        gw.focus = false;
+        var save = gw.saveFocus();
+        
+        /*if (gw.debug)
+          console.log('--> ' + xhr.responseText);*/
+        
+        var r = xhr.responseText.split('\n');
+        var i, expr;
+        
+        for (i = 0; i < r.length; i++)
+        {
+          expr = r[i].trim();
+          if (expr.length == 0)
+            continue;
+          if (gw.debug)
+          {
+            if (expr.length > 1024)
+              gw.log('--> ' + expr.substr(0, 1024) + '...');
+            else
+              gw.log('--> ' + expr);
+          }
+          eval(expr);
+        }
+         
+        //eval(xhr.responseText);
+        
+        if (!gw.focus)
+          gw.restoreFocus(save);
+        
+      }
+      
+      if (after)
+        after();
+        
+      xhr.gw_command && gw.log('==> ' + xhr.gw_command + ' done.');
+      
+      if (xhr.gw_command && (xhr.gw_command.length < 5 || xhr.gw_command[4] == undefined || xhr.gw_command[4] == false))
+        gw.wait(false);
+        
+      gw.commands.splice(0, 2);
+      gw.sendNewCommand();
+    }
+  },
+  
+  sendNewCommand: function()
+  {
+    var command, after, len;
+    var xhr;
+    
+    for(;;) {
+    
+      len = gw.commands.length;
+      
+      if (len < 2)
+        return;
+      
+      command = gw.commands[0];
+      after = gw.commands[1];
+  
+      gw.log('[ ' + command + ' ]');
+    
+      if (command)
+      {
+        if (command.length < 5 || command[4] == undefined || command[4] == false)
+          gw.wait(true);
+          
+        xhr = new XMLHttpRequest();
+        xhr.gw_command = command;
+        xhr.open('GET', $root + '/x?c=' + encodeURIComponent(JSON.stringify(command)), true);
+        xhr.onreadystatechange = function() { gw.answer(xhr, after); };
+        xhr.send(null);
+        return;
+      }
+      
+      after();
+      gw.commands.splice(0, 2);
     }
   },
 
   send: function(command, after)
   {
-    gw.log('gw.send: ' + command);
-    var xhr = new XMLHttpRequest();
-    xhr.gw_command = command;
-    xhr.open('GET', $root + '/' + encodeURIComponent(gw.form) + '/x?c=' + encodeURIComponent(JSON.stringify(command)), true);
-    if (after)
-      xhr.onreadystatechange = function() { gw.answer(xhr); after(); };
-    else
-      xhr.onreadystatechange = function() { gw.answer(xhr); };
-    xhr.send(null);
+    gw.log('gw.send: ' + command + ' ' + JSON.stringify(gw.commands));
+    
+    gw.commands.push(command);
+    gw.commands.push(after);
+    
+    if (gw.commands.length == 2)
+      gw.sendNewCommand();
   },
 
-  raise: function(id, event, args)
+  raise: function(id, event, args, no_wait)
   {
-    gw.send(['raise', id, event, args]);
+    gw.send(['raise', id, event, args, no_wait]);
   },
   
   update: function(id, prop, value, after)
   {
-    gw.send(['update', id, prop, value], after);
+    gw.send(['update', id, prop, value, true], after);
+  },
+  
+  command: function(action)
+  {
+    gw.send(null, action);
   },
 
   getSelection: function(o)
@@ -226,12 +372,15 @@ gw = {
   
   setFocus: function(id)
   {
-    /*if (!$(id))
-      return;*/
-      
-    $(id).focus();
-    gw.active = document.activeElement.id;
-    gw.selection = undefined;
+    var elt = $(id + ':entry') || $(id);
+    
+    if (elt)
+    {
+      elt.focus();
+      gw.active = document.activeElement.id;
+      gw.selection = undefined;
+      gw.focus = true;
+    }
   },
   
   resizeComboBox: function(id)
@@ -239,10 +388,33 @@ gw = {
     $(id + '-select').onmouseover = function() { $(id + '-select').style.width = $(id).offsetWidth + 'px'; }
   },
   
+  highlightMandatory: function(id)
+  {
+    var elt = $(id);
+    var elt_br;
+    var div;
+    var div_br;
+    
+    if (elt == undefined || elt.gw_mandatory)
+      return;
+    
+    elt.gw_mandatory = div = document.createElement('div');
+    div.className = 'gw-mandatory';
+    elt.parentNode.insertBefore(div, elt);
+    
+    elt_br = gw.getPos(elt);
+    div_br = gw.getPos(div);
+    
+    div.style.top = (elt_br.top - div_br.top) + 'px';
+    div.style.left = (elt_br.left - div_br.left) + 'px';
+    div.style.width = elt_br.width + 'px';
+    div.style.height = elt_br.height + 'px';
+  },
+  
   addTimer: function(id, delay)
   {
     gw.removeTimer(id);
-    gw.timers[id] = setInterval(function() { gw.raise(id, 'timer'); }, delay);
+    gw.timers[id] = setInterval(function() { gw.raise(id, 'timer', [], true); }, delay);
   },
   
   removeTimer: function(id)
@@ -293,6 +465,95 @@ gw = {
     return { found: found, left: left, top: top, width: width, height: height, right: left + width, bottom: top + height };
   },
 
+  /*ensureVisible: function(id, x, y, w, h)
+  {
+    var elt = typeof(id) == 'string' ? $(id) : id;
+    var pw, ph,cx, cy, cw, ch;
+    var xx, yy, ww, hh;
+  
+    // WW = W / 2
+    ww = w / 2;
+    //HH = H / 2
+    hh = h / 2;
+    // XX = X + WW
+    xx = x + ww
+    // YY = Y + HH
+    yy = y + hh;
+    
+    // PW = Me.ClientW 
+    // PH = Me.ClientH
+    pw = elt.clientWidth;
+    ph = elt.clientHeight;
+    
+    cx = - elt.scrollLeft;
+    cy = - elt.scrollTop;
+    cw = elt.scrollWidth;
+    ch = elt.scrollHeight;
+  
+    //If PW < (WW * 2) Then WW = PW / 2
+    //If PH < (HH * 2) Then HH = PH / 2
+    if (pw < (ww * 2)) ww = pw / 2;
+    if (ph < (hh * 2)) hh = ph / 2;
+  
+    //If CW <= PW Then
+    //  WW = 0
+    //  CX = 0
+    //Endif
+    if (cw <= pw) { ww = 0; cx = 0; }
+    
+    //If CH <= PH Then
+    //  HH = 0
+    //  CY = 0
+    //Endif
+    if (ch <= ph) { hh = 0; cy = 0 }
+  
+    //If XX < (- CX + WW) Then
+    //  CX = Ceil(- XX + WW)
+    //Else If XX >= (- CX + PW - WW) Then
+    //  CX = Floor(- XX + PW - WW)
+    //Endif
+    if (xx < (- cx + ww))
+      cx = - xx + ww;
+    else if (xx >= (- cx + pw - ww))
+      cx = - xx + pw - ww;
+    
+    //If YY < (- CY + HH) Then
+    //  CY = Ceil(- YY + HH)
+    //Else If YY >= (- CY + PH - HH) Then
+    //  CY = Floor(- YY + PH - HH)
+    //Endif
+    
+    if (yy < (- cy + hh))
+      cy = - yy + hh;
+    else if (yy >= (- cy + ph - hh))
+      cy = - yy + ph - hh;
+  
+    //If CX > 0
+    //  CX = 0
+    //Else If CX < (PW - CW) And If CW > PW Then
+    //  CX = PW - CW
+    //Endif
+    if (cx > 0)
+      cx = 0;
+    else if (cx < (pw - cw) && cw > pw)
+      cx = pw - cw;
+  
+    //If CY > 0 Then
+    //  CY = 0
+    //Else If CY < (PH - CH) And If CH > PH Then
+    //  CY = PH - CH
+    //Endif
+    if (cy > 0)
+      cy = 0;
+    else if (cy < (ph - ch) && ch > ph)
+      cy = ph - ch;
+  
+    //If $hHBar.Value = - CX And If $hVBar.Value = - CY Then Return True
+    //Scroll(- CX, - CY)
+    elt.scrollLeft = - cx;
+    elt.scrollTop = - cy;
+  },*/
+
   window: 
   {
     zIndex: 0,
@@ -314,6 +575,9 @@ gw = {
       
       $(id).gw_resizable = resizable;
       $(id).gw_modal = modal;
+      
+      if (modal)
+        $(id).gw_focus = gw.saveFocus();
       
       if (minw != undefined)
       {
@@ -356,6 +620,7 @@ gw = {
       $(id).gw_resizable = resizable;
       $(id).gw_modal = true;
       $(id).gw_popup = true;
+      $(id).gw_focus = gw.saveFocus();
       
       if (minw != undefined)
       {
@@ -390,17 +655,26 @@ gw = {
         gw.windows.splice(i, 1);
         gw.window.refresh();
       }
+      
+      if ($(id).gw_focus)
+      {
+        gw.restoreFocus($(id).gw_focus);
+        $(id).gw_focus = undefined;
+      }
     },
     
     refresh: function()
     {
       var i = 0;
+      var zi;
       
       while (i < gw.windows.length)
       {
         if ($(gw.windows[i]))
         {
-          $(gw.windows[i]).style.zIndex = 11 + i * 2;
+          zi = 11 + i * 2;
+          if ($(gw.windows[i]).style.zIndex != zi)
+            $(gw.windows[i]).style.zIndex = zi;
           i++;
         }
         else
@@ -438,7 +712,6 @@ gw = {
         $(last).removeClass('gw-deactivated');
         $(last + '-titlebar').removeClass('gw-deactivated');
       }
-        
     },
     
     raise: function(id, send)
@@ -470,10 +743,10 @@ gw = {
           gw.window.zIndex = 10 + i * 2;
           elt.style.zIndex = 10 + i * 2;
           elt.style.display = 'block';
-          if ($(gw.windows[i]).gw_popup)
+          /*if ($(gw.windows[i]).gw_popup)
             elt.style.opacity = '0';
           else
-            elt.style.opacity = '';
+            elt.style.opacity = '';*/
           return;
         }
       }
@@ -549,7 +822,7 @@ gw = {
         gw.update(win, '#close');
     },
     
-    onMove(e) 
+    onMove: function(e) 
     {
       var i, id, elt, b, x, y, bx, by, bw, bh, th;
       var onTopEdge, onLeftEdge, onRightEdge, onBottomEdge, isResizing;
@@ -743,6 +1016,47 @@ gw = {
   
   table:
   {
+    select: function(id, row)
+    {
+      var elt = $(id);
+      var tr = $(id + ':' + row);
+      var current = elt.gw_current;
+      
+      if (tr.tagName == 'TR')
+      {
+        if (current !== undefined)
+        {
+          if (current >= 0)
+            $(id + ':' + current) && $(id + ':' + current).removeClass('gw-table-row-selected');
+          tr.addClass('gw-table-row-selected');
+          elt.gw_current = row;
+        }
+        else
+        {
+          if (tr.hasClass('gw-table-row-selected'))
+            tr.removeClass('gw-table-row-selected');
+          else
+            tr.addClass('gw-table-row-selected');
+        }
+      }
+      
+      gw.update(id, '$' + row, null);
+    },
+    
+    check: function(id, row)
+    {
+      var elt = $(id + ':' + row);
+      if (event.target.tagName == 'TD')
+        elt.checked = !elt.checked;
+      gw.update(id, '!' + row, elt.checked);
+      event.stopPropagation();
+    },
+    
+    toggle: function(id, row)
+    {
+      gw.update(id, '?' + row, false);
+    },
+    
     onScroll: function(id, more, timeout)
     {
       var elt = $(id);
@@ -826,6 +1140,12 @@ gw = {
       }
       if (x != sw.scrollLeft || y != sw.scrollTop)
         gw.update(id, '#scroll', [sw.scrollLeft, sw.scrollTop]); 
+    },
+    
+    ensureVisible: function(id, row)
+    {
+      var sw = $(id).firstChild;
+      gw.table.scroll(id, sw.scrollLeft, $(id + ':' + row).offsetTop - sw.clientHeight / 2);
     }
   },
   
@@ -851,6 +1171,22 @@ gw = {
       elt.click();
     },
     
+    finish: function(xhr)
+    {
+      if (xhr.gw_progress)
+      {
+        setTimeout(function() { gw.file.finish(xhr); }, 250);
+        return;
+      }
+      
+      gw.update(xhr.gw_id, '#progress', 1, function() {
+        gw.answer(xhr); 
+        gw.uploads[xhr.gw_id] = undefined;
+        gw.raise(xhr.gw_id, 'upload', [], true);
+        xhr.gw_id = undefined;
+        });
+    },
+    
     upload: function(id)
     {
       var elt = $(id + ':file');
@@ -863,7 +1199,12 @@ gw = {
       
       gw.uploads[id] = xhr;
       
-      gw.log('gw.file.upload: ' + id + ': ' + file.name);
+      //gw.log('gw.file.upload: ' + id + ': ' + file.name);
+      
+      xhr.gw_progress = 0;
+      
+      xhr.gw_progress++;
+      gw.update(id, '#progress', 0, function() { xhr.gw_progress--; });
       
       form.append('file', file);
       form.append('name', file.name);
@@ -875,31 +1216,34 @@ gw = {
       xhr.upload.addEventListener("progress", 
         function(e) 
         {
+          //console.log('upload: progress ' + e.loaded + ' / ' + e.total);
+          
+          if (xhr.gw_id == undefined)
+            return;
+            
           if (e.lengthComputable)
           {
             var t = (new Date()).getTime();
             
-            if (xhr.gw_time == undefined || (t - xhr.gw_time) > 250)
+            if ((xhr.gw_time == undefined || (t - xhr.gw_time) > 250) && xhr.gw_progress == 0)
             {
-              gw.update(id, '#progress', e.loaded / e.total); 
+              xhr.gw_progress++;
+              gw.update(xhr.gw_id, '#progress', e.loaded / e.total, function() { xhr.gw_progress--; }); 
               xhr.gw_time = t;
             }
           }
         },
         false);
       
-      xhr.gw_command = 'upload ' + id;
+      xhr.gw_command = ['upload', id];
       xhr.gw_id = id;
         
-      xhr.open("POST", $root + '/' + encodeURIComponent(gw.form) + '/u', true);  
+      xhr.open("POST", $root + '/u', true);  
       
       xhr.onreadystatechange = function() 
         {
           if (xhr.readyState == 4)
-          {
-            gw.uploads[xhr.gw_id] = undefined;
-            gw.answer(xhr); 
-          }
+            gw.file.finish(xhr);
         };
         
       xhr.send(form);  
@@ -915,13 +1259,8 @@ gw = {
   autocomplete: function(id)
   {
     new AutoComplete({
-      selector: $(id),
+      selector: $(id + ':entry'),
       cache: false,
-      /*source: function(term, response) 
-        {
-          gw.raise(id, 'completion', [term]);
-          response($(id).gw_completion);
-        }*/
       source: function(term, response) {
         var xhr = $(id).gw_xhr;
         if (xhr)
@@ -931,7 +1270,7 @@ gw = {
         
         $(id).gw_xhr = xhr = new XMLHttpRequest();
         
-        xhr.open('GET', $root + '/' + encodeURIComponent(gw.form) + '/x?c=' + encodeURIComponent(JSON.stringify(['raise', id, 'completion', [term]])), true);
+        xhr.open('GET', $root + '/x?c=' + encodeURIComponent(JSON.stringify(['raise', id, 'completion', [term]])), true);
         xhr.onreadystatechange = function() {
           if (xhr.readyState == 4)
           {
@@ -941,8 +1280,42 @@ gw = {
           }
         };
         xhr.send();
+      },
+      onSelect: function(e, term, item) {
+        gw.textbox.setText(id, gw.textbox.getText(id));
       }
     });
-  } 
+  },
+  
+  textbox:
+  {
+    onactivate: function(id, e)
+    {
+      gw.log('textbox.onactivate');
+      if (e.keyCode == 13)
+        setTimeout(function() { gw.raise(id, 'activate', [], false); }, 50);
+    },
+    
+    getText: function(id)
+    {
+      return $(id + ':entry').value;
+    },
+    
+    setText: function(id, text)
+    {
+      gw.command(function() {
+        $(id + ':entry').value = text;
+        gw.setSelection($(id + ':entry'), [text.length, text.length]);
+        gw.update(id, 'text', text);
+        });
+    },
+    
+    clear: function(id)
+    {
+      gw.textbox.setText(id, '');
+      gw.setFocus(id);
+      gw.raise(id, 'activate', [], false);
+    }
+  }
 }
 

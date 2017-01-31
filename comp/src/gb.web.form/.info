@@ -1677,7 +1677,7 @@ C
 _Properties
 C
 s
-"*,Border=True,Mode{Select.*}=None,ShowCheck=True,ShowHeader=true"
+"*,Border=True,Mode{Select.*}=None,ShowCheck=True,ShowHeader=True,Sortable"
 _DrawWith
 C
 s
@@ -1699,6 +1699,10 @@ s
 
 
 :DblClick
+:
+
+
+:Sort
 :
 
 
@@ -1749,6 +1753,18 @@ b
 ShowHeader
 p
 b
+
+Sortable
+p
+b
+
+SortColumn
+p
+i
+
+SortOrder
+p
+i
 
 _new
 m
@@ -2116,6 +2132,10 @@ p
 s
 
 Hidden
+p
+b
+
+Sortable
 p
 b
 

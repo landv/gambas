@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Border=True,Mode{Select.*}=None,ShowCheck=True,ShowHeader=true"
+Public Const _Properties As String = "*,Border=True,Mode{Select.*}=None,ShowCheck=True,ShowHeader=True,Sortable"
 Public Const _DrawWith As String = "GridView"
 Public Const _DefaultSize As String = "24,24"
 Public Const _DefaultEvent As String = "Data"
@@ -11,6 +11,7 @@ Public Const _DefaultEvent As String = "Data"
 Event Data(Row As Integer, Column As Integer, Data As WebTableData)
 Event Select
 Event DblClick
+Event Sort
 
 Property Read Columns As _WebTableColumns
 Property Count As Integer
@@ -24,6 +25,10 @@ Property ScrollX As Integer
 Property ScrollY As Integer
 Property ShowCheck As Boolean
 Property ShowHeader As Boolean
+Property Sortable As Boolean
+Property SortColumn As Integer
+Property SortOrder As Integer
+
 'Property Fixed As Boolean
 
 Private $hColumns As _WebTableColumns
@@ -39,6 +44,9 @@ Private $bNoScrolling As Boolean
 Private $bNoCheck As Boolean
 Private $bNoHeader As Boolean
 Private $iEnsureVisible As Integer = -1
+Private $bSortable As Boolean
+Private $iSortColumn As Integer = -1
+Private $bSortDescent As Boolean
 
 Public Sub _new()
   
@@ -63,14 +71,14 @@ Private Sub PrintRow(iRow As Integer)
   Dim NX As Integer
   
   If $iMode And If Not $bNoCheck Then
-    Print "<td>";
+    Print "<td onclick=\"gw.table.check("; JS(Me.Name); ","; CStr(iRow); ")\">";
     If $iMode = Select.Single Then
       Print "<input type=\"radio\" name=\""; Me.Name; "\""; 
     Else
       Print "<input type=\"checkbox\""; 
     Endif
-    Print " id=\""; Me.Name & ":" & CStr(iRow); "\""
-    Print Me._GetUpdateJS("onchange", "!" & CStr(iRow), "this.checked"); 
+    Print " id=\""; Me.Name & ":" & CStr(iRow); "\"";
+    'Print Me._GetUpdateJS("onchange", "!" & CStr(iRow), "this.checked");
     If IsSelected(iRow) Then Print " checked";
     Print ">";
     Print "</td>";
@@ -123,12 +131,19 @@ Private Sub PrintBody(iStart As Integer, iEnd As Integer)
   For iRow = iStart To iEnd
     
     Print "<tr";
-    If $iMode And If $bNoCheck Then
-      Print " id=\""; Me.Name & ":" & CStr(iRow); "\""
-      If IsSelected(iRow) Then Print " class=\"gw-table-row-selected\";"
+    If $iMode Then
+      
+      If $bNoCheck Then
+        Print " id=\""; Me.Name & ":" & CStr(iRow); "\""
+        If IsSelected(iRow) Then Print " class=\"gw-table-row-selected\";"
       'Print Me._GetUpdateJS("onclick", "$" & CStr(iRow));
-      Print " onclick=\"gw.table.select("; JS(Me.Name); ","; iRow; ");\"";
+        Print " onclick=\"gw.table.select("; JS(Me.Name); ","; iRow; ");\"";
+      Else
+        Print " onclick=\"gw.table.toggle("; JS(Me.Name); ","; iRow; ");\"";
+      Endif
+      
       Print Me._GetEventJS("ondblclick", "DblClick");
+      
     Endif
     Print ">";
     
@@ -333,6 +348,7 @@ End
 Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   
   Dim iRow As Integer
+  Dim iCol As Integer
   
   If Left(sProp) = "!" Then
     
@@ -352,6 +368,12 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
       Endif
       Dec Me._NoRefresh
     Endif
+    
+  Else If Left(sProp) = "?" Then
+    
+    UnselectAll
+    iRow = CInt(Mid(sProp, 2))
+    Try Select(iRow)
     
   Else If Left(sProp) = "$" Then
     
@@ -382,6 +404,20 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
     Me.ScrollX = vValue[0]
     Me.ScrollY = vValue[1]
     Dec Me._NoRefresh
+    
+  Else If sProp = "#sort" Then
+    
+    iCol = CInt(vValue)
+    If iCol = $iSortColumn Then
+      If $bSortDescent Then
+        Me.SortColumn = -1
+      Else
+        Me.SortOrder = gb.Descent
+      Endif
+    Else
+      Me.SortColumn = iCol
+      Me.SortOrder = gb.Ascent
+    Endif
     
   Endif
   
@@ -548,4 +584,47 @@ Public Sub EnsureVisible(Row As Integer)
   Me.Refresh
   $iEnsureVisible = Row
   
+End
+
+Private Function Sortable_Read() As Boolean
+
+  Return $bSortable
+
+End
+
+Private Sub Sortable_Write(Value As Boolean)
+
+  $bSortable = Value
+  Me._SetProperty("Sortable", Value)
+  
+End
+
+Private Function SortColumn_Read() As Integer
+
+  Return $iSortColumn
+
+End
+
+Private Sub SortColumn_Write(Value As Integer)
+
+  If $iSortColumn = Value Then Return
+  $iSortColumn = Value
+  Me._SetProperty("SortColumn", Value)
+  Raise Sort
+
+End
+
+Private Function SortOrder_Read() As Integer
+
+  Return If($bSortDescent, gb.Descent, gb.Ascent)
+
+End
+
+Private Sub SortOrder_Write(Value As Integer)
+
+  If $bSortDescent = (Value = gb.Descent) Then Return
+  $bSortDescent = Value = gb.Descent
+  Me._SetProperty("SortOrder", Value)
+  Raise Sort
+
 End

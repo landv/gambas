@@ -655,6 +655,25 @@ P:first-child,UL:first-child,OL:first-child {
   padding-left: 4px;
 }
 
+IMG.gw-table-sort {
+  position: absolute;
+  right: 0.1em;
+  top: 0.25em;
+}
+
+TH.gw-table-sortable {
+  position: relative;
+  cursor: pointer;
+}
+
+TH.gw-table-sortable > DIV {
+  margin-right: 2em;
+}
+
+TH.gw-table-sortable:hover {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQYlWNkYGDgYcADmPBJDh8FABV4ABwe4TuyAAAAAElFTkSuQmCC');
+}
+
 .gw-waiting {
   position: absolute;
   top: 0;

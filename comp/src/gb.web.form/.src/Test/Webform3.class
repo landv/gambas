@@ -11,6 +11,7 @@ Public Sub _new()
   For I = 0 To WebTable1.Columns.Count - 1
     WebTable1.Columns[I].Text = Chr$(65 + I)
     WebTable1.Columns[I].Wrap = False
+    WebTable1.Columns[I].Sortable = I Mod 3
   Next
   'WebTable1.Columns[3].Expand = True
   
@@ -27,7 +28,7 @@ End
 Public Sub WebTable1_Data(Row As Integer, Column As Integer, Data As WebTableData)
 
   Data.Text = "This is the " & CStr(Row) & ":" & CStr(Column) & " cell"
-  Data.Text = 1 / 0
+  'Data.Text = 1 / 0
 
 End
 

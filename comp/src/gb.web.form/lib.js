@@ -1043,6 +1043,20 @@ gw = {
       gw.update(id, '$' + row, null);
     },
     
+    check: function(id, row)
+    {
+      var elt = $(id + ':' + row);
+      if (event.target.tagName == 'TD')
+        elt.checked = !elt.checked;
+      gw.update(id, '!' + row, elt.checked);
+      event.stopPropagation();
+    },
+    
+    toggle: function(id, row)
+    {
+      gw.update(id, '?' + row, false);
+    },
+    
     onScroll: function(id, more, timeout)
     {
       var elt = $(id);

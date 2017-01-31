@@ -285,6 +285,8 @@ End
 
 Public Sub Render()
 
+  Dim sImage As Variant
+  
   Response.Buffered = True
   Response.Begin
   
@@ -297,7 +299,11 @@ Public Sub Render()
   
   Print "<body"; Me._GetEventJS("onload", "open"); ">"
   
-  Print "<div id=\"gw-preload\" style=\"display:none;\"></div>"
+  Print "<div id=\"gw-preload\" style=\"display:none;\">";
+  For Each sImage In ["error.png", "info.png", "question.png", "warning.png"]
+    Print "<img src=\""; Application.Root &/ sImage; "\">";
+  Next
+  Print "</div>"
   Print "<div id=\"gw-modal\" onmousedown=\"gw.window.onDownModal();\"></div>"
   Print "<div id=\"gw-lock\">"
     "<div id=\"gw-lock-animation\">"
