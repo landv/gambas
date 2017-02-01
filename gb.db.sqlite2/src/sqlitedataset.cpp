@@ -765,7 +765,7 @@ fType GetFieldType(const char *Type, unsigned int *length )
      	    _right = (char *)rindex(Type, ')');
      	    _left = (char *)index(Type, '(');
 	     if (_right){
-	 	_right = '\0';
+	 	_right = NULL;
                 rTypeLen = atoi(_left + 1);
 	     }
 	     else {
