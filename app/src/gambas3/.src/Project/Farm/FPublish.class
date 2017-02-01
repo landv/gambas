@@ -4,6 +4,8 @@ Private $aDep As String[]
 Private $sScreenshot As String
 Private $hIdentity As FarmIdentity
 
+Private Const SCREENSHOT_SIZE As Integer = 640
+
 Public Sub Run() As Boolean
 
   If Project.MajorVersion = 0 And If Project.MinorVersion = 0 Then
@@ -309,8 +311,8 @@ Private Sub SetScreenshot()
   Endif
   
   If hImage Then
-    If hImage.Width > 320 Then hImage = hImage.Stretch(320, -1)
-    If hImage.Height > 320 Then hImage = hImage.Stretch(-1, 320)
+    If hImage.Width > SCREENSHOT_SIZE Then hImage = hImage.Stretch(SCREENSHOT_SIZE, -1)
+    If hImage.Height > SCREENSHOT_SIZE Then hImage = hImage.Stretch(-1, SCREENSHOT_SIZE)
     
     If Not $sScreenshot Then $sScreenshot = File.SetExt(Temp$(), "jpg")
     hImage.Save($sScreenshot, 75)
