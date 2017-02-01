@@ -2137,7 +2137,7 @@ static int index_info(DB_DATABASE *db, const char *table, const char *index, DB_
 static int index_delete(DB_DATABASE *db, const char *table, const char *index)
 {
 	clear_table_cache(db, table);
-	return do_query(db, "Unable to delete index: &1", NULL, "drop index `&1` on `&2`", 1, index, table);
+	return do_query(db, "Unable to delete index: &1", NULL, "drop index `&1` on `&2`", 2, index, table);
 }
 
 /*****************************************************************************
