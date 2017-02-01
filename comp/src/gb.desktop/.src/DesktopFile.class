@@ -97,6 +97,8 @@ Public Sub _new(Path As String)
     For I = 0 To aLine.Max
       
       sLine = Trim(aLine[I])
+      'It's a commentary line
+      If sLine Begins "#" Then Continue
       
       If Not bInDesktopEntry Then
         If sLine = "[Desktop Entry]" Then
