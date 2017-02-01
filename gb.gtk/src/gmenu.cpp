@@ -1031,36 +1031,36 @@ void gMenu::setFont()
 void gMenu::setColor()
 {
 	gMainWindow *win = window();
-	/*if (child) 
+	
+	if (pr == win)
 	{
-		set_gdk_bg_color(GTK_WIDGET(child), win->background());
-		set_gdk_fg_color(GTK_WIDGET(child), win->foreground());
-	}*/
-	if (label) set_gdk_fg_color(GTK_WIDGET(label), win->foreground());
-	if (aclbl) set_gdk_fg_color(GTK_WIDGET(aclbl), win->foreground());
+		if (label) set_gdk_fg_color(GTK_WIDGET(label), win->foreground());
+	}
+	//if (aclbl) set_gdk_fg_color(GTK_WIDGET(aclbl), win->foreground());
 }
 
 void gMenu::updateColor(gMainWindow *win)
 {
-	GList *item;
-	gMenu *mn;
+	//GList *item;
+	//gMenu *mn;
 
 	if (!win->menuBar)
 		return;
 	
 	set_gdk_bg_color(GTK_WIDGET(win->menuBar), win->background());
+	set_gdk_fg_color(GTK_WIDGET(win->menuBar), win->foreground());
 
-	if (!menus) 
+	/*if (!menus) 
 		return;
 	
 	item = g_list_first(menus);
 	while (item)
 	{
 		mn = (gMenu*)item->data;
-		if (mn->pr == (void*)win)
+		//if (mn->pr == (void*)win)
 			mn->setColor();
-		item=g_list_next(item);
-	}
+		item = g_list_next(item);
+	}*/
 }
 
 void gMenu::updateFont(gMainWindow *win)
