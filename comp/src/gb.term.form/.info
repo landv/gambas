@@ -347,6 +347,76 @@ _Reset
 M
 
 
+#TermButton
+TermControl
+C
+Text
+p
+s
+
+Shadow
+p
+b
+
+Alignment
+p
+i
+
+_DefaultBackground
+r
+i
+
+_DefaultForeGround
+r
+i
+
+_new
+m
+
+
+_Render
+m
+
+
+_GetBackGround
+m
+i
+
+_GetForeground
+m
+i
+
+_KeyPress
+m
+
+
+#TermCheckBox
+TermControl
+C
+Text
+p
+s
+
+Value
+p
+i
+
+Tristate
+p
+b
+
+_Render
+m
+
+
+_MouseUp
+m
+
+
+_KeyPress
+m
+
+
 #TermColor
 
 C
@@ -398,6 +468,54 @@ ModeRGB
 C
 i
 2
+ForeGround
+V
+i
+
+Background
+V
+i
+
+ActiveWindow
+V
+i
+
+InactiveWindow
+V
+i
+
+Focus
+V
+i
+
+FocusText
+V
+i
+
+Desktop
+V
+i
+
+ButtonBackground
+V
+i
+
+ButtonText
+V
+i
+
+Border
+V
+i
+
+TextBackground
+V
+i
+
+TextForeground
+V
+i
+
 #TermContainer
 TermControl
 C
@@ -444,6 +562,10 @@ b
 _Arrangement
 v
 i
+
+_new
+m
+
 
 _Add
 m
@@ -584,6 +706,14 @@ HaveFocus
 r
 b
 
+_DefaultBackground
+r
+i
+
+_DefaultForeGround
+r
+i
+
 _AllowFocus
 v
 b
@@ -628,6 +758,10 @@ _DefineRect
 m
 
 
+_GetScreenRect
+m
+Rect
+
 _Render
 m
 
@@ -640,13 +774,13 @@ _GetScreenClientRect
 m
 Rect
 
-_GetScreenRect
-m
-Rect
-
 _GetRect
 m
 Rect
+
+Refresh
+m
+
 
 _GetChar
 m
@@ -668,7 +802,15 @@ _GetClientRect
 m
 Rect
 
+_GetForeground
+m
+i
+
 _MouseDown
+m
+
+
+SetFocus
 m
 
 
@@ -700,15 +842,7 @@ Resize
 m
 
 (Width)i(Height)i
-Refresh
-m
-
-
 _KeyPress
-m
-
-
-SetFocus
 m
 
 
@@ -720,6 +854,9 @@ _GotFocus
 m
 
 
+#TermForm
+TermWindow
+C
 #TermFrame
 TermPanel
 C
@@ -745,9 +882,17 @@ Text
 p
 s
 
+_new
+m
+
+
 _Render
 m
 
+
+_GetForeground
+m
+i
 
 #TermPanel
 TermContainer
@@ -796,6 +941,72 @@ m
 
 
 _Render
+m
+
+
+#TermRadioButton
+TermControl
+C
+Text
+p
+s
+
+Value
+p
+b
+
+_Render
+m
+
+
+_MouseUp
+m
+
+
+_KeyPress
+m
+
+
+#TermTextBox
+TermControl
+C
+Text
+p
+s
+
+Height
+p
+i
+
+:Change
+:
+
+
+:Activate
+:
+
+
+_new
+m
+
+
+_Render
+m
+
+
+_GetBackGround
+m
+i
+
+_GetForeground
+m
+i
+
+_KeyPress
+m
+
+
+_MouseDown
 m
 
 
@@ -936,7 +1147,7 @@ TermControl
 _SetFocus
 m
 
-(id)i
+(hCtrl)TermControl;
 _GetCurrentFocusId
 m
 i

@@ -435,6 +435,8 @@ Static Public Sub File_Read()
           Key._SetKey(ss, Key.Return, bAlt, bControl, bShift)
         Case "\t"
           Key._SetKey(ss, Key.Tab, bAlt, bControl, bShift)
+        Case Chr(8)
+          Key._SetKey(ss, Key.BackSpace, bAlt, bControl, bShift)
         Case Else
           Key._SetKey(ss, 0, bAlt, bControl, bShift)
       End Select
@@ -477,7 +479,7 @@ Static Private Sub RaiseMouseEvent(hControl As TermControl, sEvent As String, Co
       $hCurControl = Null
     Endif
   Endif
-  Try Object.Call($hCurControl, sEvent)
+  If $hCurControl Then Object.Call($hCurControl, sEvent)
 
 End
 
@@ -554,7 +556,7 @@ Static Public Sub _Render()
   Dim hCont As TermControl
   Dim sAttr As String
   Dim sDisplay As String
-
+  Dim hOldCont As Object
   If bLock Then Stop
   If $bInRender Then Return
   $bInRender = True
@@ -577,6 +579,11 @@ Static Public Sub _Render()
       ' hAttr.Background = $aScreen[l, c]
       ' hAttr.Send
       hCont = TermControl._IdToControl[$aScreen[l, c]]
+      If hOldCont <> hCont Then 
+        hAttr.Reset
+      Endif
+      hOldCont = hCont
+      'If hCont Is TermLabel Then Stop
       'If $aScreen[l, c] = 3 And If l > 2 Then Stop
       If hCont Then
         hChar = hCont._GetChar(c, l)

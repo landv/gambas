@@ -55,7 +55,7 @@ Public Sub _Render()
   Super._Render
   If Not b Then Return
 
-  hAttr.Background = IIf(Me.Active, TermColor.Red, TermColor.Magenta)
+  hAttr.Background = IIf(Me.Active, TermColor.ActiveWindow, TermColor.InactiveWindow)
   hAttr.Foreground = TermColor.White
   hAttr.Bold = True
   iAttr = hAttr.GetInteger()
@@ -81,7 +81,7 @@ Public Sub _Render()
     If Not $bMaximized Then Me._Content[Me._Content.Max - 1][Me._Content[0].Max].c = &h25E2
 
   Endif
-
+'Catch 
 End
 
 Private Function Text_Read() As String
@@ -279,6 +279,7 @@ End
 Private Sub Height_Write(Value As Integer)
 
   If $bMaximized Then Return
+  If value < 3 Then Return
   Super.H = Value
 
 End
@@ -292,6 +293,7 @@ End
 Private Sub Width_Write(Value As Integer)
 
   If $bMaximized Then Return
+  If value < 5 Then Return
   Super.Width = Value
 
 End
@@ -318,8 +320,11 @@ Public Sub GetNextFocusedControl(hCtrl As TermControl, Optional bFirst As Boolea
   Dim i As Integer
   'On stock le control passé en argument
   Dim hFirst As TermControl = hCtrl
+  Dim hCont As TermContainer
+  hCont = hCtrl.Parent
+  If Not hCont Then Return Null
   'Trouver le parent du control
-  aChildren = hCtrl.Parent.Children
+  aChildren = hCont.Children   
   'et la position du control
   i = aChildren.Find(hCtrl)
 
@@ -425,9 +430,15 @@ Public Sub GetPrevFocusedControl(hCtrl As TermControl, Optional bFirst As Boolea
 End
 
 
-Public Sub _SetFocus(Id As Integer)
-
-  $iFocusedId = Id
+Public Sub _SetFocus(hCtrl As TermControl)
+  Dim hPrev As TermControl
+  hPrev = TermControl._IdToControl[$iFocusedId]
+  If hPrev Then
+    hPrev._LostFocus
+    hPrev.Refresh
+  Endif
+  
+  $iFocusedId = hCtrl.Id
 
 End
 
@@ -438,17 +449,18 @@ Public Function _GetCurrentFocusId() As Integer
 End
 
 Public Sub _KeyPress()
-
+  Dim hCtrl As TermControl
   If Key.Code = Key.Tab Then
-    
-    GetNextFocusedControl(TermControl._IdToControl[$iFocusedId]).SetFocus
-
+    hCtrl = GetNextFocusedControl(TermControl._IdToControl[$iFocusedId])
+    If hCtrl Then hCtrl.SetFocus
+    Return
   Endif
   If Key.Code = Key.BackTab Then
     GetPrevFocusedControl(TermControl._IdToControl[$iFocusedId]).SetFocus
+    Return
   Endif
   Super._KeyPress
-
-  TermControl._IdToControl[$iFocusedId]._KeyPress
+  hCtrl = TermControl._IdToControl[$iFocusedId]
+  If hCtrl <> Me Then hCtrl._KeyPress
 
 End

@@ -12,7 +12,7 @@ Private $hCurFocued As Object
  Public Sub Main()
 
   Dim hWin As New TermForm
-  Dim hTermLabel2 As TermLabel
+  Dim hTerCheckBox As TermRadioButton
   Dim i As Integer
   Dim hCont As TermVBox
   Dim hCont2 As TermHBox
@@ -73,9 +73,9 @@ Private $hCurFocued As Object
   'hcont.Padding = 1
   hcont.Shadow = True
   For i = 0 To 10
-    hTermLabel2 = New TermLabel(hcont)
-    hTermLabel2.Background = TermColor.Green
-    hTermLabel2.Text = "TermLabel " & i
+    hTerCheckBox = New TermRadioButton(hcont)
+    hTerCheckBox.Background = TermColor.Green
+    hTerCheckBox.Text = "TermLabel " & i
     
   Next
   hCont2 = New TermHBox(hWin2)
@@ -85,14 +85,14 @@ Private $hCurFocued As Object
   hCont2.Invert = True
   'hCont.Shadow = True
   hTermButton = New TermButton(hCont2) As "btnOk"
-  hTermButton.Background = TermColor.Magenta
+  'hTermButton.Background = TermColor.Magenta
   hTermButton.Text = "Ok"
   hTermButton.W = 10
   hTermButton.H = 2
   hTermButton._Shadow = True
   hTermButton.Alignment = Align.Center
     hTermButton = New TermButton(hCont2) As "btnCancel"
-  hTermButton.Background = TermColor.Magenta
+  'hTermButton.Background = TermColor.Magenta
   hTermButton.Text = "Cancel"
   hTermButton.W = 10
   hTermButton.H = 2

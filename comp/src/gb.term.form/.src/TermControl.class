@@ -31,6 +31,8 @@ Property Visible As Boolean
 Property Read Next As TermControl
 Property Read Previous As TermControl
 Property Read HaveFocus As Boolean
+Property Read _DefaultBackground As Integer
+Property Read _DefaultForeGround As Integer
 
 Private $iColorMode As Integer
 Private $iBorder As Integer
@@ -45,7 +47,7 @@ Private $iScreenX As Integer
 Private $iScreenY As Integer
 Private $iWindow As Integer
 Private $iBackGround As Integer = -1
-Private $iForeground As Integer
+Private $iForeground As Integer = -1
 Private $vTag As Variant
 Private $bExpand As Boolean
 Private $yBorder As Byte
@@ -75,6 +77,7 @@ Public Sub _new(Optional hParent As TermContainer)
   Else
     If Me Is TermWindow Then
       TermWindows._Add(Me)
+      $iWindow = $iId
     Endif
   Endif
   $rectControl.Width = 5
@@ -84,8 +87,14 @@ Public Sub _new(Optional hParent As TermContainer)
   _RecalcPos = True
   _NeedRender = True
   _AllowFocus = True
+  If hParent Then 
+    TermWindows.SetRefreshArea(hParent._GetScreenRect())
+    TermWindows._Render
+    'hParent.Refresh
+  Endif
   ' TermWindows._RefreshScreen
-
+  'Me.Window.Refresh
+  
 End
 
 Private Sub ResizeBuffer(Width As Integer, Height As Integer)
@@ -121,13 +130,14 @@ Public Sub _Render()
 
   If Not _Content Then ResizeBuffer(hRectC.Width, hRectC.Height)
 
-  iBC = _GetBackGround()
-  If Me.HaveFocus Then iBC = TermColor.Yellow
+  iBC = Me._GetBackGround()
+  If Me.HaveFocus Then iBC = TermColor.Focus
   hAttr.Background = iBC
 
   iAttr = hAttr.GetInteger()
 
   For i = 0 To _Content.Max
+      hAttr.Foreground = TermColor.Border
     For j = 0 To _Content[0].Max
       _Content[i][j] = Char(" ", iAttr)
     Next
@@ -180,7 +190,7 @@ Public Sub _Render()
     ' If Me Is TermButton Then Stop
     hAttr.Foreground = TermColor.Black
     If IsNull(Me.Parent) Then
-      hAttr.Background = TermColor.Blue
+      hAttr.Background = TermColor.Desktop
     Else
       hAttr.Background = Me.Parent.Background
     Endif
@@ -382,18 +392,19 @@ End
 Private Sub Background_Write(Value As Integer)
 
   $iBackGround = Value
+  Me.Refresh
 
 End
 
 Private Function Foreground_Read() As Integer
 
   Return $iForeGround
-
 End
 
 Private Sub Foreground_Write(Value As Integer)
 
   $iBackGround = Value
+  Me.Refresh
 
 End
 
@@ -439,8 +450,15 @@ Private Function Expand_Read() As Boolean
 End
 
 Private Sub Expand_Write(Value As Boolean)
-
+ Dim hParent As TermContainer
   $bExpand = Value
+  hParent = Me.Parent
+  If hParent Then 
+    TermWindows.SetRefreshArea(hParent._GetScreenRect())
+    TermWindows._Render
+    
+    
+  Endif
 
 End
 
@@ -513,13 +531,31 @@ Public Sub _GetBackGround() As Integer
       i = Me.Parent._GetBackGround()
       Return i
     Else
-      Return TermColor.White
+      Return TermColor.Background
     Endif
   Else
     Return $iBackGround
   Endif
 
 End
+
+Public Sub _GetForeground() As Integer
+  
+    Dim i As Integer
+
+  If $iForeground = -1 Then
+    If $iParent > 0 Then
+      i = Me.Parent._GetForeground()
+      Return i
+    Else
+      Return TermColor.ForeGround
+    Endif
+  Else
+    Return $iForeground
+  Endif
+  
+End
+
 
 Private Function _ColorMode_Read() As Integer
 
@@ -534,11 +570,14 @@ Private Sub _ColorMode_Write(Value As Integer)
 End
 
 Public Sub _MouseDown()
-
+  Dim hwindow As TermWindow
+  
   If TermWindows.Debug Then Error "Mouse Down Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  
   If Not Me.Window.Active Then
     Me.Window.Activate
   Endif
+  Me.SetFocus
   Raise MouseDown
 
 End
@@ -650,17 +689,14 @@ End
 Public Sub SetFocus()
 
   Dim hPrev As TermControl
+  If Me.HaveFocus Then Return
   If _AllowFocus Then
     hPrev = TermControl._IdToControl[Me.Window._GetCurrentFocusId()]
     hPrev._LostFocus
-    TermWindows.SetRenderArea(hPrev._GetScreenRect())
-    hPrev._NeedRender = True
-    TermWindows._Render
-    Me.Window._SetFocus(Me.id)
-    TermWindows.SetRenderArea(_GetScreenRect())
-    _NeedRender = True
+    hPrev.Refresh
+    Me.Window._SetFocus(Me)
     Me._GotFocus
-    TermWindows._Render
+    Me.Refresh
   Endif
 
 End
@@ -686,3 +722,18 @@ Public Sub _GotFocus()
   Raise GotFocus
 
 End
+
+Private Function _DefaultBackground_Read() As Integer
+
+  Return TermColor.Background
+End
+
+Private Function _DefaultForeGround_Read() As Integer
+
+  Return TermColor.ForeGround
+
+End
+
+
+
+

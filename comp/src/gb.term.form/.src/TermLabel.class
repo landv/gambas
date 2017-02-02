@@ -8,6 +8,14 @@ Property Text As String
 Private $sText As String
 Private $iOldLen As Integer
 
+Public Sub _new()
+  
+  Me._AllowFocus = False
+  
+End
+
+
+
 Public Sub _Render()
     Dim hAttr As New Attr
   Dim iAttr As Integer
@@ -19,7 +27,7 @@ Public Sub _Render()
   Else
   hAttr.Background = Me._GetBackGround()
   Endif
-  hAttr.Foreground = Me.Foreground
+  hAttr.Foreground = Me._GetForeground()
   iAttr = hAttr.GetInteger()
   
   For i = 1 To Me._Content[0].count
@@ -45,4 +53,16 @@ Private Sub Text_Write(Value As String)
   $sText = Value
    TermWindows.SetRenderArea(rect(Me.ScreenX, Me.ScreenY, Max($iOldLen, String.Len($sText)), Me.Height))
   Me._NeedRender = True
+  TermWindows._Render
+End
+
+
+Public Sub _GetForeground() As Integer
+  
+  If Me.Foreground = -1 Then
+    Return TermColor.ForeGround
+  Else
+    Return Me.Foreground
+  Endif
+  
 End

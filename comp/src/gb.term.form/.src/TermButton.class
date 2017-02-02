@@ -1,11 +1,13 @@
 ' Gambas class file
 
+Export
 Inherits TermControl
 Class Rect
 Property Text As String
 Property Shadow As Boolean
 Property Alignment As Integer
-
+Property Read _DefaultBackground As Integer
+Property Read _DefaultForeGround As Integer
 Private $sText As String
 Private $iOldLen As Integer
 Private $iAlignment As Integer
@@ -51,10 +53,11 @@ Public Sub _Render()
   End Select
   If Not Me.HaveFocus Then
     hAttr.Background = Me._GetBackGround()
+  hAttr.Foreground = Me._GetForeground()
   Else
-    hAttr.Background = TermColor.Yellow
+    hAttr.Background = TermColor.Focus
+      hAttr.Foreground = TermColor.FocusText
   Endif
-  hAttr.Foreground = Me.Foreground
   iAttr = hAttr.GetInteger()
   
   For i = 1 To Me._Content[0].count
@@ -105,3 +108,38 @@ Public Sub _KeyPress()
   
 End
 
+
+
+
+Private Function _DefaultBackground_Read() As Integer
+
+  Return TermColor.ButtonBackground
+
+End
+
+Private Function _DefaultForeGround_Read() As Integer
+
+  Return TermColor.ButtonText
+
+End
+
+Public Sub _GetBackGround() As Integer
+
+  If Me.Background = -1 Then
+    Return TermColor.ButtonBackground
+  Else
+    Return Me.Background
+  Endif
+
+End
+
+
+Public Sub _GetForeGround() As Integer
+  
+  If Me.Foreground = -1 Then
+    Return TermColor.ButtonText
+  Else
+    Return Me.Foreground
+  Endif
+  
+End

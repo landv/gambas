@@ -4,13 +4,13 @@ Export
 Inherits TermControl
 Class Rect
 Property Text As String
-Property Value As Integer
-Property Tristate As Boolean
+Property Value As Boolean
+
 
 Private $sText As String
 Private $iOldLen As Integer
-Private $iValue As Integer
-Private $bTristate As Boolean
+Private $bValue As Integer
+
 
 Private Function Text_Read() As String
 
@@ -37,9 +37,9 @@ Public Sub _Render()
   If Not Me._NeedRender Then Return
   Super._Render
 
-  sValue = Choose($iValue + 2, "x", " ", "/")
+  sValue = IIf($bValue, "*", " ")
 
-  sALign = "[" & sValue & "] " & $sText
+  sALign = "(" & sValue & ") " & $sText
 
   iBC = Me._GetBackGround()
   If Me.HaveFocus Then iBC = TermColor.Focus
@@ -60,54 +60,52 @@ Public Sub _Render()
 
 End
 
-Private Function Value_Read() As Integer
+Private Function Value_Read() As Boolean
 
-  Return $iValue
-
-End
-
-Private Sub Value_Write(Value As Integer)
-
-  $iValue = Max(Min(Value, 1), -1)
+  Return $bValue
 
 End
 
-Private Function Tristate_Read() As Boolean
-
-  Return $bTristate
-
+Private Sub Value_Write(Value As Boolean)
+  If $bValue = Value Then Return
+  If Value Then SetChecked
+  $bValue = Value
+  Me.Refresh
+  '$iValue = Max(Min(Value, 1), -1)
 End
 
-Private Sub Tristate_Write(Value As Boolean)
-
-  $bTristate = Value
-
+Private Sub SetChecked()
+  
+  Dim hParent As TermContainer = Me.Parent
+  Dim hCtrl As Object
+  
+  For Each hCtrl In hParent.Children
+    If hCtrl Is TermRadioButton Then
+      If hCtrl.Value Then hCtrl.Value = False
+    Endif
+  Next
+  
 End
+
+
+
+
 
 Public Sub _MouseUp()
 
-  ChangeValue
+  Me.Value = True
   Super._MouseUp
   Super._Click
   'Me._NeedRender = True
   'Me.Refresh
 End
 
-Private Sub ChangeValue()
-
-  If Me.Value < IIf($bTristate, 1, 0) Then
-    Me.Value = $iValue + 1
-  Else
-    Me.Value = -1
-  Endif
-  Me.Refresh
-End
 
 
 Public Sub _KeyPress()
   
   If Key.Text = " " Then
-    ChangeValue
+    Me.Value = True
   Endif
   Super._Click
   Super._KeyPress

@@ -19,6 +19,13 @@ Private $aChildren As New Object[]
 
 Public _Arrangement As Integer = Arrange.Vertical
 
+Public Sub _new()
+  
+  Me._AllowFocus = False
+  
+End
+
+
 Public Sub _Add(hCtrl As TermControl)
 
   $aChildren.Add(hCtrl)
@@ -128,7 +135,8 @@ Public Sub _Arrange()
         
         hChild.X = H
         hChild.Height = hrectClient.Height
-        If hChild.Expand Then hChild.H = iHExp
+        If hChild.Expand Then hChild.W = iHExp
+        'f hChild.Expand Then Stop
         If $bInvert Then
           H -= $iSpacing
         Else

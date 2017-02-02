@@ -1,32 +1,59 @@
 ' Gambas class file
 
 Inherits TermForm
-Private hTimer As New Timer As "Timer"
+Private $hLab2 As TermLabel
+'Private hTimer As New Timer As "Timer"
 
 
 
 Public Sub _New()
+  Dim hText As TermTextBox
+  Dim hBox As New TermHBox(Me)
+  Dim hLab As New TermLabel(hBox)
+  'Dim hlab2 As TermLabel
   
   'Me.Maximized = True
   'Me.Background = Color.Yellow
-  
-  Me.Move(3, 3, 20, 20)
+  Me.Padding = 1
+  Me.Move(3, 3, 50, 20)
   Me.Text = "coucou"
   Me.Border = Border.Simple
   Me.Visible = True
-  Me.left = 8
-  'Error Me.Left
-  ' TermWindows.SetRenderArea(Me._getrect())
-  ' termwindows._Render
-  hTimer.Delay = 500
-  hTimer.Start
+  Me.Center
+  Me._Arrangement = Arrange.Vertical
+  Me.Spacing = 1
+  
+  hLab.Text = "Votre nom: "
+  hLab.W = Len(hLab.Text)
+  
+
+  hText = New TermTextBox(hBox) As "TextBox"
+  hText.Text = "test"
+  hText.Expand = True
+  
+  
+  hbox = New TermHBox(Me)
+  hlab = New TermLabel(hbox)
+    hLab.Text = "Votre prenom: "
+  hLab.W = Len(hLab.Text)
+  
+
+  hText = New TermTextBox(hBox) As "TextBox"
+  hText.Text = "test"
+  hText.Expand = True
+  
+  
+  $hlab2 = New TermLabel(Me)
+  
+  $hlab2.Background = TermColor.green
+  $hlab2.Show
 End
 
 
-
-Public Sub Timer_Timer()
+Public Sub TextBox_Change()
   
-  'Me.Move(Me.Left + 1, 0, 20, 20)
+  $hLab2.Text = Last.text
   
 End
+
 

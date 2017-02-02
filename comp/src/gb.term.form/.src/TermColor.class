@@ -4,3 +4,16 @@ Export
 Public Const Transparent As Integer = -1
 Public Enum Black, Red, Green, Yellow, Blue, Magenta, Cyan, White
 Public Enum {Default}, Mode256, ModeRGB
+
+Static Public ForeGround As Integer = Black
+Static Public Background As Integer = White
+Static Public ActiveWindow As Integer = Red
+Static Public InactiveWindow As Integer = Magenta
+Static Public Focus As Integer = Yellow
+Static Public FocusText As Integer = White
+Static Public {Desktop} As Integer = Black
+Static Public ButtonBackground As Integer = Red
+Static Public ButtonText As Integer = White
+Static Public Border As Integer = Black
+Static Public TextBackground As Integer = Cyan
+Static Public TextForeground As Integer = Black

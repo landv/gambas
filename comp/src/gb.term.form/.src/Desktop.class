@@ -12,7 +12,7 @@ Static Public Sub _init()
   
   Dim hAttr As New Attr
   'hAttr.ColorMode = TermColor.Mode256
-  hAttr.Background = TermColor.Blue
+  hAttr.Background = TermColor.Desktop
   $hChar.Attr = hAttr.GetInteger()
   $hChar.c = Asc(" ")
   
