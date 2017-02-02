@@ -57,6 +57,20 @@ Static Private Sub IsDBusValues(sType As String) As Boolean
   
 End
 
+Static Private Sub IsDBusVariant(sType As String) As Boolean
+  
+  Dim hClass As Class
+  
+  If sType = "DBusVariant" Then Return True
+  
+  Try hClass = Classes[sType]
+  If Not hClass Then Return
+  If Not hClass.Parent Then Return
+  
+  Return IsDBusVariant(hClass.Parent.Name)
+  
+End
+
 
 Static Private Sub ConvType(sType As String) As String
 
@@ -65,7 +79,7 @@ Static Private Sub ConvType(sType As String) As String
   
   sSign = $cType[sType]
   
-  If Not sSign And If IsDBusValues(sType) Then
+  If Not sSign And If IsDBusVariant(sType) Then
     hClass = Classes[sType]
     sSign = hClass["Signature"].Value
   Endif
@@ -345,6 +359,7 @@ Public Sub _Introspect() As String
       Endif
       
       sSymbol = Mid$(sSymbol, Len(sPrefix) + 1)
+      
       If InStr(sSymbol, "_") Then Continue
       
       sDesc = ""
