@@ -30,7 +30,7 @@ Public Sub _New()
   hText = New TermTextBox(hBox) As "TextBox"
   hText.Text = "test"
   hText.Expand = True
-  
+  hText.SetFocus
   
   hbox = New TermHBox(Me)
   hlab = New TermLabel(hbox)
@@ -47,6 +47,7 @@ Public Sub _New()
   
   $hlab2.Background = TermColor.green
   $hlab2.Show
+  
 End
 
 

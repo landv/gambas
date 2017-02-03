@@ -1,19 +1,16 @@
 ' Gambas class file
 
-Export
-
-
-Private CSI As String = Chr(27) & "["
+Private Const CSI As String = "\e["
 Property Read Modified As Boolean
 
-Property ColorMode As Integer 
+Property ColorMode As Integer
 Property Foreground As Integer
-Property Background As Integer 
+Property Background As Integer
 Property Bold As Boolean
-Property Dim As Boolean 
-Property Underline As Boolean 
-Property Reverse As Boolean 
-Property Blink As Boolean 
+Property Dim As Boolean
+Property Underline As Boolean
+Property Reverse As Boolean
+Property Blink As Boolean
 Private Enum FLAG_BG, FLAG_FG, FLAG_BOLD, FLAG_DIM, FLAG_REV, FLAG_UND, FLAG_BLK
 'Private Enum FLAG_BOLD, FLAG_DIM, FLAG_UND, FLAG_REV, FLAG_BLK, FLAG_FG, FLAG_BG
 
@@ -29,16 +26,12 @@ Private $bReverse As Boolean
 Private $bUnderline As Boolean
 Private $bBlink As Boolean
 
-
-
-
 Public Sub _new()
-  
+
   $iForeground = TermColor.Black
   $iBackGround = TermColor.White
-  
-End
 
+End
 
 Private Function Modified_Read() As Boolean
 
@@ -49,8 +42,6 @@ Private Function Modified_Read() As Boolean
   Next
 
 End
-
-
 
 Private Function Foreground_Read() As Integer
 
@@ -75,6 +66,7 @@ Private Sub Background_Write(Value As Integer)
 
   If $iBackGround <> Value Then $aModified[FLAG_BG] = True
   $iBackGround = Value
+
 End
 
 Private Function Bold_Read() As Boolean
@@ -85,7 +77,7 @@ End
 
 Private Sub Bold_Write(Value As Boolean)
 
-  If $bBold <> Value Then 
+  If $bBold <> Value Then
     $aModified[FLAG_BOLD] = True
   Endif
   $bBold = Value
@@ -144,9 +136,6 @@ Private Sub Blink_Write(Value As Boolean)
 
 End
 
-
-
-
 Private Function ColorMode_Read() As Integer
 
   Return $iColorMode
@@ -163,75 +152,131 @@ End
 Public Sub Send()
 
   Print Me._GetString();
-  
+
 End
 
 Public Function _GetString(Optional Force As Boolean) As String
-  
-    Dim sValue As String
+
+  Dim sValue As String
+
   If $aModified[FLAG_BOLD] Then sValue &= IIf($bBold, "1;", "22;")
   If $aModified[FLAG_DIM] Then sValue &= IIf($bDim, "8;", "28;")
   If $aModified[FLAG_BLK] Then sValue &= IIf($bBlink, "5;", "25;")
   If $aModified[FLAG_UND] Then sValue &= IIf($bUnderline, "4;", "24;")
   If $aModified[FLAG_REV] Then sValue &= IIf($bReverse, "7;", "27;")
-  
+
   If $aModified[FLAG_FG] Or Force Then
     Select Case $iColorMode
       Case TermColor.Default
         sValue &= (30 + Max(Min($iForeground, 8), 0)) & ";"
       Case TermColor.Mode256
-         sValue &= "38;5;" & Max(Min($iForeground, 255), 0) & ";"
+        sValue &= "38;5;" & Max(Min($iForeground, 255), 0) & ";"
       Case TermColor.ModeRGB
         sValue &= "38;2;" & Subst("&1;&2;&3;", GetRed($iForeGround), GetGreen($iForeground), GetBlue($iForeground))
     End Select
   Endif
-  
+
   If $aModified[FLAG_BG] Or Force Then
     Select Case $iColorMode
       Case TermColor.Default
         sValue &= (40 + Max(Min($iBackGround, 8), 0)) & ";"
       Case TermColor.Mode256
-         sValue &= "48;5;" & Max(Min($iBackGround, 255), 0) & ";"
+        sValue &= "48;5;" & Max(Min($iBackGround, 255), 0) & ";"
       Case TermColor.ModeRGB
         sValue &= "48;2;" & Subst("&1;&2;&3;", GetRed($iBackGround), GetGreen($iBackGround), GetBlue($iBackGround))
     End Select
   Endif
-  
-  
-  
-  
-  
+
   If Not sValue Then Return
-  
+
   If sValue Ends ";" Then sValue = Left(sValue, -1)
-  
+
   sValue = CSI & sValue & "m"
-  
+
   $aModified = New Boolean[8]
   'Debug sValue
   Return sValue
-  
+
 End
 
+Public Function WriteToStream(hStream As Stream)
+
+  Dim bFirst As Boolean
+  Dim iFlag As Integer
+
+  For iFlag = 0 To 6
+    If $aModified[iFlag] Then
+      If Not bFirst Then
+        Write #hStream, CSI
+        bFirst = True
+      Else
+        Write #hStream, ";"
+      Endif
+
+      Select Case iFlag
+        Case FLAG_BOLD
+          Write #hStream, IIf($bBold, "1", "22")
+        Case FLAG_DIM
+          Write #hStream, IIf($bDim, "8", "28")
+        Case FLAG_BLK
+          Write #hStream, IIf($bBlink, "5", "25")
+        Case FLAG_UND
+          Write #hStream, IIf($bUnderline, "4", "24")
+        Case FLAG_REV
+          Write #hStream, IIf($bReverse, "7", "27")
+
+        Case FLAG_FG
+          Select Case $iColorMode
+            Case TermColor.Default
+              Write #hStream, Str((30 + Max(Min($iForeground, 8), 0)))
+            Case TermColor.Mode256
+              Write #hStream, ("38;5;" & Max(Min($iForeground, 255), 0))
+            Case TermColor.ModeRGB
+              Write #hStream, ("38;2;" & Subst("&1;&2;&3", GetRed($iForeGround), GetGreen($iForeground), GetBlue($iForeground)))
+          End Select
+          
+        Case FLAG_BG
+          Select Case $iColorMode
+            Case TermColor.Default
+              Write #hStream, Str((40 + Max(Min($iBackGround, 8), 0)))
+
+            Case TermColor.Mode256
+              Write #hStream, ("48;5;" & Max(Min($iBackGround, 255), 0))
+
+            Case TermColor.ModeRGB
+              Write #hStream, ("48;2;" & Subst("&1;&2;&3", GetRed($iBackGround), GetGreen($iBackGround), GetBlue($iBackGround)))
+
+          End Select
+      End Select
+
+    Endif
+
+  Next
+  If bFirst Then
+    Write #hStream, "m"
+  Endif
+
+  $aModified = New Boolean[8]
+
+End
 
 Private Function GetRed(iValue As Integer) As Integer
-  
+
   Return Lsr(iValue, 16) And 255
-  
+
 End
 
 Private Function GetGreen(iValue As Integer) As Integer
-  
+
   Return Lsr(iValue, 8) And 255
-  
+
 End
 
 Private Function GetBlue(iValue As Integer) As Integer
-  
-  Return iValue And 255
-  
-End
 
+  Return iValue And 255
+
+End
 
 Public Sub FillFrom(iAttr As Integer)
 
@@ -246,18 +291,17 @@ Public Sub FillFrom(iAttr As Integer)
   Else
     Me.Foreground = 0
   Endif
-  
+
   Me.Bold = BTst(iAttr, FLAG_BOLD)
   Me.Dim = BTst(iAttr, FLAG_DIM)
   Me.Reverse = BTst(iAttr, FLAG_REV)
   Me.Underline = BTst(iAttr, FLAG_UND)
   Me.Blink = BTst(iAttr, FLAG_BLK)
-  
+
 End
 
-
 Public Sub Reset()
-  
+
   $iForeground = -1
   $iBackGround = -1
   $bBold = False
@@ -267,33 +311,31 @@ Public Sub Reset()
   $bBlink = False
   $aModified = New Boolean[8]
   Print CSI & "0m";
-  
+
 End
 
 Public Sub IsVoid() As Boolean
-  
+
   If $iForeground >= 0 Then Return
   If $iBackground >= 0 Then Return
   If $bBold Or If $bDim Or If $bUnderline Or If $bReverse Or If $bBlink Then Return
   Return True
-  
+
 End
 
 Public Function GetInteger() As Integer
-  
-   Dim iAttr As Integer
 
-  
+  Dim iAttr As Integer
+
   If Me.Background <> -1 Then iAttr = BSet(iAttr, FLAG_BG) + Lsl(Me.Background And 255, 16)
   If Me.Foreground <> -1 Then iAttr = BSet(iAttr, FLAG_FG) + Lsl(Me.Foreground And 255, 24)
-  
+
   If Me.Bold Then iAttr = BSet(iAttr, FLAG_BOLD)
   If Me.Dim Then iAttr = BSet(iAttr, FLAG_DIM)
   If Me.Reverse Then iAttr = BSet(iAttr, FLAG_REV)
   If Me.Underline Then iAttr = BSet(iAttr, FLAG_UND)
   If Me.Blink Then iAttr = BSet(iAttr, FLAG_BLK)
-  
-  Return iAttr
-  
-End
 
+  Return iAttr
+
+End

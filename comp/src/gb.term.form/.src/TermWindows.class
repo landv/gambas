@@ -17,6 +17,7 @@ Static Private $bInRender As Boolean
 Static Private $hCurControl As TermControl
 Static Private $iActiveWindow As Integer
 Static Public bLock As Boolean
+Static Private $hStream As File
 
 Static Public Sub _init()
 
@@ -27,15 +28,15 @@ Static Public Sub _init()
 
   hRect = New Rect(0, 0, 3, 3)
 
-
   $hFile = Open File.In.Term.Name For Read Watch
   obs = New Observer(File.In) As "Terminal"
 
   hSetting = File.In.Term.GetAttr()
-  hSetting.ICANON = False
-  hSetting.ECHO = False
+  'hSetting.ICANON = False
+  'hSetting.ECHO = False
+  hSetting.MakeRaw
   File.In.Term.SetAttr(Term.TCSANOW, hSetting)
-
+  'saveSetting(hSetting)
   Print "\e[?1002h\e[?1006h\e[?1049h\e[?25l\e[?2h";
   Print "\e[8;30;200";
   ResizeScreen(File.Out.Term.Width, File.Out.Term.Height)
@@ -137,44 +138,44 @@ Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
 
       RefreshChild(hObj, rectUpdate)
     Next
-    
+
   Endif
 
 End
 
 ' Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
-' 
+'
 '   Dim iLeft, iRight, iTop, iBottom As Integer
-' 
+'
 '   Dim L As Integer
 '   Dim C As Integer
 '   Dim hObj As Object
 '   Dim rectUpdate As Rect
 '   Dim iMove, iResize As Integer
 '   'If hChild Is Window Then Stop
-' 
+'
 '   rectUpdate = hRect.Intersection(hChild._GetScreenRect())
 '   If hChild.Visible = False Then Return
 '   If Not rectUpdate Then Return
-' 
+'
 '   For L = rectUpdate.Top To rectUpdate.Bottom - 1
 '     For C = rectUpdate.Left To rectUpdate.Right - 1
 '       $aScreen[l, C] = hChild.Id
 '     Next
 '   Next
-' 
-' 
+'
+'
 '   If hChild Is TermContainer Then
 '     imove = If(hChild.Border > 0, 1, 0) + hChild.Padding
 '     iResize = iMove * 2 + If(hChild._Shadow, 1, 0)
 '     rectUpdate.Move(rectUpdate.Left + iMove, rectUpdate.Top + imove, rectUpdate.Width - iResize, rectUpdate.Height - iResize)
 '     For Each hObj In hChild.Children
-' 
+'
 '       RefreshChild(hObj, rectUpdate)
 '     Next
-' 
+'
 '   Endif
-' 
+'
 ' End
 
 Static Public Sub Terminal_Resize()
@@ -270,6 +271,7 @@ Static Public Sub File_Read()
       Endif
       i = 10
       ipos2 = 10
+      If String.InStr(S, "B") Then Stop
       For Each ss In ["~", "A", "B", "C", "D", "H", "F", "P", "Q", "R", "S", "M", "Z"]
         i = InStr(s, ss, ipos)
         If i = 0 Then Continue
@@ -435,7 +437,7 @@ Static Public Sub File_Read()
           Key._SetKey(ss, Key.Return, bAlt, bControl, bShift)
         Case "\t"
           Key._SetKey(ss, Key.Tab, bAlt, bControl, bShift)
-        Case Chr(8)
+        Case Chr(8), Chr(127)
           Key._SetKey(ss, Key.BackSpace, bAlt, bControl, bShift)
         Case Else
           Key._SetKey(ss, 0, bAlt, bControl, bShift)
@@ -484,7 +486,7 @@ Static Private Sub RaiseMouseEvent(hControl As TermControl, sEvent As String, Co
 End
 
 Static Private Sub RaiseKeyEvent()
-  
+
   Select Case Key.Code
     Case Key.Menu
       If Key.Alt Then
@@ -557,65 +559,69 @@ Static Public Sub _Render()
   Dim sAttr As String
   Dim sDisplay As String
   Dim hOldCont As Object
+  Dim iOldAttr As Integer
+
   If bLock Then Stop
   If $bInRender Then Return
+
+  $hStream = Open String For Write
+
   $bInRender = True
   DoRefreshArea()
   RenderAll
 
   If Not IsNull($RectRenderArea) Then hRect = $hRect.Intersection($RectRenderArea)
+  
   If hRect = Null Then
     $bInRender = False
     Return
   Endif
   sAttr = hAttr._GetString(True)
-  Print sAttr;
+
+  Write #$hStream, sAttr
+  
   For l = hRect.Y To hRect.Bottom - 1
     'Debug "ligne " & l
-    sDisplay &= "\e[" & (l + 1) & ";" & (hRect.X + 1) & "H"
-    'If l = 9 Then Stop
+    Write #$hStream, "\e[" & (l + 1) & ";" & (hRect.X + 1) & "H"
+    iOldAttr = 0
+
     For c = hRect.X To hRect.Right - 1
 
-      ' hAttr.Background = $aScreen[l, c]
-      ' hAttr.Send
       hCont = TermControl._IdToControl[$aScreen[l, c]]
-      If hOldCont <> hCont Then 
+      If hCont Then
+      If hOldCont <> hCont Then
         hAttr.Reset
+        hAttr.ColorMode = hCont._ColorMode
       Endif
       hOldCont = hCont
-      'If hCont Is TermLabel Then Stop
-      'If $aScreen[l, c] = 3 And If l > 2 Then Stop
-      If hCont Then
         hChar = hCont._GetChar(c, l)
-        hAttr.FillFrom(hChar.Attr)
-        hAttr.ColorMode = hCont._ColorMode
-        'Debug hAttr.Foreground
-        sAttr = hAttr._GetString()
-        sDisplay &= sAttr
-        sDisplay &= String.Chr(hChar.c)
-
-        'sDisplay &= Str($aScreen[l, c])
-        '  If Str($aScreen[l, c]) = "37" Then
-        '   Debug Str($aScreen[l, c]), l
-        ' Endif
+        If hChar.Attr <> iOldAttr Then
+          hAttr.FillFrom(hChar.Attr)
+          hAttr.WriteToStream($hStream)
+          'sAttr = hAttr._GetString()
+          iOldAttr = hChar.Attr
+        Endif
+        'Write #$hStream, sAttr
+        Write #$hStream, String.Chr(hChar.c)
       Else
         hAttr.FillFrom(Desktop.BackGround.Attr)
-        'hAttr.Background = 240
-        sAttr = hAttr._GetString()
-        sDisplay &= sAttr
-        sDisplay &= String.Chr(Desktop.BackGround.c)
+        'sAttr = hAttr._GetString()
+        'Write #$hStream, sAttr
+        hAttr.WriteToStream($hStream)
+        Write #$hStream, String.Chr(Desktop.BackGround.c)
+
       Endif
 
     Next
   Next
+  sDisplay = Close #$hStream
   Print sDisplay;
+  Flush
 
-  ' If Me.Debug = True Then
-  ' Debug Replace(sDisplay, "\e", "&")
-  ' Endif
   $RectRenderArea = Null
-  'Catch
+
   $bInRender = False
+
 
 End
 
