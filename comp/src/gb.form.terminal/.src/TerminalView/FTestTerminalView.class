@@ -26,7 +26,7 @@ End
 
 Public Sub Form_Open()
 
-  TerminalView1.Exec(["bash"])
+  'TerminalView1.Exec(["bash"])
 
 End
 
@@ -106,3 +106,14 @@ End
 '   TerminalView1.Print("\e[m")
 ' 
 ' End
+
+Public Sub Button6_Click()
+
+  Dim I As Integer
+
+  TerminalView1.Print("Gambas")
+  For I = &H2589 To &H258F
+    TerminalView1.Print(String.Chr$(I))
+  Next
+
+End

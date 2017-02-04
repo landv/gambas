@@ -12,8 +12,7 @@
     Limit = 0
   }
   { Panel1 HBox
-    MoveScaled(2,55,82,5)
-    Visible = False
+    MoveScaled(2,55,120,5)
     { TextBox1 TextBox
       MoveScaled(1,0,43,5)
       Expand = True
@@ -37,6 +36,10 @@
     { Button5 ToggleButton
       MoveScaled(69,0,5,5)
       Text = ("b")
+    }
+    { Button6 Button
+      MoveScaled(91,1,16,4)
+      Text = ("Test")
     }
   }
   { Timer1 #Timer

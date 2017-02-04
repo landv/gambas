@@ -955,6 +955,7 @@ DRAW_TEXT:
   
 DRAW_NO_TEXT:
 
+  W = iLen * CW
   Paint.FillRect(X, Y, W, LH, iBg)
   X += W
   P += iLen
@@ -2013,7 +2014,7 @@ _2585:
 _2586:
 _2587:
 _2588:
-  Paint.FillRect(0, H, W, - (C - &H2580) * H / 8, iBg)
+  Paint.FillRect(0, H, W, - Max(1, (C - &H2580) * H / 8), iBg)
   Return
 
 _2589:
@@ -2023,7 +2024,7 @@ _258C:
 _258D:
 _258E:
 _258F:
-  Paint.FillRect(0, 0, W - (C - &H2588) * W / 8, H, iBg)
+  Paint.FillRect(0, 0, Max(1, W - (C - &H2588) * W / 8), H, iBg)
   Return
 
 _2590:
