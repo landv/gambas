@@ -560,6 +560,10 @@ Static Public Sub _Render()
   Dim sDisplay As String
   Dim hOldCont As Object
   Dim iOldAttr As Integer
+  Dim iBgAttr As Integer
+  Dim iBgChar As Integer
+  Dim bWroteBg As Boolean
+  Dim iId As Integer
 
   If bLock Then Stop
   If $bInRender Then Return
@@ -576,6 +580,12 @@ Static Public Sub _Render()
     $bInRender = False
     Return
   Endif
+  
+  With Desktop.Background
+    iBgAttr = .Attr
+    iBgChar = .c
+  End With
+  
   sAttr = hAttr._GetString(True)
 
   Write #$hStream, sAttr
@@ -584,16 +594,20 @@ Static Public Sub _Render()
     'Debug "ligne " & l
     Write #$hStream, "\e[" & (l + 1) & ";" & (hRect.X + 1) & "H"
     iOldAttr = 0
+    bWroteBg = False
 
     For c = hRect.X To hRect.Right - 1
 
-      hCont = TermControl._IdToControl[$aScreen[l, c]]
-      If hCont Then
-      If hOldCont <> hCont Then
-        hAttr.Reset
-        hAttr.ColorMode = hCont._ColorMode
-      Endif
-      hOldCont = hCont
+      iId = $aScreen[l, c]
+
+      If iId Then
+        
+        hCont = TermControl._IdToControl[iId]
+        If hOldCont <> hCont Then
+          hAttr.Reset
+          hAttr.ColorMode = hCont._ColorMode
+        Endif
+        hOldCont = hCont
         hChar = hCont._GetChar(c, l)
         If hChar.Attr <> iOldAttr Then
           hAttr.FillFrom(hChar.Attr)
@@ -603,12 +617,16 @@ Static Public Sub _Render()
         Endif
         'Write #$hStream, sAttr
         Write #$hStream, String.Chr(hChar.c)
+        bWroteBg = False
+      
       Else
-        hAttr.FillFrom(Desktop.BackGround.Attr)
-        'sAttr = hAttr._GetString()
-        'Write #$hStream, sAttr
-        hAttr.WriteToStream($hStream)
-        Write #$hStream, String.Chr(Desktop.BackGround.c)
+        
+        If Not bWroteBg Then
+          hAttr.FillFrom(iBgAttr)
+          hAttr.WriteToStream($hStream)
+        Endif
+        Write #$hStream, String.Chr(iBgChar)
+        bWroteBg = True
 
       Endif
 
