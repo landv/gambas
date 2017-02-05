@@ -39,7 +39,7 @@ Public Sub _new()
   
   $hObject = New DBusStatusIcon As "StatusIcon"
 
-  $bAppIndicator = ["unity", "cinnamon", "x-cinnamon"].Exist(Env["XDG_CURRENT_DESKTOP"], gb.IgnoreCase)
+  $bAppIndicator = ["unity", "cinnamon", "x-cinnamon", "lxde"].Exist(Env["XDG_CURRENT_DESKTOP"], gb.IgnoreCase)
   
   Inc $iCount
   $iId = $iCount
