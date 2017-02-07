@@ -52,10 +52,9 @@
 
 #include "gbx_c_application.h"
 
-static bool _daemon = FALSE;
-
 extern char **environ;
 
+static bool _daemon = FALSE;
 
 //-------------------------------------------------------------------------
 
@@ -166,6 +165,18 @@ BEGIN_PROPERTY(Application_Args_All)
   GB_ReturnObject(array);
 
 END_PROPERTY
+
+/*BEGIN_PROPERTY(Application_Args_Name)
+
+	if (READ_PROPERTY)
+    GB_ReturnConstZeroString(PROJECT_argv[0]);
+	else
+	{
+		GB_StoreString(PROP(GB_STRING), &PROJECT_argname);
+		PROJECT_argv[0] = PROJECT_argname;
+	}
+
+END_PROPERTY*/
 
 //-------------------------------------------------------------------------
 
@@ -295,6 +306,7 @@ GB_DESC NATIVE_AppArgs[] =
   GB_STATIC_PROPERTY_READ("All", "String[]", Application_Args_All),
   GB_STATIC_METHOD("_get", "s", Application_Args_get, "(Index)i"),
   GB_STATIC_METHOD("_next", "s", Application_Args_next, NULL),
+  //GB_STATIC_PROPERTY("Name", "s", Application_Args_Name),
 
   GB_END_DECLARE
 };

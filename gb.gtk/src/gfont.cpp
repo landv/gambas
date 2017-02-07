@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gfont.cpp
+	gfont.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -31,37 +31,37 @@
 
 static void set_font_from_string(gFont *font, const char *str)
 {
-  gchar **tokens, **p;
-  gchar *copy, *elt;
-  int grade;
-  double size;
-  
-  /*font->setBold(false);
-  font->setItalic(false);
-  font->setUnderline(false);
-  font->setStrikeOut(false);
-  font->setName(gDesktop::font()->name());
-  font->setSize(gDesktop::font()->size());*/
-  
-  if (!str || !*str)
-  	return;
-  	
+	gchar **tokens, **p;
+	gchar *copy, *elt;
+	int grade;
+	double size;
+	
+	/*font->setBold(false);
+	font->setItalic(false);
+	font->setUnderline(false);
+	font->setStrikeOut(false);
+	font->setName(gDesktop::font()->name());
+	font->setSize(gDesktop::font()->size());*/
+	
+	if (!str || !*str)
+		return;
+		
 	tokens = g_strsplit(str, ",", 0);
-  
-  p = tokens;
-  for(p = tokens; *p; p++)
-  {
+	
+	p = tokens;
+	for(p = tokens; *p; p++)
+	{
 		copy = g_strdup(*p);
-  	elt = g_strstrip(copy);
-  	
-  	if (!strcasecmp(elt, "bold"))
-  		font->setBold(true);
+		elt = g_strstrip(copy);
+		
+		if (!strcasecmp(elt, "bold"))
+			font->setBold(true);
 		else if (!strcasecmp(elt, "italic"))
-  		font->setItalic(true);
+			font->setItalic(true);
 		else if (!strcasecmp(elt, "underline"))
-  		font->setUnderline(true);
+			font->setUnderline(true);
 		else if (!strcasecmp(elt, "strikeout"))
-  		font->setStrikeout(true);
+			font->setStrikeout(true);
 		else if (elt[0] == '+' || elt[0] == '-' || elt[0] == '0')
 		{
 			grade = atoi(elt);
@@ -84,9 +84,9 @@ static void set_font_from_string(gFont *font, const char *str)
 		}
 
 		g_free(copy);
-  }
-  
-  g_strfreev(tokens);
+	}
+	
+	g_strfreev(tokens);
 }
 
 
@@ -102,28 +102,28 @@ static int _nfont = 0;
 
 void gFont::init()
 {
-  PangoFontFamily **_families;
-  PangoContext *ct;
-  char *buf1,*buf2; 
-  int bucle;
- 
-  ct=gdk_pango_context_get();
-  pango_context_list_families(ct, &_families, &FONT_n_families);
-  
-  for (bucle=0;bucle<FONT_n_families;bucle++)
-  {
-  	buf1=(char*)pango_font_family_get_name (_families[bucle]);
-  	if (buf1){
+	PangoFontFamily **_families;
+	PangoContext *ct;
+	char *buf1,*buf2; 
+	int bucle;
+
+	ct=gdk_pango_context_get();
+	pango_context_list_families(ct, &_families, &FONT_n_families);
+	
+	for (bucle=0;bucle<FONT_n_families;bucle++)
+	{
+		buf1=(char*)pango_font_family_get_name (_families[bucle]);
+		if (buf1){
 		buf2=(char*)g_malloc(sizeof(char)*(strlen(buf1)+1));
 		strcpy(buf2,buf1);
 		FONT_families=g_list_prepend (FONT_families,buf2);
 	}
-  }
-  
-  if (FONT_families) FONT_families=g_list_sort(FONT_families,(GCompareFunc)strcasecmp);
-  
-  g_free(_families);
-  g_object_unref(G_OBJECT(ct));
+	}
+	
+	if (FONT_families) FONT_families=g_list_sort(FONT_families,(GCompareFunc)strcasecmp);
+	
+	g_free(_families);
+	g_object_unref(G_OBJECT(ct));
 }
 
 void gFont::exit()
@@ -145,7 +145,7 @@ void gFont::exit()
 	if (FONT_families) g_list_free(FONT_families);
 	
 	//if (_nfont)
-  //  fprintf(stderr, "WARNING: %d gFont objects were not freed.\n", _nfont);
+	//  fprintf(stderr, "WARNING: %d gFont objects were not freed.\n", _nfont);
 }
 
 int gFont::count()
@@ -234,7 +234,7 @@ void gFont::setAllFrom(gFont *font)
 
 void gFont::realize()
 {
-  ct = NULL;
+	ct = NULL;
 	_height = 0;
 
 	reset();
@@ -258,7 +258,7 @@ void gFont::create()
 {
 #ifdef GTK3
 	char *font;
-  g_object_get(gtk_settings_get_default(), "gtk-font-name", &font, (char *)NULL);
+	g_object_get(gtk_settings_get_default(), "gtk-font-name", &font, (char *)NULL);
 	realize();
 	ct = gdk_pango_context_get();
 	pango_context_set_font_description(ct, pango_font_description_from_string(font));

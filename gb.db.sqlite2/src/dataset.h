@@ -60,9 +60,10 @@
 #include <list>
 #include "qry_dat.h"
 
-extern "C" {
 #include "gambas.h"
 #include "gb_common.h"
+
+extern "C" {
 #include "../gb.db.h"
 
 extern GB_INTERFACE GB;

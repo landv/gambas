@@ -56,7 +56,6 @@
 #include <time.h>
 #include <iostream>
 #include <string.h>
-#include <math.h>
 
 #include "sqlitedataset.h"
 #include <unistd.h>

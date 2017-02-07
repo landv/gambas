@@ -133,8 +133,8 @@ BEGIN_PROPERTY(Color_TooltipForeground)
 
 	QColor bg = qApp->palette().color(QPalette::ToolTipBase);
 	QColor fg = qApp->palette().color(QPalette::ToolTipText);
-	uint lbg = get_luminance(bg);
-	uint lfg = get_luminance(fg);
+	int lbg = get_luminance(bg);
+	int lfg = get_luminance(fg);
 	
 	if (abs(lbg - lfg) <= 64)
 		fg.setHsv(fg.hue(), fg.saturation(), 255 - fg.value());

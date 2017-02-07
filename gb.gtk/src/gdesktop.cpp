@@ -256,8 +256,8 @@ gColor gDesktop::tooltipForeground()
 	int h, s, v;
 	gColor fg = get_color(GTK_TYPE_TOOLTIP, 0, STATE_NORMAL, true, false);
 	gColor bg = gDesktop::tooltipBackground();
-	uint lfg = get_luminance(fg);
-	uint lbg = get_luminance(bg);
+	int lfg = get_luminance(fg);
+	int lbg = get_luminance(bg);
 	
 	if (abs(lfg - lbg) > 64)
 		return fg;

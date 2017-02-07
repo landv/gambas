@@ -39,7 +39,12 @@
 #define __USE_ISOC99	1
 #define __USE_ISOC9X	1
 
+#if defined(__cplusplus)
+#include <cmath>
+#else
 #include <math.h>
+#endif
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>

@@ -55,6 +55,7 @@ CLASS *PROJECT_class = NULL;
 
 int PROJECT_argc = 0;
 char **PROJECT_argv = NULL;
+//char *PROJECT_argname = NULL;
 
 char *PROJECT_oldcwd = NULL;
 
@@ -397,9 +398,9 @@ void PROJECT_exit(void)
 	if (project_buffer)
 		FREE(&project_buffer);
 
+	//STRING_free(&PROJECT_argname);
 	STRING_free(&PROJECT_name);
 	STRING_free(&PROJECT_path);
-
 	STRING_free(&PROJECT_oldcwd);
 	STRING_free(&PROJECT_exec_path);
 }
