@@ -25,15 +25,17 @@ Private Sub CheckMime()
   Dim sCharset As String
   
   If Not Mime Then
-    Mime = "text/plain;charset=" & System.Charset
+    Mime = "text/plain"
+    Charset = "utf-8"
     Encoding = Encode.ENC_QUOTED
     Return
   Endif
   
   iPos = RInStr(Mime, ";")
   If iPos Then
-    If Left(Mime, iPos - 1) Not Like "*/*" Then Goto SYNTAX_ERROR
     sCharset = Trim(Mid$(Mime, iPos + 1))
+    Mime = Left(Mime, iPos - 1)
+    If Mime Not Like "*/*" Then Goto SYNTAX_ERROR
     If sCharset Not Begins "charset=" Then Goto SYNTAX_ERROR
     Charset = Trim(Mid$(sCharset, 9))
   Else
