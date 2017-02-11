@@ -252,7 +252,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_SystemDomainName,
 	(void *)GB_IsRightToLeft,
 	(void *)GB_SystemPath,
-	(void *)FILE_init,
+	(void *)GB_SystemHasForked,
 	(void *)GB_SystemDebug,
 	(void *)FILE_get_home,
 
@@ -2463,6 +2463,19 @@ bool GB_SystemDebug(void)
 	return EXEC_debug;
 }
 
+void GB_SystemHasForked(void)
+{
+	MATH_init();
+	
+	FILE_init();
+	
+	if (EXEC_profile)
+		DEBUG.Profile.Cancel();
+	EXEC_profile = FALSE;
+	EXEC_profile_instr = FALSE;
+
+	SIGNAL_has_forked();
+}
 
 bool GB_ExistClass(const char *name)
 {
