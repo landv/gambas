@@ -139,7 +139,7 @@ Private Sub PrintBody(iStart As Integer, iEnd As Integer)
       'Print Me._GetUpdateJS("onclick", "$" & CStr(iRow));
         Print " onclick=\"gw.table.select("; JS(Me.Name); ","; iRow; ");\"";
       Else
-        Print " onclick=\"gw.table.toggle("; JS(Me.Name); ","; iRow; ");\"";
+        Print " onclick=\"gw.table.check("; JS(Me.Name); ","; iRow; ");\"";
       Endif
       
       Print Me._GetEventJS("ondblclick", "DblClick");
