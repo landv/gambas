@@ -2,6 +2,8 @@
 
 Export
 
+'Event LineChange
+
 Private $iStartLine As Integer
 Private $iStartColumn As Integer
 Private $iEndLine As Integer
@@ -10,6 +12,10 @@ Private $iEndColumn As Integer
 Private $hLabel As TextLabel
 Private $hLabelTimer As Timer
 Private $hObserver As Observer
+Private $iLastLine As Integer = -1
+
+Static Private $sFindPrefix As String
+Static Private $aFind As Integer[]
 
 Public Sub _new()
   
@@ -248,9 +254,24 @@ Public Sub ShowMessageLabel(sStr As String, Optional X As Integer, Y As Integer,
 
 End
 
+Public Sub Editor_GotFocus()
+  
+  $iLastLine = -1
+  $aFind = Null
+  $sFindPrefix = ""
+  
+End
+
 Public Sub Editor_Cursor()
   
   Try $hLabel.Hide
+  
+  If Me.Line <> $iLastLine Then
+    $iLastLine = Me.Line
+    $aFind = Null
+    $sFindPrefix = ""
+    'Raise LineChange
+  Endif
   
 End
 
@@ -318,5 +339,29 @@ Public Sub Editor_KeyPress()
     Next
     
   Endif
+  
+End
+
+Public Sub FindStrings(sPrefix As String) As Integer[]
+  
+  Dim iLine As Integer
+  
+  If sPrefix = $sFindPrefix Then Return $aFind
+  
+  $sFindPrefix = sPrefix
+  $aFind = New Integer[]
+  
+  iLine = -1
+  Do
+  
+    iLine = Me.FindNextString(sPrefix, iLine + 1)
+    If iLine < 0 Then Break 
+    If iLine = Me.Line Then Continue
+    
+    $aFind.Add(iLine)
+  
+  Loop 
+  
+  Return $aFind
   
 End

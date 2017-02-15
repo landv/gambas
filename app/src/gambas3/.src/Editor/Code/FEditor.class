@@ -237,7 +237,6 @@ Public Sub Modify(Optional bReset As Boolean)
   $bModify = True
   Inc Project.TimeStamp
   Inc Age
-  Scan = Null
   $cProc.Clear ' = New Collection
   $aProc.Clear ' = New String[]
 
@@ -3789,5 +3788,57 @@ End
 Public Sub mnuEditor_Show()
   
   CreateMenu
+  
+End
+
+Public Sub FindEventClass(sCtrl As String) As String
+
+  Dim iLine As Integer
+  Dim aLine As String[]
+  Dim sClass As String
+  Dim iPos As Integer
+  Dim sLine As String
+  Dim aEvent As String[]
+  
+  iLine = $hEditor.Line
+  
+  Do
+    
+    sLine = $hEditor[iLine].Text
+    GoSub CHECK_LINE
+    If iLine = 0 Then Return
+    If IsProc(sLine) Then Break
+    Dec iLine
+    
+  Loop
+  
+  iLine = 0
+  
+  Do
+    
+    sLine = $hEditor[iLine].Text
+    If IsProc(sLine) Then Break
+    GoSub CHECK_LINE
+    Inc iLine
+    If iLine = $hEditor.Count Then Break
+    
+  Loop
+  
+  Return
+  
+CHECK_LINE:
+
+  aLine = Scan(sLine, "*NEW * AS \"*\"*")
+  If aLine.Count <> 4 Then Return
+  If LCase(aLine[2]) <> sCtrl Then Return
+      
+  sClass = aLine[1]
+  iPos = InStr(sClass, "(")
+  If iPos Then sClass = Left(sClass, iPos - 1)
+  
+  Try aEvent = Project.Documentation.Classes[sClass].Events
+  If aEvent Then Return sClass
+
+  Return
   
 End

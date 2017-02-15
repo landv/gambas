@@ -450,22 +450,10 @@ Private Sub GetEvents(sCtrl As String) As String[]
   If $sEventClass Then Try aEvent = Project.Documentation.Classes[$sEventClass].Events
   
   If Not aEvent Then
-    For iLine = 0 To $hEditor.Count - 1
-      sLine = $hEditor[iLine].Purge(False, True)
-      
-      aLine = Scan(sLine, "*NEW * AS \"*\"*")
-      If aLine.Count <> 4 Then Continue
-      If LCase(aLine[2]) <> sCtrl Then Continue
-      
-      sLine = aLine[1]
-      iPos = InStr(sLine, "(")
-      If iPos Then sLine = Left(sLine, iPos - 1)
-      $sEventClass = sLine
-      
-      Try aEvent = Project.Documentation.Classes[$sEventClass].Events
-      If aEvent Then Break
-      
-    Next
+    
+    $sEventClass = $hForm.FindEventClass(sCtrl)
+    If $sEventClass Then aEvent = Project.Documentation.Classes[$sEventClass].Events
+
   Endif
   
   Return aEvent
@@ -502,6 +490,7 @@ Private Sub FillWithIdent(sWord As String)
   Dim iLine As Integer
   Dim sUCaseLine As String
   Dim aKeywords As String[]
+  Dim aFind As Integer[]
 
   ClearRows
 
@@ -559,13 +548,10 @@ Private Sub FillWithIdent(sWord As String)
     Next
   Endif
   
-  iLine = -1
-  Do
+  aFind = $hEditor.FindStrings(Left(sWord, 3))
   
-    iLine = $hEditor.FindNextString(sWord, iLine + 1)
-    If iLine < 0 Then Break 
-    If iLine = $hEditor.Line Then Continue
-
+  For Each iLine In aFind
+  
     If $bGambas Then
       sLine = Highlight.Purge($hEditor[iLine].Text)
     Else
@@ -593,7 +579,7 @@ Private Sub FillWithIdent(sWord As String)
       cKey[sCar] = True
     Loop
   
-  Loop 
+  Next
 
   If $bGambas Then
     
