@@ -10,6 +10,7 @@ Public Const _Group As String = "View"
 
 Event Kill
 Event Title(Title As String)
+Event Resize(W As Integer, H As Integer)
 
 Property Border As Boolean
 Property Read Attr As TerminalAttr
@@ -176,6 +177,7 @@ Private Sub UpdateScreen()
     _UpdateSize
     Refresh
     If $hProcess Then $hProcess.Term.Resize(W, H)
+    Raise Resize(W, H)
   Endif
 
 End
