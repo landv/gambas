@@ -110,7 +110,7 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
     Case "<"
       $bGambas = $hForm Is FEditor
       $sText = sClass
-      iPos = String.InStr(sClass, "_")
+      iPos = String.RInStr(sClass, "_")
       If iPos Then 
         $iLen = iPos
       Else
@@ -852,7 +852,7 @@ Private Function InsertItem(Optional bNoSpace As Boolean) As Boolean
   If gvwComp[gvwComp.Row, 0].Picture = Picture["img/symbol/event.png"] Then
     If $hForm.IsProc($hEditor[$hEditor.Line].Text) Then
       hClass = Project.Documentation.Classes[$sEventClass]
-      sEvent = Mid$(sText, InStr(sText, "_") + 1)
+      sEvent = Mid$(sText, RInStr(sText, "_") + 1)
       hEvent = hClass.Symbols[":" & sEvent]
       sText &= hEvent.GetSignature(False)
     Endif
