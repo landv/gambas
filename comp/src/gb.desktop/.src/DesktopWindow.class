@@ -20,6 +20,7 @@ Property Maximized As Boolean
 Property FullScreen As Boolean
 Property SkipTaskbar As Boolean
 Property Sticky As Boolean
+Property Shaded As Boolean
 
 Private $iId As Integer
 Private $hGeom As Rect
@@ -193,9 +194,7 @@ Private Function Maximized_Read() As Boolean
 
   Dim aState As String[] = GetState()
 
-  If aState Then
-    Return aState.Find("_NET_WM_STATE_MAXIMIZED_VERT") >= 0 And aState.Find("_NET_WM_STATE_MAXIMIZED_HORZ") >= 0
-  Endif
+  If aState And If aState.Exist("_NET_WM_STATE_MAXIMIZED_VERT") And If aState.Exist("_NET_WM_STATE_MAXIMIZED_HORZ") Then Return True
 
 End
 
@@ -213,9 +212,7 @@ Private Function FullScreen_Read() As Boolean
 
   Dim aState As String[] = GetState()
 
-  If aState Then
-    Return aState.Find("_NET_WM_STATE_FULLSCREEN") >= 0 
-  Endif
+  If aState Then Return aState.Exist("_NET_WM_STATE_FULLSCREEN")
 
 End
 
@@ -233,9 +230,7 @@ Private Function SkipTaskbar_Read() As Boolean
 
   Dim aState As String[] = GetState()
 
-  If aState Then
-    Return aState.Find("_NET_WM_STATE_SKIP_TASKBAR") >= 0 
-  Endif  
+  If aState Then Return aState.Exist("_NET_WM_STATE_SKIP_TASKBAR")
 
 End
 
@@ -253,9 +248,7 @@ Private Function Sticky_Read() As Boolean
 
   Dim aState As String[] = GetState()
 
-  If aState Then
-    Return aState.Find("_NET_WM_STATE_STICKY") >= 0 
-  Endif  
+  If aState Then Return aState.Exist("_NET_WM_STATE_STICKY")
 
 End
 
@@ -312,5 +305,23 @@ Public Sub GetScreenshot(Optional WithoutFrame As Boolean) As Picture
   If Not hRect Then Return
   
   Return Desktop.Screenshot(hRect.X, hRect.Y, hRect.W, hRect.H)
+  
+End
+
+Private Function Shaded_Read() As Boolean
+  
+  Dim aState As String[] = GetState()
+  
+  If aState Then Return aState.Find("_NET_WM_STATE_SHADED") >= 0 
+  
+End
+
+Private Sub Shaded_Write(Value As Boolean)
+  
+  If Value Then
+    SetState("_NET_WM_STATE_SHADED")
+  Else
+    ClearState("_NET_WM_STATE_SHADED")
+  Endif
   
 End
