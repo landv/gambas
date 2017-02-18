@@ -943,8 +943,8 @@ bool gMainWindow::isResizable()
 
 void gMainWindow::setBorder(bool b)
 {
-  if (!isTopLevel()) 
-  	return;
+	if (!isTopLevel()) 
+		return;
 	
 	gtk_window_set_decorated(GTK_WINDOW(border), b);
 	/*#ifdef GDK_WINDOWING_X11
@@ -956,8 +956,8 @@ void gMainWindow::setBorder(bool b)
 
 void gMainWindow::setResizable(bool b)
 {
-  if (!isTopLevel()) 
-  	return;
+	if (!isTopLevel()) 
+		return;
 	
 	if (b == isResizable())
 		return;

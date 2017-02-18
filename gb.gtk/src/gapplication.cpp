@@ -342,7 +342,7 @@ static void gambas_handle_event(GdkEvent *event)
 			control = gt_get_control(widget);
 			if (control)
 				gApplication::setActiveControl(control, event->focus_change.in);
-			else if (event->focus_change.in);
+			else if (event->focus_change.in)
 			{
 				//fprintf(stderr, "GDK_FOCUS_CHANGE: setActiveWindow(NULL)\n");
 				gMainWindow::setActiveWindow(NULL);

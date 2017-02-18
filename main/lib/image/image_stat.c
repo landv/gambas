@@ -388,7 +388,7 @@ static bool handle_jpeg(IMAGE_STREAM * stream, IMAGE_INFO *result)
 
 //-------------------------------------------------------------------------
 
-static const int _tiff_bytes_per_format[] = {0, 1, 1, 2, 4, 8, 1, 1, 2, 4, 8, 4, 8};
+//static const int _tiff_bytes_per_format[] = {0, 1, 1, 2, 4, 8, 1, 1, 2, 4, 8, 4, 8};
 
 /* uncompressed only */
 #define TAG_IMAGEWIDTH              0x0100

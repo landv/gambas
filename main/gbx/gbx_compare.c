@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_compare.c
+	gbx_compare.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -44,140 +44,140 @@ static bool _descent = FALSE;
 
 int compare_nothing(void *a, void *b)
 {
-  return 0;
+	return 0;
 }
 
 int compare_integer(int *a, int *b)
 {
-  bool comp;
+	bool comp;
 
-  if (*a < *b)
-    comp = -1;
-  else if (*a > *b)
-    comp = 1;
-  else
-    return 0;
+	if (*a < *b)
+		comp = -1;
+	else if (*a > *b)
+		comp = 1;
+	else
+		return 0;
 
-  if (_descent)
-    comp = -comp;
+	if (_descent)
+		comp = -comp;
 
-  return comp;
+	return comp;
 }
 
 int compare_short(short *a, short *b)
 {
-  bool comp;
+	bool comp;
 
-  if (*a < *b)
-    comp = -1;
-  else if (*a > *b)
-    comp = 1;
-  else
-    return 0;
+	if (*a < *b)
+		comp = -1;
+	else if (*a > *b)
+		comp = 1;
+	else
+		return 0;
 
-  if (_descent)
-    comp = -comp;
+	if (_descent)
+		comp = -comp;
 
-  return comp;
+	return comp;
 }
 
 
 int compare_byte(unsigned char *a, unsigned char *b)
 {
-  bool comp;
+	bool comp;
 
-  if (*a < *b)
-    comp = -1;
-  else if (*a > *b)
-    comp = 1;
-  else
-    return 0;
+	if (*a < *b)
+		comp = -1;
+	else if (*a > *b)
+		comp = 1;
+	else
+		return 0;
 
-  if (_descent)
-    comp = -comp;
+	if (_descent)
+		comp = -comp;
 
-  return comp;
+	return comp;
 }
 
 
 int compare_long(int64_t *a, int64_t *b)
 {
-  bool comp;
+	bool comp;
 
-  if (*a < *b)
-    comp = -1;
-  else if (*a > *b)
-    comp = 1;
-  else
-    return 0;
+	if (*a < *b)
+		comp = -1;
+	else if (*a > *b)
+		comp = 1;
+	else
+		return 0;
 
-  if (_descent)
-    comp = -comp;
+	if (_descent)
+		comp = -comp;
 
-  return comp;
+	return comp;
 }
 
 
 int compare_float(double *a, double *b)
 {
-  bool comp;
+	bool comp;
 
-  if (*a < *b)
-    comp = -1;
-  else if (*a > *b)
-    comp = 1;
-  else
-    return 0;
+	if (*a < *b)
+		comp = -1;
+	else if (*a > *b)
+		comp = 1;
+	else
+		return 0;
 
-  if (_descent)
-    comp = -comp;
+	if (_descent)
+		comp = -comp;
 
-  return comp;
+	return comp;
 }
 
 
 int compare_single(float *a, float *b)
 {
-  bool comp;
+	bool comp;
 
-  if (*a < *b)
-    comp = -1;
-  else if (*a > *b)
-    comp = 1;
-  else
-    return 0;
+	if (*a < *b)
+		comp = -1;
+	else if (*a > *b)
+		comp = 1;
+	else
+		return 0;
 
-  if (_descent)
-    comp = -comp;
+	if (_descent)
+		comp = -comp;
 
-  return comp;
+	return comp;
 }
 
 
 int compare_date(DATE *a, DATE *b)
 {
-  bool comp;
+	bool comp;
 
-  comp = DATE_comp(a, b);
+	comp = DATE_comp(a, b);
 
-  if (_descent)
-    comp = -comp;
+	if (_descent)
+		comp = -comp;
 
-  return comp;
+	return comp;
 }
 
 int COMPARE_string_lang(const char *s1, int l1, const char *s2, int l2, bool nocase, bool throw)
 {
-  wchar_t *t1 = NULL;
-  wchar_t *t2 = NULL;
-  int i, cmp;
-  int lt1, lt2;
+	wchar_t *t1 = NULL;
+	wchar_t *t2 = NULL;
+	int i, cmp;
+	int lt1, lt2;
 
-  if (l1 < 0)
-  	l1 = s1 ? strlen(s1) : 0;
+	if (l1 < 0)
+		l1 = s1 ? strlen(s1) : 0;
 
 	if (l2 < 0)
-  	l2 = s2 ? strlen(s2) : 0;
+		l2 = s2 ? strlen(s2) : 0;
 
 	if (l1 == 0)
 	{
@@ -190,7 +190,7 @@ int COMPARE_string_lang(const char *s1, int l1, const char *s2, int l2, bool noc
 		return 1;
 
 	if (STRING_convert_to_unicode(&t1, &lt1, s1, l1)
-		  || STRING_convert_to_unicode(&t2, &lt2, s2, l2))
+			|| STRING_convert_to_unicode(&t2, &lt2, s2, l2))
 	{
 		if (throw)
 			THROW(E_CONV);
@@ -257,9 +257,9 @@ static int strnatcmp_compare_right(const char *a, int la, const char *b, int lb)
 		ca = (la > 0) ? *a : 0;
 		cb = (lb > 0) ? *b : 0;
 
-	  if (!isdigit(ca) && !isdigit(cb))
+		if (!isdigit(ca) && !isdigit(cb))
 			return bias;
-	  else if (!isdigit(ca))
+		else if (!isdigit(ca))
 			return -1;
 		else if (!isdigit(cb))
 			return +1;
@@ -400,22 +400,22 @@ int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool no
 #define IMPLEMENT_COMPARE_STRING(_name, _func) \
 int compare_string_##_name(char **pa, char **pb) \
 { \
-  char *a; \
-  char *b; \
-  int comp; \
-  \
-  a = *pa; \
-  if (!a) \
-    a = ""; \
-  \
-  b = *pb; \
-  if (!b) \
-    b = ""; \
-  \
-  comp = _func(a, b); \
-  if (_descent) \
-    comp = -comp; \
-  return comp; \
+	char *a; \
+	char *b; \
+	int comp; \
+	\
+	a = *pa; \
+	if (!a) \
+		a = ""; \
+	\
+	b = *pb; \
+	if (!b) \
+		b = ""; \
+	\
+	comp = _func(a, b); \
+	if (_descent) \
+		comp = -comp; \
+	return comp; \
 }
 
 IMPLEMENT_COMPARE_STRING(binary, strcmp)
@@ -448,7 +448,7 @@ static int compare_string_like(char **pa, char **pb)
 	int la = *pa ? strlen(*pa) : 0;
 	int lb = *pb ? strlen(*pb) : 0;
 	int diff = COMPARE_string_like(*pa, la, *pb, lb);
-  if (_descent)
+	if (_descent)
 		return (-diff);
 	else
 		return diff;
@@ -582,37 +582,37 @@ int COMPARE_variant(VARIANT *a, VARIANT *b)
 
 COMPARE_FUNC COMPARE_get(TYPE type, int mode)
 {
-  _descent = (mode & GB_COMP_DESCENT) != 0;
-  mode &= GB_COMP_TYPE_MASK;
+	_descent = (mode & GB_COMP_DESCENT) != 0;
+	mode &= GB_COMP_TYPE_MASK;
 
 	if (type >= T_OBJECT)
 		return (COMPARE_FUNC)COMPARE_object;
 
-  switch(type)
-  {
-    case T_INTEGER:
-      return (COMPARE_FUNC)compare_integer;
+	switch(type)
+	{
+		case T_INTEGER:
+			return (COMPARE_FUNC)compare_integer;
 
-    case T_SHORT:
-      return (COMPARE_FUNC)compare_short;
+		case T_SHORT:
+			return (COMPARE_FUNC)compare_short;
 
-    case T_BYTE:
-    case T_BOOLEAN:
-      return (COMPARE_FUNC)compare_byte;
+		case T_BYTE:
+		case T_BOOLEAN:
+			return (COMPARE_FUNC)compare_byte;
 
-    case T_LONG:
-      return (COMPARE_FUNC)compare_long;
+		case T_LONG:
+			return (COMPARE_FUNC)compare_long;
 
-    case T_FLOAT:
-      return (COMPARE_FUNC)compare_float;
+		case T_FLOAT:
+			return (COMPARE_FUNC)compare_float;
 
-    case T_SINGLE:
-      return (COMPARE_FUNC)compare_single;
+		case T_SINGLE:
+			return (COMPARE_FUNC)compare_single;
 
-    case T_DATE:
-      return (COMPARE_FUNC)compare_date;
+		case T_DATE:
+			return (COMPARE_FUNC)compare_date;
 
-    case T_STRING:
+		case T_STRING:
 
 			if (mode & GB_COMP_NATURAL)
 				return (COMPARE_FUNC)((mode & GB_COMP_NOCASE) ? compare_string_natural_case : compare_string_natural);
@@ -633,7 +633,7 @@ COMPARE_FUNC COMPARE_get(TYPE type, int mode)
 		case T_VARIANT:
 			return (COMPARE_FUNC)COMPARE_variant;
 
-    default:
-      return (COMPARE_FUNC)compare_nothing;
-  }
+		default:
+			return (COMPARE_FUNC)compare_nothing;
+	}
 }
