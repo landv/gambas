@@ -410,6 +410,8 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
                     $aMode[MODE_Mouse1005] = True
                   Case "1006"
                     $aMode[MODE_Mouse1006] = True
+                  Case "1034"
+                    ' ignore
                   Case "1048"
                     hScreen.SaveCursor
                   Case "1049"
@@ -441,7 +443,7 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
           
         Case "l"
           
-            If sStr Begins "[?" Then      'DEC Private Mode Set
+          If sStr Begins "[?" Then      'DEC Private Mode Set
             sStr = Replace(sStr, "?", "") 'remove the ?
             GoSub GET_ARGS
             If aArg Then
@@ -476,6 +478,8 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
                     $aMode[MODE_Mouse1005] = False
                   Case "1006"
                     $aMode[MODE_Mouse1006] = False
+                  Case "1034"
+                    ' ignore
                   Case "1047"
                     hScreen.Clear
                     $aMode[MODE_AppScreen] = False
