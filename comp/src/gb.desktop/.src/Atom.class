@@ -6,6 +6,7 @@ Static Public Sub _get(sAtom As String) As Integer
   
   Dim iAtom As Integer
   
+  If Not sAtom Then Return 0
   Try iAtom = $cAtom[sAtom]
   If Error Then
     iAtom = X11.InternAtom(sAtom, True)
