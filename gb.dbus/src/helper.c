@@ -671,6 +671,9 @@ __ERROR:
 
 static void return_value_cb(GB_TYPE type, void *value, void *param)
 {
+	if (type == GB_T_STRING)
+		type = GB_T_CSTRING;
+	
 	GB.ReturnPtr(type, value);
 }
 
@@ -1185,7 +1188,7 @@ char *DBUS_introspect(DBusConnection *connection, const char *application, const
 	dbus_message_set_auto_start(message, TRUE);
 
 	dbus_error_init(&error);
-	reply = dbus_connection_send_with_reply_and_block (connection, message, -1, &error);
+	reply = dbus_connection_send_with_reply_and_block(connection, message, -1, &error);
 	check_message(connection);
 
 	if (dbus_error_is_set(&error))
