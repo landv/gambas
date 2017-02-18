@@ -3061,7 +3061,10 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			CMOUSE_clear(false);
 			
 			if (cancel)
+			{
+				event->accept();
 				return true;
+			}
 		}
 		
 		if (EXT(control) && EXT(control)->proxy_for)

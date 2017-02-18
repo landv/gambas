@@ -48,7 +48,7 @@ MySpinBox::~MySpinBox()
 BEGIN_METHOD(CSPINBOX_new, GB_OBJECT parent)
 
   QSpinBox *wid = new QSpinBox(QCONTAINER(VARG(parent)));
-  
+
   //QT.SetBackgroundRole(_object, QColorGroup::Base);
 
   QObject::connect(wid, SIGNAL(valueChanged(int)), &CSpinBox::manager, SLOT(event_change()));
@@ -159,45 +159,6 @@ BEGIN_PROPERTY(CSPINBOX_border)
 		WIDGET->setFrame(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
-
-/*BEGIN_PROPERTY(CSPINBOX_border)
-
-	QLineEdit *lw = (QLineEdit *)WIDGET->child("qt_spinbox_edit", "QLineEdit");
-	
-	if (!lw)
-	{
-		if (READ_PROPERTY)
-			GB.ReturnBoolean(0);
-		return;
-	}
-		
-	if (READ_PROPERTY)
-		GB.ReturnBoolean(lw->frame());
-	else
-		lw->setFrame(VPROP(GB_BOOLEAN));
-
-END_PROPERTY*/
-
-/*
-BEGIN_PROPERTY(CSPINBOX_button)
-
- if (READ_PROPERTY)
-    GB.ReturnInteger(WIDGET->buttonSymbols());
- else
- {
-  if ( PROPERTY(GB_INTEGER)  == 1)
-    WIDGET->setButtonSymbols(QSpinBox::PlusMinus);
-  else
-    WIDGET->setButtonSymbols(QSpinBox::UpDownArrows);
-
-    // The hide() and show() are needed to force an immediate update which could not be produced through
-    // repaint()
-    WIDGET->hide();
-    WIDGET->show();
- }
-
-END_PROPERTY
-*/
 
 BEGIN_METHOD_VOID(CSPINBOX_select_all)
 
