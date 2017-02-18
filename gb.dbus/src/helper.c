@@ -710,13 +710,26 @@ static bool retrieve_arg(DBusMessageIter *iter, RETRIEVE_CALLBACK cb, void *para
 	char *signature = dbus_message_iter_get_signature(iter);
 	GB_TYPE gtype = from_dbus_type(signature);
 	int type = dbus_message_iter_get_arg_type(iter);
+	
+#ifdef DEBUG_ARG
+	fprintf(stderr, "retrieve_arg: signature = '%s'", signature);
+	if (gtype > GB_T_OBJECT) fprintf(stderr, " / %s", GB.GetClassName((void *)gtype));
+	fprintf(stderr, "\n");
+#endif
+	
 	dbus_free(signature);
 	
 	if (dbus_type_is_basic(type))
 	{
+#ifdef DEBUG_ARG
+			fprintf(stderr, "-> basic type\n");
+#endif
 		char val[16];
-		dbus_message_iter_get_basic (iter, (void *)val);
+		dbus_message_iter_get_basic(iter, (void *)val);
 		(*cb)(gtype, val, param);
+#ifdef DEBUG_ARG
+			fprintf(stderr, "<- basic type\n");
+#endif
 		return FALSE;
 	}
 	
@@ -726,8 +739,16 @@ static bool retrieve_arg(DBusMessageIter *iter, RETRIEVE_CALLBACK cb, void *para
 		{
 			DBusMessageIter iter_contents;
 
+			#ifdef DEBUG_ARG
+				fprintf(stderr, "-> variant\n");
+			#endif
 			dbus_message_iter_recurse(iter, &iter_contents);
-			return retrieve_arg(&iter_contents, cb, param);
+			if (retrieve_arg(&iter_contents, cb, param))
+				return TRUE;
+			#ifdef DEBUG_ARG
+				fprintf(stderr, "<- variant\n");
+			#endif
+			return FALSE;
 		}
 			
 		case DBUS_TYPE_ARRAY:
@@ -746,6 +767,10 @@ static bool retrieve_arg(DBusMessageIter *iter, RETRIEVE_CALLBACK cb, void *para
 				GB_COLLECTION col;
 				COLLECTION_ADD add;
 				
+				#ifdef DEBUG_ARG
+					fprintf(stderr, "-> collection\n");
+				#endif
+					
 				GB.Collection.New(POINTER(&col), FALSE);
 				
 				add.col = col;
@@ -774,14 +799,24 @@ static bool retrieve_arg(DBusMessageIter *iter, RETRIEVE_CALLBACK cb, void *para
 				}
 				
 				(*cb)(gtype, &col, param);
+				
+				#ifdef DEBUG_ARG
+					fprintf(stderr, "<- collection\n");
+				#endif
+				
 				return FALSE;
 			}
 			else
 			{
-				GB_ARRAY array;
-				GB.Array.New(POINTER(&array), from_dbus_type(signature_contents), 0);
-				dbus_free(signature_contents);
+				GB_ARRAY array = GB.New(gtype, NULL, NULL);
 				
+				#ifdef DEBUG_ARG
+					fprintf(stderr, (type == DBUS_TYPE_ARRAY) ? "-> array" : "-> struct");
+					fprintf(stderr, " '%s' / %s\n", signature_contents, GB.GetClassName((void *)array));
+				#endif
+					
+				dbus_free(signature_contents);
+					
 				while (dbus_message_iter_get_arg_type(&iter_contents) != DBUS_TYPE_INVALID)
 				{
 					if (retrieve_arg(&iter_contents, add_value_cb, array))
@@ -790,6 +825,11 @@ static bool retrieve_arg(DBusMessageIter *iter, RETRIEVE_CALLBACK cb, void *para
 				}
 				
 				(*cb)(gtype, &array, param);
+
+				#ifdef DEBUG_ARG
+					fprintf(stderr, (type == DBUS_TYPE_ARRAY) ? "<- array\n" : "<- struct\n");
+				#endif
+				
 				return FALSE;
 			}
 		}

@@ -121,10 +121,37 @@ End
 ' 
 ' End
 
-Public Sub Main()
+Public Sub Main0()
 
   DBus.Debug = True
   DBus.Name = "org.mpris.MediaPlayer2.xt7"
   DBus.Session.Register(mpris, "/org/mpris/MediaPlayer2", ["org.mpris.MediaPlayer2", "org.mpris.MediaPlayer2.Player", "org.mpris.MediaPlayer2.TrackList", "org.mpris.MediaPlayer2.Playlists", "org.freedesktop.Dbus.Properties", "org.freedesktop.Dbus.Introspectable"])
 
 End
+
+Public Sub Main()
+
+  Dim a As String[]
+  Dim s As String
+  Dim sIcon As String
+  Dim hDBusPixmap As Variant[][]
+
+  DBus.Debug = True
+  a = DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].RegisteredStatusNotifierItems
+ 
+  For Each s In a
+    
+    Print s
+    'sIcon = DBus[File.Dir(s)]["/" & File.Name(s), "org.kde.StatusNotifierItem"].IconThemePath
+    sIcon = DBus[File.Dir(s)]["/" & File.Name(s), "org.kde.StatusNotifierItem"].IconName
+    If sIcon Then 
+      Print sIcon
+    Else
+      hDBusPixmap = DBus[File.Dir(s)]["/" & File.Name(s), "org.kde.StatusNotifierItem"].IconPixmap
+    Endif
+    
+  Next
+
+
+End
+
