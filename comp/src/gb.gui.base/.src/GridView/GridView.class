@@ -2358,3 +2358,23 @@ Public Sub _RefreshRow(iRow As Integer)
   $hView.RefreshRect(0, $hRows._GetRowY(iRow), $hView.ScrollW, $hRows._GetRowHeight(iRow))
   
 End
+
+Public Sub AddColumn(Text As String, Optional Width As Integer, Alignment As Integer = Align.Normal) As _GridView_Column
+  
+  Dim hCol As _GridView_Column
+  
+  Inc $hColumns.Count
+  
+  hCol = $hColumns[$hColumns.Max]
+  hCol.Text = Text
+  If Width < 0 Then
+    hCol.Expand = True
+  Else If Width Then
+    hCol.Width = Width
+  Endif
+  hCol.Alignment = Alignment
+  
+  Return hCol
+  
+End
+
