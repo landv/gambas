@@ -10,10 +10,9 @@ Public Sub Main()
   ' hSettings.Save
   
   hSettings = New Settings("~/test.conf")
-  b = hSettings["Cat1/Values"]
-  b[1] = True
-  hSettings["Cat1/Values"] = b
+  hSettings["Test"] = 0.00000001
   hSettings.Save
+  hSettings.Reload
   
   ' Settings.Save hSettings["localhost/Login"] = ""
   ' hSettings["Charlie/Login"] = "Toto"

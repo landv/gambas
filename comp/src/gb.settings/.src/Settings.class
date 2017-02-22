@@ -536,7 +536,7 @@ Static Private Sub WriteValue(vVal As Variant)
     
     Case gb.Float
       sStr = CStr(vVal)
-      If InStr(sStr, ".") = 0 Then sStr &= ".0"
+      If InStr(sStr, ".") = 0 And If InStr(sStr, "E", 1, gb.IgnoreCase) = 0 Then sStr &= ".0"
       $sStr &= sStr
     
     Case gb.Date
