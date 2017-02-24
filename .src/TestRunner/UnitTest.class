@@ -12,9 +12,9 @@ Private $DoSelfTest As Boolean
 
 Public Sub _new()
 
-    If UnittestFileNotExist() = False Then
-        $Suite = New TestSuite
-    Endif
+    'If UnittestFileNotExist() = False Then
+    $Suite = New TestSuite
+    'Endif
 
 End
 
@@ -171,8 +171,11 @@ Static Public Function GetAllTestContainerNames(Optional DoSelfTest As Boolean) 
             If TestClass.Parent Then
                 If TestClass.Parent.Name = "ATestContainer" Then
                     strName = String.UCaseFirst(String.Lower(TestClass.Name))
-                    Debug "Add to testclasses: ";; strName
-                    TestContainernames.Add(strName)
+
+                    If Not TestContainernames.Exist(strName) Then
+                        TestContainernames.Add(strName)
+                        Debug "Add to testclasses: ";; strName
+                    Endif
                 Endif
             Endif
         Endif

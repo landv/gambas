@@ -90,7 +90,7 @@ Sub FillCboContainers()
         .Insert(UnitTest.GetAllTestContainerNames($DoSelftest))
     End With
 
-    With Me.CboContainers
+    With CboContainers
         .List = ContainerNames
         .Index = 0
         .Show()
@@ -124,7 +124,7 @@ Sub FillCboTests(Optional TestContainerName As String)
     Next
 
     TestNames.Sort
-    With Me.CboTestCases
+    With CboTestCases
         .List = TestNames
         .Index = 0
         .Show()
@@ -143,7 +143,7 @@ Sub FillTabs()
         .Expand = True
     End With
 
-    With Me.TabPanel1
+    With TabPanel1
         .Count = 1
         .Arrangement = Arrange.Fill
         .Index = 0
@@ -161,7 +161,7 @@ Sub FillTabs()
         .Show
     End With
 
-    With Me.TabPanel1
+    With TabPanel1
         .Count = 2
         .Arrangement = Arrange.Fill
         .Index = 1
@@ -172,7 +172,7 @@ Sub FillTabs()
 
     ' ------------------------------------------------- Index 0
 
-    With Me.TabPanel1
+    With TabPanel1
         .Index = 0
         .Show
     End With
