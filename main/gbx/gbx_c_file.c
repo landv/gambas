@@ -70,17 +70,17 @@ static SIGNAL_CALLBACK *_SIGWINCH_callback = NULL;
 static GB_FUNCTION _term_resize_func;
 
 
-static void callback_read(int fd, int type, CFILE *file)
+static void callback_read(int fd, int type, CSTREAM *stream)
 {
-	if (!STREAM_read_ahead(CSTREAM_stream(file)))
-		GB_Raise(file, EVENT_Read, 0);
+	if (!STREAM_read_ahead(CSTREAM_stream(stream)))
+		GB_Raise(stream, EVENT_Read, 0);
 	else
 		WATCH_little_sleep();
 }
 
-static void callback_write(int fd, int type, CFILE *file)
+static void callback_write(int fd, int type, CSTREAM *stream)
 {
-	GB_Raise(file, EVENT_Write, 0);
+	GB_Raise(stream, EVENT_Write, 0);
 }
 
 static void cb_term_resize(int signum, intptr_t data)
@@ -90,31 +90,31 @@ static void cb_term_resize(int signum, intptr_t data)
 		GB_Raise(CFILE_in, EVENT_Resize, 0);
 }
 
+static void watch_stream(CSTREAM *_object, int mode, bool on)
+{
+	STREAM *stream = &THIS_STREAM->stream;
+	int fd = STREAM_handle(stream);
+	
+	if (mode & ST_READ)
+		GB_Watch(fd, GB_WATCH_READ, (void *)(on ? callback_read : NULL), (intptr_t)THIS);
+
+	if (mode & ST_WRITE)
+		GB_Watch(fd, GB_WATCH_WRITE, (void *)(on ? callback_write : NULL), (intptr_t)THIS);
+}
 
 CFILE *CFILE_create(STREAM *stream, int mode)
 {
-	int fd;
-	CFILE *file;
-
-	file = OBJECT_new(CLASS_File, NULL, NULL);
+	CFILE *file = OBJECT_new(CLASS_File, NULL, NULL);
 	OBJECT_UNREF_KEEP(file);
 
 	if (stream)
 	{
 		*CSTREAM_stream(file) = *stream;
-		file->watch_fd = -1;
+		//file->watch_fd = -1;
 
 		if (mode & ST_WATCH)
 		{
-			fd = STREAM_handle(&file->ob.stream);
-			file->watch_fd = fd;
-
-			if (mode & ST_READ)
-				GB_Watch(fd, GB_WATCH_READ, (void *)callback_read, (intptr_t)file);
-
-			if (mode & ST_WRITE)
-				GB_Watch(fd, GB_WATCH_WRITE, (void *)callback_write, (intptr_t)file);
-
+			watch_stream(&file->ob, mode, TRUE);
 			OBJECT_attach((OBJECT *)file, OP ? (OBJECT *)OP : (OBJECT *)CP, "File");
 		}
 	}
@@ -168,7 +168,7 @@ void CFILE_init_watch(void)
 	if (has_read_func)
 	{
 		//fprintf(stderr, "watch stdin\n");
-		CFILE_in->watch_fd = STDIN_FILENO;
+		//CFILE_in->watch_fd = STDIN_FILENO;
 		GB_Watch(STDIN_FILENO, GB_WATCH_READ, (void *)callback_read, (intptr_t)CFILE_in);
 	}
 }
@@ -862,6 +862,24 @@ BEGIN_PROPERTY(Stream_IsTerm)
 
 END_PROPERTY
 
+BEGIN_METHOD(Stream_Watch, GB_INTEGER mode; GB_BOOLEAN on)
+
+	int mode = VARG(mode);
+	
+	if (mode == R_OK)
+		mode = ST_READ;
+	else if (mode == W_OK)
+		mode = ST_WRITE;
+	else
+	{
+		GB_Error("Unknown watch");
+		return;
+	}
+	
+	watch_stream(THIS_STREAM, mode, VARG(on));
+
+END_METHOD
+
 BEGIN_METHOD_VOID(StreamLines_next)
 
 	char *str;
@@ -976,6 +994,8 @@ END_PROPERTY
 
 #endif
 
+//---------------------------------------------------------------------------
+
 GB_DESC StreamLinesDesc[] = 
 {
 	GB_DECLARE_VIRTUAL(".Stream.Lines"),
@@ -1024,6 +1044,8 @@ GB_DESC StreamDesc[] =
 	GB_METHOD("Begin", NULL, Stream_Begin, NULL),
 	GB_METHOD("Send", NULL, Stream_End, NULL),
 	GB_METHOD("Drop", NULL, Stream_Cancel, NULL),
+	
+	GB_METHOD("Watch", NULL, Stream_Watch, "(Mode)i(Watch)b"),
 
 	GB_END_DECLARE
 };

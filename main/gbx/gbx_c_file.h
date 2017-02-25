@@ -42,7 +42,6 @@ typedef
 typedef
 	struct {
 		CSTREAM ob;
-		int watch_fd;
 		}
 	CFILE;
 
