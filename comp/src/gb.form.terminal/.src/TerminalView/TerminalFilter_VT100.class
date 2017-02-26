@@ -632,7 +632,7 @@ NOT_IMPLEMENTED:
   
 End
 
-Public Sub InputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess As Process, iCode As Integer, sText As String, Optional bNormal As Boolean = True, bShift As Boolean, bControl As Boolean) As Boolean
+Public Sub InputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess As Stream, iCode As Integer, sText As String, Optional bNormal As Boolean = True, bShift As Boolean, bControl As Boolean) As Boolean
   
   If bNormal Then
     

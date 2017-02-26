@@ -1,0 +1,75 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,147,69)
+  { Term TerminalView
+    MoveScaled(2,4,58,56)
+  }
+  { sndTxt Button
+    MoveScaled(132,4,13,4)
+    Text = ("Send data")
+  }
+  { dataToSend TextBox
+    MoveScaled(66,3,61,6)
+    Text = ("Test Data to the terminal")
+  }
+  { DataFromTerminal TextArea
+    MoveScaled(66,15,65,41)
+  }
+  { Label1 Label
+    MoveScaled(67,11,44,4)
+    Text = ("Data From Terminal")
+  }
+  { KillSession Button
+    MoveScaled(132,20,14,6)
+    Text = ("kill Session")
+  }
+  { TaskTest Button
+    MoveScaled(132,27,14,6)
+    Text = ("Task Testing")
+  }
+  { TaskStop Button
+    MoveScaled(132,33,14,5)
+    Text = ("Task Stop")
+  }
+  { Timer1 #Timer
+    #MoveScaled(29,61)
+  }
+  { SerialPort1 #SerialPort
+    #MoveScaled(43,61)
+    FlowControl = SerialPort.None
+    PortName = "/dev/ttyS0"
+  }
+  { StartSession Button
+    MoveScaled(132,14,14,6)
+    Text = ("Start Session")
+  }
+  { StartRs232 Button
+    MoveScaled(132,40,14,6)
+    Text = ("Start Rs232")
+  }
+  { Stoprs232 Button
+    MoveScaled(132,46,14,5)
+    Text = ("Stop Rs232")
+  }
+  { Button2 Button
+    MoveScaled(132,57,14,5)
+    Text = ("TCP test")
+  }
+  { Socket1 #Socket
+    #MoveScaled(54,61)
+    Host = "localhost"
+  }
+  { TCPSTOP Button
+    MoveScaled(132,62,14,5)
+    Text = ("TCP Stop")
+  }
+  { HostName TextBox
+    MoveScaled(67,57,63,5)
+    Text = ("127.0.0.1")
+  }
+  { PortNumber TextBox
+    MoveScaled(67,62,63,5)
+    Text = ("23")
+  }
+}

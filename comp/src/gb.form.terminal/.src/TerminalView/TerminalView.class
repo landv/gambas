@@ -47,6 +47,9 @@ Private $hMouseTimer As Timer
 Private $bTermUseMouse As Boolean
 
 Private $hProcess As Process
+Private $hPipeIn As Stream 			  ' Added this BG to support pipe io to and from the ScreenTop
+Private $hPipeOut As Stream 			' added this BG to support pipe io to and from the screen 
+
 Private $fStart As Float
 
 Private $hFilter As TerminalFilter
@@ -562,13 +565,25 @@ End
 Public Sub View_KeyPress()
 
   'If Key.Text Then $hScreen.Print(Replace(Key.Text, "\r", "\n"))
-  If Not $hProcess Then Return
+  
+  If Not $hProcess And Not $hPipeout Then Return  ' added BG to allow redirection of io
 
   If $hOutputTimer.Enabled Then $hOutputTimer.Trigger
+  
+  If $hPipeOut Then ' added BG to allow redirection of io
+  
+       If $hFilter.InputTo(Me, $hScreen, $hPipeOut, Key.Code, Key.Text, Key.Normal, Key.Shift, Key.Control) Then
+	 EnsureVisible
+	 Stop Event
+      Endif
+      
+  Else
 
-  If $hFilter.InputTo(Me, $hScreen, $hProcess, Key.Code, Key.Text, Key.Normal, Key.Shift, Key.Control) Then
-    EnsureVisible
-    Stop Event
+      If $hFilter.InputTo(Me, $hScreen, $hProcess, Key.Code, Key.Text, Key.Normal, Key.Shift, Key.Control) Then
+	 EnsureVisible
+	 Stop Event
+      Endif
+      
   Endif
 
 End
@@ -676,7 +691,7 @@ Public Sub Exec(Command As String[], Optional Environment As String[]) As Proces
 
   Dim aEnv As String[]
   
-  If $hProcess Then Return
+  If Not (IsNull($hProcess) Or IsNull($hPipeOut)) Then Return
 
   aEnv = ["TERM=xterm"]
   If Environment Then aEnv.Insert(Environment)
@@ -695,7 +710,7 @@ Public Sub Shell(Command As String, Optional Environment As String[]) As Process
 
   Dim aEnv As String[]
   
-  If $hProcess Then Return
+  If Not (IsNull($hProcess) Or IsNull($hPipeOut)) Then Return
 
   aEnv = ["TERM=xterm"]
   If Environment Then aEnv.Insert(Environment)
@@ -710,6 +725,27 @@ Public Sub Shell(Command As String, Optional Environment As String[]) As Process
 
 End
 
+
+' allow a connection to a filter or other task
+
+Public Sub Piped(PipeOut As Variant, PipeIn As Variant) As Boolean ' added BG this function to use as a piped terminal
+ 
+  
+  If $hProcess Then Return
+   
+  $hPipeOut = PipeOut
+  $hPipeIn = PipeIn
+
+  $hPipeIn.Watch(gb.Read, True)
+  Object.Attach($hPipeIn, Me, "Process")
+
+  $fStart = Timer
+  
+  Return True
+  
+End
+
+
 Public Sub Process_Kill()
 
   If $sBuffer Then OutputTimer_Timer
@@ -718,12 +754,18 @@ Public Sub Process_Kill()
 
 End
 
+
 Public Sub Process_Read()
 
   Dim sData As String
-
-  sData = Read #$hProcess, Lof($hProcess)
-
+  
+  If $hPipeIn Then
+       Read #$hPipeIn, sData, Lof($hPipeIn)
+    Stop Event
+  Else
+    sData = Read #$hProcess, Lof($hProcess)
+ Endif
+ 
   $sBuffer &= sData
 
   If Len($sBuffer) > 65536 Or If (Timer - $fStart) > 0.25 Then
@@ -744,7 +786,12 @@ End
 Public Sub OutputTimer_Timer()
 
   $fStart = Timer
-  $hFilter.OutputTo(Me, $hScreen, $hProcess, $sBuffer)
+  
+  If $hPipeOut Then
+    $hFilter.OutputTo(Me, $hScreen, $hPipeOut, $sBuffer) ' added this BG to support piped io
+  Else
+    If $hProcess Then $hFilter.OutputTo(Me, $hScreen, $hProcess, $sBuffer)
+  Endif
   $sBuffer = ""
   $hOutputTimer.Stop
   EnsureVisible
@@ -792,8 +839,19 @@ End
 
 Public Sub Kill()
 
-  Try $hProcess.Kill
-
+   
+  If $hProcess Then 
+      Try $hProcess.Kill
+  Else                     ' added BG to end the piped session
+    If $hPipeIn Then
+        Process_Read()        ' Get the last data in stream and display it
+        $hPipeIn.Watch(gb.Read, False)
+        
+        $hPipeIn = Null       ' dont close the pipes its the owners problem
+        $hPipeOut = Null    
+    Endif
+  Endif
+  
 End
 
 Private Function Blink_Read() As Boolean
@@ -830,13 +888,17 @@ Public Sub Paste()
 
   Dim sText As String
 
-  If Not $hProcess Then Return
+  If Not $hProcess Or Not $hPipeOut Then Return  ' Added BG to support Pipes
 
   sText = Clipboard.Paste("text/plain")
   If Not sText Then Return
 
   If $hFilter.BracketedPasteActive Then sText = "\e[200~" & sText & "\e[200~"
-  $hFilter.InputTo(Me, $hScreen, $hProcess, 0, sText)
+  If $hPipeOut Then
+      $hFilter.InputTo(Me, $hScreen, $hPipeOut, 0, sText)
+  Else
+      $hFilter.InputTo(Me, $hScreen, $hProcess, 0, sText)
+  Endif
   EnsureVisible
 
 End
