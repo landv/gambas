@@ -19,7 +19,7 @@ Public Sub Form_Open()
   InPipe = Pipe "/tmp/MyPipeOut" For Read        ' providers in pipe
 
   
-  If Not Term.Piped(OutPipe, InPipe) Then
+  If Not Term.ConnectTo(OutPipe, InPipe) Then
     
     Close $hPipeOut
     Close InPipe
@@ -91,7 +91,7 @@ Public Sub TaskTest_Click()
         InPipe = Pipe PipedTask.$sInputFileName For Write
         OutPipe = Pipe PipedTask.$sOutputFileName For Read
         
-        Term.Piped(InPipe, OutPipe)      ' tell the terminal about the remote task
+        Term.ConnectTo(InPipe, OutPipe)      ' tell the terminal about the remote task
         
   Endif
 
@@ -133,7 +133,7 @@ Public Sub StartRs232_Click()
   $hPipeIn = SerialPort1.Open()
   $hPipeOut = $hPipeIn()
   
-  If Not Term.Piped($hPipeIn, $hPipeOut) Then
+  If Not Term.ConnectTo($hPipeIn, $hPipeOut) Then
     
     Close $hPipeOut
     Close $hPipeIn
@@ -178,7 +178,7 @@ Public Sub Socket1_Ready()
     
     DataFromTerminal.text &= "Ready to send receive on socket\n"
     
-    Term.Piped($hMySock, $hMySock)
+    Term.ConnectTo($hMySock, $hMySock)
 
 End
 

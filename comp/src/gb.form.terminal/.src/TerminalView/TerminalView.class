@@ -727,16 +727,19 @@ End
 
 
 ' allow a connection to a filter or other task
+' Output is the Pipe on which the connect Task or process will receive input
+' the input stream I the one this process will use to receive input
 
-Public Sub Piped(PipeOut As Variant, PipeIn As Variant) As Boolean ' added BG this function to use as a piped terminal
+Public Sub ConnectTo($hOutputStream As Variant, $hInputStream As Variant) As Boolean ' added BG this function to use as a piped terminal
  
   
   If $hProcess Then Return
    
-  $hPipeOut = PipeOut
-  $hPipeIn = PipeIn
+  $hPipeOut = $hOutputStream
+  $hPipeIn = $hInputStream
 
   $hPipeIn.Watch(gb.Read, True)
+  
   Object.Attach($hPipeIn, Me, "Process")
 
   $fStart = Timer
