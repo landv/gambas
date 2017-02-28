@@ -5,6 +5,7 @@ Private $hPipeOut As File
 Private InPipe As File
 Private OutPipe As File
 Private $hMySock As Socket
+Private $oTelnet As TelNetProtocol
 
 Public TheTask As PipedTask
 
@@ -19,7 +20,7 @@ Public Sub Form_Open()
   InPipe = Pipe "/tmp/MyPipeOut" For Read        ' providers in pipe
 
   
-  If Not Term.ConnectTo(OutPipe, InPipe) Then
+  If Not Term.ConnectTo(OutPipe, InPipe, Null) Then
     
     Close $hPipeOut
     Close InPipe
@@ -91,7 +92,7 @@ Public Sub TaskTest_Click()
         InPipe = Pipe PipedTask.$sInputFileName For Write
         OutPipe = Pipe PipedTask.$sOutputFileName For Read
         
-        Term.ConnectTo(InPipe, OutPipe)      ' tell the terminal about the remote task
+        Term.ConnectTo(InPipe, OutPipe, Null)      ' tell the terminal about the remote task
         
   Endif
 
@@ -133,7 +134,7 @@ Public Sub StartRs232_Click()
   $hPipeIn = SerialPort1.Open()
   $hPipeOut = $hPipeIn()
   
-  If Not Term.ConnectTo($hPipeIn, $hPipeOut) Then
+  If Not Term.ConnectTo($hPipeIn, $hPipeOut, Null) Then
     
     Close $hPipeOut
     Close $hPipeIn
@@ -151,7 +152,7 @@ Public Sub Stoprs232_Click()
 
 End
 
-Public Sub Button2_Click()
+Public Sub TelnetTest_Click()
 Dim Port As Integer
 Dim host As String
 
@@ -178,13 +179,15 @@ Public Sub Socket1_Ready()
     
     DataFromTerminal.text &= "Ready to send receive on socket\n"
     
-    Term.ConnectTo($hMySock, $hMySock)
+    $oTelnet = New TelNetProtocol($hMySock)
+    
+    Term.ConnectTo($hMySock, $hMySock, ByRef $oTelnet)
 
 End
 
 
 
-Public Sub TCPSTOP_Click()
+Public Sub TelNetStop_Click()
 
   If Not $hMySock Then Return
   Term.Kill
@@ -205,5 +208,17 @@ Public Sub Socket1_Closed()
 
   DataFromTerminal.text &= "Event Closed for send receive on socket\n"
   
+
+End
+
+Public Sub Socket1_Read()
+
+  Return
+
+End
+
+Public Sub Socket1_Write()
+
+  Return
 
 End

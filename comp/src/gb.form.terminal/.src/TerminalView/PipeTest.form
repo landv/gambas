@@ -52,17 +52,17 @@
     MoveScaled(132,46,14,5)
     Text = ("Stop Rs232")
   }
-  { Button2 Button
+  { TelnetTest Button
     MoveScaled(132,57,14,5)
-    Text = ("TCP test")
+    Text = ("Telnet Start")
   }
   { Socket1 #Socket
     #MoveScaled(54,61)
     Host = "localhost"
   }
-  { TCPSTOP Button
+  { TelNetStop Button
     MoveScaled(132,62,14,5)
-    Text = ("TCP Stop")
+    Text = ("telNet Stop")
   }
   { HostName TextBox
     MoveScaled(67,57,63,5)

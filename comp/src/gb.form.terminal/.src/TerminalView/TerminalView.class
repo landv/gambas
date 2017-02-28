@@ -49,6 +49,7 @@ Private $bTermUseMouse As Boolean
 Private $hProcess As Process
 Private $hPipeIn As Stream 			  ' Added this BG to support pipe io to and from the ScreenTop
 Private $hPipeOut As Stream 			' added this BG to support pipe io to and from the screen 
+Private $oPreprocess As Object    ' Added to allow call back to handle data before the terminal does
 
 Private $fStart As Float
 
@@ -729,18 +730,30 @@ End
 ' allow a connection to a filter or other task
 ' Output is the Pipe on which the connect Task or process will receive input
 ' the input stream I the one this process will use to receive input
+' if a callBack is passed then the preprocess method is executed before recieved data is handled by the terminal
+' Preprocess may return true to have the terminal process the data, or false to have the terminal ignore the data
+' This allows the implementation of a state machine or filter to hande extended terminal functions on the stream
 
-Public Sub ConnectTo($hOutputStream As Variant, $hInputStream As Variant) As Boolean ' added BG this function to use as a piped terminal
- 
+Public Sub ConnectTo($hOutputStream As Stream, $hInputStream As Stream, ByRef Preprocess As Object) As Boolean ' added BG this function to use as a piped terminal
+  Dim TheClass As Class
+  Dim TheObject As Object
+  
   
   If $hProcess Then Return
-   
+  
+  TheObject = $hInputStream
+  TheClass = Object.Class(TheObject)
+  
   $hPipeOut = $hOutputStream
   $hPipeIn = $hInputStream
-
-  $hPipeIn.Watch(gb.Read, True)
+  
+  If TheClass.Name <> "Socket" Then       ' it seems that a socket has a watch always doing this screws it up
+      $hPipeIn.Watch(gb.Read, True)
+  Endif
   
   Object.Attach($hPipeIn, Me, "Process")
+  
+  If Preprocess Then $oPreprocess = Preprocess ' set the call back to handle connection state messages etc
 
   $fStart = Timer
   
@@ -761,15 +774,26 @@ End
 Public Sub Process_Read()
 
   Dim sData As String
+  Dim len As Integer
   
   If $hPipeIn Then
-       Read #$hPipeIn, sData, Lof($hPipeIn)
-    Stop Event
+       len = Lof($hPipeIn)
+       Read #$hPipeIn, sData, len
+       Stop Event
+       If $oPreprocess Then 
+          If $oPreprocess.Preprocess(ByRef sData, ByRef len) Then  ' if it returns true then we should process the data
+                 $sBuffer &= sData   
+          Endif
+       Else
+          $sBuffer &= sData
+       Endif
   Else
     sData = Read #$hProcess, Lof($hProcess)
+    Stop Event
+    $sBuffer &= sData
  Endif
  
-  $sBuffer &= sData
+ 
 
   If Len($sBuffer) > 65536 Or If (Timer - $fStart) > 0.25 Then
     $hOutputTimer.Trigger
@@ -848,8 +872,14 @@ Public Sub Kill()
   Else                     ' added BG to end the piped session
     If $hPipeIn Then
         Process_Read()        ' Get the last data in stream and display it
-        $hPipeIn.Watch(gb.Read, False)
         
+        If Object.Class($hPipeIn).name <> "Socket" Then
+            $hPipeIn.Watch(gb.Read, False)
+        Endif
+        
+        Object.Detach(Me)
+        
+        $oPreprocess = Null
         $hPipeIn = Null       ' dont close the pipes its the owners problem
         $hPipeOut = Null    
     Endif
