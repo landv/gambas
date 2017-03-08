@@ -112,7 +112,7 @@ Public Sub _UploadFinish()
   'Session.Load
   'Me._InitProperties
   
-  If Me["path"] Then Try Kill Me["path"]
+  Me["path"] = ""
   Me["file"] = ""
   
   For Each sPath In Request.Files
@@ -173,9 +173,17 @@ End
 
 Public Sub Clear()
   
-  If Me["path"] Then
-    Try Kill Me["path"]
+  Dim sPath As String
+  
+  Abort
+  
+  sPath = Me["path"]
+  If sPath Then
+    Try Kill sPath
+    Try Rmdir File.Dir(sPath)
     Me["name"] = ""
+    Me["path"] = ""
+    Me["file"] = ""
   Endif
   
 End

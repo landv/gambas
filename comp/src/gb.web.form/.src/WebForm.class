@@ -540,8 +540,7 @@ Public Sub Hide()
   
 End
 
-
-Public Sub Show()
+Private Sub DoShow()
   
   Dim hWindow As WebWindow
   
@@ -558,6 +557,12 @@ Public Sub Show()
   
   _Window = hWindow.Id
   
+End
+
+
+Public Sub Show()
+
+  DoShow  
   Raise Open
   
 End
@@ -566,7 +571,7 @@ Public Sub ShowModal(Optional Parent As WebControl)
   
   Dim hWindow As WebWindow
   
-  If _Window = 0 Then Show()
+  If _Window = 0 Then DoShow()
   
   hWindow = WebControl.FromId(_Window)
   If hWindow Then

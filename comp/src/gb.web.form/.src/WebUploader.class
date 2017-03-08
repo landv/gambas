@@ -5,12 +5,13 @@ Inherits WebContainer
 
 Public Const _IsContainer As Boolean = False
 Public Const _Group As String = "WebForm"
-Public Const _Properties As String = "*,Text"
+Public Const _Properties As String = "*,Text,Image{WebImage}"
 'Public Const _DrawWith As String = "DateChooser"
 
 Event Upload
 
 Property Text As String
+Property Image As String
 Property Read Path As String
 Property Read File As String
 
@@ -20,7 +21,6 @@ Private pgbUpload As WebProgressBar
 Private btnAbort As WebButton
   
 Private $sText As String
-Private $bUploaded As Boolean
 
 Public Sub _new()
   
@@ -70,32 +70,31 @@ End
 
 Public Sub uplFile_Upload()
   
-  pgbUpload.Hide
+  'pgbUpload.Hide
   btnAbort.Hide
   uplFile.Show
   
-  $bUploaded = True
   pgbUpload.Value = 1
+
   Raise Upload
   
 End
 
 Private Function Path_Read() As String
 
-  If $bUploaded Then Return uplFile.Path
+  Return uplFile.Path
 
 End
 
 Private Function File_Read() As String
 
-  If $bUploaded Then Return uplFile.File
+  Return uplFile.File
 
 End
 
 Public Sub uplFile_Progress()
   
-  If $bUploaded Then
-    $bUploaded = False
+  If uplFile.Progress = 0 Then
     pgbUpload.Show
     btnAbort.Show
     uplFile.Hide
@@ -118,5 +117,17 @@ End
 Public Sub Clear()
 
   uplFile.Clear
+
+End
+
+Private Function Image_Read() As String
+
+  Return btnUpload.Image
+
+End
+
+Private Sub Image_Write(Value As String)
+
+  btnUpload.Image = Value
 
 End
