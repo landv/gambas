@@ -161,7 +161,7 @@ Public Sub _RenderStyleSheet()
       Select Case $iArrangement
         Case Arrange.Horizontal
           Me._AddStyleSheet("flex-flow:row;")
-          Me._AddStyleSheet("overflow:hidden;")
+          Me._AddStyleSheet("overflow-x:hidden;")
         Case Arrange.Vertical
           Me._AddStyleSheet("flex-flow:column;")
         Case Arrange.Column

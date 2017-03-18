@@ -569,18 +569,18 @@ End
 Public Sub _GetUpdateJS(sEvent As String, sProp As String, Optional sGetValue As String = "null", Optional sMore As String) As String
   
   Dim sStr As String
-  
-  sStr = " " & sEvent & "=\"gw.update(" '& JS(Me.Form.Name) & "," 
-  'If Me Is WebForm Then
-  '  sStr &= "null"
-  'Else
-    sStr &= JS($sName)
-  'Endif
-  sStr &= "," & JS(sProp) & "," & sGetValue & ");"
+  sStr = " " & sEvent & "=\"gw.update(" & JS($sName) & "," & JS(sProp) & "," & sGetValue & ");"
   If sMore Then sStr &= sMore
-  sStr &= "\""
+  Return sStr & "\""
   
-  Return sStr
+End
+
+Public Sub _GetUpdateWaitJS(sEvent As String, sProp As String, Optional sGetValue As String = "null", Optional sMore As String) As String
+  
+  Dim sStr As String
+  sStr = " " & sEvent & "=\"gw.updateWait(" & JS($sName) & "," & JS(sProp) & "," & sGetValue & ");"
+  If sMore Then sStr &= sMore
+  Return sStr & "\""
   
 End
 

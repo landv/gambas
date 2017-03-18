@@ -5,15 +5,11 @@
   Height = "100%"
   Arrangement = Arrange.Vertical
   Title = ("This is webform2")
-  { WebSeparator8 WebSeparator
-    #MoveScaled(1,1,136,3)
-    Height = "1px"
-  }
-  { WebHBox1 WebHBox
-    #MoveScaled(1,4,136,17)
+  { WebMenuBar1 WebMenuBar
+    #MoveScaled(1,1,136,48)
     Spacing = True
     { WebMenu3 WebMenu
-      #MoveScaled(1,1,32,15)
+      #MoveScaled(1,1,32,46)
       Text = ("File")
       { WebMenuItem7 WebMenuItem
         #MoveScaled(1,1,30,4)
@@ -66,7 +62,7 @@
       }
     }
     { WebMenu1 WebMenu
-      #MoveScaled(34,1,30,15)
+      #MoveScaled(34,1,30,46)
       Text = ("Project")
       { WebMenuItem2 WebMenuItem
         #MoveScaled(1,1,28,4)
@@ -97,10 +93,9 @@
     }
   }
   { WebContainer1 WebHBox
-    #MoveScaled(1,21,136,6)
+    #MoveScaled(1,49,136,6)
     { WebButton1 WebButton
       #MoveScaled(1,1,13,4)
-      Border = False
       Text = ("A button")
     }
     { WebButton2 WebButton
@@ -132,7 +127,7 @@
     }
   }
   { WebContainer9 WebContainer
-    #MoveScaled(1,27,136,88)
+    #MoveScaled(1,55,136,88)
     Expand = True
     Arrangement = Arrange.Vertical
     Margin = True

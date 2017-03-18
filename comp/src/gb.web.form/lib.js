@@ -329,6 +329,11 @@ gw = {
     gw.send(['update', id, prop, value, true], after);
   },
   
+  updateWait: function(id, prop, value, after)
+  {
+    gw.send(['update', id, prop, value, false], after);
+  },
+  
   command: function(action)
   {
     gw.send(null, action);
@@ -697,7 +702,7 @@ gw = {
     {
       var i, win, last;
       
-      for (i = 0; i < gw.windows.length - 1; i++)
+      for (i = 0; i < gw.windows.length; i++)
       {
         win = gw.windows[i];
         if ($(win).gw_popup)

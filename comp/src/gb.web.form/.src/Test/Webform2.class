@@ -10,7 +10,7 @@ End
 
 Public Sub WebButton1_Click()
 
-  WebTabPanel1.Index = 1 - WebTabPanel1.Index
+  WebTabPanel1.Index = 1
 
 End
 
@@ -129,7 +129,7 @@ End
 
 Public Sub WebForm_Message(Source As WebControl, Action As String)
 
-  Debug "Action '"; Action; "' on '"; Source.Name; "'"
+  'Debug "Action '"; Action; "' on '"; Source.Name; "'"
 
 End
 
