@@ -1050,6 +1050,8 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value)
 
 			STREAM_read(stream, &buffer._byte, 1);
 			type = (TYPE)buffer._byte;
+			if (type > T_OBJECT)
+				THROW(E_SERIAL);
 
 			size = read_length(stream);
 
@@ -1392,8 +1394,12 @@ void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value)
 				{
 					buffer._byte = 'A';
 					STREAM_write(stream, &buffer._byte, 1);
-
-					buffer._byte = (unsigned char)Min(T_OBJECT, array->type);
+					
+					if (TYPE_is_object(array->type))
+						buffer._byte = T_OBJECT;
+					else
+						buffer._byte = (unsigned char)array->type;
+					
 					STREAM_write(stream, &buffer._byte, 1);
 
 					write_length(stream, array->count);
