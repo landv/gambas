@@ -1203,11 +1203,13 @@ Public Sub UpdateMenu()
   
   mnuUseHttpServer.Visible = Project.CanUseHttpServer()
   
+  bVisible = False
   If Project.Components Then
-    Action["gui"].Visible = Project.Components.Exist("gb.gui")
-  Else
-    Action["gui"].Visible = False
+    If Project.Components.Exist("gb.gui") Or If Project.Components.Exist("gb.gui.qt") Then
+      bVisible = True
+    Endif
   Endif
+  Action["gui"].Visible = bVisible
   
   btnShowMenu.Visible = Not Me.Menus.Visible
   btnShowMenu.Raise

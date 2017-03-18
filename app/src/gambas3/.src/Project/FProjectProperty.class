@@ -253,6 +253,7 @@ Private Function DoApply() As Boolean
   Project.RefreshRoot
   If bRefreshForm Then Project.RefreshForm
   If bRefreshEditor Then Project.RefreshEditor
+  FMain.OnRefreshComponents
   
   Project.SetMessage(("OK"))
 
