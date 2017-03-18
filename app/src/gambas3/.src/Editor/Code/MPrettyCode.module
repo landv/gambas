@@ -9,7 +9,8 @@ Private $bLastNewLine As Boolean
 Private $bNeedNewLine As Boolean
 Private $iLastDim As Integer
 Private $iLastSelect As Integer
-Private $bLastWrap As Boolean
+Private $bLastWrap As Integer
+Private $bLastString As Boolean
 
 Private $bIndentDim As Boolean
 Private $bRemoveSpace As Boolean
@@ -87,6 +88,7 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
   $iLastDim = -1
   $iLastSelect = -1
   $bLastWrap = False
+  $bLastString = False
   
   aText = Split(hEditor.Text, "\n")
   
@@ -213,7 +215,10 @@ Private Sub IndentLine(sLine As String) As String
   Dim sFuncSym As String
   Dim iPos As Integer
   Dim iType As Integer
-  Dim bLastWrap As Boolean
+  Dim bLastWrap As Integer
+  Dim bLastString As Boolean
+  Dim iLevel As Integer
+
   sLine = LTrim(sLine)
   
   If sLine Then
@@ -232,8 +237,19 @@ Private Sub IndentLine(sLine As String) As String
     If aSym.Count Then
       
       bLastWrap = $bLastWrap
-      $bLastWrap = False
-      If iType = Highlight.Operator And If InStr(":]);.!", aSym[aSym.Max]) = 0 And If aSym[0] <> "PRINT" Then $bLastWrap = True 
+      
+      bLastString = False
+      If $bLastString And If Highlight.Types[0] = Highlight.String Then
+        bLastString = True
+      Endif
+
+      $bLastString = iType = Highlight.String
+      
+      If iType = Highlight.Operator And If InStr(":]);.!", aSym[aSym.Max]) = 0 And If aSym[0] <> "PRINT" Then 
+        $bLastWrap = True
+      Else
+        If Not $bLastString Then $bLastWrap = False
+      Endif
       
       If $bNeedNewLine Then
         If Not $bLastNewLine Then sAdd = "\n"
@@ -276,7 +292,11 @@ Private Sub IndentLine(sLine As String) As String
         Else
         
           If $iLastDim = ($iLine - 1) Then
-            If Not $bLastNewLine Then sAdd = "\n"
+            If Not bLastString And If Not bLastWrap Then
+              If Not $bLastNewLine Then sAdd = "\n"
+            Else
+              Inc $iLastDim
+            Endif
           Endif
         
           If sSym = "END SELECT" Then
@@ -304,7 +324,6 @@ Private Sub IndentLine(sLine As String) As String
             If $cClose.Exist(sSym) Then Dec $iLevel
             iNextLevel = $iLevel
             If $cOpen.Exist(sSym) Then Inc iNextLevel
-            If bLastWrap Then Inc $iLevel
           Endif
           
         Endif
@@ -316,7 +335,10 @@ Private Sub IndentLine(sLine As String) As String
       $iLevel = Max(0, $iLevel)
       iNextLevel = Max(0, iNextLevel)
       
-      sLine = sAdd & Space$(Project.TabSize * $iLevel) & sLine
+      iLevel = $iLevel
+      If bLastWrap Then Inc iLevel
+      If bLastString Then Inc iLevel
+      sLine = sAdd & Space$(Project.TabSize * iLevel) & sLine '& " '" & If(bLastWrap, "W", "") & If(bLastString, "S", "")
       $iLevel = iNextLevel
       
       Return sLine
