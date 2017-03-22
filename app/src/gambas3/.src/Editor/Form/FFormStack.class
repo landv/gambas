@@ -319,3 +319,18 @@ Public Sub txtSearch_Activate()
   txtSearch_Click
   
 End
+
+Public Sub tvwControl_Menu()
+
+  If tvwControl.Current.Text = Null Then Return
+  ' faking the TAG
+  'tvwControl.Tag = tvwControl.Current.Text
+  'Try $hForm.Control_MouseDown()
+  ' calling Menu
+  'If Mouse.Right Then
+    Try $hForm.Control_Menu()
+  'End If 
+  ' deleting the faked TAG
+  'tvwControl.Tag = Null
+
+End
