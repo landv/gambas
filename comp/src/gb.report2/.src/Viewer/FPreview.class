@@ -50,6 +50,7 @@ Private Sub SelectPrinter(Optional sName As String)
     
   'NOTE: force the printer fullpage mode because it make error on report placement
   $hPrinter.FullPage = True
+  $hPrinter.Duplex = cmbDuplex.Index
   
   tgbGrayScale.Value = $hPrinter.GrayScale
   tgbFullPage.Value = $hPrinter.FullPage
