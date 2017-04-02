@@ -141,7 +141,28 @@ if(!THIS->foundNode->type == Node::ElementNode) return;
 
 Attribute *attr = XMLElement_GetAttribute((Element*)(THIS->foundNode), STRING(name), LENGTH(name));
 
+if (!attr)
+{
+    GB.Error("No such attribute");
+    return;
+}
+
 GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
+
+END_METHOD
+
+BEGIN_METHOD(CReaderNodeAttr_Exist, GB_STRING name)
+
+if(!THIS->foundNode || THIS->state == READ_END_CUR_ELEMENT)
+{
+    return;
+}
+
+if(!THIS->foundNode->type == Node::ElementNode) return;
+
+Attribute *attr = XMLElement_GetAttribute((Element*)(THIS->foundNode), STRING(name), LENGTH(name));
+
+GB.ReturnBoolean(!!attr);
 
 END_METHOD
 
@@ -353,6 +374,7 @@ GB_DESC CReaderNodeAttributesDesc[] =
 
     GB_METHOD("_get", "s", CReaderNodeAttr_get, "(Name)s"),
     GB_METHOD("_next", "s", CReaderNodeAttr_next, ""),
+    GB_METHOD("Exist", "b", CReaderNodeAttr_Exist, "(Name)s"),
     GB_PROPERTY_READ("Count", "i", CReaderNodeAttr_count),
     GB_PROPERTY_READ("Name", "i", CReaderNodeAttr_name),
     GB_PROPERTY_READ("Value", "i", CReaderNodeAttr_value),

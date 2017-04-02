@@ -138,7 +138,21 @@ int Reader::ReadChar(char car)
         return 0;
     }
     
-    if(car == '<' && !inComment)//Début de tag
+    /* [T. Boege, 02 Apr 2017]: Reset specialTagLevel, which tries to recognise a sequence
+     *   of characters, when this sequence is interrupted, so that e.g. <![CDATA[ab]x]>
+     *   does *not* finish the CDATA tag at ]x]>. We want a literal ]]>. */
+    if (inCDATA)
+    {
+        if (specialTagLevel > CDATA_TAG_STARTCHAR_8 && car != ']' && car != '>')
+            specialTagLevel = CDATA_TAG_STARTCHAR_8;
+    }
+    if (inComment)
+    {
+        if (specialTagLevel > COMMENT_TAG_STARTCHAR_3 && car != '-' && car != '-')
+            specialTagLevel = COMMENT_TAG_STARTCHAR_3;
+    }
+
+    if(car == '<' && !inComment && !inCDATA)//Début de tag
     {
         if(inTag)//Si on est déjà dans un tag
         {
@@ -166,7 +180,7 @@ int Reader::ReadChar(char car)
             return NODE_TEXT;
         }
     }
-    else if(car == '>' && inTag && !inEndTag && !inComment)//Fin de tag (de nouvel élément)
+    else if(car == '>' && inTag && !inEndTag && !inComment && !inCDATA)//Fin de tag (de nouvel élément)
     {
         DESTROYPARENT(foundNode);
         //UNREF(foundNode);
@@ -195,12 +209,12 @@ int Reader::ReadChar(char car)
         this->state = NODE_ELEMENT;
         return NODE_ELEMENT;
     }
-    else if(isWhiteSpace(car) && inTag && inTagName && !inComment)// Fin de tagName
+    else if(isWhiteSpace(car) && inTag && inTagName && !inComment && !inCDATA)// Fin de tagName
     {
         inTagName = false;
         XMLElement_RefreshPrefix((Element*)curNode);
     }
-    else if(isNameStartChar(car) && inTag && !inTagName && !inEndTag && !inAttrVal && !inAttrName && !inComment)//Début de nom d'attribut
+    else if(isNameStartChar(car) && inTag && !inTagName && !inEndTag && !inAttrVal && !inAttrName && !inComment && !inCDATA)//Début de nom d'attribut
     {
         if(attrName && attrVal)
         {
@@ -220,16 +234,16 @@ int Reader::ReadChar(char car)
         *attrName = car;
         lenAttrName = 1;
     }
-    else if(car == '=' && inAttrName && !inComment)//Fin du nom d'attribut
+    else if(car == '=' && inAttrName && !inComment && !inCDATA)//Fin du nom d'attribut
     {
         inAttrName = false;
     }
-    else if((car == '\'' || car == '"') && inAttr && !inAttrVal && !inComment)//Début de valeur d'attribut
+    else if((car == '\'' || car == '"') && inAttr && !inAttrVal && !inComment && !inCDATA)//Début de valeur d'attribut
     {
         inAttrVal = true;
         attrVal = 0;
     }
-    else if((car == '\'' || car == '"') && inAttr && inAttrVal && !inComment)//Fin de valeur d'attribut
+    else if((car == '\'' || car == '"') && inAttr && inAttrVal && !inComment && !inCDATA)//Fin de valeur d'attribut
     {
         XMLElement_AddAttribute(((Element*)curNode), attrName, lenAttrName,
                                            attrVal, lenAttrVal);
@@ -240,7 +254,7 @@ int Reader::ReadChar(char car)
         this->state = READ_ATTRIBUTE;
         return READ_ATTRIBUTE;
     }
-    else if(car == '/' && inTag && !inAttrVal && !inComment)//Self-closed element
+    else if(car == '/' && inTag && !inAttrVal && !inComment && !inCDATA)//Self-closed element
     {
         inTag = false;
         inTagName = false;
@@ -256,13 +270,13 @@ int Reader::ReadChar(char car)
         depth++;
         return NODE_ELEMENT;
     }
-    else if(car == '/' && inNewTag && !inComment)//C'est un tag de fin
+    else if(car == '/' && inNewTag && !inComment && !inCDATA)//C'est un tag de fin
     {
         inEndTag = true;
         inNewTag = false;
         inTag = true;
     }
-    else if(car == '>' && inEndTag && !inComment)//La fin d'un tag de fin
+    else if(car == '>' && inEndTag && !inComment && !inCDATA)//La fin d'un tag de fin
     {
         inTag = false;
         inEndTag = false;
@@ -350,7 +364,7 @@ int Reader::ReadChar(char car)
         return NODE_CDATA;
     }
     //Caractère "-" de début de commentaire
-    else if(inCommentTag && car == '-' && specialTagLevel >= COMMENT_TAG_STARTCHAR_1 && specialTagLevel < COMMENT_TAG_STARTCHAR_3  && !inComment)
+    else if(inCommentTag && car == '-' && specialTagLevel >= COMMENT_TAG_STARTCHAR_1 && specialTagLevel < COMMENT_TAG_STARTCHAR_3  && !inComment && !inCDATA)
     {
         ++specialTagLevel;
         if (specialTagLevel == COMMENT_TAG_STARTCHAR_3)//Le tag <!-- est complet, on crée un nouveau node
@@ -396,17 +410,17 @@ int Reader::ReadChar(char car)
         return NODE_COMMENT;
     }
     //Début de prologue XML
-    else if(car == '?' && inNewTag && !inComment)
+    else if(car == '?' && inNewTag && !inComment && !inCDATA)
     {
         inXMLProlog = true;
         inNewTag = false;
         inTag = false;
     }
-    else if(car == '?' && inXMLProlog && !inComment)
+    else if(car == '?' && inXMLProlog && !inComment && !inCDATA)
     {
         specialTagLevel = PROLOG_TAG_ENDCHAR;
     }
-    else if(car == '>' && inXMLProlog && specialTagLevel == PROLOG_TAG_ENDCHAR && !inComment)
+    else if(car == '>' && inXMLProlog && specialTagLevel == PROLOG_TAG_ENDCHAR && !inComment && !inCDATA)
     {
         specialTagLevel = 0;
         inXMLProlog = 0;
