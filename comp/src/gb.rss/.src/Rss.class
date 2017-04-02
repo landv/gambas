@@ -1,0 +1,440 @@
+' Gambas class file
+
+Export
+
+''' This class represents an RSS document. Its properties are those of its single <channel> element.
+''' It acts like an array of RssItem objects. Add your items in order and then call the ToString()
+''' method to get the XML document string.
+'''
+''' Conforming to RSS 2.0, see https://cyber.harvard.edu/rss/rss.html
+
+Static Private DAY_NAME As String[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] ' conforms to how WeekDay() works in Gambas
+Static Private MONTH_NAME As String[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+'' Format a date according to RFC 822, but with 4-digit years as this is preferred by the RSS specification.
+Static Public Function FormatDate(Dat As Date) As String
+  Dim sWeekDay, sDate, sTime As String
+  Dim sTimezone As String
+
+  sWeekDay = DAY_NAME[WeekDay(Dat)]
+  ' Avoid using format because it may replace ":" and such by another separators, depending on the locale
+  ' Contrary to what is specified in RFC 822, RSS prefers 4-digit years!
+  sDate = Subst$("&1 &2 &3", Format(Dat, "d"), MONTH_NAME[Month(Dat) - 1], Format(Dat, "yyyy"))
+  ' TODO: I'm not sure what to pick here. Is the Gambas timezone abbreviation compatible with the RFC?
+  sTimezone = Format(Dat, "tt")
+  sTime = Subst$("&1:&2:&3 &4", Format$(Dat, "hh"), Format$(Dat, "nn"), Format$(Dat, "ss"), sTimezone)
+  Return Subst$("&1, &2 &3", sWeekDay, sDate, sTime)
+End
+
+Static Public Function ParseDate(Str As String) As Date
+  Dim sWeekDay, sDay, sMonth, sYear, sHour, sMinute, sSecond, sTimezone As String
+  Dim dRes As Date
+
+  ' In RFC 822, the 'day' and 'seconds' parts as optional. We have to deal with 2- and 4-digit years.
+  With Scan(Str, "*, *")
+    If .Count Then
+      sWeekDay = .[0]
+      Str = .[1]
+    Endif
+  End With
+  With Scan(Str, "* * * *:*:*")
+    If Not .Count Then Error.Raise(("Date does not conform to RFC 822"))
+    sDay = .[0]
+    sMonth = .[1]
+    If Len(sYear) = 2 Then
+      ' XXX: I think 2-digit years are most likely from the 20th century, so I will always use that.
+      sYear = "19" & sYear
+      Debug "2-digit year";; sYear;; "is ambiguous. Taking it as 20th century."
+    Endif
+    sYear = .[2]
+    sHour = .[3]
+    sMinute = .[4]
+    Str = .[5]
+  End With
+  With Scan(Str, "* *")
+    If .Count Then
+      sSecond = .[0]
+      sTimezone = .[1]
+    Else
+      sSecond = "0"
+      sTimezone = Str
+    Endif
+  End With
+
+  If sWeekDay And If Not DAY_NAME.Exist(sWeekDay) Then Error.Raise(Subst$(("Invalid weekday '&1'"), sWeekDay))
+  If Not IsInteger(sYear) Then Error.Raise(Subst$(("Invalid year '&1'"), sYear))
+  If MONTH_NAME.Find(sMonth) = -1 Then Error.Raise(Subst$(("Invalid month '&1'"), sMonth))
+  If Not IsInteger(sDay) Then Error.Raise(Subst$(("Invalid day '&1'"), sDay))
+  If Not IsInteger(sMinute) Then Error.Raise(Subst$(("Invalid minute '&1'"), sMinute))
+  If Not IsInteger(sSecond) Then Error.Raise(Subst$(("Invalid second '&1'"), sSecond))
+  ' TODO: Check validity of timezone
+  ' TODO: Don't ignore timezone
+  dRes = Date(CInt(sYear), 1 + MONTH_NAME.Find(sMonth), CInt(sDay), CInt(sHour), CInt(sMinute), CInt(sSecond))
+  ' 3. Consistency check: does the given 'day' match the date?
+  If sWeekDay And If DAY_NAME[WeekDay(dRes)] <> sWeekDay Then Error.Raise(Subst$(("Weekday does not match date: '&1' vs. '&2'"), sWeekDay, DAY_NAME[WeekDay(dRes)]))
+  Return dRes
+End
+
+' Mandatory <channel> elements
+Public Title As String
+Public {Link} As String
+Public Description As String
+' Optional <channel> elements
+Public Language As String
+Public Copyright As String
+Public ManagingEditor As String
+Public WebMaster As String
+Public PubDate As Date
+Public LastBuildDate As Date
+Public Categories As RssCategory[]
+Public Generator As String
+Public Docs As String
+Public Cloud As RssCloud
+Public Ttl As Integer
+Public Image As RssImage
+Public Rating As String
+Public TextInput As RssTextInput
+Public SkipHours As Integer[]
+Public SkipDays As Integer[]
+
+Property Read Count As Integer
+
+Private $aItems As New RssItem[]
+
+Public Sub Add(Item As RssItem, Optional Index As Integer)
+  If IsMissing(Index) Then
+    $aItems.Add(Item)
+  Else
+    $aItems.Add(Item, Index)
+  Endif
+End
+
+Private Function Count_Read() As Integer
+  Return $aItems.Count
+End
+
+Public Sub _get(Index As Integer) As RssItem
+  Return $aItems[Index]
+End
+
+Public Sub _put(Item As RssItem, Index As Integer)
+  $aItems[Index] = Item
+End
+
+Public Sub _next() As RssItem
+  Dim iIndex As Integer
+  Dim hItem As RssItem
+
+  iIndex = 0
+  If Not IsNull(Enum.Index) Then iIndex = Enum.Index
+  If iIndex > $aItems.Max Then
+    Enum.Stop()
+    Return
+  Endif
+  hItem = $aItems[iIndex]
+  Enum.Index = iIndex + 1
+  Return hItem
+End
+
+Public Sub Remove(Index As Integer, Optional Length As Integer = 1)
+  $aItems.Remove(Index, Length)
+End
+
+Public Sub Reverse()
+  $aItems.Reverse()
+End
+
+'' Sort the items by their date. You can pick ~Mode~ as gb.Ascent or gb.Descent.
+'' The default is descending sort so that the newest items are first in the document.
+Public Sub Sort(Optional Mode As Integer = gb.Descent)
+  $aItems.Sort(Mode)
+End
+
+Public Sub Clear()
+  Title = Null
+  {Link} = Null
+  Description = Null
+  Language = Null
+  Copyright = Null
+  ManagingEditor = Null
+  WebMaster = Null
+  PubDate = Null
+  LastBuildDate = Null
+  Categories = Null
+  Generator = Null
+  Docs = Null
+  Cloud = Null
+  Ttl = 0
+  Image = Null
+  Rating = Null
+  TextInput = Null
+  SkipHours = Null
+  SkipDays = Null
+  $aItems.Clear()
+End
+
+Public Function ToString() As String
+  Dim hWriter As New XmlWriter
+
+  hWriter.Open(Null, True)
+    _Write(hWriter)
+  Return hWriter.EndDocument()
+End
+
+Public Sub _Write(hWriter As XmlWriter)
+  Dim hItem As RssItem
+  Dim hCat As RssCategory
+
+  hWriter.StartElement("rss", ["version", "2.0"])
+    hWriter.StartElement("channel")
+      With hWriter
+        .Element("title", Title)
+        .Element("link", {Link})
+        .Element("description", Description)
+        If Language Then .Element("language", Language)
+        If Copyright Then .Element("copyright", Copyright)
+        If ManagingEditor Then .Element("managingEditor", ManagingEditor)
+        If WebMaster Then .Element("webMaster", WebMaster)
+        If PubDate Then .Element("pubDate", Rss.FormatDate(PubDate))
+        If LastBuildDate Then .Element("lastBuildDate", Rss.FormatDate(LastBuildDate))
+        If Categories Then
+          For Each hCat In Categories
+            hCat._Write(hWriter)
+          Next
+        Endif
+        If Generator Then .Element("generator", Generator)
+        If Docs Then .Element("docs", Docs)
+        If Cloud Then Cloud._Write(hWriter)
+        If Ttl Then .Element("ttl", Str$(Ttl))
+        If Image Then Image._Write(hWriter)
+        ' For the Rating, see Holzner: "Secrets of RSS", chapter 4
+        If Rating Then .Element("rating", Rating)
+        If TextInput Then TextInput._Write(hWriter)
+        If SkipHours Then _WriteSkipHours(hWriter)
+        If SkipDays Then _WriteSkipDays(hWriter)
+      End With
+
+      For Each hItem In $aItems
+        hItem._Write(hWriter)
+      Next
+    hWriter.EndElement()
+  hWriter.EndElement()
+End
+
+'' https://cyber.harvard.edu/rss/skipHoursDays.html
+
+Private Sub _WriteSkipHours(hWriter As XmlWriter)
+  Dim iHour As Integer
+
+  If Not SkipHours.Count Then Return
+  If SkipHours.Count > 24 Then Error.Raise(("SkipHours may only contain up to 24 elements"))
+  With hWriter
+    .StartElement("skipHours")
+      For Each iHour In SkipHours
+        If iHour < 0 Or If iHour > 23 Then Error.Raise(("SkipHour element must be in the range [0, 23]"))
+        .Element("hour", Str$(iHour))
+      Next
+    .EndElement()
+  End With
+End
+
+Private Sub _WriteSkipDays(hWriter As XmlWriter)
+  Dim iDay As Integer
+
+  If Not SkipDays.Count Then Return
+  If SkipDays.Count > 7 Then Error.Raise(("SkipDays may only contain up to 7 elements"))
+  With hWriter
+    .StartElement("skipDays")
+      For Each iDay In SkipDays
+        .Element("day", GetSkipDay(iDay))
+      Next
+    .EndElement()
+  End With
+End
+
+Private Function GetSkipDay(iDay As Integer) As String
+  Select Case iDay
+    Case gb.Monday
+      Return "Monday"
+    Case gb.Tuesday
+      Return "Tuesday"
+    Case gb.Wednesday
+      Return "Wednesday"
+    Case gb.Thursday
+      Return "Thursday"
+    Case gb.Friday
+      Return "Friday"
+    Case gb.Saturday
+      Return "Saturday"
+    Case gb.Sunday
+      Return "Sunday"
+  End Select
+  Error.Raise(Subst$(("Invalid SkipDays day '&1'"), iDay))
+End
+
+Private Function GetDay(sDay As String) As Integer
+  Select Case sDay
+    Case "Monday"
+      Return gb.Monday
+    Case "Tuesday"
+      Return gb.Tuesday
+    Case "Wednesday"
+      Return gb.Wednesday
+    Case "Thursday"
+      Return gb.Thursday
+    Case "Friday"
+      Return gb.Friday
+    Case "Saturday"
+      Return gb.Saturday
+    Case "Sunday"
+      Return gb.Sunday
+  End Select
+  Error.Raise(Subst$(("Invalid day '&1'"), sDay))
+End
+
+Public Sub FromString(Data As String)
+  Dim hReader As New XmlReader
+
+  Clear()
+  hReader.FromString(Data)
+  _Read(hReader)
+End
+
+Public Sub _Read(hReader As XmlReader)
+  hReader.Read()
+  If Not hReader.Node.Name = "rss" Then Error.Raise(("<rss> expected"))
+  _ReadRss(hReader)
+  hReader.Read()
+  If Not hReader.Eof Then Error.Raise(("End-of-file expected"))
+End
+
+' This method is to be used as a While condition. In this case, the loop will continue until
+' an end tag is found on the same depth as ~iDepth~.
+Static Public Function _NotClosed(hReader As XmlReader, iDepth As Integer) As Boolean
+  ' The depth of the end tag is apparently one less than that of the start tag.
+  ' TODO: It would be nice if hReader.Node.Name contained the name of an element also when we encounter its closing tag.
+  Return (hReader.Node.Type <> XmlReaderNodeType.EndElement) Or (hReader.Depth <> iDepth - 1)
+End
+
+Static Public Sub _GetText(hReader As XmlReader) As String
+  Dim sRes As String
+  Dim iDepth As Integer = hReader.Depth
+
+  hReader.Read()
+  While _NotClosed(hReader, iDepth)
+    If hReader.Node.Type = XmlReaderNodeType.Text Or If hReader.Node.Type = XmlReaderNodeType.CDATA Then sRes &= hReader.Node.Value
+    hReader.Read()
+  Wend
+  Return sRes
+End
+
+Private Sub _ReadRss(hReader As XmlReader)
+  hReader.Read()
+  If Not hReader.Node.Name = "channel" Then Error.Raise(("<channel> expected"))
+  _ReadChannel(hReader)
+  hReader.Read()
+  ' FIXME: Here, hReader.Depth is 0, instead of -1, as it should be if it was consistent with the observation in _NotClosed()
+  If hReader.Node.Type <> XmlReaderNodeType.EndElement Or If hReader.Depth <> 0 Then Error.Raise(("</rss> expected"))
+End
+
+Private Sub _ReadChannel(hReader As XmlReader)
+  Dim hCat As RssCategory, aCategories As New RssCategory[]
+  Dim hItem As RssItem, aItems As New RssItem[]
+  Dim iDepth As Integer = hReader.Depth
+
+  hReader.Read()
+  While _NotClosed(hReader, iDepth)
+    Select Case hReader.Node.Name
+      Case "title"
+        Title = _GetText(hReader)
+      Case "link"
+        {Link} = _GetText(hReader)
+      Case "description"
+        Description = _GetText(hReader)
+      Case "language"
+        Language = _GetText(hReader)
+      Case "copyright"
+        Copyright = _GetText(hReader)
+      Case "managingEditor"
+        ManagingEditor = _GetText(hReader)
+      Case "webMaster"
+        WebMaster = _GetText(hReader)
+      Case "pubDate"
+        PubDate = ParseDate(_GetText(hReader))
+      Case "lastBuildDate"
+        LastBuildDate = ParseDate(_GetText(hReader))
+      Case "category"
+        hCat = New RssCategory
+        hCat._Read(hReader)
+        aCategories.Add(hCat)
+      Case "generator"
+        Generator = _GetText(hReader)
+      Case "docs"
+        Docs = _GetText(hReader)
+      Case "cloud"
+        Cloud = New RssCloud
+        Cloud._Read(hReader)
+      Case "ttl"
+        Ttl = CInt(_GetText(hReader))
+      Case "image"
+        Image = New RssImage
+        Image._Read(hReader)
+      Case "rating"
+        Rating = _GetText(hReader)
+      Case "textInput"
+        TextInput = New RssTextInput
+        TextInput._Read(hReader)
+      Case "skipHours"
+        _ReadSkipHours(hReader)
+      Case "skipDays"
+        _ReadSkipDays(hReader)
+      Case "item"
+        hItem = New RssItem
+        hItem._Read(hReader)
+        aItems.Add(hItem)
+      Default
+        Error.Raise(Subst$(("Unexpected element '&1' in <channel>"), hReader.Node.Name))
+    End Select
+    ' XXX: Empty tags can be <tag /> or <tag></tag>. If the last thing we read was of the
+    ' latter kind, we have to Read() one step further to consume its closing tag. If it was
+    ' a self-closing element, we must not read any further.
+    '
+    ' This is how I check for this currently: we have to be at the end of an element now.
+    ' XmlReader sets hReader.Node.Type To XmlReaderNodeType.EndElement only if a real
+    ' ending tag was encountered. A self-closing element is an XmlReaderNodeType.Element.
+    If hReader.Node.Type = XmlReaderNodeType.EndElement Then hReader.Read()
+  Wend
+  If aCategories.Count Then Categories = aCategories
+  $aItems = aItems
+End
+
+Private Sub _ReadSkipHours(hReader As XmlReader)
+  Dim iDepth As Integer = hReader.Depth
+  Dim iHour As Integer, aHours As New Integer[]
+
+  hReader.Read()
+  While _NotClosed(hReader, iDepth)
+    If hReader.Node.Name <> "hour" Then Error.Raise(("<hour> expected"))
+    iHour = CInt(_GetText(hReader))
+    If iHour < 0 Or If iHour > 23 Then Error.Raise(Subst$(("SkipHours element '&1' out of range [0, 23]"), iHour))
+    aHours.Add(iHour)
+    hReader.Read()
+  Wend
+  If aHours.Count > 24 Then Error.Raise(("SkipHours may only contain up to 24 elements"))
+  If aHours.Count Then SkipHours = aHours
+End
+
+Private Sub _ReadSkipDays(hReader As XmlReader)
+  Dim iDepth As Integer = hReader.Depth
+  Dim iDay As Integer, aDays As New Integer[]
+
+  hReader.Read()
+  While _NotClosed(hReader, iDepth)
+    If hReader.Node.Name <> "day" Then Error.Raise(("<day> expected"))
+    iDay = GetDay(_GetText(hReader))
+    aDays.Add(iDay)
+    hReader.Read()
+  Wend
+  If aDays.Count > 7 Then Error.Raise(("SkipDays may only contain up to 7 elements"))
+  If aDays.Count Then SkipDays = aDays
+End

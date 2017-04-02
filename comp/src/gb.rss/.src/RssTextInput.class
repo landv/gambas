@@ -1,0 +1,41 @@
+' Gambas class file
+
+Export
+
+Public Title As String
+Public Description As String
+Public Name As String
+Public {Link} As String
+
+Public Sub _Write(hWriter As XmlWriter)
+  If Not Title Or If Not Description Or If Not Name Or If Not {Link} Then Error.Raise(("Title, Description, Name and Link must be set in RssTextInput"))
+  With hWriter
+    .StartElement("textInput")
+      .Element("title", Title)
+      .Element("description", Description)
+      .Element("name", Name)
+      .Element("link", {Link})
+    .EndElement()
+  End With
+End
+
+Public Sub _Read(hReader As XmlReader)
+  Dim iDepth As Integer = hReader.Depth
+
+  hReader.Read()
+  While Rss._NotClosed(hReader, iDepth)
+    Select Case hReader.Node.Name
+      Case "title"
+        Title = Rss._GetText(hReader)
+      Case "description"
+        Description = Rss._GetText(hReader)
+      Case "name"
+        Name = Rss._GetText(hReader)
+      Case "link"
+        {Link} = Rss._GetText(hReader)
+      Default
+        Error.Raise(Subst$(("Unexpected element '&1' in <textInput>"), hReader.Node.Name))
+    End Select
+    hReader.Read()
+  Wend
+End

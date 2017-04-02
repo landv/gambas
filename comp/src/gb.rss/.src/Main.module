@@ -1,0 +1,17 @@
+' Gambas module file
+
+Public Sub Main()
+  Dim sRealInFile As String = "test.xml"
+  Dim sInFile As String = Temp$()
+  Dim sOutFile As String = Temp$()
+  Dim sDiff As String
+  Dim hRss As New Rss
+
+  Copy sRealInFile To sInFile
+  hRss.FromString(File.Load(sInFile))
+  File.Save(sOutFile, hRss.ToString())
+
+  System.Shell = "/bin/bash"
+  Shell Subst$("diff -u <(sort &1 | sed 's/ *$//' | sed 's/^ *//') <(sort &2 | sed 's/^ *//')", sOutFile, sInFile) To sDiff
+  Print sDiff
+End

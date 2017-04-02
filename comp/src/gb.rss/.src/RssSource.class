@@ -1,0 +1,20 @@
+' Gambas class file
+
+Export
+
+Public Source As String
+Public Url As String
+
+Public Sub _Write(hWriter As XmlWriter)
+  If Not Url Then Error.Raise(("Url must be set in RssSource"))
+  With hWriter
+    .StartElement("source", ["url", Url])
+      .Text(Source)
+    .EndElement()
+  End With
+End
+
+Public Sub _Read(hReader As XmlReader)
+  Url = hReader.Node.Attributes["url"]
+  Source = Rss._GetText(hReader)
+End

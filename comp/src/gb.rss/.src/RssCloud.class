@@ -1,0 +1,56 @@
+' Gambas class file
+
+Export
+
+''' https://cyber.harvard.edu/rss/soapMeetsRss.html#rsscloudInterface
+
+Public Enum XmlRpc, Soap, HttpPost ' Protocol constants
+
+Public Domain As String
+Public Port As Integer
+Public Path As String
+Public RegisterProcedure As String
+Public Protocol As Integer
+
+Public Sub _Write(hWriter As XmlWriter)
+  If Not Domain Or If Not Port Or If Not Path Or If Not RegisterProcedure Or If Not Protocol Then Error.Raise(("Domain, Port, Path, RegisterProcedure and Protocol must be set in RssCloud"))
+  With hWriter
+    .StartElement("cloud", ["domain", Domain, "port", Str$(Port), "path", Path, "registerProcedure", RegisterProcedure, "protocol", GetProtocol(Protocol)])
+    .EndElement()
+  End With
+End
+
+Private Function GetProtocol(iProto As Integer) As String
+  Select Case iProto
+    Case XmlRpc
+      Return "xml-rpc"
+    Case Soap
+      Return "soap"
+    Case HttpPost
+      Return "http-post"
+  End Select
+  Error.Raise(Subst$(("Invalid RssCloud protocol constant '&1'"), iProto))
+End
+
+Private Function GetProtocolConst(sProto As String) As Integer
+  Select Case sProto
+    Case "xml-rpc"
+      Return XmlRpc
+    Case "soap"
+      Return Soap
+    Case "http-post"
+      Return HttpPost
+  End Select
+  Error.Raise(Subst$(("Invalid RssCloud protocol '&1'"), sProto))
+End
+
+Public Sub _Read(hReader As XmlReader)
+  With hReader.Node.Attributes
+    Domain = .["domain"]
+    Port = CInt(.["port"])
+    Path = .["path"]
+    RegisterProcedure = .["registerProcedure"]
+    Protocol = GetProtocolConst(.["protocol"])
+  End With
+  hReader.Read()
+End

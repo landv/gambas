@@ -1,0 +1,19 @@
+' Gambas class file
+
+Export
+
+Public Category As String
+Public Domain As String
+
+Public Sub _Write(hWriter As XmlWriter)
+  With hWriter
+    .StartElement("category", IIf(Domain, ["domain", Domain], Null))
+      .Text(Category)
+    .EndElement()
+  End With
+End
+
+Public Sub _Read(hReader As XmlReader)
+  Domain = hReader.Node.Attributes["domain"]
+  Category = Rss._GetText(hReader)
+End
