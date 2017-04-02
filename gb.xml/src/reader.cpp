@@ -121,6 +121,16 @@ void Reader::DestroyReader()
     ClearReader();
 }
 
+static void addchars(TextNode *node, char car, size_t num)
+{
+    char *&textContent = node->content;
+    size_t &lenTextContent = node->lenContent;
+    textContent = (char*)realloc(textContent, lenTextContent + num);
+    for (unsigned int i = 0; i < num; ++i)
+        textContent[lenTextContent + i] = car;
+    lenTextContent += num;
+}
+
 int Reader::ReadChar(char car)
 {
     #define APPEND(elmt) if(curElmt == 0){}\
@@ -144,12 +154,18 @@ int Reader::ReadChar(char car)
     if (inCDATA)
     {
         if (specialTagLevel > CDATA_TAG_STARTCHAR_8 && car != ']' && car != '>')
+        {
+            addchars((TextNode *) curNode, ']', specialTagLevel - CDATA_TAG_STARTCHAR_8);
             specialTagLevel = CDATA_TAG_STARTCHAR_8;
+        }
     }
     if (inComment)
     {
         if (specialTagLevel > COMMENT_TAG_STARTCHAR_3 && car != '-' && car != '-')
+        {
+            addchars((TextNode *) curNode, '-', specialTagLevel - COMMENT_TAG_STARTCHAR_3);
             specialTagLevel = COMMENT_TAG_STARTCHAR_3;
+        }
     }
 
     if(car == '<' && !inComment && !inCDATA)//Début de tag
