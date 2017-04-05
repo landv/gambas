@@ -276,6 +276,12 @@ if(!THISOBJ->curAttrEnum)
     return;
 }
 
+if(!THISOBJ->curAttrEnum->attrName || !THISOBJ->curAttrEnum->lenAttrName)
+{
+    GB.ReturnNull();
+    return;
+}
+
 GB.ReturnNewString(THISOBJ->curAttrEnum->attrName, THISOBJ->curAttrEnum->lenAttrName);
 
 END_PROPERTY
@@ -285,6 +291,12 @@ BEGIN_PROPERTY(CElementAttributes_value)
 if(!THISOBJ->curAttrEnum)
 {
     GB.Error("No enumerated attribute available");
+    GB.ReturnNull();
+    return;
+}
+
+if(!THISOBJ->curAttrEnum->attrValue || !THISOBJ->curAttrEnum->lenAttrValue)
+{
     GB.ReturnNull();
     return;
 }

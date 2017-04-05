@@ -194,6 +194,13 @@ if(!THIS->curAttrEnum)
     return;
 }
 
+
+if(!THIS->curAttrEnum->attrName || !THIS->curAttrEnum->lenAttrName)
+{
+    GB.ReturnNull();
+    return;
+}
+
 GB.ReturnNewString(THIS->curAttrEnum->attrName, THIS->curAttrEnum->lenAttrName);
 
 END_PROPERTY
@@ -203,6 +210,12 @@ BEGIN_PROPERTY(CReaderNodeAttr_value)
 if(!THIS->curAttrEnum)
 {
     GB.Error("No enumerated attribute available");
+    GB.ReturnNull();
+    return;
+}
+
+if(!THIS->curAttrEnum->attrValue || !THIS->curAttrEnum->lenAttrValue)
+{
     GB.ReturnNull();
     return;
 }
