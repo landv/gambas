@@ -49,7 +49,7 @@ Public Sub Element(TagName As String, Optional Value As String, Optional Prefix 
   If URI Then PrintXmlNsAttribute(Prefix, URI)
   
   If Value Then
-    Print #$stream, ">"; Value; "</"; TagName; "> ";
+    Print #$stream, ">"; XmlNode.Serialize(Value); "</"; TagName; "> ";
   Else
     Print #$stream, " />";
   Endif
