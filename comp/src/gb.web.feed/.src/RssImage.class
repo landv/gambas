@@ -1,0 +1,79 @@
+' Gambas class file
+
+''' This class represents an image which is associated with an RSS feed.
+''' The Title and Link properties should be the same as the corresponding ones of the
+''' parent Rss object.
+
+Export
+
+'' The URL of the image file. The specification requires this to be a GIF, JPEG or PNG file.
+Public Url As String
+'' An image title. It is to be used as the 'alt' attribute of the '<img>' HTML tag if the feed is rendered as HTML.
+''
+'' ## See also
+'' [../link], [../description]
+Public Title As String
+'' The URL of the website the feed belongs to. When the feed is rendered as HTML the RssImage becomes a link to this website.
+''
+'' ## See also
+'' [../title], [../description]
+Public {Link} As String
+'' The width of the image. The maximum width is 144, the default is 88.
+Public Width As Integer
+'' The height of the image. The maximum height is 400, the default is 31.
+Public Height As Integer
+'' If the feed is rendered as HTML this string is to be become the 'title' attribute of the link rendered around the image.
+''
+'' ## See also
+'' [../title], [../link]
+Public Description As String
+
+Public Sub _new()
+  Width = 88
+  Height = 31
+End
+
+Public Sub _Write(hWriter As XmlWriter)
+  If Not Url Or If Not Title Or If Not {Link} Then Error.Raise(("Url, Title and Link must be set in RssImage"))
+  With hWriter
+    .StartElement("image")
+      .Element("url", Url)
+      .Element("title", Title)
+      .Element("link", {Link})
+      If Width Then
+        If Width > 144 Then Error.Raise(("Maximum width of RssImage is 144"))
+        .Element("width", Str$(Width))
+      Endif
+      If Height Then
+        If Height > 400 Then Error.Raise(("Maximum height of RssImage is 400"))
+        .Element("height", Str$(Height))
+      Endif
+      If Description Then .Element("description", Description)
+    .EndElement()
+  End With
+End
+
+Public Sub _Read(hReader As XmlReader)
+  Dim iDepth As Integer = hReader.Depth
+
+  hReader.Read()
+  While Rss._NotClosed(hReader, iDepth)
+    Select Case hReader.Node.Name
+      Case "url"
+        Url = Rss._GetText(hReader)
+      Case "title"
+        Title = Rss._GetText(hReader)
+      Case "link"
+        {Link} = Rss._GetText(hReader)
+      Case "width"
+        Width = CInt(Rss._GetText(hReader))
+      Case "height"
+        Height = CInt(Rss._GetText(hReader))
+      Case "description"
+        Description = Rss._GetText(hReader)
+      Default
+        Error.Raise(Subst$(("Unexpected element '&1' in <image>"), hReader.Node.Name))
+    End Select
+    hReader.Read()
+  Wend
+End

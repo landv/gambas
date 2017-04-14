@@ -1,9 +1,14 @@
 ' Gambas class file
 
+''' This class represents a media attachment to an RSS item.
+
 Export
 
+'' The URL of the attached file.
 Public Url As String
+'' The length of the file in bytes.
 Public Length As Long
+'' The MIME type of the file.
 Public Type As String
 
 Public Sub _Write(hWriter As XmlWriter)

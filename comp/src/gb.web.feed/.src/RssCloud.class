@@ -1,15 +1,23 @@
 ' Gambas class file
 
-Export
+''' This class can be used to specify a web application implementing the rssCloud interface.
+''' An rssCloud application notifies its registrees of changes in subscribed RSS channels.
+'''
+''' See [https://cyber.harvard.edu/rss/soapMeetsRss.html#rsscloudInterface] for an explanation.
 
-''' https://cyber.harvard.edu/rss/soapMeetsRss.html#rsscloudInterface
+Export
 
 Public Enum XmlRpc, Soap, HttpPost ' Protocol constants
 
+'' Domain name of the application server.
 Public Domain As String
+'' TCP port of the application.
 Public Port As Integer
+'' The script path on the server.
 Public Path As String
+'' The name of the registration procedure to be called on the server side.
 Public RegisterProcedure As String
+'' The rssCloud protocol to use. One of [../xmlrpc], [../soap] or [../httppost].
 Public Protocol As Integer
 
 Public Sub _Write(hWriter As XmlWriter)

@@ -1,16 +1,44 @@
 ' Gambas class file
 
+''' This class represents a single news item. Create an object of this class, fill its properties
+''' and add it to an existing [Rss](../rss) object.
+'''
+''' All properties of this class are optional, but you have to fill at least Title *or* Description.
+
 Export
 
+'' The title of the news item.
 Public Title As String
+'' A link to the website containing the full content.
 Public {Link} As String
+'' Synopsis of the item. You can use entity-encoded HTML.
 Public Description As String
+'' EMail address of the author.
 Public Author As String
+'' An array of categories for this item.
+''
+'' ## See also
+'' [../../rsscategory]
 Public Categories As RssCategory[]
+'' A URL pointing to a comment page for the item.
 Public Comments As String
+'' Describes a media attachment to this item.
+''
+'' ## See also
+'' [../../rssenclosure]
 Public Enclosure As RssEnclosure
+'' A **G**lobally **U**nique **ID**entifier for this item, e.g. a [permalink](https://en.wikipedia.org/wiki/Permalink)
+'' to the item's full content on your website.
+''
+'' ## See also
+'' [../../rssguid]
 Public Guid As RssGuid
+'' Publication date of this item.
 Public PubDate As Date
+'' If this item comes from another RSS feed, use this property to link to the original feed.
+''
+'' ## See also
+'' [../../rsssource]
 Public Source As RssSource
 
 Public Sub _compare(Other As RssItem) As Integer

@@ -1,23 +1,30 @@
 ' Gambas class file
 
-Export
-
 ''' This class represents an RSS document. Its properties are those of its single <channel> element.
-''' It acts like an array of RssItem objects. Add your items in order and then call the ToString()
-''' method to get the XML document string.
+''' It acts like an array of [RssItem](../rssitem) objects. Add your items in order and then call the
+''' ToString() method to get the XML document string.
 '''
-''' Conforming to RSS 2.0, see https://cyber.harvard.edu/rss/rss.html
+''' The Title, Link and Description are necessary. All other properties are optional.
+'''
+''' Conforming to the [RSS 2.0 specification](https://cyber.harvard.edu/rss/rss.html). You have to
+''' know the document structure and terminology of RSS to make use of this component.
+
+Export
 
 Static Private DAY_NAME As String[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] ' conforms to how WeekDay() works in Gambas
 Static Private MONTH_NAME As String[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-'' Format a date according to RFC 822, but with 4-digit years as this is preferred by the RSS specification.
+'' Format a date according to [RFC 822](https://tools.ietf.org/html/rfc822#section-5), but with
+'' 4-digit years as this is preferred by the RSS specification.
+''
+'' ## See also
+'' [../parsedate]
 Static Public Function FormatDate(Dat As Date) As String
   Dim sWeekDay, sDate, sTime As String
   Dim sTimezone As String
 
   sWeekDay = DAY_NAME[WeekDay(Dat)]
-  ' Avoid using format because it may replace ":" and such by another separators, depending on the locale
+  ' Avoid using format because it may replace ":" and such by other separators, depending on the locale.
   ' Contrary to what is specified in RFC 822, RSS prefers 4-digit years!
   sDate = Subst$("&1 &2 &3", Format(Dat, "d"), MONTH_NAME[Month(Dat) - 1], Format(Dat, "yyyy"))
   ' TODO: I'm not sure what to pick here. Is the Gambas timezone abbreviation compatible with the RFC?
@@ -26,6 +33,10 @@ Static Public Function FormatDate(Dat As Date) As String
   Return Subst$("&1, &2 &3", sWeekDay, sDate, sTime)
 End
 
+'' Return a Date from an [RFC 822](https://tools.ietf.org/html/rfc822#section-5)-formatted string.
+''
+'' ## See also
+'' [../formatdate]
 Static Public Function ParseDate(Str As String) As Date
   Dim sWeekDay, sDay, sMonth, sYear, sHour, sMinute, sSecond, sTimezone As String
   Dim dRes As Date
@@ -76,31 +87,68 @@ Static Public Function ParseDate(Str As String) As Date
 End
 
 ' Mandatory <channel> elements
+'' The name or title of the feed.
 Public Title As String
+'' The URL to the website corresponding to this feed.
 Public {Link} As String
+'' A description of the feed's contents.
 Public Description As String
+
 ' Optional <channel> elements
+'' The language the feed content is written in. Use one of the [defined](https://cyber.harvard.edu/rss/languages.html) values.
 Public Language As String
+'' Copyright notice for the feed content.
 Public Copyright As String
+'' EMail address of the managing editor.
 Public ManagingEditor As String
+'' EMail address of the web master.
 Public WebMaster As String
+'' Publication date of the feed. E.g. a newspaper with daily publication would change this once a day.
 Public PubDate As Date
+'' The date of the last change to the feed contents.
 Public LastBuildDate As Date
+'' An array of categories for this feed.
+''
+'' ## See also
+'' [../../rsscategory]
 Public Categories As RssCategory[]
+'' The program which generated the feed.
 Public Generator As String
+'' A link to the RSS specification, to inform future generations of what an RSS file is, if they find one.
 Public Docs As String
+'' Description of an associated cloud service.
+'' 
+'' ## See also
+'' [../../rsscloud]
 Public Cloud As RssCloud
+'' "Time to live", indicates how long the feed contents may be cached.
 Public Ttl As Integer
+'' An image associated with the feed.
+''
+'' ## See also
+'' [../../rssimage]
 Public Image As RssImage
+'' [PICS](http://www.w3.org/PICS/) rating of the feed.
 Public Rating As String
+'' Describes a text input box to be displayed with the feed.
+''
+'' ## See also
+'' [../../rsstextinput]
 Public TextInput As RssTextInput
+'' A hint for news aggregators. It gives a number of hours in the range of 0 to 23 when no new content is to be expected in the feed.
+'' A client may ignore this setting, but can also use it to save traffic. You may only specify up to 24 skip hours.
 Public SkipHours As Integer[]
+'' A hint for news aggregators. It gives a number of weekdays (gb.Monday, gb.Tuesday, etc.) when no new content is to be expected in
+'' the feed. A client may ignore this setting, but can also use it to save traffic. You may only specify up to 7 skip days.
 Public SkipDays As Integer[]
 
+'' Returns the number of RssItems in this document.
 Property Read Count As Integer
 
 Private $aItems As New RssItem[]
 
+'' Add an RssItem to the document. If ~Index~ is given, the item is inserted at the given
+'' position in the array of items. By default it is inserted at the end.
 Public Sub Add(Item As RssItem, Optional Index As Integer)
   If IsMissing(Index) Then
     $aItems.Add(Item)
@@ -113,14 +161,17 @@ Private Function Count_Read() As Integer
   Return $aItems.Count
 End
 
+'' Return the RssItem at position ~Index~.
 Public Sub _get(Index As Integer) As RssItem
   Return $aItems[Index]
 End
 
+'' Replace the RssItem at position ~Index~.
 Public Sub _put(Item As RssItem, Index As Integer)
   $aItems[Index] = Item
 End
 
+'' Iterate through all RssItems, in the order they are given in the document.
 Public Sub _next() As RssItem
   Dim iIndex As Integer
   Dim hItem As RssItem
@@ -136,10 +187,12 @@ Public Sub _next() As RssItem
   Return hItem
 End
 
+'' Remove ~Length~-many RssItems from the item array, beginning at position ~Index~. By default ~Length~ is 1.
 Public Sub Remove(Index As Integer, Optional Length As Integer = 1)
   $aItems.Remove(Index, Length)
 End
 
+'' Reverse the order of RssItems.
 Public Sub Reverse()
   $aItems.Reverse()
 End
@@ -150,6 +203,7 @@ Public Sub Sort(Optional Mode As Integer = gb.Descent)
   $aItems.Sort(Mode)
 End
 
+'' Clear the Rss object. Sets all properties to Null and clears the item array.
 Public Sub Clear()
   Title = Null
   {Link} = Null
@@ -173,6 +227,7 @@ Public Sub Clear()
   $aItems.Clear()
 End
 
+'' Write this Rss object as an XML document and return its contents.
 Public Function ToString() As String
   Dim hWriter As New XmlWriter
 
@@ -292,6 +347,8 @@ Private Function GetDay(sDay As String) As Integer
   Error.Raise(Subst$(("Invalid day '&1'"), sDay))
 End
 
+'' Read the RSS document in XML format, given in ~Data~, and fill the properties of this Rss object
+'' accordingly.
 Public Sub FromString(Data As String)
   Dim hReader As New XmlReader
 

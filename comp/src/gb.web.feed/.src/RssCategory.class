@@ -1,8 +1,13 @@
 ' Gambas class file
 
+''' This class represents an RSS category. The RSS specification does not provide a standard
+''' set of categories. You can invent your own (site-specific) categories.
+
 Export
 
+'' The category description string. Use forward slashes as separators to structure categories hierarchically.
 Public Category As String
+'' The category domain is an ID for, or a URL to, a category taxonomy description.
 Public Domain As String
 
 Public Sub _Write(hWriter As XmlWriter)

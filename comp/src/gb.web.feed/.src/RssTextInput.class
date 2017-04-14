@@ -1,10 +1,20 @@
 ' Gambas class file
 
+''' This class represents a text input field which the news aggregator may display
+''' with your feed. The [RSS specification](https://cyber.harvard.edu/rss/rss.html#lttextinputgtSubelementOfLtchannelgt)
+''' admits that this element's purpose is unclear and that it may not be widely supported.
+''' It can be used as a built-in mechanism to provide feedback to the feed owner's website
+''' or as a search box.
+
 Export
 
+'' The label of the submit button next to the input box.
 Public Title As String
+'' Explanation of the input box's purpose.
 Public Description As String
+'' The name of the input box, for use by the CGI script the input is sent to.
 Public Name As String
+'' Link to the CGI script which processes the input.
 Public {Link} As String
 
 Public Sub _Write(hWriter As XmlWriter)
