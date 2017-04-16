@@ -2,13 +2,6 @@
 
 Public Sub Main()
 
-  Dim sResult As String
-    
-  Shell "date +%s" To sResult
-  
-  Print Date.ToUnixTime(Now);; sResult
-  
-  Print Date.FromUnixTime(Date.ToUnixTime(Now));; Now
-  
+  Print Date.ToRFC822(Date.FromRFC822("Sun, 23 Apr 2017 19:55:10 +0200"), "-0100")
   
 End

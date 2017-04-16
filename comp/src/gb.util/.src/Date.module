@@ -1,6 +1,8 @@
 ' Gambas module file
 
 Export
+Private $aDay As String[]
+Private $aMonth As String[]
 
 Public Sub ToUnixTime({Date} As Date) As Long
 
@@ -33,5 +35,86 @@ Public Sub EasterDay(Year As Integer) As Date
   G = 44 - F
   If G < 21 Then G = G + 30
   Return DateAdd(Date(Year, 3, 1), gb.Day, G + 7 - (E + G) Mod 7 - 1)
+  
+End
+
+Private Sub InitDaysMonths()
+
+  If Not $aDay Then 
+    $aDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    $aMonth = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  Endif
+
+End
+
+Public Sub ToUTC({Date} As Date) As Date
+  
+  {Date} += System.TimeZone / 86400
+  
+End
+
+Private Sub GetRFC822Zone(sZone As String) As Float
+  
+  Dim fZone As Float
+  
+  Select Case sZone
+    Case "UT", "GMT", "Z"
+      fZone = 0
+    Case "EDT"
+      fZone = -4
+    Case "EST", "CDT"
+      fZone = -5
+    Case "CST", "MDT"
+      fZone = -6
+    Case "MST", "PDT"
+      fZone = -7
+    Case "PST"
+      fZone = -8
+    Case Like "[A-I]"
+      fZone = - (Asc(sZone) - 64)
+    Case Like "[J-M]"
+      fZone = - (Asc(sZone) - 65)
+    Case Like "[N-Y]"
+      fZone = Asc(sZone) - 77
+    Case Like "[+-][0-1][0-9][0-5][0-9]"
+      fZone = CInt(Left(sZone, 3)) + CInt(Mid$(sZone, 4)) / 60
+    Case Else
+      Error.Raise("Unknown timezone")
+  End Select
+  
+  Return fZone / 24
+  
+End
+
+
+
+Public Sub ToRFC822({Date} As Date, Optional TimeZone As String = "GMT") As String
+  
+  InitDaysMonths
+  {Date} += System.TimeZone / 86400 + GetRFC822Zone(TimeZone)
+  Return $aDay[WeekDay({Date})] & ", " & Format(Day({Date}), "00") & " " & $aMonth[Month({Date}) - 1] & " " & Year({Date}) & " " & Format(Time({Date}), "hh:nn:ss") & " " & TimeZone
+  
+End
+
+Public Sub FromRFC822(Value As String) As Date
+
+  Dim aDate As String[]
+  Dim dDate As Date
+  Dim fZone As Float
+  Dim sZone As String
+  
+  aDate = Scan(Value, "*, * * * *:*:* *")
+  If aDate.Count <> 8 Then Return
+  
+  InitDaysMonths
+  dDate = Date(CInt(aDate[3]), $aMonth.Find(aDate[2]) + 1, CInt(aDate[1]), CInt(aDate[4]), CInt(aDate[5]), CInt(aDate[6]))
+  dDate -= Frac(Date(Now))
+  
+  dDate += GetRFC822Zone(aDate[7])
+  Return dDate
+
+Catch
+  
+  Error.Raise("Not a RFC822 date format")
   
 End
