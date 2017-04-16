@@ -1021,46 +1021,97 @@ gw = {
   
   table:
   {
-    select: function(id, row)
+    selectRange: function(id, start, end, checked)
     {
-      var elt = $(id);
-      var tr = $(id + ':' + row);
-      var current = elt.gw_current;
+      var i;
+      var tr;
       
-      if (tr.tagName == 'TR')
+      if (end < start)
       {
-        if (current !== undefined)
-        {
-          if (current >= 0)
-            $(id + ':' + current) && $(id + ':' + current).removeClass('gw-table-row-selected');
-          tr.addClass('gw-table-row-selected');
-          elt.gw_current = row;
-        }
-        else
-        {
-          if (tr.hasClass('gw-table-row-selected'))
-            tr.removeClass('gw-table-row-selected');
-          else
-            tr.addClass('gw-table-row-selected');
-        }
+        i = start;
+        start = end;
+        end = i;
       }
       
-      gw.update(id, '$' + row, null);
+      for (i = start; i <= end; i++)
+      {
+        tr = $(id + ':' + i);
+        if (checked)
+          tr.addClass('gw-table-row-selected');
+        else
+          tr.removeClass('gw-table-row-selected');
+      }
+        
+      gw.update(id, '!' + start + ':' + (end - start + 1), checked);
     },
-    
-    check: function(id, row)
+  
+    select: function(id, row, event)
     {
       var elt = $(id + ':' + row);
-      //if (event.target.tagName == 'TD')
-      elt.checked = !elt.checked;
-      gw.update(id, '!' + row, elt.checked);
-      //event.stopPropagation();
+      var last = $(id).gw_current;
+      var selected = !elt.hasClass('gw-table-row-selected');
+      
+      if (event)
+      {
+        if (event.shiftKey && last)
+          gw.table.selectRange(id, last, row, selected);
+        else
+          gw.table.selectRange(id, row, row, selected);
+      }
+      else
+      {
+        if (last)
+          $(id + ':' + last) && $(id + ':' + last).removeClass('gw-table-row-selected');
+        elt.addClass('gw-table-row-selected');
+        gw.update(id, '$' + row, null);
+      }
+      
+      $(id).gw_current = row;
+      
+      $(id).addClass('gw-unselectable');
+      setTimeout(function() { $(id).removeClass('gw-unselectable'); }, 0);
     },
     
-    toggle: function(id, row)
+    checkRange: function(id, start, end, checked)
+    {
+      var i;
+      if (end < start)
+      {
+        i = start;
+        start = end;
+        end = i;
+      }
+      
+      for (i = start; i <= end; i++)
+        $(id + ':' + i).checked = checked;
+        
+      gw.update(id, '!' + start + ':' + (end - start + 1), checked);
+    },
+  
+    check: function(id, row, event)
+    {
+      var elt = $(id + ':' + row);
+      var checked = !elt.checked;
+      var last = $(id).gw_current;
+      var len;
+      
+      elt.focus();
+      
+      if (event && event.shiftKey && last)
+        gw.table.checkRange(id, last, row, checked);
+      else
+        gw.table.checkRange(id, row, row, checked);
+      
+      $(id).gw_current = row;
+
+      $(id).addClass('gw-unselectable');
+      setTimeout(function() { $(id).removeClass('gw-unselectable'); }, 0);
+    },
+    
+    /*toggle: function(id, row)
     {
       gw.update(id, '?' + row, false);
-    },
+    },*/
     
     onScroll: function(id, more, timeout)
     {
@@ -1131,7 +1182,7 @@ gw = {
     {
       var sw = $(id).firstChild
       
-      //console.log("gw.table.scroll: " + id + ": " + x + " " + y);
+      console.log("gw.table.scroll: " + id + ": " + x + " " + y);
       
       if (x != sw.scrollLeft)
       {
@@ -1160,8 +1211,15 @@ gw = {
     {
       $(id).gw_headerh = hid;
       $(id).gw_headerv = vid;
+    },
+
+    ensureVisible: function(id, child)
+    {
+      var sw = $(id).firstChild;
+      child = $(child);
+      gw.table.scroll(id, child.offsetLeft - (sw.clientWidth - child.offsetWidth) / 2, child.offsetTop - (sw.clientHeight - child.offsetHeight) / 2);
     }
-  },
+},
   
   file: 
   {

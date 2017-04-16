@@ -21,6 +21,8 @@ Private $iScroll As Integer = Scroll.Both
 Private $hHeaderH As WebScrollView
 Private $hHeaderV As WebScrollView
 
+Private $sEnsureVisible As String
+
 Public Sub _new()
   
   $hCont = New WebContainer(Me) 'As Me.Name & "-contents"
@@ -38,7 +40,7 @@ Public Sub _Render()
   Print ")\"";
   $hCont._StartStyleSheet
   $hCont._RenderStyleSheet
-  $hCont._RemoveStyleSheet("overflow:hidden;")
+  $hCont._RemoveStyleSheet("overflow-x:hidden;")
   Select Case $iScroll
     Case Scroll.None
       $hCont._AddStyleSheet("overflow:hidden;")
@@ -61,8 +63,6 @@ Public Sub _Render()
   'Print "</div>";
   Print "</div>";
   
-  WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & "); // _Render")
-  
   If $hHeaderH Then
     sHeaderH = JS($hHeaderH.Name)
   Else
@@ -78,7 +78,14 @@ Public Sub _Render()
   If $hHeaderH Or If $hHeaderV Then
     WebForm._AddJavascript("gw.scrollview.setHeaders(" & JS(Me.Name) & "," & sHeaderH & "," & sHeaderV & ")")
   Endif
-
+  
+  If $sEnsureVisible Then
+    WebForm._AddJavascript("gw.scrollview.ensureVisible(" & JS(Me.Name) & "," & JS($sEnsureVisible) & ")")
+    $sEnsureVisible = ""
+  Else
+    WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & "); // _Render")
+  Endif
+  
 End
 
 
@@ -118,6 +125,18 @@ Private Sub ScrollY_Write(Value As Integer)
 
   If Me._CanRefresh() Then WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & ") // _ScrollY")
 
+End
+
+Public Sub EnsureVisible(Child As WebControl)
+
+  Dim hParent As WebContainer
+
+  Try hParent = Child.Parent.Parent
+  If hParent <> Me Then Error.Raise("Not a direct child")
+  
+  $sEnsureVisible = Child.Name
+  Me.Refresh
+  
 End
 
 Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)

@@ -36,6 +36,12 @@ P:first-child,UL:first-child,OL:first-child {
   margin-top: 0;
 }*/
 
+.gw-unselectable {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}
+
 .gw-hidden {
   display: none !important;
 }

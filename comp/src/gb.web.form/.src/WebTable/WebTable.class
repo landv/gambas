@@ -71,7 +71,9 @@ Private Sub PrintRow(iRow As Integer)
   Dim NX As Integer
   
   If $iMode And If Not $bNoCheck Then
-    Print "<td onclick=\"gw.table.check("; JS(Me.Name); ","; CStr(iRow); ")\">";
+    Print "<td onmousedown=\"gw.table.check("; JS(Me.Name); ","; CStr(iRow); 
+    If $iMode <> Select.Single Then Print ",event"; 
+    Print ")\">";
     If $iMode = Select.Single Then
       Print "<input type=\"radio\" name=\""; Me.Name; "\""; 
     Else
@@ -137,10 +139,13 @@ Private Sub PrintBody(iStart As Integer, iEnd As Integer)
         Print " id=\""; Me.Name & ":" & CStr(iRow); "\""
         If IsSelected(iRow) Then Print " class=\"gw-table-row-selected\";"
       'Print Me._GetUpdateJS("onclick", "$" & CStr(iRow));
-        Print " onclick=\"gw.table.select("; JS(Me.Name); ","; iRow; ");\"";
+        Print " onmousedown=\"gw.table.select("; JS(Me.Name); ","; iRow; 
       Else
-        Print " onclick=\"gw.table.check("; JS(Me.Name); ","; iRow; ");\"";
+        Print " onmousedown=\"gw.table.check("; JS(Me.Name); ","; iRow; 
       Endif
+      
+      If $iMode <> Select.Single Then Print ",event";
+      Print ");\"";
       
       Print Me._GetEventJS("ondblclick", "DblClick");
       
@@ -349,6 +354,8 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   
   Dim iRow As Integer
   Dim iCol As Integer
+  Dim aProp As String[]
+  Dim iLength As Integer
   
   If Left(sProp) = "!" Then
     
@@ -359,12 +366,18 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
         UnselectAll
       Endif
     Else
-      iRow = CInt(Mid(sProp, 2))
+      aProp = Split(Mid$(sProp, 2), ":")
+      iRow = CInt(aProp[0])
+      If aProp.Count = 2 Then
+        iLength = CInt(aProp[1])
+      Else
+        iLength = 1
+      Endif
       Inc Me._NoRefresh
       If vValue Then
-        Try Select(iRow)
+        Try Select(iRow, iLength)
       Else
-        Try Unselect(iRow)
+        Try Unselect(iRow, iLength)
       Endif
       Dec Me._NoRefresh
     Endif
