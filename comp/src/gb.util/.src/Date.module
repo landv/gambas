@@ -92,7 +92,7 @@ Public Sub ToRFC822({Date} As Date, Optional TimeZone As String = "GMT") As Stri
   
   InitDaysMonths
   {Date} += System.TimeZone / 86400 + GetRFC822Zone(TimeZone)
-  Return $aDay[WeekDay({Date})] & ", " & Format(Day({Date}), "00") & " " & $aMonth[Month({Date}) - 1] & " " & Year({Date}) & " " & Format(Time({Date}), "hh:nn:ss") & " " & TimeZone
+  Return $aDay[WeekDay({Date})] & ", " & Format(Day({Date}), "00") & " " & $aMonth[Month({Date}) - 1] & " " & Year({Date}) & " " & Hour({Date}) & ":" & Minute({Date}) & ":" & Second({Date}) & " " & TimeZone
   
 End
 
@@ -100,17 +100,41 @@ Public Sub FromRFC822(Value As String) As Date
 
   Dim aDate As String[]
   Dim dDate As Date
-  Dim fZone As Float
-  Dim sZone As String
-  
-  aDate = Scan(Value, "*, * * * *:*:* *")
-  If aDate.Count <> 8 Then Return
+  Dim iPos As Integer
+  Dim iWeekDay As Integer
+  Dim iYear As Integer
   
   InitDaysMonths
-  dDate = Date(CInt(aDate[3]), $aMonth.Find(aDate[2]) + 1, CInt(aDate[1]), CInt(aDate[4]), CInt(aDate[5]), CInt(aDate[6]))
-  dDate -= Frac(Date(Now))
+  Value = Trim(Value)
   
-  dDate += GetRFC822Zone(aDate[7])
+  iPos = InStr(Value, ", ")
+  If iPos Then
+    iWeekDay = $aDay.Find(Trim(Left(Value, iPos - 1)))
+    If iWeekDay < 0 Then Error.Raise("Unknown week day")
+    Value = Trim(Mid$(Value, iPos + 2))
+  Else
+    iWeekDay = -1
+  Endif
+  
+  aDate = Scan(Value, "* * * *:* *")
+  If aDate.Count <> 6 Then Return
+  
+  iPos = InStr(aDate[4], ":")
+  If iPos Then
+    aDate.Add(Mid$(aDate[4], iPos + 1), 5)
+    aDate[4] = Left(aDate[4], iPos - 1)
+  Else
+    aDate.Add("0", 5)
+  Endif
+  
+  iYear = CInt(aDate[2])
+  If iYear >= 0 And If iYear <= 99 Then iYear += 1900
+  dDate = Date(iYear, $aMonth.Find(aDate[1]) + 1, CInt(aDate[0]), CInt(aDate[3]), CInt(aDate[4]), CInt(aDate[5]))
+  If iWeekDay >= 0 And If WeekDay(dDate) <> iWeekDay Then Error.Raise("Incorrect week day")
+  
+  dDate -= Frac(Date(Now))
+  dDate += GetRFC822Zone(aDate[6])
+  
   Return dDate
 
 Catch
