@@ -872,6 +872,11 @@ void SUBR_move(ushort code)
 			FILE_chgrp(path, auth);
 			break;
 			
+		case 6: // Move DownTo
+			
+			FILE_rename_unlink(path, get_path(&PARAM[1]));
+			break;
+			
 		default:
 			THROW_ILLEGAL();
 	}

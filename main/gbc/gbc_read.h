@@ -42,6 +42,6 @@ void READ_dump_pattern(PATTERN *pattern);
 char *READ_get_pattern(PATTERN *pattern);
 int READ_get_column();
 
-void THROW_UNEXPECTED(PATTERN *pattern);
+void THROW_UNEXPECTED(PATTERN *pattern) NORETURN;
 
 #endif

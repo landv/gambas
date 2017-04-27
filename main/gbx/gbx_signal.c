@@ -184,56 +184,59 @@ void SIGNAL_raise_callbacks(int fd, int type, void *data)
 	fprintf(stderr, "SIGNAL_raise_callbacks: fd = %d blocking = %d\n", fd, (fcntl(fd, F_GETFL) & O_NONBLOCK) == 0);
 	#endif
 
-	ret = read(fd, &signum, 1);
-	if (ret != 1)
+	for(;;)
 	{
-		#if DEBUG_ME
-		fprintf(stderr, "SIGNAL_raise_callbacks: read -> %d / errno = %d\n", ret, errno);
-		#endif
-		return;
-	}
-	
-	handler = find_handler(signum);
-	if (!handler)
-	{
-		#if DEBUG_ME
-		fprintf(stderr, "SIGNAL_raise_callbacks: no handler\n");
-		#endif
-		return;
-	}
-	
-	#if DEBUG_ME
-	fprintf(stderr, ">> SIGNAL_raise_callbacks (%d)\n", _raising_callback);
-	#endif
-
-	_raising_callback++;
-	_purge_signum = signum;
-	_purge_handler = handler;
-	
-	ON_ERROR(purge_callbacks)
-	{
-		cb = handler->callbacks;
-		while (cb)
+		ret = read(fd, &signum, 1);
+		if (ret != 1)
 		{
 			#if DEBUG_ME
-			fprintf(stderr, "SIGNAL_raise_callbacks: cb = %p cb->callback = %p\n", cb, cb->callback);
+			fprintf(stderr, "SIGNAL_raise_callbacks: read -> %d / errno = %d\n", ret, errno);
 			#endif
-			if (cb->callback)
-				(*cb->callback)((int)signum, cb->data);
-			
-			cb = cb->next;
+			return;
 		}
-	}
-	END_ERROR
-	
-	#if DEBUG_ME
-	fprintf(stderr, "SIGNAL_raise_callbacks: purge_callbacks\n");
-	#endif
-	purge_callbacks();
+		
+		handler = find_handler(signum);
+		if (!handler)
+		{
+			#if DEBUG_ME
+			fprintf(stderr, "SIGNAL_raise_callbacks: no handler\n");
+			#endif
+			return;
+		}
+		
+		#if DEBUG_ME
+		fprintf(stderr, ">> SIGNAL_raise_callbacks (%d)\n", _raising_callback);
+		#endif
 
-	#if DEBUG_ME
-	fprintf(stderr, "<< SIGNAL_raise_callbacks (%d)\n", _raising_callback);
-	#endif
+		_raising_callback++;
+		_purge_signum = signum;
+		_purge_handler = handler;
+		
+		ON_ERROR(purge_callbacks)
+		{
+			cb = handler->callbacks;
+			while (cb)
+			{
+				#if DEBUG_ME
+				fprintf(stderr, "SIGNAL_raise_callbacks: cb = %p cb->callback = %p\n", cb, cb->callback);
+				#endif
+				if (cb->callback)
+					(*cb->callback)((int)signum, cb->data);
+				
+				cb = cb->next;
+			}
+		}
+		END_ERROR
+		
+		#if DEBUG_ME
+		fprintf(stderr, "SIGNAL_raise_callbacks: purge_callbacks\n");
+		#endif
+		purge_callbacks();
+
+		#if DEBUG_ME
+		fprintf(stderr, "<< SIGNAL_raise_callbacks (%d)\n", _raising_callback);
+		#endif
+	}
 }
 
 static void create_pipe(void)

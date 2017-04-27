@@ -1240,14 +1240,17 @@ void FILE_unlink(const char *path)
 }
 
 
-void FILE_rename(const char *src, const char *dst)
+void FILE_rename_ext(const char *src, const char *dst, bool kill)
 {
 	#ifdef PROJECT_EXEC
 	if (FILE_is_relative(src) || FILE_is_relative(dst))
 		THROW(E_ACCESS);
 
-	if (FILE_exist(dst))
-		THROW(E_EXIST, dst);
+	if (!kill)
+	{
+		if (FILE_exist(dst))
+			THROW(E_EXIST, dst);
+	}
 
 	if (rename(src, dst) != 0)
 		THROW_SYSTEM(errno, dst);

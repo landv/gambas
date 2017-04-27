@@ -102,6 +102,7 @@ enum {
 	TS_SUBR_CHGRP,
 	TS_SUBR_USE,
 	TS_SUBR_CHECK_EXEC,
+	TS_SUBR_MOVE_KILL
 	};
 
 enum {

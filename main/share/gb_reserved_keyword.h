@@ -475,6 +475,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ ".Chmod",            72,  3, T_VOID,         2     },
 	{ ".Chown",            72,  4, T_VOID,         2     },
 	{ ".Chgrp",            72,  5, T_VOID,         2     },
+	{ ".MoveKill",         72,  6, T_VOID,         2     },
 #endif
 	{ "Swap",              73,  0, T_STRING,       1,  2 }, // at least one argument, because 73 is a deprecated Copy() too.
 	{ "Swap$",             73,  0, T_STRING,       1,  2 },

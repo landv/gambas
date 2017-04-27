@@ -56,7 +56,8 @@ static void trans_subr(int subr, int nparam)
 		{ ".Copy" }, { ".Link" },  { ".Error" }, { ".Lock" }, { ".Unlock" }, 
 		{ ".LockWait" }, { ".InputFrom" }, { ".OutputTo" }, { ".Debug" }, { ".Sleep" },
 		{ ".Randomize" }, { ".ErrorTo" }, { "Left" }, { "Mid" }, { ".OpenMemory" },
-		{ ".Chmod" }, { ".Chown" }, { ".Chgrp" }, { ".Use" }, { ".CheckExec" }
+		{ ".Chmod" }, { ".Chown" }, { ".Chgrp" }, { ".Use" }, { ".CheckExec" },
+		{ ".MoveKill" }
 	};
 
 	TRANS_SUBR_INFO *tsi = &subr_info[subr];
@@ -779,10 +780,18 @@ void TRANS_kill(void)
 
 void TRANS_move(void)
 {
+	int subr;
+	
 	TRANS_expression(FALSE);
-	TRANS_want(RS_TO, NULL);
+	if (TRANS_is(RS_TO))
+		subr = TS_SUBR_MOVE;
+	else if (TRANS_is(RS_DOWNTO))
+		subr = TS_SUBR_MOVE_KILL;
+	else
+		THROW_UNEXPECTED(JOB->current);
+		
 	TRANS_expression(FALSE);
-	trans_subr(TS_SUBR_MOVE, 2);
+	trans_subr(subr, 2);
 	CODE_drop();
 }
 

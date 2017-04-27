@@ -80,7 +80,10 @@ bool FILE_is_dir(const char *path);
 
 const char *FILE_find_gambas(void);
 
-void FILE_rename(const char *src, const char *dst);
+void FILE_rename_ext(const char *src, const char *dst, bool unlink);
+#define FILE_rename(_src, _dst) FILE_rename_ext(_src, _dst, FALSE)
+#define FILE_rename_unlink(_src, _dst) FILE_rename_ext(_src, _dst, TRUE)
+
 void FILE_unlink(const char *path);
 
 char *FILE_get_home(void);

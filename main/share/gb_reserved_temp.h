@@ -526,9 +526,9 @@ __2C:
 __2D:
 	return -1;
 __2E:
-	if (len == 4 && tolower(word[1]) == 'u' && tolower(word[2]) == 's' && tolower(word[3]) == 'e') return 221;
+	if (len == 4 && tolower(word[1]) == 'u' && tolower(word[2]) == 's' && tolower(word[3]) == 'e') return 222;
 	if (len == 5 && tolower(word[1]) == 'c' && tolower(word[2]) == 'o' && tolower(word[3]) == 'p' && tolower(word[4]) == 'y') return 195;
-	if (len == 5 && tolower(word[1]) == 'e' && tolower(word[2]) == 'x' && tolower(word[3]) == 'e' && tolower(word[4]) == 'c') return 213;
+	if (len == 5 && tolower(word[1]) == 'e' && tolower(word[2]) == 'x' && tolower(word[3]) == 'e' && tolower(word[4]) == 'c') return 214;
 	if (len == 5 && tolower(word[1]) == 'k' && tolower(word[2]) == 'i' && tolower(word[3]) == 'l' && tolower(word[4]) == 'l') return 188;
 	if (len == 5 && tolower(word[1]) == 'l' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 'k') return 196;
 	if (len == 5 && tolower(word[1]) == 'l' && tolower(word[2]) == 'o' && tolower(word[3]) == 'c' && tolower(word[4]) == 'k') return 179;
@@ -548,19 +548,20 @@ __2E:
 	if (len == 6 && tolower(word[1]) == 'm' && tolower(word[2]) == 'k' && tolower(word[3]) == 'd' && tolower(word[4]) == 'i' && tolower(word[5]) == 'r') return 189;
 	if (len == 6 && tolower(word[1]) == 'p' && tolower(word[2]) == 'r' && tolower(word[3]) == 'i' && tolower(word[4]) == 'n' && tolower(word[5]) == 't') return 173;
 	if (len == 6 && tolower(word[1]) == 'r' && tolower(word[2]) == 'm' && tolower(word[3]) == 'd' && tolower(word[4]) == 'i' && tolower(word[5]) == 'r') return 190;
-	if (len == 6 && tolower(word[1]) == 's' && tolower(word[2]) == 'h' && tolower(word[3]) == 'e' && tolower(word[4]) == 'l' && tolower(word[5]) == 'l') return 214;
-	if (len == 6 && tolower(word[1]) == 's' && tolower(word[2]) == 'l' && tolower(word[3]) == 'e' && tolower(word[4]) == 'e' && tolower(word[5]) == 'p') return 220;
+	if (len == 6 && tolower(word[1]) == 's' && tolower(word[2]) == 'h' && tolower(word[3]) == 'e' && tolower(word[4]) == 'l' && tolower(word[5]) == 'l') return 215;
+	if (len == 6 && tolower(word[1]) == 's' && tolower(word[2]) == 'l' && tolower(word[3]) == 'e' && tolower(word[4]) == 'e' && tolower(word[5]) == 'p') return 221;
 	if (len == 6 && tolower(word[1]) == 'w' && tolower(word[2]) == 'r' && tolower(word[3]) == 'i' && tolower(word[4]) == 't' && tolower(word[5]) == 'e') return 176;
 	if (len == 7 && tolower(word[1]) == 'u' && tolower(word[2]) == 'n' && tolower(word[3]) == 'l' && tolower(word[4]) == 'o' && tolower(word[5]) == 'c' && tolower(word[6]) == 'k') return 180;
 	if (len == 8 && tolower(word[1]) == 'e' && tolower(word[2]) == 'r' && tolower(word[3]) == 'r' && tolower(word[4]) == 'o' && tolower(word[5]) == 'r' && tolower(word[6]) == 't' && tolower(word[7]) == 'o') return 184;
 	if (len == 9 && tolower(word[1]) == 'l' && tolower(word[2]) == 'o' && tolower(word[3]) == 'c' && tolower(word[4]) == 'k' && tolower(word[5]) == 'w' && tolower(word[6]) == 'a' && tolower(word[7]) == 'i' && tolower(word[8]) == 't') return 181;
+	if (len == 9 && tolower(word[1]) == 'm' && tolower(word[2]) == 'o' && tolower(word[3]) == 'v' && tolower(word[4]) == 'e' && tolower(word[5]) == 'k' && tolower(word[6]) == 'i' && tolower(word[7]) == 'l' && tolower(word[8]) == 'l') return 200;
 	if (len == 9 && tolower(word[1]) == 'o' && tolower(word[2]) == 'u' && tolower(word[3]) == 't' && tolower(word[4]) == 'p' && tolower(word[5]) == 'u' && tolower(word[6]) == 't' && tolower(word[7]) == 't' && tolower(word[8]) == 'o') return 183;
-	if (len == 10 && tolower(word[1]) == 'c' && tolower(word[2]) == 'h' && tolower(word[3]) == 'e' && tolower(word[4]) == 'c' && tolower(word[5]) == 'k' && tolower(word[6]) == 'e' && tolower(word[7]) == 'x' && tolower(word[8]) == 'e' && tolower(word[9]) == 'c') return 222;
+	if (len == 10 && tolower(word[1]) == 'c' && tolower(word[2]) == 'h' && tolower(word[3]) == 'e' && tolower(word[4]) == 'c' && tolower(word[5]) == 'k' && tolower(word[6]) == 'e' && tolower(word[7]) == 'x' && tolower(word[8]) == 'e' && tolower(word[9]) == 'c') return 223;
 	if (len == 10 && tolower(word[1]) == 'i' && tolower(word[2]) == 'n' && tolower(word[3]) == 'p' && tolower(word[4]) == 'u' && tolower(word[5]) == 't' && tolower(word[6]) == 'f' && tolower(word[7]) == 'r' && tolower(word[8]) == 'o' && tolower(word[9]) == 'm') return 182;
 	if (len == 10 && tolower(word[1]) == 'l' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 'e' && tolower(word[5]) == 'i' && tolower(word[6]) == 'n' && tolower(word[7]) == 'p' && tolower(word[8]) == 'u' && tolower(word[9]) == 't') return 172;
 	if (len == 10 && tolower(word[1]) == 'r' && tolower(word[2]) == 'a' && tolower(word[3]) == 'n' && tolower(word[4]) == 'd' && tolower(word[5]) == 'o' && tolower(word[6]) == 'm' && tolower(word[7]) == 'i' && tolower(word[8]) == 'z' && tolower(word[9]) == 'e') return 82;
 	if (len == 10 && tolower(word[1]) == 'r' && tolower(word[2]) == 'e' && tolower(word[3]) == 'a' && tolower(word[4]) == 'd' && tolower(word[5]) == 'b' && tolower(word[6]) == 'y' && tolower(word[7]) == 't' && tolower(word[8]) == 'e' && tolower(word[9]) == 's') return 175;
-	if (len == 11 && tolower(word[1]) == 'c' && tolower(word[2]) == 'o' && tolower(word[3]) == 'l' && tolower(word[4]) == 'l' && tolower(word[5]) == 'e' && tolower(word[6]) == 'c' && tolower(word[7]) == 't' && tolower(word[8]) == 'i' && tolower(word[9]) == 'o' && tolower(word[10]) == 'n') return 225;
+	if (len == 11 && tolower(word[1]) == 'c' && tolower(word[2]) == 'o' && tolower(word[3]) == 'l' && tolower(word[4]) == 'l' && tolower(word[5]) == 'e' && tolower(word[6]) == 'c' && tolower(word[7]) == 't' && tolower(word[8]) == 'i' && tolower(word[9]) == 'o' && tolower(word[10]) == 'n') return 226;
 	if (len == 11 && tolower(word[1]) == 'o' && tolower(word[2]) == 'p' && tolower(word[3]) == 'e' && tolower(word[4]) == 'n' && tolower(word[5]) == 'm' && tolower(word[6]) == 'e' && tolower(word[7]) == 'm' && tolower(word[8]) == 'o' && tolower(word[9]) == 'r' && tolower(word[10]) == 'y') return 169;
 	if (len == 11 && tolower(word[1]) == 'w' && tolower(word[2]) == 'r' && tolower(word[3]) == 'i' && tolower(word[4]) == 't' && tolower(word[5]) == 'e' && tolower(word[6]) == 'b' && tolower(word[7]) == 'y' && tolower(word[8]) == 't' && tolower(word[9]) == 'e' && tolower(word[10]) == 's') return 177;
 	return -1;
@@ -618,11 +619,11 @@ __61:
 	if (len == 4 && tolower(word[1]) == 't' && tolower(word[2]) == 'n' && word[3] == '2') return 91;
 	if (len == 4 && tolower(word[1]) == 't' && tolower(word[2]) == 'n' && tolower(word[3]) == 'h') return 70;
 	if (len == 5 && tolower(word[1]) == 'c' && tolower(word[2]) == 'o' && tolower(word[3]) == 's' && tolower(word[4]) == 'h') return 69;
-	if (len == 5 && tolower(word[1]) == 'l' && tolower(word[2]) == 'l' && tolower(word[3]) == 'o' && tolower(word[4]) == 'c') return 215;
+	if (len == 5 && tolower(word[1]) == 'l' && tolower(word[2]) == 'l' && tolower(word[3]) == 'o' && tolower(word[4]) == 'c') return 216;
 	if (len == 5 && tolower(word[1]) == 's' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 'h') return 67;
 	if (len == 5 && tolower(word[1]) == 't' && tolower(word[2]) == 'a' && tolower(word[3]) == 'n' && word[4] == '2') return 90;
 	if (len == 5 && tolower(word[1]) == 't' && tolower(word[2]) == 'a' && tolower(word[3]) == 'n' && tolower(word[4]) == 'h') return 71;
-	if (len == 6 && tolower(word[1]) == 'c' && tolower(word[2]) == 'c' && tolower(word[3]) == 'e' && tolower(word[4]) == 's' && tolower(word[5]) == 's') return 205;
+	if (len == 6 && tolower(word[1]) == 'c' && tolower(word[2]) == 'c' && tolower(word[3]) == 'e' && tolower(word[4]) == 's' && tolower(word[5]) == 's') return 206;
 	return -1;
 __42:
 __62:
@@ -632,11 +633,11 @@ __62:
 	if (len == 4 && tolower(word[1]) == 'i' && tolower(word[2]) == 'n' && word[3] == '$') return 141;
 	if (len == 4 && tolower(word[1]) == 's' && tolower(word[2]) == 'e' && tolower(word[3]) == 't') return 107;
 	if (len == 4 && tolower(word[1]) == 't' && tolower(word[2]) == 's' && tolower(word[3]) == 't') return 108;
-	if (len == 5 && tolower(word[1]) == 'o' && tolower(word[2]) == 'o' && tolower(word[3]) == 'l' && word[4] == '@') return 268;
-	if (len == 5 && tolower(word[1]) == 'y' && tolower(word[2]) == 't' && tolower(word[3]) == 'e' && word[4] == '@') return 270;
-	if (len == 6 && tolower(word[1]) == 'a' && tolower(word[2]) == 's' && tolower(word[3]) == 'e' && word[4] == '6' && word[5] == '4') return 234;
-	if (len == 7 && tolower(word[1]) == 'a' && tolower(word[2]) == 's' && tolower(word[3]) == 'e' && word[4] == '6' && word[5] == '4' && word[6] == '$') return 235;
-	if (len == 8 && tolower(word[1]) == 'o' && tolower(word[2]) == 'o' && tolower(word[3]) == 'l' && tolower(word[4]) == 'e' && tolower(word[5]) == 'a' && tolower(word[6]) == 'n' && word[7] == '@') return 269;
+	if (len == 5 && tolower(word[1]) == 'o' && tolower(word[2]) == 'o' && tolower(word[3]) == 'l' && word[4] == '@') return 269;
+	if (len == 5 && tolower(word[1]) == 'y' && tolower(word[2]) == 't' && tolower(word[3]) == 'e' && word[4] == '@') return 271;
+	if (len == 6 && tolower(word[1]) == 'a' && tolower(word[2]) == 's' && tolower(word[3]) == 'e' && word[4] == '6' && word[5] == '4') return 235;
+	if (len == 7 && tolower(word[1]) == 'a' && tolower(word[2]) == 's' && tolower(word[3]) == 'e' && word[4] == '6' && word[5] == '4' && word[6] == '$') return 236;
+	if (len == 8 && tolower(word[1]) == 'o' && tolower(word[2]) == 'o' && tolower(word[3]) == 'l' && tolower(word[4]) == 'e' && tolower(word[5]) == 'a' && tolower(word[6]) == 'n' && word[7] == '@') return 270;
 	return -1;
 __43:
 __63:
@@ -669,11 +670,11 @@ __44:
 __64:
 	if (len == 3 && tolower(word[1]) == 'a' && tolower(word[2]) == 'y') return 154;
 	if (len == 3 && tolower(word[1]) == 'e' && tolower(word[2]) == 'g') return 60;
-	if (len == 3 && tolower(word[1]) == 'i' && tolower(word[2]) == 'r') return 211;
+	if (len == 3 && tolower(word[1]) == 'i' && tolower(word[2]) == 'r') return 212;
 	if (len == 4 && tolower(word[1]) == 'a' && tolower(word[2]) == 't' && tolower(word[3]) == 'e') return 160;
-	if (len == 5 && tolower(word[1]) == 'a' && tolower(word[2]) == 't' && tolower(word[3]) == 'e' && word[4] == '@') return 277;
+	if (len == 5 && tolower(word[1]) == 'a' && tolower(word[2]) == 't' && tolower(word[3]) == 'e' && word[4] == '@') return 278;
 	if (len == 5 && tolower(word[1]) == 'c' && tolower(word[2]) == 'o' && tolower(word[3]) == 'n' && tolower(word[4]) == 'v') return 41;
-	if (len == 5 && tolower(word[1]) == 'f' && tolower(word[2]) == 'r' && tolower(word[3]) == 'e' && tolower(word[4]) == 'e') return 207;
+	if (len == 5 && tolower(word[1]) == 'f' && tolower(word[2]) == 'r' && tolower(word[3]) == 'e' && tolower(word[4]) == 'e') return 208;
 	if (len == 6 && tolower(word[1]) == 'c' && tolower(word[2]) == 'o' && tolower(word[3]) == 'n' && tolower(word[4]) == 'v' && word[5] == '$') return 42;
 	if (len == 7 && tolower(word[1]) == 'a' && tolower(word[2]) == 't' && tolower(word[3]) == 'e' && tolower(word[4]) == 'a' && tolower(word[5]) == 'd' && tolower(word[6]) == 'd') return 162;
 	if (len == 8 && tolower(word[1]) == 'a' && tolower(word[2]) == 't' && tolower(word[3]) == 'e' && tolower(word[4]) == 'd' && tolower(word[5]) == 'i' && tolower(word[6]) == 'f' && tolower(word[7]) == 'f') return 163;
@@ -686,22 +687,22 @@ __65:
 	if (len == 4 && tolower(word[1]) == 'v' && tolower(word[2]) == 'e' && tolower(word[3]) == 'n') return 191;
 	if (len == 4 && tolower(word[1]) == 'x' && tolower(word[2]) == 'p' && word[3] == '2') return 72;
 	if (len == 4 && tolower(word[1]) == 'x' && tolower(word[2]) == 'p' && tolower(word[3]) == 'm') return 76;
-	if (len == 5 && tolower(word[1]) == 'x' && tolower(word[2]) == 'i' && tolower(word[3]) == 's' && tolower(word[4]) == 't') return 204;
+	if (len == 5 && tolower(word[1]) == 'x' && tolower(word[2]) == 'i' && tolower(word[3]) == 's' && tolower(word[4]) == 't') return 205;
 	if (len == 5 && tolower(word[1]) == 'x' && tolower(word[2]) == 'p' && word[3] == '1' && word[4] == '0') return 73;
 	return -1;
 __46:
 __66:
 	if (len == 3 && tolower(word[1]) == 'i' && tolower(word[2]) == 'x') return 45;
 	if (len == 4 && tolower(word[1]) == 'r' && tolower(word[2]) == 'a' && tolower(word[3]) == 'c') return 47;
-	if (len == 4 && tolower(word[1]) == 'r' && tolower(word[2]) == 'e' && tolower(word[3]) == 'e') return 216;
+	if (len == 4 && tolower(word[1]) == 'r' && tolower(word[2]) == 'e' && tolower(word[3]) == 'e') return 217;
 	if (len == 5 && tolower(word[1]) == 'l' && tolower(word[2]) == 'o' && tolower(word[3]) == 'o' && tolower(word[4]) == 'r') return 78;
-	if (len == 6 && tolower(word[1]) == 'l' && tolower(word[2]) == 'o' && tolower(word[3]) == 'a' && tolower(word[4]) == 't' && word[5] == '@') return 276;
+	if (len == 6 && tolower(word[1]) == 'l' && tolower(word[2]) == 'o' && tolower(word[3]) == 'a' && tolower(word[4]) == 't' && word[5] == '@') return 277;
 	if (len == 6 && tolower(word[1]) == 'o' && tolower(word[2]) == 'r' && tolower(word[3]) == 'm' && tolower(word[4]) == 'a' && tolower(word[5]) == 't') return 149;
 	if (len == 7 && tolower(word[1]) == 'o' && tolower(word[2]) == 'r' && tolower(word[3]) == 'm' && tolower(word[4]) == 'a' && tolower(word[5]) == 't' && word[6] == '$') return 148;
-	if (len == 7 && tolower(word[1]) == 'r' && tolower(word[2]) == 'o' && tolower(word[3]) == 'm' && tolower(word[4]) == 'u' && tolower(word[5]) == 'r' && tolower(word[6]) == 'l') return 244;
-	if (len == 8 && tolower(word[1]) == 'r' && tolower(word[2]) == 'o' && tolower(word[3]) == 'm' && tolower(word[4]) == 'u' && tolower(word[5]) == 'r' && tolower(word[6]) == 'l' && word[7] == '$') return 245;
-	if (len == 10 && tolower(word[1]) == 'r' && tolower(word[2]) == 'o' && tolower(word[3]) == 'm' && tolower(word[4]) == 'b' && tolower(word[5]) == 'a' && tolower(word[6]) == 's' && tolower(word[7]) == 'e' && word[8] == '6' && word[9] == '4') return 242;
-	if (len == 11 && tolower(word[1]) == 'r' && tolower(word[2]) == 'o' && tolower(word[3]) == 'm' && tolower(word[4]) == 'b' && tolower(word[5]) == 'a' && tolower(word[6]) == 's' && tolower(word[7]) == 'e' && word[8] == '6' && word[9] == '4' && word[10] == '$') return 243;
+	if (len == 7 && tolower(word[1]) == 'r' && tolower(word[2]) == 'o' && tolower(word[3]) == 'm' && tolower(word[4]) == 'u' && tolower(word[5]) == 'r' && tolower(word[6]) == 'l') return 245;
+	if (len == 8 && tolower(word[1]) == 'r' && tolower(word[2]) == 'o' && tolower(word[3]) == 'm' && tolower(word[4]) == 'u' && tolower(word[5]) == 'r' && tolower(word[6]) == 'l' && word[7] == '$') return 246;
+	if (len == 10 && tolower(word[1]) == 'r' && tolower(word[2]) == 'o' && tolower(word[3]) == 'm' && tolower(word[4]) == 'b' && tolower(word[5]) == 'a' && tolower(word[6]) == 's' && tolower(word[7]) == 'e' && word[8] == '6' && word[9] == '4') return 243;
+	if (len == 11 && tolower(word[1]) == 'r' && tolower(word[2]) == 'o' && tolower(word[3]) == 'm' && tolower(word[4]) == 'b' && tolower(word[5]) == 'a' && tolower(word[6]) == 's' && tolower(word[7]) == 'e' && word[8] == '6' && word[9] == '4' && word[10] == '$') return 244;
 	return -1;
 __47:
 __67:
@@ -712,19 +713,19 @@ __68:
 	if (len == 3 && tolower(word[1]) == 'y' && tolower(word[2]) == 'p') return 93;
 	if (len == 4 && tolower(word[1]) == 'e' && tolower(word[2]) == 'x' && word[3] == '$') return 143;
 	if (len == 4 && tolower(word[1]) == 'o' && tolower(word[2]) == 'u' && tolower(word[3]) == 'r') return 155;
-	if (len == 4 && tolower(word[1]) == 't' && tolower(word[2]) == 'm' && tolower(word[3]) == 'l') return 232;
-	if (len == 5 && tolower(word[1]) == 't' && tolower(word[2]) == 'm' && tolower(word[3]) == 'l' && word[4] == '$') return 233;
+	if (len == 4 && tolower(word[1]) == 't' && tolower(word[2]) == 'm' && tolower(word[3]) == 'l') return 233;
+	if (len == 5 && tolower(word[1]) == 't' && tolower(word[2]) == 'm' && tolower(word[3]) == 'l' && word[4] == '$') return 234;
 	return -1;
 __49:
 __69:
 	if (len == 2 && tolower(word[1]) == 'f') return 86;
 	if (len == 3 && tolower(word[1]) == 'i' && tolower(word[2]) == 'f') return 87;
 	if (len == 3 && tolower(word[1]) == 'n' && tolower(word[2]) == 't') return 44;
-	if (len == 4 && tolower(word[1]) == 'n' && tolower(word[2]) == 't' && word[3] == '@') return 272;
+	if (len == 4 && tolower(word[1]) == 'n' && tolower(word[2]) == 't' && word[3] == '@') return 273;
 	if (len == 5 && tolower(word[1]) == 'n' && tolower(word[2]) == 's' && tolower(word[3]) == 't' && tolower(word[4]) == 'r') return 28;
-	if (len == 5 && tolower(word[1]) == 's' && tolower(word[2]) == 'd' && tolower(word[3]) == 'i' && tolower(word[4]) == 'r') return 210;
-	if (len == 5 && tolower(word[1]) == 's' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 'f') return 203;
-	if (len == 5 && tolower(word[1]) == 's' && tolower(word[2]) == 'n' && tolower(word[3]) == 'a' && tolower(word[4]) == 'n') return 202;
+	if (len == 5 && tolower(word[1]) == 's' && tolower(word[2]) == 'd' && tolower(word[3]) == 'i' && tolower(word[4]) == 'r') return 211;
+	if (len == 5 && tolower(word[1]) == 's' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 'f') return 204;
+	if (len == 5 && tolower(word[1]) == 's' && tolower(word[2]) == 'n' && tolower(word[3]) == 'a' && tolower(word[4]) == 'n') return 203;
 	if (len == 6 && tolower(word[1]) == 's' && tolower(word[2]) == 'd' && tolower(word[3]) == 'a' && tolower(word[4]) == 't' && tolower(word[5]) == 'e') return 122;
 	if (len == 6 && tolower(word[1]) == 's' && tolower(word[2]) == 'h' && tolower(word[3]) == 'e' && tolower(word[4]) == 'x' && tolower(word[5]) == 'a') return 102;
 	if (len == 6 && tolower(word[1]) == 's' && tolower(word[2]) == 'l' && tolower(word[3]) == 'o' && tolower(word[4]) == 'n' && tolower(word[5]) == 'g') return 120;
@@ -739,12 +740,12 @@ __69:
 	if (len == 7 && tolower(word[1]) == 's' && tolower(word[2]) == 's' && tolower(word[3]) == 'p' && tolower(word[4]) == 'a' && tolower(word[5]) == 'c' && tolower(word[6]) == 'e') return 103;
 	if (len == 7 && tolower(word[1]) == 's' && tolower(word[2]) == 'u' && tolower(word[3]) == 'c' && tolower(word[4]) == 'a' && tolower(word[5]) == 's' && tolower(word[6]) == 'e') return 99;
 	if (len == 7 && tolower(word[1]) == 's' && tolower(word[2]) == 'u' && tolower(word[3]) == 'p' && tolower(word[4]) == 'p' && tolower(word[5]) == 'e' && tolower(word[6]) == 'r') return 100;
-	if (len == 8 && tolower(word[1]) == 'n' && tolower(word[2]) == 't' && tolower(word[3]) == 'e' && tolower(word[4]) == 'g' && tolower(word[5]) == 'e' && tolower(word[6]) == 'r' && word[7] == '@') return 273;
+	if (len == 8 && tolower(word[1]) == 'n' && tolower(word[2]) == 't' && tolower(word[3]) == 'e' && tolower(word[4]) == 'g' && tolower(word[5]) == 'e' && tolower(word[6]) == 'r' && word[7] == '@') return 274;
 	if (len == 8 && tolower(word[1]) == 's' && tolower(word[2]) == 'l' && tolower(word[3]) == 'e' && tolower(word[4]) == 't' && tolower(word[5]) == 't' && tolower(word[6]) == 'e' && tolower(word[7]) == 'r') return 96;
 	if (len == 8 && tolower(word[1]) == 's' && tolower(word[2]) == 'n' && tolower(word[3]) == 'u' && tolower(word[4]) == 'm' && tolower(word[5]) == 'b' && tolower(word[6]) == 'e' && tolower(word[7]) == 'r') return 123;
 	if (len == 9 && tolower(word[1]) == 's' && tolower(word[2]) == 'b' && tolower(word[3]) == 'o' && tolower(word[4]) == 'o' && tolower(word[5]) == 'l' && tolower(word[6]) == 'e' && tolower(word[7]) == 'a' && tolower(word[8]) == 'n') return 118;
 	if (len == 9 && tolower(word[1]) == 's' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 't' && tolower(word[5]) == 'e' && tolower(word[6]) == 'g' && tolower(word[7]) == 'e' && tolower(word[8]) == 'r') return 119;
-	if (len == 9 && tolower(word[1]) == 's' && tolower(word[2]) == 'm' && tolower(word[3]) == 'i' && tolower(word[4]) == 's' && tolower(word[5]) == 's' && tolower(word[6]) == 'i' && tolower(word[7]) == 'n' && tolower(word[8]) == 'g') return 224;
+	if (len == 9 && tolower(word[1]) == 's' && tolower(word[2]) == 'm' && tolower(word[3]) == 'i' && tolower(word[4]) == 's' && tolower(word[5]) == 's' && tolower(word[6]) == 'i' && tolower(word[7]) == 'n' && tolower(word[8]) == 'g') return 225;
 	return -1;
 __4A:
 __6A:
@@ -765,7 +766,7 @@ __6C:
 	if (len == 5 && tolower(word[1]) == 'c' && tolower(word[2]) == 'a' && tolower(word[3]) == 's' && tolower(word[4]) == 'e') return 24;
 	if (len == 5 && tolower(word[1]) == 'e' && tolower(word[2]) == 'f' && tolower(word[3]) == 't' && word[4] == '$') return 0;
 	if (len == 5 && tolower(word[1]) == 'o' && tolower(word[2]) == 'g' && word[3] == '1' && word[4] == '0') return 62;
-	if (len == 5 && tolower(word[1]) == 'o' && tolower(word[2]) == 'n' && tolower(word[3]) == 'g' && word[4] == '@') return 274;
+	if (len == 5 && tolower(word[1]) == 'o' && tolower(word[2]) == 'n' && tolower(word[3]) == 'g' && word[4] == '@') return 275;
 	if (len == 5 && tolower(word[1]) == 'o' && tolower(word[2]) == 'w' && tolower(word[3]) == 'e' && tolower(word[4]) == 'r') return 22;
 	if (len == 5 && tolower(word[1]) == 't' && tolower(word[2]) == 'r' && tolower(word[3]) == 'i' && tolower(word[4]) == 'm') return 14;
 	if (len == 6 && tolower(word[1]) == 'c' && tolower(word[2]) == 'a' && tolower(word[3]) == 's' && tolower(word[4]) == 'e' && word[5] == '$') return 23;
@@ -779,30 +780,30 @@ __6D:
 	if (len == 3 && tolower(word[1]) == 'i' && tolower(word[2]) == 'd') return 3;
 	if (len == 3 && tolower(word[1]) == 'i' && tolower(word[2]) == 'n') return 84;
 	if (len == 4 && tolower(word[1]) == 'i' && tolower(word[2]) == 'd' && word[3] == '$') return 2;
-	if (len == 5 && tolower(word[1]) == 'k' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 't') return 254;
+	if (len == 5 && tolower(word[1]) == 'k' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 't') return 255;
 	if (len == 5 && tolower(word[1]) == 'o' && tolower(word[2]) == 'n' && tolower(word[3]) == 't' && tolower(word[4]) == 'h') return 153;
 	if (len == 6 && tolower(word[1]) == 'i' && tolower(word[2]) == 'n' && tolower(word[3]) == 'u' && tolower(word[4]) == 't' && tolower(word[5]) == 'e') return 156;
-	if (len == 6 && tolower(word[1]) == 'k' && tolower(word[2]) == 'b' && tolower(word[3]) == 'o' && tolower(word[4]) == 'o' && tolower(word[5]) == 'l') return 246;
-	if (len == 6 && tolower(word[1]) == 'k' && tolower(word[2]) == 'b' && tolower(word[3]) == 'y' && tolower(word[4]) == 't' && tolower(word[5]) == 'e') return 250;
-	if (len == 6 && tolower(word[1]) == 'k' && tolower(word[2]) == 'd' && tolower(word[3]) == 'a' && tolower(word[4]) == 't' && tolower(word[5]) == 'e') return 264;
-	if (len == 6 && tolower(word[1]) == 'k' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 't' && word[5] == '$') return 255;
-	if (len == 6 && tolower(word[1]) == 'k' && tolower(word[2]) == 'l' && tolower(word[3]) == 'o' && tolower(word[4]) == 'n' && tolower(word[5]) == 'g') return 258;
-	if (len == 7 && tolower(word[1]) == 'k' && tolower(word[2]) == 'b' && tolower(word[3]) == 'o' && tolower(word[4]) == 'o' && tolower(word[5]) == 'l' && word[6] == '$') return 247;
-	if (len == 7 && tolower(word[1]) == 'k' && tolower(word[2]) == 'b' && tolower(word[3]) == 'y' && tolower(word[4]) == 't' && tolower(word[5]) == 'e' && word[6] == '$') return 251;
-	if (len == 7 && tolower(word[1]) == 'k' && tolower(word[2]) == 'd' && tolower(word[3]) == 'a' && tolower(word[4]) == 't' && tolower(word[5]) == 'e' && word[6] == '$') return 265;
-	if (len == 7 && tolower(word[1]) == 'k' && tolower(word[2]) == 'f' && tolower(word[3]) == 'l' && tolower(word[4]) == 'o' && tolower(word[5]) == 'a' && tolower(word[6]) == 't') return 262;
-	if (len == 7 && tolower(word[1]) == 'k' && tolower(word[2]) == 'l' && tolower(word[3]) == 'o' && tolower(word[4]) == 'n' && tolower(word[5]) == 'g' && word[6] == '$') return 259;
-	if (len == 7 && tolower(word[1]) == 'k' && tolower(word[2]) == 's' && tolower(word[3]) == 'h' && tolower(word[4]) == 'o' && tolower(word[5]) == 'r' && tolower(word[6]) == 't') return 252;
-	if (len == 8 && tolower(word[1]) == 'k' && tolower(word[2]) == 'f' && tolower(word[3]) == 'l' && tolower(word[4]) == 'o' && tolower(word[5]) == 'a' && tolower(word[6]) == 't' && word[7] == '$') return 263;
-	if (len == 8 && tolower(word[1]) == 'k' && tolower(word[2]) == 's' && tolower(word[3]) == 'h' && tolower(word[4]) == 'o' && tolower(word[5]) == 'r' && tolower(word[6]) == 't' && word[7] == '$') return 253;
-	if (len == 8 && tolower(word[1]) == 'k' && tolower(word[2]) == 's' && tolower(word[3]) == 'i' && tolower(word[4]) == 'n' && tolower(word[5]) == 'g' && tolower(word[6]) == 'l' && tolower(word[7]) == 'e') return 260;
-	if (len == 9 && tolower(word[1]) == 'k' && tolower(word[2]) == 'b' && tolower(word[3]) == 'o' && tolower(word[4]) == 'o' && tolower(word[5]) == 'l' && tolower(word[6]) == 'e' && tolower(word[7]) == 'a' && tolower(word[8]) == 'n') return 248;
-	if (len == 9 && tolower(word[1]) == 'k' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 't' && tolower(word[5]) == 'e' && tolower(word[6]) == 'g' && tolower(word[7]) == 'e' && tolower(word[8]) == 'r') return 256;
-	if (len == 9 && tolower(word[1]) == 'k' && tolower(word[2]) == 'p' && tolower(word[3]) == 'o' && tolower(word[4]) == 'i' && tolower(word[5]) == 'n' && tolower(word[6]) == 't' && tolower(word[7]) == 'e' && tolower(word[8]) == 'r') return 266;
-	if (len == 9 && tolower(word[1]) == 'k' && tolower(word[2]) == 's' && tolower(word[3]) == 'i' && tolower(word[4]) == 'n' && tolower(word[5]) == 'g' && tolower(word[6]) == 'l' && tolower(word[7]) == 'e' && word[8] == '$') return 261;
-	if (len == 10 && tolower(word[1]) == 'k' && tolower(word[2]) == 'b' && tolower(word[3]) == 'o' && tolower(word[4]) == 'o' && tolower(word[5]) == 'l' && tolower(word[6]) == 'e' && tolower(word[7]) == 'a' && tolower(word[8]) == 'n' && word[9] == '$') return 249;
-	if (len == 10 && tolower(word[1]) == 'k' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 't' && tolower(word[5]) == 'e' && tolower(word[6]) == 'g' && tolower(word[7]) == 'e' && tolower(word[8]) == 'r' && word[9] == '$') return 257;
-	if (len == 10 && tolower(word[1]) == 'k' && tolower(word[2]) == 'p' && tolower(word[3]) == 'o' && tolower(word[4]) == 'i' && tolower(word[5]) == 'n' && tolower(word[6]) == 't' && tolower(word[7]) == 'e' && tolower(word[8]) == 'r' && word[9] == '$') return 267;
+	if (len == 6 && tolower(word[1]) == 'k' && tolower(word[2]) == 'b' && tolower(word[3]) == 'o' && tolower(word[4]) == 'o' && tolower(word[5]) == 'l') return 247;
+	if (len == 6 && tolower(word[1]) == 'k' && tolower(word[2]) == 'b' && tolower(word[3]) == 'y' && tolower(word[4]) == 't' && tolower(word[5]) == 'e') return 251;
+	if (len == 6 && tolower(word[1]) == 'k' && tolower(word[2]) == 'd' && tolower(word[3]) == 'a' && tolower(word[4]) == 't' && tolower(word[5]) == 'e') return 265;
+	if (len == 6 && tolower(word[1]) == 'k' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 't' && word[5] == '$') return 256;
+	if (len == 6 && tolower(word[1]) == 'k' && tolower(word[2]) == 'l' && tolower(word[3]) == 'o' && tolower(word[4]) == 'n' && tolower(word[5]) == 'g') return 259;
+	if (len == 7 && tolower(word[1]) == 'k' && tolower(word[2]) == 'b' && tolower(word[3]) == 'o' && tolower(word[4]) == 'o' && tolower(word[5]) == 'l' && word[6] == '$') return 248;
+	if (len == 7 && tolower(word[1]) == 'k' && tolower(word[2]) == 'b' && tolower(word[3]) == 'y' && tolower(word[4]) == 't' && tolower(word[5]) == 'e' && word[6] == '$') return 252;
+	if (len == 7 && tolower(word[1]) == 'k' && tolower(word[2]) == 'd' && tolower(word[3]) == 'a' && tolower(word[4]) == 't' && tolower(word[5]) == 'e' && word[6] == '$') return 266;
+	if (len == 7 && tolower(word[1]) == 'k' && tolower(word[2]) == 'f' && tolower(word[3]) == 'l' && tolower(word[4]) == 'o' && tolower(word[5]) == 'a' && tolower(word[6]) == 't') return 263;
+	if (len == 7 && tolower(word[1]) == 'k' && tolower(word[2]) == 'l' && tolower(word[3]) == 'o' && tolower(word[4]) == 'n' && tolower(word[5]) == 'g' && word[6] == '$') return 260;
+	if (len == 7 && tolower(word[1]) == 'k' && tolower(word[2]) == 's' && tolower(word[3]) == 'h' && tolower(word[4]) == 'o' && tolower(word[5]) == 'r' && tolower(word[6]) == 't') return 253;
+	if (len == 8 && tolower(word[1]) == 'k' && tolower(word[2]) == 'f' && tolower(word[3]) == 'l' && tolower(word[4]) == 'o' && tolower(word[5]) == 'a' && tolower(word[6]) == 't' && word[7] == '$') return 264;
+	if (len == 8 && tolower(word[1]) == 'k' && tolower(word[2]) == 's' && tolower(word[3]) == 'h' && tolower(word[4]) == 'o' && tolower(word[5]) == 'r' && tolower(word[6]) == 't' && word[7] == '$') return 254;
+	if (len == 8 && tolower(word[1]) == 'k' && tolower(word[2]) == 's' && tolower(word[3]) == 'i' && tolower(word[4]) == 'n' && tolower(word[5]) == 'g' && tolower(word[6]) == 'l' && tolower(word[7]) == 'e') return 261;
+	if (len == 9 && tolower(word[1]) == 'k' && tolower(word[2]) == 'b' && tolower(word[3]) == 'o' && tolower(word[4]) == 'o' && tolower(word[5]) == 'l' && tolower(word[6]) == 'e' && tolower(word[7]) == 'a' && tolower(word[8]) == 'n') return 249;
+	if (len == 9 && tolower(word[1]) == 'k' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 't' && tolower(word[5]) == 'e' && tolower(word[6]) == 'g' && tolower(word[7]) == 'e' && tolower(word[8]) == 'r') return 257;
+	if (len == 9 && tolower(word[1]) == 'k' && tolower(word[2]) == 'p' && tolower(word[3]) == 'o' && tolower(word[4]) == 'i' && tolower(word[5]) == 'n' && tolower(word[6]) == 't' && tolower(word[7]) == 'e' && tolower(word[8]) == 'r') return 267;
+	if (len == 9 && tolower(word[1]) == 'k' && tolower(word[2]) == 's' && tolower(word[3]) == 'i' && tolower(word[4]) == 'n' && tolower(word[5]) == 'g' && tolower(word[6]) == 'l' && tolower(word[7]) == 'e' && word[8] == '$') return 262;
+	if (len == 10 && tolower(word[1]) == 'k' && tolower(word[2]) == 'b' && tolower(word[3]) == 'o' && tolower(word[4]) == 'o' && tolower(word[5]) == 'l' && tolower(word[6]) == 'e' && tolower(word[7]) == 'a' && tolower(word[8]) == 'n' && word[9] == '$') return 250;
+	if (len == 10 && tolower(word[1]) == 'k' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 't' && tolower(word[5]) == 'e' && tolower(word[6]) == 'g' && tolower(word[7]) == 'e' && tolower(word[8]) == 'r' && word[9] == '$') return 258;
+	if (len == 10 && tolower(word[1]) == 'k' && tolower(word[2]) == 'p' && tolower(word[3]) == 'o' && tolower(word[4]) == 'i' && tolower(word[5]) == 'n' && tolower(word[6]) == 't' && tolower(word[7]) == 'e' && tolower(word[8]) == 'r' && word[9] == '$') return 268;
 	return -1;
 __4E:
 __6E:
@@ -815,12 +816,12 @@ __6F:
 __50:
 __70:
 	if (len == 2 && tolower(word[1]) == 'i') return 80;
-	if (len == 8 && tolower(word[1]) == 'o' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 't' && tolower(word[5]) == 'e' && tolower(word[6]) == 'r' && word[7] == '@') return 278;
+	if (len == 8 && tolower(word[1]) == 'o' && tolower(word[2]) == 'i' && tolower(word[3]) == 'n' && tolower(word[4]) == 't' && tolower(word[5]) == 'e' && tolower(word[6]) == 'r' && word[7] == '@') return 279;
 	return -1;
 __51:
 __71:
-	if (len == 5 && tolower(word[1]) == 'u' && tolower(word[2]) == 'o' && tolower(word[3]) == 't' && tolower(word[4]) == 'e') return 228;
-	if (len == 6 && tolower(word[1]) == 'u' && tolower(word[2]) == 'o' && tolower(word[3]) == 't' && tolower(word[4]) == 'e' && word[5] == '$') return 229;
+	if (len == 5 && tolower(word[1]) == 'u' && tolower(word[2]) == 'o' && tolower(word[3]) == 't' && tolower(word[4]) == 'e') return 229;
+	if (len == 6 && tolower(word[1]) == 'u' && tolower(word[2]) == 'o' && tolower(word[3]) == 't' && tolower(word[4]) == 'e' && word[5] == '$') return 230;
 	return -1;
 __52:
 __72:
@@ -829,14 +830,14 @@ __72:
 	if (len == 3 && tolower(word[1]) == 'o' && tolower(word[2]) == 'l') return 114;
 	if (len == 3 && tolower(word[1]) == 'o' && tolower(word[2]) == 'r') return 115;
 	if (len == 4 && tolower(word[1]) == 'a' && tolower(word[2]) == 'n' && tolower(word[3]) == 'd') return 193;
-	if (len == 4 && tolower(word[1]) == 'd' && tolower(word[2]) == 'i' && tolower(word[3]) == 'r') return 212;
+	if (len == 4 && tolower(word[1]) == 'd' && tolower(word[2]) == 'i' && tolower(word[3]) == 'r') return 213;
 	if (len == 5 && tolower(word[1]) == 'i' && tolower(word[2]) == 'g' && tolower(word[3]) == 'h' && tolower(word[4]) == 't') return 5;
 	if (len == 5 && tolower(word[1]) == 'o' && tolower(word[2]) == 'u' && tolower(word[3]) == 'n' && tolower(word[4]) == 'd') return 81;
 	if (len == 5 && tolower(word[1]) == 't' && tolower(word[2]) == 'r' && tolower(word[3]) == 'i' && tolower(word[4]) == 'm') return 16;
 	if (len == 6 && tolower(word[1]) == 'i' && tolower(word[2]) == 'g' && tolower(word[3]) == 'h' && tolower(word[4]) == 't' && word[5] == '$') return 4;
 	if (len == 6 && tolower(word[1]) == 'i' && tolower(word[2]) == 'n' && tolower(word[3]) == 's' && tolower(word[4]) == 't' && tolower(word[5]) == 'r') return 29;
 	if (len == 6 && tolower(word[1]) == 't' && tolower(word[2]) == 'r' && tolower(word[3]) == 'i' && tolower(word[4]) == 'm' && word[5] == '$') return 15;
-	if (len == 7 && tolower(word[1]) == 'e' && tolower(word[2]) == 'a' && tolower(word[3]) == 'l' && tolower(word[4]) == 'l' && tolower(word[5]) == 'o' && tolower(word[6]) == 'c') return 217;
+	if (len == 7 && tolower(word[1]) == 'e' && tolower(word[2]) == 'a' && tolower(word[3]) == 'l' && tolower(word[4]) == 'l' && tolower(word[5]) == 'o' && tolower(word[6]) == 'c') return 218;
 	if (len == 7 && tolower(word[1]) == 'e' && tolower(word[2]) == 'p' && tolower(word[3]) == 'l' && tolower(word[4]) == 'a' && tolower(word[5]) == 'c' && tolower(word[6]) == 'e') return 33;
 	if (len == 8 && tolower(word[1]) == 'e' && tolower(word[2]) == 'p' && tolower(word[3]) == 'l' && tolower(word[4]) == 'a' && tolower(word[5]) == 'c' && tolower(word[6]) == 'e' && word[7] == '$') return 32;
 	return -1;
@@ -851,59 +852,59 @@ __73:
 	if (len == 4 && tolower(word[1]) == 'c' && tolower(word[2]) == 'a' && tolower(word[3]) == 'n') return 35;
 	if (len == 4 && tolower(word[1]) == 'e' && tolower(word[2]) == 'e' && tolower(word[3]) == 'k') return 187;
 	if (len == 4 && tolower(word[1]) == 'i' && tolower(word[2]) == 'n' && tolower(word[3]) == 'h') return 63;
-	if (len == 4 && tolower(word[1]) == 't' && tolower(word[2]) == 'a' && tolower(word[3]) == 't') return 206;
+	if (len == 4 && tolower(word[1]) == 't' && tolower(word[2]) == 'a' && tolower(word[3]) == 't') return 207;
 	if (len == 4 && tolower(word[1]) == 't' && tolower(word[2]) == 'r' && word[3] == '$') return 146;
-	if (len == 4 && tolower(word[1]) == 't' && tolower(word[2]) == 'r' && word[3] == '@') return 218;
-	if (len == 4 && tolower(word[1]) == 'w' && tolower(word[2]) == 'a' && tolower(word[3]) == 'p') return 200;
+	if (len == 4 && tolower(word[1]) == 't' && tolower(word[2]) == 'r' && word[3] == '@') return 219;
+	if (len == 4 && tolower(word[1]) == 'w' && tolower(word[2]) == 'a' && tolower(word[3]) == 'p') return 201;
 	if (len == 5 && tolower(word[1]) == 'c' && tolower(word[2]) == 'o' && tolower(word[3]) == 'n' && tolower(word[4]) == 'v') return 39;
-	if (len == 5 && tolower(word[1]) == 'h' && tolower(word[2]) == 'e' && tolower(word[3]) == 'l' && tolower(word[4]) == 'l') return 230;
+	if (len == 5 && tolower(word[1]) == 'h' && tolower(word[2]) == 'e' && tolower(word[3]) == 'l' && tolower(word[4]) == 'l') return 231;
 	if (len == 5 && tolower(word[1]) == 'p' && tolower(word[2]) == 'a' && tolower(word[3]) == 'c' && tolower(word[4]) == 'e') return 8;
 	if (len == 5 && tolower(word[1]) == 'p' && tolower(word[2]) == 'l' && tolower(word[3]) == 'i' && tolower(word[4]) == 't') return 34;
 	if (len == 5 && tolower(word[1]) == 'u' && tolower(word[2]) == 'b' && tolower(word[3]) == 's' && tolower(word[4]) == 't') return 31;
-	if (len == 5 && tolower(word[1]) == 'w' && tolower(word[2]) == 'a' && tolower(word[3]) == 'p' && word[4] == '$') return 201;
+	if (len == 5 && tolower(word[1]) == 'w' && tolower(word[2]) == 'a' && tolower(word[3]) == 'p' && word[4] == '$') return 202;
 	if (len == 6 && tolower(word[1]) == 'c' && tolower(word[2]) == 'o' && tolower(word[3]) == 'n' && tolower(word[4]) == 'v' && word[5] == '$') return 40;
 	if (len == 6 && tolower(word[1]) == 'e' && tolower(word[2]) == 'c' && tolower(word[3]) == 'o' && tolower(word[4]) == 'n' && tolower(word[5]) == 'd') return 157;
-	if (len == 6 && tolower(word[1]) == 'h' && tolower(word[2]) == 'e' && tolower(word[3]) == 'l' && tolower(word[4]) == 'l' && word[5] == '$') return 231;
-	if (len == 6 && tolower(word[1]) == 'h' && tolower(word[2]) == 'o' && tolower(word[3]) == 'r' && tolower(word[4]) == 't' && word[5] == '@') return 271;
+	if (len == 6 && tolower(word[1]) == 'h' && tolower(word[2]) == 'e' && tolower(word[3]) == 'l' && tolower(word[4]) == 'l' && word[5] == '$') return 232;
+	if (len == 6 && tolower(word[1]) == 'h' && tolower(word[2]) == 'o' && tolower(word[3]) == 'r' && tolower(word[4]) == 't' && word[5] == '@') return 272;
 	if (len == 6 && tolower(word[1]) == 'i' && tolower(word[2]) == 'z' && tolower(word[3]) == 'e' && tolower(word[4]) == 'o' && tolower(word[5]) == 'f') return 126;
 	if (len == 6 && tolower(word[1]) == 'p' && tolower(word[2]) == 'a' && tolower(word[3]) == 'c' && tolower(word[4]) == 'e' && word[5] == '$') return 7;
 	if (len == 6 && tolower(word[1]) == 't' && tolower(word[2]) == 'r' && tolower(word[3]) == 'i' && tolower(word[4]) == 'n' && tolower(word[5]) == 'g') return 10;
 	if (len == 6 && tolower(word[1]) == 'u' && tolower(word[2]) == 'b' && tolower(word[3]) == 's' && tolower(word[4]) == 't' && word[5] == '$') return 30;
-	if (len == 7 && tolower(word[1]) == 'i' && tolower(word[2]) == 'n' && tolower(word[3]) == 'g' && tolower(word[4]) == 'l' && tolower(word[5]) == 'e' && word[6] == '@') return 275;
+	if (len == 7 && tolower(word[1]) == 'i' && tolower(word[2]) == 'n' && tolower(word[3]) == 'g' && tolower(word[4]) == 'l' && tolower(word[5]) == 'e' && word[6] == '@') return 276;
 	if (len == 7 && tolower(word[1]) == 't' && tolower(word[2]) == 'r' && tolower(word[3]) == 'i' && tolower(word[4]) == 'n' && tolower(word[5]) == 'g' && word[6] == '$') return 9;
-	if (len == 7 && tolower(word[1]) == 't' && tolower(word[2]) == 'r' && tolower(word[3]) == 'i' && tolower(word[4]) == 'n' && tolower(word[5]) == 'g' && word[6] == '@') return 219;
+	if (len == 7 && tolower(word[1]) == 't' && tolower(word[2]) == 'r' && tolower(word[3]) == 'i' && tolower(word[4]) == 'n' && tolower(word[5]) == 'g' && word[6] == '@') return 220;
 	return -1;
 __54:
 __74:
-	if (len == 2 && tolower(word[1]) == 'r') return 226;
+	if (len == 2 && tolower(word[1]) == 'r') return 227;
 	if (len == 3 && tolower(word[1]) == 'a' && tolower(word[2]) == 'n') return 53;
-	if (len == 3 && tolower(word[1]) == 'r' && word[2] == '$') return 227;
+	if (len == 3 && tolower(word[1]) == 'r' && word[2] == '$') return 228;
 	if (len == 4 && tolower(word[1]) == 'a' && tolower(word[2]) == 'n' && tolower(word[3]) == 'h') return 65;
-	if (len == 4 && tolower(word[1]) == 'e' && tolower(word[2]) == 'm' && tolower(word[3]) == 'p') return 208;
+	if (len == 4 && tolower(word[1]) == 'e' && tolower(word[2]) == 'm' && tolower(word[3]) == 'p') return 209;
 	if (len == 4 && tolower(word[1]) == 'i' && tolower(word[2]) == 'm' && tolower(word[3]) == 'e') return 161;
 	if (len == 4 && tolower(word[1]) == 'r' && tolower(word[2]) == 'i' && tolower(word[3]) == 'm') return 12;
-	if (len == 5 && tolower(word[1]) == 'e' && tolower(word[2]) == 'm' && tolower(word[3]) == 'p' && word[4] == '$') return 209;
+	if (len == 5 && tolower(word[1]) == 'e' && tolower(word[2]) == 'm' && tolower(word[3]) == 'p' && word[4] == '$') return 210;
 	if (len == 5 && tolower(word[1]) == 'i' && tolower(word[2]) == 'm' && tolower(word[3]) == 'e' && tolower(word[4]) == 'r') return 150;
 	if (len == 5 && tolower(word[1]) == 'r' && tolower(word[2]) == 'i' && tolower(word[3]) == 'm' && word[4] == '$') return 11;
 	if (len == 6 && tolower(word[1]) == 'y' && tolower(word[2]) == 'p' && tolower(word[3]) == 'e' && tolower(word[4]) == 'o' && tolower(word[5]) == 'f') return 125;
 	return -1;
 __55:
 __75:
-	if (len == 3 && tolower(word[1]) == 'r' && tolower(word[2]) == 'l') return 236;
-	if (len == 4 && tolower(word[1]) == 'r' && tolower(word[2]) == 'l' && word[3] == '$') return 237;
+	if (len == 3 && tolower(word[1]) == 'r' && tolower(word[2]) == 'l') return 237;
+	if (len == 4 && tolower(word[1]) == 'r' && tolower(word[2]) == 'l' && word[3] == '$') return 238;
 	if (len == 5 && tolower(word[1]) == 'c' && tolower(word[2]) == 'a' && tolower(word[3]) == 's' && tolower(word[4]) == 'e') return 20;
 	if (len == 5 && tolower(word[1]) == 'p' && tolower(word[2]) == 'p' && tolower(word[3]) == 'e' && tolower(word[4]) == 'r') return 18;
 	if (len == 6 && tolower(word[1]) == 'c' && tolower(word[2]) == 'a' && tolower(word[3]) == 's' && tolower(word[4]) == 'e' && word[5] == '$') return 19;
 	if (len == 6 && tolower(word[1]) == 'p' && tolower(word[2]) == 'p' && tolower(word[3]) == 'e' && tolower(word[4]) == 'r' && word[5] == '$') return 17;
-	if (len == 7 && tolower(word[1]) == 'n' && tolower(word[2]) == 'q' && tolower(word[3]) == 'u' && tolower(word[4]) == 'o' && tolower(word[5]) == 't' && tolower(word[6]) == 'e') return 238;
-	if (len == 8 && tolower(word[1]) == 'n' && tolower(word[2]) == 'b' && tolower(word[3]) == 'a' && tolower(word[4]) == 's' && tolower(word[5]) == 'e' && word[6] == '6' && word[7] == '4') return 240;
-	if (len == 8 && tolower(word[1]) == 'n' && tolower(word[2]) == 'q' && tolower(word[3]) == 'u' && tolower(word[4]) == 'o' && tolower(word[5]) == 't' && tolower(word[6]) == 'e' && word[7] == '$') return 239;
-	if (len == 9 && tolower(word[1]) == 'n' && tolower(word[2]) == 'b' && tolower(word[3]) == 'a' && tolower(word[4]) == 's' && tolower(word[5]) == 'e' && word[6] == '6' && word[7] == '4' && word[8] == '$') return 241;
+	if (len == 7 && tolower(word[1]) == 'n' && tolower(word[2]) == 'q' && tolower(word[3]) == 'u' && tolower(word[4]) == 'o' && tolower(word[5]) == 't' && tolower(word[6]) == 'e') return 239;
+	if (len == 8 && tolower(word[1]) == 'n' && tolower(word[2]) == 'b' && tolower(word[3]) == 'a' && tolower(word[4]) == 's' && tolower(word[5]) == 'e' && word[6] == '6' && word[7] == '4') return 241;
+	if (len == 8 && tolower(word[1]) == 'n' && tolower(word[2]) == 'q' && tolower(word[3]) == 'u' && tolower(word[4]) == 'o' && tolower(word[5]) == 't' && tolower(word[6]) == 'e' && word[7] == '$') return 240;
+	if (len == 9 && tolower(word[1]) == 'n' && tolower(word[2]) == 'b' && tolower(word[3]) == 'a' && tolower(word[4]) == 's' && tolower(word[5]) == 'e' && word[6] == '6' && word[7] == '4' && word[8] == '$') return 242;
 	return -1;
 __56:
 __76:
 	if (len == 3 && tolower(word[1]) == 'a' && tolower(word[2]) == 'l') return 145;
-	if (len == 6 && tolower(word[1]) == 'a' && tolower(word[2]) == 'r' && tolower(word[3]) == 'p' && tolower(word[4]) == 't' && tolower(word[5]) == 'r') return 223;
+	if (len == 6 && tolower(word[1]) == 'a' && tolower(word[2]) == 'r' && tolower(word[3]) == 'p' && tolower(word[4]) == 't' && tolower(word[5]) == 'r') return 224;
 	return -1;
 __57:
 __77:
