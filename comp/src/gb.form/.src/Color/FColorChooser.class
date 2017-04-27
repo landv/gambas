@@ -186,6 +186,8 @@ Public Sub dwgColorMap_MouseMove()
   Dim H, S As Integer
   Dim bChange As Boolean
 
+  If Not GetParent().Enabled Then Return
+
   $bLock = True
   H = 359 - (Mouse.ScreenX - Last.ScreenX) * 360 / dwgColorMap.ClientW
   S = 255 - (Mouse.ScreenY - Last.ScreenY) * 256 / dwgColorMap.ClientH
@@ -246,9 +248,17 @@ End
 ' 
 ' End
 
+Private Sub RaiseActivate()
+
+  With GetParent()
+    If .Enabled Then ._RaiseActivate()
+  End With
+
+End
+
 Public Sub dwgColorMap_DblClick()
 
-  GetParent()._RaiseActivate()
+  RaiseActivate
 
 End
 
@@ -307,7 +317,7 @@ End
 
 Public Sub panColor_DblClick()
 
-  GetParent()._RaiseActivate()
+  RaiseActivate
 
 End
 
@@ -433,6 +443,9 @@ End
 Public Sub dwgStdColor_MouseMove()
 
   Dim iStep As Integer
+
+  If Not GetParent().Enabled Then Return
+
   iStep = 360 \ $nStdColor
   SetColor(Color.HSV(360 - Int(Max(0, Min(dwgStdColor.W - 1, Mouse.X)) / dwgStdColor.W * 360 / iStep) * iStep, 255, 255))
 
@@ -472,6 +485,8 @@ Public Sub dwgValue_MouseMove()
 
   Dim V As Integer
   
+  If Not GetParent().Enabled Then Return
+
   V = Mouse.Y / dwgValue.H * 256
   If Not (Mouse.Shift Xor $bSnap) Then V = Int((V + 16) / 32) * 32
   V = 255 - Min(255, Max(0, V))
@@ -534,7 +549,7 @@ End
 
 Public Sub dwgStdColor_DblClick()
 
-  GetParent()._RaiseActivate()
+  RaiseActivate
 
 End
 
