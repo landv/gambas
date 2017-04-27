@@ -17,13 +17,13 @@ Static Public Sub _init()
   
   $aKeywords = New String[]
   
-  For Each sStr In ["break", "case", "catch", "const", "continue", "debugger", "default", "delete", "do", "else", "finally", "for",
-    "function", "if", "in", "instanceof", "new", "return", "switch", "throw", "try", "typeof", "var", "void", "while", "with"]
+  For Each sStr In ["break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "enum", "export", "extends", "finally", "for",
+    "function", "if", "import", "in", "instanceof", "new", "return", "super", "switch", "throw", "try", "typeof", "var", "void", "while", "with", "yield"]
     $cKeyword[sStr] = 0
     $aKeywords.Add(sStr)
   Next
 
-  For Each sStr In ["false", "null", "this", "true", "undefined"]
+  For Each sStr In ["false", "null", "this", "true", "undefined", "NaN", "Infinity"]
     $cKeyword[sStr] = 1
     $aKeywords.Add(sStr)
   Next
@@ -180,7 +180,7 @@ Public Sub Run(sText As String)
         If $cKeyword.Exist(sIdent) Then
           iState = Highlight.Keyword
           If sIdent = "function" Then bTestShowLimit = True
-          If $cKeyword[sIdent] = 1 Then bLastExpr = True
+          bLastExpr = $cKeyword[sIdent] = 1
         Else
           iState = Highlight.Symbol
           bLastExpr = True
