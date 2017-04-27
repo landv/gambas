@@ -89,7 +89,7 @@ Public Sub _new(Optional hParent As TermContainer)
   _AllowFocus = True
   If hParent Then 
     TermWindows.SetRefreshArea(hParent._GetScreenRect())
-    TermWindows._Render
+    'TermWindows._Render
     'hParent.Refresh
   Endif
   ' TermWindows._RefreshScreen

@@ -10,6 +10,9 @@ Public Sub _New()
   Dim hText As TermTextBox
   Dim hBox As New TermHBox(Me)
   Dim hLab As New TermLabel(hBox)
+  Dim hBar As TermScrollBar
+  Dim bar As TermScrollBar
+  Dim hbb As TermHBox
   'Dim hlab2 As TermLabel
   
   'Me.Maximized = True
@@ -42,12 +45,29 @@ Public Sub _New()
   hText.Text = "test"
   hText.Expand = True
   
-  
+  '
   $hlab2 = New TermLabel(Me)
   
   $hlab2.Background = TermColor.green
   $hlab2.Show
   
+  
+  hbb = New TermHBox(Me)
+  hbb.Height = 8
+  hbb.Expand = True
+  hbox = New TermHBox(hbb)
+  'hbox.Expand
+  bar = New TermScrollBar(hbb) As "Bar"
+  bar.Height = 5
+  bar.Width = 1
+  bar.Show
+  bar.Background = TermColor.red
+  
+  bar = New TermScrollBar(Me) As "bar"
+  
+  bar.Show
+  bar.MinValue = -20
+  bar.MaxValue = 100
 End
 
 
@@ -57,4 +77,9 @@ Public Sub TextBox_Change()
   
 End
 
+Public Sub Bar_Change()
+  
+  $hlab2.Text = Last.value
+  
+End
 

@@ -827,6 +827,21 @@ _GetForeground
 m
 i
 
+#TermListBox
+TermControl
+C
+List
+p
+String[]
+
+Index
+p
+i
+
+Count
+r
+i
+
 #TermPanel
 TermContainer
 C
@@ -897,6 +912,45 @@ m
 
 
 _KeyPress
+m
+
+
+#TermScrollBar
+TermControl
+C
+MinValue
+p
+i
+
+MaxValue
+p
+i
+
+Value
+p
+i
+
+:Change
+:
+
+
+_new
+m
+
+
+_Render
+m
+
+
+_MouseDown
+m
+
+
+_MouseUp
+m
+
+
+_MouseMove
 m
 
 
