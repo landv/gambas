@@ -33,6 +33,8 @@
 
 #define OVECSIZE_INC 99
 
+#define PCRE_GREEDY 0x80000000 // The highest possible pcre constant. It must be not used by pcre of course!
+
 DECLARE_METHOD(RegExp_free);
 
 //---------------------------------------------------------------------------
@@ -375,7 +377,11 @@ BEGIN_METHOD(RegExp_Replace, GB_STRING subject; GB_STRING pattern; GB_STRING rep
 	CLEAR(&r);
 	r.ovecsize = OVECSIZE_INC;
 	GB.Alloc(POINTER(&r.ovector), sizeof(int) * r.ovecsize);
-	r.copts = VARGOPT(coptions, 0) | PCRE_UNGREEDY;
+	r.copts = VARGOPT(coptions, 0);
+	if (r.copts & PCRE_GREEDY)
+		r.copts &= ~PCRE_GREEDY;
+	else
+		r.copts |= PCRE_UNGREEDY;
 	r.pattern = GB.NewString(STRING(pattern), LENGTH(pattern));
 
 	compile(&r);
@@ -488,6 +494,7 @@ GB_DESC CRegexpDesc[] =
 #else
 	GB_CONSTANT("BadUTF8Offset", "i", PCRE_ERROR_BADUTF8_OFFSET),
 #endif
+	GB_CONSTANT("Greedy", "i", PCRE_GREEDY),
 
 	GB_PROPERTY_READ("SubMatches", ".Regexp.Submatches", RegExp_Submatches),
 	
