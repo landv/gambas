@@ -11,15 +11,20 @@
   }
   { DateChooser1 DateChooser
     Move(287,42,357,238)
+    Enabled = False
   }
   { DateBox2 DateBox
     Move(63,140,168,28)
   }
   { txtYear SpinBox
-    Move(112,238,63,28)
+    Move(168,308,63,28)
     MinValue = 1600
     MaxValue = 9999
     Value = 2015
     Border = False
+  }
+  { SliderBox1 SliderBox
+    Move(21,203,238,28)
+    Enabled = False
   }
 }

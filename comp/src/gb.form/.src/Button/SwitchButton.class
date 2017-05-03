@@ -235,6 +235,7 @@ End
 
 Public Sub DrawingArea_MouseWheel()
   
+  'If Not Me.Enabled Then Return
   If Not Mouse.Forward Xor Me.Value Then
     ToggleAnimate
   Endif

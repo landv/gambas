@@ -117,6 +117,7 @@ End
 
 Public Sub SpinBox_MouseWheel()
   
+  If Not Me.Enabled Then Return
   $hSpinBox.Value += If(Mouse.Forward, $iStep, - $iStep)
   Stop Event
   

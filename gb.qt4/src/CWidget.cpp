@@ -2632,7 +2632,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
 		if (!original)
 			goto _DESIGN;
-
+		
 		/*if (type == QEvent::MouseButtonPress)
 		{
 			qDebug("mouse event on [%s %s %p] (%s %p) %s%s%s", widget->metaObject()->className(), qPrintable(widget->objectName()), widget, 
@@ -2659,6 +2659,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		//	control = (CWIDGET *)control->proxy_for;
 
 	__MOUSE_TRY_PROXY:
+	
+		if (!design && !QWIDGET(control)->isEnabled())
+			goto __NEXT;
 	
 		p.setX(mevent->globalX());
 		p.setY(mevent->globalY());
@@ -3036,6 +3039,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
 	__MOUSE_WHEEL_TRY_PROXY:
 		
+		if (!design && !QWIDGET(control)->isEnabled())
+			goto __NEXT;
+	
 		if (GB.CanRaise(control, EVENT_MouseWheel))
 		{
 			// Automatic focus for wheel events
@@ -3177,6 +3183,9 @@ _DESIGN:
 				|| (type == QEvent::DragMove)
 				|| (type == QEvent::DragLeave)
 				|| (type == QEvent::Drop)
+				|| (type == QEvent::TabletMove)
+				|| (type == QEvent::TabletPress)
+				|| (type == QEvent::TabletRelease)
 				)
 		return true;
 	}

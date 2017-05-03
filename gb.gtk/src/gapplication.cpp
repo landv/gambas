@@ -540,6 +540,9 @@ __FOUND_WIDGET:
 
 
 		__BUTTON_TRY_PROXY:
+		
+			if (!control->design() && !control->isEnabled())
+				goto __HANDLE_EVENT;
 
 			cancel = false;
 
@@ -658,6 +661,9 @@ __FOUND_WIDGET:
 
 		__MOTION_TRY_PROXY:
 
+			if (!control->design() && !control->isEnabled())
+				goto __HANDLE_EVENT;
+
 			if (control->onMouseEvent && (control->canRaise(control, gEvent_MouseMove) || control->canRaise(control, gEvent_MouseDrag))
 					&& (control->isTracking() || (event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK))))
 			{
@@ -709,6 +715,9 @@ __FOUND_WIDGET:
 				goto __HANDLE_EVENT;
 
 		__SCROLL_TRY_PROXY:
+
+			if (!control->design() && !control->isEnabled())
+				goto __HANDLE_EVENT;
 
 			if (control->onMouseEvent && control->canRaise(control, gEvent_MouseWheel))
 			{

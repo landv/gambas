@@ -91,7 +91,7 @@ bool CPICTURE_load_image(QImage **p, const char *path, int lenp)
 		GB.Error(NULL);
 		return FALSE;
 	}
-			
+	
 	CREATE_IMAGE_FROM_MEMORY(*p, addr, len, ok)
 	
 	GB.ReleaseFile(addr, len);

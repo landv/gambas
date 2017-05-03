@@ -33,16 +33,29 @@ Public Sub Link(hLink As MarkdownLink)
   
   hLink.Query = Mid$(Main.LinkSuffix, 2)
   
+  If Main.IsImage(sPath) Then
+    If hLink.Text Then
+      sLink = hLink.Text
+      If sLink Begins "/" Then
+      Else If sLink Begins "./" Then
+        sLink = Main.Path &/ Mid$(sLink, 3)
+      Else If sLink Begins "../" Then
+        sLink = Main.MakeAbsolute(sLink, Main.Path)
+      Endif
+      hLink.Html = "<img src=\"" & Html(Application.Root &/ sLink) & "?v" & "\" />"
+    Else
+      hLink.Html = "<img src=\"" & Html(Application.Root &/ sPath) & "?v" & "\" />"
+    Endif
+    If Session.Id Then
+      hLink.Html = "<a href=\"" & Html(Application.Root &/ sPath) & "\">" & hLink.Html & "</a>"
+    Else If hLink.Text Then
+      hLink.Html = "<a href=\"" & Html(Application.Root &/ sPath & "?v") & "\" target=\"_blank\">" & hLink.Html & "</a>"
+    Endif
+    Return
+  Endif
+
   If Not hLink.Text Or If hLink.Text = hLink.Link Then
     
-    If Main.IsImage(sPath) Then
-      hLink.Html = "<img src=\"" & Application.Root &/ sPath & "?v" & "\" />"
-      If Session.Id Then
-        hLink.Html = "<a href=\"" & Application.Root &/ sPath & "\">" & hLink.Html & "</a>"
-      Endif
-      Return
-    Endif
-  
     hLink.Text = Main.GetPageTitle(sPath)
     
   Endif

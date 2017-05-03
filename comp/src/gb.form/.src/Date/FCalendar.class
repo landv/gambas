@@ -248,6 +248,7 @@ Public Sub dwgMonth_Draw()
         Draw.FillColor = Color.SelectedBackground
         Draw.Foreground = Color.SelectedForeground
     End Select
+    If Not Me.Enabled Then Draw.Foreground = Color.Merge(Draw.Foreground, Draw.FillColor)
     Draw.Rect(X, Y, W, YD)
     Draw.Text(Format(CDate($dStart + I), "ddd"), X, Y, W, YD, Align.Center)
     X += W
@@ -276,6 +277,8 @@ Public Sub dwgMonth_Draw()
       iBackground = hDate.Background
       If iBackground = Color.Default Then iBackground = dwgMonth.Background
       
+      If Not Me.Enabled Then iForeground = Color.Merge(iForeground, iBackground)
+
       Draw.Font = hDate.Font
       Draw.Font.Size = fSize
 
