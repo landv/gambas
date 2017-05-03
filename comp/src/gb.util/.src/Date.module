@@ -6,7 +6,7 @@ Private $aMonth As String[]
 
 Public Sub ToUnixTime({Date} As Date) As Long
 
-  Return DateDiff(Date(1970, 1, 1), {Date} - Frac(Date(Now)), gb.Second)
+  Return DateDiff(Date(1970, 1, 1), {Date}, gb.Second) + System.TimeZone
 
 End
 
