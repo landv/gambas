@@ -67,3 +67,9 @@ Public Sub WebButton1_Click()
   Message.Warning("Ceci est une table avec " & WebTable1.Count & " éléments !")
 
 End
+
+Public Sub WebTable1_Select()
+
+  WebForm.Print("Select: " & WebTable1.Selection.Count)
+
+End

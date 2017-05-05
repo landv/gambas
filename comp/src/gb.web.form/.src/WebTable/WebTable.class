@@ -71,9 +71,10 @@ Private Sub PrintRow(iRow As Integer)
   Dim NX As Integer
   
   If $iMode And If Not $bNoCheck Then
-    Print "<td onmousedown=\"gw.table.check("; JS(Me.Name); ","; CStr(iRow); 
-    If $iMode <> Select.Single Then Print ",event"; 
-    Print ")\">";
+    'Print "<td onmousedown=\"gw.table.check("; JS(Me.Name); ","; CStr(iRow); 
+    'If $iMode <> Select.Single Then Print ",event"; 
+    'Print ")\">";
+    Print "<td class=\"gw-table-check\">";
     If $iMode = Select.Single Then
       Print "<input type=\"radio\" name=\""; Me.Name; "\""; 
     Else
