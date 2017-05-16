@@ -11,13 +11,13 @@ Public Sub Form_Open()
   With MapView1.Map.AddShape("Poly")
     
     hPolyLine = [MapPoint(48.457454, -4.638139), MapPoint(51.123363, 2.217329), MapPoint(48.921609, 8.106001), MapPoint(43.833550, 7.666547),
-    MapPoint(42.487303, 3.008345), MapPoint(43.324192, -1.825640)]
+    MapPoint(42.487303, 3.008345), MapPoint(43.324192, -1.825640), MapPoint(48.457454, -4.638139)]
 
 
     
     .AddPolyLine("Section 1", hPolyLine)
     .Color = Color.Red
-    
+     .["Section 1"].Color = Color.Green
   End With
   
 

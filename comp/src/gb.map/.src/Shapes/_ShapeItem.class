@@ -2,7 +2,8 @@
 
 Export
 Public Bounds As New MapBounds
-Public {Color} As Integer
+Public {Color} As Integer = -1
+Public LineWidth As Integer = -1
 Property Read Key As String
 Public Type As Integer
 Public Points As Object

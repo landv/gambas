@@ -13,6 +13,8 @@ Private $himgPoint As Image
 'Property Points As Shapes
 Property {Color} As Integer
 Private $icolor As Integer
+Property LineWidth As Integer
+Private $iLineWidth As Integer = 2
 Private $colKeyShape As New Collection
 Property Read Count As Integer
 Property Image As Image
@@ -58,12 +60,13 @@ Public Sub Load()
   
 End
 
-Public Sub AddPoint(Key As String, Points As MapPoint)
+Public Sub AddPoint(Key As String, Points As MapPoint, Optional {Color} As Integer)
   
   Dim hItem As _ShapeItem
   
   If $colKeyShape.Exist(Key) Then Error.Raise("This key already exist")
   hItem = New _ShapeItem(Key) As "Item"
+  If Not IsMissing({Color}) Then hItem.Color = Color
   hItem.Type = Me.Point
   hItem.Center = Points
   hItem.Points = Points
@@ -73,12 +76,13 @@ Public Sub AddPoint(Key As String, Points As MapPoint)
   
 End
 
-Public Sub AddMultipoint(Key As String, Points As MapPoint[])
+Public Sub AddMultipoint(Key As String, Points As MapPoint[], Optional {Color} As Integer)
   
   Dim hItem As _ShapeItem
   
   If $colKeyShape.Exist(Key) Then Error.Raise("This key already exist")
   hItem = New _ShapeItem(Key) As "Item"
+  If Not IsMissing({Color}) Then hItem.Color = Color
   hItem.MultiPoint = MultiPoint
   hItem.Center = GetCenter(Points)
   hItem.Points = Points
@@ -88,12 +92,14 @@ Public Sub AddMultipoint(Key As String, Points As MapPoint[])
   
 End
 
-Public Sub AddPolyLine(Key As String, Points As MapPoint[])
+Public Sub AddPolyLine(Key As String, Points As MapPoint[], Optional {Color} As Integer, Optional LineWidth As Integer)
   
   Dim hItem As _ShapeItem
   
   If $colKeyShape.Exist(Key) Then Error.Raise("This key already exist")
   hItem = New _ShapeItem(Key) As "Item"
+  If Not IsMissing({Color}) Then hItem.Color = Color
+  If Not IsMissing(LineWidth) Then hItem.LineWidth = LineWidth
   hItem.Type = Polyline
   hItem.Center = GetCenter(Points)
   hItem.Bounds = GetPointBounds(Points)
@@ -103,12 +109,14 @@ Public Sub AddPolyLine(Key As String, Points As MapPoint[])
   
 End
 
-Public Sub AddPolygon(Key As String, Points As MapPoint[][])
+Public Sub AddPolygon(Key As String, Points As MapPoint[][], Optional {Color} As Integer, Optional LineWidth As Integer)
   
   Dim hItem As _ShapeItem
   
   If $colKeyShape.Exist(Key) Then Error.Raise("This key already exist")
   hItem = New _ShapeItem(Key) As "Item"
+  If Not IsMissing({Color}) Then hItem.Color = Color
+  If Not IsMissing(LineWidth) Then hItem.LineWidth = LineWidth
   hItem.Type = Polygon
   hItem.Center = GetCenter(Points[0])
   hItem.Bounds = GetPointBounds(Points[0])
@@ -128,11 +136,12 @@ Public Sub _Draw()
   Dim hShape As _ShapeItem
   
   If $aShapes.Count = 0 Then Return
-  Paint.LineWidth = 2
+  'Paint.LineWidth = 2
   For i = 0 To $aInView.Max
     
     hShape = $aShapes[$aInView[i]]
-    iColor = Color.SetAlpha(IIf(hShape.Color, hShape.Color, Me.Color), 255 - 255 * Me.Opacity)
+    iColor = Color.SetAlpha(IIf(hShape.Color < -1, $icolor, hShape.Color), 255 - 255 * Me.Opacity)
+    Paint.LineWidth = IIf(hShape.LineWidth > -1, hShape.LineWidth, $iLineWidth)
     If hShape.Selected Then icolor = Color.White
     Select Case hShape.Type
       Case Me.Point
@@ -157,7 +166,7 @@ Public Sub _Draw()
           hPoly.Add(pt.x - hMap.PixelBox.X)
           hPoly.Add(pt.y - hMap.PixelBox.Y)
         Next
-        'Paint.LineWKeyth = 2
+        Paint.LineWidth = hShape.LineWidth
         Paint.Brush = Paint.Color(Color.SetAlpha(icolor, 125))
         Paint.Polygon(hPoly)
         Paint.fill(True)
@@ -171,15 +180,20 @@ Public Sub _Draw()
         ' Endif
         
       Case Me.Polyline
-        hPoly = New Integer[]
-        For j = 0 To hShape.Points.Max
+        'hPoly = New Integer[]
+        If hShape.Points.Count = 0 Then Continue
+        pt = Geo.MapPointToPixel(hShape.Points[0], hMap.zoom)
+        Paint.MoveTo(pt.x - hMap.PixelBox.X, pt.y - hMap.PixelBox.Y)
+        For j = 1 To hShape.Points.Max
           pt = Geo.MapPointToPixel(hShape.Points[j], hMap.zoom)
-          hPoly.Add(pt.x - hMap.PixelBox.X)
-          hPoly.Add(pt.y - hMap.PixelBox.Y)
+          Paint.LineTo(pt.x - hMap.PixelBox.X, pt.y - hMap.PixelBox.Y)
+          ' hPoly.Add(pt.x - hMap.PixelBox.X)
+          ' hPoly.Add(pt.y - hMap.PixelBox.Y)
         Next
-        Paint.LineWidth = 2
+        
+        'Paint.LineWidth = hShape.LineWidth
         'Paint.Brush = Paint.Color(Color.SetAlpha(Color.red, 125))
-        Paint.Polygon(hPoly)
+        'Paint.Polygon(hPoly)
         'Paint.fill(True)
         Paint.Brush = Paint.Color(icolor)
         Paint.Stroke
@@ -418,4 +432,16 @@ Public Sub Clear()
   $aShapes.Clear
   $colKeyShape.Clear
   
+End
+
+Private Function LineWidth_Read() As Integer
+
+  Return $iLineWidth
+
+End
+
+Private Sub LineWidth_Write(Value As Integer)
+
+  $iLineWidth = Max(Value, 1)
+
 End

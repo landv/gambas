@@ -498,6 +498,10 @@ Color
 p
 i
 
+LineWidth
+p
+i
+
 Count
 r
 i
@@ -525,7 +529,7 @@ m
 AddPoint
 m
 
-(Key)s(Points)MapPoint;
+(Key)s(Points)MapPoint;[(Color)i]
 Exist
 m
 b
@@ -533,7 +537,7 @@ b
 AddMultipoint
 m
 
-(Key)s(Points)MapPoint[];
+(Key)s(Points)MapPoint[];[(Color)i]
 GetCenter
 M
 MapPoint
@@ -541,11 +545,11 @@ MapPoint
 AddPolyLine
 m
 
-(Key)s(Points)MapPoint[];
+(Key)s(Points)MapPoint[];[(Color)i(LineWidth)i]
 AddPolygon
 m
 
-(Key)s(Points)MapPoint[][];
+(Key)s(Points)MapPoint[][];[(Color)i(LineWidth)i]
 _Draw
 m
 
@@ -685,6 +689,10 @@ v
 MapBounds
 
 Color
+v
+i
+
+LineWidth
 v
 i
 
