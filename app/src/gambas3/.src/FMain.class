@@ -1236,13 +1236,16 @@ Private Sub UpdateGlobalLayout()
   mnuSave.Visible = Not bWelcome
   mnuSaveAs.Visible = Not bWelcome
 
-  For Each hMenu In [mnuEdit, mnuProject, mnuDebug, mnuView]
+  For Each hMenu In [mnuProject, mnuDebug, mnuView]
     hMenu.Visible = Not bWelcome And Not bFake
     hMenu.Enabled = hMenu.Visible
   Next
   
+  mnuEdit.Visible = Not bWelcome
+  mnuEdit.Enabled = mnuEdit.Visible
+  
   mnuTool.Visible = Not bWelcome
-  For Each hMenu In [mnuBrowse, mnuTerminal, mnuSendMail, mnuUpdateAllForms]
+  For Each hMenu In [mnuBrowse, mnuTerminal, mnuSendMail, mnuUpdateAllForms, mnuTool]
     hMenu.Visible = Not bFake
     hMenu.Enabled = hMenu.Visible
   Next
