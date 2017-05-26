@@ -23,15 +23,14 @@
 
 #define __DATE_C
 
-//#define _BSD_SOURCE
+#include "gb_common.h"
+#include "gb_common_buffer.h"
 
 #include <unistd.h>
 #include <ctype.h>
 #include <time.h>
 #include <stdlib.h>
 
-#include "gb_common.h"
-#include "gb_common_buffer.h"
 #include "gb_error.h"
 #include "gbx_value.h"
 #include "gbx_local.h"
@@ -110,17 +109,27 @@ static short date_from_julian_year(short year)
 		return year + DATE_YEAR_MIN + 1;
 }
 
+static double get_monotonic_timer(void)
+{
+#ifdef HAVE_MONOTONIC_CLOCK
+	struct timespec tv;
+	#if OS_LINUX
+	if (clock_gettime(CLOCK_MONOTONIC_RAW, &tv) == 0)
+	#else
+	if (clock_gettime(CLOCK_MONOTONIC, &tv) == 0)
+	#endif
+		return (double)tv.tv_sec + (double)tv.tv_nsec / 1E9;
+#else
+	struct timeval tv;
+	if (gettimeofday(&tv, NULL) == 0)
+		return (double)tv.tv_sec + (double)tv.tv_usec / 1E6;
+#endif
+	return 0.0;
+}
 
 void DATE_init(void)
 {
-	struct timeval tv;
-
-	if (gettimeofday(&tv, NULL) == 0)
-		_start_time = (double)tv.tv_sec + (double)tv.tv_usec / 1E6;
-	else
-		_start_time = 0.0;
-
-	//DATE_init_local();
+	_start_time = get_monotonic_timer();
 }
 
 
@@ -621,15 +630,14 @@ double DATE_to_double(struct timeval *time, int from_start)
 
 bool DATE_timer(double *result, int from_start)
 {
-	struct timeval tv;
-
-	if (gettimeofday(&tv, NULL))
-	{
-		*result = 0;
+	*result = get_monotonic_timer();
+	
+	if (*result == 0.0)
 		return TRUE;
-	}
-
-	*result = DATE_to_double(&tv, from_start);
+	
+	if (from_start)
+		*result -= _start_time;
+	
 	return FALSE;
 }
 

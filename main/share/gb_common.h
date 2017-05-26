@@ -83,7 +83,7 @@
 	#if (defined(__amd64__) || defined(__ia64__) || defined(__sparc64__))
 		#define __WORDSIZE 64
 	#endif
-
+	
 #endif
 
 #ifdef OS_SOLARIS

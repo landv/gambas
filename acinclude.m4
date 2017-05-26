@@ -165,6 +165,10 @@ AC_DEFUN([GB_INIT],
   GB_SYSTEM
   GB_LIBTOOL
 
+  dnl ---- Checks for headers needed by the following tests
+
+  AC_CHECK_HEADERS(unistd.h)
+  
   dnl ---- Checks for programs
 
   AC_PROG_CPP
@@ -177,7 +181,6 @@ AC_DEFUN([GB_INIT],
   dnl AC_HEADER_DIRENT
   dnl AC_HEADER_STDC
   dnl AC_HEADER_SYS_WAIT
-  dnl AC_CHECK_HEADERS(fcntl.h limits.h malloc.h strings.h sys/ioctl.h sys/time.h unistd.h)
 
   dnl ---- Checks for typedefs, structures, and compiler characteristics.
 
@@ -230,6 +233,31 @@ AC_DEFUN([GB_INIT],
   dnl ---- Check for gettext lib
 
   GB_GETTEXT()
+  
+  dnl ---- Check for monotonic clock
+  
+  AC_CACHE_CHECK(for monotonic clock, gb_cv_monotonic_clock,
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+        #include <time.h>
+        #ifdef HAVE_UNISTD_H
+        #include <unistd.h>
+        #endif
+      ]], [[
+        #if !defined(_POSIX_MONOTONIC_CLOCK) || _POSIX_MONOTONIC_CLOCK < 0 || !defined(CLOCK_MONOTONIC)
+        #error Either _POSIX_MONOTONIC_CLOCK or CLOCK_MONOTONIC not defined
+        #endif
+      ]])],[
+         gb_cv_monotonic_clock=yes
+       ],[
+         gb_cv_monotonic_clock=no
+       ])
+    )
+   
+  if test "$gb_cv_monotonic_clock" = "yes"; then
+    AC_DEFINE(HAVE_MONOTONIC_CLOCK,1,[Have a monotonic clock])
+  fi
+  
+  AM_CONDITIONAL(GST_HAVE_MONOTONIC_CLOCK, test "$gb_cv_monotonic_clock" = "yes")
 
   dnl ---- Support for colorgcc
   dnl ---- WARNING: libtool does not support colorgcc!
