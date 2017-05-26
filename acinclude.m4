@@ -236,29 +236,8 @@ AC_DEFUN([GB_INIT],
   
   dnl ---- Check for monotonic clock
   
-  AC_CACHE_CHECK(for monotonic clock, gb_cv_monotonic_clock,
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-        #include <time.h>
-        #ifdef HAVE_UNISTD_H
-        #include <unistd.h>
-        #endif
-      ]], [[
-        #if !defined(_POSIX_MONOTONIC_CLOCK) || _POSIX_MONOTONIC_CLOCK < 0 || !defined(CLOCK_MONOTONIC)
-        #error Either _POSIX_MONOTONIC_CLOCK or CLOCK_MONOTONIC not defined
-        #endif
-      ]])],[
-         gb_cv_monotonic_clock=yes
-       ],[
-         gb_cv_monotonic_clock=no
-       ])
-    )
-   
-  if test "$gb_cv_monotonic_clock" = "yes"; then
-    AC_DEFINE(HAVE_MONOTONIC_CLOCK,1,[Have a monotonic clock])
-  fi
+  GB_MONOTONIC()
   
-  AM_CONDITIONAL(GST_HAVE_MONOTONIC_CLOCK, test "$gb_cv_monotonic_clock" = "yes")
-
   dnl ---- Support for colorgcc
   dnl ---- WARNING: libtool does not support colorgcc!
 
@@ -488,17 +467,23 @@ AC_DEFUN([GB_MATH],
 AC_DEFUN([GB_CHECK_MATH_FUNC],
 [AC_CACHE_CHECK(for $1,
   gb_cv_math_$1,
-[AC_TRY_COMPILE([
-#define _ISOC9X_SOURCE	1
-#define _ISOC99_SOURCE	1
-#define __USE_ISOC99	1
-#define __USE_ISOC9X	1
-#include <math.h>],
-[	int value = $1 (1.0) ; ], gb_cv_math_$1=yes, gb_cv_math_$1=no)])
-if test $gb_cv_math_$1 = yes; then
-  AC_DEFINE(HAVE_$2, 1,
-            [Define if you have $1 function.])
-fi
+  [AC_TRY_COMPILE(
+    [
+      #define _ISOC9X_SOURCE	1
+      #define _ISOC99_SOURCE	1
+      #define __USE_ISOC99	1
+      #define __USE_ISOC9X	1
+      #include <math.h>
+    ],
+    [
+      int value = $1 (1.0);
+    ],
+    gb_cv_math_$1=yes, gb_cv_math_$1=no
+    )])
+  
+  if test $gb_cv_math_$1 = yes; then
+    AC_DEFINE(HAVE_$2, 1, [Define if you have $1 function.])
+  fi
 ])
 
 ## ---------------------------------------------------------------------------
@@ -681,9 +666,52 @@ AC_DEFUN([GB_GETTEXT],
   esac
 
   AC_SUBST(GETTEXT_LIB)
+  AC_SUBST(GETTEXT_LDFLAGS)
 
   AC_MSG_RESULT($GETTEXT_LIB)
 ])
+
+
+## ---------------------------------------------------------------------------
+## GB_MONOTONIC
+## Detect monotonic clock
+## ---------------------------------------------------------------------------
+
+AC_DEFUN([GB_MONOTONIC],
+[
+  AC_CACHE_CHECK(for monotonic clock, gb_cv_monotonic_clock,
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+        #include <time.h>
+        #ifdef HAVE_UNISTD_H
+        #include <unistd.h>
+        #endif
+      ]], [[
+        #if !defined(_POSIX_MONOTONIC_CLOCK) || _POSIX_MONOTONIC_CLOCK < 0 || !defined(CLOCK_MONOTONIC)
+        #error Either _POSIX_MONOTONIC_CLOCK or CLOCK_MONOTONIC not defined
+        #endif
+      ]])],[
+         gb_cv_monotonic_clock=yes
+       ],[
+         gb_cv_monotonic_clock=no
+       ])
+    )
+   
+  if test "$gb_cv_monotonic_clock" = "yes"; then
+  
+    AC_DEFINE(HAVE_MONOTONIC_CLOCK,1,[Have a monotonic clock])
+    
+    ac_save_LIBS="$LIBS"
+    AC_SEARCH_LIBS(clock_gettime, rt)
+    RT_LIB=$LIBS
+    LIBS=$ac_save_LIBS
+    
+  fi
+  
+  AC_SUBST(RT_LIB)
+  AC_SUBST(RT_LDFLAGS)
+])
+
+
 
 
 ## ---------------------------------------------------------------------------
