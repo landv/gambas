@@ -65,6 +65,8 @@ Private Sub Decode()
   Dim hFile As File
   Dim iPos As Integer
   Dim sCharset As String
+  Dim sDir As String
+  Dim iMaxFileLength As Long
   
   If $cVal Then Return
 
@@ -133,7 +135,11 @@ Private Sub Decode()
       sValue = sFileName
       If sValue Then
         sFileName = Temp$()
+        sDir = Request.TempDir
+        If sDir Then sFileName = sDir &/ File.Name(sFileName)
         $cFiles[sName] = sFileName
+        
+        iMaxFileLength = Request.MaxFileSize
         
         hFile = Open sFileName For Create
   
@@ -144,6 +150,7 @@ Private Sub Decode()
           If Not bFirst Then Print #hFile, "\r\n";
           Print #hFile, sLine;
           bFirst = False
+          If Lof(hFile) > iMaxFileLength Then Error.Raise("Response too big")
         Loop
         
         Close #hFile

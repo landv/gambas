@@ -15,10 +15,8 @@ Property Progress As Float
 Property Read File As String
 Property Read Path As String
 Property Read Uploading As Boolean
-'Property TempDir As String
 
 Private $fProgress As Float
-'Private $sTempDir As String
 
 'Property File As String
 
@@ -115,18 +113,29 @@ Public Sub _UploadFinish()
   Me["path"] = ""
   Me["file"] = ""
   
+  WebForm.Print("_UploadFinish: Request.TempDir = " & Request.TempDir)
+  
   For Each sPath In Request.Files
+    
+    WebForm.Print("_UploadFinish: sPath = " & sPath)
     sName = Request["name"]
-    sTemp = GetUploadDir() &/ Me.Name & "." & File.Ext(sName)
-    Try Kill sTemp
-    Try Move sPath To sTemp
-    If Error Then 
-      WebForm.Print("_UploadFinish: " & Error.Text & ": " & sPath & " -> " & sTemp)
-      Break
+    
+    If Request.TempDir Then
+      sTemp = sPath
+    Else
+      sTemp = GetUploadDir() &/ Me.Name & "." & File.Ext(sName)
+      Try Kill sTemp
+      Try Move sPath To sTemp
+      If Error Then 
+        WebForm.Print("_UploadFinish: " & Error.Text & ": " & sPath & " -> " & sTemp)
+        Break
+      Endif
     Endif
+    
     Me["path"] = sTemp
     Me["file"] = sName
     Break
+    
   Next
   
   Me.Enabled = True
@@ -180,24 +189,10 @@ Public Sub Clear()
   sPath = Me["path"]
   If sPath Then
     Try Kill sPath
-    Try Rmdir File.Dir(sPath)
+    If Not Request.TempDir Then Try Rmdir File.Dir(sPath)
     Me["name"] = ""
     Me["path"] = ""
     Me["file"] = ""
   Endif
   
 End
-
-
-' Private Function TempDir_Read() As String
-' 
-'   Return $sTempDir
-' 
-' End
-' 
-' Private Sub TempDir_Write(Value As String)
-' 
-'   $sTempDir = Value
-'   Me._SetProperty("TempDir", Value)
-' 
-' End

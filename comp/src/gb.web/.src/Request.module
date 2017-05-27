@@ -13,6 +13,8 @@ Property Read InternetExplorer As Integer
 Property Read Referer As String
 Property Read UserAgent As String
 Property Read Language As String
+Property TempDir As String
+Property MaxFileSize As Long
 
 Property Read Get As _Request_Get
 Property Read Post As _Request_Post
@@ -27,6 +29,8 @@ Private $iIE As Integer
 Private $bDecoded As Boolean
 Private $bPost As Boolean
 Private $bDebug As Boolean
+Private $sTempDir As String
+Private $iMaxFileSize As Long = 128 * 1048576
 
 Private Sub Decode()
 
@@ -236,5 +240,29 @@ Private Function Language_Read() As String
   If iPos Then sLang = Left(sLang, iPos - 1)
   sLang = Replace(sLang, "-", "_")
   Return sLang & ".UTF-8"
+
+End
+
+Private Function TempDir_Read() As String
+
+  Return $sTempDir
+
+End
+
+Private Sub TempDir_Write(Value As String)
+
+  $sTempDir = Value
+
+End
+
+Private Function MaxFileSize_Read() As Long
+
+  Return $iMaxFileSize
+
+End
+
+Private Sub MaxFileSize_Write(Value As Long)
+
+  $iMaxFileSize = Value
 
 End

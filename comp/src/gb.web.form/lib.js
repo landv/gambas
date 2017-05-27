@@ -300,6 +300,7 @@ gw = {
         xhr.open('GET', $root + '/x?c=' + encodeURIComponent(JSON.stringify(command)), true);
         xhr.onreadystatechange = function() { gw.answer(xhr, after); };
         xhr.send(null);
+        gw.log("send XMLHttpRequest...");
         return;
       }
       
@@ -1119,6 +1120,10 @@ gw = {
     onScroll: function(id, more, timeout)
     {
       var elt = $(id);
+      
+      if (!elt)
+        return;
+      
       var sw = elt.firstChild;
       var last = elt.gw_last_scroll;
       

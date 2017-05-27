@@ -73,6 +73,8 @@ Static Public Sub Main()
   Dim sKey As String
   Dim sErr As String
   
+  'System.Log("Start request: " & Application.Request)
+  
   Try Object.Call(Application.Startup, "HandleRequest")
   If Response.Done Then Return
   
@@ -85,7 +87,7 @@ Static Public Sub Main()
       aLib = Split(Left(sPath, -4), ":")
       If aLib.Count >= 3 Then sFile = aLib[1] & ".css"
       RenderStyleSheet(sFile)
-      Return
+      Goto END_REQUEST
       
     Else If sPath Begins "lib:" And sPath Ends ".js" Then
       
@@ -93,18 +95,18 @@ Static Public Sub Main()
       aLib.Remove(aLib.Max)
       'If aLib.Count >= 3 Then sFile = aLib[1] & ".js"
       RenderJavascript(aLib)
-      Return
+      Goto END_REQUEST
     
     Else If sPath Begins "img:" Then
       
       Try sPath = Session[Mid$(sPath, 5)]["Image"]
       If Not Error Then Response.SendFile(sPath)
-      Return
+      Goto END_REQUEST
       
     Else If sPath Begins "download:" Then
       
       If DownloadFile(Mid$(sPath, 10)) Then Goto NOT_FOUND
-      Return
+      Goto END_REQUEST
       
     Else If sPath = "~dump" Then
       
@@ -128,12 +130,12 @@ Static Public Sub Main()
     Else If Exist("../.public/" &/ sPath) Then
       
       Response.SendFile("../.public/" &/ sPath)
-      Return
+      Goto END_REQUEST
       
     Else If Exist(".public/" &/ sPath) Then
       
       Response.SendFile(".public/" &/ sPath)
-      Return
+      Goto END_REQUEST
       
     ' Else
     '   
@@ -183,7 +185,7 @@ Static Public Sub Main()
     hForm.Render
   Endif
   
-  Return
+  Goto END_REQUEST
   
 NOT_FOUND:
 
@@ -191,7 +193,12 @@ NOT_FOUND:
   Response.Begin
   Print "<html><body><h1>404 NotFound</h1></body></html>"
   Response.End
-  
+
+END_REQUEST:  
+
+  'System.Log("End request: " & Application.Request)
+  Return
+
 Catch
   
   sErr = Error.Text & "\n" & Error.Backtrace.Join(" ")
@@ -203,6 +210,7 @@ Catch
   Print "alert("; JS(sErr); ");"
   Print "</script></body></html>"
   Response.End
+  'System.Log("End request")
   
 End
 
