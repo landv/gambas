@@ -7,6 +7,7 @@ Private Const SUBST_CAR As String = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP
 Private $aExt As String[] = ["js", "css", "html"]
 
 Private $cKeyword As Collection
+Private $cKeywordRegexp As Collection
 Private $cSubst As Collection
 Private $cIdent As Collection
 Private $iSubst As Integer
@@ -44,6 +45,11 @@ Private Sub InitJavascriptKeywords()
     $cKeyword[sStr] = 1
   Next
   
+  $cKeywordRegexp = New Collection
+  For Each sStr In ["break", "case", "continue", "delete", "do", "else", "finally", "in", "instanceof", "return", "throw", "try", "typeof", "void"]
+    $cKeywordRegexp[sStr] = True
+  Next
+   
 End
 
 Private Sub SubstIdent(sIdent As String)
@@ -96,6 +102,7 @@ Public Sub Javascript(sText As String) As String
   Dim bKeyword As Boolean
   Dim iPosMem As Integer
   Dim bRegExp As Boolean
+  Dim sLastKeyword As String
   
   If Not $cKeyword Then InitJavascriptKeywords
 
@@ -251,6 +258,7 @@ Public Sub Javascript(sText As String) As String
       sIdent &= sCar
       Continue
     Else
+      sLastKeyword = ""
       If Len(sIdent) >= 2
         bKeyword = $cKeyword.Exist(sIdent)
         If Not IsDigit(Left(sIdent)) And If Not bKeyword Then 
@@ -279,6 +287,7 @@ Public Sub Javascript(sText As String) As String
           Else If sIdent = "var" Then
             bVar = True
           Endif
+          sLastKeyword = sIdent
         Endif
       Endif
       
@@ -304,8 +313,13 @@ Public Sub Javascript(sText As String) As String
       Endif
       If Right(sRes) = "\n" Then sRes = Left(sRes, -1)
     Else If sCar = "/" Then
-      If sCar2 <> "/ " Then
-        bRegExp = True
+      If iPos > 1 Then
+        sCar2 = Right(RTrim(Left(sText, iPos - 1)))
+        If InStr("+-*/.,!%&(:;<=>?[^{|}~", sCar2) Then
+          bRegExp = True
+        Else If sLastKeyword And If $cKeywordRegexp.Exist(sLastKeyword) Then
+          bRegExp = True
+        Endif
       Endif
     Else If InStr(" \t\n", sCar) Then
       

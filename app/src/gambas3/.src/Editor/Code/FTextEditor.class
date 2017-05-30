@@ -898,7 +898,7 @@ Public Sub Compress() As Boolean
     CompressMessage = "<b>" & Subst(("The file has been compressed from &1 to &2 bytes (&3)."), Str(iLen), Str(Len(sText)), Format(fGain, "#.##%")) & "</b> " & ("Original file has been saved in the <b>Project</b> folder.")
   Endif
   
-Catch
+Catch 
   
   Dec Application.Busy
   CompressMessage = "<b>" & ("Unable to compress file.") & "</b><p>" & Error.Text
