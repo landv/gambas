@@ -275,7 +275,7 @@ void ARCHIVE_load(ARCHIVE *arch, bool load_exp)
 
 		if (!(path = exist_library(PROJECT_path, FILE_get_name(name))))
 		{
-			if (!_local_path ||  !(path = exist_library(_local_path, name)))
+			if (!_local_path || !(path = exist_library(_local_path, name)))
 			{
 				if (!ARCHIVE_path || !(path = exist_library(ARCHIVE_path, name)))
 				{

@@ -58,6 +58,7 @@
 #include "gbx_c_array.h"
 #include "gbx_local.h"
 #include "gbx_signal.h"
+#include "gbx_event.h"
 
 #include "gbx_c_process.h"
 
@@ -86,7 +87,7 @@ static int _last_child_error_errno = 0;
 
 static void init_child(void);
 static void exit_child(void);
-static void wait_child(CPROCESS *process);
+static bool wait_child(CPROCESS *process);
 
 enum {
 	CHILD_NO_ERROR,
@@ -827,13 +828,16 @@ void CPROCESS_check(void *_object)
 	#endif
 
 	usleep(100);
-	wait_child(THIS);
-	throw_last_child_error();
+	if (wait_child(THIS))
+	{
+		EVENT_post(stop_process, (intptr_t)THIS);
+		throw_last_child_error();
+	}
 
 	//fprintf(stderr, "CPROCESS_check: %p END\n", THIS);
 }
 
-static void wait_child(CPROCESS *process)
+static bool wait_child(CPROCESS *process)
 {
 	int status;
 
@@ -846,8 +850,10 @@ static void wait_child(CPROCESS *process)
 		fprintf(stderr, "Process %d has returned %d\n", process->pid, status);
 		#endif
 
-		stop_process(process);
+		return TRUE;
 	}
+	else
+		return FALSE;
 }
 
 static void callback_child(int signum, intptr_t data)
@@ -872,7 +878,8 @@ static void callback_child(int signum, intptr_t data)
 	for (process = _running_process_list; process; )
 	{
 		next = process->next;
-		wait_child(process);
+		if (wait_child(process))
+			stop_process(process);
 		process = next;
 	}
 
@@ -1199,6 +1206,42 @@ BEGIN_METHOD_VOID(Process_CloseInput)
 
 END_METHOD
 
+/*
+static int calc_mode(int arg)
+{
+	int mode = 0;
+	
+	if (arg & R_OK) mode += PM_READ;
+	if (arg & W_OK) mode += PM_WRITE;
+	if (arg & X_OK) mode += PM_SHELL;
+	
+	return mode;
+}
+
+BEGIN_METHOD(Process_Exec, GB_OBJECT command; GB_INTEGER mode; GB_OBJECT env)
+
+	CARRAY *command = (CARRAY *)VARG(command);
+	CARRAY *env = (CARRAY *)VARG(env);
+	
+	if (GB_CheckObject(command))
+		return;
+
+	init_process(THIS);
+	run_process(THIS, calc_mode(VARGOPT(mode, 0)), command, env);
+
+END_METHOD
+
+BEGIN_METHOD(Process_Shell, GB_STRING command; GB_INTEGER mode; GB_OBJECT env)
+
+	char *command = GB_ToZeroString(ARG(command));
+	CARRAY *env = (CARRAY *)VARG(env);
+	
+	init_process(THIS);
+	run_process(THIS, calc_mode(VARGOPT(mode, 0)) | PM_SHELL, command, env);
+
+END_METHOD
+*/
+
 #endif
 
 GB_DESC NATIVE_Process[] =
@@ -1231,6 +1274,9 @@ GB_DESC NATIVE_Process[] =
 
 	GB_PROPERTY("Ignore", "b", Process_Ignore),
 
+	/*GB_METHOD("Exec", NULL, Process_Exec, "(Command)String[];[(Mode)i(Environment)String[];]"),
+	GB_METHOD("Shell", NULL, Process_Shell, "(Command)s;[(Mode)i(Environment)String[];]"),*/
+	
 	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 	GB_EVENT("Error", NULL, "(Error)s", &EVENT_Error),
 	GB_EVENT("Kill", NULL, NULL, &EVENT_Kill),
