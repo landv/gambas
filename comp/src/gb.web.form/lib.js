@@ -420,7 +420,19 @@ gw = {
   addTimer: function(id, delay)
   {
     gw.removeTimer(id);
-    gw.timers[id] = setInterval(function() { gw.raise(id, 'timer', [], true); }, delay);
+    gw.timers[id] = setInterval(
+      function() {
+        if (gw.timers[id + '!'])
+          return;
+        gw.timers[id + '!'] = true;
+        gw.send(['raise', id, 'timer', [], true],
+          function() {
+            if (gw.timers[id])
+              gw.timers[id + '!'] = undefined;
+            }
+          );
+      },
+      delay);
   },
   
   removeTimer: function(id)

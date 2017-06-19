@@ -73,7 +73,7 @@ Static Public Sub Main()
   Dim sKey As String
   Dim sErr As String
   
-  'System.Log("Start request: " & Application.Request)
+  'System.Log(Format(Timer, "#0.000") & ": start request: [" & Session.Id & "] " & URL.Decode(Application.Request))
   
   Try Object.Call(Application.Startup, "HandleRequest")
   If Response.Done Then Return
@@ -196,7 +196,7 @@ NOT_FOUND:
 
 END_REQUEST:  
 
-  'System.Log("End request: " & Application.Request)
+  'System.Log(Format(Timer, "#0.000") & ": end request: [" & Session.Id & "] " & URL.Decode(Application.Request))
   Return
 
 Catch
