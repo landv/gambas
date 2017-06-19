@@ -195,10 +195,8 @@ static void http_initialize_curl_handle(void *_object, GB_ARRAY custom_headers)
 		THIS_CURL = curl_easy_init();
 	}
 	
-	curl_easy_setopt(THIS_CURL, CURLOPT_NOSIGNAL,1);
-	curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->timeout);
-	curl_easy_setopt(THIS_CURL, CURLOPT_VERBOSE, (bool)THIS->debug);
-	curl_easy_setopt(THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
+	CURL_init_options(THIS);
+
 	curl_easy_setopt(THIS_CURL, CURLOPT_USERAGENT, THIS_HTTP->sUserAgent);
 	curl_easy_setopt(THIS_CURL, CURLOPT_ENCODING, THIS_HTTP->encoding);
 	curl_easy_setopt(THIS_CURL, CURLOPT_HEADERFUNCTION, (curl_write_callback)http_header_curl);
@@ -212,10 +210,6 @@ static void http_initialize_curl_handle(void *_object, GB_ARRAY custom_headers)
 	else
 		curl_easy_setopt(THIS_CURL, CURLOPT_COOKIEJAR, NULL);
 
-	CURL_proxy_set(&THIS->proxy.proxy, THIS_CURL);
-	CURL_user_set(&THIS->user, THIS_CURL);
-	curl_easy_setopt(THIS_CURL, CURLOPT_URL, THIS_URL);
-	
 	THIS_HTTP->return_code = 0;
 	GB.FreeString(&THIS_HTTP->return_string);
 
@@ -229,7 +223,6 @@ static void http_initialize_curl_handle(void *_object, GB_ARRAY custom_headers)
 		GB.Ref(custom_headers);
 	}
 	
-	CURL_init_options(THIS);
 	CURL_init_stream(THIS);
 }
 

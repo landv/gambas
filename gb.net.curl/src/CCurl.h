@@ -32,6 +32,10 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 
+#ifndef CURL_MAX_READ_SIZE
+#define CURL_MAX_READ_SIZE 524288
+#endif
+
 //#define DEBUG 1
 
 #ifndef __CCURL_C
@@ -70,6 +74,7 @@ typedef
 		CPROXY proxy;
 		CURL_USER user;
 		int timeout;
+		int buffer_size;
 		int method; // 0->Get, 1->Put
 		char *data;
 		int64_t dltotal;

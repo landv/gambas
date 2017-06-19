@@ -260,8 +260,20 @@ void CURL_init_stream(void *_object)
 
 void CURL_init_options(void *_object)
 {
+	curl_easy_setopt(THIS_CURL, CURLOPT_NOSIGNAL, 1);
+	curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT, THIS->timeout);
+	curl_easy_setopt(THIS_CURL, CURLOPT_VERBOSE, (bool)THIS->debug);
+	curl_easy_setopt(THIS_CURL, CURLOPT_PRIVATE, (char*)_object);
+	
+	if (THIS->buffer_size)
+		curl_easy_setopt(THIS_CURL, CURLOPT_BUFFERSIZE, THIS->buffer_size);
+	
 	curl_easy_setopt(THIS_CURL, CURLOPT_SSL_VERIFYPEER, THIS->ssl_verify_peer ? 1 : 0);
 	curl_easy_setopt(THIS_CURL, CURLOPT_SSL_VERIFYHOST , THIS->ssl_verify_host ? 2 : 0);
+
+	CURL_proxy_set(&THIS->proxy.proxy, THIS_CURL);
+	CURL_user_set(&THIS->user, THIS_CURL);
+	curl_easy_setopt(THIS_CURL, CURLOPT_URL, THIS_URL);
 }
 
 #define CHECK_PROGRESS_VAL(_var) if (THIS->_var != (int64_t)_var) { THIS->_var = (int64_t)_var; raise = TRUE; }
@@ -426,6 +438,7 @@ bool CURL_copy_from(CCURL *dest, CCURL *src)
 	dest->async = src->async;
 	dest->timeout = src->timeout;
 	dest->debug = src->debug;
+	dest->buffer_size = src->buffer_size;
 	COPY_STRING(url);
 
 	dest->user.auth = src->user.auth;
@@ -492,6 +505,31 @@ BEGIN_PROPERTY(Curl_Timeout)
 			timeout = 0;
 		
 		THIS->timeout = timeout;
+	}
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Curl_BufferSize)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS->buffer_size);
+	else
+	{
+		int buffer_size;
+		
+		if (CURL_check_active(THIS))
+			return;
+	
+		buffer_size = VPROP(GB_INTEGER);
+		if (buffer_size <= 0)
+			buffer_size = 0;
+		else if (buffer_size < 1024)
+			buffer_size = 1024;
+		else if (buffer_size > CURL_MAX_READ_SIZE)
+			buffer_size = CURL_MAX_READ_SIZE;
+		
+		THIS->buffer_size = buffer_size;
 	}
 
 END_PROPERTY
@@ -594,7 +632,7 @@ BEGIN_METHOD_VOID(Curl_new)
 	THIS->ssl_verify_host = TRUE;
 
 	THIS->proxy.parent_status = (int*)&THIS_STATUS;
-
+	
 END_METHOD
 
 BEGIN_METHOD_VOID(Curl_free)
@@ -745,6 +783,7 @@ GB_DESC CurlDesc[] =
 	GB_PROPERTY_READ("Status", "i", Curl_Status),
 	GB_PROPERTY_READ("ErrorText", "s", Curl_ErrorText),
 	GB_PROPERTY("Debug", "b", Curl_Debug),
+	GB_PROPERTY("BufferSize", "i", Curl_BufferSize),
 
 	GB_PROPERTY_READ("Downloaded", "l", Curl_Downloaded),
 	GB_PROPERTY_READ("Uploaded", "l", Curl_Uploaded),
