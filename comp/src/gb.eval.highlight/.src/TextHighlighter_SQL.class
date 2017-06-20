@@ -82,8 +82,8 @@ Public Sub Run(sText As String)
           TextHighlighter.Add(iState)
         Else If sCar = "'" Or If sCar = "\"" Then
           iState = Highlight.String
+          iTag = Asc(sCar)
           TextHighlighter.Add(iState)
-          sWait = sCar
         Else If sCar = "`" Then
           iState = Highlight.Symbol
           TextHighlighter.Add(iState)
@@ -116,6 +116,7 @@ Public Sub Run(sText As String)
             Else 
               TextHighlighter.Add(Highlight.Symbol, iLen)
               iPos += iLen - 1
+              iState = Highlight.Normal
               Continue
             Endif
           Endif
@@ -146,7 +147,7 @@ Public Sub Run(sText As String)
         If sCar = "\\" Then
           TextHighlighter.Add(iState)
           Inc iPos
-        Else If sCar = sWait Then
+        Else If sCar = Chr$(iTag) Then
           iState = Highlight.Normal
         Endif
         
