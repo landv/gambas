@@ -1073,7 +1073,7 @@ gw = {
       }
       else
       {
-        if (last)
+        if (last != undefined)
           $(id + ':' + last) && $(id + ':' + last).removeClass('gw-table-row-selected');
         elt.addClass('gw-table-row-selected');
         gw.update(id, '$' + row, null);

@@ -6,7 +6,8 @@ Inherits WebContainer
 Public Const _IsContainer As Boolean = False
 Public Const _Group As String = "WebForm"
 Public Const _Properties As String = "*,Text,Image{WebImage}"
-'Public Const _DrawWith As String = "DateChooser"
+Public Const _DefaultEvent As String = "Upload"
+Public Const _DefaultSize As String = "18,6"
 
 Event Upload
 
