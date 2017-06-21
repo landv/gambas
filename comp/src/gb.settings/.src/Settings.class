@@ -390,8 +390,12 @@ Private Sub WriteWindow(hWindow As Window, sKey As String)
   
     S = hWindow.Screen
     
-    X -= Screens[S].AvailableX
-    Y -= Screens[S].AvailableY
+    If S >= 0 Then
+      X -= Screens[S].AvailableX
+      Y -= Screens[S].AvailableY
+    Else
+      S = 0
+    Endif
     
   Endif
   
