@@ -136,6 +136,10 @@ void XMLNode_DestroyParent(Node *node)
 
 Document* XMLNode_GetOwnerDocument(Node *node)
 {
+    if(node->type == Node::DocumentNode || node->type == Node::HTMLDocumentNode) {
+        return (Document*) node;
+    }
+
     while(node->parent && !node->parentDocument)
         node = (Node*)(node->parent);
     return node->parentDocument;

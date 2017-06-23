@@ -31,7 +31,14 @@ void addStringLen(Node *node, size_t &len, int indent)
     switch (node->type)
     {
     case Node::DocumentNode:
-        len += 15 + (indent >= 0 ? 1 : 0);// root->addStringLen(len, indent);
+        if(((Document*)node)->docType == HTMLDocumentType)
+        {
+            len += 15 + (indent >= 0 ? 1 : 0);
+        }
+        else
+        {
+            len += 109 + (indent >= 0 ? 1 : 0);
+        }
         //Content
         for(register Node *child = node->firstChild; child != 0; child = child->nextNode)
         {
@@ -98,8 +105,16 @@ void addString(Node *node, char *&data, int indent)
     switch (node->type)
     {
     case Node::DocumentNode:
-        memcpy(data, "<!DOCTYPE html>", 15);
-        data += 15;
+        if(((Document*)node)->docType == HTMLDocumentType)
+        {
+            memcpy(data, "<!DOCTYPE html>", 15);
+            data += 15;
+        }
+        else
+        {
+            memcpy(data, "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">", 109);
+            data += 109;
+        }
         if(indent >= 0)
         {
             ADD('\n')

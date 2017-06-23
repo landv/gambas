@@ -36,13 +36,14 @@ BEGIN_METHOD(CDocument_new, GB_STRING fileName)
 if(XMLNode_NoInstanciate()) return;
 
 bool isHtml = false;
+
 if(GB.Is(_object, GB.FindClass("HtmlDocument")))//Called as inherited HtmlDocument constructor
 {
     if(CheckHtmlInterface())
     {
         isHtml = true;
     }
-};
+}
 
 try
 {
