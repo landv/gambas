@@ -6,12 +6,12 @@ Property Result As TestResult
 
 Public Sub Reset()
 
-    Me.ProgressBar1.Value = 0
-    Me.LblErrors.Text = Null
-    Me.LblFailures.Text = Null
-    Me.LblRuns.Text = Null
-    Me.LblTestName.Text = Null
-    Me.GridViewTests.Clear
+    ProgressBar1.Value = 0
+    LblErrors.Text = Null
+    LblFailures.Text = Null
+    LblRuns.Text = Null
+    LblTestName.Text = Null
+    GridViewTests.Clear
 
 End
 
@@ -26,8 +26,8 @@ Private Sub Runs_Write(Value As Integer[])
     done = Value[0]
     all = Value[1]
 
-    Me.ProgressBar1.Value = done / all
-    Me.LblRuns.Text = "Runs: " & done & "/" & all
+    ProgressBar1.Value = done / all
+    LblRuns.Text = "Runs: " & done & "/" & all
 
 End
 
@@ -47,15 +47,15 @@ Private Sub Result_Write(Res As TestResult)
         Errs = Res.Errors
         Fails = Res.Failures
 
-        Me.LblErrors.Text = "Errors: " & Errs.Count
-        Me.LblFailures.Text = "Failures: " & Fails.Count
+        LblErrors.Text = "Errors: " & Errs.Count
+        LblFailures.Text = "Failures: " & Fails.Count
 
         FillGrid(Res)
 
         If Errs.Count > 0 Or If Fails.Count > 0 Then
-            Me.LblTestName.Text = "No success!"
+            LblTestName.Text = "No success!"
         Else
-            Me.LblTestName.Text = "Success!"
+            LblTestName.Text = "Success!"
         Endif
         Wait
     Endif
@@ -129,7 +129,7 @@ End
 
 Public Sub Form_Close()
 
-    Me.GridViewTests = Null
-    Me.ProgressBar1 = Null
+    GridViewTests = Null
+    ProgressBar1 = Null
 
 End
