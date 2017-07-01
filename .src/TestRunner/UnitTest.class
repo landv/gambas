@@ -12,9 +12,9 @@ Private $DoSelfTest As Boolean
 
 Public Sub _new()
 
-    If UnittestFileNotExist() = False Then
-        $Suite = New TestSuite
-    Endif
+    'If UnittestFileNotExist() = False Then
+    $Suite = New TestSuite
+    'Endif
 
 End
 
@@ -40,10 +40,8 @@ Public Sub ShowTestForm()
 
     Dim fm As FmRunner
 
-    If UnittestFileNotExist() = False Then
-        fm = New FmRunner(Null, Me.DoSelfTest)
-        fm.Show()
-    Endif
+    fm = New FmRunner(Null, Me.DoSelfTest)
+    fm.Show()
 
 End
 '' Runs the Unittest and prints the result to the console. Optional limited to one testclass and/or one testmethod.
@@ -52,10 +50,8 @@ Public Sub Test(Optional ContainerName As String, Optional CaseName As String, O
 
     Dim Res As New TestResult
 
-    If UnittestFileNotExist() = False Then
-        Me._RunTests(Res, ContainerName, CaseName, ShowDebug, Me.DoSelfTest)
-        Me._PrintResult(Res)
-    Endif
+    Me._RunTests(Res, ContainerName, CaseName, ShowDebug, Me.DoSelfTest)
+    Me._PrintResult(Res)
 
 End
 
@@ -171,7 +167,7 @@ Static Public Function GetAllTestContainerNames(Optional DoSelfTest As Boolean) 
             If TestClass.Parent Then
                 If TestClass.Parent.Name = "ATestContainer" Then
                     strName = String.UCaseFirst(String.Lower(TestClass.Name))
-                    Debug "Add to testclasses: ";; strName
+                    'Debug "Add to testclasses: ";; strName
                     TestContainernames.Add(strName)
                 Endif
             Endif

@@ -116,10 +116,10 @@ Public Sub ResultEvent_AfterAddFailure(oError As TestError)
 
     If tvTrace["Root"].Picture = $PictureOk Then
 
-        Debug "Root";; tvTrace["Root"].Picture
-        Debug "Error";; $PictureError
-        Debug "Fail";; $PictureFail
-        Debug "Set Fail"
+        'Debug "Root";; tvTrace["Root"].Picture
+        'Debug "Error";; $PictureError
+        'Debug "Fail";; $PictureFail
+        'Debug "Set Fail"
         tvTrace["Root"].Picture = $PictureFail
     Endif
 
