@@ -40,7 +40,7 @@ GB_COMPONENT(
   jit, JIT, gb.jit, [src],
   [GB_FIND(llvm/ExecutionEngine/JIT.h llvm/Config/llvm-config.h llvm-c/Core.h, `$LLVM_CONFIG --prefix` /usr/lib/llvm* /usr/local /usr, include)],
   [],
-  [$C_LIB `$LLVM_CONFIG --ldflags` `$LLVM_CONFIG --libs jit`],
+  [$C_LIB `$LLVM_CONFIG --ldflags` `$LLVM_CONFIG --libs all`],
   [-I../../main/gbx -I../../main/share -D_DEBUG -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS])
 
 AC_OUTPUT(Makefile src/Makefile)
