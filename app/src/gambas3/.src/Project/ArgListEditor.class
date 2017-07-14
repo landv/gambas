@@ -20,7 +20,6 @@ Public Sub _new()
   $hPanel.Background = Color.TextBackground
   $hPanel.Foreground = Color.TextForeground
   $hPanel.Arrangement = Arrange.LeftRight
-  '$hPanel.Spacing = True
   $hPanel.Margin = True
   
   Set(Null)
@@ -33,6 +32,9 @@ Private Sub Add(Optional sArg As String)
   
   hArg = New ArgListBox($hPanel) As "ArgListBox"
   hArg.Text = sArg
+  
+  hArg = hArg.Previous
+  If hArg Then Try hArg.Text = hArg.Text
   
 End
 
@@ -63,6 +65,7 @@ Public Sub Get() As String[]
   Dim aArg As New String[]
   Dim I As Integer
   Dim hArg As ArgListBox
+  Dim sText As String
   
   For I = 0 To $hPanel.Children.Count - 1
     hArg = $hPanel.Children[I]
@@ -163,7 +166,9 @@ Public Sub ArgListBox_Activate()
   Dim hArg As ArgListBox
   
   hArg = Last
-  If Not hArg.Next And If hArg.Text Then Add()
+  If Not hArg.Next Then
+    Add()
+  Endif
   Try hArg.Next.SetFocus
   
 End

@@ -13,6 +13,8 @@ Private $hTextBox As TextBox
 
 Public Sub _new()
 
+  Dim hPrev As ArgListBox
+  
   $hTextBox = New TextBox(Me) As "TextBox"
   $hTextBox.Border = False
   AutoResize
@@ -23,7 +25,7 @@ End
 
 Private Sub AutoResize()
 
-  Me.Resize(Me.Font.TextWidth($hTextBox.Text) + Desktop.Scale + 2, Desktop.Scale * 3)
+  Me.Resize(Max(Me.Font.TextWidth($hTextBox.Text), Me.Font.TextWidth("ø")) + Desktop.Scale + 2, Desktop.Scale * 3)
   $hTextBox.Move(1, 1, Me.W - 2, Me.H - 2)
 
 End
@@ -31,12 +33,24 @@ End
 
 Private Function Text_Read() As String
 
-  Return $hTextBox.Text
+  Dim sText As String
+
+  sText = $hTextBox.Text
+  If sText = "ø" Then sText = ""
+  Return sText
 
 End
 
 Private Sub Text_Write(Value As String)
 
+  If Me.Next Then
+    If Not Value Then 
+      Value = "ø"
+      $hTextBox.Foreground = Color.LightForeground
+    Else
+      $hTextBox.Foreground = Color.Default
+    Endif
+  Endif
   $hTextBox.Text = Value
 
 End
@@ -55,12 +69,23 @@ Public Sub TextBox_GotFocus()
     $hComp.Editor = Last
   Endif
   
+  If $hTextBox.Text = "ø" Then 
+    $hTextBox.Text = ""
+    $hTextBox.Foreground = Color.Default
+  Endif
   Me.Border = Border.Plain
   
 End
 
 Public Sub TextBox_LostFocus()
 
+  If Me.Next Then
+    If $hTextBox.Text = "" Then 
+      $hTextBox.Text = "ø"
+      $hTextBox.Foreground = Color.LightForeground
+    Endif
+  Endif
+  
   Me.Border = Border.None
   
 End
@@ -93,7 +118,7 @@ Public Sub TextBox_KeyPress()
         Endif
       Endif
       
-    Else If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
+    Else If Key.Code = Key.Tab Then
       
       Raise Activate
       Stop Event

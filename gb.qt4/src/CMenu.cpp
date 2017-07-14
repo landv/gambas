@@ -1182,6 +1182,8 @@ void CMenu::slotDestroyed(void)
 
 //---------------------------------------------------------------------------
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0) && QT_VERSION < QT_VERSION_CHECK(5,5,0)
+
 void MyMenu::setVisible(bool visible)
 {
 	if (!visible)
@@ -1189,3 +1191,4 @@ void MyMenu::setVisible(bool visible)
 	QMenu::setVisible(visible);
 }
 
+#endif

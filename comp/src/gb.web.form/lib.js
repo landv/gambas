@@ -1144,7 +1144,7 @@ gw = {
       
       elt.gw_last_scroll = [sw.scrollLeft, sw.scrollTop];
       
-      //console.log('onScroll: ' + id + ' ' + sw.scrollLeft + ',' + sw.scrollTop);
+      console.log('gw.table.onScroll: ' + id + ' ' + sw.scrollLeft + ',' + sw.scrollTop);
       
       if (more)
       {
@@ -1182,9 +1182,9 @@ gw = {
       
       elt.gw_scroll = setTimeout(function()
         { 
-          //console.log("gw.table.onScroll: " + id + ": " + sw.scrollLeft + " " + sw.scrollTop);
           var pos = [sw.scrollLeft, sw.scrollTop];
           
+          console.log('gw.table.onScroll (timer): ' + id + ' ' + sw.scrollLeft + ',' + sw.scrollTop);
           clearTimeout(elt.gw_scroll); 
           
           gw.update(elt.id, '#scroll', pos, function() 

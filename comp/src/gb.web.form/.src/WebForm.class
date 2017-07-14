@@ -127,6 +127,10 @@ Static Public Sub Main()
         
       Endif
       
+    Else If sPath = "~logout" Then
+      
+      Session.Abandon
+      
     Else If Exist("../.public/" &/ sPath) Then
       
       Response.SendFile("../.public/" &/ sPath)

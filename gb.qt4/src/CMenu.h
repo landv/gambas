@@ -121,12 +121,14 @@ public slots:
 	void slotHidden();
 };
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0) && QT_VERSION < QT_VERSION_CHECK(5,5,0)
 class MyMenu: public QMenu
 {
 public:
 	
 	virtual void setVisible(bool visible);
 };
+#endif
 
 void CMENU_popup(CMENU *_object, const QPoint &pos);
 

@@ -323,6 +323,8 @@ Public Sub DrawingArea_MouseWheel()
     Try GetParent()._MoveNext()
   Endif
   
+  Stop Event
+  
 End
 
 Private Function Picture_Read() As Picture
