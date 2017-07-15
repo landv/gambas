@@ -210,6 +210,7 @@ Private $bTesting As Boolean
 Private $aSystems As String[] = ["archlinux", "autotools", "debian", "fedora", "mageia", "mandriva", "slackware", "suse", "ubuntu"]
 
 ' Pretty background
+Public DEFAULT_BACKGROUND As String = "gambas"
 Private $hBackground As Image
 Private $bBackgroundValid As Boolean
 
@@ -5944,7 +5945,7 @@ Public Sub GetBackground() As Image
 
   If Not $bBackgroundValid Then
     $hBackground = Null
-    sBackground = Settings["/Background", "tawhid"]
+    sBackground = Settings["/Background", DEFAULT_BACKGROUND]
     If sBackground = "void" Then
       $hBackground = New Image(32, 32, Color.LightForeground)
     Else
@@ -5984,7 +5985,7 @@ End
 
 Public Sub SetBackground(sBackground As String)
 
-  If sBackground = "tawhid" Then sBackground = ""
+  If sBackground = DEFAULT_BACKGROUND Then sBackground = ""
   Settings["/Background"] = sBackground
   ChangeBackground
 

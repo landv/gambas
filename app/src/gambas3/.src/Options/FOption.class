@@ -181,7 +181,7 @@ Public Sub _new()
   tvwIgnore.Columns.Count = 1
   LoadIgnoreFiles
   
-  aColors = [Color.White, &H808080]
+  aColors = [Color.White, &HC0C0C0, &H808080]
   For iInd = 0 To 359 Step 30
     aColors.Add(Color.HSV(iInd, 255, 255))
   Next
@@ -942,12 +942,16 @@ Private Sub RefreshBackground()
   hBg.Image = hImage.Colorize(iColor)
   
   For Each sBackground In Split(File.Load("img/background/list"), "\n", "", True)
+    Try hImage = Image.Load("img/background" &/ sBackground & ".png").Colorize(iColor)
+    If Error Then
+      Error "gambas3: warning: unable to load background image: "; sBackground
+    Endif
     hBg = New CBackground(svwBackground) As "Background"
-    hBg.Image = Image.Load("img/background" &/ sBackground & ".png").Colorize(iColor)
+    hBg.Image = hImage
     hBg.Tag = sBackground
   Next
   
-  sBackground = Settings["/Background", "tawhid"]
+  sBackground = Settings["/Background", Project.DEFAULT_BACKGROUND]
   For Each hBg In svwBackground.Children
     If hBg.Tag = sBackground Then 
       hBg.Selected = True
