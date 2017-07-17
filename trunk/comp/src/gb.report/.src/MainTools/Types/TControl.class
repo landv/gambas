@@ -1,0 +1,76 @@
+' Gambas class file
+
+'Fast
+
+
+Property Read RealLeft As Float  ''Return the left relative position size in Pixel
+
+Property Read RealTop As Float ''Return the top relative position size in Pixel
+
+Property Read RealWidth As Float ''Return the width in pixel
+
+Property Read RealHeight As Float ''Return the height in pixel
+
+Public SizeHint As TSizeHint ''Size hints buffer
+
+Property Ctrl As ReportControl ''Return or set the link between real widget and virtual object
+
+Public _PageChildren As New Collection ''The links between page and objects
+
+Public Index As Integer ''Remember the dataindex
+
+Public Cache As Variant ''For future data cache
+
+Private $iCtrl As Integer
+Private fX As Float
+Private fY As Float
+Private fW As Float
+Private fH As Float
+
+''Define the virtual widget size in internal unit (cm)
+Public Function _SetGeometry(X As Float, Y As Float, W As Float, H As Float) As Float
+
+  fX = X
+  fY = Y
+  fW = W
+  fH = H
+
+End
+
+
+Private Function Ctrl_Read() As ReportControl
+
+  Return ReportControl._ObjectFromId[$iCtrl]
+
+End
+
+
+Private Sub Ctrl_Write(Value As ReportControl)
+
+  $iCtrl = Value.id
+
+End
+
+Private Function RealLeft_Read() As Float
+
+  Return ReportUnits._ReportUnitsToPixels(fX)
+
+End
+
+Private Function RealTop_Read() As Float
+
+  Return ReportUnits._ReportUnitsToPixels(fY)
+
+End
+
+Private Function RealWidth_Read() As Float
+
+  Return ReportUnits._ReportUnitsToPixels(fX + fW) - ReportUnits._ReportUnitsToPixels(fX)
+
+End
+
+Private Function RealHeight_Read() As Float
+
+  Return ReportUnits._ReportUnitsToPixels(fY + fH) - ReportUnits._ReportUnitsToPixels(fY)
+
+End

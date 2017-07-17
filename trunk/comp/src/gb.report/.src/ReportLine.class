@@ -1,0 +1,127 @@
+' Gambas class file
+
+Export
+Inherits ReportControl
+
+Public Const _Properties As String = "*,Direction{Align.TopLeft;Top;TopRight;Left;Right;BottomLeft;Bottom;BottomRight}=BottomRight,LineWidth{ReportCoord}=2 px"
+Public Const _Similar As String = "ReportTextLabel"
+Property Direction As Integer
+
+Private $fLineWidth As Float = 1.0
+
+Private $iLineStyle As Integer = Line.solid
+Private $iDirection As Integer = Align.BottomRight
+Private $sLineWidth As String = "2px"
+Property LineWidth As String
+Property LineStyle As Integer
+
+Public Sub _new()
+
+  Me.Height = "1cm"
+  Me.Width = "1cm"
+
+End
+
+Private Function LineWidth_Read() As String
+
+  Return $sLineWidth
+
+End
+
+Private Sub LineWidth_Write(Value As String)
+
+  $sLineWidth = Value
+
+End
+
+Public Sub _SetUnifiedValues()
+
+  Dim hSizeParse As TSizeParse
+
+  Super._SetUnifiedValues()
+
+  hSizeParse = New TSizeParse($sLineWidth)
+  $fLineWidth = hSizeParse.GetValue()
+
+End
+
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
+
+  Dim hMyHints As New TSizeHint
+
+  hMyHints.Height = Me._Height
+  hMyHints.Width = Me._Width
+  Return hMyHints
+
+End
+
+Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, DataIndex As Integer)
+
+  Dim iX, iY, W, H, W2, H2 As Integer
+
+  If Me.LineStyle = Line.None Then Return
+  If Me.LineStyle <> Line.Solid Then Paint.Dash = ReportUnits.GetBorder(Me.LineStyle)
+  Paint.LineWidth = ReportUnits._ReportUnitsToPixels($fLineWidth)
+
+  iX = (x + hControl.RealLeft + ReportUnits._ReportUnitsToPixels(Me.Padding._Left))
+  iY = (y + hControl.RealTop + ReportUnits._ReportUnitsToPixels(Me.Padding._Top))
+
+  W = iX + hControl.RealWidth - ReportUnits._ReportUnitsToPixels(Me.Padding._Right)
+  H = iY + hControl.RealHeight - ReportUnits._ReportUnitsToPixels(Me.Padding._Bottom)
+  Paint.Brush = Me._GetActualBrush(iX, iY, W, H)
+  W2 = (iX + W) / 2
+  H2 = (iY + H) / 2
+  Select Case $iDirection
+    Case Align.TopLeft
+      Paint.MoveTo(W, H)
+      Paint.LineTo(iX, iY)
+    Case Align.Top
+      Paint.MoveTo(W2, H)
+      Paint.LineTo(W2, iY)
+    Case Align.TopRight
+      Paint.MoveTo(iX, H)
+      Paint.LineTo(W, iY)
+    Case Align.Left
+      Paint.MoveTo(W, H2)
+      Paint.LineTo(iX, H2)
+    Case Align.Right
+      Paint.MoveTo(iX, H2)
+      Paint.LineTo(W, H2)
+    Case Align.BottomLeft
+      Paint.MoveTo(W, iY)
+      Paint.LineTo(iX, H)
+    Case Align.Bottom
+      Paint.MoveTo(W2, iY)
+      Paint.LineTo(W2, H)
+    Case Align.BottomRight
+      Paint.MoveTo(iX, iY)
+      Paint.LineTo(W, H)
+  End Select
+
+  Paint.Stroke
+
+End
+
+Private Function LineStyle_Read() As Integer
+
+  Return $iLineStyle
+
+End
+
+Private Sub LineStyle_Write(Value As Integer)
+
+  $iLineStyle = Value
+
+End
+
+Private Function Direction_Read() As Integer
+
+  Return $iDirection
+
+End
+
+Private Sub Direction_Write(Value As Integer)
+
+  $iDirection = Value
+
+End

@@ -1,0 +1,56 @@
+' Gambas class file
+
+Static $iLevel As Integer
+
+Public Sub Start(sMsg As String)
+  
+  Inc Application.Busy
+  Inc $iLevel
+  Me.Show
+  SetMessage(sMsg)
+  
+End
+
+Public Sub SetMessage(sMsg As String)
+  
+  lblConvert.Text = sMsg
+  pgbConvert.Value = 0
+  Wait
+  
+End
+
+Public Sub SetProgress(fValue As Float)
+  
+  pgbConvert.Value = fValue
+  Wait
+  
+End
+
+Public Sub Stop()
+  
+  If $iLevel = 0 Then Return
+  
+  Dec Application.Busy
+  Dec $iLevel
+  If $iLevel = 0 Then 
+    Me.Hide
+  Else
+    pgbConvert.Value = 1
+    Wait
+  Endif
+  
+End
+
+Public Sub StopAll()
+  
+  $iLevel = 1
+  Stop()
+  
+End
+
+
+Public Sub Form_Open()
+
+  Me.Center
+
+End

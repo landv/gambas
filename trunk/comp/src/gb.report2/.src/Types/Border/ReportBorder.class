@@ -1,0 +1,205 @@
+' Gambas class file
+
+Export
+'>>>>>>>>>>>>>>>>>>>>>>  PUBLIC VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>>
+Static Public Const None As Integer = 0
+Static Public Const Solid As Integer = 1
+
+Public _Left As Float
+Public _Right As Float
+Public _Top As Float
+Public _Bottom As Float
+Public Style As Integer
+'>>>>>>>>>>>>>>>>>>>>>>>>>>  PROPERTIES  >>>>>>>>>>>>>>>>>>>>>>>>>>>
+Property Read Top As _ReportBorderSide
+Property Read {Left} As _ReportBorderSide
+Property Read bottom As _ReportBorderSide
+Property Read {Right} As _ReportBorderSide
+Property Read RoundCorner As _ReportRoundCorner
+Property Width As String
+Property Brush As ReportBrush
+Property Read _Height As Float
+Property Read _Width As Float
+
+
+'>>>>>>>>>>>>>>>>>>>>>>  PRIVATE VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>
+' Static Private $aShadowStyle As String[] = ["none", "solid", "gradiant"]
+' Static Private $aAlign As String[] = Classes["Align"].Symbols
+
+Private hTop As New _ReportBorderSide
+Private hBottom As New _ReportBorderSide
+Private hLeft As New _ReportBorderSide
+Private hRight As New _ReportBorderSide
+Private hRCorner As New _ReportRoundCorner
+
+
+'#####################  PUBLIC PROCEDURES  #########################
+
+Static Public Function _get(sValue As String) As ReportBorder
+  
+  Dim hReportBorder As New ReportBorder
+  
+  Dim sBorder As String
+  Dim aScan As String[]
+  
+  If Not sValue Then Return hReportBorder
+  hReportBorder.Style = ReportBorder.Solid
+  hReportBorder.RoundCorner._Active = False
+  For Each sBorder In Split(sValue, ";")
+    
+    aScan = Scan(sBorder, "*:*")
+    Select Case LCase(Trim(aScan[0]))
+      Case "border"
+        FillObject(hReportBorder, aScan[1])
+      Case "left"
+        FillObject(hReportBorder.Left, aScan[1])
+      Case "right"
+        FillObject(hReportBorder.Right, aScan[1])
+      Case "bottom"
+        FillObject(hReportBorder.bottom, aScan[1])
+      Case "top"
+        FillObject(hReportBorder.Top, aScan[1])
+      Case "topleftcorner"
+        hReportBorder.RoundCorner.TopLeft = aScan[1]
+      Case "toprightcorner"
+        hReportBorder.RoundCorner.TopRight = aScan[1]
+      Case "bottomleftcorner"
+        hReportBorder.RoundCorner.BottomLeft = aScan[1]
+      Case "bottomrightcorner"
+        hReportBorder.RoundCorner.BottomRight = aScan[1]
+        
+    End Select
+    
+  Next
+  
+Finally
+  Return hReportBorder
+  
+End
+
+Public Function ToString() As String
+  
+  Dim aValue As New String[]
+  
+  If Me.Style = ReportBorder.None Then Return 'aValue.Add("None")
+  'If Me.Style = ReportBorder.Solid Then aValue.Add("Solid")
+  aValue.Add(Me.Width)
+  If Me.Top Then aValue.Add("Top")
+  If Me.Bottom Then aValue.Add("Bottom")
+  If Me.Left Then aValue.Add("Left")
+  If Me.Right Then aValue.Add("Right")
+  aValue.Add("#" & Hex(Me.Color, 6))
+  Return aValue.Join()
+  
+End
+
+Public Sub _NormalizeUnits()
+  
+  Dim hSizeParse As TSizeParse
+  
+  hSizeParse = New TSizeParse(hLeft.Width)
+  _Left = hSizeParse.GetValue()
+  hSizeParse = New TSizeParse(hRight.Width)
+  _Right = hSizeParse.GetValue()
+  hSizeParse = New TSizeParse(hTop.Width)
+  _Top = hSizeParse.GetValue()
+  hSizeParse = New TSizeParse(hBottom.Width)
+  _Bottom = hSizeParse.GetValue()
+  
+  hRCorner._NormalizeUnits()
+  
+End
+
+'#####################  PRIVATE PROCEDURES  ########################
+
+Static Private Sub FillObject(hObj As Object, sValue As String)
+  
+  Dim sBrush As String
+  
+  For Each sBrush In Split(sValue, " ")
+    
+    If IsDigit(Left(sBrush)) Then
+      Try hObj.Width = sBrush
+    Else
+      Try hObj.Brush = ReportBrush[sBrush]
+      If hObj.Brush = Null Then hObj.Brush = ReportBrush["&H0"]
+    Endif
+  Next
+  
+End
+
+'########################  PROPERTIES  #############################
+
+Private Function Top_Read() As _ReportBorderSide
+  
+  Return hTop
+  
+End
+
+Private Function Left_Read() As _ReportBorderSide
+  
+  Return hLeft
+  
+End
+
+Private Function bottom_Read() As _ReportBorderSide
+  
+  Return hBottom
+  
+End
+
+Private Function Width_Read() As String
+  
+  Return hLeft.Width
+  
+End
+
+Private Sub Width_Write(Value As String)
+  
+  hLeft.Width = Value
+  hTop.Width = Value
+  hBottom.Width = Value
+  hRight.Width = Value
+  
+End
+
+Private Function Brush_Read() As ReportBrush
+  
+  Return hLeft.Brush
+  
+End
+
+Private Sub Brush_Write(Value As ReportBrush)
+  
+  hLeft.Brush = Value
+  hTop.Brush = Value
+  hBottom.Brush = Value
+  hRight.Brush = Value
+  
+End
+
+Private Function Right_Read() As _ReportBorderSide
+  
+  Return hRight
+  
+End
+
+Private Function RoundCorner_Read() As _ReportRoundCorner
+  
+  Return hRCorner
+  
+End
+
+
+
+Private Function _Height_Read() As Float
+
+  Return _Top + _Bottom
+
+End
+
+Private Function _Width_Read() As Float
+
+  Return _Left + _Right
+
+End

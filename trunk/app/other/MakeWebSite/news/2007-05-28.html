@@ -1,0 +1,17 @@
+Release of Gambas 1.0.18
+<p>
+The release mainly fixes the following bugs:
+<ul>
+  <li>The interpreter native event loop has been fixed. 
+  <li>Date() now correctly converts its arguments to dates.
+  <li>Static arrays should not be freed twice and crash the interpreter anymore.
+  <li>The number of dimensions of an array is correctly limited now by the compiler.
+  <li>Using a parameter as loop variable now correctly raises an error.
+  <li>Filling the picture cache explicitely does not leak the memory anymore. 
+  <li>TableView correctly refreshes its contents when its number of rows or columns has changed. 
+  <li>Database pseudo-collections now always work correctly when being accessed. 
+  <li>The sqlite driver does not truncate Float fields anymore.
+</ul>
+<p>
+See the <a href="changelog.html">ChangeLog</a> for more details.
+

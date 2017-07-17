@@ -1,0 +1,307 @@
+' Gambas class file
+
+Static Public All As New Collection
+Static Public Libraries As New String[]
+Static Public Classes As Collection
+Static Private $iKey As Integer
+
+Public Const STABLE As Integer = 0
+Public Const STABLE_NOT_FINISHED As Integer = 1
+Public Const UNSTABLE As Integer = 2
+
+Public Key As String
+Public Name As String
+Public Authors As New String[]
+'Public Type As String
+Public Hiddens As New String[]
+Public Controls As New String[]
+'Public Containers As New String[]
+'Public MultiContainers As New String[]
+'Public Virtuals As New String[]
+Public Require As New String[]
+Public Exclude As New String[]
+Public Implement As New String[]
+Public Need As New String[]
+Public Loaded As Boolean
+Public ClassList As New String[]
+Public State As Integer
+Public SortKey As Integer
+'Public User As Boolean
+Public Version As String
+Public Family As String
+Public ThirdParty As Boolean
+Static Public WhoImplement As New Collection
+Public {Library} As Boolean
+Public Path As String
+
+Static Public Features As New Collection
+
+'Static Private $hDumbClass As CClassInfo
+'Static Private $hClass As CClassInfo
+
+Private $bCalcKey As Boolean
+
+Static Private Sub InitComponent(sFile As String)
+  
+  Dim hComponent As CComponent
+  Dim hFic As File
+  Dim sLig As String
+  Dim sKey As String
+  Dim sPath As String
+  Dim iPos As Integer
+  Dim sGroup As String
+  
+  sPath = Component.Path &/ sFile 
+  
+  Try hFic = Open sPath
+  If Error Then
+    Error "Warning: cannot read "; sPath
+    Return
+  Endif
+  
+  Line Input #hFic, sLig
+  sLig = Trim(sLig)
+  
+  If sLig = "[Component]" Then
+    
+    hComponent = New CComponent
+    hComponent.Key = File.BaseName(sFile)
+    'hComponent.ThirdParty = Not $cName.Exist(hComponent.key)
+    'hComponent.Name = $cName[hComponent.Key]
+    If Not hComponent.Name Then hComponent.Name = " " 'Subst(("&1 component"), hComponent.Key)
+    
+    While Not Eof(hFic)
+      
+      Line Input #hFic, sLig
+      sLig = Trim(sLig)
+      
+      If Not sLig Then Continue
+      If Left(sLig) = ";" Or Left(sLig) = "'" Then Continue
+      
+      If sLig = "[Component]" Then Break
+      
+      If Left(sLig) = "[" And If Right(sLig) = "]" Then
+        sGroup = Mid$(sLig, 2, -1)
+        Continue
+      Endif
+      
+      iPos = InStr(sLig, "=")
+      If iPos = 0 Then Continue
+      
+      sKey = Left$(sLig, iPos - 1)
+      sLig = Mid$(sLig, iPos + 1)
+      
+      With hComponent
+        
+        If sKey = "Author" Or sKey = "Authors" Then
+          .Authors = Split(sLig)
+          'Else If sKey = "Type" Then
+          '  .Type = sLig
+          ' Else If sKey = "Group" Then
+          '   sGroup = sLig
+          ' Else If sKey = "Hidden" Then
+          '   .Hiddens = Split(sLig)
+          ' Else If sKey = "Control" Or If sKey = "Controls" Then
+          '   .AddControls(sGroup, Split(sLig))
+          ' Else If sKey = "Container" Then
+          '   .AddContainers(sGroup, Split(sLig))
+          ' Else If sKey = "MultiContainer" Then
+          '   .AddContainers(sGroup, Split(sLig))
+          '   .MultiContainers.Insert(Split(sLig))
+          ' Else If sKey = "Virtual" Then
+          '   .AddControls(sGroup, Split(sLig))
+          '   .Virtuals.Insert(Split(sLig))
+        Else If sKey = "Require" Or sKey = "Requires" Then
+          .Require = Split(sLig)
+        Else If sKey = "Exclude" Or sKey = "Excludes" Then
+          .Exclude = Split(sLig)
+        Else If sKey = "Implement" Or sKey = "Implements" Then
+          .Implement = Split(LCase(sLig))
+        Else If sKey = "Need" Or sKey = "Needs" Then
+          .Need = Split(LCase(sLig))
+        ' Do not care with State
+        'Else If sKey = "Alpha" Then
+        '  .State = UNSTABLE
+        'Else If sKey = "State" Then 
+        '  .State = CInt(sLig)
+        Else If sKey = "Version" Then
+          .Version = sLig
+        Endif
+        
+        ' Endif
+        
+      End With
+      
+    Wend
+    
+    If hComponent.Key Then
+      All[hComponent.Key] = hComponent
+    Endif
+    
+  Endif
+  
+  Close #hFic
+  
+  ' Catch 
+  ' 
+  '   Debug "Unable to read component file:";; sFile
+  
+End
+
+Static Public Sub _init()
+  
+  Dim aComp As String[]
+  Dim sFile As String
+  
+  '$cName = New Collection
+  'InitComponentNames
+  
+  ' sLang = System.Language
+  ' iPos = InStr(sLang, "_")
+  ' IF iPos THEN
+  '   sLangShort = Left$(sLang, iPos - 1)
+  ' ELSE
+  '   sLangShort = sLang
+  ' ENDIF
+  
+  'OPEN Component.Path &/ "components" FOR READ AS #hFic
+  
+  aComp = Dir(Component.Path, "*.component").Sort()
+  For Each sFile In aComp
+    'If Not $cName.Exist(File.BaseName(sFile)) Then Continue
+    InitComponent(sFile)
+  Next
+  
+  ' If Exist(Component.UserPath) Then
+  '   aComp = Dir(Component.UserPath, "*.component").Sort()
+  '   For Each sFile In aComp
+  '     If All.Exist(File.BaseName(sFile)) Then 
+  '       Error "Warning: User component "; File.BaseName(sFile); " is ignored"
+  '       Continue
+  '     Endif
+  '     InitComponent(sFile, True)
+  '   Next
+  ' Endif
+  
+  SortComponents()
+  
+  '$cName = Null
+  'Force gb.gui en premier lieu
+  WhoImplement["form"] = ["gb.gui"]
+  GetWhoImplement
+  
+  Reset
+  
+End
+
+Static Private Sub GetWhoImplement()
+  
+  Dim s As String
+  Dim hComp As CComponent
+  
+  For Each hComp In CComponent.All
+    
+    For Each s In hComp.Implement
+      
+      If WhoImplement[s] = Null Then WhoImplement[s] = New String[]
+      If Not WhoImplement[s].Exist(hComp.Name) Then WhoImplement[s].Add(hComp.key)
+      
+    Next 
+    
+  Next
+  
+End
+
+Static Public Sub Exit()
+  
+  All = Null
+  
+End
+
+Public Sub CalcSortKey()
+  
+  Dim sComp As String
+  Dim sNeed As String
+  Dim hComp As CComponent
+  
+  If SortKey = 0 Then 
+    
+    If $bCalcKey Then Return
+    
+    $bCalcKey = True
+    
+    If Require.Count Or If Need.Count Then
+      
+      For Each sComp In Require
+        hComp = All[sComp]
+        If Not hComp Then Continue
+        If hComp <> Me Then hComp.CalcSortKey
+      Next
+      
+      For Each sNeed In Need
+        For Each hComp In All
+          If hComp.Implement.Find(sNeed) >= 0 Then
+            hComp.CalcSortKey
+          Endif
+        Next
+      Next
+      
+    Endif
+    
+    Inc $iKey
+    SortKey = $iKey
+    'DEBUG Key;; "=";; SortKey
+    
+    $bCalcKey = False
+    
+  Endif
+  
+End
+
+Static Private Sub SortComponents()
+  
+  Dim iMax As Integer
+  Dim hComponent As CComponent
+  Dim cNewAll As New Collection
+  Dim iInd As Integer
+  
+  For Each hComponent In All
+    hComponent.CalcSortKey
+    iMax = Max(iMax, hComponent.SortKey)
+    'PRINT hComponent.Key;; hComponent.SortKey
+  Next
+  
+  For iInd = 1 To iMax
+    For Each hComponent In All
+      If hComponent.SortKey = iInd Then
+        cNewAll.Add(hComponent, hComponent.Key)
+        'DEBUG hComponent.Key;; hComponent.SortKey
+      Endif
+    Next
+  Next
+  
+  All = cNewAll
+  
+End
+
+Static Public Sub Reset()
+  
+  Dim hComponent As CComponent
+  Dim sLib As String
+  
+  For Each hComponent In All
+    hComponent.Loaded = False
+  Next
+  
+  For Each sLib In Libraries
+    All[sLib] = Null
+  Next
+  Libraries.Clear
+  
+  '  CModule.Reset
+  
+  Classes = New Collection(gb.IgnoreCase)
+  
+  'All["gb"].Load
+  
+End

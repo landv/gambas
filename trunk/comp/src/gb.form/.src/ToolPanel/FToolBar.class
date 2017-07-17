@@ -1,0 +1,73 @@
+' Gambas class file
+
+Public Function GetContainer() As Container
+
+  Return panToolBar
+
+End
+
+
+Public Sub SetTitle(sTitle As String)
+
+  btnTitle.Text = sTitle
+  btnTitle.Height = Me.Font.Height + 4 + Style.FrameWidth * 2
+  'IF ME.Parent.Parent.Parent.Design THEN panToolBar.Move(0, btnTitle.H, panToolBar.W, ME.CLientH - btnTitle.H)
+
+End
+
+Public Function GetTitle() As String
+
+  Return btnTitle.Text
+
+End
+
+Public Sub SetPicture(hPict As Picture)
+
+  btnTitle.Picture = hPict
+
+End
+
+Public Function GetPicture() As Picture
+
+  Return btnTitle.Picture
+
+End
+
+Public Function GetButtonHeight() As Integer
+
+  Return btnTitle.Height
+
+End
+
+Public Sub btnTitle_Click()
+
+  Dim hParent As ToolPanelContainer = Me.Parent
+  hParent._Change
+
+End
+
+Public Sub SetTextFont(hFont As Font)
+  
+  btnTitle.Font = hFont
+  SetTitle(btnTitle.Text)
+  
+End
+
+Public Sub GetTextFont() As Font
+  
+  Return btnTitle.Font
+  
+End
+
+' Public Sub Form_MouseWheel()
+' 
+'   Dim hToolPanel As ToolPanel = Me.Parent.Parent.Parent
+'   
+'   If Mouse.Delta < 0 Then
+'     Try Inc hToolPanel.Index
+'   Else
+'     Try Dec hToolPanel.Index
+'   Endif
+' 
+' End
+' 

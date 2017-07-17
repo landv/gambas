@@ -1,0 +1,226 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+
+Public Const _Properties As String = "*,Border,Animated,Separator"
+Public Const _DefaultSize As String = "32,6"
+Public Const _Group As String = "View"
+Public Const _DrawWith As String = "DrawingArea"
+
+Event Open
+Event Close
+
+Property Animated As Boolean
+Property Separator As Boolean
+Property Border As Boolean
+
+Private $sText As String
+Private $hIcon As Picture
+Private $hView As DrawingArea
+Private $hClose As Button
+Private $bAnimate As Boolean
+Private $bSeparator As Boolean
+Private $H As Integer
+
+Private $aText As New String[]
+Private $aIcon As New Picture[]
+
+Public Sub _new()
+  
+  $hView = New DrawingArea(Me) As "View"
+  $hView.Background = Color.TextBackground
+  $hView.Foreground = Color.TextForeground
+  
+  $hClose = New Button($hView) As "CloseButton"
+  $hClose.H = Desktop.Scale * 4
+  $hClose.AutoResize = True
+  
+  Me.Proxy = $hView
+  
+  Me.Hide
+  
+End
+
+Private Sub UpdateButton()
+
+  If $aText.Count Then
+    $hClose.Text = ("Next")
+    Try $hClose.Picture = Picture["icon:/small/forward"]
+  Else
+    $hClose.Text = ("Close")
+    Try $hClose.Picture = Picture["icon:/small/close"]
+  Endif
+
+End
+
+Private Sub DoOpen()
+  
+  Dim fTime As Float
+  
+  UpdateButton
+  Me.H = 1
+  Me.Show
+  
+  $H = Max($hIcon.H + Desktop.Scale * 2, Me.Font.RichTextHeight($sText, Me.Parent.ClientW - Desktop.Scale * 4 - $hIcon.W) + Desktop.Scale * 4)
+  
+  If $bAnimate Then
+  
+    fTime = Timer
+    
+    While Me.H < $H
+      Me.H = $H * Min(1, (Timer - fTime) * 8)
+      Try Wait
+    Wend
+    
+  Endif
+  
+  Me.H = $H
+  
+  Raise Open
+  
+End
+
+
+Public Sub Open(Text As String, Optional Icon As Picture)
+  
+  If $sText = Text Then Return
+  
+  If Me.Visible Then
+    
+    $aText.Add(Text)
+    $aIcon.Add(Icon)
+    UpdateButton
+    Return
+    
+  Endif
+  
+  $sText = Text
+  $hIcon = Icon
+  If Not Icon Then 
+    Try $hIcon = Picture["icon:/32/warning"]
+    If Error Then $hIcon = Picture["img/32/warning.png"]
+  Endif
+  
+  DoOpen
+  
+End
+
+Public Sub Close()
+  
+  Dim fTime As Float
+  Dim H As Integer
+  
+  If $bAnimate Then
+    
+    H = Me.H
+    fTime = Timer
+    While Me.H > 1
+      Me.H = H * (1 - Min(1, (Timer - fTime) * 8))
+      Wait
+    Wend
+    
+  Endif
+  
+  Me.Hide
+  
+  Raise Close
+  
+  If $aText.Count Then 
+    $sText = $aText[0]
+    $hIcon = $aIcon[0]
+    $aText.Remove(0)
+    $aIcon.Remove(0)
+    DoOpen
+  Else
+    $sText = ""
+    $hIcon = Null
+  Endif
+  
+End
+
+
+Public Sub View_Arrange()
+  
+  $hClose.Move($hView.W - $hClose.W - Desktop.Scale, ($H - $hClose.H) \ 2)
+  
+End
+
+Public Sub View_DblClick()
+  
+  Close()
+  
+End
+
+
+Public Sub CloseButton_Click()
+  
+  Close()
+  
+End
+
+Public Sub View_Draw()
+  
+  Dim X, W As Integer
+  
+  W = Me.W - Desktop.Scale * 2
+  
+  If $hIcon Then
+    Paint.DrawPicture($hIcon, Desktop.Scale, Desktop.Scale)
+    X += $hIcon.W + Desktop.Scale * 3
+    W -= $hIcon.W - Desktop.Scale * 2
+  Endif
+  
+  Paint.DrawRichText($sText, X, Desktop.Scale * 2, W, Me.H - Desktop.Scale * 2, Align.TopLeft)
+  
+  If $bSeparator Then
+    If Me.Y > 0 Then 
+      If IsNull(Me.Previous) Or If Not Me.Previous Is Separator Then
+        Paint.FillRect(0, 0, Me.W, 1, Color.LightForeground)
+      Endif
+    Endif
+    If Me.Y + Me.H < Me.Parent.ClientH Then 
+      If IsNull(Me.Next) Or If Not Me.Next Is Separator Then
+        Paint.FillRect(0, Me.H - 1, Me.W, 1, Color.LightForeground)
+      Endif
+    Endif
+  Endif
+  
+End
+
+Private Function Animated_Read() As Boolean
+
+  Return $bAnimate
+
+End
+
+Private Sub Animated_Write(Value As Boolean)
+
+  $bAnimate = Value
+
+End
+
+Private Function Separator_Read() As Boolean
+
+  Return $bSeparator
+
+End
+
+Private Sub Separator_Write(Value As Boolean)
+
+  $bSeparator = Value
+  $hView.Refresh
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hView.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hView.Border = If(Value, Border.Plain, Border.None)
+
+End

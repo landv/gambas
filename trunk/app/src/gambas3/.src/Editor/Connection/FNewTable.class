@@ -1,0 +1,75 @@
+' Gambas class file
+
+Static Public TableName As String
+Static Public TableType As String
+
+Static Private $aType As String[]
+
+Static Public Function Run(hConn As Connection, Optional sTable As String, Optional sType As String, Optional aType As String[]) As Boolean
+
+  TableName = sTable
+  TableType = sType
+  $aType = aType
+  DB.Current = hConn
+  Return Not FNewTable.ShowModal()
+
+End
+
+Public Sub _new()
+
+  If $aType And If $aType.Count Then
+    cmbType.List = $aType
+    If TableType Then cmbType.Text = TableType
+  Else
+    panType.Hide
+  Endif
+
+  lblType.Text = TableType
+
+  If TableName Then
+    Me.Title = ("Rename table")
+    cmbType.Visible = False
+  Else
+    Me.Title = ("Create table")
+  Endif
+
+  txtName.Text = TableName
+  txtName.SelectAll
+  txtName.SetFocus
+
+End
+
+
+Public Sub btnOK_Click()
+
+  Dim sName As String = Trim(txtName.Text)
+
+  If TableName And If TableName = sName Then
+    Me.Close
+    Return
+  Endif
+
+  If Not TableName And If Not sName Then
+    Balloon.Warning(("Please enter the name of the new table."), txtName)
+    txtName.SetFocus
+    Return
+  Endif
+  
+  If DB.Tables.Exist(sName) Then
+    Balloon.Warning(Subst(("Table '&1' already exists."), TableName), txtName)
+    txtName.SetFocus
+    Return
+  Endif
+
+  TableName = sName
+  If TableName Then TableType = cmbType.Text
+
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close()
+
+End

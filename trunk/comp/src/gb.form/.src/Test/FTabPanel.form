@@ -1,0 +1,48 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,105,62)
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { TabPanel2 TabPanel
+    MoveScaled(1,2,78,26)
+    #Translate = False
+    Foreground = &H57FF1F&
+    Expand = True
+    Closable = True
+    Moveable = True
+    Highlight = True
+    Index = 0
+    Text = ""
+    Index = 0
+  }
+  { TabStrip1 TabStrip
+    MoveScaled(2,30,51,15)
+    Foreground = Color.Red
+    Count = 3
+    Index = 0
+    Text = ("Text")
+    Index = 1
+    Text = ("")
+    Index = 2
+    Text = ("")
+    Index = 0
+  }
+  { Panel1 HBox
+    MoveScaled(7,47,66,4)
+    { Button1 Button
+      MoveScaled(0,0,16,4)
+      Text = ("Border")
+    }
+    { Button2 Button
+      MoveScaled(17,0,16,4)
+      Text = ("Orientation")
+    }
+  }
+  { Timer1 #Timer
+    #MoveScaled(75,45)
+    Enabled = True
+    Delay = 100
+  }
+}

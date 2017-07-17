@@ -1,0 +1,64 @@
+#!/bin/bash
+
+if test -d ../$1; then
+	echo "$0: error: This component already exists";
+	exit 1; 
+fi
+
+if test ! -e ./conf/$1.conf; then
+	echo "$0: error: The configuration file for this component does not exist";
+	exit 1; 
+fi
+
+if test x`which cpp` == x; then
+	echo "$0: error: cpp was not found";
+	exit 1; 
+fi
+
+echo "Creating component directory $1..."
+cp -R template ../$1
+rm -rf ../$1/.svn ../$1/*/.svn
+
+echo "Applying template..."
+for i in ../$1/* ../$1/*/*; do
+	if test ! -h $i && test ! -d $i; then
+		cpp -P -include ./conf/$1.conf -o $i.out $i;
+		rm -f $i;
+		cat $i.out | sed s/"\\$\/\\$"/"\/"/g | sed s/"\\$'\\$"/"\""/g | sed s/"\\$:\\$"/"\""/g | sed s/"\\$\#\\$"/"\#"/g | sed s/"\#@\#"/"@"/g | sed s/"\#\#"/""/g > $i;
+		rm -f $i.out;
+	fi
+done
+
+echo "Creating source files..."
+for i in `cat ../$1/SOURCES`; do
+	BASENAME=`basename $i`;
+	SOURCE=../$1/src/$i;
+	if test ! `basename $i .h` = $BASENAME; then
+		cpp -P -include ./conf/$1.conf -D__SOURCE_NAME=`basename $i .h` -D__SOURCE_UNAME=`basename $i .h | tr '[:lower:]' '[:upper:]'` -o $SOURCE TEMPLATE.h;
+	elif  test ! `basename $i .c` = $BASENAME; then
+		cpp -P -include ./conf/$1.conf -D__SOURCE_NAME=`basename $i .c` -D__SOURCE_UNAME=`basename $i .c | tr '[:lower:]' '[:upper:]'` -o $SOURCE TEMPLATE.c;
+	elif  test ! `basename $i .cpp` = $BASENAME; then
+		cpp -P -include ./conf/$1.conf -D__SOURCE_NAME=`basename $i .cpp` -D__SOURCE_UNAME=`basename $i .cpp | tr '[:lower:]' '[:upper:]'` -o $SOURCE TEMPLATE.cpp;
+	fi
+	cat $SOURCE | sed s/"\\$\/\\$"/"\/"/g | sed s/"\\$'\\$"/"\""/g | sed s/"\\$:\\$"/"\""/g | sed s/"\\$\#\\$"/"\#"/g | sed s/"\#@\#"/"@"/g | sed s/"\#\#"/""/g > $SOURCE.tmp;
+	rm -f $SOURCE;
+	mv $SOURCE.tmp $SOURCE;
+done
+rm -f ../$1/SOURCES
+
+echo "Creating symbolic links..."
+pushd . > /dev/null
+cd ../$1
+rm -f `find . -name \*~`
+for i in ../acinclude.m4 ../component.am ../main/share/gambas.h ../main/share/gb_common.h ../reconf ../INSTALL ../COPYING ../missing ../m4; do
+	ln -s $i;
+done
+popd > /dev/null
+
+pushd . > /dev/null
+cd ../$1
+(source ./make-component)
+rm -f make-component
+popd > /dev/null
+
+

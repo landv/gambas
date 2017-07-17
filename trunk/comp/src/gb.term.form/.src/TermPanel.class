@@ -1,0 +1,23 @@
+' Gambas class file
+
+Export
+Inherits TermContainer
+
+Property Arrangement As Integer
+
+
+
+
+Private Function Arrangement_Read() As Integer
+
+  Return Super._Arrangement
+
+End
+
+Private Sub Arrangement_Write(Value As Integer)
+
+  Super._Arrangement = Value
+
+End
+
+

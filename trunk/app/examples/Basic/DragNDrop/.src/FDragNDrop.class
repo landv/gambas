@@ -1,0 +1,138 @@
+' Gambas class file
+
+Private $iKey As Integer
+Private Const MIME_TYPE As String = "text/x-gambas-dragndrop-example"
+
+Public Sub imgIcon_MouseDrag()
+
+  If Mouse.Left Then
+    Drag.Icon = Last.Picture
+    Last.Drag(Last.Picture.Image)
+    'LAST.Drag(LAST.Tag)
+  Endif
+
+End
+
+Public Sub TreeView1_Drag()
+
+  If Drag.Type <> Drag.Image Then Stop Event
+
+End
+
+Public Sub TreeView1_DragMove()
+
+  'IF Drag.Type <> Drag.Image THEN STOP EVENT
+
+  With TreeView1
+    If Not .FindAt(Drag.X, Drag.Y) Then
+      Drag.Show(TreeView1, .Item.X, .Item.Y, .Item.W, .Item.H)
+    Else 
+      Drag.Show(TreeView1)
+    Endif
+  End With
+
+End
+
+Public Sub TreeView1_Drop()
+
+  Dim sKey As String
+
+  With TreeView1
+
+    If Not .FindAt(Drag.X, Drag.Y) Then
+      sKey = .Item.Key
+    Endif
+    
+    Inc $iKey
+  
+    If Drag.Type = Drag.Image Then
+      .Add($iKey, "#" & $iKey, Drag.Data.Picture, sKey).EnsureVisible
+    ' ELSE IF Drag.Type = Drag.Text THEN 
+    '   .Add($iKey, Drag.Data,, sKey).EnsureVisible    
+    Endif
+
+  End With
+
+End
+
+Public Sub TreeView1_MouseDrag()
+
+  Dim hImage As Image
+
+  If Not Mouse.Left Then Return
+
+  With TreeView1
+    If .FindAt(Mouse.X, Mouse.Y) Then Return
+    If Not .Key Then Return
+
+    hImage = New Image(32 + 8 + .Font.TextWidth(.Current.Text), 32, Color.Transparent)
+    Paint.Begin(hImage)
+      Try Paint.DrawImage(.Current.Picture.Image, 0, 0)
+      'Try Draw.Picture(.Current.Picture, 0, 0)
+      Paint.Font = .Font
+      Paint.Text(.Current.Text, 34, 0, hImage.Width, 32, Align.Left)
+      Paint.Fill
+    Paint.End  
+
+    Drag.Icon = hImage.Picture
+    'hImage.Save("~/drag.png")
+    'Drag.Icon = .Current.Picture
+    .Drag(.Key, MIME_TYPE)
+  End With
+
+End
+
+Public Sub imgHole_Drag()
+
+  'DEBUG Drag.Type;; Drag.Format
+  If Drag.Type = Drag.Text Then
+    If Drag.Format = MIME_TYPE Then
+      Return
+    Endif
+  Endif
+
+  Stop Event
+
+End
+
+Public Sub imgHole_Drop()
+
+  TreeView1.Remove(Drag.Data)
+
+End
+
+Public Sub Form_Open()
+
+  Me.Center
+  TreeView1.Add("Test", "Test", Picture["drop.png"])
+
+End
+
+
+Public Sub imgHole_DragMove()
+
+  'DEBUG Drag.Type;; Drag.Format
+  If Drag.Type = Drag.Text Then
+    If Drag.Format = MIME_TYPE Then
+      Drag.Show(imgHole)
+      Return
+    Endif
+  Endif
+
+  Stop Event  
+
+End
+
+
+Public Sub Test_DragMove()
+
+  Drag.Show(Last)
+  'PRINT LAST.ScreenX;; LAST.ScreenY;; LAST.Window.ScreenX;; LAST.Window.ScreenY
+  
+End
+
+Public Sub Form_DragMove()
+
+  Test_DragMove
+
+End

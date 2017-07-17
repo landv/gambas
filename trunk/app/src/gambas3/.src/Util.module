@@ -1,0 +1,68 @@
+' Gambas module file
+
+Private Const REMOVE_ACC As String = "ÀÁÂÃÄÅ[A]àáâãäå[a]Æ[AE]æ[ae]Œ[OE]œ[oe]Ç[C]ç[c]ÈÉÊËẼ[E]èéêëẽ[e]ÌÍÎĨÏ[I]ìíîïĩ[i]ÑŃǸ[N]ñńǹ[n]ÒÓÔÕÖ[O]òóôõö[o]ÙÚÛÜ[U]ùúûü[u]ÝŸ[Y]ýÿ[y]ß[ss]°[]"
+
+Public Sub RemoveAccents(sStr As String) As String
+
+  Dim iInd As Integer
+  Dim sCar As String
+  Dim iPos As Integer
+  Dim iPosL As Integer
+  Dim iPosR As Integer
+  Dim sNewStr As String
+
+  If Not sStr Then Return
+  If IsAscii(sStr) Then Return sStr
+
+  For iInd = 1 To String.Len(sStr)
+    sCar = String.Mid$(sStr, iInd, 1)
+    If Len(sCar) > 1 Then
+      iPos = InStr(REMOVE_ACC, sCar)
+      If iPos Then
+        iPosL = InStr(REMOVE_ACC, "[", iPos + 1)
+        iPosR = InStr(REMOVE_ACC, "]", iPos + 1)
+        If iPosL <> 0 And If iPosR <> 0 And If iPosL < iPosR Then
+          sCar = Mid$(REMOVE_ACC, iPosL + 1, iPosR - iPosL - 1)
+        Endif
+      Endif
+    Endif
+    sNewStr &= sCar
+  Next
+
+  Return sNewStr
+
+End
+
+Public Sub GetFileSize(iSize As Long) As String
+  
+  If iSize < 1000 Then
+    Return Subst(("&1 B"), CStr(iSize))
+  Else If iSize < 1000000 Then
+    Return Subst(("&1 KiB"), Format(iSize / 1024, "0.#"))
+  Else If iSize < 1000000000 Then
+    Return Subst(("&1 MiB"), Format(iSize / 1048576, "0.#"))
+  Else
+    Return Subst(("&1 GiB"), Format(iSize / 1073741824, "0.#"))
+  Endif
+  
+End
+
+Public Sub Main()
+
+  Dim A As Float
+  
+  Print Chr$(34);
+  For A = 0 To 6
+    If A > 0 Then Print ";";
+    Print CStr(Round(Cos(Pi(2) * A / 6), -10)); ","; CStr(Round(Sin(Pi(2) * A / 6), -10)); 
+  Next
+  Print Chr$(34)
+  
+  Print "[";
+  For A = 0 To 6
+    If A > 0 Then Print ",";
+    Print CStr(Round(Cos(Pi(2) * A / 6), -10)); ","; CStr(Round(Sin(Pi(2) * A / 6), -10));
+  Next
+  Print "]"
+  
+End

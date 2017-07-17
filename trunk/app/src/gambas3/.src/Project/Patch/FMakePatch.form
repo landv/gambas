@@ -1,0 +1,98 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,82,65)
+  Text = ("Generate patch")
+  Icon = Picture["icon:/16/text"]
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { wizMakePatch Wizard
+    MoveScaled(1,1,79,63)
+    Expand = True
+    Arrangement = Arrange.Vertical
+    Spacing = True
+    Count = 5
+    TextFont = Font["Bold,+3"]
+    ShowIndex = True
+    Border = False
+    Animated = True
+    Index = 0
+    Text = ("Select patch origin")
+    { Panel1 VBox
+      MoveScaled(0,0,70,45)
+      Expand = True
+      { Label1 Label
+        MoveScaled(0,0,18,4)
+        Font = Font["Bold"]
+        Text = ("Patch origin")
+      }
+      { radArchive RadioButton radType
+        Name = "radArchive"
+        MoveScaled(1,4,40,4)
+        Text = ("Source archive")
+        Value = True
+      }
+      { radProject RadioButton radType
+        Name = "radProject"
+        MoveScaled(1,8,45,4)
+        Text = ("Project directory")
+      }
+      { Label2 Label
+        MoveScaled(0,13,23,4)
+        Font = Font["Bold,"]
+        Text = ("Options")
+      }
+      { chkMakeName CheckBox
+        MoveScaled(1,17,64,4)
+        Text = ("Automatic patch name")
+        Value = CheckBox.True
+      }
+      { chkEditPatch CheckBox
+        MoveScaled(1,21,64,4)
+        Text = ("Edit patch")
+        Value = CheckBox.True
+      }
+      { Panel2 Panel
+        MoveScaled(14,26,19,2)
+      }
+      { TextLabel1 TextLabel
+        MoveScaled(0,29,69,3)
+        Font = Font["Italic,-1"]
+        Text = ("This wizard will generate a patch between an origin project and the current project.")
+      }
+    }
+    Index = 1
+    Text = ("Select source archive")
+    { fchOld FileChooser chOld
+      Name = "fchOld"
+      MoveScaled(2,2,75,48)
+      Expand = True
+      Filter = [("*.gz;*.bz2;*.xz"), ("Source packages")]
+      ShowFile = False
+    }
+    Index = 2
+    Text = ("Select project directory")
+    { pchOld ProjectChooser chOld
+      Name = "pchOld"
+      MoveScaled(2,1,68,49)
+      Expand = True
+      Border = True
+    }
+    Index = 3
+    Text = ("Edit patch")
+    { panViewer Panel
+      MoveScaled(2,1,70,45)
+      Expand = True
+      Arrangement = Arrange.Fill
+    }
+    Index = 4
+    Text = ("Choose patch file name")
+    { fchPatch FileChooser
+      MoveScaled(0,1,77,51)
+      Expand = True
+      Filter = [("*.patch;*.diff"), ("Patch/Diff files")]
+    }
+    Index = 0
+  }
+}

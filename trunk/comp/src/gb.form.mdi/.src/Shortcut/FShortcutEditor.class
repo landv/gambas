@@ -1,0 +1,100 @@
+' Gambas class file
+
+Property Text As String
+Property Read BadShortcut As Boolean
+
+Private $hAction As CAction
+Private $bBadShortcut As Boolean
+
+Public Sub Define(hAction As CAction) As Boolean
+  
+  If $hAction = hAction Then Return True
+  $hAction = hAction
+
+End
+
+Private Function Text_Read() As String
+
+  Return lblShortcut.Text
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  If Not lblShortcut Then Return
+  
+  'Object.Lock(txtShortcut)
+  lblShortcut.Text = Value
+  'Object.Unlock(txtShortcut)
+
+End
+
+Public Sub btnClear_Click()
+
+  lblShortcut.Text = ""
+  CheckShortcut
+
+End
+
+Public Sub Form_KeyPress()
+
+  Dim sShortcut As String
+  
+  If Not FShortcut.HandleKey() Then 
+    sShortcut = MAction.FindShortcut()
+    If sShortcut Then 
+      lblShortcut.Text = sShortcut
+      CheckShortcut
+    Endif
+  Endif
+  
+  Stop Event
+
+End
+
+Private Sub CheckShortcut()
+  
+  Dim hAction As CAction
+  Dim hSame As CAction
+  Dim sShortcut As String = lblShortcut.Text
+  
+  If sShortcut Then
+  
+    For Each hAction In MAction.Actions
+      If hAction = $hAction Then Continue
+      If hAction.Shortcut = sShortcut Then
+        hSame = hAction
+        Break
+      Endif 
+    Next
+    
+  Endif
+  
+  If hSame Then
+    $bBadShortcut = True
+    Balloon.Warning(("This shortcut is already used by the following action:") & "<br><br><b>" & hSame.Display & "</b>", lblShortcut)
+  Else
+    $bBadShortcut = False
+    Balloon.Hide
+  Endif
+  
+End
+
+' Public Sub txtShortcut_Change()
+' 
+'   CheckShortcut
+' 
+' End
+
+
+Private Function BadShortcut_Read() As Boolean
+
+  Return $bBadShortcut
+
+End
+
+' Public Sub Form_Open()
+' 
+'   panSpace.Width = 2
+' 
+' End

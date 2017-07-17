@@ -1,0 +1,43 @@
+' Gambas class file
+
+Export
+Create Static
+
+Public Procedure Modify(View As String, Statement As String)
+
+  Add(View, Statement, True)
+
+End
+
+Public Procedure Add(View As String, Statement As String, Optional {Replace} As Boolean = False)
+
+  'TODO: Quote the Statement parameter
+  modMain.$Query = "CREATE"
+  If {Replace} Then modMain.$Query &= " OR REPLACE"
+  modMain.$Query &= " VIEW `" & View & "` AS " & Statement
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure Delete(Views As String[], Optional IfExists As Boolean = False)
+
+  modMain.$Query = "DROP VIEW "
+  If IfExists Then modMain.$Query &= "IF EXISTS "
+  modMain.$Query &= modMain.ArrayToString(Views, True)
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Function Info(View As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SHOW CREATE VIEW `" & Database & "`.`" & View & "`"
+  Return modMain.$Connection.Exec(modMain.$Query)!"Create View"
+
+End
+
+Public Function Definition(View As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT `VIEW_DEFINITION` FROM `information_schema`.`VIEWS` WHERE `TABLE_SCHEMA` = '" & Database & "' AND `TABLE_NAME` = '" & View & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!"VIEW_DEFINITION"
+
+End

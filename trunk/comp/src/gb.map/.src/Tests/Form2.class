@@ -1,0 +1,96 @@
+' Gambas class file
+
+Public Sub Form_Open()
+  Dim hClient As New HttpClient
+  Dim _Lay As _MapTile
+  Dim cArgs As New Collection
+  Dim hBounds As New MapBounds
+  Dim idep, iend As Integer
+  Dim stext As String
+  Dim a As String[]
+  Dim hproj As Proj = Proj("epsg:4326")
+  hClient.Async = False
+  hClient.CookiesFile = Temp
+  hClient.UpdateCookies = True
+  
+  hClient.URL = "http://www.cadastre.gouv.fr/scpc/rechercherPlan.do"
+  hClient.Get()
+  hClient.URL = "http://www.cadastre.gouv.fr/scpc/listerCommune.do?codeDepartement=017&keepVolatileSession=&listeCommuneNatValeurVueFilterField=&listeCommuneNatValeurVueFilterValue=&offset=500"
+  hClient.Get()
+  hClient.URL = "http://www.cadastre.gouv.fr/scpc/afficherCarteCommune.do?c=9B016&keepVolatileSession"
+  hClient.Get()
+  'récupération de la zone 
+  '
+   sText = Replace(hClient.Peek(), "\t", "")
+  
+  idep = InStr(sText, "GeoBox(") + 7
+ iEnd = InStr(sText, ")", idep)
+ 
+ 
+ a = Split(Replace(Mid(sText, idep, iend - idep), "\n", ""))
+ 
+ hBounds = Proj("IGNF:RGF93CC46").TransformMBounds(Proj("epsg:4326"), MapBounds(MapPoint(CFloat(a[1]), CFloat(a[0])), MapPoint(CFloat(a[3]), CFloat(a[2]))))
+
+  
+  
+  
+  MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "134"]).SubDomains = ["0", "1", "2"]
+  MapView1.Map.AddShape("mysh")
+
+  MapView1.Map!mysh.Addpoint("pp", hBounds.NorthEast)
+
+  MapView1.Map!mysh.Addpoint("pp2", hBounds.SouthWest)
+  MapView1.Map.Zoom = 15
+  MapView1.Map.Center = hBounds.NorthEast
+  
+
+  
+  _Lay = MapView1.Map.AddTile("CAD", "http://www.cadastre.gouv.fr/scpc/wms")
+
+
+
+  With _Lay
+    .WMSProjection = "IGNF:RGF93CC46"
+    .SetCoockieFile(hClient.CookiesFile)
+    .UseWebMapService = True
+    .MaxBounds = hBounds
+    .WMSArgs!version = "1.1"
+    .WMSArgs!request = "GetMap"
+    .WMSArgs!layers = "CDIF:LS3,CDIF:LS2,CDIF:LS1,CDIF:PARCELLE,CDIF:NUMERO,CDIF:PT3,CDIF:PT2,CDIF:PT1,CDIF:LIEUDIT,CDIF:SUBSECTION,CDIF:SECTION,CDIF:COMMUNE"
+    .WMSArgs!format = "image/png"
+    .WMSArgs!width = "256"
+    .WMSArgs!height = "256"
+    .WMSArgs!exception = "application/vnd.ogc.se_inimage"
+    .WMSArgs!styles = "LS3_90,LS2_90,LS1_90,PARCELLE_90,NUMERO_90,PT3_90,PT2_90,PT1_90,LIEUDIT_90,SUBSECTION_90,SECTION_90,COMMUNE_90"
+    '.WMSArgs!bbox = "{lon2},{lat},{lon},{lat2}"
+    .WMSArgs!bbox = "{lon},{lat2},{lon2},{lat}"
+    
+    
+  End With
+
+End
+
+
+Public Sub Button1_Click()
+  
+  MapView1.Map.Center = MapPoint(Geo.SexToDec("45°31'33,33''N"), Geo.SexToDec("0°18'43,50''W"))
+  MapView1.Map.Zoom = 17
+  MapView1.Refresh
+
+End
+
+Public Sub Slider1_Change()
+
+  MapView1.Map!CAD.Opacity = Last.Value / 100
+
+End
+
+Public Sub MapView1_MouseUp()
+  Dim hMapShape As _MapShape
+  Dim hShape As _ShapeItem
+  hMapShape = MapView1.map!mysh
+  hShape = hMapShape.Find(MapView1.Map.PixelToMapPointRel(Point(Mouse.x, Mouse.Y)))
+  
+  If hShape Then Print hShape.Key
+  
+End

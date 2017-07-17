@@ -1,0 +1,52 @@
+' Gambas class file
+
+Private myButton As New Button(Me) As "mBEvent"
+Private myText As New TextLabel(Me)
+Private myIView As New ImageView(Me)
+Public Sub form_Open()
+  
+  With myButton
+    .H = 35
+    .w = 100
+    .x = 20
+    .y = 50
+  End With
+  
+  With myText
+    .H = 30
+    .W = 180
+    .X = 7
+    .Y = 105
+  End With
+  
+  With myIView
+    .H = 130
+    .W = 200
+    .X = 190
+    .Y = 50
+  End With
+  
+End
+
+Public Sub mbevent_Click()
+  Select Case myIView.Border
+    Case False
+      myText.Text = conBool(myIView.Border)
+      myIView.Border = True
+    Case True
+      myIView.Border = False
+      myText.Text = conBool(myIView.Border)
+  End Select
+End
+Static Public Sub conBool(myVar As Variant) As String
+    Select Case TypeOf(myVar)
+        Case 1
+          Select Case myVar
+            Case True
+              Return "True"
+            Case False 
+              Return "False"
+          End Select
+    End Select
+  
+End

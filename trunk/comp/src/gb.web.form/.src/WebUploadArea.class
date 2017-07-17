@@ -1,0 +1,198 @@
+' Gambas class file
+
+Inherits WebContainer
+
+Export
+
+Public Const _Properties As String = "*"
+Public Const _DefaultEvent As String = "Click"
+
+'Event Click
+Event Upload
+Event Progress
+
+Property Progress As Float
+Property Read File As String
+Property Read Path As String
+Property Read Uploading As Boolean
+
+Private $fProgress As Float
+
+'Property File As String
+
+'Private $sFile As String
+'Private $bUpload As Boolean
+
+Public Sub _BeforeRender()
+  
+  Print "<div"; Me._GetClassId(); 
+  If Me.Enabled Then Print " onclick=\"gw.file.select("; JS(Me.Name); ")\"";
+  Me._RenderStyleSheet()
+  Print ">";
+  Print "<input class=\"gw-file-input\" type=\"file\" id=\""; Me.Name; ":file\" onchange=\"gw.file.upload("; JS(Me.Name); ");\">"
+  
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  If sProp = "#progress" Then
+    
+    If vValue = 0 Then
+      Me.Enabled = False
+    Endif
+    If Not Me.Enabled Then
+      Me.Progress = vValue
+      Raise Progress
+      If $fProgress = 1 Then
+        Me.Enabled = True
+      Endif
+    Endif
+    
+  Endif
+  
+End
+
+' Private Function File_Read() As String
+' 
+'   Return $sFile
+' 
+' End
+' 
+' Private Sub File_Write(Value As String)
+' 
+'   $sFile = Value
+'   Me._SetProperty("File", Value)
+' 
+' End
+
+' Public Sub Upload()
+' 
+'   If $bUpload Then Error.Raise("Pending upload")
+'   
+'   $bUpload = True
+'   Me._SetProperty("#upload", True)
+'   
+'   WebForm._AddReply("gw.file.upload(" & JS(Me.Name) & ");")
+'   
+' End
+' 
+' Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
+'   
+'   If sProp = "#upload" Then
+'     $bUpload = vVal
+'     Me.Refresh
+'   Endif
+'   
+' End
+' 
+
+Private Sub GetUploadDir() As String
+
+  Dim sDir As String
+  
+  sDir = File.Dir(File.Dir(Temp$())) &/ "upload"
+  Try Mkdir sDir
+  sDir &/= Session.Id
+  Try Mkdir sDir
+  Return sDir
+
+End
+
+Public Sub _UploadFinish()
+
+  Dim sPath As String
+  Dim sTemp As String
+  Dim sName As String
+  
+  'Progress_Write(1)
+  'Raise Progress
+  
+  'Session.Load
+  'Me._InitProperties
+  
+  Me["path"] = ""
+  Me["file"] = ""
+  
+  WebForm.Print("_UploadFinish: Request.TempDir = " & Request.TempDir)
+  
+  For Each sPath In Request.Files
+    
+    WebForm.Print("_UploadFinish: sPath = " & sPath)
+    sName = Request["name"]
+    
+    If Request.TempDir Then
+      sTemp = sPath
+    Else
+      sTemp = GetUploadDir() &/ Me.Name & "." & File.Ext(sName)
+      Try Kill sTemp
+      Try Move sPath To sTemp
+      If Error Then 
+        WebForm.Print("_UploadFinish: " & Error.Text & ": " & sPath & " -> " & sTemp)
+        Break
+      Endif
+    Endif
+    
+    Me["path"] = sTemp
+    Me["file"] = sName
+    Break
+    
+  Next
+  
+  Me.Enabled = True
+  
+End
+
+Private Function Progress_Read() As Float
+
+  Return $fProgress
+
+End
+
+Private Sub Progress_Write(Value As Float)
+
+  $fProgress = Value
+  Me._SetProperty("Progress", Value)
+
+End
+
+Private Function File_Read() As String
+
+  Return Me["file"]
+
+End
+
+Private Function Path_Read() As String
+
+  Return Me["path"]
+
+End
+
+Private Function Uploading_Read() As Boolean
+
+  Return $fProgress > 0
+
+End
+
+Public Sub Abort()
+  
+  WebForm._AddReplyBefore("gw.file.abort(" & JS(Me.Name) & ")")  
+  Me.Enabled = True
+  
+End
+
+Public Sub Clear()
+  
+  Dim sPath As String
+  
+  Abort
+  
+  sPath = Me["path"]
+  If sPath Then
+    Try Kill sPath
+    If Not Request.TempDir Then Try Rmdir File.Dir(sPath)
+    Me["name"] = ""
+    Me["path"] = ""
+    Me["file"] = ""
+  Endif
+  
+End

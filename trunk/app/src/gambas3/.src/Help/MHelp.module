@@ -1,0 +1,977 @@
+' Gambas module file
+
+'' Routines for managing the IDE help system.
+
+Public Const TYPE_NATIVE As Integer = 0
+Public Const TYPE_CLASS As Integer = 1
+Public Const TYPE_CONTROL As Integer = 2
+Public Const TYPE_SYMBOL As Integer = 3
+Public Const TYPE_EVENT As Integer = 4
+Public Const TYPE_KEYWORD As Integer = 5
+Public Const TYPE_SPECIAL As Integer = 6
+Public Const TYPE_COMPONENT As Integer = 7
+Public Const TYPE_FILE As Integer = 8
+
+Public Enum OFFLINE_NO_NETWORK, OFFLINE_NOT_AVAILABLE, OFFLINE_UP_TO_DATE, OFFLINE_NEW_AVAILABLE, OFFLINE_NO_WGET
+
+Public $PopupHelpCache As Collection
+
+Private $bInitOffline As Boolean
+
+Private $cSubstComponent As New Collection
+
+Public Sub _init()
+
+  Dim sComp As String
+  
+  For Each sComp In ["gb.gui", "gb.gtk", "gb.gtk3", "gb.qt5", "gb.gui.qt"]
+    $cSubstComponent[sComp] = "gb.qt4"
+  Next
+  For Each sComp In ["gb.gui.opengl", "gb.gtk.opengl", "gb.gtk3.opengl", "gb.qt5.opengl"]
+    $cSubstComponent[sComp] = "gb.qt4.opengl"
+  Next
+  For Each sComp In ["gb.qt5.webkit", "gb.gui.qt.webkit"]
+    $cSubstComponent[sComp] = "gb.qt4.webkit"
+  Next
+  
+End
+
+
+Public Sub ActualComponent(sComp As String) As String
+  
+  If $cSubstComponent.Exist(sComp) Then
+    Return $cSubstComponent[sComp]
+  Else
+    Return sComp
+  Endif
+  
+End
+
+
+Private Sub GetPath(sPath As String) As String
+  
+  'sPath = Replace(sPath, "/gb+gui/", "/gb+qt/")
+  'sPath = Replace(sPath, "/gb+gtk/", "/gb+qt/")
+  Return System.Path &/ "share/gambas" & CStr(System.Version) &/ "help" &/ sPath
+  
+End
+
+Public Sub SetLanguage(sLang As String)
+  
+  Settings["/HelpLanguage"] = sLang
+  
+End
+
+Public Sub GetLanguage(Optional bReturnVoidIfDefault As Boolean) As String
+  
+  Dim sLang As String
+  Dim iPos As Integer
+  
+  sLang = Settings["/HelpLanguage"]
+  If sLang Then Return sLang
+  If bReturnVoidIfDefault Then Return
+  
+  sLang = System.Language
+  
+  For iPos = 1 To Len(sLang)
+    If Not IsLower(Mid$(sLang, iPos, 1)) Then Break
+  Next
+  
+  Return Left$(sLang, iPos - 1)
+  
+End
+
+Public Sub Open()
+  
+  Dim sTool As String = FToolBox.GetTool()
+  
+  If sTool Then 
+    GotoClass(Project.Documentation.Classes[sTool].Component, sTool)
+    FToolBox.SetTool
+  Else
+    Project.OpenWebPage(GetPath("tree/index.html"))
+  Endif
+  
+End
+
+Private Sub FormatName(sName As String) As String
+  
+  sName = LCase(sName)
+  sName = Replace(sName, "_", "+")
+  sName = Replace(sName, "/.", "/_")
+  sName = Replace(sName, "/+", "/_")
+  sName = Replace(sName, ".", "+")
+  sName = Replace(sName, ":", "+")
+  
+  Return sName
+  
+End
+
+Public Sub GotoSymbol(hSymbol As CSymbolInfo)
+  
+  Dim sLink As String
+  Dim sName As String
+  Dim sComp As String
+  
+  sName = LCase(hSymbol.Name)
+  If Right(sName) = "$" Then sName = Left(sName, -1)
+  If hSymbol.Component = "gb" And If hSymbol.Class = "." Then
+    sLink = "/lang"
+  Else
+    sLink = "/comp"
+    sComp = ActualComponent(hSymbol.Component)
+    sLink &= "/" & sComp
+    If hSymbol.Class <> "." Then sLink &= "/" & LCase(hSymbol.Class)
+  Endif
+  
+  sLink &/= sName '& ".html"
+  'sLink = FormatName(sLink)
+  
+  If Exist(GetPath(FormatName(sLink)) & ".html")
+    Project.OpenWebPage(GetPath(FormatName(sLink)) & ".html")
+  Else
+    Project.OpenWebPage(Project.WIKI_URL &/ sLink & "?l=" & GetLanguage())
+  Endif
+  
+End
+
+Public Sub GotoComponent(sComp As String)
+  
+  Dim sLink As String
+  
+  sLink = "/comp" &/ FormatName(sComp)
+  Project.OpenWebPage(GetPath(sLink) & ".html")
+  FHelpBrowser.Main
+  
+End
+
+Public Sub GotoClass(sComp As String, sClass As String)
+  
+  Dim sLink As String
+  
+  sLink = "/comp" &/ FormatName(sComp) &/ FormatName(sClass)
+  Project.OpenWebPage(GetPath(sLink) & ".html")
+  
+End
+
+Public Function GotoKeyword(sName As String, Optional sName2 As String) As Boolean
+  
+  Dim sPath As String
+  
+  If sName2 Then
+    If Not GotoKeyword(sName2) Then Return
+  Endif
+  
+  If Right(sName) = "$" Then sName = Left$(sName, -1)
+  
+  sPath = GetPath("/lang" &/ LCase(sName)) & ".html"
+  If Not Exist(sPath) Then Return True
+  Project.OpenWebPage(sPath)
+  
+Catch
+  
+  Return True
+  
+End
+
+Public Function GotoDatatype(sName As String) As Boolean
+  
+  Dim sPath As String
+  
+  sPath = GetPath("/lang/type" &/ LCase(sName)) & ".html"
+  If Not Exist(sPath) Then Return True
+  Project.OpenWebPage(sPath)
+  
+Catch
+  
+  Return True
+  
+End
+
+Public Function GetSymbolHelpPath(hSymbol As CSymbolInfo) As String
+  
+  Dim sLink As String
+  Dim sName As String
+  Dim Result As String
+  Dim sComp As String
+  
+  sName = LCase(hSymbol.Name)
+  
+  If hSymbol.Component = "gb" And If hSymbol.Class = "." Then
+    sLink = "/lang"
+  Else
+    sLink = "/comp"
+    sComp = hSymbol.Component
+    If sComp = "gb.qt5" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt4"
+    sLink &= "/" & sComp
+    If hSymbol.Class <> "." Then sLink &= "/" & LCase(hSymbol.Class)
+  Endif
+  
+  sLink &/= sName 
+  sLink = FormatName(sLink)
+  
+  Result = GetPath(sLink) & ".html"
+  
+  If Not Exist(Result) Then 
+    If hSymbol.Kind Then 
+      'Try looking for the property in the object that this object inherits from
+      hSymbol.Class = hSymbol.Kind
+      hSymbol.Kind = ""
+      Result = GetSymbolHelpPath(hsymbol)
+      If Not Exist(Result) Then 
+        'Try looking for the property in the Control object
+        hSymbol.Class = "Control"
+        Result = GetSymbolHelpPath(hsymbol)
+      Endif   
+    Endif 
+  Endif 
+  
+  Result = LCase(Result)
+  
+  Return Result
+  
+End
+
+Public Function GetSymbolHelpText(SymbolHelpPath As String) As String
+
+  Dim HelpText As String
+  
+  'Check cache
+  If Not $PopupHelpCache Then 
+    'Create cache collection
+    $PopupHelpCache = New Collection(gb.IgnoreCase)
+  Endif 
+  
+  If $PopupHelpCache.Exist(SymbolHelpPath) Then 
+    Return $PopupHelpCache[SymbolHelpPath]
+  Else 
+    'Get from file
+    HelpText = GetHelpTextFromFile(SymbolHelpPath)
+    If HelpText Then 
+      'Add to cache
+      $PopupHelpCache[SymbolHelpPath] = HelpText 
+      Return HelpText 
+    Else 
+      Return ""
+    Endif 
+  Endif 
+  
+End
+
+Private Function GetHelpTextFromFile(SymbolHelpPath As String) As String
+  
+  Dim hFileIn As File
+  Dim sInputLine As String
+  Dim bGrabNextLine As Boolean
+  Dim sResult As String
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim sWord As String
+  
+  bGrabNextLine = False
+  sResult = ""
+  
+  hFileIn = Open SymbolHelpPath For Read
+  
+  Do While Not Eof(hFileIn)
+    Line Input #hFileIn, sInputLine
+    If bGrabNextLine Then 
+      
+      ' Remove links
+      
+      Do
+        iPos = InStr(sInputLine, "<a ")
+        If iPos = 0 Then Break 
+        iPos2 = InStr(sInputLine, ">", iPos)
+        If iPos2 = 0 Then Break 
+        sInputLine = Left(sInputLine, iPos - 1) & Mid$(sInputLine, iPos2 + 1)
+      Loop 
+      
+      sInputLine = Replace(sInputLine, "</a>", "")
+      
+      For Each sWord In Split(Trim(sInputLine), " \n")
+        sResult &= " " & sWord
+        iPos = InStr(sWord, ".")
+        If iPos > 0 And If iPos = Len(sWord) Then Break
+      Next
+      If iPos > 0 And If iPos = Len(sWord) Then Break
+      
+    Else 
+      If Right(RTrim(sInputLine), 6) = "</pre>" Then 
+        bGrabNextLine = True
+      Endif 
+    Endif 
+  Loop 
+  
+  sResult = Trim(sResult)
+  
+Finally 
+  
+  Try Close hFileIn
+  
+  If Not sResult Then 
+    Return "<i>" & ("No help found.") & "</i>"
+  Else
+    Return sResult 
+  Endif
+  
+End
+
+Public Sub GetURL(Optional sPath As String) As String
+  
+  Return Project.WIKI_ROOT &/ sPath
+  
+End
+
+Public Sub GetLangURL(sSymbol As String) As String
+  
+  sSymbol = LCase(sSymbol)
+  sSymbol = Replace(sSymbol, "$", "")
+  If Right(sSymbol) = "?" Then sSymbol = "is" & Left(sSymbol, -1)
+  
+  Return GetURL("lang") &/ sSymbol & "?v&nh&l=" & GetLanguage()
+  
+End
+
+Public Sub GetSpecialURL(sSymbol As String) As String
+  
+  Return GetURL("lang") &/ "special" &/ Mid$(sSymbol, 2) & "?v&nh&l=" & GetLanguage()
+  
+End
+
+'' ## Description ##
+'' Initialize a web browser view with the help on a specific symbol.
+'' ## Arguments ##
+'' - *hWebView* is the WebView control to initialize.
+'' - *iType* is the type of the symbol.
+'' - *sSymbol* is the symbol.
+'' - *sClass* is the class if the symbol is a member of this class.
+'' - *sMore* is a suffix that will be added to the URL of the help page.
+'' - *hEditor* is the source code editor that the symbol comes from.
+'' ## Symbol types ##
+'' The *iType* argument can be one of the following constants, defined in the MHelp module:
+'' - `TYPE_NATIVE` for a native datatype.
+'' - `TYPE_CLASS` for a class.
+'' - `TYPE_CONTROL` for a control name.
+'' - `TYPE_SYMBOL` for a class symbol, a local or a global variable.
+'' - `TYPE_EVENT` for an event.
+'' - `TYPE_KEYWORD` for a language keyword.
+'' - `TYPE_SPECIAL` for a special method.
+
+Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As String, Optional sClass As String, Optional sMore As String, Optional hEditor As FEditor)
+  
+  Dim hSymbol As CSymbolInfo
+  Dim hClass As CClassInfo
+  Dim hComp As CComponent
+  Dim sUrl As String
+  Dim sHtml As String
+  Dim iPos As Integer
+  Dim sTemp As String
+  Dim bHelpBrowser As Boolean
+  
+  If Not hWebView Then 
+    If Not FHelpBrowser.Visible Then Return
+    bHelpBrowser = True
+    hWebView = FHelpBrowser.GetBrowser()
+  Endif
+  
+  If iType = TYPE_NATIVE Then
+    
+    sUrl = MHelp.GetLangURL("type" &/ sSymbol)
+    
+  Else If iType = TYPE_KEYWORD Then
+    
+    sUrl = MHelp.GetLangURL(sSymbol)
+    
+  Else If iType = TYPE_SYMBOL Or If iType = TYPE_EVENT Then
+    
+    If iType = TYPE_EVENT Then
+      iPos = InStr(sSymbol, "_")
+      If iPos Then sSymbol = ":" & Mid$(sSymbol, iPos + 1)
+    Endif
+    Try hSymbol = Project.Documentation.GetClassSymbols(sClass)[sSymbol]
+    If Not hSymbol Then 
+      hEditor.GetSymbolType(sSymbol)
+      hSymbol = hEditor.GetLastSymbolDesc()
+    Endif
+    If hSymbol Then 
+      Try hComp = Project.Documentation[hSymbol.Component]
+      If Not hSymbol.Component Or If hSymbol.Component = CComponent.PROJECT_NAME Then
+        sHtml = hSymbol.GetHelpHTML()
+        sUrl = "-" & sClass & "-" & sSymbol
+      Else If hComp And If Not hComp.Library And If Not hComp.ThirdParty Then 
+        sUrl = hSymbol.GetHelpURL()
+      Else
+        sUrl = hSymbol.Component & "-" & sClass & "-" & sSymbol
+        sHtml = hSymbol.GetHelpHTML()
+      Endif
+    Endif
+    
+  Else If iType = TYPE_CLASS Or If iType = TYPE_CONTROL Then
+    
+    Try hClass = Project.Documentation.Classes[sSymbol]
+    If hClass Then 
+      Try hComp = Project.Documentation[hClass.Component]
+      If hClass.Component And If hClass.Component <> CComponent.PROJECT_NAME And If Not hComp.Library And If Not hComp.ThirdParty Then
+        sUrl = hClass.GetHelpURL()
+      Else 'If hClass.Help Then
+        sHtml = hClass.GetHelpHTML()
+        sUrl = hClass.Component & "-" & sSymbol
+      Endif
+    Else 
+      sSymbol = File.Name(sSymbol)
+      If Project.GetClasses().Exist(sSymbol) Then
+        Project.Documentation.GetClassSymbols(sSymbol)
+        sHtml = Project.Documentation.GetLastClass().GetHelpHTML()
+        sUrl = "-" & sSymbol
+      Endif
+    Endif
+    
+  Else If iType = TYPE_SPECIAL Then
+    
+    sUrl = MHelp.GetSpecialURL(sSymbol)
+    
+  Else If iType = TYPE_COMPONENT
+    
+    Try hComp = Project.Documentation[sSymbol]
+    If hComp.Library Or If hComp.ThirdParty Then
+      sUrl = sSymbol
+      sHtml = hComp.GetHelpHTML()
+    Else
+      sUrl = hComp.GetHelpURL()
+    Endif
+    
+  Endif
+  
+  hWebView.Stop
+  hWebView.History.Clear
+  
+  If sHtml Then
+    
+    sTemp = File.Dir(Temp$()) &/ "help"
+    Try Mkdir sTemp
+    sTemp &/= Replace(sUrl, "/", "|") & ".html"
+    File.Save(sTemp, sHtml)
+    hWebView.Url = "file://" & sTemp
+    
+  Else If sUrl Then
+    
+    If bHelpBrowser Then 
+      sUrl = URL.UnsetQuery(sUrl, "v")
+      sUrl = URL.UnsetQuery(sUrl, "nh")
+    Endif
+    sUrl = URL.UnsetQuery(sUrl, "l")
+    sUrl = URL.SetQuery(sUrl, "l", GetLanguage())
+    sUrl = URL.SetQuery(sUrl, "nl")
+    If sMore Then sUrl &= "&" & sMore
+    hWebView.Url = sUrl
+    
+  Else
+    
+    hWebView.HTML = "<html><body><h2><i>" & ("No help found.") & "</i></h2></body></html>"
+    
+  Endif
+  
+  'hWebView.TextZoom = 0.8
+  
+End
+
+'' # Description
+'' 
+'' Initialize the help browser with the help on a specific symbol, and show it automatically.
+'' 
+'' # Arguments
+'' 
+'' - *hWebView* is the WebView control to initialize.
+'' - *iType* is the type of the symbol.
+'' - *sSymbol* is the symbol.
+'' - *sClass* is the class if the symbol is a member of this class.
+'' - *sMore* is a suffix that will be added to the URL of the help page.
+'' 
+'' # Symbol types
+'' 
+'' The #iType# argument can be one of the following constants, defined in the MHelp module:
+'' - `TYPE_NATIVE` for a native datatype.
+'' - `TYPE_CLASS` for a class.
+'' - `TYPE_CONTROL` for a control name.
+'' - `TYPE_SYMBOL` for a class symbol, a local or a global variable.
+'' - `TYPE_EVENT` for an event.
+'' - `TYPE_KEYWORD` for a language keyword.
+'' - `TYPE_SPECIAL` for a special method.
+'' - `TYPE_COMPONENT` for a component help page.
+
+Public Sub ShowHelpBrowserWith(iType As Integer, sSymbol As String, Optional sClass As String, Optional sMore As String)
+  
+  FHelpBrowser.Show
+  InitWebViewWith(Null, iType, sSymbol, sClass, sMore)
+  
+End
+
+
+
+'' +Description
+'' Return the formated help of the local class if it exists
+'' +Arguments
+'' - #sClass# is the class to analyze
+'' - #sMarkup# is the markup to convert to HTML
+
+' Private Function GetProjectClassHelpHTML(sClass As String, Optional sMarkup As String) As String
+'   
+'   Dim sHelp, sHtml, sLine, sWhere, sSymbols, sParSymbols, sInfo As String
+'   Dim hForm As FEditor
+'   Dim hEdit As Editor
+'   Dim i As Integer
+'   Dim hSymbol As CSymbolInfo
+'   Dim cClassSymbols As Collection
+'   Dim hClassInfo, hParentClass As CClassInfo
+'   Dim aProperty, aEvent, aMethod, aConst, aVar As New String[]
+'   Dim aParentProperty, aParentEvent, aParentMethod, aParentConst, aParentVar As New String[]
+'   Dim sComp, sSymbolName As String
+'   Dim hArray As String[]
+'   Dim sParent As String
+' 
+'   If Not sMarkup Then
+'   
+'     hForm = Project.LoadFile(Project.FindPath(sClass))
+'     Try hEdit = hForm.GetEditor()
+'     
+'     If Not hEdit Then Return  
+'   
+'     For i = 0 To hEdit.Lines.Count - 1
+'       sLine = Trim(hEdit.Lines[i].Text)
+'       If sLine Begins "''' " Then
+'         sMarkup &= Trim(Mid$(sLine, 4)) & "\n"
+'       Else
+'         If sMarkup Then Break
+'         If sLine Not Begins "'" Then Break
+'       Endif
+'     Next
+'     
+'   Endif
+'     
+'   sHelp = Markup.Convert(sMarkup)
+'   
+'   hClassInfo = CComponent.GetClassDescription(sClass)
+'   cClassSymbols = CComponent.GetClassSymbols(sClass)
+'   
+'   'If hClassInfo.Name = sClass Then hClassInfo.Name = hClassInfo.Parent ????? Do not modify the class info!
+'   
+'   If cClassSymbols.Count > 0 Then
+'     
+'     For Each hSymbol In cClassSymbols
+'       
+'       sSymbolName = hSymbol.Name
+'       If Left(sSymbolName) = ":" Then sSymbolName = Mid$(sSymbolName, 2)
+'       
+'       sComp = Subst("<a class=\"none\" href=\"&1\">&2</a>", Html(hSymbol.GetHelpURL()), sSymbolName)
+'       
+'       If hSymbol.NotPublic Or If hSymbol.IsHidden() Then Continue
+' 
+'       If IsLetter(hSymbol.Kind) And If hSymbol.Kind = UCase(hSymbol.Kind) Then sComp = "<b>" & sComp & "</b>"
+' 
+'       If hSymbol.Class = sClass Then
+'         
+'         Select Case LCase(hSymbol.Kind)
+'           Case ":" 
+'             aEvent.Add(sComp)
+'           Case "m"
+'             aMethod.Add(sComp)
+'           Case "p", "r"
+'             aProperty.Add(sComp)
+'           Case "c"
+'             aConst.Add(sComp)
+'           Case "v"
+'             aVar.Add(sComp)
+'         End Select
+'         
+'       Else
+'         
+'         Select Case LCase(hSymbol.Kind)
+'           Case ":" 
+'             aParentEvent.Add(sComp)
+'           Case "m"
+'             aParentMethod.Add(sComp)
+'           Case "p", "r"
+'             aParentProperty.Add(sComp)
+'           Case "c"
+'             aParentConst.Add(sComp)
+'           Case "v"
+'             aParentVar.Add(sComp)
+'         End Select
+'         
+'       Endif
+'       
+'     Next
+'     
+'     For Each hArray In [aConst, aEvent, aMethod, aProperty, aVar, aParentConst, aParentEvent, aParentMethod, aParentProperty, aParentVar]
+'       hArray.Sort
+'     Next
+'     
+'     sParSymbols = ""
+'     If aParentProperty.Count + aParentMethod.Count + aParentEvent.Count + aParentVar.Count Then
+'       sParSymbols &= "<tr>"
+'       If aParentProperty.Count Then sParSymbols &= "<td><b>" & ("Properties") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       If aParentVar.Count Then sParSymbols &= "<td><b>" & ("Variables") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       If aParentMethod.Count Then sParSymbols &= "<td><b>" & ("Methods") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       If aParentEvent.Count Then sParSymbols &= "<td><b>" & ("Events") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       sParSymbols &= "</tr>"
+'       sParSymbols &= "<tr valign=\"top\">"
+'       If aParentProperty.Count Then sParSymbols &= "<td>" & aParentProperty.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       If aParentVar.Count Then sParSymbols &= "<td>" & aParentVar.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       If aParentMethod.Count Then sParSymbols &= "<td>" & aParentMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       If aParentEvent.Count Then sParSymbols &= "<td>" & aParentEvent.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       sParSymbols &= "</tr>"
+'     Endif
+'     
+'     sSymbols = ""
+'     If aProperty.Count + aMethod.Count + aEvent.Count + aVar.Count Then
+'       sSymbols &= "<tr>"
+'       If aProperty.Count Then sSymbols &= "<td><b>" & ("Properties") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       If aVar.Count Then sSymbols &= "<td><b>" & ("Variables") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       If aMethod.Count Then sSymbols &= "<td><b>" & ("Methods") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       If aEvent.Count Then sSymbols &= "<td><b>" & ("Events") & "</b></td><td width=\"32\">&nbsp;</td>"
+'       sSymbols &= "</tr>"
+'       sSymbols &= "<tr valign=\"top\">"
+'       If aProperty.Count Then sSymbols &= "<td>" & aProperty.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       If aVar.Count Then sSymbols &= "<td>" & aVar.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       If aMethod.Count Then sSymbols &= "<td>" & aMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       If aEvent.Count Then sSymbols &= "<td>" & aEvent.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+'       sSymbols &= "</tr>"
+'     Endif
+'     
+'   Endif
+'   
+'   If hClassInfo.AutoCreatable Then sInfo = ("This class can be used like an object by creating an hidden instance on demand.<br>")
+'   If hClassInfo.Creatable Then sInfo &= ("This class is creatable.<br>")
+'   
+'   sWhere = "gambas://project/" & sClass & "?showfile"
+'   
+'   sHtml = File.Load("help/class-help.html")
+'   sHtml = Replace(sHtml, "$(class)", sClass)
+'   sHtml = Replace(sHtml, "$(help)", sHelp)
+'   
+'   If sInfo Then 
+'     sHtml = Replace(sHtml, "<!--$(Info)-->", sInfo & "<hr class=\"border\">")
+'   Endif
+'   
+'   If hClassInfo.Parent Then 
+'     
+'     sParent = hClassInfo.Parent
+'     
+'     hParentClass = CComponent.Classes[hClassInfo.ParentComponent &/ sParent]
+'     If Not hParentClass Then hParentClass = CComponent.GetClassDescription(sParent)
+'     
+'     sHtml = SubstPart(sHtml, "ShowInherits", True)
+'     sHtml = SubstPart(sHtml, "ShowParConst", aParentConst.Count > 0)
+'     sHtml = Replace(sHtml, "$(ParConst)", aParentConst.Join(" "))
+'     
+'     sHtml = Replace(sHtml, "$(Inherits)", Subst(("This class inherits &1."), Subst("<a href=\"&1\">&2</a>", Html(hParentClass.GetHelpURL()), sParent)))
+'     sHtml = Replace(sHtml, "$(ParSymbols)", sParSymbols)
+'     
+'   Else
+'     
+'     sHtml = SubstPart(sHtml, "ShowInherits", False)
+'     
+'   Endif
+'   
+'   sHtml = SubstPart(sHtml, "ShowConst", aConst.Count > 0)
+'   sHtml = Replace(sHtml, "$(Const)", aConst.Join(" "))
+'   
+'   sHtml = Replace(sHtml, "$(where)", sWhere)
+'   sHtml = Replace(sHtml, "$(Symbols)", sSymbols)
+'   
+'   sHtml = Replace(sHtml, "''Symbols''", ("Symbols"))
+'   sHtml = Replace(sHtml, "''Constants''", ("Constants"))
+'   
+'   sHtml = Replace(sHtml, "$(hide-title)", "")
+'   
+'   Return sHtml
+' 
+' End
+
+'' Manage 'the gambas://' links
+
+Public Sub ManageSpecialLink(hWebView As WebView, sUrl As String)
+  
+  Dim sClass As String
+  Dim sSymbol As String
+  Dim iLine As Integer
+  Dim iPos As Integer
+  Dim aValues As String[]
+  Dim bShowFile As Boolean
+  Dim sLast As String
+  
+  If InStr(sUrl, "?showfile") Then
+    sUrl = Replace(sUrl, "?showfile", "")
+    bShowFile = True
+  Endif
+  
+  aValues = Split(sUrl, "/")
+  sClass = aValues[3]
+  
+  If sUrl Begins "gambas://" Then 
+    
+    sLast = aValues[aValues.Max]
+    iPos = InStr(sLast, "#")
+    If iPos Then
+      Try iLine = CInt(Mid$(sLast, iPos + 1))
+      aValues[aValues.Max] = Left$(sLast, iPos - 1)
+      sClass = aValues[3]
+    Endif
+    
+    If aValues[2] = "project" Then
+    
+      If bShowFile Then 
+        Project.OpenFile(Project.FindPath(sClass), iLine)
+        FMain.Show
+      Else
+        If aValues.Count = 4 Then
+          InitWebViewWith(hWebView, TYPE_CLASS, aValues[3])
+        Else
+          InitWebViewWith(hWebView, TYPE_SYMBOL, aValues[4], aValues[3])
+        Endif
+      Endif 
+      
+    Else If aValues[2] = "library" Then
+      
+      If aValues.Count = 4 Then
+        InitWebViewWith(hWebView, TYPE_COMPONENT, aValues[3])
+      Else If aValues.Count = 5 Then
+        InitWebViewWith(hWebView, TYPE_CLASS, aValues[3] &/ aValues[4])
+      Else If aValues.Count = 6
+        InitWebViewWith(hWebView, TYPE_SYMBOL, aValues[5], aValues[3] &/ aValues[4])
+      Endif
+      
+    Endif
+    
+  Else
+    
+    sSymbol = aValues[3]
+    sClass = File.Name(File.Dir(sUrl))
+    InitWebViewWith(hWebView, TYPE_SYMBOL, sSymbol, sClass)
+    
+  Endif 
+  
+End
+
+Public Sub Clear()
+  
+  Try Shell "rm -rf " & Shell$(File.Dir(Temp$()) &/ "help")
+  
+End
+
+Public Sub LoadProxyConfig()
+  
+  With WebSettings.Proxy
+    
+    Select Case Settings["/Proxy/Type", 0]
+      Case 0
+        .Type = WebSettings.DefaultProxy
+        Return
+      Case 1
+        .Type = WebSettings.NoProxy
+        Return
+      Case 2
+        .Type = WebSettings.HttpProxy
+      Case 3
+        .Type = WebSettings.Socks5Proxy
+    End Select
+    
+    .Host = Settings["/Proxy/Host"]
+    .Port = Settings["/Proxy/Port", 0]
+    .User = Settings["/Proxy/User"]
+    If .User Then Try .Password = Desktop.Passwords["/Proxy" &/ .User]
+    
+  End With
+  
+End
+
+Public Sub FindMarkup(hEdit As TextEditor, iLine As Integer) As String
+  
+  Dim I As Integer
+  Dim sHelp As String
+  Dim sLine As String
+  
+  ' Try to find help on the line of the declaration
+  
+  Highlight.Analyze(hEdit[iLine].Text)
+  I = Highlight.Symbols.Max
+  If I >= 1 Then
+    If Highlight.Types[I] = Highlight.Help Then
+      sLine = Trim(Highlight.Symbols[I])
+      sHelp = Trim(Mid$(sLine, 3))
+    Endif
+  Endif
+
+  ' Find help just above
+  
+  If Not sHelp Then
+  
+    For I = iLine - 1 DownTo 0
+      sLine = Trim(hEdit[I].Text)
+      If sLine Begins "'' " Or If sLine = "''" Then 
+        sHelp = RTrim(Mid(sLine, 4)) & "\n" & sHelp
+      Else
+        If sLine Then Break
+      Endif
+    Next
+    
+  Endif
+  
+  Return sHelp
+  
+End
+
+Public Sub ReadConfig()
+  
+  If Settings["/UseOfflineHelp"] Then
+    Project.WIKI_URL = "wiki://"
+    Project.WIKI_ROOT = "wiki://"
+  Else
+    Project.WIKI_URL = "http://gambaswiki.org/"
+    Project.WIKI_ROOT = Project.WIKI_URL &/ "wiki"
+  Endif
+  
+End
+
+Public Sub GetOfflineDir() As String
+  
+  Return Desktop.DataDir &/ "gambas3/wiki"
+  
+End
+
+Public Sub GetOfflinePath(sPath As String) As String
+  
+  Return Desktop.DataDir &/ "gambas3/wiki/data" &/ Wiki.Lang &/ sPath &/ "~page"
+  
+End
+
+Public Sub GetOfflineState() As Integer
+
+  Dim sTimestamp As String
+  Dim sDir As String
+  Dim sDate As String
+
+  If Not Desktop.NetworkAvailable Then Return OFFLINE_NO_NETWORK
+
+  If Not System.Exist("wget") Then Return OFFLINE_NO_WGET
+  
+  Inc Application.Busy
+  
+  Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp
+  
+  Dec Application.Busy
+  
+  sTimestamp = Trim(sTimestamp)
+  If Not sTimestamp Then Return OFFLINE_NOT_AVAILABLE
+  
+  sDir = MHelp.GetOfflineDir()
+  
+  Try sDate = File.Load(sDir &/ "timestamp")
+  If Not sDate Then
+    Try sDate = Format(Stat(File.SetName(sDir, "wiki.tar.bz2")).LastModified, "yyyymmdd")
+  Endif
+  
+  If IsDir(sDir) And If sDate And If sDate >= sTimestamp Then Return OFFLINE_UP_TO_DATE
+  
+  Return OFFLINE_NEW_AVAILABLE
+  
+End
+
+
+Public Sub MakeOffline(hWebView As WebView, sUrl As String, Optional bNoHeader As Boolean)
+  
+  Dim sFile As String
+  Dim sHtml As String
+  Dim hFile As File
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim sQuery As String
+  Dim sPath As String
+  
+  Wiki.Root = GetOfflineDir()
+  Wiki.InfoDir = CComponent.GetInfoDir()
+  
+  If Not IsDir(Wiki.Root) Then
+    hWebView.HTML = "<h2>" & ("Documentation is not available.") & "</h2>"
+    Return
+  Endif
+  
+  If Not $bInitOffline Then
+    
+    For Each sFile In ["up.png", "critical.png", "info.png", "tip.png", "vb.png", "warning.png", "error-bg.png"]
+      Try Kill GetOfflineDir() &/ sFile
+      Copy "help/wiki" &/ sFile To GetOfflineDir() &/ sFile
+    Next
+  
+    File.Save(GetOfflineDir() &/ "style.css", Replace(File.Load("help/wiki/style.css"), "<%/%>", GetOfflineDir()) & "\n.login { display: none !important; }")
+    
+    $bInitOffline = True
+    
+  Endif
+  
+  iPos = InStr(sUrl, "?")
+  If iPos Then
+    sQuery = Mid$(sUrl, iPos + 1)
+    sUrl = Left(sUrl, iPos - 1)
+  Endif
+  
+  Wiki.Lang = GetLanguage()
+  Wiki.Path = "/" &/ Mid$(sUrl, 8)
+  Wiki.AnalyzePath()
+  
+  sPath = GetOfflineDir() &/ "data" &/ Wiki.Lang &/ Wiki.Path &/ "page.html"
+  If True Then 'Not Exist(sPath) Then
+  
+    hFile = Open sPath For Create
+    Output To #hFile
+    
+    sHtml = File.Load("help/wiki/page.html")
+    iPos = 0
+    
+    Do
+      
+      iPos2 = InStr(sHtml, "$(", iPos + 1)
+      If iPos2 = 0 Then
+        Print Mid$(sHtml, iPos + 1);
+        Break
+      Endif
+      
+      Print Mid$(sHtml, iPos + 1, iPos2 - iPos - 1);
+      iPos = InStr(sHtml, ")", iPos2 + 2)
+      If iPos = 0 Then Break
+      
+      Select Case Mid$(sHtml, iPos2 + 2, iPos - iPos2 - 2)
+        Case "root"
+          Print GetOfflineDir();
+        Case "parent"
+          Wiki.PrintParent
+        Case "link"
+          Wiki.PrintLink
+        Case "page"
+          Wiki.PrintPage
+        Case "noheader"
+          If bNoHeader Then 
+            Print "<style type=\"text/css\">"
+            Print ".header { display: none; }"
+            Print ".page { top: 0; }"
+            Print "</style>"
+          Endif
+      End Select
+      
+    Loop
+    
+    Output To Default
+    Close #hFile
+    
+  Endif
+
+  'Desktop.Open($sOffline)  
+  hWebView.Url = "file:///" &/ URL.Encode(sPath)
+  
+Catch
+  
+  Output To Default
+  hWebView.Html = "<h2>" & ("This page does not exist.") & "</h2>"
+  
+End

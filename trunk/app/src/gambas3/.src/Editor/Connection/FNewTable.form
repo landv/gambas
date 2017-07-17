@@ -1,0 +1,64 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,53,19)
+  Text = ("New table")
+  Icon = Picture["img/16/table.png"]
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  AutoResize = True
+  Spacing = True
+  Margin = True
+  { HBox2 HBox
+    MoveScaled(1,1,51,4)
+    Spacing = True
+    { Label1 Label
+      MoveScaled(0,0,11,4)
+      Text = ("Name")
+    }
+    { txtName TextBox
+      MoveScaled(13,0,37,4)
+      Expand = True
+    }
+  }
+  { panType HBox
+    MoveScaled(1,6,51,4)
+    Spacing = True
+    { Label2 Label
+      MoveScaled(0,0,11,4)
+      Text = ("Type")
+    }
+    { lblType Label
+      MoveScaled(13,0,31,4)
+      Visible = False
+      Expand = True
+      Border = Border.Raised
+    }
+    { cmbType ComboBox
+      MoveScaled(16,0,34,4)
+      Expand = True
+      ReadOnly = True
+    }
+  }
+  { Panel2 Panel
+    MoveScaled(15,11,3,2)
+  }
+  { HBox1 HBox
+    MoveScaled(1,14,51,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(4,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(11,0,16,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(28,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

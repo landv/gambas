@@ -1,0 +1,136 @@
+' Gambas module file
+
+
+Private hTimer As New Timer As "Timer"
+Private hWin2 As TermWindow
+Private hTermLabel As TermLabel
+Private $i As Integer
+Private $iBal As Integer = 1
+Private $hCurFocued As Object
+'Private hWin2 As TermForm
+
+ Public Sub Main()
+
+  Dim hWin As New TermForm
+  Dim hTerCheckBox As TermRadioButton
+  Dim i As Integer
+  Dim hCont As TermVBox
+  Dim hCont2 As TermHBox
+  Dim hTermButton As TermButton
+  'TermWindows.Debug = True
+  
+  'Dim hTermLabel As New TermLabel(hWin)
+  'Dim hWin2 As New Window
+  hTermLabel = New TermLabel(hwin)
+ hTimer.delay = 5
+ 'hTimer.Start
+
+  hWin.Left = 3
+  hWin.Top = 1
+  hWin.Height = 20
+  hWin.Width = 70
+  hwin.Padding = 1
+  hwin.Border = Border.Simple
+  hTermLabel.Left = 2
+  hTermLabel.Top = 2
+  hTermLabel.Width = 7
+  hTermLabel.tag = "*"
+  hTermLabel.Background = TermColor.Yellow
+  hTermLabel.Foreground = TermColor.Green
+  hTermLabel.Text = "TermLabel 1"
+  hWin.Text = "Window 1"
+  hTermLabel = New TermLabel(hWin)
+  hTermLabel.Width = 15
+  hTermLabel.Text = "TermLabel 2"
+  hTermLabel.Tag = "#"
+  hTermLabel.SetFocus
+  
+  
+  hWin2 = New TermWindow
+  hWin2.Background = TermColor.Cyan
+  hWin2.Border = Border.Simple
+  hWin2.Width = 50
+  hWin2.Spacing = 1
+  hWin2.Height = 14
+  'hWin2._Shadow = True
+  hWin2.top = 6
+  hWin2.Left = 15
+  'hWin2.Padding = 1
+  'hWin2.Maximized = True
+  hWin2.Text = "Window 2" 
+  
+  'hCont.Top = 3
+  hTermLabel = New TermLabel(hWin2)
+  hTermLabel.Width = 14
+  hTermLabel.Top = 2
+  hTermLabel.Left = 2
+  hTermLabel.Text = "TermLabel on win 2"
+  
+  hCont = New TermVBox(hWin2)
+  hCont.Expand = True
+  hcont.Background = TermColor.Green
+  hcont.Border = Border.Simple
+  'hcont.Padding = 1
+  hcont.Shadow = True
+  For i = 0 To 10
+    hTerCheckBox = New TermRadioButton(hcont)
+    hTerCheckBox.Background = TermColor.Green
+    hTerCheckBox.Text = "TermLabel " & i
+    
+  Next
+  hCont2 = New TermHBox(hWin2)
+  hCont2.Height = 2
+  hCont2.Spacing = 1
+  hCont2.Background = TermColor.Cyan
+  hCont2.Invert = True
+  'hCont.Shadow = True
+  hTermButton = New TermButton(hCont2) As "btnOk"
+  'hTermButton.Background = TermColor.Magenta
+  hTermButton.Text = "Ok"
+  hTermButton.W = 10
+  hTermButton.H = 2
+  hTermButton._Shadow = True
+  hTermButton.Alignment = Align.Center
+    hTermButton = New TermButton(hCont2) As "btnCancel"
+  'hTermButton.Background = TermColor.Magenta
+  hTermButton.Text = "Cancel"
+  hTermButton.W = 10
+  hTermButton.H = 2
+  hTermButton._Shadow = True
+  hTermButton.Alignment = Align.Center
+  'hWin2.Maximized = True
+  hWin2.Show
+  hwin.Show
+   'TermWindows._Render
+   $hCurFocued = hTermLabel
+   hTermButton.SetFocus
+ End
+
+
+Public Sub Timer_Timer()
+  
+ hTermLabel.Text = $i
+$hCurFocued = hWin2.GetNextFocusedControl($hCurFocued)
+ Error Object.Type($hCurFocued) & "    ";
+ Try Error $hCurFocued.Text
+ $hCurFocued.setFocus()
+ Inc $i
+   TermWindows._Render
+  
+End
+
+
+Public Sub btnCancel_Click()
+  
+  Last.Window.Visible = False
+  'TermWindows._Render
+  
+End
+
+Public Sub btnOk_Click()
+  Dim hattr As New Attr
+  hattr.Background = TermColor.Black
+  'Message("Salut a tous !")
+  Desktop.BackGround = Char(" ", hattr.GetInteger())
+  hTimer.Start
+End

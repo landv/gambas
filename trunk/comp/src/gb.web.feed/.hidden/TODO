@@ -1,0 +1,10 @@
+ o Should I Html$() every string? Or better use CDATA? How to detect when it is necessary?
+   ~> Adrien said gb.xml will take care of escaping in the future.
+
+ o Rss.ParseDate() ignores the timezone. What should I do and what can I do?
+   ~> Gambas Dates are always UTC. Probably make an RssDate class which saves a Date and the timezone.
+      Give it conversion methods. Benoit said these should be provided by gb.(web.)util.
+ o Should Rss.FormatDate() put the timezone string instead of +nnnn. How?
+
+ o Support Atom. Should there be a basis class which represents the common features of Rss and Atom
+   so that a user can offer both formats cheaply (without keeping a complete Rss and Atom object around)?

@@ -1,0 +1,57 @@
+' Gambas class file
+
+Export
+Inherits TermPanel
+Class Rect
+
+Property Text As String
+Private $sText As String
+Private $iOldLen As Integer
+
+Public Sub _Render()
+
+  Dim hAttr As New Attr
+  Dim iAttr As Integer
+  Dim i As Integer
+  Dim iStart As Integer
+  Dim hRectC As Rect = Me._GetClientRect()
+   Dim sText As String = " " & $sText & " "
+  Super._Render
+  If Not Me._NeedRender Then Return
+
+  ' Select Case $iAlignment
+  '   Case Align.Right
+  '     sALign = String(hRectC.Width - Len($sText), " ") & $sText
+  '   Case Align.Center
+      iStart = CInt(Ceil((hRectC.Width - Len(sText)) / 2))
+  '   Case Else
+  '     sALign = $sText
+  ' End Select
+
+  hAttr.Background = Me._GetBackGround()
+  hAttr.Foreground = Me.Foreground
+  iAttr = hAttr.GetInteger()
+
+  For i = iStart To Me._Content[0].count
+     If i - iStart >= String.Len(sText) Then Break
+    
+      Me._Content[0][i - 1] = Char(Mid(sText, i - iStart + 1, 1), iAttr)
+  
+  
+  Next
+
+  Me._NeedRender = False
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+
+End

@@ -1,0 +1,67 @@
+' Gambas module file
+
+' Original author : Arnaud Storq
+' Gambas Port : Fabien Bodard
+
+Private Screen As Window
+
+
+Public Sub Main()
+  Dim Texture As Image
+
+  Screen = New Window(True) As "Screen"
+
+  With Screen
+    .Resize(512, 512)
+    .Framerate = 120
+    .Resizable = True
+    .Show
+  End With 
+  
+  Texture = image.Load("texture.png")
+  CTunnel.tunnelInitialiser(Texture)
+  
+End
+
+Public Sub Screen_Draw()
+  
+  CTunnel.tunnelAfficher(GetTickCount())
+  
+  Print Screen.FrameRate; " FPS\r";
+  
+End
+
+Public Sub Screen_Close()
+  
+  CTunnel.tunnelDetruire()
+  
+End
+
+
+Public Sub Screen_Keypress()
+  
+  If key.Code = key.f1 Then 
+    Screen.FullScreen = Not Screen.FullScreen
+  Else If Key.Code = Key.Esc Then 
+    Screen.Close
+  Endif
+  
+End
+
+Private Sub GetTickCount() As Integer
+
+  Return CInt(Timer() * 1000)
+
+End
+
+Public Sub Screen_Resize()
+
+  Gl.Viewport(0, 0, Screen.Width, Screen.Height)
+  Gl.MatrixMode(Gl.PROJECTION)
+  Gl.LoadIdentity()
+  Gl.Frustum(-1.0, 1.0, - (Screen.Height / Screen.Width), (Screen.Height / Screen.Width), 5.0, 60.0)
+  Gl.MatrixMode(Gl.MODELVIEW)
+  Gl.LoadIdentity()
+  Gl.Translatef(0.0, 0.0, -40.0)
+
+End

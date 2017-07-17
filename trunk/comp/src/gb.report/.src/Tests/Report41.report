@@ -1,0 +1,34 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,109,64)
+  Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
+  Spacing = "1cm"
+  Index = 0
+  Text = ("")
+  { ReportVBox1 ReportVBox
+    #MoveScaled(4,5,101,53)
+    Spacing = "1cm"
+    { ReportHBox1 ReportHBox
+      #MoveScaled(3,4,94,35)
+      { ReportLabel1 ReportLabel
+        #MoveScaled(0,0,6,32)
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+        Rotate = 90
+      }
+      { ReportVBox2 ReportVBox
+        #MoveScaled(13,1,79,32)
+        Expand = True
+        { ReportHBox2 ReportHBox
+          #MoveScaled(1,1,77,4)
+          Tag = "*"
+          { ReportLabel2 ReportLabel
+            #MoveScaled(2,0,46,4)
+            Expand = True
+          }
+        }
+      }
+    }
+  }
+  Index = 0
+}

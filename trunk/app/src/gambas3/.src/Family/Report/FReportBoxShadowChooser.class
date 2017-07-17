@@ -1,0 +1,136 @@
+' Gambas class file
+
+Static Public Value As String
+
+Public Sub Run(sShadow As String) As Boolean
+
+  Value = sShadow
+  Return Not Me.ShowModal()
+
+End
+
+
+Public Sub _new()
+  
+  crdX.AllowNegative = True
+  crdY.AllowNegative = True
+  crdSpread.AllowNegative = True
+  'crdBlur.AllowNegative = True
+  
+End
+
+Public Sub btnOK_Click()
+  Value = GetValue()
+  Me.Close(True)
+End
+
+Private Function IsActive() As Boolean
+  
+  Return Not (CFamilyReport.ToPixel(crdBlur.Value) = 0 And CFamilyReport.ToPixel(crdSpread.Value) = 0 And CFamilyReport.ToPixel(crdX.Value) = 0 And CFamilyReport.ToPixel(crdY.Value) = 0)
+  
+End
+
+Private Sub PaintShadow()
+  
+  Dim fSPread As Float = CFamilyReport.ToPixel(crdSpread.Value)
+  Dim fX As Float = CFamilyReport.ToPixel(crdX.Value)
+  Dim fY As Float = CFamilyReport.ToPixel(crdY.Value)
+  Dim fBlur As Float = CFamilyReport.ToPixel(crdBlur.Value)
+  'Dim fMaxOffset As Float = Max(fX, fY)
+  Dim fWIdth, fHeight As Integer
+  Dim hImg As Image
+
+  fWidth = Paint.Width - 30 'fSPread * 2 - fMaxOffset - 30
+  fHeight = Paint.Height - 30 ' fSPread * 2 - fMaxOffset - 30
+  'Print fX
+  'Print IsActive()
+  If IsActive() Then 
+    himg = New Image(fWidth + fSpread * 2 + fBlur * 2, fHeight + fSpread * 2 + fBlur * 2, Color.Transparent)
+    Paint.Begin(himg)
+    Paint.Brush = Paint.Color(btnColor.Value)
+    Paint.rectangle(fBlur, fBlur, Paint.Width - fBlur * 2, Paint.Height - fBlur * 2, 5)
+    Paint.Fill
+    Paint.End
+    himg.Fuzzy(fBlur)
+    Draw.Image(himg, 15 + fX - fSpread - fBlur, 15 + fY - fSpread - fBlur)
+    
+  Endif
+  Paint.Rectangle((Paint.Width - fWidth) / 2, (Paint.Height - fHeight) / 2, fWIdth, fHeight, 5)
+  Paint.Brush = Paint.Color(Color.White)
+  Paint.Fill(True)
+  Paint.Brush = Paint.Color(Color.Black)
+  Paint.Stroke
+  
+End
+
+Public Sub dwgBorder_Draw()
+  
+  PaintShadow
+  
+End
+
+Public Sub crdBrush_Change()
+
+  dwgBorder.Refresh
+
+End
+
+
+Private Sub GetValue() As String
+
+
+  Dim sRet As String
+  Dim sVal As String
+  
+  sVal = crdX.Value
+  If Not sVal Then sVal = "0px"
+  sRet &= sVal
+  
+  sVal = crdY.Value
+  If Not sVal Then sVal = "0px"
+  sRet &= " " & sVal
+  
+  sVal = crdBlur.Value
+  If Not sVal Then sVal = "0px"
+  sRet &= " " & sVal
+
+  sVal = crdSpread.Value
+  If Not sVal Then sVal = "0px"
+  sRet &= " " & sVal
+  
+  
+  sRet &= " " & CReportBrush.ColorToString(btnColor.Value)
+  
+ Return sRet
+  
+  
+  
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub Form_Open()
+  Dim a As String[]
+  Dim aCont As CoordBox[] = [crdX, crdY, crdBlur, crdSpread]
+  Dim i As Integer
+  'Value = "1px -2cm 3mm 1px #FF5641"
+  If Not Value Then
+    Return
+  Endif
+  
+  a = Split(Value, " ")
+  
+  For i = 0 To 4
+    If a[i] Begins "#" Then 
+      Try btnColor.Value = CReportBrush.StringToColor(a[i])
+      Break
+    Endif
+    Try aCont[i].Value = a[i]
+  Next
+  
+  dwgBorder.Refresh
+End

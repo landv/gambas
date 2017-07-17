@@ -1,0 +1,60 @@
+NG 29/12/2005 - For sqlite3 PRAGMA full_column_names is only useful
+                when PRAGMA short_column_names is off. Included so
+                that this will work from 3.2.1 onwards.
+
+(Daniel Campos <danielcampos@netcourrier.com> ) - All float values has been replace
+by double values, as some extra wrong decimals were added in conversions from sql data
+types to Gambas data types.
+
+Uses the STL and requires the sqliteclient library. Currently tested with
+SQLite 2.8.13. from www.sqlite.org
+
+sqlite is typeless...although in the create you can specify type details (these are
+just comments!).  These types have been defined to map to gambas, those not defined
+will default to string.
+
+Database/Gambas Type : ft_String/ GB_T_STRING
+DDL Value : BLOB, CHAR(, CLOB, TEXT, VARCHAR, ENUM, SET, YEAR, Non specified
+
+Database/Gambas Type : ft_Boolean/ GB_T_BOOLEAN
+DDL Value : CHAR, TINYINT, INT1, BOOL
+
+Database Type/Gambas : ft_Short/ GB_T_INTEGER
+DDL Value : SMALLINT, INT2, MEDIUMINT
+
+Database/Gambas Type : ft_LongDouble/ GB_T_FLOAT
+DDL Value : BIGINT, INT8
+
+Database/Gambas Type : ft_Long/ GB_T_INTEGER
+DDL Value : INTEGER, INT, INT4
+
+Database/Gambas Type : ft_Float/GB_T_FLOAT
+DDL Value : DECIMAL, NUMERIC, REAL, FLOAT, FLOAT8, FLOAT4
+
+Database/Gambas Type : ft_Date/GB_T_DATE
+DDL Value : TIMESTAMP, DATETIME, DATE, TIME
+
+Database/Gambas Type : ft_Double/GB_T_FLOAT
+DDL Value : DOUBLE
+
+Thanks go to Leo Seib for his SQLiteDataset library ( sqlitedataset.sourceforge.net)
+which has been the base for my hacking.
+
+The order for locating database files is:
+1) If database is fullpath qualified
+2) If Host is specified as a valid path
+3) If set, GAMBAS_SQLITE_DBHOME variable
+4) Current working directory.
+
+The driver will look for databases in the current working directory unless the environment
+variable GAMBAS_SQLITE_DBHOME is set.
+
+There is no concept of users within sqlite.  Access is controlled by file permissions
+on the database file. 
+
+Creates database /tmp/sqlite.db by default.  For the gambas-database-manager this will
+allow functionality.
+
+Sqlite is not case sensative on table or field names.  The implementation for Gambas is. 
+
+Database :memory: will load only in memory

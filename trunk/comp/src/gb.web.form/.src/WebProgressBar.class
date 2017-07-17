@@ -1,0 +1,58 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,Label=True,Border=True" ',Pulse"
+Public Const _DefaultSize As String = "24,4"
+Public Const _DrawWith As String = "ProgressBar"
+
+Property Label As Boolean
+Property Value As Float
+'Property Pulse As Boolean
+
+Private $bLabel As Boolean = True
+Private $fValue As Float
+
+
+Public Sub _Render()
+  
+  Print "<div id=\""; Me.Name; ":p\" class=\"gw-progressbar-bar\" style=\"width:"; CInt($fValue * 100); "."; CInt(Frac($fValue * 100) * 10); "%\">"; "</div>"
+  If $bLabel Then Print "<div id=\""; Me.Name; ":l\" class=\"gw-progressbar-label\">"; Html(Format($fValue, "0%")); "</div>"
+  
+End
+
+
+Private Function Label_Read() As Boolean
+
+  Return $bLabel
+
+End
+
+Private Sub Label_Write(Value As Boolean)
+
+  $bLabel = Value
+  Me._SetProperty("Label", Value)
+
+End
+
+Private Function Value_Read() As Float
+
+  Return $fValue
+
+End
+
+Private Sub Value_Write(Value As Float)
+
+  $fValue = Min(1, Max(0, Value))
+  
+  Inc Me._NoRefresh
+  Me._SetProperty("Value", Value)
+  Dec Me._NoRefresh
+  
+  If Me._CanRefresh() Then
+    WebForm._AddJavascript("$(" & JS(Me.Name & ":p") & ").style.width = '" & CStr(CInt($fValue * 100)) & "." & CStr(CInt(Frac($fValue * 100) * 10)) & "%'")
+    If $bLabel Then WebForm._AddJavascript("gw.setInnerHtml(" & JS(Me.Name & ":l") & "," & JS(Html(Format($fValue, "0%"))) & ")")
+  Endif
+
+End

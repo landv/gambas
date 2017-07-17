@@ -1,0 +1,41 @@
+' Gambas class file
+
+Private $hReport As Report
+
+Public Sub _new()
+
+  Application.MainWindow = Me
+
+End
+
+Public Sub Form_Open()
+
+  Me.Center
+
+End
+
+Public Sub btnReport_Click()
+
+  $hReport = New Report1(Null, LCase(cmbServer.Text))
+  $hReport.Preview()
+
+End
+
+Public Sub btnAbout_Click()
+
+  Message.Info("A simple report example by Fabien Bodard")
+
+End
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnReport2_Click()
+
+  $hReport = New Report3(LCase(cmbServer.Text))
+  $hReport.Preview()
+
+End

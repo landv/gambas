@@ -1,0 +1,29 @@
+' Gambas class file
+
+' 'Private hMap As New Map
+' 'Private hImgCache As Image
+ Public Sub _new()
+ ReportDrawingArea1.BoxShadow.XOffset = "1mm"
+ ReportDrawingArea1.BoxShadow.YOffset = "1mm"
+ ReportDrawingArea1.BoxShadow.Color = Color.Gray
+ ReportDrawingArea1.BoxShadow.Blur = "1mm"
+' '   
+' '   hMap.AddTile("gg", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "145"]).SubDomains = ["0", "1", "2"]
+' ' 
+' '   hmap.Zoom = 17
+' '   'ReportPanel1.DataCount = 200
+ End
+' ' 
+' ' 
+ Public Sub ReportDrawingArea1_Draw(width As Integer, Height As Integer, Index As Integer)
+' ' 
+Draw.FillRect(0, 0, width, height, Color.White)
+' '   'Print width, Height
+' '  'hMap.Resize(Width, Height)
+' '  'If Paint.Device Is Printer Then Stop
+' '  hMap.Center = MapPoint(Geo.SexToDec("45°31'33,33''N"), Geo.SexToDec("0°18'43,50''W"))
+' '     'hMap.Center = MapPoint(Geo.SexToDec(Str(CInt(Rnd(30, 45))) & "°31'33,33''N"), Geo.SexToDec("0°18'43,50''W"))
+' '  'If Not hImgCache Then 
+' '  hImgCache = hMap.Grab(hMap.Bounds, width / ReportUnits.DesktopScale, Height / ReportUnits.DesktopScale, 0, 18)
+' '  Draw.Image(hImgCache, 0, 0, width, Height)
+End

@@ -1,0 +1,102 @@
+' Gambas class file
+
+' This program is free software: you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation, either version 2 of the License, or
+' (at your option) any later version.
+
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+
+Inherits POPClient
+
+''Socket instance
+Public sSocket As New Socket As "Client"
+
+Public Sub _new()
+
+  'Wait 10 seconds before timing out
+  sSocket.Timeout = 10000
+
+  sSocket.EndOfLine = gb.Windows
+  
+  Me.SetStream(sSocket)
+
+End
+
+''Raised when the socket is ready to connect. Starts the timer.
+Public Sub Client_Ready()
+
+  'Debug "Connected to remote host " & sSocket.Path
+
+End
+
+''Raised when the server closes the socket.
+Public Sub Client_Closed()
+
+  Debug "Connection Closed by foreign host."
+
+End
+
+''Raised when the host has been resolved.
+Public Sub Client_Found()
+
+  'Debug "Host Found. Connecting..."
+
+End
+
+''Raised when an error occurs
+Public Sub Client_Error()
+
+  Select Case sSocket.Status
+
+    Case Net.CannotCreateSocket
+      Error.Raise("The system does not allow to create a socket")
+
+    Case Net.HostNotFound
+      Error.Raise("Host not Found")
+
+    Case Net.ConnectionRefused
+      Error.Raise("Unable to Connect. Connection Refused")
+
+    Case Net.CannotRead
+      Error.Raise("Error Reading Data")
+
+    Case Net.CannotWrite
+      Error.Raise("Error Writing Data")
+
+  End Select
+
+End
+
+''Connect to Host trough Port
+Public Sub Connect(Host As String, Port As Integer)
+
+  sSocket.Connect(Host, Port)
+  sSocket.Blocking = True
+
+  'Debug "Looking up host name..."
+
+  'Loop until the socket is connected and ready
+  Do While (sSocket.Status <> Net.Connected And sSocket.Status > 0)
+    Wait 0.1
+  Loop
+
+End
+
+''Close the socket. No further data can be sent or read.
+Public Sub Disconnect()
+
+  Try Close sSocket
+  'Debug "Connection closed by user"
+
+End
+
+''Send data to the server.
+Public Function Send(Data As String, Multiline As Boolean) As String
+
+  If sSocket.Status = Net.Connected Then Return Super.Send(Data, Multiline)
+
+End

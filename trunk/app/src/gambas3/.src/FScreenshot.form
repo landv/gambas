@@ -1,0 +1,41 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,31,7)
+  Action = "screenshot"
+  Text = ("Take screenshot")
+  Icon = Picture["icon:/small/camera"]
+  Border = False
+  Stacking = Window.Above
+  SkipTaskbar = True
+  Arrangement = Arrange.Fill
+  { Panel1 Panel
+    MoveScaled(0,0,30,7)
+    Arrangement = Arrange.Horizontal
+    Border = Border.Plain
+    { btnTakeScreenshot Button
+      MoveScaled(0,0,23,7)
+      Background = Color.TextBackground
+      Expand = True
+      Text = ("Take screenshot")
+      Picture = Picture["icon:/large/camera"]
+      Border = False
+    }
+    { VBox1 VBox
+      MoveScaled(25,0,3,7)
+      { btnClose ToolButton
+        MoveScaled(0,0,3,3)
+        Picture = Picture["icon:/small/close"]
+      }
+    }
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action screenshot
+    Text = "Take screenshot"
+    Picture = "icon:/small/camera"
+  }
+}

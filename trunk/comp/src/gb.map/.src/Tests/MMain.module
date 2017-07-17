@@ -1,0 +1,24 @@
+' Gambas module file
+
+Public Sub Main()
+Dim hpoint As MapPoint
+hpoint = MapPoint(Geo.SexToDec("45°31'32.1''N"), Geo.SexToDec("0°18'33.8''W"))
+'   Dim ars As String[]
+'   Dim sPath As String = User.Home &/ ".cache/gb.map/GMapCache"
+'   Dim s As String
+'   Dim fSince As Float = 5
+' ars = Dir(sPath, "*.png", gb.File)
+' 
+' 
+' 'Print CFloat(Date(-4801, 1, 1))
+' Print CFloat(Time(Now))
+' For Each s In ars
+' Print Now, Stat(sPath &/ s).LastModified
+' Print Int(CFloat(Now)), Int(CFloat(Stat(sPath &/ s).LastModified))
+' Print DateDiff(Now(), Stat(sPath &/ s).LastModified, gb.Day)
+' Print Int(CFloat(Now)) - Int(CFloat(Stat(sPath &/ s).LastModified))
+' 'Print sPath &/ s, Stat(sPath &/ s).LastChange, Stat(sPath &/ s).LastModified
+' 
+' Next
+End
+

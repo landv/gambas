@@ -1,0 +1,115 @@
+' Gambas class file
+
+Export
+
+Property Count As Integer
+
+Event _Fake
+
+Private $aColumns As New _WebTableColumn[]
+
+Private Sub GetTable() As WebTable
+  
+  Return Object.Parent(Me)
+  
+End
+
+
+Private Function Count_Read() As Integer
+
+  Return $aColumns.Count
+
+End
+
+Private Sub Count_Write(Value As Integer)
+
+  Dim iOldCount As Integer = $aColumns.Count
+  Dim I As Integer
+  
+  If Value = iOldCount Then Return
+  
+  Try $aColumns.Resize(Value)
+  If Error Then Error.Raise("Bad argument")
+  
+  If Value > iOldCount Then
+    For I = iOldCount To Value - 1
+      $aColumns[I] = New _WebTableColumn As "Column"
+      $aColumns[I]._Column = I
+    Next
+  Endif
+  
+  GetTable()._SetProperty("#count", Value)
+
+End
+
+Public Sub _Render()
+  
+  Dim hTable As WebTable = GetTable()
+  Dim hCol As _WebTableColumn
+  Dim iMode As Integer
+  Dim NX As Integer
+  Dim bSortable As Boolean = hTable.Sortable
+  Dim iSortColumn As Integer = hTable.SortColumn
+  Dim I As Integer
+  Dim bSort As Boolean
+  
+  Print "<thead><tr>";
+  
+  iMode = hTable.Mode
+  If iMode And If hTable.ShowCheck Then
+    Print "<th><div>";
+    If iMode = Select.Multiple Then
+      Print "<input type=\"checkbox\"";
+      Print GetTable()._GetUpdateJS("onchange", "!!", "this.checked");
+      If GetTable()._IsEverythingSelected() Then Print " checked";
+      Print ">"
+    Endif
+    Print "</div></th>"
+  Endif
+  
+  For Each hCol In $aColumns
+    If hCol.Expand Then Inc NX
+  Next
+  
+  For I = 0 To $aColumns.Max
+    
+    hCol = $aColumns[I]
+    If hCol.Hidden Then Continue
+    
+    If bSortable And If hCol.Sortable Then
+      bSort = True
+    Else
+      bSort = False
+    Endif
+    
+    Print "<th";
+    If hCol.Expand Then 
+      Print " width=\""; 100 \ NX; "%\"";
+    Else If hCol.Width Then
+      Print " style=\"min-width:"; hCol.Width; ";\"";
+    Endif
+    If Not hCol.Wrap Then Print " nowrap";
+    If bSortable And If hCol.Sortable Then 
+      Print hTable._GetUpdateJS("onclick", "#sort", CStr(I));
+      Print " class=\"gw-table-sortable\"";
+    Endif
+    Print ">";
+    If bSort And If I = iSortColumn Then
+      Print "<img class=\"gw-table-sort\" src=\""; Application.Root &/ If(hTable.SortOrder = gb.Descent, "gw-arrow-up.png", "gw-arrow-down.png"); "\">";
+    Endif
+    Print "<div";
+    hCol._PrintAlignment()
+    Print ">";
+    Print Html(hCol.Text);
+    Print "</div></th>"
+  Next
+  
+  Print "</tr></thead>"
+  
+End
+
+Public Sub _get(Index As Integer) As _WebTableColumn
+  
+  Return $aColumns[Index]
+  
+End

@@ -1,0 +1,22 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,39,47)
+  Persistent = True
+  Resizable = False
+  Arrangement = Arrange.Fill
+  { panProc Panel
+    MoveScaled(3,4,31,39)
+    Background = Color.TextBackground
+    Arrangement = Arrange.Fill
+    Border = Border.Plain
+    { gvwProc GridView
+      MoveScaled(4,3,25,30)
+      Tracking = True
+      Mouse = Mouse.Pointing
+      Border = False
+      Grid = False
+      Padding = 0
+    }
+  }
+}

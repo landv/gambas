@@ -1,0 +1,65 @@
+' Gambas class file
+
+Private $sRutine As String
+Private $bEdit As Boolean = False
+
+Public Sub _new(Optional Rutine As String)
+
+  If Rutine Then
+    $sRutine = Rutine
+    $bEdit = True
+  Endif
+  txtName.Text = $sRutine
+
+End
+
+Public Sub Form_Open()
+
+  If $bEdit Then
+    Me.Text = ("Edit Routine")
+    lblTitle.Text = Me.Text
+    txtName.Enabled = False
+    txtParameters.Text = modMain.$Connection.MySQL.Routines.Parameters($sRutine)
+    txtReturns.Text = modMain.$Connection.MySQL.Routines.Returns($sRutine)
+    txtData.Text = modMain.$Connection.MySQL.Routines.Definition($sRutine)
+  Else
+   txtData.Text = "BEGIN\n  \nEND"
+  Endif
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close()
+
+End
+
+Public Sub tbnOK_Click()
+
+  If $bEdit Then
+    modMain.$Connection.MySQL.Routines.Modify($sRutine, txtData.Text, Split(Trim(txtParameters.Text)), txtReturns.Text)
+  Else
+    modMain.$Connection.MySQL.Routines.Add(txtName.Text, txtData.Text, Split(Trim(txtParameters.Text)), txtReturns.Text)
+  Endif
+  Me.Close()
+  Catch
+    modMain.Error()
+
+End
+
+Public Sub btnClue_Click()
+
+  If txtName.Text = "FooProcedure" Then
+    txtName.Text = "FooFunction"
+    txtParameters.Text = "Param1 INT,Param2 VARCHAR(200)"
+    txtReturns.Text = "INT"
+    txtData.Text = "BEGIN\n  SELECT `User` FROM `mysql`.`user` WHERE `User` = `Param2`;\n"
+    txtData.Text &= "  RETURN `Param1`\nEND"
+  Else
+    txtName.Text = "FooProcedure"
+    txtParameters.Text = "Param1 INT,Param2 VARCHAR(200)"
+    txtReturns.Text = ""
+    txtData.Text = "BEGIN\n  SELECT `User` FROM `mysql`.`user` WHERE `User` = `Param2`;\nEND"
+  Endif
+
+End

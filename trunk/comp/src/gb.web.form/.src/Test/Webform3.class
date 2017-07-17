@@ -1,0 +1,75 @@
+' Gambas class file
+
+
+Public Sub _new()
+
+  Dim I As Integer
+  
+  WebForm.Debug = True
+  
+  WebTable1.Columns.Count = 12
+  For I = 0 To WebTable1.Columns.Count - 1
+    WebTable1.Columns[I].Text = Chr$(65 + I)
+    WebTable1.Columns[I].Wrap = False
+    WebTable1.Columns[I].Sortable = I Mod 3
+  Next
+  'WebTable1.Columns[3].Expand = True
+  
+  WebTable1.Count = 1000
+  'WebTable1.Select(2, 3)
+
+End
+
+Public Sub WebForm_Open()
+  
+End
+
+
+Public Sub WebTable1_Data(Row As Integer, Column As Integer, Data As WebTableData)
+
+  Data.Text = "This is the " & CStr(Row) & ":" & CStr(Column) & " cell"
+  'Data.Text = 1 / 0
+
+End
+
+Public Sub WebContainer1_Render()
+
+  Dim sKey As String
+  Dim bTable As Boolean
+  Dim bDark As Boolean
+  
+  If Session.Id Then
+    
+    For Each sKey In Session.Keys
+      If Not bTable Then
+        Print "<table border=\"0\" cellspacing=\"0\" cellpadding=\"2\" style=\"font-size:x-small;border-collapse:collapse;border: solid 1px #C0C0C0;\">"
+        bTable = True
+      Endif
+      If bDark Then
+        Print "<tr style=\"background:#F0F0F0;\">"
+      Else
+        Print "<tr>"
+      Endif
+      Print "<td>"; Html(sKey); "</td><td>:</td>";
+      Print "<td><tt>"; Html(JSON.Encode(Session[sKey])); "</tt></td>"
+      Print "</tr>"
+      bDark = Not bDark
+    Next
+    
+    If bTable Then Print "</table>"
+    
+  Endif
+
+End
+
+Public Sub WebButton1_Click()
+
+  Message.Warning("Ceci est une table avec " & WebTable1.Count & " éléments !")
+
+End
+
+Public Sub WebTable1_Select()
+
+  WebForm.Print("Select: " & WebTable1.Selection.Count)
+
+End

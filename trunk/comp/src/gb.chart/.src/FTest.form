@@ -1,0 +1,234 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,111,90)
+  Text = ("")
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Padding = 5
+  { HBox1 HBox
+    MoveScaled(2,2,105,81)
+    Expand = True
+    Spacing = True
+    { DrawingArea1 DrawingArea
+      MoveScaled(1,4,61,61)
+      Background = &HFFFFFF&
+      Expand = True
+    }
+    { TabStrip1 TabStrip
+      MoveScaled(63,2,44,79)
+      Arrangement = Arrange.Vertical
+      Spacing = True
+      Padding = 5
+      Count = 4
+      Index = 0
+      Text = ("Data")
+      { tvdata TableView
+        MoveScaled(2,3,38,28)
+      }
+      { Button1 Button
+        MoveScaled(2,32,18,4)
+        Text = ("Add a Row")
+      }
+      { Button2 Button
+        MoveScaled(3,37,18,4)
+        Text = ("Remove a Row")
+      }
+      { Separator1 Separator
+        MoveScaled(2,41,36,4)
+      }
+      { Button3 Button
+        MoveScaled(4,44,18,4)
+        Text = ("Add a Dataset")
+      }
+      { Button4 Button
+        MoveScaled(6,51,18,4)
+        Text = ("Remove a Dataset")
+      }
+      { Panel1 Panel
+        MoveScaled(1,57,38,16)
+        Expand = True
+        { Label7 Label
+          MoveScaled(2,4,10,3)
+          Text = ("MinY")
+        }
+        { Label8 Label
+          MoveScaled(2,8,10,3)
+          Text = ("MaxY")
+        }
+        { Label9 Label
+          MoveScaled(2,12,10,3)
+          Text = ("StepY")
+        }
+        { spMin SpinBox
+          MoveScaled(18,4,11,3)
+        }
+        { spMax SpinBox
+          MoveScaled(18,8,11,3)
+        }
+        { spStep SpinBox
+          MoveScaled(18,12,11,3)
+        }
+        { CheckBox10 CheckBox
+          MoveScaled(2,1,23,1)
+          Text = ("AutoScale Yaxe")
+        }
+      }
+      Index = 1
+      Text = ("Chart Style")
+      { Label2 Label
+        MoveScaled(1,2,11,3)
+        Text = ("Style")
+      }
+      { ScrollView1 ScrollView
+        MoveScaled(1,5,63,18)
+        Arrangement = Arrange.Row
+        Spacing = True
+        Padding = 5
+        ScrollBar = Scroll.Horizontal
+      }
+      { Label3 Label
+        MoveScaled(1,25,11,3)
+        Text = ("SubStyle")
+      }
+      { ScrollView2 ScrollView
+        MoveScaled(1,28,63,18)
+        Arrangement = Arrange.Row
+        Spacing = True
+        Padding = 5
+      }
+      Index = 2
+      Text = ("Other")
+      { Frame3 Frame
+        MoveScaled(2,3,38,25)
+        Text = ("General")
+        { CheckBox2 CheckBox
+          MoveScaled(2,4,22,4)
+          Text = ("Show Title")
+          Value = CheckBox.True
+        }
+        { Label4 Label
+          MoveScaled(2,17,16,3)
+          Text = ("BackColor")
+        }
+        { ColorButton1 ColorButton
+          MoveScaled(17,16,9,4)
+        }
+        { CheckBox7 CheckBox
+          MoveScaled(2,13,19,3)
+          Text = ("Chart Border")
+          Value = CheckBox.True
+        }
+        { Label6 Label
+          MoveScaled(2,9,7,3)
+          Text = ("Title")
+        }
+        { txtChart TextBox
+          MoveScaled(8,9,19,3)
+          Text = ("TextBox1")
+        }
+        { btnTitleFont Button
+          MoveScaled(27,9,4,2)
+          Text = ("Button7")
+          Picture = Picture["icon:/16/font"]
+        }
+        { CheckBox8 CheckBox
+          MoveScaled(2,21,28,3)
+          Text = ("Proportional fonts")
+          Value = CheckBox.True
+        }
+      }
+      { Frame1 Frame
+        MoveScaled(3,28,38,17)
+        Text = ("Legend")
+        { CheckBox1 CheckBox
+          MoveScaled(1,3,30,3)
+          Text = ("Show Legend")
+          Value = CheckBox.True
+        }
+        { ComboBox1 ComboBox
+          MoveScaled(1,11,25,4)
+          Text = ("")
+          ReadOnly = True
+          List = [("Right"), ("Bottom")]
+        }
+        { Label5 Label
+          MoveScaled(1,7,7,3)
+          Text = ("Title")
+        }
+        { txtLegend TextBox
+          MoveScaled(8,7,19,3)
+          Text = ("TextBox1")
+        }
+        { btnLegFont Button
+          MoveScaled(27,7,4,2)
+          Text = ("Button7")
+          Picture = Picture["icon:/16/font"]
+        }
+      }
+      { Frame2 Frame
+        MoveScaled(3,46,37,26)
+        Text = ("Axes")
+        { CheckBox3 CheckBox
+          MoveScaled(2,3,30,3)
+          Text = ("Show X Labels")
+          Value = CheckBox.True
+        }
+        { CheckBox4 CheckBox
+          MoveScaled(2,12,30,3)
+          Text = ("Show Y Labels")
+          Value = CheckBox.True
+        }
+        { CheckBox5 CheckBox
+          MoveScaled(2,17,30,3)
+          Text = ("Show Y Interlines")
+          Value = CheckBox.True
+        }
+        { btnXFont Button
+          MoveScaled(30,2,4,2)
+          Text = ("Button7")
+          Picture = Picture["icon:/16/font"]
+        }
+        { btnYFont Button
+          MoveScaled(30,11,4,2)
+          Text = ("Button7")
+          Picture = Picture["icon:/16/font"]
+        }
+        { CheckBox9 CheckBox
+          MoveScaled(2,8,24,2)
+          Text = ("X Steps Arrange")
+        }
+        { CheckBox11 CheckBox
+          MoveScaled(2,22,30,3)
+          Text = ("Show Data labels")
+          Value = CheckBox.True
+        }
+      }
+      Index = 3
+      Text = ("Colors")
+      { CheckBox6 CheckBox
+        MoveScaled(1,3,26,1)
+        Text = ("Auto")
+      }
+      { ScrollView3 ScrollView
+        MoveScaled(1,6,29,44)
+        Arrangement = Arrange.Vertical
+        ScrollBar = Scroll.Vertical
+      }
+      { Button5 Button
+        MoveScaled(31,10,9,5)
+        Text = ("Add")
+      }
+      { Button6 Button
+        MoveScaled(31,16,9,5)
+        Text = ("Remove")
+      }
+      Index = 0
+    }
+  }
+  { Label1 Label
+    MoveScaled(7,84,96,4)
+    Text = ("")
+    Border = Border.Etched
+  }
+}

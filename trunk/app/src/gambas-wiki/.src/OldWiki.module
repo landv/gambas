@@ -1,0 +1,599 @@
+' Gambas module file
+
+Private $hConn As Connection
+Private $bHasIndex As Boolean
+Private $sPath As String
+Private $bGotClasses As Boolean
+Private $bGotSymbols As Boolean
+
+Private $cImage As Collection
+Private $sLastLevel As String
+
+Private Sub OpenDatabase()
+
+  If $hConn Then Return
+
+  $hConn = New Connection
+  $hConn.Type = "mysql"
+  $hConn.Name = "wiki"
+  $hConn.User = "root"
+  $hConn.Open
+
+End
+
+Private Sub SolvePath(sPath As String) As String
+
+  Return Main.MakeAbsolute(sPath, $sPath)
+
+End
+
+Public Sub GetTitle(sPath As String) As String
+  
+  Dim rPage As Result
+  Dim sTitle As String
+  
+  OpenDatabase
+  
+  If Not sPath Then sPath = "/"
+  
+  rPage = $hConn.Find("page", "sLang = &1 AND sPath = &2", Main.Lang, sPath)
+  If rPage.Available Then 
+    sTitle = rPage!stitle
+    If sTitle Ends "#3" Then sTitle = Left(sTitle, -2)
+    Return sTitle
+  Endif
+  
+Catch
+  
+End
+
+
+Public Sub GetPage(sPath As String) As String
+  
+  Dim rPage As Result
+  Dim sLine As String
+  Dim aResult As String[]
+  Dim iIgnore As Integer
+  Dim iLevel As Integer
+  Dim aLevel As New String[]
+  Dim sLevel As String
+  Dim bCode As Boolean
+  Dim sTitle As String
+  
+  OpenDatabase
+  
+  If Not sPath Then sPath = "/"
+  $sPath = sPath
+  
+  rPage = $hConn.Find("page", "sLang = &1 AND sPath = &2", Main.Lang, sPath)
+  If Not rPage.Available Then Return
+
+  'Return rPage!sdesc
+
+  $bHasIndex = False
+  $sLastLevel = ""
+
+  sTitle = rPage!stitle
+  If sTitle Ends "#3" Then sTitle = Left(sTitle, -2)
+  
+  If Left(sTitle) = "@" Then Return "--> " & String.LCase(Replace(Mid$(sTitle, 2), "/comp/gb.qt/", "/comp/gb.qt4/")) & "\n"
+  
+  aResult = ["# " & sTitle, ""]
+
+  If Main.Symbol Then
+    aResult.Add("@{syntax}")
+    aResult.Add("")
+  Else If Main.Class Then
+    $bGotSymbols = False
+  Else If Main.Component Then
+    $bGotClasses = False
+  Endif
+
+  For Each sLine In Split(rPage!sdesc, "\n")
+    
+    sLine = RTrim(sLine)
+    
+    If Left(sLine) = "{" And If Not bCode Then
+      sLevel = LCase(Trim(Mid$(sLine, 2)))
+      If sLevel = "syntax no-title" Then sLevel = "syntax"
+      aLevel.Push(sLevel)
+      If sLevel Begins "only " And If sLevel <> "only 3.0" Then
+        Inc iIgnore
+      Endif
+      Inc iLevel
+      If iIgnore = 0 And If sLevel <> "only 3.0" Then 
+        If sLevel = "error" Then 
+          aResult.Add("### " & ("Errors"))
+        Else If sLevel = "example" Then
+          If $sLastLevel <> "example" Then aResult.Add("### " & ("Examples"))
+        Else If sLevel = "seealso" Then
+          aResult.Add("### " & ("See also"))
+        Endif
+        
+        If sLevel = "example" Or If sLevel = "code" Then 
+          bCode = True
+        Else If sLevel = "error" Then
+          aResult.Add("[[ " & sLevel)
+          aResult.Add(("Message"))
+          aResult.Add("--")
+          aResult.Add(("Description"))
+          aResult.Add("==")
+        Else
+          aResult.Add("[[ " & sLevel)
+        Endif
+      Endif
+      $sLastLevel = sLevel
+      Continue
+    Else If sLine = "}" And If aLevel.Count Then
+      sLevel = aLevel.Pop()
+      If iIgnore = 0 And If sLevel <> "only 3.0" Then 
+        If sLevel = "example" Or If sLevel = "code" Then 
+          bCode = False
+        Else
+          aResult.Add("]]")
+        Endif
+      Endif
+      Dec iLevel
+      If sLevel Begins "only" And sLevel <> "only 3.0" Then Dec iIgnore
+      Continue
+    Else If sLine = "==" Then
+      bCode = Not bCode
+      Continue
+    Endif
+    
+    If iIgnore Then Continue
+    
+    If bCode Then
+      If sLine = "--" Then 
+        aResult.Add("    ----")
+      Else If sLine Begins "<hr>" Then
+        aResult.Add("    ----")
+        aResult.Add("    " & Mid$(sLine, 5))
+      Else
+        If RTrim$(sLine) = "\\}" Then sLine = "}"
+        aResult.Add("    " & sLine)
+      Endif
+    Else
+      If aLevel.Count Then
+        sLevel = aLevel[aLevel.Max]
+      Else
+        sLevel = ""
+      Endif
+      If Not Trim(sLine) Then
+        aResult.Add("")
+      Else
+        aResult.Insert(Split(Convert(sLine, sLevel), "\n"))
+      Endif
+    Endif
+    
+  Next
+
+  If Main.Component And If Not Main.Class And If Not $bGotClasses Then aResult.Add("@{classes}")
+  If Main.Class And If Not Main.Symbol And If Not $bGotSymbols Then aResult.Add("@{symbols}")
+  
+  Return aResult.Join("\n")
+  
+End
+
+Private Sub IsWordLimit(sCar As String) As Boolean
+
+  Return InStr("'_*=/.,;?!:()<> ", sCar) > 0
+  If IsLetter(sCar) Or If IsDigit(sCar) Then Return False
+  Return True
+
+End
+
+Private Sub Convert(sLine As String, sLevel As String) As String
+
+  Dim sResult As String
+  Dim I As Integer
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim sLink As String
+  Dim iPos3 As Integer
+  Dim sTitle As String
+  Dim sCar As String
+  Dim sWait As String
+  Dim sQuote As String
+  Dim bCloseLink As Boolean
+  Dim bCode As Boolean
+  Dim bQuote As Boolean
+  Dim bUnderline As Boolean
+  Dim bItalic As Boolean
+  Dim bBold As Boolean
+  Dim iLevel As Integer
+  Dim bAllowStart As Boolean
+  Dim bAllowEnd As Boolean
+  Dim sRest As String
+
+  If sLevel = "example" Then
+    If sLine = "-" Then Return "----"
+    If sLine Begins "<hr>" Then
+      sLine = Mid$(sLine, 5)
+      sResult = "----\n"
+    Endif
+  Endif
+  
+  If sLine = "-" Then Return "--"
+  If sLine = "][" Then Return "=="
+  If sLine = "--" Then Return "----"
+  
+  If sLine Begins "<!--" And If sLine Ends "-->" Then Return
+
+  If sLine Begins "@" Then
+    
+    If sLine = "@title-index" Then 
+      $bHasIndex = True
+      Return "@{index}"
+    Else If sLine Begins "@class-stat" Then
+      Return "@{stat}"
+    Else If sLine = "@no-autolink" Then
+      Return
+    Endif
+    
+    sLine = Trim(Mid$(sLine, 2))
+    
+    If sLine = "symbols" Then 
+      $bGotSymbols = True
+    Else If sLine = "classes" Then 
+      $bGotClasses = True
+    Endif
+    
+    Return "@{" & sLine & "}"
+    
+  Endif
+
+  If sLine Begins "* " Then 
+    sResult = "* "
+    sLine = Mid$(sLine, 3)
+  Else If sLine Begins "** " Then 
+    sResult = "  * "
+    sLine = Mid$(sLine, 4)
+  Else If sLine Begins "# " Then 
+    sResult = "+ "
+    sLine = Mid$(sLine, 3)
+  Else If sLine Begins "## " Then 
+    sResult = "  + "
+    sLine = Mid$(sLine, 4)
+  Else If sLine Begins "+" Then
+    Repeat
+      sLine = Mid$(sLine, 2)
+      sResult &= "#"
+    Until sLine Not Begins "+"
+    sResult &= "# "
+    sLine = Trim(sLine)
+    If $bHasIndex Then 
+      sResult &= "["
+      bCloseLink = True
+    Endif
+    $sLastLevel = ""
+  Endif
+
+  If sLevel = "syntax" Then Goto NO_LINK
+
+  Do
+    
+    iPos = InStr(sLine, "[", iPos + 1)
+    If iPos = 0 Then Break
+    If iPos > 1 And If Mid$(sLine, iPos - 1, 1) = "\\" Then Continue
+    If Mid$(sLine, iPos + 1, 1) = " " Or If Mid$(sLine, iPos + 1, 1) = "]" Then Continue
+    
+    iPos2 = iPos
+    iLevel = 0
+    Do
+      Inc iPos2
+      If iPos2 > Len(sLine) Then
+        iPos2 = 0
+        Break
+      Endif
+      sCar = Mid$(sLine, iPos2, 1)
+      If sCar = "[" Then
+        Inc iLevel
+      Else If sCar = "]" Then
+        If iLevel = 0 Then Break
+        Dec iLevel
+      Endif
+    Loop
+    
+    If iPos2 = 0 Then Break
+    
+    sLink = Mid$(sLine, iPos + 1, iPos2 - iPos - 1)
+    iPos3 = InStr(sLink, "|")
+    If iPos3 Then
+      sTitle = Mid$(sLink, iPos3 + 1)
+      sLink = Left$(sLink, iPos3 - 1)
+    Else
+      sTitle = ""
+    Endif
+    
+    If sLink Not Begins "/" And If sLink Not Begins "./" And If sLink Not Begins "../" And If sLink Not Like "http*://*" Then
+      If InStr(sLink, ".") = 0 Or If InStr(sLink, "/") Then sLink = "/" & sLink
+    Endif
+    
+    If sLink Begins "/" Then sLink = String.LCase(sLink)
+    
+    If sLink Ends "?v3" Or If sLink Ends "&v3" Then sLink = Left(sLink, -3)
+    If sLink Ends "/gb.qt" Then 
+      sLink &= "4"
+    Else
+      sLink = Replace(sLink, "/gb.qt/", "/gb.qt4/")
+    Endif
+    
+    If Left(File.Name(sLink)) = ":" Then
+      sTitle = ""
+      sLink = Main.MakeAbsolute(sLink, Main.Path)
+      If $cImage And If $cImage.Exist(sLink) Then
+        sLink = $cImage[sLink]
+      Else
+        sLink = File.SetName(sLink, Mid$(File.Name(sLink), 2) & ".png")
+      Endif
+      If sLink Begins (Main.Path &/ "/") Then 
+        sLink = "./" &/ Mid$(sLink, Len(Main.Path) + 1)
+      Endif
+    Endif
+      
+    If InStr(sLink, "/def/") And If sLevel <> "seealso" Then
+      
+      sLink = GetTitle(SolvePath(sLink))
+      
+    Else
+    
+      If sLink Not Like "*://*" Then sLink = String.LCase(sLink)
+      
+      If sTitle Then 
+        sLink = "[" & Trim(sTitle) & "] (" & sLink & ")"
+      Else
+        sLink = Replace(sLink, "\\]", "]")
+        sLink = "[" & Trim(sLink) & "]"
+      Endif
+      
+    Endif
+    
+    If sLevel = "seealso" Then 
+      If Trim(sLink) Then
+        sLink = "* " & sLink
+        If iPos > 1 Then sLink = "\n" & sLink
+      Endif
+    Endif
+    
+    If Left(LTrim(Mid(sLine, iPos2 + 1))) = "(" Then 
+      sRest = Mid$(sLine, iPos2 + 1)
+      sLine = Left$(sLine, iPos - 1) & sLink & Space$(Len(sRest) - Len(LTrim(sRest))) & "\\" & LTrim(sRest)
+    Else
+      sLine = Left$(sLine, iPos - 1) & sLink & Mid$(sLine, iPos2 + 1)
+    Endif
+    iPos += Len(sLink)
+      
+  Loop
+
+NO_LINK:
+
+  Do
+    Inc I
+    'If I > String.Len(sLine) Then Break
+    sCar = String.Mid$(sLine, I, 1)
+    If Not sCar Then Break
+    
+    If sCar = "\\" Then
+      Inc I
+      sCar = String.Mid$(sLine, I, 1)
+      If sQuote Or If sCar Not Like "[/=a-zA-Z0-9_]" Then sCar = "\\" & sCar 
+      Goto ADD_CHAR
+    Endif
+    
+    If sWait Then
+      If sCar = "'" Then
+        If sQuote = "'" Then
+          sQuote = ""
+        Else
+          sQuote = sCar
+        Endif
+      Else If sCar = "\"" Then
+        If sQuote = "\"" Then
+          sQuote = ""
+        Else
+          sQuote = sCar
+        Endif
+      Endif
+    Endif
+    
+    If sWait Then
+      sResult &= sCar
+      If Not sQuote And If sCar = sWait Then 
+        sWait = ""
+        If sCar = "]" Then
+          If Left(LTrim(String.Mid$(sLine, I + 1))) = "(" Then
+            sWait = ")"
+          Endif
+        Endif
+      Endif
+      Continue
+    Endif
+    
+    ' If I > 1 And If I < String.Len(sLine) Then
+    '   If IsWordLimit(String.Mid$(sLine, I - 1, 1)) Then
+    '     If IsWordLimit(String.Mid$(sLine, I + 1, 1)) Then
+    '       Goto ADD_CHAR
+    '     Endif
+    '   Endif
+    ' Endif
+    
+    bAllowStart = False
+    bAllowEnd = False
+
+    If I = 1 Or If IsWordLimit(String.Mid$(sLine, I - 1, 1)) Then
+      If I < String.Len(sLine) And If String.Mid$(sLine, I + 1, 1) <> " " Then
+        bAllowStart = True
+      Endif
+    Endif
+    
+    If I = String.Len(sLine) Or If IsWordLimit(String.Mid$(sLine, I + 1, 1)) Then
+      If I > 1 And If String.Mid$(sLine, I - 1, 1) <> " " Then
+        bAllowEnd = True
+      Endif
+    Endif
+    
+    If sCar = "=" Then
+      If bCode And If Not bAllowEnd Then Goto ADD_CHAR
+      If Not bCode And If Not bAllowStart Then Goto ADD_CHAR
+      bCode = Not bCode
+      If bCode Then 'And If InStr("*_[", String.Mid$(sLine, I + 1, 1)) And If String.Mid$(sLine, I + 2, 1) <> "=" Then
+        sCar = "'"
+        bQuote = True
+      Else If Not bCode And If bQuote Then
+        sCar = "'"
+        bQuote = False
+      Else
+        sCar = "`"
+        bQuote = False
+      Endif
+    Else If sCar = "_" Then
+      If bUnderline And If Not bAllowEnd Then Goto ADD_CHAR
+      If Not bUnderline And If Not bAllowStart Then 
+        If I = String.Len(sLine) Then sCar = "\\"
+        Goto ADD_CHAR
+      Endif
+      bUnderLine = Not bUnderLine
+      sCar = "~"
+    Else If sCar = "*" Then
+      If bBold And If Not bAllowEnd Then Goto ADD_CHAR
+      If Not bBold And If Not bAllowStart Then Goto ADD_CHAR
+      bBold = Not bBold
+      sCar = "**"
+    Else If sCar = "/" Then
+      If bItalic And If Not bAllowEnd Then Goto ADD_CHAR
+      If Not bItalic And If Not bAllowStart Then Goto ADD_CHAR
+      bItalic = Not bItalic
+      sCar = "*"
+    Else If sCar = "~" Then
+      sCar = "\\~"
+    Else If sCar = "[" Then
+      If sLevel = "syntax" Or String.Mid$(sLine, I + 1, 1) = " " Then
+        sCar = "\\["
+      Else
+        sWait = "]"
+      Endif
+    Else If sCar = "<" Then
+      sWait = ">"
+    Else If sCar = "'" Then
+      If bAllowStart Or If bAllowEnd Then
+        sCar = "\\'"
+      Endif
+    Endif
+    
+  ADD_CHAR:
+    
+    sResult &= sCar
+    
+  Loop
+  
+  If bCloseLink Then sResult &= "]"
+
+  sResult = Replace(sResult, "<br>", "<br/>")
+  sResult = Replace(sResult, "[/comp/gb.web/html]", "HTML")
+
+  Return sResult
+
+End
+
+Public Sub Restore()
+  
+  Dim rPage As Result
+  Dim sPage As String
+  Dim hBlob As Blob
+  Dim sPath As String
+  Dim sExt As String
+  Dim sLang As String
+  Dim aPath As String[]
+  Dim hComp As CComponent
+  Dim hClass As CClassInfo
+  Dim hSym As Variant
+
+  CComponent.Init
+    
+  OpenDatabase()
+  
+  $cImage = New Collection
+  
+  rPage = $hConn.Exec("SELECT * FROM page ORDER BY spath,slang")
+  
+  For Each sLang In Main.Languages
+  
+    Main.SetLanguage(sLang)
+      
+    ' Images processing
+    
+    For Each rPage
+      
+      If rPage!slang <> sLang Then Continue
+      
+      sPath = rPage!spath
+      If Left(File.Name(sPath)) <> ":" Then Continue
+      If sPath Begins "/comp/gb.qt/" Or If sPath = "/comp/gb.qt" Then Continue
+      
+      Try sExt = Scan(rPage!shtml, "*image/*")[1]
+      If Error Then Continue
+      
+      Print sPath;; "("; rPage!slang; ")";; sExt
+      
+      sPath = File.Dir(sPath) &/ Mid$(File.Name(sPath), 2) & "." & sExt
+      $cImage[rPage!spath] = sPath
+      
+      hBlob = rPage!sdata
+      sPath = Main.GetPagePathFrom(sPath)
+      Main.MakeDir(File.Dir(sPath))
+      File.Save(sPath, hBlob.Data)
+      
+    Next
+    
+    For Each rPage
+      
+      If rPage!slang <> sLang Then Continue
+      
+      sPath = rPage!spath
+      If Left(File.Name(sPath)) = ":" Then Continue
+      If sPath Ends ".comment" Then Continue
+      If sPath Begins "/comp/gb.qt/" Or If sPath = "/comp/gb.qt" Then Continue
+      If rPage!stitle Ends "#2" Then Continue
+      
+      Main.Path = sPath
+      Main.Component = ""
+      Main.Class = ""
+      Main.Symbol = ""
+
+      If sPath Begins "/comp/" Then
+        aPath = Split(sPath, "/", "", True)
+        If aPath.Count >= 2 Then 
+          Main.Component = aPath[1]
+          Try hComp = CComponent.Get(Main.Component)
+          If Error Then Continue
+        Endif
+        If aPath.Count >= 3 Then 
+          Main.Class = aPath[2]
+          hClass = hComp[Main.Class]
+          If Not hClass Then Continue
+        Endif
+        If aPath.Count >= 4 Then 
+          Main.Symbol = aPath[3]
+          If Left(Main.Symbol) = "." Then Main.Symbol = ":" & Mid(Main.Symbol, 2)
+          hSym = hClass.Symbols[Main.Symbol]
+          If Not hSym Then Continue
+        Endif
+      Endif
+
+      Print sPath;; "("; rPage!slang; ")"
+
+      sPage = GetPage(sPath)
+      
+      sPath = Main.GetPagePathFrom(sPath)
+      Main.MakeDir(File.Dir(sPath))
+      File.Save(sPath, sPage)
+      File.Save(sPath & "." & Format(Now, "yyyymmddhhnnssuu") & ".admin", sPage)
+      
+    Next
+    
+  Next
+  
+  CComponent.Exit
+  
+End

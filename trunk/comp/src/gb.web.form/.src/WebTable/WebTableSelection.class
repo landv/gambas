@@ -1,0 +1,296 @@
+' Gambas class file
+
+Property Read Count As Integer
+
+Private $aSel As New Integer[]
+Private $bInvert As Boolean
+
+Event _Fake
+
+' Private Sub Dump()
+'   
+'    Dim I As Integer
+'   ' 
+'   ' Print System.Backtrace.Join(" ")
+'   ' 
+'   Print "Selection = ";
+'   For I = 0 To $aSel.Max Step 2
+'     Print "["; $aSel[I]; ","; $aSel[I + 1]; "] ";
+'   Next
+'   Print
+'   
+' End
+' 
+
+Private Sub GetTable() As WebTable
+
+  Return Object.Parent(Me)
+
+End
+
+Public Sub SetProperty()
+  
+  GetTable()._SetProperty("#selection", [$bInvert, $aSel])
+  
+End
+
+
+Public Sub SetSelection(aSel As Integer[], bInvert As Boolean)
+
+  $aSel = aSel
+  $bInvert = bInvert
+  
+End
+
+Public Sub Copy() As WebTableSelection
+  
+  Dim hSel As WebTableSelection = New WebTableSelection
+
+  hSel.SetSelection($aSel.Copy(), $bInvert)
+  Return hSel
+  
+End
+
+Private Sub Add(iStart As Integer, Optional iLength As Integer = 1)
+  
+  Dim I, S, L As Integer
+  
+  For I = 0 To $aSel.Max Step 2
+    
+    S = $aSel[I]
+    L = $aSel[I + 1]
+    
+    If iStart >= S And If iStart <= (S + L) Then
+      $aSel[I + 1] = iStart + iLength - S
+      'Dump
+      Return
+    Else If (iStart + iLength) >= S And If (iStart + iLength) <= (S + L) Then
+      $aSel[I + 1] += $aSel[I] - iStart
+      $aSel[I] = iStart
+      'Dump
+      Return
+    Endif
+    
+  Next
+  
+  $aSel.Add(iStart)
+  $aSel.Add(iLength)
+  'Dump
+  
+End
+
+Private Sub Remove(iStart As Integer, Optional iLength As Integer = 1)
+  
+  Dim I, S, L As Integer
+  
+  I = 0
+  While I < $aSel.Count
+    
+    S = $aSel[I]
+    L = $aSel[I + 1]
+    
+    If (iStart + iLength) > S And If iStart < (S + L) Then 
+      
+      If iStart <= S And If (iStart + iLength) >= (S + L) Then
+        $aSel.Remove(I, 2)
+        Continue
+      Endif
+      
+      If iStart <= S Then
+        $aSel[I + 1] -= iStart + iLength - S
+        $aSel[I] = iStart + iLength
+      Else If (iStart + iLength) >= (S + L) Then
+        $aSel[I + 1] = iStart - S
+      Else
+        $aSel[I + 1] = iStart - S
+        $aSel.Add(iStart + iLength)
+        $aSel.Add(S + L - iStart - iLength)
+      Endif
+      
+    Endif
+    
+    I += 2
+  Wend
+  'Dump
+  
+End
+
+Public Sub Select(iStart As Integer, Optional iLength As Integer = 1)
+  
+  If $bInvert Then
+    Remove(iStart, iLength)
+  Else
+    Add(iStart, iLength)
+  Endif
+  SetProperty
+  
+End
+
+Public Sub Unselect(iStart As Integer, Optional iLength As Integer = 1)
+  
+  If $bInvert Then
+    Add(iStart, iLength)
+  Else
+    Remove(iStart, iLength)
+  Endif
+  SetProperty
+  
+End
+
+
+Public Sub SelectAll()
+  
+  $aSel.Clear
+  $bInvert = True
+  SetProperty
+ 
+End
+
+Public Sub UnselectAll()
+  
+  $aSel.Clear
+  $bInvert = False
+  SetProperty
+  
+End
+
+Public Sub IsSelected(iIndex As Integer) As Boolean
+  
+  Dim I, S, L As Integer  
+  
+  For I = 0 To $aSel.Max Step 2
+    
+    S = $aSel[I]
+    L = $aSel[I + 1]
+    
+    If iIndex >= S And iIndex < (S + L) Then Return Not $bInvert
+    
+  Next
+  
+  Return $bInvert
+  
+End
+
+Public Function GetSelectedRows() As Integer[]
+  
+  Dim aRet As New Integer[]
+  Dim I, J, S, L As Integer
+  
+  If $bInvert Then
+    
+    For I = 0 To GetTable().Max
+      If IsSelected(I) Then aRet.Add(I)
+    Next
+    
+  Else
+  
+    For I = 0 To $aSel.Max Step 2
+      S = $aSel[I]
+      L = $aSel[I + 1]
+      
+      For J = 0 To L - 1
+        aRet.Add(S + J)
+      Next
+    Next
+    
+  Endif
+  
+  Return aRet.Sort()
+
+End
+
+Private Sub Count_Read() As Integer
+  
+  Dim I, N As Integer
+
+  For I = 0 To $aSel.Max Step 2
+    N += $aSel[I + 1]
+  Next
+  
+  If $bInvert Then
+    
+    Return GetTable().Count - N
+    
+  Else
+    
+    Return N
+    
+  Endif
+    
+End
+
+
+
+Public Sub IsEverythingSelected() As Boolean
+  
+  If $bInvert And $aSel.Count = 0 Then Return True
+  
+End
+
+' Public Sub InsertRows(iStart As Integer, iLength As Integer)
+' 
+'   Dim I, S, L As Integer
+'   
+'   For I = 0 To $aSel.Max Step 2
+'     
+'     S = $aSel[i]    
+'     L = $aSel[I + 1]
+'     
+'     If iStart <= S Then
+'       $aSel[I] += iLength
+'     Else If iStart <= (S + L) Then
+'       $aSel[I + 1] = iStart - S
+'       $aSel.Add(iStart + iLength)
+'       $aSel.Add(L - (iStart - S))
+'     Endif
+'     
+'   Next
+'   
+'   'Dump
+' 
+' End
+' 
+' Public Sub RemoveRows(iStart As Integer, iLength As Integer)
+'   
+'   Dim I, S, L As Integer
+'   
+'   I = 0
+'   While I < $aSel.Count
+'     
+'     S = $aSel[I]
+'     L = $aSel[I + 1]
+'     
+'     If (iStart + iLength) <= S Then
+'       $aSel[I] -= iLength
+'     Else If iStart >= (S + L) Then
+'     Else 
+'       If iStart < S Then 
+'         iLength -= (S - iStart)
+'         $aSel[I] = iStart
+'       Endif
+'       $aSel[I + 1] -= iLength - (iStart - S)
+'     Endif
+'     
+'     If $aSel[I + 1] <= 0 Then
+'       $aSel.Remove(I, 2)
+'     Else
+'       I += 2
+'     Endif
+'     
+'   Wend
+'   
+'   'Dump
+'   
+' End
+
+Public Sub GetCurrent() As Integer
+  
+  Dim iCurrent As Integer
+  
+  If $aSel.Count = 2 Then 
+    iCurrent = $aSel[0]
+    If iCurrent < GetTable().Count Then Return iCurrent
+  Endif
+  Return -1
+  
+End

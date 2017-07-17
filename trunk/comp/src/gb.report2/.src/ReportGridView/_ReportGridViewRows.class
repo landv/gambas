@@ -1,0 +1,120 @@
+' Gambas class file
+
+Property Count As Integer
+Property Read Max As Integer
+Property Width, W As String
+Property Resizable As Boolean
+Property Height, H As String
+'Property Border As Border
+
+Private $iCount As Integer
+Private aLineCol As New Collection
+Private $sHeight As String
+Private $sWidth As String
+Private $bResizable As Boolean
+
+
+Private Function Count_Read() As Integer
+
+  Return $iCount
+
+End
+
+Private Sub Count_Write(Value As Integer)
+
+  
+  Dim i As Integer
+  Value = Max(1, Value)
+  If Value < $iCount Then
+    For i = $iCount DownTo Value
+      aLineCol[i - 1] = Null
+    Next
+  Endif
+  
+  $iCount = Value
+
+End
+
+Private Function Max_Read() As Integer
+
+  Return $iCount - 1
+
+End
+
+Private Function Width_Read() As String
+
+  Return $sWidth 
+
+End
+
+Private Sub Width_Write(Value As String)
+
+  $sWidth = Value
+
+End
+
+Private Function Resizable_Read() As Boolean
+
+  Return $bResizable
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  $bResizable = Value
+
+End
+
+Private Function Height_Read() As String
+
+  Return $sHeight
+
+End
+
+Private Sub Height_Write(Value As String)
+
+  $sHeight = Value
+
+End
+
+Public Sub _NormalizeUnits()
+
+  Dim hRow As New _ReportGridViewRow
+  
+  For Each hRow In aLineCol
+    
+    hRow._NormalizeUnits()
+    
+  Next
+  
+End
+
+
+Public Function _GetStrRowHeight(iVal As Integer) As String
+  
+  If aLineCol.Exist(iVal) Then
+    Return aLineCol(iVal).Height
+  Else 
+    Return $sHeight
+  Endif
+  
+End
+
+Public Function _SetStrRowHeight(iVal As Integer, sValue As String)
+  Dim hRow As _ReportGridViewRow
+  If iVal < 0 Then Return
+  If iVal > $iCount - 1 Then Return
+  
+  hRow = aLineCol[iVal]
+  If Not hRow Then 
+    hRow = New _ReportGridViewRow
+    aLineCol[iVal] = hRow
+  Endif
+  hRow._Row = iVal
+  hRow.Height = sValue
+  
+  
+  
+End
+
+

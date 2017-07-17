@@ -1,0 +1,33 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,49,11)
+  Text = ("Select a dimension")
+  Persistent = True
+  Resizable = False
+  Spacing = True
+  Margin = True
+  { cmbUnit ComboBox
+    MoveScaled(18,1,8,4)
+    #Translate = False
+    ReadOnly = True
+    List = ["px", "cm", "mm", "in", "%"]
+  }
+  { btnCancel Button
+    MoveScaled(32,6,16,4)
+    Text = ("Cancel")
+    Cancel = True
+  }
+  { btnOK Button
+    MoveScaled(32,1,16,4)
+    Text = ("OK")
+    Default = True
+  }
+  { btnClear Button
+    MoveScaled(26,1,4,4)
+    Picture = Picture["icon:/small/clear"]
+  }
+  { txtCoord ValueBox
+    MoveScaled(1,1,17,4)
+  }
+}

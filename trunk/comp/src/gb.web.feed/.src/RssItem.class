@@ -1,0 +1,112 @@
+' Gambas class file
+
+''' This class represents a single news item. Create an object of this class, fill its properties
+''' and add it to an existing [Rss](../rss) object.
+'''
+''' All properties of this class are optional, but you have to fill at least Title *or* Description.
+
+Export
+
+'' The title of the news item.
+Public Title As String
+'' A link to the website containing the full content.
+Public {Link} As String
+'' Synopsis of the item. You can use entity-encoded HTML.
+Public Description As String
+'' EMail address of the author.
+Public Author As String
+'' An array of categories for this item.
+''
+'' ## See also
+'' [../../rsscategory]
+Public Categories As RssCategory[]
+'' A URL pointing to a comment page for the item.
+Public Comments As String
+'' Describes a media attachment to this item.
+''
+'' ## See also
+'' [../../rssenclosure]
+Public Enclosure As RssEnclosure
+'' A **G**lobally **U**nique **ID**entifier for this item, e.g. a [permalink](https://en.wikipedia.org/wiki/Permalink)
+'' to the item's full content on your website.
+''
+'' ## See also
+'' [../../rssguid]
+Public Guid As RssGuid
+'' Publication date of this item.
+Public PubDate As Date
+'' If this item comes from another RSS feed, use this property to link to the original feed.
+''
+'' ## See also
+'' [../../rsssource]
+Public Source As RssSource
+
+Public Sub _compare(Other As RssItem) As Integer
+  ' Only up to seconds. The time formatting in RSS is not any finer anyway.
+  Return Sgn(DateDiff(Other.PubDate, PubDate, gb.Second))
+End
+
+Public Sub _Write(hWriter As XmlWriter)
+  Dim hCat As RssCategory
+
+  If Not Title And If Not Description Then Error.Raise(("Title or Description must be set in RssItem"))
+  hWriter.StartElement("item")
+    With hWriter
+      If Title Then .Element("title", Title)
+      If {Link} Then .Element("link", {Link})
+      If Description Then .Element("description", Description)
+      If Author Then .Element("author", Author)
+      If Categories Then
+        For Each hCat In Categories
+          hCat._Write(hWriter)
+        Next
+      Endif
+      If Comments Then .Element("comments", Comments)
+      If Enclosure Then Enclosure._Write(hWriter)
+      If Guid Then Guid._Write(hWriter)
+      If PubDate Then .Element("pubDate", Rss.FormatDate(PubDate))
+      If Source Then Source._Write(hWriter)
+    End With
+  hWriter.EndElement()
+End
+
+Public Sub _Read(hReader As XmlReader)
+  Dim hCat As RssCategory, aCategories As New RssCategory[]
+  Dim iDepth As Integer = hReader.Depth
+
+  hReader.Read()
+  While Rss._NotClosed(hReader, iDepth)
+    Select Case hReader.Node.Name
+      Case "title"
+        Title = Rss._GetText(hReader)
+      Case "link"
+        {Link} = Rss._GetText(hReader)
+      Case "description"
+        Description = Rss._GetText(hReader)
+      Case "author"
+        Author = Rss._GetText(hReader)
+      Case "category"
+        hCat = New RssCategory
+        hCat._Read(hReader)
+        aCategories.Add(hCat)
+      Case "comments"
+        Comments = Rss._GetText(hReader)
+      Case "enclosure"
+        Enclosure = New RssEnclosure
+        Enclosure._Read(hReader)
+      Case "guid"
+        Guid = New RssGuid
+        Guid._Read(hReader)
+      Case "pubDate"
+        PubDate = Rss.ParseDate(Rss._GetText(hReader))
+      Case "source"
+        Source = New RssSource
+        Source._Read(hReader)
+      Default
+        Error.Raise(Subst$(("Unexpected element '&1' in <item>"), hReader.Node.Name))
+    End Select
+    ' XXX: See Rss._ReadChannel() for this construction.
+    If hReader.Node.Type = XmlReaderNodeType.EndElement Then hReader.Read()
+  Wend
+  If aCategories.Count Then Categories = aCategories
+End

@@ -1,0 +1,51 @@
+' Gambas class file
+
+Property Height As String
+Property Text As String
+
+Property _Height As Float
+
+Public _Row As Integer
+Event _Foo
+
+Private Function Height_Read() As String
+
+  
+
+End
+
+Private Sub Height_Write(Value As String)
+
+  
+
+End
+
+Private Function Text_Read() As String
+
+  Return GetView()._GetRowText(_Row)
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  
+
+End
+
+Private Function _Height_Read() As Float
+
+  Return GetView()._GetHeight()
+
+End
+
+Private Sub _Height_Write(Value As Float)
+
+  
+
+End
+
+Private Sub GetView() As _ReportGridViewRows
+  
+  Return Object.Parent(Me)
+  
+End

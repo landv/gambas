@@ -1,0 +1,141 @@
+' Gambas class file
+
+' ==================================================================
+' @Class: TestSuite
+' @Author: R Morgan <rmorgan62@gmail.com>
+' @Date: 03/01/2012
+' @Ver: 0.01
+' @Desc: A framework for running unit and regression tests.
+' ==================================================================
+
+Public numErrors As Integer
+Public msgErrors As New String[]
+Private numTests As Integer
+Public Tests As New Test[]
+Public hasErrors As Boolean
+Public HeaderChar As String = "="
+Public HeaderWidth As Integer = 40
+Public TestHeaderChar As String = "-"
+Public TestHeaderWidth As Integer = 40
+Public Name As String
+
+Public Note As String
+Public NoteHeaderChar As String = "*"
+Public NoteHeaderWidth As Integer = 40
+Public ShowTestNotes As Boolean = False
+
+
+Public Sub AddTest(t As Test)
+  
+  Tests.Add(t)
+  numTests += 1
+  
+End
+
+
+
+Public Procedure ErrorCount() As Integer
+  Dim i As Integer
+  Dim t As Test
+  
+  For i = 0 To Tests.Length - 1
+    t = Tests[i]
+    If t.hasError Then
+      Me.numErrors += 1
+      Me.hasErrors = True
+    Endif  
+  Next
+  
+  Return Me.numErrors
+End
+
+
+
+
+Public Sub ShowHeader()
+  Dim Header As String
+  
+  Me.ErrorCount()
+  
+  Header = String$(Me.HeaderWidth, Me.HeaderChar)
+  Header &= "\n " & Name & " test\n"
+  Header &= " Date: " & Date() & "\n"
+  Header &= " Time: " & Time() & "\n"
+  
+  If Me.hasErrors Then
+    Header &= " Failure:" & Me.numErrors & " errors occurred.\n"
+  Else
+    Header &= " Success: All tests passed.\n"
+  Endif
+
+  Header &= " There are " & numTests & " test in this run.\n"
+  Header &= String$(Me.HeaderWidth, Me.HeaderChar)
+  Header &= "\n\n"
+  
+  Print Header
+
+End
+
+Public Sub ShowNotes()
+  Dim Header As String
+  
+  If Len(Me.Note) > 0 Then
+    Header = String$(Me.NoteHeaderWidth, Me.NoteHeaderChar)
+    Header &= "\n"
+    Header &= Me.Note & "\n"  
+    Header &= String$(Me.NoteHeaderWidth, Me.NoteHeaderChar)
+    Header &= "\n\n"
+    
+    Print Header
+    
+  Endif 
+  
+End
+
+
+
+Public Sub ShowTest(idx As Integer)
+  Dim t As New Test
+  Dim header As String
+  Dim cnt As Integer = idx + 1
+  t = Tests[idx]
+  
+  header = String$(Me.TestHeaderWidth, Me.TestHeaderChar)
+  header &= "\n #" & cnt & " " & t.Name & "\n"
+  
+  If t.hasError Then
+    header &= " Status: <<<<< Failure >>>>> \n"
+    header &= " Error: " & t.msgError & "\n"
+  Else
+    header &= " Status: Passed \n"
+  Endif
+  
+  header &= " Expected result: " & Str(t.Expected) & "\n of type: " & t.ExpType & "\n"
+  header &= " Recieved result: " & Str(t.Result) & "\n of type: " & t.ResType & "\n"
+  
+  If ShowTestNotes And Len(t.Note) <> 0 Then
+    header &= " Notes: " & t.Note & "\n"
+  Endif
+  header &= String$(Me.TestHeaderWidth, Me.TestHeaderChar) 
+   
+  Print header
+  
+End
+
+
+Public Sub ShowTests()
+  Dim t As Test
+  Dim i As Integer
+  
+  Me.ShowHeader()
+  Me.ShowNotes()
+  
+  i = 0
+  For i = 0 To Tests.Length - 1
+    ShowTest(i)
+  Next
+  
+End
+
+
+

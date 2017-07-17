@@ -1,0 +1,103 @@
+' Gambas class file
+
+Static Private $sNewPath As String
+
+Public Sub Run() 
+
+  $sNewPath = ""
+  If Me.ShowModal() Then
+    Project.Open($sNewPath)
+  Endif
+
+End
+
+Public Sub btnOK_Click()
+
+  Dim sDir As String
+  Dim sName As String
+  Dim sMsg As String
+  Dim aLine As String[]
+  Dim iCount As Integer
+  Dim I As Integer
+  
+  sName = Trim(txtName.Text)
+  sDir = dchProject.Value
+  
+  sMsg = Project.CheckProjectName(sName, sDir)
+  If sMsg
+    txtName.SetFocus
+    txtName.SelectAll
+    Balloon.Warning(sMsg, txtName)
+    Return
+  Endif
+  
+  sDir &/= sName
+
+  If sDir Begins (Project.Dir & "/") Then
+    dchProject.SetFocus
+    Balloon.Warning(("Cannot save a project inside its own directory."), txtName)
+    Return
+  Endif
+  
+  Inc Application.Busy
+  Project.Save
+  Project.CopyProject(Project.Dir, sDir)
+
+  aLine = Split(File.Load(sDir &/ ".project"), "\n")
+  iCount = aLine.Count
+  I = aLine.Find("ExecPath=*", gb.Like)
+  If I >= 0 Then aLine.Remove(I)
+  I = aLine.Find("SourcePath=*", gb.Like)
+  If I >= 0 Then aLine.Remove(I)
+  If aLine.Count <> iCount Then File.Save(sDir &/ ".project", aLine.Join("\n"))
+
+  Project.CleanUp(sDir)
+
+  Dec Application.Busy
+  $sNewPath = sDir
+  Me.Close(True)
+  
+Catch 
+  
+  Application.Busy = 0
+  Message.Error(("Unable to save the project.") & "\n\n" & Error.Text)
+  
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub Form_Open()
+
+  txtName.Text = Project.Name
+  txtName.SelectAll
+  txtName.SetFocus
+  
+  Settings.Read(Me)
+  Settings.Read(dchProject, "dchProject")
+
+  dchProject.Bookmarks = Project.GetBookmarks()
+
+End
+
+Public Sub Form_Close()
+  
+  Settings.Write(Me)
+  Settings.Write(dchProject, "dchProject")
+  
+End
+
+Public Sub txtName_Change()
+
+  lblFinalDir.Text = dchProject.Value &/ Trim(txtName.Text)
+
+End
+
+Public Sub dchProject_Change()
+
+  txtName_Change
+
+End

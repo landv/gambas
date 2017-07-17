@@ -1,0 +1,248 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,Border=True,List,ReadOnly=True,PlaceHolder,Text"
+Public Const _DrawWith As String = "ComboBox"
+Public Const _DefaultSize As String = "24,4"
+Public Const _Similar As String = "WebTextBox"
+Public Const _DefaultEvent As String = "Click"
+
+Event Click
+Event Change
+Event Activate
+
+Property Text As String
+Property Read Count As Integer
+Property Index As Integer
+Property List As String[]
+Property ReadOnly As Boolean
+Property PlaceHolder As String
+
+Private $iIndex As Integer
+Private $sText As String
+Private $aList As New String[]
+Private $bReadOnly As Boolean = True
+Private $sPlaceHolder As String
+
+Public Sub _new()
+  
+  Me._Proxy = ":entry"
+  
+End
+
+
+Public Sub _BeforeRender()
+  
+  Dim sClass As String
+  
+  If $bReadOnly Then
+    sClass = "gw-selectbox"
+  Else
+    sClass = "gw-combobox"
+  Endif
+  
+  Print "<div"; Me._GetClassId(sClass);
+  Me._RenderStyleSheet()
+  Print ">"
+  
+End
+
+Public Sub _Render()
+  
+  Dim I As Integer
+  
+  If Not $bReadOnly Then
+    Print "<input id=\""; Me.Name; ":entry\" class=\"gw-combobox-text\" type=\"text\" value=\""; Html(Text_Read()); "\""; Me._GetUpdateJS("onchange", "text", "this.value"); Me._GetUpdateJS("onblur", "text", "this.value"); 
+    If Object.CanRaise(Me, "Activate") Then
+      Print " onkeypress=\"gw.textbox.onactivate("; JS(Me.Name); ",event);\""; 'WebForm._AddJavascript("gw.textbox.onactivate(" & JS(Me.Name) & ");")
+    Endif
+    If Not Me.Enabled Then Print " disabled";
+    If $sPlaceHolder Then Print " placeholder=\""; Html($sPlaceHolder); "\"";
+    Print ">";
+    Print "<div class=\"gw-combobox-arrow\">";
+  Endif
+  
+  Print "<select id=\""; Me.Name; "-select\" autocomplete=\"off\""; Me._GetUpdateWaitJS("onchange", "index", "this.selectedIndex"); 
+  If Not Me.Enabled Then Print " disabled";
+  Print ">"
+  
+  For I = 0 To $aList.Max
+    Print "<option";
+    If I = $iIndex Then Print " selected";
+    Print ">"; Html($aList[I]); "</option>"
+  Next
+  
+  Print "</select>";
+  
+  If Not $bReadOnly Then
+    Print "</div>";
+    WebForm._AddJavascript("gw.resizeComboBox(" & JS(Me.Name) & ")")
+  Endif
+  Print
+  
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  If sProp = "index" Then 
+    Try Me.Index = vValue
+  Else If sProp = "text" Then
+    Try Me.Text = vValue
+  Endif
+  
+End
+
+
+Private Function Index_Read() As Integer
+
+  Return $iIndex
+
+End
+
+Private Sub Index_Write(Value As Integer)
+
+  If Value < -1 Or If Value >= $aList.Count Then Error.Raise("Out of bounds")
+  If $iIndex = Value Then Return
+  
+  $iIndex = Value
+  If Not $bReadOnly Then 
+    If $iIndex < 0 Then
+      $sText = ""
+    Else
+      $sText = $aList[$iIndex]
+    Endif
+    Me._SetProperty("Text", $sText)
+  Endif
+  Me._SetProperty("Index", $iIndex)
+  Raise Click
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return $aList.Count
+
+End
+
+Private Function List_Read() As String[]
+
+  Return $aList.Copy()
+
+End
+
+Private Sub CheckIndex()
+
+  If $iIndex < 0 Or If $iIndex >= $aList.Count Then
+    If $aList.Count = 0 Then
+      Index_Write(-1)
+    Else
+      Index_Write(0)
+    Endif
+  Endif
+
+End
+
+Private Sub List_Write(Value As String[])
+
+  If Value Then
+    $aList = Value.Copy()
+  Else
+    $aList = New String[]
+  Endif
+  CheckIndex
+  Me._SetProperty("List", $aList)
+
+End
+
+Public Sub Clear()
+  
+  $aList.Clear
+  Index_Write(-1)
+  Me._SetProperty("List", $aList)
+  If Not $bReadOnly Then Text_Write("")
+  
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $bReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $bReadOnly = Value
+  If $bReadOnly Then
+    Me._Proxy = ""
+  Else
+    Me._Proxy = ":entry"
+  Endif
+  Me._SetProperty("ReadOnly", Value)
+
+End
+
+Public Sub Add(Item As String, Optional Index As Integer = -1)
+  
+  $aList.Add(Item, Index)
+  CheckIndex
+  Me._SetProperty("List", $aList)
+  
+End
+
+Public Sub Remove(Index As Integer)
+  
+  $aList.Remove(Index)
+  CheckIndex
+  Me._SetProperty("List", $aList)
+  
+End
+
+
+Private Function Text_Read() As String
+
+  If $bReadOnly Then
+    Try Return $aList[$iIndex]
+    Return -1
+  Else
+    Return $sText
+  Endif
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  If $bReadOnly Then
+    
+    Index_Write($aList.Find(Value))
+    
+  Else
+    
+    If $sText = Value Then Return
+    $sText = Value
+    
+    Inc Me._NoRefresh
+    Me._SetProperty("Text", Value)
+    Dec Me._NoRefresh
+    
+    If Me._CanRefresh() Then WebForm._AddJavascript("$(" & JS(Me.Name & ":entry") & ").value = " & JS($sText))
+    
+    Raise Change
+    
+  Endif
+
+End
+
+Private Function PlaceHolder_Read() As String
+
+  Return $sPlaceHolder
+
+End
+
+Private Sub PlaceHolder_Write(Value As String)
+
+  $sPlaceHolder = Value
+  Me._SetProperty("PlaceHolder", Value)
+
+End

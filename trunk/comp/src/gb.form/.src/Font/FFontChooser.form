@@ -1,0 +1,88 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,80,65)
+  Arrangement = Arrange.Fill
+  { panBorder Panel
+    MoveScaled(1,1,77,58)
+    Arrangement = Arrange.Vertical
+    Border = Border.Plain
+    { lblFont Label
+      MoveScaled(3,1,32,4)
+      Padding = 4
+    }
+    { sepToolbar Separator
+      MoveScaled(3,7,35,0)
+    }
+    { panFont HBox
+      MoveScaled(3,8,71,4)
+      { panStyle HBox
+        MoveScaled(0,0,16,4)
+        { btnBold ToolButton
+          MoveScaled(0,0,4,4)
+          ToolTip = ("Bold")
+          Picture = Picture["icon:/small/text-bold"]
+          Toggle = True
+        }
+        { btnItalic ToolButton
+          MoveScaled(4,0,4,4)
+          ToolTip = ("Italic")
+          Picture = Picture["icon:/small/text-italic"]
+          Toggle = True
+        }
+        { btnUnderline ToolButton
+          MoveScaled(8,0,4,4)
+          ToolTip = ("Underline")
+          Picture = Picture["icon:/small/text-underline"]
+          Toggle = True
+        }
+        { btnStrikeout ToolButton
+          MoveScaled(12,0,4,4)
+          ToolTip = ("Strikeout")
+          Picture = Picture["icon:/small/text-strike"]
+          Toggle = True
+        }
+      }
+      { btnRelative CheckBox
+        MoveScaled(17,0,11,4)
+        AutoResize = True
+        Text = ("Relative")
+      }
+      { Panel1 Panel
+        MoveScaled(29,0,1,4)
+      }
+      { txtSize SpinBox
+        MoveScaled(31,0,7,4)
+        Background = Color.Background
+        Border = False
+      }
+      { sldSize Slider
+        MoveScaled(42,0,28,4)
+        Expand = True
+      }
+    }
+    { sepFamily Separator
+      MoveScaled(17,14,35,0)
+    }
+    { lstFamily ListView
+      MoveScaled(6,16,59,9)
+      Expand = True
+      Border = False
+    }
+    { sepExample Separator
+      MoveScaled(16,28,35,0)
+    }
+    { txtExample Label
+      MoveScaled(4,36,62,8)
+      Background = Color.TextBackground
+      Foreground = Color.TextForeground
+      Alignment = Align.Center
+    }
+    { cmbFamily ComboBox
+      MoveScaled(40,1,27,4)
+      Visible = False
+      ReadOnly = True
+      Text = ("ComboBox1")
+    }
+  }
+}

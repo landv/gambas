@@ -1,0 +1,24 @@
+' Gambas class file
+
+Private $sCurrent As String
+
+Public Sub Run(aHide As String[]) As String
+  
+  choComponent.HiddenComponents = aHide
+  If Me.ShowDialog() Then Return $sCurrent
+  
+End
+
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnOK_Click()
+
+  $sCurrent = choComponent.Current  
+  Me.Close(True)
+
+End

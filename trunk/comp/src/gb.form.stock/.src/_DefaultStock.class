@@ -1,0 +1,28 @@
+' Gambas class file
+
+Export
+
+Class Image
+Class SvgImage
+
+Static Public Sub LoadImage(sKey As String, iSize As Integer) As Image
+
+  Dim sPath As String
+  
+  sPath = "stock" &/ CStr(iSize) &/ sKey
+  If System.RightToLeft And If Exist(sPath & "-rtl.png") Then sPath &= "-rtl"
+  'If sKey = "tools" Then Debug sPath
+  Return Image.Load(sPath & ".png")
+  
+End
+
+Static Public Sub LoadSvgImage(sKey As String) As SvgImage
+
+  Dim sPath As String
+  
+  sPath = "stock" &/ "scalable" &/ sKey
+  If System.RightToLeft And If Exist(sPath & "-rtl.svg") Then sPath &= "-rtl"
+  'If sKey = "tools" Then Debug sPath
+  Return SvgImage.Load(sPath & ".svg")
+  
+End

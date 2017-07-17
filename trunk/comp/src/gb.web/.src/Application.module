@@ -1,0 +1,87 @@
+' Gambas module file
+
+Export
+
+Property Read Host As String
+Property Read Port As String
+Property Read Root As String
+Property Read Request As String
+
+Property LogFile As String
+Property Protocol As String
+ 
+Private $sLogFile As String
+Private $hLogFile As File
+Private $sProtocol As String = "http"
+Private $sRoot As String
+
+Private Function Host_Read() As String
+
+  Return CGI["HTTP_HOST"]
+
+End
+
+Private Function Request_Read() As String
+
+  Dim sReq As String
+  
+  sReq = CGI["SCRIPT_NAME"] &/ CGI["PATH_INFO"]
+  If CGI["QUERY_STRING"] Then sReq &= "?" & CGI["QUERY_STRING"]
+  Return Main.GetAbsoluteURL(sReq)
+  
+End
+
+Private Function Root_Read() As String
+
+  Dim sElt As String
+  
+  If Not $sRoot Then
+    $sRoot = "/"
+    For Each sElt In Split(CGI["SCRIPT_NAME"], "/")
+      If sElt = "." Then Continue
+      $sRoot &/= sElt
+    Next
+  Endif
+  
+  If $sRoot = "/" Then Return
+  Return $sRoot
+  
+End
+
+
+Private Function LogFile_Read() As String
+
+  Return $sLogFile
+
+End
+
+Private Sub LogFile_Write(Value As String)
+
+  If $sLogFile Then Error To Default
+
+  $sLogFile = Value
+  If Value Then
+    $hLogFile = Open $sLogFile For Append 
+    Error To #$hLogFile
+  Endif
+  
+End
+
+Private Function Protocol_Read() As String
+
+  Return $sProtocol  
+
+End
+
+Private Sub Protocol_Write(Value As String)
+
+  $sProtocol = Value
+
+End
+
+
+Private Function Port_Read() As String
+
+  Return CGI["SERVER_PORT"]
+
+End

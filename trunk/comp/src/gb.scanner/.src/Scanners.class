@@ -1,0 +1,167 @@
+' Gambas class file
+
+Export
+Create Static
+
+Public Struct ScannerInfo
+  Vendor As String
+  Model As String
+  Type As String
+End Struct
+
+Static Private colCache As New Collection
+
+Static Private $colScannerList As New Collection
+Static Private $aScannerNames As String[]
+' Static _Vendors As New String[]
+' Static _Models As New String[]
+' Static _Types As New String[]
+
+Static hProcess As Process
+Static Private $ret As String
+Static Private $IsInit As Boolean
+Event Found
+Static Public Sub _init()
+  
+  If Not System.Exist("scanimage") Then 
+    Error.Raise("Scanner CLI tool is not detected.\nPlease Install the Sane package")
+  Endif
+   '  GetList(True)
+   '$IsInit = True
+End
+
+
+
+Public Sub Search(Optional bWait As Boolean)
+  
+  Dim sRet As String
+  
+  If hProcess Then Return 
+  $colScannerList.Clear
+  $aScannerNames = Null
+  If Not bWait Then
+    $ret = ""
+    hProcess = Exec ["scanimage", "--formatted-device-list", "%d|%v|%m|%t%n"] For Read As "Process"
+  Else
+    Exec ["scanimage", "--formatted-device-list", "%d|%v|%m|%t%n"] To sRet
+    FillList(sRet)
+  Endif
+  
+End
+
+Public Function _GetInfo(sDeviceName As String) As ScannerInfo
+  
+  If Not $aScannerNames Then Search(True)
+  
+  If $colScannerList.Exist(sDeviceName) Then
+    Return $colScannerList[sDeviceName]
+  Else
+    'If Not hProcess Then
+    'FillList(GetList(False))
+    Search(True)
+    Return $colScannerList[sDeviceName]
+    'Endif
+  Endif
+  
+End
+
+Private Sub FillList(sRet As String)
+
+  Dim s As String
+  Dim ars As New String[]
+  Dim hScanner As ScannerInfo
+
+
+
+  $colScannerList.Clear
+  $aScannerNames = New String[]
+  For Each s In Split(sRet, "\n")
+    If Not s Then Break
+    ars = Split(s, "|")
+    hScanner = New ScannerInfo
+    
+    'hScanner._Name = ars[0]
+    hScanner.Vendor = ars[1]
+    hScanner.Model = ars[2]
+    hScanner.Type = ars[3]
+    $colScannerList[ars[0]] = hScanner
+    $aScannerNames.Add(ars[0])
+  Next
+  
+End
+
+
+''List all the existing devices
+Public Function _next() As String
+  
+  Dim s As String
+
+
+ If Not $aScannerNames Then Search(True)
+  If IsNull(Enum.Index) Then 
+    Enum.Index = 0
+  Else
+    Inc Enum.Index
+  Endif
+  If $aScannerNames.Count = 0 Or If Enum.Index >= $aScannerNames.Count Then 
+    Enum.Stop
+    Return
+  Endif
+  
+  s = $aScannerNames[Enum.Index]
+  Return s
+  
+End
+
+
+''Return the given device if exist or fail.
+Public Function _get(sDeviceName As String) As Scanner
+  
+  Dim hScan As Scanner
+  
+  If Not $aScannerNames Then Search(True)
+  
+  If Not colCache.Exist(sDeviceName) Then
+    
+    hScan = New Scanner(sDeviceName)
+    colCache[sDeviceName] = hScan
+  Else
+    hScan = colCache[sDeviceName]
+  Endif
+  
+  Return hScan
+  
+End
+
+Public Sub Process_Read()
+  
+  $ret &= Read #hProcess, Lof(hProcess)
+  
+End
+
+Public Sub Process_Error(sError As String)
+  
+  Print sError
+  
+End
+
+
+Public Sub Process_kill()
+  
+  
+  If hProcess.State <> hProcess.Crashed Then
+    FillList($ret)
+    Raise Found
+  Endif
+  
+End
+
+
+Static Public Sub Close()
+  
+  Try hProcess.Kill
+  
+End
+
+
+

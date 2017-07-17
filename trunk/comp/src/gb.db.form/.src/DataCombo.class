@@ -1,0 +1,344 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+
+Event Validate(Value As Variant)
+Event Click
+
+Property Field As String
+Property Value As Variant
+Property Table As String
+Property Filter As String
+Property Display As String
+Property Read Valid As Boolean
+Property Read Modified As Boolean
+Property ReadOnly As Boolean
+Property All As String
+
+Public Const _Properties As String = "*,ReadOnly,Field{Field},Table{Table},Filter,Display{Field:Table},All"
+Public Const _Group As String = "Data"
+Public Const _DrawWith As String = "ComboBox"
+Public Const _Event As String = "Click"
+Public Const _DefaultSize As String = "24,4"
+
+Private $hConn As DataConnection
+Private $hCtrl As ComboBox
+Private $vVal As Variant
+Private $sKey As String
+Private $sTable As String
+Private $sFilter As String
+Private $sDisplay As String
+Private $cKey As New Collection
+Private $hInfo As DataField
+Private $sAll As String
+
+Public Sub _new()
+  
+  $hCtrl = New ComboBox(Me) As "ComboBox"
+  Me._AutoResize = True
+  Me.Proxy = $hCtrl
+  '$hCtrl.ReadOnly = TRUE
+  
+End
+
+
+Private Sub Reload()
+  
+  Dim rData As Result
+  Dim sDisp As String
+  Dim sName As String
+  Dim hSrc As DataSource
+  Dim hConn As Connection
+  
+  hSrc = Common.GetSource(Me)
+  If hSrc Then 
+    If hSrc._Check() Then Return
+    $hConn = hSrc._GetDataConnection()
+  Else
+    If Not DB.Current Then Return
+    $hConn = New DataConnection(DB.Current)
+  Endif
+  
+  If Not $sKey And If $sTable Then
+    If $hConn.GetFields($sTable).Find($sTable) >= 0 Then
+      $sKey = $sTable
+    Endif
+  Else If Not $sTable And If $sKey Then
+    If $hConn.ExistTable($sKey) Then
+      If $hConn.GetFields($sKey).Find($sKey) >= 0 Then
+        $sTable = $sKey
+      Endif
+    Endif
+  Endif
+    
+  sDisp = $sDisplay
+  If Not sDisp Then
+    For Each sName In $hConn.GetFields($sTable)
+      If sName <> $sKey Then
+        sDisp = sName
+        Break
+      Endif
+    Next
+  Endif
+  
+  If Not sDisp Then Return
+  
+  'rData = hSrc._GetDB().Exec(Request.Select([$sKey, sDisp]).From($sTable).Where($sFilter).Get(hSrc._GetDB()))
+  hConn = hSrc._GetDB()
+  rData = hConn.Exec(hConn.SQL.Select([$sKey, sDisp]).From($sTable).Where($sFilter)())
+
+  $cKey.Clear
+  $hCtrl.Clear
+
+  If $sAll Then $hCtrl.Add($sAll)
+  For Each rData
+    $cKey[rData[$sKey]] = rData[sDisp]
+    $cKey[rData[sDisp]] = rData[$sKey]
+    $hCtrl.Add(rData[sDisp])
+  Next
+  
+  If Not $sAll And If $hCtrl.ReadOnly Then 
+    $hCtrl.Add("", 0)
+  Endif
+
+  Try SetValue(hSrc[$sKey])
+
+  'RAISE Click AFTER
+  
+End
+
+
+Private Sub _Update(Optional bReload As Boolean)
+  
+  Dim hSource As DataSource
+  Dim hInfo As DataField
+  
+  If Not $sTable Then Return
+  If Not $sKey Then Return
+  
+  hSource = Common.GetSource(Me)
+  If Not hSource Then Return
+  
+  If hSource._Check() Then 
+    Reload
+  Else
+    hInfo = hSource._GetInfo($sKey)
+    If hInfo <> $hInfo Then
+      $hInfo = hInfo
+      $hCtrl.Enabled = Not $hInfo.ReadOnly
+      $hCtrl.Font.Bold = $hInfo.Key
+    Endif
+  
+    If bReload Then Reload
+    
+    $vVal = hSource[$sKey]
+    SetValue($vVal)
+    
+  Endif
+    
+End
+
+Public Sub Update()
+  
+  _Update()
+  
+End
+
+
+
+Private Function Modified_Read() As Boolean
+  
+  Dim vVal As Variant
+  
+  Try vVal = GetValue()
+  If Error Then Return
+  'IF vVal <> $vVal THEN STOP
+  Return vVal <> $vVal  
+  
+End
+
+
+Private Function Valid_Read() As Boolean
+  
+  Dim vVal As Variant
+  Dim bCancel As Boolean
+  
+  Try vVal = GetValue()
+  If Error Then Return False
+  bCancel = Raise Validate(vVal)
+  Return Not bCancel
+  
+End
+
+
+Private Function Value_Read() As Variant
+
+  Dim vVal As Variant
+  
+  Try vVal = GetValue()
+  If Error Then Return $vVal
+  Return vVal
+  
+End
+
+Private Sub Value_Write(vVal As Variant)
+
+  'IF NOT IsNull(vVal) THEN
+  '  vVal = CInt(vVal)
+  'ENDIF
+  
+  SetValue(vVal)
+  
+Catch
+  
+End
+
+
+Private Sub SetValue(vVal As Variant)
+
+  If $sAll And If IsNull(vVal) Then
+    $hCtrl.Index = 0
+  Else
+    If Not IsNull(vVal) And If $cKey.Exist(vVal) Then
+      $hCtrl.Text = $cKey[vVal]
+    Else
+      $hCtrl.Text = Str(vVal)
+    Endif
+  Endif 
+  
+End
+
+Private Function GetValue() As Variant
+
+  Dim vVal As Variant
+  
+  If Not Trim($hCtrl.Text) Then Return
+  If $sAll Then
+    If $hCtrl.Index = 0 Then Return
+  Endif
+  
+  Try vVal = CInt(Trim($hCtrl.Text))
+  If Error Then
+    vVal = $cKey[Trim($hCtrl.Text)]
+  Endif
+
+  Return vVal  
+  
+End
+
+
+Public Sub SetFocus()
+  
+  $hCtrl.SetFocus
+  
+End
+
+
+Private Function Table_Read() As String
+  
+  Return $sTable
+  
+End
+
+Private Sub Table_Write(sTable As String)
+  
+  $sTable = sTable
+  _Update(True)
+  
+End
+
+Private Function Filter_Read() As String
+  
+  Return $sFilter
+  
+End
+
+Private Sub Filter_Write(sFilter As String)
+  
+  $sFilter = sFilter
+  _Update(True)
+  
+End
+
+Private Function Display_Read() As String
+  
+  Return $sDisplay
+  
+End
+
+Private Sub Display_Write(sDisplay As String)
+  
+  $sDisplay = sDisplay
+  _Update(True)
+  
+End
+
+Private Function Field_Read() As String
+  
+  Return $sKey
+  
+End
+
+Private Sub Field_Write(sKey As String)
+  
+  If sKey = $sKey Then Return
+  $sKey = sKey
+  _Update(True)
+  
+End
+
+Public Sub ComboBox_GotFocus()
+  
+  Try $hCtrl.SelectAll()
+  
+End
+
+Public Sub ComboBox_Click()
+  
+  Raise Click
+  
+End
+
+
+Private Function ReadOnly_Read() As Boolean
+  
+  Return $hCtrl.ReadOnly
+  
+End
+
+
+Private Sub ReadOnly_Write(bReadOnly As Boolean)
+  
+  $hCtrl.ReadOnly = bReadOnly
+  _Update(True)
+  
+End
+
+
+Public Function GetFilter() As String
+  
+  If $sAll And If IsNull(Me.Value) Then Return
+  
+  Return DB.Subst($sKey & " = &1", Me.Value)
+  
+End
+
+Private Function All_Read() As String
+
+  Return $sAll  
+
+End
+
+Private Sub All_Write(Value As String)
+
+  $sAll = Value
+  _Update(True)
+
+End
+
+Public Sub _OnDatabaseChange()
+  
+  Reload
+  
+End

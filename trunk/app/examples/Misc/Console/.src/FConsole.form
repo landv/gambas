@@ -1,0 +1,37 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(38.4286,16.1429,99,50)
+  Text = ("Console")
+  Icon = Picture["terminal.png"]
+  Arrangement = Arrange.Vertical
+  { HBox1 HBox
+    MoveScaled(1,1,85,4)
+    { txtCommand TextBox
+      MoveScaled(0,0,23,4)
+      Font = Font["Monospace,10"]
+      Expand = True
+    }
+    { btnCtrlC ToolButton
+      MoveScaled(31,0,4,4)
+      Font = Font["Bold"]
+      Text = ("^C")
+    }
+    { btnCtrlD ToolButton
+      MoveScaled(36,0,4,4)
+      Font = Font["Bold"]
+      Text = ("^D")
+    }
+    { btnCtrlZ ToolButton
+      MoveScaled(41,0,4,4)
+      Font = Font["Bold"]
+      Text = ("^Z")
+    }
+  }
+  { txtConsole TextArea
+    MoveScaled(1,7,47,37)
+    Font = Font["Monospace,10"]
+    Expand = True
+    ReadOnly = True
+  }
+}

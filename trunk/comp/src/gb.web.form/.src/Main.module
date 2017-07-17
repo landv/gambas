@@ -1,0 +1,30 @@
+' Gambas module file
+
+'Public CurrentForm As WebForm
+
+Public Sub Main()
+
+  'Debug Base64(File.Load(".public/waiting.gif"))
+  'Debug WebForm._GetColor(Color.Gray)
+  Debug Base64$(File.Load("shadow.png"))
+
+End
+
+Public Sub DumpSession()
+  
+  Dim sKey As String
+
+  Debug String$(80, "-")
+  
+  If Session.Id Then
+    
+    For Each sKey In Session.Keys
+      Error sKey; ": "; JSON.Encode(Session[sKey])
+    Next
+    
+  Endif
+  
+  Debug String$(80, "-")
+  
+End
+

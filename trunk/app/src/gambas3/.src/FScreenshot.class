@@ -1,0 +1,46 @@
+' Gambas class file
+
+Public Sub Form_Open()
+  
+  Me.W = btnTakeScreenshot.Font.TextWidth(btnTakeScreenshot.Text) + Desktop.Scale * 14
+  Me.Move(Desktop.X + Desktop.W - Me.W, Desktop.Y)
+  
+End
+
+
+Public Sub btnTakeScreenshot_Click()
+
+  Dim hWindow As DesktopWindow
+  Dim hPict As Picture
+  Dim I As Integer
+  Dim sDir As String
+  Dim sPath As String
+  
+  Me.Hide
+  Wait 0.1
+  
+  hWindow = New DesktopWindow(Desktop.ActiveWindow)
+  hPict = hWindow.GetScreenshot()
+
+  sDir = Project.Dir &/ ".hidden/screenshots"
+  For I = 1 To 999
+    sPath = sDir &/ Format(Now, "yyyy-mm-dd")
+    If I > 1 Then sPath &= "-" & CStr(I)
+    sPath &= ".png"
+    If Not Exist(sPath) Then
+      If Not IsDir(sDir) Then Project.InsertDirectory(sDir)
+      hPict.Save(sPath)
+      Project.InsertFile(File.Name(sPath), File.Dir(sPath))
+      Break
+    Endif
+  Next
+    
+  Me.Show
+  
+End
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End

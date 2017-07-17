@@ -1,0 +1,94 @@
+' Gambas class file
+
+
+Public Sub TrayIcon1_Click()
+
+  Debug
+  Me.Visible = Not Me.Visible
+
+End
+
+Public Sub TrayIcon1_Menu()
+
+  Debug
+
+End
+
+Public Sub TrayIcon1_Scroll(Delta As Float, Orientation As Integer)
+
+  Debug Delta;; Orientation
+
+End
+
+Public Sub Button1_Click()
+
+  TrayIcon1.Visible = Not TrayIcon1.Visible
+
+End
+
+Public Sub Button2_Click()
+
+  TrayIcon1.Picture = Picture["icon:/48/flag"]
+
+End
+
+Public Sub Menu2_Click()
+
+  Debug
+
+End
+
+Public Sub Menu3_Click()
+
+  Debug
+
+End
+
+Public Sub Menu5_Click()
+
+  Debug
+
+End
+
+Public Sub TrayIcon1_MiddleClick()
+
+  Debug
+
+End
+
+Public Sub Menu6_Click()
+
+  Debug
+
+End
+
+Public Sub Menu7_Click()
+
+  Debug
+
+End
+
+Public Sub Menu8_Click()
+
+  Debug
+
+End
+
+Public Sub Button3_Click()
+
+  Menu5.Value = Not Menu5.Value
+
+End
+
+Public Sub Menu9_Click()
+
+  TrayIcon1.Hide
+  Me.Close()
+
+End
+
+Public Sub _new()
+
+  DBus.Debug = True
+
+End

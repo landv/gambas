@@ -1,0 +1,274 @@
+' Gambas module file
+
+Private Const IDENT_CAR As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_$"
+Private Const DIGIT_CAR As String = "0123456789.+-eE"
+
+Private $cKeyword As New Collection
+Private $cOperator As New Collection
+Private $cType As New Collection
+Private $aKeywords As String[]
+
+Public Sub _init()
+  
+  Dim sStr As String
+  
+  $aKeywords = New String[]
+  
+  For Each sStr In ["auto", "break", "case", "const", "continue", "default", "do", "else", "enum", "extern", "for",
+    "goto", "if", "register", "return", "sizeof", "static", "struct", "switch", "typedef", "union", "volatile", "while"]
+    $cKeyword[sStr] = 0
+    $aKeywords.Add(sStr)
+  Next
+
+  For Each sStr In ["FALSE", "NULL" "TRUE"]
+    $cKeyword[sStr] = 1
+    $aKeywords.Add(sStr)
+  Next
+
+  For Each sStr In ["{", "}", ".", ">=", "+", "<<", "!", "=", ">>=", ";", "==", "-", ">>", "~", "+=", "(", ",", "!=", "*", "&&", "-=", "&=", ")", "<", "%", "&", "||", "*=", "|=", "[", ">", "++", "|", "?", "%=", "^=",
+    "--", "^", ":", "<<=", "]", "<=", "/", "/="]
+    $cOperator[sStr] = True
+  Next
+  
+  For Each sStr In ["void", "signed", "unsigned", "char", "short", "int", "long", "float", "double", "int64_t", "uint64_t", "int32_t", "uint32_t", "int16_t", "uint16_t", "int8_t", "uint8_t"]
+    $cType[sStr] = True
+    $aKeywords.Add(sStr)
+  Next
+  
+End
+
+Public Sub GetKeywords() As String[]
+  
+  Return $aKeywords
+  
+End
+
+Public Sub RunWith(cKeyword As Collection, cOperator As Collection, cType As Collection)
+  
+  Dim iState As Integer
+  Dim iTag As Integer
+  Dim sText As String
+  Dim iLenText As Integer
+  Dim iPos, iSavePos As Integer
+  Dim sCar As String
+  Dim bSingleLineComment As Boolean
+  Dim bSingleQuoteString As Boolean
+  Dim sIdent As String
+  Dim iPosType, iPosIdent, iPosAfterIdent As Integer
+  Dim bLastExpr As Boolean
+  
+  iState = Highlight.State
+  iTag = Highlight.Tag
+  sText = Highlight.Text
+  iLenText = String.Len(sText)
+  bLastExpr = True
+  If iState = Highlight.Operator Then bLastExpr = False
+  
+  If Left(LTrim(sText)) = "#" Then
+    
+    Highlight.Add(Highlight.Preprocessor, iLenText)
+    iState = Highlight.Normal
+    
+  Else
+  
+    For iPos = 1 To iLenText
+    
+      If iState = Highlight.Normal Then
+      
+        sCar = String.Mid$(sText, iPos, 1)
+        If sCar = "/" Then
+          sCar = String.Mid$(sText, iPos + 1, 1)
+          If sCar = "/" Then
+            iState = Highlight.Comment
+            bSingleLineComment = True
+          Else If sCar = "*" Then
+            sCar = String.Mid$(sText, iPos + 2, 1)
+            If sCar = "*" Then
+              iState = Highlight.Help
+            Else
+              iState = Highlight.Comment
+            Endif
+            bSingleLineComment = False
+          Endif
+        Else If sCar = "\"" Then
+          iState = Highlight.String
+          bSingleQuoteString = False
+        Else If sCar = "'" Then
+          iState = Highlight.String
+          bSingleQuoteString = True
+        Else If Asc(sCar) <= 32 Then 
+        
+        Else If IsDigit(sCar) Then
+        
+          sIdent = sCar
+          sCar = String.Mid$(sText, iPos + 1, 1)
+          If sCar = "x" Or If sCar = "X" Then
+            sIdent &= sCar
+            Inc iPos
+            While iPos < iLenText
+              Inc iPos
+              sCar = String.Mid$(sText, iPos, 1)
+              If Not IsHexa(sCar) Then
+                Dec iPos
+                Break
+              Endif
+              sIdent &= sCar
+            Wend
+          Else
+            While iPos < iLenText
+              Inc iPos
+              sCar = String.Mid$(sText, iPos, 1)
+              If InStr(DIGIT_CAR, sCar) = 0 Then
+                Dec iPos
+                Break
+              Endif
+              sIdent &= sCar
+            Wend
+          Endif
+        
+          Highlight.Add(Highlight.Number, String.Len(sIdent))
+          iState = Highlight.Normal
+          bLastExpr = True
+          Continue
+          
+        Else If Len(sCar) >= 2 Or If InStr(IDENT_CAR, sCar) Then
+          
+          sIdent = sCar
+          iSavePos = iPos
+          
+          While iPos < iLenText
+            Inc iPos
+            sCar = String.Mid$(sText, iPos, 1)
+            If Len(sCar) = 1 And If Not IsDigit(sCar) And If InStr(IDENT_CAR, sCar) = 0 Then
+              Dec iPos
+              Break
+            Endif
+            sIdent &= sCar
+          Wend
+          
+          If cKeyword.Exist(sIdent) Then
+            iState = Highlight.Keyword
+            If cKeyword[sIdent] = 1 Then bLastExpr = True
+          Else If cType.Exist(sIdent) Then
+            iState = Highlight.Datatype
+            bLastExpr = True
+            If iPosType = 0 Then iPosType = iSavePos
+          Else
+            iState = Highlight.Symbol
+            If iPosAfterIdent = 0 Then 
+              iPosIdent = iSavePos
+              iPosAfterIdent = iSavePos + String.Len(sIdent)
+            Endif
+            bLastExpr = True
+          Endif
+          
+          Highlight.Add(iState, String.Len(sIdent))
+          iState = Highlight.Normal
+          Continue
+        
+        Else
+        
+          sIdent = sCar
+          
+          While iPos < iLenText
+            If cOperator.Exist(sIdent) Then Break
+            Inc iPos
+            sCar = String.Mid$(sText, iPos, 1)
+            If IsLetter(sCar) Or If IsDigit(sCar) Or If IsBlank(sCar) Then
+              Dec iPos
+              Break
+            Endif
+            sIdent &= sCar
+          Wend
+          
+          If cOperator.Exist(sIdent) Then
+            iState = Highlight.Operator
+          Else
+            iState = Highlight.Error
+          Endif
+          
+          Highlight.Add(iState, String.Len(sIdent))
+          iState = Highlight.Normal
+          bLastExpr = False
+          
+          'Dec iPos
+          Continue
+        
+        Endif
+        
+      Else If iState = Highlight.Comment Or If iState = Highlight.Help Then
+      
+        If Not bSingleLineComment Then
+          sCar = String.Mid$(sText, iPos, 2)
+          If sCar = "*/" Then
+            Highlight.Add(iState, 2)
+            Inc iPos
+            iState = Highlight.Normal
+            Continue
+          Endif
+        Endif
+        
+      Else If iState = Highlight.String Then
+      
+        sCar = String.Mid$(sText, iPos, 1)
+        If sCar = "\\" Then
+          sCar = String.Mid$(sText, iPos + 1, 1)
+          If sCar = "x" Then
+            Highlight.Add(iState, 3)
+            iPos += 2
+            Continue
+          Else If sCar = "u" Then
+            Highlight.Add(iState, 5)
+            iPos += 4
+            Continue
+          Else
+            Highlight.Add(iState, 2)
+            Inc iPos
+            Continue
+          Endif
+        Else If sCar = "\"" And If Not bSingleQuoteString Then
+          Highlight.Add(iState)
+          iState = Highlight.Normal
+          bLastExpr = True
+          Continue
+        Else If sCar = "'" And If bSingleQuoteString Then
+          Highlight.Add(iState)
+          iState = Highlight.Normal
+          bLastExpr = True
+          Continue
+        Endif
+        
+      Endif
+      
+      Highlight.Add(iState)
+      
+    Next
+  
+    If iState = Highlight.Comment And If bSingleLineComment Then
+      iState = Highlight.Normal
+    Endif
+    
+    If iState <> Highlight.Comment And If iState <> Highlight.Help Then
+      iState = Highlight.Normal
+    Endif
+    
+  Endif
+  
+  If iPosType > 0 And iPosAfterIdent > iPosType Or If iPosIdent = 1 Then
+    If InStr(String.Mid$(sText, iPosAfterIdent), "(") Then
+      If RInStr(sText, ";") = 0 Then
+        Highlight.ShowLimit = True
+      Endif
+    Endif
+  Endif
+  
+  Highlight.State = iState
+  Highlight.Tag = iTag
+  
+End
+
+Public Sub Run()
+
+  RunWith($cKeyword, $cOperator, $cType)
+  
+End

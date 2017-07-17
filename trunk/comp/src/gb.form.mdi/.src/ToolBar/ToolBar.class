@@ -1,0 +1,140 @@
+' Gambas class file
+
+Export
+
+Inherits UserContainer
+
+Public Const _Properties As String = "*,-Arrangement,-Padding,-Spacing,-Indent,-Invert,Key,Text,Action,Orientation{ToolBar.Horizontal;Vertical},AutoResize=True,Separator"
+Public Const _DefaultArrangement As String = "R"
+Public Const _DefaultSize As String = "36,4"
+
+Public Enum Horizontal, Vertical
+
+Event Configure
+
+Property Design As Boolean
+Property Orientation As Integer
+Property AutoResize As Boolean
+Property Key As String
+Property Text As String
+Property Separator As Boolean
+
+Private $hForm As FToolBar
+
+Public Sub _new()
+  
+  $hForm = New FToolBar(Me)
+  Me._Container = $hForm.GetContainer()
+  'Super.AutoResize = True
+  
+End
+
+Public Sub Configure()
+  
+  If Not Me.Key Then Error.Raise("The Key property must be defined")
+  Action._ConfigureToolbar(Me)
+  
+End
+
+Private Function Design_Read() As Boolean
+
+  Return Super.Design
+
+End
+
+Private Sub Design_Write(Value As Boolean)
+
+  Super.Design = Value
+  If Value Then $hForm.SetDesign()
+  
+End
+
+' Private Function Hidden_Read() As Boolean
+' 
+'   Return $hForm.IsHidden()  
+' 
+' End
+' 
+' Private Sub Hidden_Write(Value As Boolean)
+' 
+'     $hForm.SetHidden(Value)
+' 
+' End
+
+' Private Function Action_Read() As String
+' 
+'   Return Action.Get(Me)  
+' 
+' End
+' 
+' Private Sub Action_Write(Value As String)
+' 
+'   Action.Register(Me, Value)
+' 
+' End
+
+Private Function Orientation_Read() As Integer
+
+  Return If($hForm.IsVertical(), 1, 0)
+
+End
+
+Private Sub Orientation_Write(Value As Integer)
+
+  $hForm.SetVertical(Value)
+
+End
+
+Private Function AutoResize_Read() As Boolean
+
+  Return $hForm.IsAutoResize()
+
+End
+
+Private Sub AutoResize_Write(Value As Boolean)
+
+  $hForm.SetAutoResize(Value)
+
+End
+
+Private Function Key_Read() As String
+
+  Return $hForm.ToolbarKey
+
+End
+
+Private Sub Key_Write(Value As String)
+
+  $hForm.SetKey(Value)
+
+End
+
+Private Function Text_Read() As String
+
+  Return $hForm.Text
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $hForm.SetText(Value)
+
+End
+
+Public Sub _RaiseConfigure()
+  
+  Raise Configure
+  
+End
+
+Private Function Separator_Read() As Boolean
+
+  Return $hForm.HasSeparator()
+
+End
+
+Private Sub Separator_Write(Value As Boolean)
+
+  $hForm.SetSeparator(Value)
+
+End

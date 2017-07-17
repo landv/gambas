@@ -1,0 +1,58 @@
+' Gambas module file
+
+Property Read Current As _Page
+Private $oPage As _Page
+
+Public Sub LoadCurrent()
+
+  If $oPage Then Return
+
+  $oPage = Get(Path.Page)
+
+  ' If Not $oPage Then
+  '   $oPage = New _Page
+  ' Endif
+
+End
+
+Public Function Get(sPath As String, Optional bReadOnly As Boolean = True, Optional sLang As String) As _Page
+
+  Dim rPage As Result
+
+  Dim oTemp As _Page
+
+  rPage = Find(sPath, bReadOnly, sLang)
+
+  If Not rPage Then Return
+
+  oTemp = New _Page(rPage, bReadOnly)
+
+  Return oTemp
+
+End
+
+Public Function Find(sPath As String, Optional bReadOnly As Boolean = True, Optional sLang As String) As Result
+
+  Dim rPage As Result
+
+  If Not sLang Then sLang = Main.Language
+
+  If bReadOnly Then
+    rPage = DB.Find(DBScheme.TABLE_PAGES, DBScheme.PAGE_PATH & " = &1 AND " & DBScheme.PAGE_LANG & "= &2", sPath, sLang)
+  Else
+    rPage = DB.Edit(DBScheme.TABLE_PAGES, DBScheme.PAGE_PATH & " = &1 AND " & DBScheme.PAGE_LANG & "= &2", sPath, sLang)
+  Endif
+
+  If rPage.Available Then
+    Return rPage
+  Endif
+
+End
+
+Private Function Current_Read() As _Page
+
+  LoadCurrent()
+
+  Return $oPage
+
+End

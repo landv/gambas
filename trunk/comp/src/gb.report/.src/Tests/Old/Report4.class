@@ -1,0 +1,46 @@
+' Gambas class file
+
+Private $hres As Result
+
+Public Sub _new()
+
+  'Report.Debug = True
+
+  Try Connections["Connection2"].Open
+  $hres = db.Exec("SELECT fc.cd_sc as codesoc, fc.int_sc as intsoc, fcc.compte_cc as compte, fcc.intitule_cc as intitule From Fiches_Comptes as fcc "
+  "Left join Fiches_Societes as fc on fc.cd_sc=1")
+  ReportHBox4.DataCount = $hres.Count
+
+End
+
+Public Sub lblCpte_Data(Index As Integer)
+
+  $hres.MoveTo(Index)
+  Last.data = $hres!compte
+
+End
+
+Public Sub lblcpteLab_Data(Index As Integer)
+
+  $hres.MoveTo(Index)
+  Last.data = $hres!intitule
+
+End
+
+Public Sub lblSoc_Data(Index As Integer)
+
+  Last.data = $hres!codesoc & " " & $hres!intsoc
+
+End
+
+Public Sub lblDate_Data(Index As Integer)
+
+  Last.data = Format(Now(), "dddd dd mmmm yyyy")
+
+End
+
+Public Sub ReportImage1_Data(Index As Integer)
+
+  Last.Data = Picture["icon:/32/directory"].Image
+
+End

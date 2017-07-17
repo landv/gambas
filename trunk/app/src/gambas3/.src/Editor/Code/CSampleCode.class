@@ -1,0 +1,505 @@
+' Gambas class file
+
+'
+' Copyright (C) Benoît Minisini
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin St, Fifth Floor, 
+' Boston, MA  02110-1301  USA
+'
+
+Static Public All As Collection
+Static Public List As String[]
+
+Public Trigger As String
+Public Pattern As String
+Public {Default} As Boolean
+
+Private $aPattern As String[]
+Private $bNoVoid As Boolean
+
+Static Private Sub Load(hSettings As Settings, bDefault As Boolean)
+  
+  Dim hSampleCode As CSampleCode
+  Dim iInd As Integer
+  Dim sSnippet As String
+  Dim iPos As Integer
+  Dim sTrigger As String
+
+  For iInd = 1 To hSettings["Snippets/Count", 0]
+    sSnippet = hSettings["Snippets/Snippet[" & CStr(iInd) & "]"]
+    If Not sSnippet Then Break
+    iPos = InStr(sSnippet, "\n")
+    If iPos = 0 Then Continue
+    sTrigger = Left$(sSnippet, iPos - 1)
+    sSnippet = Mid$(sSnippet, iPos + 1)
+    hSampleCode = New CSampleCode(sTrigger, sSnippet)
+    hSampleCode.Default = bDefault
+  Next
+  
+End
+
+Static Public Sub Save()
+  
+  Dim iInd As Integer
+  Dim iCpt As Integer
+  Dim hSampleCode As CSampleCode
+  
+  Settings.Clear("/Snippets")
+  For iCpt = 0 To List.Max
+    hSampleCode = All[List[iCpt]]
+    If hSampleCode.Default Then Continue
+    Inc iInd
+    Settings["/Snippets/Snippet[" & CStr(iInd) & "]"] = hSampleCode.Trigger & "\n" & hSampleCode.Pattern
+  Next
+  Settings["/Snippets/Count"] = iInd
+  Settings.Save
+  
+End
+
+Static Public Sub Init()
+  
+  Dim hSettings As Settings
+  'Dim sTemp As String
+  
+  If All Then Return
+  
+  All = New Collection(gb.IgnoreCase)
+  List = New String[]
+  
+  'sTemp = Temp$()
+  'Copy "snippets" To sTemp
+
+  Load(Settings, False)
+  hSettings = New Settings("../snippets")
+  Load(hSettings, True)
+
+  'Kill sTemp
+  
+End
+
+' Static Public Sub Reset()
+'   
+'   Settings.Clear("Snippets")
+'   Settings.Save
+'   All = Null
+'   Init
+'   
+' End
+' 
+Static Public Sub Exit()
+  
+  All = Null
+  
+End
+
+
+Public Sub _new(sStart As String, sPattern As String)
+  
+  Dim iInd As Integer
+  Dim sCar As String
+  Dim bVar As Boolean
+  
+  If All.Exist(sStart) Then All[sStart].Delete
+  
+  Trigger = sStart
+  Pattern = sPattern
+  All[sStart] = Me
+  List.Add(sStart)
+  List.Sort(gb.IgnoreCase)
+  
+  $bNoVoid = InStr(Pattern, "${}") = 0
+  
+  $aPattern = New String[]
+  sPattern = ""
+  
+  For iInd = 1 To Len(Pattern)
+    sCar = Mid$(Pattern, iInd, 1)
+    
+    If bVar Then
+      If sCar = "}" Then
+        ' If sPattern Then
+        '   iPos = InStr(sPattern, ":")
+        '   If iPos = 0 Then iPos = Len(sPattern) + 1
+        '   $nPattern = Max($nPattern, CInt(Left$(sPattern, iPos - 1)))
+        ' Endif
+        
+        $aPattern.Add("\t" & sPattern)
+        sPattern = ""
+        bVar = False
+      Else
+        sPattern &= sCar
+      Endif
+    Else
+      If Mid$(Pattern, iInd, 2) = "${" Then
+        bVar = True
+        Inc iInd
+        If sPattern Then $aPattern.Add(sPattern)
+        sPattern = ""
+      Else If sCar = "\n" Then
+        If sPattern Then $aPattern.Add(sPattern)
+        $aPattern.Add("\n")
+        sPattern = ""
+        While Mid$(Pattern, iInd + 1, 1) = " "
+          Inc iInd
+        Wend
+      Else
+        sPattern &= sCar
+      Endif
+    Endif
+  Next
+  
+  If sPattern Then $aPattern.Add(sPattern)
+  
+End
+
+Public Sub GetLineCount() As Integer
+  
+  Return Split(Pattern, "\n").Count
+  
+End
+
+
+Private Sub Make(Optional iIndent As Integer) As String
+  
+  Dim sMake As String
+  Dim iPos, iPos2 As Integer
+  Dim sCar As String
+  Dim sVar As String
+  
+  For iPos = 1 To Len(Pattern)
+  
+    sCar = Mid$(Pattern, iPos, 1)
+    If sCar = "$" And If Mid$(Pattern, iPos + 1, 1) = "{" Then
+      iPos += 2
+      iPos2 = InStr(Pattern, "}", iPos)
+      sCar = Mid$(Pattern, iPos, iPos2 - iPos)
+      iPos = InStr(sCar, ":")
+      If iPos Then
+        sVar = Mid$(sCar, iPos + 1)
+        If sVar = "$TITLE" Then
+          sCar = Project.Title
+        Else If sVar = "$DESCRIPTION" Then
+          sCar = Project.Description
+        Else If sVar = "$AUTHOR" Or If sVar = "$AUTHORS" Then
+          sCar = Split(Project.Authors, "\n", "", True).Join(", ")
+        Else If svar = "$USER" Then 
+          sCar = User.Name
+        Else If svar = "$DATE" Then
+          sCar = Format$(Now(), gb.MediumDate)
+        Else If svar = "$PROJECT" Then 
+          sCar = Project.Name
+        Else
+          sCar = sVar
+        Endif
+      Else
+        sCar = ""
+      Endif
+      iPos = iPos2
+    Endif
+    
+    sMake &= sCar
+  
+  Next
+  
+  If iIndent Then sMake = Replace(sMake, "\n", "\n" & Space$(iIndent))
+  Return sMake
+  
+End
+
+Public Sub Insert(hEditor As TextEditor)
+  
+  Dim iIndent As Integer
+  Dim sLine As String
+  
+  sLine = hEditor.Current.Text
+  iIndent = Len(sLine) - Len(LTrim(sLine))
+  hEditor.Insert(Make(iIndent))
+  
+End
+
+
+Private Sub CursorFromPos(sText As String, iPos As Integer) As Integer[]
+  
+  Dim iLine, iCol As Integer
+  
+  While iPos > 0
+    If String.Left$(sText) = "\n" Then
+      Inc iLine
+      iCol = 0
+    Else
+      Inc iCol
+    Endif
+    sText = String.Mid$(sText, 2)
+    If Not sText Then Break
+    Dec iPos
+  Wend
+  
+  Return [iLine, iCol]
+  
+End
+
+Private Sub PosFromCursor(sText As String, iLine As Integer, iCol As Integer) As Integer
+  
+  Dim iPos As Integer
+  Dim iFind As Integer
+  
+  While iLine > 0
+    iFind = String.InStr(sText, "\n")
+    If iFind = 0 Then Break
+    iPos += iFind
+    sText = String.Mid$(sText, iFind + 1)
+    Dec iLine
+  Wend
+  
+  If iLine > 0 Then 
+    Return iPos + String.Len(sText)
+  Else
+    iFind = String.InStr(sText, "\n")
+    If iFind = 0 Then iFind = String.Len(sText) + 1
+    Return iPos + Min(iCol, iFind - 1)
+  Endif
+  
+End
+
+Private Sub Search(sText As String, sString As String, iStart As Integer, Optional iDefault As Integer = -1) As Integer
+  
+  Dim iPos As Integer
+  
+  iPos = String.InStr(sText, sString, iStart + 1) - 1
+  
+  If iPos < 0 Then iPos = iDefault
+  Return iPos
+  
+End
+
+Private Sub NewLinePattern(sText As String, iPos As Integer) As Integer
+  
+  ' Ignore space, Ignore new lines, Ignore spaces
+  
+  Inc iPos
+  
+  While String.Mid$(sText, iPos, 1) = " "
+    Inc iPos
+  Wend
+  
+  If String.Mid$(sText, iPos, 1) <> "\n" Then Return -1
+  Inc iPos
+
+  While String.Mid$(sText, iPos, 1) = " "
+    Inc iPos
+  Wend
+  
+  Return iPos - 1
+  
+End
+
+
+Public Sub GotoNextPos(hEditor As TextEditor, iStart As Integer, iEnd As Integer, iPosStart As Integer) As Boolean
+  
+  Dim iPosText, iPosTextEnd As Integer
+  Dim sText As String
+  Dim iInd As Integer
+  Dim sPattern As String
+  Dim iPosCursor As Integer
+  Dim iIndexPattern As Integer
+  Dim iPos As Integer
+  Dim aCursor, aCursorEnd As Integer[]
+  Dim iLen As Integer
+  
+  For iInd = iStart To iEnd - 1
+    ' if hEditor.Lines[iInd].Length 
+    sText &= hEditor[iInd].Text & "\n"
+  Next
+  iLen = String.Len(sText) - 1
+  
+  iPosCursor = PosFromCursor(sText, hEditor.Line - iStart, hEditor.Column)
+  If iPosCursor > iLen Then Return True
+  
+  ' Find index of current pattern
+  
+  iPosText = iPosStart
+  iInd = 0
+  
+  If iPosText < iPosCursor Then  
+  
+    While iInd < $aPattern.Count
+      sPattern = $aPattern[iInd]
+      If Left(sPattern) = "\t" Then
+        If iInd < $aPattern.Max Then
+          iPosText = Search(sText, $aPattern[iInd + 1], iPosText)
+          If iPosText < 0 Then Return True
+        Else
+          iPosText = iLen
+        Endif
+  
+        sPattern = Mid$(sPattern, 2)
+        iPos = InStr(sPattern, ":")
+        If iPos Then sPattern = Left$(sPattern, iPos - 1)
+        If sPattern Then
+          iIndexPattern = CInt(sPattern)
+        Else
+          iIndexPattern = 0
+        Endif
+        
+        If iPosText >= iPosCursor Then
+          If iIndexPattern Then 
+            Break
+          Else
+            ' We are in the void pattern, try again
+            Return True
+          Endif
+        Endif
+      Else 
+        If sPattern = "\n" Then
+          iPosText = NewLinePattern(sText, iPosText)
+          If iPosText < 0 Then Return True
+        Else
+          If String.Mid$(sText, iPosText + 1, String.Len(sPattern)) <> sPattern Then Return True
+          iPosText += String.Len(sPattern)
+        Endif
+        ' Find first pattern
+        If iPosText > iPosCursor Then Break
+      Endif
+      Inc iInd
+    Wend
+    
+    If iInd >= $aPattern.Count Then Return True
+    
+  Endif
+  
+  ' Find next pattern
+  
+  Inc iIndexPattern
+  iPosText = iPosStart
+  iInd = 0
+  While iInd < $aPattern.Count
+    sPattern = $aPattern[iInd]
+    If Left(sPattern) = "\t" Then
+      sPattern = Mid$(sPattern, 2)
+      iPos = InStr(sPattern, ":")
+      If iPos Then sPattern = Left$(sPattern, iPos - 1)
+      
+      If sPattern And If iIndexPattern = CInt(sPattern) Then 
+        If iInd < $aPattern.Max Then 
+          iPosTextEnd = Search(sText, $aPattern[iInd + 1], iPosText, iLen)
+        Else
+          iPosTextEnd = iLen
+        Endif
+        Goto FOUND
+      Endif
+
+      If iInd < $aPattern.Max Then
+        iPosText = Search(sText, $aPattern[iInd + 1], iPosText)
+        If iPosText < 0 Then Break
+      Else
+        Break
+      Endif
+    Else
+      If sPattern = "\n" Then
+        iPosText = NewLinePattern(sText, iPosText)
+        If iPosText < 0 Then Return True
+      Else
+        If String.Mid$(sText, iPosText + 1, String.Len(sPattern)) <> sPattern Then Return True
+        iPosText += String.Len(sPattern)
+      Endif
+    Endif
+    Inc iInd
+  Wend
+
+  ' No next pattern, find void pattern
+  
+  If $bNoVoid Then
+    iPosText = iLen
+    iPosTextEnd = iPosText
+    Goto FOUND
+  Endif
+
+  iPosText = iPosStart
+  iInd = 0
+  While iInd < $aPattern.Count
+    sPattern = $aPattern[iInd]
+    If Left(sPattern) = "\t" Then
+      If iInd < $aPattern.Max Then
+        iPosText = Search(sText, $aPattern[iInd + 1], iPosText)
+        If iPosText < 0 Then Return True
+      Else
+        iPosText = iLen
+      Endif
+      sPattern = Mid$(sPattern, 2)
+      If Not sPattern Then 
+        iPosTextEnd = iPosText
+        Goto FOUND
+      Endif
+    Else
+      If sPattern = "\n" Then
+        iPosText = NewLinePattern(sText, iPosText)
+        If iPosText < 0 Then Return True
+      Else
+        If String.Mid$(sText, iPosText + 1, String.Len(sPattern)) <> sPattern Then Return True
+        iPosText += String.Len(sPattern)
+      Endif
+    Endif
+    Inc iInd
+  Wend
+  
+  Return True
+  
+FOUND:
+  
+  aCursor = CursorFromPos(sText, iPosText)
+  If iPosTextEnd = iPosText Then
+    hEditor.Goto(aCursor[1], iStart + aCursor[0])
+  Else
+    aCursorEnd = CursorFromPos(sText, iPosTextEnd)
+    hEditor.Goto(aCursor[1], iStart + aCursor[0])
+    hEditor.Goto(aCursorEnd[1], iStart + aCursorEnd[0], True)
+  Endif
+  
+Catch
+
+  Return True
+  
+End
+
+
+Public Sub Rename(sNewTrigger As String)
+  
+  Dim iFind As Integer
+  
+  If {Default} Then Return
+
+  All[Trigger] = Null
+  All[sNewTrigger] = Me
+  
+  iFind = List.Find(Trigger)
+  If iFind >= 0 Then List.Remove(iFind)
+  List.Add(sNewTrigger)
+  List.Sort(gb.IgnoreCase)
+
+  Trigger = sNewTrigger
+  
+End
+
+Public Sub Delete()
+
+  Dim iFind As Integer
+  
+  If {Default} Then Return
+  
+  All[Trigger] = Null
+  iFind = List.Find(Trigger)
+  If iFind >= 0 Then List.Remove(iFind)
+
+End

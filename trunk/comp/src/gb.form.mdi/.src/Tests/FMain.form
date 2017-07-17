@@ -1,0 +1,105 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,77,74)
+  Arrangement = Arrange.Vertical
+  { ToolBar1 ToolBar
+    MoveScaled(0,0,45,5)
+    Key = "test"
+    Separator = True
+    { ToolButton1 ToolButton
+      MoveScaled(0,0,5,4)
+      Action = "a"
+      Picture = Picture["icon:/22/bookmark"]
+    }
+    { ToolButton2 ToolButton
+      MoveScaled(5,0,4,4)
+      Visible = False
+      Action = "b"
+      Picture = Picture["icon:/22/computer"]
+    }
+    { Separator1 Separator
+      MoveScaled(10,0,1,4)
+    }
+    { ToolButton3 ToolButton
+      MoveScaled(13,0,4,4)
+      Visible = False
+      Action = "c"
+      Picture = Picture["icon:/22/edit"]
+    }
+    { ToolButton4 ToolButton
+      MoveScaled(18,0,4,4)
+      Action = "d"
+      Picture = Picture["icon:/22/component"]
+    }
+  }
+  { Panel2 HBox
+    MoveScaled(2,8,72,51)
+    Expand = True
+    { SidePanel2 SidePanel
+      MoveScaled(1,4,15,46)
+      Arrangement = Arrange.Fill
+      Orientation = Align.Left
+      { TreeView2 TreeView
+        MoveScaled(1,11,12,16)
+      }
+    }
+    { Workspace1 Workspace
+      MoveScaled(24,0,28,50)
+      Expand = True
+      Border = False
+    }
+    { SidePanel1 SidePanel
+      MoveScaled(54,2,15,46)
+      Arrangement = Arrange.Fill
+      Orientation = Align.Right
+      { TreeView1 TreeView
+        MoveScaled(0,11,15,21)
+      }
+    }
+  }
+  { Panel1 HBox
+    MoveScaled(2,61,70,4)
+    { Button1 Button
+      MoveScaled(0,0,16,4)
+      Text = ("Border")
+    }
+    { Button2 Button
+      MoveScaled(17,0,16,4)
+      Text = ("Window")
+    }
+    { Button3 Button
+      MoveScaled(34,0,16,4)
+      Text = ("Orientation")
+    }
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action a
+    Text = ""
+    Picture = "icon:/22/bookmark"
+  }
+  { Action b
+    Text = ""
+    Picture = "icon:/22/computer"
+  }
+  { Action c
+    Text = ""
+    Picture = "icon:/22/edit"
+  }
+  { Action d
+    Text = ""
+    Picture = "icon:/22/component"
+  }
+}
+
+{ Toolbars
+  { Toolbar test
+    Text = ""
+    List = "a,b,c,d"
+    Default = "a,|,d"
+  }
+}

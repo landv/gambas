@@ -1,0 +1,48 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(18,23,90,46)
+  Text = ("Save modified files")
+  Icon = Picture["icon:/16/save"]
+  Resizable = False
+  { btnQuit Button
+    MoveScaled(54,40,17,5)
+    Enabled = False
+    Text = ("Continue")
+    Picture = Picture["icon:/medium/play"]
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(72,40,17,5)
+    Text = ("Cancel")
+    Picture = Picture["icon:/medium/close"]
+    Cancel = True
+  }
+  { btnIgnore ToggleButton
+    MoveScaled(25,40,23,5)
+    Text = Shortcut(("Do not save"), "n")
+    Picture = Picture["icon:/medium/cancel"]
+    Radio = True
+  }
+  { btnSave ToggleButton
+    MoveScaled(1,40,23,5)
+    Text = Shortcut(("Save All"), "a")
+    Picture = Picture["icon:/medium/save"]
+    Radio = True
+  }
+  { VBox1 VBox
+    MoveScaled(1,1,88,38)
+    Spacing = True
+    { TextLabel1 TextLabel
+      MoveScaled(0,0,86,5)
+      Font = Font["Bold,+1"]
+      AutoResize = True
+      Text = ("The following files have been modified. Do you want to save them?")
+    }
+    { lvwFile ListView
+      MoveScaled(3,10,44,21)
+      Expand = True
+      Mode = Select.Multiple
+    }
+  }
+}

@@ -1,0 +1,770 @@
+' Gambas class file
+
+Export
+Inherits _MapLayer
+
+Property SubDomains As String[]
+Property Opacity As Float
+Property Read Loading As Boolean
+Property UseWebMapService As Boolean
+Property WMSArgs As Collection
+Property MaxBounds As MapBounds 
+''Delay before refreshing an image in the cache. (By default 30 day)
+Property CacheRefreshDelay As Integer  
+''Set the projection used by the WMS server.
+Property WMSProjection As String
+
+Public $aStack As New String[]
+Public TileBoundValue As MapBounds
+
+Private $aClients As New HttpClient[]
+Private $iClientCount As Integer = 4
+Private $sCachePath As String = User.Home &/ ".cache/gb.map"
+Private $tmrGet As New Timer As "tmrGet"
+Private $aTiles As New String[]
+Private $colTiles As New Collection
+Private $sPattern As String
+Private $aSubDomains As String[] = ["a", "b", "c"]
+Private $fOpacity As Float = 1
+Private $aPreload As New String[]
+Private $bPreloadMode As Boolean
+Private $fGradStep As Float = 0.1
+Private $bIsQuadKey As Boolean
+Private $bLoading As Boolean 
+Private $iCli As Integer
+Private $iTileSource As Integer
+'Property TileSource As Integer
+
+Private $bUseWMS As Boolean
+Private $cWMSArgs As New Collection
+Private $mbMaxBounds As New MapBounds
+Private $prjWMS As Proj
+Private $prjLatLon As Proj
+Private $WMSProj As String
+Private $iVersion As Integer = 1
+Private $iCacheRefreshDelay As Integer = 30
+Private $bCacheRefresh As Boolean = True
+
+
+' Private $aUsedTiles As New String[]
+' Private $aNewTiles As New String[]
+' Private $bHaveCache As Boolean
+Event Refresh
+
+Public Sub _new(Optional CacheName As String)
+  
+  Dim sTempPath As String
+  Dim hClient As HttpClient
+  Dim i As Integer
+  'Dim hTable As Table
+  
+  'db.Debug = True
+  $prjLatLon = New Proj("epsg:4326")
+  If CacheName Then
+    sTempPath = $sCachePath &/ CacheName 
+    
+  Else
+    sTempPath = Temp() 
+  Endif
+  
+  If Not Exist(sTempPath) Then
+    If MakeDir(sTempPath) Then Error.Raise("Cannot create Cache Path: \n" & sTempPath)
+  Endif
+  
+  $sCachePath = sTempPath
+  
+  $aClients.Resize($iClientCount)
+  For i = 0 To $aClients.Max
+    hClient = New HttpClient As "Client"
+    hClient.Async = True
+    $aClients[i] = hClient
+    hClient.Timeout = 10
+  Next
+  
+End
+' svn checkout --username=gambix svn+ssh://gambas@svn.code.sf.net/p/gambas/code/gambas/trunk
+' 
+
+
+Public Sub _Draw()
+  
+  Dim s As String
+  Dim hTile As _Tile
+  Dim hMap As Map = GetMap()
+  Dim hBound As MapBounds
+  Dim hPx As Point
+  Dim hpx2 As Point
+  'Paint.Reset()
+  'Paint.Rotate(Rad(90))
+  
+  'Paint.Translate(hmap.Width / 2, hmap.Height / 2)
+  For Each s In $aTiles
+    hTile = $coltiles[s]
+    
+    hBound = Geo.TileBounds(hTile.x, hTile.y, hTile.z)
+    
+    hpx = Geo.MapPointToPixel(hBound.TopLeft, hmap.Zoom)
+    hpx2 = Geo.MapPointToPixel(hBound.BottomRight, hmap.Zoom)
+    
+    Select Case hTile.Status
+      Case _Tile.Normal
+        If hmap._ShowWithEffect Then
+          Try Paint.DrawImage(hTile.Image, hTile.X * 256 - hMap.PixelBox.X, hTile.Y * 256 - hMap.PixelBox.Y,,, Min(hTile.Opacity, $fOpacity))
+          
+          If hTile.Opacity < $fOpacity Then 
+            hTile.Opacity += $fGradStep
+            Raise Refresh
+          Endif
+        Else
+          Try Paint.DrawImage(hTile.Image, hTile.X * 256 - hMap.PixelBox.X, hTile.Y * 256 - hMap.PixelBox.Y,,, $fOpacity)
+        Endif
+        
+        'Draw.Foreground = Color.Green
+        'Draw.Text("TileOK", hTile.X * 256 - hMap.PixelBox.X, hTile.Y * 256 - hMap.PixelBox.Y)
+      Case _Tile.Error
+        Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, Min(125, (255 * $fOpacity))))
+        Paint.Rectangle(hTile.X * 256 - hMap.PixelBox.X, hTile.Y * 256 - hMap.PixelBox.Y, 256, 256)
+        Paint.Fill
+        'Draw.Image(Picture["icon:/256/cancel"].Image, hTile.X * 256 - hMap.PixelBox.X, hTile.Y * 256 - hMap.PixelBox.Y)
+      Case _Tile.Loading
+        ' Draw.Foreground = Color.Red
+        ' Draw.Font.Bold = True
+        ' Draw.Text("Loading: " & hTile.x & " / " & hTile.y, hTile.X * 256 - hMap.PixelBox.X, hTile.Y * 256 - hMap.PixelBox.Y)
+    End Select
+    
+    ' Draw.Foreground = Color.Green
+    ' Draw.rect(hpx.x - hmap.PixelBox.x, hpx.Y - hmap.PixelBox.y, hpx2.x - hpx.x, hpx2.y - hpx.Y)
+  Next
+  
+End
+
+Public Sub Load()
+  
+  Dim ptFirst, ptLast As Point
+  Dim hMap As Map = GetMap()
+  Dim iX, iY As Integer
+  Dim hTile As New _Tile
+  Dim sTileName As String
+  Dim aTileOrder As New String[]
+  Dim iDist As Integer
+  Dim ptTileCenter As Point
+  Dim ars As String[]
+  Dim mpFirst As MapPoint
+  Dim mpLast As MapPoint
+  Dim sTileUrl As String
+  'Dim hresult As Result
+  Dim hStat As Stat
+  Dim s As String
+  Dim sExec As String
+  Dim bFirst As Boolean
+
+
+  '***********************************
+  
+  mpFirst = Geo.PixelToMapPoint(Point(hMap.PixelBox.x, hMap.PixelBox.y), hmap.Zoom)
+  mpLast = Geo.PixelToMapPoint(Point(hMap.PixelBox.Right, hMap.PixelBox.Bottom), hmap.Zoom)
+  ptTileCenter = Geo.MapPointToTile(hMap.Center, hMap.Zoom)
+  ptFirst = Geo.MapPointToTile(mpFirst, hmap.Zoom)
+  ptLast = Geo.MapPointToTile(mpLast, hmap.Zoom)
+  
+  $aPreload.Clear
+  
+  For iX = ptFirst.X - 1 To ptLast.X + 1
+    For iY = ptFirst.Y - 1 To ptLast.Y + 1
+      iDist = Sqr((iX - ptTileCenter.X) ^ 2 + (iY - ptTileCenter.Y) ^ 2)
+      aTileOrder.Add(Subst("&1/&2/&3", iDist, iY, iX))
+    Next
+  Next
+  aTileOrder.Sort(gb.Descent)
+  
+  $aTiles.Clear
+  '$aStack.Clear
+  'ptTileCenter = Geo.MapPointToTile(hMap.Center, hMap.Zoom)
+  'Print "Tile Center = " & ptTileCenter.x & "   " & ptTileCenter.Y
+  For Each sTileName In aTileOrder
+    ars = Split(sTileName, "/") 
+    iY = CInt(ars[1])
+    iX = CInt(ars[2])
+    sTileName = Subst("&1-&2-&3-&4.png", hMap.Zoom, iY, iX, $iVersion)
+    If Not $coltiles.Exist(sTileName) Then
+      hTile = New _Tile
+      hTile.X = iX
+      hTile.Y = iY
+      hTile.Z = hMap.Zoom
+      hTile.Name = sTileName
+      If Exist($sCachePath &/ hTile.Name) Then 
+        'Print $db.Tables["tiles"]
+        ' hresult = $db.Exec("Select * from tiles where name=&1", "toto")
+        ' 'hresult = $DB.Find("tiles", "name=&1", hTile.Name)
+        ' 
+        ' If hresult.Available And If $bCacheRefresh And If DateDiff(Now(), hresult!lastmodified, gb.Day) > $iCacheRefreshDelay Then
+        '   ReLoadTile(hTile)
+        ' Else
+        ' hStat = Stat($sCachePath &/ hTile.Name)
+        '   Print DateDiff(Now(), hStat.LastModified, gb.Day)
+        ' If $bCacheRefresh And If DateDiff(Now(), hStat.LastChange, gb.Day) > $iCacheRefreshDelay Then
+        '   ReLoadTile(hTile)
+        ' Else
+        hTile.Status = _Tile.Normal
+        Try hTile.Image = Image.Load($sCachePath &/ hTile.Name)
+        If Error Then 
+          'Error "Image illisible  -> " & hTile.Name
+          ReLoadTile(hTile)
+        Else
+          'On valide la Date de dernier acces
+          'If $bHaveCache Then $aUsedTiles.Add(hTile.Name)
+          'Exec ["touch", $sCachePath &/ hTile.Name]
+          hTile.Opacity = $fOpacity
+        Endif
+        '       Endif
+        '         Endif
+      Else
+        hTile.Status = _Tile.Loading
+        'Debug "loading of : " & hTile.Name
+        If Not $aStack.Exist(hTile.Name) Then
+          sTileUrl = GetTileUrl(hTile)
+          If sTileUrl Then
+            $aStack.Push(hTile.Name)
+            $aStack.Push(sTileUrl)
+          Endif
+        Endif
+      Endif
+      
+      $coltiles[hTile.Name] = hTile
+      
+    Else
+      hTile = $coltiles[sTileName]
+      ' If hTile.Status = _Tile.Loading Then
+      '   hTile.TryCount = 0
+      '   ReLoadTile(hTile)
+      ' Endif
+    Endif 
+    
+    $aTiles.Add(sTileName)
+  Next
+  
+  'Loading of uppers tiles
+  ' If hmap.Zoom > 1 Then
+  '   ptFirst = Geo.MapPointToTile(mpFirst, hmap.Zoom - 1)
+  '   ptLast = Geo.MapPointToTile(mpLast, hmap.Zoom - 1)
+  '   For iX = ptFirst.X To ptLast.X 
+  '     For iY = ptFirst.Y To ptLast.Y 
+  '       sTileName = Subst("&1-&2-&3.png", hMap.Zoom - 1, iY, iX)
+  '       If Exist($sCachePath &/ sTileName) Then Continue
+  '       $aPreload.Push(sTileName)
+  '       $aPreload.Push(GetTileUrlpt(iX, iY, hMap.Zoom - 1))
+  '     Next
+  '   Next
+  ' Endif
+  ' If hmap.Zoom < 18 Then
+  '   ptFirst = Geo.MapPointToTile(mpFirst, hmap.Zoom + 1)
+  '   ptLast = Geo.MapPointToTile(mpLast, hmap.Zoom + 1)
+  '   For iX = ptFirst.X To ptLast.X 
+  '     For iY = ptFirst.Y To ptLast.Y 
+  '       sTileName = Subst("&1-&2-&3.png", hMap.Zoom + 1, iY, iX)
+  '       If Exist($sCachePath &/ sTileName) Then Continue
+  '       $aPreload.Push(sTileName)
+  '       $aPreload.Push(GetTileUrlpt(iX, iY, hMap.Zoom + 1))
+  '     Next
+  '   Next
+  ' Endif
+  $bLoading = $aStack.Count > 0
+  $bPreloadMode = False
+  $tmrGet.Trigger
+  'tmrGet_Timer
+  
+End
+
+Private Sub ReLoadTile(hTile As _Tile)
+  ' if more than 3 try then stop try
+  
+  'Dim hresult As Result
+  
+  If hTile.TryCount > 3 Then 
+    hTile.Status = _Tile.Error
+    $tmrGet.Trigger
+    Raise Refresh
+    Return
+  Endif
+  'If the tile exist then remove it
+  If Exist($sCachePath &/ hTile.Name) Then 
+    Kill $sCachePath &/ hTile.Name
+
+  Endif
+  If Not $aStack.Exist(hTile.Name) Then
+    hTile.Status = _Tile.Loading
+    Inc hTile.TryCount
+    'Error "rechargement de : " & hTile.Name
+    
+    $aStack.Push(hTile.Name)
+    $aStack.Push(GetTileUrl(hTile))
+    $bPreloadMode = False
+  Endif
+  $tmrGet.Trigger
+  
+End
+
+Private Function MakeDir(Path As String) As Boolean
+  
+  Dim ars As String[]
+  Dim sDir, s As String
+  
+  sDir = "/"
+  
+  ars = Split(Path, "/")
+  For Each s In ars
+    sDir &/= s
+    If Not Exist(sDir) Then
+      Mkdir sDir
+    Endif
+    
+  Next
+  
+  If Map._Debug Then Debug "Création du Dossier: " & sDir
+  
+Catch
+  
+  Return True
+  
+End
+
+Private Function GetMap() As Map
+  
+  Return Object.Parent(Me)
+  
+End
+
+Public Sub tmrGet_Timer()
+  
+  Dim sUrl, sFile As String
+  Dim hClient As HttpClient
+  
+  Do
+    
+    If $bPreloadMode Then
+      $bLoading = False
+      If $aPreload.Count = 0 Then Return
+      hClient = GetClient()
+      If Not hClient Then Return
+      sUrl = $aPreload.Pop()
+      sFile = $aPreload.Pop()
+    Else
+      $bLoading = $aStack.Count > 0
+      If $aStack.count = 0 Then 
+        $bPreloadMode = True
+        Return
+      Endif
+      hClient = GetClient()
+      If Not hClient Then Return
+      Inc $iCli
+      sUrl = $aStack.Pop()
+      sFile = $aStack.Pop()
+    Endif
+    
+    hClient.Url = sUrl
+    'Print surl
+    hClient.Tag = sFile
+    hClient.Get(Null, $sCachePath &/ sFile)
+    
+  Loop
+  
+End
+
+Private Sub GetClient() As HttpClient
+  
+  Dim i As Integer
+  
+  For i = 0 To $aClients.max
+    If $aClients[i].Status = Net.Inactive Then Return $aClients[i]
+  Next
+  
+End
+
+Public Sub Client_Finished()
+  
+  Dim hTile As _Tile 
+  'Dim hresult As Result
+  
+  Dec $iCli
+  'If Not $bPreloadMode Then6752042.96,2525540.18,6751587.00,2525742.70
+  hTile = $colTiles[Last.Tag]
+  If Not hTile Then Goto Skip
+  Try hTile.Image = Image.Load($sCachePath &/ hTile.Name)
+  If Error Then 
+    'Error "Image illisible  -> " & hTile.Name
+    ReLoadTile(hTile)
+    Return
+  Endif
+  'Print hTile.Name
+  hTile.Status = _Tile.Normal
+  'If $bHaveCache Then $aNewTiles.Add(hTile.Name)
+  ' 'The tile have been loaded and the file is created so now 
+  ' 'we add an entry to the database
+  ' hresult = $DB.Create("tiles")
+  ' hresult!name = hTile.Name
+  ' hresult!lastmodified = Now()
+  ' hresult!version = hTile.Version
+  ' hresult!lastaccess = Now()
+  ' hresult.Update
+  Raise Refresh
+  'Endif
+Skip:
+  $tmrGet.Trigger
+  'Debug "Fichier téléchargé et chargé: " & Last.Tag
+  
+End
+
+Public Sub Client_Error()
+  
+  Dim hTile As _Tile
+  
+  Dec $iCli
+  'If Not $bPreloadMode Then
+  hTile = $coltiles[Last.Tag]
+  If Not hTile Then Goto Skip
+  'Debug "erreur : " & hTile.Name
+  ReLoadTile(hTile)
+  'Endif
+Skip:
+  $tmrGet.Trigger
+  
+End
+
+Public Sub Refresh()
+  
+  Dim i As Integer
+  
+  $coltiles.Clear
+  $aTiles.Clear
+  $aStack.Clear
+  $aPreload.Clear
+  For i = 0 To $aClients.Max  
+    $aClients[i].Stop
+    Try Kill $sCachePath &/ $aClients[i].Tag
+  Next
+  
+End
+
+Private Function GetTileUrl(hTile As _Tile) As String
+  
+  Return GetTileUrlpt(hTile.X, hTile.Y, hTile.Z)
+  
+End
+
+' Private Function GetWMSTilept(X As Integer, Y As Integer, Z As Integer) As String
+'   
+'   Dim hBound As MapBounds = Geo.TileBounds(X, Y, Z)
+'   Dim hbound2 As MapBounds
+'   ' Dim hbound2 As MapBounds = Geo.TileBounds(x + 1, y - 1, z)
+'   Dim hConv, hConv2 As MapBounds
+'   Dim sTemp As String
+'   Dim s As String
+'   
+'   If Not Me.MaxBounds.Collide(hbound) Then Return
+'   
+'   For Each s In $cWMSArgs
+'     
+'     sTemp &= "&" & $cWMSArgs.Key & "=" & s 
+'     
+'   Next
+'   
+'   If $cWMSArgs.Exist("bbox") Then 
+' 
+'     'Invertion de coordonée
+'     ' Print "de ->            ", hbound.lat2, hbound.Lon, hbound.Lat, hbound.Lon2
+'     ' hbound2 = $prjLatLon.TransformMBounds($prjWMS, hbound)
+'     ' Print "de lamb ->       ", hbound2.lat2, hbound2.Lon, hbound.Lat, hbound.Lon2
+'      hbound = MapBounds(MapPoint(hBound.lat2, hBound.lon), MapPoint(hBound.lat, hBound.lon2))
+'     ' Print "converti ->      ", hbound.lat, hbound.Lon, hbound.Lat2, hbound.Lon2
+'     ' hbound2 = $prjLatLon.TransformMBounds($prjWMS, hbound)
+'     ' Print "converti lamb -> ", hbound2.lat, hbound2.Lon, hbound.Lat2, hbound.Lon2
+'     ' Print
+'     If $prjWMS Then
+'       hbound = $prjLatLon.TransformMBounds($prjWMS, hbound)
+'     Endif
+'     sTemp = Replace(sTemp, "{lat}", CStr(hBound.Lat))
+'     sTemp = Replace(sTemp, "{lon}", CStr(hbound.Lon))
+'     sTemp = Replace(sTemp, "{lat2}", CStr(hbound.lat2))
+'     sTemp = Replace(sTemp, "{lon2}", CStr(hbound.lon2))
+'     
+'   Else
+'     If $cWMSArgs.Exist("tilerow") Or If $cWMSArgs.Exist("TILEROW") Then
+'       If InStr(sTemp, "{q}") Then
+'         sTemp = Replace(sTemp, "{q}", TileToQuadKey(x, y, z))
+'       Else
+'         sTemp = Replace(sTemp, "{x}", CStr(X))
+'         sTemp = Replace(sTemp, "{y}", CStr(Y))
+'         sTemp = Replace(sTemp, "{z}", CStr(Z))
+'         
+'       Endif
+'     Endif
+'   Endif
+'   
+'   'sTemp = $sPattern & 
+'   'sTemp = $sPattern & "?bbox=" & hConv.Lat & "," & hConv.Lon & "," & hConv.Lat2 & "," & hConv.Lon2 
+'   Print sTemp
+'   Return $sPattern & "?" & sTemp
+'   
+' End
+Private Function GetWMSTilept(X As Integer, Y As Integer, Z As Integer) As String
+  
+  Dim hBound As MapBounds = Geo.TileBounds(X, Y, Z)
+  ' Dim hbound2 As MapBounds = Geo.TileBounds(x + 1, y - 1, z)
+  Dim hConv, hConv2 As MapBounds
+  Dim sTemp As String
+  Dim s As String
+  
+  If Not Me.MaxBounds.Collide(hbound) Then Return
+  
+  For Each s In $cWMSArgs
+    
+    sTemp &= "&" & $cWMSArgs.Key & "=" & s 
+    
+  Next
+  
+  If $cWMSArgs.Exist("bbox") Then 
+    'Print X, Y, Z, hbound.Lat, hbound.Lon, hbound.lat2, hbound.lon2
+    'Invertion de coordonée
+    'hbound = MapBounds(MapPoint(hBound.lat2, hBound.lon), MapPoint(hBound.lat, hBound.Lon2))
+    'Swap hbound.Lat, hbound.Lat2
+    'Print X, Y, Z, hbound.Lat, hbound.Lon, hbound.lat2, hbound.lon2
+    If $prjWMS Then
+      hbound = $prjLatLon.TransformMBounds($prjWMS, hbound)
+    Endif
+    'Print X, Y, Z, hbound.Lat, hbound.Lon, hbound.lat2, hbound.lon2
+    sTemp = Replace(sTemp, "{lat}", CStr(hBound.Lat))
+    sTemp = Replace(sTemp, "{lon}", CStr(hbound.Lon))
+    sTemp = Replace(sTemp, "{lat2}", CStr(hbound.lat2))
+    sTemp = Replace(sTemp, "{lon2}", CStr(hbound.lon2))
+    
+  Else
+    If $cWMSArgs.Exist("tilerow") Or If $cWMSArgs.Exist("TILEROW") Then
+      If InStr(sTemp, "{q}") Then
+        sTemp = Replace(sTemp, "{q}", TileToQuadKey(x, y, z))
+      Else
+        sTemp = Replace(sTemp, "{x}", CStr(X))
+        sTemp = Replace(sTemp, "{y}", CStr(Y))
+        sTemp = Replace(sTemp, "{z}", CStr(Z))
+        
+      Endif
+    Endif
+  Endif
+  
+  'sTemp = $sPattern & 
+  'sTemp = $sPattern & "?bbox=" & hConv.Lat & "," & hConv.Lon & "," & hConv.Lat2 & "," & hConv.Lon2 
+  
+  'Print X, Y, Z, hbound.Lat, hbound.Lon, hbound.lat2, hbound.lon2
+  'Print X, Y, Z, Mid(sTemp, InStr(sTemp, "bbox"))
+  ' Print 
+  ' Print
+  
+  Return $sPattern & "?" & sTemp
+  
+End
+
+Private Function GetTileUrlpt(X As Integer, Y As Integer, Z As Integer) As String
+  
+  Dim sTemp As String
+  
+  If $bUseWMS Then
+    sTemp = GetWMSTilept(X, Y, Z) 
+    If Map.Debug Then Debug sTemp
+    Return sTemp
+  Else
+    If $bIsQuadKey Then
+      sTemp = Replace($sPattern, "{q}", TileToQuadKey(X, Y, Z))
+    Else
+      sTemp = Replace($sPattern, "{x}", CStr(X))
+      sTemp = Replace(sTemp, "{y}", CStr(Y))
+      sTemp = Replace(sTemp, "{z}", CStr(Z))
+    Endif
+    sTemp = Replace(sTemp, "{s}", $aSubDomains[Round(Rnd(0, $aSubDomains.Max))])
+    If Map.Debug Then Debug sTemp
+    Return sTemp
+    
+  Endif
+  
+End
+
+Public Sub SetPattern(sPattern As String, Optional cArgs As Collection)
+  
+  Dim s As Variant
+  
+  $sPattern = sPattern
+  
+  If InStr($sPattern, "{q}") Then 
+    $bIsQuadKey = True
+  Else
+    $bIsQuadKey = False
+  Endif
+  
+  If cArgs Then
+    For Each s In cArgs
+      $sPattern = Replace($sPattern, "{" & cArgs.Key & "}", s)
+    Next
+  Endif
+  
+End
+
+Private Function SubDomains_Read() As String[]
+  
+  Return $aSubDomains
+  
+End
+
+Private Sub SubDomains_Write(Value As String[])
+  
+  $aSubDomains = Value
+  
+End
+
+Public Function CountActiveClients() As Integer
+  
+  Dim i, j As Integer
+  
+  For i = 0 To $aClients.Max
+    If $aClients[i].Status <> Net.Inactive Then Inc j
+  Next
+  Return j
+  
+End
+
+Private Function TileToQuadKey(X As Integer, Y As Integer, Z As Integer) As String
+  
+  Dim quadKey As String
+  Dim i, digit, mask As Integer
+  
+  For i = z To 1 Step -1
+    digit = 0
+    mask = Lsl(1, (i - 1))
+    If (x And mask) <> 0 Then digit += 1
+    If (y And mask) <> 0 Then digit += 2
+    quadKey &= digit
+    
+  Next
+  Return quadKey
+  
+End
+
+Private Function Opacity_Read() As Float
+  
+  Return $fOpacity
+  
+End
+
+Private Sub Opacity_Write(Value As Float)
+  
+  $fOpacity = Min(1, Max(0, Value))
+  $fGradStep = $fOpacity / 10
+  
+End
+
+Public Sub _free()
+  
+  Dim hClient As HttpClient
+  
+  For Each hClient In $aClients
+    hClient.Stop
+    
+  Next
+  $aClients.Clear
+  '   $DB.Close
+  
+End
+
+Private Function Loading_Read() As Boolean
+  
+  Return $bLoading '
+  
+End
+
+'''Define the cookie file
+Public Function SetCoockieFile(sFile As String) As Object
+  
+  Dim hc As HttpClient
+  
+  If Not sFile Then
+    For Each hc In $aClients
+      hc.UpdateCookies = False
+      hc.CookiesFile = ""
+    Next
+    
+  Else
+    
+    For Each hc In $aClients
+      hc.UpdateCookies = True
+      hc.CookiesFile = sFile
+    Next
+    
+  Endif
+  
+End
+
+Private Function UseWebMapService_Read() As Boolean
+  
+  Return $bUseWMS
+  
+End
+
+Private Sub UseWebMapService_Write(Value As Boolean)
+  
+  $bUseWMS = Value
+  
+End
+
+Private Function WMSArgs_Read() As Collection
+  
+  Return $cWMSArgs
+  
+End
+
+Private Sub WMSArgs_Write(Value As Collection)
+  
+  $cWMSArgs = Value  
+  
+End
+
+Private Function MaxBounds_Read() As MapBounds
+  
+  Return $mbMaxBounds
+  
+End
+
+Private Sub MaxBounds_Write(Value As MapBounds)
+  
+  $mbMaxBounds = value
+  
+End
+
+Private Function WMSProjection_Read() As String
+  
+  Return $WMSProj
+  
+End
+
+Private Sub WMSProjection_Write(Value As String)
+  
+  $WMSProj = Value
+  $prjWMS = New Proj(Value)
+  
+End
+
+Private Function CacheRefreshDelay_Read() As Integer
+  Return $iCacheRefreshDelay
+End
+
+Private Sub CacheRefreshDelay_Write(Value As Integer)
+  $iCacheRefreshDelay = Value
+End
+
+Public Sub ClearCache(Optional iLastUse As Integer)
+  If $sCachePath = Null Or Len($sCachePath) < 5 Then Return
+  If iLastUse Then
+    Exec ["find", ".", "-mtime", "+" & Str(iLastUse), "-delete"] With ["PWD", $sCachePath]
+  Else
+    Exec ["rm", $sCachePath &/ "*"]
+  Endif
+  
+  
+End
+

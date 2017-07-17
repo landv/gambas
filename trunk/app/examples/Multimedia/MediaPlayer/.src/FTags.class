@@ -1,0 +1,147 @@
+' Gambas class file
+
+Private $cTags As New Collection
+Private $aTags As New String[]
+
+Private btnResetBalance As CButton
+
+Private Sub GetBalanceName(sName As String) As String
+
+  Select Case LCase(sName)
+    Case "hue"
+      Return ("Hue")
+    Case "saturation"
+      Return ("Saturation")
+    Case "contrast"
+      Return ("Contrast")
+    Case "brightness"
+      Return ("Brightness")
+    Case Else
+      Return sName
+  End Select
+
+End
+
+Public Sub Clear(hPlayer As MediaPlayer)
+  
+  Dim I As Integer
+  Dim hLabel As Label
+  Dim hSlider As Slider
+  Dim H As Integer
+  
+  $cTags.Clear
+  $aTags.Clear
+  gvwTags.Rows.Count = 0
+  
+  panBalance.Children.Clear
+  
+  For I = 0 To hPlayer.Balance.Count - 1
+    
+    With hPlayer.Balance[I]
+    
+      hLabel = New Label(panBalance)
+      hLabel.Text = GetBalanceName(.Name)
+      hLabel.Foreground = lblBalance.Foreground
+      hLabel.ResizeScaled(16, 4)
+      
+      hSlider = New Slider(panBalance) As "sldBalance"
+      hSlider.ResizeScaled(4, 4)
+      hSlider.Expand = True
+      hSlider.MinValue = .Min
+      hSlider.MaxValue = .Max
+      hSlider.Value = .Value
+      hSlider.Tag = I
+      
+      H += Desktop.Scale * 5
+      
+    End With
+    
+  Next
+  
+  panBalance.Parent.H = H + lblBalance.H + Desktop.Scale * 4
+  panBalance.Parent.Show
+  
+End
+
+Public Sub AddTag(sTag As String, sValue As String)
+  
+  $cTags[sTag] = sValue
+  
+  If Not $aTags.Exist(sTag) Then
+    $aTags.Add(sTag)
+    $aTags.Sort
+    gvwTags.Rows.Count = $aTags.Count
+    gvwTags.Columns[0].Width = -1
+  Endif
+  
+  gvwTags.Refresh
+  
+End
+
+
+Public Sub gvwTags_Data(Row As Integer, Column As Integer)
+
+  If Column = 0 Then
+    gvwTags.Data.Text = $aTags[Row]
+  Else
+    gvwTags.Data.Text = $cTags[$aTags[Row]]
+    gvwTags.Data.WordWrap = True
+  Endif
+
+End
+
+Public Sub _new()
+
+  Dim sFile As String
+  
+  gvwTags.Columns.Count = 2
+  
+  btnResetBalance = New CButton(panLabel) As "btnResetBalance"
+  btnResetBalance.Resize(panLabel.H, panLabel.H)
+  btnResetBalance.Image = Image.Load("undo.png")
+
+  cmbVideoDevice.Clear
+  If Exist("/sys/class/video4linux") Then
+    For Each sFile In Dir("/sys/class/video4linux")
+      cmbVideoDevice.Add(Trim(File.Load("/sys/class/video4linux" &/ sFile &/ "name")) & " (/dev/" & sFile & ")")
+    Next
+  Else
+    cmbVideoDevice.Add(("No video device"))
+    cmbVideoDevice.Enabled = False
+  Endif
+
+End
+
+Public Sub Form_Resize()
+
+  panTags.Move(0, 0, Me.W - Desktop.Scale, Me.H)
+
+End
+
+Public Sub sldBalance_Change()
+  
+  FMain.SetBalance(Last.Tag, Last.Value)
+  
+End
+
+
+Public Sub btnResetBalance_Click()
+
+  Dim hCtrl As Control
+  Dim hSlider As Slider
+  
+  For Each hCtrl In panBalance.Children
+    If hCtrl Is Slider Then
+      hSlider = hCtrl
+      CAnimation.Start(hSlider, "Value", 0, 250)
+    Endif
+  Next
+  
+End
+
+Public Sub GetVideoDevice() As String
+  
+  If cmbVideoDevice.Enabled Then Return cmbVideoDevice.Text
+  
+End
+

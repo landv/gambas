@@ -1,0 +1,47 @@
+Different people have different terminal dimensions. The following shall
+outline my attempt to make Pong soundly playable with every one.
+
+Consider this picture. Assume that it is your terminal:
+
+...........    Legend: +, -, | = Real border (of terminal)
+.        '.            .       = Imaginary border
+.       ' .            o       = Ball
+.      '  .            "       = Real flying behaviour
+.     '   .            '       = Equivalent imaginary flying behaviour
++----'----+            The real and imaginary border make a square w^2.
+|   "     | \
+|  " "   "|  |
+| "   " " |  | Height h
+|o     "  | /
++---------+
+ \_______/
+  Width w
+
+We clearly want that the ball gets some velocity linearly proportional to
+the distance it has to fly so that the time the ball needs (and the human
+player has time to react) is constant.
+
+As you can see, the distance from paddle 1 to paddle 2 is sqrt(2w^2) units.
+The ball goes one unit per Timer event. We need a Timer.Delay that makes the
+constant time elapse after sqrt(2w^2) Timer events.
+
+Let's arbitrarily set the time from one paddle to the other to 4s:
+
+	Timer.Delay = 4000 / Sqr(2 * w ^ 2).
+
+This is the starting delay. With each hit on a paddle, it decrements.
+
+This was tested with ANSI's 80*24 terminal dimensions in xterm and my home
+180*74 on the Linux console. Feel free to set the LINES and COLUMNS
+environment variables to try different proportions.
+
+One may see the crux with this approach: The larger/smaller the terminal,
+the faster/slower the ball. I found both scenarios equally hard: with a
+large terminal, the paddle is large; with a small terminal, the paddle is
+small. It compensates.
+
+TODO: The above is not true for terminals which are much _wider_ than high.
+      I found it problematic to play "LINES=10" but easy with "COLUMNS=30".
+
+BTW: The NPCs make one step per each ball step. You may have to resize your
+     terminal to be able to win against 'master' ;-)

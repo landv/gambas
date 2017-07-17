@@ -1,0 +1,259 @@
+' Gambas class file
+
+Public Enum SORT_BY_DATE, SORT_BY_NAME, SORT_BY_PATH 
+
+Static Public All As New CRecentProject[]
+Static Public Sort As Integer
+Static Public LastLoad As Date
+
+Static Private $hSettings As Settings
+
+Public Const MAX_RECENT As Integer = 100
+
+Public Path As String
+Public ({Date}) As Date
+
+Public Sub _new(sPath As String, dDate As Date)
+  
+  If IsNull(dDate) Then Try dDate = Stat(sPath &/ ".startup").LastModified
+  If IsNull(dDate) Then Try dDate = Stat(sPath &/ ".project").LastModified
+  If IsNull(dDate) Then Return
+  If Not Exist(sPath &/ ".project") Then Return
+
+  Path = sPath
+  {Date} = dDate
+  
+End
+
+Public Sub _compare(hRecentFile As CRecentProject) As Integer
+  
+  Select Case Sort
+    Case SORT_BY_NAME
+      Return Comp(File.Name(Path), File.Name(hRecentFile.Path), gb.Natural + gb.IgnoreCase)
+    Case SORT_BY_PATH
+      Return Comp(Path, hRecentFile.Path, gb.Natural + gb.IgnoreCase)
+    Case Else
+      Return Sgn(hRecentFile.Date - {Date})
+  End Select
+  
+End
+
+Public Sub IsValid() As Boolean
+  
+  If Path And If Exist(Path) Then Return True
+  
+End
+
+
+Public Sub GetTitle(iSort As Integer) As String
+  
+  Select Case iSort
+    Case SORT_BY_NAME
+      Return String.UCase(String.Left(File.Name(Path)))
+    Case SORT_BY_PATH
+      Return Replace(File.Dir(Path), User.Home, "~")
+    Case Else
+      Return GetDateTitle()
+  End Select
+  
+End
+  
+Private Sub GetDateTitle() As String
+
+  Dim dToday As Date = Date(Now)
+  Dim dDate As Date = Date({Date})
+  Dim sText As String
+  
+  If dDate = dToday Then
+    Return ("Today")
+  Else If DateDiff(dDate, dToday, gb.Day) = 1 Then
+    Return ("Yesterday")
+  Else If DateDiff(dDate, dToday, gb.Day) = 2 Then
+    Return ("Two days ago")
+  Else If DateDiff(dDate, dToday, gb.Day) <= 7 Then
+    Return ("This week")
+  Else If Year(dToday) = Year(dDate) And If Month(dToday) = Month(dDate) Then
+    Return ("This month")
+  Else
+    sText = Format(dDate, "mmmm yyyy")
+    Return String.UCase(String.Left(sText)) & String.Mid$(sText, 2)
+  Endif
+  
+End
+
+
+Static Public Sub Clear()
+  
+  All.Clear
+  Save
+  
+End
+
+Static Public Sub Load()
+
+  Dim nRecent As Integer
+  Dim iInd As Integer
+  Dim sPath As String
+  Dim hRecentFile As CRecentProject
+
+  If Not $hSettings Then
+    $hSettings = New Settings("gambas3.recent")
+  Endif
+
+  If Not IsOutOfDate(LastLoad) Then Return
+  
+  $hSettings.Reload
+  nRecent = $hSettings["/Recent/Count", 0]
+  
+  If nRecent = 0 Then
+    nRecent = Settings["/Recent/Count", 0]
+    If nRecent Then
+      $hSettings["/Recent/Count"] = nRecent
+      For iInd = 1 To nRecent
+        $hSettings["/Recent/File[" & CStr(iInd) & "]"] = Settings["/Recent/File[" & CStr(iInd) & "]"]
+        $hSettings["/Recent/Date[" & CStr(iInd) & "]"] = Settings["/Recent/Date[" & CStr(iInd) & "]"]
+      Next
+    Endif
+  Endif
+  
+  All = New CRecentProject[]
+
+  For iInd = 1 To nRecent
+    sPath = $hSettings["/Recent/File[" & CStr(iInd) & "]"]
+    If sPath Then
+      hRecentFile = New CRecentProject(sPath, CDate($hSettings["/Recent/Date[" & CStr(iInd) & "]"]))
+      If hRecentFile.IsValid() Then
+        All.Add(hRecentFile)
+        If All.Count >= MAX_RECENT Then Break
+      Endif
+    Endif
+  Next
+  
+  Try LastLoad = Stat($hSettings.Path).LastModified
+  
+End
+
+Static Private Sub Save()
+
+  Dim iInd As Integer
+
+  $hSettings.Clear
+
+  $hSettings["/Recent/Count"] = All.Count
+
+  Sort = SORT_BY_DATE
+  All.Sort()
+
+  For iInd = 0 To All.Max
+    $hSettings["/Recent/File[" & CStr(iInd + 1) & "]"] = All[iInd].Path
+    $hSettings["/Recent/Date[" & CStr(iInd + 1) & "]"] = CStr(All[iInd].Date)
+  Next
+
+  $hSettings.Save
+
+  LastLoad = Stat($hSettings.Path).LastModified
+
+End
+
+Static Private Sub AddRemove(sPath As String, bAdd As Boolean)
+
+  Dim iInd As Integer
+  Dim hRecentFile As CRecentProject
+  
+  Load
+
+  If Right$(sPath) = "/" Then sPath = Left$(sPath, -1)
+
+  'sPath = "(" & File.BaseName(sPath) & ") " & File.Dir(sPath)
+  Sort = SORT_BY_DATE
+  All.Sort()
+
+  While iInd < All.Count
+
+    If All[iInd].Path = sPath Then
+      All.Remove(iInd)
+    Else
+      Inc iInd
+    Endif
+
+  Wend
+
+  If bAdd Then
+
+    hRecentFile = New CRecentProject(sPath, CStr(Now))
+    If hRecentFile.IsValid() Then 
+    
+      All.Add(hRecentFile, 0)
+    
+      'nMax = Settings["/Recent/Max", DEFAULT_MAX_RECENT]
+      While All.Count > MAX_RECENT
+        All.Remove(All.Max)
+      Wend
+      
+    Endif
+    
+  Endif
+
+  Save
+
+End
+
+Static Public Sub Add(sPath As String)
+  
+  AddRemove(sPath, True)
+  
+End
+
+
+Static Public Sub Remove(sPath As String)
+
+  AddRemove(sPath, False)
+
+End
+
+Static Public Sub Check()
+
+  Dim I As Integer
+  Dim hRecent As CRecentProject
+  Dim bRemove As Boolean
+  
+  While I < All.Count
+    hRecent = All[I]
+    If hRecent.IsValid() Then
+      Inc I
+    Else
+      All.Remove(I)
+      bRemove = True
+    Endif
+  Wend
+  
+  If bRemove Then Save
+  
+End
+
+
+Static Public Sub Get(Optional iSort As Integer) As CRecentProject[]
+  
+  Load
+  
+  Sort = iSort
+  All.Sort()
+  
+  Return All
+  
+End
+
+Static Public Sub Exit()
+  
+  All = Null
+  
+End
+
+Static Public Sub IsOutOfDate(dDate As Date) As Boolean
+
+  If dDate And If Stat($hSettings.Path).LastModified <= dDate Then Return
+  Return True  
+  
+Catch
+
+End

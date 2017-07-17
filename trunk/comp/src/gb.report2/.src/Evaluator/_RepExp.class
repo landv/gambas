@@ -1,0 +1,50 @@
+' Gambas class file
+
+Inherits Expression
+Public Data As Variant
+Event Data(Name As String)
+Static Private $aFunctions As String[]
+Static Private $aAllowedIdentifiers As String[] = ["page", "pages", "index"]
+
+Static Private Sub LoadFunctions()
+  
+  $aFunctions = Split(File.Load("FunctionsList"), "\n")
+  
+End
+
+
+
+
+Static Public Sub IsIdentifier(Name As String) As Boolean
+  
+  'Print "Identifier : " & Name
+  
+
+Return $aAllowedIdentifiers.Exist(LCase(Name))
+End
+
+Static Public Sub IsSubr(Name As String) As Boolean
+  If Not $aFunctions Then LoadFunctions
+   ' Return if a the 'Name' Gambas subroutine is allowed.
+   Return $aFunctions.Exist(LCase(Name))
+'Print Name
+   
+End
+
+Public Sub GetValue(Name As String) As Variant
+
+   'Return the value Of the 'Name' identifier.
+   Data = 0
+   'Print object.parent(Me)
+   Raise Data(Name)
+   Return Data
+   'Print "Get Value : " & Name
+   'Return "2"
+
+End
+
+' Public Sub Coucou(Value As String) As String
+'   
+'   Return "Coucou " & Value
+'   
+' End

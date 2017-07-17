@@ -1,0 +1,108 @@
+' Gambas class file
+
+Private Sub Reload()
+
+  'Dim I As Integer
+  
+  ' System.Profile = False
+  ' 'TextEditor1.Load("~/test.txt")
+  ' For I = 1 To 100
+  '   TextEditor1.Insert(String$(80, CStr(I) & " ") & "\n")
+  ' Next
+  ' System.Profile = True
+
+  TextEditor1.Highlight = "gambas"
+  'TextEditor1.Load("~/gambas/3.0/trunk/comp/src/gb.form.editor/.src/CLineInfo.class", True)
+  TextEditor1.Load("~/gambas/comp/src/gb.form.editor/.src/CLineInfo.class", True)
+End
+
+Public Sub Form_Open()
+
+  'TextEditor1.LineNumberOffset = 10000
+  
+  'Image.Debug = True
+  
+  'TextEditor1.Highlight = "html"
+  'TextEditor1.Highlight = "C++"
+  Reload
+  
+  'TextEditor1.Load("~/asap/guygle/trunk/gambas/guygle.cgi/.src/Site/Dialog.class")
+  'TextEditor1.Load("~/gambas/3.0/issues/754/test/.src/Main.module")
+  'TextEditor1.Load("~/gambas/3.0/trunk/comp/src/gb.form.editor/.src/TextEditor.class", True)
+  'TextEditor1.Load("/var/log/thttpd/debug.log.old")
+  'TextEditor1.Load("~/cosme/style.css")
+  'TextEditor1.Load("~/gambas/3.0/trunk/app/src/gambas3/.src/Project.module")
+  'TextEditor1.Load("~/gambas/3.0/trunk/gb.qt4/src/CWidget.cpp")
+  'TextEditor1.Load("~/gambas/3.0/trunk/main/share/gb_reserved_temp.h")
+  'TextEditor1.Goto(0, TextEditor1.Count - 1)
+
+  'TextEditor1.Highlight = "webpage"
+  'TextEditor1.Load("test.html")
+
+  ' For Each sLine In Split(File.Load("/proc/self/maps"), "\n")
+  '   If InStr(sLine, "[heap]") Then
+  '     aScan = Scan(sLine, "*-* *")
+  '     Print "------------ Heap size is " & Format(Val("&H" & aScan[1] & "&") - Val("&H" & aScan[0] & "&"), "#,##0") & " bytes."
+  '     Break
+  '   Endif
+  ' Next
+  
+  'TextEditor2.View = TextEditor1
+  
+  'TextEditor1.Text = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+
+  'TextEditor1.Text = "If sType = \"class\" And If Dir(File.Dir(sPath), File.BaseName(sPath) &/ \".*\").Count >= 2 Then Dec iCount\n'titi\n'tata"
+  
+  TextEditor1.SetFocus
+  
+End
+
+Public Sub TextEditor1_Margin()
+
+  TextEditor1[TextEditor1.Line].Breakpoint = Not TextEditor1[TextEditor1.Line].Breakpoint
+
+End
+
+Public Sub txtPrint_Activate()
+
+  TextEditor1.Print(UnQuote(txtPrint.Text))
+
+End
+
+Public Sub Button1_Click()
+
+  TextEditor1.Wrap = Not TextEditor1.Wrap
+  TextEditor1.SetFocus
+
+End
+
+Public Sub Button2_Click()
+
+  TextEditor1.PrintCache
+
+End
+
+Public Sub txtPrint_KeyPress()
+
+  Debug Key.Code;; Quote(Key.Text)
+
+End
+
+Public Sub Button3_Click()
+
+  TextEditor1.Clear
+
+End
+
+Public Sub Button4_Click()
+
+  Reload
+
+End
+
+Public Sub Button5_Click()
+
+  TextEditor1.Styles[Highlight.Background].Color = Color.Yellow
+  
+
+End

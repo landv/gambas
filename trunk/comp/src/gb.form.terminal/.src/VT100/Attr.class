@@ -1,0 +1,220 @@
+' Gambas class file
+
+' Gambas class file
+
+Public Enum Color8, Color256, ColorRGB
+
+Private CSI As String = Chr(27) & "["
+Property Read Modified As Boolean
+
+Property ColorMode As Integer 
+Property Foreground As Integer
+Property Background As Integer 
+Property Bold As Boolean
+Property Hidden As Boolean 
+Property Underline As Boolean 
+Property Reverse As Boolean 
+Property Blink As Boolean 
+
+Private Enum CH_BOLD, CH_HIDDEN, CH_UNDERLINE, CH_REVERSE, CH_BLINK, CH_FOREGROUND, CH_BACKGROUND
+
+Private $aModified As New Boolean[8]
+Private $aValues As New Boolean[8]
+
+Private $iColorMode As Integer = Color8
+Private $iForeground As Integer
+Private $iBackGround As Integer
+
+Public Enum Black, Red, Green, Yellow, Blue, Magenta, Cyan, White
+
+
+Private Function Modified_Read() As Boolean
+
+  Dim b As Boolean
+
+  For Each b In $aModified
+    If b Then Return True
+  Next
+
+End
+
+
+
+Private Function Foreground_Read() As Integer
+
+  Return $iForeground
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  $iForeground = Value
+  $aModified[CH_FOREGROUND] = True
+
+End
+
+Private Function Background_Read() As Integer
+
+  Return $iBackGround
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  $iBackGround = Value
+  $aModified[CH_BACKGROUND] = True
+End
+
+Private Function Bold_Read() As Boolean
+
+  Return $aValues[CH_BOLD]
+
+End
+
+Private Sub Bold_Write(Value As Boolean)
+
+  $aValues[CH_BOLD] = Value
+  $aModified[CH_BOLD] = True
+
+End
+
+Private Function Hidden_Read() As Boolean
+
+  Return $aValues[CH_HIDDEN]
+
+End
+
+Private Sub Hidden_Write(Value As Boolean)
+
+  $aValues[CH_HIDDEN] = Value
+  $aModified[CH_HIDDEN] = True
+
+End
+
+Private Function Underline_Read() As Boolean
+
+  Return $aValues[CH_UNDERLINE]
+
+End
+
+Private Sub Underline_Write(Value As Boolean)
+
+  $aValues[CH_UNDERLINE] = Value
+  $aModified[CH_UNDERLINE] = True
+
+End
+
+Private Function Reverse_Read() As Boolean
+
+  Return $aValues[CH_REVERSE]
+
+End
+
+Private Sub Reverse_Write(Value As Boolean)
+
+  $aValues[CH_REVERSE] = Value
+  $aModified[CH_REVERSE] = True
+
+End
+
+Private Function Blink_Read() As Boolean
+
+  Return $aValues[CH_BLINK]
+
+End
+
+Private Sub Blink_Write(Value As Boolean)
+
+  $aValues[CH_BLINK] = Value
+  $aModified[CH_BLINK] = True
+
+End
+
+Public Sub Reset()
+  
+
+  $aValues = New Boolean[8]
+  $aModified = New Boolean[8]
+  Print CSI & "0m";
+  
+End
+
+
+Private Function ColorMode_Read() As Integer
+
+  Return $iColorMode
+
+End
+
+Private Sub ColorMode_Write(Value As Integer)
+
+  $iColorMode = Value
+  '$bModified = True
+
+End
+
+Public Sub Send()
+  
+  Dim sValue As String
+  If $aModified[CH_BOLD] Then sValue &= IIf($aValues[CH_BOLD], "1;", "22;")
+  If $aModified[CH_HIDDEN] Then sValue &= IIf($aValues[CH_HIDDEN], "8;", "28;")
+  If $aModified[CH_BLINK] Then sValue &= IIf($aValues[CH_BLINK], "5;", "25;")
+  If $aModified[CH_UNDERLINE] Then sValue &= IIf($aValues[CH_UNDERLINE], "4;", "24;")
+  If $aModified[CH_REVERSE] Then sValue &= IIf($aValues[CH_REVERSE], "7;", "27;")
+  
+  If $aModified[CH_FOREGROUND] Then
+    Select Case $iColorMode
+      Case Color8
+        sValue &= (30 + Max(Min($iForeground, 8), 0)) & ";"
+      Case Color256
+         sValue &= "38;5;" & Max(Min($iForeground, 255), 0) & ";"
+      Case ColorRGB
+        sValue &= "38;2;" & Subst("&1;&2;&3;", GetRed($iForeGround), GetGreen($iForeground), GetBlue($iForeground))
+    End Select
+  Endif
+  
+  If $aModified[CH_BACKGROUND] Then
+    Select Case $iColorMode
+      Case Color8
+        sValue &= (40 + Max(Min($iBackGround, 8), 0)) & ";"
+      Case Color256
+         sValue &= "48;5;" & Max(Min($iBackGround, 255), 0) & ";"
+      Case ColorRGB
+        sValue &= "48;2;" & Subst("&1;&2;&3;", GetRed($iBackGround), GetGreen($iBackGround), GetBlue($iBackGround))
+    End Select
+  Endif
+  
+  
+  
+  
+  
+  If Not sValue Then Return
+  
+  If sValue Ends ";" Then sValue = Left(sValue, -1)
+  
+  sValue = CSI & sValue & "m"
+  
+  $aModified = New Boolean[8]
+  
+  Print sValue;
+  
+End
+
+Private Function GetRed(iValue As Integer) As Integer
+  
+  Return Lsr(iValue, 16) And 255
+  
+End
+
+Private Function GetGreen(iValue As Integer) As Integer
+  
+  Return Lsr(iValue, 8) And 255
+  
+End
+
+Private Function GetBlue(iValue As Integer) As Integer
+  
+  Return iValue And 255
+  
+End
+

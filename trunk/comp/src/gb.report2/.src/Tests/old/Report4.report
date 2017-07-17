@@ -1,0 +1,23 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,111,87)
+  Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
+  Index = 0
+  Text = ("")
+  { rv2 ReportVBox
+    #MoveScaled(3,9,107,51)
+    Padding = ReportPadding["Top:5mm;Bottom:5mm;Left:5mm;Right:5mm"]
+    Tag = "**"
+    { rhh ReportHBox
+      #MoveScaled(12,6,84,7)
+      Height = "1cm"
+      Margin = ReportMargin["Top:3mm;Bottom:1mm"]
+      Background = ReportBrush["#00FF00"]
+    }
+    { ReportDrawingArea1 ReportDrawingArea
+      #MoveScaled(10,16,85,27)
+    }
+  }
+  Index = 0
+}

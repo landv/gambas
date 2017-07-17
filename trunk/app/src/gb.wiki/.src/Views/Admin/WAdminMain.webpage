@@ -1,0 +1,78 @@
+<%
+Dim sUser As String
+%>
+<<WHeader>>
+<h2><%=("User management")%></h2>
+<table class="table" cellpadding="8" cellspacing="0" border="0">
+<tr>
+<th><%=("Create user")%></th>
+<th><%= ("Edit user")%></th>
+<th><%=("Delete user")%></th>
+</tr>
+
+<tr><td align="top">
+<form action="/admin/create" method="post" name="new">
+<p>
+<table class="none">
+<tr><td width="100"><%=("Username")%></td><td><input type="text" name="sName" size="16" maxlength="16"></input></td></tr>
+<tr><td><%=("Password")%></td><td><input type="password" name="sPassword" size="16" maxlength="16"></input></td></tr>
+<tr><td><%=("Confirm")%></td><td><input type="password" name="sPasswordAgain" size="16" maxlength="16"></input></td></tr>
+<tr><td><%=("Email")%></td><td><input type="email" name="sEmail" size="16" maxlength="50"></input></td></tr>
+</table>
+</p><input type="submit" value="<%=("Create user")%>" ></input>
+</form>
+</td><td valign="top">
+
+
+<form action="/admin/edit" method="post" name="new">
+<p>
+<table class="none">
+<tr><td width="100"><%=("Name")%></td><td>
+<select name="sName" size="1" style="width: 100%;">
+<%
+For Each sUser In Users.List()
+    Print "<option value=\""; sUser; "\">"; sUser; "</option>"
+Next
+%>
+</select>
+</td></tr>
+<tr><td><%=("Password")%></td><td><input type="password" name="sPassword" size="16" maxlength="16"></input></td></tr>
+<tr><td><%=("Confirm")%></td><td><input type="password" name="sPasswordAgain" size="16" maxlength="16"></input></td></tr>
+</table>
+</p><input type="submit" value="<%=("Edit user")%>"></input>
+</form>
+</td><td valign="top">
+
+<form action="/admin/delete" method="post" name="new">
+<p>
+<table class="none">
+<tr><td width="100"><%=("Name")%></td><td>
+<select name="sUsername" size="1" style="width: 100%;">
+<%
+For Each sUser In Users.List()
+    Print "<option value=\""; sUser; "\">"; sUser; "</option>"
+Next
+%>
+</select>
+</td></tr>
+</table>
+</p><input type="submit" value="<%=("Delete user")%>" ></input>
+</form>
+</td></tr>
+</table>
+
+<h2><%=("Database management")%></h2>
+<form action="/admin/save.sql.bz2" method="post" name="save">
+<input type="submit" value="<%=("Download database")%>" ></input>
+</form>
+
+<form action="/admin/purge" method="post" name="purge">
+<input type="submit" value="<%=("Purge temporary files")%>"></input>
+</form>
+
+<form action="/admin/clear" method="post" name="clear">
+<input type="submit" value="<%=("Clear page cache")%>" ></input>
+</form>
+
+
+<</WHeader>>

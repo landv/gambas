@@ -1,0 +1,94 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(19.1429,40,72,60)
+  Text = ("Edit list property")
+  Arrangement = Arrange.Horizontal
+  Spacing = True
+  Margin = True
+  { VBox1 VBox
+    MoveScaled(0,1,49,46)
+    Expand = True
+    Spacing = True
+    { lstValue ListBox
+      MoveScaled(1,1,46,25)
+      Expand = True
+    }
+    { cmbValue ComboBox
+      MoveScaled(1,28,43,4)
+      Visible = False
+      Enabled = False
+      Sorted = True
+    }
+    { txtValue TextBox
+      MoveScaled(1,32,43,4)
+      Enabled = False
+    }
+  }
+  { VBox3 VBox
+    MoveScaled(51,1,19,59)
+    Spacing = True
+    { btnInsert Button
+      MoveScaled(0,0,18,4)
+      Text = Shortcut(("Insert"), "I")
+      Picture = Picture["icon:/small/add"]
+    }
+    { btnDelete Button
+      MoveScaled(0,5,18,4)
+      Text = Shortcut(("Delete"), "D")
+      Picture = Picture["icon:/small/delete"]
+    }
+    { btnUp Button
+      MoveScaled(0,10,14,4)
+      Text = Shortcut(("Up"), "U")
+      Picture = Picture["icon:/small/up"]
+    }
+    { btnDown Button
+      MoveScaled(0,15,15,4)
+      Text = Shortcut(("Down"), "D")
+      Picture = Picture["icon:/small/down"]
+    }
+    { Panel2 Panel
+      MoveScaled(0,20,2,1)
+    }
+    { btnInvert Button
+      MoveScaled(0,23,16,4)
+      Text = Shortcut(("Invert"), "n")
+      Picture = Picture["img/draw/vflip.png"]
+    }
+    { btnClear Button
+      MoveScaled(0,28,16,4)
+      Text = Shortcut(("Clear"), "e")
+      Picture = Picture["icon:/small/clear"]
+    }
+    { btnCopy Button
+      MoveScaled(0,33,16,4)
+      Text = Shortcut(("Copy"), "C")
+      Picture = Picture["icon:/small/copy"]
+    }
+    { btnPaste Button
+      MoveScaled(0,38,16,4)
+      Text = Shortcut(("Paste"), "P")
+      Picture = Picture["icon:/small/paste"]
+    }
+    { btnUndo Button
+      MoveScaled(0,43,16,4)
+      Text = Shortcut(("Undo"), "U")
+      Picture = Picture["icon:/small/undo"]
+    }
+    { Panel1 Panel
+      MoveScaled(2,49,7,1)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(0,50,16,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(0,55,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

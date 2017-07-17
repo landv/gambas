@@ -1,0 +1,17 @@
+' Gambas class file
+
+Static $iCpt As Integer
+
+Public Sub Form_Close()
+
+  'Message.Info("Hello")
+
+End
+
+Public Sub Form_Open()
+
+  Inc $iCpt
+  Me.Title = "#" & $iCpt
+  Label1.Text = Me.Title
+
+End

@@ -1,0 +1,45 @@
+' Gambas class file
+
+Export
+Create Static
+Property Read Width, W As Integer
+Property Read Height, H As Integer
+Property Background As Char
+
+Static Private $hChar As New Char
+
+Static Public Sub _init()
+  
+  Dim hAttr As New Attr
+  'hAttr.ColorMode = TermColor.Mode256
+  hAttr.Background = TermColor.Desktop
+  $hChar.Attr = hAttr.GetInteger()
+  $hChar.c = Asc(" ")
+  
+End
+
+
+
+Private Function Width_Read() As Integer
+
+  Return File.Out.Term.Width
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return File.Out.Term.Height
+
+End
+
+Private Function Background_Read() As Char
+
+  Return $hChar
+
+End
+
+Private Function Background_Write(Value As Char)
+
+  $hChar = Value
+
+End

@@ -1,0 +1,89 @@
+' Gambas class file
+
+Export 
+
+Static Property Read Control As Control
+Static Property Delay As Integer
+Static Property Font As Font
+Static Property Read Visible As Boolean
+
+Static Public Sub _call((Message) As String, (Control) As Control, Optional Icon As Picture, Optional X As Integer = -1, Optional Y As Integer = -1)
+
+  FBalloon.Run(Message, Control, Icon, X, Y)
+  
+End
+
+Static Public Sub Info((Message) As String, (Control) As Control, Optional X As Integer = -1, Optional Y As Integer = -1)
+
+  FBalloon.Run(Message, Control, Picture["icon:/32/info"], X, Y)
+  
+End
+
+Static Public Sub Warning((Message) As String, (Control) As Control, Optional X As Integer = -1, Optional Y As Integer = -1)
+
+  FBalloon.Run(Message, Control, Picture["icon:/32/warning"], X, Y)
+  
+End
+
+Static Public Sub Error((Message) As String, (Control) As Control, Optional X As Integer = -1, Optional Y As Integer = -1)
+
+  FBalloon.Run(Message, Control, Picture["icon:/32/error"], X, Y)
+  
+End
+
+Static Public Sub Question((Message) As String, (Control) As Control, Optional X As Integer = -1, Optional Y As Integer = -1)
+
+  FBalloon.Run(Message, Control, Picture["icon:/32/question"], X, Y)
+  
+End
+
+Static Public Sub Delete((Message) As String, (Control) As Control, Optional X As Integer = -1, Optional Y As Integer = -1)
+
+  FBalloon.Run(Message, Control, Picture["icon:/32/delete"], X, Y)
+  
+End
+
+Static Public Sub Hide(Optional (Control) As Control)
+
+  If Control And If FBalloon.GetControl() <> Control Then Return  
+  'Debug
+  FBalloon.Hide
+  'Try Wait
+  
+End
+
+Static Private Function Control_Read() As Control
+
+  Return FBalloon.GetControl()  
+
+End
+
+Static Private Function Delay_Read() As Integer
+
+  Return FBalloon.GetDelay()  
+
+End
+
+Static Private Sub Delay_Write(Value As Integer)
+
+  FBalloon.SetDelay(Value)
+
+End
+
+Static Private Function Font_Read() As Font
+
+  Return FBalloon.Font
+
+End
+
+Static Private Sub Font_Write(Value As Font)
+
+  FBalloon.Font = Value
+
+End
+
+Static Private Function Visible_Read() As Boolean
+
+  Return FBalloon.Visible  
+
+End

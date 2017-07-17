@@ -1,0 +1,61 @@
+' Gambas class file
+
+Export
+
+Static Public Name As String
+
+Static Private Sub Open(sIcon As String, sTitle As String, sText As String, Optional sButton1 As String, sButton2 As String, sButton3 As String)
+  
+  Dim hMessage As FMessage
+  Dim sName As String
+  
+  hMessage = New FMessage
+  hMessage.Title = sTitle
+  hMessage.SetIcon(sIcon)
+  hMessage.SetText(sText)
+  hMessage.SetButton(sButton1, sButton2, sButton3)
+  
+  If Name Then
+    sName = Name
+  Else
+    Try sName = Last.Name
+  Endif
+  
+  hMessage["#message"] = sName
+  
+  hMessage.ShowModal(Null)
+  
+End
+
+
+Static Public Sub _call(Text As String, Optional Button As String)
+
+  Open("info", ("Information"), Text, Button)
+
+End
+
+Static Public Sub Info(Text As String, Optional Button As String)
+  
+  _call(Text, Button)
+  
+End
+
+Static Public Sub Warning(Text As String, Optional Button1 As String, Button2 As String, Button3 As String)
+  
+  Open("warning", ("Warning"), Text, Button1, Button2, Button3)
+  
+End
+
+Static Public Sub Error(Text As String, Optional Button As String)
+  
+  Open("error", ("Error"), Text, Button)
+  
+End
+
+Static Public Sub Question(Text As String, Optional Button1 As String, Button2 As String, Button3 As String)
+  
+  Open("question", ("Question"), Text, Button1, Button2, Button3)
+  
+End
+
+

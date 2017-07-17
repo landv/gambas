@@ -1,0 +1,51 @@
+' Gambas class file
+
+''' This class represents a text input field which the news aggregator may display
+''' with your feed. The [RSS specification](https://cyber.harvard.edu/rss/rss.html#lttextinputgtSubelementOfLtchannelgt)
+''' admits that this element's purpose is unclear and that it may not be widely supported.
+''' It can be used as a built-in mechanism to provide feedback to the feed owner's website
+''' or as a search box.
+
+Export
+
+'' The label of the submit button next to the input box.
+Public Title As String
+'' Explanation of the input box's purpose.
+Public Description As String
+'' The name of the input box, for use by the CGI script the input is sent to.
+Public Name As String
+'' Link to the CGI script which processes the input.
+Public {Link} As String
+
+Public Sub _Write(hWriter As XmlWriter)
+  If Not Title Or If Not Description Or If Not Name Or If Not {Link} Then Error.Raise(("Title, Description, Name and Link must be set in RssTextInput"))
+  With hWriter
+    .StartElement("textInput")
+      .Element("title", Title)
+      .Element("description", Description)
+      .Element("name", Name)
+      .Element("link", {Link})
+    .EndElement()
+  End With
+End
+
+Public Sub _Read(hReader As XmlReader)
+  Dim iDepth As Integer = hReader.Depth
+
+  hReader.Read()
+  While Rss._NotClosed(hReader, iDepth)
+    Select Case hReader.Node.Name
+      Case "title"
+        Title = Rss._GetText(hReader)
+      Case "description"
+        Description = Rss._GetText(hReader)
+      Case "name"
+        Name = Rss._GetText(hReader)
+      Case "link"
+        {Link} = Rss._GetText(hReader)
+      Default
+        Error.Raise(Subst$(("Unexpected element '&1' in <textInput>"), hReader.Node.Name))
+    End Select
+    hReader.Read()
+  Wend
+End

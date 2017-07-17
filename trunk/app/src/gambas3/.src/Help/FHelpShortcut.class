@@ -1,0 +1,44 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+  tabShortcut_Click
+  
+  Settings.Read(Me)
+  
+End
+
+Public Sub tabShortcut_Click()
+
+  Dim sURL As String
+  
+  Select Case tabShortcut.Index
+    Case 0
+      sURL = "project-shortcuts"
+    Case 1
+      sURL = "shortcuts"
+    Case 2
+      sURL = "debugger-shortcuts"
+    Case 3
+      sURL = "translate-shortcuts"
+    Default
+      sURL = "project-shortcuts"
+  End Select
+
+  webShortcut.URL = Project.WIKI_ROOT &/ "ide" &/ sURL & "?v&nh&nt&l=" & MHelp.GetLanguage()
+  
+End
+
+Public Sub Form_Arrange()
+
+  webShortcut.Raise
+  webShortcut.Move(tabShortcut.X + tabShortcut.ClientX, tabShortcut.Y + tabShortcut.ClientY, tabShortcut.ClientW, tabShortcut.ClientH)
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)
+
+End

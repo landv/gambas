@@ -1,0 +1,65 @@
+' Gambas class file
+
+Export
+Public Enum Normal, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, BackSpace, Enter, {Return}, Tab, BackTab, Up, Down, Left, Right, Home, {End}, Insert, Delete, PageDown, PageUp, Menu
+Static Property Read Shift As Boolean
+Static Property Read Control As Boolean
+Static Property Read Code As Integer
+Static Property Read Text As String
+Static Property Read Alt As Boolean
+Static Private $bControl As Boolean
+Static Private $bShift As Boolean
+Static Private $bAlt As Boolean
+Static Private $iCode As Integer
+Static Private $sText As String
+
+Static Public Sub _SetKey(sKey As String, code As Integer, Alt As Boolean, Control As Boolean, Shift As Boolean)
+
+  $bShift = Shift
+  $bControl = Control
+  $bALt = ALt
+  $iCode = Code
+  $sText = sKey
+  If TermWindows.Debug Then Error "Alt: " & alt & "   Control: " & Control & "   Shift: " & Shift & "   Code :" & code & "        Text :" & sKey
+
+End
+
+Static Private Function Shift_Read() As Boolean
+
+  Return $bShift
+
+End
+
+Static Private Function Control_Read() As Boolean
+
+  Return $bControl
+
+End
+
+Static Private Function Code_Read() As Integer
+
+  Return $iCode
+
+End
+
+Static Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Static Private Function Alt_Read() As Boolean
+
+  Return $bAlt
+
+End
+
+Static Public Sub _Reset()
+
+  $bShift = False
+  $bControl = False
+  $bALt = False
+  $iCode = 0
+  $sText = ""
+
+End

@@ -1,0 +1,87 @@
+' Gambas class file
+
+Static Private $sIcon As String
+Static Private $aButtons As String[]
+Static Private $sKey As String
+Static Private $sText As String
+
+
+Static Public Sub Run(sIcon As String, sText As String, aButtons As String[], Optional sKey As String, Optional Force As Boolean) As Integer
+  
+  If sKey And If Settings["/HiddenMessage" &/ sKey, False] And If Not Force Then Return
+  
+  $sIcon = sIcon
+  $aButtons = aButtons
+  $sKey = sKey
+  $sText = sText
+  
+  Return Me.ShowModal()
+  
+End
+
+Public Sub _new()
+  
+  Dim hButton As Button
+  Dim iTag As Integer
+  Dim W, H As Integer
+  
+  If Message.Title Then Me.Title = Message.Title
+  
+  If Not $sIcon Then $sIcon = "info"
+  Try picIcon.Picture = Picture["icon:/64/" &/ $sIcon]
+  If Error Then picIcon.Picture = Picture["icon:/64/info"]
+  picIcon.W = 64
+  
+  chkDoNotDisplayAnymore.Visible = $sKey
+  If $sKey Then chkDoNotDisplayAnymore.Value = Settings["/HiddenMessage" &/ $sKey, False]
+  
+  panButton.Children.Clear
+  
+  W = Desktop.Scale * 12
+  For iTag = 0 To $aButtons.Max
+    hButton = New Button(panButton) As "Button"
+    hButton.Text = $aButtons[iTag]
+    hButton.Tag = iTag
+    W = Max(W, hButton.Font.TextWidth($aButtons[iTag]) + Desktop.Scale * 4)
+    If iTag = 0 Then 
+      hButton.Default = True
+      hButton.SetFocus
+    Else If iTag = $aButtons.Max Then
+      hButton.Cancel = True
+    Endif
+  Next
+  
+  For Each hButton In panButton.Children
+    hButton.Resize(W, Desktop.Scale * 4)
+  Next
+
+  W = Max(Desktop.Scale * 48, W * $aButtons.Count + Desktop.Scale * ($aButtons.Count + 2))
+  
+  'panMessage.Arrangement = Arrange.None
+  txtMessage.Ignore = True
+  txtMessage.W = W - picIcon.W - Desktop.Scale * 3
+  txtMessage.Text = $sText
+  H = Max(64, txtMessage.H)
+  'Print "-->";; txtMessage.W;; txtMessage.H
+  txtMessage.Ignore = False
+  'panMessage.Arrangement = Arrange.Horizontal
+  
+  H += panButton.H + Desktop.Scale * 5
+  If chkDoNotDisplayAnymore.Visible Then H += Desktop.Scale + chkDoNotDisplayAnymore.H 
+  
+  Me.Resize(W, H)
+
+End
+
+Public Sub Button_Click()
+  
+  'Debug txtMessage.W;; txtMessage.H
+  Me.Close(Last.Tag)
+  
+End
+
+Public Sub chkDoNotDisplayAnymore_Click()
+
+  If $sKey Then Settings["/HiddenMessage" &/ $sKey] = chkDoNotDisplayAnymore.Value <> 0
+
+End

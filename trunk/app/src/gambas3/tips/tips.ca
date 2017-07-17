@@ -1,0 +1,463 @@
+[WELCOME]
+
+<p>Benvingut a <b>Gambas</b> !</p>
+
+<p><b>Gambas</b> és un entorn gràfic de desenvolupament basat en un intèrpret <i>Basic</i> avançat.</p>
+
+<p>El propòsit de <b>Gambas</b> és permetre crear aplicacions potents de manera fàcil i ràpida. Però la netedat dels vostres programes resta sota la <i>vostra</i> responsabilitat...</p>
+
+<p>Gaudiu-lo  !</p>
+
+<p align=right>Beno&icirc;t Minisini<br>
+<u>gambas@users.sourceforge.net</u></p>
+
+
+[STARTUP]
+
+<p>Cada projecte ha de tenir una <i>classe d'inici</i>. Aquesta classe d'inici ha de tenir definit un mètode públic i estàtic anomenat <i>Main</i> sense arguments, el qual actuarà com a mètode d'inici del vostre programa.</p>
+
+<p>Podeu definir la classe d'inici fent clic sobre ella amb el botó dret del ratolí a l'arbre de projecte, i seleccionant <i>Classe d'inici</i> al menú contextual.</p>
+
+<p>No és necessari definir un mètode <i>Main</i> en un formulari d'inici, per que ja en te un de predefinit.</p>
+
+<p>Aquest mètode d'inici predefinit instancia el formulari i el mostra, igual que a <i>Visual Basic&trade;</i>.</p>
+
+
+[OPEN]
+
+<p>La instrucció <b>OPEN</b> de <b>Gambas</b> no fa el mateix que la de <i>Visual Basic</i>. No retorna el fitxer com un integer, si no com un objecte <i>File</i>.</p>
+
+<p>Per tant, en comptes d'escriure :</p>
+
+<pre>DIM handle AS Integer
+...
+OPEN "elmeufitxer" FOR READ AS #handle</pre>
+
+<p>heu d'escriure :</p>
+
+<pre>DIM handle AS File
+...
+handle = OPEN "elmeufitxer" FOR READ</pre>
+
+
+[CATDIR]
+
+<p>Sabeu que podeu concatenar noms de directori i noms de fitxer amb l'operador "<b><tt>&/</tt></b>"? Aquest operador afegeix si cal els separadors de directoris, així que el camí resultant és perfecte.</p>
+
+<p>Per exemple:</p>
+
+<pre>PRINT "/home/gambas" &/ ".bashrc"
+/home/gambas/.bashrc
+
+PRINT "/home/gambas/" &/ "/tmp" &/ "foo.bar"
+/home/gambas/tmp/foo.bar
+</pre>
+
+<p>No és meravellós ?</p>
+
+
+[EXEC]
+
+<p>Podeu crear un fitxer executable de tot el vostre projecte. Seleccioneu <i>Crea executable</i> dins el menú <i>Projecte</i>.</p>
+
+<p>Quan <b>Gambas</b> crea un fitxer executable, el posa per defecte dins del directori del vostre projecte. El nom de l'executable és el mateix que el del vostre projecte.</p>
+
+
+[PATH]
+<p>
+Els camins relatius tenen un significat especial a <b><i>Gambas</i></b>.
+Sempre fan referència a fitxers dintre dels vostres projectes.
+<p>
+No existeix el concepte de <i>directori actual</i>, ni paraula clau com <tt>CHDIR</tt> per canviar-lo.
+<p>
+<b>Aneu amb compte:</b> només heu de fer servir camins relatius per accedir als fitxers del projecte, ja que els camins absoluts deixaran de funcionar quan creeu un executable.
+
+
+[GLOBAL]
+
+No hi han <u>variables globals</u> a <b><i>Gambas</i></b>!
+<p>
+Com a solució temporal, poseu-les dins del mòdul principal i declareu-les com a <tt>PUBLIC</tt>.
+<p>
+Si en comptes d'un mòdul principal teniu un formulari principal al vostre projecte, llavors declareu-les com a <tt>STATIC PUBLIC</tt>.
+<p>
+Per accedir a aquestes variables heu de fer servir el nom de mòdul principal ò del formulari: <tt>ElMeuModulPrincipal.LaMevaVariableGlobal</tt> ò <tt>ElMeuFormulariPrincipal.LaMevaVariableGlobal</tt>.
+
+
+[EMPTY]
+
+<p>Per saber si una cadena és buida, no és necessari fer servir la funció <b>Len()</b>. Ho poseu comprovar directament ja que una cadena buida és <b>FALSE</b> i una cadena no buida és <b>TRUE</b>.</p>
+
+<p>Per exemple, en comptes de fer :</p>
+
+<pre>IF Len(LaMevaCadena) > 0 THEN ...
+IF Len(LaMevaCadena) = 0 THEN ...</pre>
+
+<p>Heu de fer :</p>
+
+<pre>IF LaMevaCadena THEN ...
+IF NOT LaMevaCadena THEN ...</pre>
+
+
+[TRANSLATE]
+
+<p>Les aplicacions del Gambas son totalment traduïbles, permetent que indiqueu quines cadenes s'han de traduir i quines no.</p>
+<p>Per a marcar una cadena com a traduïble, només l'heu de tancar entre parèntesis:<p>
+
+<pre>PRINT ("Traduïu-me")
+PRINT "Però no em traduïu!"</pre>
+
+
+[SUBST]
+
+<p>La substitució és molt útil per a la internacionalització de la vostra aplicació.
+Es fa amb l'instrucció <b>Subst()</b>.</p>
+
+<p>Té com a mínim 2 paràmetres. El primer és la màscara de text a on s'aplica la substitució. Després hi són les vostres variables, a on la primera té el número <i>1</i>. S'usa d'aquesta manera: <b>&1, &2, ...</b></p>
+
+<pre>Subst(("Substitució de &1, &2 i &3"), "primer", "segon", "tercer")
+
+'...retornarà això:
+'Substitució de primer, segon i tercer</pre>
+
+
+[EVENT]
+
+<p>Tots els controls i tots els objectes que poden rebre esdeveniments, tenen un <i>observador d'esdeveniments</i> i un <i>nom de grup</i> d'esdeveniment.</p>
+
+<p>L'observador d'esdeveniments captura tots els esdeveniments rebuts per l'objecte, i el nom de grup de l'esdeveniment és el prefixe del procediment encarregat de gestionar l'esdeveniment.</p>
+
+<p>Per defecte, l'observador d'esdeveniments és l'objecte a on heu creat el control, i el nom de grup és el nom del control.</p>
+
+<p>D'aquesta manera, un formulari rep tots els esdeveniments produïts sobre el control que heu creat dins d'ell.</p>
+
+<pre>' Gambas form
+Public Sub _new()
+&nbsp;&nbsp;Dim hButton As Button
+&nbsp;&nbsp;hButton = New Button(Me) As "ElMeuBoto"
+End
+
+Public Sub ElMeuBoto_Click()
+&nbsp;&nbsp;Print "Heu fet clic a ElMeuBoto!"
+End
+</pre>
+
+
+[GROUP]
+
+<p>Tot control te la propietat <i>(Group)</i>. Quan aquesta propietat es fa servir, el prefix del nom del gestor d'esdeveniments és el nom del grup i no el nom del control.</p>
+
+<p>Suposem que teniu un <i>Botó</i> anomenat <b>btnAction</b> amb el gestor d'esdeveniments <i>Click</i> següent :</p>
+
+<pre>PUBLIC SUB btnAction_Click()</pre>
+
+<p>Si definiu la propietat <i>(Group)</i> de <b>btnAction</b> com a <i>ElMeuGrup</i>, llavors el gestor d'esdeveniments que rebrà els esdeveniments del botó serà el següent :</p>
+
+<pre>PUBLIC SUB ElMeuGrup_Click()</pre>
+
+<p>Aquesta propietat us permet gestionar els esdeveniments de diversos controls en una sola funció. I els controls del mateix grup no han de ser del mateix tipus !</p>
+
+<p><b>Nota :</b> Els veterans del vell <i>Visual Basic</i> reconeixeran el concepte de <i>control array</i>, però en una implementació més potent. :-)</p>
+
+
+[FORM]
+
+<p>A <b><i>Gambas</i></b>, un formulari és el seu propi observador d'esdeveniments, de manera que podeu gestionar directament els seus esdeveniments (com <i>Resize</i>, <i>Activate</i>, ...) dins del seu propi codi de classe.</p>
+
+<p>D'aquesta manera, els novells provinents de <i>Visual Basic</i> no es desorientaran :-).</p>
+
+
+[EMBED]
+
+<p>A <b><i>Gambas</i></b> podeu fer que qualsevol formulari estigui incrustat dins d'altres formularis&nbsp;!</p>
+
+<p>Per fer servir aquesta poderosa eina, només heu d'instanciar el formulari passant un contenidor pare com a últim argument del constructor.</p>
+
+<p>Per exemple&nbsp;:</p>
+<p><tt>DIM hForm AS MyDialog<br>
+DIM hSuperControl AS MyForm<br><br>
+' Crea un quadre de diàleg<br>
+hForm = NEW MyDialog<br>
+' Insereix un formulari dins d'aquest quadre de diàleg<br>
+' Observeu que aquest formulari rep dos paràmetres abans del contenidor<br>
+hSuperControl = NEW MyForm(Param1, Param2, MyDialog)<br>
+' Mou i canvia la mida del formulari<br>
+hSuperControl.Move(8, 8, 128, 64)<br>
+</tt></p>
+
+<p>Aneu amb compte: un formulari incrustat dins d'un altre formulari segueix sent un formulari, i per tant el seu propi observador d'esdeveniments.</p>
+
+
+[TAG]
+
+<p>Cada control te una propietat anomenada <i>Tag</i>. Aquesta propietat és per al programador, i pot contenir qualsevol dada <b>VARIANT</b> que trobeu pertinent.</p>
+
+<p>Això és molt útil quan voleu distingir controls del mateix grup dins d'un gestor d'esdeveniments comú.</p>
+
+
+
+[LAST]
+
+<p>La paraula clau <b>LAST</b> retorna l'últim control que ha rebut un esdeveniment. Això és molt útil quan vulgueu escriure un gestor d'esdeveniments que sigui independent de qualsevol nom de control.</p>
+
+<p>Per exemple, suposem que voleu escriure un programa calculadora.
+Heu definit deu botons, un per cada dígit, tots dins del mateix <i>group</i> "Digit". El valor <i>Tag</i> de cada control és el que es mostrarà en el botó. El vostre gestor d'esdeveniments tindria un aspecte com això :</p>
+
+<p><tt>PUBLIC SUB Digit_Click()<br><br>
+&nbsp;&nbsp;Display = Display & LAST.Tag<br>
+&nbsp;&nbsp;RefreshDisplay<br><br>
+END</tt></p>
+
+
+[LEFT]
+
+<p>Les ben conegudes rutines de <i>BASIC</i> <b>Left$</b>, <b>Right$</b> i <b>Mid$</b> tenen un comportament molt útil a <b><i>Gambas</i></b></p>
+
+<p>El segon paràmetre de <b>Left$</b> i <b>Right$</b> és opcional, i és 1 per defecte.</p>
+
+<p><tt>Left$("Gambas")</tt> retorna <tt>"G"</tt><br>
+<tt>Right$("Gambas")</tt> retorna <tt>"s"</tt></p>
+
+<p>Aquest segon paràmetre pot ser negatiu, i llavors dona el nombre de caràcters que no es mostraran.</p>
+
+<p><tt>Left$("Gambas", -2)</tt> retorna <tt>"Gamb"</tt><br>
+<tt>Right$("Gambas", -2)</tt> retorna <tt>"mbas"</tt></p>
+
+<p>Així mateix, el tercer argument de <b>Mid$</b> pot ser negatiu, i llavors representa el nombre de caràcters des del final de la cadena que no es mostraran.</p>
+
+<p><tt>Mid$("Gambas", 2, -2)</tt> retorna <tt>"amb"</tt>
+
+
+[OBSERVER]
+
+<p>La classe <b>Observer</b> us permet interceptar tots els esdeveniments produïts per un objecte abans de que siguin enviats.</p>
+
+<pre>MyTextBox = NEW TextBox(ME) AS "MyTextBox"
+MyObserver = NEW Observer(MyTextBox) AS "MyObserver"
+...
+PUBLIC SUB MyObserver_KeyPress()
+  DEBUG "Obtingut primer"
+END
+
+PUBLIC SUB MyTextBox_KeyPress()
+  DEBUG "Obtingut després"
+END</pre>
+
+L'Observer pot canceŀlar l'esdeveniment per prevenir que efectivament es produeixi.
+
+
+[STRING]
+
+<p>Gambas fa servir el joc de caràcters <b>UTF-8</b> per representar cadenes a la memòria.</p>
+
+<p>Però totes les funcions estàndard de cadenes del Gambas treballen amb <b>ASCII</b>: 
+<tt>Left</tt>, <tt>Mid</tt>, <tt>Right</tt>, <tt>UCase</tt>...
+
+<p>Si voleu manipular cadenes UTF-8, heu de fer servir els mètodes de la classe estàtica <b>String</b>, els quals tenen el mateix nom que els seus homòlegs estàndards.
+
+<pre>PRINT Len("pròleg");; Left$("pròleg", 4)
+7 prò
+PRINT String.Len("pròleg");; String.Left("pròleg", 4)
+6 pròl</pre>
+
+
+[ASSIGNMENT]
+
+<p>El Gambas implementa les dreceres d'assignació tal com els programadors de C/C++ fan servir també.
+
+<p><tt>LaMevaVariable += 2</tt> és una equivalència de <tt>LaMevaVariable = LaMevaVariable + 2</tt>
+
+<p><tt>LaMevaVariable &= "Pròleg"</tt> és una equivalència de <tt>LaMevaVariable = LaMevaVariable & "Pròleg"</tt>
+
+<p>etc...
+
+
+[DEBUG]
+
+<p>Podeu fer servir l'instrucció <b>DEBUG</b> per a imprimir missatges de depuració a la consola (és a dir, la sortida d'errors estàndard). Es comporta exactament igual a la instrucció <tt>PRINT</tt>.
+
+<p>Aquests son missatges prefixats amb el nom de la classe, nom del mètode i número de línia de la instrucció <tt>DEBUG</tt>.
+
+<p>Els missatges de depuració es suprimeixen automàticament quan es crea un executable sense informació de depuració.
+
+
+[TRY]
+
+<p>La gestió d'errors al Gambas es fa amb les següents instruccions:
+<b><tt>TRY</tt></b>, <b><tt>ERROR</tt></b>, <tt>CATCH</tt>, i <tt>FINALLY</tt>.
+
+<p><tt>TRY</tt> prova d'executar la sentència sense llançar l'error. La instrucció <tt>ERROR</tt> es fa servir just després de saber si la sentència s'ha executat correctament.
+
+<pre>TRY ElMeuFitxer = OPEN "/etc/password" FOR WRITE
+IF ERROR THEN PRINT "No puc fer el que vull!"</pre>
+
+
+[CATCH]
+
+<p>La gestió d'errors al Gambas es fa amb les següents instruccions:
+<tt>TRY</tt>, <tt>ERROR</tt>, <b><tt>CATCH</tt></b>, i <tt>FINALLY</tt>.
+
+<p><tt>CATCH</tt> indica el principi de la part de gestió d'errors d'una funció o procediment.
+Es posa al final del codi de la funció.
+
+<p>El part del catch s'executa si es produeix un error entre el principi i el final de la funció.
+
+<p>Si es produeix un error dins la part del catch, aquest és tractat normalment.
+
+<pre>SUB ProcessFile(FileName AS STRING)
+  ...
+  OPEN FileName FOR READ AS #hFile
+  ...
+  CLOSE #hFile
+CATCH ' S'executa només si hi ha un error
+  PRINT "No es pot processar el fitxer "; FileName
+END</pre>
+
+
+[FINALLY]
+
+<p>La gestió d'errors al Gambas es fa amb les següents instruccions: 
+<tt>TRY</tt>, <tt>ERROR</tt>, <tt>CATCH</tt>, i <b><tt>FINALLY</tt></b>.
+
+<p><tt>FINALLY</tt> inclou el codi que s'executa al final de la funció, fins i tot si s'ha produït un error durant la seva execució.
+
+<p>La part finally no és obligatòria. Si hi ha una part catch a la funció, la part finally l'ha de precedir.
+ 
+<p>Si es produeix un error dins la part del finally, aquest és tractat normalment.
+
+<pre>SUB ProcessFile(FileName AS STRING)
+  ...
+  OPEN FileName FOR READ AS #hFile
+  ...
+FINALLY ' S'executa sempre, fins i tot si s'ha produït un error
+  CLOSE #hFile
+CATCH ' S'executa només si hi ha un error
+  PRINT "No es pot processar el fitxer "; FileName
+END</pre>
+
+
+[OPTIONAL]
+
+<p>Les funcions i procediments al Gambas poden tenir paràmetres opcionals.</p>
+
+<p>Els paràmetres són opcionals simplement posant l'indicador <b>OPTIONAL</b> just a davant de la variable</p>
+
+<pre>PRIVATE SUB LaMevaFuncio(param AS String, OPTIONAL optim AS String)
+  ...
+  PRINT param & " requerit, '" & optim "' opcional"
+  ...
+END
+
+'cridant la funció:
+
+LaMevaFuncio("parametre") 'sense argument opcional (si no cal)
+LaMevaFuncio("parametre", "parametre_opcional")
+</pre>
+
+
+[ARRAY]
+
+<p>Al Gambas podeu recórrer fàcilment una matriu d'una coŀlecció de variables amb la funció <b>FOR EACH</b>.</p>
+
+<p>Exemple:</p>
+
+<pre>DIM xml AS NEW XmlDocument
+DIM node AS XmlNode
+DIM i AS Integer
+
+'Obre l'xml
+xml.Open("pokus.xml")
+'Children s'indexa via [i], perquè és una matriu
+FOR i = 0 TO xml.Root.Children.Count - 1
+  'Attributes es recorren via FOR EACH, perquè és una coŀlecció
+  FOR EACH node IN xml.Root.Children[i].Attributes
+    DEBUG node.Name;; Node.Value
+  NEXT
+NEXT</pre>
+
+
+[ICON]
+
+<p>Podeu fer servir les icones internes per a crear una interfície més agradable de la vostra aplicació, les quals estan disponibles en diverses mides (des de 16x16 fins a 128x128)</p>
+
+<p>Per exemple:</p>
+
+<pre>Imatge1.Picture = Picture["icon:/32/warning"]</pre>
+
+
+[SETTINGS]
+
+<p>Si necessiteu desar la configuració del vostre programa (tal com la mida i posició de la finestra), llavors esteu de sort. Això és molt elegant i fàcil de fer a Gambas.</p>
+
+<p>Podeu desar tota la configuració d'un objecte, o només una propietat.</p>
+
+<p>Exemple:</p>
+
+<pre>'Desa la posició d'un objecte
+Settings.Write(ME)
+
+'Carrega l'objecte
+Settings.Read(ME)
+
+'Desa la propietat
+Settings["win/x"] = ME.X
+
+'Llegeix la propietat
+'podeu utilitzar el valor per defecte com aquest: ["win/x", 0]
+ME.X = Settings["win/x"]
+</pre>
+
+<p><b>Atenció:</b> heu d'incloure el component: <i>gb.settings</i></p>
+
+
+[EDITOR]
+
+<p>Alguns consells de l'editor...</p>
+
+<h3>Dues classes de comentaris</h3>
+
+<pre>' Comentari normal</pre>
+<b><pre>'' Comentari en negreta</pre></b>
+
+<p>Els comentaris en negreta es fan servir per a documentar el vostre codi.</p>
+
+<h3>Com utilitzar fragments de codi</h3>
+
+<p>Si escriviu <tt>main</tt> i després premeu la tecla <b>TAB</b>, s'insereix automàticament al vostre codi una funció d'inici <tt>Main</tt> estàtica pública.
+
+<p>Si escriviu <tt>ds</tt> i després premeu la tecla <b>TAB</b>, s'insereix automàticament una declaració de variable del tipus string, i seguidament ja podeu escriure el nom de la variable.
+
+<p>Els fragments de codi són totalment configurables des del diàleg de les opcions globals de l'IDE.
+
+
+[END]
+
+<p>Ja heu llegit tots els consells del dia. Espero que us hàgiu convertit en un expert en <b>Gambas</b>! :-)</p>
+
+<p>Si voleu contribuir, envieu nous consells a l'adreça següent&nbsp;:</p>
+<p><u>gambas@users.sourceforge.net</u></p>
+
+<p>Gràcies per endavant !</p>
+
+
+
+
+[MESSAGE]
+
+<p>Per a informar als usuaris, podeu usar les classes del Gambas <b>Message</b> i <b>Balloon</b>. Message prové dels components (QT, GTK+)i el Balloon de <i>gb.form</i>.</p>
+
+<p><b>Message</b> i <b>Balloon</b> tenen els següents tipus possibles: Message.Delete(), .Error(), .Info(), .Question() i .Warning()</p>
+
+<p>A cada botó del diàleg <b>Message</b> podeu establir les vostres pròpies etiquetes. Després de prémer el botó, us tornarà un valor numèric (de 1 a X, depenent del tipus i la quantitat de botons).</p>
+
+<pre>DEBUG Message.Info("Bon dia món!")  'retornarà 1
+
+Message("Bon dia món!")  'El mateix però el formulari més curt</pre>
+
+<p>Mentre creeu el <b>Balloon</b> heu de definir el contenidor pare.
+Opcionalment podeu definir el temps de mostra en ms, i la posició X,Y.</p>
+
+<pre>Balloon.Info("Bon dia món!", ME)
+'Mostrarà el «ballon» dins el formulari principal
+
+'més reduït sense icona: Balloon("Bon dia món!", ME)</pre>

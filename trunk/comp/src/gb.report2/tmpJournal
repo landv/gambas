@@ -1,0 +1,12 @@
+[GB.REPORT2]
+* BUG: The ReportControl font property now make a copy of the font given in argument.
+* BUG: Now a too big children element is clipped if it is the first one listed
+  after the fixed ones (no more infinite loop)
+* NEW: ReportUnit module is merged with Report class. All functions for convertion
+  are now available as static functions in Report. The two internal functions scale and
+  internal width are now public function of report instance.
+* NEW: Return of the ReportImage and ReportSvgImage with no change for now.
+* NEW: Continue to improve the ReportGridView widget ... really not ready for use.
+* NEW: Restore the UseField property in ReportLabel so for now the component is
+  backward compatible.
+  

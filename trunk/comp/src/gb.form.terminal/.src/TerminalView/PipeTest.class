@@ -1,0 +1,224 @@
+' Gambas class file
+
+Private $hPipeIn As File
+Private $hPipeOut As File
+Private InPipe As File
+Private OutPipe As File
+Private $hMySock As Socket
+Private $oTelnet As TelNetProtocol
+
+Public TheTask As PipedTask
+
+
+
+Public Sub Form_Open()
+
+  OutPipe = Pipe "/tmp/MyPipeIn" For Write     ' providers output pipe
+  $hPipeIn = Pipe "/tmp/MyPipeIn" For Read Watch
+    
+  $hPipeOut = Pipe "/tmp/MyPipeOut" For Write    ' open this first so other side never blocks
+  InPipe = Pipe "/tmp/MyPipeOut" For Read        ' providers in pipe
+
+  
+  If Not Term.ConnectTo(OutPipe, InPipe, Null) Then
+    
+    Close $hPipeOut
+    Close InPipe
+    Close OutPipe
+    Close $hPipeIn
+    $hPipeIn = Null
+    $hPipeOut = Null
+    InPipe = Null
+    OutPipe = Null
+    
+  Endif
+  
+End
+
+Public Sub file_read()
+  
+  If Not Lof($hPipeIn) Then Return
+  
+  DataFromTerminal.Text &= Read #$hPipeIn, Lof($hPipeIn)
+  
+End
+
+Public Sub sndTxt_Click()
+
+  If TheTask Then
+    TaskStop_Click()
+  Endif
+
+  If Not $hPipeIn Then 
+    Form_Open() 
+  Endif
+  
+  Write #$hPipeOut, dataToSend.Text
+
+End
+
+Public Sub KillSession_Click()
+
+  Term.Kill()
+  
+  If $hPipeIn Then Close #$hPipeIn
+  If $hPipeOut Then Close #$hPipeOut
+  If InPipe Then Close InPipe
+  If OutPipe Then Close OutPipe
+   
+  $hPipeIn = Null
+  $hPipeOut = Null
+  InPipe = Null
+  OutPipe = Null
+  
+  
+End
+
+
+
+Public Sub TaskTest_Click()
+
+  If TheTask Then Return
+
+  PipedTask.$sInputFileName = "/tmp/MyPipeIn"
+  PipedTask.$sOutputFileName = "/tmp/MyPipeOut"
+  
+  TheTask = New PipedTask As "TheBestTask"   ' Start the task which should wait on the input stream until opened by the terminal 
+  
+  Wait 1
+  
+  If TheTask Then 
+    
+        InPipe = Pipe PipedTask.$sInputFileName For Write
+        OutPipe = Pipe PipedTask.$sOutputFileName For Read
+        
+        Term.ConnectTo(InPipe, OutPipe, Null)      ' tell the terminal about the remote task
+        
+  Endif
+
+End
+
+
+
+Public Sub TaskStop_Click()
+
+  If Not Thetask Then Return
+  
+  Term.Kill()
+  
+  TheTask.Stop()
+  
+  Close InPipe
+  Close OutPipe
+  
+  Thetask = Null
+  InPipe = Null
+  OutPipe = Null
+  
+End
+
+Public Sub TheBestTask_Read(buffer As String)
+  
+  DataFromTerminal.text &= "Task stdout -> " & buffer   ' display from task stdout
+  
+End
+
+Public Sub TheBestTask_kill()
+  DataFromTerminal.text &= "Task Killed"
+End
+
+
+
+Public Sub StartRs232_Click()
+
+  $hPipeIn = SerialPort1.Open()
+  $hPipeOut = $hPipeIn()
+  
+  If Not Term.ConnectTo($hPipeIn, $hPipeOut, Null) Then
+    
+    Close $hPipeOut
+    Close $hPipeIn
+    $hPipeIn = Null
+    $hPipeOut = Null
+
+    
+  Endif
+
+End
+
+Public Sub Stoprs232_Click()
+
+  KillSession_Click   ' should be same as this
+
+End
+
+Public Sub TelnetTest_Click()
+Dim Port As Integer
+Dim host As String
+
+    
+    $hMySock = New Socket As "Socket1"
+    Port = Val(PortNumber.text)
+    host = HostName.text
+    
+    $hMySock.Connect(Host, port)
+    
+    DataFromTerminal.text &= "Opening Socket host = " & Host & ", Port = " & Str$(Port) & "\n"
+    
+End
+
+Public Sub Socket1_Found()
+
+    DataFromTerminal.text &= "Found Socket\n"
+End
+
+
+
+Public Sub Socket1_Ready()
+
+    
+    DataFromTerminal.text &= "Ready to send receive on socket\n"
+    
+    $oTelnet = New TelNetProtocol($hMySock)
+    
+    Term.ConnectTo($hMySock, $hMySock, ByRef $oTelnet)
+
+End
+
+
+
+Public Sub TelNetStop_Click()
+
+  If Not $hMySock Then Return
+  Term.Kill
+  Close #$hMySock
+  $hMySock = Null
+  DataFromTerminal.text &= "Closed for send receive on socket\n"
+
+End
+
+Public Sub Socket1_Error()
+
+  DataFromTerminal.text &= "Error on socket(" & Str$($hMySock.Status) & ")\n"
+  $hMySock = Null
+
+End
+
+Public Sub Socket1_Closed()
+
+  DataFromTerminal.text &= "Event Closed for send receive on socket\n"
+  
+
+End
+
+Public Sub Socket1_Read()
+
+  Return
+
+End
+
+Public Sub Socket1_Write()
+
+  Return
+
+End

@@ -1,0 +1,54 @@
+' Gambas class file
+
+Private $fTime As Float
+Private $fAlarm As Float
+
+Public Sub btnStart_Click()
+
+  Dim dAlarm As Date
+  
+  If timClock.Enabled Then
+    timClock.Stop
+  Else
+    
+    $fTime = Timer
+    dAlarm = timTime.Value
+    If Not dAlarm Then Return
+    $fAlarm = $fTime + Minute(dAlarm) * 60 + Second(dAlarm)
+    
+    timClock.Start
+    timClock_Timer
+    
+  Endif
+
+End
+
+Public Sub timClock_Timer()
+
+  Dim fDiff As Float
+  Dim dAlarm As Date
+  
+  fDiff = $fAlarm - Timer
+  If fDiff <= 0 Then
+    dAlarm = timTime.Value
+    $fAlarm += Minute(dAlarm) * 60 + Second(dAlarm)
+    fDiff = $fAlarm - Timer
+    Music.Play
+  Endif
+  lblAlarm.Text = Format(Int(fDiff / 60), "00") & ":" & Format(Int(fDiff - Int(fDiff / 60) * 60), "00") & ":" & Format(Int(Frac(fDiff) * 100), "00")
+
+End
+
+Public Sub Form_Arrange()
+
+  lblAlarm.Padding = lblAlarm.Width / 16
+
+End
+
+Public Sub Form_Open()
+
+  ' SDL cannot resample its music track...
+  Sound.Frequency = 48000
+  Music.Load("alarm.ogg")
+
+End

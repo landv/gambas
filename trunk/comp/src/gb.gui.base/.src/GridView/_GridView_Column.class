@@ -1,0 +1,149 @@
+' Gambas class file
+
+Export
+
+Property Read X, {Left} As Integer
+Property Width, W As Integer
+Property Text, Title As String
+Property Resizable As Boolean
+Property Expand As Boolean
+Property Alignment As Integer
+Property Background As Integer
+
+Event _Refresh
+
+Public _X As Integer
+Public _W As Integer
+Public _Column As Integer
+
+Private $W As Integer
+Private $sText As String
+Private $bResizable As Boolean = True
+Private $bExpand As Boolean
+Private $iAlign As Integer
+Private $iBackground As Integer = Color.Default
+
+Private Sub GetView() As GridView
+  
+  Return Object.Parent(Object.Parent(Me))
+  
+End
+
+Public Sub _new()
+  
+  $W = Desktop.Scale * 8
+  
+End
+
+Private Function Width_Read() As Integer
+
+  Return Max(_W, $W)
+
+End
+
+Public Sub _GetExplicitWidth() As Integer
+  
+  Return $W
+  
+End
+
+
+Private Sub Width_Write(Value As Integer)
+  
+  Dim bCancel As Boolean
+  'Dim bSetLayout As Boolean
+  
+  If Value < 0 Then
+    bCancel = GetView()._RaiseColumnSize(_Column)
+    If Not bCancel Then Return
+    Value = GetView()._GetPreferredWidth(_Column)
+    'bSetLayout = True
+  Endif
+  
+  If Value < 0 Or If Value = $W Then Return
+  $W = Max(0, Value)
+  'If bSetLayout Then _W = $W
+  _W = $W
+  Raise _Refresh
+  GetView()._RaiseColumnResize(_Column)
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  $W = Max($W, GetView().Font.TextWidth($sText) + 8 + If(GetView().Sorted, 16, 0))
+  Raise _Refresh
+
+End
+
+Private Function X_Read() As Integer
+
+  Return _X
+
+End
+
+Private Function Resizable_Read() As Boolean
+
+  Return $bResizable
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  $bResizable = Value
+
+End
+
+Private Function Expand_Read() As Boolean
+
+  Return $bExpand
+
+End
+
+Private Sub Expand_Write(Value As Boolean)
+
+  $bExpand = Value
+  Raise _Refresh
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return $iAlign
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  Select Case Value
+    Case Align.Left, Align.Right, Align.Normal, Align.Center
+    Default
+      Return
+  End Select
+
+  If $iAlign = Value Then Return
+  $iAlign = Value
+  GetView().Refresh
+
+End
+
+Private Function Background_Read() As Integer
+
+  Return $iBackground
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  If $iBackground = Value Then Return
+  $iBackground = Value
+  GetView().Refresh
+
+End

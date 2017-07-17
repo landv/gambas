@@ -1,0 +1,222 @@
+' Gambas class file
+
+Private $aBoxShadow As New _ReportBoxShadow[]
+
+Property XOffset As String
+Property YOffset As String
+Property Blur As String
+Property Spread As String
+Property Inset As Boolean
+Property Color As Integer
+Property Read Count As Integer
+Property Read Max As Integer
+
+
+Property Read _XOffset As Float
+Property Read _YOffset As Float
+Property Read _Blur As Float
+Property Read _Spread As Float
+Property Read _Active As Boolean
+
+
+Public Sub _new()
+  
+  Dim hBoxShadow As New _ReportBoxShadow
+  $aBoxShadow.Add(hBoxShadow)
+  
+End
+
+Static Public Function _get(sValue As String) As ReportBoxShadow
+  
+  Dim hBoxShadow As New ReportBoxShadow
+  Dim s As String
+  Dim i As Integer
+  For Each s In Split(sValue, " ")
+    If IsDigit(Left(s)) Then
+      
+      Select Case i
+        Case 0
+          hBoxShadow.XOffset = s
+        Case 1
+          hBoxShadow.YOffset = s
+        Case 2
+          hBoxShadow.Blur = s
+        Case 3
+          hBoxShadow.Spread = s
+      End Select
+      Inc i
+      Continue
+    Endif
+    If LCase(s) = "inset" Then 
+      hBoxShadow.Inset = True
+      Continue
+    Endif
+    Try hBoxShadow.Color = Val(s)
+    
+  Next
+  Return hBoxShadow
+  
+End
+
+
+
+' Public Function _get(Index As Integer) As _ReportBoxShadow
+'   
+'   Return $aBoxShadow[Index]
+'   
+' End
+
+Public Sub Add(Optional XOffset As String, YOffset As String, iColor As Integer, Spread As String, Blur As String, Inset As Boolean)
+  
+  Dim hBoxShadow As New _ReportBoxShadow
+  
+  If XOffset Then hBoxShadow.XOffset = XOffset
+  If YOffset Then hBoxShadow.YOffset = YOffset
+  If iColor Then hBoxShadow.Color = iColor
+  If SPread Then hBoxShadow.Spread = Spread
+  If Blur Then hBoxShadow.Blur = Blur
+  hBoxShadow.Inset = Inset
+  $aBoxShadow.Add(hBoxShadow)
+  
+End
+
+Public Sub Remove(Index As Integer)
+  
+  $aBoxShadow.Remove(Index)
+  
+End
+
+
+
+Private Function XOffset_Read() As String
+
+  Return $aBoxShadow[0].XOffset
+
+End
+
+Private Sub XOffset_Write(Value As String)
+
+  $aBoxShadow[0].XOffset = Value
+
+End
+
+Private Function YOffset_Read() As String
+
+  Return $aBoxShadow[0].YOffset
+
+End
+
+Private Sub YOffset_Write(Value As String)
+
+  $aBoxShadow[0].YOffset = Value
+
+End
+
+Private Function Blur_Read() As String
+
+  Return $aBoxShadow[0].Blur
+
+End
+
+Private Sub Blur_Write(Value As String)
+
+  $aBoxShadow[0].Blur = Value
+
+End
+
+Private Function Spread_Read() As String
+
+  Return $aBoxShadow[0].Spread
+
+End
+
+Private Sub Spread_Write(Value As String)
+
+  $aBoxShadow[0].Spread = Value
+
+End
+
+Private Function Inset_Read() As Boolean
+
+  Return $aBoxShadow[0].Inset
+
+End
+
+Private Sub Inset_Write(Value As Boolean)
+
+  $aBoxShadow[0].Inset = Value
+
+End
+
+Private Function Color_Read() As Integer
+
+  Return $aBoxShadow[0].Color
+
+End
+
+Private Sub Color_Write(Value As Integer)
+
+  $aBoxShadow[0].Color = Value
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return $aBoxShadow.Count
+
+End
+
+Private Function Max_Read() As Integer
+
+  Return $aBoxShadow.Max
+
+End
+
+Public Sub _SetUnifiedValues()
+  
+  Dim i As Integer
+  Dim SizeParse As TSizeParse
+  For i = 0 To $aBoxShadow.Max
+    'With 
+      $aBoxShadow[i]._XOffset = TSizeParse[$aBoxShadow[i].XOffset].GetValue()
+      $aBoxShadow[i]._YOffset = TSizeParse[$aBoxShadow[i].YOffset].GetValue()
+      $aBoxShadow[i]._Spread = TSizeParse[$aBoxShadow[i].Spread].GetValue()
+      $aBoxShadow[i]._Blur = TSizeParse[$aBoxShadow[i].Blur].GetValue()
+     
+      '._Blur = TSizeParse[.Blur].GetValue()
+    'End With
+    
+    
+  Next
+  
+End
+
+Private Function _XOffset_Read() As Float
+
+  Return $aBoxShadow[0]._XOffset
+
+End
+
+Private Function _YOffset_Read() As Float
+
+  Return $aBoxShadow[0]._YOffset
+
+End
+
+Private Function _Blur_Read() As Float
+
+  Return $aBoxShadow[0]._Blur
+
+End
+
+Private Function _Spread_Read() As Float
+
+  Return $aBoxShadow[0]._Spread
+
+End
+
+Private Function _Active_Read() As Boolean
+
+  Return Not ($aBoxShadow[0]._XOffset = 0 And $aBoxShadow[0]._YOffset = 0 And $aBoxShadow[0]._Blur = 0 And $aBoxShadow[0]._Spread = 0)
+
+End

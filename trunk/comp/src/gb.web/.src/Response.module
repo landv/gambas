@@ -1,0 +1,370 @@
+' Gambas module file
+
+Export
+
+Class Compress
+
+Property Buffered As Boolean
+Property ContentType As String
+Property Status As String
+Property EndOfLine As Integer
+Property Read Done As Boolean
+
+'Property LastModified As Date
+'Property Read Cache As _ResponseCache
+
+Private $bBuffered As Boolean
+Private $sHeader As String
+Private $hFile As File
+Private $sContentType As String = "text/html;charset=utf-8"
+Private $sStatus As String
+Private $iBegin As Integer
+'Private $dLastModified As Date
+Private $bCompressionComponentChecked As Boolean
+Private $bCanUseCompression As Boolean
+Private $hComp As Compress
+Private $bDone As Boolean
+
+Public Sub AddHeader(Name As String, Value As String)
+
+  If Not Value Then Return  
+  $sHeader &= Name & ": " & Value & "\r\n"
+  
+End
+
+Public Sub Redirect(URL As String)
+  
+  If $iBegin Then Return
+  
+  If URL Like "*://*" Then 
+    AddHeader("Location", URL)
+  Else 
+    AddHeader("Location", Main.GetAbsoluteURL(URL))
+  Endif
+  
+  Response.Buffered = False
+  Response.Begin
+  Response.End
+  
+End
+
+Public Sub SetCookie(Cookie As String, Value As String, Optional Domain As String, Optional Path As String, Optional Expires As Date, Optional HttpOnly As Boolean)
+  
+  Dim sVal As String
+  
+  sVal = Cookie & "=" & Value
+  If Domain Then sVal &= ";domain=" & Domain
+  If Expires Then sVal &= ";expires=" & CGI.FormatDate(Expires)
+  If Path Then sVal &= ";path=" & Path
+  If HttpOnly Then sVal &= ";httponly"
+  
+  AddHeader("Set-Cookie", sVal)
+  
+End
+
+Public Sub RemoveCookie(Cookie As String, Value As String, Optional Domain As String, Optional Path As String)
+  
+  Dim sVal As String
+  
+  sVal = Cookie & "=" & Value
+  If Domain Then sVal &= ";domain=" & Domain
+  sVal &= ";expires=" & CGI.FormatDate(Now - 1)
+  If Path Then sVal &= ";path=" & Path
+  
+  AddHeader("Set-Cookie", sVal)
+  
+End
+
+Public Sub Begin()
+
+  Inc $iBegin
+  If $iBegin <> 1 Then Return 
+  
+  If $sStatus Then AddHeader("Status", $sStatus)
+  AddHeader("Content-type", $sContentType)
+  'AddHeader("Cache-control", "private")
+  
+  If $bBuffered Then
+  
+    $hFile = Open Temp$("response") For Create
+    $hFile.EndOfLine = File.Out.EndOfLine
+    Output To #$hFile
+    
+  Else
+  
+    Print $sHeader
+    $sHeader = ""
+    
+  Endif
+  
+End
+
+Private Sub CloseTempFile()
+
+  Output To Default 
+  File.Out.EndOfLine = $hFile.EndOfLine
+  Close #$hFile
+  $hFile = Null
+  
+End
+
+Public Sub Cancel()
+  
+  If Not $bBuffered Then
+    If $iBegin Then Error.Raise("Response has been started")
+    Return
+  Endif
+  
+  If $bDone Then Error.Raise("Response has been sent")
+  
+  If $iBegin Then
+    $iBegin = 0
+    Try CloseTempFile
+    Try Kill Temp$("response")
+    $sHeader = ""
+    $sStatus = ""
+    $sContentType = "text/html;charset=utf-8"
+  Endif
+  
+End
+
+
+Private Sub ShouldCompress() As Boolean
+  
+  Return $sContentType Begins "text/"
+  
+End
+
+Private Sub CanUseCompression() As Boolean
+
+  If Not $bCompressionComponentChecked Then
+    Try Component.Load("gb.compress")
+    $bCanUseCompression = Not Error
+    $bCompressionComponentChecked = True
+    $hComp = New Compress
+    $hComp.Type = "zlib"
+  Endif
+  
+  Return $bCanUseCompression
+
+End
+
+Public Sub End()
+  
+  Dim sBuffer As String
+  Dim sFile As String
+  Dim iSize As Long
+  
+  'Dim hLog As File
+
+  Dec $iBegin
+  If $iBegin <> 0 Then Return
+
+  If $bBuffered Then
+  
+    CloseTempFile
+    
+    sFile = Temp$("response")
+    
+    If ShouldCompress() Then
+      If Split(CGI["HTTP_ACCEPT_ENCODING"], ",").Exist("gzip*", gb.Like) Then
+        iSize = Stat(sFile).Size
+        If iSize >= 128 Then
+          If CanUseCompression() Then
+            AddHeader("Content-Encoding", "gzip")
+            AddHeader("Vary", "Accept-Encoding")
+            $hComp.File(sFile, sFile & ".gz", $hComp.Max)
+            If Exist(sFile & ".gz") Then sFile &= ".gz"
+          Endif
+        Endif
+      Endif
+    Endif
+
+    $hFile = Open sFile For Read 
+    AddHeader("Content-Length", Lof($hFile))
+    Print $sHeader
+    $sHeader = ""
+  
+    While Not Eof($hFile)
+      sBuffer = Read #$hFile, -65536
+      Print sBuffer;
+      'Print #hLog, sBuffer;
+    Wend
+    Close #$hFile
+    
+  Else
+    
+    Flush
+    
+  Endif
+  
+  $bDone = True
+  
+'Catch
+  
+'  Main.Log(Error.Where & ": " & Error.Text, True)
+  
+End
+
+Public Sub GetContentTypeFrom(Path As String) As String
+  
+  Select Case Lower(File.Ext(Path))
+    Case "css"
+      Return "text/css"
+    Case "jpg", "jpeg", "jpe", "thumb"
+      Return "image/jpeg"
+    Case "png"
+      Return "image/png"
+    Case "gif"
+      Return "image/gif"
+    Case "svg"
+      Return "image/svg+xml"
+    Case "tiff", "tif"
+      Return "image/tiff"
+    Case "odt"
+      Return "application/vnd.oasis.opendocument.text"
+    Case "doc"
+      Return "application/msword"
+    Case "ods"
+      Return "application/vnd.oasis.opendocument.spreadsheet"
+    Case "xls"
+      Return "application/msexcel"
+    Case "pdf"
+      Return "application/pdf"
+    Case "zip"
+      Return "application/zip"
+    Case "html", "htm"
+      Return "text/html"
+    Case "txt"
+      Return "text/plain"
+    Case "avi"
+      Return "video/x-msvideo"
+    Case "mpg", "mpeg"
+      Return "video/mpeg"
+    Case "ps"
+      Return "application/postscript"
+    Case "dwg"
+      Return "application/acad"
+    Case "wav"
+      Return "audio/x-wav"
+    Case "ogg"
+      Return "application/ogg"
+    Case "jar"
+      Return "application/x-jar"
+    Case "json"
+      Return "application/json;charset=utf-8"
+    Case "kml"
+      Return "application/vnd.google-earth.kml+xml"
+    Case "kmz"
+      Return "application/vnd.google-earth.kmz"
+    Case Else 
+      Return "application/octet-stream"
+  End Select
+  
+End
+
+Public Sub SendFile(Path As String, Optional ContentType As String)
+  
+  Dim sBuffer As String
+  Dim hFile As File
+
+  $bDone = True
+
+  If Left(Path) <> "/" Then Path = ".." &/ Path
+
+  If Not Exist(Path) Then
+    Print "Status: 404 Not Found"
+    Print
+    Return
+  Endif
+
+  If Not ContentType Then ContentType = GetContentTypeFrom(Path)
+  Print "Content-Type: "; ContentType
+  Print $sHeader;
+  
+  hFile = Open Path For Read 
+
+  Print "Content-length: "; Lof(hFile)
+  Print
+  While Not Eof(hFile)
+    sBuffer = Read #hFile, -1024
+    Print sBuffer;
+  Wend
+  Close #hFile
+  
+End
+
+
+Private Function Buffered_Read() As Boolean
+
+  Return $bBuffered  
+
+End
+
+Private Sub Buffered_Write(Value As Boolean)
+
+  If $bBuffered And If Not Value Then $iBegin = 0
+
+  $bBuffered = Value
+
+End
+
+Private Function ContentType_Read() As String
+
+  Return $sContentType  
+
+End
+
+Private Sub ContentType_Write(Value As String)
+
+  $sContentType = Value  
+
+End
+
+Private Function Status_Read() As String
+
+  Return $sStatus
+
+End
+
+Private Sub Status_Write(Value As String)
+
+  $sStatus = Value
+
+End
+' 
+' Private Function Cache_Read() As _ResponseCache
+' 
+'   Return _ResponseCache
+' 
+' End
+' 
+' Private Function LastModified_Read() As Date
+' 
+'   Return $dLastModified
+' 
+' End
+' 
+' Private Sub LastModified_Write(Value As Date)
+' 
+'   $dLastModified = Value
+' 
+' End
+
+Private Function EndOfLine_Read() As Integer
+
+  Return File.Out.EndOfLine
+
+End
+
+Private Sub EndOfLine_Write(Value As Integer)
+
+  File.Out.EndOfLine = Value
+
+End
+
+Private Function Done_Read() As Boolean
+
+  Return $bDone
+
+End

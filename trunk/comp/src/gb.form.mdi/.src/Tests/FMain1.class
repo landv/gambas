@@ -1,0 +1,48 @@
+' Gambas class file
+
+Public Sub _new()
+
+End
+
+Public Sub Form_Open()
+
+  Application.MainWindow = Me
+
+End
+
+Public Sub Button1_Click()
+
+  Label1.H = tlbrMain.Children[0].H
+  Print tlbrMain.H;; tlbrMain.Children[0].H;; ToolButton1.H
+
+End
+
+Public Sub Button2_Click()
+
+  If Panel2.Parent = Panel1 Then
+    Panel2.Reparent(Me)
+  Else
+    Panel2.Reparent(Panel1)
+    Panel2.Next = ToolButton6
+  Endif
+
+End
+
+Public Sub Panel2_MouseDrag()
+
+  Drag(Panel2, "Coucou")
+
+End
+
+Public Sub Label1_DragMove()
+
+  Debug
+
+End
+
+Public Sub Label1_Drop()
+
+  Debug Drag.Data
+
+End
+

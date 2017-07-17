@@ -1,0 +1,99 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+
+Event Change
+
+Property Color As Integer
+Property Value As Integer
+
+Public Const _Properties As String = "*,Value{Color}"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "8,4"
+
+Private $hButton As Button
+Private $hPicture As Picture
+Private $hWatcher As Watcher
+Private $iColor As Integer
+
+Public Sub _new()
+
+  $hButton = New Button(Me) As "Button"
+  $hWatcher = New Watcher($hButton) As "Button"
+
+  'ResizePicture
+
+End
+
+Private Sub FillPicture()
+
+  If $hPicture Then
+    '$hPicture.Fill($iColor)
+    Draw.Begin($hPicture)
+    Draw.LineStyle = Line.None
+    Draw.FillStyle = Fill.Solid
+    Draw.FillColor = $iColor
+    Draw.Rect(2, 2, $hPicture.Width - 4, $hPicture.Height - 4)
+    Draw.LineStyle = Line.Solid
+    Draw.FillStyle = Fill.None
+    Draw.Foreground = Color.LightForeground
+    Draw.Rect(0, 0, $hPicture.Width, $hPicture.Height)
+    Draw.Foreground = Color.White
+    Draw.Rect(1, 1, $hPicture.Width - 2, $hPicture.Height - 2)
+    Draw.End
+  Endif
+
+  $hButton.Picture = $hPicture
+
+End
+
+Private Sub ResizePicture()
+
+  $hPicture = Null
+  Try $hPicture = New Picture($hButton.W - 14, $hButton.H - 14)
+  FillPicture
+
+End
+
+Private Function Color_Read() As Integer
+
+  Return $iColor
+
+End
+
+Private Sub Color_Write(iColor As Integer)
+
+  If iColor = $iColor Then Return
+  $iColor = iColor
+  FillPicture
+
+End
+
+Public Sub Button_Click()
+
+  Dialog.Color = $iColor
+  If Dialog.SelectColor() Then Return
+  $iColor = Dialog.Color
+  FillPicture
+  Raise Change
+
+End
+
+Public Sub Button_Resize()
+
+  ResizePicture
+
+End
+
+Private Function Value_Read() As Integer
+
+  Return Color_Read()  
+
+End
+
+Private Sub Value_Write(Value As Integer)
+
+  Color_Write(Value)
+
+End

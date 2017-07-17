@@ -1,0 +1,82 @@
+' Gambas module file
+
+Public screen As New Window As "screen"
+
+' structure pour stocker les coordonnées d'une étoile
+' ainsi que sa vitesse
+Public Struct Star
+  x As Integer
+  y As Integer
+  speed As Integer
+End Struct
+
+' notre champ étoilé
+Private Starfield As New Star[]
+
+' le logo
+Private img As Image
+Private rotation As Integer = 0
+
+Public Sub Main()
+
+  Dim i As Integer
+  Dim stars As Star
+  
+  Randomize
+  
+  ' Ouverture de notre fenêtre, on limite
+  ' a 60 images par secondes maximum
+  With screen
+    .Framerate = 100
+    .Resizable = False
+    .Show()
+  End With
+  
+  img = Image.Load("logo.png")
+  
+  ' Remplissons notre champ étoilé
+  For i = 0 To 100
+    Stars = New Star
+    Stars.x = Int(Rnd(Screen.Width))
+    Stars.y = Int(Rnd(screen.Height))
+    Stars.speed = Int(Rnd(1, 4))
+    Starfield.Push(stars)
+  Next
+
+End
+
+Public Sub Screen_Draw()
+  
+  Dim Stars As Star
+
+  screen.Clear()
+  
+  For Each Stars In Starfield
+    ' Plus une étoile est rapide (proche), plus elle est lumineuse
+    Draw.ForeColor = &h444444& * Stars.speed
+    ' Plus elle est proche plus sa trace est longue
+    Draw.Line(Stars.x, Stars.y, Stars.x + (Stars.speed * 2), stars.y)
+    Stars.x += Stars.speed
+
+    ' Notre étoile est hors de l'écran
+    If Stars.x > screen.Width Then
+      Stars.x = 0
+      Stars.y = Int(Rnd(screen.Height))
+      Stars.speed = Int(Rnd(1, 4))
+    Endif
+  Next
+  
+  ' Attention la couleur affecte aussi les images !
+  Draw.ForeColor = &hFFFFFF&
+
+  Draw.Font.Size = Font.DefaultFontSize * 2
+  Draw.Text(Screen.Framerate, 10, Screen.Height - 40)
+  
+  ' on applique la rotation et on affiche le logo
+  Draw.Rotate(rotation)
+  Draw.Image(img, Screen.Width \ 2 - 64, Screen.Height \ 2 - 64)
+  
+  ' rotation de 0 a 360 :-)
+  rotation = (rotation + 1) Mod 360
+  
+End

@@ -1,0 +1,146 @@
+' Gambas class file
+
+Static Public Path As String
+
+Public Sub Run() As Boolean
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  Dim sKey As String
+
+  sKey = cvwLibrary.Key
+  If Not sKey Then Return
+  If Not cvwLibrary.Current.ParentKey Then Return
+  
+  Path = ":" & sKey
+  
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Private Sub RefreshLibraries()
+
+  Dim sDir As String
+  Dim sVendor As String
+  Dim sLib As String
+  Dim bParent As Boolean
+  Dim aLib As String[]
+  Dim sKey As String
+  Dim hPict As Picture
+
+  cvwLibrary.Clear
+
+  For Each sDir In [CLibraryInfo.UserPath, Component.Path]
+
+    If Not IsDir(sDir) Then Continue
+
+    For Each sVendor In Dir(sDir, "*", gb.Directory).Sort(gb.Natural)
+      
+      bParent = cvwLibrary.Exist(sVendor)
+      
+      For Each sLib In Dir(sDir &/ sVendor, "*.gambas", gb.File).Sort(gb.Natural)
+        
+        sLib = File.BaseName(sLib)
+        sKey = sVendor &/ sLib
+        If cvwLibrary.Exist(sKey) Then Continue
+        
+        aLib = Split(sLib, ":")
+        If aLib.Count <> 2 Then Continue
+        
+        If Not bParent Then
+          If sVendor = "(unknown)" Then
+            With cvwLibrary.Add(sVendor, "", Picture["icon:/small/directory"])
+              .Expanded = True
+              .RichText = "<i>" & ("unknown") & "</i>"
+            End With
+          Else
+            cvwLibrary.Add(sVendor, sVendor, Picture["icon:/small/directory"]).Expanded = True
+          Endif
+          bParent = True
+        Endif
+  
+        If sDir = Component.Path Then 
+          hPict = Picture["icon:/small/component"]
+        Else
+          hPict = Picture["icon:/small/book"]
+        Endif
+  
+        cvwLibrary.Add(sKey, aLib[0], hPict, sVendor)[1] = aLib[1]
+        
+      Next
+      
+    Next
+    
+  Next
+
+  If cvwLibrary.Count Then
+    cvwLibrary.Show
+    panNoLibrary.Hide
+  Else
+    cvwLibrary.Hide
+    panNoLibrary.Show
+  Endif
+    
+End
+
+Public Sub Form_Open()
+
+  Settings.Read(Me)
+
+  cvwLibrary.Columns.Count = 2
+  cvwLibrary.Columns[0].Text = ("Library")
+  cvwLibrary.Columns[0].Expand = True
+  cvwLibrary.Columns[1].Text = ("Version")
+  
+  RefreshLibraries
+
+End
+
+Public Sub cvwLibrary_Select()
+
+  If cvwLibrary.Key And If Not cvwLibrary.Current.ParentKey Then
+    cvwLibrary.MoveChild
+    cvwLibrary.Item.Selected = True
+  Endif
+  
+  btnRemove.Enabled = cvwLibrary.Key
+  btnOK.Enabled = btnRemove.Enabled
+
+End
+
+Public Sub btnRemove_Click()
+
+  Dim sPath As String
+  
+  If Not cvwLibrary.Key Then Return
+  
+  sPath = CLibraryInfo.UserPath &/ cvwLibrary.Key & ".gambas"
+  Try Kill sPath
+  Try Rmdir File.Dir(sPath)
+  
+  RefreshLibraries
+  cvwLibrary_Select
+
+End
+
+Public Sub cvwLibrary_Activate()
+
+  btnOK.Value = True
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)
+
+End

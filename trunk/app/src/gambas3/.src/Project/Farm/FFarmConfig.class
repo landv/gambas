@@ -1,0 +1,32 @@
+' Gambas class file
+
+
+Public Sub Run() As Boolean
+  
+  Return Not Me.ShowModal()
+  
+End
+
+Public Sub Form_Open()
+
+  lstFarm.List = FarmRequest.GetFarms()
+
+End
+
+Public Sub lstFarm_Change()
+
+  FarmIdentity.FarmList = lstFarm.List
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnOK_Click()
+
+  Me.Close(True)
+
+End

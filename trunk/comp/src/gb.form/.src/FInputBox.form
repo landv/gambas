@@ -1,0 +1,39 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,68,16)
+  Resizable = False
+  Arrangement = Arrange.Horizontal
+  AutoResize = True
+  Spacing = True
+  Margin = True
+  { panBox Panel
+    MoveScaled(1,1,48,12)
+    AutoResize = True
+    Spacing = True
+    { lblMessage TextLabel
+      MoveScaled(0,0,48,7)
+      AutoResize = True
+    }
+    { txtValue TextBox
+      MoveScaled(0,8,15,4)
+    }
+  }
+  { Panel1 Panel
+    MoveScaled(50,1,2,10)
+  }
+  { VBox2 VBox
+    MoveScaled(53,1,14,9)
+    Spacing = True
+    { btnOK Button
+      MoveScaled(0,0,14,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(0,5,14,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

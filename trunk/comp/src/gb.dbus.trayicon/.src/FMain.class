@@ -1,0 +1,60 @@
+' Gambas class file
+
+Public $hTray As TrayIcon
+Private $bOK As Boolean
+
+Public Sub Form_Open()
+
+  DBus.Debug = True
+  Try $hTray = New TrayIcon
+  If Error Then 
+    Print "#ERROR" 
+    Return
+  Endif   
+  '$hTray.Icon = Picture["griG.png"]
+  object.Attach($hTray, Me, "myMenu")
+  $hTray.Show
+  myMenu.Hide  
+  $hTray.PopupMenu = "myMenu"
+
+End
+
+Public Sub Menu2_Click()
+
+  Me.Visible = True 
+
+End
+
+Public Sub Menu3_Click()
+
+  Me.Close
+
+End
+
+Public Sub Form_Close()
+  
+  If Not $bOK Then
+    Me.Visible = False
+    Stop Event    
+  Else
+    Me.Close
+  Endif
+  
+End
+
+Public Sub Menu4_Click()
+
+  $bOK = True    
+  ' Object.Detach($hTray)
+  ' $hTray.Delete()
+  Me.Close()    
+  ' Wait
+  ' Quit
+
+End
+
+Public Sub myMenu_Click()
+  
+  Print "CLICK"
+  
+End

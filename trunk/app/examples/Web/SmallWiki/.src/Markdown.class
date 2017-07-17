@@ -1,0 +1,40 @@
+' Gambas class file
+
+Export
+Create
+
+Public Root As String
+Public Line As Integer
+Public Current As String
+
+Public Sub ToHTML(Markdown As String) As String
+  
+  Return Markup.Convert(Markdown, Me)
+  
+End
+
+Public Sub Link((sLink) As MarkdownLink)
+  
+End
+
+Public Sub Command((sCommand) As String) As String[]
+  
+End
+
+Public Sub Enter((sClass) As String) As String[]
+  
+End
+
+Public Sub Leave((sClass) As String) As String[]
+  
+End
+
+Public Sub EnableCode(bEnabled As Boolean)
+  
+  If bEnabled Then
+    Inc Markup.EnableCode
+  Else
+    Dec Markup.EnableCode
+  Endif
+  
+End

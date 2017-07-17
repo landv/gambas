@@ -1,0 +1,77 @@
+' Gambas module file
+
+Public Sub Main()
+  
+  Dim hFont As Font = Font["Gambas,10"]
+  Dim hImage As New Image(hFont.TextWidth(" "), hFont.Height, Color.White)
+  Dim C As Integer
+  Dim Y As Integer
+  Dim X As Integer
+  Dim V As Integer
+  Dim hFile As File
+  
+  hFile = Open "~/gambas/3.0/trunk/gb.sdl/src/default_font.h" For Create
+  Output To #hFile
+  
+  Print "#define DEFAULT_FONT_WIDTH "; hImage.W
+  Print "#define DEFAULT_FONT_HEIGHT "; hImage.H
+  Print "#define DEFAULT_FONT_ASCENT "; 10
+  Print "#define DEFAULT_FONT_DESCENT "; 3
+  Print
+  Print "const char _default_font_33_126[] = {"
+  For C = 33 To 126
+    GoSub WRITE_CHAR
+  Next
+  Print "};"
+  
+  Print
+  Print "const char _default_font_160_687[] = {"
+  For C = 160 To 687
+    GoSub WRITE_CHAR
+  Next
+  Print "};"
+
+  ' Print
+  ' Print "typedef"
+  ' Print "  struct {"
+  ' Print "    int start;"
+  ' Print "    int end;"
+  ' Print "    char *data;"
+  ' Print "  }"
+  ' Print "FONT_SLICE;"
+  ' Print
+  ' Print "FONT_SLICE _default_font[] = {"
+  ' Print "  {  32, 126, _default_font_32_136 },"
+  ' Print "  { 160, 687, _default_font_160_687 },"
+  ' Print "  { 0 }"
+  ' Print "};"
+  
+  Output To Default
+  Close #hFile
+  
+  Return
+    
+WRITE_CHAR:
+
+  hImage.Fill(Color.White)
+  Paint.Begin(hImage)
+  Paint.Background = Color.Black
+  Paint.Font = hFont
+  Paint.DrawText(String.Chr$(C), 0, 0, hImage.W, hImage.H, Align.TopLeft)
+  Paint.End
+  
+  Print "  ";
+  For Y = 0 To hImage.H - 1
+    V = 0
+    For X = 0 To hImage.W - 1
+      If hImage[X, Y] <> Color.White Then V += Shl(1, X)
+    Next
+    If Y Then Print ", ";
+    Print "0x"; Hex$(V, 2);
+  Next
+  
+  Print ","
+  
+  Return
+  
+End

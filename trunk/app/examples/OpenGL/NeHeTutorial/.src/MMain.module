@@ -1,0 +1,17 @@
+' Gambas module file
+
+Public Title As String
+
+Public Sub Main()
+
+  Dim hClass As Class
+
+  If Application.Args.Count >= 2 Then
+    Title = Application.Args[2]
+    hClass = Class.Load(Application.Args[1])
+    Object.Call(hClass, "Main")
+  Else
+    Print "Usage: NeHeTutorial Example<N> <Title>"
+  Endif
+
+End

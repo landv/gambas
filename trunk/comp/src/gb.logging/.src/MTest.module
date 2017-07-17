@@ -1,0 +1,36 @@
+' Gambas module file
+
+Public Sub Main()
+
+  Dim aHandler As LogHandler
+  Dim bHandler As FileHandler
+
+  Dim bLogger As ComplexLogger
+
+  Dim i As Integer = 0
+
+  aHandler = New ConsoleHandler(ConsoleHandler.STDOUT)
+  bHandler = New FileHandler("~/Desktop")
+  bHandler.RotateAfter(1024)
+
+  bLogger = New ComplexLogger(Null, aHandler)
+
+  bLogger.addHandler(bHandler)
+
+  bLogger.Begin()
+
+    bLogger.Log("I can read this in the console or at a file stored in my Desktop folder.")
+
+    For i = 0 To 100
+
+      bLogger("Log message " & i)
+
+    Next
+
+    ' cLogger = New Logger(LogLevel.Error, Null, Logger.Stdout)
+    '
+    ' cLogger.Begin()
+    '
+    ' cLogger.Log("Using the old logger interface", LogLevel.Critical)
+
+End

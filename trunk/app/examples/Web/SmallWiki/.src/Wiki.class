@@ -1,0 +1,47 @@
+' Gambas class file
+
+Private Sub _PrintTitle()
+
+  If Main.Path Then
+    Print Html(Main.Path);
+  Else
+    Print "/";
+  Endif
+
+End
+
+Private Sub _PrintPage()
+
+  Dim sPath As String
+
+  sPath = Main.GetPagePath()
+  
+  If Main.Edit Then
+    If Exist(sPath) Then Print Html(File.Load(sPath));
+    Return
+  Endif
+  
+  If Not Main.Exist Then
+    Print "<div class=\"unknown\">This page does not exist."
+    If Session.Id Then Print "<p>Click on the <b>Create</b> button to create it!"
+    Print "</div>"
+    Return
+  Endif
+  
+  If Main.Image Then
+    Print "<img src=\"" & Application.Root &/ Main.Path & "?show\" />";
+  Else
+    Print WikiMarkdown.ToHTML(File.Load(sPath));
+  Endif
+
+End
+
+Private Sub _PrintParent()
+
+  Dim sPath As String
+
+  sPath = Request.Path
+  If sPath Then sPath = File.Dir(sPath)
+  Print Application.Root &/ sPath;
+
+End

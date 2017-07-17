@@ -1,0 +1,119 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,Border=True,ReadOnly,Wrap,PlaceHolder,Text"
+Public Const _DrawWith As String = "TextArea"
+Public Const _DefaultSize As String = "16,16"
+
+Event Change
+
+Property Text As String
+Property ReadOnly As Boolean
+Property Wrap As Boolean
+Property PlaceHolder As String
+
+Private $sText As String
+Private $bReadOnly As Boolean
+Private $bWrap As Boolean
+Private $sPlaceHolder As String
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  If $sText = Value Then Return
+  
+  $sText = Value
+  Me._SetProperty("Text", Value)
+  Raise Change
+
+End
+
+Public Sub _RenderStyleSheet()
+  
+  Me._StartStyleSheet
+  
+  Super._RenderStyleSheet()
+  
+  If Not $bWrap Then Me._AddStyleSheet("white-space:pre;")
+  
+  Me._EndStyleSheet
+  
+End
+
+
+Public Sub _BeforeRender()
+  
+  Print "<textarea"; Me._GetClassId(); Me._GetUpdateJS("onchange", "text", "this.value"); " autocomplete=\"off\""; 
+  If Not Me.Enabled Then Print " disabled";
+  If $bReadOnly Then Print " readonly";
+  If $sPlaceHolder Then Print " placeholder=\""; Html($sPlaceHolder); "\"";
+  Me._RenderStyleSheet()
+  Print ">";
+  
+End
+
+Public Sub _Render()
+  
+  Print Html($sText);
+  
+End
+
+
+Public Sub _AfterRender()
+  
+  Print "</textarea>"
+  
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $bReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $bReadOnly = Value
+  Me._SetProperty("ReadOnly", Value)
+
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  If sProp = "text" Then Try Me.Text = vValue
+  
+End
+
+
+Private Function Wrap_Read() As Boolean
+
+  Return $bWrap
+
+End
+
+Private Sub Wrap_Write(Value As Boolean)
+
+  $bWrap = Value
+  Me._SetProperty("Wrap", Value)
+
+End
+
+Private Function PlaceHolder_Read() As String
+
+  Return $sPlaceHolder
+
+End
+
+Private Sub PlaceHolder_Write(Value As String)
+
+  $sPlaceHolder = Value
+  Me._SetProperty("PlaceHolder", Value)
+
+End

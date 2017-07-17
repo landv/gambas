@@ -1,0 +1,139 @@
+' Gambas module file
+
+' TODO: Make real setup for playing
+' TODO: There is an occasional flickering when shooting and the ships are already near the player and few
+
+Public X As Integer
+Public Y As Integer
+' Hardcoded corresponding to the strings in Draw() below!
+Public Width As Integer = 3
+Public Height As Integer = 2
+
+Private $hEnemies As Timer
+Private $hMissiles As Timer
+
+Public Sub Main()
+  ' Debug aid. Watch /tmp/pipe with "tail -f"
+  ' Dim hPipe As Stream
+  ' 
+  ' hPipe = Pipe "/tmp/pipe" For Write
+  ' Error To #hPipe
+
+  Screen.Cursor = Cursor.Hidden
+  Screen.Echo = False
+  Window.Attributes = Attr.Bold
+  Object.Attach(Window, Me, "Window")
+  Window.SetFocus()
+
+  X = (Window.Width - Width) \ 2
+  Y = Window.Height - Height
+
+  Object.Attach(Enemies, Me, "Enemies")
+
+  Draw()
+  ' Populate ca. 1/3 of the screen with enemies. It will actually look more
+  ' because of the enemy arrangement. But that's good :-)
+  Enemies.Init(Window, Window.Width * Window.Height / 3 / Enemy.AverageWidth)
+  Missiles.Init(Window)
+  Window.Buffered = True
+
+  $hEnemies = New Timer As "Enemies"
+  ' TODO: The Timers are made for a 80*24 terminal.
+  ' Make it 100 and you'll likely win, 75 really depends on the amount of Borg for me...
+  $hEnemies.Delay = 75
+  $hMissiles = New Timer As "Missiles"
+  $hMissiles.Delay = 50
+
+  $hEnemies.Start()
+  $hMissiles.Start()
+End
+
+Public Sub Window_Read()
+  Select Window.Read()
+    ' Navigate left/right
+    Case Key.Left
+      If X = 0 Then Return
+      Undraw()
+      Dec X
+      Draw()
+    Case Key.Right
+      If X + Width >= Window.Width Then Return
+      Undraw()
+      Inc X
+      Draw()
+    ' Navigate up/down
+    Case Key.Up
+      If Y <= 0 Then Return
+      Undraw()
+      Dec Y
+      Draw()
+    Case Key.Down
+      If Y >= Window.Height - Height Then Return
+      Undraw()
+      Inc Y
+      Draw()
+    ' Shoot normal missile
+    Case Key[" "]
+      Missiles.Shoot(Missile.Normal, X, Y - 1)
+      'If Not $hMissiles.Enabled Then $hMissiles.Start()
+    ' Shoot super missile
+    Case Key["v"]
+      Missiles.Shoot(Missile.Super, X, Y - 1)
+      'If Not $hMissiles.Enabled Then $hMissiles.Start
+    ' Of course, manipulate the timers
+    Case Key["+"]
+      $hEnemies.Delay -= 10
+      $hMissiles.Delay -= 5
+    Case Key["-"]
+      $hEnemies.Delay += 10
+      $hMissiles.Delay += 5
+  End Select
+End
+
+Public Sub Enemies_Triumph()
+  End("TRIUMPH!", Color.Yellow)
+End
+
+Public Sub Enemies_GameOver()
+  End("GAME OVER!", Color.Blue)
+End
+
+Private Sub End(sMessage As String, iColor As Integer)
+  $hEnemies.Stop()
+  $hMissiles.Stop()
+  '' TODO: The message display is glitchy
+  Window.Buffered = False
+  Window.PrintCenter(sMessage,, Pair[iColor, Window.Background])
+  '' TODO: What now? Note that the user can still interact at this point...
+End
+
+Private Sub Draw()
+  Window.Print(" | ", X, Y)
+  Window.Print("^'^", X, Y + 1)
+End
+
+Private Sub Undraw()
+  Window.Print(Space$(Width), X, Y)
+  Window.Print(Space$(Width), X, Y + 1)
+End
+
+Public Sub Enemies_Timer()
+  Enemies.Move()
+  If Not $hMissiles.Enabled Then
+    Enemies.Draw()
+    Screen.Refresh()
+  Endif
+End
+
+Public Sub Missiles_Timer()
+  If Missiles.Move() And Missiles.Count = 0 Then
+    '$hMissiles.Stop()
+    Return
+  Endif
+  ' Missiles draw at a higher rate so we can safely redraw everything
+  ' here. Note that, thanks to ncurses' buffering, only the changed
+  ' parts are redrawn so that there is no overhead in more frequent
+  ' Screen.Refresh()es here.
+  Enemies.Draw()
+  Screen.Refresh()
+End

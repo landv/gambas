@@ -1,0 +1,69 @@
+' Gambas class file
+
+Private hResult As Result
+Private hResult2 As Result
+  Private hVBox As ReportVBox
+
+Public Sub Report_Open()
+  hVBox = New ReportVBox(ReportHBox1)
+  hVBox.Spacing = "1cm"
+  Connections["MainConn"].Open
+  hResult = db.Exec("select * from parc_ilots")
+  'Report.Debug = True  
+  'ReportHBox1.BackGround = ReportBrush.Color(Color.Yellow)
+  'hVBox.BackGround = ReportBrush.Color(Color.red)
+  hVBox.Width = "50%"
+   For Each hResult
+     
+     AddIlot(hResult!nom, hResult!id)
+     
+   Next
+
+End
+
+
+Private Sub AddIlot(sIlot As String, iIlot As Integer)
+  Dim hHBox1 As New ReportHBox(hVBox)
+  Dim hLblIlot As New ReportLabel(hHBox1)
+  Dim hVBoxList As New ReportVBox(hHBox1)
+  Dim hHBoxLine As ReportHBox
+  Dim hLblParcelle As ReportLabel
+  Dim i As Integer
+  hLblIlot.Rotate = 90
+  hVBoxList.Expand = True
+  
+  hVBoxList.Border.Top.Width = "0.1mm"
+hVBoxList.Border.Right.Width = "0.1mm"  
+hHbox1.Border.Bottom.Width = "0.1mm"  
+  hLblIlot.Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+ 
+  hLblIlot.Text = sIlot
+  hLblIlot.Border = ReportBorder["Top:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+  hResult2 = db.Exec("select p.nom parcelle from liaisonilotparc lip left join parcelles p on p.id=lip.id_parc where id_ilot=&1 order by lip.ordre", iIlot)
+  
+  
+  
+  For Each hResult2
+    hHBoxLine = New ReportHBox(hVBoxList)
+    hHBoxLine.Expand = True
+    'hHBoxLine.Height = "5mm"
+    hLblIlot = New ReportLabel(hHBoxLine)
+    hHBoxLine.Border = ReportBorder["Bottom:0.1mm #000000;"]
+    hLblIlot.Text = hResult2!parcelle
+    hLblIlot.Padding.Left = "1mm"
+    hLblIlot.Expand = True
+    'hHBoxLine.Expand = True
+    'hLblIlot.Border = ReportBorder["Bottom:0.1mm #00000"]
+    For i = 0 To 3
+      hLblIlot = New ReportLabel(hHBoxLine)
+      hLblIlot.Width = "5mm"
+      hLblIlot.Border = ReportBorder["Left:0.1mm #000000;"]
+      
+    Next
+  Next
+  
+  
+  
+  
+  
+End

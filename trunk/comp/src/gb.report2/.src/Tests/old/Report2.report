@@ -1,0 +1,26 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,64,64)
+  Padding = ReportPadding["Top:15mm;Bottom:15mm;Left:15mm;Right:15mm"]
+  Index = 0
+  Text = ("")
+  { ReportLabel1 ReportLabel
+    #MoveScaled(1,3,59,12)
+    Height = "2cm"
+    Font = Font["+12"]
+    Margin = ReportMargin["Bottom:1cm;Left:2cm;Right:2cm"]
+    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000;TopLeftCorner:5mm;TopRightCorner:5mm;BottomRightCorner:5mm;BottomLeftCorner:5mm"]
+    Background = ReportBrush["LinearGradient(0.49,0,0.49,1,[#00BF5C,#FFE79F],[0,1])"]
+    BoxShadow = ReportBoxShadow["1mm 1mm 1mm 0mm #000000"]
+    Text = ("ReportLabel1")
+    Alignment = Align.Center
+  }
+  { ReportGridView1 ReportGridView
+    #MoveScaled(4,24,46,25)
+    Expand = True
+    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+    BoxShadow = ReportBoxShadow["0mm 0mm 2mm 0mm #000000"]
+  }
+  Index = 0
+}

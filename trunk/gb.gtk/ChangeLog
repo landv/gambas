@@ -1,0 +1,118 @@
+* FIXED: A serious bug making the program crash when deleting controls.
+* FIXED: Some "Arrangement" bugs in some containers.
+* NEW:   "Menu" Enabled property implemented.
+* FIXED: "Button" enabled/disabled aspect with some themes.
+* FIXED: "PictureBox" can have focus now.
+* NEW:   Added an "Scroll" event to "ScrollView" container to detect user scroll changes.
+
+
+* NEW:   "Lang","Timer", and "Error" hooks implemented.
+* NEW:   "Label.Autoresize" property implemented.
+* FIXED: "ScrollBar" is aligned at top or left of the control when there's extra space, as gb.qt does.
+* FIXED: Some "Container" arrangement problems.
+* FIXED: "HSplit" and "VSplit" arrangement fixed.
+* NEW:   "Separator" widget added. A simple widget which shows an horizontal or vertical separator line.
+* FIXED: "TextLabel" horizontal alignment was wrong.
+* FIXED: "Stock" icons take the current theme in account.
+* FIXED: "ToolButton" click event is working now.
+* NEW:   "Button" and "ToggleButton" have a new boolean property "Vertical". If set, the
+         picture is show in the Top side instead of the Left side of the button.
+* NEW:   "TextLabel" and "Message" are able handle some HTML tags: <i>,<b>,<u>,<s>,<tt>,
+         <sup>,<sub>,<small>,<big>,<h1>...<h6>,<p>,<br>, and are able to ignore unrecognized
+	 tags and parse not XML formatted strings.
+* NEW:   "Label" and "TextLabel" controls have a "Transparent" property now.
+* FIXED: "Label" and "TextLabel" controls redesigned.
+* FIXED: Segmentation fault in the "Stock" class.
+* FIXED: "Window" size is working in transitions from border resizable to fixed.
+* FIXED: "Picture" cache redesigned.
+* FIXED: "ComboBox" background and foreground colors. 
+
+050808 - Alpha
+
+* NEW:   "UserContainer" class implemented.
+* FIXED: Some problems in menu representation.
+* NEW:   "Stock" class implemented.
+
+050804 - Alpha
+
+* NEW:   Added "HSplit" and "VSplit" containers.
+* FIXED: Picture cache now is implemented using a hash table (faster).
+* FIXED: some speed problems in DrawingArea.
+
+050731 - Alpha
+
+* NEW:   ScrollView.EnsureVisible implemented.
+* NEW:   "UserControl" class implemented. 
+* NEW:   TrayIcon.Tag, W and H properties.
+* NEW:   Font.Scalable and Font.Grade properties implemented.
+* NEW:   System colors added to "Color" class.
+* NEW:   TextArea.Scrollbar property added.
+* NEW:   Control.Reparent method added to reparent widgets (but not top-level windows)
+* FIXED: Mouse, Focus, and Key events handling redesigned: 28 bytes less per widget.
+* NEW:   Application.Font implemented.
+
+050730 - Alpha
+
+* FIXED: Controls now inherit parent font.
+* FIXED: Tooltips management improved: best performance and less memory wasted.
+* NEW:   Application.Tooltip: Enabled and Font properties implemented
+* NEW:   MouseWheel event, Mouse.Orientation and Mouse.Delta properties implemented.
+* NEW:   Fonts.Count and Fonts._next implemented.
+* FIXED: Containers only arrange visible children.
+* FIXED: Segmentation fault on some containers when arrangement is not "None".
+* FIXED: Some Window.Picture representation problems.
+* NEW:   "ListView" Find implemented.
+* NEW:   "Application.ActiveWindow" implemented.
+* NEW:   "TrayIcon": ScreenX, ScreenY, Width and Height properties added.
+* NEW:   "TrayIcon" adapted to the gb.qt new interface.
+* NEW:   "Mouse.ScreenX" and "Mouse.ScreenY" implemented.
+* NEW:   "Desktop.Scale", "Control.MoveScaled" and "Control.ResizeScaled" implemented.
+
+050725 - Alpha
+
+* FIXED: Restored compatibility with GTK+-2.4
+* FIXED: "ComboBox" Length and Text properties are working now.
+* FIXED: "TextBox" Length property is working now.
+* NEW:   "ColumnView" Click and Activate events implemented.
+
+050724 - Alpha
+
+* NEW:   "Picture.Copy" implemented.
+* FIXED: Pictures now display correctly PNG transparences.
+* FIXED: "Picture" class redesigned for better performance and less memory usage.
+* NEW:   "Image" _get, _put, copy and replace methods implemented.
+* FIXED:  4 bytes less wasted per "PictureBox".
+* FIXED:  4 bytes less wasted per "ComboBox".
+* FIXED:  Internal code reorganization and cleaning.
+
+050722 - Alpha
+
+* FIXED:  "Show" calls to "ShowModal" if current Window is modal.
+* NEW:    8 bytes less wasted per container.
+* FIXED:  "Frame" children position fixed.
+* FIXED:  "TabStrip" can display accelerators in labels. BackGround and ForeGround properties
+          fixed. Some less memory wasted per TabStrip widget.
+* NEW:    "Window" Maximized, Minimized and FullScreen properties are working. State removed.
+* FIXED:  "Dialog" class now implements Dialog.paths and OpenFile(Multi) to be compatible with
+          the gb.qt component.
+* FIXED:  "Window" now has two related properties "Mask" and "Picture" in order to be 
+          compatible with the gb.qt implementation. Masking works correctly now. Using a Picture
+		  with Mask=FALSE just uses the Picture as background for the Window.
+* FIXED:  "Plugger" control now is called "Embedder" in order to be compatible with 
+          the gb.qt implementation. Methods, Events and Properties names changed too.
+* NEW:    "Application.Embedder" added to be compatible with gb.qt implementation.
+
+
+050702 - Alpha
+
+* NEW:    ScrollView properties and methods fully implemented.
+* FIXED:  Button font handling improved: more compatibility with gb.qt
+* FIXED:  "fg" and "bg" widgets pointers removed from gControl (8 bytes less used per 
+          widget)
+* NEW:    Image.Save, Picture.Save, Picture.Flush, Picture._put, Picture._get methods 
+          implemented.
+* FIXED:  ListView.BackGround now works correctly.
+* NEW:    Mouse.Move method implemented.
+* NEW:    Picture.Clear method implemented.
+* NEW:    Window and Form can have a parent now.
+* NEW:    ScrollBar and Slider properties and methods are fully implemented now.

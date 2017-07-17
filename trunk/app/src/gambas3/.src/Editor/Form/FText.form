@@ -1,0 +1,33 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(20,12,70,41)
+  Text = ("Edit text property")
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { txtText TextArea
+    MoveScaled(1,1,36,17)
+    Expand = True
+    Wrap = True
+  }
+  { HBox1 HBox
+    MoveScaled(1,35,63,4)
+    Spacing = True
+    { chkFont CheckBox
+      MoveScaled(0,0,29,4)
+      Expand = True
+      Text = ("Use a fixed font")
+    }
+    { btnOK Button
+      MoveScaled(35,0,13,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(50,0,13,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

@@ -1,0 +1,127 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,107,84)
+  Text = ("Gambas DBus Explorer")
+  Icon = Picture["dbus64.png"]
+  Arrangement = Arrange.Vertical
+  { Panel1 Panel
+    MoveScaled(3,0,102,4)
+    Arrangement = Arrange.Horizontal
+    { btnRefresh ToolButton
+      MoveScaled(0,0,11,4)
+      AutoResize = True
+      Text = ("Refresh")
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { btnShowId ToolButton
+      MoveScaled(12,0,15,4)
+      AutoResize = True
+      Text = ("Show bus ids")
+      Picture = Picture["icon:/small/lamp"]
+      Toggle = True
+    }
+    { Panel2 Panel
+      MoveScaled(37,1,2,3)
+      Expand = True
+    }
+    { HBox1 HBox
+      MoveScaled(46,0,44,4)
+      AutoResize = True
+      Spacing = True
+      Margin = True
+      { Label4 Label
+        MoveScaled(0,0,9,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("Legend:")
+      }
+      { PictureBox1 PictureBox
+        MoveScaled(8,0,3,4)
+        Picture = Picture["method.png"]
+        AutoResize = True
+        Alignment = Align.Center
+      }
+      { Label1 Label
+        MoveScaled(11,0,8,4)
+        AutoResize = True
+        Text = ("Method")
+      }
+      { PictureBox2 PictureBox
+        MoveScaled(20,0,3,4)
+        Picture = Picture["property.png"]
+        AutoResize = True
+        Alignment = Align.Center
+      }
+      { Label2 Label
+        MoveScaled(25,0,8,4)
+        AutoResize = True
+        Text = ("Property")
+      }
+      { PictureBox3 PictureBox
+        MoveScaled(34,0,3,4)
+        Picture = Picture["signal.png"]
+        AutoResize = True
+        Alignment = Align.Center
+      }
+      { Label3 Label
+        MoveScaled(38,0,6,4)
+        AutoResize = True
+        Text = ("Signal")
+      }
+    }
+  }
+  { Separator2 Separator
+    MoveScaled(20,5,18,0)
+  }
+  { HSplit1 HSplit
+    MoveScaled(0,8,106,74)
+    Expand = True
+    { TabStrip3 TabStrip
+      MoveScaled(2,5,39,57)
+      Arrangement = Arrange.Fill
+      Count = 2
+      Index = 0
+      Text = ("Session")
+      { lstbSession ListBox lstb
+        Name = "lstbSession"
+        MoveScaled(2,1,30,51)
+        Tag = "session"
+        Expand = True
+      }
+      Index = 1
+      Text = ("System")
+      { lstbSystem ListBox lstb
+        Name = "lstbSystem"
+        MoveScaled(3,1,30,50)
+        Tag = "system"
+        Expand = True
+      }
+      Index = 0
+    }
+    { VBox1 HBox
+      MoveScaled(46,2,59,65)
+      { Separator3 Separator
+        MoveScaled(2,19,0,30)
+      }
+      { VBox2 VBox
+        MoveScaled(3,8,54,56)
+        Expand = True
+        { tvDbus TreeView
+          MoveScaled(7,4,33,32)
+          Expand = True
+          Border = False
+        }
+        { Separator4 Separator
+          MoveScaled(12,45,23,0)
+        }
+        { lblsignature TextLabel
+          MoveScaled(5,49,34,3)
+          Font = Font["Monospace,-2"]
+          Padding = 4
+          AutoResize = True
+        }
+      }
+    }
+  }
+}

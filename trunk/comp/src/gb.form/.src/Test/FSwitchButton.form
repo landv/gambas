@@ -1,0 +1,43 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,77,54)
+  { SwitchButton1 SwitchButton
+    MoveScaled(3,8,16,4)
+    Value = True
+    Animated = True
+  }
+  { SwitchButton3 SwitchButton
+    MoveScaled(3,13,16,4)
+    Animated = True
+  }
+  { SwitchButton2 SwitchButton
+    MoveScaled(4,18,16,4)
+    Enabled = False
+    Value = True
+    Animated = True
+  }
+  { TextBox1 TextBox
+    MoveScaled(10,26,24,4)
+    Text = ("TextBox1")
+  }
+  { URLLabel1 URLLabel
+    MoveScaled(32,7,27,6)
+    Link = "http://gambaswiki.org"
+    Border = True
+    Alignment = Align.TopNormal
+  }
+  { ValueBox1 ValueBox
+    MoveScaled(44,23,24,6)
+  }
+  { Label1 Label
+    MoveScaled(44,33,11,5)
+    Background = Color.LinkForeground
+    Border = Border.Plain
+  }
+  { Label2 Label
+    MoveScaled(44,40,11,5)
+    Background = Color.VisitedForeground
+    Border = Border.Plain
+  }
+}

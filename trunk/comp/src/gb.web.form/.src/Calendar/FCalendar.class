@@ -1,0 +1,25 @@
+' Gambas class file
+
+Property Value As Date
+
+Private Function Value_Read() As Date
+
+  Return dchChooser.Value
+
+End
+
+Private Sub Value_Write(Value As Date)
+
+  dchChooser.Value = Value
+
+End
+
+Public Sub dchChooser_Click()
+
+  Dim hDateBox As WebDateBox
+  
+  hDateBox = Me.PopupParent
+  hDateBox.Date = Value_Read() + Time(hDateBox.Date)
+  Me.Close
+
+End

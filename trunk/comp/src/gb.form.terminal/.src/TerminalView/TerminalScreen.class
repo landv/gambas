@@ -1,0 +1,2172 @@
+' Gambas class file
+
+Event _Foo
+
+Public Const DEBUG_FILTER As Boolean = False
+
+Property Read Attr As TerminalAttr
+Property Read Column As Integer
+Property Read Line As Integer
+Property Read Width As Integer
+Property Read Height As Integer
+Property Read Geometry As Rect
+Property Read X As Integer
+Property Read Y As Integer
+
+Property Read HasMode As Boolean
+
+Public AppCursorKey As Boolean
+Public AppKeypad As Boolean
+Public Origin As Boolean
+Public InsertMode As Boolean
+Public NewlineMode As Boolean
+Public WrapMode As Boolean
+Public HideCursor As Boolean
+
+Static Private $aColor As Integer[] = [
+&H000000, &H800000, &H008000, &H808000, &H000080, &H800080, &H008080, &Hc0c0c0,
+&H808080, &Hff0000, &H00ff00, &Hffff00, &H0000ff, &Hff00ff, &H00ffff, &Hffffff,
+&H000000, &H00005f, &H000087, &H0000af, &H0000d7, &H0000ff,
+&H005f00, &H005f5f, &H005f87, &H005faf, &H005fd7, &H005fff,
+&H008700, &H00875f, &H008787, &H0087af, &H0087d7, &H0087ff,
+&H00af00, &H00af5f, &H00af87, &H00afaf, &H00afd7, &H00afff,
+&H00d700, &H00d75f, &H00d787, &H00d7af, &H00d7d7, &H00d7ff,
+&H00ff00, &H00ff5f, &H00ff87, &H00ffaf, &H00ffd7, &H00ffff,
+&H5f0000, &H5f005f, &H5f0087, &H5f00af, &H5f00d7, &H5f00ff,
+&H5f5f00, &H5f5f5f, &H5f5f87, &H5f5faf, &H5f5fd7, &H5f5fff,
+&H5f8700, &H5f875f, &H5f8787, &H5f87af, &H5f87d7, &H5f87ff,
+&H5faf00, &H5faf5f, &H5faf87, &H5fafaf, &H5fafd7, &H5fafff,
+&H5fd700, &H5fd75f, &H5fd787, &H5fd7af, &H5fd7d7, &H5fd7ff,
+&H5fff00, &H5fff5f, &H5fff87, &H5fffaf, &H5fffd7, &H5fffff,
+&H870000, &H87005f, &H870087, &H8700af, &H8700d7, &H8700ff,
+&H875f00, &H875f5f, &H875f87, &H875faf, &H875fd7, &H875fff,
+&H878700, &H87875f, &H878787, &H8787af, &H8787d7, &H8787ff,
+&H87af00, &H87af5f, &H87af87, &H87afaf, &H87afd7, &H87afff,
+&H87d700, &H87d75f, &H87d787, &H87d7af, &H87d7d7, &H87d7ff,
+&H87ff00, &H87ff5f, &H87ff87, &H87ffaf, &H87ffd7, &H87ffff,
+&Haf0000, &Haf005f, &Haf0087, &Haf00af, &Haf00d7, &Haf00ff,
+&Haf5f00, &Haf5f5f, &Haf5f87, &Haf5faf, &Haf5fd7, &Haf5fff,
+&Haf8700, &Haf875f, &Haf8787, &Haf87af, &Haf87d7, &Haf87ff,
+&Hafaf00, &Hafaf5f, &Hafaf87, &Hafafaf, &Hafafd7, &Hafafff,
+&Hafd700, &Hafd75f, &Hafd787, &Hafd7af, &Hafd7d7, &Hafd7ff,
+&Hafff00, &Hafff5f, &Hafff87, &Hafffaf, &Hafffd7, &Hafffff,
+&Hd70000, &Hd7005f, &Hd70087, &Hd700af, &Hd700d7, &Hd700ff,
+&Hd75f00, &Hd75f5f, &Hd75f87, &Hd75faf, &Hd75fd7, &Hd75fff,
+&Hd78700, &Hd7875f, &Hd78787, &Hd787af, &Hd787d7, &Hd787ff,
+&Hd7af00, &Hd7af5f, &Hd7af87, &Hd7afaf, &Hd7afd7, &Hd7afff,
+&Hd7d700, &Hd7d75f, &Hd7d787, &Hd7d7af, &Hd7d7d7, &Hd7d7ff,
+&Hd7ff00, &Hd7ff5f, &Hd7ff87, &Hd7ffaf, &Hd7ffd7, &Hd7ffff,
+&Hff0000, &Hff005f, &Hff0087, &Hff00af, &Hff00d7, &Hff00ff,
+&Hff5f00, &Hff5f5f, &Hff5f87, &Hff5faf, &Hff5fd7, &Hff5fff,
+&Hff8700, &Hff875f, &Hff8787, &Hff87af, &Hff87d7, &Hff87ff,
+&Hffaf00, &Hffaf5f, &Hffaf87, &Hffafaf, &Hffafd7, &Hffafff,
+&Hffd700, &Hffd75f, &Hffd787, &Hffd7af, &Hffd7d7, &Hffd7ff,
+&Hffff00, &Hffff5f, &Hffff87, &Hffffaf, &Hffffd7, &Hffffff,
+&H080808, &H121212, &H1c1c1c, &H262626, &H303030, &H3a3a3a,
+&H444444, &H4e4e4e, &H585858, &H606060, &H666666, &H767676,
+&H808080, &H8a8a8a, &H949494, &H9e9e9e, &Ha8a8a8, &Hb2b2b2,
+&Hbcbcbc, &Hc6c6c6, &Hd0d0d0, &Hdadada, &He4e4e4, &Heeeeee]
+
+Static Private $aGraphicCharset As Integer[] = [&H0020&, &H25C6&, &H2592&, &H2409&, &H240c&, &H240d&, &H240a&, &H00b0&,
+  &H00b1&, &H2424&, &H240b&, &H2518&, &H2510&, &H250c&, &H2514&, &H253c&,
+  &HF800&, &HF801&, &H2500&, &HF803&, &HF804&, &H251c&, &H2524&, &H2534&,
+  &H252c&, &H2502&, &H2264&, &H2265&, &H03C0&, &H2260&, &H00A3&, &H00b7&]
+
+
+Static Private $sControlChar As String
+
+Static Private $hBrushLight As Image
+Static Private $hBrushMedium As Image
+Static Private $hBrushDark As Image
+
+Public Lines As New CTerminalLine[]
+
+' Screen size
+Private $W As Integer
+Private $H As Integer
+
+' Cursor position
+Private $X As Integer
+Private $Y As Integer
+
+' Saved cursor
+Private $SX As Integer
+Private $SY As Integer
+
+' Current attributes
+Private $hAttr As New TerminalAttr
+
+' Selection
+Private $X1 As Integer
+Private $Y1 As Integer
+Private $X2 As Integer
+Private $Y2 As Integer
+
+' Scroll area
+Private $iScrollStart As Integer = -1
+Private $iScrollEnd As Integer = -1
+
+' Drawing cache
+Private $hLineCache As Image
+Private $cCharCache As New Collection
+
+' Charsets
+Private $aCharset As New Byte[4]
+Private $iCurrentCharset As Integer
+Private $bGraphicCharset As Boolean
+
+Public Sub _new()
+  
+  Dim I As Integer
+  
+  If Not $sControlChar Then
+    For I = 0 To 31
+      $sControlChar &= Chr$(I)
+    Next
+  Endif
+  
+  Reset
+  
+End
+
+Private Sub GetView() As TerminalView
+
+  Return Object.Parent(Me)
+
+End
+
+Public Sub Clear()
+  
+  Lines.Clear
+  GetView()._UpdateSize
+  
+End
+
+Public Sub Resize(W As Integer, H As Integer) As Boolean
+  
+  If W <> $W Or If H <> $H Then
+    $W = W
+    $H = H
+    $X = Min($X, $W - 1)
+    $Y = ScreenTop() + Max(0, Min($Y - ScreenTop(), $H - 1))
+    $X1 = 0
+    $Y1 = 0
+    $X2 = 0
+    $Y2 = 0
+    'Debug "$Y = "; $Y
+    $iScrollStart = -1
+    $iScrollEnd = -1
+    If GetView().AlternateScreen Then
+      If Lines.Count > $H Then
+        Lines.Resize($H)
+        'GetView()._UpdateSize
+      Endif
+    Endif
+    $hLineCache = Null
+    Return True
+  Endif
+  
+End
+
+Public Sub GetLine(Y As Integer) As CTerminalLine
+
+  Dim hLine As CTerminalLine
+  
+  If Y > Lines.Max Then
+    Lines.Resize(Y + 1)
+    GetView()._UpdateSize()
+  Endif
+  hLine = Lines[Y]
+  If Not hLine Then 
+    hLine = New CTerminalLine
+    Lines[Y] = hLine
+  Endif
+  
+  Return hLine
+
+End
+
+Private Sub ClearLine(Y As Integer)
+  
+  Dim hLine As CTerminalLine
+  
+  If Y > Lines.Max Then Return
+  hLine = Lines[Y]
+  If Not hLine Then Return
+  
+  hLine.Clear()
+  
+End
+
+
+Private Sub Insert(sText As String, Optional X As Integer = $X)
+
+  Dim hLine As CTerminalLine
+  Dim iLen As Integer = String.Len(sText)
+  
+  If iLen = 0 Then Return
+  
+  'Debug Quote(sText);; X;; $Y
+  
+  If (X + iLen) > $W Then
+    iLen = Max(0, $W - X)
+    If iLen Then
+      Insert(String.Left(sText, iLen))
+      sText = String.Mid$(sText, iLen + 1) 
+    Endif
+    If WrapMode Then
+      Index()
+      $X = 0
+      Insert(sText)
+    Endif
+    Return
+  Endif
+  
+  hLine = GetLine($Y)
+  
+  If hLine.Length <= X Then 
+    hLine.Text &= Space$(X - hLine.Length) & sText '& String.Mid(hLine.Text, X + iLen)
+    hLine.Length = X + iLen 'String.Len(hLine.Text)
+    hLine.SetAttr($hAttr, X, iLen)
+  Else
+    If InsertMode Then
+      hLine.Text = String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + 1)
+      hLine.Length += iLen 'Min(hLine.Length + iLen, $W)
+      hLine.SetAttr($hAttr, X, iLen, True)
+    Else
+      hLine.Text = String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + iLen + 1)
+      hLine.Length = Max(hLine.Length, X + iLen)
+      hLine.SetAttr($hAttr, X, iLen)
+    Endif
+  Endif
+  
+  GetView()._RefreshLine($Y)
+  
+  If IsMissing(X) Then $X += iLen
+  
+End
+
+Public Sub Print(sText As String)
+
+  Dim aText As String[]
+  Dim sElt As String
+  Dim iLen As Integer
+  Dim iCode As Integer
+  
+  aText = Split(sText, $sControlChar)
+  
+  For Each sElt In aText
+    
+    If sElt Then 
+      
+      If DEBUG_FILTER Then
+        Debug Quote(sElt)
+        DebugRefresh
+      Endif
+      
+      If $bGraphicCharset Then sElt = ApplyGraphicCharset(sElt)
+      Insert(sElt)
+      
+    Endif
+    
+    iLen += Len(sElt)
+    If iLen >= Len(sText) Then Break
+    iCode = Asc(sText, iLen + 1)
+    
+    If DEBUG_FILTER Then
+      Debug "^" & Chr$(64 + iCode)
+      DebugRefresh
+    Endif
+    
+    Select Case iCode
+      Case 7
+      Case 8
+        CursorLeft
+      Case 9
+        Tab()
+      Case 10, 12
+        Goto(0, $Y)
+        NewLine()
+      ' Case 12
+      '   EraseScreen()
+      Case 13
+        Goto(0, $Y)
+      Case 14
+        UseCharset(0)
+      Case 15
+        UseCharset(1)
+      Case Else
+        Insert("^" & Chr$(64 + iCode))
+    End Select
+    Inc iLen
+  Next
+  
+End
+
+
+Private Sub NewLine()
+  
+  If NewlineMode Then $X = 0
+  Index()
+  
+End
+
+Private Sub Tab()
+  
+  Goto($X + 8 - $X Mod 8, $Y)
+  
+End
+
+Public Sub Goto(X As Integer, Y As Integer)
+  
+  If X >= $W Then
+    X = 0
+    Inc Y
+  Else If X < 0 Then
+    X = $W - 1
+    Dec Y
+  Endif
+  
+  If Y < 0 Then Y = 0
+  
+  With GetView()
+  
+    ._ShowCursor()
+    ._RefreshLine($Y)
+  
+    $X = X
+    If Y <> $Y Then
+      $Y = Y
+      'Debug "$Y = "; Y
+      ._RefreshLine($Y)
+    Endif
+    
+    '.EnsureVisible
+    
+  End With
+  
+End
+
+Private Function Column_Read() As Integer
+
+  Return $X
+
+End
+
+Private Function Line_Read() As Integer
+
+  Return Max(0, $Y - ScreenTop())
+
+End
+
+Public Sub ApplyLimit(iLimit As Integer)
+
+  Dim iDel As Integer
+  
+  iDel = Lines.Count - iLimit
+  If iDel <= 0 Then Return
+  
+  Lines.Remove(0, iDel)
+  $Y = Max(0, $Y - iDel)
+  'Debug "$Y = "; $Y
+  
+  GetView()._UpdateSize()
+  
+End
+
+Public Sub ScreenTop() As Integer
+  
+  Return Max(0, Lines.Count - $H)
+  
+End
+
+' Terminal VT100 commands
+
+Public Sub CursorGoto(X As Integer, Y As Integer)
+  
+  'Debug X;; Y
+  
+  ' If X >= $W Then
+  '   X = 0
+  '   Inc Y
+  ' Else If X < 0 Then
+  '   X = $W - 1
+  '   Dec Y
+  ' Endif
+  
+  If X < 0 Then
+    X = 0
+  Else If X >= $W
+    X = $W - 1
+  Endif
+  
+  If Y < 0 Then
+    Y = 0
+  Else If Y >= $H
+    Y = $H - 1
+  Endif
+  
+  With GetView()
+  
+    ._ShowCursor()
+    ._RefreshLine($Y)
+  
+    $X = X
+    Y += ScreenTop()
+    
+    If Y <> $Y Then
+      $Y = Y
+      'Debug "$Y = "; $Y
+      'If $Y = 50 Then Stop
+      ._RefreshLine($Y)
+    Endif
+    '.EnsureVisible
+    
+  End With
+  
+End
+
+Public Sub CursorUp(Optional Count As Integer = 1)
+  
+  CursorGoto($X, Me.Line - Count)
+  
+End
+
+Public Sub CursorDown(Optional Count As Integer = 1)
+  
+  CursorGoto($X, Me.Line + Count)
+  
+End
+
+Public Sub CursorLeft(Optional Count As Integer = 1)
+  
+  CursorGoto($X - Count, $Y)
+  
+End
+
+Public Sub CursorRight(Optional Count As Integer = 1)
+  
+  CursorGoto($X + Count, $Y)
+  
+End
+
+Public Sub InsertSpace(N As Integer)
+
+  Dim hLine As CTerminalLine
+  
+  hLine = GetLine($Y)
+  If $X < hLine.Length Then 
+    hLine.Text = String.Left(String.Left(hLine.Text, $X) & Space$(N) & String.Mid$(hLine.Text, $X + 1), $W)
+    hLine.Length = String.Len(hLine.Text)
+  Endif
+  If Not $hAttr.IsVoid() Then
+    hLine.SetAttr($hAttr, $X, N, True)
+  Endif
+  GetView()._RefreshLine($Y)
+  
+End
+
+
+Public Sub DeleteChar(Optional N As Integer = 1)
+
+  Dim hLine As CTerminalLine
+  
+  hLine = GetLine($Y)
+  If $X < hLine.Length Then 
+    hLine.Text = String.Left(hLine.Text, $X) & String.Mid$(hLine.Text, $X + N + 1)
+    hLine.Length = String.Len(hLine.Text)
+  Endif
+  If Not $hAttr.IsVoid() Then
+    Insert(Space$(N), hLine.Length)
+  Endif
+  GetView()._RefreshLine($Y)
+  
+End
+
+Public Sub EraseChar(Optional N As Integer = 1)
+
+  Dim hLine As CTerminalLine
+  
+  hLine = GetLine($Y)
+  If $X < hLine.Length Then 
+    hLine.Text = String.Left(hLine.Text, $X) & Space$(N) & String.Mid$(hLine.Text, $X + N + 1)
+    hLine.Length = String.Len(hLine.Text)
+  Endif
+  hLine.SetAttr($hAttr, $X, N)
+  GetView()._RefreshLine($Y)
+  
+End
+
+Public Sub EraseEndOfLine()
+
+  Dim hLine As CTerminalLine
+
+  hLine = GetLine($Y)
+  If hLine.Length <= $X Then 
+    If $hAttr.IsVoid() Then Return
+    hLine.Text &= Space($X - hLine.Length)
+  Else
+    hLine.Text = String.Left(hLine.Text, $X)
+  Endif
+  hLine.Length = $X
+  If Not $hAttr.IsVoid() Then Insert(Space$($W - $X), $X)
+  GetView()._RefreshLine($Y)
+
+End
+
+Public Sub EraseStartOfLine()
+
+  Dim hLine As CTerminalLine
+
+  hLine = GetLine($Y)
+  If hLine.Length <= $X Then
+    hLine.Clear()
+  Else
+    hLine.Text = Space$($X + 1) & String.Mid$(hLine.Text, $X + 1)
+  Endif
+  GetView()._RefreshLine($Y)
+
+End
+
+Public Sub EraseLine()
+
+  Dim hLine As CTerminalLine
+
+  hLine = GetLine($Y)
+  If $hAttr.IsVoid() Then
+    hLine.Clear()
+  Else
+    Insert(Space$($W), 0)
+  Endif
+  
+  GetView()._RefreshLine($Y)
+
+End
+
+Public Sub EraseScreen()
+
+  Dim Y As Integer
+  
+  For Y = ScreenTop() To Lines.Max
+    ClearLine(Y)
+  Next
+  
+  CursorGoto(0, 0)
+  GetView()._ShowScreen()
+  
+End
+
+Public Sub EraseDown()
+  
+  Dim Y As Integer
+  
+  EraseEndOfLine
+  
+  For Y = Max(ScreenTop(), $Y + 1) To Lines.Max
+    ClearLine(Y)
+  Next
+  
+  GetView().Refresh
+  
+End
+
+
+Public Sub EraseUp()
+
+  Dim Y As Integer
+  
+  EraseStartOfLine
+  
+  For Y = ScreenTop() To Max(ScreenTop() - 1, $Y + 1)
+    ClearLine(Y)
+  Next
+  
+  GetView().Refresh
+  
+End
+
+Public Sub ScrollScreen(Optional Start As Integer, {End} As Integer)
+  
+  If IsMissing(Start) Or IsMissing({End}) Then
+    $iScrollStart = -1
+    $iScrollEnd = -1
+  Else
+    $iScrollStart = Start
+    $iScrollEnd = {End}
+  Endif
+  
+End
+
+Private Sub GetScreen(ByRef Y1 As Integer, ByRef Y2 As Integer)
+  
+  If $iScrollStart < 0 Or $iScrollEnd < 0 Then
+    Y1 = ScreenTop()
+    Y2 = Y1 + $H - 1
+  Else
+    Y1 = Max(ScreenTop(), $iScrollStart)
+    Y2 = Min(ScreenTop() + $H - 1, $iScrollEnd)
+  Endif
+  
+End
+
+
+Private Sub Scroll(bUp As Boolean, Optional iFrom As Integer)
+
+  Dim hView As TerminalView = GetView()
+  Dim Y1, Y2 As Integer
+  
+  GetScreen(ByRef Y1, ByRef Y2)
+  If Not IsMissing(iFrom) Then Y1 = iFrom
+  
+  If bUp Then
+    If $iScrollStart >= 0 Or If hView.AlternateScreen Then
+      Try Lines.Remove(Y1)
+      Try Lines.Add(Null, Y2)
+    Else
+      Lines.Add(Null)
+      Inc $Y
+      hView._UpdateSize()
+      'hView.EnsureVisible
+    Endif
+  Else
+    Try Lines.Remove(Y2)
+    Try Lines.Add(Null, Y1)
+  Endif
+  
+  hView.Refresh
+  
+End
+
+Public Sub ScrollUp(Optional N As Integer)
+  
+  Repeat
+    Scroll(True)
+    Dec N
+  Until N <= 0
+  
+End
+
+Public Sub ScrollDown(Optional N As Integer)
+  
+  Repeat
+    Scroll(False)
+    Dec N
+  Until N <= 0
+  
+End
+
+Public Sub InsertLine(N As Integer)
+
+  While N > 0  
+    Scroll(False, $Y)
+    Dec N
+  Wend
+  
+End
+
+Public Sub DeleteLine(N As Integer)
+
+  While N > 0  
+    Scroll(True, $Y)
+    Dec N
+  Wend
+  
+End
+
+Public Sub Index()
+  
+  Dim Y1, Y2 As Integer
+
+  GetScreen(ByRef Y1, ByRef Y2)
+
+  If $Y >= Y2 Then
+    Scroll(True)
+  Else
+    CursorDown
+  Endif
+  
+End
+
+Public Sub ReverseIndex()
+  
+  Dim Y1, Y2 As Integer
+
+  GetScreen(ByRef Y1, ByRef Y2)
+
+  If $Y <= Y1 Then
+    ScrollDown
+  Else
+    CursorUp
+  Endif
+  
+End
+
+
+Private Function Attr_Read() As TerminalAttr
+
+  Return $hAttr
+
+End
+
+Private Function Geometry_Read() As Rect
+
+  Return Rect(0, ScreenTop(), $W, $H)
+
+End
+
+Private Function Width_Read() As Integer
+
+  Return $W
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return $H
+
+End
+
+Private Sub DrawLine(hView As TerminalView, L As Integer, X As Integer, Y As Integer, LH As Integer, CW As Integer, (LA) As Integer, hFontCache As Image)
+
+  Dim hLine As CTerminalLine
+  Dim I, J, K As Integer
+  'Dim sText As String
+  Dim aAttr As Integer[]
+  Dim hAttr As New TerminalAttr
+  Dim iFg As Integer = hView.Foreground
+  Dim iBg As Integer = hView.Background
+  'Dim hRect As Rect
+  Dim P, iLen As Integer
+  Dim XT As Integer
+  Dim C, OC As Integer
+  Dim hFont As Font
+  Dim HC As Integer
+  Dim hRect As Rect
+  Dim W As Integer
+  Dim YC As Integer
+  Dim XC As Integer
+  Dim bNoText As Boolean
+  Dim XB, WB As Integer
+
+  hLine = Lines[L]
+  If Not hLine Then 
+    Paint.FillRect(X, Y, Paint.W, LH, iBg)
+    Return
+  Endif
+  
+  hFont = Paint.Font
+  aAttr = hLine.GetAttr()
+  
+  P = 1
+  
+  For I = 0 To aAttr.Max
+  
+    If P > hLine.Length Then Break
+  
+    hAttr._FillFrom(aAttr[I])
+    iLen = Min((Lsr(aAttr[I], 8) And 255), hLine.Length - P) + 1
+  
+    iBg = hAttr.Background
+    If iBg >= 0 Then
+      iBg = $aColor[iBg]
+    Else
+      iBg = hView.Background
+    Endif
+    
+    iFg = hAttr.Foreground
+    If iFg >= 0 Then
+      'Debug iFg
+      iFg = $aColor[iFg]
+    Else
+      iFg = hView.Foreground
+    Endif
+    
+    If hAttr.Reverse Then Swap iBg, iFg
+    
+    bNoText = False
+
+    If hAttr.Blink Then
+      hView._HasBlink = True
+      If hView._Blink Then 
+        GoSub DRAW_NO_TEXT
+        Continue
+      Endif
+    Endif
+    
+    If hAttr.Dim Then iFg = Color.Merge(iFg, hView.Background)
+    
+    'Paint.Background = Color.White
+    
+    If hAttr.Bold Then
+      HC = LH
+    Else
+      HC = 0
+    Endif
+      
+    GoSub DRAW_TEXT
+    
+  Next
+  
+  If P <= hLine.Length Then
+    iLen = hLine.Length - P + 1
+    iFg = hView.Foreground
+    iBg = hView.Background
+    HC = 0
+    hAttr._FillFrom(0)
+    GoSub DRAW_TEXT
+  Endif
+    
+  Paint.FillRect(X, Y, Paint.W - X, LH, hView.Background)
+  
+  Return
+  
+DRAW_TEXT:
+
+  If iLen <= 0 Then Return
+  
+  W = iLen * CW
+  
+  If IsSpace(String.Mid$(hLine.Text, P, iLen)) Then 
+  
+    Paint.FillRect(X, Y, W, LH, iBg)
+    
+  Else
+    
+    Paint.Begin($hLineCache)
+    Paint.Font = hFont
+    
+    Paint.FillRect(0, 0, W, LH, iFg)
+  
+    XT = 0
+    
+    hRect = Rect(0, 0, CW, LH)
+    
+    Paint.Operator = Paint.OperatorDestATop
+    For J = P To P + iLen - 1
+      'sCar = String.Mid$(hLine.Text, J, 1)
+      
+      C = String.Code(hLine.Text, J)
+      
+      If C <= 255 Then
+        
+        hRect.Move(C * CW, HC)
+        Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
+      
+      Else If C >= &H2500 And If C <= &H259F Then
+        
+        If C >= &H2591 And If C <= &H2593 Then
+          DrawLineChar(C, XT, 0, CW, LH, XT, Y, hAttr.Bold)
+        Else
+          hRect.Move((C - &H2500 + 256) * CW, HC)
+          Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
+        Endif
+      
+      Else
+        
+        If $cCharCache.Exist(C) Then
+          
+          C = $cCharCache[C]
+          hRect.Move(C * CW, HC)
+          Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
+          
+        Else
+          
+          If $cCharCache.Count = 32 Then
+            For Each OC In $cCharCache
+              $cCharCache.Remove($cCharCache.Key)
+              Break
+            Next
+          Else
+            OC = $cCharCache.Count
+          Endif
+          
+          If True '$cCharCache.Count < 32 Then
+            
+            XC = OC * CW
+            YC = 0
+          
+            Paint.Begin(hFontCache)
+            Paint.Font = hFont
+            
+            Paint.Operator = Paint.OperatorSource
+            Paint.FillRect(XC, YC, CW, LH * 2, Color.Transparent)
+            Paint.Operator = Paint.OperatorOver
+            
+            Paint.ClipRect = Rect(XC, YC, CW, LH)
+            'Paint.Background = Color.White
+            GoSub DRAW_CHAR
+          
+            YC += LH
+          
+            Paint.ClipRect = Rect(XC, YC, CW, LH)
+            GoSub DRAW_BOLD_CHAR
+            
+            ' 'Paint.DrawText(String.Chr(C), XC, YC, CW, LH, Align.Center)
+            ' GoSub DRAW_CHAR
+            ' Paint.Background = Color.SetAlpha(Color.White, 64)
+            ' 'Paint.DrawText(String.Chr(C), XC + 1, YC, CW, LH, Align.Center)
+            ' Inc XC
+            ' GoSub DRAW_CHAR
+            ' Dec XC
+          
+            Paint.End
+            
+            hRect.Move(XC, HC)
+            Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
+
+            $cCharCache[C] = OC
+            
+          Else
+            
+            'Paint.DrawText(String.Chr(C), XT, 0, CW, LH, Align.Center)
+            XC = XT
+            YC = 0
+            'Paint.Background = Color.White
+            Paint.Operator = Paint.OperatorDestATop
+            If hAttr.Bold Then 
+              GoSub DRAW_BOLD_CHAR
+            Else
+              GoSub DRAW_CHAR
+            Endif
+            
+          Endif
+          
+        Endif
+      Endif
+      
+      XT += CW
+      
+    Next
+      
+    Paint.End
+    
+    XT = X
+    
+    Paint.FillRect(XT, Y, W, LH, iBg)
+    Paint.DrawImage($hLineCache, XT, Y, W, LH,, Rect(0, 0, W, LH))
+    
+  Endif
+  
+  If hAttr.Underscore Then Paint.FillRect(X, Y + LH - 1, W, 1, Color.SetAlpha(iFg, 64))
+  
+  X += W
+  P += iLen
+  Return
+  
+DRAW_NO_TEXT:
+
+  W = iLen * CW
+  Paint.FillRect(X, Y, W, LH, iBg)
+  X += W
+  P += iLen
+  Return
+  
+DRAW_CHAR:
+
+  Paint.DrawText(String.Chr(C), XC, YC, CW, LH, Align.Center)
+  Return
+  
+DRAW_BOLD_CHAR:
+
+  GoSub DRAW_CHAR
+
+  XB = XC
+  WB = CW \ 8 + 1
+  
+  For K = 1 To WB \ 2
+    Inc XC
+    GoSub DRAW_CHAR
+  Next
+  If Odd(WB) Then
+    Paint.Background = Color.SetAlpha(Color.White, 64)
+    Inc XC
+    GoSub DRAW_CHAR
+  Endif
+
+  XC = XB
+  Return
+  
+End
+
+Private Sub GetSelection(ByRef X1 As Integer, ByRef Y1 As Integer, ByRef X2 As Integer, ByRef Y2 As Integer) As Boolean
+
+  Y1 = $Y1
+  Y2 = $Y2
+  X1 = $X1
+  X2 = $X2
+  
+  If Y1 > Y2 Then
+    Swap Y1, Y2
+    Swap X1, X2
+  Else If Y1 = Y2 Then
+    If X1 > X2 Then Swap X1, X2
+  Endif
+  
+  If Y1 < 0 Then
+    Y1 = 0
+    X1 = 0
+  Endif
+  
+  If Y2 >= Max($H, Lines.Count) Then
+    Y2 = Max($H, Lines.Count) - 1
+    X2 = $W
+  Endif
+
+  If Y2 > Y1 Or If X2 > X1 Then Return True
+  
+End
+
+Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHideCursor As Boolean, hFont As Image)
+
+  Dim hView As TerminalView = GetView()
+  Dim L, L1, L2 As Integer
+  Dim Y As Integer
+  Dim X1 As Integer
+  Dim X2 As Integer
+  Dim Y1 As Integer
+  Dim Y2 As Integer
+
+  If Not $hLineCache Then $hLineCache = New Image($W * CW, LH)
+  $cCharCache.Clear
+
+  L1 = (SY + Paint.ClipRect.Y) \ LH
+  L2 = (SY + Paint.ClipRect.Y + Paint.ClipRect.H - 1) \ LH
+
+  'Debug L1;; L2
+  
+  Y = L1 * LH - SY + SY Mod LH
+  
+  For L = L1 To L2
+    
+    If L < Lines.Count Then DrawLine(hView, L, 0, Y, LH, CW, LA, hFont)
+
+    ' Cursor
+
+    If L = $Y And If Not bHideCursor And If Not HideCursor Then
+      Paint.FillRect($X * CW, Y, CW, LH, Color.SetAlpha(Color.Merge(Color.SelectedBackground, hView.Foreground), 64))
+    Endif
+    
+    ' Selection
+    
+    If GetSelection(ByRef X1, ByRef Y1, ByRef X2, ByRef Y2) Then
+    
+      If L >= Y1 And If L <= Y2 Then
+        If L = Y1 Then
+          X1 *= CW
+        Else
+          X1 = 0
+        Endif
+        If L = Y2 Then
+          X2 *= CW
+        Else
+          X2 = Paint.W
+        Endif
+        If X2 > X1 Then Paint.FillRect(X1, Y, X2 - X1, LH, Color.SetAlpha(Color.SelectedBackground, 128))
+      Endif
+      
+    Endif
+  
+    Y += LH
+      
+  Next
+  
+End
+
+
+Private Function X_Read() As Integer
+
+  Return $X
+
+End
+
+Private Function Y_Read() As Integer
+
+  Return $Y
+
+End
+
+Public Sub GotoMouse(X As Integer, Y As Integer, bStart As Boolean)
+
+  X = Max(0, Min($W, X))
+  Y = Max(0, Min(Max(Lines.Count, $H), Y))
+  
+  If bStart Then
+    $X1 = X
+    $Y1 = Y
+  Endif
+  $X2 = X
+  $Y2 = Y
+  
+  If Not bStart Then
+    With GetView()
+      .Refresh
+      ._EnsureVisibleAt(X, Y)
+    End With
+  Endif
+
+End
+
+Public Sub SaveCursor()
+  
+  $SX = $X
+  $SY = $Y
+  
+End
+
+Public Sub RestoreCursor()
+  
+  Goto($SX, $SY)
+  
+End
+
+Public Sub Reset()
+
+  $X = 0
+  $Y = 0
+  $SX = 0
+  $SY = 0
+  $X1 = 0
+  $Y1 = 0
+  $X2 = 0
+  $Y2 = 0
+
+  $iScrollStart = -1
+  $iScrollEnd = -1
+
+  $hAttr.Reset
+  
+  AppCursorKey = False
+  AppKeypad = False
+  Origin = False
+  InsertMode = False
+  NewlineMode = False
+  WrapMode = True
+  HideCursor = False
+  
+  $iCurrentCharset = 0
+  $bGraphicCharset = False
+  
+End
+
+Public Sub DebugRefresh()
+  
+  If DEBUG_FILTER Then
+    GetView().Refresh
+    Inc GetView()._DisableFilter
+    Wait
+    Dec GetView()._DisableFilter
+    'Stop
+  Endif
+  
+End
+
+
+Private Function HasMode_Read() As Boolean
+
+  If AppCursorKey Or If AppKeypad Or If Origin Or If InsertMode Or If NewlineMode Or If WrapMode Or If HideCursor Then Return True
+
+End
+
+Public Sub GetSelectedText() As String
+  
+  Dim X1 As Integer
+  Dim X2 As Integer
+  Dim Y1 As Integer
+  Dim Y2 As Integer
+  Dim sText As String
+  Dim Y As Integer
+  
+  If Not GetSelection(ByRef X1, ByRef Y1, ByRef X2, ByRef Y2) Then Return
+  
+  If Y2 = Y1 Then
+    sText = String.Mid$(GetLine(Y1).Text, X1 + 1, X2 - X1)
+  Else
+    sText = String.Mid$(GetLine(Y1).Text, X1 + 1) & "\n"
+    For Y = Y1 + 1 To Y2 - 1
+      sText &= GetLine(Y).Text & "\n"
+    Next
+    sText &= String.Left$(GetLine(Y2).Text, X2)
+  Endif
+  
+  Return sText
+  
+End
+
+Public Sub UseCharset(iNum As Integer)
+  
+  $iCurrentCharset = iNum
+  $bGraphicCharset = Chr$($aCharset[iNum]) = "0"
+  
+End
+
+
+Public Sub SetCharset(iNum As Integer, sCharset As String)
+  
+  $aCharset[iNum] = Asc(sCharset)
+  UseCharset($iCurrentCharset)
+  
+End
+
+Private Sub ApplyGraphicCharset(sStr As String) As String
+
+  Dim sResult As String
+  Dim I As Integer
+  Dim C As Integer
+  
+  For I = 1 To Len(sStr)
+    C = Asc(sStr, I)
+    If C >= &5F And If C <= &7E Then 
+      sResult &= String.Chr($aGraphicCharset[C - &5F])
+    Else
+      sResult &= Chr$(C)
+    Endif
+  Next
+  
+  Return sResult
+
+End
+
+Static Public Sub DrawLineChar(C As Integer, X As Integer, Y As Integer, W As Integer, H As Integer, XB As Integer, YB As Integer, bBold As Boolean) 
+  
+  Dim L, DL As Integer
+  Dim XC As Integer
+  Dim YC As Integer
+  Dim L3, DL3 As Integer
+  Dim hChar As Image
+  Dim iBg As Integer
+  Dim P, D As Float
+  Dim hBold As Image
+  Dim hFont As Font
+  
+  iBg = Paint.Background
+  hFont = Paint.Font
+
+  hChar = New Image(W, H, Color.Transparent)
+  Paint.Begin(hChar)
+  Paint.Background = iBg
+  
+  L = Min(W, H)
+  If L < 4 Then
+    L = 0
+  Else If L < 11
+    L = 1
+  Else
+    L \= 6
+  Endif
+  DL = L \ 2
+  L3 = L * 3
+  DL3 = L3 \ 2
+  XC = W \ 2
+  YC = H \ 2
+  
+  If C <= &H256F Then
+  
+    On C - &H2500 GoSub _2500, _2501, _2502, _2503, _2504, _2505, _2506, _2507, _2508, _2509, _250A, _250B, _250C, _250D, _250E, _250F, _2510, _2511, _2512, _2513, _2514, _2515, _2516, _2517, _2518, _2519, _251A, _251B, _251C, _251D, _251E, _251F, _2520, _2521, _2522, _2523, _2524, _2525, _2526, _2527, _2528, _2529, _252A, _252B, _252C, _252D, _252E, _252F, _2530, _2531, _2532, _2533, _2534, _2535, _2536, _2537, _2538, _2539, _253A, _253B, _253C, _253D, _253E, _253F, _2540, _2541, _2542, _2543, _2544, _2545, _2546, _2547, _2548, _2549, _254A, _254B, _254C, _254D, _254E, _254F, _2550, _2551, _2552, _2553, _2554, _2555, _2556, _2557, _2558, _2559, _255A, _255B, _255C, _255D, _255E, _255F, _2560, _2561, _2562, _2563, _2564, _2565, _2566, _2567, _2568, _2569, _256A, _256B, _256C, _256D, _256E, _256F
+
+  Else
+
+    On C - &H2570 GoSub _2570, _2571, _2572, _2573, _2574, _2575, _2576, _2577, _2578, _2579, _257A, _257B, _257C, _257D, _257E, _257F, _2580, _2581, _2582, _2583, _2584, _2585, _2586, _2587, _2588, _2589, _258A, _258B, _258C, _258D, _258E, _258F, _2590, _2591, _2592, _2593, _2594, _2595, _2596, _2597, _2598, _2599, _259A, _259B, _259C, _259D, _259E, _259F
+    
+  Endif
+  
+  Paint.End
+  
+  If bBold And If C <= &H2580 Then
+    hBold = hChar.Copy()
+    Paint.Begin(hChar)
+    If L >= 2 Then Paint.DrawImage(hBold, DL, 0)
+    If Odd(L) Then Paint.DrawImage(hBold, DL + 1, 0,,, 0.75)
+    Paint.End
+  Endif
+  
+  Paint.DrawImage(hChar, X, Y)
+  Return
+  
+_2500:
+  GoSub _LEFT_S
+  Goto _RIGHT_S
+  
+_2501:
+  GoSub _LEFT_H
+  Goto _RIGHT_H
+  
+_2502:
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+  
+_2503:
+  GoSub _TOP_H
+  Goto _BOTTOM_H
+  
+_2504:
+_2505:
+_2508:
+_2509:
+_254C:
+_254D:
+
+  If C = &H2504 Or If C = &H2505 Then
+    D = W / 6
+  Else If C = &H2508 Or If C = &H2509 Then
+    D = W / 8
+  Else
+    D = W / 4
+  Endif
+
+  P = 0
+  While P < W
+    If Odd(C) Then
+      Paint.Rectangle(P, YC - DL3, D, L3)
+    Else
+      Paint.Rectangle(P, YC - DL, D, L)
+    Endif
+    P += D * 2
+  Wend
+  Paint.Background = iBg
+  Paint.Fill
+
+  Return
+
+_2506:
+_2507:
+_250A:
+_250B:
+_254E:
+_254F:
+
+  If C = &H2506 Or If C = &H2507 Then
+    D = H / 6
+  Else If C = &H250A Or If C = &H250B Then
+    D = H / 8
+  Else
+    D = H / 4
+  Endif
+
+  P = 0
+  While P < H
+    If Odd(C) Then
+      Paint.Rectangle(XC - DL3, P, L3, D)
+    Else
+      Paint.Rectangle(XC - DL, P, L, D)
+    Endif
+    P += D * 2
+  Wend
+  Paint.Background = iBg
+  Paint.Fill
+
+  Return
+
+_250C:
+  GoSub _RIGHT_S
+  Goto _BOTTOM_S
+  
+_250D:
+  GoSub _CENTER_SV
+  GoSub _RIGHT_H
+  Goto _BOTTOM_S
+  
+_250E:
+  GoSub _CENTER_SH
+  GoSub _RIGHT_S
+  Goto _BOTTOM_H
+  
+_250F:
+  GoSub _RIGHT_H
+  GoSub _BOTTOM_H
+  Goto _CENTER_H
+  
+_2510:
+  GoSub _LEFT_S
+  Goto _BOTTOM_S
+  
+_2511:
+  GoSub _CENTER_SV
+  GoSub _LEFT_H
+  Goto _BOTTOM_S
+  
+_2512:
+  GoSub _CENTER_SH
+  GoSub _LEFT_S
+  Goto _BOTTOM_H
+  
+_2513:
+  GoSub _LEFT_H
+  GoSub _BOTTOM_H
+  Goto _CENTER_H
+  
+_2514:
+  GoSub _RIGHT_S
+  Goto _TOP_S
+  
+_2515:
+  GoSub _CENTER_SV
+  GoSub _RIGHT_H
+  Goto _TOP_S
+  
+_2516:
+  GoSub _CENTER_SH
+  GoSub _RIGHT_S
+  Goto _TOP_H
+  
+_2517:
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  Goto _CENTER_H
+  
+_2518:
+  GoSub _LEFT_S
+  Goto _TOP_S
+  
+_2519:
+  GoSub _CENTER_SV
+  GoSub _LEFT_H
+  Goto _TOP_S
+  
+_251A:
+  GoSub _CENTER_SH
+  GoSub _LEFT_S
+  Goto _TOP_H
+  
+_251B:
+  GoSub _LEFT_H
+  GoSub _TOP_H
+  Goto _CENTER_H
+  
+_251C:
+  GoSub _TOP_S
+  GoSub _BOTTOM_S
+  Goto _RIGHT_S
+  
+_251D:
+  GoSub _TOP_S
+  GoSub _BOTTOM_S
+  Goto _RIGHT_H
+  
+_251E:
+  GoSub _TOP_H
+  GoSub _BOTTOM_S
+  Goto _RIGHT_S
+  
+_251F:
+  GoSub _TOP_S
+  GoSub _BOTTOM_H
+  Goto _RIGHT_S
+  
+_2520:
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Goto _RIGHT_S
+  
+_2521:
+  GoSub _TOP_H
+  GoSub _BOTTOM_S
+  GoSub _RIGHT_H
+  Goto _CENTER_H
+  
+_2522:
+  GoSub _TOP_S
+  GoSub _BOTTOM_H
+  GoSub _RIGHT_H
+  Goto _CENTER_H
+  
+_2523:
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Goto _RIGHT_H
+  
+
+_2524:
+  GoSub _TOP_S
+  GoSub _BOTTOM_S
+  Goto _LEFT_S
+  
+_2525:
+  GoSub _TOP_S
+  GoSub _BOTTOM_S
+  Goto _LEFT_H
+  
+_2526:
+  GoSub _TOP_H
+  GoSub _BOTTOM_S
+  Goto _LEFT_S
+  
+_2527:
+  GoSub _TOP_S
+  GoSub _BOTTOM_H
+  Goto _LEFT_S
+  
+_2528:
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Goto _LEFT_S
+  
+_2529:
+  GoSub _TOP_H
+  GoSub _BOTTOM_S
+  GoSub _LEFT_H
+  Goto _CENTER_H
+  
+_252A:
+  GoSub _TOP_S
+  GoSub _BOTTOM_H
+  GoSub _LEFT_H
+  Goto _CENTER_H
+  
+_252B:
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Goto _LEFT_H
+
+
+_252C:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  Goto _BOTTOM_S
+  
+_252D:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  Goto _BOTTOM_S
+  
+_252E:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  Goto _BOTTOM_S
+  
+_252F:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Goto _BOTTOM_S
+  
+_2530:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  Goto _BOTTOM_H
+  
+_2531:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  GoSub _BOTTOM_H
+  Goto _CENTER_H
+  
+_2532:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  GoSub _BOTTOM_H
+  Goto _CENTER_H
+  
+_2533:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Goto _BOTTOM_H
+  
+  
+_2534:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  Goto _BOTTOM_S
+  
+_2535:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  Goto _BOTTOM_S
+  
+_2536:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  Goto _BOTTOM_S
+  
+_2537:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Goto _BOTTOM_S
+  
+_2538:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  Goto _BOTTOM_H
+  
+_2539:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  GoSub _BOTTOM_H
+  Goto _CENTER_H
+  
+_253A:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  GoSub _BOTTOM_H
+  Goto _CENTER_H
+  
+_253B:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Goto _BOTTOM_H
+
+
+_253C:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+  
+_253D:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+  
+_253E:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+  
+_253F:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+  
+_2540:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  GoSub _TOP_H
+  Goto _BOTTOM_S
+  
+_2541:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  GoSub _TOP_S
+  Goto _BOTTOM_H
+  
+_2542:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  GoSub _TOP_H
+  Goto _BOTTOM_H
+  
+_2543:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  GoSub _TOP_H
+  GoSub _CENTER_H
+  Goto _BOTTOM_S
+  
+_2544:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  GoSub _CENTER_H
+  Goto _BOTTOM_S
+  
+_2545:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  GoSub _TOP_S
+  GoSub _CENTER_H
+  Goto _BOTTOM_H
+  
+_2546:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  GoSub _TOP_S
+  GoSub _CENTER_H
+  Goto _BOTTOM_H
+  
+_2547:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  Goto _BOTTOM_S
+  
+_2548:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  GoSub _TOP_S
+  Goto _BOTTOM_H
+  
+_2549:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  GoSub _TOP_H
+  GoSub _CENTER_H
+  Goto _BOTTOM_H
+  
+_254A:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  Goto _BOTTOM_H
+  
+_254B:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  Goto _BOTTOM_H
+  
+_2550:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Goto _RIGHT_S
+  
+_2551:
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+
+_2552:
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _RIGHT_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _BOTTOM_S
+
+_2553:
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _BOTTOM_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _RIGHT_S
+
+_2554:
+  GoSub _CENTER_H
+  GoSub _RIGHT_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _RIGHT_S
+  Goto _BOTTOM_S
+  
+_2555:
+  GoSub _LEFT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _BOTTOM_S
+
+_2556:
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _BOTTOM_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _LEFT_S
+
+_2557:
+  GoSub _CENTER_H
+  GoSub _LEFT_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Goto _BOTTOM_S
+  
+_2558:
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _RIGHT_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _TOP_S
+
+_2559:
+  GoSub _TOP_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _RIGHT_S
+
+_255A:
+  GoSub _CENTER_H
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _RIGHT_S
+  Goto _TOP_S
+  
+_255B:
+  GoSub _LEFT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _TOP_S
+
+_255C:
+  GoSub _TOP_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _LEFT_S
+
+_255D:
+  GoSub _CENTER_H
+  GoSub _LEFT_H
+  GoSub _TOP_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Goto _TOP_S
+  
+_255E:
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _RIGHT_S
+  Paint.Operator = Paint.OperatorOver
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+
+_255F:
+  GoSub _RIGHT_S
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+
+_2560:
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  GoSub _BOTTOM_S
+  Goto _RIGHT_S
+  
+_2561:
+  GoSub _LEFT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Paint.Operator = Paint.OperatorOver
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+
+_2562:
+  GoSub _LEFT_S
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+
+_2563:
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  GoSub _LEFT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  GoSub _BOTTOM_S
+  Goto _LEFT_S
+
+_2564:
+  GoSub _BOTTOM_S
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Goto _RIGHT_S
+
+_2565:
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _BOTTOM_S
+  Paint.Operator = Paint.OperatorOver
+  GoSub _LEFT_S
+  Goto _RIGHT_S
+
+_2566:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  Goto _BOTTOM_S
+
+_2567:
+  GoSub _TOP_S
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Goto _RIGHT_S
+
+_2568:
+  GoSub _TOP_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  Paint.Operator = Paint.OperatorOver
+  GoSub _LEFT_S
+  Goto _RIGHT_S
+
+_2569:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  Goto _TOP_S
+
+_256A:
+  GoSub _TOP_S
+  GoSub _BOTTOM_S
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Goto _RIGHT_S
+
+_256B:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+
+_256C:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+
+_256D:
+_256E:
+_256F:
+_2570:
+  Goto _DRAW_CHAR
+  
+_2571:
+  Paint.AntiAlias = False
+  Paint.LineWidth = L
+  Paint.MoveTo(0, H)
+  Paint.LineTo(W, 0)
+  Paint.Stroke
+  Return
+
+_2572:
+  Paint.AntiAlias = False
+  Paint.LineWidth = L
+  Paint.MoveTo(0, 0)
+  Paint.LineTo(W, H)
+  Paint.Stroke
+  Return
+  
+_2573:
+  GoSub _2571
+  Goto _2572
+
+_2574:
+  Goto _LEFT_S
+  
+_2575:
+  Goto _TOP_S
+  
+_2576:
+  Goto _RIGHT_S
+  
+_2577:
+  Goto _BOTTOM_S
+  
+_2578:
+  Goto _LEFT_H
+  
+_2579:
+  Goto _TOP_H
+  
+_257A:
+  Goto _RIGHT_H
+  
+_257B:
+  Goto _BOTTOM_H
+  
+_257C:
+  GoSub _LEFT_S
+  Goto _RIGHT_H
+  
+_257D:
+  GoSub _TOP_S
+  Goto _BOTTOM_H
+  
+_257E:
+  GoSub _RIGHT_S
+  Goto _LEFT_H
+  
+_257F:
+  GoSub _BOTTOM_S
+  Goto _TOP_H
+
+_2580:
+  Paint.FillRect(0, 0, W, H / 2, iBg)
+  Return
+  
+_2581:
+_2582:
+_2583:
+_2584:
+_2585:
+_2586:
+_2587:
+_2588:
+  Paint.FillRect(0, H, W, - Max(1, (C - &H2580) * H / 8), iBg)
+  Return
+
+_2589:
+_258A:
+_258B:
+_258C:
+_258D:
+_258E:
+_258F:
+  Paint.FillRect(0, 0, Max(1, W - (C - &H2588) * W / 8), H, iBg)
+  Return
+
+_2590:
+  Paint.FillRect(W, 0, - W / 2, H, iBg)
+  Return
+
+_2591:
+
+  If Not $hBrushLight Then $hBrushLight = Image.Load("brush_light.png")
+  Paint.Brush = Paint.Image($hBrushLight, - XB, - YB)
+  Goto _DRAW_BRUSH
+  
+_2592:
+
+  If Not $hBrushMedium Then $hBrushMedium = Image.Load("brush_medium.png")
+  Paint.Brush = Paint.Image($hBrushMedium, - XB, - YB)
+  Goto _DRAW_BRUSH
+  
+_2593:
+
+  If Not $hBrushDark Then $hBrushDark = Image.Load("brush_dark.png")
+  Paint.Brush = Paint.Image($hBrushDark, - XB, - YB)
+  Goto _DRAW_BRUSH
+
+_2594:
+  Paint.FillRect(0, 0, W, H / 8, iBg)
+  Return
+  
+_2595:
+  Paint.FillRect(W * 7 / 8, 0, W / 8, H, iBg)
+  Return
+
+
+_2596:
+  Paint.FillRect(0, H / 2, W / 2, H / 2, iBg)
+  Return
+  
+_2597:
+  Paint.FillRect(W / 2, H / 2, W / 2, H / 2, iBg)
+  Return
+  
+_2598:
+  Paint.FillRect(0, 0, W / 2, H / 2, iBg)
+  Return
+  
+_2599:
+  Paint.FillRect(0, 0, W / 2, H, iBg)
+  Paint.FillRect(0, H, W, - H / 2, iBg)
+  Return
+  
+_259A:
+  GoSub _2598
+  Goto _2597
+  
+_259B:
+  Paint.FillRect(0, 0, W, H / 2, iBg)
+  Paint.FillRect(0, 0, W / 2, H, iBg)
+  Return
+  
+_259C:
+  GoSub _2580
+  Goto _2590
+  
+_259D:
+  Paint.FillRect(W / 2, 0, W / 2, H / 2, iBg)
+  Return
+
+_259E:
+  GoSub _259D
+  Goto _2596
+  
+_259F:
+  Paint.FillRect(W, 0, - W / 2, H, iBg)
+  Paint.FillRect(0, H, W, - H / 2, iBg)
+  Return
+
+
+_DRAW_BRUSH:  
+
+  Paint.Rectangle(0, 0, W, H)
+  Paint.Fill
+  Return
+
+_LEFT_S:
+
+  Paint.FillRect(0, YC - DL, XC + L - DL, L, iBg)
+  Return
+  
+_RIGHT_S:
+
+  Paint.FillRect(XC - DL, YC - DL, W - XC + DL, L, iBg)
+  Return
+  
+_TOP_S:
+
+  Paint.FillRect(XC - DL, 0, L, YC + L - DL, iBg)
+  Return
+  
+_BOTTOM_S:
+
+  Paint.FillRect(XC - DL, YC - DL, L, H - YC + DL, iBg)
+  Return
+  
+_LEFT_H:
+
+  Paint.FillRect(0, YC - DL3, XC + L - DL, L3, iBg)
+  Return
+  
+_RIGHT_H:
+
+  Paint.FillRect(XC - DL, YC - DL3, W - XC + DL, L3, iBg)
+  Return
+  
+_TOP_H:
+
+  Paint.FillRect(XC - DL3, 0, L3, YC + L - DL, iBg)
+  Return
+  
+_BOTTOM_H:
+
+  Paint.FillRect(XC - DL3, YC - DL, L3, H - YC + DL, iBg)
+  Return
+  
+_CENTER_H:
+
+  Paint.FillRect(XC - DL3, YC - DL3, L3, L3, iBg)
+  Return
+  
+_CENTER_SH:
+
+  Paint.FillRect(XC - DL3, YC - DL, L3, L, iBg)
+  Return
+  
+_CENTER_SV:
+
+  Paint.FillRect(XC - DL, YC - DL3, L, L3, iBg)
+  Return
+
+_DRAW_CHAR:
+
+  Paint.Font = hFont
+  Paint.DrawText(String.Chr$(C), 0, 0, W, H, Align.Center)
+  Return
+
+End

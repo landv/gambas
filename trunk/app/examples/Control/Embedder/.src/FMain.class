@@ -1,0 +1,89 @@
+' Gambas class file
+
+Public Sub btnEmbed_Click()
+
+  Dim sTitle As String
+  Dim aHandle As Integer[]
+  Dim iHandle As Integer
+  
+  sTitle = Trim(txtTitle.Text)
+  If Not sTitle Then Return
+  
+  If Left(sTitle, 2) = "0x" Then 
+    iHandle = Val("&" & Mid$(sTitle, 3))
+  Else If Left(sTitle) = "&" Then 
+    iHandle = Val(sTitle)
+  Else
+'     aHandle = Desktop.FindWindow(Trim(txtTitle.Text))
+    aHandle = Desktop.FindWindow(txtTitle.Text)
+    If aHandle.Count = 0 Then 
+      Message.Warning(("Window not found!"))
+      Return
+    Else If aHandle.Count >= 2 Then 
+      Message(("Several windows found. I take the first one!"))
+    Endif
+    iHandle = aHandle[0]
+  Endif
+  
+  Try embEmbedder.Embed(iHandle)
+  If Error Then Message.Warning(Error.Text)
+
+End
+
+Public Sub embEmbedder_Embed()
+
+  btnEmbed.Enabled = False
+  btnDiscard.Enabled = True
+
+End
+
+Public Sub btnDiscard_Click()
+
+  embEmbedder.Discard
+  embEmbedder_Close
+
+End
+
+Public Sub embEmbedder_Close()
+
+  btnEmbed.Enabled = True
+  btnDiscard.Enabled = False
+
+End
+
+Public Sub Form_Open()
+
+  lblID.Text = "&" & Hex$(embEmbedder.Id)
+
+End
+
+Public Sub embEmbedder_Error()
+
+  Message.Error(("Embed error"))
+
+End
+
+
+Public Sub Process_Read()
+
+  Dim sStr As String
+
+  'READ #LAST, sStr, Lof(LAST)
+  Line Input #Last, sStr
+  Print "\t"; sStr
+
+End
+
+Public Sub Process_Error(sStr As String)
+
+  Print "\t"; sStr; 
+  If Right(sStr) <> "\n" Then Print
+
+End
+
+Public Sub Process_Kill()
+
+  Print "Process_Kill"
+  Print Last.State;; Last.Value
+
+End

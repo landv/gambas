@@ -1,0 +1,70 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,Text,Image{WebImage},Shortcut"
+'Public Const _DrawWith As String = "Label"
+Public Const _DefaultSize As String = "24,4"
+Public Const _DefaultEvent As String = "Click"
+
+Event Click
+
+Property Text As String
+Property Image As String
+Property Shortcut As String
+
+Private $sText As String
+Private $sImage As String
+Private $sShortcut As String
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  Me._SetProperty("Text", Value)
+
+End
+
+Public Sub _Render()
+  
+  Print "<div class=\"gw-menuitem-icon\">";
+  If $sImage Then Print "<img class=\"gw-menuitem-icon\" src=\""; Html(Application.Root &/ $sImage); "\">";
+  Print "</div>";
+  Print "<div class=\"gw-menuitem-text\">"; Html($sText); "</div>";
+  Print "<div class=\"gw-menuitem-shortcut\">";
+  If $sShortcut Then Print Html($sShortcut);
+  Print "</div><div></div>"
+  
+End
+
+Private Function Image_Read() As String
+
+  Return $sImage
+
+End
+
+Private Sub Image_Write(Value As String)
+
+  $sImage = Value
+  Me._SetProperty("Image", Value)
+
+End
+
+Private Function Shortcut_Read() As String
+
+  Return $sShortcut
+
+End
+
+Private Sub Shortcut_Write(Value As String)
+
+  $sShortcut = Value
+  Me._SetProperty("Shortcut", Value)
+
+End

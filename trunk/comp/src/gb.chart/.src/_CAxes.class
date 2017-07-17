@@ -1,0 +1,89 @@
+' Gambas class file
+Export
+Property MinValue As Float 
+Property MaxValue As Float 
+Property {Step} As Float 
+Property {Font} As Font
+Private $oFont As Font = Font["11"]
+Private $bVisible As Boolean = True
+Property Visible As Boolean
+Private $iAutoScale As Boolean = True
+Property AutoScale As Boolean
+
+Private $iMaxValue As Float = 100
+Private $iMinValue As Float = 0
+Private $iStep As Float = 1
+
+Private Function MinValue_Read() As Float
+
+  Return $iMinValue
+
+End
+
+Private Sub MinValue_Write(Value As Float)
+  $iMinValue = Value
+  $iAutoScale = False
+
+End
+
+Private Function MaxValue_Read() As Float
+
+  Return $iMaxValue
+
+End
+
+Private Sub MaxValue_Write(Value As Float)
+
+    $iMaxValue = Value
+    $iAutoScale = False
+
+End
+
+Private Function Step_Read() As Float
+
+  Return $iStep
+
+End
+
+Private Sub Step_Write(Value As Float)
+
+    $iStep = Value
+    $iAutoScale = False
+
+End
+
+Private Function Font_Read() As Font
+
+  Return $oFont
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  $oFont = Value
+
+End
+
+Private Function Visible_Read() As Boolean
+
+  Return $bVisible  
+
+End
+
+Private Sub Visible_Write(Value As Boolean)
+
+  $bVisible = Value
+
+End
+
+Private Function AutoScale_Read() As Boolean
+
+  Return $iAutoScale
+
+End
+
+Private Sub AutoScale_Write(Value As Boolean)
+
+  $iAutoScale = Value
+
+End

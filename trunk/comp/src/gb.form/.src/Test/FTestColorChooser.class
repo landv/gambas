@@ -1,0 +1,26 @@
+' Gambas class file
+
+Public Sub Form_Resize()
+
+  Debug Me.W;; Me.H
+  'Sleep 2
+
+End
+
+Public Sub Form_Open()
+
+  ' Dim hCtrl As TestControl
+  ' 
+  ' hCtrl = New TestControl(Me)
+  ' hCtrl.ResizeScaled(40, 40)
+  ' hCtrl.Background = Color.Yellow
+  
+  'Me.Resizable = False
+
+End
+
+Public Sub Button1_Click()
+
+  Me.Resizable = Not Me.Resizable
+
+End

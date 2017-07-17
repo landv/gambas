@@ -1,0 +1,43 @@
+' Gambas class file
+
+Inherits UserControl
+
+Property ReadOnly As Boolean
+
+Private $bReadOnly As Boolean = True
+Private $hView As DrawingArea
+
+Public Sub _new()
+  
+  $hView = New DrawingArea(Me) As "View"
+  $hView.Focus = True
+  Me.Proxy = $hView
+  
+End
+
+Public Sub View_Draw()
+  
+  If $bReadOnly Then
+    Style.PaintButton(0, 0, Paint.W, Paint.H, False, Style.StateOf($hView))
+  Else
+    Style.PaintBox(0, 0, Paint.W, Paint.H, Style.StateOf($hView))
+  Endif
+  
+  Paint.Background = Color.Black
+  Style.PaintArrow(Paint.W - Desktop.Scale * 3, 0, Desktop.Scale * 2, Paint.H, Align.Bottom, Style.StateOf($hView))
+  
+End
+
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $bReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $bReadOnly = Value
+  $hView.Refresh
+
+End

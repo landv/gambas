@@ -1,0 +1,45 @@
+' Gambas class file
+
+Export
+
+Static Public Sub _call(Text As String, Shortcut As String) As String
+
+  Dim iPos As Integer
+  
+  ' iPos = String.InStr(Text, "&")
+  ' If iPos Then 
+  '   Shortcut = String.Mid$(Text, iPos + 1, 1)
+  '   Text = String.Left(Text, iPos - 1) & String.Mid$(Text, iPos + 1)
+  ' Endif
+  
+  If Not Shortcut Then Return Text
+  
+  iPos = InStr(Text, Shortcut, 1, gb.IgnoreCase)
+  If iPos = 0 Then Return Text '& " (&" & String.UCase(Shortcut) & ")"
+  Return Left(Text, iPos - 1) & "&" & Mid$(Text, iPos)
+  
+End
+
+Static Public Sub FromKey() As String
+
+  Dim sShortcut As String
+  Dim sSymbol As String
+  Dim hClass As Class
+  
+  If Key.Control Then sShortcut &= "CTRL+"
+  If Key.Shift Then sShortcut &= "SHIFT+"
+  If Key.Alt Then sShortcut &= "ALT+"
+  If Key.Meta Then sShortcut &= "META+"
+  
+  hClass = Classes["Key"]
+  For Each sSymbol In hClass.Symbols
+    With hClass[sSymbol]
+      If .Kind = Class.Constant And If .Value = Key.Code Then
+        Return sShortcut & .Name
+      Endif
+    End With
+  Next
+  
+  Return sShortcut & String.Chr(Key.Code)
+  
+End

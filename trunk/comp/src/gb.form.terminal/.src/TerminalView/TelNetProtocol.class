@@ -1,0 +1,139 @@
+' Gambas class file
+
+Private $hOutput As Stream
+
+Private state As Integer
+
+Const t_Will As Byte = &hfb
+Const t_DO As Byte = &hfd
+Const t_dont As Byte = &hfe
+Const t_wont As Byte = &hfc
+Const t_IAC As Byte = &hff
+Const t_sb As Byte = &hfa
+Const t_se As Byte = &hf0
+Const t_nop As Byte = &hf1
+Const t_GoAhead As Byte = &hf9
+
+Public Enum c_BinaryTx,
+            c_EchoData,
+            C_reconnect,
+            c_SuppressGA,
+            c_MsgSize,
+            c_OptStatus,
+            c_TimingMark,
+            c_RCXmtEcho,
+            c_LineWidth,
+            c_PageLength,
+            c_CrUsage,
+            c_SetHTabs,
+            c_HorTabUse,
+            c_FFUse,
+            c_SetVTab,
+            c_vtabUse,
+            c_LfUse,
+            c_ExtAsc,
+            c_LogOut,
+            c_ByteMacro,
+            c_DataTerm,
+            c_SUPDUP,
+            c_SUPDUPOutput,
+            c_SendLocate,
+            c_TermType,
+            c_EndRecord,
+            c_TACACSId,
+            c_OutputMark,
+            c_TermLocNum,
+            c_3270Emulate,
+            c_X3pad,
+            c_WinSize, 
+            c_TermSpeed,
+            c_RemoteFlow,
+            c_LineMode,
+            c_xdispLocation,
+            c_NewEnvOption = &h27,
+            c_Extend = &hff           
+
+
+
+
+
+
+Public Sub Preprocess(ByRef DataIn As String, ByRef Len As Integer) As Boolean ' Use byref to allow the process to edit the data as needed
+Dim MyBuff As String
+Dim Cchar As Byte
+Dim myOutBuf As String
+
+
+      If Len <= 0 Then Return True
+       
+      Cchar = Byte@(DataIn)
+
+      Print Hex$(Cchar, 2)
+      
+      While Cchar = t_iac 
+          If len <= 2 Then Break
+          Print "Got Command"
+          MyBuff = Mid$(DataIn, 2, 2)
+          len -= 3
+          dataIn = Mid$(dataIn, 4, len)
+          
+          Cchar = Byte@(MyBuff)
+          
+          If Cchar = T_do Then 
+            
+            MyBuff = Mid$(MyBuff, 2, 1)
+            Cchar = Byte@(MyBuff)
+            
+            Print Hex$(c_TermSpeed)
+          
+            Select Case Cchar
+              Case c_TermSpeed
+                  MyOutBuf &= Chr$(t_IAC) & Chr$(t_will) & Chr$(c_TermSpeed) & Chr$(t_IAC) & Chr$(t_sb) & Chr$(c_TermSpeed) & Chr$(&h00) & "38400,38400" & Chr$(&hff) & Chr$(&f0)
+                  
+              Case c_TermType
+                  MyOutBuf &= Chr$(t_IAC) & Chr$(t_will) & Chr$(c_TermType) & Chr$(t_IAC) & Chr$(t_sb) & Chr$(c_TermType) & Chr$(&h00) & "VT100" & Chr$(&hff) & Chr$(&hf0) 
+                  
+              Case c_xdispLocation
+                  MyOutBuf &= Chr$(t_IAC) & Chr$(t_wont) & Chr$(c_xdispLocation)
+                  
+              Case c_NewEnvOption
+                  MyOutBuf &= Chr$(t_IAC) & Chr$(t_wont) & Chr$(c_NewEnvOption)
+                  
+              Case c_EchoData
+                  MyOutBuf &= Chr$(t_IAC) & Chr$(t_wont) & Chr$(c_EchoData)
+                  state += 1
+              Case Else
+                 Print "Unknown or Unprocessed command " & Hex$(Cchar)
+            End Select
+          Endif
+           If len > 0 Then
+                Cchar = Byte@(DataIn)
+                Print Hex$(Cchar, 2)
+           Endif
+      Wend
+      
+      If state = 0 Then
+        MyOutBuf &= Chr$(t_iac) & Chr$(t_DO) & Chr$(c_EchoData)
+        state += 1
+      Endif
+      
+      If Len(MyOutBuf) > 0 Then
+         Write #$hOutput, MyOutBuf, Len(myOutBuf)
+      Endif
+   
+  
+If Len > 0 Then 
+    Return True ' default to allowing the terminal to process the data
+Else
+    Return False
+Endif    
+    
+End
+
+Public Sub _new(StreamOut As Stream) 
+  
+  $hOutput = StreamOut
+  
+  
+End
+

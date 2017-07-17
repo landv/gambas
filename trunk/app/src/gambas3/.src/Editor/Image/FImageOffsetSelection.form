@@ -1,0 +1,30 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,39,12)
+  Text = ("Offset selection")
+  { txtSize SpinBox
+    MoveScaled(1,1,10,4)
+    MinValue = -256
+    MaxValue = 256
+  }
+  { Label1 Label
+    MoveScaled(12,1,4,4)
+    Text = ("px")
+  }
+  { btnOK Button
+    MoveScaled(21,1,16,4)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(21,6,16,4)
+    Text = ("Cancel")
+    Cancel = True
+  }
+  { chkDuplicate CheckBox
+    MoveScaled(1,6,16,1)
+    AutoResize = True
+    Text = ("Duplicate")
+  }
+}

@@ -1,0 +1,96 @@
+' Gambas class file
+
+Property Width, W As String
+Property Text, Title As String
+Property Resizable As Boolean
+Property Expand As Boolean
+Property Alignment As Integer
+Property Background As ReportBrush
+
+Private $sWidth As String
+Private $sText As String
+Private $bExpand As String
+Private $iAlignment As Integer
+Private $hBackGround As New ReportBrush
+Private $bResizable As Integer
+Public _Width As Float
+
+Public _Column As Integer                     ''Column Number
+
+Private Function Width_Read() As String
+
+  Return $sWidth
+
+End
+
+Private Sub Width_Write(Value As String)
+
+  $sWidth = Value
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+
+End
+
+Private Function Resizable_Read() As Boolean
+
+  Return $bResizable
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  $bResizable = Value
+
+End
+
+Private Function Expand_Read() As Boolean
+
+  Return $bExpand
+
+End
+
+Private Sub Expand_Write(Value As Boolean)
+
+  $bExpand = Value
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return $iAlignment
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  $iAlignment = Value
+
+End
+
+Private Function Background_Read() As ReportBrush
+
+  Return $hBackGround
+
+End
+
+Private Sub Background_Write(Value As ReportBrush)
+
+  $hBackGround = Value
+
+End
+
+Public Sub _NormalizeUnits()
+
+  _Width = ReportSizeParser($sWidth)
+
+End

@@ -1,0 +1,213 @@
+# Gambas Database Template File 3.0
+{ Table
+  Name="vote"
+  PrimaryKey=["software","user"]
+  { Field
+    Name="software"
+    Type=db.Integer
+  }
+  { Field
+    Name="user"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="tag"
+  PrimaryKey=["software","tag"]
+  { Field
+    Name="software"
+    Type=db.Integer
+  }
+  { Field
+    Name="tag"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="name"
+  PrimaryKey=["id"]
+  { Field
+    Name="id"
+    Type=db.Serial
+  }
+  { Field
+    Name="name"
+    Type=db.String
+    Length=64
+    Collation="default"
+  }
+  { Field
+    Name="cname"
+    Type=db.String
+    Length=64
+    Collation="default"
+  }
+  { Index 
+    Name="tag_name_Index_name"
+    Unique=True
+    Fields=["cname"]
+  }
+}
+{ Table
+  Name="__gb_metadata_v2"
+  PrimaryKey=["stablename","itype","skey"]
+  { Field
+    Name="stablename"
+    Type=db.String
+    Collation="default"
+  }
+  { Field
+    Name="itype"
+    Type=db.Integer
+  }
+  { Field
+    Name="skey"
+    Type=db.String
+    Collation="default"
+  }
+  { Field
+    Name="svalue"
+    Type=db.String
+    Collation="default"
+  }
+}
+{ Table
+  Name="user"
+  PrimaryKey=["id"]
+  { Field
+    Name="id"
+    Type=db.Serial
+  }
+  { Field
+    Name="login"
+    Type=db.String
+    Length=16
+    Collation="default"
+  }
+  { Field
+    Name="password"
+    Type=db.String
+    Length=128
+    Collation="default"
+  }
+  { Field
+    Name="name"
+    Type=db.String
+    Length=64
+    Collation="default"
+  }
+  { Field
+    Name="confirm"
+    Type=db.String
+    Length=32
+    Collation="default"
+  }
+  { Index 
+    Name="user_Index_login"
+    Unique=True
+    Fields=["login"]
+  }
+}
+{ Table
+  Name="software"
+  PrimaryKey=["id"]
+  { Field
+    Name="id"
+    Type=db.Serial
+  }
+  { Field
+    Name="owner"
+    Type=db.Integer
+  }
+  { Field
+    Name="vendor"
+    Type=db.String
+    Length=64
+    Collation="default"
+  }
+  { Field
+    Name="name"
+    Type=db.String
+    Length=64
+    Collation="default"
+  }
+  { Field
+    Name="version"
+    Type=db.Integer
+  }
+  { Field
+    Name="release"
+    Type=db.Integer
+  }
+  { Field
+    Name="date"
+    Type=db.Date
+  }
+  { Field
+    Name="description"
+    Type=db.String
+    Collation="default"
+  }
+  { Field
+    Name="url"
+    Type=db.String
+    Collation="default"
+  }
+  { Field
+    Name="gambas"
+    Type=db.Integer
+  }
+  { Field
+    Name="size"
+    Type=db.Integer
+  }
+  { Field
+    Name="dependencies"
+    Type=db.String
+    Collation="default"
+  }
+  { Field
+    Name="checksum"
+    Type=db.String
+    Length=128
+    Collation="default"
+  }
+  { Field
+    Name="download"
+    Type=db.Integer
+  }
+  { Field
+    Name="vote"
+    Type=db.Integer
+  }
+  { Index 
+    Name="software_index_date"
+    Unique=True
+    Fields=["date","id"]
+  }
+  { Index 
+    Name="software_Index_vote"
+    Unique=True
+    Fields=["vote","id"]
+  }
+  { Index 
+    Name="software_Index_download"
+    Unique=True
+    Fields=["download","id"]
+  }
+  { Index 
+    Name="software_Index_name"
+    Unique=True
+    Fields=["vendor","name","version"]
+  }
+  { Index 
+    Name="software_Index_checksum"
+    Unique=True
+    Fields=["checksum"]
+  }
+  { Index 
+    Name="software_Index_size"
+    Unique=True
+    Fields=["size","id"]
+  }
+}

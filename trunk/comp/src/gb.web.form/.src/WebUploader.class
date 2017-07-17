@@ -1,0 +1,135 @@
+' Gambas class file
+
+Export
+Inherits WebContainer
+
+Public Const _IsContainer As Boolean = False
+Public Const _Group As String = "WebForm"
+Public Const _Properties As String = "*,Text,Image{WebImage}"
+Public Const _DefaultEvent As String = "Upload"
+Public Const _DefaultSize As String = "18,6"
+
+Event Upload
+
+Property Text As String
+Property Image As String
+Property Read Path As String
+Property Read File As String
+
+Private uplFile As WebUploadArea
+Private btnUpload As WebButton
+Private pgbUpload As WebProgressBar
+Private btnAbort As WebButton
+  
+Private $sText As String
+
+Public Sub _new()
+  
+  Me.Arrangement = Arrange.Horizontal
+  Me.Spacing = True
+  
+  uplFile = New WebUploadArea(Me) As "uplFile"
+  btnUpload = New WebButton(uplFile) As "btnUpload"
+  
+  btnAbort = New WebButton(Me) As "btnAbort"
+  btnAbort.Image = "gw-close.png"
+  btnAbort.Text = ("Abort")
+  btnAbort.Hide
+  
+  pgbUpload = New WebProgressBar(Me) As "pgbUpload"
+  pgbUpload.Expand = True
+  pgbUpload.Hide
+  
+  UpdateUploadButton
+  
+End
+
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub UpdateUploadButton()
+
+  If $sText Then
+    btnUpload.Text = $sText
+  Else
+    btnUpload.Text = ("Upload file...")
+  Endif
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  Me._SetProperty("Text", Value)
+  UpdateUploadButton
+
+End
+
+Public Sub uplFile_Upload()
+  
+  'pgbUpload.Hide
+  btnAbort.Hide
+  uplFile.Show
+  
+  pgbUpload.Value = 1
+
+  Raise Upload
+  
+End
+
+Private Function Path_Read() As String
+
+  Return uplFile.Path
+
+End
+
+Private Function File_Read() As String
+
+  Return uplFile.File
+
+End
+
+Public Sub uplFile_Progress()
+  
+  If uplFile.Progress = 0 Then
+    pgbUpload.Show
+    btnAbort.Show
+    uplFile.Hide
+  Endif
+  
+  pgbUpload.Value = uplFile.Progress
+  
+End
+
+Public Sub btnAbort_Click()
+  
+  uplFile.Abort
+  
+  pgbUpload.Hide
+  btnAbort.Hide
+  uplFile.Show
+  
+End
+
+Public Sub Clear()
+
+  uplFile.Clear
+
+End
+
+Private Function Image_Read() As String
+
+  Return btnUpload.Image
+
+End
+
+Private Sub Image_Write(Value As String)
+
+  btnUpload.Image = Value
+
+End
+

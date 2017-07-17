@@ -1,0 +1,63 @@
+' Gambas class file
+
+Create Static
+'Private $sBuffer As String
+Private $bBuffered As Boolean
+Private ESC As String = Chr(27)
+Private CSI As String = Chr(27) & "["
+Property Read Attr As Attr
+Private $hAttr As New Attr
+
+Public Sub Begin()
+  
+  $bBuffered = True
+  
+End
+
+Public Sub End()
+  
+  $bBuffered = False
+  
+End
+
+
+Public Sub Print(sValue As String)
+  
+  If $hAttr.Modified Then
+    $hAttr.Send
+  Endif
+  
+  Print sValue;
+  
+End
+
+Private Function Attr_Read() As Attr
+
+  Return $hAttr
+
+End
+
+Public Sub SetTitle(sText As String)
+  
+  Print ESC & "]2;" & sText & Chr(7)
+  
+End
+
+Public Sub Goto(Row As Integer, Column As Integer)
+  
+  Print CSI & Row & ";" & Column & "H";
+  
+End
+
+Public Sub Info()
+  
+  Print CSI & "?6n;"
+  
+End
+
+Public Sub Reset()
+  
+  Print CSI & "!p";
+  
+End
+

@@ -1,0 +1,20 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(33,14,61,40)
+  Text = ("Collection")
+  Icon = Picture["collection.png"]
+  Resizable = False
+  { btnCreate Button
+    MoveScaled(37,1,23,4)
+    Text = ("Create Collection")
+  }
+  { tvThings TreeView
+    MoveScaled(1,1,35,38)
+    Sorted = True
+  }
+  { Label1 Label
+    MoveScaled(37,35,24,4)
+    Text = ("by juergen@zdero.com")
+  }
+}

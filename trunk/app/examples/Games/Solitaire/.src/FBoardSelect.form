@@ -1,0 +1,23 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(42.6667,7.5,40,11)
+  Text = ("Select board")
+  Resizable = False
+  { cboLayout ComboBox
+    MoveScaled(16,1,23,4)
+    Text = (" ")
+  }
+  { lblLayout TextLabel
+    MoveScaled(1,1,14,4)
+    Text = ("Board Layout")
+  }
+  { cmdOK Button
+    MoveScaled(1,6,11,4)
+    Text = ("OK")
+  }
+  { cmdCancel Button
+    MoveScaled(28,6,11,4)
+    Text = ("Cancel")
+  }
+}

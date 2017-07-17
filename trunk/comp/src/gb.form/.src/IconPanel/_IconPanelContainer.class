@@ -1,0 +1,78 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Property Text As String
+Property Picture As Picture
+Property Read Container As Container
+Property Visible As Boolean
+
+Private Sub GetIconPanel() As IconPanel
+  
+  Return Me.Parent.Parent.Parent
+  
+End
+
+Private Sub GetView() As GridView
+  
+  Return GetIconPanel()._GetView()
+  
+End
+
+Private Sub GetIndex() As Integer
+  
+  Return GetIconPanel()._GetIndex(Me)
+  
+End
+
+
+Public Sub _new()
+
+End
+
+
+Private Function Text_Read() As String
+
+  Try Return GetView()[GetIndex(), 0].Text
+
+End
+
+Private Sub Text_Write(sText As String)
+
+  Try GetView()[GetIndex(), 0].Text = sText
+  GetIconPanel()._UpdateIconViewWidth
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Try Return GetView()[GetIndex(), 0].Picture
+
+End
+
+Private Sub Picture_Write(hPict As Picture)
+
+  Try GetView()[GetIndex(), 0].Picture = hPict
+  GetIconPanel()._UpdateIconViewWidth
+
+End
+
+Private Function Container_Read() As Container
+
+  Return Me
+
+End
+
+Private Function Visible_Read() As Boolean
+
+  Return GetView().Rows[GetIndex()].H > 0
+
+End
+
+Private Sub Visible_Write(Value As Boolean)
+
+  GetIconPanel()._SetVisible(Me, Value)
+
+End

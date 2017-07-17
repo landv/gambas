@@ -1,0 +1,73 @@
+' Gambas class file
+
+Inherits Task
+
+Private $hPipeIn As File
+Private $hPipeOut As File
+
+Static Public $sInputFileName As String
+Static Public $sOutputFileName As String
+
+
+Public Sub Main()
+ Dim i As Integer = 1
+
+      Print "Task is up and running"
+      
+      $hPipeOut = Pipe $sOutputFileName For Write
+      
+      Print "Task has opened output file : " & $sOutputFileName 
+      Wait 2
+      Print "Waited 2 Seconds"
+      
+      $hPipeIn = Pipe $sInputFileName For Read Watch                   ' we should hang on this till the other side starts
+  
+      Print "Task IO in " & $sInputFilename
+      
+      Do
+        
+        Wait 5
+        
+           Print " Task Is alive " & i
+           Inc i
+           If $hPipeIn.EndOfFile Then 
+             Print " Task Pipe Closed on other end"
+             Wait 1
+             Break
+           Endif
+        
+      Loop
+  
+  
+End
+
+Public Sub file_read()
+
+  Dim $sBuffer As String
+  Dim $sChar As String
+  
+  
+  Print "Got read message"
+  
+  If Lof($hPipeIn) Then
+    
+    $sBuffer = "Term Key Rx .. Echoed back ---->"
+    
+    $sChar = Read #$hPipeIn, Lof($hPipeIn)
+    
+    Write #$hPipeOut, $sChar
+    
+    Print $sBuffer & $sChar
+    
+  Endif
+  
+End
+
+Public Sub _kill()
+
+  Print "Exit task"
+  
+  Close #$hPipeIn
+  Close #$hPipeOut
+  
+End

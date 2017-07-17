@@ -1,0 +1,57 @@
+' Gambas module file
+
+Private $oClient As New Memcached
+
+Public Sub Main()
+
+  Dim a As New Memcached
+
+  '  Dim b As New Memcached
+
+  Dim c As Float
+
+  Dim d As Boolean
+
+  $oClient.Open()
+
+  TestCas()
+  TestIncrement()
+
+  $oClient.Close()
+
+End
+
+Public Sub TestCas()
+
+  ''Store initial value
+  $oClient["key"].Value = "value1"
+
+  ''Read the value to store cas id
+  Debug $oClient["key"].Value = "value1"
+
+  ''Store new value. cas id is not modified
+  $oClient["key"].Value = "value2"
+
+  ''Fails, value was modified since last fetched
+  Debug $oClient["key"].Cas("value3")
+
+  ''Should print True
+  Debug $oClient["key"].Value = "value2"
+
+End
+
+Public Sub TestIncrement()
+
+  Dim tmpVal As Integer
+
+  $oClient["key2"].Value = 5
+
+  tmpVal = $oClient["key2"].Value
+
+  Debug tmpVal = 5
+
+  $oClient["key2"].Increment(3)
+
+  Debug $oClient["key2"].Value = tmpVal + 3
+
+End

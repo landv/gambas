@@ -1,0 +1,282 @@
+' Gambas module file
+
+Public Root As String
+Public Path As String
+Public Exist As Boolean
+Public Edit As Boolean
+Public Image As Boolean
+
+Public Sub GetPagePath(Optional bSuffix As Boolean) As String
+
+  Dim sPath As String
+  
+  sPath = Root &/ "data" &/ Path &/ "~page"
+  If bSuffix Then sPath &= "." & Format(Now, "yyyymmddhhnnssuu") & "." & Session["login"]
+  Return sPath
+  
+End
+
+Private Sub MakeDir(sDir As String)
+
+  Dim sPath As String
+  Dim sElt As String
+
+  For Each sElt In Split(sDir, "/")
+    sPath &/= sElt
+    'Shell "echo MKDIR: " & Shell$(sPath) & " >> /tmp/session.log" Wait
+    Try Mkdir "/" & sPath
+  Next
+
+  'If Not Exist(sDir) Or If Not IsDir(sDir) Then Return True
+
+End
+
+Private Sub InitWiki()
+  
+  Mkdir Root &/ "data"
+  Copy "passwd" To Root &/ "passwd"
+  Copy "page" To GetPagePath()
+  Copy "page" To GetPagePath(True)
+  
+End
+
+Private Sub LockPage()
+
+  Dim sLock As String = File.Dir(GetPagePath()) &/ "~lock"
+  Dim hLock As File
+  Dim I As Integer
+  
+  For I = 1 To 20
+    Try hLock = Lock sLock
+    If Not Error Then Return
+    Sleep 0.1
+  Next
+  
+  Error.Raise("Unable to lock the current page")
+
+End
+
+Public Sub Main()
+
+  Dim iSize As Long
+  Dim sMsg As String
+  Dim sIdent As String
+  Dim iPos As Integer
+  Dim sLogin As String
+  Dim sPasswd As String
+  Dim aPage As String[]
+  Dim sDir As String
+  
+  ' The wiki is stored in the following root directory.
+
+  Root = User.Home &/ "wiki"
+  Try Mkdir Root
+
+  ' All pages are stored in a "data" directory stored in the root directory.
+  ' If the "data" directory does not exist, the wiki is initialized with a default root page.
+
+  If Not Exist(Root &/ "data") Then 
+    InitWiki
+    Response.Redirect(Application.Root)
+    Return
+  Endif
+
+  ' The url path is directly converted to a relative directory path inside the "data" directory located in the root directory.
+  ' The page contents is stored inside a "~page" file located in that directory.
+  ' Consequently, no "~" character is allowed in the url path.
+  ' Each page modification is archived in a "~page.<date>.<user>" file, allowing changes to be undone.
+  
+  Path = Request.Path
+  If Path = "/" Then Path = ""
+  
+  ' Handle resource files: images, style sheet...
+  
+  If Path And If Exist(".public" &/ Path) Then
+    Response.SendFile(".public" &/ Path)
+    Return
+  Endif
+  
+  ' Reject pages whose url includes a "~" character.
+  
+  If InStr(Path, "~") Then
+    Response.Status = "404 Not Found"
+    Response.Begin
+    Print "<h1>404 Not Found</h1>"
+    Response.End
+    Return
+  Endif
+  
+  If Request.Exist("logout") Then
+    
+    Session.Abandon
+   
+  Else If Request["login"] And If Request["password"] Then
+    
+    Session.Abandon
+    
+    For Each sIdent In Split(File.Load(Root &/ "passwd"), "\n")
+      iPos = InStr(sIdent, ": ")
+      If iPos = 0 Then Continue
+      sLogin = Trim(Left(sIdent, iPos - 1))
+      sPasswd = Trim(Mid$(sIdent, iPos + 2))
+      If sLogin = Request["login"] And If sPasswd = Request["password"] Then
+        Session["login"] = sLogin
+        Break
+      Endif
+    Next
+    
+  Endif
+    
+  Try iSize = Stat(GetPagePath()).Size
+  {Exist} = iSize > 0
+  Image = IsImage(Path)
+
+  If Session.Id Then
+  
+    If Request.Exist("save") Then
+    
+      If Request.Exist("page") Then
+        MakeDir(File.Dir(GetPagePath()))
+        LockPage
+        File.Save(GetPagePath(), Request["page"])
+        Copy GetPagePath() To GetPagePath(True)
+        Response.Redirect(Application.Root &/ Request.Path)
+        Return
+      Else If Request.Exist("file") And If Image Then
+        MakeDir(File.Dir(GetPagePath()))
+        LockPage
+        Try Kill GetPagePath()
+        Copy Request.Files["file"] To GetPagePath()
+        Copy GetPagePath() To GetPagePath(True)
+        Response.Redirect(Application.Root &/ Request.Path)
+        Return
+      Endif
+      
+    Else If Request.Exist("delete") Then
+      
+      If {Exist} Then
+        LockPage
+        File.Save(GetPagePath(), "")
+        Copy GetPagePath() To GetPagePath(True)
+      Endif
+      Response.Redirect(Application.Root &/ Request.Path)
+      Return
+      
+    Else If Request.Exist("undo") Then
+      
+      sDir = File.Dir(GetPagePath())
+      aPage = Dir(sDir, "~page.*").Sort(gb.Descent)
+      If aPage.Count >= 2 Then
+        LockPage
+        Try Kill sDir &/ aPage[0]
+        Try Kill GetPagePath()
+        Try Copy sDir &/ aPage[1] To GetPagePath()
+      Endif
+      Response.Redirect(Application.Root &/ Request.Path)
+      Return
+      
+    Else If Request.Exist("create") Or If Request.Exist("edit") Then
+      
+      Edit = True
+      
+    Endif
+    
+  Endif
+
+  If Image Then
+    If Not Session.Id Or If Request.Exist("show") Then
+      Response.SendFile(GetPagePath(), GetContentTypeFrom(Path))
+      Return
+    Endif
+  Endif
+
+  Wiki.Render
+  
+Catch
+  
+  sMsg = Error.Where & ": " & Error.Text
+  Response.Begin
+  Response.ContentType = "text/plain;charset=utf-8"
+  Print "<pre>"; sMsg; "</pre>"
+  Response.End
+
+End
+
+Public Sub GetPageTitle(sPath As String) As String
+  
+  Dim sFile As String
+  Dim iPos As Integer
+  
+  sPath = Root &/ "data" &/ sPath &/ "~page"
+  If Not Exist(sPath) Then Return
+  
+  sFile = LTrim(File.Load(sPath))
+  
+  If sFile Begins "# " Then
+    iPos = InStr(sFile, "\n")
+    If iPos = 0 Then iPos = Len(sFile)
+    Return Trim(Mid$(sFile, 3, iPos - 3))
+  Endif
+  
+End
+
+Public Sub IsImage(sPath As String) As Boolean
+
+  Dim sExt As String
+  
+  sExt = File.Ext(sPath)
+  Return ["png", "jpg", "jpeg", "gif"].Exist(sExt)
+  
+End
+
+Private Sub GetContentTypeFrom(sPath As String) As String
+  
+  Select Case Lower(File.Ext(sPath))
+    Case "css"
+      Return "text/css"
+    Case "jpg", "jpeg", "jpe", "thumb"
+      Return "image/jpeg"
+    Case "png"
+      Return "image/png"
+    Case "gif"
+      Return "image/gif"
+    Case "tiff", "tif"
+      Return "image/tiff"
+    Case "odt"
+      Return "application/vnd.oasis.opendocument.text"
+    Case "doc"
+      Return "application/msword"
+    Case "ods"
+      Return "application/vnd.oasis.opendocument.spreadsheet"
+    Case "xls"
+      Return "application/msexcel"
+    Case "pdf"
+      Return "application/pdf"
+    Case "zip"
+      Return "application/zip"
+    Case "html", "htm"
+      Return "text/html"
+    Case "txt"
+      Return "text/plain"
+    Case "avi"
+      Return "video/x-msvideo"
+    Case "mpg", "mpeg"
+      Return "video/mpeg"
+    Case "ps"
+      Return "application/postscript"
+    Case "dwg"
+      Return "application/acad"
+    Case "wav"
+      Return "audio/x-wav"
+    Case "ogg"
+      Return "application/ogg"
+    Case "jar"
+      Return "application/x-jar"
+    'Case "xml", "kml"
+    '  Return "text/plain"
+    Case Else 
+      Return "application/octet-stream"
+  End Select
+  
+End
+

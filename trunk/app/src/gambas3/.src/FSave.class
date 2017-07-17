@@ -1,0 +1,83 @@
+' Gambas class file
+
+Static Public Function Run(Optional bQuit As Boolean) As Boolean
+
+  Dim hForm As Form
+  
+  hForm = New FSave(bQuit)
+  Return Not hForm.ShowModal()
+
+End
+
+Public Sub _new(bQuit As Boolean)
+
+  Dim hFile As Object
+  Dim hPict As Picture
+
+  For Each hFile In Project.Files
+    If hFile.IsModified() Then
+      hPict = Project.GetFileIcon(hFile.Path)
+      lvwFile.Add(hFile.Path, File.Name(hFile.Path), hPict).Selected = True
+    Endif
+  Next
+
+  'lvwFile.SelectAll
+  
+  If bQuit Then
+    btnQuit.Picture = Picture["icon:/medium/quit"]
+    btnQuit.Text = ("Quit")
+  Endif
+
+  btnQuit.Enabled = False
+
+End
+
+
+Public Sub btnSave_Click()
+
+  lvwFile.SelectAll
+  btnQuit.Enabled = True
+
+End
+
+
+Public Sub btnQuit_Click()
+
+  Dim hFile As Object
+  
+  For Each hFile In Project.Files
+    If hFile.IsModified() Then
+
+      If lvwFile[hFile.Path].Selected Then
+        If hFile.Save() Then Return
+      Endif
+      
+    Endif
+  Next
+
+  'IF bSaved THEN ME.Close(TRUE)
+
+  Me.Close(True)
+
+End
+
+
+Public Sub btnCancel_Click()
+
+  Me.Close()
+
+End
+
+
+Public Sub btnIgnore_Click()
+
+  lvwFile.UnselectAll
+  btnQuit.Enabled = True
+
+End
+
+Public Sub lvwFile_MouseUp()
+
+  btnQuit.Enabled = True  
+
+End

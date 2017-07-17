@@ -1,0 +1,37 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,68,66)
+  Background = Color.LightForeground
+  Text = ("How to play?")
+  Resizable = False
+  { TextLabel1 TextLabel
+    MoveScaled(2,2,63,11)
+    Text = ("Place the numbers 1 to 8 in each of the boxes without repeating, so that each box does not contain a correlative number to its neighbors or adjacent boxes. See the following examples:")
+    Alignment = Align.Justify
+  }
+  { PictureBox1 PictureBox
+    MoveScaled(32,15,32,21)
+    Picture = Picture["ejemplo1.png"]
+    Stretch = True
+  }
+  { TextLabel3 TextLabel
+    MoveScaled(2,15,28,21)
+    Text = ("<b>Way incorrect:</b><br><br>The numbers 1 and 2 are consecutive and are in adjoining boxes, so it is not allowed.")
+    Alignment = Align.Justify
+  }
+  { PictureBox2 PictureBox
+    MoveScaled(32,38,32,21)
+    Picture = Picture["ejemplo2.png"]
+    Stretch = True
+  }
+  { Button1 Button
+    MoveScaled(23,60,22,5)
+    Text = ("&Close")
+  }
+  { TextLabel2 TextLabel
+    MoveScaled(2,39,28,18)
+    Text = ("<b>Way correct:</b><br><br>There aren't correlativity between to the numbers entered with respect to their adjoining boxes, so it's allowed.")
+    Alignment = Align.Justify
+  }
+}

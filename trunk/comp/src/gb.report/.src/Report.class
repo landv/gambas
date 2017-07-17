@@ -1,0 +1,794 @@
+' Gambas class file
+
+Create Static
+Export
+Inherits ReportSection
+
+' For Stretch properties
+Public Enum None, Proportional, Fill
+
+Public Const _Properties As String = "*,-Left,-Top,-Width,-Height,Count{Range:1;256}=1,Index,Text,"
+"Paper{Printer.A3;A4;A5;B5;Letter;Executive;Legal;Custom}=A4,"
+"Orientation{Printer.Portrait;Landscape}=Portrait"
+Public Const _HiddenControls As String = "Report,ReportControl,ReportContainer,ReportFrame,ReportSection"
+Public Const _IsForm As Boolean = True
+Public Const _IsContainer As Boolean = True
+Public Const _IsMultiContainer As Boolean = True
+Public Const _DrawWith As String = "TabPanel"
+Public Const _DefaultEvent As String = "Open"
+Public _LayoutNotFinished As Boolean
+Public _Container As ReportSection
+'Public Constants
+Public {Debug} As Boolean = False
+Public _bInExec As Boolean
+'Public _cPages As New Object[]
+
+Private $aSections As New TControl[]
+Private iCurPage As Integer = 0
+Private $iPageCount As Integer = -1
+Private $bLayoutIsDirty As Boolean = True
+Private $fScale As Float = 1.0
+Private $iIndex As Integer
+Private $iResolution As Integer = -1
+Private $iCurSection As Integer
+Private $iCurPage As Integer = -1
+Private $iPaper As Integer = 2
+Private $iOrientation As Integer
+' Private $hPrinter As New Printer As "Printer"
+Private $bOpened As Boolean
+
+' Property Read Printer As Printer
+Property Resolution As Integer
+Property Scale As Float
+Property Read PageCount As Integer
+Property Count As Integer
+Property Index As Integer
+
+'All ReportControl Properties
+Property Left As String
+Property Top As String
+Property X As String
+Property Y As String
+
+Property Width As String
+Property Height As String
+
+Property Visible As Boolean
+Property {Font} As Font
+Property Expand As Boolean
+Property Ignore As Boolean
+Property Fixed As Boolean
+
+Property Autoresize As Boolean
+Property Padding As ReportPadding
+'All ReportFrame Properties
+Property Border As ReportBorder
+Property BackGround As ReportBrush
+
+'All ReportContainer Properties
+Property Read Children As ReportControl[]
+Property Spacing As String
+Property Data As Object
+
+'All ReportSection Properties
+Property Text As String
+
+Property Paper As Integer
+Property Orientation As Integer
+
+Public _Scale As Float
+
+Event Open
+
+Static Public Sub Main()
+  
+  Dim hObject As Object
+  
+  hObject = Application.Startup.AutoCreate()
+  If Not hObject Is Report Then Return
+  FPreview.Run(hObject)
+  
+End
+
+Public Sub _New()
+  
+  Dim hSection As New ReportSection
+  Dim TSection As New TControl
+  
+  object.Attach(Me, Me, "Report")
+  
+  '$hReportTControl.RelPage = 0
+  ReportControl._ObjectFromId[Me.id] = Me
+  hSection = New ReportSection
+  hSection._ReportId = Me.Id
+  
+  ReportControl._ObjectFromId[hSection.Id] = hSection
+  TSection.Ctrl = hSection
+  $aSections.Add(TSection)
+  hSection.Text = ("Section ") & $aSections.Max
+  _Container = hSection
+  Me.paper = Printer.A4
+  'Me.Orientation = Printer.Landscape
+End
+
+Public Sub Layout()
+  
+  _Layout()
+  
+End
+
+
+
+Public Sub _Layout(Optional iPage As Integer = -1)
+  
+  'Dim iCurPage As Integer
+  Dim TSection As TControl
+  Dim CSection As ReportContainer
+  Dim CBaseSection As ReportContainer
+  Dim i As Integer
+  
+  If Not $bOpened Then 
+    Raise Open
+    $bOpened = True
+  Endif
+  
+  'Print Paint.ResolutionX
+  'If iPage < 0 Then Return
+  If Not $bLayoutIsDirty Then Return
+  If _bInExec Then Return
+  If iPage > -1 Then
+    'La page a déja été calculée
+    If iPage <= $iCurPage Then Return
+  Else
+    'Mise a zéro
+    $iCurPage = -1
+    $iCurSection = 0
+    $iPageCount = 0
+    Me._Reset
+  Endif
+  'Set execution Flag to true
+  _bInExec = True
+  CBaseSection = $aSections[0].Ctrl
+  
+  'ReportUnits.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
+  
+  For i = $iCurSection To $aSections.Max
+    Tsection = $aSections[i]
+    CSection = TSection.Ctrl
+    CSection.Padding = CBaseSection.Padding
+    CSection.Spacing = CBaseSection.Spacing
+    CSection._SetUnifiedValues()
+    ReportUnits._ReportWidth = CBaseSection._Width
+    TSection._SetGeometry(0, 0, CSection._Width, CSection._Height)
+    Inc $iCurPage
+    Do
+      
+      CSection._SetChildGeometry(0, 0, CSection._Width, CSection._Height, $iCurPage, TSection, False)
+      
+      If CSection._CurItem > CSection.Children.Max Then Break
+      
+      Inc $iCurPage
+      $iPageCount = $iCurPage
+      'Print "Fin Page " & $iCurPage
+      If iPage > -1 And If $iCurPage > iPage Then
+        Dec $iCurPage
+        _LayoutNotFinished = True
+        $iCurSection = i
+        _bInExec = False
+        Return
+        
+      Endif
+      
+    Loop
+    'Inc iCurPage
+  Next
+  
+  $iPageCount = $iCurPage + 1
+  'Debug Me._PageChildren.Count
+  _LayoutNotFinished = False
+  'ReportUnits.PageCount = $iCount
+  $iCurSection = 0
+  '$iCurPage = -1
+  $bLayoutIsDirty = False
+  
+  'End of execution
+  _bInExec = False
+  
+End
+
+Public Sub Paint(Page As Integer)
+  
+  Dim TSection As TControl
+  Dim fScale As Float
+  'Debug "**** "; Page;; Paint.ResolutionX;; Paint.ResolutionY
+  
+  If Me.Parent = Null Then
+    'If $sOldWidth <> ((Paint.Width / $fScale) & " px") Then $bLayoutIsDirty = True
+    'If $sOldHeight <> ((Paint.Height / $fScale) & " px") Then $bLayoutIsDirty = True
+  Endif
+  ReportUnits._ReportWidth = $aSections[0].Ctrl._Width
+  'ReportUnits.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
+  If $bLayoutIsDirty And $iPageCount = -1 Then Layout()
+  Paint.Save
+  'Set execution Flag to true
+  _bInExec = True
+  
+  ' If page < 1 Or page > $iCount Then
+  '   Error.Raise("This page does not exist")
+  ' Endif
+  'Dec page
+  
+  'Paint.Clip
+  'ReportUnits.DrawCount = 0
+  
+  'Paint.Reset
+  ' If Paint.Device Is Printer Then
+  '   Paint.Scale(Paint.ResolutionX / 1200, Paint.ResolutionY / 1200)
+  ' Endif
+  ' If Paint.Device Is Printer Then
+  ' If ReportUnits._ReportUnitsToPixels($aSections[0].Ctrl._Width) > Paint.Width Then
+  '   
+  '   fScale = Paint.Width / ReportUnits._ReportUnitsToPixels($aSections[0].Ctrl._Width) 
+  '   
+  ' Paint.Scale($fScale, $fScale)
+  ' Endif
+  ' Endif
+  'Print Paint.Width
+  'ReportUnits.Ratio = Paint.Width / $aSections[0].Ctrl._Width
+  ' With Paint.ClipExtents
+  '   Debug "ClipExtents: "; .X;; .Y;; .Width;; .Height
+  ' End With
+  Dec page
+  'Me._ClipChildren(Page, 0, 0, $hReportTControl, -1, $fSCale)
+  For Each TSection In $aSections
+    TSection.Ctrl._PaintBefore(Page, 0, 0, TSection, -1)
+    TSection.Ctrl._Paint(Page, 0, 0, TSection, -1)
+    TSection.Ctrl._PaintAfter(Page, 0, 0, TSection, -1)
+  Next
+  'Debug "DrawCount = "; ReportUnits.DrawCount
+  'End of execution
+  _bInExec = False
+  Paint.Restore
+  
+End
+
+Private Function PageCount_Read() As Integer
+  
+  If $bLayoutIsDirty And Not _LayoutNotFinished Then Layout() '$iCount = -1
+  
+  Return $iPageCount
+  
+End
+
+Private Function Height_Read() As String
+  
+  Return $aSections[0].Ctrl.Height
+  
+End
+
+Private Sub Height_Write(Value As String)
+  
+  SetHeight(Value)
+  $iPaper = Printer.Custom
+  
+End
+
+Private Sub SetHeight(Value As String)
+  
+  Dim TSection As TControl
+  
+  If $aSections[0].Ctrl.Height <> Value Then
+    
+    For Each TSection In $aSections
+      TSection.Ctrl.Height = Value
+    Next
+    $bLayoutIsDirty = True
+  Endif
+  
+End
+
+Private Function Width_Read() As String
+  
+  Return $aSections[0].Ctrl.Width
+  
+End
+
+Private Sub Width_Write(Value As String)
+  
+  SetWidth(Value)
+  $iPaper = Printer.Custom
+  
+End
+
+Private Sub SetWidth(Value As String)
+  
+  Dim TSection As TControl
+  
+  If $aSections[0].Ctrl.Width <> Value Then
+    For Each TSection In $aSections
+      Tsection.Ctrl.Width = Value
+    Next
+    $bLayoutIsDirty = True
+  Endif
+  
+End
+
+Private Function Scale_Read() As Float
+  
+  Return $fScale
+  
+End
+
+Private Sub Scale_Write(Value As Float)
+  
+  $fScale = Value
+  
+End
+
+Public Sub Clear()
+  
+  Super._Free
+  iCurPage = 0
+  $iPageCount = -1
+  '$iResolution = Desktop.Resolution
+  $bLayoutIsDirty = True
+  $fScale = 1.0
+  'Me.Brush = Null
+  'Me.Border = New ReportBorder
+  'Me.Spacing = "0 cm"
+  'Me.Padding = New ReportPadding
+  
+End
+'
+
+Public Function Preview()
+  
+  FPreview.Run(Me)
+  
+End
+
+' Public Function Image(Value As String, X As String, Y As String) As ReportBrush
+' 
+'   Dim hBrush As New ReportBrush
+' 
+'   hBrush._Type = 1
+'   hBrush._X = New TSizeParse(X)
+'   hBrush._Y = New TSizeParse(Y)
+'   hBrush._Image = Image.Load(Value)
+'   Return hBrush
+' 
+' End
+' 
+' Public Function LinearGradient(Colors As Integer[], Positions As Float[]) As ReportBrush
+' 
+'   Dim hBrush As New ReportBrush
+' 
+'   hBrush._Type = 2
+'   'hBrush.X = MRTools.ScanValue(X)
+'   'hBrush.Y = MRTools.ScanValue(Y)
+' 
+'   hBrush._Color = Colors
+'   hBrush._Pos = Positions
+'   Return hBrush
+' 
+' End
+
+' Public Function RadialGradient(Colors As Integer[], Positions As Float[]) As ReportBrush
+' 
+'   Dim hBrush As New ReportBrush
+' 
+'   hBrush._Type = 3
+'   'hBrush.X = MRTools.ScanValue(X)
+'   'hBrush.Y = MRTools.ScanValue(Y)
+' 
+'   hBrush._Color = Colors
+'   hBrush._Pos = Positions
+'   Return hBrush
+' 
+' End
+
+' Public Sub {Color}(iColor As Integer) As ReportBrush
+' 
+'   Dim hBrush As New ReportBrush
+' 
+'   hBrush._Type = 0
+'   hBrush._iValue = iColor
+'   Return hBrush
+' 
+' End
+
+Public Sub Refresh()
+  
+  $bLayoutIsDirty = True
+  Me._Reset
+  
+End
+
+Private Function Count_Read() As Integer
+  
+  Return $aSections.Count
+  
+End
+
+Private Sub Count_Write(Value As Integer)
+  
+  Dim i As Integer
+  Dim hSection As ReportSection
+  Dim TSection As TControl
+  
+  If Value < 0 Then Return
+  If Value < $aSections.Count Then
+    $aSections.Resize(Value)
+  Else If Value > $aSections.Count Then
+    For i = $aSections.Count To Value - 1
+      
+      TSection = New TControl
+      hSection = New ReportSection
+      hSection.Text = "Section " & CStr(i)
+      hSection._ReportId = Me.Id
+      ReportControl._ObjectFromId[hSection.Id] = hSection
+      TSection.Ctrl = hSection
+      hSection.Padding = Me.Padding
+      hSection.Height = Me.Height
+      hSection.Width = Me.Width
+      $aSections.Add(TSection)
+      hSection.Text = ("Section ") & $aSections.Max
+    Next
+  Endif
+  
+End
+
+Private Function Index_Read() As Integer
+  
+  Return $iIndex
+  
+End
+
+Private Sub Index_Write(Value As Integer)
+  
+  $iIndex = Max(Min($aSections.Max, Value), 0)
+  _Container = $aSections[$iIndex].Ctrl
+  
+End
+
+Public Sub _get(Index As Integer) As ReportSection
+  
+  Return $aSections[Index].Ctrl
+  
+End
+
+Private Function Padding_Read() As ReportPadding
+  
+  Return $aSections[0].Ctrl.Padding
+  
+End
+
+Private Sub Padding_Write(Value As ReportPadding)
+  
+  Dim TSection As TControl
+  
+  If Me.Padding <> Value Then
+    For Each TSection In $aSections
+      Tsection.Ctrl.Padding = Value
+    Next
+  Endif
+  
+End
+
+Private Function Resolution_Read() As Integer
+  
+  Return $iResolution
+  
+End
+
+Private Sub Resolution_Write(Value As Integer)
+  
+  $bLayoutIsDirty = True
+  $iResolution = Max(0, Value)
+  
+End
+
+Private Function Left_Read() As String
+  
+  Return _Container.Left
+  
+End
+
+Private Sub Left_Write(Value As String)
+  
+  _Container.Left = Value
+  
+End
+
+Private Function Top_Read() As String
+  
+  Return _Container.Top
+  
+End
+
+Private Sub Top_Write(Value As String)
+  
+  _Container.Top = Value
+  
+End
+
+Private Function X_Read() As String
+  
+  Return _Container.Left
+  
+End
+
+Private Sub X_Write(Value As String)
+  
+  _Container.Left = Value
+  
+End
+
+Private Function Y_Read() As String
+  
+  Return _Container.Top
+  
+End
+
+Private Sub Y_Write(Value As String)
+  
+  _Container.Top = Value
+  
+End
+
+Private Function Visible_Read() As Boolean
+  
+  Return _Container.Visible
+  
+End
+
+Private Sub Visible_Write(Value As Boolean)
+  
+  _Container.Visible = Value
+  
+End
+
+Private Function Font_Read() As Font
+  
+  Return _Container.Font
+  
+End
+
+Private Sub Font_Write(Value As Font)
+  
+  _Container.Font = Value
+  
+End
+
+Private Function Expand_Read() As Boolean
+  
+  Return _Container.Expand
+  
+End
+
+Private Sub Expand_Write(Value As Boolean)
+  
+  _Container.Expand = Value
+  
+End
+
+Private Function Ignore_Read() As Boolean
+  
+  Return _Container.Ignore
+  
+End
+
+Private Sub Ignore_Write(Value As Boolean)
+  
+  _Container.Ignore = Value
+  
+End
+
+Private Function Fixed_Read() As Boolean
+  
+  Return _Container.Fixed
+  
+End
+
+Private Sub Fixed_Write(Value As Boolean)
+  
+  _Container.Fixed = Value
+  
+End
+
+Private Function Autoresize_Read() As Boolean
+  
+  Return _Container.Autoresize
+  
+End
+
+Private Sub Autoresize_Write(Value As Boolean)
+  
+  _Container.Autoresize = Value
+  
+End
+
+Private Function Border_Read() As ReportBorder
+  
+  Return _Container.Border
+  
+End
+
+Private Sub Border_Write(Value As ReportBorder)
+  
+  _Container.Border = Value
+  
+End
+
+Private Function BackGround_Read() As ReportBrush
+  
+  Return _Container.BackGround
+  
+End
+
+Private Sub BackGround_Write(Value As ReportBrush)
+  
+  _Container.BackGround = Value
+  
+End
+
+Private Function Children_Read() As ReportControl[]
+  
+  Return _Container.Children
+  
+End
+
+Private Function Spacing_Read() As String
+  
+  Return _Container.Spacing
+  
+End
+
+Private Sub Spacing_Write(Value As String)
+  
+  Dim TSection As TControl
+  Dim hCont As ReportContainer
+  
+  If Me.Spacing <> Value Then
+    For Each TSection In $aSections
+      hCont = Tsection.Ctrl
+      hCont.Spacing = Value
+    Next
+  Endif
+  
+End
+
+Private Function Data_Read() As Object
+  
+  Return _Container.Data
+  
+End
+
+Private Sub Data_Write(Value As Object)
+  
+  _Container.Data = Value
+  
+End
+
+Private Function Text_Read() As String
+  
+  Return _Container.Text
+  
+End
+
+Private Sub Text_Write(Value As String)
+  
+  _Container.Text = Value
+  
+End
+
+''Return a new report object
+Public Sub Clone() As Report
+  
+  'Return Object.New(Object.Type(Me))
+  Return Object.Class(Me).New()
+  
+End
+
+Private Function Paper_Read() As Integer
+  
+  Return $iPaper
+  
+End
+
+Private Sub Paper_Write(Value As Integer)
+  
+  $iPaper = Value
+  SetPaper
+  
+End
+
+Private Function Orientation_Read() As Integer
+  
+  Return $iOrientation
+  
+End
+
+Private Sub Orientation_Write(Value As Integer)
+  
+  $iOrientation = Value
+  SetPaper
+  
+End
+
+Public Sub Print(Optional hPrinter As Printer)
+  
+  If hPrinter Then 
+    CPrint.PrintReport(Me, hPrinter)
+  Else
+    CPrint.PrintReport(Me)
+  Endif
+  
+End
+
+Private Sub SetPaper()
+  
+  Dim sPrev As String
+  
+  Select Case $iPaper
+    Case Printer.A3
+      SetWidth("29.7cm")
+      SetHeight("42cm")
+    Case Printer.A4
+      SetWidth("21cm")
+      SetHeight("29.7cm")
+    Case Printer.A5
+      SetWidth("14.8cm")
+      SetHeight("21cm")
+    Case Printer.B5
+      SetWidth("18.7cm")
+      SetHeight("25.7cm")
+    Case Printer.Executive
+      SetWidth("19.1cm")
+      SetHeight("25.4cm")
+    Case Printer.Legal
+      SetWidth("21.6cm")
+      SetHeight("35.6cm")
+    Case Printer.Letter
+      SetWidth("21.6cm")
+      SetHeight("27.9cm")
+      
+  End Select
+  'Print $iOrientation, $iPaper
+  
+  If $iOrientation = Printer.Landscape And Not ($iPaper = Printer.Custom) Then
+    sPrev = Me.Height
+    SetHeight(Me.Width)
+    SetWidth(sPrev)
+    ' Print "width = " & Me.Width
+    ' Print "height = " & Me.Height
+  Endif
+  
+End
+
+Public Sub _Reset()
+  
+  Dim hSection As TControl
+  
+  For Each hSection In $aSections
+    hSection.Ctrl._Reset
+    hSection._PageChildren = New Collection
+  Next
+  
+  $iCurPage = -1
+  $iCurSection = 0
+  $iPageCount = 0
+  
+End
+
+' Private Function Printer_Read() As Printer
+' 
+'   Return $hPrinter
+' 
+' End
+
+' Public Sub Print2()
+'   
+'   _Reset
+'   
+' End

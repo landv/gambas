@@ -1,0 +1,1636 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,174,103)
+  Icon = Picture["img/logo/logo-ide.png"]
+  Arrangement = Arrange.Vertical
+  { mnuFile Menu
+    Text = Shortcut(("File"), "F")
+    { mnuNewProject Menu
+      Action = "new-project"
+      Text = Shortcut(("New project"), "N") & "..."
+      Picture = Picture["icon:/small/new"]
+      Shortcut = "Ctrl+N"
+    }
+    { mnuOpen Menu
+      Action = "open-project"
+      Text = Shortcut(("Open project"), "O") & "..."
+      Picture = Picture["icon:/small/open"]
+      Shortcut = "Ctrl+O"
+    }
+    { mnuOpenRecent Menu
+      Text = ("Open recent")
+      Picture = Picture["icon:/small/open-recent"]
+      { Menu4 Menu
+      }
+    }
+    { mnuOpenExample Menu
+      Text = Shortcut(("Open example"), "e")
+      Visible = False
+      { Menu16 Menu
+      }
+    }
+    { mnuOpenExtern Menu
+      Action = "open-extern"
+      Text = ("Open file") & "..."
+      Picture = Picture["icon:/small/edit"]
+    }
+    { Menu5 Menu
+    }
+    { mnuSave Menu
+      Action = "save-project"
+      Text = Shortcut(("Save project"), "S")
+      Picture = Picture["icon:/small/save"]
+      Visible = False
+      Shortcut = "Ctrl+Alt+S"
+    }
+    { mnuSaveAs Menu
+      Action = "save-project-as"
+      Text = Shortcut(("Save project as"), "a") & "..."
+      Picture = Picture["icon:/small/save-as"]
+      Visible = False
+      Shortcut = "Ctrl+Shift+Alt+S"
+    }
+    { mnuSepSave Menu
+    }
+    { mnuQuit Menu
+      Action = "quit"
+      Text = Shortcut(("Quit"), "Q")
+      Picture = Picture["icon:/small/quit"]
+      Shortcut = "Ctrl+Q"
+    }
+  }
+  { mnuFileExtern Menu
+    Text = Shortcut(("File"), "F")
+    Visible = False
+    { Menu37 Menu mnuOpenExtern
+      Name = "Menu37"
+      Action = "open-extern"
+      Text = ("Open") & "..."
+      Picture = Picture["icon:/small/open"]
+      Shortcut = "Ctrl+O"
+    }
+    { Menu31 Menu
+      Action = "_reload"
+      Text = ("Reload")
+      Picture = Picture["icon:/small/revert"]
+    }
+    { Menu29 Menu
+    }
+    { Menu39 Menu
+      Action = "_save"
+      Text = ("Save")
+      Picture = Picture["icon:/small/save"]
+    }
+    { Menu40 Menu
+      Action = ".save-as"
+      Text = ("Save as") & "..."
+      Picture = Picture["icon:/small/save-as"]
+      Shortcut = "Ctrl+Alt+S"
+    }
+    { Menu41 Menu
+    }
+    { mnuClose Menu
+      Action = "_close"
+      Text = ("Close")
+      Picture = Picture["icon:/small/close"]
+      Shortcut = "Ctrl+W"
+    }
+    { Menu42 Menu mnuQuit
+      Name = "Menu42"
+      Action = "quit"
+      Text = ("Quit")
+      Picture = Picture["icon:/small/quit"]
+      Shortcut = "Ctrl+Q"
+    }
+  }
+  { mnuEdit Menu
+    Text = Shortcut(("Edit"), "E")
+    Visible = False
+    { Menu38 Menu
+    }
+  }
+  { mnuProject Menu
+    Text = Shortcut(("Project"), "P")
+    Visible = False
+    { mnuCompile Menu
+      Action = "compile"
+      Text = Shortcut(("Compile"), "C")
+      Picture = Picture["icon:/small/make"]
+      Shortcut = "F7"
+    }
+    { mnuCompileAll Menu
+      Action = "compile-all"
+      Text = Shortcut(("Compile All"), "A")
+      Picture = Picture["icon:/small/make-all"]
+      Shortcut = "Alt+F7"
+    }
+    { mnuSepCompile Menu
+    }
+    { mnuTranslate Menu
+      Action = "translate"
+      Text = Shortcut(("Translate"), "T") & "..."
+      Picture = Picture["icon:/small/language"]
+      Shortcut = "Ctrl+T"
+    }
+    { mnuSepTranslate Menu
+    }
+    { Menu22 Menu
+      Text = ("Make")
+      { mnuExec Menu
+        Action = "exec"
+        Text = Shortcut(("Executable"), "x") & "..."
+        Picture = Picture["icon:/small/exec"]
+        Shortcut = "Ctrl+Alt+X"
+      }
+      { mnuMakePackage Menu
+        Action = "archive"
+        Text = Shortcut(("Source archive"), "S") & "..."
+        Picture = Picture["icon:/small/archive"]
+        Shortcut = "Ctrl+Alt+A"
+      }
+      { mnuMakeInstall Menu
+        Action = "install"
+        Text = Shortcut(("Installation package"), "I") & "..."
+        Picture = Picture["icon:/small/package"]
+        Shortcut = "Ctrl+Alt+I"
+      }
+    }
+    { Menu12 Menu
+      Text = ("Patch")
+      { mnuPatch Menu
+        Text = Shortcut(("Create"), "C") & "..."
+        Picture = Picture["icon:/small/text"]
+      }
+      { mnuPatchProject Menu
+        Text = Shortcut(("Apply"), "A") & "..."
+        Picture = Picture["icon:/small/pen"]
+      }
+    }
+    { mnuPublish Menu
+      Action = "publish"
+      Text = ("Publish") & "..."
+      Picture = Picture["icon:/medium/internet"]
+    }
+    { Menu15 Menu
+    }
+    { mnuClean Menu
+      Action = "clean-up-project"
+      Text = Shortcut(("Clean up"), "C")
+      Picture = Picture["icon:/small/clear"]
+    }
+    { mnuRefresh Menu
+      Action = "refresh-project"
+      Text = Shortcut(("Refresh"), "R")
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { mnuVersionControl Menu
+      Action = "version-control"
+      Text = Shortcut(("Put on version control"), "v")
+      Picture = Picture["icon:/small/add"]
+      Visible = False
+    }
+    { Menu1 Menu
+    }
+    { mnuProperty Menu
+      Action = "project-property"
+      Text = Shortcut(("Properties"), "P") & "..."
+      Picture = Picture["icon:/small/edit"]
+      Shortcut = "Ctrl+P"
+    }
+    { mnuVersion Menu
+      Action = "project-version"
+      Text = Shortcut(("Version control"), "V") & "..."
+      Picture = Picture["icon:/small/calendar"]
+    }
+  }
+  { mnuDebug Menu
+    Text = Shortcut(("Debug"), "D")
+    Visible = False
+    { mnuRun Menu
+      Action = "start"
+      Text = Shortcut(("Run"), "R")
+      Picture = Picture["icon:/small/play"]
+      Shortcut = "F5"
+    }
+    { mnuRunWith Menu
+      Text = ("Run with")
+      { mnuRunWithNoArg Menu
+        Text = ("No argument")
+        Radio = True
+        Checked = True
+      }
+    }
+    { Menu36 Menu
+    }
+    { mnuUseTerminal Menu
+      Action = "terminal"
+      Text = Shortcut(("Use terminal emulator"), "t")
+      Toggle = True
+    }
+    { mnuRedirectStderr Menu
+      Action = "redirect"
+      Text = ("Redirect standard error output")
+      Toggle = True
+    }
+    { mnuUseHttpServer Menu
+      Action = "httpserver"
+      Text = ("Use embedded HTTP server")
+      Toggle = True
+    }
+    { mnuProfile Menu
+      Action = "profile"
+      Text = Shortcut(("Activate profiling"), "g")
+      Toggle = True
+    }
+    { mnuGUI Menu
+      Action = "gui"
+      Text = ("GUI component")
+      { mnuSetGUICurrentDesktop Menu mnuSetGUI
+        Name = "mnuSetGUICurrentDesktop"
+        Text = ("Current desktop")
+      }
+      { Menu30 Menu
+      }
+      { Menu21 Menu mnuSetGUI
+        Name = "Menu21"
+        #Translate = False
+        Text = "QT4"
+        Tag = "gb.qt4"
+      }
+      { Menu35 Menu mnuSetGUI
+        Name = "Menu35"
+        Text = ("QT5")
+        Tag = "gb.qt5"
+      }
+      { Menu27 Menu mnuSetGUI
+        Name = "Menu27"
+        #Translate = False
+        Text = "GTK+2"
+        Tag = "gb.gtk"
+      }
+      { Menu28 Menu mnuSetGUI
+        Name = "Menu28"
+        #Translate = False
+        Text = "GTK+3"
+        Tag = "gb.gtk3"
+      }
+    }
+    { Menu14 Menu
+    }
+    { mnuPause Menu
+      Action = "pause"
+      Text = Shortcut(("Pause"), "P")
+      Picture = Picture["icon:/small/pause"]
+      Shortcut = "Pause"
+    }
+    { mnuStop Menu
+      Action = "stop"
+      Text = Shortcut(("Stop"), "S")
+      Picture = Picture["icon:/small/stop"]
+      Shortcut = "Alt+Pause"
+    }
+    { mnuStep Menu
+      Action = "step"
+      Text = Shortcut(("Step"), "e")
+      Picture = Picture["icon:/small/end"]
+      Shortcut = "F8"
+    }
+    { mnuForward Menu
+      Action = "forward"
+      Text = Shortcut(("Forward"), "F")
+      Picture = Picture["icon:/small/forward"]
+      Shortcut = "Shift+F8"
+    }
+    { mnuFrom Menu
+      Action = "return"
+      Text = Shortcut(("Finish"), "h")
+      Picture = Picture["icon:/small/eject"]
+    }
+    { Menu9 Menu
+    }
+    { mnuOpenProfile Menu
+      Action = "open-profile"
+      Text = Shortcut(("Open profile"), "O") & "..."
+      Picture = Picture["icon:/small/clock"]
+    }
+    { mnuClearBreakpoints Menu
+      Action = "clear-break"
+      Text = Shortcut(("Clear all breakpoints"), "a")
+    }
+    { mnuClearDebugWindows Menu
+      Action = "close-all-debug"
+      Text = Shortcut(("Close all debug windows"), "d")
+    }
+  }
+  { mnuView Menu
+    Text = Shortcut(("View"), "V")
+    Visible = False
+    { mnuViewProject Menu
+      Action = "project"
+      Text = ("Project")
+      Picture = Picture["icon:/small/view-split-h"]
+      Toggle = True
+      Checked = True
+      Shortcut = "F10"
+    }
+    { mnuViewProperty Menu
+      Action = "property"
+      Text = ("Properties")
+      Picture = Picture["icon:/small/edit"]
+      Toggle = True
+      Checked = True
+      Shortcut = "F4"
+    }
+    { mnuViewConsole Menu
+      Action = "console"
+      Text = ("Console")
+      Picture = Picture["icon:/small/terminal"]
+      Toggle = True
+      Shortcut = "F11"
+    }
+    { Menu11 Menu
+    }
+    { mnuStatusBar Menu
+      Text = ("Status bar")
+      Toggle = True
+      Checked = True
+      Visible = False
+    }
+    { mnuHideMenu Menu
+      Text = ("Hide menubar")
+      Picture = Picture["icon:/small/text-fill"]
+      Shortcut = "Ctrl+Alt+M"
+    }
+    { Menu3 Menu
+    }
+    { mnuGoBack Menu
+      Action = "go-back"
+      Text = ("Go back")
+      Picture = Picture["icon:/small/left"]
+      Shortcut = "Alt+Left"
+    }
+    { mnuGoForward Menu
+      Action = "go-forward"
+      Text = ("Go forward")
+      Picture = Picture["icon:/small/right"]
+      Shortcut = "Alt+Right"
+    }
+    { mnuCloseAll Menu
+      Action = "close-all-window"
+      Text = ("Close all windows")
+      Shortcut = "Ctrl+Alt+W"
+    }
+  }
+  { mnuTool Menu
+    Text = Shortcut(("Tools"), "T")
+    Visible = False
+    { mnuFind Menu
+      Text = ("Find") & "..."
+      Picture = Picture["icon:/small/find"]
+      Shortcut = "Ctrl+F"
+    }
+    { mnuReplace Menu
+      Text = ("Replace") & "..."
+      Picture = Picture["icon:/small/replace"]
+      Shortcut = "Ctrl+R"
+    }
+    { Menu10 Menu
+    }
+    { mnuBrowse Menu
+      Action = "browse-project"
+      Text = ("Browse project") & "..."
+      Picture = Picture["icon:/small/file-manager"]
+      Shortcut = "Ctrl+Alt+O"
+    }
+    { mnuTerminal Menu
+      Action = "open-terminal"
+      Text = ("Open a terminal") & "..."
+      Picture = Picture["icon:/16/terminal"]
+      Shortcut = "Ctrl+Alt+T"
+    }
+    { mnuSendMail Menu
+      Action = "send-mail"
+      Text = Shortcut(("Send project by mail"), "m") & "..."
+      Picture = Picture["icon:/small/mail"]
+    }
+    { mnuUpdateAllForms Menu
+      Action = "update-all-forms"
+      Text = ("Update all forms")
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { Menu20 Menu
+    }
+    { mnuFarm Menu
+      Action = "farm"
+      Text = ("Software farm") & "..."
+      Picture = Picture["icon:/small/book"]
+    }
+    { Menu33 Menu
+    }
+    { mnuShortcut Menu
+      Action = "shortcut"
+      Text = ("Shortcuts") & "..."
+      Picture = Picture["icon:/small/shortcut"]
+    }
+    { mnuPreferences Menu
+      Action = "option"
+      Text = Shortcut(("Preferences"), "P") & "..."
+      Picture = Picture["icon:/small/options"]
+      Toggle = True
+      Shortcut = "Ctrl+Alt+P"
+    }
+  }
+  { mnuPopup Menu
+    Enabled = False
+    { mnuNew Menu
+      Text = ("New")
+      { mnuAddDirectory Menu
+        Text = Shortcut(("Directory"), "D")
+        Picture = Picture["icon:/small/directory"]
+      }
+      { mnuAddProjectLink Menu
+        Text = Shortcut(("Project link"), "P") & "..."
+        Visible = False
+      }
+      { Menu19 Menu
+      }
+      { mnuNewModule Menu mnuNewFile
+        Name = "mnuNewModule"
+        Text = ("Module") & "..."
+        Picture = Picture["img/module/module.png"]
+        Tag = "module"
+      }
+      { mnuNewClass Menu mnuNewFile
+        Name = "mnuNewClass"
+        Text = ("Class") & "..."
+        Picture = Picture["img/module/class.png"]
+        Tag = "class"
+      }
+      { mnuNewForm Menu mnuNewFile
+        Name = "mnuNewForm"
+        Text = ("Form") & "..."
+        Picture = Picture["img/module/form.png"]
+        Tag = "form"
+      }
+      { mnuNewWebPage Menu mnuNewFile
+        Name = "mnuNewWebPage"
+        Text = ("WebPage") & "..."
+        Picture = Picture["img/module/webpage.png"]
+        Tag = "webpage"
+      }
+      { mnuNewReport Menu mnuNewFile
+        Name = "mnuNewReport"
+        Text = ("Report") & "..."
+        Picture = Picture["img/module/report.png"]
+        Tag = "report"
+      }
+      { mnuNewWebForm Menu mnuNewFile
+        Name = "mnuNewWebForm"
+        Text = ("WebForm") & "..."
+        Picture = Picture["img/module/webform.png"]
+        Tag = "webform"
+      }
+      { Menu18 Menu
+      }
+      { mnuNewImage Menu mnuNewFile
+        Name = "mnuNewImage"
+        Text = Shortcut(("Image"), "I") & "..."
+        Picture = Picture["icon:/small/image"]
+        Tag = "image"
+      }
+      { mnuNewHtml Menu mnuNewFile
+        Name = "mnuNewHtml"
+        Text = Shortcut(("HTML file"), "H") & "..."
+        Picture = Picture["icon:/small/html"]
+        Tag = "html"
+      }
+      { mnuNewCSS Menu mnuNewFile
+        Name = "mnuNewCSS"
+        Text = Shortcut(("Style sheet"), "S") & "..."
+        Picture = Picture["icon:/small/html"]
+        Tag = "css"
+      }
+      { mnuNewJS Menu mnuNewFile
+        Name = "mnuNewJS"
+        Text = Shortcut(("Javascript file"), "J") & "..."
+        Picture = Picture["icon:/small/script"]
+        Tag = "js"
+      }
+      { mnuNewFile Menu mnuNewFile
+        Name = "mnuNewFile"
+        Action = "new-other"
+        Text = Shortcut(("Other"), "O") & "..."
+        Picture = Picture["icon:/small/new"]
+        Tag = "text"
+      }
+    }
+    { mnuImportFile Menu
+      Text = ("Import") & "..."
+    }
+    { mnuOpenRecentFile Menu
+      Text = ("Recent")
+      Picture = Picture["icon:/small/recent"]
+      { Menu32 Menu
+      }
+    }
+    { Menu2 Menu
+    }
+    { mnuEditFile Menu
+      Text = Shortcut(("Open"), "O")
+      Picture = Picture["icon:/small/edit"]
+    }
+    { mnuEditClass Menu
+      Text = Shortcut(("Open code"), "c")
+    }
+    { mnuOpenWithFileManager Menu
+      Action = "open-file-manager"
+      Text = ("Open in file manager") & "..."
+      Picture = Picture["icon:/small/file-manager"]
+    }
+    { mnuEditWith Menu
+      Text = ("Open with")
+      { Menu23 Menu
+      }
+    }
+    { mnuCompressAll Menu
+      Action = "compress-all"
+      Text = ("Compress all")
+      Picture = Picture["icon:/small/archive"]
+    }
+    { mnuUncompressAll Menu
+      Action = "uncompress-all"
+      Text = ("Uncompress all")
+      Picture = Picture["icon:/small/undo"]
+    }
+    { Menu7 Menu
+    }
+    { mnuCut Menu
+      Action = ".cut"
+      Text = Shortcut(("Cut"), "C")
+      Picture = Picture["icon:/small/cut"]
+      Shortcut = "Ctrl+X"
+    }
+    { mnuCopy Menu
+      Action = ".copy"
+      Text = Shortcut(("Copy"), "C")
+      Picture = Picture["icon:/small/copy"]
+      Shortcut = "Ctrl+C"
+    }
+    { mnuPaste Menu
+      Action = ".paste"
+      Text = Shortcut(("Paste"), "P")
+      Picture = Picture["icon:/small/paste"]
+      Shortcut = "Ctrl+V"
+    }
+    { mnuRenameFile Menu
+      Action = "rename"
+      Text = Shortcut(("Rename"), "R") & "..."
+      Picture = Picture["img/16/rename.png"]
+      Shortcut = "F2"
+    }
+    { mnuDeleteFile Menu
+      Action = ".delete"
+      Text = Shortcut(("Delete"), "D") & "..."
+      Picture = Picture["icon:/small/delete"]
+      Shortcut = "Del"
+    }
+    { mnuCopyPathSep Menu
+    }
+    { mnuCopyPath Menu
+      Action = "copy-file-path"
+      Text = Shortcut(("Copy file path"), "h")
+      Shortcut = "Ctrl+Shift+C"
+    }
+    { mnuSepDeleteFile Menu
+    }
+    { mnuStartup Menu
+      Action = "startup-class"
+      Text = Shortcut(("Startup class"), "S")
+      Picture = Picture["img/16/startup-class.png"]
+      Shortcut = "Alt+S"
+    }
+    { mnuRunThat Menu
+      Action = "run-that"
+      Text = ("Run this class")
+      Picture = Picture["icon:/small/play"]
+    }
+    { Menu24 Menu
+    }
+    { mnuAddVersion Menu
+      Text = Shortcut(("Add to repository"), "A")
+      Picture = Picture["icon:/16/add"]
+    }
+    { mnuFilter Menu
+      Text = ("Filter")
+      { mnuFilterExport Menu
+        Text = ("Show exported classes")
+        Picture = Picture["img/16/exported.png"]
+      }
+      { mnuFilterAdd Menu
+        Text = ("Show added files")
+        Picture = Picture["icon:/small/add"]
+      }
+      { mnuFilterConflict Menu
+        Text = ("Show files in conflict")
+        Picture = Picture["icon:/small/important"]
+      }
+      { Menu13 Menu
+      }
+      { mnuFilterAll Menu
+        Text = ("Show all")
+        Picture = Picture["icon:/small/refresh"]
+      }
+    }
+    { mnuAddVersionAll Menu
+      Text = ("Add everything to repository")
+      Picture = Picture["icon:/small/add"]
+    }
+    { mnuInformation Menu
+      Action = "info"
+      Text = Shortcut(("Properties"), "P") & "..."
+      Picture = Picture["icon:/small/info"]
+      Shortcut = "Ctrl+I"
+    }
+  }
+  { mnuDatabase Menu
+    Enabled = False
+    { mnuNewConnection Menu
+      Text = Shortcut(("New connection"), "N") & "..."
+      Picture = Picture["icon:/small/new"]
+    }
+    { mnuOpenRecentFile2 Menu
+      Text = ("Recent")
+      Picture = Picture["icon:/small/recent"]
+      { Menu34 Menu
+      }
+    }
+    { Menu17 Menu
+    }
+    { mnuEditConnection Menu
+      Text = Shortcut(("Open"), "O")
+      Picture = Picture["icon:/small/edit"]
+    }
+    { mnuKillConnection Menu mnuDeleteFile
+      Name = "mnuKillConnection"
+      Text = Shortcut(("Remove"), "R")
+      Picture = Picture["icon:/small/delete"]
+      Shortcut = "Shift+Del"
+    }
+    { Menu25 Menu
+    }
+    { mnuAddVersionConnection Menu mnuAddVersion
+      Name = "mnuAddVersionConnection"
+      Text = Shortcut(("Add to repository"), "A")
+      Picture = Picture["icon:/16/add"]
+    }
+    { mnuInfoConnection Menu
+      Text = Shortcut(("Properties"), "P") & "..."
+      Picture = Picture["icon:/small/info"]
+      Shortcut = "Ctrl+I"
+    }
+    { Menu26 Menu
+    }
+    { mnuRefresh3 Menu
+      Action = "refresh-project"
+      Text = Shortcut(("Refresh"), "R")
+      Picture = Picture["icon:/small/refresh"]
+    }
+  }
+  { mnuMenu Menu
+    Visible = False
+    { mnuFile2 Menu
+      Text = Shortcut(("File"), "F")
+    }
+    { mnuProject2 Menu
+      Text = Shortcut(("Project"), "P")
+    }
+    { mnuDebug2 Menu
+      Text = Shortcut(("Debug"), "D")
+    }
+    { mnuView2 Menu
+      Text = Shortcut(("View"), "V")
+    }
+    { mnuTools2 Menu
+      Text = Shortcut(("Tools"), "T")
+    }
+    { mnuHelp2 Menu
+      Text = Shortcut(("?"), "?")
+    }
+  }
+  { mnuHelp Menu
+    Text = Shortcut(("?"), "?")
+    { mnuViewExplorer Menu
+      Action = "help"
+      Text = Shortcut(("Help browser"), "H") & "..."
+      Picture = Picture["icon:/small/help"]
+      Toggle = True
+      Shortcut = "F1"
+    }
+    { mnuTip Menu
+      Action = "tips"
+      Text = Shortcut(("Tips of the day"), "T") & "..."
+      Picture = Picture["icon:/small/lamp"]
+    }
+    { mnuHelpShortcuts Menu
+      Action = "help-shortcut"
+      Text = ("Keyboard shortcuts") & "..."
+      Picture = Picture["icon:/small/shortcut"]
+      Toggle = True
+    }
+    { Menu8 Menu
+    }
+    { mnuSystemInfo Menu
+      Text = Shortcut(("System informations"), "S") & "..."
+      Picture = Picture["icon:/16/system"]
+    }
+    { mnuAbout Menu
+      Action = "about"
+      Text = Shortcut(("About Gambas"), "A") & "..."
+      Picture = Picture["icon:/small/info"]
+    }
+  }
+  { mnuBackward Menu
+    { Menu6 Menu
+    }
+  }
+  { sepMenu Separator
+    MoveScaled(0,0,13,0)
+    Visible = False
+  }
+  { tlbMain ToolBar
+    MoveScaled(0,0,175,8)
+    Visible = False
+    Key = "main"
+    { ToolButton1 ToolButton
+      MoveScaled(0,0,4,4)
+      ToolTip = ("New project")
+      Action = "new-project"
+      Picture = Picture["icon:/small/new"]
+    }
+    { ToolButton2 MenuButton
+      MoveScaled(3,0,6,4)
+      ToolTip = ("Open project")
+      Action = "open-project"
+      Picture = Picture["icon:/small/open"]
+      Border = False
+      Menu = "mnuOpenRecent"
+    }
+    { btnSave ToolButton
+      MoveScaled(8,0,4,4)
+      ToolTip = ("Save project")
+      Action = "save-project"
+      Picture = Picture["icon:/small/save"]
+    }
+    { ToolButton15 ToolButton
+      MoveScaled(11,0,4,4)
+      ToolTip = ("Save project as")
+      Action = "save-project-as"
+      Picture = Picture["icon:/small/save-as"]
+    }
+    { btnProperty ToolButton
+      MoveScaled(14,0,4,4)
+      ToolTip = ("Project properties")
+      Action = "project-property"
+      Picture = Picture["icon:/small/edit"]
+    }
+    { btnVersion ToolButton
+      MoveScaled(17,0,4,4)
+      ToolTip = ("Project version control")
+      Action = "project-version"
+      Picture = Picture["icon:/small/calendar"]
+    }
+    { ToolButton7 ToolButton
+      MoveScaled(22,0,4,4)
+      Visible = False
+      ToolTip = ("Refresh project")
+      Action = "refresh-project"
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { ToolButton12 ToolButton
+      MoveScaled(25,0,4,4)
+      ToolTip = ("Preferences")
+      Action = "option"
+      Picture = Picture["icon:/small/options"]
+      Toggle = True
+    }
+    { ToolButton9 ToolButton
+      MoveScaled(28,0,4,4)
+      Visible = False
+      ToolTip = ("Shortcuts")
+      Action = "shortcut"
+      Picture = Picture["icon:/small/shortcut"]
+    }
+    { Separator3 Separator
+      MoveScaled(31,0,1,4)
+    }
+    { ToolButton5 ToolButton
+      MoveScaled(32,0,4,4)
+      ToolTip = ("Make executable")
+      Action = "exec"
+      Picture = Picture["icon:/small/exec"]
+    }
+    { btnTranslate ToolButton
+      MoveScaled(35,0,4,4)
+      ToolTip = ("Translate")
+      Action = "translate"
+      Picture = Picture["icon:/small/language"]
+    }
+    { ToolButton4 ToolButton
+      MoveScaled(38,0,4,4)
+      Visible = False
+      ToolTip = ("Make source archive")
+      Action = "archive"
+      Picture = Picture["icon:/small/archive"]
+    }
+    { ToolButton14 ToolButton
+      MoveScaled(41,0,4,4)
+      Visible = False
+      ToolTip = ("Make installation package")
+      Action = "install"
+      Picture = Picture["icon:/small/package"]
+    }
+    { Separator2 Separator
+      MoveScaled(44,0,1,4)
+    }
+    { ToolButton3 ToolButton
+      MoveScaled(45,0,4,4)
+      Visible = False
+      ToolTip = ("Project")
+      Action = "project"
+      Picture = Picture["icon:/small/view-split-h"]
+      Toggle = True
+      Value = True
+    }
+    { ToolButton8 ToolButton
+      MoveScaled(48,0,4,4)
+      Visible = False
+      ToolTip = ("Properties sheet")
+      Action = "property"
+      Picture = Picture["icon:/small/edit"]
+      Toggle = True
+    }
+    { ToolButton10 ToolButton
+      MoveScaled(51,0,4,4)
+      Visible = False
+      ToolTip = ("Toolbox")
+      Action = "control"
+      Picture = Picture["icon:/small/tools"]
+      Toggle = True
+    }
+    { btnShowConsole ToolButton
+      MoveScaled(54,0,4,4)
+      Visible = False
+      ToolTip = ("Console")
+      Action = "console"
+      Picture = Picture["icon:/small/terminal"]
+      Toggle = True
+    }
+    { btnFind ToolButton
+      MoveScaled(57,0,4,4)
+      Visible = False
+      ToolTip = ("Search")
+      Action = "find"
+      Picture = Picture["icon:/small/find"]
+      Toggle = True
+    }
+    { btnHelp ToolButton
+      MoveScaled(60,0,4,4)
+      Visible = False
+      ToolTip = ("Help browser")
+      Action = "help"
+      Picture = Picture["icon:/small/help"]
+      Toggle = True
+    }
+    { btnCompile ToolButton
+      MoveScaled(64,0,4,4)
+      ToolTip = ("Compile")
+      Action = "compile"
+      Picture = Picture["icon:/small/make"]
+    }
+    { btnCompileAll ToolButton
+      MoveScaled(67,0,4,4)
+      ToolTip = ("Compile all")
+      Action = "compile-all"
+      Picture = Picture["icon:/small/make-all"]
+    }
+    { btnGo MenuButton
+      MoveScaled(70,0,6,4)
+      ToolTip = ("Run")
+      Action = "start"
+      Picture = Picture["icon:/small/play"]
+      Border = False
+    }
+    { btnPause ToolButton
+      MoveScaled(75,0,4,4)
+      ToolTip = ("Pause")
+      Action = "pause"
+      Picture = Picture["icon:/small/pause"]
+    }
+    { btnStop ToolButton
+      MoveScaled(78,0,4,4)
+      ToolTip = ("Stop")
+      Action = "stop"
+      Picture = Picture["icon:/small/stop"]
+    }
+    { btnStep ToolButton
+      MoveScaled(81,0,4,4)
+      ToolTip = ("Step")
+      Action = "step"
+      Picture = Picture["icon:/small/end"]
+    }
+    { btnForward ToolButton
+      MoveScaled(84,0,4,4)
+      ToolTip = ("Forward")
+      Action = "forward"
+      Picture = Picture["icon:/small/forward"]
+    }
+    { btnFrom ToolButton
+      MoveScaled(86,0,4,4)
+      ToolTip = ("Finish current function")
+      Action = "return"
+      Picture = Picture["icon:/small/eject"]
+    }
+    { btnUntil ToolButton mnuUntil
+      Name = "btnUntil"
+      MoveScaled(89,0,4,4)
+      ToolTip = ("Run until current line")
+      Action = "until"
+      Picture = Picture["icon:/small/jump"]
+    }
+    { btnShowMenu ToolButton
+      MoveScaled(94,0,4,4)
+      Visible = False
+      ToolTip = ("Show menubar")
+      Picture = Picture["icon:/small/text-fill"]
+    }
+    { Panel3 Panel
+      MoveScaled(98,0,1,4)
+    }
+    { txtSearch ButtonBox
+      MoveScaled(99,0,37,4)
+      ToolTip = ("Browse project") & "..."
+      Action = "find-project"
+      Picture = Picture["icon:/small/find"]
+    }
+    { btnGoBack MenuButton
+      MoveScaled(136,0,6,4)
+      Enabled = False
+      ToolTip = ("Go back")
+      Action = "go-back"
+      Picture = Picture["icon:/small/left"]
+      Border = False
+      Menu = "mnuBackward"
+    }
+    { btnGoForward ToolButton
+      MoveScaled(140,0,4,4)
+      Enabled = False
+      ToolTip = ("Go forward")
+      Action = "go-forward"
+      Picture = Picture["icon:/small/right"]
+    }
+    { ToolButton6 ToolButton
+      MoveScaled(143,0,4,4)
+      Visible = False
+      ToolTip = ("Browse project")
+      Action = "browse-project"
+      Picture = Picture["icon:/small/file-manager"]
+    }
+    { ToolButton11 ToolButton
+      MoveScaled(145,0,4,4)
+      Visible = False
+      ToolTip = ("Open a terminal")
+      Action = "open-terminal"
+      Picture = Picture["icon:/small/terminal"]
+    }
+    { ToolButton13 ToolButton
+      MoveScaled(148,0,4,4)
+      Visible = False
+      ToolTip = ("Send project by mail")
+      Action = "send-mail"
+      Picture = Picture["icon:/small/mail"]
+    }
+    { ToolButton16 ToolButton
+      MoveScaled(0,4,4,4)
+      Visible = False
+      ToolTip = ("Publish software")
+      Action = "publish"
+      Picture = Picture["icon:/small/internet"]
+    }
+    { ToolButton17 ToolButton
+      MoveScaled(3,4,4,4)
+      Visible = False
+      ToolTip = ("Software farm")
+      Action = "farm"
+      Picture = Picture["icon:/small/book"]
+    }
+    { btnGUI MenuButton
+      MoveScaled(13,4,11,4)
+      Visible = False
+      ToolTip = ("GUI component")
+      Action = "gui"
+      AutoResize = True
+      Picture = Picture["icon:/small/desktop"]
+      Border = False
+      Menu = "mnuGUI"
+      MenuOnly = True
+    }
+    { btnMnuFile MenuButton
+      MoveScaled(25,4,8,4)
+      Visible = False
+      Action = "menu-file"
+      AutoResize = True
+      Text = ("&File")
+      Arrow = False
+      Border = False
+      Menu = "mnuFile"
+    }
+    { btnMenuEdit MenuButton
+      MoveScaled(32,4,8,4)
+      Visible = False
+      Action = "menu-edit"
+      AutoResize = True
+      Text = ("&Edit")
+      Arrow = False
+      Border = False
+      Menu = "mnuEdit"
+    }
+    { btnMnuProject MenuButton
+      MoveScaled(43,4,7,4)
+      Visible = False
+      Action = "menu-project"
+      AutoResize = True
+      Text = ("&Project")
+      Arrow = False
+      Border = False
+      Menu = "mnuProject"
+    }
+    { btnMnuDebug MenuButton
+      MoveScaled(50,4,7,4)
+      Visible = False
+      Action = "menu-debug"
+      AutoResize = True
+      Text = ("&Debug")
+      Arrow = False
+      Border = False
+      Menu = "mnuDebug"
+    }
+    { btnMenuView MenuButton
+      MoveScaled(58,4,7,4)
+      Visible = False
+      Action = "menu-view"
+      AutoResize = True
+      Text = ("&View")
+      Arrow = False
+      Border = False
+      Menu = "mnuView"
+    }
+    { btnMnuTool MenuButton
+      MoveScaled(65,4,7,4)
+      Visible = False
+      Action = "menu-tool"
+      AutoResize = True
+      Text = ("&Tools")
+      Arrow = False
+      Border = False
+      Menu = "mnuTool"
+    }
+    { btnMnuHelp MenuButton
+      MoveScaled(73,4,4,4)
+      Visible = False
+      Action = "menu-help"
+      AutoResize = True
+      Text = ("&?")
+      Arrow = False
+      Border = False
+      Menu = "mnuHelp"
+    }
+  }
+  { sepMessage Separator
+    MoveScaled(58,9,38,0)
+    Visible = False
+  }
+  { msgError MessageView
+    MoveScaled(28,10,57,6)
+    Animated = True
+  }
+  { Panel1 Panel
+    MoveScaled(2,17,170,77)
+    Expand = True
+    Arrangement = Arrange.Horizontal
+    Border = Border.Plain
+    { panProject SidePanel
+      MoveScaled(2,3,29,66)
+      Visible = False
+      Background = Color.TextBackground
+      ToolTip = ("Project")
+      Arrangement = Arrange.Vertical
+      Action = "project"
+      Orientation = Align.Left
+      Separator = True
+      Transparent = True
+      { txtSearchProject ButtonBox
+        MoveScaled(1,1,25,3)
+        Foreground = Color.LightForeground
+        Picture = Picture["icon:/small/close"]
+        Border = False
+        ClearButton = True
+        Filter = True
+        FilterMenu = "mnuFilter"
+      }
+      { Separator4 Separator
+        MoveScaled(0,6,9,0)
+      }
+      { tvwProject TreeView
+        MoveScaled(1,16,20,47)
+        Drop = True
+        Expand = True
+        Border = False
+      }
+      { timSearchProject #Timer
+        #MoveScaled(21,8)
+        Delay = 500
+      }
+    }
+    { Panel4 VBox
+      MoveScaled(33,2,135,74)
+      Expand = True
+      { Panel5 HBox
+        MoveScaled(0,7,133,66)
+        Expand = True
+        { panCentral Panel
+          MoveScaled(0,0,94,64)
+          Expand = True
+          Arrangement = Arrange.Vertical
+          { Panel2 HBox
+            MoveScaled(1,2,88,32)
+            Expand = True
+            { Separator5 Separator
+              MoveScaled(1,7,0,10)
+              Visible = False
+            }
+            { wrkProject Workspace
+              MoveScaled(2,0,81,31)
+              Background = Color.LightForeground
+              Expand = True
+              Border = False
+            }
+            { Separator8 Separator
+              MoveScaled(86,8,0,9)
+              Visible = False
+            }
+          }
+          { panDebug SidePanel
+            MoveScaled(3,37,81,14)
+            Visible = False
+            ToolTip = ("Debug")
+            Arrangement = Arrange.Fill
+            Orientation = Align.Bottom
+            Separator = True
+            Transparent = True
+            Hidden = True
+          }
+          { Separator1 Separator
+            MoveScaled(19,52,29,0)
+          }
+          { panButton Panel
+            MoveScaled(3,56,85,4)
+            Visible = False
+            Arrangement = Arrange.Fill
+          }
+        }
+        { panProperty SidePanel
+          MoveScaled(97,1,32,65)
+          ToolTip = ("Properties")
+          Arrangement = Arrange.Vertical
+          Action = "property"
+          Orientation = Align.Right
+          Separator = True
+          Transparent = True
+          { panImageProperty Panel
+            MoveScaled(7,4,16,14)
+            Expand = True
+            Arrangement = Arrange.Fill
+          }
+          { panTabProperty Panel
+            MoveScaled(3,6,28,42)
+            Expand = True
+            Arrangement = Arrange.Vertical
+            { tabProperty TabPanel
+              MoveScaled(1,3,26,37)
+              Expand = True
+              Arrangement = Arrange.Fill
+              Border = False
+              Count = 2
+              CloseButton = True
+              Index = 0
+              Text = ("Properties")
+              Index = 1
+              Text = ("Hierarchy")
+              Index = 0
+            }
+          }
+          { panTool SidePanel
+            MoveScaled(5,49,21,37)
+            ToolTip = ("Toolbox")
+            Arrangement = Arrange.Fill
+            Spacing = True
+            Action = "control"
+            Orientation = Align.Bottom
+            Separator = True
+            Transparent = True
+          }
+        }
+      }
+    }
+  }
+  { dwgWelcome DrawingArea
+    MoveScaled(157,6,15,10)
+    Ignore = True
+    Arrangement = Arrange.Fill
+    Margin = True
+    Padding = 32
+  }
+  { timOpen #Timer
+    #MoveScaled(147,7)
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action _close
+    Text = "Close"
+    Shortcut = "Ctrl+W"
+    Picture = "icon:/small/close"
+  }
+  { Action _reload
+    Text = "Reload"
+    Shortcut = ""
+    Picture = "icon:/small/revert"
+  }
+  { Action _save
+    Text = "Save"
+    Shortcut = ""
+    Picture = "icon:/small/save"
+  }
+  { Action about
+    Text = "About Gambas"
+    Shortcut = ""
+    Picture = "icon:/small/info"
+  }
+  { Action archive
+    Text = "Source archive"
+    Shortcut = "Ctrl+Alt+A"
+    Picture = "icon:/small/archive"
+  }
+  { Action browse-project
+    Text = "Browse project"
+    Shortcut = "Ctrl+Alt+O"
+    Picture = "icon:/small/file-manager"
+  }
+  { Action clean-up-project
+    Text = "Clean up"
+    Shortcut = ""
+    Picture = "icon:/small/clear"
+  }
+  { Action clear-break
+    Text = "Clear all breakpoints"
+    Shortcut = ""
+  }
+  { Action close-all-debug
+    Text = "Close all debug windows"
+    Shortcut = ""
+  }
+  { Action close-all-window
+    Text = "Close all windows"
+    Shortcut = "Ctrl+Alt+W"
+  }
+  { Action compile
+    Text = "Compile"
+    Shortcut = "F7"
+    Picture = "icon:/small/make"
+  }
+  { Action compile-all
+    Text = "Compile All"
+    Shortcut = "Alt+F7"
+    Picture = "icon:/small/make-all"
+  }
+  { Action compress-all
+    Text = "Compress all"
+    Shortcut = ""
+    Picture = "icon:/small/archive"
+  }
+  { Action console
+    Text = "Console"
+    Shortcut = "F11"
+    Picture = "icon:/small/terminal"
+  }
+  { Action control
+    Text = "Toolbox"
+    Picture = "icon:/small/tools"
+  }
+  { Action copy
+    Text = "Copy"
+    Shortcut = "Ctrl+C"
+    Picture = "icon:/small/copy"
+  }
+  { Action copy-file-path
+    Text = "Copy file path"
+    Shortcut = "Ctrl+Shift+C"
+  }
+  { Action cut
+    Text = "Cut"
+    Shortcut = "Ctrl+X"
+    Picture = "icon:/small/cut"
+  }
+  { Action delete
+    Text = "Delete"
+    Shortcut = "Del"
+    Picture = "icon:/small/delete"
+  }
+  { Action exec
+    Text = "Executable"
+    Shortcut = "Ctrl+Alt+X"
+    Picture = "icon:/small/exec"
+  }
+  { Action farm
+    Text = "Software farm"
+    Shortcut = ""
+    Picture = "icon:/small/book"
+  }
+  { Action find
+    Text = "Search"
+    Picture = "icon:/small/find"
+  }
+  { Action find-project
+    Text = "Browse project..."
+    Picture = "icon:/small/find"
+  }
+  { Action forward
+    Text = "Forward"
+    Shortcut = "Shift+F8"
+    Picture = "icon:/small/forward"
+  }
+  { Action go-back
+    Text = "Go back"
+    Shortcut = "Alt+Left"
+    Picture = "icon:/small/left"
+  }
+  { Action go-forward
+    Text = "Go forward"
+    Shortcut = "Alt+Right"
+    Picture = "icon:/small/right"
+  }
+  { Action gui
+    Text = "GUI component"
+    Shortcut = ""
+    Picture = "icon:/small/desktop"
+  }
+  { Action help
+    Text = "Help browser"
+    Shortcut = "F1"
+    Picture = "icon:/small/help"
+  }
+  { Action help-shortcut
+    Text = "Keyboard shortcuts"
+    Shortcut = ""
+    Picture = "icon:/small/shortcut"
+  }
+  { Action httpserver
+    Text = "Use embedded HTTP server"
+    Shortcut = ""
+  }
+  { Action info
+    Text = "Properties"
+    Shortcut = "Ctrl+I"
+    Picture = "icon:/small/info"
+  }
+  { Action install
+    Text = "Installation package"
+    Shortcut = "Ctrl+Alt+I"
+    Picture = "icon:/small/package"
+  }
+  { Action menu-debug
+    Text = "Debug"
+    Picture = "$MenuButton"
+  }
+  { Action menu-edit
+    Text = "Edit"
+    Picture = "$MenuButton"
+  }
+  { Action menu-file
+    Text = "File"
+    Picture = "$MenuButton"
+  }
+  { Action menu-help
+    Text = "?"
+    Picture = "$MenuButton"
+  }
+  { Action menu-project
+    Text = "Project"
+    Picture = "$MenuButton"
+  }
+  { Action menu-tool
+    Text = "Tools"
+    Picture = "$MenuButton"
+  }
+  { Action menu-view
+    Text = "View"
+    Picture = "$MenuButton"
+  }
+  { Action new-other
+    Text = "Other"
+    Shortcut = ""
+    Picture = "icon:/small/new"
+  }
+  { Action new-project
+    Text = "New project"
+    Shortcut = "Ctrl+N"
+    Picture = "icon:/small/new"
+  }
+  { Action open-extern
+    Text = "Open"
+    Shortcut = "Ctrl+O"
+    Picture = "icon:/small/open"
+  }
+  { Action open-file-manager
+    Text = "Open in file manager"
+    Shortcut = ""
+    Picture = "icon:/small/file-manager"
+  }
+  { Action open-profile
+    Text = "Open profile"
+    Shortcut = ""
+    Picture = "icon:/small/clock"
+  }
+  { Action open-project
+    Text = "Open project"
+    Shortcut = "Ctrl+O"
+    Picture = "icon:/small/open"
+  }
+  { Action open-terminal
+    Text = "Open a terminal"
+    Shortcut = "Ctrl+Alt+T"
+    Picture = "icon:/small/terminal"
+  }
+  { Action option
+    Text = "Preferences"
+    Shortcut = "Ctrl+Alt+P"
+    Picture = "icon:/small/options"
+  }
+  { Action paste
+    Text = "Paste"
+    Shortcut = "Ctrl+V"
+    Picture = "icon:/small/paste"
+  }
+  { Action pause
+    Text = "Pause"
+    Shortcut = "Pause"
+    Picture = "icon:/small/pause"
+  }
+  { Action profile
+    Text = "Activate profiling"
+    Shortcut = ""
+  }
+  { Action project
+    Text = "Project"
+    Shortcut = "F10"
+    Picture = "icon:/small/view-split-h"
+  }
+  { Action project-property
+    Text = "Properties"
+    Shortcut = "Ctrl+P"
+    Picture = "icon:/small/edit"
+  }
+  { Action project-version
+    Text = "Version control"
+    Shortcut = ""
+    Picture = "icon:/small/calendar"
+  }
+  { Action property
+    Text = "Properties"
+    Shortcut = "F4"
+    Picture = "icon:/small/edit"
+  }
+  { Action publish
+    Text = "Publish"
+    Shortcut = ""
+    Picture = "icon:/small/internet"
+  }
+  { Action quit
+    Text = "Quit"
+    Shortcut = "Ctrl+Q"
+    Picture = "icon:/small/quit"
+  }
+  { Action redirect
+    Text = "Redirect standard error output"
+    Shortcut = ""
+  }
+  { Action refresh-project
+    Text = "Refresh"
+    Shortcut = ""
+    Picture = "icon:/small/refresh"
+  }
+  { Action rename
+    Text = "Rename"
+    Shortcut = "F2"
+    Picture = "img/16/rename.png"
+  }
+  { Action return
+    Text = "Finish"
+    Shortcut = ""
+    Picture = "icon:/small/eject"
+  }
+  { Action run-that
+    Text = "Run this class"
+    Shortcut = ""
+    Picture = "icon:/small/play"
+  }
+  { Action save-as
+    Text = "Save as"
+    Shortcut = "Ctrl+Alt+S"
+    Picture = "icon:/small/save-as"
+  }
+  { Action save-project
+    Text = "Save project"
+    Shortcut = "Ctrl+Alt+S"
+    Picture = "icon:/small/save"
+  }
+  { Action save-project-as
+    Text = "Save project as"
+    Shortcut = "Ctrl+Shift+Alt+S"
+    Picture = "icon:/small/save-as"
+  }
+  { Action send-mail
+    Text = "Send project by mail"
+    Shortcut = ""
+    Picture = "icon:/small/mail"
+  }
+  { Action shortcut
+    Text = "Shortcuts"
+    Shortcut = ""
+    Picture = "icon:/small/shortcut"
+  }
+  { Action start
+    Text = "Run"
+    Shortcut = "F5"
+    Picture = "icon:/small/play"
+  }
+  { Action startup-class
+    Text = "Startup class"
+    Shortcut = "Alt+S"
+    Picture = "img/16/startup-class.png"
+  }
+  { Action step
+    Text = "Step"
+    Shortcut = "F8"
+    Picture = "icon:/small/end"
+  }
+  { Action stop
+    Text = "Stop"
+    Shortcut = "Alt+Pause"
+    Picture = "icon:/small/stop"
+  }
+  { Action terminal
+    Text = "Use terminal emulator"
+    Shortcut = ""
+  }
+  { Action tips
+    Text = "Tips of the day"
+    Shortcut = ""
+    Picture = "icon:/small/lamp"
+  }
+  { Action translate
+    Text = "Translate"
+    Shortcut = "Ctrl+T"
+    Picture = "icon:/small/language"
+  }
+  { Action uncompress-all
+    Text = "Uncompress all"
+    Shortcut = ""
+    Picture = "icon:/small/undo"
+  }
+  { Action until
+    Text = "Run until current line"
+    Picture = "icon:/small/jump"
+  }
+  { Action update-all-forms
+    Text = "Update all forms"
+    Shortcut = ""
+    Picture = "icon:/small/refresh"
+  }
+  { Action version-control
+    Text = "Put on version control"
+    Shortcut = ""
+    Picture = "icon:/small/add"
+  }
+}
+
+{ Toolbars
+  { Toolbar main
+    Text = ""
+    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,publish,farm,gui,menu-file,menu-edit,menu-project,menu-debug,menu-view,menu-tool,menu-help"
+    Default = "new-project,open-project,save-project,save-project-as,project-property,project-version,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,-,find-project,go-back,go-forward"
+  }
+}

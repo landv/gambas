@@ -1,0 +1,31 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,160,72)
+  Arrangement = Arrange.Vertical
+  { Panel1 HBox
+    MoveScaled(1,2,116,4)
+    Spacing = True
+    { sldFrame Slider
+      MoveScaled(0,0,24,4)
+      Expand = True
+    }
+    { Separator1 Separator
+      MoveScaled(54,0,0,4)
+    }
+    { lblInfo Label
+      MoveScaled(64,0,18,4)
+      Padding = 4
+      AutoResize = True
+    }
+  }
+  { timAnim #Timer
+    #MoveScaled(52,13)
+    Delay = 20
+  }
+  { glaScreen GLArea
+    MoveScaled(4,14,16,16)
+    Background = &H7FBFFF&
+    Expand = True
+  }
+}

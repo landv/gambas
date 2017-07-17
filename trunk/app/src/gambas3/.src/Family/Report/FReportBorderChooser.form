@@ -1,0 +1,169 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,80,33)
+  Text = ("Configure border")
+  Resizable = False
+  { btnCancel Button
+    MoveScaled(63,28,16,4)
+    Text = ("Cancel")
+    Cancel = True
+  }
+  { btnOK Button
+    MoveScaled(46,28,16,4)
+    Text = ("OK")
+    Default = True
+  }
+  { chkSynchro CheckBox
+    MoveScaled(1,28,20,4)
+    Text = ("Synchronize")
+  }
+  { TabStrip1 TabStrip
+    MoveScaled(1,1,52,26)
+    Count = 2
+    Index = 0
+    Text = ("Border")
+    { panBorder Panel
+      MoveScaled(1,1,34,19)
+      { crdBottom CoordBox crdBrush
+        Name = "crdBottom"
+        MoveScaled(9,15,18,4)
+      }
+      { Label4 Label
+        MoveScaled(0,15,9,4)
+        #Translate = False
+        Text = "Bottom"
+      }
+      { crdTop CoordBox crdBrush
+        Name = "crdTop"
+        MoveScaled(9,0,18,4)
+      }
+      { btnTop Button btnBrush
+        Name = "btnTop"
+        MoveScaled(28,0,5,4)
+        Tag = "Top"
+        Picture = Picture["icon:/small/color"]
+      }
+      { btnLeft Button btnBrush
+        Name = "btnLeft"
+        MoveScaled(28,5,5,4)
+        Tag = "Left"
+        Picture = Picture["icon:/small/color"]
+      }
+      { crdRight CoordBox crdBrush
+        Name = "crdRight"
+        MoveScaled(9,10,18,4)
+      }
+      { btnRight Button btnBrush
+        Name = "btnRight"
+        MoveScaled(28,10,5,4)
+        Tag = "Right"
+        Picture = Picture["icon:/small/color"]
+      }
+      { Label3 Label
+        MoveScaled(0,0,9,4)
+        #Translate = False
+        Text = "Top"
+      }
+      { Label5 Label
+        MoveScaled(0,5,9,4)
+        #Translate = False
+        Text = "Left"
+      }
+      { Label6 Label
+        MoveScaled(0,10,9,4)
+        #Translate = False
+        Text = "Right"
+      }
+      { crdLeft CoordBox crdBrush
+        Name = "crdLeft"
+        MoveScaled(9,5,18,4)
+      }
+      { btnBottom Button btnBrush
+        Name = "btnBottom"
+        MoveScaled(28,15,5,4)
+        Tag = "Bottom"
+        Picture = Picture["icon:/small/color"]
+      }
+    }
+    Index = 1
+    Text = ("Corner")
+    { panCorner Panel
+      MoveScaled(1,1,49,19)
+      { Label2 Label
+        MoveScaled(0,5,9,4)
+        #Translate = False
+        Text = "TopRight"
+      }
+      { crdTopRight1 CoordBox
+        MoveScaled(12,5,16,4)
+      }
+      { Label7 Label
+        MoveScaled(0,10,12,4)
+        #Translate = False
+        Text = "BottomRight"
+      }
+      { crdBottomRight1 CoordBox
+        MoveScaled(12,10,16,4)
+      }
+      { Label8 Label
+        MoveScaled(0,15,11,4)
+        #Translate = False
+        Text = "BottomLeft"
+      }
+      { crdBottomLeft1 CoordBox
+        MoveScaled(12,15,16,4)
+      }
+      { crdTopLeft1 CoordBox
+        MoveScaled(12,0,16,4)
+      }
+      { Label1 Label
+        MoveScaled(0,0,9,4)
+        #Translate = False
+        Text = "TopLeft"
+      }
+      { crdTopLeft2 CoordBox
+        MoveScaled(29,0,16,4)
+        Enabled = False
+      }
+      { crdTopRight2 CoordBox
+        MoveScaled(29,5,16,4)
+        Enabled = False
+      }
+      { crdBottomRight2 CoordBox
+        MoveScaled(29,10,16,4)
+        Enabled = False
+      }
+      { crdBottomLeft2 CoordBox
+        MoveScaled(29,15,16,4)
+        Enabled = False
+      }
+      { chkTopLeft CheckBox
+        MoveScaled(46,0,3,4)
+        Value = CheckBox.True
+      }
+      { chkTopRight CheckBox
+        MoveScaled(46,5,3,4)
+        Value = CheckBox.True
+      }
+      { chkBottomRight CheckBox
+        MoveScaled(46,10,3,4)
+        Value = CheckBox.True
+      }
+      { chkBottomLeft CheckBox
+        MoveScaled(46,15,3,4)
+        Value = CheckBox.True
+      }
+    }
+    Index = 0
+  }
+  { Panel1 Panel
+    MoveScaled(54,1,25,26)
+    Arrangement = Arrange.Fill
+    Border = Border.Plain
+    { dwgBorder DrawingArea
+      MoveScaled(2,1,16,19)
+      Background = Color.SelectedForeground
+    }
+  }
+}

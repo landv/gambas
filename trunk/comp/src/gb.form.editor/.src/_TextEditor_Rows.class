@@ -1,0 +1,383 @@
+' Gambas class file
+
+Property Count As Integer
+Property Read Max As Integer
+Property Height, H As Integer
+
+Public RelativeY As Integer
+
+Event _Fake
+
+Private $nRows As Integer
+Private $cHeight As Collection
+Private $aHeight As Integer[]
+Private $iHeight As Integer 
+
+Private $cCacheRowY As New Collection
+Private $cCacheRowFromPos As New Collection
+Private $iLastRow As Integer
+
+Private Sub GetView() As TextEditor
+  
+  Return Object.Parent(Me)
+  
+End
+
+Private Function Count_Read() As Integer
+  
+  Return $nRows
+  
+End
+
+Private Sub ClearCache()
+
+  $iLastRow = 0
+  $cCacheRowY.Clear
+  $cCacheRowFromPos.Clear
+
+End
+
+Private Sub Count_Write(Value As Integer)
+  
+  Dim hView As TextEditor = GetView()
+  
+  ClearCache
+  
+  If Value = $nRows Then Return
+  
+  $nRows = Value
+  hView._ResizeContents
+  
+End
+
+Private Sub StripCache(cCol As Collection)
+
+  If cCol.Count < 256 Then Return
+  For Each cCol
+    cCol.Remove(cCol.Key)
+    Break
+  Next
+
+End
+
+Public Sub _GetRowY(iRow As Integer) As Integer
+  
+  Dim hView As TextEditor = GetView()
+  Dim Y As Integer
+  Dim DH As Integer = $iHeight
+  Dim I As Integer
+  Dim iViewRow As Integer
+  
+  iViewRow = hView._RealToView(iRow)
+  
+  If Not $cHeight Then Return iViewRow * DH
+  
+  Try Return $cCacheRowY[iRow]
+  
+  If $cCacheRowY.Exist($iLastRow) And If iRow > Abs(iRow - $iLastRow) Then
+    
+    If $iLastRow < iRow Then
+      
+      I = $iLastRow
+      While I < iRow
+        If hView._IsRowVisible(I) Then Try Y += CInt($cHeight[I]) - 1
+        Inc I
+      Wend
+      
+    Else
+      
+      I = $iLastRow
+      While I > iRow
+        Dec I
+        If hView._IsRowVisible(I) Then Try Y -= CInt($cHeight[I]) - 1
+      Wend
+
+    Endif
+    
+    Y += iViewRow - hView._RealToView($iLastRow)
+    Y *= DH
+    Y += $cCacheRowY[$iLastRow]
+    
+  Else
+  
+    Y = iViewRow
+  
+    For Each I In $aHeight
+      If I >= iRow Then Break
+      If hView._IsRowVisible(I) Then 
+        Y += CInt($cHeight[I]) - 1
+      Endif
+    Next
+    
+    Y *= DH
+    
+  Endif
+    
+  $cCacheRowY[iRow] = Y
+  StripCache($cCacheRowY)
+  
+  $iLastRow = iRow
+  
+  Return Y
+  
+End
+
+Public Sub _GetRowHeight(iRow As Integer) As Integer
+  
+  'Debug iRow;; System.Backtrace.Join("|")
+  Try Return $cHeight[iRow] * $iHeight
+  Return $iHeight
+  
+End
+
+Private Sub AddSorted(iRow As Integer)
+  
+  Dim I, J As Integer
+  
+  'If iRow >= GetView().Count Then Stop
+  
+  I = 0
+  J = $aHeight.Max
+  
+  If J < 0 Or If iRow > $aHeight[J] Then
+    $aHeight.Add(iRow)
+    Return
+  Endif
+  
+  '' TODO: Binary search
+  $aHeight.Add(iRow)
+  $aHeight.Sort
+  
+End
+
+Public Sub _SetRowHeight(iRow As Integer, H As Integer)
+  
+  Dim hView As TextEditor = GetView()
+  'Dim DH As Integer = $iHeight
+  Dim OH As Integer
+  'Dim bCancel As Boolean
+  
+  ClearCache
+  
+  If Not $cHeight Then 
+    $cHeight = New Collection
+    '$cHeight.Default = 1
+    $aHeight = New Integer[]
+  Endif
+  
+  ' If H < 0 Then
+  '   bCancel = hView._RaiseRowSize(iRow)
+  '   If Not bCancel Then Return
+  '   H = hView._GetPreferredHeight(iRow)
+  ' Endif
+  
+  If H <= 1 Then
+    If $cHeight.Exist(iRow) Then
+      $cHeight.Remove(iRow)
+      $aHeight.Remove($aHeight.Find(iRow))
+      hView._ResizeContents()
+    Endif
+  Else
+    OH = -1
+    Try OH = $cHeight[iRow]
+    If H <> OH Then
+      If OH < 0 Then AddSorted(iRow)
+      $cHeight[iRow] = H
+      hView._ResizeContents()
+      'hView._RaiseRowResize(iRow)
+    Endif
+  Endif
+  
+End
+
+Public Sub _GetHeight() As Integer
+  
+  Dim N As Integer
+  
+  N = GetView()._GetLastVisibleRow()
+  Return _GetRowY(N) + _GetRowHeight(N)
+  
+  ' Dim hView As TextEditor = GetView()
+  ' Dim H, DH As Integer
+  ' Dim I As Integer
+  ' 
+  ' DH = $iHeight
+  ' H = $nRows
+  ' If $cHeight Then
+  '   For Each I In $aHeight
+  '     If hView._IsRowVisible(I) Then H += CInt($cHeight[I]) - 1
+  '   Next
+  ' Endif
+  ' 
+  ' Return H * DH
+  
+End
+
+Public Sub _FindRowFromPos(Y As Integer) As Integer
+  
+  Dim hView As TextEditor = GetView()
+  Dim DH As Integer = $iHeight
+  Dim iCache As Long
+  Dim D As Integer
+  Dim F As Integer
+  Dim I As Integer
+  Dim RY As Integer
+  Dim RH As Integer
+  Dim J As Integer
+  
+  If Not $cHeight Then
+    I = Min($nRows - 1, Y \ DH)
+    If I < 0 Then Return -1
+    RelativeY = Y - I * DH
+    Return hView._ViewToReal(I)
+  Endif
+    
+  Try iCache = $cCacheRowFromPos[Y]
+  If Not Error Then
+    If iCache < 0 Then Return -1
+    RelativeY = iCache And &HFFFFFFFF&
+    Return Lsr(iCache, 32)
+  Endif
+  
+  D = 0
+  F = $nRows
+  While F > D
+    I = (F + D) \ 2
+    J = hView._ViewToReal(I)
+    RY = _GetRowY(J)
+    RH = _GetRowHeight(J)
+    If Y < RY Then
+      F = I
+    Else If Y >= RY + RH Then
+      D = I + 1
+    Else
+      Break
+    Endif
+  Wend
+  
+  I = J
+  RelativeY = Y - RY
+  
+  If I < 0 Or If I >= hView.Count Then
+    I = -1
+    iCache = -1
+  Else
+    iCache = Shl(CLong(I), 32) + RelativeY
+  Endif
+  
+  $cCacheRowFromPos[Y] = iCache
+  StripCache($cCacheRowFromPos)
+  
+  Return I
+  
+End
+
+Private Sub Height_Read() As Integer
+  
+  Return $iHeight
+  
+End
+
+Private Sub Height_Write(Value As Integer)
+  
+  $iHeight = Value
+  ClearCache
+  
+End
+
+Private Function Max_Read() As Integer
+  
+  Return $nRows - 1
+  
+End
+
+' Public Sub Remove(Start As Integer, Optional Length As Integer = 1)
+'   
+'   GetView()._RemoveRows(Start, Length)
+'   
+' End
+' 
+' Public Sub Insert(Start As Integer, Optional Length As Integer = 1)
+'   
+'   GetView()._InsertRows(Start, Length)
+'   
+' End
+
+Public Sub Clear()
+  
+  If $cHeight Then
+    $cHeight.Clear
+    $aHeight.Clear
+  Endif
+  
+  ClearCache
+  
+End
+
+Public Sub _AfterRemove(Y1 As Integer, Y2 As Integer, cLineLayout As Collection)
+
+  Dim Y As Integer
+  Dim I As Integer
+  Dim YY As Integer
+  
+  If Not $aHeight Then Return
+  
+  While I < $aHeight.Count
+    If $aHeight[I] > Y1 Then Break
+    Inc I
+  Wend
+  
+  While I < $aHeight.Count
+    Y = $aHeight[I]
+    If Y > Y2 Then Break
+    $aHeight.Remove(I)
+    $cHeight.Remove(Y)
+    cLineLayout.Remove(Y)
+    If $cHeight.Count <> $aHeight.Count Then Stop
+  Wend
+    
+  While I < $aHeight.Count
+    Y = $aHeight[I]
+    YY = Y - (Y2 - Y1)
+    $aHeight[I] = YY
+    $cHeight[YY] = $cHeight[Y]
+    $cHeight.Remove(Y)
+    cLineLayout[YY] = cLineLayout[Y]
+    cLineLayout.Remove(Y)
+    If $cHeight.Count <> $aHeight.Count Then Stop
+    Inc I
+  Wend
+  
+  ClearCache
+  
+  'If $aHeight.Count And If $aHeight[$aHeight.Max] >= GetView().Count Then Stop
+  'If _GetHeight() <> _GetRowY($nRows - 1) + _GetRowHeight($nRows - 1) Then Stop
+  
+End
+
+Public Sub _BeforeInsert(Y1 As Integer, N As Integer, cLineLayout As Collection)
+  
+  Dim I As Integer
+  Dim Y As Integer
+  
+  If Not $aHeight Then Return
+  
+  For I = $aHeight.Max DownTo 0
+    Y = $aHeight[I]
+    If Y <= Y1 Then Break
+    $aHeight[I] = Y + N
+    $cHeight[Y + N] = $cHeight[Y]
+    $cHeight.Remove(Y)
+    cLineLayout[Y + N] = cLineLayout[Y]
+    cLineLayout.Remove(Y)
+  Next
+  
+  'If $cHeight.Count <> $aHeight.Count Then Stop
+  
+  ClearCache  
+  
+  'If $aHeight And If $aHeight.Count And If $aHeight[$aHeight.Max] >= GetView().Count Then Stop
+  'If _GetHeight() <> _GetRowY($nRows - 1) + _GetRowHeight($nRows - 1) Then Stop
+  
+End
+

@@ -1,0 +1,18 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,64)
+  { myMenu Menu
+    Text = ("myMenu")
+    { Menu2 Menu
+      Text = Shortcut(("Open"), "O")
+      Shortcut = "Ctrl+O"
+    }
+    { Menu3 Menu
+      Text = Shortcut(("Close"), "C")
+    }
+    { Menu4 Menu
+      Text = Shortcut(("Quit"), "Q")
+    }
+  }
+}

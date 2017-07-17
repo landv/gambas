@@ -1,0 +1,210 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+
+Event Data(Row As Integer, Column As Integer, Value As Variant)
+
+'PROPERTY Border AS Integer "<Border>"
+Property Columns As String[]
+Property Labels As String[]
+Property Control As Boolean
+Property Read View As TableView
+Property Header As Boolean
+Property Orientation As Integer
+Property Editable As Boolean
+Property Border As Boolean
+Property Grid As Boolean
+Property Read Data As _GridView_Data
+Property CanCreate As Boolean
+Property CanDelete As Boolean
+
+Public Const _Properties As String = "*,Control=True,CanCreate=True,CanDelete=True,Columns{Field[]},Labels,Editable,Header=True,Grid,Orientation{Align.Bottom;Left;Right;Top}=Bottom,Border=True"
+Public Const _Group As String = "Data"
+
+Private $hForm As FBrowser
+Private $hObs As Observer
+
+Public Sub _new()
+  
+  $hForm = New FBrowser(Me)
+  Me.Proxy = $hForm.DataView
+  $hObs = New Observer($hForm.DataView) As "DataView"
+  
+End
+
+Public Sub Update()
+  
+  $hForm.Update
+  
+End
+
+
+' PRIVATE FUNCTION Border_Read() AS Integer
+'   
+'   RETURN $hForm.Panel.Border
+'   
+' END
+' 
+' PRIVATE SUB Border_Write(iBorder AS Integer)
+'   
+'   $hForm.Panel.Border = iBorder
+'   
+' END
+
+Private Function Columns_Read() As String[]
+  
+  Return $hForm.DataView.Columns
+  
+End
+
+Private Sub Columns_Write(aCol As String[])
+
+  $hForm.DataView.Columns = aCol  
+  
+End
+
+Private Function Control_Read() As Boolean
+  
+  Return $hForm.ButtonPanel.Visible
+  
+End
+
+Private Sub Control_Write(bVisible As Boolean)
+  
+  $hForm.SetControl(bVisible)
+  
+End
+
+Private Function View_Read() As TableView
+  
+  Return $hForm.DataView.View
+  
+End
+
+
+Private Function Header_Read() As Boolean
+  
+  Return $hForm.DataView.Header <> GridView.None
+  
+End
+
+Private Sub Header_Write(bHeader As Boolean)
+  
+  $hForm.DataView.Header = If(bHeader, GridView.Both, GridView.Vertical)
+  
+End
+
+Private Function Orientation_Read() As Integer
+
+  Return $hForm.GetOrientation()  
+
+End
+
+Private Sub Orientation_Write(Value As Integer)
+
+  $hForm.SetOrientation(Value)
+
+End
+
+' Private Function Adjust_Read() As Boolean
+' 
+'   Return $hForm.DataView.Adjust
+' 
+' End
+' 
+' Private Sub Adjust_Write(Value As Boolean)
+' 
+'   $hForm.DataView.Adjust = Value
+' 
+' End
+
+Public Sub _OnDatabaseChange()
+  
+  $hForm._OnDatabaseChange
+  
+End
+
+Private Function Editable_Read() As Boolean
+
+  Return $hForm.DataView.Editable
+
+End
+
+Private Sub Editable_Write(Value As Boolean)
+
+  $hForm.DataView.Editable = Value
+
+End
+
+Private Function Labels_Read() As String[]
+
+  Return $hForm.DataView.Labels
+
+End
+
+Private Sub Labels_Write(Value As String[])
+
+  $hForm.DataView.Labels = Value
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hForm.HasBorder()
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hForm.SetBorder(Value)
+
+End
+
+Private Function Grid_Read() As Boolean
+
+  Return $hForm.DataView.Grid
+
+End
+
+Private Sub Grid_Write(Value As Boolean)
+
+  $hForm.DataView.Grid = Value
+
+End
+
+Public Sub DataView_Data(Row As Integer, Column As Integer, Value As Variant)
+  
+  Raise Data(Row, Column, Value)
+  
+End
+
+Private Function Data_Read() As _GridView_Data
+
+  Return $hForm.DataView.Data
+
+End
+
+Private Function CanCreate_Read() As Boolean
+
+  Return $hForm.GetCanCreate()
+
+End
+
+Private Sub CanCreate_Write(Value As Boolean)
+
+  $hForm.SetCanCreate(Value)
+
+End
+
+Private Function CanDelete_Read() As Boolean
+
+  $hForm.GetCanDelete()
+
+End
+
+Private Sub CanDelete_Write(Value As Boolean)
+
+  $hForm.SetCanDelete(Value)
+
+End

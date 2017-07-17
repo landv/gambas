@@ -1,0 +1,203 @@
+' Gambas module file
+
+' Pour récupérer les icônes manquantes depuis subversion :
+' $ for i in `svn status | grep "! " | cut -b 9-`; do svn revert $i; done
+' 
+Class Image 
+Class SvgImage 
+Class Color
+Class Paint
+
+Private Const UPDATE_ICONS As Boolean = False
+
+Private Sub Copy(sSrc As String, sDest As String) As Boolean
+
+  If Not Exist(sSrc) Then Return True
+  If Exist(sDest) Then
+    If Not UPDATE_ICONS Then Return True
+    Try Kill sDest
+  Endif
+  Try Copy sSrc To sDest
+  If Error Then 
+    Print Error.Text
+    Return True
+  Endif
+  Print sSrc; " ==> "; sDest
+
+End
+
+Private Sub MakeStock()
+  
+  Dim hFile As File
+  Dim sLine As String
+  Dim aLine As String[]
+  Dim sIcon As String
+  Dim sPath As String
+  Dim sPathOrg As String
+  Dim sTheme As String
+  Dim sSize As String
+  Dim sTemplate As String
+  Dim sExt As String
+  'Dim sSrc As String
+  Dim sFullPath As String
+  Dim hImage As Image
+  Dim hSvgImage As SvgImage
+  Dim bOK As Boolean
+  Dim bFound As Boolean
+  Dim sTest As String
+  Dim aPath As String[]
+  Dim sOther As String
+  Dim iPos As Integer
+  Dim sCheck As String
+  
+  hFile = Open "~/gambas/3.0/trunk/comp/src/gb.form/map/icon.map"
+  
+  Try Mkdir "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock/16"
+  Try Mkdir "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock/22"
+  Try Mkdir "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock/32"
+  Try Mkdir "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock/scalable"
+  
+  While Not Eof(hFile)
+  
+    Line Input #hFile, sLine
+    aLine = Scan(sLine, "* *")
+    If aLine.Count < 2 Then Continue
+    sIcon = aLine[0]
+    If Left(sIcon) = ";" Then Continue
+    sPath = Trim(aLine[1])
+    If Not sPath Then Continue
+    
+    ' aPath = Split(sPath, ";")
+    ' For I = 0 To aPath.Max
+    '   sPath = aPath[I]
+    '   If sPath Begins "[elementary]" Then Break
+    '   If Left(sPath) <> "[" Then Break
+    ' Next
+    
+    Print sIcon;; sPath
+    aPath = Split(sPath, ";")
+    
+    For Each sSize In ["scalable", "16", "22", "32"]
+      
+      'Try Kill "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & ".png"
+      'Try Kill "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & ".svg"
+      
+      bOK = False
+      
+      For Each sTheme In ["elementary/&2/&1", "Tango/&1/&2", "Humanity/&2/&1", "gnome/&1/&2", "hicolor/&1/&2", "oxygen/base/&1/&2"]
+    
+        'If sIcon = "favorite" And If sTheme Begins "elementary/" Then Continue
+    
+        sTemplate = "/usr/share/icons" &/ sTheme
+        'If Not Exist(sTemplate) Then Continue
+    
+        For Each sPathOrg In aPath
+    
+          If sPathOrg Begins "[" Then
+            iPos = InStr(sPathOrg, "]")
+            sCheck = Mid$(sPathOrg, 2, iPos - 2)
+            If Left(sCheck) = "-" Then
+              If sSize = "scalable" Or If CInt(sSize) > 32 Then Continue
+              If sTheme Not Like Mid$(sCheck, 2) Then Continue
+            Else If Left(sCheck) = "+" Then
+              If sSize = "scalable" Or If CInt(sSize) <= 32 Then Continue
+              If sTheme Not Like Mid$(sCheck, 2) Then Continue
+            Else
+              If sTheme Not Like sCheck Then Continue
+            Endif
+            sPathOrg = Mid$(sPathOrg, iPos + 1)
+          Endif
+          
+          If sPathOrg = "#" Then Continue
+    
+          If sPathOrg Begins "$(mime)/" Then
+            
+            bFound = False
+            
+            For Each sTest In ["mimetypes", "mimes"]
+              sPath = Subst(sTemplate, sSize, sTest)
+              If Exist(sPath) Then
+                sPathOrg = Replace(sPathOrg, "$(mime)", sTest)
+                bFound = True
+                Break
+              Endif
+              sPath = Subst(sTemplate, "32", sTest)
+              If Exist(sPath) Then
+                sPathOrg = Replace(sPathOrg, "$(mime)", sTest)
+                bFound = True
+                Break
+              Endif
+            Next
+            
+            If Not bFound Then Goto NEXT_ICON
+        
+          Endif
+          
+          sPath = sPathOrg
+        
+          If sSize = "scalable" Then
+            sExt = ".svg"
+            bOK = True
+            If Copy(Subst(sTemplate, sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
+              bOK = False
+              For Each sOther In ["64", "48", "32", "24", "16"]
+                If Not Copy(Subst(sTemplate, sOther, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then 
+                  bOK = True
+                  Break
+                Endif
+              Next
+            Endif
+          Else
+            sExt = ".png"
+            bOK = True
+            If Copy(Subst(sTemplate, sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
+              If Copy(Subst(sTemplate, sSize & "x" & sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), sExt), "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt) Then
+                sFullPath = Subst(sTemplate, sSize, File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), ".svg")
+                If Not Exist(sFullPath) Then sFullPath = Subst(sTemplate, "24", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), ".svg")
+                If Not Exist(sFullPath) Then sFullPath = Subst(sTemplate, "16", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), ".svg")
+                If Not Exist(sFullPath) Then sFullPath = Subst(sTemplate, "32", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), ".svg")
+                If Not Exist(sFullPath) Then sFullPath = Subst(sTemplate, "48", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), ".svg")
+                If Not Exist(sFullPath) Then sFullPath = Subst(sTemplate, "64", File.Dir(sPath)) &/ File.SetExt(File.Name(sPath), ".svg")
+                If Exist(sFullPath) Then
+                  hSvgImage = SvgImage.Load(sFullPath)
+                  hImage = New Image(CInt(sSize), CInt(sSize), Color.Transparent)
+                  Paint.Begin(hImage)
+                  hSvgImage.Resize(CInt(sSize), CInt(sSize))
+                  hSvgImage.Paint
+                  Paint.End
+                  sPath = "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & sExt
+                  hImage.Save(sPath)
+                  Print sFullPath; " => "; sPath
+                Else
+                  bOK = False
+                Endif
+              Endif
+            Endif
+          Endif
+          
+          If bOK Then Break
+          
+        Next
+        
+        If bOK Then Break
+    
+      Next
+      
+    NEXT_ICON:
+      
+      If Not bOK Then Print sIcon;; "("; sSize; "): *NOT FOUND*"
+      
+    Next
+    
+  
+  Wend
+  
+  Close #hFile
+  
+End
+
+Public Sub Main()
+
+  MakeStock
+
+End

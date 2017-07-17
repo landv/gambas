@@ -1,0 +1,25 @@
+# Gambas Form File 3.0
+
+{ WebForm WebForm
+  #MoveScaled(0,0,64,29)
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Persistent = True
+  { WebHBox1 WebHBox
+    #MoveScaled(1,1,62,7)
+    { WebButton1 WebButton
+      #MoveScaled(1,1,11,5)
+      Image = "gw-arrow-left.png"
+    }
+    { cmbMonth WebComboBox
+      #MoveScaled(12,1,24,5)
+    }
+    { WebButton2 WebButton
+      #MoveScaled(36,1,16,5)
+      Image = "gw-arrow-right.png"
+    }
+  }
+  { WebContainer1 WebContainer
+    #MoveScaled(1,9,62,18)
+  }
+}

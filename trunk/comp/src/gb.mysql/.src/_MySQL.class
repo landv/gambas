@@ -1,0 +1,324 @@
+' Gambas class file
+
+Export
+Create Static
+
+Private $Engine As String = "InnoDB"
+Private $Charset As String = "utf8"
+Private $Collation As String = "utf8_general_ci"
+Private $sTmp As String
+Private $DataTypes As _DataTypes
+Private $Database As _Database
+Private $Table As _Table
+Private $Index As _Index
+Private $Field As _Field
+Private $View As _View
+Private $User As _User
+Private $Trigger As _Trigger
+Private $Routines As _Routines
+Private $Event As _Event
+Private $Result As _Result
+Private $asEngines As New String[]
+Private $asCollations As New String[]
+Private $asCharsets As New String[]
+Private $asDatabases As New String[]
+Private $asUsers As New String[]
+Private $Version As _Version
+
+Property Engine As String
+Property Charset As String
+Property Collation As String
+Property Read DataTypes As _DataTypes
+Property Read Database As _Database
+Property Read Index As _Index
+Property Read Table As _Table
+Property Read Field As _Field
+Property Read View As _View
+Property Read User As _User
+Property Read Trigger As _Trigger
+Property Read Routines As _Routines
+Property Read Collations As String[]
+Property Read Engines As String[]
+Property Read Charsets As String[]
+Property Read Databases As String[]
+Property Read Users As String[]
+Property Read Query As String
+Property Read {Event} As _Event
+Property Read Result As _Result
+Property Read Version As _Version
+
+Private Function Engine_Read() As String
+
+  Return $Engine
+
+End
+
+Private Sub Engine_Write(Value As String)
+
+  $Engine = Value
+
+End
+
+Private Function Charset_Read() As String
+
+  Return $Charset
+
+End
+
+Private Sub Charset_Write(Value As String) 'Validate if the Char Set is valid
+
+  For Each $sTmp In $asCharsets
+    If $sTmp = Value Then
+      $Charset = Value
+      Return
+    Endif
+  Next
+  Error.Raise("Invalid Charset")
+
+End
+
+Private Function Collation_Read() As String
+
+  Return $Collation
+
+End
+
+Private Sub Collation_Write(Value As String)
+
+  For Each $sTmp In $asCollations
+    If $sTmp = Value Then
+      $Collation = Value
+      Return
+    Endif
+  Next
+  Error.Raise("Invalid Collation")
+
+End
+
+Private Function DataTypes_Read() As _DataTypes
+
+  $DataTypes = New _DataTypes
+  Return $DataTypes
+
+End
+
+Private Function Database_Read() As _Database
+
+  $Database = New _Database
+  Return $Database
+
+End
+
+Private Function Index_Read() As _Index
+
+  $Index = New _Index
+  Return $Index
+
+End
+
+Private Function Table_Read() As _Table
+
+  $Table = New _Table
+  Return $Table
+
+End
+
+Private Function Field_Read() As _Field
+
+  $Field = New _Field
+  Return $Field
+
+End
+
+Private Function View_Read() As _View
+
+  $View = New _View
+  Return $View
+
+End
+
+Private Function User_Read() As _User
+
+  $User = New _User
+  Return $User
+
+End
+
+Public Function CBool(Value As Variant) As Integer
+
+  'These types are synonyms for TINYINT(1). A value of zero is considered false. Non-zero values are considered true
+  If Value = 0 Then
+    Return 0 'False
+  Else
+    Return 1 'True
+  Endif
+
+End
+
+Private Function Routines_Read() As _Routines
+
+  $Routines = New _Routines
+  Return $Routines
+
+End
+
+Public Function CurrentTimestamp(Optional {Format} As String = "yyyy-mm-dd hh:nn:ss") As String
+
+  modMain.$Query = "SELECT CURRENT_TIMESTAMP"
+  Return Format(modMain.$Connection.Exec(modMain.$Query)!CURRENT_TIMESTAMP, {Format})
+
+End
+
+Public Function CurrentUser() As String
+
+  modMain.$Query = "SELECT CURRENT_USER"
+  Return modMain.$Connection.Exec(modMain.$Query)!CURRENT_USER
+
+End
+
+Public Function Quote(Value As Variant) As String
+
+  Return "`" & Value & "`"
+
+End
+
+Private Function Collations_Read() As String[]
+
+  $asCollations.Clear()
+  modMain.$Query = "SELECT `COLLATION_NAME` FROM `information_schema`.`COLLATIONS` ORDER BY `COLLATION_NAME`"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    $asCollations.Add(modMain.$hResult["COLLATION_NAME"])
+  Next
+  Return $asCollations
+
+End
+
+Private Function Engines_Read() As String[]
+
+  $asEngines.Clear()
+  modMain.$Query = "SHOW ENGINES"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    $asEngines.Add(modMain.$hResult["Engine"])
+  Next
+  Return $asEngines
+
+End
+
+Private Function Charsets_Read() As String[]
+
+  $asCharsets.Clear()
+  modMain.$Query = "SELECT DISTINCT `CHARACTER_SET_NAME` FROM `information_schema`.`COLLATIONS` ORDER BY `CHARACTER_SET_NAME`"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    $asCharsets.Add(modMain.$hResult["CHARACTER_SET_NAME"])
+  Next
+  Return $asCharsets
+
+End
+
+Private Function Trigger_Read() As _Trigger
+
+  $Trigger = New _Trigger
+  Return $Trigger
+
+End
+
+Private Function Databases_Read() As String[]
+
+  $asDatabases.Clear()
+  modMain.$Query = "SHOW DATABASES"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    $asDatabases.Add(modMain.$hResult["Database"])
+  Next
+  Return $asDatabases
+
+End
+
+Private Function Users_Read() As String[]
+
+  $asUsers.Clear()
+  modMain.$Query = "SELECT DISTINCT `User` FROM `mysql`.`user`"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    $asUsers.Add(modMain.$hResult["User"])
+  Next
+  Return $asUsers
+
+End
+
+Public Procedure Use(Database As String)
+
+  modMain.$Query = "USE `" & Database & "`"
+  modMain.RunQuery(modMain.$Query)
+  modMain.$Connection.Name = Database
+
+End
+
+Private Function Query_Read() As String
+
+  Return modMain.$Query
+
+End
+
+Public Function Id() As String
+
+  modMain.$Query = "SELECT CONNECTION_ID()"
+  Return modMain.$Connection.Exec(modMain.$Query)["CONNECTION_ID()"]
+
+End
+
+Public Function LastInsertId() As String
+
+  modMain.$Query = "SELECT LAST_INSERT_ID()"
+  Return modMain.$Connection.Exec(modMain.$Query)["LAST_INSERT_ID()"]
+
+End
+
+Public Function Password(Password As String) As String
+
+  modMain.$Query = "SELECT PASSWORD('" & Password & "') AS `Pass`"
+  Return modMain.$Connection.Exec(modMain.$Query)!Pass
+
+End
+
+Private Function Event_Read() As _Event
+
+  $Event = New _Event
+  Return $Event
+
+End
+
+Public Procedure KillProcess(Process As Integer)
+
+   modMain.RunQuery("KILL " & Process)
+
+End
+
+Private Function Result_Read() As _Result
+
+  $Result = New _Result
+  Return $Result
+
+End
+
+Private Function Version_Read() As _Version
+
+  $Version = New _Version
+  Return $Version
+
+End
+
+Public Function CharsetCollations(Charset As String) As String[]
+
+  $asCollations.Clear()
+  modMain.$Query = "SELECT `COLLATION_NAME` FROM `information_schema`.`COLLATIONS` WHERE `CHARACTER_SET_NAME` = '" & Lower(Charset) & "' ORDER BY `COLLATION_NAME`"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    $asCollations.Add(modMain.$hResult["COLLATION_NAME"])
+  Next
+  Return $asCollations
+
+End

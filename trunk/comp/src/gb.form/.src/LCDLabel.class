@@ -1,0 +1,455 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+
+Public Const _Properties As String = "*,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,Sheared,Padding{Range:0;63},Border,HighlightColor{Color}"
+Public Const _DefaultSize As String = "24,4"
+Public Const _Similar As String = "Label"
+
+Property Text As String
+Property Alignment As Integer
+Property Sheared As Boolean
+Property Padding As Integer
+Property Border As Boolean
+Property HighlightColor As Integer
+Property Value As Float
+
+Private $hView As DrawingArea
+Private $sText As String
+Private $iAlign As Integer = Align.Normal
+Private $iFg As Integer
+Private $iLightBg As Integer
+Private $iBg As Integer
+Private $bSheared As Boolean
+Private $iPadding As Integer
+Private $bBorder As Boolean
+Private $iHighlightColor As Integer = Color.Default
+
+Static Private $aSegment As Float[][]
+Static Private $cCar As Collection
+
+Static Private Sub Init()
+  
+  $aSegment = New Float[][19]
+  
+  $aSegment[0] = [0.5, 0.5, 1, 0, 4, 0, 4.5, 0.5, 4, 1, 1, 1]
+  $aSegment[1] = [4.5, 0.5, 5, 0, 8, 0, 8.5, 0.5, 8, 1, 5, 1]
+  $aSegment[2] = [0.5, 0.5, 1, 1, 1, 8, 0.5, 8.5, 0, 8, 0, 1]
+  $aSegment[3] = [1, 1, 4, 7, 4, 8, 3.5, 8, 1, 3]
+  $aSegment[4] = [4.5, 0.5, 5, 1, 5, 8, 4.5, 8.5, 4, 8, 4, 1]
+  $aSegment[5] = [8, 1, 5, 7, 5, 8, 5.5, 8, 8, 3]
+  $aSegment[6] = [8.5, 0.5, 9, 1, 9, 8, 8.5, 8.5, 8, 8, 8, 1]
+  $aSegment[7] = [0.5, 8.5, 1, 8, 4, 8, 4.5, 8.5, 4, 9, 1, 9]
+  $aSegment[8] = [4.5, 8.5, 5, 8, 8, 8, 8.5, 8.5, 8, 9, 5, 9]
+  $aSegment[9] = [0.5, 8.5, 1, 9, 1, 16, 0.5, 16.5, 0, 16, 0, 9]
+  $aSegment[10] = [3.5, 9, 4, 9, 4, 10, 1, 16, 1, 14]
+  $aSegment[11] = [4.5, 8.5, 5, 9, 5, 16, 4.5, 16.5, 4, 16, 4, 9]
+  $aSegment[12] = [5, 9, 5.5, 9, 8, 14, 8, 16, 5, 10]
+  $aSegment[13] = [8.5, 8.5, 9, 9, 9, 16, 8.5, 16.5, 8, 16, 8, 9]
+  $aSegment[14] = [0.5, 16.5, 1, 16, 4, 16, 4.5, 16.5, 4, 17, 1, 17]
+  $aSegment[15] = [4.5, 16.5, 5, 16, 8, 16, 8.5, 16.5, 8, 17, 5, 17]
+  
+  $aSegment[16] = [10, 16, 11, 16, 11, 17, 10, 17]
+  $aSegment[17] = [10, 4, 11, 4, 11, 5, 10, 5]
+  $aSegment[18] = [10, 12, 11, 12, 11, 13, 10, 13]
+  
+  $cCar = New Collection
+  
+  $cCar["0"] = [0, 1, 2, 5, 6, 9, 10, 13, 14, 15]
+  $cCar["1"] = [6, 13]
+  $cCar["2"] = [0, 1, 6, 7, 8, 9, 14, 15]
+  $cCar["3"] = [0, 1, 6, 7, 8, 13, 14, 15]
+  $cCar["4"] = [2, 6, 7, 8, 13]
+  $cCar["5"] = [0, 1, 2, 7, 8, 13, 14, 15]
+  $cCar["6"] = [0, 1, 2, 7, 8, 9, 13, 14, 15]
+  $cCar["7"] = [0, 1, 6, 13]
+  $cCar["8"] = [0, 1, 2, 6, 7, 8, 9, 13, 14, 15]
+  $cCar["9"] = [0, 1, 2, 6, 7, 8, 13, 14, 15]
+  $cCar["A"] = [0, 1, 2, 6, 7, 8, 9, 13]
+  $cCar["B"] = [0, 1, 4, 6, 8, 11, 13, 14, 15]
+  $cCar["C"] = [0, 1, 2, 9, 14, 15]
+  $cCar["D"] = [0, 1, 4, 6, 11, 13, 14, 15]
+  $cCar["E"] = [0, 1, 2, 7, 8, 9, 14, 15]
+  $cCar["F"] = [0, 1, 2, 7, 8, 9]
+  $cCar["G"] = [0, 1, 2, 8, 9, 13, 14, 15]
+  $cCar["H"] = [2, 6, 7, 8, 9, 13]
+  $cCar["I"] = [0, 1, 4, 11, 14, 15]
+  $cCar["J"] = [6, 9, 13, 14, 15]
+  $cCar["K"] = [2, 5, 7, 9, 12]
+  $cCar["L"] = [2, 9, 14, 15]
+  $cCar["M"] = [2, 3, 5, 6, 9, 13]
+  $cCar["N"] = [2, 3, 6, 9, 12, 13]
+  $cCar["O"] = [0, 1, 2, 6, 9, 13, 14, 15]
+  $cCar["P"] = [0, 1, 2, 6, 7, 8, 9]
+  $cCar["Q"] = [0, 1, 2, 6, 9, 12, 13, 14, 15]
+  $cCar["R"] = [0, 1, 2, 6, 7, 8, 9, 12]
+  $cCar["S"] = [0, 1, 2, 7, 12, 14, 15]
+  $cCar["T"] = [0, 1, 4, 11]
+  $cCar["U"] = [2, 6, 9, 13, 14, 15]
+  $cCar["V"] = [2, 5, 9, 10]
+  $cCar["W"] = [2, 6, 9, 10, 12, 13]
+  $cCar["X"] = [3, 5, 10, 12]
+  $cCar["Y"] = [3, 5, 11]
+  $cCar["Z"] = [0, 1, 5, 10, 14, 15]
+  $cCar["_"] = [14, 15]
+  $cCar["["] = [1, 4, 11, 15]
+  $cCar["]"] = [0, 4, 11, 14]
+  $cCar["("] = [1, 4, 11, 15]
+  $cCar[")"] = [0, 4, 11, 14]
+  $cCar["{"] = [1, 4, 7, 11, 15]
+  $cCar["}"] = [0, 4, 8, 11, 14]
+  $cCar["-"] = [7, 8]
+  $cCar["+"] = [4, 7, 8, 11]
+  $cCar["|"] = [4, 11]
+  $cCar["\\"] = [3, 12]
+  $cCar["/"] = [5, 10]
+  $cCar["="] = [7, 8, 14, 15]
+  $cCar["*"] = [3, 5, 7, 8, 10, 12]
+  $cCar["<"] = [5, 12]
+  $cCar[">"] = [3, 10]
+  $cCar["@"] = [0, 1, 2, 4, 6, 8, 9, 14, 15]
+  $cCar["'"] = [4]
+  $cCar["\""] = [4, 6]
+  $cCar["`"] = [3]
+  $cCar["°"] = [0, 2, 4, 7]
+  $cCar["~"] = [0, 2, 4, 6, 8]
+  $cCar["$"] = [0, 1, 2, 4, 7, 8, 11, 13, 14, 15]
+  $cCar["%"] = [0, 2, 4, 5, 7, 8, 10, 11, 13, 15]
+  $cCar["#"] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+  $cCar["^"] = [10, 12]
+  $cCar[" "] = []
+  
+End
+
+
+Public Sub _new()
+
+  If Not $cCar Then Init
+
+  $hView = New DrawingArea(Me) As "View"
+  Me.Proxy = $hView
+  
+  'GetRealForeground()
+  'GetRealForeground()
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  $hView.Refresh
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return $iAlign
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  $iAlign = Value
+  $hView.Refresh
+
+End
+
+Public Sub View_Draw()
+  
+  Dim nCar As Integer
+  Dim I As Integer
+  Dim sCar As String
+  Dim CW, X, Y As Float
+  Dim W, H As Integer
+  Dim bPoint As Boolean
+  Dim iPad As Integer
+  Dim bColon As Boolean
+  Dim iLen As Integer
+  
+  iPad = $iPadding
+  If $bBorder Then Inc iPad
+  
+  W = $hView.W - iPad * 2
+  H = $hView.H - iPad * 2
+  
+  If W < 16 Or If H < 8 Or If Not $sText Then Goto DRAW_BORDER
+  
+  For I = 1 To String.Len($sText)
+    sCar = String.Mid$($sText, I, 1)
+    If sCar = "." Or If sCar = ":" Then
+      If I = 1 Or If String.Mid$($sText, I - 1, 1) = sCar Then
+        Inc nCar
+      Endif
+    Else
+      Inc nCar
+    Endif
+  Next
+  
+  CW = W / nCar
+  If (CW * 2) > H Then CW = H / 2
+  
+  If Align.IsCenter($iAlign) Then
+    X = (W - (CW * nCar)) / 2
+  Else If Align.IsRight($iAlign) Then
+    X = W - (CW * nCar)
+  Else
+    X = 0
+  Endif
+  
+  Y = H / 2 - CW
+  
+  X += iPad
+  Y += iPad
+  
+  $iFg = GetRealForeground()
+  $iBg = GetRealBackground()
+  $iLightBg = Color.Merge($iFg, $iBg, 0.9)
+  
+  Paint.ResetClip
+  
+  iLen = String.Len($sText)
+  For I = 1 To iLen
+    sCar = String.Mid$($sText, I, 1)
+    bPoint = False
+    bColon = False
+    If I < iLen Then
+      If String.Mid$($sText, I + 1, 1) = "." Then
+        bPoint = True
+        Inc I
+      Else If String.Mid$($sText, I + 1, 1) = ":" Then
+        bColon = True
+        Inc I
+      Endif
+    Endif
+    DrawCharacter(sCar, bPoint, bColon, X, Y, CW)
+    X += CW
+  Next
+  
+DRAW_BORDER:
+  
+  If $bBorder Then
+    Draw.Rect(0, 0, $hView.W, $hView.H)
+  Endif
+  
+End
+
+Private Sub GetRealBackground() As Integer
+  
+  Dim hCtrl As Control = Me
+  
+  Repeat
+    If hCtrl.Background <> Color.Default Then Return hCtrl.Background
+    hCtrl = hCtrl.Parent
+  Until IsNull(hCtrl)
+  
+  Return Color.Background
+  
+End
+
+Private Sub GetRealForeground() As Integer
+  
+  Dim hCtrl As Control = Me
+  
+  Repeat
+    If hCtrl.Foreground <> Color.Default Then Return hCtrl.Foreground
+    hCtrl = hCtrl.Parent
+  Until IsNull(hCtrl)
+  
+  Return Color.Foreground
+  
+End
+
+
+Private Sub DrawCharacter(sCar As String, bPoint As Boolean, bColon As Boolean, X As Float, Y As Float, W As Float)
+
+  Dim U As Float = W / 12
+  Dim aCar As Integer[]
+  Dim iSegment As Integer
+  Dim aOn As Boolean[]
+  Dim hShear As PaintMatrix
+  Dim bOutline As Boolean
+  Dim hImage As Image
+  Dim hMatrix As PaintMatrix
+  
+  aCar = $cCar[UCase(sCar)]
+  If Not aCar And If Not bPoint And If Not bColon Then Return
+  
+  Paint.Save
+  
+  Paint.Translate(X, Y)
+  Paint.Scale(U, U)
+
+  If $bSheared Then
+    Paint.Translate(3, 3.5)
+    hShear = PaintMatrix(1.0, 0.0, -0.2, 1.0, 0.0, 0.0)
+    Paint.Matrix = hShear.Multiply(Paint.Matrix)
+  Else
+    Paint.Translate(0, 3.5)
+  Endif
+  
+  If U >= 1 Then 
+    bOutLine = True
+    Paint.LineWidth = 0.1
+  Endif
+  
+  aOn = New Boolean[$aSegment.Count]
+  
+  If aCar Then 
+    For Each iSegment In aCar
+      aOn[iSegment] = True
+    Next
+  Endif
+  
+  If bPoint Then aOn[16] = True
+  If bColon Then 
+    aOn[17] = True
+    aOn[18] = True
+  Endif
+  
+  For iSegment = 0 To $aSegment.Max
+    If Not aOn[iSegment] Then Paint.Polygon($aSegment[iSegment])
+  Next
+  Paint.Background = $iLightBg
+  Paint.Fill
+
+  If $iHighlightColor <> Color.Default Then
+
+    hImage = New Image(W * 1.2, W * 2, Color.Transparent)
+
+    Paint.Begin(hImage)
+    
+    Paint.Translate(W * 0.1, 0)
+    Paint.Scale(U, U)
+
+    If $bSheared Then
+      Paint.Translate(3, 3.5)
+      hShear = PaintMatrix(1.0, 0.0, -0.2, 1.0, 0.0, 0.0)
+      Paint.Matrix = hShear.Multiply(Paint.Matrix)
+    Else
+      Paint.Translate(0, 3.5)
+    Endif
+    
+    For iSegment = 0 To $aSegment.Max
+      If aOn[iSegment] Then Paint.Polygon($aSegment[iSegment])
+    Next
+  
+    Paint.LineWidth = 0.1
+    
+    Paint.Background = $iHighlightColor
+    Paint.Fill
+    
+    Paint.End
+    
+    hImage.Fuzzy(W * 0.15)
+    
+    hMatrix = Paint.Matrix
+    Paint.Restore
+    Paint.Save
+    Paint.DrawImage(hImage, X - W * 0.1, Y)
+    Paint.DrawImage(hImage, X - W * 0.1, Y)
+    Paint.Matrix = hMatrix
+    
+  Endif
+  
+  
+  For iSegment = 0 To $aSegment.Max
+    If aOn[iSegment] Then Paint.Polygon($aSegment[iSegment])
+  Next
+  
+  ' If $iHighlightColor <> Color.Default Then
+  '   If U >= 1.5 Then
+  '     Paint.LineCap = Paint.LineCapRound
+  '     Paint.LineJoin = Paint.LineJoinRound
+  '     Paint.Background = Color.SetAlpha($iHighlightColor, 220)
+  '     Paint.LineWidth = 0.8
+  '     For I = 1 To 5
+  '       Paint.Stroke(True)
+  '       Paint.LineWidth *= 1.5
+  '     Next
+  '   Endif
+  ' Endif
+  
+  Paint.LineWidth = 0.1
+  Paint.Background = $iFg
+  If bOutline Then
+    Paint.Fill(True)
+    Paint.Background = $iBg
+    Paint.Stroke
+  Else
+    Paint.Fill
+  Endif
+  
+  Paint.Restore
+
+End
+
+Private Function Sheared_Read() As Boolean
+
+  Return $bSheared
+
+End
+
+Private Sub Sheared_Write(Value As Boolean)
+
+  $bSheared = Value
+  $hView.Refresh
+
+End
+
+Private Function Padding_Read() As Integer
+
+  Return $iPadding
+
+End
+
+Private Sub Padding_Write(Value As Integer)
+
+  $iPadding = Value
+  $hView.Refresh
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $bBorder = Value
+  $hView.Refresh
+
+End
+
+Private Function HighlightColor_Read() As Integer
+
+  Return $iHighlightColor
+
+End
+
+Private Sub HighlightColor_Write(Value As Integer)
+
+  $iHighlightColor = Value
+  $hView.Refresh
+
+End
+
+Private Function Value_Read() As Float
+
+  Return CFloat($sText)
+
+End
+
+Private Sub Value_Write(Value As Float)
+
+  Try Me.Text = CStr(Value)
+
+End

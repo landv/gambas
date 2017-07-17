@@ -1,0 +1,44 @@
+' Gambas class file
+
+Export
+
+Static Public _All As New TrayIcon[]
+
+Static Property Read Count As Integer
+
+Static Public Sub _get(Index As Integer) As TrayIcon
+  
+  Return _All[Index]
+  
+End
+
+
+Static Public Sub _next() As TrayIcon
+  
+  Dim iIndex As Integer
+  
+  If Not IsNull(Enum.Index) Then iIndex = Enum.Index
+  
+  If iIndex >= _All.Count Then
+    Enum.Stop
+  Else
+    Enum.Index = iIndex + 1
+    Return _All[iIndex]
+  Endif
+  
+End
+
+
+Static Private Function Count_Read() As Integer
+
+  Return _All.Count
+
+End
+
+Static Public Sub DeleteAll()
+  
+  While _All.Count
+    _All[_All.Max].Delete
+  Wend
+  
+End

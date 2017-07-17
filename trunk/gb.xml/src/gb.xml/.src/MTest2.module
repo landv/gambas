@@ -1,0 +1,32 @@
+' Gambas module file
+
+Public Sub Main()
+  
+  Dim reader As New XmlReader
+  
+  reader.Open("text.xml")
+  reader.ReadFlags[XmlReaderNodeType.Element] = True
+  reader.Read()
+  While Not reader.Eof
+    Print reader.Node.Type;;
+    Select Case reader.Node.Type
+      Case XmlReaderNodeType.Element
+        Print "element"
+      Case XmlReaderNodeType.Attribute
+        Print "attribute"
+      Case XmlReaderNodeType.Text
+        Print "text";; reader.Node.Value
+      Case XmlReaderNodeType.Comment
+        Print "comment"
+      Case XmlReaderNodeType.CDATA
+        Print "cdata"
+      Case XmlReaderNodeType.EndElement
+        Print "endelement"
+      Default
+      Print ""
+    End Select
+    reader.Read()
+  Wend
+  
+  
+End

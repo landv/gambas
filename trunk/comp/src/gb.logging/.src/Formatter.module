@@ -1,0 +1,167 @@
+' Gambas module file
+
+''' This class formats a line to automatically replace required Logger data
+
+Export
+
+Private Function GetCallLocation() As String
+
+  Dim iCount As Integer = 1
+
+  While System.Backtrace[iCount] Begins "Logger" Or System.Backtrace[iCount] Begins "Formatter"
+    Inc iCount
+  Wend
+
+  Return System.Backtrace[iCount]
+
+End
+
+Private Function GetCallFile() As String
+
+  Return Split(GetCallLocation(), ".")[0]
+
+End
+
+Private Function GetCallFunction() As String
+
+  Return Split(GetCallLocation(), ".")[1]
+
+End
+
+Private Function GetCallLine() As String
+
+  Return Split(GetCallLocation(), ".")[2]
+
+End
+
+Public Function _call(sMessage As String, sFormat As String, iLevel As Integer) As String
+
+  Dim sName As String
+  Dim aLoaded As String[]
+  Dim oComponent As Component
+
+  If String.InStr(sFormat, "$(message)") > 0 Then
+    sFormat = Replace$(sFormat, "$(message)", sMessage)
+  Endif
+
+  If String.InStr(sFormat, "$(callLocation)") > 0 Then
+    sFormat = Replace$(sFormat, "$(callLocation)", GetCallLocation())
+  Endif
+
+  If String.InStr(sFormat, "$(callLine)") > 0 Then
+    sFormat = Replace$(sFormat, "$(callLine)", GetCallLine())
+  Endif
+
+  If String.InStr(sFormat, "$(callFile)") > 0 Then
+    sFormat = Replace$(sFormat, "$(callFile)", GetCallFile())
+  Endif
+
+  If String.InStr(sFormat, "$(callFunction)") > 0 Then
+    sFormat = Replace$(sFormat, "$(callFunction)", GetCallFunction())
+  Endif
+
+  If String.InStr(sFormat, "$(now)") > 0 Then
+    sFormat = Replace$(sFormat, "$(now)", CStr(Now))
+  Endif
+
+  If String.InStr(sFormat, "$(date)") > 0 Then
+    sFormat = Replace$(sFormat, "$(date)", CStr(Date(Now)))
+  Endif
+
+  If String.InStr(sFormat, "$(time)") > 0 Then
+    sFormat = Replace$(sFormat, "$(time)", CStr(Time(Now)))
+  Endif
+
+  If String.InStr(sFormat, "$(ptimer)") > 0 Then
+    sFormat = Replace$(sFormat, "$(ptimer)", CStr(Timer))
+  Endif
+
+  If String.InStr(sFormat, "$(ptimerint)") > 0 Then
+    sFormat = Replace$(sFormat, "$(ptimerint)", CStr(Int(Timer)))
+  Endif
+
+  If String.InStr(sFormat, "$(levelno)") > 0 Then
+    sFormat = Replace$(sFormat, "$(levelno)", CStr(iLevel))
+  Endif
+
+  If String.InStr(sFormat, "$(levelname)") > 0 Then
+    Select Case iLevel
+
+      Case LogLevel.Critical
+        sName = "CRITICAL"
+
+      Case LogLevel.Error
+        sName = "ERROR"
+
+      Case LogLevel.Warning
+        sName = "WARNING"
+
+      Case LogLevel.Info
+        sName = "INFO"
+
+      Case LogLevel.Debug
+        sName = "DEBUG"
+
+      Case Else
+        sName = "CUSTOM DEBUG"
+
+    End Select
+
+    sFormat = Replace$(sFormat, "$(levelname)", sName)
+
+  Endif
+
+  If String.InStr(sFormat, "$(version)") > 0 Then
+    sFormat = Replace$(sFormat, "$(version)", Application.Version)
+  Endif
+
+  If String.InStr(sFormat, "$(gbversion)") > 0 Then
+    sFormat = Replace$(sFormat, "$(gbversion)", System.FullVersion)
+  Endif
+
+  If String.InStr(sFormat, "$(host)") > 0 Then
+    sFormat = Replace$(sFormat, "$(host)", System.Host)
+  Endif
+
+  If String.InStr(sFormat, "$(pid)") > 0 Then
+    sFormat = Replace$(sFormat, "$(pid)", CStr(Application.Id))
+  Endif
+
+  If String.InStr(sFormat, "$(architecture)") > 0 Then
+    sFormat = Replace$(sFormat, "$(architecture)", System.Architecture)
+  Endif
+
+  If String.InStr(sFormat, "$(charset)") > 0 Then
+    sFormat = Replace$(sFormat, "$(charset)", System.Charset)
+  Endif
+
+  If String.InStr(sFormat, "$(home)") > 0 Then
+    sFormat = Replace$(sFormat, "$(home)", User.Home)
+  Endif
+
+  If String.InStr(sFormat, "$(username)") > 0 Then
+    sFormat = Replace$(sFormat, "$(username)", User.Name)
+  Endif
+
+  If String.InStr(sFormat, "$(appPath)") > 0 Then
+    sFormat = Replace$(sFormat, "$(appPath)", Application.Path)
+  Endif
+
+  If String.InStr(sFormat, "$(appName)") > 0 Then
+    sFormat = Replace$(sFormat, "$(appName)", Application.Name)
+  Endif
+
+  If String.InStr(sFormat, "$(loadedComponents)") > 0 Then
+
+    aLoaded = New String[]
+
+    For Each oComponent In Components
+      aLoaded.Add(oComponent.Name)
+    Next
+
+    sFormat = Replace$(sFormat, "$(loadedComponents)", aLoaded.Join(", "))
+  Endif
+
+  Return sFormat
+
+End

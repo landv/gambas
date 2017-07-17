@@ -1,0 +1,66 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,87,75)
+  Background = Color.TextBackground
+  Text = ("Tips of the day")
+  Icon = Picture["icon:/small/lamp"]
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { dwgBackground DrawingArea
+    MoveScaled(1,2,80,6)
+    Arrangement = Arrange.Horizontal
+    { PictureBox1 PictureBox
+      MoveScaled(0,0,5,5)
+      Picture = Picture["icon:/24/lamp"]
+      Alignment = Align.Center
+    }
+    { lblTitle Label
+      MoveScaled(9,1,54,5)
+      Font = Font["Bold,+3"]
+      Foreground = Color.SelectedForeground
+      Expand = True
+      Text = ("Tips of the day")
+    }
+  }
+  { ScrollView1 ScrollView
+    MoveScaled(5,23,71,40)
+    Expand = True
+    Arrangement = Arrange.Vertical
+    Border = False
+    ScrollBar = Scroll.Vertical
+    { txtTip TextLabel
+      MoveScaled(2,2,48,24)
+      Padding = 4
+      AutoResize = True
+    }
+  }
+  { panBottom Panel
+    MoveScaled(2,66,76,4)
+    Arrangement = Arrange.Horizontal
+    AutoResize = True
+    Spacing = True
+    { chkShowTip CheckBox
+      MoveScaled(0,0,31,4)
+      Expand = True
+      Text = ("Show tips on startup")
+    }
+    { btnPrev Button
+      MoveScaled(32,0,14,4)
+      Text = Shortcut(("Previous"), "P")
+      Picture = Picture["icon:/small/rewind"]
+    }
+    { btnNext Button
+      MoveScaled(47,0,14,4)
+      Text = Shortcut(("Next"), "N")
+      Picture = Picture["icon:/small/forward"]
+    }
+    { btnClose Button
+      MoveScaled(62,0,14,4)
+      Text = ("Close")
+      Default = True
+      Cancel = True
+    }
+  }
+}

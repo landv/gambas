@@ -1,0 +1,51 @@
+' Gambas class file
+
+Export
+Inherits UserContainer
+
+Private $hContainer As DrawingArea
+Private $hHeader As DrawingArea
+Private $hObs As Observer
+
+
+Public Sub _new()
+  
+  $hHeader = New DrawingArea(Me) As "Header"
+  $hContainer = New DrawingArea(Me) As "Container"
+  Me._Container = $hContainer
+  $hContainer.Arrangement = Arrange.Vertical
+  $hContainer.Spacing = True
+
+  $hObs = New Observer(Me) As "UserContainer"
+  
+End
+
+Public Sub UserContainer_Arrange()
+
+  Dim DS As Integer
+  
+  DS = Desktop.Scale
+  
+  $hHeader.Move(0, 0, Me.W, DS * 4)
+  $hContainer.Move(0, DS * 3, Me.W, Me.H - DS * 3)
+  $hHeader.Raise
+  
+End
+
+Public Sub Header_Draw()
+
+  Dim hForm As FForm
+  
+  hForm = Object.Parent(Me)
+  
+  CFamilyWebForm.PaintMenuItem(hForm.GetControl(Me))
+  
+End
+
+Public Sub Container_Draw()
+  
+  'Paint.Background = Color.LightForeground
+  CFamily.PaintContainer(0, -1, Paint.W, Paint.H + 1)
+  'Paint.Stroke
+  
+End

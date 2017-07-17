@@ -1,0 +1,50 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,93,73)
+  Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
+  BoxShadow = ReportBoxShadow["2mm 2mm 0mm 0px #C05800"]
+  Spacing = "5mm"
+  Index = 0
+  Text = ("")
+  { ReportHBox1 ReportHBox
+    #MoveScaled(1,1,91,14)
+    Height = "2cm"
+    Fixed = True
+    Tag = "**"
+    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000;TopLeftCorner:3mm;TopRightCorner:3mm;BottomRightCorner:3mm;BottomLeftCorner:3mm"]
+    BoxShadow = ReportBoxShadow["0mm 3mm 1mm -4px #FF8000"]
+    { ReportLabel1 ReportLabel
+      #MoveScaled(1,1,58,12)
+      Font = Font["+10"]
+      Expand = True
+      AutoResize = True
+      Text = ("=\"Page \" & Page")
+      Alignment = Align.Center
+    }
+  }
+  { ReportVBox1 ReportVBox
+    #MoveScaled(1,16,91,10)
+    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000;TopLeftCorner:10mm;TopRightCorner:20mm;BottomRightCorner:10mm;BottomLeftCorner:1mm"]
+    Background = ReportBrush["LinearGradient(0.35,0.74,0.95,0.07,[#FFFFFF,#FFFFFF,#007FFF],[0,1,0.36])"]
+    BoxShadow = ReportBoxShadow["1mm 1mm 1mm 0px #000000"]
+  }
+  { ReportHBox2 ReportPanel
+    #MoveScaled(1,27,91,16)
+    Height = "20mm"
+    Fixed = True
+    { ReportLabel2 ReportLabel
+      #MoveScaled(10,3,59,9)
+      Expand = True
+      Text = ("=pi() + 4")
+      Format = "0.00"
+    }
+  }
+  { ReportHBox3 ReportHBox
+    #MoveScaled(1,44,91,6)
+    Height = "10mm"
+    Brush = ReportBrush["#FF0000"]
+    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+  }
+  Index = 0
+}

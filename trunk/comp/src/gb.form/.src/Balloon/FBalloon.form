@@ -1,0 +1,26 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,35,23)
+  Visible = False
+  Foreground = Color.TextForeground
+  Mask = True
+  Persistent = True
+  Border = False
+  TakeFocus = False
+  Stacking = Window.Above
+  SkipTaskbar = True
+  Transparent = True
+  { txtMessage TextLabel
+    MoveScaled(8,3,24,10)
+  }
+  { timCheck #Timer
+    #MoveScaled(24,15)
+    Delay = 250
+  }
+  { imgIcon PictureBox txtMessage
+    Name = "imgIcon"
+    MoveScaled(2,4,5,5)
+    Visible = False
+  }
+}

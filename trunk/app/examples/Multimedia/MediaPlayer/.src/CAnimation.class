@@ -1,0 +1,101 @@
+' Gambas class file
+
+Static Private All As New CAnimation[]
+
+Event Stop
+
+Property Read Object As Object
+
+Private $hObject As Object
+Private $sProperty As String
+Private $fTarget As Float
+Private $fTime As Float
+Private $hTimer As Timer
+
+Static Public Sub Start(hObject As Control, sProperty As String, fTarget As Float, iTime As Integer, Optional hParent As Object)
+  
+  Dim hAnim As CAnimation
+  Dim aStop As New CAnimation[]
+  
+  For Each hAnim In All
+    If hAnim.Object = hObject Then aStop.Add(hAnim)
+  Next
+  
+  For Each hAnim In aStop
+    hAnim.Stop
+  Next
+  
+  hAnim = New CAnimation(hObject, sProperty, fTarget, iTime)
+  All.Add(hAnim)
+  
+  If hParent Then Object.Attach(hAnim, hParent, "Animation")
+  
+End
+
+Static Public Sub Exit()
+  
+  While All.Count
+    All[0].Stop
+  Wend
+  
+End
+
+
+
+Public Sub _new(hObject As Control, sProperty As String, fTarget As Float, iTime As Integer)
+  
+  'Debug hObject.Tag;; sProperty;; fTarget
+  
+  $hObject = hObject
+  $sProperty = sProperty
+  $fTarget = fTarget
+  $fTime = Timer + iTime / 1000
+  
+  $hTimer = New Timer As "Timer"
+  $hTimer.Delay = 50
+  $hTimer.Start
+  
+End
+
+Public Sub Timer_Timer()
+  
+  Dim fValue As Float
+  Dim iSign As Integer
+  Dim fDiff As Float
+  
+  fValue = Object.GetProperty($hObject, $sProperty)
+  
+  iSign = Sgn($fTarget - fValue)
+  fDiff = $fTime - Timer
+  fValue += ($fTarget - fValue) / (1000 * fDiff / $hTimer.Delay)
+  
+  If fDiff <= 0 Or If iSign = 0 Or If iSign > 0 And fValue >= $fTarget Or If iSign < 0 And fValue <= $fTarget Then
+    Object.SetProperty($hObject, $sProperty, $fTarget)
+    {Stop}
+  Else
+    Object.SetProperty($hObject, $sProperty, fValue)
+  Endif
+  
+Catch
+  
+  {Stop}
+  
+End
+
+Public Sub Stop()
+  
+  $hTimer.Stop
+  $hTimer = Null
+  $hObject = Null
+  
+  All.Remove(All.Find(Me))
+  
+  Raise Stop
+  
+End
+
+Private Function Object_Read() As Object
+
+  Return $hObject
+
+End

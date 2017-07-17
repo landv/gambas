@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="<%/%>/style.css">
+  <link rel="icon" href="<%/%>/logo.png" type="image/png">
+  <title>Gambas Documentation - Register</title>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="header-inside">
+    <div class="up">
+      <a href="<%=Application.Root & Main.LinkSuffix%>"><img src="<%/%>/up.png"></a>
+    </div>
+    <div class="title">
+      <i>Register a new user</i>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+<h1>Register a new user</h1>
+
+<form name="form" method="post" enctype="multipart/form-data">
+<!--<div style="padding:8px;background:#E0E0E0;display:inline-table;border:solid gray 1px;border-radius:8px;">-->
+
+<h2>Identification</h2>
+
+<table class="no-border">
+
+<tr>
+  <td style="width:12em;">Login</td>
+  <td><input type="text" name="login" value="<%=Request["login"]%>"></td>
+</tr>
+
+<tr>
+  <td>Password</td>
+  <td><input type="password" name="password"></td>
+</tr>
+
+<tr>
+  <td>Confirm password</td>
+  <td><input type="password" name="cpassword"></td>
+</tr>
+
+<tr>
+  <td>First name</td>
+  <td><input type="text" name="fname" value="<%=Request["fname"]%>"></td>
+</tr>
+
+<tr>
+  <td>Last name</td>
+  <td><input type="text" name="lname" value="<%=Request["lname"]%>"></td>
+</tr>
+
+</table>
+
+<h2>Confirmation</h2>
+
+<table class="no-border">
+
+<tr>
+  <td colspan="2">
+    <div class="box">Enter an e-mail address: a mail will be sent to it that will include a confirmation link.<br>Click on that link to activate your account.</div>
+  </td>
+</tr>
+
+<tr>
+  <td style="width:12em;">E-mail</td>
+  <td><input type="text" name="email" value="<%=Request["email"]%>"></td>
+</tr>
+
+<tr>
+  <td>Confirm e-mail</td>
+  <td><input type="text" name="cemail" value="<%=Request["cemail"]%>"></td>
+</tr>
+
+<tr>
+  <td colspan="2">
+    <p/><p/>
+    <div class="box">
+      <p>Please run the following Gambas code and enter its result.</p>
+      <div><pre><code><%_PrintCode%></code></pre></div>
+    </div>
+  </td>
+</tr>
+
+<tr>
+  <td style="width:12em;">Result</rd>
+  <td><input type="text" name="result"></td>
+</tr>
+
+</table>
+
+<p/>
+<input type="hidden" name="seed" value="<%=$iSeed%>">
+<input type="submit" name="confirm" value="Confirm">
+<input type="submit" name="cancel" value="Cancel">
+
+</form>
+
+<%If Session["warning"] Then%>
+<p/>
+<div class="warning">
+<%
+Print Session["warning"];
+Session["warning"] = ""
+%>
+</div>
+<%Endif%>
+
+<%If Session["message"] Then%>
+<p/>
+<div class="info"><%Print Session["message"];%></div>
+<%Session["message"] = ""%>
+<%Endif%>
+
+</div>
+
+<script type="text/javascript">
+document.form['login'].focus();
+</script>
+
+</body>
+</html>
+

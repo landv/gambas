@@ -1,0 +1,123 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,Border=True,MinValue=0,MaxValue=100,Step=1,Value=0"
+Public Const _DrawWith As String = "SpinBox"
+Public Const _DefaultSize As String = "24,4"
+Public Const _DefaultEvent As String = "Change"
+
+Event Change
+
+Property Value As Integer
+Property MinValue As Integer
+Property MaxValue As Integer
+Property Step As Integer
+Property Read Text As String
+
+Private $iVal As Integer
+Private $iMinVal As Integer = 0
+Private $iMaxVal As Integer = 100
+Private $iStep As Integer = 1
+
+Private Function Text_Read() As String
+
+  Return CStr($iVal)
+
+End
+
+
+Public Sub _BeforeRender()
+  
+  Print "<input type=\"number\""; Me._GetClassId(); Me._GetUpdateJS("onchange", "value", "this.value");
+  Me._RenderStyleSheet()
+  If Not Me.Enabled Then Print " disabled";
+  'If $bReadOnly Then Print " readonly";
+  Print " value=\""; CStr($iVal); "\"";
+  Print " min=\""; CStr($iMinVal); "\"";
+  Print " max=\""; CStr($iMaxVal); "\"";
+  If $iStep > 1 Then Print " step=\""; CStr($iStep); "\"";
+  Print ">"
+  
+End
+
+
+Public Sub _AfterRender()
+  
+  'Raise Render
+  'Print "</input>"
+  
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  If sProp = "value" Then Try Me.Value = vValue
+  
+End
+
+
+Private Function Value_Read() As Integer
+
+  Return $iVal
+
+End
+
+Private Sub Value_Write(Value As Integer)
+
+  If Value < $iMinVal Then Return
+  If Value > $iMaxVal Then Return
+  
+  If $iVal = Value Then Return
+  
+  $iVal = Value
+  Me._SetProperty("Value", Value)
+  Raise Change
+
+End
+
+Private Function MinValue_Read() As Integer
+
+  Return $iMinVal
+
+End
+
+Private Sub MinValue_Write(Value As Integer)
+
+  If Value = $iMinVal Then Return
+  $iMinVal = Value
+  Me._SetProperty("MinValue", Value)
+  
+  Me.Value = Max(Value, Me.Value)
+
+End
+
+Private Function MaxValue_Read() As Integer
+
+  Return $iMaxVal
+
+End
+
+Private Sub MaxValue_Write(Value As Integer)
+
+  If Value = $iMaxVal Then Return
+  $iMaxVal = Value
+  Me._SetProperty("MaxValue", Value)
+
+  Me.Value = Min(Value, Me.Value)
+
+End
+
+Private Function Step_Read() As Integer
+
+  Return $iStep
+
+End
+
+Private Sub Step_Write(Value As Integer)
+
+  If Value = $iStep Then Return
+  $iStep = Value
+  Me._SetProperty("Step", Value)
+
+End

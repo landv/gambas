@@ -1,0 +1,204 @@
+' Gambas class file
+
+Static Property Read UserPath As String
+
+Public Name As String
+Public Path As String
+Public NotFound As Boolean
+Public Version As String
+Public (Classes) As String[]
+Public Libraries As String[]
+Public Info As String
+Public Require As String[]
+Public CompatibleUntil As String
+
+Private $sDesc As String
+
+Static Private $cAll As New Collection
+Static Private $sInfo As String
+
+Static Public Sub _get(sPath As String) As CLibraryInfo
+  
+  Dim hLib As CLibraryInfo = $cAll[sPath]
+  If Not hLib Then 
+    hLib = New CLibraryInfo(sPath)
+    $cAll[sPath] = hLib
+  Endif
+  Return hLib
+  
+End
+
+Static Public Sub Clear()
+  
+  $cAll.Clear
+  
+End
+
+Static Public Sub Exit()
+  
+  Clear()
+  
+End
+
+Static Public Sub SolvePath(sPath As String, Optional bKeepPath As Boolean) As String
+  
+  Dim sSolve As String
+  
+  If Left(sPath) = ":" Then
+    sPath = Mid$(sPath, 2)
+    sSolve = CLibraryInfo.UserPath &/ sPath & ".gambas"
+    If Not Exist(sSolve) Then sSolve = Component.Path &/ sPath & ".gambas"
+  Else
+    sSolve = sPath
+    If sSolve Not Ends ".gambas" Then sSolve &= ".gambas"
+  Endif
+  
+  'sSolve = File.SetExt(sSolve, "gambas")
+  
+  If bKeepPath Or If Exist(sSolve) Then Return sSolve
+  
+End
+
+Public Sub _new(sPath As String)
+  
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sData As String
+  Dim aData As String[]
+  
+  If Left(sPath) = ":" Then
+    Name = File.Name(sPath)
+    iPos = RInStr(Name, ":")
+    If iPos Then 
+      Version = Mid$(Name, iPos + 1)
+      Name = Left(Name, iPos - 1)
+    Endif
+  Else
+    Name = File.BaseName(sPath)
+  Endif
+  
+  sPath = SolvePath(sPath, True)
+  
+  Classes = New String[]
+  Libraries = New String[]
+  Require = New String[]
+  Path = sPath
+    
+  If Not sPath Or If Not Exist(sPath) Then 
+    NotFound = True
+    Return
+  Endif
+  
+  Exec [System.Path &/ "bin/gba" & System.Version, "-x", sPath, ".startup"] To sData
+  aData = Split(sData, "\n")
+  Try Version = aData[4]
+  
+  For iPos = 5 To aData.Max
+    If aData[iPos] Then Break
+  Next
+  
+  While iPos <= aData.Max
+    If Left(aData[iPos]) = "/" Then Libraries.Add(aData[iPos])
+    Inc iPos
+  Wend
+    
+  Exec [System.Path &/ "bin/gba" & System.Version, "-x", sPath, ".list"] To sData
+  Classes = Split(sData, "\n", "", True)
+  
+  Exec [System.Path &/ "bin/gba" & System.Version, "-x", sPath, ".component"] To sData
+  For Each sLine In Split(sData, "\n", "", True)
+    sLine = Trim(sLine)
+    If sLine Begins "Requires=" Then 
+      Require.Insert(Split(Trim(Mid$(sLine, InStr(sLine, "=") + 1))))
+    Else If sLine Begins "CompatibleUntil=" Then
+      CompatibleUntil = Trim(Mid$(sLine, InStr(sLine, "=") + 1))
+    Endif
+  Next
+    
+End
+
+Public Sub GetInfo() 
+  
+  Exec [System.Path &/ "bin/gba" & System.Version, "-x", Path, ".info"] To Info
+    
+End
+
+Public Sub GetHelp() As String
+  
+  Dim sData As String
+  Dim aData As String[]
+  Dim iPos As Integer
+  
+  If Not $sDesc Then
+  
+    Exec [System.Path &/ "bin/gba" & System.Version, "-x", Path, ".project"] To sData
+    
+    aData = Split(sData, "\n")
+    iPos = aData.Find("Description=*", gb.Like)
+    If iPos >= 0 Then
+      $sDesc = UnQuote(Scan(aData[iPos], "Description=*")[0])
+    Else
+      $sDesc = " "
+    Endif
+    
+  Endif
+  
+  Return Trim($sDesc)
+  
+End
+
+Public Sub GetDependencyName() As String
+  
+  Dim sProject As String
+  Dim sLine As String
+  Dim sVendor As String
+  Dim sVendorPrefix As String
+  
+  Exec [System.Path &/ "bin/gba" & System.Version, "-x", Path, ".project"] To sProject
+  
+  For Each sLine In Split(sProject, "\n")
+    If sLine Begins "Vendor=" Then
+      sVendor = Mid$(sLine, InStr(sLine, "=") + 1)
+    Else If sLine Begins "Vendor=" Then
+      sVendorPrefix = Mid$(sLine, InStr(sLine, "=") + 1)
+    Endif
+  Next
+  
+  Return Package.GetPackagePrefix(Project.TYPE_LIBRARY, sVendor, sVendorPrefix, True) & Package.GetPackageName(Name)
+  
+End
+
+Private Sub AddInfo(sTitle As String, sValue As String)
+  
+  If $sInfo Then $sInfo &= "<br>"
+  $sInfo &= Subst(("<b>&1:</b> &2"), sTitle, sValue)
+  
+End
+
+
+Public Sub GetDescription(bLong As Boolean) As String
+  
+  Dim sDesc As String
+  
+  If NotFound Then bLong = True
+  
+  $sInfo = ""
+  AddInfo(("Location"), Path)
+  If NotFound Then
+    $sInfo &= "<br><b><font color=\"red\">" & ("WARNING! Library not found.") & "</font></b>"
+  Else
+    AddInfo(("Provides"), Classes.Join(", "))
+    If Require.Count Then AddInfo(("Requires"), Require.Join(", "))
+  Endif
+  
+  sDesc = "<font size=\"+1\"><b>" & File.Name(File.Dir(Path)) & " ▸ " & Name & "</b> " & Version & "</font>"
+  If bLong Then sDesc &= "<p><font size=\"-1\" color=\"#" & Hex$(Color.Merge(Color.Foreground, Color.LightForeground), 6) & "\">" & $sInfo & "</font>"
+  Return sDesc
+  
+End
+
+Static Private Function UserPath_Read() As String
+
+  Return Desktop.DataDir &/ "gambas3/lib"
+
+End

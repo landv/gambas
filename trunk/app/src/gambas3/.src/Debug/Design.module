@@ -1,0 +1,1356 @@
+' Gambas module file
+
+Public Startup As String
+
+Private Const STATE_LAST As Integer = -1
+Private Const STATE_STOP As Integer = 0
+Private Const STATE_RUNNING As Integer = 1
+Private Const STATE_DEBUG As Integer = 2
+Private Const STATE_STARTING As Integer = 3
+
+Private $iState As Integer
+Private $hProcess As Process
+Private $hObserver As Observer
+
+Private $sPosClass As String
+Private $iPosLine As Integer
+Private $sError As String
+
+Private $bStart As Boolean
+Private $sCmdStart As String
+'PRIVATE $sCmdStartRun AS String
+
+Private $sAddBreakpoint As String
+Private $sRemoveBreakpoint As String
+
+Private $bResult As Boolean
+Private $sResult As String
+
+Private $bIgnoreNextInfo As Boolean
+
+Private $bConsole As Boolean
+
+Private $sFifo As String
+
+Private $bLastCommandMayBeLong As Boolean
+
+Public BalloonControl As Control
+Public BalloonX As Integer
+Public BalloonY As Integer
+
+Private $sProfilePath As String
+'Private $bUpdateBreakOnError As Boolean
+
+Private $sPipeError As String
+Private $hPipeError As File
+Private $hBrowser As Process
+Private $iProcessId As Integer
+
+Public Sub Init()
+ 
+  $sFifo = Debug.Begin()
+  SetState(STATE_STOP)
+
+End
+
+
+Public Sub Exit()
+
+  Debug.End
+
+End
+
+Public Sub CheckErrorMessage(hEditor As FEditor)
+  
+  Dim sPath As String
+  
+  If Not $sError Then Return
+  If hEditor Then
+    If hEditor.Name == $sPosClass And If hEditor.GetEditor().Line = ($iPosLine - 1) Then
+      hEditor.ShowErrorMessage(Html($sError), "error")
+    Else If $iPosLine > hEditor.GetEditor().Count Then
+      sPath = Project.FindForm(hEditor.Name)
+      FMain.ShowError(Html($sError), sPath)
+    Endif
+  Else
+    FDebugInfo.ShowError(Html($sError))
+  Endif
+  
+End
+
+
+Private Sub SetState(iState As Integer)
+
+  Dim bDebug As Boolean
+  Dim bEnable As Boolean
+
+  'PRINT "SetState:"; iState
+  
+  bDebug = $iState <> STATE_STOP And $iState <> STATE_STARTING
+
+  $iState = iState
+
+  Action["pause"].Enabled = $iState = STATE_RUNNING
+  bEnable = $iState <> STATE_RUNNING And $iState <> STATE_STARTING
+  Action["forward"].Enabled = bEnable
+  Action["step"].Enabled = bEnable
+  Action["return"].Enabled = bEnable And $iState <> STATE_STOP
+  Action["start"].Enabled = bEnable
+
+  Action["stop"].Enabled = $iState <> STATE_STOP
+  'btnInfo.Enabled = btnStop.Enabled
+
+  If iState = $iState Then Return
+  FOutput.OnProjectDebugState
+  
+End
+
+
+' PRIVATE SUB HideForm(hForm AS Form)
+' 
+'    IF NOT hForm.Visible THEN RETURN
+' 
+'    $cShow.Add(hForm)
+'    hForm.Hide
+' 
+' END
+
+
+Public Sub Pause()
+
+  If $iState <> STATE_RUNNING Then Return
+  
+  If Project.UseTerminal Then
+    If $iProcessId Then Signal.Send($iProcessId, Signal.SIGUSR1)
+  Else
+    Signal.Send($hProcess.Id, Signal.SIGUSR1)
+  Endif
+
+End
+
+' Public Sub UpdateBreakOnError()
+'   
+'   If $iState = STATE_STOP Then Return
+'   
+'   If $iState = STATE_RUNNING Then
+'     $bUpdateBreakOnError = True
+'     $hProcess.Signal
+'   Else
+'     BreakOnError
+'   Endif
+'   
+' End
+
+
+' Public Sub Process_Error(sData As String)
+' 
+'   Insert(sData)
+' 
+' End
+' 
+Public Sub File_Read()
+  
+  Dim sData As String
+  
+  sData = Read #$hPipeError, Lof($hPipeError)
+  Insert(sData)
+  
+End
+
+
+' Public Sub Process_Read()
+' 
+'   Dim sData As String
+'   
+'   sData = Read #Last, -4096
+'   Insert(sData)
+'   
+' End
+' 
+Private Sub Translate(sErr As String) As String
+  
+  If InStr(sErr, " ") Then Return Tr$(sErr)
+  Return sErr
+  
+End
+
+
+Public Sub MakeMessage(sErr As String) As String
+  
+  Dim aErr As String[]
+  Dim iInd As Integer
+  
+  ' Substitution can be recursive in error messages!
+  
+  aErr = Split(sErr, "|")
+  aErr.Resize(aErr.Count + 4)
+  
+  For iInd = aErr.Max - 4 DownTo 0
+    If iInd = 0 Or If InStr(aErr[iInd], "&1") Then
+      aErr[iInd] = Subst(Tr$(aErr[iInd]), Translate(aErr[iInd + 1]), Translate(aErr[iInd + 2]), Translate(aErr[iInd + 3]), Translate(aErr[iInd + 4]))
+    Endif
+    If Left(aErr[iInd]) = "#" Then
+      Select Case Mid(aErr[iInd], 2)
+        Case "1"
+          aErr[iInd] = ("first")
+        Case "2"
+          aErr[iInd] = ("second")
+        Case "3"
+          aErr[iInd] = ("third")
+        Case Else
+          Try aErr[iInd] = CInt(Mid(aErr[iInd], 2))
+      End Select
+    Endif
+  Next
+  
+  Return aErr[0]
+  
+End
+
+
+Public Sub Debug_Read(Data As String)
+  
+  Dim aData As String[]
+  Dim aPos As String[]
+  Dim sPos As String
+  Dim aFrame As String[]
+  'Dim aLocal As String[]
+  Dim sClass As String
+  Dim iLine As Integer
+  Dim sVar As String
+
+  If Not Data Then Return 
+  
+  If Data = "!" Then 
+    Signal
+    Return 
+  Else If Data = "!!" Then
+    $bStart = True
+    Signal
+    Return
+  Endif
+  
+  aData = Split(Data, "\t")
+  
+  Select Left$(aData[0])
+  
+    Case "*" 
+    
+      If aData.Count < 5 Then 
+        Debug Data
+        Return
+      Endif
+    
+      ' Information, printed each time the debugger stops
+      ' Format is: 
+      '   [0] *[pid] 
+      '   [1] Error message
+      '   [2] Stack trace
+      '   [3] Local variables
+      '   [4] Current object
+    
+      If $iProcessId = 0 Then Try $iProcessId = CInt(Scan(aData[0], "?[[]*]")[0])
+    
+      aPos = Split(Trim(aData[2]), " ")
+  
+      For Each sPos In aPos
+
+        If sPos = "?" Then Continue
+        aFrame = Scan(sPos, "*.*.*")
+
+        sClass = aFrame[0]
+        iLine = 0
+        Try iLine = CInt(aFrame[2])
+
+        If sClass Then
+          If Project.Exist(sClass) Then Break
+          sClass = ""
+        Endif
+
+      Next
+  
+      If iLine = 0 Then sClass = ""
+      
+      $sError = ""
+      If aData[1] Then 
+        If sClass Then SetPosition(sClass, iLine)
+      Else
+        If Not sClass Or If SetPosition(sClass, iLine) Then 
+          If $bIgnoreNextInfo Then 
+            $bIgnoreNextInfo = False
+          Else
+            Command("", STATE_RUNNING)
+          Endif
+          Return
+        Endif
+      Endif
+  
+      FDebugInfo.DefineLocal(Trim(aData[3]))
+      FDebugInfo.DefineObject(Trim(aData[4]))
+
+      If FDebugInfo.FillStack(aPos) Then
+        If aData[1] Then 
+          $sError = MakeMessage(aData[1])
+          If sClass Then $sError &= " " & Subst(("in &1:&2."), $sPosClass, $iPosLine)
+          If sClass Then
+            Try CheckErrorMessage(Project.ActiveForm)
+          Else
+            Try CheckErrorMessage(Null)
+          Endif
+        Endif
+      Endif
+
+      SetState(STATE_DEBUG)
+
+    'Case "I", "W"
+      'FDebugInfo.Message(aData[1])
+    
+    Case "?", "&"
+    
+      sVar = Mid$(aData[0], 2)
+      
+      Select Case Left(sVar)
+      
+        Case "L"
+          FDebugInfo.AddLocal(Mid$(sVar, 2), aData[1])
+ 
+        Case "O"
+          FDebugInfo.AddObject(Mid$(sVar, 2), aData[1])
+
+        Case "W"
+          FDebugInfo.AddResultWatch(Mid$(sVar, 2), aData[1])
+
+        Case "I"
+          FDebugInfo.AddResultWatch(Mid$(sVar, 2), aData[1], True)
+          
+        Case "X"
+          FDebugExpr.AddResult(Mid$(sVar, 2), aData[1])
+ 
+      End Select
+      
+    Case "="
+      
+      sVar = Mid$(aData[0], 2)
+      
+      Select Case Left(sVar)
+      
+        Case "X"
+          FDebugExpr.AddResult(Mid$(sVar, 2), aData[1], True)
+          
+        Case "L"
+          FDebugInfo.AddLocal(Mid$(sVar, 2), aData[1], True)
+ 
+        Case "O"
+          FDebugInfo.AddObject(Mid$(sVar, 2), aData[1], True)
+ 
+      End Select
+      
+    Case "#"
+    
+      sVar = Mid$(aData[0], 2)
+      
+      Select Case Left(sVar)
+      
+        Case "X"
+          If Not aData[1] Then
+            ' sending to Ballon
+            Command("?I" & Mid$(sVar, 2) & ":\t" & Mid$(sVar, 2))  
+            
+          Else
+            If Left(aData[1]) = "!" Then
+                          
+              If FDebugExpr.Exist(Mid$(sVar, 2)) Then
+                FDebugExpr.Disable(Mid$(sVar, 2), Mid$(aData[1], 2))
+              Else 
+                Command("?I" & Mid$(sVar, 2) & ":\t" & Mid$(sVar, 2))  
+              End If
+                          
+            Else 
+              
+              FDebugExpr.Add(Mid$(sVar, 2), aData[1])
+      
+            Endif 
+      
+          Endif
+          
+      End Select
+  
+  End Select
+  
+End
+
+Public Function DebugExprCheck(sExpr As String) As Boolean
+
+  Return Not (Left(sExpr) = "!")
+
+End
+
+Public Sub Process_Kill()
+
+  Dim sMsg As String
+  
+  If Not Project.AboutToQuit Then AfterStop
+  
+  If Not $hProcess Then Return ' $hProcess may be NULL if the event loop is called somewhere during AfterStop()
+
+  If $hProcess.State = Process.Crashed Then
+    ' SIGKILL, SIGTERM and SIGINT are not considered as bugs in the program
+    Select Case $hProcess.Value
+      Case 2
+        sMsg = ("The program has been interrupted by CTRL+C.")
+      Case 9
+        'sMsg = ("The program has been killed.")
+      Case 15
+        sMsg = ("The program has been terminated.")
+      Default
+        FCrash.Run($hProcess)
+    End Select
+    If sMsg Then FMain.ShowWarning(sMsg)
+  Else If $hProcess.Value Then
+    FMain.ShowInfo(Subst(("The program has returned\nthe value: &1"), $hProcess.Value))
+  Endif
+
+  $hProcess = Null
+
+  If Project.Profiling Then
+    FProfile.Open($sProfilePath)
+  Endif
+
+End
+
+
+Private Sub AfterStop()
+
+  Dim hForm As Object
+
+  If $iState = STATE_STOP Then Return
+
+  $sAddBreakPoint = ""
+  $sRemoveBreakPoint = ""
+
+  Debug.Stop
+  
+  If $sPipeError Then
+    $hPipeError.Close
+    $sPipeError = ""
+  Endif
+
+  SetPosition("", 0)
+
+  SetState(STATE_STOP)
+  UpdateMinimize
+  Project.Running = False
+
+  WriteDebugSettings()
+
+  'Project.DebugInfoForm.Hide
+  'tvwLocal.Clear
+  FDebugInfo.Clear
+  FDebugExpr.Clear
+
+  $sError = ""
+  Balloon.Hide
+
+  For Each hForm In Project.Workspace.Windows
+    Try hForm.OnProjectDebug 
+  Next
+  'FMain.ShowTool(TRUE)
+  FMain.OnProjectDebug
+  FOutput.OnProjectDebug
+  FSearch.OnProjectDebug
+
+  'hForm = FDebugInfo.Parent
+  'Settings["/FMain/Splitter"] = hForm.Layout
+  'FDebugInfo.Hide
+  
+  If Not $bConsole Then FMain.ShowDebug(False)
+  FDebugInfo.UpdateView
+
+  ' FOR EACH hForm IN $cShow
+  '   'TRY PRINT "Design.AfterStop: SHOW "; hForm.Name
+  '   hForm.Show
+  ' NEXT
+
+  Action["console"].Value = $bConsole
+
+  Project.SetMessage(("OK"))
+
+  FMain.ActivateCurrentWindow
+
+  'IF Project.ActiveForm THEN
+  '  TRY Project.ActiveForm.Show
+  'ENDIF
+
+End
+
+
+Public Sub Stop()
+
+  If $iState = STATE_STOP Then Return
+
+  'Try $hBrowser.Kill
+  '$hBrowser = Null
+  Try $hProcess.Kill
+  AfterStop
+
+End
+
+
+Public Sub Forward()
+
+  If $iState = STATE_RUNNING Then Return
+
+  If $iState = STATE_STOP Then
+    Start("n")
+    Return
+  Endif
+
+  Command("n", STATE_RUNNING)
+
+End
+
+
+Public Sub ReturnFrom()
+
+  If $iState = STATE_RUNNING Then Return
+
+  If $iState = STATE_STOP Then
+    Start("n")
+    Return
+  Endif
+
+  Command("f", STATE_RUNNING)
+
+End
+
+
+
+' PUBLIC SUB btnForward_Click()
+' 
+'   IF $iState = STATE_STOP THEN
+'     Project.Run(FALSE, 2)
+'   ELSE
+'     Forward
+'   ENDIF
+' 
+' END
+
+
+Public Sub Step()
+
+  If $iState = STATE_RUNNING Then Return
+
+  If $iState = STATE_STOP Then
+    Start("s")
+    Return
+  Endif
+
+  Command("s", STATE_RUNNING)
+
+End
+
+' PUBLIC SUB btnStep_Click()
+' 
+'   IF $iState = STATE_STOP THEN
+'     Project.Run(FALSE, 1)
+'   ELSE
+'     ME.Step
+'   ENDIF
+' 
+' END
+
+
+
+Private Function SetPosition(sClass As String, iLine As Integer) As Boolean
+
+  Dim sPath As String
+
+  'PRINT "SetPosition "; sClass; iLine
+
+  If Len(sClass) > 0 And iLine > 0 Then
+    If sClass = $sPosClass And iLine = $iPosLine Then Return
+  Endif
+
+  If $sPosClass Then
+
+    sPath = Project.FindPath($sPosClass)
+
+    With Project.Files[sPath]
+      .GetEditor().StopLine = -1
+      'Try .GetEditor().Lines[$iPosLine - 1].Current = False
+    End With
+
+  Endif
+
+  $sPosClass = sClass
+  $iPosLine = iLine
+
+  If $sPosClass Then
+
+    sPath = Project.FindPath($sPosClass)
+
+'     Project.LoadFile(sPath)
+'     'PRINT $sPosClass; " / "; sPath; " -> "; IsNull(Project.Files[sPath])
+'
+'     WITH Project.Files[sPath]
+'       IF $iPosLine <= .GetEditor().Lines.Count THEN
+'         .GetEditor().Lines.SetFlag($iPosLine - 1, Editor.Current, TRUE)
+'         .Show()
+'         .Goto($iPosLine)
+'         RETURN
+'       ENDIF
+'     END WITH
+
+    Project.LoadFile(sPath)
+
+    With Project.Files[sPath]
+      If $iPosLine <= .GetEditor().Count Then
+        Project.OpenFile(sPath, $iPosLine)
+        .GetEditor().StopLine = $iPosLine - 1
+        Return
+      Endif
+    End With
+
+  Endif
+
+  Return True
+
+End
+
+
+' PRIVATE SUB ClearPosition()
+'
+'   SetPosition("", 0)
+'
+' END
+
+Private Sub WriteCommand(sCmd As String)
+  
+  'Error "---> "; sCmd
+  Debug.Write(sCmd)
+  
+End
+
+Public Sub RunUntil(hForm As FEditor, iLine As Integer)
+
+  Dim bOn As Boolean
+  Dim sClass As String
+  Dim sBreak As String
+
+  If $iState = STATE_RUNNING Then Return
+
+  sClass = hForm.Name
+
+  With hForm.GetEditor()
+    bOn = Not .[iLine].Breakpoint
+  End With
+
+  Inc iLine
+
+  If bOn Then
+    'PRINT "RunUntil "; sClass; "."; iLine
+    sBreak = sClass & "." & CStr(iLine)
+    If $iState <> STATE_DEBUG Then
+      $sAddBreakpoint = "+" & sBreak
+    Else
+      WriteCommand("+" & sBreak)
+    Endif
+    $sRemoveBreakpoint = "-" & sBreak
+  Endif
+
+  Run
+
+End
+
+
+Public Sub Run()
+
+  If $iState = STATE_RUNNING Then Return
+
+  $bLastCommandMayBeLong = True
+
+  If $iState = STATE_STOP Then
+    Start("g")
+  Else
+    Command("g", STATE_RUNNING)
+  Endif
+
+  $bLastCommandMayBeLong = False
+
+End
+
+
+' PUBLIC SUB btnGo_Click()
+' 
+'   IF $iState = STATE_STOP THEN
+'     Project.Run(FALSE)
+'   ELSE
+'     Run
+'   ENDIF
+' 
+' END
+
+
+' PRIVATE SUB SplitArg(sArg AS String) AS String[]
+'   
+'   DIM aArg AS NEW String[]
+'   DIM iPos AS Integer
+'   DIM sCar AS String
+'   DIM sElt AS String
+'   DIM bIgnoreSpace AS Boolean
+'   
+'   sArg = Trim(sArg)
+'   IF sArg THEN
+'   
+'     FOR iPos = 1 TO Len(sArg)
+'     
+'       sCar = Mid$(sArg, iPos, 1)
+'       IF sCar = " " AND IF NOT bIgnoreSpace THEN
+'         aArg.Add(sElt)
+'         sElt = ""
+'         CONTINUE
+'       ENDIF
+'       IF sCar = Chr$(34) THEN 
+'         bIgnoreSpace = NOT bIgnoreSpace
+'         CONTINUE 
+'       ENDIF
+'       IF sCar = "\\" THEN 
+'         INC iPos
+'         sElt &= Mid$(sArg, iPos, 1)
+'         CONTINUE 
+'       ENDIF 
+'       sElt &= sCar
+'     NEXT
+'     
+'     aArg.Add(sElt)
+'     
+'   ENDIF 
+'   
+'   RETURN aArg
+'   
+' END
+
+
+' PRIVATE SUB SplitArgument(sArg AS String) AS String[]
+'   
+'   DIM I, J AS Integer
+'   DIM aArg AS NEW String[]
+'   DIM iCar AS Integer
+'   DIM iWait AS Integer
+' 
+'   I = 1
+'   DO
+'     INC J
+'     IF J > Len(sArg) THEN BREAK 
+'     iCar = Asc(Mid$(sArg, J, 1))
+'     
+'     IF iCar = iWait THEN 
+'       iWait = 0
+'       CONTINUE 
+'     ENDIF
+'     
+'     IF iCar = 34 OR iCar = Asc("'") THEN 
+'       iWait = iCar  
+'     ENDIF
+'     
+'     IF iCar < 32 THEN 
+'       IF J > I THEN aArg.Add(Mid$(sArg, I, J - I))
+'       I = J + 1
+'       CONTINUE 
+'     ENDIF
+'     
+'   LOOP 
+'   
+'   IF J > I THEN aArg.Add(Mid$(sArg, I, J - I))
+'   
+'   RETURN aArg
+'   
+' END
+
+
+Private Sub Start(sCmd As String)
+
+  Dim hForm As Object
+  'Dim hEdit As FEditor
+  Dim aExec As String[]
+  Dim bValgrind As Boolean '= True
+  Dim sTitle As String
+  Dim sProg As String
+  Dim sBreakpoint As String
+  Dim sFile As String
+  Dim aEnv As String[]
+  Dim sOpenWebBrowser As String
+  Dim sPort As String
+  Dim iPos As Integer
+
+  If Project.Running Then Return
+  
+  '$cShow.Clear
+
+  $bConsole = Action["console"].Value  
+
+  If Project.Compile() Then Return
+
+  ClearOutput
+
+  'PRINT "EXEC "; "gbx -gs " & File.Dir(Project.Path) & " -- " & Project.Arguments
+
+  $iProcessId = 0
+  $sCmdStart = ""
+  ' FDebugInfo.ClearBreakpoint
+
+  ReadDebugSettings()
+
+  ' FDebugInfo.ResetBreakpoints
+  ' 
+  ' For Each hForm In Project.Files
+  '   If Project.IsEditor(hForm) Then
+  '     hEdit = hForm
+  ' 
+  '     For Each iLine In hEdit.GetBreakpoints()
+  ' 
+  '       FDebugInfo.AddBreakpoint(hEdit.Name, hEdit.GetProcAt(iLine), iLine, True)
+  '       $sCmdStart = $sCmdStart & "+" & hEdit.Name & "." & CStr(iLine + 1) & "\n"
+  '       '$hProcess.Send(sCmd & "\n")
+  ' 
+  '     Next
+  ' 
+  '   Endif
+  ' Next
+  
+  For Each sBreakpoint In FDebugInfo.GetBreakpoints()
+    $sCmdStart &= "+" & sBreakpoint & "\n"
+  Next
+
+  If $sAddBreakpoint Then
+    $sCmdStart &= $sAddBreakpoint & "\n"
+    $sAddBreakpoint = ""
+  Endif
+  
+  'If Project.BreakOnError Then $sCmdStart &= "b+\n"
+
+  $sCmdStart &= sCmd
+  '$sCmdStartRun = sCmd
+
+  $bStart = True
+  Project.Running = True
+
+  For Each hForm In Project.Workspace.Windows
+    Try hForm.OnProjectDebug
+  Next
+  FOutput.OnProjectDebug
+  FMain.OnProjectDebug
+  FSearch.OnProjectDebug
+
+  FMain.ShowDebug(True)
+  FDebugInfo.UpdateView
+
+  aEnv = Project.Environment.Copy()
+  
+  If Not aEnv.Exist("GB_GUI=*", gb.Like) Then 
+    aEnv.Add("GB_GUI=")
+  Endif
+
+  If Project.Profiling Then FProfile.CleanProfileFiles
+
+  ' If Project.Environment And If Project.Environment.Count Then 
+  ' 
+  '   sExec = Project.Environment.Join(" ")
+  '   sExec &= " exec " & Shell$(System.Path &/ "bin/gbx" & System.Version) & " -g -f " & Shell$(File.Dir(SConv(Project.Path)))
+  ' 
+  '   For Each sArg In Project.Arguments
+  '     sExec &= " " & Shell$(sArg)
+  '   Next
+  '   
+  '   $hProcess = Shell sExec For Read Write As "Process"
+  ' 
+  ' Else
+
+  aExec = [System.Path &/ "bin/gbx" & System.Version, "-g", "-f", $sFifo]
+  
+  If Startup Then 
+    aExec.Add("-s")
+    aExec.Add(Startup)
+  Endif
+  
+  If Project.CanUseHttpServer() Then 
+    If Project.UseHttpServer Or If Project.Components.Exist("gb.httpd") Then
+      aExec.Add("-H")
+      iPos = aEnv.Find("GB_HTTPD_PORT=*", gb.Like)
+      sPort = "8080"
+      If iPos < 0 Then
+        aEnv.Add("GB_HTTPD_PORT=8080")
+      Else
+        Try sPort = Scan(aEnv[iPos], "*=*")[1]
+      Endif
+      sOpenWebBrowser = "http://localhost:" & sPort
+    Endif
+  Endif
+  
+  If Project.Profiling Then 
+    
+    aExec.Add("-p")
+    
+    Inc Project.ProfileIndex
+    sFile = "." & CStr(Project.ProfileIndex) & ".prof"
+    
+    If Project.ReadOnly Then
+      $sProfilePath = File.Dir(Temp$) &/ sFile
+    Else
+      $sProfilePath = Project.Dir &/ sFile
+    Endif
+    aExec.Add($sProfilePath)
+    
+  Endif
+  
+  aExec.Add(File.Dir(SConv(Project.Path)))
+  
+  If Project.Arguments.Count Then
+    iPos = Project.CurrentArgument - 1
+    If iPos >= 0 And If iPos < Project.Arguments.Count Then
+      aExec.Add("--")
+      aExec.Insert(Project.Arguments[iPos])
+    Endif
+  Endif
+  
+  If bValgrind Then 
+    aExec.Insert(["valgrind", "--tool=memcheck", "--num-callers=50"], 0)
+  Endif
+
+  'If Project.UseTerminal Then aExec.Insert(["/usr/bin/Terminal", "--hold", "--disable-server", "-x"], 0)
+
+  If Project.UseTerminal Then 
+  
+    sTitle = Project.Name & " (" & ("Output terminal") & ")"
+  
+    sProg = Settings["/Terminal"]
+    
+    If Not sProg Then
+  
+      Select Case Desktop.Type
+      
+        Case Like "KDE*"
+          sProg = "konsole"
+          
+        Case "GNOME"        
+          sProg = "gnome-terminal"
+          
+        Case "XFCE"
+          sProg = "Terminal"
+          
+        Case "LXDE"
+          sProg = "lxterminal"
+        
+        Default
+          sProg = "xterm"
+      
+      End Select
+      
+    Endif
+    
+    If Project.CheckProgram(sProg) Then 
+      sProg = "xterm"
+      If Project.CheckProgram(sProg) Then
+        FMain.ShowWarning(("No terminal emulator found."))
+        sProg = ""
+      Endif
+    Endif
+    
+    If Project.RedirectStderr Then
+      $sPipeError = Temp$()
+      aExec.Add("-t")
+      aExec.Add($sPipeError)
+    Endif
+    
+  Endif
+    
+  Select Case sProg
+  
+    Case "konsole"
+      aExec.Insert(["konsole", "--nofork", "--caption", sTitle, "--hold", "--name", Project.Name & "-output", "-e"], 0)
+      
+    Case "gnome-terminal"
+      ' gnome terminal cannot hold at end
+      aExec.Insert(["gnome-terminal", "--hide-menubar", "--maximize", "--title=" & sTitle, "-x"], 0)
+      
+    Case "Terminal"
+      aExec.Insert(["Terminal", "--hide-menubar", "--hide-toolbars", "--title=" & sTitle, "--hold", "-x"], 0)
+    
+    Case "lxterminal"
+      aExec.Insert(["lxterminal", "-t", sTitle, "-e"], 0)
+      
+    Case "xterm"
+      aExec.Insert(["xterm", "-title", sTitle, "-hold", "-e"], 0)
+      
+  End Select
+  
+  If sProg Then
+    $hProcess = Exec aExec With aEnv As "Process"
+  Else
+    '$hProcess = Exec aExec With aEnv For Input Output As "Process"
+    $hProcess = FOutput.GetTerminal().Exec(aExec, aEnv)
+    $hProcess.Term.Echo = True
+    $hObserver = New Observer($hProcess, True) As "Process"
+  Endif
+  
+  If $sPipeError Then
+    $hPipeError = Pipe $sPipeError For Read Watch
+  Endif
+  
+  SetState(STATE_STARTING)
+  Balloon.Hide
+
+  Try Debug.Start
+
+  If Error Then 
+    'sArg = Error.Text
+    Try $hProcess.Kill
+    'FMain.ShowError(("Unable to start debugger.") & "\n\n" & sArg)
+    Return
+  Endif
+
+  UpdateMinimize
+
+  If sOpenWebBrowser Then
+    $hBrowser = Project.OpenWebPage(sOpenWebBrowser, True)
+    'If $hBrowser Then Object.Attach($hBrowser, Me, "Browser")
+  Endif
+
+  'PRINT "Debug.Start"
+  'PRINT "Debug.Start -> OK"
+
+  'Signal
+
+End
+
+' Public Sub Browser_Kill()
+'   
+'   Stop()
+'   
+' End
+
+
+Private Sub UpdateMinimize()
+  
+  'Debug Project.Running;; $iState;; $bLastCommandMayBeLong
+  
+  If Project.Running And If Settings["/MinimizeOnRun"] Then
+    If $iState = STATE_STARTING Then
+      If $bLastCommandMayBeLong Then
+        'Debug "MINIMIZE"
+        FMain.Minimized = True
+      Endif
+    Else 
+      'Debug "RESTORE"
+      FMain.Minimized = False
+    Endif
+  Endif
+  
+End
+
+Public Sub Command(sCmd As String, Optional iNewState As Integer = STATE_LAST)
+
+  'IF Start(sCmd) THEN RETURN
+
+  'IF NOT Project.Running THEN RETURN
+
+  'WAIT
+  If Not $hProcess Then Return
+
+  'IF bResult THEN
+  '  $cCommand.Add(sPrefix & sCmd)
+  'ENDIF
+
+  WriteCommand(sCmd)
+  
+  If iNewState <> STATE_LAST Then
+    If iNewState <> $iState Then
+      SetState(iNewState)
+      SetPosition("", 0)
+    Endif
+  Endif
+  
+End
+
+' Private Sub BreakOnError()
+' 
+'   WriteCommand("b" & If(Project.BreakOnError, "+", "-"))
+' 
+' End
+
+Private Sub Signal()
+
+  'PRINT "Signal"
+
+  If $bStart Then
+    'PRINT "START Debug.Write: "; $sCmdStart
+    WriteCommand($sCmdStart)
+    $bStart = False
+    'Command("w", TRUE)
+    'Command($sCmdStartRun, FALSE, STATE_RUNNING)
+    SetState(STATE_RUNNING)
+    $bIgnoreNextInfo = True
+    Return
+  Endif
+
+  ' If $bUpdateBreakOnError Then
+  '   $bUpdateBreakOnError = False
+  '   BreakOnError
+  '   Command("", STATE_RUNNING)
+  '   Return
+  ' Endif
+
+  'IF $iState = STATE_DEBUG THEN RETURN
+
+  ' Entering debug
+
+  If $sRemoveBreakpoint Then
+    WriteCommand($sRemoveBreakpoint)
+    $sRemoveBreakpoint = ""
+  Endif
+
+  'Command("w", TRUE)
+  'Command("l", TRUE)
+
+  FDebugInfo.RefreshAllWatch
+
+  Try FDebugExpr.RefreshAll
+  
+  FMain.Show
+
+  'Command("e", TRUE)
+
+End
+
+
+' PUBLIC SUB Stop()
+'
+'   IF $iState = STATE_STOP THEN RETURN
+'
+'   'SendCommand("q", TRUE)
+'   $hProcess.Kill
+'
+' END
+
+Public Sub ClearOutput()
+
+  FOutput.Clear
+
+End
+
+
+Private Sub Insert(sText As String)
+
+  'TRY sText = DConv$(sText)
+  FOutput.Insert(sText)
+
+End
+
+
+
+' Private Sub ToggleChild(hChild As Object)
+' 
+'   'hChild.Visible = TRUE 'NOT hChild.Visible
+'   hChild.Show
+' 
+' End
+
+
+' PRIVATE SUB SaveChild(hChild AS Object)
+' 
+'   hChild.Shown = hChild.Visible
+'   hChild.Hide
+' 
+' END
+' 
+' 
+' PRIVATE SUB RestoreChild(hChild AS Object)
+' 
+'   hChild.Visible = hChild.Shown
+' 
+' END
+
+
+Public Function IsRunning() As Boolean
+
+  Return $iState = STATE_RUNNING
+
+End
+
+Public Function IsStop() As Boolean
+
+  Return $iState = STATE_STOP
+
+End
+
+Public Sub GetProcess() As Process
+  
+  Return $hProcess
+  
+End
+
+Public Sub Send(sStr As String)
+
+  If $iState <> STATE_RUNNING Then Return
+  Write #$hProcess, sStr
+  Flush #$hProcess
+
+End
+
+
+' PUBLIC SUB btnFrom_Click()
+' 
+'   IF $iState = STATE_STOP THEN
+'     Project.Run(FALSE, 1)
+'   ELSE
+'     ME.ReturnFrom
+'   ENDIF
+' 
+' END
+
+Public Sub Eval(sExpr As String) As String
+
+  $bResult = False  
+  Command("!" & sExpr)
+
+  Wait
+  While Not $bResult
+    Wait 
+  Wend
+  
+  Return $sResult
+  
+End
+
+Public Sub ReadDebugSettings()
+  
+  FDebugInfo.ReadWatchSettings()
+  FDebugExpr.ReadSettings()
+
+End
+
+Public Sub WriteDebugSettings()
+  
+  FDebugInfo.WriteWatchSettings()
+  FDebugExpr.WriteSettings()
+
+End
+
+
+Public Sub SetBreakpoint(sClass As String, iLine As Integer, bOn As Boolean) 
+  
+  Dim hEditor As FEditor
+  Dim sPath As String
+  
+  'Debug sClass; "."; iLine;; bOn
+  
+  If $iState = STATE_RUNNING Then Return
+
+  ' Update editor
+  sPath = Project.FindPath(sClass)
+  If Not sPath Then Return
+  Try hEditor = Project.LoadFile(sPath)
+  If Not hEditor Then Return 
+  If hEditor.SetBreakpoint(iLine, bOn) Then Return 
+  
+  'IF $iState = STATE_STOP THEN RETURN
+
+  Inc iLine
+
+  ' Update debugger
+
+  If bOn Then
+    'DEBUG "+" & sClass & "." & CStr(iLine)
+    WriteCommand("+" & sClass & "." & CStr(iLine))
+  Else
+    'DEBUG "-" & sClass & "." & CStr(iLine)
+    WriteCommand("-" & sClass & "." & CStr(iLine))
+  Endif
+
+End
+
+Private Sub SetBreakpointFromString(sKey As String, bOn As Boolean)
+  
+  Dim aBreak As String[]
+  
+  aBreak = Scan(sKey, "*.*")
+  If aBreak.Count <> 2 Then Return 
+  SetBreakpoint(aBreak[0], CInt(aBreak[1]), bOn)
+  
+End
+
+
+' Public Sub HasBreakpoint(sClass As String, iLine As Integer) As Boolean
+'   
+'   Dim hEditor As FEditor
+'   
+'   ' Update editor
+'   hEditor = Project.Files[Project.FindPath(sClass)]
+'   If Not hEditor Then Return
+'   Return hEditor.HasBreakpoint(iLine)
+'    
+' End
+
+
+
+Public Sub ReadBreakpoints()
+
+  Dim iInd As Integer
+
+  FDebugInfo.ClearBreakpoints
+  For iInd = 1 To Project.Config["/Breakpoints/Count", 0]
+    SetBreakpointFromString(Project.Config["/Breakpoints/Breakpoint[" & CStr(iInd) & "]"], True)
+  Next
+  
+End
+
+Public Sub WriteBreakpoints()
+  
+  Dim hFile As Object
+  Dim hEditor As FEditor
+  Dim iLine As Integer
+  Dim iCount As Integer
+
+  'IF NOT Project.Config THEN RETURN
+
+  Project.Config.Clear("/Breakpoints")
+
+  For Each hFile In Project.Files
+    If Not Project.IsEditor(hFile) Then Continue 
+    hEditor = hFile
+    For Each iLine In hEditor.GetBreakpoints(True)
+      Inc iCount
+      Project.Config["/Breakpoints/Breakpoint[" & CStr(iCount) & "]"] = hEditor.Name & "." & CStr(iLine)
+    Next
+  Next
+
+  Project.Config["/Breakpoints/Count"] = iCount
+
+End
+
+Public Sub ClearBreakpoints()
+
+  Dim hFile As Object
+  Dim hEditor As FEditor
+  Dim iLine As Integer
+
+  For Each hFile In Project.Files
+    If Not Project.IsEditor(hFile) Then Continue 
+    hEditor = hFile
+
+    For Each iLine In hEditor.GetBreakpoints()
+      SetBreakpoint(hEditor.Name, iLine, False)
+    Next
+
+  Next
+    
+End
+
+
+Public Sub SetBalloon(hCtrl As Control, Optional X As Integer = -1, Y As Integer = -1)
+  
+  BalloonControl = hCtrl
+  BalloonX = X
+  BalloonY = Y  
+  
+End

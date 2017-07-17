@@ -1,0 +1,37 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+Dim hprinter As New Printer
+
+Dim sPrinter As String
+  For Each sPrinter In Printer.List
+    ListView1.Add(sPrinter, sPrinter, IIf(sPrinter = Printer.Default, Picture["icon:/16/ok"], Picture["icon:/16/printer"]))
+  If sPrinter = Printer.Default Then ListView1[sPrinter].RichText = "<b>" & sPrinter & "</b>"
+  Next
+
+' hprinter.FirstPage
+' hprinter.LastPage
+' hprinter.NumCopies
+' hprinter.Orientation
+' hprinter.Page
+' hprinter.Paper
+' hprinter.PaperHeight
+' hprinter.PaperWidth
+' 
+
+' hprinter.ReverseOrder
+ 'hprinter.GrayScal
+' hprinter.FullPage
+' hprinter.OutputFile
+ 'hprinter.CollateCopie
+' hprinter.ReverseOrder
+
+
+End
+
+Public Sub Panel6_Show()
+
+  Me.Refresh
+
+End

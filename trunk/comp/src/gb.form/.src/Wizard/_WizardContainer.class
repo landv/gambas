@@ -1,0 +1,56 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Event _Refresh
+
+Property Text As String
+Property Picture As Picture
+Property Read Container As Container
+
+Private $sText As String
+Private $hPict As Picture
+
+Private $hPanel As Panel
+
+Public Sub _new()
+
+  $hPanel = New Panel(Me)
+  Me._Container = $hPanel
+
+End
+
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(sText As String)
+
+  $sText = sText
+  Raise _Refresh
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $hPict
+
+End
+
+Private Sub Picture_Write(hPict As Picture)
+
+  $hPict = hPict
+  Raise _Refresh
+
+End
+
+Private Function Container_Read() As Container
+
+  Return $hPanel  
+
+End

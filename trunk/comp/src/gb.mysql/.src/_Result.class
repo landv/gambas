@@ -1,0 +1,124 @@
+' Gambas class file
+
+Export
+Create Static
+
+Property Read RowCount As Integer
+Property Read RowMax As Integer
+Property Read ColumnCount As Integer
+Property Read ColumnMax As Integer
+Property Read Fields As String[]
+Property Read KeyFields As String[]
+
+Public Procedure Create(Database As String, Table As String, Optional OrderBy As String)
+
+  Dim iCounter As Integer
+  Dim hField As ResultField
+
+  modMain.$sResultDatabase = Database
+  modMain.$sResultTable = Table
+
+  modMain.$asFields.Clear()
+
+  modMain.$hResult = modMain.$Connection.Exec("SELECT * FROM `" & Database & "`.`" & Table & "`" & IIf(OrderBy, " ORDER BY " & OrderBy, ""))
+
+  If Not modMain.$hResult.Available Then Error.Raise("Empty set")
+
+  modMain.$asData = New String[modMain.$hResult.Count, modMain.$hResult.Fields.Count]
+  For Each modMain.$hResult
+    iCounter = 0
+    For Each hField In modMain.$hResult.Fields
+      modMain.$asData[modMain.$hResult.Index, iCounter] = Str(modMain.$hResult[hField.Name])
+      modMain.$asFields.Add(hField.Name)
+      Inc iCounter
+    Next
+  Next
+
+  modMain.$hResult = modMain.$Connection.Exec("SELECT `COLUMN_NAME` FROM `information_schema`.`COLUMNS` WHERE `TABLE_SCHEMA` = '" & Database & "' AND `TABLE_NAME` = '" & Table & "' AND `COLUMN_KEY` = 'PRI'")
+  For Each modMain.$hResult
+    modMain.$asKeyFields.Add(modMain.$hResult!COLUMN_NAME)
+  Next
+
+End
+
+Public Function Data(Row As Integer, Column As Integer) As String
+
+  Return modMain.$asData[Row, Column]
+
+End
+
+Public Function Field(Column As Integer) As String
+
+  Return modMain.$asFields[Column]
+
+End
+
+Public Function Column(Column As Integer) As String
+
+  Return Field(Column)
+
+End
+
+Public Function AddRecord(Optional Rows As Integer = 1) As Boolean
+
+  Dim asData As String[]
+  Dim iRow As Integer
+  Dim iColumn As Integer
+  Dim sDefault As String
+
+  asData = modMain.$asData
+  modMain.$asData = New String[asData.Bounds[0] + Rows, asData.Bounds[1]]
+  For iRow = 0 To asData.Bounds[0] - 1
+    For iColumn = 0 To asData.Bounds[1] - 1
+      modMain.$asData[iRow, iColumn] = asData[iRow, iColumn]
+    Next
+  Next
+  For iColumn = 0 To modMain.$asData.Bounds[1] - 1
+    sDefault = modMain.$Connection.Exec("SELECT `COLUMN_DEFAULT` FROM `information_schema`.`COLUMNS` WHERE `TABLE_SCHEMA` = '" & modMain.$sResultDatabase & "' AND `TABLE_NAME` = '" & modMain.$sResultTable & "' AND `COLUMN_NAME` = '" & modMain.$asFields[iColumn] & "'")!COLUMN_DEFAULT
+    For iRow = modMain.$asData.Bounds[0] - Rows To modMain.$asData.Bounds[0] - 1
+      Select (sDefault)
+        Case "CURRENT_TIMESTAMP"
+          modMain.$asData[iRow, iColumn] = modMain.$Connection.MySQL.CurrentTimestamp()
+        Default
+          modMain.$asData[iRow, iColumn] = sDefault
+      End Select
+    Next
+  Next
+
+End
+
+Private Function RowCount_Read() As Integer
+
+  Return modMain.$asData.Bounds[0]
+
+End
+
+Private Function RowMax_Read() As Integer
+
+   Return modMain.$asData.Bounds[0] - 1
+
+End
+
+Private Function ColumnCount_Read() As Integer
+
+  Return modMain.$asData.Bounds[1]
+
+End
+
+Private Function ColumnMax_Read() As Integer
+
+  Return modMain.$asData.Bounds[1] - 1
+
+End
+
+Private Function Fields_Read() As String[]
+
+  Return modMain.$asFields
+
+End
+
+Private Function KeyFields_Read() As String[]
+
+  Return modMain.$asKeyFields
+
+End

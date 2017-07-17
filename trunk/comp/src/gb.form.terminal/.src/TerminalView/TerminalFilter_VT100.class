@@ -1,0 +1,830 @@
+' Gambas class file
+
+Inherits TerminalFilter
+
+Private Enum SCAN_NORMAL, SCAN_TITLE, SCAN_SET_CHARSET
+
+Private Enum MODE_AppScreen, MODE_AppCuKeys, MODE_AppKeyPad, MODE_Mouse1000, MODE_Mouse1001, MODE_Mouse1002, MODE_Mouse1003, MODE_Mouse1005, MODE_Mouse1006, MODE_Mouse1015, MODE_AnsiMODE_132Columns, MODE_Allow132Columns, MODE_BracketedPaste
+
+Private $aMode As New Boolean[13]
+'Private $aSavedMode As New Boolean[13]
+Private $sLeft As String
+
+Public Sub Reset()
+  
+  $aMode.Fill(False)
+  
+End
+
+
+Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess As Stream, sData As String)
+  
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim iCode As Integer
+  Dim iMode As Integer
+  Dim sTitle As String
+  Dim sCmd As String
+  Dim sStr As String
+  Dim iNum As Integer
+  Dim iPosEraseScreen As Integer
+  
+  If hView._DisableFilter Then
+    $sLeft &= sData
+    Return
+  Endif
+  
+  If $sLeft Then 
+    sData = $sLeft & sData
+    $sLeft = ""
+  Endif
+  
+  If Not String.IsValid(sData) Then
+    For iPos = Len(sData) DownTo 1
+      If Asc(sData, iPos) >= 192 Then Break 
+    Next
+    If iPos = 0 Then Return
+    $sLeft = Mid$(sData, iPos)
+    sData = Left(sData, iPos - 1)
+    If Not sData Then Return
+  Endif
+  
+  'If Len(sData) >= 4096 Then
+    iPosEraseScreen = RInStr(sData, "\e[2J")
+  'Endif
+  
+  Do
+    
+    hScreen = hView._GetCurrentScreen()
+    
+    Inc iPos
+    
+    iPos2 = InStr(sData, Chr$(27), iPos)
+    If iPos2 = 0 Then
+      hScreen.Print(Mid$(sData, iPos))
+      Break
+    Endif
+    
+    If iPos2 > iPos And If iPos > iPosEraseScreen Then hScreen.Print(Mid$(sData, iPos, iPos2 - iPos))
+    
+    iPos = iPos2
+    Inc iPos
+    
+    If iPos > Len(sData) Then
+      $sLeft = Mid$(sData, iPos2)
+      Return
+    Endif
+    
+    If Mid$(sData, iPos, 1) = "[" Then
+      
+      Inc iPos
+      
+      Do
+        
+        If iPos > Len(sData) Then
+          $sLeft = Mid$(sData, iPos2)
+          Return
+        Endif
+        
+        iCode = Asc(sData, iPos)
+        If iCode >= 64 And If iCode <= 126 Then Break
+        
+        Inc iPos
+        
+      Loop
+      
+    Endif
+    
+    iMode = Escape(hView, hScreen, hProcess, sData, iPos2 + 1, iPos - iPos2)
+    
+    If iMode = SCAN_TITLE Then
+      
+      Inc iPos
+      iPos2 = InStr(sData, Chr$(7), iPos)
+      If iPos2 = 0 Then
+        $sLeft = Mid$(sData, iPos)
+        Return
+      Endif
+      
+      sStr = Mid$(sData, iPos, iPos2 - iPos)
+      
+      iPos = InStr(sStr, ";")
+      If iPos Then
+        
+        sCmd = Left(sStr, iPos - 1)
+        sTitle = Mid$(sStr, iPos + 1)
+        
+        If sCmd = "0" Or If sCmd = "1" Or If sCmd = "2" Then
+          hView._SetTitle(sCmd, sTitle)
+        Else
+          sStr = "]" & sStr
+          GoSub NOT_IMPLEMENTED
+        Endif
+            
+      Endif
+      
+      iPos = iPos2
+      iMode = SCAN_NORMAL
+      
+    Else If iMode = SCAN_SET_CHARSET Then
+      
+      iNum = InStr("()*+", Mid$(sData, iPos, 1)) - 1
+      If iNum >= 0 Then hScreen.SetCharset(iNum, Mid$(sData, iPos + 1, 1))
+      
+      Inc iPos
+      iMode = SCAN_NORMAL
+      
+    Endif
+    
+  Loop
+  
+  Return
+  
+NOT_IMPLEMENTED:
+  
+  Debug "Not implemented: "; Quote(sStr)
+  Return
+  
+End
+
+' Escape sequence without the initial 27 character.
+
+Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As Stream, sData As String, iPos As Integer, iLen As Integer) As Integer
+  
+  Dim Y As Integer
+  Dim X As Integer
+  Dim aArg As String[]
+  Dim sArg As String
+  Dim iArg As Integer
+  Dim sStr As String
+  Dim iMode As Integer
+  Dim N As Integer
+  Dim I As Integer
+  
+  sStr = Mid$(sData, iPos, iLen)
+  
+  If hScreen.DEBUG_FILTER Then
+    Debug "ESC";
+    For I = 1 To Len(sStr)
+      Error " "; Mid$(sStr, I, 1);
+    Next
+    Error
+    hScreen.DebugRefresh
+  Endif
+  
+  Select Case Left(sStr)
+      
+    Case "[" ' CSI, the most frequent
+      
+      Select Case Right(sStr)
+        
+        Case "m" ' Set attribute (frequent, so test it first)
+          
+          GoSub GET_ARGS
+          If aArg Then
+            For I = 0 To aArg.Max
+              sArg = aArg[i]
+              'For Each sArg In aArg
+              
+              Try iArg = CInt(sArg)
+              If Error Then Continue
+              
+              Select Case iArg
+                Case 0
+                  hScreen.Attr.Reset()
+                Case 1
+                  hScreen.Attr.Bold = True
+                  'hScreen.Attr.Reverse = True
+                Case 2
+                  hScreen.Attr.Dim = True
+                Case 4
+                  hScreen.Attr.Underscore = True
+                Case 5
+                  hScreen.Attr.Blink = True
+                Case 7
+                  hScreen.Attr.Reverse = True
+                Case 21
+                  hScreen.Attr.Bold = False
+                Case 22
+                  hScreen.Attr.Dim = False
+                Case 24
+                  hScreen.Attr.Underscore = False
+                Case 25
+                  hScreen.Attr.Blink = False
+                Case 27
+                  hScreen.Attr.Reverse = False
+                Case 30
+                  hScreen.Attr.Foreground = 0
+                Case 31 To 37
+                  hScreen.Attr.Foreground = iArg - 30 + 8
+                Case 39
+                  hScreen.Attr.Foreground = -1
+                Case 40 To 47
+                  hScreen.Attr.Background = iArg - 40
+                Case 49
+                  hScreen.Attr.Background = -1
+                Case 90 To 97
+                  hScreen.Attr.Foreground = iArg - 90
+                Case 100 To 107
+                  hScreen.Attr.Background = iArg - 100
+                Case 38
+                  If (aArg.max - i) >= 2 And If aArg[I + 1] = "5" Then
+                    Try hScreen.Attr.Foreground = CInt(aArg[I + 2])
+                    I += 2
+                  Endif
+                  'TODO: Implement support for RGB Colors
+                  ' If (aArg.max - i) >= 4 And If aArg[i + 1] = "2" Then
+                  '   Try hScreen.Attr.Background = Color.RGB(CInt(aArg[i + 2]), CInt(aArg[i + 3]), CInt(aArg[i + 4))
+                  '   i += 4
+                  ' Endif
+                Case 48
+                  If (aArg.max - I) >= 2 And If aArg[I + 1] = "5" Then
+                    Try hScreen.Attr.Background = CInt(aArg[I + 2])
+                    I += 2
+                  Endif
+                  'TODO: Implement support for RGB Colors
+                  ' If (aArg.max - i) >= 4 And If aArg[i + 1] = "2" Then
+                  '   Try hScreen.Attr.ForeGround = Color.RGB(CInt(aArg[i + 2]), CInt(aArg[i + 3]), CInt(aArg[i + 4))
+                  '   i += 4
+                  ' Endif
+                  
+                Default
+                  Goto NOT_IMPLEMENTED
+              End Select
+            Next
+          Else
+            hScreen.Attr.Reset
+          Endif
+          
+        Case "@"
+          
+          GoSub GET_COUNT
+          hScreen.InsertSpace(N)
+          
+        Case "A"
+          
+          GoSub GET_COUNT
+          hScreen.CursorUp(N)
+          
+        Case "B"
+          
+          GoSub GET_COUNT
+          hScreen.CursorDown(N)
+          
+        Case "C"
+          
+          GoSub GET_COUNT
+          hScreen.CursorRight(N)
+          
+        Case "D"
+          
+          GoSub GET_COUNT
+          hScreen.CursorLeft(N)
+          
+        Case "G"
+          
+          GoSub GET_ARGS
+          Try hScreen.CursorGoto(CInt(aArg[0]) - 1, hScreen.Line)
+          
+        Case "H", "f" ' Cursor goto
+          
+          GoSub GET_ARGS
+          
+          If aArg Then
+            Try Y = CInt(aArg[0]) - 1
+            Try X = CInt(aArg[1]) - 1
+          Endif
+          hScreen.CursorGoto(X, Y)
+
+        Case "c"  'Report terminal type
+          
+          Print #hProcess, "\e[?1;2c"
+          
+        Case "d" 'Set Cursor Y
+          
+          GoSub GET_ARGS
+          
+          If aArg Then 
+            Try Y = CInt(aArg[0]) - 1
+            hScreen.CursorGoto(hScreen.Column, Y)
+          Endif
+          
+        Case "J" ' Erase screen
+          
+          GoSub GET_ARGS
+          If Not aArg Or If aArg[0] = "0" Then
+            hScreen.EraseDown
+          Else If aArg[0] = "1" Then
+            hScreen.EraseUp
+          Else If aArg[0] = "2" Then
+            hScreen.EraseScreen
+          Else
+            Goto NOT_IMPLEMENTED
+          Endif
+          
+        Case "K" ' Erase line
+          
+          GoSub GET_ARGS
+          If Not aArg Or If aArg[0] = "0" Then
+            hScreen.EraseEndOfLine
+          Else If aArg[0] = "1" Then
+            hScreen.EraseStartOfLine
+          Else If aArg[0] = "2" Then
+            hScreen.EraseLine
+          Else
+            Goto NOT_IMPLEMENTED
+          Endif
+          
+        Case "L" ' Insert lines
+          
+          GoSub GET_COUNT
+          hScreen.InsertLine(N)
+          
+        Case "M" ' Delete lines
+          
+          GoSub GET_COUNT
+          hScreen.DeleteLine(N)
+          
+        Case "P" ' Delete characters
+          
+          GoSub GET_COUNT
+          hScreen.DeleteChar(N)
+          
+        Case "S" ' Scroll up
+          
+          GoSub GET_COUNT
+          hScreen.ScrollUp(N)
+          
+        Case "T" ' Scroll down
+          
+          GoSub GET_COUNT
+          hScreen.ScrollDown(N)
+          
+        Case "X" ' Erase char
+          
+          GoSub GET_COUNT
+          hScreen.EraseChar(N)
+        
+        ' Case "d"
+        '   
+        '   GoSub GET_ARGS
+        '   If aArg Then
+        '     Try Y = CInt(aArg[0]) - 1
+        '   Endif
+        '   hScreen.CursorGoto(hScreen.Column, Y)
+        
+        Case "h"
+          
+          If sStr Begins "[?" Then      'DEC Private Mode Set
+            sStr = Replace(sStr, "?", "") 'remove the ?
+            GoSub GET_ARGS
+            If aArg Then
+              For Each sArg In aArg
+                Select sArg
+                  Case "1" ' Application cursor keys
+                    hScreen.AppCursorKey = True
+                  Case "6" ' Origin
+                    hScreen.Origin = True
+                  Case "7" ' Wrap mode
+                    hScreen.WrapMode = True
+                  Case "12"
+                    'Ignored
+                  Case "25" ' Hide cursor
+                    hScreen.HideCursor = False
+                  Case "47", "1047"
+                    $aMode[MODE_AppScreen] = False
+                    hView.AlternateScreen = True
+                  Case "1000"
+                    $aMode[MODE_Mouse1000] = True
+                    UpdateMouseActive(hView)
+                  Case "1001"
+                    $aMode[MODE_Mouse1001] = True
+                    UpdateMouseActive(hView)
+                  Case "1002"
+                    $aMode[MODE_Mouse1002] = True
+                    UpdateMouseActive(hView)
+                  Case "1003"
+                    $aMode[MODE_Mouse1003] = True
+                    UpdateMouseActive(hView)
+                  Case "1005"
+                    $aMode[MODE_Mouse1005] = True
+                  Case "1006"
+                    $aMode[MODE_Mouse1006] = True
+                  Case "1034"
+                    ' ignore
+                  Case "1048"
+                    hScreen.SaveCursor
+                  Case "1049"
+                    hScreen.SaveCursor
+                    hView.AlternateScreen = True
+                    hView._GetCurrentScreen().Clear()
+                  Case "2004"
+                    Me.BracketedPasteActive = True
+                  Default
+                    Goto NOT_IMPLEMENTED
+                End Select
+              Next
+            Endif
+          Else                         'Set Mode
+            GoSub GET_ARGS
+            If aArg Then
+              For Each sArg In aArg
+                Select Case sArg
+                  Case "4" ' Insert mode
+                    hScreen.InsertMode = True
+                  Case "20" ' Newline mode
+                    hScreen.NewLineMode = True
+                  Default
+                    Goto NOT_IMPLEMENTED
+                End Select
+              Next
+            Endif
+          Endif
+          
+        Case "l"
+          
+          If sStr Begins "[?" Then      'DEC Private Mode Set
+            sStr = Replace(sStr, "?", "") 'remove the ?
+            GoSub GET_ARGS
+            If aArg Then
+              For Each sArg In aArg
+                Select sArg
+                  Case "1" ' Normal cursor keys
+                    hScreen.AppCursorKey = False
+                  Case "6" ' Origin
+                    hScreen.Origin = False
+                  Case "7" ' Wrap mode
+                    hScreen.WrapMode = False
+                  Case "12"
+                    'Ignored
+                  Case "25" ' Hide cursor
+                    hScreen.HideCursor = True
+                  Case "47"
+                    $aMode[MODE_AppScreen] = False
+                    hView.AlternateScreen = False
+                  Case "1000"
+                    $aMode[MODE_Mouse1000] = False
+                    UpdateMouseActive(hView)
+                  Case "1001"
+                    $aMode[MODE_Mouse1001] = False
+                    UpdateMouseActive(hView)
+                  Case "1002"
+                    $aMode[MODE_Mouse1002] = False
+                    UpdateMouseActive(hView)
+                  Case "1003"
+                    $aMode[MODE_Mouse1003] = False
+                    UpdateMouseActive(hView)
+                  Case "1005"
+                    $aMode[MODE_Mouse1005] = False
+                  Case "1006"
+                    $aMode[MODE_Mouse1006] = False
+                  Case "1034"
+                    ' ignore
+                  Case "1047"
+                    hScreen.Clear
+                    $aMode[MODE_AppScreen] = False
+                    hView.AlternateScreen = False
+                    $aMode[MODE_Mouse1000] = False
+                    $aMode[MODE_Mouse1001] = False
+                    $aMode[MODE_Mouse1002] = False
+                    $aMode[MODE_Mouse1003] = False
+                    UpdateMouseActive(hView)
+                  Case "1048"
+                    hScreen.RestoreCursor
+                  Case "1049"
+                    hView.AlternateScreen = False
+                    hScreen.RestoreCursor
+                  Case "2004"
+                    Me.BracketedPasteActive = False
+                  Default
+                    Goto NOT_IMPLEMENTED
+                End Select
+              Next
+            Endif
+          Else                          'Set Mode
+            GoSub GET_ARGS
+            If aArg Then
+              For Each sArg In aArg
+                Select Case sArg
+                  Case "4" ' Insert mode
+                    hScreen.InsertMode = False
+                  Case "20" ' Newline mode
+                    hScreen.NewLineMode = False
+                  Default
+                    Goto NOT_IMPLEMENTED
+                End Select
+              Next
+            Endif
+          Endif
+        
+        Case "n" ' Device Status Report
+          
+          Select Case Mid(sStr, 2, -1)
+            Case "5"
+              Print #hProcess, "\e[0n";  'Report Status OK
+            Case "6"
+              Print #hProcess, Subst("\e[&1;&2R", hScreen.Line, hScreen.Column);  'Report Cursor Position
+            Case "?6"
+              Print #hProcess, Subst("\e[?&1;&2R", hScreen.Line, hScreen.Column); 'Report Cursor Position
+            Case "?15"
+              Print #hProcess, "\0[?11n" 'Printer not ready (10 for ready)"
+            Case "?25" 'Report UDK statu
+              Print #hProcess, "\0[?20n"  'UDK status as CSI ? 2 0 n (unlocked) or CSI ? 2 1 n (locked)
+            Case "?26" 'Report Keyboard status as
+              Print #hProcess, "\0[?50n"  'No Locator, if not.
+            Default
+              Goto NOT_IMPLEMENTED
+          End Select
+        
+        Case "r" ' Scroll screen
+          
+          GoSub GET_ARGS
+          If Not aArg Then
+            hScreen.ScrollScreen()
+          Else
+            Try hScreen.ScrollScreen(CInt(aArg[0]) - 1, CInt(aArg[1]) - 1)
+          Endif
+          
+        Case "s" ' Save cursor
+          
+          hScreen.SaveCursor
+          
+        Case "u" ' Restore cursor
+          
+          hScreen.RestoreCursor
+          
+        Default
+          
+          Goto NOT_IMPLEMENTED
+          
+      End Select
+      
+    Case "7" ' Save cursor
+      
+      hScreen.SaveCursor()
+      
+    Case "8" ' Restore cursor
+      
+      hScreen.RestoreCursor()
+      
+    Case "D" ' Index
+      
+      hScreen.Index
+      
+    Case "M" ' Reverse index
+      
+      hScreen.ReverseIndex
+      
+    Case "n"
+      
+      ' TODO: Must apply it to both screens apparently
+      hScreen.UseCharset(2)
+      
+    Case "o"
+      
+      ' TODO: Must apply it to both screens apparently
+      hScreen.UseCharset(3)
+      
+    Case "="
+      
+      hScreen.AppKeypad = True
+      
+    Case ">"
+      
+      hScreen.AppKeypad = False
+      
+    Case "(", ")", "*", "+"
+      
+      iMode = SCAN_SET_CHARSET
+      
+    Case "]" '>>>>> OSC
+      
+      iMode = SCAN_TITLE
+      
+    Default
+      
+      Goto NOT_IMPLEMENTED
+      
+  End Select
+  
+  Return iMode
+  
+GET_COUNT:
+  
+  N = 1
+  If Len(sStr) > 2 Then Try N = CInt(Mid$(sStr, 2, -1))
+  
+  Return
+  
+GET_ARGS:
+  
+  If Len(sStr) > 2 Then
+    aArg = Split(Mid$(sStr, 2, -1), ";")
+  Else
+    aArg = Null
+  Endif
+  
+  Return
+  
+NOT_IMPLEMENTED:
+  
+  Debug "Not implemented: "; Quote(sStr)
+  
+End
+
+Public Sub InputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess As Stream, iCode As Integer, sText As String, Optional bNormal As Boolean = True, bShift As Boolean, bControl As Boolean) As Boolean
+  
+  If bNormal Then
+    
+    Select Case iCode
+        
+      Case Key.Up
+        sText = If(hScreen.AppCursorKey, "\eOA", "\e[A")
+        
+      Case Key.Down
+        sText = If(hScreen.AppCursorKey, "\eOB", "\e[B")
+        
+      Case Key.Right
+        sText = If(hScreen.AppCursorKey, "\eOC", "\e[C")
+        
+      Case Key.Left
+        sText = If(hScreen.AppCursorKey, "\eOD", "\e[D")
+
+      Case Key.Enter, Key.Return
+        sText = If(hScreen.NewlineMode, "\r\n", "\n")
+        
+      Case Key.Insert
+        sText = "\e[2~"
+
+      Case Key.Delete
+        sText = "\e[3~"
+
+      Case Key.Home
+        'sText="\e[1~"
+        sText = If(hScreen.AppCursorKey, "\eOH", "\e[H")
+
+      Case Key.End
+        'sText = "\e[4~"
+        sText = If(hScreen.AppCursorKey, "\eOF", "\e[F")
+
+      Case Key.PageDown
+        sText = "\e[6~"
+
+      Case Key.PageUp
+        sText = "\e[5~"
+
+      Case Key.F1
+        sText = "\eOP"
+
+      Case Key.F2
+        sText = "\eOQ"
+
+      Case Key.F3
+        sText = "\eOR"
+
+      Case Key.F4
+        sText = "\eOS"
+
+      Case Key.F5
+        sText = "\e[15~"
+
+      Case Key.F6
+        sText = "\e[17~"
+
+      Case Key.F7
+        sText = "\e[18~"
+
+      Case Key.F8
+        sText = "\e[19~"
+
+      Case Key.F9
+        sText = "\e[20~"
+
+      Case Key.F10
+        sText = "\e[21~"
+
+      Case Key.F11
+        sText = "\e[23~"
+
+      Case Key.F12
+        sText = "\e[24~"
+        
+      Case Key.Return, Key.Enter
+        If hScreen.NewlineMode Then
+          sText = "\r\n"
+        Else
+          sText = "\n"
+        Endif
+        
+      Case Key.BackSpace
+        sText = Chr$(127)
+      
+      Case Key.Tab
+        sText = "\t"
+      
+      Case Key.BackTab
+        sText = "\e[Z"
+      
+    End Select
+    
+  Else If bShift Then
+    
+    Select iCode
+      
+      Case Key.Return, Key.Enter
+        sText = "\eOM"
+        
+      Case Key.BackTab
+        sText = "\e[Z"
+        
+    End Select
+    
+  Else If bControl Then
+    
+    Select iCode
+      
+      Case Key["S"]
+        
+        hView._Suspend(True)
+        
+      Case Key["Q"], Key["C"]
+      
+        hView._Suspend(False)
+        
+    End Select
+    
+  Endif
+  
+  If sText Then
+    Print #hProcess, sText;
+    Return True
+  Endif
+  
+End
+
+'iButton indicates the button pressed or released (0-2) or scroll event (4-5).
+
+'iEvent represents the kind of mouse action that occurred:
+'        0 = Mouse button press
+'        1 = Mouse drag
+'        2 = Mouse button release
+
+
+
+Public Sub SendMouseEvent(hProcess As Process, X As Integer, Y As Integer, iEvent As Integer)
+
+  Dim sCommand As String
+  Dim iButton As Integer = 3
+  
+  If Mouse.left Then
+    iButton = 0
+  Else If Mouse.Right Then
+    iButton = 2
+  Else If Mouse.Middle Then
+    iButton = 1
+  Else If Mouse.Delta = -1 Then
+    iButton = 5
+  Else If Mouse.Delta = 1 Then 
+    iButton = 4
+  Endif
+  
+  If X < 0 Or Y < 0 Then Return
+  
+  X += 1
+  Y += 1
+
+   ' With the exception Of the 1006 mode, button release Is Encoded In cb.
+   'Note that If multiple extensions are enabled, the 1006 Is Used, so it 's okay to check for only that.
+    If iEvent = Me.MouseMove And If Not $aMode[MODE_Mouse1006] Then iButton = 3
+  
+  'normal buttons are passed As 0 x20 + button,
+  'mouse wheel(buttons 4, 5) As 0 x5c + button
+    If iButton >= 4 Then iButton += &H3c
+  
+  'Mouse motion handling
+    If ($aMode[MODE_Mouse1002] Or $aMode[MODE_Mouse1003]) And iEvent = Me.MouseMove Then iButton += &H20  'add 32 To signify motion Event
+
+
+  
+  If $aMode[MODE_Mouse1006] Then 
+    sCommand &= Subst("\e[<&1;&2;&3&4", iButton, x, y, IIf(iEvent = Me.MouseUp, "m", "M"))
+  Else If $aMode[MODE_Mouse1015] Then
+    sCommand &= Subst("\e[<&1;&2;&3M", iButton + &H20, x, y)
+  ' Else If $aMode[MODE_Mouse1005] Then 
+  '   If X <= 2015 And y <= 2015 Then
+  '     sMouse = Conv(Chr(X + &H20) & Chr(Y + &H20), "ASCII", "UTF-8")
+  '     sCommand = Subst("\e[M&1&2", iButton + &H20, sMouse)
+  '   Endif
+  Else If X <= 223 And Y <= 223 Then
+    sCommand = Subst("\e[M&1&2&3", iButton + &H20, X + &H20, Y + &H20)
+  Endif
+  'Print sCommand
+  Print #hProcess, sCommand;
+  
+End
+
+Private Sub UpdateMouseActive(hView As TerminalView)
+
+  hView._UseMouse($aMode[MODE_Mouse1000] Or $aMode[MODE_Mouse1001] Or $aMode[MODE_Mouse1002] Or $aMode[MODE_Mouse1003])
+
+End

@@ -1,0 +1,61 @@
+' Gambas module file
+
+' Gambas module file
+
+Public hXMLRPC As CXMLRPC
+Public tMainSleep As Timer
+
+Public Function GetPlanning()
+
+  Dim fRpc As RpcFunction
+  Dim cRpc As RpcClient
+  Dim vVar As New Variant[]
+  Dim bOk As Boolean
+
+  fRpc = New RpcFunction("calendar.getplanning", Null, XmlRpc.xArray)
+  cRpc = New RpcClient(fRpc)
+  cRpc.URL = "http://127.0.0.1:9009"
+
+  Try bOk = cRpc.Call(Null)
+  If Error Then Print "Error posting"
+  If bOk Then
+    Print "Successful post"
+  Else
+    Print "Error: There was a problem setting"
+  Endif
+
+End
+
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+' gets triggered by sleep timer, triggers main loop
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Public Sub tSleep_Timer()
+
+  ' Check_for_Action()
+  Wait 0.01
+End
+
+
+Public Sub Main()
+
+  Dim X As Integer
+
+  ' main loop sleep timer
+  tMainSleep = New Timer As "tSleep"
+  tMainSleep.Delay = 1000
+  'tMainSleep.Enabled = True
+
+  hXMLRPC = New CXMLRPC
+  
+  ' start xmlrpc server
+  If hXMLRPC.Connect() Then
+    Print "XML-RPC listening on port 9009"
+  Else
+    Print "XML-RPC failed to start on port 9009"
+  End If
+
+  For X = 1 To 100000 Step 1
+    Print "XXX=" & X
+    GetPlanning()
+  Next 
+End

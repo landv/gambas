@@ -1,0 +1,34 @@
+' Gambas module file
+
+Public Sub Main()
+
+Dim writer As New XmlWriter
+
+  
+ writer.Open(Null, True)
+writer.StartElement("toto")
+writer.StartElement("titi")
+writer.Attribute("titi", "tutu\ntoto")
+writer.Text("h<&ello")
+writer.EndElement()
+writer.StartElement("titi")
+writer.Text("hello")
+writer.EndElement()
+writer.Element("toto", "hel<<lo", "np", "http://np.org")
+writer.StartElement("foo", ["fizz", "buzz"], "tx", "http://example.com/tx.xml")
+writer.StartElement("titi")
+writer.Text("hello")
+writer.EndElement()
+writer.Element("toto", "hello")
+writer.Comment("Hidden")
+writer.CDATA("Raw Data")
+writer.PI("hello", "worldl")
+writer.StartElement("titi")
+writer.Text("hello")
+
+Print "======"
+Print writer.Close()
+Print "======"
+Print writer.Data
+
+End

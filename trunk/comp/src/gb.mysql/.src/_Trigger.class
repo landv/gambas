@@ -1,0 +1,53 @@
+' Gambas class file
+
+Export
+Create Static
+
+Public Function {Time}(Trigger As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT `ACTION_TIMING` FROM `information_schema`.`TRIGGERS` WHERE `TRIGGER_SCHEMA` = '" & Database & "' AND `TRIGGER_NAME` = '" & Trigger & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!ACTION_TIMING
+
+End
+
+Public Function Event(Trigger As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT `EVENT_MANIPULATION` FROM `information_schema`.`TRIGGERS` WHERE `TRIGGER_SCHEMA` = '" & Database & "' AND `TRIGGER_NAME` = '" & Trigger & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!EVENT_MANIPULATION
+
+End
+
+Public Procedure Modify(Trigger As String, Table As String, {Time} As String, {Event} As String, Statement As String, Optional Database As String = modMain.$Connection.Name)
+
+  Delete(Trigger, True)
+  Add(Trigger, Table, {Time}, {Event}, Statement, Database)
+
+End
+
+Public Procedure Add(Trigger As String, Table As String, {Time} As String, {Event} As String, Statement As String, Optional Database As String = modMain.$Connection.Name)
+
+  modMain.RunQuery("CREATE TRIGGER `" & Trigger & "` " & {Time} & " " & {Event} & " ON `" & Database & "`.`" & Table & "` FOR EACH ROW " & Statement)
+
+End
+
+Public Procedure Delete(Trigger As String, Optional IfExists As Boolean = False, Optional Database As String = modMain.$Connection.Name)
+
+  modMain.$Query = "DROP TRIGGER "
+  If IfExists Then modMain.$Query &= "IF EXISTS "
+  modMain.$Query &= "`" & Database & "`.`" & Trigger & "`"
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Function Info(Trigger As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT `ACTION_STATEMENT` FROM `information_schema`.`TRIGGERS` WHERE `TRIGGER_SCHEMA` = '" & Database & "' AND `TRIGGER_NAME` = '" & Trigger & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!ACTION_STATEMENT
+
+End
+
+' Public Procedure Rename(Table As String, NewTable As String)
+' 
+' 
+' 
+' End

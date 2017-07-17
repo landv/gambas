@@ -1,0 +1,721 @@
+' Gambas class file
+
+Export
+
+Property Read Key As String
+Property {Picture} As Picture
+Property Text As String
+Property RichText As String
+Property Selected As Boolean
+Property Editable As Boolean
+Property Read Hovered As Boolean
+
+Property Read X As Integer
+Property Read Y As Integer
+Property Read Height, H As Integer
+Property Read Width, W As Integer
+
+Public _Key As String
+Private $sText As String
+Private $sRichText As String
+Private $hPicture As Picture
+Private $bSelected As Boolean
+Private $bEditable As Boolean
+Private $bEllipsized As Boolean
+
+Event _Foo
+
+Public Sub _new()
+  
+  $bEditable = GetIconView().Editable
+  
+End
+
+
+Private Sub GetIconView() As IconView
+  
+  Return Object.Parent(Me)
+  
+End
+
+Private Sub RefreshView()
+  
+  GetIconView()._RefreshItem(Me)
+  
+End
+
+Private Function Key_Read() As String
+
+  Return _Key
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $hPicture
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  If $hPicture = Value Then Return
+  $hPicture = Value
+  GetIconView()._UpdateIconSize($hPicture)
+  RefreshView
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  If $sText = Value Then Return
+  $sText = Value
+  GetIconView()._SortIsDirty
+  RefreshView
+  
+End
+
+
+Private Function RichText_Read() As String
+
+  Return $sRichText
+
+End
+
+Private Sub RichText_Write(Value As String)
+
+  If $sRichText = Value Then Return
+  $sRichText = Value
+  GetIconView()._SortIsDirty
+  RefreshView
+  
+End
+
+' Public Sub _Draw2(X As Integer, Y As Integer, Width As Integer, Height As Integer, bFocus As Boolean, bHover As Boolean)
+'   
+'   Dim iBackColor As Integer
+'   Dim hBackImage As Image
+'   Dim hParent As IconView
+'   Dim ix, iy As Integer
+'   
+'   If _IconViewItem._hBackPicture.Width <> Width Then 
+'     _IconViewItem._hBackPicture = DrawBackGround(Width, Height, Color.SelectedBackground)
+'     _IconViewItem._hBackPictureNoFocus = DrawBackGround(Width, Height, Color.Gray)
+'     _IconViewItem._hBackPictureMouseOver = DrawBackGround(Width, Height, Color.Lighter(Color.SelectedBackground))
+'     _IconViewItem._hBackPictureSelOver = DrawBackGround(Width, Height, Color.Darker(Color.SelectedBackground))
+'   Endif
+'   
+'   If bHover Then
+'     hBackImage = IIf(Me.Selected, _hBackPictureSelOver, _hBackPictureMouseOver)
+'     iBackColor = Color.Transparent
+'     
+'   Else
+'     
+'     If bFocus
+'       hBackImage = _hBackPicture
+'       iBackColor = Color.SelectedBackground
+'     Else
+'       hBackImage = _hBackPictureNoFocus
+'       iBackColor = Color.Gray
+'     Endif
+'     
+'   Endif
+'   
+'   Draw.Font = _Font
+'   ix = X + (Width - $hPicture.w) / 2
+'   iy = Y + (Height - ($hPicture.Height + Draw.TextHeight($sText) + 5)) / 2
+' 
+'   
+'   If Me.Selected Or bHover Then
+'     Draw.Foreground = Color.Lighter(iBackColor)
+'     Draw.FillColor = iBackColor
+'     Draw.FillStyle = Fill.Solid
+'     Draw.Image(hBackImage, X, Y)
+'     'Draw.Rect(X, Y, Width, Height)
+'     Draw.Picture($hPicture.Image.Colorize(iBackColor).Picture, iX, iY)
+'     
+'     'Draw.Rect($iX + ($hPicture.Width - Draw.TextWidth($sText)) / 2 - 4, $iY + $hPicture.Height + 5, Draw.TextWidth($sText) + 8, Draw.TextHeight($sText))
+'     Draw.Foreground = IIf(bFocus, Color.SelectedForeground, Color.TextForeground)
+'   Else
+'     Draw.Picture($hPicture, iX, iY)
+'     Draw.Foreground = Color.TextForeground
+'     
+'   Endif
+'   Me._TextX = ix + ($hPicture.Width - Draw.TextWidth($sText)) / 2
+'   Me._TextY = Y + (Height - (Draw.TextHeight($sText) + 5))
+'   Me._TextWidth = Draw.TextWidth($sText) + 8
+'   Me._TextHeight = Draw.TextHeight($sText)
+'     
+'     Draw.Text($sText, iX + ($hPicture.Width - Draw.TextWidth($sText)) / 2, iY + $hPicture.Height + 5)
+' 
+' '  Prend le rectangle comme zone 
+'   $ix = X
+'   $iy = Y
+'   $iWidth = Width
+'   $iheight = Height
+'   
+' End
+
+Public Sub _GetTextRect(hRect As Rect, bHorizontal As Boolean) As Rect
+  
+  Dim hText As Rect
+  Dim X, Y, W, H As Integer
+  Dim HT As Integer
+  
+  hRect.Adjust(8)
+  
+  If bHorizontal Then
+    
+    X = hRect.X
+    If $hPicture Then X += $hPicture.W + 4
+    
+    W = hRect.W - (X - hRect.X)
+    If $sRichText Then
+      H = GetIconView().Font.RichTextHeight($sRichText, W - 4) + 4
+    Else
+      H = GetIconView().Font.RichTextHeight(Html($sText), W - 4) + 4
+    Endif
+    
+    hText = New Rect(X, hRect.Y, W, H)
+    hText.Y -= (H - hRect.H) \ 2
+    
+  Else
+  
+    Y = hRect.Y
+    If $hPicture Then Y += $hPicture.H + 4
+    
+    If $sRichText Then
+      H = GetIconView().Font.RichTextHeight($sRichText, hRect.W) '+ 4
+    Else
+      H = GetIconView().Font.RichTextHeight(Html($sText), hRect.W) '+ 4
+    Endif
+    HT = Min(H, hRect.H - (Y - hRect.Y) - 8)
+    
+    hText = New Rect(hRect.X, Y, hRect.W, HT)
+    'hText = hText.Intersection(hRect)
+    
+  Endif
+  
+  hText.Adjust(-1)
+  
+  Return hText
+  
+End
+
+Private Sub GetBackground(hIconView As IconView, Optional bSelected As Boolean, bFocus As Boolean) As Integer
+
+  Dim iColor As Integer
+  
+  iColor = hIconView.Background
+  If iColor = Color.Default Then iColor = Color.TextBackground
+  
+  If bSelected Then 
+    If bFocus Then
+      iColor = Color.Merge(Color.LightBackground, iColor)
+    Else
+      iColor = Color.Merge(Color.LightForeground, iColor, 0.75)
+    Endif
+  Endif
+  
+  If Not hIconView.Enabled Then iColor = Color.Desaturate(iColor)
+  Return iColor
+
+End
+
+Private Sub GetForeground(hIconView As IconView, Optional bSelected As Boolean) As Integer
+
+  Dim iColor As Integer
+  
+  If bSelected Then 
+    iColor = Color.SelectedForeground
+  Else
+    iColor = hIconView.Foreground
+    If iColor = Color.Default Then iColor = Color.TextForeground
+  Endif
+  
+  If Not hIconView.Enabled Then iColor = Color.Desaturate(Color.Merge(iColor, GetBackground(hIconView, bSelected)))
+  Return iColor
+
+End
+
+Private Sub DrawText(sText As String, sRichText As String, X As Float, Y As Float, W As Float, H As Float, iAlign As Integer)
+  
+  If sRichText Then
+    Paint.DrawRichText(sRichText, X, Y, W, H, iAlign)
+  Else
+    Paint.DrawRichText(Html(sText), X, Y, W, H, iAlign)
+  Endif
+  
+End
+
+
+Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizontal As Boolean, bFocus As Boolean, bHover As Boolean)
+  
+  Dim X, Y, W, H, HT, PW, PH As Integer
+  Dim iColor As Integer
+  Dim bFrame As Boolean
+  Dim sText As String
+  Dim bHighlight As Boolean
+  
+  hRect.Adjust(2)
+  
+  If Not hIconView.Picture Then
+    bFrame = True
+  Endif
+  
+  If $hPicture Then
+    PW = $hPicture.W
+    PH = $hPicture.H
+  Endif
+  
+  'iColor = hIconView.Background
+  'If iColor = Color.Default Then iColor = Color.TextBackground
+  'If $bSelected Then iColor = Color.SelectedBackground
+  'If bHover Then iColor = Color.Merge(iColor, Color.LightBackground)
+  
+  bHighlight = $bSelected Or bHover
+  iColor = GetBackground(hIconView, bHighlight, bFocus)
+
+  ' If bHover And Not $bSelected Then
+  '   Paint.Begin(Draw.Device)
+  '   Paint.ClipRect = hClip
+  '   'Paint.Rectangle(hClip.X, hClip.Y, hClip.Width, hClip.Height)
+  '   'Paint.Clip()
+  '   PaintRoundedRect(hRect.X, hRect.Y, hRect.W, hRect.H, 7)
+  '   Paint.Brush = Paint.Color(iColor)
+  '   Paint.Fill
+  '   'Paint.Rectangle(hRect.X, hRect.Y, hRect.W, hRect.H)
+  '   'Paint.Brush = Paint.Color(Color.Black)
+  '   'Paint.Stroke
+  '   Paint.End
+  '   bFrame = True
+  ' Else If $bSelected Then
+  '   bSelected = True
+  '   iColor = Color.SelectedBackground
+  '   If bHover Then iColor = Color.Merge(iColor, Color.LightBackground)
+  ' Endif
+
+  hClip = hClip.Intersection(hRect)
+  If IsNull(hClip) Then Return
+  hRect.Adjust(6)
+
+  If bHorizontal Then
+  
+    X = hRect.X
+    W = hRect.W
+    
+    If bHighlight Then
+      Paint.Save
+      Paint.ClipRect = hClip
+      Paint.Background = iColor
+      ' If $hPicture Then
+      '   If System.RightToLeft Then
+      '   Else
+      '     PaintRoundedRect(hRect.X - 4, hRect.Y + (hRect.H - PH) / 2 - 4, PW + 8, PH + 8, 7)
+      '     Paint.Fill
+      '   Endif
+      ' Endif
+      ' If $sText Then
+      '   H = hIconView.Font.RichTextHeight($sText, W - PW - 4)
+      '   If H < (hClip.H - 12) Then
+      '     PaintRoundedRect(hRect.X, hRect.Y - 4 + (hRect.H - H) \ 2, hRect.W + 4, H + 12, 7)
+      '   Else
+      '     PaintRoundedRect(hRect.X, hClip.Y, hRect.W + 4, hClip.H, 7)
+      '   Endif
+      '   Paint.Fill
+      ' Endif
+      Paint.Rectangle(hClip.X, hClip.Y, hClip.W, hClip.H, 6)
+      If bHover And If Not $bSelected Then Paint.Stroke
+      If $bSelected Then Paint.Fill
+      Paint.Restore
+    Endif
+
+    Draw.ClipRect = hClip
+  
+    If System.RightToLeft Then
+      
+      If $hPicture Then
+        Paint.DrawPicture($hPicture, hRect.X + hRect.W - PW, hRect.Y + (hRect.H - PH) / 2)
+        W -= PW + 4
+      Endif
+
+    Else
+  
+      If $hPicture Then
+        Paint.DrawPicture($hPicture, hRect.X, hRect.Y + (hRect.H - PH) / 2)
+        X += PW + 4
+        W -= PW + 4
+      Endif
+      
+    Endif
+      
+    If $sText Then
+      Paint.Font = hIconView.Font
+      If Not bFrame Then
+        Paint.Background = GetBackground(hIconView, False) 'If($bSelected, Color.SelectedBackground, Color.TextBackground)
+        DrawText($sText, $sRichText, X + 1, hRect.Y + 1, W, hRect.H, Align.Left)
+      Endif
+      Paint.Background = GetForeground(hIconView, False) 'If($bSelected, Color.SelectedForeground, Color.TextForeground)
+      DrawText($sText, $sRichText, X, hRect.Y, W, hRect.H, Align.Left)
+    Endif
+  
+  Else
+  
+    Y = hRect.Y
+    If $hPicture Then Y += $hPicture.H + 4
+    
+    If $sText Or If $sRichText Then
+
+      sText = $sRichText
+      If Not sText Then sText = Html($sText)
+      
+      H = hIconView.Font.RichTextHeight(sText, hRect.W)
+      HT = hRect.H - (Y - hRect.Y)
+
+      If H > HT Then 
+        sText = Paint.TrimRichText(sText, hRect.W, HT)
+        $bEllipsized = True
+      Else
+        $bEllipsized = False
+      Endif
+      
+    Endif
+    
+    If bHighlight Then
+      
+      Paint.Save
+      Paint.ClipRect = hClip
+      Paint.Background = iColor
+      
+      If bHover And If Not $bSelected Then
+      
+        Paint.LineWidth = 2
+        If $hPicture Then
+          Paint.Rectangle(hRect.X + (hRect.W - PW) / 2 - 4, hRect.Y - 4, PW + 8, PH + 8, 6)
+          Paint.Stroke
+        Endif
+        If $sText Or If $sRichText Then
+          Paint.Rectangle(hRect.X - 4, Y - 6, hRect.W + 8, hIconView.Font.RichTextHeight(sText, hRect.W) + 10, 6)
+          Paint.Stroke
+        Endif
+        Paint.Background = GetBackground(hIconView, False)
+        
+      Endif
+      
+      If $bSelected Or If bHover Then
+      
+        If $hPicture Then
+          Paint.Rectangle(hRect.X + (hRect.W - PW) / 2 - 4, hRect.Y - 4, PW + 8, PH + 8, 6)
+          Paint.Fill
+        Endif
+        If $sText Or If $sRichText Then
+          Paint.Rectangle(hRect.X - 4, Y - 6, hRect.W + 8, hIconView.Font.RichTextHeight(sText, hRect.W) + 10, 6)
+          Paint.Fill
+        Endif
+        
+      Endif
+  
+      Paint.Restore
+    
+    Endif
+
+    'Paint.Save
+    'Paint.ClipRect = hClip
+  
+    If $hPicture Then
+      Paint.DrawPicture($hPicture, hRect.X + (hRect.W - PW) / 2, hRect.Y)
+    Endif
+    
+    If $sText Or If $sRichText Then
+      'Draw.Clip(hRect.X, Y, hRect.W, hRect.H - Y)
+      Paint.Font = hIconView.Font
+      
+      If Not $sRichText And If Not $bEllipsized Then sText = ""
+      
+      If Not bFrame Then
+        Paint.Background = GetBackground(hIconView, False) '$bSelected) 'If($bSelected, Color.SelectedBackground, Color.TextBackground)
+        DrawText($sText, sText, hRect.X + 1, Y + 1, hRect.W, HT, Align.Top)
+      Endif
+      Paint.Background = GetForeground(hIconView, False) '$bSelected) 'If($bSelected, Color.SelectedForeground, Color.TextForeground)
+      DrawText($sText, sText, hRect.X, Y, hRect.W, HT, Align.Top)
+      'Draw.Clip.Enabled = False
+    Endif
+    
+    'Paint.Restore
+    
+  Endif
+  
+End
+
+
+Private Function Selected_Read() As Boolean
+
+  Return $bSelected
+
+End
+
+Private Sub Selected_Write(Value As Boolean)
+
+  If $bSelected = Value Then Return
+  
+  $bSelected = Value
+  GetIconView()._SelectItem(Me, Value)
+  RefreshView
+
+End
+
+Public Sub EnsureVisible()
+  
+  Dim hParent As IconView = GetIconView()
+  
+  hParent._EnsureVisible(hParent._FindItem(Me))
+  
+End
+
+Public Sub _Intersect(hRect As Rect, hOther As Rect, bHorizontal As Boolean) As Boolean
+  
+  Dim H, YT, HT, PW, PH As Integer
+  Dim hInside As Rect
+  Dim sText As String
+  Dim hFont As Font
+  
+  hRect.Adjust(4)
+  
+  If bHorizontal Then
+  
+    Return hRect.Intersection(hOther)
+    
+  Else
+  
+    If $hPicture Then
+      PW = $hPicture.W
+      PH = $hPicture.H
+    Else If Not $sText Then
+      PW = 8
+      PH = 8
+    Endif
+  
+    YT = hRect.Y
+    
+    If PW Then 
+      hInside = New Rect(hRect.X + (hRect.W - PW) / 2 - 4, hRect.Y - 4, PW + 8, PH + 8)
+      If hInside.Intersection(hOther) Then Return True
+      YT += PH + 4
+    Endif
+    
+    If $sText Then
+      sText = $sText
+      hFont = GetIconView().Font
+      H = hFont.RichTextHeight(sText, hRect.W)
+      HT = hRect.H - (YT - hRect.Y)
+      If H > HT Then 
+        sText = Ellipsize(sText, hFont, hRect.W, HT)
+      Endif
+      hInside = New Rect(hRect.X - 4, YT - 6, hRect.W + 8, hFont.RichTextHeight(sText, hRect.W) + 10)
+      If hInside.Intersection(hOther) Then Return True
+    Endif
+    
+  Endif
+  
+End
+
+
+Public Sub _Inside(hRect As Rect, hIconView As IconView, bHorizontal As Boolean, X As Integer, Y As Integer) As Boolean
+  
+  Dim H, YT, HT, PW, PH As Integer
+  Dim hInside As Rect
+  Dim sText As String
+  
+  hRect.Adjust(4)
+  If Not hRect.Contains(X, Y) Then Return False
+  
+  If bHorizontal Then
+  
+    Return True
+    
+  Else
+  
+    If $hPicture Then
+      PW = $hPicture.W
+      PH = $hPicture.H
+    Else If Not $sText Then
+      PW = 8
+      PH = 8
+    Endif
+  
+    YT = hRect.Y
+    
+    If PW Then 
+      hInside = New Rect(hRect.X + (hRect.W - PW) / 2 - 4, hRect.Y - 4, PW + 8, PH + 8)
+      If hInside.Contains(X, Y) Then Return True
+      YT += PH + 4
+    Endif
+    
+    If $sText Then
+      sText = $sText
+      H = hIconView.Font.RichTextHeight(sText, hRect.W)
+      HT = hRect.H - (YT - hRect.Y)
+      If H > HT Then 
+        sText = Ellipsize(sText, hIconView.Font, hRect.W, HT)
+      Endif
+      hInside = New Rect(hRect.X - 4, YT - 6, hRect.W + 8, hIconView.Font.RichTextHeight(sText, hRect.W) + 10)
+      If hInside.Contains(X, Y) Then Return True
+    Endif
+    
+  Endif
+  
+End
+
+Public Sub _compare(hItem As _IconView_Item) As Integer
+  
+  Dim hParent As IconView = GetIconView()
+  
+  If Not hParent._CompareItem(_Key, hItem.Key) Then 
+    Return hParent.Compare
+  Else
+    Return Comp($sText, hItem.Text, gb.Natural + gb.IgnoreCase)
+  Endif
+  
+End
+
+Private Function Editable_Read() As Boolean
+
+  Return $bEditable
+
+End
+
+Private Sub Editable_Write(Value As Boolean)
+
+  $bEditable = Value
+
+End
+
+Public Sub Rename()
+  
+  If Not $bEditable Then Return
+  GetIconView()._RenameItem(Me)
+  
+End
+
+Private Sub GetGeometry() As Rect
+  
+  Dim hParent As IconView = GetIconView()
+  Dim hRect As New Rect
+  hParent._GetItemGeometry(Me, hRect)
+  Return hRect
+  
+End
+
+
+Private Function X_Read() As Integer
+
+  Return GetGeometry().X
+
+End
+
+Private Function Y_Read() As Integer
+
+  Return GetGeometry().Y
+
+End
+
+Private Function Width_Read() As Integer
+
+  Return GetGeometry().Width
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return GetGeometry().Height
+
+End
+
+Public Sub MoveAfter(Optional (Key) As String)
+  
+  Dim hParent As IconView = GetIconView()
+  Dim iPos As Integer 
+  
+  If Not Key Then 
+    MoveFirst()
+    Return
+  Endif
+  
+  iPos = hParent._FindItem(hParent[Key])
+  If iPos < 0 Then Error.Raise(Subst("Unknown item: '&1'", Key))
+  
+  hParent._MoveItem(Me, iPos + 1)
+  
+End
+
+Public Sub MoveBefore(Optional (Key) As String)
+  
+  Dim hParent As IconView = GetIconView()
+  Dim iPos As Integer 
+  
+  If Not Key Then 
+    MoveLast()
+    Return
+  Endif
+  
+  iPos = hParent._FindItem(hParent[Key])
+  If iPos < 0 Then Error.Raise(Subst("Unknown item: '&1'", Key))
+  
+  hParent._MoveItem(Me, iPos)
+  
+End
+
+Public Sub MoveFirst()
+  
+  Dim hParent As IconView = GetIconView()
+  hParent._MoveItem(Me, 0)
+  
+End
+
+Public Sub MoveLast()
+  
+  Dim hParent As IconView = GetIconView()
+  hParent._MoveItem(Me, hParent.Count - 1)
+  
+End
+
+Private Sub Ellipsize(sText As String, hFont As Font, W As Integer, H As Integer) As String
+  
+  Dim sPoints As String = "…"
+  Dim iPos As Integer
+  Dim sCar As String
+  Dim bMarkup As Boolean
+  
+  If Not sText Then Return
+  
+  For iPos = 1 To String.Len(sText)
+    sCar = String.Mid(sText, iPos, 1)
+    If sCar = "<" Then
+      bMarkup = True
+    Else If sCar = ">" Then
+      bMarkup = False
+    Endif
+    If bMarkup Then Continue
+    If hFont.RichTextHeight(String.Left(sText, iPos) & sPoints, W) > H Then Break
+  Next
+  
+  Return String.Left(sText, iPos - 1) & sPoints
+  
+End
+
+Public Sub _IsEllipsized() As Boolean
+  
+  Return $bEllipsized
+  
+End
+
+Private Function Hovered_Read() As Boolean
+
+  Return GetIconView()._IsHovered(Me)
+
+End

@@ -1,0 +1,81 @@
+' Gambas class file
+
+Export
+Create Static
+
+Property Read Count As Integer
+
+Static Private $aWin As Integer[]
+Static Private $cWin As Collection
+
+
+
+Public Sub _new()
+  
+  Refresh
+  
+End
+
+Public Sub Refresh()
+  
+  '$aWin = X11.GetWindowProperty(Atom["_NET_CLIENT_LIST"])
+  $aWin = X11.GetWindowProperty(X11.RootWindow, Atom["_NET_CLIENT_LIST_STACKING"])
+  If Not $aWin Then $aWin = New Integer[]
+  $cWin = Null
+  
+End
+
+Public Sub _get(Index As Integer) As DesktopWindow
+  
+  Return FromHandle($aWin[Index])
+  
+End
+
+
+Public Sub FromHandle((Window) As Integer) As DesktopWindow
+  
+  Dim hWin As DesktopWindow
+  
+  If $aWin.Find(Window) < 0 Then Return
+  
+  If Not $cWin Then $cWin = New Collection
+  hWin = $cWin[Window]
+  If Not hWin Then
+    hWin = New DesktopWindow(Window)
+    $cWin[Window] = hWin
+  Endif
+  
+  hWin.Refresh
+  Return hWin
+  
+End
+
+
+Public Sub _next() As DesktopWindow
+  
+  Dim hWin As DesktopWindow
+  
+  If IsNull(Enum.Index) Then Enum.Index = 0
+  
+  If Enum.Index >= $aWin.Count Then
+    Enum.Stop
+    Return 
+  Endif
+  
+  hWin = _get(Enum.Index)
+  Inc Enum.Index
+  Return hWin
+  
+End
+
+' Private Function StackingOrder_Read() As Integer[]
+' 
+'   Return $aStacking.Copy()
+' 
+' End
+
+Private Function Count_Read() As Integer
+
+  Return $aWin.Count
+
+End

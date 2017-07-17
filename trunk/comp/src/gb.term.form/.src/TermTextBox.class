@@ -1,0 +1,183 @@
+' Gambas class file
+
+Export
+Inherits TermControl
+Class Rect
+Property Text As String
+
+Private $sText As String
+Private $iOldLen As Integer
+Property Height As Integer
+Private $iCursor As Integer
+Private $iLenText As Integer
+
+Event Change
+Event Activate
+
+Public Sub _new()
+
+  Me._AllowFocus = True
+  'Me.Height = 1
+
+End
+
+Public Sub _Render()
+
+  Dim hAttr As New Attr
+  Dim iAttr As Integer
+  Dim i As Integer
+
+  If Not Me._NeedRender Then Return
+  Super._Render
+  If Me.HaveFocus Then
+    hAttr.Background = TermColor.Yellow
+  Else
+    hAttr.Background = Me._GetBackGround()
+  Endif
+  hAttr.Foreground = Me._GetForeground()
+  iAttr = hAttr.GetInteger()
+
+  For i = 1 To Me._Content[0].count
+    If Me._Content[0][Me._Content[0].Max] And If i > Max($iOldLen, $iLenText) Then Break
+    If i <= $iLenText Then
+      Me._Content[0][i - 1] = Char(Mid($sText, i, 1), iAttr)
+    Else
+      Me._Content[0][i - 1] = Char(" ", iAttr)
+    Endif
+  Next
+  If Me.HaveFocus Then
+    hAttr.FillFrom(iAttr)
+    hAttr.Blink = True
+    If $iCursor < Me.Width Then
+      If $iCursor >= $iLenText Then
+        Me._Content[0][$iLenText] = Char(String.Chr(&H258F), hAttr.GetInteger())
+        hAttr.Blink = False
+        Me._Content[0][$iLenText + 1] = Char(" ", hAttr.GetInteger())
+      Else
+        Swap hAttr.Background, hAttr.Foreground
+        Me._Content[0][$iCursor].Attr = hAttr.GetInteger()
+      Endif
+    Endif
+    'Me._Content[0][string.Len($sText)].Attr = hAttr.GetInteger()
+  Endif
+  Me._NeedRender = False
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $iOldLen = String.len($sText)
+  $sText = Value
+  $iLenText = String.Len(Value)
+  RefreshText
+  ' TermWindows.SetRenderArea(rect(Me.ScreenX, Me.ScreenY, Max($iOldLen + 1, $iLenText), Me.Height))
+  ' Me._NeedRender = True
+  ' Termwindows._Render()
+
+End
+
+Public Sub _KeyPress()
+  Dim sText As String = Me.Text
+  Select Case Key.Code
+    Case Key.BackSpace
+      '$iOldLen = $iLenText
+      If $iCursor >= $iLenText Then
+        sText = Left(sText, -1)
+      Else
+        If $iCursor = 0 Then
+          
+        Else
+          Mid(sText, $iCursor, 1) = ""
+        Endif
+      Endif
+      '$iLenText = String.Len($sText)
+      
+       $iCursor = Max(0, Min($iLenText, $iCursor - 1))
+      Me.Text = sText
+      Raise Change
+    Case Key.Left
+      $iCursor = Max(0, Min($iLenText, $iCursor - 1))
+      RefreshText
+    Case Key.Right
+      $iCursor = Max(0, Min($iLenText, $iCursor + 1))
+      RefreshText
+    Case Key.Home
+      $iCursor = 0
+      RefreshText
+    Case Key.End
+      $iCursor = $iLenText
+      RefreshText
+    Case Key.Return
+      Raise Activate
+    Case Else
+      If $iCursor >= $iLenText Then
+        sText &= Key.Text
+      Else
+        If $iCursor = 0 Then
+          sText = Key.Text & sText
+        Else
+          sText = Left(sText, $iCursor) & Key.Text & Right(sText, - $iCursor)
+        Endif
+      Endif
+      Inc $iCursor
+      Me.Text = sText
+      Raise Change
+  End Select
+      Super._KeyPress
+
+End
+
+Private Sub RefreshText()
+
+  TermWindows.SetRenderArea(rect(Me.ScreenX, Me.ScreenY, Max($iOldLen + 1, $iLenText + 1), Me.Height))
+  Me._NeedRender = True
+  Termwindows._Render()
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return Super.Height
+
+End
+
+Private Sub Height_Write(Value As Integer)
+
+End
+
+Public Sub _GetBackGround() As Integer
+
+  If Me.Background = -1 Then
+    Return TermColor.TextBackground
+  Else
+    Return Me.Background
+  Endif
+
+End
+
+Public Sub _GetForeGround() As Integer
+
+  If Me.Foreground = -1 Then
+    Return TermColor.TextForeground
+  Else
+    Return Me.Foreground
+  Endif
+
+End
+
+Public Sub _MouseDown()
+  Dim iPos As Integer = Min(Mouse.x, String.Len($sText))
+  If iPos <> $iCursor Then 
+    
+  $iCursor = iPos
+  RefreshText
+  Endif
+  Super._MouseDown
+
+End

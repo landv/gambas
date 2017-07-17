@@ -1,0 +1,243 @@
+' Gambas module file
+
+Private $cProp As New Collection
+Private $aKeywords As String[]
+
+Public Sub _init()
+  
+  Dim sProp As String
+  
+  $aKeywords = New String[]
+  
+  For Each sProp In Split(File.Load("css/properties"), ", \n", "", True)
+    $cProp[sProp] = True
+    $aKeywords.Add(sProp)
+  Next
+  
+  For Each sProp In Split(File.Load("css/values"), ", \n", "", True)
+    sProp = Trim(sProp)
+    $aKeywords.Add(sProp)
+  Next
+  
+End
+
+Public Sub GetKeywords() As String[]
+  
+  Return $aKeywords
+  
+End
+
+
+' Private Sub AnalyzeCode(sText As String) As String
+'   
+'   Dim iInd As Integer
+'   Dim iPos As Integer
+'   Dim iLen As Integer
+'   
+'   If Not sText Then Return
+'   
+'   Highlight.Analyze(sText, True)
+'   
+'   iPos = 0
+'   For iInd = 0 To Highlight.Symbols.Max
+'     
+'     If iPos < Highlight.Positions[iInd] Then 
+'       Highlight.Add(Highlight.Normal, Highlight.Positions[iInd] - iPos)
+'       iPos = Highlight.Positions[iInd]
+'     Endif
+'     
+'     iLen = String.Len(Highlight.Symbols[iInd])
+'     Highlight.Add(Highlight.Types[iInd], iLen)
+'     iPos += iLen
+'     
+'   Next
+' 
+'   If iPos < String.Len(Highlight.TextAfter) Then 
+'     Highlight.Add(Highlight.Normal, String.Len(Highlight.TextAfter) - iPos)
+'   Endif
+'   
+'   Return Highlight.TextAfter
+' 
+' End
+
+Public Sub Run()
+
+  Dim iState As Integer
+  Dim iNextState As Integer
+  Dim iInd As Integer
+  Dim sText As String
+  Dim sOrgText As String
+  Dim sCar As String
+  Dim bLimit As Boolean
+  Dim iTag As Integer
+  Dim sProperty As String
+  Dim sWait As String
+  Dim iSaveState As Integer
+  Dim iPos, iPos2 As Integer
+
+  iState = Highlight.State
+  If iState = Highlight.Normal Then iState = Highlight.Keyword
+  iTag = Highlight.Tag
+  sText = Highlight.Text
+  sOrgText = sText
+
+  For iInd = 1 To String.Len(sText)
+
+    iNextState = iState
+    sCar = String.Mid$(sText, iInd, 1)
+    
+    Select Case iState
+    
+      Case Highlight.String
+        If sCar = sWait Then iNextState = iSaveState
+        Goto NEXT_STATE
+
+      Case Highlight.Comment
+        If sCar = "/" And If iInd > 1 And If String.Mid$(sText, iInd - 1, 1) = "*" Then
+          iNextState = iTag
+        Endif
+        Goto NEXT_STATE
+        
+      Case Else
+        
+        If sCar = "/" And If Mid$(sText, iInd, 2) = "/*" Then 
+          iTag = iState
+          iState = Highlight.Comment
+          iNextState = iState
+          Goto NEXT_STATE
+        Else If HighlightHTML.AllowCode And If sCar = "<" And If Mid$(sText, iInd, 2) = "<%" Then
+          HighlightHTML.MeetCodeAt = iInd
+          Break
+        Endif
+        
+    End Select
+
+    Select Case iState
+    
+      Case Highlight.Keyword, Highlight.Datatype, Highlight.Function, Highlight.Operator
+        
+        If sCar = "." Then 
+          
+          iState = Highlight.Datatype
+          iNextState = iState
+          
+        Else If sCar = "#" Then 
+          
+          iState = Highlight.Function
+          iNextState = iState
+          
+        Else If sCar = ":" Then
+          
+          iState = Highlight.Operator
+          iNextState = iState
+          
+        Else If sCar = " " Then 
+          
+          iState = Highlight.Keyword
+          iNextState = iState
+          
+        Else If sCar = "{" Then 
+          
+          iState = Highlight.Keyword
+          iNextState = Highlight.Symbol
+          iTag = Highlight.Symbol
+          bLimit = True
+          
+        Endif
+        
+      Case Highlight.Symbol
+        
+        If sCar = ":" Then
+          
+          iState = Highlight.Keyword
+          iNextState = Highlight.Number
+          
+        Else If sCar = "}" Then 
+          
+          iState = Highlight.Keyword
+          iNextState = Highlight.Keyword
+          iTag = Highlight.Keyword
+          
+        Else If sCar = " " Then
+          
+          iState = Highlight.Symbol
+          iNextState = iState
+          
+        Else
+        
+          sProperty = String.Mid$(sText, iInd)
+          
+          iPos = String.InStr(sProperty, ":")
+          iPos2 = String.InStr(sProperty, "/*")
+          
+          If iPos = 0 Then iPos = String.Len(sProperty)
+          If iPos2 = 0 Then iPos2 = String.Len(sProperty)
+          iPos = Min(iPos, iPos2)
+        
+          Dec iPos
+          sProperty = RTrim(String.Left$(sProperty, iPos))
+          
+          If Not sProperty Then Goto NEXT_STATE
+          
+          If sProperty Then
+            Highlight.Add(IIf($cProp.Exist(sProperty), Highlight.Symbol, Highlight.Error), iPos)
+          Else
+            Highlight.Add(Highlight.Symbol, iPos)
+          Endif
+          iInd += iPos - 1
+          Continue
+          
+        Endif
+        
+      Case Highlight.Number
+        
+        If sCar = Chr$(34) Or If sCar = "'" Then
+          
+          iSaveState = iState
+          sWait = sCar
+          iState = Highlight.String
+          iNextState = iState
+          
+        Else If sCar = ";" Then 
+          
+          iState = Highlight.Keyword
+          iNextState = Highlight.Symbol
+          
+        Else If sCar = "}" Then 
+          
+          iState = Highlight.Keyword
+          iNextState = Highlight.Keyword
+          iTag = Highlight.Keyword
+          
+        Else If sCar = "#" Then
+          
+          iState = Highlight.Preprocessor
+          iNextState = iState
+          
+        Endif
+        
+      Case Highlight.Preprocessor
+        
+        If Not IsHexa(sCar) Then
+          iState = Highlight.Number
+          iNextState = iState
+          Dec iInd
+          Continue
+        Endif
+                    
+    End Select
+  
+  NEXT_STATE:
+  
+    Highlight.Add(iState)
+    iState = iNextState
+
+  Next
+  
+  If iNextState = Highlight.String Then iNextState = iSaveState
+  
+  Highlight.State = iNextState
+  Highlight.Tag = iTag
+  Highlight.ShowLimit = bLimit
+
+End

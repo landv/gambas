@@ -1,0 +1,26 @@
+' Gambas class file
+
+Export
+Create Static
+
+Public _Calendar As FCalendar
+
+Public Sub Clear()
+  
+  _Calendar.ClearColors()
+  
+End
+
+Public Sub _put((Color) As Integer, {Date} As Date)
+  
+  _Calendar.SetColor({Date}, Color)
+  
+End
+
+
+Public Sub _get({Date} As Date) As Integer
+  
+  Return _Calendar.GetColor({Date})
+  
+End
+

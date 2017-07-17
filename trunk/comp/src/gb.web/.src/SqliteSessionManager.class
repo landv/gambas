@@ -1,0 +1,370 @@
+' Gambas class file
+
+Inherits SessionManager
+
+Private $sPath As String
+
+Private $eStartup As Float
+
+Private $hConn As Connection
+
+Private $cValues As Collection
+Private $cDelete As Collection
+
+Private Sub GetPath(Optional sId As String) As String
+
+  Dim sPath As String
+  
+  sPath = "/tmp/gambas." & System.User.Id &/ "session" 
+  If sId Then sPath &/= Replace(sId, ":", "_") & ".db"
+  Return sPath
+  
+End
+
+Public Sub _new(sId As String)
+  
+  Component.Load("gb.db")
+  $sPath = GetPath(sId) '"/tmp/gambas." & System.User.Id &/ "session" &/ $sId
+  
+End
+
+Private Sub CheckSession() As Boolean
+  
+  'Main.Log("TimeOut: " & CStr(CDate($eTimeOut)) & " Startup: " & CStr(CDate($eStartup)) & " Now: " & CStr(Now))
+  Return (CFloat(Now) - $eStartup) >= Me.Timeout
+  
+End
+
+Public Sub Load() As Boolean
+  
+  Dim rConf As Result
+  Dim hSave As Connection
+
+  If Not Exist($sPath) Then Goto _ABANDON
+  
+  Me.Size = Stat($sPath).Size
+  
+  hSave = DB.Current
+  $hConn = New Connection
+  DB.Current = hSave
+  
+  $hConn.Type = "sqlite"
+  $hConn.Host = File.Dir($sPath)
+  $hConn.Name = File.Name($sPath)
+  
+  $hConn.Open
+  
+  rConf = $hConn.Find("config")
+
+  $eStartup = rConf!fStartup
+  Me.Timeout = rConf!fTimeout
+  
+  If CheckSession() Then Goto _ABANDON
+  
+  Session.CookiePath = rConf!sCookiePath
+
+  $cValues = New Collection
+  $cDelete = New Collection
+
+  Me.Modified = False
+  
+Catch
+
+  Main.Log("LoadSession: " & Session.Id & ": " & Error.Where & ": " & Error.Text)
+  'Try File.Save(File.Dir($sPath) &/ "session.error", Error.Where & ": " & Error.Text & "\n")
+  'Try Kill $sPath & ".error"
+  'Try Copy $sPath To $sPath & ".error"
+
+_ABANDON:
+
+  Main.Log("LoadSession: abandon")
+
+  'Main.Log("LoadSession: #4")
+
+  If $hConn Then
+    $hConn.Close
+    $hConn = Null
+  Endif
+  
+  Session.Abandon
+  Return True
+  
+End
+
+Public Sub Save()
+  
+  Dim eNow As Float
+  Dim rConf As Result
+  Dim vVal As Variant
+
+  'PRINT "<h2>Save session</h2>"
+  'PRINT "<p>"; $sId; "<br>"; $bModify; "<br>"; $sPath; "<br>"; $cVal.Count
+  
+  'Startup time is always modified
+  If Not Me.Modified Then 
+  
+    eNow = Now
+    If (eNow - $eStartup) < (1 / 86400) Then Return
+  
+    rConf = $hConn.Edit("config")
+    rConf!fStartup = CFloat(Now)
+    rConf.Update
+
+  Else
+  
+    $hConn.Begin
+    
+    rConf = $hConn.Edit("config")
+    rConf!fStartup = CFloat(Now)
+    rConf!sCookiePath = Session.CookiePath
+    rConf.Update
+    
+    For Each $cDelete
+      FlushValue(Null, $cDelete.Key)
+    Next
+    
+    For Each vVal In $cValues
+      FlushValue(vVal, $cValues.Key)
+    Next
+    
+    $cDelete.Clear
+    $cValues.Clear
+    
+    $hConn.Commit
+    
+    $hConn.Close
+    
+    $hConn.Open
+
+    Me.Size = Stat($sPath).Size
+    
+    Me.Modified = False
+    
+  Endif
+  
+Catch
+  
+  Try Main.Log("SaveSession: " & Error.Where & ": " & Error.Text)
+  
+End
+
+Public Sub CheckUnique()
+  
+  Dim hLock As File
+  Dim sPrefix As String
+  Dim aKill As String[]
+  Dim sKill As String
+  Dim sDir As String
+  
+  If Session.Prefix Then
+    sPrefix = Session.Prefix
+  Else
+    sPrefix = CGI["REMOTE_ADDR"]
+  Endif
+  
+  sDir = GetPath()
+    
+  If Session.Unique Then 
+  
+    Try hLock = Lock GetPath(".unique.lock")
+    If Error Then Return
+    
+    Do
+      aKill = Dir(sDir, sPrefix & "_*")
+      If aKill.Count = 0 Then Break
+      For Each sKill In aKill
+        Try Kill sDir &/ sKill
+      Next
+    Loop
+    
+    Unlock #hLock
+  
+  Else
+
+    ' dNow = Now
+    ' For Each sFile In Dir(sDir, sPrefix & ":*")
+    '   Try hStat = Stat(sDir &/ sFile)
+    '   If Error Then Continue
+    '   If DateDiff(hStat.LastModified, dNow, gb.Hour) >= 24 Then
+    '     Try Kill sDir &/ sFile
+    '   Endif
+    ' Next
+    
+  Endif
+  
+End
+
+
+Public Sub Create()
+  
+  Dim sPrefix As String
+  Dim hConn As Connection
+  Dim hTable As Table
+  Dim rConf As Result
+  Dim hSave As Connection
+  
+  sPrefix = "/tmp/gambas." & System.User.Id
+  
+  Repeat 
+    Session._MakeId()
+    $sPath = GetPath(Session.Id)
+  Until Not Exist($sPath)
+  
+  'TRY MKDIR $sPrefix
+  Try Mkdir GetPath() 'sPrefix &/ "session"
+  
+  CheckUnique
+
+  hSave = DB.Current
+  hConn = New Connection
+  DB.Current = hSave
+    
+  hConn.Type = "sqlite"
+  hConn.Host = File.Dir($sPath)
+  
+  hConn.Open
+  hConn.Databases.Add(File.Name($sPath))
+  hConn.Close
+  
+  hConn.Name = File.Name($sPath)
+  hConn.Open
+  
+  hTable = hConn.Tables.Add("config")
+  hTable.Fields.Add("fStartup", db.Float,, 0)
+  hTable.Fields.Add("fTimeout", db.Float,, 1)
+  hTable.Fields.Add("sCookiePath", db.String)
+  hTable.PrimaryKey = ["fStartup"]
+  hTable.Update
+  
+  rConf = hConn.Create("config")
+  rConf!sCookiePath = Session.CookiePath
+  rConf.Update
+  
+  hTable = hConn.Tables.Add("values")
+  hTable.Fields.Add("sKey", db.String, 255)
+  hTable.Fields.Add("sValue", db.Blob)
+  hTable.PrimaryKey = ["sKey"]
+  hTable.Update
+  
+  $hConn = hConn
+  $cValues = New Collection
+  $cDelete = New Collection
+  
+End
+
+Public Sub Abandon()
+
+  $sPath = ""
+  Me.Size = 0
+  $cValues = Null
+  $cDelete = Null
+  If $hConn Then 
+    $hConn.Close
+    $hConn = Null
+  Endif
+  
+  Try Kill $sPath
+
+End
+
+Public Sub _get(Key As String) As Variant
+
+  Dim rValue As Result
+  Dim sValue As Variant
+  Dim hFile As File
+  Dim vVal As Variant
+
+  If $cDelete.Exist(Key) Then Return
+  vVal = $cValues[Key]
+  If vVal Then Return vVal
+
+  rValue = $hConn.Find("values", "sKey = &1", Key)
+  If rValue.Available Then 
+    sValue = rValue!sValue.Data
+    hFile = Open String sValue
+    vVal = Read #hFile As Variant
+    Return vVal
+  Endif
+  
+End
+
+Public Sub Exist(Key As String) As Boolean
+
+  If $cDelete.Exist(Key) Then Return
+  If $cValues.Exist(Key) Then Return True
+  
+  Return $hConn.Exec("SELECT 1 FROM values WHERE sKey = &1", Key).Available
+  
+End
+
+
+Public Sub _put(Value As Variant, Key As String)
+
+  If IsNull(Value) Then
+    $cDelete[Key] = True
+    $cValues.Remove(Key)
+  Else
+    If $cDelete.Count Then $cDelete.Remove(Key)
+    $cValues[Key] = Value
+  Endif
+  
+  Me.Modified = True
+  
+End
+
+Private Sub FlushValue(Value As Variant, Key As String)
+
+  Dim rValue As Result
+  Dim hFile As File
+  Dim sValue As String
+
+  If IsNull(Value) Then
+    $hConn.Delete("values", "sKey = &1", Key)
+    Return
+  Endif
+
+  rValue = $hConn.Edit("values", "sKey = &1", Key)
+  If Not rValue.Available Then
+    rValue = $hConn.Create("values")
+    rValue!sKey = Key
+  Endif
+  
+  hFile = Open String For Write
+  Write #hFile, Value As Variant
+  sValue = Close #hFile
+  rValue!sValue = sValue
+  rValue.Update
+    
+End
+
+Public Sub GetKeys() As String[]
+
+  Dim rValue As Result
+  Dim aKey As New String[]
+
+  rValue = $hConn.Find("values")
+  For Each rValue
+    aKey.Add(rValue!sKey)
+  Next
+  
+  For Each $cDelete
+    Try aKey.Remove(aKey.Find($cDelete.Key))
+  Next
+  
+  For Each $cValues
+    If Not aKey.Exist($cValues.Key) Then aKey.Add($cValues.Key)
+  Next
+  
+  Return aKey
+
+End
+
+Public Sub Exit()
+  
+  If $hConn Then
+    Save()
+    $hConn.Close
+    $hConn = Null
+  Endif
+  
+End

@@ -1,0 +1,79 @@
+' Gambas class file
+
+Export
+Create Static
+
+Public Procedure Delete(User As String, Host As String, Optional IfExists As Boolean = False)
+
+  modMain.$Query = "DROP USER '" & User & "'@'" & Host & "'"
+  If IfExists Then
+    Try modMain.RunQuery(modMain.$Query)
+  Else
+    modMain.RunQuery(modMain.$Query)
+  Endif
+
+End
+
+Public Procedure Add(User As String, Password As String, Host As String)
+
+  modMain.$Query = "CREATE USER '" & User & "'@'" & Host & "' IDENTIFIED BY '" & Password & "'"
+  modMain.$Connection.Exec(modMain.$Query)
+
+End
+
+Public Procedure Grant(Privileges As String[], User As String, Password As String, Host As String, Optional Database As String = modMain.$Connection.Name)
+
+  If Upper(Privileges[0]) = "ALL" Then
+    modMain.$Query = "GRANT ALL PRIVILEGES"
+  Else
+    modMain.$Query = "GRANT " & modMain.ArrayToString(Privileges, False)
+  Endif
+  modMain.$Query &= " ON " & Database & ".* TO '" & User & "'@'" & Host & "' IDENTIFIED BY '" & Password & "'"
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Function Info(User As String) As String
+
+  Dim sDefinition As String
+
+  'Validate if mysql.user_info exists
+  modMain.$Query = "SELECT * FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = 'mysql' AND `TABLE_NAME` = 'user_info'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  If Not modMain.$hResult.Available Then Return ""
+
+  modMain.$Query = "SELECT * FROM `mysql`.`user_info` WHERE `User` = '" & User & "'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  sDefinition &= "User:        " & modMain.$hResult!User & GB.NewLine
+  sDefinition &= "Name:        " & modMain.$hResult!Full_name & GB.NewLine
+  sDefinition &= "Description: " & modMain.$hResult!Description & GB.NewLine
+  sDefinition &= "Email:       " & modMain.$hResult!Email & GB.NewLine
+  sDefinition &= "Contact:     " & modMain.$hResult!Contact_information
+  Return sDefinition
+
+End
+
+Public Procedure Revoke(Privileges As String[], User As String, Host As String, Optional Database As String)
+
+  If Not Database Then Database = modMain.$Connection.Name
+  If Upper(Privileges[0]) = "ALL" Then
+    modMain.$Query = "REVOKE ALL PRIVILEGES"
+  Else
+    modMain.$Query = "REVOKE " & modMain.ArrayToString(Privileges, False)
+  Endif
+  modMain.$Query &= " ON " & Database & ".* FROM '" & User & "'@'" & Host & "'"
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure Rename(User As String, Host As String, NewUser As String, NewHost As String)
+
+  modMain.RunQuery("RENAME USER '" & User & "'@'" & Host & "' TO '" & NewUser & "'@'" & NewHost & "'")
+
+End
+
+Public Procedure SetPassword(User As String, Password As String, Host As String)
+
+  modMain.RunQuery("SET PASSWORD FOR '" & User & "'@'" & Host & "' = PASSWORD('" & Password & "')")
+
+End

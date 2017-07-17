@@ -1,0 +1,137 @@
+' Gambas class file
+
+'Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,Border=True,Text,Image{WebImage}"
+Public Const _DrawWith As String = "Button"
+Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "16,4"
+
+Event Click
+Event Upload
+Event Progress(Progress As Float)
+
+Property Text As String
+Property Image As String
+Property File As String
+
+Private $sText As String
+Private $sImage As String
+Private $sFile As String
+Private $bUpload As Boolean
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  Me._SetProperty("Text", Value)
+
+End
+
+Private Function Image_Read() As String
+
+  Return $sImage
+
+End
+
+Private Sub Image_Write(Value As String)
+
+  $sImage = Value
+  Me._SetProperty("Image", Value)
+
+End
+
+Public Sub _BeforeRender()
+  
+  Print "<input class=\"gw-file-input\" type=\"file\" id=\""; Me.Name; ":file\" name=\"p\""; Me._GetUpdateJS("onchange", "#path", "this.value"); ">";
+  
+  Print "<button"; Me._GetClassId(); " onclick=\"gw.file.select("; JS(Me.Name); ")\"";
+  'Me._GetEventJS("onclick", "click");
+  Me._RenderStyleSheet()
+  If Not Me.Enabled Or If $bUpload Then Print " disabled";
+  Print ">";
+  
+End
+
+
+Public Sub _Render()
+  
+  If $sImage Then 
+    If $sText Then
+      Print "<img class=\"gw-button-image\" src=\""; Html(Application.Root &/ $sImage); "\">";
+    Else
+      Print "<img src=\""; Html(Application.Root &/ $sImage); "\">";
+    Endif
+  Endif
+  If $sText Then Print "<div>"; Html($sText); "</div>"
+  
+End
+
+Public Sub _AfterRender()
+  
+  Raise Render
+  Print "</button>"
+  
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  Dim sFile As String
+  
+  If sProp = "#path" Then
+    Try sFile = File.Name(Replace(vValue, "\\", "/"))
+    Me.File = sFile
+    Raise Click
+  Endif
+  
+End
+
+Private Function File_Read() As String
+
+  Return $sFile
+
+End
+
+Private Sub File_Write(Value As String)
+
+  $sFile = Value
+  Me._SetProperty("File", Value)
+
+End
+
+Public Sub Upload()
+
+  If $bUpload Then Error.Raise("Pending upload")
+  
+  $bUpload = True
+  Me._SetProperty("#upload", True)
+  
+  WebForm._AddReply("gw.file.upload(" & JS(Me.Name) & ")")
+  
+End
+
+Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
+  
+  If sProp = "#upload" Then
+    $bUpload = vVal
+    Me.Refresh
+  Endif
+  
+End
+
+Public Sub _UploadFinish()
+
+  Raise Progress(1.0)
+  
+  $bUpload = False
+  Me._SetProperty("#upload", False)
+  
+  Raise Upload  
+  
+End

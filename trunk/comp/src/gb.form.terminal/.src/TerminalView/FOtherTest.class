@@ -1,0 +1,11 @@
+' Gambas class file
+
+Private $hProcess As Process
+
+Public Sub Form_Open()
+
+  $hProcess = TerminalView1.Shell("sh")
+  
+  
+
+End

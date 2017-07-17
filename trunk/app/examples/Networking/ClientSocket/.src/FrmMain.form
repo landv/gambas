@@ -1,0 +1,75 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(34,23.4286,49,60)
+  Text = ("Client socket example ")
+  Icon = Picture["socket.png"]
+  Resizable = False
+  { btnConnect Button
+    MoveScaled(31,7,17,4)
+    Text = ("Connect")
+  }
+  { txtReceive TextArea
+    MoveScaled(1,44,47,15)
+    ReadOnly = True
+  }
+  { btnClose Button
+    MoveScaled(31,12,17,4)
+    Enabled = False
+    Text = ("Close")
+  }
+  { txtHost TextBox
+    MoveScaled(11,7,18,4)
+    Text = ("localhost")
+  }
+  { Label1 Label
+    MoveScaled(1,7,9,4)
+    Text = ("Host :")
+  }
+  { Label2 Label
+    MoveScaled(1,12,9,4)
+    Text = ("Port :")
+  }
+  { txtPort TextBox
+    MoveScaled(11,12,18,4)
+    Text = ("32340")
+  }
+  { txtSend TextArea
+    MoveScaled(1,27,47,6)
+    Enabled = False
+  }
+  { btnSend Button
+    MoveScaled(13,34,23,4)
+    Enabled = False
+    Text = ("Send Data")
+  }
+  { Label4 Label
+    MoveScaled(1,24,47,3)
+    Text = ("Write here data to send, then press \"Send Data\"")
+  }
+  { Label5 Label
+    MoveScaled(1,1,17,4)
+    Text = ("Select protocol :")
+  }
+  { cmbProtocol ComboBox
+    MoveScaled(19,1,29,4)
+    ReadOnly = True
+    List = [("TCP"), ("UNIX")]
+  }
+  { lblMessage TextLabel
+    MoveScaled(1,17,47,6)
+    Font = Font["Bold"]
+    Alignment = Align.Center
+    Border = Border.Sunken
+  }
+  { timTimeout #Timer
+    #MoveScaled(26,47)
+  }
+  { Label3 Label
+    MoveScaled(1,40,47,4)
+    Text = ("Data Received :")
+  }
+  { MySocket #Socket
+    #MoveScaled(38,35)
+  }
+}

@@ -1,0 +1,146 @@
+' Gambas class file
+
+Private $bNoChange As Boolean
+
+Private $MX As Integer
+Private $MY As Integer
+Private $hRect As Rect
+Private $bBegin As Boolean
+
+Private btnUndo As CButton
+Private btnApply As CButton
+Private btnBrightness As CButton
+Private btnContrast As CButton
+Private btnGamma As CButton
+
+Public Sub _new()
+  
+  btnUndo = New CButton(Me) As "btnUndo"
+  btnUndo.Move(Me.W - 96 - Desktop.Scale * 4, Desktop.Scale * 3, 48, 48)
+  btnUndo.Image = Image.Load("undo.png")
+  
+  btnApply = New CButton(Me) As "btnApply"
+  btnApply.Move(btnUndo.X + btnUndo.W + Desktop.Scale, btnUndo.Y, 48, 48)
+  btnApply.Image = Image.Load("ok.png")
+  
+  btnBrightness = New CButton(Me)
+  btnBrightness.Enabled = False
+  btnBrightness.Move(Desktop.Scale * 3, Desktop.Scale * 10, 48, 48)
+  btnBrightness.Image = Image.Load("brightness.png")
+  btnBrightness.Shortcut = "B"
+  sldBrightness.Move(btnBrightness.X + 64, btnBrightness.Y + 4)
+  sldBrightness.Tag = btnBrightness
+  
+  btnContrast = New CButton(Me)
+  btnContrast.Enabled = False
+  btnContrast.Move(btnBrightness.X, btnBrightness.Y + 64, 48, 48)
+  btnContrast.Image = Image.Load("contrast.png")
+  btnContrast.Shortcut = "C"
+  sldContrast.Move(btnContrast.X + 64, btnContrast.Y + 4)
+  sldContrast.Tag = btnContrast
+  
+  btnGamma = New CButton(Me)
+  btnGamma.Enabled = False
+  btnGamma.Move(btnBrightness.X, btnContrast.Y + 64, 48, 48)
+  btnGamma.Image = Image.Load("gamma.png")
+  btnGamma.Shortcut = "G"
+  sldGamma.Move(btnGamma.X + 64, btnGamma.Y + 4)
+  sldGamma.Tag = btnGamma
+  
+End
+
+
+Public Sub Form_Open()
+
+  Me.Center
+
+End
+
+Public Sub btnUndo_Click()
+
+  $bNoChange = True
+  sldBrightness.Value = 50
+  sldContrast.Value = 50
+  sldGamma.Value = 50
+  $bNoChange = False
+  Balance_Change
+
+End
+
+Public Sub btnApply_Click()
+
+  If $bBegin Then FMain.Apply
+
+End
+
+Public Sub Balance_Change()
+
+  If $bNoChange Then Return
+  If Not $bBegin Then
+    FMain.Begin
+    $bBegin = True
+  Endif
+  FMain.Balance(sldBrightness.Value, sldContrast.Value, sldGamma.Value)
+
+End
+
+Public Sub panBrightness_MouseDown()
+
+  $MX = Mouse.ScreenX
+  $MY = Mouse.ScreenY
+  $hRect = Rect(Me.X, Me.Y, Me.W, Me.H)
+
+End
+
+Public Sub panBrightness_MouseMove()
+  
+  Dim X, Y As Integer
+  
+  X = Min(Max($hRect.X + Mouse.ScreenX - $MX, 0), FMain.W - $hRect.W)
+  Y = Min(Max($hRect.Y + Mouse.ScreenY - $MY, 0), FMain.H - $hRect.H)
+  Me.Move(X, Y)
+  
+End
+
+Public Sub Form_KeyPress()
+
+  If Key.Code = Key.Backspace Then
+    btnUndo_Click
+    Stop Event
+    Return
+  Endif
+  
+  If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
+    btnApply_Click
+    Stop Event
+    Return
+  Endif
+
+  Select Case UCase(Key.Text)
+    Case "B"
+      sldBrightness.SetFocus
+    Case "C"
+      sldContrast.SetFocus
+    Case "G"
+      sldGamma.SetFocus
+    Case Else
+      FMain.Form_KeyPress
+      Return
+  End Select
+
+  Stop Event
+
+End
+
+Public Sub Balance_GotFocus()
+
+  CAnimation.Start(Last.Tag, "Opacity", CButton.MAX_OPACITY, 250)
+
+End
+
+Public Sub Balance_LostFocus()
+
+  CAnimation.Start(Last.Tag, "Opacity", CButton.MIN_OPACITY, 250)
+
+End
+

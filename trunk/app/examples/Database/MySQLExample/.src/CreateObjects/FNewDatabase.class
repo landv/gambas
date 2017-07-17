@@ -1,0 +1,33 @@
+' Gambas class file
+
+Public Sub Form_Open()
+
+  cmbCharset.List = modMain.$Connection.MySQL.Charsets
+  cmbCharset.Index = cmbCharset.Find("utf8")
+  Me.Center()
+  Catch
+    modMain.Error()
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close()
+
+End
+
+Public Sub btnCreate_Click()
+
+  modMain.$Connection.MySQL.DataBase.Add(txtNombre.Text, cmbCharset.Text, cmbCollations.Text)
+  modMain.$Connection.MySQL.Use(txtNombre.Text)
+  Me.Close()
+  Catch
+    modMain.Error()
+
+End
+
+Public Sub cmbCharset_Click()
+
+  cmbCollations.List = modMain.$Connection.MySQL.CharsetCollations(cmbCharset.Text)
+
+End

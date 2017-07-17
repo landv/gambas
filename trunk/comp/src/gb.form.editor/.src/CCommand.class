@@ -1,0 +1,250 @@
+' Gambas class file
+
+Public Enum BEGIN, {END}, INSERT, DELETE
+
+'Public View As Editor
+Public Type As Integer
+Public X As Integer
+Public Y As Integer
+Public SX As Integer
+Public SY As Integer
+Public XA As Integer
+Public YA As Integer
+Public Text As String
+
+' /**---- GCommand -----------------------------------------------------------*/
+' 
+' struct GCommandDocument
+' {
+' public:
+'   GEditor *view;
+'   int cx;
+'   int cy;
+'   int sx;
+'   int sy;
+'   int sx2;
+'   int sy2;
+'   
+'   GCommandDocument() { }
+'   GCommandDocument(GDocument *doc);
+'   void process(GDocument *doc) const;
+'   void print() const;
+'   bool equals(GCommandDocument *o) const;
+' };
+' 
+
+Public Sub _new(hDoc As CDocument, iType As Integer, Optional sText As String, X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
+  
+  With hDoc.Current
+    Type = iType
+    X = X1
+    Y = Y1
+    XA = X2
+    YA = Y2
+    SX = .SelectionColumn
+    SY = .SelectionLine
+    Text = sText
+  End With
+  
+End
+
+Public Sub Print(sPrefix As String)
+  
+  Print sPrefix;
+  Print ["BEGIN", "END", "INSERT", "DELETE"][Type];;
+  Print "X =";; X;; "Y =";; Y;; "SX =";; SX;; "SY =";; SY;; "XA =";; XA;; "YA =";; YA;; "Text =";; Quote(Text)
+  
+End
+
+Static Public Sub _call(hDoc As CDocument, iType As Integer, Optional sText As String, X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer) As CCommand
+  
+  Return New CCommand(hDoc, iType, sText, X1, Y1, X2, Y2)
+
+End
+
+Public Sub MoveCursor(hDoc As CDocument)
+
+  If SX <> X Or If SY <> Y Then 
+    hDoc.Current.Goto(SX, SY)
+    hDoc.Current.Goto(X, Y, True)
+  Else
+    hDoc.Current.Goto(X, Y)
+  Endif
+
+  
+End
+
+
+' GCommandDocument::GCommandDocument(GDocument *doc)
+' {
+'   view = doc->currentView();
+'   
+'   view->getCursor(&cy, &cx);
+'   
+'   if (doc->hasSelection())
+'     doc->getSelection(&sy, &sx, &sy2, &sx2, false); // TODO: store insertMode
+'   else
+'     sx = sy = sx2 = sy2 = -1;
+' }
+' 
+' void GCommandDocument::process(GDocument *doc) const
+' {
+'   //qDebug("goto %d %d", cx, cy);
+'   view->cursorGoto(cy, cx, false);
+'   if (sx >= 0)
+'   {
+'     //qDebug("select %d %d %d %d", sx, sy, sx2, sy2);
+'     doc->startSelection(view, sy, sx);
+'     doc->endSelection(sy2, sx2);
+'   }
+' }
+' 
+' void GCommandDocument::print() const
+' {
+'   qDebug("- %d %d [%d %d %d %d]", cx, cy, sx, sy, sx2, sy2);
+' }
+' 
+
+' Public Sub Equals(hOther As CCommand) As Boolean
+'   
+'   If hOther.X = X And If hOther.Y = Y And If hOther.SX = SX And If hOther.SY = SY Then Return True
+'   
+' End
+
+
+' bool GCommandDocument::equals(GCommandDocument *o) const
+' {
+'   return view == o->view && cx == o->cx && cy == o->cy 
+'     && sx == o->sx && sy == o->sy && sx2 == o->sx2 && sy2 == o->sy2;
+' }
+' 
+' class GCommand
+' {
+' public:
+'   enum Type
+'   {
+'     None, Begin, End, Move, Insert, Delete, Indent, Unindent
+'   };
+'   GCommandDocument info;
+' 
+'   virtual ~GCommand() { }
+'   virtual Type type() const { return None; }
+'   virtual int nest() const { return 0; }
+'   virtual void print() const { }
+'   virtual bool merge(GCommand *) const { return false; }
+'   virtual void process(GDocument *doc, bool undo) const { }
+'   virtual bool linked() const { return false; }
+'   virtual bool remove(GCommand *) const { return false; }
+' };
+' 
+' class GBeginCommand: public GCommand
+' {
+' public:
+'   bool _linked;
+'   
+'   GBeginCommand(GCommandDocument *info, bool linked = false) { _linked = linked; this->info = *info; }
+'   Type type() const { return Begin; }
+'   void print() const { qDebug("Begin"); info.print(); }
+'   int nest() const { return 1; }
+'   bool linked() const { return _linked; }
+'   void process(GDocument *doc, bool undo) const { info.process(doc); }
+' };
+' 
+' class GEndCommand: public GCommand
+' {
+' public:
+'   bool _linked;
+' 
+'   GEndCommand(bool linked = false) { _linked = linked; }
+'   Type type() const { return End; }
+'   void print() const { qDebug("End"); }
+'   int nest() const { return -1; }
+'   bool linked() const { return _linked; }
+'   bool remove(GCommand *o) const { return (o->type() == Begin); }
+' };
+' 
+' class GDeleteCommand: public GCommand
+' {
+' public:
+'   int x, y, x2, y2;
+'   GString str;
+' 
+'   GDeleteCommand(GCommandDocument *info, int y, int x, int y2, int x2, const GString &str)
+'   {
+'     this->x = x; this->y = y; this->x2 = x2; this->y2 = y2; this->str = str;
+'     this->info = *info;
+'   }
+'   
+'   Type type() const { return Delete; }
+'   void print() const { qDebug("Delete: (%d %d)-(%d %d): '%s'", x, y, x2, y2, TO_UTF8(str.getString())); info.print(); }
+' 
+'   bool merge(GCommand *c) const
+'   {
+'     if (c->type() != type())
+'       return false;
+' 
+'     GDeleteCommand *o = (GDeleteCommand *)c;
+'     
+'     if (info.view != o->info.view)
+'       return false;
+' 
+'     if (x2 != o->x || y2 != o->y || o->y != o->y2)
+'       return false;
+' 
+'     o->str.prepend(str);
+'     o->x = x;
+'     o->y = y;
+'     //o->info = info;
+'     return true;
+'   }
+' 
+'   void process(GDocument *doc, bool undo) const 
+'   {
+'     if (undo)
+'       doc->insert(y, x, str);
+'     else
+'       doc->remove(y, x, y2, x2);
+'     
+'     info.process(doc);
+'   }
+' };
+' 
+' class GInsertCommand: public GDeleteCommand
+' {
+' public:
+'   GInsertCommand(GCommandDocument *info, int y, int x, int y2, int x2, const GString &str): 
+'     GDeleteCommand(info, y, x, y2, x2, str) {}
+'   Type type() const { return Insert; }
+'   void print() const { qDebug("Insert: (%d %d)-(%d %d): '%s'", x, y, x2, y2, TO_UTF8(str.getString())); info.print(); }
+' 
+'   bool merge(GCommand *c) const
+'   {
+'     if (c->type() != type())
+'       return false;
+' 
+'     if (str.length() && str.isNewLine(0))
+'       return false;
+' 
+'     GInsertCommand *o = (GInsertCommand *)c;
+' 
+'     if (o->info.view != info.view)
+'       return false;
+'     
+'     if (o->str.length() && o->str.isNewLine(str.length() - 1))
+'       return false;
+' 
+'     if (x != o->x2 || y != o->y2)
+'       return false;
+' 
+'     o->str += str;
+'     o->x2 = x2;
+'     o->y2 = y2;
+'     return true;
+'   }
+' 
+'   void process(GDocument *doc, bool undo) const
+'   {
+'     GDeleteCommand::process(doc, !undo);
+'   }
+' };
+' 

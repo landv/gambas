@@ -1,0 +1,134 @@
+' Gambas class file
+
+Inherits DrawingArea
+
+Event Click
+
+Property Path As String
+Property Label As String
+
+Private $hObs As Observer
+Private $sPath As String
+Private $sText As String
+Private $sLabel As String
+
+Public Sub _new()
+  
+  $hObs = New Observer(Me) As "DirButton"
+  Me.Mouse = Mouse.Pointing
+  
+End
+
+Private Sub Ellipsize(sText As String, hFont As Font, W As Integer) As String
+  
+  Dim sCar As String = "…"
+  Dim iPos As Integer
+  
+  If Not sText Then Return
+  If hFont.TextWidth(sText) <= W Then Return sText
+  
+  For iPos = 1 To String.Len(sText)
+    If hFont.TextWidth(String.Left(sText, iPos) & sCar) > W Then Break
+  Next
+  
+  Return String.Left(sText, iPos - 1) & sCar
+  
+End
+
+Public Sub DirButton_Draw()
+  
+  Paint.Background = Color.LightForeground
+  
+  Paint.LineWidth = 1.5
+  Paint.MoveTo(Desktop.Scale / 2, Paint.H / 2 - Desktop.Scale / 2)
+  Paint.LineTo(Desktop.Scale, Paint.H / 2)
+  Paint.LineTo(Desktop.Scale / 2, Paint.H / 2 + Desktop.Scale / 2)
+  Paint.LineCap = Paint.LineCapRound
+  Paint.Stroke
+  
+  Paint.Background = Style.ForegroundOf(Me)
+
+  If Me.Hovered Then 
+    'Paint.Background = Color.SetAlpha(Paint.Background, 128)
+    Paint.DrawTextShadow($sText, Desktop.Scale * 1.75, 0, Paint.W - Desktop.Scale, Paint.H, Align.Left)
+    'Paint.Background = Color.SetAlpha(Paint.Background, 0)
+  Endif
+  Paint.DrawText($sText, Desktop.Scale * 1.75, 0, Paint.W - Desktop.Scale, Paint.H, Align.Left)
+  
+End
+
+Public Sub DirButton_Enter()
+  
+  Me.Refresh
+  
+End
+
+Public Sub DirButton_Leave()
+  
+  Me.Refresh
+  
+End
+
+Public Sub DirButton_Font()
+  
+  UpdateSize
+  
+End
+
+Private Sub GetText() As String
+
+  If $sLabel Then Return $sLabel
+  Return File.Name($sPath)
+  
+End
+
+Private Sub UpdateSize()
+
+  Dim W As Integer
+  Dim sText As String
+  
+  sText = GetText()
+
+  W = Min(Desktop.Scale * 2 + Me.Font.TextWidth(sText), Desktop.Scale * 20)
+  
+  $sText = Ellipsize(sText, Me.Font, W - Desktop.Scale * 2)
+  If $sText <> sText Then
+    Me.Tooltip = sText
+  Else
+    Me.Tooltip = ""
+  Endif
+  
+  Me.W = W
+
+End
+
+Public Sub DirButton_MouseDown()
+  
+  Raise Click
+  
+End
+
+Private Function Path_Read() As String
+
+  Return $sPath
+
+End
+
+Private Sub Path_Write(Value As String)
+
+  $sPath = Value
+  UpdateSize
+
+End
+
+Private Function Label_Read() As String
+
+  Return $sLabel
+
+End
+
+Private Sub Label_Write(Value As String)
+
+  $sLabel = Value
+
+End

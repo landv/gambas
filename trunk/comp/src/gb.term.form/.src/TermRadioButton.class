@@ -1,0 +1,112 @@
+' Gambas class file
+
+Export
+Inherits TermControl
+Class Rect
+Property Text As String
+Property Value As Boolean
+
+
+Private $sText As String
+Private $iOldLen As Integer
+Private $bValue As Integer
+
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+
+End
+
+Public Sub _Render()
+
+  Dim hAttr As New Attr
+  Dim iAttr As Integer
+  Dim i As Integer
+  Dim sALign As String
+  Dim hRectC As Rect = Me._GetClientRect()
+  Dim sValue As String
+  Dim iBC As Integer
+
+  If Not Me._NeedRender Then Return
+  Super._Render
+
+  sValue = IIf($bValue, "*", " ")
+
+  sALign = "(" & sValue & ") " & $sText
+
+  iBC = Me._GetBackGround()
+  If Me.HaveFocus Then iBC = TermColor.Focus
+  hAttr.Background = iBC
+  hAttr.Foreground = Me.Foreground
+  iAttr = hAttr.GetInteger()
+
+  For i = 1 To Me._Content[0].count
+    If Me._Content[0][Me._Content[0].Max] And If i > Max($iOldLen, String.Len(sALign)) Then Break
+    If i <= String.Len(sALign) Then
+      Me._Content[0][i - 1] = Char(Mid(sALign, i, 1), iAttr)
+    Else
+      Me._Content[0][i - 1] = Char(" ", iAttr)
+    Endif
+  Next
+
+  Me._NeedRender = False
+
+End
+
+Private Function Value_Read() As Boolean
+
+  Return $bValue
+
+End
+
+Private Sub Value_Write(Value As Boolean)
+  If $bValue = Value Then Return
+  If Value Then SetChecked
+  $bValue = Value
+  Me.Refresh
+  '$iValue = Max(Min(Value, 1), -1)
+End
+
+Private Sub SetChecked()
+  
+  Dim hParent As TermContainer = Me.Parent
+  Dim hCtrl As Object
+  
+  For Each hCtrl In hParent.Children
+    If hCtrl Is TermRadioButton Then
+      If hCtrl.Value Then hCtrl.Value = False
+    Endif
+  Next
+  
+End
+
+
+
+
+
+Public Sub _MouseUp()
+
+  Me.Value = True
+  Super._MouseUp
+  Super._Click
+  'Me._NeedRender = True
+  'Me.Refresh
+End
+
+
+
+Public Sub _KeyPress()
+  
+  If Key.Text = " " Then
+    Me.Value = True
+  Endif
+  Super._Click
+  Super._KeyPress
+End

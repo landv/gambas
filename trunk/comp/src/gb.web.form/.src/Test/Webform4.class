@@ -1,0 +1,41 @@
+' Gambas class file
+
+Public Sub _new()
+  
+  WebForm.Debug = True
+  
+End
+
+
+Public Sub WebUploadArea1_Progress()
+
+  btnSelectFile.Enabled = False
+  WebProgressBar1.Value = WebUploadArea1.Progress
+
+End
+
+Public Sub WebUploadArea1_Upload()
+
+  Dim sPath As String
+
+  btnSelectFile.Enabled = True
+
+  WebForm.Print("upload")
+  For Each sPath In Request.Files
+    Message(Request.Files.Key & ": " & sPath)
+  Next
+
+End
+
+
+Public Sub WebButton1_Click()
+
+  Webform5.Show
+
+End
+
+Public Sub WebButton2_Click()
+
+  Webform5.Hide
+
+End

@@ -1,0 +1,83 @@
+' Gambas class file
+
+Export
+Create Static
+
+Public Procedure Modify(Routine As String, Statement As String, Optional Parameters As String[], Optional Returns As String, Optional Database As String = modMain.$Connection.Name)
+
+  Delete(Routine, True, Database)
+  Add(Routine, Statement, Parameters, Returns, Database)
+
+End
+
+Public Procedure Add(Routine As String, Statement As String, Optional Parameters As String[], Optional Returns As String, Optional Database As String = modMain.$Connection.Name)
+
+  modMain.$Query = "CREATE "
+  If Returns Then
+    modMain.$Query &= "FUNCTION "
+  Else
+    modMain.$Query &= "PROCEDURE "
+  Endif
+  modMain.$Query &= "`" & Database & "`.`" & Routine & "`("
+  If Parameters Then modMain.$Query &= modMain.ArrayToString(Parameters, False)
+  modMain.$Query &= ") "
+  If Returns Then modMain.$Query &= "RETURNS " & Returns & " "
+  modMain.$Query &= Statement
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure Delete(Routine As String, Optional IfExists As Boolean = False, Optional Database As String = modMain.$Connection.Name)
+
+  modMain.$Query = "DROP "
+  modMain.$hResult = modMain.$Connection.Exec("SELECT `TYPE` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'")
+  If Not modMain.$hResult.Available Then Return
+  Select (modMain.$hResult!TYPE)
+    Case "FUNCTION"
+      modMain.$Query &= "FUNCTION "
+    Case "PROCEDURE"
+      modMain.$Query &= "PROCEDURE "
+    Default
+  End Select
+  If IfExists Then modMain.$Query &= "IF EXISTS "
+  modMain.$Query &= "`" & Database & "`.`" & Routine & "`"
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Function Info(Routine As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$hResult = modMain.$Connection.Exec("SELECT `TYPE` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'")
+  If Not modMain.$hResult.Available Then Return
+  Select (modMain.$hResult!TYPE)
+    Case "FUNCTION"
+      modMain.$Query = "SHOW CREATE FUNCTION `" & Database & "`.`" & Routine & "`"
+      Return modMain.$Connection.Exec(modMain.$Query)!"Create Function"
+    Case "PROCEDURE"
+      modMain.$Query = "SHOW CREATE PROCEDURE `" & Database & "`.`" & Routine & "`"
+      Return modMain.$Connection.Exec(modMain.$Query)!"Create Procedure"
+    Default
+  End Select
+
+End
+
+Public Function Definition(Routine As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT `body` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)["body"].Data
+
+End
+
+Public Function Returns(Routine As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT `returns` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)["returns"].Data
+
+End
+
+Public Function Parameters(Routine As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT REPLACE(REPLACE(REPLACE(CAST(`param_list` AS CHAR), '\n', ''), '  ', ''), '`', '') AS `List` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)["List"]
+
+End

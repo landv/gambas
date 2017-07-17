@@ -1,0 +1,102 @@
+' Gambas class file
+
+Create Private
+
+Static Property Read {Left} As Boolean
+Static Property Read {Right} As Boolean
+Static Property Read {Middle} As Boolean
+Static Property Read X, Col As Integer
+Static Property Read Y, Row As Integer
+Static Property Read ScreenX, ScreenCol As Integer
+Static Property Read ScreenY, ScreenRow As Integer
+
+Static Private $iRow As Integer
+Static Private $iCol As Integer
+Static Private $iScreenRow As Integer
+Static Private $iScreenCol As Integer
+Static Private $bLeft As Boolean
+Static Private $bMiddle As Boolean
+Static Private $bRight As Boolean
+Static Private $iDelta As Integer
+
+Static Private Function Left_Read() As Boolean
+
+  Return $bLeft
+
+End
+
+Static Private Function Right_Read() As Boolean
+
+  Return $bRight
+
+End
+
+Static Private Function Middle_Read() As Boolean
+
+  Return $bMiddle
+
+End
+
+Static Public Sub Hide()
+  
+  
+  
+End
+
+Static Public Sub Show()
+  
+  
+  
+End
+
+
+Static Public Sub _SetState(hControl As TermControl, Col As Integer, Row As Integer, Optional btnLeft As Boolean, btnMiddle As Boolean, btnRight As Boolean, Delta As Integer)
+  
+  If Not IsMissing(btnLeft) Then $bLeft = btnLeft
+  If Not IsMissing(btnMiddle) Then $bMiddle = btnMiddle
+  If Not IsMissing(btnRight) Then $bRight = btnRight
+  $iDelta = Delta
+  $iScreenRow = Row 
+  $iScreenCol = Col 
+  If hControl = Null Then
+    $iRow = $iScreenRow
+    $iCol = $iScreenCol
+  Else
+    $irow = $iScreenRow - hControl.ScreenY
+    $iCol = $iScreenCol - hControl.ScreenX
+  Endif
+  
+  
+  
+  
+  If TermWindows.Debug Then Error "Mouse State:  Row: " & $iRow & "  Col: " & $iCol & "  btnLeft: " & $bLeft & "  btnMiddle: " & $bMiddle & "  btnRight: " & $bRight & "  Delta: " & $iDelta  
+End
+
+
+
+Static Private Function X_Read() As Integer
+
+  Return $iCol
+
+End
+
+Static Private Function Y_Read() As Integer
+
+  Return $iRow
+
+End
+
+Static Private Function ScreenX_Read() As Integer
+
+  Return $iScreenCol
+
+End
+
+
+
+Static Private Function ScreenY_Read() As Integer
+
+  Return $iScreenRow
+
+End
+

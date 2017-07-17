@@ -1,0 +1,188 @@
+' Gambas class file
+
+Export
+Inherits ReportFrame
+Public Const _Properties As String = "*"
+Public Const _Similar As String = "ReportTextLabel"
+Public Const _DefaultEvent As String = "Data"
+
+Property Read Columns As _ReportGridViewColumns
+Property Read Rows As _ReportGridViewRows
+'Property Autoresize As Boolean
+
+Private $bAutoresize As Boolean
+Private $hColumns As _ReportGridViewColumns
+Private $hRows As _ReportGridViewRows
+
+
+
+
+Event Data(Row As Integer, Column As Integer)
+
+Public Sub _new()
+  $hColumns = New _ReportGridViewColumns As "Columns"
+  $hRows = New _ReportGridViewRows As "Rows"
+  
+  
+End
+
+
+Public Sub _SetUnifiedValues()
+  
+  Dim i As Integer
+  Super._SetUnifiedValues
+  $hRows._SetUnifiedValues()
+  $hColumns._SetUnifiedValues()
+  ' For i = 0 To $hColumns.Max
+  '   $hColumns[i]._Width = TSizeParse[$hColumns[i].Width].ToCm()
+  ' Next
+  ' 
+  ' For i = 0 To $hRows.Max
+  '   $hRows[i]._Height = TSizeParse[$hRows[i].Height].ToCm()
+  ' Next
+  
+  
+End
+
+
+
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
+  
+  Dim hMyHints As New TSizeHint
+  Dim fWidth As Float
+  Dim i As Integer
+  'On Récupère la taille standard
+  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
+  If hMyHints.Width = 0 Then hMyHints.Width = 1
+  If hMyHints.Height = 0 Then hMyHints.Height = 5
+  
+  If Me.Autoresize Or If (Me._Width = 0 And Me._Height = 0) Then 
+    
+    'Largeur
+    
+    ' For i = 0 To $hColumns.Max
+    '   
+    '   fWidth += $hColumns[i].Width
+    '   
+    ' Next
+    
+    
+    
+  Endif
+  
+  
+  
+  
+  
+  Return hMyHints
+  
+  End
+
+Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, DataIndex As Integer)
+  
+  Dim iColWidth As Float = ReportUnits._ReportUnitsToPixels(Me.Rows._Width)
+  Dim iRowHeight As Float = ReportUnits._ReportUnitsToPixels(Me.Rows._Height)
+  Dim i, j As Integer
+  Dim fCurY, fCurX, fH, fRow As Float
+  Dim fRowWidth As Float = ReportUnits._ReportUnitsToPixels($hRows._Width)
+  Dim fColHeight As Float = ReportUnits._ReportUnitsToPixels($hColumns._Height)
+  Dim fX As Float = X + hControl.RealLeft + ReportUnits._ReportUnitsToPixels(Me.Border._Left)
+  Dim fY As Float = Y + hControl.RealTop + ReportUnits._ReportUnitsToPixels(Me.Border._Top)
+  'Paint.Brush = Paint.Color(Color.Red)
+  'Paint.Rectangle(X + hControl.RealLeft, Y + hControl.RealTop, hControl.RealWidth, hControl.RealHeight)
+  'Paint.Fill
+  Paint.LineWidth = ReportUnits._ReportUnitsToPixels(Me.Border._Top)
+   
+   
+     fCurY = fY + fColHeight
+
+
+   For i = 0 To $hRows.Max
+     
+     Paint.MoveTo(fX, fCurY)
+     Paint.LineTo(fX + hControl.RealWidth, fCurY)
+     fCurY += ReportUnits._ReportUnitsToPixels($hRows[i]._Height)
+     
+   Next
+   
+   fCurX = fX + fRowWidth
+   
+   For i = 0 To $hColumns.max
+     
+   Paint.MoveTo(fCurX, fY)
+   Paint.LineTo(fCurX, fY + hControl.RealHeight)
+   fCurX += ReportUnits._ReportUnitsToPixels($hColumns[i]._Width)
+     
+   Next
+   
+
+
+
+
+
+  Paint.Stroke
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   fCurY = fY + fColHeight
+   For i = 0 To $hRows.Max
+     fH = ReportUnits._ReportUnitsToPixels($hRows[i]._Height)
+     Paint.Text($hRows[i].Text, fX, fCurY, fRowWidth, fH, Align.Right)
+     Paint.Fill
+     fCurY += fH
+   Next
+   
+   
+   
+   
+  
+  
+  
+  
+  
+  
+  
+End
+
+
+
+
+
+
+
+
+
+
+
+
+Private Function Columns_Read() As _ReportGridViewColumns
+
+  Return $hColumns
+
+End
+
+Private Function Rows_Read() As _ReportGridViewRows
+
+  Return $hRows
+
+End
+
+Private Function Autoresize_Read() As Boolean
+
+  Return $bAutoresize
+
+End
+
+Private Sub Autoresize_Write(Value As Boolean)
+
+  $bAutoresize = Value
+
+End

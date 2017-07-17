@@ -1,0 +1,27 @@
+' Gambas class file
+
+''' This class describes a foreign source of an RSS item which you included in your RSS feed.
+
+Export
+
+'' The feed title of the source RSS feed.
+'' 
+'' ## See also
+'' [Rss.Title](../../rss/title)
+Public Source As String
+'' Link to the foreign RSS feed's XML document.
+Public Url As String
+
+Public Sub _Write(hWriter As XmlWriter)
+  If Not Url Then Error.Raise(("Url must be set in RssSource"))
+  With hWriter
+    .StartElement("source", ["url", Url])
+      .Text(Source)
+    .EndElement()
+  End With
+End
+
+Public Sub _Read(hReader As XmlReader)
+  Url = hReader.Node.Attributes["url"]
+  Source = Rss._GetText(hReader)
+End

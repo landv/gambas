@@ -1,0 +1,33 @@
+' Gambas class file
+
+''' This class represents a GUID (**G**lobally **U**nique **ID**entifier) of an RSS item.
+''' The RSS specification does not prescribe a particular format. A news aggregator may use
+''' this property, if present, to determine whether the item is new.
+'''
+''' By default the [IsPermaLink] property is True, meaning permalinks are the default way
+''' to assign the item a GUID.
+
+Export
+
+'' The GUID string.
+Public Guid As String
+'' Returns or sets if this GUID is a [permalink](https://en.wikipedia.org/wiki/Permalink).
+'' The default value of this property is True.
+Public IsPermaLink As Boolean
+
+Public Sub _new()
+  IsPermaLink = True
+End
+
+Public Sub _Write(hWriter As XmlWriter)
+  With hWriter
+    .StartElement("guid", IIf(IsPermaLink, ["isPermaLink", "true"], Null))
+      .Text(Guid)
+    .EndElement()
+  End With
+End
+
+Public Sub _Read(hReader As XmlReader)
+  If hReader.Node.Attributes.Exist("isPermaLink") Then IsPermaLink = (hReader.Node.Attributes["isPermaLink"] = "true")
+  Guid = Rss._GetText(hReader)
+End

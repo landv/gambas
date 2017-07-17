@@ -1,0 +1,42 @@
+' Gambas module file
+
+Public Sub Send()
+
+  Dim rPage As Result
+  Dim rPageDef As Result
+  Dim sPath As String
+
+  sPath = Path.Page
+
+  rPage = DB.Find(DBScheme.TABLE_PAGES, DBScheme.PAGE_PATH & "= &1 AND " & DBScheme.PAGE_LANG & "= &2", sPath, Main.Language)
+  rPageDef = DB.Find(DBScheme.TABLE_PAGES, DBScheme.PAGE_PATH & "= &1 AND " & DBScheme.PAGE_LANG & "= &2", sPath, Main.DEFAULT_LANG)
+
+  If rPageDef.Available Then
+    If Not rPage.Available Then
+      '       IF sPath = $sPath THEN
+      '         sWarn = ("This page is not translated.")
+      '         $bNew = TRUE
+      '       ENDIF
+      rPage = rPageDef
+    Else
+      '       IF rPageDef!dDate > rPage!dDate THEN
+      '         IF sPath = $sPath THEN sWarn = ("This page is not up to date.")
+      '       ENDIF
+    Endif
+  Endif
+
+  'DEBUG DB.Tables["page"].Fields["sdata"].Type
+  'PRINT #File.Err, rPage.Fields["sData"].Type; "/"; Len(rPage["sData"].Data)
+  'DEBUG rPage!sData.Length
+
+  sPath = Temp()
+
+  File.Save(sPath, rPage["sData"].Data)
+
+  Response.AddHeader("Last-Modified", CGI.FormatDate(rPage!dDate))
+
+  Response.SendFile(sPath, Mid(rPage!sHTML, InStr(rPage!sHTML, " ") + 1))
+
+  Quit
+
+End

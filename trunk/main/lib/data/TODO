@@ -1,0 +1,55 @@
+NOTE that one should not compare elements in a list based on their indices.
+If List2 is an exact copy of List1 and both Currents point to the same
+element, it is not guaranteed that List1.Index = List2.Index because one of
+them could be the negative equivalent of the other (non-negative) one.
+
+* OPT: Dynamically add up to 8 anchors to increase the chance of finding a
+  very good anchor for traversals. These are automatically updated on
+  append/prepend/take operations to be widespread across the List.
+* OPT: Also save an anchor of the last element obtained via _get().
+  Sequential traversal with indices should now be almost array-like in
+  speed.
+
+* BUG: Current can be used as an enumerator now without corrupting the list
+  and also if it is initially invalid.
+
+* OPT: Make the VAL_append()/prepend() algorithms more clever: They can use
+  any neighbour chunk now to borrow space for the inserted value. This
+  measure reduces list fragmentation and also enables to satisfy the (L)
+  postulate.
+
+* NEW: Push() and Pop() are new methods of the List class to save and
+  restore anchors from a Gambas program. These can be used to quickly go
+  back to a formerly-visited element.
+
+AvlTree:
+* NEW: Add a Copy() method to return a deep copy of an AvlTree.
+* NEW: Split() is a new method of AvlTree to return the left or right
+  subtree of a given node or both.
+* NEW: Add Insert() to insert an AvlTree into another one. (See a thread on
+  stackoverflow about an O(log n) algorithm for that.)
+* NEW: Add the Reverse virtual property to traver in reverse in-order.
+
+Graph:
+* Write down the hidden methods and their signatures
+* Set down the relationships between methods; which default implementation
+  calls what; what is minimum needed to implement a fully-functional Graph
+* NEW: Add default implementations for some hidden functions
+
+RedBlackTree:
+* NEW: RedBlackTree class.
+
+SearchTree:
+* NEW: SearchTree is the base class of all search trees.
+
+PrioQueue:
+* NEW: Re-implement PrioQueue using a RedBlackTree.
+  -> contain structures (key, time, value) where key is the key and time
+  is a logical timestamp (rbtree->clock++). If key1 == key2, then compare
+  the unique insertion timestamps.
+* OPT: Don't have Integer priority parameters. Consistently use
+  GB.CompVariant() to compare elements. This is at least as mighty as
+  integer priorities, but better encapsulated.
+
+- Use libtree to provide some trees (if possible).
+- General, navigatable tree class.

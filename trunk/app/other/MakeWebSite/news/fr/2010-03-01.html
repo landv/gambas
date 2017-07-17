@@ -1,0 +1,16 @@
+Publication de Gambas 2.20
+<p>Cette version corrige un grand nombre de bugs dans l'interpréteur, l'environnement de développement, les composants graphiques...
+Les corrections les plus notables sont :
+<ul>
+  <li>La génération de paquetages Debian et Ubuntu devrait fonctionner correctement maintenant.
+  <li>RDir() gère correctement les chemins trop longs.
+  <li>Le drapeau d'entrée de conversion CR / NL est mis à zéro lors de l'initialisation d'un port série.
+  <li>L'utilisation de <tt>gb.desktop</tt> ne plante plus l'interpréteur lorsqu'il se termine.
+  <li>Dans <tt>gb.qt</tt>, TreeView.Count et ColumnView.Count retournent maintenant le nombre d'éléments dans la vue comme avec <tt>gb.gtk</tt>, et non simplement
+  le nombre d'éléments à la racine.
+  <li>La ComboBox émet son évènement Click lorsqu'elle reçoit son premier élément, car celui-ci est automatiquement sélectionné.
+</ul>
+Attention : les deux derniers changements introduisent une petite incompatibilité, qui peut vous obliger à modifier vos projets s'ils sont concernés.
+<p>
+Veuillez vous reporter au <a href="changelog2.html">ChangeLog</a> complet pour les détails.
+

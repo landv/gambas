@@ -1,0 +1,216 @@
+' Gambas class file
+
+Private $aProc As String[]
+Private $iCurrent As Integer
+Private $iInit As Integer
+Private $sClass As String
+Private $sFind As String
+Private $dFind As Float
+Private $hModule As FEditor
+
+Static Public Sub Popup(hModule As FEditor, sClass As String, aProc As String[], iCurrent As Integer, X As Integer, Y As Integer, W As Integer, H As Integer) As Integer
+  
+  Dim iRet As Integer
+  
+  FProcedureList.Init(hModule, sClass, aProc, iCurrent, W, H)
+  iRet = FProcedureList.ShowPopup(X, Y) - 1
+  FProcedureList.Exit
+  Return iRet
+  
+End
+
+Public Sub Init(hModule As FEditor, sClass As String, aProc As String[], iCurrent As Integer, W As Integer, H As Integer)
+  
+  $hModule = hModule
+  $sClass = sClass
+  ' Copy it, as it can disappear during the Editor_Change() method
+  $aProc = aProc.Copy()
+  $iInit = iCurrent
+  $iCurrent = -1
+  
+  gvwProc.Rows.Count = aProc.Count
+  gvwProc.Rows.UnselectAll
+  gvwProc.Columns.Count = 1
+  Project.SetNormalFont(gvwProc)
+  'gvwProc.Rows.H = gvwProc.Font.Height + 4
+  ' For I = 0 To aProc.Max
+  '   If aProc[I] Begins "-" Then gvwProc.Rows[I].H = Desktop.Scale * 1.5
+  ' Next
+
+  Me.Resize(W, Min(H, gvwProc.ScrollHeight + 2))
+  Try gvwProc[iCurrent, 0].EnsureVisible
+  
+  $sFind = ""
+  $dFind = Timer
+  
+End
+
+Public Sub Exit()
+  
+  $hModule = Null
+  
+End
+
+
+Public Sub gvwProc_MouseUp()
+  
+  Me.Close($iCurrent + 1)
+  
+End
+
+Private Sub SetCurrent(iCurrent As Integer)
+
+  Dim iOld As Integer = $iCurrent
+  
+  If iCurrent = iOld Then Return
+  If iCurrent >= 0 And If $aProc[iCurrent] = "-" Then Return
+  
+  $iCurrent = iCurrent
+  If iOld >= 0 Then gvwProc.Rows[iOld].Refresh
+  If iCurrent >= 0 Then 
+    gvwProc.Rows[iCurrent].Refresh
+    gvwProc[iCurrent, 0].EnsureVisible
+  Endif
+
+End
+
+Public Sub gvwProc_MouseMove()
+  
+  SetCurrent(gvwProc.RowAt(Mouse.Y))
+  
+End
+
+Public Sub gvwProc_MouseWheel()
+  
+  gvwProc_MouseMove
+  
+End
+
+Private Sub FindProcedure()
+  
+  Dim iRow, iStart As Integer
+  
+  iStart = $iCurrent
+  iRow = iStart
+  
+  Do
+    If LCase(gvwProc[iRow, 0].Text) Begins $sFind Then
+      SetCurrent(iRow) 'Try gvwProc.Rows[iRow].Selected = True
+      Break
+    Endif
+    Inc iRow
+    If iRow >= gvwProc.Rows.Count Then
+      iRow = 0
+    Endif
+    If iRow = iStart Then Break
+  Loop
+  
+End
+
+Public Sub gvwProc_KeyPress()
+  
+  If Key.Code = Key.Return Or If Key.Code = Key.Enter Or If Key.Code = Key.Space Then
+    gvwProc_MouseUp
+    Stop Event
+  Else If Key.Code = Key.F6 Or If Key.Code = Key.Escape Then
+    Me.Close
+    Stop Event
+  Else If Key.Text Then
+    If (Timer - $dFind) >= 1 Then $sFind = ""
+    $sFind &= String.LCase(Key.Text)
+    $dFind = Timer
+    FindProcedure
+  Else If Key.Code = Key.Up Then
+    If $iCurrent > 0 Then SetCurrent($iCurrent - 1)
+    Stop Event
+  Else If Key.Code = Key.Down Then
+    If $iCurrent < (gvwProc.Rows.Count - 1) Then SetCurrent($iCurrent + 1)
+    Stop Event
+  Else If Key.Code = Key.Home Then
+    SetCurrent(0)
+    Stop Event
+  Else If Key.Code = Key.End Then
+    SetCurrent(gvwProc.Rows.Count - 1)
+    Stop Event
+  Endif
+  
+End
+
+Public Sub Form_Activate()
+  
+  gvwProc.SetFocus
+  'Debug gvwProc.ScrollY
+  
+End
+
+' Public Sub gvwProc_Scroll()
+' 
+'   Dim iRow As Integer = gvwProc.RowAt(Mouse.ScreenY - gvwProc.ScreenY)
+'   
+'   Try gvwProc.Rows[iRow].Selected = True
+'   Debug gvwProc.ScrollY
+' 
+' End
+
+Public Sub gvwProc_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, (Column) As Integer)
+
+  Dim hSymbol As CSymbolInfo
+  Dim sName As String
+  Dim WT As Float
+  
+  Try sName = $aProc[Row]
+  If Not sName Then Return
+
+  If sName Begins "-" Then 
+  
+    sName = Mid$(sName, 2)
+    
+    Paint.Font.Grade = -2
+    WT = Paint.TextSize(sName).Width + Desktop.Scale 
+    
+    Paint.FillRect(X - 2, Y + Height \ 2, Width + 4, 1, Color.Merge(Color.LightForeground, Color.TextBackground))
+    Paint.FillRect(X + (Width - WT) / 2, Y, WT, Height, Color.TextBackground)
+    
+    Paint.Background = Color.LightForeground
+    Paint.DrawText(sName, X, Y, Width, Height, Align.Center)
+    
+    Return
+    
+  Endif
+  
+  If Row = $iCurrent Then Paint.FillRect(X, Y, Width, Height, Color.SetAlpha(Color.LightBackground, 192))
+  If Row = $iInit Then Paint.FillRect(X, Y, Width, Height, Color.SetAlpha(Color.LightBackground, 128))
+  
+  Paint.Background = Color.TextForeground
+  Paint.Font.Bold = False
+  Paint.Font.Italic = False
+
+  If $sClass Then
+    
+    Project.Documentation.GetClassSymbols($sClass)
+    Try hSymbol = $hModule.Scan[sName]
+    If hSymbol And If hSymbol.Kind = "M" Then Paint.Font.Bold = True
+  
+  Endif
+    
+  If Left(sName) = "_" Then 
+    If FCompletion.GetSpecialMethods().Exist(sName, gb.IgnoreCase) Then 
+      Paint.Background = Color.SelectedBackground
+    Endif
+  Else If InStr(sName, "_") Then
+    'gvwProc.Data.Picture = Picture["img/16/event.png"]
+    Paint.Font.Italic = True
+  Endif
+  
+  If hSymbol And If hSymbol.NotPublic Then Paint.Background = Color.Merge(Paint.Background, Color.TextBackground)
+  
+  If Row = $iInit Then Paint.DrawTextShadow(sName, X + 2, Y, Width - 4, Height, Align.Left)
+  Paint.DrawText(sName, X + 2, Y, Width - 4, Height, Align.Left)
+  
+  ' If Row = $iInit Then
+  '   Paint.Rectangle(X + 0.5, Y + 0.5, Width - 1, Height - 1)
+  '   Paint.Background = Color.SelectedBackground
+  '   Paint.Stroke
+  ' Endif
+
+End

@@ -1,0 +1,554 @@
+' Gambas class file
+
+Public Name As String
+Public Parent As String
+Public Symbols As Collection
+Public Creatable As Boolean
+Public AutoCreatable As Boolean
+Public (Component) As String
+Public ParentComponent As String
+ 
+Public DefaultEvent As String
+Public Events As String[]
+Public PropertyList As String[]
+Public Properties As Collection
+Public Virtual As Boolean
+Public DrawWith As String
+Public Container As Boolean
+Public MultiContainer As Boolean
+Public Help As String
+
+Public Sub _new(sName As String, sComponent As String, sParent As String)
+
+  Dim hSym As CSymbolInfo
+
+  If Not sParent And If CComponent.Classes.Exist(sName) Then
+    sParent = sName
+  Endif
+
+  Name = sName
+  {Parent} = sParent
+  Component = sComponent
+  Symbols = New Collection(gb.IgnoreCase)
+
+  If {Parent} Then
+    ParentComponent = CComponent.Classes[sParent].Component
+    If ParentComponent Then
+      For Each hSym In CComponent.Classes[sParent].Symbols
+        Symbols[hSym.Name] = hSym
+      Next
+    Else
+      Parent = ""
+    Endif
+  Endif
+
+End
+
+' PUBLIC FUNCTION _get(Symbol AS String) AS SymbolInfo
+' 
+'   RETURN Symbols[Symbol]
+' 
+' END
+
+
+
+Public Function IsVirtual() As Boolean
+
+  Return Left$(Name) = "." Or Left$(Name) = "_"
+
+End
+
+
+' PUBLIC SUB BecomeControl(hForm AS Object)
+' 
+'   DIM hComp AS ComponentInfo
+'   DIM aProp AS String[]
+'   DIM sProp AS String
+'   DIM sParent AS String
+'   DIM hProp AS PropertyInfo
+'   DIM hSym AS SymbolInfo
+'   DIM hCtrl AS Object
+'   DIM iPos AS Integer
+'   DIM hClass AS ClassInfo
+'   DIM bRemove AS Boolean
+'   DIM aCont AS String[]
+'   DIM sDefault AS String
+'   DIM sKind AS String
+' 
+'   hComp = Info[Component]
+' 
+'   Virtual = hComp.Virtuals.Find(Name) >= 0
+' 
+'   IF Virtual THEN
+'     CComponent.Forms["*"].Controls.Add(Name)
+'   ELSE
+'     CComponent.Forms[hComp.Type].Controls.Add(Name)
+'   ENDIF
+' 
+'   hClass = ME
+'   DO
+'     IF hClass.Virtual THEN
+'       TRY hCtrl = NEW (hClass.Name)
+'     ELSE
+'       TRY hCtrl = NEW (hClass.Name, hForm)
+'     ENDIF
+' 
+'     IF hCtrl THEN BREAK
+' 
+'     TRY hClass = Info[hClass.ParentComponent][hClass.Parent]
+'     IF ERROR THEN BREAK
+'   LOOP
+' 
+'   'IF NOT hCtrl THEN hCtrl = NEW Frame(hWin)
+' 
+'   aCont = hComp.Containers
+'   IF aCont THEN
+'     Container = aCont.Find(Name) >= 0 'OR Name = "Form" OR Name = "Menu"
+'   'ELSE ' Compatibility
+'   '  Container = IsContainer(hCtrl)
+'   ENDIF
+' 
+'   MultiContainer = hComp.MultiContainers.Find(Name) >= 0 'OR Name = "TabStrip"
+' 
+'   TRY sProp = Symbols["_Properties"].Value
+'   IF NOT sProp THEN sProp = "*"
+' 
+'   ' sParent = Parent
+'   ' WHILE Left$(sProp) = "*"
+'   '   WITH Info.Classes[sParent]
+'   '     sProp = .Symbols["_Properties"].Value & Mid$(sProp, 2)
+'   '     sParent = .Parent
+'   '   END WITH
+'   ' WEND
+' 
+'   hClass = ME
+'   WHILE Left$(sProp) = "*"
+'     TRY hClass = Info[hClass.ParentComponent][hClass.Parent]
+'     IF ERROR THEN BREAK
+'     sProp = hClass.Symbols["_Properties"].Value & Mid$(sProp, 2)
+'   WEND
+' 
+'   Properties = NEW Collection
+'   FOR EACH sProp IN Split(sProp)
+' 
+'     ' Property: Name { Type } = Default
+' 
+'     sDefault = ""
+'     sKind = ""
+' 
+'     iPos = InStr(sProp, "=")
+'     IF iPos THEN
+'       sDefault = Trim(Mid$(sProp, iPos + 1))
+'       sProp = Trim(Left$(sProp, iPos - 1))
+'     ENDIF
+'     iPos = InStr(sProp, "{")
+'     IF iPos THEN
+'       sKind = Trim(Mid$(sProp, iPos + 1, -1))
+'       sProp = Trim(Left$(sProp, iPos - 1))
+'     ENDIF
+' 
+'     bRemove = Left(sProp) = "-"
+'     IF bRemove THEN sProp = Mid$(sProp, 2)
+' 
+'     IF Component THEN
+'       'PRINT "? "; Component; ": "; Name; "."; sProp
+'       IF NOT Info[Component][Name][sProp] THEN
+'         DEBUG Component; ": "; Name; "."; sProp; ": property declared but not implemented"
+'         CONTINUE
+'       ENDIF
+'     ENDIF
+' 
+'     IF bRemove THEN
+'       Properties[sProp] = NULL
+'     ELSE
+'       hProp = NEW PropertyInfo(Component, Name, sProp, FALSE, Virtual, sKind, sDefault)
+'       Properties[sProp] = hProp
+'     ENDIF
+' 
+'   NEXT
+' 
+'   TRY DefaultEvent = Symbols["_DefaultEvent"].Value
+' 
+'   Events = NEW String[]
+'   FOR EACH hSym IN Symbols
+'     IF hSym.Kind = ":" THEN
+'       IF Left$(hSym.Name) = ":" THEN
+'         Events.Add(Mid$(hSym.Name, 2))
+'       ELSE
+'         Events.Add(hSym.Name)
+'       ENDIF
+'     ENDIF
+'   NEXT
+'   Events.Sort
+' 
+'   ' Modification des propriétés
+' 
+'   PropertyList = NEW String[]
+' 
+'   FOR EACH hProp IN Properties
+'     PropertyList.Add(hProp.Name)
+'   NEXT
+' 
+'   Properties[PropertyCComponent.EVENT_NAME] = NEW PropertyInfo(Component, Name, PropertyCComponent.EVENT_NAME)
+'   PropertyList.Add(PropertyCComponent.EVENT_NAME, 0)
+' 
+'   'IF Name = "Timer" THEN
+'   IF Virtual THEN
+' 
+'     Properties["X"] = NEW PropertyInfo("", Name, "X", TRUE)
+'     PropertyList.Add("X", 1)
+'     Properties["Y"] = NEW PropertyInfo("", Name, "Y", TRUE)
+'     PropertyList.Add("Y", 2)
+' 
+'   ENDIF
+' 
+'   TRY DrawWith = Symbols["_DrawWith"].Value
+'   'IF DrawWith THEN ?Me. <= CRASH!
+'   '  PRINT ME.Name;; "->";; DrawWith
+'   'ENDIF
+' 
+'   'IF hCtrl <> hWin THEN
+'   '  TRY hCtrl.Delete
+'   'ENDIF
+' 
+' END
+
+
+Public Function Inherits(sClass As String) As Boolean
+
+  If {Parent} = sClass Then Return True
+  If Not Parent Then Return False
+  Return CComponent.All[ParentComponent][Parent].Inherits(sClass)
+
+End
+
+Public Function GetProperties() As Collection
+
+  If Properties Then
+    If Properties.Count Then
+      Return Properties
+    Endif
+  Endif
+
+  If {Parent} Then
+    Return CComponent.All[ParentComponent][{Parent}].GetProperties()
+  Endif
+
+End
+
+Private Sub GetSymbolLink(sName As String, Optional sTitle As String, Optional sStaticTitle As String) As String
+  
+  Dim hSym As CSymbolInfo
+  Dim sDesc As String
+  Dim bInherit As Boolean
+  Dim sRes As String
+  Dim sLink As String
+
+  hSym = Symbols[sName]
+  sName = Replace(sName, ":", ".")
+  sDesc = hSym.GetDescription()
+  
+  If sDesc Then sRes &= "<div class=\"tooltip-activator\">"
+
+  If sDesc Then 
+    sRes &= "<div class=\"tooltip\"><div class=\"tooltip-contents\">" & sDesc & "</div></div>"
+  Endif
+  
+  sLink = "/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName)
+
+  If hSym.Class <> Name Or If hSym.Component <> Component Then
+  Else If hSym.Class <> Main.Class Or If hSym.Component <> Main.Component Then
+    bInherit = True
+  Else
+    bInherit = True
+    sLink = "./" & LCase(sName)
+  Endif
+  
+  If sTitle Then
+    If sStaticTitle And If hSym.IsStatic() Then sTitle = sStaticTitle
+    sLink = "[" & sTitle & "](" & sLink & ")"
+  Else
+    sLink = "[" & sLink & "]"
+  Endif
+  
+  If bInherit Then sLink = "<span class=\"inherit\">~" & sLink & "~</span>"
+  
+  sRes &= sLink
+  
+  If Not sTitle Then sRes &= "&nbsp;&nbsp;"
+  If sDesc Then sRes &= "</div>"
+  
+  Return sRes
+  
+End
+
+
+Private Function GetSymbolType(aSym As String[]) As String
+
+  Dim sRes As String
+  Dim sName As String
+
+  If aSym.Count = 0 Then Return
+
+  For Each sName In aSym
+    sRes &= GetSymbolLink(sName) & "\n"
+  Next
+
+  Return sRes
+
+End
+
+
+Public Function GetSymbols() As String[]
+
+  Dim aResult As New String[]
+  Dim sSymbol As String
+  Dim cSymbol As New Collection
+  Dim hSym As CSymbolInfo
+  Dim bDynamic As Boolean
+  Dim bStatic As Boolean
+  Dim sBreak As String
+  Dim sPrefix As String
+  Dim aArray As String[]
+  Dim bHasSymbols As Boolean
+  Dim bHasDynamicVariable As Boolean
+  Dim sCreatable As String
+
+  If Symbols.Count Then
+
+    For Each sSymbol In ["P", "C", "M", "p", "e", "m"]
+      cSymbol[sSymbol] = New String[]
+      cSymbol[">" & sSymbol] = New String[]
+    Next
+
+    For Each hSym In Symbols
+      If hSym.IsHidden() Then Continue
+      If Right$(hSym.Name) = "$" Then Continue
+
+      bHasSymbols = True
+
+      Select Case hSym.Kind
+        Case "r", "p", "v"
+          cSymbol[sPrefix & "p"].Add(hSym.Name)
+          If hSym.Kind = "v" Then bHasDynamicVariable = True
+        Case "R", "P", "V"
+          cSymbol[sPrefix & "P"].Add(hSym.Name)
+        Case "C"
+          cSymbol[sPrefix & "C"].Add(hSym.Name)
+        Case ":", "e", "E"
+          hSym.Kind = "e"
+          cSymbol[sPrefix & "e"].Add(hSym.Name)
+        Case "m"
+          cSymbol[sPrefix & "m"].Add(hSym.Name)
+        Case "M"
+          cSymbol[sPrefix & "M"].Add(hSym.Name)
+        Default
+          Print hSym.Kind; " ?"
+      End Select
+      'IF InStr("rpm", hSym.Kind) THEN bDynamic = TRUE
+      If hSym.IsStatic() Then
+        'If bParent Then
+        '  bParentStatic = True
+        'Else
+          bStatic = True
+        'Endif
+      Else
+        'If bParent Then
+        '  bParentDynamic = True
+        'Else
+          bDynamic = True
+        'Endif
+      Endif
+    Next
+
+    For Each aArray In cSymbol
+      aArray.Sort
+    Next
+
+  Endif
+
+  'aResult.Add("### Symbols")
+  aResult.Add("[[ desc")
+  aResult.Add("==")
+  
+  sBreak = "\\\n"
+
+  If Parent Then
+    
+    If Parent = Name Then
+      aResult.Add(("This class reimplements"))
+    Else
+      aResult.Add(("This class inherits"))
+    Endif
+
+    'sRes = sRes & " " & GetLink("/comp" &/ $hClass.ParentComponent &/ $hClass.Parent,,, "arrow")
+    aResult.Add("[/comp" &/ ParentComponent &/ LCase(Parent) & "]")
+
+    If ParentComponent <> Component Then
+      aResult.Add(Subst(("in &1"), "[/comp" &/ ParentComponent & "]"))
+    Endif
+    
+    aResult[aResult.Max] &= ".\\"
+    
+  Endif
+  
+  If IsVirtual() Then
+    aResult.Add(("This class is virtual.") & "\\")
+  Else If AutoCreatable Then
+    aResult.Add(("This class can be used like an object by creating a hidden instance on demand.") & "\\")
+  Endif
+
+  sCreatable = ""
+  
+  If Creatable And If Not IsVirtual() And If bDynamic Then
+    If Symbols.Exist("_new") Then
+      'GetSymbolLink($hClass.Symbols["_new"], $hClass, ("creatable"))) & sBreak
+      sCreatable = Subst(("This class is &1."), GetSymbolLink("_new", ("creatable"))) & "\\"
+    Else 
+      sCreatable = Subst(("This class is &1."), ("creatable")) & "\\"
+    Endif
+  Endif
+  
+  If Not sCreatable Then
+    If Not bDynamic Then
+      sCreatable = ("This class is static.") & "\\"
+    Else
+      sCreatable = ("This class is not creatable.") & "\\"
+    Endif
+  Endif
+  
+  aResult.Add(sCreatable)
+
+  If Symbols.Exist("_call") Then
+    aResult.Add(Subst(("This class can be used as a &1."), GetSymbolLink("_call", ("function"), ("static function"))) & "\\")
+  Endif
+
+  hSym = Symbols["_get"]
+  If hSym Then
+    If hSym.IsStatic() Then
+      If Symbols.Exist("_put") Then
+        aResult.Add(Subst(("This class acts like a &1 / &2 static array."), GetSymbolLink("_get", ("read")), GetSymbolLink("_put", ("write"))) & "\\")
+      Else
+        aResult.Add(Subst(("This class acts like a &1 static array."), GetSymbolLink("_get", ("read-only"))) & "\\")
+      Endif
+    Else
+      If Symbols.Exist("_put") Then
+        aResult.Add(Subst(("This class acts like a &1 / &2 array."), GetSymbolLink("_get", ("read")), GetSymbolLink("_put", ("write"))) & "\\")
+      Else
+        aResult.Add(Subst(("This class acts like a &1 array."), GetSymbolLink("_get", ("read-only"))) & "\\")
+      Endif
+    Endif
+  Endif
+
+  If Symbols.Exist("_next") Then
+    aResult.Add(Subst(("This class is &1 with the &2 keyword."), GetSymbolLink("_next", ("enumerable"), ("statically enumerable")), "[/lang/foreach]") & "\\")
+  Endif
+
+  'If aResult[aResult.Max] <> "==" And If bHasSymbols Then aResult.Add("==")
+  'If bHasSymbols Then aResult.Add("\\")
+
+  If bStatic Then
+
+    aResult.Add("[[ symbols")
+    If cSymbol["P"].Count Then aResult.Insert([Replace(("Static properties"), " ", "&nbsp;"), "--"])
+    If cSymbol["M"].Count Then aResult.Insert([Replace(("Static methods"), " ", "&nbsp;"), "--"])
+    'IF cSymbol["E"].Count THEN sRes = sRes & "<td align=left><b>" & ("Events") & "</b></td>" & sSpace & "\n"
+    If cSymbol["C"].Count Then aResult.Insert([("Constants"), "--"])
+    aResult[aResult.Max] = "=="
+    
+    If cSymbol["P"].Count Then 
+      aResult.Add(GetSymbolType(cSymbol["P"]))
+      aResult.Add("--")
+    Endif
+    
+    If cSymbol["M"].Count Then         
+      aResult.Add(GetSymbolType(cSymbol["M"]))
+      aResult.Add("--")
+    Endif
+    
+    If cSymbol["C"].Count Then 
+      aResult.Add(GetSymbolType(cSymbol["C"]))
+      aResult.Add("--")
+    Endif
+    aResult[aResult.Max] = "]]"
+
+  Endif
+
+  If bDynamic Then
+
+    aResult.Add("[[ symbols")
+    If cSymbol["p"].Count Then aResult.Insert([("Properties"), "--"])
+    If cSymbol["m"].Count Then aResult.Insert([("Methods"), "--"])
+    If cSymbol["e"].Count Then aResult.Insert([("Events"), "--"])
+    aResult[aResult.Max] = "=="
+    
+    If cSymbol["p"].Count Then 
+      aResult.Add(GetSymbolType(cSymbol["p"]))
+      aResult.Add("--")
+    Endif
+    
+    If cSymbol["m"].Count Then         
+      aResult.Add(GetSymbolType(cSymbol["m"]))
+      aResult.Add("--")
+    Endif
+    
+    If cSymbol["e"].Count Then 
+      aResult.Add(GetSymbolType(cSymbol["e"]))
+      aResult.Add("--")
+    Endif
+    aResult[aResult.Max] = "]]"
+
+  Endif
+  
+  aResult.Add("]]")
+  Return aResult
+
+Catch
+
+  Return ["`" & Error.Where & ": " & Error.Text & "`"]
+
+End
+
+
+Public Sub HasEvents() As Boolean
+
+  Dim hSym As CSymbolInfo
+
+  For Each hSym In Symbols
+    If hSym.IsHidden() Then Continue
+    If InStr(":eE", hSym.Kind) Then Return True
+  Next
+
+End
+
+Public Sub GetDescription() As String
+  
+  Dim sPath As String
+  Dim aData As String[]
+  Dim iPos As Integer
+  Dim sData As String
+  Dim sDesc As String
+  Dim sCar As String
+  
+  sPath = Main.GetPagePathFrom("/comp" &/ LCase(Component &/ Name))
+  If Not Exist(sPath) Then Return 
+  
+  aData = Split(File.Load(sPath), "\n")
+  While iPos < aData.Count
+    sData = LTrim(aData[iPos])
+    If sData Then
+      sCar = String.Left(sData)
+      If Len(sCar) >= 2 Or If IsLetter(sCar) Then
+        sData = Replace(sData, "[../", "[./")
+        sData = Replace(sData, "[./../", "[../")
+        sDesc &= sData & "\n"
+      Endif
+    Else If sDesc Then
+      Break
+    Endif
+    Inc iPos
+  Wend
+  
+  Return sDesc
+  
+End

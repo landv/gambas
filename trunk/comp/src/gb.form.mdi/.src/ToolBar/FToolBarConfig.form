@@ -1,0 +1,106 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,74,40)
+  Visible = False
+  Utility = True
+  Arrangement = Arrange.Vertical
+  { mnuToolbar Menu
+    { mnuConfigure Menu
+      Text = ("Configure") & "..."
+      Picture = Picture["icon:/small/options"]
+    }
+    { Menu2 Menu
+      Text = ("Icon size")
+      { mnuSmallSize Menu
+        Text = ("Small")
+        Toggle = True
+      }
+      { mnuMediumSize Menu
+        Text = ("Medium")
+        Toggle = True
+      }
+      { mnuLargeSize Menu
+        Text = ("Large")
+        Toggle = True
+      }
+      { mnuHugeSize Menu
+        Text = ("Huge")
+        Toggle = True
+      }
+    }
+    { Menu1 Menu
+    }
+    { Menu3 Menu
+      Text = ("Cancel")
+      Picture = Picture["icon:/small/close"]
+    }
+  }
+  { timDeleteLater #Timer
+    #MoveScaled(43,1)
+  }
+  { HBox1 HBox
+    MoveScaled(1,3,47,6)
+    Margin = True
+    { Label1 Label
+      MoveScaled(0,0,10,4)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Icon size")
+    }
+    { Panel2 Panel
+      MoveScaled(11,0,2,3)
+    }
+    { cmbSize ComboBox
+      MoveScaled(17,0,24,4)
+      ReadOnly = True
+      List = [("Small"), ("Medium"), ("Large"), ("Huge")]
+    }
+  }
+  { Separator1 Separator
+    MoveScaled(8,11,9,0)
+  }
+  { panAction Panel
+    MoveScaled(1,12,53,16)
+    Background = Color.TextBackground
+    Drop = True
+    Expand = True
+    Arrangement = Arrange.Fill
+    { svwAction ScrollView
+      MoveScaled(1,2,45,11)
+      Spacing = True
+      Margin = True
+      Border = False
+      ScrollBar = Scroll.Vertical
+    }
+  }
+  { Separator2 Separator
+    MoveScaled(20,29,10,0)
+  }
+  { HBox2 HBox
+    MoveScaled(1,31,53,6)
+    Spacing = True
+    Margin = True
+    { Panel1 Panel
+      MoveScaled(1,0,2,4)
+      Expand = True
+    }
+    { btnReset Button
+      MoveScaled(3,0,16,4)
+      Text = Shortcut(("Reset"), "R")
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { btnUndo Button
+      MoveScaled(20,0,16,4)
+      Visible = False
+      Text = Shortcut(("Undo"), "U")
+      Picture = Picture["icon:/small/undo"]
+    }
+    { btnClose Button
+      MoveScaled(37,0,16,4)
+      Text = Shortcut(("Close"), "C")
+      Default = True
+      Cancel = True
+    }
+  }
+}

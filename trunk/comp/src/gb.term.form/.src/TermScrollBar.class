@@ -1,0 +1,173 @@
+' Gambas class file
+
+Export
+Inherits TermControl
+
+Property MinValue As Integer
+Property MaxValue As Integer
+Property Value As Integer
+
+Private $iMaxValue As Integer = 5
+Private $iMinValue As Integer
+Private $iValue As Integer
+Private $bInCursor As Boolean
+Private $iCursorPos As Integer
+
+Event Change
+
+Public Sub _new()
+
+  Me.MaxValue = 5
+  Me.Value = 5
+
+End
+
+Private Function MinValue_Read() As Integer
+
+  Return $iMinValue
+
+End
+
+Private Sub MinValue_Write(Value As Integer)
+
+  $iMinValue = Max(Value, 0)
+  Me.Refresh
+
+End
+
+Private Function MaxValue_Read() As Integer
+
+  Return $iMaxValue
+
+End
+
+Private Sub MaxValue_Write(Value As Integer)
+
+  $iMaxValue = Value
+  Me.Refresh
+
+End
+
+Private Function Value_Read() As Integer
+
+  Return $iValue
+
+End
+
+Private Sub Value_Write(Value As Integer)
+
+  $iValue = Max(Min($iMaxValue, Value), $iMinValue)
+  Me.Refresh
+  Raise Change
+
+End
+
+Public Sub _Render()
+
+  Dim hAttr As New Attr
+  Dim iAttr As Integer
+  Dim i As Integer
+  Dim iHeight As Integer
+
+  If Not Me._NeedRender Then Return
+  
+  Super._Render
+  
+  If Me.HaveFocus Then
+    hAttr.Background = TermColor.Yellow
+  Else
+    hAttr.Background = Me._GetBackGround()
+  Endif
+  
+  hAttr.Foreground = Me._GetForeground()
+  iAttr = hAttr.GetInteger()
+
+  If Me.Height >= Me.Width Then
+    iHeight = Me.Height - 3
+
+    For i = 1 To Me._Content.Count - 3
+      Me._Content[i][0] = Char(String.Chr(&H2591), iAttr)
+
+    Next
+
+    Me._Content[0][0] = Char(String.Chr(&H25B2), iAttr)
+    Me._Content[Me._Content.Count - 2][0] = Char(String.Chr(&H25BC), iAttr)
+
+    If Me.MaxValue > 0 Then
+      $iCursorPos = Ceil($iValue / ($iMaxValue - $iMinValue) * iHeight) + 1
+      Me._Content[$iCursorPos][0] = Char(String.Chr(&H2588), iAttr)
+    Endif
+
+  Else
+    iHeight = Me.Width - 3
+    
+    For i = 1 To Me._Content[0].max - 1
+
+      Me._Content[0][i] = Char(String.Chr(&H2591), iAttr)
+
+    Next
+    
+    Me._Content[0][0] = Char(String.Chr(&H25C0), iAttr)
+    Me._Content[0][Me._Content[0].Max] = Char(String.Chr(&H25BA), iAttr)
+    
+    If Me.MaxValue > 0 Then
+      $iCursorPos = Ceil($iValue / ($iMaxValue - $iMinValue) * iHeight) + 1
+      Me._Content[0][$iCursorPos] = Char(String.Chr(&H2588), iAttr)
+    Endif
+    
+  Endif
+  Me._NeedRender = False
+
+End
+
+Public Sub _MouseDown()
+
+  If Me.Height > Me.Width Then
+    If Mouse.Row = 0 Then
+      Dec Me.Value
+    Else
+      If Mouse.Row = Me.Height - 1 Then
+
+        Inc Me.Value
+      Else
+        If Mouse.Row = $iCursorPos Then $bInCursor = True
+
+      Endif
+    Endif
+  Else
+    If Mouse.Col = 0 Then
+      Dec Me.Value
+    Else
+      If Mouse.Col = Me.Width - 1 Then
+        Inc Me.Value
+      Else
+        If Mouse.Col = $iCursorPos Then $bInCursor = True
+      Endif
+    Endif
+
+  Endif
+  Super._MouseDown
+
+End
+
+Public Sub _MouseUp()
+
+  $bInCursor = False
+  Super._MouseUp
+
+End
+
+Public Sub _MouseMove()
+
+  Dim iHeight As Integer
+
+  If Me.Height > Me.Width Then
+
+    Me.Value = (Mouse.Row - 1) / (Me.Height - 3) * ($iMaxValue - $iMinValue)
+  Else
+    Me.Value = (Mouse.Col - 1) / (Me.Width - 3) * ($iMaxValue - $iMinValue)
+  Endif
+
+  Super._MouseMove
+
+End

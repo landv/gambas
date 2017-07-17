@@ -1,0 +1,20 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(59.5714,26.7143,67,31)
+  Resizable = False
+  { Label1 Label
+    MoveScaled(1,1,65,24)
+    Text = ("Concéntrese Geográfico v 0.3\n\nProgramado para Gambas por:\nJairo Alonso Badillo Bedoya - jbadbe@gmail.com\nPublicado bajo los términos de la licencia GPL\nViva Colombia!!!!!\nVisite http://www.linuxeam.tk -Una comunidad Linux")
+    Alignment = Align.Center
+  }
+  { Button1 Button
+    MoveScaled(24,26,19,4)
+    Text = ("&Aceptar")
+  }
+  { PictureBox1 PictureBox
+    MoveScaled(8,4,6.7143,4)
+    Expand = True
+    Picture = Picture["imagenes/colombia.gif"]
+  }
+}

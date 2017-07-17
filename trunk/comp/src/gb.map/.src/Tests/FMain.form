@@ -1,0 +1,35 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,97,64)
+  Arrangement = Arrange.Vertical
+  { Panel1 HBox
+    MoveScaled(-1,-5,97,55)
+    Expand = True
+    { MapView1 MapView
+      MoveScaled(12,10,16,16)
+      Expand = True
+    }
+    { GridView1 GridView
+      MoveScaled(72,11,25,35)
+      Mode = Select.Single
+      Grid = False
+    }
+  }
+  { Panel2 Panel
+    MoveScaled(8,55,87,6)
+    { SpinBox1 SpinBox
+      MoveScaled(14,0,19,4)
+      MaxValue = 3
+      Value = 1
+    }
+    { Button1 Button
+      MoveScaled(36,1,49,4)
+      Text = ("Maison")
+    }
+    { Label1 Label
+      MoveScaled(1,1,12,3)
+      Text = ("Lens")
+    }
+  }
+}

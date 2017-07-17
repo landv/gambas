@@ -1,0 +1,237 @@
+' Gambas class file
+
+Export
+Inherits TermControl
+Class Rect
+
+Property Read Children As TermControl[]
+Property Read ClientWidth, CLientW As Integer
+Property Read ClientHeight, ClientH As Integer
+Property Spacing As Integer
+Property Padding As Integer
+Property Border As Integer
+Property Shadow As Boolean
+Property Invert As Boolean
+
+Private $iSpacing As Integer '= 1
+Private $bInvert As Boolean
+Private $aChildren As New Object[]
+
+Public _Arrangement As Integer = Arrange.Vertical
+
+Public Sub _new()
+  
+  Me._AllowFocus = False
+  
+End
+
+
+Public Sub _Add(hCtrl As TermControl)
+
+  $aChildren.Add(hCtrl)
+
+End
+
+Private Function Children_Read() As TermControl[]
+
+  If Not $aChildren Then $aChildren = New TermControl[]
+  Return $aChildren
+
+End
+
+Public Sub _Render()
+
+  Dim hChild As TermControl
+  Dim i, j As Integer
+  Dim hAttr As New Attr
+  Dim iAttr As Integer
+
+  If Me._NeedRender Then
+    Super._Render
+
+  Endif
+  For Each hChild In Me.Children
+
+    hChild._Render
+
+  Next
+  Me._NeedRender = False
+End
+
+Public Sub _Arrange()
+
+  Dim hChild As Object
+  Dim H As Integer
+  Dim iExt As Integer '= Min(5, $yBorder + $iPadding)
+  Dim iNExp As Integer
+  Dim iHExp As Integer
+  Dim hRectClient As Rect = Me._GetClientRect()
+  Dim iPadding As Integer = Me.Padding
+  'If Me.tag = "*" Then Stop
+  Select Case _Arrangement
+    Case Arrange.Vertical
+
+      For Each hChild In $aChildren
+        If Not hChild.Expand Then
+          iHExp += hChild.Height
+          If $iSpacing > 0 Then iHExp += $iSpacing
+        Else
+          Inc iNExp
+        Endif
+        'If Me Is TermVBox Then Stop
+        If iHExp >= (hrectClient.Height - iPadding * 2) Then Break
+      Next
+
+      If iNExp > 0 Then
+        If iHExp > 0 And If $iSpacing > 0 Then
+          'iHExp -= $iSpacing
+        Endif
+        iHExp = (hrectClient.Height - iHExp) / iNExp
+      Endif
+      
+      h = hrectClient.Top 
+      For Each hChild In $aChildren
+        'If hChild Is TermPictureBox Then Stop
+        hChild.X = hrectClient.Left
+        hChild.Y = H
+        hChild.Width = hrectClient.Width
+        If hChild.Expand Then hChild.H = iHExp
+        H += hChild.H + $iSpacing
+        hChild._Arrange()
+        'If H >= Me.ClientHeight Then Break
+      Next
+
+    Case Arrange.Horizontal
+      For Each hChild In $aChildren
+        If Not hChild.Expand Then
+          iHExp += hChild.Width
+          If $iSpacing > 0 Then iHExp += $iSpacing
+        Else
+          Inc iNExp
+        Endif
+        'If Me Is TermVBox Then Stop
+        If iHExp >= (hrectClient.Width - iPadding * 2) Then Break
+      Next
+
+      If iNExp > 0 Then
+
+        If iHExp > 0 And If $iSpacing > 0 Then
+          'iHExp -= $iSpacing
+        Endif
+        iHExp = Ceil((hrectClient.Width - iHExp) / iNExp)
+      Endif
+      
+      If $bInvert Then
+        H = hrectClient.Right - 1
+      Else 
+      H = hrectClient.Width - Me.Width
+      Endif
+      For Each hChild In $aChildren
+        If $bInvert Then H -= hChild.W
+          
+        
+        
+        hChild.Y = hrectClient.Top 
+        
+        hChild.X = H
+        hChild.Height = hrectClient.Height
+        If hChild.Expand Then hChild.W = iHExp
+        'f hChild.Expand Then Stop
+        If $bInvert Then
+          H -= $iSpacing
+        Else
+          H += hChild.W + $iSpacing
+        Endif
+        hChild._Arrange()
+        'If H >= Me.ClientHeight Then Break
+      Next
+  End Select
+
+End
+
+' Public Sub _GetClientRect() As Rect
+'
+'   Return $rectClient.Copy()
+'
+' End
+
+Private Function ClientWidth_Read() As Integer
+
+  Return Me._GetClientRect().Width
+  'Return $rectClient.Width
+  'Return $iCLientW
+
+End
+
+Private Function ClientHeight_Read() As Integer
+
+  Return Me._GetClientRect().Height
+
+End
+
+Private Function Spacing_Read() As Integer
+
+  Return $iSpacing
+
+End
+
+Private Sub Spacing_Write(Value As Integer)
+
+  $iSpacing = Value
+
+End
+
+Private Function Padding_Read() As Integer
+
+  Return Me._Padding
+
+End
+
+Private Sub Padding_Write(Value As Integer)
+
+  Me._Padding = Value
+  Me._DefineRect
+
+End
+
+Private Function Border_Read() As Integer
+
+  Return Super._Border
+
+End
+
+Private Sub Border_Write(Value As Integer)
+
+  Super._Border = Value
+  
+  Me._DefineRect
+  Me.Refresh
+
+
+End
+
+Private Function Shadow_Read() As Boolean
+
+  Return Super._Shadow
+
+End
+
+Private Sub Shadow_Write(Value As Boolean)
+
+  Super._Shadow = True
+
+End
+
+Private Function Invert_Read() As Boolean
+
+  Return $bInvert
+
+End
+
+Private Sub Invert_Write(Value As Boolean)
+
+  $bInvert = Value
+
+End
+
+

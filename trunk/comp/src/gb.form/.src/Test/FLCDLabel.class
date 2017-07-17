@@ -1,0 +1,17 @@
+' Gambas class file
+
+Private $bColon As Boolean
+
+Public Sub Timer1_Timer()
+
+  $bColon = Not $bColon
+  
+  LCDLabel2.Text = ";" & Format(Now, "hh" & If($bColon, ":", "") & "nn" & If($bColon, ":", "") & "ss") & ";"
+
+End
+
+Public Sub Form_Open()
+
+  Timer1_Timer
+
+End

@@ -1,0 +1,40 @@
+' Gambas class file
+
+Static Public Sub Main()
+  Dim myForm As Form
+  myForm = New FStart
+  myForm.Show
+End
+
+Public myThings As Collection
+Public myThing As CThing
+
+Public Sub btnCreate_Click()
+'creating objects and add to collection
+  Dim i As Integer
+  myThings = New Collection
+  For i = 1 To 7
+    myThing = New CThing
+    myThing.Name = ("Item") & " " & CStr(i)
+    myThing.X = i
+    myThing.Y = i
+    myThing.ID = i 
+    myThings.Add(myThing, CStr(myThing.ID))
+  Next
+  
+'show the collectionmembers in treeview
+  
+  tvThings.Add("root", ("myThings"))
+    
+  For Each myThing In myThings
+    tvThings.Add(myThing.ID, myThing.Name,, "root")
+    tvThings.Add(myThing.ID & "Name", ("Name = ") & myThing.Name,, CStr(myThing.ID))
+    tvThings.Add(myThing.ID & "X", "X= " & myThing.X,, CStr(myThing.ID))
+    tvThings.Add(myThing.ID & "Y", "Y= " & myThing.Y,, CStr(myThing.ID))
+    tvThings.Add(myThing.ID & "ID", "ID= " & myThing.ID,, CStr(myThing.ID))
+  Next
+  
+  tvThings["root"].Expanded = True
+  btnCreate.Enabled = False
+End 
+ 

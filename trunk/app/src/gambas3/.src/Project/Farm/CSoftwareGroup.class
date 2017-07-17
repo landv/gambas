@@ -1,0 +1,27 @@
+' Gambas class file
+
+Public (Key) As String
+Public Name As String
+Public Icon As String
+
+Public Sub _compare(hOther As CSoftwareGroup) As Integer
+  
+  Return String.Comp(Name, hOther.Name, gb.IgnoreCase)
+  
+End
+
+Static Public Sub _call(sKey As String, sName As String, sIcon As String) As CSoftwareGroup
+
+  Dim hGroup As CSoftwareGroup
+  
+  hGroup = New CSoftwareGroup
+  With hGroup
+    .Key = sKey  
+    .Name = sName
+    .Icon = sIcon
+  End With
+  Return hGroup
+  
+End
+
+

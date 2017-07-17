@@ -1,0 +1,55 @@
+' Gambas class file
+
+Export
+Create Static
+
+Public Sub Arrow(X As Integer, Y As Integer, Width As Integer, Height As Integer, Type As Integer, Optional Flag As Integer)
+  
+  Style.PaintArrow(X, Y, Width, Height, Type, Flag)
+  
+End
+
+Public Sub Check(X As Integer, Y As Integer, Width As Integer, Height As Integer, Value As Integer, Optional Flag As Integer)
+  
+  Style.PaintCheck(X, Y, Width, Height, Value, Flag)
+  
+End
+
+Public Sub Option(X As Integer, Y As Integer, Width As Integer, Height As Integer, Value As Boolean, Optional Flag As Integer)
+  
+  Style.PaintOption(X, Y, Width, Height, Value, Flag)
+  
+End
+
+
+Public Sub Separator(X As Integer, Y As Integer, Width As Integer, Height As Integer, Optional Vertical As Boolean, Optional Flag As Integer)
+  
+  Style.PaintSeparator(X, Y, Width, Height, Vertical, Flag)
+  
+End
+
+Public Sub Button(X As Integer, Y As Integer, Width As Integer, Height As Integer, Value As Boolean, Optional Flag As Integer, Flat As Boolean)
+  
+  Style.PaintButton(X, Y, Width, Height, Value, Flag, Flat)
+  
+End
+
+Public Sub Panel(X As Integer, Y As Integer, Width As Integer, Height As Integer, Border As Integer, Optional Flag As Integer)
+  
+  Style.PaintPanel(X, Y, Width, Height, Border, Flag)
+  
+End
+
+Public Sub Handle(X As Integer, Y As Integer, Width As Integer, Height As Integer, Optional Vertical As Boolean, Optional Flag As Integer)
+  
+  Style.PaintHandle(X, Y, Width, Height, Vertical, Flag)
+  
+End
+
+Public Sub Box(X As Integer, Y As Integer, Width As Integer, Height As Integer, Optional Flag As Integer)
+  
+  Style.PaintBox(X, Y, Width, Height, Flag)
+  
+End
+
+

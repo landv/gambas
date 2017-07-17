@@ -1,0 +1,72 @@
+' Gambas class file
+
+Private _NET_CLIENT_LIST As Integer
+Private _NET_WM_ICON As Integer
+
+Public Sub Button1_Click()
+
+  Dim aWindow As Integer[]
+  Dim iWindow As Integer
+  Dim aIcon As Integer[]
+  Dim hImage As Image
+  Dim hPictureBox As PictureBox
+  Dim iCurrentDesktop As Integer
+  Dim iDesktop As Integer
+  Dim hWindow As DesktopWindow
+  
+  iCurrentDesktop = X11.GetWindowProperty(X11.RootWindow, "_NET_CURRENT_DESKTOP")[0]
+
+  For Each hPictureBox In ScrollView1.Children
+    hPictureBox.Delete
+  Next
+
+  _NET_CLIENT_LIST = X11.InternAtom("_NET_CLIENT_LIST")  
+  _NET_WM_ICON = X11.InternAtom("_NET_WM_ICON")  
+  aWindow = X11.GetWindowProperty(X11.RootWindow, _NET_CLIENT_LIST)
+  For Each iWindow In aWindow
+    hWindow = New DesktopWindow(iWindow)
+    'iDesktop = X11.GetWindowProperty("_NET_WM_DESKTOP", hWindow)[0]
+    iDesktop = hWindow.Desktop
+    'If iDesktop <> iCurrentDesktop And If iDesktop >= 0 Then Continue
+    
+    aIcon = X11.GetWindowProperty(iWindow, _NET_WM_ICON)
+    hPictureBox = New PictureBox(ScrollView1)
+    hPictureBox.Border = Border.Plain
+    hPictureBox.Alignment = Align.Center
+    hPictureBox.Resize(16, 16)
+    hPictureBox.Tooltip = hWindow.VisibleName
+    hImage = hWindow.Icon
+    If hImage Then
+      hPictureBox.Picture = hImage.Picture
+      hPictureBox.Resize(hImage.W, hImage.H)
+    Endif
+    ' If aIcon Then
+    '   
+    '   ' For iInd = 0 To aIcon.Max
+    '   '   If iInd Mod 8 = 0 Then Print Format(iInd, "#####0"); " : ";
+    '   '   Print Hex$(aIcon[iInd], 8);
+    '   '   If aIcon[iInd] And If (aIcon[iInd] And &HFFFFFF00) = 0 Then 
+    '   '     Print "*";
+    '   '   Else
+    '   '     Print " ";
+    '   '   Endif
+    '   '   If iInd Mod 8 = 7 Then Print
+    '   ' Next
+    '   
+    '   hImage = X11.MakeIcon(aIcon)
+    '   If hImage Then
+    '     hPictureBox.Picture = hImage.Picture
+    '     hPictureBox.Resize(hImage.W + 4, hImage.H + 4)
+    '   Endif
+    ' Endif
+  Next
+
+
+End
+
+Public Sub Button2_Click()
+
+  TextArea1.SetFocus
+  Desktop.SendKeys("{[Control_L][v]}")
+
+End

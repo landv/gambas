@@ -1,0 +1,22 @@
+<%Dim i As Integer%>
+
+<html>
+
+<body>
+
+<h2><%=Application.Name%></h2>
+Benoît bébé règle
+<ul>
+<%
+For i = 1 To 10
+  Print "<li>"; i; "</li>"
+Next
+%>
+</ul>
+<p>
+<%-- "coucou" --%>
+Bonjour le monde! <br> Comment va ?
+<div class="toto"></div>
+<<WebPage2 title="test">>
+</body>
+</html> 

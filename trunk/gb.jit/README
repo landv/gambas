@@ -1,0 +1,17 @@
+You should use the latest version of LLVM. To check it out, run:
+
+svn co http://llvm.org/svn/llvm-project/llvm/trunk llvm
+cd llvm
+mkdir build
+cd build
+../configure --prefix=/usr --enable-optimized --enable-jit --enable-shared
+make -j4
+sudo make install
+
+You might need to edit the configure.ac file in order to set the llvm
+location settings appropriate, followed by ./reconf.
+
+To enable the JIT for all functions in a Gambas class, add the word "Fast"
+on a separate line at the top of the class file. The functions will then be
+JIT compiled to native machine code, instead of letting the interpreter to
+run it, if gb.jit is available.

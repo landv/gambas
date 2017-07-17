@@ -1,0 +1,903 @@
+' Gambas class file
+
+Private aFiles As String[]
+Private aPFiles As New String[]
+Private aThumbs As New String[]
+Private aTime As New String[]
+Private aSort As New String[]
+Private aFrame As New Object[]
+Private aPicture As New Object[]
+Private aOri As New String[]
+Private alblFile As New Object[]
+Private alblTime As New Object[]
+Private bStop As Boolean = False
+Private hCurClose As Cursor
+Private hCurHand As Cursor
+Private hCurZoom As Cursor
+Private iDelay As Integer
+Private iPicCount As Integer
+Private iPicRow As Integer
+Private iRow As Integer
+Private iOffset As Integer
+Private iMark As Integer
+Private iNr As Integer
+Private sPath As String
+
+Public Sub Form_Open()
+  
+  sPath = Me.Tag
+  aFiles = MMain.GetFiles()
+  iPicCount = aFiles.Count
+  
+  Me.Caption = ("Lighttable   -   ") & sPath
+  Me.Move(Desktop.X, Desktop.Y, Desktop.Width, Desktop.Height)
+  
+  mnuSortA.Enabled = False
+  mnuSortT.Enabled = False
+  mnuDelete.Enabled = False
+  mnuTimecorr.Enabled = False
+  mnuSlide.Enabled = False
+  mnuOpen.Enabled = False
+  hCurClose = New Cursor(Picture.Load("close.png"))
+  hCurHand = New Cursor(Picture.Load("hand1.png"))
+  hCurZoom = New Cursor(Picture.Load("zoom-in.png"))
+  PicBox.Mouse = -2
+  PicBox.Cursor = hCurZoom
+  Me.Tooltip = ("Right-click for Main Menu")
+  lblCount.Text = iPicCount & (" pictures")
+  lblSort.Text = ("sorted alphabetically")
+  aPFiles.Resize(iPicCount)
+  aThumbs.Resize(iPicCount)
+  aOri.Resize(iPicCount)
+  aTime.Resize(iPicCount)
+  aFrame.Resize(iPicCount + 1)
+  alblFile.Resize(iPicCount)
+  alblTime.Resize(iPicCount)
+  aPicture.Resize(iPicCount)
+  
+  Timer1.Trigger  ' Finish this sub, so the user can do something
+
+End
+
+Public Sub Timer1_Timer()   ' Load the pictures in the background
+
+  Dim PicInfo As String
+  Dim i As Integer
+  Dim hImg As Image
+  
+  If iPicRow = 0 Then
+'     Print Me.Width
+    iPicRow = Int((Me.Width) / 200)
+    iOffset = (Me.Width + 30 - iPicRow * 200) / 2
+  Endif
+  
+  lblStatus.Text = ("Right-click on the background or on a frame for menus.")
+  For i = 0 To iPicCount - 1
+    aPFiles[i] = sPath & "/" & aFiles[i]
+    aThumbs[i] = Thumb(aFiles[i])
+    Shell "exiftool -b -orientation -createdate '" & aPFiles[i] & "'" To PicInfo ' Get orientation and create time of the picture
+    aOri[i] = Left$(PicInfo, 1)
+    aTime[i] = Right$(PicInfo, 19)
+
+    aFrame[i] = New Panel(ScrollView1) As "Framegroup"  ' Make frame
+    With aFrame[i]
+      .Width = 140
+      .Height = 175
+      .Border = 3
+      .Background = &CFCFCF&
+      .Tag = i
+      .Mouse = -2
+      .Cursor = hCurHand
+      iRow = Int((i) / iPicRow)
+      .X = (i - (iPicRow * iRow)) * 200 + iOffset
+      .Y = iRow * 210 + 30
+      .Tooltip = ("Right-click for Picture Menu")
+    End With 
+    
+    alblFile[i] = New Label(aFrame[i]) As "Framegroup" ' Label filename
+    With alblFile[i]
+      .Width = 130
+      .Height = 16
+      .X = 5
+      .Y = 140
+      .Font.Grade = -1
+      .Alignment = 3
+      .Tag = i
+      .Text = aFiles[i]
+      If Len(.Text) > 22 Then 
+        .Alignment = 1
+        .ToolTip = .Text
+      Endif 
+    End With 
+    
+    alblTime[i] = New Label(aFrame[i]) As "Framegroup" ' Label Timestamp
+    With alblTime[i]
+      .Width = 130
+      .Height = 16
+      .X = 5
+      .Y = 155
+      .Font.Grade = -1
+      .Alignment = 3
+      .Tag = i
+      .Text = aTime[i]
+    End With 
+    If i = 0 Then 
+      iNr = 0
+      Mark_Frame(iNr)
+    Endif 
+    
+    aPicture[i] = New PictureBox(aFrame[i]) As "Thumbnail" ' Thumbnail
+    With aPicture[i]
+      .Mouse = -2
+      .Cursor = hCurZoom
+      .Tag = i
+      .Alignment = 3
+      .X = 5
+      .Y = 5
+      .Width = 128
+      .Height = 128
+      
+      Try hImg = Image.Load(aThumbs[i])   ' Image, because it might have to be rotated
+      If Error Then   ' If thumbnail doesn't exist, it has to be created
+        Shell "convert -define jpeg:size=150x150 '" & aPFiles[i] & "' -auto-orient -thumbnail 128x128 '" & aThumbs[i] & "'" Wait
+        hImg = Image.Load(aThumbs[i])
+      Endif
+      
+      If aOri[i] > "1" And hImg.Width > hImg.Height Then  ' If a system's thumbnail isn't rotated correctly
+        If aOri[i] = 6 Then
+          hImg = hImg.Rotate(Rad(-90))
+        Else If aOri[i] = 8 Then 
+          hImg = hImg.Rotate(Rad(90))
+        Endif 
+      Endif
+      .Picture = hImg.Picture
+    End With 
+
+    ProgressBar1.Value = (i + 1) / iPicCount
+    If bStop = True Then  'if loading is stopped
+      iPicCount = i + 1
+      lblCount.Text = iPicCount & (" pictures")
+      Break
+    Endif
+    Wait 0.01
+  Next
+  
+  iRow = Int(iPicCount / iPicRow) + 1
+  panEmpty.Y = iRow * 210  ' Insert an empty panel to get some space at the bottom
+  ProgressBar1.Visible = False
+  lblStatus.Text = ""
+  mnuSortA.Enabled = False
+  mnuSortT.Enabled = True
+  mnuDelete.Enabled = True
+  mnuTimecorr.Enabled = True
+  mnu_StopLoad_RenameAll.Caption = ("&Rename all files...")
+  mnu_StopLoad_RenameAll.Picture = Stock["16/save-as"]
+  mnu_StopLoad_RenameAll.Shortcut = "Ctrl+N"
+  mnuSlide.Enabled = True
+  mnuOpen.Enabled = True
+  bStop = True
+  Me.Tag = "alpha"
+  Me.Tooltip = ""
+  For i = 0 To iPicCount - 1
+    aFrame[i].Tooltip = ""
+  Next
+
+End
+
+Public Sub Framegroup_MouseDown() ' a frame is clicked
+
+  iNr = Last.Tag
+  Mark_Frame(iNr)
+  If PicBox.Visible = True And PicBox.Tag <> aFiles[iNr] Then
+    If PicBox.Cursor = hCurClose Then
+      mnuFullscreen_Click
+    Else
+      mnuView_Click
+    Endif
+  Endif
+
+End
+
+Public Sub Framegroup_MouseMove() ' Move a frame
+
+  iNr = Last.Tag
+  PicBox.Visible = False
+  FInfo.Close
+  aFrame[iNr].X += Mouse.X - Mouse.StartX
+  aFrame[iNr].Y += Mouse.Y - Mouse.StartY
+  If aFrame[iNr].Y < ScrollView1.ScrollY Then 
+    ScrollView1.Scroll(ScrollView1.ScrollX, ScrollView1.ScrollY - 10)
+  Endif 
+  If aFrame[iNr].Y > Me.Height + ScrollView1.ScrollY - 175 Then 
+    ScrollView1.Scroll(ScrollView1.ScrollX, ScrollView1.ScrollY + 10)
+  Endif
+  Mark_Frame(iNr)
+
+End
+
+Public Sub Framegroup_Menu()  ' Context menu of the frames
+
+  iNr = Last.Tag
+  FInfo.Close
+  mnuDrag.Enabled = True
+  mnuView.Enabled = True
+  mnuESC.Enabled = False
+  mnuFramegroup.Popup
+
+End
+
+Public Sub Thumbnail_MouseDown() ' a thumbnail is clicked
+
+  iNr = Last.Tag
+  FInfo.Close
+  Framegroup_MouseDown
+  If Mouse.Left Then  ' view picture
+    If PicBox.Visible = False Then mnuView_Click
+  Else    ' Show menu
+    mnuFramegroup.Popup
+  Endif
+
+End
+
+Public Sub mnuView_Click() ' Show picture
+
+  Dim iFormat As Single
+
+  Load_Picture
+  iFormat = aPicture[iNr].Picture.Width / aPicture[iNr].Picture.Height
+  If iFormat > 1 Then   ' Landscape
+    PicBox.Width = 800
+    PicBox.Height = 800 / iFormat
+  Else  ' Portrait
+    PicBox.Height = 800
+    PicBox.Width = 800 * iFormat
+  Endif
+  PicBox.X = (Me.Width - PicBox.Width) / 2  ' center picture
+  PicBox.Y = (Me.Height - PicBox.Height) / 2
+  mnuView.Enabled = False
+  mnuESC.Enabled = True
+  PicBox.Visible = True
+  PicBox.SetFocus
+
+End
+
+Public Sub Load_Picture()
+
+  Dim hImg As Image
+  
+  lblStatus.Text = ("Loading picture...")
+  Wait
+  hImg = Image.Load(aPFiles[iNr]) ' Image, because it might have to be rotated
+  If aOri[iNr] = 6 Then 
+    hImg = hImg.Rotate(Rad(-90))
+  Else If aOri[iNr] = 8 Then 
+    hImg = hImg.Rotate(Rad(90))
+  Endif 
+  PicBox.Picture = hImg.Picture
+  PicBox.Tag = aFiles[iNr]
+  lblStatus.Text = ""
+  Wait
+
+End
+
+Public Sub Form_Menu()  ' Main context menu
+
+  PicBox.Visible = False
+  FInfo.Close
+  mnuMain.Popup
+
+End
+
+Public Sub mnuSortA_Click()   ' Sort pictures alphabetically by file names
+
+  Dim i, pos As Integer
+  Dim n As String
+  
+  PicBox.Visible = False
+  FInfo.Close
+  aSort.Resize(iPicCount)
+  For i = 0 To iPicCount - 1
+    aSort[i] = aFiles[i] & "/" & i ' Workaround. A 2-dim array would be correct, but I can't sort it...
+  Next 
+  aSort.Sort(1)
+  
+  For i = 0 To iPicCount - 1
+    pos = InStr(aSort[i], "/")
+    n = Right$(aSort[i], Len(aSort[i]) - pos)
+    iRow = Int((i) / iPicRow)
+    aFrame[n].X = (i - (iPicRow * iRow)) * 200 + iOffset
+    aFrame[n].Y = iRow * 210 + 30
+  Next 
+  mnuSortT.Checked = False
+  mnuSortT.Enabled = True
+  mnuSortA.Checked = True
+  mnuSortA.Enabled = False
+  lblSort.Text = ("sorted alphabetically")
+  Me.Tag = "alpha"
+  Show_marked_frame
+
+End
+
+Public Sub mnuSortT_Click() ' Sort pictures chronologically by timestamp
+
+  Dim i, pos As Integer
+  Dim n As String
+  
+  aSort.Resize(iPicCount)
+  For i = 0 To iPicCount - 1
+    aSort[i] = aTime[i] & "/" & i ' Workaround. A 2-dim array would be correct, but I can't sort it...
+  Next 
+  aSort.Sort()
+  
+  For i = 0 To iPicCount - 1
+    pos = InStr(aSort[i], "/")
+    n = Right$(aSort[i], Len(aSort[i]) - pos)
+    iRow = Int((i) / iPicRow)
+    aFrame[n].X = (i - (iPicRow * iRow)) * 200 + iOffset
+    aFrame[n].Y = iRow * 210 + 30
+  Next 
+  mnuSortA.Checked = False
+  mnuSortA.Enabled = True
+  mnuSortT.Checked = True
+  mnuSortT.Enabled = False
+  lblSort.Text = ("sorted chronologically")
+  Me.Tag = "chron"
+  Show_marked_frame
+
+End
+
+Public Sub Show_marked_frame()
+
+  If iMark > -1 Then   ' Only if a picture is selected
+    If ScrollView1.ScrollY > (aFrame[iMark].Y - 30) Then  ' If necessary, scroll up
+      ScrollView1.Scroll(0, (aFrame[iMark].Y - 30))
+      Return 
+    Endif 
+    If ScrollView1.ScrollY + Me.Height < aFrame[iMark].Y + 210 Then   ' If necessary, scroll down
+      ScrollView1.Scroll(0, aFrame[iMark].Y + 230 - Me.Height)
+    Endif 
+  Endif 
+
+End
+
+Public Sub mnuRename_Click()  ' Show the form FRename (the renaming itself is done in the function FileRename)
+  
+  If iMark = -1 Then Return   ' Only if a picture is selected
+  PicBox.Visible = False
+  FInfo.Close
+  mnuESC.Enabled = False
+  mnuView.Enabled = True
+  mnuFullscreen.Enabled = True
+  PicBox.Cursor = hCurZoom
+  FRename.Tag = aFiles[iNr]
+  FRename.ShowModal
+
+End
+
+Public Function TestRenameOne(sOldname As String, sNewname As String) As Boolean
+
+  Dim n As Integer
+  
+  For n = 0 To iPicCount - 1  ' Check if new name already exists
+    If aFiles[n] = sNewname Then
+      Message.Error(Subst(("The file &1 already exists in the current directory!"), sNewname))
+      Return False  ' Give error back to FRename
+    Endif 
+  Next
+  Return True
+
+End
+
+Public Function FileRename(sOldname As String, sNewname As String) As Boolean ' Rename a file
+
+  Dim sThumbname As String
+  
+  Try Move sPath & "/" & sOldname To sPath & "/" & sNewname   ' Rename file
+  If Error Then Return False
+  aFiles[iNr] = sNewname  ' Rename all entries in arrays and labels
+  alblFile[iNr].Text = sNewname
+  alblFile[iNr].ToolTip = ""
+  alblFile[iNr].Alignment = 3
+  If Len(sNewname) > 20 Then
+    alblFile[iNr].Alignment = 1
+    alblFile[iNr].ToolTip = sNewname
+  Endif 
+  Wait
+  aPFiles[iNr] = sPath & "/" & sNewname
+  sThumbname = Thumb(aFiles[iNr])   ' Rename thumbnail
+  Try Move aThumbs[iNr] To sThumbname
+  If Error Then
+    Kill sThumbname
+    Wait
+    Move aThumbs[iNr] To sThumbname
+  Endif
+  aThumbs[iNr] = sThumbname
+  Return True  ' give ok back
+
+End
+
+Public Sub mnuDelete_Click()  ' Delete a picture
+
+  Dim i, x, y As Integer
+  Dim sPicState As String
+  
+  If iMark = -1 Then Return   ' Only if a picture is selected
+  FInfo.Close
+  If PicBox.Visible = True Then   ' Remember the state of PictureBox
+    If PicBox.Cursor = hCurZoom Then
+      sPicState = "on"
+    Else
+      sPicState = "full"
+    Endif
+  Else
+    sPicState = "off"
+  Endif
+  If Message.Warning(Subst(("The file &1 will be deleted."), aFiles[iNr]), ("&OK"), ("&Cancel")) = 2 Then Return  ' If user aborts, cancel
+  
+  Try Shell "kioclient move '" & aPFiles[iNr] & "' trash:/" ' Move file to trash - kioclient preferred, because it writes the restore infos
+  If Error Then   ' Otherwise move directly to trash
+    Move aPFiles[iNr] To "trash:/"
+  Endif 
+  Try Shell "kioclient move '" & aThumbs[iNr] & "' trash:/"   ' Move Thumbnail to trash
+  If Error Then 
+    Move aThumbs[iNr] To "trash:/"
+  Endif 
+  
+  x = aFrame[iNr].X   ' Remember position of deleted frame
+  y = aFrame[iNr].Y
+  iPicCount = iPicCount - 1
+  lblCount.Text = iPicCount & (" pictures")
+  
+  aFrame[iNr].Delete  ' Remove picture
+  aFiles.Remove(iNr) ' Delete all array-elements, arrays are 1 smaller
+  aPFiles.Remove(iNr)
+  aThumbs.Remove(iNr)
+  aTime.Remove(iNr)
+  aFrame.Remove(iNr)
+  aPicture.Remove(iNr)
+  alblFile.Remove(iNr)
+  alblTime.Remove(iNr)
+  aOri.Remove(iNr)
+  
+  For i = iNr To iPicCount - 1  ' Set the tags of all next frames in the arrays -1
+    aFrame[i].Tag = i
+    aPicture[i].Tag = i
+    alblFile[i].Tag = i
+    alblTime[i].Tag = i
+  Next 
+  
+  If FindNextFrame(x, y) = False Then
+    iMark = -1
+    PicBox.Visible = False
+    mnuFullscreen.Enabled = True
+    Return
+  Endif
+  mnuView.Enabled = True
+  mnuFullscreen.Enabled = True
+  Mark_Frame(iNr)
+  Show_marked_frame
+  Select Case sPicState   ' Show PictureBox again with next picture
+    Case "on"
+      mnuView_Click
+    Case "full"
+      mnuFullscreen_Click
+  End Select
+End
+
+Public Sub mnuInfo_Click()  ' Show picture infos
+
+  Dim posx, posy As Integer
+  
+  If iMark = -1 Then Return
+  posx = aFrame[iNr].X
+  posy = aFrame[iNr].Y - ScrollView1.ScrollY
+  If posx < Me.Width - 740 Then   ' Calculate position for FInfo
+    FInfo.X = posx + 145
+  Else 
+    FInfo.X = posx - 595
+  Endif 
+  If posy < Me.Height - 350 Then 
+    FInfo.Y = posy + 24
+  Else 
+    FInfo.Y = posy - 180
+  Endif 
+  FInfo.Tag = iNr
+  FInfo.Show
+
+End
+
+Public Sub GetExifInfoCommon(iNumber As Integer) As String
+
+  Dim sExif As String
+  
+  Shell "exiftool -common -h '" & aPFiles[iNumber] & "'" To sExif
+  Return sExif
+
+End
+
+Public Sub GetExifInfoAll(iNumber As Integer) As String
+
+  Dim sExif As String
+  
+  Shell "exiftool -a -h '" & aPFiles[iNumber] & "'" To sExif
+  Return sExif
+
+End
+
+Public Sub mnuHelp_Click()  ' Show help
+
+  FHelp.X = (Me.Width - FHelp.Width) / 2
+  FHelp.Show
+
+End
+
+Public Sub PicBox_MouseDown()  ' Click on PictureBox
+
+  If Mouse.Left = True Then 
+    If PicBox.Cursor = hCurZoom Then  ' if smaller picture
+      mnuFullscreen_Click
+    Else  ' if full screen
+      BackToSmallView
+    Endif
+  Else  ' right-klick
+    mnuDrag.Enabled = False
+    mnuFramegroup.Popup
+  Endif 
+
+End
+
+Public Sub mnuFullscreen_Click() ' Full screen view (we ignore that a picture might be smaller)
+
+  Dim iFormat As Single
+  
+  If PicBox.Visible = False Or PicBox.Tag <> aFiles[iNr] Then
+    Load_Picture
+  Endif
+  iFormat = aPicture[iNr].Picture.Width / aPicture[iNr].Picture.Height
+  PicBox.Y = 0
+  PicBox.Height = Me.Height
+  PicBox.Width = Me.Height * iFormat
+  If PicBox.Width > Me.Width Then  ' If picture format is 16:9 or wider
+    PicBox.Width = Me.Width
+    PicBox.Height = Me.Width / iFormat
+  Endif 
+  PicBox.X = (Me.Width - PicBox.Width) / 2
+  PicBox.Visible = True
+  mnuFullscreen.Enabled = False
+  mnuView.Enabled = False
+  mnuESC.Enabled = True
+  PicBox.Cursor = hCurClose
+  PicBox.SetFocus
+
+End
+
+Public Sub BackToSmallView()  ' Close FullScreen view
+
+  Dim w, h As Integer
+  
+  w = PicBox.Width
+  h = PicBox.Height
+  If w / h > 1 Then
+    PicBox.Width = 800
+    PicBox.Height = 800 / w * h
+  Else
+    PicBox.Width = 800 * w / h
+    PicBox.Height = 800
+  Endif
+  PicBox.X = (Me.Width - PicBox.Width) / 2  ' centered
+  PicBox.y = (Me.Height - PicBox.Height) / 2
+  PicBox.Cursor = hCurZoom
+  mnuView.Enabled = False
+  mnuFullscreen.Enabled = True
+  mnuESC.Enabled = True
+
+End
+
+Public Sub mnuESC_Click()   ' ESC is pressed
+  
+  If PicBox.Visible = True Then
+    If PicBox.Cursor = hCurClose Then ' we have full screen
+      BackToSmallView
+    Else  ' Close small view
+      PicBox.Visible = False
+      mnuView.Enabled = True
+      mnuFullscreen.Enabled = True
+      mnuESC.Enabled = False
+      aFrame[iNr].SetFocus
+    Endif
+  Endif 
+
+End
+
+Public Sub mnuNext_Click() ' Move to next picture
+  
+  If iMark = -1 Then Return ' Only if a picture is selected
+  If FindNextFrame(aFrame[iNr].X, aFrame[iNr].Y) = False Then Return ' if no next picture is found, exit
+  Mark_Frame(iNr)
+  Show_marked_frame
+  If PicBox.Visible = True Then
+    If PicBox.Cursor = hCurClose Then ' if fullscreen
+      mnuFullscreen_Click
+    Else
+      mnuView_Click
+    Endif
+  Endif 
+
+End
+
+Public Function FindNextFrame(x As Integer, y As Integer) As Boolean
+
+  Dim i As Integer
+  
+  Do
+    x = x + 70
+    If x > (ScrollView1.ScrollWidth - 150) Then   ' if we are at the end of a line, go to next line
+      x = 0
+      y = y + 210
+    Endif 
+    If y > panEmpty.Y + 200 Then Break  ' if we are in last line, end
+    For i = 0 To iPicCount - 1
+      If aFrame[i].X > x And aFrame[i].X < x + 140 And aFrame[i].Y > y - 100 And aFrame[i].Y < y + 100 Then
+        iNr = i
+        Return True   ' found
+      Endif 
+    Next 
+  Loop
+  Return False    'none found
+
+End
+
+Public Sub mnuPrevious_Click()  ' Move to previous picture
+
+  Dim x, y, i As Integer
+  
+  If iMark = -1 Then Return   ' Only if a picture is selected
+  x = aFrame[iNr].X
+  y = aFrame[iNr].Y
+  Do
+    x = x - 70
+    If x < 70 Then   ' if we are at the beginning of a line, go to end of previous line
+      x = Me.Width
+      y = y - 210
+    Endif 
+    If y < 0 Then Break   ' if we are at top, end
+    For i = 0 To iPicCount - 1
+      If aFrame[i].X < x And aFrame[i].X > x - 140 And aFrame[i].Y > y - 100 And aFrame[i].Y < y + 100 Then
+        iNr = i
+        Mark_Frame(iNr)
+        Show_marked_frame
+        If PicBox.Visible = True Then
+          If PicBox.Cursor = hCurClose Then 'fullscreen
+            mnuFullscreen_Click
+          Else
+            mnuView_Click
+          Endif
+        Endif 
+        Goto found
+      Endif 
+    Next 
+  Loop
+  found:
+
+End
+
+Public Sub Mark_Frame(iNumber As Integer) 'Mark selected frame
+
+  If iMark > -1 Then
+    aFrame[iMark].Background = &CFCFCF&
+    alblFile[iMark].Foreground = &000000&
+    alblTime[iMark].Foreground = &000000&
+  Endif 
+  aFrame[iNumber].Background = &0000FF&
+  alblFile[iNumber].Foreground = &FFFFFF&
+  alblTime[iNumber].Foreground = &FFFFFF&
+  aFrame[iNumber].Raise
+  iMark = iNumber
+  If FInfo.Visible = True Then
+    FInfo.Close
+    mnuInfo_Click
+  Endif
+
+End
+
+Public Function Thumb(sFilename As String) As String  ' Get the file name for thumbnail using md5sum
+
+  Dim sThumb As String
+  Dim i As Integer
+  
+  sFilename = sPath & "/" & sFilename
+  sFilename = Replace$(sFilename, " ", "%20") ' we have to replace spaces and special characters
+  For i = 123 To 255
+    sFilename = Replace$(sFilename, Chr(i), "%" & Hex$(i))
+  Next 
+  sFilename = "file://" & sFilename
+  Shell "echo -n '" & sFilename & "' | md5sum" To sThumb
+  sThumb = Left$(sThumb, 32)
+  sThumb = User.Home & "/.thumbnails/normal/" & sThumb & ".png"
+  Return sThumb
+
+End
+
+Public Sub mnu_StopLoad_RenameAll_Click() 'Abort Loading or Rename all
+
+  PicBox.Visible = False
+  FInfo.Close
+  
+  If bStop = False Then   ' abort
+    lblStatus.Text = ("Loading of pictures is being aborted...")
+    Wait
+    bStop = True
+    Return
+  Endif
+  FRenameAll.ShowModal   ' rename
+
+End
+
+Public Function TestRenameAll(sPref As String, sFmt As String, iStart As Integer, bKeep As Boolean) As String   ' Check if target filenames already exist
+
+  Dim x, y, i, n As Integer
+  Dim sResult As String = ""
+  Dim aOldname As New String[iPicCount]
+  Dim aNewname As New String[iPicCount]
+  
+  x = -60
+  y = 100
+  i = iStart
+  n = 0
+  Do While FindNextFrame(x, y)
+    aOldname[n] = aFiles[iNr]
+    aNewname[n] = sPref & Format(i, sFmt)
+    If bKeep = True Then ' keep old filename
+      aNewname[n] = aNewname[n] & "_" & aOldname[n]
+    Else  ' just number
+      aNewname[n] = aNewname[n] & ".jpg"
+    Endif
+    x = aFrame[iNr].X
+    y = aFrame[iNr].Y
+    n = n + 1
+    i = i + 1
+  Loop
+  Mark_Frame(iNr)
+  Show_marked_frame
+  For i = 0 To iPicCount - 1  ' Check if there would be a conflict with existing filenames
+    For n = i + 1 To iPicCount - 1
+      If aNewname[i] = aOldname[n] Then
+        sResult = sResult & aOldname[i] & " --> " & aOldname[n] & "\n"
+      Endif
+    Next
+  Next
+  Return sResult
+
+End
+
+Public Function RenameAll(sPref As String, sFmt As String, iStart As Integer, bKeep As Boolean) As Boolean   ' Rename all files
+
+  Dim x, y, n, i As Integer
+  Dim oldname, newname As String
+  
+  lblStatus.Text = ("Files are being renamed...")
+  Wait
+  x = -60
+  y = 100
+  n = 0
+  i = iStart
+  
+  Do While FindNextFrame(x, y)
+    oldname = aFiles[iNr]
+    newname = sPref & Format(i, sFmt)
+    If bKeep = True Then ' keep old filename
+      newname = newname & "_" & oldname
+    Else  ' just number
+      newname = newname & ".jpg"
+    Endif
+    If FileRename(oldname, newname) = False Then
+      n = n - 1
+    Endif
+    x = aFrame[iNr].X
+    y = aFrame[iNr].Y
+    n = n + 1
+    i = i + 1
+    Wait
+  Loop
+  
+  Mark_Frame(iNr)
+  Show_marked_frame
+  lblStatus.Text = ""
+  Dec Application.Busy
+  Message.Info(Subst(("&1 files renamed"), n))
+
+End
+
+Public Sub mnuTimecorr_Click()  ' Time correction
+
+  FTime.Tag = sPath
+  FTime.ShowModal
+
+End
+
+Public Sub TimeCorrection(idays As Integer, ihours As Integer, iminutes As Integer, PlusMinus As String)
+
+  Dim i As Integer
+  Dim Hrs As Single
+  
+  lblStatus.Text = ("Setting time informations in all files...")
+  Wait
+  If PlusMinus = "0" Then
+    PlusMinus = "-"
+  Else
+    PlusMinus = "+"
+  Endif
+  Hrs = idays * 24 + ihours + iminutes / 60
+  
+  Shell "exiftool -alldates" & PlusMinus & "=" & Hrs & " '" & sPath & "'" Wait
+  For i = 0 To iPicCount - 1
+    Shell "exiftool -b -createdate '" & aPFiles[i] & "'" To alblTime[i].Text
+  Next
+  lblStatus.Text = ""
+
+End
+
+Public Sub mnuSlide_Click()   ' Slide Show
+
+  Dim i, iLast As Integer
+  
+  iLast = iNr
+  FSlideshow.Show
+  
+  Do
+    FSlideshow.PictureLoad(aPFiles[iNr], aOri[iNr])
+    FSlideshow.Title = aFiles[iNr]
+    i = 1
+    Do
+      If i > iDelay Then Break
+      If FSlideshow.Visible = False Or FSlideshow.Minimized = True Then Break
+      Wait 1
+      Inc i
+    Loop
+    
+    If FSlideshow.Visible = False Or FSlideshow.Minimized = True Then Break
+    mnuNext_Click
+    If iNr = iLast Then Break
+    iLast = iNr
+  Loop
+  
+  FSlideshow.Close
+  Settings["SlideShow/Delay"] = iDelay
+
+End
+
+Public Function GetDelay(iSec As Integer) As Boolean
+
+  iDelay = iSec
+
+End
+
+Public Sub mnuOpen_Click()  ' Open another folder
+
+  MMain.Main
+  Me.Close
+
+End
+
+Public Sub mnuQuit_Click() ' Quit
+
+  Me.Close
+
+End
+
+Public Sub Form_Close()
+
+  If bStop = False Then   ' if loading of pictures is still in progress
+    bStop = True
+    Stop Event
+    Wait
+    Timer2.Enabled = True
+  Endif
+
+End
+
+Public Sub Timer2_Timer()
+
+  Me.Close
+
+End

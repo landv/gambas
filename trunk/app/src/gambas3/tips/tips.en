@@ -1,0 +1,592 @@
+[WELCOME]
+
+<h3>Welcome to <b>Gambas</b>!</h3>
+
+<p><b>Gambas</b> is a graphical development
+environment based on an advanced <i>Basic</i> interpreter.</p>
+
+<p><b>Gambas</b> aims at enabling you to make
+powerful programs easily and quickly. But clean programs
+remain on your <i>own</i> responsibility...</p>
+
+<p>Enjoy it !</p>
+
+<p align=right>Beno&icirc;t Minisini<br>
+<u>gambas@users.sourceforge.net</u></p>
+
+
+[STARTUP]
+
+<h3>Startup class</h3>
+
+<p>Each project must have a <i>startup class</i>. This
+startup class must define a static public method named <tt><b>Main</b></tt>
+with no arguments, that will act as the startup method of
+your program.</p>
+
+<p>You can define the startup class by clicking on it with the
+right mouse button in the project tree, and by selecting 
+<u>Startup class</u> in the popup menu.</p>
+
+<p>It is not necessary to define a <tt>Main</tt> method in a startup
+form, because it already has a predefined one.</p>
+
+<p>This predefined startup method instanciates the form and shows it, like in
+<i>Visual Basic&trade;</i>.</p>
+
+
+[OPEN]
+
+<h3>Open</h3>
+
+<p>The <b>Open</b> instruction of <b>Gambas</b> does not
+work like the <i>Visual Basic&trade;</i> one. It does not return the file
+as an integer, but as a <b>File</b> object.</p>
+
+<p>So, instead of typing :</p>
+
+<pre>Dim handle As Integer
+...
+Open "myfile" For Read As #handle</pre>
+
+<p>you must type :</p>
+
+<pre>Dim handle As File
+...
+handle = Open "myfile" For Read</pre>
+
+
+[CATDIR]
+
+<h3>Path concatenation</h3>
+
+<p>Do you know that you can concatenate directory names and
+file names with the <b><tt>&/</tt></b> operator ? This operator
+deals with the trailing slashes so that the resulting path is
+perfect.</p>
+
+<p>For example:</p>
+
+<pre>Print "/home/gambas" &/ ".bashrc"
+&rarr; /home/gambas/.bashrc
+
+Print "/home/gambas/" &/ "/tmp" &/ "foo.bar"
+&rarr; /home/gambas/tmp/foo.bar
+</pre>
+
+<p>Isn't it marvelous ?</p>
+
+
+[EXEC]
+
+<h3>Executable</h3>
+
+<p>You can make an executable file from your entire project. Select
+<u>Make executable</u> in the <u>Project</u> menu.</p>
+
+<p>When <b>Gambas</b> makes an executable file, it puts 
+the result in the directory of your project by default. 
+The executable name has the same name as your project.</p>
+
+
+[PATH]
+
+<h3>Relative paths</h3>
+
+<p>Relative paths have a special meaning in <b>Gambas</b>.
+They always refer to files inside your projects.
+<p>
+There is no concept of <i>current directory</i>, and no keyword like
+<tt>CHDIR</tt> to change it.
+<p>
+<b>Be careful:</b> you must use relative paths only for accessing
+project files, because absolute paths won't work anymore when
+you make an executable.
+
+
+[GLOBAL]
+
+<h3>Global variables</h3>
+
+There is <b>no global variables</b> in <b>Gambas</b>!
+<p>
+As a workaround, put them in your main module and declare them
+as <tt>Public</tt>.
+<p>
+If you do not have a main module in your project, but a main
+form, then declare them as <tt>Static Public</tt>.
+<p>
+To access these variables, you must use the name of the main module
+or form: <tt>MyMainModule.MyGlobalVariable</tt> or
+<tt>MyMainForm.MyGlobalVariable</tt>.
+
+
+[EMPTY]
+
+<h3>Empty strings</h3>
+
+<p>To know if a string is empty, it is not necessary to use the
+<tt><b>Len()</b></tt> function. You can directly test it, as an empty string
+is <tt><b>False</b></tt> and a non-empty string is <tt><b>True</b></tt>.</p>
+
+<p>For example, instead of doing :</p>
+
+<pre>If Len(MyString) > 0 Then ...
+If Len(MyString) = 0 Then ...</pre>
+
+<p>You should do :</p>
+
+<pre>If MyString THEN ...
+If Not MyString THEN ...</pre>
+
+
+[TRANSLATE]
+
+<h3>Translation</h3>
+
+<p>Gambas applications are fully translatable, provided that you tell it
+which strings must be translated, and which one must not.</p>
+<p>To mark strings as translatable, just enclose them between braces:<p>
+
+<pre>Print ("Translate me")
+Print "But do not translate me!"</pre>
+
+
+[SUBST]
+
+<h3>Subst$</h3>
+
+<p>The <b><tt>Subst$()</tt></b> function is very useful to internationalize your application.</p>
+
+<p>It takes at least two arguments. The first one is the text mask which the substitution applies on.
+The other ones are the substitution arguments, numbered from one.</p>
+
+<p>Each <tt>&X</tt> pattern in the substitution string will be replaced by the X<sup>th</sup> substitution argument.
+For example: </p>
+
+<pre>Print Subst(("Substitution of &1, &2 and &3"),
+  "first", "second", "third")
+
+&rarr; Substitution of first, second and third</pre>
+
+
+[EVENT]
+
+<h3>Event Handlers</h3>
+
+<p>Every control, and every object that can raise events, has an
+<i>event observer</i> and an event <i>group name</i>.</p>
+
+<p>The event observer catches every event raised by the object, and
+the event group name is the prefix of the procedure called to manage
+the event. That function is called <i>event handler</i>.</p>
+
+<p>By default, this event observer is the object where you have
+created the control, and the group name is the name of the control.</p>
+
+<p>This way, a form receives all events raised by the controls you
+created inside.</p>
+
+<pre>' Gambas form
+Dim hButton As Button
+
+Public Sub _new()
+&nbsp;&nbsp;hButton = New Button(Me) As "MyButton"
+End
+
+Public Sub MyButton_Click()
+&nbsp;&nbsp;Print "You have clicked MyButton !"
+End
+</pre>
+
+
+[GROUP]
+
+<h3>Control groups</h3>
+
+<p>Every control has a <b>(Group)</b> property. When this property
+is set, the prefix of the event handler name is the name of the group
+and not the name of the control.</p>
+
+<p>Let's suppose you have a <b>Button</b> named <tt>btnAction</tt>
+with the following <b>Click</b> event handler :</p>
+
+<pre>Public SubbtnAction_Click()</pre>
+
+<p>If you set the <b>(Group)</b> property of <tt>btnAction</tt> to
+<tt>"MyGroup"</tt>, then the event handler that will receive events from
+the button will be the following :</p>
+
+<pre>Pubic Sub MyGroup_Click()</pre>
+
+<p>This property lets you handle events of different controls in
+a single function. And the controls of the same group do not need
+to have the same type !</p>
+
+<p><b>Note :</b> The old <b>Visual Basic&trade;</b> veteran may recognize
+the concept of <i>control array</i>, but in a more powerful
+implementation. :-)</p>
+
+
+[FORM]
+
+<h3>Forms</h3>
+
+<p>In <b>Gambas</b>, a form is its own event observer, so that 
+you can directly manage its events (like <b>Resize</b>, 
+<b>Activate</b>, ...) into its own class code.</p>
+
+<p>This way, newbies coming from <b>Visual Basic&trade;</b> are not
+disorientated :-).</p>
+
+
+[EMBED]
+
+<h3>Embedding forms</h3>
+
+<p>You can embed any form into other forms with <b>Gambas</b>!</p>
+
+<p>To do such a powerful thing, just instanciate the form by passing
+a parent container as last argument of the contructor.</p>
+
+<p>For example:</p>
+<pre>Dim hForm As MyDialog
+Dim hSuperControl As MyForm
+' Create a dialog
+hForm = New MyDialog
+' Insert a form into this dialog
+' Note that this form takes two parameters before the container
+hSuperControl = New MyForm(Param1, Param2, MyDialog)
+' Moves and resizes the form
+hSuperControl.Move(8, 8, 128, 64)
+</pre>
+
+<p><b>Be careful:</b> a form embedded into another form is still a form, and
+so is its own event observer.</p>
+
+
+[TAG]
+
+<h3>Tag Property</h3>
+
+<p>Each control has a <b>Tag</b> property. This property is for the
+programmer, and can contain any <b>Variant</b> data that you find
+relevant.</p>
+
+<p>This is very useful, when you want to distinguish controls of the
+same group in a common event handler.</p>
+
+
+[LAST]
+
+<h3>Last</h3>
+
+<p>The <b>Last</b> keyword returns the last control that has
+received an event. This is very useful when you want to write an
+event handler that is independent of any control name.</p>
+
+<p>For example, let's suppose you want to write a calculator program.
+You have defined ten buttons, one for each digit, each one in the
+same <i>control group</i> "Digit". The <b>Tag</b> of each control is set to
+the digit drawn in the button.</p>
+
+<p>Your event handler may look like that :</p>
+
+<pre>Public Sub Digit_Click()
+
+&nbsp;&nbsp;Display = Display & Last.Tag
+&nbsp;&nbsp;RefreshDisplay
+END
+</pre>
+
+
+[LEFT]
+
+<h3>Left$ / Mid$ / Right$</h3>
+
+<p>The well known BASIC routines <b>Left$</b>, <b>Right$</b>
+and <b>Mid$</b> have useful behaviours in <b>Gambas</b></p>
+
+<p>The second parameter of <b>Left$</b> and <b>Right$</b> is
+optional, and is one by default.</p>
+
+<p><tt>Left$("Gambas")</tt> returns <tt>"G"</tt><br>
+<tt>Right$("Gambas")</tt> returns <tt>"s"</tt></p>
+
+<p>This second parameter can be negative, and then gives the number
+of characters not to extract.</p>
+
+<p><tt>Left$("Gambas", -2)</tt> returns <tt>"Gamb"</tt><br>
+<tt>Right$("Gambas", -2)</tt> returns <tt>"mbas"</tt></p>
+
+<p>Likewise, the third argument of <b>Mid$</b> can be negative, and
+then gives the number of characters from the end of the string
+not to extract.</p>
+
+<p><tt>Mid$("Gambas", 2, -2)</tt> returns <tt>"amb"</tt>
+
+
+[OBSERVER]
+
+<h3>Observer</h3>
+
+<p>The <b>Observer</b> class allows you to intercept all events raised
+by an object before they are actually sent.</p>
+
+<pre>MyTextBox = New TextBox(Me) As "MyTextBox"
+MyObserver = New Observer(MyTextBox) As "MyObserver"
+...
+Public Sub MyObserver_KeyPress()
+  Debug "Got it first"
+End
+
+Public Sub MyTextBox_KeyPress()
+  Debug "Got it next"
+End</pre>
+
+The observer can cancel the event with <tt>Stop Event</tt> to prevent the object from effectively
+raising it.
+
+
+[STRING]
+
+<h3>UTF-8 Strings</h3>
+
+<p><b>Gambas</b> uses the <b>UTF-8</b> charset to represent strings in memory.
+
+<p>But all standard string functions deal with <b>ASCII</b> only: 
+<tt>Left</tt>, <tt>Mid</tt>, <tt>Right</tt>, <tt>UCase</tt>...
+
+<p>If you want to deal with UTF-8 strings, you have to use the methods of the
+<b>String</b> static class, which have the same name as their standard counterparts.
+
+<pre>Print Len("bébé");; Left$("bébé", 3)
+&rarr; 6 bé
+
+Print String.Len("bébé");; String.Left("bébé", 3)
+&rarr; 4 béb</pre>
+
+
+[ASSIGNMENT]
+
+<h3>Assignments</h3>
+
+<p><b>Gambas</b> implements the assignment shortcuts that the C/C++ programmers are used to.
+
+<pre>MyVariable += 2
+MyVariable *= 4
+MyVariable &= "Great"</pre>
+is an equivalent of
+<pre>MyVariable = MyVariable + 2
+MyVariable = MyVariable * 4
+MyVariable = MyVariable & "Great"</pre>
+
+<p>And so on...
+
+
+[DEBUG]
+
+<h3>Debug</h3>
+
+<p>You can use the <b><tt>Debug</tt></b> instruction to print debugging messages to the
+console (namely the standard error output). It behaves exactly like the <tt>Print</tt>
+instruction.
+
+<p>These messages are prefixed with the class name, method name and line number of
+the <tt>Debug</tt> instruction. If you don't want that prefix, you can use the <b><tt>Error</tt></b>
+instruction instead of <tt>Debug</tt>.
+
+<p>The debugging messages are automatically removed when creating an executable
+without debugging information.
+
+
+[TRY]
+
+<h3>Error management (1)</h3>
+
+<p>Error management in <b>Gambas</b>is done with the following instructions: 
+<b><tt>Try</tt></b>, <b><tt>Error</tt></b>, <tt>Catch</tt>, and <tt>Finally</tt>.
+
+<p><tt>Try</tt> tries to execute a statement without raising an error. The <tt>Error</tt>
+keyword is used just after to know if the statement was executed correctly.
+
+<pre>Try MyFile = Open "/etc/password" For Write
+If Error Then Print "I cannot do what I want!"</pre>
+
+
+[CATCH]
+
+<h3>Error management (2)</h3>
+
+<p>Error management in <b>Gambas</b>is done with the following instructions: 
+<tt>Try</tt>, <tt>Error</tt>, <b><tt>Catch</tt></b>, and <tt>Finally</tt>.
+
+<p><tt>Catch</tt> indicates the beginning of the error management part of a function or procedure. 
+It is put at the end of the function code.
+
+<p>The catch part is executed when an error is raised between the beginning of the function execution 
+and its end.
+
+<p>If an error is raised during the execution of the catch part, it is normally propagated. 
+
+<pre>Sub ProcessFile(FileName As String)
+  ...
+  Open FileName For Read As #hFile
+  ...
+  Close #hFile
+  
+Catch ' Executed only if there is an error
+
+  Print "Cannot process file "; FileName
+
+End</pre>
+
+
+[FINALLY]
+
+<h3>Error management (3)</h3>
+
+<p>Error management in <b>Gambas</b>is done with the following instructions: 
+<tt>Try</tt>, <tt>Error</tt>, <tt>Catch</tt>, and <b><tt>Finally</tt></b>.
+
+<p><tt>Finally</tt> introduces the code executed at the end of the function, even if an error was 
+raised during its execution. 
+
+<p>The finally part is not mandatory. If there is a catch part in the function, the finally part must precede it. 
+ 
+<p>If an error is raised during the execution of the finally part, it is normally propagated.
+
+<pre>Sub ProcessFile(FileName As String)
+  ...
+  Open FileName For Read As #hFile
+  ...
+Finally ' Always executed, even if a error is raised
+
+  Close #hFile
+  
+Catch ' Executed only if there is an error
+  
+  Print "Cannot print file "; FileName
+  
+End</pre>
+
+
+[OPTIONAL]
+
+<h3>Optional</h3>
+
+<p>Functions and procedures in <b>Gambas</b> can have optional arguments.</p>
+
+<p>Optional arguments are done simply by putting down the <b><tt>Optional</tt></b>
+keyword just before the argument name.</p>
+
+<p>Optional arguments can have an explicit default value too.</p>
+
+<pre>Private Sub MyFunction(Param AS String, Optional Optim AS String = "Default")
+  ...
+  Print "Required: "; param; ", Optional: "; optim
+  ...
+End</pre>
+
+
+[ARRAY]
+
+<h3>For Each</h3>
+
+<p>In <b>Gambas</b> you can easily loop through an array, a collection, or many other
+enumerable classes with the <b><tt>For Each</tt></b> instruction.</p>
+
+<p>For example:</p>
+
+<pre>Dim Xml As New XmlDocument
+Dim Node As XmlNode
+Dim I As Integer
+
+' Open XML file
+Xml.Open("pokus.xml")
+' Children is indexed via [i], since it's an array
+For I = 0 To Xml.Root.Children.Count - 1
+  'Attributes are looped via For Each, since it's a collection
+  For Each Node In Xml.Root.Children[i].Attributes
+    Print Node.Name;; Node.Value
+  Next
+Next</pre>
+
+
+[ICON]
+
+<h3>Default Icons</h3>
+
+<p>You can use built in icons for nicer GUI of your application, which are available
+in several predefined sizes (<tt>"small"</tt>, <tt>"medium"</tt>, <tt>"large"</tt>,...)
+or absolute sizes (from 16x16 to 256x256).</p>
+
+<p>For example:
+
+<pre>Image1.Picture = Picture["icon:/32/warning"]
+Image2.Picture = Picture["icon:/small/error"]
+</pre>
+
+<p><b>Warning:</b> the <tt>gb.form</tt> component is required.
+
+
+[SETTINGS]
+
+<h3>Settings</h3>
+
+<p>If you need to store the configuration of your program (like the geometry of your forms),
+then you are a lucky guy. It's very easy and elegant in <b>Gambas</b>. :-)
+
+<p>To save the position of a form:
+<pre>Settings.Write(TheForm)</pre>
+
+<p>To recall it:
+<pre>Settings.Read(TheForm)</pre>
+
+To save any settings:
+<pre>Settings["Slot/Key"] = Value</pre>
+
+And to read the settings back:
+<pre>Value = Settings["Slot/Key", DefaultValue]</pre>
+
+These settings are stored in the <tt>~/.config/gambas3/&lt;MyApplication&gt;.conf</tt> file,
+where <tt>&lt;MyApplication&gt;</tt> is the name of your project.
+
+<p><b>Warning:</b> The <tt>gb.settings</tt> component is required.
+
+
+[EDITOR]
+
+<p>Here is a few editor tips...</p>
+
+<h3>Two Types Of Comments</h3>
+
+<pre>' Normal comment</pre>
+<b><pre>'' Bold comment</pre></b>
+
+<p>Bold comments are used for documenting your code.</p>
+
+<h3>How To Use Code Snippets</h3>
+
+<p>Let's type <tt>main</tt> then the <b>TAB</b> key. A static public <tt>Main</tt>
+startup function is automatically inserted in your code.
+
+<p>Let's type <tt>ds</tt> then the <b>TAB</b> key. A local string variable declaration is
+automatically inserted, and you can type the variable name immediately.
+
+<p>Code snippets are entirely configurable from the global IDE option dialog.
+
+
+[END]
+
+<h3>That's All Folks!</h3>
+
+<p>You have read all the tips of the days. I hope you have became
+a <b>Gambas</b> expert now ! :-)</p>
+
+<p>If you want to contribute, send new tips to the following
+address:</p>
+<p><u>gambas@users.sourceforge.net</u></p>
+
+<p>Thanks beforehand !</p>
+

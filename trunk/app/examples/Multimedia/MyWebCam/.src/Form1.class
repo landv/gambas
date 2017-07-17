@@ -1,0 +1,203 @@
+' Gambas class file
+
+Private hWebcam As VideoDevice
+Private OnSet As Boolean
+Private Fps As Date
+Private nFps As Integer
+
+Public Sub Button1_Click()
+
+
+  Dim num As Integer
+  Dim Buf As String
+  Dim sSize As String
+
+  If hWebCam Then
+    Button1.Caption = ("Capture")
+    Bright.Enabled = False
+    Contrast.Enabled = False
+    Hue.Enabled = False
+    Whiteness.Enabled = False
+    Colour.Enabled = False
+    cmbSize.Enabled = False
+    FreqUp.Enabled = False
+    FreqDown.Enabled = False
+    TxtDevice.Enabled = True
+    BtnTakeShot.Enabled = False
+    Button2.Enabled = False
+    hWebCam = Null
+    Tmr.Enabled = False
+    Return
+  End If
+
+
+  Try hWebCam = New VideoDevice(TxtDevice.Text)
+  If Error Then
+    Message.Error(("Unable to open video device"))
+    Return
+  End If
+  hWebCam.Source = hWebCam.TV + hWebCam.PAL
+
+  Button1.Caption = ("Stop")
+  BtnTakeShot.Enabled = True
+  Button2.Enabled = True
+  Bright.Enabled = True
+  Contrast.Enabled = True
+  Hue.Enabled = True
+  Whiteness.Enabled = True
+  Colour.Enabled = True
+  cmbSize.Enabled = True
+  sSize = CStr(hWebCam.Width) & "x" & CStr(hWebCam.Height)
+  If cmbSize.Find(sSize) < 0 Then cmbSize.Add(sSize)
+  Try cmbSize.Text = sSize
+  FreqUp.Enabled = True
+  FreqDown.Enabled = True
+  TxtDevice.Enabled = False
+  OnSet = True
+  Bright.Value = hWebcam.Bright
+  Contrast.Value = hWebcam.Contrast
+  Hue.Value = hWebCam.Hue
+  Whiteness.Value = hWebCam.Whiteness
+  Colour.Value = hWebCam.Color
+  LblFreq.Text = "Tuner frequency: " & hWebCam.Tuner.Frequency
+
+  Wait 0.001
+  OnSet = False
+  Tmr.Delay = 10
+  Tmr.Enabled = True
+  Me.Caption = hWebCam.Name
+  Fps = Now()
+  nFps = 0
+
+
+End
+
+
+
+
+
+Public Sub Bright_Change()
+
+  If OnSet Then Return
+  hWebCam.Bright = Bright.Value
+
+End
+
+Public Sub Contrast_Change()
+
+  If OnSet Then Return
+  hWebCam.Contrast = Contrast.Value
+
+End
+
+Public Sub Whiteness_Change()
+
+  If OnSet Then Return
+  hWebCam.Whiteness = Whiteness.Value
+
+End
+
+Public Sub Colour_Change()
+
+  If OnSet Then Return
+  hWebcam.Color = Colour.Value
+
+End
+
+Public Sub Hue_Change()
+
+  If OnSet Then Return
+  hWebCam.Hue = Hue.Value
+
+End
+
+Public Sub cmbSize_Click()
+  
+  Dim aSize As String[]
+  
+  aSize = Split(cmbSize.Text, "*x*")
+  hWebcam.Resize(CInt(aSize[0]), CInt(aSize[1]))
+  
+End
+
+
+Public Sub Tmr_Timer()
+
+  Dim T1 As Date
+  Dim sBuf As String
+  Dim hPict As Picture
+
+  Tmr.Enabled = False
+
+  'Try PictureBox1.Picture = hWebCam.Picture
+  Draw.Begin(dwgVideo)
+  hPict = hWebCam.Image.Picture
+  Draw.Picture(hPict, (dwgVideo.W - hPict.W) \ 2, (dwgVideo.H - hPict.H) \ 2)
+  Draw.End
+  
+  If Not Error Then
+    nFps = nFps + 1
+    T1 = Now() - Fps
+    If Second(T1) >= 1 Then
+      Me.Caption = hWebCam.Name & " (" & nFps & " fps)"
+      Fps = Now()
+      nFps = 0
+    End If
+  End If
+  Tmr.Enabled = True
+
+End
+
+
+Public Sub Form_Close()
+
+  Tmr.Enabled = False
+  hWebCam = Null
+
+End
+
+
+
+
+
+Public Sub FreqUP_Click()
+
+  hWebCam.Tuner.Frequency = hWebCam.Tuner.Frequency + 5
+  LblFreq.Text = "Tuner frequency: " & hWebCam.Tuner.Frequency
+
+End
+
+
+
+Public Sub FreqDown_Click()
+
+  hWebCam.Tuner.Frequency = hWebCam.Tuner.Frequency - 5
+  LblFreq.Text = "Tuner frequency: " & hWebCam.Tuner.Frequency
+
+End
+
+Public Sub Button2_Click()
+
+  Dim sCad As String
+
+  sCad = "Device Bus: " & hWebCam.Bus & "\n"
+  sCad = sCad & "Device Driver: " & hWebCam.Driver & " Version: " & hWebCam.Version & "\n"
+  sCad = sCad & "Device Name: " & hWebCam.Name & "\n"
+  sCad = sCad & "Max.Resolution: " & hWebCam.MaxWidth & "x" & hWebCam.MaxHeight & "\n"
+  sCad = sCad & "Min. Resolution: " & hWebCam.MinWidth & "x" & hWebCam.MinHeight & "\n"
+
+  Message.Info(sCad)
+
+End
+
+Public Sub BtnTakeShot_Click()
+
+  Try hWebCam.Save(User.Home & "/webcam_shot.png")
+  If Not Error Then Message.Info("Image saved as " & User.Home & "/webcam_shot.png")
+End
+
+Public Sub Panel2_MouseDown()
+
+
+
+End

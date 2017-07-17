@@ -1,0 +1,45 @@
+' Gambas class file
+
+Static Private $sLang As String
+
+Static Public Function Run() As String
+
+  FNewTranslation.ShowModal
+  Return $sLang
+
+End
+
+Public Sub Form_Open()
+  
+  Dim sLang As String
+  
+  For Each sLang In Language.GetAll()
+    If Project.HasTranslation(sLang) Then Continue
+    lstLanguage.Add(Language.ToName(sLang))
+  Next
+
+  Try lstLanguage.Index = 0
+
+End
+
+
+Public Sub btnOK_Click()
+
+  $sLang = Language.FromName(lstLanguage.Text)
+  Me.Close
+
+End
+
+Public Sub btnCancel_Click()
+
+  $sLang = ""
+  Me.Close
+
+End
+
+
+Public Sub lstLanguage_Activate()
+
+  btnOK.Value = True
+
+End

@@ -1,0 +1,193 @@
+' Gambas class file
+
+Private hMap As New Map As "LensMap"
+
+Private $aNames As New String[]
+
+Private $iMX As Integer
+Private $iMY As Integer
+Private $bLens As Boolean
+Private hPicture As Picture
+
+Public Sub _new()
+
+  Dim o As Object
+  Dim hmp As MapPoint
+  'Dim hShapes As Shapes = Shapes.LoadKml("parcellaire.kml")
+
+  hPicture = New Picture(200, 200)
+  
+  MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "162"], "GMapCache").SubDomains = ["0", "1", "2"]
+  MapView1.Map["GoogleMap"].Visible = False
+  
+  With MapView1.Map.AddTile("OpenStreet", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null)
+  '.Opacity = 0.5
+  .Copyright = "OpenStreetMap contributors"
+  .Opacity = 0.5
+  End With
+  'MapView1.Map.AddShape("test")
+    MapView1.Map.AddTile("Virtual Earth", "http://ecn.dynamic.t{s}.tiles.virtualearth.net/comp/ch/{q}?mkt=fr-fr&it=G,VE,BX,L,LA&shading=hill&n=z&cb=1").SubDomains = ["0", "1", "2"]
+  'Map for lens
+  hmap.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "141"]).SubDomains = ["0", "1", "2"]
+  'hmap.Padding = 256
+  hmap.Resize(200, 200)
+  
+  MapView1.Map.AddShape("NewShape")
+  hmp = Proj("epsg:3946").TransformMPoint(Proj("epsg:4326"), MapPoint(5152182, 1442096))
+  'hmp = Proj("epsg:3946").TransformMPoint(Proj("epsg:4326"), MapPoint(-2.4500, 45.0000))
+  MapView1.Map!NewShape.AddPoint("archiac", hmp)
+  MapView1.Map!NewShape.AddPoint("archiac2", MapPoint(0, 0))
+  Print MapView1.Map!NewShape[0].Center.Lat
+  'MapView1.Map["NewShape"].Points = LoadShapes()
+'MapView1.ShowControls = False
+  
+  'Manage the list of layers
+  For Each o In MapView1.Map
+    $aNames.Add(o.Name)
+  Next
+  GridView1.Rows.count = $aNames.Count
+  GridView1.Columns.Count = 2
+  GridView1.Columns[0].Width = 32
+  GridView1.Rows.Height = 32
+  
+End
+
+Public Sub Form_Open()
+  
+End
+
+Public Sub MapView1_MouseDown()
+  Dim hMapPoint As New MapPoint[][]
+ 'Print "mousedown"
+  If Mouse.Control Then 
+    
+    hmap.Zoom = MapView1.map.Zoom + SpinBox1.Value
+    $bLens = True
+    hmap.Center = Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom)
+    MapView1.Lock = True
+    MapView1.Refresh
+  Endif
+
+  If Mouse.Shift Then
+    If MapView1.Map["NewShape"].Count = 0 Then 
+      hMapPoint.Add([Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom)])
+      MapView1.Map["NewShape"].AddPolygon("mypoly", hMapPoint)
+      MapView1.Map["NewShape"]["mypoly"].Selected = True
+    Else
+      MapView1.Map["NewShape"]["mypoly"].Points[0].Add(Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom))
+       'MapView1.Map["NewShape"]["mypoly"].Center = Shapes.GetCenter(MapView1.Map["NewShape"]["mypoly"].Points[0])
+       MapView1.Map["NewShape"].Refresh
+    Endif
+    'MapView1.Map["NewShape"].Points.AddPoint(Geo.PixelToMapPoint(point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom))
+    MapView1.Refresh
+  Endif
+
+End
+
+Public Sub MapView1_MouseMove()
+  
+  $iMX = Mouse.X
+  $iMY = Mouse.Y
+  Me.Text = Geo.PixelToMapPoint(Point(MapView1.Map.PixelBox.x + Mouse.x, MapView1.Map.PixelBox.y + Mouse.y), MapView1.Map.Zoom).Lon
+  If $bLens Then
+    hmap.Center = Geo.PixelToMapPoint(Point(MapView1.Map.PixelBox.X + Mouse.X, MapView1.Map.PixelBox.Y + Mouse.y), MapView1.Map.Zoom)
+    
+  MapView1.Refresh
+  Endif
+  
+
+End
+
+Public Sub MapView1_MouseUp()
+  
+  If $bLens Then
+    $bLens = False
+    MapView1.Lock = False
+    MapView1.Refresh
+  Endif
+  
+  
+End
+
+Public Sub MapView1_Draw()
+
+  If $bLens Then
+    Paint.Begin(Draw.Device)
+    'Draw the lens temporary picture
+    Draw.Begin(hPicture)
+      Draw.FillRect(0, 0, hPicture.Width, hPicture.Height, Color.DarkGray)
+      hmap.Draw
+    Draw.End
+    'And put it in a circle with a blue border
+    Paint.Brush = Paint.Image(hPicture.Image, $iMX - 100, $iMY - 100)
+    Paint.Arc($iMX, $iMY, 100)
+    Paint.Fill(True)
+    Paint.Brush = Paint.Color(Color.Blue)
+    Paint.Stroke
+    Paint.End
+  Endif
+' ListBox1.Clear
+' ListBox1.List = MapView1.Map["GoogleMap"].$aStack
+'Me.Text = MapView1.Map["GoogleMap"].CountActiveClients()
+End
+
+Public Sub GridView1_Data(Row As Integer, Column As Integer)
+  
+  Select Case Column
+    Case 0
+      Last.Data.Picture = IIf(MapView1.Map[$aNames[row]].Visible, Picture["icon:/22/ok"], Picture["icon:/22/cancel"])
+      
+    Case 1
+      Last.Data.Text = $aNames[row]
+  End Select
+  
+End
+
+Public Sub GridView1_MouseUp()
+  
+  If Last.column = 0 Then MapView1.Map[GridView1[Last.row, 1].Text].Visible = Not MapView1.Map[GridView1[Last.row, 1].Text].Visible
+  GridView1.Refresh
+
+End
+
+Public Sub Button1_Click()
+  
+  MapView1.Map.Center = MapPoint(Geo.SexToDec("45°31'33,33''N"), Geo.SexToDec("0°18'43,50''W"))
+  Print Geo.SexToDec("45°31'33,33''N")
+  MapView1.Map.Zoom = 17
+  MapView1.Refresh
+
+End
+
+Public Sub LensMap_Refresh()
+  'Resfresh the view when the Lensmap say it need to be refreshed
+  'This call the MapView_Draw Event then so the lens is refreshed too
+  MapView1.Refresh
+  
+End
+
+
+Public Sub SpinBox1_Change()
+  'Change the lens zoom
+  hmap.Zoom = MapView1.map.Zoom + SpinBox1.Value
+
+End
+
+Public Sub GridView1_Click()
+
+  
+
+End
+
+Public Sub Panel3_MouseDown()
+
+  
+
+End
+
+
+Public Sub Panel1_MouseDown()
+
+  
+
+End

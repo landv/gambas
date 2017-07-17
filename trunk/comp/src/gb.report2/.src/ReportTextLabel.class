@@ -1,0 +1,143 @@
+' Gambas class file
+
+Export
+Inherits ReportFrame
+
+Public Const _Properties As String = "*,Text,Alignment{Align.*}" '"*,Text,Key,Format,Alignment{Align.*},UseField"
+Public Const _Similar As String = "ReportTextLabel"
+Public Const _DefaultEvent As String = "Data"
+Public Data As String
+
+Property Text As String
+Property Alignment As Integer
+
+Private $sText As String
+Private $iAlignment As Integer
+
+Event Data(Index As Integer)
+
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As ReportSizeHints
+  
+  Dim hSizeHint As ReportSizeHints
+  Dim hRect As RectF
+  Dim fWidth, fHeight As Float
+  Dim sText As String
+  'Dim hExt As PaintExtents
+  'Obtenir la taille de l'objet de base en tenant compte
+  'de padding et des dimensions fournies
+  hSizeHint = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
+  'Inutile de chercher a connaitre la taille réclamée par l'objet si elle est
+  'soit définie par le parent, soit imposée par l'utilisateur
+  
+  If Me.Autoresize Or If (Me._Width = 0 And Me._Height = 0) Then
+    'Sinon on cherche la tailmle du texte
+    
+    If $sText Then
+      sText = $sText
+    Else
+      Raise Data(DataIndex)
+      sText = Data
+    Endif
+    
+    Paint.Font = Me.Font
+    'If sText = "Gambas" Then Stop
+    'If $fAngle = 0 Then
+      hRect = Paint.RichTextSize(sText)
+      hSizeHint = New ReportSizeHints
+      fWidth = Me.Border._Left + Me.Padding._Left + Me.Report._FromPixels(hRect.Width) + Me.Padding._Right + Me.Border._Right 
+      fHeight = Me.Border._Top + Me.Padding._Top + Me.Report._FromPixels(hRect.Height) + Me.Padding._Bottom + Me.Border._Bottom
+      
+    'Endif
+    
+  Endif
+  
+  hSizeHint.Width = Max(hSizeHint.Width, fWidth)
+  hSizeHint.Height = Max(hSizeHint.Height, fHeight)
+  
+  Return hSizeHint
+  
+End
+
+Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, DataIndex As Integer)
+  
+  Dim sTempText As Variant
+  Dim iX, iY, iW, iH As Integer
+  
+  If $sText Then
+    sTempText = $sText
+  Else
+    Raise Data(DataIndex)
+    sTempText = Data
+  Endif
+  
+  iX = (x + hControl.RealLeft + Me.Report._ToPixels(Me.Padding._Left + Me.Border._Left))
+  iY = (y + hControl.RealTop + Me.Report._ToPixels(Me.Padding._Top + Me.Border._Top))
+  iW = (hControl.RealWidth - Me.Report._ToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
+  
+  iH = (hControl.RealHeight - Me.Report._ToPixels(Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom))
+  
+  If Report.Debug Then
+    
+    Paint.Brush = Paint.Color(Color.Red)
+    Paint.Rectangle(ix, iy, iw, ih)
+    Paint.Stroke
+    
+  Endif
+  
+  'Set the Font if it is initialized
+  
+  'Paint.Font = Me.Font
+  'If InStr($sText, "color=") Then
+    Draw.Font = Me.Font
+    Paint.Brush = Me._GetActualBrush(iX, iY, iX + hControl.RealWidth, iY + hControl.RealHeight)
+    Draw.RichText(sTempText, iX, iY, iW, iH, $iAlignment)
+  'Else
+  '  Paint.Font = Me.Font
+  '  Paint.RichText(sTempText, iX, iY, iW, iH, $iAlignment)
+ ' Endif
+  'Paint.Fill
+  
+End
+
+Private Function DecodeText(sText As String, Optional Page As Integer, Optional ForSize As Boolean = False) As String
+  
+  If ForSize Then
+    If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", "999")
+    If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", "999")
+  Else
+    If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", Str(Page + 1))
+    If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", Str(Me.Report.PageCount))
+  Endif
+  
+  Return sText
+  
+End
+
+Private Function Text_Read() As String
+  
+  Return $sText
+  
+End
+
+Private Sub Text_Write(Value As String)
+  
+  $sText = Value
+  
+End
+
+
+
+Private Function Alignment_Read() As Integer
+  
+  Return $iAlignment
+  
+End
+
+Private Sub Alignment_Write(Value As Integer)
+  
+  $iAlignment = Value
+  
+End
+
+
+

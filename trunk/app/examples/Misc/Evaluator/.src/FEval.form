@@ -1,0 +1,83 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(32,28,51,41)
+  Text = ("Evaluator")
+  Icon = Picture["calculator.png"]
+  Resizable = False
+  { Label4 Label
+    MoveScaled(27,17,7,4)
+    Text = ("y =")
+  }
+  { Label3 Label
+    MoveScaled(27,12,7,4)
+    Text = ("x =")
+  }
+  { Label2 Label
+    MoveScaled(2,17,7,4)
+    Text = ("b =")
+  }
+  { Label1 Label
+    MoveScaled(2,12,7,4)
+    Text = ("a =")
+  }
+  { txtValueA TextBox txtValue
+    Name = "txtValueA"
+    MoveScaled(6,12,17,4)
+  }
+  { txtValueB TextBox txtValue
+    Name = "txtValueB"
+    MoveScaled(6,17,17,4)
+  }
+  { txtValueX TextBox txtValue
+    Name = "txtValueX"
+    MoveScaled(31,12,17,4)
+    Text = ("45")
+  }
+  { txtValueY TextBox txtValue
+    Name = "txtValueY"
+    MoveScaled(31,17,17,4)
+    Text = ("60")
+  }
+  { Label6 Label
+    MoveScaled(2,23,13,4)
+    Text = ("Expression")
+  }
+  { txtExpr TextBox
+    MoveScaled(15,23,35,4)
+    Text = ("a * Cos(Rad(x)) + b * Sin(Rad(y))")
+  }
+  { Label7 Label
+    MoveScaled(2,28,9,4)
+    Text = ("Result")
+  }
+  { txtResult TextBox
+    MoveScaled(15,28,35,4)
+    ReadOnly = True
+  }
+  { btnUpdate Button
+    MoveScaled(23,36,16,4)
+    Text = ("&Update result")
+    Default = True
+  }
+  { btnClose Button
+    MoveScaled(40,36,10,4)
+    Text = ("&Quit")
+    Cancel = True
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(1,1,49,7)
+    Font = Font["Bold,Italic"]
+    Background = Color.SelectedBackground
+    Foreground = Color.SelectedForeground
+    Padding = 6
+    Text = ("This is an example of how to use the <tt>gb.eval</tt> expression evaluator component.")
+    Alignment = Align.Normal
+  }
+  { Separator1 Separator
+    MoveScaled(1,9,49,1)
+  }
+  { Separator2 Separator
+    MoveScaled(0,34,50,1)
+  }
+}

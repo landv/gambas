@@ -1,0 +1,536 @@
+' Gambas class file
+
+Inherits UserControl
+
+Private $hDrawingArea As DrawingArea
+
+Property Text As String
+Property RichText As String
+Property Selected As Boolean
+Property Orientation As Integer
+Property Picture As Picture
+Property Closable As Boolean
+'Property Visible As Boolean
+
+Private $sText As String
+Private $bRichText As Boolean
+Private $bSelected As Boolean
+Private $iOrientation As Integer = Align.Top
+Private $hPicture As Picture
+Private $bShowClose As Boolean
+Private $bInClose As Boolean
+
+Private Const BUTTON_SIZE As Integer = 14
+
+Static Private $bDragging As Boolean
+Private $bDrag As Boolean
+Private $hDragImage As Image
+Private $hDragWindow As Window
+Private $DX As Integer
+Private $SX As Integer
+Private $hTimerDrag As Timer
+Private $bClosable As Boolean
+
+Public Sub _new()
+  
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  $hDrawingArea.Mouse = Mouse.Pointing
+  $hDrawingArea.Name = Me.Name & "_DrawingArea"
+  
+End
+
+Private Sub GetParent() As TabPanel
+  
+  Return Me.Parent.Parent.Parent
+  
+End
+
+Private Sub GetIndex() As Integer
+  
+  Return GetParent()._GetIndex(Me)
+  
+End
+
+Private Sub IsClosable() As Boolean
+
+  If $bClosable Then Return True
+  If GetParent().Closable Then Return True
+
+End
+
+Public Sub DrawingArea_Draw()
+  
+  Dim iFg As Integer
+  Dim X, W As Integer
+  Dim bBorder As Boolean
+  Dim hTabPanel As TabPanel
+  Dim bClosable As Boolean
+  Dim bHighlight As Boolean
+  Dim bFirst As Boolean
+  Dim iIndex As Integer
+  Dim hPict As Picture
+  Dim iBg As Integer
+  Dim hFont As Font
+  
+  hTabPanel = GetParent()
+  
+  ' If $bDrag Then 
+  '   
+  '   Draw.FillRect(0, 0, Me.W, Me.H, hTabPanel._GetBackground())
+  ' 
+  '   Draw.Foreground = Color.LightForeground
+  '   
+  '   Select Case $iOrientation
+  '   
+  '     Case Align.Top
+  '       Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
+  '       
+  '     Case Align.Bottom
+  '       Draw.Line(0, 0, Me.W - 1, 0)
+  '       
+  '   End Select
+  '   
+  '   Return
+  ' 
+  ' Endif
+  
+  iIndex = GetIndex()
+  bHighlight = hTabPanel.Highlight And Not $bSelected
+  bClosable = IsClosable()
+  
+  If bHighlight Then
+    Paint.FillRect(0, 0, Me.W, Me.H, hTabPanel._GetBackground())
+  Else
+    iBg = hTabPanel.Background
+    If iBg <> Color.Default Then Paint.FillRect(0, 0, Me.W, Me.H, iBg)
+  Endif
+  
+  iFg = Me.Foreground
+  If iFg = Color.Default Then iFg = Color.Foreground
+  
+  X = 0
+  W = Me.W
+  
+  If $hPicture Then
+    If System.RightToLeft Then
+      W -= $hPicture.W
+      Paint.DrawPicture($hPicture, Me.W - $hPicture.W - 4, (Me.H - $hPicture.H) / 2)
+    Else
+      X += $hPicture.W
+      W = Me.W - X
+      Paint.DrawPicture($hPicture, 4, (Me.H - $hPicture.H) / 2)
+    Endif
+  Endif
+  
+  If bClosable Then 
+    W -= BUTTON_SIZE
+    If System.RightToLeft Then X += BUTTON_SIZE
+  Endif
+  
+  Paint.Background = iFg
+  hFont = hTabPanel.TextFont
+  If Not hFont Then hFont = hTabPanel.Font
+  Paint.Font = hFont
+  
+  If Not $bSelected And If $hDrawingArea.Hovered Then
+    If $bRichText Then
+      Paint.DrawRichTextShadow($sText, X, 0, W, Me.Height, Align.Center)
+    Else
+      Paint.DrawTextShadow($sText, X, 0, W, Me.Height, Align.Center, -1)
+    Endif
+  Endif
+  
+  If $bRichText Then
+    Paint.DrawRichText($sText, X, 0, W, Me.Height, Align.Center)
+  Else
+    Paint.DrawText($sText, X, 0, W, Me.Height, Align.Center)
+  Endif
+  
+  Draw.Foreground = Color.LightForeground
+  
+  bBorder = hTabPanel.Border
+  bFirst = iIndex = hTabPanel._GetFirstIndex()
+  
+  Select Case $iOrientation
+  
+    Case Align.Top
+      If $bSelected Then
+        If Not bFirst Or If bBorder Or If System.RightToLeft Then Draw.Line(0, Me.H - 1, 0, 0)
+        If Not bFirst Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, 0, Me.W - 1, Me.H - 1)
+        If bBorder Then Draw.Line(0, 0, Me.W - 1, 0)
+      Else
+        Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
+      Endif
+      
+    Case Align.Bottom
+      If $bSelected Then
+        If Not bFirst Or If bBorder Or If System.RightToLeft Then Draw.Line(0, 0, 0, Me.H - 1)
+        If Not bFirst Or If bBorder Or If Not System.RightToLeft Then Draw.Line(Me.W - 1, Me.H - 1, Me.W - 1, 0)
+        If bBorder Then Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
+      Else
+        Draw.Line(0, 0, Me.W - 1, 0)
+      Endif
+      
+  End Select
+
+  If $bShowClose And If Not $bDragging Then
+    hPict = Picture[If($bInClose, "img/delete-h.png", "img/delete.png")]
+    If System.RightToLeft Then
+      Draw.Picture(hPict, 2, (Me.H - hPict.H) \ 2)
+    Else
+      Draw.Picture(hPict, Me.W - hPict.W - 2, (Me.H - hPict.H) \ 2)
+    Endif
+  Endif
+  
+  If $bSelected And If Me.Parent.HasFocus Then
+    Draw.Foreground = Color.LightBackground
+    If $iOrientation = Align.Bottom Then Draw.Translate(0, -2)
+    If hTabPanel.Border Then
+      'Draw.Line(1, Draw.H - 1, 1, 1)
+      'Draw.Line(1, 1, Draw.W - 2, 1)
+      'Draw.Line(Draw.W - 2, 1, Draw.W - 2, Draw.H - 1)
+      Draw.Rect(2, 2, Draw.W - 4, Draw.H - 2)
+      'Draw.Rect(2, 2, Draw.W - 4, Draw.H - 4)
+    Else If iIndex = 0 Then
+      ' Draw.Line(0, Draw.H - 1, 0, 0)
+      ' Draw.Line(0, 0, Draw.W - 2, 0)
+      ' Draw.Line(Draw.W - 2, 0, Draw.W - 2, Draw.H - 1)
+      If System.RightToLeft Then
+        Draw.Rect(2, 1, Draw.W - 3, Draw.H - 1)
+      Else
+        Draw.Rect(1, 1, Draw.W - 3, Draw.H - 1)
+      Endif
+    Else
+      ' Draw.Line(1, Draw.H - 1, 1, 0)
+      ' Draw.Line(1, 0, Draw.W - 2, 0)
+      ' Draw.Line(Draw.W - 2, 1, Draw.W - 2, Draw.H - 1)
+      'Draw.Rect(2, 1, Draw.W - 4, Draw.H - 3)
+      Draw.Rect(2, 1, Draw.W - 4, Draw.H - 1)
+    Endif
+  Endif
+  
+End
+
+Private Function Text_Read() As String
+
+  If Not $bRichText Then Return $sText
+
+End
+
+Public Sub UpdateLayout()
+
+  Dim S As Integer
+  Dim bClosable As Boolean = IsClosable()
+  
+  If $bRichText Then
+    S = Me.Parent.Font.RichTextWidth($sText) + 16
+  Else
+    S = Me.Parent.Font.TextWidth($sText) + 16
+  Endif
+
+  Select Case $iOrientation
+    Case Align.Left, Align.Right
+      If $hPicture Then S += $hPicture.W '- 4
+      If bClosable Then S += BUTTON_SIZE - 4
+      Me.H = S
+    Case Else
+      If $hPicture Then S += $hPicture.W '- 4
+      If bClosable Then S += BUTTON_SIZE - 4
+      Me.W = S
+  End Select
+  
+  GetParent().TabBar_Arrange
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  $bRichText = False
+  UpdateLayout
+  $hDrawingArea.Refresh
+
+End
+
+Private Function Selected_Read() As Boolean
+
+  Return $bSelected
+
+End
+
+Private Sub Selected_Write(Value As Boolean)
+
+  $bSelected = Value
+  SetMouse
+  DrawingArea_MouseMove
+  $hDrawingArea.Refresh
+
+End
+
+Private Function Orientation_Read() As Integer
+
+  Return $iOrientation
+
+End
+
+Private Sub Orientation_Write(Value As Integer)
+
+  $iOrientation = Value
+  UpdateLayout
+
+End
+
+Public Sub DrawingArea_MouseDown()
+  
+  Dim hTabPanel As TabPanel
+  If Mouse.Left Then 
+    hTabPanel = GetParent()
+    If $bInClose And If IsClosable() Then
+      hTabPanel._Close(GetIndex())
+    Else
+      If $bSelected Then Return
+      'Me.Parent.SetFocus()
+      hTabPanel.Index = GetIndex()
+    Endif
+  Else If Mouse.Middle Then
+    If IsClosable() Then
+      hTabPanel = GetParent()
+      hTabPanel._Close(GetIndex())
+    Endif
+  Endif
+  
+End
+
+Public Sub DrawingArea_MouseDrag()
+  
+  StartDrag
+  
+End
+
+Public Sub DrawingArea_MouseUp()
+  
+  StopDrag
+  
+End
+
+Public Sub DrawingArea_MouseWheel()
+  
+  Try Application.PreviousControl.SetFocus
+  
+  If Mouse.Delta > 0 Xor System.RightToLeft Then
+    Try GetParent()._MovePrevious()
+  Else
+    Try GetParent()._MoveNext()
+  Endif
+  
+  Stop Event
+  
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $hPicture
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  $hPicture = Value
+  UpdateLayout
+  $hDrawingArea.Refresh
+
+End
+
+Public Sub DrawingArea_Enter()
+  
+  'Debug ">";; Me.Text
+  $hDrawingArea.Tracking = True
+  $bShowClose = IsClosable()
+  $hDrawingArea.Refresh
+  
+End
+
+Private Sub SetMouse()
+  
+  $hDrawingArea.Mouse = If($bSelected And Not $bInClose, Mouse.Default, Mouse.Pointing)
+  
+End
+
+
+Public Sub DrawingArea_Leave()
+  
+  'Debug "<";; Me.Text
+  $bShowClose = False
+  $bInClose = False
+  SetMouse
+  $hDrawingArea.Tracking = False
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub DrawingArea_MouseMove()
+  
+  Dim bInClose As Boolean
+  Dim X As Integer
+  Dim bShowClose As Boolean
+  Dim bShift As Boolean
+  
+  If $bDrag Then TimerDrag_Timer
+  
+  X = Mouse.ScreenX - Me.ScreenX
+  Try bShift = Mouse.Shift And Mouse.Control
+  If Not Error And If bShift Then Debug X
+  
+  If X >= 0 And If X < Me.W Then
+    bShowClose = IsClosable()
+  
+    If bShowClose Then
+      If System.RightToLeft Then
+        bInClose = (X >= 0) And (X < BUTTON_SIZE)
+      Else
+        bInClose = (X >= (Me.W - BUTTON_SIZE)) And (X < Me.W)
+      Endif
+    Endif
+  Endif
+  
+  If bInClose <> $bInClose Or If bShowClose <> $bShowClose Then
+    $bInClose = bInClose
+    $bShowClose = bShowClose
+    SetMouse
+    $hDrawingArea.Refresh
+  Endif
+  
+End
+
+Public Sub Update()
+  
+  If $bDrag Then Return
+  DrawingArea_MouseMove
+  
+End
+
+
+Private Function RichText_Read() As String
+
+  If $bRichText Then Return $sText
+
+End
+
+Private Sub RichText_Write(Value As String)
+
+  $sText = Value
+  $bRichText = True
+  UpdateLayout
+  $hDrawingArea.Refresh
+
+End
+
+
+Private Sub StartDrag()
+
+  Dim hTabPanel As TabPanel = GetParent()
+
+  If $bDrag Then Return
+  If Not hTabPanel.Moveable Then Return
+  If Me.Parent.Children.Count <= 1 Then Return
+  
+  $hDragImage = New Image($hDrawingArea.W, $hDrawingArea.H, Color.Background)
+  Paint.Begin($hDragImage)
+  ' TODO: How to get the actual font of the control ???
+  Paint.Font = hTabPanel.TextFont
+  DrawingArea_Draw
+  Paint.End
+  
+  $bDrag = True
+  $bDragging = True
+  $hDrawingArea.Tracking = True
+  'Me.Parent.SetFocus
+  
+  $DX = Me.ScreenX
+  $SX = Mouse.ScreenX
+  
+  $hDragWindow = New Window
+  $hDragWindow.TopOnly = True
+  $hDragWindow.Border = False
+  $hDragWindow.Utility = True
+  $hDragWindow.SkipTaskbar = True
+  $hDragWindow.Move(Me.ScreenX, Me.ScreenY, $hDragImage.W, $hDragImage.H)
+  $hDragWindow.Picture = $hDragImage.Picture
+  $hDragWindow.Show
+
+  $hTimerDrag = New Timer As "TimerDrag"
+  $hTimerDrag.Delay = 1000
+  $hTimerDrag.Start
+
+  $hDrawingArea.Grab()
+  
+End
+
+Public Sub TimerDrag_Timer()
+
+  Dim hTabPanel As TabPanel = GetParent()
+  Dim hButton As _TabPanelButton
+  Dim DX, W As Integer
+  Dim bAfter As Boolean
+  Dim hTarget As _TabPanelButton
+  
+  $hDragWindow.X = $DX + Mouse.ScreenX - $SX
+  DX = Mouse.ScreenX '$hDragWindow.ScreenX + $hDrawingArea.W \ 2
+  
+  W = Desktop.Scale * 3
+  
+  For Each hButton In Me.Parent.Children
+    
+    If Not hButton.Visible Then Continue
+    
+    If hButton = Me Then
+      If $hDragWindow.X < (hButton.ScreenX + hButton.W) Then Break
+      bAfter = True
+      Continue
+    Endif
+    
+    If bAfter Then
+    
+      'Debug "After";; $hDragWindow.X; " >= "; hButton.ScreenX
+      If $hDragWindow.X >= hButton.ScreenX Then hTarget = hButton
+    
+    Else
+    
+      'Debug "Before";; $hDragWindow.X; " <= "; hButton.ScreenX
+      If $hDragWindow.X <= hButton.ScreenX Then hTarget = hButton
+    
+    Endif
+    
+  Next
+
+  'Debug "----> "; hTabPanel._GetIndex(hTarget)
+
+  If hTarget Then hTabPanel._MoveTab(Me, hTarget, bAfter)
+
+End
+
+Private Sub StopDrag()
+
+  If Not $bDrag Then Return
+  $hDragWindow.Delete
+  $hTimerDrag.Stop
+  $hTimerDrag = Null
+  $hDrawingArea.Tracking = False
+  $bDrag = False
+  $bDragging = False
+
+End
+
+Private Function Closable_Read() As Boolean
+
+  Return $bClosable
+
+End
+
+Private Sub Closable_Write(Value As Boolean)
+
+  $bClosable = Value
+  UpdateLayout
+  $hDrawingArea.Refresh
+
+End

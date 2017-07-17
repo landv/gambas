@@ -1,0 +1,354 @@
+' Gambas class file
+
+Export
+Create Private
+Inherits ReportControl
+' Static Private iLevel As Integer
+Public Const _Properties As String = "*,Border,Background{ReportBrush}"
+
+' Private $fLeftBorderWidth As Float
+' Private $fRightBorderWidth As Float
+' Private $fTopBorderWidth As Float
+' Private $fBottomBorderWidth As Float
+
+Private $hBorder As New ReportBorder
+
+Private $hBackGround As ReportBrush
+
+Property Border As ReportBorder
+Property BoxShadow As ReportBoxShadow
+
+Private $hBoxShadow As New ReportBoxShadow
+Property BackGround As ReportBrush
+'Property Read _BorderWidth As Float
+
+Private Function Border_Read() As ReportBorder
+
+  Return $hBorder
+
+End
+
+Private Sub Border_Write(Value As ReportBorder)
+
+  $hBorder = Value
+
+End
+
+Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
+
+  Dim X1, Y1, X2, Y2 As Float
+  Dim iBorder As Integer
+  Dim hShadowActive As Boolean = $hBoxShadow._Active
+  Dim himgShadow As Image
+  Dim fSpread As Float
+  Dim fBlur As Float
+  Dim fbx As Float
+  Dim fby As Float
+  Dim TL1, TL2, TR1, TR2, BR1, BR2, BL1, BL2 As Float
+  'If Me.tag = "*" Then Stop
+
+  X1 = (x + hControl.RealLeft)
+  Y1 = (y + hControl.RealTop)
+  X2 = (x + hControl.RealLeft + hControl.RealWidth)
+  Y2 = (y + hControl.RealTop + hControl.RealHeight)
+  'Clipping
+  paint.save
+
+  ' Print String(iLevel, " ") & "sauvé"
+  ' Inc iLevel
+  ' Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
+  ' paint.Clip(True)
+
+  If Report.Debug Then
+
+    Paint.Brush = Paint.Color(Color.Green)
+    'Paint.Dash = ReportUnits.GetBorder(Line.Dot)
+    Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
+    Paint.Stroke
+
+  Else
+    'If $hBorder.Shadow.Style > ReportShadowStyle.None Then PaintShadow(X1, Y1, hControl.RealWidth, hControl.RealHeight, $hBorder.RoundCorner._Active)
+    If $hBorder.RoundCorner._Active Then
+      TL1 = ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._TopLeft1)
+      TR1 = ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._TopRight1)
+      BR1 = ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._BottomRight1)
+      BL1 = ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._BottomLeft1)
+      TL2 = ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._TopLeft2)
+      TR2 = ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._TopRight2)
+      BR2 = ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._BottomRight2)
+      BL2 = ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._BottomLeft2)
+
+      If hShadowActive Then
+        fbx = ReportUnits._ReportUnitsToPixels($hBoxShadow._XOffset)
+        fby = ReportUnits._ReportUnitsToPixels($hBoxShadow._YOffset)
+        fSpread = ReportUnits._ReportUnitsToPixels($hBoxShadow._Spread)
+        If $hBoxShadow._Blur > 0 Then
+          fBlur = ReportUnits._ReportUnitsToPixels($hBoxShadow._Blur)
+          himgShadow = New Image(hControl.RealWidth + fSpread * 2 + fBlur * 2, hControl.RealHeight + fSpread * 2 + fBlur * 2, Color.Transparent)
+          Paint.Begin(himgShadow)
+          Paint.Brush = Paint.Color($hBoxShadow.Color)
+          RoundRect(fBlur, fBlur, Paint.Width - fBlur * 2, Paint.Height - fBlur * 2, [TL1, TR1, BR1, BL1], [TL2, TR2, BR2, BL2])
+          Paint.Fill
+          Paint.End
+          himgShadow.Fuzzy(fBlur)
+          Draw.Image(himgShadow, X1 + fbx - fSpread - fBlur, Y1 + fby - fSpread - fBlur)
+        Else
+
+          Paint.Brush = Paint.Color($hBoxShadow.Color)
+          RoundRect(X1 + fbx - fSpread, Y1 + fby - fSpread, hControl.RealWidth + fSpread * 2, hControl.RealHeight + fSpread * 2, [TL1, TR1, BR1, BL1], [TL2, TR2, BR2, BL2])
+          Paint.Fill
+        Endif
+      Endif
+
+      iBorder = ReportUnits._ReportUnitsToPixels($hBorder._Top)
+
+      RoundRect(X1 + iBorder, Y1 + iBorder, hControl.RealWidth - iBorder * 2, hControl.RealHeight - iBorder * 2, [TL1, TR1, BR1, BL1], [TL2, TR2, BR2, BL2])
+
+    Else
+
+      If hShadowActive Then
+        fbx = ReportUnits._ReportUnitsToPixels($hBoxShadow._XOffset)
+        fby = ReportUnits._ReportUnitsToPixels($hBoxShadow._YOffset)
+        fSpread = ReportUnits._ReportUnitsToPixels($hBoxShadow._Spread)
+        If $hBoxShadow._Blur > 0 Then
+          fBlur = ReportUnits._ReportUnitsToPixels($hBoxShadow._Blur)
+          himgShadow = New Image(hControl.RealWidth + fSpread * 2 + fBlur * 2, hControl.RealHeight + fSpread * 2 + fBlur * 2, Color.Transparent)
+          Paint.Begin(himgShadow)
+          Paint.Brush = Paint.Color($hBoxShadow.Color)
+          Paint.rectangle(fBlur, fBlur, Paint.Width - fBlur * 2, Paint.Height - fBlur * 2)
+          Paint.Fill
+          Paint.End
+          himgShadow.Fuzzy(fBlur)
+          Draw.Image(himgShadow, X1 + fbx - fSpread - fBlur, Y1 + fby - fSpread - fBlur)
+        Else
+        Endif
+        Paint.Brush = Paint.Color($hBoxShadow.Color)
+        Paint.Rectangle(X1 + fbx - fSpread, Y1 + fby - fSpread, hControl.RealWidth + fSpread * 2, hControl.RealHeight + fSpread * 2)
+        Paint.Fill
+      Endif
+
+      Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
+
+    Endif
+
+    If Me.BackGround = Null Then
+      paint.Clip
+      Return
+    Else
+      paint.Clip(True)
+    Endif
+    paint.Brush = Me.BackGround._PaintBrush(X1, Y1, X2, Y2)
+
+    Paint.Fill
+
+  Endif
+
+End
+
+Private Sub PaintBoxShadow(X As Integer, Y As Integer, Width As Integer, Height As Integer)
+
+End
+
+Public Sub _PaintFrame((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
+
+  _PaintBefore(Page, X, Y, hControl, DataIndex)
+  Me._Paint(Page, X, Y, hControl, DataIndex)
+  _PaintAfter(Page, X, Y, hControl, DataIndex)
+
+End
+
+Public Sub _PaintAfter((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
+
+  Dim X1, Y1, X2, Y2 As Float
+  'Dim fWidth As Float
+
+  Dim fTopWidth, fBottomWidth, fLeftWidth, fRighWidth As Float
+
+  'Fin du clipping
+  paint.Restore
+
+  X1 = (x + hControl.RealLeft)
+  Y1 = (y + hControl.RealTop)
+  X2 = (x + hControl.RealLeft + hControl.RealWidth)
+  Y2 = (y + hControl.RealTop + hControl.RealHeight)
+  'If Me.Tag = "**" Then Stop
+  If $hBorder.RoundCorner._Active Then
+    Paint.AntiAlias = True
+    fLeftWidth = ReportUnits._ReportUnitsToPixels($hBorder._Left) / 2
+    paint.LineWidth = fLeftWidth * 2
+    paint.Brush = $hBorder.Left.Brush._PaintBrush(X1, Y1, X2, Y2)
+    ' RoundRect(Paint.LineWidth / 2, Paint.LineWidth / 2, Paint.Width - Paint.LineWidth, Paint.Height - Paint.LineWidth, aX, aY)
+    RoundRect(X1 + fLeftWidth, Y1 + fLeftWidth, hControl.RealWidth - fLeftWidth * 2, hControl.RealHeight - fLeftWidth * 2,
+      [ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._TopLeft1),
+      ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._TopRight1),
+      ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._BottomRight1),
+      ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._BottomLeft1)],
+      [ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._TopLeft2),
+      ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._TopRight2),
+      ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._BottomRight2),
+      ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._BottomLeft2)])
+    paint.Stroke
+
+  Else
+    'Paint.AntiAlias = False
+    fLeftWidth = ReportUnits._ReportUnitsToPixels($hBorder._Left)
+    fRighWidth = ReportUnits._ReportUnitsToPixels($hBorder._Right)
+    fTopWidth = ReportUnits._ReportUnitsToPixels($hBorder._Top)
+    fBottomWidth = ReportUnits._ReportUnitsToPixels($hBorder._Bottom)
+
+    'If $hBorder.Style <> Line.None Then
+
+    'fWidth = ReportUnits._ReportUnitsToPixels($fBorderWidth)
+
+    'Paint.Brush = Paint.Color($hBorder.Brush._iValue)
+
+    If fTopWidth > 0 Then
+      paint.Brush = $hBorder.Top.Brush._PaintBrush(X1, Y1, X2, Y2)
+      paint.Rectangle(X1, Y1, X2 - X1, fTopWidth)
+      paint.Fill
+    Endif
+    If fRighWidth > 0 Then
+      paint.Brush = $hBorder.Right.Brush._PaintBrush(X1, Y1, X2, Y2)
+      paint.Rectangle(X2 - fRighWidth, Y1, fRighWidth, Y2 - Y1)
+      paint.Fill
+    Endif
+    If fBottomWidth > 0 Then
+      paint.Brush = $hBorder.Bottom.Brush._PaintBrush(X1, Y1, X2, Y2)
+      paint.Rectangle(X1, Y2 - fBottomWidth, X2 - X1, fBottomWidth)
+      paint.Fill
+    Endif
+    If fLeftWidth > 0 Then
+      paint.Brush = $hBorder.Left.Brush._PaintBrush(X1, Y1, X2, Y2)
+      paint.Rectangle(X1, Y1, fLeftWidth, Y2 - Y1)
+      paint.Fill
+    Endif
+    'Paint.AntiAlias = True
+    '
+
+  Endif
+  'Dec iLevel
+  'Print String(iLevel, " ") & "restoré"
+
+  'Endif
+
+End
+
+Private Function BackGround_Read() As ReportBrush
+
+  Return $hBackGround
+
+End
+
+Private Sub BackGround_Write(Value As ReportBrush)
+
+  $hBackGround = Value
+
+End
+
+Public Sub _SetUnifiedValues()
+
+  Super._SetUnifiedValues()
+  $hBorder._SetUnifiedValues
+  $hBoxShadow._SetUnifiedValues
+
+End
+
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
+
+  Dim hMyHints As TSizeHint
+
+  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
+
+  If hMyHints.Height <= 0 Then
+    hMyHints.Height = Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
+    'hMyHints.Height += Abs($hBoxShadow._YOffset) + $hBoxShadow._Spread + $hBoxShadow._Blur
+  Endif
+
+  If hMyHints.Width <= 0 Then
+    hMyHints.Width = Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right
+    'hMyHints.Width += Abs($hBoxShadow._xOffset) + $hBoxShadow._Spread + $hBoxShadow._Blur
+  Endif
+
+  Return hMyHints
+
+End
+
+Static Private Sub RoundRect(x As Float, y As Float, w As Float, h As Float, Radius_X As Float[], radius_y As Float[])
+
+  Dim ARC_TO_BEZIER As Float = 0.55228475
+  Dim c1, c2 As Float
+  Dim i As Integer
+
+  For i = 0 To 3
+    If radius_x[i] > w - radius_x[i] Then
+      radius_x[i] = w / 2
+    Endif
+
+    If radius_y[i] > h - radius_y[i] Then
+      radius_y[i] = h / 2
+    Endif
+
+  Next
+  'approximate(quite Close )the arc using a bezier curve
+
+  '        A**********B
+  '       H            C
+  '       *            *
+  '       *            *
+  '       G            D
+  '        F**********E
+
+  '-->A
+  Paint.MoveTo(x + radius_x[0], y)
+
+  '-->B
+  Paint.LineTo(x + w - radius_x[1], y)
+
+  '-->C
+  c1 = ARC_TO_BEZIER * radius_x[1]
+  c2 = ARC_TO_BEZIER * radius_y[1]
+  Paint.RelCurveTo(c1, 0.0, radius_x[1], c2, radius_x[1], radius_y[1])
+
+  '-->D
+  Paint.LineTo(x + w, y + h - radius_y[2])
+
+  '-->E
+  c1 = ARC_TO_BEZIER * radius_x[2]
+  c2 = ARC_TO_BEZIER * radius_y[2]
+  Paint.RelCurveTo(0.0, c2, c1 - radius_x[2], radius_y[2], - radius_x[2], radius_y[2])
+
+  '-->F
+  Paint.LineTo(x + radius_x[3], y + h)
+
+  '-->G
+  c1 = ARC_TO_BEZIER * radius_x[3]
+  c2 = ARC_TO_BEZIER * radius_y[3]
+  Paint.RelCurveTo(- c1, 0, - radius_x[3], - c2, - radius_x[3], - radius_y[3])
+
+  '-->H
+  Paint.LineTo(x, y + radius_y[0])
+
+  '-->A
+  c1 = ARC_TO_BEZIER * radius_x[0]
+  c2 = ARC_TO_BEZIER * radius_y[0]
+  Paint.relcurveto(0.0, - c2, radius_x[0] - c1, - radius_y[0], radius_x[0], - radius_y[0])
+
+  'Paint.closepath()
+
+End
+
+Private Function BoxShadow_Read() As ReportBoxShadow
+
+  Return $hBoxShadow
+
+End
+
+Private Sub BoxShadow_Write(Value As ReportBoxShadow)
+
+  $hBoxShadow = Value
+
+End
+
+Public Sub _Free()
+
+End

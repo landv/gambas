@@ -1,0 +1,232 @@
+' Gambas class file
+
+' Written by Iman Karim
+' http://home.inf.fh-rhein-sieg.de/~ikarim2s/
+' 14.11.2006
+
+Private Objects As New Collection
+Private world_Gravity As Float = 0.9
+Private world_Bounce As Float = 0.7
+Private world_SlideFloor As Float = 0.9
+Private isDrawing As Boolean
+
+Private Sub AddBall(Optional x As Integer = -1, Optional y As Integer = -1)
+  Dim cBall As New CBall
+  If x = -1 Then
+    cBall.x = Rnd(1, 100)
+    cBall.y = Rnd(1, 100)
+  Else
+    cBall.x = x
+    cBall.y = y
+  End If
+  cBall.ax = Rnd(-100, 100)
+  cBall.col = Rnd(1, 90000000)
+  objects.Add(cBall, Str(objects.Count + 1))
+  cB.Add(Str(objects.Count))
+End
+
+
+Private Sub DoGravity()
+  Dim myBall As CBall
+  For Each myBall In Objects
+      If togGrav.value Then myBall.ay = myBall.ay + world_Gravity '// Make Gravity
+      myBall.x = myBall.x + myBall.ax '// Move Ball
+      myBall.y = myBall.y + myBall.ay
+      If myBall.x >= dW.width - 5 Or myBall.x <= 0 Then '// Ball collidated on wall (left/right)
+        myBall.ax = (myBall.ax * world_Bounce) * -1 '// Reverse Ball direction and include world_Bounce
+      End If
+      If myBall.y > dW.Height - 10 Or myBall.y < 10 Then '// Ball collidated on Floor or Sky
+        If myball.y < 10 And togSky.value = False Then myball.ay = (myball.ay * world_Bounce) * -1 '// If Sky is disabled no not bounce
+        If myball.y > 10 Then myball.ay = (myball.ay * world_Bounce) * -1 '// On floor make bounce for sure
+      End If
+      If (((dW.Height - 10) - myBall.y) <= 1) And (Abs(myBall.ay) <= 2) And togGrav.Value Then '// If ball is n floor and to slow to jump up again stop the ball (y)
+        myball.y = (dW.Height - 10)
+        myball.ay = 0
+      End If
+
+      If myball.ay = 0 And myball.y = (dW.Height - 10) Then '// If ball is already on floor decrease the roll speed depending on world_SlideFloor factor.
+        If myball.ax < 0.1 Then
+          myball.ax = Abs(myball.ax) * world_SlideFloor * -1
+        Else If myball.ax > 0.1 Then
+          myball.ax = Abs(myball.ax) * world_SlideFloor 
+        Else 
+          myball.ax = 0 '// If ball is moving to slow stop it
+        End If
+      End If
+
+      If myball.y > dW.Height - 10 Then '// Make sure befor painting that the ball is inside your viewport. (floor)
+        myball.y = dW.Height - 10
+      Else If myball.y <= 10 And togSky.Value = False Then 
+        myball.y = 12
+      End If
+      If myball.x > dW.width - 5 Then '// Make sure befor painting that the ball is inside your viewport. (left\right wall)
+        myball.x = dW.Width - 5
+      Else If myball.x < 0 Then 
+        myball.x = 0
+      End If  
+  Next 
+End
+
+Private Sub DrawWorld()
+  Dim myBall As CBall  
+  Dim index As Integer
+  If isDrawing = False Then
+    isDrawing = True
+    Try Draw.begin(dW)
+    'Draw.Rect(3, 12, dW.Width - 6, dW.Height - 17)
+    Draw.FillStyle = 1
+    Draw.FillColor = Color.White
+    For Each myBall In Objects
+      index = index + 1
+      Draw.Foreground = myBall.col
+      Draw.Ellipse(myBall.x, myBall.y, 5, 5) 
+      If Str(index) = cB.Text Then 
+        Draw.FillStyle = 0
+        Draw.Foreground = Color.Red
+        If togFocus.value Then Draw.Ellipse(myBall.x - 3, myBall.y - 3, 11, 11) 
+        lblX.Caption = Str(Round(myBall.x))
+        lblY.Caption = Str(Round(myBall.y))
+        If myball.y <= 0 Then 
+          lblOutOfRange.Visible = True
+        Else 
+          lblOutOfRange.Visible = False
+        End If
+        lblaX.Caption = Str(Round(myBall.ax))
+        lblaY.Caption = Str(Round(myBall.ay))
+        Draw.FillStyle = 1
+      End If
+    Next
+    Draw.End
+    If cB.Text = "ALL" Then 
+      lblX.Caption = "%null%"
+      lblY.Caption = "%null%"
+      lblaX.Caption = "%null%"
+      lblaY.Caption = "%null%"
+      lblOutOfRange.Visible = False
+    End If
+    isDrawing = False
+  End If
+End
+
+Private Sub Render()
+  
+  DoGravity
+  If togClear.Value Then dW.Clear()
+  Wait 0.001
+  DrawWorld
+  
+End
+
+
+Public Sub Form_Open()
+  cb.Add("ALL")
+End
+
+Public Sub Button1_Click()
+   AddBall  
+End
+
+Public Sub Timer1_Timer()
+
+  Render  
+
+End
+
+Public Sub Form_Resize()
+  Timer1.Enabled = False
+  
+  'DO
+  '  WAIT 1
+  'LOOP WHILE modGravity.isDrawing
+  
+  dw.Width = Me.Width - dw.Left - 10  
+  dw.Height = Me.Height - dw.top - 10
+  Timer1.Enabled = True  
+  
+
+End
+
+
+Public Sub Slider1_Change()
+
+   lblGrav.Caption = "Gravity: " & Str(Slider1.Value / 100)
+   world_Gravity = Slider1.Value / 100
+
+End
+
+
+Public Sub togGrav_Click()
+
+  If Not togGrav.Value Then 
+    lblGrav.Caption = "Gravity: off"
+    lblSlide.Caption = "Floor Slide: off"
+    Slider1.Enabled = False
+    Slider2.Enabled = False
+    world_SlideFloor = 1
+  Else 
+    Slider1.Enabled = True
+    Slider2.Enabled = True
+    lblGrav.Caption = "Gravity: " & Str(Slider1.Value / 100)
+    lblSlide.Caption = "Floor Slide: " & Str(Slider2.Value / 100)
+    world_SlideFloor = Slider2.Value / 100
+  End If
+
+End
+
+Public Sub cmdRandomize_Click()
+  Dim myBall As CBall  
+  Dim index As Integer
+  cmdRandomize.Enabled = False
+  Draw.begin(dW)
+  Draw.FillStyle = 1
+  For Each myBall In Objects
+    index = index + 1
+    Draw.Foreground = myBall.col
+    Draw.Ellipse(myBall.x, myBall.y, 5, 5) 
+    If Str(index) = cB.Text Or cB.Text = "ALL" Then 
+      myBall.ax = Rnd(1, 100)
+      myBall.ay = Rnd(1, 100)
+    End If
+  Next
+  Draw.End
+  cmdRandomize.Enabled = True
+End
+
+
+
+Public Sub dW_MouseMove()
+  If togAddMore.Value Then 
+    AddBall(Mouse.x, Mouse.Y)  
+  End If
+End
+
+Public Sub Slider2_Change()
+
+   lblSlide.Caption = "Floor Slide: " & Str(Slider2.Value / 100)
+   world_SlideFloor = Slider2.Value / 100
+
+End
+
+
+Public Sub togAddMore_Click()
+
+  If togAddMore.Value Then 
+    lbladdmore.visible = True  
+  Else 
+    lblAddMore.visible = False
+  End If
+
+End
+
+Public Sub dW_MouseUp()
+
+  togAddMore.Value = False
+  lblAddMore.visible = False  
+
+End
+
+Public Sub lblAbout_MouseDown()
+
+  FAbout.ShowModal  
+
+End

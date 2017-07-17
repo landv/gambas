@@ -1,0 +1,35 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,113,64)
+  Text = ("Select an extra file")
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { fchFile FileChooser
+    MoveScaled(1,1,110,56)
+    Expand = True
+    Picture = Picture["img/logo/head-16.png"]
+    ShowDirectory = True
+    ShowBookmark = False
+    ReadOnly = True
+  }
+  { HBox1 HBox
+    MoveScaled(1,59,66,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(4,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(31,0,16,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(48,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

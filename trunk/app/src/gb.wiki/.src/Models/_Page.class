@@ -1,0 +1,171 @@
+' Gambas class file
+
+Property Title As String
+Property Language As String
+Property Path As String
+Property {Date} As Date
+Property Content As String
+Property HTML As String
+Property User As String
+Property Read Type As Integer
+
+Private $rPage As Result
+
+Private $bReadOnly As Boolean
+
+Public Sub _new(rTemp As Result, Optional bReadOnly As Boolean = True)
+
+  $rPage = rTemp
+
+  $bReadOnly = bReadOnly
+
+End
+
+Private Function Title_Read() As String
+
+  If Not $rPage.Available Then Return
+
+  Return $rPage[DBScheme.PAGE_TITLE]
+
+End
+
+Private Function Language_Read() As String
+
+  If Not $rPage.Available Then Return
+
+  Return $rPage[DBScheme.PAGE_LANGE]
+
+End
+
+Private Function Path_Read() As String
+
+  If Not $rPage.Available Then Return
+
+  Return $rPage[DBScheme.PAGE_PATH]
+
+End
+
+Private Function Date_Read() As Date
+
+  If Not $rPage.Available Then Return
+
+  Return $rPage[DBScheme.PAGE_DATE]
+
+End
+
+Private Function Content_Read() As String
+
+  If Not $rPage.Available Then Return
+
+  Return $rPage[DBScheme.PAGE_CONTENT]
+
+End
+
+Private Function HTML_Read() As String
+
+  If Not $rPage.Available Then Return
+
+  Return $rPage[DBScheme.PAGE_HTML]
+
+End
+
+Private Function User_Read() As String
+
+  If Not $rPage.Available Then Return
+
+  Return $rPage[DBScheme.PAGE_USER]
+
+End
+
+Private Function Type_Read() As Integer
+
+End
+
+Private Sub Title_Write(Value As String)
+
+  If $bReadOnly Then IsReadonly()
+
+  If Not $rPage.Available Then Return
+
+  $rPage[DBScheme.PAGE_TITLE] = Value
+
+End
+
+Private Sub Language_Write(Value As String)
+
+  If $bReadOnly Then IsReadonly()
+
+  If Not $rPage.Available Then Return
+
+  If Not Main.Langs.Exist(Value) Then Return
+
+  $rPage[DBScheme.PAGE_LANG] = Value
+
+End
+
+Private Sub Path_Write(Value As String)
+
+  If $bReadOnly Then IsReadonly()
+
+  If Not $rPage.Available Then Return
+
+  $rPage[DBScheme.PAGE_PATH] = Value
+
+End
+
+Private Sub Date_Write(Value As Date)
+
+  If $bReadOnly Then IsReadonly()
+
+  If Not $rPage.Available Then Return
+
+  $rPage[DBScheme.PAGE_DATE] = Value
+
+End
+
+Private Sub Content_Write(Value As String)
+
+  If $bReadOnly Then IsReadonly()
+
+  If Not $rPage.Available Then Return
+
+  $rPage[DBScheme.PAGE_CONTENT] = Value
+
+End
+
+Private Sub HTML_Write(Value As String)
+
+  If $bReadOnly Then IsReadonly()
+
+  If Not $rPage.Available Then Return
+
+  $rPage[DBScheme.PAGE_HTML] = Value
+
+End
+
+Private Sub User_Write(Value As String)
+
+  If $bReadOnly Then IsReadonly()
+
+  If Not $rPage.Available Then Return
+
+  $rPage[DBScheme.PAGE_USER] = Value
+
+End
+
+Public Sub Update()
+
+  $rPage.Update()
+
+End
+
+Private Sub IsReadonly()
+
+  Dim sText As String
+
+  sText = "Trying to modify a readonly page instance!<br /><br />"
+  sText &= System.Backtrace.Join("<br />")
+
+  Main.ThrowError(sText)
+
+End

@@ -1,0 +1,71 @@
+' Gambas class file
+
+Inherits Completion
+
+Static Private $aTag As String[]
+
+Public Farm As String
+
+Private $aCache As String[]
+
+Static Public Sub _init()
+  
+  Dim I As Integer
+  
+  $aTag = ["Example", "Game", "OpenGL", "Database", "Multimedia", "Command-line", "Network", "Web", "Accessories", "Internet", "System"]
+  For I = 5 To CInt(Split(System.FullVersion, ".")[1]) + 1
+    $aTag.Add("Gambas 3." & CStr(I))
+  Next
+  
+  $aTag.Sort()
+  
+End
+
+Public Sub Fill(Text As String, Explicit As Boolean) 
+  
+  Dim aTag As String[]
+  Dim sTag As String
+  Dim hHttpClient As HttpClient
+  Dim sResult As String
+  Dim aResult As String[]
+  Dim I As Integer
+  
+  If Not Text Then
+    If Not Explicit Then Return
+    If $aCache Then 
+      Me.List = $aCache
+      Return
+    Endif
+  Endif
+  
+  aTag = New String[]
+  For Each sTag In $aTag
+    If Left(sTag, Len(Text)) == Text Then aTag.Add(sTag)
+  Next
+  
+  If Farm Then
+  
+    hHttpClient = New HttpClient
+    hHttpClient.URL = Farm &/ "/farm/tags?name=" & URL.Encode(Text)
+    hHttpClient.Async = False
+    hHttpClient.Timeout = 3
+    hHttpClient.Get()
+    sResult = hHttpClient.Peek()
+    If sResult Begins "10 OK" Then
+      aResult = Split(sResult, "\r\n", "", True)
+      For I = 1 To aResult.Max
+        sTag = aResult[I]
+        'sTag = UCase(Left(sTag)) & Mid$(sTag, 2)
+        If Not aTag.Exist(sTag) Then aTag.Add(sTag)
+      Next
+      aTag.Sort()
+    Endif
+    
+  Endif
+  
+  If Not Text Then $aCache = aTag
+  
+  Me.List = aTag
+  
+End
+

@@ -1,0 +1,25 @@
+' Gambas class file
+
+'PRIVATE $hConn AS NEW Connection
+
+Public Sub Form_Open()
+
+  'DataSource2.Connection = DB.Current
+
+End
+
+Public Sub DataControl6_Validate(Value As Variant)
+
+  If IsNull(Value) Then Return
+  If Value < 0 Or Value > 10000 Then
+    Stop Event
+  Endif
+
+End
+
+
+' Public Sub DataSource1_BeforeSave(Data As Result)
+' 
+'   Data["color"] = DataSource2["color"]
+' 
+' End

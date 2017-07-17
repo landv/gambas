@@ -1,0 +1,16 @@
+Public Sub Example18()
+  
+  Paint.Save
+  Paint.Rectangle(10, 10, 200, 100)
+  Paint.Stroke(True)
+  Paint.Clip
+  Paint.Font.Size = 18
+  'Paint.Brush = Paint.Color(Color.Blue)
+  Paint.Text("TO BE, OR NOT TO BE: THAT IS THE QUESTION:", 10, 10, 30, 30)
+  Paint.Fill
+  Paint.Restore
+  'Paint.Brush = Paint.Color(Color.Blue)
+  Paint.Text("TO BE, OR NOT TO BE: THAT IS THE QUESTION:", 10, 40, 30, 30)
+  Paint.Fill
+  
+End

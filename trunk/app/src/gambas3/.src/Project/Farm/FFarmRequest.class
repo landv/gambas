@@ -1,0 +1,64 @@
+' Gambas class file
+
+Private $hRequest As HttpForm
+Private $iProgress As Integer
+
+Public Sub Run(hRequest As HttpForm, sTitle As String, Optional iProgress As Integer)
+
+  Dim hObs As Observer
+  
+  $hRequest = hRequest
+  $iProgress = iProgress
+  
+  hObs = New Observer(hRequest) As "Request"
+  lblRequest.Text = sTitle & "..."
+  Me.Title = sTitle
+  pgbRequest.Visible = $iProgress <> FarmRequest.PROGRESS_NONE
+  Me.ShowModal
+  $hRequest = Null
+  
+End
+
+Public Sub Request_Error()
+  
+  Me.Close
+  
+End
+
+Public Sub Request_Finished()
+
+  Request_Progress
+  Me.Close
+  
+End
+
+Public Sub Request_Cancel()
+
+  Me.Close
+  
+End
+
+Public Sub Request_Progress()
+  
+  If pgbRequest.Visible Then
+    If $iProgress = FarmRequest.PROGRESS_UPLOAD Then
+      Try pgbRequest.Value = $hRequest.Uploaded / $hRequest.TotalUploaded
+    Else
+      Try pgbRequest.Value = $hRequest.Downloaded / $hRequest.TotalDownloaded
+    Endif
+  Endif
+  
+End
+
+
+Public Sub btnCancel_Click()
+
+  $hRequest.Stop
+
+End
+
+Public Sub Form_Open()
+
+  If Not pgbRequest.Visible Then Me.H -= pgbRequest.H
+
+End

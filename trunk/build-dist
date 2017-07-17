@@ -1,0 +1,34 @@
+#!/bin/sh
+
+dirs="gb.* app comp examples main"
+files="config.guess config.sub install-sh ltmain.sh"
+
+#--reconf file--
+rm -f config.cache
+rm -f acconfig.cache
+
+libtoolize --force --copy
+autoreconf -v --install
+#---------------
+
+echo
+echo Creating symlinks.....
+echo
+
+for subdirs in $dirs; do
+  echo Directory $subdirs
+
+  for cfiles in $files; do
+    rm -f $subdirs/$cfiles
+    ln -s $cfiles $subdirs/$cfiles
+  done
+
+done
+
+echo
+echo Building dist file
+echo
+
+./configure 
+make dist-bzip2
+

@@ -1,0 +1,77 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,60,66)
+  Text = ("Minesweeper")
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { menuGame Menu
+    Text = Shortcut(("Game"), "G")
+    { menuReDim Menu
+      Text = Shortcut(("Change Game Parameters"), "C")
+      Picture = Picture["icon:/32/edit"]
+    }
+    { menuQuit Menu
+      Text = Shortcut(("Quit"), "Q")
+      Picture = Picture["icon:/32/quit"]
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(0,2,59,15)
+    Spacing = True
+    Margin = True
+    { PictureBox2 PictureBox
+      MoveScaled(0,0,13,13)
+      Picture = Picture["icon:/64/clock"]
+      Stretch = True
+    }
+    { lblTime Label
+      MoveScaled(13,2,12,7)
+      Font = Font["20"]
+      AutoResize = True
+    }
+    { Panel2 Panel
+      MoveScaled(25,3,1,7)
+      Expand = True
+    }
+    { btnStatus Button
+      MoveScaled(26,2,7,7)
+    }
+    { Panel3 Panel
+      MoveScaled(33,3,1,7)
+      Expand = True
+    }
+    { PictureBox1 PictureBox
+      MoveScaled(33,0,13,13)
+      Picture = Picture["image/bigflag.png"]
+      Stretch = True
+    }
+    { lblFlags Label
+      MoveScaled(44,5,15,4)
+      Font = Font["20"]
+      AutoResize = True
+    }
+  }
+  { Panel6 Panel
+    MoveScaled(25,17,10,1)
+  }
+  { Panel4 HBox
+    MoveScaled(1,19,58,35)
+    Expand = True
+    { Panel1 Panel
+      MoveScaled(4,7,1,13)
+      Expand = True
+    }
+    { panelBoard Panel
+      MoveScaled(7,6,47,25)
+    }
+    { Panel5 Panel
+      MoveScaled(55,7,1,20)
+      Expand = True
+    }
+  }
+  { Timer1 #Timer
+    #MoveScaled(2,54)
+  }
+}

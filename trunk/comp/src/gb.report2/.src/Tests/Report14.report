@@ -1,0 +1,66 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,64,91)
+  Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
+  Index = 0
+  Text = ("")
+  { ReportHBox1 ReportHBox
+    #MoveScaled(1,1,62,7)
+    Fixed = True
+    Margin = ReportMargin["Bottom:5mm"]
+    BoxShadow = ReportBoxShadow["1mm 1mm 3px 0px #000000"]
+    { ReportLabel1 ReportLabel
+      #MoveScaled(1,1,12,5)
+      Width = "3cm"
+      Border = ReportBorder["Top:3px #000000;Bottom:3px #000000;Left:3px #000000;Right:3px #000000;TopLeftCorner:5mm"]
+      Text = ("Reference")
+      Alignment = Align.Center
+    }
+    { ReportLabel2 ReportLabel
+      #MoveScaled(13,1,25,5)
+      Expand = True
+      Border = ReportBorder["Top:3px #000000;Bottom:3px #000000;Left:3px #000000"]
+      Text = ("Description")
+      Alignment = Align.Center
+    }
+    { ReportLabel3 ReportLabel
+      #MoveScaled(38,1,21,5)
+      Width = "5cm"
+      Border = ReportBorder["Top:3px #000000;Bottom:3px #000000;Left:3px #000000;Right:3px #000000;TopRightCorner:0mm;BottomLeftCorner:0mm"]
+      Text = ("Valeur")
+      Alignment = Align.Center
+    }
+  }
+  { RHBList ReportHBox
+    #MoveScaled(1,8,62,6)
+    Margin = ReportMargin["Bottom:1mm"]
+    { ReportLabel4 ReportLabel
+      #MoveScaled(1,1,12,4)
+      Width = "3cm"
+      Border = ReportBorder["Top:0px #000000;Bottom:3px #000000;Left:3px #000000"]
+      Text = ("=index")
+    }
+    { ReportLabel5 ReportLabel
+      #MoveScaled(13,1,25,4)
+      Expand = True
+      Border = ReportBorder["Top:0px #000000;Bottom:3px #000000;Left:3px #000000"]
+    }
+    { ReportLabel6 ReportLabel
+      #MoveScaled(38,1,21,4)
+      Width = "5cm"
+      Border = ReportBorder["Top:0px #000000;Bottom:3px #000000;Left:3px #000000;Right:3px #000000"]
+    }
+  }
+  { ReportPanel1 ReportPanel
+    #MoveScaled(1,14,62,6)
+    Expand = True
+  }
+  { ReportLabel7 ReportLabel
+    #MoveScaled(1,20,62,3)
+    Fixed = True
+    Text = ("=page & \" on \" & pages")
+    Alignment = Align.Right
+  }
+  Index = 0
+}

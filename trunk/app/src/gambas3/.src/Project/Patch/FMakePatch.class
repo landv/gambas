@@ -1,0 +1,155 @@
+' Gambas class file
+
+' (C) 2013, 2014 Tobias Boege <tobias@gambas-buch.de>
+
+Private $sOldName As String
+Private $hViewer As FPatch
+
+Public Sub wizMakePatch_BeforeChange()
+
+  Dim hProject As CProjectInfo
+
+  Select Case wizMakePatch.Index
+    Case 0
+      wizMakePatch[1].Enabled = radArchive.Value
+      wizMakePatch[2].Enabled = Not radArchive.Value
+
+    Case 1
+      If Not Exist(fchOld.SelectedPath) Or If IsDir(fchOld.SelectedPath) Then
+        Message.Warning(("Please select the origin archive."))
+        Stop Event
+      Endif
+      Project.Config["/FMakePatch/LastArchive"] = fchOld.SelectedPath
+      $sOldName = File.BaseName(fchOld.SelectedPath)
+      If File.Ext($sOldName) = "tar" Then $sOldName = File.BaseName($sOldName)
+
+    Case 2
+      If Not IsDir(pchOld.Path) Or If Not Exist(pchOld.Path &/ ".project") Then
+        Message.Warning(("Please select the origin project."))
+        Stop Event
+      Endif
+      Project.Config["/FMakePatch/LastProject"] = pchOld.Path
+      $sOldName = File.Name(pchOld.Path)
+      hProject = New CProjectInfo(pchOld.Path)
+      $sOldName &= "-" & hProject.Version
+
+  End Select
+
+End
+
+Private Function GetDiff() As String
+
+  Dim sOld As String
+
+  If radArchive.Value Then
+    sOld = fchOld.SelectedPath
+  Else
+    sOld = pchOld.Path
+  Endif
+
+  Project.Config["/FMakePatch/MakeName"] = CBool(chkMakeName.Value)
+  Project.Config["/FMakePatch/EditPatch"] = CBool(chkEditPatch.Value)
+  If Not chkMakeName.Value Then
+    Project.Config["/FMakePatch/PatchName"] = fchPatch.Value
+  Endif
+
+  Project.Save()
+  Return Patch.GenerateForOld(sOld)
+
+End
+
+Public Sub wizMakePatch_Close()
+
+  Dim sDiff As String
+
+  If Not fchPatch.Value Then
+    Message.Warning(("Please enter the patch file name."))
+    Return
+  Endif
+
+  ' Get the edited patch
+  If chkEditPatch.Value And If $hViewer Then
+    sDiff = $hViewer.Patch.MakeText()
+  Else
+    sDiff = GetDiff()
+  Endif
+  File.Save(fchPatch.Value, sDiff)
+  Message.Info(("Patch has been successfully generated."))
+  Me.Close()
+
+Catch
+
+  Message.Error(("Unable to generate the patch.") & "\n\n" & Error.Text)
+
+End
+
+Public Sub wizMakePatch_Cancel()
+
+  Me.Close()
+
+End
+
+Public Sub chOld_Activate()
+
+  wizMakePatch.Index = 3
+
+End
+
+Public Sub fchPatch_Activate()
+
+  wizMakePatch_Close()
+
+End
+
+Public Sub Form_Open()
+
+  Settings.Read(Me)
+  Settings.Read(fchPatch)
+
+  chkMakeName.Value = Project.Config["/FMakePatch/MakeName", True]
+  chkEditPatch.Value = Project.Config["/FMakePatch/EditPatch", True]
+  fchOld.SelectedPath = Project.Config["/FMakePatch/LastArchive", User.Home]
+  pchOld.Path = Project.Config["/FMakePatch/LastProject", User.Home]
+
+  $hViewer = New FPatch(panViewer)
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)
+  Settings.Write(fchPatch)
+
+End
+
+Public Sub wizMakePatch_Change()
+
+  Dim sName As String
+
+  If wizMakePatch.Index = 3 Then
+    $hViewer.Clear()
+    Try $hViewer.Parse(GetDiff())
+    If Error Then
+      Message.Error(("Unable to generate the patch.") & "\n\n" & Error.Text)
+    Endif
+  Else If wizMakePatch.Index = 4 Then
+    If chkMakeName.Value Then
+      sName = $sOldName
+      sName &= "~"
+      If $sOldName Not Begins sName & "-" Then
+        sName &= Project.Name & "-"
+      Endif
+      sName &= Project.FormatVersion()
+      fchPatch.SelectedPath = fchPatch.Dir &/ sName & ".patch"
+    Else
+      fchPatch.SelectedPath = Project.Config["/FMakePatch/PatchName"]
+    Endif
+  Endif
+
+End
+
+Public Sub chkEditPatch_Click()
+
+  wizMakePatch[3].Enabled = chkEditPatch.Value
+
+End

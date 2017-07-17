@@ -1,0 +1,41 @@
+# Gambas Form File 3.0
+
+{ WebForm WebForm
+  #MoveScaled(0,0,106,85)
+  Height = "100%"
+  Arrangement = Arrange.Vertical
+  Margin = True
+  Spacing = True
+  { WebTabPanel1 WebTabPanel
+    #MoveScaled(1,1,104,69)
+    Height = "32em"
+    Expand = True
+    Arrangement = Arrange.Vertical
+    Margin = True
+    Spacing = True
+    Count = 2
+    Index = 0
+    Text = ("Tab 1")
+    { WebButton1 WebButton
+      #MoveScaled(1,1,101.7143,4)
+      Text = ("Message")
+    }
+    { WebTable1 WebTable
+      #MoveScaled(1,6,101.7143,32)
+      Expand = True
+      Mode = Select.Multiple
+      Sortable = True
+    }
+    Index = 1
+    Text = ("Tab 2")
+    { WebContainer1 WebContainer
+      #MoveScaled(1,1,101.7143,32)
+    }
+    Index = 0
+  }
+  { WebHBox1 WebHBox
+    #MoveScaled(1,71,104,9)
+    Height = "6em"
+    Border = True
+  }
+}

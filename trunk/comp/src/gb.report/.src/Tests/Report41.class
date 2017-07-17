@@ -1,0 +1,36 @@
+' Gambas class file
+
+Private hResult As Result
+Private hResult2 As Result
+
+
+Public Sub Report_Open()
+  Connections["MainConn"].Open
+  hResult = db.Exec("select * from parc_ilots")
+  ReportHBox1.DataCount = 3 'hResult.Count
+  Report.Debug = True
+End
+
+Public Sub ReportLabel1_Data(Index As Integer)
+
+  hResult.MoveTo(Index)
+  Last.Data = hResult!nom
+
+End
+
+Public Sub ReportHBox1_BeforeData()
+  hResult.MoveTo(ReportHBox1.DataIndex)
+  Print "Section : " & hResult!id & "/" & ReportHBox1.DataIndex
+  
+  hResult2 = db.Exec("select * from liaisonilotparc where id_ilot=&1", hResult!id)
+  ReportHBox2.DataCount = hResult2.Count
+  Print "DataCount : " & hResult2.Count
+End
+
+Public Sub ReportLabel2_Data(Index As Integer)
+
+  hResult2.MoveTo(Index)
+  Print "     " & ReportHBox1.DataIndex & "/" & Index
+  Try Last.Data = hResult2!id_parc
+  'If Error Then Stop
+End

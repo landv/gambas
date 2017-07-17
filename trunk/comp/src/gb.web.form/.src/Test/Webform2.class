@@ -1,0 +1,146 @@
+' Gambas class file
+
+Public Sub _new()
+  
+  WebLabel1.Style["font-size"] = "140%"
+  WebLabel1.Style["padding-right"] = "1em"
+  
+End
+
+
+Public Sub WebButton1_Click()
+
+  WebTabPanel1.Index = 1
+
+End
+
+Public Sub WebContainer2_Render()
+
+  Dim sKey As String
+  Dim bTable As Boolean
+  Dim bDark As Boolean
+  
+  If Session.Id Then
+    
+    For Each sKey In Session.Keys
+      If Not bTable Then
+        Print "<table border=\"0\" cellspacing=\"0\" cellpadding=\"2\" style=\"font-size:x-small;border-collapse:collapse;border: solid 1px #C0C0C0;\">"
+        bTable = True
+      Endif
+      If bDark Then
+        Print "<tr style=\"background:#F0F0F0;\">"
+      Else
+        Print "<tr>"
+      Endif
+      Print "<td>"; Html(sKey); "</td><td>:</td>";
+      Print "<td><tt>"; Html(JSON.Encode(Session[sKey])); "</tt></td>"
+      Print "</tr>"
+      bDark = Not bDark
+    Next
+    
+    If bTable Then Print "</table>"
+    
+  Endif
+
+End
+
+
+Public Sub WebForm_Event()
+
+  WebContainer2.Refresh
+
+End
+
+Public Sub WebTabPanel1_Click()
+
+  'If WebTabPanel1.Index = 0 Then WebTextBox1.SetFocus
+
+End
+
+Public Sub WebButton4_Click()
+
+  WebComboBox1.Add("Item #" & CStr(WebComboBox1.Count))
+
+End
+
+Public Sub WebButton5_Click()
+
+  WebComboBox1.Clear
+
+End
+
+Public Sub WebTimer1_Timer()
+
+  WebLabel1.Text = Format(Now, gb.LongTime)
+
+End
+
+Public Sub WebButton2_Click()
+
+  Dim hForm As WebForm
+
+  Randomize
+  
+  hForm = New FHello
+  hForm.Show()
+  hForm.Move(Rand(16, 24), Rand(4, 16), 32, 32)
+  
+Catch
+  
+  Me.Print(Error.Text & ": " & Error.Backtrace.Join(" "))
+
+End
+
+Public Sub WebButton6_Click()
+
+  WebTimer1.Enabled = Not WebTimer1.Enabled
+
+End
+
+Public Sub WebSlider1_Change()
+
+  WebSpinBox1.Value = WebSlider1.Value
+
+End
+
+Public Sub WebSpinBox1_Change()
+
+  WebSlider1.Value = WebSpinBox1.Value
+
+End
+
+Public Sub WebButton3_Click()
+
+  Message("Hello world!")
+
+End
+
+Public Sub WebButton7_Click()
+
+  Message.Warning("<b>File has been modified.</b><p>All changes will be lost!", "Cancel", "Delete")
+
+End
+
+Public Sub WebMenu3_Click(Target As WebControl)
+
+  Message("You have clicked on '" & Target.Name & "' control.")
+
+End
+
+Public Sub WebForm_Message(Source As WebControl, Action As String)
+
+  'Debug "Action '"; Action; "' on '"; Source.Name; "'"
+
+End
+
+Public Sub WebMenu4_Click(Target As WebControl)
+
+  Message("You have clicked on '" & Target.Name & "' control.")
+
+End
+
+Public Sub WebMenuItem6_Click()
+
+  Message.Error("Quit !")
+
+End

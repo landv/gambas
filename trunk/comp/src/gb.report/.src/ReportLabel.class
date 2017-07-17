@@ -1,0 +1,226 @@
+' Gambas class file
+
+Export
+Inherits ReportFrame
+
+Public Const _Properties As String = "*,Text,Format,Alignment{Align.*},Rotate{Angle:Degrees},UseField" '"*,Text,Key,Format,Alignment{Align.*},UseField"
+Public Const _Similar As String = "ReportTextLabel"
+Public Const _DefaultEvent As String = "Data"
+Private $sText As String
+Private $iAlignment As Integer = Align.Normal
+Private $bIsSpecial As Boolean
+
+Private $sKey As String
+Private $sFormat As String
+Private $bUseField As Boolean
+Private $fAngle As Float
+
+Property Text As String
+Property Alignment As Integer
+Property IsSpecial As Boolean
+'Property Key As String
+Property {Format} As String
+Property UseField As Boolean
+Property Rotate As Float
+
+Public Data As String
+Event Data(Index As Integer)
+
+Private Function Text_Read() As String
+  
+  Return $sText
+  
+End
+
+Private Sub Text_Write(Value As String)
+  
+  $sText = Value
+  'Me._Count = 2
+  
+End
+
+Private Function Alignment_Read() As Integer
+  
+  Return $iAlignment
+  
+End
+
+Private Sub Alignment_Write(Value As Integer)
+  
+  $iAlignment = Value
+  
+End
+
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
+  
+  Dim hMyHints As New TSizeHint
+  Dim fTextHeight As Float
+  Dim fTextWidth As Float
+  Dim hext As PaintExtents
+  Dim hRect As RectF
+  Dim sText As String
+  
+  'On Récupère la taille standard
+  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
+  
+  'if the size choosed by the user is less than the font height, set the object to the font height
+  
+  If Me.Autoresize Or If (Me._Width = 0 And Me._Height = 0) Then
+    If Not IsNull(Me.Font) Then Paint.Font = Me.Font
+    If Not $sText Then
+      Raise Data(DataIndex)
+      sText = Data
+      
+    Else
+      sText = $sText
+    Endif
+    If $fAngle = 0.0 Then
+
+      hRect = Paint.TextSize(sText)
+      fTextWidth = Me.Padding._Left + Me.Border._Left + ReportUnits._PixelsToReportUnits(hRect.Width) + Me.Padding._Right + Me.Border._Right
+      fTextHeight = ReportUnits._PixelsToReportUnits(hRect.Height) + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
+      'Debug Paint.Font.Height * Paint.ResolutionX / Desktop.Resolution
+      
+    Else
+      Paint.Save
+      Paint.Rotate(Rad($fAngle))
+      Paint.Text(sText, 0, 0)
+      hExt = Paint.PathExtents
+      fTextWidth = Me.Padding._Left + Me.Border._Left + ReportUnits._PixelsToReportUnits(hExt.Width) + Me.Padding._Right + Me.Border._Right
+      fTextHeight = ReportUnits._PixelsToReportUnits(hExt.Height) + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
+      Paint.Restore
+    Endif
+    hMyHints.Height = Max(hMyHints.Height, fTextHeight)
+    hMyHints.Width = Max(hMyHints.Width, fTextWidth)
+  Endif
+  'Me._SizeInt = hMyHints
+  Return hMyHints
+  
+End
+
+Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, DataIndex As Integer)
+  
+  Dim sTempText As Variant
+  Dim iX, iY, iW, iH As Integer
+  
+  
+  If $sText Then
+    sTempText = $sText
+  Else
+    Raise Data(DataIndex)
+    sTempText = Data
+  Endif
+  
+  If $sFormat Then
+    Try sTempText = Format(sTempText, $sFormat)
+  Endif
+  If $bUseField Then
+    sTempText = DecodeText(sTempText, Page)
+  Endif
+  
+  
+  iX = (x + hControl.RealLeft + ReportUnits._ReportUnitsToPixels(Me.Padding._Left + Me.Border._Left))
+  iY = (y + hControl.RealTop + ReportUnits._ReportUnitsToPixels(Me.Padding._Top + Me.Border._Top))
+  iW = (hControl.RealWidth - ReportUnits._ReportUnitsToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
+  
+  iH = (hControl.RealHeight - ReportUnits._ReportUnitsToPixels(Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom))
+  
+  Paint.Brush = Me._GetActualBrush(iX, iY, iX + hControl.RealWidth, iY + hControl.RealHeight)
+  
+  If Report.Debug Then
+    
+    Paint.Brush = Paint.Color(Color.Red)
+    Paint.Rectangle(ix, iy, iw, ih)
+    Paint.Stroke
+    
+  Endif
+  
+  'Set the Font if it is initialized
+  If Not IsNull(Me.Font) Then
+    Paint.Font = Me.Font
+    
+  Endif
+  
+  
+  If $fAngle = 0.0 Then
+    
+    Paint.Text(sTempText, iX, iY, iW, iH, $iAlignment)
+  Else
+    Paint.Translate(iX + iW / 2, iY + iH / 2)
+    Paint.Rotate(Rad($fAngle))
+    Paint.Translate(- (iX + iW / 2), - (iY + iH / 2))
+    Paint.Text(sTempText, iX, iY, iW, iH, Align.Center)
+    
+  Endif
+  Paint.Fill
+  
+  'Paint.ResetClip
+  'Paint.Restore
+  'Paint.Restore
+  'If $sKey Then $sText = Null
+  'Draw.Clip.Enabled = False
+  
+End
+
+Private Function IsSpecial_Read() As Boolean
+  
+  Return $bIsSpecial
+  
+End
+
+Private Sub IsSpecial_Write(Value As Boolean)
+  
+  $bIsSpecial = Value
+  
+End
+
+
+Private Function Format_Read() As String
+  
+  Return $sFormat
+  
+End
+
+Private Sub Format_Write(Value As String)
+  
+  $sFormat = Value
+  
+End
+
+Private Function DecodeText(sText As String, Optional Page As Integer, Optional ForSize As Boolean = False) As String
+  
+  If ForSize Then
+    If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", "999")
+    If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", "999")
+  Else
+    If InStr(sText, "$PAGE") Then sText = Replace(sText, "$PAGE", Str(Page + 1))
+    If InStr(sText, "$NPAGE") Then sText = Replace(sText, "$NPAGE", Str(Me.Report.PageCount))
+  Endif
+  
+  Return sText
+  
+End
+
+Private Function UseField_Read() As Boolean
+  
+  Return $bUseField
+  
+End
+
+Private Sub UseField_Write(Value As Boolean)
+  
+  $bUseField = Value
+  
+End
+
+Private Function Rotate_Read() As Float
+  
+  Return $fAngle
+  
+End
+
+Private Sub Rotate_Write(Value As Float)
+  
+  $fAngle = Value
+  
+End

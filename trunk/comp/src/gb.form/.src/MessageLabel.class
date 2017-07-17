@@ -1,0 +1,151 @@
+' Gambas class file
+
+'Export
+Inherits TextLabel
+
+Event Change
+
+Private $ErrorColor As Integer = Color.Red
+Private $InfoColor As Integer = Color.Green
+Private $WarningColor As Integer = Color.Yellow
+Private $CustomColor As Integer = Color.Background
+Private $iBackground As Integer = Color.Default
+Private $hTimer As Timer
+Private $bGetColor As Boolean = True
+
+Public Const _Properties As String = "*,Background{Color},Delay=500,InfoColor{Color},ErrorColor{Color},WarningColor{Color},CustomColor{Color}"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "24,3"
+Public Const _DrawWith As String = "TextLabel"
+
+Public Const Info As Integer = 0
+Public Const {Error} As Integer = 1
+Public Const Warning As Integer = 2
+Public Const Custom As Integer = 3
+
+Property Delay As Integer
+Property ErrorColor As Integer
+Property InfoColor As Integer
+Property WarningColor As Integer
+Property CustomColor As Integer
+Property Background As Integer
+
+Public Sub _new()
+
+  $hTimer = New Timer As "hTimer"
+  $hTimer.Enabled = False
+
+End
+
+Public Sub hTimer_Timer()
+
+  Me.Background = $iBackground
+  $hTimer.Enabled = False
+
+End
+
+Public Procedure Message((Message) As String, Optional State As Integer)
+
+  $bGetColor = False
+  Me.Text = Message
+  Select State
+    Case 2
+      Me.Background = $ErrorColor
+    Case 3
+      Me.Background = $WarningColor
+    Case 4
+      Me.Background = $CustomColor
+    Default
+      Me.Background = $InfoColor
+  End Select
+  $hTimer.Start()
+  Raise Change
+
+End
+
+Public Procedure Clear()
+
+  Me.Text = ""
+  Me.Background = $iBackground
+
+End
+
+Private Function Delay_Read() As Integer
+
+  Return $hTimer.Delay
+
+End
+
+Private Sub Delay_Write(Value As Integer)
+
+  $hTimer.Delay = Value
+
+End
+
+Private Function ErrorColor_Read() As Integer
+
+  Return $ErrorColor
+
+End
+
+Private Sub ErrorColor_Write(Value As Integer)
+
+  $ErrorColor = Value
+
+End
+
+Private Function InfoColor_Read() As Integer
+
+  Return $InfoColor
+
+End
+
+Private Sub InfoColor_Write(Value As Integer)
+
+  $InfoColor = Value
+
+End
+
+Private Function WarningColor_Read() As Integer
+
+  Return $WarningColor
+
+End
+
+Private Sub WarningColor_Write(Value As Integer)
+
+  $WarningColor = Value
+
+End
+
+Private Function CustomColor_Read() As Integer
+
+  Return $CustomColor
+
+End
+
+Private Sub CustomColor_Write(Value As Integer)
+
+  $CustomColor = Value
+
+End
+
+' Private Function Text_Read() As String
+' 
+'   Return Super.Text
+' 
+' End
+
+Private Function Background_Read() As Integer
+
+  Return Super.Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  Super.Background = Value
+  If $bGetColor Then $iBackground = Value
+  $bGetColor = True
+
+End

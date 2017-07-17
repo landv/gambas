@@ -1,0 +1,507 @@
+' Gambas class file
+
+Inherits GridView
+Export 
+
+Public Const _Properties As String = "*,NoKeyboard"
+Public Const _Group As String = "View"
+Public Const _Similar As String = "GridView"
+
+Event Save(Row As Integer, Column As Integer, Value As String)
+Event Insert
+Event Click
+Event Hide
+
+Property Read Editor As Control
+Property NoKeyboard As Boolean
+
+Private $hTextBox As TextBox
+Private $hComboBox As ComboBox
+Private $hEditor As Object
+Private $hPanel As Panel
+Private $bTextBox As Boolean
+
+Private $iCol As Integer
+Private $iRow As Integer
+Private $hWatcher As Watcher
+Private $bNoKeyboard As Boolean
+Private $hTimer As Timer
+Private $bDoNotHideEditor As Boolean
+
+Public Sub _new()
+  
+  Dim hObs As Observer
+  
+  hObs = New Observer(Me) As "GridView"
+  $hWatcher = New Watcher(Me) As "GridView"
+  
+  $hPanel = New Panel(Me.Window)
+  $hPanel.Background = Color.TextBackground
+  $hPanel.Ignore = True
+  '$hPanel.Arrangement = Arrange.Fill
+  $hPanel.Hide
+  
+  $hComboBox = New ComboBox($hPanel) As "Editor"
+  '$hComboBox.Ignore = True
+  '$hComboBox.Background = Color.TextBackground
+  $hComboBox.Hide
+  $hComboBox.Border = False
+  
+  $hTextBox = New TextBox($hPanel) As "Editor"
+  '$hTextBox.Ignore = True
+  $hTextBox.Border = False
+  '$hTextBox.Background = Color.TextBackground
+  $hTextBox.Hide
+  
+  $hTimer = New Timer As "Timer"
+  
+End
+
+Private Sub SaveEditor() As Boolean
+  
+  Dim sText As String
+  Dim sCurrent As String
+  Dim bCancel As Boolean
+  
+  If Not $hEditor Then Return
+  
+  Try sCurrent = Me[$iRow, $iCol].Text 
+  If Error Then Return
+  
+  Try sText = $hEditor.Text
+  
+  If sText = sCurrent Then Return
+  
+  bCancel = Raise Save($iRow, $iCol, sText)
+  Me[$iRow, $iCol].Refresh
+  Return bCancel
+  
+End
+
+Public Sub Save() As Boolean
+  
+  If SaveEditor() Then Return True
+  HideEditor(True)
+  
+End
+
+Public Sub Cancel()
+  
+  HideEditor(True)
+  
+End
+
+Private Sub HideEditor(Optional bNoSave As Boolean) As Boolean
+  
+  Dim bCancel As Boolean
+  
+  'Error "------------------------\n"; System.Backtrace.Join("\n")
+  
+  If $hEditor And If Not $bDoNotHideEditor Then
+    If Not bNoSave Then 
+      bCancel = SaveEditor()
+    Endif
+    If $hEditor Then
+      $hPanel.Hide
+      $hEditor.Hide
+      $hEditor = Null
+      Raise Hide
+    Endif
+  Endif
+  
+  Return bCancel
+  
+End
+
+Private Sub MoveEditor()
+  
+  Dim X, Y, W, H As Integer
+  Dim MX, MY As Integer
+  Dim hEditor As Object
+  Dim P As Variant
+  
+  If Not $hEditor Then Return 
+  
+  $bDoNotHideEditor = True
+  
+  ' $bDoNotHideEditor can be set to FALSE during the WAIT instruction
+  hEditor = $hEditor
+  Me[$iRow, $iCol].EnsureVisible
+  Wait
+  If Not $hEditor Then $hEditor = hEditor
+  
+  X = Me.ScreenX - Me.Window.ScreenX - Me.Window.ClientX + Me.Rows.Width - Me.ScrollX + Me.ClientX
+  Y = Me.ScreenY - Me.Window.ScreenY - Me.Window.ClientY + Me.Columns.Height - Me.ScrollY + Me.ClientY
+  
+  MX = Me.ScreenX - Me.Window.ScreenX - Me.Window.ClientX + Me.Rows.Width - Me.ScrollX + Me.ClientX
+  MY = Me.ScreenY - Me.Window.ScreenY - Me.Window.ClientY + Me.Columns.Height - Me.ScrollY + Me.ClientY
+  
+  $bDoNotHideEditor = False
+  
+  With Me[$iRow, $iCol]
+    
+    X += .X
+    Y += .Y
+    W = Min(Me.ClientW - Me.Rows.W, .Width)
+    H = Min(Me.ClientH - Me.Columns.H, .Height)
+    
+    P = Max(Me.Padding, .Padding)
+    P = Max(0, P - 1)
+
+    If (W - P * 2) < 4 Or If H < 4 Then
+      HideEditor
+      Return
+    Endif
+    
+    $hPanel.Move(X, Y, W, H)
+    $hEditor.Move(P, P, W - P * 2, H - P * 2)
+    $hPanel.Background = Style.BackgroundOf($hEditor)
+    
+    $hEditor.Font = Me.Font
+    $hEditor.Show
+    $hPanel.Show
+    $hPanel.Raise
+    $hEditor.Raise
+    
+    'Debug $iRow;; $iCol; " : ";; .Width;; .Height; " / "; $hEditor.Width;; $hEditor.Height
+  End With
+  
+End
+
+Public Sub GridView_MouseDown()
+  
+  HideEditor
+  
+End
+
+Public Sub GridView_RowResize((Row) As Integer)
+  
+  HideEditor
+  
+End
+
+Public Sub GridView_ColumnResize((Column) As Integer)
+  
+  HideEditor
+  
+End
+
+Public Sub GridView_Scroll()
+  
+  If $bDoNotHideEditor Then
+    MoveEditor
+  Else
+    HideEditor
+  Endif
+  
+End
+
+Public Sub GridView_Arrange()
+  
+  If $bDoNotHideEditor Then
+    MoveEditor
+  Else
+    HideEditor
+  Endif
+  
+End
+
+Public Sub GridView_Resize()
+  
+  HideEditor
+  
+End
+
+Public Sub GridView_Hide()
+
+  HideEditor
+  
+End
+
+Public Sub GridView_Change()
+  
+  HideEditor
+  
+End
+
+Public Sub Edit(Optional List As String[], Optional ReadOnly As Boolean)
+  
+  'DEBUG  
+  HideEditor
+  
+  $iCol = Me.Column
+  $iRow = Me.Row
+  
+  If $iCol < 0 Or $iRow < 0 Then Return
+  
+  If List Then 
+    $hComboBox.List = List
+    $hComboBox.ReadOnly = ReadOnly
+    $hEditor = $hComboBox
+    $bTextBox = Not ReadOnly
+  Else 
+    $hEditor = $hTextBox
+    $bTextBox = True
+  Endif
+  
+  With Me[$iRow, $iCol]
+    $hEditor.Text = .Text
+    Try $hEditor.Alignment = .Alignment
+  End With
+  If $bTextBox Then $hEditor.SelectAll
+  MoveEditor
+  Try $hEditor.SetFocus
+  
+End
+
+Public Sub EditWith(Editor As Control)
+  
+  Dim hObs As Observer
+  
+  HideEditor
+  
+  $iCol = Me.Column
+  $iRow = Me.Row
+  
+  If $iCol < 0 Or $iRow < 0 Then Return
+  
+  Editor.Reparent($hPanel)
+
+  $hEditor = Editor
+  $hEditor.Ignore = False
+  
+  $bTextBox = False
+  If Editor Is TextArea Or If Editor Is TextBox Or If Editor Is ButtonBox Then
+    $bTextBox = True
+  Endif
+  
+  Try $hEditor.Text = Me[$iRow, $iCol].Text
+  If Error Then
+    $hEditor = Null
+    Error.Raise("The TableView editor must have a Text public property")
+  Endif
+  
+  hObs = New Observer($hEditor) As "Editor"
+  
+  Try $hEditor.SelectAll
+  MoveEditor
+  Try $hEditor.SetFocus
+  
+End
+
+Public Sub Editor_Activate()
+  
+  SaveEditor
+  
+End
+
+Public Sub Editor_Click()
+  
+  SaveEditor
+  
+End
+
+Private Sub RaiseClickOrActivate()
+
+  If Object.CanRaise(Me, "Click") Then
+    Raise Click
+  Else
+    Raise Activate
+  Endif
+
+End
+
+Public Sub Editor_KeyPress()
+  
+  Dim hEditor As Control = Last
+  
+  If Not $hEditor Then 
+    Stop Event
+    Return
+  Endif
+  
+  Select Case Key.Code
+      
+    Case Key.Escape
+      If $hEditor.Text = Me[$iRow, $iCol].Text Then
+        HideEditor(True)
+      Else
+        $hEditor.Text = Me[$iRow, $iCol].Text
+      Endif
+      Stop Event
+      
+    Case Key.Up
+      If $bNoKeyboard Then Return
+      If Not Key.Normal Then Return
+      If $hEditor Is TextArea And If $hEditor.Line > 0 Then Return
+      
+      If SaveEditor() Then
+        Stop Event
+        Return
+      Endif
+      
+      While Me.Row > 0
+        Dec Me.Row
+        RaiseClickOrActivate
+        If $hEditor Then
+          Stop Event
+          Break
+        Endif
+        Break
+      Wend
+      
+    Case Key.Down
+      If $bNoKeyboard Then Return
+      If Not Key.Normal Then Return
+      If $hEditor Is TextArea And If $hEditor.Line < $hEditor.ToLine($hEditor.Length) Then Return
+      
+      If SaveEditor() Then
+        Stop Event
+        Return
+      Endif
+      
+      While Me.Row < (Me.Rows.Count - 1)
+        Inc Me.Row
+        RaiseClickOrActivate
+        If $hEditor Then
+          Stop Event
+          Break
+        Endif
+        Break
+      Wend
+      
+    Case Key.Left
+      If $bNoKeyboard Then Return
+      If Not Key.Normal Then Return
+      If $bTextBox And If Not $hEditor.ReadOnly And If $hEditor.Pos > 0 Then Return
+      
+      If SaveEditor() Then
+        Stop Event
+        Return
+      Endif
+      
+      Do
+        If Me.Column > 0 Then 
+          Dec Me.Column
+          RaiseClickOrActivate
+        Else If Me.Row > 0 Then
+          Me.MoveTo(Me.Row - 1, Me.Columns.Count - 1) 
+          RaiseClickOrActivate
+        Else
+          Break
+        Endif
+        If $hEditor Then
+          Try $hEditor.Pos = $hEditor.Length
+          Stop Event
+          Break
+        Endif
+      Loop
+      
+    Case Key.Right
+      If $bNoKeyboard Then Return
+      If Not Key.Normal Then Return
+      If $bTextBox And If Not $hEditor.ReadOnly And If $hEditor.Pos < $hEditor.Length Then Return
+      
+      If SaveEditor() Then
+        Stop Event
+        Return
+      Endif
+      
+      Do
+        If Me.Column < (Me.Columns.Count - 1) Then 
+          Inc Me.Column
+          RaiseClickOrActivate
+        Else If Me.Row < (Me.Rows.Count - 1) Then
+          Me.MoveTo(Me.Row + 1, 0)
+          RaiseClickOrActivate
+        Else
+          Break
+        Endif
+        If $hEditor Then
+          Try $hEditor.Pos = 0
+          Stop Event
+          Break
+        Endif
+      Loop
+      
+    Case Key.Enter, Key.Return
+      
+      If Not Key.Normal Then Return
+      
+      If $bNoKeyboard Then 
+        If $hEditor Then 
+          HideEditor
+          Stop Event
+        Endif
+        Return
+      Endif
+      
+      If SaveEditor() Then
+        Stop Event
+        Return
+      Endif
+      
+      Do
+        If Me.Column < (Me.Columns.Count - 1) Then 
+          Inc Me.Column
+          RaiseClickOrActivate
+        Else If Me.Row < (Me.Rows.Count - 1) Then
+          Me.MoveTo(Me.Row + 1, 0)
+          RaiseClickOrActivate
+        Else 
+          Raise Insert
+          Stop Event
+          Break
+        Endif
+        If $hEditor Then
+          Try $hEditor.Pos = 0
+          Stop Event
+          Break
+        Endif
+      Loop
+      
+  End Select 
+  
+  If Not $bDoNotHideEditor Then
+    $bDoNotHideEditor = Not IsNull($hEditor)
+    If $bDoNotHideEditor Then $hTimer.Trigger
+  Endif
+  
+  If Not $hEditor Then 
+    Me.SetFocus
+  Else If $hEditor <> hEditor Then
+    Stop Event
+  Endif
+  
+End
+
+Public Sub Timer_Timer()
+  
+  $bDoNotHideEditor = False
+  
+End
+
+Private Function Editor_Read() As Control
+  
+  Return $hEditor
+  
+End
+
+Private Function NoKeyboard_Read() As Boolean
+  
+  Return $bNoKeyboard
+  
+End
+
+Private Sub NoKeyboard_Write(Value As Boolean)
+  
+  $bNoKeyboard = Value
+  
+End
+
+Public Sub Clear()
+  
+  Cancel
+  Super.Clear
+  
+End

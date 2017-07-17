@@ -1,0 +1,66 @@
+' Gambas class file
+
+Export
+Create
+
+'Public Root As String
+Public Line As Integer
+Public Current As String
+Public Reinterpret As Boolean = True
+
+Property Verbatim As Integer
+
+Public Sub ToHTML(Markdown As String) As String
+  
+  Return Markup.Convert(Markdown, Me)
+  
+End
+
+Public Sub Link(({Link}) As MarkdownLink)
+  
+End
+
+Public Sub Command((Command) As String) As String[]
+  
+End
+
+Public Sub Enter((Class) As String) As String[]
+  
+End
+
+Public Sub Leave((Class) As String) As String[]
+  
+End
+
+Public Sub Process((Class) As String, (Lines) As String[]) As String[]
+  
+End
+
+
+Public Sub EnableCode(Enabled As Boolean)
+  
+  If Enabled Then
+    Inc Markup.EnableCode
+  Else
+    Dec Markup.EnableCode
+  Endif
+  
+End
+
+Public Sub CheckURL({Url} As String, (Markup) As String) As String
+  
+  Return {Url}
+  
+End
+
+Private Function Verbatim_Read() As Integer
+
+  Return Markup.Verbatim
+
+End
+
+Private Sub Verbatim_Write(Value As Integer)
+
+  Markup.Verbatim = Value
+
+End

@@ -1,0 +1,52 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,50)
+  Text = ("Select a library")
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { cvwLibrary ColumnView
+    MoveScaled(5,5,39,31)
+    Expand = True
+  }
+  { panNoLibrary Panel
+    MoveScaled(9,21,43,17)
+    Visible = False
+    Background = Color.TextBackground
+    Expand = True
+    Arrangement = Arrange.Fill
+    Margin = True
+    Border = Border.Plain
+    { TextLabel1 TextLabel
+      MoveScaled(5,2,34,12)
+      Font = Font["Italic"]
+      Text = ("No library has been found on your system.")
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(1,44,62,4)
+    Spacing = True
+    { btnRemove Button
+      MoveScaled(2,0,16,4)
+      Enabled = False
+      Text = ("Uninstall")
+      Picture = Picture["icon:/small/undo"]
+    }
+    { Panel1 Panel
+      MoveScaled(23,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(29,0,16,4)
+      Enabled = False
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(46,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

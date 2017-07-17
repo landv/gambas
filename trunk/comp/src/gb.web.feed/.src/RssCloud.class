@@ -1,0 +1,64 @@
+' Gambas class file
+
+''' This class can be used to specify a web application implementing the rssCloud interface.
+''' An rssCloud application notifies its registrees of changes in subscribed RSS channels.
+'''
+''' See [https://cyber.harvard.edu/rss/soapMeetsRss.html#rsscloudInterface] for an explanation.
+
+Export
+
+Public Enum XmlRpc, Soap, HttpPost ' Protocol constants
+
+'' Domain name of the application server.
+Public Domain As String
+'' TCP port of the application.
+Public Port As Integer
+'' The script path on the server.
+Public Path As String
+'' The name of the registration procedure to be called on the server side.
+Public RegisterProcedure As String
+'' The rssCloud protocol to use. One of [../xmlrpc], [../soap] or [../httppost].
+Public Protocol As Integer
+
+Public Sub _Write(hWriter As XmlWriter)
+  If Not Domain Or If Not Port Or If Not Path Or If Not RegisterProcedure Or If Not Protocol Then Error.Raise(("Domain, Port, Path, RegisterProcedure and Protocol must be set in RssCloud"))
+  With hWriter
+    .StartElement("cloud", ["domain", Domain, "port", Str$(Port), "path", Path, "registerProcedure", RegisterProcedure, "protocol", GetProtocol(Protocol)])
+    .EndElement()
+  End With
+End
+
+Private Function GetProtocol(iProto As Integer) As String
+  Select Case iProto
+    Case XmlRpc
+      Return "xml-rpc"
+    Case Soap
+      Return "soap"
+    Case HttpPost
+      Return "http-post"
+  End Select
+  Error.Raise(Subst$(("Invalid RssCloud protocol constant '&1'"), iProto))
+End
+
+Private Function GetProtocolConst(sProto As String) As Integer
+  Select Case sProto
+    Case "xml-rpc"
+      Return XmlRpc
+    Case "soap"
+      Return Soap
+    Case "http-post"
+      Return HttpPost
+  End Select
+  Error.Raise(Subst$(("Invalid RssCloud protocol '&1'"), sProto))
+End
+
+Public Sub _Read(hReader As XmlReader)
+  With hReader.Node.Attributes
+    Domain = .["domain"]
+    Port = CInt(.["port"])
+    Path = .["path"]
+    RegisterProcedure = .["registerProcedure"]
+    Protocol = GetProtocolConst(.["protocol"])
+  End With
+  hReader.Read()
+End

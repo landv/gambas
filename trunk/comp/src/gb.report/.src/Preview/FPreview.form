@@ -1,0 +1,274 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,114.2857,85.7143)
+  Text = ("Report preview")
+  Arrangement = Arrange.Vertical
+  { Panel4 HBox
+    MoveScaled(1,1,138,86)
+    Expand = True
+    { Panel1 VBox
+      MoveScaled(0,0,73,84)
+      Expand = True
+      { View ReportView
+        MoveScaled(2,0,70,65)
+        Background = Color.LightForeground
+        Tag = "3"
+        Expand = True
+      }
+      { hbPrinting HBox
+        MoveScaled(1,70,71,4)
+        Visible = False
+        { Panel18 Panel
+          MoveScaled(-1,0,19,3)
+          Expand = True
+          Arrangement = Arrange.Horizontal
+        }
+        { lblPrint Label
+          MoveScaled(23,0,11,3)
+          Text = ("Printing...")
+        }
+        { ProgressBar1 ProgressBar
+          MoveScaled(34,0,37,4)
+        }
+      }
+      { hbZoom HBox
+        MoveScaled(1,80,73,4)
+        { Panel2 Panel
+          MoveScaled(-1,0,19,3)
+          Expand = True
+          Arrangement = Arrange.Horizontal
+          { ToolButton1 ToolButton Mode
+            Name = "ToolButton1"
+            MoveScaled(0,0,4,4)
+            Tag = "1"
+            ToolTip = ("One page")
+            Picture = Picture["img/22/OnePage.png"]
+            Toggle = True
+            Value = True
+          }
+          { ToolButton2 ToolButton Mode
+            Name = "ToolButton2"
+            MoveScaled(4,0,4,4)
+            Tag = "2"
+            ToolTip = ("Two pages")
+            Picture = Picture["img/22/TwoPage.png"]
+            Toggle = True
+          }
+          { ToolButton4 ToolButton Mode
+            Name = "ToolButton4"
+            MoveScaled(8,0,4,4)
+            Tag = "3"
+            ToolTip = ("Full width")
+            Picture = Picture["img/22/FullWidth.png"]
+            Toggle = True
+          }
+          { ToolButton3 ToolButton Mode
+            Name = "ToolButton3"
+            MoveScaled(12,0,4,4)
+            Tag = "4"
+            ToolTip = ("Real size")
+            Picture = Picture["img/22/RealSize.png"]
+            Toggle = True
+          }
+        }
+        { Slider1 Slider
+          MoveScaled(36,0,26,4)
+          MinValue = 12
+          MaxValue = 200
+        }
+        { lblZoom Label
+          MoveScaled(63,1,8,2)
+          Alignment = Align.Center
+        }
+      }
+    }
+    { Separator1 Separator
+      MoveScaled(74,23,0,15)
+    }
+    { VBox1 VBox
+      MoveScaled(75,2,38,83)
+      Spacing = True
+      Margin = True
+      { TabPanel1 TabPanel
+        MoveScaled(0,-1,36,19)
+        Count = 2
+        Index = 0
+        Text = ("Printer")
+        { PictureBox1 PictureBox
+          MoveScaled(1,1,7,7)
+          Picture = Picture["icon:/48/printer"]
+        }
+        { cmbPrinter ComboBox
+          MoveScaled(1,9,34,4)
+          ReadOnly = True
+        }
+        Index = 1
+        Text = ("File")
+        { PictureBox2 PictureBox
+          MoveScaled(1,1,7,7)
+          Picture = Picture["icon:/48/pdf"]
+        }
+        { ButtonBox1 ButtonBox
+          MoveScaled(1,9,34,4)
+          Picture = Picture["icon:/16/open"]
+        }
+        Index = 0
+      }
+      { Panel14 HBox
+        MoveScaled(1,20,36,4)
+        { Label10 Label
+          MoveScaled(0,0,12,4)
+          Text = ("Orientation")
+        }
+        { cmbOrientation ComboBox
+          MoveScaled(14,0,21,4)
+          ReadOnly = True
+          List = [("Portrait"), ("Landscape")]
+        }
+      }
+      { Panel8 HBox
+        MoveScaled(1,24,36,4)
+        { Label3 Label
+          MoveScaled(0,0,12,4)
+          Text = ("Paper")
+        }
+        { cmbPaper ComboBox
+          MoveScaled(13,0,21,4)
+          ReadOnly = True
+          List = [("Custom"), ("A3"), ("A4"), ("A5"), ("B5"), ("Letter"), ("Executive"), ("Legal")]
+        }
+      }
+      { pnlCust Panel
+        MoveScaled(2,30,35,16)
+        { pnlCustom Panel
+          MoveScaled(2,0,31,15)
+          Enabled = False
+          Border = Border.Etched
+          { Label5 Label
+            MoveScaled(3,2,7,4)
+            Text = ("Width")
+          }
+          { spWidth SpinBox
+            MoveScaled(11,2,13,4)
+            MaxValue = 1000
+          }
+          { Label7 Label
+            MoveScaled(24,2,4,4)
+            Text = ("mm")
+          }
+          { Label6 Label
+            MoveScaled(3,9,8,4)
+            Text = ("Height")
+          }
+          { spHeight SpinBox
+            MoveScaled(11,9,13,4)
+            MaxValue = 1000
+          }
+          { Label8 Label
+            MoveScaled(24,9,4,4)
+            Text = ("mm")
+          }
+        }
+      }
+      { Panel11 Panel
+        MoveScaled(2,46,35,3)
+        Expand = True
+      }
+      { Panel16 VBox
+        MoveScaled(2,48,37,12)
+        Spacing = True
+        { Panel7 HBox
+          MoveScaled(0,1,36,4)
+          { Label2 Label
+            MoveScaled(0,0,12,4)
+            Text = ("Recto Verso")
+          }
+          { cmbDuplex ComboBox
+            MoveScaled(15,0,21,4)
+            ReadOnly = True
+            List = [("None"), ("Short side"), ("Long side")]
+          }
+        }
+        { HBox3 HBox
+          MoveScaled(-1,6,35,6)
+          Spacing = True
+          { Panel13 Panel
+            MoveScaled(1,1,3,4)
+            Expand = True
+          }
+          { tgbGrayScale ToggleButton
+            MoveScaled(5,0,6,6)
+            ToolTip = ("Gray Scale")
+            Picture = Picture["img/32/grayscale.png"]
+          }
+          { tgbFullPage ToggleButton
+            MoveScaled(11,0,6,6)
+            Visible = False
+            ToolTip = ("Full Page")
+            Picture = Picture["img/32/Empty.png"]
+          }
+          { tgbReverseCopies ToggleButton
+            MoveScaled(17,0,6,6)
+            ToolTip = ("Reverse order")
+            Picture = Picture["img/32/reverse.png"]
+          }
+          { tgbCollateCopies ToggleButton
+            MoveScaled(24,0,6,6)
+            ToolTip = ("Collate copie")
+            Picture = Picture["img/32/Collatecopie.png"]
+          }
+          { Panel15 Panel
+            MoveScaled(32,2,3,3)
+            Expand = True
+          }
+        }
+      }
+      { Panel12 Panel
+        MoveScaled(2,57,35,5)
+        Expand = True
+      }
+      { Panel6 HBox
+        MoveScaled(2,61,36,4)
+        { Label1 Label
+          MoveScaled(0,0,15,4)
+          Text = ("Range")
+        }
+        { TextBox1 ButtonBox
+          MoveScaled(17,0,18,4)
+          Picture = Picture["icon:/16/clear"]
+        }
+      }
+      { HBox1 HBox
+        MoveScaled(2,66,34,4)
+        { Label4 Label
+          MoveScaled(0,0,15,4)
+          Text = ("Copies")
+        }
+        { TextBox2 SpinBox
+          MoveScaled(15,0,12,4)
+          MinValue = 1
+        }
+      }
+      { Panel5 Panel
+        MoveScaled(2,71,33,2)
+      }
+      { HBox2 HBox
+        MoveScaled(2,75,33,6)
+        { Panel10 Panel
+          MoveScaled(2,1,10,3)
+          Expand = True
+        }
+        { Button1 Button
+          MoveScaled(7,0,22,6)
+          Text = ("Print")
+          Picture = Picture["icon:/22/print"]
+        }
+        { Panel9 Panel
+          MoveScaled(24,4,10,3)
+          Expand = True
+        }
+      }
+    }
+  }
+}

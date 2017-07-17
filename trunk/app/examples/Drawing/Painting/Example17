@@ -1,0 +1,29 @@
+Public Sub Example17()
+  
+  Dim sText As String = "<font size=\"+2\" color=\"green\">Gambas</font><br><i>already</i> <u>means</u><br><b>Basic!</b>"
+  
+  Dim X, Y As Float
+  Dim hExt As PaintExtents
+  
+  Paint.Font = Font["Sans,40"]
+  X = 50
+  Y = 100
+  
+  Paint.MoveTo(X, Y)
+  
+  hExt = Paint.RichTextExtents(sText)
+  
+  Paint.Brush = Paint.RadialGradient(50, 100, 300, 50, 100, [Color.Yellow, Color.Cyan], [1.0, 0.0])
+  Paint.RichText(sText)
+  Paint.Fill
+  
+  Paint.Brush = Paint.Color(Color.RGB(255, 31, 31, 93))
+  Paint.LineWidth = 1
+  Paint.Arc(X, Y, 10)
+  Paint.Fill
+
+  Paint.Brush = Paint.Color(Color.RGB(255, 31, 31, 224))
+  Paint.Rectangle(hExt.X, hExt.Y, hExt.Width, hExt.Height)
+  Paint.Fill
+  
+End

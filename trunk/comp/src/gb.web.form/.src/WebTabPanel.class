@@ -1,0 +1,193 @@
+' Gambas class file
+
+Export
+Inherits WebContainer
+
+Public Const _Properties As String = "*,Border=True,Count{Range:1;256}=1,Index,Text,ShowTabs=True"
+Public Const _IsMultiContainer As Boolean = True
+Public Const _DrawWith As String = "TabPanel"
+Public Const _DefaultEvent As String = "Click"
+
+Event Click
+
+Property Count As Integer
+Property Text As String
+Property Index As Integer
+Property Border As Boolean
+Property ShowTabs As Boolean
+
+Private $aTab As New WebContainer[]
+Private $aText As New String[]
+
+Private $iIndex As Integer
+Private $bBorder As Boolean = True
+Private $bHideTabs As Boolean
+
+Public Sub _new()
+  
+  Count_Write(1)
+  Index_Write(0)
+  
+End
+
+
+Private Function Count_Read() As Integer
+
+  Return $aTab.Count
+
+End
+
+Private Sub Count_Write(Value As Integer)
+
+  Dim iOldSize As Integer
+  Dim I As Integer
+  Dim hContainer As WebContainer
+  Dim sName As String
+  
+  If Value < 1 Or If Value > 256 Then Error.Raise("Bad argument")
+  
+  iOldSize = $aTab.Count
+  $aTab.Resize(Value)
+  $aText.Resize(Value)
+  
+  hContainer = Me._Container
+  Me._Container = Null
+  
+  For I = iOldSize To $aTab.Max
+    sName = Me.Name & "." & CStr(I)
+    WebControl._NextName = sName
+    $aTab[I] = New WebContainer(Me)
+    Object.Attach($aTab[I], Object.Parent(Me), sName)
+    $aText[I] = "Tab #" & CStr(I)
+  Next
+  
+  Me._Container = hContainer
+  
+  Me._SetProperty("Count", $aTab.Count)
+
+End
+
+Private Function Text_Read() As String
+
+  Return $aText[$iIndex]
+
+End
+
+Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
+  
+  If sProp Begins "#Text[" Then
+    $aText[CInt(Mid$(sProp, 7, -1))] = vVal
+    Me.Refresh
+  Endif
+  
+End
+
+
+Private Sub Text_Write(Value As String)
+
+  $aText[$iIndex] = Value
+  Me._SetProperty("#Text[" & CStr($iIndex) & "]", Value)
+
+End
+
+Private Function Index_Read() As Integer
+
+  Return $iIndex
+
+End
+
+Private Sub Index_Write(Value As Integer)
+
+  Dim I As Integer
+  
+  If Value < 0 Or If Value >= $aTab.Count Then Error.Raise("Bad argument")
+  $iIndex = Value
+  Me._SetContainer($aTab[Value])
+  For I = 0 To $aTab.Max
+    $aTab[I].Visible = I = $iIndex
+  Next
+  Me._SetProperty("Index", Value)
+  
+  Raise Click
+
+End
+
+
+Public Sub _Render()
+  
+  Dim I As Integer
+
+  If Not $bHideTabs Then
+    
+    Print "<div class=\"gw-tab-header";
+    If Not $bBorder Then Print " gw-noborder";
+    Print "\" style=\"display:flex;flex-flow:row;\">"
+    For I = 0 To $aTab.Max
+      Print "<div class=\""; If(I = $iIndex, "gw-tab-selected", "gw-tab"); "\"";
+      If I <> $iIndex Then Print Me._GetUpdateWaitJS("onclick", "index", CStr(I));
+      Print ">"; $aText[I]; "</div>"
+    Next
+    Print "</div>"
+    
+  Endif
+  
+  Print "<div class=\"gw-tab-contents";
+  If Not $bBorder Then Print " gw-noborder";
+  Print "\">"
+  
+  With $aTab[$iIndex]
+    ._BeforeRender()
+    ._Render()
+    ._AfterRender()
+  End With
+  
+  Print "</div>"
+  
+End
+
+Public Sub _RenderStyleSheet()
+  
+  Me._StartStyleSheet
+  
+  Super._RenderStyleSheet()
+  
+  Me._AddStyleSheet("display:flex;")
+  Me._AddStyleSheet("flex-flow:column;")
+  
+  Me._EndStyleSheet
+  
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  If sProp = "index" Then Try Me.Index = vValue
+  
+End
+
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $bBorder = Value
+  Me._SetProperty("Border", Value)
+  Me.Refresh
+
+End
+
+Private Function ShowTabs_Read() As Boolean
+
+  Return Not $bHideTabs
+
+End
+
+Private Sub ShowTabs_Write(Value As Boolean)
+
+  $bHideTabs = Not Value
+  Me._SetProperty("ShowTabs", Value)
+
+End

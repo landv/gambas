@@ -1,0 +1,19 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(51.6667,32.1667,54,26)
+  Text = ("About DeepSpace")
+  Resizable = False
+  { lblInfo TextLabel
+    MoveScaled(1,1,35,19)
+    Text = ("")
+  }
+  { cmdOK Button
+    MoveScaled(19,21,13,4)
+    Text = ("&OK")
+  }
+  { pbIcon PictureBox
+    MoveScaled(36,1,17,16)
+    Picture = Picture["images/deepspace.png"]
+  }
+}

@@ -1,0 +1,170 @@
+' Gambas class file
+
+Private $hImage As Image
+
+Public Sub Form_Open()
+
+  Me.Center
+
+  txtFontText.Text = Font["17"].ToString()
+  txtText.Text = File.Load("molly-malone.txt")
+
+End
+
+Private Sub GetText() As String
+  
+  Dim sText As String
+  
+  sText = txtText.Text
+  If Not btnRichText.Value Then sText = Replace(Html(sText), "\n", "<br>")  
+  Return sText
+  
+End
+
+Private Sub RefreshText()
+  
+  Dim hFont As Font = Font[txtFontText.Text]
+  Dim sText As String = GetText()
+  
+  scrText.ResizeContents(scrText.ClientW, hFont.RichTextHeight(sText, scrText.ClientW - 16) + 16)
+  scrText.Refresh
+  
+End
+
+Public Sub scrText_Draw()
+
+  Dim sText As String = GetText()
+  
+  Paint.FillRect(0, 0, Draw.W, Draw.H, Color.TextBackground)
+  Try Paint.Font = Font[txtFontText.Text]
+  Paint.Translate(- scrText.ScrollX, - scrText.ScrollY)
+  Paint.Background = Color.TextForeground
+  Paint.DrawRichText(sText, 8, 8, scrText.ClientW - 16, scrText.ClientH - 16, Align.TopNormal)
+  'Debug Paint.ResolutionY;; ":";; Paint.TextSize("toto").Height;; Paint.TextExtents("toto").Height;; "/";; Paint.RichTextSize(sText, scrText.ClientW - 16).Height;; Paint.RichTextExtents(sText, scrText.ClientW - 16).Height
+
+End
+
+Public Sub btnRichText_Click()
+
+  RefreshText
+
+End
+
+Public Sub txtText_Change()
+
+  RefreshText
+
+End
+
+Public Sub txtFontText_Click()
+
+  Dialog.Title = "Select a font"
+  Dialog.Font = Font[txtFontText.Text]
+  If Dialog.SelectFont() Then Return
+  txtFontText.Text = Dialog.Font.ToString()
+  RefreshText
+
+End
+
+Public Sub scrText_Arrange()
+
+  RefreshText
+
+End
+
+Public Sub btnOpenText_Click()
+
+  Dialog.Title = "Select a text file"
+  If Dialog.OpenFile() Then Return
+  Try txtText.Text = File.Load(Dialog.Path)
+
+End
+
+Public Sub btnPrintText_Click()
+
+  If prtText.Configure() Then Return
+
+  Me.Enabled = False
+  Inc Application.Busy
+  prtText.Print
+  Dec Application.Busy
+  Me.Enabled = True
+
+End
+
+Public Sub prtText_Begin()
+  
+  Dim PRINT_MARGIN As Float = Paint.Width / prtText.PaperWidth * 10
+  Dim hExtents As PaintExtents
+  
+  Paint.Font = Font[txtFontText.Text]
+  hExtents = Paint.RichTextExtents(GetText(), Paint.Width - PRINT_MARGIN * 2)
+  prtText.Count = Ceil(hExtents.Height / (Paint.Height - PRINT_MARGIN * 2))
+  
+End
+
+Public Sub prtText_Draw()
+
+  Dim PRINT_MARGIN As Float = Paint.Width / prtText.PaperWidth * 10
+    
+  Debug "Printing page";; prtText.Page
+  
+  Paint.Font = Font[txtFontText.Text]
+  Paint.Rectangle(PRINT_MARGIN / 2, PRINT_MARGIN / 2, Paint.Width - PRINT_MARGIN, Paint.Height - PRINT_MARGIN)
+  Paint.LineWidth = Paint.Width / prtText.PaperWidth * 0.5
+  Paint.Stroke
+  Paint.Rectangle(PRINT_MARGIN, PRINT_MARGIN, Paint.Width - PRINT_MARGIN * 2, Paint.Height - PRINT_MARGIN * 2)
+  Paint.Clip
+  Paint.DrawRichText(GetText(), PRINT_MARGIN, PRINT_MARGIN - (prtText.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * prtText.Count, Align.TopNormal)
+  'Debug Paint.ResolutionY;; ":";; Paint.TextSize("toto").Height;; Paint.TextExtents("toto").Height;; "/";; Paint.RichTextSize(GetText(), Paint.Width - PRINT_MARGIN * 2).Height;; Paint.RichTextExtents(GetText(), Paint.Width - PRINT_MARGIN * 2).Height
+  Paint.ResetClip
+  
+End
+
+Public Sub btnOpenImage_Click()
+
+  Dialog.Title = "Select an image file"
+  Dialog.Filter = ["*.png;*.jpg;*.jpeg;*.gif;*.xpm", "Image files"]
+  If Dialog.OpenFile() Then Return
+  
+  Try $hImage = Image.Load(Dialog.Path)
+  scrImage.ResizeContents($hImage.W, $hImage.H)
+  scrImage.Refresh
+
+End
+
+Public Sub scrImage_Draw()
+  
+  If $hImage Then Draw.Image($hImage, - scrImage.ScrollX, - scrImage.ScrollY)
+  
+End
+
+Public Sub btnPrintImage_Click()
+
+  If prtImage.Configure() Then Return
+
+  Me.Enabled = False
+  Inc Application.Busy
+  prtImage.Print
+  Dec Application.Busy
+  Me.Enabled = True
+
+End
+
+Public Sub prtImage_Draw()
+  
+  Dim PRINT_MARGIN As Float = Paint.Width / prtText.PaperWidth * 10
+  Dim hImage As Image
+  Dim W, H As Float
+  
+  If Not $hImage Then Return
+  
+  hImage = $hImage
+  If hImage.Width > hImage.Height Then hImage = hImage.Rotate(Pi(0.5))
+  
+  W = Paint.Width - PRINT_MARGIN * 2
+  H = W * hImage.Height / hImage.Width
+  Paint.DrawImage(hImage, PRINT_MARGIN, (Paint.Height - H) / 2, W, H)
+  
+End
+

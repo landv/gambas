@@ -1,0 +1,83 @@
+' Gambas class file
+
+Private $hConn As New Connection
+Private $res As Result
+'-------------------------------------------------
+Public Sub Form_Open()
+Dim iCount As Integer
+Dim hTable As Table
+Dim rTest As Result
+Dim sql As String
+ 
+'define the gridview layout
+GridView1.header = GridView.Horizontal
+GridView1.grid = True
+GridView1.Rows.count = 0
+GridView1.Columns.count = 2
+GridView1.Columns[0].text = "ID"
+GridView1.Columns[1].text = "Value"
+GridView1.Columns[0].width = 55
+GridView1.Columns[1].width = 55
+ 
+ 
+With $hConn
+    .Type = "sqlite"
+    .host = User.home
+    .name = ""
+End With
+ 
+' 'delete an existing test.sqlite
+' If Exist(User.home & "/test.sqlite") Then
+'     Kill User.home & "/test.sqlite"
+' Endif
+ 
+' 'create test.sqlite
+' $hConn.Open
+'     $hConn.Databases.Add("test.sqlite")
+' $hconn.Close
+ 
+'define the table sampleTable
+$hconn.name = "test.sqlite"
+$hConn.Open
+'     hTable = $hConn.Tables.Add("sampleTable")
+'     hTable.Fields.Add("s_seq", db.Integer)
+'     hTable.Fields.Add("s_rndm", db.Integer)
+'     hTable.PrimaryKey = ["s_seq"]
+'     hTable.Update
+'  
+' 'fill the table with generated data
+' $hconn.Begin
+'     rTest = $hConn.Create("sampleTable")
+'     For iCount = 1 To 1000000
+'         rTest!s_seq = iCount
+'         rTest!s_rndm = Int(Rnd(0, 100))
+'         rTest.Update
+'     Next
+' $hConn.Commit
+ 
+'read the database
+sql = "select s_seq as ID, s_rndm as Value from sampleTable"
+$res = $hconn.Exec(sql)
+ 
+Catch
+$hConn.Rollback
+Message.Error(DConv(Error.Text))
+ 
+End
+'-------------------------------------------------
+Public Sub Form_Activate()
+'change the rowcount of the gridview from 0 to the number of records.
+'This triggers the data handling event
+ 
+GridView1.Rows.Count = $res.Count
+End
+'-------------------------------------------------
+Public Sub GridView1_Data(Row As Integer, Column As Integer)
+    $res.moveTo(row)
+    GridView1.Data.text = Str($res[GridView1.Columns[column].text])
+End
+'-------------------------------------------------
+Public Sub Form_Close()
+    $hconn.Close
+End
+'-------------------------------------------------

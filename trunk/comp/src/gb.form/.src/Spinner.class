@@ -1,0 +1,181 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Border,Label"
+Public Const _DefaultSize As String = "8,8"
+
+Property Border As Boolean
+Property Label As Boolean
+Property Value As Float
+Property Enabled As Boolean
+
+Private $hDrawingArea As DrawingArea
+Private $fStartTime As Float
+Private $hTimer As Timer
+Private $bBorder As Boolean
+Private $bLabel As Boolean
+Private $fValue As Float
+Private $fLastWait As Float
+
+Public Sub _new()
+  
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  Start
+  
+End
+
+Public Sub Start()
+  
+  $fStartTime = Timer
+  $hTimer = New Timer As "Timer"
+  $hTimer.Delay = 50
+  $hTimer.Start
+  
+End
+
+Public Sub Stop()
+  
+  $fStartTime = 0
+  $hTimer = Null
+  
+End
+
+Public Sub Wait()
+  
+  If $fLastWait = 0 Or If (Timer - $fLastWait) >= 0.2 Then
+    Wait 0.05
+    $fLastWait = Timer
+  Else
+    Wait
+  Endif
+  
+End
+
+
+Public Sub DrawingArea_Draw()
+  
+  Dim iFlag As Integer
+  Dim A As Float
+  Dim X As Float
+  Dim Y As Float
+  Dim R As Variant
+  Dim D As Float
+  Dim I As Integer
+  Dim C As Float
+  Dim W As Float
+  Dim H As Float
+  Dim HL As Integer
+  
+  If Not Me.Design Then
+    If $fStartTime = 0 Then Goto DRAW_BORDER
+    D = Frac(Timer - $fStartTime) * Pi(2)
+  Endif
+  
+  W = Paint.W
+  H = Paint.H
+  
+  If $bLabel Then
+    HL = Paint.Font.Height + Desktop.Scale
+    H -= HL + Desktop.Scale
+  Endif
+  
+  If H > 0 Then
+  
+    X = W / 2
+    Y = H / 2
+    R = Min(W, H) / 2 * 7 / 8
+    
+    Paint.LineWidth = R / 8
+    Paint.LineCap = Paint.LineCapRound
+    
+    For I = 0 To 11
+      
+      A = Pi(2) * I / 12
+      C = Frac(1 + (D - A) / Pi(2))
+      
+      'Paint.Background = Color.Merge(Color.Background, Color.Foreground, C / 4)
+      Paint.Background = Color.SetAlpha(Color.Foreground, 255 * (1 - C / 4))
+      Paint.MoveTo(X + Cos(A) * R / 2, Y + Sin(A) * R / 2)
+      Paint.LineTo(X + Cos(A) * R, Y + Sin(A) * R)
+      Paint.Stroke
+      
+    Next
+    
+  Endif
+  
+  If $bLabel Then
+    Paint.Background = Color.Foreground
+    Paint.DrawText(Format($fValue, "0%"), 0, Paint.H - HL, Paint.W, HL - Desktop.Scale, Align.Center)
+  Endif
+  
+DRAW_BORDER:
+  
+  If $bBorder Then Style.PaintPanel(0, 0, Paint.W, Paint.H, Border.Plain, iFlag)
+  
+End
+
+Public Sub Timer_Timer()
+  
+  $hDrawingArea.Refresh
+  
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $bBorder = Value
+  $hDrawingArea.Refresh
+
+End
+
+Private Function Label_Read() As Boolean
+
+  Return $bLabel
+
+End
+
+Private Sub Label_Write(Value As Boolean)
+
+  $bLabel = Value
+  $hDrawingArea.Refresh
+
+End
+
+Private Function Value_Read() As Float
+
+  Return $fValue
+
+End
+
+Private Sub Value_Write(Value As Float)
+
+  $fValue = Max(0, Min(1, Value))
+  $hDrawingArea.Refresh
+
+End
+
+Private Function Enabled_Read() As Boolean
+
+  Return Super.Enabled
+
+End
+
+Private Sub Enabled_Write(Value As Boolean)
+
+  If Value = Me.Enabled Then Return
+  Super.Enabled = Value
+  If Value Then
+    Start
+  Else
+    Me.Stop
+  Endif
+
+End

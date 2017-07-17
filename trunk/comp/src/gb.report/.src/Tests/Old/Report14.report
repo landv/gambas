@@ -1,0 +1,90 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,100,77)
+  Padding = ReportPadding["Top:1cm;Bottom:15mm;Left:2cm;Right:2cm"]
+  Index = 0
+  Text = ("Section 1")
+  { ReportHBox2 ReportHBox
+    #MoveScaled(0,0,67,14)
+    Height = "5cm"
+    Fixed = True
+    Padding = ReportPadding["Top:5mm;Bottom:5mm;Left:5mm;Right:5mm"]
+    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+    Background = ReportBrush["#3398C3"]
+    { ReportSvgImage1 ReportSvgImage
+      #MoveScaled(1,1,14,12)
+      Width = "4cm"
+      Image = SvgImage.Load("gambas.svg")
+    }
+    { ReportLabel3 ReportLabel
+      #MoveScaled(20,2,43,10)
+      Brush = ReportBrush["LinearGradient(0.71,0.07,0.34,0.06,[#FFFF00,#FFFFFF],[0,1])"]
+      Fixed = True
+      Font = Font["DejaVu Sans,Bold,+14"]
+      Expand = True
+      AutoResize = True
+      Text = ("Gambas")
+      Alignment = Align.Left
+    }
+  }
+  { ReportHBox1 ReportHBox
+    #MoveScaled(0,15,87,56)
+    Padding = ReportPadding["0cm"]
+    Expand = True
+    Border = ReportBorder["Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+    { ReportVBox1 ReportVBox
+      #MoveScaled(1,1,25,47)
+      Width = "6cm"
+      Padding = ReportPadding["Top:5mm;Bottom:5mm;Left:5mm;Right:5mm"]
+      Background = ReportBrush["#DF6B00"]
+      { ReportLabel4 ReportLabel
+        #MoveScaled(3,2,20,4)
+        Brush = ReportBrush["#FFFFFF"]
+        Fixed = True
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("All friends list !")
+      }
+    }
+    { ReportVBox2 ReportVBox
+      #MoveScaled(27,1,60,54)
+      Expand = True
+      Border = ReportBorder["Left:1mm #000000"]
+      Background = ReportBrush["#FFFFFF"]
+      { RVBCont ReportVBox
+        #MoveScaled(4,4,53,42)
+        Padding = ReportPadding["Top:5mm;Bottom:5mm;Left:5mm;Right:5mm"]
+        Expand = True
+        Tag = "*"
+        Spacing = "1mm"
+        { ReportLabel1 ReportLabel
+          #MoveScaled(0,0,44,9)
+          Font = Font["Bitstream Charter,Bold,Italic,+2"]
+          AutoResize = True
+          Text = ("Gambas Report Demo")
+          Alignment = Align.Center
+        }
+        { ReportVBox3 ReportVBox
+          #MoveScaled(0,11,38,4)
+          Height = "1cm"
+          AutoResize = True
+        }
+      }
+      { ReportLabel2 ReportLabel
+        #MoveScaled(7,49,47,3)
+        Brush = ReportBrush["#FFFFFF"]
+        Fixed = True
+        Font = Font["Bold,+1"]
+        Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+        AutoResize = True
+        Border = ReportBorder["Top:1mm #000000"]
+        Background = ReportBrush["#3398C3"]
+        Text = ("Page $PAGE on $NPAGE  ")
+        Alignment = Align.Right
+        UseField = True
+      }
+    }
+  }
+  Index = 0
+}

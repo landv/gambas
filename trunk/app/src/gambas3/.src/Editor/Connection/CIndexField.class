@@ -1,0 +1,18 @@
+' Gambas class file
+
+Public Index As String
+Public Field As String
+Public Unique As Boolean
+Public Description As String
+Public List As String[]
+
+Public Sub _new(Optional hIndex As Index)
+  
+  If hIndex Then
+  
+    Index = hIndex.Name
+    Unique = hIndex.Unique
+  
+  Endif
+  
+End

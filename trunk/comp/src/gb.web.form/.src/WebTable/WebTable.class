@@ -1,0 +1,644 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,Border=True,Mode{Select.*}=None,ShowCheck=True,ShowHeader=True,Sortable"
+Public Const _DrawWith As String = "GridView"
+Public Const _DefaultSize As String = "24,24"
+Public Const _DefaultEvent As String = "Data"
+
+Event Data(Row As Integer, Column As Integer, Data As WebTableData)
+Event Select
+Event DblClick
+Event Sort
+
+Property Read Columns As _WebTableColumns
+Property Count As Integer
+Property Read Max As Integer
+Property Mode As Integer
+Property Read Selection As Integer[]
+Property Current As Integer
+Property Display As Integer
+Property Step As Integer
+Property ScrollX As Integer
+Property ScrollY As Integer
+Property ShowCheck As Boolean
+Property ShowHeader As Boolean
+Property Sortable As Boolean
+Property SortColumn As Integer
+Property SortOrder As Integer
+
+'Property Fixed As Boolean
+
+Private $hColumns As _WebTableColumns
+Private $iCount As Integer
+Private $iMode As Integer
+Private $hSelection As WebTableSelection
+Private $iStep As Integer = 100
+Private $iDisplay As Integer = 100
+
+Private $iScrollX As Integer
+Private $iScrollY As Integer
+Private $bNoScrolling As Boolean
+Private $bNoCheck As Boolean
+Private $bNoHeader As Boolean
+Private $iEnsureVisible As Integer = -1
+Private $bSortable As Boolean
+Private $iSortColumn As Integer = -1
+Private $bSortDescent As Boolean
+
+Public Sub _new()
+  
+  Me._Proxy = ":table"
+  $hColumns = New _WebTableColumns As "Columns"
+  
+End
+
+
+Private Function Columns_Read() As _WebTableColumns
+
+  Return $hColumns
+
+End
+
+Private Sub PrintRow(iRow As Integer)
+
+  Dim iCol As Integer
+  Dim hCol As _WebTableColumn
+  Dim hData As WebTableData
+  Dim sStyle As String
+  Dim NX As Integer
+  
+  If $iMode And If Not $bNoCheck Then
+    'Print "<td onmousedown=\"gw.table.check("; JS(Me.Name); ","; CStr(iRow); 
+    'If $iMode <> Select.Single Then Print ",event"; 
+    'Print ")\">";
+    Print "<td class=\"gw-table-check\">";
+    If $iMode = Select.Single Then
+      Print "<input type=\"radio\" name=\""; Me.Name; "\""; 
+    Else
+      Print "<input type=\"checkbox\""; 
+    Endif
+    Print " id=\""; Me.Name & ":" & CStr(iRow); "\"";
+    'Print Me._GetUpdateJS("onchange", "!" & CStr(iRow), "this.checked");
+    If IsSelected(iRow) Then Print " checked";
+    Print ">";
+    Print "</td>";
+  Endif
+  
+  If $bNoHeader Then
+    For iCol = 0 To $hColumns.Count - 1
+      If $hColumns[iCol].Expand Then Inc NX
+    Next
+  Endif
+  
+  For iCol = 0 To $hColumns.Count - 1
+    
+    hCol = $hColumns[iCol]
+    If hCol.Hidden Then Continue
+    
+    hData = New WebTableData
+    Raise Data(iRow, iCol, hData)
+    
+    Print "<td";
+    hCol._PrintAlignment()
+    sStyle = ""
+    If $bNoHeader And If iCol = 0 Then
+      If hCol.Expand Then 
+        Print " width=\""; 100 \ NX; "%\"";
+      Else If hCol.Width Then
+        sStyle &= "min-width:" & hCol.Width & ";"
+      Endif
+    Endif
+    If hData.Background <> Color.Default Then sStyle &= "background-color:" & WebControl._GetColor(hData.Background) & ";"
+    If hData.Foreground <> Color.Default Then sStyle &= "color:" & WebControl._GetColor(hData.Foreground) & ";"
+    If sStyle Then Print " style=\""; sStyle; "\"";
+    Print ">";
+    If hData.Html Then
+      Print hData.Html;
+    Else
+      Print Html(hData.Text);
+    Endif
+    
+  Next
+  
+
+End
+
+Private Sub PrintBody(iStart As Integer, iEnd As Integer)
+  
+  Dim iRow As Integer
+  
+  Print "<tbody>"
+  For iRow = iStart To iEnd
+    
+    Print "<tr";
+    If $iMode Then
+      
+      If $bNoCheck Then
+        Print " id=\""; Me.Name & ":" & CStr(iRow); "\""
+        If IsSelected(iRow) Then Print " class=\"gw-table-row-selected\";"
+      'Print Me._GetUpdateJS("onclick", "$" & CStr(iRow));
+        Print " onmousedown=\"gw.table.select("; JS(Me.Name); ","; iRow; 
+      Else
+        Print " onmousedown=\"gw.table.check("; JS(Me.Name); ","; iRow; 
+      Endif
+      
+      If $iMode <> Select.Single Then Print ",event";
+      Print ");\"";
+      
+      Print Me._GetEventJS("ondblclick", "DblClick");
+      
+    Endif
+    Print ">";
+    
+    PrintRow(iRow)
+    
+    Print "</tr>"
+  Next
+  
+  Print "</tbody>"
+  
+  If iRow < $iCount Then Print "<tbody id=\""; Me.Name; ":more\"><tr><td><div class=\"gw-table-more\"><img src=\""; Application.Root &/ "gw-table-more.gif\"></td></tr></div></tbody>"
+  
+End
+
+
+Public Sub _Render()
+
+  If $hColumns.Count = 0 Then Return
+
+  Print "<div class=\"gw-table-contents\" onscroll=\"gw.table.onScroll("; JS(Me.Name); ",true);\">";
+  'If $bFixed Then
+  '  Print "<table style=\"table-layout:fixed;\">"
+  'Else
+    Print "<table id=\""; Me.Name; ":table\" width=\"100%\">"
+  'Endif
+
+  If Not $bNoHeader Then $hColumns._Render()
+  
+  PrintBody(0, Min($iDisplay, $iCount) - 1)
+  
+  Print "</table>"
+  
+  ' If iRow < $iCount Then
+  '   Print "<div style=\"padding:0.25em;\"><button class=\"gw-button\""; Me._GetUpdateJS("onclick", "#more"); ">"; iRow; " / "; $iCount; "&nbsp;<img src=\""; Html(Application.Root &/ "gw-arrow-down.png"); "\"></button></div>"
+  ' Endif
+  
+  Print "</div>"
+  
+  If $bNoScrolling Then
+    $bNoScrolling = False
+  Else
+    If $iEnsureVisible > 0 Then
+      WebForm._AddJavascript("gw.table.ensureVisible(" & JS(Me.Name) & "," & CStr($iEnsureVisible) & ")")
+      $iEnsureVisible = -1
+    Else
+      WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & ")")
+    Endif
+  Endif
+  
+  If $iMode = Select.Single Then WebForm._AddJavascript("$(" & JS(Me.Name) & ").gw_current = " & Current_Read())
+
+End
+
+
+Private Function Count_Read() As Integer
+
+  Return $iCount
+
+End
+
+Private Sub Count_Write(Value As Integer)
+
+  If Value < 0 Then Error.Raise("Bad argument")
+  $iCount = Value
+  Me._SetProperty("Count", Value)
+  UnselectAll
+  'Me.Display = 100
+
+End
+
+Private Function Max_Read() As Integer
+
+  Return $iCount - 1
+
+End
+
+Private Function Mode_Read() As Integer
+
+  Return $iMode
+
+End
+
+Private Sub Mode_Write(Value As Integer)
+
+  If $iMode = Value Then Return
+  $iMode = Value
+  Me._SetProperty("Mode", Value)
+  SetSelection
+
+End
+
+Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
+  
+  Dim aProp As String[]
+  
+  If sProp = "#count" Then
+    $hColumns.Count = vVal
+  Else If sProp = "#selection" Then
+    $hSelection.SetSelection(vVal[1], vVal[0])
+  ' Else If sProp = "#scroll" Then
+  '   $iScrollX = vVal[0]
+  '   $iScrollY = vVal[1]
+  Else
+    aProp = Scan(sProp, "#\\[*].*")
+    Object.SetProperty($hColumns[CInt(aProp[0])], aProp[1], vVal)
+  Endif
+  
+  Me.Refresh
+  
+End
+
+Private Sub SetSelection()
+  
+  If $iMode = Select.None Then
+    $hSelection = Null
+    'Me._SetProperty("#selection", Null)
+  Else
+    If Not $hSelection Then $hSelection = New WebTableSelection As "TableSelection"
+    '$hSelection.SetProperty()
+  Endif
+  
+End
+
+
+Public Sub SelectAll()
+  
+  If $hSelection Then 
+    $hSelection.SelectAll
+    Raise Select
+  Endif
+  
+End
+
+Public Sub UnselectAll()
+  
+  If $hSelection Then 
+    $hSelection.UnselectAll
+    Raise Select
+  Endif    
+  
+End
+
+Public Sub Select(Row As Integer, Optional Length As Integer = 1)
+  
+  If $hSelection Then 
+  
+    If $iMode = Select.Single Then
+      
+      $hSelection.UnselectAll
+      $hSelection.Select(Row)
+      
+    Else
+      
+      $hSelection.Select(Row, Length)
+      
+    Endif
+    
+    Raise Select
+    
+  Endif
+  
+End
+
+Public Sub Unselect(Row As Integer, Optional Length As Integer = 1)
+  
+  If $hSelection Then 
+    $hSelection.Unselect(Row, Length)
+    Raise Select
+  Endif
+  
+End
+
+Public Sub IsSelected(Row As Integer) As Boolean
+  
+  If $hSelection Then Return $hSelection.IsSelected(Row)
+  
+End
+
+' Public Sub SetFocus()
+'   
+'   WebForm._AddReply("gw.setFocus(" & JS(Me.Name & ":table") & ");")
+'   
+' End
+
+Private Sub SendMoreJavascript()
+
+  Dim hFile As File
+  Dim sResult As String
+
+  hFile = Open String For Write
+  Output To #hFile
+    
+  PrintBody($iDisplay, Min($iDisplay + $iStep, $iCount) - 1)
+    
+  sResult = Close #hFile
+  Output To Default
+  
+  WebForm._AddJavascript("$(" & JS(Me.Name & ":more") & ").outerHTML = " & JS(sResult))
+
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  Dim iRow As Integer
+  Dim iCol As Integer
+  Dim aProp As String[]
+  Dim iLength As Integer
+  
+  If Left(sProp) = "!" Then
+    
+    If sProp = "!!" Then
+      If vValue Then
+        SelectAll
+      Else
+        UnselectAll
+      Endif
+    Else
+      aProp = Split(Mid$(sProp, 2), ":")
+      iRow = CInt(aProp[0])
+      If aProp.Count = 2 Then
+        iLength = CInt(aProp[1])
+      Else
+        iLength = 1
+      Endif
+      Inc Me._NoRefresh
+      If vValue Then
+        Try Select(iRow, iLength)
+      Else
+        Try Unselect(iRow, iLength)
+      Endif
+      Dec Me._NoRefresh
+    Endif
+    
+  Else If Left(sProp) = "?" Then
+    
+    UnselectAll
+    iRow = CInt(Mid(sProp, 2))
+    Try Select(iRow)
+    
+  Else If Left(sProp) = "$" Then
+    
+    Inc Me._NoRefresh
+    iRow = CInt(Mid(sProp, 2))
+    If IsSelected(iRow) Then
+      If $iMode = Select.Multiple Then Try Unselect(iRow)
+    Else
+      Try Select(iRow)
+    Endif
+    Dec Me._NoRefresh
+  
+  Else If sProp = "#more" Then
+    
+    Inc Me._NoRefresh
+    If $iDisplay < $iCount Then
+      SendMoreJavascript()
+      Me.Display += $iStep
+      Me.SetFocus
+    Endif
+    Me.ScrollX = vValue[0]
+    Me.ScrollY = vValue[1]
+    Dec Me._NoRefresh
+    
+  Else If sProp = "#scroll" Then
+    
+    Inc Me._NoRefresh
+    Me.ScrollX = vValue[0]
+    Me.ScrollY = vValue[1]
+    Dec Me._NoRefresh
+    
+  Else If sProp = "#sort" Then
+    
+    iCol = CInt(vValue)
+    If iCol = $iSortColumn Then
+      If $bSortDescent Then
+        Me.SortColumn = -1
+      Else
+        Me.SortOrder = gb.Descent
+      Endif
+    Else
+      Me.SortColumn = iCol
+      Me.SortOrder = gb.Ascent
+    Endif
+    
+  Endif
+  
+End
+
+Public Sub _IsEverythingSelected() As Boolean
+  
+  If $hSelection Then Return $hSelection.IsEverythingSelected()
+  
+End
+
+Private Function Selection_Read() As Integer[]
+
+  If $hSelection Then
+    Return $hSelection.GetSelectedRows()
+  Else
+    Return New Integer[]
+  Endif
+
+End
+
+Private Function Display_Read() As Integer
+
+  Return $iDisplay
+
+End
+
+Private Sub Display_Write(Value As Integer)
+
+  $iDisplay = Value
+  Me._SetProperty("Display", Value)
+
+End
+
+Private Function ScrollX_Read() As Integer
+
+  Return $iScrollX
+
+End
+
+Private Sub ScrollX_Write(Value As Integer)
+
+  $iScrollX = Value
+  Me._SetProperty("ScrollX", Value)
+
+End
+
+Private Function ScrollY_Read() As Integer
+
+  Return $iScrollY
+
+End
+
+Private Sub ScrollY_Write(Value As Integer)
+
+  $iScrollY = Value
+  Me._SetProperty("ScrollY", Value)
+
+End
+
+' Private Function Fixed_Read() As Boolean
+' 
+'   Return $bFixed
+' 
+' End
+' 
+' Private Sub Fixed_Write(Value As Boolean)
+' 
+'   $bFixed = Value
+'   Me._SetProperty("Fixed", Value)
+' 
+' End
+
+Public Sub Clear()
+  
+  Me.Count = 0
+  Me.Display = 100
+  Me.ScrollX = 0
+  Me.ScrollY = 0
+  
+End
+
+Private Function ShowCheck_Read() As Boolean
+
+  Return Not $bNoCheck
+
+End
+
+Private Sub ShowCheck_Write(Value As Boolean)
+
+  $bNoCheck = Not Value
+  Me._SetProperty("ShowCheck", Value)
+
+End
+
+Private Function Step_Read() As Integer
+
+  Return $iStep
+
+End
+
+Private Sub Step_Write(Value As Integer)
+
+  $iStep = Value
+  Me._SetProperty("Step", $iStep)
+
+End
+
+Private Function Current_Read() As Integer
+
+  If $hSelection Then
+    Return $hSelection.GetCurrent()
+  Else
+    Return -1
+  Endif
+
+End
+
+Private Sub Current_Write(Value As Integer)
+
+  If $iMode = Select.None Then Return
+  UnselectAll
+  Select(Value)  
+
+End
+
+Private Function ShowHeader_Read() As Boolean
+
+  Return Not $bNoHeader
+
+End
+
+Private Sub ShowHeader_Write(Value As Boolean)
+
+  $bNoHeader = Not Value
+  Me._SetProperty("ShowHeader", Value)
+
+End
+
+Public Sub AddColumn(Text As String, Optional Width As String, Alignment As Integer = Align.Normal) As _WebTableColumn
+  
+  Dim hCol As _WebTableColumn
+  
+  Inc Me.Columns.Count
+  
+  hCol = Me.Columns[Me.Columns.Count - 1]
+  hCol.Text = Text
+  If Width = "*" Then
+    hCol.Expand = True
+  Else If Width Then
+    hCol.Width = Width
+  Endif
+  hCol.Alignment = Alignment
+  
+  Return hCol
+  
+End
+
+Public Sub EnsureVisible(Row As Integer)
+
+  If Row < 0 Or If Row >= $iCount Then Return
+
+  Me.Display = Min($iCount, Max($iStep, ((Row + $iStep - 1) \ $iStep) * $iStep))
+  Me.Refresh
+  $iEnsureVisible = Row
+  
+End
+
+Private Function Sortable_Read() As Boolean
+
+  Return $bSortable
+
+End
+
+Private Sub Sortable_Write(Value As Boolean)
+
+  $bSortable = Value
+  Me._SetProperty("Sortable", Value)
+  
+End
+
+Private Function SortColumn_Read() As Integer
+
+  Return $iSortColumn
+
+End
+
+Private Sub SortColumn_Write(Value As Integer)
+
+  If $iSortColumn = Value Then Return
+  $iSortColumn = Value
+  Me._SetProperty("SortColumn", Value)
+  Raise Sort
+
+End
+
+Private Function SortOrder_Read() As Integer
+
+  Return If($bSortDescent, gb.Descent, gb.Ascent)
+
+End
+
+Private Sub SortOrder_Write(Value As Integer)
+
+  If $bSortDescent = (Value = gb.Descent) Then Return
+  $bSortDescent = Value = gb.Descent
+  Me._SetProperty("SortOrder", Value)
+  Raise Sort
+
+End

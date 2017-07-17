@@ -1,0 +1,1 @@
+../../../gb.gtk/src/sm/libgnomeuiP.h

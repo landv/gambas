@@ -1,0 +1,46 @@
+' Gambas class file
+
+Export
+
+Event Change
+
+Public _Style As New Collection
+
+Public Sub _get({Property} As String) As String
+  
+  Return _Style[{Property}]
+  
+End
+
+Public Sub _put(Value As String, {Property} As String)
+  
+  _Style[{Property}] = Value
+  Raise Change
+  
+End
+
+Public Sub IsVoid() As Boolean
+  
+  Return _Style.Count = 0
+  
+End
+
+Public Sub Exist({Property} As String) As Boolean
+  
+  Return _Style.Exist({Property})
+  
+End
+
+
+Public Sub _GetStyleSheet() As String[]
+  
+  Dim aStyle As New String[]
+  Dim sValue As String
+  
+  For Each sValue In _Style
+    aStyle.Add(_Style.Key & ":" & sValue & ";")
+  Next
+  
+  Return aStyle
+  
+End

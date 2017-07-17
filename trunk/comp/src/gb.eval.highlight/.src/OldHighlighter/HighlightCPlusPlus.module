@@ -1,0 +1,53 @@
+' Gambas module file
+
+Private Const IDENT_CAR As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_$"
+Private Const DIGIT_CAR As String = "0123456789.+-eE"
+
+Private $cKeyword As New Collection
+Private $cOperator As New Collection
+Private $cType As New Collection
+Private $aKeywords As String[]
+
+Public Sub _init()
+  
+  Dim sStr As String
+  
+  $aKeywords = New String[]
+  
+  For Each sStr In ["asm", "auto", "break", "case", "catch", "class", "const", "const_cast", "continue", "default", "delete", "do", "dynamic_cast",
+    "else", "enum", "explicit", "export", "extern", "for", "friend", "goto", "if", "inline", "mutable", "namespace", "new", "operator",
+    "private", "protected", "public", "register", "reinterpret_cast", "return", "sizeof", "static", "static_cast", "struct", "switch",
+    "template", "this", "throw", "try", "typedef", "typeid", "typename", "union", "using", "virtual", "volatile", "while"]
+    $cKeyword[sStr] = 0
+    $aKeywords.Add(sStr)
+  Next
+
+  For Each sStr In ["false", "null" "true", "FALSE", "TRUE", "NULL"]
+    $cKeyword[sStr] = 1
+    $aKeywords.Add(sStr)
+  Next
+
+  For Each sStr In ["{", "}", ".", ">=", "+", "<<", "!", "=", ">>=", ";", "==", "-", ">>", "~", "+=", "(", ",", "!=", "*", "&&", "-=", "&=", ")", "<", "%", "&", "||", "*=", "|=", "[", ">", "++", "|", "?", "%=", "^=",
+    "--", "^", ":", "<<=", "]", "<=", "/", "/="]
+    $cOperator[sStr] = True
+  Next
+  
+  For Each sStr In ["void", "bool", "signed", "unsigned", "char", "short", "int", "long", "float", "double", "int64_t", "uint64_t", "int32_t", 
+    "uint32_t", "int16_t", "uint16_t", "int8_t", "uint8_t", "wchar_t"]
+    $cType[sStr] = True
+    $aKeywords.Add(sStr)
+  Next
+  
+End
+
+Public Sub GetKeywords() As String[]
+  
+  Return $aKeywords
+  
+End
+
+Public Sub Run()
+
+  HighlightC.RunWith($cKeyword, $cOperator, $cType)
+  
+End

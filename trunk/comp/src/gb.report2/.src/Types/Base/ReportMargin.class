@@ -1,0 +1,40 @@
+' Gambas class file
+
+Export
+Inherits ReportPadding
+Static Public Sub _Get(Value As String) As ReportMargin
+  
+  Dim hMargin As New ReportMargin
+  Dim hSize As TSizeParse
+  Dim s As String
+  Dim ars As String[]
+  
+  For Each s In Split(Value, ";")
+    ars = Scan(s, "*:*")
+    If ars.count > 1 Then
+      Select Case LCase(ars[0])
+        Case "left"
+          hMargin.Left = ars[1]
+        Case "top"
+          hMargin.top = ars[1]
+        Case "bottom"
+          hMargin.bottom = ars[1]
+        Case "right"
+          hMargin.Right = ars[1]
+        Case Else
+          
+      End Select
+    Else
+      Try hSize = New TSizeParse(s)
+      If hSize <> Null Then
+        hMargin.Left = s
+        hMargin.Right = s
+        hMargin.Bottom = s
+        hMargin.Top = s
+      Endif
+    Endif
+    
+  Next
+  Return hMargin
+  
+End

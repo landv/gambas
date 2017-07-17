@@ -1,0 +1,50 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,77,38)
+  Text = ("POP3 Mailbox Example")
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  Padding = 10
+  { !MailClient #Pop3Client
+    #MoveScaled(23,1)
+    #Public = True
+  }
+  { HSplit1 HSplit
+    MoveScaled(1,9,69,19)
+    Expand = True
+    { lvInbox ListView
+      MoveScaled(2,3,29,14)
+    }
+    { txtContent TextArea
+      MoveScaled(33,1,31,16)
+      ReadOnly = True
+      Wrap = True
+      ScrollBar = Scroll.Vertical
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(3,30,67,4)
+    { btnConnect Button
+      MoveScaled(0,0,16,4)
+      Text = ("Connect")
+    }
+    { Panel2 Panel
+      MoveScaled(16,0,7,4)
+    }
+    { btnDisconnect Button
+      MoveScaled(23,0,16,4)
+      Enabled = False
+      Text = ("Disconnect")
+    }
+    { Panel1 Panel
+      MoveScaled(39,0,7,4)
+      Expand = True
+    }
+    { btnSettings Button
+      MoveScaled(46,0,16,4)
+      Text = ("Settings")
+    }
+  }
+}

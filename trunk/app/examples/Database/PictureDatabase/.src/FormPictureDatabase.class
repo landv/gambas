@@ -1,0 +1,227 @@
+' Gambas class file
+
+'''
+' Name: FormPictureDatabase
+' Author: Timothy Marshal-Nichols
+' eMail: timothy.marshal-nichols@ntlworld.com
+' Version: 1.0
+' Version Date: April 2007
+' Version History:
+'
+'''
+' Licence Information
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+'
+' http://www.gnu.org/licenses/gpl.html
+'
+'''
+' Description:
+'
+' Provides the interface to the pictures database.
+'
+'''
+' Developed using Gambas2 Version
+'
+'  Version: 1.9.48
+'
+' Gambas Components Used:
+'
+' gb - Gambas internal native classes
+' gb.qt - Graphical QT toolkit component
+'
+' Look in the Project menu then Properties... and select
+' the Components tab. Check that the listed components
+' are in the project.
+'
+'''
+' External Dependencies:
+'
+' None.
+'
+'''
+' Class Usage:
+'
+' Set as startup class 
+'
+'''
+
+Public Sub Form_Open()
+
+  'DB.Debug = True
+
+  Me.Center()
+  Dialog.Path = User.Home
+  GridViewImages.Columns.Count = 2
+  GridViewImages.Columns[0].Text = ("Thumb")
+  GridViewImages.Columns[0].Width = 1.5 * ModuleDatabase.ThumbSize
+  GridViewImages.Columns[1].Text = ("Description")
+  GridViewImages.Columns[1].Width = 300
+  ' Open database
+  ' 
+  ' Use somthing like this for a SQLite3 database
+  ModuleDatabase.OpenDatabase("sqlite3", User.Home, Application.Name & ".db", "", "")
+  '
+  ' Use somthing like this for a MySQL database
+  'ModuleDatabase.OpenDatabase("mysql", "", Application.Name, "root", "")
+  '
+  ' Use somthing like this for a PostgreSQL database
+  'ModuleDatabase.OpenDatabase("postgresql", "localhost", Application.Name, "timothy", "password")
+  ' 
+  ' Display the database content
+  ModuleDatabase.Select()
+  DisplayImages()
+Catch
+  PanelButtons.Enabled = False
+  Message.Warning(ERROR.Text)
+End
+
+Public Sub Form_Close()
+  ModuleDatabase.CloseDatabase()
+End
+
+'''
+''' Buttons
+'''
+
+Public Sub ToolButtonAdd_Click()
+  Dialog.Filter = FileFilter(True)
+  Dialog.Title = ("Add image to database")
+  If Dialog.OpenFile() Then Return 
+  ModuleDatabase.Add(Dialog.Path)
+  ModuleDatabase.Select()
+  DisplayImages()
+Catch
+  Message.Warning(ERROR.Text)
+End
+
+Public Sub ToolButtonRemove_Click()
+  Dim m As String
+  If GridViewImages.Row >= 0 Then
+    m = ("Are you sure you want to delete image ") & (GridViewImages.Row + 1)
+    m &= (" from the database:\n\n") & TextAreaDescription.Text
+    If Message.Question(m, ("Delete"), ("Cancel")) = 1 Then 
+      ModuleDatabase.Delete(GridViewImages.Row)
+      ModuleDatabase.Select()
+      DisplayImages()
+    End If
+  End If
+Catch
+  Message.Warning(ERROR.Text)
+End
+
+Public Sub ToolButtonExport_Click()
+  Dialog.Filter = FileFilter(False)
+  Dialog.Title = ("Save image from database")
+  If Dialog.SaveFile() Then Return 
+  PictureBoxImage.Picture.Save(Dialog.Path)
+Catch
+  Message.Warning(("Error saving image:\n\n") & ERROR.Text)
+End
+
+Public Sub ToolButtonUpdate_Click()
+  ModuleDatabase.Update(GridViewImages.Row, TextAreaDescription.Text)
+  GridViewImages[GridViewImages.Row, 1].Text = TextAreaDescription.Text
+Catch
+  Message.Warning(ERROR.Text)
+End
+
+'''
+''' GridView events
+'''
+
+Public Sub GridViewImages_Click()
+  If GridViewImages.Row >= 0 Then 
+    ShowImage(GridViewImages.Row)
+  End If
+End
+
+'''
+''' Functions
+'''
+
+Private Sub DisplayImages()
+  Dim i As Integer
+  Dim tempFile As String
+  Dim tempPicture As String
+  GridViewImages.Clear()
+  GridViewImages.Rows.Count = ModuleDatabase.ResultPictures.Count
+  If ModuleDatabase.ResultPictures.Count > 0 Then 
+    tempFile = Temp() & ".png"
+    For Each ModuleDatabase.ResultPictures
+      i = ModuleDatabase.ResultPictures.Index
+      tempPicture = ModuleDatabase.ResultPictures["thumb"].Data
+      If tempPicture Then 
+        File.Save(tempFile, tempPicture)
+        GridViewImages[i, 0].Picture = Picture.Load(tempFile)
+      End If
+      GridViewImages[i, 1].Text = ModuleDatabase.ResultPictures["description"]
+    Next 
+    GridViewImages.Row = 0
+    ShowImage(0)
+  Else 
+    TextAreaDescription.Text = ""
+    PictureBoxImage.Picture = Null  
+    PictureBoxImage.Resize(1, 1)
+  End If
+  If Exist(tempFile) Then Kill tempFile
+  GridViewImages.Rows.Height = ModuleDatabase.ThumbSize
+  ToolButtonRemove.Enabled = (GridViewImages.Rows.Count > 0)
+  ToolButtonExport.Enabled = ToolButtonRemove.Enabled 
+  ToolButtonUpdate.Enabled = ToolButtonRemove.Enabled 
+End
+
+Private Sub ShowImage(Row As Integer)
+  Dim tempFile As String
+  Dim tempPicture As String
+  tempFile = Temp() & ".png"
+  ModuleDatabase.ResultPictures.MoveTo(Row)
+  TextAreaDescription.Text = ModuleDatabase.ResultPictures["description"]
+  If tempFile Then 
+    'tempPicture = ModuleDatabase.ResultPictures["image"].Data
+    File.Save(tempFile, ModuleDatabase.ResultPictures["image"].Data)
+    PictureBoxImage.Picture = Picture.Load(tempFile)  
+    PictureBoxImage.Resize(PictureBoxImage.Picture.Width, PictureBoxImage.Picture.Height)
+  Else 
+     PictureBoxImage.Picture = Null
+  End If
+  If Exist(tempFile) Then Kill tempFile
+End
+
+' Filter for our user file open dialog. All image types supported by Gambas
+Private Function FileFilter(Optional All As Boolean = False) As String[]
+  Dim filter As New String[]
+  If All Then 
+    filter.Add("*.png;*.jpeg;*.jpg;*.bmp;*.gif;*.xpm")
+    filter.Add("All Graphics")
+  End If
+  filter.Add("*.png")
+  filter.Add("Portable Network Graphics")
+  filter.Add("*.jpeg *.jpg")
+  filter.Add("Joint Photographic Experts Group")
+  filter.Add("*.bmp")
+  filter.Add("Windows Bitmap")
+  filter.Add("*.gif")
+  filter.Add("Graphics Interchange Format")
+  filter.Add("*.xpm")
+  filter.Add("X PixMap")
+  If All Then
+    filter.Add("*") 
+    filter.Add("All Files")
+  End If
+  Return filter
+End
+
+''' End of class FormPictureDatabase '''

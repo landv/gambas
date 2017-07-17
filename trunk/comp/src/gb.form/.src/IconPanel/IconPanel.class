@@ -1,0 +1,347 @@
+' Gambas class file
+
+Export
+Inherits UserContainer
+
+Public Const _Properties As String = "*,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Border"
+Public Const _Similar As String = "TabStrip"
+Public Const _IsMultiContainer As Boolean = True
+Public Const _DefaultEvent As String = "Click"
+
+Event Click
+
+Property Count As Integer
+Property Index As Integer
+Property Text As String
+Property Picture As Picture
+Property Font As Font
+Property TextFont As Font
+Property Border As Boolean
+
+Private $hView As GridView
+Private $aCont As New _IconPanelContainer[]
+
+Private $iCurrent As Integer = -1
+Private $hPanel As Panel
+Private $hBorder As Panel
+Private $hSep As Separator
+
+Private Const MIN_WIDTH_PANEL As Integer = 20
+
+Public Sub _new()
+
+  Me.Spacing = True
+
+  $hBorder = New Panel(Me)
+  $hBorder.Arrangement = Arrange.Horizontal
+
+  $hView = New GridView($hBorder) As "View"
+  '$hView.Orientation = Arrange.Horizontal
+  '$hView.IconLines = 2
+  $hView.Width = Desktop.Scale * MIN_WIDTH_PANEL
+  $hView.Mouse = Mouse.Pointing
+  $hView.Columns.Count = 1
+  $hView.Mode = Select.Single
+  $hView.Grid = False
+  $hView.Border = False
+  '$hView.ScrollBar = Scroll.None
+  
+  $hSep = New Separator($hBorder)
+  $hSep.W = 1
+  
+  'hSpace = New Panel($hBorder)
+  'hSpace.W = Desktop.Scale
+  
+  $hPanel = New Panel($hBorder) As "Panel"
+  $hPanel.Expand = True
+  $hPanel.Arrangement = Arrange.Fill
+
+  Border_Write(False)
+  'Me._Container = $hPanel
+  Me.Count = 1
+  'Me.Index = 0
+  'Me.Border = True
+  Me.Arrangement = Arrange.None
+  Me.Spacing = False
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return $aCont.Count
+
+End
+
+Public Sub _UpdateIconViewWidth()
+  
+  Dim iInd As Integer
+  Dim W, H, WC As Integer
+  
+  W = Desktop.Scale * MIN_WIDTH_PANEL
+  
+  For iInd = 0 To $aCont.Max
+    
+    WC = $hView.Font.TextWidth($hView[iInd, 0].Text) + Desktop.Scale * 4
+    If $hView[iInd, 0].Picture Then WC += $hView[iInd, 0].Picture.Width + Desktop.Scale
+    W = Max(W, WC)
+    
+    H = Max(H, $hView.Font.TextHeight($hView[iInd, 0].Text))
+    If $hView[iInd, 0].Picture Then H = Max(H, $hView[iInd, 0].Picture.Height)
+    
+    $hView[iInd, 0].Padding = Desktop.Scale
+    
+  Next
+  
+  $hView.Rows.H = H + Desktop.Scale * 2
+  
+  If $hView.ScrollH > ($hView.ClientH + Style.FrameWidth * 2) Then W += Style.ScrollbarSize + Style.ScrollbarSpacing
+  
+  $hView.W = Min(W, Me.Width / 2)
+  
+End
+
+Public Sub Panel_Arrange()
+  
+  _UpdateIconViewWidth()
+  
+End
+
+
+Private Sub Count_Write(iCount As Integer)
+
+  Dim iInd As Integer
+  Dim hToolbar As _IconPanelContainer
+  Dim iCurrent As Integer
+
+  If iCount < 1 Then Error.Raise("Bad argument")
+  If iCount = $aCont.Count Then Return
+
+  If iCount < $aCont.Count Then
+
+    For iInd = $aCont.Max To iCount Step -1
+      hToolbar = $aCont[iInd]
+      If hToolbar.Children.Count Then Error.Raise("IconPanel container is not empty")
+    Next
+
+    iCurrent = $iCurrent
+    
+    Object.Lock(Me) '' FIXME: Interpreter crash if this is removed!
+    For iInd = $aCont.Max To iCount Step -1
+      $aCont[iInd].Delete
+      $hView.Rows.Remove(iInd)
+      If iInd <= iCurrent Then Dec iCurrent
+    Next
+    Object.Unlock(Me)
+
+    $aCont.Remove(iCount, -1)
+    
+    $iCurrent = -1
+    Index_Write(iCurrent)
+    
+  Else
+
+    $hView.Rows.Count = iCount
+
+    For iInd = $aCont.Count To iCount - 1
+      hToolbar = New _IconPanelContainer($hPanel) As "_IconPanelContainer"
+      hToolbar.Resize(1, 1)
+      'hToolbar.Text = "Toolbar " & CInt(iInd)
+      $aCont.Add(hToolbar)
+      '$hView.Add(iInd, "Item " & CStr(iInd))
+      With $hView[iInd, 0]
+        .Text = "Item " & CStr(iInd)
+      End With
+      _UpdateIconViewWidth
+    Next
+    'ME.Container = hCont
+
+    'ME.Index = iCount - 1
+    Index_Write(iCount - 1)
+
+  Endif
+
+End
+
+Private Function Index_Read() As Integer
+
+  Return $iCurrent
+
+End
+
+Private Sub Index_Write(iIndex As Integer)
+
+  If iIndex < 0 Or iIndex >= $aCont.Count Then Error.Raise("Bad index")
+
+  If iIndex = $iCurrent Then Return
+
+  Me._Container = $aCont[iIndex]
+  $iCurrent = iIndex
+  $hView.Rows[$iCurrent].Selected = True
+
+  UpdateContainer
+  Raise Click
+
+End
+
+Private Sub UpdateContainer()
+
+  Dim iInd As Integer
+
+  For iInd = 0 To $aCont.Max
+
+    If iInd = $iCurrent
+      $aCont[iInd].Show
+    Else
+      $aCont[iInd].Hide
+    Endif
+
+  Next
+
+End
+
+Private Function Text_Read() As String
+
+  Return $aCont[$iCurrent].Text
+
+End
+
+Private Sub Text_Write(sText As String)
+
+  $aCont[$iCurrent].Text = sText
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $aCont[$iCurrent].Picture
+
+End
+
+Private Sub Picture_Write(hPict As Picture)
+
+  $aCont[$iCurrent].Picture = hPict
+
+End
+
+Public Function _get(Index As Integer) As _IconPanelContainer
+
+  If Index < 0 Or Index >= $aCont.Count Then Error.Raise("Bad index")
+  Return $aCont[Index]
+
+End
+
+Private Function Font_Read() As Font
+
+  Return Super.Font
+
+End
+
+Private Sub Font_Write(hFont As Font)
+
+  Dim hToolbar As _IconPanelContainer
+
+  Super.Font = hFont
+
+  For Each hToolbar In $aCont
+    hToolBar.Text = hToolBar.Text
+  Next
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hView.Border <> Border.None
+
+End
+
+Private Sub Border_Write(bBorder As Boolean)
+
+  $hView.Border = If(bBorder, Border.Plain, Border.None)
+  $hSep.Visible = Not bBorder
+  $hBorder.Spacing = bBorder
+
+End
+
+Private Function TextFont_Read() As Font
+
+  Return $hView.Font
+
+End
+
+Private Sub TextFont_Write(Value As Font)
+
+  $hView.Font = Value
+  
+End
+
+Public Sub _GetView() As GridView
+  
+  Return $hView
+  
+End
+
+Public Sub _GetIndex(hCont As _IconPanelContainer) As Integer
+  
+  Return $aCont.Find(hCont)
+  
+End
+
+Public Sub View_Select()
+  
+  Index_Write($hView.Row)
+  
+End
+
+Private Sub GotoIndex(iInc As Integer)
+
+  Dim iIndex As Integer
+  
+  iIndex = $iCurrent
+  Do
+    iIndex += iInc
+    If iIndex < 0 Or If iIndex > $aCont.Max Then Break
+    If $aCont[iIndex].Visible Then
+      Index_Write(iIndex)
+      Break
+    Endif
+  Loop
+  
+End
+
+
+Public Sub View_MouseWheel()
+  
+  GotoIndex(- Sgn(Mouse.Delta))
+  
+End
+
+Public Sub _SetVisible(hCont As _IconPanelContainer, bVisible As Boolean)
+  
+  Dim iIndex As Integer = _GetIndex(hCont)
+  Dim bBackward As Boolean
+  
+  If bVisible Then
+    $hView.Rows[iIndex].H = -1
+  Else
+    $hView.Rows[iIndex].H = 0
+  Endif
+  
+  If Not bVisible And If iIndex = $iCurrent Then
+    
+    While Not $aCont[iIndex].Visible
+      If bBackward Then
+        Dec iIndex
+        If iIndex < 0 Then Return
+      Else
+        Inc iIndex
+        If iIndex > $aCont.Max Then 
+          bBackward = True
+        Endif
+      Endif
+    Wend
+    
+    Me.Index = iIndex
+    
+  Endif
+    
+End

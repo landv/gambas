@@ -1,0 +1,306 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,76,85)
+  Fixed = True
+  Padding = ReportPadding["Top:20mm;Bottom:20mm;Left:20mm;Right:20mm"]
+  Expand = True
+  Index = 0
+  Text = ("")
+  { ReportHBox1 ReportHBox
+    #MoveScaled(2,0,62,11)
+    Height = "25mm"
+    Fixed = True
+    Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+    Border = ReportBorder["Bottom:2px #000000"]
+    { ReportImage1 ReportImage
+      #MoveScaled(1,1,18,9)
+      Width = "51mm"
+      AutoResize = True
+    }
+    { ReportLabel1 ReportLabel
+      #MoveScaled(21,1,10,9)
+      AutoResize = True
+      Text = ("Version 1.0")
+      Alignment = Align.BottomLeft
+    }
+    { ReportLabel2 ReportLabel
+      #MoveScaled(31,1,30,9)
+      Expand = True
+      AutoResize = True
+      Text = ("Date")
+      Alignment = Align.BottomRight
+      UseField = True
+    }
+  }
+  { ReportVBox1 ReportVBox
+    #MoveScaled(2,11,62,9)
+    Height = "28.01mm"
+    Fixed = True
+    Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+    Border = ReportBorder["Bottom:2px #000000"]
+    { ReportLabel3 ReportLabel
+      #MoveScaled(0,0,12,2)
+      Height = "6mm"
+      AutoResize = True
+      Text = ("Project Title:")
+      Alignment = Align.TopLeft
+    }
+    { ReportLabel4 ReportLabel
+      #MoveScaled(0,2,12,2)
+      Height = "6mm"
+      AutoResize = True
+      Text = ("Project No.:")
+      Alignment = Align.TopLeft
+    }
+    { ReportLabel5 ReportLabel
+      #MoveScaled(0,4,12,2)
+      Height = "6mm"
+      AutoResize = True
+      Text = ("Company:")
+      Alignment = Align.TopLeft
+    }
+    { ReportLabel6 ReportLabel
+      #MoveScaled(0,6,12,2)
+      Height = "6mm"
+      AutoResize = True
+      Text = ("Designer:")
+      Alignment = Align.TopLeft
+    }
+  }
+  { ReportHBox2 ReportHBox
+    #MoveScaled(2,20,62,3)
+    Height = "8mm"
+    Fixed = True
+    Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+    Border = ReportBorder["Bottom:2px #000000"]
+    { ReportLabel7 ReportLabel
+      #MoveScaled(0,0,12,2)
+      Height = "6mm"
+      AutoResize = True
+      Text = ("Base Plate ID:")
+      Alignment = Align.TopLeft
+    }
+  }
+  { FullRepeat ReportPanel
+    #MoveScaled(2,25,63,50)
+    AutoResize = True
+    Tag = "**"
+    ForceNewPage = True
+    { ReportHBox3 ReportHBox
+      #MoveScaled(0,0,62,17)
+      Height = "61mm"
+      Fixed = True
+      Expand = True
+      { ReportVBox3 ReportVBox
+        #MoveScaled(1,1,18,14)
+        AutoResize = True
+        { ReportHBox8 ReportHBox
+          #MoveScaled(1,2,15,4)
+          Width = "51mm"
+          Height = "12mm"
+          { ReportLabel9 ReportLabel
+            #MoveScaled(1,1,13,2)
+            Font = Font["+1"]
+            Expand = True
+          }
+        }
+        { ReportHBox9 ReportHBox
+          #MoveScaled(1,8,15,4)
+          Width = "51mm"
+          Height = "6mm"
+          { ReportLabel14 ReportLabel
+            #MoveScaled(1,1,13,2)
+            Expand = True
+          }
+        }
+      }
+      { ReportImage2 ReportImage
+        #MoveScaled(31,1,17,15)
+        Padding = ReportPadding["Top:5mm;Bottom:5mm;Left:5mm;Right:5mm"]
+        Expand = True
+        Background = ReportBrush["#0000FF"]
+        Alignment = Align.Center
+      }
+    }
+    { ReportVBox4 ReportVBox
+      #MoveScaled(1,18,62,14)
+      AutoResize = True
+      Tag = "Serie 1"
+      { ReportLabel19 ReportLabel
+        #MoveScaled(2,0,16,4)
+        Fixed = True
+        Font = Font["+1"]
+        Padding = ReportPadding["Top:3mm"]
+        AutoResize = True
+        Text = ("Bearing Pressue")
+      }
+      { ReportHBox4 ReportHBox
+        #MoveScaled(1,3,60,4)
+        Height = "6mm"
+        Fixed = True
+        { ReportLabel20 ReportLabel
+          #MoveScaled(1,1,13,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Text = ("Node #")
+          Alignment = Align.Center
+        }
+        { ReportLabel21 ReportLabel
+          #MoveScaled(14,1,14,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Text = ("Brg. Press., psi")
+          Alignment = Align.Center
+        }
+        { ReportLabel22 ReportLabel
+          #MoveScaled(28,1,4,2)
+          Width = "5mm"
+        }
+        { ReportLabel23 ReportLabel
+          #MoveScaled(32,1,12,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Text = ("Node #")
+          Alignment = Align.Center
+        }
+        { ReportLabel24 ReportLabel
+          #MoveScaled(44,1,15,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Text = ("Brg. Press., psi")
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox5 ReportHBox
+        #MoveScaled(1,8,60,4)
+        Height = "6mm"
+        { ReportLabel25 ReportLabel
+          #MoveScaled(1,1,13,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Alignment = Align.Center
+        }
+        { ReportLabel26 ReportLabel
+          #MoveScaled(14,1,14,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Alignment = Align.Center
+        }
+        { ReportLabel27 ReportLabel
+          #MoveScaled(28,1,4,2)
+          Width = "5mm"
+        }
+        { ReportLabel29 ReportLabel
+          #MoveScaled(32,1,12,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Alignment = Align.Center
+        }
+        { ReportLabel30 ReportLabel
+          #MoveScaled(44,1,15,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Alignment = Align.Center
+        }
+      }
+    }
+    { ReportVBox6 ReportVBox
+      #MoveScaled(1,33,62,14)
+      AutoResize = True
+      Tag = "Serie2"
+      { ReportLabel31 ReportLabel
+        #MoveScaled(2,0,19,4)
+        Fixed = True
+        Font = Font["+1"]
+        Padding = ReportPadding["Top:3mm"]
+        AutoResize = True
+        Text = ("Anchor Rod Tension")
+      }
+      { ReportHBox6 ReportHBox
+        #MoveScaled(1,3,60,4)
+        Height = "6mm"
+        Fixed = True
+        { ReportLabel44 ReportLabel
+          #MoveScaled(1,1,13,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Text = ("Rod #")
+          Alignment = Align.Center
+        }
+        { ReportLabel45 ReportLabel
+          #MoveScaled(14,1,14,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Text = ("Tension, lbs")
+          Alignment = Align.Center
+        }
+        { ReportLabel46 ReportLabel
+          #MoveScaled(28,1,4,2)
+          Width = "5mm"
+        }
+        { ReportLabel47 ReportLabel
+          #MoveScaled(32,1,12,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Text = ("Rod #")
+          Alignment = Align.Center
+        }
+        { ReportLabel48 ReportLabel
+          #MoveScaled(44,1,15,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Text = ("Tension, lbs")
+          Alignment = Align.Center
+        }
+      }
+      { ReportHBox7 ReportHBox
+        #MoveScaled(1,8,60,4)
+        Height = "6mm"
+        { ReportLabel49 ReportLabel
+          #MoveScaled(1,1,13,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Alignment = Align.Center
+        }
+        { ReportLabel50 ReportLabel
+          #MoveScaled(14,1,14,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Alignment = Align.Center
+        }
+        { ReportLabel51 ReportLabel
+          #MoveScaled(28,1,4,2)
+          Width = "5mm"
+        }
+        { ReportLabel52 ReportLabel
+          #MoveScaled(32,1,12,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Alignment = Align.Center
+        }
+        { ReportLabel53 ReportLabel
+          #MoveScaled(44,1,15,2)
+          Expand = True
+          Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000"]
+          Alignment = Align.Center
+        }
+      }
+    }
+  }
+  { ReportHBox10 ReportHBox
+    #MoveScaled(2,75,62,4)
+    Fixed = True
+    Expand = True
+    AutoResize = True
+    { ReportLabel8 ReportLabel
+      #MoveScaled(22,1,21,2)
+      Expand = True
+      AutoResize = True
+      Text = ("Page $PAGE of $NPAGE")
+      Alignment = Align.Bottom
+      UseField = True
+    }
+  }
+  Index = 0
+}

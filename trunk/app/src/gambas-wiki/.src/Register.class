@@ -1,0 +1,17 @@
+' Gambas class file
+
+Private $iSeed As Integer
+
+Public Sub _new()
+  
+  $iSeed = Int(Rnd(0, 2147483647))
+  
+End
+
+
+Private Sub _PrintCode()
+
+  Print "Randomize "; $iSeed
+  Print "Print Int(Rnd(0, &H1000000))"
+
+End

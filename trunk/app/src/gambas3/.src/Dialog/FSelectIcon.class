@@ -1,0 +1,195 @@
+' Gambas class file
+
+'STATIC PRIVATE $aImgExt AS String[] = ["png", "jpeg", "jpg", "gif", "xpm"]
+
+Public Const SELECT_STOCK As Integer = 1
+Public Const SELECT_IMAGE As Integer = 2
+Public Const SELECT_SVGIMAGE As Integer = 4
+Public Const SELECT_PUBLIC As Integer = 8
+
+Private $sIcon As String
+Private $sSize As String
+Private $iOption As Integer
+
+Public Sub Run(sIcon As String, Optional iOption As Integer = SELECT_IMAGE + SELECT_STOCK) As String
+  
+  $sIcon = sIcon
+  If Not Project.IsStockAllowed() Then iOption = iOption And Not SELECT_STOCK
+  $iOption = iOption
+  If Not Me.ShowModal() Then Return
+  Return $sIcon
+  
+End
+
+
+Public Sub Form_Open()
+
+  Dim iPos As Integer
+  Dim aFilter As String[]
+
+  Inc Application.Busy
+  
+  Settings.Read(Me)
+
+  aFilter = New String[]
+  If $iOption And SELECT_IMAGE Then aFilter.Insert(["*.png;*.jpg;*.jpeg;*.xpm;*.gif;*.mng", ("Image files")])
+  If $iOption And SELECT_SVGIMAGE Then aFilter.Insert(["*.svg", ("SVG image files")])
+
+  If $iOption And SELECT_PUBLIC Then
+    fchIcon.Root = Project.Dir &/ ".public"
+  Else
+    fchIcon.Root = Project.Dir
+  Endif
+  
+  cmbSize.List = ["small", "medium", "large", "huge", "16", "22", "32", "48", "64", "96", "128"]
+  
+  tabIcon[1].Visible = $iOption And SELECT_STOCK
+  
+  If $sIcon Begins "icon:/" Then 
+    $sIcon = Mid$($sIcon, 7)
+    iPos = InStr($sIcon, "/")
+    icwStock.Clear
+    If iPos Then 
+      SetSize(Left$($sIcon, iPos - 1))
+    Else 
+      SetSize(Settings["FSelectIcon/Size", "32"])
+    Endif
+    $sIcon = Mid$($sIcon, iPos + 1)
+    If icwStock.Exist($sIcon) Then
+      icwStock[$sIcon].Selected = True
+      icwStock[$sIcon].EnsureVisible
+    Endif
+    tabIcon.Index = 1 
+  Else If $sIcon Then
+    fchIcon.SelectedPath = fchIcon.Root &/ $sIcon
+    tabIcon.Index = 0
+  Endif
+
+  If Not $sSize Then SetSize(Settings["FSelectIcon/Size", "32"])
+  
+  Dec Application.Busy
+  
+End
+
+' PUBLIC SUB fchIcon_Icon(Path AS String)
+' 
+'   IF $aImgExt.Find(File.Ext(Path)) < 0 THEN RETURN
+'   IF Stat(Path).Size > 8192 THEN RETURN 
+'   fchIcon.Icon = Picture.Load(Path)
+' 
+' END
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub cmbSize_Activate()
+
+  SetSize(cmbSize.Text)
+
+End
+
+Public Sub cmbSize_Click()
+
+  SetSize(cmbSize.Text)
+
+End
+
+Private Sub RefreshStock()
+  
+  Dim sIcon As String
+  Dim sKey As String
+  
+  Inc Application.Busy
+
+  sKey = icwStock.Key
+  icwStock.Clear
+
+  For Each sIcon In Stock.Icons
+    icwStock.Add(sIcon, sIcon, Stock[$sSize &/ sIcon])
+  Next
+  
+  If sKey Then 
+    icwStock[sKey].Selected = True
+    icwStock[sKey].EnsureVisible
+  Endif
+  
+  Dec Application.Busy
+  
+End
+
+Private Sub SetSize(sSize As String) As Boolean
+
+  Dim iSize As Integer
+  
+  sSize = LCase(sSize)
+  Try iSize = CInt(sSize)
+  If Error Then 
+    If Not ["small", "medium", "large", "huge"].Exist(sSize) Then 
+      cmbSize.Text = $sSize
+      Return True
+    Endif
+  Else 
+    If iSize < 8 Or iSize > 256 Then 
+      cmbSize.Text = $sSize
+      Return True
+    Endif
+    sSize = CStr(iSize)
+  Endif
+  
+  $sSize = sSize
+  Object.Lock(cmbSize)
+  cmbSize.Text = sSize
+  Object.Unlock(cmbSize)
+  RefreshStock
+  
+End
+
+
+Public Sub btnOK_Click()
+
+  Select Case tabIcon.Index
+  
+    Case 0
+      $sIcon = Mid$(fchIcon.SelectedPath, Len(fchIcon.Root) + 1)
+      If Left($sIcon) = "/" Then $sIcon = Mid$($sIcon, 2)
+  
+    Case 1
+      $sIcon = "icon:/" &/ $sSize &/ icwStock.Key
+      Settings["FSelectIcon/Size"] = $sSize
+      
+  End Select 
+  
+  If Not $sIcon Then Return
+
+  Me.Close(True)
+
+End
+
+Public Sub icwStock_Activate()
+
+  btnOK.Value = True
+
+End
+
+Public Sub fchIcon_Activate()
+
+  btnOK.Value = True
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)  
+
+End
+
+Public Sub tabIcon_Click()
+
+  If tabIcon.Index = 1 Then 
+    icwStock.SetFocus
+  Endif 
+
+End

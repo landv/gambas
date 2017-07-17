@@ -1,0 +1,71 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,73,58)
+  Action = "Show a clue"
+  Text = ("Create Routine")
+  Icon = Picture["icons/16/Routine.png"]
+  Resizable = False
+  { lblTitle Label
+    MoveScaled(1,1,71,5)
+    Font = Font["+4"]
+    Background = Color.LightBackground
+    Text = ("Create Routine")
+    Alignment = Align.Center
+    Border = Border.Sunken
+  }
+  { lblName Label
+    MoveScaled(1,8,11,3)
+    Font = Font["+1"]
+    Text = ("Name:")
+  }
+  { txtName TextBox
+    MoveScaled(15,8,57,3)
+  }
+  { lblParameters Label
+    MoveScaled(1,12,13,3)
+    Font = Font["+1"]
+    Text = ("Parameters:")
+  }
+  { txtParameters TextBox
+    MoveScaled(15,12,57,3)
+    ToolTip = ("Comma separated values: Hola1 INT,Hola2 CHAR(5)")
+  }
+  { lblReturns Label
+    MoveScaled(1,16,10,3)
+    Font = Font["+1"]
+    Text = ("Returns:")
+  }
+  { txtReturns TextBox
+    MoveScaled(15,16,57,3)
+  }
+  { txtData TextArea
+    MoveScaled(1,20,71,32)
+  }
+  { btnClue Button
+    MoveScaled(1,53,5,4)
+    ToolTip = ("Show a clue")
+    Picture = Picture["icon:/22/help"]
+  }
+  { tbnOK Button
+    MoveScaled(44,53,13,4)
+    Text = ("&Ok")
+    Picture = Picture["icon:/16/ok"]
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(59,53,13,4)
+    Text = ("&Cancel")
+    Picture = Picture["icon:/16/cancel"]
+    Cancel = True
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action Show a clue
+    Text = "Create Routine"
+    Picture = "icons/16/Routine.png"
+  }
+}

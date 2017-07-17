@@ -1,0 +1,65 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+
+Public Const _Properties As String = "*,Action,Border=True"
+Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "32,4"
+Public Const _Similar As String = "TextBox"
+Public Const _Group As String = "Chooser"
+
+Event Click
+Event Change
+
+Property Value As String
+Property Border As Boolean
+
+Private $hButtonBox As ButtonBox
+
+Public Sub _new()
+  
+  $hButtonBox = New ButtonBox(Me) As "Button"
+  Me.Proxy = $hButtonBox
+  $hButtonBox.Picture = Picture["icon:/small/directory"]
+  $hButtonBox.ReadOnly = True
+  $hButtonBox.ClearButton = True
+  
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hButtonBox.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hButtonBox.Border = Value
+
+End
+
+Private Function Value_Read() As String
+
+  Return $hButtonBox.Text
+
+End
+
+Private Sub Value_Write(Value As String)
+
+  $hButtonBox.Text = Value
+
+End
+
+Public Sub Button_Click()
+  
+  Dialog.Path = $hButtonBox.Text
+  If Dialog.SelectDirectory() Then Return
+  
+  $hButtonBox.Text = Dialog.Path
+  '$hButtonBox.Foreground = Color.Foreground
+  
+  Raise Click
+  Raise Change
+  
+End

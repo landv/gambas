@@ -1,0 +1,43 @@
+' Gambas class file
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnDraw_Click()
+  Dim total As Integer
+  total = 10
+  With FormChart
+    .value = New Float[]
+    .total = total
+    .value.Resize(total + 1)
+    Try .value[1] = Val(textbox1.Text)
+    Try .value[2] = Val(textbox2.Text)
+    Try .value[3] = Val(textbox3.Text)
+    Try .value[4] = Val(textbox4.Text)
+    Try .value[5] = Val(textbox5.Text)
+    Try .value[6] = Val(textbox6.Text)
+    Try .value[7] = Val(textbox7.Text)
+    Try .value[8] = Val(textbox8.Text)
+    Try .value[9] = Val(textbox9.Text)
+    Try .value[10] = Val(textbox10.Text)
+    .Show
+  End With
+
+End
+
+Public Sub btnRandom_Click()
+
+  Dim hCtrl As Control
+
+  For Each hCtrl In Me.Children
+    
+    If hCtrl Is TextBox Then
+      TextBox(hCtrl).Text = CStr(Int(Exp(Rnd(Log(2), 6))))
+    Endif
+    
+  Next
+
+End

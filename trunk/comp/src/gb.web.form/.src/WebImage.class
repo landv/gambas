@@ -1,0 +1,61 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,Border,Image{WebImage}"
+
+Property Image As String
+
+Private $sImage As String
+
+Public Sub _new()
+  
+  Me.Border = False
+  
+End
+
+
+Public Sub _BeforeRender()
+  
+  If $sImage Then
+    Print "<img"; Me._GetClassId(); 
+    If $sImage Then
+      Print " src=\""; Me._GetImageLink($sImage); "\"";
+    Endif
+    Me._RenderStyleSheet()
+    Print ">";
+  Else
+    Super._BeforeRender()
+  Endif
+  
+End
+
+Public Sub _AfterRender()
+  
+  If Not $sImage Then Super._AfterRender()
+  
+End
+
+Private Function Image_Read() As String
+
+  Return $sImage
+
+End
+
+Private Sub Image_Write(Value As String)
+
+  $sImage = Value
+  'If $sImage Then WebForm._Preload($sImage)
+  Me._SetProperty("Image", Value)
+  ' Inc $iCpt
+  ' Me._SetProperty("#count", $iCpt)
+
+End
+
+
+' Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
+'   
+'   If sProp = "#count" Then $iCpt = vVal
+'   
+' End

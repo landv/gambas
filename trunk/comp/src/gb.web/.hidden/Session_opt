@@ -1,0 +1,527 @@
+' Gambas module file
+
+Export 
+'CREATE 
+
+Private $sId As String
+Private $sPath As String
+Private $hFile As File
+
+Private $cKey As Collection
+Private $cVal As Collection
+
+Private $bModify As Boolean
+Private $eTimeout As Float = 1
+Private $eStartup As Float
+Private $hLock As File
+Private $sPrefix As String
+Private $bUnique As Boolean
+Private $sCookiePath As String
+Private $bInit As Boolean
+
+Property Id As String
+Property Timeout As Float
+Property Prefix As String
+Property Unique As Boolean
+Property Modified As Boolean
+Property CookiePath As String
+
+Private Sub LockSession() 
+  
+  Dim iInd As Integer
+  
+  For iInd = 1 To 10
+    Try $hLock = Lock $sPath & ".lock"
+    If Not Error Then Return
+    Sleep 0.1
+  Next
+  
+  Main.Log("LockSession: unable to lock session")
+  
+End
+
+Private Sub UnlockSession()
+  
+  Try Unlock #$hLock
+  
+End
+
+' Session file format
+' 
+'   0   Float           Session timestamp
+'   8   Float           Session timeout
+'  16   Integer         Index offset (IDX)
+'  20   Variant[]       Session values
+'         :
+'         :
+'         :
+' IDX   Collection      Session index
+'       String          Cookie path
+
+Private Sub SaveSession()
+  
+  Dim hFile As File
+  Dim sTemp As String
+  Dim eNow As Float
+  Dim iPos As Integer
+  Dim iPosOffset As Integer
+  Dim vVal As Variant
+  Dim sKey As String
+  Dim aRemove As New String[]
+
+  'PRINT "<h2>Save session</h2>"
+  'PRINT "<p>"; $sId; "<br>"; $bModify; "<br>"; $sPath; "<br>"; $cVal.Count
+  
+  Main.Log("SaveSession: " & Application.Request)
+  
+  If Not $sId Then Return 
+  
+  'Startup time is always modified
+  If Not $bModify Then 
+  
+    eNow = Now
+    If (eNow - $eStartup) < (1 / 86400) Then Return
+  
+    Main.Log("SaveSession: " & $sId & ": update timestamp")
+
+    LockSession
+    
+    'Main.Log("SaveSession: " & $sPath & ": Just update time stamp : " & Exist($sPath))
+    hFile = Open $sPath For Write 
+    Write #hFile, Now As Float
+    Close #hFile
+    
+    UnlockSession
+
+  Else
+  
+    sTemp = Temp$()
+
+    Main.Log("SaveSession: " & $sId)
+    
+    'Main.Log("SaveSession: " & $sPath & ": Save all session : " & Exist($sPath))
+    hFile = Open sTemp For Write Create 
+
+    Write #hFile, Now As Float
+    Write #hFile, $eTimeout As Float
+
+    iPosOffset = Seek(hFile)
+    Write #hFile, 0 As Integer
+
+    For Each iPos In $cKey
+      
+      sKey = $cKey.Key
+      
+      Main.Log(sKey & " " & CStr(iPos))
+
+      If Not $cVal.Exist(sKey) Then
+        If iPos Then
+          Seek #$hFile, iPos
+          vVal = Read #$hFile As Variant
+          $cVal[sKey] = vVal
+        Else
+          aRemove.Add(sKey)
+          Main.Log("DEL : " & sKey)
+          Continue
+        Endif
+      Else
+        vVal = $cVal[sKey]
+      Endif
+  
+      $cKey[sKey] = Seek(hFile)
+      Main.Log(Seek(hFile) & ": " & sKey & " = " & Left(Str(vVal), 128))
+      Write #hFile, vVal As Variant
+    Next
+    
+    For Each sKey In aRemove
+      $cKey.Remove(sKey)
+    Next
+
+    iPos = Seek(hFile)
+    Write #hFile, $cKey As Collection
+    
+    Write #hFile, $sCookiePath As String
+    
+    Seek #hFile, iPosOffset
+    Write #hFile, iPos As Integer
+    
+    Close #hFile
+    
+    LockSession
+    Try Kill $sPath
+    Move sTemp To $sPath
+    UnlockSession
+    
+  Endif
+    
+  Main.Log("SaveSession: OK")
+  $bModify = False
+
+  ' If Exist($sPath) Then
+  '   Main.Log("SaveSession: " & $sPath & " (" & Stat($sPath).Size & ")")
+  ' Else
+  '   Main.Log("SaveSession: " & $sPath & " NOT FOUND!")
+  ' Endif
+  
+Catch
+  
+  Main.Log("SaveSession: " & Error.Where & ": " & Error.Text)
+  
+End
+
+
+Private Sub CheckSession() As Boolean
+  
+  'Main.Log("TimeOut: " & CStr(CDate($eTimeOut)) & " Startup: " & CStr(CDate($eStartup)) & " Now: " & CStr(Now))
+  Return (CFloat(Now) - $eStartup) >= $eTimeout
+  
+End
+
+
+Private Sub LoadSession()
+  
+  Dim hFile As File
+  Dim iPos As Integer
+
+  Main.Log("LoadSession: " & $sPath)
+  ' Main.Log("System.Language = " & System.Language)
+  ' Main.Log("System.Charset = " & System.Charset)
+  ' Main.Log(System.Backtrace.Join(" "))
+
+  If Not Exist($sPath) Then Goto _ABANDON
+  
+  'Main.Log("LoadSession: #2")
+  
+  LockSession ' Pour être sur d'ouvrir un fichier complet
+  
+  hFile = Open $sPath
+
+  'IF ReadValue() = 1 THEN GOTO _ABANDON
+  $eStartup = Read #hFile As Float
+  $eTimeout = Read #hFile As Float
+  If CheckSession() Then 
+    Main.Log("LoadSession: timeout: " & CStr(CDate($eTimeOut)) & " Startup: " & CStr(CDate($eStartup)) & " Now: " & CStr(Now))
+    Goto _ABANDON
+  Endif
+  
+  iPos = Read #hFile As Integer
+  Seek #hFile, iPos
+  $cKey = Read #hFile As Collection
+  $cVal = New Collection
+  Try $sCookiePath = Read #hFile As String
+  $bModify = False
+  
+  $hFile = hFile
+  
+  UnlockSession
+  
+  Main.Log("LoadSession: OK")
+  
+  For Each $cKey
+    Main.Log($cKey.Key)
+  Next
+  
+  Return  
+
+Catch
+
+  Main.Log("LoadSession: " & $sId & ": " & Error.Where & ": " & Error.Text)
+  'Try File.Save(File.Dir($sPath) &/ "session.error", Error.Where & ": " & Error.Text & "\n")
+  'Try Kill $sPath & ".error"
+  'Try Copy $sPath To $sPath & ".error"
+
+_ABANDON:
+
+  Main.Log("LoadSession: abandon")
+
+  'Main.Log("LoadSession: #4")
+
+  If hFile Then
+    Close #hFile
+    UnlockSession
+  Endif
+  
+  Try Object.Call(Application.Startup, "Session_Abandon")
+  
+  Try Kill $sPath
+  Try Kill $sPath & ".lock"
+  $sId = ""
+  
+End
+
+Private Sub GetPath(Optional sId As String) As String
+  
+  Return "/tmp/gambas." & System.User.Id &/ "session" &/ sId 
+  
+End
+
+Private Sub CheckUnique()
+  
+  Dim hLock As File
+  Dim sPrefix As String
+  Dim aKill As String[]
+  Dim sKill As String
+  
+  If Not $bUnique Then Return
+  
+  Try hLock = Lock GetPath(".unique.lock")
+  If Error Then Return
+  
+  If $sPrefix Then
+    sPrefix = $sPrefix
+  Else
+    sPrefix = CGI["REMOTE_ADDR"]
+  Endif
+  
+  Do
+    aKill = Dir(GetPath(), sPrefix & ":*")
+    If aKill.Count = 0 Then Break
+    For Each sKill In aKill
+      Try Kill GetPath(sKill)
+    Next
+  Loop
+  
+  Unlock #hLock
+  
+End
+
+
+Private Sub CreateSession()
+  
+  Dim iInd As Integer
+  Dim sPrefix As String
+  
+  sPrefix = "/tmp/gambas." & System.User.Id
+  
+  Repeat 
+    $sId = ""
+    For iInd = 1 To 6
+      $sId &= Hex$(Int(Rnd(65536)), 4)
+    Next
+    If $sPrefix Then
+      $sId = $sPrefix & ":" & $sId
+    Else
+      $sId = CGI["REMOTE_ADDR"] & ":" & $sId
+    Endif
+    '$sId = "TEST"
+    $sPath = GetPath($sId) 'sPrefix &/ "session" &/ $sId  
+  Until Not Exist($sPath)
+  
+  'TRY MKDIR $sPrefix
+  Try Mkdir GetPath() 'sPrefix &/ "session"
+  
+  CheckUnique
+  
+  Main.Log("CreateSession: " & $sId)
+  Response.SetCookie("SESSION", $sId, "", GetCookiePath(),, True)
+  
+  $cVal = New Collection
+  $cKey = New Collection
+  $eStartup = Now
+  
+End
+
+Private Sub SelectSession()
+  
+  $sPath = GetPath($sId) '"/tmp/gambas." & System.User.Id &/ "session" &/ $sId
+  
+  LoadSession
+
+End
+
+
+Private Sub Init()
+  
+  If $bInit Then Return
+  
+  $bInit = True
+  
+  Main.AllowLog = Exist("/tmp/session.debug")
+  
+  'Main.Log("Session.Init")
+  
+  'Main.Log("HTTP_COOKIE = " & CGI["HTTP_COOKIE"] & " / " & Env["HTTP_COOKIE"])
+  $sId = Request.Cookies["SESSION"]
+  Main.Log("--------------- Init: Cookie = " & $sId)
+  '$sId = "9E2496B3AB6DDED93ABE6F0CF6E071B3@"
+  If Not $sId Then Return
+  
+  SelectSession
+  
+'CATCH 
+'  CGI.Error(Error.Where & ": " & Error.Text)
+
+End
+
+Public Sub _exit()
+  
+  Main.Log("Session._exit")
+  
+  SaveSession
+  
+End
+
+Private Sub GetCookiePath() As String
+
+  Dim sPath As String
+  
+  If $sCookiePath Then Return $sCookiePath
+  
+  sPath = CGI["SCRIPT_NAME"]
+  If sPath = "/." Then sPath = "/"
+  Return sPath
+
+End
+
+Public Sub Abandon()
+  
+  'Main.Log("Abandon")  
+  
+  If Not $sId Then Return
+
+  Try Object.Call(Application.Startup, "Session_Abandon")
+
+  Try Kill $sPath
+  Try Kill $sPath & ".lock"
+  Response.RemoveCookie("SESSION", $sId, "", GetCookiePath())
+  $sId = ""
+  $sPath = ""
+  $cKey = Null
+  $cVal = Null
+  
+End
+
+Public Sub _get(Key As String) As Variant
+  
+  Init
+  
+  If Not $cVal Then Return
+  
+  If Not $cVal.Exist(Key) Then
+    If $cKey.Exist(Key) Then
+      Seek #$hFile, $cKey[Key]
+      $cVal[Key] = Read #$hFile As Variant
+    Endif
+  Endif
+  
+  Return $cVal[Key]
+  
+End
+
+Public Sub _put(Value As Variant, Key As String)
+
+  Init
+  
+  If Not $cVal Then CreateSession
+  
+  $cVal[Key] = Value
+  
+  If Not IsNull(Value) Then
+    $cKey[Key] = 0
+  Else 'If $cKey.Exist(Key) And If $cKey[Key] = 0 Then
+    $cKey.Remove(Key)
+  Endif
+  
+  $bModify = True
+  
+  Main.Log(Key & " = " & Str(Value))
+    
+End
+
+
+Private Function Id_Read() As String
+
+  Init
+  Return $sId  
+
+End
+
+
+Private Sub Id_Write(Value As String)
+
+  Init
+  Abandon
+  $sId = Value
+  SelectSession    
+
+End
+
+Private Function Timeout_Read() As Float
+
+  Init
+  Return Int($eTimeout * 86400 + 0.5)
+
+End
+
+Private Sub Timeout_Write(Value As Float)
+
+  Init
+  $eTimeout = Value / 86400
+
+End
+
+Public Sub Save()
+  
+  Init
+  SaveSession
+  
+End
+
+Public Sub Load()
+
+  Init
+  LoadSession
+  
+End
+
+
+Private Function Prefix_Read() As String
+
+  Return $sPrefix
+
+End
+
+Private Sub Prefix_Write(Value As String)
+
+  $sPrefix = Value
+
+End
+
+Private Function Unique_Read() As Boolean
+
+  Return $bUnique
+
+End
+
+Private Sub Unique_Write(Value As Boolean)
+
+  Init
+  $bUnique = Value
+  CheckUnique
+
+End
+
+Private Function Modified_Read() As Boolean
+
+  Return $bModify
+
+End
+
+Private Sub Modified_Write(Value As Boolean)
+
+  Init
+  $bModify = Value
+
+End
+
+Private Function CookiePath_Read() As String
+
+  Return $sCookiePath
+
+End
+
+Private Sub CookiePath_Write(Value As String)
+
+  $sCookiePath = Value
+
+End

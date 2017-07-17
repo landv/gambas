@@ -1,0 +1,28 @@
+' Gambas class file
+
+Public Sub _new()
+
+  Dim sLanguage As String
+  Dim sPath As String
+  Dim sDest As String
+  
+  sLanguage = Left$(System.Language, 2)
+  sPath = "Help_" & sLanguage & ".html"
+  sDest = File.SetExt(Temp$("help"), "html")
+  Try Copy sPath To sDest
+  
+  If Error Then
+    sPath = "Help_en.html"
+    sDest = File.SetExt(Temp$("help"), "html")
+    Try Copy sPath To sDest
+  Endif
+
+  WebViewHelp.Url = sDest
+
+End
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End

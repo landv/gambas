@@ -1,0 +1,147 @@
+' Gambas class file
+
+Static Private $cConn As New Collection(gb.IgnoreCase)
+
+Property Read Connection As Connection
+
+Private $hConn As Connection
+Private $cInfo As Collection
+Private $cKey As Collection
+Private $cFields As Collection
+Private $cTable As Collection
+
+Static Public Sub Get(sConnection As String) As DataConnection
+  
+  Dim hConn As Connection
+  
+  If Not sConnection Then sConnection = "."
+  
+  If Not $cConn.Exist(sConnection) Then 
+    If sConnection = "." Then
+      hConn = DB.Current
+    Else
+      hConn = Connections[sConnection]
+    Endif
+    If Not hConn Then Return
+    $cConn[sConnection] = New DataConnection(hConn)
+  Endif
+  
+  Return $cConn[sConnection]
+  
+End
+
+
+Public Sub _new(hConn As Connection)
+  
+  $hConn = hConn
+  Try $hConn.Open
+  Reset()
+  
+End
+
+
+Public Function _get(sTable As String, sField As String, Optional bCreate As Boolean) As DataField
+  
+  Dim hTable As Table
+  Dim hField As Field
+  Dim hInfo As DataField
+  Dim sKey As String
+  Dim cInfoTable As Collection
+  
+  sKey = sField
+  If bCreate Then sKey &= "."
+  
+  If Not $cInfo.Exist(sTable) Then $cInfo[sTable] = New Collection
+  cInfoTable = $cInfo[sTable]
+  
+  If Not cInfoTable.Exist(sKey) Then
+
+    hTable = $hConn.Tables[sTable]
+    hField = hTable.Fields[sField]
+
+    hInfo = New DataField
+    hInfo.FromField(hField, hTable)
+    If bCreate And If Not hInfo.Serial Then hInfo.ReadOnly = False
+    
+    cInfoTable[sKey] = hInfo
+    
+  Endif
+  
+  Return cInfoTable[sKey]
+  
+End
+
+
+Public Function GetDefaultValue(sTable As String, sField As String) As Variant
+  
+  Return Me[sTable, sField].Default
+  
+End
+
+Public Function GetPrimaryKey(sTable As String) As String[]
+  
+  If Not $cKey.Exist(sTable) Then
+    $cKey[sTable] = $hConn.Tables[sTable].PrimaryKey
+  Endif
+  
+  Return $cKey[sTable]  
+  
+End
+
+Public Function GetFields(sTable As String) As String[]
+
+  Dim aField As String[]
+  Dim hField As Field
+  
+  If Not $cFields.Exist(sTable) Then
+    aField = New String[]
+    For Each hField In $hConn.Tables[sTable].Fields
+      aField.Add(hField.Name)
+    Next
+    $cFields[sTable] = aField
+  Endif
+  
+  Return $cFields[sTable]  
+  
+End
+
+Public Function ExistTable(sTable As String) As Boolean
+  
+  If Not $cTable.Exist(sTable) Then
+    $cTable[sTable] = $hConn.Tables.Exist(sTable)
+  Endif
+  Return $cTable[sTable]  
+  
+End
+
+
+Public Sub Reset(Optional sTable As String)
+  
+  If sTable Then
+    If $cInfo Then 
+      $cInfo.Remove(sTable)
+      $cKey.Remove(sTable)
+      $cFields.Remove(sTable)
+      $cTable.Remove(sTable)
+    Endif
+  Else
+    $cInfo = New Collection
+    $cKey = New Collection
+    $cFields = New Collection
+    $cTable = New Collection
+  Endif
+  
+End
+
+Public Sub CheckTable(sTable As String)
+  
+  If $hConn.Tables.Exist(sTable) Then Return
+  Reset(sTable)
+  
+End
+
+Private Function Connection_Read() As Connection
+
+  Return $hConn
+
+End

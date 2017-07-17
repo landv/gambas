@@ -1,0 +1,64 @@
+' Gambas module file
+
+Public Sub Page()
+
+  If Actions.Edit Then
+
+    WHeader.Title = Pages.Current.Title
+
+    WEdit.Render()
+
+  Else If Actions.Get
+
+    Get()
+
+  Else
+
+    WHeader.Title = Pages.Current.Title
+
+    WWiki.Render()
+
+    'Print Parser.Encode(Pages.Current.Content)
+
+  Endif
+
+End
+
+Public Sub Get()
+
+  Dim rPage As Result
+  Dim rPageDef As Result
+  Dim sWarn As String
+  Dim sPath As String
+
+  rPage = DB.Find("page", "sPath = &1 AND sLang = &2", Path.Page, Main.Language)
+  rPageDef = DB.Find("page", "sPath = &1 AND sLang = &2", Path.Page, Main.DEFAULT_LANG)
+
+  If rPageDef.Available Then
+    If Not rPage.Available Then
+      If sPath = Path.Page Then
+        sWarn = ("This page is not translated.")
+      Endif
+      rPage = rPageDef
+    Else
+      If rPageDef!dDate > rPage!dDate Then
+        If sPath = Path.Page Then sWarn = ("This page is not up to date.")
+      Endif
+    Endif
+  Endif
+
+  If Not rPage.Available Then
+    Return
+  Endif
+
+  Response.Buffered = True
+
+  Response.ContentType = "text/plain;charset=UTF-8"
+
+  Response.Begin()
+
+  Print rPage!sDesc
+
+  Response.End
+
+End

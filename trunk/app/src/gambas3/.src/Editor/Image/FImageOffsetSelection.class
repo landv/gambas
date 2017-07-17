@@ -1,0 +1,26 @@
+' Gambas class file
+
+Static Public Size As Integer
+Static Public Duplicate As Boolean
+
+Public Sub Run() As Boolean
+  
+  txtSize.Value = Size
+  chkDuplicate.Value = Duplicate
+  Return Not Me.ShowDialog()
+  
+End
+
+Public Sub btnOK_Click()
+
+  Size = txtSize.Value
+  Duplicate = chkDuplicate.Value
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End

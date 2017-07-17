@@ -1,0 +1,260 @@
+' Gambas class file
+
+Export
+
+Property Count As Integer
+Property Read Max As Integer
+Property Read Height, H As Integer
+Property Resizable As Boolean
+Property Width, W As Integer
+Property Sort As Integer
+Property Ascending As Boolean
+
+Event _Refresh
+
+Private $aColumns As New _GridView_Column[]
+Private $iWidth As Integer
+Private $iHeight As Integer
+Private $bResizable As Boolean = True
+Private $bLayouting As Boolean
+Private $iSort As Integer = -1
+Private $bAscent As Boolean
+
+Private Sub GetView() As GridView
+  
+  Return Object.Parent(Me)
+  
+End
+
+
+Private Function Count_Read() As Integer
+
+  Return $aColumns.Count
+
+End
+
+Private Sub Count_Write(Value As Integer)
+
+  Dim iOldCount As Integer = $aColumns.Count
+  Dim I As Integer
+  
+  If Value = iOldCount Then Return
+  
+  Try $aColumns.Resize(Value)
+  If Error Then Error.Raise("Bad argument")
+  
+  If Value > iOldCount Then
+    If GetView().AutoResize And If iOldCount Then $aColumns[iOldCount - 1]._W = 0
+    For I = iOldCount To Value - 1
+      $aColumns[I] = New _GridView_Column As "Column"
+      $aColumns[I]._Column = I
+    Next
+  Endif
+  
+  GetView()._CheckCurrent
+  
+  _Layout
+
+End
+
+Public Sub Column__Refresh()
+  
+  _Layout
+  
+End
+
+Private Function Height_Read() As Integer
+
+  With GetView()
+    If $aColumns.Count Then
+      If .Header = .Horizontal Or If .Header = .Both Then Return $iHeight + 2
+    Endif
+  End With
+
+End
+
+Public Sub _get(Index As Integer) As _GridView_Column
+  
+  Return $aColumns[Index]
+  
+End
+
+Public Sub _GetWidth() As Integer
+  
+  Return $iWidth
+  
+End
+
+Public Sub _FindColumnFromPos(X As Integer) As Integer
+  
+  Dim I As Integer
+  
+  If X < 0 Then Return -1
+  
+  For I = 0 To $aColumns.Max
+    With $aColumns[I]
+      If X >= .X And If X < (.X + .Width) Then Return I
+    End With
+  Next
+  
+  Return -1
+  
+End
+
+Private Function Resizable_Read() As Boolean
+
+  Return $bResizable
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  $bResizable = Value
+
+End
+
+Public Sub _Layout()
+
+  Dim hView As GridView = GetView()
+  Dim I, W, WX, N, NX, VW, H As Integer
+  Dim hCol As _GridView_Column
+  Dim X As Integer
+  Dim FH As Integer
+  
+  VW = hView._GetVisibleWidth()
+  N = $aColumns.Count - 1
+
+  'Debug N
+  If N >= 0 And If hView.AutoResize And If Not $bLayouting Then 
+
+    $bLayouting = True
+  
+    For I = 0 To N
+      
+      With $aColumns[I]
+        If .Expand Then
+          WX = ._GetExplicitWidth()
+          If WX Then
+            W += WX
+            Inc NX
+          Endif
+        Else
+          W += .Width
+        Endif
+      End With
+      
+    Next
+    
+    If NX = 0 Then
+      
+      W = $aColumns[N].Width + VW - W
+      
+      If W > 0 Then
+        $aColumns[N]._W = W
+      Endif
+      
+    Else If W < VW Then
+      
+      For I = 0 To N
+        If $aColumns[I].Expand Then
+          WX = (VW - W) / NX
+          $aColumns[I]._W = $aColumns[I]._GetExplicitWidth() + WX
+          W += WX
+          Dec NX
+          If NX <= 0 Then Break
+        Endif
+      Next
+      
+    Endif
+  
+    $bLayouting = False
+    
+  Endif
+  
+  FH = GetView().Font.Height
+  For Each hCol In $aColumns
+    hCol._X = X
+    X += hCol.Width
+    H = Max(H, hView.Font.TextHeight(hCol.Text) + hView.Padding * 2)
+  Next
+  
+  If System.RightToLeft Then
+    'Debug "";
+    I = 0
+    For Each hCol In $aColumns
+      hCol._X = Max(X, VW) - hCol._X - hCol.Width
+      'Error "["; I; "] "; hCol._X;;
+      Inc I
+    Next
+    'Error
+  Endif
+  
+  If X <> $iWidth Or If H <> $iHeight Then
+    $iWidth = X
+    $iHeight = H
+    hView._ResizeContents
+  Endif
+  
+  hView.Refresh
+     
+End
+
+Private Function Max_Read() As Integer
+
+  Return $aColumns.Max
+
+End
+
+Private Function Width_Read() As Integer
+
+  If $aColumns.Count Then Return $aColumns[0].Width
+  Return -1
+
+End
+
+Private Sub Width_Write(Value As Integer)
+
+  Dim hCol As _GridView_Column
+  
+  For Each hCol In $aColumns
+    Object.Lock(hCol)
+    hCol.Width = Value
+    Object.Unlock(hCol)
+  Next
+  _Layout
+
+End
+
+Private Function Sort_Read() As Integer
+
+  Return $iSort
+
+End
+
+Private Sub Sort_Write(Value As Integer)
+
+  If $iSort = Value Then Return
+  $iSort = Value
+  With GetView()
+    ._RaiseSort
+    .Refresh
+  End With
+
+End
+
+Private Function Ascending_Read() As Boolean
+
+  Return $bAscent
+
+End
+
+Private Sub Ascending_Write(Value As Boolean)
+
+  If $bAscent = Value Then Return
+  $bAscent = Value
+  With GetView()
+    ._RaiseSort
+    .Refresh
+  End With
+
+End

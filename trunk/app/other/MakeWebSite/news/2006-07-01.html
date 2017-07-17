@@ -1,0 +1,15 @@
+Release of Gambas 1.9.33
+
+This release fixes two important bugs in the interpreter.
+<ul>
+  <li>The error management does not leak stack anymore.
+  <li>The <tt>=</tt> and <tt>&lt;&gt;</tt> operators now always behave
+  correctly when comparing a string with <tt>NULL</tt>.
+  <li>And they are many fixes in the IDE.
+</ul>
+Last, but not least, the symbolic links in <tt>/usr/bin</tt> are not
+necessary anymore! Now the Gambas installation path is encoded directly in 
+the executable at compilation time. The only requirement is that <tt>gbr2</tt> 
+must be in the <tt>PATH</tt>.
+<p>
+See the <a href="changelog2.html">ChangeLog</a> for other bug fixes and changes.

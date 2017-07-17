@@ -1,0 +1,175 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(23,39,107,86)
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  { mnuPopup Menu
+  }
+  { panBorder Panel
+    MoveScaled(0,0,90,59)
+    Expand = True
+    Arrangement = Arrange.Horizontal
+    Border = Border.Plain
+    { VBox1 VBox
+      MoveScaled(2,3,82,53)
+      Expand = True
+      { panToolbar HBox
+        MoveScaled(1,1,74,4)
+        AutoResize = True
+        { btnParent ToolButton
+          MoveScaled(1,0,4,4)
+          Visible = False
+          ToolTip = ("Parent directory")
+          Picture = Picture["icon:/small/up"]
+        }
+        { btnRoot ToolButton
+          MoveScaled(5,0,4,4)
+          ToolTip = ("Root directory")
+          Picture = Picture["icon:/small/computer"]
+        }
+        { Panel2 Panel
+          MoveScaled(9,0,1,4)
+          Visible = False
+        }
+        { panDir HBox
+          MoveScaled(11,0,8,4)
+          Expand = True
+          { dwgGradient DrawingArea
+            MoveScaled(6,0,2,4)
+            Ignore = True
+          }
+        }
+        { Separator3 Separator
+          MoveScaled(20,0,0,4)
+          Visible = False
+        }
+        { btnBack ToolButton
+          MoveScaled(21,0,4,4)
+          Enabled = False
+          ToolTip = ("Parent directory")
+          Picture = Picture["icon:/small/left"]
+        }
+        { btnForward ToolButton
+          MoveScaled(25,0,4,4)
+          Enabled = False
+          Picture = Picture["icon:/small/right"]
+        }
+        { panIconSize HBox
+          MoveScaled(29,0,23,4)
+          Visible = False
+          { btnZoomOut ToolButton
+            MoveScaled(0,0,4,4)
+            Picture = Picture["icon:/small/zoom-out"]
+          }
+          { sldIconSize Slider
+            MoveScaled(4,0,14,4)
+            Expand = True
+            MaxValue = 8
+            PageStep = 1
+          }
+          { btnZoomIn ToolButton
+            MoveScaled(18,0,4,4)
+            Picture = Picture["icon:/small/zoom-in"]
+          }
+        }
+        { btnPreview ToolButton
+          MoveScaled(52,0,4,4)
+          ToolTip = ("Image preview")
+          Picture = Picture["icon:/small/image"]
+          Toggle = True
+        }
+        { btnDetail ToolButton mnuShowDetailed
+          Name = "btnDetail"
+          MoveScaled(56,0,4,4)
+          ToolTip = ("Detailed view")
+          Picture = Picture["icon:/small/view-detail"]
+          Toggle = True
+        }
+        { btnProperty ToolButton mnuProperty
+          Name = "btnProperty"
+          MoveScaled(59,0,4,4)
+          ToolTip = ("File properties")
+          Picture = Picture["icon:/small/info"]
+        }
+        { btnView ToolButton
+          MoveScaled(63,0,4,4)
+          ToolTip = ("Show files")
+          Picture = Picture["icon:/small/view-split-h"]
+        }
+      }
+      { Separator2 Separator
+        MoveScaled(30,6,39,0)
+      }
+      { splChoose HSplit
+        MoveScaled(6,7,67,43)
+        Expand = True
+        { panDirectory Panel
+          MoveScaled(2,4,27,38)
+          Arrangement = Arrange.Vertical
+          { btnBookmark MenuButton
+            MoveScaled(3,2,18,4)
+            ToolTip = ("Bookmarks")
+            AutoResize = True
+            Picture = Picture["icon:/small/home"]
+            Border = False
+            MenuOnly = True
+          }
+          { Separator1 Separator
+            MoveScaled(6,7,12,0)
+          }
+          { dvwChoose DirView
+            MoveScaled(0,9,26,28)
+            Expand = True
+            Border = False
+            Picture = Picture["icon:/small/home"]
+            HideRoot = True
+          }
+        }
+        { panView Panel
+          MoveScaled(38,5,25,33)
+          Visible = False
+          Arrangement = Arrange.Fill
+          { fvwChoose FileView
+            MoveScaled(1,1,23,31)
+            Border = False
+          }
+        }
+      }
+    }
+  }
+  { panFilter HBox
+    MoveScaled(3,60,84,11)
+    Spacing = True
+    { panExtension VBox
+      MoveScaled(1,1,62,9)
+      Expand = True
+      Spacing = True
+      { txtFile TextBox
+        MoveScaled(0,0,57,4)
+        Visible = False
+      }
+      { cmbFilter ComboBox
+        MoveScaled(0,5,57,4)
+        Visible = False
+        ReadOnly = True
+      }
+    }
+    { panButton VBox
+      MoveScaled(68,1,15,9)
+      Visible = False
+      Spacing = True
+      { btnOK Button
+        MoveScaled(0,0,15,4)
+        Text = ("OK")
+        Default = True
+      }
+      { btnCancel Button
+        MoveScaled(0,5,15,4)
+        Text = ("Cancel")
+        Cancel = True
+      }
+    }
+  }
+}

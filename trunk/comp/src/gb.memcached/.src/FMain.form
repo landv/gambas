@@ -1,0 +1,76 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,72)
+  Arrangement = Arrange.Vertical
+  AutoResize = True
+  Spacing = True
+  Margin = True
+  { Frame1 Frame
+    MoveScaled(3,6,54,22)
+    Expand = True
+    Text = ("Set")
+    { Label1 Label
+      MoveScaled(1,3,24,4)
+      Text = ("Key")
+    }
+    { tbKey TextBox
+      MoveScaled(28,3,24,4)
+    }
+    { Label2 Label
+      MoveScaled(1,8,24,4)
+      Text = ("Value")
+    }
+    { tbValue TextBox
+      MoveScaled(28,8,24,4)
+    }
+    { btnSet Button
+      MoveScaled(35,15,16,4)
+      Text = ("OK")
+    }
+  }
+  { Frame2 Frame
+    MoveScaled(3,27,54,22)
+    Expand = True
+    Text = ("Get")
+    { Label3 Label
+      MoveScaled(1,3,24,4)
+      Text = ("Key")
+    }
+    { tbKey2 TextBox
+      MoveScaled(28,3,24,4)
+    }
+    { Label4 Label
+      MoveScaled(1,8,24,4)
+      Text = ("Value")
+    }
+    { tbValue2 TextBox
+      MoveScaled(28,8,24,4)
+      ReadOnly = True
+    }
+    { btnSet2 Button
+      MoveScaled(35,15,16,4)
+      Text = ("OK")
+    }
+  }
+  { Frame3 Frame
+    MoveScaled(2,48,54,20)
+    Expand = True
+    Text = ("Delete")
+    { Label5 Label
+      MoveScaled(1,3,24,4)
+      Text = ("Key")
+    }
+    { tbKey3 TextBox
+      MoveScaled(28,3,24,4)
+    }
+    { btnSet3 Button
+      MoveScaled(35,14,16,4)
+      Text = ("OK")
+    }
+    { tbKey4 TextBox
+      MoveScaled(28,8,24,4)
+      ReadOnly = True
+    }
+  }
+}

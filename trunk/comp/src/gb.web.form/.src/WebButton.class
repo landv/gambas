@@ -1,0 +1,90 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,Border=True,Text,Image{WebImage}"
+'Public Const _DrawWith As String '= "Button"
+Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "16,4"
+
+Event Click
+
+Property Text As String
+Property Image As String
+
+Private $sText As String
+Private $sImage As String
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  If $sText = Value Then Return
+  $sText = Value
+  Me._SetProperty("Text", Value)
+
+End
+
+Private Function Image_Read() As String
+
+  Return $sImage
+
+End
+
+Private Sub Image_Write(Value As String)
+
+  If $sImage = Value Then Return
+  $sImage = Value
+  Me._SetProperty("Image", Value)
+
+End
+
+Public Sub _BeforeRender()
+  
+  Print "<button"; Me._GetClassId(); Me._GetEventJS("onclick", "click");
+  Me._RenderStyleSheet()
+  If Not Me.Enabled Then Print " disabled";
+  Print ">";
+  
+End
+
+
+Public Sub _Render()
+  
+  If $sImage Then 
+    Print "<div><img src=\""; Me._GetImageLink($sImage); "\"";
+    If $sText Then Print " class=\"gw-button-image\"";
+    If Me.Height Then
+      Print " style=\"max-height:"; Me.Height; "\"";
+    Else
+      Print " style=\"height:1em;\"";
+    Endif
+    ' If Me.Width Or If Me.Height Then
+    '   Print " style=\"";
+    '   If Me.Width Then Print "max-width:"; Me.Width; ";"
+    '   If Me.Height Then Print "max-height:"; Me.Height; ";"
+    '   Print "\"";
+    ' Endif
+    Print ">";
+  Endif
+  If $sText Then Print "<span>"; Html($sText); "</span>";
+  
+End
+
+Public Sub _AfterRender()
+  
+  Raise Render
+  Print "</button>"
+  
+End
+
+Public Sub Click()
+  
+  Object.Raise(Me, "Click")
+  
+End

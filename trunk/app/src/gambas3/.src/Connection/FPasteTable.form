@@ -1,0 +1,79 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,67,34)
+  Text = ("Paste table")
+  Icon = Picture["icon:/small/paste"]
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { HPanel1 Panel
+    MoveScaled(1,1,63,9)
+    Arrangement = Arrange.Row
+    AutoResize = True
+    Spacing = True
+    Margin = True
+    Border = Border.Plain
+    { Label1 Label
+      MoveScaled(1,1,18,3)
+      Font = Font["Bold"]
+      Text = ("Source")
+    }
+    { lblSource Label
+      MoveScaled(19,1,32,3)
+      Expand = True
+    }
+    { Label2 Label
+      MoveScaled(1,5,18,3)
+      Font = Font["Bold"]
+      Text = ("Destination")
+    }
+    { lblDest Label
+      MoveScaled(19,5,32,3)
+      Expand = True
+    }
+  }
+  { HBox2 HBox
+    MoveScaled(1,11,62,4)
+    Spacing = True
+    { Label3 Label
+      MoveScaled(0,0,14,4)
+      AutoResize = True
+      Text = ("Table")
+    }
+    { txtName TextBox
+      MoveScaled(15,0,46,4)
+      Expand = True
+    }
+  }
+  { optCopyData CheckBox
+    MoveScaled(1,17,47,4)
+    Text = Shortcut(("Also copy table data"), "d")
+  }
+  { pgbPaste ProgressBar
+    MoveScaled(1,22,65,4)
+  }
+  { Panel2 Panel
+    MoveScaled(17,27,6,1)
+    Expand = True
+  }
+  { HBox1 HBox
+    MoveScaled(1,29,65,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(4,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(31,0,16,4)
+      Text = ("Paste")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(48,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

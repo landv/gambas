@@ -1,0 +1,709 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+Public Const _IsControl As Boolean = True
+Public Const _IsContainer As Boolean = False
+'Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Ignore,Expand,AutoResize,Tag,Range"
+'Public Const _Family As String = "Report"
+
+
+
+Private $View As ScrollArea
+Private $hReport As Report
+Private $fScale As Float = 1.0
+Private fReportWidthCm As Float
+Private fReportHeightCm As Float
+Private $iNbrePage As Integer
+Private $iTotNbrePage As Integer
+Private $iNbrePageByLine As Integer
+Private $fPageWidth As Float
+Private $fPageHeight As Float
+Property {Report} As Report
+Private $fSpace As Float
+Property Scale As Float
+Property _GrayScale As Boolean
+Private $bGrayScale As Boolean
+Property Settings As Variant[]
+
+
+Private $fRealPageHeight As Float
+Private $fRealPageWidth As Float
+Private $fRealSpace As Float
+
+Private $cBuffer As New Collection
+Private $aImageToLoad As New Integer[]
+Private $aImageLoaded As New Integer[]
+
+Private $aTask As New ReportViewTask[8]
+Private $Timer As New Timer As "Timer"
+Private $tmrRedraw As New Timer As "tmrRedraw"
+Private $hSpinner As Spinner
+Property Read LayoutInProgress As Boolean
+Private $bLayoutInProgress As Boolean
+Private htmpImage As New Image(1, 1)
+Private $bLayoutEnd As Boolean
+Private bNeedToLoad As Boolean = True
+Private $iMinLine As Integer
+Private $iMaxLine As Integer
+Private $iFirstPage As Integer
+Private $iLastPage As Integer
+Private $iRealCenter As Integer
+
+Public Const Custom As Integer = 0
+Public Const Page As Integer = 1
+Public Const DualPage As Integer = 2
+Public Const FullWidth As Integer = 3
+Public Const RealSize As Integer = 4
+
+Property ScaleMode As Integer
+Private $iScaleMode As Integer = Me.Custom
+Private $fCurScale As Float = 1.0
+Private $bForceReload As Boolean
+Property ShowPageNumbers As Boolean
+Property Range As String
+Private $sRange As String
+Public _RangePages As New Integer[]
+Private $bShowPageNumbers As Boolean
+Property Read Count As Integer
+' Property Read Status As Integer
+' Private $iStatus As Integer
+
+Private $bLayoutLocked As Boolean
+
+Property Read PageCount As Integer
+
+Event Progress
+Event Change
+Event Layout(LayoutInProgress As Boolean)
+Private $bLayout As Boolean
+Private $MX As Integer
+Private $MY As Integer
+Public Sub _new(Optional hReport As Report)
+  
+  If hReport Then Me.Report = hReport
+  '$hReport = hReport
+  $fCurScale = 0.3
+  $fRealSpace = 2 * Desktop.Resolution / 2.54
+  
+  $Timer.Delay = 5
+  $View = New ScrollArea(Me) As "View"
+  $View.ScrollBar = Scroll.Both
+  'If Not $hReport Then $view.Enabled = False
+  '$View.Background = Color.Red  
+  
+End
+
+Public Sub Timer_Timer()
+  
+  Dim hImg As New Image($fPageWidth, $fPageHeight, Color.White)
+  'Dim hSvg As New SvgImage($fRealPageWidth, $fRealPageHeight)
+  Dim i As Integer 
+  Dim aDiff As Integer[]
+  
+  If $bLayoutLocked Then 
+    $Timer.Stop
+    Return
+  Endif
+  
+  If $aImageToLoad.Count > 0 Then 
+    i = $aImageToLoad.Pop()
+    'If $aImageLoaded.Exist(i) Then Return
+    'Print "load : "; i
+    Paint.Begin(hImg)
+    ReportUnits._Scale = $fCurScale
+     Paint.Scale($fCurScale, $fCurScale)
+    
+    If _RangePages.Count > 0 Then
+      
+      $hReport.Paint(_RangePages[i - 1])
+    Else
+      
+      $hReport.Paint(i)
+      
+    Endif
+    ReportUnits._Scale = 1.0
+    
+    Paint.End
+    
+    ' Paint.Begin(hImg)
+    ' hsvg.Paint()
+    ' Paint.End
+    
+    If $bGrayScale Then hImg = hImg.Desaturate()
+    If Not $aImageLoaded.Exist(i) Then $aImageLoaded.Add(i)
+    $cBuffer[i] = hImg 
+    $bLayoutInProgress = $hReport._LayoutNotFinished
+    $tmrRedraw.Trigger
+    
+  Else
+    
+    If $bLayoutInProgress Then
+      Raise Layout(True)
+      Paint.Begin(htmpImage)
+      'Print "Layout : "; $hReport.PageCount
+      $hReport._layout($hReport.PageCount)
+      Paint.End
+      $iTotNbrePage = $hReport.PageCount
+      $bLayoutInProgress = $hReport._LayoutNotFinished
+      Layout
+    Else
+      If Not $bLayoutEnd Then
+        $cBuffer.Clear
+        $aImageLoaded.Clear
+        $aImageToLoad.Clear
+        $Timer.Stop
+        $bLayoutEnd = True
+        Layout
+        $tmrRedraw.Trigger
+        Raise Layout(False)
+      Else
+        $Timer.Stop
+      Endif
+    Endif
+  Endif
+  
+End
+
+Public Sub tmrRedraw_Timer()
+  
+  $View.Refresh
+  
+End
+
+Public Sub View_Draw()
+  
+  Dim i, j, iline As Integer
+  Dim X As Integer
+  Dim Y As Integer
+  Dim hImg As Image
+  Dim bBreak As Boolean
+  Dim aDiff As Integer[]
+  Dim iTextWidth As Integer
+  Dim sText As String
+  If Not $hReport Then Return
+  Paint.Scale($fCurScale, $fCurScale)
+  i = $iFirstPage
+  iline = $iMinLine
+  '$aImageToLoad.Clear
+  'PrintIArray($aImageLoaded)
+  'Print $aImageLoaded.Count
+  
+  Do 
+    
+    For j = 0 To $iNbrePageByLine - 1
+      
+      X = $iRealCenter + $fRealSpace + (($fRealPageWidth + $fRealSpace) * j) - $View.ScrollX / $fCurScale
+      Y = $fRealSpace + (($fRealPageHeight + $fRealSpace) * iline) - $View.ScrollY / $fCurScale
+      
+      Paint.Rectangle(X + 10, Y + 10, $fRealPageWidth, $fRealPageHeight)
+      Paint.Brush = Paint.Color(&HA0000000)
+      Paint.Fill
+      Paint.Rectangle(X, Y, $fRealPageWidth, $fRealPageHeight)
+      Paint.LineWidth = 2
+      Paint.Brush = Paint.Color(Color.Black)
+      Paint.Stroke(True)
+      Paint.Brush = Paint.Color(Color.White)
+      Paint.Fill 
+      
+      hImg = $cBuffer[i + 1]
+      
+      If hImg Then Draw.Image(hImg, X, Y, $fRealPageWidth, $fRealPageHeight)
+      
+      If $bShowPageNumbers Then 
+        Paint.Font.size = 200
+        Paint.Font.Bold = True
+        Paint.Brush = Paint.Color(Color.SetAlpha(Color.Gray, 128))
+        Paint.Text(i + 1, X, Y, $fRealPageWidth, $fRealPageHeight, Align.Center)
+        Paint.Fill
+      Endif
+      Inc i
+      
+      If i >= $iLastPage + 1 Then 
+        bBreak = True
+        Break
+      Endif
+    Next
+    
+    
+    
+    If bBreak Then Break
+    Inc iline
+    
+  Loop
+  'Draw.Background = Color.Yellow
+  Paint.Reset
+  sText = Str($iFirstPage + 1) & "/" & Str($iNbrePage)
+  iTextWidth = Paint.TextSize(sText).Width + 10
+   Paint.Rectangle(Paint.Width - iTextWidth - 10, 10, iTextWidth, 25, 5)
+   Paint.Brush = Paint.Color(Color.SetAlpha(Color.DarkGray, 125))
+    Paint.Fill(True)
+   Paint.Brush = Paint.Color(Color.DarkGray)
+   Paint.Stroke
+   Paint.Brush = Paint.Color(Color.White)
+   Paint.Font.Bold = True
+   Paint.Text(sText, Paint.Width - iTextWidth - 10, 10, iTextWidth, 25, Align.Center)
+   Paint.fill
+  'Draw.FillRect(Paint.Width - 50, 10 + (Paint.h - 40) * $View.scrolly / $View.ScrollH, 40, 25, Color.Yellow)
+  
+  
+  bNeedToLoad = False
+  
+End
+
+Private Function GetDiffArray(Array1 As Integer[], Array2 As Integer[]) As Integer[]
+  
+  Dim aRet As New Integer[]
+  Dim i As Integer
+  
+  For Each i In Array2
+    If Array1.Exist(i) Then Continue
+    aRet.Add(i)
+  Next
+  Return aRet
+  
+End
+
+Public Function MakePageImage(Index As Integer) As Image
+  
+  Dim hImg As New Image($fRealPageWidth, $fRealPageHeight, Color.White)
+  Dim hSvg As New SvgImage($fRealPageWidth, $fRealPageHeight)
+
+  Paint.Begin(hsvg)
+  $hReport.Paint(Index)
+  Paint.End
+  
+  Paint.Begin(hImg)
+  Paint.Scale($fCurScale, $fCurScale)
+  hsvg.Paint  
+  Paint.End
+  
+  Return hImg
+  
+End
+
+Public Sub View_Arrange()
+  
+   Layout
+  Raise Change
+  
+End
+
+Private Sub Layout()
+  
+  Dim iH, iW, iiS As Integer
+  Dim $atmpA As New Integer[]
+  Dim i As Integer
+  Dim OldScale As Float = $fCurScale
+  If Not $hReport Then Return
+  If _RangePages.Count > 0 Then 
+    $iNbrePage = _RangePages.Count
+  Else
+    $iNbrePage = $iTotNbrePage
+  Endif
+  $iNbrePageByLine = 0
+  $aImageToLoad.Clear
+  'Dim hImg As New Image($fRealPageWidth, $fRealPageHeight)
+  $fRealPageWidth = fReportWidthCm * Desktop.Resolution / 2.54 '* $fCurScale
+  $fRealPageHeight = fReportHeightCm * Desktop.Resolution / 2.54 '* $fCurScale
+  'Print $iNbrePage
+  'Paint.Begin(hImg)
+  
+  'Paint.Scale($fCurScale, $fCurScale)
+  '$hReport._Layout(1)
+  'Paint.End
+  '$iNbrePage = 200
+  'If Error Then Return
+  Select Case $iScaleMode
+    Case Me.Page
+      $fCurScale = $View.ClientHeight / ($fRealPageHeight + $fRealSpace * 2)
+      $iNbrePageByLine = 1
+    Case Me.DualPage
+      $fCurScale = Min($View.ClientWidth / ($fRealPageWidth * 2 + $fRealSpace * 3), $View.ClientHeight / ($fRealPageHeight + $fRealSpace * 2))
+      $iNbrePageByLine = 2
+    Case Me.FullWidth
+      $fCurScale = $View.ClientWidth / ($fRealPageWidth + $fRealSpace * 2)
+    Case Custom
+      $fCurScale = $fScale
+    Case RealSize
+      $fCurScale = 1
+  End Select
+  
+  If OldScale <> $fCurScale Then $bForceReload = True
+  
+  bNeedToLoad = True
+  $fPageHeight = Max($fRealPageHeight * $fCurScale, 1)
+  $fPageWidth = Max($fRealPageWidth * $fCurScale, 1)
+  $fSpace = Max($fRealSpace * $fCurScale, 1)
+  If Not $iNbrePageByLine Then $iNbrePageByLine = Max(Floor(($View.ClientWidth - $fSpace) / ($fPageWidth + $fSpace)), 1)
+  
+  $iMinLine = FindPageLineByPos($fSpace + $View.ScrollY) - 1
+  $iMaxLine = Max(1, FindPageLineByPos($View.ClientHeight + $View.ScrollY))
+  'Print $iMinLine, $iMaxLine
+  $iFirstPage = $iMinLine * $iNbrePageByLine
+  $iLastPage = Min($iMaxLine * $iNbrePageByLine, $iNbrePage - 1)
+  If $iNbrePageByLine <= $iNbrePage Then
+    $iRealCenter = ($View.ClientWidth - ($fSpace + ($fPageWidth + $fSpace) * $iNbrePageByLine)) / 2 / $fCurScale
+  Else
+    $iRealCenter = 0
+  Endif
+  'Calcule des images a charger
+  
+  'Print "Afficher pages de: "; $iFirstPage + 1; " à "; $iLastPage + 1
+  'PrintCol
+  ' Print "Pages chargées: "
+  ' PrintIArray($aImageLoaded)
+  For i = 0 To $aImageLoaded.Max
+    
+    If $aImageLoaded[i] < $iFirstPage Or If $aImageLoaded[i] > $iLastPage + 1 Then 
+      'Print "supprimer : " & i
+      $cBuffer[$aImageLoaded[i]] = Null
+      'Print "Efface : "; $aImageLoaded[i]
+    Else
+      $atmpA.Add($aImageLoaded[i])
+    Endif
+    
+  Next
+  
+  $aImageLoaded = $atmpA
+  'If not forcing consign is given
+  'Add only the not load page to the loading queue
+  For i = $iFirstPage To $iLastPage
+    If Not $bForceReload And If $aImageLoaded.Exist(i + 1) Then 
+      Continue
+    Else
+      $aImageToLoad.Add(i + 1)
+    Endif
+  Next
+  
+  If $bForceReload Then $bForceReload = False
+  
+  ' Print "Pages à charger: "
+  ' PrintIArray($aImageToLoad)
+'   Print
+  If Not $Timer.Enabled And If $aImageToLoad.Count > 0 Then 
+    $aImageToLoad = $aImageToLoad.Reverse()
+    $Timer.Start
+  Endif
+  $View.ResizeContents(Max($View.ClientWidth, ($fPageWidth + 2 * $fSpace)), $fSpace + Ceil($iNbrePage / $iNbrePageByLine) * ($fPageHeight + $fSpace))
+  '$View.ScrollX = Max($View.ClientWidth, ($fPageWidth + 2 * $fSpace)) / 8
+End
+
+Public Sub View_MouseWheel()
+  
+  If Mouse.Control Then
+  Stop Event
+    Me.Scale += (Mouse.Delta * 0.1)
+  Endif
+End
+
+
+
+Public Sub View_Scroll()
+  
+  '$aImageToLoad.Clear
+  'bNeedToLoad = True
+  '$cBuffer.Clear
+  '$aImageLoaded.Clear
+  $Timer.Stop
+  Layout
+  
+End
+
+Private Sub FindPageLineByPos(Y As Integer) As Integer
+  
+  Dim yPage As Integer
+  Dim i As Integer
+  
+  For i = 1 To Ceil($iNbrePage / $iNbrePageByLine)
+    yPage = $fSpace + ($fPageHeight + $fSpace) * (i - 1)
+    'If i = 3 Then Stop
+    If Y >= yPage And If Y <= (yPage + $fPageHeight + $fSpace) Then Return i
+  Next
+  Return -1
+  
+End
+
+Private Function Scale_Read() As Float
+  
+  Return $fCurScale
+  
+End
+
+Private Sub Scale_Write(Value As Float)
+  
+  $fScale = Max(0.1, Min(2, Value))
+  
+  '$cBuffer.Clear
+  $bForceReload = True
+  '$aImageLoaded.Clear
+  $iScaleMode = Me.Custom
+  Layout
+  
+End
+
+Private Function Report_Read() As Report
+  
+  Return $hReport
+  
+End
+
+Private Sub Report_Write(Value As Report)
+  
+  Dim hSizeParse As TSizeParse
+  
+  If Not Value Then Return 
+  $hReport = Value
+  '$hReport.Orientation = Printer.Landscape
+  Paint.Begin(htmpImage)
+  $hReport._Layout(0)
+  Paint.End
+  
+  $iTotNbrePage = $hReport.PageCount
+  $bLayoutInProgress = $hReport._LayoutNotFinished
+  $bLayoutEnd = False
+  fReportWidthCm = TSizeParse[$hReport.Width].ToCm()
+  fReportHeightCm = TSizeParse[$hReport.Height].ToCm()
+  Layout
+  '$view.Enabled = True
+  $tmrRedraw.Trigger
+  
+End
+
+Public Sub View_MouseUp()
+  
+  'Print FindPageByPos(Mouse.y)
+  
+End
+
+Private Function LayoutInProgress_Read() As Boolean
+  
+  Return $bLayoutInProgress
+  
+End
+
+Private Sub PrintIArray(Array1 As Integer[])
+  
+  Dim i As Integer
+  
+  For Each i In Array1
+    Print i; " ";
+  Next
+  Print "\n";
+  
+End
+
+Public Sub PrintCol()
+  
+  Dim o As Object
+  
+  Print "Collection: "
+  For Each o In $cBuffer
+    Print $cBuffer.Key;
+    
+  Next
+  Print "\n"
+  
+End
+
+Private Function ScaleMode_Read() As Integer
+  
+  Return $iScaleMode
+  
+End
+
+Private Sub ScaleMode_Write(Value As Integer)
+  
+  $iScaleMode = Value
+  $bForceReload = True
+  Layout
+  Raise change
+  $tmrRedraw.Trigger
+  
+End
+
+Private Function GetScale() As Float
+  
+End
+
+Private Sub SetCurScale(Value As Integer)
+  
+  If $fCurScale <> Value Then
+    $fCurScale = Value
+    $bForceReload = True
+  Endif
+  
+End
+
+Private Function ShowPageNumbers_Read() As Boolean
+  
+  Return $bShowPageNumbers
+  
+End
+
+Private Sub ShowPageNumbers_Write(Value As Boolean)
+  
+  $bShowPageNumbers = Value
+  $tmrRedraw.Trigger
+  
+End
+
+
+Public Sub Refresh()
+  $Timer.Stop
+  $aImageLoaded.Clear
+  $aImageToLoad.Clear
+  $cBuffer.Clear
+  $bLayoutEnd = False
+  $hReport.Refresh
+ Me.Report = Me.Report
+
+End
+
+Private Function _GrayScale_Read() As Boolean
+
+  Return $bGrayScale
+  
+End
+
+Private Sub _GrayScale_Write(Value As Boolean)
+
+  If $bGrayScale = Value Then Return
+  $bGrayScale = Value
+  $cBuffer.Clear
+        $aImageLoaded.Clear
+        $aImageToLoad.Clear
+        $Timer.Stop
+        Layout
+        $tmrRedraw.Trigger
+  
+End
+
+Private Function Range_Read() As String
+
+  Return $sRange
+
+End
+
+Private Sub Range_Write(Value As String)
+
+  $sRange = Value
+  SetRangePages
+  $Timer.Stop
+  $aImageLoaded.Clear
+  $aImageToLoad.Clear
+  $cBuffer.Clear
+  Layout
+End
+
+Public Sub SetRangePages()
+  
+  Dim ars As String[]
+  Dim ars2 As String[]
+  Dim s As String
+  Dim iStart, iEnd, i As Integer
+  _RangePages.Clear
+  If Not $sRange Then Return
+  ars = Split($sRange, ";")
+  
+  For Each s In ars
+    If InStr(s, "-") Then
+      ars2 = Scan(s, "*-*")
+      iStart = CInt(Val(ars2[0]))
+      iEnd = Val(ars2[1])
+      If iStart < 0 Or If iEnd < 0 Or If iEnd < iStart Then Goto Fin
+      If _RangePages.Count > 0 And If iStart < _RangePages[_RangePages.Max] Then Goto Fin
+      For i = iStart To iEnd
+        
+        _RangePages.Add(i)
+        
+      Next
+    Else
+      iStart = CInt(Val(s))
+      If _RangePages.Count > 0 And If iStart < _RangePages[_RangePages.Max] Then Goto Fin
+      _RangePages.Add(iStart)
+    Endif
+  Next
+  Return
+Catch
+Fin:
+'_RangePages.Clear
+  
+End
+
+
+Private Function PageCount_Read() As Integer
+
+  Return $iNbrePage
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return $iTotNbrePage
+
+End
+
+Public Sub LockLayout()
+  
+  $bLayoutLocked = True
+  
+End
+
+
+Public Sub UnlockLayout()
+  
+  $bLayoutLocked = False
+  
+End
+
+Public Sub _ForceLayout()
+  $Timer.Stop
+  Paint.Begin(htmpImage)
+  $hReport.Layout()
+  Paint.End
+  $iTotNbrePage = $hReport.PageCount
+  Layout
+End
+
+Public Sub View_MouseDown()
+  
+  If Mouse.Left Then 
+  $MX = Mouse.X
+  $MY = Mouse.Y
+  Endif
+  
+  
+End
+
+Public Sub View_MouseMove()
+  
+  If Mouse.Left Then
+    'Print $MX - Mouse.X
+    $View.ScrollX += $MX - Mouse.X
+    $MX = Mouse.X
+    
+    $View.ScrollY += $MY - Mouse.Y
+    $MY = Mouse.Y
+    
+    $tmrRedraw.Trigger
+    
+  Endif
+  
+End
+
+Private Function Settings_Read() As Variant[]
+
+  Return [$fScale, CVariant($iScaleMode)]
+
+End
+
+Private Sub Settings_Write(Value As Variant[])
+
+   $fScale = Value[0]
+   $iScaleMode = Value[1]
+
+Catch
+  
+End

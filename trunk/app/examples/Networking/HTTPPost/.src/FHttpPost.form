@@ -1,0 +1,85 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(38.1429,12.7143,95,85)
+  Text = ("Internet Calculator")
+  Resizable = False
+  { Button1 Button
+    MoveScaled(37,18,14.7143,4)
+    Text = ("Post")
+  }
+  { TextArea1 TextArea
+    MoveScaled(1,56,93,28)
+  }
+  { TextArea2 TextArea
+    MoveScaled(1,35,93,16)
+  }
+  { Label1 Label
+    MoveScaled(1,31,89.1429,4)
+    Font = Font["Bold"]
+    Text = ("HTTP Headers")
+  }
+  { Label2 Label
+    MoveScaled(1,52,90.7143,4)
+    Font = Font["Bold"]
+    Text = ("HTTP Data")
+  }
+  { Label3 Label
+    MoveScaled(4,8,32,4)
+    Text = ("Write Here a Number :")
+  }
+  { Label4 Label
+    MoveScaled(4,13,32,4)
+    Text = ("Write Here Another Number :")
+  }
+  { TextBox1 TextBox
+    MoveScaled(37,8,14.7143,4)
+    Text = ("5")
+  }
+  { TextBox2 TextBox
+    MoveScaled(37,13,14.7143,4)
+    Text = ("5")
+  }
+  { Label5 Label
+    MoveScaled(4,18,32,4)
+    Text = ("Finally press the Post button >>>")
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(0,0,96,6)
+    Font = Font["Bold"]
+    Background = &H101A9E&
+    Foreground = &HF7F02A&
+    Text = ("Using the power of internet to have a minimal calculator machine!")
+    Alignment = Align.Center
+  }
+  { Label6 Label
+    MoveScaled(60,8,34,5)
+    Font = Font["12,Bold"]
+    Background = &H092773&
+    Foreground = &HFFFFFF&
+    Padding = 4
+  }
+  { Label7 Label
+    MoveScaled(60,14,34,5)
+    Font = Font["12,Bold"]
+    Background = &H092773&
+    Foreground = &HFFFFFF&
+    Padding = 4
+  }
+  { LblInfo Label
+    MoveScaled(60,20,34,4)
+    Font = Font["Bold"]
+    Background = &H003DB6&
+    Foreground = &HFFFF00&
+    Padding = 4
+  }
+  { ChkProxy CheckBox
+    MoveScaled(1,26,18.7143,4)
+    Text = ("Use Proxy")
+  }
+  { TxtProxy TextBox
+    MoveScaled(18,26,77,4)
+    Enabled = False
+    Text = ("127.0.0.1:3128")
+  }
+}

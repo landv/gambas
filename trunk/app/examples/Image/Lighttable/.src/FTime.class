@@ -1,0 +1,27 @@
+' Gambas class file
+
+Public Sub Form_Open()
+
+  Me.Center
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnOK_Click()
+  
+  If SpinDay.Value + SpinHrs.Value + SpinMins.Value = 0 Then
+    Message.Info(("There is no time correction selected."))
+    Return
+  Endif
+  
+  Inc Application.Busy
+  FMain.TimeCorrection(SpinDay.Value, SpinHrs.Value, SpinMins.Value, cmbPlusMinus.Index)
+  Dec Application.Busy
+  Me.Close
+
+End

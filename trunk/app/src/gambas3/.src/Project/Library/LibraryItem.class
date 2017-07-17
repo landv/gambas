@@ -1,0 +1,120 @@
+' Gambas class file
+
+Inherits UserControl
+
+Property Path As String
+
+Private $hDrawingArea As DrawingArea
+Private $sPath As String
+Private $hLibraryInfo As CLibraryInfo
+Private $sText As String
+Private $iTextW As Integer
+
+Private Const ICON_SIZE As Integer = 32
+Private Const PADDING As Integer = 6
+
+Private $bHighlight As Boolean
+
+Property Background As Integer
+
+Public Sub _new()
+  
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  $hDrawingArea.Mouse = Mouse.Pointing
+  Me.H = Max(ICON_SIZE, Desktop.Scale * 12) + PADDING * 2
+  
+End
+
+Private Sub IsSelected() As Boolean
+  
+  Return Me.Background = Color.SelectedBackground  
+  
+End
+
+
+Private Sub SetPath(sPath As String)
+  
+  $sPath = sPath
+  $hLibraryInfo = CLibraryInfo[sPath]
+  Me.Refresh
+  
+End
+
+Public Sub DrawingArea_Draw()
+  
+  Dim X, W As Integer
+  
+  If Not $hLibraryInfo Then Return
+  
+  With $hLibraryInfo
+    
+    $sText = Subst("<font color=\"&1\">", If(IsSelected(), "white", "black"))
+    $sText &= "<font size=\"+1\"><b>" & .Name & "</b> " & .Version & "</font>"
+    '$sText &= Subst("<font size=\"-1\" color=\"&1\"><b>", If(IsSelected(), "white", "gray")) & Replace($sPath, System.User.Home, "~") & "</b></font>"
+    $sText &= "<hr><font size=\"-1\"><b>" & ("Location") & "&nbsp;:&nbsp;</b>" & Replace($sPath, User.Home, "~") & "</font>"
+    If .NotFound Then
+      $sText &= "<p><b><font color=\"red\">" & ("WARNING! Library not found.") & "</font></b>"
+    Else
+      $sText &= "<br><font size=\"-1\"><b>" & ("Provides") & "&nbsp;:&nbsp;</b>" & .Classes.Join(", ") & "</font>"
+      'If .Libraries.Count Then $sText &= "<br><font size=\"-1\"><b>" & ("Depends on") & "&nbsp;:&nbsp;</b>" & .Libraries.Join(", ") & "</font>"
+      If .Require.Count Then $sText &= "<br><font size=\"-1\"><b>" & ("Requires") & "&nbsp;:&nbsp;</b>" & .Require.Join(", ") & "</font>"
+      $sText &= "<br></font>"
+    Endif
+
+    $iTextW = Draw.RichTextWidth($sText)
+
+    Draw.Picture(Picture["icon:/" & ICON_SIZE & "/exec"], PADDING, PADDING)
+    
+    X = ICON_SIZE + PADDING * 2
+    W = Max(Me.W - X - PADDING, $iTextW)
+    If IsSelected() Then Draw.Foreground = Color.SelectedForeground
+    Draw.RichText($sText, X, PADDING, W, Desktop.Scale * 6, Align.TopLeft)
+    
+  End With
+  
+End
+
+Public Sub DrawingArea_Enter()
+  
+  'If Me.Parent Is ListContainer Then
+    If Me.Background = Color.Default Then 
+      $hDrawingArea.Background = Color.LightBackground
+      $bHighlight = True
+    Endif
+  'Endif
+  
+End
+
+Public Sub DrawingArea_Leave()
+  
+  If $bHighlight Then 
+    $hDrawingArea.Background = Color.Default
+  Endif
+  
+End
+
+
+Private Function Background_Read() As Integer
+
+  Return Super.Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  Super.Background = Value
+  $hDrawingArea.Background = Color.Default
+
+End
+
+Private Function Path_Read() As String
+
+  Return $sPath
+
+End
+
+Private Sub Path_Write(Value As String)
+
+  SetPath(Value)
+
+End

@@ -1,0 +1,189 @@
+' Gambas class file
+
+Export
+
+Inherits DrawingArea
+
+Event Click
+
+Property Image As Image
+Property Opacity As Float
+Property Highlight As Boolean
+Property Shortcut As String
+
+Public Const MIN_OPACITY As Float = 0.3
+Public Const MAX_OPACITY As Float = 0.8
+
+Private $hObs As Observer
+Private $hImage As Image
+Private $hDraw As Image
+'Private $bInside As Boolean
+'Private $hTimer As Timer
+Private $fOpacity As Float = MIN_OPACITY
+Private $bHighlight As Boolean
+Private $hTimer As Timer
+Private $sShortcut As String
+
+Public Sub _new()
+  
+  $hObs = New Observer(Me) As "DrawingArea"
+  '$hTimer = New Timer As "Timer"
+  '$hTimer.Delay = 50
+  Me.Mouse = Mouse.Pointing
+  $hTimer = New Timer As "Timer"
+  
+End
+
+Public Sub DrawingArea_Enter()
+  
+  'Debug
+  
+  If Not Me.Enabled Then Return
+  CAnimation.Start(Me, "Opacity", MAX_OPACITY, 250)
+  
+End
+
+Public Sub DrawingArea_Leave()
+  
+  'Debug
+  
+  If Not Me.Enabled Then Return
+  CAnimation.Start(Me, "Opacity", MIN_OPACITY, 250)
+  
+End
+
+Public Sub DrawingArea_MouseUp()
+  
+  If Not Me.Enabled Then Return
+  Raise Click
+  Stop Event
+  
+End
+
+'Public Sub DrawingArea_DblClick()
+'  
+'  Raise Click
+'  Stop Event
+'  
+'End
+
+
+' Public Sub Timer_Timer()
+'   
+'   If $bInside Then
+'     $fOpacity = Min(MAX_OPACITY, $fOpacity + 0.1)
+'     If $fOpacity >= MAX_OPACITY Then
+'       $hTimer.Stop
+'     Endif
+'   Else
+'     $fOpacity = Max(MIN_OPACITY, $fOpacity - 0.1)
+'     If $fOpacity <= MIN_OPACITY Then
+'       $hTimer.Stop
+'     Endif
+'   Endif
+'   
+'   SetOpacity
+'   
+' End
+
+
+Public Sub DrawingArea_Draw()
+  
+  If $hDraw Then Draw.Image($hDraw, 2, 2)
+  
+  If $bHighlight Then 
+    Paint.Begin(Me)
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 192))
+    Paint.Rectangle(0, 0, Me.W, Me.H)
+    Paint.Fill
+    Paint.End
+  Endif
+  
+End
+
+Private Function Image_Read() As Image
+
+  Return $hImage
+
+End
+
+Private Sub Image_Write(Value As Image)
+
+  $hImage = Value.Stretch(Me.W - 4, Me.H - 4)
+  SetOpacity
+
+End
+
+Private Sub SetOpacity()
+
+  Dim X, Y As Integer
+
+  $hDraw = $hImage.Copy()
+  If $sShortcut Then
+    
+    Paint.Begin($hDraw)
+    
+    Paint.Font = Font["Bold,+3"]
+    
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 64))
+    'For X = -2 To 2
+    '  For Y = -2 To 2
+    '    Paint.DrawText($sShortcut, $hDraw.W - 16 + X, $hDraw.H - 16 + Y, 16, 16, Align.Center)
+    '  Next
+    'Next
+    Paint.Arc($hDraw.W - 12, $hDraw.H - 12, 12)
+    Paint.Fill
+    
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 64))
+    Paint.DrawText($sShortcut, $hDraw.W - 24, $hDraw.H - 24, 24, 24, Align.Center)
+    
+    Paint.End
+    
+  Endif
+  
+  $hDraw.Opacity($fOpacity)
+  Me.Refresh
+
+End
+
+Private Function Opacity_Read() As Float
+
+  Return $fOpacity
+
+End
+
+Private Sub Opacity_Write(Value As Float)
+
+  'Debug Value
+  $fOpacity = Max(0, Min(1, Value))
+  SetOpacity
+
+End
+
+Private Function Highlight_Read() As Boolean
+
+  Return $bHighlight
+
+End
+
+Private Sub Highlight_Write(Value As Boolean)
+
+  $bHighlight = Value
+  Me.Refresh
+
+End
+
+
+Private Function Shortcut_Read() As String
+
+  Return $sShortcut
+
+End
+
+Private Sub Shortcut_Write(Value As String)
+
+  $sShortcut = Value
+  SetOpacity
+  Me.Refresh
+
+End

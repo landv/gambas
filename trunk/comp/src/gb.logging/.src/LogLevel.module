@@ -1,0 +1,11 @@
+' Gambas module file
+
+Export
+
+Public Enum Critical, {Error}, Warning, Info, {Debug}
+
+Public Function isEnabledFor(iHandlerLevel As Integer, iLevel As Integer) As Boolean
+
+  Return (iLevel <= iHandlerLevel)
+
+End

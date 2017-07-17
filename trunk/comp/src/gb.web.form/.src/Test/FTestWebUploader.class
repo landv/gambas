@@ -1,0 +1,16 @@
+' Gambas class file
+
+Export
+
+
+Public Sub WebUploader1_Upload()
+
+  WebImage1.Image = WebUploader1.Path
+
+End
+
+Public Sub WebForm_Open()
+
+  WebForm.Debug = True
+
+End

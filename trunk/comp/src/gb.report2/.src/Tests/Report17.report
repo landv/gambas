@@ -1,0 +1,24 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,100,91)
+  Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
+  Index = 0
+  Text = ("")
+  { ReportPanel1 ReportPanel
+    #MoveScaled(1,1,98,22)
+    Height = "5cm"
+    AutoResize = True
+    { ReportLabel1 ReportLabel
+      #MoveScaled(0,0,98,21)
+      Brush = ReportBrush["RadialGradient(0.95,0.04,0.5,0.53,0.21,[#FFFFFF,#FF007F],[0,1])"]
+      Font = Font["Bold,+17"]
+      Border = ReportBorder["Top:1mm LinearGradient(1,0.88,0,0,[#000000,#FFFFFF],[0,1]);Bottom:1mm LinearGradient(1,0.88,0,0,[#000000,#FFFFFF],[0,1]);Left:1mm LinearGradient(1,0.88,0,0,[#000000,#FFFFFF],[0,1]);Right:1mm LinearGradient(1,0.88,0,0,[#000000,#FFFFFF],[0,1]);TopLeftCorner:12mm;BottomRightCorner:12mm"]
+      Background = ReportBrush["RadialGradient(0.49,0.46,0.5,0.84,0.14,[#3737DF,#FFFFFF],[0,1])"]
+      BoxShadow = ReportBoxShadow["1mm 1mm 2mm 0mm #000000"]
+      Text = ("Coucou")
+      Alignment = Align.Center
+    }
+  }
+  Index = 0
+}

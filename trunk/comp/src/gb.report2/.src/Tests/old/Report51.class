@@ -1,0 +1,207 @@
+' Gambas class file
+
+Private hResult As Result
+Private hResult2 As Result
+Private hVBox As ReportVBox
+Private $iTotal As Integer
+Private $bReel As Boolean ' = True
+Public Sub Report_Open()
+  Dim hPanel As ReportPanel
+  Dim hHBox1 As ReportHBox
+  Dim hLine As ReportLine
+  Dim hLblIlot As ReportLabel
+  Dim hVBox2 As ReportVBox
+  Dim i As Integer
+    'Report.Debug = True
+    ReportHBox3.DataCount = 8
+    
+  hVBox = New ReportVBox(ReportHBox1)
+   hHBox1 = New ReportHBox(hVBox)
+  hVBox.Expand = True
+  hHBox1.Height = "1cm"
+  hLblIlot = New ReportLabel(hHBox1)
+  hLblIlot.Expand = True
+  For i = 0 To 2
+    hline = New ReportLine(hHBox1)
+    hLine.Width = "6mm"
+    hline.LineWidth = "0.1mm"
+    hline.Direction = Align.topRight
+  Next
+  
+  
+  
+  'hVBox.Spacing = "1mm"
+  Connections["Connection2"].Open
+  hResult = db.Exec("select * from secteurs where ordre<=3 order by ordre")
+  'Report.Debug = True  
+  'ReportHBox1.BackGround = ReportBrush.Color(Color.Yellow)
+  'hVBox.BackGround = ReportBrush.Color(Color.red)
+  hVBox.Expand = True
+  For Each hResult
+    
+    AddIlot(hResult!nom, hResult!id_secteur)
+    If hResult.Index = hResult.Max Then Break
+    hLblIlot = New ReportLabel(hVBox)
+    hLblIlot.Height = "4mm"
+    hLblIlot.Expand = True
+  Next
+  
+  hVBox = New ReportVBox(ReportHBox1)
+  'hVBox.Spacing = "2mm"
+  'hVBox.Spacing = "1mm"
+  hResult = db.Exec("select * from secteurs where ordre > 3 order by ordre")
+  'Report.Debug = True  
+  'ReportHBox1.BackGround = ReportBrush.Color(Color.Yellow)
+  'hVBox.BackGround = ReportBrush.Color(Color.red)
+    hVBox2 = New ReportVBox(hVBox)
+    hVBox2.Border = ReportBorder["Top:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000;Bottom:0.1mm #000000"]
+    hVBox2.Expand = True
+    hVBox2.Margin.Bottom = "4mm"
+  hLblIlot = New ReportLabel(hVBox2)
+  hLblIlot.Text = "Parcellaire 2015"
+  hLblIlot.Font = Font["Times,Bold,+3"]
+  hLblIlot.Margin.Top = "2mm"
+  hLblIlot.Alignment = Align.Center
+  hLblIlot = New ReportLabel(hVBox2)
+  hLblIlot.Text = "Date :"
+  hLblIlot.Margin.Top = "2mm"
+  hLblIlot.Padding.Left = "2mm"
+  'hLblIlot.Border.bottom.Width = "2px"
+  hHBox1 = New ReportHBox(hVBox)
+  hVBox.Expand = True
+  hHBox1.Height = "1cm"
+  hLblIlot = New ReportLabel(hHBox1)
+  hLblIlot.Expand = True
+  For i = 0 To 2
+    hline = New ReportLine(hHBox1)
+    hLine.Width = "6mm"
+    hline.LineWidth = "0.1mm"
+    hline.Direction = Align.topRight
+  Next
+  For Each hResult
+    
+    AddIlot(hResult!nom, hResult!id_secteur)
+        hLblIlot = New ReportLabel(hVBox)
+    hLblIlot.Height = "3mm"
+  Next
+  
+End
+
+Private Sub AddIlot(sIlot As String, siIlot As String)
+
+  Dim hHBox1 As New ReportHBox(hVBox)
+  Dim hLblIlot As New ReportLabel(hHBox1)
+  Dim hVBoxList As New ReportVBox(hHBox1)
+  Dim hHBoxLine As ReportHBox
+  Dim hLblParcelle As ReportLabel
+  Dim i As Integer
+  Dim fTot As Float
+  Dim hLine As ReportLine
+
+  
+  
+  hLblIlot.Rotate = 90
+  hVBoxList.Expand = True
+  
+  hVBoxList.Border.Top.Width = "0.1mm"
+  hVBoxList.Border.Right.Width = "0.1mm"  
+  hHbox1.Border.Bottom.Width = "0.1mm"  
+  hLblIlot.Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+  
+  hLblIlot.Text = sIlot
+  hLblParcelle = hLblIlot
+  hLblIlot.Border = ReportBorder["Top:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+  'ecartement
+  'parcelle
+  'surface
+  'ordre
+  hResult2 = db.Exec("Select p.ecartement ecartement, p.nom parcelle, p.surface surface, p.ordre ordre from parcelles p where p.id_secteur=&1 order by p.ordre", siIlot)
+  
+  
+'   hResult2 = db.Exec("Select p.ecartement ecartement, p.nom parcelle, sum(lcp.surface) surface, lip.ordre ordre From liaisonilotparc lip " 
+' "Left join parcelles p On p.id = lip.id_parc " 
+' "Left join liaisoncadparc lcp On lcp.idparc = p.id " 
+' "Left Join cadastre c On c.id = lcp.idcad " 
+' "where id_ilot = &1 group by p.nom order by lip.ordre", iIlot)
+  
+  For Each hResult2
+    If hResult2!ordre = 0 Then Continue
+    hHBoxLine = New ReportHBox(hVBoxList)
+    hHBoxLine.Expand = True
+    'hHBoxLine.Height = "5mm"
+    
+    
+    hLblIlot = New ReportLabel(hHBoxLine)
+    Try hLblIlot.Text = Format(hResult2!ecartement / 100, "0.0")
+    'If hResult2!ecartement > 250 Then hLblIlot.Font.Bold = True
+    hLblIlot.Alignment = Align.Right
+    hLblIlot.Border.Right.Width = "0.1mm"
+    hLblIlot.Font.Size = 6
+    hLblIlot.Width = "0.5cm"
+        hLblIlot.Padding.Right = "0.2mm"
+    'hLblIlot.Padding.Top = "0.4mm"
+    
+    hLblIlot.Brush = ReportBrush.Color(Color.Gray)
+    
+    hLblIlot = New ReportLabel(hHBoxLine)
+    hLblIlot.Font.Size = 9
+    hHBoxLine.Border = ReportBorder["Bottom:0.1mm #000000;"]
+    hLblIlot.Text = hResult2!parcelle
+    hLblIlot.Padding.Left = "1mm"
+    hLblIlot.Padding.Top = "0.6mm"
+    hLblIlot.Padding.Left = "0.5mm"
+    hLblIlot.Padding.Bottom = "0.6mm"
+    hLblIlot.Expand = True
+    'hHBoxLine.Expand = True
+    'hLblIlot.Border = ReportBorder["Bottom:0.1mm #00000"]
+    hLblIlot = New ReportLabel(hHBoxLine)
+    hLblIlot.Width = "1.2cm"
+    hLblIlot.Border.Left.Width = "0.1mm"
+    hLblIlot.Alignment = Align.Right
+    
+    Try hLblIlot.Text = Format(IIf($bReel, hResult2!surface / 10000, NearFive(hResult2!surface)), "0.00")
+    Try $iTotal += hResult2!surface
+    hLblIlot.Padding.Right = "1mm"
+    hLblIlot.Padding.Top = "0.1mm"
+    hLblIlot.Padding.Left = "0.5mm"
+    hLblIlot.Padding.Bottom = "0.1mm"
+    Try fTot += hResult2!surface
+    hLblIlot.Font.Size = 9
+    
+    For i = 0 To 2
+      hLblIlot = New ReportLabel(hHBoxLine)
+      hLblIlot.Width = "6mm"
+      hLblIlot.Border = ReportBorder["Left:0.1mm #000000;"]
+      
+    Next
+    
+    
+Next
+  
+    ' hLblIlot = New ReportLabel(hVBoxList)
+    ' hLblIlot.Text = Format(IIf($bReel, fTot / 10000, NearFive(fTot)), "0.00")
+    ' hLblIlot.Font.Size = 7
+    ' hLblIlot.Padding.Top = "0.8mm"
+    ' hLblIlot.Alignment = Align.Right
+     hLblParcelle.Text &= " (" & Format(IIf($bReel, fTot / 10000, NearFive(fTot)), "0.00") & ")"
+     
+End
+
+Public Sub ReportLabel1_Data(Index As Integer)
+
+  Last.Data = "Parcellaire " & Year(Now)
+
+End
+
+
+Public Function NearFive(Value As Integer) As Float
+
+Return Round((Value / 10000) * 20, 0) / 20
+  
+End
+
+Public Sub ReportLabel21_Data(Index As Integer)
+
+  Last.data = Str($iTotal / 10000) & " ha"
+
+End

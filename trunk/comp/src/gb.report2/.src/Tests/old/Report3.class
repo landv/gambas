@@ -1,0 +1,26 @@
+' Gambas class file
+
+
+Public Sub _new()
+
+  Dim i As Integer
+  Dim hCont As ReportLabel
+  Dim hBreak As ReportPageBreak
+  'Report.Debug = True
+  ReportLabel1.Border.Width = "0.5mm"
+  
+  'ReportVBox1.Border.Left.Width = "1mm"
+  'ReportVBox1.DataCount = 3
+
+For i = 0 To 800
+  'If i = 3 Then hBreak = New ReportPageBreak(Me)
+  hCont = New ReportLabel(Me)
+  hCont.BoxShadow.Blur = "5mm"
+  hCont.Border.Width = "0.5mm"
+  hCont.Height = "1cm"
+  hCont.Margin.Top = "5mm"
+  hCont.Text = i
+Next
+
+
+End

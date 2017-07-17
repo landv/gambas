@@ -1,0 +1,186 @@
+' Gambas class file
+
+Export
+
+Event Change
+
+Inherits UserControl
+
+Private Const MARGIN As Integer = 5
+
+Private $hView As Panel
+Private $hEditor As MaskBox
+Private $hBorder As Panel
+Private $hCompletion As CTagCompletion
+
+Public Sub _new()
+
+  $hBorder = New Panel(Me)
+  $hBorder.Border = Border.Plain
+  $hBorder.Arrangement = Arrange.Fill
+  $hBorder.Mouse = Mouse.Text
+  $hBorder.Background = Color.TextBackground
+  
+  $hView = New Panel($hBorder) As "View"
+  $hView.Border = False
+  $hView.Arrangement = Arrange.Row
+  $hView.Margin = True
+  $hView.Spacing = True
+  $hView.Padding = MARGIN
+  
+  Me.Proxy = $hView
+  
+  Clear()
+  
+End
+
+Public Sub SetFarm(sFarm As String)
+  
+  $hCompletion.Farm = sFarm
+  
+End
+
+Private Sub ResizeEditor()
+
+  If Not Object.IsValid($hEditor) Then Return
+
+  $hEditor.Resize(MARGIN * 2 + Max(Desktop.Scale * 12, $hEditor.Font.TextWidth($hEditor.Text) + 8), $hEditor.Font.Height + MARGIN)
+  $hEditor.Raise
+  
+  '$hView.EnsureVisible($hEditor.X, $hEditor.Y - MARGIN, $hEditor.W, $hEditor.H + MARGIN * 2)
+  With $hEditor
+    Me.H = .Y + .H + MARGIN + 2
+  End With
+
+End
+
+Public Sub View_MouseDown()
+  
+  ResizeEditor
+  $hEditor.SetFocus
+  
+End
+
+Public Sub Editor_Change()
+  
+  ResizeEditor
+  
+End
+
+Public Sub Add(sTag As String)
+  
+  AddTag(sTag)
+  
+End
+
+
+Private Sub AddTag(sTag As String)
+
+  Dim hTag As CTag
+
+  sTag = Trim(sTag)
+  If Not sTag Then Return
+  If GetTags().Exist(sTag, gb.IgnoreCase) Then Return
+  
+  hTag = New CTag($hView)
+  hTag.Text = sTag
+  
+  $hEditor.Text = ""
+  ResizeEditor
+  
+  Raise Change
+
+End
+
+Public Sub Editor_Activate()
+
+  AddTag($hEditor.Text)
+
+End
+
+Public Sub Editor_KeyPress()
+  
+  Dim hTag As CTag
+  Dim sText As String
+  
+  If Key.Code = Key.Backspace And If $hEditor.Length = 0 Then
+    If $hView.Children.Count >= 2 Then
+      hTag = $hView.Children[$hView.Children.Count - 2]
+      sText = hTag.Text
+      hTag.Delete
+      $hEditor.Text = sText
+      $hEditor.Pos = $hEditor.Length
+      ResizeEditor
+      Raise Change
+      Stop Event
+    Endif
+  Endif
+  
+End
+
+Public Sub GetTags() As String[]
+
+  Dim hChild As Control
+  Dim aTag As New String[]
+  
+  For Each hChild In $hView.Children
+    If hChild Is CTag Then
+      aTag.Add(CTag(hChild).Text)
+    Endif
+  Next
+  
+  Return aTag
+  
+End
+
+Public Sub SetTags(aTag As String[])
+
+  Dim sTag As String
+  
+  Clear()
+  
+  For Each sTag In aTag
+    AddTag(sTag)
+  Next
+  
+End
+
+Public Sub Completion_Activate()
+  
+  Editor_Activate
+  
+End
+
+Public Sub _RaiseChange()
+  
+  Raise Change
+  
+End
+
+Public Sub Clear()
+
+  If $hView.Children.Count = 1 Then Return
+
+  $hView.Children.Clear
+  
+  $hEditor = New MaskBox($hView) As "Editor"
+  $hEditor.Border = False
+  $hEditor.MaxLength = 24
+  $hEditor.Filter = "[0-9A-Za-z .-]"
+  ResizeEditor
+  
+  $hCompletion = New CTagCompletion($hEditor) As "Completion"
+  
+End
+
+Public Sub Sort()
+  
+  SetTags(GetTags().Sort(gb.IgnoreCase))
+  
+End
+
+Public Sub View_Arrange()
+  
+  ResizeEditor
+  
+End

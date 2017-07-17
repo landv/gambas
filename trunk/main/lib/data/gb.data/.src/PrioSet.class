@@ -1,0 +1,63 @@
+' Gambas class file
+
+'' The PrioSet class is much similar to the PrioQueue, except that
+'' the FIFO principle is missing. While a PrioQueue
+''
+''  1. divides its elements into priority classes and
+''  2. within each class enforces the FIFO semantics,
+''
+'' a PrioSet does only the first. In other words: using a PrioSet
+'' will give you high-priority elements first but elements with
+'' equal priority will have no a-priori determined ordering.
+''
+'' To most applications the FIFO semantics are irrelevant and
+'' forgetting about them allows for faster algorithms and less
+'' memory used.
+''
+'' Beware that the term "priority queue" is sometimes used to refer
+'' to what we call "priority set" here.
+
+Export
+
+Property Read First As Variant
+Property Read Count As Integer
+Property Read IsEmpty As Boolean
+
+Private $hHeap As Heap
+
+Public Sub _new()
+  $hHeap = New Heap(gb.Ascent)
+End
+
+Public Sub Insert(Data As Variant, Prio As Integer)
+  Dim hEntry As New _PrioSet_Entry(Data, Prio)
+
+  $hHeap.Insert(hEntry)
+End
+
+Public Sub Remove() As Variant
+  Dim hEntry As _PrioSet_Entry = $hHeap.Remove()
+
+  Return hEntry.Data
+End
+
+Public Sub Update(Old As Variant, {New} As Variant, Prio As Integer)
+  Dim hOld As New _PrioSet_Entry(Old, 0) ' Prio doesn't matter here
+  Dim hNew As New _PrioSet_Entry({New}, Prio)
+
+  $hHeap.Update(hOld, hNew)
+End
+
+Private Function First_Read() As Variant
+  Dim hEntry As _PrioSet_Entry = $hHeap.First
+
+  Return hEntry.Data
+End
+
+Private Function Count_Read() As Integer
+  Return $hHeap.Count
+End
+
+Private Function IsEmpty_Read() As Boolean
+  Return $hHeap.IsEmpty
+End

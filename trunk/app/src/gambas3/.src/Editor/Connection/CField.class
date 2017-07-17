@@ -1,0 +1,31 @@
+' Gambas class file
+
+Public Name As String
+Public Type As Integer
+Public DefaultValue As Variant
+Public Length As Integer
+Public (Key) As Boolean
+Public OldName As String
+Public Description As String
+Public Collation As String
+
+Public Sub _new(Optional hField As Field)
+
+  If hField Then
+  
+    With hField
+      
+      Name = .Name
+      OldName = .Name
+      Type = .Type
+      DefaultValue = .Default
+      Length = .Length
+      Collation = .Collation
+      
+      Key = hField.Table.PrimaryKey.Find(Name) >= 0
+    
+    End With
+    
+  Endif
+
+End

@@ -1,0 +1,528 @@
+' Gambas class file
+
+Export
+
+' 	GB_PROPERTY("Height", "i", CGRIDROWS_height),
+' 	GB_PROPERTY("H", "i", CGRIDROWS_height),
+' 	GB_PROPERTY("Resizable", "b", CGRIDROWS_resizable),
+' 	//GB_PROPERTY("Moveable", "b", CGRIDROWS_moveable),
+' 	GB_METHOD("Select", NULL, CGRIDROWS_select, "[(Start)i(Length)i]"),
+' 	GB_METHOD("SelectAll", NULL, GridViewRows_SelectAll, NULL),
+' 	GB_METHOD("UnselectAll", NULL, GridViewRows_UnselectAll, NULL),
+' 	GB_METHOD("Remove", NULL, CGRIDROWS_remove, "(Start)i[(Length)i]"),
+' 	GB_METHOD("Insert", NULL, CGRIDROWS_insert, "(Start)i[(Length)i]"),
+' 
+
+Property Count As Integer
+Property Read Max As Integer
+Property Width, W As Integer
+Property Resizable As Boolean
+Property Height, H As Integer
+Property Selection As Integer[]
+Property Border As Border
+
+Event _Refresh
+
+'Private $aRows As New _GridView_Row[]
+Private $nRows As Integer
+Private $cHeight As Collection
+Private $aHeight As Integer[]
+Private $bResizable As Boolean = True
+Private $cText As Collection
+Private $iDefaultHeight As Integer 
+Private $iWidth As Integer
+
+Private $hBorder As Border
+Private $cBorder As Collection
+
+Private $hSel As New GridViewSelection
+
+Public Sub _GetSel() As GridViewSelection
+  
+  Return $hSel
+  
+End
+
+Private Sub GetView() As GridView
+  
+  Return Object.Parent(Me)
+  
+End
+
+Private Function Count_Read() As Integer
+  
+  Return $nRows
+  
+End
+
+Private Sub Count_Write(Value As Integer)
+  
+  Dim hView As GridView = GetView()
+  Dim iRow As Integer
+  
+  If Value = $nRows Then Return
+  
+  $nRows = Value
+  
+  If $aHeight Then
+    While $aHeight.Count
+      If $aHeight[$aHeight.Max] < $nRows Then Break
+      iRow = $aHeight[$aHeight.Max]
+      $cHeight.Remove(iRow)
+      $aHeight.Remove($aHeight.Max)
+      If hView.Mode = Select.Multiple Then $hSel.UnSelect(iRow)
+    Wend
+  Endif
+  
+  If $cText Then
+    For Each $cText
+      If CInt($cText.Key) >= Value Then
+        'Debug "Remove text from " & $cText.Key
+        $cText.Remove($cText.Key)
+      Endif
+    Next
+  Endif
+  
+  If $cBorder Then
+    For Each $cBorder
+      If CInt($cBorder.Key) >= Value Then
+        $cBorder.Remove($cBorder.Key)
+      Endif
+    Next
+  Endif
+  
+  If hView.Row >= $nRows Then hView.Row = -1
+  
+  With hView
+    ._ResizeContents()
+    ._CheckCurrent()
+    .Refresh
+  End With
+  
+End
+
+Public Sub _get(Row As Integer) As _GridView_Row
+  
+  Dim hRow As _GridView_Row
+  
+  hRow = New _GridView_Row As "Row"
+  hRow._Row = Row
+  Return hRow
+  
+End
+
+Public Sub _GetDefaultRowHeight() As Integer
+  
+  Dim hView As GridView
+  Dim H As Integer
+  
+  If $iDefaultHeight > 0 Then Return $iDefaultHeight
+  hView = GetView()
+
+  H = hView._GetTextHeight() + hView.Padding * 2 + 2
+  If $hBorder Then
+    With $hBorder
+      H += .TopPadding + .BottomPadding + .TopWidth + .BottomWidth + .TopMargin + .BottomMargin
+      H -= (.TopMargin + .BottomMargin) / 2
+    End With
+  Endif
+  Return H
+  
+End
+
+Public Sub _GetRowY(iRow As Integer) As Integer
+  
+  Dim Y As Integer
+  Dim DH As Integer = _GetDefaultRowHeight()
+  Dim I As Integer
+  
+  Y = iRow * DH
+  
+  If $cHeight Then
+    
+    For Each I In $aHeight
+      If I < iRow Then Y += $cHeight[I] - DH
+    Next
+  Endif
+  
+  Return Y
+  
+End
+
+Public Sub _GetRowHeight(iRow As Integer) As Integer
+  
+  'Debug iRow;; System.Backtrace.Join("|")
+  Try Return $cHeight[iRow]
+  Return _GetDefaultRowHeight()
+  
+End
+
+Private Sub AddSorted(iRow As Integer)
+  
+  Dim I, J As Integer
+  
+  I = 0
+  J = $aHeight.Max
+  
+  If J < 0 Or If iRow > $aHeight[J] Then
+    $aHeight.Add(iRow)
+    Return
+  Endif
+  
+  '' TODO: Binary search
+  $aHeight.Add(iRow)
+  $aHeight.Sort
+  
+End
+
+Public Sub _ResetRowHeight(iRow As Integer)
+  
+  Dim hView As GridView = GetView()
+  
+  If $cHeight.Exist(iRow) Then
+    $cHeight.Remove(iRow)
+    $aHeight.Remove($aHeight.Find(iRow))
+    hView._ResizeContents()
+    hView._RaiseRowResize(iRow)
+  Endif
+  
+End
+
+Public Sub _SetRowHeight(iRow As Integer, H As Integer)
+  
+  Dim hView As GridView = GetView()
+  Dim DH As Integer = _GetDefaultRowHeight()
+  Dim OH As Integer
+  Dim bCancel As Boolean
+  
+  H = Min(1024, H)
+  
+  If Not $cHeight Then 
+    $cHeight = New Collection
+    $aHeight = New Integer[]
+  Endif
+  
+  If H < 0 Then
+    bCancel = hView._RaiseRowSize(iRow)
+    If Not bCancel Then Return
+    H = hView._GetPreferredHeight(iRow)
+  Endif
+  
+  If H = DH Then
+    _ResetRowHeight(iRow)
+    Return
+  Endif
+  
+  If H >= 0 Then
+    OH = -1
+    Try OH = $cHeight[iRow]
+    If H <> OH Then
+      If OH < 0 Then AddSorted(iRow)
+      $cHeight[iRow] = H
+      hView._ResizeContents()
+      hView._RaiseRowResize(iRow)
+    Endif
+  Endif
+  
+End
+
+Private Function Width_Read() As Integer
+  
+  With GetView()
+    If $nRows Then
+      If .Header = .Vertical Or If .Header = .Both Then 
+        If $iWidth Then
+          Return $iWidth
+        Else
+          Return Max(.Font.TextWidth("9"), .Font.TextWidth("0")) * (2 + CInt(Log10(Max(1, $nRows)))) + .Padding * 2 + 2
+        Endif
+      Endif
+    Endif
+  End With
+  
+End
+
+Public Sub _GetHeight() As Integer
+  
+  Dim H, DH, HR As Integer
+  
+  DH = _GetDefaultRowHeight()
+  H = DH * $nRows
+  If $cHeight Then
+    H -= DH * $cHeight.Count
+    For Each HR In $cHeight
+      H += HR
+    Next 
+  Endif
+  
+  Return H
+  
+End
+
+Public Sub _FindRowFromPos(Y As Integer) As Integer
+  
+  Dim iRow, YY, H As Integer
+  Dim DH As Integer = _GetDefaultRowHeight()
+  
+  If $cHeight Then
+    For Each iRow In $aHeight
+      YY = iRow * DH
+      If Y < YY Then Break
+      H = $cHeight[iRow]
+      If Y < (YY + H) Then Return iRow
+      Y -= H - DH
+    Next
+  Endif
+  
+  iRow = Y / DH
+  If iRow < 0 Or If iRow >= $nRows Then iRow = -1
+  Return iRow
+  
+End
+
+Private Function Resizable_Read() As Boolean
+  
+  Return $bResizable
+  
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+  
+  $bResizable = Value
+  
+End
+
+Public Sub _GetRowText(iRow As Integer) As String
+  
+  Dim sText As String
+  
+  If $cText Then sText = $cText[iRow]
+  If Not sText Then sText = CStr(iRow + 1)
+  Return sText
+  
+End
+
+Public Sub _SetRowText(iRow As Integer, sText As String)
+  
+  Dim W As Integer
+  
+  If Not $cText Then $cText = New Collection
+  $cText[iRow] = sText
+  If sText Then
+    W = GetView().Font.TextWidth(sText) + 8
+    If W > Width_Read() Then $iWidth = W
+  Endif
+  
+End
+
+Public Sub Select(Optional Start As Integer = 0, Optional Length As Integer = 1)
+  
+  Dim hView As GridView = GetView()
+  
+  If hView.Mode = Select.Single And If Length = 1 Then
+
+    hView.Row = Start
+
+  Else If hView.Mode = Select.Multiple Then 
+  
+    If Start < 0 Then Return
+    If Start >= $nRows Then Return
+    If Length < 0 Then Length = $nRows - Start
+    
+    $hSel.Select(Start, Length)
+    hView.Refresh
+    hView._RaiseSelect
+    
+  Endif
+  
+End
+
+Public Sub UnSelect(Optional Start As Integer = 0, Optional Length As Integer = 1)
+  
+  Dim hView As GridView = GetView()
+
+  If hView.Mode = Select.Single And If Length = 1 And If hView.Row = Start Then
+    
+    hView.Row = -1
+    
+  Else If hView.Mode = Select.Multiple Then 
+  
+    If Start < 0 Then Return
+    If Start >= $nRows Then Return
+    If Length < 0 Then Length = $nRows - Start
+    
+    $hSel.UnSelect(Start, Length)
+    hView._RaiseSelect
+    
+  Endif
+  
+End
+
+Public Sub SelectAll()
+  
+  Dim hView As GridView = GetView()
+
+  If hView.Mode <> Select.Multiple Then Return
+  
+  $hSel.UnSelectAll
+  $hSel.Select(0, $nRows)
+  hView.Refresh
+  hView._RaiseSelect
+  
+End
+
+Public Sub UnSelectAll()
+  
+  Dim hView As GridView = GetView()
+
+  If hView.Mode = Select.Single Then
+    
+    $hSel.UnSelectAll
+    hView.Row = -1
+    
+  Else If hView.Mode = Select.Multiple Then 
+  
+    $hSel.UnSelectAll
+    hView.Refresh
+    hView._RaiseSelect
+    
+  Endif
+  
+End
+
+Public Sub _IsSelected(iRow As Integer) As Boolean
+  
+  Return $hSel.IsSelected(iRow)
+  
+End
+
+Public Sub _SaveSelection() As GridViewSelection
+  
+  Return $hSel.Copy()
+  
+End
+
+Public Sub _RestoreSelection(hSel As GridViewSelection)
+  
+  $hSel = hSel.Copy()
+  
+End
+
+Private Sub Height_Read() As Integer
+  
+  Return _GetDefaultRowHeight()
+  
+End
+
+Private Sub Height_Write(Value As Integer)
+  
+  $iDefaultHeight = Value
+  GetView()._ResizeContents()
+  
+End
+
+Private Function Max_Read() As Integer
+  
+  Return $nRows - 1
+  
+End
+
+Private Sub Width_Write(Value As Integer)
+  
+  $iWidth = Max(0, Value)
+  
+End
+
+Public Sub Remove(Start As Integer, Optional Length As Integer = 1)
+  
+  GetView()._RemoveRows(Start, Length)
+  
+End
+
+Public Sub Insert(Start As Integer, Optional Length As Integer = 1)
+  
+  GetView()._InsertRows(Start, Length)
+  
+End
+
+Public Sub _Clear()
+  
+  If $cHeight Then
+    $cHeight.Clear
+    $aHeight.Clear
+    If $cText Then $cText.Clear
+  Endif
+  
+  $hSel.UnSelectAll
+  
+End
+
+'' Return an integer array of all the selected rows
+
+Private Function Selection_Read() As Integer[]
+
+  Dim hView As GridView = GetView()
+  
+  If hView.Mode = Select.Single Then
+    If hView.Row >= 0 Then
+      Return [hView.Row]
+    Endif
+  Else If hView.Mode = Select.Multiple Then
+    Return $hSel._GetSelectedRows()
+  Endif
+
+  Return New Integer[]
+
+End
+
+Private Sub Selection_Write(Value As Integer[])
+
+  Dim hView As GridView = GetView()
+  Dim iRow As Integer
+  
+  If hView.Mode = Select.Single Then
+    If Not Value Then 
+      hView.Row = -1
+    Else
+      hView.Row = Value[Value.Max]
+    Endif
+  Else If hView.Mode = Select.Multiple Then
+    $hSel.UnSelectAll
+    For Each iRow In Value
+      $hSel.Select(iRow)
+    Next
+    hView.Refresh
+  Endif
+
+End
+
+Private Function Border_Read() As Border
+
+  Return $hBorder
+
+End
+
+Private Sub Border_Write(Value As Border)
+
+  $hBorder = Value
+
+End
+
+Public Sub _SetRowBorder(iRow As Integer, hBorder As Border)
+  
+  If Not $cBorder Then $cBorder = New Collection
+  $cBorder[iRow] = hBorder
+  
+End
+
+Public Sub _GetRowBorder(iRow As Integer) As Border
+
+  Dim hBorder As Border
+  
+  If $cBorder Then hBorder = $cBorder[iRow]
+  If Not hBorder Then hBorder = $hBorder
+  
+  If hBorder And If Not hBorder.IsVoid() Then Return hBorder
+  
+End
+

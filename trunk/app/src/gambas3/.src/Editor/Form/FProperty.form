@@ -1,0 +1,95 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,2,62,60)
+  Text = ("Properties")
+  Icon = Picture["img/16/grid.png"]
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  { mnuProperty Menu
+    { Menu1 Menu
+    }
+  }
+  { panProperty Panel
+    MoveScaled(4,1,54,4)
+    AutoResize = True
+    { lblName TextLabel
+      MoveScaled(0,0,28,4)
+      Expand = True
+      Padding = 4
+      Alignment = Align.Normal
+    }
+    { btnLock ToolButton
+      MoveScaled(50,0,4,4)
+      ToolTip = ("Lock property")
+      Picture = Picture["icon:/small/lock"]
+      Toggle = True
+    }
+  }
+  { sepProperty Separator
+    MoveScaled(8,6,14,0)
+  }
+  { Panel1 Panel
+    MoveScaled(2,8,56,36)
+    Background = Color.TextBackground
+    Expand = True
+    Arrangement = Arrange.Fill
+    { grdProperty GridView
+      MoveScaled(28,2,25,31)
+      Visible = False
+      Background = Color.TextBackground
+      Border = False
+    }
+    { panEditor HBox
+      MoveScaled(2,3,25,31)
+      Visible = False
+      Background = Color.TextBackground
+      Ignore = True
+      { crdProperty CoordBox txtProperty
+        Name = "crdProperty"
+        MoveScaled(1,14,17,3)
+        Visible = False
+        Expand = True
+        Border = False
+        AllowRelative = True
+        AutoConvert = True
+      }
+      { spnProperty SpinBox
+        MoveScaled(2,5,14,3)
+        Visible = False
+        Expand = True
+        Border = False
+      }
+      { txtAngle AngleBox
+        MoveScaled(2,19,21,3)
+        Visible = False
+        Expand = True
+      }
+      { txtProperty ButtonBox
+        MoveScaled(3,9,18,3)
+        Visible = False
+        Expand = True
+        Border = False
+        ClearButton = True
+      }
+      { cmbProperty ComboBox
+        MoveScaled(4,25,18,4)
+        Visible = False
+        Expand = True
+        ReadOnly = True
+        Border = False
+      }
+    }
+  }
+  { spnHelp SidePanel
+    MoveScaled(15,46,24,13)
+    Arrangement = Arrange.Fill
+    Orientation = Align.Bottom
+    Separator = True
+    Transparent = True
+    { webHelp HelpView
+      MoveScaled(3,1,16,9)
+      NoHeader = True
+    }
+  }
+}

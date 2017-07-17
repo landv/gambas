@@ -1,0 +1,58 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,33,32)
+  Text = ("Configure padding")
+  Resizable = False
+  { Label3 Label
+    MoveScaled(1,1,9,4)
+    #Translate = False
+    Text = "Top"
+  }
+  { crdTop CoordBox crdBrush
+    Name = "crdTop"
+    MoveScaled(10,1,22,4)
+  }
+  { Label5 Label
+    MoveScaled(1,6,9,4)
+    #Translate = False
+    Text = "Left"
+  }
+  { crdLeft CoordBox crdBrush
+    Name = "crdLeft"
+    MoveScaled(10,6,22,4)
+  }
+  { Label6 Label
+    MoveScaled(1,11,9,4)
+    #Translate = False
+    Text = "Right"
+  }
+  { crdRight CoordBox crdBrush
+    Name = "crdRight"
+    MoveScaled(10,11,22,4)
+  }
+  { Label4 Label
+    MoveScaled(1,16,9,4)
+    #Translate = False
+    Text = "Bottom"
+  }
+  { crdBottom CoordBox crdBrush
+    Name = "crdBottom"
+    MoveScaled(10,16,22,4)
+  }
+  { chkSynchro CheckBox
+    MoveScaled(1,21,19,4)
+    AutoResize = True
+    Text = ("Synchronize")
+  }
+  { btnOK Button
+    MoveScaled(1,27,15,4)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(17,27,15,4)
+    Text = ("Cancel")
+    Cancel = True
+  }
+}

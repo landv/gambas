@@ -1,0 +1,33 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,64)
+  { Menu1 Menu
+    { Menu2 Menu
+      Text = ("Menu2")
+    }
+    { Menu3 Menu
+      Text = ("Menu3")
+    }
+  }
+  { SidePanel1 SidePanel
+    MoveScaled(1,1,29,61)
+    Orientation = Align.Left
+    { DirView1 DirView
+      MoveScaled(2,2,25,32)
+      PopupMenu = "Menu1"
+    }
+    { TreeView1 TreeView
+      MoveScaled(2,43,16,16)
+      PopupMenu = "Menu1"
+    }
+  }
+  { DirView2 DirView
+    MoveScaled(36,3,16,16)
+    PopupMenu = "Menu1"
+  }
+  { TreeView2 TreeView
+    MoveScaled(36,45,16,16)
+    PopupMenu = "Menu1"
+  }
+}

@@ -1,0 +1,242 @@
+<%
+Dim sLang As String
+
+Dim rPage As Result
+
+%>
+
+<!DOCTYPE html>
+<html lang="<%= Main.Language %>" dir="<%= IIf(System.RightToLeft, "rtl", "ltr") %>" >
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta language="<%= Main.Language %>" />
+<link rel="stylesheet" href="<%=Path.Static("style.css")%>" />
+
+<% If Actions.NoTitle Then%>
+     <style>
+     <!--
+       .title { display: none; }
+     -->
+    </style>
+<% Else If Actions.OnlineHelp Then%>
+
+     <style>
+     <!--
+       .title { font-size: large; letter-spacing: 1px; }
+     -->
+    </style>
+<% Else If Actions.View Then %>
+    <style>
+     <!--
+     .title {
+       padding: 0px;
+       font-weight: bold;
+       font-size: xx-large;
+       color: #3398c3;
+       text-shadow: 2px 2px 2px #FF7F00;
+       letter-spacing: 2px;
+       margin-bottom: 16px;
+       border: none;
+     }
+     -->
+     </style>
+<% End If %>
+
+<title><%=("Gambas Documentation")%> - <%= Main.PrintTitle(Me.Title) %></title>
+
+</head>
+
+<% If Actions.OnlineHelp Then%>
+  <body class="none">
+<% Else If Actions.View Then %>
+  <body class="view">
+<% Else %>
+  <body>
+<% End If %>
+
+<% 
+'If Me.Warning Then Print "<pre>"; Me.Warning; "</pre><hr>"
+%>
+
+<%  If Not Actions.Show Then %>
+
+<%  If Not Main.IsWget Then %>
+
+<% 
+PrintDivLang()
+ %>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td width="16">
+
+<%
+PrintVersion()
+%>
+
+</td><td nowrap="nowrap">&nbsp;
+
+<%
+PrintPath()
+%>
+
+</td><td align="right">
+
+<%
+
+
+If Users.Current.IsGuest Then
+
+Print "<a style=\"text-decoration:none; color:#FFFFFF;\" href=\"/login\" >Login</a>&nbsp;&nbsp;"
+
+Else
+
+Print "Welcome <a href=\"/account\" >"; Users.Current.Username; "</a>&nbsp;&nbsp;"
+
+Endif
+
+
+
+
+For Each sLang In Main.Langs
+
+  If sLang = Main.Language Then Continue
+  %>
+<a class="flag" href="<%=Main.EncodeLink(Path.Path) %>?lang=<%=sLang%>" >
+  <%
+  Print Main.GetImage("lang/" & sLang, "class=\"flag\" alt=\"" & sLang & "\"", "top"); "\n</a>\n"
+
+Next
+
+%>
+
+  </td></tr></table>
+
+</div>
+
+<% 
+Else
+    PrintPath()
+Endif 
+ %>
+
+<% If Actions.Help And Not Actions.Edit And Not Actions.Rename Then %>
+<a href="/help/license\" id="license-logo"><img src="http://gambasdoc.org/img/license.png" border="0" /></a>
+
+<%
+      rPage = DB.Exec("SELECT sPath FROM page WHERE sPath < &1 AND sLang = &2 ORDER BY sPath DESC LIMIT 2", Path.Page, Main.Language)
+      If rPage.Available Then
+        Print "<a href=\"/help" &/ rPage!sPath & "\" >" & ("Previous") & "</a>";
+      Else
+        Print ("Previous");
+      Endif
+%>
+&nbsp;
+<%
+      rPage = DB.Exec("SELECT sPath FROM page WHERE sPath > &1 AND sLang = &2 ORDER BY sPath LIMIT 2", Path.Page, Main.Language)
+      If rPage.Available Then
+        Print "<a href=\"/help" & rPage!sPath & "\" >" & ("Next") & "</a>";
+      Else
+        Print ("Next");
+      Endif
+%>
+&nbsp;
+<% Endif %>
+<%  If Not Main.IsWget And (Not Users.Current.IsAdmin Or Path.Section <> Path.PATH_ADMIN) Then %>
+
+<%  If Actions.Edit Or Actions.Rename Then %>
+<a href="<%=Path.Path%>"><%= ("Cancel")%></a>
+<% Else If Not Users.Current.IsAdmin %>
+<a href="<%=Path.Path%>?edit"><%=IIf(Me.Title, ("Edit"), ("Create"))%>
+</a>&nbsp;&nbsp;
+
+<%If Me.Title And Request.Path <> "/" Then%>
+<a href="<%=Path.Path%>?rename"><%=("Rename")%></a>&nbsp;
+<% Endif %>
+
+<%If Me.Title And Not Actions.Image Then %>
+<a href="<%=Path.Path%>?undo"><%=("Undo")%></a>&nbsp;
+<% Endif %>
+
+<!-- refresh -->
+
+<% Endif %>
+
+<% If Actions.Help And Not Actions.Edit And Not Actions.Rename Then %>
+<a href="/help/search" ><%=("Search")%></a>&nbsp;&nbsp;
+<a href="/admin"><%=("Administration")%></a>&nbsp;&nbsp;
+<% Endif %>
+
+<% Else %>
+
+<!-- refresh -->
+
+<% Endif %>
+
+<% Else If Not Actions.View Then 
+PrintDivLang()
+PrintPath()
+PrintVersion()
+ %>
+ </div>
+<% Endif %>
+
+<% If Not Actions.Show And (Actions.Help Or Actions.History) Then %>
+<table class="tabheader frame" cellpadding="0" cellspacing="0" width="100%"><tr>
+<% PrintTab(("Documentation"), Not Actions.History, "taboffl", Request.Path)
+If Not Actions.Image Then
+If GetTitle(Path.Page) Then
+PrintTab(("History"), Actions.History, "taboffr", "", Request.Path & "?hist")
+
+Endif
+
+Endif %>
+<td class="tabnone">&nbsp;</td>
+</tr></table>
+<div class="tab frame">
+
+<% Else %>
+
+<% If Actions.Show Then %>
+<div class="frame">
+<% Else %>
+<div class="notab frame">
+<% Endif %>
+
+<% Endif %>
+
+<% If Me.Warning And Not Actions.Help Then %>
+<div class="alert">
+<b><%=("Warning!")%>&nbsp;<%=Me.Warning%></b>
+</div>
+<% Endif %>
+
+
+<% If Not Actions.Edit Then %>
+<div class="title">
+<%= Main.PrintTitle(Me.Title) %>
+</div>
+<% Endif %>
+
+
+
+<<--CONTENTS-->>
+
+</div>
+
+<% If (Actions.Help And Not Actions.Show) Or Users.Current.IsAdmin Then %>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td align="left">
+&copy; Creative Commons Attribution-ShareAlike (CC-BY-SA) 3.0
+</td>
+<td align="right">
+Version: <%=Application.Version%>
+</td>
+</tr>
+</table>
+
+<% Endif %>
+
+</body>
+</html>

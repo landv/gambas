@@ -1,0 +1,98 @@
+' Gambas class file
+
+Export
+
+Property Read X As Integer
+Property Read Y As Integer
+Property Read Width As Integer
+Property Read Height As Integer
+Property Read Index As Integer
+Property Name As String
+
+Private $aGeom As Integer[]
+Private $iIndex As Integer
+Private $sName As String
+
+Public Sub Refresh()
+  
+  Dim aDim As Integer[]
+  Dim aName As String[]
+  Dim iInd As Integer
+  
+  aDim = X11.GetWindowProperty(X11.RootWindow, Atom["_NET_WORKAREA"])
+  iInd = $iIndex * 4
+  Try $aGeom = [aDim[iInd], aDim[iInd + 1], aDim[iInd + 2], aDim[iInd + 3]]
+  
+  aName = X11.GetWindowProperty(X11.RootWindow, Atom["_NET_DESKTOP_NAMES"])
+  Try $sName = aName[$iIndex]
+  
+End
+
+
+Public Sub _new(iIndex As Integer)
+
+  $iIndex = iIndex
+  Refresh  
+  
+End
+
+
+' Private Function Width_Read() As Integer
+' 
+'   Return $iWidth
+' 
+' End
+' 
+' Private Function Height_Read() As Integer
+' 
+'   Return $iHeight
+' 
+' End
+
+Private Function Index_Read() As Integer
+
+  Return $iIndex
+
+End
+
+Private Function Name_Read() As String
+
+  Return $sName
+
+End
+
+Private Sub Name_Write(Value As String)
+
+  Dim aName As String[]
+
+  $sName = Value
+
+  aName = X11.GetWindowProperty(X11.RootWindow, Atom["_NET_DESKTOP_NAMES"])
+  Try aName[$iIndex] = $sName
+  X11.SetWindowProperty(X11.RootWindow, Atom["_NET_DESKTOP_NAMES"], Atom["UTF8_STRING"], aName)
+
+End
+
+Private Function X_Read() As Integer
+
+  Try Return $aGeom[0]
+
+End
+
+Private Function Y_Read() As Integer
+
+  Try Return $aGeom[1]
+
+End
+
+Private Function Width_Read() As Integer
+
+  Try Return $aGeom[2]
+
+End
+
+Private Function Height_Read() As Integer
+
+  Try Return $aGeom[3]
+
+End

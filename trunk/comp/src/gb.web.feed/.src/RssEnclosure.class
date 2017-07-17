@@ -1,0 +1,29 @@
+' Gambas class file
+
+''' This class represents a media attachment to an RSS item.
+
+Export
+
+'' The URL of the attached file.
+Public Url As String
+'' The length of the file in bytes.
+Public Length As Long
+'' The MIME type of the file.
+Public Type As String
+
+Public Sub _Write(hWriter As XmlWriter)
+  If Not Url Or If Not Length Or If Not Type Then Error.Raise(("Url, Length and Type must be set in RssEnclosure"))
+  With hWriter
+    .StartElement("enclosure", ["url", Url, "type", Type, "length", Str$(Length)])
+    .EndElement()
+  End With
+End
+
+Public Sub _Read(hReader As XmlReader)
+  With hReader.Node.Attributes
+    Url = .["url"]
+    Length = CLong(.["length"])
+    Type = .["type"]
+  End With
+  hReader.Read()
+End

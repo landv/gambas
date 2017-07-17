@@ -1,0 +1,464 @@
+' Gambas class file
+
+Inherits UserControl
+
+Event Click
+Event DblClick
+Event ButtonClick
+Event RemoveClick
+
+Static Public ShowButton As Boolean
+
+Property ShowPath As Boolean
+Property Path As String
+Property Highlight As Boolean
+Property Selected As Boolean
+Property ShowAuthors As Boolean
+Property Read Info As CProjectInfo
+
+Public ShowRemove As Boolean
+Public Group As String ' for examples
+Public Template As Boolean
+
+Static Private $hRemove As Image
+Static Private $hRemoveGray As Image
+
+Private $hDrawingArea As DrawingArea
+Private $sPath As String
+Private $hProjectInfo As CProjectInfo
+Private $hIcon As Image
+Private $bShowPath As Boolean
+Private $bShowAuthors As Boolean
+
+Private ICON_SIZE As Integer = Desktop.Scale * 4
+
+Private $bCanHighlight As Boolean = True
+Private $bHighlight As Boolean
+
+Private $hObs As Observer
+
+'Private $iIdealH As Integer
+Private $iIdealW As Integer
+Private $bSelected As Boolean
+Private $sToolTip As String
+Private $bInsideButton As Boolean
+Private $bInsideRemove As Boolean
+
+Public Sub _new()
+  
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  $hDrawingArea.Mouse = Mouse.Pointing
+  $hDrawingArea.Focus = True
+  $hDrawingArea.Tracking = True
+  
+  $hObs = New Observer(Me) As "ProjectItem"
+  
+  If Not $hRemove Then
+    $hRemove = Picture["icon:/small/remove"].Image
+    $hRemoveGray = $hRemove.Copy().Brightness(1).Colorize(Color.LightGray)
+  Endif
+  
+  ' If Not $hGradient Then
+  '   
+  '   $hGradient = New Image(128, 128)
+  '   
+  '   Paint.Begin($hGradient)
+  '   Paint.Brush = Paint.RadialGradient(0, 0, 64, 0, 0, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.8), Color.TextBackground], [0.0, 1.0])
+  '   Paint.Rectangle(0, 0, 128, 128)
+  '   Paint.Fill
+  '   Paint.End
+  '   
+  ' Endif
+  
+End
+
+  
+Private Sub SetPath(sPath As String)
+  
+  $sPath = sPath
+  $hProjectInfo = New CProjectInfo(sPath)
+  $hIcon = Null
+  
+  $sToolTip = Replace($sPath, System.User.Home, "~")
+  $iIdealW = 0
+  'Me.H = Me.IdealHeight
+  Me.Refresh
+  
+End
+
+
+' Private Sub GetTitle() As String
+'   
+'   Dim sTitle As String
+'   Dim bSelected As Boolean
+'   
+'   bSelected = Me.Background = Color.SelectedBackground
+' 
+'   With $hProjectInfo
+'     sTitle = .Title
+'     If Not sTitle Then sTitle = .Name
+'     sTitle = "<b>" & .Name & "</b>&nbsp;" & .Version
+'     sTitle &= Subst("<br><font size=\"-1\" color=\"#&1\">", Hex$(If(bSelected, Color.SelectedForeground, Color.Gradient(Color.TextBackground, Color.TextForeground, 0.75)), 6)) & .Title
+'     If $bShowAuthors And If .Authors And If .Authors.Count Then
+'       If .Title Then sTitle &= " - "
+'       sTitle &= "<i>" & If(.Authors.Count = 1, ("Author"), ("Authors")) & " : " & .Authors.Join(", ") & "</i>"
+'     Endif
+'     sTitle &= "</font>"
+'     If $bShowPath Then sTitle &= Subst("<br><font size=\"-1\" color=\"&1\"><b>", If(bSelected, "white", "gray")) & Replace($sPath, System.User.Home, "~") & "</b></font>"
+'   End With
+'   
+'   Return sTitle
+' 
+' End
+
+Public Sub DrawingArea_MouseMove()
+  
+  Dim DS As Integer = Desktop.Scale
+  Dim bInButton As Boolean
+  Dim bInRemove As Boolean
+  Dim sTooltip As String
+  
+  If Rect(DS, DS, ICON_SIZE, ICON_SIZE).Contains(Mouse.X, Mouse.Y) Then sTooltip = $sToolTip
+  If sTooltip <> $hDrawingArea.Tooltip Then $hDrawingArea.Tooltip = sTooltip
+  
+  If ShowButton Then bInButton = Rect(0, $hDrawingArea.H - DS * 4, $hDrawingArea.W, DS * 4).Contains(Mouse.X, Mouse.Y)
+  If bInButton <> $bInsideButton Then
+    $bInsideButton = bInButton
+    $hDrawingArea.Refresh
+  Endif
+
+  If ShowRemove Then bInRemove = Rect($hDrawingArea.W - DS - $hRemove.W, DS, $hRemove.W, $hRemove.H).Contains(Mouse.X, Mouse.Y)
+  If bInRemove <> $bInsideRemove Then
+    $bInsideRemove = bInRemove
+    $hDrawingArea.Refresh
+  Endif
+  
+End
+
+
+Public Sub DrawingArea_Draw()
+  
+  Dim X, Y, W, H, HT As Integer
+  Dim XS, YS, WS, HS As Integer
+  Dim sText As String
+  Dim P As Integer
+  Dim bSmall As Boolean
+  Dim hScrollView As ScrollView
+  Dim WT As Integer
+  Dim iCol As Integer
+  Dim iBg As Integer
+  
+  If Not $hProjectInfo Then Return
+  
+  P = Desktop.Scale
+  bSmall = $hDrawingArea.H <= P * 12
+  
+  X = 1
+  Y = 1
+  W = Paint.W - 1
+  H = Paint.H - 1
+  
+  If Me.Parent Is ScrollView Then
+    hScrollView = Me.Parent
+    If hScrollView.Arrangement = Arrange.Vertical And If hScrollView.ScrollH > hScrollView.ClientH Then
+      W -= P
+    Endif
+  Endif
+  
+  XS = X
+  YS = Y
+  WS = W
+  HS = H
+  
+  With $hProjectInfo
+    
+    If Not $hIcon Then
+      $hIcon = Project.StretchIcon(.GetIconPath(), ICON_SIZE)
+    Endif
+    
+    Paint.AntiAlias = False
+    Paint.Rectangle(X, Y, W - 1, H - 1)
+
+    If $bSelected Then
+      iBg = Color.Gradient(Color.LightBackground, Color.TextBackground)
+    Else
+      iBg = Color.Merge(Color.TextForeground, Color.TextBackground, 0.97)
+    Endif
+    Paint.Background = iBg
+    Paint.Fill(True)
+
+    'Paint.Brush = Paint.RadialGradient(X, Y, Desktop.Scale * 24, X, Y, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.6), Color.Merge(Color.TextForeground, Color.TextBackground, 0.97)], [0.0, 1.0])
+    'Paint.Fill(True)
+    'Paint.Brush = Null
+    'Paint.DrawImage($hGradient, X, Y, W, W)
+    
+    
+    If $hDrawingArea.HasFocus Or If $bHighlight Then
+    
+      Paint.Background = Color.LightBackground
+      Paint.LineWidth = 2
+    
+    Else
+      
+      Paint.Background = Color.LightForeground
+      
+    Endif
+    
+    Paint.Stroke
+    Paint.AntiAlias = True
+
+    Paint.Save
+    
+    X += P
+    Y += P
+    W -= P * 2
+    H -= P * 2
+    
+    If ShowButton And If $bHighlight Then H -= P * 2
+    
+    Paint.Rectangle(X, Y, W, H)
+    Paint.Clip
+    
+    Paint.DrawImage($hIcon, X, Y)
+    
+    iCol = Color.Foreground 'If($bSelected, Color.SelectedForeground, Color.Foreground)
+    
+    X += ICON_SIZE + P
+
+    If Template Then
+      sText = .GetTranslatedTitle()
+    Else
+      sText = .Name
+    Endif
+    'Paint.Font = Font["+1"]
+    Paint.Background = iCol
+    Paint.DrawTextShadow(sText, X, Y, W, H, Align.TopLeft)
+    Paint.DrawText(sText, X, Y, W, H, Align.TopLeft)
+    
+    If Template Then
+    
+      X -= ICON_SIZE + P
+      
+      sText = .GetTranslatedDescription()
+      Paint.Font = Font["-1"]
+      
+      W = W - X - P * 2
+      H = H - Y - ICON_SIZE
+      sText = Paint.TrimText(sText, W, H)
+      Paint.DrawText(sText, X, Y + ICON_SIZE + P, W, H)
+      
+    Else If bSmall Then
+    
+      WT = Paint.Font.TextWidth(sText & " ")
+      
+      Paint.Font.Bold = False
+      sText = .Version
+      'Paint.Background = Color.Red
+      'Paint.DrawTextShadow(sText, X + WT, Y, Paint.W, Paint.H, Align.TopLeft, 4)
+      Paint.DrawText(sText, X + WT, Y, Paint.W, Paint.H, Align.TopLeft)
+
+      HT = Paint.Font.Height
+
+      sText = .Description
+      If Not sText Then sText = .Title
+      Paint.Font = Font["-1"]
+      
+      W = Paint.W - X - P * 2
+      H = Paint.H - Y - HT - P - 3
+      Paint.DrawText(Paint.TrimText(sText, W, H), X, Y + HT + 3, W, H)
+      
+    Else
+      
+      Paint.Font.Bold = False
+      
+      sText = .Version
+      'Paint.DrawTextShadow(sText, X + 1, Y + Paint.Font.Height + 1, Paint.W, Paint.H, Align.TopLeft, 4)
+      Paint.DrawText(sText, X, Y + Paint.Font.Height, Paint.W, Paint.H, Align.TopLeft)
+      
+      X -= ICON_SIZE + P
+      
+      sText = .Description
+      If Not sText Then sText = .Title
+      Paint.Font = Font["-1"]
+      
+      W = W - X - P * 2
+      H = H - Y - ICON_SIZE
+      sText = Paint.TrimText(sText, W, H)
+      Paint.DrawText(sText, X, Y + ICON_SIZE + P, W, H)
+      
+    Endif
+    
+  End With
+  
+  Paint.Restore
+  
+  If ShowButton And If $bHighlight Then
+    X = 0
+    Y = Paint.H - P * 4
+    W = Paint.W
+    H = P * 4
+    Paint.Font.Grade = -1
+    If $bInsideButton Then
+      Paint.Background = Color.SelectedBackground
+      Paint.DrawTextShadow(("Open in another window") & "…", X + P, Y, W - P * 2, H, Align.Normal)
+    Else
+      Paint.Background = Color.LightForeground
+    Endif
+    Paint.DrawText(("Open in another window") & "…", X + P, Y, W - P * 2, H, Align.Normal)
+  Endif
+  
+  If ShowRemove And If $bHighlight Then
+    Paint.DrawImage(If($bInsideRemove, $hRemove, $hRemoveGray), Paint.W - $hRemove.W - P, P)
+  Endif
+  
+  ' If Template And If $sPath = GetParent().Current Then
+  '   Paint.FillRect(0, 0, Paint.W, Paint.H, Color.SetAlpha(Color.SelectedBackground, 128))
+  ' Endif
+  ' 
+End
+
+Public Sub DrawingArea_Enter()
+  
+  If $bCanHighlight Then
+    'If not $bHighlight Then 
+      '$hDrawingArea.Background = Color.LightBackground
+      $bHighlight = True
+      $hDrawingArea.Refresh
+    'Endif
+  Endif
+  
+End
+
+Public Sub DrawingArea_Leave()
+  
+  If $bHighlight Then 
+    '$hDrawingArea.Background = Color.Default
+    $bHighlight = False
+    $hDrawingArea.Refresh
+  Endif
+  
+End
+
+Public Sub DrawingArea_KeyPress()
+
+  If Key.Code = Key.Space Then Raise Click
+
+End
+
+' Private Function Background_Read() As Integer
+' 
+'   Return Super.Background
+' 
+' End
+' 
+' Private Sub Background_Write(Value As Integer)
+' 
+'   Super.Background = Value
+'   $hDrawingArea.Background = Color.Default
+' 
+' End
+
+Private Function ShowPath_Read() As Boolean
+
+  Return $bShowPath
+
+End
+
+Private Sub ShowPath_Write(Value As Boolean)
+
+  $bShowPath = Value
+  Me.Refresh
+
+End
+
+Private Function Path_Read() As String
+
+  Return $sPath
+
+End
+
+Private Sub Path_Write(Value As String)
+
+  SetPath(Value)
+
+End
+
+Private Function Highlight_Read() As Boolean
+
+  Return $bCanHighlight
+
+End
+
+Private Sub Highlight_Write(Value As Boolean)
+
+  $bCanHighlight = Value
+  $hDrawingArea.Mouse = If(Value, Mouse.Pointing, Mouse.Default)
+
+End
+
+Private Function Info_Read() As CProjectInfo
+
+  Return $hProjectInfo
+
+End
+
+Public Sub DrawingArea_MouseUp()
+  
+  If Mouse.Left Then 
+    If $bInsideButton Then
+      Raise ButtonClick
+    Else If $bInsideRemove Then
+      Raise RemoveClick
+    Else
+      Raise Click
+    Endif
+    $hDrawingArea.Refresh
+  Endif
+  
+End
+
+Public Sub DrawingArea_DblClick()
+  
+  If Mouse.Left Then Raise DblClick
+  
+End
+
+Private Function ShowAuthors_Read() As Boolean
+
+  Return $bShowAuthors
+
+End
+
+Private Sub ShowAuthors_Write(Value As Boolean)
+
+  $bShowAuthors = Value
+  $hDrawingArea.Refresh
+
+End
+
+Public Sub Match(sFilter As String) As Boolean
+
+  If Not sFilter Then Return True
+  With $hProjectInfo
+    If .Name Like sFilter Then Return True
+    If String.LCase(.Title) Like sFilter Then Return True
+    If $bShowAuthors And If String.LCase(.Authors.Join(" ")) Like sFilter Then Return True
+    If String.LCase(Group) Like sFilter Then Return True
+    If String.LCase(.Description) Like sFilter Then Return True
+    If .Components.Exist(sFilter) Then Return True
+  End With
+  
+End
+
+Private Function Selected_Read() As Boolean
+
+  Return $bSelected
+
+End
+
+Private Sub Selected_Write(Value As Boolean)
+
+  $bSelected = Value
+  $hDrawingArea.Refresh
+
+End

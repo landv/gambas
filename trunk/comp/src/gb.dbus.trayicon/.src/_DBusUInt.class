@@ -1,0 +1,16 @@
+' Gambas class file
+
+Export
+Inherits DBusValues
+
+Public Const Signature As String = "u"
+
+Static Public Sub _call(Value As Integer) As _DBusUInt
+
+  Dim hVal As _DBusUInt
+  
+  hVal = New _DBusUInt
+  hVal.Value = Value
+  Return hVal
+  
+End

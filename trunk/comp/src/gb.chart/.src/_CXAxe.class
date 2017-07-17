@@ -1,0 +1,25 @@
+' Gambas class file
+Export
+Inherits _CAxes
+
+Public Const Normal As Integer = 0
+
+Public Const Steps As Integer = 1
+
+Private $iArrange As Integer = 0
+
+Property Arrange As Integer
+
+
+
+Private Function Arrange_Read() As Integer
+
+  Return $iArrange
+
+End
+
+Private Sub Arrange_Write(Value As Integer)
+
+  $iArrange = Value
+
+End

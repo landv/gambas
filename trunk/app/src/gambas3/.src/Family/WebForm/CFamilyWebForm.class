@@ -1,0 +1,261 @@
+' Gambas class file
+
+Inherits CFamily
+
+Public Const Name As String = "WebForm"
+Public Const ControlClass As String = "WebControl"
+Public Const DropImageClass As String = "WebImage"
+Public Const DropImageProperty As String = "Image"
+Public Const EmbedContainer As String = "WebContainer"
+Public Const AutomaticArrangement As Boolean = True
+
+Public Sub _new()
+
+  Me.Background = Color.TextBackground
+  
+End
+
+
+Public Sub GetIcon(hCCtrl As CControl) As String
+  
+  Dim sImage As String
+  
+  Select hCCtrl.Kind
+  
+    Case "WebHBox"
+      sImage = "horizontal"
+    
+    Case "WebVBox", "WebMenu"
+      sImage = "vertical"
+    
+    'Case "WebForm", "WebContainer"
+    '  sImage = "vertical"
+      
+    Case Else
+      sImage = Super.GetIcon(hCCtrl)
+      
+  End Select
+  
+  ' If hCCtrl.GetProperty("Invert") Then
+  '   If Exist("img/family/" &/ sImage & "-invert.png") Then sImage &= "-invert"
+  ' Endif
+  
+  Return sImage
+  
+End
+
+Static Public Sub PaintMenuItem(hCCtrl As CControl)
+
+  Dim DS As Integer
+  Dim X As Integer
+  Dim sImage As String
+  Dim hImage As Image
+  Dim sColor As String
+  Dim bMenu As Boolean
+  Dim sText As String
+  
+  DS = Desktop.Scale
+  bMenu = hCCtrl.Kind = "WebMenu"
+  sText = hCCtrl.GetProperty("Text")
+  
+  If hCCtrl.Kind = "WebMenuItem" Then
+    X = DS * 2 + Stock.GetSize("small")
+  Else
+    X = DS
+  Endif
+  
+  sImage = hCCtrl.GetProperty("Image")
+  If sImage Then
+    
+    Try hImage = Image.Load(Project.Dir &/ ".public" &/ sImage)
+    
+    If hImage Then 
+      Paint.DrawImage(hImage, DS, CInt(Paint.H - hImage.H) \ 2)
+      X = DS + hImage.W + DS
+    Endif
+    
+  Endif
+  
+  sColor = hCCtrl.GetProperty("Foreground")
+  If sColor Then
+    Paint.Background = FColorChooser.FromString(sColor)
+  Else
+    Paint.Background = Color.TextForeground
+  Endif
+  
+  Paint.DrawText(sText, X, 0, Paint.W - X - DS, Paint.H, Align.Normal)
+  
+  If bMenu Then 
+    If hCCtrl.Parent And If hCCtrl.Parent.Kind = "WebMenu" Then Style.PaintArrow(Paint.W - DS * 4, 0, DS * 4, DS * 4, Align.Right)    
+  Else
+    Paint.DrawText(hCCtrl.GetProperty("Shortcut"), X, 0, Paint.W - X - DS, Paint.H, Align.Right)
+  Endif
+  
+  If bMenu Then
+    Paint.Background = &HFFB0B0
+    Paint.AntiAlias = False
+    If hCCtrl.Parent And If hCCtrl.Parent.Kind = "WebMenu" Then 
+      Paint.MoveTo(0, Paint.H - DS)
+      Paint.LineTo(0, 0)
+      Paint.LineTo(Paint.W - 1, 0)
+      Paint.LineTo(Paint.W - 1, Paint.H - DS)
+    Else
+      Paint.MoveTo(0, Paint.H - DS)
+      Paint.LineTo(0, 0)
+      X = Min(Paint.W - 1, X + Paint.TextSize(sText).Width + DS)
+      Paint.LineTo(X, 0)
+      Paint.LineTo(X, Paint.H - DS)
+      Paint.LineTo(Paint.W - 1, Paint.H - DS)
+    Endif
+    Paint.Stroke
+    Paint.AntiAlias = True
+  ' Else
+  '   Paint.Background = Color.SetAlpha(Color.LightForeground, 128)
+  '   Paint.Rectangle(0.5, 0.5, Paint.W - 1, Paint.H - 1)
+  '   Paint.Stroke
+  Endif
+  
+End
+
+Private Sub PaintButton(hCCtrl As CControl)
+
+  Dim hRect As Rect
+  Dim F As Integer = Style.FrameWidth * 4
+  
+  Style.PaintButton(0, 0, Paint.W, Paint.H, False,, Not hCCtrl["Border"])
+  
+  hRect = New Rect(0, 0, Paint.W, Paint.H)
+  'hRect.Adjust(F)
+  
+  If hCCtrl["Image"] Then
+    CFamily.PaintImage(hCCtrl, ".public", Align.Left, F)
+    Try hRect.Left += CFamily.LastRect.W + F
+  Endif
+  
+  If hCCtrl["Text"] Then Paint.DrawText(hCCtrl["Text"], hRect.X, hRect.Y, hRect.W, hRect.H, Align.Center)
+
+End
+
+Public Sub DrawControl(hCCtrl As CControl) As Boolean
+  
+  Select hCCtrl.Kind
+  
+    Case "WebMenuItem"
+      
+      PaintMenuItem(hCCtrl)
+      Return
+      
+    Case "WebContainer", "WebHBox", "WebVBox"
+      If Not CFamily.PaintExpand(hCCtrl) Then
+        CFamily.PaintContainer(0, 0, hCCtrl.W, hCCtrl.H)
+      Endif
+      Return
+      
+    Case "WebImage"
+      Return CFamily.PaintImage(hCCtrl, ".public")
+      
+    Case "WebButton"
+      PaintButton(hCCtrl)
+      Return
+    
+    Case Else
+      
+      Return True
+
+  End Select
+
+End
+
+Public Sub ActionDialog(sAction As String) As Boolean
+
+  Dim vColor As Variant
+  Dim sFont As String
+  
+  Select Case sAction
+    
+    Case ".text-font"
+      sFont = FWebFontChooser.Run(FProperty.GetProperty("Font"))
+      If Not sFont Then Return True
+      Me.ActionValue = sFont
+    
+    Case Like ".format-*"
+      If FColorChooser.Run(, True) Then Return True
+      vColor = FColorChooser.Color
+      If Not IsNull(Val(vColor)) Then vColor = Val(vColor)
+      Me.ActionValue = vColor
+      
+  End Select
+  
+End
+
+Private Sub ToggleFont(hCtrl As CControl, sElt As String)
+
+  Dim sFont As String
+  Dim aFont As String[]
+  Dim iPos As Integer
+
+  Try sFont = hCtrl.GetProperty("Font")
+  If Error Then Return
+  
+  aFont = Split(sFont)
+  iPos = aFont.Find(sElt)
+  If iPos >= 0 Then
+    aFont.Remove(iPos)
+  Else
+    aFont.Add(sElt)
+  Endif
+  
+  Try hCtrl.SetProperty("Font", aFont.Join())
+
+End
+
+Public Sub ActionExec(hCtrl As CControl, sAction As String)
+  
+  Select Case sAction
+    
+    ' Case Like ".text-*"
+    '   Super.ActionExec(hCtrl, sAction)
+    
+    Case ".text-font"
+      Super.ActionExec(hCtrl, sAction)
+      
+    Case ".text-set-font"
+      Super.ActionExec(hCtrl, sAction)
+    
+    Case ".text-bold"
+      ToggleFont(hCtrl, "bold")
+    
+    Case ".text-italic"
+      ToggleFont(hCtrl, "italic")
+    
+    Case ".text-underline"
+      ToggleFont(hCtrl, "underline")
+    
+    Case ".format-background"
+      If hCtrl.HasProperty("Background") Then hCtrl.SetProperty("Background", Me.ActionValue)
+    
+    Case ".format-foreground"
+      If hCtrl.HasProperty("Foreground") Then hCtrl.SetProperty("Foreground", Me.ActionValue)
+    
+  End Select
+  
+End
+
+Public Sub SelectImage((sPropertyType) As String, sImage As String) As String
+
+  Return FSelectIcon.Run(sImage, FSelectIcon.SELECT_IMAGE + FSelectIcon.SELECT_SVGIMAGE + FSelectIcon.SELECT_PUBLIC)
+      
+End
+
+Static Public Sub InitCoord(hCtrl As CoordBox)
+  
+  hCtrl.Units = ["em", "px", "ex", "mm", "cm", "in", "pt", "pc", "rem", "vw", "vh", "vmin", "vmax"]
+  hCtrl.DefaultUnit = "em"
+  
+End
+
+Public Sub GetFonts() As String[]
+  
+  Return ["sans-serif", "serif", "monospace", "cursive", "fantasy"].Sort()
+  
+End

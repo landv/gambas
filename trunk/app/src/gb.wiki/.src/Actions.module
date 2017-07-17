@@ -1,0 +1,189 @@
+' Gambas module file
+
+Property Read Refresh As Boolean
+Property Read Undo As Boolean
+Property Read View As Boolean
+Property Read Show As Boolean
+Property Read Get As Boolean
+Property Read OnlineHelp As Boolean
+Property Read NoTitle As Boolean
+Property Read NoImage As Boolean
+Property Read NoCache As Boolean
+Property Read Edit As Boolean
+Property Read Rename As Boolean
+Property Read Help As Boolean
+Property Read Image As Boolean
+Property Read History As Boolean
+
+Property Parsed As Boolean
+Public $bParsed As Boolean
+
+Private $bRefresh As Boolean
+Private $bUndo As Boolean
+Private $bView As Boolean
+Private $bShow As Boolean
+Private $bGet As Boolean
+Private $bOnlineHelp As Boolean
+Private $bNoTitle As Boolean
+Private $bNoImage As Boolean
+Private $bNoCache As Boolean
+Private $bEdit As Boolean
+Private $bRename As Boolean
+Private $bHelp As Boolean
+Private $bHistory As Boolean
+
+Public Sub _init()
+
+  Dim sField As String
+
+  For Each sField In Request.Get.Fields
+
+    Select Case sField
+      Case "refresh"
+        $bRefresh = True
+
+      Case "undo"
+        $bUndo = True
+
+      Case "view"
+        $bView = True
+        $bShow = True
+
+      Case "show"
+        $bShow = True
+
+      Case "wiki"
+        $bGet = True
+
+      Case "help"
+        $bView = True
+        $bShow = True
+        $bOnlineHelp = True
+
+      Case "notitle"
+        $bNoTitle = True
+
+      Case "noimage"
+        $bNoImage = True
+
+      Case "nocache"
+        $bNoCache = True
+
+      Case "edit"
+        $bEdit = True
+
+      Case "rename"
+        $bRename = True
+
+      Case "hist"
+        $bHistory = True
+    End Select
+
+  Next
+
+  If Not $bShow Then $bShow = Main.IsWget Or Request.Get.Exist("show")
+  $bHelp = $bShow Or Request.Get.Exist("help") Or Request.Path Like "/help*"
+
+End
+
+Private Function Refresh_Read() As Boolean
+
+  Return $bRefresh
+
+End
+
+Private Function Undo_Read() As Boolean
+
+  Return $bUndo
+
+End
+
+Private Function View_Read() As Boolean
+
+  Return $bView
+
+End
+
+Private Function Show_Read() As Boolean
+
+  Return $bShow
+
+End
+
+Private Function Get_Read() As Boolean
+
+  Return $bGet
+
+End
+
+Private Function OnlineHelp_Read() As Boolean
+
+  Return $bOnlineHelp
+
+End
+
+Private Function NoTitle_Read() As Boolean
+
+  Return $bNoTitle
+
+End
+
+Private Function NoImage_Read() As Boolean
+
+  Return $bNoImage
+
+End
+
+Private Function NoCache_Read() As Boolean
+
+  Return $bNoCache
+
+End
+
+Private Function Edit_Read() As Boolean
+
+  Return $bEdit
+
+End
+
+Private Function Help_Read() As Boolean
+
+  Return Request.Path Begins "/help"
+
+End
+
+Private Function Image_Read() As Boolean
+
+  Return (Left$(File.Name(Request.Path)) = ":")
+
+End
+
+Private Function History_Read() As Boolean
+
+  Return $bHistory
+
+End
+
+Public Sub Debug()
+
+  'Print WWiki.oPage.Content
+
+End
+
+Private Function Rename_Read() As Boolean
+
+  Return $bRename
+
+End
+
+Private Function Parsed_Read() As Boolean
+
+  Return $bParsed
+
+End
+
+Private Sub Parsed_Write(Value As Boolean)
+
+  $bParsed = Value
+
+End

@@ -1,0 +1,108 @@
+' Gambas module file
+
+Public Function GetSource(hCtrl As Control) As DataSource
+  
+  Dim hCont As Container
+  
+  hCont = hCtrl.Parent
+  Do
+    If hCont Is DataSource Then Return hCont
+    hCont = hCont.Parent
+    If Not hCont Then Return
+  Loop
+  
+End
+
+Public Function GetValue(hCtrl As DataControl) As Variant
+  
+  Dim hSource As DataSource
+  
+  If Not hCtrl.Key Then Return
+  
+  hSource = GetSource(hCtrl)
+  If Not hSource Then Return
+  
+  Return hSource[hCtrl.Key]
+  
+End
+
+Public Function CheckDB(hConn As Connection) As Boolean
+
+  If Not hConn Then Return True  
+  If hConn.Opened Then Return
+  
+  hConn.Open
+  Return Not hConn.Opened
+  
+End
+
+
+Public Function MakeWhere(aKey As String[], aVal As Variant[]) As String
+  
+  Dim iInd As Integer
+  Dim sReq As String
+  
+  For iInd = 0 To aKey.Max
+    If iInd Then sReq &= " AND "
+    sReq &= DB.Subst(aKey[iInd] & " = &1", aVal[iInd])
+  Next
+  
+  Return sReq
+  
+End
+
+Public Function MakeNextWhere(aKey As String[], aVal As Variant[]) As String
+  
+  Dim iInd As Integer
+  Dim sReq As String
+  Dim sTest As String
+  Dim sKey As String
+  Dim sOp As String
+  
+  For iInd = 0 To aKey.Max
+    If iInd Then sReq &= " OR "
+    If sTest Then sReq &= "(" & sTest & " AND "
+    
+    sKey = aKey[iInd]
+    If sKey Ends " DESC" Then
+      sKey = Left(sKey, -5)
+      sOp = "<"
+    Else
+      sOp = ">"
+    Endif
+    
+    If IsNull(aVal[iInd]) Then 
+      sReq &= DB.Subst(sKey & " IS NOT NULL")
+    Else
+      sReq &= DB.Subst(sKey & " " & sOp & " &1 ", aVal[iInd])
+    Endif
+    
+    If sTest Then sReq &= ") "
+    If sTest Then sTest &= " AND "
+    sTest &= DB.Subst(sKey & " = &1", aVal[iInd])
+  Next
+  
+  Return sReq
+  
+End
+
+
+Public Function Compare(aVal As Variant[], aVal2 As Variant[]) As Boolean
+  
+  Dim iInd As Integer
+  
+  If aVal.Count <> aVal2.Count Then Return
+  
+  For iInd = 0 To aVal.Max
+    If aVal[iInd] <> aVal2[iInd] Then Return
+  Next
+  
+  Return True
+  
+End
+
+Public Function IsControl(hCtrl As Control) As Boolean
+  
+  If hCtrl Is DataControl Or If hCtrl Is DataCombo Or If hCtrl Is DataComboView Or If hCtrl Is DataCheckBox Then Return True
+  
+End

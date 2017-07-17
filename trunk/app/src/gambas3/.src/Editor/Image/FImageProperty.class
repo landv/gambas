@@ -1,0 +1,1464 @@
+' Gambas class file
+
+Private $aDefaultColor As Integer[] = [Color.Black, Color.White, Color.DarkGray, Color.Gray, Color.LightGray, Color.Blue, Color.Cyan, Color.Green, Color.Yellow, Color.Orange, Color.Red, Color.Magenta]
+
+Private $aGradient As New CReportBrush[]
+Private $aShape As CImageSelection[]
+
+Private $aClipboard As New CImageClipboard[]
+
+Private $aGradientPos As Float[]
+Private $aGradientColors As Integer[]
+
+Private $iCurrentColor As Integer = -1
+
+Private $aLabel As Label[]
+Private $lblA1 As DrawingArea
+Private $lblA2 As DrawingArea
+
+'tampon souris
+Private $MX As Integer
+Private $MY As Integer
+'Valeur radiales
+Private $fX As Float = 0.5
+Private $fY As Float = 0.5
+Private $cX As Float = 0.5
+Private $cY As Float = 0.5
+Private $fRadius As Float = 1 / Sqr(2)
+'valeur linéaires
+Private $flX1 As Float = 0
+Private $flY1 As Float = 0.5
+Private $flX2 As Float = 1
+Private $flY2 As Float = 0.5
+
+Private $iLineCap As Integer
+Private $iLineJoin As Integer
+Private $iFillRule As Integer
+
+'Static Public Value As String  '"radialgradient(0.5,0.5,1,0.5,0.5,[&hFFFFFF,&h000000,&h00FF00],[0,0.5,1])" '"lineargradient(0,0.5,1,0.5,[&hFFFFFF,&h000000,&h00FF00],[0,0.5,1])"
+
+Private Sub GetCurrent() As FImageEditor
+  
+  Try Return Project.ActiveForm
+  
+End
+
+
+Public Sub _new()
+  
+  $aGradientColors = [Color.Black, Color.White]
+  $aGradientPos = [0, 1]
+  
+  $lblA2 = New DrawingArea(dwgGradient) As "lblAngle"
+  $lblA2.Mouse = Mouse.Cross
+  $lblA1 = New DrawingArea(dwgGradient) As "lblAngle"
+  $lblA1.Mouse = Mouse.Cross
+   
+  gvwClipboard.Columns.Count = 3
+  gvwClipboard.Columns[0].Width = Desktop.Scale * 12
+  gvwClipboard.Columns[1].Expand = True
+  gvwClipboard.Columns[2].Width = Desktop.Scale * 4
+  gvwClipboard.Rows.H = Desktop.Scale * 8
+  
+  gvwShape.Columns.Count = 3
+  gvwShape.Columns[0].Width = Desktop.Scale * 12
+  gvwShape.Columns[1].Expand = True
+  gvwShape.Columns[2].Width = Desktop.Scale * 4
+  gvwShape.Rows.H = Desktop.Scale * 8
+  
+  $aGradient.Add(CReportBrush["LinearGradient(0,0.5,1,0.5,[#000000,#FFFFFF],[0,1])"])
+  $aGradient.Add(CReportBrush["LinearGradient(0,0.5,1,0.5,[#000000,#FFFFFFFF],[0,1])"])
+  
+  palColor.Colors = $aDefaultColor
+  
+  SetLineCap(Paint.LineCapRound)
+  SetLineJoin(Paint.LineJoinRound)
+  SetFillRule(Paint.FillRuleWinding)
+  
+End
+
+Public Sub Form_Open()
+  
+  Dim I As Integer
+  Dim hLabel As Label
+  
+  $aLabel = New Label[$aGradientColors.Count]
+  For I = 0 To $aGradientColors.Max
+    hLabel = New Label(dwgGradientColor) As "Label"
+    hLabel.Background = $aGradientColors[I]
+    hLabel.Border = Border.Plain
+    hLabel.Resize(10, 10)
+    hLabel.Tag = I
+    $aLabel[I] = hLabel
+  Next
+ 
+  $lblA1.Border = Border.Plain
+  $lblA1.Resize(10, 10)
+  $lblA1.Background = Color.White
+  $lblA1.Tag = 1
+ 
+  $lblA2.Border = Border.Plain
+  $lblA2.Resize(10, 10)
+  $lblA2.Background = Color.White
+  $lblA2.Tag = 2
+  
+  'MoveLabels
+  UpdateGradient
+  
+  ReadConfig
+  
+  AddClipboard(Null, "")
+  'UpdateClipboard
+  
+End
+
+Private Sub RememberColor(iColor As Integer)
+  
+  If Not palColor.Exist(iColor) Then palColor.AddFirst(iColor)
+  
+End
+
+Private Sub RememberGradient(hBrush As CReportBrush)
+  
+  If $aGradient.Exist(hBrush) Then Return
+  
+  $aGradient.Add(hBrush.Copy(), 0)
+  If $aGradient.Count > 24 Then $aGradient.Remove($aGradient.Max)
+  dwgGradientStack.Refresh
+  
+End
+
+Public Sub SetColor(iColor As Integer)
+  
+  cchColor.Value = Color.SetAlpha(iColor, 0)
+  
+End
+
+
+Public Sub GetColor(Optional bIgnoreOpacity As Boolean) As Integer
+  
+  Dim iColor As Integer = cchColor.Value
+  
+  RememberColor(iColor)
+  
+  If Not bIgnoreOpacity Then iColor = Color.SetAlpha(iColor, 255 - slbOpacity.Value)
+  Return iColor
+  
+End
+
+Public Sub GetSize() As Integer
+  
+  Return slbSize.Value
+  
+End
+
+
+
+Public Sub GetBrush(hRect As RectF, Optional bIgnoreOpacity As Boolean, Optional bDoNotRemember As Boolean) As PaintBrush
+  
+  Dim hImage As Image
+  Dim hBrush As CReportBrush
+  Dim hPaintBrush As PaintBrush
+  Dim I As Integer
+  Dim iCol As Integer
+  
+  Select Case tabBrush.Index
+    
+    Case 1
+      
+      hBrush = ToBrush()
+      If Not bDoNotRemember Then RememberGradient(hBrush)
+      
+      If Not bIgnoreOpacity Then
+        For I = 0 To hBrush.Colors.Max
+          iCol = hBrush.Colors[I]
+          hBrush.Colors[I] = Color.SetAlpha(iCol, 255 - ((255 - Color.GetAlpha(iCol)) * slbOpacity.Value) \ 255)
+        Next
+      Endif
+      
+      hPaintBrush = hBrush.GetBrush(0, 0, 1, 1)
+      
+      If hRect Then  
+        hPaintBrush.Translate(hRect.X, hRect.Y)
+        hPaintBrush.Scale(hRect.W, hRect.H)
+      Endif
+      
+    Case 2
+      
+      If gvwClipboard.Row = 0 Then
+        Try hImage = Clipboard.Paste()
+      Else If gvwClipboard.Row > 0 Then
+        hImage = $aClipboard[gvwClipboard.Row].Image
+      Endif
+      
+      If Not hImage Or If hImage.W <= 0 Or If hImage.H <= 0 Then Return Paint.Color(GetColor())
+      
+      If Not bIgnoreOpacity Then hImage = hImage.Copy().Opacity(slbOpacity.Value / 255)
+      hPaintBrush = Paint.Image(hImage)
+      
+      If hRect Then  
+        hPaintBrush.Translate(hRect.X, hRect.Y)
+        hPaintBrush.Scale(hRect.W / hImage.W, hRect.H / hImage.H)
+      Endif
+      
+    Case Else
+      
+      hPaintBrush = Paint.Color(GetColor(bIgnoreOpacity))
+      
+  End Select
+
+  Return hPaintBrush
+  
+End
+
+Public Sub PaintForStroke(Optional hRect As RectF, Optional bIgnoreOpacity As Boolean)
+  
+  Dim iSize As Integer = slbSize.Value
+  
+  If iSize = 0 Then
+    Paint.LineWidth = 1
+    Paint.AntiAlias = False
+    Paint.LineCap = Paint.LineCapSquare
+    Paint.LineJoin = Paint.LineJoinRound
+  Else
+    Paint.LineWidth = iSize
+    Paint.AntiAlias = True
+    Paint.LineCap = $iLineCap
+    Paint.LineJoin = $iLineJoin
+  Endif
+  
+  If Not hRect Then hRect = RectF(0, 0, Paint.W, Paint.H)
+  Paint.Brush = GetBrush(hRect, bIgnoreOpacity)
+  
+End
+
+Public Sub PaintForFill(Optional hRect As RectF)
+  
+  Paint.FillRule = $iFillRule
+  If Not hRect Then hRect = RectF(0, 0, Paint.W, Paint.H)
+  Paint.Brush = GetBrush(hRect)
+  
+End
+
+Public Sub HasGradient() As Boolean
+  
+  Return tabBrush.Index = 1
+  
+End
+
+Public Sub palColor_Click()
+
+  cchColor.Value = palColor.Current
+
+End
+
+Public Sub dwgGradientColor_Draw()
+  
+  Dim hLabel As Label
+  Dim iPos, I As Integer
+  
+  Paint.Rectangle(5, 5, Paint.Width - 10, Paint.Height - 20)
+  Paint.Clip
+  Paint.FillRect(0, 0, Paint.W, Paint.H, Color.LightForeground)
+  Project.DrawBackground()
+  Paint.Brush = Paint.LinearGradient(5, 0, Paint.Width - 10, 0, $aGradientColors, $aGradientPos)
+  Paint.Rectangle(0, 0, Paint.W, Paint.H)
+  Paint.Fill
+  Paint.ResetClip
+  
+  For Each hLabel In $aLabel
+    
+    iPos = $aGradientPos[I] * (Paint.Width - 10) + 5
+    Paint.MoveTo(iPos - hLabel.Width / 2, Paint.Height - hLabel.Height)
+    Paint.LineTo(iPos + hLabel.Width / 2, Paint.Height - hLabel.Height)
+    Paint.LineTo(iPos, Paint.Height - 15)
+    Paint.Brush = Paint.Color(IIf(hLabel.Tag = $iCurrentColor, Color.White, Color.Black))
+    Paint.Fill
+    hLabel.Move(iPos - hLabel.Width / 2, Paint.Height - hLabel.Height)
+    Inc I
+    
+  Next
+  
+  dwgGradient.Refresh
+  
+End
+
+Public Sub Label_MouseDown()
+  
+  $MX = Mouse.ScreenX - Last.X
+  $iCurrentColor = Last.Tag
+  '$MY = Mouse.ScreenY - Last.Y
+  dwgGradientColor.Refresh
+  
+End
+
+Public Sub Label_MouseMove()
+  
+  Dim hLabel As Label = Last
+  Dim iRealPos As Integer = Mouse.ScreenX - $MX + hLabel.Width / 2
+  
+  If iRealPos < 5 Or iRealPos > dwgGradientColor.Width - 5 Then Return
+  hLabel.Move(Mouse.ScreenX - $MX, hLabel.Y)
+  $aGradientPos[hLabel.Tag] = Round((hLabel.X + hLabel.Width / 2 - 5) / (dwgGradientColor.Width - 10), -2)
+  dwgGradientColor.Refresh
+  'Print $aGradientPos[hLabel.Tag]
+  
+End
+
+Public Sub dwgGradient_Draw()
+
+  Dim hBrush As PaintBrush
+  
+  Paint.Rectangle(5, 5, dwgGradient.Width - 10, dwgGradient.Height - 10)
+  Paint.Clip
+  Paint.FillRect(0, 0, Paint.W, Paint.H, Color.LightForeground)
+  Project.DrawBackground()
+  
+  hBrush = GetBrush(Null, True, True)
+  hBrush.Scale(dwgGradient.Width, dwgGradient.Height)
+  Paint.Brush = hBrush
+  'Paint.Brush.Translate(5, 5)
+  'Paint.Brush.Reset
+  Paint.Rectangle(5, 5, dwgGradient.Width - 10, dwgGradient.Height - 10)
+  Paint.Fill
+  
+  Paint.LineWidth = 1
+  Paint.Brush = Paint.Color(Color.Black)
+  Paint.MoveTo($lblA1.Left + 5, $lblA1.Top + 5)
+  Paint.LineTo($lblA2.Left + 5, $lblA2.Top + 5)
+  Paint.Stroke
+
+  ' If radRadial.Value Then
+  '   
+  '   
+  '   Paint.Brush = Paint.RadialGradient((Paint.Width - 10) * $cX, (Paint.Height - 10) * $cY, (Paint.Width - 10) * 2 * $fRadius, (Paint.Width - 10) * $fX, (Paint.Height - 10) * $fY, $aGradientColors, $aGradientPos)
+  '   Paint.Rectangle(5, 5, Paint.Width - 10, Paint.Height - 10)
+  '   Paint.Fill
+  '   
+  ' Else
+  '   
+  '   Paint.Brush = Paint.LinearGradient((Paint.Width - 10) * $flX1, (Paint.Height - 10) * $flY1, (Paint.Width - 10) * $flX2, (Paint.Height - 10) * $flY2, $aGradientColors, $aGradientPos)
+  '   Paint.Rectangle(5, 5, Paint.Width - 10, Paint.Height - 10)
+  '   Paint.Fill
+  '   Paint.Brush = Paint.Color(Color.Black)
+  '   Paint.MoveTo($lblA1.Left + 5, $lblA1.Top + 5)
+  '   Paint.LineTo($lblA2.Left + 5, $lblA2.Top + 5)
+  '   Paint.Stroke
+  '   
+  ' Endif
+  
+End
+
+Private Sub AddGradient(X As Float, iGradientColor As Integer)
+
+  Dim hLabel As Label
+  
+  hLabel = New Label(dwgGradientColor) As "Label"
+  
+  $aGradientColors.Add(iGradientColor)
+  $aGradientPos.Add(X)
+  hLabel.Background = iGradientColor
+  hLabel.Resize(10, 10)
+  hLabel.Tag = $aGradientColors.Max
+  hLabel.Border = Border.Plain
+  $aLabel.Add(hLabel)
+  dwgGradientColor.Refresh
+
+End
+
+Public Sub dwgGradientColor_DblClick()
+  
+  Dim X, XMin, XMax As Float
+  Dim iInd, iMin, iMax As Integer
+  
+  X = Round((Mouse.X - 5) / (dwgGradientColor.Width - 10), -2)
+  If $aGradientPos.Exist(X) Then Return
+  
+  XMin = 0
+  iMin = -1
+  XMax = 1
+  iMax = -1
+  For iInd = 0 To $aGradientPos.Max
+    If $aGradientPos[iInd] >= XMin And $aGradientPos[iInd] < X Then 
+      iMin = iInd
+      XMin = $aGradientPos[iInd]
+    Endif
+    If $aGradientPos[iInd] > X And $aGradientPos[iInd] <= XMax Then 
+      iMax = iInd
+      XMax = $aGradientPos[iInd]
+    Endif
+  Next
+  
+  If iMin < 0 Then 
+    iMin = iMax
+  Else If iMax < 0 Then 
+    iMax = iMin
+  Endif
+  
+  AddGradient(X, Color.Gradient($aGradientColors[iMin], $aGradientColors[iMax]))
+  
+End
+
+Public Sub sldRadius_Change()
+  
+  $fRadius = Last.value / 100
+  dwgGradient.Refresh
+  
+End
+
+Private Function FindLabel(iColor As Integer) As Label
+
+  Dim hLabel As Label
+  
+  For Each hLabel In $aLabel
+    If hLabel.Tag = iColor Then Return hLabel
+  Next
+
+End
+
+Private Sub SelectColor(iColor As Integer)
+
+  Dim hLabel As Label = FindLabel(iColor)
+
+  If Not FColorChooser.Run($aGradientColors[iColor], True) Then
+    hLabel.Background = FColorChooser.Value
+    $aGradientColors[iColor] = FColorChooser.Value
+    dwgGradientColor.Refresh
+  Endif
+
+End
+
+Public Sub Label_DblClick()
+  
+  SelectColor(Last.Tag)
+  
+End
+
+Private Sub RemoveGradient()
+
+  Dim I As Integer
+  
+  If $aGradientColors.Count <= 2 Then Return
+  
+  $aGradientColors.Remove($iCurrentColor)
+  $aGradientPos.Remove($iCurrentColor)
+  $aLabel[$iCurrentColor].Delete
+  $aLabel.Remove($iCurrentColor)
+  $iCurrentColor = -1
+  For I = 0 To $aGradientColors.Max
+    $aLabel[I].Tag = I
+  Next
+  dwgGradientColor.Refresh
+
+End
+
+Public Sub dwgGradientColor_KeyPress()
+  
+  If Key.Code <> Key.Delete Then Return
+  If $iCurrentColor < 0 Then Return
+  
+  RemoveGradient()
+  
+End
+
+' Public Sub btnOK_Click()
+'   
+'   Dim i As Integer
+'   Dim f As Float
+'   Dim sValue As String
+'   
+'   Select Case cmbType.Index
+'     Case CReportBrush.TYPE_COLOR
+'       sValue = CReportBrush.ColorToString($iColor)
+'       
+'     Case CReportBrush.TYPE_LINEAR_GRADIENT, CReportBrush.TYPE_RADIAL_GRADIENT
+'       If cmbType.Index = CReportBrush.TYPE_RADIAL_GRADIENT Then
+'         sValue = "RadialGradient(" & $cx & "," & $cy & "," & $fRadius & "," & $fx & "," & $fy & ",["
+'       Else
+'         sValue = "LinearGradient(" & $flX1 & "," & $flY1 & "," & $flX2 & "," & $flY2 & ",["
+'       Endif
+'       
+'       For Each i In $aGradientColors
+'         sValue &= CReportBrush.ColorToString(i) & ","
+'       Next
+'       
+'       sValue = Left(sValue, -1)
+'       
+'       sValue &= "],["
+'       
+'       For Each f In $aGradientPos
+'         sValue &= f & ","
+'       Next
+'       sValue = Left(sValue, -1)
+'       
+'       sValue &= "])"
+'     
+'     Case CReportBrush.TYPE_IMAGE
+'       
+'       sValue = "Image(" & Quote(txtImage.Text) & ")"
+'       
+'   End Select
+'   
+'   Value = sValue
+'   Me.Close(True)
+'   
+' End
+
+Public Sub lblAngle_MouseDown()
+  
+  $MX = Mouse.ScreenX - Last.X
+  'iCurrentColor = Last.Tag
+  $MY = Mouse.ScreenY - Last.Y
+  dwgGradientColor.Refresh
+  
+End
+
+Private Sub UpdateAngle()
+  
+  Dim hLabel As DrawingArea
+  Dim X, Y As Float
+  
+  For Each hLabel In [$lblA1, $lblA2]
+    
+    X = Round(hLabel.X / (dwgGradient.Width - 10), -2)
+    Y = Round(hLabel.Y / (dwgGradient.Height - 10), -2)
+    
+    If hLabel.Tag = 1 Then
+      If radLinear.Value Then
+        $flX1 = X
+        $flY1 = Y
+      Else
+        $cX = X
+        $cY = Y
+      Endif
+    Else
+      If radLinear.Value Then
+        $flX2 = X
+        $flY2 = Y
+      Else
+        $fX = X
+        $fY = Y
+      Endif
+    Endif
+    
+    dwgGradient.Refresh
+
+  Next
+  
+End
+
+Public Sub lblAngle_MouseMove()
+  
+  Dim hLabel As DrawingArea = Last
+  Dim X As Integer = Mouse.ScreenX - $MX 
+  Dim Y As Integer = Mouse.ScreenY - $MY 
+  
+  If Mouse.Control Then
+  Else If Mouse.Shift Then
+  Else
+    X = X And Not 7
+    Y = Y And Not 7
+  Endif
+  
+  X = Max(Min(dwgGradient.Width - 10, X), 0)
+  Y = Max(Min(dwgGradient.Height - 10, Y), 0)
+  
+  hLabel.Move(X, Y)
+  UpdateAngle
+  
+End
+
+Public Sub lblAngle_DblClick()
+  
+  Dim hLabel As DrawingArea = Last
+  Dim hOther As DrawingArea
+  
+  If hLabel = $lblA1 Then
+    hOther = $lblA2
+  Else
+    hOther = $lblA1
+  Endif
+  
+  hLabel.Move(hOther.X, hOther.Y)
+  UpdateAngle
+  
+End
+
+' Public Sub txtImage_Change()
+'   
+'   Try picImage.Picture = Picture[Project.Dir &/ txtImage.Text]
+'   
+' End
+
+' Public Sub FileChooser1_Activate()
+' 
+'   btnOK_Click
+'   Me.Title = value
+' 
+' End
+
+' Public Sub cchColor_Change()
+'   
+'   $iColor = cchColor.Value
+'   
+' End
+' 
+' Public Sub cchColor_Activate()
+' 
+'   btnOK.Value = True
+' 
+' End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Private Sub UpdateGradient()
+
+  Dim bRadial As Boolean = radRadial.Value
+
+  panRadius.Visible = bRadial
+  MoveLabels
+  UpdateAngle
+  dwgGradientColor.Refresh
+  
+End
+
+' Public Sub txtImage_Click()
+' 
+'   Dim sImage As String
+'   
+'   sImage = FSelectIcon.Run(txtImage.Text)
+'   If Not sImage Then Return
+'   txtImage.Text = sImage
+' 
+' End
+
+Public Sub lblAngle_Draw()
+  
+  Dim sText As String
+  
+  If Not radRadial.Value Then Return
+  
+  If Last.Tag = 1 Then
+    sText = "C"
+  Else
+    sText = "F"
+  Endif
+  
+  Draw.Font.Size = 7
+  Draw.Font.Bold = True
+  Draw.Text(sText, 0, 0, Draw.Width, Draw.Height, Align.Center)
+  
+End
+
+Private Sub FindNextColor(iColor As Integer) As Integer
+
+  Dim iInd As Integer
+  Dim iColor2 As Integer
+  Dim fMax As Float = 1
+  
+  For iInd = 0 To $aGradientPos.Max
+    If $aGradientPos[iInd] > $aGradientPos[iColor] And If $aGradientPos[iInd] <= fMax Then
+      fMax = $aGradientPos[iInd]
+      iColor2 = iInd
+    Endif
+  Next
+
+  Return iColor2
+
+End
+
+Public Sub btnAddGradient_Click()
+
+  Dim iColor As Integer = $iCurrentColor
+  Dim iColor2 As Integer  
+  
+  If iColor < 0 Then iColor = 0
+
+  iColor2 = FindNextColor(iColor)
+  
+  AddGradient(($aGradientPos[iColor] + $aGradientPos[iColor2]) / 2, Color.Gradient($aGradientColors[iColor], $aGradientColors[iColor2]))
+
+End
+
+Public Sub btnRemoveGradient_Click()
+
+  If $iCurrentColor < 0 Then Return
+  If $aGradientPos.Count <= 2 Then Return
+  RemoveGradient()
+
+End
+
+Public Sub btnColorGradient_Click()
+
+  If $iCurrentColor < 0 Then Return
+  SelectColor($iCurrentColor)
+
+End
+
+Public Sub btnExchangeGradient_Click()
+
+  $aGradientPos.Reverse
+  dwgGradientColor.Refresh
+
+End
+
+Public Sub radLinear_Click()
+
+  UpdateGradient
+
+End
+
+Public Sub radRadial_Click()
+
+  UpdateGradient
+
+End
+
+Public Sub panGradient_Arrange()
+
+  dwgGradient.Resize(panGradient.H, panGradient.H)
+  panGradientToolbar.Move(panGradient.H + Desktop.Scale, 0)
+  MoveLabels
+
+End
+
+Private Sub MoveLabels()
+
+  Dim X1, X2, Y1, Y2 As Float
+
+  If radLinear.Value Then
+    X1 = $flX1
+    Y1 = $flY1
+    X2 = $flX2
+    Y2 = $flY2
+  Else
+    X1 = $cX
+    Y1 = $cY
+    X2 = $fX
+    Y2 = $fY
+    sldRadius.Value = $fRadius * 100
+  Endif
+
+  $lblA1.Move((dwgGradient.Width - 10) * X1, (dwgGradient.Height - 10) * Y1)
+  $lblA2.Move((dwgGradient.Width - 10) * X2, (dwgGradient.Height - 10) * Y2)
+
+End
+
+Public Sub btnResetRadius_Click()
+
+  sldRadius.Value = 100 / Sqr(2)
+
+End
+
+Public Sub GetTolerance() As Integer
+
+  Return slbTolerance.Value
+  
+End
+
+Public Sub GetRoundness() As Integer
+  
+  Return slbRoundness.Value
+  
+End
+
+
+Public Sub ReadConfig()
+  
+  tabBrush.TextFont = Project.GetSmallFont()
+  
+End
+
+Public Sub AddClipboard(hImage As Image, sText As String)
+
+  Dim hClip As CImageClipboard
+  
+  hClip = New CImageClipboard
+  hClip.Image = hImage
+  
+  If Not sText Then
+    hClip.Text = ("System clipboard")
+    hImage = Picture["icon:/128/paste"].Image
+  Else
+    hClip.Text = sText
+  Endif
+  hClip.MakeThumb(hImage)
+  
+  $aClipboard.Add(hClip)
+  gvwClipboard.Rows.Count = $aClipboard.Count
+  
+  If $aClipboard.Count > 1 Then
+    gvwClipboard.Row = $aClipboard.Max
+    tabBrush.Index = 2
+  Endif
+  
+End
+
+Public Sub gvwClipboard_Data(Row As Integer, Column As Integer)
+
+  Dim sText As String
+  
+  Select Case Column
+    
+    Case 0
+      With gvwClipboard.Data
+        .Picture = $aClipboard[Row].Thumb
+        .Alignment = Align.Left
+        .Padding = Desktop.Scale
+      End With
+
+    Case 1
+      With gvwClipboard.Data
+        .Alignment = Align.Left
+        .Padding = Desktop.Scale
+        
+        sText = $aClipboard[Row].Text
+        If $aClipboard[Row].Image Then sText &= " ( " & CStr($aClipboard[Row].Image.Width) & " × " & CStr($aClipboard[Row].Image.Height) & " )"
+        .Text = sText
+        
+      End With
+
+    Case 2
+      If Row = 0 Then Return
+      With gvwClipboard.Data
+        .Picture = Picture["icon:/small/delete"]
+        .Alignment = Align.Center
+        .Padding = Desktop.Scale
+      End With
+
+  End Select
+
+End
+
+' Public Sub tabBrush_Click()
+' 
+'   If tabBrush.Index = 2 Then
+'     timClipboard_Timer
+'     timClipboard.Start
+'   Else
+'     timClipboard.Stop
+'   Endif
+' 
+' End
+' 
+' Public Sub timClipboard_Timer()
+' 
+'   Dim hClip As CImageClipboard
+' 
+'   If Clipboard.Type = Clipboard.Image Then
+'     If Not $bHasSystemClipboard Then
+'       hClip = New CImageClipboard
+'       $aClipboard.Add(hClip, 0)
+'     Else
+'       hClip = $aClipboard[0]
+'       hClip.Image = Clipboard.Paste()
+'       hClip.Text = ("System clipboard")
+'       hClip.Thumb = hClip.Image.Stretch(-1, Desktop.Scale * 6).Picture
+'     Endif
+'     $bHasSystemClipboard = True
+'   Else
+'     $aClipboard.Remove(0)
+'     $bHasSystemClipboard = False
+'   Endif
+'   
+'   gvwClipboard.Rows.Count = $aClipboard.Count
+'   gvwClipboard.Refresh
+' 
+' End
+
+Private Sub RefreshClipboard()
+
+  'Dim aFormat As String[]
+  'Dim iFormat As Integer
+  
+  Inc Application.Busy
+  'aFormat = Clipboard.Formats
+  'iFormat = aFormat.Find("image/*", gb.Like)
+  'If iFormat >= 0 Then 
+    Try $aClipboard[0].Image = Clipboard.Paste()
+  'Endif
+  Dec Application.Busy
+  
+  If Not Error Then 
+    $aClipboard[0].MakeThumb
+  Else
+    $aClipboard[0].MakeThumb(Picture["icon:/128/paste"].Image)
+  Endif
+
+End
+
+Public Sub gvwClipboard_Select()
+
+  If gvwClipboard.Row = 0 Then RefreshClipboard
+  UpdateClipboard
+  
+End
+
+Public Sub gvwClipboard_Click()
+
+  If gvwClipboard.Row > 0 And If gvwClipboard.Column = 2 Then
+    $aClipboard.Remove(gvwClipboard.Row)
+    gvwClipboard.Rows.Count = $aClipboard.Count
+    gvwClipboard.Refresh
+  Endif
+
+End
+
+Public Sub GetClipboard() As Image
+
+  Dim hImage As Image
+  
+  If tabBrush.Index <> 2 Then Return
+  
+  Try hImage = $aClipboard[gvwClipboard.Row].Image
+  If Not hImage Then Return
+  
+  Return hImage.Copy().Opacity(slbOpacity.Value / 255)
+ 
+End
+
+Public Sub GetShape() As CImageSelection
+  
+  If tabBrush.Index <> 3 Then Return
+  Try Return $aShape[gvwShape.Row]
+  
+End
+
+
+Public Sub slbValue_Change()
+
+  UpdateBalance
+
+End
+
+Public Sub btnBalanceReset_Click()
+
+  Dim hCtrl As SliderBox
+  
+  For Each hCtrl In [slbBrightness, slbContrast, slbGamma, slbHue, slbSaturation, slbLightness, slbBlur]
+    hCtrl.Value = 0
+  Next
+  
+End
+
+Public Sub HasBalance() As Boolean
+  
+  Dim hCtrl As SliderBox
+  
+  For Each hCtrl In [slbBrightness, slbContrast, slbGamma, slbHue, slbSaturation, slbLightness, slbBlur]
+    If hCtrl.Value Then Return True
+  Next
+  
+End
+
+Public Sub ApplyBalance(hImage As Image)
+  
+  hImage.BeginBalance
+  hImage.Brightness(slbBrightness.Value / slbBrightness.MaxValue)
+  hImage.Contrast(slbContrast.Value / slbContrast.MaxValue)
+  hImage.Gamma(slbGamma.Value / slbGamma.MaxValue)
+  hImage.Hue(slbHue.Value / slbHue.MaxValue)
+  hImage.Saturation(slbSaturation.Value / slbSaturation.MaxValue)
+  hImage.Lightness(slbLightness.Value / slbLightness.MaxValue)
+  hImage.EndBalance
+  If slbBlur.Value Then hImage.Fuzzy(slbBlur.Value)
+  
+End
+
+Public Sub chkBalancePreview_Click()
+
+  UpdateBalance
+
+End
+
+Private Sub UpdateBalance()
+
+  Dim hFile As Object
+  Dim hImageEditor As FImageEditor
+  
+  For Each hFile In Project.Files
+    Try hImageEditor = hFile
+    If Error Then Continue
+    Try hImageEditor.UpdateBalance
+  Next
+
+End
+
+Private Sub UpdateClipboard()
+
+  Dim hFile As Object
+  Dim hImageEditor As FImageEditor
+  
+  For Each hFile In Project.Files
+    Try hImageEditor = hFile
+    If Error Then Continue
+    Try hImageEditor.UpdateClipboard
+  Next
+
+End
+
+Public Sub OnProjectActivate()
+  
+  Dim hCurrent As FImageEditor
+  
+  UpdateBalance
+  'UpdateInfo
+  
+  hCurrent = GetCurrent()
+  If hCurrent Then
+    ShowGridOption(hCurrent.HasGrid())
+    ShowTextOption(hCurrent.GetTool() = "text")
+  Endif
+  
+End
+
+Public Sub btnBalanceApply_Click()
+
+  Try GetCurrent().ApplyBalance
+  btnBalanceReset_Click
+
+End
+
+Private Sub ToBrush() As CReportBrush
+  
+  Dim hBrush As New CReportBrush
+  
+  If radLinear.Value Then
+    hBrush.Type = CReportBrush.TYPE_LINEAR_GRADIENT
+    hBrush.X1 = $flX1
+    hBrush.Y1 = $flY1
+    hBrush.X2 = $flX2
+    hBrush.Y2 = $flY2
+  Else
+    hBrush.Type = CReportBrush.TYPE_RADIAL_GRADIENT
+    hBrush.X1 = $fX
+    hBrush.Y1 = $fY
+    hBrush.X2 = $cX
+    hBrush.Y2 = $cY
+    hBrush.Radius = $fRadius
+  Endif
+  
+  hBrush.Colors = $aGradientColors.Copy()
+  hBrush.Positions = $aGradientPos.Copy()
+  
+  Return hBrush
+  
+End
+
+Private Sub FromBrush(hBrush As CReportBrush)
+  
+  With hBrush
+    
+    If .Type = CReportBrush.TYPE_LINEAR_GRADIENT Then
+      radLinear.Value = True
+      $flX1 = .X1
+      $flY1 = .Y1
+      $flX2 = .X2
+      $flY2 = .Y2
+    Else
+      radRadial.Value = True
+      $fX = .X1
+      $fY = .Y1
+      $cX = .X2
+      $cY = .Y2
+      $fRadius = .Radius
+    Endif
+    
+    $aGradientColors = .Colors.Copy()
+    $aGradientPos = .Positions.Copy()
+    
+  End With
+
+  UpdateGradient  
+  
+End
+
+Public Sub dwgGradientStack_Draw()
+
+  Dim I As Integer
+  Dim X, W As Integer
+  
+  X = 0
+  W = dwgGradientStack.H - 1
+
+  Paint.LineWidth = 1
+  
+  For I = 0 To $aGradient.Max
+    
+    Paint.Rectangle(0, 0, W, W)
+    Paint.Clip
+    Paint.FillRect(0, 0, W, W, Color.LightForeground)
+    Project.DrawBackground()
+    Paint.ResetClip
+
+    Paint.Brush = $aGradient[I].GetBrush(0, 0, W, W)
+    Paint.Rectangle(0, 0, W, W)
+    Paint.Fill
+    Paint.Rectangle(0.5, 0.5, W, W)
+    Paint.Background = Color.LightForeground
+    Paint.Stroke
+    
+    Paint.Translate(W + 4, 0)
+    
+  Next
+
+End
+
+Public Sub dwgGradientStack_MouseDown()
+
+  Dim I As Integer = Mouse.X / (dwgGradientStack.H + 3)
+
+  If I < 0 Or If I > $aGradient.Max Then Return
+  FromBrush($aGradient[I])
+
+End
+
+Private Sub RotateLabel(hLabel As Control, iAng As Integer)
+  
+  Dim W As Integer = hLabel.Parent.Width - 10
+  
+  hLabel.Move(W / 2 + Cos(Rad(iAng)) * (hLabel.X - W / 2) + Sin(Rad(iAng)) * (hLabel.Y - W / 2), W / 2 - Sin(Rad(iAng)) * (hLabel.X - W / 2) + Cos(Rad(iAng)) * (hLabel.Y - W / 2))
+  
+End
+
+Public Sub btnRotateL_Click()
+
+  RotateLabel($lblA1, 90)
+  RotateLabel($lblA2, 90)
+  UpdateAngle
+
+End
+
+Public Sub btnRotateR_Click()
+
+  RotateLabel($lblA1, -90)
+  RotateLabel($lblA2, -90)
+  UpdateAngle
+
+End
+
+Public Sub btnFlipV_Click()
+
+  $lblA1.Y = $lblA1.Parent.Height - 10 - $lblA1.Y
+  $lblA2.Y = $lblA2.Parent.Height - 10 - $lblA2.Y
+  UpdateAngle
+
+End
+
+Public Sub btnFlipH_Click()
+
+  $lblA1.X = $lblA1.Parent.Width - 10 - $lblA1.X
+  $lblA2.X = $lblA2.Parent.Width - 10 - $lblA2.X
+  UpdateAngle
+
+End
+
+
+Public Sub tabBrush_Click()
+
+  If tabBrush.Text = ("Shapes") Then
+    If Not $aShape Then InitShapes
+  Else If tabBrush.Text = ("Clipboard") Then
+    RefreshClipboard
+    UpdateClipboard
+  Endif
+
+End
+
+Public Sub gvwShape_Data(Row As Integer, Column As Integer)
+
+  Select Case Column
+    
+    Case 1
+      
+      gvwShape.Data.Text = $aShape[Row].Name
+    
+    ' Case 2
+    '   
+    '   With gvwShape.Data
+    '     .Picture = Picture["icon:/small/delete"]
+    '     .Alignment = Align.Center
+    '     .Padding = Desktop.Scale
+    '   End With
+    
+  End Select
+
+End
+
+Public Sub gvwShape_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, Column As Integer)
+
+  Dim hShape As CImageSelection = $aShape[Row]
+  Dim S As Float
+
+  If Column = 0 Then
+    
+    X += 4
+    Y += 4
+    Width -= 8
+    Height -= 8
+    Paint.Rectangle(X, Y, Width, Height)
+    Paint.Clip
+    
+    With hShape.GetExtents()
+      
+      S = Min((Width - 16) / .W, (Height - 16) / .H)
+    
+      Paint.Background = Color.Black
+      Paint.LineWidth = 2 / S
+      Paint.LineCap = Paint.LineCapRound
+      Paint.Translate(X - .X * S + (Width - .W * S) / 2, Y - .Y * S + (Height - .H * S) / 2)
+      Paint.Scale(S, S)
+      
+    End With
+    
+    $aShape[Row].Paint(Null, CImageSelection.ACTION_STROKE)
+    
+  Endif
+
+End
+
+
+Public Sub gvwShape_Activate()
+
+  Project.ActiveForm.PasteShape($aShape[gvwShape.Row])
+
+End
+
+Private Sub InitShapes()
+
+  $aShape = New CImageSelection[]
+  
+  $aShape.Add(CImageSelection.FromString(("Arrow"), "-0.5,0.5*;1,0.5* 0.8,0.3*;1,0.5*;0.8,0.7*"))
+  '$aShape.Add(CImageSelection.FromString(("Double arrow"), "-0.5,0.5*;1,0.5*  0.8,0.3*;1,0.5*;0.8,0.7*"))
+  $aShape.Add(CImageSelection.FromString(("Arrow #2"), "0,1;0,2;4,2;4,3;6,1.5*;4,0;4,1;0,1;0.5,1.5+"))
+  $aShape.Add(CImageSelection.FromString(("Triangle"), "0,0*;0,1*;0.86602540378444,0.5*;0,0;0.28867513459481,0.5+;0,0.5+;0.43301270189222,0.75+;0.43301270189222,0.25+"))
+  $aShape.Add(CImageSelection.FromString(("Square triangle"), "0,0*;1,0*;0,1*;0,0;1,0+;0,1+;0.333333333333,0.333333333333+;0.5,0+;0.5,0.5+;0,0.5+"))
+  $aShape.Add(CImageSelection.FromString(("Pentagon"), "1,0*;0.3090169944,0.9510565163*;-0.8090169944,0.5877852523*;-0.8090169944,-0.5877852523*;0.3090169944,-0.9510565163*;1,0"))
+  $aShape.Add(CImageSelection.FromString(("Hexagon"), "1,0*;0.5,0.8660254038*;-0.5,0.8660254038*;-1,0*;-0.5,-0.8660254038*;0.5,-0.8660254038*;1,0*"))
+  
+  gvwShape.Rows.Count = $aShape.Count
+
+End
+
+Public Sub txtGridRes_Change()
+
+  Try GetCurrent().UpdateGrid
+
+End
+
+Public Sub cmbGridSub_Click()
+
+  Try GetCurrent().UpdateGrid
+
+End
+
+Public Sub GetGridResolution() As Integer
+  
+  Return txtGridRes.Value
+  
+End
+
+Public Sub GetGridSubdivision() As Integer
+  
+  Return CInt(cmbGridSub.Text)
+  
+End
+
+Public Sub GetOpacity() As Integer
+  
+  Return slbOpacity.Value
+  
+End
+
+Public Sub ShowTextOption(bShow As Boolean, Optional bInit As Boolean)
+  
+  If bShow Then
+    If bInit Then
+      txtText.Text = ""
+      txtText.SetFocus
+    Endif
+    panText.Show
+    sepText.Show
+  Else
+    panText.Hide
+    sepText.Hide
+  Endif
+  
+End
+
+Public Sub ShowGridOption(bShow As Boolean)
+  
+  panGrid.Visible = bShow
+  sepGrid.Visible = bShow
+  
+End
+
+
+
+Public Sub RefreshTextOption()
+  
+  Dim iAlign As Integer
+  Dim bAlignBase As Boolean
+  
+  If btnTextLeft.Value Then
+    iAlign = Align.Left
+  Else If btnTextCenter.Value Then
+    iAlign = Align.Center
+  Else If btnTextRight.Value Then
+    iAlign = Align.Right
+  Endif
+  
+  If btnTextTop.Value Then 
+    iAlign += Align.TopNormal
+  Else If btnTextMiddle.Value Then
+    iAlign += Align.Normal
+  Else If btnTextBottom.Value Then
+    iAlign += Align.BottomNormal
+  Else
+    bAlignBase = True
+  Endif
+  
+  GetCurrent().UpdateText(txtText.Text, fchText.Value, iAlign, bAlignBase)
+  
+End
+
+
+Public Sub txtText_Change()
+
+  RefreshTextOption
+
+End
+
+Public Sub fchText_Change()
+
+  RefreshTextOption
+
+End
+
+Public Sub btnTextAlign_Click()
+
+  RefreshTextOption
+
+End
+
+Public Sub panEffect_Arrange()
+
+  panEffect.Parent.H = panEffect.H + Desktop.Scale * 2
+
+End
+
+Public Sub slbOpacity_Change()
+
+  UpdateBalance
+
+End
+
+Public Sub btnAction_Click()
+
+  GetCurrent().ExecAction(Last.Tag)
+
+End
+
+Public Sub OnToolChange(sTool As String)
+  
+  If sTool <> "text" Then ShowTextOption(False)
+  panRoundness.Visible = sTool = "rectangle"
+  panTolerance.Visible = sTool = "magic"
+  
+End
+
+Public Sub panSlider_Arrange()
+
+  Dim hChild As Control
+  Dim H As Integer
+
+  For Each hChild In panSlider.Children
+    If hChild.Visible Then H += hChild.H
+  Next
+  panSlider.H = H + Desktop.Scale * 2
+
+End
+
+Public Sub tabBrush_CloseAll()
+
+  FMain.HideTool
+
+End
+
+Private Sub SetLineCap(iLineCap As Integer)
+
+  Dim sImage As String
+  
+  Select Case iLineCap
+    Case Paint.LineCapButt
+      sImage = "butt"
+    Case Paint.LineCapRound
+      sImage = "round"
+    Case Paint.LineCapSquare
+      sImage = "square"
+  End Select
+  
+  btnLineCap.Picture = Picture["img/draw/cap-" & sImage & ".png"]
+  
+  $iLineCap = iLineCap
+
+End
+
+Private Sub SetLineJoin(iLineJoin As Integer)
+
+  Dim sImage As String
+  
+  Select Case iLineJoin
+    Case Paint.LineJoinBevel
+      sImage = "bevel"
+    Case Paint.LineJoinMiter
+      sImage = "miter"
+    Case Paint.LineJoinRound
+      sImage = "round"
+  End Select
+  
+  btnLineJoin.Picture = Picture["img/draw/join-" & sImage & ".png"]
+  
+  $iLineJoin = iLineJoin
+
+End
+
+Public Sub btnLineCap_Click()
+
+  SetLineCap(($iLineCap + 1) Mod 3)
+
+End
+
+Public Sub btnLineJoin_Click()
+
+  SetLineJoin(($iLineJoin + 1) Mod 3)
+
+End
+
+Private Sub SetFillRule(iFillRule As Integer)
+
+  Dim sImage As String
+  
+  Select Case iFillRule
+    Case Paint.FillRuleEvenOdd
+      sImage = "exclusive"
+    Case Paint.FillRuleWinding
+      sImage = "union"
+  End Select
+  
+  btnFillRule.Picture = Picture["img/draw/" & sImage & ".png"]
+  
+  $iFillRule = iFillRule
+
+End
+
+
+Public Sub btnFillRule_Click()
+  
+  SetFillRule(1 - $iFillRule)
+  
+End

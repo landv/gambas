@@ -1,0 +1,87 @@
+' Gambas class file
+
+' 
+'   Copyright (C) 2004, Michael Isaac.  All rights reserved. 
+' 
+
+Public ID As String
+
+Public X As Float 'Center X 
+Public Y As Float 'Center Y 
+
+Public MX As Float 'Motion X 
+Public MY As Float 'Motion Y 
+
+Public Size As Float
+
+Public Points As Integer[]
+Public Distance As Float[]
+Public Degree As Float[]
+
+Public Direction As Float
+Public Agility As Float
+Public Acceleration As Float
+Public Torque As Float
+
+Public Hull As Integer
+Public Shield As Integer
+
+Public ShieldOn As Boolean
+
+Public Thrust As Boolean
+Public Attack As Boolean
+Public TurnRight As Boolean
+Public TurnLeft As Boolean
+
+Public Sub _new()
+    Points = New Integer[]
+    Distance = New Float[]
+    Degree = New Float[]
+End
+
+Public Sub Load2DObject(sFilename As String, sID As String, X As Integer, Y As Integer)
+    'DIM F AS File 
+    Dim I As Integer
+    Dim sData As String
+
+    Dim aLine As New String[]
+
+    sData = File.Load(Application.Path &/ "object.data/" &/ sFilename)
+    'OPEN Application.Path &/ "object.data/" &/ sFilename FOR READ AS #F
+    'READ #F, sData, Lof(F)
+
+    'Split this into an array and remove the CR character
+    aLine = Split(Replace(sData, Chr$(13), Null), "\n")
+
+    With Me
+        .X = X
+        .Y = Y
+        .ID = sID
+
+        If sID Like "Object*" Then
+            .Torque = -1
+            '.Attack = TRUE
+            .MX = Rnd(-4, +5)
+            .MY = Rnd(-4, +5)
+        End If
+
+        .Agility = 5
+        .Acceleration = 0.75
+        .Hull = 100
+
+        .Direction = Rad(180)
+
+        For I = 0 To aLine.Count - 1
+            If (Not (Left$(aLine[I], 1) = "'")) And (Not (aLine[I] = "")) Then
+                .Degree.Add(CFloat(Split(aLine[I], ",")[1]))
+                .Distance.Add(CFloat(Split(aLine[I], ",")[0]))
+
+                If .Distance[.Distance.Count - 1] > .Size Then
+                    .Size = .Distance[.Distance.Count - 1]
+                End If
+            End If
+        Next
+    End With
+
+    'CLOSE #F
+End

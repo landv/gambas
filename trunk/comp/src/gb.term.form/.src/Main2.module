@@ -1,0 +1,61 @@
+' Gambas module file
+
+Private i As Integer
+
+Public Sub Main()
+  Dim hForm As New TermForm
+
+  Dim hCont As TermFrame
+  Dim hCont2 As TermHBox
+  Dim hTermButton As TermButton
+  Dim hLabel As New TermLabel(hForm)
+  Dim hCheck As TermCheckBox
+  Dim i As Integer
+  Dim hPicBox As TermPictureBox
+
+  hLabel.Text = "Hello this is My first terminal window"
+
+  hForm.Padding = 1
+  hForm.Height = 15
+  hForm.Width = 50
+  hForm.Text = "Hi Gambasians"
+  hForm.Background = TermColor.White
+  hForm.Border = Border.Double
+
+  hcont = New TermFrame(hForm)
+  hCont.Expand = True
+  hCont.Text = "Choose an option"
+  hCont2 = New TermHBox(hForm)
+  hCont2.Invert = True
+
+  hTermButton = New TermButton(hCont2) As "btnClose"
+  hTermButton.Width = 10
+  hTermButton.Text = "< Close >"
+
+  hcont.Background = TermColor.Cyan
+  hcont.Shadow = True
+  hcont.Border = Border.Simple
+  hcont.Padding = 1
+  For i = 0 To 5
+    hCheck = New TermCheckBox(hcont)
+
+    hCheck.Text = "Check me   " & i
+    hCheck.Value = Int(Rnd(-1, 2))
+  Next
+  hPicBox = New TermPictureBox(hcont)
+
+  hPicBox.Expand = True
+  hPicBox.Image = Image.Load("all.png")
+
+  hForm.Spacing = 1
+  hForm.Center
+  hForm.Show
+  hForm.Maximized = True
+  'TermWindows._Render
+
+End
+Public Sub btnClose_MouseUp()
+  
+  Last.Window.Close
+  
+End

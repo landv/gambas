@@ -1,0 +1,466 @@
+' Gambas class file
+
+Create Static
+Export
+Inherits TermContainer
+Class Rect
+Property Text, Title As String
+Private $sText As String
+
+Property Maximized As Boolean
+Property Read Active As Boolean
+Property Resizable As Boolean
+
+Private $rectOldPos As Rect
+
+Private $bMaximized As Boolean
+Private $iInMove As Integer
+Private $tmrMove As Timer
+Private $iTmpCol As Integer
+Private $iTmpRow As Integer
+Private $bResizable As Boolean = True
+Private $bInResize As Boolean
+
+Property Left, X, Column As Integer
+Property Top, Y, {Line} As Integer
+Property Width, W As Integer
+Property Height, H As Integer
+Private $iFocusedId As Integer
+
+Public Sub _new()
+
+  Me.Visible = False
+  $iFocusedId = Me.id
+
+End
+
+Static Public Sub Main()
+
+  Dim hObject As Object
+
+  hObject = Application.Startup.AutoCreate()
+  'If Not hObject Is Report Then Return
+  'FPreview.Run(hObject)
+  TermWindows._Render
+
+End
+
+Public Sub _Render()
+
+  Dim i As Integer
+  Dim hAttr As New Attr
+  Dim iAttr As Integer
+  Dim b As Boolean = Me._NeedRender
+
+  Super._Render
+  If Not b Then Return
+
+  hAttr.Background = IIf(Me.Active, TermColor.ActiveWindow, TermColor.InactiveWindow)
+  hAttr.Foreground = TermColor.White
+  hAttr.Bold = True
+  iAttr = hAttr.GetInteger()
+
+  For i = 0 To Me.Width - 1 '- 2
+    Me._Content[0][i] = Char(" ", iAttr)
+  Next
+  Me._Content[0][0].c = Asc("[")
+  Me._Content[0][1].c = Asc("]")
+  For i = 1 To String.Len($sText)
+    Try Me._Content[0][i + 2].c = Asc(Mid($sText, i, 1))
+  Next
+  Me._Content[0][Me._Content[0].Max].c = Asc("X")
+  Me._NeedRender = False
+
+  If Me.Resizable Then
+
+    hAttr.Background = Me.Background
+    hAttr.Foreground = Me.Foreground
+    hAttr.Bold = False
+    iAttr = hAttr.GetInteger()
+
+    If Not $bMaximized Then Me._Content[Me._Content.Max - 1][Me._Content[0].Max].c = &h25E2
+
+  Endif
+'Catch 
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  Me._NeedRender = True
+  TermWindows.SetRenderArea(Rect(Me.ScreenX, Me.ScreenY, Me.Width, 1))
+  TermWindows._Render
+
+End
+
+Public Sub _Arrange()
+
+  Me._GetClientRect().Move(0, 1, Me.W - 1, Me.Height - 1)
+  Super._Arrange
+
+End
+
+Private Function Maximized_Read() As Boolean
+
+  Return $bMaximized
+
+End
+
+Private Sub Maximized_Write(Value As Boolean)
+
+  If $bMaximized = Value Then Return
+
+  If Value Then
+    $rectOldPos = Me._GetRect()
+    Me.Move(0, 0, Desktop.Width, Desktop.Height)
+    $bMaximized = Value
+  Else
+    $bMaximized = Value
+    Me.Move($rectOldPos.Left, $rectOldPos.Top, $rectOldPos.Width, $rectOldPos.Height)
+  Endif
+
+End
+
+Public Sub _ScreenResize()
+
+  If $bMaximized Then
+    Me.Move(0, 0, Desktop.Width, Desktop.Height)
+
+  Endif
+
+End
+
+Public Sub Center()
+
+  Me.Move((Desktop.Width - Me.Width) / 2, (Desktop.Height - Me.Height) / 2, Me.Width, Me.Height)
+
+End
+
+Public Sub Close()
+
+  Dim hCont As TermControl
+
+  Me.Visible = False
+  TermWindows.Delete(Me)
+
+End
+
+Public Sub _MouseUp()
+
+  If Mouse.ScreenY = Me.ScreenY Then
+    If Mouse.ScreenX = Me.ScreenX + Me.Width - 1 Then
+      Me.Close
+      Return
+    Endif
+    If Mouse.X >= 0 And If Mouse.x <= 1 Then
+      Me.Maximized = Not Me.Maximized
+    Endif
+  Endif
+  $tmrMove = Null
+  $iInMove = 0
+  $bInResize = False
+  Super._MouseUp
+
+End
+
+Public Sub _MouseDown()
+
+  If Mouse.Left
+    If Not Me.Active Then Termwindows._RaiseWindow(Me)
+    If Mouse.y = 0 Then
+      $iInMove = Mouse.Col
+      $tmrMove = New Timer As "_tmrMove"
+      $tmrMove.Delay = 100
+    Endif
+    If Mouse.y = Me.Height - 1 And Mouse.x = Me.Width - 1 Then
+      If Me.Resizable And If Not Me.Maximized Then
+        $tmrMove = New Timer As "_tmrMove"
+        $tmrMove.Delay = 100
+        $bInResize = True
+      Endif
+    Endif
+  Endif
+  Super._MouseDown
+
+End
+
+Public Sub _MouseMove()
+
+  If $iInMove > 0 Then
+    $iTmpCol = Mouse.ScreenCol - $iInMove
+    $iTmpRow = Mouse.ScreenRow
+    $tmrMove.Start
+    'Me.Move(Mouse.ScreenX - $iInMove, Mouse.screeny)
+  Endif
+
+  If $bInResize Then
+    $iTmpCol = Mouse.ScreenCol - Me.ScreenX
+    $iTmpRow = Mouse.ScreenRow - Me.ScreenY
+    $tmrMove.Start
+  Endif
+  Super._MouseMove
+
+End
+
+Private Function Active_Read() As Boolean
+
+  Return TermWindows.GetActiveWindow() = Me
+
+End
+
+Public Sub _tmrMove_Timer()
+
+  If $bInResize Then
+    Me.Move(Me.Left, Me.Top, $iTmpCol, $iTmpRow)
+    $tmrMove.Stop
+  Else
+    Me.Move($iTmpCol, $iTmpRow)
+    $tmrMove.Stop
+  Endif
+
+End
+
+Public Sub Activate()
+
+  TermWindows._RaiseWindow(Me)
+
+End
+
+Private Function Resizable_Read() As Boolean
+
+  Return $bResizable
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  $bResizable = Value
+
+End
+
+Private Function Top_Read() As Integer
+
+  Return Super.Top
+
+End
+
+Private Sub Top_Write(Value As Integer)
+
+  If $bMaximized Then Return
+  Super.Top = Value
+
+End
+
+Private Function Left_Read() As Integer
+
+  Return Super.Left
+
+End
+
+Private Sub Left_Write(Value As Integer)
+
+  If $bMaximized Then Return
+  Super.Left = Value
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return Super.H
+
+End
+
+Private Sub Height_Write(Value As Integer)
+
+  If $bMaximized Then Return
+  If value < 3 Then Return
+  Super.H = Value
+
+End
+
+Private Function Width_Read() As Integer
+
+  Return Super.W
+
+End
+
+Private Sub Width_Write(Value As Integer)
+
+  If $bMaximized Then Return
+  If value < 5 Then Return
+  Super.Width = Value
+
+End
+
+Public Sub Move(Left As Integer, Top As Integer, Optional Width As Integer, Height As Integer)
+
+  If $bMaximized Then Return
+  Super.Move(Left, Top, Width, Height)
+
+End
+
+Public Sub Resize(Width As Integer, Height As Integer)
+
+  If $bMaximized Then Return
+  Super.Resize(Width, Height)
+
+End
+
+Public Sub GetNextFocusedControl(hCtrl As TermControl, Optional bFirst As Boolean) As TermControl
+
+  Dim hNext As Object
+  Dim hParent As TermContainer
+  Dim aChildren As TermControl[]
+  Dim i As Integer
+  'On stock le control passé en argument
+  Dim hFirst As TermControl = hCtrl
+  Dim hCont As TermContainer
+  hCont = hCtrl.Parent
+  If Not hCont Then Return Null
+  'Trouver le parent du control
+  aChildren = hCont.Children   
+  'et la position du control
+  i = aChildren.Find(hCtrl)
+
+  Do
+    'Il n 'y a pas d'enfant a suivre
+    If i = aChildren.Max Then
+      'le control a t'il un parent ?
+      hParent = aChildren[i].Parent.Parent
+      If hParent Then
+        hNext = Null
+        If hParent.Children.Count > 0 Then hNext = GetNextFocusedControl(hParent.Children[hParent.Children.Find(aChildren[i].Parent)])
+        If hNext Then Return hNext
+      Endif
+      i = 0
+    Else
+      'On passe a l'enfant suivant
+      If Not bFirst Then Inc i
+  
+    Endif
+
+    hNext = aChildren[i]
+    'Si on reviens au point de départ c'est qu'on a rien trouve
+    If Not bFirst And If hNext = hFirst Then Return Null
+    bFirst = False
+    'si c'est un conteneur
+    If hNext Is TermContainer Then
+      'parcourir le conteneur
+      hCtrl = Null
+      'si le conteneur a des enfants
+      If hNext.Children.Count > 0 Then hCtrl = GetNextFocusedControl(hNext.Children[0], True)
+      'si on a trouve on retourne l'enfant
+      If hCtrl Then Return hCtrl
+      'sinon on passe a l'enfant suivant en repartant de l'enfant courant
+      Continue
+      'si c'est pas un conteneur
+    Else
+      'on verifie si le control accepte  le focus
+      'si oui on le retourne
+      If hNext._AllowFocus Then Return hNext
+      'sinon on passe au control suivant
+      Continue
+    Endif
+
+  Loop
+
+End
+
+Public Sub GetPrevFocusedControl(hCtrl As TermControl, Optional bFirst As Boolean) As TermControl
+  
+    Dim hNext As Object
+  Dim hParent As TermContainer
+  Dim aChildren As TermControl[]
+  Dim i As Integer
+  'On stock le control passé en argument
+  Dim hFirst As TermControl = hCtrl
+  'Trouver le parent du control
+  aChildren = hCtrl.Parent.Children
+  'et la position du control
+  i = aChildren.Find(hCtrl)
+  
+  Do
+    If i = 0 Then
+     'le control a t'il un parent ?
+      hParent = aChildren[i].Parent.Parent
+      If hParent Then
+        hNext = Null
+        If hParent.Children.Count > 0 Then hNext = GetNextFocusedControl(hParent.Children[hParent.Children.Find(aChildren[i].Parent)])
+        If hNext Then Return hNext
+      Endif
+      i = aChildren.Max
+    Else
+      'On passe a l'enfant suivant
+      If Not bFirst Then Dec i
+  
+    Endif
+    
+    hNext = aChildren[i]
+    'Si on reviens au point de départ c'est qu'on a rien trouve
+    If Not bFirst And If hNext = hFirst Then Return Null
+    
+    bFirst = False
+    'si c'est un conteneur
+    If hNext Is TermContainer Then
+      'parcourir le conteneur
+      hCtrl = Null
+      'si le conteneur a des enfants
+      If hNext.Children.Count > 0 Then hCtrl = GetNextFocusedControl(hNext.Children[hNext.Children.Max], True)
+      'si on a trouve on retourne l'enfant
+      If hCtrl Then Return hCtrl
+      'sinon on passe a l'enfant suivant en repartant de l'enfant courant
+      Continue
+      'si c'est pas un conteneur
+    Else
+      'on verifie si le control accepte  le focus
+      'si oui on le retourne
+      If hNext._AllowFocus Then Return hNext
+      'sinon on passe au control suivant
+      Continue
+    Endif
+    
+  Loop
+  
+End
+
+
+Public Sub _SetFocus(hCtrl As TermControl)
+  Dim hPrev As TermControl
+  hPrev = TermControl._IdToControl[$iFocusedId]
+  If hPrev Then
+    hPrev._LostFocus
+    hPrev.Refresh
+  Endif
+  
+  $iFocusedId = hCtrl.Id
+
+End
+
+Public Function _GetCurrentFocusId() As Integer
+
+  Return $iFocusedId
+
+End
+
+Public Sub _KeyPress()
+  Dim hCtrl As TermControl
+  If Key.Code = Key.Tab Then
+    hCtrl = GetNextFocusedControl(TermControl._IdToControl[$iFocusedId])
+    If hCtrl Then hCtrl.SetFocus
+    Return
+  Endif
+  If Key.Code = Key.BackTab Then
+    GetPrevFocusedControl(TermControl._IdToControl[$iFocusedId]).SetFocus
+    Return
+  Endif
+  Super._KeyPress
+  hCtrl = TermControl._IdToControl[$iFocusedId]
+  If hCtrl <> Me Then hCtrl._KeyPress
+
+End

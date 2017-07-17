@@ -1,0 +1,165 @@
+' Gambas class file
+
+Export
+
+Inherits _DBus
+
+Static Property Name As String
+Static Public _ApplicationCache As New Collection
+Static Property Read Null As Object
+Static Property Unique As Boolean
+
+Static Private $sAppName As String
+Static Private $iRegisterCount As Integer
+Static Private $bUnique As Boolean
+
+Static Public Sub _get((Application) As String) As DBusApplication
+  
+  Dim hConn As DBusConnection
+  Dim hApp As DBusApplication
+  Dim sKey As String
+  
+  If Application Like "system://*" Then
+    sKey = Application
+    Application = Mid$(Application, 10)
+    hConn = _DBus.System
+  Else If Application Like "session://*" Then
+    sKey = Application
+    Application = Mid$(Application, 11)
+    hConn = _DBus.Session
+  Else
+    sKey = "session://" & Application
+    hConn = _DBus.Session
+  Endif
+  
+  hApp = _ApplicationCache[sKey]
+  If Not hApp Then hApp = New DBusApplication(hConn, Application)
+  Return hApp
+  
+End
+
+Static Public Sub _Normalize(sName As String, Optional bKeepCase As Boolean, Optional sMore As String) As String
+  
+  Dim sRes As String
+  Dim iInd As Integer
+  Dim sCar As String
+  
+  For iInd = 1 To Len(sName)
+    sCar = Mid$(sName, iInd, 1)
+    If IsLetter(sCar) Then
+      If Not bKeepCase Then sCar = LCase(sCar)
+    Else If IsDigit(sCar) Or If sCar = "_" Then
+    Else If InStr(sMore, sCar) Then
+    Else
+      If Right(sRes) <> "." Then
+        sCar = "."
+      Else
+        sCar = ""
+      Endif
+    Endif
+    sRes &= sCar
+  Next
+  
+  If Right(sRes) = "." Then sRes = Left(sRes, -1)
+  
+  Return sRes
+  
+End
+
+
+Static Public Sub _RegisterApplication(hConnection As DBusConnection) As String
+  
+  Dim sName As String
+  
+  If IsNull(hConnection.Tag) Then
+    sName = Name_Read()
+    If hConnection._RequestName(sName, True) Then 
+      If $bUnique Then
+        Error.Raise("Unique application is already registered")
+      Else
+        Error.Raise("Application is already registered")
+      Endif
+    Endif
+    hConnection.Tag = sName
+  Endif
+  Inc $iRegisterCount
+  Return hConnection.Tag
+  
+End
+
+Static Public Sub _UnregisterApplication(hConnection As DBusConnection)
+  
+  Dec $iRegisterCount
+  If $iRegisterCount > 0 Then Return
+  If Not hConnection.Tag Then Return
+  hConnection._ReleaseName(hConnection.Tag)
+  hConnection.Tag = ""
+  
+End
+
+Static Private Function Name_Read() As String
+
+  Dim sName As String
+  
+  If $sAppName Then Return $sAppName
+  
+  sName = "org.gambas." & _Normalize(Application.Name, True, "-_")
+  If Not $bUnique Then sName &= "-" & CStr(Application.Handle)
+  Return sName
+  
+End
+
+Static Private Sub Name_Write(Value As String)
+
+  $sAppName = _Normalize(Value, True, "-_")
+
+End
+
+Static Public Sub Register((Object) As DBusObject, Path As String, Optional Interfaces As String[])
+  
+  Object._Register(DBus.Session, Path, Interfaces)
+  
+End
+
+Static Public Sub Unregister((Object) As DBusObject)
+  
+  Object._Unregister(DBus.Session)
+  
+End
+
+Static Public Sub IsRegistered((Object) As DBusObject) As Boolean
+  
+  Return {Object}._Path
+  
+End
+
+
+Static Public Sub Raise((Object) As DBusObject, Signal As String, Optional Arguments As Variant[])
+  
+  Object._Raise(DBus.Session, Signal, Arguments)
+  
+End
+
+Static Private Function Null_Read() As Object
+
+  Return _DBusNull
+
+End
+
+Static Public Sub _HasSystemTray() As Boolean
+  
+  Try Return DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].IsStatusNotifierHostRegistered
+  
+End
+
+Static Private Function Unique_Read() As Boolean
+
+  Return $bUnique
+
+End
+
+Static Private Sub Unique_Write(Value As Boolean)
+
+  $bUnique = Value
+
+End

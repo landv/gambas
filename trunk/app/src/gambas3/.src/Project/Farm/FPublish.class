@@ -1,0 +1,355 @@
+' Gambas class file
+
+Private $aDep As String[]
+Private $sScreenshot As String
+Private $hIdentity As FarmIdentity
+
+Private Const SCREENSHOT_SIZE As Integer = 640
+
+Public Sub Run() As Boolean
+
+  If Project.MajorVersion = 0 And If Project.MinorVersion = 0 Then
+    FMain.ShowError(("You cannot publish a software whose version is \"0.0\"."))
+    Return
+  Endif
+  Return Not Me.ShowModal()
+
+End
+
+Private Sub FillGambasVersion()
+
+  Dim aVersion As String[]
+  Dim iMajor As Integer
+  Dim iMajorMax As Integer
+  Dim iMinorMax As Integer
+  Dim iMinor As Integer
+  
+  aVersion = Split(System.FullVersion, ".")
+  
+  iMajorMax = CInt(aVersion[0])
+  iMinorMax = CInt(aVersion[1])
+  If CInt(aVersion[2]) >= 90 Then Inc iMinorMax
+  
+  iMajor = 3
+  iMinor = 3
+  
+  Do
+    
+    If iMajor > iMajorMax Or If iMinor > iMinorMax Then Break
+    cmbGambasVersion.Add(CStr(iMajor) & "." & CStr(iMinor))
+    Inc iMinor
+    
+  Loop
+
+End
+
+Public Sub Form_Open()
+
+  Dim aTag As String[]
+  Dim sTag As String
+  
+  Settings.Read(Me)
+
+  $hIdentity = FarmIdentity.Get(Settings["/Publish/Farm"])
+  $hIdentity.Init(lblIdentity)
+  
+  tagEditor.SetFarm($hIdentity.Farm)
+  tagEditor.SetTags(Project.PublishTags)
+  
+  $aDep = Project.PublishDependencies
+  
+  lblProject.Text = Project.Name & " " & Project.FormatVersion()
+  txtVendor.Text = Project.Vendor
+  
+  FillGambasVersion
+  cmbGambasVersion.Text = Project.PublishGambasVersion
+  txtURL.Text = Project.PublishWebSite
+  txtDesc.Text = Project.Description
+  
+  ' cmbScreenshot.Add(("None"))
+  ' If IsDir(Project.Dir &/ ".hidden/screenshots") Then
+  '   For Each sScreenshot In Dir(Project.Dir &/ ".hidden/screenshots")
+  '     If Right(sScreenshot) = "~" Then Continue
+  '     cmbScreenshot.Add(sScreenshot)
+  '   Next
+  ' Endif
+  ' 
+  ' cmbScreenshot.Text = File.Name(Project.PublishScreenshot)
+  ' If cmbScreenshot.Index < 0 Then cmbScreenshot.Index = 0
+  
+  If Project.HasModule("form") Or If Project.Components.Exist("gb.sdl") Then
+    btnCreateMenu.Value = Project.PublishCreateMenu
+    btnCreateMenu.Enabled = True
+  Else
+    btnCreateMenu.Value = False
+    btnCreateMenu.Enabled = False
+  Endif
+  
+  tbvDep.Columns.Count = 2
+  tbvDep.Columns[0].Text = ("Software")
+  tbvDep.Columns[0].Expand = True
+  tbvDep.Columns[1].Text = ("Version")
+  tbvDep.Columns[1].Width = Desktop.Scale * 12
+  tbvDep.Rows.Count = $aDep.Count
+
+  aTag = Split(RTrim(File.Load("install/categories")), "\n")
+  For Each sTag In Split(RTrim(File.Load("tags.txt")), "\n")
+    If Not aTag.Exist(sTag) Then aTag.Add(sTag)
+  Next
+  aTag.Sort(gb.IgnoreCase)
+  lstTags.List = aTag
+  
+
+End
+
+Private Sub SaveProject()
+  
+  Project.Vendor = Trim(txtVendor.Text)
+  Project.PublishTags = tagEditor.GetTags()
+  Project.PublishDependencies = $aDep
+  Project.PublishGambasVersion = cmbGambasVersion.Text
+  Project.PublishWebSite = txtURL.Text
+  ' If cmbScreenshot.Index <= 0 Then
+  '   Project.PublishScreenshot = ""
+  ' Else
+  '   Project.PublishScreenshot = cmbScreenshot.Text
+  ' Endif
+  
+  If Project.HasModule("form") Then Project.PublishCreateMenu = btnCreateMenu.Value
+  Project.Description = txtDesc.Text
+  Project.WriteProject
+  
+End
+
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)
+  
+  Settings["/Publish/Farm"] = $hIdentity.Farm
+  
+  SaveProject
+
+End
+
+Public Sub wizPublish_Cancel()
+
+  Me.Close
+
+End
+
+Public Sub lstTags_Activate()
+
+  tagEditor.Add(lstTags.Text)
+
+End
+
+Public Sub wizPublish_Close()
+  
+  Dim hReq As FarmRequest
+  Dim sScreenshot As String
+
+  SaveProject
+
+  hReq = New FarmRequest($hIdentity.Farm)
+  
+  If radKeepScreenshot.Value Then
+  Else If radDeleteScreenshot.Value Then
+    sScreenshot = "*"
+  Else If imvScreenshot.Image Then
+    sScreenshot = $sScreenshot
+  Endif
+  
+  hReq.PublishSoftware(Trim(txtVendor.Text), sScreenshot, cmbGambasVersion.Text, tagEditor.GetTags(), $aDep, txtURL.Text, txtDesc.Text)
+  hReq.WaitFor(("The project has been successfully published."), ("Unable to publish project."))
+  
+  Me.Close
+  
+End
+
+Public Sub tbvDep_Data(Row As Integer, Column As Integer)
+
+  Dim aDep As String[] = Split($aDep[Row], " ")
+  Try tbvDep.Data.Text = aDep[Column]
+
+End
+
+Public Sub btnAddDep_Click()
+
+  tbvDep.Save
+  $aDep.Add("")
+  Inc tbvDep.Rows.Count
+  tbvDep.MoveTo($aDep.Max, 0)
+  tbvDep.Edit
+
+End
+
+Public Sub tbvDep_Insert()
+
+  btnAddDep.Value = True
+
+End
+
+Public Sub btnRemoveDep_Click()
+
+  If tbvDep.Row < 0 Then Return
+  tbvDep.Cancel
+  $aDep.Remove(tbvDep.Row)
+  'SaveExtraDependencies
+  Dec tbvDep.Rows.Count
+
+End
+
+Public Sub btnUpDep_Click()
+
+  If tbvDep.Row >= 1 Then
+    tbvDep.Save
+    Swap $aDep[tbvDep.Row], $aDep[tbvDep.Row - 1]
+    'SaveExtraDependencies
+    tbvDep.Refresh
+    Dec tbvDep.Row
+    tbvDep.Edit
+  Endif
+
+End
+
+Public Sub btnDownDep_Click()
+
+  If tbvDep.Row < $aDep.Max Then
+    tbvDep.Save
+    Swap $aDep[tbvDep.Row], $aDep[tbvDep.Row + 1]
+    'SaveExtraDependencies
+    tbvDep.Refresh
+    Inc tbvDep.Row
+    tbvDep.Edit
+  Endif
+
+End
+
+Public Sub tbvDep_Save(Row As Integer, Column As Integer, Value As String)
+
+  Dim aRow As String[]
+
+  If Column = 0 Then
+    If Value And If InStr(Value, " ") Then
+      Balloon.Warning(("Spaces are not allowed."), tbvDep.Editor)
+      Stop Event
+      Return
+    Endif
+  Else If Column = 1 Then
+    If Value And If Not IsDigit(Replace(Value, ".", "")) Then
+      Balloon.Warning(("Incorrect version number."), tbvDep.Editor)
+      Stop Event
+      Return
+    Endif
+  Endif
+ 
+  aRow = Split($aDep[Row], " ")
+  aRow.Resize(2)
+  aRow[Column] = Value
+  $aDep[Row] = Trim(aRow.Join(" "))
+
+End
+
+Public Sub tbvDep_Click()
+
+  tbvDep.Edit
+
+End
+
+Public Sub btnAddTag_Click()
+
+  Dim I As Integer
+
+  For I = 0 To lstTags.Count - 1
+    If lstTags[I].Selected Then tagEditor.Add(lstTags[I].Text)
+  Next
+  lstTags.UnselectAll
+
+End
+
+Public Sub btnClearTags_Click()
+
+  If Message.Delete(("Do you really want to remove all tags?"), ("Remove"), ("Cancel")) <> 1 Then Return
+  tagEditor.Clear
+
+End
+
+Public Sub btnSortTags_Click()
+
+  tagEditor.Sort
+
+End
+
+Public Sub txtVendor_KeyPress()
+
+  Project.OnVendorKeyPress()
+
+End
+
+Public Sub radScreenshot_Click()
+
+  imvScreenshot.Visible = radPasteScreenshot.Value Or radLoadScreenshot.Value
+  txtScreenshot.Enabled = radLoadScreenshot.Value
+  
+  If radLoadScreenshot.Value Then
+    If Not txtScreenshot.Text Then txtScreenshot_Click
+  Endif
+
+  SetScreenshot
+  
+End
+
+Private Sub SetScreenshot()
+
+  Dim hImage As Image
+  
+  If radLoadScreenshot.Value Then
+    Try hImage = Image.Load(Dialog.Path)
+  Else If radPasteScreenshot.Value Then
+    Try hImage = Clipboard.Paste()
+  Endif
+  
+  If hImage Then
+    If hImage.Width > SCREENSHOT_SIZE Then hImage = hImage.Stretch(SCREENSHOT_SIZE, -1)
+    If hImage.Height > SCREENSHOT_SIZE Then hImage = hImage.Stretch(-1, SCREENSHOT_SIZE)
+    
+    If Not $sScreenshot Then $sScreenshot = File.SetExt(Temp$(), "jpg")
+    hImage.Save($sScreenshot, 75)
+  Endif
+  
+  imvScreenshot.Image = hImage
+  imvScreenshot.ZoomFit
+
+End
+
+Public Sub txtScreenshot_Click()
+
+  Dialog.Title = ("Select a screenshot file")
+  Dialog.Filter = ["*.png;*.jpg;*.jpeg", ("Screenshot files")]
+  If Dialog.OpenFile() Then Return
+  txtScreenshot.Text = Dialog.Path
+  SetScreenshot
+
+End
+
+Public Sub wizPublish_Arrange()
+
+  imvScreenshot.ZoomFit
+
+End
+
+Public Sub btnRegister_Click()
+
+  FFarmRegister.Run
+
+End
+
+Public Sub btnLogin_Click()
+
+  If FFarmLogin.Run($hIdentity.Farm) Then Return
+  
+  $hIdentity = FFarmLogin.Identity
+  $hIdentity.Init(lblIdentity)
+
+End

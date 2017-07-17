@@ -1,0 +1,30 @@
+' Gambas class file
+
+Private $hCompletion As FileCompletion
+
+Public Sub Form_Open()
+
+  TableView1.Rows.Count = 10
+  TableView1.Columns.Count = 1
+
+End
+
+Public Sub TableView1_Click()
+
+  TableView1.Edit
+  
+  If Not $hCompletion Then $hCompletion = New FileCompletion(TableView1.Editor)
+
+End
+
+Public Sub Button2_Click()
+
+  Form5.Show
+
+End
+
+Public Sub Button1_Click()
+
+  
+
+End

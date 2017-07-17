@@ -1,0 +1,375 @@
+' Gambas class file
+
+Export
+Static Public Debug As Boolean
+Property Top, Y As Integer
+Property Left, X As Integer
+Property Width As Integer
+Property Height As Integer
+Property Zoom As Integer 
+Property Center As MapPoint
+Property Read PixelBox As Rect
+Property Read Bounds As MapBounds
+Property Read Count As Integer
+Property MaxZoom As Integer
+Private $iMaxZoom As Integer = 18
+Private $iZoom As Integer = 1
+Private $mpCenter As New MapPoint
+Private $iTop As Integer
+Private $iLeft As Integer
+Private $iWidth As Integer
+Private $iHeight As Integer
+Private tmrLoad As New Timer As "tmrLoad"
+Private tmrDraw As New Timer As "tmrDraw"
+Private $PixelBox As New Rect
+Private $Bounds As New MapBounds
+Private $PrevBox As Rect
+Private $iPrevent As Integer = 256
+Private $aLayers As New _MapLayer[]
+Private $aLayerNames As New String[]
+Public _ShowWithEffect As Boolean
+Static Public _Debug As Boolean
+Event Refresh
+Event Draw
+
+Private Function Top_Read() As Integer
+  
+  Return $iTop
+  
+End
+
+Private Sub Top_Write(Value As Integer)
+  
+  $iTop = Value
+  
+End
+
+Private Function Left_Read() As Integer
+  
+  Return $iLeft
+  
+End
+
+Private Sub Left_Write(Value As Integer)
+  
+  $iLeft = Value
+  
+End
+
+Private Function Width_Read() As Integer
+  
+  Return $iWidth
+  
+End
+
+Private Sub Width_Write(Value As Integer)
+  
+  $iWidth = Value
+  SetBoxes
+  
+End
+
+Private Function Height_Read() As Integer
+  
+  Return $iHeight
+  
+End
+
+Private Sub Height_Write(Value As Integer)
+  
+  $iHeight = Value
+  SetBoxes
+  
+End
+
+Private Sub SetBoxes()
+  
+  Dim ptCenter As Point
+  Dim iMaxSize As Integer
+  If Not $PrevBox Then 
+    $PrevBox = $PixelBox.Copy()
+    tmrLoad.Trigger
+  Endif
+  
+  'Create the pixBox
+  ptCenter = Geo.MapPointToPixel($mpCenter, $iZoom)
+  'Set a square surface on max size
+  iMaxSize = Max($iWidth, $iHeight)
+  
+    $PixelBox.X = ptCenter.X - (iMaxSize / 2)
+    $PixelBox.Y = ptCenter.Y - (iMaxSize / 2)
+    $PixelBox.Right = ptCenter.x + (iMaxSize / 2)
+    $PixelBox.Bottom = ptCenter.Y + (iMaxSize / 2)
+
+  
+  $Bounds.TopLeft = Geo.PixelToMapPoint(Point($PixelBox.x, $PixelBox.y), $iZoom)
+  $Bounds.BottomRight = Geo.PixelToMapPoint(Point($PixelBox.Right, $PixelBox.Bottom), $iZoom)
+  
+  '$PixelBox.Width = $iWidth
+  '$PixelBox.Height = $iHeight
+  ' Print "Largeur/hauteur", $iWidth, $iHeight
+  ' Print $PixelBox.Right, $PixelBox.Left, $PixelBox.Right - $PixelBox.Left
+  ' Print ptCenter.x + ($iWidth / 2), ptCenter.X - ($iWidth / 2)
+  'Print $PixelBox.Top, $PixelBox.Left, $PixelBox.Height, $PixelBox.Width
+  'a Movement ?
+  If Abs($PixelBox.Left - $PrevBox.Left) > $iPrevent / 2 Or If Abs($PixelBox.Top - $PrevBox.Top) > $iPrevent / 2 Then
+    $PrevBox = $PixelBox.Copy()
+    tmrLoad.Trigger
+  Endif
+  'a Resize ?
+  If Abs($PixelBox.Width - $PrevBox.Height) > $iPrevent / 2 Or If Abs($PixelBox.Height - $PrevBox.Height) > $iPrevent / 2 Then
+    $PrevBox = $PixelBox.Copy()
+    tmrLoad.Trigger
+  Endif
+  'tmrLoad.Trigger
+  
+End
+
+Private Function PixelBox_Read() As Rect
+  
+  Return $PixelBox
+  
+End
+
+Private Function Zoom_Read() As Integer
+  
+  Return $iZoom
+  
+End
+
+Private Sub Zoom_Write(Value As Integer)
+  
+  Dim i As Integer
+  
+  $iZoom = Min(Max(Value, 1), $iMaxZoom)
+  For i = 0 To $aLayers.Max
+    $aLayers[i].Refresh
+  Next
+  SetBoxes
+  tmrLoad.Trigger
+  
+End
+
+Private Function Center_Read() As MapPoint
+  
+  Return $mpCenter
+  
+End
+
+Private Sub Center_Write(Value As MapPoint)
+  
+  'Print Value.Lat, Value.Lon
+  $mpCenter = Value
+  SetBoxes
+  
+End
+
+Public Sub tmrLoad_Timer()
+  
+  Dim hLayer As _MapLayer
+  
+  For Each hLayer In $aLayers
+    If hLayer.Visible Then hLayer.Load
+  Next
+  
+End
+
+Public Sub Resize(iWidth As Integer, iHeight As Integer)
+  
+  $iWidth = iWidth
+  $iHeight = iHeight
+  SetBoxes
+  
+End
+
+Public Sub AddTile(Name As String, Pattern As String, Optional Args As Collection, Optional CacheName As String) As _MapTile
+  
+  Dim hLayer As New _MapTile(CacheName)
+  
+  hLayer.Name = Name
+  'hLayer.Pattern = Pattern
+  hLayer.SetPattern(Pattern, Args)
+  $aLayers.Add(hLayer)
+  $aLayerNames.Add(Name)
+  Object.Attach(hLayer, Me, "Layer")
+  Return hLayer
+  
+End
+
+Public Function AddShape(Name As String) As _MapShape
+  
+  Dim hLayer As New _MapShape
+  
+  hLayer.Name = Name
+  
+  $aLayers.Add(hLayer)
+  $aLayerNames.Add(Name)
+  Object.Attach(hLayer, Me, "Layer")
+  'If Shape Then hLayer.Data = Shape
+  Return hLayer
+  
+End
+
+Public Sub _get(Name As String) As Object
+  
+  Return $aLayers[$aLayerNames.Find(Name)]
+  
+End
+
+Public Sub _next() As Object
+  
+  If IsNull(Enum.Index) Then Enum.Index = 0 Else Inc Enum.Index
+  
+  If Enum.Index > $aLayers.Max Then
+    Enum.Stop
+    Return
+  Endif
+  
+  Return $aLayers[Enum.Index]
+  
+End
+
+Public Sub Draw()
+  
+  Dim hLayer As _MapLayer
+  Dim sCopyright As String
+  Dim iTextHeight, iTextWidth As Integer
+  'Draw.Rect(0, 0, Me.Width, Me.Height)
+  For Each hLayer In $aLayers
+    If hLayer.Visible Then 
+      hLayer._Draw
+      sCopyright &/= hLayer.Copyright
+    Endif
+  Next
+  
+  If sCopyright Then
+    Draw.FillStyle = Fill.Solid
+    Draw.FillColor = Color.SetAlpha(Color.Pink, 150)
+    iTextHeight = Draw.TextHeight(sCopyright)
+    iTextWidth = Draw.TextWidth(sCopyright)
+    Draw.Rect(Draw.Width - iTextWidth - 5, Draw.Height - iTextHeight - 2, iTextWidth + 6, iTextHeight + 4)
+    Draw.Text(sCopyright, Draw.Width - iTextWidth, Draw.Height - iTextHeight)
+  Endif 
+  Raise Draw
+
+End
+
+Public Sub Layer_Refresh()
+  
+  tmrDraw.Trigger
+  
+End
+
+Public Sub tmrDraw_Timer()
+  
+  Raise Refresh
+  
+End
+
+Public Sub Refresh()
+  
+  SetBoxes
+  tmrLoad.Trigger
+  
+End
+
+' Private Function Preload_Read() As Boolean
+'   
+' End
+' 
+' Private Sub Preload_Write(Value As Boolean)
+'   
+' End
+
+Private Function Bounds_Read() As MapBounds
+  
+  Return $Bounds
+  
+End
+
+Public Function Grab(Bounds As MapBounds, iWidth As Integer, iHeight As Integer, Optional Padding As Integer, Optional Zoom As Integer) As Image
+  
+  Dim i As Integer
+  Dim hBndCenter As MapPoint = MapPoint((Bounds.Lat + Bounds.Lat2) / 2, (Bounds.Lon + Bounds.Lon2) / 2)
+  Dim hPix, hPix2 As Point
+  Dim hImg As New Image(iWidth, iHeight, Color.white)
+  Dim bLoad As Boolean
+  Dim hLayer As _MapLayer
+  'Définir la zone a afficher
+  'On centre la carte sur le bound
+  Me.Center = hBndCenter
+  Me.Resize(iwidth, iHeight)
+  
+  If Zoom Then 
+    
+    Me.Zoom = Zoom
+    
+  Else
+    
+    For i = $iMaxZoom To 1 Step -1
+      hpix = Geo.MapPointToPixel(hBndCenter, i)
+      hPix2 = Geo.MapPointToPixel(Bounds.BottomRight, i)
+      If (hPix2.X - hpix.X) <= (iWidth / 2 - Padding) And If (hpix.Y - hPix2.Y) <= (iHeight / 2 - Padding) Then
+        Break
+      Endif
+    Next
+    
+    Me.Zoom = i 
+  Endif
+  
+  tmrLoad_Timer
+  
+  Repeat
+    bLoad = False
+    For Each hLayer In $aLayers
+      If hLayer.loading = True Then bLoad = True
+      Wait
+    Next
+  Until bLoad = False
+  
+  Draw.Begin(hImg)
+  Draw()
+  Draw.End
+  
+  Return hImg
+  
+End
+''Return a Point relative to the view from a MapPoint
+
+Public Function MapPointToPixelRel(hMapPoint As MapPoint) As Point
+
+  Dim hPoint As Point
+  hPoint = Geo.MapPointToPixel(hMapPoint, $iZoom)
+  hPoint.X -= $PixelBox.X
+  hPoint.Y -= $PixelBox.Y
+  Return hPoint
+
+End
+
+''Return a MapPoint from a point relative to the view
+Public Function PixelToMapPointRel(hPoint As Point) As MapPoint
+
+  Dim pt As Point = hPoint.Copy()
+  pt.X += $PixelBox.X
+  pt.Y += $PixelBox.Y
+  Return Geo.PixelToMapPoint(pt, $iZoom)
+
+End
+
+Private Function Count_Read() As Integer
+  
+  Return $aLayers.Count
+  
+End
+
+Private Function MaxZoom_Read() As Integer
+  
+  Return $iMaxZoom
+  
+End
+
+Private Sub MaxZoom_Write(Value As Integer)
+
+  $iMaxZoom = Value
+
+End

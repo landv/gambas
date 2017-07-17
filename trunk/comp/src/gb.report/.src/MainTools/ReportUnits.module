@@ -1,0 +1,92 @@
+' Gambas module file
+
+Fast
+Export
+Public AllowedUnits As String[] = ["m", "cm", "mm", "in", "pt", "px"]
+Property Read DesktopScale As Float
+Public _ReportWidth As Float
+Public _Scale As Float = 1.0
+'Public Ratio As Float
+Public Function GetFactorUnitToInch(Unit As String, Optional Resolution As Integer) As Float
+
+  
+  Select Case Unit
+    Case "cm"
+      Return 0.3937
+    Case "ft"
+      Return 12
+    Case "in"
+      Return 1
+    Case "m"
+      Return 39.37
+    Case "mm"
+      Return 0.03937
+    Case "px"
+      Return 1 / Paint.ResolutionX  'If(Resolution, Resolution, ReportUnits.Resolution)
+    Case "pt"
+      Return 1 / 72
+    Case Else
+      Error.Raise("Unknown unit")
+  End Select
+
+End
+
+Public Function ReportUnitsConverter(Value As Float, Unit1 As String, Unit2 As String) As Float
+  
+  Dim fInch As Float
+  Dim f As Float
+  
+  f = GetFactorUnitToInch(Unit1)
+  finch = value * f
+  f = GetFactorUnitToInch(Unit2)
+  Return finch / f
+  
+End
+
+
+Public Function UnitToCm(Value As Float, Unit As String) As Float
+  
+  Dim fInch As Float
+  Dim f As Float
+  
+  f = GetFactorUnitToInch(Unit)
+  finch = value * f
+  f = 0.3937
+  Return finch / f
+  
+End
+
+
+Public Function _ReportUnitsToPixels(Value As Float) As Float
+
+  Dim f As Float
+  
+'Return Value * Ratio
+' If Value > 0 Then Stop
+  f = Value / _ReportWidth * (Paint.Width / _Scale)
+  'f = 0.3937 * Paint.ResolutionX
+  'f = ReportUnits.GetFactorUnitToInch("cm") * Resolution 'ReportResolution
+  
+  'Return Value * f
+  Return f
+
+End
+
+Public Function _PixelsToReportUnits(Value As Float) As Float
+
+  Dim f As Float
+
+  'f = 0.3937 * Paint.ResolutionX 'ReportResolution
+  Return (value / Paint.ResolutionX * 2.54) '/ _ReportWidth * Paint.Width
+  'Return (Value) / f
+
+End
+
+
+
+
+Private Function DesktopScale_Read() As Float
+
+  Return Paint.ResolutionX / Desktop.Resolution
+
+End

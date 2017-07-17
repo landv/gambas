@@ -1,0 +1,306 @@
+' Gambas class file
+
+Export
+
+Property Read Children As String[]
+Property Read _Introspection As String
+
+Private $hAppIndex As Integer
+Private $sObjectPath As String
+Private $sInterface As String
+Private $sIntrospection As String
+Private $cSignature As New Collection
+
+Public Sub _new((Application) As DBusApplication, ObjectPath As String, Optional Interface As String)
+  
+  Dim iPos, iPos2 As Integer
+  
+  $hAppIndex = Application.Index
+  $sObjectPath = ObjectPath
+  $sInterface = Interface
+  
+  $sIntrospection = Application._Introspect(ObjectPath)
+  If Not $sIntrospection Then Error.Raise("Unknown object")
+  
+  If Interface Then
+    iPos = InStr($sIntrospection, "<interface name=\"" & Interface & "\">")
+    If iPos = 0 Then Error.Raise("Unknown interface")
+    iPos2 = InStr($sIntrospection, "</interface>", iPos)
+    If iPos2 = 0 Then Error.Raise("Introspection error")
+    $sIntrospection = Mid$($sIntrospection, iPos, iPos2 - iPos)
+  Endif
+  
+  'Debug $sIntrospection
+  
+End
+
+Private Sub GetSignature(sSymbol As String) As String
+  
+  Dim sFind As String
+  Dim iPos, iStart, iEnd As Integer
+  Dim sSignIn, sSignOut As String
+  Dim sDir, sType As String
+  Dim sAccess As String
+  Dim iPos2 As Integer
+  
+  sSignIn = $cSignature[sSymbol]
+  If sSignIn Then Return sSignIn
+  
+  iPos = InStr($sIntrospection, " name=\"" & sSymbol & "\"", 1, gb.IgnoreCase)
+  If iPos = 0 Then Error.Raise("Unknown symbol")
+  
+  iStart = RInStr($sIntrospection, "<", iPos)
+  If iStart = 0 Then Error.Raise("Malformed introspection")
+  iEnd = InStr($sIntrospection, ">", iStart)
+  If iEnd = 0 Then Error.Raise("Malformed introspection")
+  
+  If Mid$($sIntrospection, iStart) Begins "<property " Then
+    
+    Try sType = Scan(Mid$($sIntrospection, iStart, iEnd - iStart), "*type=\"*\"*")[1]
+    If Error Then Error.Raise("Malformed property")
+
+    Try sAccess = Scan(Mid$($sIntrospection, iStart, iEnd - iStart), "*access=\"*\"*")[1]
+    If Error Then Error.Raise("Malformed property")
+    
+    If sAccess = "read" Then
+      sType &= ":r"
+    Else If sAccess = "write" Then
+      sType &= ":w"
+    Else If sAccess = "readwrite" Then
+      sType &= ":rw"
+    Else
+      Error.Raise("Malformed property")
+    Endif
+    
+    sType = "P:" & sType
+    
+  Else If Mid$($sIntrospection, iStart) Begins "<method " Then
+    
+    If Mid$($sIntrospection, iEnd - 1, 2) <> "/>" Then
+  
+      iEnd = InStr($sIntrospection, "</method>", iStart)
+      
+      Do
+        iPos = InStr($sIntrospection, "<arg ", iPos)
+        If iPos = 0 Or If iPos > iEnd Then Break
+        iPos2 = InStr($sIntrospection, ">", iPos + 1)
+        If iPos2 = 0 Or If iPos2 > iEnd Then Break
+        
+        sDir = "in"
+        Try sDir = Scan(Mid$($sIntrospection, iPos, iPos2 - iPos), "*direction=\"*\"*")[1]
+        Try sType = Scan(Mid$($sIntrospection, iPos, iPos2 - iPos), "*type=\"*\"*")[1]
+        If Error Then Break
+        
+        If sDir = "in" Then
+          sSignIn &= sType
+        Else
+          sSignOut &= sType
+        Endif
+        
+        iPos = iPos2
+        
+      Loop
+      
+    Endif
+    
+    sType = "M:" & sSignIn & ":" & sSignOut
+    
+  Else
+    
+    Error.Raise("Unknown symbol")
+    
+  Endif
+  
+  $cSignature[sSymbol] = sType
+  Return sType
+  
+  sFind = "<property name=\"" & sSymbol & "\""
+  iPos = InStr($sIntrospection, sFind, 1, gb.IgnoreCase)
+  If iPos = 0 Then Goto METHOD
+    
+  iPos += Len(sFind)
+  If Not $sInterface Then
+    If InStr($sIntrospection, sFind, iPos, gb.IgnoreCase) Then Error.Raise("Ambiguous property")
+  Endif
+
+  iPos2 = InStr($sIntrospection, ">", iPos + 1)
+  Try sType = Scan(Mid$($sIntrospection, iPos, iPos2 - iPos), "*type=\"*\"*")[1]
+  If Error Then Error.Raise("Unknown property")
+      
+  Try sAccess = Scan(Mid$($sIntrospection, iPos, iPos2 - iPos), "*access=\"*\"*")[1]
+  If Error Then Error.Raise("Malformed property")
+  
+  If sAccess = "read" Then
+    sType &= ":r"
+  Else If sAccess = "write" Then
+    sType &= ":w"
+  Else If sAccess = "readwrite" Then
+    sType &= ":rw"
+  Else
+    Error.Raise("Malformed property")
+  Endif
+    
+  sType = "P:" & sType
+  $cSignature[sSymbol] = sType
+  Return sType
+
+METHOD:
+
+  sFind = "<method name=\"" & sSymbol & "\""
+  iPos = InStr($sIntrospection, sFind, 1, gb.IgnoreCase)
+  If iPos = 0 Then Error.Raise("Unknown symbol")
+  
+  iPos += Len(sFind)
+  If Not $sInterface Then
+    If InStr($sIntrospection, sFind, iPos, gb.IgnoreCase) Then Error.Raise("Ambiguous method")
+  Endif
+  
+  If LTrim(Mid$($sIntrospection, iPos, 1)) <> "/>" Then
+  
+    iEnd = InStr($sIntrospection, "</method>", iPos)
+  
+    Do
+      iPos = InStr($sIntrospection, "<arg ", iPos)
+      If iPos = 0 Or If iPos > iEnd Then Break
+      iPos2 = InStr($sIntrospection, ">", iPos + 1)
+      If iPos2 = 0 Or If iPos2 > iEnd Then Break
+      
+      sDir = "in"
+      Try sDir = Scan(Mid$($sIntrospection, iPos, iPos2 - iPos), "*direction=\"*\"*")[1]
+      Try sType = Scan(Mid$($sIntrospection, iPos, iPos2 - iPos), "*type=\"*\"*")[1]
+      If Error Then Break
+      
+      If sDir = "in" Then
+        sSignIn &= sType
+      Else
+        sSignOut &= sType
+      Endif
+      
+      iPos = iPos2
+      
+    Loop
+    
+  Endif
+  
+  sSignIn = "M:" & sSignIn & ":" & sSignOut
+  $cSignature[sSymbol] = sSignIn
+  Return sSignIn
+  
+End
+
+Public Sub _Invoke(sName As String, aArg As Variant[]) As Variant
+  
+  Dim aSign As String[]
+  Dim hApp As DBusApplication
+  Dim vVal As Variant
+  Dim sSign As String
+  Dim bProperty As Boolean
+  
+  hApp = DBus._ApplicationCache[$hAppIndex]
+  
+  sSign = GetSignature(sName)
+  bProperty = Left(sSign, 2) = "P:"
+  sSign = Mid$(sSign, 3)
+  
+  aSign = Split(sSign, ":")
+  
+  If bProperty Then 'Error.Raise("Unknown property")
+  
+    If IsNull(aArg) Or If aArg.Count = 0 Then
+      'Debug "read property " & sName
+      If InStr(aSign[1], "r") = 0 Then Error.Raise("Write-only property")
+      aArg = New Variant[2]
+      aArg[0] = $sInterface
+      aArg[1] = sName
+      Return hApp.Connection._CallMethod(hApp.Name, $sObjectPath, "org.freedesktop.DBus.Properties", "Get", "ss", "v", aArg)
+    Else
+      'Debug "write property " & sName
+      If InStr(aSign[1], "w") = 0 Then Error.Raise("Read-only property")
+      vVal = aArg[0]
+      aArg = New Variant[3]
+      aArg[0] = $sInterface
+      aArg[1] = sName
+      aArg[2] = DBusVariant(vVal, aSign[0])
+      hApp.Connection._CallMethod(hApp.Name, $sObjectPath, "org.freedesktop.DBus.Properties", "Set", "ssv", "", aArg)
+    Endif
+  
+  Else
+  
+    'Print GetSignature(Param.Name)
+    Return hApp.Connection._CallMethod(hApp.Name, $sObjectPath, $sInterface, Param.Name, aSign[0], aSign[1], aArg)
+    
+  Endif
+  
+End
+
+Public Sub _unknown(...) As Variant
+  
+  Dim aArg As Variant[]
+  
+  If Param.Count Then aArg = Param.All
+  Return _Invoke(Param.Name, aArg)
+  
+End
+
+Public Sub _property() As Boolean
+  
+  'Return True
+  'Debug Param.Name;; GetSignature(Param.Name)
+  Return Left(GetSignature(Param.Name)) = "P"
+  
+End
+
+
+' We do not use the cached introspection, because new objects may have appeared.
+' But new interfaces or new methods are unlikely.
+
+Private Function Children_Read() As String[]
+
+  Dim sIntr As String
+  Dim aChildren As New String[]
+  Dim iPos, iPos2, iLevel As Integer
+  Dim sNode, sChild As String
+  Dim hApp As DBusApplication
+  
+  hApp = DBus._ApplicationCache[$hAppIndex]
+  sIntr = hApp._Introspect($sObjectPath)
+  
+  Do
+    iPos2 = iPos
+    iPos = InStr(sIntr, "<node", iPos + 1)
+    If iPos = 0 Then iPos = Len(sIntr) + 1
+    iPos2 = InStr(sIntr, "</node>", iPos2 + 1)
+    If iPos2 = 0 Then iPos2 = Len(sIntr) + 1
+    
+    If iPos > Len(sIntr) And If iPos2 > Len(sIntr) Then Return aChildren
+    
+    If iPos < iPos2 Then
+    
+      Inc iLevel
+      If iLevel <> 2 Then Continue
+    
+      iPos2 = InStr(sIntr, ">", iPos + 1)
+      If iPos2 = 0 Then Continue
+      
+      sNode = Mid$(sIntr, iPos, iPos2 - iPos + 1)
+      Try sChild = Scan(sNode, "*name=\"*\"*")[1]
+      If sChild Then aChildren.Add(sChild)
+      
+      If Right(sNode, 2) = "/>" Then Dec iLevel
+    
+    Else
+    
+      iPos = iPos2
+      Dec iLevel
+    
+    Endif
+    
+  Loop
+
+End
+
+Private Function _Introspection_Read() As String
+
+  Return $sIntrospection
+
+End

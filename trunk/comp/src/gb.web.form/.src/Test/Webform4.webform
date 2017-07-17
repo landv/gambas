@@ -1,0 +1,45 @@
+# Gambas Form File 3.0
+
+{ WebForm WebForm
+  #MoveScaled(0,0,107,26)
+  Arrangement = Arrange.Horizontal
+  Margin = True
+  Spacing = True
+  { WebContainer3 WebVBox
+    #MoveScaled(1,1,60,24)
+    Spacing = True
+    { WebContainer2 WebHBox
+      #MoveScaled(1,1,58,8)
+      { WebUploadArea1 WebUploadArea
+        #MoveScaled(1,1,21,6)
+        { btnSelectFile WebButton
+          #MoveScaled(1,1,16,4)
+          Text = ("Select file") & "..."
+        }
+      }
+    }
+    { WebProgressBar1 WebProgressBar
+      #MoveScaled(1,10,58,4)
+    }
+  }
+  { WebContainer1 WebContainer
+    #MoveScaled(62,1,27,24)
+    Width = "10em"
+    Arrangement = Arrange.Vertical
+    { WebDateBox1 WebDateBox
+      #MoveScaled(1,1,25,4)
+    }
+    { WebButton1 WebButton
+      #MoveScaled(1,5,25,4)
+      Text = ("Show")
+    }
+    { WebButton2 WebButton
+      #MoveScaled(1,9,25,4)
+      Text = ("Hide")
+    }
+  }
+  { WebTimer1 WebTimer
+    #MoveScaled(93,7)
+    Delay = 500
+  }
+}

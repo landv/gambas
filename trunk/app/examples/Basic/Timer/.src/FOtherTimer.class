@@ -1,0 +1,85 @@
+' Gambas class file
+
+'&HC00F47& = red
+'&H4BC021& = green
+
+Private $iCounter As Integer
+
+Public Sub Button1_Click()
+
+  Dim iSeconds, iMinutes As Integer
+
+  iSeconds = vbSeconds.Value
+  iMinutes = vbMinutes.Value
+
+  If iSeconds = 0 And iMinutes = 0 Then
+    Message.Info(("The counter is set to stop at 0 seconds!"))
+    Return
+  Endif
+
+  If Not Timer1.enabled Then
+
+    'Normalize minutes and seconds
+    If iSeconds >= 60 Then
+
+      While iSeconds > 59
+
+        Inc iMinutes
+        iSeconds = iSeconds - 60
+
+      Wend
+
+    Endif
+
+    'Update normalized values
+    vbSeconds.Value = iSeconds
+    vbMinutes.Value = iMinutes
+
+    'Store the total count to simplify code
+    $iCounter = iSeconds + iMinutes * 60
+
+    'Let the timer start!
+    Timer1.enabled = True
+
+    Button1.Text = ("Stop")
+    Button1.Background = &HC00F47&
+
+  Else
+
+    Button1.Text = ("Start")
+    Button1.Background = &H4BC021&
+    Timer1.enabled = False
+  Endif
+
+  'thank you Benoit, that is just a great thing
+End
+
+Public Sub Timer1_Timer()
+
+  'The counter has reached 0. Stop it and update the window
+  If $iCounter = 0 Then
+    Timer1.Enabled = False
+    Button1.Text = ("Start")
+    Button1.Background = &H4BC021&
+    Message.Info(("Time is over!"))
+  Else
+
+    'Seconds are over, decrease the minute count by 1 and reset the seconds count
+    If vbSeconds.Value = 0 Then
+
+      Dec vbMinutes.Value
+
+      vbSeconds.Value = 59
+
+    Else
+
+      Dec vbSeconds.Value
+
+    Endif
+
+  Endif
+
+  'Also decrease the global counter
+  Dec $iCounter
+
+End

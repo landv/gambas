@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="<%/%>/style.css">
+  <link rel="icon" href="<%/%>/logo.png" type="image/png">
+  <title>Gambas Documentation - Confirm</title>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="header-inside">
+    <div class="up">
+      <a href="<%/%>"><img src="<%/%>/up.png"></a>
+    </div>
+    <div class="title">
+      <i>Confirm registration</i>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+<h1>Confirm registration</h1>
+
+<p/>
+
+<%If _Confirm() Then%>
+<p><b>Congratulations! Your account is now activated.</b></p>
+<p><a href="<%/%>">Return to the home page to login.</a></p>
+<%Else%>
+<div class="message">
+Registration has failed!
+</div>
+<%Endif%>
+</div>
+
+</body>
+</html>
+

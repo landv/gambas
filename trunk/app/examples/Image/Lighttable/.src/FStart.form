@@ -1,0 +1,42 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,101,65)
+  Text = ("Lighttable   -   Select picture folder")
+  Resizable = False
+  { btnOK Button
+    MoveScaled(69,60,15,4)
+    Text = ("&OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(85,60,15,4)
+    Text = ("&Cancel")
+    Cancel = True
+  }
+  { DirChooser1 DirChooser
+    MoveScaled(2,6,51,51)
+  }
+  { Separator1 Separator
+    MoveScaled(0,58,102,1)
+  }
+  { Label1 Label
+    MoveScaled(2,2,27,3)
+    Font = Font["Bold,+1"]
+    Text = ("New selection")
+  }
+  { Separator2 Separator
+    MoveScaled(54,0,2,58)
+  }
+  { Label2 Label
+    MoveScaled(58,2,23,3)
+    Font = Font["Bold,+1"]
+    Text = ("Last selections")
+  }
+  { svwLast ScrollView
+    MoveScaled(58,7,41,49)
+    Arrangement = Arrange.Vertical
+    Border = False
+    ScrollBar = Scroll.Vertical
+  }
+}

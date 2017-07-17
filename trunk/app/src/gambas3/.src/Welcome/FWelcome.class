@@ -1,0 +1,413 @@
+' Gambas class file
+
+Static Private $sPath As String
+Static Private $hLogo As Image
+
+Private btnNew As CCoolButton
+Private btnOpen As CCoolButton
+Private btnOpenExtern As CCoolButton
+Private btnRecent As CCoolButton
+Private btnExample As CCoolButton
+Private btnQuit As CCoolButton
+Private btnAbout As CCoolButton
+Private btnFarm As CCoolButton
+Private btnSoft As CCoolButton
+
+Private $iRecent As Integer
+
+Private Const LIST_NONE As Integer = 0
+Private Const LIST_RECENT As Integer = 1
+Private Const LIST_EXAMPLE As Integer = 2
+Private Const LIST_SOFTWARE As Integer = 3
+
+Private HEIGHT_BUTTON As Integer = Desktop.Scale * 7
+
+Private $hWelcome As CWelcome
+Private $iSort As Integer = CRecentProject.SORT_BY_DATE
+
+Private $hRecent As CProjectList
+Private $hExample As CProjectList
+Private $hSoft As CProjectList
+
+Static Public Function Run() As String
+
+  'DIM hForm AS Form
+
+  $sPath = ""
+  'hForm = NEW FWelcome
+  FWelcome.ShowModal()
+  Return $sPath
+
+End
+
+Public Sub _new()
+  
+  $hRecent = New CProjectList(lstRecent, txtFilter, CProjectList.TYPE_RECENT, Arrange.Row) As "ProjectItem"
+  $hExample = New CProjectList(lstExample, txtFilterExample, CProjectList.TYPE_EXAMPLE, Arrange.Row) As "ProjectItem"
+  $hSoft = New CProjectList(lstSoft, txtFilterSoft, CProjectList.TYPE_SOFTWARE, Arrange.Row) As "ProjectItem"
+  
+End
+
+
+Public Sub Form_Open()
+
+  Dim W As Integer
+  Dim sFont As String
+  Dim hCtrl As CCoolButton
+
+  If Not $hLogo Then $hLogo = Image.Load("img/logo/logo.png")
+
+  'Settings.Read(Me)
+  'Me.Center
+  
+  sFont = "Bold"
+  W = panButton.ClientW
+
+  btnNew = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("New project..."), "icon:/large/new", sFont) As "btnNew"
+  btnOpen = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Open project") & "...", "icon:/large/open", sFont) As "btnOpen"
+  btnRecent = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/recent", sFont) As "btnList"
+  btnExample = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Examples"), "icon:/large/help", sFont) As "btnList"
+  btnSoft = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Installed software"), "icon:/large/download", sFont) As "btnList"
+  btnFarm = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Software farm") & "...", "icon:/large/book", sFont) As "btnFarm"
+  btnOpenExtern = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Open file") & "...", "icon:/large/edit", sFont) As "btnOpenExtern"
+  btnAbout = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("About Gambas") & "...", "icon:/large/info", sFont) As "btnAbout"
+  btnQuit = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Quit"), "icon:/large/quit", sFont) As "btnQuit"
+  
+  btnRecent.Tag = LIST_RECENT
+  btnExample.Tag = LIST_EXAMPLE
+  btnSoft.Tag = LIST_SOFTWARE
+
+  For Each hCtrl In [btnNew, btnOpen, btnRecent, btnExample, btnSoft, btnFarm, btnOpenExtern, btnAbout, btnQuit]
+    hCtrl.Foreground = Color.White
+    hCtrl.Highlight = &H61A7C3&
+  Next
+
+  ' Fill recent list
+
+  $iSort = Settings["/FWelcome/SortRecent", CRecentProject.SORT_BY_DATE]
+  UpdateMenuSort
+  $hRecent.SetSort($iSort)
+  
+  If CRecentProject.All.Count Then
+    Toggle(LIST_RECENT)
+  Else
+    Toggle(LIST_EXAMPLE)
+  Endif
+  
+  $hWelcome = New CWelcome(dwgWelcome)
+  
+  $hSoft.Fill
+
+End
+
+' Public Sub cvwRecent_Click()
+' 
+'   $sPath = CRecentProject.All[Val(Last.Key)].Path
+'   Me.Close
+' 
+' End
+
+
+' PUBLIC SUB timMessage_Timer()
+' 
+'   IF System.RightToLeft THEN
+'     INC lblMessage.X
+'     IF lblMessage.X >= panMessage.W THEN
+'       lblMessage.X = - lblMessage.Width
+'     ENDIF
+'   ELSE
+'     DEC lblMessage.X
+'     IF lblMessage.X <= (- lblMessage.Width) THEN
+'       lblMessage.X = panMessage.Width
+'     ENDIF
+'   ENDIF
+' 
+' END
+
+
+Public Sub btnNew_Click()
+
+  $sPath = FCreateProject.Run()
+  txtFilter.SetFocus
+  If $sPath Then Project.Open($sPath)
+
+End
+
+
+Public Sub btnOpen_Click()
+
+  $sPath = FOpenProject.Run()
+  txtFilter.SetFocus
+  If $sPath Then 
+    Project.Open($sPath)
+  Else
+    $hRecent.Fill
+  Endif
+
+End
+
+Public Sub btnOpenExtern_Click()
+
+  FMain.Action_Activate("open-extern")
+
+End
+
+Public Sub btnList_Click()
+
+  Toggle(Last.Tag)
+
+End
+
+Public Sub btnQuit_Click()
+
+  $sPath = ""
+  FMain.Close()
+
+End
+
+Private Sub Toggle(iState As Integer)
+
+  Dim hCtrl As CCoolButton
+  
+  If $iRecent = iState Then Return
+  
+  $iRecent = iState
+
+  lstRecent.Hide
+  txtFilter.Hide
+  lstExample.Hide
+  txtFilterExample.Hide
+  lstSoft.Hide
+  txtFilterSoft.Hide
+
+  Select Case $iRecent
+    
+    Case LIST_NONE
+      panList.Hide
+      
+    Case LIST_RECENT
+      panList.Raise
+      lstRecent.Show
+      txtFilter.Show
+      panList.Show
+      txtFilter.SetFocus
+      
+    Case LIST_EXAMPLE
+      $hExample.Fill
+      panList.Raise
+      lstExample.Show
+      txtFilterExample.Show
+      panList.Show
+      txtFilterExample.SetFocus
+    
+    Case LIST_SOFTWARE
+      $hSoft.Fill
+      panList.Raise
+      lstSoft.Show
+      txtFilterSoft.Show
+      panList.Show
+      txtFilterSoft.SetFocus
+    
+  End Select
+  
+  For Each hCtrl In [btnRecent, btnExample, btnSoft]
+    hCtrl.Background = If($iRecent = hCtrl.Tag, Color.TextBackground, Color.Default)
+    hCtrl.Foreground = If($iRecent = hCtrl.Tag, Color.TextForeground, Color.White)
+  Next
+  
+End
+
+Public Sub Form_KeyPress()
+
+  If Key.Code = Key.Escape Then
+    btnQuit_Click
+  Else If Key.Alt Then
+    If Key.Code = Key["P"] Then
+      Toggle(LIST_RECENT)
+      Stop Event
+    Else If Key.Code = Key["E"] Then
+      Toggle(LIST_EXAMPLE)
+      Stop Event
+    Endif
+  Endif
+
+End
+
+
+Public Sub Form_Close()
+
+  'Settings.Write(Me)
+  Settings["/FWelcome/SortRecent"] = $iSort
+
+End
+
+' PUBLIC SUB dwgRound_Draw()
+' 
+'   Draw.FillColor = LAST.Foreground
+'   Draw.LineStyle = Line.None
+'   Draw.FillStyle = Fill.Solid
+'   Draw.RoundRect(0, 0, LAST.W, LAST.H)
+' 
+' END
+
+Public Sub dwgExample_Draw()
+  
+  Dim hDrawingArea As DrawingArea = Last
+  
+  'Draw.FillRect(Draw.Clip.X, Draw.Clip.Y, Draw.Clip.Width, Draw.Clip.Height, Int(Rnd(0, &H1000000)))
+  
+  Draw.Font = hDrawingArea.Font
+  Draw.Text(hDrawingArea.Tag, 4, 0, Draw.W - 16, Draw.H - 4, Align.BottomNormal)
+  Draw.Foreground = Color.Merge(Draw.Foreground, Color.White, 0.7)
+  Draw.Line(4, Draw.H - 4, Draw.W - 9, Draw.H - 4)
+  
+End
+
+' Public Sub dwgExample_Draw()
+'   
+'   Dim hDrawingArea As DrawingArea = Last
+'   
+'   With hDrawingArea
+'     Draw.Font = .Font
+' 
+'     'Draw.Foreground = .Foreground
+'     'Draw.Line(0, .H / 2 - 2, .W - 1, .H / 2 - 2)
+'     'Draw.Picture($hPicture, 0, 0, .W, .H)
+'  
+'     'Draw.FillStyle = Fill.Solid
+'     'Draw.LineStyle = Line.None
+'     'Draw.FillColor = .Background
+'     'Draw.Rect(8, 0, Draw.TextWidth(.Tag) + 8, .H)
+'     
+'     Draw.Text(.Tag, 8, 0, .W - 8, .H - 2, Align.Normal)
+'   
+'   End With
+'   
+' End
+
+' Private Sub GetTitle(hProjectInfo As CProjectInfo) As String
+'   
+'   With hProjectInfo
+'     Return "<b>" & .Name & "</b> " & .Version & "<br><font size=\"-1\" color=\"#404040\">" & .Title & "</font>"
+'   End With
+'   
+' End
+
+Public Sub lblWebSite_MouseDown()
+
+  Last.Foreground = Color.LightBackground
+
+End
+
+Public Sub lblWebSite_MouseUp()
+  
+  Last.Foreground = Color.TextBackground
+  If Mouse.X >= 0 And If Mouse.Y >= 0 And If Mouse.X < Last.W And If Mouse.Y < Last.H Then
+    Wait
+    Desktop.Open(Last.Text)
+  Endif
+  
+End
+
+Public Sub lblWebSite_Enter()
+
+  Last.Foreground = Color.LightBackground
+
+End
+
+Public Sub lblWebSite_Leave()
+
+  Last.Foreground = Color.Default
+
+End
+
+
+Public Sub lstRecent_Menu()
+
+  mnuSort.Popup
+   
+End
+
+Private Sub UpdateMenuSort()
+  
+  Dim hMenu As Menu
+  
+  For Each hMenu In mnuSort.Children
+    If hMenu.Tag = $iSort Then 
+      hMenu.Checked = True
+      Break
+    Endif
+  Next
+  
+End
+
+
+Public Sub mnuSort_Click()
+  
+  $iSort = Last.Tag
+  $hRecent.SetSort($iSort)
+  'UpdateMenuSort
+  
+End
+
+Public Sub ProjectItem_Click(Path As String, (Another) As Boolean)
+
+  $sPath = Path
+  Project.Open($sPath)
+
+End
+
+Public Sub ProjectItem_Refresh()
+  
+  CRecentProject.Check()
+  $hRecent.Fill
+  $hExample.Fill
+  
+End
+
+Public Sub ProjectItem_Fill()
+  
+  If Last = $hSoft Then 
+    btnSoft.Enabled = Not $hSoft.IsVoid()
+    If Not btnSoft.Enabled And If $iRecent = LIST_SOFTWARE Then Toggle(LIST_RECENT)
+  Endif
+  
+End
+
+
+Public Sub btnAbout_Click()
+  
+  FAbout.Run
+  txtFilter.SetFocus
+  
+End
+
+Public Sub btnFarm_Click()
+  
+  FSoftwareFarm.Run
+  
+  $hExample.Fill
+  $hSoft.Fill
+  
+End
+
+Public Sub panList_Arrange()
+
+  Dim iArr As Integer
+
+  iArr = If(panList.W > Desktop.Scale * 70, Arrange.Row, Arrange.Vertical)
+  'Debug iArr;; panList.W;; Desktop.Scale * 64
+  $hRecent.SetArrangement(iArr)
+  $hExample.SetArrangement(iArr)
+
+End
+
+Public Sub Form_Activate()
+
+  If $iRecent = LIST_EXAMPLE Then
+    txtFilterExample.SetFocus
+  Else
+    txtFilter.SetFocus
+  Endif
+
+End

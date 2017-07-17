@@ -1,0 +1,67 @@
+' Gambas module file
+
+Private $hPlayer As MediaPipeline
+Private $bStop As Boolean
+
+Public Sub Main()
+
+  Dim hSrc As MediaControl
+  Dim hFilter As MediaFilter
+  Dim hSink As MediaControl
+  Dim I As Integer
+
+  $hPlayer = New MediaPipeline As "MediaPlayer"
+  
+  hSrc = New MediaControl($hPlayer, "v4l2src")
+  'hSrc["norm"] = "SECAM"
+  Print hSrc["norm"]
+  
+  hFilter = New MediaFilter($hPlayer)
+  
+  hSink = New MediaControl($hPlayer, "xvimagesink")
+  
+  hSrc.LinkTo(hFilter)
+  hFilter.LinkTo(hSink)
+  
+  hFilter.Filter = "video/x-raw,width=640,height=480,framerate=30/1"
+
+  $hPlayer.Play
+
+  Print "I will take a screenshot in 5 seconds..."
+  Repeat
+    Wait 1
+    Inc I
+    If I <= 5 Then
+      Print "..."; I;
+      Flush
+      If I = 5 Then
+        Print
+        hSink.GetLastImage().Save("~/screenshot.png")
+        Print "Screenshot saved to '~/screenshot.png'!"
+      Endif
+    Endif
+  Until $bStop
+
+End
+
+Public Sub MediaPlayer_Message((Source) As MediaControl, Type As Integer, Message As String)
+  
+  Select Case Type
+    Case Media.Info
+      Print "(i)";
+    Case Media.Warning
+      Print "/!\\";
+    Case Media.Error
+      Print "[*]";
+      $bStop = True
+  End Select
+  Print " "; Message
+  
+End
+
+Public Sub MediaPlayer_State()
+  
+  Debug Last.State
+  
+End
+

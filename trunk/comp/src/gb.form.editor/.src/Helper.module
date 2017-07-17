@@ -1,0 +1,71 @@
+' Gambas module file
+
+Public Sub ReadNumber(sText As String, iPos As Integer) As Integer
+  
+  sText = String.Mid$(sText, iPos)
+  iPos = 1
+  
+  If IsDigit(Left(sText)) Then
+    Inc iPos
+  Else If InStr("+-", Left(sText)) And If IsDigit(Mid$(sText, 2, 1)) Then
+    iPos += 2
+  Else
+    Return 0
+  Endif
+  
+  While IsDigit(Mid$(sText, iPos, 1))
+    Inc iPos
+  Wend
+  
+  If Mid$(sText, iPos, 1) = "." Then
+    Inc iPos
+  Else
+    Return iPos - 1
+  Endif
+  
+  While IsDigit(Mid$(sText, iPos, 1))
+    Inc iPos
+  Wend
+  
+  If InStr("eE", Mid$(sText, iPos, 1)) Then
+    Inc iPos
+  Else
+    Return iPos - 1
+  Endif
+  
+  If InStr("+-", Mid$(sText, iPos, 1)) And If IsDigit(Mid$(sText, iPos + 1, 1)) Then
+    iPos += 2
+  Else If IsDigit(Mid$(sText, iPos, 1)) Then
+    Inc iPos
+  Else
+    Return iPos - 1
+  Endif
+  
+  While IsDigit(Mid$(sText, iPos, 1))
+    Inc iPos
+  Wend
+  
+  Return iPos - 1
+  
+End
+
+Public Sub ReadIdentifier(sText As String, iPos As Integer, sIdentCar As String) As Integer
+  
+  sText = String.Mid$(sText, iPos)
+  iPos = 1
+  
+  If InStr(sIdentCar, Left(sText)) Then
+    While InStr(sIdentCar, Mid$(sText, iPos, 1)) And Asc(Mid$(sText, iPos, 1)) > 32
+      Inc iPos
+    Wend
+  Else
+    While InStr(sIdentCar, Mid$(sText, iPos, 1)) = 0 And Asc(Mid$(sText, iPos, 1)) > 32
+      Inc iPos
+    Wend
+  Endif
+  
+  Return iPos - 1
+  
+End
+
+

@@ -1,0 +1,55 @@
+' Gambas class file
+
+Public Enum TypeValue, TypeString, TypeOp, TypeVar, TypeFunc, TypeBool, TypeDate
+Public Value As Variant
+Public {Type} As Integer
+Public Pos As Integer
+Property Read isValue As Boolean
+Property Read isOperator As Boolean
+Property Read isString As Boolean
+Property Read isVariable As Boolean
+Property Read isFunction As Boolean
+Property Read isBoolean As Boolean
+
+Public Sub _new(vValue As Variant, iType As Integer)
+
+  Value = vValue
+  Me.Type = iType
+
+End
+
+Private Function isValue_Read() As Boolean
+
+  Return Me.Type = TypeValue
+
+End
+
+Private Function isOperator_Read() As Boolean
+
+  Return Me.Type = TypeOp
+
+End
+
+Private Function isString_Read() As Boolean
+
+  Return Me.Type = TypeString
+
+End
+
+Private Function isVariable_Read() As Boolean
+
+  Return Me.Type = TypeVar
+
+End
+
+Private Function isFunction_Read() As Boolean
+
+  Return Me.Type = TypeFunc
+
+End
+
+Private Function isBoolean_Read() As Boolean
+
+  Return Me.Type = TypeBool
+
+End

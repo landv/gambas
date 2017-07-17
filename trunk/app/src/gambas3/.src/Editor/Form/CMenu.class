@@ -1,0 +1,79 @@
+' Gambas class file
+
+Public Name As String
+Public Caption As String
+Public (Shortcut) As String
+Public Group As String
+Public Ctrl As Boolean
+Public Shift As Boolean
+Public Alt As Boolean
+Public Enabled As Boolean
+Public Visible As Boolean
+Public Checked As Boolean
+Public Toggle As Boolean
+Public Radio As Boolean
+Public Level As Integer
+Public (Picture) As String
+Public Tag As String
+Public (Action) As String
+Public Translate As Boolean
+
+Public Sub _new()
+
+  Enabled = True
+  Visible = True
+
+End
+
+Public Sub SetShortcut(sShortcut As String)
+
+  Do
+
+    If UCase(Left$(sShortcut, 5)) = "CTRL+" Then
+      Ctrl = True
+      sShortcut = Mid$(sShortcut, 6)
+      Continue
+    Endif
+
+    If UCase(Left$(sShortcut, 6)) = "SHIFT+" Then
+      Shift = True
+      sShortcut = Mid$(sShortcut, 7)
+      Continue
+    Endif
+
+    If UCase(Left$(sShortcut, 4)) = "ALT+" Then
+      Alt = True
+      sShortcut = Mid$(sShortcut, 5)
+      Continue
+    Endif
+
+    Shortcut = sShortcut
+    Return
+
+  Loop
+
+End
+
+
+Public Function GetShortcut() As String
+
+  Dim sShortcut As String
+
+  If Shortcut Then
+
+    If Ctrl Then sShortcut = sShortcut & "Ctrl+"
+    If Shift Then sShortcut = sShortcut & "Shift+"
+    If Alt Then sShortcut = sShortcut & "Alt+"
+    sShortcut = sShortcut & Shortcut
+
+    Return sShortcut
+
+  Endif
+
+End
+
+Public Sub ToString() As String
+  
+  Return [Name, Caption, Shortcut, Group, CStr(Ctrl), CStr(Shift), CStr(Alt), CStr(Enabled), CStr(Visible), CStr(Checked), CStr(Translate), CStr(Toggle), CStr(Radio), CStr(Level), Picture, Tag, Action].Join(":")
+  
+End

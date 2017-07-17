@@ -1,0 +1,61 @@
+Public Sub Example5()
+  
+  ' A custom shape that could be wrapped in a function
+  Dim X0 As Float = 25.6
+  Dim Y0 As Float = 25.6
+  Dim RectWidth As Float = 204.8
+  Dim RectHeight As Float = 204.8
+  
+  Dim Radius As Float = 102.4
+  
+  Dim X1, Y1 As Float
+  
+  X1 = X0 + RectWidth
+  Y1 = Y0 + RectHeight
+  
+  If Not (RectWidth > 0.0) Or Not (RectHeight > 0.0) Then Return
+  
+  If RectWidth / 2 < Radius Then
+    If RectHeight / 2 < Radius Then
+      Paint.MoveTo(X0, (Y0 + Y1) / 2)
+      Paint.CurveTo(X0, Y0, X0, Y0, (X0 + X1) / 2, Y0)
+      Paint.CurveTo(X1, Y0, X1, Y0, X1, (Y0 + Y1) / 2)
+      Paint.CurveTo(X1, Y1, X1, Y1, (X1 + X0) / 2, Y1)
+      Paint.CurveTo(X0, Y1, X0, Y1, X0, (Y0 + Y1) / 2)
+    Else
+      Paint.MoveTo(X0, Y0 + Radius)
+      Paint.CurveTo(X0, Y0, X0, Y0, (X0 + X1) / 2, Y0)
+      Paint.CurveTo(X1, Y0, X1, Y0, X1, Y0 + Radius)
+      Paint.LineTo(X1, Y1 - Radius)
+      Paint.CurveTo(X1, Y1, X1, Y1, (X1 + X0) / 2, Y1)
+      Paint.CurveTo(X0, Y1, X0, Y1, X0, Y1 - Radius)
+    Endif
+  Else
+    If (RectHeight / 2 < Radius) Then 
+      Paint.MoveTo(X0, (Y0 + Y1) / 2)
+      Paint.CurveTo(X0, Y0, X0, Y0, X0 + Radius, Y0)
+      Paint.LineTo(X1 - Radius, Y0)
+      Paint.CurveTo(X1, Y0, X1, Y0, X1, (Y0 + Y1) / 2)
+      Paint.CurveTo(X1, Y1, X1, Y1, X1 - Radius, Y1)
+      Paint.LineTo(X0 + Radius, Y1)
+      Paint.CurveTo(X0, Y1, X0, Y1, X0, (Y0 + Y1) / 2)
+    Else
+      Paint.MoveTo(X0, Y0 + Radius)
+      Paint.CurveTo(X0, Y0, X0, Y0, X0 + Radius, Y0)
+      Paint.LineTo(X1 - Radius, Y0)
+      Paint.CurveTo(X1, Y0, X1, Y0, X1, Y0 + Radius)
+      Paint.LineTo(X1, Y1 - Radius)
+      Paint.CurveTo(X1, Y1, X1, Y1, X1 - Radius, Y1)
+      Paint.LineTo(X0 + Radius, Y1)
+      Paint.CurveTo(X0, Y1, X0, Y1, X0, Y1 - Radius)
+    Endif
+  Endif
+
+  Paint.ClosePath
+  Paint.Brush = Paint.Color(Color.RGB(128, 128, 255))
+  Paint.Fill(True)
+  Paint.Brush = Paint.Color(Color.RGB(128, 0, 0, 128))
+  Paint.LineWidth = 10.0
+  Paint.Stroke
+  
+End

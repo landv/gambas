@@ -1,0 +1,21 @@
+Release of Gambas 1.9.51
+<p>
+The database component is now case sensitive, and so some applications may break.
+The <tt>gb.qt</tt> and <tt>gb.gtk</tt> now share more code, especially the drawing
+routines that were moved to a dedicated common component. The features that cannot
+be common are put in the <tt>gb.qt.ext</tt> and <tt>gb.gtk.ext</tt> extension
+components.
+<p>
+The other main changes are:
+<ul>
+  <li>The IDE menus were lightly reorganized.
+  <li>The IDE project property component list was redesigned.
+  <li>The IDE debugging windows were redesigned.
+  <li>A new catalan translation, made by Jordi Sayol.
+  <li>The Draw class lost the Draw.Rotate() and Draw.RoundRect() methods, but
+  gained a new method for drawing rich text.
+  <li>InputBox returns as a static class of the <tt>gb.form</tt> component.
+  <li>A new experimental component made by Fabien Bodard, =gb.chart=, for drawing charts.
+</ul>
+<p>
+There are anyway tons of bugfixes. See the <a href="changelog2.html">ChangeLog</a> for the details.

@@ -1,0 +1,85 @@
+' Gambas class file
+
+Inherits TermForm
+Private $hLab2 As TermLabel
+'Private hTimer As New Timer As "Timer"
+
+
+
+Public Sub _New()
+  Dim hText As TermTextBox
+  Dim hBox As New TermHBox(Me)
+  Dim hLab As New TermLabel(hBox)
+  Dim hBar As TermScrollBar
+  Dim bar As TermScrollBar
+  Dim hbb As TermHBox
+  'Dim hlab2 As TermLabel
+  
+  'Me.Maximized = True
+  'Me.Background = Color.Yellow
+  Me.Padding = 1
+  Me.Move(3, 3, 50, 20)
+  Me.Text = "coucou"
+  Me.Border = Border.Simple
+  Me.Visible = True
+  Me.Center
+  Me._Arrangement = Arrange.Vertical
+  Me.Spacing = 1
+  
+  hLab.Text = "Votre nom: "
+  hLab.W = Len(hLab.Text)
+  
+
+  hText = New TermTextBox(hBox) As "TextBox"
+  hText.Text = "test"
+  hText.Expand = True
+  hText.SetFocus
+  
+  hbox = New TermHBox(Me)
+  hlab = New TermLabel(hbox)
+    hLab.Text = "Votre prenom: "
+  hLab.W = Len(hLab.Text)
+  
+
+  hText = New TermTextBox(hBox) As "TextBox"
+  hText.Text = "test"
+  hText.Expand = True
+  
+  '
+  $hlab2 = New TermLabel(Me)
+  
+  $hlab2.Background = TermColor.green
+  $hlab2.Show
+  
+  
+  hbb = New TermHBox(Me)
+  hbb.Height = 8
+  hbb.Expand = True
+  hbox = New TermHBox(hbb)
+  'hbox.Expand
+  bar = New TermScrollBar(hbb) As "Bar"
+  bar.Height = 5
+  bar.Width = 1
+  bar.Show
+  bar.Background = TermColor.red
+  
+  bar = New TermScrollBar(Me) As "bar"
+  
+  bar.Show
+  bar.MinValue = -20
+  bar.MaxValue = 100
+End
+
+
+Public Sub TextBox_Change()
+  
+  $hLab2.Text = Last.text
+  
+End
+
+Public Sub Bar_Change()
+  
+  $hlab2.Text = Last.value
+  
+End
+

@@ -1,0 +1,408 @@
+' Gambas class file
+
+Export
+
+Inherits WebControl
+
+Public Const _IsContainer As Boolean = True
+Public Const _Group As String = "Container"
+Public Const _Properties As String = "*,Arrangement{Arrange.*},Margin,Spacing,Indent,Border"
+Public Const _DefaultArrangement As String = "F"
+Public Const _DefaultSize As String = "32,32"
+
+Property Arrangement As Integer
+Property Margin As Boolean
+Property Spacing As Boolean
+Property Border As Boolean
+Property Indent As Boolean
+
+Property Read Children As WebControl[]
+
+Public _Container As WebContainer
+
+Private $aChildren As New String[]
+Private $aExtraChildren As New String[][]
+Private $iArrangement As Integer
+Private $bMargin As Boolean
+Private $bSpacing As Boolean
+Private $bBorder As Boolean
+Private $bIndent As Boolean
+
+Public Sub _Add(hChild As WebControl)
+  
+  Dim aExtraChild As String[]
+  Dim hParent As WebControl
+  
+  $aChildren.Add(hChild.Name)
+  
+  Inc Me._NoRefresh
+  
+  If WebForm._InExec And If Not Object.IsLocked(Me) Then
+  'If Not Object.IsLocked(Me) Then
+    
+    'Debug "Add extra "; hChild.Name; " to "; Me.Name
+    hChild._Extra = True
+    aExtraChild = [hChild.Name, Object.Type(hChild)]
+    
+    If hChild._EventName Then
+      aExtraChild.Add(hChild._EventName)
+      Try hParent = Object.Parent(hChild)
+      If Not Error Then aExtraChild.Add(hParent.Name)
+    Endif
+    
+    $aExtraChildren.Add(aExtraChild)
+    
+    Me._SetProperty("#extra", $aExtraChildren)
+    
+  Endif
+  
+  Me._SetProperty("#children", $aChildren)
+  
+  Dec Me._NoRefresh
+  
+  If Me._CanRefresh() Then
+    WebForm._AddJavascriptBefore("gw.insertElement(" & JS(hChild.Name) & "," & JS(Me.Name) & ")")
+    hChild.Refresh
+  Endif
+  
+End
+
+Public Sub _Remove(hChild As WebControl)
+  
+  Dim iPos As Integer
+  
+  $aChildren.Remove($aChildren.Find(hChild.Name))
+  
+  Inc Me._NoRefresh
+  
+  If hChild._Extra Then
+    
+    For iPos = 0 To $aExtraChildren.Max
+      If $aExtraChildren[iPos][0] = hChild.Name Then
+        'Debug "Remove extra "; hChild.Name; " from "; Me.Name
+        $aExtraChildren.Remove(iPos)
+        Me._SetProperty("#extra", $aExtraChildren)
+        Break
+      Endif
+    Next
+    
+  Endif
+  
+  Me._SetProperty("#children", $aChildren)
+  
+  Dec Me._NoRefresh
+  
+  If Me._CanRefresh() Then
+    WebForm._AddJavascript("gw.removeElement(" & JS(hChild.Name) & ")")
+  Endif
+  
+End
+
+Public Sub _UpdateChildName(sOld As String, sNew As String)
+  
+  $aChildren[$aChildren.Find(sOld)] = sNew
+  
+End
+
+
+Public Sub _IsFirstVisibleChild(hChild As WebControl) As Boolean
+
+  Dim I As Integer
+  Dim hCtrl As WebControl
+  
+  For I = 0 To $aChildren.Max
+    If $aChildren[I] = hChild.Name Then Return True
+    hCtrl = WebControl.FromName($aChildren[I])
+    If hCtrl.Visible And If Not hCtrl.Ignore Then Return
+  Next
+  
+End
+
+Public Sub _InitProperties()
+  
+  Dim I As Integer
+  
+  Super._InitProperties()
+  
+  For I = 0 To $aChildren.Max
+    WebControl.FromName($aChildren[I])._InitProperties()
+  Next
+  
+End
+
+Public Sub _Render()
+  
+  Dim I As Integer
+  
+  For I = 0 To $aChildren.Max
+    With WebControl.FromName($aChildren[I])
+      'If Not .Visible Then Continue
+      ._BeforeRender()
+      ._Render()
+      ._AfterRender()
+    End With
+  Next
+  
+End
+
+Public Sub _RenderStyleSheet()
+  
+  'Dim I As Integer
+  
+  Me._StartStyleSheet
+  
+  Super._RenderStyleSheet()
+  
+  If Not _Container And If Me.Visible Then
+  
+    If $iArrangement Then
+    
+      Me._AddStyleSheet("display:flex;")
+      Select Case $iArrangement
+        Case Arrange.Horizontal
+          Me._AddStyleSheet("flex-flow:row;")
+          Me._AddStyleSheet("overflow-x:hidden;")
+        Case Arrange.Vertical
+          Me._AddStyleSheet("flex-flow:column;")
+        Case Arrange.Column
+          Me._AddStyleSheet("flex-flow:column wrap;")
+          'If $bSpacing And If $aChildren.Count Then Me._AddStyleSheet("margin-right:-0.5em;margin-bottom:-0.5em;")
+        Case Arrange.Row
+          Me._AddStyleSheet("flex-flow:row wrap;")
+          'If $bSpacing And If $aChildren.Count Then Me._AddStyleSheet("margin-right:-0.5em;margin-bottom:-0.5em;")
+      End Select
+      
+    Endif
+    
+    If $bMargin Then Me._AddStyleSheet("padding:0.5rem;")
+    
+    If $bIndent Then
+      If $bMargin Then
+        Me._AddStyleSheet("padding-left:1rem;")
+      Else
+        Me._AddStyleSheet("padding-left:0.5rem;")
+      Endif
+    Endif
+    
+  Endif
+  
+  If $bBorder Then Me._AddStyleSheet("border:solid #C0C0C0 1px;")
+    
+  Me._EndStyleSheet
+  
+  ' For I = 0 To $aChildren.Max
+  '   With WebControl.FromId($aChildren[I])
+  '     ._RenderStyleSheet()
+  '   End With
+  ' Next
+  
+End
+
+Private Function Arrangement_Read() As Integer
+
+  Return $iArrangement
+
+End
+
+Private Sub Arrangement_Write(Value As Integer)
+
+  $iArrangement = Value
+  Me._SetProperty("Arrangement", Value)
+  UpdateContainer()
+
+End
+
+Private Function Margin_Read() As Boolean
+
+  Return $bMargin
+
+End
+
+Private Sub Margin_Write(Value As Boolean)
+
+  $bMargin = Value
+  Me._SetProperty("Margin", Value)
+  UpdateContainer()
+
+End
+
+Private Function Spacing_Read() As Boolean
+
+  Return $bSpacing
+
+End
+
+Private Sub Spacing_Write(Value As Boolean)
+
+  $bSpacing = Value
+  Me._SetProperty("Spacing", Value)
+  UpdateContainer()
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $bBorder = Value
+  Me._SetProperty("Border", Value)
+
+End
+
+Public Sub _RefreshReply() As Boolean
+  
+  Dim I As Integer
+  
+  If Super._RefreshReply() Then Return
+  
+  For I = 0 To $aChildren.Max
+    WebControl.FromName($aChildren[I])._RefreshReply()
+  Next
+  
+End
+
+Public Sub _SetContainer(hCont As WebContainer)
+  
+  _Container = hCont
+  UpdateContainer()
+  
+End
+
+Private Sub UpdateContainer()
+
+  If Not _Container Then Return
+  
+  With _Container
+    .Arrangement = $iArrangement
+    .Spacing = $bSpacing
+    .Margin = $bMargin
+  End With
+  
+End
+
+Private Function Children_Read() As WebControl[]
+
+  Dim aChildren As WebControl[]
+  Dim I As Integer
+
+  aChildren = New WebControl[$aChildren.Count]
+  For I = 0 To $aChildren.Max
+    aChildren[I] = WebControl.FromName($aChildren[I])
+  Next
+  Return aChildren
+End
+
+Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
+  
+  Dim I As Integer
+  Dim sClass As String
+  Dim sName As String
+  Dim hCtrl As WebControl
+  Dim hForm As WebForm
+  Dim sEventName As String
+  Dim aExtraChildren As String[][]
+  Dim aExtraChild As String[]
+  Dim sParentName As String
+  
+  If sProp = "#extra" Then
+    
+    hForm = Me.Form
+    aExtraChildren = vVal
+    
+    For I = 0 To aExtraChildren.Max
+      
+      aExtraChild = aExtraChildren[I]
+      
+      sName = aExtraChild[0]
+      sClass = aExtraChild[1]
+      
+      WebControl._NextName = sName
+      hCtrl = Object.New(sClass, [Me])
+      
+      If aExtraChild.Count = 4 Then
+        sEventName = aExtraChild[2]
+        sParentName = aExtraChild[3]
+        'Debug sName;; sClass; sEventName;; WebControl.FromName(sParentName)
+        If sEventName Then Object.Attach(hCtrl, WebControl.FromName(sParentName), sEventName)
+      Endif
+      
+      hCtrl._Extra = True
+      
+      'WebForm.Print(WebControl._GetNames())
+      
+      ' TODO: attach to the real form
+      'If Left(sName) <> "$" Then Object.Attach(hCtrl, hForm, sName)
+      
+    Next
+    
+    $aExtraChildren = aExtraChildren
+    
+  Else If sProp = "#children" Then
+    
+    $aChildren = vVal
+    Me.Refresh
+      
+  Endif
+  
+End
+
+Public Sub _Raise(sName As String)
+
+  Dim iPos As Integer
+  
+  iPos = $aChildren.Find(sName)
+  If iPos < 0 Then Return
+  
+  $aChildren.Remove(iPos)
+  $aChildren.Add(sName)
+  Me._SetProperty("#children", $aChildren)
+  
+End
+
+Public Sub _Lower(sName As String)
+
+  Dim iPos As Integer
+  
+  iPos = $aChildren.Find(sName)
+  If iPos < 0 Then Return
+  
+  $aChildren.Remove(iPos)
+  $aChildren.Add(sName, 0)
+  Me._SetProperty("#children", $aChildren)
+  
+End
+
+
+Public Sub DeleteChildren()
+  
+  While $aChildren.Count
+    WebControl.FromName($aChildren[0]).Delete
+  Wend
+  
+End
+
+Public Sub Delete()
+
+  Inc WebForm._DisableRefresh
+  DeleteChildren
+  Dec WebForm._DisableRefresh
+  Super.Delete
+  
+End
+
+Private Function Indent_Read() As Boolean
+
+  Return $bIndent
+
+End
+
+Private Sub Indent_Write(Value As Boolean)
+
+  $bIndent = Value
+  Me._SetProperty("Indent", Value)
+
+End

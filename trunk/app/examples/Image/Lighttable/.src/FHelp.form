@@ -1,0 +1,26 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,84,73)
+  Text = ("Help")
+  Arrangement = Arrange.Vertical
+  { WebViewHelp WebView
+    MoveScaled(2,1,80,64)
+    Expand = True
+  }
+  { Panel1 HBox
+    MoveScaled(2,66,80,6)
+    Background = Color.TextBackground
+    Margin = True
+    { Panel2 Panel
+      MoveScaled(0,1,16,2)
+      Expand = True
+    }
+    { btnClose Button
+      MoveScaled(64,1,15,4)
+      Text = ("&Close")
+      Default = True
+      Cancel = True
+    }
+  }
+}

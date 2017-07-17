@@ -1,0 +1,110 @@
+' Gambas class file
+
+'    Copyright(C)2010. Autor: Pablo Mileti  
+
+'This program Is free software: you can redistribute it And / Or modify it under the terms Of the GNU General Public License As published by the Free Software Foundation, either version 3 Of the License, Or (at your option)any later version.
+
+'This program Is distributed In the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty Of MERCHANTABILITY Or FITNESS For A PARTICULAR PURPOSE.See the GNU General Public License For more details.
+
+'You should have received a Copy Of the GNU General Public License along With this program.IfNot, see < http: / / www.gnu.org / licenses / > .
+
+
+
+'****English documentation*****
+'This class represents the gameboard, all boxes of the game.
+
+'Public var:
+'Boxes---> Array of Casillero (box), there are 9 elements, it uses from 1 to 8.
+
+'Public methods:
+'Set---> Put a value in a object Casillero (box). Receive 2 parameters: the position of the box in the gameboard and the value to put, return true if there are a conflict with another box.
+'isRepeats---> Return true if value already exists in another box.
+'isInvalid---> Compare a determinated box (parameter), with your neighbor boxes. Return true if there are conflicts.
+'isWin---> If all boxes have a correct value and nothing is empty then return true - Win!
+
+
+
+
+'* * * * * Documentación en español ******
+'Esta clase representa el juego en conjunto, es decir integro los 8 casilleros
+
+'Variables públicas:
+'Boxes---> Array de Casilleros, son 9 elementos, se usan del 1 al 8.
+
+'Métodos públicos:
+'Set---> Se encarga de darle un valor a cada Casillero. Recibe 2 parametros el nro de casillero y el valor, devuelve true si ese valor entra en conflicto con otro casillero
+'isRepeats--->Devuelve true si el valor de un casillero ya esta en otro.
+'isInvalid---> Compara un determinado casillero, segun su parametro, con sus casilleros vecinos. Devuelve true si hay conflicto
+'isWin---> Verifica si todos los casilleros tienen un valor correcto, si todos son correctos y no hay ninguno vacio devuelve true.
+
+Public Boxes As New Casillero[9]
+
+Public Sub _new()
+  Dim i As Integer
+  For i = 1 To 8
+    Boxes[i] = New Casillero
+  Next
+End
+
+Public Function Set(nBox As Integer, nValue As Integer) As Boolean
+  Boxes[nbox].setValue(nValue)
+  If (isRepeats(nBox) And nValue <> 0) Or isInvalid(nBox) Then
+    Boxes[nBox].isInvalid = True
+    Return True
+  Else
+    Boxes[nBox].isInvalid = False
+    Return False
+  End If 
+End
+
+Private Function isRepeats(nBox As Integer) As Boolean
+  Dim i As Integer
+  For i = 1 To 8
+    If i <> nBox Then
+      If Boxes[nBox].Value = Boxes[i].Value Then
+        Return True
+     End If
+    End If
+  Next
+  Return False
+End
+
+Private Function isInvalid(nBox As Integer) As Boolean
+Select Case nBox
+Case 1
+     Boxes[1].isInvalid = Boxes[1].validateWith(Boxes[2]) Or Boxes[1].validateWith(Boxes[3]) Or Boxes[1].validateWith(Boxes[4])
+     Return Boxes[1].isInvalid
+Case 2 
+      Boxes[2].isInvalid = Boxes[2].validateWith(Boxes[1]) Or Boxes[2].validateWith(Boxes[3]) Or Boxes[2].validateWith(Boxes[5]) Or Boxes[2].validateWith(Boxes[6])
+      Return Boxes[2].isInvalid
+Case 3 
+     Boxes[3].isInvalid = Boxes[3].validateWith(Boxes[1]) Or Boxes[3].validateWith(Boxes[2]) Or Boxes[3].validateWith(Boxes[4]) Or Boxes[3].validateWith(Boxes[5]) Or Boxes[3].validateWith(Boxes[6]) Or Boxes[3].validateWith(Boxes[7])
+     Return Boxes[3].isInvalid
+Case 4 
+     Boxes[4].isInvalid = Boxes[4].validateWith(Boxes[1]) Or Boxes[4].validateWith(Boxes[3]) Or Boxes[4].validateWith(Boxes[6]) Or Boxes[4].validateWith(Boxes[7])
+     Return Boxes[4].isInvalid
+Case 5 
+     Boxes[5].isInvalid = Boxes[5].validateWith(Boxes[2]) Or Boxes[5].validateWith(Boxes[3]) Or Boxes[5].validateWith(Boxes[6]) Or Boxes[5].validateWith(Boxes[8])
+     Return Boxes[5].isInvalid
+Case 6 
+     Boxes[6].isInvalid = Boxes[6].validateWith(Boxes[2]) Or Boxes[6].validateWith(Boxes[3]) Or Boxes[6].validateWith(Boxes[4]) Or Boxes[6].validateWith(Boxes[5]) Or Boxes[6].validateWith(Boxes[7]) Or Boxes[6].validateWith(Boxes[8])
+     Return Boxes[6].isInvalid
+Case 7 
+     Boxes[7].isInvalid = Boxes[7].validateWith(Boxes[3]) Or Boxes[7].validateWith(Boxes[4]) Or Boxes[7].validateWith(Boxes[6]) Or Boxes[7].validateWith(Boxes[8])
+     Return Boxes[7].isInvalid
+Case 8 
+     Boxes[8].isInvalid = Boxes[8].validateWith(Boxes[5]) Or Boxes[8].validateWith(Boxes[6]) Or Boxes[8].validateWith(Boxes[7]) 
+     Return Boxes[8].isInvalid
+End Select
+End
+
+
+Public Function isWin() As Boolean
+  Dim i As Integer
+  For i = 1 To 8
+     If Boxes[i].isInvalid Or Boxes[i].isEmpty Then
+       Return False
+     End If
+  Next
+  Return True
+End

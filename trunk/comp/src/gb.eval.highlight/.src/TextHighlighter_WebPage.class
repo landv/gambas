@@ -1,0 +1,11 @@
+' Gambas class file
+
+Inherits TextHighlighter
+
+Public Const Name As String = "webpage"
+
+Public Sub Run(sText As String)
+  
+  TextHighlighter_Html.RunWebpage(sText)
+  
+End

@@ -1,0 +1,167 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Border=True"
+Public Const _DefaultEvent As String = "Activate"
+Public Const _DefaultSize As String = "36,36"
+Public Const _Group As String = "Chooser"
+Public Const _DrawWith As String = "DrawingArea"
+
+Public Enum Unchecked = 0, Checked = 1, GrayChecked = 2
+
+Event Select
+Event Activate
+
+Property Border As Boolean
+'Property Components As String[]
+Property Current As String
+Property ShowDeprecated As Boolean
+Property ShowCheckedOnly As Boolean
+Property Checkable As Boolean
+Property HiddenComponents As String[]
+Property CheckedComponents As String[]
+Property Libraries As String[]
+
+Private $hForm As FComponentChooser
+
+Public Sub _new()
+  
+  $hForm = New FComponentChooser(Me)
+  
+End
+
+
+Private Function Border_Read() As Boolean
+
+  Return $hForm.HasBorder()
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hForm.SetBorder(Value)
+
+End
+
+' Private Function Components_Read() As String[]
+' 
+'   Return $hForm.GetComponents()
+' 
+' End
+' 
+' Private Sub Components_Write(Value As String[])
+' 
+'   $hForm.SetComponents(Value)
+' 
+' End
+
+Private Function Current_Read() As String
+
+  Return $hForm.GetCurrent()
+
+End
+
+Private Sub Current_Write(Value As String)
+
+  $hForm.SetCurrent(Value)
+
+End
+
+Private Function ShowDeprecated_Read() As Boolean
+
+  Return $hForm.GetShowDeprecated()
+
+End
+
+Private Sub ShowDeprecated_Write(Value As Boolean)
+
+  $hForm.SetShowDeprecated(Value)
+
+End
+
+Private Function HiddenComponents_Read() As String[]
+
+  Return $hForm.GetHiddenComponents()
+
+End
+
+Private Sub HiddenComponents_Write(Value As String[])
+
+  $hForm.SetHiddenComponents(Value)
+
+End
+
+Private Function Checkable_Read() As Boolean
+
+  Return $hForm.IsCheckable()
+
+End
+
+Private Sub Checkable_Write(Value As Boolean)
+
+  $hForm.SetCheckable(Value)
+
+End
+
+Public Sub SetFocus()
+  
+  $hForm.SetFocus
+  
+End
+
+Private Function CheckedComponents_Read() As String[]
+
+  Return $hForm.GetCheckedComponents()
+
+End
+
+Private Sub CheckedComponents_Write(Value As String[])
+
+  $hForm.SetCheckedComponents(Value)
+
+End
+
+Public Sub CheckSelection() As Boolean
+  
+  Return $hForm.CheckSelection()
+  
+End
+
+Public Sub IsChecked(sComp As String) As Boolean
+  
+  Return $hForm.IsChecked(sComp)
+  
+End
+
+Private Function ShowCheckedOnly_Read() As Boolean
+
+  Return $hForm.GetShowCheckedOnly()
+
+End
+
+Private Sub ShowCheckedOnly_Write(Value As Boolean)
+
+  $hForm.SetCheckedOnly(Value)
+
+End
+
+Public Sub HideBrowser()
+  
+  $hForm.HideBrowser
+  
+End
+
+Private Function Libraries_Read() As String[]
+
+  Return $hForm.GetLibraries()
+
+End
+
+Private Sub Libraries_Write(Value As String[])
+
+  $hForm.SetLibraries(Value)
+
+End

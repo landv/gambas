@@ -1,0 +1,103 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,62,50)
+  Background = Color.LightForeground
+  Text = ("Puzzle 1 to 8 - Locate the numbers!")
+  Icon = Picture["logo.png"]
+  Resizable = False
+  { MnuJuego Menu
+    Text = ("Game")
+    { MnuReiniciar Menu
+      Text = ("Clear")
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { MnuSalir Menu
+      Text = ("Quit")
+      Picture = Picture["icon:/small/quit"]
+    }
+  }
+  { Mnuayuda Menu
+    Text = ("Help")
+    { MnuComoJugar Menu
+      Text = ("How to play?")
+      Picture = Picture["icon:/small/help"]
+    }
+    { MnuAutor Menu
+      Text = ("About...")
+      Picture = Picture["icon:/small/gambas"]
+    }
+  }
+  { TextBox1 TextBox TXT
+    Name = "TextBox1"
+    MoveScaled(25,5,12,9)
+    Font = Font["Bitstream Charter,+8"]
+    Tag = "1"
+    Text = ("")
+    Alignment = Align.Center
+    MaxLength = 1
+  }
+  { TextBox2 TextBox TXT
+    Name = "TextBox2"
+    MoveScaled(13,14,12,9)
+    Font = Font["Bitstream Charter,+8"]
+    Tag = "2"
+    Text = ("")
+    Alignment = Align.Center
+    MaxLength = 1
+  }
+  { TextBox3 TextBox TXT
+    Name = "TextBox3"
+    MoveScaled(25,14,12,9)
+    Font = Font["Bitstream Charter,+8"]
+    Tag = "3"
+    Text = ("")
+    Alignment = Align.Center
+    MaxLength = 1
+  }
+  { TextBox4 TextBox TXT
+    Name = "TextBox4"
+    MoveScaled(37,14,12,9)
+    Font = Font["Bitstream Charter,+8"]
+    Tag = "4"
+    Text = ("")
+    Alignment = Align.Center
+    MaxLength = 1
+  }
+  { TextBox5 TextBox TXT
+    Name = "TextBox5"
+    MoveScaled(13,23,12,9)
+    Font = Font["Bitstream Charter,+8"]
+    Tag = "5"
+    Text = ("")
+    Alignment = Align.Center
+    MaxLength = 1
+  }
+  { TextBox6 TextBox TXT
+    Name = "TextBox6"
+    MoveScaled(25,23,12,9)
+    Font = Font["Bitstream Charter,+8"]
+    Tag = "6"
+    Text = ("")
+    Alignment = Align.Center
+    MaxLength = 1
+  }
+  { TextBox7 TextBox TXT
+    Name = "TextBox7"
+    MoveScaled(37,23,12,9)
+    Font = Font["Bitstream Charter,+8"]
+    Tag = "7"
+    Text = ("")
+    Alignment = Align.Center
+    MaxLength = 1
+  }
+  { TextBox8 TextBox TXT
+    Name = "TextBox8"
+    MoveScaled(25,32,12,9)
+    Font = Font["Bitstream Charter,+8"]
+    Tag = "8"
+    Text = ("")
+    Alignment = Align.Center
+    MaxLength = 1
+  }
+}

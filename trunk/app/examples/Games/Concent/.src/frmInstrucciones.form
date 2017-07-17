@@ -1,0 +1,22 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(63.8571,1.7143,86,77)
+  Resizable = False
+  { Label1 Label
+    MoveScaled(1,1,83,4)
+    Font = Font["Bold,+2"]
+    Text = ("COMO JUGAR CONCÉNTRESE?")
+  }
+  { Label2 Label
+    MoveScaled(1,6,84,65)
+    Padding = 8
+    Text = ("Se trata de un Juego Bastante sencillo: \n\n1.) El objetivo del juego es probar tu retentiva y nivel de concentración, para lo cual\n    debes encontrar los pares de rostros que hay ocultos en el tablero de\n    concéntrese. \n \n2.) El juego tiene tres niveles (Principiante, Medio, Experto), que te permite\n    escoger entre tres tamaños del tablero para añadir emoción y dificultad al juego,\n    para Acceder a estas opciones debes ingresar por el menu Configuración - Nivel,\n    y seleccionar uno de los tres preestablecidos. \n \n3). Así mismo, tienes la posibilidad de incrementar tus conocimientos al jugar en\n    Modo Pregunta, lo que incrementa tu nivel educativo, esto se logra mediante un\n    cuestionario emergente que deberás responder con cada acierto en el tablero, si\n    contestas correctamente tendrás un puntaje más alto y podrás competir con tus\n    amigos. (Esta función se encuentra en construcción debido a la migracion de\n    Visual Basic hacia Gambas, y experimentar el poder de Linux, viva el\n    OpenSource!!! \n \n4.) El juego también te permite activar o desactivar los sonidos de ambientación,\n    para lo cual debes cambiar el estado del menú Configuración - Sonido. \n \n5.) Recuerda: Para redistribuir el Tablero Pulsa F2 , para comenzar a jugar pulsa\n    F4, los rostros serán cargados aleatoriamente, por lo que no debes intentar\n    aprenderte el tablero de memoria...!, Esto sí que va a ser un verdadero reto!. \n \n6.) Estoy actualmente diseñando los modulos de aprendizaje que podrás conseguir\n    muy pronto; para comentarios y / o sugerencias escribe a: jbadbe@gmail.com.\n")
+    Alignment = Align.TopNormal
+    Border = Border.Plain
+  }
+  { Button1 Button
+    MoveScaled(34,72,18,4)
+    Text = ("&Aceptar")
+  }
+}

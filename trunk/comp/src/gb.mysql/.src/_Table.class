@@ -1,0 +1,161 @@
+' Gambas class file
+
+Export
+Create Static
+
+Private $hMaintenance As _TableMaintenance
+Property Read Maintenance As _TableMaintenance
+
+Public Procedure Modify(Table As String, Optional Database As String = modMain.$Connection.Name, Optional Engine As String = modMain.$Connection.MySQL.Engine, Optional Charset As String = modMain.$Connection.MySQL.Charset)
+
+  modMain.$Query = "ALTER TABLE `" & Database & "`.`" & Table & "`"
+  modMain.$Query &= " ENGINE = " & Engine
+  modMain.$Query &= " CHARACTER SET = " & Charset
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure ModifyColumn(Table As String, Action As String, Optional Symbol As String, Optional Definition As String, Optional Database As String = modMain.$Connection.Name)
+
+  Action = Upper(Action)
+  modMain.$Query = "ALTER TABLE `" & Database & "`.`" & Table & "` "
+  Select (Action)
+    Case "DROP"
+      modMain.$Query &= Action & " COLUMN `" & Symbol & "` "
+    Case "ADD", "MODIFY", "CHANGE", "ALTER"
+      modMain.$Query &= Action & " COLUMN `" & Symbol & "` " & Definition
+    Case "CHARACTER SET"
+      modMain.$Query &= "CONVERT TO CHARACTER SET " & Definition
+    Case "ENGINE"
+      modMain.$Query &= "ENGINE " & Definition
+    Default
+      Error.Raise("Invalid Action")
+  End Select
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure Add(Table As String, Optional Engine As String = modMain.$Connection.MySQL.Engine, Optional Charset As String = modMain.$Connection.MySQL.Charset, Optional Database As String = modMain.$Connection.Name)
+
+  'Make the table statement
+  modMain.$Query = "CREATE TABLE `" & Database & "`.`" & Table & "` ("
+  modMain.$Query &= modMain.ArrayToString(modMain.$FieldDefinition, False)
+  If modMain.$PrimaryKey Then modMain.$Query &= modMain.$PrimaryKey
+  If modMain.$Index.Count Then modMain.$Query &= ", " & modMain.ArrayToString(modMain.$Index, False)
+  If modMain.$ForeignKey.Count Then modMain.$Query &= ", " & modMain.ArrayToString(modMain.$ForeignKey, False)
+  modMain.$Query &= ") ENGINE = " & Engine & " DEFAULT CHARSET = " & Charset
+
+  'Clears all the information from this table to be ready for the next one
+  modMain.$FieldDefinition.Clear()
+  modMain.$PrimaryKey = Null
+  modMain.$ForeignKey.Clear()
+  modMain.$Index.Clear()
+
+  'Runs the query
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure Delete(Tables As String[], Optional IfExists As Boolean = False)
+
+  modMain.$Query = "DROP TABLE "
+  If IfExists Then modMain.$Query &= "IF EXISTS "
+  modMain.$Query &= modMain.ArrayToString(Tables, True)
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure LoadData(Table As String, File As String, Optional Database As String = modMain.$Connection.Name)
+
+  modMain.RunQuery("LOAD DATA LOCAL INFILE '" & File & "' INTO TABLE `" & Database & "`.`" & Table & "`")
+
+End
+
+Public Function Info(Table As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SHOW CREATE TABLE `" & Database & "`.`" & Table & "`"
+  Return modMain.$Connection.Exec(modMain.$Query)!"Create Table"
+
+End
+
+Public Procedure Insert(Table As String, Fields As String[], Values As String[], Optional Database As String = modMain.$Connection.Name)
+
+
+  Dim iCounter As Integer
+
+  modMain.$Query = "INSERT INTO `" & Database & "`.`" & Table & "`"
+  If Upper(Fields[0]) = "ALL" Then
+    modMain.$Query &= " VALUES ("
+  Else
+    modMain.$Query &= " (" & modMain.ArrayToString(Fields, True) & ") VALUES ("
+  Endif
+  'If the Value is string type, we need to use the Apostrophe caracter
+  For iCounter = 0 To Values.Count - 1
+    If (IsNumber(Val(Values[iCounter]))) Then
+      modMain.$Query &= Values[iCounter] & ", "
+    Else
+      If Upper(Values[iCounter]) = "NULL" Or Upper(Values[iCounter]) = "TRUE" Or Upper(Values[iCounter]) = "FALSE" Then
+        modMain.$Query &= Values[iCounter] & ", "
+      Else
+        modMain.$Query &= "'" & Values[iCounter] & "', "
+      Endif
+    Endif
+  Next
+  modMain.$Query = Mid(modMain.$Query, 1, Len(modMain.$Query) - 2) 'Strips the last two characters
+  modMain.$Query &= ")"
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure Rename(Table As String, NewTable As String, Optional Database As String = modMain.$Connection.Name)
+
+  modMain.RunQuery("RENAME TABLE `" & Database & "`.`" & Table & "` TO `" & Database & "`.`" & NewTable & "`")
+
+End
+
+Public Function Fields(Table As String, Optional Database As String = modMain.$Connection.Name) As String[]
+
+  Dim asFields As New String[]
+
+  modMain.$Query = "SHOW COLUMNS FROM `" & Database & "`.`" & Table & "`"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
+  For Each modMain.$hResult
+    asFields.Add(modMain.$hResult!Field)
+  Next
+  Return asFields
+
+End
+
+Public Function Charset(Table As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT `a`.`CHARACTER_SET_NAME` FROM `information_schema`.`COLLATIONS` `a`, `information_schema`.`TABLES` `b` WHERE `b`.`TABLE_SCHEMA` = '" & Database & "' AND `b`.`TABLE_NAME` = '" & Table & "' AND `a`.`COLLATION_NAME` = `b`.`TABLE_COLLATION`"
+  Return modMain.$Connection.Exec(modMain.$Query)!CHARACTER_SET_NAME
+
+End
+
+Public Function Collation(Table As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT `TABLE_COLLATION` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND `TABLE_NAME` = '" & Table & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!TABLE_COLLATION
+
+End
+
+Public Function Engine(Table As String, Optional Database As String = modMain.$Connection.Name) As String
+
+  modMain.$Query = "SELECT `ENGINE` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND `TABLE_NAME` = '" & Table & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!ENGINE
+
+End
+
+Public Procedure Truncate(Table As String, Optional Database As String = modMain.$Connection.Name)
+
+  modMain.RunQuery("TRUNCATE TABLE `" & Database & "`.`" & Table & "`")
+
+End
+
+Private Function Maintenance_Read() As _TableMaintenance
+
+  $hMaintenance = New _TableMaintenance
+  Return $hMaintenance
+
+End

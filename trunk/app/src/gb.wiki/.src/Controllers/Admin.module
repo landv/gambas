@@ -1,0 +1,115 @@
+' Gambas module file
+
+Public Sub Main()
+
+  If Not Users.Current.IsAdmin Then
+    UserManage.Login()
+    Return
+  Endif
+
+  If Path.Components.Count > 1 Then
+
+    Select Case Path.Components[1]
+      Case "create"
+        usrCreate()
+
+      Case "delete"
+        usrDelete()
+
+    End Select
+
+  Else
+    WHeader.Title = ("Administration")
+
+    WAdminMain.Render()
+
+  Endif
+
+End
+
+Private Sub usrDelete()
+
+  If Request.Method <> "POST" Then
+    Main.ThrowError("Invalid method")
+  Endif
+
+  If Not Request.Post["sUsername"] Then
+    Error.Raise("No username!")
+  Endif
+
+  If Not Users.Find(Request.Post["sUsername"]) Then
+    Error.Raise("Username already in use!")
+  Endif
+
+  Users.Delete(Request.Post["sUsername"])
+
+  Response.Redirect("/admin")
+  Quit
+
+Catch
+
+  WHeader.Title = ("Administration")
+
+  WHeader.Warning = Error.Text
+
+  WAdminMain.Render()
+
+End
+
+Private Sub usrCreate()
+
+  Dim sField As String
+  Dim sRequired As String[] = ["sName", "sPassword", "sPasswordAgain", "sEmail"]
+  Dim uUser As _User
+
+  If Request.Method <> "POST" Then
+    Main.ThrowError("Invalid method")
+  Endif
+
+  For Each sField In sRequired
+    If Not Request.Post[sField] Then
+      Error.Raise("Missing: " & sField)
+    Endif
+  Next
+
+  If Request.Post["sPassword"] <> Request.Post["sPasswordAgain"] Then
+    Error.Raise("Passwords do not match")
+  Endif
+
+  If Len(Request.Post["sPassword"]) < 6 Or Not IsAscii(Request.Post["sPassword"]) Then
+    Error.Raise("Passwords invalid. Too short or contains invalid characters.")
+  Endif
+
+  If Len(Request.Post["sName"]) < 6 Or Not IsAscii(Request.Post["sName"]) Then
+    Error.Raise("Username invalid. Too short or contains invalid characters.")
+  Endif
+
+  If Not Request.Post["sEmail"] Then
+    Error.Raise("Email not set.")
+  Endif
+
+  uUser = Users.Create(Request.Post["sName"])
+
+  If Not uUser Then
+    Error.Raise("Username already in use!")
+  Endif
+
+  uUser.Username = Request.Post["sName"]
+  uUser.Password = Request.Post["sPassword"]
+
+  uUser.Email = Request.Post["sEmail"]
+
+  uUser.Update()
+
+  Response.Redirect("/admin")
+  Quit
+
+Catch
+
+  WHeader.Title = ("Administration")
+
+  WHeader.Warning = Error.Text
+
+  WAdminMain.Render()
+
+End

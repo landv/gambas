@@ -1,0 +1,861 @@
+' Gambas class file
+
+Export
+
+Public Enum Solid = 1, Dotted = 2, Dashed = 3, Double = 16
+
+Property Width As Single
+Property Radius As Single
+Property Style As Integer
+Property Color As Integer
+Property Padding As Single
+Property Margin As Single
+
+Public LeftStyle As Byte = Solid
+Public RightStyle As Byte = Solid
+Public TopStyle As Byte = Solid
+Public BottomStyle As Byte = Solid
+
+Public LeftWidth As Single = 1
+Public RightWidth As Single = 1
+Public TopWidth As Single = 1
+Public BottomWidth As Single = 1
+
+Public LeftColor As Integer
+Public RightColor As Integer
+Public TopColor As Integer
+Public BottomColor As Integer
+
+Public TopLeftRadius As Single
+Public TopRightRadius As Single
+Public BottomLeftRadius As Single
+Public BottomRightRadius As Single
+
+Public LeftPadding As Single
+Public RightPadding As Single
+Public TopPadding As Single
+Public BottomPadding As Single
+
+Public LeftMargin As Single
+Public RightMargin As Single
+Public TopMargin As Single
+Public BottomMargin As Single
+
+Public SlashStyle As Byte
+Public BackslashStyle As Byte
+Public SlashColor As Integer
+Public BackslashColor As Integer
+Public SlashWidth As Single
+Public BackslashWidth As Single
+
+Static Private $aProp As String[] = ["width", "color", "radius", "style", "padding", "margin", "slash"]
+
+Private Const CURVE_MUL As Single = 0.44771525
+
+Private Function Width_Read() As Single
+
+  Return LeftWidth
+
+End
+
+Private Sub Width_Write(Value As Single)
+
+  LeftWidth = Value
+  RightWidth = Value
+  TopWidth = Value
+  BottomWidth = Value
+  
+End
+
+Private Function Radius_Read() As Single
+
+  Return TopLeftRadius
+
+End
+
+Private Sub Radius_Write(Value As Single)
+
+  TopLeftRadius = Value
+  TopRightRadius = Value
+  BottomLeftRadius = Value
+  BottomRightRadius = Value
+
+End
+
+Private Function Style_Read() As Integer
+
+  Return LeftStyle
+
+End
+
+Private Sub Style_Write(Value As Integer)
+
+  LeftStyle = Value
+  RightStyle = Value
+  TopStyle = Value
+  BottomStyle = value
+
+End
+
+Private Function Color_Read() As Integer
+
+  Return LeftColor
+
+End
+
+Private Sub Color_Write(Value As Integer)
+
+  LeftColor = Value
+  RightColor = value
+  TopColor = Value
+  BottomColor = value
+
+End
+
+Private Sub GetRectF(hRect As RectF, bPadding As Boolean, TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border) As RectF
+  
+  Dim LM, RM, TM, BM As Single
+  
+  LM = LeftMargin
+  If LeftBorder Then LM = Max(LM, LeftBorder.RightMargin) / 2
+  RM = RightMargin
+  If RightBorder Then RM = Max(RM, RightBorder.LeftMargin) / 2
+  TM = TopMargin
+  If TopBorder Then TM = Max(TM, TopBorder.BottomMargin) / 2
+  BM = BottomMargin
+  If BottomBorder Then BM = Max(BM, BottomBorder.TopMargin) / 2
+  
+  hRect = hRect.Copy()
+  hRect.Adjust(LM, TM, RM, BM)
+  If bPadding Then hRect.Adjust(LeftPadding + LeftWidth, TopPadding + TopWidth, RightPadding + RightWidth, BottomPadding + BottomWidth)
+  
+  Return hRect
+  
+End
+
+
+Public Sub Paint((Rect) As RectF, Optional TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border)
+  
+  Dim fWidth As Single
+  Dim iStyle As Integer
+  Dim iColor As Integer
+  Dim F As Single
+  Dim F2 As Single
+  Dim bTop As Boolean
+  Dim bRight As Boolean
+  Dim bLeft As Boolean
+  Dim bBottom As Boolean
+  Dim bSlash As Boolean
+  Dim bBackslash As Boolean
+  Dim X, Y, Width, Height As Single
+  Dim X1, Y1, X2, Y2 As Single
+  Dim iClip As Integer
+  
+  Rect = GetRectF(Rect, False, TopBorder, BottomBorder, LeftBorder, RightBorder)
+  If Rect.IsVoid() Then Return
+  
+  X = Rect.X
+  Y = Rect.Y
+  Width = Rect.W
+  Height = Rect.H
+  
+  Paint.Save
+  Paint.LineCap = Paint.LineCapSquare
+  
+  If TopStyle And If TopWidth Then bTop = True
+  If BottomStyle And If BottomWidth Then bBottom = True
+  If RightStyle And If RightWidth Then bRight = True
+  If LeftStyle And If LeftWidth Then bLeft = True
+  If SlashStyle And If SlashWidth Then bSlash = True
+  If BackslashStyle And If BackslashWidth Then bBackslash = True
+  
+  If bTop Then
+    
+    If TopStyle = LeftStyle And If TopStyle = RightStyle And If TopStyle = BottomStyle Then
+      If TopColor = LeftColor And If TopColor = RightColor And If TopColor = BottomColor Then
+        If TopWidth = LeftWidth And If TopWidth = RightWidth And If TopWidth = BottomWidth Then
+          
+          iStyle = TopStyle
+          fWidth = TopWidth
+          iColor = TopColor
+          
+          GoSub DRAW_BORDER
+          
+          Paint.Restore
+          Return
+
+        Endif
+      Endif
+    Endif
+  
+    Paint.Save
+    
+    iClip = 0
+    If bLeft And If TopLeftRadius > TopWidth Then iClip += 1
+    If bRight And If TopRightRadius > TopWidth Then iClip += 2
+    
+    Select Case iClip
+      
+      Case 0
+        Paint.Rectangle(X, Y, Width, TopWidth)
+      
+      Case 1
+        Paint.MoveTo(X, Y)
+        'Print "MoveTo:";; X;; Y
+        Paint.LineTo(X + Width / 2, Y + Width / 2)
+        'Print "LineTo:";; X + Width / 2;; Y + Width / 2
+        Paint.LineTo(X + Width / 2, Y + TopWidth)
+        'Print "LineTo:";; X + Width / 2;; Y + TopWidth
+        Paint.LineTo(X + Width, Y + TopWidth)
+        'Print "LineTo:";; X + Width;; Y + TopWidth
+        Paint.LineTo(X + Width, Y)
+        'Print "LineTo:";; X + Width;; Y
+        Paint.LineTo(X, Y)
+        'Print "LineTo:";; X;; Y
+        
+      Case 2
+        Paint.MoveTo(X, Y)
+        Paint.LineTo(X + Width, Y)
+        Paint.LineTo(X + Width / 2, Y + Width / 2)
+        Paint.LineTo(X + Width / 2, Y + TopWidth)
+        Paint.LineTo(X, Y + TopWidth)
+        Paint.ClosePath
+      
+      Case 3
+        Paint.MoveTo(X, Y)
+        Paint.LineTo(X + Width, Y)
+        Paint.LineTo(X + Width / 2, Y + Width / 2)
+        Paint.ClosePath
+      
+    End Select
+    
+    Paint.Clip
+    
+    Paint.Rectangle(X, Y, Width, Height - TopWidth)
+    Paint.Clip
+    
+    GoSub CLIP_BORDER
+  
+    iStyle = TopStyle
+    fWidth = TopWidth
+    iColor = TopColor
+    
+    GoSub DRAW_BORDER
+    
+    Paint.Restore
+    
+  Endif
+  
+  If bRight Then
+    
+    Paint.Save
+    
+    iClip = 0
+    If bTop And If TopRightRadius > RightWidth Then iClip += 1
+    If bBottom And If BottomRightRadius > RightWidth Then iClip += 2
+    
+    Select Case iClip
+      
+      Case 0
+        Paint.Rectangle(X + Width - RightWidth, Y, RightWidth, Height)
+        
+      Case 1
+        Paint.MoveTo(X + Width, Y)
+        Paint.LineTo(X + Width - Height / 2, Y + Height / 2)
+        Paint.LineTo(X + Width - RightWidth, Y + Height / 2)
+        Paint.LineTo(X + Width - RightWidth, Y + Height)
+        Paint.LineTo(X + Width, Y + Height)
+        Paint.ClosePath
+        
+      Case 2
+        Paint.MoveTo(X + Width, Y)
+        Paint.LineTo(X + Width, Y + Height)
+        Paint.LineTo(X + Width - Height / 2, Y + Height / 2)
+        Paint.LineTo(X + Width - RightWidth, Y + Height / 2)
+        Paint.LineTo(X + Width - RightWidth, Y)
+        Paint.ClosePath
+        
+      Case 3
+        Paint.MoveTo(X + Width, Y)
+        Paint.LineTo(X + Width - Height / 2, Y + Height / 2)
+        Paint.LineTo(X + Width, Y + Height)
+        Paint.ClosePath
+      
+    End Select
+    
+    ' If bTop And If TopRightRadius > RightWidth Then
+    '   Paint.MoveTo(X + Width - Height / 2, Y + Height / 2)
+    '   Paint.LineTo(X + Width, Y)
+    '   Paint.LineTo(X + Width, Y + Height / 2)
+    '   Paint.ClosePath
+    ' Else
+    '   Paint.Rectangle(X + Width - RightWidth, Y, RightWidth, Height / 2)
+    ' Endif
+    ' 
+    ' If bBottom And If BottomRightRadius > RightWidth Then
+    '   Paint.MoveTo(X + Width - Height / 2, Y + Height / 2)
+    '   Paint.LineTo(X + Width, Y + Height)
+    '   Paint.LineTo(X + Width, Y + Height / 2)
+    '   Paint.ClosePath
+    ' Else
+    '   Paint.Rectangle(X + Width - RightWidth, Y + Height / 2, RightWidth, Height / 2)
+    ' Endif
+    
+    Paint.Clip
+    
+    Paint.Rectangle(X + RightWidth, Y, Width - RightWidth, Height)
+    Paint.Clip
+    
+    GoSub CLIP_BORDER
+  
+    iStyle = RightStyle
+    fWidth = RightWidth
+    iColor = RightColor
+    
+    GoSub DRAW_BORDER
+    
+    Paint.Restore
+    
+  Endif
+  
+  If bBottom Then
+    
+    Paint.Save
+    
+    iClip = 0
+    If bLeft And If BottomLeftRadius > BottomWidth Then Inc iClip
+    If bRight And If BottomRightRadius > BottomWidth Then iClip += 2
+    
+    Select Case iClip
+      
+      Case 0
+        Paint.Rectangle(X, Y + Height - BottomWidth, Width, BottomWidth)
+      
+      Case 1
+        Paint.MoveTo(X, Y + Height)
+        Paint.LineTo(X + Width / 2, Y + Height - Width / 2)
+        Paint.LineTo(X + Width / 2, Y + Height - BottomWidth)
+        Paint.LineTo(X + Width, Y + Height - BottomWidth)
+        Paint.LineTo(X + Width, Y + Height)
+        Paint.ClosePath
+        
+      Case 2
+        Paint.MoveTo(X, Y + Height)
+        Paint.LineTo(X + Width, Y + Height)
+        Paint.LineTo(X + Width / 2, Y + Height - Width / 2)
+        Paint.LineTo(X + Width / 2, Y + Height - BottomWidth)
+        Paint.LineTo(X, Y + Height - BottomWidth)
+        Paint.ClosePath
+      
+      Case 3
+        Paint.MoveTo(X, Y + Height)
+        Paint.LineTo(X + Width / 2, Y + Height - Width / 2)
+        Paint.LineTo(X + Width, Y + Height)
+        Paint.ClosePath
+      
+    End Select
+    
+    ' If bLeft And If BottomLeftRadius > BottomWidth Then
+    '   Paint.MoveTo(X + Width / 2, Y + Height - Width / 2)
+    '   Paint.LineTo(X + Width / 2, Y + Height)
+    '   Paint.LineTo(X, Y + Height)
+    '   Paint.ClosePath
+    ' Else
+    '   Paint.Rectangle(X, Y + Height - BottomWidth, Width / 2, BottomWidth)
+    ' Endif
+    ' 
+    ' If bRight And If BottomRightRadius > BottomWidth Then
+    '   Paint.MoveTo(X + Width / 2, Y + Height - Width / 2)
+    '   Paint.LineTo(X + Width / 2, Y + Height)
+    '   Paint.LineTo(X + Width, Y + Height)
+    '   Paint.ClosePath
+    ' Else
+    '   Paint.Rectangle(X + Width / 2, Y + Height - BottomWidth, Width / 2, BottomWidth)
+    ' Endif
+    
+    Paint.Clip
+      
+    Paint.Rectangle(X, Y + BottomWidth, Width, Height - BottomWidth)
+    Paint.Clip
+      
+    GoSub CLIP_BORDER
+  
+    iStyle = BottomStyle
+    fWidth = BottomWidth
+    iColor = BottomColor
+    
+    GoSub DRAW_BORDER
+    
+    Paint.Restore
+    
+  Endif
+  
+  If bLeft Then
+    
+    Paint.Save
+    
+    iClip = 0
+    If bTop And If TopLeftRadius > LeftWidth Then Inc iClip
+    If bBottom And If BottomLeftRadius > LeftWidth Then iClip += 2
+    
+    Select Case iClip
+      
+      Case 0
+        Paint.Rectangle(X, Y, LeftWidth, Height)
+      
+      Case 1
+        Paint.MoveTo(X, Y)
+        Paint.LineTo(X + Height / 2, Y + Height / 2)
+        Paint.LineTo(X + LeftWidth, Y + Height / 2)
+        Paint.LineTo(X + LeftWidth, Y + Height)
+        Paint.LineTo(X, Y + Height)
+        Paint.ClosePath
+        
+      Case 2
+        Paint.MoveTo(X, Y)
+        Paint.LineTo(X, Y + Height)
+        Paint.LineTo(X + LeftWidth, Y + Height)
+        Paint.LineTo(X + LeftWidth, Y + Height / 2)
+        Paint.LineTo(X + Height / 2, Y + Height / 2)
+        Paint.ClosePath
+      
+      Case 3
+        Paint.MoveTo(X, Y)
+        Paint.LineTo(X + Height / 2, Y + Height / 2)
+        Paint.LineTo(X, Y + Height)
+        Paint.ClosePath
+      
+    End Select
+    
+    ' If bTop And If TopLeftRadius > LeftWidth Then
+    '   Paint.MoveTo(X + Height / 2, Y + Height / 2)
+    '   Paint.LineTo(X, Y)
+    '   Paint.LineTo(X, Y + Height / 2)
+    '   Paint.ClosePath
+    ' Else
+    '   Paint.Rectangle(X, Y, LeftWidth, Height / 2)
+    ' Endif
+    ' 
+    ' If bBottom And If BottomLeftRadius > LeftWidth Then
+    '   Paint.MoveTo(X + Height / 2, Y + Height / 2)
+    '   Paint.LineTo(X, Y + Height)
+    '   Paint.LineTo(X, Y + Height / 2)
+    '   Paint.ClosePath
+    ' Else
+    '   Paint.Rectangle(X, Y + Height / 2, LeftWidth, Height / 2)
+    ' Endif
+    
+    Paint.Clip
+    
+    Paint.Rectangle(X, Y, Width - LeftWidth, Height)
+    Paint.Clip
+    
+    GoSub CLIP_BORDER
+  
+    iStyle = LeftStyle
+    fWidth = LeftWidth
+    iColor = LeftColor
+    
+    GoSub DRAW_BORDER
+    
+    Paint.Restore
+    
+  Endif
+  
+  If bSlash Or If bBackslash Then
+    
+    Paint.Save
+    
+    PaintRoundRectangle(X, Y, Width, Height, TopLeftRadius, TopRightRadius, BottomLeftRadius, BottomRightRadius, True)
+    
+    If bSlash Then
+      
+      X1 = X
+      Y1 = Y + Height
+      X2 = X + Width
+      Y2 = Y
+      
+      iStyle = SlashStyle
+      fWidth = SlashWidth
+      iColor = SlashColor
+      
+      GoSub DRAW_LINE
+      
+    Endif
+    
+    If bBackslash Then
+      
+      X1 = X
+      Y1 = Y
+      X2 = X + Width
+      Y2 = Y + Height
+
+      iStyle = BackslashStyle
+      fWidth = BackslashWidth
+      iColor = BackslashColor
+      
+      GoSub DRAW_LINE
+      
+    Endif
+    
+    Paint.Restore
+    
+  Endif
+  
+  Paint.Restore
+  Return
+
+CLIP_BORDER:
+
+  PaintRoundRectangle(X, Y, Width, Height, TopLeftRadius, TopRightRadius, BottomLeftRadius, BottomRightRadius, True)
+  Return
+  
+INIT_STYLE:
+  
+  Paint.Background = iColor
+  
+  Select Case iStyle And 15
+    Case Dotted
+      Paint.Dash = [0, 2]
+    Case Dashed
+      Paint.Dash = [3, 2]
+    Case Else
+      Paint.Dash = Null
+  End Select
+  
+  If iStyle And Double Then
+  
+    F = fWidth / 3
+    F2 = F / 2
+  
+  Else
+  
+    F = fWidth
+    F2 = F / 2
+    
+  Endif
+  
+  Paint.LineWidth = F
+
+  Return
+  
+DRAW_BORDER:
+
+  GoSub INIT_STYLE
+
+  If iStyle And Double Then
+  
+    PaintRoundRectangle(X + F2, Y + F2, Width - F, Height - F, TopLeftRadius - F2, TopRightRadius - F2, BottomLeftRadius - F2, BottomRightRadius - F2)
+    Paint.Stroke
+
+    PaintRoundRectangle(X + F * 2 + F2, Y + F * 2 + F2, Width - F * 5, Height - F * 5, TopLeftRadius - F2 - F * 2, TopRightRadius - F2 - F * 2, BottomLeftRadius - F2 - F * 2, BottomRightRadius - F2 - F * 2)
+    Paint.Stroke
+  
+  Else
+  
+    PaintRoundRectangle(X + F2, Y + F2, Width - F, Height - F, TopLeftRadius - F2, TopRightRadius - F2, BottomLeftRadius - F2, BottomRightRadius - F2)
+    Paint.Stroke
+    
+  Endif
+  
+  Return
+  
+DRAW_LINE:
+
+  GoSub INIT_STYLE
+
+  If iStyle And Double Then
+    
+    Paint.MoveTo(X1 - F - F2, Y1)
+    Paint.LineTo(X2 - F - F2, Y2)
+    Paint.Stroke
+    
+    Paint.MoveTo(X1, Y1 - F - F2)
+    Paint.LineTo(X2, Y2 - F - F2)
+    Paint.Stroke
+    
+  Else
+    
+    Paint.MoveTo(X1, Y1)
+    Paint.LineTo(X2, Y2)
+    Paint.Stroke
+    
+  Endif
+  
+  Return
+  
+End
+
+Private Sub ConvertToRect(hRect As RectF) As Rect
+
+  Dim X, Y, W, H As Integer
+  
+  X = CInt(Ceil(hRect.X))
+  Y = CInt(Ceil(hRect.Y))
+  W = CInt(Floor(hRect.Right)) - X
+  H = CInt(Floor(hRect.Bottom)) - Y
+  
+  If W <= 0 Or If H <= 0 Then Return
+  
+  Return Rect(X, Y, W, H)
+  
+End
+
+
+Public Sub GetRect((Rect) As RectF, Optional WithPadding As Boolean, Optional TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border) As Rect
+  
+  Rect = GetRectF({Rect}, WithPadding, TopBorder, BottomBorder, LeftBorder, RightBorder)
+  If Rect.IsVoid() Then Return
+  
+  Return ConvertToRect(Rect)
+  
+End
+
+
+Public Sub Clip((Rect) As RectF, Optional TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border) As Rect
+  
+  Rect = GetRectF(Rect, False, TopBorder, BottomBorder, LeftBorder, RightBorder)
+  If Rect.IsVoid() Then Return Null
+  
+  PaintRoundRectangle(Rect.X, Rect.Y, Rect.Width, Rect.Height, TopLeftRadius, TopRightRadius, BottomLeftRadius, BottomRightRadius, True)
+  
+  Return ConvertToRect(Rect)
+  
+End
+
+
+Private Sub PaintRoundRectangle(X As Single, Y As Single, W As Single, H As Single, TL As Single, TR As Single, BL As Single, BR As Single, Optional bClip As Boolean)
+
+  'Paint.Debug = True
+
+  If W <= 0 Or If H <= 0 Then 
+    If bClip Then
+      Paint.Rectangle(X, Y, 0, 0)
+      Paint.Clip
+    Endif
+    'Paint.Debug = False
+    Return
+  Endif
+
+  TL = Max(0, Min(TL, Min(W, H) / 2))
+  TR = Max(0, Min(TR, Min(W, H) / 2))
+  BL = Max(0, Min(BL, Min(W, H) / 2))
+  BR = Max(0, Min(BR, Min(W, H) / 2))
+
+  If TL <= 0 And If TR <= 0 And If BL <= 0 And If BR <= 0 Then
+    If bClip Then
+      Paint.Rectangle(X, Y, W, H)
+    Else
+      Paint.MoveTo(X, Y)
+      Paint.LineTo(X + W, Y)
+      Paint.MoveTo(X, Y)
+      Paint.LineTo(X, Y + H)
+      Paint.MoveTo(X + W, Y)
+      Paint.LineTo(X + W, Y + H)
+      Paint.MoveTo(X, Y + H)
+      Paint.LineTo(X + W, Y + H)
+    Endif
+  Else
+    '     PAINT->MoveTo(THIS, x + r, y);
+    '     PAINT->LineTo(THIS, x + w - r, y);
+    '     PAINT->CurveTo(THIS, x + w - r2, y, x + w, y + r2, x + w, y + r);
+    '     PAINT->LineTo(THIS, x + w, y + h - r);
+    '     PAINT->CurveTo(THIS, x + w, y + h - r2, x + w - r2, y + h, x + w - r, y + h);
+    '     PAINT->LineTo(THIS, x + r, y + h);
+    '     PAINT->CurveTo(THIS, x + r2, y + h, x, y + h - r2, x, y + h - r);
+    '     PAINT->LineTo(THIS, x, y + r);
+    '     PAINT->CurveTo(THIS, x, y + r2, x + r2, y, x + r, y);
+    ' 
+    
+    Paint.MoveTo(X + TL, Y)
+    Paint.LineTo(X + W - TR, Y)
+    If TR > 0 Then Paint.CurveTo(X + W - TR * CURVE_MUL, Y, X + W, Y + TR * CURVE_MUL, X + W, Y + TR)
+    Paint.LineTo(X + W, Y + H - BR)
+    If BR > 0 Then Paint.CurveTo(X + W, Y + H - BR * CURVE_MUL, X + W - BR * CURVE_MUL, Y + H, X + W - BR, Y + H)
+    Paint.LineTo(X + BL, Y + H)
+    If BL > 0 Then Paint.CurveTo(X + BL * CURVE_MUL, Y + H, X, Y + H - BL * CURVE_MUL, X, Y + H - BL)
+    Paint.LineTo(X, Y + TL)
+    If TL > 0 Then Paint.CurveTo(X, Y + TL * CURVE_MUL, X + TL * CURVE_MUL, Y, X + TL, Y)
+    Paint.LineTo(X + TL, Y)
+  Endif
+  
+  If bClip Then Paint.Clip
+
+  'Paint.Debug = False
+  
+End
+
+Private Function Padding_Read() As Single
+
+  Return LeftPadding
+
+End
+
+Private Sub Padding_Write(Value As Single)
+
+  LeftPadding = Value
+  RightPadding = Value
+  TopPadding = Value
+  BottomPadding = Value
+
+End
+
+Private Sub SetProperty(sProp As String, sValue As String)
+  
+  Dim vValue As Variant
+  Dim aValue As String[]
+
+  aValue = Split(sValue, " ")
+  If aValue.Count >= 2 Then
+    If Not $aProp.Exist(sProp) Then Return 
+    If aValue.Count < 3 Then aValue.Add(aValue[0])
+    If aValue.Count < 4 Then aValue.Add(aValue[1])
+    SetProperty("top" & sProp, aValue[0])
+    SetProperty("right" & sProp, aValue[1])
+    SetProperty("bottom" & sProp, aValue[2])
+    SetProperty("left" & sProp, aValue[3])
+    Return
+  Endif
+
+  If sProp Ends "style" Then
+    Try vValue = Classes["Border"][Replace(sValue, "-", "")].Value
+  Else If sProp Ends "color" Then
+    Try vValue = Object.GetProperty(Classes["Color"], Replace(sValue, "-", ""))
+    If Left(sValue) = "#" Then
+      Try vValue = Val("&H" & Mid$(sValue, 2) & "&")
+    Endif
+  Else
+    Try vValue = CSingle(sValue)
+  Endif
+  If Error Then Return
+  
+  Try Object.SetProperty(Me, sProp, vValue)
+  
+End
+
+Private Sub NormalyzeOneStyle(ByRef iStyle As Byte, ByRef fWidth As Single)
+  
+  If iStyle Then
+    If fWidth = 0 Then fWidth = 1
+  Else
+    fWidth = 0
+  Endif
+  
+End
+
+
+Private Sub NormalizeStyle()
+
+  NormalyzeOneStyle(ByRef LeftStyle, ByRef LeftWidth)
+  NormalyzeOneStyle(ByRef RightStyle, ByRef RightWidth)
+  NormalyzeOneStyle(ByRef TopStyle, ByRef TopWidth)
+  NormalyzeOneStyle(ByRef BottomStyle, ByRef BottomWidth)
+  NormalyzeOneStyle(ByRef SlashStyle, ByRef SlashWidth)
+  NormalyzeOneStyle(ByRef BackslashStyle, ByRef BackslashWidth)
+
+End
+
+Static Public Sub _call(Optional (Style) As String) As Border
+  
+  Return New Border(Style)
+  
+End
+
+
+Public Sub _new(Optional (Style) As String)
+  
+  Dim aStyle As String[]
+  Dim sStyle As String
+  Dim iPos As Integer
+  Dim sProp As String
+  Dim sValue As String
+  
+  If Style Then
+    
+    aStyle = Split(Style, ";", "", True)
+    
+    For Each sStyle In aStyle
+      
+      iPos = InStr(sStyle, ":")
+      If iPos = 0 Then Continue
+      sProp = Replace(LCase(Trim(Left(sStyle, iPos - 1))), "-", "")
+      sValue = Trim(Mid$(sStyle, iPos + 1))
+      If Not sProp Then Continue
+      If Not sValue Then Continue
+      
+      SetProperty(sProp, sValue)
+      
+    Next
+    
+    NormalizeStyle
+    
+  Endif
+  
+End
+
+Private Function Margin_Read() As Single
+
+  Return LeftMargin
+
+End
+
+Private Sub Margin_Write(Value As Single)
+
+  LeftMargin = Value
+  RightMargin = Value
+  TopMargin = Value
+  BottomMargin = Value
+
+End
+
+Public Sub Copy() As Border
+  
+  Dim hBorder As New Border
+  
+  With hBorder
+    .BottomColor = BottomColor
+    .BottomLeftRadius = BottomLeftRadius
+    .BottomMargin = BottomMargin
+    .BottomPadding = BottomPadding
+    .BottomRightRadius = BottomRightRadius
+    .BottomStyle = BottomStyle
+    .BottomWidth = BottomWidth
+    .LeftColor = LeftColor
+    .LeftMargin = LeftMargin
+    .LeftPadding = LeftPadding
+    .LeftStyle = LeftStyle
+    .LeftWidth = LeftWidth
+    .RightColor = RightColor
+    .RightMargin = RightMargin
+    .RightPadding = RightPadding
+    .RightStyle = RightStyle
+    .RightWidth = RightWidth
+    .TopColor = TopColor
+    .TopLeftRadius = TopLeftRadius
+    .TopMargin = TopMargin
+    .TopPadding = TopPadding
+    .TopRightRadius = TopRightRadius
+    .TopStyle = TopStyle
+    .TopWidth = TopWidth
+    .SlashColor = SlashColor
+    .SlashStyle = SlashStyle
+    .SlashWidth = SlashWidth
+    .BackslashColor = BackslashColor
+    .BackslashStyle = BackslashStyle
+    .BackslashWidth = BackslashWidth
+  End With
+  
+  Return hBorder
+  
+End
+
+Public Sub IsVoid() As Boolean
+  
+  If TopStyle And If TopWidth Then Return
+  If BottomStyle And If BottomWidth Then Return
+  If LeftStyle And If LeftWidth Then Return
+  If RightStyle And If RightWidth Then Return
+  
+  Return True
+  
+End

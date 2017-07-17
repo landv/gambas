@@ -1,0 +1,16 @@
+' Gambas module file
+
+Public Sub Main()
+
+  Dim hFile As File
+  Dim I As Integer
+
+  hFile = Open "~/test.txt" For Create
+  
+  For I = 1 To 40000
+    Print #hFile, String$(80, CStr(I) & " ")
+  Next
+  
+  hFile.Close
+
+End

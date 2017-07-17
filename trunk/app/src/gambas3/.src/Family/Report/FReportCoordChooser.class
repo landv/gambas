@@ -1,0 +1,95 @@
+' Gambas class file
+
+Static Public Coord As String
+
+Public Sub Run(sCoord As String) As Boolean
+
+  Coord = sCoord
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  Dim fVal As Float
+  
+  Try fVal = Val(Trim(txtCoord.Text))
+
+  If fVal > 0 Then
+    Try Coord = CStr(fVal) & cmbUnit.Text
+    If Error Then
+      Balloon.Error(("Incorrect value."), txtCoord)
+      Return
+    Endif
+  Else
+    Coord = ""
+  Endif
+  
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub Form_Open()
+
+  Dim iPos As Integer
+  
+  For iPos = 1 To Len(Coord)
+    If InStr("0123456789.", Mid$(Coord, iPos, 1)) = 0 Then Break
+  Next
+
+  txtCoord.Text = ""
+  cmbUnit.Index = 0
+  
+  Try txtCoord.Text = Str(CFloat(Left(Coord, iPos - 1)))
+  Try cmbUnit.Text = Trim(Mid$(Coord, iPos))
+  
+  'txtCoord.SelectAll
+  txtCoord.SetFocus
+
+End
+
+Public Sub cmbUnit_Click()
+
+  txtCoord.SetFocus
+
+End
+
+Public Sub txtCoord_MouseWheel()
+
+  Dim fVal As Float
+  Dim fInc As Float
+
+  Debug Mouse.Shift;; Mouse.Control
+
+  If Mouse.Shift Then 
+    fInc = 0.1
+  Else
+    fInc = 1
+  Endif
+  
+  Try fVal = Val(txtCoord.Text)
+  If Mouse.Delta > 0 Then
+    fVal += fInc
+  Else
+    fVal -= fInc
+  Endif
+  
+  If fVal > 0 Then txtCoord.Text = Str(fVal)
+  
+  Stop Event
+  
+End
+
+Public Sub btnClear_Click()
+
+  txtCoord.Clear
+
+End

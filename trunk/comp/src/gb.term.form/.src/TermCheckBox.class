@@ -1,0 +1,114 @@
+' Gambas class file
+
+Export
+Inherits TermControl
+Class Rect
+Property Text As String
+Property Value As Integer
+Property Tristate As Boolean
+
+Private $sText As String
+Private $iOldLen As Integer
+Private $iValue As Integer
+Private $bTristate As Boolean
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+
+End
+
+Public Sub _Render()
+
+  Dim hAttr As New Attr
+  Dim iAttr As Integer
+  Dim i As Integer
+  Dim sALign As String
+  Dim hRectC As Rect = Me._GetClientRect()
+  Dim sValue As String
+  Dim iBC As Integer
+
+  If Not Me._NeedRender Then Return
+  Super._Render
+
+  sValue = Choose($iValue + 2, "x", " ", "/")
+
+  sALign = "[" & sValue & "] " & $sText
+
+  iBC = Me._GetBackGround()
+  If Me.HaveFocus Then iBC = TermColor.Focus
+  hAttr.Background = iBC
+  hAttr.Foreground = Me.Foreground
+  iAttr = hAttr.GetInteger()
+
+  For i = 1 To Me._Content[0].count
+    If Me._Content[0][Me._Content[0].Max] And If i > Max($iOldLen, String.Len(sALign)) Then Break
+    If i <= String.Len(sALign) Then
+      Me._Content[0][i - 1] = Char(Mid(sALign, i, 1), iAttr)
+    Else
+      Me._Content[0][i - 1] = Char(" ", iAttr)
+    Endif
+  Next
+
+  Me._NeedRender = False
+
+End
+
+Private Function Value_Read() As Integer
+
+  Return $iValue
+
+End
+
+Private Sub Value_Write(Value As Integer)
+
+  $iValue = Max(Min(Value, 1), -1)
+
+End
+
+Private Function Tristate_Read() As Boolean
+
+  Return $bTristate
+
+End
+
+Private Sub Tristate_Write(Value As Boolean)
+
+  $bTristate = Value
+
+End
+
+Public Sub _MouseUp()
+
+  ChangeValue
+  Super._MouseUp
+  Super._Click
+  'Me._NeedRender = True
+  'Me.Refresh
+End
+
+Private Sub ChangeValue()
+
+  If Me.Value < IIf($bTristate, 1, 0) Then
+    Me.Value = $iValue + 1
+  Else
+    Me.Value = -1
+  Endif
+  Me.Refresh
+End
+
+
+Public Sub _KeyPress()
+  
+  If Key.Text = " " Then
+    ChangeValue
+  Endif
+  Super._Click
+  Super._KeyPress
+End

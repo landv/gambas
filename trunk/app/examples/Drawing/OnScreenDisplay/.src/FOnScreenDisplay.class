@@ -1,0 +1,67 @@
+' Gambas class file
+
+Private $sLast As String
+Private $MX As Integer
+Private $MY As Integer
+
+Public Sub Form_Open()
+
+  Me.Font = Font["64"]
+  Me.Resize(Me.Font.TextWidth("00:00:00") + 64, Me.Font.Height + 16)
+  Redraw
+End
+
+Public Sub Timer1_Timer()
+
+  Redraw
+
+End
+
+Private Sub Redraw()
+
+  Dim hImage As Image
+  Dim sText As String
+  Dim iInd As Integer
+
+  sText = Str(Time)
+  If sText = $sLast Then Return
+
+  hImage = New Image(Me.Width, Me.Height, Color.Transparent)
+
+  Paint.Begin(hImage)
+  Paint.Font = Font["64"]
+  Paint.LineWidth = 4
+
+  For iInd = 8 To 0 Step -1
+    Paint.Brush = Paint.Color(Color.RGB(&h43 - iInd * &h43 / 8, &hC7 - iInd * &hC7 / 8, &hFF - iInd * &HFF / 8))
+    Paint.DrawText(sText, iInd, iInd - 8, hImage.W, hImage.H, Align.Center)
+    Paint.Rectangle(iInd + 4, iInd + 4, hImage.Width - 14, hImage.Height - 14)
+    Paint.Stroke
+  Next
+
+  Paint.End
+
+  Me.Picture = hImage.Picture
+'   Me.Mask = True
+  $sLast = sText
+
+End
+
+Public Sub Form_KeyPress()
+
+  If Key.Code = Key["Esc"] Then Me.Close
+
+End
+
+Public Sub Form_MouseDown()
+
+  $MX = Mouse.ScreenX - Me.X
+  $MY = Mouse.ScreenY - Me.Y
+
+End
+
+Public Sub Form_MouseMove()
+
+  Me.Move(Mouse.ScreenX - $MX, Mouse.ScreenY - $MY)
+  
+End

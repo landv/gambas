@@ -1,0 +1,131 @@
+' Gambas class file
+
+Static Public Init As Boolean
+
+Private $hConn As Connection
+Private $rData As Result
+
+Public Sub _new(hConn As Connection, rData As Result)
+
+  $hConn = hConn
+  $rData = rData
+
+  RefreshTitle
+
+  ReadData
+
+  Me.Move(Int(Rnd(Desktop.W - Me.W)), Int(Rnd(Desktop.H - Me.H)))
+
+End
+
+
+Private Sub RefreshTitle()
+
+  Dim sTitle As String
+
+  sTitle = ("SQL request") & " - " & $hConn.Name
+
+  Me.Title = sTitle
+
+End
+
+
+Private Sub ReadData()
+
+  Dim hField As ResultField
+  Dim iInd As Integer
+
+  Inc Application.Busy
+
+  tbvData.Rows.Count = 0
+
+  tbvData.Columns.Count = $rData.Fields.Count
+
+  For Each hField In $rData.Fields
+
+    With hField
+
+      'PRINT .Name; ": "; .Type; " "; .Length
+
+      tbvData.Columns[iInd].Text = .Name
+      tbvData.Columns[iInd].Width = WidthFromType(tbvData, .Type, .Length, .Name)
+
+    End With
+
+    Inc iInd
+  Next
+
+  tbvData.Rows.Count = $rData.Count
+
+Finally
+
+  Dec Application.Busy
+
+Catch
+
+  Message.Error("Cannot exec request." & "\n\n" & DConv(Error.Text))
+
+End
+
+
+Public Sub tbvData_Data(Row As Integer, Column As Integer)
+
+  $rData.MoveTo(Row)
+
+  tbvData.Data.Text = Str($rData[tbvData.Columns[Column].Text])
+  tbvData.Data.Background = Color.RGB((Row Mod 31) * 8, (Row Mod 17) * 15, (Row Mod 13) * 21)
+  tbvData.Data.Foreground = Color.White
+
+End
+
+
+Private Function WidthFromType(hCtrl As Control, iType As Integer, iLength As Integer, sTitle As String) As Integer
+
+  Dim iWidth As Integer
+
+  Select Case iType
+
+    Case gb.Boolean
+      iWidth = hCtrl.Font.TextWidth(Str(False)) + 32
+
+    Case gb.Integer
+      iWidth = hCtrl.Font.TextWidth("1234567890") + 16
+
+    Case gb.Long
+      iWidth = hCtrl.Font.TextWidth("12345678901234567890") + 16
+
+    Case gb.Float
+      iWidth = hCtrl.Font.TextWidth(CStr(Pi) & "E+999") + 16
+
+    Case gb.Date
+      iWidth = hCtrl.Font.TextWidth(Str(Now)) + 16
+
+    Case gb.String
+      If iLength = 0 Then iLength = 255
+      iLength = Min(32, iLength)
+      iWidth = hCtrl.Font.TextWidth("X") * iLength + 16
+
+  End Select
+
+  iWidth = Max(iWidth, hCtrl.Font.TextWidth(sTitle) + 8)
+
+  Return iWidth
+
+End
+
+' Private Function rowcount() As Integer
+' 
+'   Dim rows As Integer
+' 
+'   rows = 0
+'   Do
+'     $rData.MoveTo(rows)
+'    Inc rows
+'   Loop
+' 
+' Catch
+' 
+'   Return rows
+' 
+' End
+

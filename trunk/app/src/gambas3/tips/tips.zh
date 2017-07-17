@@ -1,0 +1,341 @@
+[WELCOME]
+
+<p>    欢迎使用<b>Gambas</b>！</p>
+
+<p><b>    Gambas</b>是一个基于高级<b>Basic</b>语言解释器的图形界面的开发环境。</p>
+
+<p><b>    Gambas</b>的目标是使你能轻易而快速地开发出功能强大的程序。但是高效而简洁的程序还得靠你<b>自己</b>的努力...</p>
+
+<p>    希望你能喜欢！</p>
+
+<p align=right>Beno&icirc;t Minisini<br>
+English:<u>gambas@users.sourceforge.net</u><br>
+中文：<u>yizhou.he@gmail.com</u></p>
+
+[STARTUP]
+
+<p>    每一个工程都需要有一个<b>启动类</b>，这个启动类必须定义一个名为<b>Main</b>的无参数的静态公用方法，它将成为你的程序的启动方法。</p>
+
+<p>定义启动类的方法是，用鼠标右键点击工程目录树中要设为启动类的类，并在弹出的右键菜单中选中<b>启动类</b>。</p>
+
+<p>你不需要在启动窗体中定义一个<b>Main</b>方法，因为<b>Gambas</b>己经预定义好了。</p>
+
+<p>这个预定义的启动方法创建并显示窗体就像<b>Visual Basic&trade;</b>一样。</p>
+
+
+[OPEN]
+
+<p>    <b>Gambas</b>的<b>OPEN</b>函数和<b>Visual Basic</b>的不太一样，它并不返回一个整型变量，而是返回一个<b>文件</b>对象。</p>
+
+<p>所以，不要使用：</p>
+
+<pre>DIM handle AS Integer
+...
+OPEN "myfile" FOR READ AS #handle</pre>
+
+<p>而应该使用：</p>
+
+<pre>DIM handle AS File
+...
+handle = OPEN "myfile" FOR READ</pre>
+
+
+[CATDIR]
+
+<p>    你知道吗？你可以使用<b><tt>&/</tt></b>操作符连结文件路径中的目录和文件，此操作符处理路径尾的斜杠以免重复。</p>
+
+<p>例如：</p>
+
+<pre>PRINT "/home/gambas" &/ ".bashrc"
+/home/gambas/.bashrc
+
+PRINT "/home/gambas/" &/ "/tmp" &/ "foo.bar"
+/home/gambas/tmp/foo.bar
+</pre>
+
+<p>怎么样？好用吧！</p>
+
+
+[EXEC]
+
+<p>    可以将你的整个工程生成一个可执行文件，在<b>工程</b>菜单中选择<b>生成可执行文件</b>。</p>
+
+<p>当<b>Gambas</b>生成可执行文件时，默认将产生的可执行文件放到你的工程目录下，可执行文件名和你的工程名相同。</p>
+
+
+[PATH]
+<p>
+    相对路径在<b>Gambas</b>中有特殊含义，它们总是指向你工程内的文件。
+<p>
+这里没有<b>当前目录</b>的概念，没有<b>CHDIR</b>之类的关键字来改变它。
+<p>
+<b>注意：</b>只能使用相对路径访问你的工程文件，因为绝对路径在你生成可执行文件后就不再可靠了。
+
+
+[GLOBAL]
+
+    <b>Gambas</b>里不再有<b>全局变量</b>了！
+<p>
+相应的，在你的主模块中声明它们为<b>PUBLIC</b>(公用类型)。
+<p>
+如果你的工程中没有主模块，只有主窗体，那么声明它们为<b>STATIC PUBLIC</b>(静态公用类型)。
+<p>
+要访问这些变量，你必须使用主模块名或主窗体名：<tt>MyMainModule.MyGlobalVariable</tt>或
+<tt>MyMainForm.MyGlobalVariable</tt>。
+
+
+[EMPTY]
+
+<p>    要知道一个字符串是否为空，没必要使用<b>Len()</b>函数，你可以直接测试它，因为空字符串为<b>FALSE</b>非空字符串为<b>TRUE</b>。</p>
+
+<p>例如，你不用写：</p>
+
+<pre>IF Len(MyString) > 0 THEN ...
+IF Len(MyString) = 0 THEN ...</pre>
+
+<p>你只需写：</p>
+
+<pre>IF MyString THEN ...
+IF NOT MyString THEN ...</pre>
+
+[TRANSLATE]
+
+<p>    <b>Gambas</b>应用程序是可完全翻译的，条件是你应声明哪些字符串是必须要翻译的，哪些不必翻译。 </p>
+<p>用括号括起来就表明该字符串是可以被翻译的。<p>
+
+<pre>PRINT ("我可以被翻译！")
+PRINT "我不能被翻译！"</pre>
+
+[EVENT]
+
+<p>    每个控件和每个对象都可以产生事件，都有一个<b>event observer</b>(事件观察器)和一个事件 <b>group name</b>(组名)。</p>
+
+<p>事件观察器捕捉对象产生的每一个事件，事件组名将是你用来处理事件的类名的前缀。</p>
+
+<p>默认的事件观察器是你创建的控件的容器对象，事件组名是控件名。</p>
+
+<p>这梓，一个窗体接收你在它上面创建的所有控件发生的事件。</p>
+
+<pre>' Gambas form
+DIM hButton AS Button
+
+PUBLIC SUB _new()
+&nbsp;&nbsp;hButton = NEW Button(ME) AS "MyButton"
+END
+
+PUBLIC SUB MyButton_Click()
+&nbsp;&nbsp;PRINT "You have clicked MyButton !"
+END
+</pre>
+
+
+[FORM]
+
+<p>    在<b>Gambas</b>中，一个窗体是它自己的事件观察器，所以你可以直接在它自己的类代码中管理它的事件(像<b>Resize</b>， 
+<b>Activate</b>， ...)。 </p>
+
+<p>这样，从<b>Visual Basic</b>转来的新手们就不会迷失方向:-)。</p>
+
+
+[EMBED]
+
+<p>    在<b>Gambas</b>中，你可以在窗体中嵌入窗体！</p>
+
+<p>    要实现如此强大的功能,只要在初始化窗体对象时将父容器做为最后一个参数传给窗体构建函数。</p>
+
+<p>例如：</p>
+<p><tt>DIM hForm AS MyDialog<br>
+DIM hSuperControl AS MyForm<br><br>
+' 创建一个对话框<br>
+hForm = NEW MyDialog<br>
+' 在此对话框中插入一个窗体<br>
+' 注意此窗体需要三个参数,最后一个参数是容器对象<br>
+hSuperControl = NEW MyForm(Param1, Param2, MyDialog)<br>
+' 移动并改变窗体的大小<br>
+hSuperControl.Move(8, 8, 128, 64)<br>
+</tt></p>
+
+<p>小心：嵌入后的窗体还是个窗体，它还是它自己的事件观察器。</p>
+
+
+[GROUP]
+
+<p>    每个控件都有一个<b>Group</b>(组)属性，当此属性被设置，事件处理名称的前缀就将是组名而不是控件名。</p>
+
+<p>    假定你有一个<b>Button</b>(按钮)名叫<b>btnAction</b>
+有一个<b>Click</b>事件处理：</p>
+
+<pre>PUBLIC SUB btnAction_Click()</pre>
+
+<p>    如果你将<b>btnAction</b>的<b>(Group)</b>属性设为<b>MyGroup</b>，那么事件处理从按钮收到的事件将是：</p>
+
+<pre>PUBLIC SUB MyGroup_Click()</pre>
+
+<p>    此属性让你在一个函数中处理不同的控件的事件，同组中的控件不需要有相同的类型！</p>
+
+<p><b>注释：</b> <b>Visual Basic</b>老手可以认为是<b>控件数组</b>，但有更为强大的用法。:-)</p>
+
+
+[TAG]
+
+<p>    每一个控件都有<b>Tag</b>属性，此属性是为编程者设计的，可以是任何你想要的<b>VARIANT</b>(变体类型)数据。</p>
+
+<p>这在使用同组的公用事件处理中区别控件时非常有用。</p>
+
+
+
+[LAST]
+
+<p>    <b>LAST</b>关键字返回发生事件的最近控件，当你要写一个独立于控件名的事件处理类就非常有用。</p>
+
+<p>例如，假设你要写一个计算器程序。
+你定义了十个按钮，每个数字一个，它们都在一个名叫"Digit"的<b>组</b>，每个控件的<b>Tag</b>属性都被设为相应的数字。
+你的处理程序将会是：</p>
+
+<p><tt>PUBLIC SUB Digit_Click()<br><br>
+&nbsp;&nbsp;Display = Display & LAST.Tag<br>
+&nbsp;&nbsp;RefreshDisplay<br><br>
+END</tt></p>
+
+
+[LEFT]
+
+<p>    大名鼎鼎的<b>BASIC</b>函数<b>Left$</b>、<b>Right$</b>
+和<b>Mid$</b>在<b>Gambas</b>中有了新功能。</p>
+
+<p><b>Left$</b>和<b>Right$</b>的第二个参数是可选的，默认值为1。</p>
+
+<p><tt>Left$("Gambas")</tt> 返回<tt>"G"</tt><br>
+<tt>Right$("Gambas")</tt> 返回<tt>"s"</tt></p>
+
+<p>第二个参数可以是负数，它将指定反方向上将被切掉的字符个数。</p>
+
+<p><tt>Left$("Gambas", -2)</tt> 返回<tt>"Gamb"</tt><br>
+<tt>Right$("Gambas", -2)</tt> 返回<tt>"mbas"</tt></p>
+
+<p>相同的，<b>Mid$</b>的第三个参数也可以是负数，指定字符串末端将被切掉的字符的个数。</p>
+
+<p><tt>Mid$("Gambas", 2, -2)</tt> 返回<tt>"amb"</tt>
+
+[OBSERVER]
+
+<p>    <b>Observer</b>类允许你将对象发生的所有事件在被发送之前截获。 </p>
+
+<pre>MyTextBox = NEW TextBox(ME) AS "MyTextBox"
+MyObserver = NEW Observer(MyTextBox) AS "MyObserver"
+...
+PUBLIC SUB MyObserver_KeyPress()
+  DEBUG "Got it first"
+END
+
+PUBLIC SUB MyTextBox_KeyPress()
+  DEBUG "Got it next"
+END</pre>
+
+    <b>Observer</b>能取消事件防止对象有效的发出它。
+
+
+[STRING]
+
+<p>    <b>Gambas</b>使用<b>UTF-8</b>字符编码在内存中描述字符串。</p>
+
+<p>但是所有的标准<b>Gambas</b>字符串函数处理<b>ASCII</b>码: 
+<b>Left</b>、<b>Mid</b>、<b>Right</b>、<b>UCase</b>...
+
+<p>如果想处理UTF-8编码的字符串，必须使用<b>String</b>静态类的方法，它们有和标准字符串处理函数相同的名字。 
+
+<pre>PRINT Len("bébé");; Left$("bébé", 3)
+6 bé
+PRINT String.Len("bébé");; String.Left("bébé", 3)
+4 béb</pre>
+
+
+[ASSIGNMENT]
+
+<p>    <b>Gambas</b>实现了<b>C/C++</b>程序员常用的快捷赋值。 
+
+<p><tt>MyVariable += 2</tt> 等价于 <tt>MyVariable = MyVariable + 2</tt>
+
+<p><tt>MyVariable &= "Great"</tt> 等价于 <tt>MyVariable = MyVariable & "Great"</tt>
+
+<p>诸如此类...
+
+
+[DEBUG]
+
+<p>    可以使用<b>DEBUG</b>语句打印调试信息到控制台(也就是标准错误输出)，用法和<b>PRINT</b>语句完全一样。
+
+<p>调试信息前缀有类名，方法名和<b>DEBUG</b>语句所在行号。 
+
+<p>调试信息在生成不包含调试信息的可执行文件时被自动删除。
+
+
+[TRY]
+
+<p>    Gambas使用下面的语句实现错误管理： 
+<b>TRY</b>，<b>ERROR</b>，<b>CATCH</b>和<b>FINALLY</b>。
+
+<p><b>TRY</b>尝试执行一个语句而不引发错误，随后使用<b>ERROR</b>语句检测语句执行中是否发生错误。
+
+<pre>TRY MyFile = OPEN "/etc/password" FOR WRITE
+IF ERROR THEN PRINT "I cannot do what I want!"</pre>
+
+
+[CATCH]
+
+<p>    Gambas使用下面的语句实现错误管理： 
+<b>TRY</b>，<b>ERROR</b>，<b>CATCH</b>和<b>FINALLY</b>。
+
+<p><b>CATCH</b>标明函数或者过程中错误管理部分(错误陷阱)的代码起始。
+
+<p>当错误发生于函数执行的起始到终止之间，执行错误陷阱部分。
+
+<p>如果错误发生于执行错误陷阱代码期间，会正常传送。错误陷阱不保护自己！
+
+<pre>SUB ProcessFile(FileName AS STRING)
+  ...
+  OPEN FileName FOR READ AS #hFile
+  ...
+  CLOSE #hFile
+CATCH ' 仅仅发生错误时执行
+  PRINT "Cannot process file "; FileName
+END</pre>
+
+
+[FINALLY]
+
+<p>    Gambas使用下面的语句实现错误管理： 
+<b>TRY</b>，<b>ERROR</b>，<b>CATCH</b>和<b>FINALLY</b>。
+
+<p>在函数的尾部，<b>FINALLY</b>语句引领的代码被执行，即使在其执行期间有错误发生。
+
+<b>FINALLY</b>部分是非托管的。如果函数中有错误陷阱，<b>FINALLY</b>部分必须位于陷阱之前。
+
+ 
+<p><b>FINALLY</b>部分是非托管的。如果函数中有错误陷阱，<b>FINALLY</b>部分必须位于陷阱之前。
+ 
+<p>如果错误发生于<b>FINALLY</b>部分执行期间，错误会正常传送。
+
+<pre>SUB ProcessFile(FileName AS STRING)
+  ...
+  OPEN FileName FOR READ AS #hFile
+  ...
+FINALLY '总是执行，即使有错误发生
+  CLOSE #hFile
+CATCH ' 仅当错误发生时执行
+  PRINT "Cannot print file "; FileName
+END</pre>
+
+
+[END]
+
+<p>    你己读完所有今日提示。我希望你己经是一个<b>Gambas</b>的专家了！:-)</p>
+
+<p>如果你想为Gambas贡献一份力量，用电子邮件发送新提示到：</p>
+英文:<p><u>gambas@users.sourceforge.net</u></p>
+中文:<p><u>yizhou.he@gmail.com</u></p>
+
+<p>预先感谢！</p>
+
+
+

@@ -1,0 +1,85 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,64,95)
+  Padding = ReportPadding["Top:1cm;Bottom:1cm;Left:1cm;Right:1cm"]
+  Index = 0
+  Text = ("")
+  { ReportHBox1 ReportHBox
+    #MoveScaled(4,2,56,6)
+    Height = "12mm"
+    Expand = True
+    { ReportLabel9 ReportLabel
+      #MoveScaled(2,1,20,5)
+      Expand = True
+      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+      Background = ReportBrush["#FFFF00"]
+    }
+    { ReportHBox2 ReportHBox
+      #MoveScaled(30,2,24,8)
+      Expand = True
+      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+      Background = ReportBrush["#FFFF00"]
+    }
+  }
+  { ReportPageBreak1 ReportPageBreak
+    #MoveScaled(5,10,60,5)
+  }
+  { ReportLabel1 ReportImage
+    #MoveScaled(1,12,59,8)
+    Height = "7cm"
+    Border = ReportBorder["Bottom:2mm #000000"]
+    Background = ReportBrush["#00FF00"]
+  }
+  { ReportLabel2 ReportLabel
+    #MoveScaled(2,18,59,8)
+    Height = "2cm"
+    Border = ReportBorder["Bottom:2mm #000000"]
+    Background = ReportBrush["LinearGradient(1,0,0.28,0.35,[#00FF00,#FFFFFF],[0,1])"]
+  }
+  { ReportLabel4 ReportImage
+    #MoveScaled(3,23,59,8)
+    Height = "6cm"
+    Border = ReportBorder["Bottom:2mm #000000"]
+    Background = ReportBrush["#00FF00"]
+  }
+  { ReportPageBreak2 ReportPageBreak
+    #MoveScaled(2,31,59,2)
+  }
+  { ReportLabel5 ReportLabel
+    #MoveScaled(2,33,59,8)
+    Height = "2cm"
+    Border = ReportBorder["Bottom:2mm #000000"]
+    Background = ReportBrush["#00FF00"]
+  }
+  { ReportPageBreak3 ReportPageBreak
+    #MoveScaled(2,42,58,3)
+  }
+  { ReportLabel3 ReportLabel
+    #MoveScaled(1,44,59,8)
+    Height = "2cm"
+    Border = ReportBorder["Bottom:2mm #000000"]
+    Background = ReportBrush["#00FF00"]
+  }
+  { ReportLabel6 ReportLabel
+    #MoveScaled(2,52,59,8)
+    Height = "10cm"
+    Border = ReportBorder["Bottom:2mm #000000"]
+    Background = ReportBrush["#00FF00"]
+  }
+  { ReportLabel7 ReportLabel
+    #MoveScaled(2,62,59,8)
+    Height = "2cm"
+    Expand = True
+    Border = ReportBorder["Bottom:2mm #000000"]
+    Background = ReportBrush["#00FF00"]
+  }
+  { ReportLabel8 ReportLabel
+    #MoveScaled(2,72,59,8)
+    Height = "2cm"
+    Expand = True
+    Border = ReportBorder["Bottom:2mm #000000"]
+    Background = ReportBrush["#00FF00"]
+  }
+  Index = 0
+}

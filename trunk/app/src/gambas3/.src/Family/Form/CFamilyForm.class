@@ -1,0 +1,148 @@
+' Gambas class file
+
+Inherits CFamily
+
+Public Const Name As String = "Form"
+Public Const ControlClass As String = "Control"
+Public Const DropImageClass As String = "PictureBox"
+Public Const DropImageProperty As String = "Picture"
+Public Const AllowScaledProperty As Boolean = True
+Public Const HasMenuEditor As Boolean = True
+Public Const EmbedContainer As String = "Panel"
+Public Const AutomaticArrangement As Boolean = False
+
+Public Sub GetIcon(hCCtrl As CControl) As String
+  
+  Dim sImage As String
+  
+  Select hCCtrl.Kind
+  
+    Case "HBox"
+      sImage = "horizontal"
+    
+    Case "VBox"
+      sImage = "vertical"
+      
+    Case "HPanel"
+      sImage = "row"
+      
+    Case "VPanel"
+      sImage = "column"
+      
+    Case "HSplit"
+      sImage = "hsplit"
+      
+    Case "VSplit"
+      sImage = "vsplit"
+      
+    Case Else
+      sImage = Super.GetIcon(hCCtrl)
+      
+  End Select
+  
+  If hCCtrl.GetProperty("Invert") Then
+    If Exist("img/family/" &/ sImage & "-invert.png") Then sImage &= "-invert"
+  Endif
+  
+  Return sImage
+  
+End
+
+
+Public Sub DrawControl(hCCtrl As CControl) As Boolean
+  
+  Dim iBorder As Integer
+  Dim hCtrl As Control = hCCtrl.Control
+  
+  'Debug hCCtrl.Name
+  
+  Select hCCtrl.Kind
+  
+    Case "HBox", "VBox", "HPanel", "VPanel"
+    
+      Paint.Background = &HFFB0B0
+    
+    Case "Panel"
+    
+      CFamily.PaintExpand(hCCtrl)
+    
+      Select Case hCCtrl.GetProperty("Border")
+        Case "Raised"
+          iBorder = Border.Raised
+        Case "Sunken"
+          iBorder = Border.Sunken
+        Case "Etched"
+          iBorder = Border.Etched
+        Case "Plain"
+          iBorder = Border.Plain
+        Default
+          iBorder = Border.None
+      End Select
+      
+      If iBorder Then
+        Style.PaintPanel(0, 0, hCtrl.W, hCtrl.H, iBorder)
+        Return
+      Endif
+      'If hCCtrl.GetProperty("Background") Then Return
+      'Draw.Foreground = Color.Gradient(Color.Background, &H808080&)
+    
+    Case Else
+      
+      Return True
+
+  End Select
+
+  CFamily.PaintContainer(0, 0, hCtrl.W, hCtrl.H)
+  
+End
+
+Public Sub ActionDialog(sAction As String) As Boolean
+
+  Dim vColor As Variant
+  
+  Select Case sAction
+    
+    Case Like ".text-*"
+      Return Super.ActionDialog(sAction)
+      
+    Case Like ".format-*"
+      If FColorChooser.Run(, True) Then Return True
+      vColor = FColorChooser.Color
+      If Not IsNull(Val(vColor)) Then vColor = Val(vColor)
+      Me.ActionValue = vColor
+      
+  End Select
+  
+End
+
+Public Sub ActionExec(hCtrl As CControl, sAction As String)
+  
+  Select Case sAction
+    
+    Case Like ".text-*"
+      Super.ActionExec(hCtrl, sAction)
+      
+    Case ".format-background"
+      If hCtrl.HasProperty("Background") Then hCtrl.SetProperty("Background", Me.ActionValue)
+    
+    Case ".format-foreground"
+      If hCtrl.HasProperty("Foreground") Then hCtrl.SetProperty("Foreground", Me.ActionValue)
+    
+  End Select
+  
+End
+
+Public Sub SelectImage(sPropertyType As String, sImage As String) As String
+
+  Dim iOption As Integer
+
+  If sPropertyType <> "Image" Then iOption = FSelectIcon.SELECT_STOCK
+  If sPropertyType = "SvgImage" Then
+    iOption += FSelectIcon.SELECT_SVGIMAGE
+  Else
+    iOption += FSelectIcon.SELECT_IMAGE
+  Endif
+  
+  Return FSelectIcon.Run(sImage, iOption) 'GetPicture()
+      
+End

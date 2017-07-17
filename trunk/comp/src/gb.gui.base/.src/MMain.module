@@ -1,0 +1,42 @@
+' Gambas module file
+
+' Private $hFadeN As Picture
+' ' Private $hFadeW As Picture
+' ' Private $hFadeS As Picture
+' ' Private $hFadeE As Picture
+' 
+' Private Sub LoadFades()
+'   
+'   Dim hImage As Image
+'   'Dim Y As Integer
+'   Dim iColor As Integer
+'   
+'   iColor = Color.Desaturate(Color.TextForeground)
+'   
+'   'If iColor = $iFadeColor Then Return
+'   
+'   hImage = New Image(32, 8, Color.Transparent)
+'   ' For Y = 0 To 7
+'   '   hImage.FillRect(0, Y, hImage.W, 1, Color.SetAlpha(iColor, 160 + Y * 12))
+'   ' Next
+'   
+'   $hFadeN = hImage.Picture
+'   $hFadeN = hImage.Picture
+'   ' hImage.RotateLeft
+'   ' $hFadeW = hImage.Picture
+'   ' hImage.RotateLeft
+'   ' $hFadeS = hImage.Picture
+'   ' hImage.RotateLeft
+'   ' $hFadeE = hImage.Picture
+'   
+' End
+
+Public Sub Main()
+
+  Dim sEnv As String
+
+  For Each sEnv In Env
+    Print sEnv; "="; Env[sEnv]
+  Next
+
+End

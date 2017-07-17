@@ -1,0 +1,78 @@
+' Gambas class file
+
+Private $hCtrl As Control
+
+
+Public Sub TabPanel2_GotFocus()
+
+  Debug
+
+End
+
+Public Sub TabPanel2_LostFocus()
+
+  Debug
+
+End
+
+Public Sub Form_Open()
+
+  Dim I As Integer
+  Dim hLabel As Label
+  
+  TabPanel2.Count = 6
+  For I = 0 To TabPanel2.Count - 1
+    TabPanel2.Index = I
+    TabPanel2.Text = "Tab " & (I + 1) & " " & String$(CInt(Rnd(1, 10)), "-")
+    TabPanel2.Picture = Picture["icon:/16/bookmark"]
+    hLabel = New Label(TabPanel2)
+    hLabel.Move(8, 8, 8, 8)
+    hLabel.AutoResize = True
+    hLabel.Text = " " & CStr(I + 1) & " "
+    hLabel.Font.Grade = 6
+    hLabel.Border = Border.Plain
+  Next
+  
+  TabPanel2[1].Closable = True
+  
+End
+
+Public Sub Form_DblClick()
+
+  
+
+End
+
+Public Sub Timer1_Timer()
+
+  Dim hCtrl As Control
+
+  hCtrl = Application.ActiveControl
+  If hCtrl <> $hCtrl Then
+    $hCtrl = hCtrl
+    If $hCtrl Then
+      Print "Active: "; $hCtrl.Name
+    Else
+      Print "Active: NULL"
+    Endif
+  Endif
+
+End
+
+Public Sub TabPanel2_Close(Index As Integer)
+
+  Debug Index
+
+End
+
+Public Sub Button1_Click()
+
+  TabPanel2.Border = Not TabPanel2.Border
+
+End
+
+Public Sub Button2_Click()
+
+  TabPanel2.Orientation = If(TabPanel2.Orientation = Align.Top, Align.Bottom, Align.Top)  
+
+End

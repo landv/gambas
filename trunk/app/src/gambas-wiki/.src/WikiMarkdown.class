@@ -1,0 +1,278 @@
+' Gambas class file
+
+Inherits Markdown
+
+Public Sub Link(hLink As MarkdownLink)
+  
+  Dim sPath As String
+  Dim sLink As String = hLink.Link
+  Dim iPos As Integer
+  
+  If sLink Begins "/" Then
+    sPath = sLink
+  Else If sLink Begins "./" Then
+    sPath = Main.Path &/ Mid$(sLink, 3)
+  Else If sLink Begins "../" Then
+    sPath = Main.MakeAbsolute(sLink, Main.Path)
+  Else If Not sLink Then
+    
+    sLink = hLink.Text
+    iPos = InStr(sLink, ".")
+    If iPos Then
+      hLink.Text = ""
+      sPath = "/comp/gb" &/ Trim(Left$(sLink, iPos - 1)) &/ Trim(Mid$(sLink, iPos + 1))
+    Endif
+    
+  Else
+    
+    If sLink Like "*://*" Then hLink.Blank = True
+    
+  Endif
+  
+  If Not sPath Then Return
+  
+  hLink.Query = Mid$(Main.LinkSuffix, 2)
+  
+  If Main.IsImage(sPath) Then
+    If hLink.Text Then
+      sLink = hLink.Text
+      If sLink Begins "/" Then
+      Else If sLink Begins "./" Then
+        sLink = Main.Path &/ Mid$(sLink, 3)
+      Else If sLink Begins "../" Then
+        sLink = Main.MakeAbsolute(sLink, Main.Path)
+      Endif
+      hLink.Html = "<img src=\"" & Html(Application.Root &/ sLink) & "?v" & "\" />"
+    Else
+      hLink.Html = "<img src=\"" & Html(Application.Root &/ sPath) & "?v" & "\" />"
+    Endif
+    If Session.Id Then
+      hLink.Html = "<a href=\"" & Html(Application.Root &/ sPath) & "\">" & hLink.Html & "</a>"
+    Else If hLink.Text Then
+      hLink.Html = "<a href=\"" & Html(Application.Root &/ sPath & "?v") & "\" target=\"_blank\">" & hLink.Html & "</a>"
+    Endif
+    Return
+  Endif
+
+  If Not hLink.Text Or If hLink.Text = hLink.Link Then
+    
+    hLink.Text = Main.GetPageTitle(sPath)
+    
+  Endif
+  
+  hLink.Link = Application.Root &/ sPath 
+  
+End
+
+Private Sub MakeError(sMsg As String) As String[]
+
+  Return ["*<span style=\"color:red;\">" & Html(sMsg) & "</span>*"]
+
+End
+
+Public Sub Command(sCommand As String) As String[]
+
+  Dim aArg As String[]
+  Dim sDir As String
+  Dim aResult As String[]
+  Dim iPos As Integer
+  Dim sPath As String
+  Dim sLetter, sLast As String
+  Dim aDir As String[]
+  Dim hComp As CComponent
+  Dim hClass As CClassInfo
+  Dim hSym As CSymbolInfo
+  Dim sTitle As String
+  Dim sClass As String
+  Dim iStart As Integer
+  Dim I, J, K, N, NC As Integer
+  
+  aArg = Split(sCommand, " ", Chr$(34))
+  sCommand = aArg[0]
+  
+  If sCommand = "index" Then
+    
+    If aArg.Count > 1 Then
+      
+      sDir = File.Dir(Main.GetPagePathFrom(aArg[1]))
+      aResult = New String[]
+      aDir = New String[]
+      
+      NC = 2
+      For I = 1 To aArg.Max
+        If aArg[I] Begins "col=" Then
+          Try NC = CInt(Mid$(aArg[I], 5))
+        Endif
+      Next
+      
+      If IsDir(sDir) Then
+        
+        For Each sDir In Dir(sDir, "*", gb.Directory)
+          sPath = "/" &/ aArg[1] &/ sDir
+          If Not Main.ExistPage(sPath) Then Continue
+          sTitle = Main.GetPageTitle(sPath)
+          If aArg.Count > 2 And If Comp(Left(sTitle, Len(aArg[2])), aArg[2], gb.Language + gb.IgnoreCase) = 0 Then sTitle = LTrim(Mid$(sTitle, Len(aArg[2]) + 1))
+          
+          Do
+            sLetter = String.Left(sTitle)
+            If Len(sLetter) > 1 Then Break
+            If Not IsPunct(sLetter) Then Break
+            If Not sTitle Then Break
+            sTitle = String.Mid$(sTitle, 2)
+          Loop
+          
+          If Not sTitle Then sTitle = " "
+          
+          aDir.Add(sTitle & "\n[" & sPath & "]")
+        Next
+        
+        If aDir.Count Then
+
+          aResult.Add("<table class=\"no-border full\">")
+            
+          aDir.Sort(gb.Natural + gb.IgnoreCase)
+          
+          iStart = 0
+          For I = 0 To aDir.Max
+            sLetter = String.UCase(String.Left(aDir[I]))
+            If sLetter <> sLast Then
+              If I Then GoSub MAKE_INDEX_LETTER
+              sLast = sLetter
+              iStart = I
+            Endif
+          Next
+          GoSub MAKE_INDEX_LETTER
+          
+          aResult.Add("</table>")
+          
+        Endif
+        
+      Endif
+      
+      Return aResult
+      
+    Endif
+  
+  Else If sCommand = "since" Or If sCommand = "only" Then
+  
+    Return ["<div class=\"since\">" & ("Since") & "&nbsp;" & Html(aArg[1]) & "</div>"]
+  
+  Else If sCommand = "classes" And If Main.Component Then
+    
+    hComp = CComponent.Get(Main.Component)
+    If hComp Then Return hComp.GetClasses()
+
+    Return MakeError(("This component does not exist."))
+  
+  Else If sCommand = "description" And If Main.Component Then
+    
+    hComp = CComponent.Get(Main.Component)
+    If hComp Then Return hComp.GetDescription()
+
+    Return MakeError(("This component does not exist."))
+  
+  Else If sCommand = "symbols" Then
+    
+    If aArg.Count >= 2 And If aArg[1] Then
+      sClass = aArg[1]
+    Else
+      sClass = Main.Class
+    Endif
+    
+    If sClass Then
+      hComp = CComponent.Get(Main.Component)
+      If hComp Then
+        hClass = hComp[sClass]
+        If hClass Then Return hClass.GetSymbols()
+      Endif
+    Endif
+    
+    Return MakeError(sClass & ": " & ("This class does not exist."))
+  
+  Else If sCommand = "syntax" And If Main.Symbol Then
+  
+    hComp = CComponent.Get(Main.Component)
+    If hComp Then
+      hClass = hComp[Main.Class]
+      If hClass Then 
+        hSym = hClass.Symbols[Main.Symbol]
+        If hSym Then Return hSym.GetSyntax()
+      Endif
+    Endif
+    
+    Return MakeError(("This symbol does not exist."))
+
+  Else If sCommand = "stat" Then
+    
+    Return Main.GetStat()
+
+  Else If sCommand = "todo" Then
+    
+    Return Main.GetToDo()
+    
+  Else If sCommand = "changes" Then
+    
+    Return Main.GetChanges()
+    
+  Else If sCommand = "package-table" Then
+
+    Return Main.GetPackageTable()
+
+  Else If sCommand = "developer-table" Then
+    
+    Return Main.GetDeveloperTable()
+
+  Else If sCommand = "translator-table" Then
+
+    Return Main.GetTranslatorTable()
+    
+  Else If sCommand = "project-dependencies" Then
+    
+    Return Main.GetProjectDependencies(aArg[1])
+
+  Else
+    
+    Return ["**COMMAND: `" & sCommand & "`**"]
+    
+  Endif
+  
+MAKE_INDEX_LETTER:
+  
+  aResult.Add("<tr><td><div class=\"letter\">" & sLast & "&nbsp;</div></td>")
+  
+  N = (I - iStart + NC - 1) \ NC 
+  J = iStart
+  
+  For K = 1 To NC
+    
+    aResult.Add("<td width=\"" & CStr(100 \ NC) & "%\">")
+  
+    For J = J To J + N - 1
+      If J >= I Then Break
+      iPos = InStr(aDir[J], "\n")
+      aResult.Add(Mid$(aDir[J], iPos + 1) & "\\")
+    Next
+  
+    aResult.Add("</td>")
+    
+  Next
+  
+  aResult.Add("</tr>")
+  
+  Return
+  
+End
+
+Public Sub Enter(sClass As String) As String[]
+  
+  If sClass = "syntax" Then Me.EnableCode(False)
+  
+End
+
+Public Sub Leave(sClass As String) As String[]
+  
+  If sClass = "syntax" Then Me.EnableCode(True)
+  
+End
+
+

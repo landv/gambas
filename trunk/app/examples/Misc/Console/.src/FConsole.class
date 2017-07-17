@@ -1,0 +1,162 @@
+' Gambas class file
+
+
+Private $hProcess As Process
+Private $sText As String
+
+Static Public Sub Main()
+
+  Dim hForm As Form
+
+  hForm = New FConsole
+  hForm.Show
+
+End
+
+
+Public Sub _new()
+
+  $hProcess = Exec ["bash", "--noediting"] For Input Output As "Process"
+
+End
+
+
+Public Sub Form_Close()
+
+  $hProcess.Kill
+
+End
+
+
+Public Sub Process_Read()
+
+  Dim sStr As String
+
+  'Debug Eof(Last);; Lof(Last);;
+  'While Not sStr
+  Read #$hProcess, sStr, -256
+  'Wend
+  'Error sStr
+  $sText = $sText & sStr
+  'Debug Quote(sStr)
+  UpdateConsole
+
+End
+
+
+Public Sub Process_Error(sStr As String)
+  
+  $sText = $sText & sStr
+  UpdateConsole
+  
+End
+
+Private Sub UpdateConsole()
+
+  Dim iPos As Integer
+  Dim sStr As String
+  
+  While Len($sText)
+  
+    iPos = InStr($sText, "\n")
+    If iPos = 0 Then iPos = Len($sText)
+    
+    sStr = Normalize(Left$($sText, iPos))
+    'Debug sStr
+    $sText = Mid$($sText, iPos + 1)
+    
+    txtConsole.Pos = txtConsole.Length
+    txtConsole.Insert(sStr)
+  
+  Wend
+  
+End
+
+
+
+Public Sub Process_Kill()
+  
+  'hProcess = NULL
+  Try Me.Close
+  
+End
+
+
+
+Public Sub txtCommand_Activate()
+  
+  Dim sLig As String
+  
+  sLig = txtCommand.Text & gb.NewLine
+  
+  'txtConsole.Pos = txtConsole.Length
+  'txtConsole.Insert("# " & sLig)
+  txtCommand.Clear
+
+  sLig = Conv$(sLig, Desktop.Charset, System.Charset)
+  
+  Print #$hProcess, sLig;
+  
+End
+
+
+Static Private Function Normalize(sStr As String) As String
+
+  Dim sNorm As String
+  Dim iInd As Integer
+  Dim iCar As Integer
+  Dim bEsc As Boolean
+
+  ' For iInd = 1 To Len(sStr)
+  ' 
+  '   iCar = Asc(sStr, iInd)
+  ' 
+  '   If iCar = 27 Then
+  '     bEsc = True
+  '     Continue
+  '   Endif
+  ' 
+  '   If bEsc Then
+  '     If iCar < 32 Then bEsc = False
+  '     Continue
+  '   Endif
+  ' 
+  '   If iCar < 32 And iCar <> 10 Then iCar = 32
+  ' 
+  '   sNorm = sNorm & Chr$(iCar)
+  ' 
+  ' Next
+  
+  sNorm = sStr
+  
+  If System.Charset = Desktop.Charset Then 
+    Return sNorm
+  Else
+    Return Conv$(sNorm, System.Charset, Desktop.Charset) 
+  Endif
+  
+End
+
+Public Sub Form_Open()
+
+  txtCommand.SetFocus
+
+End
+
+Public Sub btnCtrlC_Click()
+
+  Print #$hProcess, Chr$(3);
+
+End
+
+Public Sub btnCtrlD_Click()
+
+  Print #$hProcess, Chr$(4);
+
+End
+
+Public Sub btnCtrlZ_Click()
+
+  Print #$hProcess, Chr$(26);
+
+End

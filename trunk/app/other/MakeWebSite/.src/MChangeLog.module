@@ -1,0 +1,202 @@
+' Gambas module file
+
+Private $hIn As File
+Private $hOut As File
+
+' Private Sub Terminate(aStack As String[], Optional sMark As String, Optional iNeed As Integer)
+' 
+'   Dim sElt As String
+' 
+'   While aStack.Count > iNeed
+' 
+'     sElt = aStack.Pop()
+'     Print #$hOut, sElt
+'     If sElt = sMark Then Break
+' 
+'   Wend
+' 
+' End
+
+
+Private Function UnCapitalize(sLig As String) As String
+
+  Dim sRes As String
+  Dim sWord As String
+  Dim bBracket As Boolean
+  
+  If Left(sLig) = "[" Then 
+    bBracket = True
+    sLig = Mid$(sLig, 2, -1)
+  Endif
+
+  For Each sWord In Split(sLig, " ")
+    If sWord Like "gb.*" Then
+      sRes &= "<a href=\"http://gambasdoc.org/help/comp/" & LCase(sWord) & "\">" & UCase(sWord) & "</a> "
+    Else
+      sRes &= UCase(Left$(sWord)) & LCase(Mid$(sWord, 2)) & " "
+    Endif
+  Next
+
+  'IF bBracket THEN sRes = "[" & Trim(sRes) & "]"
+
+  Return Trim(sRes)
+
+End
+
+
+
+Public Sub MakeChangeLog(sDir As String, iVer As Integer)
+
+  Dim sLig As String
+  Dim aElt As String[]
+  Dim bVer As Boolean
+  Dim bList As Boolean
+  Dim sOut As String
+  Dim sVer As String
+
+  sOut = sDir &/ "changelog" & iVer & ".html"
+
+  Print sOut
+
+  $hIn = Open User.Home &/ "gambas/" & iVer & ".0/trunk/ChangeLog" For Read
+  $hOut = Open sOut For Create
+
+  Print #$hOut, "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">\n"
+    "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"$(LANG)\" lang=\"$(LANG)\" dir=\"$(LANGDIR)\">\n"
+    "<link rel=\"stylesheet\" href=\"$(STYLE)\">"
+    "<head>\n"
+    "<base target=\"arch\">\n"
+    "</head>\n"
+    "<body>\n"
+
+    "<div class=\"title\">\n"
+    "ChangeLog\n"
+    "</div>\n<br>"
+
+  $hIn = Open User.Home &/ "gambas/" & iVer & ".0/trunk/ChangeLog" For Read
+  While Not Eof($hIn)
+    
+    Line Input #$hIn, sLig
+    sLig = RTrim(sLig)
+    If Not sLig Then Continue
+
+    If Left$(sLig, 3) = "---" Then
+
+      Line Input #$hIn, sLig
+      aElt = Split(sLig, "-")
+      
+      Print #$hOut, "<a target=\"_self\" href=\"#"; Trim(aElt[1]); "\">"; Trim(aElt[1]); "</a>&nbsp;"
+      
+      Line Input #$hIn, sLig
+      
+    Endif
+
+  Wend
+  Close $hIn
+  
+  Print #$hOut, "<br>"
+  
+  $hIn = Open User.Home &/ "gambas/" & iVer & ".0/trunk/ChangeLog" For Read
+  While Not Eof($hIn)
+
+    Line Input #$hIn, sLig
+    sLig = RTrim(sLig)
+    If Not sLig Then Continue
+
+    If Left$(sLig, 3) = "---" Then
+
+      If bList Then Print #$hOut, "  </ul>"
+
+      If bVer Then
+        Print #$hOut, "</td></tr>"
+        Print #$hOut, "</table></div>"
+      Endif
+
+      Line Input #$hIn, sLig
+      aElt = Split(sLig, "-")
+
+      Print #$hOut, "<a style=\"height:4px; font-size:xx-small;\" name=\""; Trim(aElt[1]); "\"></a>"
+
+      Print #$hOut, "<div class=\"news-title\">"
+      Print #$hOut, "  <img src=\"top-left-corner.png\" class=\"top-left-corner\">"
+      Print #$hOut, "  <img src=\"top-right-corner.png\" class=\"top-right-corner\">"
+      Print #$hOut, "  <div style=\"height:4px;\"></div>"
+      Print #$hOut, "  <div><b>"; Trim(aElt[1]); " - "; Trim(aElt[2]); "</b></div>"
+      Print #$hOut, "</div>"
+      Print #$hOut, "<div class=\"news\">"
+      Print #$hOut, "<table class=\"none\" width=\"100%\"><tr><td class=\"none\">"
+      
+      'Print #$hOut, "<table class=\"news\" cellspacing=\"0\" cellpadding=\"6\" width=\"100%\" valign=\"top\">"
+      ''PRINT #$hOut, "  <tr bgcolor=#A1E3FF><td><font size=+1><b>"; Trim(aElt[1]); " - "; Trim(aElt[2]); "</b></font></td></tr>"
+      'Print #$hOut, "  <tr><th class=\"news\"><font size=\"+1\">"; Trim(aElt[1]); " - "; Trim(aElt[2]); "</font></th></tr>"
+      'Print #$hOut, "  <tr><td clas=\"news\">"
+      If Not sVer Then sVer = Trim(aElt[1])
+      bVer = True
+      bList = False
+
+      Line Input #$hIn, sLig
+
+      Continue
+
+    Endif
+
+    If UCase(sLig) = sLig And If Left(sLig) <> " " Then
+
+      If bList Then
+        Print #$hOut, "  </ul>"
+        bList = False
+      Endif
+
+      Print #$hOut, "  <p><font><b>" & UnCapitalize(sLig) & "</b></font>"
+
+      Continue
+
+    Endif
+
+    If Left$(sLig, 2) = "* " Then
+
+      If Not bList Then
+        Print #$hOut, "  <ul>"
+        bList = True
+      Endif
+
+      sLig = Mid$(sLig, 3)
+      Print #$hOut, "  <li>";
+
+    Endif
+
+    sLig = Replace(sLig, "&", "&amp;")
+    sLig = Replace(sLig, "<", "&lt;")
+    sLig = Replace(sLig, ">", "&gt;")
+    Print #$hOut, sLig
+
+  Wend
+  Close #$hIn
+
+  If bList Then Print #$hOut, "  </ul>"
+  If bVer Then Print #$hOut, "</td></tr>"
+
+  Print #$hOut, "</table>\n"
+  Print #$hOut, "</body>\n</html>\n"
+
+  Close #$hOut
+
+  ' PRINT "Modification de debian/changelog"
+  ' 
+  ' sOld = File.Load(User.Home &/ "gambas/" & System.Version & ".0/debian/changelog")
+  ' 
+  ' IF NOT (sOld LIKE "gambas (" & sVer & ") *") THEN
+  ' 
+  '   sData = "gambas (" & sVer & ") unstable; urgency=low\n\n"
+  '   sData = sData & "   * Automatically generated. See ChangeLog file for more details.\n\n"
+  '   sData = sData & " -- Jose L. Redrejo <jredrejo@edu.juntaextremadura.net>  "
+  ' 
+  '   sTemp = Temp$
+  '   SHELL "date -R > " & sTemp WAIT
+  '   sData = sData & File.Load(sTemp) & "\n\n"
+  ' 
+  '   File.Save(User.Home &/ "gambas/" & System.Version & ".0/debian/changelog", sData & sOld)
+  ' 
+  ' ENDIF
+
+End

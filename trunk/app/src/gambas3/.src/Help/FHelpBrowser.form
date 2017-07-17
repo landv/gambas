@@ -1,0 +1,124 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,113,71)
+  Visible = False
+  Action = "help"
+  Text = ("Help browser")
+  Icon = Picture["icon:/small/help"]
+  Persistent = True
+  Utility = True
+  Arrangement = Arrange.Vertical
+  { panToolbar HBox
+    MoveScaled(0,0,107,4)
+    { btnBack ToolButton
+      MoveScaled(0,0,4,4)
+      ToolTip = ("Go back")
+      Picture = Picture["icon:/small/left"]
+    }
+    { btnForward ToolButton
+      MoveScaled(4,0,4,4)
+      ToolTip = ("Go forward")
+      Picture = Picture["icon:/small/right"]
+    }
+    { btnHome MenuButton
+      MoveScaled(6,0,16,4)
+      ToolTip = ("Index")
+      AutoResize = True
+      Picture = Picture["icon:/small/home"]
+      Border = False
+    }
+    { btnStop ToolButton
+      MoveScaled(23,0,4,4)
+      ToolTip = ("Cancel")
+      Picture = Picture["icon:/small/delete"]
+    }
+    { btnReload ToolButton
+      MoveScaled(27,0,4,4)
+      ToolTip = ("Reload")
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { btnShowPanel ToolButton
+      MoveScaled(32,0,4,4)
+      Tracking = True
+      ToolTip = ("Show help tree")
+      Picture = Picture["icon:/small/view-split-h"]
+      Toggle = True
+    }
+    { Separator1 Separator
+      MoveScaled(37,0,1,4)
+    }
+    { btnZoomIn ToolButton
+      MoveScaled(38,0,4,4)
+      ToolTip = ("Zoom in")
+      Picture = Picture["icon:/small/zoom-in"]
+    }
+    { btnZoomOut ToolButton
+      MoveScaled(42,0,4,4)
+      ToolTip = ("Zoom out")
+      Picture = Picture["icon:/small/zoom-out"]
+    }
+    { btnZoomNormal ToolButton
+      MoveScaled(46,0,4,4)
+      ToolTip = ("No zoom")
+      Picture = Picture["icon:/small/zoom-normal"]
+    }
+    { Separator2 Separator
+      MoveScaled(51,0,1,4)
+    }
+    { btnWebSite ToolButton
+      MoveScaled(52,0,31,4)
+      #Translate = False
+      ToolTip = "Gambas web site"
+      AutoResize = True
+      Text = "http://gambas.sourceforge.net"
+      Picture = Picture["icon:/small/gambas"]
+    }
+    { btnPrint ToolButton
+      MoveScaled(84,0,8,4)
+      AutoResize = True
+      Text = ("Print")
+      Picture = Picture["icon:/small/print"]
+    }
+  }
+  { Printer1 #Printer
+    #MoveScaled(4,2)
+  }
+  { Panel1 Panel
+    MoveScaled(2,9,81,30)
+    Expand = True
+    Arrangement = Arrange.Fill
+    Border = Border.Plain
+    { splHelp HSplit
+      MoveScaled(0,0,80,29)
+      Expand = True
+      { tvwClasses TreeView
+        MoveScaled(3,1,16,27)
+        Visible = False
+        Expand = True
+        Sorted = True
+        Border = False
+      }
+      { !webHelp HelpView
+        MoveScaled(22,2,28,16)
+        #Public = True
+      }
+    }
+  }
+  { movWaiting MovieBox
+    MoveScaled(31,5,9,8)
+    Visible = False
+    Ignore = True
+    Path = "img/waiting.gif"
+    Alignment = Align.Center
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action help
+    Text = "Help browser"
+    Picture = "icon:/small/help"
+  }
+}

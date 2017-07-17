@@ -1,0 +1,616 @@
+' Gambas class file
+
+'Property TagsX As Integer
+
+Private $hPlayer As MediaPlayer
+Private $hImage As MediaControl
+Private $hFilter As MediaFilter
+Private $hOutput As MediaContainer
+Private $aVisualisation As MediaControl[]
+
+Private $fPos As Float
+Private $fLength As Float
+Private $iVisualisation As Integer
+Private $fVolume As Float
+Private $bSuspend As Boolean
+Private $bShowTags As Boolean
+'Private $iTagsX As Integer
+
+Public Sub _new()
+  
+  Application.MainWindow = Me
+  '$iTagsX = - FTags.W
+  
+End
+
+Private Sub AddVisualisation(sType As String, sTitle As String)
+  
+  Dim hVisualisation As MediaControl
+  
+  If sType Then
+    hVisualisation = New MediaControl($hPlayer, sType)
+    hVisualisation.Tag = sTitle
+  Endif
+  
+  $aVisualisation.Add(hVisualisation)
+  
+Catch
+  
+  Error sType; ": "; Error.Text
+  
+End
+
+Private Sub MakeMediaPlayer()
+  
+  $hPlayer = New MediaPlayer As "MediaPlayer"
+  
+  '$hOutput = New MediaContainer($hPlayer)
+  '$hOutput.Name = "MyOutput"
+  
+  $hFilter = New MediaFilter($hPlayer)
+  $hImage = New MediaControl($hPlayer, "ximagesink")  
+  '$hFilter.LinkTo($hImage)
+
+  '$hOutput.AddInput($hImage)
+  
+  $hPlayer.Video.Output = $hImage
+  
+  $aVisualisation = New MediaControl[]
+  AddVisualisation("", "")
+  AddVisualisation("goom", "Goom")
+  AddVisualisation("goom2k1", "Goom2")
+  AddVisualisation("libvisual_bumpscope", "Bump")
+  AddVisualisation("libvisual_corona", "Corona")
+  AddVisualisation("libvisual_infinite", "Infinite")
+  AddVisualisation("libvisual_jakdaw", "Jakdaw")
+  AddVisualisation("libvisual_jess", "Jess")
+  AddVisualisation("monoscope", "Mono")
+  AddVisualisation("libvisual_oinksie", "Oinksie")
+  AddVisualisation("libvisual_lv_analyzer", "Analyzer")
+  AddVisualisation("libvisual_lv_scope", "Scope")
+  AddVisualisation("spacescope", "Space")
+  AddVisualisation("spectrascope", "Spectra")
+  AddVisualisation("synaescope", "Synae")
+  AddVisualisation("wavescope", "Wave")
+  
+  $iVisualisation = 0
+  UpdateVisualisation
+  
+End
+
+Public Sub GetButton(sKey As String) As CButton
+  
+  Return FControl.Controls["#" & sKey]
+  
+End
+
+
+Public Sub CreateButtons(aButton As String[], hParent As Container)
+  
+  Dim sKey As String
+  Dim sImg As String
+  Dim hPanel As Panel
+  Dim hButton As CButton
+  Dim iPos As Integer
+  
+  For Each sKey In aButton
+    
+    If sKey = "<->" Then
+      hPanel = New Panel(hParent)
+      hPanel.Expand = True
+      hPanel.Resize(8, 48)
+    Else If sKey = "-" Then
+      hPanel = New Panel(hParent)
+      hPanel.Resize(8, 48)
+    Else
+      
+      sImg = sKey
+      iPos = InStr(sImg, "#")
+      If iPos Then sImg = Left(sImg, iPos - 1)
+      
+      hButton = New CButton(hParent) As "Button"
+      hButton.Resize(48, 48)
+      hButton.Image = Image.Load(sImg & ".png")
+      hButton.Tag = sKey
+      hButton.Name = "#" & sKey
+      'If cTooltip Then hButton.Tooltip = cTooltip[sImg]
+      'If $cShortcut Then hButton.Shortcut = $cShortcut[sImg]
+      '$cButton[hButton.Tag] = hButton
+    Endif
+  Next
+  
+End
+
+
+Public Sub Form_Open()
+
+  MakeMediaPlayer
+  
+  FControl.Show
+  FControl.Raise
+  
+  RefreshVolume
+  
+End
+
+Public Sub Form_KeyPress()
+  
+  If Key.Code = Key.Escape Then Action("quit")
+  
+End
+
+Private Sub GetDevice(sName As String) As String
+
+  Try Return Scan(sName, "* (*)")[1]
+
+End
+
+' Private Sub FindChildFromType(hCont As MediaContainer, sType As String) As MediaControl
+'   
+'   Dim hCtrl As MediaControl
+'   
+'   For I = 0 To hCont.Children.Count - 1
+'     hCtrl = hCont.Children[I]
+'     If hCtrl.Type = sType Then Return hCtrl
+'   Next
+'   
+' End
+
+Private Sub Dump(hCont As MediaContainer, Optional iIndent As Integer)
+
+  Dim I As Integer
+  Dim hCtrl As MediaControl
+  Dim sOutput As String
+
+  If iIndent = 0 Then 
+    Print "Source: "; $hPlayer.Input.Name
+    Print "[-------------------------------------------"
+  Endif
+  For I = 0 To hCont.Children.Count - 1
+    hCtrl = hCont.Children[I]
+    Print Space$(iIndent * 2); hCtrl;; hCtrl.Name;; "["; hCtrl.Type; "]";; "=>";; hCtrl.Parent.Name
+
+    For Each sOutput In hCtrl.Inputs
+      With hCtrl.GetLink(sOutput)
+        If Not .Peer Then Continue
+        Print Space$(iIndent * 2); "| "; sOutput; " <--- "; .Peer.Name; "."; .Output
+      End With
+    Next
+    
+    For Each sOutput In hCtrl.Outputs
+      With hCtrl.GetLink(sOutput)
+        If Not .Peer Then Continue
+        Print Space$(iIndent * 2); "| "; sOutput; " ---> "; .Peer.Name; "."; .Input
+      End With
+    Next
+    
+    If hCtrl Is MediaContainer Then
+      Dump(hCtrl, iIndent + 1)
+    Endif
+  Next
+  If iIndent = 0 Then Print "-------------------------------------------]"
+
+End
+
+Private Sub Action(sAction As String)
+
+  Dim fPos As Float
+  Dim iState As Integer
+  Dim sName As String
+  Dim iName As Integer
+  Dim sVideo As String
+
+  Select sAction
+    
+    Case "eject"
+      Dialog.Title = ("Select a media file")
+      If Not Dialog.OpenFile() Then 
+        FControl.SetTitle(File.Name(Dialog.Path))
+        Action("stop")
+        $hPlayer.URL = Media.URL(Dialog.Path)
+        $hPlayer.Subtitles.Enabled = False
+        If Exist(File.SetExt(Dialog.Path, "srt")) Then 
+          $hPlayer.Subtitles.URL = Media.URL(File.SetExt(Dialog.Path, "srt"))
+          $hPlayer.Subtitles.Enabled = True
+        Endif
+        UpdateSubtitle
+        FTags.Clear($hPlayer)
+        
+        Action("play")
+        
+      Endif
+      
+    Case "video"
+      
+      sVideo = FTags.GetVideoDevice()
+      If sVideo Then
+        FControl.SetTitle(("Video device") & " " & sVideo)
+        Action("stop")
+        $hPlayer.Subtitles.Enabled = False
+        $hPlayer.URL = "v4l2://" & GetDevice(sVideo)
+        UpdateSubtitle
+        FTags.Clear($hPlayer)
+        Action("play")
+      Endif
+      
+    Case "info", "config"
+      If $bShowTags Then
+        CAnimation.Start(FTags, "Opacity", 0, 250, Me)
+        'CAnimation.Start(Me, "TagsX", - FTags.W, 250)
+      Else
+        FTags.X = - FTags.W
+        FTags.Show
+        CAnimation.Start(FTags, "Opacity", 70, 250)
+        'CAnimation.Start(Me, "TagsX", 0, 250)
+      Endif
+      $bShowTags = Not $bShowTags
+      
+    Case "subtitle"
+      'If $hPlayer.State = Media.Playing Or If $hPlayer.State = Media.Paused Then
+      '  $hPlayer.Subtitles.Enabled = Not $hPlayer.Subtitles.Enabled
+      '  UpdateSubtitle
+      'Else
+        Dialog.Title = ("Select a subtitle file")
+        If Not Dialog.OpenFile() Then 
+          $hPlayer.Subtitles.URL = Media.URL(Dialog.Path)
+          $hPlayer.Subtitles.Enabled = True
+          UpdateSubtitle
+        Endif
+      'Endif
+      
+    Case "play"
+      SuspendScreenSaver
+      $hImage.SetWindow(dwgVideo) ', panLeft.X + panLeft.W + 8, panLeft.Y + 8, Me.W - panLeft.X - panLeft.W - 16, Me.H - panLeft.Y - 16)
+      EnableVideoFilter
+      Sleep 0.1
+      Try $hPlayer.Play
+      If Not Error Then
+        dwgVideo.Mouse = Mouse.Blank
+        timTime.Start
+        Dump($hPlayer)
+      Else
+        ResumeScreenSaver
+        Try $hPlayer.Stop
+        $fLength = 0
+      Endif
+      
+    Case "stop"
+      ResumeScreenSaver
+      Try $hPlayer.Stop
+      $fLength = 0
+      timTime.Stop
+      dwgVideo.Mouse = Mouse.Default
+      
+    Case "pause"
+      ResumeScreenSaver
+      $hPlayer.Pause
+      dwgVideo.Mouse = Mouse.Default
+      timTime.Stop
+      
+    Case "fullscreen"
+      Me.FullScreen = Not Me.FullScreen
+      Me.Maximized = Not Me.FullScreen
+      Form_Resize
+      
+    Case "volume"
+      $hPlayer.Audio.Mute = Not $hPlayer.Audio.Mute
+      RefreshVolume
+      
+    'Case "balance"
+      'FBalance.Visible = Not FBalance.Visible
+      
+    Case "visualisation"
+      
+      iState = $hPlayer.State
+      If iState <> Media.Null And If iState <> Media.Ready Then
+        fPos = $hPlayer.Position
+        $hPlayer.Stop
+        $hPlayer.Close
+        timTime.Stop
+        'FadeOut
+      Endif
+      
+      Inc $iVisualisation
+      If $iVisualisation >= $aVisualisation.Count Then $iVisualisation = 0
+      UpdateVisualisation
+      
+      If iState <> Media.Null And If iState <> Media.Ready Then
+        $hPlayer.Pause
+        $hPlayer.Position = fPos
+        $hPlayer.State = iState
+        If iState = Media.Playing Then timTime.Start
+        'FadeIn
+      Endif
+    
+    Case "quit"
+      Me.Close
+      
+    Case "screenshot"
+      
+      Do
+        Inc iName
+        sName = "~/MediaPlayerScreenshot"
+        If iName > 1 Then sName &= "-" & CStr(iName)
+        sName &= ".jpg"
+        If Not Exist(sName) Then Break
+      Loop
+      Try $hPlayer.Video.Image.Save(sName)
+      If Error Then FControl.SetError(Error.Text)
+    
+    Case "seek-forward"
+      FControl.Y = Screen.H - FControl.H
+    
+    Case "seek-backward"
+      FControl.Y = 600
+      
+  End Select
+
+End
+
+Public Sub Button_Click()
+  
+  Action(Last.Tag)
+  
+End
+
+' Public Sub Form_Arrange()
+' 
+'   panToolbar.Move(0, Me.H - panToolbar.H, Me.W, panToolbar.H)
+' 
+' End
+
+Public Sub timTime_Timer()
+
+  $fPos = $hPlayer.Position
+  If $fLength = 0 Then $fLength = $hPlayer.Duration
+  FControl.SetInfo(Format(CDate(($fPos + 0.5) / 86400), "hh:nn:ss") & " / " & Format(CDate($fLength / 86400), "hh:nn:ss"))
+  
+End
+
+Public Sub GetLength() As Float
+  
+  Return $fLength
+  
+End
+
+Public Sub GetPos() As Float
+  
+  Return $fPos
+  
+End
+
+Public Sub SetPos(fPos As Float)
+  
+  If $hPlayer.State = Media.Paused Or If $hPlayer.State = Media.Playing Then
+    If $fLength Then
+      $fPos = fPos * $fLength
+      '$hPlayer.Pause
+      'FadeOut
+      $hPlayer.Position = $fPos
+      '$hPlayer.Play
+      'FadeIn
+    Endif
+  Endif
+  
+End
+
+Public Sub Form_Resize()
+
+  'Debug Me.X;; Me.Y;; Me.W;; Me.H;; FControl.H;; Me.Y + Me.H - FControl.H
+  'Debug "FControl.Move:";; Me.X;; Me.Y + Me.H - FControl.H;; Me.W;; FControl.H
+  FControl.Move(dwgVideo.ScreenX, dwgVideo.ScreenY + dwgVideo.H - FControl.H, dwgVideo.W, FControl.H)
+  FTags.Move(dwgVideo.ScreenX, dwgVideo.ScreenY, FTags.W, dwgVideo.H - FControl.H)
+
+End
+
+Public Sub Form_Close()
+
+  ResumeScreenSaver
+  CAnimation.Exit
+
+End
+
+Public Sub Button_MouseWheel()
+  
+  $hPlayer.Audio.Mute = False
+  
+  If Mouse.Delta > 0 Then
+    $hPlayer.Audio.Volume = Min(1, (Sqr($hPlayer.Audio.Volume) + 0.05) ^ 2)
+  Else
+    $hPlayer.Audio.Volume = Max(0, (Sqr($hPlayer.Audio.Volume) - 0.05) ^ 2)
+  Endif
+  
+  RefreshVolume
+  
+End
+
+Private Sub RefreshVolume()
+  
+  Dim sImage As String
+  Dim fVolume As Float
+  
+  With GetButton("volume")
+    
+    If $hPlayer.Audio.Mute Then
+      sImage = "mute"
+      .Text = ""
+    Else
+      fVolume = Sqr($hPlayer.Audio.Volume)
+      .Text = Format(fVolume, "0%")
+      sImage = "volume-" & Min(3, CInt(fVolume * 4))
+    Endif
+    
+    .Image = Image.Load(sImage & ".png")
+    
+  End With
+  
+End
+
+Private Sub UpdateSubtitle()
+
+  GetButton("subtitle").Text = If($hPlayer.Subtitles.Enabled, "ON", "")
+
+End
+
+Private Sub UpdateVisualisation()
+
+  Dim hVis As MediaControl = $aVisualisation[$iVisualisation]
+
+  $hPlayer.Video.Visualisation = hVis
+  If hVis Then
+    GetButton("visualisation").Text = hVis.Tag
+    $hImage.SetWindow(dwgVideo)
+    $hPlayer.Position = $hPlayer.Position
+  Else
+    GetButton("visualisation").Text = ""
+    $hImage.SetWindow(Null)
+  Endif
+
+End
+
+Public Sub dwgVideo_Draw()
+
+  If $hPlayer.State = Media.Null Then
+    Draw.Font = Font["+16"]
+    Draw.Foreground = Color.Gray
+    Draw.RichText("<b>G</b>ambas <b>A</b>lmost <b>M</b>eans <b>Bas</b>ic!", 0, 0, dwgVideo.Width, dwgVideo.Height, Align.Center)
+  Endif
+
+End
+
+Public Sub MediaPlayer_End()
+  
+  Action("stop")
+  
+End
+
+Public Sub MediaPlayer_Message((Source) As MediaControl, Type As Integer, Message As String)
+  
+  Select Case Type
+    Case Media.Info
+      Print "(i)";
+    Case Media.Warning
+      Print "/!\\";
+    Case Media.Error
+      Print "[*]";
+  End Select
+  Print " "; Message
+  
+  If Type = Media.Error Then
+    FControl.SetError(Message)
+    Action("stop")
+  Endif
+  
+End
+
+
+Public Sub MediaPlayer_Tag(TagList As MediaTagList)
+  
+  Dim sTag As String
+  Dim vTag As Variant
+  Dim I As Integer
+  
+  For Each sTag In TagList.Tags
+    vTag = TagList[sTag]
+    If TypeOf(vTag) = gb.Object And If vTag Is Array Then
+      For I = 0 To vTag.Max
+        FTags.AddTag(sTag & "[" & CStr(I) & "]", Str(vTag[I]))
+      Next
+    Else
+      FTags.AddTag(sTag, Str(vTag))
+    Endif
+  Next
+  
+End
+
+
+Private Sub FadeOut()
+  
+  $fVolume = $hPlayer.Audio.Volume
+  
+  Do
+    Debug $hPlayer.Audio.Volume 
+    $hPlayer.Audio.Volume = Max(0, $hPlayer.Audio.Volume - 0.05)
+    If $hPlayer.Audio.Volume = 0 Then Break
+    Sleep 0.01
+  Loop
+  
+End
+
+Private Sub FadeIn()
+  
+  Do
+    Debug $hPlayer.Audio.Volume 
+    $hPlayer.Audio.Volume = Min($fVolume, $hPlayer.Audio.Volume + 0.05)
+    If $hPlayer.Audio.Volume >= $fVolume Then Break
+    Sleep 0.01
+  Loop
+  
+End
+
+Private Sub SuspendScreenSaver()
+  
+  If $bSuspend Then Return
+  Desktop.ScreenSaver.Suspend(Me)
+  
+End
+
+Private Sub ResumeScreenSaver()
+  
+  If Not $bSuspend Then Return
+  Desktop.ScreenSaver.Resume(Me)
+  
+End
+
+Public Sub Form_Enter()
+
+  If $hPlayer.State = Media.Playing Then
+    CAnimation.Start(FControl, "Opacity", 0, 400)
+    CAnimation.Start(FTags, "Opacity", 0, 400)
+  Endif
+
+End
+
+Public Sub Form_Leave()
+
+  If $hPlayer.State = Media.Playing Then
+    CAnimation.Start(FControl, "Opacity", 70, 250)
+    If $bShowTags Then CAnimation.Start(FTags, "Opacity", 70, 250)
+  Endif
+
+End
+
+Public Sub Animation_Stop()
+  
+  FTags.Hide
+  
+End
+
+' Private Function TagsX_Read() As Integer
+' 
+'   Return $iTagsX
+' 
+' End
+' 
+' Private Sub TagsX_Write(Value As Integer)
+' 
+'   $iTagsX = Value
+'   FTags.X = Me.X + $iTagsX
+' 
+' End
+
+Public Sub SetBalance(iIndex As Integer, iValue As Integer)
+  
+  $hPlayer.Balance[iIndex].Value = iValue
+  
+End
+
+Private Sub EnableVideoFilter()
+
+  'If $hPlayer.URL Begins "v4l2://" Then
+  '  $hFilter.Filter = "video/x-raw,width=640,height=480,framerate=30/1"
+  'Else
+  '  $hFilter.Filter = "video/x-raw"
+  'Endif
+  
+End

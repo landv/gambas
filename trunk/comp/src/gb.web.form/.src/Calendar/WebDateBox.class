@@ -1,0 +1,121 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,Border=True,ReadOnly=True,DateTime"
+Public Const _Group As String = "Chooser"
+Public Const _DrawWith As String = "ComboBox"
+Public Const _DefaultSize As String = "24,4"
+Public Const _Similar As String = "WebTextBox"
+Public Const _DefaultEvent As String = "Click"
+
+Event Click
+Event Change
+
+Property Text As String
+Property Date, Value As Date
+Property ReadOnly As Boolean
+Property DateTime As Boolean
+
+Private $bReadOnly As Boolean = True
+Private $dDate As Date
+Private $bDateTime As Boolean
+
+Public Sub _new()
+  
+  Me._Proxy = ":entry"
+  
+End
+
+
+Public Sub _Render()
+  
+  Print "<input id=\""; Me.Name; ":entry\" class=\"gw-combobox-text\" type=\"text\" value=\""; Html(Text_Read()); "\""; Me._GetUpdateJS("onchange", "text", "this.value"); ">";
+  Print "<div class=\"gw-combobox-arrow\""; Me._GetUpdateJS("onclick", "#popup"); "></div>"
+  'Print "displayCalendar($("; JS(Me.Name & ":entry"); "),'dd/mm/yyyy'"; '"; If(bTime And Not bChooseDate, "dd/mm/yyyy hh:nn", "dd/mm/yyyy"); 
+  'Print ",$("; JS(Me.Name); "),false,false);"; '; If(bTime And Not bChooseDate, "true", "false"); ","; If(bSubmit, "true", "false"); ")\""; 
+  'Print "\"></div>"
+  'WebForm._AddJavascript("gw.load('calendar.css');")
+  'WebForm._AddJavascript("gw.load('calendar.js');")
+  
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  If sProp = "text" Then
+    Try Me.Text = vValue
+    If Error Then Me.Refresh
+  Else If sProp = "#popup" Then
+    FCalendar.Value = Date_Read()
+    FCalendar.ShowPopup(Me, Align.Right)
+  Endif
+  
+End
+
+
+Public Sub Clear()
+  
+  Date_Write(Null)
+  
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $bReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $bReadOnly = Value
+  Me._SetProperty("ReadOnly", Value)
+
+End
+
+Private Function Date_Read() As Date
+
+  Return $dDate
+
+End
+
+Private Sub Date_Write(Value As Date)
+
+  $dDate = Value
+  Me._SetProperty("Date", Value)
+  Raise Change
+
+End
+
+Private Function Text_Read() As String
+
+  If $bDateTime Then
+    Return Format($dDate, gb.GeneralDate)
+  Else
+    Return Format($dDate, gb.ShortDate)
+  Endif
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  If IsDate(Value) Or If IsNull(Value) Then 
+    Date_Write(Val(Value))
+  Else
+    Error.Raise("Invalid date")
+  Endif
+
+End
+
+Private Function DateTime_Read() As Boolean
+
+  Return $bDateTime
+
+End
+
+Private Sub DateTime_Write(Value As Boolean)
+
+  $bDateTime = Value
+  Me._SetProperty("DateTime", Value)
+
+End

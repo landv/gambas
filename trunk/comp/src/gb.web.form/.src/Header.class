@@ -1,0 +1,36 @@
+' Gambas class file
+
+Static Public Form As WebForm
+
+Private Sub GetTitle() As String
+
+  If Form And If Form.Title Then
+    Print Html(Form.Title);
+  Else
+    Print Html(Application.Title);
+  Endif
+
+End
+
+Private Sub GetJavascript() As String
+  
+  Dim aFiles As String[]
+  
+  aFiles = Form._GetJavascriptFiles()
+  If aFiles And If aFiles.Count Then Return ":" & aFiles.Join(":")
+  
+End
+
+Private Sub PrintJavascriptExternFiles()
+
+  Dim aFiles As String[]
+  Dim sFile As String
+  
+  aFiles = Form._GetJavascriptExternFiles()
+  If aFiles Then
+    For Each sFile In aFiles
+      Print "<script type=\"text/javascript\" src=\""; Html(sFile); "\"></script>"
+    Next
+  Endif
+
+End

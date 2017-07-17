@@ -1,0 +1,112 @@
+About gbh3
+----------
+
+gbh3 is used to extract Gambas documentation from C/C++ source files and
+create .help files for a component from them. It is a single Gambas project
+depending only on gb.pcre.
+
+... and why?
+------------
+
+Components written in Gambas can already be documented in-code. This docu-
+mentation is then stored inside their .info files. With a similar result
+provided by gbh3 for C/C++ components, we can document all[*] Gambas in
+its source files (at least my components will be) which makes it, IMHO,
+easier to keep the documentation up-to-date. Also the help could be
+displayed locally by the IDE or remotely once these .help files are imported
+to the gambaswiki.org site.
+
+Also, documentation can be bound to a specific source code version, so that
+you get docs for the version of Gambas you are running, not only for the
+development branch.
+
+[*] I'm not sure about intrinsic functions, though. Should be feasible,
+    looking at gbx_class_info.c...
+
+Great! How do I prepare my component?
+-------------------------------------
+
+The No. 0 rule is to BE CAREFUL! There are quite some rules to remember:
+
+1. Documentation syntax.
+
+You may write a Gambas documentation comment like
+
+  /**G
+   * Here goes the documentation.
+   **/
+  BEGIN_METHOD_VOID(ClassName_MethodName)
+  	/* ... */
+  END_METHOD
+
+or alternatively
+
+  /**G Class Symbol
+   * Documenting Class.Symbol
+   **/
+
+Instead of the **/ at the end, you may also write */. Cool, huh?
+
+The second syntax can also be used to document the class per se:
+
+  /**G Class
+   * Class documentation here
+   **/
+
+The difference between both notations is that the first must immediately
+precede a BEGIN_{PROPERTY,METHOD,METHOD_VOID) line that defines the symbol
+to which the documentation refers. The second syntax documents the indicated
+symbol -- no matter where the comment is.
+
+This is intended to document GB_CONSTANTs or GB_PROPERTY_SELFs which don't
+have a BEGIN_* line. It can neverthelss be used for any other symbol but
+NEVER intermix both syntaxes on a single symbol.
+
+The ClassName_MethodName part I call "(implementation) function name". The
+particular function naming convention shown is not mandatory. The scripts
+take the function name and look up the corresponding symbol in your
+GB_DESC[].
+
+2. Regular expressions.
+
+The regular expressions used to filter these comments are somewhat strict.
+You have to pass the spaces exactly as indicated in the line where your
+comment text starts, i.e. <space>*<space>text. Also note that Class and
+Symbol in the second syntax are case sensitive!
+
+OTOH, I can't guarantee that the expressions will not consume junk that you
+left behind where I didn't expect junk to be.
+
+3. Strict structure.
+
+DON'T try to confuse the parsers by not giving information it needs where
+it expects it.
+
+4. Synonyms.
+
+The first match for a function name lookup in a GB_DESC[] is taken as the
+"primary" implementation of that symbol. That means the help comment will
+be attched to that symbol. All other symbols which call the same function
+are considered synonyms and are *automatically* documented with the default
+sentence: "This is a synonym for <primary-symbol>". DO NOT document them
+separately using a syntax-2 help block!
+
+5. Don't reuse method and property implementations (except for synonyms).
+
+As the implementation function name is searched in the GB_DESC[]s in your
+source file, you may not put the same function into different classes -- or
+the parser may get confused.
+
+Also, keep the GB_DESC[] in the same source file as the help comment.
+
+Umm... I need an example
+------------------------
+
+gb.openssl and gb.data are partially documented that way. Digest.Hash() and
+Digest._call() in gb.openssl show how to deal with synonyms. There the entry
+for Hash precedes the entry for _call, thus Hash is the primary symbol and
+_call a synonym.
+
+To see a sample .help file (on stdout), you can do at the source tree root:
+
+  $ gbx3 app/src/gbh3 -- gb.openssl
