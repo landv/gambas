@@ -50,6 +50,7 @@ End
 Public Sub ToUTC({Date} As Date) As Date
   
   {Date} += System.TimeZone / 86400
+  Return {Date}
   
 End
 
