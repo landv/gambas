@@ -13,8 +13,6 @@ Private $hTextBox As TextBox
 
 Public Sub _new()
 
-  Dim hPrev As ArgListBox
-  
   $hTextBox = New TextBox(Me) As "TextBox"
   $hTextBox.Border = False
   AutoResize

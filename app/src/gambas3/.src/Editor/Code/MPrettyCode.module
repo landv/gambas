@@ -9,8 +9,7 @@ Private $bLastNewLine As Boolean
 Private $bNeedNewLine As Boolean
 Private $iLastDim As Integer
 Private $iLastSelect As Integer
-Private $bLastWrap As Integer
-Private $bLastString As Boolean
+Private $bNextIndent As Boolean
 
 Private $bIndentDim As Boolean
 Private $bRemoveSpace As Boolean
@@ -72,6 +71,8 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
   Dim aText As String[]
   Dim bModified As Boolean
   
+  Inc Application.Busy
+  
   aBreakpoint = hEditor.Breakpoints
   aBookmark = hEditor.Bookmarks
     
@@ -87,8 +88,7 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
   $bLastNewLine = True
   $iLastDim = -1
   $iLastSelect = -1
-  $bLastWrap = False
-  $bLastString = False
+  $bNextIndent = False
   
   aText = Split(hEditor.Text, "\n")
   
@@ -184,6 +184,8 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
     hEditor.Goto(X, Y)
   Endif
   
+  Dec Application.Busy
+  
 End
 
 Private Sub IsStruct() As Boolean
@@ -214,10 +216,9 @@ Private Sub IndentLine(sLine As String) As String
   Dim sSym As String
   Dim sFuncSym As String
   Dim iPos As Integer
-  Dim iType As Integer
-  Dim bLastWrap As Integer
-  Dim bLastString As Boolean
+  Dim iLastType As Integer
   Dim iLevel As Integer
+  Dim bNextIndent As Boolean
 
   sLine = LTrim(sLine)
   
@@ -229,26 +230,29 @@ Private Sub IndentLine(sLine As String) As String
     
     aSym = Highlight.Analyze(Highlight.Purge(Trim(sLine)))
     While aSym.Count
-      iType = Highlight.Types[aSym.Max]
-      If iType <> Highlight.Comment And If iType <> Highlight.Help Then Break
+      iLastType = Highlight.Types[aSym.Max]
+      If iLastType <> Highlight.Comment And If iLastType <> Highlight.Help Then Break
       aSym.Remove(aSym.Max)
     Wend
     
     If aSym.Count Then
       
-      bLastWrap = $bLastWrap
+      bNextIndent = $bNextIndent
+      $bNextIndent = False
       
-      bLastString = False
-      If $bLastString And If Highlight.Types[0] = Highlight.String Then
-        bLastString = True
-      Endif
-
-      $bLastString = iType = Highlight.String
+      ' bLastString = False
+      ' If $bLastString And If Highlight.Types[0] = Highlight.String Then
+      '   bLastString = True
+      ' Endif
+      ' 
+      ' $bLastString = iLastType = Highlight.String
       
-      If iType = Highlight.Operator And If InStr(":]);.!", aSym[aSym.Max]) = 0 And If aSym[0] <> "PRINT" Then 
-        $bLastWrap = True
-      Else
-        If Not $bLastString Then $bLastWrap = False
+      If iLastType = Highlight.Operator Then
+        If InStr(":]);.!", aSym[aSym.Max]) = 0 Then 'And If aSym[0] <> "PRINT" Then 
+          $bNextIndent = True
+        Endif
+      Else If iLastType = Highlight.String And If Highlight.Types[0] = Highlight.String Then
+        bNextIndent = True
       Endif
       
       If $bNeedNewLine Then
@@ -292,7 +296,7 @@ Private Sub IndentLine(sLine As String) As String
         Else
         
           If $iLastDim = ($iLine - 1) Then
-            If Not bLastString And If Not bLastWrap Then
+            If Not bNextIndent Then 'Not bLastString And If Not bLastWrap Then
               If Not $bLastNewLine Then sAdd = "\n"
             Else
               Inc $iLastDim
@@ -336,8 +340,7 @@ Private Sub IndentLine(sLine As String) As String
       iNextLevel = Max(0, iNextLevel)
       
       iLevel = $iLevel
-      If bLastWrap Then Inc iLevel
-      If bLastString Then Inc iLevel
+      If bNextIndent Then Inc iLevel
       sLine = sAdd & Space$(Project.TabSize * iLevel) & sLine '& " '" & If(bLastWrap, "W", "") & If(bLastString, "S", "")
       $iLevel = iNextLevel
       
