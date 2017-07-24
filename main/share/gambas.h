@@ -1105,6 +1105,7 @@ typedef
 			void (*HasForked)(void);
 			bool (*Debug)(void);
 			char *(*Home)(void);
+			int (*TimeZone)(void);
 			}
 		System;
 

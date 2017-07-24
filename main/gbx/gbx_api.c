@@ -255,6 +255,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_SystemHasForked,
 	(void *)GB_SystemDebug,
 	(void *)FILE_get_home,
+	(void *)DATE_get_timezone,
 
 	(void *)GB_ArrayNew,
 	(void *)GB_ArrayCount,

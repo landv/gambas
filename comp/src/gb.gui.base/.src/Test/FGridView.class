@@ -159,3 +159,21 @@ Public Sub Button2_Click()
   gvwInfo.Border = Not gvwInfo.Border
 
 End
+
+Public Sub Label1_MouseDown()
+
+  
+
+End
+
+Public Sub Label1_MouseDrag()
+
+  Drag(Label1, "text")
+
+End
+
+Public Sub gvwInfo_Drop()
+
+  Debug Drag.Paste()
+
+End

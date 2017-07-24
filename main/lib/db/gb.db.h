@@ -54,6 +54,7 @@ typedef
 		void *data;                     /* Can be used by the driver for storing its own private data */
 		int error;                      /* Last SQL error code raise by a query */
 		int timeout;                    /* Connection timeout */
+		int timezone;                   /* Timezone of dates (default to local timezone) */
 		unsigned ignore_case : 1;       /* If table, field and index names are case sensitive */
 		struct {
 			unsigned no_table_type : 1;   /* Tables do not have types */

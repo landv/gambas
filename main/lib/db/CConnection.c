@@ -154,6 +154,7 @@ BEGIN_METHOD(CCONNECTION_new, GB_STRING url)
 	THIS->db.handle = NULL;
 	THIS->db.ignore_case = FALSE; // Now case is sensitive by default!
 	THIS->db.timeout = 20; // Connection timeout is 20 seconds by default
+	THIS->db.timezone = GB.System.TimeZone();
 
 	if (_current == NULL)
 		_current = THIS;
@@ -258,6 +259,16 @@ BEGIN_PROPERTY(Connection_Timeout)
 		GB.ReturnInteger(THIS->db.timeout);
 	else
 		THIS->db.timeout = VPROP(GB_INTEGER);
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Connection_Timezone)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS->db.timezone);
+	else
+		THIS->db.timezone = VPROP(GB_INTEGER);
 
 END_PROPERTY
 
@@ -767,6 +778,7 @@ GB_DESC CConnectionDesc[] =
 	GB_PROPERTY("Name", "s", CCONNECTION_name),
 	GB_PROPERTY("Port", "s", CCONNECTION_port),
 	GB_PROPERTY("Timeout", "i", Connection_Timeout),
+	GB_PROPERTY("Timezone", "i", Connection_Timezone),
 	GB_PROPERTY_READ("Charset", "s", CCONNECTION_charset),
 	GB_PROPERTY_READ("Version", "i", CCONNECTION_version),
 	GB_PROPERTY_READ("Opened", "b", CCONNECTION_opened),
