@@ -24,7 +24,6 @@
 #define __GBX_C
 
 #include "config.h"
-#include "../trunk_version.h"
 
 //#define USE_PROFILE 1
 
@@ -255,8 +254,8 @@ int main(int argc, char *argv[])
 		}
 		else if (is_long_option(argv[1], 'V', "version"))
 		{
-#ifdef TRUNK_VERSION
-			printf(VERSION " r" TRUNK_VERSION "\n");
+#ifdef GIT_REVISION
+                        printf(VERSION " git " GIT_REVISION "\n");
 #else
 			printf(VERSION "\n");
 #endif

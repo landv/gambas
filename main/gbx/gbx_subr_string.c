@@ -38,7 +38,7 @@
 #include "gbx_c_array.h"
 #include "gbx_local.h"
 #include "gbx_compare.h"
-#include "gb.pcre.h"
+#include "pcre/gb.pcre.h"
 
 //static int _count = 0;
 
