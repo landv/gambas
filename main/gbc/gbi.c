@@ -24,7 +24,6 @@
 #define __GBI_C
 
 #include "config.h"
-#include "trunk_version.h"
 
 #include "gb_limit.h"
 #include "gb_common.h"
@@ -778,8 +777,8 @@ int main(int argc, char **argv)
 		switch (opt)
 		{
 			case 'V':
-				#ifdef TRUNK_VERSION
-				printf(VERSION " r" TRUNK_VERSION "\n");
+				#ifdef GIT_REVISION
+				printf(VERSION " git " GIT_REVISION "\n");
 				#else
 				printf(VERSION "\n");
 				#endif

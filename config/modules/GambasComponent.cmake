@@ -15,7 +15,8 @@
 # GB_COMPONENT_REQUIRES_${_NAME} : a list of all the targets that requires this component.
 # GB_COMPONENT_NEEDS_${_NAME} : a list of all the needs of this component.
 # GB_COMPONENT_IMPLEMENTS_${_NAME} : a list of all the needs this component implements.
-# GB_COMPONENT_IS_SWITCHER_${_NAME} : yes if this component is a switcher component.# ==== Gambas need-related global properties ===== #
+# GB_COMPONENT_IS_SWITCHER_${_NAME} : yes if this component is a switcher component.
+# ==== Gambas need-related global properties ===== #
 # GB_NEED_IMPLEMENTERS_${_NAME} : a list of all the components that implements this need.
 # GB_NEED_COMPONENT_LIST_${_NAME} : a list of all the components that need this need.
 

@@ -11,3 +11,5 @@ endmacro()
 # add_subdirectory(eval) 
 # add_subdirectory(debug) 
 # add_subdirectory(data) 
+
+add_subdirectory(pcre)

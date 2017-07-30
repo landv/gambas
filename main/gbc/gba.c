@@ -24,7 +24,6 @@
 #define __GBA_C
 
 #include "config.h"
-#include "trunk_version.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -90,8 +89,8 @@ static void get_arguments(int argc, char **argv)
 		switch (opt)
 		{
 			case 'V':
-				#ifdef TRUNK_VERSION
-				printf(VERSION " r" TRUNK_VERSION "\n");
+				#ifdef GIT_REVISION
+				printf(VERSION " git " GIT_REVISION "\n");
 				#else
 				printf(VERSION "\n");
 				#endif
