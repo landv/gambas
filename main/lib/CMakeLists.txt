@@ -12,4 +12,17 @@ endmacro()
 # add_subdirectory(debug) 
 # add_subdirectory(data) 
 
+add_subdirectory(geom)
+add_subdirectory(draw)
+add_subdirectory(image)
 add_subdirectory(pcre)
+add_subdirectory(eval)
+add_subdirectory(term)
+
+add_subdirectory(gui)
+add_subdirectory(gui.opengl)
+add_subdirectory(gui.qt)
+add_subdirectory(gui.qt.webkit)
+add_subdirectory(gui.trayicon)
+
+add_subdirectory(db)

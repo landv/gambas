@@ -130,16 +130,18 @@ endfunction()
 
 function(gb_component)
 
+    set(OPTIONS SWITCHER)
     set(OVA NATIVE GAMBAS)
-    set(MVA SOURCE_LIST SUBCOMPONENTS REQUIRED_PACKAGES)
-    cmake_parse_arguments(_ "" "${OVA}" "${MVA}" ${ARGN})
+    set(MVA SOURCE_LIST SUBCOMPONENTS REQUIRED_PACKAGES COMPONENT_DEPENDENCIES)
+    cmake_parse_arguments(_ "${OPTIONS}" "${OVA}" "${MVA}" ${ARGN})
 
     if(NOT "${__NATIVE}" STREQUAL "")
-        
+
         foreach(package ${__REQUIRED_PACKAGES})
-            gb_component_require_package("${__NATIVE}" "${package}")
+            string(REPLACE " " ";" package "${package}")
+            gb_component_require_package("${__NATIVE}" ${package})
         endforeach()
-        
+
         gb_add_component("${__NATIVE}" ${__SOURCE_LIST})
         if(NOT "${__GAMBAS}" STREQUAL "")
             gb_add_subcomponent("${__NATIVE}" "${__GAMBAS}")
@@ -148,6 +150,15 @@ function(gb_component)
         foreach(subcomponent ${__SUBCOMPONENTS})
             gb_add_subcomponent("${__NATIVE}" "${subcomponent}")
         endforeach()
+
+        foreach(component ${__COMPONENT_DEPENDENCIES})
+            gb_add_component_dependency("${__NATIVE}" "${component}")
+        endforeach()
+
+
+        if("${__SWITCHER}")
+            gb_component_set_switcher(${__NATIVE})
+        endif()
 
     elseif(NOT "${__GAMBAS}" STREQUAL "")
         gb_add_gambas_component("${__GAMBAS}")
@@ -636,7 +647,7 @@ function(gb_check_dependencies)
         foreach(dep IN ITEMS ${GB_COMPONENT_DEPENDENCIES_${comp}})
             if(NOT TARGET ${dep})
                 if(NOT TARGET "${dep}.gambas")
-                    message("!! WARNING : Dependency ${dep} not found for ${comp}.")
+                    message("!! WARNING: Dependency ${dep} not found for ${comp}.")
                     gb_disable_component(${comp})
                 endif()
             endif()
@@ -873,7 +884,6 @@ function(gb_check_needs)
     get_property(GB_NEED_LIST GLOBAL PROPERTY GB_NEED_LIST)
     
     foreach(need IN ITEMS ${GB_NEED_LIST})
-        
         gb_get_need_implementer(${need})
         if(NOT "${IMPLEMENTER}" STREQUAL "")
             get_property(GB_NEED_COMPONENT_LIST_${need} GLOBAL PROPERTY GB_NEED_COMPONENT_LIST_${need})
@@ -885,7 +895,7 @@ function(gb_check_needs)
                 endif()
             endforeach()
         else()
-            message("Warning : no implementer found for need ${need}")
+            message("!! WARNING: No implementer found for need '${need}'")
             _gb_disable_needers(${need})
         endif()
     endforeach()

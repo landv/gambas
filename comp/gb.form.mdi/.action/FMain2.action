@@ -1,0 +1,37 @@
+# Gambas Action File 3.0
+
+{ Actions
+  { Action open
+    Text = ""
+    Picture = "icon:/small/new"
+  }
+  { Action properties
+    Text = "Properties"
+    Shortcut = ""
+    Picture = "icon:/small/properties"
+  }
+  { Action quit
+    Text = "Quit"
+    Shortcut = ""
+    Picture = "icon:/small/quit"
+  }
+  { Action save
+    Text = "Save"
+    Shortcut = ""
+    Picture = "icon:/small/save"
+  }
+  { Action saveas
+    Text = "Save as"
+    Shortcut = ""
+    Picture = "icon:/small/save-as"
+  }
+}
+
+{ Toolbars
+  { Toolbar toolbar
+    Text = ""
+    List = "open,properties,saveas,quit,save"
+    Default = "open,properties,saveas,quit,$MenuButton1,save,$Button1"
+  }
+}
+

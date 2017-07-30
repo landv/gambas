@@ -85,7 +85,7 @@ if(IS_DIRECTORY "${CMAKE_SOURCE_DIR}/.git")
     execute_process(COMMAND git rev-parse --short HEAD
         OUTPUT_VARIABLE GIT_REVISION
         OUTPUT_STRIP_TRAILING_WHITESPACE)
-    message("Found git working tree at revision ${GIT_REVISION}")
+    message("-- Found Git working tree at revision ${GIT_REVISION}")
 endif()
 
 check_function_exists(atoll HAVE_ATOLL)
