@@ -1,3 +1,3 @@
-
-gb_component_require_package(gb.pcre PCRE)
-gb_add_component(gb.pcre main.c regexp.c)
+gb_component(NATIVE gb.pcre
+    REQUIRED_PACKAGES PCRE
+    SOURCE_LIST main.c regexp.c)

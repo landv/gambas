@@ -128,6 +128,33 @@ function(gb_add_component_target _NAME)
     
 endfunction()
 
+function(gb_component)
+
+    set(OVA NATIVE GAMBAS)
+    set(MVA SOURCE_LIST SUBCOMPONENTS REQUIRED_PACKAGES)
+    cmake_parse_arguments(_ "" "${OVA}" "${MVA}" ${ARGN})
+
+    if(NOT "${__NATIVE}" STREQUAL "")
+        
+        foreach(package ${__REQUIRED_PACKAGES})
+            gb_component_require_package("${__NATIVE}" "${package}")
+        endforeach()
+        
+        gb_add_component("${__NATIVE}" ${__SOURCE_LIST})
+        if(NOT "${__GAMBAS}" STREQUAL "")
+            gb_add_subcomponent("${__NATIVE}" "${__GAMBAS}")
+        endif()
+
+        foreach(subcomponent ${__SUBCOMPONENTS})
+            gb_add_subcomponent("${__NATIVE}" "${subcomponent}")
+        endforeach()
+
+    elseif(NOT "${__GAMBAS}" STREQUAL "")
+        gb_add_gambas_component("${__GAMBAS}")
+    endif()
+
+endfunction()
+
 function(gb_add_component _NAME)
     
     gb_add_component_target(${_NAME} ${ARGN})
@@ -322,31 +349,26 @@ macro(set_directory_property_from_variable _PROPERTY)
 endmacro()
 
 macro(gb_component_require_package _COMPONENT _PACKAGE)
-    
-
-    
     include("Find${_PACKAGE}" OPTIONAL RESULT_VARIABLE FOUND_PACKAGE)
-    
+
     if(${FOUND_PACKAGE} STREQUAL "NOTFOUND")
         message("-- Could not find CMake Module 'Find${_PACKAGE}' for component ${_COMPONENT}")
         gb_disable_component(${_COMPONENT})
     else()
         find_package(${_PACKAGE} ${ARGN})
-    
+
         if(NOT ${${_PACKAGE}_FOUND})
             message("-- Could not find package '${_PACKAGE}' for component ${_COMPONENT}")
             gb_disable_component(${_COMPONENT})
         else()
             string(TOUPPER ${_PACKAGE} PACKAGE_UPPERCASE)
             set_directory_property_from_variable(LINK_DIRECTORIES ${${_PACKAGE}_LIBRARIES} ${${PACKAGE_UPPERCASE}_LIBRARIES})
-            
+
             set_directory_property_from_variable(INCLUDE_DIRECTORIES ${${_PACKAGE}_INCLUDE_DIRS} ${${PACKAGE_UPPERCASE}_INCLUDE_DIRS} ${${_PACKAGE}_INCLUDE_DIR} ${${PACKAGE_UPPERCASE}_INCLUDE_DIR})
         endif()
-        
+
     endif()
-    
-    
-    
+
 endmacro()
 
 function(gb_component_require_library _COMPONENT _LIBRARY)

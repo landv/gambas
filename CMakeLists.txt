@@ -8,6 +8,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -ggdb -fvisibility=hidden")
 include(config/gambas.cmake)
 
 add_subdirectory(main)
+add_subdirectory(gb.net)
 add_subdirectory(gb.xml)
 # add_subdirectory(comp)
 # add_subdirectory(app)
