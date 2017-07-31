@@ -1200,14 +1200,13 @@ void TRANS_label(void)
 
 void TRANS_with(void)
 {
-	control_enter(RS_WITH);
+        if (!TRANS_affectation(TRUE))
+            TRANS_expression(FALSE);
 
-	if (!TRANS_affectation(TRUE))
-		TRANS_expression(FALSE);
+	control_enter(RS_WITH);
 
 	CODE_pop_ctrl(current_ctrl->local);
 }
-
 
 void TRANS_use_with(void)
 {
