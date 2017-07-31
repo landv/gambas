@@ -1,3 +1,9 @@
+
+if(GMIME_INCLUDE_DIRS AND GMIME_LIBRARIES)
+    set(GMIME_FIND_QUIETLY TRUE)
+    return()
+endif()
+
 find_package(PkgConfig)
 pkg_check_modules(GMIME gmime-2.6)
 

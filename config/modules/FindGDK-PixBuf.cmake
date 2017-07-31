@@ -7,6 +7,11 @@
 
 include(LibFindMacros)
 
+if(GDK-PixBuf_LIBRARY AND GDK-PixBuf_INCLUDE_DIR)
+    set(GDK-PixBuf_FIND_QUIETLY TRUE)
+    return()
+endif()
+
 # Use pkg-config to get hints about paths
 libfind_pkg_check_modules(GDK-PixBuf_PKGCONF gdk-pixbuf-2.0)
 

@@ -360,7 +360,7 @@ macro(set_directory_property_from_variable _PROPERTY)
 endmacro()
 
 macro(gb_component_require_package _COMPONENT _PACKAGE)
-    include("Find${_PACKAGE}" OPTIONAL RESULT_VARIABLE FOUND_PACKAGE)
+#     include("Find${_PACKAGE}" OPTIONAL RESULT_VARIABLE FOUND_PACKAGE)
 
     if(${FOUND_PACKAGE} STREQUAL "NOTFOUND")
         message("-- Could not find CMake Module 'Find${_PACKAGE}' for component ${_COMPONENT}")
