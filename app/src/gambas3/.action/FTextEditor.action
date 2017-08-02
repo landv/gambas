@@ -1,0 +1,177 @@
+# Gambas Action File 3.0
+
+{ Actions
+  { Action bookmark
+    Text = "Bookmarks"
+    Picture = "icon:/small/bookmark"
+  }
+  { Action close
+    Text = "Close"
+    Shortcut = "Ctrl+W"
+    Picture = "icon:/small/close"
+  }
+  { Action color
+    Text = "Insert color"
+    Shortcut = ""
+    Picture = "icon:/small/color"
+  }
+  { Action compress
+    Text = "Compress file"
+    Shortcut = ""
+    Picture = "icon:/small/archive"
+  }
+  { Action copy
+    Text = "Copy"
+    Shortcut = "Ctrl+C"
+    Picture = "icon:/small/copy"
+  }
+  { Action cut
+    Text = "Cut"
+    Shortcut = "Ctrl+X"
+    Picture = "icon:/small/cut"
+  }
+  { Action eol
+    Text = "End of line"
+    Picture = "img/16/eol.png"
+  }
+  { Action find-next
+    Text = "Find next"
+    Shortcut = "F3"
+    Picture = "icon:/small/down"
+  }
+  { Action find-previous
+    Text = "Find previous"
+    Shortcut = "Shift+F3"
+    Picture = "icon:/small/up"
+  }
+  { Action goto-line
+    Text = "Go to line"
+    Shortcut = "Ctrl+G"
+  }
+  { Action indent
+    Text = "Indent"
+    Picture = "icon:/small/indent"
+  }
+  { Action lcase
+    Text = "Lower case"
+    Shortcut = "Ctrl+Alt+L"
+    Picture = "img/16/lcase.png"
+  }
+  { Action locked
+    Text = "Locked"
+    Shortcut = ""
+    Picture = "icon:/small/lock"
+  }
+  { Action paste
+    Text = "Paste"
+    Shortcut = "Ctrl+V"
+    Picture = "icon:/small/paste"
+  }
+  { Action paste-comment
+    Text = "Paste as comments"
+    Shortcut = ""
+  }
+  { Action paste-special
+    Text = "Paste special"
+    Shortcut = "Ctrl+Shift+V"
+    Picture = "icon:/small/paste"
+  }
+  { Action paste-string
+    Text = "Paste as string"
+    Shortcut = ""
+  }
+  { Action paste-string-split
+    Text = "Paste as multi-line string"
+    Shortcut = ""
+  }
+  { Action proc
+    Text = "Procedure list"
+    Picture = "icon:/small/bottom"
+  }
+  { Action redo
+    Text = "Redo"
+    Shortcut = "Ctrl+Y"
+    Picture = "icon:/small/redo"
+  }
+  { Action reload
+    Text = "Reload"
+    Shortcut = ""
+    Picture = "icon:/small/revert"
+  }
+  { Action save
+    Text = "Save"
+    Shortcut = "Ctrl+S"
+    Picture = "icon:/small/save"
+  }
+  { Action select-all
+    Text = "Select All"
+    Shortcut = "Ctrl+A"
+  }
+  { Action show-class
+    Text = "Code"
+    Picture = "icon:/small/next"
+  }
+  { Action show-code
+    Text = "Open code"
+    Shortcut = "F12"
+    Picture = "img/16/class.png"
+  }
+  { Action sort-ascent
+    Text = "Sort ascent"
+    Shortcut = ""
+    Picture = "icon:/small/sort-ascent"
+  }
+  { Action sort-descent
+    Text = "Sort descent"
+    Shortcut = ""
+    Picture = "icon:/small/sort-descent"
+  }
+  { Action ucase
+    Text = "Upper case"
+    Shortcut = "Ctrl+Alt+U"
+    Picture = "img/16/ucase.png"
+  }
+  { Action uncompress
+    Text = "Uncompress file"
+    Shortcut = ""
+    Picture = "icon:/small/undo"
+  }
+  { Action undo
+    Text = "Undo"
+    Shortcut = "Ctrl+Z"
+    Picture = "icon:/small/undo"
+  }
+  { Action unindent
+    Text = "Unindent"
+    Picture = "icon:/small/unindent"
+  }
+  { Action view-hsplit
+    Text = "Horizontal split"
+    Shortcut = "Ctrl+H"
+    Picture = "icon:/small/view-split-h"
+  }
+  { Action view-nosplit
+    Text = "No split"
+    Shortcut = ""
+    Picture = "icon:/small/view-normal"
+  }
+  { Action view-vsplit
+    Text = "Vertical split"
+    Shortcut = "Ctrl+J"
+    Picture = "icon:/small/view-split-v"
+  }
+  { Action wrap
+    Text = "Automatic word wrap"
+    Shortcut = ""
+    Picture = "img/16/wrap.png"
+  }
+}
+
+{ Toolbars
+  { Toolbar text
+    Text = "Text editor"
+    List = "show-class,save,reload,locked,cut,copy,paste,undo,redo,indent,unindent,bookmark,color,wrap,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,eol"
+    Default = "show-class,save,reload,locked,paste,undo,redo,color,wrap,|,compress,uncompress,|,|,proc"
+  }
+}
+

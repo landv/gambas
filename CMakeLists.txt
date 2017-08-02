@@ -18,7 +18,7 @@ add_subdirectory(gb.opengl)
 add_subdirectory(gb.media)
 add_subdirectory(gb.xml)
 add_subdirectory(comp)
-# add_subdirectory(app)
+add_subdirectory(app)
 
 gb_check_needs()
 gb_check_dependencies()

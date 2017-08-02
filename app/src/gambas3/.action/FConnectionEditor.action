@@ -1,0 +1,29 @@
+# Gambas Action File 3.0
+
+{ Actions
+  { Action database
+    Text = ""
+    Picture = "img/16/database.png"
+  }
+  { Action reload
+    Text = "Reload"
+    Picture = "icon:/small/refresh"
+  }
+  { Action save
+    Text = "Save"
+    Picture = "icon:/small/save"
+  }
+  { Action show-system
+    Text = "Show system tables"
+    Picture = "img/16/system-table.png"
+  }
+}
+
+{ Toolbars
+  { Toolbar connection
+    Text = "Connection editor"
+    List = "database,show-system,save,reload"
+    Default = "database,show-system,|,$btnNewTable,save,reload,|,$btnKill,$btnRename,$btnCopyTable,$btnPasteTable,$btnImport"
+  }
+}
+

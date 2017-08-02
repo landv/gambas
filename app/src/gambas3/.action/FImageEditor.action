@@ -1,0 +1,213 @@
+# Gambas Action File 3.0
+
+{ Actions
+  { Action close
+    Text = "Close"
+    Shortcut = "Ctrl+W"
+    Picture = "icon:/small/close"
+  }
+  { Action copy
+    Text = "Copy"
+    Shortcut = "Ctrl+C"
+    Picture = "icon:/small/copy"
+  }
+  { Action crop
+    Text = "Crop"
+    Shortcut = "Ctrl+K"
+    Picture = "img/draw/crop.png"
+  }
+  { Action cut
+    Text = "Cut"
+    Shortcut = "Ctrl+X"
+    Picture = "icon:/small/cut"
+  }
+  { Action difference
+    Text = "Difference"
+    Picture = "img/draw/difference.png"
+  }
+  { Action duplicate
+    Text = "Duplicate selection"
+    Shortcut = "Ctrl+D"
+    Picture = "img/draw/duplicate.png"
+  }
+  { Action exclusive
+    Text = "Exclusive or"
+    Picture = "img/draw/exclusive.png"
+  }
+  { Action flip-h
+    Text = "Horizontal flip"
+    Shortcut = ""
+    Picture = "img/draw/hflip.png"
+  }
+  { Action flip-v
+    Text = "Vertical flip"
+    Shortcut = ""
+    Picture = "img/draw/vflip.png"
+  }
+  { Action grid
+    Text = "Drawing grid"
+    Picture = "img/draw/grid.png"
+  }
+  { Action hide
+    Text = "Hide selection"
+    Shortcut = "Esc"
+    Picture = "img/draw/hide.png"
+  }
+  { Action intersection
+    Text = "Intersection"
+    Picture = "img/draw/intersection.png"
+  }
+  { Action invert
+    Text = "Invert selection"
+    Shortcut = "Ctrl+I"
+    Picture = "img/draw/invert.png"
+  }
+  { Action locked
+    Text = "Locked"
+    Shortcut = ""
+    Picture = "icon:/small/lock"
+  }
+  { Action offset
+    Text = "Offset selection"
+    Shortcut = "Ctrl+*"
+    Picture = "img/draw/offset.png"
+  }
+  { Action paste
+    Text = "Paste"
+    Shortcut = "Ctrl+V"
+    Picture = "icon:/small/paste"
+  }
+  { Action redo
+    Text = "Redo"
+    Shortcut = "Ctrl+Y"
+    Picture = "icon:/small/redo"
+  }
+  { Action reload
+    Text = "Reload"
+    Shortcut = ""
+    Picture = "icon:/small/refresh"
+  }
+  { Action resize
+    Text = "Resize"
+    Shortcut = ""
+    Picture = "img/draw/resize.png"
+  }
+  { Action rotate
+    Text = "Rotate"
+    Shortcut = ""
+    Picture = "img/draw/rotate.png"
+  }
+  { Action rotate-l
+    Text = "Rotate counter-clockwise"
+    Picture = "img/draw/rotate-left.png"
+  }
+  { Action rotate-left
+    Text = "Rotate counter-clockwise"
+    Shortcut = "Ctrl+<"
+    Picture = "img/draw/rotate-left.png"
+  }
+  { Action rotate-r
+    Text = "Rotate clockwise"
+    Picture = "img/draw/rotate-right.png"
+  }
+  { Action rotate-right
+    Text = "Rotate clockwise"
+    Shortcut = "Ctrl+>"
+    Picture = "img/draw/rotate-right.png"
+  }
+  { Action save
+    Text = "Save"
+    Shortcut = "Ctrl+S"
+    Picture = "icon:/small/save"
+  }
+  { Action select-all
+    Text = "Select All"
+    Shortcut = "Ctrl+A"
+  }
+  { Action tiff
+    Text = "Save as TIFF"
+    Shortcut = ""
+  }
+  { Action tool-change
+    Text = "Edit selection"
+    Picture = "img/draw/move.png"
+  }
+  { Action tool-draw
+    Text = "Draw"
+    Picture = "icon:/small/pen"
+  }
+  { Action tool-ellipse
+    Text = "Ellipse"
+    Picture = "img/draw/ellipse.png"
+  }
+  { Action tool-erase
+    Text = "Erase"
+    Picture = "icon:/small/erase"
+  }
+  { Action tool-line
+    Text = "Line"
+    Picture = "img/draw/line.png"
+  }
+  { Action tool-magic
+    Text = "Magic wand"
+    Picture = "img/draw/magic.png"
+  }
+  { Action tool-move
+    Text = "Move"
+    Picture = "img/draw/scroll.png"
+  }
+  { Action tool-paste
+    Text = "Paste"
+    Picture = "icon:/small/paste"
+  }
+  { Action tool-rectangle
+    Text = "Rectangle"
+    Picture = "img/draw/rectangle.png"
+  }
+  { Action tool-text
+    Text = "Text"
+    Picture = "img/draw/text.png"
+  }
+  { Action undo
+    Text = "Undo"
+    Shortcut = "Ctrl+Z"
+    Picture = "icon:/small/undo"
+  }
+  { Action union
+    Text = "Union"
+    Picture = "img/draw/union.png"
+  }
+  { Action zoom
+    Text = "Zoom level"
+    Picture = "$ComboBox"
+  }
+  { Action zoom-fit
+    Text = "Zoom fit"
+    Shortcut = ""
+    Picture = "icon:/small/zoom-fit"
+  }
+  { Action zoom-in
+    Text = "Zoom in"
+    Shortcut = "Ctrl++"
+    Picture = "icon:/small/zoom-in"
+  }
+  { Action zoom-normal
+    Text = "Zoom normal"
+    Shortcut = "Ctrl+0"
+    Picture = "icon:/small/zoom-normal"
+  }
+  { Action zoom-out
+    Text = "Zoom out"
+    Shortcut = "Ctrl+-"
+    Picture = "icon:/small/zoom-out"
+  }
+}
+
+{ Toolbars
+  { Toolbar image
+    Text = "Image editor"
+    List = "save,reload,locked,undo,redo,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,resize,rotate,copy,cut,tool-paste,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,union,difference,intersection,exclusive,invert,duplicate,offset,crop,flip-h,flip-v,rotate-r,rotate-l"
+    Default = "save,reload,locked,undo,redo,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,copy,cut,tool-paste,|,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,|,invert,duplicate,offset,|,crop,flip-h,flip-v,rotate-r,rotate-l"
+  }
+}
+

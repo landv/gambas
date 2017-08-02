@@ -1,0 +1,2 @@
+gb_add_gambas_app(gbs3)
+gb_add_gambas_app(gambas3)
