@@ -271,7 +271,7 @@ Static Public Sub File_Read()
       Endif
       i = 10
       ipos2 = 10
-      If String.InStr(S, "B") Then Stop
+'      If String.InStr(S, "B") Then Stop
       For Each ss In ["~", "A", "B", "C", "D", "H", "F", "P", "Q", "R", "S", "M", "Z"]
         i = InStr(s, ss, ipos)
         If i = 0 Then Continue
