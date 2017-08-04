@@ -969,7 +969,7 @@ Public Sub Editors_KeyPress()
 
     $bCheckSignature = True
     
-  Else If InStr("(),[]", Key.Text) Then
+  Else If InStr("(),[]!", Key.Text) Then
 
     $bCheckSignature = True
 
@@ -1727,7 +1727,7 @@ Private Sub GetExpressionStart(aExpr As String[], aType As Integer[]) As Integer
       Endif
       bLastSymbol = False
       Continue
-    Else If sPattern = "." Then
+    Else If sPattern = "." Or sPattern = "!" Then
       bLastSymbol = False
       Continue
     Else If IsTypeSymbol(sPattern, aType[iInd]) Then
@@ -1849,7 +1849,7 @@ Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointA
         sType = $hSymbol.Type ' A method cannot return static classes
         $bLastStatic = False
       Endif
-    Else If sPattern = "]" Then
+    Else If sPattern = "]" Or sPattern = "!" Then
       
       If Not sType Then ' Array constructor operator [ ... ]
         Return
@@ -1980,13 +1980,19 @@ Public Sub CheckCompletion(sMode As String)
         $bCheckSignature = True
         
         sWord = $hCompletion.GetWord(sLine, $hEditor.Column - 1)
-        If Right(sLine) <> "." And If Len(sLine) > Len(sWord) And If Mid$(sLine, Len(sLine) - Len(sWord), 1) = "." Then
-          iPos = $hEditor.Column
-          $hEditor.Goto($hEditor.Column - String.Len(sWord) - 2, $hEditor.Line)
-          CheckCompletion(".")
-          FCompletion.SetText(sWord)
-          $hEditor.Goto(iPos, $hEditor.Line)
-          Return
+        If Right(sLine) <> "." And If Len(sLine) > Len(sWord) Then 
+          Select Case Mid$(sLine, Len(sLine) - Len(sWord), 1)
+            Case "."
+              iPos = $hEditor.Column
+              $hEditor.Goto($hEditor.Column - String.Len(sWord) - 2, $hEditor.Line)
+              CheckCompletion(".")
+              FCompletion.SetText(sWord)
+              $hEditor.Goto(iPos, $hEditor.Line)
+              Return
+            Case "!" 'Do not trigger completion form for index shortcut
+              $hCompletion.Hide
+              Return
+          End Select
         Endif
         
         If Len(sWord) >= 3 Then 
@@ -2020,6 +2026,7 @@ Private Function GetExpressionSignature(aExpr As String[], aType As Integer[]) A
   Dim sPattern As String
   Dim sType As String
   Dim bNew As Boolean
+  Dim bIndexShortcutEnded As Boolean
 
   $hSymbol = Null
   $iArgSignature = 0
@@ -2045,6 +2052,10 @@ Private Function GetExpressionSignature(aExpr As String[], aType As Integer[]) A
       Break
     Else If sPattern = "," Then
       Inc $iArgSignature
+    Else If sPattern = "." Or sPattern = "=" Then
+      bIndexShortcutEnded = True
+    Else If sPattern = "!" And bIndexShortcutEnded = False
+      Break
     Endif
 
   Next
@@ -2067,7 +2078,7 @@ Private Function GetExpressionSignature(aExpr As String[], aType As Integer[]) A
       Else
         Try $hSymbol = Project.Documentation.GetClassSymbols(sType)["_call"]
       Endif
-    Else If sPattern = "[" Then
+    Else If sPattern = "[" Or sPattern = "!" Then
       $hSymbol = Null
       Try $hSymbol = Project.Documentation.GetClassSymbols(sType)["_get"]
     Endif
