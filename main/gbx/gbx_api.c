@@ -131,6 +131,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_ExistClassLocal,
 	(void *)CLASS_find,
 	(void *)GB_GetArrayType,
+	(void *)CLASS_get_array_class,
 	(void *)GB_Is,
 	(void *)GB_Ref,
 	(void *)GB_Unref,
