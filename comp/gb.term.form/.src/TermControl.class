@@ -34,6 +34,12 @@ Property Read HaveFocus As Boolean
 Property Read _DefaultBackground As Integer
 Property Read _DefaultForeGround As Integer
 
+Property Read _ClientHeight As Integer
+Property Read _ClientWidth As Integer
+
+
+
+
 Private $iColorMode As Integer
 Private $iBorder As Integer
 
@@ -403,7 +409,7 @@ End
 
 Private Sub Foreground_Write(Value As Integer)
 
-  $iBackGround = Value
+  $iForeground = Value
   Me.Refresh
 
 End
@@ -735,5 +741,14 @@ Private Function _DefaultForeGround_Read() As Integer
 End
 
 
+Private Function _ClientHeight_Read() As Integer
 
+  Return $rectClient.Height
 
+End
+
+Private Function _ClientWidth_Read() As Integer
+
+  Return $rectClient.Width
+
+End
