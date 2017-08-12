@@ -268,8 +268,8 @@ Public Sub Editor_Cursor()
   
   If Me.Line <> $iLastLine Then
     $iLastLine = Me.Line
-    $aFind = Null
-    $sFindPrefix = ""
+    '$aFind = Null
+    '$sFindPrefix = ""
     'Raise LineChange
   Endif
   
@@ -342,6 +342,13 @@ Public Sub Editor_KeyPress()
   
 End
 
+Public Sub IsSameFindStrings(sPrefix As String) As String
+  
+  Return sPrefix = $sFindPrefix
+  
+End
+
+
 Public Sub FindStrings(sPrefix As String) As Integer[]
   
   Dim iLine As Integer
@@ -356,7 +363,7 @@ Public Sub FindStrings(sPrefix As String) As Integer[]
   
     iLine = Me.FindNextString(sPrefix, iLine + 1)
     If iLine < 0 Then Break 
-    If iLine = Me.Line Then Continue
+    'If iLine = Me.Line Then Continue
     
     $aFind.Add(iLine)
   

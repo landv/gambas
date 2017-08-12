@@ -86,6 +86,7 @@ Public Sub Command(sCommand As String) As String[]
   Dim sClass As String
   Dim iStart As Integer
   Dim I, J, K, N, NC As Integer
+  Dim aClass As String[]
   
   aArg = Split(sCommand, " ", Chr$(34))
   sCommand = aArg[0]
@@ -160,7 +161,10 @@ Public Sub Command(sCommand As String) As String[]
   Else If sCommand = "classes" And If Main.Component Then
     
     hComp = CComponent.Get(Main.Component)
-    If hComp Then Return hComp.GetClasses()
+    If hComp Then 
+      If aArg.Count > 1 Then aClass = Split(aArg[1])
+      Return hComp.GetClasses(aClass)
+    Endif
 
     Return MakeError(("This component does not exist."))
   

@@ -845,10 +845,11 @@ READ_HELP:
 End
 
 
-Public Function GetClasses() As String[]
+Public Function GetClasses(Optional aMore As String[]) As String[]
 
   Dim aResult As New String[]
   Dim sClass As String
+  Dim aClass As New String[]
 
   aResult.Add("[[ desc")
   aResult.Add(("Class"))
@@ -857,11 +858,19 @@ Public Function GetClasses() As String[]
 
   For Each sClass In ClassList
     If Left(sClass) = "." Or If Left(sClass) = "_" Or If InStr(sClass, "*") Then Continue
+    aClass.Add(sClass)
+  Next
+  
+  If aMore Then aClass.Insert(aMore)
+  
+  aClass.Sort(gb.IgnoreCase)
+  
+  For Each sClass In aClass
     'aClass.Add(sClass)
     aResult.Add("==")
     aResult.Add("[/comp" &/ Key &/ LCase(sClass) & "]")
     aResult.Add("--")
-    aResult.Add(Me[sClass].GetDescription())
+    Try aResult.Add(Me[sClass].GetDescription())
   Next
   
   aResult.Add("]]")

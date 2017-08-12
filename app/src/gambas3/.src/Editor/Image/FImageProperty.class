@@ -939,7 +939,7 @@ Public Sub btnBalanceReset_Click()
 
   Dim hCtrl As SliderBox
   
-  For Each hCtrl In [slbBrightness, slbContrast, slbGamma, slbHue, slbSaturation, slbLightness, slbBlur]
+  For Each hCtrl In [slbBrightness, slbContrast, slbGamma, slbHue, slbSaturation, slbLightness, slbBlur, slbTransparency]
     hCtrl.Value = 0
   Next
   
@@ -949,7 +949,7 @@ Public Sub HasBalance() As Boolean
   
   Dim hCtrl As SliderBox
   
-  For Each hCtrl In [slbBrightness, slbContrast, slbGamma, slbHue, slbSaturation, slbLightness, slbBlur]
+  For Each hCtrl In [slbBrightness, slbContrast, slbGamma, slbHue, slbSaturation, slbLightness, slbBlur, slbTransparency]
     If hCtrl.Value Then Return True
   Next
   
@@ -966,6 +966,7 @@ Public Sub ApplyBalance(hImage As Image)
   hImage.Lightness(slbLightness.Value / slbLightness.MaxValue)
   hImage.EndBalance
   If slbBlur.Value Then hImage.Fuzzy(slbBlur.Value)
+  If slbTransparency.Value Then hImage.Opacity((255 - slbTransparency.Value) / 255)
   
 End
 

@@ -30,6 +30,8 @@ Private $bGambas As Boolean
 
 Private $bHideLater As Boolean
 
+Private $cFindStrings As Collection
+
 Public Sub _new()
   
   gvwComp.Columns.Count = 1
@@ -67,7 +69,7 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
 
   $hForm = hForm
   $hEditor = hForm.GetEditor()
-  Me.Font = $hEditor.font
+  Me.Font = $hEditor.Font
 
   Inc Application.Busy
 
@@ -544,37 +546,51 @@ Private Sub FillWithIdent(sWord As String)
     Next
   Endif
   
-  aFind = $hEditor.FindStrings(Left(sWord, 3))
+  If Not $hEditor.IsSameFindStrings(Left(sWord, 3)) Then
   
-  For Each iLine In aFind
+    $cFindStrings = New Collection
+    aFind = $hEditor.FindStrings(Left(sWord, 3))
+    
+    For Each iLine In aFind
+    
+      If iLine = $hEditor.Line Then Continue
+      'If $bGambas Then
+        'sLine = Highlight.Purge($hEditor[iLine].Text)
+      'Else
+        sLine = $hEditor[iLine].Text
+      'Endif
+      sUCaseLine = String.UCase(sLine) ' Only ASCII characters are interesting there...
+    
+      iPos = 0
+      Do
+        Inc iPos
+        iPos = String.InStr(sUCaseLine, sWord, iPos)
+        If iPos = 0 Then Break
+        If iPos > 1 Then
+          sCar = String.Mid$(sLine, iPos - 1, 1)
+          If $hForm.IsWordChar(sCar) Then Break
+        Endif
+        For iPos2 = iPos + String.Len(sWord) To String.Len(sLine)
+          sCar = String.Mid$(sLine, iPos2, 1)
+          If Not $hForm.IsWordChar(sCar) Then Break
+        Next
+        sCar = String.Mid$(sLine, iPos, iPos2 - iPos)
+        If IsDigit(Left$(sCar)) Then Continue 
+        
+        If $cFindStrings.Exist(sCar) Then Continue
+        $cFindStrings[sCar] = True
+        
+      Loop
+    
+    Next
   
-    If $bGambas Then
-      sLine = Highlight.Purge($hEditor[iLine].Text)
-    Else
-      sLine = $hEditor[iLine].Text
-    Endif
-    sUCaseLine = String.UCase(sLine) ' Only ASCII characters are interesting there...
-  
-    iPos = 0
-    Do
-      Inc iPos
-      iPos = String.InStr(sUCaseLine, sWord, iPos)
-      If iPos = 0 Then Break
-      If iPos > 1 Then
-        sCar = String.Mid$(sLine, iPos - 1, 1)
-        If $hForm.IsWordChar(sCar) Then Break
-      Endif
-      For iPos2 = iPos + String.Len(sWord) To String.Len(sLine)
-        sCar = String.Mid$(sLine, iPos2, 1)
-        If Not $hForm.IsWordChar(sCar) Then Break
-      Next
-      sCar = String.Mid$(sLine, iPos, iPos2 - iPos)
-      If IsDigit(Left$(sCar)) Then Continue 
-      If cKey.Exist(sCar) Then Continue
-      aResult.Add(sCar & " " & MHelp.TYPE_SYMBOL)
-      cKey[sCar] = True
-    Loop
-  
+  Endif
+    
+  For Each $cFindStrings
+    sCar = $cFindStrings.Key
+    If cKey.Exist(sCar) Then Continue
+    aResult.Add(sCar & " " & MHelp.TYPE_SYMBOL)
+    cKey[sCar] = True
   Next
 
   If $bGambas Then
