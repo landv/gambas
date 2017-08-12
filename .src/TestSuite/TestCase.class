@@ -56,7 +56,10 @@ Public Sub Run(oTestResult As TestResult, Optional ShowDebug As Boolean)
         oTestResult.AddError(Error.Code, Error.Where & "::Setup", Error.Text)
         Error.Clear
     Else
-        $MyContainer.RunCase(Me, oTestResult)
+        Try $MyContainer.RunCase(Me, oTestResult)
+        If Error Then
+            oTestResult.AddError(Error.Code, Error.Where, Error.Text)
+        Endif
     End If
 
     '' Tear down test fixture
