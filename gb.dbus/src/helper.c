@@ -245,6 +245,7 @@ static char *array_from_dbus_type(const char *signature)
 			
 			if (type_contents != type)
 				strcpy(type, type_contents);
+			GB.GetArrayClass(GB.FindClass(type));
 			strcat(type, "[]");
 			return type;
 		}

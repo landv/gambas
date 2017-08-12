@@ -977,6 +977,7 @@ typedef
 		bool (*ExistClassLocal)(const char *);
 		GB_CLASS (*FindClassLocal)(const char *);
 		GB_TYPE (*GetArrayType)(GB_CLASS);
+		GB_CLASS (*GetArrayClass)(GB_CLASS);
 		bool (*Is)(void *, GB_CLASS);
 		void (*Ref)(void *);
 		void (*Unref)(void **);
