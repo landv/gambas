@@ -12,26 +12,7 @@ Private $DoSelfTest As Boolean
 
 Public Sub _new()
 
-    'If UnittestFileNotExist() = False Then
     $Suite = New TestSuite
-    'Endif
-
-End
-
-' returns cancel
-Sub UnittestFileNotExist() As Boolean
-
-    Dim cancel As Boolean = True
-
-    ' http://gambaswiki.org/wiki/cat/path
-    'If you need to access a file located in the main project from a component,
-    'it is possible! You must start your relative path by the ../ sequence.
-    If Exist(".." &/ "Unittests") Then
-        cancel = False
-    Else
-        Print "No Unittests defined"
-    Endif
-    Return cancel
 
 End
 
@@ -161,14 +142,25 @@ Static Public Function GetAllTestContainerNames(Optional DoSelfTest As Boolean) 
     Endif
 
     For Each strName In strClassnames
-
-        Try TestClass = Class.Load(strName)
-        If TestClass Then
-            If TestClass.Parent Then
-                If TestClass.Parent.Name = "ATestContainer" Then
-                    strName = String.UCaseFirst(String.Lower(TestClass.Name))
-                    'Debug "Add to testclasses: ";; strName
+        If Left(Lower(strName), Len("d8e8fca2dc0f896fd7cb4cb0031ba249")) = "d8e8fca2dc0f896fd7cb4cb0031ba249" Then
+            If DoSelfTest = True Then
+                If Not TestContainernames.Exist(strName) Then
                     TestContainernames.Add(strName)
+                Endif
+            Endif
+        Else
+            If DoSelfTest = False Then
+                Try TestClass = Class.Load(strName)
+                If TestClass Then
+                    If TestClass.Parent Then
+                        If TestClass.Parent.Name = "ATestContainer" Then
+                            strName = String.UCaseFirst(String.Lower(TestClass.Name))
+                            'Debug "Add to testclasses: ";; strName
+                            If Not TestContainernames.Exist(strName) Then
+                                TestContainernames.Add(strName)
+                            Endif
+                        Endif
+                    Endif
                 Endif
             Endif
         Endif
