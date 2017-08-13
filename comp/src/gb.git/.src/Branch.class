@@ -1,0 +1,30 @@
+' Gambas class file
+
+Export
+
+Private $repo As Repository
+Private $ref As Pointer
+Private $type As Byte
+
+Property Read _Handle As Pointer
+Property Read Name As String
+
+Public Sub _new(repo As Repository, ref As Pointer, type As Byte)
+  
+  $repo = repo
+  $ref = ref
+  $type = type
+  
+End
+
+Private Function _Handle_Read() As Pointer
+
+  Return $ref
+
+End
+
+Private Function Name_Read() As String
+
+  Return FFIBranch.GetName($ref)
+
+End

@@ -1,0 +1,31 @@
+' Gambas module file
+
+Public Enum
+GIT_OK = 0, ' No Error
+GIT_ERROR = -1, ' Generic Error
+GIT_ENOTFOUND = -3, ' Requested object could Not be found
+GIT_EEXISTS = -4, ' Object exists preventing operation
+GIT_EAMBIGUOUS = -5, ' More than one object matches
+GIT_EBUFS = -6, ' Output buffer too short To hold data
+GIT_EUSER = -7, ' User-generated error
+GIT_EBAREREPO = -8, ' Operation Not allowed On bare repository
+GIT_EUNBORNBRANCH = -9, ' HEAD refers To branch With no commits
+GIT_EUNMERGED = -10, ' Merge In progress prevented operation
+GIT_ENONFASTFORWARD = -11, ' Reference was Not Fast - forwardable
+GIT_EINVALIDSPEC = -12, ' Name / ref spec was Not In a valid format
+GIT_ECONFLICT = -13, ' Checkout conflicts prevented operation
+GIT_ELOCKED = -14, ' Lock file prevented operation
+GIT_EMODIFIED = -15, ' Reference value does Not Match expected
+GIT_EAUTH = -16, ' Authentication Error
+GIT_ECERTIFICATE = -17, ' Server certificate Is Invalid
+GIT_EAPPLIED = -18, ' Patch / merge has already been applied
+GIT_EPEEL = -19, ' The requested peel operation Is Not possible
+GIT_EEOF = -20, ' Unexpected Eof
+GIT_EINVALID = -21, ' Invalid operation Or Input
+GIT_EUNCOMMITTED = -22, ' Uncommitted changes In index prevented operation
+GIT_EDIRECTORY = -23, ' The operation Is Not valid For a directory
+GIT_EMERGECONFLICT = -24, ' A merge conflict exists And cannot Continue
+GIT_PASSTHROUGH = -30, ' Internal only
+GIT_ITEROVER = -31, ' Signals End Of iteration With iterator
+GIT_RETRY = -32, ' Internal only
+GIT_EMISMATCH = -33 ' Hashsum mismatch In object

@@ -1,0 +1,15 @@
+' Gambas module file
+
+Public Sub Main()
+
+  Dim repo As New Repository("/home/adrien/Programmation/Gambas/src/gambas")
+  Dim branch As Branch
+
+  Print repo.Path
+  Print repo.Workdir
+
+  For Each branch In repo.Branches
+    Print Branch.Name
+  Next
+
+End

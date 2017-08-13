@@ -1,0 +1,63 @@
+' Gambas module file
+
+Library "libgit2"
+
+Public Struct GitError
+  Message As Pointer
+  Code As Integer
+End Struct
+
+Extern git_libgit2_init() As Integer
+Extern giterr_last() As GitError
+
+Public Available As Boolean
+Public LastErrorCode As Integer
+
+'' Initializes the libgit2 library.
+'' If the library was not found by the interpreter, it stops and Available is set to False
+'' If the library failed to initialize, a warning message is printed to stderr and Available is set to False
+Public Sub _init()
+
+  Dim err As GitError
+  Dim errCode As Integer
+
+  Try errCode = git_libgit2_init()
+  If Error Then
+    If Error.Code = 60 Then
+      Available = False
+    Else
+      Error.Propagate()
+    Endif
+  Endif
+
+  If errCode < 0 Then
+    err = giterr_last()
+    Error "Failed to initialize libgit2 : Error #"; err.Code; ": "; String@(err.Message)
+  Endif
+  
+  Available = True
+
+End
+
+'' Handles a libgit2 error code
+'' If the given code is an error code, the last libgit2 error is retrieved and then thrown.
+'' It also sets the LastErrorCode to the latest Git error code that was caught
+Public Sub HandleError(Code As Integer)
+
+  Dim err As GitError
+
+  If Code < 0 Then
+    err = giterr_last()
+    LastErrorCode = err.Code
+    Error.Raise("Git Error #" & err.Code & ": " & String@(err.Message))
+  Endif
+
+End
+
+Public Sub CheckAvailable()
+
+  If Not Available Then
+    Error.Raise("libgit2 is not available")
+  Endif
+
+End

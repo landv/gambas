@@ -1,0 +1,31 @@
+' Gambas class file
+
+Export
+
+Private $repo As Repository
+Private $branchType As Integer
+
+Public Sub _new(Repo As Repository, BranchType As Integer)
+  
+  $repo = Repo
+  $branchType = BranchType
+  
+End
+
+Public Sub _next() As Branch
+  
+  Dim iter As FFIBranchIterator = Enum.Index
+  
+  If Not iter Then
+    iter = New FFIBranchIterator($repo._Handle, $branchType)
+    Enum.Index = iter
+  Endif
+  
+  If Not iter.Next() Then 
+    Enum.Stop()
+    Enum.Index = Null
+  Endif
+  
+  Return New Branch($repo, iter.Ref, iter.Type)
+  
+End

@@ -1,0 +1,37 @@
+' Gambas module file
+
+Library "libgit2"
+Extern git_repository_open(Repo As Pointer, Path As String) As Integer
+Extern git_repository_free(Repo As Pointer)
+Extern git_repository_path(Repo As Pointer) As String
+Extern git_repository_workdir(Repo As Pointer) As String
+
+Public Sub Open(Path As String) As Pointer
+  
+  Dim repo As Pointer
+  
+  FFI.CheckAvailable
+  FFI.HandleError(git_repository_open(VarPtr(repo), Path & "\0"))
+  
+  Return repo
+  
+End
+
+Public Sub Free(Repo As Pointer)
+  
+  git_repository_free(Repo)
+  
+End
+
+
+Public Sub GetPath(Repo As Pointer) As String
+  
+  Return git_repository_path(Repo)
+  
+End
+
+Public Sub GetWorkdir(Repo As Pointer) As String
+  
+  Return git_repository_workdir(Repo)
+  
+End

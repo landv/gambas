@@ -1,0 +1,17 @@
+' Gambas module file
+
+Library "libgit2"
+
+Public Enum GIT_BRANCH_LOCAL = 1, GIT_BRANCH_REMOTE = 2, GIT_BRANCH_ALL = 3
+
+Extern git_branch_name(out As Pointer, ref As Pointer) As Integer
+
+Public Sub GetName(branch As Pointer) As String 
+  
+  Dim out As Pointer
+  
+  FFI.HandleError(git_branch_name(VarPtr(out), branch))
+  
+  Return String@(out)
+  
+End

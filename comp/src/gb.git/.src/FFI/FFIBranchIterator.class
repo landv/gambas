@@ -1,0 +1,40 @@
+' Gambas class file
+
+Library "libgit2"
+
+Extern git_branch_iterator_new(out As Pointer, repo As Pointer, branchType As Integer) As Integer
+Extern git_branch_iterator_free(iterator As Pointer) As Integer
+Extern git_branch_next(out As Pointer, outType As Pointer, iterator As Pointer) As Integer
+
+Private $iter As Pointer
+
+Public Ref As Pointer
+Public Type As Integer
+
+Public Sub _new(Repo As Pointer, BranchType As Integer)
+
+  FFI.HandleError(git_branch_iterator_new(VarPtr($iter), Repo, BranchType))
+
+End
+
+Public Sub Next() As Boolean
+
+  Dim code As Integer = git_branch_next(VarPtr(Ref), VarPtr(Type), $iter)
+
+  If code < 0 Then
+    If code = FFIError.GIT_ITEROVER Then
+      Return False
+    Else
+      FFI.HandleError(code)
+    Endif
+  Endif
+
+  Return True
+
+End
+
+Public Sub _free()
+
+  FFI.HandleError(git_branch_iterator_free($iter))
+
+End

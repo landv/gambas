@@ -1,0 +1,61 @@
+' Gambas class file
+
+Export
+
+Property Read Path As String
+Property Read Workdir As String
+Property Read _Handle As Pointer
+Property Read Branches As _RepositoryBranches
+Property Read LocalBranches As _RepositoryBranches
+Property Read RemoteBranches As _RepositoryBranches
+Private $repo As Pointer
+
+Public Sub _new(Path As String)
+
+  $repo = FFIRepository.Open(Path)
+
+End
+
+Public Sub _free()
+
+  FFIRepository.Free($repo)
+
+End
+
+Private Function Path_Read() As String
+
+  Return FFIRepository.GetPath($repo)
+
+End
+
+Private Function Workdir_Read() As String
+
+  Return FFIRepository.GetWorkdir($repo)
+
+End
+
+Private Function _Handle_Read() As Pointer
+
+  Return $repo
+
+End
+
+
+
+Private Function Branches_Read() As _RepositoryBranches
+
+  Return New _RepositoryBranches(Me, FFIBranch.GIT_BRANCH_ALL)
+
+End
+
+Private Function LocalBranches_Read() As _RepositoryBranches
+
+  Return New _RepositoryBranches(Me, FFIBranch.GIT_BRANCH_LOCAL)
+
+End
+
+Private Function RemoteBranches_Read() As _RepositoryBranches
+
+  Return New _RepositoryBranches(Me, FFIBranch.GIT_BRANCH_REMOTE)
+
+End
