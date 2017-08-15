@@ -256,8 +256,12 @@ int main(int argc, char *argv[])
 		else if (is_long_option(argv[1], 'V', "version"))
 		{
 #ifdef TRUNK_VERSION
+#ifdef TRUNK_VERSION_GIT
+			printf(VERSION " " TRUNK_VERSION "\n");
+#else /* from svn */
 			printf(VERSION " r" TRUNK_VERSION "\n");
-#else
+#endif
+#else /* no TRUNK_VERSION */
 			printf(VERSION "\n");
 #endif
 			my_exit(0);
