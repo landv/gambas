@@ -11,4 +11,5 @@ gb_qt5_ext_la_CPPFLAGS = @QT5EXT_INC@ -I$(top_srcdir)/share -I$(top_srcdir)/src/
 
 gb_qt5_ext_la_SOURCES = \
  main.h main.cpp \
+ CDial.h CDial_moc.cpp CDial.cpp \
  CTextEdit.h CTextEdit_moc.cpp CTextEdit.cpp

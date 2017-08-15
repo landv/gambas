@@ -29,6 +29,8 @@
 #include <string.h>
 
 #include "main.h"
+
+#include "CDial.h"
 #include "CTextEdit.h"
 
 extern "C" {
@@ -38,6 +40,8 @@ QT_INTERFACE QT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
+	CDialDesc,
+
 	CTextEditSelectionDesc,
 	CTextEditFormatDesc,
 	CTextEditDesc,
