@@ -30,6 +30,7 @@
 
 #include "main.h"
 
+#include "CLCDNumber.h"
 #include "CDial.h"
 #include "CTextEdit.h"
 
@@ -40,6 +41,8 @@ QT_INTERFACE QT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
+	CLCDNumberDesc,
+	
 	CDialDesc,
 
 	CTextEditSelectionDesc,
