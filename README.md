@@ -1,4 +1,4 @@
-# WELCOME TO GAMBAS!
+# Gambas Almost Means BASIC
 
 GAMBAS is a free implementation of a graphical development environment 
 based on a BASIC interpreter and a full development platform. It is very 
