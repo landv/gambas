@@ -57,6 +57,16 @@
 #include "gb.db.proto.h"
 #include "main.h"
 
+// define unixODBC ONLY constants if they are not available
+#ifndef SQLTables_TABLE_NAME
+#define SQLTables_TABLE_NAME 3
+#define SQLTables_TABLE_TYPE 4
+#define SQLTables_REMARKS 5
+#define SQLColumns_COLUMN_NAME 4
+#define SQLColumns_COLUMN_SIZE 7
+#define SQLColumns_SQL_DATA_TYPE 14
+#endif
+
 GB_INTERFACE GB EXPORT;
 DB_INTERFACE DB EXPORT;
 
