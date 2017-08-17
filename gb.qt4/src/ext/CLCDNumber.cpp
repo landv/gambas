@@ -27,8 +27,6 @@
 
 #include <qapplication.h>
 #include <qlcdnumber.h>
-//Added by qt3to4:
-#include <Q3Frame>
 
 #include "gambas.h"
 
@@ -44,7 +42,7 @@ BEGIN_METHOD(CLCDNUMBER_new, GB_OBJECT parent)
   QT.InitWidget(wid, _object, false);
   //QT.SetBackgroundRole(_object, QColorGroup::Base);
 
-  wid->setFrameStyle(Q3Frame::NoFrame);
+  wid->setFrameStyle(QFrame::NoFrame);
 
   wid->show();
 
@@ -62,7 +60,11 @@ END_PROPERTY
 BEGIN_PROPERTY(CLCDNUMBER_digits)
 
   if (READ_PROPERTY)
+  #if (HAVE_QTEXT_COMPONENT)
     GB.ReturnInteger(WIDGET->numDigits());
+  #else
+    GB.ReturnInteger(WIDGET->digitCount());
+  #endif
   else
   {
     int n = VPROP(GB_INTEGER);
@@ -72,7 +74,11 @@ BEGIN_PROPERTY(CLCDNUMBER_digits)
     else if (n > 32)
       n = 32;
 
+    #if (HAVE_QTEXT_COMPONENT)
     WIDGET->setNumDigits(n);
+    #else
+    WIDGET->setDigitCount(n);
+    #endif
     /* Increasing the number of digits does not redisplay value */
     WIDGET->repaint();
     WIDGET->display(WIDGET->value());
