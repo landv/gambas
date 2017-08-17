@@ -4,10 +4,10 @@ GAMBAS is a free implementation of a graphical development environment
 based on a BASIC interpreter and a full development platform. It is very 
 inspired by Visual Basic and Java.
 
-Go to [http://gambas.sourceforge.net] to get more information: how to compile 
+Go to http://gambas.sourceforge.net to get more information: how to compile 
 and install it, where to find binary packages, how to report a bug...
 
-Go to [http://gambaswiki.org] for the language documentation.
+Go to http://gambaswiki.org for the language documentation.
 
 The following pieces of code were borrowed and adapted:
 
