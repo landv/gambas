@@ -86,7 +86,7 @@ function goto_frame(url, menu)
         <li><a target="_blank" href="http://sourceforge.net/projects/gambas/files/gambas3/gambas3-$(DEV_VERSION).tar.bz2/download">{Download} Gambas $(DEV_VERSION)...</a></li>
         <li><a href="#" onclick="goto_frame('$(WIKI:/doc/release/$(DEV_VERSION))','m-download');">{Release Notes}</a></li>
         <li><a target="_blank" href="http://sourceforge.net/projects/gambas/files/">{Other downloads}...</a></li>
-        <li><a target="_blank" href="http://sourceforge.net/p/gambas/code">{Browse source code}...</a></li>
+        <li><a target="_blank" href="https://gitlab.com/gambas/gambas">{Browse source code}...</a></li>
       </a>
       </ul>
     </li>
@@ -94,6 +94,8 @@ function goto_frame(url, menu)
     <li><a href="#" onclick="goto_frame('/wiki');">{Wiki}</a></li>
 
     <li><a href="#" onclick="goto_frame('/bugtracker');">{Bugtracker}</a></li>
+
+    <li><a target="_blank" href="https://gambas-playground.proko.eu/">{Playground}</a></li>
 
     <li><a href="#">{Help}</a>
       <ul class="sub-menu" id="m-help">
