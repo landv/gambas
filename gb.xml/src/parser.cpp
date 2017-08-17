@@ -23,7 +23,7 @@ void GBparse(const char *data, const size_t lendata, GB_ARRAY *array, DocumentTy
     GBparseXML(data, lendata, array);
 }
 
-Node** parse(char const *data, const size_t lendata, size_t *nodeCount, DocumentType docType) throw(XMLParseException)
+Node** parse(char const *data, const size_t lendata, size_t *nodeCount, DocumentType docType)
 {
     if(docType == HTMLDocumentType || docType == XHTMLDocumentType)
     {
@@ -75,7 +75,7 @@ void parser_cleanup(Node **elements, size_t *nodeCount)
 
 #define THROW(_ex) parser_cleanup(elements, nodeCount); throw(_ex)
 
-Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw(XMLParseException)
+Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount)
 {
     *nodeCount = 0;
     if(!lendata || !data) return 0; //Empty ?
