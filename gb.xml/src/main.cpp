@@ -104,7 +104,7 @@ extern "C"
 
         (void *)ThrowXMLParseException,
 
-    #if defined(OS_MACOSX) || defined(__APPLE__) || defined(__CYGWIN__)
+    #if defined(OS_MACOSX) || defined(__APPLE__)
         (void*)memrchr,
     #endif
 
