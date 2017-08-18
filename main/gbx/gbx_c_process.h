@@ -53,6 +53,7 @@ typedef
     int status;
     int watch;
 		unsigned running : 1;
+		unsigned wait : 1;
     unsigned to_string : 1;
 		unsigned process_group : 1;
 		unsigned ignore : 1;
