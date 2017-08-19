@@ -29,11 +29,8 @@
 #include <QPixmap>
 #include <QRegExp>
 #include <QApplication>
-#include <Q3DragObject>
 #include <QTimer>
-#include <Q3Dict>
 #include <QCursor>
-#include <Q3CString>
 #include <QString>
 #include <QKeyEvent>
 #include <QResizeEvent>
