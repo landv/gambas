@@ -150,6 +150,7 @@ static void remove_process_from_running_list(CPROCESS *process)
 		_running_process_list = process->next;
 
 	process->running = FALSE;
+	
 	_running_process--;
 	if (process->ignore)
 		_ignore_process--;
@@ -841,13 +842,18 @@ static bool wait_child(CPROCESS *process)
 {
 	int status;
 
+	#ifdef DEBUG_ME
+	fprintf(stderr, "wait_child: check process %d\n", process->pid);
+	#endif
+
 	if (wait4(process->pid, &status, WNOHANG, NULL) == process->pid)
 	{
 		process->status = status;
+		process->wait = TRUE;
 		_last_status = status;
 
 		#ifdef DEBUG_ME
-		fprintf(stderr, "Process %d has returned %d\n", process->pid, status);
+		fprintf(stderr, "wait_child: process %d has returned %d\n", process->pid, status);
 		#endif
 
 		return TRUE;
@@ -961,6 +967,12 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 	#ifdef DEBUG_ME
 	fprintf(stderr, "Waiting for %d\n", process->pid);
 	#endif
+	
+	// If CPROCESS_check() catched the process end, process->running is not set yet, because 
+	// stop_process() will be raised at the next event loop. So no need to wait for it.
+	
+	if (process->wait)
+		return;
 
 	OBJECT_REF(process);
 
@@ -975,7 +987,7 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 			#endif
 			ret = WATCH_process(sigfd, process->out, timeout);
 			#ifdef DEBUG_ME
-			fprintf(stderr, "Watch process %d -> %d\n", process->pid, ret);
+			fprintf(stderr, "Watch process %d ->%s%s%s\n", process->pid, ret & WP_END ? " END" : "", ret & WP_OUTPUT ? " OUTPUT" : "", ret & WP_TIMEOUT ? " TIMEOUT" : "");
 			#endif
 
 			if (ret & WP_OUTPUT)

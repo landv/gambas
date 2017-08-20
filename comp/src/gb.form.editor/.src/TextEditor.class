@@ -422,6 +422,7 @@ End
 Public Sub View_Font()
 
   CalcSizes
+  UpdateSideBarFont
 
 End
 
@@ -4873,74 +4874,74 @@ Private Sub DrawBarImage2(fRowHeight As Float)
 
 End
 
-Private Sub DrawBarImage(fRowHeight As Float)
-
-  Dim i As Integer
-  Dim s As String
-  Dim x, y, j As Integer
-  Dim aDash As Float[][] = [[1, 0.25, 1, 0.5], [2, 0.5, 1, 0.25], [1, 0.3, 2, 0.3]]
-
-  $imgSideBar = New Image(Paint.Width - 1, Paint.Height, $hStyles[Highlight.Background].Color)
-  Paint.Begin($imgSideBar)
-  Paint.Background = Color.Gray
-  Paint.AntiAlias = True
-
-  For i = 0 To $hDoc.Lines.Max
-    Inc j
-    If j = 3 Then j = 0
-
-    Paint.LineWidth = fRowHeight
-    s = $hDoc.Lines[i]
-    y = i * fRowHeight
-    If Not LTrim(s) = "" Then
-      Paint.Dash = aDash[j]
-      x = 6 + ((String.Len(s) - String.Len(LTrim(s)))) * 60 / 100
-
-      Paint.MoveTo(x, y)
-      Paint.RelLineTo(Len(s) * 60 / 100, 0)
-      If Not IsNull($hDoc.LinesInfo[i]) And If $hDoc.LinesInfo[i].Comment Then
-        Paint.Background = Color.SetAlpha($hStyles[Highlight.Comment].Color, 180) 'Color.Lighter($hStyles[Highlight.Comment].Color)
-      Else
-        Paint.Background = Color.SetAlpha($hStyles[Highlight.Normal].Color, 180) 'Color.Lighter($hStyles[Highlight.Normal].Color)
-      Endif
-      Paint.Stroke
-    Endif
-    Paint.Dash = Null
-
-    If Not IsNull($hDoc.LinesInfo[i]) Then
-      Paint.AntiAlias = False
-      If $hDoc.LinesInfo[i].Modified Then
-        Paint.Background = Color.Merge($iBackground, Color.Red, 0.2)
-        Paint.Rectangle(0, y, 3, fRowHeight + 1)
-        Paint.Fill
-      Endif
-      If $hDoc.LinesInfo[i].Saved Then
-        Paint.Background = Color.Merge($iBackground, Color.Green, 0.2)
-        Paint.Rectangle(0, y, 3, fRowHeight + 1)
-        Paint.Fill
-      Endif
-      If $hDoc.LinesInfo[i].Bookmark Then
-        Paint.MoveTo(0, y)
-        Paint.RelLineTo(Paint.Width, 0)
-
-        Paint.Background = Color.yellow
-        Paint.Stroke
-      Endif
-      If $bShowLimit Then
-        If $hDoc.Count <= 600 And If $hDoc.LinesInfo[i].Limit Then
-          Paint.LineWidth = 1.2
-          Paint.MoveTo(6, y - fRowHeight)
-          Paint.RelLineTo(Paint.Width - 6, 0)
-          Paint.Background = $iMarginColor
-          Paint.Stroke
-        Endif
-      Endif
-    Endif
-  Next
-
-  Paint.end
-
-End
+' Private Sub DrawBarImage(fRowHeight As Float)
+' 
+'   Dim i As Integer
+'   Dim s As String
+'   Dim x, y, j As Integer
+'   Dim aDash As Float[][] = [[1, 0.25, 1, 0.5], [2, 0.5, 1, 0.25], [1, 0.3, 2, 0.3]]
+' 
+'   $imgSideBar = New Image(Paint.Width - 1, Paint.Height, $hStyles[Highlight.Background].Color)
+'   Paint.Begin($imgSideBar)
+'   Paint.Background = Color.Gray
+'   Paint.AntiAlias = True
+' 
+'   For i = 0 To $hDoc.Lines.Max
+'     Inc j
+'     If j = 3 Then j = 0
+' 
+'     Paint.LineWidth = fRowHeight
+'     s = $hDoc.Lines[i]
+'     y = i * fRowHeight
+'     If Not LTrim(s) = "" Then
+'       Paint.Dash = aDash[j]
+'       x = 6 + ((String.Len(s) - String.Len(LTrim(s)))) * 60 / 100
+' 
+'       Paint.MoveTo(x, y)
+'       Paint.RelLineTo(Len(s) * 60 / 100, 0)
+'       If Not IsNull($hDoc.LinesInfo[i]) And If $hDoc.LinesInfo[i].Comment Then
+'         Paint.Background = Color.SetAlpha($hStyles[Highlight.Comment].Color, 180) 'Color.Lighter($hStyles[Highlight.Comment].Color)
+'       Else
+'         Paint.Background = Color.SetAlpha($hStyles[Highlight.Normal].Color, 180) 'Color.Lighter($hStyles[Highlight.Normal].Color)
+'       Endif
+'       Paint.Stroke
+'     Endif
+'     Paint.Dash = Null
+' 
+'     If Not IsNull($hDoc.LinesInfo[i]) Then
+'       Paint.AntiAlias = False
+'       If $hDoc.LinesInfo[i].Modified Then
+'         Paint.Background = Color.Merge($iBackground, Color.Red, 0.2)
+'         Paint.Rectangle(0, y, 3, fRowHeight + 1)
+'         Paint.Fill
+'       Endif
+'       If $hDoc.LinesInfo[i].Saved Then
+'         Paint.Background = Color.Merge($iBackground, Color.Green, 0.2)
+'         Paint.Rectangle(0, y, 3, fRowHeight + 1)
+'         Paint.Fill
+'       Endif
+'       If $hDoc.LinesInfo[i].Bookmark Then
+'         Paint.MoveTo(0, y)
+'         Paint.RelLineTo(Paint.Width, 0)
+' 
+'         Paint.Background = Color.yellow
+'         Paint.Stroke
+'       Endif
+'       If $bShowLimit Then
+'         If $hDoc.Count <= 600 And If $hDoc.LinesInfo[i].Limit Then
+'           Paint.LineWidth = 1.2
+'           Paint.MoveTo(6, y - fRowHeight)
+'           Paint.RelLineTo(Paint.Width - 6, 0)
+'           Paint.Background = $iMarginColor
+'           Paint.Stroke
+'         Endif
+'       Endif
+'     Endif
+'   Next
+' 
+'   Paint.end
+' 
+' End
 
 Public Sub SideBar_Draw()
 
@@ -5004,10 +5005,6 @@ Public Sub SideBar_MouseMove()
   Dim iStyle As Integer
   Dim X As Integer
   Dim D As Integer = Desktop.Scale * 2
-  Dim i As Integer
-  Dim iLineStart As Integer
-  Dim iLineEnd As Integer
-  Dim sText As String
   Dim iCount As Integer = _RealToView($hDoc.Count)
 
   If Mouse.Y < D Then
@@ -5099,7 +5096,6 @@ End
 
 Public Sub SideBar_MouseDown()
 
-  Dim iNl As Integer
   Dim Y As Integer
 
   If Mouse.Left Then
@@ -5174,6 +5170,18 @@ Private Function ShowPreview_Read() As Boolean
 
 End
 
+Private Sub UpdateSideBarFont()
+
+  Dim hFont As Font
+  
+  If Not $hSideBarViewer Then Return
+  
+  hFont = Me.Font.Copy()
+  hFont.Grade -= 2
+  $hSideBarViewer.Font = hFont
+
+End
+
 Private Sub ShowPreview_Write(Value As Boolean)
 
   If $bShowPreview = Value Then Return
@@ -5197,7 +5205,11 @@ Private Sub ShowPreview_Write(Value As Boolean)
     $hSideBar.Width = Desktop.Scale * 8
     $hSideBar.Background = $hStyles[Highlight.BackGround].Color
     $hSideBar.Tracking = True
+    
+    UpdateSideBarFont
+    
     ScrollBar_Write($iScrollBar)
+    
   Else
     If $hSideBar Then
       $hSideBar.Hide
@@ -5243,8 +5255,6 @@ Public Sub TimerShowPreviewViewer_Timer()
 
   $hSideBarViewer.Move($hSideBar.Left - $hView.Width / 2, Min(Max(1, $iMY - ($hView.Height / 5) / 2), $hSideBar.Height - $hSideBarViewer.Height), $hView.Width / 2, $hView.Height / 5)
   $iSideBarNBLines = Ceil(($hSideBarViewer.ClientH / $hSideBarViewer.LineHeight) / 2)
-  $hSideBarViewer.Font = Me.Font.Copy()
-  $hSideBarViewer.Font.Grade -= 2
   $hSideBarViewer.View = Me
   $hSideBarViewer._SyncFolding()
   $hSideBarViewer.Show

@@ -339,7 +339,7 @@ GB_DESC CElementDesc[] =
     GB_METHOD("AppendFromText", "", CElement_appendFromText, "(Data)s(Arguments)."),
     
     GB_METHOD("GetAttribute", "s", CElement_getAttribute, "(Name)s[(Mode)i]"),
-    GB_METHOD("RemoveAttribute", "s", CElement_removeAttribute, "(Name)s"),
+    GB_METHOD("RemoveAttribute", "", CElement_removeAttribute, "(Name)s"),
     GB_METHOD("SetAttribute", "", CElement_setAttribute, "(Name)s(Value)s"),
     
     GB_METHOD("IsAttributeSet", "b", CElement_isAttributeSet, "(Name)s"),

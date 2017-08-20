@@ -1,0 +1,60 @@
+STANDARD FORMAT FOR COMMIT MESSAGES
+-----------------------------------
+
+This message is for all developers that will commit something
+into the git repository.
+
+I want to have a standard way to write commit messages, so that ChangeLog can 
+be almost automatically generated.
+
+The format is the following:
+
+- One line that will be a summary of the changes displayed next to the commit 
+  in GitLab.
+
+- A ChangeLog slot, between '[' & ']'
+
+  Slots are the name of the component, in uppercase if possible, or some other 
+  slots like [INTERPRETER], [COMPILER]...
+
+- A ChangeLog modification: a '*', a space, the word 'BUG','NEW' or 'OPT', a 
+  colon, a space, and the text.
+
+  'BUG' is for a fix, 'NEW' for a new feature, and 'OPT' for an optimization.
+
+  If a changelog modification is more than one line, you must use a two space 
+  indent.
+
+- Other ChangeLog modifications for the same slot.
+
+- Other slots.
+
+- Void lines are ignored.
+
+- All other lines won't go into the changelog.
+
+For example:
+
+--8<-----------
+I did this thing, and this will be the summary displayed in GitLab.
+
+[GB.QT5]
+* BUG: I fixed this bug.
+* NEW: I made this very long modification....
+  and it takes more than one line to write it.
+
+This won't go into the changelog too.
+
+[GB.SDL2]
+* BUG: What an awful bug!
+
+[GB.GTK3]
+* NEW: I finally finished the component :-)
+
+--8<-----------
+
+You should really try hard to follow this scheme, otherwise generating the 
+release notes becomes truly a pain for me. Be nice!
+
+-- 
+Benoît.
