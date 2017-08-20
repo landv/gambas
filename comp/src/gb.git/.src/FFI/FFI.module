@@ -45,7 +45,7 @@ End
 Public Sub HandleError(Code As Integer)
 
   Dim err As GitError
-
+  
   If Code < 0 Then
     err = giterr_last()
     LastErrorCode = err.Code

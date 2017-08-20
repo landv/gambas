@@ -2,14 +2,26 @@
 
 Public Sub Main()
 
-  Dim repo As New Repository("/home/adrien/Programmation/Gambas/src/gambas")
+  Dim repo As Repository
   Dim branch As Branch
+  Object.Attach(Git, Me, "Git")
+  repo = Git.Clone("https://gitlab.com/gambas/gambas.git", "/home/adrien/Temp/git_test")
 
   Print repo.Path
   Print repo.Workdir
-
+  
   For Each branch In repo.Branches
     Print Branch.Name
   Next
-
+Catch
+  Error Error.Text
 End
+
+Public Sub Git_Transfer()
+  
+  Print Chr(27); "[2K\r";; Round(Git.Transfer.ReceivedObjects / Git.Transfer.TotalObjects * 100); "%";;
+  Print Git.Transfer.ReceivedObjects; "/"; Git.Transfer.TotalObjects; " objects ";
+  Print Git.Transfer.ReceivedBytes; " received at "; Git.Transfer.Speed;
+  
+End
+

@@ -1,0 +1,61 @@
+' Gambas class file
+
+Export
+
+Private $totalObjects As Integer
+Private $indexedObjects As Integer
+Private $receivedObjects As Integer
+Private $localObjects As Integer
+Private $totalDeltas As Integer
+Private $receivedBytes As Long
+Private $lastReceivedBytes As Long
+Private $lastTimer As Float
+Private $timer As Float
+
+Property Read ReceivedObjects As Integer
+Property Read TotalObjects As Integer
+Property Read ReceivedBytes As Integer
+Property Read Speed As Float
+
+Public Sub _Update(TotalObjects As Integer, IndexedObjects As Integer, ReceivedObjects As Integer, LocalObjects As Integer, TotalDeltas As Integer, ReceivedBytes As Long)
+  $totalObjects = TotalObjects
+  $indexedObjects = IndexedObjects
+  $receivedObjects = ReceivedObjects
+  $localObjects = LocalObjects
+  $totalDeltas = TotalDeltas
+  If ReceivedBytes <> $receivedBytes Then
+    $lastReceivedBytes = $receivedBytes
+    $receivedBytes = ReceivedBytes
+    If $lastTimer Then 
+      $lastTimer = $timer
+    Else
+      $lastTimer = Timer()
+    Endif
+    $timer = Timer()
+  Endif
+End
+
+Private Function ReceivedObjects_Read() As Integer
+
+  Return $receivedObjects
+
+End
+
+Private Function TotalObjects_Read() As Integer
+
+  Return $totalObjects
+
+End
+
+Private Function ReceivedBytes_Read() As Integer
+
+  Return $receivedBytes
+
+End
+
+Private Function Speed_Read() As Float
+
+  If Not $lastTimer Then Return 0
+  Return ($receivedBytes - $lastReceivedBytes) / ($timer - $lastTimer)
+
+End

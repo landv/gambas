@@ -10,11 +10,18 @@ Property Read LocalBranches As _RepositoryBranches
 Property Read RemoteBranches As _RepositoryBranches
 Private $repo As Pointer
 
-Public Sub _new(Path As String)
+Public Sub _new(Optional Path As String)
 
-  $repo = FFIRepository.Open(Path)
+  If Path Then $repo = FFIRepository.Open(Path)
 
 End
+
+Public Sub _Repo(repo As Pointer)
+  
+  $repo = repo
+  
+End
+
 
 Public Sub _free()
 

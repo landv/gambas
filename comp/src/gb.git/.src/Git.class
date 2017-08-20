@@ -1,0 +1,41 @@
+' Gambas class file
+
+Export
+Create Private
+Create Static
+
+Property Read Available As Boolean
+Property Read Transfer As _Git_Transfer
+
+Event Transfer
+
+Private $transfer As _Git_Transfer
+
+Private Function Available_Read() As Boolean
+
+  Return FFI.Available
+
+End
+
+Public Sub Clone(Url As String, Path As String) As Repository
+  
+  Dim repo As New Repository
+  Dim p As Pointer = FFIRepository.Clone(Url, Path)
+  repo._Repo(p)
+  
+  Return repo
+  
+End
+
+Private Function Transfer_Read() As _Git_Transfer
+
+  If Not $transfer Then $transfer = New _Git_Transfer
+  Return $transfer
+
+End
+
+Public Sub _Transfer()
+
+  Raise Transfer
+  
+End

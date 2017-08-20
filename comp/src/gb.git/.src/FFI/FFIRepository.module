@@ -1,10 +1,186 @@
 ' Gambas module file
 
+Public Enum
+GIT_REPOSITORY_INIT_BARE = %0,
+GIT_REPOSITORY_INIT_NO_REINIT = %1,
+GIT_REPOSITORY_INIT_NO_DOTGIT_DIR = %10,
+GIT_REPOSITORY_INIT_MKDIR = %100,
+GIT_REPOSITORY_INIT_MKPATH = %1000,
+GIT_REPOSITORY_INIT_EXTERNAL_TEMPLATE = %10000,
+GIT_REPOSITORY_INIT_RELATIVE_GITLINK = %100000
+
+Public Enum
+GIT_REPOSITORY_INIT_SHARED_UMASK = 0,
+GIT_REPOSITORY_INIT_SHARED_GROUP = 0002775,
+GIT_REPOSITORY_INIT_SHARED_ALL = 0002777
+
+Public Const GIT_PATH_LIST_SEPARATOR As String = ":"
+
+Public Enum
+GIT_CHECKOUT_NONE = %0, 
+GIT_CHECKOUT_SAFE = %1,
+GIT_CHECKOUT_FORCE = %10,
+GIT_CHECKOUT_RECREATE_MISSING = %100,
+GIT_CHECKOUT_ALLOW_CONFLICTS = %10000,
+GIT_CHECKOUT_REMOVE_UNTRACKED = %100000,
+GIT_CHECKOUT_REMOVE_IGNORED = %1000000,
+GIT_CHECKOUT_UPDATE_ONLY = %10000000,
+GIT_CHECKOUT_DONT_UPDATE_INDEX = %100000000,
+GIT_CHECKOUT_NO_REFRESH = %1000000000,
+GIT_CHECKOUT_SKIP_UNMERGED = %1000000000,
+GIT_CHECKOUT_USE_OURS = %100000000000,
+GIT_CHECKOUT_USE_THEIRS = %1000000000000,
+GIT_CHECKOUT_DISABLE_PATHSPEC_MATCH = %10000000000000,
+GIT_CHECKOUT_SKIP_LOCKED_DIRECTORIES = %1000000000000000000,
+GIT_CHECKOUT_DONT_OVERWRITE_IGNORED = %1000000000000000000,
+GIT_CHECKOUT_CONFLICT_STYLE_MERGE = %10000000000000000000,
+GIT_CHECKOUT_CONFLICT_STYLE_DIFF3 = %100000000000000000000,
+GIT_CHECKOUT_DONT_REMOVE_EXISTING = %1000000000000000000000,
+GIT_CHECKOUT_DONT_WRITE_INDEX = %10000000000000000000000
+
+
+Public Struct GitRepositoryInitOptions
+  Version As Integer
+  Flags As Integer
+  Mode As Integer
+  WorkdirPath As Pointer
+  Description As Pointer
+  TemplatePath As Pointer
+  InitialHead As Pointer
+  OriginUrl As Pointer
+End Struct
+
+Public Struct GitTransferProgress
+  TotalObjects As Integer
+  IndexedObjects As Integer
+  ReceivedObjects As Integer
+  LocalObjects As Integer
+  TotalDeltas As Integer
+  IndexedDeltas As Integer
+  ReceivedBytes As Pointer 'size_t
+End Struct
+
+Public Struct GitRemoteCallbacks
+  Version As Integer
+  SidebandProgressCallback As Pointer 'git_transport_message_cb
+  CompletionCallback As Pointer 'int (*completion)(git_remote_completion_type type, void *data)
+  CredentialsAcquireCallback As Pointer 'git_cred_acquire_cb
+  CertificateCheckCallback As Pointer
+  TransferProgressCallback As Pointer 'git_transfer_progress_cb
+  UpdateTips As Pointer 'int (*update_tips)(const char *refname, const git_oid *a, const git_oid *b, void *data)
+  PackProgress As Pointer 'git_packbuilder_progress
+  PushTransferProgress As Pointer 'git_push_transfer_progress
+  PushUpdateReference As Pointer 'int (*push_update_reference)(const char *refname, const char *status, void *data)
+  PushNegociationCallback As Pointer 'git_push_negociation
+  Transport As Pointer 'git_transport_cb
+  Payload As Pointer
+End Struct
+
+Public Struct GitProxyOptions
+  Version As Integer
+  Type As Integer
+  URL As Pointer
+  Credentials As Pointer 'git_cred_acquire_cb
+  CertificateCheck As Pointer 'git_transport_certificate_check_cb
+  Payload As Pointer
+End Struct
+
+Public Struct GitStrArray
+  Strings As Pointer
+  Count As Pointer 'size_t
+End Struct
+
+Public Struct GitFetchOptions
+  Version As Integer
+  RemoteCallbacks As Struct GitRemoteCallbacks
+  Prune As Integer
+  UpdateFetchHead As Integer
+  DownloadTags As Integer
+  ProxyOptions As Struct GitProxyOptions
+  CustomHeaders As Struct GitStrArray
+End Struct
+
+Public Struct GitCheckoutOptions
+  Version As Integer
+  CheckoutStrategy As Integer
+  DisableFilters As Integer
+  DirMode As Integer
+  FileMode As Integer
+  FileOpenFlags As Integer
+  NotifyFlags As Integer
+  NotifyCallback As Pointer
+  NotifyPayload As Pointer
+  ProgressCallback As Pointer
+  ProgressPayload As Pointer
+  Paths As Struct GitStrArray
+  Baseline As Pointer 'git_tree
+  BaselineIndex As Pointer 'git_index
+  TargetDirectory As Pointer
+  AncestorLabel As Pointer
+  OurLabel As Pointer
+  TheirLabel As Pointer
+  PerfDataCallback As Pointer
+  PerfDataPayload As Pointer
+End Struct
+
+Public Struct GitCloneOptions
+  Version As Integer
+  CheckoutOptions As Struct GitCheckoutOptions
+  FetchOptions As Struct GitFetchOptions
+  Bare As Integer 'bool
+  Local As Integer 'git_clone_local_t
+  CheckoutBranch As Pointer 'const char*
+  RepositoryCallback As Pointer 'git_repository_create_cb
+  RepositoryCallbackPayload As Pointer
+  RemoteCallback As Pointer 'git_remote_create_cb
+  RemoteCallbackPayload As Pointer 
+End Struct
+
 Library "libgit2"
-Extern git_repository_open(Repo As Pointer, Path As String) As Integer
-Extern git_repository_free(Repo As Pointer)
-Extern git_repository_path(Repo As Pointer) As String
-Extern git_repository_workdir(Repo As Pointer) As String
+
+Extern git_repository_open(out As Pointer, Path As String) As Integer
+Extern git_repository_open_bare(out As Pointer, Path As String) As Integer
+Extern git_repository_open_ext(out As Pointer, Path As String, Flags As Integer, CeilingDirs As String) As Integer
+Extern git_repository_free(out As Pointer)
+Extern git_repository_path(out As Pointer) As String
+Extern git_repository_workdir(out As Pointer) As String
+Extern git_repository_init(out As Pointer, Path As String, Bare As Boolean) As Integer
+Extern git_repository_init_ext(out As Pointer, Path As String, Options As Pointer) As Integer
+Extern git_clone(out As Pointer, Url As String, Path As String, Options As GitCloneOptions) As Integer
+Extern git_repository_discover(out As Pointer, StartPath As String, AcrossFs As Integer, CeilingDirs As String) As Integer
+
+' Private Sub git_transport_message_cb(str As Pointer, len As Integer, payload As Pointer)
+' End
+
+
+Private Sub git_transfer_progress_cb(statsPointer As Pointer, payload As Pointer)
+
+  Dim stats As GitTransferProgress
+  Dim mem As Stream
+'   Debug stats
+  mem = Memory statsPointer For Read
+  stats = Read #mem As GitTransferProgress
+  
+  Git.Transfer._Update(stats.TotalObjects, stats.IndexedObjects, stats.ReceivedObjects, stats.LocalObjects, stats.TotalDeltas, stats.ReceivedBytes)
+  Git._Transfer()
+  
+  Wait
+End
+
+Private Sub InitGitCloneOptions(ByRef opts As GitCloneOptions)
+  
+  opts.Version = 1
+  opts.CheckoutOptions.Version = 1
+  opts.CheckoutOptions.CheckoutStrategy = GIT_CHECKOUT_SAFE
+  opts.FetchOptions.Version = 1
+  opts.FetchOptions.RemoteCallbacks.Version = 1
+  'GIT_FETCH_PRUNE_UNSPECIFIED
+  opts.FetchOptions.UpdateFetchHead = 1
+  'GIT_REMOTE_DOWNLOAD_TAGS_UNSPECIFIED
+  opts.FetchOptions.ProxyOptions.Version = 1
+  
+End
+
 
 Public Sub Open(Path As String) As Pointer
   
@@ -17,12 +193,25 @@ Public Sub Open(Path As String) As Pointer
   
 End
 
-Public Sub Free(Repo As Pointer)
+Public Sub Clone(Url As String, Path As String) As Pointer
   
+  Dim opts As New GitCloneOptions
+  Dim repo As Pointer
+
+  InitGitCloneOptions(ByRef opts)
+  opts.FetchOptions.RemoteCallbacks.TransferProgressCallback = git_transfer_progress_cb
+  FFI.HandleError(git_clone(VarPtr(Repo), Url, Path, opts))
+
+  Return repo
+
+End
+
+
+Public Sub Free(Repo As Pointer)
+
   git_repository_free(Repo)
   
 End
-
 
 Public Sub GetPath(Repo As Pointer) As String
   
