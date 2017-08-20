@@ -831,6 +831,10 @@ void CPROCESS_check(void *_object)
 	usleep(100);
 	if (wait_child(THIS))
 	{
+		#ifdef DEBUG_ME
+		fprintf(stderr, "CPROCESS_check: stop process later\n");
+		#endif
+		stop_process_after(THIS);
 		EVENT_post(stop_process, (intptr_t)THIS);
 		throw_last_child_error();
 	}
