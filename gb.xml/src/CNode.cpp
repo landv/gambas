@@ -395,8 +395,8 @@ GB_DESC CNodeDesc[] =
 {
     GB_DECLARE("XmlNode", sizeof(CNode)), GB_NOT_CREATABLE(),
 
-    GB_METHOD("_new", "", CNode_new, ""),
-    GB_METHOD("_free", "", CNode_free, ""),
+    GB_METHOD("_new", NULL, CNode_new, ""),
+    GB_METHOD("_free", NULL, CNode_free, ""),
     
     GB_CONSTANT("ElementNode", "i", NODE_ELEMENT),
     GB_CONSTANT("TextNode", "i", NODE_TEXT),
@@ -422,7 +422,7 @@ GB_DESC CNodeDesc[] =
     
     GB_METHOD("ToString", "s", CNode_tostring, "[(Indent)b]"),
     GB_METHOD("GetUserData", "v", CNode_getUserData, "(Key)s"),
-    GB_METHOD("SetUserData", "", CNode_setUserData, "(Key)s(Value)v"),
+    GB_METHOD("SetUserData", NULL, CNode_setUserData, "(Key)s(Value)v"),
     GB_PROPERTY("TextContent", "s", CNode_textContent),
     GB_PROPERTY("Value", "s", CNode_textContent),
     GB_PROPERTY("Name", "s", CNode_name),
@@ -430,8 +430,8 @@ GB_DESC CNodeDesc[] =
     GB_STATIC_METHOD("Serialize", "s", CNode_escapeContent, "(Data)s"),
     GB_STATIC_METHOD("Deserialize", "s", CNode_unEscapeContent, "(Data)s"),
 
-    GB_METHOD("NewElement", "", CNode_newElement, "(Name)s[(Value)s]"),
-    GB_METHOD("NewAttribute", "", CNode_setAttribute, "(Name)s(Value)s"),
+    GB_METHOD("NewElement", NULL, CNode_newElement, "(Name)s[(Value)s]"),
+    GB_METHOD("NewAttribute", NULL, CNode_setAttribute, "(Name)s(Value)s"),
     GB_PROPERTY_SELF("Attributes", ".XmlElementAttributes"),
 
     GB_END_DECLARE

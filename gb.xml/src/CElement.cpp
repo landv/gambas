@@ -324,23 +324,23 @@ GB_DESC CElementDesc[] =
 {
     GB_DECLARE("XmlElement", sizeof(CNode)), GB_INHERITS("XmlNode"),
     
-    GB_METHOD("_new", "", CElement_new, "[(TagName)s]"),
+    GB_METHOD("_new", NULL, CElement_new, "[(TagName)s]"),
     
-    GB_METHOD("AppendChild", "", CElement_appendChild, "(NewChild)XmlNode"),
-    GB_METHOD("AppendChildren", "", CElement_appendChildren, "(NewChildren)XmlNode[]"),
-    GB_METHOD("PrependChild", "", CElement_prependChild, "(NewChild)XmlNode"),
-    GB_METHOD("InsertAfter", "", CElement_insertAfter, "(Child)XmlNode;(NewChild)XmlNode"),
-    GB_METHOD("InsertBefore", "", CElement_insertBefore, "(Child)XmlNode;(NewChild)XmlNode"),
-    GB_METHOD("RemoveChild", "", CElement_removeChild, "(OldChild)XmlNode"),
-    GB_METHOD("ReplaceChild", "", CElement_replaceChild, "(OldChild)XmlNode;(NewChild)XmlNode"),
-    GB_METHOD("ClearChildren", "", CElement_clearChildren, ""),
+    GB_METHOD("AppendChild", NULL, CElement_appendChild, "(NewChild)XmlNode"),
+    GB_METHOD("AppendChildren", NULL, CElement_appendChildren, "(NewChildren)XmlNode[]"),
+    GB_METHOD("PrependChild", NULL, CElement_prependChild, "(NewChild)XmlNode"),
+    GB_METHOD("InsertAfter", NULL, CElement_insertAfter, "(Child)XmlNode;(NewChild)XmlNode"),
+    GB_METHOD("InsertBefore", NULL, CElement_insertBefore, "(Child)XmlNode;(NewChild)XmlNode"),
+    GB_METHOD("RemoveChild", NULL, CElement_removeChild, "(OldChild)XmlNode"),
+    GB_METHOD("ReplaceChild", NULL, CElement_replaceChild, "(OldChild)XmlNode;(NewChild)XmlNode"),
+    GB_METHOD("ClearChildren", NULL, CElement_clearChildren, ""),
     
-    GB_METHOD("AppendText", "", CElement_appendText, "(Data)s"),
-    GB_METHOD("AppendFromText", "", CElement_appendFromText, "(Data)s(Arguments)."),
+    GB_METHOD("AppendText", NULL, CElement_appendText, "(Data)s"),
+    GB_METHOD("AppendFromText", NULL, CElement_appendFromText, "(Data)s(Arguments)."),
     
     GB_METHOD("GetAttribute", "s", CElement_getAttribute, "(Name)s[(Mode)i]"),
-    GB_METHOD("RemoveAttribute", "", CElement_removeAttribute, "(Name)s"),
-    GB_METHOD("SetAttribute", "", CElement_setAttribute, "(Name)s(Value)s"),
+    GB_METHOD("RemoveAttribute", NULL, CElement_removeAttribute, "(Name)s"),
+    GB_METHOD("SetAttribute", NULL, CElement_setAttribute, "(Name)s(Value)s"),
     
     GB_METHOD("IsAttributeSet", "b", CElement_isAttributeSet, "(Name)s"),
     
@@ -371,18 +371,18 @@ GB_DESC CElementDesc[] =
 GB_DESC CElementDesc[] =
 {
     GB_DECLARE("XmlElement", sizeof(CElement)), GB_INHERITS("XmlNode"),
-    GB_METHOD("_new", "", CElement_new, "[(TagName)s]"),
-    GB_METHOD("_free", "", CElement_free, ""),
-    GB_METHOD("AppendChild", "", CElement_AppendChild, "(NewChild)XmlNode"),
-    GB_METHOD("AppendChildren", "", CElement_AppendChildren, "(NewChildren)XmlNode[]"),
-    GB_METHOD("PrependChild", "", CElement_prependChild, "(NewChild)XmlNode"),
-    GB_METHOD("InsertAfter", "", CElement_insertAfter, "(Child)XmlNode;(NewChild)XmlNode"),
-    GB_METHOD("InsertBefore", "", CElement_insertBefore, "(Child)XmlNode;(NewChild)XmlNode"),
-    GB_METHOD("AppendText", "", CElement_AppendText, "(NewText)s"),
-    GB_METHOD("AppendFromText", "", CElement_appendFromText, "(Data)s"),
-    GB_METHOD("RemoveChild", "", CElement_removeChild, "(OldChild)XmlNode"),
-    GB_METHOD("ReplaceChild", "", CElement_replaceChild, "(OldChild)XmlNode;(NewChild)XmlNode"),
-    GB_METHOD("NewElement", "", CElement_newElement, "(Name)s[(Value)s]"),
+    GB_METHOD("_new", NULL, CElement_new, "[(TagName)s]"),
+    GB_METHOD("_free", NULL, CElement_free, ""),
+    GB_METHOD("AppendChild", NULL, CElement_AppendChild, "(NewChild)XmlNode"),
+    GB_METHOD("AppendChildren", NULL, CElement_AppendChildren, "(NewChildren)XmlNode[]"),
+    GB_METHOD("PrependChild", NULL, CElement_prependChild, "(NewChild)XmlNode"),
+    GB_METHOD("InsertAfter", NULL, CElement_insertAfter, "(Child)XmlNode;(NewChild)XmlNode"),
+    GB_METHOD("InsertBefore", NULL, CElement_insertBefore, "(Child)XmlNode;(NewChild)XmlNode"),
+    GB_METHOD("AppendText", NULL, CElement_AppendText, "(NewText)s"),
+    GB_METHOD("AppendFromText", NULL, CElement_appendFromText, "(Data)s"),
+    GB_METHOD("RemoveChild", NULL, CElement_removeChild, "(OldChild)XmlNode"),
+    GB_METHOD("ReplaceChild", NULL, CElement_replaceChild, "(OldChild)XmlNode;(NewChild)XmlNode"),
+    GB_METHOD("NewElement", NULL, CElement_newElement, "(Name)s[(Value)s]"),
 
     GB_PROPERTY("TagName", "s", CElement_tagName),
 
@@ -390,8 +390,8 @@ GB_DESC CElementDesc[] =
     GB_PROPERTY_READ("NextSibling", "XmlElement", CElement_nextSibling),
 
     GB_METHOD("GetAttribute", "s", CElement_getAttribute, "(Name)s"),
-    GB_METHOD("SetAttribute", "", CElement_setAttribute, "(Name)s(Value)s"),
-    GB_METHOD("NewAttribute", "", CElement_setAttribute, "(Name)s(Value)s"),
+    GB_METHOD("SetAttribute", NULL, CElement_setAttribute, "(Name)s(Value)s"),
+    GB_METHOD("NewAttribute", NULL, CElement_setAttribute, "(Name)s(Value)s"),
     GB_METHOD("IsAttributeSet", "b", CElement_isAttributeSet, "(Name)s"),
 
     GB_PROPERTY_READ("ChildNodes", "XmlNode[]", CElement_childNodes),
