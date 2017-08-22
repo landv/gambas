@@ -43,16 +43,20 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess A
     For iPos = Len(sData) DownTo 1
       If Asc(sData, iPos) >= 192 Then Break 
     Next
+    'Debug "not valid";; iPos; " / "; Len(sData)
+    'Debug Quote(Right(sData, 256))
     If iPos = 0 Then Return
     $sLeft = Mid$(sData, iPos)
     sData = Left(sData, iPos - 1)
     If Not sData Then Return
+    iPos = 0
   Endif
   
   'Debug If(hProcess.Term.GetAttr().ONLCR, "+", "-"); "ONLCR"
   
   'If Len(sData) >= 4096 Then
     iPosEraseScreen = RInStr(sData, "\e[2J")
+    'If iPosEraseScreen > 0 Then Debug "erase screen at "; iPosEraseScreen
   'Endif
   
   Do

@@ -415,7 +415,7 @@ static void init_child_tty(int fd)
 	#endif
 
 	terminal.c_oflag |= OPOST;
-	//terminal.c_oflag &= ~ONLCR;
+	terminal.c_oflag &= ~ONLCR;
 
 	terminal.c_lflag |= ISIG | ICANON | IEXTEN; // | ECHO;
 	///terminal.c_lflag &= ~ECHO;

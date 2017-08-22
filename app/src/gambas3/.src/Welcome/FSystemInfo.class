@@ -148,7 +148,7 @@ Static Public Sub GetInfo() As String[]
      "OpenGL": "libGL.so.*.*.*", "Cairo": "libcairo.so.*.*.*", "DBus": "libdbus-[0-9].so.*.*.*", "SQLite": "libsqlite3.so.*.*.*"]
   Endif
 
-  If Stat("/lib", False).Type = GB.Directory Then 'Some systems link /lib to /usr/lib
+  If Stat("/lib", False).Type = gb.Directory Then 'Some systems link /lib to /usr/lib
     aSearchPath.Add("/lib", 0)
   Endif
 

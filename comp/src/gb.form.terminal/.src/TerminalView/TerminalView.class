@@ -73,6 +73,7 @@ Private $bSuspend As Boolean
 Private $iMouseX As Integer
 Private $iMouseY As Integer
 Private $bShowScrollBar As Boolean
+Private $hResizeTimer As Timer
 
 'Private $bDoubleFont As Boolean = True
 
@@ -118,6 +119,9 @@ Public Sub _new()
   
   $hBlinkTimer = New Timer As "BlinkTimer"
   $hBlinkTimer.Delay = 500
+  
+  $hResizeTimer = New Timer As "ResizeTimer"
+  $hResizeTimer.Delay = 100
   
 End
 
@@ -168,21 +172,26 @@ Private Sub UpdateScreen()
   Dim W, H As Integer
   
   W = $hView.ClientW
-  'If $bShowScrollBar Then W -= $hScroll.W
-  
   W = Max(1, CInt(W / $CW))
   H = Max(1, $hView.ClientH \ $LH)
-  
-  'Debug W;; H
   
   If $hScreen.Resize(W, H) Then
     $H = H
     _UpdateSize
     Refresh
-    If $hProcess Then $hProcess.Term.Resize(W, H)
+    'If $hProcess Then $hProcess.Term.Resize($hScreen.Width, $hScreen.Height)
+    If $hProcess Then $hResizeTimer.Restart
     Raise Resize(W, H)
   Endif
   
+  
+End
+
+Public Sub ResizeTimer_Timer()
+  
+  If $hProcess Then $hProcess.Term.Resize($hScreen.Width, $hScreen.Height)
+  $hResizeTimer.Stop
+
 End
 
 Private Sub UpdateFont()
@@ -689,13 +698,14 @@ End
 
 Private Sub InitProcess()
 
-  'Dim hSettings As TerminalSettings
+  Dim hSettings As TerminalSettings
   
   $hProcess.Term.Echo = True
   
-  ' hSettings = $hProcess.Term.GetAttr()
-  ' hSettings.ONLCR = True
-  ' $hProcess.Term.SetAttr(Term.TCSADRAIN, hSettings)
+  hSettings = $hProcess.Term.GetAttr()
+  hSettings.ONLCR = True
+  hSettings.ECHO = True
+  $hProcess.Term.SetAttr(Term.TCSANOW, hSettings)
   
   $hProcess.Term.Resize($hScreen.Width, $hScreen.Height)
 
