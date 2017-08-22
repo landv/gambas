@@ -284,11 +284,9 @@ Public Sub Print(sText As String)
         CursorLeft
       Case 9
         Tab()
-      Case 10, 12
-        Goto(0, $Y)
+      Case 10, 11, 12
         NewLine()
-      ' Case 12
-      '   EraseScreen()
+        'Goto(0, $Y)
       Case 13
         Goto(0, $Y)
       Case 14
@@ -300,6 +298,8 @@ Public Sub Print(sText As String)
     End Select
     Inc iLen
   Next
+  
+  'Debug "[";; $X;; ":";; $Y;; "]"
   
 End
 
@@ -440,15 +440,25 @@ End
 
 Public Sub CursorLeft(Optional Count As Integer = 1)
   
-  CursorGoto($X - Count, $Y)
+  CursorGoto($X - Count, Me.Line)
   
 End
 
 Public Sub CursorRight(Optional Count As Integer = 1)
   
-  CursorGoto($X + Count, $Y)
+  CursorGoto($X + Count, Me.Line)
   
 End
+
+Public Sub CursorHome()
+
+  Dim P As Integer
+  
+  If Origin And If $iScrollStart >= 0 Then P = $iScrollStart
+  CursorGoto(0, P)
+  
+End
+
 
 Public Sub InsertSpace(N As Integer)
 
@@ -551,7 +561,7 @@ Public Sub EraseScreen()
     ClearLine(Y)
   Next
   
-  CursorGoto(0, 0)
+  CursorHome
   GetView()._ShowScreen()
   
 End
@@ -594,6 +604,7 @@ Public Sub ScrollScreen(Optional Start As Integer, {End} As Integer)
     $iScrollStart = Start
     $iScrollEnd = {End}
   Endif
+  CursorHome()
   
 End
 
@@ -603,9 +614,11 @@ Private Sub GetScreen(ByRef Y1 As Integer, ByRef Y2 As Integer)
     Y1 = ScreenTop()
     Y2 = Y1 + $H - 1
   Else
-    Y1 = Max(ScreenTop(), $iScrollStart)
-    Y2 = Min(ScreenTop() + $H - 1, $iScrollEnd)
+    Y1 = ScreenTop() + $iScrollStart
+    Y2 = ScreenTop() + Min($H - 1, $iScrollEnd)
   Endif
+  
+  If Y2 < Y1 Then Y2 = Y1
   
 End
 
@@ -1151,6 +1164,7 @@ End
 Public Sub DebugRefresh()
   
   If DEBUG_FILTER Then
+    Return
     GetView().Refresh
     Inc GetView()._DisableFilter
     Wait

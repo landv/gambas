@@ -408,17 +408,17 @@ static void init_child_tty(int fd)
 	struct termios terminal = { 0 };
 	tcgetattr(fd, &terminal);
 
-	terminal.c_iflag |= ICRNL | IXON | IXOFF;
+	terminal.c_iflag |= IXON | IXOFF;
 	#ifdef IUTF8
 	if (LOCAL_is_UTF8)
 		terminal.c_iflag |= IUTF8;
 	#endif
 
 	terminal.c_oflag |= OPOST;
-	terminal.c_oflag &= ~ONLCR;
+	//terminal.c_oflag &= ~ONLCR;
 
 	terminal.c_lflag |= ISIG | ICANON | IEXTEN; // | ECHO;
-	terminal.c_lflag &= ~ECHO;
+	///terminal.c_lflag &= ~ECHO;
 
 	#ifdef DEBUG_CHILD
 	fprintf(stderr, "init_child_tty: %s\n", isatty(fd) ? ttyname(fd) : "not a tty!");
@@ -831,6 +831,10 @@ void CPROCESS_check(void *_object)
 	usleep(100);
 	if (wait_child(THIS))
 	{
+		#ifdef DEBUG_ME
+		fprintf(stderr, "CPROCESS_check: stop process later\n");
+		#endif
+		stop_process_after(THIS);
 		EVENT_post(stop_process, (intptr_t)THIS);
 		throw_last_child_error();
 	}

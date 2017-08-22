@@ -254,7 +254,7 @@ BEGIN_METHOD_VOID(StreamTerm_GetAttr)
 
 	CTERMINALSETTINGS *settings;
 
-	fprintf(stderr, "fd = %d\n", STREAM_FD);
+	//fprintf(stderr, "fd = %d\n", STREAM_FD);
 	
 	settings = (CTERMINALSETTINGS *)GB.New(GB.FindClass("TerminalSettings"), NULL, NULL);
 	if (check_error(tcgetattr(STREAM_FD, &settings->settings)))

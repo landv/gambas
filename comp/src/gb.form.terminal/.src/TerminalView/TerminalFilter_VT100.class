@@ -49,6 +49,8 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess A
     If Not sData Then Return
   Endif
   
+  'Debug If(hProcess.Term.GetAttr().ONLCR, "+", "-"); "ONLCR"
+  
   'If Len(sData) >= 4096 Then
     iPosEraseScreen = RInStr(sData, "\e[2J")
   'Endif
@@ -135,6 +137,8 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess A
       iMode = SCAN_NORMAL
       
     Endif
+    
+    'Debug "[";; hScreen.Column;; ":";; hScreen.Line + hScreen.ScreenTop();; "]"
     
   Loop
   
@@ -285,7 +289,8 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
           
           GoSub GET_ARGS
           Try hScreen.CursorGoto(CInt(aArg[0]) - 1, hScreen.Line)
-          
+        
+        ' TODO: must take Origin into account
         Case "H", "f" ' Cursor goto
           
           GoSub GET_ARGS
@@ -651,7 +656,7 @@ Public Sub InputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess As
         sText = If(hScreen.AppCursorKey, "\eOD", "\e[D")
 
       Case Key.Enter, Key.Return
-        sText = If(hScreen.NewlineMode, "\r\n", "\n")
+        sText = If(hScreen.NewlineMode, "\r\n", "\r")
         
       Case Key.Insert
         sText = "\e[2~"
@@ -708,13 +713,6 @@ Public Sub InputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess As
 
       Case Key.F12
         sText = "\e[24~"
-        
-      Case Key.Return, Key.Enter
-        If hScreen.NewlineMode Then
-          sText = "\r\n"
-        Else
-          sText = "\n"
-        Endif
         
       Case Key.BackSpace
         sText = Chr$(127)
