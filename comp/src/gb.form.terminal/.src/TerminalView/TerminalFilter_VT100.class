@@ -17,7 +17,7 @@ Public Sub Reset()
 End
 
 
-Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess As Stream, sData As String)
+Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hOutput As Stream, sData As String)
   
   Dim iPos As Integer
   Dim iPos2 As Integer
@@ -101,7 +101,7 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess A
       
     Endif
     
-    iMode = Escape(hView, hScreen, hProcess, sData, iPos2 + 1, iPos - iPos2)
+    iMode = Escape(hView, hScreen, hOutput, sData, iPos2 + 1, iPos - iPos2)
     
     If iMode = SCAN_TITLE Then
       
@@ -120,8 +120,10 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess A
         sCmd = Left(sStr, iPos - 1)
         sTitle = Mid$(sStr, iPos + 1)
         
-        If sCmd = "0" Or If sCmd = "1" Or If sCmd = "2" Then
-          hView._SetTitle(sCmd, sTitle)
+        If sCmd = "0" Or If sCmd = "2" Then
+          hView.Title = sTitle
+        Else If IsInteger(sCmd) Then
+          ' ignore, mostly XTerm specific commands
         Else
           sStr = "]" & sStr
           GoSub NOT_IMPLEMENTED
@@ -157,7 +159,7 @@ End
 
 ' Escape sequence without the initial 27 character.
 
-Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As Stream, sData As String, iPos As Integer, iLen As Integer) As Integer
+Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hOutput As Stream, sData As String, iPos As Integer, iLen As Integer) As Integer
   
   Dim Y As Integer
   Dim X As Integer
@@ -205,16 +207,24 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
                   'hScreen.Attr.Reverse = True
                 Case 2
                   hScreen.Attr.Dim = True
+                Case 3
+                  ' Italic on
                 Case 4
                   hScreen.Attr.Underscore = True
                 Case 5
                   hScreen.Attr.Blink = True
+                Case 6
+                  ' Fast blink on
                 Case 7
                   hScreen.Attr.Reverse = True
+                Case 20
+                  ' Fraktur on
                 Case 21
                   hScreen.Attr.Bold = False
                 Case 22
                   hScreen.Attr.Dim = False
+                Case 23
+                  ' Italic & Fraktur off
                 Case 24
                   hScreen.Attr.Underscore = False
                 Case 25
@@ -307,7 +317,7 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
 
         Case "c"  'Report terminal type
           
-          Print #hProcess, "\e[?1;2c"
+          Print #hOutput, "\e[?1;2c"
           
         Case "d" 'Set Cursor Y
           
@@ -530,17 +540,17 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
           
           Select Case Mid(sStr, 2, -1)
             Case "5"
-              Print #hProcess, "\e[0n";  'Report Status OK
+              Print #hOutput, "\e[0n";  'Report Status OK
             Case "6"
-              Print #hProcess, Subst("\e[&1;&2R", hScreen.Line, hScreen.Column);  'Report Cursor Position
+              Print #hOutput, Subst("\e[&1;&2R", hScreen.Line, hScreen.Column);  'Report Cursor Position
             Case "?6"
-              Print #hProcess, Subst("\e[?&1;&2R", hScreen.Line, hScreen.Column); 'Report Cursor Position
+              Print #hOutput, Subst("\e[?&1;&2R", hScreen.Line, hScreen.Column); 'Report Cursor Position
             Case "?15"
-              Print #hProcess, "\0[?11n" 'Printer not ready (10 for ready)"
+              Print #hOutput, "\0[?11n" 'Printer not ready (10 for ready)"
             Case "?25" 'Report UDK statu
-              Print #hProcess, "\0[?20n"  'UDK status as CSI ? 2 0 n (unlocked) or CSI ? 2 1 n (locked)
+              Print #hOutput, "\0[?20n"  'UDK status as CSI ? 2 0 n (unlocked) or CSI ? 2 1 n (locked)
             Case "?26" 'Report Keyboard status as
-              Print #hProcess, "\0[?50n"  'No Locator, if not.
+              Print #hOutput, "\0[?50n"  'No Locator, if not.
             Default
               Goto NOT_IMPLEMENTED
           End Select

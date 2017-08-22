@@ -26,6 +26,7 @@ Property ShowScrollBar As Boolean
 Property Background As Integer
 Property Foreground As Integer
 Property Read Count As Integer
+Property Title As String
 
 Private $hPanel As Panel
 Private $hView As DrawingArea
@@ -74,6 +75,7 @@ Private $iMouseX As Integer
 Private $iMouseY As Integer
 Private $bShowScrollBar As Boolean
 Private $hResizeTimer As Timer
+Private $sTitle As String
 
 'Private $bDoubleFont As Boolean = True
 
@@ -572,32 +574,30 @@ Public Sub View_MouseWheel()
   
 End
 
+Private Sub GetOutputStream() As Stream
+  
+  If $hPipeOut Then Return $hPipeOut
+  If $hProcess Then Return $hProcess
+  
+End
+
+
 Public Sub View_KeyPress()
   
-  'If Key.Text Then $hScreen.Print(Replace(Key.Text, "\r", "\n"))
+  Dim hOutput As Stream
   
-  If Not $hProcess And Not $hPipeout Then Return  ' added BG to allow redirection of io
+  hOutput = GetOutputStream()
+  If Not hOutput Then Return
   
   If $hOutputTimer.Enabled Then $hOutputTimer.Trigger
   
   $hScroll.Value = $hScroll.MaxValue
   
-  If $hPipeOut Then ' added BG to allow redirection of io
-    
-    If $hFilter.InputTo(Me, $hScreen, $hPipeOut, Key.Code, Key.Text, Key.Normal, Key.Shift, Key.Control) Then
-      EnsureVisible
-      Stop Event
-    Endif
-    
-  Else
-    
-    If $hFilter.InputTo(Me, $hScreen, $hProcess, Key.Code, Key.Text, Key.Normal, Key.Shift, Key.Control) Then
-      EnsureVisible
-      Stop Event
-    Endif
-    
+  If $hFilter.InputTo(Me, $hScreen, hOutput, Key.Code, Key.Text, Key.Normal, Key.Shift, Key.Control) Then
+    EnsureVisible
+    Stop Event
   Endif
-  
+    
 End
 
 Public Sub View_DblClick()
@@ -717,7 +717,7 @@ Public Sub Exec(Command As String[], Optional Environment As String[]) As Proces
   
   Dim aEnv As String[]
   
-  If Not (IsNull($hProcess) Or IsNull($hPipeOut)) Then Return
+  If GetOutputStream() Then Error.Raise("Terminal already in use")
   
   aEnv = ["TERM=xterm"]
   If Environment Then aEnv.Insert(Environment)
@@ -734,7 +734,7 @@ Public Sub Shell(Command As String, Optional Environment As String[]) As Process
   
   Dim aEnv As String[]
   
-  If Not (IsNull($hProcess) Or IsNull($hPipeOut)) Then Return
+  If GetOutputStream() Then Error.Raise("Terminal already in use")
   
   aEnv = ["TERM=xterm"]
   If Environment Then aEnv.Insert(Environment)
@@ -760,7 +760,7 @@ Public Sub ConnectTo($hOutputStream As Stream, $hInputStream As Stream, ByRef Pr
   Dim TheClass As Class
   Dim TheObject As Object
   
-  If $hProcess Then Return
+  If GetOutputStream() Then Error.Raise("Terminal already in use")
   
   TheObject = $hInputStream
   TheClass = Object.Class(TheObject)
@@ -830,13 +830,13 @@ End
 
 Public Sub OutputTimer_Timer()
   
+  Dim hOutput As Stream
+  
   $fStart = Timer
   
-  If $hPipeOut Then
-    $hFilter.OutputTo(Me, $hScreen, $hPipeOut, $sBuffer) ' added this BG to support piped io
-  Else
-    If $hProcess Then $hFilter.OutputTo(Me, $hScreen, $hProcess, $sBuffer)
-  Endif
+  hOutput = GetOutputStream()
+  If hOutput Then $hFilter.OutputTo(Me, $hScreen, hOutput, $sBuffer)
+  
   $sBuffer = ""
   $hOutputTimer.Stop
   EnsureVisible
@@ -886,20 +886,18 @@ Public Sub Kill()
   
   If $hProcess Then 
     Try $hProcess.Kill
-  Else                     ' added BG to end the piped session
-    If $hPipeIn Then
-      Process_Read()        ' Get the last data in stream and display it
-      
-      If Object.Class($hPipeIn).name <> "Socket" Then
-        $hPipeIn.Watch(gb.Read, False)
-      Endif
-      
-      Object.Detach(Me)
-      
-      $oPreprocess = Null
-      $hPipeIn = Null       ' dont close the pipes its the owners problem
-      $hPipeOut = Null    
+  Else If $hPipeIn Then
+    Process_Read()        ' Get the last data in stream and display it
+    
+    If Object.Class($hPipeIn).name <> "Socket" Then
+      $hPipeIn.Watch(gb.Read, False)
     Endif
+    
+    Object.Detach(Me)
+    
+    $oPreprocess = Null
+    $hPipeIn = Null       ' dont close the pipes its the owners problem
+    $hPipeOut = Null    
   Endif
   
 End
@@ -938,18 +936,23 @@ Public Sub Paste()
   
   Dim sText As String
   
-  If Not $hProcess Or Not $hPipeOut Then Return  ' Added BG to support Pipes
-  
   sText = Clipboard.Paste("text/plain")
   If Not sText Then Return
   
   If $hFilter.BracketedPasteActive Then sText = "\e[200~" & sText & "\e[200~"
-  If $hPipeOut Then
-    $hFilter.InputTo(Me, $hScreen, $hPipeOut, 0, sText)
-  Else
-    $hFilter.InputTo(Me, $hScreen, $hProcess, 0, sText)
+  Input(sText)
+  
+End
+
+Public Sub Input(Text As String)
+
+  Dim hOutput As Stream
+  
+  hOutput = GetOutputStream()
+  If hOutput Then
+    $hFilter.InputTo(Me, $hScreen, hOutput, 0, Text)
+    EnsureVisible
   Endif
-  EnsureVisible
   
 End
 
@@ -957,12 +960,6 @@ Public Sub _ShowScreen()
   
   $hScroll.Value = $hScreen.ScreenTop()
   Refresh
-  
-End
-
-Public Sub _SetTitle(sCmd As String, sTitle As String)
-  
-  If sCmd = "0" Or If sCmd = "2" Then Raise Title(sTitle)
   
 End
 
@@ -1051,4 +1048,17 @@ Private Function Count_Read() As Integer
   
   Return $hScreen.Lines.Count
   
+End
+
+Private Function Title_Read() As String
+
+  Return $sTitle
+
+End
+
+Private Sub Title_Write(Value As String)
+
+  $sTitle = Value
+  Raise Title($sTitle)
+
 End
