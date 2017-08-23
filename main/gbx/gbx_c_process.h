@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_c_process.h
+	gbx_c_process.h
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -42,36 +42,35 @@ extern char *CPROCESS_shell;
 #endif
 
 typedef
-  struct _CPROCESS {
-    CSTREAM ob;
-    struct _CPROCESS *prev;
-    struct _CPROCESS *next;
-    pid_t pid;
-    int in;
-    int out;
-    int err;
-    int status;
-    int watch;
+	struct _CPROCESS {
+		CSTREAM ob;
+		struct _CPROCESS *prev;
+		struct _CPROCESS *next;
+		pid_t pid;
+		int in;
+		int out;
+		int err;
+		int status;
 		unsigned running : 1;
 		unsigned wait : 1;
-    unsigned to_string : 1;
+		unsigned to_string : 1;
 		unsigned process_group : 1;
 		unsigned ignore : 1;
 		unsigned error : 1;
-    char *result;
-    GB_VARIANT_VALUE tag;
-  }
-  CPROCESS;
+		char *result;
+		GB_VARIANT_VALUE tag;
+	}
+	CPROCESS;
 
 enum
 {
-  PM_READ = 1,
-  PM_WRITE = 2,
-  PM_TERM = 4,
-  PM_STRING = 8,
+	PM_READ = 1,
+	PM_WRITE = 2,
+	PM_TERM = 4,
+	PM_STRING = 8,
 	PM_WAIT = 16,
 	PM_CONTINUE = 32,
-  PM_SHELL = 128
+	PM_SHELL = 128
 };
 
 CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env);

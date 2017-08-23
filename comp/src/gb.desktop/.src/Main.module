@@ -159,7 +159,8 @@ Public Sub Main()
   ' Print hMime.Pattern
   ' Print hMime.Type
   'Print Desktop.Passwords["guygle.cgi/Connection/IndexMySQL"]
-  Desktop.OpenTerminal
+  'Desktop.OpenTerminal
+  Desktop.SendMail(Null,,,,, "/home/benoit/Translate.module, comma")
   
 End
 

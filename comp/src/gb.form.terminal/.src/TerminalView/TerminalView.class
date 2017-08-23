@@ -546,6 +546,9 @@ End
 
 Public Sub View_MouseWheel()
   
+  Dim hOutput As Stream
+  Dim I As Integer
+  
   If Mouse.Control Then
     
     If Mouse.Forward Then
@@ -554,23 +557,35 @@ Public Sub View_MouseWheel()
       $hView.Font.Size = Max(6, $hView.Font.Size / Sqr(Sqr(2)))
     Endif
     
-    Return
-    
-  Endif
-  
-  If $bTermUseMouse Then
-    
-    SendMouseEvent($hFilter.MouseDown)
-    
   Else
-    
-    If Mouse.Forward Then
-      $hScroll.Value -= 3
+  
+    If $bTermUseMouse Then
+      
+      SendMouseEvent($hFilter.MouseDown)
+      
+    Else If $hScroll.MaxValue = 0 Then
+      
+      hOutput = GetOutputStream()
+      If hOutput Then
+        For I = 1 To Abs(Mouse.Delta)
+          $hFilter.InputTo(Me, $hScreen, hOutput, If(Mouse.Forward, Key.Up, Key.Down), "")
+        Next
+        EnsureVisible
+      Endif
+      
     Else
-      $hScroll.Value += 3
+      
+      If Mouse.Forward Then
+        $hScroll.Value -= 3
+      Else
+        $hScroll.Value += 3
+      Endif
+      
     Endif
     
   Endif
+  
+  Stop Event
   
 End
 
@@ -698,17 +713,8 @@ End
 
 Private Sub InitProcess()
 
-  Dim hSettings As TerminalSettings
-  
-  $hProcess.Term.Echo = True
-  
-  hSettings = $hProcess.Term.GetAttr()
-  hSettings.ONLCR = True
-  hSettings.ECHO = True
-  $hProcess.Term.SetAttr(Term.TCSANOW, hSettings)
-  
   $hProcess.Term.Resize($hScreen.Width, $hScreen.Height)
-
+  
 End
 
 ' Running a command
