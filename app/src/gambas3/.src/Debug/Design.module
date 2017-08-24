@@ -967,7 +967,8 @@ Private Sub Start(sCmd As String)
   Select Case sProg
   
     Case "konsole"
-      aExec.Insert(["konsole", "--nofork", "--caption", sTitle, "--hold", "--name", Project.Name & "-output", "-e"], 0)
+      '  "--caption", sTitle
+      aExec = ["konsole", "--nofork", "--hold", "--name", Project.Name & "-output", "-e", aExec.Join(" ")]
       
     Case "gnome-terminal"
       ' gnome terminal cannot hold at end

@@ -227,7 +227,7 @@ static void update_stream(CPROCESS *process)
 
 static void init_process(CPROCESS *process)
 {
-	process->watch = GB_WATCH_NONE;
+	//process->watch = GB_WATCH_NONE;
 	process->in = process->out = process->err = -1;
 	update_stream(process);
 }
@@ -247,7 +247,7 @@ static void exit_process(CPROCESS *_object)
 
 	close_fd(&THIS->out);
 	close_fd(&THIS->err);
-
+	
 	STREAM_close(&THIS->ob.stream);
 }
 
@@ -406,6 +406,8 @@ static void abort_child(int error)
 static void init_child_tty(int fd)
 {
 	struct termios terminal = { 0 };
+	struct termios check;
+	
 	tcgetattr(fd, &terminal);
 
 	terminal.c_iflag |= IXON | IXOFF;
@@ -415,9 +417,9 @@ static void init_child_tty(int fd)
 	#endif
 
 	terminal.c_oflag |= OPOST;
-	terminal.c_oflag &= ~ONLCR;
+	//terminal.c_oflag &= ~ONLCR;
 
-	terminal.c_lflag |= ISIG | ICANON | IEXTEN; // | ECHO;
+	terminal.c_lflag |= ISIG | ICANON | IEXTEN | ECHO;
 	///terminal.c_lflag &= ~ECHO;
 
 	#ifdef DEBUG_CHILD
@@ -433,6 +435,10 @@ static void init_child_tty(int fd)
 		#endif
 		abort_child(CHILD_CANNOT_INIT_TTY);
 	}
+	
+	tcgetattr(fd, &check);
+	if (check.c_iflag != terminal.c_iflag || check.c_oflag != terminal.c_oflag || check.c_lflag != terminal.c_lflag)
+		abort_child(CHILD_CANNOT_INIT_TTY);
 }
 
 const char *CPROCESS_search_program_in_path(char *name)
@@ -726,6 +732,8 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 			fd_slave = open(slave, O_RDWR);
 			if (fd_slave < 0)
 				abort_child(CHILD_CANNOT_OPEN_TTY);
+			
+			init_child_tty(fd_slave);
 
 			/*#ifdef DEBUG_ME
 			fprintf(stderr, "run_process (child): slave = %s isatty = %d\n", slave, isatty(fd_slave));
@@ -748,10 +756,10 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 			// Terminal initialization must be done on STDIN_FILENO after using dup2().
 			// If it is done on fd_slave, before using dup2(), it sometimes fails with no error.
 
-			if (mode & PM_WRITE)
+			/*if (mode & PM_WRITE)
 				init_child_tty(STDIN_FILENO);
 			else if (mode & PM_READ)
-				init_child_tty(STDOUT_FILENO);
+				init_child_tty(STDOUT_FILENO);*/
 
 			/*puts("---------------------------------");
 			if (stdin_isatty) puts("STDIN is a tty");*/
@@ -1289,7 +1297,7 @@ GB_DESC NATIVE_Process[] =
 	GB_METHOD("CloseInput", NULL, Process_CloseInput, NULL),
 
 	GB_PROPERTY("Ignore", "b", Process_Ignore),
-
+	
 	/*GB_METHOD("Exec", NULL, Process_Exec, "(Command)String[];[(Mode)i(Environment)String[];]"),
 	GB_METHOD("Shell", NULL, Process_Shell, "(Command)s;[(Mode)i(Environment)String[];]"),*/
 	

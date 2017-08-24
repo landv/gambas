@@ -202,35 +202,6 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hOutput As 
               Select Case iArg
                 Case 0
                   hScreen.Attr.Reset()
-                Case 1
-                  hScreen.Attr.Bold = True
-                  'hScreen.Attr.Reverse = True
-                Case 2
-                  hScreen.Attr.Dim = True
-                Case 3
-                  ' Italic on
-                Case 4
-                  hScreen.Attr.Underscore = True
-                Case 5
-                  hScreen.Attr.Blink = True
-                Case 6
-                  ' Fast blink on
-                Case 7
-                  hScreen.Attr.Reverse = True
-                Case 20
-                  ' Fraktur on
-                Case 21
-                  hScreen.Attr.Bold = False
-                Case 22
-                  hScreen.Attr.Dim = False
-                Case 23
-                  ' Italic & Fraktur off
-                Case 24
-                  hScreen.Attr.Underscore = False
-                Case 25
-                  hScreen.Attr.Blink = False
-                Case 27
-                  hScreen.Attr.Reverse = False
                 Case 30
                   hScreen.Attr.Foreground = 0
                 Case 31 To 37
@@ -241,6 +212,27 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hOutput As 
                   hScreen.Attr.Background = iArg - 40
                 Case 49
                   hScreen.Attr.Background = -1
+                Case 1
+                  hScreen.Attr.Bold = True
+                  'hScreen.Attr.Reverse = True
+                Case 2
+                  hScreen.Attr.Dim = True
+                Case 4
+                  hScreen.Attr.Underscore = True
+                Case 5
+                  hScreen.Attr.Blink = True
+                Case 7
+                  hScreen.Attr.Reverse = True
+                Case 21
+                  hScreen.Attr.Bold = False
+                Case 22
+                  hScreen.Attr.Dim = False
+                Case 24
+                  hScreen.Attr.Underscore = False
+                Case 25
+                  hScreen.Attr.Blink = False
+                Case 27
+                  hScreen.Attr.Reverse = False
                 Case 90 To 97
                   hScreen.Attr.Foreground = iArg - 90
                 Case 100 To 107
@@ -266,6 +258,14 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hOutput As 
                   '   i += 4
                   ' Endif
                   
+                Case 3
+                  ' Italic on
+                Case 6
+                  ' Fast blink on
+                Case 20
+                  ' Fraktur on
+                Case 23
+                  ' Italic & Fraktur off
                 Default
                   Goto NOT_IMPLEMENTED
               End Select
@@ -315,6 +315,19 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hOutput As 
           Endif
           hScreen.CursorGoto(X, Y)
 
+        Case "K" ' Erase line
+          
+          GoSub GET_ARGS
+          If Not aArg Or If aArg[0] = "0" Then
+            hScreen.EraseEndOfLine
+          Else If aArg[0] = "1" Then
+            hScreen.EraseStartOfLine
+          Else If aArg[0] = "2" Then
+            hScreen.EraseLine
+          Else
+            Goto NOT_IMPLEMENTED
+          Endif
+          
         Case "c"  'Report terminal type
           
           Print #hOutput, "\e[?1;2c"
@@ -337,19 +350,6 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hOutput As 
             hScreen.EraseUp
           Else If aArg[0] = "2" Then
             hScreen.EraseScreen
-          Else
-            Goto NOT_IMPLEMENTED
-          Endif
-          
-        Case "K" ' Erase line
-          
-          GoSub GET_ARGS
-          If Not aArg Or If aArg[0] = "0" Then
-            hScreen.EraseEndOfLine
-          Else If aArg[0] = "1" Then
-            hScreen.EraseStartOfLine
-          Else If aArg[0] = "2" Then
-            hScreen.EraseLine
           Else
             Goto NOT_IMPLEMENTED
           Endif
@@ -578,6 +578,14 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hOutput As 
           
       End Select
       
+    Case "(", ")", "*", "+"
+      
+      iMode = SCAN_SET_CHARSET
+      
+    Case "]" '>>>>> OSC
+      
+      iMode = SCAN_TITLE
+      
     Case "7" ' Save cursor
       
       hScreen.SaveCursor()
@@ -611,14 +619,6 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hOutput As 
     Case ">"
       
       hScreen.AppKeypad = False
-      
-    Case "(", ")", "*", "+"
-      
-      iMode = SCAN_SET_CHARSET
-      
-    Case "]" '>>>>> OSC
-      
-      iMode = SCAN_TITLE
       
     Default
       
