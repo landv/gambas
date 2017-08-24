@@ -1117,7 +1117,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
       sExt = File.Ext(sPath)
       Select Case sExt
 
-        Case "form", "class", "module", "webpage", "report", "webform"
+        Case "form", "class", "module", "webpage", "report", "webform", "termform"
           If IsSourcePath(sPath) Then
             sModule = sExt
             sIcon = sExt & "-" & iSize
@@ -2107,7 +2107,7 @@ Public Function LoadFile(sPath As String) As Object
         Case "module", "class"
           hForm = New FEditor(sPath)
 
-        Case "form", "report", "webform"
+        Case "form", "report", "webform", "termform"
           If HasModule(sType) Then
             hForm = New FForm(sPath)
           Endif

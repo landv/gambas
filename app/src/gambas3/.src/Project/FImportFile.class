@@ -139,7 +139,7 @@ Private Sub ImportFile() As Boolean
         sName = File.BaseName(Project.GetUniqueSourceName(sName))
         Project.InsertSource(sName, "class", $sDir, sTemp,,, chkLink.Value)
     
-      Case "form", "report", "webform"
+      Case "form", "report", "webform", "termform"
         sName = File.BaseName(Project.GetUniqueSourceName(sName))
         Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True, True, chkLink.Value)
         Project.InsertSource(sName, sExt, $sDir, sTemp, False, True, chkLink.Value)

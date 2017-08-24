@@ -34,16 +34,16 @@ Public Sub _new()
 
 End
 
-Static Public Sub Main()
-
-  Dim hObject As Object
-
-  hObject = Application.Startup.AutoCreate()
-  'If Not hObject Is Report Then Return
-  'FPreview.Run(hObject)
-  TermWindows._Render
-
-End
+' Static Public Sub Main()
+' 
+'   Dim hObject As Object
+' 
+'   hObject = Application.Startup.AutoCreate()
+'   'If Not hObject Is Report Then Return
+'   'FPreview.Run(hObject)
+'   TermWindows._Render
+' 
+' End
 
 Public Sub _Render()
 

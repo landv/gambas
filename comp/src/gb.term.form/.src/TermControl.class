@@ -1,7 +1,16 @@
 ' Gambas class file
 
 Export
+Create Private
 Class Rect
+
+
+Public Const _IsControl As Boolean = True
+Public Const _IsContainer As Boolean = False
+Public Const _Properties As String = "" '"Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Margin,Ignore,Expand,AutoResize,Tag,Range"
+Public Const _Family As String = "TermForm"
+
+
 Static Public _IdToControl As New Collection
 Static Private $iLastId As Integer = 1
 

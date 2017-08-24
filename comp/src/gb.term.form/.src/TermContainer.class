@@ -1,8 +1,13 @@
 ' Gambas class file
 
 Export
+Create Private
 Inherits TermControl
 Class Rect
+
+Public Const _IsContainer As Boolean = True
+Public Const _Group As String = "Container"
+Public Const _Properties As String = "*"
 
 Property Read Children As TermControl[]
 Property Read ClientWidth, CLientW As Integer
