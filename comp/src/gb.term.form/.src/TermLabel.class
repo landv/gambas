@@ -2,7 +2,11 @@
 
 Export
 Inherits TermControl
+
 Class Rect
+
+Public Const _Properties As String = "*,Text"
+
 Property Text As String
 
 Private $sText As String

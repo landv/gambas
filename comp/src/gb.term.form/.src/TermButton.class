@@ -2,7 +2,11 @@
 
 Export
 Inherits TermControl
+
 Class Rect
+
+Public Const _Properties As String = "*,Text,Shadow"
+
 Property Text As String
 Property Shadow As Boolean
 Property Alignment As Integer

@@ -13,10 +13,10 @@ Public Const _DefaultEvent As String = "Open"
 
 Static Public Sub Main()
   
-  Dim hObject As Object
+  Dim hObject As TermForm
   
   hObject = Application.Startup.AutoCreate()
-  If Not hObject Is TermForm Then Return
+  hObject.Show
 
   TermWindows._Render
 
