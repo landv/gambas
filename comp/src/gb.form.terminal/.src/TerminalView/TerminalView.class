@@ -212,6 +212,8 @@ Private Sub UpdateFont()
     $iAscent = .Ascent
     sText = String$(8, "mM0_@$#W")
     $CW = CInt(.TextWidth(sText) / Len(sText))
+    W = $CW \ 8 + 1
+    $CW += W \ 2
     
     $hCacheFont = New Image($CW * 416, $LH * 2, Color.Transparent)
     Paint.Begin($hCacheFont)
