@@ -4,15 +4,20 @@ Create Static
 Export
 Inherits TermContainer
 Class Rect
-Property Text, Title As String
 Private $sText As String
 
+Property Text, Title As String
 Property Maximized As Boolean
 Property Read Active As Boolean
 Property Resizable As Boolean
 Property Visible As Boolean
+Property Left, X, Column As Integer
+Property Top, Y, {Line} As Integer
+Property Width, W As Integer
+Property Height, H As Integer
+Property Persistent As Boolean
+Private $bOpen As Boolean
 Private $rectOldPos As Rect
-
 Private $bMaximized As Boolean
 Private $iInMove As Integer
 Private $tmrMove As Timer
@@ -22,13 +27,6 @@ Private $bResizable As Boolean = True
 Private $bInResize As Boolean
 Private $iFocusedId As Integer
 Private $bPersistent As Boolean
-
-Property Left, X, Column As Integer
-Property Top, Y, {Line} As Integer
-Property Width, W As Integer
-Property Height, H As Integer
-Property Persistent As Boolean
-Private $bOpen As Boolean
 
 Event Close
 Event Open

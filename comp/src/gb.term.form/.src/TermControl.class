@@ -589,7 +589,7 @@ End
 Public Sub _MouseDown()
   Dim hwindow As TermWindow
   
-  If TermWindows.Debug Then Error "Mouse Down Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  If TermWindows.Debug = TermWindows.DebugInput Then Error "Mouse Down Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
   
   If Not Me.Window.Active Then
     Me.Window.Activate
@@ -601,28 +601,28 @@ End
 
 Public Sub _MouseUp()
 
-  If TermWindows.Debug Then Error "Mouse Up Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  If TermWindows.Debug = TermWindows.DebugInput Then Error "Mouse Up Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
   Raise MouseUp
 
 End
 
 Public Sub _MouseMove()
 
-  If TermWindows.Debug Then Error "Mouse Move Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  If TermWindows.Debug = TermWindows.DebugInput Then Error "Mouse Move Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
   Raise MouseMove
 
 End
 
 Public Sub _MouseWheel()
 
-  If TermWindows.Debug Then Error "Mouse Wheel Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  If TermWindows.Debug = TermWindows.DebugInput Then Error "Mouse Wheel Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
   Raise MouseWheel
 
 End
 
 Public Sub _Click()
 
-  If TermWindows.Debug Then Error "Mouse Click Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  If TermWindows.Debug = TermWindows.DebugInput Then Error "Mouse Click Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
   Raise Click
 
 End

@@ -10,7 +10,7 @@ Static Private $RectRefreshArea As Rect
 Static Private $aChildren As New TermWindow[]
 Static Private $hRect As Rect
 Static Private $RectRenderArea As Rect
-Static Public {Debug} As Boolean '= True
+Static Public {Debug} As Integer
 Static Private $Index As Integer
 Static Private $bThisIsTheEnd As Boolean
 Static Private $bInRender As Boolean
@@ -19,18 +19,20 @@ Static Private $iActiveWindow As Integer
 Static Public bLock As Boolean
 Static Private $hStream As File
 
-Static Public Sub _init()
+Public Enum DebugNone, DebugInput, DebugOutput
 
+Static Public Sub _init()
+  
   Dim hRect As Rect
   Dim hSetting As TerminalSettings
-
+  
   Component.Load("gb.geom")
-
+  
   hRect = New Rect(0, 0, 3, 3)
-
+  
   $hFile = Open File.In.Term.Name For Read Watch
   obs = New Observer(File.In) As "Terminal"
-
+  
   hSetting = File.In.Term.GetAttr()
   'hSetting.ICANON = False
   'hSetting.ECHO = False
@@ -40,23 +42,22 @@ Static Public Sub _init()
   Print "\e[?1002h\e[?1006h\e[?1049h\e[?25l\e[?2h";
   Print "\e[8;30;200";
   ResizeScreen(File.Out.Term.Width, File.Out.Term.Height)
-
+  
 End
 
 Static Private Sub ResizeScreen(Width As Integer, Height As Integer)
   
-  
   $aScreen = New Integer[Height, Width]
   $hRect = Rect(0, 0, Width, Height)
   $RectRefreshArea = $hRect.Copy()
-
+  
 End
 
 Public Sub _Add(hWin As TermWindow)
-
+  
   Dim i As Integer
   Dim hCurACtive As TermWindow
-
+  
   hCurActive = TermControl._IdToControl[$iActiveWindow]
   If hCurACtive Then
     hCurACtive._NeedRender = True
@@ -64,7 +65,7 @@ Public Sub _Add(hWin As TermWindow)
   Endif
   $aChildren.Add(hWIn)
   $iActiveWindow = hWin.id
-
+  
   ' For i = 0 To $aChildren.Max - 1
   '   SetRenderArea($aChildren[i]._GetRect())
   '   $aChildren[i]._NeedRender = True
@@ -72,49 +73,49 @@ Public Sub _Add(hWin As TermWindow)
 End
 
 Static Public Sub _RefreshScreen()
-
+  
   $RectRefreshArea = $hRect.Copy()
   _Render
-
+  
 End
 
 'Recalculate the refresh zone
 Static Public Sub DoRefreshArea()
-
+  
   Dim hChild As TermWindow
   Dim hRect As Rect
-
+  
   If Not $RectRefreshArea Then Return
   DoArrange()
   'refresh desktop
   'Try
-   RefreshDesktop($hRect.InterSection($RectRefreshArea))
+  RefreshDesktop($hRect.InterSection($RectRefreshArea))
   'Resfresh windows
   For Each hChild In $aChildren
     hRect = $hRect.InterSection($RectRefreshArea)
     'Try 
     RefreshChild(hChild, hRect)
   Next
-
+  
   SetRenderArea($RectRefreshArea)
   $RectRefreshArea = Null
-
+  
 End
 
 Static Private Sub RefreshDesktop(rectUpdate As Rect)
-
+  
   Dim L, C As Integer
-
+  
   For L = rectUpdate.Top To rectUpdate.Bottom - 1
     For C = rectUpdate.Left To rectUpdate.Right - 1
       $aScreen[l, C] = 0
     Next
   Next
-
+  
 End
 
 Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
-
+  
   Dim rectUpdate As Rect
   Dim L, C As Integer
   Dim hObj As Object
@@ -124,26 +125,26 @@ Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
   If Not hChild.Visible Then Return
   'La zone n'existe pas alors fin
   If Not rectUpdate Then Return
-
+  
   'Remplissage de la zone de calepinageavec l'id de l'objet
-
+  
   For L = rectUpdate.Top To rectUpdate.Bottom - 1
     For C = rectUpdate.Left To rectUpdate.Right - 1
       $aScreen[l, C] = hChild.Id
     Next
   Next
-
+  
   'L'objet est un conteneur ?
   If hChild Is TermContainer Then
     'On applique la Client Zone
     rectUpdate = hRect.InterSection(hChild._GetScreenClientRect())
     For Each hObj In hChild.Children
-
+      
       RefreshChild(hObj, rectUpdate)
     Next
-
+    
   Endif
-
+  
 End
 
 ' Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
@@ -182,7 +183,7 @@ End
 ' End
 
 Static Public Sub Terminal_Resize()
-
+  
   Dim hWin As TermWindow
   
   ResizeScreen(File.Out.Term.Width, File.Out.Term.Height)
@@ -192,11 +193,11 @@ Static Public Sub Terminal_Resize()
   'Try
   SetRefreshArea(Rect(0, 0, Desktop.Width, Desktop.Height))
   _Render
-
+  
 End
 
 Static Public Sub File_Read()
-
+  
   Dim s, ss, sss As String
   Dim ai As Integer[]
   Dim hControl As TermControl
@@ -214,11 +215,11 @@ Static Public Sub File_Read()
   Dim bAlt As Boolean
   'Dim bControl As Boolean
   Dim bShift As Boolean
-
+  
   s = Read #$hFile, Lof($hFile)
   bnoesc = InStr(s, "\e", 0) = -1
   'Inc $index
-
+  
   If s = "" Then Return
   Do
     ss = Mid(s, iPos, 1)
@@ -226,7 +227,7 @@ Static Public Sub File_Read()
       bInEscapeSec = True
       Inc ipos
     Endif
-
+    
     If bInEscapeSec Then
       'Is a mouse sequence ?
       If Mid(s, ipos, 2) = "[<" Then
@@ -267,15 +268,15 @@ Static Public Sub File_Read()
               'Mouse._SetState(hControl, ai[1], ai[2],,,, IIf(ai[0] = 64, -1, 1))
               RaiseMouseEvent(hControl, "_MouseWheel", ai[1], ai[2],,,, IIf(ai[0] = 64, -1, 1))
           End Select
-
+          
         Endif
-
+        
         bInEscapeSec = False
         Continue
       Endif
       i = 10
       ipos2 = 10
-'      If String.InStr(S, "B") Then Stop
+      '      If String.InStr(S, "B") Then Stop
       For Each ss In ["~", "A", "B", "C", "D", "H", "F", "P", "Q", "R", "S", "M", "Z"]
         i = InStr(s, ss, ipos)
         If i = 0 Then Continue
@@ -300,32 +301,32 @@ Static Public Sub File_Read()
           'Key.Up
           Key._SetKey("", Key.Up, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "OB", "[B"
           'Key.Down
           Key._SetKey("", Key.Down, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "OC", "[C"
           'Key.Right
           Key._SetKey("", Key.Right, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "OD", "[D"
           'Key.Left
           Key._SetKey("", Key.Left, bAlt, bControl, bShift)
           bFound = True
-
+          
           'Case
           'Key.Enter, Key.Return
           ' sText = If(hScreen.NewlineMode, "\r\n", "\n")
-
+          
         Case "OH", "[H"
           'Key.Home
           'sText="\e[1~"
           Key._SetKey("", Key.Home, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "OF", "[F"
           'Key.End
           Key._SetKey("", Key.End, bAlt, bControl, bShift)
@@ -334,17 +335,17 @@ Static Public Sub File_Read()
           'Key.F1
           Key._SetKey("", Key.F1, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "OQ", "[1Q"
           'Key.F2
           Key._SetKey("", Key.F2, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "OR", "[1R"
           'Key.F3
           Key._SetKey("", Key.F3, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "OS", "[1S"
           'Key.F4
           Key._SetKey("", Key.F4, bAlt, bControl, bShift)
@@ -353,72 +354,72 @@ Static Public Sub File_Read()
           'Key.Return, Key.Enter
           Key._SetKey("", Key.Return, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "[Z"
           'Key.BackTab
           Key._SetKey("", Key.BackTab, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "[2~"
           'Key.Insert
           Key._SetKey("", Key.Insert, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "[3~"
           'Key.Delete
           Key._SetKey("", Key.Delete, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "[6~"
           'Key.PageDown
           Key._SetKey("", Key.PageDown, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "[5~"
           'Key.PageUp
           Key._SetKey("", Key.PageUp, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "[15~"
           'Key.F5
           Key._SetKey("", Key.F5, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "[17~"
           'Key.F6
           Key._SetKey("", Key.F6, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "[18~"
           'Key.F7
           Key._SetKey("", Key.F7, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "[19~"
           'Key.F8
           Key._SetKey("", Key.F8, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "[20~"
           'Key.F9
           Key._SetKey("", Key.F9, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "[21~"
           'Key.F10
           Key._SetKey("", Key.F10, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "[23~"
           'Key.F11
           Key._SetKey("", Key.F11, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "[24~"
           'Key.F12
           Key._SetKey("", Key.F12, bAlt, bControl, bShift)
           bFound = True
-
+          
         Case "[29~"
           'menu
           Key._SetKey("", Key.Menu, bAlt, bControl, bShift)
@@ -427,13 +428,13 @@ Static Public Sub File_Read()
       If bFound Then
         ipos = ipos2
       Endif
-
+      
       bFound = False
-
+      
     Else
-
+      
       'Normal Characters
-
+      
       ss = Mid(s, iPos, 1)
       'Key._SetKey(s, bControl)
       Select Case ss
@@ -446,51 +447,51 @@ Static Public Sub File_Read()
         Case Else
           Key._SetKey(ss, 0, bAlt, bControl, bShift)
       End Select
-
+      
       iPos += 1
     Endif
-
+    
     RaiseKeyEvent()
     Key._Reset
-
+    
   Loop Until iPos > Len(s)
-
+  
   'This is the end
-
+  
   If $bThisIsTheEnd Then
     TermControl._IdToControl = Null
     hControl = Null
     $hFile.Close
-
+    
   Endif
-
+  
 End
 
 Static Private Sub RaiseMouseEvent(hControl As TermControl, sEvent As String, Col As Integer, Row As Integer, Optional btnLeft As Boolean, btnMiddle As Boolean, btnRight As Boolean, Delta As Integer)
-
+  
   'Dim hControl As TermControl
-
+  
   'hControl = TermControl._IdToControl[$aScreen[Mouse.Row, Mouse.Col]]
-
+  
   If hControl = Null And If $hCurControl = Null Then Return
   If sEvent = "_MouseDown" Then $hCurControl = hControl
-
+  
   Mouse._SetState($hCurControl, Col, Row, btnLeft, btnMiddle, btnRight, Delta)
-
+  
   If sEvent = "_MouseUp" Then
     If hControl = $hCurControl Then
-
+      
       Object.Call($hCurControl, "_Click")
       Object.Call($hCurControl, sEvent)
       $hCurControl = Null
     Endif
   Endif
   If $hCurControl Then Object.Call($hCurControl, sEvent)
-
+  
 End
 
 Static Private Sub RaiseKeyEvent()
-
+  
   Select Case Key.Code
     Case Key.Menu
       If Key.Alt Then
@@ -499,11 +500,11 @@ Static Private Sub RaiseKeyEvent()
     Case Else
       TermControl._IdToControl[$iActiveWindow]._KeyPress()
   End Select
-
+  
 End
 
 Static Public Sub _RaiseWindow(hWin As TermWindow)
-
+  
   Dim hLastActive As TermWindow
   'If $aChildren.Count = 1 Then Return
   'hWin = $aChildren[0]
@@ -515,45 +516,45 @@ Static Public Sub _RaiseWindow(hWin As TermWindow)
   SetRefreshArea(hWin._GetScreenRect())
   SetRenderArea(hLastActive._GetScreenRect())
   $iActiveWindow = hWin.id
-
+  
   _Render
-
+  
 End
 
 Static Public Sub _Read(sValue As String)
-
+  
   Write "ok" & sValue
-
+  
 End
 
 Static Public Sub SetRenderArea(hRect As Rect)
-
+  
   If Not $RectRenderArea Then
     $RectRenderArea = hRect
     Return
   Endif
-
+  
   $RectRenderArea = $RectRenderArea.Union(hRect)
-
+  
 End
 
 Static Public Sub SetRefreshArea(hRect As Rect)
-
+  
   If Not $RectRefreshArea Then $RectRefreshArea = hRect.Copy() 'New Rect
   'If hRect.Top = 3 Then Stop
   $RectRefreshArea = $RectRefreshArea.Union(hRect)
   'Error "RefreshARea : " & RectToStr($RectRefreshArea)
-
+  
 End
 
 Static Public Sub RectToStr(hRect As Rect) As String
-
+  
   Error "Top: " & hRect.Top & "   Left: " & hRect.Left & "   Width: " & hRect.Width & "   Height: " & hRect.Height
-
+  
 End
 
 Static Public Sub _Render()
-
+  
   Dim c As Integer
   Dim l As Integer
   Dim hRect As Rect
@@ -568,16 +569,16 @@ Static Public Sub _Render()
   Dim iBgChar As Integer
   Dim bWroteBg As Boolean
   Dim iId As Integer
-
+  
   If bLock Then Stop
   If $bInRender Then Return
-
+  
   $hStream = Open String For Write
-
+  
   $bInRender = True
   DoRefreshArea()
   RenderAll
-
+  
   If Not IsNull($RectRenderArea) Then hRect = $hRect.Intersection($RectRenderArea)
   
   If hRect = Null Then
@@ -591,19 +592,20 @@ Static Public Sub _Render()
   End With
   
   sAttr = hAttr._GetString(True)
-
+  
   Write #$hStream, sAttr
   
   For l = hRect.Y To hRect.Bottom - 1
     'Debug "ligne " & l
+    If TermWindows.Debug = Me.DebugOutput Then Error Replace("\e[" & (l + 1) & ";" & (hRect.X + 1) & "H", "\e", "ESC")
     Write #$hStream, "\e[" & (l + 1) & ";" & (hRect.X + 1) & "H"
     iOldAttr = 0
     bWroteBg = False
-
+    
     For c = hRect.X To hRect.Right - 1
-
+      
       iId = $aScreen[l, c]
-
+      
       If iId Then
         
         hCont = TermControl._IdToControl[iId]
@@ -620,57 +622,58 @@ Static Public Sub _Render()
           iOldAttr = hChar.Attr
         Endif
         'Write #$hStream, sAttr
+        If TermWindows.Debug = Me.DebugOutput Then Error String.Chr(hChar.c);
         Write #$hStream, String.Chr(hChar.c)
         bWroteBg = False
-      
+        
       Else
         
         If Not bWroteBg Then
           hAttr.FillFrom(iBgAttr)
           hAttr.WriteToStream($hStream)
         Endif
+        If TermWindows.Debug = Me.DebugOutput Then Error String.Chr(iBgChar);
         Write #$hStream, String.Chr(iBgChar)
         bWroteBg = True
-
+        
       Endif
-
+      
     Next
   Next
   sDisplay = Close #$hStream
   Print sDisplay;
   Flush
-
+  
   $RectRenderArea = Null
-
+  
   $bInRender = False
-
-
+  
 End
 
 Static Private Sub RenderAll()
-
+  
   Dim hWin As TermWindow
-
+  
   For Each hWin In $aChildren
     hWin._Render
   Next
-
+  
 End
 
 Static Private Sub DoArrange()
-
+  
   Dim hChild As TermWindow
-
+  
   For Each hChild In $aChildren
     hChild._Arrange()
   Next
-
+  
 End
 
 Static Public Sub Delete(hControl As TermControl)
-
+  
   Dim hObj As Object = hControl
-
+  
   TermControl._IdToControl[hObj.Id] = Null
   hObj._Content = Null
   If hObj Is TermContainer Then
@@ -679,22 +682,22 @@ Static Public Sub Delete(hControl As TermControl)
     Next
     'hObj.Children.Clear
   Endif
-
+  
   If hObj Is TermWindow Then
     $aChildren.Delete($aChildren.Find(hObj))
-     _RaiseWindow($aChildren[$aChildren.Max])
+    _RaiseWindow($aChildren[$aChildren.Max])
   Endif
-
+  
   If $aChildren.Count = 0 Then
-
+    
     $bThisIsTheEnd = True
-
+    
   Endif
-
+  
 End
 
 Static Public Sub GetActiveWindow() As TermWindow
-
+  
   Return TermControl._IdToControl[$iActiveWindow]
-
+  
 End

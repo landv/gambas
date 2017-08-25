@@ -36,12 +36,13 @@ Public Sub _new()
   
   hLbl.Background = TermColor.Green
   hLbl.Foreground = TermColor.Black
+  TermWindows.Debug = TermWindows.DebugOutput
 End
 
 
 Public Sub tim_Timer()
   
-  hList[5] = k
+  'hList[5] = k
   Inc k
 End
 

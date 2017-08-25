@@ -10,6 +10,7 @@ Property Read Text As String
 Private $iIndex As Integer
 Private $aList As New String[]
 Private $iFirstVisible As Integer
+Private $iPrevIndex As Integer
 Event Activate
 Event Change
 Class Rect
@@ -33,9 +34,14 @@ Private Function Index_Read() As Integer
 End
 
 Private Sub Index_Write(Value As Integer)
-  
-  $iIndex = Min($aList.Max, Max(0, Value))
-  EnsureVisible
+
+  Dim iNewIndex As Integer
+  iNewIndex = Min($aList.Max, Max(0, Value))
+  If iNewIndex <> $iIndex Then
+    $iPrevIndex = $iIndex
+    $iIndex = iNewIndex
+    EnsureVisible
+  Endif
   
 End
 
@@ -53,7 +59,8 @@ Public Sub _Render()
   Dim s As String
   Dim hRectC As Rect = Me._GetClientRect()
   Dim hRect As Rect = Me._GetClientRect()
-Dim iCursorPos As Integer
+  Dim iCursorPos As Integer
+
   If Not Me._NeedRender Then Return
   Super._Render
   
@@ -85,10 +92,8 @@ Dim iCursorPos As Integer
   
   hAttr.Foreground = TermColor.Black
   iAttr = hAttr.GetInteger()
-      iCursorPos = ($iFirstVisible + hRect.height) / $aList.Count * (hRect.Height - 3)
-      Me._Content[iCursorPos][hRect.width - 1] = Char(String.Chr(&H2588), iAttr)
- 
-  
+  iCursorPos = ($iFirstVisible + hRect.height) / $aList.Count * (hRect.Height - 3)
+  Try Me._Content[iCursorPos][hRect.width - 1] = Char(String.Chr(&H2588), iAttr)
   
   Me._NeedRender = False
 Fin:
@@ -111,6 +116,7 @@ Public Sub _KeyPress()
       
   End Select
   Super._KeyPress
+
 End
 
 Public Sub _MouseDown()
@@ -119,9 +125,11 @@ Public Sub _MouseDown()
   Me.Index = $iFirstVisible + Mouse.Row
   Raise Change
   'EnsureVisible
+
 End
 
 Public Sub _MouseUp()
+
   Super._MouseUp
   Raise Activate
   Raise Click
@@ -129,20 +137,25 @@ Public Sub _MouseUp()
 End
 
 Public Sub _MouseMove()
+
   Super._MouseMove
   _MouseDown
   
 End
 
 Public Sub EnsureVisible()
-
-  Dim hRect As Rect = Me._GetClientRect()
+  
+  Dim hRect As Rect
+  Dim hRectSc As Rect 
   
   If IsVisible($iIndex) Then 
-    
+    hRectSC = Me._GetScreenClientRect()
+    Me.Refresh(Rect(hRectSc.X, GetRowByIndex($iPrevIndex), hRectSc.Width, 1))
+    Me.Refresh(Rect(hRectSc.X, GetRowByIndex($iIndex), hRectSc.Width, 1))
+    Return
   Endif
   
-  
+  hRect = Me._GetClientRect()
   If $iFirstVisible + (hRect.Height - 1) < $iIndex Then
     $iFirstVisible = $iIndex - hRect.Height + 1
   Endif
@@ -150,25 +163,24 @@ Public Sub EnsureVisible()
     $iFirstVisible = $iIndex
   Endif
   Me.Refresh
-
+  
 End
 
-
 Public Sub _put(Value As String, Index As Integer)
+
   Dim hRect As Rect = Me._GetScreenClientRect()
   $aList[Index] = Value
   If IsVisible(Index) Then 
     Me.Refresh(Rect(hRect.X, hRect.Y + GetRowByIndex(Index), hRect.Width, 1))
   Endif
-End
 
+End
 
 Public Function _get(Index As Integer) As String
   
   Return $aList[Index]
   
 End
-
 
 Private Sub IsVisible(Index As Integer) As Boolean
   
@@ -177,9 +189,9 @@ Private Sub IsVisible(Index As Integer) As Boolean
 End
 
 Private Function Text_Read() As String
-
+  
   Return $aList[$iIndex]
-
+  
 End
 
 Private Function GetRowByIndex(Index As Integer) As Integer
@@ -187,4 +199,3 @@ Private Function GetRowByIndex(Index As Integer) As Integer
   Return Index - $iFirstVisible
   
 End
-

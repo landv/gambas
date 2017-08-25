@@ -69,7 +69,7 @@ Static Public Sub _SetState(hControl As TermControl, Col As Integer, Row As Inte
   
   
   
-  If TermWindows.Debug Then Error "Mouse State:  Row: " & $iRow & "  Col: " & $iCol & "  btnLeft: " & $bLeft & "  btnMiddle: " & $bMiddle & "  btnRight: " & $bRight & "  Delta: " & $iDelta  
+  If TermWindows.Debug = TermWindows.DebugInput Then Error "Mouse State:  Row: " & $iRow & "  Col: " & $iCol & "  btnLeft: " & $bLeft & "  btnMiddle: " & $bMiddle & "  btnRight: " & $bRight & "  Delta: " & $iDelta  
 End
 
 
