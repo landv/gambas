@@ -44,7 +44,8 @@ Static Public Sub _init()
 End
 
 Static Private Sub ResizeScreen(Width As Integer, Height As Integer)
-
+  
+  
   $aScreen = New Integer[Height, Width]
   $hRect = Rect(0, 0, Width, Height)
   $RectRefreshArea = $hRect.Copy()
@@ -86,11 +87,13 @@ Static Public Sub DoRefreshArea()
   If Not $RectRefreshArea Then Return
   DoArrange()
   'refresh desktop
-  Try RefreshDesktop($hRect.InterSection($RectRefreshArea))
+  'Try
+   RefreshDesktop($hRect.InterSection($RectRefreshArea))
   'Resfresh windows
   For Each hChild In $aChildren
     hRect = $hRect.InterSection($RectRefreshArea)
-    Try RefreshChild(hChild, hRect)
+    'Try 
+    RefreshChild(hChild, hRect)
   Next
 
   SetRenderArea($RectRefreshArea)
@@ -181,12 +184,13 @@ End
 Static Public Sub Terminal_Resize()
 
   Dim hWin As TermWindow
-
+  
   ResizeScreen(File.Out.Term.Width, File.Out.Term.Height)
   For Each hWin In $aChildren
     hWin._ScreenResize
   Next
   'Try
+  SetRefreshArea(Rect(0, 0, Desktop.Width, Desktop.Height))
   _Render
 
 End
@@ -490,7 +494,7 @@ Static Private Sub RaiseKeyEvent()
   Select Case Key.Code
     Case Key.Menu
       If Key.Alt Then
-        Try _RaiseWindow($aChildren[$aChildren.max - 1])
+        _RaiseWindow($aChildren[$aChildren.max - 1])
       Endif
     Case Else
       TermControl._IdToControl[$iActiveWindow]._KeyPress()
@@ -678,7 +682,7 @@ Static Public Sub Delete(hControl As TermControl)
 
   If hObj Is TermWindow Then
     $aChildren.Delete($aChildren.Find(hObj))
-    Try _RaiseWindow($aChildren[$aChildren.Max])
+     _RaiseWindow($aChildren[$aChildren.Max])
   Endif
 
   If $aChildren.Count = 0 Then

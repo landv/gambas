@@ -382,7 +382,8 @@ Public Function _GetScreenClientRect() As Rect
 
   Dim iCorner As Integer = IIf($iBorder > 0, 1, 0) + $iPadding
   Dim iSize As Integer = iCorner * 2 + IIf($bShadow, 1, 0)
-
+  
+  
   Return rect(Me.ScreenX + iCorner, Me.ScreenY + iCorner, $rectControl.Width - iSize, $rectControl.Height - iSize)
 
 End
@@ -664,10 +665,14 @@ Public Sub Resize(Width As Integer, Height As Integer)
 
 End
 
-Public Sub Refresh()
+Public Sub Refresh(Optional hScreenRect As Rect)
 
   Me._NeedRender = True
-  TermWindows.SetRenderArea(Me._GetScreenRect())
+  If hScreenRect Then 
+    TermWindows.SetRenderArea(hScreenRect)
+  Else
+    TermWindows.SetRenderArea(Me._GetScreenRect())
+  Endif
   TermWindows._Render
 
 End

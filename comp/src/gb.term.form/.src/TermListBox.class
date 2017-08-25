@@ -138,6 +138,11 @@ Public Sub EnsureVisible()
 
   Dim hRect As Rect = Me._GetClientRect()
   
+  If IsVisible($iIndex) Then 
+    
+  Endif
+  
+  
   If $iFirstVisible + (hRect.Height - 1) < $iIndex Then
     $iFirstVisible = $iIndex - hRect.Height + 1
   Endif
@@ -150,9 +155,11 @@ End
 
 
 Public Sub _put(Value As String, Index As Integer)
-  
+  Dim hRect As Rect = Me._GetScreenClientRect()
   $aList[Index] = Value
-  If IsVisible(Index) Then Me.Refresh
+  If IsVisible(Index) Then 
+    Me.Refresh(Rect(hRect.X, hRect.Y + GetRowByIndex(Index), hRect.Width, 1))
+  Endif
 End
 
 
@@ -174,3 +181,10 @@ Private Function Text_Read() As String
   Return $aList[$iIndex]
 
 End
+
+Private Function GetRowByIndex(Index As Integer) As Integer
+  
+  Return Index - $iFirstVisible
+  
+End
+
