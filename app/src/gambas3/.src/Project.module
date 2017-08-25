@@ -2811,7 +2811,7 @@ Public Sub MakeRelativeLink(sLink As String, sPath As String) As String
     If aPath[iInd] <> aLink[iInd] Then Break
   Next
 
-  If iInd <= iMax And (aPath.Count - iInd) <= 4 Then
+  If iInd <= iMax And (aPath.Count - iInd) <= 6 Then
 
     sLink = String$(aPath.Count - iInd, "../")
     While iInd < aLink.Count
