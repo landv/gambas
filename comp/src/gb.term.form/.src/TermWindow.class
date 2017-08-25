@@ -10,7 +10,7 @@ Private $sText As String
 Property Maximized As Boolean
 Property Read Active As Boolean
 Property Resizable As Boolean
-
+Property Visible As Boolean
 Private $rectOldPos As Rect
 
 Private $bMaximized As Boolean
@@ -28,6 +28,7 @@ Property Top, Y, {Line} As Integer
 Property Width, W As Integer
 Property Height, H As Integer
 Property Persistent As Boolean
+Private $bOpen As Boolean
 
 Event Close
 Event Open
@@ -36,9 +37,7 @@ Public Sub _new()
   
   Me.Visible = False
   $iFocusedId = Me.id
-  Object.Attach(Me, Me, "Form")
-  Raise open
-
+  Object.Attach(Me, Me, "TermForm")
 End
 
 ' Static Public Sub Main()
@@ -72,7 +71,7 @@ Public Sub _Render()
   Next
   Me._Content[0][0].c = Asc("[")
   Me._Content[0][1].c = Asc("]")
-  For i = 1 To String.Len($sText)
+  For i = 1 To Min(Me._Content[0].Max, String.Len($sText)) - 2
     Me._Content[0][i + 2].c = Asc(Mid($sText, i, 1))
   Next
   Me._Content[0][Me._Content[0].Max].c = Asc("X")
@@ -141,8 +140,10 @@ Private Sub Maximized_Write(Value As Boolean)
     Me.Move(0, 0, Desktop.Width, Desktop.Height)
     $bMaximized = Value
   Else
-    $bMaximized = Value
-    Me.Move($rectOldPos.Left, $rectOldPos.Top, $rectOldPos.Width, $rectOldPos.Height)
+    If $bMaximized <> value Then 
+      $bMaximized = Value
+      Me.Move($rectOldPos.Left, $rectOldPos.Top, $rectOldPos.Width, $rectOldPos.Height)
+    Endif
   Endif
   
 End
@@ -511,5 +512,23 @@ Public Sub _GetClientRect() As Rect
   Endif
   Return hRect
 
+End
+
+Private Function Visible_Read() As Boolean
+
+  Return Super.Visible
+
+End
+
+
+Private Sub Visible_Write(Value As Boolean)
+  
+  If Value And If Not $bOpen Then
+    Raise Open
+    $bOpen = True
+  Endif
+  
+  Super.Visible = Value
+  
 End
 
