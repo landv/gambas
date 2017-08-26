@@ -144,6 +144,7 @@ Static Private Sub InitComponentNames()
   $cName["gb.xml.rpc"] = ("XML-RPC protocol")
   $cName["gb.xml.xslt"] = ("XSLT tools based on libxslt and libxml")
   $cName["gb.web"] = ("Web applications tools")
+  $cName["gb.web.feed"] = ("Web feed parser and generator")
   $cName["gb.web.form"] = ("Web application development")
   
   ' For Each $cName
@@ -774,7 +775,11 @@ Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule As Boole
               Inc iInd
               If iInd < aSym.Count Then
                 .Value = aSym[iInd]
-                If .Type = "s" Then .Value = UnQuote(.Value)
+                If .Type = "s" Then 
+                  .Value = UnQuote(.Value)
+                Else If .Type = "b" Then
+                  .Value = .Value == "TRUE"
+                Endif
               Endif
             Endif
           Loop
