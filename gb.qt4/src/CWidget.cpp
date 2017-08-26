@@ -2696,7 +2696,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		GB.Ref(control);
 		cancel = false;
 
-		if (GB.CanRaise(control, event_id))
+		if (GB.CanRaise(control, event_id) || (event_id == EVENT_DblClick && GB.CanRaise(control, EVENT_MouseDown)))
 		{
 			/*if (!design && CWIDGET_test_flag(control, WF_SCROLLVIEW))
 			{
