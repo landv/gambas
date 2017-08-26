@@ -603,6 +603,18 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		#ifdef DEBUG_ME
 		fprintf(stderr, "run_process: slave = %s\n", slave);
 		#endif
+		
+		if (mode & PM_TERM)
+		{
+			if (tcgetattr(fd_master, &termios_master))
+				goto __ABORT_ERRNO;
+
+			cfmakeraw(&termios_master);
+			//termios_master.c_lflag &= ~ECHO;
+
+			if (tcsetattr(fd_master, TCSANOW, &termios_master))
+				goto __ABORT_ERRNO;
+		}
 	}
 	else
 	{
@@ -652,18 +664,6 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		#ifdef DEBUG_ME
 		fprintf(stderr, "fork: pid = %d\n", pid);
 		#endif
-
-		if (mode & PM_TERM)
-		{
-			if (tcgetattr(fd_master, &termios_master))
-				goto __ABORT_ERRNO;
-
-			cfmakeraw(&termios_master);
-			//termios_master.c_lflag &= ~ECHO;
-
-			if (tcsetattr(fd_master, TCSANOW, &termios_master))
-				goto __ABORT_ERRNO;
-		}
 
 		if (mode & PM_WRITE)
 		{
