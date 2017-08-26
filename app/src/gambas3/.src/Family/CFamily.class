@@ -7,15 +7,18 @@ Static Public LastRect As RectF
 
 Static Private $cCtrlFromIcon As New Collection
 
-Public Const Name As String = ""
-Public Const ControlClass As String = ""
-Public Const DropImageClass As String = ""
-Public Const DropImageProperty As String = ""
-Public Background As Integer = Color.Background
-Public Const AllowScaledProperty As Boolean = False
-Public Const HasMenuEditor As Boolean = False
-Public Const EmbedContainer As String = ""
-Public Const AutomaticArrangement As Boolean = False
+Public Const Name As String = ""                        ' Name of the family
+Public Const ControlClass As String = ""                ' Name of the "Control" class
+Public Const VirtualCoord As Boolean = False            ' If Controls do not have real coordinates
+Public Const DropImageClass As String = ""              ' Class to use when dropping an image on the form
+Public Const DropImageProperty As String = ""           ' Property to assign to the previous class with the resulting image
+Public Background As Integer = Color.Background         ' Default form background color
+Public Const AllowScaledProperty As Boolean = False     ' Allow "Scaled" property in the form
+Public Const HasMenuEditor As Boolean = False           ' If the menu editor must be used
+Public Const EmbedContainer As String = ""              ' Default container class to use when using the "embed in a container" menu
+Public Const AutomaticArrangement As Boolean = False    ' If controls are always automatically arranged
+Public Const ForceGrid As Integer = 0                   ' Force grid
+Public Const UseMoveScaled As Boolean = False
 
 Public AllowedProperties As String[]
 
@@ -614,5 +617,17 @@ Public Sub GetFonts() As String[]
   
   aFont.Sort
   Return aFont
+  
+End
+
+Public Sub GetSnap() As Integer
+  
+  Return Max(Me.ForceGrid, 1) * Desktop.Scale
+  
+End
+
+Public Sub ConvertCoord(iCoord As Integer, (bViewToCoord) As Boolean) As Integer
+  
+  Return iCoord
   
 End

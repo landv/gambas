@@ -4,10 +4,13 @@ Inherits CFamily
 
 Public Const Name As String = "TermForm"
 Public Const ControlClass As String = "TermControl"
+Public Const VirtualCoord As Boolean = False
+Public Const UseMoveScaled As Boolean = False
 Public Const DropImageClass As String = "TermPictureBox"
 Public Const DropImageProperty As String = "Image"
 Public Const EmbedContainer As String = "TermPanel"
 Public Const AutomaticArrangement As Boolean = False
+Public Const ForceGrid As Integer = 3
 
 Public Sub _new()
 
@@ -43,7 +46,7 @@ Public Sub GetIcon(hCCtrl As CControl) As String
   
 End
 
-Public Sub DrawControl(hCCtrl As CControl) As Boolean
+Public Sub DrawControl((hCCtrl) As CControl) As Boolean
   
   
   
@@ -82,3 +85,15 @@ Public Sub ActionExec(hCtrl As CControl, sAction As String)
 End
 
 
+Public Sub ConvertCoord(iCoord As Integer, bViewToCoord As Boolean) As Integer
+  
+  Dim iSnap As Integer = Me.GetSnap()
+  
+  If bViewToCoord Then
+    'Return (iCoord + iSnap \ 2) \ iSnap
+    Return iCoord \ iSnap
+  Else
+    Return iCoord * iSnap
+  Endif
+  
+End

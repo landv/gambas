@@ -50,9 +50,6 @@ Public Warnings As Boolean
 Public MajorVersion As Integer
 Public MinorVersion As Integer
 Public ReleaseVersion As Integer
-'PUBLIC SnapToGrid AS Boolean
-'PUBLIC ShowGrid AS Boolean
-Public Snap As Integer
 Public Localize As Boolean
 Public Description As String
 Public Icon As String
@@ -973,7 +970,7 @@ Private Sub AddEmblem(hSource As Image, sEmblem As String) As Image
   iSize = Min(hEmblem.H, hSource.H / 2)
   hEmblem = hEmblem.Stretch(-1, iSize) ', iSize * hEmblem.H / hEmblem.W)
 
-  iSize -= hSource.W \ 4
+  'iSize -= hSource.W \ 4
 
   hImage = New Image(hSource.Width + iSize, hSource.Height, Color.Transparent)
   hImage.PaintImage(hSource, iSize, 0)
@@ -1021,7 +1018,7 @@ End
 Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup As Boolean) As Image
 
   Dim hImage As Image
-  Dim hImageModule As Image
+  'Dim hImageModule As Image
   'Dim hImageStartup As Image
   Dim sKey As String
 
@@ -1032,10 +1029,19 @@ Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup
   sKey = sModule & "-" & iSize & If(bStartup, "s", "") & ".png"
   hImage = $cImageCache[sKey]
   If Not hImage Then
-    hImage = Picture["icon:/" &/ CStr(iSize) &/ "file"].Image '$cImageCache["base"]
+    'hImage = Picture["icon:/" &/ CStr(iSize) &/ "file"].Image '$cImageCache["base"]
+    'hImage = New Image(iSize, iSize, Color.Transparent)
+    ' Paint.Begin(hImage)
+    ' Paint.Background = Color.LightForeground 'Color.Merge(Color.TextBackground, Color.LightForeground, 0.333)
+    ' Paint.Rectangle(0.5, 0.5, Paint.W - 1, Paint.H - 1, iSize / 16)
+    ' Paint.LineWidth = iSize / 16
+    ' Paint.Stroke
+    ' Paint.End
     'hImage = hImage.Stretch(iSize, iSize)
-    hImageModule = Image.Load("img/module" &/ sModule & ".png") '.Stretch(iSize / 2, iSize / 2)
-    hImage.PaintImage(hImageModule, iSize / 4, iSize / 4, iSize / 2, iSize / 2)
+    'hImageModule = Image.Load("img/module" &/ sModule & ".png") '.Stretch(iSize / 2, iSize / 2)
+    'hImage.PaintImage(hImageModule, iSize / 16, iSize / 16, iSize * 0.75, iSize * 0.75)
+    hImage = Image.Load("img/module" &/ sModule & ".png")
+    hImage = hImage.Stretch(iSize, iSize)
 
     'If bExported Then MakeExportedIcon(hImage)
 
@@ -3292,7 +3298,6 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   ReleaseVersion = 1
   'SnapToGrid = TRUE
   'ShowGrid = TRUE
-  Snap = Desktop.Scale 'Settings["/DefaultGridResolution", 8]
   ControlPublic = False
   ModulePublic = False
   Warnings = True

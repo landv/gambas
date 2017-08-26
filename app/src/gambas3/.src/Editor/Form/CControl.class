@@ -430,10 +430,13 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
     Try Object.Attach(hCtrl, hForm, "Control")
   Endif
   
-  VirtualCoord = hClass.Family <> "Form" And Not Virtual
+  'VirtualCoord = hClass.Family <> "Form" And Not Virtual
+  VirtualCoord = hFamily.VirtualCoord And Not Virtual
   
-  Try $bIsContainer = Project.Documentation.Classes[Kind].Container
-  Try $bIsMultiContainer = Project.Documentation.Classes[Kind].MultiContainer
+  'Try $bIsContainer = Project.Documentation.Classes[Kind].Container
+  'Try $bIsMultiContainer = Project.Documentation.Classes[Kind].MultiContainer
+  Try $bIsContainer = hClass.Container
+  Try $bIsMultiContainer = hClass.MultiContainer
 
   InitControl()
 
@@ -655,7 +658,7 @@ _DO_NOT_APPLY:
         If Not VirtualCoord Then
           If sProp = "X" Or If sProp = "Y" Or If sProp = "Width" Or If sProp = "Height" Then
             If Not IsNull(Parent) Or If Len(sProp) > 1 Then
-              If Not IsNull(vVal) Then Object.SetProperty(Control, sProp, vVal)
+              If Not IsNull(vVal) Then Object.SetProperty(Control, sProp, $hFamily.ConvertCoord(vVal, False))
             Endif
             $cValue["#" & sProp] = vVal
             MoveAllHandle
@@ -1261,16 +1264,9 @@ Public Sub UpdateArrangement()
 
 End
 
-Public Sub Move(X As Integer, Y As Integer, Optional bFree As Boolean)
+Public Sub Move(X As Integer, Y As Integer)
 
   Dim hUndo As CUndo = GetUndo()
-
-  If Not bFree Then
-    X = Grid(X, Project.Snap)
-    Y = Grid(Y, Project.Snap)
-    'X = Grid(X, Desktop.Scale)
-    'Y = Grid(Y, Desktop.Scale)
-  Endif
 
   'IF Kind = "GridView" THEN
   '  PRINT "Pos ="; Control.X; Control.Y
@@ -1280,7 +1276,7 @@ Public Sub Move(X As Integer, Y As Integer, Optional bFree As Boolean)
   If X And If Y And If X = GetProperty("#X") And If Y = GetProperty("#Y") Then Return
 
   If Parent Then
-    Control.Move(X, Y)
+    Control.Move($hFamily.ConvertCoord(X, False), $hFamily.ConvertCoord(Y, False))
     'Arrange(Parent.Control, FALSE)
   Endif
 
@@ -1299,6 +1295,22 @@ Public Sub Move(X As Integer, Y As Integer, Optional bFree As Boolean)
   
 End
 
+Public Sub MoveCoord(X As Integer, Y As Integer, Optional bFree As Boolean)
+  
+  If Not bFree Then
+    X = Grid(X)
+    Y = Grid(Y)
+    'X = Grid(X, Desktop.Scale)
+    'Y = Grid(Y, Desktop.Scale)
+  Endif
+
+  X = $hFamily.ConvertCoord(X, True)
+  Y = $hFamily.ConvertCoord(Y, True)
+  Move(X, Y)
+  
+End
+
+
 Public Sub HasIcon() As Boolean
   
   Return $cValue["#icon"]
@@ -1306,20 +1318,18 @@ Public Sub HasIcon() As Boolean
 End
 
 
-Public Sub Resize(W As Integer, H As Integer, Optional bFree As Boolean)
+Public Sub Resize(W As Integer, H As Integer)
 
   Dim hUndo As CUndo = GetUndo()
 
   If Virtual Then Return
 
-  If Not bFree Then
-    W = Grid(W, Project.Snap)
-    H = Grid(H, Project.Snap)
-  Endif
+  W = Max(W, 1)
+  H = Max(H, 1)
 
   If W = GetProperty("#Width") And If H = GetProperty("#Height") Then Return
 
-  Control.Resize(W, H)
+  Control.Resize($hFamily.ConvertCoord(W, False), $hFamily.ConvertCoord(H, False))
 
   $bDoNotMoveHandle = True
 
@@ -1335,24 +1345,33 @@ Public Sub Resize(W As Integer, H As Integer, Optional bFree As Boolean)
 
 End
 
+Public Sub ResizeCoord(W As Integer, H As Integer, Optional bFree As Boolean)
+  
+  If Not bFree Then
+    W = Grid(W)
+    H = Grid(H)
+  Endif
 
-Public Sub MoveAndResize(X As Integer, Y As Integer, W As Integer, H As Integer, Optional bFree As Boolean)
+  W = $hFamily.ConvertCoord(W, True)
+  H = $hFamily.ConvertCoord(H, True)
+  Resize(W, H)
+  
+End
+
+
+Public Sub MoveAndResize(X As Integer, Y As Integer, W As Integer, H As Integer)
 
   Dim hUndo As CUndo = GetUndo()
 
   If Virtual Then
-    Move(X, Y, bFree)
+    Move(X, Y)
     Return
   Endif
+  
+  W = Max(W, 1)
+  H = Max(H, 1)
 
   hUndo.Begin
-
-  If Not bFree Then
-    X = Grid(X, Project.Snap)
-    Y = Grid(Y, Project.Snap)
-    W = Grid(W, Project.Snap)
-    H = Grid(H, Project.Snap)
-  Endif
 
   'IF Kind = "GridView" THEN
   '  PRINT "Pos ="; Control.X; Control.Y
@@ -1360,11 +1379,11 @@ Public Sub MoveAndResize(X As Integer, Y As Integer, W As Integer, H As Integer,
   'ENDIF
 
   If Parent Then
-    Control.Move(X, Y, W, H)
+    Control.Move($hFamily.ConvertCoord(X, False), $hFamily.ConvertCoord(Y, False), $hFamily.ConvertCoord(W, False), $hFamily.ConvertCoord(H, False))
   Else
-    Control.Resize(W, H)
+    Control.Resize($hFamily.ConvertCoord(W, False), $hFamily.ConvertCoord(H, False))
   Endif
-
+  
   $bDoNotMoveHandle = True
 
   SetProperty("#X", X)
@@ -1380,6 +1399,24 @@ Public Sub MoveAndResize(X As Integer, Y As Integer, W As Integer, H As Integer,
   MoveAllHandle
 
 End
+
+Public Sub MoveAndResizeCoord(X As Integer, Y As Integer, W As Integer, H As Integer, Optional bFree As Boolean)
+  
+  If Not bFree Then
+    X = Grid(X)
+    Y = Grid(Y)
+    W = Grid(W)
+    H = Grid(H)
+  Endif
+
+  X = $hFamily.ConvertCoord(X, True)
+  Y = $hFamily.ConvertCoord(Y, True)
+  W = $hFamily.ConvertCoord(W, True)
+  H = $hFamily.ConvertCoord(H, True)
+  MoveAndResize(X, Y, W, H)
+  
+End
+
 
 
 Public Procedure Panel_MouseDown()
@@ -1468,12 +1505,12 @@ Public Procedure Panel_MouseMove()
 
     Case "N", "NW", "NE"
 
-      iY = Grid(iPanY, Project.Snap)
-      iH = Grid(hCtrl.H + hCtrl.Y - iY, Project.Snap)
+      iY = Grid(iPanY)
+      iH = Grid(hCtrl.H + hCtrl.Y - iY)
 
     Case "S", "SW", "SE"
 
-      iH = Grid(iPanY - hCtrl.Y, Project.Snap)
+      iH = Grid(iPanY - hCtrl.Y)
 
   End Select
 
@@ -1481,12 +1518,12 @@ Public Procedure Panel_MouseMove()
 
     Case "W", "NW", "SW"
 
-      iX = Grid(iPanX, Project.Snap)
-      iW = Grid(hCtrl.W + hCtrl.X - iX, Project.Snap)
+      iX = Grid(iPanX)
+      iW = Grid(hCtrl.W + hCtrl.X - iX)
 
     Case "E", "NE", "SE"
 
-      iW = Grid(iPanX - hCtrl.X, Project.Snap)
+      iW = Grid(iPanX - hCtrl.X)
 
   End Select
   
@@ -1494,14 +1531,14 @@ Public Procedure Panel_MouseMove()
 
     If iX <> hCtrl.X Or If iY <> hCtrl.Y Then
       If iW <> hCtrl.W Or If iH <> hCtrl.H Then
-        MoveAndResize(iX, iY, iW, iH)
+        MoveAndResizeCoord(iX, iY, iW, iH)
         bSomethingDone = True
       Else
-        Move(iX, iY)
+        MoveCoord(iX, iY)
         bSomethingDone = True
       Endif
     Else If iW <> hCtrl.W Or If iH <> hCtrl.H Then
-      Resize(iW, iH)
+      ResizeCoord(iW, iH)
       bSomethingDone = True
     Endif
     
@@ -1570,9 +1607,10 @@ End
 
 
 
-Static Public Function Grid(iVal As Integer, iGrid As Integer) As Integer
+Public Function Grid(iVal As Integer) As Integer
 
   Dim iMod As Integer
+  Dim iGrid As Integer
 
   'IF (iVal >= 0) THEN
   '  RETURN Int((iVal + iGrid / 2) / iGrid) * iGrid
@@ -1580,7 +1618,8 @@ Static Public Function Grid(iVal As Integer, iGrid As Integer) As Integer
   '  RETURN Int((iVal + iGrid / 2) / iGrid) * iGrid
   'ENDIF
 
-  If $bGrid Then
+  If $bGrid Or If $hFamily.ForceGrid Then
+    iGrid = $hFamily.GetSnap()
     iMod = iVal Mod iGrid
     If (iMod < 0) Then iMod = iMod + iGrid
 
