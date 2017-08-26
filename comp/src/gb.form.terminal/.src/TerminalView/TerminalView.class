@@ -76,6 +76,10 @@ Private $iMouseY As Integer
 Private $bShowScrollBar As Boolean
 Private $hResizeTimer As Timer
 Private $sTitle As String
+Private $fLastMouseDownTime As Float
+Private $nClick As Integer
+Private $fLastMouseDownX As Integer
+Private $fLastMouseDownY As Integer
 
 'Private $bDoubleFont As Boolean = True
 
@@ -92,7 +96,7 @@ Public Sub _new()
   $hView.Focus = True
   $hView.Tracking = True
   $hView.Mouse = Mouse.Text
-  $hView.NoBackground = True
+  '$hView.NoBackground = True
   
   Me.Background = Color.TextForeground
   Me.Foreground = Color.TextBackground
@@ -210,8 +214,10 @@ Private Sub UpdateFont()
     
     $LH = .Height
     $iAscent = .Ascent
+    
     sText = String$(8, "mM0_@$#W")
-    $CW = CInt(.TextWidth(sText) / Len(sText))
+    $CW = CInt(.TextWidth(sText) / Len(sText) + 0.5)
+    
     W = $CW \ 8 + 1
     $CW += W \ 2
     
@@ -423,12 +429,36 @@ Private Sub GotoMouse(bStart As Boolean)
   Dim X As Integer
   Dim Y As Integer
   
-  X = CInt((Mouse.ScreenX - $hView.ScreenX) / $CW)
+  X = CInt((Mouse.ScreenX - $hView.ScreenX) / $CW + 0.4)
   Y = GetScrollY() + (Mouse.ScreenY - $hView.ScreenY) \ $LH
   'Print x, y
   $hScreen.GotoMouse(X, Y, bStart)
   
 End
+
+Private Sub SelectCurrentLine()
+  
+  Dim Y As Integer
+  
+  Y = GetScrollY() + CInt((Mouse.ScreenY - $hView.ScreenY) / $LH)
+  'Print x, y
+  $hScreen.GotoMouse(0, Y, True)
+  $hScreen.GotoMouse(0, Y + 1, False)
+  
+End
+
+Private Sub SelectCurrentWord()
+  
+  Dim X As Integer
+  Dim Y As Integer
+  
+  X = CInt((Mouse.ScreenX - $hView.ScreenX) / $CW + 0.4)
+  Y = GetScrollY() + CInt((Mouse.ScreenY - $hView.ScreenY) / $LH)
+  'Print x, y
+  $hScreen.SelectCurrentWord(X, Y)
+  
+End
+
 
 Private Sub UpdateMouse() As Boolean
   
@@ -458,21 +488,46 @@ Private Sub SendMouseEvent(iType As Integer, Optional bIfMove As Boolean)
   bHasMoved = UpdateMouse()
   If bIfMove And If Not bHasMoved Then Return
   If $hProcess Then $hFilter.SendMouseEvent($hProcess, $iMouseX, $iMouseY, iType)
+  $fStart = 0
   
 End
 
 Public Sub View_MouseDown()
   
+  If $fLastMouseDownTime And If (Timer - $fLastMouseDownTime) * 1000 <= Application.DblClickTime And If Mouse.ScreenX = $fLastMouseDownX And If Mouse.ScreenY = $fLastMouseDownY Then
+    Inc $nClick
+  Else
+    $nClick = 1
+  Endif
+  
+  $fLastMouseDownTime = Timer
+  $fLastMouseDownX = Mouse.ScreenX
+  $fLastMouseDownY = Mouse.ScreenY
+  
   If $bTermUseMouse Then
     
     SendMouseEvent($hFilter.MouseDown)
     
-  Else  
+  Else If $nClick = 2 Then
+    
+    If Mouse.Left Then 
+      SelectCurrentWord
+      $bMouseDown = True
+    Endif
+    
+  Else If $nClick = 3 Then
+    
+    If Mouse.Left Then 
+      SelectCurrentLine
+      $bMouseDown = True
+    Endif
+    
+  Else
     
     If Mouse.Left Then
       $bMouseDown = True
       GotoMouse(True)
-      $hMouseTimer = New Timer(50) As "MouseTimer"
+      GotoMouse(False)
     Else If Mouse.Middle Then
       Clipboard.Current = Clipboard.Selection
       Paste()
@@ -493,6 +548,7 @@ Public Sub View_MouseMove()
   Else
     
     If $bMouseDown Then
+      If Not $hMouseTimer Then $hMouseTimer = New Timer(50) As "MouseTimer"
       GotoMouse(False)
     Else If Not $bShowScrollBar Then
       If System.RightToLeft Then
@@ -612,18 +668,10 @@ Public Sub View_KeyPress()
   
   If $hFilter.InputTo(Me, $hScreen, hOutput, Key.Code, Key.Text, Key.Normal, Key.Shift, Key.Control) Then
     EnsureVisible
+    $fStart = 0
     Stop Event
   Endif
     
-End
-
-Public Sub View_DblClick()
-  
-  If $bTermUseMouse And If Not $bMouseDown Then
-    SendMouseEvent($hFilter.MouseDown)
-    Return
-  Endif
-  
 End
 
 Private Function Column_Read() As Integer
@@ -715,7 +763,8 @@ End
 
 Private Sub InitProcess()
 
-  $hProcess.Term.Resize($hScreen.Width, $hScreen.Height)
+  '$hProcess.Term.Resize($hScreen.Width, $hScreen.Height)
+  $hResizeTimer.Trigger
   
 End
 
@@ -821,7 +870,7 @@ Public Sub Process_Read()
     $sBuffer &= sData
   Endif
   
-  If Len($sBuffer) > 65536 Or If (Timer - $fStart) > 0.25 Then
+  If (Timer - $fStart) > 0.5 Then
     $hOutputTimer.Trigger
   Else
     $hOutputTimer.Restart

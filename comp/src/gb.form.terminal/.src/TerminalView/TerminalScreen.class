@@ -756,12 +756,15 @@ Private Sub DrawLine(hView As TerminalView, L As Integer, X As Integer, Y As Int
   Dim XC As Integer
   Dim bNoText As Boolean
   Dim XB, WB As Integer
+  Dim iMaxLen As Integer
   
   hLine = Lines[L]
   If Not hLine Then 
     Paint.FillRect(X, Y, Paint.W, LH, iBg)
     Return
   Endif
+  
+  iMaxLen = Min($W, hLine.Length)
   
   hFont = Paint.Font
   aAttr = hLine.GetAttr()
@@ -770,10 +773,10 @@ Private Sub DrawLine(hView As TerminalView, L As Integer, X As Integer, Y As Int
   
   For I = 0 To aAttr.Max
     
-    If P > hLine.Length Then Break
+    If P > iMaxLen Then Break
     
     hAttr._FillFrom(aAttr[I])
-    iLen = Min((Lsr(aAttr[I], 8) And 255), hLine.Length - P) + 1
+    iLen = Min((Lsr(aAttr[I], 8) And 255), iMaxLen - P) + 1
     
     iBg = hAttr.Background
     If iBg >= 0 Then
@@ -819,8 +822,8 @@ Private Sub DrawLine(hView As TerminalView, L As Integer, X As Integer, Y As Int
     
   Next
   
-  If P <= hLine.Length Then
-    iLen = hLine.Length - P + 1
+  iLen = iMaxLen - P + 1
+  If iLen > 0 Then
     iFg = hView.Foreground
     iBg = hView.Background
     HC = 0
@@ -828,7 +831,7 @@ Private Sub DrawLine(hView As TerminalView, L As Integer, X As Integer, Y As Int
     GoSub DRAW_TEXT
   Endif
   
-  Paint.FillRect(X, Y, Paint.W - X, LH, hView.Background)
+  If Paint.W > X Then Paint.FillRect(X, Y, Paint.W - X, LH, hView.Background)
   
   Return
   
@@ -847,14 +850,14 @@ DRAW_TEXT:
     Paint.Begin($hLineCache)
     Paint.Font = hFont
     
-    Paint.FillRect(0, 0, W, LH, iFg)
+    Paint.FillRect(0, 0, $hLineCache.W, LH, iFg)
     
     XT = 0
     
     hRect = Rect(0, 0, CW, LH)
     
     Paint.Operator = Paint.OperatorDestATop
-    For J = P To P + iLen - 1
+    For J = P To Min(P + iLen - 1, $W)
       'sCar = String.Mid$(hLine.Text, J, 1)
       
       C = String.Code(hLine.Text, J)
@@ -2176,4 +2179,49 @@ _DRAW_CHAR:
   Paint.DrawText(String.Chr$(C), 0, 0, W, H, Align.Center)
   Return
   
+End
+
+Private Sub IsWordChar(C As String) As Boolean
+
+  If Len(C) = 1 Then
+    If IsLetter(C) Or If IsDigit(C) Then Return True
+    If InStr(":@-./_~?&=%+#", C) Then Return True
+  Else
+    Return True
+  Endif
+
+End
+
+Public Sub SelectCurrentWord(X As Integer, Y As Integer)
+
+  Dim hLine As CTerminalLine
+  Dim XR As Integer
+  Dim C As String
+  Dim XL As Integer
+  Dim bCheck As Boolean
+
+  Try hLine = Lines[Y]
+  If Error Then Return
+  If X < 0 Or If X >= $W Or If X >= hLine.Length Then Return
+  
+  C = String.Mid$(hLine.Text, X, 1)
+  bCheck = Not IsWordChar(C)
+
+  XR = X + 1
+  While XR <= hLine.Length
+    C = String.Mid$(hLine.Text, XR, 1)
+    If IsWordChar(C) = bCheck Then Break
+    Inc XR
+  Wend
+
+  XL = X - 1
+  While XL > 0
+    C = String.Mid$(hLine.Text, XL, 1)
+    If IsWordChar(C) = bCheck Then Break
+    Dec XL
+  Wend
+
+  GotoMouse(XL, Y, True)
+  GotoMouse(XR - 1, Y, False)
+
 End
