@@ -1,9 +1,18 @@
 # Gambas Form File 3.0
 
 { TermForm TermForm
-  #MoveScaled(0,0,89,91)
-  { TermButton1 TermButton
-    #MoveScaled(18,30,14,7)
-    Text = ("Click me !")
+  Move(0,0,52,22)
+  { TermPanel1 TermPanel
+    Move(2,2,18,16)
+    { TermLabel2 TermLabel
+      Move(1,1,11,3)
+      Text = ("Bonjour")
+    }
+    { TermTextBox1 TermTextBox
+      Move(4,6,8,4)
+    }
+    { TermCheckBox1 TermCheckBox
+      Move(3,13,11,1)
+    }
   }
 }

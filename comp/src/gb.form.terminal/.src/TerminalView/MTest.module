@@ -1,10 +1,5 @@
 ' Gambas module file
 
-Private $aInvertColor As Integer[] = [
-  &H000000, &H800000, &H008000, &H808000, &H000080, &H800080, &H008080, &Hc0c0c0,
-  &H808080, &Hff0000, &H00ff00, &Hffff00, &H0000ff, &Hff00ff, &H00ffff, &Hffffff]
-
-
 Public Sub Main()
 
   Print "\e[38;5;10mGambas\e[m"

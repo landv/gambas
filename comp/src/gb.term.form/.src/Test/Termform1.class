@@ -1,16 +1,2 @@
 ' Gambas class file
 
-
-Public Sub TermButton1_Click()
-
-  Debug
-
-End
-
-Public Sub TermForm_Open()
-Me.Background = TermColor.Blue
-Me.Title = "coucou"
-Me.Width = 30
-Me.Height = 10
-  TermButton1.Width = Len(TermButton1.Text)
-End
