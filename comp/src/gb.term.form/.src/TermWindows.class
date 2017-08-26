@@ -58,6 +58,7 @@ Public Sub _Add(hWin As TermWindow)
   Dim i As Integer
   Dim hCurACtive As TermWindow
   
+  
   hCurActive = TermControl._IdToControl[$iActiveWindow]
   If hCurACtive Then
     hCurACtive._NeedRender = True
@@ -138,11 +139,12 @@ Static Private Sub RefreshChild(hChild As Object, hRect As Rect)
   If hChild Is TermContainer Then
     'On applique la Client Zone
     rectUpdate = hRect.InterSection(hChild._GetScreenClientRect())
-    For Each hObj In hChild.Children
-      
-      RefreshChild(hObj, rectUpdate)
-    Next
-    
+    If Not IsNull(rectUpdate) Then 
+      For Each hObj In hChild.Children
+        
+        RefreshChild(hObj, rectUpdate)
+      Next
+    Endif
   Endif
   
 End
@@ -506,13 +508,23 @@ End
 Static Public Sub _RaiseWindow(hWin As TermWindow)
   
   Dim hLastActive As TermWindow
+  Dim i As Integer
+  Dim bAdded As Boolean
   'If $aChildren.Count = 1 Then Return
   'hWin = $aChildren[0]
   hLastActive = $aChildren[$aChildren.Max]
   hLastActive._NeedRender = True
   hWin._NeedRender = True
-  $aChildren.Remove($aChildren.Find(hWIn))
-  $aChildren.Push(hWin)
+  
+  For i = $aChildren.Max DownTo 0
+    
+    If $aChildren[i] <> hwin And If Not $aChildren[i]._IsModal Then 
+      $aChildren.Remove($aChildren.Find(hWIn))
+      $aChildren.add(hWin, i + 1)
+      bAdded = True
+    Endif
+  Next
+  
   SetRefreshArea(hWin._GetScreenRect())
   SetRenderArea(hLastActive._GetScreenRect())
   $iActiveWindow = hWin.id
@@ -597,7 +609,6 @@ Static Public Sub _Render()
   
   For l = hRect.Y To hRect.Bottom - 1
     'Debug "ligne " & l
-    If TermWindows.Debug = Me.DebugOutput Then Error Replace("\e[" & (l + 1) & ";" & (hRect.X + 1) & "H", "\e", "ESC")
     Write #$hStream, "\e[" & (l + 1) & ";" & (hRect.X + 1) & "H"
     iOldAttr = 0
     bWroteBg = False
@@ -622,7 +633,7 @@ Static Public Sub _Render()
           iOldAttr = hChar.Attr
         Endif
         'Write #$hStream, sAttr
-        If TermWindows.Debug = Me.DebugOutput Then Error String.Chr(hChar.c);
+        
         Write #$hStream, String.Chr(hChar.c)
         bWroteBg = False
         
@@ -632,7 +643,7 @@ Static Public Sub _Render()
           hAttr.FillFrom(iBgAttr)
           hAttr.WriteToStream($hStream)
         Endif
-        If TermWindows.Debug = Me.DebugOutput Then Error String.Chr(iBgChar);
+        
         Write #$hStream, String.Chr(iBgChar)
         bWroteBg = True
         
@@ -641,6 +652,7 @@ Static Public Sub _Render()
     Next
   Next
   sDisplay = Close #$hStream
+  If TermWindows.Debug = Me.DebugOutput Then Error Replace(Replace(sDisplay, "\e[", "\n"), "\e", "!");
   Print sDisplay;
   Flush
   
@@ -685,7 +697,7 @@ Static Public Sub Delete(hControl As TermControl)
   
   If hObj Is TermWindow Then
     $aChildren.Delete($aChildren.Find(hObj))
-    _RaiseWindow($aChildren[$aChildren.Max])
+    If $aChildren.Count > 0 Then _RaiseWindow($aChildren[$aChildren.Max])
   Endif
   
   If $aChildren.Count = 0 Then

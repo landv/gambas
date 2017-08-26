@@ -1,2 +1,31 @@
 ' Gambas class file
 
+<<<<<<< Updated upstream
+=======
+
+Public Sub TermButton1_Click()
+Debug TermButton1.left, TermButton1.Top
+  'Debug
+Termform2.Showmodal
+End
+
+Public Sub TermForm_Open()
+'TermWindows.Debug = TermWindows.DebugOutput
+Me.Background = TermColor.Blue
+Me.Title = "coucou"
+Me.Width = 30
+Me.Height = 10
+Me.Center
+Me.Border = Border.Simple
+TermButton1.Width = 10
+TermButton1.move(10, 1)
+Debug TermButton1.left, TermButton1.Top
+  'TermButton1.Width = Len(TermButton1.Text)
+End
+
+Public Sub TermForm_Close()
+
+
+
+End
+>>>>>>> Stashed changes

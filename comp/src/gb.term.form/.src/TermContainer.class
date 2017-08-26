@@ -94,14 +94,16 @@ Public Sub _Arrange()
         iHExp = (hrectClient.Height - iHExp) / iNExp
       Endif
       
-      h = hrectClient.Top 
+      H = 0 'hrectClient.Top 
       For Each hChild In $aChildren
         'If hChild Is TermPictureBox Then Stop
-        hChild.X = hrectClient.Left
-        hChild.Y = H
-        hChild.Width = hrectClient.Width
-        If hChild.Expand Then hChild.H = iHExp
-        H += hChild.H + $iSpacing
+        If Not hChild.Ignore Then 
+          hChild.X = 0 'hrectClient.Left
+          hChild.Y = H
+          hChild.Width = hrectClient.Width
+          If hChild.Expand Then hChild.H = iHExp
+          H += hChild.H + $iSpacing
+        Endif
         hChild._Arrange()
         'If H >= Me.ClientHeight Then Break
       Next
@@ -132,10 +134,8 @@ Public Sub _Arrange()
       H = hrectClient.Width - Me.Width
       Endif
       For Each hChild In $aChildren
+        If Not hChild.Ignore Then 
         If $bInvert Then H -= hChild.W
-          
-        
-        
         hChild.Y = hrectClient.Top 
         
         hChild.X = H
@@ -146,6 +146,7 @@ Public Sub _Arrange()
           H -= $iSpacing
         Else
           H += hChild.W + $iSpacing
+        Endif
         Endif
         hChild._Arrange()
         'If H >= Me.ClientHeight Then Break

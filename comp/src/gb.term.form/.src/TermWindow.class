@@ -27,6 +27,11 @@ Private $bResizable As Boolean = True
 Private $bInResize As Boolean
 Private $iFocusedId As Integer
 Private $bPersistent As Boolean
+Property Read ScreenY As Integer
+Property Read ScreenX As Integer
+
+Public _IsModal As Boolean
+
 
 Event Close
 Event Open
@@ -113,7 +118,7 @@ End
 
 Public Sub _Arrange()
   
-  Me._GetClientRect().Move(0, 1, Me.W - 1, Me.Height - 1)
+  'Me._GetClientRect().Move(0, 1, Me.W - 1, Me.Height - 1)
   Super._Arrange
   
 End
@@ -168,7 +173,9 @@ Public Sub Close()
   Me.Visible = False
   Raise Close
   
-  If Not Me.Persistent Then TermWindows.Delete(Me)
+  If Not Me.Persistent Then 
+    TermWindows.Delete(Me)
+  Endif
   
 End
 
@@ -377,14 +384,14 @@ Public Sub GetNextFocusedControl(hCtrl As TermControl, Optional bFirst As Boolea
       hCtrl = Null
       'si le conteneur a des enfants
       If hNext.Children.Count > 0 Then hCtrl = GetNextFocusedControl(hNext.Children[0], True)
-      'si on a trouve on retourne l'enfant
+      'si on a trouve on Return l'enfant
       If hCtrl Then Return hCtrl
       'sinon on passe a l'enfant suivant en repartant de l'enfant courant
       Continue
       'si c'est pas un conteneur
     Else
       'on verifie si le control accepte  le focus
-      'si oui on le retourne
+      'si oui on le Return
       If hNext._AllowFocus Then Return hNext
       'sinon on passe au control suivant
       Continue
@@ -434,14 +441,14 @@ Public Sub GetPrevFocusedControl(hCtrl As TermControl, Optional bFirst As Boolea
       hCtrl = Null
       'si le conteneur a des enfants
       If hNext.Children.Count > 0 Then hCtrl = GetNextFocusedControl(hNext.Children[hNext.Children.Max], True)
-      'si on a trouve on retourne l'enfant
+      'si on a trouve on Return l'enfant
       If hCtrl Then Return hCtrl
       'sinon on passe a l'enfant suivant en repartant de l'enfant courant
       Continue
       'si c'est pas un conteneur
     Else
       'on verifie si le control accepte  le focus
-      'si oui on le retourne
+      'si oui on le Return
       If hNext._AllowFocus Then Return hNext
       'sinon on passe au control suivant
       Continue
@@ -529,4 +536,27 @@ Private Sub Visible_Write(Value As Boolean)
   Super.Visible = Value
   
 End
+
+
+Private Function ScreenY_Read() As Integer
+
+  Return Me.Top
+
+End
+
+
+
+Private Function ScreenX_Read() As Integer
+
+  Return Me.Left
+
+End
+
+Public Sub ShowModal()
+  
+  Me._IsModal = True
+  Me.Show
+  
+End
+
 
