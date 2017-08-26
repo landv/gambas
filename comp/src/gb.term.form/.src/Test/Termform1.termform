@@ -1,27 +1,24 @@
 # Gambas Form File 3.0
 
 { TermForm TermForm
-<<<<<<< Updated upstream
   Move(0,0,52,22)
   { TermPanel1 TermPanel
-    Move(2,2,18,16)
+    Move(0,0,623,637)
     { TermLabel2 TermLabel
       Move(1,1,11,3)
       Text = ("Bonjour")
     }
     { TermTextBox1 TermTextBox
-      Move(4,6,8,4)
+      Move(8,6,8,4)
     }
     { TermCheckBox1 TermCheckBox
       Move(3,13,11,1)
     }
-=======
-  #MoveScaled(0,0,89,91)
-  { TermButton1 TermButton
-    #MoveScaled(24,9,14,7)
-    Background = Color.Red
-    Ignore = True
-    Text = ("Click me !")
->>>>>>> Stashed changes
+    { TermButton1 TermButton
+      Move(168,63,98,49)
+      Background = Color.Red
+      Ignore = True
+      Text = ("Click me !")
+    }
   }
 }
