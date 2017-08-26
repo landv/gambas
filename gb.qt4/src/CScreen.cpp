@@ -296,6 +296,12 @@ BEGIN_PROPERTY(Application_Restart)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Application_DblClickTime)
+
+	GB.ReturnInteger(QApplication::doubleClickInterval());
+
+END_PROPERTY
+
 //-------------------------------------------------------------------------
 
 BEGIN_PROPERTY(Screens_Count)
@@ -454,6 +460,7 @@ GB_DESC ApplicationDesc[] =
 	GB_STATIC_PROPERTY("Embedder", "i", Application_Embedder),
 	GB_STATIC_PROPERTY("Theme", "s", Application_Theme),
 	GB_STATIC_PROPERTY("Restart", "String[]", Application_Restart),
+	GB_STATIC_PROPERTY_READ("DblClickTime", "i", Application_DblClickTime),
 
 	GB_END_DECLARE
 };

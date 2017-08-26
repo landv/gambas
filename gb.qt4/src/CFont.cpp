@@ -425,9 +425,9 @@ END_METHOD
 
 BEGIN_METHOD(Font_TextWidth, GB_STRING text)
 
-	QFontMetrics fm(*(THIS->font));
+	QFontMetricsF fm(*(THIS->font));
 	QStringList sl;
-	int w, width = 0;
+	qreal w, width = 0;
 	int i;
 
 	QString str = QSTRING_ARG(text);
@@ -440,7 +440,7 @@ BEGIN_METHOD(Font_TextWidth, GB_STRING text)
 		if (w > width) width = w;
 	}
 
-	GB.ReturnInteger(width);
+	GB.ReturnInteger((int)(width + 0.5));
 
 END_METHOD
 
