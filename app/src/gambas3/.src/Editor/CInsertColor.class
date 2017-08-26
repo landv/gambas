@@ -79,7 +79,10 @@ Public Sub Menu_Show()
       sDigit = String$(6 - Len(sDigit), "0") & sDigit
       
       sDigit = sPattern & UCase$(sDigit)
-      If Not aColor.Exist(sDigit) Then aColor.Add(sDigit)
+      If Not aColor.Exist(sDigit) Then 
+        aColor.Add(sDigit)
+        If aColor.Count = 100 Then Break
+      Endif
       
     Loop
   Next
