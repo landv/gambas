@@ -4,7 +4,7 @@ This guide provides a step-by-step tutorial on how to contribute to the Gambas s
 
 It will cover the sources' organization, some contributing guidelines and how to use Git and GitLab in order to submit your contribution.
 
-## [Using Git and GitLab]
+## Using Git and GitLab
 
 The Gambas source code is managed by a Git repository, hosted on [GitLab.com](https://gitlab.com/gambas/gambas).
 
@@ -15,7 +15,7 @@ While this might sound complex to new contributors, this document is made to gui
 
 If you are having trouble with the steps mentioned here, or if you have any question regarding a contribution, you can [ask on the mailing-list](http://gambaswiki.org/wiki/doc/forum).
 
-### [Creating a GitLab account]
+### Creating a GitLab account
 
 First, you will need a [GitLab account](https://gitlab.com/users/sign_in) in order to submit any changes.
 
@@ -24,7 +24,7 @@ Not only you won't have to enter your GitLab username and password every time yo
 
 You can also [use GPG to sign your commits](https://docs.gitlab.com/ee/user/project/gpg_signed_commits/index.html), although it is not required.
 
-### [Forking the Gambas Repository]
+### Forking the Gambas Repository
 
 Now that your GitLab account is set up, we can now [fork the Gambas repository](https://docs.gitlab.com/ce/gitlab-basics/fork-project.html).
 This will create a copy of the Gambas repository, but it will belong to you, so you can make any change you want.
@@ -37,7 +37,7 @@ You can then clone the repository to your local machine, using the following com
 
     git clone git@gitlab.com:<yourusername>/gambas.git
 
-### [Making changes to your repository]
+### Making changes to your repository
 
 Once the cloning is complete, you can make changes to your local copy, which will then have to be commited and pushed.
 
@@ -57,7 +57,7 @@ This command will start the default editor (usually `vi`), but you can change th
 
 Now that the commit is done, you can push it to your GitLab repository using the `git push` command.
 
-### [Creating the merge request]
+### Creating the merge request
 
 With your changes now pushed to the GitLab repository, the final step is to create a [Merge Request](https://docs.gitlab.com/ee/user/project/merge_requests/index.html), 
 kindly asking the Gambas developers to merge your changes to the main Gambas repository.
@@ -95,7 +95,7 @@ If you made commits to your version of the repository, it will merge them with t
 When the merge is complete, you can simply use `git push` to push all these changes to your version of the repository. If you have any Merge Request pending, they will get updated automatically.
 
 
-## [Writing commit messages]
+## Writing commit messages
 
 In order to automatically generate changelogs for each release, commits in the Gambas repository have to follow a very specific format.
 
