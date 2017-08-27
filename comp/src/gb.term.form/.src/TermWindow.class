@@ -5,7 +5,7 @@ Export
 Inherits TermContainer
 Class Rect
 Private $sText As String
-
+Property Arrangement As Integer
 Property Text, Title As String
 Property Maximized As Boolean
 Property Read Active As Boolean
@@ -23,7 +23,7 @@ Private $iInMove As Integer
 Private $tmrMove As Timer
 Private $iTmpCol As Integer
 Private $iTmpRow As Integer
-Private $bResizable As Boolean = True
+Private $bResizable As Boolean 
 Private $bInResize As Boolean
 Private $iFocusedId As Integer
 Private $bPersistent As Boolean
@@ -31,7 +31,6 @@ Property Read ScreenY As Integer
 Property Read ScreenX As Integer
 
 Public _IsModal As Boolean
-
 
 Event Close
 Event Open
@@ -41,6 +40,7 @@ Public Sub _new()
   Me.Visible = False
   $iFocusedId = Me.id
   Object.Attach(Me, Me, "TermForm")
+  
 End
 
 ' Static Public Sub Main()
@@ -64,34 +64,37 @@ Public Sub _Render()
   Super._Render
   If Not b Then Return
   
-  hAttr.Background = IIf(Me.Active, TermColor.ActiveWindow, TermColor.InactiveWindow)
-  hAttr.Foreground = TermColor.White
-  hAttr.Bold = True
-  iAttr = hAttr.GetInteger()
-  
-  For i = 0 To Me.Width - 1 '- 2
-    Me._Content[0][i] = Char(" ", iAttr)
-  Next
-  Me._Content[0][0].c = Asc("[")
-  Me._Content[0][1].c = Asc("]")
-  For i = 1 To Min(Me._Content[0].Max, String.Len($sText)) - 2
-    Me._Content[0][i + 2].c = Asc(Mid($sText, i, 1))
-  Next
-  Me._Content[0][Me._Content[0].Max].c = Asc("X")
+  'Render TitleBar
+  If Me.Border > 0 Then 
+    hAttr.Background = IIf(Me.Active, TermColor.ActiveWindow, TermColor.InactiveWindow)
+    hAttr.Foreground = TermColor.White
+    hAttr.Bold = True
+    iAttr = hAttr.GetInteger()
+    
+    For i = 0 To Me.Width - 1 '- 2
+      Me._Content[0][i] = Char(" ", iAttr)
+    Next
+    
+    Me._Content[0][0].c = Asc("[")
+    Me._Content[0][1].c = Asc("]")
+    
+    For i = 1 To Min(Me._Content[0].Max, String.Len($sText)) - 2
+      Me._Content[0][i + 2].c = Asc(Mid($sText, i, 1))
+    Next
+    Me._Content[0][Me._Content[0].Max].c = Asc("X")
+  Endif
   Me._NeedRender = False
   
   If Me.Resizable Then
-    
     hAttr.Background = Me.Background
     hAttr.Foreground = Me.Foreground
     hAttr.Bold = False
     iAttr = hAttr.GetInteger()
     
     If Not $bMaximized Then Me._Content[Me._Content.Max - 1][Me._Content[0].Max].c = &h25E2
-    
   Endif
   'Catch 
-
+  
 End
 
 Private Function Text_Read() As String
@@ -101,8 +104,9 @@ Private Function Text_Read() As String
 End
 
 Private Sub Text_Write(Value As String)
-
+  
   Dim bNeedLayout As Boolean
+  
   If Len($sText) > 0 And Value = "" Then bNeedLayout = True
   If $sText = "" And Value <> "" Then bNeedLayout = True
   $sText = Value
@@ -152,6 +156,7 @@ Private Sub Maximized_Write(Value As Boolean)
 End
 
 Public Sub _ScreenResize()
+  
   Me.Maximized = $bMaximized
   ' If $bMaximized Then
   '   Me.Move(0, 0, Desktop.Width, Desktop.Height)
@@ -349,7 +354,7 @@ Public Sub GetNextFocusedControl(hCtrl As TermControl, Optional bFirst As Boolea
   'On stock le control passé en argument
   Dim hFirst As TermControl = hCtrl
   Dim hCont As TermContainer
-
+  
   hCont = hCtrl.Parent
   If Not hCont Then Return Null
   'Trouver le parent du control
@@ -459,8 +464,9 @@ Public Sub GetPrevFocusedControl(hCtrl As TermControl, Optional bFirst As Boolea
 End
 
 Public Sub _SetFocus(hCtrl As TermControl)
-
+  
   Dim hPrev As TermControl
+  
   hPrev = TermControl._IdToControl[$iFocusedId]
   If hPrev Then
     hPrev._LostFocus
@@ -478,8 +484,9 @@ Public Function _GetCurrentFocusId() As Integer
 End
 
 Public Sub _KeyPress()
-
+  
   Dim hCtrl As TermControl
+  
   If Key.Code = Key.Tab Then
     hCtrl = GetNextFocusedControl(TermControl._IdToControl[$iFocusedId])
     If hCtrl Then hCtrl.SetFocus
@@ -510,21 +517,22 @@ End
 Public Sub _GetClientRect() As Rect
   '  If Me Is TermFrame Then Stop
   '_DefineRect
+  
   Dim hRect As Rect = Super._GetClientRect()
+
   If Me.Border < 1 And Me.Title <> "" Then 
     hRect.y += 1
     hRect.Height -= 1
   Endif
   Return hRect
-
+  
 End
 
 Private Function Visible_Read() As Boolean
-
+  
   Return Super.Visible
-
+  
 End
-
 
 Private Sub Visible_Write(Value As Boolean)
   
@@ -537,19 +545,16 @@ Private Sub Visible_Write(Value As Boolean)
   
 End
 
-
 Private Function ScreenY_Read() As Integer
-
+  
   Return Me.Top
-
+  
 End
 
-
-
 Private Function ScreenX_Read() As Integer
-
+  
   Return Me.Left
-
+  
 End
 
 Public Sub ShowModal()
@@ -559,4 +564,14 @@ Public Sub ShowModal()
   
 End
 
+Private Function Arrangement_Read() As Integer
+  
+  Return Me._Arrangement
+  
+End
 
+Private Sub Arrangement_Write(Value As Integer)
+  
+  Me._Arrangement = Value
+  
+End
