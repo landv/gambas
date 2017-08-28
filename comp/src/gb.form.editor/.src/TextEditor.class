@@ -1505,6 +1505,8 @@ Public Sub _RaiseCursor()
   $LY = $Y
   EnsureVisible
   If $bShowPosition Then UpdatePosition
+  
+  TimerChange_Timer
   Raise Cursor
 
 End

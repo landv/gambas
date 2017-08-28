@@ -2,14 +2,20 @@
 
 Public Path As String '' Source file absolute path.
 Public RichText As String
-Public Scan As Collection '' The result of the class symbol analyze.
 Public ParentClass As String '' The parent class.
 Public ParentComponent As String '' The component of the parent class.
 Public AutoCreatable As Boolean '' If the class has `CREATE STATIC`.
 Public NotCreatable As Boolean '' If the class has `CREATE PRIVATE`.
 Public Age As Integer '' The text age. It is incremented each time the text is modified
-
 Property Read ReadOnly As Boolean '' If the editor is read-only.
+
+' Metadata
+
+Public Scan As Collection '' The result of the class symbol analyze.
+Private $cProc As New Collection(gb.IgnoreCase)
+Private $aProc As New String[]
+Private $iFirstProcLine As Integer
+Private $iScanTimeStamp As Integer
 
 Public Const IDENT_CAR As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_$"
 Public Const NBR_COLOR As Integer = 15
@@ -54,10 +60,6 @@ Private VIEWMODE_VERTICAL As Integer = 2
 
 Private $hEditor1 As TextEditor
 Private $hEditor2 As TextEditor
-
-Private $cProc As New Collection(gb.IgnoreCase)
-Private $aProc As New String[]
-Private $iFirstProcLine As Integer
 
 Private $sModule As String
 
@@ -176,6 +178,8 @@ Public Function Save() As Boolean
     Return
   Endif
 
+  ResetIfModified
+
   Editors_Scroll
   
   Save.Begin(Path)
@@ -230,6 +234,18 @@ End
 '
 ' End
 
+Private Sub ResetIfModified()
+
+  If Not $bModify Then Return
+  If $iScanTimeStamp = Project.TimeStamp Then Return
+  
+  $cProc.Clear
+  $aProc.Clear
+  Scan = Null
+  $iScanTimeStamp = Project.TimeStamp
+
+End
+
 Public Sub Modify(Optional bReset As Boolean)
 
   If Me.ReadOnly Then Return
@@ -237,8 +253,6 @@ Public Sub Modify(Optional bReset As Boolean)
   $bModify = True
   Inc Project.TimeStamp
   Inc Age
-  $cProc.Clear ' = New Collection
-  $aProc.Clear ' = New String[]
 
   FSearch.OnFileChange(Me.Path)
   FDebugInfo.RefreshTabs(Me.Path, Me.Name)
@@ -329,12 +343,12 @@ Private Sub RefreshLineInfo(Optional bForce As Boolean) As Boolean
   If $hEditor.Line <> $iLastLine Then
 
     $iLastLine = $hEditor.Line
-
+    
+    ResetIfModified
+    
     UpdateCurrentProc
     timProc.Stop
     timProc.Start
-
-    If IsModified() Then {Scan} = Null
 
     If $hSampleCode Then
       If $hEditor.Line < $iSampleStart Or If $hEditor.Line >= $iSampleEnd Then
@@ -2566,6 +2580,7 @@ End
 
 Public Sub Editors_LostFocus()
   
+  ResetIfModified
   RefreshBackground
   
 End
@@ -2757,7 +2772,7 @@ Private Sub FillProcCombo()
   $aProc = New String[]
   $iFirstProcLine = 1000000
 
-  {Scan} = Null
+  '{Scan} = Null
   
   If Project.IsSourcePath(Path) Then
     Try cSymbol = Project.Documentation.GetClassSymbols(Me.Name)
