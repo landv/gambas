@@ -213,8 +213,8 @@ GB_DESC CDocumentDesc[] =
 {
     GB_DECLARE("XmlDocument", sizeof(CDocument)),
 
-    GB_METHOD("_new", "", CDocument_new, "[(FileName)s]"),
-    GB_METHOD("_free", "", CDocument_free, ""),
+    GB_METHOD("_new", NULL, CDocument_new, "[(FileName)s]"),
+    GB_METHOD("_free", NULL, CDocument_free, NULL),
     
     GB_METHOD("CreateElement", "XmlElement", CDocument_createElement, "(TagName)s"),
     GB_PROPERTY("Root", "XmlElement", CDocument_root),
@@ -225,13 +225,13 @@ GB_DESC CDocumentDesc[] =
     
     
     GB_PROPERTY("Content", "s", CDocument_content),
-    GB_METHOD("FromString", "", CDocument_fromString, "(Data)s"),
-    GB_METHOD("HtmlFromString", "", CDocument_fromString, "(Data)s"),
+    GB_METHOD("FromString", NULL, CDocument_fromString, "(Data)s"),
+    GB_METHOD("HtmlFromString", NULL, CDocument_fromString, "(Data)s"),
     GB_METHOD("ToString", "s", CDocument_tostring, "[(Indent)b]"),
     
-    GB_METHOD("Open", "", CDocument_open, "(FileName)s"),
-    GB_METHOD("Save", "", CDocument_save, "(FileName)s[(Indent)b]"),
-    GB_METHOD("Write", "", CDocument_save, "(FileName)s[(Indent)b]"),
+    GB_METHOD("Open", NULL, CDocument_open, "(FileName)s"),
+    GB_METHOD("Save", NULL, CDocument_save, "(FileName)s[(Indent)b]"),
+    GB_METHOD("Write", NULL, CDocument_save, "(FileName)s[(Indent)b]"),
     
 
     GB_END_DECLARE

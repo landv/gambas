@@ -1631,6 +1631,8 @@ Private Sub GetSymbolWith(aExpr As String[], aType As Integer[], Optional iInd A
   Dim iLine As Integer
   Dim aWith As String[]
   Dim aWithType As Integer[]
+  Dim aWithNested As String[]
+  Dim aWithTypeNested As Integer[]
   Dim iLevel As Integer
   Dim iAssign As Integer
 
@@ -1654,6 +1656,22 @@ Private Sub GetSymbolWith(aExpr As String[], aType As Integer[], Optional iInd A
               Break
             Endif
           Next
+
+          ' Nested WITHs
+          If Left$(aWith[0]) = "." Then
+            If Not aWithNested Then 'Lazy buffer allocations
+              aWithNested = New String[]
+              aWithTypeNested = New Integer[]
+            Endif
+            aWithNested.Insert(aWith, 0)
+            aWithTypeNested.Insert(aWithType, 0)
+            Continue
+          Endif
+
+          If aWithNested Then
+            aWith.Insert(aWithNested)
+            aWithType.Insert(aWithTypeNested)
+          Endif
 
           aExpr.Insert(aWith, iInd)
           aType.Insert(aWithType, iInd)

@@ -261,6 +261,8 @@ Private Sub WriteValue(vVal As Variant)
           Inc iPos
         Next
         Write #$hStream, "}"
+      Else If IsNull(vVal) Then
+        Write #$hStream, "null"
       Else
         Write #$hStream, "undefined"
       Endif

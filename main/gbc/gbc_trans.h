@@ -155,7 +155,7 @@ void TRANS_init_optional(TRANS_PARAM *param);
 void TRANS_expression(bool check);
 void TRANS_ignore_expression();
 void TRANS_reference(void);
-bool TRANS_affectation(bool check);
+bool TRANS_affectation(bool dup);
 void TRANS_operation(short op, short nparam, bool output, PATTERN previous);
 void TRANS_new(void);
 TYPE TRANS_variable_get_type(void);

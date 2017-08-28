@@ -1,0 +1,99 @@
+' Gambas class file
+
+Inherits CFamily
+
+Public Const Name As String = "TermForm"
+Public Const ControlClass As String = "TermControl"
+Public Const VirtualCoord As Boolean = False
+Public Const UseMoveScaled As Boolean = False
+Public Const DropImageClass As String = "TermPictureBox"
+Public Const DropImageProperty As String = "Image"
+Public Const EmbedContainer As String = "TermPanel"
+Public Const AutomaticArrangement As Boolean = False
+Public Const ForceGrid As Integer = 3
+
+Public Sub _new()
+
+  Me.Background = Color.Gray
+  
+End
+
+Public Sub GetIcon(hCCtrl As CControl) As String
+  
+  Dim sImage As String
+  
+  Select hCCtrl.Kind
+  
+    Case "TermHBox"
+      sImage = "horizontal"
+    
+    Case "TermVBox", "WebMenu"
+      sImage = "vertical"
+    
+    'Case "WebForm", "WebContainer"
+    '  sImage = "vertical"
+      
+    Case Else
+      sImage = Super.GetIcon(hCCtrl)
+      
+  End Select
+  
+  If hCCtrl.GetProperty("Invert") Then
+    If Exist("img/family/" &/ sImage & "-invert.png") Then sImage &= "-invert"
+  Endif
+  
+  Return sImage
+  
+End
+
+Public Sub DrawControl((hCCtrl) As CControl) As Boolean
+  
+  
+  
+End
+
+Public Sub ActionExec(hCtrl As CControl, sAction As String)
+  
+  Select Case sAction
+    
+    ' Case Like ".text-*"
+    '   Super.ActionExec(hCtrl, sAction)
+    
+    Case ".text-font"
+      Super.ActionExec(hCtrl, sAction)
+      
+    Case ".text-set-font"
+      Super.ActionExec(hCtrl, sAction)
+    
+    ' Case ".text-bold"
+    '   ToggleFont(hCtrl, "bold")
+    ' 
+    ' Case ".text-italic"
+    '   ToggleFont(hCtrl, "italic")
+    ' 
+    ' Case ".text-underline"
+    '   ToggleFont(hCtrl, "underline")
+    ' 
+    ' Case ".format-background"
+    '   If hCtrl.HasProperty("Background") Then hCtrl.SetProperty("Background", Me.ActionValue)
+    ' 
+    ' Case ".format-foreground"
+    '   If hCtrl.HasProperty("Foreground") Then hCtrl.SetProperty("Foreground", Me.ActionValue)
+    
+  End Select
+  
+End
+
+
+Public Sub ConvertCoord(iCoord As Integer, bViewToCoord As Boolean) As Integer
+  
+  Dim iSnap As Integer = Me.GetSnap()
+  
+  If bViewToCoord Then
+    'Return (iCoord + iSnap \ 2) \ iSnap
+    Return iCoord \ iSnap
+  Else
+    Return iCoord * iSnap
+  Endif
+  
+End

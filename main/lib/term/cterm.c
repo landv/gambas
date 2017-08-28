@@ -254,7 +254,7 @@ BEGIN_METHOD_VOID(StreamTerm_GetAttr)
 
 	CTERMINALSETTINGS *settings;
 
-	fprintf(stderr, "fd = %d\n", STREAM_FD);
+	//fprintf(stderr, "fd = %d\n", STREAM_FD);
 	
 	settings = (CTERMINALSETTINGS *)GB.New(GB.FindClass("TerminalSettings"), NULL, NULL);
 	if (check_error(tcgetattr(STREAM_FD, &settings->settings)))
@@ -270,12 +270,17 @@ END_PROPERTY
 BEGIN_METHOD(StreamTerm_SetAttr, GB_INTEGER mode; GB_OBJECT settings)
 
 	CTERMINALSETTINGS *settings;
+	struct termios check;
 
 	settings = (CTERMINALSETTINGS *)VARG(settings);
 	if (GB.CheckObject(settings))
 		return;
 		
 	check_error(tcsetattr(STREAM_FD, VARG(mode), &settings->settings));
+	
+	tcgetattr(STREAM_FD, &check);
+	if (check.c_iflag != settings->settings.c_iflag || check.c_oflag != settings->settings.c_oflag || check.c_lflag != settings->settings.c_lflag)
+		GB.Error("Unable to set terminal attributes");
 
 END_PROPERTY
 

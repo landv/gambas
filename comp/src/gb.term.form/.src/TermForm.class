@@ -2,3 +2,22 @@
 
 Export
 Inherits TermWindow
+Public Const _Properties As String = "*,Border{Border.None;Simple;Double}=Simple,Arrangement{Arrange.None;Vertical;Horizontal}=None,Text,Resizable=True"
+Public Const _HiddenControls As String = "TermControl,TermForm,TermWindow,TermContainer"
+Public Const _IsForm As Boolean = True
+Public Const _IsContainer As Boolean = True
+Public Const _IsMultiContainer As Boolean = False
+Public Const _DrawWith As String = "Form"
+Public Const _DefaultEvent As String = "Open"
+
+
+Static Public Sub Main()
+  
+  Dim hObject As TermForm
+  
+  hObject = Application.Startup.AutoCreate()
+  hObject.Show
+
+  TermWindows._Render
+
+End

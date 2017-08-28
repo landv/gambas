@@ -1519,5 +1519,9 @@ void gApplication::quit()
 	_must_quit = true;
 }
 
-
-
+int gApplication::dblClickTime()
+{
+  gint value;
+  g_object_get (gtk_settings_get_default(), "gtk-double-click-time", &value, (char *)NULL);
+	return value;
+}

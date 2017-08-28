@@ -60,6 +60,8 @@ public:
 	static void enableTooltips(bool vl);
 	static bool areTooltipsEnabled();
 
+	static int dblClickTime();
+	
 	static void setDefaultTitle(const char *title);
 	static char *defaultTitle() { return _title; }
 

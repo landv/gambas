@@ -188,9 +188,9 @@ GB_DESC CDocumentStyleSheetsDesc[] =
 {
     GB_DECLARE(".HtmlDocumentStyleSheets", 0), GB_VIRTUAL_CLASS(),
 
-    GB_METHOD("Add", "", CDocumentStyleSheets_add, "(Source)s[(Media)s]"),
-    GB_METHOD("AddIfIE", "", CDocumentStyleSheets_addIfIE, "(Source)s[(Condition)s(Media)s]"),
-    GB_METHOD("AddIfNotIE", "", CDocumentStyleSheets_addIfNotIE, "(Source)s[(Media)s]"),
+    GB_METHOD("Add", NULL, CDocumentStyleSheets_add, "(Source)s[(Media)s]"),
+    GB_METHOD("AddIfIE", NULL, CDocumentStyleSheets_addIfIE, "(Source)s[(Condition)s(Media)s]"),
+    GB_METHOD("AddIfNotIE", NULL, CDocumentStyleSheets_addIfNotIE, "(Source)s[(Media)s]"),
 
     GB_END_DECLARE
 };
@@ -199,9 +199,9 @@ GB_DESC CDocumentScriptsDesc[] =
 {
     GB_DECLARE(".HtmlDocumentScripts", 0), GB_VIRTUAL_CLASS(),
 
-    GB_METHOD("Add", "", CDocumentScripts_add, "(Source)s"),
-    GB_METHOD("AddIfIE", "", CDocumentScripts_addIfIE, "(Source)s[(Condition)s]"),
-    GB_METHOD("AddIfNotIE", "", CDocumentScripts_addIfNotIE, "(Source)s"),
+    GB_METHOD("Add", NULL, CDocumentScripts_add, "(Source)s"),
+    GB_METHOD("AddIfIE", NULL, CDocumentScripts_addIfIE, "(Source)s[(Condition)s]"),
+    GB_METHOD("AddIfNotIE", NULL, CDocumentScripts_addIfNotIE, "(Source)s"),
 
     GB_END_DECLARE
 };
@@ -210,8 +210,8 @@ GB_DESC CDocumentDesc[] =
 {
     GB_DECLARE("HtmlDocument", sizeof(CDocument)), GB_INHERITS("XmlDocument"),
 
-    GB_METHOD("_new", "", CDocument_new, ""),
-    GB_METHOD("_free", "", CDocument_free, ""),
+    GB_METHOD("_new", NULL, CDocument_new, ""),
+    GB_METHOD("_free", NULL, CDocument_free, ""),
     
     GB_PROPERTY("Html5", "b", CDocument_Html5),
 
@@ -222,8 +222,8 @@ GB_DESC CDocumentDesc[] =
     GB_PROPERTY_READ("Head", "XmlElement", CDocument_head),
     GB_PROPERTY_READ("Body", "XmlElement", CDocument_body),
 
-    //GB_METHOD("FromString", "", CDocument_fromString, "(Data)s"),
-    //GB_METHOD("HtmlFromString", "", CDocument_fromString, "(Data)s"),
+    //GB_METHOD("FromString", NULL, CDocument_fromString, "(Data)s"),
+    //GB_METHOD("HtmlFromString", NULL, CDocument_fromString, "(Data)s"),
 
     GB_PROPERTY_SELF("StyleSheets", ".HtmlDocumentStyleSheets"),
     GB_PROPERTY_SELF("Scripts", ".HtmlDocumentScripts"),

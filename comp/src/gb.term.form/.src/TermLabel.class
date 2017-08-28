@@ -2,7 +2,12 @@
 
 Export
 Inherits TermControl
+
 Class Rect
+
+Public Const _Properties As String = "*,Text"
+Public Const _DrawWith As String = "Label"
+
 Property Text As String
 
 Private $sText As String

@@ -2696,7 +2696,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		GB.Ref(control);
 		cancel = false;
 
-		if (GB.CanRaise(control, event_id))
+		if (GB.CanRaise(control, event_id) || (event_id == EVENT_DblClick && GB.CanRaise(control, EVENT_MouseDown)))
 		{
 			/*if (!design && CWIDGET_test_flag(control, WF_SCROLLVIEW))
 			{
@@ -2720,7 +2720,11 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			//if (type == QEvent::MouseButtonPress)
 			//	qDebug("GB.Raise on %p (%s %p) %d", widget, control ? GB.GetClassName(control) : "-", control, event_id);
 			
-			cancel = GB.Raise(control, event_id, 0); //, GB_T_INTEGER, p.x(), GB_T_INTEGER, p.y(), GB_T_INTEGER, state);
+			if (event_id == EVENT_DblClick)
+				cancel = GB.Raise(control, EVENT_MouseDown, 0); //, GB_T_INTEGER, p.x(), GB_T_INTEGER, p.y(), GB_T_INTEGER, state);
+				
+			if (!cancel)
+				cancel = GB.Raise(control, event_id, 0); //, GB_T_INTEGER, p.x(), GB_T_INTEGER, p.y(), GB_T_INTEGER, state);
 
 			CMOUSE_clear(false);
 			

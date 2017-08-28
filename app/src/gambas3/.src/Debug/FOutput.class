@@ -65,7 +65,7 @@ Public Sub Insert(sText As String, Optional bCurrent As Boolean)
   
   If Not Action["console"].Value Then Action["console"].Value = True
 
-  trmOutput.Print(sText)
+  trmOutput.Print(Replace(sText, "\n", "\r\n"))
   
 End
 

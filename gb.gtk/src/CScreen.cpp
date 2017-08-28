@@ -88,6 +88,8 @@ static GdkRectangle *available_geometry(int num)
 	return &rect;
 }
 
+//-------------------------------------------------------------------------
+
 BEGIN_PROPERTY(Desktop_X)
 
 	GB.ReturnInteger(available_geometry(0)->x);
@@ -146,6 +148,7 @@ BEGIN_PROPERTY(Desktop_Type)
 
 END_PROPERTY
 
+//-------------------------------------------------------------------------
 
 static void set_font(gFont *font, void *object = 0)
 {
@@ -281,6 +284,12 @@ BEGIN_PROPERTY(Application_Restart)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Application_DblClickTime)
+
+	GB.ReturnInteger(gApplication::dblClickTime());
+
+END_PROPERTY
+
 //-------------------------------------------------------------------------
 
 BEGIN_PROPERTY(Screens_Count)
@@ -361,6 +370,7 @@ BEGIN_PROPERTY(Screen_AvailableHeight)
 
 END_PROPERTY
 
+//-------------------------------------------------------------------------
 
 GB_DESC ScreenDesc[] =
 {
@@ -431,7 +441,8 @@ GB_DESC ApplicationDesc[] =
 	GB_STATIC_PROPERTY("Embedder", "i", Application_Embedder),
 	GB_STATIC_PROPERTY("Theme", "s", Application_Theme),
 	GB_STATIC_PROPERTY("Restart", "String[]", Application_Restart),
-
+	GB_STATIC_PROPERTY_READ("DblClickTime", "i", Application_DblClickTime),
+	
 	GB_END_DECLARE
 };
 

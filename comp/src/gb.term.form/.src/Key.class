@@ -20,7 +20,7 @@ Static Public Sub _SetKey(sKey As String, code As Integer, Alt As Boolean, Contr
   $bALt = ALt
   $iCode = Code
   $sText = sKey
-  If TermWindows.Debug Then Error "Alt: " & alt & "   Control: " & Control & "   Shift: " & Shift & "   Code :" & code & "        Text :" & sKey
+  If TermWindows.Debug = TermWindows.DebugInput Then Error "Alt: " & alt & "   Control: " & Control & "   Shift: " & Shift & "   Code :" & code & "        Text :" & sKey
 
 End
 
