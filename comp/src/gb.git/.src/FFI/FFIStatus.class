@@ -1,0 +1,63 @@
+' Gambas class file
+
+' Gambas module file
+
+Public Enum
+GIT_STATUS_CURRENT = %0, 
+GIT_STATUS_INDEX_NEW = %1,
+GIT_STATUS_INDEX_MODIFIED = %10,
+GIT_STATUS_INDEX_DELETED = %100,
+GIT_STATUS_INDEX_RENAMED = %1000,
+GIT_STATUS_INDEX_TYPECHANGE = %1000,
+GIT_STATUS_INDEX_ANY = %1111,
+GIT_STATUS_WT_NEW = %10000000,
+GIT_STATUS_WT_MODIFIED = %100000000,
+GIT_STATUS_WT_DELETED = %1000000000,
+GIT_STATUS_WT_TYPECHANGE = %10000000000,
+GIT_STATUS_WT_RENAMED = %100000000000,
+GIT_STATUS_WT_UNREADABLE = %1000000000000,
+GIT_STATUS_WT_ANY = %1111110000000,
+GIT_STATUS_IGNORED = %100000000000000,
+GIT_STATUS_CONFLICTED = %1000000000000000
+
+Public Struct GitStatusEntry
+  status As Integer
+  headToIndex As Pointer
+  indexToWorkdir As Pointer
+End Struct
+
+Library "libgit2"
+
+Extern git_status_list_new(out As Pointer, Repo As Pointer, Options As Pointer) As Integer
+Extern git_status_list_entrycount(statuses As Pointer) As Pointer 'size_t
+Extern git_status_byindex(status As Pointer, Index As Pointer) As Pointer
+Extern git_status_foreach(repo As Pointer, callback As Pointer, payload As Pointer) As Integer
+
+Static Private $aStatuses As FFIStatus[]
+
+Static Private Sub status_cb(Path As Pointer, Flags As Integer, data As Pointer) As Integer
+  
+  Dim status As New FFIStatus
+  
+  status.Path = String@(Path)
+  status.Flags = Flags
+  
+  $aStatuses.Add(status)
+  
+  Return 0
+  
+End
+
+Static Public Sub GetStatuses(repo As Pointer) As FFIStatus[]
+  
+  Dim statuses As New FFIStatus[]
+  
+  $aStatuses = statuses
+  FFI.HandleError(git_status_foreach(repo, status_cb, Null))
+  $aStatuses = Null
+  Return statuses
+  
+End
+
+Public Path As String
+Public Flags As Integer

@@ -29,6 +29,17 @@ Public Sub _free()
 
 End
 
+Public Sub Status() As GitStatus
+  
+  Dim status As New GitStatus
+  
+  status._Statuses(FFIStatus.GetStatuses($repo))
+  
+  Return status
+  
+End
+
+
 Private Function Path_Read() As String
 
   Return FFIRepository.GetPath($repo)
@@ -46,7 +57,6 @@ Private Function _Handle_Read() As Pointer
   Return $repo
 
 End
-
 
 
 Private Function Branches_Read() As _RepositoryBranches

@@ -1,0 +1,155 @@
+' Gambas class file
+
+Export
+
+Private $aStatuses As FFIStatus[]
+Private $hCurrentStatus As FFIStatus
+
+Property Read Path As String
+Property Read Flags As Integer
+Property Read IndexNew As Boolean
+Property Read IndexModified As Boolean
+Property Read IndexDeleted As Boolean
+Property Read IndexRenamed As Boolean
+Property Read IndexTypeChanged As Boolean
+Property Read WorkTreeNew As Boolean
+Property Read WorkTreeModified As Boolean
+Property Read WorkTreeDeleted As Boolean
+Property Read WorkTreeTypeChanged As Boolean
+Property Read WorkTreeRenamed As Boolean
+Property Read WorkTreeUnreadable As Boolean
+Property Read StatusString As String
+
+Public Sub _Statuses(statuses As FFIStatus[])
+  
+  $aStatuses = statuses
+  
+End
+
+Private Sub GetCurrent() As FFIStatus
+  
+  If Not $hCurrentStatus Then Error.Raise("Property is only available during iteration")
+  Return $hCurrentStatus
+  
+End
+
+Public Sub _next()
+  
+  If Enum.Index = Null Then 
+    Enum.Index = 0
+  Else
+    Inc Enum.Index
+  Endif
+  
+  If Enum.Index > $aStatuses.Max Then 
+    $hCurrentStatus = Null
+    Enum.Stop
+    Return
+  Endif
+  
+  $hCurrentStatus = $aStatuses[Enum.Index]
+  
+End
+
+
+Private Function Path_Read() As String
+
+  Return GetCurrent().Path
+
+End
+
+Private Function Flags_Read() As Integer
+
+  Return GetCurrent().Flags
+
+End
+
+
+Private Function IndexNew_Read() As Boolean
+
+  Return Me.Flags And FFIStatus.GIT_STATUS_INDEX_NEW
+
+End
+
+Private Function IndexModified_Read() As Boolean
+
+  Return Me.Flags And FFIStatus.GIT_STATUS_INDEX_MODIFIED
+
+End
+
+Private Function IndexDeleted_Read() As Boolean
+
+  Return Me.Flags And FFIStatus.GIT_STATUS_INDEX_DELETED
+
+End
+
+Private Function IndexRenamed_Read() As Boolean
+
+  Return Me.Flags And FFIStatus.GIT_STATUS_INDEX_RENAMED
+
+End
+
+Private Function IndexTypeChanged_Read() As Boolean
+
+  Return Me.Flags And FFIStatus.GIT_STATUS_INDEX_TYPECHANGE
+
+End
+
+Private Function WorkTreeNew_Read() As Boolean
+
+  Return Me.Flags And FFIStatus.GIT_STATUS_WT_NEW
+
+End
+
+Private Function WorkTreeModified_Read() As Boolean
+
+  Return Me.Flags And FFIStatus.GIT_STATUS_WT_MODIFIED
+
+End
+
+Private Function WorkTreeDeleted_Read() As Boolean
+
+  Return Me.Flags And FFIStatus.GIT_STATUS_WT_DELETED
+
+End
+
+Private Function WorkTreeTypeChanged_Read() As Boolean
+
+  Return Me.Flags And FFIStatus.GIT_STATUS_WT_TYPECHANGE
+
+End
+
+Private Function WorkTreeRenamed_Read() As Boolean
+
+  Return Me.Flags And FFIStatus.GIT_STATUS_WT_RENAMED
+
+End
+
+Private Function WorkTreeUnreadable_Read() As Boolean
+
+  Return Me.Flags And FFIStatus.GIT_STATUS_WT_UNREADABLE
+
+End
+
+Private Function StatusString_Read() As String
+
+  Dim flags As Integer = Me.Flags
+  Dim aFlags As New String[]
+
+  If flags And FFIStatus.GIT_STATUS_INDEX_NEW Then aFlags.Add("index-new")
+  If flags And FFIStatus.GIT_STATUS_INDEX_MODIFIED Then aFlags.Add("index-modified")
+  If flags And FFIStatus.GIT_STATUS_INDEX_DELETED Then aFlags.Add("index-deleted")
+  If flags And FFIStatus.GIT_STATUS_INDEX_RENAMED Then aFlags.Add("index-renamed")
+  If flags And FFIStatus.GIT_STATUS_INDEX_TYPECHANGE Then aFlags.Add("index-typechange")
+  If flags And FFIStatus.GIT_STATUS_WT_NEW Then aFlags.Add("worktree-new")
+  If flags And FFIStatus.GIT_STATUS_WT_MODIFIED Then aFlags.Add("worktree-modified")
+  If flags And FFIStatus.GIT_STATUS_WT_DELETED Then aFlags.Add("worktree-deleted")
+  If flags And FFIStatus.GIT_STATUS_WT_TYPECHANGE Then aFlags.Add("worktree-typechange")
+  If flags And FFIStatus.GIT_STATUS_WT_RENAMED Then aFlags.Add("worktree-renamed")
+  If flags And FFIStatus.GIT_STATUS_WT_UNREADABLE Then aFlags.Add("worktree-unreadable")
+  If flags And FFIStatus.GIT_STATUS_IGNORED Then aFlags.Add("ignored")
+  If flags And FFIStatus.GIT_STATUS_CONFLICTED Then aFlags.Add("conflicted")
+
+  Return aFlags.Join(",")
+
+End

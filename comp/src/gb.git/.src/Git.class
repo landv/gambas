@@ -27,6 +27,13 @@ Public Sub Clone(Url As String, Path As String) As Repository
   
 End
 
+Public Sub Open(Path As String) As Repository
+  
+  Return New Repository(Path)
+  
+End
+
+
 Private Function Transfer_Read() As _Git_Transfer
 
   If Not $transfer Then $transfer = New _Git_Transfer

@@ -4,24 +4,37 @@ Public Sub Main()
 
   Dim repo As Repository
   Dim branch As Branch
+  Dim s As GitStatus
+
   Object.Attach(Git, Me, "Git")
-  repo = Git.Clone("https://gitlab.com/gambas/gambas.git", "/home/adrien/Temp/git_test")
+  If Not Exist("/home/adrien/Programmation/Gambas/src/gambas-gb.git/") Then
+    repo = Git.Clone("https://gitlab.com/gambas/gambas.git", "/home/adrien/Programmation/Gambas/src/gambas-gb.git/")
+  Else
+    repo = Git.Open("/home/adrien/Programmation/Gambas/src/gambas-gb.git/")
+  Endif
 
   Print repo.Path
   Print repo.Workdir
-  
+
   For Each branch In repo.Branches
     Print Branch.Name
   Next
+
+  s = repo.Status()
+
+  For Each s
+    Print "S:";; s.Path;; s.StatusString
+  Next
+
 Catch
   Error Error.Text
 End
 
 Public Sub Git_Transfer()
-  
+
   Print Chr(27); "[2K\r";; Round(Git.Transfer.ReceivedObjects / Git.Transfer.TotalObjects * 100); "%";;
   Print Git.Transfer.ReceivedObjects; "/"; Git.Transfer.TotalObjects; " objects ";
   Print Git.Transfer.ReceivedBytes; " received at "; Git.Transfer.Speed;
-  
+
 End
 
