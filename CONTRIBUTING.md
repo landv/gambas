@@ -69,7 +69,7 @@ Its is probable that your changes won't be accepted right away, and you will be 
 In this case, you can make your changes, commit them and then push them. 
 The Merge request on GitLab will be automatically updated, you won't have to recreate it.
 
-### [Keeping your repository up to date]
+### Keeping your repository up to date
 
 During the time you make changes to your version of the Gambas source code, or while your request is being reviewed, it is likely that the Gambas repository will receive some updates.
 
