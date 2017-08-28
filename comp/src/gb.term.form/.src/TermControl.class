@@ -6,7 +6,9 @@ Class Rect
 
 Public Const _IsControl As Boolean = True
 Public Const _IsContainer As Boolean = False
+
 Public Const _Properties As String = "X{Position},Y{Position},Width{Dimension},Height{Dimension},Background{Color},Foreground{Color},Ignore"
+
 '"Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Margin,Ignore,Expand,AutoResize,Tag,Range"
 Public Const _Family As String = "TermForm"
 
@@ -176,6 +178,7 @@ Public Sub _Render()
       _Content[0][hRectC.Width - 1 - iShadow] = Char(String.chr(&H2510), iAttr)
       _Content[hRectC.Height - 1 - iShadow][0] = Char(String.chr(&H2514), iAttr)
       _Content[hRectC.Height - 1 - iShadow][hRectC.Width - 1 - iShadow] = Char(String.chr(&H2518), iAttr)
+    
     Case Border.Double
       hAttr.Background = iBC
       
