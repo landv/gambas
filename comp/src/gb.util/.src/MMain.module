@@ -2,14 +2,4 @@
 
 Public Sub Main()
 
-  'Print Date.ToRFC822(Date.FromRFC822("23 Apr 17 19:55:10 +0200"), "-0100")
-  
-  ' Dim sEpochSeconds As String
-  ' Shell "date +%s" To sEpochSeconds
-  ' Print Trim(sEpochSeconds)
-  ' Print Date.ToUnixTime(Now)
-  
-  Print CStr(Date(Now))
-  Print CStr(Date.ToUTC(Date(Now)))
-  
 End

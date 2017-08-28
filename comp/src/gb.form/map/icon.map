@@ -35,7 +35,7 @@ eject                   actions/media-eject
 end                     actions/media-skip-forward
 erase                   actions/draw-eraser
 error                   status/dialog-error
-exec                    actions/system-run
+exec                    [breeze]actions/run-build;actions/system-run
 file                    [-breeze*]actions/document-new;$(mime)/empty;$(mime)/application-x-zerosize
 file-manager            [-breeze*]apps/toolbar/system-file-manager;apps/system-file-manager
 fill                    actions/fill-color

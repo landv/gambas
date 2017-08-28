@@ -109,3 +109,127 @@ Static Public Sub Distance(String1 As String, String2 As String) As Integer
   Return D[L1, L2]
   
 End
+
+Static Public Sub FromHTML(Html As String) As String
+
+  Dim P As Integer
+  Dim iLen As Integer
+  Dim C As String
+  Dim sResult As String
+  Dim C2 As String
+  Dim sEntity As String
+  Dim sMarkup As String
+  Dim aMarkup As New String[]
+  
+  iLen = String.Len(Html)
+  
+READ_TEXT:
+  
+  GoSub READ_CHAR
+  
+  If C = "<" Then Goto READ_MARKUP
+  
+  If C = "&" Then Goto READ_ENTITY
+  
+  If aMarkup.Count = 0 Then sResult &= C
+  Goto READ_TEXT
+  
+READ_MARKUP:
+
+READ_MARKUP_NAME:
+
+  GoSub READ_CHAR
+  
+  If C = " " Then Goto READ_MARKUP_REST
+  If C = ">" Then Goto READ_MARKUP_END
+  
+  sMarkup &= C
+  
+  Goto READ_MARKUP_NAME
+  
+READ_MARKUP_REST:
+
+  GoSub READ_CHAR
+  
+  If C = ">" Then Goto READ_MARKUP_END
+  
+  If C = Chr$(34) Or If C = "'" Then 
+    C2 = C
+    Goto READ_STRING
+  Endif
+  
+  Goto READ_MARKUP_REST
+
+READ_MARKUP_END:
+
+  sMarkup = LCase(sMarkup)
+  If sMarkup Begins "/" Then
+    sMarkup = Mid$(sMarkup, 2)
+    If aMarkup.Count Then
+      If aMarkup[aMarkup.Max] = sMarkup Then aMarkup.Pop()
+    Endif
+  Else
+    If sMarkup = "script" Or If sMarkup = "style" Then
+      aMarkup.Push(sMarkup)
+    Endif
+  Endif
+  sMarkup = ""
+  Goto READ_TEXT
+
+READ_STRING:
+
+  GoSub READ_CHAR
+  
+  If C = C2 Then Goto READ_MARKUP
+  
+  Goto READ_STRING
+
+READ_ENTITY:
+  
+  GoSub READ_CHAR
+  
+  If IsDigit(C) Or If IsLetter(C) Or If C = "#" Then
+    sEntity &= C
+    Goto READ_ENTITY
+  Endif
+  
+  Select Case sEntity
+    Case "lt"
+      C = "<"
+    Case "gt"
+      C = ">"
+    Case "amp"
+      C = "&"
+    Case "nbsp"
+      C = String.Chr$(160)
+    Case "quot"
+      C = Chr$(34)
+    Case "apos"
+      C = "'"
+    Case Else
+      If sEntity Begins "#x" Then
+        Try C = String.Chr(Val("&H" & Mid$(sEntity, 3)))
+        If Error Then C = "?"
+      Else If sEntity Begins "#" Then
+        Try C = String.Chr(CInt(Mid$(sEntity, 2)))
+        If Error Then C = "?"
+      Else
+        C = "&" & sEntity
+        Dec P
+      Endif
+  End Select
+  
+  If aMarkup.Count = 0 Then sResult &= C
+  sEntity = ""
+  Goto READ_TEXT
+  
+READ_CHAR:
+
+  Inc P
+  If P > iLen Then 
+    Return sResult
+  Endif
+  C = String.Mid$(Html, P, 1)
+  Return
+  
+End
