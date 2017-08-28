@@ -670,7 +670,8 @@ Public Sub InputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess As
         sText = If(hScreen.AppCursorKey, "\eOD", "\e[D")
 
       Case Key.Enter, Key.Return
-        sText = If(hScreen.NewlineMode, "\r\n", "\n")
+        'Debug If(hProcess.Term.GetAttr().ICRNL, "+", "-"); "ICRNL";; If(hProcess.Term.GetAttr().INLCR, "+", "-"); "INLCR"
+        sText = If(hScreen.NewlineMode, "\r\n", "\r")
         
       Case Key.Insert
         sText = "\e[2~"
