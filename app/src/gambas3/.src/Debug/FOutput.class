@@ -93,11 +93,13 @@ Public Sub trmOutput_KeyPress()
 
     If Key.Code = Key["L"] Then
       Clear
+      Stop Event
     Else If Key.Code = Key["G"] Then 
       ' edtOutput.ReadOnly = False
       ' edtOutput.Print(Chr$(7))
       ' edtOutput.ReadOnly = True
       ' TODO: flash
+      Stop Event
     Endif
     
   Endif

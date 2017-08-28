@@ -3762,6 +3762,7 @@ Private Sub EmbedIntoContainer()
   Dim hParent As CControl
   Dim X1, Y1, X2, Y2 As Integer
   Dim sChildren As String
+  Dim D As Integer
 
   X1 = Master.X
   Y1 = Master.Y
@@ -3777,8 +3778,8 @@ Private Sub EmbedIntoContainer()
   
   $hUndo.Begin
   hParent = CreateControl($hFamily.EmbedContainer, Master.Parent)
-  ' TODO: Replace Desktop.Scale by a value depending on family
-  hParent.MoveAndResize(X1, Y1, X2 - X1 + Desktop.Scale, Y2 - Y1 + Desktop.Scale)
+  D = $hFamily.GetSnap()
+  hParent.MoveAndResize(X1, Y1, X2 - X1 + D, Y2 - Y1 + D)
   
   DeleteSelection
   UnselectAll

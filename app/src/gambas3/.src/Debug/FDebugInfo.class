@@ -1388,7 +1388,7 @@ Public Sub SetCompilation(Optional sOutput As String)
   gvwCompilation.Clear
   If Not sOutput Then 
     HideTab(TAB_COMPILATION)
-    GotoConsole
+    'GotoConsole
     Return
   Endif
   
