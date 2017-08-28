@@ -32,7 +32,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NULL
 };
 
-char *GB_INCLUDE EXPORT = "gb.qt4.webkit";
+char *GB_INCLUDE EXPORT = "gb.qt4.webkit|gb.qt5.webkit";
 
 int EXPORT GB_INIT(void)
 {
