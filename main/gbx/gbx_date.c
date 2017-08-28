@@ -113,7 +113,7 @@ static double get_monotonic_timer(void)
 {
 #ifdef HAVE_MONOTONIC_CLOCK
 	struct timespec tv;
-	#if OS_LINUX
+	#if OS_LINUX && defined(CLOCK_MONOTONIC_RAW)
 	if (clock_gettime(CLOCK_MONOTONIC_RAW, &tv) == 0)
 	#else
 	if (clock_gettime(CLOCK_MONOTONIC, &tv) == 0)
