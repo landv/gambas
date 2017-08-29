@@ -1,3 +1,7 @@
+<a href="http://gambaswiki.org/wiki/screenshot/cygwin-ide.png?v"><img src="http://gambaswiki.org/wiki/screenshot/t-cygwin-ide.png?v"></a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="http://gambaswiki.org/wiki/screenshot/webform-ide.png?v"><img src="http://gambaswiki.org/wiki/screenshot/t-webform-ide.png?v"></a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="http://gambas.sf.net/2014-07-26.png"><img src="http://gambas.sf.net/t-2014-07-26.png"></a>
+
 # Gambas Almost Means BASIC
 
 GAMBAS is a free implementation of a graphical development environment 
