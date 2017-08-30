@@ -112,7 +112,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
       If Left(sLink) = "#" Then
         iPos = InStr(sLink, " ")
         If iPos Then sLink = Left(sLink, iPos - 1)
-        aLine[iLine] = "<a name=\"" & Html$(sLink) & "\"></a>"
+        aLine[iLine] = "<a id=\"" & Html$(sLink) & "\"></a>"
         Continue
       Endif
     Endif
@@ -492,7 +492,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
           If Left(sLine) = "[" And If Right(sLine) = "]" Then
             sLine = ConvertLine(Mid$(sLine, 2, -1))
             $aIndex.Add(String$(I - 1, "  ") & "- [" & sLine & "] (#t" & CStr($aIndex.Count + 1) & ")")
-            sLine = "<a name=\"t" & CStr($aIndex.Count) & "\"></a>" & "<h" & CStr(I) & ">" & sLine & "</h" & CStr(I) & ">"
+            sLine = "<a id=\"t" & CStr($aIndex.Count) & "\"></a>" & "<h" & CStr(I) & ">" & sLine & "</h" & CStr(I) & ">"
           Else
             sLine = "<h" & CStr(I) & ">" & ConvertLine(sLine) & "</h" & CStr(I) & ">"
           Endif
