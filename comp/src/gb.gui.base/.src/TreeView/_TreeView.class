@@ -150,7 +150,7 @@ Public Sub _Add((Key) As String, Text As String, Optional (Picture) As Picture, 
   $bNoUpdateHeight = False
 
   If After Then 
-    _MoveItem(hItem, After, False)
+    If _MoveItem(hItem, After, False) Then _UpdateItemHeight(hItem)
   Else
     _UpdateItemHeight(hItem, True)
   Endif
@@ -1068,7 +1068,7 @@ Public Sub FindAt((X) As Integer, Y As Integer) As Boolean
   
 End
 
-Public Sub _MoveItem(hItem As _TreeView_Item, sKey As String, bBefore As Boolean)
+Public Sub _MoveItem(hItem As _TreeView_Item, sKey As String, bBefore As Boolean) As Boolean
   
   Dim hParent As _TreeView_Item = _GetParentItem(hItem)
   Dim aChildren As String[]
@@ -1103,7 +1103,7 @@ Public Sub _MoveItem(hItem As _TreeView_Item, sKey As String, bBefore As Boolean
     Endif
   Endif
   
-  If iPos = iNewPos Then Return
+  If iPos = iNewPos Then Return True
   
   aChildren.Remove(iPos)
   aChildren.Add(hItem.Key, iNewPos)
