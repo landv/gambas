@@ -3651,14 +3651,16 @@ Private Sub CreateLocalVariable() As Boolean
   Dim sType As String
   Dim I As Integer
  
-  If aSym.Count < 3 Then Return
+  If aSym.Count < 2 Then Return
  
   If aSym[0] = "TRY" Then
     aSym.Remove(0)
     aType.Remove(0)
   Endif
   
-  If aSym[0] = "IF" Or If aSym[0] = "ELSE" And aSym[1] = "IF" Then
+  If aSym.Count < 2 Then Return
+ 
+  If aSym[0] = "IF" Or If aSym[0] = "ELSE" Then
     I = aSym.Find("THEN") + 1
     If I <= 0 Then Return
     aSym.Remove(0, I)
@@ -3747,6 +3749,15 @@ Private Sub CreateLocalVariable() As Boolean
   
       sType = "s"
     Endif
+
+  ' Inc & Dec
+  Else If aSym.Count = 2 And If aSym[0] = "INC" Or aSym[0] = "DEC" Then
+  
+    sName = aSym[1]
+    sType = GetSymbolType(sName)
+    If sType Then Return
+  
+    sType = "i"
   
   Endif
 
