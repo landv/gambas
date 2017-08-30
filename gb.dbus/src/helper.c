@@ -1276,7 +1276,7 @@ bool DBUS_watch(DBusConnection *connection, bool on)
 {
 	intptr_t count;
 	int socket;
-	static dbus_int32_t slot;
+	static dbus_int32_t slot = -1;
 	
 	if (!dbus_connection_allocate_data_slot(&slot))
 	{
