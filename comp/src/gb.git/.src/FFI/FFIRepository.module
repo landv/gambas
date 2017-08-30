@@ -148,12 +148,14 @@ Extern git_repository_init(out As Pointer, Path As String, Bare As Boolean) As I
 Extern git_repository_init_ext(out As Pointer, Path As String, Options As Pointer) As Integer
 Extern git_clone(out As Pointer, Url As String, Path As String, Options As GitCloneOptions) As Integer
 Extern git_repository_discover(out As Pointer, StartPath As String, AcrossFs As Integer, CeilingDirs As String) As Integer
+Extern git_reset_default(repo As Pointer, target As Pointer, pathspecs As GitStrArray) As Integer
+Extern git_repository_head(out As Pointer, repo As Pointer) As Integer
 
 ' Private Sub git_transport_message_cb(str As Pointer, len As Integer, payload As Pointer)
 ' End
 
 
-Private Sub git_transfer_progress_cb(statsPointer As Pointer, payload As Pointer)
+Private Sub git_transfer_progress_cb(statsPointer As Pointer, _payload As Pointer)
 
   Dim stats As GitTransferProgress
   Dim mem As Stream
@@ -187,7 +189,7 @@ Public Sub Open(Path As String) As Pointer
   Dim repo As Pointer
   
   FFI.CheckAvailable
-  FFI.HandleError(git_repository_open(VarPtr(repo), Path & "\0"))
+  FFI.HandleError(git_repository_open(VarPtr(repo), Path))
   
   Return repo
   
@@ -206,21 +208,48 @@ Public Sub Clone(Url As String, Path As String) As Pointer
 
 End
 
+Public Sub ResetDefault(Repo As Pointer, Paths As String[], Optional commit As Pointer = Null)
+
+  Dim strArray As New GitStrArray
+  Dim rawArray As Pointer
+
+  If Not Paths.Count Then Return
+
+  rawArray = FFI.ToCStrArray(Paths)
+  strArray.Count = Paths.Count
+  strArray.Strings = rawArray
+
+  FFI.HandleError(git_reset_default(repo, commit, strArray))
+
+' Finally
+'FIXME: Using finally breaks errors
+   FFI.FreeCStrArray(rawArray, Paths.Count)
+End
+
 
 Public Sub Free(Repo As Pointer)
 
   git_repository_free(Repo)
-  
+
 End
 
 Public Sub GetPath(Repo As Pointer) As String
-  
+
   Return git_repository_path(Repo)
-  
+
 End
 
 Public Sub GetWorkdir(Repo As Pointer) As String
-  
+
   Return git_repository_workdir(Repo)
-  
+
 End
+
+Public Sub GetHead(Repo As Pointer) As Pointer
+ 
+  Dim head As Pointer
+  FFI.HandleError(git_repository_head(VarPtr(head), repo))
+  Return head
+
+End
+

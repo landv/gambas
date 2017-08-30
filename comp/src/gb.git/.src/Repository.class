@@ -8,7 +8,11 @@ Property Read _Handle As Pointer
 Property Read Branches As _RepositoryBranches
 Property Read LocalBranches As _RepositoryBranches
 Property Read RemoteBranches As _RepositoryBranches
+Property Read Index As GitIndex
+Property Read Head As GitCommit
+
 Private $repo As Pointer
+Private $index As GitIndex
 
 Public Sub _new(Optional Path As String)
 
@@ -30,15 +34,27 @@ Public Sub _free()
 End
 
 Public Sub Status() As GitStatus
-  
+
   Dim status As New GitStatus
-  
+
   status._Statuses(FFIStatus.GetStatuses($repo))
-  
+
   Return status
-  
 End
 
+Public Sub Reset(files As String[], Optional Commit As GitCommit = Null)
+
+  If Not Commit Then Commit = Me.Head
+  FFIRepository.ResetDefault($repo, files, Commit._Handle)
+
+End
+
+
+Private Function Head_Read() As GitCommit
+
+  Return New GitCommit(FFIRepository.GetHead($repo))
+
+End
 
 Private Function Path_Read() As String
 
@@ -74,5 +90,12 @@ End
 Private Function RemoteBranches_Read() As _RepositoryBranches
 
   Return New _RepositoryBranches(Me, FFIBranch.GIT_BRANCH_REMOTE)
+
+End
+
+Private Function Index_Read() As GitIndex
+
+  If Not $index Then $index = New GitIndex(FFIIndex.GetIndex($repo))
+  Return $index
 
 End

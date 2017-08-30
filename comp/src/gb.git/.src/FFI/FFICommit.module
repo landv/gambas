@@ -1,0 +1,11 @@
+' Gambas module file
+
+Library "libgit2"
+
+Extern git_commit_id(commit As Pointer) As Pointer
+
+Public Sub GetId(commit As Pointer) As Pointer
+
+  Return git_commit_id(commit)
+
+End

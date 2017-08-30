@@ -1,0 +1,26 @@
+' Gambas class file
+
+Export
+
+Property Read Id As String
+Property Read _Handle As Pointer
+
+Private $commit As Pointer
+
+Public Sub _new(commit As Pointer)
+
+  $commit = FFIReference.Peel(commit, FFIReference.GIT_OBJ_COMMIT)
+
+End
+
+Private Function Id_Read() As String
+
+  Return FFIOid.Format(FFICommit.GetId($commit))
+
+End
+
+Private Function _Handle_Read() As Pointer
+
+  Return $commit
+
+End

@@ -18,19 +18,19 @@ Private Function Available_Read() As Boolean
 End
 
 Public Sub Clone(Url As String, Path As String) As Repository
-  
+
   Dim repo As New Repository
   Dim p As Pointer = FFIRepository.Clone(Url, Path)
   repo._Repo(p)
-  
+
   Return repo
-  
+
 End
 
 Public Sub Open(Path As String) As Repository
-  
+
   Return New Repository(Path)
-  
+
 End
 
 
@@ -44,5 +44,5 @@ End
 Public Sub _Transfer()
 
   Raise Transfer
-  
+
 End

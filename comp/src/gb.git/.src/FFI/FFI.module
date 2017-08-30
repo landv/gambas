@@ -8,6 +8,7 @@ Public Struct GitError
 End Struct
 
 Extern git_libgit2_init() As Integer
+Extern git_libgit2_shutdown() As Integer
 Extern giterr_last() As GitError
 
 Public Available As Boolean
@@ -34,10 +35,17 @@ Public Sub _init()
     err = giterr_last()
     Error "Failed to initialize libgit2 : Error #"; err.Code; ": "; String@(err.Message)
   Endif
-  
+
   Available = True
 
 End
+
+Public Sub _exit()
+
+  If Available Then git_libgit2_shutdown()
+
+End
+
 
 '' Handles a libgit2 error code
 '' If the given code is an error code, the last libgit2 error is retrieved and then thrown.
@@ -45,7 +53,7 @@ End
 Public Sub HandleError(Code As Integer)
 
   Dim err As GitError
-  
+
   If Code < 0 Then
     err = giterr_last()
     LastErrorCode = err.Code
@@ -61,3 +69,46 @@ Public Sub CheckAvailable()
   Endif
 
 End
+
+Public Sub ToCStrArray(array As String[]) As Pointer
+
+  Dim rawStrArray As Pointer 
+  Dim rawStrArrayStream As Stream
+
+  Dim str As Pointer
+  Dim i As Integer
+
+  If Not Array.Count Then Return
+
+  rawStrArray = Alloc(SizeOf(GB.Pointer), Array.Count)
+  rawStrArrayStream = Memory rawStrArray For Write
+  For i = 0 To array.Max
+    str = Alloc(array[i])
+    Write #rawStrArrayStream, str As Pointer
+  Next
+
+  Close rawStrArrayStream
+
+  Return rawStrArray
+
+End
+
+Public Sub FreeCStrArray(array As Pointer, length As Integer)
+
+  Dim rawStrArrayStream As Stream
+
+  Dim str As Pointer
+  Dim i As Integer
+
+  rawStrArrayStream = Memory array For Read
+  For i = 0 To length - 1
+    str = Read #rawStrArrayStream As Pointer
+    Free(str)
+  Next
+
+  Close rawStrArrayStream
+
+  Free(array)
+
+End
+

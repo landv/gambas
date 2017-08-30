@@ -1,0 +1,31 @@
+' Gambas class file
+
+Export
+
+Private $index As Pointer
+
+Public Sub _new(index As Pointer)
+
+  $index = index
+
+End
+
+Public Sub Add(Path As String)
+
+  FFIIndex.Add($index, Path)
+
+End
+
+Public Sub Remove(Path As String)
+
+  FFIIndex.Remove($index, Path)
+
+End
+
+Public Sub Save()
+  
+  FFIIndex.Save($index)
+  
+End
+
+

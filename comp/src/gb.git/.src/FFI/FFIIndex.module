@@ -1,0 +1,38 @@
+' Gambas module file
+
+Library "libgit2"
+
+Extern git_repository_index(out As Pointer, repo As Pointer) As Integer
+Extern git_index_add_bypath(index As Pointer, path As String) As Integer
+Extern git_index_remove_bypath(index As Pointer, path As String) As Integer
+Extern git_index_write(index As Pointer) As Integer
+
+Public Sub GetIndex(repo As Pointer) As Pointer
+
+  Dim index As Pointer
+
+  FFI.HandleError(git_repository_index(VarPtr(index), repo))
+
+  Return index
+
+End
+
+Public Sub Add(index As Pointer, path As String)
+
+  FFI.HandleError(git_index_add_bypath(index, path))
+
+End
+
+Public Sub Remove(index As Pointer, path As String)
+
+  FFI.HandleError(git_index_remove_bypath(index, path))
+
+End
+
+Public Sub Save(index As Pointer)
+  
+  FFI.HandleError(git_index_write(index))
+  
+End
+
+

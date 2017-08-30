@@ -1,0 +1,25 @@
+' Gambas module file
+
+Library "libgit2"
+
+Public Enum
+	GIT_OBJ_ANY = -2,
+	GIT_OBJ_BAD = -1,
+	GIT_OBJ__EXT1 = 0,
+	GIT_OBJ_COMMIT = 1,
+	GIT_OBJ_TREE = 2,
+	GIT_OBJ_BLOB = 3,
+	GIT_OBJ_TAG = 4,
+	GIT_OBJ__EXT2 = 5,
+	GIT_OBJ_OFS_DELTA = 6,
+	GIT_OBJ_REF_DELTA = 7
+
+Extern git_reference_peel(out As Pointer, reference As Pointer, Type As Integer) As Integer
+
+Public Sub Peel(reference As Pointer, type As Integer) As Pointer
+  
+  Dim obj As Pointer
+  FFI.HandleError(git_reference_peel(VarPtr(obj), reference, type))
+  Return obj
+  
+End

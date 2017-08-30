@@ -5,6 +5,7 @@ Public Sub Main()
   Dim repo As Repository
   Dim branch As Branch
   Dim s As GitStatus
+  Dim files As New String[]
 
   Object.Attach(Git, Me, "Git")
   If Not Exist("/home/adrien/Programmation/Gambas/src/gambas-gb.git/") Then
@@ -19,10 +20,36 @@ Public Sub Main()
   For Each branch In repo.Branches
     Print Branch.Name
   Next
+  Print "===="
 
   s = repo.Status()
 
   For Each s
+    If s.Ignored Then Continue
+    Print "S:";; s.Path;; s.StatusString
+    repo.Index.Remove(s.Path)
+    files.Add(s.Path)
+  Next
+
+  repo.Index.Save
+
+  s = repo.Status()
+  Print "===="
+
+  For Each s
+    If s.Ignored Then Continue
+    Print "S:";; s.Path;; s.StatusString
+  Next
+
+  Print "===="
+
+  repo.Reset(files)
+  Print repo.Head.Id
+
+  s = repo.Status()
+
+  For Each s
+    If s.Ignored Then Continue
     Print "S:";; s.Path;; s.StatusString
   Next
 

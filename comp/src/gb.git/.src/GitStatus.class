@@ -18,6 +18,8 @@ Property Read WorkTreeDeleted As Boolean
 Property Read WorkTreeTypeChanged As Boolean
 Property Read WorkTreeRenamed As Boolean
 Property Read WorkTreeUnreadable As Boolean
+Property Read Ignored As Boolean
+Property Read Conflicted As Boolean
 Property Read StatusString As String
 
 Public Sub _Statuses(statuses As FFIStatus[])
@@ -128,6 +130,18 @@ End
 Private Function WorkTreeUnreadable_Read() As Boolean
 
   Return Me.Flags And FFIStatus.GIT_STATUS_WT_UNREADABLE
+
+End
+
+Private Function Ignored_Read() As Boolean
+
+  Return Me.Flags And FFIStatus.GIT_STATUS_IGNORED
+
+End
+
+Private Function Conflicted_Read() As Boolean
+
+  Return Me.Flags And FFIStatus.GIT_STATUS_CONFLICTED
 
 End
 
