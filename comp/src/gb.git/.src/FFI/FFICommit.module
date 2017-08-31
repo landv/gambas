@@ -3,9 +3,45 @@
 Library "libgit2"
 
 Extern git_commit_id(commit As Pointer) As Pointer
+Extern git_commit_message(commit As Pointer) As String
+Extern git_commit_summary(commit As Pointer) As String
+Extern git_commit_body(commit As Pointer) As String
+Extern git_commit_time(commit As Pointer) As Long
+Extern git_commit_free(commit As Pointer)
 
 Public Sub GetId(commit As Pointer) As Pointer
 
   Return git_commit_id(commit)
 
 End
+
+Public Sub GetMessage(commit As Pointer) As String
+
+  Return git_commit_message(commit)
+
+End
+
+Public Sub GetSummary(commit As Pointer) As String
+
+  Return git_commit_summary(commit)
+
+End
+
+Public Sub GetBody(commit As Pointer) As String
+
+  Return git_commit_body(commit)
+
+End
+
+Public Sub GetTime(commit As Pointer) As Date
+
+  Return Date.FromUnixTime(git_commit_time(commit))
+
+End
+
+Public Sub Free(commit As Pointer)
+
+  git_commit_free(commit)
+
+End
+

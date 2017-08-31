@@ -15,11 +15,18 @@ Public Enum
 	GIT_OBJ_REF_DELTA = 7
 
 Extern git_reference_peel(out As Pointer, reference As Pointer, Type As Integer) As Integer
+Extern git_reference_free(ref As Pointer)
 
 Public Sub Peel(reference As Pointer, type As Integer) As Pointer
-  
+
   Dim obj As Pointer
   FFI.HandleError(git_reference_peel(VarPtr(obj), reference, type))
   Return obj
-  
+
+End
+
+Public Sub Free(reference As Pointer)
+
+  git_reference_free(reference)
+
 End

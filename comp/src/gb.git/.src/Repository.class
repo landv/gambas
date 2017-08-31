@@ -21,9 +21,9 @@ Public Sub _new(Optional Path As String)
 End
 
 Public Sub _Repo(repo As Pointer)
-  
+
   $repo = repo
-  
+
 End
 
 
@@ -49,7 +49,6 @@ Public Sub Reset(files As String[], Optional Commit As GitCommit = Null)
 
 End
 
-
 Private Function Head_Read() As GitCommit
 
   Return New GitCommit(FFIRepository.GetHead($repo))
@@ -73,7 +72,6 @@ Private Function _Handle_Read() As Pointer
   Return $repo
 
 End
-
 
 Private Function Branches_Read() As _RepositoryBranches
 

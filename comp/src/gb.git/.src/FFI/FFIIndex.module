@@ -6,6 +6,7 @@ Extern git_repository_index(out As Pointer, repo As Pointer) As Integer
 Extern git_index_add_bypath(index As Pointer, path As String) As Integer
 Extern git_index_remove_bypath(index As Pointer, path As String) As Integer
 Extern git_index_write(index As Pointer) As Integer
+Extern git_index_write_tree(out As Pointer, index As Pointer) As Integer
 
 Public Sub GetIndex(repo As Pointer) As Pointer
 
@@ -30,9 +31,18 @@ Public Sub Remove(index As Pointer, path As String)
 End
 
 Public Sub Save(index As Pointer)
-  
+
   FFI.HandleError(git_index_write(index))
-  
+
 End
 
+Public Sub WriteTree(index As Pointer) As Pointer
+
+  Dim oid As Pointer = FFIOid.New()
+
+  FFI.HandleError(git_index_write_tree(oid, index))
+
+  Return oid
+
+End
 

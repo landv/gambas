@@ -3,6 +3,7 @@
 Library "libgit2"
 
 Public Const GIT_OID_HEXSZ As Integer = 40
+Public Const GIT_OID_RAWSZ As Integer = 20
 
 Extern git_oid_fmt(out As Pointer, id As Pointer)
 
@@ -16,5 +17,17 @@ Public Sub Format(oid As Pointer) As String
 
   Free(buf)
   Return out
+
+End
+
+Public Sub New() As Pointer
+
+  Return Alloc(1, GIT_OID_RAWSZ)
+
+End
+
+Public Sub Free(oid As Pointer)
+
+  Free(oid)
 
 End
