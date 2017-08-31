@@ -4686,7 +4686,7 @@ Public Sub Styles_Change()
   If $bShowPreview Then
     $hSideBar.Background = $hStyles[Highlight.Background].Color
     SyncSideBarViewerStyles
-    $hTimerSideBarRefresh.Start
+    $hTimerSideBarRefresh.Trigger
   Endif
 
 End
