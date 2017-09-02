@@ -902,11 +902,10 @@ static void QT_Init(void)
 		char *env = getenv("GB_QT_NO_OXYGEN_FIX");
 		if (!env || atoi(env) == 0)
 		{
-			CSTYLE_fix_breeze = TRUE;
+			CSTYLE_fix_oxygen = TRUE;
 			qApp->setStyle(new FixBreezeStyle);
 		}
 	}
-
 
 	MAIN_update_scale(qApp->desktop()->font());
 

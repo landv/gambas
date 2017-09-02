@@ -29,6 +29,7 @@
 #ifndef __CSTYLE_CPP
 extern GB_DESC StyleDesc[];
 extern bool CSTYLE_fix_breeze;
+extern bool CSTYLE_fix_oxygen;
 #endif
 
 #endif
