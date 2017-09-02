@@ -1,0 +1,22 @@
+' Gambas class file
+
+Export
+
+
+Public Sub WebButton1_Click()
+
+  Message("This is a message box.")
+
+End
+
+Public Sub WebTimer1_Timer()
+
+  WebLabel1.Text = Format(Now, "hh:nn:ss")
+
+End
+
+Public Sub WebForm_Open()
+
+  WebTimer1_Timer
+
+End
