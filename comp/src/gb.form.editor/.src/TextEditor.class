@@ -5155,8 +5155,10 @@ End
 Public Sub TimerRefreshBar_Timer()
 
   $imgSideBar = Null
-  $hTimerSideBarRefresh.Stop
-  $hSideBar.Refresh
+  If $bShowPreview Then
+    $hTimerSideBarRefresh.Stop
+    $hSideBar.Refresh
+  Endif
 
 End
 
