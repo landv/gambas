@@ -46,8 +46,6 @@ Static Private $hCurrentMenu As Menu
 
 Public Sub _new()
   
-  'Dim hObs As Observer
-  
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
   $hDrawingArea.Focus = True
   
@@ -55,17 +53,8 @@ Public Sub _new()
   $bArrow = True
 
   Me.Proxy = $hDrawingArea
-  'hObs = New Observer($hDrawingArea)
-  'Object.Attach(hObs, Me.Parent, sEventName)   
   
 End
-
-' Public Sub Watcher_Resize()
-'   
-'   $hArrow.Move(Me.W - $hArrow.W, 0, $hArrow.W, Me.H)
-'   
-' End
-
 
 Private Function Picture_Read() As Picture
 

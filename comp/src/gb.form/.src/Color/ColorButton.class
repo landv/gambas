@@ -4,56 +4,53 @@ Export
 Inherits UserControl
 
 Event Change
+Event Click
 
-Property Color As Integer
-Property Value As Integer
+Property Color, Value As Integer
+Property Border As Boolean
 
-Public Const _Properties As String = "*,Value{Color}"
-Public Const _DefaultEvent As String = "Change"
+Public Const _Properties As String = "*,Value{Color},Border=True"
+Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "8,4"
 
-Private $hButton As Button
-Private $hPicture As Picture
-Private $hWatcher As Watcher
 Private $iColor As Integer
+Private $hDrawingArea As DrawingArea
+Private $bBorder As Boolean = True
+Private $bPressed As Boolean
+Private $bInside As Boolean
 
 Public Sub _new()
 
-  $hButton = New Button(Me) As "Button"
-  $hWatcher = New Watcher($hButton) As "Button"
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
 
-  'ResizePicture
+  $hDrawingArea.Focus = True
+  
+  $bBorder = True
 
+  Me.Proxy = $hDrawingArea
+  
 End
 
-Private Sub FillPicture()
-
-  If $hPicture Then
-    '$hPicture.Fill($iColor)
-    Draw.Begin($hPicture)
-    Draw.LineStyle = Line.None
-    Draw.FillStyle = Fill.Solid
-    Draw.FillColor = $iColor
-    Draw.Rect(2, 2, $hPicture.Width - 4, $hPicture.Height - 4)
-    Draw.LineStyle = Line.Solid
-    Draw.FillStyle = Fill.None
-    Draw.Foreground = Color.LightForeground
-    Draw.Rect(0, 0, $hPicture.Width, $hPicture.Height)
-    Draw.Foreground = Color.White
-    Draw.Rect(1, 1, $hPicture.Width - 2, $hPicture.Height - 2)
-    Draw.End
-  Endif
-
-  $hButton.Picture = $hPicture
-
-End
-
-Private Sub ResizePicture()
-
-  $hPicture = Null
-  Try $hPicture = New Picture($hButton.W - 14, $hButton.H - 14)
-  FillPicture
-
+Public Sub DrawingArea_Draw()
+  
+  Dim W, H As Integer
+  Dim F As Integer = If($bBorder, Style.FrameWidth, 0)
+  Dim bPressed As Boolean
+  
+  bPressed = $bPressed And $bInside
+  
+  Style.PaintButton(0, 0, Paint.W, Paint.H, bPressed, Style.StateOf(Last), Not $bBorder)
+  
+  F = F * 2 + 4
+  
+  W = Paint.W - F * 2
+  H = Paint.H - F * 2
+  If W <= 0 Or If H <= 0 Then Return
+  
+  'Paint.FillRect(F, F, W, H, $iColor)
+  If bPressed Then Inc F
+  Style.PaintBox(F, F, W, H, Style.Normal, $iColor)
+  
 End
 
 Private Function Color_Read() As Integer
@@ -66,34 +63,86 @@ Private Sub Color_Write(iColor As Integer)
 
   If iColor = $iColor Then Return
   $iColor = iColor
-  FillPicture
-
-End
-
-Public Sub Button_Click()
-
-  Dialog.Color = $iColor
-  If Dialog.SelectColor() Then Return
-  $iColor = Dialog.Color
-  FillPicture
+  Me.Refresh
   Raise Change
 
 End
 
-Public Sub Button_Resize()
+Public Sub DrawingArea_MouseDown()
 
-  ResizePicture
+  $bPressed = True
+  $bInside = True
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub DrawingArea_MouseMove()
+  
+  Dim bInside As Boolean
+  
+  If Mouse.X >= 0 And If Mouse.X < $hDrawingArea.W And If Mouse.Y >= 0 And If Mouse.Y < $hDrawingArea.H Then
+    bInside = True
+  Else
+    bInside = False
+  Endif
+  
+  If bInside <> $bInside Then
+    $bInside = bInside
+    Me.Refresh
+  Endif
+  
+End
+
+Public Sub DrawingArea_MouseUp()
+
+  If $bPressed And $bInside Then
+    Dialog.Color = $iColor
+    If Not Dialog.SelectColor() Then 
+      Color_Write(Dialog.Color)
+      Raise Click
+    Endif
+  Endif
+
+  $bPressed = False
+  $bInside = False
+  Me.Refresh
+  
+End
+
+Public Sub DrawingArea_Enter()
+  
+  Me.Refresh
+  
+End
+
+Public Sub DrawingArea_Leave()
+  
+  Me.Refresh
+  
+End
+
+Public Sub DrawingArea_GotFocus()
+  
+  Me.Refresh
+  
+End
+
+Public Sub DrawingArea_LostFocus()
+  
+  Me.Refresh
+  
+End
+
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
 
 End
 
-Private Function Value_Read() As Integer
+Private Sub Border_Write(Value As Boolean)
 
-  Return Color_Read()  
-
-End
-
-Private Sub Value_Write(Value As Integer)
-
-  Color_Write(Value)
+  $bBorder = Value
+  Me.Refresh
 
 End
