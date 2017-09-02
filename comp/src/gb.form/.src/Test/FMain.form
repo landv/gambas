@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,64,64)
+  MoveScaled(0,0,100,72)
   { Menu1 Menu
     { Menu2 Menu
       Text = ("Menu2")
@@ -29,5 +29,28 @@
   { TreeView2 TreeView
     MoveScaled(35,29,21,26)
     PopupMenu = "Menu1"
+  }
+  { ColorButton1 ColorButton
+    MoveScaled(62,5,23,7)
+  }
+  { ComboBox1 ComboBox
+    MoveScaled(61,23,32,3)
+    List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
+    Text = ("ComboBox1")
+  }
+  { ComboBox2 ComboBox
+    MoveScaled(61,30,32,5)
+    Text = ("ComboBox2")
+  }
+  { TextBox1 TextBox
+    MoveScaled(61,37,32,2)
+    Text = ("TextBox1")
+  }
+  { Button1 Button
+    MoveScaled(61,48,19,2)
+    Text = ("Button1")
+  }
+  { SpinBox1 SpinBox
+    MoveScaled(71,55,5,3)
   }
 }

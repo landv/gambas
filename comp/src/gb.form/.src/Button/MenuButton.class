@@ -184,6 +184,8 @@ Static Private Sub HandleMenu(hCurrent As MenuButton)
     $hCurrent = hCurrent
     $hCurrentMenu = hMenu
     
+    hCurrent.SetFocus ' Should refresh old and new menus
+    
     hMenu.Popup(hCurrent.ScreenX, hCurrent.ScreenY + hCurrent.H)
     
     If $hCurrent = hCurrent Then Break
@@ -388,6 +390,8 @@ Public Sub DrawingArea_Draw()
   Dim bFlat As Boolean
   Dim bDrawArrow As Boolean
   Dim iFg As Integer
+  Dim hFont As Font
+  Dim bMenu As Boolean
   
   iFlag = Style.StateOf(Last)
   
@@ -405,8 +409,11 @@ Public Sub DrawingArea_Draw()
   '' TODO: System.RightToLeft
 
   bFlat = Not $bBorder 'And Not $bInside
+  If Me = $hCurrent And If $hDrawingArea.HasFocus Then bMenu = True
 
-  If $bInsideArrow Or If $bMenuOnly Then
+  If bMenu Then
+    Paint.FillRect(1, 1, Me.W - 2, Me.H - 2, Color.SelectedBackground)
+  Else If $bInsideArrow Or If $bMenuOnly Then
     Style.PaintButton(0, 0, Me.W, Me.H, False, iFlag, bFlat)
   Else
     Style.PaintButton(0, 0, Me.W, Me.H, $bPressed, iFlag, bFlat)
@@ -432,17 +439,20 @@ Public Sub DrawingArea_Draw()
     If bDrawArrow Then Paint.ClipRect = Rect(0, 0, Me.W - Desktop.Scale * 3, Me.H)
     iFg = Style.ForegroundOf(Me)
     If Not Me.Enabled Then iFg = Color.Merge(Color.ButtonBackground, iFg)
+    If bMenu Then iFg = Color.SelectedForeground
+    Paint.Background = iFg
     sText = $sText
     If $iShortcutPos Then sText = String.Left($sText, $iShortcutPos - 1) & String.Mid$($sText, $iShortcutPos + 1)
     If Not $hPicture And If Not $bArrow Then
       X = (Me.W - Draw.Font.TextWidth(sText)) \ 2
     Endif
-    Draw.Text(sText, X, 0, Me.W - X, Me.H, Align.Left)
+    Paint.DrawText(sText, X, 0, Me.W - X, Me.H, Align.Left)
     If $iShortcutPos Then
-      X2 = X + Draw.Font.TextWidth(String.Left(sText, $iShortcutPos))
-      X += Draw.Font.TextWidth(String.Left(sText, $iShortcutPos - 1))
-      Y = (Me.H - Draw.Font.Height) / 2 + Draw.Font.Ascent + 1
-      Draw.Line(X, Y, X2, Y)
+      hFont = Paint.Font
+      X2 = X + hFont.TextWidth(String.Left(sText, $iShortcutPos))
+      X += hFont.TextWidth(String.Left(sText, $iShortcutPos - 1))
+      Y = (Me.H - hFont.Height) / 2 + hFont.Ascent + 1
+      Paint.FillRect(X, Y, X2 - X, 1, iFg)
     Endif
   Endif
   
