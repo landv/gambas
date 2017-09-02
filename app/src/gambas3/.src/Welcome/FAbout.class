@@ -174,9 +174,10 @@ Private Sub FillAbout()
   ' Space
   gvwAbout.Rows[0].H = dwgAbout.H
   ' Gambas
-  gvwAbout[1, 0].Text = "Gambas\nAlmost\nMeans\nB A S I C !"
-  gvwAbout[1, 0].Font = Font["Bold,+10"]
+  gvwAbout[1, 0].RichText = "<b>G</b>ambas <b>A</b>lmost<br><b>M</b>eans <b>BAS</b>ic !"
+  gvwAbout[1, 0].Font = Font["+10"]
   gvwAbout[1, 0].Alignment = Align.Top
+  gvwAbout[1, 0].WordWrap = True
   ' Logo
   gvwAbout[2, 0].Picture = Picture["img/logo/logo.png"]
   gvwAbout[2, 0].Alignment = Align.Top
@@ -188,6 +189,7 @@ Private Sub FillAbout()
   gvwAbout[4, 0].RichText = lblLicense.Text
   gvwAbout[4, 0].WordWrap = True
   gvwAbout[4, 0].Alignment = Align.Top
+  gvwAbout[4, 0].Padding = Desktop.Scale * 3
   ' Authors title
   gvwAbout[5, 0].Text = ("Authors")
   gvwAbout[5, 0].Font = Font["Bold,+2"]
@@ -227,8 +229,9 @@ Private Sub FillAbout()
     
     gvwAbout[I + N, 0].WordWrap = True
     gvwAbout[I + N, 0].RichText = sText
+    gvwAbout[I + N, 0].Padding = Desktop.Scale * 3
     gvwAbout.Rows[I + N].Height = -1
-    gvwAbout.Rows[I + N].Height += Desktop.Scale * 3
+    'gvwAbout.Rows[I + N].Height += Desktop.Scale 
     
   Next
 
