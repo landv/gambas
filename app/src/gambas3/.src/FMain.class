@@ -1405,6 +1405,8 @@ Public Sub Action_Activate((Key) As String) As Boolean
       Project.Save
     Case "save-project-as"
       Project.SaveAs
+    Case "reload-project"
+      Project.Reload
     Case "refresh-project"
       Project.RefreshAll
     Case "project-property"

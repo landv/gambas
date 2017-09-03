@@ -53,6 +53,13 @@
     }
     { mnuSepSave Menu
     }
+    { mnuReload Menu
+      Action = "reload-project"
+      Text = Shortcut(("Reload project"), "R")
+      Picture = Picture["icon:/small/revert"]
+    }
+    { Menu43 Menu
+    }
     { mnuQuit Menu
       Action = "quit"
       Text = Shortcut(("Quit"), "Q")
@@ -1537,6 +1544,11 @@
     Text = "Refresh"
     Shortcut = ""
     Picture = "icon:/small/refresh"
+  }
+  { Action reload-project
+    Text = "Reload project"
+    Shortcut = ""
+    Picture = "icon:/small/revert"
   }
   { Action rename
     Text = "Rename"

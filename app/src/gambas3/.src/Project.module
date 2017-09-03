@@ -2741,6 +2741,13 @@ Public Sub Save(Optional (bReset) As Boolean)
 
 End
 
+Public Sub Reload()
+  
+  Open(Project.Dir)
+  
+End
+
+
 Public Sub CopyProject(sSrc As String, sDst As String)
 
   Dim sFile As String
