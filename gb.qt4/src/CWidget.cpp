@@ -2907,8 +2907,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 #endif
 				": %s: real = %d original = %d no_keyboard = %d",
 				(type == QEvent::KeyRelease ? "KeyRelease" :
-				type == QEvent::KeyPress ? "KeyPress" :
-				type == QEvent::InputMethod ? "InputMethod" : "?"),
+				 (type == QEvent::KeyPress ? "KeyPress" : "?")),
 				real, original, control->flag.no_keyboard);
 		}
 		
@@ -2931,12 +2930,14 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
 		if (type == QEvent::KeyRelease && kevent->isAutoRepeat())
 			goto __NEXT;
-			
-		/*qDebug("QKeyEvent: %s: (%s %s) -> %d %s %s",
-			type == QEvent::KeyPress ? "KeyPress" : "KeyRelease",
-			GB.GetClassName(control), control->name,
-			kevent->key(), (const char *)kevent->text().toLatin1(), kevent->isAutoRepeat() ? "AR" : "--");*/
-
+		
+		if (MAIN_key_debug)
+		{
+			qDebug("       " 
+				"(%s %s) -> %d `%s' %s",
+				GB.GetClassName(control), control->name,
+				kevent->key(), (const char *)kevent->text().toLatin1(), kevent->isAutoRepeat() ? "AR" : "--");
+		}
 		//qDebug("CWidget::eventFilter: KeyPress on %s %p", GB.GetClassName(control), control);
 			
 	__KEY_TRY_PROXY:
@@ -2997,6 +2998,17 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	{
 		QInputMethodEvent *imevent = (QInputMethodEvent *)event;
 
+		if (MAIN_key_debug)
+		{
+#ifdef QT5
+			qDebug("gb.qt5"
+#else
+			qDebug("gb.qt4"
+#endif
+				": InputMethod: real = %d original = %d no_keyboard = %d",
+				real, original, control->flag.no_keyboard);
+		}
+		
 		#if QT_VERSION <= 0x030005
 		if (!real || !original)
 			goto _DESIGN;
@@ -3004,11 +3016,14 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
 		if (!imevent->commitString().isEmpty())
 		{
-
-			// 		qDebug("QIMEvent: IMEnd (%s %p) (%s %p) TL:%d",
-			// 			widget->className(), widget, GB.GetClassName(control), control,
-			// 			((QWidget *)widget)->isWindow());
-	
+			if (MAIN_key_debug)
+			{
+				qDebug("       " 
+					"(%s %s) -> `%s'",
+					GB.GetClassName(control), control->name,
+					(const char *)imevent->commitString().toUtf8());
+			}
+		
 			event_id = EVENT_KeyPress;
 			cancel = false;
 			
