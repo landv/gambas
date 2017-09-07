@@ -131,6 +131,7 @@ int MAIN_x11_last_key_code = 0;
 #endif
 bool MAIN_debug_busy = false;
 bool MAIN_init = false;
+bool MAIN_key_debug = false;
 
 GB_CLASS CLASS_Control;
 GB_CLASS CLASS_Container;
@@ -875,6 +876,7 @@ static void QT_Init(void)
 {
 	static bool init = false;
 	QFont f;
+	char *env;
 
 	if (init)
 		return;
@@ -890,7 +892,7 @@ static void QT_Init(void)
 
 	if (::strcmp(qApp->style()->metaObject()->className(), "Breeze::Style") == 0)
 	{
-		char *env = getenv("GB_QT_NO_BREEZE_FIX");
+		env = getenv("GB_QT_NO_BREEZE_FIX");
 		if (!env || atoi(env) == 0)
 		{
 			CSTYLE_fix_breeze = TRUE;
@@ -899,7 +901,7 @@ static void QT_Init(void)
 	}
 	else if (::strcmp(qApp->style()->metaObject()->className(), "Oxygen::Style") == 0)
 	{
-		char *env = getenv("GB_QT_NO_OXYGEN_FIX");
+		env = getenv("GB_QT_NO_OXYGEN_FIX");
 		if (!env || atoi(env) == 0)
 		{
 			CSTYLE_fix_oxygen = TRUE;
@@ -928,6 +930,10 @@ static void QT_Init(void)
 
 	MyApplication::initClipboard();
 
+	env = getenv("GB_QT_KEY_DEBUG");
+	if (env && atoi(env) != 0)
+		MAIN_key_debug = TRUE;
+	
 	init = true;
 }
 

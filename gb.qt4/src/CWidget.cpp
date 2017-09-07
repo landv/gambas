@@ -2898,6 +2898,20 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	{
 		QKeyEvent *kevent = (QKeyEvent *)event;
 
+		if (MAIN_key_debug)
+		{
+#ifdef QT5
+			qDebug("gb.qt5"
+#else
+			qDebug("gb.qt4"
+#endif
+				": %s: real = %d original = %d no_keyboard = %d",
+				(type == QEvent::KeyRelease ? "KeyRelease" :
+				type == QEvent::KeyPress ? "KeyPress" :
+				type == QEvent::InputMethod ? "InputMethod" : "?"),
+				real, original, control->flag.no_keyboard);
+		}
+		
 		#if QT_VERSION <= 0x030005
 		if (!real || !original)
 			goto _DESIGN;

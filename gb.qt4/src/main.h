@@ -51,6 +51,7 @@ extern int MAIN_loop_level;
 extern int MAIN_scale;
 extern bool MAIN_debug_busy;
 extern bool MAIN_init;
+extern bool MAIN_key_debug;
 #ifndef NO_X_WINDOW
 extern int MAIN_x11_last_key_code;
 #endif
