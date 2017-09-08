@@ -5,6 +5,7 @@
   Icon = Picture["img/logo/logo-ide.png"]
   Arrangement = Arrange.Vertical
   { mnuFile Menu
+    Action = "menu-file"
     Text = Shortcut(("File"), "F")
     { mnuNewProject Menu
       Action = "new-project"
@@ -112,12 +113,14 @@
     }
   }
   { mnuEdit Menu
+    Action = "menu-edit"
     Text = Shortcut(("Edit"), "E")
     Visible = False
     { Menu38 Menu
     }
   }
   { mnuProject Menu
+    Action = "menu-project"
     Text = Shortcut(("Project"), "P")
     Visible = False
     { mnuCompile Menu
@@ -212,6 +215,7 @@
     }
   }
   { mnuDebug Menu
+    Action = "menu-debug"
     Text = Shortcut(("Debug"), "D")
     Visible = False
     { mnuRun Menu
@@ -331,6 +335,7 @@
     }
   }
   { mnuView Menu
+    Action = "menu-view"
     Text = Shortcut(("View"), "V")
     Visible = False
     { mnuViewProject Menu
@@ -390,6 +395,7 @@
     }
   }
   { mnuTool Menu
+    Action = "menu-tools"
     Text = Shortcut(("Tools"), "T")
     Visible = False
     { mnuFind Menu
@@ -732,6 +738,7 @@
     }
   }
   { mnuHelp Menu
+    Action = "menu-help"
     Text = Shortcut(("?"), "?")
     { mnuViewExplorer Menu
       Action = "help"
@@ -1058,7 +1065,7 @@
       Menu = "mnuFile"
       MenuOnly = True
     }
-    { btnMenuEdit MenuButton
+    { btnMnuEdit MenuButton
       MoveScaled(32,4,8,4)
       Visible = False
       Action = "menu-edit"
@@ -1088,7 +1095,7 @@
       Border = False
       Menu = "mnuDebug"
     }
-    { btnMenuView MenuButton
+    { btnMnuView MenuButton
       MoveScaled(58,4,7,4)
       Visible = False
       Action = "menu-view"
@@ -1426,30 +1433,40 @@
   }
   { Action menu-debug
     Text = "Debug"
+    Shortcut = ""
     Picture = "$MenuButton"
   }
   { Action menu-edit
     Text = "Edit"
+    Shortcut = ""
     Picture = "$MenuButton"
   }
   { Action menu-file
     Text = "File"
+    Shortcut = ""
     Picture = "$MenuButton"
   }
   { Action menu-help
     Text = "?"
+    Shortcut = ""
     Picture = "$MenuButton"
   }
   { Action menu-project
     Text = "Project"
+    Shortcut = ""
     Picture = "$MenuButton"
   }
   { Action menu-tool
     Text = "Tools"
     Picture = "$MenuButton"
   }
+  { Action menu-tools
+    Text = "Tools"
+    Shortcut = ""
+  }
   { Action menu-view
     Text = "View"
+    Shortcut = ""
     Picture = "$MenuButton"
   }
   { Action new-other

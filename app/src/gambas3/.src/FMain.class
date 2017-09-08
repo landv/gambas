@@ -1222,30 +1222,30 @@ Private Sub UpdateGlobalLayout()
   Dim bFake As Boolean
   Dim hMenu As Menu
   Dim hCtrl As Control
+  Dim sMenu As String
 
   bWelcome = Not Project.Dir
   bFake = Project.IsFake()
 
   dwgWelcome.Visible = bWelcome
 
-  mnuFile.Visible = bWelcome Or Not bFake
-  mnuFile.Enabled = mnuFile.Visible
+  Action["menu-file"].Visible = bWelcome Or Not bFake
+  Action["menu-file"].Enabled = bWelcome Or Not bFake
   mnuFileExtern.Visible = bFake
   mnuFileExtern.Enabled = mnuFileExtern.Visible
   
   mnuSave.Visible = Not bWelcome
   mnuSaveAs.Visible = Not bWelcome
 
-  For Each hMenu In [mnuProject, mnuDebug, mnuView]
-    hMenu.Visible = Not bWelcome And Not bFake
-    hMenu.Enabled = hMenu.Visible
+  For Each sMenu In ["menu-project", "menu-debug", "menu-view", "menu-tool"]
+    Action[sMenu].Visible = Not bWelcome And Not bFake
+    Action[sMenu].Enabled = Not bWelcome And Not bFake
   Next
   
-  mnuEdit.Visible = Not bWelcome
-  mnuEdit.Enabled = mnuEdit.Visible
+  Action["menu-edit"].Visible = Not bWelcome
+  Action["menu-edit"].Enabled = Not bWelcome
   
-  mnuTool.Visible = Not bWelcome
-  For Each hMenu In [mnuBrowse, mnuTerminal, mnuSendMail, mnuUpdateAllForms, mnuTool]
+  For Each hMenu In [mnuBrowse, mnuTerminal, mnuSendMail, mnuUpdateAllForms]
     hMenu.Visible = Not bFake
     hMenu.Enabled = hMenu.Visible
   Next
@@ -2603,14 +2603,15 @@ Public Sub wrkProject_Activate()
     If wrkProject.Count = 0 Then Me.Close
   Endif
   
+  mnuEdit.Proxy = Null
   If Not hForm Then
-    mnuEdit.Enabled = False
+    Action["menu-edit"].Enabled = False
   Else
     Try hMenu = hForm.GetPopupMenu()
     If Not hMenu Then
-      mnuEdit.Enabled = False
+      Action["menu-edit"].Enabled = False
     Else
-      mnuEdit.Enabled = True
+      Action["menu-edit"].Enabled = True
       mnuEdit.Proxy = hMenu
     Endif
   Endif

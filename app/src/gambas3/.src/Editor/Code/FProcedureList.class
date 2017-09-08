@@ -26,7 +26,7 @@ Public Sub Init(hModule As FEditor, sClass As String, aProc As String[], iCurren
   ' Copy it, as it can disappear during the Editor_Change() method
   $aProc = aProc.Copy()
   $iInit = iCurrent
-  $iCurrent = -1
+  $iCurrent = iCurrent
   
   gvwProc.Rows.Count = aProc.Count
   gvwProc.Rows.UnselectAll

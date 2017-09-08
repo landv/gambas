@@ -3145,9 +3145,8 @@ Private Sub ToggleProcList()
 
 End
 
-Public Sub btnProc_MouseDown()
+Public Sub btnProc_Click()
 
-  If Not Mouse.Left Then Return
   ToggleProcList
   Stop Event
 
@@ -3886,3 +3885,4 @@ CHECK_LINE:
   Return
   
 End
+
