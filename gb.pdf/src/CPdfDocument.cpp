@@ -132,11 +132,19 @@ static void aux_return_string_info(void *_object, const char *key)
 	Dict *info_dict;
 	char *tmpstr;
 
+	#if POPPLER_VERSION_0_58
+	obj = THIS->doc->getDocInfo ();
+	#else
 	THIS->doc->getDocInfo (&obj);
+	#endif
 	if (!obj.isDict()) { GB.ReturnNewZeroString(""); return; }
 		
 	info_dict=obj.getDict();
+	#if POPPLER_VERSION_0_58
+	dst = info_dict->lookup ((char *)key);
+	#else
 	info_dict->lookup ((char *)key, &dst);
+	#endif
 	if (!dst.isString ()) { GB.ReturnNewZeroString(""); }
 	else {
 		goo_value = dst.getString();
@@ -149,8 +157,10 @@ static void aux_return_string_info(void *_object, const char *key)
 		else
 			GB.ReturnNewString(goo_value->getCString(),goo_value->getLength());		
 	}
+	#if ! POPPLER_VERSION_0_58
 	dst.free();
 	obj.free();		
+	#endif
 }
 
 static void aux_return_date_info(void *_object, const char *key)
@@ -167,11 +177,19 @@ static void aux_return_date_info(void *_object, const char *key)
 
 	GB.ReturnDate(NULL);
 	
+	#if POPPLER_VERSION_0_58
+	obj = THIS->doc->getDocInfo ();
+	#else
 	THIS->doc->getDocInfo (&obj);
+	#endif
 	if (!obj.isDict()) return;
 
 	info_dict=obj.getDict();
+	#if POPPLER_VERSION_0_58
+	dst = info_dict->lookup ((char *)key);
+	#else
 	info_dict->lookup ((char *)key, &dst);
+	#endif
 	if (dst.isString ())
 	{
 		goo = dst.getString();
@@ -197,8 +215,10 @@ static void aux_return_date_info(void *_object, const char *key)
 	}
 
 	if (tofree) GB.FreeString(&tofree);
+	#if ! POPPLER_VERSION_0_58
 	dst.free();
 	obj.free();
+	#endif
 }
 
 static LinkDest *get_dest(LinkAction *act)
@@ -426,8 +446,12 @@ int32_t open_document (void *_object, char *sfile, int32_t lfile)
 
 	if ( GB.LoadFile(sfile,lfile,&buf,&len) ) return -1;
 
+	#if POPPLER_VERSION_0_58
+	stream=new MemStream(buf,0,(Guint)len,std::move(obj));
+	#else
 	obj.initNull();
 	stream=new MemStream(buf,0,(Guint)len,&obj);
+	#endif
 	test=new PDFDoc (stream,0,0);
 
 	if (!test->isOk())
