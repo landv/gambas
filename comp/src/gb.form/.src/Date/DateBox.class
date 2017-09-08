@@ -17,6 +17,7 @@ Property Value As Date
 Property ReadOnly As Boolean
 Property Border As Boolean
 Property Mode As Integer
+Property Read Text As String
 
 Private $hButtonBox As ButtonBox
 Private $hPopup As Window
@@ -275,5 +276,11 @@ Private Sub Mode_Write(Value As Integer)
   $hChooser.Mode = Value
 
   UpdateMask
+
+End
+
+Private Function Text_Read() As String
+
+  Return $hButtonBox.Text
 
 End
