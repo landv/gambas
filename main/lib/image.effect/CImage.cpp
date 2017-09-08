@@ -195,9 +195,7 @@ BEGIN_METHOD_VOID(CIMAGE_despeckle)
 
 	QImage src(THIS);
 	QImage dest = KImageEffect::despeckle(src);
-	GB_IMAGE img = dest.object();
-
-	GB.ReturnObject(img);
+	GB.ReturnObject(dest.object());
 
 END_METHOD
 

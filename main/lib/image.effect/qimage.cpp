@@ -27,27 +27,25 @@ void QImage::init()
 {
 	img = NULL;
 	bpl = 0;
-	inv = FALSE;
 	jt = NULL;
-	created = false;
+	inv = FALSE;
 }
 
-void QImage::getInfo()
+void QImage::check()
 {
-	bpl = 4 * img->width;
-	inv = GB_IMAGE_FMT_IS_RGBA(img->format);
-	
+	if (!img)
+		return;
 	if (GB_IMAGE_FMT_IS_SWAPPED(img->format))
 		fprintf(stderr, "gb.image.effect: warning: unsupported image format: %s\n", IMAGE.FormatToString(img->format));
-
-	jumpTable();
+	inv = GB_IMAGE_FMT_IS_RGBA(img->format);
 }
 
 void QImage::create(int w, int h, bool t)
 {
 	img = IMAGE.Create(w, h, t ? GB_IMAGE_BGRA : GB_IMAGE_BGRX, NULL);
-	created = true;
-	getInfo();
+	//GB.Ref(img);
+	check();
+	jumpTable();
 }
 
 QImage::QImage()
@@ -71,23 +69,34 @@ QImage::QImage(GB_IMAGE image)
 {
 	init();
 	img = (GB_IMG *)image;
+	//GB.Ref(img);
 	SYNCHRONIZE_IMAGE(img);
-	getInfo();
+	check();
+	jumpTable();
+}
+
+QImage::QImage(const QImage &copy)
+{
+	init();
+	img = (GB_IMG *)copy.object();
+	//GB.Ref(img);
+	SYNCHRONIZE_IMAGE(img);
+	check();
 }
 
 QImage::~QImage()
 {
 	if (jt)
-    free(jt);
+	{
+		free(jt);
+		jt = NULL;
+	}
 }
 
 void QImage::release()
 {
-	if (created)
-	{
-		GB.Unref((void **)&img);
-		created = false;
-	}
+	GB.Unref(POINTER(&img));
+	img = NULL;
 }
 
 /*static inline uint invert(uint col)
@@ -116,6 +125,7 @@ uchar **QImage::jumpTable()
 {
 	if (!jt && img->data)
 	{
+		int bpl = 4 * width();
     jt = (uchar**)malloc(height() * sizeof(uchar*));
     for (int i = 0; i < height(); i++)
 			jt[i] = (uchar *)img->data + i * bpl;
@@ -135,5 +145,3 @@ void QImage::invertPixels()
 	for (i = 0; i < n; i++)
 		p[i] ^= 0xFFFFFF;
 }
-
-
