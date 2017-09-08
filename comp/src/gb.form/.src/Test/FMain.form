@@ -11,10 +11,10 @@
     }
   }
   { SidePanel1 SidePanel
-    MoveScaled(1,1,29,61)
+    MoveScaled(0,3,29,61)
     Orientation = Align.Left
     { DirView1 DirView
-      MoveScaled(2,4,25,32)
+      MoveScaled(2,2,25,32)
       PopupMenu = "Menu1"
     }
     { TreeView1 TreeView
@@ -23,15 +23,15 @@
     }
   }
   { DirView2 DirView
-    MoveScaled(39,9,16,16)
+    MoveScaled(40,11,16,16)
     PopupMenu = "Menu1"
   }
   { TreeView2 TreeView
-    MoveScaled(35,29,21,26)
+    MoveScaled(32,30,21,26)
     PopupMenu = "Menu1"
   }
   { ColorButton1 ColorButton
-    MoveScaled(62,5,11,5)
+    MoveScaled(62,5,19,5)
   }
   { ComboBox1 ComboBox
     MoveScaled(61,23,32,3)
@@ -43,15 +43,19 @@
     Text = ("ComboBox2")
   }
   { TextBox1 TextBox
-    MoveScaled(61,37,32,2)
+    MoveScaled(61,37,32,4)
+    Background = &HBFBF8F&
     Text = ("TextBox1")
   }
   { Button1 Button
-    MoveScaled(61,48,19,2)
+    MoveScaled(61,45,19,4)
     Text = ("Button1")
   }
   { MenuButton1 MenuButton
     MoveScaled(62,14,23,6)
     Text = ("MenuButton1")
+  }
+  { DateBox1 DateBox
+    MoveScaled(62,53,28,5)
   }
 }
