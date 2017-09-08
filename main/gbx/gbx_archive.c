@@ -557,7 +557,7 @@ void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int
 		return;
 	}
 
-	if (pattern == NULL)
+	if (pattern == NULL || !*pattern)
 		pattern = "*";
 
 	arch = find.arch;
