@@ -486,13 +486,9 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
         aCoord = Split(Mid$(sLine, 6, -1))
         X = CInt(aCoord[0])
         Y = CInt(aCoord[1])
-        W = CInt(aCoord[2])
-        H = CInt(aCoord[3])
-        'TRY PRINT cCoord[0]; ","; cCoord[1]; ","; cCoord[2]; ","; cCoord[3]
-        'TRY hCtrl.SetProperty("X", Val(cCoord[0]))
-        'TRY hCtrl.SetProperty("Y", Val(cCoord[1]))
-        'iSnap = $hFamily.GetSnap()
         If aCoord.Count = 4 Then
+          W = CInt(aCoord[2])
+          H = CInt(aCoord[3])
           Try hCtrl.MoveAndResize(X, Y, W, H)
         Else
           Try hCtrl.Move(X, Y)
