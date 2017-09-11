@@ -442,6 +442,7 @@ gw = {
     {
       clearInterval(gw.timers[id]);
       gw.timers[id] = undefined;
+      gw.timers[id + '!'] = undefined;
     }
   },
   
