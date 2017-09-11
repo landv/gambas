@@ -395,7 +395,7 @@
     }
   }
   { mnuTool Menu
-    Action = "menu-tools"
+    Action = "menu-tool"
     Text = Shortcut(("Tools"), "T")
     Visible = False
     { mnuFind Menu
@@ -1458,11 +1458,8 @@
   }
   { Action menu-tool
     Text = "Tools"
-    Picture = "$MenuButton"
-  }
-  { Action menu-tools
-    Text = "Tools"
     Shortcut = ""
+    Picture = "$MenuButton"
   }
   { Action menu-view
     Text = "View"
