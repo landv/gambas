@@ -785,7 +785,7 @@ void TRANS_move(void)
 	TRANS_expression(FALSE);
 	if (TRANS_is(RS_TO))
 		subr = TS_SUBR_MOVE;
-	else if (TRANS_is(RS_DOWNTO))
+	else if (TRANS_is(RS_DOWNTO) || TRANS_is(RS_KILL))
 		subr = TS_SUBR_MOVE_KILL;
 	else
 		THROW_UNEXPECTED(JOB->current);
