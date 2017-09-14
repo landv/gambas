@@ -854,6 +854,7 @@ Public Sub HighlightFrom(Y As Integer)
   Dim bCustom As Boolean
   Dim bRefresh As Boolean
   Dim bBegin As Boolean
+  Dim bEndOfLine As Boolean
   
   If $bHighlighting Then Return
   
@@ -918,6 +919,7 @@ Public Sub HighlightFrom(Y As Integer)
       If TextHighlighter.TextAfter And If Lines[Y] <> TextHighlighter.TextAfter Then
         If Not bBegin Then
           bBegin = True
+          bEndOfLine = Me.Current.Column >= LineLength[Me.Current.Line]
           Me.Current._SaveCursor
           Begin()
         Endif
@@ -945,6 +947,7 @@ Public Sub HighlightFrom(Y As Integer)
 
   If bBegin Then 
     Me.Current._RestoreCursor
+    If bEndOfLine Then Me.Current.Goto(-1, Me.Current.Line)
     End()
   Endif
 

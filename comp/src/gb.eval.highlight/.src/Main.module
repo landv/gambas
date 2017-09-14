@@ -46,16 +46,18 @@ End
 
 Public Sub Main()
 
-  Dim hFile As File
+  Dim iPos As Integer
+  
+  Highlight.Analyze("?(a+b) >Len(c)", False)
+  For Each iPos In Highlight.Positions
+    Print iPos;;
+  Next
+  Print Highlight.TextAfter
 
-  hFile = Open "~/test.html" For Create
-  '  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  Print #hFile, "<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"></head><body>"
-  Print #hFile, "<div style=\"font-family:monospace;\">";
-  Print #hFile, TextHighlighter["javascript"].ToHTML(File.Load("~/er/WebRadio/WebRadio/erfm.js"))
-  Print #hFile, "</div>"
-  Print #hFile, "</body></html>"
-  hFile.Close
-
+  Highlight.Analyze("?(a+b) > Len(c)", True)
+  For Each iPos In Highlight.Positions
+    Print iPos;;
+  Next
+  Print Highlight.TextAfter
 
 End
