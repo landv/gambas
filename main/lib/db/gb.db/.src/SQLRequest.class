@@ -70,6 +70,7 @@ Public Function Where((Where) As String, ...) As SQLRequest
   aArg.Add(Where)
   aArg.Insert(Param.All)
   $sWhere &= " (" & Object.Call($hConn, "Subst", aArg) & ")"
+  $sOp = "AND"
   Return Me
   
 End
