@@ -14,11 +14,13 @@ Private $hLabelTimer As Timer
 Private $hObserver As Observer
 Private $iLastLine As Integer = -1
 
+Static Public CloseBraces As Boolean
 Static Private $sFindPrefix As String
 Static Private $aFind As Integer[]
 
 Public Sub _new()
   
+  CloseBraces = Settings["/Editor/CloseBraces", 1]
   $hObserver = New Observer(Me) As "Editor"
   
 End
@@ -324,6 +326,40 @@ Private Sub ToggleAroundCurrentWord(sIdentCar As String, sBraces As String)
   
 End
 
+Private Sub InsertClosingMarkup()
+
+  Dim sLine As String
+  Dim X, X1, X2 As Integer
+  Dim iLen As Integer
+  Dim sCar As String
+  
+  sLine = Me.Current.Text
+  iLen = Me.Current.Length
+  
+  X = Me.Column
+  
+  X1 = X
+  While X1 > 0
+    If String.Mid$(sLine, X1, 1) = "<" Then Break
+    Dec X1
+  Wend
+  
+  If X = 0 Then Return
+  
+  X2 = X1
+  Do
+    Inc X2
+    If X2 > iLen Then Break
+    sCar = String.Mid$(sLine, X2, 1)
+    If sCar = " " Or If sCar = ">" Then Break
+  Loop
+  
+  Me.Insert("></" & String.Mid$(sLine, X1 + 1, X2 - X1 - 1) & ">")
+  Me.Goto(X + 1, Me.Line)
+  Stop Event
+  
+End
+
 Public Sub Editor_KeyPress()
   
   Dim sBraces As String
@@ -337,6 +373,33 @@ Public Sub Editor_KeyPress()
         Return
       Endif
     Next
+    
+  Else
+    
+    If CloseBraces Then
+    
+      Select Case Key.Text
+        
+        Case "("
+          Me.Insert(")")
+          Me.Goto(Me.Column - 1, Me.Line)
+        
+        Case "["
+          Me.Insert("]")
+          Me.Goto(Me.Column - 1, Me.Line)
+        
+        Case "{"
+          Me.Insert("}")
+          Me.Goto(Me.Column - 1, Me.Line)
+          
+        Case ">"
+          If Me.Highlight = "html" Or Me.Highlight = "webpage" Then
+            InsertClosingMarkup
+          Endif
+        
+      End Select
+      
+    Endif
     
   Endif
   

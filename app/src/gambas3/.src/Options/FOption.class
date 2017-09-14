@@ -123,6 +123,7 @@ Public Sub _new()
     [btnControlStructCompletion, "/Editor/ControlStructCompletion", 1],
     [btnLocalVarDecl, "/Editor/LocalVariableDeclaration", 0],
     [btnComment, "/Editor/AutoComment", 1],
+    [btnCloseBrace, "/Editor/CloseBraces", 1],
     [btnIndentDim, "/FormatCode/IndentLocal", 1],
     [btnRemoveSpace, "/FormatCode/RemoveSpaces", 0],
     [btnKeepVoidLine, "/FormatCode/KeepVoidLines", 0],
@@ -697,6 +698,13 @@ Public Sub btnComment_Click()
 
   Settings["/Editor/AutoComment"] = btnComment.Value
   FEditor.AutoComment = btnComment.Value
+
+End
+
+Public Sub btnCloseBrace_Click()
+
+  Settings["/Editor/CloseBraces"] = btnCloseBrace.Value
+  TextEditor.CloseBraces = btnCloseBrace.Value
 
 End
 

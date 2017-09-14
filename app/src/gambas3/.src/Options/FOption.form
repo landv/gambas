@@ -162,7 +162,7 @@
         Text = ("Icon theme")
       }
       { cmbIconTheme ComboBox
-        MoveScaled(20,0,44,4)
+        MoveScaled(26,0,38,4)
         ReadOnly = True
       }
     }
@@ -398,7 +398,7 @@
       Text = ("Editor")
     }
     { ScrollView1 ScrollView
-      MoveScaled(1,4,66,51)
+      MoveScaled(1,4,66,60)
       Expand = True
       Arrangement = Arrange.Vertical
       Spacing = True
@@ -690,13 +690,27 @@
         Animated = True
       }
     }
+    { HBox52 HBox
+      MoveScaled(1,19,66,4)
+      Spacing = True
+      Indent = True
+      { Label64 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Close braces, brackets... automatically")
+      }
+      { btnCloseBrace SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
+      }
+    }
     { Label48 Label
-      MoveScaled(1,20,63,3)
+      MoveScaled(1,31,63,3)
       Font = Font["Bold"]
       Text = ("Explicit formating")
     }
     { HBox33 HBox
-      MoveScaled(1,24,66,4)
+      MoveScaled(1,35,66,4)
       Spacing = True
       Indent = True
       { Label31 Label
@@ -710,7 +724,7 @@
       }
     }
     { HBox30 HBox
-      MoveScaled(1,29,66,4)
+      MoveScaled(1,40,66,4)
       Spacing = True
       Indent = True
       { Label28 Label
@@ -724,7 +738,7 @@
       }
     }
     { HBox31 HBox
-      MoveScaled(1,34,66,4)
+      MoveScaled(1,45,66,4)
       Spacing = True
       Indent = True
       { Label29 Label
@@ -738,7 +752,7 @@
       }
     }
     { HBox32 HBox
-      MoveScaled(1,39,66,4)
+      MoveScaled(1,50,66,4)
       Spacing = True
       Indent = True
       { Label30 Label
