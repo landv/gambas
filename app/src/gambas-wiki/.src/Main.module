@@ -353,7 +353,7 @@ Private Sub LoadUser(sUser As String) As Collection
   Dim sField As String
   Dim sValue As String
 
-  sPath = User.Home &/ "data/@/.user" &/ UCase(sUser)
+  sPath = User.Home &/ "guygle/data/@/.user" &/ UCase(sUser)
   If Not Exist(sPath) Then Return
   
   cUser = New Collection
