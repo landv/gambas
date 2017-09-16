@@ -327,6 +327,9 @@ BEGIN_METHOD(CipherMethod_EncryptSalted, GB_STRING plain; GB_STRING passwd;
 		memcpy(salt, STRING(salt), MIN(sizeof(salt), LENGTH(salt)));
 	}
 
+// "openssl enc" >= 1.1.0 uses SHA256 by default instead of MD5
+//	EVP_BytesToKey(_method, EVP_sha256(), salt, (uchar *) STRING(passwd),
+//		       LENGTH(passwd), ITER, key, iv);
 	EVP_BytesToKey(_method, EVP_md5(), salt, (uchar *) STRING(passwd),
 		       LENGTH(passwd), ITER, key, iv);
 	cipher = do_cipher((uchar *) STRING(plain), LENGTH(plain), key, iv,
@@ -364,6 +367,9 @@ BEGIN_METHOD(CipherMethod_DecryptSalted, GB_STRING cipher; GB_STRING passwd)
 	/* salt begins at STRING(cipher) + strlen("Salted__") */
 	memcpy(salt, STRING(cipher) + 8, sizeof(salt));
 
+// "openssl enc" >= 1.1.0 uses SHA256 by default instead of MD5
+//	EVP_BytesToKey(_method, EVP_sha256(), salt, (uchar *) STRING(passwd),
+//		       LENGTH(passwd), ITER, key, iv);
 	EVP_BytesToKey(_method, EVP_md5(), salt, (uchar *) STRING(passwd),
 		       LENGTH(passwd), ITER, key, iv);
 	cipher = (uchar *) STRING(cipher) + 8 + sizeof(salt);
@@ -373,10 +379,8 @@ BEGIN_METHOD(CipherMethod_DecryptSalted, GB_STRING cipher; GB_STRING passwd)
 		GB.Error(errmsg ? errmsg : "Decryption failed");
 		return;
 	}
-	GB.ReturnString(plain);
-	GB.ReturnBorrow();
+	GB.ReturnNewString(plain, length);
 	GB.FreeString(&plain);
-	GB.ReturnRelease();
 
 END_METHOD
 
