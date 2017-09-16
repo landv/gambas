@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,112,80)
+  MoveScaled(0,2,112,75)
   Text = ("Project properties")
   Icon = Picture["icon:/small/edit"]
   Persistent = True
@@ -105,7 +105,7 @@
     }
   }
   { ipnProject IconPanel
-    MoveScaled(1,1,108,69)
+    MoveScaled(1,1,108,66)
     Expand = True
     Arrangement = Arrange.Vertical
     Spacing = True
@@ -126,7 +126,7 @@
       }
     }
     { panGeneral HPanel
-      MoveScaled(1,10,84,59)
+      MoveScaled(1,10,84,56)
       Expand = True
       AutoResize = True
       Spacing = True
@@ -196,17 +196,17 @@
         Text = ("Description")
       }
       { txtDesc TextArea
-        MoveScaled(18,20,60,19)
+        MoveScaled(18,20,60,16)
         Expand = True
         Wrap = True
       }
       { Label11 Label
-        MoveScaled(0,39,16,4)
+        MoveScaled(0,37,16,4)
         Font = Font["Bold"]
         Text = ("Authors")
       }
       { txtAuthor TextArea
-        MoveScaled(18,40,57,19)
+        MoveScaled(18,37,57,15)
         Expand = True
         Wrap = True
       }
@@ -214,7 +214,7 @@
     Index = 1
     Text = ("Information")
     { Panel5 VBox
-      MoveScaled(1,1,82,68)
+      MoveScaled(1,1,82,65)
       Expand = True
       Spacing = True
       { lblInfo Label
@@ -223,7 +223,7 @@
         Text = ("Information")
       }
       { HBox15 HBox
-        MoveScaled(0,8,78,4)
+        MoveScaled(0,4,78,4)
         Spacing = True
         Indent = True
         { Label26 Label
@@ -237,7 +237,7 @@
         }
       }
       { HBox16 HBox
-        MoveScaled(0,13,71,4)
+        MoveScaled(0,9,71,4)
         Spacing = True
         Indent = True
         { Label25 Label
@@ -251,7 +251,7 @@
         }
       }
       { panCompatible HBox
-        MoveScaled(0,18,71,4)
+        MoveScaled(0,14,71,4)
         Spacing = True
         Indent = True
         { chkCompat CheckBox
@@ -275,7 +275,7 @@
         }
       }
       { HBox14 HBox
-        MoveScaled(0,23,71,4)
+        MoveScaled(0,19,71,4)
         Spacing = True
         Indent = True
         { Label13 Label
@@ -288,12 +288,12 @@
         }
       }
       { Label15 Label
-        MoveScaled(0,28,79,3)
+        MoveScaled(0,24,79,3)
         Font = Font["Bold"]
         Text = ("Required features")
       }
       { HBox7 HBox
-        MoveScaled(0,32,75,12)
+        MoveScaled(0,28,75,12)
         Indent = True
         { panNeed Panel
           MoveScaled(1,0,37,12)
@@ -331,7 +331,7 @@
         }
       }
       { Panel12 HBox
-        MoveScaled(0,45,80,3)
+        MoveScaled(0,41,80,3)
         { Label14 Label
           MoveScaled(0,0,35,3)
           Font = Font["Bold"]
@@ -340,7 +340,7 @@
         }
       }
       { HBox10 HBox
-        MoveScaled(0,49,81,18)
+        MoveScaled(0,45,81,18)
         Expand = True
         Spacing = True
         { lvwRequire ListView
@@ -512,7 +512,7 @@
     Index = 6
     Text = ("Options")
     { Panel6 VBox
-      MoveScaled(0,0,86,66)
+      MoveScaled(0,0,86,47)
       Spacing = True
       { Label7 Label
         MoveScaled(0,0,84,3)
@@ -539,15 +539,29 @@
           Text = ("space(s)")
         }
       }
+      { HBox4 HBox
+        MoveScaled(1,9,83,4)
+        Spacing = True
+        Indent = True
+        { Label2 Label
+          MoveScaled(0,0,46,4)
+          Text = ("Show deprecated components and controls")
+        }
+        { cmbShowDeprecated ComboBox
+          MoveScaled(47,0,10,4)
+          ReadOnly = True
+          List = [("Yes"), ("No")]
+        }
+      }
       { Label8 Label
-        MoveScaled(0,9,84,3)
+        MoveScaled(0,14,84,3)
         Font = Font["Bold"]
         Expand = True
         Text = ("Compilation")
         Alignment = Align.BottomNormal
       }
       { HBox12 HBox
-        MoveScaled(1,13,83,4)
+        MoveScaled(1,18,83,4)
         Spacing = True
         Indent = True
         { Label21 Label
@@ -561,7 +575,7 @@
         }
       }
       { HBox11 HBox
-        MoveScaled(1,18,83,4)
+        MoveScaled(1,23,83,4)
         Spacing = True
         Indent = True
         { Label22 Label
@@ -575,7 +589,7 @@
         }
       }
       { HBox5 HBox
-        MoveScaled(1,23,83,4)
+        MoveScaled(1,28,83,4)
         Spacing = True
         Indent = True
         { Label4 Label
@@ -589,14 +603,14 @@
         }
       }
       { Label19 Label
-        MoveScaled(0,28,84,3)
+        MoveScaled(0,33,84,3)
         Font = Font["Bold"]
         Expand = True
         Text = ("Translation")
         Alignment = Align.BottomNormal
       }
       { HBox9 HBox
-        MoveScaled(1,32,83,4)
+        MoveScaled(1,37,83,4)
         Spacing = True
         Indent = True
         { Label24 Label
@@ -610,7 +624,7 @@
         }
       }
       { HBox8 HBox
-        MoveScaled(1,37,83,4)
+        MoveScaled(1,42,83,4)
         Spacing = True
         Indent = True
         { Label20 Label
@@ -624,70 +638,6 @@
           Sorted = True
         }
       }
-      { Label27 Label
-        MoveScaled(0,42,84,3)
-        Font = Font["Bold"]
-        Expand = True
-        Text = ("Debugging")
-        Alignment = Align.BottomNormal
-      }
-      { HBox4 HBox
-        MoveScaled(1,46,83,4)
-        Spacing = True
-        Indent = True
-        { Label2 Label
-          MoveScaled(0,0,46,4)
-          Text = ("Activate profiling")
-        }
-        { cmbProfile ComboBox
-          MoveScaled(47,0,10,4)
-          ReadOnly = True
-          List = [("Yes"), ("No")]
-        }
-      }
-      { HBox17 HBox
-        MoveScaled(1,51,83,4)
-        Spacing = True
-        Indent = True
-        { Label28 Label
-          MoveScaled(0,0,46,4)
-          Text = ("Use a terminal emulator")
-        }
-        { cmbTerminal ComboBox
-          MoveScaled(47,0,10,4)
-          ReadOnly = True
-          List = [("Yes"), ("No")]
-        }
-      }
-      { HBox6 HBox
-        MoveScaled(1,56,83,4)
-        Spacing = True
-        Indent = True
-        { Label9 Label
-          MoveScaled(0,0,46,4)
-          Text = ("Redirect standard error output")
-        }
-        { cmbRedirect ComboBox
-          MoveScaled(47,0,10,4)
-          ReadOnly = True
-          List = [("Yes"), ("No")]
-        }
-      }
-      { panHttpServer HBox
-        MoveScaled(1,61,83,4)
-        Enabled = False
-        Spacing = True
-        Indent = True
-        { Label6 Label
-          MoveScaled(0,0,46,4)
-          Text = ("Use embedded HTTP server")
-        }
-        { cmbHttpServer ComboBox
-          MoveScaled(47,0,10,4)
-          ReadOnly = True
-          List = [("Yes"), ("No")]
-        }
-      }
     }
     Index = 7
     Text = ("Statistics")
@@ -699,7 +649,7 @@
     Index = 0
   }
   { Panel10 HBox
-    MoveScaled(29,72,81,4)
+    MoveScaled(27,69,81,4)
     Spacing = True
     { Panel11 Panel
       MoveScaled(0,1,14,3)

@@ -59,6 +59,7 @@ Public Sub Form_Open()
     txtAuthor.Text = .Authors
     cmbControlPublic.Index = If(.ControlPublic, 0, 1)
     cmbModulePublic.Index = If(.ModulePublic, 0, 1)
+    cmbShowDeprecated.Index = If(.ShowDeprecated, 0, 1)
     cmbWarning.Index = If(.Warnings, 0, 1)
     txtMajor.Value = .MajorVersion
     txtMinor.Value = .MinorVersion
@@ -83,10 +84,10 @@ Public Sub Form_Open()
     'cmbStackTrace.Index = If(.StackTrace, 0, 1)
     chkGetVersionFromFile.Value = .VersionFile
     'chkVersion.Value = NOT IsNull(.VersionProgram)
-    cmbTerminal.Index = If(.UseTerminal, 0, 1)
-    cmbRedirect.Index = If(.RedirectStderr, 0, 1)
-    cmbProfile.Index = If(.Profiling, 0, 1)
-    cmbHttpServer.Index = If(.UseHttpServer, 0, 1)
+    'cmbTerminal.Index = If(.UseTerminal, 0, 1)
+    'cmbRedirect.Index = If(.RedirectStderr, 0, 1)
+    'cmbProfile.Index = If(.Profiling, 0, 1)
+    'cmbHttpServer.Index = If(.UseHttpServer, 0, 1)
     txtLibraryPath.Text = .LibraryPath
     $aLibraries = .Libraries.Copy()
     $aComponents = .Components.Copy()
@@ -100,6 +101,7 @@ Public Sub Form_Open()
   choComponent.Checkable = True
   choComponent.CheckedComponents = Project.Components
   choComponent.Libraries = $aLibraries
+  choComponent.ShowDeprecated = Project.ShowDeprecated
   
   'chkShowUsed.Value = $bShowUsed
   $bCanInitComponents = True
@@ -198,18 +200,23 @@ Private Function DoApply() As Boolean
     .Description = Trim(txtDesc.Text)
     .Authors = Trim(txtAuthor.Text)
     .Icon = $sIcon
-    .Profiling = cmbProfile.Index = 0
-    .UseTerminal = cmbTerminal.Index = 0
-    .RedirectStderr = cmbRedirect.Index = 0
-    .UseHttpServer = cmbHttpServer.Index = 0
+    '.Profiling = cmbProfile.Index = 0
+    '.UseTerminal = cmbTerminal.Index = 0
+    '.RedirectStderr = cmbRedirect.Index = 0
+    '.UseHttpServer = cmbHttpServer.Index = 0
     
     If .ControlPublic <> (cmbControlPublic.Index = 0) Or If .ModulePublic <> (cmbModulePublic.Index = 0) Then
+      .ControlPublic = cmbControlPublic.Index = 0
+      .ModulePublic = cmbModulePublic.Index = 0
       Project.ResetScan
       Project.DeleteCompiledFiles
     Endif
-
-    .ControlPublic = cmbControlPublic.Index = 0
-    .ModulePublic = cmbModulePublic.Index = 0
+    
+    If .ShowDeprecated <> (cmbShowDeprecated.Index = 0) Then
+      .ShowDeprecated = cmbShowDeprecated.Index = 0
+      FToolBox.RefreshToolbar(True)
+    Endif
+    
     .Warnings = cmbWarning.Index = 0
     .MajorVersion = txtMajor.Value
     .MinorVersion = txtMinor.Value
@@ -867,7 +874,7 @@ Public Sub ipnProject_Click()
       RefreshLibraries
       btnReset.Show
     Case ("Options") 
-      panHttpServer.Enabled = choComponent.IsChecked("gb.web") 'Project.Components.Exist("gb.web")
+      'panHttpServer.Enabled = choComponent.IsChecked("gb.web") 'Project.Components.Exist("gb.web")
     Case ("Statistics") 
       UpdateStat
     Case ("Information") 
@@ -1374,5 +1381,11 @@ Public Sub btnMoveDownArg_Click()
   Endif
 
   UpdateArgButtons
+
+End
+
+Public Sub cmbShowDeprecated_Click()
+
+  choComponent.ShowDeprecated = cmbShowDeprecated.Index = 0
 
 End

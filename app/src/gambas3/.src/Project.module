@@ -46,6 +46,7 @@ Public CreateShortcut As Boolean
 Public RunAfterMakingExec As String
 Public ControlPublic As Boolean
 Public ModulePublic As Boolean
+Public ShowDeprecated As Boolean
 Public Warnings As Boolean
 Public MajorVersion As Integer
 Public MinorVersion As Integer
@@ -3307,6 +3308,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   'ShowGrid = TRUE
   ControlPublic = False
   ModulePublic = False
+  ShowDeprecated = False
   Warnings = True
   KeepDebugInfo = True
   Localize = False
@@ -3462,6 +3464,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
       Case "modulepublic"
         ModulePublic = CInt(sVal) <> 0
+
+      Case "showdeprecated"
+        ShowDeprecated = CInt(sVal) <> 0
 
       Case "warnings"
         Warnings = CInt(sVal) <> 0
@@ -3773,6 +3778,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   End Select
   If ControlPublic Then Print #hFic, "ControlPublic=1"
   If ModulePublic Then Print #hFic, "ModulePublic=1"
+  If ShowDeprecated Then Print #hFic, "ShowDeprecated=1"
   If Not Warnings Then Print #hFic, "Warnings=0"
   If SourcePath Then Print #hFic, "SourcePath="; SourcePath
 

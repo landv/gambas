@@ -171,6 +171,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
 
         For Each sCtrl In .Controls
           sGroup = Project.Documentation.Classes[sCtrl].Group
+          If sGroup = "Deprecated" And If Not Project.ShowDeprecated Then Continue
           cToolBar[sGroup] = sGroup
         Next
 
@@ -204,6 +205,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
           If cHidden.Exist(sCtrl) Then Continue
           hClass = Project.Documentation.Classes[sCtrl]
           sGroup = hClass.Group
+          If sGroup = "Deprecated" And If Not Project.ShowDeprecated Then Continue
           bExist = False
           For Each hToolBar In $cToolBar
             If hToolBar.Exist(sCtrl) Then 
