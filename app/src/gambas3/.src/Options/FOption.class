@@ -109,6 +109,7 @@ Public Sub _new()
     [btnFold, "/Editor/ShowExpand", 1],
     [btnFoldProc, "/Editor/CollapseByDefault", 0],
     [btnWrapText, "/Editor/WrapTextByDefault", 0],
+    [btnTabIndent, "/Editor/TabIndentByDefault", 0],
     [btnOutput, "/QuietExternalCommands", 0],
     [btnUtility, "/UseUtilityWindows", 1],
     [btnStartupLoad, "/RestoreFiles", 1],
@@ -724,6 +725,12 @@ End
 Public Sub btnWrapText_Click()
 
   Settings["/Editor/WrapTextByDefault"] = btnWrapText.Value
+
+End
+
+Public Sub btnTabIndent_Click()
+
+  Settings["/Editor/TabIndentByDefault"] = btnTabIndent.Value
 
 End
 

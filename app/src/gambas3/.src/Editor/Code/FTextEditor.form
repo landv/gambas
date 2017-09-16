@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(9.4286,14,158,76)
+  MoveScaled(9.375,14,158,76)
   Icon = Picture["icon:/small/text"]
   Persistent = True
   Arrangement = Arrange.Vertical
@@ -127,7 +127,13 @@
       { mnuWrap Menu
         Action = ".wrap"
         Text = ("Automatic word wrap")
-        Picture = Picture["img/16/wrap.png"]
+        Picture = Picture["img/32/wrap.png"]
+        Toggle = True
+      }
+      { mnuTabIndent Menu
+        Action = ".tab-indent"
+        Text = ("Indent with tab")
+        Picture = Picture["img/32/tab.png"]
         Toggle = True
       }
       { mnuNoSplit Menu
@@ -324,7 +330,14 @@
       MoveScaled(56,0,4,4)
       ToolTip = ("Automatic word wrap")
       Action = ".wrap"
-      Picture = Picture["img/16/wrap.png"]
+      Picture = Picture["img/32/wrap.png"]
+      Toggle = True
+    }
+    { btnTabIndent ToolButton
+      MoveScaled(60,0,4,4)
+      ToolTip = ("Indent with tab")
+      Action = ".tab-indent"
+      Picture = Picture["img/32/tab.png"]
       Toggle = True
     }
     { Separator1 Separator
@@ -548,6 +561,11 @@
     Shortcut = ""
     Picture = "icon:/small/sort-descent"
   }
+  { Action tab-indent
+    Text = "Indent with tab"
+    Shortcut = ""
+    Picture = "img/32/tab.png"
+  }
   { Action ucase
     Text = "Upper case"
     Shortcut = "Ctrl+Alt+U"
@@ -585,14 +603,14 @@
   { Action wrap
     Text = "Automatic word wrap"
     Shortcut = ""
-    Picture = "img/16/wrap.png"
+    Picture = "img/32/wrap.png"
   }
 }
 
 { Toolbars
   { Toolbar text
     Text = "Text editor"
-    List = "show-class,save,reload,locked,cut,copy,paste,undo,redo,indent,unindent,bookmark,color,wrap,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,eol"
-    Default = "show-class,save,reload,locked,paste,undo,redo,color,wrap,|,compress,uncompress,|,|,proc"
+    List = "show-class,save,reload,locked,cut,copy,paste,undo,redo,indent,unindent,bookmark,color,wrap,tab-indent,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,eol"
+    Default = "show-class,save,reload,locked,paste,undo,redo,color,wrap,tab-indent,|,compress,uncompress,|,|,proc"
   }
 }

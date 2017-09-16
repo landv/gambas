@@ -2967,6 +2967,7 @@ Private Sub InitEditor(hEditor As TextEditor)
     .TabSize = edtEditor.TabSize
     .ShowIcon = True
     .Wrap = edtEditor.Wrap
+    .TabIndent = edtEditor.TabIndent
     '.Flags[Editor.ShowCursorPosition] = edtEditor.Flags[Editor.ShowCursorPosition]
   End With
   hEditor.ReadConfig(True)
@@ -3803,6 +3804,13 @@ Public Sub Action_Activate((Key) As String) As Boolean
         $hEditor1.Wrap = $hEditor.Wrap
         $hEditor2.Wrap = $hEditor.Wrap
       Endif
+      
+    ' Case ".tab-indent"
+    '   $hEditor.TabIndent = mnuTabIndent.Value
+    '   If $hEditor1 Then
+    '     $hEditor1.TabIndent = $hEditor.TabIndent
+    '     $hEditor2.TabIndent = $hEditor.TabIndent
+    '   Endif
     
     Case Else
       Return True
@@ -3821,6 +3829,7 @@ End
 Public Sub Form_Open()
 
   Action[".wrap", Me].Value = Settings["/Editor/WrapTextByDefault", False]
+  'Action[".tab-indent", Me].Value = Settings["/Editor/TabIndentByDefault", False]
 
 End
 

@@ -714,6 +714,7 @@ Private Sub InitEditor(hEditor As TextEditor)
     .ReadOnly = edtEditor.ReadOnly
     .TabSize = edtEditor.TabSize
     .Wrap = edtEditor.Wrap
+    .TabIndent = edtEditor.TabIndent
   End With 
   hEditor.ReadConfig(True)
   
@@ -1244,6 +1245,7 @@ Public Sub Form_Open()
   ReadConfig
   SetReadOnly
   Action[".wrap", Me].Value = Settings["/Editor/WrapTextByDefault", False]
+  Action[".tab-indent", Me].Value = Settings["/Editor/TabIndentByDefault", False]
 
 End
 
@@ -1480,6 +1482,13 @@ Public Sub Action_Activate((Key) As String) As Boolean
       If $hEditor1 Then
         $hEditor1.Wrap = $hEditor.Wrap
         $hEditor2.Wrap = $hEditor.Wrap
+      Endif
+    
+    Case ".tab-indent"
+      $hEditor.TabIndent = mnuTabIndent.Value
+      If $hEditor1 Then
+        $hEditor1.TabIndent = $hEditor.TabIndent
+        $hEditor2.TabIndent = $hEditor.TabIndent
       Endif
     
     Case Else

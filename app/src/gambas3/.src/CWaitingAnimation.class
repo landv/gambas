@@ -16,7 +16,7 @@ Private Sub DisableWindow(hWindow As Window, bDisable As Boolean)
   For Each hCtrl In hWindow.Children
     hCtrl.Enabled = Not bDisable
   Next
-
+  
 End
 
 Public Sub _new(hWindow As Window, Optional bWithCancel As Boolean)
