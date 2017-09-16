@@ -206,11 +206,11 @@ End
 Public Sub Timer_Timer()
   
   $fValue += $fInc
-  If $fValue <= 0 Then
+  If $fValue < 0 Then
     $fValue = 0
     $hTimer.Stop
     Raise Click
-  Else If $fValue >= 1 Then
+  Else If $fValue > 1 Then
     $fValue = 1
     $hTimer.Stop
     Raise Click
