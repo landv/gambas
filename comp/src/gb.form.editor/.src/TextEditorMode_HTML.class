@@ -1,0 +1,52 @@
+' Gambas class file
+
+Inherits TextEditorMode
+
+Static Public Const Name As String = "html"
+
+Private Sub InsertClosingMarkup(hEditor As TextEditor)
+
+  Dim sLine As String
+  Dim X, X1, X2 As Integer
+  Dim iLen As Integer
+  Dim sCar As String
+  
+  sLine = hEditor.Current.Text
+  iLen = hEditor.Current.Length
+  
+  X = hEditor.Column
+  
+  X1 = X
+  While X1 > 0
+    If String.Mid$(sLine, X1, 1) = "<" Then Break
+    Dec X1
+  Wend
+  
+  If X = 0 Then Return
+  
+  X2 = X1
+  Do
+    Inc X2
+    If X2 > iLen Then Break
+    sCar = String.Mid$(sLine, X2, 1)
+    If sCar = " " Or If sCar = ">" Then Break
+  Loop
+  
+  hEditor.Insert("</" & String.Mid$(sLine, X1 + 1, X2 - X1 - 1) & ">")
+  hEditor.Goto(X, hEditor.Line)
+  
+End
+
+Public Sub OnKeyPress(hEditor As TextEditor)
+
+  If Key.Text = ">" Then 
+    If Me.CanCloseBraces(hEditor) Then
+      InsertClosingMarkup(hEditor)
+      Stop Event
+      Return
+    Endif
+  Endif
+  
+  Super.OnKeyPress(hEditor)
+  
+End

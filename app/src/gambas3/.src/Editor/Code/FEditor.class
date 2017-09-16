@@ -107,6 +107,7 @@ Public Sub _new(sPath As String)
   $hEditor = edtEditor
   edtEditor.ShowIcon = True
   edtEditor.ShowBraces = True 
+  edtEditor.Mode = "gambas"
   edtEditor.Highlight = "gambas"
 
   $hInsertColor = New CInsertColor(Me, btnInsertColor)
@@ -2959,6 +2960,7 @@ Private Sub InitEditor(hEditor As TextEditor)
   With hEditor
     .Border = False
     .View = edtEditor
+    .Mode = edtEditor.Mode
     .Highlight = edtEditor.Highlight
     '.Flags[Editor.Highlight] = True
     .ReadOnly = edtEditor.ReadOnly

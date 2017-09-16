@@ -925,8 +925,8 @@ Private Sub Start(sCmd As String)
   
     sProg = Settings["/Terminal"]
     
-    If Not sProg Then
-  
+    If Not sProg Or If Project.CheckProgram(sProg) Then
+    
       Select Case Desktop.Type
       
         Case Like "KDE*"
@@ -946,14 +946,14 @@ Private Sub Start(sCmd As String)
       
       End Select
       
-    Endif
-    
-    If Project.CheckProgram(sProg) Then 
-      sProg = "xterm"
-      If Project.CheckProgram(sProg) Then
-        FMain.ShowWarning(("No terminal emulator found."))
-        sProg = ""
+      If Project.CheckProgram(sProg) Then 
+        sProg = "xterm"
+        If Project.CheckProgram(sProg) Then
+          FMain.ShowWarning(("No terminal emulator found."))
+          sProg = ""
+        Endif
       Endif
+      
     Endif
     
     If Project.RedirectStderr Then

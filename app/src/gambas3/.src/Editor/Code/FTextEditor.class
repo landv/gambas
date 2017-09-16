@@ -101,20 +101,20 @@ Public Sub LoadFile() As Boolean
   
       Select Case sExt
         Case "css"
-          edtEditor.Highlight = "css"
+          edtEditor.Mode = "css"
         Case "webpage"
-          edtEditor.Highlight = "webpage"
+          edtEditor.Mode = "webpage"
           $bWebPage = True
         Case "js"
-          edtEditor.Highlight = "javascript"
+          edtEditor.Mode = "javascript"
         Case "c"
-          edtEditor.Highlight = "c"
+          edtEditor.Mode = "c"
         Case "cpp", "h"
-          edtEditor.Highlight = "c++"
+          edtEditor.Mode = "c++"
         Case "gbs"
-          edtEditor.Highlight = "gambas"
+          edtEditor.Mode = "gambas"
         Case Else 
-          edtEditor.Highlight = "html"
+          edtEditor.Mode = "html"
       End Select
       
       $bShowCompress = MCompressFile.CanCompress(Path) And Not Project.IsHiddenPath(Path)
@@ -665,9 +665,9 @@ Public Sub Reload()
   
   If $bNoHighlight Then
     If LTrim(sText) Like "<!DOCTYPE*" Or If LTrim(sText) Like "<html*" Then
-      edtEditor.Highlight = "html"
+      edtEditor.Mode = "html"
     Else
-      edtEditor.Highlight = ""
+      edtEditor.Mode = ""
     Endif
   Endif
   
@@ -706,6 +706,7 @@ Private Sub InitEditor(hEditor As TextEditor)
   With hEditor
     .Border = False
     .View = edtEditor
+    .Mode = edtEditor.Mode
     .Highlight = edtEditor.Highlight
     '.Flags[Editor.HighlightImmediately] = edtEditor.Flags[Editor.HighlightImmediately]
     .ShowBraces = edtEditor.ShowBraces

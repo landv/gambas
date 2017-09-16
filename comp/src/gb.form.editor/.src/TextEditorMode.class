@@ -1,0 +1,82 @@
+' Gambas class file
+
+Static Public Const Name As String = ""
+
+Public CloseBraces As Boolean
+
+Private $bCanCloseBraces As Boolean
+Private $bCanCloseBracesComputed As Boolean
+
+
+Static Public Sub _get(Type As String) As TextEditorMode
+
+	Try Return Object.New("TextEditorMode_" & Type)
+	'Error.Raise("Cannot load highlighter: '" & Type & "'")
+	Return New TextEditorMode
+
+End
+
+Public Sub IsIdentCar(sCar As String) As Boolean
+  
+  If IsLetter(sCar) Or If IsDigit(sCar) Then Return True
+  
+End
+
+Public Sub InsideString(hEditor As TextEditor) As Boolean
+  
+  Dim iLen As Integer
+  Dim I As Integer
+  Dim sInside As String
+  Dim sLine As String
+  Dim sCar As String
+  
+  sLine = hEditor.Current.Text
+  iLen = hEditor.Current.Length
+  
+  For I = 1 To hEditor.Column - 1
+    sCar = String.Mid$(sLine, I, 1)
+    If sCar = sInside Then
+      sInside = ""
+    Else If InStr("'\"", sCar) Then
+      If Not sInside Then sInside = sCar
+    Else If sCar = "\\" Then
+      If sInside Then Inc I
+    Endif
+  Next
+  
+  Return sInside
+  
+End
+
+
+Public Sub CanCloseBraces(hEditor As TextEditor) As Boolean
+  
+  If Not $bCanCloseBracesComputed Then 
+    $bCanCloseBraces = False
+    If CloseBraces Then 
+      $bCanCloseBraces = Not InsideString(hEditor)
+    Endif
+    $bCanCloseBracesComputed = True
+  Endif
+  
+  Return $bCanCloseBraces
+  
+End
+
+
+Public Sub OnKeyPress(hEditor As TextEditor)
+  
+  Dim sOther As String
+  
+  If InStr("([{'\"", Key.Text) And If CanCloseBraces(hEditor) Then
+    
+    sOther = Mid$(")]}'\"", InStr("([{'\"", Key.Text), 1)
+    hEditor.Insert(sOther)
+    hEditor.Goto(hEditor.Column - 1, hEditor.Line)
+    Stop Event
+    
+  Endif
+  
+  $bCanCloseBracesComputed = False
+    
+End

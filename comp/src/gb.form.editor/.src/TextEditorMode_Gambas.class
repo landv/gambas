@@ -1,0 +1,101 @@
+' Gambas class file
+
+Inherits TextEditorMode
+
+Static Public Const Name As String = "gambas"
+
+Public Sub IsIdentCar(sCar As String) As Boolean
+  
+  If IsLetter(sCar) Then Return True
+  If IsDigit(sCar) Then Return True
+  If sCar = "_" Or If sCar = "$" Then Return True
+  
+End
+
+
+Private Sub ToggleAroundCurrentWord(hEditor As TextEditor, sBraces As String)
+
+  Dim sLine As String
+  Dim X1, X2 As Integer
+  Dim iLen As Integer
+  
+  sLine = hEditor.Current.Text
+  iLen = hEditor.Current.Length
+  
+  X1 = hEditor.Column
+  While X1 > 0
+    If Not IsIdentCar(String.Mid$(sLine, X1, 1)) Then Break
+    Dec X1
+  Wend
+  
+  X2 = hEditor.Column
+  While X2 < iLen
+    If Not IsIdentCar(String.Mid$(sLine, X2 + 1, 1)) Then Break
+    Inc X2
+  Wend
+  
+  If X1 = X2 Then Return
+  
+  If X1 >= 1 And If String.Mid$(sLine, X1, 1) = Left(sBraces) And If X2 < iLen And If String.Mid$(sLine, X2 + 1, 1) = Right(sBraces) Then
+    sLine = String.Left(sLine, X1 - 1) & String.Mid$(sLine, X1 + 1, X2 - X1) & String.Mid$(sLine, X2 + 2)
+    X1 = hEditor.Column - 1
+  Else
+    sLine = String.Left(sLine, X1) & Left(sBraces) & String.Mid$(sLine, X1 + 1, X2 - X1) & Right$(sBraces) & String.Mid$(sLine, X2 + 1)
+    X1 = hEditor.Column + 1
+  Endif
+  
+  Me[hEditor.Line].Text = sLine
+  hEditor.Goto(X1, hEditor.Line)
+  
+End
+
+Public Sub InsideString(hEditor As TextEditor) As Boolean
+  
+  Dim iLen As Integer
+  Dim I As Integer
+  Dim sInside As String
+  Dim sLine As String
+  Dim sCar As String
+  
+  sLine = hEditor.Current.Text
+  iLen = hEditor.Current.Length
+  
+  For I = 1 To hEditor.Column
+    sCar = String.Mid$(sLine, I, 1)
+    If sCar = sInside Then
+      sInside = ""
+    Else If InStr("'\"", sCar) Then
+      If Not sInside Then 
+        sInside = sCar
+        If sCar = "'" Then Return True
+      Endif
+    Else If sCar = "\\" Then
+      If sInside Then Inc I
+    Endif
+  Next
+  
+  Return sInside
+  
+End
+
+Public Sub OnKeyPress(hEditor As TextEditor)
+  
+  Dim sBraces As String
+  
+  If Key.Alt Then
+  
+    For Each sBraces In ["()", "{}", "[]", "<>"]
+      If InStr(sBraces, Key.Text) Then
+        ToggleAroundCurrentWord(hEditor, sBraces)
+        Stop Event
+        Return
+      Endif
+    Next
+    
+  Endif
+  
+  If Key.Text = "'" Then Return
+  
+  Super.OnKeyPress(hEditor)
+    
+End

@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border=True,ShowPreview,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces,ShowIndent"
+Public Const _Properties As String = "*,Border=True,ShowPreview,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,Mode{None;Gambas;HTML;CSS;WebPage;JavaScript;SQL}=None,ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces,ShowIndent,CloseBraces"
 Public Const _DrawWith As String = "-"
 Public Const _DefaultEvent As String = "Change"
 Public Const _Similar As String = "TextArea"
@@ -26,6 +26,7 @@ Property Read Selected As Boolean
 Property Read SelectedText As String
 Property ReadOnly As Boolean
 Property ShowPreview As Boolean
+Property Mode As String
 Property Highlight As String
 Property LineNumberOffset As Integer
 Property TabSize As Integer
@@ -61,6 +62,7 @@ Property ShowCursor As Boolean
 Property ShowExpand As Boolean
 Property ShowSpaces As Boolean
 Property ShowIndent As Boolean
+Property CloseBraces As Boolean
 
 Private Const MATCH_STRING As String = "()[]{}"
 
@@ -1283,6 +1285,7 @@ Public Sub View_KeyPress()
   
   If Key.Text And If Asc(Key.Text) >= 32 And If Asc(Key.Text) <> 127 Then
     If Not $bReadOnly Then Insert(Key.Text)
+    If $hDoc._Mode Then $hDoc._Mode.OnKeyPress(Me)
     Goto STOP_EVENT
   Endif
   
@@ -5304,4 +5307,28 @@ Public Sub _SyncFolding()
     I = hSrc.FindNextLimit(I)
   Until I < 0
   
+End
+
+Private Function Mode_Read() As String
+
+  Return $hDoc.Mode
+
+End
+
+Private Sub Mode_Write(Value As String)
+
+  $hDoc.Mode = Value
+
+End
+
+Private Function CloseBraces_Read() As Boolean
+
+  Return $hDoc.CloseBraces
+
+End
+
+Private Sub CloseBraces_Write(Value As Boolean)
+
+  $hDoc.CloseBraces = Value
+
 End
