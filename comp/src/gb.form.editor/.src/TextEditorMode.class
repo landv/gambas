@@ -2,6 +2,12 @@
 
 Static Public Const Name As String = ""
 
+Static Public Const BRACES_OPEN As String = "([{\"'"
+Static Public Const BRACES_CLOSE As String = ")]}\"'"
+Static Public Const STRING_DELIM As String = "\"'"
+Static Public Const BETWEEN_BRACES_LEFT As String = "([{"
+Static Public Const BETWEEN_BRACES_RIGHT As String = ")]}"
+
 Public CloseBraces As Boolean
 
 Private $bCanCloseBraces As Boolean
@@ -29,15 +35,17 @@ Public Sub InsideString(hEditor As TextEditor) As Boolean
   Dim sInside As String
   Dim sLine As String
   Dim sCar As String
+  Dim sDelim As String
   
   sLine = hEditor.Current.Text
   iLen = hEditor.Current.Length
+  sDelim = Me.STRING_DELIM
   
   For I = 1 To hEditor.Column - 1
     sCar = String.Mid$(sLine, I, 1)
     If sCar = sInside Then
       sInside = ""
-    Else If InStr("'\"", sCar) Then
+    Else If InStr(sDelim, sCar) Then
       If Not sInside Then sInside = sCar
     Else If sCar = "\\" Then
       If sInside Then Inc I
@@ -47,6 +55,29 @@ Public Sub InsideString(hEditor As TextEditor) As Boolean
   Return sInside
   
 End
+
+Public Sub BetweenBraces(hEditor As TextEditor) As Boolean
+
+  Dim sLine As String
+  Dim X As Integer
+  Dim iLen As Integer
+  Dim iPos As Integer
+  
+  If InsideString(hEditor) Then Return
+  
+  sLine = hEditor.Current.Text
+  iLen = hEditor.Current.Length
+  X = hEditor.Column
+  
+  If X = 0 Or If X = iLen Then Return
+  
+  iPos = InStr(Me.BETWEEN_BRACES_LEFT, String.Mid$(sLine, X, 1))
+  If iPos = 0 Then Return
+  
+  Return String.Mid$(sLine, X + 1, 1) = Mid$(Me.BETWEEN_BRACES_RIGHT, iPos, 1)
+  
+End
+
 
 
 Public Sub CanCloseBraces(hEditor As TextEditor) As Boolean
@@ -67,10 +98,13 @@ End
 Public Sub OnKeyPress(hEditor As TextEditor)
   
   Dim sOther As String
+  Dim iPos As Integer
   
-  If InStr("([{'\"", Key.Text) And If CanCloseBraces(hEditor) Then
+  iPos = InStr(Me.BRACES_OPEN, Key.Text)
+  
+  If iPos And If CanCloseBraces(hEditor) Then
     
-    sOther = Mid$(")]}'\"", InStr("([{'\"", Key.Text), 1)
+    sOther = Mid$(Me.BRACES_CLOSE, iPos, 1)
     hEditor.Insert(sOther)
     hEditor.Goto(hEditor.Column - 1, hEditor.Line)
     Stop Event

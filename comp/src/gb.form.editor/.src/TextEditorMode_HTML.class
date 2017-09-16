@@ -10,6 +10,7 @@ Private Sub InsertClosingMarkup(hEditor As TextEditor)
   Dim X, X1, X2 As Integer
   Dim iLen As Integer
   Dim sCar As String
+  Dim sMarkup As String
   
   sLine = hEditor.Current.Text
   iLen = hEditor.Current.Length
@@ -32,8 +33,31 @@ Private Sub InsertClosingMarkup(hEditor As TextEditor)
     If sCar = " " Or If sCar = ">" Then Break
   Loop
   
-  hEditor.Insert("</" & String.Mid$(sLine, X1 + 1, X2 - X1 - 1) & ">")
+  sMarkup = String.Mid$(sLine, X1 + 1, X2 - X1 - 1)
+  If sMarkup Begins "/" Then Return
+  
+  hEditor.Insert("</" & sMarkup & ">")
   hEditor.Goto(X, hEditor.Line)
+  
+End
+
+Public Sub BetweenBraces(hEditor As TextEditor) As Boolean
+
+  Dim sLine As String
+  Dim X As Integer
+  Dim iLen As Integer
+  
+  If Me.InsideString(hEditor) Then Return
+  
+  sLine = hEditor.Current.Text
+  iLen = hEditor.Current.Length
+  X = hEditor.Column
+  
+  If X = 0 Or If X = iLen Then Return
+  
+  If String.Mid$(sLine, X, 1) = ">" And If String.Mid$(sLine, X + 1, 2) = "</" Then Return True
+  
+  Return Super.BetweenBraces(hEditor)
   
 End
 

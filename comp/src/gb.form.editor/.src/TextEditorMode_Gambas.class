@@ -3,6 +3,7 @@
 Inherits TextEditorMode
 
 Static Public Const Name As String = "gambas"
+Static Public Const STRING_DELIM As String = "\""
 
 Public Sub IsIdentCar(sCar As String) As Boolean
   
@@ -84,7 +85,7 @@ Public Sub OnKeyPress(hEditor As TextEditor)
   
   If Key.Alt Then
   
-    For Each sBraces In ["()", "{}", "[]", "<>"]
+    For Each sBraces In ["()", "{}", "[]"]
       If InStr(sBraces, Key.Text) Then
         ToggleAroundCurrentWord(hEditor, sBraces)
         Stop Event

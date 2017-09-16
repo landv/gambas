@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border=True,ShowPreview,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,Mode{None;Gambas;HTML;CSS;WebPage;JavaScript;SQL}=None,ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces,ShowIndent,CloseBraces"
+Public Const _Properties As String = "*,Border=True,ShowPreview,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,Mode{None;Gambas;HTML;CSS;WebPage;JavaScript;SQL}=None,ReadOnly,TabSize{Range:2;64}=2,TabIndent,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces,ShowIndent,CloseBraces"
 Public Const _DrawWith As String = "-"
 Public Const _DefaultEvent As String = "Change"
 Public Const _Similar As String = "TextArea"
@@ -30,6 +30,7 @@ Property Mode As String
 Property Highlight As String
 Property LineNumberOffset As Integer
 Property TabSize As Integer
+Property TabIndent As Boolean
 Property Read Length As Integer
 Property Border As Boolean
 Property ScrollBar As Integer
@@ -88,6 +89,7 @@ Private $bStyleChanged As Boolean
 Private $iLargestLine As Integer
 Private $iWidth As Integer
 Private $LH As Integer
+Private $BW As Integer ' bold width
 Private $MW As Integer
 Private $iWidthLineNumber As Integer
 Private $iPosIcon As Integer
@@ -96,6 +98,7 @@ Private $iTabSize As Integer = 2
 Private $iTabWidth As Integer
 Private $fTabSymbolSize As Float
 Private $iSpaceWidth As Integer
+Private $bTabIndent As Boolean
 
 Private $X As Integer
 Private $X0 As Integer
@@ -272,6 +275,7 @@ Private Sub CalcSizes()
   '$hFontBold.Bold = True
   
   $LH = $hFont.Height + 1
+  $BW = 1 + $LH \ 6
   $hRows.Height = $LH
   
   $hFontNumber = Me.Parent.Font.Copy()
@@ -531,7 +535,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
   Dim aStyle As TextEditorStyle[]
   Dim hImage As Image
   
-  Dim XX, YY As Integer
+  Dim XX, YY, XB, LB As Integer
   Dim hPos As Point
   Dim iNextBreak As Integer
   Dim iLayout As Integer
@@ -637,7 +641,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
           
           W = X2 - XX
           If W <= 0 Then W = TextWidth(sStr, 1, iLen)
-          If hStyle.Bold Then Inc W
+          If hStyle.Bold Then W += ($BW + 1) \ 2
           hImage = New Image(W, H, Color.Transparent)
           
           Paint.Begin(hImage)
@@ -703,11 +707,20 @@ DRAW_TEXT:
   iCol = hStyle.Color
   Paint.Background = iCol
   If hStyle.Bold Then
-    'Paint.Background = Color.Gradient(iCol, $iBackground)
-    Paint.DrawText(sStr, XX + 1, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
+    LB = $BW
+    XB = XX
+    While LB >= 2
+      Paint.DrawText(sStr, XB, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
+      Inc XB
+      LB -= 2
+    Wend
+    If LB Then
+      Paint.Background = Color.SetAlpha(iCol, 128)
+      Paint.DrawText(sStr, XB, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
+    Endif
+  Else
+    Paint.DrawText(sStr, XX, YY + $iAscent) 'DrawText(sStr, SX, X, Y)
   Endif
-  'Paint.Background = iCol
-  Paint.DrawText(sStr, XX, YY + $iAscent) 'DrawText(sStr, SX, X, Y)
   
   Return
   
@@ -1445,7 +1458,12 @@ Public Sub View_KeyPress()
       
       If Not $bPrint Then $bOverwrite = False
       sTab = GetIndentText($Y)
-      Insert("\n" & String.Left(sTab, $X))
+      If $hDoc._Mode.BetweenBraces(Me) Then
+        Insert("\n" & String.Left(sTab, $X) & GetTab() & "\n" & String.Left(sTab, $X))
+        Goto(-1, $Y - 1)
+      Else
+        Insert("\n" & String.Left(sTab, $X))
+      Endif
       'If Not $bPrint Then $bOverwrite = True
       $bOverwrite = bSaveOverwrite
       
@@ -1728,7 +1746,7 @@ Public Sub View_MouseDown()
       Endif
     Else
       'X = NormalizeColumn(PosToColumn(Y, Mouse.X, RY), Y)
-      X = PosToColumn(Y, Mouse.X - 4, RY)
+      X = PosToColumn(Y, Mouse.X - $iSpaceWidth \ 2, RY)
       Goto(X, Y, Mouse.Shift)
     Endif
   Endif
@@ -2056,8 +2074,10 @@ Private Sub DeleteLeft()
     If Len(sTab) = Len($hDoc.Lines[$Y]) Then
       If Right(sTab) = "\t" Then
         Remove($X - 1, $Y, $X, $Y)
-      Else
+      Else If Not $bTabIndent Then
         Remove((($X - 1) \ $iTabSize) * $iTabSize, $Y, $X, $Y)
+      Else
+        Remove($X - 1, $Y, $X, $Y)
       Endif
     Else
       Remove($X - 1, $Y, $X, $Y)
@@ -2346,7 +2366,7 @@ End
 
 Private Sub TabSize_Write(Value As Integer)
   
-  $iTabSize = Max(2, Value)
+  $iTabSize = Max(1, Value)
   CalcSizes
   
 End
@@ -2369,6 +2389,18 @@ Private Sub GetSelection(ByRef X1 As Integer, ByRef Y1 As Integer, ByRef X2 As I
   
 End
 
+Private Sub GetTab(Optional X As Integer) As String
+  
+  If $bTabIndent Then 
+    Return "\t"
+  Else
+    Return Space$($iTabSize - X Mod $iTabSize)
+  Endif
+  
+End
+
+
+
 Private Sub DoIndent(bBack As Boolean)
   
   Dim X1, Y1, X2, Y2 As Integer
@@ -2380,7 +2412,7 @@ Private Sub DoIndent(bBack As Boolean)
   If Not HasSelection() Then
     
     If Not bBack Then
-      Insert(Space$($iTabSize - $X Mod $iTabSize))
+      Insert(GetTab($X))
       Return
     Endif
     
@@ -2405,7 +2437,7 @@ Private Sub DoIndent(bBack As Boolean)
   
   If Not bBack Then
     
-    sTab = Space$($iTabSize - (iInd Mod $iTabSize))
+    sTab = GetTab(iInd)
     
     For Y = Y1 To Y2
       Goto(0, Y)
@@ -2414,7 +2446,11 @@ Private Sub DoIndent(bBack As Boolean)
     
   Else
     
-    sTab = Space$(Min(iInd, $iTabSize))
+    If $bTabIndent Then
+      sTab = "\t"
+    Else
+      sTab = Space$(Min(iInd, $iTabSize))
+    Endif
     
     For Y = Y1 To Y2
       If $hDoc.Lines[Y] Begins sTab Then Remove(0, Y, Len(sTab), Y)
@@ -5330,5 +5366,17 @@ End
 Private Sub CloseBraces_Write(Value As Boolean)
 
   $hDoc.CloseBraces = Value
+
+End
+
+Private Function TabIndent_Read() As Boolean
+
+  Return $bTabIndent
+
+End
+
+Private Sub TabIndent_Write(Value As Boolean)
+
+  $bTabIndent = Value
 
 End
