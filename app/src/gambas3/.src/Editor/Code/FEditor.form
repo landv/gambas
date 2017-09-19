@@ -57,13 +57,13 @@
       { mnuComment Menu
         Action = ".comment"
         Text = ("Comment")
-        Picture = Picture["img/16/comment.png"]
+        Picture = Picture["img/32/comment.png"]
         Shortcut = "Ctrl+K"
       }
       { mnuUncomment Menu
         Action = ".uncomment"
         Text = ("Uncomment")
-        Picture = Picture["img/16/uncomment.png"]
+        Picture = Picture["img/32/uncomment.png"]
         Shortcut = "Ctrl+U"
       }
       { mnuSepComment Menu
@@ -96,6 +96,7 @@
     { mnuSelectAll Menu
       Action = ".select-all"
       Text = Shortcut(("Select All"), "A")
+      Picture = Picture["icon:/small/select-all"]
       Shortcut = "Ctrl+A"
     }
     { Menu1 Menu
@@ -370,14 +371,14 @@
       MoveScaled(81,0,4,4)
       ToolTip = ("Comment")
       Action = ".comment"
-      Picture = Picture["img/16/comment.png"]
+      Picture = Picture["img/32/comment.png"]
     }
     { btnUncomment ToolButton mnuUncomment
       Name = "btnUncomment"
       MoveScaled(84,0,4,4)
       ToolTip = ("Uncomment")
       Action = ".uncomment"
-      Picture = Picture["img/16/uncomment.png"]
+      Picture = Picture["img/32/uncomment.png"]
     }
     { btnPretty ToolButton mnuPretty
       Name = "btnPretty"
@@ -503,7 +504,7 @@
   { Action comment
     Text = "Comment"
     Shortcut = "Ctrl+K"
-    Picture = "img/16/comment.png"
+    Picture = "img/32/comment.png"
   }
   { Action copy
     Text = "Copy"
@@ -602,6 +603,7 @@
   { Action select-all
     Text = "Select All"
     Shortcut = "Ctrl+A"
+    Picture = "icon:/small/select-all"
   }
   { Action show-form
     Text = "Open form"
@@ -616,7 +618,7 @@
   { Action uncomment
     Text = "Uncomment"
     Shortcut = "Ctrl+U"
-    Picture = "img/16/uncomment.png"
+    Picture = "img/32/uncomment.png"
   }
   { Action undo
     Text = "Undo"

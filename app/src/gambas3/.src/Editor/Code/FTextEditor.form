@@ -94,6 +94,7 @@
     { mnuSelectAll Menu
       Action = ".select-all"
       Text = Shortcut(("Select All"), "A")
+      Picture = Picture["icon:/small/select-all"]
       Shortcut = "Ctrl+A"
     }
     { Menu4 Menu
@@ -402,7 +403,7 @@
       ToolTip = ("End of line")
       Action = ".eol"
       AutoResize = True
-      Picture = Picture["img/16/eol.png"]
+      Picture = Picture["img/32/eol.png"]
       Border = False
       Menu = "mnuEndOfLine"
       MenuOnly = True
@@ -467,7 +468,7 @@
   }
   { Action eol
     Text = "End of line"
-    Picture = "img/16/eol.png"
+    Picture = "img/32/eol.png"
   }
   { Action find-next
     Text = "Find next"
@@ -541,6 +542,7 @@
   { Action select-all
     Text = "Select All"
     Shortcut = "Ctrl+A"
+    Picture = "icon:/small/select-all"
   }
   { Action show-class
     Text = "Code"
