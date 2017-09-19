@@ -34,7 +34,7 @@
 #ifndef __CHTTPCLIENT_C
 
 
-extern GB_DESC CHttpClientDesc[];
+extern GB_DESC HttpClientDesc[];
 extern GB_STREAM_DESC HttpStream;
 
 #else

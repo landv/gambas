@@ -49,7 +49,8 @@ typedef
 	} 
 	CURL_USER;
 
-char *CURL_get_protocol(char *url, char *default_protocol);
+//char *CURL_get_protocol(char *url, char *default_protocol);
+bool CURL_set_url(void *_object, const char *src, int len);
 
 bool CURL_check_userpwd(CURL_USER *user);
 

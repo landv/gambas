@@ -293,7 +293,7 @@ static void http_get(void *_object, GB_ARRAY custom_headers, char *target, CURLo
 		}
 	}
 
-	THIS->method=0;
+	THIS->method = 0;
 	
 	http_initialize_curl_handle(_object, custom_headers);
 	
@@ -645,7 +645,22 @@ BEGIN_PROPERTY(HttpClient_TargetFile)
 END_PROPERTY
 
 
-GB_DESC CHttpClientDesc[] =
+BEGIN_METHOD(HttpClient_Download, GB_STRING url; GB_OBJECT headers)
+
+	_object = GB.New(GB.FindClass("HttpClient"), NULL, NULL);
+
+	GB.Ref(THIS);
+	THIS->async = FALSE;
+	if (CURL_set_url(THIS, STRING(url), LENGTH(url)))
+		return;
+	
+	http_get(THIS, VARGOPT(headers, NULL), NULL, CURLOPT_HTTPGET);
+	GB.ReturnString(THIS->data);
+	GB.Unref(POINTER(&_object));
+	
+END_METHOD
+
+GB_DESC HttpClientDesc[] =
 {
   GB_DECLARE("HttpClient", sizeof(CHTTPCLIENT)),
 
@@ -673,6 +688,8 @@ GB_DESC CHttpClientDesc[] =
   GB_PROPERTY_READ("Reason", "s", HttpClient_ReturnString),
 
   GB_METHOD("CopyFrom", NULL, HttpClient_CopyFrom, "(HttpClient)Source"),
+  
+  GB_STATIC_METHOD("Download", "s", HttpClient_Download, "(URL)s[(Headers)String[];]"),
   
   GB_CONSTANT("_IsControl", "b", TRUE),
   GB_CONSTANT("_IsVirtual", "b", TRUE),
