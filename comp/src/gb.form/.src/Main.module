@@ -201,13 +201,9 @@ End
 
 Public Sub Main()
 
-  Dim msg As String
+  Dim hPicture As Picture
 
-  msg = "This is a a very very very very very very very very very very " &
-    "a very very very very very very very very very very " &
-    "a very very very very very very very very very very " &
-    "moderate message. "
-  InputBox(String(4, msg), "This is the ill inputbox", "Default Text")
+  hPicture = Picture["icon:/20/save"]
   
 End
 
