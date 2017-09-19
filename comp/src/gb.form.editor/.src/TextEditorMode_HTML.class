@@ -61,16 +61,16 @@ Public Sub BetweenBraces(hEditor As TextEditor) As Boolean
   
 End
 
-Public Sub OnKeyPress(hEditor As TextEditor)
+Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
 
   If Key.Text = ">" Then 
+    hEditor.Insert(">")
     If Me.CanCloseBraces(hEditor) Then
       InsertClosingMarkup(hEditor)
-      Stop Event
-      Return
+      Return True
     Endif
   Endif
   
-  Super.OnKeyPress(hEditor)
+  Return Super.OnKeyPress(hEditor)
   
 End

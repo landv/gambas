@@ -45,7 +45,7 @@ Private Sub ToggleAroundCurrentWord(hEditor As TextEditor, sBraces As String)
     X1 = hEditor.Column + 1
   Endif
   
-  Me[hEditor.Line].Text = sLine
+  hEditor[hEditor.Line].Text = sLine
   hEditor.Goto(X1, hEditor.Line)
   
 End
@@ -79,7 +79,7 @@ Public Sub InsideString(hEditor As TextEditor) As Boolean
   
 End
 
-Public Sub OnKeyPress(hEditor As TextEditor)
+Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
   
   Dim sBraces As String
   
@@ -88,8 +88,7 @@ Public Sub OnKeyPress(hEditor As TextEditor)
     For Each sBraces In ["()", "{}", "[]"]
       If InStr(sBraces, Key.Text) Then
         ToggleAroundCurrentWord(hEditor, sBraces)
-        Stop Event
-        Return
+        Return True
       Endif
     Next
     
@@ -97,6 +96,6 @@ Public Sub OnKeyPress(hEditor As TextEditor)
   
   If Key.Text = "'" Then Return
   
-  Super.OnKeyPress(hEditor)
+  Return Super.OnKeyPress(hEditor)
     
 End

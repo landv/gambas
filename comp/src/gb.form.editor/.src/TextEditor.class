@@ -1297,8 +1297,9 @@ Public Sub View_KeyPress()
   Endif
   
   If Key.Text And If Asc(Key.Text) >= 32 And If Asc(Key.Text) <> 127 Then
-    If Not $bReadOnly Then Insert(Key.Text)
-    If $hDoc._Mode Then $hDoc._Mode.OnKeyPress(Me)
+    If $bReadOnly Then Goto STOP_EVENT
+    If $hDoc._Mode And If $hDoc._Mode.OnKeyPress(Me) Then Goto STOP_EVENT
+    Insert(Key.Text)
     Goto STOP_EVENT
   Endif
   
