@@ -526,11 +526,13 @@ GB_IMG *MEDIA_get_image_from_sample(GstSample *sample, bool convert)
 	switch (IMAGE.GetDefaultFormat())
 	{
 		case GB_IMAGE_BGRA:
+		case GB_IMAGE_BGRP:
 			format = "BGR";
 			gb_format = GB_IMAGE_BGR;
 			break;
 
 		case GB_IMAGE_RGBA:
+		case GB_IMAGE_RGBP:
 			format = "RGB";
 			gb_format = GB_IMAGE_RGB;
 			break;

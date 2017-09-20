@@ -161,10 +161,12 @@ static GB_IMG *get_frame(void *_object)
 	switch (IMAGE.GetDefaultFormat())
 	{
 		case GB_IMAGE_BGRA:
+		case GB_IMAGE_BGRP:
 			format = "BGR";
 			break;
 
 		case GB_IMAGE_RGBA:
+		case GB_IMAGE_RGBP:
 			format = "RGB";
 			break;
 
