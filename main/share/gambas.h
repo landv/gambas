@@ -1136,6 +1136,7 @@ typedef
 			void (*Remove)(GB_HASHTABLE, const char *, int);
 			bool (*Get)(GB_HASHTABLE, const char *, int, void **);
 			void (*Enum)(GB_HASHTABLE, GB_HASHTABLE_ENUM_FUNC);
+			bool (*First)(GB_HASHTABLE, void **);
 			}
 		HashTable;
 

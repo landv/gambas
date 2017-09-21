@@ -277,6 +277,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_HashTableRemove,
 	(void *)GB_HashTableGet,
 	(void *)GB_HashTableEnum,
+	(void *)GB_HashTableFirst,
 
 	(void *)GB_StreamGet,
 	(void *)GB_StreamSetBytesRead,
@@ -2136,22 +2137,37 @@ bool GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data)
 		return TRUE;
 }
 
-
 void GB_HashTableEnum(GB_HASHTABLE hash, GB_HASHTABLE_ENUM_FUNC func)
 {
 	HASH_ENUM iter;
-	void **data;
+	void **pdata;
 
 	CLEAR(&iter);
 
 	for(;;)
 	{
-		data = (void **)HASH_TABLE_next((HASH_TABLE *)hash, &iter, FALSE);
-		if (!data)
+		pdata = (void **)HASH_TABLE_next((HASH_TABLE *)hash, &iter, FALSE);
+		if (!pdata)
 			break;
 
-		(*func)(*data);
+		(*func)(*pdata);
 	}
+}
+
+bool GB_HashTableFirst(GB_HASHTABLE hash, void **data)
+{
+	HASH_ENUM iter;
+	void **pdata;
+
+	CLEAR(&iter);
+	pdata = (void **)HASH_TABLE_next((HASH_TABLE *)hash, &iter, FALSE);
+	if (pdata)
+	{
+		*data = *pdata;
+		return FALSE;
+	}
+	else
+		return TRUE;
 }
 
 void GB_NewArray(void *pdata, int size, int count)

@@ -193,6 +193,7 @@ void GB_HashTableAdd(GB_HASHTABLE hash, const char *key, int len, void *data);
 void GB_HashTableRemove(GB_HASHTABLE hash, const char *key, int len);
 bool GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data);
 void GB_HashTableEnum(GB_HASHTABLE hash, GB_HASHTABLE_ENUM_FUNC func);
+bool GB_HashTableFirst(GB_HASHTABLE hash, void **data);
 
 void GB_NewArray(void *pdata, int size, int count);
 int GB_CountArray(void *data);
