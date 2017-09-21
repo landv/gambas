@@ -2027,7 +2027,6 @@ Public Sub _GetTextHeight() As Integer
   
 End
 
-
 ' Private Function Mouse_Read() As Integer
 ' 
 '   Return Super.Mouse
@@ -2347,8 +2346,10 @@ End
 
 Public Sub ScrollArea_Font()
   
+  'Debug Me.Name
   $iTextHeight = 0
   $hColumns._Layout
+  $hRows._Clear
   _ResizeContents
   
 End
