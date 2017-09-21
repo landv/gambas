@@ -76,7 +76,7 @@ Public _Views As TextEditor[]
 Private $hPanel As Panel
 Private $hView As ScrollArea
 Private $hSideBar As DrawingArea
-Private $imgSideBar As Image
+Private $hImageSideBar As Image
 Private $hLabelFrame As Panel
 Private $hLabel As Label
 
@@ -357,7 +357,7 @@ Private Sub Text_Write(Value As String)
   Goto(0, 0)
   $hDoc.Text = Value
   Init
-  If $bShowPreview Then $hTimerSideBarRefresh.Start
+  If $bShowPreview Then $hTimerSideBarRefresh.Trigger
   
 End
 
@@ -367,12 +367,13 @@ Public Sub Load(Path As String, Optional AddNewLine As Boolean)
   Goto(0, 0)
   $hDoc.Load(Path, AddNewLine)
   Init
+  If $bShowPreview Then $hTimerSideBarRefresh.Trigger
   Dec Application.Busy
-  If $bShowPreview Then $hTimerSideBarRefresh.Start
-  'Catch
+
+Catch
   
-  '  Dec Application.Busy
-  '  Error.Propagate
+  Dec Application.Busy
+  Error.Propagate
   
 End
 
@@ -2777,7 +2778,7 @@ Public Sub _RaiseChange()
   
   If $hTimerChange Then Return
   $hTimerChange = New Timer As "TimerChange"
-  If $bShowPreview Then $hTimerSideBarRefresh.Start
+  RefreshSideBar
   $hTimerChange.Trigger
   
 End
@@ -3645,11 +3646,19 @@ End
 
 Public Sub FindNextString(Search As String, Start As Integer) As Integer
   
-  Do
-    If Start >= $hDoc.Count Then Return -1
-    If String.InStr($hDoc.Lines[Start], Search, 1, gb.IgnoreCase) Then Return Start
-    Inc Start
-  Loop
+  If IsAscii(Search) Then
+    Do
+      If Start >= $hDoc.Count Then Return -1
+      If InStr($hDoc.Lines[Start], Search, 1, gb.IgnoreCase) Then Return Start
+      Inc Start
+    Loop
+  Else
+    Do
+      If Start >= $hDoc.Count Then Return -1
+      If String.InStr($hDoc.Lines[Start], Search, 1, gb.IgnoreCase) Then Return Start
+      Inc Start
+    Loop
+  Endif
   
 End
 
@@ -3727,7 +3736,7 @@ Public Sub Refresh()
   
   ClearCacheLine
   $hView.Refresh
-  If $bShowPreview Then $hTimerSideBarRefresh.Start
+  RefreshSideBar
   
 End
 
@@ -4151,7 +4160,7 @@ Private Sub ToggleRow(Y As Integer)
     _ExpandRow(Y)
   Endif
   
-  If $bShowPreview Then $hTimerSideBarRefresh.Start
+  RefreshSideBar
   
 End
 
@@ -4233,6 +4242,8 @@ Public Sub CollapseAll()
   $cCacheView.Clear
   UpdateCount
   EnsureVisible(True)
+
+  RefreshSideBar
   
 End
 
@@ -4263,6 +4274,8 @@ Public Sub ExpandAll()
   UpdateCount
   $cCacheView.Clear
   EnsureVisible(True)
+  
+  RefreshSideBar
   
 End
 
@@ -4839,82 +4852,192 @@ Public Sub _HasFolding() As Boolean
   
 End
 
-Private Sub DrawBarImage2(fRowHeight As Float)
-  
-  Dim i As Integer
-  Dim iMax As Integer
+Private Sub DrawBarImage3()
+
+  Dim aLines As String[]
+  Dim H, F As Integer
+  Dim I As Integer
+  Dim N As Integer
   Dim iRow As Integer
-  'Dim aRow As Integer[]
-  Dim s As String
-  Dim x, y, j As Integer
-  Dim aDash As Float[][] = [[1, 0.25, 1, 0.5], [2, 0.5, 1, 0.25], [1, 0.3, 2, 0.3]]
+  Dim aLineLength As Integer[]
+  Dim iLen As Integer
+  Dim Y As Integer
+  Dim X As Integer
+  Dim sLine As String
+  Dim sIndent As String
+  Dim aLinesInfo As CLineInfo[]
+  Dim hInfo As CLineInfo
+  Dim iCol As Integer
+  Dim J As Integer
+  Dim FX As Integer
+  Dim bModified As Boolean
+  Dim bSaved As Boolean
+  Dim iAlpha As Integer
+  Dim iColComment As Integer
+  Dim iColNormal As Integer
+  Dim iColModified As Integer
+  Dim iColSaved As Integer
+
+  aLines = $hDoc.Lines
+  aLineLength = $hDoc.LineLength
+  aLinesInfo = $hDoc.LinesInfo
   
-  $imgSideBar = New Image(Paint.Width - 1, Paint.Height, $hStyles[Highlight.Background].Color)
-  Paint.Begin($imgSideBar)
-  Paint.Background = Color.Gray
-  Paint.AntiAlias = True
-  iMax = _RealToView($hDoc.Lines.Max)
+  N = _RealToView(aLines.Max)
+
+  If N <= Paint.H Then
+    F = 1
+    H = Max(N, CInt(Paint.H / 2))
+  Else
+    F = CInt(N / Paint.H)
+    H = (N + F - 1) \ F
+  Endif
   
-  For i = 0 To iMax
-    iRow = _ViewToReal(i)
-    Inc j
-    If j = 3 Then j = 0
+  FX = Max(4, Min(8, F))
+  
+  iAlpha = 255 - 128 \ F
+  iColComment = Color.SetAlpha($hStyles[Highlight.Comment].Color, iAlpha)
+  iColNormal = Color.SetAlpha($hStyles[Highlight.Normal].Color, iAlpha)
+  iColModified = Color.Merge($iBackground, Color.Red, 0.4)
+  iColSaved = Color.Merge($iBackground, Color.Green, 0.4)
+  
+  $hImageSideBar = New Image(Paint.Width - 1, H, $hStyles[Highlight.Background].Color)
+  Paint.Begin($hImageSideBar)
+  
+  For I = 0 To N Step F
     
-    Paint.LineWidth = fRowHeight
-    s = $hDoc.Lines[iRow]
-    'Print s
-    y = i * fRowHeight
-    If Not LTrim(s) = "" Then
-      Paint.Dash = aDash[j]
-      x = 6 + ((String.Len(s) - String.Len(LTrim(s)))) * 60 / 100
+    bModified = False
+    bSaved = False
+
+    Paint.FillRect(0, Y, 4, 1, $iMarginColor)
+    
+    For J = I To Min(N, I + F - 1)
+    
+      iRow = _ViewToReal(J)
+      iLen = aLineLength[iRow]
       
-      Paint.MoveTo(x, y)
-      Paint.RelLineTo(Len(s) * 60 / 100, 0)
-      If Not IsNull($hDoc.LinesInfo[iRow]) And If $hDoc.LinesInfo[iRow].Comment Then
-        Paint.Background = Color.SetAlpha($hStyles[Highlight.Comment].Color, 180) 'Color.Lighter($hStyles[Highlight.Comment].Color)
-      Else
-        Paint.Background = Color.SetAlpha($hStyles[Highlight.Normal].Color, 180) 'Color.Lighter($hStyles[Highlight.Normal].Color)
-      Endif
-      Paint.Stroke
-    Endif
-    Paint.Dash = Null
-    
-    If Not IsNull($hDoc.LinesInfo[iRow]) Then
-      Paint.AntiAlias = False
-      If $hDoc.LinesInfo[iRow].Modified Then
-        Paint.Background = Color.Merge($iBackground, Color.Red, 0.2)
-        Paint.Rectangle(0, y, 3, fRowHeight + 1)
-        Paint.Fill
-      Endif
-      If $hDoc.LinesInfo[iRow].Saved Then
-        Paint.Background = Color.Merge($iBackground, Color.Green, 0.2)
-        Paint.Rectangle(0, y, 3, fRowHeight + 1)
-        Paint.Fill
-      Endif
-      If $hDoc.LinesInfo[iRow].Bookmark Then
-        Paint.MoveTo(0, y)
-        Paint.RelLineTo(Paint.Width, 0)
+      If iLen > 0 Then 
         
-        Paint.Background = Color.yellow
-        Paint.Stroke
+        sLine = aLines[iRow]
+        hInfo = aLinesInfo[iRow]
+        
+        X = 0
+        
+        If IsSpace(Left(sLine)) Then
+          sIndent = GetIndentText(iRow)
+          sIndent = Replace(sIndent, "\t", Space$($iTabSize))
+          X = Len(sIndent)
+        Endif
+        
+        If hInfo And If hInfo.Comment Then
+          iCol = iColComment
+        Else
+          iCol = iColNormal
+        Endif
+        
+        Paint.FillRect(X / FX + 5, Y, (iLen - X) / FX, 1, iCol)
+        
       Endif
-      If $bShowLimit Then
-        If $hDoc.Count <= 600 And If $hDoc.LinesInfo[iRow].Limit Then
-          Paint.LineWidth = 1.2
-          Paint.MoveTo(6, y - fRowHeight)
-          Paint.RelLineTo(Paint.Width - 6, 0)
-          Paint.Background = $iMarginColor
-          Paint.Stroke
-          Paint.DrawImage($imgSmallARrow, 0, y - fRowHeight - 1)
-          
+      
+      If $bShowModified Then
+        If Not bModified Then
+          If hInfo Then
+            If hInfo.Modified Then
+              bModified = True
+              Paint.FillRect(0, Y, 4, 1, iColModified)
+            Else If hInfo.Saved And If Not bSaved Then
+              bSaved = True
+              Paint.FillRect(0, Y, 4, 1, iColSaved)
+            Endif
+          Endif
         Endif
       Endif
-    Endif
+      
+    Next
+    
+    Inc Y
+      
   Next
   
-  Paint.end
-  
+  Paint.End
+
 End
+
+' Private Sub DrawBarImage2(fRowHeight As Float)
+'   
+'   Dim i As Integer
+'   Dim iMax As Integer
+'   Dim iRow As Integer
+'   'Dim aRow As Integer[]
+'   Dim s As String
+'   Dim x, y, j As Integer
+'   Dim aDash As Float[][] = [[1, 0.25, 1, 0.5], [2, 0.5, 1, 0.25], [1, 0.3, 2, 0.3]]
+'   
+'   $hImageSideBar = New Image(Paint.Width - 1, Paint.Height, $hStyles[Highlight.Background].Color)
+'   Paint.Begin($hImageSideBar)
+'   Paint.Background = Color.Gray
+'   Paint.AntiAlias = True
+'   iMax = _RealToView($hDoc.Lines.Max)
+'   
+'   For i = 0 To iMax
+'     iRow = _ViewToReal(i)
+'     Inc j
+'     If j = 3 Then j = 0
+'     
+'     Paint.LineWidth = fRowHeight
+'     s = $hDoc.Lines[iRow]
+'     'Print s
+'     y = i * fRowHeight
+'     If Not LTrim(s) = "" Then
+'       Paint.Dash = aDash[j]
+'       x = 6 + ((String.Len(s) - String.Len(LTrim(s)))) * 60 / 100
+'       
+'       Paint.MoveTo(x, y)
+'       Paint.RelLineTo(Len(s) * 60 / 100, 0)
+'       If Not IsNull($hDoc.LinesInfo[iRow]) And If $hDoc.LinesInfo[iRow].Comment Then
+'         Paint.Background = Color.SetAlpha($hStyles[Highlight.Comment].Color, 180) 'Color.Lighter($hStyles[Highlight.Comment].Color)
+'       Else
+'         Paint.Background = Color.SetAlpha($hStyles[Highlight.Normal].Color, 180) 'Color.Lighter($hStyles[Highlight.Normal].Color)
+'       Endif
+'       Paint.Stroke
+'     Endif
+'     Paint.Dash = Null
+'     
+'     If Not IsNull($hDoc.LinesInfo[iRow]) Then
+'       Paint.AntiAlias = False
+'       If $hDoc.LinesInfo[iRow].Modified Then
+'         Paint.Background = Color.Merge($iBackground, Color.Red, 0.2)
+'         Paint.Rectangle(0, y, 3, fRowHeight + 1)
+'         Paint.Fill
+'       Endif
+'       If $hDoc.LinesInfo[iRow].Saved Then
+'         Paint.Background = Color.Merge($iBackground, Color.Green, 0.2)
+'         Paint.Rectangle(0, y, 3, fRowHeight + 1)
+'         Paint.Fill
+'       Endif
+'       If $hDoc.LinesInfo[iRow].Bookmark Then
+'         Paint.MoveTo(0, y)
+'         Paint.RelLineTo(Paint.Width, 0)
+'         
+'         Paint.Background = Color.yellow
+'         Paint.Stroke
+'       Endif
+'       If $bShowLimit Then
+'         If $hDoc.Count <= 600 And If $hDoc.LinesInfo[iRow].Limit Then
+'           Paint.LineWidth = 1.2
+'           Paint.MoveTo(6, y - fRowHeight)
+'           Paint.RelLineTo(Paint.Width - 6, 0)
+'           Paint.Background = $iMarginColor
+'           Paint.Stroke
+'           Paint.DrawImage($imgSmallARrow, 0, y - fRowHeight - 1)
+'           
+'         Endif
+'       Endif
+'     Endif
+'   Next
+'   
+'   Paint.end
+'   
+' End
 
 ' Private Sub DrawBarImage(fRowHeight As Float)
 ' 
@@ -4923,8 +5046,8 @@ End
 '   Dim x, y, j As Integer
 '   Dim aDash As Float[][] = [[1, 0.25, 1, 0.5], [2, 0.5, 1, 0.25], [1, 0.3, 2, 0.3]]
 ' 
-'   $imgSideBar = New Image(Paint.Width - 1, Paint.Height, $hStyles[Highlight.Background].Color)
-'   Paint.Begin($imgSideBar)
+'   $hImageSideBar = New Image(Paint.Width - 1, Paint.Height, $hStyles[Highlight.Background].Color)
+'   Paint.Begin($hImageSideBar)
 '   Paint.Background = Color.Gray
 '   Paint.AntiAlias = True
 ' 
@@ -4999,8 +5122,8 @@ Public Sub SideBar_Draw()
   
   Paint.AntiAlias = False
   'Barre Cache
-  If Not $imgSideBar Then DrawBarImage2($fBarLineHeight)
-  Paint.DrawImage($imgSideBar, iBorder, 0)
+  If Not $hImageSideBar Then DrawBarImage3()
+  Paint.DrawImage($hImageSideBar, iBorder, 0, Paint.W - 1, Paint.H)
   
   'Border Line
   Paint.FillRect(If(System.RightToLeft, Paint.W - 1, 0), 0, 1, Paint.H, $iLimitColor)
@@ -5201,7 +5324,7 @@ End
 
 Public Sub TimerRefreshBar_Timer()
   
-  $imgSideBar = Null
+  $hImageSideBar = Null
   If $bShowPreview Then
     $hTimerSideBarRefresh.Stop
     $hSideBar.Refresh
@@ -5211,7 +5334,7 @@ End
 
 Public Sub SideBar_Arrange()
   
-  $hTimerSideBarRefresh.Start
+  $hTimerSideBarRefresh.Restart
   
 End
 
@@ -5379,5 +5502,11 @@ End
 Private Sub TabIndent_Write(Value As Boolean)
 
   $bTabIndent = Value
+
+End
+
+Private Sub RefreshSideBar()
+
+  If $bShowPreview Then $hTimerSideBarRefresh.Restart
 
 End
