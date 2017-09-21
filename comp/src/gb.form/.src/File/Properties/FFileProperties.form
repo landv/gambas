@@ -1,10 +1,10 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,55,51)
+  MoveScaled(0,0,55,56)
   Arrangement = Arrange.Vertical
   { tabInfo TabPanel
-    MoveScaled(1,1,52,47)
+    MoveScaled(1,1,52,51)
     Expand = True
     Arrangement = Arrange.Vertical
     Count = 4
@@ -27,7 +27,7 @@
       }
     }
     { panProperty Panel
-      MoveScaled(0,12,50,30)
+      MoveScaled(0,12,50,34)
       Expand = True
       Arrangement = Arrange.Row
       Margin = True
@@ -41,64 +41,76 @@
         Expand = True
         Alignment = Align.TopNormal
       }
-      { Label3 Label
+      { lblLabelLink Label
         MoveScaled(1,5,18,4)
+        Visible = False
+        Text = ("Link")
+        Alignment = Align.TopNormal
+      }
+      { lblLink Label
+        MoveScaled(22,5,26,4)
+        Visible = False
+        Expand = True
+        Alignment = Align.TopNormal
+      }
+      { Label3 Label
+        MoveScaled(1,9,18,4)
         Text = ("Directory")
         Alignment = Align.TopNormal
       }
       { lblDir Label
-        MoveScaled(22,5,26,4)
-        Expand = True
-        Alignment = Align.TopNormal
-      }
-      { Label4 Label
-        MoveScaled(1,9,18,4)
-        Text = ("Size")
-        Alignment = Align.TopNormal
-      }
-      { lblSize Label
         MoveScaled(22,9,26,4)
         Expand = True
         Alignment = Align.TopNormal
       }
-      { Label5 Label
+      { Label4 Label
         MoveScaled(1,13,18,4)
-        Text = ("Last modified")
+        Text = ("Size")
         Alignment = Align.TopNormal
       }
-      { lblLastModified Label
+      { lblSize Label
         MoveScaled(22,13,26,4)
         Expand = True
         Alignment = Align.TopNormal
       }
-      { Label6 Label
+      { Label5 Label
         MoveScaled(1,17,18,4)
+        Text = ("Last modified")
+        Alignment = Align.TopNormal
+      }
+      { lblLastModified Label
+        MoveScaled(22,17,26,4)
+        Expand = True
+        Alignment = Align.TopNormal
+      }
+      { Label6 Label
+        MoveScaled(1,21,18,4)
         Text = ("Permissions")
         Alignment = Align.TopNormal
       }
       { lblAuth Label
-        MoveScaled(22,17,26,4)
+        MoveScaled(22,21,26,4)
         Font = Font["Monospace"]
         Expand = True
         Alignment = Align.TopNormal
       }
       { Label7 Label
-        MoveScaled(1,21,18,4)
+        MoveScaled(1,25,18,4)
         Text = ("Owner")
         Alignment = Align.TopNormal
       }
       { lblUser Label
-        MoveScaled(22,21,26,4)
+        MoveScaled(22,25,26,4)
         Expand = True
         Alignment = Align.TopNormal
       }
       { Label8 Label
-        MoveScaled(1,25,18,4)
+        MoveScaled(1,29,18,4)
         Text = ("Group")
         Alignment = Align.TopNormal
       }
       { lblGroup Label
-        MoveScaled(22,25,26,4)
+        MoveScaled(22,29,26,4)
         Expand = True
         Alignment = Align.TopNormal
       }

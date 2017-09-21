@@ -88,12 +88,6 @@ Private Sub RefreshPath()
       Else
       
         If .Link Then
-          lblLabelType.Text = ("Symbolic link")
-        Else
-          lblLabelType.Text = ("Type")
-        Endif
-        
-        If .Link Then
           lblType.Text = .Link
           lblType.Font.Italic = True
           hMime = DesktopMime.FromFile($sPath)
@@ -133,6 +127,16 @@ Private Sub RefreshPath()
         
       Endif
       
+      
+      If .Link Then
+        lblLabelLink.Show
+        lblLink.Show
+        lblLink.Text = .Link
+      Else
+        lblLabelLink.Hide
+        lblLink.Hide
+      Endif
+        
       If IsDir($sPath) Then $hTask = New CTaskDirSize($sPath) As "Task"
       
       $iSize = .Size
