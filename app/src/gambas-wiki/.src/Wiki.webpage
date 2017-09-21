@@ -8,6 +8,9 @@
   <%If System.RightToLeft Then%>
   <link rel="stylesheet" href="<%/%>/style-rtl.css">
   <%Endif%>
+  <%If Request.Exist("nh") Then%>
+  <link rel="stylesheet" href="<%/%>/style-nh.css">
+  <%Endif%>
   <link rel="icon" href="<%/%>/logo.png" type="image/png">
   <title><%=("Gambas Documentation")%> - <%_PrintTitle%></title>
 </head>
@@ -62,10 +65,10 @@ H1 { display: none; }
 
 <%Else%>
 
-<div class="header">
+<div class="header<%If Main.Edit Then%> header-edit<%Endif%>">
 
   <div class="header-inside">
-    
+  
     <div class="header-bar">
       <div class="up">
         <%If Main.Edit Then%>

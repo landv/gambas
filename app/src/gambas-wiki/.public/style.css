@@ -8,8 +8,8 @@ HTML, BODY {
   }
 
 BODY {
-  padding: 0px;
-  margin: 0px auto;
+  padding: 0;
+  margin: 0 auto;
   font-family: sans-serif;
   /*font-size: 10pt;
   font-family: default-font;*/
@@ -87,6 +87,7 @@ A[id] {
   top: -1em;
   height: 1em;
   margin-bottom: -1em;
+  pointer-events: none;
 }
 
 P {
@@ -114,17 +115,16 @@ CODE {
 PRE {
   /*background: #F0F0F0;*/
   display: inline-block;
-  padding: 1em 8px;
+  padding-left: 0.5em;
   margin: 0px;
   margin-top: 0.75em;
-  border-left: solid #D8D8D8 2px;
   white-space: pre-wrap;
 }
 
 HR {
   margin-top: 0.75em;
-  margin-left: -8px;
-  margin-right: -8px;
+  margin-left: -0.5em;
+  margin-right: -0.5em;
   padding: 0px;
   height: 1px;
   border: none;
@@ -138,7 +138,7 @@ PRE HR {
 TABLE.table, TABLE.error {
   border-bottom: solid #D0D0D0 1px;
   border-right: solid #D0D0D0 1px;
-  padding: 0px;
+  padding: 0;
   margin-top: 0.75em;
   border-spacing: 0;
   empty-cells: show;
@@ -180,21 +180,27 @@ TABLE.desc > TBODY > TR > TH {
 
 .header {
   left: 0;
+  right: 0;
   top: 0;
-  width: 100%;
+  max-width: 80em;
+  height: 2em;
+  line-height: 2em;
+  margin: 0 auto;
   position: fixed;
   z-index: 10;
-  background: white;
-  /*border-bottom: solid 1px #C0C0C0;*/
-  /*background: #DFA36F;
-  border-top: solid 3px #DF6B00;
-  border-bottom: solid 4px #DF6B00;*/
+  background-color: #F8F8F8;
+  padding: 0 1em;
+  box-sizing: border-box;
+  border-left: solid 1px #C0C0C0;
+  border-right: solid 1px #C0C0C0;
+}
+
+.header-edit {
+  border-bottom: solid 1px #C0C0C0;
 }
 
 .header-inside {
-  /*max-width: 800px;
-  margin: 0 auto;*/
-  padding: 2px 4px;
+  padding: 0;
   /*background: #E8E8E8;
   border-bottom-left-radius: 32px;
   border-bottom-right-radius: 32px;
@@ -213,6 +219,24 @@ TABLE.desc > TBODY > TR > TH {
 
 .header-bar {
   /*margin-top: 4px;*/
+}
+
+.header INPUT[type=submit],.header INPUT[type=button] {
+  background-color: #A0A0A0;
+  color: white;
+  font-size: 80%;
+  height: 1.6em;
+  border: none;
+  cursor: pointer;
+}
+
+.header SELECT {
+  background-color: #A0A0A0;
+  color: white;
+  font-size: 80%;
+  height: 1.8em;
+  border: none;
+  cursor: pointer;
 }
 
 .title {
@@ -234,27 +258,44 @@ TABLE.desc > TBODY > TR > TH {
 }
 
 .page {
-  padding: 0 0.5em 0.5em 0.5em;
-  max-width: 80em;
-  /*margin: 0 auto;*/
-  position: relative;
-  top: 2em;
-}
-
-.page-edit {
-  /*padding: 4px 8px;*/
-  /*max-width: 800px;
-  margin: 0 auto;*/
   position: absolute;
   top: 2em;
   bottom: 0;
   left: 0;
   right: 0;
+  margin: 0 auto;
+  overflow: auto;
+  padding: 1em;
+  max-width: 80em;
+  background-color: #F8F8F8;
+  box-sizing: border-box;
+  border-left: solid 1px #C0C0C0;
+  border-right: solid 1px #C0C0C0;
+}
+
+.page P {
+  line-height: 1.5em;
+}
+
+.page-edit {
+  position: absolute;
+  top: 2em;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  overflow: auto;
+  padding: 1em;
+  width: 80em;
+  background-color: white;
+  box-sizing: border-box;
+  border-left: solid 1px #C0C0C0;
+  border-right: solid 1px #C0C0C0;
 }
 
 .unknown {
   color: red;
-  margin-top: 8px;
+  margin-top: 0.5em;
 }
 
 DIV.error {
@@ -271,20 +312,18 @@ DIV.message {
 
 .command {
   display: inline-block;
-  margin-left: 8px;
+  margin-left: 0.5em;
   vertical-align: top;
 }
 
 #lang {
   font-size: 80%;
-  margin-right: 4px;
-  margin-left: 4px;
+  margin-right: 0.25em;
+  margin-left: 0.25em;
 }
 
 .up {
   display: inline-block;
-  vertical-align: middle;
-  padding: 2px;
 }
 
 .edit-frame {
@@ -293,7 +332,7 @@ DIV.message {
   right: 0;
   top: 0;
   bottom: 0;
-  padding: 4px;
+  padding: 0.5em;
 }
 
 .edit {
@@ -311,16 +350,16 @@ DIV.box {
   margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
-  border-radius: 8px;
-  padding: 8px;
+  border-radius: 0.25em;
+  padding: 0.5em;
 }
 
 DIV.info {
   margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
-  border-radius: 8px;
-  padding: 8px;
+  border-radius: 0.25em;
+  padding: 0.5em;
   padding-left: 48px;
   background: url('<%/%>/info.png') 8px 8px no-repeat;
   min-height: 32px;
@@ -330,7 +369,7 @@ DIV.warning {
   margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
-  border-radius: 8px;
+  border-radius: 0.25em;
   padding: 8px;
   padding-left: 48px;
   background: url('<%/%>/warning.png') 8px 8px no-repeat;
@@ -341,7 +380,7 @@ DIV.tip {
   margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
-  border-radius: 8px;
+  border-radius: 0.25em;
   padding: 8px;
   padding-left: 48px;
   background: url('<%/%>/tip.png') 8px 8px no-repeat;
@@ -352,7 +391,7 @@ DIV.vb {
   margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
-  border-radius: 8px;
+  border-radius: 0.25em;
   padding: 8px;
   padding-left: 48px;
   background: url('<%/%>/vb.png') 8px 8px no-repeat;
@@ -363,7 +402,7 @@ DIV.critical {
   margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
-  border-radius: 8px;
+  border-radius: 0.25em;
   padding: 8px;
   padding-left: 48px;
   background: url('<%/%>/critical.png') 8px 8px no-repeat;
@@ -373,7 +412,7 @@ DIV.critical {
 DIV.example, DIV.seealso {
   display: inline-block;
   border: none;
-  padding: 0px;
+  padding: 0;
 }
 
 TEXTAREA {
@@ -382,7 +421,7 @@ TEXTAREA {
 
 TABLE.index {
   border: none;
-  padding: 0px;
+  padding: 0;
   margin-top: 0.75em;
 }
 
@@ -412,9 +451,9 @@ DIV.index {
 DIV.syntax {
   margin-top: 0.75em;
   display: inline-block;
-  border: solid #D8D8D8 2px;
+  border: solid #D8D8D8 1px;
   background-color: #F0F0F0;
-  padding: 4px 8px;
+  padding: 0.25em 0.5em;
   font-family: monospace;
   white-space: pre-wrap;
 }
@@ -428,8 +467,8 @@ DIV.since {
   background: #FF8080;
   color: white;
   font-weight: bold;
-  border: solid 1px red;
-  padding: 1px 6px;
+  padding: 0 0.5em;
+  line-height: 1.2rem;
   text-transform: uppercase;
   font-size: 80%;
 }
@@ -646,10 +685,11 @@ DIV.release {
   color: white;
 }
 
-DIV.date p {
+DIV.date P {
   display: table-cell;
   vertical-align: middle;
   text-align: center;
+  line-height: initial;
 }
 
 DIV.result {
@@ -667,6 +707,7 @@ DIV.code {
 }
 
 DIV.code PRE {
+  padding: 0.5em 1em;
   margin-top: 0;
   border: none;
 }
