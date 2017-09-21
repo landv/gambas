@@ -980,12 +980,23 @@ Private Sub AddEmblem(hSource As Image, sEmblem As String) As Image
 
 End
 
-Private Sub AddLinkEmblem(hSource As Image) As Image
+Public Sub AddLinkEmblem(hSource As Image) As Image
 
-  Dim hImage As New Image(hSource.Width + 1, hSource.Height + 1, Color.Transparent)
+  Dim hImage As Image
+  Dim iSize As Integer
 
-  hImage.PaintImage(hSource, 1, 0)
-  hImage.PaintImage(Picture["img/16/link.png"].Image, 0, hImage.Height - 16)
+  hImage = hSource.Copy()
+
+  iSize = Min(hSource.H, hSource.W) \ 2
+
+  Paint.Begin(hImage)
+  Paint.MoveTo(hImage.W, hImage.H)
+  Paint.RelLineTo(0, - iSize)
+  Paint.RelLineTo(- iSize, iSize)
+  Paint.RelLineTo(iSize, 0)
+  Paint.Background = Color.SetAlpha(Color.TextForeground, 64)
+  Paint.Fill
+  Paint.End
   Return hImage
 
 End
@@ -5888,7 +5899,11 @@ Public Sub SetNormalFont(hCtrl As Control)
   Dim hFont As Font = Font[Settings["/Font"]]
 
   Try hFont.Size *= 1 - Settings["/ProjectFontSize", 0] / 20
-  hCtrl.Font = hFont
+  If hFont.ToString() = Application.Font.ToString() Then
+    hCtrl.Font = Null
+  Else
+    hCtrl.Font = hFont
+  Endif
 
 End
 

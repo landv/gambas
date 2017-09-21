@@ -442,16 +442,16 @@ Private Sub AddEmblem(hSource As Image, sEmblem As String) As Image
   
 End
 
-Private Sub AddLinkEmblem(hSource As Image) As Image
-  
-  Dim hImage As New Image(hSource.Width + 1, hSource.Height + 1, Color.Transparent)
-  
-  hImage.PaintImage(hSource, 1, 0)
-  hImage.PaintImage(Picture["img/16/link.png"].Image, 0, hImage.Height - 16)
-  Return hImage
-  
-End
-
+' Private Sub AddLinkEmblem(hSource As Image) As Image
+'   
+'   Dim hImage As New Image(hSource.Width + 1, hSource.Height + 1, Color.Transparent)
+'   
+'   hImage.PaintImage(hSource, 1, 0)
+'   hImage.PaintImage(Picture["img/16/link.png"].Image, 0, hImage.Height - 16)
+'   Return hImage
+'   
+' End
+' 
 Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
 
   Dim hImage As Image
@@ -599,9 +599,7 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
     If bAdded Then hImage = AddEmblem(hImage, "icon:/32/add")
 
-    If bLink Then
-      hImage = AddLinkEmblem(hImage)
-    Endif
+    If bLink Then hImage = Project.AddLinkEmblem(hImage)
 
     hPict = hImage.Picture
 
@@ -644,9 +642,7 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
         hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
       Endif
 
-      If bLink Then
-        hImage = AddLinkEmblem(hImage)
-      Endif
+      If bLink Then hImage = Project.AddLinkEmblem(hImage)
 
       hPict = hImage.Picture
 

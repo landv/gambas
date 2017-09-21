@@ -282,7 +282,7 @@
     }
     { btnCut ToolButton mnuCut
       Name = "btnCut"
-      MoveScaled(20,0,4,4)
+      MoveScaled(18,0,4,4)
       Visible = False
       ToolTip = ("Cut")
       Action = ".cut"
@@ -290,7 +290,7 @@
     }
     { btnCopy ToolButton mnuCopy
       Name = "btnCopy"
-      MoveScaled(23,0,4,4)
+      MoveScaled(21,0,4,4)
       Visible = False
       ToolTip = ("Copy")
       Action = ".copy"
@@ -298,7 +298,7 @@
     }
     { btnPaste MenuButton mnuPaste
       Name = "btnPaste"
-      MoveScaled(26,0,6,4)
+      MoveScaled(24,0,6,4)
       ToolTip = ("Paste")
       Action = ".paste"
       Picture = Picture["icon:/small/paste"]
@@ -307,7 +307,7 @@
     }
     { btnPasteSpecial ToolButton mnuPasteSpecial
       Name = "btnPasteSpecial"
-      MoveScaled(31,0,14,4)
+      MoveScaled(29,0,16,4)
       Visible = False
       ToolTip = ("Paste special")
       Action = ".paste-special"
@@ -449,7 +449,7 @@
     }
   }
   { Panel1 Panel
-    MoveScaled(10,9,38,63)
+    MoveScaled(11,9,38,63)
     Background = Color.TextBackground
     Expand = True
     Arrangement = Arrange.Fill

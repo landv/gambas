@@ -419,6 +419,7 @@ End
 
 Public Sub DrawingArea_DblClick()
   
+  If Not Object.IsValid(Me) Then Return
   If Mouse.Left Then Raise DblClick
   
 End

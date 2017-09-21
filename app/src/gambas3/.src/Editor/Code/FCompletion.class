@@ -31,6 +31,21 @@ Private $bGambas As Boolean
 Private $bHideLater As Boolean
 
 Private $cFindStrings As Collection
+Static Private $sWordSeparators As String
+
+Static Public Sub _init()
+
+  Dim I As Integer
+  Dim sCar As String
+  
+  For I = 0 To 255
+    sCar = Chr$(I)
+    If IsDigit(sCar) Or If IsLetter(sCar) Or If sCar = "_" Or If sCar = "$" Then Continue
+    $sWordSeparators &= sCar
+  Next
+  
+End
+
 
 Public Sub _new()
   
@@ -478,7 +493,6 @@ Private Sub FillWithIdent(sWord As String)
 
   Dim sLine As String
   Dim iPos As Integer
-  Dim iPos2 As Integer
   Dim sCar As String
   Dim aResult As New String[]
   Dim cKey As New Collection
@@ -486,9 +500,12 @@ Private Sub FillWithIdent(sWord As String)
   Dim cSymbol As Collection
   Dim sOrg As String
   Dim iLine As Integer
-  Dim sUCaseLine As String
   Dim aKeywords As String[]
   Dim aFind As Integer[]
+  Dim fTimer As Float
+  Dim sSearchLine As String
+  Dim sSearchWord As String
+  Dim aSearchWord As String[]
 
   ClearRows
 
@@ -546,10 +563,14 @@ Private Sub FillWithIdent(sWord As String)
     Next
   Endif
   
-  If Not $hEditor.IsSameFindStrings(Left(sWord, 3)) Then
+  If Not $hEditor.IsSameFindStrings(String.Left(sWord, 3)) Then
+  
+    fTimer = Timer
   
     $cFindStrings = New Collection
-    aFind = $hEditor.FindStrings(Left(sWord, 3))
+    aFind = $hEditor.FindStrings(String.Left(sWord, 3))
+    
+    fTimer = Timer
     
     For Each iLine In aFind
     
@@ -559,31 +580,47 @@ Private Sub FillWithIdent(sWord As String)
       'Else
         sLine = $hEditor[iLine].Text
       'Endif
-      sUCaseLine = String.UCase(sLine) ' Only ASCII characters are interesting there...
-    
-      iPos = 0
+      
+      sSearchLine = String.RemoveDiacritics(sLine)
+      sSearchWord = LCase(String.RemoveDiacritics(sWord))
+      
+      aSearchWord = Split(sSearchLine, $sWordSeparators, "", True)
+      
+      iPos = -1
       Do
-        Inc iPos
-        iPos = String.InStr(sUCaseLine, sWord, iPos)
-        If iPos = 0 Then Break
-        If iPos > 1 Then
-          sCar = String.Mid$(sLine, iPos - 1, 1)
-          If $hForm.IsWordChar(sCar) Then Break
-        Endif
-        For iPos2 = iPos + String.Len(sWord) To String.Len(sLine)
-          sCar = String.Mid$(sLine, iPos2, 1)
-          If Not $hForm.IsWordChar(sCar) Then Break
-        Next
-        sCar = String.Mid$(sLine, iPos, iPos2 - iPos)
+        iPos = aSearchWord.Find(sSearchWord & "*", gb.Like, iPos + 1)
+        If iPos < 0 Then Break
+        sCar = aSearchWord[iPos]
         If IsDigit(Left$(sCar)) Then Continue 
-        
         If $cFindStrings.Exist(sCar) Then Continue
         $cFindStrings[sCar] = True
-        
       Loop
+      
+      ' sUCaseLine = String.UCase(sLine) ' Only ASCII characters are interesting there...
+      ' 
+      ' iPos = 0
+      ' Do
+      '   Inc iPos
+      '   iPos = String.InStr(sUCaseLine, sWord, iPos)
+      '   If iPos = 0 Then Break
+      '   If iPos > 1 Then
+      '     sCar = String.Mid$(sLine, iPos - 1, 1)
+      '     If $hForm.IsWordChar(sCar) Then Break
+      '   Endif
+      '   For iPos2 = iPos + String.Len(sWord) To String.Len(sLine)
+      '     sCar = String.Mid$(sLine, iPos2, 1)
+      '     If Not $hForm.IsWordChar(sCar) Then Break
+      '   Next
+      '   sCar = String.Mid$(sLine, iPos, iPos2 - iPos)
+      '   If IsDigit(Left$(sCar)) Then Continue 
+      '   
+      '   If $cFindStrings.Exist(sCar) Then Continue
+      '   $cFindStrings[sCar] = True
+      '   
+      ' Loop
     
     Next
-  
+    
   Endif
     
   For Each $cFindStrings
