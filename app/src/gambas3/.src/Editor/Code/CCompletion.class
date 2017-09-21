@@ -82,9 +82,9 @@ Public Sub OnKeyPress() As Boolean
     CheckCompletion("/")
 
   Else If Key.Text And If $hModule.IsWordChar(Key.Text) Then
-
+    
     CheckCompletion("A")
-
+    
   Endif  
   
 End

@@ -1299,7 +1299,7 @@ End
 
 Public Sub IsWordChar(sCar As String) As Boolean
   
-  Return InStr("&~\"#'{([|`\\^@)]°=+}€$£%*!§:/;.,?<>¢«»¥·©®¬¿×·÷¡øø \t", sCar) = 0
+  Return InStr("&~\"#'{([|`\\^@)]°=+}€$£%*!§:/;.,?<>¢«»¥·©®¬¿×·÷¡ø \t", sCar) = 0
   
 End
 

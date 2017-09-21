@@ -38,7 +38,7 @@ Static Public Sub _init()
   Dim I As Integer
   Dim sCar As String
   
-  For I = 0 To 255
+  For I = 0 To 127
     sCar = Chr$(I)
     If IsDigit(sCar) Or If IsLetter(sCar) Or If sCar = "_" Or If sCar = "$" Then Continue
     $sWordSeparators &= sCar
@@ -506,6 +506,7 @@ Private Sub FillWithIdent(sWord As String)
   Dim sSearchLine As String
   Dim sSearchWord As String
   Dim aSearchWord As String[]
+  Dim aResultWord As String[]
 
   ClearRows
 
@@ -585,12 +586,13 @@ Private Sub FillWithIdent(sWord As String)
       sSearchWord = LCase(String.RemoveDiacritics(sWord))
       
       aSearchWord = Split(sSearchLine, $sWordSeparators, "", True)
+      aResultWord = Split(sLine, $sWordSeparators, "", True)
       
       iPos = -1
       Do
         iPos = aSearchWord.Find(sSearchWord & "*", gb.Like, iPos + 1)
         If iPos < 0 Then Break
-        sCar = aSearchWord[iPos]
+        sCar = aResultWord[iPos]
         If IsDigit(Left$(sCar)) Then Continue 
         If $cFindStrings.Exist(sCar) Then Continue
         $cFindStrings[sCar] = True

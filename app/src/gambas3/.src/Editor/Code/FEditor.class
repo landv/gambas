@@ -1962,7 +1962,7 @@ Public Sub CheckCompletion(sMode As String)
     
     If Not FCompletion.VisibleFrom($hEditor) Then
       sWord = $hCompletion.GetWord(sLine & Key.Text, $hEditor.Column + 1)
-      If Len(sWord) >= 3 Then FCompletion.Open(Me, sMode, sWord)
+      If String.Len(sWord) >= 3 Then FCompletion.Open(Me, sMode, sWord)
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
     Endif
     
@@ -3784,7 +3784,8 @@ End
 
 Public Sub IsWordChar(sCar As String) As Boolean
   
-  Return InStr(FEditor.IDENT_CAR, sCar) > 0
+  Return InStr("&~\"#'{([|`\\^@)]°=+}€$£%*!§:/;.,?<>¢«»¥·©®¬¿×·÷¡ø \t", sCar) = 0
+  'Return InStr(FEditor.IDENT_CAR, sCar) > 0
   
 End
 
