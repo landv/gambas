@@ -5185,7 +5185,7 @@ Public Sub SideBar_MouseMove()
     $iSideBarStyle = iStyle
     $hSideBar.Refresh
   Endif
-  
+
   If $iMD > 0 Then
     $hView.Scrolly = $hRows._GetRowY(_ViewToReal(Min(Max(0, Floor((Mouse.Y - $iMD) / $fBarLineHeight)), iCount)))
   Endif

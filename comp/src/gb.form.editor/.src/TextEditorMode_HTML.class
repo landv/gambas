@@ -4,6 +4,8 @@ Inherits TextEditorMode
 
 Static Public Const Name As String = "html"
 
+Static Private $aDoNotClose As String[] = ["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"]
+
 Private Sub InsertClosingMarkup(hEditor As TextEditor)
 
   Dim sLine As String
@@ -23,7 +25,7 @@ Private Sub InsertClosingMarkup(hEditor As TextEditor)
     Dec X1
   Wend
   
-  If X = 0 Then Return
+  If X1 = 0 Then Return
   
   X2 = X1
   Do
@@ -34,7 +36,11 @@ Private Sub InsertClosingMarkup(hEditor As TextEditor)
   Loop
   
   sMarkup = String.Mid$(sLine, X1 + 1, X2 - X1 - 1)
+  
+  If Not sMarkup Then Return
   If sMarkup Begins "/" Then Return
+  If sMarkup Begins "%" Then Return
+  If $aDoNotClose.Exist(sMarkup, gb.IgnoreCase) Then Return
   
   hEditor.Insert("</" & sMarkup & ">")
   hEditor.Goto(X, hEditor.Line)
