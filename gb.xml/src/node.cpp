@@ -257,95 +257,37 @@ void XMLNode_appendFromText(Node *node, const char *data, const size_t lenData)
 
 void XMLNode_addGBChildrenByTagName(Node *node, const char *compTagName, const size_t compLenTagName, GB_ARRAY *array, const int mode, const int depth)
 {
-    if(depth == 0) return;
-    if(node->type == Node::ElementNode)
-    {
-        if(mode == GB_STRCOMP_NOCASE || mode == GB_STRCOMP_LANG + GB_STRCOMP_NOCASE)
-        {
-            if(compLenTagName == ((Element*)node)->lenTagName)
-            {
-                if(strncasecmp(compTagName, ((Element*)node)->tagName, compLenTagName) == 0)
-                {
-                    *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = XMLNode_GetGBObject(node);
-                    GB.Ref(node->GBObject);
-                }
-            }
-        }
-        else if(mode == GB_STRCOMP_LIKE)
-        {
-            if(GB.MatchString(compTagName, compLenTagName, ((Element*)node)->tagName, ((Element*)node)->lenTagName))
-            {
-                *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = XMLNode_GetGBObject(node);
-                GB.Ref(node->GBObject);
-            }
-        }
-        else
-        {
-            if(compLenTagName == ((Element*)node)->lenTagName)
-            {
-                if(memcmp(compTagName, ((Element*)node)->tagName, compLenTagName) == 0)
-                {
-                    *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = XMLNode_GetGBObject(node);
-                    GB.Ref(node->GBObject);
-                }
-            }
-        }
-    }
-    if(depth == 1) return;
-    
+    if(depth == 0 || depth == 1) return;
+
     for(Node *tNode = node->firstChild; tNode != 0; tNode = tNode->nextNode)
     {
-        if(tNode->type == Node::ElementNode)
+        if(tNode->type != Node::ElementNode) continue;
+
+        if(GB_MatchString(((Element*)tNode)->tagName, ((Element*)tNode)->lenTagName, compTagName, compLenTagName, mode))
         {
-            XMLNode_addGBChildrenByTagName(tNode, compTagName, compLenTagName, array, mode, depth - 1);
+            *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = XMLNode_GetGBObject(tNode);
+            GB.Ref(tNode->GBObject);
         }
+
+        XMLNode_addGBChildrenByTagName(tNode, compTagName, compLenTagName, array, mode, depth - 1);
     }
 }
 
 void XMLNode_addGBChildrenByNamespace(Node *node, const char *cnamespace, const size_t lenNamespace, GB_ARRAY *array, const int mode, const int depth)
 {
-    if(depth == 0) return;
-    if(node->type != Node::ElementNode)
-    {
-        if(mode == GB_STRCOMP_NOCASE || mode == GB_STRCOMP_LANG + GB_STRCOMP_NOCASE)
-        {
-            if(lenNamespace == ((Element*)node)->lenTagName)
-            {
-                if(strncasecmp(cnamespace, ((Element*)node)->tagName, lenNamespace) == 0)
-                {
-                    *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = XMLNode_GetGBObject(node);
-                    GB.Ref(node->GBObject);
-                }
-            }
-        }
-        else if(mode == GB_STRCOMP_LIKE)
-        {
-            if(GB.MatchString(cnamespace, lenNamespace, ((Element*)node)->tagName, ((Element*)node)->lenTagName))
-            {
-                *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = XMLNode_GetGBObject(node);
-                GB.Ref(node->GBObject);
-            }
-        }
-        else
-        {
-            if(lenNamespace == ((Element*)node)->lenTagName)
-            {
-                if(memcmp(cnamespace, ((Element*)node)->tagName, lenNamespace) == 0)
-                {
-                    *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = XMLNode_GetGBObject(node);
-                    GB.Ref(node->GBObject);
-                }
-            }
-        }
-    }
-    if(depth == 1) return;
+    if(depth == 0 || depth == 1) return;
 
-    for(Node *tNode = node->firstChild; tNode != 0; tNode = node->nextNode)
+    for(Node *tNode = node->firstChild; tNode != 0; tNode = tNode->nextNode)
     {
-        if(tNode->type == Node::ElementNode)
+        if(tNode->type != Node::ElementNode) continue;
+
+        if(GB_MatchString(((Element*)tNode)->tagName, ((Element*)tNode)->lenTagName, cnamespace, lenNamespace, mode))
         {
-            XMLNode_addGBChildrenByTagName(tNode, cnamespace, lenNamespace, array, mode, depth - 1);
+            *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = XMLNode_GetGBObject(tNode);
+            GB.Ref(tNode->GBObject);
         }
+
+        XMLNode_addGBChildrenByNamespace(tNode, cnamespace, lenNamespace, array, mode, depth - 1);
     }
 }
 
@@ -393,28 +335,23 @@ void XMLNode_addGBChildrenByAttributeValue(Node *node, const char *attrName, con
                                                  const char *attrValue, const size_t lenAttrValue,
                                                  GB_ARRAY *array, const int mode, const int depth)
 {
-    if(node->type == Node::ElementNode)
+    if(depth == 0 || depth == 1) return;
+
+    for(Node *tNode = node->firstChild; tNode != 0; tNode = tNode->nextNode)
     {
+        if(tNode->type != Node::ElementNode) continue;
         Attribute *attr = XMLElement_GetAttribute((Element*)node, attrName, lenAttrName);
         if(attr)
         {
             if(GB_MatchString(attr->attrValue, attr->lenAttrValue, attrValue, lenAttrValue, mode))
             {
-                *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = XMLNode_GetGBObject(node);
-                GB.Ref(node->GBObject);
+                *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = XMLNode_GetGBObject(tNode);
+                GB.Ref(tNode->GBObject);
             }
         }
-    }
 
-    if(depth == 1) return;
-    for(Node *tNode = node->firstChild; tNode != 0; tNode = tNode->nextNode)
-    {
-        if(tNode->type == Node::ElementNode)
-        {
-            XMLNode_addGBChildrenByAttributeValue(tNode, attrName, lenAttrName, attrValue, lenAttrValue, array, mode, depth - 1);
-        }
+        XMLNode_addGBChildrenByAttributeValue(tNode, attrName, lenAttrName, attrValue, lenAttrValue, array, mode, depth - 1);
     }
-            
 }
 
 void XMLNode_getGBChildElements(Node *node, GB_ARRAY *array)
