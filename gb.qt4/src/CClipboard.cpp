@@ -39,6 +39,7 @@
 #include <QTextEdit>
 #include <QSpinBox>
 #include <QWidget>
+#include <QTextCodec>
 
 #include "CWidget.h"
 #include "CImage.h"
@@ -132,6 +133,7 @@ static void paste(const QMimeData *data, const char *fmt)
 	QString format;
 	QByteArray ba;
 	int type;
+	QTextCodec *codec = NULL;
 
 	if (fmt)
 		format = fmt;
@@ -152,9 +154,23 @@ static void paste(const QMimeData *data, const char *fmt)
 	switch(type)
 	{
 		case MIME_TEXT:
+			
 			ba = data->data(format);
+			
 			if (ba.size())
+			{
+#if QT5
 				GB.ReturnNewString(ba.constData(), ba.size());
+#else
+				if (((uchar)ba[0] == 0xFE && (uchar)ba[1] == 0xFF) || ((uchar)ba[0] == 0xFF && (uchar)ba[1] == 0xFE))
+					codec = QTextCodec::codecForUtfText(ba, NULL);
+				
+				if (codec)
+					RETURN_NEW_STRING(codec->toUnicode(ba));
+				else
+					GB.ReturnNewString(ba.constData(), ba.size());
+#endif
+			}
 			else
 				GB.ReturnNull();
 			break;
