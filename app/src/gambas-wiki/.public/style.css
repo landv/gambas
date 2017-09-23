@@ -3,18 +3,22 @@
   src: url('/Roboto-Light.ttf');
 }*/
 
-HTML, BODY {
-  height: 100%;
-  }
+HTML {
+  margin: 0;
+  padding: 0;
+}
 
 BODY {
-  padding: 0;
+  padding: 1em;
   margin: 0 auto;
   font-family: sans-serif;
   /*font-size: 10pt;
   font-family: default-font;*/
   background: white;
   color: #404040;
+	box-sizing: border-box;
+	overflow: hidden;
+	height: 100vh;
 }
 
 INPUT[type=text] {
@@ -31,16 +35,6 @@ INPUT[type=password] {
 
 INPUT[type=text]:focus {
   border: solid gray 1px;
-}
-
-INPUT[type=button] {
-  font-size: 80%;
-  height: 2em;
-}
-
-INPUT[type=submit] {
-  font-size: 80%;
-  height: 2em;
 }
 
 /*INPUT {
@@ -178,21 +172,23 @@ TABLE.desc > TBODY > TR > TH {
   padding: 6px 12px;
 }
 
-.header {
+#page-frame {
+  position: absolute;
   left: 0;
   right: 0;
-  top: 0;
+  top: 1em;
+  bottom: 1em;
   max-width: 80em;
+  margin: auto;
+  border: solid 1px #C0C0C0;
+  box-sizing: border-box;
+  background-color: #F8F8F8;
+}
+
+.header {
   height: 2em;
   line-height: 2em;
-  margin: 0 auto;
-  position: fixed;
-  z-index: 10;
-  background-color: #F8F8F8;
   padding: 0 1em;
-  box-sizing: border-box;
-  border-left: solid 1px #C0C0C0;
-  border-right: solid 1px #C0C0C0;
 }
 
 .header-edit {
@@ -221,7 +217,7 @@ TABLE.desc > TBODY > TR > TH {
   /*margin-top: 4px;*/
 }
 
-.header INPUT[type=submit],.header INPUT[type=button] {
+.header-bar INPUT[type=submit],.header-bar INPUT[type=button] {
   background-color: #A0A0A0;
   color: white;
   font-size: 80%;
@@ -263,14 +259,10 @@ TABLE.desc > TBODY > TR > TH {
   bottom: 0;
   left: 0;
   right: 0;
-  margin: 0 auto;
   overflow: auto;
-  padding: 1em;
-  max-width: 80em;
+  padding: 2em;
   background-color: #F8F8F8;
   box-sizing: border-box;
-  border-left: solid 1px #C0C0C0;
-  border-right: solid 1px #C0C0C0;
 }
 
 .page P {
@@ -283,14 +275,10 @@ TABLE.desc > TBODY > TR > TH {
   bottom: 0;
   left: 0;
   right: 0;
-  margin: 0 auto;
   overflow: auto;
   padding: 1em;
-  width: 80em;
   background-color: white;
   box-sizing: border-box;
-  border-left: solid 1px #C0C0C0;
-  border-right: solid 1px #C0C0C0;
 }
 
 .unknown {
@@ -415,6 +403,10 @@ DIV.example, DIV.seealso {
   padding: 0;
 }
 
+DIV.seealso > UL:first-child {
+  margin-top: 0.75em;
+}
+
 TEXTAREA {
   font-family: monospace;
 }
@@ -475,7 +467,6 @@ DIV.since {
 
 .letter {
   font-weight: bold;
-  font-size: larger;
   vertical-align: baseline;
 }
 
@@ -514,13 +505,18 @@ TABLE.symbols > TBODY > TR > TD {
 }
 
 TABLE.full {
-  width: 100%
+  width: 100%;
+  line-height: 1.5em;
 }
 
-UL, OL {
+UL,OL {
   padding-left: 2em;
   margin-bottom: 0;
-  /*margin-top: 0.75em;*/
+  margin-top: 0.75em;
+}
+
+LI UL,OL {
+  margin-top: 0;
 }
 
 P:first-child,UL:first-child,OL:first-child,TABLE:first-child {
@@ -542,13 +538,15 @@ DIV.syntax > P:first-child {
 .login {
   position: absolute;
   background: white;
-  border: solid 2px gray;
-  padding: 1em;
-  width: 24em;
-  z-index: -1;
+  border: solid 1px #C0C0C0;
+  box-shadow: 0 0 0.5em black;
+  padding: 2em;
+  z-index: 10;
   text-align: center;
-  right: 1em;
-  top: 3em;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  border-radius: 1em;
 }
 
 .login-glue {
@@ -714,4 +712,24 @@ DIV.code PRE {
 
 IMG.screenshot {
   box-shadow: 0 0 0.5em rgba(0,0,0,0.25);
+}
+
+#welcome {
+	font-size: 200%;
+	font-weight: bold;
+	text-shadow: 0 0 0.1em gray;
+	margin-bottom: 1em;
+}
+
+#logo {
+	width: 10em;
+	margin-bottom: 1em;
+}
+
+#login-buttons {
+  margin-top: 2em;
+}
+
+#login-buttons > INPUT {
+  margin: 0 0.5em;
 }

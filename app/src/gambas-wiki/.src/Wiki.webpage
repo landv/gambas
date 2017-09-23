@@ -23,6 +23,7 @@ H1 { display: none; }
 </style>
 <%Endif%>
 
+<div id="page-frame">
 <form name="form" method="post" enctype="multipart/form-data">
 
 <%If Not Main.Edit And If Request["ident"] Then%>
@@ -30,7 +31,6 @@ H1 { display: none; }
     <input type="submit" name="ok" value="<%=("OK")%>" style="position:absolute;width:0px;height:0px;margin:0px;padding:0px;outline:none;border:none;">
   <%Endif%>
 <%Endif%>
-  
 
 <%If Request.Exist("v") Or If Request.Exist("nh") Then%>
 
@@ -140,12 +140,16 @@ H1 { display: none; }
         <div id="user" class="label-login" align="left"><%=Main.UserName%></div>
         <div class="command"><input type="submit" name="logout" value="<%=("Logout")%>"></div>
       <%Else%>
+        <div id="welcome">Gambas Wiki</div>
+        <div align="center"><img id="logo" src="<%/%>/gambas.png"></div>
         <div class="label-login" align="left"><%=("Login")%>&nbsp;</div>
-        <input type="text" name="login" id="login" maxlength="16">
+        <input type="text" name="login" id="login" maxlength="16" autofocus><br>
         <div class="label-login" align="left"><%=("Password")%>&nbsp;</div>
-        <input type="password" name="password" id="password" maxlength="16">
-        <div class="command"><input type="submit" name="ok" id="ok" value="<%=("OK")%>"></div>
-        <div class="command"><input type="submit" id="cancel" value="<%=("Cancel")%>"></div>
+        <input type="password" name="password" id="password" maxlength="16"><br>
+        <div id="login-buttons">
+          <input type="submit" name="ok" id="ok" value="<%=("OK")%>">
+          <input type="submit" id="cancel" value="<%=("Cancel")%>">
+        </div>
       <%Endif%>
     </div></div>
   <%Endif%>
@@ -201,6 +205,7 @@ H1 { display: none; }
 </div>
 
 </form>
+</div>
 
 </body>
 </html>
