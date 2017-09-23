@@ -265,21 +265,23 @@ void UpdateMetaCharset(Document *doc, bool html5)
     size_t lenMetas;
     Element **metas = XML.XMLNode_getChildrenByTagName(HtmlDocument_GetHead(doc), "meta", 4, lenMetas, 2);
     Element *meta = 0;
+    Element *tmeta = 0;
     Attribute *attr;
 
     for(size_t i = 0; i < lenMetas; i++)
     {
+        tmeta = metas[i];
         if(doc->docType == XHTMLDocumentType)
         {
-            attr = XML.XMLElement_GetAttribute(metas[i], "http-equiv", 11, 0);
+            attr = XML.XMLElement_GetAttribute(tmeta, "http-equiv", 10, 0);
             if(!attr) continue;
             if(!XML.GB_MatchString(attr->attrValue, attr->lenAttrValue, "Content-Type", 12, 0)) continue;
-            XML.XMLElement_RemoveAttribute(metas[i], attr);
-            attr = XML.XMLElement_GetAttribute(metas[i], "content", 7, 0);
+            XML.XMLElement_RemoveAttribute(tmeta, attr);
+            attr = XML.XMLElement_GetAttribute(tmeta, "content", 7, 0);
             if(!attr) continue;
-            if(!XML.GB_MatchString(attr->attrValue, attr->lenAttrValue, "text/html; charset=utf-8", 25, 0)) continue;
-            XML.XMLElement_RemoveAttribute(metas[i], attr);
-            meta = metas[i];
+            if(!XML.GB_MatchString(attr->attrValue, attr->lenAttrValue, "text/html; charset=utf-8", 24, 0)) continue;
+            XML.XMLElement_RemoveAttribute(tmeta, attr);
+            meta = tmeta;
             break;
         }
         else
