@@ -529,6 +529,8 @@ Public Sub ProjectItem_RemoveClick()
   Dim hItem As ProjectBox = Last
   Dim sErr As String
   
+  If $hCurrent = hItem Then $hCurrent = Null
+  
   If $iType = TYPE_RECENT Then 
     
     CRecentProject.Remove(hItem.Path)

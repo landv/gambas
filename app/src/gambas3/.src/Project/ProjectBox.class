@@ -409,6 +409,7 @@ Public Sub DrawingArea_MouseUp()
       Raise ButtonClick
     Else If $bInsideRemove Then
       Raise RemoveClick
+      Stop Event
     Else
       Raise Click
     Endif
@@ -419,7 +420,7 @@ End
 
 Public Sub DrawingArea_DblClick()
   
-  If Not Object.IsValid(Me) Then Return
+  'If Not Object.IsValid(Me) Then Return
   If Mouse.Left Then Raise DblClick
   
 End
