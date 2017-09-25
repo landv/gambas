@@ -1730,6 +1730,7 @@ Public Sub View_MouseDown()
   Dim Y As Integer
   Dim X As Integer
   Dim RY As Integer
+  Dim MW As Integer
   
   $bFirstFocus = True
   
@@ -1739,7 +1740,9 @@ Public Sub View_MouseDown()
   RY = $hRows.RelativeY
   
   If Y >= 0 Then
-    If Mouse.X < $MW And If Mouse.X >= $iPosIcon Then
+    MW = $MW
+    If $bShowModified Then MW -= 4
+    If Mouse.X < MW And If Mouse.X >= $iPosIcon Then
       If Mouse.Left Then
         Goto(0, Y, Mouse.Shift)
         If Mouse.Normal And If $bShowExpand And If $hDoc.Info(Y).Limit Then
@@ -5518,3 +5521,26 @@ Public Sub GetIndent(StartLine As Integer, Optional EndLine As Integer) As Strin
   
 End
 
+Public Sub GetHighlight(Y As Integer, ByRef Symbols As String[], ByRef Types As Integer[])
+  
+  Dim aColors As Byte[]
+  Dim sLine As String
+  Dim I As Integer
+  Dim P As Integer
+  
+  $hDoc.HighlightFrom(Y)
+  Try aColors = $hDoc.LinesInfo[Y].Colors
+  If Not aColors Then Return
+  
+  Symbols = New String[]
+  Types = New Integer[]
+  
+  sLine = $hDoc.Lines[Y]
+  P = 1
+  For I = 0 To aColors.Max Step 2
+    Types.Add(aColors[I])
+    Symbols.Add(String.Mid$(sLine, P, aColors[I + 1]))
+    P += aColors[I + 1]
+  Next
+  
+End

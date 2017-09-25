@@ -41,7 +41,7 @@ Public Sub InsideString(hEditor As TextEditor) As Boolean
   iLen = hEditor.Current.Length
   sDelim = Me.STRING_DELIM
   
-  For I = 1 To hEditor.Column - 1
+  For I = 1 To hEditor.Column
     sCar = String.Mid$(sLine, I, 1)
     If sCar = sInside Then
       sInside = ""
