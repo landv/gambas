@@ -751,6 +751,13 @@ Catch
 
 End
 
+Static Public Sub GetIndent(sLine As String) As Integer
+  
+  Return Len(sLine) - Len(LTrim(sLine))
+  
+End
+
+
 Private Sub DoStructControlCompletion(iLine As Integer, sLine As String, aSymbol As String[]) As Boolean
 
   Dim bIndent, bUnindent As Boolean
@@ -781,7 +788,7 @@ Private Sub DoStructControlCompletion(iLine As Integer, sLine As String, aSymbol
 
   If bIndent Then
 
-    iIndent = $hEditor.GetIndent(sLine)
+    iIndent = GetIndent(sLine)
 
     If sClose Then
       For iInd = $hEditor.Line + 1 To $hEditor.Count - 1
@@ -789,7 +796,7 @@ Private Sub DoStructControlCompletion(iLine As Integer, sLine As String, aSymbol
         If Not Trim(sLine) Then Continue
         If Right(RTrim(sLine)) = ":" Then Continue ' Ignore labels
         If Left(LTrim(sLine)) = "'" Then Continue ' Ignore comments
-        iPos = $hEditor.GetIndent(sLine)
+        iPos = GetIndent(sLine)
         If iPos < iIndent Then Break
         If iPos > iIndent Then Continue
         Highlight.Analyze(sLine)
@@ -915,7 +922,7 @@ Public Sub Editors_KeyPress()
 
     If AutoComment And If IsComment(sLine) And If Key.Shift Then
 
-      iInd = $hEditor.GetIndent(sLine)
+      iInd = GetIndent(sLine)
       If $hEditor.Column > iInd Then
         iPos = iInd + 1
         While Mid$(sLine, iPos, 1) = "'"
@@ -1193,6 +1200,7 @@ Public Sub mnuComment_Click()
   'IF NOT Editor.Selected THEN RETURN
 
   If $hEditor.Selected Then
+    
     $hEditor.StoreSelection
 
     iStartLine = Min($hEditor.SelectionLine, $hEditor.Line)
@@ -1208,10 +1216,13 @@ Public Sub mnuComment_Click()
     'Modify
 
     $hEditor.RecallSelection
+    
   Else
     'Comment only the current line
     iLine = $hEditor.Line
+    iIndent = GetIndentWidth(iLine, iLine + 1)
     $hEditor[iLine].Text = Space$(iIndent) & "' " & Mid$($hEditor[iLine].Text, iIndent + 1)
+    
   Endif
 
 End
@@ -1228,6 +1239,7 @@ Public Sub mnuUncomment_Click()
   'IF NOT Editor.Selected THEN RETURN
 
   If $hEditor.Selected Then
+    
     $hEditor.StoreSelection
 
     iStartLine = Min($hEditor.SelectionLine, $hEditor.Line)
@@ -1255,9 +1267,13 @@ Public Sub mnuUncomment_Click()
     Endif
 
     $hEditor.RecallSelection
+    
   Else
+    
     iLine = $hEditor.Line
     sLine = $hEditor[iLine].Text
+    iIndent = GetIndentWidth(iLine, iLine + 1)
+    
     If Len(sLine) < (iIndent + 1) Then Return
     If Left(LTrim(sLine), 1) <> "'" Then Return
     If Left(LTrim($hEditor[iLine].Text), 2) = "' " Then
@@ -3586,8 +3602,8 @@ Private Sub AddLocalVariable(sName As String, sType As String)
     If sLine And If Left(sLine) <> "'" Then
       Highlight.Analyze(sLine)
       If Highlight.Symbols[0] = "DIM" Then
-        iIndent = $hEditor.GetIndent($hEditor[I].Text)
-      Else If $hEditor.GetIndent($hEditor[I].Text) <= iIndent Then
+        iIndent = GetIndent($hEditor[I].Text)
+      Else If GetIndent($hEditor[I].Text) <= iIndent Then
         Break
       Endif
       iLine = I + 1
@@ -3784,8 +3800,10 @@ End
 
 Public Sub IsWordChar(sCar As String) As Boolean
   
-  Return InStr("&~\"#'{([|`\\^@)]°=+}€$£%*!§:/;.,?<>¢«»¥·©®¬¿×·÷¡ø \t", sCar) = 0
-  'Return InStr(FEditor.IDENT_CAR, sCar) > 0
+  If Len(sCar) = 1 And If Asc(sCar) <= 32 Then Return False
+  If IsDigit(sCar) Then Return True
+  If InStr("_$", sCar) Then Return True
+  If IsLetter(String.RemoveDiacritics(sCar)) Then Return True
   
 End
 

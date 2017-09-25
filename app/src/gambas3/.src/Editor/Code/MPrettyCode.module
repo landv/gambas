@@ -101,6 +101,7 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
     $iLine = iLine
     sLine = aText[iLine]
     
+    'Select Case hEditor.Mode
     sLine = IndentLine(sLine)
     
     If iLine < iStart Then

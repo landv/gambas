@@ -31,9 +31,12 @@ Static Private $aExt As String[] = ["htm", "html", "xml", "kml", "svg", "css", "
 
 Private $hEditor As TextEditor
 Private $bNoHighlight As Boolean
-Private $bShowCompress As Boolean
 Private $bModule As Boolean
 Private $bConsole As Boolean
+
+Private $bShowCompress As Boolean
+Private $bShowComment As Boolean
+Private $bShowPretty As Boolean
 
 Private $bModify As Boolean
 
@@ -92,6 +95,8 @@ Public Sub LoadFile() As Boolean
   $bWebPage = False
   $bNoHighlight = True
   $bConsole = False
+  $bShowComment = False
+  $bShowPretty = False
   
   If Path Then
   
@@ -118,7 +123,8 @@ Public Sub LoadFile() As Boolean
       End Select
       
       $bShowCompress = MCompressFile.CanCompress(Path) And Not Project.IsHiddenPath(Path)
-      
+      $bShowComment = True
+      '$bShowPretty = True
       $bNoHighlight = False
       
     Else If sExt = "console" Then
@@ -666,6 +672,9 @@ Public Sub Reload()
   If $bNoHighlight Then
     If LTrim(sText) Like "<!DOCTYPE*" Or If LTrim(sText) Like "<html*" Then
       edtEditor.Mode = "html"
+      $bNoHighlight = False
+      $bShowComment = True
+      '$bShowPretty = True
     Else
       edtEditor.Mode = ""
     Endif
@@ -1237,7 +1246,9 @@ Private Sub UpdateMenu()
 
   Action[".compress,.uncompress", Me].Visible = $bShowCompress And bVisible
   Action[".proc", Me].Visible = Not $bNoHighlight
-
+  Action[".comment,.uncomment"].Visible = $bShowComment And bVisible
+  Action[".pretty"].Visible = $bShowPretty And bVisible
+  
 End
 
 Public Sub Form_Open()
@@ -1299,7 +1310,11 @@ End
 
 Public Sub IsWordChar(sCar As String) As Boolean
   
-  Return InStr("&~\"#'{([|`\\^@)]°=+}€$£%*!§:/;.,?<>¢«»¥·©®¬¿×·÷¡ø \t", sCar) = 0
+  If Len(sCar) = 1 And If Asc(sCar) <= 32 Then Return False
+  If IsDigit(sCar) Then Return True
+  If InStr("_", sCar) Then Return True
+  If IsLetter(String.RemoveDiacritics(sCar)) Then Return True
+  'Return InStr("&~\"#'{([|`\\^@)]°=+}€$£%*!§:/;.,?<>¢«»¥·©®¬¿×·÷¡ø", sCar) = 0
   
 End
 
@@ -1567,3 +1582,207 @@ Public Sub GetPopupMenu() As Menu
   Return mnuEditor
   
 End
+
+Public Sub mnuComment_Click()
+
+  Dim iStartLine As Integer
+  Dim iEndLine As Integer
+  Dim iLine As Integer
+  Dim sIndent As String
+
+  If $hEditor.ReadOnly Then Return
+  'IF NOT Editor.Selected THEN RETURN
+
+  If $hEditor.Selected Then
+
+    $hEditor.StoreSelection
+
+    iStartLine = Min($hEditor.SelectionLine, $hEditor.Line)
+    iEndLine = Max($hEditor.SelectionLine, $hEditor.Line)
+    sIndent = $hEditor.GetIndent(iStartLine, iEndLine)
+
+    $hEditor.Begin
+    
+    Select Case $hEditor.Mode
+      Case "webpage", "html"
+        $hEditor[iStartLine].Text = sIndent & "<!-- " & Mid$($hEditor[iStartLine].Text, Len(sIndent) + 1)
+        $hEditor[iEndLine - 1].Text = $hEditor[iEndLine - 1].Text & " -->"
+      Case "c", "c++", "javascript", "css"
+        $hEditor[iStartLine].Text = sIndent & "/* " & Mid$($hEditor[iStartLine].Text, Len(sIndent) + 1)
+        $hEditor[iEndLine - 1].Text = $hEditor[iEndLine - 1].Text & " */"
+      Case "gbs"
+        For iLine = iStartLine To iEndLine - 1
+          $hEditor[iLine].Text = sIndent & "' " & Mid$($hEditor[iLine].Text, Len(sIndent) + 1)
+        Next
+    End Select
+
+    $hEditor.End
+    $hEditor.RecallSelection
+    
+  Else
+    
+    'Comment only the current line
+    iLine = $hEditor.Line
+    sIndent = $hEditor.GetIndent(iLine, iLine + 1)
+    
+    Select Case $hEditor.Mode
+      Case "css"
+        $hEditor[iLine].Text = sIndent & "/* " & Mid$($hEditor[iLine].Text, Len(sIndent) + 1) & " */"
+      Case "webpage", "html"
+        $hEditor[iLine].Text = sIndent & "<!-- " & Mid$($hEditor[iLine].Text, Len(sIndent) + 1) & " -->"
+      Case "c", "c++", "javascript"
+        $hEditor[iLine].Text = sIndent & "// " & Mid$($hEditor[iLine].Text, Len(sIndent) + 1)
+      Case "gbs"
+        $hEditor[iLine].Text = sIndent & "' " & Mid$($hEditor[iLine].Text, Len(sIndent) + 1)
+    End Select
+    
+  Endif
+
+End
+
+
+Public Sub mnuUncomment_Click()
+
+  Dim iLine As Integer
+  Dim sLine As String
+  Dim iStartLine As Integer
+  Dim iEndLine As Integer
+  Dim sIndent As String
+  Dim sLineStart As String
+  Dim sLineEnd As String
+
+  If $hEditor.ReadOnly Then Return
+  'IF NOT Editor.Selected THEN RETURN
+
+  If $hEditor.Selected Then
+    
+    $hEditor.StoreSelection
+
+    iStartLine = Min($hEditor.SelectionLine, $hEditor.Line)
+    iEndLine = Max($hEditor.SelectionLine, $hEditor.Line)
+
+    sIndent = $hEditor.GetIndent(iStartLine, iEndLine)
+
+    Select Case $hEditor.Mode
+      
+      Case "css", "c", "c++", "javascript"
+      
+        sLineStart = LTrim($hEditor[iStartLine].Text)
+        If sLineStart Begins "/*" Then
+          sLineEnd = RTrim($hEditor[iEndLine - 1].Text)
+          If sLineEnd Ends "*/" Then
+            sLineStart = Mid$(sLineStart, 3)
+            If sLineStart Begins " " Then sLineStart = Mid$(sLineStart, 2)
+            sLineEnd = Left(sLineEnd, -2)
+            If sLineEnd Ends " " Then sLineEnd = Left(sLineEnd, -1)
+            $hEditor[iStartLine].Text = sIndent & sLineStart
+            $hEditor[iEndLine - 1].Text = sLineEnd
+          Endif
+        Endif
+        
+      Case "html", "webpage"
+      
+        sLineStart = LTrim($hEditor[iStartLine].Text)
+        If sLineStart Begins "<!--" Then
+          sLineEnd = RTrim($hEditor[iEndLine - 1].Text)
+          If sLineEnd Ends "-->" Then
+            sLineStart = Mid$(sLineStart, 5)
+            If sLineStart Begins " " Then sLineStart = Mid$(sLineStart, 2)
+            sLineEnd = Left(sLineEnd, -3)
+            If sLineEnd Ends " " Then sLineEnd = Left(sLineEnd, -1)
+            $hEditor[iStartLine].Text = sIndent & sLineStart
+            $hEditor[iEndLine - 1].Text = sLineEnd
+          Endif
+        Endif
+      
+      Case "gbs"
+      
+        For iLine = iStartLine To iEndLine - 1
+          sLine = $hEditor[iLine].Text
+          'If Len(sLine) < (iIndent + 1) Then Break
+          If Left(LTrim(sLine), 1) <> "'" Then Break
+        Next
+  
+        If iLine = iEndLine Then
+          $hEditor.Begin
+          For iLine = iStartLine To iEndLine - 1
+            If Left(LTrim($hEditor[iLine].Text), 2) = "' " Then
+              $hEditor[iLine].Text = sIndent & Mid$(LTrim($hEditor[iLine].Text), 3)
+            Else
+              $hEditor[iLine].Text = sIndent & Mid$(LTrim($hEditor[iLine].Text), 2)
+            Endif
+          Next
+          $hEditor.End
+          'Modify
+        Endif
+
+    End Select
+
+    $hEditor.RecallSelection
+    
+  Else
+    
+    iLine = $hEditor.Line
+    sIndent = $hEditor.GetIndent(iLine, iLine + 1)
+    sLine = LTrim($hEditor[iLine].Text)
+    If Not sLine Then Return
+    
+    Select Case $hEditor.Mode
+      
+      Case "css"
+        
+        If sLine Like "/[*]*[*]/" Then
+          sLine = Mid$(sLine, 3, -2)
+          If Left(sLine) = " " And If Right(sLine) = " " Then sLine = Mid$(sLine, 2, -1)
+          $hEditor[iLine].Text = sIndent & sLine
+        Endif
+        
+      Case "html", "webpage"
+        
+        If sLine Like "<!--*-->" Then
+          sLine = Mid$(sLine, 5, -3)
+          If sLine Begins " " And If sLine Ends " " Then sLine = Mid$(sLine, 2, -1)
+          $hEditor[iLine].Text = sIndent & sLine
+        Endif
+        
+      Case "c", "c++", "js"
+        
+        If sLine Begins "//" Then
+          sLine = Mid$(sLine, 3)
+          If sLine Begins " " Then sLine = Mid$(sLine, 2)
+          $hEditor[iLine].Text = sIndent & sLine
+        Else If sLine Like "/[*]*[*]/" Then
+          sLine = Mid$(sLine, 3, -2)
+          If Left(sLine) = " " And If Right(sLine) = " " Then sLine = Mid$(sLine, 2, -1)
+          $hEditor[iLine].Text = sIndent & sLine
+        Endif
+        
+      Case "gbs"
+        
+        If sLine Begins "'" Then
+          sLine = Mid$(sLine, 2)
+          If sLine Begins " " Then sLine = Mid$(sLine, 2)
+          $hEditor[iLine].Text = sIndent & sLine
+        Endif
+        
+    End Select
+    
+  Endif
+
+End
+
+' Public Sub mnuPretty_Click()
+' 
+'   Dim iStart, iEnd As Integer
+' 
+'   If $hEditor.Selected Then
+'     iStart = Min($hEditor.Line, $hEditor.SelectionLine)
+'     iEnd = Max($hEditor.Line, $hEditor.SelectionLine)
+'   Else
+'     iStart = 0
+'     iEnd = $hEditor.Count - 1
+'   Endif
+' 
+'   MPrettyCode.Run($hEditor, iStart, iEnd)
+' 
+' End
