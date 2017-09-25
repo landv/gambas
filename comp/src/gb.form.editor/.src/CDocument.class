@@ -36,6 +36,7 @@ Private $iNoHighlight As Integer
 Private $iBegin As Integer
 
 Public _Mode As TextEditorMode
+Private $sMode As String
 Private $bCloseBraces As Boolean
 
 Private $iEndOfLine As Integer = gb.Unix
@@ -1349,7 +1350,7 @@ End
 
 Private Function Mode_Read() As String
 
-  Return _Mode.Name
+  Return $sMode
 
 End
 
@@ -1366,6 +1367,7 @@ Private Sub Mode_Write(Value As String)
   Highlight_Write(Value)
   
   _Mode.CloseBraces = $bCloseBraces
+  $sMode = Value
 
 End
 
@@ -1381,3 +1383,28 @@ Private Sub CloseBraces_Write(Value As Boolean)
   _Mode.CloseBraces = Value
 
 End
+
+Public Sub GetIndentText(iStart As Integer, iEnd As Integer) As String
+
+  Dim iLine As Integer
+  Dim sLine As String
+  Dim sIndent As String
+  Dim sResult As String
+
+  For iLine = iStart To iEnd - 1
+    sLine = Lines[iLine]
+    If LTrim(sLine) Then
+      sIndent = Left(sLine, Len(sLine) - Len(LTrim(sLine)))
+      If Not sResult Then
+        sResult = sIndent
+      Else If sIndent Begins sResult Then
+      Else
+        Return
+      Endif
+    Endif
+  Next
+
+  Return sResult
+
+End
+

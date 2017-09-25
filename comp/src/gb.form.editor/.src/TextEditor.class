@@ -736,7 +736,7 @@ Private Sub GetTabSizeAround(Row As Integer) As Integer
   Y = Row
   While Y > 0
     Dec Y
-    iBefore = GetIndent(Y, True)
+    iBefore = GetLineIndent(Y, True)
     If iBefore >= 0 Then Break
   Wend
   
@@ -744,7 +744,7 @@ Private Sub GetTabSizeAround(Row As Integer) As Integer
   Do
     Inc Y
     If Y >= $hDoc.Count Then Break
-    iAfter = GetIndent(Y, True)
+    iAfter = GetLineIndent(Y, True)
     If iAfter >= 0 Then Break
   Loop
   
@@ -1375,7 +1375,7 @@ Public Sub View_KeyPress()
       Else
         Try aLayout = $cLineLayout[$Y]
         If Not aLayout Or If $X < aLayout[0] Then
-          P = GetIndent($Y)
+          P = GetLineIndent($Y)
           If P = $X Then P = 0
           Goto(P, $Y, Key.Shift)
         Else
@@ -1384,7 +1384,7 @@ Public Sub View_KeyPress()
             If $X < P + aLayout[I] Then Break
             P += aLayout[I]
           Next
-          If P = $X Then P = GetIndent($Y)
+          If P = $X Then P = GetLineIndent($Y)
           Goto(P, $Y, Key.Shift)
         Endif
       Endif
@@ -1459,7 +1459,7 @@ Public Sub View_KeyPress()
       If $bReadOnly Then Goto STOP_EVENT
       
       If Not $bPrint Then $bOverwrite = False
-      sTab = GetIndentText($Y)
+      sTab = GetLineIndentText($Y)
       If $hDoc._Mode.BetweenBraces(Me) Then
         Insert("\n" & String.Left(sTab, $X) & GetTab() & "\n" & String.Left(sTab, $X))
         Goto(-1, $Y - 1)
@@ -2072,7 +2072,7 @@ Private Sub DeleteLeft()
       Remove($hDoc.LineLength[$Y - 1], $Y - 1, 0, $Y)
     Endif
   Else
-    sTab = GetIndentText($Y)
+    sTab = GetLineIndentText($Y)
     If Len(sTab) = Len($hDoc.Lines[$Y]) Then
       If Right(sTab) = "\t" Then
         Remove($X - 1, $Y, $X, $Y)
@@ -2144,7 +2144,7 @@ Private Sub DeleteRight()
   
 End
 
-Private Sub GetIndent(Y As Integer, Optional bIgnoreEmpty As Boolean) As Integer
+Private Sub GetLineIndent(Y As Integer, Optional bIgnoreEmpty As Boolean) As Integer
   
   Dim sText As String
   Dim I As Integer
@@ -2161,9 +2161,9 @@ Private Sub GetIndent(Y As Integer, Optional bIgnoreEmpty As Boolean) As Integer
   
 End
 
-Private Sub GetIndentText(Y As Integer) As String
+Private Sub GetLineIndentText(Y As Integer) As String
   
-  Return String.Left($hDoc.Lines[Y], GetIndent(Y))
+  Return String.Left($hDoc.Lines[Y], GetLineIndent(Y))
   
 End
 
@@ -2428,7 +2428,7 @@ Private Sub DoIndent(bBack As Boolean)
   
   iInd = 1024
   For Y = Y1 To Y2
-    I = GetIndent(Y, True)
+    I = GetLineIndent(Y, True)
     If I >= 0 Then iInd = Min(iInd, I)
     If iInd = 0 Then Break
   Next
@@ -4923,7 +4923,7 @@ Private Sub DrawBarImage3()
         X = 0
         
         If IsSpace(Left(sLine)) Then
-          sIndent = GetIndentText(iRow)
+          sIndent = GetLineIndentText(iRow)
           sIndent = Replace(sIndent, "\t", Space$($iTabSize))
           X = Len(sIndent)
         Endif
@@ -5510,3 +5510,11 @@ Private Sub RefreshSideBar()
   If $bShowPreview Then $hTimerSideBarRefresh.Restart
 
 End
+
+Public Sub GetIndent(StartLine As Integer, Optional EndLine As Integer) As String
+  
+  If EndLine = 0 Then EndLine = StartLine + 1
+  Return $hDoc.GetIndentText(StartLine, EndLine)
+  
+End
+
