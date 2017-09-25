@@ -3378,17 +3378,7 @@ End
 
 Public Sub mnuPretty_Click()
 
-  Dim iStart, iEnd As Integer
-
-  If $hEditor.Selected Then
-    iStart = Min($hEditor.Line, $hEditor.SelectionLine)
-    iEnd = Max($hEditor.Line, $hEditor.SelectionLine)
-  Else
-    iStart = 0
-    iEnd = $hEditor.Count - 1
-  Endif
-
-  MPrettyCode.Run($hEditor, iStart, iEnd)
+  MPrettyCode.Run($hEditor)
 
 End
 

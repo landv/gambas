@@ -8,12 +8,13 @@ Private $iLevel As Integer
 Private $bLastNewLine As Boolean
 Private $bNeedNewLine As Boolean
 Private $iLastDim As Integer
-Private $iLastSelect As Integer
+Private $aSwitch As Integer[]
 Private $bNextIndent As Boolean
 
 Private $bIndentDim As Boolean
 Private $bRemoveSpace As Boolean
 Private $bKeepVoidLine As Boolean
+Private $iIndentSize As Integer
 
 Public Sub _init()
   
@@ -56,12 +57,11 @@ Private Sub InsertLine(aPos As Integer[], iLine As Integer, Optional iCount As I
 End
 
 
-Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd As Integer = -1)
+Public Sub Run(hEditor As TextEditor)
   
   Dim sLine As String
   Dim aLine As String[]
   Dim iLine As Integer
-  Dim iLevel As Integer
   Dim aBookmark As Integer[]
   Dim bBookmark As Boolean
   Dim aBreakpoint As Integer[]
@@ -70,9 +70,20 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
   Dim Y As Integer
   Dim aText As String[]
   Dim bModified As Boolean
+  Dim aSymbols As String[]
+  Dim aTypes As Integer[]
+  Dim iStart, iEnd As Integer
   
   Inc Application.Busy
   
+  If hEditor.Selected Then
+    iStart = Min(hEditor.Line, hEditor.SelectionLine)
+    iEnd = Max(hEditor.Line, hEditor.SelectionLine)
+  Else
+    iStart = 0
+    iEnd = hEditor.Count - 1
+  Endif
+
   aBreakpoint = hEditor.Breakpoints
   aBookmark = hEditor.Bookmarks
     
@@ -80,29 +91,45 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
   $bRemoveSpace = Settings["/FormatCode/RemoveSpaces", 0]
   $bKeepVoidLine = Settings["/FormatCode/KeepVoidLines", 0]
   
-  If iEnd < 0 Then
-    iEnd = hEditor.Count - 1
+  $iLevel = 0
+  If hEditor.TabIndent Then
+    $iIndentSize = 0
+    $iLevel = Len(hEditor.GetIndent(iStart))
+  Else
+    $iIndentSize = hEditor.TabSize
+    $iLevel = Len(hEditor.GetIndent(iStart)) \ hEditor.TabSize
   Endif
   
-  $iLevel = iLevel
   $bLastNewLine = True
   $iLastDim = -1
-  $iLastSelect = -1
   $bNextIndent = False
+  $aSwitch = New Integer[]
   
   aText = Split(hEditor.Text, "\n")
   
   X = hEditor.Column
   Y = hEditor.Line
   
-  iLine = 0
+  iLine = iStart
   While iLine <= iEnd
     
     $iLine = iLine
     sLine = aText[iLine]
-    
-    'Select Case hEditor.Mode
-    sLine = IndentLine(sLine)
+
+    If Not LTrim(sLine) Then
+      $bLastNewLine = True
+      sLine = GetIndent($iLevel)
+    Else
+      hEditor.GetHighlight(iLine, ByRef aSymbols, ByRef aTypes)
+      Select Case hEditor.Mode
+        Case "gambas"
+          sLine = IndentLineGambas(sLine)
+        Case "css"
+          sLine = IndentLineBraces(sLine, aSymbols, aTypes, False)
+        Case "c", "c++", "javascript"
+          sLine = IndentLineBraces(sLine, aSymbols, aTypes, True)
+      End Select
+    Endif
     
     If iLine < iStart Then
       Inc iLine
@@ -209,7 +236,18 @@ Private Sub IsEndStruct() As Boolean
   
 End
 
-Private Sub IndentLine(sLine As String) As String
+Private Sub GetIndent(iLevel As Integer) As String
+  
+  If $iIndentSize = 0 Then
+    Return String$(iLevel, "\t")
+  Else
+    Return Space$(iLevel * $iIndentSize)
+  Endif
+  
+End
+
+
+Private Sub IndentLineGambas(sLine As String) As String
   
   Dim aSym As String[]
   Dim sAdd As String
@@ -223,136 +261,214 @@ Private Sub IndentLine(sLine As String) As String
 
   sLine = LTrim(sLine)
   
-  If sLine Then
+  If Left(sLine) = "'" Then
+    Return GetIndent($iLevel) & sLine
+  Endif
+  
+  aSym = Highlight.Analyze(Highlight.Purge(Trim(sLine)))
+  While aSym.Count
+    iLastType = Highlight.Types[aSym.Max]
+    If iLastType <> Highlight.Comment And If iLastType <> Highlight.Help Then Break
+    aSym.Remove(aSym.Max)
+  Wend
+  
+  If aSym.Count Then
     
-    If Left(sLine) = "'" Then
-      Return Space$(Project.TabSize * $iLevel) & sLine
+    bNextIndent = $bNextIndent
+    $bNextIndent = False
+    
+    ' bLastString = False
+    ' If $bLastString And If Highlight.Types[0] = Highlight.String Then
+    '   bLastString = True
+    ' Endif
+    ' 
+    ' $bLastString = iLastType = Highlight.String
+    
+    If iLastType = Highlight.Operator Then
+      If InStr(":]);.!", aSym[aSym.Max]) = 0 Then 'And If aSym[0] <> "PRINT" Then 
+        $bNextIndent = True
+      Endif
+    Else If iLastType = Highlight.String And If Highlight.Types[0] = Highlight.String Then
+      bNextIndent = True
     Endif
     
-    aSym = Highlight.Analyze(Highlight.Purge(Trim(sLine)))
-    While aSym.Count
-      iLastType = Highlight.Types[aSym.Max]
-      If iLastType <> Highlight.Comment And If iLastType <> Highlight.Help Then Break
-      aSym.Remove(aSym.Max)
-    Wend
+    If $bNeedNewLine Then
+      If Not $bLastNewLine Then sAdd = "\n"
+      $bNeedNewLine = False
+    Endif
     
-    If aSym.Count Then
+    If aSym.Count = 2 And If aSym[1] = ":" Then
+      iNextLevel = $iLevel
+      Dec $iLevel
+    Else If FEditor.IsCurrentProc() Then
+      $iLevel = 0
+      iNextLevel = 1
+      $bNeedNewLine = True
+      If Not $bLastNewLine Then sAdd = "\n"
+    Else If FEditor.IsCurrentEndProc() Then
+      $iLevel = 0
+      iNextLevel = 0
+      $bNeedNewLine = True
+      If Not $bLastNewLine Then sAdd = "\n"
+    Else If IsStruct() Then
+      $iLevel = 0
+      iNextLevel = 1
+      If Not $bLastNewLine Then sAdd = "\n"
+    Else If IsEndStruct() Then
+      $iLevel = 0
+      iNextLevel = 0
+      $bNeedNewLine = True
+    Else
+      sSym = aSym[0]
+      If aSym.Count > 2 Then sFuncSym = LCase(aSym[2])
       
-      bNextIndent = $bNextIndent
-      $bNextIndent = False
+      If sSym = "END" And If aSym.Count >= 2 Then sSym &= " " & aSym[1]
       
-      ' bLastString = False
-      ' If $bLastString And If Highlight.Types[0] = Highlight.String Then
-      '   bLastString = True
-      ' Endif
-      ' 
-      ' $bLastString = iLastType = Highlight.String
-      
-      If iLastType = Highlight.Operator Then
-        If InStr(":]);.!", aSym[aSym.Max]) = 0 Then 'And If aSym[0] <> "PRINT" Then 
-          $bNextIndent = True
-        Endif
-      Else If iLastType = Highlight.String And If Highlight.Types[0] = Highlight.String Then
-        bNextIndent = True
-      Endif
-      
-      If $bNeedNewLine Then
-        If Not $bLastNewLine Then sAdd = "\n"
-        $bNeedNewLine = False
-      Endif
-      
-      If aSym.Count = 2 And If aSym[1] = ":" Then
-        iNextLevel = $iLevel
-        Dec $iLevel
-      Else If FEditor.IsCurrentProc() Then
-        $iLevel = 0
+      If sSym = "DIM" Then
+        
+        $iLastDim = $iLine
+        If Not $bIndentDim Then $iLevel = 0
         iNextLevel = 1
-        $bNeedNewLine = True
-        If Not $bLastNewLine Then sAdd = "\n"
-      Else If FEditor.IsCurrentEndProc() Then
-        $iLevel = 0
-        iNextLevel = 0
-        $bNeedNewLine = True
-        If Not $bLastNewLine Then sAdd = "\n"
-      Else If IsStruct() Then
-        $iLevel = 0
-        iNextLevel = 1
-        If Not $bLastNewLine Then sAdd = "\n"
-      Else If IsEndStruct() Then
-        $iLevel = 0
-        iNextLevel = 0
-        $bNeedNewLine = True
+      
       Else
-        sSym = aSym[0]
-        If aSym.Count > 2 Then sFuncSym = LCase(aSym[2])
-        
-        If sSym = "END" And If aSym.Count >= 2 Then sSym &= " " & aSym[1]
-        
-        If sSym = "DIM" Then
-          
-          $iLastDim = $iLine
-          If Not $bIndentDim Then $iLevel = 0
-          iNextLevel = 1
-        
-        Else
-        
-          If $iLastDim = ($iLine - 1) Then
-            If Not bNextIndent Then 'Not bLastString And If Not bLastWrap Then
-              If Not $bLastNewLine Then sAdd = "\n"
-            Else
-              Inc $iLastDim
-            Endif
-          Endif
-        
-          If sSym = "END SELECT" Then
-            $iLevel -= 2
-            iNextLevel = $iLevel
-          Else If Right(aSym[0]) = ":" Then
-            iNextLevel = $iLevel
-            $iLevel = 0
-          Else If sSym = "IF" Then
-            iNextLevel = $iLevel
-            iPos = aSym.Find("THEN")
-            If iPos < 0 Or If iPos = aSym.Max Then Inc iNextLevel
-          Else If sSym = "SELECT" Then
-            $iLastSelect = $iLine
-            iNextLevel = $iLevel + 2
-          ' Else If sFuncSym = "end" Then                     'Fabien : Add End function detecetion
-          '   Dec $iLevel
-          '   iNextLevel = $iLevel
-          '   If bLastWrap Then Inc $iLevel
-          ' Else If sFuncSym = "begin" Then                   'Fabien : Add Begin function detection
-          '   iNextLevel = $iLevel
-          '   Inc iNextLevel
-          '   If bLastWrap Then Inc $iLevel
+      
+        If $iLastDim = ($iLine - 1) Then
+          If Not bNextIndent Then 'Not bLastString And If Not bLastWrap Then
+            If Not $bLastNewLine Then sAdd = "\n"
           Else
-            If $cClose.Exist(sSym) Then Dec $iLevel
-            iNextLevel = $iLevel
-            If $cOpen.Exist(sSym) Then Inc iNextLevel
+            Inc $iLastDim
           Endif
-          
+        Endif
+      
+        If sSym = "END SELECT" Then
+          $iLevel -= 2
+          iNextLevel = $iLevel
+        Else If Right(aSym[0]) = ":" Then
+          iNextLevel = $iLevel
+          $iLevel = 0
+        Else If sSym = "IF" Then
+          iNextLevel = $iLevel
+          iPos = aSym.Find("THEN")
+          If iPos < 0 Or If iPos = aSym.Max Then Inc iNextLevel
+        Else If sSym = "SELECT" Then
+          '$iLastSelect = $iLine
+          iNextLevel = $iLevel + 2
+        Else
+          If $cClose.Exist(sSym) Then Dec $iLevel
+          iNextLevel = $iLevel
+          If $cOpen.Exist(sSym) Then Inc iNextLevel
         Endif
         
       Endif
       
-      $bLastNewLine = False 
-      
-      $iLevel = Max(0, $iLevel)
-      iNextLevel = Max(0, iNextLevel)
-      
-      iLevel = $iLevel
-      If bNextIndent Then Inc iLevel
-      sLine = sAdd & Space$(Project.TabSize * iLevel) & sLine '& " '" & If(bLastWrap, "W", "") & If(bLastString, "S", "")
-      $iLevel = iNextLevel
-      
-      Return sLine
-      
     Endif
+    
+    $bLastNewLine = False 
+    
+    $iLevel = Max(0, $iLevel)
+    iNextLevel = Max(0, iNextLevel)
+    
+    iLevel = $iLevel
+    If bNextIndent Then Inc iLevel
+    sLine = sAdd & GetIndent(iLevel) & sLine '& " '" & If(bLastWrap, "W", "") & If(bLastString, "S", "")
+    $iLevel = iNextLevel
+    
+    Return sLine
     
   Endif
   
-  $bLastNewLine = True
-  sLine = Space$(Project.TabSize * $iLevel)
-  Return sLine
+End
+
+Private Sub CountStr(sStr As String, sCount As String) As Integer
+
+  Dim iPos As Integer
+  Dim N As Integer
   
+  Do
+    iPos = InStr(sStr, sCount, iPos + 1)
+    If iPos = 0 Then Return N
+    Inc N
+  Loop
+  
+End
+
+
+Private Sub IndentLineBraces(sLine As String, aSymbols As String[], aTypes As String[], bLang As Boolean) As String
+
+  Dim I As Integer
+  Dim iNextLevel As Integer
+  Dim iClose As Integer
+  Dim iOpen As Integer
+  Dim sSym As String
+  Dim bNextIndent As Boolean
+  Dim sFirst As String
+  Dim sLast As String
+
+  If aTypes.Count = 1 And If aTypes[0] = Highlight.Comment Then Return sLine
+  
+  sLine = LTrim(sLine)
+  iNextLevel = $iLevel
+  bNextIndent = $bNextIndent
+  $bNextIndent = False
+  
+  For I = 0 To aSymbols.Max
+    
+    If aTypes[I] = Highlight.Comment Then Continue
+    
+    sSym = aSymbols[I]
+    If Not Trim(sSym) Then Continue
+    
+    sLast = sSym
+    
+    If aTypes[I] = Highlight.String Then Continue
+
+    If Not sFirst Then sFirst = sSym
+    
+    iOpen += CountStr(sSym, "{")
+    iClose += CountStr(sSym, "}")
+    iOpen += CountStr(sSym, "(")
+    iClose += CountStr(sSym, ")")
+    iOpen += CountStr(sSym, "[")
+    iClose += CountStr(sSym, "]")
+  Next
+  
+  If bLang Then
+    
+    If sFirst = "if" Or If sFirst = "else" Or If sFirst = "for" Or If sFirst = "while" Or If sFirst = "do" Then
+      If InStr(";}{", Right(sLast)) = 0 Then
+        $bNextIndent = True
+      Endif
+    Else If sFirst = "case" Or If sFirst = "default" Then
+      Dec $iLevel
+    Else If sFirst = "switch" Then
+      $aSwitch.Push($iLevel)
+    Else If sFirst = "{" Then
+      If $aSwitch.Count And If $iLevel = $aSwitch[$aSwitch.Max] Then Inc iOpen
+    Else If sFirst = "}" Then
+      If $aSwitch.Count And If $iLevel = ($aSwitch[$aSwitch.Max] + 2) Then 
+        Inc iClose
+        $aSwitch.Pop()
+      Endif
+    Endif
+  
+    If bNextIndent Then 
+      If sFirst <> "{" Then Inc $iLevel
+    Endif
+    
+  Endif
+
+  If iClose > iOpen Then
+    $iLevel += iOpen - iClose
+    iNextLevel += iOpen - iClose
+  Else
+    iNextLevel += iOpen - iClose
+  Endif
+
+  $iLevel = Max(0, $iLevel)
+  iNextLevel = Max(0, iNextLevel)
+
+  sLine = GetIndent($iLevel) & sLine
+  $iLevel = iNextLevel
+  Return sLine
+
 End
