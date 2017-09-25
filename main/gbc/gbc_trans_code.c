@@ -547,7 +547,7 @@ void TRANS_code(void)
 			printf("Compiling %s()...\n", TABLE_get_symbol_name(JOB->class->table, func->name));
 
 		/* Do not debug implicit or generated functions */
-		if (!func->start || func->name == NO_SYMBOL || TABLE_get_symbol_name(JOB->class->table, func->name)[0] == '$')
+		if (!func->start || func->name == NO_SYMBOL || TABLE_get_symbol_name(JOB->class->table, func->name)[0] == '@')
 			JOB->nobreak = TRUE;
 		else
 			JOB->nobreak = FALSE;
