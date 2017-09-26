@@ -31,7 +31,6 @@
 #include <QChildEvent>
 #include <QFrame>
 #include <QHash>
-#include <QStyleOptionFrameV3>
 #include <QGroupBox>
 
 #include "gambas.h"
@@ -45,6 +44,14 @@
 #include "CColor.h"
 
 #include "CContainer.h"
+
+#if QT5
+#include <QStyleOptionFrame>
+#define QStyleOptionFrameV3 QStyleOptionFrame
+#else
+#include <QStyleOptionFrameV3>
+#endif
+
 
 //#define DEBUG_ME
 //#define USE_CACHE 1

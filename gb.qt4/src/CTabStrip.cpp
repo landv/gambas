@@ -227,7 +227,7 @@ void MyTabWidget::setEnabled(bool e)
 void MyTabWidget::layoutContainer()
 {
 	CWIDGET *_object = CWidget::get(this);
-	#if QT_VERSION >= 0x040600
+	#if QT_VERSION >= 0x040600 && QT_VERSION < 0x050700
 	QStyleOptionTabWidgetFrameV2 option;
 	#else
 	QStyleOptionTabWidgetFrame option;

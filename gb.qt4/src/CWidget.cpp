@@ -2323,6 +2323,9 @@ void CWidget::destroy()
 	CLEAN_POINTER(CWIDGET_previous_control);
 	CLEAN_POINTER(CWIDGET_hovered);
 	CLEAN_POINTER(_old_active_control);
+#if QT5
+	CLEAN_POINTER(_last_entered);
+#endif
 
 	if (THIS_EXT)
 	{

@@ -133,7 +133,10 @@ static void paste(const QMimeData *data, const char *fmt)
 	QString format;
 	QByteArray ba;
 	int type;
+#if QT5
+#else
 	QTextCodec *codec = NULL;
+#endif
 
 	if (fmt)
 		format = fmt;
