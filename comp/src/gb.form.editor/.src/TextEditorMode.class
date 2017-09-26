@@ -105,9 +105,11 @@ Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
   If iPos And If CanCloseBraces(hEditor) Then
     
     sOther = Mid$(Me.BRACES_CLOSE, iPos, 1)
+    hEditor._SaveCursor()
     hEditor.Insert(Key.Text)
     hEditor.Insert(sOther)
-    hEditor.Goto(hEditor.Column - 1, hEditor.Line)
+    hEditor._RestoreCursor()
+    hEditor.Goto(hEditor.Column + 1, hEditor.Line)
     $bCanCloseBracesComputed = False
     Return True
     
