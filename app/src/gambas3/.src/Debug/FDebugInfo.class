@@ -1155,6 +1155,7 @@ Private Sub DisableEverything(bOn As Boolean)
   Dim hWin As Window
   
   For Each hWin In Windows
+    If Not Object.IsValid(hWin) Then Continue
     If hWin = FMain.Window Or If hWin = FSearch.Window Then Continue
     hWin.Enabled = bOn
   Next
