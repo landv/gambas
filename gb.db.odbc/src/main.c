@@ -2569,7 +2569,7 @@ fflush(stderr);
 		else
 			comma = TRUE;
 
-			DB.Query.Add(fp->name);
+		DB.Query.Add(fp->name);
 
 //AB autoincrement field is mapped to Integer because this is Database dependent
 			if (fp->type == DB_T_SERIAL)
