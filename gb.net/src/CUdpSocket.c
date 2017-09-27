@@ -226,9 +226,7 @@ int CUdpSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 	memcpy(buffer, &THIS->buffer[THIS->buffer_pos], len);
 	THIS->buffer_pos += len;
 	
-	GB.Stream.SetBytesRead(stream, len);
-	
-	return 0;
+	return len;
 }
 
 int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
@@ -275,12 +273,13 @@ int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 
 	USE_MSG_NOSIGNAL(retval = sendto(SOCKET->socket, (void*)buffer, len, MSG_NOSIGNAL, addr, size));
 
-	if (retval >= 0) 
-		return 0;
+	if (retval < 0) 
+	{
+		CUdpSocket_stream_close(stream);
+		SOCKET->status= NET_CANNOT_WRITE;
+	}
 	
-	CUdpSocket_stream_close(stream);
-	SOCKET->status= NET_CANNOT_WRITE;
-	return -1;
+	return retval;
 }
 
 /************************************************************************************************

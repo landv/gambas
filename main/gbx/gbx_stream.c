@@ -54,8 +54,6 @@
 #include "gbx_struct.h"
 #include "gbx_stream.h"
 
-int STREAM_eff_read;
-
 static STREAM _temp_stream = { 0 };
 static STREAM *_temp_save = NULL;
 static int _temp_level;
@@ -319,52 +317,68 @@ void STREAM_flush(STREAM *stream)
 	(*(stream->type->flush))(stream);
 }
 
-static void read_buffer(STREAM *stream, void **addr, int *len)
+static int read_buffer(STREAM *stream, void *addr, int len)
 {
 	int l = stream->common.buffer_len - stream->common.buffer_pos;
-	if (l > *len)
-		l = *len;
+	if (l > len)
+		l = len;
 	if (l > 0)
 	{
-		memcpy(*addr, stream->common.buffer + stream->common.buffer_pos, l);
-		*addr = (char *)*addr + l;
-		*len -= l;
-		STREAM_eff_read += l;
+		memcpy(addr, stream->common.buffer + stream->common.buffer_pos, l);
 		stream->common.buffer_pos += l;
+		return l;
 	}
+	else
+		return 0;
 }
 
-void STREAM_read(STREAM *stream, void *addr, int len)
+int STREAM_read(STREAM *stream, void *addr, int len)
 {
-	STREAM_eff_read = 0;
-
+	int eff = 0;
+	int n;
+	
 	if (STREAM_is_closed(stream))
 		THROW(E_CLOSED);
 
 	if (len <= 0)
-		return;
+		return 0;
 
 	if (stream->common.buffer)
-		read_buffer(stream, &addr, &len);
-
-	while ((*(stream->type->read))(stream, addr, len))
 	{
-		if (errno == EINTR)
-			continue;
-
-		stop_watching(stream, GB_WATCH_READ);
-
-		switch(errno)
-		{
-			case 0:
-			case EAGAIN:
-				THROW(E_EOF);
-			case EIO:
-				THROW(E_READ);
-			default:
-				THROW_SYSTEM(errno, NULL);
-		}
+		eff = read_buffer(stream, addr, len);
+		addr += eff;
+		len -= eff;
 	}
+
+	while (len > 0)
+	{
+		n = (*(stream->type->read))(stream, addr, len);
+		
+		if ((n <= 0) && errno != EINTR)
+		{
+			stop_watching(stream, GB_WATCH_READ);
+			
+			if (n == 0)
+				THROW(E_EOF);
+
+			switch(errno)
+			{
+				case 0:
+				case EAGAIN:
+					THROW(E_EOF);
+				case EIO:
+					THROW(E_READ);
+				default:
+					THROW_SYSTEM(errno, NULL);
+			}
+		}
+
+		eff += n;
+		addr += n;
+		len -= n;
+	}
+	
+	return eff;
 }
 
 #if 0
@@ -386,7 +400,7 @@ char STREAM_getchar(STREAM *stream)
 		else
 			ret = (*(stream->type->read))(stream, &c, 1);
 
-		if (!ret)
+		if (ret == 1)
 			break;
 
 		if (errno == EINTR)
@@ -413,74 +427,82 @@ char STREAM_getchar(STREAM *stream)
 
 int STREAM_read_max(STREAM *stream, void *addr, int len)
 {
-	bool err;
+	int eff = 0;
+	int n;
 	int flags, handle;
 	int save_errno;
 
 	if (!stream->type)
 		THROW(E_CLOSED);
-
-	STREAM_eff_read = 0;
+	
+	if (len <= 0)
+		return 0;
 
 	if (stream->common.buffer)
-		read_buffer(stream, &addr, &len);
-
-	if (len > 0)
 	{
-		for(;;)
+		eff += read_buffer(stream, addr, len);
+		addr += eff;
+		len -= eff;
+	}
+
+	while (len > 0)
+	{
+		if (stream->common.available_now)
 		{
-			if (stream->common.available_now)
+			n = (*(stream->type->read))(stream, addr, len);
+		}
+		else
+		{
+			handle = STREAM_handle(stream);
+			flags = fcntl(handle, F_GETFL);
+			if ((flags & O_NONBLOCK) == 0)
 			{
-				err = (*(stream->type->read))(stream, addr, len);
-			}
-			else
-			{
-				handle = STREAM_handle(stream);
-				flags = fcntl(handle, F_GETFL);
-				if ((flags & O_NONBLOCK) == 0)
-				{
-					wait_for_fd_ready_to_read(handle);
-					fcntl(handle, F_SETFL, flags | O_NONBLOCK);
-				}
-
-				errno = 0;
-				err = (*(stream->type->read))(stream, addr, len);
-				save_errno = errno;
-
-				if ((flags & O_NONBLOCK) == 0)
-					fcntl(handle, F_SETFL, flags);
-
-				errno = save_errno;
+				wait_for_fd_ready_to_read(handle);
+				fcntl(handle, F_SETFL, flags | O_NONBLOCK);
 			}
 
-			if (!err)
-				break;
+			errno = 0;
+			n = (*(stream->type->read))(stream, addr, len);
+			save_errno = errno;
 
-			if (errno == EINTR)
-				continue;
+			if ((flags & O_NONBLOCK) == 0)
+				fcntl(handle, F_SETFL, flags);
 
-			if (errno == 0)
+			errno = save_errno;
+		}
+		
+		if (n > 0)
+			eff += n;
+
+		if (n <= 0 && errno != EINTR)
+		{
+			if (n == 0 || errno == 0)
+			{
 				stop_watching(stream, GB_WATCH_READ);
-
+				return eff;
+			}
+			
 			switch(errno)
 			{
-				case 0:
 				case EAGAIN:
-					return STREAM_eff_read;
-				case EIO:
-					return -1; //THROW(E_READ);
+					return eff;
 				default:
 					THROW_SYSTEM(errno, NULL);
 			}
 		}
+
+		addr += n;
+		len -= n;
 	}
 
-	return STREAM_eff_read;
+	return eff;
 }
 
 
 void STREAM_write(STREAM *stream, void *addr, int len)
 {
+	int n;
+	
 	if (STREAM_is_closed_for_writing(stream))
 		THROW(E_CLOSED);
 
@@ -490,17 +512,24 @@ void STREAM_write(STREAM *stream, void *addr, int len)
 	if (stream->common.redirected)
 		stream = stream->common.redirect;
 
-	while ((*(stream->type->write))(stream, addr, len))
+	while (len > 0)
 	{
-		switch(errno)
+		n = ((*(stream->type->write))(stream, addr, len));
+		
+		if (n <= 0 && errno != EINTR)
 		{
-			case EINTR:
-				break;
-			case EIO:
-				THROW(E_WRITE);
-			default:
-				THROW_SYSTEM(errno, NULL);
+			switch(errno)
+			{
+				case 0:
+				case EIO:
+					THROW(E_WRITE);
+				default:
+					THROW_SYSTEM(errno, NULL);
+			}
 		}
+		
+		addr += n;
+		len -= n;
 	}
 }
 
@@ -565,18 +594,20 @@ void STREAM_seek(STREAM *stream, int64_t pos, int whence)
 	release_buffer(stream);
 }
 
-static void fill_buffer(STREAM *stream, char *addr, bool do_not_wait_ready)
+static int fill_buffer(STREAM *stream, char *addr, bool do_not_wait_ready)
 {
-	bool err;
+	int n;
 	int flags, fd;
+	int len;
+	int eff = 0;
 
-	STREAM_eff_read = 0;
 	fd = STREAM_handle(stream);
+	len = STREAM_BUFFER_SIZE;
 
-	for(;;)
+	while (len > 0)
 	{
 		if (stream->common.available_now)
-			err = (*(stream->type->read))(stream, addr, STREAM_BUFFER_SIZE);
+			n = (*(stream->type->read))(stream, addr, len);
 		else
 		{
 			if (!do_not_wait_ready)
@@ -586,7 +617,7 @@ static void fill_buffer(STREAM *stream, char *addr, bool do_not_wait_ready)
 			if ((flags & O_NONBLOCK) == 0)
 				fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 
-			err = (*(stream->type->read))(stream, addr, STREAM_BUFFER_SIZE);
+			n = (*(stream->type->read))(stream, addr, len);
 
 			if ((flags & O_NONBLOCK) == 0)
 			{
@@ -596,31 +627,36 @@ static void fill_buffer(STREAM *stream, char *addr, bool do_not_wait_ready)
 			}
 		}
 
-		if (!err)
-			break;
-
-		if (errno == EINTR)
-			continue;
-
-		//if (STREAM_eff_read == 0 && stream->common.available_now)
-		//	WATCH_need_little_sleep = TRUE;
-
-		switch(errno)
+		if (n == 0)
+			return eff;
+		
+		if (n > 0)
+			eff += n;
+			
+		if (n < 0 && errno != EINTR)
 		{
-			case 0:
-			case EAGAIN:
-			case EINPROGRESS:
-				return;
-			case EIO:
-				return; //THROW(E_READ);
-			default:
-				THROW_SYSTEM(errno, NULL);
+			switch(errno)
+			{
+				case EAGAIN:
+				case EINPROGRESS:
+				case EIO:
+					return eff;
+				default:
+					THROW_SYSTEM(errno, NULL);
+			}
 		}
+		
+		addr += n;
+		len -= n;
 	}
+	
+	return eff;
 }
 
 bool STREAM_read_ahead(STREAM *stream)
 {
+	int eff;
+	
 	if (stream->common.no_read_ahead)
 		return FALSE;
 
@@ -630,14 +666,12 @@ bool STREAM_read_ahead(STREAM *stream)
 	if (!stream->common.buffer)
 		ALLOC(&stream->common.buffer, STREAM_BUFFER_SIZE);
 
-	fill_buffer(stream, stream->common.buffer, TRUE);
+	eff = fill_buffer(stream, stream->common.buffer, TRUE);
 
 	stream->common.buffer_pos = 0;
-	stream->common.buffer_len = STREAM_eff_read;
+	stream->common.buffer_len = eff;
 
-	//fprintf(stderr, "STREAM_read_ahead: %d\n", STREAM_eff_read);
-
-	if (STREAM_eff_read == 0)
+	if (eff == 0)
 	{
 		stream->common.eof = TRUE;
 		return TRUE;
@@ -816,10 +850,8 @@ static char *input(STREAM *stream, bool line, char *escape)
 		stream->common.buffer_pos = buffer_pos;
 		stream->common.buffer_len = buffer_len;
 
-		fill_buffer(stream, buffer, FALSE);
-
 		buffer_pos = 0;
-		buffer_len = STREAM_eff_read;
+		buffer_len = fill_buffer(stream, buffer, FALSE);
 
 		if (!buffer_len)
 		{
@@ -1671,6 +1703,7 @@ bool STREAM_eof(STREAM *stream)
 }
 
 
+#if 0
 int STREAM_read_direct(int fd, char *buffer, int len)
 {
 	ssize_t eff_read;
@@ -1722,7 +1755,7 @@ int STREAM_write_direct(int fd, char *buffer, int len)
 
 	return FALSE;
 }
-
+#endif
 
 void STREAM_blocking(STREAM *stream, bool block)
 {

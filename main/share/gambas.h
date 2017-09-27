@@ -1142,7 +1142,6 @@ typedef
 
 		struct {
 			GB_STREAM *(*Get)(void *object);
-			void (*SetBytesRead)(GB_STREAM *stream, int length);
 			void (*SetSwapping)(GB_STREAM *stream, int swap);
 			void (*SetAvailableNow)(GB_STREAM *stream, int available_now);
 			bool (*Block)(GB_STREAM *stream, int block);

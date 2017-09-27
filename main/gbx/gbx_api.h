@@ -200,7 +200,7 @@ int GB_CountArray(void *data);
 void *GB_Add(void *pdata);
 
 GB_STREAM *GB_StreamGet(void *);
-void GB_StreamSetBytesRead(GB_STREAM *, int);
+//void GB_StreamSetBytesRead(GB_STREAM *, int);
 void GB_StreamSetSwapping(GB_STREAM *, int);
 void GB_StreamSetAvailableNow(GB_STREAM *, int);
 bool GB_StreamBlock(GB_STREAM *, int);

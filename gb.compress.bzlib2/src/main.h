@@ -44,7 +44,6 @@ static int BZ_stream_close(GB_STREAM *stream);
 static int BZ_stream_write(GB_STREAM *stream, char *buffer, int len);
 static int BZ_stream_eof(GB_STREAM *stream);
 static int BZ_stream_read(GB_STREAM *stream, char *buffer, int len);
-static int BZ_stream_getchar(GB_STREAM *stream, char *buffer);
 
 #endif /* __MAIN_H */
 

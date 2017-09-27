@@ -578,6 +578,7 @@ BEGIN_PROPERTY(Task_Value)
 	FILE_STAT info;
 	char *err = NULL;
 	int fd;
+	int n;
 	
 	if (!THIS->child && THIS->stopped)
 	{
@@ -629,7 +630,12 @@ BEGIN_PROPERTY(Task_Value)
 					fd = open(path, O_RDONLY);
 					if (fd < 0) goto __ERROR;
 					
-					STREAM_read_direct(fd, err, info.size);
+					for(;;)
+					{
+						n = read(fd, err, info.size);
+						if (n == info.size || errno != EINTR)
+							break;
+					}
 					close(fd);
 					
 					GB_Error("Task has failed: &1", err);

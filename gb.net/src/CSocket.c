@@ -448,16 +448,12 @@ int CSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 	if (bytes < len)
 		len = bytes;
 
-	USE_MSG_NOSIGNAL(npos=recv(SOCKET->socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
-	
-	GB.Stream.SetBytesRead(stream, npos);
-	
-	if (npos==len) return 0;
+	USE_MSG_NOSIGNAL(npos = recv(SOCKET->socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
 	
 	if (npos < 0 && errno != EAGAIN)
 		CSocket_stream_internal_error(THIS, NET_CANNOT_READ, FALSE);
 	
-	return -1;
+	return npos;
 }
 
 int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
@@ -467,14 +463,7 @@ int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 
 	if (!THIS) return -1;
 
-	while (len > 0)
-	{
-		USE_MSG_NOSIGNAL(npos=send(SOCKET->socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
-		if (npos <= 0)
-			break;
-		len -= npos;
-		buffer += npos;
-	}
+	USE_MSG_NOSIGNAL(npos = send(SOCKET->socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
 
 	if (npos >= 0 || errno == EAGAIN) 
 	{
@@ -486,13 +475,10 @@ int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 		}
 	}
 	
-	if (npos >= 0)
-		return 0;
-	
 	if (errno != EAGAIN)
 		CSocket_stream_internal_error(THIS, NET_CANNOT_WRITE, FALSE);
 	
-	return -1;
+	return npos;
 }
 
 
