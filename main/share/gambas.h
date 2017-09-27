@@ -743,7 +743,6 @@ typedef
 		int (*open)(struct GB_STREAM *stream, const char *path, int mode, void *data);
 		int (*close)(struct GB_STREAM *stream);
 		int (*read)(struct GB_STREAM *stream, char *buffer, int len);
-		int (*getchar)(struct GB_STREAM *stream, char *buffer);
 		int (*write)(struct GB_STREAM *stream, char *buffer, int len);
 		int (*seek)(struct GB_STREAM *stream, int64_t pos, int whence);
 		int (*tell)(struct GB_STREAM *stream, int64_t *pos);
