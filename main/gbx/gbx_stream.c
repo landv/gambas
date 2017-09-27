@@ -472,7 +472,10 @@ int STREAM_read_max(STREAM *stream, void *addr, int len)
 		}
 		
 		if (n > 0)
+		{
 			eff += n;
+			break;
+		}
 
 		if (n <= 0 && errno != EINTR)
 		{
@@ -486,6 +489,8 @@ int STREAM_read_max(STREAM *stream, void *addr, int len)
 			{
 				case EAGAIN:
 					return eff;
+				/*case EIO:
+					return -1; //THROW(E_READ);*/
 				default:
 					THROW_SYSTEM(errno, NULL);
 			}
@@ -611,7 +616,10 @@ static int fill_buffer(STREAM *stream, char *addr, bool do_not_wait_ready)
 		else
 		{
 			if (!do_not_wait_ready)
+			{
 				wait_for_fd_ready_to_read(fd);
+				do_not_wait_ready = TRUE;
+			}
 
 			flags = fcntl(fd, F_GETFL);
 			if ((flags & O_NONBLOCK) == 0)
