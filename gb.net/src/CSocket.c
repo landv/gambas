@@ -475,7 +475,7 @@ int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 		}
 	}
 	
-	if (errno != EAGAIN)
+	if ((npos < 0) && errno != EAGAIN)
 		CSocket_stream_internal_error(THIS, NET_CANNOT_WRITE, FALSE);
 	
 	return npos;
