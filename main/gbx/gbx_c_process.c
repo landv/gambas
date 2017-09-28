@@ -937,21 +937,19 @@ static void exit_child(void)
 }
 
 
-static CPROCESS *_CPROCESS_create_process;
-
-static void error_CPROCESS_create()
+static void error_CPROCESS_create(CPROCESS *process)
 {
-	OBJECT_UNREF(_CPROCESS_create_process);
+	OBJECT_UNREF(process);
 }
 
 CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 {
 	CPROCESS *process;
 
-	_CPROCESS_create_process = process = OBJECT_new(CLASS_Process, name, OP  ? (OBJECT *)OP : (OBJECT *)CP);
+	process = OBJECT_new(CLASS_Process, name, OP  ? (OBJECT *)OP : (OBJECT *)CP);
 	//fprintf(stderr, "CPROCESS_create: %p\n", process);
 
-	ON_ERROR(error_CPROCESS_create)
+	ON_ERROR_1(error_CPROCESS_create, process)
 	{
 		init_process(process);
 		run_process(process, mode, cmd, env);
@@ -964,11 +962,6 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 		STREAM_blocking(CSTREAM_stream(process), TRUE);
 
 	return process;
-}
-
-static void error_CPROCESS_wait_for(CPROCESS *process)
-{
-	OBJECT_UNREF(process);
 }
 
 void CPROCESS_wait_for(CPROCESS *process, int timeout)
@@ -990,7 +983,7 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 
 	sigfd = SIGNAL_get_fd();
 
-	ON_ERROR_1(error_CPROCESS_wait_for, process)
+	ON_ERROR_1(error_CPROCESS_create, process)
 	{
 		while (process->running)
 		{

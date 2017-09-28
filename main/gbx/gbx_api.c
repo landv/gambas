@@ -928,11 +928,9 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 
 static GB_RAISE_HANDLER *_GB_Raise_handler = NULL;
 
-static void error_GB_Raise()
+static void error_GB_Raise(void *object, intptr_t nparam)
 {
-	void *object = (void *)ERROR_handler->arg1;
-
-	RELEASE_MANY(SP, (int)(ERROR_handler->arg2));
+	RELEASE_MANY(SP, (int)nparam);
 	OBJECT_UNREF(object);
 
 	_raise_event_level--;

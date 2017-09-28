@@ -123,11 +123,9 @@ void SUBR_sleep(ushort code)
 	SUBR_LEAVE();
 }
 
-static CPROCESS *_error_subr_exec_process;
-
-static void error_subr_exec()
+static void error_subr_exec(CPROCESS *process)
 {
-	OBJECT_UNREF(_error_subr_exec_process);
+	OBJECT_UNREF(process);
 }
 
 void SUBR_exec(ushort code)
@@ -183,8 +181,7 @@ void SUBR_exec(ushort code)
 	{
 		OBJECT_REF(process);
 
-		_error_subr_exec_process = process;
-		ON_ERROR(error_subr_exec)
+		ON_ERROR_1(error_subr_exec, process)
 		{
 			CPROCESS_wait_for(process, 0);
 		}

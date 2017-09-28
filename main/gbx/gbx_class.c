@@ -736,10 +736,9 @@ char *CLASS_DESC_get_signature(CLASS_DESC *cd)
 
 // NOTE: The _free method can be called during a conversion, so we must save the EXEC structure
 
-static void error_CLASS_free()
+static void error_CLASS_free(void *object, EXEC_GLOBAL *save)
 {
-	void *object = (void *)ERROR_handler->arg1;
-	EXEC = *((EXEC_GLOBAL *)ERROR_handler->arg2);
+	EXEC = *save;
 	((OBJECT *)object)->ref = 0;
 	OBJECT_release(OBJECT_class(object), object);
 }
@@ -754,10 +753,10 @@ void CLASS_free(void *object)
 		((OBJECT *)object)->ref = 1; // Prevents anybody from freeing the object!
 
 		EXEC_special_inheritance(SPEC_FREE, class, object, 0, TRUE);
-
-		((OBJECT *)object)->ref = 0;
+		error_CLASS_free(object, &save);
+		/*((OBJECT *)object)->ref = 0;
 		EXEC = save;
-		OBJECT_release(class, object);
+		OBJECT_release(class, object);*/
 	}
 	END_ERROR
 }
