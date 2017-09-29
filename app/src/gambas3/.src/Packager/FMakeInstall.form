@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,92,74)
+  MoveScaled(0,0,98,76)
   Text = ("Make installation package")
   Icon = Picture["icon:/large/package"]
   Arrangement = Arrange.Vertical
@@ -693,5 +693,12 @@
       }
     }
     Index = 0
+  }
+  { btnCreateNow Button
+    MoveScaled(92,1,25,4)
+    Ignore = True
+    AutoResize = True
+    Text = ("Create package now")
+    Picture = Picture["icon:/small/package"]
   }
 }

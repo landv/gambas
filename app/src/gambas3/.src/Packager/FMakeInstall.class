@@ -549,6 +549,8 @@ Public Sub wizInstall_Change()
       panError.Hide
       
   End Select
+  
+  btnCreateNow.Visible = wizInstall.Index <> TAB_CREATE
 
 End
 
@@ -1248,5 +1250,26 @@ End
 Public Sub panError_Arrange()
 
   spnCreatePackage.W = spnCreatePackage.H
+
+End
+
+Public Sub Form_Arrange()
+
+  btnCreateNow.Move(Desktop.Scale, Me.ClientH - Desktop.Scale - btnCreateNow.H)
+
+End
+
+Public Sub btnCreateNow_Click()
+
+  Dim iIndex As Integer
+  
+  wizInstall.Animated = False
+  Do
+    iIndex = wizInstall.Index
+    wizInstall.MoveNext
+    If iIndex = TAB_CREATE Then Break
+    If wizInstall.Index = iIndex Then Break
+  Loop
+  wizInstall.Animated = True
 
 End

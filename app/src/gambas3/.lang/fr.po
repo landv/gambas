@@ -222,7 +222,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.10.90\n"
-"PO-Revision-Date: 2017-09-25 03:53 UTC\n"
+"PO-Revision-Date: 2017-09-29 22:55 UTC\n"
 "Last-Translator: benoit <benoit@benoit-kubuntu>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -429,7 +429,7 @@ msgstr "Auteurs"
 msgid "Implements"
 msgstr "Implémente"
 
-#: CComponent.class:1706 CLibraryInfo.class:191 LibraryItem.class:60
+#: CComponent.class:1706 CLibraryInfo.class:211 LibraryItem.class:60
 msgid "Requires"
 msgstr "Nécessite"
 
@@ -861,19 +861,19 @@ msgstr "Gestion du XML"
 msgid "Insert color"
 msgstr "Insérer une couleur"
 
-#: CLibraryInfo.class:174
+#: CLibraryInfo.class:194
 msgid "<b>&1:</b> &2"
 msgstr "<b>&1&nbsp;:</b> &2"
 
-#: CLibraryInfo.class:186 LibraryItem.class:54
+#: CLibraryInfo.class:206 LibraryItem.class:54
 msgid "Location"
 msgstr "Emplacement"
 
-#: CLibraryInfo.class:188 LibraryItem.class:56
+#: CLibraryInfo.class:208 LibraryItem.class:56
 msgid "WARNING! Library not found."
 msgstr "ATTENTION ! Bibliothèque introuvable."
 
-#: CLibraryInfo.class:190 LibraryItem.class:58
+#: CLibraryInfo.class:210 LibraryItem.class:58
 msgid "Provides"
 msgstr "Fournit"
 
@@ -1933,7 +1933,7 @@ msgstr "La chaîne recherchée est introuvable."
 msgid "Stack backtrace"
 msgstr "Pile d'appels"
 
-#: FEditor.class:2747 FTextEditor.class:1115
+#: FEditor.class:2754 FTextEditor.class:1120
 msgid "(Declarations)"
 msgstr "(Déclarations)"
 
@@ -2157,7 +2157,7 @@ msgstr "S'enregistrer"
 msgid "Confirm password"
 msgstr "Confirmer le mot de passe"
 
-#: FFarmRegister.form:108 FMakeInstall.form:256 FOption.form:287
+#: FFarmRegister.form:108 FMakeInstall.form:257 FOption.form:287
 msgid "E-mail"
 msgstr "E-mail"
 
@@ -3461,7 +3461,7 @@ msgstr "Générer l'exécutable"
 msgid "Make source archive"
 msgstr "Générer une archive des sources"
 
-#: FMain.form:1309 FMakeInstall.form:132
+#: FMain.form:1309 FMakeInstall.form:133
 msgid "Make installation package"
 msgstr "Créer un paquet d'installation"
 
@@ -3625,153 +3625,157 @@ msgstr "Le paquet ne peut être créé à l'intérieur du répertoire du projet.
 msgid "Initial release"
 msgstr "Version initiale"
 
-#: FMakeInstall.class:776
+#: FMakeInstall.class:778
 msgid "Menus"
 msgstr "Menus"
 
-#: FMakeInstall.class:844
+#: FMakeInstall.class:846
 msgid "Groups"
 msgstr "Groupes"
 
-#: FMakeInstall.class:968
+#: FMakeInstall.class:970
 msgid "Incorrect characters"
 msgstr "Caractères incorrects"
 
-#: FMakeInstall.class:1041
+#: FMakeInstall.class:1043
 msgid "Do you really want to remove all extra dependencies?"
 msgstr "Voulez-vous vraiment retirer toutes les dépendances supplémentaires ?"
 
-#: FMakeInstall.class:1140
+#: FMakeInstall.class:1142
 msgid "Do you really want to remove all extra files?"
 msgstr "Voulez-vous vraiment retirer tous les fichiers supplémentaires ?"
 
-#: FMakeInstall.class:1188
+#: FMakeInstall.class:1190
 msgid "Select the destination directory"
 msgstr "Sélectionnez le répertoire destination"
 
-#: FMakeInstall.form:146
+#: FMakeInstall.form:147
 msgid "Create package"
-msgstr "Création du paquet"
+msgstr "Créer le paquet"
 
-#: FMakeInstall.form:150
+#: FMakeInstall.form:151
 msgid "Package information"
 msgstr "Information sur le paquet"
 
-#: FMakeInstall.form:156
+#: FMakeInstall.form:157
 msgid "Package name"
 msgstr "Nom du paquet"
 
-#: FMakeInstall.form:177 FOption.form:377
+#: FMakeInstall.form:178 FOption.form:377
 msgid "Add vendor prefix or name to package names"
 msgstr "Ajouter le préfixe ou le nom du vendeur aux noms des paquets"
 
-#: FMakeInstall.form:184
+#: FMakeInstall.form:185
 msgid "Package version"
 msgstr "Version du paquet"
 
-#: FMakeInstall.form:201 FOption.form:309 FPublish.form:84
+#: FMakeInstall.form:202 FOption.form:309 FPublish.form:84
 msgid "Vendor name"
 msgstr "Nom du fournisseur"
 
-#: FMakeInstall.form:217 FOption.form:326
+#: FMakeInstall.form:218 FOption.form:326
 msgid "Vendor prefix"
 msgstr "Prefixe du fournisseur"
 
-#: FMakeInstall.form:231
+#: FMakeInstall.form:232
 msgid "Maintainer information"
 msgstr "Informations sur le mainteneur"
 
-#: FMakeInstall.form:271 FOption.form:361
+#: FMakeInstall.form:272 FOption.form:361
 msgid "URL"
 msgstr "URL"
 
-#: FMakeInstall.form:309
+#: FMakeInstall.form:310
 msgid "License"
 msgstr "Licence"
 
-#: FMakeInstall.form:320
+#: FMakeInstall.form:321
 msgid "Changelog"
 msgstr "Liste des changements"
 
-#: FMakeInstall.form:340
+#: FMakeInstall.form:341
 msgid "Target distribution"
 msgstr "Distribution cible"
 
-#: FMakeInstall.form:609
+#: FMakeInstall.form:610
 msgid "Self-extractible"
 msgstr "Auto-extractible"
 
-#: FMakeInstall.form:614
+#: FMakeInstall.form:615
 msgid "Package group"
 msgstr "Groupe de paquet"
 
-#: FMakeInstall.form:634
+#: FMakeInstall.form:635
 msgid "Menu entry"
 msgstr "Entrée de menu"
 
-#: FMakeInstall.form:656
+#: FMakeInstall.form:657
 msgid "Categories"
 msgstr "Catégories"
 
-#: FMakeInstall.form:665
+#: FMakeInstall.form:666
 msgid "Desktop configuration file"
 msgstr "Fichier de configuration du bureau"
 
-#: FMakeInstall.form:671
+#: FMakeInstall.form:672
 msgid "Mimetypes"
 msgstr "Types MIME"
 
-#: FMakeInstall.form:679
+#: FMakeInstall.form:680
 msgid "Enter the mimetypes handled by your application there.\nPlease enter one mimetype by line.\n"
 msgstr "Saisissez les types MIME gérés par votre application.\nVeuillez saisir un type MIME par ligne.\n"
 
-#: FMakeInstall.form:691
+#: FMakeInstall.form:692
 msgid "Additional configuration"
 msgstr "Configuration additionnelle"
 
-#: FMakeInstall.form:699
+#: FMakeInstall.form:700
 msgid "The following will be added to the end of the desktop configuration file."
 msgstr "Le texte suivant sera ajouté à la fin du fichier de configuration du bureau."
 
-#: FMakeInstall.form:707
+#: FMakeInstall.form:708
 msgid "Extra dependencies"
 msgstr "Dépendances supplémentaires"
 
-#: FMakeInstall.form:711
+#: FMakeInstall.form:712
 msgid "Same dependencies for all targets"
 msgstr "Mêmes dépendances pour toutes les cibles"
 
-#: FMakeInstall.form:767
+#: FMakeInstall.form:768
 msgid "Extra files"
 msgstr "Fichiers supplémentaires"
 
-#: FMakeInstall.form:771
+#: FMakeInstall.form:772
 msgid "Same files for all targets"
 msgstr "Mêmes fichiers pour toutes les cibles"
 
-#: FMakeInstall.form:784
+#: FMakeInstall.form:785
 msgid "Extra files must be located in the <b>Project</b> folder of the current project, i.e. the <tt>.hidden</tt> directory of the project on the disk."
 msgstr "Les fichiers supplémentaires doivent être situés dans le dossier <b>Projet</b> du projet en cours, correspondant au répertoire <tt>.hidden</tt> du projet sur le disque."
 
-#: FMakeInstall.form:842
+#: FMakeInstall.form:843
 msgid "Extra autoconf tests"
 msgstr "Tests autoconf supplémentaires"
 
-#: FMakeInstall.form:848
+#: FMakeInstall.form:849
 msgid "Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
 msgstr "Ajout de tests supplémentaires au processus de configuration.\n<p><b>Laissez ce champ vide si vous n'en avez pas besoin, ou si vous ne connaissez rien aux scripts <i>autoconf</i>.</b>"
 
-#: FMakeInstall.form:856
+#: FMakeInstall.form:857
 msgid "Destination directory"
 msgstr "Répertoire de destination"
 
-#: FMakeInstall.form:865
+#: FMakeInstall.form:866
 msgid "Create directories for each distribution"
 msgstr "Créer des répertoires pour chaque distribution"
 
-#: FMakeInstall.form:896
+#: FMakeInstall.form:897
 msgid "Commands output"
 msgstr "Sortie des commandes"
+
+#: FMakeInstall.form:943
+msgid "Create package now"
+msgstr "Créer le paquet maintenant"
 
 #: FMakePatch.class:19
 msgid "Please select the origin archive."
@@ -5313,19 +5317,19 @@ msgstr "Editer les propriétés de texte"
 msgid "Use a fixed font"
 msgstr "Utiliser une police non proportionnelle"
 
-#: FTextEditor.class:213
+#: FTextEditor.class:218
 msgid "Console output #&1"
 msgstr "Sortie de console n°&1"
 
-#: FTextEditor.class:909
+#: FTextEditor.class:914
 msgid "Original file has been saved in the <b>Project</b> folder."
 msgstr "Le fichier d'origine a été sauvegardé dans le répertoire <b>Projet</b>."
 
-#: FTextEditor.class:909
+#: FTextEditor.class:914
 msgid "The file has been compressed from &1 to &2 bytes (&3)."
 msgstr "La taille du fichier a été réduite de &1 à &2 octets (&3)."
 
-#: FTextEditor.class:915
+#: FTextEditor.class:920
 msgid "Unable to compress file."
 msgstr "Impossible de compresser le fichier."
 
