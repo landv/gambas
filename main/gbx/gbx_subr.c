@@ -159,6 +159,8 @@ static TYPE conv_type(TYPE type)
 		type = T_BYTE;*/
 	if (type == T_CSTRING) // || type == T_NULL)
 		type = T_STRING;
+	else if (type == T_CLASS || type == T_FUNCTION)
+		type = T_VARIANT;
 
 	return type;
 }
@@ -172,6 +174,9 @@ TYPE SUBR_check_good_type(VALUE *param, int count)
 		goto __VARIANT;
 
 	type = conv_type(param[0].type);
+	
+	if (type == T_VARIANT)
+		goto __VARIANT;
 	
 	if (TYPE_is_value(type))
 	{
