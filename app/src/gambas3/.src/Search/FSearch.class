@@ -135,9 +135,9 @@ Public Sub Update(Optional bForce As Boolean)
       radCurrentProcedure.Enabled = False
       radCurrentFile.Enabled = False
     Endif
-    btnReplace.Enabled = True
-    btnReplaceAll.Enabled = True
-    cmbReplace.Enabled = True
+    
+    UpdateReplaceState
+    
   'Endif
   
   If radCurrentProcedure.Value And If Not radCurrentProcedure.Enabled Then
@@ -1114,10 +1114,17 @@ Public Sub timRefresh_Timer()
   
 End
 
-Public Sub OnProjectDebug()
+Public Sub UpdateReplaceState()
   
   btnReplace.Enabled = Not Project.Running
   btnReplaceAll.Enabled = btnReplace.Enabled
+  cmbReplace.Enabled = btnReplace.Enabled
+  
+End
+
+Public Sub OnProjectDebug()
+  
+  UpdateReplaceState
   
 End
 
