@@ -1748,7 +1748,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
     sLine = sProp & " = "
 
     If hProp.Translate Then
-      bTranslate = GetPropertyDefault("Translate")
+      bTranslate = GetPropertyDefault(CPropertyInfo.TRANSLATE_NAME)
     Else
       bTranslate = False
     Endif

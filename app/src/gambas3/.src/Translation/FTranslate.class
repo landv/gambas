@@ -994,6 +994,16 @@ Public Sub btnVerify_Click()
 
     Do
 
+      .MoveNext()
+      If Not .Available Then
+        .MoveFirst()
+      Endif
+
+      If .Item.Key = sKey Then
+        Balloon.Info(("Everything seems to be correct."), btnVerify)
+        Return
+      Endif
+
       If .Item[1] Then
         If .Item[1] <> "-" Then
 
@@ -1005,16 +1015,6 @@ Public Sub btnVerify_Click()
           Endif
 
         Endif
-      Endif
-
-      .MoveNext()
-      If Not .Available Then
-        .MoveFirst()
-      Endif
-
-      If .Item.Key = sKey Then
-        Balloon.Info(("Everything seems to be correct."), btnVerify)
-        Return
       Endif
 
     Loop
