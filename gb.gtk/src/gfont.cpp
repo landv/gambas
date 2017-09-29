@@ -453,7 +453,7 @@ void gFont::setSize(double sz)
 {
 	PangoFontDescription *desc=pango_context_get_font_description(ct);
 	
-	pango_font_description_set_size (desc,(int)(sz*PANGO_SCALE+0.5));
+	pango_font_description_set_size(desc, (int)(sz * PANGO_SCALE + 0.5));
 	
 	_size_set = true;
 	_height = 0;
@@ -463,8 +463,10 @@ void gFont::setGrade(int grade)
 {
 	double desktop = gDesktop::font()->size();
 	
-	if (grade < -4 || grade > 24)
-		return;
+	if (grade < FONT_GRADE_MIN)
+		grade = FONT_GRADE_MIN;
+	else if (grade > FONT_GRADE_MAX)
+		grade = FONT_GRADE_MAX;
 	
 	setSize(GRADE_TO_SIZE(grade, desktop));
 }

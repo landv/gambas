@@ -219,10 +219,6 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
 					GB.ReturnFloat(SIZE_REAL_TO_VIRTUAL(f->pointSizeF()));
 				break;
 			case CFONT::Grade:
-				/*{
-					float r = logf(f->pointSizeFloat()) / logf(qApp->font().pointSizeFloat());
-					GB.ReturnInteger((int)(10 * r + 0.5) - 10);
-				}*/
 				GB.ReturnInteger(SIZE_TO_GRADE(f->pointSizeF(), qApp->font().pointSizeF()));
 				break;
 			case CFONT::Bold: GB.ReturnBoolean(f->bold()); break;
@@ -253,11 +249,10 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
 			case CFONT::Grade:
 				{
 					int g = VPROP(GB_INTEGER);
-					if (g < -4)
-						g = -4;
-					else if (g > 24)
-						g = 24;
-					//f->setPointSizeFloat((int)(powf(qApp->font().pointSizeFloat(), 1.0 + ((int)g / 16.0)) + 0.5));
+					if (g < FONT_GRADE_MIN)
+						g = FONT_GRADE_MIN;
+					else if (g > FONT_GRADE_MAX)
+						g = FONT_GRADE_MAX;
 					f->setPointSizeF(GRADE_TO_SIZE(g, qApp->font().pointSizeF()));
 				}
 				break;
