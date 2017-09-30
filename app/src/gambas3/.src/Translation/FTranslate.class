@@ -47,7 +47,6 @@ End
 Public Sub _new()
 
   With cvwTranslate
-    .AutoResize = False
     .Columns.Count = 4
     '.Columns[0].Text = ("Untranslated")
     '.Columns[2].Text = ("Comments")
@@ -307,7 +306,7 @@ Private Sub FormatComment(sComment As String)
 
   panComment.Children.Clear
 
-  For Each sFile In Split(sComment, " ")
+  For Each sFile In Split(sComment, " ", "", True)
     
     iPos = RInStr(sFile, ":")
     If iPos Then
@@ -316,9 +315,11 @@ Private Sub FormatComment(sComment As String)
     Else
       sSuffix = ""
     Endif
-    sPath = Project.FindPath(sFile)
+    If sFile Not Begins "." Then
+      sPath = Project.FindPath(sFile)
+      sFile = Mid$(sPath, Len(Project.SourceDir) + 2)
+    Endif
     
-    sFile = Mid$(sPath, Len(Project.SourceDir) + 2)
     If sSuffix Then sFile &= " (" & sSuffix & ")"
     
     If panComment.Children.Count Then
@@ -1083,7 +1084,6 @@ Private Sub ResizeTable()
 
   Dim I As Integer
   
-  cvwTranslate.AutoResize = False
   With cvwTranslate
     .Columns[0].Width = .ClientW \ 2
     .Columns[1].Width = .ClientW - .Columns[0].Width '- 16
@@ -1245,7 +1245,7 @@ Private Sub MakeFileChoice()
   With cvwTranslate
     .MoveFirst
     Do While .Available
-      For Each sFile In Split(.Item[2], " ")
+      For Each sFile In Split(.Item[2], " ", "", True)
         iPos = InStr(sFile, ":")
         If iPos Then sFile = Left(sFile, iPos - 1)
         If Left(sFile) <> "." Then sFile = File.BaseName(sFile)
@@ -1266,8 +1266,6 @@ End
 
 Private Sub ShiftToSort(Optional sSortText As String)
 
-  Dim sTempIn As String
-  'DIM sSearchText AS String
   Dim iPos As Integer
   Dim sKey As String
   Dim sLastKey As String
@@ -1282,9 +1280,8 @@ Private Sub ShiftToSort(Optional sSortText As String)
   With cvwTranslateOrg
     .MoveFirst
     Do While .Available
-      sTempIn = .Item[2]
       If sSortText Then
-        iPos = InStr(" " & sTempIn, " " & sSortText)
+        iPos = InStr(" " & .Item[2], " " & sSortText)
       Else
         iPos = -1
       Endif
@@ -1308,7 +1305,7 @@ Private Sub ShiftToSort(Optional sSortText As String)
     If Not cvwTranslate.Available Then
       cvwTranslate.MoveFirst
     Endif
-    cvwTranslate.item.Selected = True
+    cvwTranslate.Item.Selected = True
     cvwTranslate.Item.EnsureVisible()
   Endif
   

@@ -665,6 +665,12 @@
       Text = ("Add everything to repository")
       Picture = Picture["icon:/small/add"]
     }
+    { mnuDoNotTranslate Menu
+      Action = "do-not-translate"
+      Text = ("Do not translate")
+      Picture = Picture["img/32/do-not-translate.png"]
+      Toggle = True
+    }
     { mnuInformation Menu
       Action = "info"
       Text = Shortcut(("Properties"), "P") & "..."
@@ -1368,6 +1374,11 @@
     Text = "Delete"
     Shortcut = "Del"
     Picture = "icon:/small/delete"
+  }
+  { Action do-not-translate
+    Text = "Do not translate"
+    Shortcut = ""
+    Picture = "img/32/do-not-translate.png"
   }
   { Action exec
     Text = "Executable"

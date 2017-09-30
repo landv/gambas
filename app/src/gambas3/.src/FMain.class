@@ -394,6 +394,14 @@ Public Sub mnuPopup_Show()
     Endif
     mnuRunThat.Visible = mnuStartup.Visible
     mnuRunThat.Enabled = mnuStartup.Enabled
+  
+    If IsDir(sCurrent) Then
+      mnuDoNotTranslate.Show
+      mnuDoNotTranslate.Checked = Not Project.ShouldTranslate(sCurrent)
+    Else
+      mnuDoNotTranslate.Hide
+    Endif
+    
     
     If mnuCut.Visible Then
       
@@ -2767,5 +2775,14 @@ Public Sub UpdateRunButton()
     btnGo.W = btnGo.H
     btnGo.Menu = ""
   Endif
+  
+End
+
+Public Sub mnuDoNotTranslate_Click()
+
+  Dim sPath As String = GetCurrent()
+  If Not sPath Then Return
+  Project.SetShouldTranslate(sPath, Not mnuDoNotTranslate.Value)
+  Project.WriteProject(True)
   
 End

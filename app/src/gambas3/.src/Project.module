@@ -94,8 +94,6 @@ Public FullVersionWithRevision As String
 Public SourcePath As String
 Public Language As String
 Public Type As Integer
-'Public Stack As Integer
-'Public StackTrace As Boolean
 Public Authors As String
 Public VersionFile As Boolean
 Public UseTerminal As Boolean
@@ -103,7 +101,7 @@ Public RedirectStderr As Boolean
 Public UseHttpServer As Boolean
 Public Profiling As Boolean
 Public ProfileIndex As Integer
-'Public BreakOnError As Boolean
+Public DoNotTranslate As String[]
 
 Public Running As Boolean
 'Public JustUpdateVersion As Boolean
@@ -876,11 +874,7 @@ Public Function CloseProject() As Boolean
           Try aFold = hForm.GetFoldedProc()
 
           If sState Then sState = ":" & sState
-          sPath = hForm.Path
-          If sPath Begins Project.Dir Then
-            sPath = Mid$(sPath, Len(Project.Dir) + 1)
-            If Left(sPath) = "/" Then sPath = Mid$(sPath, 2)
-          Endif
+          sPath = MakeProjectRelativePath(hForm.Path)
           Config["/OpenFile/File[" & CStr(nOpen) & "]"] = sPath & sState
 
           If aFold And If aFold.Count Then Config["/OpenFile/Fold[" & CStr(nOpen) & "]"] = aFold
@@ -968,7 +962,7 @@ Private Sub AddEmblem(hSource As Image, sEmblem As String) As Image
     Return hSource
   Endif
 
-  iSize = Min(hEmblem.H, hSource.H / 2)
+  iSize = Min(hEmblem.H, hSource.H * 0.75)
   hEmblem = hEmblem.Stretch(-1, iSize) ', iSize * hEmblem.H / hEmblem.W)
 
   'iSize -= hSource.W \ 4
@@ -1093,6 +1087,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
   Dim sLink As String
   Dim bExported As Boolean
   Dim fRapport As Float
+  Dim bDoNotTranslate As Boolean
 
   If iSize Then
     sPrefix = "icon:/" & iSize
@@ -1111,6 +1106,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
     bLocked = IsLocked(sPath)
     bAdded = IsAdded(sPath)
     $bLastAdded = bAdded
+    bDoNotTranslate = Not ShouldTranslate(sPath)
 
     If IsDir(sPath) Then
 
@@ -1222,13 +1218,14 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
 
     If Not hImage Then hImage = Picture[sPrefix &/ "image"].Image
 
-    If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
-    If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
-    If bAdded Then hImage = AddEmblem(hImage, "icon:/32/add")
-
     If bLink Then
       hImage = AddLinkEmblem(hImage)
     Endif
+
+    If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
+    If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
+    If bAdded Then hImage = AddEmblem(hImage, "icon:/32/add")
+    If bDoNotTranslate Then hImage = AddEmblem(hImage, "img/32/do-not-translate.png")
 
     hPict = hImage.Picture
 
@@ -1241,6 +1238,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
     If bLocked Then sKey &= "k"
     If bAdded Then sKey &= "a"
     If bExported Then sKey &= "x"
+    If bDoNotTranslate Then sKey &= "t"
     If Right(sKey) = "-" Then sKey = Left(sKey, -1)
     sKey &= ".png"
 
@@ -1261,18 +1259,21 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
       'If Not hPict Then hPict = Picture["img/16/unknown.png"]
       'hPict = hPict.Copy()
 
-      'If bStartup Then hImage = AddEmblem(hImage, "icon:/32/play")
-      If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
-      If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
-      If bAdded Then hImage = AddEmblem(hImage, "icon:/32/add")
-      If bExported Then hImage = AddEmblem(hImage, "img/32/exported.png")
-
       If iSize Then
         hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
       Endif
 
       If bLink Then
         hImage = AddLinkEmblem(hImage)
+      Endif
+
+      'If bStartup Then hImage = AddEmblem(hImage, "icon:/32/play")
+      If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
+      If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
+      If bAdded Then hImage = AddEmblem(hImage, "icon:/32/add")
+      If bExported Then hImage = AddEmblem(hImage, "img/32/exported.png")
+      If bDoNotTranslate Then 
+        hImage = AddEmblem(hImage, "img/32/do-not-translate.png")
       Endif
 
       hPict = hImage.Picture
@@ -2221,7 +2222,7 @@ Public Function FindPath(sClass As String) As String
 
   sPath = $cSourceDir[sClass & ".module"]
   If sPath Then Return sPath
-
+  
 End
 
 Private Sub FindKey(sClass As String) As String
@@ -3367,6 +3368,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   PublishGambasVersion = ""
   PublishWebSite = ""
   PublishCreateMenu = False
+  DoNotTranslate = New String[]
 
   For Each sLig In hFic.Lines
 
@@ -3649,6 +3651,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
       Case "createmenu"
         PublishCreateMenu = CInt(sVal) <> 0
+        
+      Case "donottranslate"
+        DoNotTranslate = Split(sVal, ",", Chr$(34), True)
 
     End Select
 
@@ -3826,6 +3831,8 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If PublishGambasVersion Then Print #hFic, "GambasVersion="; PublishGambasVersion
   If PublishWebSite Then Print #hFic, "WebSite="; PublishWebSite
   If PublishCreateMenu Then Print #hFic, "CreateMenu=1"
+  
+  If DoNotTranslate.Count Then Print #hFic, "DoNotTranslate="; DoNotTranslate.Join(",", Chr$(34))
 
   Close #hFic
 
@@ -6457,3 +6464,44 @@ Public Sub OpenTerminal(sDir As String)
   If Error Then Message.Error(("Unable to run terminal.") & "\n\n" & Error.Text)
   
 End
+
+Private Sub MakeProjectRelativePath(sPath As String) As String
+  
+  If sPath Begins Project.Dir Then 
+    sPath = Mid$(sPath, Len(Project.Dir) + 1)
+    If sPath Begins "/" Then sPath = Mid$(sPath, 2)
+  Endif
+  
+  Return sPath
+  
+End
+
+
+Public Sub ShouldTranslate(sPath As String, Optional bRecursive As Boolean) As Boolean
+  
+  If DoNotTranslate.Exist(MakeProjectRelativePath(sPath)) Then Return
+  If Not bRecursive Then Return True
+  
+  sPath = File.Dir(sPath)
+  If sPath = Project.Dir Then Return True
+  
+  Return ShouldTranslate(sPath, True)
+  
+End
+
+Public Sub SetShouldTranslate(sPath As String, bTrans As Boolean)
+  
+  Dim iPos As Integer
+  
+  sPath = MakeProjectRelativePath(sPath)
+  iPos = DoNotTranslate.Find(sPath)
+  If bTrans And iPos >= 0 Then
+    DoNotTranslate.Remove(iPos)
+    RefreshKey(Project.Dir &/ sPath)
+  Else If Not bTrans And iPos < 0 Then
+    DoNotTranslate.Add(sPath)
+    RefreshKey(Project.Dir &/ sPath)
+  Endif
+  
+End
+

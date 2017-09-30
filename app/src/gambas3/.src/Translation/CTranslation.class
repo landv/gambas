@@ -33,6 +33,32 @@ Static Public Sub SubstHeader(sHeader As String, Optional sLang As String) As St
   
 End
 
+Private Sub CheckTranslate(sMsgComment As String) As String
+
+  Dim iPos As Integer
+  Dim sFile As String
+  Dim sPath As String
+  Dim aFile As String[]
+  Dim I As Integer
+  Dim aResult As New String[]
+  
+  aFile = Split(sMsgComment, " ", "", True)
+  For I = 0 To aFile.Max
+    sFile = aFile[I]
+    If sFile Begins "." Then 
+      aResult.Add(sFile)
+    Else
+      sPath = sFile
+      iPos = InStr(sPath, ":")
+      If iPos Then sPath = Left(sPath, iPos - 1)
+      sPath = Project.FindPath(sPath)
+      If Project.ShouldTranslate(sPath, True) Then aResult.Add(sFile)
+    Endif
+  Next
+  
+  Return aResult.Join(" ")
+  
+End
 
 Private Sub LoadTranslation(sLang As String) 
   
@@ -72,7 +98,7 @@ Private Sub LoadTranslation(sLang As String)
       If Left$(sLine) = "#" Then
 
         If Left$(sLine, 2) = "#:" Then
-          sMsgComment = Trim(Mid$(sLine, 3))
+          sMsgComment = Trim(sMsgComment & " " & Mid$(sLine, 3))
           Continue
         Endif
 
@@ -109,6 +135,16 @@ Private Sub LoadTranslation(sLang As String)
     Endif
 
     If Trim(sMsgId) Then
+
+      If sMsgComment Then
+        sMsgComment = CheckTranslate(sMsgComment)
+        If Not sMsgComment Then 
+          sMsgId = ""
+          sMsgComment = ""
+          sMsgStr = ""
+          Continue
+        Endif
+      Endif
 
       'Inc iIndex
       Keys.Add(sMsgId)
