@@ -1259,7 +1259,7 @@ static int begin_transaction(DB_DATABASE *db)
 	{
 		char buffer[8];
 		sprintf(buffer, "%d", trans - 1);
-		return do_query(db, "Unable to begin transaction: &1", NULL, "SAVEPOINT t&1", 1, buffer);
+		return do_query(db, "Unable to begin transaction: Unable to define savepoint: &1", NULL, "SAVEPOINT t&1", 1, buffer);
 	}
 }
 
@@ -1290,7 +1290,7 @@ static int commit_transaction(DB_DATABASE *db)
 	{
 		char buffer[8];
 		sprintf(buffer, "%d", trans);
-		return do_query(db, "Unable to begin transaction: &1", NULL, "RELEASE SAVEPOINT t&1", 1, buffer);
+		return do_query(db, "Unable to commit transaction: Unable to release savepoint: &1", NULL, "RELEASE SAVEPOINT t&1", 1, buffer);
 	}
 }
 

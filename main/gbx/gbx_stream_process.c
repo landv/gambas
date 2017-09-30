@@ -68,14 +68,12 @@ static int stream_close(STREAM *stream)
 
 static int stream_read(STREAM *stream, char *buffer, int len)
 {
-	return STREAM_read_direct(FDR, buffer, len);
+	return read(FDR, buffer, len);
 }
-
-#define stream_getchar NULL
 
 static int stream_write(STREAM *stream, char *buffer, int len)
 {
-	return STREAM_write_direct(FDW, buffer, len);
+	return write(FDW, buffer, len);
 }
 
 

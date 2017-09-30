@@ -162,9 +162,7 @@ int CCURL_stream_read(GB_STREAM *stream, char *buffer, int len)
 	GB.FreeString(&THIS->data);
 	THIS->data = new_data;
 
-	GB.Stream.SetBytesRead(stream, len);
-	
-	return 0;
+	return len;
 }
 
 static void raise_event(void *_object, int event)

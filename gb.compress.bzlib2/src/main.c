@@ -72,7 +72,6 @@ GB_STREAM_DESC BZStream =
 	open: BZ_stream_open,
 	close: BZ_stream_close,
 	read: BZ_stream_read,
-	getchar: BZ_stream_getchar,
 	write: BZ_stream_write,
 	seek: BZ_stream_seek,
 	tell: BZ_stream_tell,
@@ -481,7 +480,7 @@ static int BZ_stream_write(GB_STREAM *stream, char *buffer, int len)
 
 	if (P_MODE==MODE_READ) return -1;
 	BZ2_bzWrite ( &bzerror,P_BZ, (void*)buffer, len);
-	if (!bzerror) { P_POS+=len; return 0; }
+	if (!bzerror) { P_POS += len; return len; }
 
 	//BZ2_bzWriteClose (&bzerror,P_BZ,0,NULL,NULL);
 	//fclose(P_FILE);
@@ -508,18 +507,16 @@ static int BZ_stream_read(GB_STREAM *stream, char *buffer, int len)
 	
 	if (!bzerror)
 	{
-		GB.Stream.SetBytesRead(stream, len2);
 		P_POS += len2;
-		return 0;
+		return len2;
 	}
 	else
 	{
 		if ((len2 == len) && (bzerror == BZ_STREAM_END))
 		{
-			GB.Stream.SetBytesRead(stream, len2);
 			P_POS += len2;
 			P_EOF = 1;
-			return 0;
+			return len2;
 		}
 	}
 
@@ -528,11 +525,6 @@ static int BZ_stream_read(GB_STREAM *stream, char *buffer, int len)
 	//GB.Free( POINTER(&((BZ2_STREAM*)stream)->info) );
 	//stream->desc=NULL;
 	return -1;
-}
-
-static int BZ_stream_getchar(GB_STREAM *stream, char *buffer)
-{
-	return BZ_stream_read(stream,buffer,1);
 }
 
 

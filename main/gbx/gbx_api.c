@@ -280,7 +280,6 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_HashTableFirst,
 
 	(void *)GB_StreamGet,
-	(void *)GB_StreamSetBytesRead,
 	(void *)GB_StreamSetSwapping,
 	(void *)GB_StreamSetAvailableNow,
 	(void *)GB_StreamBlock,
@@ -2265,11 +2264,6 @@ GB_STREAM *GB_StreamGet(void *object)
 	return (GB_STREAM *)CSTREAM_stream(object);
 }
 
-void GB_StreamSetBytesRead(GB_STREAM *stream, int length)
-{
-	STREAM_eff_read += length;
-}
-
 void GB_StreamSetSwapping(GB_STREAM *stream, int v)
 {
 	((STREAM *)stream)->common.swap = v;
@@ -2295,10 +2289,7 @@ int GB_StreamRead(GB_STREAM *stream, void *addr, int len)
 		if (len < 0)
 			ret = STREAM_read_max((STREAM *)stream, addr, -len);
 		else
-		{
-			STREAM_read((STREAM *)stream, addr, len);
-			ret = STREAM_eff_read;
-		}
+			ret = STREAM_read((STREAM *)stream, addr, len);
 	}
 	END_CATCH_ERROR_INT
 }

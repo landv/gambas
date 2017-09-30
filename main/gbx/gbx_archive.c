@@ -524,9 +524,9 @@ void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info)
 }
 
 
-bool ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len)
+void ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len)
 {
-	return ARCH_read(arch->arch, pos, buffer, len);
+	ARCH_read(arch->arch, pos, buffer, len);
 }
 
 

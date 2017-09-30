@@ -454,6 +454,7 @@ void SUBR_read(ushort code)
 {
 	STREAM *stream;
 	int len = 0;
+	int eff;
 
 	SUBR_ENTER_PARAM(2);
 
@@ -482,19 +483,19 @@ void SUBR_read(ushort code)
 			RETURN->_string.start = 0;
 			RETURN->_string.len = len;
 			
-			STREAM_read_max(stream, RETURN->_string.addr, len);
+			eff = STREAM_read_max(stream, RETURN->_string.addr, len);
 			
-			if (STREAM_eff_read == 0)
+			if (eff == 0)
 			{
 				RETURN->type = T_NULL;
 				STRING_free(&RETURN->_string.addr);
 			}
 			else
 			{
-				if (STREAM_eff_read < len)
+				if (eff < len)
 				{
-					RETURN->_string.addr = STRING_extend(RETURN->_string.addr, STREAM_eff_read);
-					RETURN->_string.len = STREAM_eff_read;
+					RETURN->_string.addr = STRING_extend(RETURN->_string.addr, eff);
+					RETURN->_string.len = eff;
 				}
 				STRING_extend_end(RETURN->_string.addr);
 			}

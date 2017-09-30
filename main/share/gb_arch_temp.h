@@ -357,13 +357,6 @@ bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
 
 bool ARCH_read(ARCH *arch, int pos, void *buffer, int len)
 {
-	/*if (lseek(arch->fd, pos, SEEK_SET) < 0)
-		return TRUE;
-
-	if (read(arch->fd, buffer, len) != len)
-		return TRUE;*/
-
 	memcpy(buffer, &arch->addr[pos], len);
-
 	return FALSE;
 }

@@ -85,17 +85,14 @@ static int stream_read(STREAM *stream, char *buffer, int len)
   if (CHECK_got_error())
   {
     errno = EIO;  
-    return TRUE;
+    return -1;
   }
   else
   {
     stream->memory.pos += len;
-    STREAM_eff_read = len;
-    return FALSE;
+    return len;
   }
 }
-
-#define stream_getchar NULL
 
 static int stream_write(STREAM *stream, char *buffer, int len)
 {
@@ -112,12 +109,12 @@ static int stream_write(STREAM *stream, char *buffer, int len)
   if (CHECK_got_error())
   {
     errno = EIO;  
-    return TRUE;
+    return -1;
   }
   else
   {
     stream->memory.pos += len;
-    return FALSE;
+    return len;
   }
 }
 

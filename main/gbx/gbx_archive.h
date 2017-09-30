@@ -79,7 +79,7 @@ void ARCHIVE_load_exported_class(ARCHIVE *arch, int pass);
 
 bool ARCHIVE_get(ARCHIVE *arch, const char **ppath, ARCHIVE_FIND *find);
 
-bool ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len);
+void ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len);
 
 bool ARCHIVE_exist(ARCHIVE *arch, const char *path);
 void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info);
