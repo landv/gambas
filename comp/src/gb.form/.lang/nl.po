@@ -3,6 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gb.form 3.10.90\n"
+"POT-Creation-Date: 2017-09-30 01:26 UTC\n"
 "PO-Revision-Date: 2017-08-26 19:38 UTC\n"
 "Last-Translator: Willy Raets <gbWilly@openmailbox.org>\n"
 "Language: nl\n"
@@ -242,6 +243,7 @@ msgstr "Bladwijzers"
 msgid "OK"
 msgstr "OK"
 
+#: FDirChooser.form:242 FEditBookmark.class:119 FInputBox.form:51
 #: FSidePanel.class:978 FWizard.form:53
 msgid "Cancel"
 msgstr "Annuleren"
@@ -294,11 +296,12 @@ msgstr "Rij"
 msgid "Vertical"
 msgstr "Verticaal"
 
-#: FDocumentView.form:96 FFontChooser.form:123
+#: FDocumentView.form:96 FFontChooser.form:123 FMain.form:66
 msgid "ComboBox1"
 msgstr "-"
 
-#: FTestMessageView.form:32 FTestWizard.form:23
+#: FDocumentView.form:101 FMain.form:82 FTestBalloon.form:18
+#: FTestCompletion.form:23 FTestMessageView.form:32 FTestWizard.form:23
 msgid "Button1"
 msgstr "-"
 
@@ -310,123 +313,123 @@ msgstr "Kolommen"
 msgid "Autocenter"
 msgstr "Autocentreren"
 
-#: FEditBookmark.class:20 FileView.class:122
+#: FEditBookmark.class:23 FileView.class:122
 msgid "Name"
 msgstr "Naam"
 
-#: FEditBookmark.class:21
+#: FEditBookmark.class:24
 msgid "Path"
 msgstr "Pad"
 
-#: FEditBookmark.class:113
+#: FEditBookmark.class:119
 msgid "Do you really want to remove this bookmark?"
 msgstr "Wil je deze bladwijzer werkelijk verwijderen?"
 
-#: FEditBookmark.form:14
+#: FEditBookmark.form:15
 msgid "Edit bookmarks"
 msgstr "Bladwijzers bewerken"
 
-#: FEditBookmark.form:33
+#: FEditBookmark.form:34
 msgid "Up"
 msgstr "Omhoog"
 
-#: FEditBookmark.form:39
+#: FEditBookmark.form:40
 msgid "Down"
 msgstr "Omlaag"
 
-#: FEditBookmark.form:45
+#: FEditBookmark.form:46
 msgid "Remove"
 msgstr "Verwijder"
 
-#: FEditBookmark.form:56 FFileProperties.form:253 MessageView.class:51
+#: FEditBookmark.form:57 FFileProperties.form:269 MessageView.class:51
 msgid "Close"
 msgstr "Sluiten"
 
-#: FFileProperties.class:91
-msgid "Symbolic link"
-msgstr "Symbolische link"
-
-#: FFileProperties.class:120
+#: FFileProperties.class:114
 msgid "Image"
 msgstr "Afbeelding"
 
-#: FFileProperties.class:125
+#: FFileProperties.class:119
 msgid "Audio"
 msgstr "-"
 
-#: FFileProperties.class:129
+#: FFileProperties.class:123
 msgid "Video"
 msgstr "-"
 
-#: FFileProperties.class:178
+#: FFileProperties.class:182
 msgid "&1 properties"
 msgstr "&1 eigenschappen"
 
-#: FFileProperties.class:209 Main.module:50
+#: FFileProperties.class:213 Main.module:50
 msgid "&1 B"
 msgstr "-"
 
-#: FFileProperties.class:214
+#: FFileProperties.class:218
 msgid "no file"
 msgstr "geen bestand"
 
-#: FFileProperties.class:216
+#: FFileProperties.class:220
 msgid "one file"
 msgstr "een bestand"
 
-#: FFileProperties.class:218
+#: FFileProperties.class:222
 msgid "files"
 msgstr "bestanden"
 
-#: FFileProperties.class:222
+#: FFileProperties.class:226
 msgid "no directory"
 msgstr "geen map"
 
-#: FFileProperties.class:224
+#: FFileProperties.class:228
 msgid "one directory"
 msgstr "een map"
 
-#: FFileProperties.class:226
+#: FFileProperties.class:230
 msgid "directories"
 msgstr "mappen"
 
-#: FFileProperties.form:50
+#: FFileProperties.form:52
 msgid "General"
 msgstr "Algemeen"
 
-#: FFileProperties.form:79
+#: FFileProperties.form:81
 msgid "Type"
 msgstr "Type"
 
-#: FFileProperties.form:91
+#: FFileProperties.form:94
+msgid "Link"
+msgstr ""
+
+#: FFileProperties.form:107
 msgid "Directory"
 msgstr "Map"
 
-#: FFileProperties.form:103 FileView.class:124
+#: FFileProperties.form:119 FileView.class:124
 msgid "Size"
 msgstr "Grootte"
 
-#: FFileProperties.form:115 FileView.class:126
+#: FFileProperties.form:131 FileView.class:126
 msgid "Last modified"
 msgstr "Laatste modificatie"
 
-#: FFileProperties.form:127
+#: FFileProperties.form:143
 msgid "Permissions"
 msgstr "Rechten"
 
-#: FFileProperties.form:140
+#: FFileProperties.form:156
 msgid "Owner"
 msgstr "Eigenaar"
 
-#: FFileProperties.form:152
+#: FFileProperties.form:168
 msgid "Group"
 msgstr "Groep"
 
-#: FFileProperties.form:163
+#: FFileProperties.form:179
 msgid "Preview"
 msgstr "Voorbeeld"
 
-#: FFileProperties.form:228
+#: FFileProperties.form:244
 msgid "Errors"
 msgstr "Fouten"
 
@@ -494,12 +497,42 @@ msgstr "Item naar omhoog verplaatsen"
 msgid "Move item down"
 msgstr "Item naar beneden verplaatsen"
 
-#: FMain.form:19 FTestFileView.form:31 FTestMenuButton.form:35 Form5.form:22
+#: FMain.form:26 FTestFileView.form:31 FTestMenuButton.form:35 Form5.form:22
 msgid "Menu2"
 msgstr "-"
 
-#: FMain.form:23 FTestFileView.form:36 FTestMenuButton.form:39 Form5.form:26
+#: FMain.form:30 FTestFileView.form:36 FTestMenuButton.form:39 Form5.form:26
 msgid "Menu3"
+msgstr "-"
+
+#: FMain.form:65
+msgid "Élément 1"
+msgstr ""
+
+#: FMain.form:65
+msgid "Élément 2"
+msgstr ""
+
+#: FMain.form:65
+msgid "Élément 3"
+msgstr ""
+
+#: FMain.form:65
+msgid "Élément 4"
+msgstr ""
+
+#: FMain.form:71
+#, fuzzy
+msgid "ComboBox2"
+msgstr "-"
+
+#: FMain.form:77 FSwitchButton.form:36 FTestBalloon.form:12
+#: FTestFileView.form:86
+msgid "TextBox1"
+msgstr "-"
+
+#: FMain.form:87 Form2.form:122
+msgid "MenuButton1"
 msgstr "-"
 
 #: FMessage.form:39
@@ -514,13 +547,9 @@ msgstr "Verborgen"
 msgid "Transparent"
 msgstr "Transparant"
 
-#: FSpinBar.form:14
+#: FSpinBar.form:24
 msgid "Test"
 msgstr "Test"
-
-#: FSwitchButton.form:36 FTestBalloon.form:12 FTestFileView.form:86
-msgid "TextBox1"
-msgstr "-"
 
 #: FTabPanel.form:34
 msgid "Text"
@@ -642,10 +671,6 @@ msgstr "Vorige"
 msgid "Cannot rename file."
 msgstr "Kan bestand niet hernoemen"
 
-#: Form2.form:122
-msgid "MenuButton1"
-msgstr "-"
-
 #: Form2.form:127
 msgid "ButtonBox2"
 msgstr "-"
@@ -678,3 +703,5 @@ msgstr "UIT"
 msgid "Step #&1"
 msgstr "Stap #&1"
 
+#~ msgid "Symbolic link"
+#~ msgstr "Symbolische link"
