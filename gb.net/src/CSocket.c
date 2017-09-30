@@ -435,18 +435,18 @@ int CSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
 	void *_object = stream->tag;
 	int npos=-1;
-	int bytes;
+	//int bytes;
 
 	if (!THIS) return -1;
 
-	if (ioctl(SOCKET->socket,FIONREAD,&bytes))
+	/*if (ioctl(SOCKET->socket,FIONREAD,&bytes))
 	{
 		CSocket_stream_internal_error(THIS, NET_CANNOT_READ, FALSE);
 		return -1;
 	}
 	//if (bytes < len) return -1;
 	if (bytes < len)
-		len = bytes;
+		len = bytes;*/
 
 	USE_MSG_NOSIGNAL(npos = recv(SOCKET->socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
 	
