@@ -64,6 +64,7 @@ Public Sub _new()
   $hView.Mode = Select.Single
   $hView.Grid = False
   $hView.AutoResize = True
+  $hView.Name = Me.Name & ":gridView"
   
   Me.Proxy = $hView
   
@@ -97,6 +98,7 @@ End
 
 Private Sub ResizeColumns()
   
+  If Not $hView.AutoResize Then Return
   If Not $hResizeColumnTimer Then
     $hResizeColumnTimer = New Timer As "ResizeColumns"
     $hResizeColumnTimer.Trigger
@@ -658,10 +660,12 @@ End
 Private Sub ScrollBar_Write(Value As Integer)
 
   $hView.Scrollbar = Value
-  If $hView.ScrollBar And Scroll.Horizontal Then
-    $hView.AutoResize = False
-  Else
-    $hView.AutoResize = True
+  If Not Me Is ColumnView Then
+    If $hView.ScrollBar And Scroll.Horizontal Then
+      $hView.AutoResize = False
+    Else
+      $hView.AutoResize = True
+    Endif
   Endif
 
 End
@@ -769,6 +773,7 @@ Public Sub ResizeColumns_Timer()
   $hResizeColumnTimer = Null
   
   If $cItem.Count = 0 Then Return
+  If Not $hView.AutoResize Then Return
   
   If $hView.Columns.Count = 1 Then
     If ($hView.ScrollBar And Scroll.Horizontal) = 0 Then Return
