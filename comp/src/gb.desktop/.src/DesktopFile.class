@@ -73,7 +73,7 @@ Public Sub _new(Path As String)
 
   $sPath = Path
 
-  $cSettings = ReadIniFile(Path)
+  $cSettings = LoadIniFile(Path)
 
 End
 
@@ -326,7 +326,7 @@ End
 Public Sub Save(Optional Path As String = "")
 
   If Path = "" Then Path = $sPath
-  SaveIniFile($cSettings, Path)
+  WriteIniFile($cSettings, Path)
 
 End
 
@@ -574,7 +574,7 @@ Static Public Function RunExec(sExec As String, sArgs As String, Optional RunAsR
 
 End
 
-Static Public Function ReadIniFile(Path As String) As Collection
+Static Private Function LoadIniFile(Path As String) As Collection
 
   Dim I As Integer
   Dim sLine As String
@@ -629,7 +629,7 @@ Static Public Function ReadIniFile(Path As String) As Collection
 
 End
 
-Static Public Sub SaveIniFile(cSettings As Collection, sPath As String)
+Static Private Sub WriteIniFile(cSettings As Collection, sPath As String)
 
   Dim hFile As File
   Dim item As Variant
