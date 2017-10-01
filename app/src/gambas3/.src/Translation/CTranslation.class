@@ -33,7 +33,7 @@ Static Public Sub SubstHeader(sHeader As String, Optional sLang As String) As St
   
 End
 
-Private Sub CheckTranslate(sMsgComment As String) As String
+Private Sub CheckTranslate(sMsgComment As String, cCache As Collection) As String
 
   Dim iPos As Integer
   Dim sFile As String
@@ -41,6 +41,7 @@ Private Sub CheckTranslate(sMsgComment As String) As String
   Dim aFile As String[]
   Dim I As Integer
   Dim aResult As New String[]
+  Dim bShouldTranslate As Boolean
   
   aFile = Split(sMsgComment, " ", "", True)
   For I = 0 To aFile.Max
@@ -51,8 +52,16 @@ Private Sub CheckTranslate(sMsgComment As String) As String
       sPath = sFile
       iPos = InStr(sPath, ":")
       If iPos Then sPath = Left(sPath, iPos - 1)
-      sPath = Project.FindPath(sPath)
-      If Project.ShouldTranslate(sPath, True) Then aResult.Add(sFile)
+      
+      If cCache.Exist(sPath) Then 
+        bShouldTranslate = cCache[sPath]
+      Else
+        bShouldTranslate = Project.ShouldTranslate(Project.FindPath(sPath), True)
+        cCache[sPath] = bShouldTranslate
+      Endif
+      
+      If bShouldTranslate Then aResult.Add(sFile)
+      
     Endif
   Next
   
@@ -71,6 +80,7 @@ Private Sub LoadTranslation(sLang As String)
   Dim iMode As Integer
   Dim bFuzzy As Boolean
   Dim iPos As Integer
+  Dim cCache As New Collection
   
   sPath = Language.GetPath(sLang, "po")
   If Not Exist(sPath) Then Return 
@@ -137,7 +147,7 @@ Private Sub LoadTranslation(sLang As String)
     If Trim(sMsgId) Then
 
       If sMsgComment Then
-        sMsgComment = CheckTranslate(sMsgComment)
+        sMsgComment = CheckTranslate(sMsgComment, cCache)
         If Not sMsgComment Then 
           sMsgId = ""
           sMsgComment = ""

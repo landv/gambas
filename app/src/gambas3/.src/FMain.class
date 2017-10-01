@@ -395,13 +395,8 @@ Public Sub mnuPopup_Show()
     mnuRunThat.Visible = mnuStartup.Visible
     mnuRunThat.Enabled = mnuStartup.Enabled
   
-    If IsDir(sCurrent) Then
-      mnuDoNotTranslate.Show
-      mnuDoNotTranslate.Checked = Not Project.ShouldTranslate(sCurrent)
-    Else
-      mnuDoNotTranslate.Hide
-    Endif
-    
+    mnuDoNotTranslate.Visible = Left(sCurrent) <> "$"
+    mnuDoNotTranslate.Checked = Not Project.ShouldTranslate(sCurrent)
     
     If mnuCut.Visible Then
       

@@ -60,57 +60,56 @@ Public Sub _new()
     '.Columns[2].Text = ("Comments")
   End With
 
+  cvwLang.Columns[0].Text = ("Language")
   With cvwLang
-    .Columns.Count = 5
-    .Columns[0].Text = ("Language")
-    .Columns[1].Text = " % "
-    .Columns[1].Alignment = Align.Right
-    .Columns[2].Text = ("File")
-    .Columns[3].Text = ("Size")
-    .Columns[3].Alignment = Align.Right
+    .AddColumn(("Progress"),, Align.Right)
+    .AddColumn(("Not translated"),, Align.Right)
+    .AddColumn(("File"))
+    .AddColumn(("Size"),, Align.Right)
   End With
 
 End
 
-Private Sub GetTransCount(sLang As String) As Integer
+' Private Sub GetTransCount(sLang As String) As Integer
+' 
+'   Dim hFile As File
+'   Dim iVal As Integer
+' 
+'   If Not Exist(Language.GetPath(sLang, "mo")) Then Return
+' 
+'   hFile = Open Language.GetPath(sLang, "mo")
+' 
+'   iVal = Read #hFile As Integer
+'   If (iVal = &H950412DE) Xor (System.ByteOrder = gb.BigEndian) Then
+'     hFile.ByteOrder = gb.LittleEndian
+'   Else
+'     hFile.ByteOrder = gb.BigEndian
+'   Endif
+'   iVal = Read #hFile As Integer
+'   iVal = Read #hFile As Integer
+' 
+'   Close #hFile
+' 
+'   Return iVal - 1
+' 
+' End
 
-  Dim hFile As File
-  Dim iVal As Integer
-
-  If Not Exist(Language.GetPath(sLang, "mo")) Then Return
-
-  hFile = Open Language.GetPath(sLang, "mo")
-
-  iVal = Read #hFile As Integer
-  If (iVal = &H950412DE) Xor (System.ByteOrder = gb.BigEndian) Then
-    hFile.ByteOrder = gb.LittleEndian
-  Else
-    hFile.ByteOrder = gb.BigEndian
-  Endif
-  iVal = Read #hFile As Integer
-  iVal = Read #hFile As Integer
-
-  Close #hFile
-
-  Return iVal - 1
-
-End
-
-Private Sub DisplayCompiledTrans(sLang As String, Optional nTrans As Integer)
+Private Sub ComputeTransStat(sLang As String, Optional nTrans As Integer)
 
   Dim nStr As Integer
+  Dim hTrans As CTranslation
 
   If nTrans = 0 Then nTrans = cvwTranslateOrg.Count
 
-  Try nStr = GetTransCount(sLang)
-  If Not Error Then
-    'DEBUG sLang;; nStr;; nTrans
-    cvwLang[sLang][1] = Min(100, (nStr * 100) \ nTrans) & "% "
-  Else
-    cvwLang[sLang][1] = "?"
-  Endif
-  cvwLang[sLang][2] = sLang & ".po"
-  Try cvwLang[sLang][3] = Project.GetFileSize(Stat(Language.GetPath(sLang, "po")).Size)
+  hTrans = New CTranslation(sLang)
+  nStr = hTrans.Translations.Count
+
+  With cvwLang[sLang]
+    .[1] = Min(100, (nStr * 100) \ nTrans) & "% "
+    .[2] = CStr(nTrans - nStr) & " "
+    .[3] = sLang & ".po"
+    Try .[4] = Project.GetFileSize(Stat(Language.GetPath(sLang, "po")).Size)
+  End With
 
 End
 
@@ -479,7 +478,7 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
 
   Endif
 
-  DisplayCompiledTrans($sLang)
+  ComputeTransStat($sLang)
 
   $bModify = False
   $bStatValid = False
@@ -1039,9 +1038,9 @@ Private Sub DisplayTrans()
   If nNotTrans = 0 Then
     lblInfo.Text = Subst(("&1 strings. Everything is translated!"), cvwTranslate.Count, nNotTrans)
   Else If nNotTrans = 1 Then
-    lblInfo.Text = Subst(("&1 strings. One is not translated. &3% done."), cvwTranslate.Count, nNotTrans, ($nTrans * 100) \ cvwTranslate.Count)
+    lblInfo.Text = Subst(("&1 strings. One is not translated. &3% done."), cvwTranslate.Count, nNotTrans, ($nTrans * 100) \ cvwTranslateOrg.Count)
   Else
-    lblInfo.Text = Subst(("&1 strings. &2 are not translated. &3% done."), cvwTranslate.Count, nNotTrans, ($nTrans * 100) \ cvwTranslate.Count)
+    lblInfo.Text = Subst(("&1 strings. &2 are not translated. &3% done."), cvwTranslate.Count, nNotTrans, ($nTrans * 100) \ cvwTranslateOrg.Count)
   Endif
   btnNext.Enabled = cvwTranslate.Count - $nTrans
   btnPrevious.Enabled = btnNext.Enabled
@@ -1342,35 +1341,31 @@ End
 Private Sub UpdateStat()
 
   Dim sLang As String
-  Dim nTrans As Integer
-  Dim sRes As String
-  Dim iCol As Integer
-  Dim iWidth As Integer
 
   If $bStatValid Then Return
 
   Inc Application.Busy
 
   cvwLang.Header = True
-
-  Shell "grep -c \"^msgid\" " & Shell$(Project.Dir &/ ".lang/.pot") To sRes
-  nTrans = Val(sRes) - 1 ' Remove the < msgid "" > line
+  
+  'Shell "grep -c \"^msgid\" " & Shell$(Project.Dir &/ ".lang/.pot") To sRes
+  'nTrans = Val(sRes) - 1 ' Remove the < msgid "" > line
 
   For Each sLang In Language.GetAll()
     If Project.HasTranslation(sLang) Then
-      DisplayCompiledTrans(sLang, nTrans)
+      ComputeTransStat(sLang)
     Endif
   Next
 
-  'cvwLang.Resizable = True
-  For iCol = 0 To 3
-    cvwLang.Columns[iCol].Width = -1
-  Next
-  'cvwLang.Resizable = False
-
-  For iCol = 0 To 3
-    iWidth += cvwLang.Columns[iCol].Width
-  Next
+  ' 'cvwLang.Resizable = True
+  ' For iCol = 0 To 3
+  '   cvwLang.Columns[iCol].Width = -1
+  ' Next
+  ' 'cvwLang.Resizable = False
+  ' 
+  ' For iCol = 0 To 3
+  '   iWidth += cvwLang.Columns[iCol].Width
+  ' Next
 
   $bStatValid = True
 
@@ -1402,16 +1397,19 @@ Public Sub cvwLang_Compare((Key) As String, OtherKey As String)
     Case 1
       iVal = CInt(Trim$(Replace(cvwLang[Key][1], "%", "")))
       iOtherVal = CInt(Trim(Replace(cvwLang[OtherKey][1], "%", "")))
-      If iVal < iOtherVal Then
+      If iVal > iOtherVal Then
         iComp = 1
-      Else If iVal > iOtherVal Then
+      Else If iVal < iOtherVal Then
         iComp = -1
       Endif
-
+      
     Case 2
-      iComp = String.Comp(cvwLang[Key][2], cvwLang[OtherKey][2])
+      iComp = Sgn(CInt(Trim(cvwLang[Key][2])) - CInt(Trim(cvwLang[OtherKey][2])))
 
     Case 3
+      iComp = String.Comp(cvwLang[Key][3], cvwLang[OtherKey][3])
+
+    Case 4
       iVal = Stat(Language.GetPath(Key, "po")).Size
       iOtherVal = Stat(Language.GetPath(OtherKey, "po")).Size
       If iVal < iOtherVal Then

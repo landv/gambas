@@ -6479,6 +6479,8 @@ End
 
 Public Sub ShouldTranslate(sPath As String, Optional bRecursive As Boolean) As Boolean
   
+  If Not sPath Then Return
+  
   If DoNotTranslate.Exist(MakeProjectRelativePath(sPath)) Then Return
   If Not bRecursive Then Return True
   
