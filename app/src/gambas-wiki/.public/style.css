@@ -176,11 +176,12 @@ TABLE.desc > TBODY > TR > TH {
   position: absolute;
   left: 0;
   right: 0;
-  top: 1em;
-  bottom: 1em;
+  top: 0;
+  bottom: 0;
   max-width: 80em;
   margin: auto;
-  border: solid 1px #C0C0C0;
+  border-left: solid 1px #C0C0C0;
+  border-right: solid 1px #C0C0C0;
   box-sizing: border-box;
   background-color: #F8F8F8;
 }
@@ -226,11 +227,23 @@ TABLE.desc > TBODY > TR > TH {
   cursor: pointer;
 }
 
+.header-bar INPUT[type=text] {
+  font-size: 80%;
+  height: 1.6em;
+  border: solid 1px #C0C0C0;
+  box-sizing: border-box;
+}
+
+#search {
+  width: 24em;
+  margin-left: 0.5em;
+}
+
 .header SELECT {
   background-color: #A0A0A0;
   color: white;
   font-size: 80%;
-  height: 1.8em;
+  height: 1.6em;
   border: none;
   cursor: pointer;
 }
@@ -261,12 +274,17 @@ TABLE.desc > TBODY > TR > TH {
   right: 0;
   overflow: auto;
   padding: 2em;
+  padding-top: 1em;
   background-color: #F8F8F8;
   box-sizing: border-box;
 }
 
 .page P {
   line-height: 1.5em;
+}
+
+.page > DIV:last-child {
+  height: 1em;
 }
 
 .page-edit {

@@ -673,6 +673,10 @@ Public Sub Main()
 
     Endif
     
+    If Request["search"] Then
+      SearchWiki(Request["search"])
+    Endif
+    
   Endif
 
   If Image Then
@@ -699,6 +703,8 @@ End
 Public Sub SolvePath(sPath As String) As String
   
   Dim sData As String
+  
+  If sPath Not Begins "/" And If sPath Not Begins "." Then sPath = "/" & sPath
   
   Do
   
@@ -1430,3 +1436,61 @@ Public Sub GetTranslatorTable() As String[]
 End
 
 
+Private Sub SearchWiki(sText As String)
+
+  Dim sDir As String
+  Dim sFile As String
+  Dim sPath As String
+  Dim aFind As String[]
+  Dim sData As String
+  Dim iPos As Integer
+  Dim sCar As String
+
+  sText = Trim(sText)
+  If Not sText Then Return
+  
+  Session["search-query"] = sText
+  'sText = String.RemoveDiacritics(sText)
+  
+  aFind = New String[]
+  sDir = Root &/ "data" &/ Lang 
+  For Each sFile In RDir(sDir, "*", gb.Directory)
+    
+    sPath = GetPagePathFrom(sFile)
+    If Not Exist(sPath) Then Continue
+    
+    sData = File.Load(sPath)
+    iPos = 0
+    
+    Do
+      
+      iPos = InStr(sData, sText, iPos + 1, gb.IgnoreCase)
+      If iPos = 0 Then Break
+      
+      If iPos > 1 Then
+        sCar = Mid$(sData, iPos - 1, 1)
+        If IsLetter(sCar) Or If IsDigit(sCar) Or If Not IsAscii(sCar) Then Goto NEXT_SEARCH
+      Endif
+      
+      If iPos < Len(sData) Then
+        sCar = Mid$(sData, iPos + Len(sText), 1)
+        If IsLetter(sCar) Or If IsDigit(sCar) Or If Not IsAscii(sCar) Then Goto NEXT_SEARCH
+      Endif
+      
+      Break
+      
+    NEXT_SEARCH:
+      iPos += Len(sText)
+      
+    Loop
+    
+    If iPos Then aFind.Add("/" & sFile)
+    
+  Next
+  
+  Session["search-result"] = aFind
+  
+  Response.Redirect("/wiki/search")
+  Return
+  
+End

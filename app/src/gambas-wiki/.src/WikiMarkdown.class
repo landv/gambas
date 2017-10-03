@@ -87,6 +87,8 @@ Public Sub Command(sCommand As String) As String[]
   Dim iStart As Integer
   Dim I, J, K, N, NC As Integer
   Dim aClass As String[]
+  Dim aSearch As String[]
+  Dim sLink As String
   
   aArg = Split(sCommand, " ", Chr$(34))
   sCommand = aArg[0]
@@ -234,6 +236,30 @@ Public Sub Command(sCommand As String) As String[]
     
     Return Main.GetProjectDependencies(aArg[1])
 
+  Else If sCommand = "search-query" Then
+    
+    Return [Session["search-query"]]
+
+  Else If sCommand = "search-result" Then
+
+    aResult = New String[]
+    aSearch = Session["search-result"]
+    If aSearch And If aSearch.Count Then
+      aResult.Add("[[")
+      For Each sLink In aSearch
+        aResult.Add("==")
+        sTitle = Main.GetPageTitle(sLink)
+        aResult.Add("<a href=\"" & Html(Application.Root &/ sLink & "?ht=" & URL.Encode(Session["search-query"])) & "\">" & Html(sTitle) & "</a>")
+        'aResult.Add("[" & Main.GetPageTitle(sLink) & "](" & sLink & "?ht=" & URL.Encode(Session["search-query"]) & ")")
+        aResult.Add("--")
+        aResult.Add("`" & sLink & "`")
+      Next
+      aResult.Add("]]")
+    Else
+      aResult.Add(("No match found."))
+    Endif
+    Return aResult
+    
   Else
     
     Return ["**COMMAND: `" & sCommand & "`**"]

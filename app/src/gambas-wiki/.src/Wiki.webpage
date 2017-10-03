@@ -13,9 +13,12 @@
   <%Endif%>
   <link rel="icon" href="<%/%>/logo.png" type="image/png">
   <title><%=("Gambas Documentation")%> - <%_PrintTitle%></title>
+  <%If Request["ht"]%>
+  <script src="<%/%>/hilitor.js"></script>
+  <%Endif%>
 </head>
 
-<body <%If Main.Edit Then%>style="overflow:hidden;"<%Endif%>>
+<body<%If Main.Edit Then%> style="overflow:hidden;"<%Endif%><%If Request["ht"]%> onload="highlight_text()"<%Endif%>>
 
 <%If Request.Exist("nt")%>
 <style type="text/css">
@@ -120,6 +123,7 @@ H1 { display: none; }
             <input type="submit" name="create" value="<%= ("Create")%>">
             <%--<input type="submit" name="undo" value="<%= ("Undo")%>">--%>
           <%Endif%>
+          <input id="search" name="search" type="text" placeholder="<%=("Enter a word to search through the wiki...")%>" onblur="this.value='';"/>
         </div>
       <%Endif%>
       <div style="float:right;">
@@ -161,7 +165,7 @@ H1 { display: none; }
 <%If Main.Edit Then%>
 <div class="page-edit">
 <%Else%>
-<div class="page">
+<div id="page" class="page">
 <%Endif%>
 
 <%Endif%>
@@ -201,6 +205,8 @@ H1 { display: none; }
       </script>
     <%Endif%>
   <%Endif%>
+
+<div></div>
 
 </div>
 
