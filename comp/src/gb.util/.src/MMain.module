@@ -2,4 +2,16 @@
 
 Public Sub Main()
 
+  Dim I As Integer
+  Dim fTimer As Float
+  Dim sData As String
+
+  sData = File.Load("~/.local/share/gambas3/wiki/data/en/doc/object-model/~page")
+
+  fTimer = Timer
+  For I = 1 To 1000
+    String.RemoveDiacritics(sData)
+  Next
+  Print Timer - fTimer
+
 End

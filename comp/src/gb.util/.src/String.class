@@ -19,47 +19,38 @@ End
 
 Static Private Sub DoRemoveAccents(sStr As String) As String
 
-  Dim iInd As Integer
   Dim sCar As String
   Dim iPos As Integer
   Dim iPosL As Integer
   Dim iPosR As Integer
   Dim sNewStr As String
+  Dim I As Integer
+  Dim L As Integer
 
-  For iInd = 1 To String.Len(sStr)
-    sCar = String.Mid$(sStr, iInd, 1)
-    If Len(sCar) > 1 Then
-      iPos = InStr(REMOVE_ACC, sCar)
-      If iPos Then
-        iPosL = InStr(REMOVE_ACC, "[", iPos + 1)
-        iPosR = InStr(REMOVE_ACC, "]", iPos + 1)
-        If iPosL <> 0 And If iPosR <> 0 And If iPosL < iPosR Then
-          sCar = Mid$(REMOVE_ACC, iPosL + 1, iPosR - iPosL - 1)
-        Endif
+  L = 1
+  For I = 1 To Len(sStr)
+    If IsAscii(Mid$(sStr, I, 1)) Then Continue
+    If I > L Then sNewStr &= Mid$(sStr, L, I - L)
+    sCar = String.Left(Mid$(sStr, I))
+    L = I + Len(sCar)
+    I = L - 1
+    iPos = InStr(REMOVE_ACC, sCar)
+    If iPos Then
+      iPosL = InStr(REMOVE_ACC, "[", iPos + 1)
+      iPosR = InStr(REMOVE_ACC, "]", iPos + 1)
+      If iPosL <> 0 And If iPosR <> 0 And If iPosL < iPosR Then
+        sCar = Mid$(REMOVE_ACC, iPosL + 1, iPosR - iPosL - 1)
       Endif
     Endif
     sNewStr &= sCar
+    
   Next
+
+  If I > L Then sNewStr &= Mid$(sStr, L)
 
   Return sNewStr
 
 End
-
-' Static Public Sub Main()
-' 
-'   Dim I As Integer
-'   Dim sCar As String
-'   
-'   For I = 1 To String.Len(REMOVE_ACC)
-'     sCar = String.Mid$(REMOVE_ACC, I, 1)
-'     If sCar <> "[" And If sCar <> "]" Then
-'       If String.InStr(REMOVE_ACC, sCar) < I Then Continue
-'     Endif
-'     Print sCar;
-'   Next
-'   Print
-'   
-' End
 
 Static Public Sub Distance(String1 As String, String2 As String) As Integer
   
