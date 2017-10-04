@@ -50,6 +50,7 @@ Private $hEditor2 As TextEditor
 Private $hInsertColor As CInsertColor
 Private $hBookmark As CBookmark
 Private $hCompletion As CCompletion
+Private $hInsertDate As CInsertDate
 
 Private $cProc As Collection
 Private $aProc As String[]
@@ -143,6 +144,7 @@ Public Sub LoadFile() As Boolean
   $hInsertColor = New CInsertColor(Me, btnInsertColor)
   $hBookmark = New CBookmark(Me, btnBookmark, mnuBookmark)
   $hCompletion = New CCompletion(Me)
+  $hInsertDate = New CInsertDate(Me, btnInsertDate)
 
   ReadConfig
 
@@ -1434,6 +1436,7 @@ Public Sub Delete()
   $hBookmark = Null
   $hCompletion = Null
   $hInsertColor = Null
+  $hInsertDate = Null
   Super.Delete
 
 End

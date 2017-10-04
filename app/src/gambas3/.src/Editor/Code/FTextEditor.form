@@ -259,7 +259,7 @@
     }
     { btnSave ToolButton mnuSave
       Name = "btnSave"
-      MoveScaled(4,0,4,4)
+      MoveScaled(3,0,4,4)
       ToolTip = ("Save")
       Action = ".save"
       Picture = Picture["icon:/small/save"]
@@ -317,7 +317,7 @@
       Picture = Picture["icon:/small/redo"]
     }
     { btnBookmark MenuButton
-      MoveScaled(34,0,6,4)
+      MoveScaled(33,0,6,4)
       Visible = False
       ToolTip = ("Bookmarks")
       Action = ".bookmark"
@@ -326,22 +326,30 @@
       Menu = "mnuBookmark"
     }
     { btnInsertColor MenuButton
-      MoveScaled(39,0,6,4)
+      MoveScaled(38,0,6,4)
       ToolTip = ("Insert color")
       Action = ".color"
       Picture = Picture["icon:/small/color"]
       Border = False
       Menu = "mnuColor"
     }
+    { btnInsertDate MenuButton
+      MoveScaled(42,0,6,4)
+      ToolTip = ("Insert today's date")
+      Action = ".date"
+      Picture = Picture["icon:/small/calendar"]
+      Border = False
+      MenuOnly = True
+    }
     { btnIndent ToolButton
-      MoveScaled(45,0,4,4)
+      MoveScaled(48,0,4,4)
       Visible = False
       ToolTip = ("Indent")
       Action = ".indent"
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
-      MoveScaled(49,0,4,4)
+      MoveScaled(51,0,4,4)
       Visible = False
       ToolTip = ("Unindent")
       Action = ".unindent"
@@ -517,6 +525,10 @@
     Shortcut = "Ctrl+X"
     Picture = "icon:/small/cut"
   }
+  { Action date
+    Text = "Insert today's date"
+    Picture = "icon:/small/calendar"
+  }
   { Action eol
     Text = "End of line"
     Picture = "img/32/eol.png"
@@ -673,7 +685,7 @@
 { Toolbars
   { Toolbar text
     Text = "Text editor"
-    List = "show-class,save,reload,locked,cut,copy,paste,undo,redo,bookmark,color,indent,unindent,comment,uncomment,pretty,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,wrap,tab-indent,eol"
-    Default = "show-class,save,reload,locked,paste,undo,redo,color,comment,uncomment,|,compress,uncompress,|,|,proc,~,wrap,tab-indent"
+    List = "show-class,save,reload,locked,cut,copy,paste,undo,redo,bookmark,color,date,indent,unindent,comment,uncomment,pretty,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,wrap,tab-indent,eol"
+    Default = "show-class,save,reload,locked,paste,undo,redo,color,date,comment,uncomment,|,compress,uncompress,|,|,proc,~,wrap,tab-indent"
   }
 }

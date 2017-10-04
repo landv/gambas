@@ -1,0 +1,146 @@
+' Gambas class file
+
+Private $hModule As Object
+Private $hMenu As Menu
+Private $hObs As Observer
+
+Private Sub FindMenuChild(hMenu As Menu, sMenu As String) As Menu
+  
+  For Each hMenu In hMenu.Children
+    If hMenu.Name == sMenu Then Return hMenu
+    hMenu = FindMenuChild(hMenu, sMenu)
+    If hMenu Then Return hMenu
+  Next
+  
+End
+
+Private Sub FindMenuWindow(hWindow As Window, sMenu As String) As Menu
+  
+  Dim hMenu As Menu
+  
+  For Each hMenu In hWindow.Menus
+    If hMenu.Name == sMenu Then Return hMenu
+    hMenu = FindMenuChild(hMenu, sMenu)
+    If hMenu Then Return hMenu
+  Next
+  
+End
+
+Private Sub FindMenu(hCtrl As Control, sMenu As String) As Menu
+  
+  Dim hWindow As Window
+  Dim hMenu As Menu
+  
+  hWindow = hCtrl.Window
+  Do
+    hMenu = FindMenuWindow(hWindow, sMenu)
+    If hMenu Then Break
+    Try hWindow = hWindow.Parent.Window
+    If Error Then Return
+  Loop
+  
+  Return hMenu
+  
+End
+
+Public Sub _new(hModule As Object, hMenuButton As MenuButton)
+  
+  Dim hMenu As Menu
+  Dim hParent As Menu
+  
+  $hModule = hModule
+  
+  hParent = FindMenu(hMenuButton, "mnuAdvanced")
+  
+  $hMenu = New Menu(hParent) As "Menu"
+  $hMenu.Name = "mnuInsertDate"
+  $hMenu.Text = ("Insert today's date")
+  $hMenu.Picture = Picture["icon:/small/calendar"]
+  
+  hMenu = New Menu($hMenu)
+  
+  hMenuButton.Menu = $hMenu.Name
+  
+  $hObs = New Observer(hMenuButton) As "Button"
+  
+End
+
+Private Sub GetEditor() As TextEditor
+  
+  Return $hModule.GetEditor()
+  
+End
+
+Public Sub Menu_Show()
+  
+  Dim aDate As String[]
+  Dim dNow As Date
+  Dim sDate As String
+  Dim hMenu As Menu
+  Dim sLang As String
+  Dim sTime As String
+  
+  $hMenu.Children.Clear
+  
+  aDate = New String[]
+  dNow = Now
+  sLang = System.Language
+  
+  System.Language = "C"
+
+  aDate.Add(Format(dNow, gb.LongDate))
+  aDate.Add(Format(dNow, gb.MediumDate))
+  aDate.Add(Format(dNow, gb.ShortDate))
+  sTime = Format(dNow, gb.MediumTime)
+  GoSub FILL_MENU
+  
+  hMenu = New Menu($hMenu)
+
+  aDate.Clear
+  aDate.Add(Format(dNow, "yyyy-mm-dd"))
+  aDate.Add(Format(dNow, "ddd mmm dd yyyy"))
+  sTime = Format(dNow, "hh:nn")
+  GoSub FILL_MENU
+  
+  hMenu = New Menu($hMenu) As "MenuDate"
+  hMenu.Text = Date.ToRFC822(dNow)
+  
+  hMenu = New Menu($hMenu)
+  
+  If sLang <> "C" And If sLang Not Begins "en_US" Then
+  
+    System.Language = sLang
+    aDate.Clear
+    aDate.Add(Format(dNow, gb.LongDate))
+    aDate.Add(Format(dNow, gb.MediumDate))
+    aDate.Add(Format(dNow, gb.ShortDate))
+    sTime = Format(dNow, gb.MediumTime)
+    GoSub FILL_MENU
+    
+  Endif
+  
+  Return
+  
+FILL_MENU:
+  
+  For Each sDate In aDate
+    hMenu = New Menu($hMenu) As "MenuDate"
+    hMenu.Text = sDate
+    hMenu = New Menu($hMenu) As "MenuDate"
+    hMenu.Text = sDate & " " & sTime
+  Next
+  
+  Return
+  
+End
+
+Public Sub MenuDate_Click()
+  
+  With GetEditor()
+    .Insert(Last.Text)
+    .SetFocus
+  End With
+  
+  
+End
+

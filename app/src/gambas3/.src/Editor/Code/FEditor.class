@@ -71,6 +71,7 @@ Private $iSamplePos As Integer
 Private $hInsertColor As CInsertColor
 Private $hBookmark As CBookmark
 Private $hCompletion As CCompletion
+Private $hInsertDate As CInsertDate
 
 'Static Private $cLastClassCount As New Collection
 
@@ -113,6 +114,7 @@ Public Sub _new(sPath As String)
   $hInsertColor = New CInsertColor(Me, btnInsertColor)
   $hBookmark = New CBookmark(Me, btnBookmark, mnuBookmark)
   $hCompletion = New CCompletion(Me)
+  $hInsertDate = New CInsertDate(Me, btnInsertDate)
 
   ReadConfig
   Refresh
@@ -274,6 +276,7 @@ Public Sub Delete()
   $hBookmark = Null
   $hCompletion = Null
   $hInsertColor = Null
+  $hInsertDate = Null
 
   Super.Delete
   

@@ -74,11 +74,6 @@
         Picture = Picture["icon:/small/paste"]
         Shortcut = "Ctrl+Shift+V"
       }
-      { mnuInsertColor Menu
-        Action = ".color"
-        Text = ("Insert color") & "..."
-        Picture = Picture["icon:/small/color"]
-      }
       { mnuPretty Menu
         Action = ".pretty"
         Text = ("Format code")
@@ -89,6 +84,13 @@
         Text = ("Sort procedures") & "..."
         Picture = Picture["icon:/small/sort-ascent"]
         Visible = False
+      }
+      { Menu6 Menu
+      }
+      { mnuInsertColor Menu
+        Action = ".color"
+        Text = ("Insert color") & "..."
+        Picture = Picture["icon:/small/color"]
       }
     }
     { Menu3 Menu
@@ -330,7 +332,7 @@
       Picture = Picture["icon:/small/redo"]
     }
     { btnBookmark MenuButton
-      MoveScaled(52,0,6,4)
+      MoveScaled(50,0,6,4)
       Visible = False
       ToolTip = ("Bookmarks")
       Action = ".bookmark"
@@ -339,21 +341,29 @@
       Menu = "mnuBookmark"
     }
     { btnInsertColor MenuButton
-      MoveScaled(57,0,6,4)
+      MoveScaled(55,0,6,4)
       ToolTip = ("Insert color")
       Action = ".color"
       Picture = Picture["icon:/small/color"]
       Border = False
     }
+    { btnInsertDate MenuButton
+      MoveScaled(59,0,6,4)
+      ToolTip = ("Insert today's date")
+      Action = ".date"
+      Picture = Picture["icon:/small/calendar"]
+      Border = False
+      MenuOnly = True
+    }
     { btnIndent ToolButton
-      MoveScaled(63,0,4,4)
+      MoveScaled(65,0,4,4)
       Visible = False
       ToolTip = ("Indent")
       Action = ".indent"
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
-      MoveScaled(67,0,4,4)
+      MoveScaled(68,0,4,4)
       Visible = False
       ToolTip = ("Unindent")
       Action = ".unindent"
@@ -520,6 +530,10 @@
     Shortcut = "Ctrl+X"
     Picture = "icon:/small/cut"
   }
+  { Action date
+    Text = "Insert today's date"
+    Picture = "icon:/small/calendar"
+  }
   { Action find-definition
     Text = "Find definition"
     Shortcut = "F2"
@@ -663,7 +677,7 @@
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "show-form,save,reload,locked,run-me,cut,copy,paste,paste-special,undo,redo,bookmark,color,indent,unindent,comment,uncomment,pretty,break,watch,find-definition,view-nosplit,view-hsplit,view-vsplit,proc,wrap"
-    Default = "show-form,save,reload,locked,paste,undo,redo,color,comment,uncomment,break,watch,|,proc,~,wrap"
+    List = "show-form,save,reload,locked,run-me,cut,copy,paste,paste-special,undo,redo,bookmark,color,date,indent,unindent,comment,uncomment,pretty,break,watch,find-definition,view-nosplit,view-hsplit,view-vsplit,proc,wrap"
+    Default = "show-form,save,reload,locked,paste,undo,redo,color,date,comment,uncomment,break,watch,|,proc,~,wrap"
   }
 }
