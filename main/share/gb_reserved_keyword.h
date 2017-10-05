@@ -254,7 +254,8 @@ SUBR_INFO COMP_subr_info[] =
 	{ "LCase$",             7,  1, T_STRING,       1     },
 	{ "LCase",              7,  1, T_STRING,       1     },
 	
-	// 8 is available
+	{ "Oct$",               8,  0, T_STRING,       1,  2 },  // CODE_OCT
+	{ "Oct",                8,  0, T_STRING,       1,  2 },
 
 	{ "Chr$",               9,  0, T_STRING,       1     },
 	{ "Chr",                9,  0, T_STRING,       1     },
@@ -263,7 +264,7 @@ SUBR_INFO COMP_subr_info[] =
 
 	{ "InStr",             11,  0, T_INTEGER,      2,  4 },
 
-	{ "RInStr",            12,  0, T_INTEGER,      2,  4 },   /* CODE_RINSTR */
+	{ "RInStr",            12,  0, T_INTEGER,      2,  4 },   // CODE_RINSTR
 
 	{ "Subst$",            13,  0, T_STRING,       1, 63 },
 	{ "Subst",             13,  0, T_STRING,       1, 63 },
@@ -283,7 +284,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ "DConv",             19,  1, T_STRING,       1     },
 	{ "DConv$",            19,  1, T_STRING,       1     },
 
-	{ "Abs",               20,  0, RST_SAME,       1     },   /* CODE_ABS */
+	{ "Abs",               20,  0, RST_SAME,       1     },   // CODE_ABS
 	{ "Int",               21,  0, RST_SAME,       1     },
 	{ "Fix",               22,  0, RST_SAME,       1     },
 	{ "Sgn",               23,  0, T_INTEGER,      1     },
@@ -329,13 +330,13 @@ SUBR_INFO COMP_subr_info[] =
 #endif
 	{ "Rnd",               28,  0, T_FLOAT,        0,  2 },
 	{ "Min",               29,  0, RST_MIN,        2,    },
-	{ "Max",               30,  0, RST_MIN,        2,    },   /* CODE_MAX */
+	{ "Max",               30,  0, RST_MIN,        2,    },   // CODE_MAX
 
 	{ "If",                31,  0, RST_SAME,       3,    },
 	{ "IIf",               31,  0, RST_SAME,       3,    },
 	{ "Choose",            32,  0, T_VARIANT,      1, 63 },
 
-	{ ".Array",            33,  0, T_OBJECT,       0, 63 },   /* Needed for Eval("[...]") */
+	{ ".Array",            33,  0, T_OBJECT,       0, 63 },   // Needed for Eval("[...]")
 
 	{ "ATan2",             34,  1, T_FLOAT,        2     },
 	{ "Atn2",              34,  1, T_FLOAT,        2     },
@@ -397,7 +398,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ "Bin$",              40,  0, T_STRING,       1,  2 },  // CODE_BIN
 	{ "Bin",               40,  0, T_STRING,       1,  2 },
 
-	{ "Hex$",              41,  0, T_STRING,       1,  2 },
+	{ "Hex$",              41,  0, T_STRING,       1,  2 },  // CODE_HEX
 	{ "Hex",               41,  0, T_STRING,       1,  2 },
 
 	{ "Val",               42,  0, T_VARIANT,      1     },

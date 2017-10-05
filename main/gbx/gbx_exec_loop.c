@@ -105,7 +105,7 @@ static const void *SubrTable[] =
 	SUBR_string,     /* 05 45 */
 	SUBR_trim,       /* 06 46 */
 	SUBR_upper,      /* 07 47 */
-	SUBR_lower,      /* 08 48 */
+	SUBR_hex_bin,    /* 08 48 */
 	SUBR_chr,        /* 09 49 */
 	SUBR_asc,        /* 10 4A */
 	SUBR_instr,      /* 11 4B */
@@ -281,7 +281,7 @@ void EXEC_loop(void)
 		/* 45 String$         */  &&_SUBR,
 		/* 46 Trim$           */  &&_SUBR_CODE,
 		/* 47 UCase$          */  &&_SUBR_CODE,
-		/* 48 LCase$          */  &&_SUBR,
+		/* 48 Oct$            */  &&_SUBR_CODE,
 		/* 49 Chr$            */  &&_SUBR,
 		/* 4A Asc             */  &&_SUBR_CODE,
 		/* 4B InStr           */  &&_SUBR_CODE,

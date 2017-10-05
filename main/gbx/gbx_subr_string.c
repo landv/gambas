@@ -404,11 +404,6 @@ void SUBR_upper(ushort code)
 	}
 }
 
-void SUBR_lower(void)
-{
-	SUBR_upper(1);
-}
-
 void SUBR_chr(void)
 {
 	int car;
