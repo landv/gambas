@@ -523,6 +523,8 @@ static bool add_number()
 			goto READ_HEXA;
 		else if (car == 'X')
 			goto READ_BINARY;
+		else if (car == 'O')
+			goto READ_OCTAL;
 		else
 		{
 			source_ptr--;
@@ -542,7 +544,20 @@ READ_BINARY:
 	for (;;)
 	{
 		car = next_char();
-		if (UNLIKELY(car != '0' && car != '1'))
+		if (car != '0' && car != '1')
+			break;
+		has_digit = TRUE;
+	}
+	
+	goto END_BINARY_HEXA;
+
+READ_OCTAL:
+
+	has_digit = FALSE;
+	for (;;)
+	{
+		car = next_char();
+		if (car < '0' || car > '7')
 			break;
 		has_digit = TRUE;
 	}
@@ -555,7 +570,7 @@ READ_HEXA:
 	for (;;)
 	{
 		car = next_char();
-		if (UNLIKELY(!isxdigit(car)))
+		if (!isxdigit(car))
 			break;
 		has_digit = TRUE;
 	}

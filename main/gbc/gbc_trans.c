@@ -67,6 +67,7 @@ static bool read_integer(char *number, int base, bool minus, int64_t *result)
 	switch (base)
 	{
 		case 2: nmax = 64; break;
+		case 8: nmax = 21; break;
 		case 16: nmax = 16; break;
 		case 10: default: nmax = 19; break;
 	}
@@ -289,6 +290,11 @@ bool TRANS_get_number(int index, TRANS_NUMBER *result)
 		else if (c == 'X' || c == 'x')
 		{
 			base = 2;
+			c = *number++;
+		}
+		else if (c == 'O' || c == 'o')
+		{
+			base = 8;
 			c = *number++;
 		}
 		else
