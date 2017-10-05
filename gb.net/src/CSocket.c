@@ -67,8 +67,8 @@ GB_STREAM_DESC SocketStream =
 	seek: CSocket_stream_seek,
 	tell: CSocket_stream_tell,
 	flush: CSocket_stream_flush,
-	eof: CSocket_stream_eof,
-	lof: CSocket_stream_lof,
+	/*eof: CSocket_stream_eof,
+	lof: CSocket_stream_lof,*/
 	handle: CSocket_stream_handle
 };
 
@@ -398,7 +398,7 @@ int CSocket_stream_close(GB_STREAM *stream)
 	return 0;
 }
 
-int CSocket_stream_lof(GB_STREAM *stream, int64_t *len)
+/*int CSocket_stream_lof(GB_STREAM *stream, int64_t *len)
 {
 	void *_object = stream->tag;
 	int bytes;
@@ -429,7 +429,7 @@ int CSocket_stream_eof(GB_STREAM *stream)
 	}
 	if (!bytes) return -1;
 	return 0;
-}
+}*/
 
 int CSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
