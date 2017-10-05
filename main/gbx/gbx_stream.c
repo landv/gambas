@@ -1685,12 +1685,14 @@ void STREAM_lof(STREAM *stream, int64_t *len)
 	if (stream->type->lof)
 	{
 		if (!(*(stream->type->lof))(stream, len))
-			return;
+			goto ADD_BUFFER;
 	}
 
 	fd = STREAM_handle(stream);
 	if ((fd >= 0) && (STREAM_get_readable(stream, &ilen) == 0))
 		*len = ilen;
+
+ADD_BUFFER:
 
 	if (stream->common.buffer)
 		*len += stream->common.buffer_len - stream->common.buffer_pos;

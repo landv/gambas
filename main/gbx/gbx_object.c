@@ -390,12 +390,13 @@ static void error_OBJECT_create(const char *name, void *object)
 void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam)
 {
 	void *object;
+	const char *save;
 
 	// The "no create" flag only concerns users of NEW
 	//if (class->no_create)
 	//	THROW(E_CSTATIC, CLASS_get_name(class));
 
-	ON_ERROR_2(error_OBJECT_create, name = EVENT_enter_name(name), object = OBJECT_new(class, name, parent))
+	ON_ERROR_2(error_OBJECT_create, save = EVENT_enter_name(name), object = OBJECT_new(class, name, parent))
 	{
 		if (OBJECT_set_pointer)
 		{
@@ -410,7 +411,7 @@ void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam)
 
 		EXEC_special(SPEC_READY, class, object, 0, TRUE);
 
-		error_OBJECT_create(name, object);
+		error_OBJECT_create(save, object);
 	}
 	END_ERROR
 
