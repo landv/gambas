@@ -53,7 +53,7 @@
 static bool read_integer(int base, bool minus, int64_t *result, bool local)
 {
 	uint64_t nbr2, nbr;
-	int d, n, c; //, nmax;
+	int d, n, c, nmax;
 	char thsep;
 	int ndigit_thsep;
 	bool first_thsep;
@@ -65,67 +65,92 @@ static bool read_integer(int base, bool minus, int64_t *result, bool local)
 	n = 0;
 	nbr = 0;
 	
-	/*switch (base)
+	switch (base)
 	{
 		case 2: nmax = 64; break;
-		case 8: nmax = 21; break;
-		case 10: nmax = 19; break;
 		case 16: nmax = 16; break;
-	}*/
-
-	c = last_char();
-
-	for(;;)
-	{
-		if (local && base == 10)
-		{
-			if (c == thsep && (ndigit_thsep == 3 || (!first_thsep && ndigit_thsep >= 1 && ndigit_thsep <= 3)))
-			{
-				c = get_char();
-				first_thsep = TRUE;
-				ndigit_thsep = 0;
-			}
-		}
-
-		if (c >= '0' && c <= '9')
-		{
-			d = c - '0';
-			if (local && base == 10)
-				ndigit_thsep++;
-		}
-		else if (c >= 'A' && c <='Z')
-			d = c - 'A' + 10;
-		else if (c >= 'a' && c <='z')
-			d = c - 'a' + 10;
-		else
-			break;
-
-		if (d >= base)
-			break;
-
-		n++;
-		
-		nbr2 = nbr * base + d;
-		
-		if ((nbr2 / base) != nbr || nbr2 > ((uint64_t)LLONG_MAX + minus))
-			return TRUE;
-		
-		nbr = nbr2;
-
-		c = get_char();
-		if (c < 0)
-			break;
+		case 10: default: nmax = 19; break;
 	}
 
 	c = last_char();
 
 	if (base == 10)
 	{
+		for(;;)
+		{
+			if (local)
+			{
+				if (c == thsep && (ndigit_thsep == 3 || (!first_thsep && ndigit_thsep >= 1 && ndigit_thsep <= 3)))
+				{
+					c = get_char();
+					first_thsep = TRUE;
+					ndigit_thsep = 0;
+				}
+			}
+
+			if (c >= '0' && c <= '9')
+			{
+				d = c - '0';
+				if (local)
+					ndigit_thsep++;
+			}
+			else
+				break;
+
+			n++;
+			if (n < nmax)
+			{
+				nbr = nbr * 10 + d;
+			}
+			else
+			{
+				nbr2 = nbr * 10 + d;
+			
+				if ((nbr2 / base) != nbr || nbr2 > ((uint64_t)LLONG_MAX + minus))
+					return TRUE;
+			
+				nbr = nbr2;
+			}
+
+			c = get_char();
+			if (c < 0)
+				break;
+		}
+
+		c = last_char();
+
 		if (local && first_thsep && ndigit_thsep != 3)
 			return TRUE;
 	}
 	else
 	{
+		for(;;)
+		{
+			if (c >= '0' && c <= '9')
+				d = c - '0';
+			else if (c >= 'A' && c <='Z')
+				d = c - 'A' + 10;
+			else if (c >= 'a' && c <='z')
+				d = c - 'a' + 10;
+			else
+				break;
+
+			if (d >= base)
+				break;
+
+			n++;
+			if (n > nmax)
+				return TRUE;
+			
+			nbr = nbr * base + d;
+			
+			c = get_char();
+			if (c < 0)
+				break;
+		}
+
+		c = last_char();
+
 		if ((c == '&' || c == 'u' || c == 'U') && base != 10)
 			c = get_char();
 		else
@@ -142,7 +167,7 @@ static bool read_integer(int base, bool minus, int64_t *result, bool local)
 			}
 		}
 	}
-
+	
 	if (c > 0 && !isspace(c))
 		return TRUE;
 	
