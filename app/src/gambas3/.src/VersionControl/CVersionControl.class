@@ -1,0 +1,80 @@
+' Gambas class file
+
+Create Static
+
+Public Sub AddFile((sPath) As String, Optional (bForce) As Boolean)
+  
+End
+
+Public Sub AddDir((sPath) As String)
+  
+End
+
+Public Sub RemoveFile((sPath) As String, Optional (bForce) As Boolean)
+  
+End
+
+Public Sub RemoveDir((sPath) As String)
+  
+End
+
+Public Sub MoveFile((sOld) As String, (sNew) As String)
+  
+End
+
+Public Sub MoveDir((sOld) As String, (sNew) As String) As Boolean
+  
+End
+
+Public Sub UpdatePath((aPath) As String[])
+
+End
+
+Public Sub CheckPaths()
+
+End
+
+Public Sub Status(Optional (sPath) As String) As String
+  
+End
+
+Public Sub Commit((sChange) As String) As Boolean
+
+End
+
+Public Sub Update() As Boolean
+  
+End
+
+Public Sub Revert(Optional (sPath) As String) As Boolean
+  
+End
+
+Public Sub InConflict((sPath) As String) As Boolean
+  
+End
+
+Public Sub Resolve((sPath) As String, Optional (sAccept) As String) As Boolean
+  
+End
+
+Public Sub HasConflict() As Boolean
+  
+End
+
+Public Sub GetVersion((sDir) As String) As String
+  
+End
+
+Public Sub Diff((sPath) As String) As String
+  
+End
+
+Public Sub Info((bRemote) As Boolean) As Collection
+  
+End
+
+Public Sub CleanUp((sPath) As String)
+  
+End
+

@@ -218,8 +218,8 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
         End With
       Endif
 
-      With $hTree.Add(sKey, sFile, hPict, sParent)        
-        .Editable = False 'Not IsLocked(sKey)
+      With $hTree.Add(sKey, sFile, hPict, sParent)
+        If $bCurrentProject Then .Editable = Not Project.IsLocked(sKey)
         If bAfter Then .MoveAfter(sAfter)
         If bShow Then
           $hTree.MoveTo(sKey)

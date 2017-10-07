@@ -79,7 +79,7 @@ Public Sub Form_Open()
  
   Me.Title = Subst(("&1 properties"), File.Name(sPath))
   
-  If VersionControl.Enabled() And Not IsDir($sPath) Then
+  If VersionControl.Enabled And Not IsDir($sPath) Then
     btnRevert.Show
     fprInfo.Add(panVersion, ("Versioning"))
     '$hObs = New Observer(fprInfo.Parent) As "tabInfo"

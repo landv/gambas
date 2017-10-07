@@ -1,0 +1,23 @@
+' Gambas class file
+
+Inherits CVersionControl
+Create Static
+
+Private $bHasGit As Boolean
+Private $bCheckGit As Boolean
+
+Public Sub Check() As Boolean
+  
+  Dim sResult As String
+  
+  If Not $bCheckGit Then
+    $bHasGit = System.Exist("git")
+    $bCheckGit = True
+  Endif
+  
+  If $bHasGit Then
+    Shell "cd " & Shell$(Project.Dir) & " && git status" To sResult
+    If Process.LastValue = 0 Then Return True
+  Endif
+  
+End

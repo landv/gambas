@@ -707,7 +707,7 @@ _INIT_AGAIN:
 
   ' The .lang/.pot file must not be on version control
   
-  If Localize And If VersionControl.Enabled() Then 
+  If Localize And If VersionControl.Enabled Then 
     sPath = Project.Dir &/ ".lang/.pot"
     sStatus = VersionControl.Status(sPath)
     If sStatus And If Left(sStatus) <> "?" And If Left(sStatus) <> "D" Then VersionControl.RemoveFile(sPath)
@@ -1939,17 +1939,21 @@ Private Sub DoRefresh(Optional bReset As Boolean, Optional bDoNotRefreshCache As
 
   ' Path may not exist in the tree if a filter is active
 
-  For Each sPath In AddedPaths
-    sPath = AddedPaths.Key
-    Tree.EnsureKey(sPath)
-    Try ProjectTree[sPath].EnsureVisible
-  Next
+  If VersionControl.Enabled Then
 
-  For Each sPath In ConflictPaths
-    sPath = ConflictPaths.Key
-    Tree.EnsureKey(sPath)
-    Try ProjectTree[sPath].EnsureVisible
-  Next
+    For Each sPath In AddedPaths
+      sPath = AddedPaths.Key
+      Tree.EnsureKey(sPath)
+      Try ProjectTree[sPath].EnsureVisible
+    Next
+  
+    For Each sPath In ConflictPaths
+      sPath = ConflictPaths.Key
+      Tree.EnsureKey(sPath)
+      Try ProjectTree[sPath].EnsureVisible
+    Next
+    
+  Endif
 
   If $cProjectFilter Then
 
@@ -4132,7 +4136,7 @@ Public Sub DeleteDir(sDir As String, Optional bNoVerCtrl As Boolean)
     Try Kill sDir &/ sFile
   Next
 
-  If Not bNoVerCtrl And If VersionControl.Enabled() Then
+  If Not bNoVerCtrl And If VersionControl.Enabled Then
 
     VersionControl.RemoveDir(sDir)
     If Exist(sDir) Then
@@ -4285,7 +4289,7 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
   Endif
 
   If IsDir(sPath) Then
-    If VersionControl.Enabled() Then
+    If VersionControl.Enabled Then
       VersionControl.MoveDir(sPath, sNewPath)
       'If Exist(sPath) Then LockedPaths[sPath] = True
     Else
@@ -5086,7 +5090,7 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
 
   If bIsDir Then
     'Move sSrc To sDst
-    If VersionControl.Enabled() Then
+    If VersionControl.Enabled Then
       VersionControl.MoveDir(sSrc, sDst)
     Else
       Move sSrc To sDst

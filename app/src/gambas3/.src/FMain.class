@@ -1192,7 +1192,7 @@ Public Sub UpdateMenu()
   UpdateProperty
   
   Action["version-control"].Visible = VersionControl.CanControlProject()
-  Action["project-version"].Visible = VersionControl.Enabled()
+  Action["project-version"].Visible = VersionControl.Enabled
   
   mnuStartup.Visible = bVisible
   mnuRenameFile.Visible = bVisible
@@ -1272,7 +1272,7 @@ Public Sub OnProjectChange()
   
   UpdateGlobalLayout
   UpdateMenu
-  mnuFilterAdd.Visible = VersionControl.Enabled() 'And panSearchProject.Hovered
+  mnuFilterAdd.Visible = VersionControl.Enabled 'And panSearchProject.Hovered
   txtSearchProject.Clear
   mnuUseTerminal.Value = Project.UseTerminal
   mnuRedirectStderr.Value = Project.RedirectStderr
