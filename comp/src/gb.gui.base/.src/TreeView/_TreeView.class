@@ -65,7 +65,7 @@ Public Sub _new()
   $hView.Grid = False
   $hView.AutoResize = True
   $hView.Name = Me.Name & ":gridView"
-  $hView.Padding = 0
+  '$hView.Padding = 0
   
   Me.Proxy = $hView
   
@@ -1243,6 +1243,7 @@ Private Sub Cancel(Optional bOK As Boolean)
   Dim sCursor As String 
   
   If Not $hRenameBox Then Return
+  
   $hRenameBox.Delete
   $hRenameBox = Null
   $hView.SetFocus
