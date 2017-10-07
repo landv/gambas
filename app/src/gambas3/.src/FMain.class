@@ -2,6 +2,8 @@
 
 Public NoMessage As Integer
 
+Private $hProjectTree As CProjectTree
+
 Private $sKey As String
 Private $bCtrl As Boolean
 Private $sKeyDrag As String
@@ -12,8 +14,8 @@ Private $bUpdateRecentMenu As Boolean
 Private $dRecentMenu As Date
 Private $bInTreeView As Boolean
 Private $bInRename As Boolean
-Private $bHasJustCollapsed As Boolean
-Private $bExpandOnMouseUp As Boolean
+' Private $bHasJustCollapsed As Boolean
+' Private $bExpandOnMouseUp As Boolean
 
 Private frmWelcome As FWelcome
 Private $hCornerNW As Image
@@ -33,7 +35,7 @@ Public Sub _new()
   
   Me.ResizeScaled(86, 97)
   
-  Project.ProjectTree = tvwProject
+  'Project.ProjectTree = tvwProject
   Project.Workspace = wrkProject
   
   ScrollArea(tvwProject.Proxy.Proxy).Shadow = True
@@ -256,7 +258,7 @@ Public Sub tvwProject_Menu()
   'mnuPopup.Enabled = TRUE
   GetCurrent()
   If Not $sKey Then Return
-  Project.FillDir($sKey)
+  $hProjectTree.FillDir($sKey)
   
   If $sKey And If Project.IsLocked($sKey) Then Return
   
@@ -1092,24 +1094,24 @@ Public Sub tvwProject_Select()
   
   RefreshMenu
   
-  If tvwProject.Current And If tvwProject.Current.Children Then 
-    ' Print Mouse.X ;; Mouse.Y ' generates crashes on random places, strange...
-    'If Not tvwProject.Find(Mouse.X, Mouse.Y) Then
-    $bExpandOnMouseUp = True
-    'Endif
-  Endif
+  ' If tvwProject.Current And If tvwProject.Current.Children Then 
+  '   ' Print Mouse.X ;; Mouse.Y ' generates crashes on random places, strange...
+  '   'If Not tvwProject.Find(Mouse.X, Mouse.Y) Then
+  '   $bExpandOnMouseUp = True
+  '   'Endif
+  ' Endif
   
 End
 
-Public Sub tvwProject_MouseUp()
-  
-  If $bExpandOnMouseUp And If Not $bHasJustCollapsed Then
-    Try tvwProject.Current.Expanded = True
-  Endif
-  $bExpandOnMouseUp = False
-  $bHasJustCollapsed = False
-  
-End
+' Public Sub tvwProject_MouseUp()
+'   
+'   If $bExpandOnMouseUp And If Not $bHasJustCollapsed Then
+'     Try tvwProject.Current.Expanded = True
+'   Endif
+'   $bExpandOnMouseUp = False
+'   $bHasJustCollapsed = False
+'   
+' End
 
 ' PUBLIC SUB tvwProject_Expand()
 ' 
@@ -1265,6 +1267,8 @@ End
 Public Sub OnProjectChange()
   
   If $bInOpenExtern Then Return
+  
+  $hProjectTree = New CProjectTree(tvwProject, Project.Dir)
   
   UpdateGlobalLayout
   UpdateMenu
@@ -1679,7 +1683,7 @@ Private Sub AddDataFiles(aFile As String[], bLink As Boolean)
     
   Next
   
-  Project.SelectKey(sDir &/ sName)
+  $hProjectTree.SelectKey(sDir &/ sName)
   
   Dec Application.Busy
   
@@ -1697,7 +1701,7 @@ Public Sub tvwProject_Drop()
   
   'Debug Drag.Format;; Drag.Data
   '
-  Project.FillDir($sKey)
+  $hProjectTree.FillDir($sKey)
   
   If Drag.Format = MMime.URI Then
     
@@ -1792,21 +1796,22 @@ Public Sub tvwProject_Cancel()
   
 End
 
-Public Sub tvwProject_Expand()
-  
-  Project.FillDir(tvwProject.Item.Key)
-  
-End
+' Public Sub tvwProject_Expand()
+'   
+'   'Project.FillDir(tvwProject.Item.Key)
+'   $hProjectTree.RefreshDir(tvwProject.Item.Key)
+'   
+' End
 
-Public Sub tvwProject_Collapse()
-  
-  Dim sKey As String = tvwProject.Item.Key
-  
-  $bHasJustCollapsed = True
-  If Not sKey Then Return
-  If File.Dir(sKey) = Project.Dir And If Not IsDir(sKey) Then tvwProject[sKey].Expanded = True
-  
-End
+' Public Sub tvwProject_Collapse()
+'   
+'   Dim sKey As String = tvwProject.Item.Key
+'   
+'   $bHasJustCollapsed = True
+'   If Not sKey Then Return
+'   If File.Dir(sKey) = Project.Dir And If Not IsDir(sKey) Then tvwProject[sKey].Expanded = True
+'   
+' End
 
 Public Sub mnuClean_Click()
   
@@ -2518,7 +2523,7 @@ Public Sub OpenExternFile(Optional sPath As String)
   Endif
 
   $bInOpenExtern = False
-  OnProjectChange
+  'OnProjectChange ??
   Return
   
 CANNOT_OPEN:

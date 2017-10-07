@@ -1255,7 +1255,7 @@ Public Sub UpdateTask()
   Inc Application.Busy
   
   $aTask = New CTask[]
-  For Each sPath In Project.Sources
+  For Each sPath In Project.Tree.Sources
     $aTask.Insert(CTask.ScanFile(sPath))
   Next
   

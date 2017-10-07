@@ -5,22 +5,38 @@ Public Const KEY_MISC As String = "$O"
 Public Const KEY_PROJECT As String = "$P"
 Public Const KEY_PUBLIC As String = "$B"
 Public Const KEY_CONNECTION As String = "$D"
+Public Const KEY_EXTERN As String = "$X"
+
+Public Sources As Collection
 
 Private $hTree As TreeView
 Private $sDir As String
+Private $bCurrentProject As Boolean
 Private $sSourceDir As String
-Private $aRefreshAfter As New String[]
-Private $cSourceDir As Collection
+Private $aInheritance As New String[]
 Private $hInfo As CProjectInfo
 Private $hObserver As Observer
+Private $cFilter As Collection
+Private $bHasJustCollapsed As Boolean
+Private $bExpandOnMouseUp As Boolean
+Private $cExtern As New Collection
 
 Public Sub _new(hTreeView As TreeView, sDir As String)
   
   $hTree = hTreeView
   $sDir = sDir
+  $bCurrentProject = $sDir = Project.Dir
+  
+  If $bCurrentProject Then
+    Project.Tree = Me
+    Project.ProjectTree = hTreeView
+  Endif
+  
   $sSourceDir = sDir &/ ".src"
   If Not Exist($sSourceDir) Then $sSourceDir = $sDir
+  
   $hInfo = New CProjectInfo(sDir)
+  
   $hObserver = New Observer(hTreeView) As "TreeView"
   
   FillTree
@@ -41,8 +57,14 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
   Dim sAfter As String
   Dim hModule As CModule
   Dim bSource As Boolean
+  Dim bExtern As Boolean
+  Dim sTitle As String
+  Dim hStat As Stat
 
   sPath = sDir &/ sFile
+  
+  If $cFilter And If Not $cFilter.Exist(sPath) Then Return
+  
   sKey = sPath
   sParent = sDir
 
@@ -56,23 +78,29 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
     sParent = KEY_SOURCE
   Else If sDir = $sDir &/ ".connection" Then
     sParent = KEY_CONNECTION
+  Else If $cExtern.Exist(sPath) Then
+    sParent = KEY_EXTERN
+    If Not $hTree.Exist(sParent) Then $hTree.Add(sParent, ("Files"), Picture["icon:/small/system"], $sDir)
+    bExtern = True
+    Try sTitle = Project.Files[sPath].GetTitle()
+    If sTitle Then sFile = sTitle
   Endif
 
-  With Stat(sPath)
+  Try hStat = Stat(sPath)
+  If Error Then Return
+  
+  With hStat
 
     If .Hidden Then Return
 
     bShow = False
-    bSource = IsSourcePath(sDir &/ sFile) 'Like (SourceDir &/ "*")
+    If Not bExtern Then bSource = IsSourcePath(sDir &/ sFile)
 
     If IsDir(sPath) Then
 
       If sFile = "CVS" Or If sFile = "CVSROOT" Then Return
 
-      'IF cDir THEN cDir.Add(sPath)
       bDir = True
-      'sIcon = "icon:/small/directory" 'IMAGE_DIR &/ "close.png"
-      'bShow = True
 
     Else
 
@@ -107,7 +135,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
                   sParent = ""
                 Else If Not $hTree.Exist(sParent) Then 
                   If Not bIgnoreInheritance Then
-                    $aRefreshAfter.Add(sPath)
+                    $aInheritance.Add(sPath)
                     bIgnore = True
                   Else 
                     sParent = ""
@@ -130,7 +158,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
           If Not sParent Then sParent = sDir
           If sParent = $sSourceDir Then sParent = KEY_SOURCE
           
-          If $cSourceDir[sFile] <> sPath Then
+          If Sources[sFile] <> sPath Then
             bIgnore = True
           Endif
             
@@ -168,7 +196,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
 
     If Not bIgnore Then
 
-      hPict = GetFileIcon(sPath)
+      hPict = GetFileIcon(sPath,, hStat)
 
       If bAfter Then 
         With $hTree
@@ -206,6 +234,8 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
           bDir = False
         Endif
       Endif
+      
+      If $bCurrentProject Then Project.RefreshIcon(sKey)
       
       'hForm = Files[sKey]
       'If hForm Then hForm.Icon = GetFileIcon(sKey, 16)
@@ -248,7 +278,7 @@ Private Procedure AddDir(Optional sDir As String)
   
     aFile.Sort(gb.Natural)
   
-    $aRefreshAfter.Clear
+    $aInheritance.Clear
   
     For Each sFile In aFile
   
@@ -266,14 +296,18 @@ Private Procedure AddDir(Optional sDir As String)
 
 End
 
-Private Sub FillTree()
+Private Sub FillTree(Optional bDoNotRefreshCache As Boolean)
 
   Dim sKey As String
-  Dim sKeyReset As String
+  'Dim sKeyReset As String
 
   '$bDisplayForm = Settings["/DisplayForm"]
 
-  RefreshSourceCache
+  For Each $cExtern
+    If Not Exist($cExtern.Key) Then $cExtern.Remove($cExtern.Key)
+  Next
+
+  If Not bDoNotRefreshCache Then RefreshSources
 
   With $hTree
 
@@ -288,13 +322,6 @@ Private Sub FillTree()
     .Add(KEY_SOURCE, ("Sources"), Picture["icon:/small/directory"], sKey)
     
     If $hInfo.Components.Exist("gb.db") Then .Add(KEY_CONNECTION, ("Connections"), Picture["icon:/small/directory"], sKey)
-    
-    ' For Each hModule In CModule.All
-    '   If hModule.Used Then
-    '     .Add(hModule.TreeKey, hModule.NamePlural, Picture["icon:/small/directory"], sKey)
-    '   Endif
-    ' Next
-    
     If $hInfo.Components.Exist("gb.web") Then .Add(KEY_PUBLIC, ("Public"), Picture["icon:/small/directory"], sKey)
     .Add(KEY_MISC, ("Data"), Picture["icon:/small/directory"], sKey)
 
@@ -302,8 +329,12 @@ Private Sub FillTree()
 
     AddDir()
     If Exist($sDir &/ ".hidden") Then AddDir($sDir &/ ".hidden")
-    If Exist($sDir &/ ".connection") Then AddDir($sDir &/ ".connection")
-    If Exist($sDir &/ ".public") Then AddDir($sDir &/ ".public")
+    If $hInfo.Components.Exist("gb.db") And If Exist($sDir &/ ".connection") Then AddDir($sDir &/ ".connection")
+    If $hInfo.Components.Exist("gb.web") And If Exist($sDir &/ ".public") Then AddDir($sDir &/ ".public")
+
+    For Each sKey In $cExtern
+      AddFile(File.Dir(sKey), File.Name(sKey))
+    Next
 
   End With
 
@@ -315,7 +346,7 @@ Private Sub FillTree()
     Wend
   End With
 
-  If sKeyReset Then sKey = sKeyReset
+  'If sKeyReset Then sKey = sKeyReset
 
   'SelectKey(sKey)
 
@@ -336,22 +367,22 @@ Private Sub FillTree()
 
 End
 
-Private Function FindPath(sClass As String) As String
+Public Function FindPath(sClass As String) As String
 
   Dim sPath As String
 
-  sPath = $cSourceDir[sClass]
+  sPath = Sources[sClass]
   If sPath Then Return sPath
 
-  sPath = $cSourceDir[sClass & ".class"]
+  sPath = Sources[sClass & ".class"]
   If sPath Then Return sPath
 
-  sPath = $cSourceDir[sClass & ".module"]
+  sPath = Sources[sClass & ".module"]
   If sPath Then Return sPath
 
 End
 
-Private Sub FindKey(sClass As String) As String
+Public Sub FindKey(sClass As String) As String
 
   Dim hModule As CModule
   
@@ -360,7 +391,7 @@ Private Sub FindKey(sClass As String) As String
   If Not sClass Then Return
 
   For Each hModule In CModule.All
-    sPath = $cSourceDir[sClass & "." & hModule.Key]
+    sPath = Sources[sClass & "." & hModule.Key]
     If sPath Then Return sPath
   Next
   
@@ -368,20 +399,19 @@ Private Sub FindKey(sClass As String) As String
 
 End
 
-Private Sub RefreshSourceCache()
+Public Sub RefreshSources()
 
   Dim sPath As String
   
-  $cSourceDir = New Collection(gb.IgnoreCase)
+  Sources = New Collection(gb.IgnoreCase)
   
   For Each sPath In RDir($sSourceDir, "*", gb.File + gb.Directory, True)
     If CModule.Ext.Exist(File.Ext(sPath)) Then
-      $cSourceDir[File.Name(sPath)] = $sSourceDir &/ sPath
+      Sources[File.Name(sPath)] = $sSourceDir &/ sPath
     Endif
   Next
   
 End
-
 
 Private Sub IsConnectionPath(sPath As String) As Boolean
   
@@ -395,52 +425,53 @@ Private Sub DoRefreshAfter()
   Dim iInd As Integer
   Dim iCount As Integer
 
-  If $aRefreshAfter.Count = 0 Then Return
+  If $aInheritance.Count = 0 Then Return
 
   Do
-    iCount = $aRefreshAfter.Count
+    iCount = $aInheritance.Count
     For iInd = 0 To iCount - 1
-      sKey = $aRefreshAfter[0]
-      $aRefreshAfter.Remove(0)
+      sKey = $aInheritance[0]
+      $aInheritance.Remove(0)
       AddFile(File.Dir(sKey), File.Name(sKey), True)
     Next
-    If $aRefreshAfter.Count >= iCount Then Break
+    If $aInheritance.Count >= iCount Then Break
   Loop
 
-  If $aRefreshAfter.Count Then 
-    For iInd = 0 To $aRefreshAfter.Max
-      sKey = $aRefreshAfter[iInd]
+  If $aInheritance.Count Then 
+    For iInd = 0 To $aInheritance.Max
+      sKey = $aInheritance[iInd]
       AddFile(File.Dir(sKey), File.Name(sKey), True, True)
-      $aRefreshAfter[iInd] = File.BaseName(sKey)
+      $aInheritance[iInd] = File.BaseName(sKey)
     Next
     'FMain.ShowError(("The following classes have circular inheritance:") & "\n\n" & $aRefreshAfter.Join(", "))
-    $aRefreshAfter.Clear
+    $aInheritance.Clear
   Endif
 
 End
 
-Public Sub Refresh()
+Public Sub Refresh(Optional bDoNotRefreshCache As Boolean, cFilter As Collection)
   
-  FillTree
-  
-End
-
-Private Sub AddEmblem(hSource As Image, sEmblem As String) As Image
-
-  Dim hEmblem As Image
-  Dim iSize As Integer
-  Dim hImage As Image
-
-  iSize = ((hSource.Height \ 2) \ 8) * 8
-  
-  hEmblem = Picture[sEmblem].Image.Stretch(iSize * 1.5, iSize * 1.5)
-  
-  hImage = New Image(hSource.Width + iSize, hSource.Height, Color.Transparent)
-  hImage.PaintImage(hSource, iSize, 0)
-  hImage.PaintImage(hEmblem, 0, (hImage.H - hEmblem.H) / 2)
-  Return hImage
+  $cFilter = cFilter
+  FillTree(bDoNotRefreshCache)
   
 End
+
+' Private Sub AddEmblem(hSource As Image, sEmblem As String) As Image
+' 
+'   Dim hEmblem As Image
+'   Dim iSize As Integer
+'   Dim hImage As Image
+' 
+'   iSize = ((hSource.Height \ 2) \ 8) * 8
+'   
+'   hEmblem = Picture[sEmblem].Image.Stretch(iSize * 1.5, iSize * 1.5)
+'   
+'   hImage = New Image(hSource.Width + iSize, hSource.Height, Color.Transparent)
+'   hImage.PaintImage(hSource, iSize, 0)
+'   hImage.PaintImage(hEmblem, 0, (hImage.H - hEmblem.H) / 2)
+'   Return hImage
+'   
+' End
 
 ' Private Sub AddLinkEmblem(hSource As Image) As Image
 '   
@@ -452,7 +483,211 @@ End
 '   
 ' End
 ' 
-Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
+' Private Sub OldGetFileIcon(sPath As String, Optional iSize As Integer) As Picture
+' 
+'   Dim hImage As Image
+'   Dim hPict As Picture
+'   Dim sKey As String
+'   Dim sCacheKey As String
+'   Dim bLink As Boolean
+'   Dim sIcon As String
+'   Dim sExt As String
+'   Dim bStartup As Boolean
+'   Dim iFileSize As Long
+'   Dim hFile As File
+'   Dim sPrefix As String
+'   Dim bNoStartup As Boolean
+'   Dim bConflict As Boolean
+'   Dim sModule As String
+'   Dim sLocalPrefix As String
+'   Dim bLocked As Boolean
+'   Dim bAdded As Boolean
+'   'Dim hProject As CProjectInfo
+'   'Dim sLink As String
+'   Dim bExported As Boolean
+'   Dim fRapport As Float
+' 
+'   If iSize Then
+'     sPrefix = "icon:/" & iSize
+'     sLocalPrefix = "img/" & iSize
+'     'bNoStartup = iSize <> 16
+'   Else
+'     sPrefix = "icon:/small"
+'     sLocalPrefix = "img/16"
+'   Endif
+' 
+'   With Stat(sPath)
+' 
+'     bLink = .Type = gb.Link
+'     bConflict = False
+'     'bLocked = IsLocked(sPath)
+'     'bAdded = IsAdded(sPath)
+' 
+'     If IsDir(sPath) Then
+' 
+'       ' If bLink Then
+'       '   sLink = GetAbsoluteLink(sPath, .Link)
+'       '   'If Left(sLink) <> "/" Then sLink = sPath &/ sLink
+'       '   sLink = File.Dir(sLink)
+'       '   hProject = New CProjectInfo(sLink)
+'       '   sIcon = hProject.Icon
+'       '   If iSize = 0 Then iSize = 16
+'       ' Else
+'         sIcon = sPrefix &/ "directory"
+'       'Endif
+' 
+'     Else
+' 
+'       bConflict = VersionControl.InConflict(sPath)
+' 
+'       sIcon = sPrefix &/ "file"
+' 
+'       sExt = File.Ext(sPath)
+'       Select Case sExt
+' 
+'         Case "form", "class", "module", "webpage", "report", "webform", "termform"
+'           If IsSourcePath(sPath) Then
+'             sModule = sExt
+'             sIcon = sExt & "-" & iSize
+'             bStartup = File.BaseName(sPath) = $hInfo.Startup And Not bNoStartup
+'             bExported = Project.IsExported(sPath)
+'           Endif
+' 
+'         Case "jpg", "jpeg", "xpm", "bmp", "png", "gif"
+' 
+'           If bLink Then
+'             Try hFile = Open sPath
+'             If Error Then
+'               iFileSize = 0
+'             Else
+'               iFileSize = Lof(hFile)
+'               Close hFile
+'             Endif
+'           Else
+'             iFileSize = .Size
+'           Endif
+' 
+'           If iFileSize > Project.MAX_ICON_SIZE Then
+'             sIcon = sPrefix &/ "image"
+'           Else
+'             sIcon = sPath
+'           Endif
+' 
+'         Case "svg"
+'           sIcon = sPrefix &/ "image"
+' 
+'         Case "htm", "html", "css"
+'           sIcon = sPrefix &/ "html"
+' 
+'         Case "txt", "text"
+'           sIcon = sPrefix &/ "text"
+' 
+'         Case "pdf"
+'           sIcon = sPrefix &/ "pdf"
+' 
+'         Case "connection"
+'           sIcon = sLocalPrefix &/ "database.png"
+' 
+'       End Select
+' 
+'     Endif
+' 
+'   End With
+' 
+'   If Left$(sIcon) = "/" Then
+' 
+'     Try hImage = Image.Load(sIcon)
+'     If hImage Then
+' 
+'       fRapport = hImage.Width / hImage.Height
+'       If fRapport < 1 Then fRapport = 1 / fRapport
+' 
+'       If fRapport < 8 Then
+' 
+'         If iSize Then
+'           hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
+'         Else
+'           iSize = 32
+'           If hImage.Height > iSize Then
+'             hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
+'           Endif
+'           If hImage.Width > iSize Then
+'             hImage = hImage.Stretch(iSize, hImage.Height * iSize / hImage.Width)
+'           Endif
+'         Endif
+' 
+'       Else
+' 
+'         hImage = Null
+' 
+'       Endif
+' 
+'     Endif
+' 
+'     If Not hImage Then hImage = Picture[sPrefix &/ "image"].Image
+' 
+'     If bConflict Then hImage = Project.AddEmblem(hImage, "icon:/32/warning")
+'     If bLocked Then hImage = Project.AddEmblem(hImage, "icon:/32/lock")
+'     If bAdded Then hImage = Project.AddEmblem(hImage, "icon:/32/add")
+' 
+'     If bLink Then hImage = Project.AddLinkEmblem(hImage)
+' 
+'     hPict = hImage.Picture
+' 
+'   Else
+' 
+'     sKey = File.Dir(sIcon) &/ File.BaseName(sIcon) & "-"
+'     If bLink Then sKey &= "l"
+'     If bStartup Then sKey &= "s"
+'     If bConflict Then sKey &= "c"
+'     If bLocked Then sKey &= "k"
+'     If bAdded Then sKey &= "a"
+'     If bExported Then sKey &= "x"
+'     If Right(sKey) = "-" Then sKey = Left(sKey, -1)
+'     sKey &= ".png"
+' 
+'     'hPict = NULL
+'     'IF NOT bNoStartup THEN hPict = Picture[sKey]
+' 
+'     sCacheKey = Replace(sKey, "icon:/", "$/")
+'     Try hPict = Picture[sCacheKey]
+'     If Not hPict Then
+' 
+'       If sModule Then
+'         hImage = Project.MakeModuleIcon(sModule, iSize, bStartup)
+'       Else
+'         Try hImage = Picture[sIcon].Image
+'         If Error Then hImage = Picture[sPrefix &/ "file"].Image
+'       Endif
+'       'If Not hPict Then hPict = Picture[sPrefix &/ "file"]
+'       'If Not hPict Then hPict = Picture["img/16/unknown.png"]
+'       'hPict = hPict.Copy()
+' 
+'       'If bStartup Then hImage = AddEmblem(hImage, "icon:/32/play")
+'       If bConflict Then hImage = Project.AddEmblem(hImage, "icon:/32/warning")
+'       If bLocked Then hImage = Project.AddEmblem(hImage, "icon:/32/lock")
+'       If bAdded Then hImage = Project.AddEmblem(hImage, "icon:/32/add")
+'       If bExported Then hImage = Project.AddEmblem(hImage, "img/32/exported.png")
+' 
+'       If iSize Then
+'         hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
+'       Endif
+' 
+'       If bLink Then hImage = Project.AddLinkEmblem(hImage)
+' 
+'       hPict = hImage.Picture
+' 
+'       If Not bNoStartup Then Picture[sCacheKey] = hPict
+' 
+'     Endif
+' 
+'   Endif
+' 
+'   Return hPict
+' 
+' End
+
+Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat) As Picture
 
   Dim hImage As Image
   Dim hPict As Picture
@@ -471,10 +706,11 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   Dim sLocalPrefix As String
   Dim bLocked As Boolean
   Dim bAdded As Boolean
-  'Dim hProject As CProjectInfo
-  'Dim sLink As String
+  Dim hProject As CProjectInfo
+  Dim sLink As String
   Dim bExported As Boolean
   Dim fRapport As Float
+  Dim bDoNotTranslate As Boolean
 
   If iSize Then
     sPrefix = "icon:/" & iSize
@@ -485,29 +721,35 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     sLocalPrefix = "img/16"
   Endif
 
-  With Stat(sPath)
+  If Not hStat Then hStat = Stat(sPath)
+  With hStat
 
     bLink = .Type = gb.Link
     bConflict = False
-    'bLocked = IsLocked(sPath)
-    'bAdded = IsAdded(sPath)
+    If $bCurrentProject Then
+      bLocked = Project.IsLocked(sPath)
+      bAdded = Project.IsAdded(sPath)
+      bDoNotTranslate = Not Project.ShouldTranslate(sPath)
+    Endif
+    '$bLastAdded = bAdded
 
     If IsDir(sPath) Then
 
-      ' If bLink Then
-      '   sLink = GetAbsoluteLink(sPath, .Link)
-      '   'If Left(sLink) <> "/" Then sLink = sPath &/ sLink
-      '   sLink = File.Dir(sLink)
-      '   hProject = New CProjectInfo(sLink)
-      '   sIcon = hProject.Icon
-      '   If iSize = 0 Then iSize = 16
-      ' Else
+      If bLink Then
+        sLink = Project.GetAbsoluteLink(sPath, .Link)
+        'If Left(sLink) <> "/" Then sLink = sPath &/ sLink
+        sLink = File.Dir(sLink)
+        hProject = New CProjectInfo(sLink)
+        sIcon = hProject.GetIconPath()
+        If iSize = 0 Then iSize = 16
+      Else
         sIcon = sPrefix &/ "directory"
-      'Endif
+      Endif
 
     Else
 
-      bConflict = VersionControl.InConflict(sPath)
+      'bConflict = VersionControl.InConflict(sPath)
+      If $bCurrentProject Then bConflict = Project.IsConflict(sPath)
 
       sIcon = sPrefix &/ "file"
 
@@ -547,6 +789,9 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
 
         Case "htm", "html", "css"
           sIcon = sPrefix &/ "html"
+          
+        Case "js"
+          sIcon = sPrefix &/ "script"
 
         Case "txt", "text"
           sIcon = sPrefix &/ "text"
@@ -556,6 +801,9 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
 
         Case "connection"
           sIcon = sLocalPrefix &/ "database.png"
+          
+        Case "console"
+          sIcon = sLocalPrefix &/ "console.png"
 
       End Select
 
@@ -595,11 +843,14 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
 
     If Not hImage Then hImage = Picture[sPrefix &/ "image"].Image
 
-    If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
-    If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
-    If bAdded Then hImage = AddEmblem(hImage, "icon:/32/add")
+    If bLink Then
+      hImage = Project.AddLinkEmblem(hImage)
+    Endif
 
-    If bLink Then hImage = Project.AddLinkEmblem(hImage)
+    If bConflict Then hImage = Project.AddEmblem(hImage, "icon:/32/warning")
+    If bLocked Then hImage = Project.AddEmblem(hImage, "icon:/32/lock")
+    If bAdded Then hImage = Project.AddEmblem(hImage, "icon:/32/add")
+    If bDoNotTranslate Then hImage = Project.AddEmblem(hImage, "img/32/do-not-translate.png")
 
     hPict = hImage.Picture
 
@@ -612,6 +863,7 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     If bLocked Then sKey &= "k"
     If bAdded Then sKey &= "a"
     If bExported Then sKey &= "x"
+    If bDoNotTranslate Then sKey &= "t"
     If Right(sKey) = "-" Then sKey = Left(sKey, -1)
     sKey &= ".png"
 
@@ -632,18 +884,21 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
       'If Not hPict Then hPict = Picture["img/16/unknown.png"]
       'hPict = hPict.Copy()
 
-      'If bStartup Then hImage = AddEmblem(hImage, "icon:/32/play")
-      If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
-      If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
-      If bAdded Then hImage = AddEmblem(hImage, "icon:/32/add")
-      If bExported Then hImage = AddEmblem(hImage, "img/32/exported.png")
-
       If iSize Then
         hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
       Endif
 
-      If bLink Then hImage = Project.AddLinkEmblem(hImage)
+      If bLink Then
+        hImage = Project.AddLinkEmblem(hImage)
+      Endif
 
+      'If bStartup Then hImage = AddEmblem(hImage, "icon:/32/play")
+      If bConflict Then hImage = Project.AddEmblem(hImage, "icon:/32/warning")
+      If bLocked Then hImage = Project.AddEmblem(hImage, "icon:/32/lock")
+      If bAdded Then hImage = Project.AddEmblem(hImage, "icon:/32/add")
+      If bExported Then hImage = Project.AddEmblem(hImage, "img/32/exported.png")
+      If bDoNotTranslate Then hImage = Project.AddEmblem(hImage, "img/32/do-not-translate.png")
+      
       hPict = hImage.Picture
 
       If Not bNoStartup Then Picture[sCacheKey] = hPict
@@ -656,199 +911,6 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
 
 End
 
-
-' Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
-'   
-'   Dim hImage As Image
-'   Dim hPict As Picture
-'   Dim sKey As String
-'   Dim sCacheKey As String
-'   Dim bLink As Boolean
-'   Dim sIcon As String
-'   Dim sExt As String
-'   Dim bStartup As Boolean
-'   Dim iFileSize As Long
-'   Dim hFile As File
-'   Dim sPrefix As String
-'   Dim bNoStartup As Boolean
-'   Dim bConflict As Boolean
-'   Dim sModule As String
-'   Dim sLocalPrefix As String
-'   Dim bLocked As Boolean
-'   Dim bAdded As Boolean
-'   Dim bExported As Boolean
-'   
-'   If iSize Then 
-'     sPrefix = "icon:/" & iSize
-'     sLocalPrefix = "img/" & iSize
-'     'bNoStartup = iSize <> 16
-'   Else  
-'     sPrefix = "icon:/small"
-'     sLocalPrefix = "img/16"
-'   Endif
-'   
-'   With Stat(sPath)
-' 
-'     bLink = .Type = gb.Link
-'     bConflict = False
-'     'bLocked = IsLocked(sPath)
-'     'bAdded = IsAdded(sPath)
-'     
-'     If IsDir(sPath) Then 
-'     
-'       ' If bLink Then
-'       '   sLink = GetAbsoluteLink(sPath, .Link)
-'       '   'If Left(sLink) <> "/" Then sLink = sPath &/ sLink
-'       '   sLink = File.Dir(sLink)
-'       '   hProject = New CProjectInfo(sLink)
-'       '   sIcon = hProject.Icon
-'       '   If iSize = 0 Then iSize = 16
-'       ' Else
-'         sIcon = sPrefix &/ "directory"
-'       ' Endif
-'   
-'     Else
-'     
-'       'bConflict = VersionControl.InConflict(sPath)
-'       sIcon = sPrefix &/ "file"
-'     
-'       sExt = File.Ext(sPath)
-'       Select Case sExt
-'       
-'         Case "form", "class", "module", "webpage", "report"
-'           If IsSourcePath(sPath) Then 
-'             sModule = sExt
-'             sIcon = sExt & "-" & iSize
-'             bStartup = File.BaseName(sPath) = $hInfo.Startup And Not bNoStartup
-'             If sExt = "class" Or If sExt = "module" Then
-'               bExported = Project.IsExported(sPath)
-'             Endif
-'           Endif
-'         
-'         Case "jpg", "jpeg", "xpm", "bmp", "png", "gif"
-' 
-'           If bLink Then 
-'             Try hFile = Open sPath
-'             If Error Then 
-'               iFileSize = 0
-'             Else
-'               iFileSize = Lof(hFile)
-'               Close hFile
-'             Endif
-'           Else
-'             iFileSize = .Size
-'           Endif
-'           
-'           If iFileSize > Project.MAX_ICON_SIZE Then
-'             sIcon = sPrefix &/ "image"
-'           Else
-'             sIcon = sPath
-'           Endif
-'   
-'         Case "svg"
-'           sIcon = sPrefix &/ "image"
-'   
-'         Case "htm", "html", "css"
-'           sIcon = sPrefix &/ "html"
-'         
-'         Case "txt", "text"
-'           sIcon = sPrefix &/ "text"
-'           
-'         Case "connection"
-'           sIcon = sLocalPrefix &/ "database.png"
-'       
-'       End Select
-'     
-'     Endif
-'   
-'   End With
-'   
-'   If Left$(sIcon) = "/" Then
-' 
-'     Try hImage = Image.Load(sIcon)
-'     If hImage Then
-' 
-'       If iSize Then
-'         hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
-'       Else
-'         iSize = 32
-'         If hImage.Height > iSize Then
-'           hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
-'         Endif
-'         If hImage.Width > iSize Then
-'           hImage = hImage.Stretch(iSize, hImage.Height * iSize / hImage.Width)
-'         Endif
-'       Endif
-' 
-'       'hPict = hImage.Picture
-'     Else
-'       hImage = Picture[sPrefix &/ "image"].Image
-'     Endif
-' 
-'     If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
-'     If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
-'     If bAdded Then hImage = AddEmblem(hImage, "icon:/32/add")
-' 
-'     If bLink Then
-'       hImage = AddLinkEmblem(hImage)
-'     Endif
-' 
-'     hPict = hImage.Picture
-' 
-'   Else
-' 
-'     sKey = File.Dir(sIcon) &/ File.BaseName(sIcon) & "-"
-'     If bLink Then sKey &= "l"
-'     If bStartup Then sKey &= "s"
-'     If bConflict Then sKey &= "c"
-'     If bLocked Then sKey &= "k"
-'     If bAdded Then sKey &= "a"
-'     If bExported Then sKey &= "x"
-'     If Right(sKey) = "-" Then sKey = Left(sKey, -1)
-'     sKey &= ".png"
-' 
-'     'hPict = NULL
-'     'IF NOT bNoStartup THEN hPict = Picture[sKey]
-' 
-'     sCacheKey = Replace(sKey, "icon:/", "$/")
-'     Try hPict = Picture[sCacheKey]
-'     If Not hPict Then
-' 
-'       If sModule Then
-'         hImage = Project.MakeModuleIcon(sModule, iSize, bStartup, bExported)
-'       Else
-'         Try hImage = Picture[sIcon].Image
-'         If Error Then hImage = Picture[sPrefix &/ "file"].Image
-'       Endif
-'       'If Not hPict Then hPict = Picture[sPrefix &/ "file"]
-'       'If Not hPict Then hPict = Picture["img/16/unknown.png"]
-'       'hPict = hPict.Copy()
-' 
-'       'If bStartup Then hImage = AddEmblem(hImage, "icon:/32/play")
-'       If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
-'       If bLocked Then hImage = AddEmblem(hImage, "icon:/32/lock")
-'       If bAdded Then hImage = AddEmblem(hImage, "icon:/32/add")
-' 
-'       If iSize Then
-'         hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
-'       Endif
-' 
-'       If bLink Then
-'         hImage = AddLinkEmblem(hImage)
-'       Endif
-' 
-'       hPict = hImage.Picture
-' 
-'       If Not bNoStartup Then Picture[sCacheKey] = hPict
-' 
-'     Endif
-' 
-'   Endif
-' 
-'   Return hPict
-'   
-' End
-' 
 Private Function IsSourcePath(sPath As String) As Boolean
 
   Dim sExt As String
@@ -873,8 +935,46 @@ Public Sub TreeView_Expand()
   FillDir(sKey)
 
 End
+
+Public Sub TreeView_Collapse()
+  
+  Dim sKey As String = $hTree.Item.Key
+  
+  $bHasJustCollapsed = True
+  If Not sKey Then Return
+  If File.Dir(sKey) = $sDir And If Not IsDir(sKey) Then $hTree[sKey].Expanded = True
+  
+End
+
+Public Sub TreeView_Select()
+  
+  'RefreshMenu
+  
+  If $hTree.Current And If $hTree.Current.Children Then 
+    ' Print Mouse.X ;; Mouse.Y ' generates crashes on random places, strange...
+    'If Not tvwProject.Find(Mouse.X, Mouse.Y) Then
+    $bExpandOnMouseUp = True
+    'Endif
+  Endif
+  
+End
+
+Public Sub TreeView_MouseUp()
+  
+  If $bExpandOnMouseUp And If Not $bHasJustCollapsed Then
+    Try $hTree.Current.Expanded = True
+  Endif
+  $bExpandOnMouseUp = False
+  $bHasJustCollapsed = False
+  
+End
+
     
-Private Sub FillDir(sDir As String)
+Public Sub FillDir(sDir As String)
+
+  If Not sDir Then Return
+  If Left(sDir) = "$" Then Return
+  If Not IsDir(sDir) Then Return
 
   $hTree.MoveTo(sDir)
   If $hTree.MoveChild() Then Return
@@ -890,4 +990,123 @@ Catch
   Debug Error.Where; ": "; Error.Text
   Dec Application.Busy
   
+End
+
+Private Sub EnsureKey(sKey As String)
+
+  Dim sPath As String
+  Dim sElt As String
+
+  sPath = "/"
+  For Each sElt In Split(sKey, "/")
+    sPath &/= sElt
+    If $hTree.Exist(sPath) Then FillDir(sPath)
+  Next
+
+End
+
+Public Sub SelectKey(sKey As String)
+
+  Dim hModule As CModule
+  Dim sBase As String
+
+  EnsureKey(sKey)
+
+  If Not $hTree.Exist(sKey) Then
+    If Right$(sKey, 6) = ".class" Then
+      sBase = Left$(sKey, -6)
+      For Each hModule In CModule.All
+        sKey = sBase & "." & hModule.Key
+        If $hTree.Exist(sKey) Then Break
+      Next
+    Endif
+  Endif
+
+  Try $hTree[sKey].Selected = True
+  Try $hTree[sKey].EnsureVisible
+
+End
+
+Public Sub FindForm(sClass As String) As String
+
+  Dim sFamily As String
+  Dim sPath As String
+
+  For Each sFamily In CFamily.List
+    sPath = Sources[sClass & "." & sFamily]
+    If Exist(sPath) Then Return sPath
+  Next
+
+End
+
+Public Function ExistForm(sClass As String) As Boolean
+
+  Dim sFamily As String
+
+  For Each sFamily In CFamily.List
+    If Sources.Exist(sClass & "." & sFamily) Then Return True
+  Next
+
+End
+
+Private Sub RefreshInheritance()
+
+  Dim sKey As String
+
+  $aInheritance.Clear
+
+  For Each sKey In Sources
+    If Not File.Ext(sKey) = "class" Then Continue
+    Try $hTree[sKey].Delete
+    $aInheritance.Add(sKey)
+  Next
+
+  DoRefreshAfter
+
+End
+
+Public Sub RefreshKey(sKey As String, Optional sOld As String)
+
+  If Not sKey Then Return
+
+  If Not $hTree.Exist(sKey) And If Not Exist(sKey) And If IsSourcePath(sKey) Then
+    sKey = FindForm(File.BaseName(sKey))
+  Endif
+
+  If Not sOld Then sOld = sKey
+
+  EnsureKey(sOld)
+  Try $hTree[sOld].Delete
+  If Error Then
+    If sOld <> sKey Then Return
+  Endif
+
+  If Not Exist(sKey) Then Return
+
+  If IsSourcePath(sKey) And If File.Ext(sKey) = "class" And If Not ExistForm(File.BaseName(sKey)) Then
+    RefreshInheritance
+    Return
+  Endif
+
+  If AddFile(File.Dir(sKey), File.Name(sKey), True) Then AddDir(sKey)
+  'If IsDir(sKey) Then AddDir(sKey)
+
+  If sOld <> sKey And If Exist(sOld) Then
+    If AddFile(File.Dir(sOld), File.Name(sOld), True) Then AddDir(sOld)
+    'If IsDir(sOld) Then AddDir(sOld)
+  Endif
+
+End
+
+Public Sub AddExtern(sPath As String)
+  
+  $cExtern[sPath] = True
+  
+End
+
+Public Sub ExistClass(sClass As String) As Boolean
+
+  If Sources.Exist(sClass & ".class") Then Return True
+  If Sources.Exist(sClass & ".module") Then Return True
+
 End
