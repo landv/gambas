@@ -15,6 +15,9 @@ Property Read Width, W As Integer
 Property Read Height, H As Integer
 Property Editable As Boolean
 Property Selected As Boolean
+Property Background As Integer
+Property Foreground As Integer
+Property Font As Font
 
 Private $sKey As String
 Private $sParent As String
@@ -23,6 +26,9 @@ Private $sRichText As String
 Private $hPicture As Picture
 Private $bExpanded As Boolean
 Private $bEditable As Boolean
+Private $iBg As Integer = Color.Default
+Private $iFg As Integer = Color.Default
+Private $hFont As Font
 
 Private $aChildren As String[]
 Private $aText As String[]
@@ -475,4 +481,40 @@ Public Sub Reparent(NewParent As String)
   If hTree Is ListView Then Error.Raise("Cannot reparent ListView items")
   hTree._ReparentItem(Me, NewParent)
   
+End
+
+Private Function Background_Read() As Integer
+
+  Return $iBg
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  $iBg = Value
+
+End
+
+Private Function Foreground_Read() As Integer
+
+  Return $iFg
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  $iFg = Value
+
+End
+
+Private Function Font_Read() As Font
+
+  Return $hFont
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  $hFont = Value
+
 End

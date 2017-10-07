@@ -65,6 +65,7 @@ Public Sub _new()
   $hView.Grid = False
   $hView.AutoResize = True
   $hView.Name = Me.Name & ":gridView"
+  $hView.Padding = 0
   
   Me.Proxy = $hView
   
@@ -485,12 +486,23 @@ Public Sub _GetItemHeight(hItem As _TreeView_Item) As Integer
   
 End
 
+Public Sub GridView_Data(Row As Integer, (Column) As Integer)
+  
+  Dim hItem As _TreeView_Item = RowToItem(Row)
+  If Not hItem Then Return
+  
+  $hView.Data.Background = hItem.Background
+  
+End
+
 Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer, Row As Integer, Column As Integer)
   
   Dim hItem As _TreeView_Item = RowToItem(Row)
   Dim sText As String
   
   If Not hItem Then Return
+  
+  'Debug Row;; Column;; System.Backtrace.Join(" ")
   
   If Column = 0 Then
   
@@ -541,19 +553,25 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer,
     
     Endif
     
+    If hItem.Foreground <> Color.Default Then Paint.Background = hItem.Foreground
+    If hItem.Font Then Paint.Font = hItem.Font
+    
     'Draw.Text(hItem.Text & " (" & hItem._Index & ") [" & hItem._Rows & "] {" & hItem._GrandChildren & "}", X, Y, W, H, $hView.Columns[Column].Alignment)
     sText = hItem.RichText
     If sText Then
-      Draw.RichText(sText, X, Y, W, H, Align.Normal)
+      Paint.DrawRichText(sText, X, Y, W, H, Align.Normal)
     Else
-      Draw.Text(hItem.Text, X, Y, W, H, Align.Normal) '$hView.Columns[Column].Alignment)
+      Paint.DrawText(hItem.Text, X, Y, W, H, Align.Normal)
     Endif
     
   Else
     
-    Draw.Text(hItem[Column], X, Y, W, H, $hView.Columns[Column].Alignment)
+    If hItem.Foreground <> Color.Default Then Paint.Background = hItem.Foreground
+    Paint.DrawText(hItem[Column], X, Y, W, H, $hView.Columns[Column].Alignment)
     
   Endif
+  
+  Stop Event
   
 End
 

@@ -705,7 +705,7 @@ Public Sub ScrollArea_Draw()
       Endif
       
       If Not hClip.Intersection(hSpan) Then Goto NEXT_CELL
-        
+      
       hData = _GetCellData(R, C)
       
       Paint.Save
