@@ -93,7 +93,7 @@ Public Sub ToRFC822({Date} As Date, Optional TimeZone As String = "GMT") As Stri
   
   InitDaysMonths
   {Date} += System.TimeZone / 86400 + GetRFC822Zone(TimeZone)
-  Return $aDay[WeekDay({Date})] & ", " & Format(Day({Date}), "00") & " " & $aMonth[Month({Date}) - 1] & " " & Year({Date}) & " " & Hour({Date}) & ":" & Minute({Date}) & ":" & Second({Date}) & " " & TimeZone
+  Return $aDay[WeekDay({Date})] & ", " & Format(Day({Date}), "00") & " " & $aMonth[Month({Date}) - 1] & " " & Year({Date}) & " " & Format(Hour({Date}), "00") & ":" & Format(Minute({Date}), "00") & ":" & Format(Second({Date}), "00") & " " & TimeZone
   
 End
 
