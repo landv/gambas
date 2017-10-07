@@ -137,7 +137,7 @@ Public Sub Process_Read()
   Dim sLine As String
 
   sData = Read #Last, -256
-  $sOutput &= sData
+  $sOutput &= Replace(sData, "\r", "")
   If Not $bOutput Then Insert(sData)
   'Insert(sData)
   $dOutput = Now
@@ -268,7 +268,7 @@ Private Sub UpdatePathFromStatus(sStatus As String)
   Dim sExt As String
   Dim sPath As String
 
-  For Each sStatus In Split(sStatus, "\n")
+  For Each sStatus In Split(sStatus, "\r\n", "", True)
 
     sFile = Mid$(sStatus, 9)
     sPath = Project.Dir &/ sFile

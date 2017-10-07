@@ -116,7 +116,7 @@ Public Sub Request_Finished()
   Endif
   
   sResult = $hForm.Peek()
-  aResult = Split(sResult, "\r\n", "", True)
+  aResult = Split(Replace(sResult, "\r", ""), "\n")
   If aResult.Count = 0 Or If aResult[0] <> "10 OK" Then
     If aResult.Count Then
       iPos = InStr(aResult[0], " ")
