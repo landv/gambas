@@ -27,7 +27,7 @@ Private $hBorderS As Image
 Private $hBorderW As Image
 Private $hBorderE As Image
 
-Private $bInOpenExtern As Boolean
+'Private $bInOpenExtern As Boolean
 
 Static Private $sCompressMessage As String
 
@@ -1266,12 +1266,14 @@ End
 
 Public Sub OnProjectChange()
   
-  If $bInOpenExtern Then Return
-  
-  $hProjectTree = New CProjectTree(tvwProject, Project.Dir)
+  $hProjectTree = New CProjectTree(Project.Dir)
+  $hProjectTree.SetView(tvwProject)
   
   UpdateGlobalLayout
   UpdateMenu
+  
+  'If $bInOpenExtern Then Return
+  
   mnuFilterAdd.Visible = VersionControl.Enabled 'And panSearchProject.Hovered
   txtSearchProject.Clear
   mnuUseTerminal.Value = Project.UseTerminal
@@ -2499,7 +2501,7 @@ Public Sub OpenExternFile(Optional sPath As String)
     Settings["/OpenExternFile/Path"] = sPath
   Endif
   
-  $bInOpenExtern = True
+  '$bInOpenExtern = True
   
   If Not Project.Dir Then
     If Project.OpenFake() Then Goto CANNOT_OPEN
@@ -2522,13 +2524,13 @@ Public Sub OpenExternFile(Optional sPath As String)
     'Endif
   Endif
 
-  $bInOpenExtern = False
+  '$bInOpenExtern = False
   'OnProjectChange ??
   Return
   
 CANNOT_OPEN:
 
-  $bInOpenExtern = False
+  '$bInOpenExtern = False
   
 End
 

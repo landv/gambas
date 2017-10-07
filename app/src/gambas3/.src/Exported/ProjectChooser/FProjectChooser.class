@@ -105,7 +105,8 @@ Public Sub dchProject_Change()
     $sLast = sPath
     
     $hProjectItem.Path = sPath
-    hProjectTree = New CProjectTree(tvwProject, sPath)
+    hProjectTree = New CProjectTree(sPath)
+    hProjectTree.SetView(tvwProject)
     
     panProject.Show
     dchProject.FileView.Hide

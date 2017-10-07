@@ -1066,31 +1066,8 @@ End
 
 Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
 
-  Return Tree.GetFileIcon(sPath, iSize)
+  If Tree Then Return Tree.GetFileIcon(sPath, iSize)
 
-  ' Dim hImage As Image
-  ' Dim hPict As Picture
-  ' Dim sKey As String
-  ' Dim sCacheKey As String
-  ' Dim bLink As Boolean
-  ' Dim sIcon As String
-  ' Dim sExt As String
-  ' Dim bStartup As Boolean
-  ' Dim iFileSize As Long
-  ' Dim hFile As File
-  ' Dim sPrefix As String
-  ' Dim bNoStartup As Boolean
-  ' Dim bConflict As Boolean
-  ' Dim sModule As String
-  ' Dim sLocalPrefix As String
-  ' Dim bLocked As Boolean
-  ' Dim bAdded As Boolean
-  ' Dim hProject As CProjectInfo
-  ' Dim sLink As String
-  ' Dim bExported As Boolean
-  ' Dim fRapport As Float
-  ' Dim bDoNotTranslate As Boolean
-  ' 
   ' If iSize Then
   '   sPrefix = "icon:/" & iSize
   '   sLocalPrefix = "img/" & iSize
@@ -1099,6 +1076,9 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   '   sPrefix = "icon:/small"
   '   sLocalPrefix = "img/16"
   ' Endif
+  
+  Return Desktop.GetFileIcon(sPath, iSize, True)
+  
   ' 
   ' If Not hStat Then hStat = Stat(sPath)
   ' With hStat

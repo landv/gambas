@@ -21,27 +21,31 @@ Private $bHasJustCollapsed As Boolean
 Private $bExpandOnMouseUp As Boolean
 Private $cExtern As New Collection
 
-Public Sub _new(hTreeView As TreeView, sDir As String)
+Public Sub _new(sDir As String)
   
-  $hTree = hTreeView
   $sDir = sDir
   $bCurrentProject = $sDir = Project.Dir
   
-  If $bCurrentProject Then
-    Project.Tree = Me
-    Project.ProjectTree = hTreeView
-  Endif
+  If $bCurrentProject Then Project.Tree = Me
   
   $sSourceDir = sDir &/ ".src"
   If Not Exist($sSourceDir) Then $sSourceDir = $sDir
   
   $hInfo = New CProjectInfo(sDir)
   
-  $hObserver = New Observer(hTreeView) As "TreeView"
+End
+
+Public Sub SetView(hTreeView As TreeView)
   
+  If $hTree And If $hTree <> hTreeView Then Error.Raise("TreeView already set")
+  
+  $hTree = hTreeView
+  If $bCurrentProject Then Project.ProjectTree = hTreeView
+  $hObserver = New Observer(hTreeView) As "TreeView"
   FillTree
   
 End
+
 
 Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean, Optional bIgnoreInheritance As Boolean) As Boolean
   
