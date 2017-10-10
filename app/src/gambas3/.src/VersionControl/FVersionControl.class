@@ -68,6 +68,8 @@ Public Sub Form_Open()
     Me.Close
   Endif
   
+  Me.Move(FMain.X + Desktop.Scale * 4, FMain.Y + Desktop.Scale * 4, FMain.ClientW - Desktop.Scale * 8, FMain.ClientH - Desktop.Scale * 8)
+  
 End
 
 Public Sub Form_Close()

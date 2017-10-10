@@ -204,6 +204,6 @@ Public Sub Commit(sChange As String) As Boolean
   aEnv = VersionControl.LANG_ENV.Copy()
   aEnv.Add("PWD=" & Project.Dir)
   VersionControl.Run(["git", "push"], True, True, aEnv)
-  If Process.LastValue Then Return True
+  'If Process.LastValue Then Return True
   
 End
