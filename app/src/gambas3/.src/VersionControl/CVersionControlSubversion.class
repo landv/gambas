@@ -167,13 +167,10 @@ End
 
 Public Sub Commit(sChange As String) As Boolean
 
-  Dim hFile As File
+  Dim sFile As String = Temp$()
 
-  hFile = Open Temp$("commit") For Create
-  Print #hFile, sChange;
-  Close #hFile
-  
-  VersionControl.Run(["svn", "commit", "--file", Temp$("commit"), SvnPath$($sRealDir)], True, False, VersionControl.LANG_ENV)
+  File.Save(sFile, sChange) 
+  VersionControl.Run(["svn", "commit", "--file", sFile, SvnPath$($sRealDir)], True, False, VersionControl.LANG_ENV)
   Return Process.LastValue
 
 End

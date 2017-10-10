@@ -8,6 +8,32 @@ End
 
 Public Sub btnOK_Click()
 
+  Dim sChange As String
+  Dim iPos As Integer
+
+  sChange = Trim(edtJournal.Text)
+  iPos = InStr(sChange, "- " & VersionControl.DELIM_CHANGE & " -")
+  If iPos Then
+    iPos = RInStr(sChange, "\n", iPos)
+    If iPos Then
+      sChange = Left(sChange, iPos - 1)
+    Else
+      sChange = ""
+    Endif
+  Endif
+  
+  If Not Trim(sChange) Then
+    tabVersionControl.Index = 0
+    edtJournal.Goto(0, 0)
+    edtJournal.SetFocus
+    Balloon.Warning(("Please enter the journal."), btnOK)
+    Return
+  Endif
+  
+  Project.Config["/FCommit/LastCommit"] = sChange
+  
+  If VersionControl.Commit(sChange) Then Return
+  
   Me.Close(True)
 
 End
@@ -25,14 +51,14 @@ Public Sub Form_Open()
   
   Inc Application.Busy
   sDiff = VersionControl.Diff()
-  txtDiff.Text = sDiff
+  edtDiff.Text = sDiff
   
-  txtJournal.ReadConfig
-  txtDiff.ReadConfig
+  edtJournal.ReadConfig
+  edtDiff.ReadConfig
   Project.SetEditorFont(trmShell)
 
-  txtJournal.Text = "\n\n" & VersionControl.GetDefaultJournal()
-  txtJournal.Goto(0, 0)
+  edtJournal.Text = "\n\n" & VersionControl.GetDefaultJournal()
+  edtJournal.Goto(0, 0)
   
   tabVersionControl_Click
   Dec Application.Busy
@@ -55,9 +81,9 @@ Public Sub tabVersionControl_Click()
 
   Select Case tabVersionControl.Index
     Case 0
-      txtJournal.SetFocus
+      edtJournal.SetFocus
     Case 1
-      txtDiff.SetFocus
+      edtDiff.SetFocus
     Case 2
       Try trmShell.Exec(["bash"])
       trmShell.SetFocus

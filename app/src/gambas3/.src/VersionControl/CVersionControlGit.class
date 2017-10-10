@@ -57,9 +57,9 @@ Public Sub Diff(sPath As String) As String
   Dim sCmd As String
 
   If IsDir(sPath) Then
-    sCmd = "cd " & Shell(sPath) & " && git diff ."
+    sCmd = "cd " & Shell(sPath) & " && git diff HEAD ."
   Else
-    sCmd = "cd " & Shell(File.Dir(sPath)) & " && git diff " & Shell(File.Name(sPath))
+    sCmd = "cd " & Shell(File.Dir(sPath)) & " && git diff HEAD " & Shell(File.Name(sPath))
   Endif
   
   sDiff = VersionControl.Shell(sCmd)
@@ -190,4 +190,14 @@ Public Sub RemoveDir(sPath As String)
 
   RemoveFile(sPath)
 
+End
+
+Public Sub Commit(sChange As String) As Boolean
+  
+  Dim sFile As String = Temp$()
+  
+  File.Save(sFile, sChange)
+  VersionControl.Run(["git", "commit", "-F", sFile, Project.Dir], True, False, VersionControl.LANG_ENV)
+  Return Process.LastValue
+  
 End

@@ -267,7 +267,18 @@ End
 
 Public Sub Commit(sChange As String) As Boolean
 
-  Return $hVC.Commit(sChange)
+  Dim bRes As Boolean
+  
+  Inc Application.Busy
+  bRes = $hVC.Commit(sChange)
+  If Not bRes Then Project.Refresh
+  Dec Application.Busy
+  
+  If bRes Then
+    Message.Error(("The project could not be committed."))
+  Endif
+  
+  Return bRes
 
 End
 

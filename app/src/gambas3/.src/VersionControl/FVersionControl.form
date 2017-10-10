@@ -14,13 +14,13 @@
     Count = 3
     Index = 0
     Text = ("Journal")
-    { txtJournal TextEditor
+    { edtJournal TextEditor
       MoveScaled(13.25,11.125,16,16)
       Border = False
     }
     Index = 1
     Text = ("Changes")
-    { txtDiff TextEditor
+    { edtDiff TextEditor
       MoveScaled(11.875,12.75,16,16)
       Border = False
       Highlight = "Diff"
@@ -43,7 +43,8 @@
     }
     { btnOK Button
       MoveScaled(29,0,16,4)
-      Text = ("OK")
+      Text = ("Commit")
+      Picture = Picture["icon:/small/save"]
       Default = True
     }
     { btnCancel Button
