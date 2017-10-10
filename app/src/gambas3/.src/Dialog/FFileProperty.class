@@ -81,7 +81,7 @@ Public Sub Form_Open()
   
   If VersionControl.Enabled And Not IsDir($sPath) Then
     btnRevert.Show
-    fprInfo.Add(panVersion, ("Versioning"))
+    fprInfo.Add(panVersion, ("Changes"))
     '$hObs = New Observer(fprInfo.Parent) As "tabInfo"
     edtChange.Clear
     edtChange.ReadConfig
@@ -105,6 +105,8 @@ End
 Public Sub panVersion_Arrange()
 
   Dim sDiff As String
+  
+  edtChange.SetFocus
   
   If $bVersion Then Return
 

@@ -397,8 +397,12 @@ Public Sub mnuPopup_Show()
     mnuRunThat.Visible = mnuStartup.Visible
     mnuRunThat.Enabled = mnuStartup.Enabled
   
-    mnuDoNotTranslate.Visible = Left(sCurrent) <> "$"
-    mnuDoNotTranslate.Checked = Not Project.ShouldTranslate(sCurrent)
+    If sCurrent And If Left(sCurrent) <> "$" Then
+      mnuDoNotTranslate.Show
+      mnuDoNotTranslate.Checked = Not Project.ShouldTranslate(sCurrent)
+    Else
+      mnuDoNotTranslate.Hide
+    Endif
     
     If mnuCut.Visible Then
       
@@ -477,6 +481,8 @@ Public Sub mnuPopup_Show()
       bCanStoreFile = False
     Endif
     
+    mnuDoNotTranslate.Hide
+    
     bFile = bCurrent
     
     If mnuCut.Visible Then
@@ -533,7 +539,7 @@ Public Sub mnuPopup_Show()
   
   If IsProject($sKey)
     mnuFilter.Show
-    If Project.AddedPaths And If Project.AddedPaths.Count > 0 Then
+    If Project.HasAdded Then
       mnuAddVersionAll.Show
     Else
       mnuAddVersionAll.Hide
@@ -1266,7 +1272,7 @@ End
 
 Public Sub OnProjectChange()
   
-  $hProjectTree = New CProjectTree(Project.Dir)
+  $hProjectTree = Project.Tree 
   $hProjectTree.SetView(tvwProject)
   
   UpdateGlobalLayout
@@ -1274,7 +1280,10 @@ Public Sub OnProjectChange()
   
   'If $bInOpenExtern Then Return
   
-  mnuFilterAdd.Visible = VersionControl.Enabled 'And panSearchProject.Hovered
+  mnuFilterAdd.Visible = VersionControl.Enabled
+  mnuFilterConflict.Visible = VersionControl.Enabled
+  mnuFilterModified.Visible = VersionControl.Enabled
+  
   txtSearchProject.Clear
   mnuUseTerminal.Value = Project.UseTerminal
   mnuRedirectStderr.Value = Project.RedirectStderr
@@ -1539,6 +1548,15 @@ Public Sub Action_Activate((Key) As String) As Boolean
       
     Case "farm"
       FSoftwareFarm.Run
+      
+    Case "vc-commit"
+      FVersionControl.Run
+      
+    Case "vc-update"
+      VersionControl.Update
+      
+    Case "vc-revert"
+      VersionControl.Revert
       
   End Select 
   
@@ -2135,8 +2153,7 @@ Public Sub mnuAddVersionAll_Click()
   
   If Message.Question(("Do you really want to add every file to the repository?"), ("Add"), ("Cancel")) = 2 Then Return
   
-  For Each Project.AddedPaths
-    sPath = Project.AddedPaths.Key
+  For Each sPath In Project.AllFlags(Project.FLAG_ADDED)
     VersionControl.AddFile(sPath)
     If Project.IsFormPath(sPath) Then VersionControl.AddFile(File.SetExt(sPath, "class"))
   Next
@@ -2218,6 +2235,12 @@ End
 Public Sub mnuFilterAdd_Click()
   
   DoFilter(Project.FILTER_ADDED)
+  
+End
+
+Public Sub mnuFilterModified_Click()
+  
+  DoFilter(Project.FILTER_MODIFIED)
   
 End
 
@@ -2786,5 +2809,35 @@ Public Sub mnuDoNotTranslate_Click()
   If Not sPath Then Return
   Project.SetShouldTranslate(sPath, Not mnuDoNotTranslate.Value)
   Project.WriteProject(True)
+  
+End
+
+Public Sub OnVersionControlChange()
+
+  Dim sBranch As String
+  Dim sCurrent As String
+  Dim hMenu As Menu
+  Dim aBranches As String[]
+  
+  If Not VersionControl.Enabled Then
+    mnuVersionControl.Hide
+  Else
+    mnuVersionControl.Show
+    mnuVersionControl.Text = ("Version control") & " (" & VersionControl.Name & ")"
+    aBranches = VersionControl.GetBranches(ByRef sCurrent)
+    If Not sCurrent Then
+      mnuVcBranch.Hide
+    Else
+      mnuVcBranch.Show
+      mnuVcBranch.Children.Clear
+      
+      For Each sBranch In aBranches
+        hMenu = New Menu(mnuVcBranch) As "mnuVcBranchSet"
+        hMenu.Text = sBranch
+        hMenu.Radio = True
+        hMenu.Value = sBranch = sCurrent
+      Next
+    Endif
+  Endif
   
 End

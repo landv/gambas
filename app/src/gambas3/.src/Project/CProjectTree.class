@@ -20,6 +20,7 @@ Private $cFilter As Collection
 Private $bHasJustCollapsed As Boolean
 Private $bExpandOnMouseUp As Boolean
 Private $cExtern As New Collection
+Private $sStartup As String
 
 Public Sub _new(sDir As String)
   
@@ -32,6 +33,7 @@ Public Sub _new(sDir As String)
   If Not Exist($sSourceDir) Then $sSourceDir = $sDir
   
   $hInfo = New CProjectInfo(sDir)
+  $sStartup = $hInfo.Startup
   
 End
 
@@ -704,7 +706,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
   Dim iFileSize As Long
   Dim hFile As File
   Dim sPrefix As String
-  Dim bNoStartup As Boolean
+  'Dim bNoStartup As Boolean
   Dim bConflict As Boolean
   Dim sModule As String
   Dim sLocalPrefix As String
@@ -715,11 +717,12 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
   Dim bExported As Boolean
   Dim fRapport As Float
   Dim bDoNotTranslate As Boolean
+  Dim bModified As Boolean
+  Dim iEmblemSize As Integer
 
   If iSize Then
     sPrefix = "icon:/" & iSize
     sLocalPrefix = "img/" & iSize
-    'bNoStartup = iSize <> 16
   Else
     sPrefix = "icon:/small"
     sLocalPrefix = "img/16"
@@ -734,6 +737,8 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
       bLocked = Project.IsLocked(sPath)
       bAdded = Project.IsAdded(sPath)
       bDoNotTranslate = Not Project.ShouldTranslate(sPath)
+      bModified = Project.HasFlag(sPath, Project.FLAG_MODIFIED)
+      If iSize = 0 Then iEmblemSize = 16
     Endif
     '$bLastAdded = bAdded
 
@@ -764,7 +769,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
           If IsSourcePath(sPath) Then
             sModule = sExt
             sIcon = sExt & "-" & iSize
-            bStartup = File.BaseName(sPath) = $hInfo.Startup And Not bNoStartup
+            bStartup = File.BaseName(sPath) = $sStartup 'And Not bNoStartup
             bExported = Project.IsExported(sPath)
           Endif
 
@@ -846,16 +851,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
     Endif
 
     If Not hImage Then hImage = Picture[sPrefix &/ "image"].Image
-
-    If bLink Then
-      hImage = Project.AddLinkEmblem(hImage)
-    Endif
-
-    If bConflict Then hImage = Project.AddEmblem(hImage, "icon:/32/warning")
-    If bLocked Then hImage = Project.AddEmblem(hImage, "icon:/32/lock")
-    If bAdded Then hImage = Project.AddEmblem(hImage, "icon:/32/add")
-    If bDoNotTranslate Then hImage = Project.AddEmblem(hImage, "img/32/do-not-translate.png")
-
+    GoSub ADD_EMBLEM
     hPict = hImage.Picture
 
   Else
@@ -866,6 +862,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
     If bConflict Then sKey &= "c"
     If bLocked Then sKey &= "k"
     If bAdded Then sKey &= "a"
+    If bModified Then sKey &= "m"
     If bExported Then sKey &= "x"
     If bDoNotTranslate Then sKey &= "t"
     If Right(sKey) = "-" Then sKey = Left(sKey, -1)
@@ -888,30 +885,29 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
       'If Not hPict Then hPict = Picture["img/16/unknown.png"]
       'hPict = hPict.Copy()
 
-      If iSize Then
-        hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
-      Endif
-
-      If bLink Then
-        hImage = Project.AddLinkEmblem(hImage)
-      Endif
-
-      'If bStartup Then hImage = AddEmblem(hImage, "icon:/32/play")
-      If bConflict Then hImage = Project.AddEmblem(hImage, "icon:/32/warning")
-      If bLocked Then hImage = Project.AddEmblem(hImage, "icon:/32/lock")
-      If bAdded Then hImage = Project.AddEmblem(hImage, "icon:/32/add")
-      If bExported Then hImage = Project.AddEmblem(hImage, "img/32/exported.png")
-      If bDoNotTranslate Then hImage = Project.AddEmblem(hImage, "img/32/do-not-translate.png")
-      
+      If iSize Then hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize)
+      GoSub ADD_EMBLEM
       hPict = hImage.Picture
-
-      If Not bNoStartup Then Picture[sCacheKey] = hPict
+      Picture[sCacheKey] = hPict
 
     Endif
 
   Endif
 
   Return hPict
+
+ADD_EMBLEM:
+
+  If bLink Then hImage = Project.AddLinkEmblem(hImage)
+  If bConflict Then hImage = Project.AddEmblem(hImage, "icon:/32/warning", iEmblemSize)
+  If bLocked Then hImage = Project.AddEmblem(hImage, "icon:/32/lock", iEmblemSize)
+  If bAdded Then hImage = Project.AddEmblem(hImage, "img/32/added.png", iEmblemSize)
+  If bModified Then hImage = Project.AddEmblem(hImage, "img/32/modified.png", iEmblemSize)
+  If bExported Then hImage = Project.AddEmblem(hImage, "img/32/exported.png", iEmblemSize)
+  If bDoNotTranslate Then hImage = Project.AddEmblem(hImage, "img/32/do-not-translate.png", iEmblemSize)
+  
+  Return
+
 
 End
 
@@ -996,7 +992,7 @@ Catch
   
 End
 
-Private Sub EnsureKey(sKey As String)
+Public Sub EnsureKey(sKey As String)
 
   Dim sPath As String
   Dim sElt As String
@@ -1113,4 +1109,16 @@ Public Sub ExistClass(sClass As String) As Boolean
   If Sources.Exist(sClass & ".class") Then Return True
   If Sources.Exist(sClass & ".module") Then Return True
 
+End
+
+Public Sub DefineStartup(sClass As String) As String
+  
+  If sClass <> $sStartup Then 
+    Swap $sStartup, sClass
+    RefreshKey(FindPath(sClass))
+    RefreshKey(FindPath($sStartup))
+  Endif
+  
+  Return $sStartup
+  
 End

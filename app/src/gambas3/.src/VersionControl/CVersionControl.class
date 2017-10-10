@@ -2,6 +2,8 @@
 
 Create Static
 
+Public Const Name As String = ""
+
 Public Sub AddFile((sPath) As String, Optional (bForce) As Boolean)
   
 End
@@ -26,9 +28,9 @@ Public Sub MoveDir((sOld) As String, (sNew) As String) As Boolean
   
 End
 
-Public Sub UpdatePath((aPath) As String[])
-
-End
+' Public Sub UpdatePath((aPath) As String[])
+' 
+' End
 
 Public Sub CheckPaths()
 
@@ -58,10 +60,6 @@ Public Sub Resolve((sPath) As String, Optional (sAccept) As String) As Boolean
   
 End
 
-Public Sub HasConflict() As Boolean
-  
-End
-
 Public Sub GetVersion((sDir) As String) As String
   
 End
@@ -78,3 +76,10 @@ Public Sub CleanUp((sPath) As String)
   
 End
 
+Public Sub GetBranches(ByRef (sCurrent) As String) As String[]
+  
+End
+
+Public Sub GetDefaultJournal() As String
+  
+End

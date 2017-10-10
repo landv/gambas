@@ -1,0 +1,55 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,95,89)
+  Text = ("Commit")
+  Icon = Picture["icon:/small/save"]
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { tabVersionControl TabPanel
+    MoveScaled(1,1,59,54)
+    Expand = True
+    Arrangement = Arrange.Fill
+    Count = 3
+    Index = 0
+    Text = ("Journal")
+    { txtJournal TextEditor
+      MoveScaled(13.25,11.125,16,16)
+      Border = False
+    }
+    Index = 1
+    Text = ("Changes")
+    { txtDiff TextEditor
+      MoveScaled(11.875,12.75,16,16)
+      Border = False
+      Highlight = "Diff"
+      ReadOnly = True
+    }
+    Index = 2
+    Text = ("Terminal")
+    { trmShell TerminalView
+      MoveScaled(11.25,13.75,16,16)
+      Border = False
+    }
+    Index = 0
+  }
+  { HBox1 HBox
+    MoveScaled(1,59,62,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(4,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(29,0,16,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(46,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

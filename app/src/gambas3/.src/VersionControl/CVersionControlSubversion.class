@@ -3,6 +3,8 @@
 Inherits CVersionControl
 Create Static
 
+Public Const Name As String = "SVN"
+
 Private $sRealDir As String
 Private $bHasSVN As Boolean
 Private $bCheckSVN As Boolean
@@ -38,7 +40,7 @@ Public Sub Check() As Boolean
     Endif
   
     If $bSvn17 Then
-      Shell "svn status " & Shell$(SvnPath$($sRealDir) &/ ".project") & " 2>&1" To sResult
+      sResult = VersionControl.Shell("svn status " & Shell$(SvnPath$($sRealDir) &/ ".project") & " 2>&1")
       If Process.LastValue = 0 And If sResult Not Like "svn:*W155007*:*" And If sResult Not Like "svn:*W155010*:*" Then Return True
     Else
       Return Exist($sRealDir &/ ".svn")
@@ -105,9 +107,9 @@ Private Sub UpdatePathFromStatus(sStatus As String)
     sPath = Project.Dir &/ sFile
 
     If Left(sStatus) = "D" Then
-      Project.LockedPaths[sPath] = True
+      Project.SetFlag(sPath, Project.FLAG_LOCKED)
     Else If Left(sStatus) = "C" Then
-      Project.ConflictPaths[sPath] = True
+      Project.SetFlag(sPath, Project.FLAG_CONFLICT)
     Else If Left(sStatus) = "?" Then
       If Left(File.Name(sFile)) = "." Then Continue
       If sFile Begins ".lang/" Then Continue
@@ -115,46 +117,37 @@ Private Sub UpdatePathFromStatus(sStatus As String)
       If sFile = Project.Name & ".gambas" Then Continue
       sExt = File.Ext(sFile)
       If Left(sExt) = "r" And IsDigit(Mid$(sExt, 2)) And If Exist(Project.Dir &/ File.Dir(sFile) &/ File.BaseName(sFile)) Then Continue
-      Project.AddedPaths[sPath] = True
-
-      ' If Project.IsSourcePath(sPath) And If sExt = "class" Then
-      '   For Each sForm In Dir(Project.Dir &/ File.Dir(sFile), File.BaseName(sFile) & ".*")
-      '     Project.AddedPaths[Project.Dir &/ File.Dir(sFile) &/ sForm] = True
-      '   Next
-      ' Endif
-
+      Project.SetFlag(sPath, Project.FLAG_ADDED)
+    Else If Left(sStatus) <> " " Then
+      Project.SetFlag(sPath, Project.FLAG_MODIFIED)
     Endif
 
   Next
 
 End
 
-Public Sub UpdatePath(aPath As String[])
-
-  Dim sStatus As String
-  Dim sCmd As String
-  Dim sPath As String
-
-  ' svn status is automatically recursive!
-  sCmd = "cd " & Shell$($sRealDir) & "; svn status --no-ignore"
-  For Each sPath In aPath
-    sCmd &= " " & Mid$(sPath, Len(Project.Dir) + 2)
-    Project.LockedPaths.Remove(sPath)
-    Project.AddedPaths.Remove(sPath)
-    Project.ConflictPaths.Remove(sPath)
-  Next
-
-  Shell sCmd To sStatus
-
-  UpdatePathFromStatus(sStatus)
-
-End
+' Public Sub UpdatePath(aPath As String[])
+' 
+'   Dim sStatus As String
+'   Dim sCmd As String
+'   Dim sPath As String
+' 
+'   ' svn status is automatically recursive!
+'   sCmd = "cd " & Shell$($sRealDir) & "; svn status --no-ignore"
+'   For Each sPath In aPath
+'     sCmd &= " " & Mid$(sPath, Len(Project.Dir) + 2)
+'   Next
+' 
+'   sStatus = VersionControl.Shell(sCmd, True)
+'   UpdatePathFromStatus(sStatus)
+' 
+' End
 
 Public Sub CheckPaths()
 
   Dim sStatus As String
 
-  Shell "cd " & Shell$($sRealDir) & "; svn status --no-ignore" To sStatus
+  sStatus = VersionControl.Shell("cd " & Shell$($sRealDir) & "; svn status --no-ignore", True)
   UpdatePathFromStatus(sStatus)
 
 End
@@ -167,11 +160,10 @@ Public Sub Status(Optional sPath As String) As String
   sCmd = "cd " & Shell$($sRealDir) & "; svn status -q" 
   If sPath Then sCmd &= " " & Shell$(SvnPath$(sPath))
 
-  Shell sCmd To sStatus
+  sStatus = VersionControl.Shell(sCmd, True)
   Return sStatus
   
 End
-
 
 Public Sub Commit(sChange As String) As Boolean
 
@@ -248,21 +240,12 @@ Public Sub Checkout(sPath As String, sDir As String) As Boolean
   
 End
 
-Public Sub HasConflict() As Boolean
-
-  ' FIXME: must be recursive!
-  If Dir(Project.Dir, "*.module.r*").Count Then Return True
-  If Dir(Project.Dir, "*.class.r*").Count Then Return True
-  If Dir(Project.Dir, "*.form.r*").Count Then Return True
-
-End
-
 Public Sub GetVersion(sDir As String) As String
 
   Dim sRes As String
 
   If Exist(sDir &/ ".svn") Then
-    Shell "cd " & Shell$(sDir) & "; " & VersionControl.LANG_ENV.Join(" ") & " svn info" To sRes
+    sRes = VersionControl.Shell("cd " & Shell$(sDir) & "; " & VersionControl.LANG_ENV.Join(" ") & " svn info")
     Try sRes = Scan(sRes, "*\nRevision: *\n*")[1]
     If Error Then 
       Return "?"
@@ -277,7 +260,7 @@ Public Sub Diff(sPath As String) As String
 
   Dim sDiff As String
 
-  Shell "svn diff " & Shell$(SvnPath$(sPath)) To sDiff
+  sDiff = VersionControl.Shell("svn diff " & Shell$(SvnPath$(sPath)))
   Return sDiff
 
 End
@@ -343,6 +326,12 @@ End
 Public Sub CleanUp(sPath As String)
 
   VersionControl.Run(["svn", "cleanup", SvnPath$(sPath)])
+  
+End
+
+Public Sub GetDefaultJournal() As String
+  
+  Return VersionControl.GetDelimChange() & "\n\n" & Status()
   
 End
 

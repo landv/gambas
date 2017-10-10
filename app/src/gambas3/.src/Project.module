@@ -133,6 +133,7 @@ Public WIKI_ROOT As String = "http://gambaswiki.org/wiki"
 Public Const FILTER_ADDED As String = " A"
 Public Const FILTER_EXPORTED As String = " X"
 Public Const FILTER_CONFLICT As String = " C"
+Public Const FILTER_MODIFIED As String = " M"
 
 Public Files As New Collection
 Public ExternFiles As New Collection
@@ -194,10 +195,11 @@ Private $hLock As File
 ' Path of source files
 'Property Read Sources As Collection
 
-' Subversion state of files
-Public LockedPaths As Collection
-Public AddedPaths As Collection
-Public ConflictPaths As Collection
+' File state from version control
+Private $cPathFlag As Collection
+Public Enum FLAG_MODIFIED, FLAG_ADDED, FLAG_LOCKED, FLAG_CONFLICT
+Public HasConflict As Boolean
+Public HasAdded As Boolean
 
 ' I'm using the IDE to test the interpreter with valgrind!
 Private $bTesting As Boolean
@@ -563,7 +565,8 @@ _INIT_AGAIN:
   Name = File.Name(Project.Dir)
   SourceDir = Project.Dir &/ ".src"
   Config = New Settings(Project.Dir &/ ".settings")
-
+  Tree = New CProjectTree(Project.Dir)
+  
   ProjectFilter = ""
 
   bIsFake = IsFake(Project.Dir)
@@ -594,9 +597,9 @@ _INIT_AGAIN:
         FConvert.SetProgress(iStep / aDir.Count)
       Next
       
-    Endif
+      RefreshSources
 
-    RefreshSources
+    Endif
 
     ReadProject(True)
     WriteProject(True)
@@ -653,7 +656,7 @@ _INIT_AGAIN:
 
   CLibraryInfo.Clear
   ' Component loading needs to know which classes are declared by the project, in the case of a component project that uses itself
-  'RefreshSources
+  RefreshSources
   ReadProject
 
   If Not ReadOnly Then
@@ -674,7 +677,7 @@ _INIT_AGAIN:
   '   DoRefresh(False, True)
   ' Endif
 
-  If Not bIsFake Then DefineStartup(Startup, True)
+  'If Not bIsFake Then DefineStartup(Startup, True) ???
 
   If Not bIsFake Then CRecentProject.Add(sDir)
 
@@ -950,10 +953,9 @@ Public Sub Exit()
 
 End
 
-Public Sub AddEmblem(hSource As Image, sEmblem As String) As Image
+Public Sub AddEmblem(hSource As Image, sEmblem As String, Optional iSize As Integer) As Image
 
   Dim hEmblem As Image
-  Dim iSize As Integer
   Dim hImage As Image
 
   Try hEmblem = Picture[sEmblem].Image
@@ -962,7 +964,8 @@ Public Sub AddEmblem(hSource As Image, sEmblem As String) As Image
     Return hSource
   Endif
 
-  iSize = Min(hEmblem.H, hSource.H * 0.75)
+  If iSize = 0 Then iSize = hEmblem.H
+  iSize = Min(iSize, hSource.H * 0.75)
   hEmblem = hEmblem.Stretch(-1, iSize) ', iSize * hEmblem.H / hEmblem.W)
 
   'iSize -= hSource.W \ 4
@@ -1794,8 +1797,15 @@ Private Sub InitProjectFilter()
 
     $cProjectFilter = New Collection
 
-    For Each AddedPaths
-      sPath = AddedPaths.Key
+    For Each sPath In AllFlags(FLAG_ADDED)
+      AddPathToFilter(sPath)
+    Next
+
+  Else If ProjectFilter = FILTER_MODIFIED Then
+
+    $cProjectFilter = New Collection
+
+    For Each sPath In AllFlags(FLAG_MODIFIED)
       AddPathToFilter(sPath)
     Next
 
@@ -1803,8 +1813,7 @@ Private Sub InitProjectFilter()
 
     $cProjectFilter = New Collection
 
-    For Each ConflictPaths
-      sPath = ConflictPaths.Key
+    For Each sPath In AllFlags(FLAG_CONFLICT)
       AddPathToFilter(sPath)
     Next
 
@@ -1860,6 +1869,7 @@ Private Sub DoRefresh(Optional bReset As Boolean, Optional bDoNotRefreshCache As
   Endif
 
   InitProjectFilter
+  VersionControl.CheckPaths
   Tree.Refresh(bDoNotRefreshCache, $cProjectFilter)
 
   ' If Not bDoNotRefreshCache Then
@@ -1902,7 +1912,7 @@ Private Sub DoRefresh(Optional bReset As Boolean, Optional bDoNotRefreshCache As
 
   Tree.SelectKey(sKey)
 
-  DefineStartup(Startup, True)
+  'DefineStartup(Startup, True) '???
 
   For Each sFamily In CFamily.List
     If Not HasModule(sFamily) Then
@@ -1921,14 +1931,12 @@ Private Sub DoRefresh(Optional bReset As Boolean, Optional bDoNotRefreshCache As
 
   If VersionControl.Enabled Then
 
-    For Each sPath In AddedPaths
-      sPath = AddedPaths.Key
+    For Each sPath In AllFlags(FLAG_ADDED)
       Tree.EnsureKey(sPath)
       Try ProjectTree[sPath].EnsureVisible
     Next
   
-    For Each sPath In ConflictPaths
-      sPath = ConflictPaths.Key
+    For Each sPath In AllFlags(FLAG_CONFLICT)
       Tree.EnsureKey(sPath)
       Try ProjectTree[sPath].EnsureVisible
     Next
@@ -2193,6 +2201,7 @@ End
 
 Public Function FindPath(sClass As String) As String
 
+  If Not Tree Then Stop
   Return Tree.FindPath(sClass)
 
 End
@@ -2554,7 +2563,7 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, 
   FProperty.SaveProperty
   Save(True) 
 
-  If VersionControl.HasConflict() Then
+  If HasConflict Then
     UnlockIt()
     If Not bNoMessage Then Message.Warning(("Some project source files are in conflict.\nPlease solve them if you want to compile the project."))
     Return True
@@ -4905,10 +4914,9 @@ Public Sub DefineStartup(sPath As String, Optional bDoNotWrite As Boolean)
   sPath = File.BaseName(sPath)
   If Not Project.Exist(sPath) Then sPath = ""
 
-  Swap Startup, sPath
-  If sPath Then RefreshKey(Tree.FindKey(sPath))
-  If Startup Then RefreshKey(Tree.FindKey(Startup))
-
+  Tree.DefineStartup(sPath)
+  Startup = sPath
+  
   If Not bDoNotWrite Then
     WriteProject(True)
     Compile
@@ -4916,7 +4924,7 @@ Public Sub DefineStartup(sPath As String, Optional bDoNotWrite As Boolean)
 
   Tree.SelectKey(sKey)
 
-Catch
+'Catch
 
 End
 
@@ -5616,28 +5624,19 @@ End
 
 Public Sub IsLocked(sPath As String) As Boolean
 
-  If Not LockedPaths Or If LockedPaths.Count = 0 Then Return
-  If LockedPaths.Exist(sPath) Then Return True
-  If sPath = "" Or sPath = "/" Then Return
-  'If IsAdded(sPath) Then Return True
-  Return IsLocked(File.Dir(sPath))
+  Return HasFlag(sPath, FLAG_LOCKED, True)
 
 End
 
 Public Sub IsAdded(sPath As String, Optional bNoRec As Boolean) As Boolean
 
-  If Not AddedPaths Or If AddedPaths.Count = 0 Then Return
-  If AddedPaths.Exist(sPath) Then Return True
-  If bNoRec Then Return False
-  If sPath = "" Or sPath = "/" Then Return False
-  Return IsAdded(File.Dir(sPath))
+  Return HasFlag(sPath, FLAG_ADDED, Not bNoRec)
 
 End
 
 Public Sub IsConflict(sPath As String) As Boolean
 
-  If Not ConflictPaths Then Return
-  If ConflictPaths.Exist(sPath) Then Return True
+  Return HasFlag(sPath, FLAG_CONFLICT)
 
 End
 
@@ -6460,3 +6459,46 @@ Public Sub SetShouldTranslate(sPath As String, bTrans As Boolean)
   
 End
 
+Public Sub HasFlag(sPath As String, iFlag As Integer, Optional bRec As Boolean) As Boolean
+  
+  If Not $cPathFlag Then Return
+  If Not sPath Then Return
+  If File.IsRelative(sPath) Then sPath = Project.Dir &/ sPath
+  If BTst($cPathFlag[sPath], iFlag) Then Return True
+  If Not bRec Then Return
+  If sPath = Project.Dir Then Return
+  Return HasFlag(File.Dir(sPath), iFlag, bRec)
+  
+End
+
+Public Sub SetFlag(sPath As String, iFlag As Integer)
+  
+  $cPathFlag[sPath] = BSet($cPathFlag[sPath], iFlag)
+  If iFlag = FLAG_ADDED Then HasAdded = True
+  If iFlag = FLAG_CONFLICT Then HasConflict = True
+  
+End
+
+Public Sub ResetFlags()
+  
+  $cPathFlag = New Collection
+  $cPathFlag.Default = 0
+  HasConflict = False
+  HasAdded = False
+  
+End
+
+Public Sub AllFlags(iFlag As Integer) As String[]
+  
+  Dim aPath As New String[]
+  Dim iState As Integer
+  
+  If $cPathFlag Then
+    For Each iState In $cPathFlag
+      If BTst(iState, iFlag) Then aPath.Add($cPathFlag.Key)
+    Next
+  Endif
+  
+  Return aPath
+  
+End

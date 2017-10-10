@@ -1,0 +1,66 @@
+' Gambas class file
+
+Public Sub Run() As Boolean
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub Form_Open()
+
+  Dim sDiff As String
+  
+  Inc Application.Busy
+  sDiff = VersionControl.Diff()
+  txtDiff.Text = sDiff
+  
+  txtJournal.ReadConfig
+  txtDiff.ReadConfig
+  Project.SetEditorFont(trmShell)
+
+  txtJournal.Text = "\n\n" & VersionControl.GetDefaultJournal()
+  txtJournal.Goto(0, 0)
+  
+  tabVersionControl_Click
+  Dec Application.Busy
+  
+  If Not sDiff Then
+    Message.Info(("There is nothing to commit."))
+    Me.Close
+  Endif
+  
+End
+
+Public Sub Form_Close()
+  
+  Try trmShell.Kill
+  
+End
+
+
+Public Sub tabVersionControl_Click()
+
+  Select Case tabVersionControl.Index
+    Case 0
+      txtJournal.SetFocus
+    Case 1
+      txtDiff.SetFocus
+    Case 2
+      Try trmShell.Exec(["bash"])
+      trmShell.SetFocus
+  End Select
+
+End

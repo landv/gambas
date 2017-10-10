@@ -177,6 +177,39 @@
         Picture = Picture["icon:/small/pen"]
       }
     }
+    { mnuVersionControl Menu
+      Text = ("Version control")
+      { mnuVcCommit Menu
+        Action = "vc-commit"
+        Text = ("Commit") & "..."
+        Picture = Picture["icon:/small/save"]
+      }
+      { mnuVcUpdate Menu
+        Action = "vc-update"
+        Text = ("Synchronize")
+        Picture = Picture["icon:/small/refresh"]
+      }
+      { mnuVcRevert Menu
+        Action = "vc-revert"
+        Text = ("Revert")
+        Picture = Picture["icon:/small/undo"]
+      }
+      { mnuVcAddAll Menu mnuAddVersionAll
+        Name = "mnuVcAddAll"
+        Text = ("Add everything to repository")
+        Picture = Picture["img/32/added.png"]
+      }
+      { mnuVcBranch Menu
+        Action = "vc-branch"
+        Text = ("Branch")
+      }
+      { Menu44 Menu
+      }
+      { mnuVcInfo Menu
+        Text = ("Information")
+        Picture = Picture["icon:/small/info"]
+      }
+    }
     { mnuPublish Menu
       Action = "publish"
       Text = ("Publish") & "..."
@@ -194,12 +227,6 @@
       Text = Shortcut(("Refresh"), "R")
       Picture = Picture["icon:/small/refresh"]
     }
-    { mnuVersionControl Menu
-      Action = "version-control"
-      Text = Shortcut(("Put on version control"), "v")
-      Picture = Picture["icon:/small/add"]
-      Visible = False
-    }
     { Menu1 Menu
     }
     { mnuProperty Menu
@@ -207,11 +234,6 @@
       Text = Shortcut(("Properties"), "P") & "..."
       Picture = Picture["icon:/small/edit"]
       Shortcut = "Ctrl+P"
-    }
-    { mnuVersion Menu
-      Action = "project-version"
-      Text = Shortcut(("Version control"), "V") & "..."
-      Picture = Picture["icon:/small/calendar"]
     }
   }
   { mnuDebug Menu
@@ -644,11 +666,15 @@
       Text = ("Filter")
       { mnuFilterExport Menu
         Text = ("Show exported classes")
-        Picture = Picture["img/16/exported.png"]
+        Picture = Picture["img/32/exported.png"]
       }
       { mnuFilterAdd Menu
         Text = ("Show added files")
-        Picture = Picture["icon:/small/add"]
+        Picture = Picture["img/32/added.png"]
+      }
+      { mnuFilterModified Menu
+        Text = ("Show modified files")
+        Picture = Picture["img/32/modified.png"]
       }
       { mnuFilterConflict Menu
         Text = ("Show files in conflict")
@@ -663,7 +689,7 @@
     }
     { mnuAddVersionAll Menu
       Text = ("Add everything to repository")
-      Picture = Picture["icon:/small/add"]
+      Picture = Picture["img/32/added.png"]
     }
     { mnuDoNotTranslate Menu
       Action = "do-not-translate"
@@ -707,7 +733,7 @@
     { mnuAddVersionConnection Menu mnuAddVersion
       Name = "mnuAddVersionConnection"
       Text = Shortcut(("Add to repository"), "A")
-      Picture = Picture["icon:/16/add"]
+      Picture = Picture["img/32/added.png"]
     }
     { mnuInfoConnection Menu
       Text = Shortcut(("Properties"), "P") & "..."
@@ -819,12 +845,6 @@
       ToolTip = ("Project properties")
       Action = "project-property"
       Picture = Picture["icon:/small/edit"]
-    }
-    { btnVersion ToolButton
-      MoveScaled(17,0,4,4)
-      ToolTip = ("Project version control")
-      Action = "project-version"
-      Picture = Picture["icon:/small/calendar"]
     }
     { ToolButton7 ToolButton
       MoveScaled(22,0,4,4)
@@ -1196,7 +1216,7 @@
               Visible = False
             }
             { wrkProject Workspace
-              MoveScaled(2,0,81,31)
+              MoveScaled(3,1,81,31)
               Background = Color.LightForeground
               Expand = True
               Border = False
@@ -1541,11 +1561,6 @@
     Shortcut = "Ctrl+P"
     Picture = "icon:/small/edit"
   }
-  { Action project-version
-    Text = "Version control"
-    Shortcut = ""
-    Picture = "icon:/small/calendar"
-  }
   { Action property
     Text = "Properties"
     Shortcut = "F4"
@@ -1663,17 +1678,31 @@
     Shortcut = ""
     Picture = "icon:/small/refresh"
   }
-  { Action version-control
-    Text = "Put on version control"
+  { Action vc-branch
+    Text = "Branch"
     Shortcut = ""
-    Picture = "icon:/small/add"
+  }
+  { Action vc-commit
+    Text = "Commit"
+    Shortcut = ""
+    Picture = "icon:/small/save"
+  }
+  { Action vc-revert
+    Text = "Revert"
+    Shortcut = ""
+    Picture = "icon:/small/undo"
+  }
+  { Action vc-update
+    Text = "Synchronize"
+    Shortcut = ""
+    Picture = "icon:/small/refresh"
   }
 }
 
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,publish,farm,gui,menu-file,menu-edit,menu-project,menu-debug,menu-view,menu-tool,menu-help"
-    Default = "new-project,open-project,save-project,save-project-as,project-property,project-version,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,-,find-project,go-back,go-forward"
+    List = "new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,publish,farm,gui,menu-file,menu-edit,menu-project,menu-debug,menu-view,menu-tool,menu-help"
+    Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,-,find-project,go-back,go-forward"
   }
 }

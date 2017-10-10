@@ -1240,8 +1240,7 @@ Public Sub RefreshTask(sPath As String)
   
   $cRefreshTask[sPath] = sPath
   If wizDebug.Index = TAB_TASK Then
-    timTask.Stop
-    timTask.Start
+    timTask.Restart
   Endif
   
 End
