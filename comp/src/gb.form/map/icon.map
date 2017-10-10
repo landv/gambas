@@ -29,7 +29,7 @@ development             categories/applications-development
 directory               places/folder
 disconnect              actions/network-disconnect
 down                    actions/go-down
-download                [elementary]actions/media-import-audio-cd;emblems/emblem-downloads;actions/download
+download                [elementary]actions/media-import-audio-cd;emblems/emblem-downloads;actions/edit-download;actions/download
 edit                    actions/document-edit;apps/accessories-text-editor
 eject                   actions/media-eject
 end                     actions/media-skip-forward
@@ -97,14 +97,14 @@ office                  [elementary]categories/applications-other;categories/app
 ok                      actions/dialog-ok
 open                    actions/document-open
 open-recent             actions/document-open-recent
-options                 categories/preferences-system;actions/configure
+options                 [breeze*]actions/configure-shortcuts;categories/preferences-system;actions/configure
 package                 apps/system-software-install;apps/preferences-desktop-default-applications
 paste                   actions/edit-paste
 pause                   actions/media-playback-pause
 pda                     devices/pda
 pdf                     $(mime)/application-pdf
 pen                     actions/draw-freehand
-people                  apps/system-users
+people                  [breeze*]actions/user-group-new;apps/system-users
 phone                   [-breeze*]devices/smartphone;devices/phone
 play                    actions/media-playback-start
 plugin                  [breeze*]apps/preferences-plugin;categories/applications-puzzles;apps/preferences-system-sharing
@@ -135,7 +135,7 @@ script                  $(mime)/text-x-script
 security                status/security-medium
 select                  actions/select-rectangular
 select-all              actions/edit-select-all
-server                  places/network-server
+server                  [breeze*!16]places/server-database;places/network-server
 shortcut                apps/accessories-character-map
 sort-ascent             actions/view-sort-ascending
 sort-descent            actions/view-sort-descending
@@ -155,9 +155,9 @@ text-left               actions/format-justify-left
 text-right              actions/format-justify-right
 text-strike             actions/format-text-strikethrough
 text-underline          actions/format-text-underline
-tools                   [elementary]categories/applications-developmenent;[+breeze*]categories/applications-system;actions/applications-system;categories/applications-system
+tools                   [elementary]categories/applications-developmenent;[breeze*]categories/applications-system;actions/applications-system;categories/applications-system
 top                     actions/go-top
-trash                   places/user-trash
+trash                   [breeze*!16]places/user-trash;places/user-trash
 undo                    actions/edit-undo
 unindent                actions/format-indent-less
 unlock                  actions/object-unlocked
