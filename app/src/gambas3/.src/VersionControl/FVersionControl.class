@@ -57,7 +57,7 @@ Public Sub Form_Open()
   edtDiff.ReadConfig
   Project.SetEditorFont(trmShell)
 
-  edtJournal.Text = "\n\n" & VersionControl.GetDefaultJournal()
+  edtJournal.Text = Project.Config["/FCommit/LastCommit"] & "\n\n" & VersionControl.GetDefaultJournal()
   edtJournal.Goto(0, 0)
   
   tabVersionControl_Click

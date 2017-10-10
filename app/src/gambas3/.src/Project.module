@@ -1777,6 +1777,11 @@ End
 Private Sub AddPathToFilter(sPath As String)
 
   $cProjectFilter[sPath] = True
+  If IsSourcePath(sPath) And If File.Ext(sPath) = "class" Then
+    Try $cProjectFilter[Tree.FindForm(File.BaseName(sPath))] = True
+  Endif
+  
+  
   While Len(sPath) > Len(Project.Dir)
     sPath = File.Dir(sPath)
     $cProjectFilter[sPath] = True
@@ -6502,3 +6507,14 @@ Public Sub AllFlags(iFlag As Integer) As String[]
   Return aPath
   
 End
+
+Public Sub IsModified(sPath As String) As Boolean
+  
+  If HasFlag(sPath, FLAG_MODIFIED) Then Return True
+  If Not IsSourcePath(sPath) Then Return
+  If File.Ext(sPath) <> "form" Then Return
+  Return HasFlag(File.SetExt(sPath, "class"), FLAG_MODIFIED)
+  
+End
+
+ 

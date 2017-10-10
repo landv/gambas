@@ -737,7 +737,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
       bLocked = Project.IsLocked(sPath)
       bAdded = Project.IsAdded(sPath)
       bDoNotTranslate = Not Project.ShouldTranslate(sPath)
-      bModified = Project.HasFlag(sPath, Project.FLAG_MODIFIED)
+      bModified = Project.IsModified(sPath)
       If iSize = 0 Then iEmblemSize = 16
     Endif
     '$bLastAdded = bAdded
