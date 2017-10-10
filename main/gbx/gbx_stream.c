@@ -488,9 +488,8 @@ int STREAM_read_max(STREAM *stream, void *addr, int len)
 			switch(errno)
 			{
 				case EAGAIN:
+				case EIO:
 					return eff;
-				/*case EIO:
-					return -1; //THROW(E_READ);*/
 				default:
 					THROW_SYSTEM(errno, NULL);
 			}
