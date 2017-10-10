@@ -131,7 +131,7 @@ Public Sub Process_Read()
   sData = Read #Last, -256
   $sOutput &= Replace(sData, "\r", "")
   If $bOutput Then Insert(sData)
-  Insert(sData)
+  'Insert(sData)
   $dOutput = Now
   
   iPos = RInStr($sOutput, "\n")
