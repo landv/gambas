@@ -144,20 +144,20 @@ Public Sub Process_Read()
   If $bIdent Then
     If Right(RTrim(sLine)) = ":" Then
       If InStr(sLine, "username", 1, gb.IgnoreCase) Then 
-        If $bOutput Then Insert(sLine)
+        'If $bOutput Then Insert(sLine)
         If Not $bAuth Then GetAuthentication()
         If Not $sUser Then Goto CANCEL
         Print #Last, $sUser
         Insert(User & "\n")
         $sOutput = ""
       Else If InStr(sLine, "password", 1, gb.IgnoreCase) Then 
-        If $bOutput Then Insert(sLine)
+        'If $bOutput Then Insert(sLine)
         If Not $bAuth Then GetAuthentication()
         Print #Last, $sPassword
         Insert("********" & "\n")
         $sOutput = ""
       Else If InStr(sLine, "passphrase", 1, gb.IgnoreCase) Then 
-        If $bOutput Then Insert(sLine)
+        'If $bOutput Then Insert(sLine)
         If Not $bAuth Then GetAuthentication(True)
         Print #Last, $sPassword
         Insert("********" & "\n")
@@ -458,6 +458,7 @@ End
 Private Sub GetAuthentication(Optional bNoUser As Boolean) 
 
   Dialog.NoUser = bNoUser
+  Dialog.Key = Project.Name &/ "VersionControl"
   If Dialog.AskPassword() Then Return
   $sUser = Dialog.User
   $sPassword = Dialog.Password
