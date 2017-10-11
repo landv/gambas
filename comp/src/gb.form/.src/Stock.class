@@ -416,13 +416,25 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
   Dim sSubDir As String
   Dim sMime As String
   Dim bBreak As Boolean
+  Dim iPos2 As Integer
+  Dim sSize As String
+  
+  sSize = CStr(iSize)
   
   For Each sFile In Split(sFile, ";")
     
     If Left(sFile) = "[" Then
       iPos = InStr(sFile, "]")
       If iPos Then
+        
         sTheme = LCase(Mid$(sFile, 2, iPos - 2))
+        
+        iPos2 = InStr(sTheme, "!")
+        If iPos2 Then
+          sSize = Mid$(sTheme, iPos2 + 1)
+          sTheme = Left(sTheme, iPos2 - 1)
+        Endif
+        
         If sTheme Begins "+" Then
           If iSize <= 32 Then Continue
           sTheme = Mid$(sTheme, 2)
@@ -430,9 +442,12 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
           If iSize > 32 Then Continue
           sTheme = Mid$(sTheme, 2)
         Endif
+        
         If File.Dir(sTemplate) Not Like "*/" & sTheme & "/*" Then Continue
         sFile = Mid$(sFile, iPos + 1)
+        
         bBreak = True
+        
       Endif
     Endif
     
@@ -454,7 +469,7 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
           If sTemplate Ends "/*" Then
             sPath = File.Dir(sTemplate) &/ sTest
           Else
-            sPath = Subst(sTemplate, CStr(iSize), sTest)
+            sPath = Subst(sTemplate, sSize, sTest)
           Endif
           If IsDir(sPath) Then 
             sMime = sTest
@@ -483,7 +498,7 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
         If hPict Then Return hPict
       Endif
     Else
-      sPath = Subst(sTemplate, CStr(iSize), File.Dir(sFile)) &/ File.Name(sFile)
+      sPath = Subst(sTemplate, sSize, File.Dir(sFile)) &/ File.Name(sFile)
       hPict = DoLoadIcon(sPath, iSize, iRealSize)
       If hPict Then Return hPict
     Endif

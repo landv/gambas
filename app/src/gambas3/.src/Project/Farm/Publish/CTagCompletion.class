@@ -52,7 +52,7 @@ Public Sub Fill(Text As String, Explicit As Boolean)
     hHttpClient.Get()
     sResult = hHttpClient.Peek()
     If sResult Begins "10 OK" Then
-      aResult = Split(sResult, "\r\n", "", True)
+      aResult = Split(Replace(sResult, "\r", ""), "\n")
       For I = 1 To aResult.Max
         sTag = aResult[I]
         'sTag = UCase(Left(sTag)) & Mid$(sTag, 2)
