@@ -55,4 +55,6 @@ Public Sub Form_Close()
     Settings.Write(Me, "gb.form.dialog" &/ Dialog.Key)
   Endif
 
+  Dialog.Key = ""
+
 End
