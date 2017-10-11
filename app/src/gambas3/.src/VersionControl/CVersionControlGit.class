@@ -95,10 +95,15 @@ End
 Public Sub Update() As Boolean
 
   Dim bResult As Integer
+  Dim aEnv As String[]
+  
   ' Dim sFile As String
   ' Dim sPath As String
   
-  bResult = VersionControl.Run(["git", "pull"], True, True)
+  aEnv = VersionControl.LANG_ENV.Copy()
+  aEnv.Add("PWD=" & Project.Dir)
+
+  bResult = VersionControl.Run(["git", "pull"], True, True, aEnv)
   
   ' For Each sFile In [".project", ".startup", ".component", ".info"]
   '   sPath = $sRealDir &/ sFile
@@ -245,6 +250,6 @@ End
 
 Public Sub SetBranch(sBranch As String)
   
-  VersionControl.Shell("cd " & Shell(Project.Dir) & " && git checkout " & Shell(sBranch))
+  VersionControl.Shell("cd " & Shell(Project.Dir) & " && git checkout " & Shell(sBranch) & " 2>&1")
   
 End

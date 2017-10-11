@@ -483,10 +483,10 @@ Public Sub SetBranch(sBranch As String)
 
   Inc Application.Busy  
   $hVC.SetBranch(sBranch)
-  Project.Reload
+  GetBranches(ByRef sCurrent)
+  If sCurrent = sBranch Then Project.Reload
   Dec Application.Busy
   
-  GetBranches(ByRef sCurrent)
   If sCurrent <> sBranch Then
     Message.Error(Subst(("Unable to switch to branch `&1`."), sBranch))
   Endif
