@@ -109,7 +109,7 @@
     Expand = True
     Arrangement = Arrange.Vertical
     Spacing = True
-    Count = 8
+    Count = 9
     Border = True
     Index = 0
     Text = ("General")
@@ -644,7 +644,14 @@
     { gvwStat GridView
       MoveScaled(10,7,62,25)
       Expand = True
-      Padding = 8
+      Padding = 4
+    }
+    Index = 8
+    Text = ("Version control")
+    { gvwVcInfo GridView
+      MoveScaled(3,7,62,25)
+      Expand = True
+      Padding = 4
     }
     Index = 0
   }

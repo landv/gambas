@@ -3,7 +3,7 @@
 Inherits CVersionControl
 Create Static
 
-Public Const Name As String = "SVN"
+Public Const Name As String = "Svn"
 
 Private $sRealDir As String
 Private $bHasSVN As Boolean
@@ -165,7 +165,7 @@ Public Sub Status(Optional sPath As String) As String
   
 End
 
-Public Sub Commit(sChange As String) As Boolean
+Public Sub Commit(sChange As String, (bDoNotPush) As Boolean) As Boolean
 
   Dim sFile As String = Temp$()
 
@@ -272,7 +272,7 @@ Private Sub FormatSvnDate(sDate As String) As String
 
 End
 
-Public Sub Info(bRemote As Boolean) As Collection
+Public Sub Info() As Collection
 
   Dim sLine As String
   Dim aLine As String[]
@@ -280,26 +280,26 @@ Public Sub Info(bRemote As Boolean) As Collection
   Dim cInfo As New Collection
   Dim cData As New Collection
   
-  If VersionControl.Run(["svn", "info", SvnPath$($sRealDir)], False, True, VersionControl.LANG_ENV) = 0 Then
+  If VersionControl.Run(["svn", "info", SvnPath$($sRealDir)], False, False, VersionControl.LANG_ENV) = 0 Then
   
     cData.Clear
     For Each sLine In Split(VersionControl.Output, "\n", "", True)
       aLine = Scan(sLine, "*: *")
-      If aLine[0] = "Repository Root" Then sUrl = Trim(aLine[1])
+      'If aLine[0] = "Repository Root" Then sUrl = Trim(aLine[1])
       cData[Trim(aLine[0])] = Trim(aLine[1])
     Next
     
-    cInfo["revision"] = cData["Revision"]
-    cInfo["author"] = cData["Last Changed Author"]
-    cInfo["date"] = FormatSvnDate(cData["Last Changed Date"])
-    cInfo["url"] = sUrl
-    cInfo["path"] = cData["Working Copy Root Path"]
+    cInfo[("Local root path")] = cData["Working Copy Root Path"]
+    cInfo[("Revision")] = cData["Revision"]
+    cInfo[("Last commit author")] = cData["Last Changed Author"]
+    cInfo[("Last commit date")] = FormatSvnDate(cData["Last Changed Date"])
+    sUrl = cData["Repository Root"]
     
   Endif
   
-  If bRemote And If sUrl Then
+  If sUrl Then
   
-    If VersionControl.Run(["svn", "info", SvnPath$(sUrl)], True, True, VersionControl.LANG_ENV) = 0 Then
+    If VersionControl.Run(["svn", "info", SvnPath$(sUrl)], True, False, VersionControl.LANG_ENV) = 0 Then
     
       cData.Clear
       For Each sLine In Split(VersionControl.Output, "\n", "", True)
@@ -307,9 +307,10 @@ Public Sub Info(bRemote As Boolean) As Collection
         cData[Trim(aLine[0])] = Trim(aLine[1])
       Next
       
-      cInfo["remote.revision"] = cData["Revision"]
-      cInfo["remote.author"] = cData["Last Changed Author"]
-      cInfo["remote.date"] = FormatSvnDate(cData["Last Changed Date"])
+      cInfo[("Remote repository URL")] = sURL
+      cInfo[("Remote revision")] = cData["Revision"]
+      cInfo[("Remote last commit author")] = cData["Last Changed Author"]
+      cInfo[("Remote last commit date")] = FormatSvnDate(cData["Last Changed Date"])
       
     Endif
     

@@ -693,7 +693,7 @@ End
 ' 
 ' End
 
-Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat) As Picture
+Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat, bNoEmblem As Boolean) As Picture
 
   Dim hImage As Image
   Dim hPict As Picture
@@ -857,14 +857,19 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
   Else
 
     sKey = File.Dir(sIcon) &/ File.BaseName(sIcon) & "-"
+    
     If bLink Then sKey &= "l"
-    If bStartup Then sKey &= "s"
-    If bConflict Then sKey &= "c"
-    If bLocked Then sKey &= "k"
-    If bAdded Then sKey &= "a"
-    If bModified Then sKey &= "m"
-    If bExported Then sKey &= "x"
-    If bDoNotTranslate Then sKey &= "t"
+    
+    If Not bNoEmblem Then
+      If bStartup Then sKey &= "s"
+      If bConflict Then sKey &= "c"
+      If bLocked Then sKey &= "k"
+      If bAdded Then sKey &= "a"
+      If bModified Then sKey &= "m"
+      If bExported Then sKey &= "x"
+      If bDoNotTranslate Then sKey &= "t"
+    Endif
+    
     If Right(sKey) = "-" Then sKey = Left(sKey, -1)
     sKey &= ".png"
 
@@ -899,12 +904,15 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
 ADD_EMBLEM:
 
   If bLink Then hImage = Project.AddLinkEmblem(hImage)
-  If bConflict Then hImage = Project.AddEmblem(hImage, "icon:/32/warning", iEmblemSize)
-  If bLocked Then hImage = Project.AddEmblem(hImage, "icon:/32/lock", iEmblemSize)
-  If bAdded Then hImage = Project.AddEmblem(hImage, "img/32/added.png", iEmblemSize)
-  If bModified Then hImage = Project.AddEmblem(hImage, "img/32/modified.png", iEmblemSize)
-  If bExported Then hImage = Project.AddEmblem(hImage, "img/32/exported.png", iEmblemSize)
-  If bDoNotTranslate Then hImage = Project.AddEmblem(hImage, "img/32/do-not-translate.png", iEmblemSize)
+  
+  If Not bNoEmblem Then
+    If bConflict Then hImage = Project.AddEmblem(hImage, "icon:/32/warning", iEmblemSize)
+    If bLocked Then hImage = Project.AddEmblem(hImage, "icon:/32/lock", iEmblemSize)
+    If bAdded Then hImage = Project.AddEmblem(hImage, "img/32/added.png", iEmblemSize)
+    If bModified Then hImage = Project.AddEmblem(hImage, "img/32/modified.png", iEmblemSize)
+    If bExported Then hImage = Project.AddEmblem(hImage, "img/32/exported.png", iEmblemSize)
+    If bDoNotTranslate Then hImage = Project.AddEmblem(hImage, "img/32/do-not-translate.png", iEmblemSize)
+  Endif
   
   Return
 

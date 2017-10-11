@@ -3,6 +3,7 @@
 Property Read Name As String
 Property Read Enabled As Boolean
 Property Read Output As String
+Property Read DoNotPush As Boolean
 
 Private $hVC As CVersionControl
 
@@ -265,12 +266,12 @@ Public Sub Status(Optional sPath As String) As String
 
 End
 
-Public Sub Commit(sChange As String) As Boolean
+Public Sub Commit(sChange As String, bDoNotPush As Boolean) As Boolean
 
   Dim bRes As Boolean
   
   Inc Application.Busy
-  bRes = $hVC.Commit(sChange)
+  bRes = $hVC.Commit(sChange, bDoNotPush)
   If Not bRes Then Project.Refresh
   Dec Application.Busy
   
@@ -403,9 +404,9 @@ Public Sub ControlProject()
 
 End
 
-Public Sub Info(bRemote As Boolean) As Collection
+Public Sub Info() As Collection
 
-  Return $hVC.Info(bRemote)
+  Return $hVC.Info()
   
 End
 
@@ -463,5 +464,11 @@ Private Sub GetAuthentication(Optional bNoUser As Boolean)
   $sUser = Dialog.User
   $sPassword = Dialog.Password
   $bAuth = True
+
+End
+
+Private Function DoNotPush_Read() As Boolean
+
+  Return $hVC.DoNotPush
 
 End

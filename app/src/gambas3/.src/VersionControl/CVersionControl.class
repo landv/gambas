@@ -3,6 +3,7 @@
 Create Static
 
 Public Const Name As String = ""
+Public Const DoNotPush As Boolean = False
 
 Public Sub AddFile((sPath) As String, Optional (bForce) As Boolean)
   
@@ -40,7 +41,7 @@ Public Sub Status(Optional (sPath) As String) As String
   
 End
 
-Public Sub Commit((sChange) As String) As Boolean
+Public Sub Commit((sChange) As String, (bDoNotPush) As Boolean) As Boolean
 
 End
 
@@ -68,7 +69,7 @@ Public Sub Diff((sPath) As String) As String
   
 End
 
-Public Sub Info((bRemote) As Boolean) As Collection
+Public Sub Info() As Collection
   
 End
 

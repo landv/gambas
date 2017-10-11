@@ -1197,8 +1197,7 @@ Public Sub UpdateMenu()
   
   UpdateProperty
   
-  Action["version-control"].Visible = VersionControl.CanControlProject()
-  Action["project-version"].Visible = VersionControl.Enabled
+  Action["version-control"].Visible = VersionControl.Enabled
   
   mnuStartup.Visible = bVisible
   mnuRenameFile.Visible = bVisible
@@ -1451,8 +1450,6 @@ Public Sub Action_Activate((Key) As String) As Boolean
     Case "version-control"
       VersionControl.ControlProject
       UpdateMenu
-    Case "project-version"
-      FProjectVersion.Run
       
     Case "find-next"
       FSearch.FindNext
@@ -2838,6 +2835,7 @@ Public Sub OnVersionControlChange()
         hMenu.Value = sBranch = sCurrent
       Next
     Endif
+    btnVersionControl.Text = VersionControl.Name
   Endif
   
 End

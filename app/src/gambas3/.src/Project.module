@@ -1069,7 +1069,7 @@ End
 
 Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
 
-  If Tree Then Return Tree.GetFileIcon(sPath, iSize)
+  If Tree Then Return Tree.GetFileIcon(sPath, iSize,, True)
 
   ' If iSize Then
   '   sPrefix = "icon:/" & iSize
@@ -2182,7 +2182,7 @@ Public Function LoadFile(sPath As String) As Object
         Dec Application.Busy
         Return
       Endif
-      hForm.Icon = GetFileIcon(sPath, 16)
+      hForm.Icon = GetFileIcon(sPath)
     Endif
 
     If hForm Then FSearch.OnNewForm(hForm)
@@ -6350,7 +6350,7 @@ Public Sub RefreshIcon(sPath As String)
   Dim hForm As Object
 
   hForm = Files[sPath]
-  If hForm Then hForm.Icon = GetFileIcon(sPath, 16)
+  If hForm Then hForm.Icon = GetFileIcon(sPath)
   
   If IsSourcePath(sPath) Then
     If File.Ext(sPath) = "class" Then
@@ -6360,7 +6360,7 @@ Public Sub RefreshIcon(sPath As String)
     Endif
     
     hForm = Files[sPath]
-    If hForm Then hForm.Icon = GetFileIcon(sPath, 16)
+    If hForm Then hForm.Icon = GetFileIcon(sPath)
     
   Endif
 

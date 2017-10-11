@@ -32,7 +32,7 @@ Public Sub btnOK_Click()
   
   Project.Config["/FCommit/LastCommit"] = sChange
   
-  If VersionControl.Commit(sChange) Then Return
+  If VersionControl.Commit(sChange, chkDoNotPush.Value) Then Return
   
   Me.Close(True)
 
@@ -48,6 +48,7 @@ End
 Public Sub Form_Open()
 
   Dim sDiff As String
+  Dim DS As Integer
   
   Inc Application.Busy
   sDiff = VersionControl.Diff()
@@ -68,7 +69,10 @@ Public Sub Form_Open()
     Me.Close
   Endif
   
-  Me.Move(FMain.X + Desktop.Scale * 4, FMain.Y + Desktop.Scale * 4, FMain.ClientW - Desktop.Scale * 8, FMain.ClientH - Desktop.Scale * 8)
+  chkDoNotPush.Visible = VersionControl.DoNotPush
+  
+  DS = Desktop.Scale
+  Me.Resize(FMain.W - DS * 16, FMain.H - DS * 16)
   
 End
 

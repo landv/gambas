@@ -179,6 +179,7 @@
     }
     { mnuVersionControl Menu
       Text = ("Version control")
+      Picture = Picture["icon:/small/calendar"]
       { mnuVcCommit Menu
         Action = "vc-commit"
         Text = ("Commit") & "..."
@@ -191,7 +192,7 @@
       }
       { mnuVcRevert Menu
         Action = "vc-revert"
-        Text = ("Revert")
+        Text = ("Revert all")
         Picture = Picture["icon:/small/undo"]
       }
       { mnuVcAddAll Menu mnuAddVersionAll
@@ -202,12 +203,6 @@
       { mnuVcBranch Menu
         Action = "vc-branch"
         Text = ("Branch")
-      }
-      { Menu44 Menu
-      }
-      { mnuVcInfo Menu
-        Text = ("Information")
-        Picture = Picture["icon:/small/info"]
       }
     }
     { mnuPublish Menu
@@ -648,7 +643,7 @@
     { mnuStartup Menu
       Action = "startup-class"
       Text = Shortcut(("Startup class"), "S")
-      Picture = Picture["img/16/startup-class.png"]
+      Picture = Picture["img/32/startup.png"]
       Shortcut = "Alt+S"
     }
     { mnuRunThat Menu
@@ -1151,6 +1146,16 @@
       Border = False
       Menu = "mnuHelp"
     }
+    { btnVersionControl MenuButton
+      MoveScaled(84,4,8,4)
+      ToolTip = ("Version control")
+      Action = "version-control"
+      AutoResize = True
+      Picture = Picture["icon:/small/calendar"]
+      Border = False
+      Menu = "mnuVersionControl"
+      MenuOnly = True
+    }
   }
   { sepMessage Separator
     MoveScaled(58,9,38,0)
@@ -1638,7 +1643,7 @@
   { Action startup-class
     Text = "Startup class"
     Shortcut = "Alt+S"
-    Picture = "img/16/startup-class.png"
+    Picture = "img/32/startup.png"
   }
   { Action step
     Text = "Step"
@@ -1688,7 +1693,7 @@
     Picture = "icon:/small/save"
   }
   { Action vc-revert
-    Text = "Revert"
+    Text = "Revert all"
     Shortcut = ""
     Picture = "icon:/small/undo"
   }
@@ -1697,12 +1702,16 @@
     Shortcut = ""
     Picture = "icon:/small/refresh"
   }
+  { Action version-control
+    Text = "Version control"
+    Picture = "icon:/small/calendar"
+  }
 }
 
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,publish,farm,gui,menu-file,menu-edit,menu-project,menu-debug,menu-view,menu-tool,menu-help"
-    Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,-,find-project,go-back,go-forward"
+    List = "new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,publish,farm,gui,menu-file,menu-edit,menu-project,menu-debug,menu-view,menu-tool,menu-help,version-control"
+    Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,-,find-project,go-back,go-forward,version-control"
   }
 }
