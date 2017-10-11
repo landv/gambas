@@ -17,8 +17,8 @@ End
 
 Public Sub End()
   
-  Project.RefreshKey($sPath)
-  Project.SelectKey($sPath)
+  Project.Tree.RefreshKey($sPath)
+  Project.Tree.SelectKey($sPath)
   $sPath = ""
   $bRename = False
   

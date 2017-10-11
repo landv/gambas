@@ -1,10 +1,13 @@
 ' Gambas module file
 
-Private $bCheckSVN As Boolean
-Private $bHasSVN As Boolean
+Property Read Name As String
+Property Read Enabled As Boolean
+Property Read Output As String
+Property Read DoNotPush As Boolean
 
-Private $bSVN As Boolean
-Private $bCVS As Boolean
+Private $hVC As CVersionControl
+
+Private $bEnabled As Boolean
 Private $bEnd As Boolean
 Private $hEditor As TextEditor
 Private $bOutput As Boolean
@@ -12,58 +15,36 @@ Private $sOutput As String
 Private $dOutput As Date
 Private $bIdent As Boolean
 
-Private $sSvnVersion As String
-Private $bSvn17 As Boolean
+Private $bAuth As Boolean
+Private $sUser As String
+Private $sPassword As String
 
-Public (User) As String
-Public Password As String
-Public UseTerminal As Boolean
+'Public (User) As String
+'Public Password As String
+'Public UseTerminal As Boolean
 
-Private $sRealDir As String
-
-Private LANG_ENV As String[] = ["LC_ALL=C.UTF-8", "LANG=C.UTF-8", "LANGUAGE=C.UTF-8"]
-
-Public Sub Enabled() As Boolean
-
-  Return $bSVN Or $bCVS
-
-End
+Public LANG_ENV As String[] = ["LC_ALL=C.UTF-8", "LANG=C.UTF-8", "LANGUAGE=C.UTF-8"]
+Public Const DELIM_CHANGE As String = ("This line and the following will be ignored")
 
 Public Sub Refresh()
 
-  Dim sResult As String
-
-  Shell "readlink -f " & Shell$(Project.Dir) To $sRealDir
-  $sRealDir = Trim($sRealDir)
-
-  If Not $bCheckSVN Then
-    $bHasSVN = System.Exist("svn")
-    $bCheckSVN = True
+  $bEnabled = True
+  If CVersionControlSubversion.Check() Then
+    $hVC = CVersionControlSubversion
+  Else If CVersionControlGit.Check() Then
+    $hVC = CVersionControlGit
+  Else
+    $hVC = CVersionControl
+    $bEnabled = False
   Endif
   
-  If $bHasSVN Then
-
-    If Not $sSvnVersion Then 
-      Exec ["svn", "--version", "--quiet"] To $sSvnVersion
-      $sSvnVersion = Trim($sSvnVersion)
-      $bSvn17 = Comp($sSvnVersion, "1.7", gb.Natural) >= 0
-    Endif
+  $bAuth = False
+  CheckPaths
+  FMain.OnVersionControlChange
   
-    If $bSvn17 Then
-      $bSVN = False
-      Shell "svn status " & Shell$(SvnPath$($sRealDir) &/ ".project") & " 2>&1" To sResult
-      If Process.LastValue = 0 And If sResult Not Like "svn:*W155007*:*" And If sResult Not Like "svn:*W155010*:*" Then $bSvn = True
-    Else
-      $bSVN = Exist($sRealDir &/ ".svn")
-    Endif
-    
-  Endif
-
-  $bCVS = Exist($sRealDir &/ "CVS") Or Exist($sRealDir &/ "CVSROOT")
-    
 End
 
-Private Sub Insert(sText As String)
+Public Sub Insert(sText As String)
 
   If $hEditor Then
     $hEditor.Print(DConv(sText))
@@ -73,7 +54,19 @@ Private Sub Insert(sText As String)
 
 End
 
-Private Sub Run(aCmd As String[], Optional bIdent As Boolean, Optional bOutput As Boolean, Optional aEnv As String[]) As Integer
+Public Sub Shell(sCmd As String, Optional bSilent As Boolean, Optional aEnv As String[]) As String
+  
+  Dim sResult As String
+  
+  If Not bSilent Then Insert(sCmd & "\n")
+  Shell sCmd With aEnv To sResult
+  If Process.LastValue Then Insert(sResult)
+  Return sResult
+  
+End
+
+
+Public Sub Run(aCmd As String[], Optional bIdent As Boolean, Optional bOutput As Boolean, Optional aEnv As String[]) As Integer
 
   Dim sPassword As String
   Dim hProcess As Process
@@ -85,23 +78,23 @@ Private Sub Run(aCmd As String[], Optional bIdent As Boolean, Optional bOutput A
   $bOutput = bOutput
   $dOutput = Now
   
-  If bIdent Then
-    'aCmd.Add("--non-interactive")
-    If User Then
-      aCmd.Add("--username")
-      aCmd.Add(User)
-      If Password Then
-        sPassword = " --password " & Password
-        aCmd.Add("--password")
-        aCmd.Add(Password)
-      Endif
-    Endif
-  Endif
+  ' If bIdent Then
+  '   'aCmd.Add("--non-interactive")
+  '   If User Then
+  '     aCmd.Add("--username")
+  '     aCmd.Add(User)
+  '     If Password Then
+  '       sPassword = " --password " & Password
+  '       aCmd.Add("--password")
+  '       aCmd.Add(Password)
+  '     Endif
+  '   Endif
+  ' Endif
   
   hProcess = Exec aCmd With aEnv For Input Output As "Process" 
   
   sCmd = aCmd.Join(" ")
-  If sPassword Then sCmd = Replace(sCmd, sPassword, "")
+  If sPassword Then sCmd = Replace(sCmd, sPassword, "********")
 
   Insert(sCmd & "\n")
 
@@ -136,9 +129,9 @@ Public Sub Process_Read()
   Dim iPos As Integer
   Dim sLine As String
 
-  sData = Read #Last, -256
+  sData = Read #Last, -1024
   $sOutput &= Replace(sData, "\r", "")
-  If Not $bOutput Then Insert(sData)
+  If $bOutput Then Insert(sData)
   'Insert(sData)
   $dOutput = Now
   
@@ -150,18 +143,39 @@ Public Sub Process_Read()
   Endif
   
   If $bIdent Then
-    If Right(RTrim(sLine)) = ":" And If InStr(sLine, "username", 1, gb.IgnoreCase) Then 
-      If $bOutput Then Insert(sLine)
-      Print #Last, User
-      Insert(User & "\n")
-      $sOutput = ""
-    Else If Right(RTrim(sLine)) = ":" And If InStr(sLine, "password", 1, gb.IgnoreCase) Then 
-      If $bOutput Then Insert(sLine)
-      Print #Last, Password
-      Insert(String$(String.Len(Password), "*") & "\n")
+    If Right(RTrim(sLine)) = ":" Then
+      If InStr(sLine, "username", 1, gb.IgnoreCase) Then 
+        'If $bOutput Then Insert(sLine)
+        If Not $bAuth Then GetAuthentication()
+        If Not $sUser Then Goto CANCEL
+        Print #Last, $sUser
+        Insert(User & "\n")
+        $sOutput = ""
+      Else If InStr(sLine, "password", 1, gb.IgnoreCase) Then 
+        'If $bOutput Then Insert(sLine)
+        If Not $bAuth Then GetAuthentication()
+        Print #Last, $sPassword
+        Insert("********" & "\n")
+        $sOutput = ""
+      Else If InStr(sLine, "passphrase", 1, gb.IgnoreCase) Then 
+        'If $bOutput Then Insert(sLine)
+        If Not $bAuth Then GetAuthentication(True)
+        Print #Last, $sPassword
+        Insert("********" & "\n")
+        $sOutput = ""
+      Endif
+    Else If RTrim(sLine) Ends "(yes/no)?" Then
+      Print #Last, "yes"
+      Insert("yes\n")
       $sOutput = ""
     Endif
   Endif
+  
+  Return
+  
+CANCEL:
+
+  Last.Kill
 
 End
 
@@ -171,39 +185,25 @@ Public Sub Process_Kill()
 
 End
 
-Private Sub SvnPath$(sPath As String) As String
-
-  If InStr(sPath, "@") Then sPath &= "@"
-  If sPath Begins Project.Dir Then sPath = $sRealDir &/ Mid$(sPath, Len(Project.Dir) + 1)
-  Return sPath
-
-End
-
 Public Sub AddFile(sPath As String, Optional bForce As Boolean)
 
-  Dim aCmd As String[]
+  $hVC.AddFile(sPath, bForce)
 
-  If $bSVN Then
-    aCmd = ["svn", "add", SvnPath$(sPath)]
-    If bForce Then aCmd.Add("--force", 2)
-    Run(aCmd)
-  Endif
-  If $bCVS Then
-    'NB: For CVS file must already exist
-    Run(["cvs", "add", sPath])
-  Endif
+  ' If $bCVS Then
+  '   'NB: For CVS file must already exist
+  '   Run(["cvs", "add", sPath])
+  ' Endif
 
 End
 
 Public Sub AddDir(sPath As String)
 
-  If $bSVN Then
-    Run(["svn", "add", SvnPath$(sPath)])
-  Endif
-  If $bCVS Then
-    'NB: For CVS, directory must already exist
-    Run(["cvs", "add", sPath])
-  Endif
+  $hVC.AddDir(sPath)
+
+  ' If $bCVS Then
+  '   'NB: For CVS, directory must already exist
+  '   Run(["cvs", "add", sPath])
+  ' Endif
 
 End
 
@@ -211,18 +211,12 @@ End
 
 Public Sub RemoveFile(sPath As String, Optional (bForce) As Boolean)
 
-  Dim aCmd As String[]
-
-  If $bSVN Then
-    aCmd = ["svn", "remove", SvnPath$(sPath), "--force"]
-    'If bForce Then aCmd.Add("--force", 2)
-    Run(aCmd)
-  Endif
-  If $bCVS Then
-    'NB: For CVS do 'cvs remove file' first then delete file
-    Run(["cvs", "remove", sPath])
-  Endif
-  UpdatePath([sPath])
+  $hVC.RemoveFile(sPath, bForce)
+  ' If $bCVS Then
+  '   'NB: For CVS do 'cvs remove file' first then delete file
+  '   Run(["cvs", "remove", sPath])
+  ' Endif
+  CheckPaths
 
 End
 
@@ -231,14 +225,12 @@ End
 
 Public Sub RemoveDir(sPath As String)
 
-  If $bSVN Then
-    RemoveFile(sPath, True)
-  Endif
-  If $bCVS Then
-    'NB: For CVS do 'cvs remove dirname' first then delete dirname
-    Run(["cvs", "remove", sPath])
-  Endif
-  UpdatePath([sPath])
+  $hVC.RemoveDir(sPath)
+  ' If $bCVS Then
+  '   'NB: For CVS do 'cvs remove dirname' first then delete dirname
+  '   Run(["cvs", "remove", sPath])
+  ' Endif
+  CheckPaths
 
 End
 
@@ -246,254 +238,116 @@ End
 
 Public Sub MoveFile(sOld As String, sNew As String)
 
-  If $bSVN Then
-    'SHELL "svn move " & Shell$(sOld) & " " & Shell$(sNew) WAIT
-    AddFile(sNew)
-    RemoveFile(sOld, True)
-    'RemoveFile(sOld)
-  Endif
-  If $bCVS Then
-    'NB: make sure the file is added BEFORE
-    AddFile(sNew)
-    'NB: make sure the file deleted AFTER
-    RemoveFile(sOld)
-  Endif
-  UpdatePath([sOld, sNew])
+  $hVC.MoveFile(sOld, sNew)
 
-End
-
-Private Sub UpdatePathFromStatus(sStatus As String)
-
-  Dim sFile As String
-  Dim sExt As String
-  Dim sPath As String
-
-  For Each sStatus In Split(sStatus, "\r\n", "", True)
-
-    sFile = Mid$(sStatus, 9)
-    sPath = Project.Dir &/ sFile
-
-    If Left(sStatus) = "D" Then
-      Project.LockedPaths[sPath] = True
-    Else If Left(sStatus) = "C" Then
-      Project.ConflictPaths[sPath] = True
-    Else If Left(sStatus) = "?" Then
-      If Left(File.Name(sFile)) = "." Then Continue
-      If sFile Begins ".lang/" Then Continue
-      If sFile Begins ".gambas/" Then Continue
-      If sFile = Project.Name & ".gambas" Then Continue
-      sExt = File.Ext(sFile)
-      If Left(sExt) = "r" And IsDigit(Mid$(sExt, 2)) And If Exist(Project.Dir &/ File.Dir(sFile) &/ File.BaseName(sFile)) Then Continue
-      Project.AddedPaths[sPath] = True
-
-      ' If Project.IsSourcePath(sPath) And If sExt = "class" Then
-      '   For Each sForm In Dir(Project.Dir &/ File.Dir(sFile), File.BaseName(sFile) & ".*")
-      '     Project.AddedPaths[Project.Dir &/ File.Dir(sFile) &/ sForm] = True
-      '   Next
-      ' Endif
-
-    Endif
-
-  Next
-
-End
-
-Private Sub UpdatePath(aPath As String[])
-
-  Dim sStatus As String
-  Dim sCmd As String
-  Dim sPath As String
-
-  If $bSVN Then
-
-    ' svn status is automatically recursive!
-    sCmd = "cd " & Shell$($sRealDir) & "; svn status --no-ignore"
-    For Each sPath In aPath
-      sCmd &= " " & Mid$(sPath, Len(Project.Dir) + 2)
-      Project.LockedPaths.Remove(sPath)
-      Project.AddedPaths.Remove(sPath)
-      Project.ConflictPaths.Remove(sPath)
-    Next
-
-    Shell sCmd To sStatus
-
-    UpdatePathFromStatus(sStatus)
-
-  Endif
+  ' If $bCVS Then
+  '   'NB: make sure the file is added BEFORE
+  '   AddFile(sNew)
+  '   'NB: make sure the file deleted AFTER
+  '   RemoveFile(sOld)
+  ' Endif
+  CheckPaths
 
 End
 
 Public Sub CheckPaths()
 
-  Dim sStatus As String
-
-  Project.LockedPaths = New Collection
-  Project.AddedPaths = New Collection
-  Project.ConflictPaths = New Collection
-
-  If $bSVN Then
-
-    Shell "cd " & Shell$($sRealDir) & "; svn status --no-ignore" To sStatus
-    UpdatePathFromStatus(sStatus)
-
-  Endif
+  Project.ResetFlags
+  $hVC.CheckPaths()
 
 End
 
 Public Sub MoveDir(sOld As String, sNew As String) As Boolean
 
-  If $bSVN Then
-    Run(["svn", "move", "--force", SvnPath$(sOld), SvnPath$(sNew)])
-    'AddFile(sNew)
-    ' For Each sDir In RDir(sNew, "*", gb.Directory)
-    '   If File.Name(sDir) <> ".svn" Then Continue
-    '   Shell "rm -rf " & Shell$(sNew &/ sDir) Wait
-    ' Next
-    ' AddFile(sNew, True)
-    ' RemoveFile(sOld, False)
-  Endif
-  If $bCVS Then
-    'NB: make sure the file is added BEFORE
-    AddFile(sNew)
-    'NB: make sure the file deleted AFTER
-    RemoveFile(sOld)
-  Endif
-
-  UpdatePath([sOld, sNew])
+  $hVC.MoveDir(sOld, sNew)
+  CheckPaths
 
 End
 
 Public Sub Status(Optional sPath As String) As String
 
-  Dim sStatus As String
-  Dim sCmd As String
-
-  If $bSVN Then
-    sCmd = "cd " & Shell$($sRealDir) & "; svn status -q" 
-    If sPath Then sCmd &= " " & Shell$(sPath)
-  Endif
-
-  If $bCVS Then
-    sCmd = "cd " & Shell$($sRealDir) & "; cvs status" 
-    If sPath Then sCmd &= " " & Shell$(sPath)
-  Endif
-
-  If sCmd Then
-    Shell sCmd To sStatus
-    Return sStatus
-  Endif
-  
-End
-
-Public Sub Commit(sChange As String) As Boolean
-
-  Dim hFile As File
-
-  If $bSVN Then
-    hFile = Open Temp$("commit") For Create
-    Print #hFile, sChange;
-    Close #hFile
-    
-    Run(["svn", "commit", "--file", Temp$("commit"), SvnPath$($sRealDir)], True, False, LANG_ENV)
-    Return Process.LastValue
-  Endif
+  Return $hVC.Status(sPath)
 
 End
 
-Public Sub Update() As Boolean
+Public Sub Commit(sChange As String, bDoNotPush As Boolean) As Boolean
 
-  Dim bResult As Integer
-  Dim sFile As String
-  Dim sPath As String
+  Dim bRes As Boolean
   
-  If $bSVN Then
-    bResult = Run(["svn", "update", SvnPath$($sRealDir), "--accept", "postpone"], True)
-    For Each sFile In [".project", ".startup", ".component", ".info"]
-      sPath = $sRealDir &/ sFile
-      If Exist(sPath) And If InConflict(sPath) Then Resolve(sPath, "theirs-full")
-    Next
-    For Each sFile In [".settings"]
-      sPath = $sRealDir &/ sFile
-      If Exist(sPath) And If InConflict(sPath) Then Resolve(sPath, "mine-full")
-    Next
-    Return bResult
+  Inc Application.Busy
+  bRes = $hVC.Commit(sChange, bDoNotPush)
+  If Not bRes Then Project.Refresh
+  Dec Application.Busy
+  
+  If bRes Then
+    Message.Error(("The project could not be committed."))
   Endif
+  
+  Return bRes
+
+End
+
+Public Sub Update()
+
+  Dim bErr As Boolean
+  Dim hFile As Object
+
+  Inc Application.Busy
+  bErr = $hVC.Update()
+  Project.Refresh
+  Dec Application.Busy
+
+  If bErr Then  
+    Message.Error(("Unable to update project from repository."))
+  Else
+    Message.Info(("Project has been updated from repository successfully."))
+  Endif
+  
+  For Each hFile In Project.Files
+    If Project.IsConflict(hFile.Path) Then Try hFile.Close
+  Next
 
 End
 
 Public Sub Revert(Optional sPath As String) As Boolean
 
-  If $bSVN Then
-    If sPath Then
-      Run(["svn", "revert", SvnPath$(sPath)])
-    Else
-      Run(["svn", "-R", "revert", SvnPath$($sRealDir)])
-    Endif
-    Return Process.LastValue
-  Endif
+  If sPath Then Return $hVC.Revert(sPath)
+
+  If Message.Warning(("You are going to cancel your changes!"), ("Continue"), ("Cancel")) = 2 Then Return
+
+  Inc Application.Busy
+  
+  $hVC.Revert()
+  'Project.Refresh
+  Project.Reload
+  
+  Dec Application.Busy
 
 End
 
-Public Sub CheckoutSVN(sPath As String, sDir As String, hEditor As TextEditor) As Boolean
+Public Sub CheckoutSVN(sPath As String, sDir As String, hEditor As TextEditor)
 
   $hEditor = hEditor
-  Run(["svn", "checkout", SvnPath$(sPath), SvnPath$(sDir)], True)
+  CVersionControlSubversion.checkout(sPath, sDir)
   $hEditor = Null
 
 End
 
 Public Sub InConflict(sPath As String) As Boolean
 
-  If $bSVN Then
-    'IF Exist(sPath & ".mine") THEN RETURN TRUE
-    If Not Exist(sPath) Then
-      Debug sPath; ": does not exist"
-      Return False
-    Endif
-    If Dir(File.Dir(sPath), File.Name(sPath) & ".r*").Count Then Return True
-  Endif
+  Return $hVC.InConflict(sPath)
 
 End
 
 Public Sub Resolve(sPath As String, Optional sAccept As String) As Boolean
 
-  Dim aArg As String[]
-  
-  If $bSVN Then
-    If sAccept Then 
-      aArg = ["svn", "resolve", SvnPath$(sPath), "--accept", sAccept]
-    Else
-      aArg = ["svn", "resolved", SvnPath$(sPath)]
-    Endif
-    Run(aArg)
-    Return Process.LastValue
-  Endif
-
-End
-
-Public Sub HasConflict() As Boolean
-
-  If $bSVN Then
-    If Dir(Project.Dir, "*.module.r*").Count Then Return True
-    If Dir(Project.Dir, "*.class.r*").Count Then Return True
-    If Dir(Project.Dir, "*.form.r*").Count Then Return True
-  Endif
+  Return $hVC.Resolve(sPath, sAccept)
 
 End
 
 Public Sub GetVersion(sDir As String) As String
 
-  Dim sRes As String
-
-  If Exist(sDir &/ ".svn") Then
-    Shell "cd " & Shell$(sDir) & "; " & LANG_ENV.Join(" ") & " svn info" To sRes
-    Try sRes = Scan(sRes, "*\nRevision: *\n*")[1]
-    If Error Then 
-      Return "?"
-    Else
-      Return "r" & sRes
-    Endif
-  Endif
+  Return $hVC.GetVersion(sDir)
 
 End
 
@@ -511,116 +365,130 @@ End
 ' 
 ' End
 
-Public Sub Diff(sPath As String) As String
+Public Sub Diff(Optional sPath As String) As String
 
-  Dim sDiff As String
-
-  If $bSVN Then
-    Shell "svn diff " & Shell$(SvnPath$(sPath)) To sDiff
-    Return sDiff
-  Endif
+  If Not sPath Then sPath = Project.Dir
+  Return $hVC.Diff(sPath)
 
 End
 
 Public Sub CanControlProject() As Boolean
 
-  Dim sDir As String
+  Return False
 
-  If $bSVN Or $bCVS Then Return
-  
-  If $bSvn17 Then
-    sDir = $sRealDir
-    Do
-      sDir = File.Dir(sDir)
-      If Exist(sDir &/ ".svn") Then Return True
-      If sDir = "/" Then Return False
-    Loop
-  Else
-    If Exist($sRealDir &/ "../.svn") Then Return True
-  Endif
-  
-  If Exist($sRealDir &/ "../CVS") Or Exist($sRealDir &/ "../CVSROOT") Then Return True
+  ' Dim sDir As String
+  ' 
+  ' If $hVC <> CVersionControl Then Return
+  ' 
+  ' If $bSvn17 Then
+  '   sDir = $sRealDir
+  '   Do
+  '     sDir = File.Dir(sDir)
+  '     If Exist(sDir &/ ".svn") Then Return True
+  '     If sDir = "/" Then Return False
+  '   Loop
+  ' Else
+  '   If Exist($sRealDir &/ "../.svn") Then Return True
+  ' Endif
+  ' 
+  ' If Exist($sRealDir &/ "../CVS") Or Exist($sRealDir &/ "../CVSROOT") Then Return True
 
 End
 
 Public Sub ControlProject()
 
-  If CanControlProject() Then
-    Project.CleanUp
-    Try Kill Project.Dir &/ ".settings"
-    Run(["svn", "add", "--parents", SvnPath$($sRealDir)])
-    Project.Config.Save
-    Refresh
-    Project.Refresh
-  Endif
+  ' If CanControlProject() Then
+  '   Project.CleanUp
+  '   Try Kill Project.Dir &/ ".settings"
+  '   Run(["svn", "add", "--parents", SvnPath$($sRealDir)])
+  '   Project.Config.Save
+  '   Refresh
+  '   Project.Refresh
+  ' Endif
 
 End
 
-Private Sub FormatSvnDate(sDate As String) As String
+Public Sub Info() As Collection
 
-  Dim aDate As String[]
-  
-  aDate = Split(sDate, "*-*-* *:*:* *")
-  Try Return Format(Date(CInt(aDate[0]), CInt(aDate[1]), CInt(aDate[2]), CInt(aDate[3]), CInt(aDate[4]), CInt(aDate[5])), gb.GeneralDate)
-  If Error Then Return sDate & " ?"
-
-End
-
-Public Sub Info(bRemote As Boolean) As Collection
-  
-  Dim sLine As String
-  Dim aLine As String[]
-  Dim sUrl As String
-  Dim cInfo As New Collection
-  Dim cData As New Collection
-  
-  If $bSvn Then
-    
-    If Run(["svn", "info", SvnPath$($sRealDir)], False, True, LANG_ENV) = 0 Then
-    
-      cData.Clear
-      For Each sLine In Split($sOutput, "\n", "", True)
-        aLine = Scan(sLine, "*: *")
-        If aLine[0] = "Repository Root" Then sUrl = Trim(aLine[1])
-        cData[Trim(aLine[0])] = Trim(aLine[1])
-      Next
-      
-      cInfo["revision"] = cData["Revision"]
-      cInfo["author"] = cData["Last Changed Author"]
-      cInfo["date"] = FormatSvnDate(cData["Last Changed Date"])
-      cInfo["url"] = sUrl
-      cInfo["path"] = cData["Working Copy Root Path"]
-      
-    Endif
-    
-    If bRemote And If sUrl Then
-    
-      If Run(["svn", "info", SvnPath$(sUrl)], True, True, LANG_ENV) = 0 Then
-      
-        cData.Clear
-        For Each sLine In Split($sOutput, "\n", "", True)
-          aLine = Scan(sLine, "*: *")
-          cData[Trim(aLine[0])] = Trim(aLine[1])
-        Next
-        
-        cInfo["remote.revision"] = cData["Revision"]
-        cInfo["remote.author"] = cData["Last Changed Author"]
-        cInfo["remote.date"] = FormatSvnDate(cData["Last Changed Date"])
-        
-      Endif
-      
-    Endif
-    
-  Endif
-  
-  Return cInfo
+  Return $hVC.Info()
   
 End
 
 Public Sub CleanUp(sPath As String)
+
+  $hVC.CleanUp(sPath)
   
-  If $bSVN Then
-    Run(["svn", "cleanup", SvnPath$(sPath)])
+End
+
+Private Function Enabled_Read() As Boolean
+
+  Return $bEnabled
+
+End
+
+Private Function Output_Read() As String
+
+  Return $sOutput
+
+End
+
+Public Sub GetBranches(ByRef sCurrent As String) As String[]
+  
+  Return $hVC.GetBranches(ByRef sCurrent)
+  
+End
+
+Private Function Name_Read() As String
+
+  Return $hVC.Name
+
+End
+
+Public Sub GetDefaultJournal() As String
+  
+  Return $hVC.GetDefaultJournal()
+  
+End
+
+Public Sub GetDelimChange() As String
+
+  Dim sStr As String
+
+  sStr = String.Left("-------- " & DELIM_CHANGE & " ", 77)
+  sStr &= String$(78 - String.Len(sStr), "-")
+  Return sStr
+
+End
+
+Private Sub GetAuthentication(Optional bNoUser As Boolean) 
+
+  Dialog.NoUser = bNoUser
+  Dialog.Key = Project.Name &/ "VersionControl"
+  If Dialog.AskPassword() Then Return
+  $sUser = Dialog.User
+  $sPassword = Dialog.Password
+  $bAuth = True
+
+End
+
+Private Function DoNotPush_Read() As Boolean
+
+  Return $hVC.DoNotPush
+
+End
+
+Public Sub SetBranch(sBranch As String)
+
+  Dim sCurrent As String
+
+  Inc Application.Busy  
+  $hVC.SetBranch(sBranch)
+  Project.Reload
+  Dec Application.Busy
+  
+  GetBranches(ByRef sCurrent)
+  If sCurrent <> sBranch Then
+    Message.Error(Subst(("Unable to switch to branch `&1`."), sBranch))
   Endif
   
 End

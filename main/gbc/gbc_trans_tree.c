@@ -289,6 +289,13 @@ static void analyze_make_array()
 		}
 	}
 
+	while (PATTERN_is_newline(*current))
+	{
+		add_pattern(PATTERN_make(RT_NEWLINE, 0));
+		JOB->line++;
+		current++;
+	}
+		
 	if (!PATTERN_is(*current, RS_RSQR))
 		THROW(E_MISSING, "']'");
 	current++;

@@ -1,0 +1,61 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,95,89)
+  Text = ("Commit")
+  Icon = Picture["icon:/small/save"]
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { tabVersionControl TabPanel
+    MoveScaled(1,1,59,54)
+    Expand = True
+    Arrangement = Arrange.Fill
+    Count = 3
+    Index = 0
+    Text = ("Journal")
+    { edtJournal TextEditor
+      MoveScaled(13.25,11.125,16,16)
+      Border = False
+    }
+    Index = 1
+    Text = ("Changes")
+    { edtDiff TextEditor
+      MoveScaled(11.875,12.75,16,16)
+      Border = False
+      Highlight = "Diff"
+      ReadOnly = True
+    }
+    Index = 2
+    Text = ("Terminal")
+    { trmShell TerminalView
+      MoveScaled(11.25,13.75,16,16)
+      Border = False
+    }
+    Index = 0
+  }
+  { HBox1 HBox
+    MoveScaled(1,59,85,4)
+    Spacing = True
+    { chkDoNotPush CheckBox
+      MoveScaled(0,0,32,4)
+      AutoResize = True
+      Text = ("Do not push to remote repository")
+    }
+    { Panel1 Panel
+      MoveScaled(39,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(45,0,16,4)
+      Text = ("Commit")
+      Picture = Picture["icon:/small/save"]
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(63,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

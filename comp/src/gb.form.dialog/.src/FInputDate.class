@@ -35,3 +35,9 @@ Public Sub dlgDate_Activate()
   btnOK.Value = True
 
 End
+
+Public Sub Form_Close()
+
+  Dialog.Key = ""
+
+End

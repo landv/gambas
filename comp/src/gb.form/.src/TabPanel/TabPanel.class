@@ -774,6 +774,19 @@ Public Sub _MoveNext()
   
 End
 
+Private Sub _MoveFirst()
+  
+  Me.Index = GetNextIndex(-1)
+  
+End
+
+Private Sub _MoveLast()
+  
+  Me.Index = GetPreviousIndex($aCont.Count)
+  
+End
+
+
 
 Private Function Highlight_Read() As Boolean
 
@@ -821,26 +834,26 @@ Public Sub TabBarContainer_KeyPress()
     
     Case Key.Left, Key.PageUp
       If System.RightToLeft Then
-        Try Inc Me.Index
+        Try _MoveNext
       Else
-        Try Dec Me.Index
+        Try _MovePrevious
       Endif
       Stop Event
       
     Case Key.Right, Key.PageDown
       If System.RightToLeft Then
-        Try Dec Me.Index
+        Try _MovePrevious
       Else
-        Try Inc Me.Index
+        Try _MoveNext
       Endif
       Stop Event
       
     Case Key.Home
-      Me.Index = 0
+      Try _MoveFirst
       Stop Event
       
     Case Key.End
-      Me.Index = $aCont.Max
+      Try _MoveLast
       Stop Event
     
   End Select

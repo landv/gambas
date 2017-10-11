@@ -11,6 +11,10 @@ Static Property FixedOnly As Boolean
 
 Static Property Key As String
 
+Static Property User As String
+Static Property Read Password As String
+Static Property NoUser As Boolean
+
 Static Private $sKey As String
 
 Static Public Function OpenFile(Optional Multi As Boolean) As Boolean
@@ -98,5 +102,41 @@ End
 Static Private Sub Key_Write(Value As String)
 
   $sKey = Value
+
+End
+
+Static Public Sub AskPassword() As Boolean
+  
+  Return FAskPassword.Run()
+  
+End
+
+Static Private Function Password_Read() As String
+
+  Return FAskPassword.Password
+
+End
+
+Static Private Function NoUser_Read() As Boolean
+
+  Return FAskPassword.NoUser
+
+End
+
+Static Private Sub NoUser_Write(Value As Boolean)
+
+  FAskPassword.NoUser = Value
+
+End
+
+Static Private Function User_Read() As String
+
+  Return FAskPassword.User
+
+End
+
+Static Private Sub User_Write(Value As String)
+
+  FAskPassword.User = Value
 
 End

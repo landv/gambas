@@ -16,6 +16,7 @@ Private $iDoNotRefreshComponent As Integer
 
 Private Const COMPONENT_PROPERTIES_TAB As Integer = 1
 Private Const LIBRARY_TAB As Integer = 3
+Private Const VERSION_CONTROL_TAB As Integer = 8
 
 Private $bInitInfo As Boolean
 Private $aNeed As String[]
@@ -105,6 +106,8 @@ Public Sub Form_Open()
   
   'chkShowUsed.Value = $bShowUsed
   $bCanInitComponents = True
+  
+  ipnProject[VERSION_CONTROL_TAB].Visible = VersionControl.Enabled
 
   ipnProject.Index = 0
 
@@ -113,6 +116,8 @@ Public Sub Form_Open()
   btnOK.Enabled = Not Project.ReadOnly And Not Project.Running
 
   $bInitInfo = False
+  
+  gvwVcInfo.Rows.Count = 0
   
 End
 
@@ -879,6 +884,8 @@ Public Sub ipnProject_Click()
       UpdateStat
     Case ("Information") 
       UpdateInfo
+    Case ("Version control")
+      UpdateVcInfo
   End Select
 
 End
@@ -890,7 +897,7 @@ Private Sub AddStat(sName As String, sValue As String)
   N = gvwStat.Rows.Count
   Inc gvwStat.Rows.Count
   gvwStat[N, 0].Text = sName
-  gvwStat[N, 0].Foreground = Color.LightForeground
+  gvwStat[N, 0].Foreground = Color.Merge(Color.TextBackground, Color.TextForeground)
   gvwStat[N, 1].Text = sValue
   
 End
@@ -1388,4 +1395,35 @@ Public Sub cmbShowDeprecated_Click()
 
   choComponent.ShowDeprecated = cmbShowDeprecated.Index = 0
 
+End
+
+Private Sub UpdateVcInfo()
+
+  Dim cInfo As Collection
+  Dim sValue As String
+  Dim iRow As Integer
+  
+  If gvwVcInfo.Rows.Count Then Return
+  
+  Inc Application.Busy
+  
+  cInfo = VersionControl.Info()
+
+  gvwVcInfo.Columns.Count = 2
+  gvwVcInfo.Rows.Count = cInfo.Count
+  
+  For Each sValue In cInfo
+    gvwVcInfo[iRow, 0].Text = cInfo.Key
+    gvwVcInfo[iRow, 0].Foreground = Color.Merge(Color.TextBackground, Color.TextForeground)
+    gvwVcInfo[iRow, 1].Text = sValue
+    Inc iRow
+  Next
+  
+  gvwVcInfo.Columns[0].W = -1
+  gvwVcInfo.Columns[0].W += Desktop.Scale * 2
+
+Finally
+  
+  Dec Application.Busy
+  
 End

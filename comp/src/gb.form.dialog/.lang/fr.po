@@ -2,7 +2,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gb.form.dialog 3.10.90\n"
-"PO-Revision-Date: 2017-09-30 01:41 UTC\n"
+"POT-Creation-Date: 2017-10-09 23:09 UTC\n"
+"PO-Revision-Date: 2017-10-09 23:08 UTC\n"
 "Last-Translator: benoit <benoit@benoit-kubuntu>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -11,13 +12,31 @@ msgstr ""
 
 #: .project:1
 msgid "Enhanced standard dialogs"
-msgstr ""
+msgstr "-"
 
-#: FDirDialog.form:32 FFontDialog.form:35 FInputDate.form:41
+#: FAskPassword.form:22
+msgid "Authentication"
+msgstr "Identification"
+
+#: FAskPassword.form:51
+msgid "User"
+msgstr "Utilisateur"
+
+#: FAskPassword.form:65
+msgid "Password"
+msgstr "Mot de passe"
+
+#: FAskPassword.form:78
+msgid "Remember password"
+msgstr "Se souvenir du mot de passe"
+
+#: FAskPassword.form:98 FDirDialog.form:32 FFontDialog.form:35
+#: FInputDate.form:41
 msgid "OK"
 msgstr "OK"
 
-#: FDirDialog.form:38 FFileDialog.class:107 FFontDialog.form:41 FInputDate.form:47
+#: FAskPassword.form:104 FDirDialog.form:38 FFileDialog.class:107
+#: FFontDialog.form:41 FInputDate.form:47
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -26,8 +45,14 @@ msgid "&Overwrite"
 msgstr "&Remplacer"
 
 #: FFileDialog.class:107
-msgid "This file already exists.\n\nDo you want to overwrite it?"
-msgstr "Ce fichier existe déjà.\n\nDésirez-vous le remplacer ?"
+msgid ""
+"This file already exists.\n"
+"\n"
+"Do you want to overwrite it?"
+msgstr ""
+"Ce fichier existe déjà.\n"
+"\n"
+"Désirez-vous le remplacer ?"
 
 #: FFileDialog.form:22
 msgid "Automatic extension"
@@ -36,4 +61,3 @@ msgstr "Extension automatique"
 #: FFontDialog.form:12
 msgid "Select a font"
 msgstr "Sélectionnez une police"
-

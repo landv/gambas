@@ -1,0 +1,99 @@
+' Gambas class file
+
+Public Sub Run() As Boolean
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  Dim sChange As String
+  Dim iPos As Integer
+
+  sChange = Trim(edtJournal.Text)
+  iPos = InStr(sChange, "- " & VersionControl.DELIM_CHANGE & " -")
+  If iPos Then
+    iPos = RInStr(sChange, "\n", iPos)
+    If iPos Then
+      sChange = Left(sChange, iPos - 1)
+    Else
+      sChange = ""
+    Endif
+  Endif
+  
+  If Not Trim(sChange) Then
+    tabVersionControl.Index = 0
+    edtJournal.Goto(0, 0)
+    edtJournal.SetFocus
+    Balloon.Warning(("Please enter the journal."), btnOK)
+    Return
+  Endif
+  
+  Project.Config["/FCommit/LastCommit"] = sChange
+  
+  If VersionControl.Commit(sChange, chkDoNotPush.Value) Then Return
+  
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub Form_Open()
+
+  Dim sDiff As String
+  Dim DS As Integer
+  
+  Inc Application.Busy
+  sDiff = VersionControl.Diff()
+  edtDiff.Text = sDiff
+  
+  edtJournal.ReadConfig
+  edtDiff.ReadConfig
+  Project.SetEditorFont(trmShell)
+
+  edtJournal.Text = Project.Config["/FCommit/LastCommit"] & "\n\n" & VersionControl.GetDefaultJournal()
+  edtJournal.Goto(0, 0)
+  
+  tabVersionControl_Click
+  Dec Application.Busy
+  
+  If Not sDiff Then
+    Message.Info(("There is nothing to commit."))
+    Me.Close
+    Return
+  Endif
+  
+  chkDoNotPush.Visible = VersionControl.DoNotPush
+  
+  DS = Desktop.Scale
+  Me.Resize(FMain.W - DS * 16, FMain.H - DS * 16)
+  
+End
+
+Public Sub Form_Close()
+  
+  Try trmShell.Kill
+  
+End
+
+
+Public Sub tabVersionControl_Click()
+
+  Select Case tabVersionControl.Index
+    Case 0
+      edtJournal.SetFocus
+    Case 1
+      edtDiff.SetFocus
+    Case 2
+      Try trmShell.Exec(["bash"])
+      trmShell.SetFocus
+  End Select
+
+End

@@ -25,8 +25,8 @@ Private $aAuthors As New String[]
 Private $sIcon As String
 Private $sStartup As String
 Private $aComponents As New String[]
-Private $bRead As Boolean
 
+Private $bRead As Boolean
 Private $sTranslatedTitle As String
 Private $sTranslatedDescription As String
 
@@ -112,7 +112,7 @@ Private Sub ReadProject()
           Case "component"
             Type = Project.TYPE_COMPONENT
         End Select
-
+        
     End Select
   
   Next

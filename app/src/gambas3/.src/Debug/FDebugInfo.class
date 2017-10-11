@@ -1240,8 +1240,7 @@ Public Sub RefreshTask(sPath As String)
   
   $cRefreshTask[sPath] = sPath
   If wizDebug.Index = TAB_TASK Then
-    timTask.Stop
-    timTask.Start
+    timTask.Restart
   Endif
   
 End
@@ -1255,7 +1254,7 @@ Public Sub UpdateTask()
   Inc Application.Busy
   
   $aTask = New CTask[]
-  For Each sPath In Project.Sources
+  For Each sPath In Project.Tree.Sources
     $aTask.Insert(CTask.ScanFile(sPath))
   Next
   

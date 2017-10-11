@@ -78,7 +78,7 @@ Public Sub Form_Open()
   edtDiff.ReadConfig
   edtDiff.Text = $sDiff
   
-  panAdded.Visible = Project.AddedPaths.Count > 0
+  'panAdded.Visible = Project.AddedPaths.Count > 0
   sepCommit.Visible = panAdded.Visible
   
 End

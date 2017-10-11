@@ -2,6 +2,8 @@
 
 Public NoMessage As Integer
 
+Private $hProjectTree As CProjectTree
+
 Private $sKey As String
 Private $bCtrl As Boolean
 Private $sKeyDrag As String
@@ -12,8 +14,8 @@ Private $bUpdateRecentMenu As Boolean
 Private $dRecentMenu As Date
 Private $bInTreeView As Boolean
 Private $bInRename As Boolean
-Private $bHasJustCollapsed As Boolean
-Private $bExpandOnMouseUp As Boolean
+' Private $bHasJustCollapsed As Boolean
+' Private $bExpandOnMouseUp As Boolean
 
 Private frmWelcome As FWelcome
 Private $hCornerNW As Image
@@ -25,7 +27,7 @@ Private $hBorderS As Image
 Private $hBorderW As Image
 Private $hBorderE As Image
 
-Private $bInOpenExtern As Boolean
+'Private $bInOpenExtern As Boolean
 
 Static Private $sCompressMessage As String
 
@@ -33,7 +35,7 @@ Public Sub _new()
   
   Me.ResizeScaled(86, 97)
   
-  Project.ProjectTree = tvwProject
+  'Project.ProjectTree = tvwProject
   Project.Workspace = wrkProject
   
   ScrollArea(tvwProject.Proxy.Proxy).Shadow = True
@@ -256,7 +258,7 @@ Public Sub tvwProject_Menu()
   'mnuPopup.Enabled = TRUE
   GetCurrent()
   If Not $sKey Then Return
-  Project.FillDir($sKey)
+  $hProjectTree.FillDir($sKey)
   
   If $sKey And If Project.IsLocked($sKey) Then Return
   
@@ -395,8 +397,12 @@ Public Sub mnuPopup_Show()
     mnuRunThat.Visible = mnuStartup.Visible
     mnuRunThat.Enabled = mnuStartup.Enabled
   
-    mnuDoNotTranslate.Visible = Left(sCurrent) <> "$"
-    mnuDoNotTranslate.Checked = Not Project.ShouldTranslate(sCurrent)
+    If sCurrent And If Left(sCurrent) <> "$" Then
+      mnuDoNotTranslate.Show
+      mnuDoNotTranslate.Checked = Not Project.ShouldTranslate(sCurrent)
+    Else
+      mnuDoNotTranslate.Hide
+    Endif
     
     If mnuCut.Visible Then
       
@@ -475,6 +481,8 @@ Public Sub mnuPopup_Show()
       bCanStoreFile = False
     Endif
     
+    mnuDoNotTranslate.Hide
+    
     bFile = bCurrent
     
     If mnuCut.Visible Then
@@ -531,7 +539,7 @@ Public Sub mnuPopup_Show()
   
   If IsProject($sKey)
     mnuFilter.Show
-    If Project.AddedPaths And If Project.AddedPaths.Count > 0 Then
+    If Project.HasAdded Then
       mnuAddVersionAll.Show
     Else
       mnuAddVersionAll.Hide
@@ -1092,24 +1100,24 @@ Public Sub tvwProject_Select()
   
   RefreshMenu
   
-  If tvwProject.Current And If tvwProject.Current.Children Then 
-    ' Print Mouse.X ;; Mouse.Y ' generates crashes on random places, strange...
-    'If Not tvwProject.Find(Mouse.X, Mouse.Y) Then
-    $bExpandOnMouseUp = True
-    'Endif
-  Endif
+  ' If tvwProject.Current And If tvwProject.Current.Children Then 
+  '   ' Print Mouse.X ;; Mouse.Y ' generates crashes on random places, strange...
+  '   'If Not tvwProject.Find(Mouse.X, Mouse.Y) Then
+  '   $bExpandOnMouseUp = True
+  '   'Endif
+  ' Endif
   
 End
 
-Public Sub tvwProject_MouseUp()
-  
-  If $bExpandOnMouseUp And If Not $bHasJustCollapsed Then
-    Try tvwProject.Current.Expanded = True
-  Endif
-  $bExpandOnMouseUp = False
-  $bHasJustCollapsed = False
-  
-End
+' Public Sub tvwProject_MouseUp()
+'   
+'   If $bExpandOnMouseUp And If Not $bHasJustCollapsed Then
+'     Try tvwProject.Current.Expanded = True
+'   Endif
+'   $bExpandOnMouseUp = False
+'   $bHasJustCollapsed = False
+'   
+' End
 
 ' PUBLIC SUB tvwProject_Expand()
 ' 
@@ -1189,8 +1197,7 @@ Public Sub UpdateMenu()
   
   UpdateProperty
   
-  Action["version-control"].Visible = VersionControl.CanControlProject()
-  Action["project-version"].Visible = VersionControl.Enabled()
+  Action["version-control"].Visible = VersionControl.Enabled
   
   mnuStartup.Visible = bVisible
   mnuRenameFile.Visible = bVisible
@@ -1264,11 +1271,18 @@ End
 
 Public Sub OnProjectChange()
   
-  If $bInOpenExtern Then Return
+  $hProjectTree = Project.Tree 
+  $hProjectTree.SetView(tvwProject)
   
   UpdateGlobalLayout
   UpdateMenu
-  mnuFilterAdd.Visible = VersionControl.Enabled() 'And panSearchProject.Hovered
+  
+  'If $bInOpenExtern Then Return
+  
+  mnuFilterAdd.Visible = VersionControl.Enabled
+  mnuFilterConflict.Visible = VersionControl.Enabled
+  mnuFilterModified.Visible = VersionControl.Enabled
+  
   txtSearchProject.Clear
   mnuUseTerminal.Value = Project.UseTerminal
   mnuRedirectStderr.Value = Project.RedirectStderr
@@ -1436,8 +1450,6 @@ Public Sub Action_Activate((Key) As String) As Boolean
     Case "version-control"
       VersionControl.ControlProject
       UpdateMenu
-    Case "project-version"
-      FProjectVersion.Run
       
     Case "find-next"
       FSearch.FindNext
@@ -1533,6 +1545,15 @@ Public Sub Action_Activate((Key) As String) As Boolean
       
     Case "farm"
       FSoftwareFarm.Run
+      
+    Case "vc-commit"
+      FVersionControl.Run
+      
+    Case "vc-update"
+      VersionControl.Update
+      
+    Case "vc-revert"
+      VersionControl.Revert
       
   End Select 
   
@@ -1679,7 +1700,7 @@ Private Sub AddDataFiles(aFile As String[], bLink As Boolean)
     
   Next
   
-  Project.SelectKey(sDir &/ sName)
+  $hProjectTree.SelectKey(sDir &/ sName)
   
   Dec Application.Busy
   
@@ -1697,7 +1718,7 @@ Public Sub tvwProject_Drop()
   
   'Debug Drag.Format;; Drag.Data
   '
-  Project.FillDir($sKey)
+  $hProjectTree.FillDir($sKey)
   
   If Drag.Format = MMime.URI Then
     
@@ -1792,21 +1813,22 @@ Public Sub tvwProject_Cancel()
   
 End
 
-Public Sub tvwProject_Expand()
-  
-  Project.FillDir(tvwProject.Item.Key)
-  
-End
+' Public Sub tvwProject_Expand()
+'   
+'   'Project.FillDir(tvwProject.Item.Key)
+'   $hProjectTree.RefreshDir(tvwProject.Item.Key)
+'   
+' End
 
-Public Sub tvwProject_Collapse()
-  
-  Dim sKey As String = tvwProject.Item.Key
-  
-  $bHasJustCollapsed = True
-  If Not sKey Then Return
-  If File.Dir(sKey) = Project.Dir And If Not IsDir(sKey) Then tvwProject[sKey].Expanded = True
-  
-End
+' Public Sub tvwProject_Collapse()
+'   
+'   Dim sKey As String = tvwProject.Item.Key
+'   
+'   $bHasJustCollapsed = True
+'   If Not sKey Then Return
+'   If File.Dir(sKey) = Project.Dir And If Not IsDir(sKey) Then tvwProject[sKey].Expanded = True
+'   
+' End
 
 Public Sub mnuClean_Click()
   
@@ -2128,8 +2150,7 @@ Public Sub mnuAddVersionAll_Click()
   
   If Message.Question(("Do you really want to add every file to the repository?"), ("Add"), ("Cancel")) = 2 Then Return
   
-  For Each Project.AddedPaths
-    sPath = Project.AddedPaths.Key
+  For Each sPath In Project.AllFlags(Project.FLAG_ADDED)
     VersionControl.AddFile(sPath)
     If Project.IsFormPath(sPath) Then VersionControl.AddFile(File.SetExt(sPath, "class"))
   Next
@@ -2211,6 +2232,12 @@ End
 Public Sub mnuFilterAdd_Click()
   
   DoFilter(Project.FILTER_ADDED)
+  
+End
+
+Public Sub mnuFilterModified_Click()
+  
+  DoFilter(Project.FILTER_MODIFIED)
   
 End
 
@@ -2494,7 +2521,7 @@ Public Sub OpenExternFile(Optional sPath As String)
     Settings["/OpenExternFile/Path"] = sPath
   Endif
   
-  $bInOpenExtern = True
+  '$bInOpenExtern = True
   
   If Not Project.Dir Then
     If Project.OpenFake() Then Goto CANNOT_OPEN
@@ -2517,13 +2544,13 @@ Public Sub OpenExternFile(Optional sPath As String)
     'Endif
   Endif
 
-  $bInOpenExtern = False
-  OnProjectChange
+  '$bInOpenExtern = False
+  'OnProjectChange ??
   Return
   
 CANNOT_OPEN:
 
-  $bInOpenExtern = False
+  '$bInOpenExtern = False
   
 End
 
@@ -2779,5 +2806,51 @@ Public Sub mnuDoNotTranslate_Click()
   If Not sPath Then Return
   Project.SetShouldTranslate(sPath, Not mnuDoNotTranslate.Value)
   Project.WriteProject(True)
+  
+End
+
+Private Sub UpdateBranchMenu()
+
+  Dim sCurrent As String
+  Dim aBranches As String[]
+  Dim sBranch As String
+  Dim hMenu As Menu
+  
+  aBranches = VersionControl.GetBranches(ByRef sCurrent)
+  
+  If Not sCurrent Then
+    mnuVcBranch.Hide
+  Else
+    mnuVcBranch.Show
+    mnuVcBranch.Children.Clear
+    
+    For Each sBranch In aBranches
+      hMenu = New Menu(mnuVcBranch) As "mnuVcBranchSet"
+      hMenu.Text = sBranch
+      hMenu.Tag = sBranch
+      hMenu.Radio = True
+      hMenu.Value = sBranch = sCurrent
+    Next
+  Endif
+
+End
+
+Public Sub OnVersionControlChange()
+
+  If Not VersionControl.Enabled Then
+    mnuVersionControl.Hide
+  Else
+    mnuVersionControl.Show
+    mnuVersionControl.Text = ("Version control") & " (" & VersionControl.Name & ")"
+    btnVersionControl.Text = VersionControl.Name
+    UpdateBranchMenu
+  Endif
+  
+End
+
+Public Sub mnuVcBranchSet_Click()
+  
+  VersionControl.SetBranch(Last.Tag)
+  UpdateBranchMenu
   
 End

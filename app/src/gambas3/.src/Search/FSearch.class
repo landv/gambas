@@ -1059,9 +1059,7 @@ Public Sub OnFileChange(sPath As String)
   If Not $cGrepCache.Exist(sPath) Then Return
   
   $cRefreshBrowse[sPath] = True
-  
-  timRefresh.Stop
-  timRefresh.Start
+  timRefresh.Restart
   
 End
 

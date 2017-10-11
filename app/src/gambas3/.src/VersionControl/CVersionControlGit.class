@@ -1,0 +1,250 @@
+' Gambas class file
+
+Inherits CVersionControl
+Create Static
+
+Public Const Name As String = "Git"
+Public Const DoNotPush As Boolean = True
+
+Private $aConflict As String[] = ["DD", "AU", "UD", "UA", "DU", "AA", "UU"]
+
+Private $bHasGit As Boolean
+Private $bCheckGit As Boolean
+Private $sRoot As String
+
+Public Sub Check() As Boolean
+  
+  Dim sResult As String
+  
+  If Not $bCheckGit Then
+    $bHasGit = System.Exist("git")
+    $bCheckGit = True
+  Endif
+  
+  If $bHasGit Then
+    sResult = VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git rev-parse --show-toplevel")
+    If Process.LastValue = 0 Then 
+      $sRoot = Trim(sResult)
+      Return True
+    Endif
+  Endif
+  
+End
+
+Public Sub GetBranches(ByRef sCurrent As String) As String[]
+  
+  Dim sResult As String
+  Dim sBranch As String
+  Dim aBranches As New String[]
+  
+  sResult = VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git branch")
+  
+  For Each sBranch In Split(Trim(sResult), "\n")
+    sBranch = Trim(sBranch)
+    If sBranch Begins "*" Then
+      sBranch = Trim(Mid$(sBranch, 2))
+      sCurrent = sBranch
+    Endif
+    aBranches.Add(sBranch)
+  Next
+  
+  Return aBranches
+  
+End
+
+Public Sub Diff(sPath As String) As String
+  
+  Dim sDiff As String
+  Dim sCmd As String
+
+  If IsDir(sPath) Then
+    sCmd = "cd " & Shell(sPath) & " && git diff HEAD ."
+  Else
+    sCmd = "cd " & Shell(File.Dir(sPath)) & " && git diff HEAD " & Shell(File.Name(sPath))
+  Endif
+  
+  sDiff = VersionControl.Shell(sCmd)
+  Return sDiff
+
+End
+
+Public Sub Status(Optional sPath As String) As String
+
+  Dim sStatus As String
+
+  If Not sPath Then sPath = Project.Dir
+  sStatus = VersionControl.Shell("cd " & Shell$(sPath) & " && git status .", True)
+  Return sStatus
+  
+End
+
+Public Sub GetDefaultJournal() As String
+
+  Dim aStatus As String[]
+  Dim I As Integer
+  
+  aStatus = Split(Status(Project.Dir), "\n")
+  For I = 0 To aStatus.Max
+    aStatus[I] = "# " & aStatus[I]
+  Next
+  
+  Return "# " & VersionControl.GetDelimChange() & "\n#\n" & aStatus.Join("\n")
+  
+End
+
+Public Sub Update() As Boolean
+
+  Dim bResult As Integer
+  ' Dim sFile As String
+  ' Dim sPath As String
+  
+  bResult = VersionControl.Run(["git", "pull"], True, True)
+  
+  ' For Each sFile In [".project", ".startup", ".component", ".info"]
+  '   sPath = $sRealDir &/ sFile
+  '   If Exist(sPath) And If InConflict(sPath) Then Resolve(sPath, "theirs-full")
+  ' Next
+  ' For Each sFile In [".settings"]
+  '   sPath = $sRealDir &/ sFile
+  '   If Exist(sPath) And If InConflict(sPath) Then Resolve(sPath, "mine-full")
+  ' Next
+  Return bResult
+
+End
+
+' Public Sub UpdatePath(aPath As String[])
+' 
+'   Dim sStatus As String
+'   Dim sCmd As String
+'   Dim sPath As String
+'   
+'   sCmd = "cd " & Shell$(Project.Dir) & " && git status -uall --porcelain -z"
+'   For Each sPath In aPath
+'     sCmd &= " " & Mid$(sPath, Len(Project.Dir) + 2)
+'   Next
+'   
+'   sStatus = VersionControl.Shell(sCmd, True)
+'   UpdatePathFromStatus(sStatus)
+' 
+' End
+
+Public Sub CheckPaths()
+
+  Dim sStatus As String
+
+  sStatus = VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git status -uall --porcelain -z .", True)
+  UpdatePathFromStatus(sStatus)
+
+End
+
+Private Sub UpdatePathFromStatus(sStatus As String)
+
+  Dim sFile As String
+  Dim sPath As String
+
+  For Each sStatus In Split(sStatus, Chr$(0), "", True)
+
+    sFile = Mid$(sStatus, 4)
+    sPath = $sRoot &/ sFile
+    If sPath Not Begins Project.Dir Then Continue
+
+    If sStatus Begins "??" Then
+      Project.SetFlag(sPath, Project.FLAG_ADDED)
+    Else If $aConflict.Exist(Left(sStatus, 2)) Then
+      Project.SetFlag(sPath, Project.FLAG_CONFLICT)
+    Else If InStr("MD", Mid$(sStatus, 2, 1)) Then
+      Project.SetFlag(sPath, Project.FLAG_MODIFIED)
+    Endif
+
+  Next
+
+End
+
+Public Sub AddFile(sPath As String, Optional (bForce) As Boolean)
+
+  VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git add " & Shell(sPath))
+  
+End
+
+Public Sub AddDir(sPath As String)
+  
+  AddFile(sPath)
+  
+End
+
+Public Sub Revert(Optional sPath As String) As Boolean
+  
+  If sPath Then 
+    VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git checkout " & Shell(sPath))
+  Else
+    VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git checkout " & Shell(Project.Dir))
+  Endif
+  
+End
+
+Public Sub RemoveFile(sPath As String, Optional (bForce) As Boolean)
+
+  VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git rm " & Shell(sPath))
+  
+End
+
+Public Sub RemoveDir(sPath As String)
+
+  RemoveFile(sPath)
+
+End
+
+Public Sub Commit(sChange As String, bDoNotPush As Boolean) As Boolean
+  
+  Dim sFile As String = Temp$()
+  Dim aEnv As String[]
+  
+  File.Save(sFile, sChange)
+  VersionControl.Run(["git", "commit", "-F", sFile, Project.Dir], False, False, VersionControl.LANG_ENV)
+  If Process.LastValue Then Return True
+  
+  If Not bDoNotPush Then
+  
+    aEnv = VersionControl.LANG_ENV.Copy()
+    aEnv.Add("PWD=" & Project.Dir)
+    VersionControl.Run(["git", "push"], True, True, aEnv)
+    
+  Endif
+  'If Process.LastValue Then Return True
+  
+End
+
+Public Sub Info() As Collection
+
+  Dim cInfo As New Collection
+  Dim aResult As String[]
+  Dim sResult As String
+  
+  cInfo[("Local root path")] = $sRoot
+  
+  aResult = Split(VersionControl.Shell("cd " & Shell(Project.Dir) & " && git log -n1"), "\n")
+  cInfo[("Last commit")] = Trim(Mid$(aResult[0], InStr(aResult[0], " ") + 1))
+  cInfo[("Last commit author")] = Trim(Mid$(aResult[1], InStr(aResult[1], " ") + 1))
+  cInfo[("Last commit date")] = Trim(Mid$(aResult[2], InStr(aResult[2], " ") + 1))
+  
+  aResult = Split(VersionControl.Shell("cd " & Shell(Project.Dir) & " && git branch -vv"), "\n")
+  For Each sResult In aResult
+    If sResult Begins "*" Then
+      aResult = Scan(sResult, "* * * [[]*] *")
+      cInfo[("Current branch")] = aResult[1]
+      cInfo[("Origin")] = aResult[3]
+      Break
+    Endif
+  Next
+  
+  aResult = Split(VersionControl.Shell("cd " & Shell(Project.Dir) & " && git remote -vv"), "\n")
+  Try cInfo[("Remote repository URL")] = Scan(aResult[0], "* * *")[1]
+  
+  Return cInfo
+End
+
+Public Sub SetBranch(sBranch As String)
+  
+  VersionControl.Shell("cd " & Shell(Project.Dir) & " && git checkout " & Shell(sBranch))
+  
+End
