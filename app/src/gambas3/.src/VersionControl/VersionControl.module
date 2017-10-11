@@ -60,7 +60,7 @@ Public Sub Shell(sCmd As String, Optional bSilent As Boolean, Optional aEnv As S
   
   If Not bSilent Then Insert(sCmd & "\n")
   Shell sCmd With aEnv To sResult
-  'Insert(sResult)
+  If Process.LastValue Then Insert(sResult)
   Return sResult
   
 End
@@ -129,7 +129,7 @@ Public Sub Process_Read()
   Dim iPos As Integer
   Dim sLine As String
 
-  sData = Read #Last, -256
+  sData = Read #Last, -1024
   $sOutput &= Replace(sData, "\r", "")
   If $bOutput Then Insert(sData)
   'Insert(sData)
@@ -164,6 +164,10 @@ Public Sub Process_Read()
         Insert("********" & "\n")
         $sOutput = ""
       Endif
+    Else If RTrim(sLine) Ends "(yes/no)?" Then
+      Print #Last, "yes"
+      Insert("yes\n")
+      $sOutput = ""
     Endif
   Endif
   
@@ -314,7 +318,7 @@ Public Sub Revert(Optional sPath As String) As Boolean
   Inc Application.Busy
   
   $hVC.Revert()
-  Project.Refresh
+  'Project.Refresh
   Project.Reload
   
   Dec Application.Busy
@@ -471,4 +475,20 @@ Private Function DoNotPush_Read() As Boolean
 
   Return $hVC.DoNotPush
 
+End
+
+Public Sub SetBranch(sBranch As String)
+
+  Dim sCurrent As String
+
+  Inc Application.Busy  
+  $hVC.SetBranch(sBranch)
+  Project.Reload
+  Dec Application.Busy
+  
+  GetBranches(ByRef sCurrent)
+  If sCurrent <> sBranch Then
+    Message.Error(Subst(("Unable to switch to branch `&1`."), sBranch))
+  Endif
+  
 End

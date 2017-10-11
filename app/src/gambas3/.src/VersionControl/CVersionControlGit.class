@@ -242,3 +242,9 @@ Public Sub Info() As Collection
   
   Return cInfo
 End
+
+Public Sub SetBranch(sBranch As String)
+  
+  VersionControl.Shell("cd " & Shell(Project.Dir) & " && git checkout " & Shell(sBranch))
+  
+End
