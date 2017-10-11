@@ -35,24 +35,25 @@
     Index = 0
   }
   { HBox1 HBox
-    MoveScaled(1,59,62,4)
+    MoveScaled(1,59,85,4)
     Spacing = True
     { chkDoNotPush CheckBox
-      MoveScaled(0,0,17,4)
-      Text = ("Do not push")
+      MoveScaled(0,0,32,4)
+      AutoResize = True
+      Text = ("Do not push to remote repository")
     }
     { Panel1 Panel
-      MoveScaled(24,1,4,4)
+      MoveScaled(39,0,4,4)
       Expand = True
     }
     { btnOK Button
-      MoveScaled(29,0,16,4)
+      MoveScaled(45,0,16,4)
       Text = ("Commit")
       Picture = Picture["icon:/small/save"]
       Default = True
     }
     { btnCancel Button
-      MoveScaled(46,0,16,4)
+      MoveScaled(63,0,16,4)
       Text = ("Cancel")
       Cancel = True
     }

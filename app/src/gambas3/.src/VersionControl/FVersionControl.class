@@ -67,6 +67,7 @@ Public Sub Form_Open()
   If Not sDiff Then
     Message.Info(("There is nothing to commit."))
     Me.Close
+    Return
   Endif
   
   chkDoNotPush.Visible = VersionControl.DoNotPush
