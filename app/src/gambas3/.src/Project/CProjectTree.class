@@ -48,7 +48,6 @@ Public Sub SetView(hTreeView As TreeView)
   
 End
 
-
 Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean, Optional bIgnoreInheritance As Boolean) As Boolean
   
   Dim bIgnore As Boolean
@@ -224,7 +223,21 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
         End With
       Endif
 
-      With $hTree.Add(sKey, sFile, hPict, sParent)
+      If $hTree.Exist(sKey) Then
+        With $hTree[sKey]
+          .Text = sFile
+          .Picture = hPict
+          .Reparent(sParent)
+        End With
+      Else
+        $hTree.Add(sKey, sFile, hPict, sParent)
+        If bDir And If Not bSource Then
+          $hTree.Add(sKey & "/", "",, sKey)
+          bDir = False
+        Endif
+      Endif
+
+      With $hTree[sKey]
         If $bCurrentProject Then .Editable = Not Project.IsLocked(sKey)
         If bAfter Then .MoveAfter(sAfter)
         If bShow Then
@@ -233,13 +246,6 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
           $hTree.Item.Expanded = True
         Endif
       End With
-      
-      If bDir Then 
-        If Not bSource Then
-          $hTree.Add(sKey & "/", "",, sKey)
-          bDir = False
-        Endif
-      Endif
       
       If $bCurrentProject Then Project.RefreshIcon(sKey)
       
@@ -1073,35 +1079,73 @@ Private Sub RefreshInheritance()
 
 End
 
+Private Sub GetOpenedItems(sParent As String) As String[]
+
+  Dim iLevel As Integer
+  Dim aOpen As String[]
+  
+  aOpen = New String[]
+
+  $hTree.MoveTo(sParent)
+  
+  Do
+    If Not $hTree.Available Then
+      Dec iLevel
+      If iLevel <= 0 Then Break
+      $hTree.MoveParent
+      $hTree.MoveNext
+    Else If $hTree.Item.Expanded Then
+      aOpen.Add($hTree.Item.Key)
+      Inc iLevel
+      $hTree.MoveChild()
+    Else
+      $hTree.MoveNext
+    Endif
+  Loop
+  
+  Return aOpen
+
+End
+
 Public Sub RefreshKey(sKey As String, Optional sOld As String)
 
+  Dim aOpen As String[]
+  Dim sOpen As String
+  
   If Not sKey Then Return
 
   If Not $hTree.Exist(sKey) And If Not Exist(sKey) And If IsSourcePath(sKey) Then
     sKey = FindForm(File.BaseName(sKey))
   Endif
 
-  If Not sOld Then sOld = sKey
-
-  EnsureKey(sOld)
-  Try $hTree[sOld].Delete
-  If Error Then
-    If sOld <> sKey Then Return
-  Endif
-
   If Not Exist(sKey) Then Return
 
-  If IsSourcePath(sKey) And If File.Ext(sKey) = "class" And If Not ExistForm(File.BaseName(sKey)) Then
-    RefreshInheritance
-    Return
-  Endif
+  If Not sOld Or If sOld = sKey Then 
+  
+    EnsureKey(sKey)
+    AddFile(File.Dir(sKey), File.Name(sKey), True)
+ 
+  Else
 
-  If AddFile(File.Dir(sKey), File.Name(sKey), True) Then AddDir(sKey)
-  'If IsDir(sKey) Then AddDir(sKey)
-
-  If sOld <> sKey And If Exist(sOld) Then
-    If AddFile(File.Dir(sOld), File.Name(sOld), True) Then AddDir(sOld)
-    'If IsDir(sOld) Then AddDir(sOld)
+    aOpen = GetOpenedItems(sOld)
+    
+    EnsureKey(sOld)
+    Try $hTree[sOld].Delete
+    If Error Then Return
+  
+    If IsSourcePath(sKey) And If File.Ext(sKey) = "class" And If Not ExistForm(File.BaseName(sKey)) Then
+      RefreshInheritance
+    Else
+      If AddFile(File.Dir(sKey), File.Name(sKey), True) Then AddDir(sKey)
+      If Exist(sOld) Then
+        If AddFile(File.Dir(sOld), File.Name(sOld), True) Then AddDir(sOld)
+      Endif
+    Endif
+    
+    For Each sOpen In aOpen
+      If sOpen Begins sOld Then $hTree[sKey & Mid$(sOpen, Len(sOld) + 1)].Expanded = True
+    Next
+    
   Endif
 
 End

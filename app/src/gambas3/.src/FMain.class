@@ -381,6 +381,9 @@ Public Sub mnuPopup_Show()
   
   bProject = Project.IsProjectPath(sCurrent)
 
+  mnuCompressAll.Hide
+  mnuUncompressAll.Hide
+    
   If sRoot = Project.KEY_SOURCE Then
     
     mnuRenameFile.Visible = mnuRenameFile.Visible And bCurrent And Not Project.Running
@@ -458,9 +461,6 @@ Public Sub mnuPopup_Show()
     
     mnuRenameFile.Visible = mnuRenameFile.Visible And bCurrent
     mnuDeleteFile.Visible = mnuDeleteFile.Visible And CanDelete(sCurrent)
-    
-    mnuCompressAll.Hide
-    mnuUncompressAll.Hide
     
     If $sKey = Project.KEY_MISC Or If IsDir(sCurrent) And bProject Then
       If MCompressFile.CanCompress(If($sKey = Project.KEY_MISC, Project.Dir, sCurrent)) Then

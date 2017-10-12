@@ -253,3 +253,16 @@ Public Sub SetBranch(sBranch As String)
   VersionControl.Shell("cd " & Shell(Project.Dir) & " && git checkout " & Shell(sBranch) & " 2>&1")
   
 End
+
+Public Sub MoveFile(sOld As String, sNew As String)
+
+  VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git mv " & Shell(sOld) & " " & Shell(sNew))
+
+End
+
+Public Sub MoveDir(sOld As String, sNew As String) As Boolean
+
+  MoveFile(sOld, sNew)
+
+End
+

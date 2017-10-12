@@ -4264,12 +4264,7 @@ End
 Private Function RenameOneFile(sDir As String, sName As String, sNewName As String, Optional sExt As String) As String
 
   Dim sPath As String
-  Dim sCheck As String
-  Dim hForm As Object
   Dim sNewPath As String
-  Dim sNewFormPath As String
-  Dim aRename As String[]
-  Dim bRecompile As Boolean
 
   sPath = sDir &/ sName
   If sExt Then sPath = sPath & "." & sExt
@@ -4301,63 +4296,60 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
   If sExt Then
     
     Try Kill Project.Dir &/ ".gambas" &/ UCase(sName)
-    If Not Error Then bRecompile = True
+    'If Not Error Then bRecompile = True
     'Try Kill Project.Dir &/ ".list"
     'Try Kill Project.Dir &/ ".info"
     'Debug sDir &/ ".gambas" &/ UCase(sName); ": "; Exist(sDir &/ ".gambas" &/ UCase(sName))
   Endif
 
-  ' Update source cache
+  RenamePaths(sPath, sNewPath)
 
-  aRename = New String[]
-  For Each sCheck In Tree.Sources
-    If sCheck = sPath Or If sCheck Begins sPath &/ "/" Then aRename.Add(sCheck)
-  Next
+  ' ' Update source cache
+  ' 
+  ' aRename = New String[]
+  ' For Each sCheck In Tree.Sources
+  '   If sCheck = sPath Or If sCheck Begins sPath &/ "/" Then aRename.Add(sCheck)
+  ' Next
+  ' 
+  ' For Each sCheck In aRename
+  ' 
+  '   If sCheck = sPath Then
+  '     Tree.Sources[File.Name(sPath)] = Null
+  '     Tree.Sources[File.Name(sNewPath)] = sNewPath
+  '   Else
+  '     sNewFormPath = sNewPath &/ Mid$(sCheck, Len(sPath) + 1)
+  '     Tree.Sources[File.Name(sPath)] = Null
+  '     Tree.Sources[File.Name(sNewFormPath)] = sNewFormPath
+  '   Endif
+  ' 
+  ' Next
 
-  For Each sCheck In aRename
+  ' ' Update Files collection
+  ' 
+  ' aRename.Clear
+  ' For Each hForm In Files
+  '   sCheck = hForm.Path
+  '   If sCheck = sPath Or If sCheck Begins sPath &/ "/" Then
+  '     If Not aRename.Exist(sCheck) Then aRename.Add(sCheck)
+  '   Endif
+  ' Next
+  ' 
+  ' For Each sCheck In aRename
+  ' 
+  '   hForm = Files[sCheck]
+  '   Files[sCheck] = Null
+  ' 
+  '   If sCheck = sPath Then
+  '     hForm.Rename(sNewName, sNewPath)
+  '     Files[sNewPath] = hForm
+  '   Else
+  '     sNewFormPath = sNewPath &/ Mid$(sCheck, Len(sPath) + 1)
+  '     hForm.Rename(hForm.Name, sNewFormPath)
+  '     Files[sNewFormPath] = hForm
+  '   Endif
+  ' 
+  ' Next
 
-    If sCheck = sPath Then
-      Tree.Sources[File.Name(sPath)] = Null
-      Tree.Sources[File.Name(sNewPath)] = sNewPath
-    Else
-      sNewFormPath = sNewPath &/ Mid$(sCheck, Len(sPath) + 1)
-      Tree.Sources[File.Name(sPath)] = Null
-      Tree.Sources[File.Name(sNewFormPath)] = sNewFormPath
-    Endif
-
-  Next
-
-  ' Update Files collection
-
-  aRename.Clear
-  For Each hForm In Files
-    sCheck = hForm.Path
-    If sCheck = sPath Or If sCheck Begins sPath &/ "/" Then
-      If Not aRename.Exist(sCheck) Then aRename.Add(sCheck)
-    Endif
-  Next
-
-  For Each sCheck In aRename
-
-    hForm = Files[sCheck]
-    Files[sCheck] = Null
-
-    If sCheck = sPath Then
-      hForm.Rename(sNewName, sNewPath)
-      Files[sNewPath] = hForm
-    Else
-      sNewFormPath = sNewPath &/ Mid$(sCheck, Len(sPath) + 1)
-      hForm.Rename(hForm.Name, sNewFormPath)
-      Files[sNewFormPath] = hForm
-    Endif
-
-  Next
-
-  'RenamePathCollection(LockedPaths, sPath, sNewPath)
-  'RenamePathCollection(AddedPaths, sPath, sNewPath)
-
-  'If bRecompile Then Compile
-  
   If sExt And If IsExported(sNewPath) Then
     UpdateAllForms(sName, sNewName)
   Endif
@@ -4496,7 +4488,7 @@ Public Sub RenameFile(sPath As String, sNewName As String)
 
 Catch
 
-  sMsg = Error.Text
+  sMsg = Error.Text & "\n" & Error.Backtrace.Join(" ")
   RefreshKey(sPath)
   FMain.ShowError(Subst(("Unable to rename '&1'") & "\n\n" & sMsg, File.Name(sPath)), sPath)
 
@@ -5077,6 +5069,7 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
       ' Endif
       DeleteFile(sSrc)
       LinkFile(sLink, sDst)
+      RenamePaths(sSrc, sDst)
       Return
     Endif
   End With
@@ -5102,15 +5095,7 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
     Files[sDst] = hForm
   Endif
 
-  'If $cSourceDir
-  If IsSourcePath(sSrc) Then
-    If bIsDir Then
-      RefreshSources
-    Else
-      Tree.Sources[File.Name(sSrc)] = Null
-      Tree.Sources[File.Name(sDst)] = sDst
-    Endif
-  Endif
+  RenamePaths(sSrc, sDst)
 
   Tree.RefreshKey(sDst, sSrc)
   Tree.SelectKey(sDst)
@@ -6517,4 +6502,84 @@ Public Sub IsModified(sPath As String) As Boolean
   
 End
 
- 
+ Private Sub ApplyRename(sOld As String, sNew As String, sPath As String) As String
+  
+  Dim bRelative As Boolean
+  
+  If File.IsRelative(sPath) Then
+    bRelative = True
+    sPath = Project.Dir &/ sPath
+  Endif
+  
+  If sPath = sOld Then 
+    sPath = sNew
+  Else If IsDir(sNew) Then
+    If Right(sOld) <> "/" Then sOld &= "/"
+    If sPath Not Begins sOld Then Return
+    sPath = sNew &/ Mid$(sPath, Len(sOld) + 1)
+  Else
+    Return
+  Endif
+  
+  If bRelative Then
+    sPath = MakeProjectRelativePath(sPath)
+  Endif
+  
+  Return sPath
+  
+End
+
+Private Sub RenamePaths(sOld As String, sNew As String)
+  
+  Dim I As Integer
+  Dim sPath As String
+  Dim aRename As String[]
+  Dim hForm As Object
+  Dim sCheck As String
+  Dim sNewFormPath As String
+  
+  ' Rename DoNotTranslate
+  
+  For I = 0 To DoNotTranslate.Max
+    sPath = ApplyRename(sOld, sNew, DoNotTranslate[I])
+    If sPath Then DoNotTranslate[I] = sPath
+  Next
+  
+  ' Rename sources
+  
+  If IsSourcePath(sOld) Then
+    If IsDir(sNew) Then
+      RefreshSources
+    Else
+      Tree.Sources[File.Name(sOld)] = Null
+      Tree.Sources[File.Name(sNew)] = sNew
+    Endif
+  Endif
+  
+  ' Rename opened files
+  
+    aRename = New String[]
+    For Each hForm In Files
+      sCheck = hForm.Path
+      If sCheck = sOld Or If sCheck Begins sOld &/ "/" Then
+        If Not aRename.Exist(sCheck) Then aRename.Add(sCheck)
+      Endif
+    Next
+  
+    For Each sCheck In aRename
+  
+      hForm = Files[sCheck]
+      Files[sCheck] = Null
+  
+      If sCheck = sOld Then
+        hForm.Rename(File.BaseName(sNew), sNew)
+        Files[sNew] = hForm
+      Else
+        sNewFormPath = sNew &/ Mid$(sCheck, Len(sOld) + 1)
+        hForm.Rename(hForm.Name, sNewFormPath)
+        Files[sNewFormPath] = hForm
+      Endif
+  
+    Next
+  
+End
