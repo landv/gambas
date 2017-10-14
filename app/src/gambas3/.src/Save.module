@@ -17,6 +17,7 @@ End
 
 Public Sub End()
   
+  VersionControl.UpdatePath($sPath)
   Project.Tree.RefreshKey($sPath)
   Project.Tree.SelectKey($sPath)
   $sPath = ""

@@ -252,10 +252,21 @@ End
 
 Public Sub CheckPaths()
 
+  If Not $bEnabled Then Return
   Project.ResetFlags
   $hVC.CheckPaths()
 
 End
+
+Public Sub UpdatePath(sPath As String, Optional sPath2 As String)
+  
+  If Not $bEnabled Then Return
+  Project.ResetFlags(sPath)
+  If sPath2 Then Project.ResetFlags(sPath2)
+  $hVC.UpdatePath(sPath, sPath2)
+  
+End
+
 
 Public Sub MoveDir(sOld As String, sNew As String) As Boolean
 

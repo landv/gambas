@@ -266,3 +266,17 @@ Public Sub MoveDir(sOld As String, sNew As String) As Boolean
 
 End
 
+Public Sub UpdatePath(sPath As String, Optional sPath2 As String)
+
+  Dim sStatus As String
+  Dim sCmd As String
+
+  ' svn status is automatically recursive!
+  sCmd = "cd " & Shell$(Project.Dir) & "; git status -uall --porcelain -z " & Shell(Mid$(sPath, Len(Project.Dir) + 2))
+  If sPath2 Then sCmd &= " " & Shell(Mid$(sPath2, Len(Project.Dir) + 2))
+
+  sStatus = VersionControl.Shell(sCmd, True)
+  UpdatePathFromStatus(sStatus)
+
+End
+

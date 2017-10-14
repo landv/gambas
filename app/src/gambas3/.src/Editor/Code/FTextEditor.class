@@ -919,7 +919,7 @@ Public Sub Compress() As Boolean
 Catch 
   
   Dec Application.Busy
-  CompressMessage = "<b>" & ("Unable to compress file.") & "</b><p>" & Error.Text
+  CompressMessage = "<b>" & ("Unable to compress file.") & "</b><p>" & Error.Text & "\n" & Error.Backtrace.Join(" ")
   Return True
   
 End

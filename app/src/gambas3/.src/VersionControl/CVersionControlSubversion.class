@@ -126,23 +126,6 @@ Private Sub UpdatePathFromStatus(sStatus As String)
 
 End
 
-' Public Sub UpdatePath(aPath As String[])
-' 
-'   Dim sStatus As String
-'   Dim sCmd As String
-'   Dim sPath As String
-' 
-'   ' svn status is automatically recursive!
-'   sCmd = "cd " & Shell$($sRealDir) & "; svn status --no-ignore"
-'   For Each sPath In aPath
-'     sCmd &= " " & Mid$(sPath, Len(Project.Dir) + 2)
-'   Next
-' 
-'   sStatus = VersionControl.Shell(sCmd, True)
-'   UpdatePathFromStatus(sStatus)
-' 
-' End
-
 Public Sub CheckPaths()
 
   Dim sStatus As String
@@ -331,5 +314,19 @@ Public Sub GetDefaultJournal() As String
   
   Return VersionControl.GetDelimChange() & "\n\n" & Status()
   
+End
+
+Public Sub UpdatePath(sPath As String, Optional sPath2 As String)
+
+  Dim sStatus As String
+  Dim sCmd As String
+
+  ' svn status is automatically recursive!
+  sCmd = "cd " & Shell$($sRealDir) & "; svn status --no-ignore " & Shell(Mid$(sPath, Len(Project.Dir) + 2))
+  If sPath2 Then sCmd &= " " & Shell(Mid$(sPath2, Len(Project.Dir) + 2))
+
+  sStatus = VersionControl.Shell(sCmd, True)
+  UpdatePathFromStatus(sStatus)
+
 End
 

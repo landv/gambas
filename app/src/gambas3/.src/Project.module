@@ -198,8 +198,8 @@ Private $hLock As File
 ' File state from version control
 Private $cPathFlag As Collection
 Public Enum FLAG_MODIFIED, FLAG_ADDED, FLAG_LOCKED, FLAG_CONFLICT
-Public HasConflict As Boolean
-Public HasAdded As Boolean
+Public HasConflict As Integer
+Public HasAdded As Integer
 
 ' I'm using the IDE to test the interpreter with valgrind!
 Private $bTesting As Boolean
@@ -6464,17 +6464,26 @@ End
 Public Sub SetFlag(sPath As String, iFlag As Integer)
   
   $cPathFlag[sPath] = BSet($cPathFlag[sPath], iFlag)
-  If iFlag = FLAG_ADDED Then HasAdded = True
-  If iFlag = FLAG_CONFLICT Then HasConflict = True
+  If iFlag = FLAG_ADDED Then Inc HasAdded
+  If iFlag = FLAG_CONFLICT Then Inc HasConflict
   
 End
 
-Public Sub ResetFlags()
+Public Sub ResetFlags(Optional sPath As String)
   
-  $cPathFlag = New Collection
-  $cPathFlag.Default = 0
-  HasConflict = False
-  HasAdded = False
+  Dim iFlag As Integer
+  
+  If Not sPath Then
+    $cPathFlag = New Collection
+    $cPathFlag.Default = 0
+    HasConflict = 0
+    HasAdded = 0
+  Else
+    iFlag = $cPathFlag[sPath]
+    If iFlag And FLAG_ADDED Then Dec HasAdded
+    If iFlag And FLAG_CONFLICT Then Dec HasConflict
+    $cPathFlag.Remove(sPath)
+  Endif
   
 End
 
