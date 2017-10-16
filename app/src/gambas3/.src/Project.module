@@ -6480,8 +6480,8 @@ Public Sub ResetFlags(Optional sPath As String)
     HasAdded = 0
   Else
     iFlag = $cPathFlag[sPath]
-    If iFlag And FLAG_ADDED Then Dec HasAdded
-    If iFlag And FLAG_CONFLICT Then Dec HasConflict
+    If BTst(iFlag, FLAG_ADDED) Then Dec HasAdded
+    If BTst(iFlag, FLAG_CONFLICT) Then Dec HasConflict
     $cPathFlag.Remove(sPath)
   Endif
   
