@@ -819,9 +819,9 @@ __LE:
 void SUBR_strcomp(ushort code)
 {
   int mode = GB_COMP_BINARY;
-  char *s1, *s2;
+  /*char *s1, *s2;
   int l1, l2;
-  int ret;
+  int ret;*/
 
   SUBR_ENTER();
 
@@ -831,7 +831,7 @@ void SUBR_strcomp(ushort code)
   if (NPARAM == 3)
     mode = SUBR_get_integer(&PARAM[2]);
 
-	mode &= GB_COMP_TYPE_MASK;
+	/*mode &= GB_COMP_TYPE_MASK;
 	
 	if (mode == GB_COMP_BINARY)
 		ret = STRING_compare(PARAM[0]._string.addr + PARAM[0]._string.start, PARAM[0]._string.len, PARAM[1]._string.addr + PARAM[1]._string.start, PARAM[1]._string.len);
@@ -845,15 +845,15 @@ void SUBR_strcomp(ushort code)
 		if (mode & GB_COMP_NATURAL)
 			ret = COMPARE_string_natural(s1, l1, s2, l2, mode & GB_COMP_NOCASE);
 		else if (mode & GB_COMP_LIKE)
-			ret = COMPARE_string_like(s1, l1, s2, l2);
+			ret = COMPARE_string_like(s1, l1, s2, l2, mode & GB_COMP_NOCASE);
 		else if (mode & GB_COMP_LANG)
 			ret = COMPARE_string_lang(s1, l1, s2, l2, mode & GB_COMP_NOCASE, FALSE);
 		else
 			THROW(E_ARG);
-	}
+	}*/
   
 	RETURN->_integer.type = T_INTEGER;
-	RETURN->_integer.value = ret;
+	RETURN->_integer.value = (*COMPARE_get_string_func(mode))(PARAM[0]._string.addr + PARAM[0]._string.start, PARAM[0]._string.len, PARAM[1]._string.addr + PARAM[1]._string.start, PARAM[1]._string.len, mode & GB_COMP_NOCASE, FALSE);
 
   SUBR_LEAVE();
 }

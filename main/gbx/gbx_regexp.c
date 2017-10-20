@@ -33,12 +33,27 @@
 #include "gb_error.h"
 #include "gbx_c_array.h"
 #include "gbx_api.h"
+#include "gb.pcre.h"
 
 #include "gbx_regexp.h"
 
 
 static REGEXP_SCAN_FUNC _scan_cb = NULL;
 static CARRAY *_scan_array;
+
+static PCRE_INTERFACE PCRE;
+
+static void init_pcre()
+{
+	static bool init = FALSE;
+
+	if (init)
+		return;
+
+	COMPONENT_load(COMPONENT_create("gb.pcre"));
+	LIBRARY_get_interface_by_name("gb.pcre", PCRE_INTERFACE_VERSION, &PCRE);
+	init = TRUE;
+}
 
 bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int len_string)
 {
@@ -279,5 +294,11 @@ bool REGEXP_scan(CARRAY *array, const char *pattern, int len_pattern, const char
 	_scan_array = NULL;
 
 	return match;
+}
+
+bool REGEXP_match_pcre(const char *pattern, int len_pattern, const char *string, int len_string)
+{
+	init_pcre();
+	return PCRE.Match(string, len_string, pattern, len_pattern, 0, 0);
 }
 

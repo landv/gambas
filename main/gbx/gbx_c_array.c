@@ -953,7 +953,7 @@ BEGIN_METHOD(Array_Sort, GB_INTEGER mode)
 
 	if (THIS->count > 1)
 	{
-		compare = COMPARE_get(THIS->type, mode);
+		compare = COMPARE_get_func(THIS->type, mode);
 		qsort(data, THIS->count, THIS->size, compare);
 	}
 
@@ -964,7 +964,7 @@ END_METHOD
 
 static int find(CARRAY *_object, int mode, void *value, int start)
 {
-	COMPARE_FUNC compare = COMPARE_get(THIS->type, mode);
+	COMPARE_FUNC compare = COMPARE_get_func(THIS->type, mode);
 	int i;
 
 	if (start < 0)
@@ -1133,11 +1133,12 @@ static int find_string(CARRAY *_object, int mode, const char *value, int len_val
 	}
 	else
 	{
-		COMPARE_FUNC compare = COMPARE_get(THIS->type, mode);
+		COMPARE_STRING_FUNC compare = COMPARE_get_string_func(mode);
+		bool nocase = mode & GB_COMP_NOCASE;
 		
 		for (i = start; i < THIS->count; i++)
 		{
-			if ((*compare)(&data[i], &value) == 0)
+			if ((*compare)(data[i], STRING_length(data[i]), value, len_value, nocase, FALSE) == 0)
 				return i;
 		}
 	}

@@ -38,23 +38,8 @@
 #include "gbx_c_array.h"
 #include "gbx_local.h"
 #include "gbx_compare.h"
-#include "gb.pcre.h"
 
 //static int _count = 0;
-
-static PCRE_INTERFACE PCRE;
-
-static void init_pcre()
-{
-	static bool init = FALSE;
-
-	if (init)
-		return;
-
-	COMPONENT_load(COMPONENT_create("gb.pcre"));
-	LIBRARY_get_interface_by_name("gb.pcre", PCRE_INTERFACE_VERSION, &PCRE);
-	init = TRUE;
-}
 
 //---------------------------------------------------------------------------
 
@@ -534,8 +519,7 @@ __ENDS:
 
 __MATCH:
 
-	init_pcre();
-	ret = PCRE.Match(string, len_string, pattern, len_pattern, 0, 0);
+	ret = REGEXP_match_pcre(pattern, len_pattern, string, len_string);
 	goto __RETURN;
 
 __RETURN:

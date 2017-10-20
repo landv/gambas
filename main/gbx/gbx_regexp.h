@@ -30,6 +30,7 @@ typedef
 	void (*REGEXP_SCAN_FUNC)(const char *, int);
 
 bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int len_string);
+bool REGEXP_match_pcre(const char *pattern, int len_pattern, const char *string, int len_string);
 bool REGEXP_scan(CARRAY *array, const char *pattern, int len_pattern, const char *string, int len_string);
 
 #endif
