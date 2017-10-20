@@ -157,7 +157,7 @@ Private Sub UpdatePathFromStatus(sStatus As String)
       Project.SetFlag(sPath, Project.FLAG_ADDED)
     Else If $aConflict.Exist(Left(sStatus, 2)) Then
       Project.SetFlag(sPath, Project.FLAG_CONFLICT)
-    Else If InStr("MD", Mid$(sStatus, 2, 1)) Then
+    Else If InStr("MD", Mid$(sStatus, 2, 1)) Or If Left(sStatus, 2) = "A " Then
       Project.SetFlag(sPath, Project.FLAG_MODIFIED)
     Endif
 

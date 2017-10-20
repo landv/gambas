@@ -571,7 +571,11 @@ _INIT_AGAIN:
 
   bIsFake = IsFake(Project.Dir)
   
-  If Not bIsFake Then VersionControl.Refresh
+  If bIsFake Then 
+    VersionControl.Disable
+  Else
+    VersionControl.Refresh
+  Endif
 
   If bConvert Then
 
@@ -6456,7 +6460,7 @@ Public Sub HasFlag(sPath As String, iFlag As Integer, Optional bRec As Boolean) 
   If File.IsRelative(sPath) Then sPath = Project.Dir &/ sPath
   If BTst($cPathFlag[sPath], iFlag) Then Return True
   If Not bRec Then Return
-  If sPath = Project.Dir Then Return
+  If (sPath &/ "/") = (Project.Dir &/ "/") Then Return
   Return HasFlag(File.Dir(sPath), iFlag, bRec)
   
 End

@@ -44,6 +44,17 @@ Public Sub Refresh()
   
 End
 
+Public Sub Disable()
+  
+  If $hVC And If $hVC Is CVersionControl Then Return
+  
+  $hVC = CVersionControl
+  $bEnabled = False
+  FMain.OnVersionControlChange
+  
+End
+
+
 Public Sub Insert(sText As String)
 
   If $hEditor Then
