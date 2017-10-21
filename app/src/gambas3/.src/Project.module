@@ -6458,9 +6458,9 @@ Public Sub HasFlag(sPath As String, iFlag As Integer, Optional bRec As Boolean) 
   If Not $cPathFlag Then Return
   If Not sPath Then Return
   If File.IsRelative(sPath) Then sPath = Project.Dir &/ sPath
+  If Not IsProjectPath(sPath) Then Return
   If BTst($cPathFlag[sPath], iFlag) Then Return True
   If Not bRec Then Return
-  If (sPath &/ "/") = (Project.Dir &/ "/") Then Return
   Return HasFlag(File.Dir(sPath), iFlag, bRec)
   
 End
