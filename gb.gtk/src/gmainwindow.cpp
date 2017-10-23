@@ -787,6 +787,7 @@ bool gMainWindow::isModal() const
 void gMainWindow::showModal()
 {
   gMainWindow *save;
+  gMainWindow *parent;
 	
 	if (!isTopLevel()) return;
 	if (isModal()) return;
@@ -798,8 +799,16 @@ void gMainWindow::showModal()
 	//show();
 	gtk_grab_add(border);
 	
-	if (_active)
-		gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(_active->topLevel()->border));
+	parent = _current;
+	if (!parent)
+	{
+		parent = gApplication::mainWindow();
+		if (!parent)
+			parent = _active;
+	}
+	
+	if (parent)
+		gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(parent->topLevel()->border));
 	
 	save = _current;
 	_current = this;
