@@ -1112,8 +1112,10 @@ Public Sub RefreshKey(sKey As String, Optional sOld As String)
   Dim aOpen As String[]
   Dim sOpen As String
   
-  If Not sKey Then Return
+  If Not $hTree Then Return
 
+  If Not sKey Then Return
+  
   If Not $hTree.Exist(sKey) And If Not Exist(sKey) And If IsSourcePath(sKey) Then
     sKey = FindForm(File.BaseName(sKey))
   Endif
