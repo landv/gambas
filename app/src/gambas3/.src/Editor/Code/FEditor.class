@@ -434,90 +434,10 @@ End
 
 Private Sub CreateMenu()
 
-  ' Dim sName As String
-  ' Dim hMenu As Menu
-  ' Dim cFunc As New String[]
-  ' Dim sParent As String
-  ' Dim sNewParent As String
-  ' Dim hParent As Menu
-  ' Dim sFullName As String
-  ' Dim iPos As Integer
-  ' Dim hSymbol As CSymbolInfo
-  ' Dim cSymbol As Collection
-
-  'DIM hPoint AS Picture
-
-  'IF $hMenuGo THEN $hMenuGo.Delete
-
-  '$hMenuGo = NEW Menu(mnuEditor)
-  '$hMenuGo.Caption = "&Go to"
-
   Inc Application.Busy
 
   mnuForm.Visible = Project.ExistForm(Me.Name)
  
-  ' mnuGoto.Children.Clear
-  ' 
-  ' cSymbol = Project.Documentation.GetClassSymbols(Me.Name)
-  ' If cSymbol Then
-  '   For Each hSymbol In cSymbol
-  ' 
-  '     If LCase(hSymbol.Kind) <> "m" Then Continue
-  '     If hSymbol.LineNumber = 0 Then Continue
-  '     cFunc.Add(hSymbol.Name)
-  ' 
-  '   Next
-  ' Endif
-  ' 
-  ' cFunc.Sort(gb.IgnoreCase + gb.Natural)
-  ' hParent = mnuGoto
-  ' 
-  ' 'hPoint = Picture["img/16/point.png"]
-  ' 
-  ' For Each sName In cFunc
-  ' 
-  '   hSymbol = cSymbol[sName]
-  '   sFullName = sName
-  ' 
-  '   iPos = InStr(sName, "_")
-  '   If iPos Then
-  '     sNewParent = Left$(sName, iPos - 1)
-  '     sName = Mid$(sName, iPos + 1)
-  '     If Len(sNewParent) = 0 Then
-  '       sNewParent = "(Special)"
-  '       sName = "_" & sName
-  '     Endif
-  '   Else
-  '     sNewParent = ""
-  '   Endif
-  ' 
-  '   If UCase(sNewParent) <> UCase(sParent) Then
-  ' 
-  '     If sNewParent Then
-  ' 
-  '       hParent = New Menu(mnuGoto)
-  '       hParent.Text = sNewParent
-  ' 
-  '     Else
-  ' 
-  '       hParent = mnuGoto
-  ' 
-  '     Endif
-  ' 
-  '     sParent = sNewParent
-  ' 
-  '   Endif
-  ' 
-  '   hMenu = New Menu(hParent) As "mnuGoto"
-  '   hMenu.Text = sName
-  '   hMenu.Tag = hSymbol.LineNumber - 1
-  '   'IF NOT hSymbol.NotPublic THEN hMenu.Picture = hPoint
-  ' 
-  ' Next
-  ' 
-  ' mnuGoto.Visible = cFunc.count > 0
-  ' mnuSepGoto.Visible = cFunc.count > 0
-
   UpdateMenu
 
   Dec Application.Busy

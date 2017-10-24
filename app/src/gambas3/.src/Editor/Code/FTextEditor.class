@@ -1253,8 +1253,8 @@ Private Sub UpdateMenu()
 
   Action[".compress,.uncompress", Me].Visible = $bShowCompress And bVisible
   Action[".proc", Me].Visible = Not $bNoHighlight
-  Action[".comment,.uncomment"].Visible = $bShowComment And bVisible
-  Action[".pretty"].Visible = $bShowPretty And bVisible
+  Action[".comment,.uncomment", Me].Visible = $bShowComment And bVisible
+  Action[".pretty", Me].Visible = $bShowPretty And bVisible
   
 End
 
