@@ -1169,8 +1169,8 @@ Public Sub DefineStartup(sClass As String) As String
   
   If sClass <> $sStartup Then 
     Swap $sStartup, sClass
-    RefreshKey(FindPath(sClass))
-    RefreshKey(FindPath($sStartup))
+    RefreshKey(FindKey(sClass))
+    RefreshKey(FindKey($sStartup))
   Endif
   
   Return $sStartup
