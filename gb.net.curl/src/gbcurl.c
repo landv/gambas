@@ -33,7 +33,7 @@
 #include "gbcurl.h"
 #include "CCurl.h"
 
-static char *_protocols[] = { "ftp://", "http://", "https://", NULL };
+static char *_protocols[] = { "ftp://", "ftps://", "http://", "https://", NULL };
 
 static void warning(const char *msg)
 {
