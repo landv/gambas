@@ -1109,7 +1109,7 @@ void gApplication::setBusy(bool b)
 		iter = g_list_next(iter);
 	}
 
-	//MAIN_do_iteration_just_events();
+	gdk_flush();
 }
 
 static bool _dirty = false;
