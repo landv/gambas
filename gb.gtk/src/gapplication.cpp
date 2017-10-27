@@ -511,24 +511,35 @@ __FOUND_WIDGET:
 		case GDK_2BUTTON_PRESS:
 		case GDK_BUTTON_RELEASE:
 		{
-			save_control = control = find_child(control, (int)event->button.x_root, (int)event->button.y_root, button_grab);
-			
 			/*if (event->type == GDK_BUTTON_PRESS)
 				fprintf(stderr, "GDK_BUTTON_PRESS: %p / %p\n", control, button_grab);
 			else if (event->type == GDK_BUTTON_RELEASE)
 				fprintf(stderr, "GDK_BUTTON_RELEASE: %p / %p\n", control, button_grab);*/
 			
-			if (!control)
-				goto __HANDLE_EVENT;
-
-			bool menu = false;
-
 			switch ((int)event->type)
 			{
 				case GDK_BUTTON_PRESS: type = gEvent_MousePress; break;
 				case GDK_2BUTTON_PRESS: type = gEvent_MouseDblClick; break;
 				default: type = gEvent_MouseRelease; break;
 			}
+
+			save_control = find_child(control, (int)event->button.x_root, (int)event->button.y_root, button_grab);
+			
+			if (!save_control)
+			{
+				if (type == gEvent_MousePress && control->isTopLevel())
+				{
+					gMainWindow *win = ((gMainWindow *)control);
+					if (win->isPopup())
+						win->close();
+				}
+			
+				goto __HANDLE_EVENT;
+			}
+			
+			control = save_control;
+
+			bool menu = false;
 
 			if (event->type != GDK_BUTTON_RELEASE)
 			{
@@ -580,7 +591,7 @@ __FOUND_WIDGET:
 				}
 			}
 
-			if (type == gEvent_MousePress && control->isTopLevel())
+			/*if (type == gEvent_MousePress && control->isTopLevel())
 			{
 				gMainWindow *win = ((gMainWindow *)control);
 				if (win->isPopup())
@@ -595,7 +606,7 @@ __FOUND_WIDGET:
 						win->close();
 				}
 			}
-			else if (type == gEvent_MouseRelease && control->_grab)
+			else*/ if (type == gEvent_MouseRelease && control->_grab)
 			{
 				gApplication::exitLoop(control);
 			}
@@ -1098,7 +1109,7 @@ void gApplication::setBusy(bool b)
 		iter = g_list_next(iter);
 	}
 
-	MAIN_do_iteration_just_events();
+	//MAIN_do_iteration_just_events();
 }
 
 static bool _dirty = false;
