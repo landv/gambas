@@ -30,7 +30,7 @@ Public Sub btnOK_Click()
     Return
   Endif
   
-  Project.Config["/FCommit/LastCommit"] = sChange
+  Project.Config["/FCommit/LastCommit"] = RTrim(sChange)
   
   If VersionControl.Commit(sChange, chkDoNotPush.Value) Then Return
   
@@ -58,7 +58,7 @@ Public Sub Form_Open()
   edtDiff.ReadConfig
   Project.SetEditorFont(trmShell)
 
-  edtJournal.Text = Project.Config["/FCommit/LastCommit"] & "\n\n" & VersionControl.GetDefaultJournal()
+  edtJournal.Text = RTrim(Project.Config["/FCommit/LastCommit"]) & "\n\n" & VersionControl.GetDefaultJournal()
   edtJournal.Goto(0, 0)
   
   tabVersionControl_Click
@@ -70,7 +70,7 @@ Public Sub Form_Open()
     Return
   Endif
   
-  chkDoNotPush.Visible = VersionControl.DoNotPush
+  chkDoNotPush.Visible = VersionControl.DoNotPush And VersionControl.HasRemote()
   
   DS = Desktop.Scale
   Me.Resize(FMain.W - DS * 16, FMain.H - DS * 16)

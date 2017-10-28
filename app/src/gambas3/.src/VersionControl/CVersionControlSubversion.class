@@ -372,3 +372,9 @@ Public Sub ControlProject() As Boolean
   If VersionControl.Run(["svn", "add", "--parents", SvnPath$($sRealDir)]) Then Return True
   
 End
+
+Public Sub HasRemote() As Boolean
+  
+  Return True
+  
+End

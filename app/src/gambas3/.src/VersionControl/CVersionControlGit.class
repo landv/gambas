@@ -14,6 +14,7 @@ Private $bCheckGit As Boolean
 Private $sRoot As String
 Private $bCanControl As Boolean
 Private $bCanInit As Boolean
+Private $bHasRemote As Boolean
 
 Private Sub Init()
 
@@ -45,6 +46,7 @@ Public Sub Check() As Boolean
         sResult = VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git rev-parse --show-toplevel")
         If Process.LastValue = 0 Then 
           $sRoot = Trim(sResult)
+          $bHasRemote = VersionControl.Shell("cd " & Shell(Project.Dir) & " && git remote show")
           Return True
         Endif
       Endif
@@ -80,11 +82,18 @@ Public Sub Diff(sPath As String) As String
   
   Dim sDiff As String
   Dim sCmd As String
+  Dim sHead As String
+
+  If VersionControl.Shell("cd " & Shell(Project.Dir) & " && git log -1", True) Then
+    sHead = "HEAD"
+  Else
+    sHead = "--staged"
+  Endif
 
   If IsDir(sPath) Then
-    sCmd = "cd " & Shell(sPath) & " && git diff HEAD ."
+    sCmd = "cd " & Shell(sPath) & " && git diff " & sHead & " ."
   Else
-    sCmd = "cd " & Shell(File.Dir(sPath)) & " && git diff HEAD " & Shell(File.Name(sPath))
+    sCmd = "cd " & Shell(File.Dir(sPath)) & " && git diff " & sHead & " " & Shell(File.Name(sPath))
   Endif
   
   sDiff = VersionControl.Shell(sCmd)
@@ -233,14 +242,14 @@ Public Sub Commit(sChange As String, bDoNotPush As Boolean) As Boolean
   VersionControl.Shell("cd " & Shell(Project.Dir) & " && git commit -F " & Shell$(sFile) & " .", Project.Dir)
   If Process.LastValue Then Return True
   
-  If Not bDoNotPush Then
+  If Not bDoNotPush And If $bHasRemote Then
   
     aEnv = VersionControl.LANG_ENV.Copy()
     aEnv.Add("PWD=" & Project.Dir)
     VersionControl.Run(["git", "push"], True, True, aEnv)
+    If Process.LastValue Then VersionControl.ShowError(("Unable to push the project."))
     
   Endif
-  'If Process.LastValue Then Return True
   
 End
 
@@ -328,5 +337,10 @@ Public Sub ControlProject() As Boolean
   
   Endif
   
+End
+
+Public Sub HasRemote() As Boolean
+  
+  Return $bHasRemote
   
 End

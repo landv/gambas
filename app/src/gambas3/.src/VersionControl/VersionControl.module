@@ -128,7 +128,9 @@ Public Sub Run(aCmd As String[], Optional bIdent As Boolean, Optional bOutput As
     
     Sleep 0.1
   Loop
-    
+  
+  If Process.LastValue Then $sLastResult = $sOutput
+  
   Return Process.LastValue
 
 End
@@ -309,7 +311,7 @@ Public Sub Commit(sChange As String, bDoNotPush As Boolean) As Boolean
   Dec Application.Busy
   
   If bRes Then
-    FVersionError.Run(("The project could not be committed."), $sLastResult)
+    ShowError(("The project could not be committed."))
   Endif
   
   Return bRes
@@ -327,7 +329,7 @@ Public Sub Update()
   Dec Application.Busy
 
   If bErr Then  
-    FVersionError.Run(("Unable to update project from repository."), $sLastResult)
+    ShowError(("Unable to update project from repository."))
   Else
     Message.Info(("Project has been updated from repository successfully."))
   Endif
@@ -458,7 +460,7 @@ Public Sub ControlProject(sType As String)
     Project.Refresh
     FVersionControl.Run()
   Else
-    FVersionError.Run(("The project could not be put under version control."), $sLastResult)
+    ShowError(("The project could not be put under version control."))
   Endif
 
 End
@@ -543,7 +545,7 @@ Public Sub SetBranch(sBranch As String)
   Dec Application.Busy
   
   If sCurrent <> sBranch Then
-    FVersionError.Run(Subst(("Unable to switch to branch `&1`."), sBranch), $sLastResult)
+    ShowError(Subst(("Unable to switch to branch `&1`."), sBranch))
   Endif
   
 End
@@ -574,5 +576,17 @@ End
 Public Sub ControlProject_Click()
   
   ControlProject(Last.Tag)
+  
+End
+
+Public Sub ShowError(sErr As String)
+  
+  FVersionError.Run(sErr, $sLastResult)
+  
+End
+
+Public Sub HasRemote() As Boolean
+  
+  Return $hVC.HasRemote()
   
 End

@@ -5,10 +5,15 @@ Static Private $sDetail As String
 
 Public Sub Run(sText As String, sDetail As String) 
 
+  Dim iBusy As Integer
+  
   $sText = sText
   $sDetail = Trim(sDetail)
 
+  iBusy = Application.Busy
+  Application.Busy = 0
   Me.ShowModal()
+  Application.Busy = iBusy
 
 End
 
@@ -22,14 +27,15 @@ Public Sub Form_Open()
 
   Dim DS, W, H As Integer
   
+  DS = Desktop.Scale
+  
   lblError.Text = $sText
   
   If $sDetail Then 
   
     Project.SetEditorFont(lblDetail)
     lblDetail.Text = $sDetail
-    
-    DS = Desktop.Scale
+    lblDetail.Border = Border.Plain
     lblDetail.Padding = DS
     With lblDetail.Font
       W = .TextWidth($sDetail)
@@ -38,7 +44,7 @@ Public Sub Form_Open()
     
   Else
     
-    lblDetail.Hide
+    lblDetail.H = DS
     
   Endif
   
