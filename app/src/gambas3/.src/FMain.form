@@ -178,8 +178,9 @@
       }
     }
     { mnuVersionControl Menu
+      Action = "version-control"
       Text = ("Version control")
-      Picture = Picture["icon:/small/calendar"]
+      Picture = Picture["icon:/small/record"]
       { mnuVcCommit Menu
         Action = "vc-commit"
         Text = ("Commit") & "..."
@@ -204,6 +205,10 @@
         Action = "vc-branch"
         Text = ("Branch")
       }
+    }
+    { mnuVersionControlWith Menu
+      Text = ("Put under version control")
+      Picture = Picture["icon:/small/record"]
     }
     { mnuPublish Menu
       Action = "publish"
@@ -1199,7 +1204,7 @@
         Border = False
       }
       { timSearchProject #Timer
-        #MoveScaled(21,8)
+        #MoveScaled(21,9)
         Delay = 500
       }
     }
@@ -1704,6 +1709,7 @@
   }
   { Action version-control
     Text = "Version control"
+    Shortcut = ""
     Picture = "icon:/small/record"
   }
 }

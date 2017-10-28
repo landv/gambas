@@ -1,27 +1,41 @@
 # Gambas Form File 3.0
 
-{ FVersionError Form
-  MoveScaled(0,0,64,64)
+{ Form Form
+  MoveScaled(0,0,59,64)
   Resizable = False
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
-{ HBox1 HBox
-  MoveScaled(1,59,62,4)
-  Spacing = True
-  { Panel1 Panel
-    MoveScaled(4,0,4,4)
+  { HBox2 HBox
+    MoveScaled(1,1,54,8)
+    Spacing = True
+    { PictureBox1 PictureBox
+      MoveScaled(0,0,8,8)
+      Picture = Picture["icon:/huge/error"]
+      Stretch = True
+    }
+    { lblError Label
+      MoveScaled(11,1,37,7)
+      Expand = True
+    }
+  }
+  { lblDetail Label
+    MoveScaled(1,11,54,17)
     Expand = True
+    Border = Border.Plain
   }
-  { btnOK Button
-    MoveScaled(29,0,16,4)
-    Text = ("OK")
-    Default = True
+  { HBox1 HBox
+    MoveScaled(1,59,57,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(4,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(40,0,16,4)
+      Text = ("OK")
+      Default = True
+      Cancel = True
+    }
   }
-  { btnCancel Button
-    MoveScaled(46,0,16,4)
-    Text = ("Cancel")
-    Cancel = True
-  }
-}
 }

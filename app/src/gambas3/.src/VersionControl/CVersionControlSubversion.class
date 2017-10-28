@@ -4,12 +4,14 @@ Inherits CVersionControl
 Create Static
 
 Public Const Name As String = "Svn"
+Public Const LongName As String = "Subversion"
 
 Private $sRealDir As String
 Private $bHasSVN As Boolean
 Private $bCheckSVN As Boolean
 Private $sSvnVersion As String
 Private $bSvn17 As Boolean
+Private $bCanControl As Boolean
 
 Private Sub SvnPath$(sPath As String) As String
 
@@ -19,18 +21,13 @@ Private Sub SvnPath$(sPath As String) As String
 
 End
 
-Public Sub Check() As Boolean
+Private Sub Init()
   
-  Dim sResult As String
-  
-  Shell "readlink -f " & Shell$(Project.Dir) To $sRealDir
-  $sRealDir = Trim($sRealDir)
+  If $bCheckSVN Then Return
+    
+  $bHasSVN = System.Exist("svn")
+  $bCheckSVN = True
 
-  If Not $bCheckSVN Then
-    $bHasSVN = System.Exist("svn")
-    $bCheckSVN = True
-  Endif
-  
   If $bHasSVN Then
 
     If Not $sSvnVersion Then 
@@ -38,12 +35,45 @@ Public Sub Check() As Boolean
       $sSvnVersion = Trim($sSvnVersion)
       $bSvn17 = Comp($sSvnVersion, "1.7", gb.Natural) >= 0
     Endif
+    
+  Endif
   
+End
+
+
+Public Sub Check() As Boolean
+  
+  Dim sResult As String
+  Dim sDir As String
+  
+  Shell "readlink -f " & Shell$(Project.Dir) To $sRealDir
+  $sRealDir = Trim($sRealDir)
+
+  Init()
+
+  If $bHasSVN Then
+
+    $bCanControl = False
+    
     If $bSvn17 Then
       sResult = VersionControl.Shell("svn status " & Shell$(SvnPath$($sRealDir) &/ ".project") & " 2>&1")
       If Process.LastValue = 0 And If sResult Not Like "svn:*W155007*:*" And If sResult Not Like "svn:*W155010*:*" Then Return True
     Else
-      Return Exist($sRealDir &/ ".svn")
+      If Exist($sRealDir &/ ".svn") Then Return True
+    Endif
+    
+    If $bSvn17 Then
+      sDir = $sRealDir
+      Do
+        sDir = File.Dir(sDir)
+        If Exist(sDir &/ ".svn") Then 
+          $bCanControl = True
+          Break
+        Endif
+        If sDir = "/" Then Break
+      Loop
+    Else
+      $bCanControl = Exist($sRealDir &/ "../.svn")
     Endif
     
   Endif
@@ -330,3 +360,15 @@ Public Sub UpdatePath(sPath As String, Optional sPath2 As String)
 
 End
 
+Public Sub CanControlProject() As Boolean
+
+  Return $bCanControl
+
+End
+
+Public Sub ControlProject() As Boolean
+  
+  If Not $bCanControl Then Return True
+  If VersionControl.Run(["svn", "add", "--parents", SvnPath$($sRealDir)]) Then Return True
+  
+End

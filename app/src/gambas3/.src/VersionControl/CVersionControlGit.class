@@ -4,6 +4,7 @@ Inherits CVersionControl
 Create Static
 
 Public Const Name As String = "Git"
+Public Const LongName As String = "Git"
 Public Const DoNotPush As Boolean = True
 
 Private $aConflict As String[] = ["DD", "AU", "UD", "UA", "DU", "AA", "UU"]
@@ -11,22 +12,45 @@ Private $aConflict As String[] = ["DD", "AU", "UD", "UA", "DU", "AA", "UU"]
 Private $bHasGit As Boolean
 Private $bCheckGit As Boolean
 Private $sRoot As String
+Private $bCanControl As Boolean
+Private $bCanInit As Boolean
+
+Private Sub Init()
+
+  If $bCheckGit Then Return
+  
+  $bHasGit = System.Exist("git")
+  $bCheckGit = True
+
+End
 
 Public Sub Check() As Boolean
   
   Dim sResult As String
   
-  If Not $bCheckGit Then
-    $bHasGit = System.Exist("git")
-    $bCheckGit = True
-  Endif
+  Init()
   
   If $bHasGit Then
-    sResult = VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git rev-parse --show-toplevel")
-    If Process.LastValue = 0 Then 
-      $sRoot = Trim(sResult)
-      Return True
+    
+    sResult = VersionControl.Shell("cd " & Shell(Project.Dir) & " && git status --porcelain .project")
+    
+    If Process.LastValue Then
+      $bCanInit = True
+      $bCanControl = False
+    Else
+      $bCanInit = False
+      $bCanControl = sResult Begins "??"
+
+      If Not $bCanControl Then
+        sResult = VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git rev-parse --show-toplevel")
+        If Process.LastValue = 0 Then 
+          $sRoot = Trim(sResult)
+          Return True
+        Endif
+      Endif
+      
     Endif
+    
   Endif
   
 End
@@ -205,7 +229,8 @@ Public Sub Commit(sChange As String, bDoNotPush As Boolean) As Boolean
   Dim aEnv As String[]
   
   File.Save(sFile, sChange)
-  VersionControl.Run(["git", "commit", "-F", sFile, Project.Dir], False, False, VersionControl.LANG_ENV)
+  'VersionControl.Run(["git", "commit", "-F", sFile, Project.Dir], False, False, VersionControl.LANG_ENV)
+  VersionControl.Shell("cd " & Shell(Project.Dir) & " && git commit -F " & Shell$(sFile) & " .", Project.Dir)
   If Process.LastValue Then Return True
   
   If Not bDoNotPush Then
@@ -280,3 +305,28 @@ Public Sub UpdatePath(sPath As String, Optional sPath2 As String)
 
 End
 
+Public Sub CanControlProject() As Boolean
+
+  Return $bCanControl Or $bCanInit
+
+End
+
+Public Sub ControlProject() As Boolean
+  
+  If Not CanControlProject() Then Return True
+  
+  If $bCanInit Then
+    
+    If Message.Warning(("A new Git repository will be created for this project."), ("OK"), ("Cancel")) = 2 Then Return
+    
+    VersionControl.Shell("cd " & Shell(Project.Dir) & " && git init && git add .")
+    If Process.LastValue Then Return True
+  
+  Else
+    
+    VersionControl.Shell("cd " & Shell(Project.Dir) & " && git add .")
+  
+  Endif
+  
+  
+End

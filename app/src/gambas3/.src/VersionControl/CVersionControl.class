@@ -3,6 +3,7 @@
 Create Static
 
 Public Const Name As String = ""
+Public Const LongName As String = ""
 Public Const DoNotPush As Boolean = False
 
 Public Sub AddFile((sPath) As String, Optional (bForce) As Boolean)
@@ -86,5 +87,13 @@ Public Sub GetDefaultJournal() As String
 End
 
 Public Sub SetBranch((sBranch) As String)
+  
+End
+
+Public Sub CanControlProject() As Boolean
+  
+End
+
+Public Sub ControlProject() As Boolean
   
 End

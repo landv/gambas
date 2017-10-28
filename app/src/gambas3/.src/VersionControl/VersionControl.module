@@ -19,6 +19,8 @@ Private $bAuth As Boolean
 Private $sUser As String
 Private $sPassword As String
 
+Private $sLastResult As String
+
 'Public (User) As String
 'Public Password As String
 'Public UseTerminal As Boolean
@@ -71,7 +73,10 @@ Public Sub Shell(sCmd As String, Optional bSilent As Boolean, Optional aEnv As S
   
   If Not bSilent Then Insert(sCmd & "\n")
   Shell sCmd With aEnv To sResult
-  If Process.LastValue Then Insert(sResult)
+  If Process.LastValue Then 
+    $sLastResult = sResult
+    Insert(sResult)
+  Endif
   Return sResult
   
 End
@@ -88,6 +93,7 @@ Public Sub Run(aCmd As String[], Optional bIdent As Boolean, Optional bOutput As
   $sOutput = ""
   $bOutput = bOutput
   $dOutput = Now
+  $sLastResult = ""
   
   ' If bIdent Then
   '   'aCmd.Add("--non-interactive")
@@ -129,6 +135,7 @@ End
 
 Public Sub Process_Error(({Error}) As String)
   
+  $sLastResult &= {Error}
   Insert({Error})
   
 End
@@ -302,7 +309,7 @@ Public Sub Commit(sChange As String, bDoNotPush As Boolean) As Boolean
   Dec Application.Busy
   
   If bRes Then
-    Message.Error(("The project could not be committed."))
+    FVersionError.Run(("The project could not be committed."), $sLastResult)
   Endif
   
   Return bRes
@@ -320,7 +327,7 @@ Public Sub Update()
   Dec Application.Busy
 
   If bErr Then  
-    Message.Error(("Unable to update project from repository."))
+    FVersionError.Run(("Unable to update project from repository."), $sLastResult)
   Else
     Message.Info(("Project has been updated from repository successfully."))
   Endif
@@ -350,7 +357,7 @@ End
 Public Sub CheckoutSVN(sPath As String, sDir As String, hEditor As TextEditor)
 
   $hEditor = hEditor
-  CVersionControlSubversion.checkout(sPath, sDir)
+  CVersionControlSubversion.Checkout(sPath, sDir)
   $hEditor = Null
 
 End
@@ -417,16 +424,42 @@ Public Sub CanControlProject() As Boolean
 
 End
 
-Public Sub ControlProject()
+Public Sub ControlProject(sType As String)
 
-  ' If CanControlProject() Then
-  '   Project.CleanUp
-  '   Try Kill Project.Dir &/ ".settings"
-  '   Run(["svn", "add", "--parents", SvnPath$($sRealDir)])
-  '   Project.Config.Save
-  '   Refresh
-  '   Project.Refresh
-  ' Endif
+  Dim hVC As CVersionControl
+  Dim bErr As Boolean
+  
+  Select Case sType
+    
+    Case CVersionControlSubversion.Name
+      hVC = CVersionControlSubversion
+    
+    Case CVersionControlGit.Name
+      hVC = CVersionControlGit
+      
+    Default
+      Return
+    
+  End Select
+
+  If Not hVC.CanControlProject() Then Return
+
+  If Message.Question(Subst(("Do you really want to put this project under version control with &1?"), hVC.LongName), ("Yes"), ("No")) = 2 Then Return
+  
+  Project.CleanUp
+  Try Kill Project.Dir &/ ".settings"
+
+  bErr = hVC.ControlProject()
+
+  Project.Config.Save
+  
+  If Not bErr Then
+    Refresh
+    Project.Refresh
+    FVersionControl.Run()
+  Else
+    FVersionError.Run(("The project could not be put under version control."), $sLastResult)
+  Endif
 
 End
 
@@ -510,7 +543,36 @@ Public Sub SetBranch(sBranch As String)
   Dec Application.Busy
   
   If sCurrent <> sBranch Then
-    Message.Error(Subst(("Unable to switch to branch `&1`."), sBranch))
+    FVersionError.Run(Subst(("Unable to switch to branch `&1`."), sBranch), $sLastResult)
   Endif
+  
+End
+
+Public Sub InitControlProjectMenu(hParent As Menu)
+  
+  Dim hMenu As Menu
+  Dim hVC As CVersionControl
+  
+  hVC = CVersionControlSubversion
+  GoSub CHECK_CONTROL
+  hVC = CVersionControlGit
+  GoSub CHECK_CONTROL
+  Return
+  
+CHECK_CONTROL:
+
+  If hVC.CanControlProject() Then
+    hMenu = New Menu(hParent) As "ControlProject"
+    hMenu.Text = Subst(("With &1"), hVC.LongName)
+    hMenu.Tag = hVC.Name
+  Endif
+  
+  Return
+  
+End
+
+Public Sub ControlProject_Click()
+  
+  ControlProject(Last.Tag)
   
 End

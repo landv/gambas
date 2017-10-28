@@ -1,20 +1,47 @@
 ' Gambas class file
 
-Public Sub Run() As Boolean
+Static Private $sText As String
+Static Private $sDetail As String
 
-  Return Not Me.ShowModal()
+Public Sub Run(sText As String, sDetail As String) 
+
+  $sText = sText
+  $sDetail = Trim(sDetail)
+
+  Me.ShowModal()
 
 End
 
 Public Sub btnOK_Click()
 
-  Me.Close(TRUE)
-
-End
-
-Public Sub btnCancel_Click()
-
   Me.Close
 
 End
 
+Public Sub Form_Open()
+
+  Dim DS, W, H As Integer
+  
+  lblError.Text = $sText
+  
+  If $sDetail Then 
+  
+    Project.SetEditorFont(lblDetail)
+    lblDetail.Text = $sDetail
+    
+    DS = Desktop.Scale
+    lblDetail.Padding = DS
+    With lblDetail.Font
+      W = .TextWidth($sDetail)
+      H = .TextHeight($sDetail)
+    End With
+    
+  Else
+    
+    lblDetail.Hide
+    
+  Endif
+  
+  Me.Resize(Max(lblDetail.X + W + DS * 4, 48 * DS), lblDetail.Y + H + DS * 8)
+
+End

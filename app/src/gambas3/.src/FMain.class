@@ -1291,6 +1291,7 @@ Public Sub OnProjectChange()
   'Action["breakerr"].Value = Project.BreakOnError
   OnRefreshComponents
   UpdateRunButton
+  
   'UpdateTranslate
   'RefreshInfo
   'IF $bHidden THEN HideAll
@@ -2837,14 +2838,17 @@ End
 
 Public Sub OnVersionControlChange()
 
-  If Not VersionControl.Enabled Then
-    mnuVersionControl.Hide
-  Else
-    mnuVersionControl.Show
+  Action["version-control"].Visible = VersionControl.Enabled
+
+  If VersionControl.Enabled Then
     mnuVersionControl.Text = ("Version control") & " (" & VersionControl.Name & ")"
     btnVersionControl.Text = VersionControl.Name
     UpdateBranchMenu
   Endif
+  
+  mnuVersionControlWith.Children.Clear
+  VersionControl.InitControlProjectMenu(mnuVersionControlWith)
+  mnuVersionControlWith.Visible = mnuVersionControlWith.Children.Count
   
 End
 
