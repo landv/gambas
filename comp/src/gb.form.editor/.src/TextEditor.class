@@ -4907,8 +4907,8 @@ Private Sub DrawBarImage3()
   iAlpha = 255 - 128 \ F
   iColComment = Color.SetAlpha($hStyles[Highlight.Comment].Color, iAlpha)
   iColNormal = Color.SetAlpha($hStyles[Highlight.Normal].Color, iAlpha)
-  iColModified = Color.Merge($iBackground, Color.Red, 0.4)
-  iColSaved = Color.Merge($iBackground, Color.Green, 0.4)
+  iColModified = Color.SetAlpha(Color.Merge($iBackground, Color.Red, 0.4), 128)
+  iColSaved = Color.SetAlpha(Color.Merge($iBackground, Color.Green, 0.4), 128)
   
   $hImageSideBar = New Image(Paint.Width - 1, H, $hStyles[Highlight.Background].Color)
   Paint.Begin($hImageSideBar)
