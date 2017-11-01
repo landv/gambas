@@ -173,6 +173,7 @@ Private Sub DrawItem(hCtrl As Control, sAction As String, bScreenshot As Boolean
   Endif
   
   Draw.Foreground = hCtrl.Foreground
+  Draw.Font = hCtrl.Font
   
   hAction = MAction.Actions[sAction]
   
