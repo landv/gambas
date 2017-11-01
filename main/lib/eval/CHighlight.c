@@ -294,6 +294,8 @@ GB_DESC CHighlightDesc[] =
 	GB_CONSTANT("Error", "i", HIGHLIGHT_ERROR),
 	GB_CONSTANT("Help", "i", HIGHLIGHT_HELP),
 	GB_CONSTANT("Preprocessor", "i", HIGHLIGHT_PREPROCESSOR),
+	GB_CONSTANT("Custom", "i", HIGHLIGHT_NUM_COLOR),
+	
 	GB_STATIC_PROPERTY_READ("Alternate", "i", Highlight_Alternate),
 	
 	GB_STATIC_METHOD("_exit", NULL, Highlight_exit, NULL),
