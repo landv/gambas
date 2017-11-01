@@ -12,9 +12,11 @@ Private Sub Reload()
   ' System.Profile = True
 
   'TextEditor1.Highlight = "gambas"
-  'TextEditor1.Load("~/gambas/3.0/trunk/comp/src/gb.form.editor/.src/CLineInfo.class", True)
+  TextEditor1.Load("~/gambas/3.0/test/test-git/CHANGELOG", True)
   'TextEditor1.Load("~/gambas/comp/src/gb.form.editor/.src/CLineInfo.class", True)
   'TextEditor1.Load("~/Fichier texte")
+  TextEditor1.Styles[Highlight.Custom].Background = Color.SetAlpha(Color.Red, 224)
+  TextEditor1.Styles[Highlight.Custom + 1].Background = Color.SetAlpha(Color.Green, 224)
   
 End
 
@@ -24,7 +26,7 @@ Public Sub Form_Open()
   
   'Image.Debug = True
   
-  'Reload
+  Reload
   'TextEditor1.Mode = "gambas"
   'TextEditor1.Load("~/asap/omogen/git/master/gambas/guygle.cgi/.src/GuygleObject.class")
   
@@ -107,4 +109,30 @@ Public Sub Button5_Click()
   TextEditor1.Styles[Highlight.Background].Color = Color.Yellow
   
 
+End
+
+Public Sub TextEditor1_Highlight(Text As String)
+
+  If Text Begins "<<<<<<" Then 
+    TextHighlighter.Add(Highlight.Keyword, String.Len(Text))
+    TextHighlighter.State = Highlight.Custom
+  Else If Text Begins "======" Then
+    TextHighlighter.Add(Highlight.Help, String.Len(Text))
+    TextHighlighter.State = Highlight.Normal
+    TextHighlighter.Tag = 1
+  Else If Text Begins ">>>>>>" Then
+    TextHighlighter.Add(Highlight.Keyword, String.Len(Text))
+    TextHighlighter.State = Highlight.Custom + 1
+    TextHighlighter.Tag = 2
+  Else
+    If TextHighlighter.Tag = 1 Then 
+      TextHighlighter.State = Highlight.Custom + 1
+      TextHighlighter.Tag = 0
+    Else If TextHighlighter.Tag = 2 Then 
+      TextHighlighter.State = Highlight.Normal
+      TextHighlighter.Tag = 0
+    Endif
+    TextHighlighter.Add(TextHighlighter.State, String.Len(Text))
+  Endif
+  
 End

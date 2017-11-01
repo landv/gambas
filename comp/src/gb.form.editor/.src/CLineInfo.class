@@ -12,7 +12,8 @@ Private Enum FLAG_MODIFIED, FLAG_SAVED, FLAG_ALTERNATE, FLAG_LIMIT, FLAG_BREAKPO
 
 Public Colors As Byte[]
 Public Tag As Short
-Public State As Byte = Highlight.Normal
+Public State As Byte '= Highlight.Normal
+
 Private $iFlag As Byte
 
 

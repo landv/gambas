@@ -521,7 +521,7 @@ End
 ' End
 '
 
-Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[], X As Integer, Y As Integer, H As Integer, aLayout As Integer[])
+Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[], X As Integer, Y As Integer, H As Integer, aLayout As Integer[], iNextState As Integer)
   
   Dim I As Integer
   Dim hStyle As TextEditorStyle
@@ -546,12 +546,14 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
   Dim W As Integer
   Dim iLayoutCount As Integer
   Dim iCol As Integer
+  Dim iBg As Integer
   
   'Dim hTemp As Image
   
   XMin = X + $hView.ScrollX
   XMax = XMin + $hView.ClientW
   aStyle = $hStyles._GetStyles()
+  iBg = aStyle[iNextState].Background
   
   XX = X
   YY = Y
@@ -581,6 +583,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
     Endif
     
     If bBreak Then
+      If iBg <> Color.Default Then Paint.FillRect(XX, YY, Paint.W, H, iBg)
       XX = X + LinePos(Row, P).X
       YY += H
       bBreak = False
@@ -614,6 +617,8 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
       If X2 < XMin Then Goto NEXT_PATTERN
     Endif
     
+    iBg = hStyle.Background
+    If iBg <> Color.Default Then Paint.FillRect(XX, YY, X2 - XX, H, iBg)
     If bAlt Then Paint.FillRect(XX, YY, X2 - XX, H, Color.SetAlpha(&HD0D0D0&, 192))
     
     sStr = String.Mid$(sText, P + 1, iLen)
@@ -700,6 +705,8 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
     DrawText(sStr, X, XX, YY)
     
   Endif
+  
+  If iBg <> Color.Default Then Paint.FillRect(XX, YY, Paint.W, H, iBg)
   
   Return
   
@@ -794,12 +801,12 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
     Paint.FillRect(X, Y + $XY.Y, Width, H, $hStyles[Highlight.CurrentLine].Color)
   Endif
   
+  hInfo = $hDoc.Info(Row)
+  
   Paint.Rectangle($MW, Y, Width - $MW, Height)
   Paint.Clip
   
   Paint.Translate($MW, 0)
-  
-  hInfo = $hDoc.Info(Row)
   
   ' Selection
   
@@ -878,7 +885,7 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   
   If hInfo.Colors Then
     
-    DrawHighlightedText(Row, sText, hInfo.Colors, X, Y, H, aLayout)
+    DrawHighlightedText(Row, sText, hInfo.Colors, X, Y, H, aLayout, hInfo.State)
     
   Else
     
@@ -4946,10 +4953,10 @@ Private Sub DrawBarImage3()
           If hInfo Then
             If hInfo.Modified Then
               bModified = True
-              Paint.FillRect(0, Y, 4, 1, iColModified)
+              Paint.FillRect(0, Y, Paint.W, 1, iColModified)
             Else If hInfo.Saved And If Not bSaved Then
               bSaved = True
-              Paint.FillRect(0, Y, 4, 1, iColSaved)
+              Paint.FillRect(0, Y, Paint.W, 1, iColSaved)
             Endif
           Endif
         Endif

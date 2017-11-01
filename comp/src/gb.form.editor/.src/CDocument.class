@@ -895,7 +895,6 @@ Public Sub HighlightFrom(Y As Integer)
       With Info(Y - 1)
         TextHighlighter.State = .State
         TextHighlighter.Tag = .Tag
-        TextHighlighter.Alternate = .Alternate
       End With
     Endif
     TextHighlighter.Limit = False
