@@ -926,7 +926,7 @@ Public Sub HighlightFrom(Y As Integer)
         If Not bBegin Then
           bBegin = True
           bEndOfLine = Me.Current.Column >= LineLength[Me.Current.Line]
-          Me.Current._SaveCursor
+          Me.Current.SaveCursor
           Begin()
         Endif
         Me.Current.Goto(0, Y)
@@ -952,7 +952,7 @@ Public Sub HighlightFrom(Y As Integer)
   Loop
 
   If bBegin Then 
-    Me.Current._RestoreCursor
+    Me.Current.RestoreCursor
     If bEndOfLine Then Me.Current.Goto(-1, Me.Current.Line)
     End()
   Endif

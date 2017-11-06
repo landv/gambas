@@ -4495,14 +4495,14 @@ Private Sub MoveSelection(bUp As Boolean)
   
 End
 
-Public Sub _SaveCursor()
+Public Sub SaveCursor()
   
   If $iSaveCursor = 0 Then $aSaveCursor = [$X, $Y, $SX, $SY]
   Inc $iSaveCursor
   
 End
 
-Public Sub _RestoreCursor()
+Public Sub RestoreCursor()
   
   Dim X, Y, SX, SY As Integer
   
