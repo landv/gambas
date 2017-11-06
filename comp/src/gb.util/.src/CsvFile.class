@@ -18,6 +18,14 @@ Public Sub _new(Path As String, Optional Separator As String = ",", Optional Esc
   Dim iInd As Integer
   Dim sField As String
   
+  If File.IsRelative(Path) Then
+    If Path Begins "./" Then 
+      Path = "." & Path
+    Else If Path Not Begins "../" Then
+      Path = ".." &/ Path
+    Endif
+  Endif
+  
   $hFile = Open Path
   
   $sSeparator = Separator
