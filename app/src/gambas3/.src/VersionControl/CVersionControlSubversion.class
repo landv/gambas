@@ -190,20 +190,7 @@ End
 
 Public Sub Update() As Boolean
 
-  Dim bResult As Integer
-  Dim sFile As String
-  Dim sPath As String
-  
-  bResult = VersionControl.Run(["svn", "update", SvnPath$($sRealDir), "--accept", "postpone"], True)
-  For Each sFile In [".project", ".startup", ".component", ".info"]
-    sPath = $sRealDir &/ sFile
-    If Exist(sPath) And If InConflict(sPath) Then Resolve(sPath, "theirs-full")
-  Next
-  For Each sFile In [".settings"]
-    sPath = $sRealDir &/ sFile
-    If Exist(sPath) And If InConflict(sPath) Then Resolve(sPath, "mine-full")
-  Next
-  Return bResult
+  Return VersionControl.Run(["svn", "update", SvnPath$($sRealDir), "--accept", "postpone"], True)
 
 End
 
@@ -230,15 +217,19 @@ Public Sub InConflict(sPath As String) As Boolean
 
 End
 
-Public Sub Resolve(sPath As String, Optional sAccept As String) As Boolean
+Public Sub SolveConflict(sPath As String, Optional iAccept As Integer) As Boolean
 
   Dim aArg As String[]
   
-  If sAccept Then 
-    aArg = ["svn", "resolve", SvnPath$(sPath), "--accept", sAccept]
-  Else
-    aArg = ["svn", "resolved", SvnPath$(sPath)]
-  Endif
+  Select Case iAccept
+    Case VersionControl.ACCEPT_OURS
+      aArg = ["svn", "resolve", SvnPath$(sPath), "--accept", "theirs-full"]
+    Case VersionControl.ACCEPT_THEIRS
+      aArg = ["svn", "resolve", SvnPath$(sPath), "--accept", "mine-full"]
+    Default
+      aArg = ["svn", "resolved", SvnPath$(sPath)]
+  End Select
+  
   VersionControl.Run(aArg)
   Return Process.LastValue
 

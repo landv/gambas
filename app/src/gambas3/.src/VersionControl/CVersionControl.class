@@ -5,6 +5,7 @@ Create Static
 Public Const Name As String = ""
 Public Const LongName As String = ""
 Public Const DoNotPush As Boolean = False
+Public Const CancelUpdate As Boolean = False
 
 Public Sub AddFile((sPath) As String, Optional (bForce) As Boolean)
   
@@ -58,7 +59,7 @@ Public Sub InConflict((sPath) As String) As Boolean
   
 End
 
-Public Sub Resolve((sPath) As String, Optional (sAccept) As String) As Boolean
+Public Sub SolveConflict((sPath) As String, Optional (iAccept) As Integer) As Boolean
   
 End
 

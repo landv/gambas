@@ -912,7 +912,7 @@ ADD_EMBLEM:
   If bLink Then hImage = Project.AddLinkEmblem(hImage)
   
   If Not bNoEmblem Then
-    If bConflict Then hImage = Project.AddEmblem(hImage, "icon:/32/warning", iEmblemSize)
+    If bConflict Then hImage = Project.AddEmblem(hImage, "img/32/conflict.png", iEmblemSize)
     If bLocked Then hImage = Project.AddEmblem(hImage, "icon:/32/lock", iEmblemSize)
     If bAdded Then hImage = Project.AddEmblem(hImage, "img/32/added.png", iEmblemSize)
     If bModified Then hImage = Project.AddEmblem(hImage, "img/32/modified.png", iEmblemSize)
@@ -1120,7 +1120,10 @@ Public Sub RefreshKey(sKey As String, Optional sOld As String)
     sKey = FindForm(File.BaseName(sKey))
   Endif
 
-  If Not Exist(sKey) Then Return
+  If Not Exist(sKey) Then 
+    Try $hTree.Remove(sKey)
+    Return
+  Endif
 
   If Not sOld Or If sOld = sKey Then 
   

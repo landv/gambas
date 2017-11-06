@@ -1073,6 +1073,14 @@ End
 
 Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
 
+  Dim hPict As Picture
+  
+  If IsConflict(sPath) Then 
+    hPict = Picture["img/32/conflict.png"]
+    If iSize = 0 Then iSize = 16
+    If iSize <> 32 Then hPict = hPict.Image.Stretch(iSize, iSize).Picture
+    Return hPict
+  Endif
   If Tree Then Return Tree.GetFileIcon(sPath, iSize,, True)
 
   ' If iSize Then
@@ -2107,15 +2115,11 @@ Public Function LoadFile(sPath As String) As Object
     Inc Application.Busy
 
     'If VersionControl.InConflict(sPath) Then Error.Raise("File in conflict")
-    If IsConflict(sPath) Then Error.Raise("File in conflict")
-
-    SetMessage(Subst(("Loading &1..."), File.Name(sPath)))
-
-    'PRINT "Load: "; sPath
-
-    'hActive = ActiveForm
-
-    If IsSourcePath(sPath) Then
+    If IsConflict(sPath) Then 
+      
+      hForm = New FConflictEditor(sPath)
+      
+    Else If IsSourcePath(sPath) Then
 
       sType = File.Ext(sPath)
 
@@ -2252,12 +2256,12 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   '  FToolBox.Show
   'ENDIF
 
-  If IsConflict(sPath) Then
-    FConflict.Run(sPath)
-    VersionControl.CheckPaths()
-    If IsConflict(sPath) Then Return
-    RefreshKey(sPath)
-  Endif
+  ' If IsConflict(sPath) Then
+  '   FConflict.Run(sPath)
+  '   VersionControl.CheckPaths()
+  '   If IsConflict(sPath) Then Return
+  '   RefreshKey(sPath)
+  ' Endif
   
   If Files[sPath] Then bAlreadyLoaded = True
 
@@ -4047,8 +4051,6 @@ Public Sub UnloadFile(sPath As String)
     Files[sPath] = Null
   Endif
 
-  Try ProjectTree.Remove(sPath)
-
 End
 
 Public Sub DeleteFile(sPath As String)
@@ -4119,10 +4121,7 @@ Public Sub DeleteFile(sPath As String)
     
   Endif
 
-  'CATCH
-
-  'Message("*Unable to delete file.||" & sPath)
-  'Refresh
+  Tree.RefreshKey(sPath)
 
 End
 
@@ -4148,7 +4147,7 @@ Public Sub DeleteDir(sDir As String, Optional bNoVerCtrl As Boolean)
 
   Endif
 
-  RefreshKey(sDir)
+  Tree.RefreshKey(sDir)
 
 End
 

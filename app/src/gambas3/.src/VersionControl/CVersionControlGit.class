@@ -6,6 +6,7 @@ Create Static
 Public Const Name As String = "Git"
 Public Const LongName As String = "Git"
 Public Const DoNotPush As Boolean = True
+Public Const CancelUpdate As Boolean = True
 
 Private $aConflict As String[] = ["DD", "AU", "UD", "UA", "DU", "AA", "UU"]
 
@@ -25,6 +26,13 @@ Private Sub Init()
 
 End
 
+Private Sub RunShell(sCmd As String) As String
+  
+  Return VersionControl.Shell("cd " & Shell(Project.Dir) & " && " & sCmd)
+  
+End
+
+
 Public Sub Check() As Boolean
   
   Dim sResult As String
@@ -33,7 +41,7 @@ Public Sub Check() As Boolean
   
   If $bHasGit Then
     
-    sResult = VersionControl.Shell("cd " & Shell(Project.Dir) & " && git status --porcelain .project")
+    sResult = RunShell("git status --porcelain .project")
     
     If Process.LastValue Then
       $bCanInit = True
@@ -43,10 +51,10 @@ Public Sub Check() As Boolean
       $bCanControl = sResult Begins "??"
 
       If Not $bCanControl Then
-        sResult = VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git rev-parse --show-toplevel")
+        sResult = RunShell("git rev-parse --show-toplevel")
         If Process.LastValue = 0 Then 
           $sRoot = Trim(sResult)
-          $bHasRemote = VersionControl.Shell("cd " & Shell(Project.Dir) & " && git remote show")
+          $bHasRemote = RunShell("git remote show")
           Return True
         Endif
       Endif
@@ -136,7 +144,7 @@ Public Sub Update() As Boolean
   aEnv = VersionControl.LANG_ENV.Copy()
   aEnv.Add("PWD=" & Project.Dir)
 
-  bResult = VersionControl.Run(["git", "pull"], True, True, aEnv)
+  bResult = VersionControl.Run(["git", "pull", "-q"], True, True, aEnv)
   
   ' For Each sFile In [".project", ".startup", ".component", ".info"]
   '   sPath = $sRealDir &/ sFile
@@ -204,9 +212,10 @@ Public Sub AddFile(sPath As String, Optional (bForce) As Boolean)
   
 End
 
-Public Sub AddDir(sPath As String)
+Public Sub AddDir((sPath) As String)
   
-  AddFile(sPath)
+  ' git does not track directories
+  ' AddFile(sPath)
   
 End
 
@@ -226,21 +235,25 @@ Public Sub RemoveFile(sPath As String, Optional (bForce) As Boolean)
   
 End
 
-Public Sub RemoveDir(sPath As String)
+Public Sub RemoveDir((sPath) As String)
 
-  RemoveFile(sPath)
+  ' git does not track directories
+  ' RemoveFile(sPath)
 
 End
 
 Public Sub Commit(sChange As String, bDoNotPush As Boolean) As Boolean
   
-  Dim sFile As String = Temp$()
+  Dim sFile As String 
   Dim aEnv As String[]
   
-  File.Save(sFile, sChange)
-  'VersionControl.Run(["git", "commit", "-F", sFile, Project.Dir], False, False, VersionControl.LANG_ENV)
-  VersionControl.Shell("cd " & Shell(Project.Dir) & " && git commit -F " & Shell$(sFile) & " .", Project.Dir)
-  If Process.LastValue Then Return True
+  If sChange Then
+    sFile = Temp$()
+    File.Save(sFile, sChange)
+    'VersionControl.Run(["git", "commit", "-F", sFile, Project.Dir], False, False, VersionControl.LANG_ENV)
+    RunShell("git commit -F " & Shell$(sFile) & " .") ', Project.Dir)
+    If Process.LastValue Then Return True
+  Endif
   
   If Not bDoNotPush And If $bHasRemote Then
   
@@ -270,8 +283,9 @@ Public Sub Info() As Collection
   For Each sResult In aResult
     If sResult Begins "*" Then
       aResult = Scan(sResult, "* * * [[]*] *")
+      If aResult.Count = 0 Then aResult = Scan(sResult, "* * *")
       cInfo[("Current branch")] = aResult[1]
-      cInfo[("Origin")] = aResult[3]
+      If aResult.Count >= 4 Then cInfo[("Origin")] = aResult[3]
       Break
     Endif
   Next
@@ -342,5 +356,28 @@ End
 Public Sub HasRemote() As Boolean
   
   Return $bHasRemote
+  
+End
+
+Public Sub SolveConflict(sPath As String, Optional iAccept As Integer) As Boolean
+  
+  If iAccept Then
+    Select iAccept
+      Case VersionControl.ACCEPT_OURS
+        RunShell("git checkout --ours " & Shell$(sPath))
+      Case VersionControl.ACCEPT_THEIRS
+        RunShell("git checkout --theirs " & Shell$(sPath))
+    End Select
+    Return Process.LastValue
+  Endif
+  
+  RunShell("git add " & Shell$(sPath))
+  If Process.LastValue Then Return True
+  
+  VersionControl.CheckPaths()
+  If Project.HasConflict Then Return
+  
+  'FVersionControl.Run(True)
+  RunShell("git commit -m " & Shell$(("Solve conflict."))) ', Project.Dir)
   
 End

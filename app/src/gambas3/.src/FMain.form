@@ -191,6 +191,12 @@
         Text = ("Synchronize")
         Picture = Picture["icon:/small/refresh"]
       }
+      { mnuVcCancelUpdate Menu
+        Action = "vc-undo-update"
+        Text = ("Undo synchronization")
+        Picture = Picture["icon:/small/undo"]
+        Visible = False
+      }
       { mnuVcRevert Menu
         Action = "vc-revert"
         Text = ("Undo all changes")
@@ -678,7 +684,7 @@
       }
       { mnuFilterConflict Menu
         Text = ("Show files in conflict")
-        Picture = Picture["icon:/small/important"]
+        Picture = Picture["img/32/conflict.png"]
       }
       { Menu13 Menu
       }
@@ -1699,6 +1705,11 @@
   }
   { Action vc-revert
     Text = "Undo all changes"
+    Shortcut = ""
+    Picture = "icon:/small/undo"
+  }
+  { Action vc-undo-update
+    Text = "Undo synchronization"
     Shortcut = ""
     Picture = "icon:/small/undo"
   }

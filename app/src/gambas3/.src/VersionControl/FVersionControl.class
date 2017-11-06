@@ -64,13 +64,19 @@ Public Sub Form_Open()
   tabVersionControl_Click
   Dec Application.Busy
   
+  chkDoNotPush.Visible = VersionControl.DoNotPush And VersionControl.HasRemote()
+  
   If Not sDiff Then
-    Message.Info(("There is nothing to commit."))
+    If chkDoNotPush.Visible Then
+      If Message.Question(("There is nothing to commit.") & "\n\n" & ("Do you want to push the repository?"), ("Push"), ("Cancel")) = 1 Then 
+        VersionControl.Commit("", False)
+      Endif
+    Else
+      Message.Info(("There is nothing to commit."))
+    Endif
     Me.Close
     Return
   Endif
-  
-  chkDoNotPush.Visible = VersionControl.DoNotPush And VersionControl.HasRemote()
   
   DS = Desktop.Scale
   Me.Resize(FMain.W - DS * 16, FMain.H - DS * 16)

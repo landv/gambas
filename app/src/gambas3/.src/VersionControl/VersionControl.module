@@ -27,6 +27,7 @@ Private $sLastResult As String
 
 Public LANG_ENV As String[] = ["LC_ALL=C.UTF-8", "LANG=C.UTF-8", "LANGUAGE=C.UTF-8"]
 Public Const DELIM_CHANGE As String = ("This line and the following will be ignored")
+Public Enum ACCEPT_OURS = 1, ACCEPT_THEIRS = 2
 
 Public Sub Refresh()
 
@@ -322,9 +323,13 @@ Public Sub Update()
 
   Dim bErr As Boolean
   Dim hFile As Object
+  Dim sFile As String
+  Dim sPath As String
+  Dim aRemove As String[]
 
   Inc Application.Busy
   bErr = $hVC.Update()
+  CheckPaths
   Project.Refresh
   Dec Application.Busy
 
@@ -334,9 +339,30 @@ Public Sub Update()
     Message.Info(("Project has been updated from repository successfully."))
   Endif
   
-  For Each hFile In Project.Files
-    If Project.IsConflict(hFile.Path) Then Try hFile.Close
+  For Each sFile In [".project", ".startup", ".component", ".info"]
+    sPath = Project.Dir &/ sFile
+    If Exist(sPath) And If Project.IsConflict(sPath) Then SolveConflict(sPath, ACCEPT_THEIRS)
   Next
+  For Each sFile In [".settings"]
+    sPath = Project.Dir &/ sFile
+    If Exist(sPath) And If Project.IsConflict(sPath) Then SolveConflict(sPath, ACCEPT_OURS)
+  Next
+
+  aRemove = New String[]
+  Project.Workspace.Lock
+  For Each hFile In Project.Files
+    If hFile Is FConflictEditor Then Continue
+    sPath = hFile.Path
+    If Project.IsConflict(sPath) Then aRemove.Add(sPath)
+  Next
+  Project.Workspace.Unlock
+  
+  If aRemove.Count Then
+    
+    Project.Reload
+    FMain.DoFilter(Project.FILTER_CONFLICT)
+    
+  Endif
 
 End
 
@@ -370,9 +396,16 @@ Public Sub InConflict(sPath As String) As Boolean
 
 End
 
-Public Sub Resolve(sPath As String, Optional sAccept As String) As Boolean
+Public Sub SolveConflict(sPath As String, Optional iAccept As Integer) As Boolean
 
-  Return $hVC.Resolve(sPath, sAccept)
+  If $hVC.SolveConflict(sPath, iAccept) Then Return True
+  
+  CheckPaths
+  If Project.HasConflict Then
+    Project.Refresh
+  Else
+    Project.Reload
+  Endif
 
 End
 
@@ -588,5 +621,11 @@ End
 Public Sub HasRemote() As Boolean
   
   Return $hVC.HasRemote()
+  
+End
+
+Public Sub GetSolveConflictMessage() As String
+  
+  Return $hVC.GetSolveConflictMessage()
   
 End

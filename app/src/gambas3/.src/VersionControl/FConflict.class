@@ -11,19 +11,7 @@ Private Const TYPE_BINARY As Integer = 2
 
 Public Sub Run(sPath As String) As Boolean
   
-  Dim sFile As String
-  Dim iRev As Integer
-  Dim iMaxRev As Integer
-
-  For Each sFile In Dir(File.Dir(sPath), File.Name(sPath) & ".r*")
-    Try iRev = CInt(Mid$(File.Ext(sFile), 2))
-    If iRev > iMaxRev Then iMaxRev = iRev
-  Next
-  
-  Select Case Message.Warning(Subst(("This file is in conflict with the revision #&1.\nYou must resolve the conflict in order to use the file."), CStr(iMaxRev)), ("&Edit"), ("Close"))
-    Case 2
-      Return
-  End Select
+  If Message.Warning(Subst(("This file is in conflict. You must resolve the conflict in order to use the file again.")), ("&Edit"), ("Close")) = 2 Then Return
 
   $sPath = sPath
   FConflict.ShowDialog
@@ -187,7 +175,7 @@ Public Sub edtConflict_Highlight(Text As String)
     TextHighlighter.Add(Highlight.Comment, String.Len(Text))
     'Highlight.Add(Highlight.Keyword, String.Len(sText) - iPos)
     TextHighlighter.State = Highlight.Number
-    TextHighlighter.ShowLimit = True
+    TextHighlighter.Limit = True
   Else If Text Begins "======" Then
     TextHighlighter.Add(Highlight.Comment, String.Len(Text))
     TextHighlighter.State = Highlight.Function

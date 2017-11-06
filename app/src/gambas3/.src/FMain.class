@@ -2219,10 +2219,23 @@ Public Sub txtSearch_Activate()
   
 End
 
-Private Sub DoFilter(sFilter As String)
+Public Sub DoFilter(sFilter As String)
+  
+  Dim sText As String
+  
+  Select Case sFilter
+    Case Project.FILTER_ADDED
+      sText = mnuFilterAdd.Text
+    Case Project.FILTER_CONFLICT
+      sText = mnuFilterConflict.Text
+    Case Project.FILTER_EXPORTED
+      sText = mnuFilterExport.Text
+    Case Project.FILTER_MODIFIED
+      sText = mnuFilterModified.Text
+  End Select
   
   txtSearchProject.Font.Italic = True
-  txtSearchProject.Text = Last.Text
+  txtSearchProject.Text = sText
   Project.ProjectFilter = sFilter
   tvwProject.SetFocus
   txtSearchProject.FilterNow
