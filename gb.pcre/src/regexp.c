@@ -64,7 +64,7 @@ static void compile(void *_object)
 static void exec(void *_object, int lsubject)
 {
 	int ret;
-	char code[8];
+	char code[16];
 	
 	if (!THIS->code) 
 	{

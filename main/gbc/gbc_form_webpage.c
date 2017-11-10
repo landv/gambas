@@ -323,7 +323,7 @@ void FORM_webpage(char *source)
 	char c;
 	const char *p;
 	int line;
-	char buf[8];
+	char buf[16];
 	bool has_contents = FALSE;
 	
 	line = FORM_FIRST_LINE;

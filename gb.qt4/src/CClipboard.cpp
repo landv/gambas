@@ -182,7 +182,7 @@ static void paste(const QMimeData *data, const char *fmt)
 			{
 				QImage *image = new QImage();
 				*image = qvariant_cast<QImage>(data->imageData());
-				image->convertToFormat(QImage::Format_ARGB32_Premultiplied);
+				*image = image->convertToFormat(QImage::Format_ARGB32_Premultiplied);
 				GB.ReturnObject(CIMAGE_create(image));
 			}
 			break;

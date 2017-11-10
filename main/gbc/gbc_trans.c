@@ -677,7 +677,7 @@ bool TRANS_check_declaration(void)
 PATTERN *TRANS_get_constant_value(TRANS_DECL *decl, PATTERN *current)
 {
 	int index;
-	TRANS_NUMBER number;
+	TRANS_NUMBER number = {0};
 	int type;
 	PATTERN value;
 
