@@ -31,6 +31,10 @@ Private $iX As Integer
 Private $iY As Integer
 
 Public Sub _new()
+
+  Dim DS As Integer
+  
+  DS = Desktop.Scale
   
   With tbvObject
     .Columns.Count = 2
@@ -49,48 +53,44 @@ Public Sub _new()
   With cvwBreak
     .Columns.Count = 3
     .Columns[0].Text = ("Class")
-    .Columns[0].Width = Desktop.Scale * 16
+    .Columns[0].Width = DS * 16
     .Columns[1].Text = ("Function")
-    .Columns[1].Width = Desktop.Scale * 16
+    .Columns[1].Width = DS * 16
     .Columns[2].Text = ("Line")
-    .Columns[2].Width = Desktop.Scale * 6
+    .Columns[2].Width = DS * 6
   End With
   
   With gvwFind
     .Columns.Count = 5
-    .Columns[0].Width = Desktop.Scale * 16
+    .Columns[0].Width = DS * 16
     .Columns[0].Text = ("File")
-    .Columns[1].Width = Desktop.Scale * 16
+    .Columns[1].Width = DS * 16
     .Columns[1].Text = ("Procedure")
-    .Columns[2].Width = Desktop.Scale * 6
+    .Columns[2].Width = DS * 6
     .Columns[2].Text = ("Line")
-    .Columns[3].Width = Desktop.Scale * 6
+    .Columns[3].Width = DS * 6
     .Columns[3].Text = ("Col.")
     .Columns[4].Width = 32
     .Columns[4].Text = ("Text")
   End With
   
   With gvwTask
-    .Columns.Count = 4
-    .Columns[0].Width = Desktop.Scale * 6
-    .Columns[0].Text = ("Type")
-    .Columns[1].Width = 32
-    .Columns[1].Text = ("Text")
-    .Columns[1].Expand = True
-    .Columns[2].Width = Desktop.Scale * 16
-    .Columns[2].Text = ("Class")
-    .Columns[3].Width = Desktop.Scale * 6
-    .Columns[3].Text = ("Line")
+    .AddColumn(("Type"))
+    .AddColumn(("Class"))
+    .AddColumn(("Line"))
+    .AddColumn(("Text"), -1)
   End With
   
   With gvwCompilation
     .Columns.Count = 3
-    .Columns[0].Width = Desktop.Scale * 16
+    .Columns[0].Width = DS * 16
     .Columns[0].Text = ("Class")
-    .Columns[1].Width = Desktop.Scale * 6
+    .Columns[1].Width = DS * 6
     .Columns[1].Text = ("Line")
     .Columns[2].Text = ("Message")
   End With
+  
+  panDebug.MinSize = 24 * DS
   
   HideTab(TAB_COMPILATION)
   'wizDebug[TAB_SEARCH].Closable = True
@@ -606,7 +606,7 @@ Public Sub ReadConfig()
   'Dim hButton As ToolButton
   Dim hCtrl As Control
 
-  Settings.Read(panStack)
+  Settings.Read(panDebug)
   wizDebug.TextFont = Project.GetSmallFont()
   
   Project.SetSmallFont(tbvLocal)
@@ -832,14 +832,17 @@ Public Sub UpdateView()
   If panStack.Visible <> Project.Running Then
     If Project.Running Then
       panStack.Visible = True
-      Settings.Read(panStack)
+      Settings.Read(panDebug)
       'Settings.Read(splDebug,, [4, 1])
     Else 
-      Settings.Write(panStack)
+      Settings.Write(panDebug)
       'Settings.Write(splDebug)
       panStack.Visible = False
     Endif
-  Endif 
+  Endif
+  
+  panButtonCompilation.Visible = Not Project.Running
+  panButtonTask.Visible = Not Project.Running
         
   If Not bUndock Then 
     If Not FOutput.Parent Then 
@@ -1245,6 +1248,22 @@ Public Sub RefreshTask(sPath As String)
   
 End
 
+Private Sub AfterRefreshTask()
+  
+  Dim I As Integer
+  
+  $aTask.Sort
+  $cRefreshTask.Clear
+  gvwTask.Rows.Count = $aTask.Count
+  gvwTask.Refresh
+  
+  For I = 0 To gvwTask.Columns.Max - 1
+    gvwTask.Columns[I].W = -1
+  Next
+  
+End
+
+
 Public Sub UpdateTask()
   
   Dim sPath As String
@@ -1258,10 +1277,7 @@ Public Sub UpdateTask()
     $aTask.Insert(CTask.ScanFile(sPath))
   Next
   
-  $aTask.Sort
-  $cRefreshTask.Clear
-  gvwTask.Rows.Count = $aTask.Count
-  gvwTask.Refresh
+  AfterRefreshTask
   
   Dec Application.Busy
 
@@ -1294,10 +1310,7 @@ Public Sub timTask_Timer()
     
   Next
   
-  $aTask.Sort
-  $cRefreshTask.Clear
-  gvwTask.Rows.Count = $aTask.Count
-  gvwTask.Refresh
+  AfterRefreshTask
   
   timTask.Stop
 
@@ -1323,10 +1336,10 @@ Public Sub gvwTask_Data(Row As Integer, Column As Integer)
     
     Select Case Column
       
-      Case 2
+      Case 1
         .Text = hTask.Class
         
-      Case 3
+      Case 2
         .Text = CStr(hTask.Line)
         
       Case 0
@@ -1339,7 +1352,7 @@ Public Sub gvwTask_Data(Row As Integer, Column As Integer)
             .Text = "TODO"
         End Select
         
-      Case 1
+      Case 3
         .Text = hTask.Text
       
     End Select

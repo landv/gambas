@@ -2871,3 +2871,16 @@ Public Sub mnuVcBranchSet_Click()
   UpdateBranchMenu
   
 End
+
+Public Sub panDebug_Arrange()
+
+  btnClosePanel.Move(panDebug.W - btnClosePanel.W, 0)
+  btnClosePanel.Raise
+
+End
+
+Public Sub btnClosePanel_Click()
+
+  ShowDebug(False)
+
+End
