@@ -843,6 +843,7 @@ Public Sub UpdateView()
   
   panButtonCompilation.Visible = Not Project.Running
   panButtonTask.Visible = Not Project.Running
+  panButtonSearch.Visible = Not Project.Running
         
   If Not bUndock Then 
     If Not FOutput.Parent Then 
