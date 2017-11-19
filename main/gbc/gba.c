@@ -384,6 +384,8 @@ int main(int argc, char **argv)
 
 						ARCH_add_file(file);
 					}
+					
+					free(dirent);
 				}
 
 	_NEXT_PATH:
