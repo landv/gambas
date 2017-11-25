@@ -99,7 +99,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Component_Version)
 
 	if (OBJECT(COMPONENT)->user)
-		GB_ReturnConstZeroString(OBJECT(COMPONENT)->version);
+		GB_ReturnString(ARCHIVE_get_version(OBJECT(COMPONENT)->archive));
 	else
 		GB_ReturnConstZeroString(VERSION);
 

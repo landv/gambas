@@ -189,7 +189,6 @@ COMPONENT *COMPONENT_create(const char *name)
 	bool library = FALSE;
 	bool same_name_as_project = FALSE;
 	char *p = NULL;
-	char *version = NULL;
 
 	if (*name == '/' || *name == ':') // user library
 	{
@@ -200,10 +199,7 @@ COMPONENT *COMPONENT_create(const char *name)
 			name++;
 			p = rindex(name, ':');
 			if (p)
-			{
-				version = p + 1;
 				*p = 0;
-			}
 		}
 		else
 			name = FILE_get_basename(name);
@@ -219,8 +215,6 @@ COMPONENT *COMPONENT_create(const char *name)
 	comp->ref = 1;
 
 	comp->name = STRING_new_zero(name);
-	if (version)
-		comp->version = STRING_new_zero(version);
 
 	if (p)
 		*p = ':';
@@ -303,7 +297,6 @@ void COMPONENT_delete(COMPONENT *comp)
 		ARCHIVE_delete(comp->archive);
 
 	STRING_free(&comp->name);
-	STRING_free(&comp->version);
 
 	FREE(&comp);
 }

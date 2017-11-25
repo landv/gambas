@@ -332,6 +332,7 @@ void ARCHIVE_delete(ARCHIVE *arch)
 
 	TABLE_delete(&arch->classes);
 	STRING_free(&arch->domain);
+	STRING_free(&arch->version);
 
 	FREE(&arch);
 }
@@ -712,4 +713,45 @@ void ARCHIVE_browse(ARCHIVE *arch, void (*found)(const char *path, int64_t size)
 		(*found)(path, size);
 		STRING_free(&path);
 	}
+}
+
+char *ARCHIVE_get_version(ARCHIVE *arch)
+{
+	COMPONENT *current;
+	char *buffer;
+	int len;
+	int n;
+	char *line;
+	
+	if (!arch->version_loaded)
+	{
+		current = COMPONENT_current;
+		COMPONENT_current = (COMPONENT *)arch->current_component;
+
+		ON_ERROR_1(error_ARCHIVE_load_exported_class, current)
+		{
+			STREAM_load(".startup", &buffer, &len);
+			
+			n = 0;
+			line = strtok(buffer, "\n");
+			while (line)
+			{
+				n++;
+				if (n == 5)
+				{
+					arch->version = STRING_new_zero(line);
+					break;
+				}
+				line = strtok(NULL, "\n");
+			}
+
+			FREE(&buffer);
+		}
+		END_ERROR
+
+		COMPONENT_current = current;
+		arch->version_loaded = TRUE;
+	}
+
+	return arch->version;
 }
