@@ -38,6 +38,7 @@ typedef
     LIST list;
 		LIST load;
     char *name;
+    char *version;
     LIBRARY *library;
     ARCHIVE *archive;
 		unsigned order : 8;

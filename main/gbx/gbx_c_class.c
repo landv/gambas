@@ -96,6 +96,21 @@ BEGIN_PROPERTY(Component_Name)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Component_Version)
+
+	if (OBJECT(COMPONENT)->user)
+		GB_ReturnConstZeroString(OBJECT(COMPONENT)->version);
+	else
+		GB_ReturnConstZeroString(VERSION);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Component_Library)
+
+	GB_ReturnBoolean(OBJECT(COMPONENT)->user);
+
+END_PROPERTY
+
 BEGIN_PROPERTY(Component_Path)
 
 	GB_ReturnString(COMPONENT_path);
@@ -885,6 +900,8 @@ GB_DESC NATIVE_Component[] =
 	GB_STATIC_PROPERTY_READ("Path", "s", Component_Path),
 
 	GB_PROPERTY_READ("Name", "s", Component_Name),
+	GB_PROPERTY_READ("Version", "s", Component_Version),
+	GB_PROPERTY_READ("Library", "b", Component_Library),
 
 	GB_END_DECLARE
 };
