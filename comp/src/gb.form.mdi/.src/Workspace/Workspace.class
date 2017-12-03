@@ -12,6 +12,7 @@ Event Activate
 Event Close({Window} As Window)
 Event Attach({Window} As Window)
 Event Detach({Window} As Window)
+Event CloseAll
 
 Property ActiveWindow As Window
 Property Read Windows As Window[]
@@ -132,6 +133,13 @@ Public Sub _RaiseDetach(hWindow As Window)
   Raise Detach(hWindow)
   
 End
+
+Public Sub _RaiseCloseAll()
+  
+  Raise CloseAll
+  
+End
+
 
 
 ' Private Function ShowTitle_Read() As Boolean

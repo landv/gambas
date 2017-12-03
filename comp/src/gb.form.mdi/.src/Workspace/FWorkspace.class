@@ -573,6 +573,8 @@ Private Sub CloseWindows(iMode As Integer)
   'CheckWindow
   {Unlock}
   
+  If iMode = CLOSE_ALL Then GetParent()._RaiseCloseAll()
+  
 End
 
 Public Sub mnuCloseOther_Click()
