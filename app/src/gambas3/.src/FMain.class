@@ -362,16 +362,19 @@ Public Sub mnuPopup_Show()
   Dim hProgList As DesktopFile[]
   Dim bProject As Boolean
   Dim sRoot As String
+  Dim bLink As Boolean
+  Dim sPath As String
   
   sCurrent = GetCurrent()
   bCurrent = sCurrent
   sRoot = GetRootKey($sKey)
+  If sCurrent Then bLink = Stat(sCurrent).Type = gb.Link
   
   UpdateMenu
   
   If sCurrent And If Project.IsReadOnly(sCurrent) Then
     'mnuNew.Visible = False
-    If Not IsDir(sCurrent) Or If Stat(sCurrent).Type <> gb.Link Then
+    If Not IsDir(sCurrent) Or If Not bLink Then
       mnuCut.Visible = False
       mnuCopy.Visible = False
       mnuPaste.Visible = False
@@ -525,10 +528,18 @@ Public Sub mnuPopup_Show()
     
   Endif
   
+  mnuOpenInProject.Hide
   If IsDir(sCurrent) Or If Left($sKey) = "$" Then
     mnuOpenWithFileManager.Show
   Else
     mnuOpenWithFileManager.Hide
+    If bLink Then
+      sPath = Project.GetAbsoluteLink(sCurrent, Stat(sCurrent).Link)
+      If Project.FindProjectPath(sPath) Then 
+        mnuOpenInProject.Show
+        mnuOpenInProject.Tag = sPath
+      Endif
+    Endif
   Endif
     
   If bProject Then
@@ -2883,4 +2894,16 @@ Public Sub btnClosePanel_Click()
 
   ShowDebug(False)
 
+End
+
+Public Sub wrkProject_CloseAll()
+
+  ShowDebug(False)
+
+End
+
+Public Sub mnuOpenInProject_Click()
+  
+  Project.Open(Project.FindProjectPath(mnuOpenInProject.Tag), True, mnuOpenInProject.Tag)
+  
 End

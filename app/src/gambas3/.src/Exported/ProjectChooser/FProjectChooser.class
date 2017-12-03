@@ -47,33 +47,6 @@ Public Sub dchProject_Icon(Path As String)
 
 End
 
-Private Sub GetProjectPath(sPath As String) As String
-  
-  Dim hFile As File
-  Dim sHeader As String
-  
-  Do
-    
-    If Exist(sPath &/ ".project") Then 
-      
-      hFile = Open sPath &/ ".project"
-      sHeader = Read #hFile, -256
-      hFile.Close
-      
-      If sHeader Begins Project.PROJECT_MAGIC Or If sHeader Begins Project.PROJECT_MAGIC_2 Then
-        Return sPath
-      Endif
-      
-    Endif
-    
-    sPath = File.Dir(sPath)
-    If sPath = "/" Then Break
-  Loop
-  
-Catch
-  
-End
-
 Private Sub UpdateButtons()
 
   If Not $bShowButton Or If Not $sLast Then
@@ -91,7 +64,7 @@ Public Sub dchProject_Change()
   Dim sPath As String
   Dim hProjectTree As CProjectTree
   
-  sPath = GetProjectPath(dchProject.Value)
+  sPath = Project.FindProjectPath(dchProject.Value)
   If sPath = $sLast Then Return
   
   If Not sPath Then
@@ -131,7 +104,7 @@ End
 
 Public Sub GetPath() As String
   
-  Return GetProjectPath(dchProject.Value)
+  Return Project.FindProjectPath(dchProject.Value)
   
 End
 

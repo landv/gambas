@@ -272,6 +272,7 @@ Public Sub Main()
   Dim iInd As Integer
   Dim sArg As String
   Dim hComp As CComponent
+  Dim aOpenFile As New String[]
 
   'DB.Debug = True
   
@@ -284,7 +285,7 @@ Public Sub Main()
       Print File.Load("usage")
       Quit
     Else If sArg = "--license" Or If sArg = "-L" Then
-      Print File.Load("license")
+      Print Replace(File.Load("license"), "YEAR", CStr(Year(Now)))
       Quit
     Else If sArg = "--version" Or If sArg = "-V" Then
       Print Application.Version
@@ -301,8 +302,11 @@ Public Sub Main()
       Error "gambas3: unknown option: " & sArg
       Quit
     Else
-      sPath = Args[iInd]
-      Break
+      If Not sPath Then
+        sPath = Args[iInd]
+      Else
+        aOpenFile.Add(Args[iInd])
+      Endif
     Endif
   Next
 
@@ -367,6 +371,9 @@ Public Sub Main()
   If sPath Then 
     If IsDir(sPath) Then
       Project.Open(sPath)
+      For Each sPath In aOpenFile
+        OpenFile(sPath)
+      Next
     Else If Exist(sPath) Then
       FMain.OpenExternFile(sPath)
     Else
@@ -463,7 +470,7 @@ Finally
 
 End
 
-Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Boolean
+Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean, sOpenFile As String) As Boolean
 
   Dim sOldPath As String
   Dim sOldName As String
@@ -479,7 +486,9 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   Dim sStatus As String
   Dim bIsFake As Boolean
 
-  If Not Exist(sDir &/ ".project") Then
+  sPath = FindProjectPath(sDir)
+
+  If Not sPath Then
     FMain.ShowError(("This project does not exist.") & "\n\n" & sDir)
     Return True
   Endif
@@ -495,7 +504,11 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
       Message.Error(Subst(("Unable to find Gambas IDE executable in directory:\n\n&1"), Application.Path))
       Return
     Endif
-    Exec [sExec, sDir]
+    If sOpenFile Then
+      Exec [sExec, sDir, sOpenFile]
+    Else
+      Exec [sExec, sDir]
+    Endif
     Return True
   Endif
 
@@ -6593,5 +6606,32 @@ Private Sub RenamePaths(sOld As String, sNew As String)
       Endif
   
     Next
+  
+End
+
+Public Sub FindProjectPath(sPath As String) As String
+  
+  Dim hFile As File
+  Dim sHeader As String
+  
+  Do
+    
+    If Exist(sPath &/ ".project") Then 
+      
+      hFile = Open sPath &/ ".project"
+      sHeader = Read #hFile, -256
+      hFile.Close
+      
+      If sHeader Begins Project.PROJECT_MAGIC Or If sHeader Begins Project.PROJECT_MAGIC_2 Then
+        Return sPath
+      Endif
+      
+    Endif
+    
+    sPath = File.Dir(sPath)
+    If sPath = "/" Then Break
+  Loop
+  
+Catch
   
 End
