@@ -10,8 +10,8 @@ Static Public Const BETWEEN_BRACES_RIGHT As String = ")]}"
 
 Public CloseBraces As Boolean
 
-Private $bCanCloseBraces As Boolean
-Private $bCanCloseBracesComputed As Boolean
+'Private $bCanCloseBraces As Boolean
+'Private $bCanCloseBracesComputed As Boolean
 
 
 Static Public Sub _get(Type As String) As TextEditorMode
@@ -82,39 +82,42 @@ End
 
 Public Sub CanCloseBraces(hEditor As TextEditor) As Boolean
   
-  If Not $bCanCloseBracesComputed Then 
-    $bCanCloseBraces = False
-    If CloseBraces Then 
-      $bCanCloseBraces = Not InsideString(hEditor)
-    Endif
-    '$bCanCloseBracesComputed = True
-  Endif
+  If Not CloseBraces Then Return
   
-  Return $bCanCloseBraces
+  If InsideString(hEditor) Then Return
+  
+  Return True
   
 End
 
 
 Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
   
-  Dim sOther As String
   Dim iPos As Integer
   
   iPos = InStr(Me.BRACES_OPEN, Key.Text)
   
   If iPos And If CanCloseBraces(hEditor) Then
-    
-    sOther = Mid$(Me.BRACES_CLOSE, iPos, 1)
     hEditor.SaveCursor()
     hEditor.Insert(Key.Text)
-    hEditor.Insert(sOther)
+    hEditor.Insert(Mid$(Me.BRACES_CLOSE, iPos, 1))
     hEditor.RestoreCursor()
     hEditor.Goto(hEditor.Column + 1, hEditor.Line)
-    $bCanCloseBracesComputed = False
+    '$bCanCloseBracesComputed = False
     Return True
+  Endif
+  
+  iPos = InStr(Me.BRACES_CLOSE, Key.Text)
+  
+  If iPos Then
+    
+    If String.Mid$(hEditor.Current.Text, hEditor.Column + 1, 1) = Key.Text Then
+      hEditor.Goto(hEditor.Column + 1, hEditor.Line)
+      Return True
+    Endif
     
   Endif
   
-  $bCanCloseBracesComputed = False
+  '$bCanCloseBracesComputed = False
     
 End
