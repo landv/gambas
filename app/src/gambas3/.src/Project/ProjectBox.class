@@ -444,6 +444,7 @@ Public Sub Match(sFilter As String) As Boolean
   With $hProjectInfo
     If .Name Like sFilter Then Return True
     If String.LCase(.Title) Like sFilter Then Return True
+    If .Version Like sFilter Then Return True
     If $bShowAuthors And If String.LCase(.Authors.Join(" ")) Like sFilter Then Return True
     If String.LCase(Group) Like sFilter Then Return True
     If String.LCase(.Description) Like sFilter Then Return True

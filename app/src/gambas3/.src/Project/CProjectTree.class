@@ -815,6 +815,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
           sIcon = sPrefix &/ "pdf"
 
         Case "connection"
+          If Exist(File.SetExt(sPath, "template")) Then bExported = True
           sIcon = sLocalPrefix &/ "database.png"
           
         Case "console"
@@ -863,6 +864,12 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
   Else
 
     sKey = File.Dir(sIcon) &/ File.BaseName(sIcon) & "-"
+    If iSize Then 
+      sKey &= CStr(iSize) & "-"
+    Else
+      sKey &= "16-"
+    Endif
+    
     
     If bLink Then sKey &= "l"
     
@@ -912,12 +919,12 @@ ADD_EMBLEM:
   If bLink Then hImage = Project.AddLinkEmblem(hImage)
   
   If Not bNoEmblem Then
-    If bConflict Then hImage = Project.AddEmblem(hImage, "img/32/conflict.png", iEmblemSize)
-    If bLocked Then hImage = Project.AddEmblem(hImage, "icon:/32/lock", iEmblemSize)
-    If bAdded Then hImage = Project.AddEmblem(hImage, "img/32/added.png", iEmblemSize)
-    If bModified Then hImage = Project.AddEmblem(hImage, "img/32/modified.png", iEmblemSize)
     If bExported Then hImage = Project.AddEmblem(hImage, "img/32/exported.png", iEmblemSize)
     If bDoNotTranslate Then hImage = Project.AddEmblem(hImage, "img/32/do-not-translate.png", iEmblemSize)
+    If bAdded Then hImage = Project.AddEmblem(hImage, "img/32/added.png", iEmblemSize)
+    If bModified Then hImage = Project.AddEmblem(hImage, "img/32/modified.png", iEmblemSize)
+    If bConflict Then hImage = Project.AddEmblem(hImage, "img/32/conflict.png", iEmblemSize)
+    If bLocked Then hImage = Project.AddEmblem(hImage, "icon:/32/lock", iEmblemSize)
   Endif
   
   Return
