@@ -4879,7 +4879,7 @@ Private Sub DrawBarImage3()
   Dim hInfo As CLineInfo
   Dim iCol As Integer
   Dim J As Integer
-  Dim FX As Integer
+  Dim FX As Float
   Dim bModified As Boolean
   Dim bSaved As Boolean
   Dim iAlpha As Integer
@@ -4902,7 +4902,7 @@ Private Sub DrawBarImage3()
     H = (N + F - 1) \ F
   Endif
   
-  FX = Max(4, Min(8, F))
+  FX = (Paint.w - 4) / 100 'Max(4, Min(8, F))
   
   iAlpha = 255 - 128 \ F
   iColComment = Color.SetAlpha($hStyles[Highlight.Comment].Color, iAlpha)
@@ -4923,11 +4923,12 @@ Private Sub DrawBarImage3()
     For J = I To Min(N, I + F - 1)
     
       iRow = _ViewToReal(J)
-      iLen = aLineLength[iRow]
+      sLine = RTrim(aLines[iRow])
+      iLen = Min(String.Len(sLine), 100)
       
-      If iLen > 0 Then 
+      If sLine Then 
         
-        sLine = aLines[iRow]
+        sLine = RTrim(aLines[iRow])
         hInfo = aLinesInfo[iRow]
         
         X = 0
@@ -4944,7 +4945,7 @@ Private Sub DrawBarImage3()
           iCol = iColNormal
         Endif
         
-        Paint.FillRect(X / FX + 5, Y, (iLen - X) / FX, 1, iCol)
+        Paint.FillRect(X * FX + 5, Y, (iLen - X) * FX, 1, iCol)
         
       Endif
       
