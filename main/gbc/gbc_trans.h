@@ -40,16 +40,15 @@ enum {
 	};
 
 enum {
-	TS_MODE_READ = 1,
-	TS_MODE_WRITE = 2,
-	TS_MODE_APPEND = 4,
-	TS_MODE_CREATE = 8,
-	TS_MODE_DIRECT = 16,
-	TS_MODE_LINE = 32,
-	TS_MODE_WATCH = 64,
-	TS_MODE_PIPE = 128,
-	TS_MODE_MEMORY = 256,
-	TS_MODE_STRING = 512
+	TS_MODE_READ   = (1 << 0),
+	TS_MODE_WRITE  = (1 << 1),
+	TS_MODE_APPEND = (1 << 2),
+	TS_MODE_CREATE = (1 << 3),
+	TS_MODE_DIRECT = (1 << 4),
+	TS_MODE_WATCH  = (1 << 6),
+	TS_MODE_PIPE   = (1 << 7),
+	TS_MODE_MEMORY = (1 << 8),
+	TS_MODE_STRING = (1 << 9)
 	};
 
 enum {

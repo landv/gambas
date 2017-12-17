@@ -36,6 +36,8 @@
 #include "gbx_c_file.h"
 #include "gbx_math.h"
 
+#include <sys/file.h>
+
 typedef
 	struct _stream {
 		struct _stream *next;
@@ -998,13 +1000,15 @@ void SUBR_lock(ushort code)
 			wait += SUBR_get_float(&PARAM[1]);
 		}
 
-		STREAM_open(&stream, path, ST_WRITE | ST_CREATE | ST_DIRECT);
-
 		for(;;)
 		{
-			if (!STREAM_lock(&stream))
+			STREAM_open(&stream, path, ST_DIRECT | ST_CREATE | ST_READ);
+			
+			if (!STREAM_lock(&stream) && FILE_exist(path))
 				break;
-
+			
+			STREAM_close(&stream);
+			
 			if (code == 2)
 			{
 				DATE_timer(&timer, FALSE);
@@ -1015,11 +1019,10 @@ void SUBR_lock(ushort code)
 				}
 			}
 
-			STREAM_close(&stream);
 			THROW(E_LOCK);
 		}
 
-		file = CFILE_create(&stream, ST_WRITE | ST_CREATE | ST_DIRECT);
+		file = CFILE_create(&stream, ST_DIRECT | ST_CREATE | ST_READ);
 		OBJECT_put(RETURN, file);
 		SUBR_LEAVE();
 	}

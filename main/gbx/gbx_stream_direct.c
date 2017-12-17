@@ -50,7 +50,11 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 	VALUE val;
 	
 	if (mode & ST_CREATE)
-		fmode = O_CREAT | O_TRUNC; // | O_EXCL;
+	{
+		fmode = O_CREAT;
+		if (mode & ST_WRITE)
+			fmode |= O_TRUNC; // | O_EXCL;
+	}
 	else if (mode & ST_APPEND)
 		fmode = O_APPEND | O_CREAT;
 	else

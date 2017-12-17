@@ -151,7 +151,6 @@ enum {
 	ST_CREATE      = (1 << 3),
 	ST_ACCESS      = 0xF,
 	ST_DIRECT      = (1 << 4),
-	ST_LINE        = (1 << 5),
 	ST_WATCH       = (1 << 6),
 	ST_PIPE        = (1 << 7),
 	ST_MEMORY      = (1 << 8),
