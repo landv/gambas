@@ -169,17 +169,13 @@ void STREAM_open(STREAM *stream, const char *path, int mode)
 	stream->type = NULL;
 
 	if (mode & ST_PIPE)
-	{
 		sclass = &STREAM_pipe;
-	}
 	else if (mode & ST_MEMORY)
-	{
 		sclass = &STREAM_memory;
-	}
 	else if (mode & ST_STRING)
-	{
 		sclass = &STREAM_string;
-	}
+	else if (mode & ST_LOCK)
+		sclass = &STREAM_lock;
 	else
 	{
 		// ".99" is used for opening a file descriptor in direct mode
@@ -1624,7 +1620,7 @@ int STREAM_handle(STREAM *stream)
 }
 
 
-bool STREAM_lock(STREAM *stream)
+bool STREAM_lock_all(STREAM *stream)
 {
 	int64_t pos;
 	int fd;

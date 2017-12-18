@@ -70,6 +70,7 @@ static int make_message(int type, int nbmax, void *_param)
 	QWidget *parent;
 	int i, n;
 	QMessageBox *mb;
+	bool busy = FALSE;
 	
 	if (MAIN_CHECK_INIT())
 		return 0;
@@ -198,9 +199,19 @@ static int make_message(int type, int nbmax, void *_param)
 	
 	// Run the message box
 	
+	if (qApp->overrideCursor())
+	{
+		qApp->restoreOverrideCursor();
+		busy = TRUE;
+	}
+			
+	
 	GB.Debug.EnterEventLoop();
 	mb->exec();
 	GB.Debug.LeaveEventLoop();
+	
+	if (busy)
+		qApp->setOverrideCursor(Qt::WaitCursor);
 	
 	//CWINDOW_ensure_active_window();
 	if (parent)

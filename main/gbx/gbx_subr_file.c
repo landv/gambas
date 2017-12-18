@@ -1002,9 +1002,9 @@ void SUBR_lock(ushort code)
 
 		for(;;)
 		{
-			STREAM_open(&stream, path, ST_DIRECT | ST_CREATE | ST_READ);
+			STREAM_open(&stream, path, ST_LOCK);
 			
-			if (!STREAM_lock(&stream) && FILE_exist(path))
+			if (!STREAM_lock_all(&stream) && FILE_exist(path))
 				break;
 			
 			STREAM_close(&stream);
@@ -1022,7 +1022,7 @@ void SUBR_lock(ushort code)
 			THROW(E_LOCK);
 		}
 
-		file = CFILE_create(&stream, ST_DIRECT | ST_CREATE | ST_READ);
+		file = CFILE_create(&stream, ST_LOCK);
 		OBJECT_put(RETURN, file);
 		SUBR_LEAVE();
 	}

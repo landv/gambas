@@ -57,6 +57,7 @@ static int run_dialog(GtkDialog *window)
   gMainWindow *active;
 	GtkWindowGroup *oldGroup;
   int ret;
+	bool busy;
   
 	active = gDesktop::activeWindow();
 	if (active)
@@ -64,6 +65,9 @@ static int run_dialog(GtkDialog *window)
 	
 	//gApplication::setActiveControl(gApplication::activeControl(), false);
 	//GB.CheckPost();
+	
+	busy = gApplication::isBusy();
+	gApplication::setBusy(false);
 	
 	gtk_window_present(GTK_WINDOW(window));
 	oldGroup = gApplication::enterGroup();
@@ -73,6 +77,9 @@ static int run_dialog(GtkDialog *window)
 	(*gApplication::onLeaveEventLoop)();
 	gApplication::_loopLevel--;
 	gApplication::exitGroup(oldGroup);
+	
+	gApplication::setBusy(busy);
+	
 	return ret;
 }
 

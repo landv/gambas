@@ -151,6 +151,7 @@ enum {
 	ST_CREATE      = (1 << 3),
 	ST_ACCESS      = 0xF,
 	ST_DIRECT      = (1 << 4),
+	ST_LOCK        = (1 << 5),
 	ST_WATCH       = (1 << 6),
 	ST_PIPE        = (1 << 7),
 	ST_MEMORY      = (1 << 8),
@@ -168,6 +169,7 @@ enum {
 #ifndef __STREAM_IMPL_C
 
 EXTERN STREAM_CLASS STREAM_direct;
+EXTERN STREAM_CLASS STREAM_lock;
 EXTERN STREAM_CLASS STREAM_buffer;
 EXTERN STREAM_CLASS STREAM_pipe;
 EXTERN STREAM_CLASS STREAM_memory;
@@ -228,10 +230,7 @@ void STREAM_load(const char *path, char **buffer, int *len);
 bool STREAM_map(const char *path, char **paddr, int *plen);
 void STREAM_unmap(char *addr, int len);
 
-//int STREAM_read_direct(int fd, char *buffer, int len);
-//int STREAM_write_direct(int fd, char *buffer, int len);
-
-bool STREAM_lock(STREAM *stream);
+bool STREAM_lock_all(STREAM *stream);
 
 #define STREAM_is_closed(_stream) ((_stream)->type == NULL)
 #define STREAM_is_closed_for_writing(_stream) (STREAM_is_closed(_stream) && !(_stream)->common.redirected)

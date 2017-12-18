@@ -338,10 +338,11 @@ Public Sub Main()
     For Each hComp In Project.Documentation.Components
       hComp.Load
     Next
+    Quit
     'FSearch.FindProject("else")
-    Project.Close
-    FMain.Close
-    Project.Exit
+    'Project.Close
+    'FMain.Close
+    'Project.Exit
     Return
   Endif
 
@@ -360,7 +361,7 @@ Public Sub Main()
 
   Inc Application.Busy
 
-  FHelpBrowser.Load
+  'FHelpBrowser.Load
   FHelpShortcut.Load
 
   ' QT5: If the main form is shown after the MDI windows have been embeddded, then 
