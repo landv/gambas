@@ -4,8 +4,10 @@ Inherits DrawingArea
 
 Event Activate
 Event Cancel
+Event Insert
 
 Property Text As String
+Property Pos As Integer
 
 Static Private $hComp As FileCompletion
 
@@ -82,6 +84,8 @@ Public Sub TextBox_LostFocus()
       $hTextBox.Text = "ø"
       $hTextBox.Foreground = Color.LightForeground
     Endif
+  Else
+    $hTextBox.Text = ""
   Endif
   
   Me.Border = Border.None
@@ -91,6 +95,8 @@ End
 Public Sub TextBox_KeyPress()
   
   Dim hArg As ArgListBox
+  Dim sText As String
+  Dim iPos As Integer
   
   If Key.Normal Then
   
@@ -121,29 +127,71 @@ Public Sub TextBox_KeyPress()
       Raise Activate
       Stop Event
       
+    Else If Key.Code = Key.Enter Or If Key.Code = Key.Return Then
+      
+      Raise Insert
+      Stop Event
+      
     Else If Key.Code = Key.Delete Then
       
-      If $hTextBox.Length = 0 Then
-        Me.Delete
+      If $hTextBox.Pos = $hTextBox.Length Then
+        hArg = Me.Next
+        If hArg And If hArg.Next Then
+          sText = Me.Text
+          iPos = String.Len(sText)
+          Me.Text &= hArg.Text
+          Me.Pos = iPos
+          hArg.Delete
+        Endif
         Stop Event
       Endif
       
     Else If Key.Code = Key.Backspace Then
       
-      If $hTextBox.Length = 0 Then
+      If $hTextBox.Pos = 0 Then
         hArg = Me.Previous
-        Me.Delete
-        If hArg And If Object.IsValid(hArg) Then
+        If hArg Then
+          sText = hArg.Text
+          iPos = String.Len(sText)
+          If Me.Next Then
+            hArg.Text = sText & Me.Text
+            Me.Delete
+          Endif
           hArg.SetFocus
-          hArg.MoveEnd
+          hArg.Pos = iPos
         Endif
         Stop Event
       Endif
+      
+      ' If $hTextBox.Length = 0 Then
+      '   hArg = Me.Previous
+      '   Me.Delete
+      '   If hArg And If Object.IsValid(hArg) Then
+      '     hArg.SetFocus
+      '     hArg.MoveEnd
+      '   Endif
+      '   Stop Event
+      ' Endif
       
     Else If Key.Code = Key.Escape Then
       
       Raise Cancel
       Stop Event
+      
+    Else If Key.Code = Key.Home Then
+      
+      If $hTextBox.Pos = 0 Then
+        hArg = Me.Parent.Children[0]
+        hArg.SetFocus
+        hArg.MoveBegin
+      Endif
+      
+    Else If Key.Code = Key.End Then
+      
+      If $hTextBox.Pos = $hTextBox.Length Then
+        hArg = Me.Parent.Children[Me.Parent.Children.Count - 1]
+        hArg.SetFocus
+      Endif
       
     Endif
     
@@ -163,3 +211,15 @@ Public Sub MoveEnd()
   
 End
 
+
+Private Function Pos_Read() As Integer
+
+  Return $hTextBox.Pos
+
+End
+
+Private Sub Pos_Write(Value As Integer)
+
+  $hTextBox.Pos = Value
+
+End

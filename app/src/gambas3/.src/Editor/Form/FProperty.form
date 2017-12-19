@@ -45,6 +45,12 @@
       Visible = False
       Background = Color.TextBackground
       Ignore = True
+      { spnProperty SpinBox
+        MoveScaled(2,5,14,3)
+        Visible = False
+        Expand = True
+        Border = False
+      }
       { crdProperty CoordBox txtProperty
         Name = "crdProperty"
         MoveScaled(1,14,17,3)
@@ -54,23 +60,17 @@
         AllowRelative = True
         AutoConvert = True
       }
-      { spnProperty SpinBox
-        MoveScaled(2,5,14,3)
-        Visible = False
-        Expand = True
-        Border = False
-      }
-      { txtAngle AngleBox
-        MoveScaled(2,19,21,3)
-        Visible = False
-        Expand = True
-      }
       { txtProperty ButtonBox
         MoveScaled(3,9,18,3)
         Visible = False
         Expand = True
         Border = False
         ClearButton = True
+      }
+      { txtAngle AngleBox
+        MoveScaled(2,19,21,3)
+        Visible = False
+        Expand = True
       }
       { cmbProperty ComboBox
         MoveScaled(4,25,18,4)

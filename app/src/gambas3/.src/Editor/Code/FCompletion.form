@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2.1429,69,17)
+  MoveScaled(0,2.125,69,17)
   Visible = False
   Ignore = True
   Persistent = True
@@ -13,9 +13,6 @@
     Background = Color.Background
     Arrangement = Arrange.Horizontal
     Border = Border.Plain
-    { timHideLater #Timer
-      #MoveScaled(0,8)
-    }
     { gvwComp GridView
       MoveScaled(1,1,7,6)
       Border = False
@@ -31,19 +28,22 @@
       Expand = True
       NoHeader = True
     }
-    { timHelp #Timer
-      #MoveScaled(24,4)
-      Delay = 100
+    { panResizeTop Panel
+      MoveScaled(64,1,2,2)
+      Mouse = Mouse.SizeNESW
+      Ignore = True
     }
     { panResizeBottom Panel
       MoveScaled(64,12,2,2)
       Mouse = Mouse.SizeNWSE
       Ignore = True
     }
-    { panResizeTop Panel
-      MoveScaled(64,1,2,2)
-      Mouse = Mouse.SizeNESW
-      Ignore = True
+    { timHideLater #Timer
+      #MoveScaled(0,8)
+    }
+    { timHelp #Timer
+      #MoveScaled(24,4)
+      Delay = 100
     }
   }
 }

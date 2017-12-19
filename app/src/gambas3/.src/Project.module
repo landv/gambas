@@ -6024,6 +6024,7 @@ End
 Public Sub UpdateAllForms(Optional sOldClass As String, sNewClass As String) 
 
   Dim sPath As String
+  Dim hObject As Object
   Dim hForm As FForm
 
   Inc Application.Busy 
@@ -6033,7 +6034,10 @@ Public Sub UpdateAllForms(Optional sOldClass As String, sNewClass As String)
     If Not IsFormPath(sPath) Then Continue
     If Stat(sPath).Type = gb.Link Then Continue
 
-    hForm = LoadFile(sPath)
+    hObject = LoadFile(sPath)
+    If Not hObject Is FForm Then Continue
+    hForm = hObject
+    
     If sOldClass Then
       hForm.RenameClass(sOldClass, sNewClass)
     Else
