@@ -4,7 +4,7 @@
 Public Sub Form_Open()
 
     Dim hPolyLine As New MapPoint[]
-  MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "702"]).SubDomains = ["0", "1", "2"]
+  MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "748"]).SubDomains = ["0", "1", "2"]
   MapView1.Map["GoogleMap"].Visible = True
   
   
@@ -12,13 +12,30 @@ Public Sub Form_Open()
     
     hPolyLine = [MapPoint(48.457454, -4.638139), MapPoint(51.123363, 2.217329), MapPoint(48.921609, 8.106001), MapPoint(43.833550, 7.666547),
     MapPoint(42.487303, 3.008345), MapPoint(43.324192, -1.825640), MapPoint(48.457454, -4.638139)]
-
+    
 
     
     .AddPolyLine("Section 1", hPolyLine)
     .Color = Color.Red
      .["Section 1"].Color = Color.Green
   End With
+  
+  
+  With MapView1.Map["Poly"]
+    
+    .AddCircle("pop", MapPoint(48.457454, -4.638139), 2000)
+    .Opacity = 1
+  End With
+With MapView1.Map["Poly"]["pop"]
+  .FillColor = Color.SetAlpha(Color.Yellow, 50)
+  .Color = Color.Red
+  .LineWidth = 2
+End With
+MapView1.Refresh
+End
+
+Public Sub MapView1_MouseDown()
+
   
 
 End
