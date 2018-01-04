@@ -21,11 +21,10 @@ Public Sub Form_Open()
   End With
   
   
-  With MapView1.Map["Poly"]
-    
+With MapView1.Map["Poly"]
     .AddCircle("pop", MapPoint(48.457454, -4.638139), 2000)
     .Opacity = 1
-  End With
+End With
 With MapView1.Map["Poly"]["pop"]
   .FillColor = Color.SetAlpha(Color.Yellow, 50)
   .Color = Color.Red
