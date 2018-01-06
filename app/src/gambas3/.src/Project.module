@@ -170,7 +170,7 @@ Public Browser As String
 Public ImageEditors As String[] = ["Gimp", "KIconEdit", "KolourPaint", "Krita"]
 Private IMAGE_EXT As String[] = ["jpg", "jpeg", "gif", "bmp", "xpm", "png", "tif", "tiff"]
 
-Private $sOldRefreshComponents As String
+Private $aOldRefreshComponents As New String[]
 
 Public ExampleTitle As New Collection
 
@@ -4127,10 +4127,10 @@ Public Sub DeleteFile(sPath As String)
   
   If bConnection And If File.Ext(sPath) = "connection" Then
     
-    sPath = File.SetExt(sPath, "template")
-    If Exist(sPath) Then 
-      VersionControl.RemoveFile(sPath)
-      Try Kill sPath
+    sPathPot = File.SetExt(sPath, "template")
+    If Exist(sPathPot) Then 
+      VersionControl.RemoveFile(sPathPot)
+      Try Kill sPathPot
     Endif
     
   Endif
@@ -4786,7 +4786,7 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
   Dim sLib As String
   Dim aLib As New String[]
   Dim hComp As CComponent
-  Dim sLibComp As String
+  Dim bChange As Boolean
 
   ' Sort components
 
@@ -4801,9 +4801,9 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
     aLib.Add(File.Name(sLib))
   Next
 
-  sLibComp = aLib.Join(" ")
+  bChange = aLib.Join() <> $aOldRefreshComponents.Join()
 
-  If sLibComp <> $sOldRefreshComponents Or If bForce Then
+  If bForce Or bChange Then
 
     Documentation.Reset
 
@@ -4821,16 +4821,15 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
       FCompletion.OnRefreshComponents
       FMain.OnRefreshComponents
       FProperty.RefreshAll
-      'Why refreshing the project?
-      'Project.Refresh
+      Tree.RefreshInfo
     Endif
 
     If Components.Exist("gb.db") And If Not Exist(Project.Dir &/ ".connection") Then InsertDirectory(Project.Dir &/ ".connection")
     If Components.Exist("gb.web") And If Not Exist(Project.Dir &/ ".public") Then InsertDirectory(Project.Dir &/ ".public")
 
-    If sLibComp <> $sOldRefreshComponents Then ReloadAll(True)
+    If bChange Then ReloadAll(True)
 
-    $sOldRefreshComponents = sLibComp
+    $aOldRefreshComponents = aLib
     
   Endif
 

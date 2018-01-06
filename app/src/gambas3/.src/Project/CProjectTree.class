@@ -37,6 +37,13 @@ Public Sub _new(sDir As String)
   
 End
 
+Public Sub RefreshInfo()
+  
+  $hInfo = New CProjectInfo($sDir)
+  
+End
+
+
 Public Sub SetView(hTreeView As TreeView)
   
   If $hTree And If $hTree <> hTreeView Then Error.Raise("TreeView already set")

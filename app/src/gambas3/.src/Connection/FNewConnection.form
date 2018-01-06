@@ -66,20 +66,27 @@
   }
   { panLogin VBox
     MoveScaled(1,21,96,9)
+    AutoResize = True
     Spacing = True
     { HBox4 HBox
-      MoveScaled(0,0,68,4)
+      MoveScaled(0,0,94,4)
+      Spacing = True
       { Label3 Label
-        MoveScaled(0,0,18,4)
+        MoveScaled(0,0,17,4)
         Text = ("User")
       }
       { txtUser TextBox
         MoveScaled(27,0,23,4)
         Expand = True
       }
+      { chkNoPassword CheckBox
+        MoveScaled(52,0,32,4)
+        Background = Color.Yellow
+        Text = ("No password")
+      }
     }
-    { HBox5 HBox
-      MoveScaled(0,5,79,4)
+    { panPassword HBox
+      MoveScaled(0,5,94,4)
       Spacing = True
       { Label4 Label
         MoveScaled(0,0,17,4)
@@ -91,16 +98,13 @@
         Password = True
       }
       { chkRememberPassword CheckBox
-        MoveScaled(53,0,24,4)
-        Expand = True
-        AutoResize = True
+        MoveScaled(52,0,32,4)
         Text = ("Remember password")
       }
     }
   }
   { panDatabase VBox
-    MoveScaled(1,35,96,47)
-    AutoResize = True
+    MoveScaled(1,35,99,47)
     Spacing = True
     { HBox6 HBox
       MoveScaled(0,0,96,4)
