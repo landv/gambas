@@ -162,6 +162,8 @@ READ_MARKUP_END:
   Else
     If sMarkup = "script" Or If sMarkup = "style" Then
       aMarkup.Push(sMarkup)
+    Else If sMarkup = "br" Then
+      sResult &= "\n"
     Endif
   Endif
   sMarkup = ""
