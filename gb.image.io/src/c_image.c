@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  c_image.c
+	c_image.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -27,71 +27,52 @@
 
 #define LOAD_INC 65536L
 
-BEGIN_METHOD(CIMAGE_load, GB_STRING path)
-
+static void load_image(const char *addr, int len)
+{
 	GdkPixbuf *img = NULL;
-	char *addr, *laddr;
-	int len, llen;
+	const char *laddr;
+	int llen;
 	GdkPixbufLoader* loader = NULL;
 	GError *error = NULL;
 	int size;
 	int format;
 	GB_IMG *image;
 
-	/*if (LENGTH(path) && *STRING(path) == '/')
+	loader = gdk_pixbuf_loader_new();
+
+	laddr = addr;
+	llen = len;
+	while (llen > 0)
 	{
-		img = gdk_pixbuf_new_from_file(GB.ToZeroString(ARG(path)), &error);
-		if (error)
+		size = llen > LOAD_INC ? LOAD_INC : llen;
+		if (!gdk_pixbuf_loader_write(loader, (guchar*)laddr, (gsize)size, &error))
 		{
+			fprintf(stderr, "gb.image.io: error: cannot load %d image bytes\n", size);
 			GB.Error(error->message);
-			return;
-		}
-	}
-	else
-	{*/
-		if (GB.LoadFile(STRING(path), LENGTH(path), &addr, &len))
-		{
-			GB.Error("Unable to load image");
-			return;
-		}
-
-		loader = gdk_pixbuf_loader_new();
-
-		laddr = addr;
-		llen = len;
-		while (llen > 0)
-		{
-			size = llen > LOAD_INC ? LOAD_INC : llen;
-			if (!gdk_pixbuf_loader_write(loader, (guchar*)laddr, (gsize)size, &error))
-			{
-				fprintf(stderr, "gb.image.io: error: cannot load %d image bytes\n", size);
-				GB.Error(error->message);
-				goto __END;
-			}
-			laddr += size;
-			llen -= size;
-		}
-
-		gdk_pixbuf_loader_close(loader, NULL);
-
-		img = gdk_pixbuf_loader_get_pixbuf(loader);
-		if (!img)
-		{
-			GB.Error("Unable to load image");
 			goto __END;
 		}
+		laddr += size;
+		llen -= size;
+	}
 
-		g_object_ref(G_OBJECT(img));
+	gdk_pixbuf_loader_close(loader, NULL);
 
-	//}
-	
+	img = gdk_pixbuf_loader_get_pixbuf(loader);
+	if (!img)
+	{
+		GB.Error("Unable to load image");
+		goto __END;
+	}
+
+	g_object_ref(G_OBJECT(img));
+
 	// Rowstride breaks gb.image (it is rounded up so that a line is always a four bytes multiple).
 	if (gdk_pixbuf_get_n_channels(img) == 3)
 	{
 		GdkPixbuf *aimg;
 		aimg = gdk_pixbuf_add_alpha(img, FALSE, 0, 0, 0);
 		g_object_unref(G_OBJECT(img));
-  	img = aimg;
+		img = aimg;
 	}
 	
 	//fprintf(stderr, "nchannels = %d size = %d x %d rowstride = %d\n", gdk_pixbuf_get_n_channels(img), gdk_pixbuf_get_width(img), gdk_pixbuf_get_height(img), gdk_pixbuf_get_rowstride(img));
@@ -115,29 +96,51 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 __END:
 	
 	if (loader)
-	{
 		g_object_unref(G_OBJECT(loader));
-		GB.ReleaseFile(addr, len);
+}
+
+
+BEGIN_METHOD(Image_Load, GB_STRING path)
+
+	char *addr;
+	int len;
+
+	if (GB.LoadFile(STRING(path), LENGTH(path), &addr, &len))
+	{
+		GB.Error("Unable to load image");
+		return;
 	}
+	
+	load_image(addr, len);
+
+	GB.ReleaseFile(addr, len);
 
 END_METHOD
 
+
+BEGIN_METHOD(Image_FromString, GB_STRING data)
+
+	load_image(STRING(data), LENGTH(data));
+
+END_METHOD
+
+
 static const char *FILE_get_ext(const char *path)
 {
-  const char *p;
+	const char *p;
 
-  p = rindex(path, '/');
-  if (p)
-    path = &p[1];
+	p = rindex(path, '/');
+	if (p)
+		path = &p[1];
 
-  p = rindex(path, '.');
-  if (p == NULL)
-    return &path[strlen(path)];
-  else
-    return p + 1;
+	p = rindex(path, '.');
+	if (p == NULL)
+		return &path[strlen(path)];
+	else
+		return p + 1;
 }
 
-BEGIN_METHOD(CIMAGE_save, GB_STRING path; GB_INTEGER quality)
+BEGIN_METHOD(Image_Save, GB_STRING path; GB_INTEGER quality)
 
 	char *path = GB.FileName(STRING(path), LENGTH(path));
 	const char *ext = NULL;
@@ -296,12 +299,13 @@ END_METHOD
 
 GB_DESC CImageDesc[] =
 {
-  GB_DECLARE("Image", sizeof(CIMAGE)),
+	GB_DECLARE("Image", sizeof(CIMAGE)),
 
-  GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
-  GB_METHOD("Save", NULL, CIMAGE_save, "(Path)s[(Quality)i]"),
-  GB_METHOD("Stretch", "Image", Image_Stretch, "(Width)i(Height)i"),
+	GB_STATIC_METHOD("Load", "Image", Image_Load, "(Path)s"),
+	GB_STATIC_METHOD("FromString", "Image", Image_FromString, "(Data)s"),
+	GB_METHOD("Save", NULL, Image_Save, "(Path)s[(Quality)i]"),
+	GB_METHOD("Stretch", "Image", Image_Stretch, "(Width)i(Height)i"),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 

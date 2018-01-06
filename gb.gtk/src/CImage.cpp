@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  CImage.cpp
+	CImage.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -79,19 +79,19 @@ static void take_image(CIMAGE *_object, gPicture *image)
 CIMAGE *CIMAGE_create(gPicture *image)
 {
 	CIMAGE *img;
-  static GB_CLASS class_id = 0;
+	static GB_CLASS class_id = 0;
 
-  if (!class_id)
-    class_id = GB.FindClass("Image");
+	if (!class_id)
+		class_id = GB.FindClass("Image");
 
-  img = (CIMAGE *)GB.New(class_id, NULL, NULL);
-  
-  if (image)
-  	take_image(img, image);
-	else
-  	take_image(img, new gPicture());
+	img = (CIMAGE *)GB.New(class_id, NULL, NULL);
 	
-  return img;
+	if (image)
+		take_image(img, image);
+	else
+		take_image(img, new gPicture());
+	
+	return img;
 }
 
 /*CIMAGE *CIMAGE_create(gPicture *picture)
@@ -109,23 +109,23 @@ CIMAGE *CIMAGE_create(gPicture *image)
 
 void* GTK_GetImage(GdkPixbuf *buf)
 {
-  CIMAGE *pic = CIMAGE_create(new gPicture(buf));
+	CIMAGE *pic = CIMAGE_create(new gPicture(buf));
 	g_object_ref(buf);
 	return (void*)pic;
 }
 
 /*******************************************************************************
 
-  Image
+	Image
 
 *******************************************************************************/
 
 #if 0
 BEGIN_METHOD(CIMAGE_new, GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN trans)
 
-  int w = VARGOPT(w, 0);
-  int h = VARGOPT(h, 0);
-  bool trans = VARGOPT(trans, false);
+	int w = VARGOPT(w, 0);
+	int h = VARGOPT(h, 0);
+	bool trans = VARGOPT(trans, false);
 
 	IMAGE = new gPicture(gPicture::MEMORY, w, h, trans);
 	PICTURE->setTag(new gGambasTag((void *)THIS));
@@ -178,6 +178,25 @@ BEGIN_METHOD(Image_Load, GB_STRING path)
 END_METHOD
 
 
+BEGIN_METHOD(Image_FromString, GB_STRING data)
+
+	CIMAGE *image;
+
+	gPicture *pic = gPicture::fromMemory(STRING(data), LENGTH(data));
+	
+	if (pic)
+	{
+		image = CIMAGE_create(pic);
+		pic->getPixbuf();
+		GB.ReturnObject(image);
+		return;
+	}
+
+	GB.Error("Unable to load image");
+
+END_METHOD
+
+
 BEGIN_METHOD(Image_Save, GB_STRING path; GB_INTEGER quality)
 
 	check_image(THIS);
@@ -197,7 +216,7 @@ BEGIN_METHOD(Image_Stretch, GB_INTEGER width; GB_INTEGER height)
 	CIMAGE *img;
 
 	check_image(THIS);
-  img = CIMAGE_create(PICTURE->stretch(VARG(width), VARG(height), true));
+	img = CIMAGE_create(PICTURE->stretch(VARG(width), VARG(height), true));
 	GB.ReturnObject((void*)img);
 
 END_METHOD
@@ -208,7 +227,7 @@ BEGIN_METHOD(Image_Rotate, GB_FLOAT angle)
 	CIMAGE *img;
 
 	check_image(THIS);
-  img = CIMAGE_create(PICTURE->rotate(VARG(angle)));
+	img = CIMAGE_create(PICTURE->rotate(VARG(angle)));
 	GB.ReturnObject((void*)img);
 
 END_METHOD
@@ -216,27 +235,27 @@ END_METHOD
 
 BEGIN_METHOD(Image_PaintImage, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER sx; GB_INTEGER sy; GB_INTEGER sw; GB_INTEGER sh)
 
-  int x, y, w, h, sx, sy, sw, sh;
-  CIMAGE *image = (CIMAGE *)VARG(img);
+	int x, y, w, h, sx, sy, sw, sh;
+	CIMAGE *image = (CIMAGE *)VARG(img);
 	gPicture *src;
 
-  if (GB.CheckObject(image))
-    return;
+	if (GB.CheckObject(image))
+		return;
 
 	src = check_image(image);
 	check_image(THIS);
 
-  x = VARGOPT(x, 0);
-  y = VARGOPT(y, 0);
-  w = VARGOPT(w, -1);
-  h = VARGOPT(h, -1);
+	x = VARGOPT(x, 0);
+	y = VARGOPT(y, 0);
+	w = VARGOPT(w, -1);
+	h = VARGOPT(h, -1);
 
-  sx = VARGOPT(sx, 0);
-  sy = VARGOPT(sy, 0);
-  sw = VARGOPT(sw, -1);
-  sh = VARGOPT(sh, -1);
+	sx = VARGOPT(sx, 0);
+	sy = VARGOPT(sy, 0);
+	sw = VARGOPT(sw, -1);
+	sh = VARGOPT(sh, -1);
 
-  //DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, pic->width(), pic->height());
+	//DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, pic->width(), pic->height());
 
 	PICTURE->draw(src, x, y, w, h, sx, sy, sw, sh);
 
@@ -245,21 +264,22 @@ END_METHOD
 
 GB_DESC CImageDesc[] =
 {
-  GB_DECLARE("Image", sizeof(CIMAGE)),
+	GB_DECLARE("Image", sizeof(CIMAGE)),
 
-  GB_STATIC_METHOD("Load", "Image", Image_Load, "(Path)s"),
-  GB_METHOD("Save", 0, Image_Save, "(Path)s[(Quality)i]"),
+	GB_STATIC_METHOD("Load", "Image", Image_Load, "(Path)s"),
+	GB_STATIC_METHOD("FromString", "Image", Image_FromString, "(Data)s"),
+	GB_METHOD("Save", 0, Image_Save, "(Path)s[(Quality)i]"),
 
-  GB_METHOD("Stretch", "Image", Image_Stretch, "(Width)i(Height)i"),
-  GB_METHOD("Rotate", "Image", Image_Rotate, "(Angle)f"),
+	GB_METHOD("Stretch", "Image", Image_Stretch, "(Width)i(Height)i"),
+	GB_METHOD("Rotate", "Image", Image_Rotate, "(Angle)f"),
 
-  GB_METHOD("PaintImage", 0, Image_PaintImage, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+	GB_METHOD("PaintImage", 0, Image_PaintImage, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 
-  GB_PROPERTY_READ("Picture", "Picture", Image_Picture),
+	GB_PROPERTY_READ("Picture", "Picture", Image_Picture),
 
-  GB_INTERFACE("Paint", &PAINT_Interface),
-  GB_INTERFACE("PaintMatrix", &PAINT_MATRIX_Interface),
+	GB_INTERFACE("Paint", &PAINT_Interface),
+	GB_INTERFACE("PaintMatrix", &PAINT_MATRIX_Interface),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 

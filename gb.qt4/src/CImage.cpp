@@ -145,7 +145,7 @@ CIMAGE *CIMAGE_create(QImage *image)
 	return img;
 }
 
-BEGIN_PROPERTY(IMAGE_Picture)
+BEGIN_PROPERTY(Image_Picture)
 
 	CPICTURE *pict;
 	QImage img;
@@ -164,7 +164,7 @@ BEGIN_PROPERTY(IMAGE_Picture)
 
 END_PROPERTY
 
-BEGIN_METHOD(IMAGE_Load, GB_STRING path)
+BEGIN_METHOD(Image_Load, GB_STRING path)
 
 	QImage *p;
 	CIMAGE *img;
@@ -180,8 +180,23 @@ BEGIN_METHOD(IMAGE_Load, GB_STRING path)
 
 END_METHOD
 
+BEGIN_METHOD(Image_FromString, GB_STRING data)
 
-BEGIN_METHOD(IMAGE_Save, GB_STRING path; GB_INTEGER quality)
+	QImage *p;
+	CIMAGE *img;
+
+	if (CPICTURE_from_string(&p, STRING(data), LENGTH(data)))
+	{
+		//p->convertToFormat(QImage::Format_ARGB32);
+		img = CIMAGE_create(p);
+		GB.ReturnObject(img);
+	}
+	else
+		GB.Error("Unable to load image");
+
+END_METHOD
+
+BEGIN_METHOD(Image_Save, GB_STRING path; GB_INTEGER quality)
 
 	QString path = TO_QSTRING(GB.FileName(STRING(path), LENGTH(path)));
 	bool ok = false;
@@ -202,7 +217,7 @@ BEGIN_METHOD(IMAGE_Save, GB_STRING path; GB_INTEGER quality)
 
 END_METHOD
 
-BEGIN_METHOD(IMAGE_Stretch, GB_INTEGER width; GB_INTEGER height)
+BEGIN_METHOD(Image_Stretch, GB_INTEGER width; GB_INTEGER height)
 
 	//static int count = 0;
 	QImage *stretch;
@@ -234,7 +249,7 @@ BEGIN_METHOD(IMAGE_Stretch, GB_INTEGER width; GB_INTEGER height)
 END_METHOD
 
 
-BEGIN_METHOD(IMAGE_Rotate, GB_FLOAT angle)
+BEGIN_METHOD(Image_Rotate, GB_FLOAT angle)
 
 	QImage *rotate = new QImage();
 	double angle = VARG(angle);
@@ -255,7 +270,7 @@ BEGIN_METHOD(IMAGE_Rotate, GB_FLOAT angle)
 END_METHOD
 
 
-BEGIN_METHOD(IMAGE_PaintImage, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER sx; GB_INTEGER sy; GB_INTEGER sw; GB_INTEGER sh)
+BEGIN_METHOD(Image_PaintImage, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER sx; GB_INTEGER sy; GB_INTEGER sw; GB_INTEGER sh)
 
 	int x, y, w, h, sx, sy, sw, sh;
 	CIMAGE *image = (CIMAGE *)VARG(img);
@@ -310,15 +325,16 @@ GB_DESC CImageDesc[] =
 {
 	GB_DECLARE("Image", sizeof(CIMAGE)),
 
-	GB_STATIC_METHOD("Load", "Image", IMAGE_Load, "(Path)s"),
-	GB_METHOD("Save", NULL, IMAGE_Save, "(Path)s[(Quality)i]"),
+	GB_STATIC_METHOD("Load", "Image", Image_Load, "(Path)s"),
+	GB_STATIC_METHOD("FromString", "Image", Image_FromString, "(Data)s"),
+	GB_METHOD("Save", NULL, Image_Save, "(Path)s[(Quality)i]"),
 
-	GB_METHOD("Stretch", "Image", IMAGE_Stretch, "(Width)i(Height)i"),
-	GB_METHOD("Rotate", "Image", IMAGE_Rotate, "(Angle)f"),
+	GB_METHOD("Stretch", "Image", Image_Stretch, "(Width)i(Height)i"),
+	GB_METHOD("Rotate", "Image", Image_Rotate, "(Angle)f"),
 
-	GB_METHOD("PaintImage", NULL, IMAGE_PaintImage, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+	GB_METHOD("PaintImage", NULL, Image_PaintImage, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 
-	GB_PROPERTY_READ("Picture", "Picture", IMAGE_Picture),
+	GB_PROPERTY_READ("Picture", "Picture", Image_Picture),
 	
 	GB_INTERFACE("Paint", &PAINT_Interface),
 	GB_INTERFACE("PaintMatrix", &PAINT_MATRIX_Interface),
