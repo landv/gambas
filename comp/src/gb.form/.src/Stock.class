@@ -16,6 +16,7 @@ Static Private $aSizeDec As Integer[] = [256, 128, 64, 48, 32, 24, 22, 16]
 Static Private $aSizeInc As Integer[] = [16, 22, 24, 32, 48, 64, 128, 256]
 Static Private $bDebug As Boolean
 'Static Private $bDebugLoad As Boolean
+Static Private $aRoots As String[] = ["~/.icons", "~/.local/share/icons", "/usr/share/icons"]
 
 Class _DefaultStock
 
@@ -197,7 +198,7 @@ Static Private Sub SearchTheme(sDesktop As String)
       
       If sTheme Then 
         sTheme = Trim(sTheme)
-        GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
+        GetAllThemePath("gnome", $aRoots, sTheme)
       Endif
       
       AddPath("gnome", "/usr/share/icons/gnome")
@@ -210,7 +211,7 @@ Static Private Sub SearchTheme(sDesktop As String)
       
       If sTheme Then 
         sTheme = Trim(sTheme)
-        GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
+        GetAllThemePath("gnome", $aRoots, sTheme)
       Endif
       
       AddPath("gnome", "/usr/share/icons/mate")
@@ -236,7 +237,7 @@ Static Private Sub SearchTheme(sDesktop As String)
         sIconPath = Trim(sIconPath)
       Endif
       
-      If Not sIconPath Then sIconPath = "/usr/share/icons"
+      If Not sIconPath Then sIconPath = $aRoots.Join(":")
         
       If Not sTheme Then
     
@@ -267,7 +268,7 @@ Static Private Sub SearchTheme(sDesktop As String)
         If aFind Then sTheme = Trim(aFind[1])
       Endif
       
-      If sTheme Then GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
+      If sTheme Then GetAllThemePath("gnome", $aRoots, sTheme)
       'GetAllThemePath("gnome", "/usr/X11R6/share/icons", sTheme)
       
       AddPath("gnome", "/usr/share/icons/gnome")
@@ -279,7 +280,7 @@ Static Private Sub SearchTheme(sDesktop As String)
         If aFind Then sTheme = Trim(aFind[0])
       Endif
       
-      If sTheme Then GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], sTheme)
+      If sTheme Then GetAllThemePath("gnome", $aRoots, sTheme)
     
       AddPath("gnome", "/usr/share/icons/gnome")
       
@@ -287,7 +288,7 @@ Static Private Sub SearchTheme(sDesktop As String)
     Case Else
       
       If sDesktop <> "gambas" Then
-        GetAllThemePath("gnome", ["~/.icons", "/usr/share/icons"], Application.Theme)
+        GetAllThemePath("gnome", $aRoots, Application.Theme)
       Endif
       
   End Select 
@@ -748,17 +749,14 @@ Static Private Function Themes_Read() As String[]
   Dim sDir As String
   Dim sPath As String
   Dim sTheme As String
+  Dim sRoot As String
   
-  If IsDir("~/.icons") Then
-    For Each sDir In Dir("~/.icons", "*", gb.Directory)
-      sPath = "~/.icons" &/ sDir
+  For Each sRoot In ["~/.icons", "~/.local/share/icons", "/usr/share/icons"]
+    If Not IsDir(sRoot) Then Continue
+    For Each sDir In Dir(sRoot, "*", gb.Directory)
+      sPath = sRoot &/ sDir
       GoSub ADD_THEME
     Next
-  Endif
-  
-  For Each sDir In Dir("/usr/share/icons", "*", gb.Directory)
-    sPath = "/usr/share/icons" &/ sDir
-    GoSub ADD_THEME
   Next
   
   aTheme.Sort(gb.IgnoreCase)
@@ -773,7 +771,7 @@ ADD_THEME:
   Try sTheme = File.Load(sPath)
   If Error Then Return
   If InStr(sTheme, "\nHidden=True") Then Return
-  aTheme.Add(sDir)
+  If Not aTheme.Exist(sDir) Then aTheme.Add(sDir)
   Return
   
 End
