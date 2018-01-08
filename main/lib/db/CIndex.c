@@ -234,10 +234,7 @@ BEGIN_METHOD(CINDEX_add, GB_STRING name; GB_OBJECT fields; GB_BOOLEAN unique)
 			q_add(",");
 
 		q_add(table->driver->GetQuote());
-		if (table->conn->db.flags.no_case)
-			q_add_lower(field);
-		else
-			q_add(field);
+		q_add(field);
 		q_add(table->driver->GetQuote());
 	}
 

@@ -44,16 +44,8 @@ static bool exist_field(CTABLE *table, const char *name)
 	{
 		for (fp = table->new_fields; fp; fp = fp->next)
 		{
-			if (table->conn->db.flags.no_case)
-			{
-				if (!strcasecmp(fp->name, name))
-					return TRUE;
-			}
-			else
-			{
-				if (!strcmp(fp->name, name))
-					return TRUE;
-			}
+			if (!strcasecmp(fp->name, name))
+				return TRUE;
 		}
 
 		return FALSE;
