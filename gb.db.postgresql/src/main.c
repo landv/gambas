@@ -1104,9 +1104,9 @@ static char *field_name(DB_RESULT result, int field)
 
 *****************************************************************************/
 
-static int field_index(DB_RESULT Result, const char *name, DB_DATABASE *db)
+static int field_index(DB_RESULT result, const char *name, DB_DATABASE *db)
 {
-	PGresult *result = (PGresult *)Result;
+	PGresult *res = (PGresult *)result;
 
 	char *fld;
 	int index;
@@ -1116,6 +1116,7 @@ static int field_index(DB_RESULT Result, const char *name, DB_DATABASE *db)
 		"select oid from pg_class where relname = '&1' "
 		"and ((relnamespace not in (select oid from pg_namespace where nspname = 'information_schema')))";
 
+	numfields = PQnfields(res);
 	fld = strrchr(name, (int)FLD_SEP);
 
 	if (fld)
@@ -1133,54 +1134,66 @@ static int field_index(DB_RESULT Result, const char *name, DB_DATABASE *db)
 			/* Need to find the OID for the table */
 			PGresult *oidres;
 
-			if (do_query(db, "Unable to get OID for table &1", &oidres, qfield, 1, table)){
-			GB.FreeString(&table);
-			return -1;
+			if (do_query(db, "Unable to get OID for table &1", &oidres, qfield, 1, table))
+			{
+				GB.FreeString(&table);
+				return -1;
+			}
+
+			if ( PQntuples(oidres) != 1)
+			{
+				/* Not unique table identifier */
+				GB.Error("Table &1 not unique in pg_class", table);
+				PQclear(oidres);
+				GB.FreeString(&table);
+				return -1;
+			}
+
+			oid = atoi(PQgetvalue(oidres, 0, 0));
+			PQclear(oidres);
+			index = PQfnumber(res, fld);
+
+			if (PQftable(res, index) != oid)
+			{
+				while ( ++index < numfields)
+				{
+					if (strcasecmp(PQfname(res, index), fld) == 0)
+					{ //Check Fieldname
+						if (PQftable(res, index) == oid)
+						{ //check oid
+							break; // is the required table oid
+						}
+					}
 				}
 
-				if ( PQntuples(oidres) != 1){
-				/* Not unique table identifier */
-					GB.Error("Table &1 not unique in pg_class", table);
-					PQclear(oidres);
+				if ( index == numfields )
+				{
+					/* field not found for OID */
+					GB.Error("Field &1.&2 not found", table, fld);
 					GB.FreeString(&table);
 					return -1;
 				}
 
-	oid = atoi(PQgetvalue(oidres, 0, 0));
-				PQclear(oidres);
-	numfields = PQnfields((PGresult *)result);
-				index = PQfnumber((PGresult *)result, fld);
-
-	if (PQftable((PGresult *)result, index) != oid){
-		numfields = PQnfields((PGresult *)result);
-		while ( ++index < numfields){
-				if (strcasecmp(PQfname((PGresult *)result, index),
-							fld) == 0){ //Check Fieldname
-						if (PQftable((PGresult *)result, index) == oid){ //check oid
-				break; // is the required table oid
-						}
-				}
+			}
+		
+			GB.FreeString(&table);
 		}
-
-		if ( index == numfields ){
-		/* field not found for OID */
-							GB.Error("Field &1.&2 not found", table, fld);
-				GB.FreeString(&table);
-				return -1;
-		}
-
-	}
-		GB.FreeString(&table);
-		}
-		else {
-		/* Using tablename and fieldname in a non supported
-		* version */
-					GB.Error("Field &1.&2 not supported below 7.4.1", table, fld);
-		return -1;
+		else
+		{
+			/* Using tablename and fieldname in a non supported version */
+			GB.Error("Field &1.&2 not supported below 7.4.1", table, fld);
+			return -1;
 		}
 	}
-	else {
-			index = PQfnumber((PGresult *)result, name);
+	else 
+	{
+		for (index = 0; index < numfields; index++)
+		{
+			if (strcasecmp(PQfname(res, index), name) == 0)
+				break;
+		}
+		if (index >= numfields)
+			index = -1;
 	}
 
 	return index;
