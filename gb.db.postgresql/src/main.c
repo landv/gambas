@@ -757,7 +757,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 
 	db->flags.no_table_type = TRUE;
 	//db->flags.no_nest = TRUE;
-	db->flags.no_case = TRUE;
+	//db->flags.no_case = TRUE;
 	db->flags.schema = TRUE;
 	db->flags.no_collation = db->version < 90100;
 
@@ -1956,7 +1956,7 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 			comma = TRUE;
 
 		DB.Query.Add(QUOTE_STRING);
-		DB.Query.AddLower(fp->name);
+		DB.Query.Add(fp->name);
 		DB.Query.Add(QUOTE_STRING);
 
 		if (fp->type == DB_T_SERIAL)
@@ -2023,7 +2023,7 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 				DB.Query.Add(",");
 
 			DB.Query.Add(QUOTE_STRING);
-			DB.Query.AddLower(primary[i]);
+			DB.Query.Add(primary[i]);
 			DB.Query.Add(QUOTE_STRING);
 		}
 
