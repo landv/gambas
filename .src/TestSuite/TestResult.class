@@ -147,6 +147,18 @@ Public Sub AssertEqualsLong(lExpected As Long, lActual As Long, Optional sMessag
 
 End Sub
 
+'' Asserts that the expected Date value equals the actual Date value
+'' dExpected: the expected value
+'' dActual: the actual value
+'' sMessage: optional message describing the asserted condition
+Public Sub AssertEqualsDate(dExpected As Date, dActual As Date, Optional sMessage As String)
+
+    If dExpected <> dActual Then
+        AddFailure(NotEqualsMessage(sMessage, dExpected, dActual))
+    End If
+
+End Sub
+
 '' Asserts that the expected Float value equals the actual Float value with delta precision.
 '' dExpected: the expected value
 '' dActual: the actual value

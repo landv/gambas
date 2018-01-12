@@ -41,6 +41,16 @@ Public Sub TestAssertEqualsLong()
 
 End
 
+Public Sub TestAssertEqualsDate()
+
+    Dim d As Date
+
+    d = Now()
+
+    Me.R.AssertEqualsDate(d, d, "Date equal")
+
+End
+
 Public Sub TestAssertEqualsObject()
 
     Dim s As New TestCase("1", Me)
