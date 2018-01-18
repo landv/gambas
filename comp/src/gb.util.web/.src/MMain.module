@@ -14,13 +14,6 @@ End
 
 Public Sub Main()
   
-  Dim hNull As Object
-  
-  Print JSON.Encode(["a": JSON.Null])
-  
-  Print JSON.Encode(Null)
-  Print JSON.Encode(hNull)
-  Print JSON.Encode(GetNullVariant())
-  Print JSON.Encode(GetNullObject())
+  'JSON.Decode(File.Load("frameImageCarrier.json"))
 
 End
