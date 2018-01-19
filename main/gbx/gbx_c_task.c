@@ -250,6 +250,12 @@ static void prepare_task(CTASK *_object)
 	THIS->fd_err = -1;
 }
 
+static void exit_child(int ret)
+{
+	EXEC_quit_value = ret;
+	EXEC_quit();
+}
+
 static bool start_task(CTASK *_object)
 {
 	const char *err = NULL;
@@ -339,7 +345,7 @@ static bool start_task(CTASK *_object)
 			close(fd_out[0]);
 
 			if (dup2(fd_out[1], STDOUT_FILENO) == -1)
-				exit(CHILD_STDOUT);
+				exit_child(CHILD_STDOUT);
 			
 			setlinebuf(stdout);
 		}
@@ -351,7 +357,7 @@ static bool start_task(CTASK *_object)
 			close(fd_err[0]);
 
 			if (dup2(fd_err[1], STDERR_FILENO) == -1)
-				exit(CHILD_STDERR);
+				exit_child(CHILD_STDERR);
 			
 			setlinebuf(stderr);
 		}
@@ -377,7 +383,7 @@ static bool start_task(CTASK *_object)
 					#if DEBUG_ME
 					fprintf(stderr, "gb.task: serialization has failed\n");
 					#endif
-					exit(CHILD_RETURN);
+					exit_child(CHILD_RETURN);
 				}
 			}
 		}
@@ -393,12 +399,12 @@ static bool start_task(CTASK *_object)
 					fclose(f);
 				}
 				
-				exit(CHILD_ERROR);
+				exit_child(CHILD_ERROR);
 			}
 		}
 		END_TRY
 		
-		_exit(CHILD_OK);
+		exit_child(CHILD_OK);
 	}
 	
 	return FALSE;
