@@ -1,0 +1,11 @@
+' Gambas module file
+
+Private hImap As New ImapClient
+Public Sub Main()
+
+  hImap.Host = "imap.gmail.com"
+  hImap.Port = 993
+  hImap.Login = "gambas.fr@gmail.com"
+  hImap.Password = "BeGambas1793&"
+  hImap.Open
+End

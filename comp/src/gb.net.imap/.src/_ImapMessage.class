@@ -1,0 +1,169 @@
+' Gambas class file
+
+Private $lUID As Long
+Property Read UID As Long
+Property Read Id As Long
+Property Read Subject As String
+'Property Read Headers As String
+Property Read Sender As String
+Property Read Date As Date
+Property Read To As String
+Property Read Cc As String[]
+Property Read HaveAttachement As Boolean
+
+Private $bHaveAttachement As Boolean
+Private $bStructureReaded As Boolean
+
+Private $hMime As New MimeMessage
+
+Private $iMsgLoadingLevel As Integer
+
+Private Enum None, Header, Text, noAttachement, Full
+
+Event foo
+
+Public Sub _new(UID As Long)
+  
+  $lUID = UID
+  
+End
+
+Private Function UID_Read() As Long
+  
+  Return $lUID
+  
+End
+
+Public Sub GetTextOnly(Optional Seen As Boolean) As String
+  
+  Dim hBox As _ImapMailbox = Object.Parent(Me)
+  Dim hImap As ImapClient = Object.Parent(hBox)
+  Dim aRet As String[]
+  Dim hMime As MimeMessage
+  
+  HBox.Select
+  
+  aRet = hImap.Call("UID FETCH " & $lUID & " (BODY" & (IIf(Seen, "", ".PEEK")) & "[TEXT])", "*")
+  
+  aRet.Remove(0)
+  aRet.Remove(aRet.Max)
+  
+  Return aRet.Join("\n")
+  
+End
+
+Public Sub GetFullMessage(Attachement As Boolean) As MimeMessage
+  
+  If Not Attachement Then
+    
+  Endif
+  
+End
+
+Private Function Subject_Read() As String
+
+  If $iMsgLoadingLevel = 0 Then ReadMessage(Header)
+  Return $hMime.Subject
+
+End
+
+' Private Function Headers_Read() As Collection
+' Dim hCol As New Collection
+'     If $iMsgLoadingLevel = 0 Then ReadMessage(Header)
+'   
+'   For Each $hMime.Headers
+'     
+' 
+' Next
+' 
+' Return $hMime.Headers
+' 
+' End
+
+Private Function Sender_Read() As String
+
+  If $iMsgLoadingLevel = 0 Then ReadMessage(Header)
+  Return $hMime.Sender
+
+End
+
+Private Function Date_Read() As Date
+
+  If $iMsgLoadingLevel = 0 Then ReadMessage(Header)
+  Return CDate($hMime.Headers["Date"])
+
+End
+
+Private Function Id_Read() As Long
+
+  Return $lUID
+
+End
+
+Private Function CC_Read() As String[]
+
+  If $iMsgLoadingLevel = 0 Then ReadMessage(Header)
+  Return $hMime.cc
+
+End
+
+Private Function To_Read() As String
+  
+  If $iMsgLoadingLevel = 0 Then ReadMessage(Header)
+  Return $hMime.To
+  
+End
+
+Private Function HaveAttachement_Read() As Boolean
+  
+  If Not $bStructureReaded Then ReadStructure
+  
+  Return $bHaveAttachement
+  
+End
+
+Private Sub ReadMessage(iLevel As Integer, Optional Seen As Boolean)
+  
+  Dim hBox As _ImapMailbox = Object.Parent(Me)
+  Dim hImap As ImapClient = Object.Parent(hBox)
+  Dim aRet As String[]
+  Dim hMime As MimeMessage
+  
+  'HBox.Select
+  
+  Select Case iLevel
+    Case Header
+      hImap.Call("imap_selecti" &/ Str($lUID), "SELECT " & Quote(ImapClient.EncodeUTF7(HBox.Name)))
+      $iMsgLoadingLevel = iLevel
+      Try hImap.Call("UID FETCH " & $lUID & " (BODY" & (IIf(Seen, "", ".PEEK")) & "[HEADER])", "*")
+      
+      ' aRet.Remove(0)
+      ' aRet.Remove(aRet.Max)
+      ' $hMime = New MimeMessage(aRet.Join("\n"))
+      ' $iMsgLoadingLevel = 1
+  End Select
+  
+End
+
+Public Sub _SetMimeMessage(Value As MimeMessage)
+  
+  If Value.Subject = "" Then 
+  
+  Stop
+  Endif
+  $hMime = Value
+  
+End
+
+
+
+Private Sub ReadStructure()
+  
+  Dim hBox As _ImapMailbox = Object.Parent(Me)
+  Dim hImap As ImapClient = Object.Parent(hBox)
+  Dim aRet As String[]
+  
+  aRet = hImap.call("UID FETCH " & $lUID & " (ENVELOPE)", "*")
+  If InStr(aRet[0], "attachement") > 0 Then $bHaveAttachement = True
+  
+End

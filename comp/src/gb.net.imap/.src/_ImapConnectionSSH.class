@@ -1,0 +1,34 @@
+' Gambas class file
+
+Inherits _ImapConnection
+
+Event Data
+
+Public Sub _New(sHost As String, iPort As Integer)
+  Dim hProcess As Process
+  Dim sPathSsl As String = GetOpenSSLPath()
+  
+  hProcess = Exec [sPathSsl, "s_client", "-quiet", "-connect", sHost & ":" & iPort] For Read Write As "Client"
+  
+  hProcess.EndOfLine = gb.Windows
+  
+  Me.SetStream(hProcess)
+  
+End
+
+
+Private Sub GetOpenSSLPath() As String
+Dim sOpenSSLPath As String
+  If Not sOpenSSLPath Then
+    If Exist("/usr/bin/openssl") Then
+      sOpenSSLPath = "/usr/bin/openssl"
+    Else If Exist("/bin/openssl") Then
+      sOpenSSLPath = "/bin/openssl"
+    Else
+      Error.Raise("Unable to find openssl")
+    Endif
+  Endif
+
+  Return sOpenSSLPath
+
+End

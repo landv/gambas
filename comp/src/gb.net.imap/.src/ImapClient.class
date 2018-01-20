@@ -1,0 +1,349 @@
+' Gambas class file
+
+Property Login As String
+Property Password As String
+Property Port As Integer
+Property Host As String
+Property Debug As Boolean
+Property Read IsOnLine As Boolean
+Property Read Capabilities As String[]
+Property Read MailBoxes As String[]
+
+Private $sLogin As String
+Private $sPassWord As String
+Private $iPort As Integer
+Private $sHost As String
+Private $hCon As _ImapConnectionSSH
+Private $bDebug As Boolean
+
+Public Struct TCall
+  Tag As String
+  Command As String
+  BufferKey As String
+End Struct
+
+Private $hCurCall As TCall
+Private $iCurTag As Integer
+Private $bAuth As Boolean
+Private $aBuffer As String[]
+Private $bInExec As Boolean
+Private $aCapabilities As String[]
+Private $aMailBoxesNames As String[]
+Private $aMailBoxes As _ImapMailBox[]
+Event OnLine
+Event OffLine
+
+Private Function Login_Read() As String
+  
+  Return $sLogin
+  
+End
+
+Private Sub Login_Write(Value As String)
+  
+  $sLogin = Value
+  
+End
+
+Private Function Password_Read() As String
+  
+  Return $sPassWord
+  
+End
+
+Private Sub Password_Write(Value As String)
+  
+  $sPassWord = Value
+  
+End
+
+Private Function Port_Read() As Integer
+  
+  Return $iPort
+  
+End
+
+Private Sub Port_Write(Value As Integer)
+  
+  $iPort = Value
+  
+End
+
+Private Function Host_Read() As String
+  
+  Return $sHost
+  
+End
+
+Private Sub Host_Write(Value As String)
+  
+  $sHost = Value
+  
+End
+
+Public Sub Open()
+  
+  If Not $sHost Then Error.Raise("Unknown host name")
+  If Not $iPort Then Error.Raise("Port number must be set")
+  If Not $sLogin Then Error.Raise("The login name must be set")
+  
+  $hCon = New _ImapConnectionSSH($sHost, $iPort) As "Connection"
+  
+End
+
+Private Function Debug_Read() As Boolean
+  
+  Return $bDebug 
+  
+End
+
+Private Sub Debug_Write(Value As Boolean)
+  
+  $bDebug = Value
+  
+End
+
+Private Function DebugPrint(sValue As String)
+  
+  Error sValue
+  
+End
+
+Public Sub Close()
+  
+  Call("LOGOUT")
+  
+End
+
+Public Sub Connection_Data()
+
+  Dim s As String
+  Dim aTuple As String[]
+  Dim iCount As Integer
+  
+  While $hCon.DataAvailable
+    
+    s = $hCon.Pop()
+    DebugPrint("< " & s)
+    aTuple = Scan(s, "* * *")
+    
+    If aTuple[0] = "*" Then
+      Select Case LCase(aTuple[1])
+        Case "ok"
+          If Not $bAuth Then
+            LogMe()
+            Return
+          Endif
+        Case "bad", "no" 
+          Error.Raise(aTuple[2])
+        Case $hCurCall.BufferKey
+          If aTuple.Count > 2 Then
+            $aBuffer.Add(aTuple[2])
+          Endif
+        Case Else
+          If $aBuffer Then
+            $aBuffer.Add(S)
+          Endif
+      End Select
+      
+    Else
+      If aTuple[0] = $hCurCall.Tag Then
+        Select Case LCase(aTuple[1])
+          Case "ok"
+            
+          Case "bad", "no"
+            Error.Raise(aTuple[2])
+        End Select
+        $bInExec = False
+      Else
+        If $aBuffer Then
+          $aBuffer.Add(s)
+        Endif
+        
+      Endif
+      
+    Endif
+    
+  Wend
+  
+End
+
+Public Sub Call(Command As String, Optional BufferKey As String) As String[]
+
+  Dim sTag As String 
+  $hCurCall = New TCall
+  $hCurCall.Command = Command
+  $hCurCall.BufferKey = BufferKey
+  If Not Me.IsOnLine Then Error.Raise("Host disconnected")
+  
+  sTag = GenNextTag()
+  $hCurCall.Tag = sTag
+  $aBuffer = Null
+  If BufferKey Then $aBuffer = New String[]
+  $bInExec = True
+  
+  DebugPrint("> " & sTag & " " & Command)
+  
+  $hCon.Send(sTag & " " & Command)
+  
+  Do
+    If Not $bInExec Then Break 
+    Wait 0.1
+  Loop
+  
+  If BufferKey Then Return $aBuffer
+  
+End
+
+Private Function GenNextTag() As String
+  
+  Inc $iCurTag
+  If $iCurTag > 9999 Then $iCurTag = 0
+  Return "a" & Format($iCurTag, "0000")
+  
+End
+
+Static Public Sub DecodeUTF7(sValue As String) As String
+  
+  Dim aBuf As New String[]
+  Dim aToConv As New String[]
+  Dim bInSp As Boolean
+  Dim i As Integer
+  Dim s As String
+  'If sValue Begins "Acc" Then Stop
+  For i = 1 To Len(sValue)
+    s = Mid(sValue, i, 1)
+    'Begin the sequence
+    If s = "&" And If Not bInSp Then 
+      bInSp = True
+      Continue
+    Endif
+    'End of the sequence doing the converting
+    If s = "-" And If bInSp Then
+      If aToConv.Count = 0 Then 
+        s = "&"
+      Else
+        s = Conv("+" & aToConv.Join(""), "UTF-7", "UTF-8")
+      Endif
+      aToConv.Clear
+      bInSp = False
+    Endif
+    'Add the char to the right table
+    If bInSp Then
+      aToConv.Add(IIf(s = "&", "+", s))
+    Else
+      aBuf.Add(s)
+    Endif
+    
+  Next
+  
+  Return aBuf.Join("")
+  
+End
+
+Static Public Sub EncodeUTF7(sValue As String) As String
+  
+  Dim i As Integer
+  Dim s, ss As String
+  Dim iChar As Integer
+  Dim aBuf As New String[]
+  Dim aSeq As New String[]
+  Dim bInseq As Boolean
+  
+  For i = 1 To String.Len(sValue)
+    
+    s = String.Mid(sValue, i, 1)
+    'Print s
+    iChar = String.Code(s)
+    'Printable chars
+    If iChar > 31 And iChar < 128 Then
+      'Some char to convert
+      If bInseq Then 
+        GoSub Convert
+      Endif
+      'Add current char
+      aBuf.Add(IIf(s = "&", "&-", s))
+    Else
+      bInseq = True
+      aSeq.Add(s)
+    Endif  
+  Next
+  'There are some char left to convert
+  If bInseq Then GoSub Convert
+  
+  Return aBuf.Join("")
+  
+Convert:
+  ss = Conv(aSeq.join("") & "f", "UTF-8", "UTF-7")
+  aSeq.Clear
+  bInseq = False
+  ss = Left(ss, -1)
+  ss = Replace(ss, "+", "&")
+  ss = Replace(ss, "/", ",")
+  aBuf.Add(ss)
+  Return
+  
+End
+
+Private Function IsOnLine_Read() As Boolean
+  
+  Return $hCon.Connected Or $bAuth
+  
+End
+
+Private Function LogMe()
+  
+  Dim aRet As String[]
+  
+  aRet = Call(Subst("LOGIN \"&1\" \"&2\"", $sLogin, $sPassword), "capability")
+  If aRet Then $aCapabilities = Split(aRet[0], " ")
+  $bAuth = True
+  Raise OnLine
+  
+End
+
+Public Sub Connection_Disconnected()
+  
+  $bAuth = False
+  Raise OffLine
+  
+End
+
+Private Function Capabilities_Read() As String[]
+
+  Dim aRet As String[]
+  If Not $aCapabilities Then
+    aRet = Call("CAPABILITY", "capability")
+    If aRet Then $aCapabilities = Split(aRet[0], " ")
+  Endif
+  Return $aCapabilities
+
+End
+
+Private Function MailBoxes_Read() As String[]
+
+  Dim aRet As String[]
+  Dim aMb As String[]
+  Dim s As String
+  Dim aFlags As String[]
+  Dim hMb As _ImapMailBox
+
+  If Not $aMailBoxesNames Then
+    $aMailBoxesNames = New String[]
+    $aMailBoxes = New _ImapMailBox[]
+    aRet = Call("LIST \"\" \"*\"", "list")
+    For Each s In aRet
+      aMb = Scan(s, "(*) \"*\" *")
+      s = DecodeUTF7(Replace(aMb[2], "\"", ""))
+      aFlags = Split(aMb[0], " ")
+      If aFlags.Exist("\\Noselect") Then Continue
+      hMb = New _ImapMailbox(s, aMb[1], aFlags) As "MailBox"
+      $aMailBoxesNames.Add(s)
+      $aMailBoxes.Add(hMb)
+    Next
+    
+  Endif
+  
+  Return $aMailBoxesNames.Copy()
+  
+End

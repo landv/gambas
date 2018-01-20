@@ -1,0 +1,99 @@
+' Gambas class file
+
+Private $hStream As Object
+Private $aBuffer As New String[]
+Property Read DataAvailable As Boolean
+Property Read Connected As Boolean
+
+Private $bConnected As Boolean
+
+Event Data
+Event Disconnected
+
+Public Sub _New()
+  
+  
+  
+End
+
+
+Public Sub SetStream(Value As Stream)
+
+  $hStream = Value
+
+  Object.Attach(Value, Me, "Client")
+  
+End
+
+
+Public Sub ReadNext() As String
+  
+  Dim s As String
+  Line Input #$hStream, s 
+  Return s
+  
+End
+
+Public Sub HaveData() As Boolean
+  
+  Return Not Eof($hStream)
+  
+End
+
+
+Public Sub Client_Read()
+  Dim s As String
+  Dim sTamp As String
+  $bConnected = True
+  
+  While Not Eof($hStream)
+    Line Input #$hStream, s
+      
+      $aBuffer.Add(s, 0)
+  Wend
+  
+  Raise Data
+  
+End
+
+Public Sub Client_Kill()
+  
+  '$hStream = Null
+  $bConnected = False
+  
+  Raise Disconnected
+  
+End
+
+
+
+Public Sub Close()
+  
+  $hStream.Kill
+End
+
+Public Sub Pop() As String
+  
+  Return $aBuffer.Pop()
+  
+End
+
+
+Private Function DataAvailable_Read() As Boolean
+
+  Return $aBuffer.Count > 0
+
+End
+
+
+Private Function Connected_Read() As Boolean
+
+  Return $bConnected
+
+End
+
+Public Sub Send(sValue As String)
+  'Print sValue
+  Print #$hStream, sValue
+  
+End

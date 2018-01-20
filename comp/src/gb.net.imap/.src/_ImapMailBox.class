@@ -1,0 +1,203 @@
+' Gambas class file
+
+'Property Read IFlags As Integer[]
+Property Read Count As Integer
+Property Read UnRead As String
+Property Read NextUid As Integer
+Property Read UsedStorage As Long
+Property Read FreeStorage As Long
+
+Private $aFlags As String[]
+Private $sName As String
+Private $sPath As String
+Private $lUsedStorage As Long
+Private $lFullStorage As Long
+Private $iCount As Integer
+Private $iUnread As Integer
+Private $iNextUID As Integer
+Private bFilled As Boolean
+Private $sUTF7Name As String
+Private $colMime As New Collection
+
+Private $aIdQueuedLoading As Long[]
+Private $aIdQueuedLoadingCommand As String[]
+Private tmrLoading As New Timer As "tmrLoading"
+
+Private Const DEFAULT_MAILBOX As String = "INBOX"
+
+Static Public _CurrentMailBox As String
+
+Event foo
+
+Public Sub _new(sName As String, sPath As String, aFlags As String[])
+  
+  $sName = sName
+  $sUTF7Name = ImapClient.EncodeUTF7(sName)
+  $sPath = sPath
+  $aFlags = aFlags
+  
+End
+
+
+Public Sub _Load(id As Long, sCommand As String)
+  
+  $aIdQueuedLoading.Add(id, 0)
+  $aIdQueuedLoadingCommand.Add(sCommand, 0)
+  tmrLoading.Trigger
+
+End
+
+Public Sub tmrLoading_Timer()
+  
+  Dim sId As String = $aIdQueuedLoading.Pop()
+  Dim sCommand As String = $aIdQueuedLoadingCommand.Pop()
+  
+  
+  If $aIdQueuedLoading.Count > 0 Then tmrLoading.Trigger
+  
+  
+End
+
+
+Private Function Name_Read() As String
+  
+  Return $sName
+  
+End
+
+Private Function Flags_Read() As String[]
+  
+  Return $aFlags.Copy()
+  
+End
+
+Private Function Count_Read() As Integer
+  
+  If Not bFilled Then GetInfo
+  
+  Return $iCount
+  
+End
+
+Private Function UnRead_Read() As String
+  
+  If Not bFilled Then GetInfo
+  
+  Return $iUnread
+  
+End
+
+Private Function UsedStorage_Read() As Long
+  
+  If Not bFilled Then GetInfo
+  
+  Return $lUsedStorage
+  
+End
+
+Private Function FreeStorage_Read() As Long
+  
+  If Not bFilled Then GetInfo
+  
+  Return $lFullStorage - $lUsedStorage
+  
+End
+
+Private Function NextUid_Read() As Integer
+  
+  If Not bFilled Then GetInfo
+  
+  Return $iNextUID
+  
+End
+
+Private Sub GetInfo()
+  
+  Dim hImap As ImapClient = Object.Parent(Me)
+  Dim aRet As String[]
+  Dim s As String
+  Dim sList As String
+  
+  If hImap.Capabilities.Exist("QUOTA") Then
+    aRet = hImap.Call("GETQUOTAROOT " & Quote($sUTF7Name), "quota")
+    For Each s In aRet
+      aRet = Split(Scan(s, "*[(]*)*")[1], " ")
+      If aRet[0] = "STORAGE" Then
+        $lUsedStorage = CLong(aRet[1]) * 1024
+        $lFullStorage = CLong(aRet[2]) * 1024
+        Break
+      Endif
+    Next
+  Endif
+  
+  aret = hImap.Call(Subst("STATUS &1 (MESSAGES UNSEEN UIDNEXT)", Quote($sUTF7Name)), "status")
+  aret = Split(Scan(aret[0], "*[(]*)*")[1], " ")
+  $iCount = ArrayValueFromKey(aret, "MESSAGES")
+  $iUnread = ArrayValueFromKey(aret, "UNSEEN")
+  $iNextUID = ArrayValueFromKey(aret, "UIDNEXT")
+  
+  sList = IIf(hImap.Capabilities.Exist("XLIST"), "XLIST", "LIST")
+  
+  aret = hImap.Call(Subst("&1 \"\" &2", sList, Quote($sUTF7Name)), LCase(sList))
+  
+  $aFlags = Split(Scan(aret[0], "*[(]*)*")[1], " ")
+  bFilled = True
+  
+End
+
+Private Function ArrayValueFromKey(aArray As String[], Key As String) As String
+  
+  Try Return aArray[aArray.Find(Key) + 1]
+  
+End
+
+Public Sub Select()
+  
+  If _CurrentMailBox = $sUTF7Name Then Return
+  
+  GetParent().Call("imap_selecti", "SELECT " & Quote($sUTF7Name),, True)
+  _CurrentMailBox = $sUTF7Name
+  
+End
+
+
+Private Sub GetParent() As ImapClient
+  
+  Return Object.Parent(Me)
+  
+End
+
+Public Function _get(UID As Long) As _ImapMessage
+  Dim hMessage As _ImapMessage
+  
+  hMessage = $colMime[UID]
+   If Not hMessage Then 
+    hMessage = New _ImapMessage(UID) As "Message"
+    $colMime[UID] = hMessage
+  Endif
+  Return hMessage
+
+End
+
+Public Sub Search(Filters As String[]) As Long[]
+  Dim hImap As ImapClient = Object.Parent(Me)
+  Dim aRet As String[]
+  Dim alRet As Long[]
+  Dim s As String
+  $colMime.Clear
+  hImap.Refresh
+  Me.Select
+  
+  aret = hImap.Call("imap_search", "UID SEARCH " & (IIf(Filters.Count > 1, "CHARSET UTF-8 ", "")) & Filters[0], "search", True)
+  
+    alRet = New Long[]
+  If aret.Count > 0 Then
+    For Each s In Split(aRet[0], " ")
+      If Not s Then Continue
+      alRet.Add(CLong(s))
+    Next
+  Endif
+  
+  Return alRet
+End
+

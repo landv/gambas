@@ -1,0 +1,71 @@
+' Gambas class file
+
+Private $hImap As New ImapClient As "ImapClient"
+
+Public Sub Form_Open()
+
+    $hImap.Host = "imap.gmail.com"
+  $hImap.Port = 993
+ $hImap.Login = "gambas.fr@gmail.com"
+  $hImap.Password = "BeGambas1793&"
+ '$ hImap.Open
+
+End
+
+
+Public Sub ImapClient_Online()
+  
+  Dim s As String
+  
+  
+  Button1.Text = "Fermer"
+  Button1.Tag = True
+  
+  
+FillTree
+  
+  
+End 
+
+
+Public Sub ImapClient_Offline()
+  
+  Button1.Text = "Ouvrir"
+  Button1.Tag = False
+  
+End
+
+
+Public Sub Button1_Click()
+
+  If Last.Tag Then 
+    
+    $hImap.Close
+
+   Else
+     
+     $hImap.Open
+    
+  Endif
+
+
+
+
+End
+
+
+Private Function FillTree()
+  Dim s, sDir As String
+  For Each s In $hImap.MailBoxes
+    sDir = File.dir(s)
+    If sDir Then
+      If Not TreeView1.Exist(sDir) Then TreeView1.Add(sDir, sDir, Picture["icon:/22/directory"])
+      TreeView1[sDir].Expanded = True
+      TreeView1.Add(s, File.Name(s), Picture["icon:/16/mail"], sDir)
+    Else
+      TreeView1.Add(s, File.Name(s), Picture["icon:/16/mail"])
+    Endif
+    
+  Next
+  
+End
