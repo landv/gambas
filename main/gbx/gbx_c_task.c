@@ -432,6 +432,81 @@ static void close_fd(int *pfd)
 	}
 }
 
+static bool get_return_value(CTASK *_object, bool cleanup)
+{
+	char path[PATH_MAX];
+	GB_VALUE value;
+	bool fail = FALSE;
+	struct stat info;
+	char *err = NULL;
+	int fd;
+	int n;
+	
+	sprintf(path, RETURN_FILE_PATTERN, getuid(), getpid(), THIS->pid);
+	
+	if (!cleanup)
+	{
+		switch (THIS->status)
+		{
+			case CHILD_OK:
+				
+				#if DEBUG_ME
+				fprintf(stderr,"unserialize from: %s\n", path);
+				#endif
+				if (!THIS->got_value)
+				{
+					fail = GB_UnSerialize(path, &value);
+					if (!fail)
+						GB_StoreVariant(&value._variant, &THIS->ret);
+					THIS->got_value = TRUE;
+				}
+				break;
+				
+			case CHILD_ERROR:
+				
+				if (stat(path, &info))
+				{
+					fail = TRUE;
+				}
+				else
+				{
+					err = STRING_new_temp(NULL, info.st_size);
+					
+					fd = open(path, O_RDONLY);
+					if (fd < 0)
+					{
+						fail = TRUE;
+						break;
+					}
+					else
+					{
+						for(;;)
+						{
+							n = read(fd, err, info.st_size);
+							if (n == info.st_size || errno != EINTR)
+								break;
+						}
+						close(fd);
+						
+						if (n == info.st_size)
+							GB_Error("Task has failed: &1", err);
+						else
+							fail = TRUE;
+					}
+				}
+				
+				if (fail)
+					GB_Error("Unable to get task error");
+				
+				break;
+		}
+	}
+
+	unlink(path);
+	
+	return fail;
+}
+
 static void cleanup_task(CTASK *_object)
 {
 	//printf("cleanup task %p\n", THIS); fflush(stdout);
@@ -527,6 +602,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Task_free)
 
+	get_return_value(THIS, TRUE);
 	GB_StoreVariant(NULL, &THIS->ret);
 
 END_METHOD
@@ -579,36 +655,16 @@ END_METHOD
 
 BEGIN_PROPERTY(Task_Value)
 
-	char path[PATH_MAX];
-	GB_VALUE ret;
-	FILE_STAT info;
-	char *err = NULL;
-	int fd;
-	int n;
-	
 	if (!THIS->child && THIS->stopped)
 	{
-		sprintf(path, RETURN_FILE_PATTERN, getuid(), getpid(), THIS->pid);
-		#if DEBUG_ME
-		fprintf(stderr,"unserialize from: %s\n", path);
-		#endif
-		
 		if (WIFEXITED(THIS->status))
 		{
 			switch (WEXITSTATUS(THIS->status))
 			{
 				case CHILD_OK:
 
-					if (!THIS->got_value)
-					{
-						bool fail = GB_UnSerialize(path, &ret);
-						if (!fail)
-							GB_StoreVariant(&ret._variant, &THIS->ret);
-						unlink(path);
-						THIS->got_value = TRUE;
-						if (fail)
-							break;
-					}
+					if (get_return_value(THIS, FALSE))
+						break;
 					GB_ReturnVariant(&THIS->ret);
 					return;
 					
@@ -629,23 +685,8 @@ BEGIN_PROPERTY(Task_Value)
 					
 				case CHILD_ERROR:
 					
-					FILE_stat(path, &info, FALSE);
-					
-					err = STRING_new_temp(NULL, info.size);
-					
-					fd = open(path, O_RDONLY);
-					if (fd < 0) goto __ERROR;
-					
-					for(;;)
-					{
-						n = read(fd, err, info.size);
-						if (n == info.size || errno != EINTR)
-							break;
-					}
-					close(fd);
-					
-					GB_Error("Task has failed: &1", err);
-					return;
+					get_return_value(THIS, FALSE);
+					break;
 			}
 		}
 		else if (WIFSIGNALED(THIS->status))
@@ -654,8 +695,6 @@ BEGIN_PROPERTY(Task_Value)
 			return;
 		}
 	}
-	
-__ERROR:
 	
 	GB_ReturnNull();
 	GB_ReturnConvVariant();

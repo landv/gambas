@@ -116,6 +116,8 @@ static void init(const char *file, int argc, char **argv)
 
 static void main_exit(bool silent)
 {
+	silent |= EXEC_task;
+	
 	// If the stack has not been initialized because the project could not be started, do it now
 	if (!SP)
 		STACK_init();
@@ -466,7 +468,8 @@ int main(int argc, char *argv[])
 
 	main_exit(FALSE);
 
-	MEMORY_exit();
+	if (!EXEC_task)
+		MEMORY_exit();
 
 	fflush(NULL);
 
