@@ -326,7 +326,7 @@ Private Function MailBoxes_Read() As String[]
   Dim aMb As String[]
   Dim s As String
   Dim aFlags As String[]
-  Dim hMb As _ImapMailBox
+  Dim hMb As _ImapMailBox 
 
   If Not $aMailBoxesNames Then
     $aMailBoxesNames = New String[]
