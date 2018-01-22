@@ -863,8 +863,10 @@ static void add_quoted_identifier(void)
 		len++;
 	}
 
-	if (get_char() == '}')
-		source_ptr++;
+	if (get_char() != '}')
+		THROW("Missing '}'");
+	
+	source_ptr++;
 
 	if (PATTERN_is(last_pattern, RS_EVENT) || PATTERN_is(last_pattern, RS_RAISE))
 	{
