@@ -316,6 +316,7 @@ Public Sub Main()
 
   Application.Theme = Settings["/Theme"]
   DESKTOP_FONT = Application.Font.ToString()
+
   Try Application.Font = Font[Settings["/Font"]]
 
   'Print Application.Theme

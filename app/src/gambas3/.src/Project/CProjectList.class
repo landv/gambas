@@ -22,6 +22,7 @@ Private $sLastURL As String
 Private $hHelp As WebView
 Private $hCurrent As ProjectBox
 Private $iCount As Integer
+Private $bNoFilter As Boolean
 
 Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Optional iArrange As Integer = Arrange.Row)
   
@@ -29,6 +30,8 @@ Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Opt
   $hFilter = hFilter
   $iType = iType
   $iArrange = iArrange
+  
+  $bNoFilter = Not $hFilter.Enabled
   
   $hObserver = New Observer($hFilter) As "Filter"
   $hObsList = New Observer(hList) As "ScrollView"
@@ -444,7 +447,7 @@ Public Sub ApplyFilter(sFilter As String)
 
   $hList.Arrangement = Arrange.None
   
-  If Not sFilter Then
+  If $bNoFilter Or If Not sFilter Then
     sFilter = "*"
   Else
     sFilter = "*" & String.LCase(sFilter) & "*"

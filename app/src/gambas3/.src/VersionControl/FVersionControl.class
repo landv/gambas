@@ -98,7 +98,7 @@ Public Sub tabVersionControl_Click()
     Case 1
       edtDiff.SetFocus
     Case 2
-      Try trmShell.Exec(["bash"])
+      Try trmShell.Exec(["bash"], ["PWD=" & Project.Dir])
       trmShell.SetFocus
   End Select
 
