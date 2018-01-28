@@ -252,8 +252,8 @@ static void prepare_task(CTASK *_object)
 
 static void exit_child(int ret)
 {
-	EXEC_quit_value = ret;
-	EXEC_quit();
+	FILE_exit();
+	_exit(ret);
 }
 
 static bool start_task(CTASK *_object)
