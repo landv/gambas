@@ -9,6 +9,8 @@ Static Public Const BETWEEN_BRACES_LEFT As String = "([{"
 Static Public Const BETWEEN_BRACES_RIGHT As String = ")]}"
 
 Public CloseBraces As Boolean
+Public InsideStringEscape As Boolean
+Public InsideStringDelim As String
 
 'Private $bCanCloseBraces As Boolean
 'Private $bCanCloseBracesComputed As Boolean
@@ -41,6 +43,9 @@ Public Sub InsideString(hEditor As TextEditor) As Boolean
   iLen = hEditor.Current.Length
   sDelim = Me.STRING_DELIM
   
+  InsideStringEscape = False
+  InsideStringDelim = False
+  
   For I = 1 To hEditor.Column
     sCar = String.Mid$(sLine, I, 1)
     If sCar = sInside Then
@@ -48,10 +53,14 @@ Public Sub InsideString(hEditor As TextEditor) As Boolean
     Else If InStr(sDelim, sCar) Then
       If Not sInside Then sInside = sCar
     Else If sCar = "\\" Then
-      If sInside Then Inc I
+      If sInside Then 
+        Inc I
+        InsideStringEscape = I > hEditor.Column
+      Endif
     Endif
   Next
   
+  InsideStringDelim = sInside
   Return sInside
   
 End
@@ -95,6 +104,8 @@ Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
   
   Dim iPos As Integer
   
+  InsideStringEscape = False
+  
   iPos = InStr(Me.BRACES_OPEN, Key.Text)
   
   If iPos And If CanCloseBraces(hEditor) Then
@@ -111,9 +122,22 @@ Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
   
   If iPos Then
     
-    If String.Mid$(hEditor.Current.Text, hEditor.Column + 1, 1) = Key.Text Then
+    If Not InsideStringEscape And If String.Mid$(hEditor.Current.Text, hEditor.Column + 1, 1) = Key.Text Then
       hEditor.Goto(hEditor.Column + 1, hEditor.Line)
       Return True
+    Endif
+    
+    If InStr(Me.STRING_DELIM, Key.Text) And If hEditor.Column < hEditor.Current.Length Then
+      If InsideStringEscape Then Return
+      If InsideStringDelim = Key.Text Then
+        hEditor.SaveCursor()
+        hEditor.Insert(Key.Text)
+        hEditor.Insert(Mid$(Me.BRACES_OPEN, iPos, 1))
+        hEditor.RestoreCursor()
+        hEditor.Goto(hEditor.Column + 1, hEditor.Line)
+        '$bCanCloseBracesComputed = False
+        Return True
+      Endif
     Endif
     
   Endif
