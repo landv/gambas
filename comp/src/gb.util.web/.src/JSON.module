@@ -341,6 +341,13 @@ Public Sub Decode(JSONString As String, Optional UseNull As Boolean) As Variant
   
 End
 
+Public Sub FromString(JSONString As String, Optional UseNull As Boolean) As Variant
+  
+  Return Decode(JSONString, UseNull)
+  
+End
+
+
 Public Sub Encode(Value As Variant) As String
   
   Dim sStr As String
@@ -351,6 +358,13 @@ Public Sub Encode(Value As Variant) As String
   Return sStr
   
 End
+
+Public Sub ToString(Value As Variant) As String
+  
+  Return Encode(Value)
+  
+End
+
 
 Private Function Null_Read() As Variant
 
