@@ -5275,7 +5275,7 @@ Private Sub CreateGitIgnore()
   Endif
 
   sData = File.Load(sPath)
-  iPos = InStr(sData, "#---- Gambas files to ignore (v1)")
+  iPos = InStr(sData, "#---- Gambas files to ignore (v3)")
   If iPos Then Return
   
   iPos = InStr(sData, "#---- Gambas files to ignore")
@@ -5291,7 +5291,7 @@ Private Sub CreateGitIgnore()
   sData = RTrim(sData)
   If sData Then sData &= "\n"
   
-  File.Save(sPath, sData & File.Load("gitignore"))
+  File.Save(sPath, RTrim(File.Load("gitignore")) & "\n" & sData)
 
 End
 
