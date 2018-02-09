@@ -72,9 +72,9 @@ Public Sub btnOK_Click()
     
     If Not Exist(sTemp) Then Error.Raise(Subst$(("The '&1' command has failed."), "tar"))
     
-    If Stat(sTemp).Size <= 256000 Then aSendCC = ["gambas-user@lists.sourceforge.net"]
+    If Stat(sTemp).Size <= 256000 Then aSendCC = ["Gambas mailing list <user@lists.gambas-basic.org>"]
     
-    Desktop.SendMail(["gambas@users.sourceforge.net"], aSendCC,, "[CRASH REPORT] " & If(Project.Title, Project.Title, Project.Name), "Hello,\n\nDamned, my program crashed Gambas that way :\n\n" & Trim(txtDesc.Text) & "\n\n", sTemp)
+    Desktop.SendMail(["Benoît Minisini <g4mba5@gmail.com>"], aSendCC,, "[CRASH REPORT] " & If(Project.Title, Project.Title, Project.Name), "Hello,\n\nDamned, my program crashed Gambas that way :\n\n" & Trim(txtDesc.Text) & "\n\n", sTemp)
     
     Dec Application.Busy
     
