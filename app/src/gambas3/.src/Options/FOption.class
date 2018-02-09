@@ -99,6 +99,10 @@ Public Sub _new()
     [cmbToolbox, "/ToolboxSize", 0],
     [btnSortProperty, "/SortProperties", 1],
     [txtTabSize, "/DefaultTabSize", 2],
+    [btnFoldProc, "/Editor/CollapseByDefault", 0],
+    [btnWrapText, "/Editor/WrapTextByDefault", 0],
+    [btnTabIndent, "/Editor/TabIndentByDefault", 0],
+    [btnVersionControl, "/VersionControl/Enabled", 1],
     [btnShowLimit, "/Editor/ProcedureLimit", 1],
     [btnShowLineNumber, "/Editor/ShowLineNumbers", 0],
     [btnShowChange, "/Editor/ShowChange", 1],
@@ -107,9 +111,7 @@ Public Sub _new()
     [btnShowIndent, "/Editor/ShowIndent", 1],
     [btnShowPreview, "/Editor/ShowPreview", 0],
     [btnFold, "/Editor/ShowExpand", 1],
-    [btnFoldProc, "/Editor/CollapseByDefault", 0],
-    [btnWrapText, "/Editor/WrapTextByDefault", 0],
-    [btnTabIndent, "/Editor/TabIndentByDefault", 0],
+    [btnInvertTheme, "/Editor/InvertTheme", 0],
     [btnOutput, "/QuietExternalCommands", 0],
     [btnUtility, "/UseUtilityWindows", 1],
     [btnStartupLoad, "/RestoreFiles", 1],
@@ -152,7 +154,6 @@ Public Sub _new()
   Else
     cmbTheme.Index = 0
   Endif
-  chkInvertTheme.Value = Settings["/Editor/InvertTheme", 0]
   
   panDownloadHelp.Visible = btnOfflineHelp.Value
   
@@ -1378,9 +1379,17 @@ Public Sub Form_Activate()
 
 End
 
-Public Sub chkInvertTheme_Click()
+Public Sub btnInvertTheme_Click()
 
-  Settings["/Editor/InvertTheme"] = chkInvertTheme.Value
+  Settings["/Editor/InvertTheme"] = btnInvertTheme.Value
   RefreshEditor
+
+End
+
+Public Sub btnVersionControl_Click()
+
+  Settings["/VersionControl/Enabled"] = btnVersionControl.Value
+  VersionControl.Refresh
+  Project.Refresh
 
 End

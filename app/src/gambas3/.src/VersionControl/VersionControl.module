@@ -31,14 +31,17 @@ Public Enum ACCEPT_OURS = 1, ACCEPT_THEIRS = 2
 
 Public Sub Refresh()
 
-  $bEnabled = True
-  If CVersionControlSubversion.Check() Then
-    $hVC = CVersionControlSubversion
-  Else If CVersionControlGit.Check() Then
-    $hVC = CVersionControlGit
-  Else
-    $hVC = CVersionControl
-    $bEnabled = False
+  $hVC = CVersionControl
+  $bEnabled = False
+  
+  If Settings["/VersionControl/Enabled", 1] Then
+    If CVersionControlSubversion.Check() Then
+      $hVC = CVersionControlSubversion
+      $bEnabled = True
+    Else If CVersionControlGit.Check() Then
+      $hVC = CVersionControlGit
+      $bEnabled = True
+    Endif
   Endif
   
   $bAuth = False
@@ -273,8 +276,8 @@ End
 
 Public Sub CheckPaths()
 
-  If Not $bEnabled Then Return
   Project.ResetFlags
+  If Not $bEnabled Then Return
   $hVC.CheckPaths()
 
 End
