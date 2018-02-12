@@ -1019,9 +1019,9 @@ void VALUE_write_variant(VALUE *value, void *addr)
 {
 	static void *jump[16] = {
 		&&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-		&&__STRING, &&__CSTRING, &&__POINTER, &&__VOID, &&__VOID, &&__VOID, &&__NULL
+		&&__STRING, &&__CSTRING, &&__POINTER, &&__VOID, &&__VOID, &&__CLASS, &&__NULL
 		};
-
+	
 	TYPE type = value->_variant.vtype;
 
 	if (TYPE_is_object(type))
@@ -1057,6 +1057,7 @@ __STRING:
 }
 
 __OBJECT:
+__CLASS:
 {
 	void *object = value->_variant.value._object;
 	OBJECT_REF(object);
@@ -1137,9 +1138,6 @@ __DATE:
 	return;
 
 __STRING:
-
-	/* Il faut faire l'affectation en deux temps au cas o
-		value->_string.addr == *addr ! */
 
 	VALUE_conv_string(value);
 
