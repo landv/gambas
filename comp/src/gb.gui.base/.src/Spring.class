@@ -1,0 +1,15 @@
+' Gambas class file
+
+Export
+
+Inherits Panel
+
+Public Const _Properties As String = "*,-Margin,-Padding,-Spacing,-Expand,-Invert,-Arrangement,-AutoResize,-Indent,-Border"
+Public Const _IsContainer As Boolean = False
+Public Const _DefaultSize As String = "4,4"
+
+Public Sub _new()
+  
+  Me.Expand = True
+  
+End

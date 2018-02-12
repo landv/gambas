@@ -56,13 +56,11 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
   Dim iBorder As Integer
   Dim hCtrl As Control = hCCtrl.Control
   
-  'Debug hCCtrl.Name
-  
   Select hCCtrl.Kind
   
     Case "HBox", "VBox", "HPanel", "VPanel"
     
-      Paint.Background = &HFFB0B0
+      'Paint.Background = &HFFB0B0
     
     Case "Panel"
     
@@ -88,6 +86,11 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
       'If hCCtrl.GetProperty("Background") Then Return
       'Draw.Foreground = Color.Gradient(Color.Background, &H808080&)
     
+    Case "Spring"
+    
+      CFamily.PaintExpand(hCCtrl, True)
+      Return
+
     Case Else
       
       Return True

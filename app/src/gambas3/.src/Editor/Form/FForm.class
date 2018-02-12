@@ -1568,11 +1568,11 @@ Public Sub HideFrame()
 
 End
 
-Private Sub DrawFrame(hCtrl As Control, Optional X As Integer, Y As Integer, W As Integer, H As Integer)
+Private Sub DrawFrame(hCtrl As Control, Optional X As Integer, Y As Integer, W As Integer, H As Integer, Optional bInside As Boolean)
   
   Dim hRoot As Container = panBorder 'RootControl.Control
   Dim S As Integer = 2
-
+  
   If W = 0 Or If H = 0 Then
     X = 0
     Y = 0
@@ -1580,10 +1580,12 @@ Private Sub DrawFrame(hCtrl As Control, Optional X As Integer, Y As Integer, W A
     H = hCtrl.H
   Endif
   
-  X -= S
-  Y -= S
-  W += 2 * S
-  H += 2 * S
+  If Not bInside Then
+    X -= S
+    Y -= S
+    W += 2 * S
+    H += 2 * S
+  Endif
   
   panSelectN.Move(hCtrl.ScreenX - hRoot.ScreenX + X, hCtrl.ScreenY - hRoot.ScreenY + Y, W, S)
   panSelectS.Move(panSelectN.X, panSelectN.Y + H - S, panSelectN.W, S)
@@ -1620,7 +1622,7 @@ Private Sub DrawDropFrame()
     H = .DefaultHeight
   End With
   
-  DrawFrame(hParent, X - W \ 2, Y - H \ 2, W, H)
+  DrawFrame(hParent, X - $hDropTarget.Grid(W \ 2), Y - $hDropTarget.Grid(H \ 2), W, H, True)
   
 End
 
@@ -3370,8 +3372,8 @@ Public Sub Control_Drop()
     ' ENDIF
     
     hParent = $hContainer
-    X = $iContX
-    Y = $iContY
+    X = hParent.Grid($iContX)
+    Y = hParent.Grid($iContY)
 
     FindContainer(hParent, X, Y, COORD_INSIDE_TO_CONTROL)
 
@@ -3385,8 +3387,8 @@ Public Sub Control_Drop()
       H = .DefaultHeight
     End With
 
-    X -= W \ 2
-    Y -= H \ 2
+    X -= hParent.Grid(W \ 2)
+    Y -= hParent.Grid(H \ 2)
 
     $hCurrent = AddControl(sClass, hParent, X, Y)
     FToolBox.SetTool()
