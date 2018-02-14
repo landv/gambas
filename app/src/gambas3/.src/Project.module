@@ -5276,7 +5276,7 @@ Private Sub CreateGitIgnore()
   Endif
 
   sData = File.Load(sPath)
-  iPos = InStr(sData, "#---- Gambas files to ignore (v3)")
+  iPos = InStr(sData, "#---- Gambas files to ignore (v4)")
   If iPos Then Return
   
   iPos = InStr(sData, "#---- Gambas files to ignore")
