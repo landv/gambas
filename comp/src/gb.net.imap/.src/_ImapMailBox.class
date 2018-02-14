@@ -121,7 +121,8 @@ Private Sub GetInfo()
   If hImap.Capabilities.Exist("QUOTA") Then
     aRet = hImap.Call("GETQUOTAROOT " & Quote($sUTF7Name), "quota")
     For Each s In aRet
-      aRet = Split(Scan(s, "*[(]*)*")[1], " ")
+      Try aRet = Split(Scan(s, "*[(]*)*")[1], " ")
+      If Error Then Continue
       If aRet[0] = "STORAGE" Then
         $lUsedStorage = CLong(aRet[1]) * 1024
         $lFullStorage = CLong(aRet[2]) * 1024
@@ -155,7 +156,7 @@ Public Sub Select()
   
   If _CurrentMailBox = $sUTF7Name Then Return
   
-  GetParent().Call("imap_selecti", "SELECT " & Quote($sUTF7Name),, True)
+  GetParent().Call("SELECT " & Quote($sUTF7Name))
   _CurrentMailBox = $sUTF7Name
   
 End
@@ -188,7 +189,7 @@ Public Sub Search(Filters As String[]) As Long[]
   hImap.Refresh
   Me.Select
   
-  aret = hImap.Call("imap_search", "UID SEARCH " & (IIf(Filters.Count > 1, "CHARSET UTF-8 ", "")) & Filters[0], "search", True)
+  aret = hImap.Call("UID SEARCH " & (IIf(Filters.Count > 1, "CHARSET UTF-8 ", "")) & Filters[0], "search")
   
     alRet = New Long[]
   If aret.Count > 0 Then

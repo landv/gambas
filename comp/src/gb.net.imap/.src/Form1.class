@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Private $hImap As New ImapClient As "ImapClient"
+Private $aAllMessageIds As Long[]
 
 Public Sub Form_Open()
 
@@ -41,6 +42,7 @@ Public Sub Button1_Click()
   If Last.Tag Then 
     
     $hImap.Close
+    TreeView1.Clear
 
    Else
      
@@ -56,6 +58,7 @@ End
 
 Private Function FillTree()
   Dim s, sDir As String
+  TreeView1.Clear
   For Each s In $hImap.MailBoxes
     sDir = File.dir(s)
     If sDir Then
@@ -68,4 +71,32 @@ Private Function FillTree()
     
   Next
   
+End
+
+Public Sub TreeView1_Select()
+  GridView1.Columns.Count = 2
+  $aAllMessageIds = $hImap[Last.Key].Search(["ALL"])
+  GridView1.Rows.Count = $aAllMessageIds.Count
+
+End
+
+Public Sub TreeView1_Click()
+
+  
+
+End
+
+Public Sub GridView1_Click()
+
+  
+
+End
+
+Public Sub GridView1_Data(Row As Integer, Column As Integer)
+
+  Select Case Column
+    Case 1
+      Last.Data.Text = $aAllMessageIds[Row]
+  End Select
+
 End

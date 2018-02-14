@@ -126,7 +126,7 @@ Public Sub Connection_Data()
     s = $hCon.Pop()
     DebugPrint("< " & s)
     aTuple = Scan(s, "* * *")
-    
+    If aTuple.Count = 0 And If s Then aTuple = Scan(s, "* *")
     If aTuple[0] = "*" Then
       Select Case LCase(aTuple[1])
         Case "ok"
@@ -347,3 +347,23 @@ Private Function MailBoxes_Read() As String[]
   Return $aMailBoxesNames.Copy()
   
 End
+
+
+''Return an _ImapMailBox from it's name
+Public Sub _get(MailBoxName As String) As _ImapMailBox
+  
+  If Not $aMailBoxesNames Then MailBoxes_Read
+  
+  If Not $aMailBoxesNames.Exist(MailBoxName) Then Error.Raise("Unknown mailbox name")
+  
+  Return $aMailBoxes[$aMailBoxesNames.Find(MailBoxName)]
+  
+End
+
+
+Public Sub Refresh()
+  
+  
+  
+End
+
