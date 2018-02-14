@@ -185,7 +185,7 @@ Public Sub Search(Filters As String[]) As Long[]
   Dim aRet As String[]
   Dim alRet As Long[]
   Dim s As String
-  $colMime.Clear
+  $colMime.Clear 
   hImap.Refresh
   Me.Select
   
@@ -196,7 +196,7 @@ Public Sub Search(Filters As String[]) As Long[]
     For Each s In Split(aRet[0], " ")
       If Not s Then Continue
       alRet.Add(CLong(s))
-    Next
+    Next 
   Endif
   
   Return alRet
