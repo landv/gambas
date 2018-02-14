@@ -81,6 +81,7 @@ Private Sub LoadTranslation(sLang As String)
   Dim bFuzzy As Boolean
   Dim iPos As Integer
   Dim cCache As New Collection
+  Dim cKey As New Collection
   
   sPath = Language.GetPath(sLang, "po")
   If Not Exist(sPath) Then Return 
@@ -157,7 +158,12 @@ Private Sub LoadTranslation(sLang As String)
       Endif
 
       'Inc iIndex
-      Keys.Add(sMsgId)
+      If Not cKey.Exist(sMsgId) Then
+        Keys.Add(sMsgId)
+        cKey[sMsgId] = True
+      Else
+        Error "gambas3: warning: duplicate translation: "; sMsgId
+      Endif
 
       If sMsgStr = "-\\n" Then sMsgStr = "-"
       

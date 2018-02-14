@@ -162,6 +162,27 @@ Public Sub Form_Open()
 
 End
 
+Private Sub ErrorMessage(sText As String, sDetail As String)
+  
+  Dim iPos As Integer
+  
+  sText = "<p>" & Html(Trim(sText) & "\n\n")
+  sDetail = Trim(sDetail)
+  If sDetail Then
+    If String.Len(sDetail) > 1024 Then
+      sDetail = String.Left(sDetail, 1024)
+      iPos = RInStr(sDetail, "\n")
+      If iPos Then sDetail = Left(sDetail, iPos - 1)
+      sDetail &= "\n[...]"
+    Endif
+    sText &= "<font size=\"-1\"><tt>" & Html(sDetail) & "</tt></font>"
+  Endif
+  
+  Message.Error(sText)
+  
+End
+
+
 Private Sub SetLang(Optional sLang As String) As Boolean
 
   Dim sDir As String
@@ -200,9 +221,12 @@ Private Sub SetLang(Optional sLang As String) As Boolean
   Else
     Try MergeMessage(sPath, Shell$(sPath) & " " & Shell$(sDir &/ ".pot"))
     If Error Then
-      Debug $sErrMerge
-      Copy sDir &/ ".pot" To sPath
-      Return True
+      Try Copy sDir &/ ".pot" To sPath
+      ErrorMessage(Subst$(("The '&1' command has failed."), "msgmerge"), $sErrMerge)
+      'ResizeTable
+      'cmbLang.Text = Language
+      'Dec Application.Busy
+      'Return True
     Endif
     '     SHELL "msgmerge -o " & Project.Quote(sPath & ".new") & " " & Project.Quote(sPath) & " " & Project.Quote(sDir &/ ".pot") & " > " & Project.Quote(sTemp) & " 2>&1" WAIT
     '     IF Exist(sPath & ".new") THEN
@@ -281,8 +305,8 @@ Finally
 
 Catch
 
-  sMsg = Error.Text
-  Message.Error(Subst(("Cannot read translation file for language '&1'"), Language.ToName(sLang)) & "\n\n" & sMsg & $sErrMerge)
+  sMsg = Error.Text & "\n\n" & Error.Backtrace.Join(" ") & "\n\n" & Trim($sErrMerge)
+  ErrorMessage(Subst(("Cannot read translation file for language '&1'"), Language.ToName(sLang)), sMsg)
   $bIgnore = False
   Return True
 
@@ -1169,7 +1193,7 @@ Private Sub MergeMessage(sPath As String, sOption As String)
     Try Kill sTemp
   Else
     'PRINT "msgmerge -o " & sOption
-    $sErrMerge = "\n\n" & DConv(File.Load(sTemp))
+    $sErrMerge = DConv(File.Load(sTemp))
     Try Kill sTemp
     Error.Raise(Subst$(("The '&1' command has failed."), "msgmerge"))
   Endif
