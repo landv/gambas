@@ -23,9 +23,6 @@ Private $sCmdStart As String
 Private $sAddBreakpoint As String
 Private $sRemoveBreakpoint As String
 
-Private $bResult As Boolean
-Private $sResult As String
-
 Private $bIgnoreNextInfo As Boolean
 
 Private $bConsole As Boolean
@@ -773,7 +770,7 @@ Private Sub Start(sCmd As String)
   Dim hForm As Object
   'Dim hEdit As FEditor
   Dim aExec As String[]
-  Dim bValgrind As Boolean '= True
+  Dim bValgrind As Boolean = False
   Dim sTitle As String
   Dim sProg As String
   Dim sBreakpoint As String
@@ -1208,20 +1205,6 @@ End
 '   ENDIF
 ' 
 ' END
-
-Public Sub Eval(sExpr As String) As String
-
-  $bResult = False  
-  Command("!" & sExpr)
-
-  Wait
-  While Not $bResult
-    Wait 
-  Wend
-  
-  Return $sResult
-  
-End
 
 Public Sub ReadDebugSettings()
   

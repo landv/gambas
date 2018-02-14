@@ -370,7 +370,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Dim bHelpBrowser As Boolean
   
   If Not hWebView Then 
-    If Not FHelpBrowser.Visible Then Return
+    If Not Class.IsLoaded("FHelpBrowser") Or If Not FHelpBrowser.Visible Then Return
     bHelpBrowser = True
     hWebView = FHelpBrowser.GetBrowser()
   Endif

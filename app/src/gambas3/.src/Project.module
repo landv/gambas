@@ -703,7 +703,7 @@ _INIT_AGAIN:
   If Not $bTesting
     FMain.OnProjectChange
     FSearch.OnProjectChange
-    FHelpBrowser.OnProjectChange
+    If Class.IsLoaded("FHelpBrowser") Then FHelpBrowser.OnProjectChange
     FProfile.OnProjectChange
     'FOpenProject.OnUpdateRecent
     

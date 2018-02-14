@@ -689,7 +689,7 @@ Private Sub ShowProperty(Optional sFocus As String)
       sHTML = Replace(sHTML, "$(warning)", ("This property is virtual: it is only implemented in the IDE, and has no existence at runtime."))
     Endif
     If Not $hWebView Then
-      If FHelpBrowser.Visible Then
+      If Class.IsLoaded("FHelpBrowser") And If FHelpBrowser.Visible Then
         sHTML = Replace(sHTML, "$(hide-title)", "")
         FHelpBrowser.webHelp.HTML = sHTML
       Endif

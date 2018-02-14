@@ -8,6 +8,7 @@ Private $cName As New Collection
 Private $iCurrent As Integer
 Private $bFreeze As Boolean
 Private $bModified As Boolean
+Private $iIconSize As Integer
 
 Static Public Sub Run(hForm As FForm)
 
@@ -44,16 +45,18 @@ Public Sub Form_Open()
   Settings.Read(Me)
   'PRINT "_new"
   Me.Title = $hForm.Name & " - " & ("Menu editor")
+
+  $iIconSize = Stock.GetSize("small")
+
   
   $bFreeze = True
   gvwMenu.UnSelectAll
   $bFreeze = False
 
   gvwMenu.Rows.Count = 0
-  gvwMenu.Columns.Count = 3
-  gvwMenu.Columns[0].Width = 20
-  gvwMenu.Columns[1].Expand = True
-  gvwMenu.Columns[2].Width = Desktop.Scale * 20
+  gvwMenu.Columns.Count = 2
+  gvwMenu.Columns[0].Expand = True
+  gvwMenu.Columns[1].Width = Desktop.Scale * 20
   
   $iCurrent = -1
   LoadShortcut
@@ -192,7 +195,7 @@ Private Sub LoadAllMenu()
   
   '$aMenu.Add(Null)
   gvwMenu.Rows.Count = $aMenu.Count
-  gvwMenu.Rows.Height = Max(18, gvwMenu.Font.Height)
+  gvwMenu.Rows.Height = gvwMenu.Font.Height * 1.2
   
   $bFreeze = False
   $bModified = False
@@ -934,53 +937,110 @@ Public Sub txtSearch_Activate()
 
 End
 
+Private Sub GetMenuColor(hMenu As CMenu) As Integer
+
+  If Not hMenu.Visible Then 
+    Return Color.Merge(Color.TextForeground, Color.TextBackground, 0.8)
+  Else If Not hMenu.Enabled Then
+    Return Color.Merge(Color.TextForeground, Color.TextBackground, 0.5)
+  Else
+    Return Color.TextForeground
+  Endif
+
+End
+
+Public Sub gvwMenu_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, Column As Integer)
+
+  Dim D As Integer
+  Dim iCol As Integer
+  Dim sText As String
+  Dim hPict As Picture
+
+  
+
+  With $aMenu[Row]
+    
+    If .Level = 0 And If Row > 0 Then
+      Paint.FillRect(X, Y, Width, 1, Color.LightForeground)
+      ' Paint.Dash = [1]
+      ' Paint.MoveTo(X, Y)
+      ' Paint.RelLineTo(Width, 0)
+      ' Paint.Background = Color.TextForeground
+      ' Paint.Stroke
+      ' Paint.Dash = Null
+    Endif
+    
+    If Column <> 0 Then Return
+
+    iCol = GetMenuColor($aMenu[Row])
+    
+    D = .Level * Desktop.Scale * 4
+    X += D + $iIconSize + Desktop.Scale
+    Width -= D + $iIconSize + Desktop.Scale
+    
+    If .Picture Then
+      Try hPict = Project.GetPicture(.Picture)
+      If hPict Then hPict = hPict.Image.Stretch($iIconSize, $iIconSize).Picture
+      Paint.DrawPicture(hPict, X - $iIconSize - Desktop.Scale / 2, Y + (Height - $iIconSize) / 2)
+    Endif
+      
+    If .Level = 0 Then
+      Paint.Font.Bold = True
+      Paint.Font.Underline = True
+    Endif
+  
+    If .Caption Then
+      
+      sText = .Caption
+      
+    Else If .Level Then
+      
+      sText = "  " & .Name & "  "
+      
+      If Width > Desktop.Scale * 2 Then
+        Paint.Dash = [1]
+        Paint.MoveTo(X, CInt(Y + Height / 2) + 0.5)
+        Paint.RelLineTo(Width - Desktop.Scale * 2, 0)
+        Paint.Background = Color.LightForeground
+        Paint.LineWidth = 1
+        Paint.Stroke
+        Paint.Dash = Null
+      Endif
+      
+      X += D
+      Width -= D
+      Paint.Font.Italic = True
+      Paint.FillRect(X, Y + Height / 2, Paint.TextSize(sText).Width, 1, If(Row = gvwMenu.Row, Color.SelectedBackground, Color.TextBackground))
+      
+    Else
+      
+      sText = .Name
+      
+    Endif
+    
+    Paint.Background = iCol
+    Paint.DrawText(sText, X, Y, Width, Height, Align.Normal)
+    
+  End With
+
+End
+
 Public Sub gvwMenu_Data(Row As Integer, Column As Integer)
 
-  Dim hPict As Picture
-  Dim sElt As String
-  
-  'If Row >= $aMenu.Max Then Return
-  
-  If Row = gvwMenu.Row Then
-    gvwMenu.Data.Background = Color.SelectedBackground
-  Endif
   
   With $aMenu[Row]
   
     Select Case Column
       
-      Case 0
-        If .Picture Then
-          Try hPict = Project.GetPicture(.Picture)
-          If hPict Then hPict = hPict.Image.Stretch(16, 16).Picture
-          gvwMenu.Data.Picture = hPict
-          gvwMenu.Data.Alignment = Align.Center
-        Endif
-        
       Case 1
-        
-        If .Caption Then
-          sElt = .Caption
-        Else
-          If .Level = 0 Then
-            sElt = .Name
-          Else
-            sElt = String$(2, "―") & " " & .Name & " " & String$(6, "―")
-          Endif
-          gvwMenu.Data.Font.Italic = True
-          gvwMenu.Data.Foreground = Color.Lighter(Color.TextForeground)
-        Endif
-        
-        If .Level Then
-          sElt = String$(.Level, "    ·    ") & sElt
-        Endif
-        gvwMenu.Data.Text = sElt
-        
-      Case 2
         gvwMenu.Data.Text = .GetShortcut()
       
     End Select
     
+    gvwMenu.Data.Foreground = GetMenuColor($aMenu[Row])
+    
+    If Row = gvwMenu.Row Then gvwMenu.Data.Background = Color.SelectedBackground
+  
     If .Level = 0 Then
       gvwMenu.Data.Font.Bold = True
       gvwMenu.Data.Font.Underline = True

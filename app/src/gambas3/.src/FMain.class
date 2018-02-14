@@ -2920,3 +2920,13 @@ Public Sub mnuOpenInProject_Click()
   Project.Open(Project.FindProjectPath(mnuOpenInProject.Tag), True, mnuOpenInProject.Tag)
   
 End
+
+Public Sub mnuViewExplorer_Click()
+
+  If Not Class.IsLoaded("FHelpBrowser") Then
+    Inc Application.Busy
+    FHelpBrowser.Load
+    Dec Application.Busy
+  Endif
+
+End
