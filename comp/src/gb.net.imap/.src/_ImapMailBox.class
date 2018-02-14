@@ -191,7 +191,7 @@ Public Sub Search(Filters As String[]) As Long[]
   
   aret = hImap.Call("UID SEARCH " & (IIf(Filters.Count > 1, "CHARSET UTF-8 ", "")) & Filters[0], "search")
   
-    alRet = New Long[]
+    alRet = New Long[] 
   If aret.Count > 0 Then
     For Each s In Split(aRet[0], " ")
       If Not s Then Continue
