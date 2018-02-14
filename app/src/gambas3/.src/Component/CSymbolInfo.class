@@ -15,6 +15,12 @@ Public NotPublic As Boolean
 Public LineNumber As Integer
 Public Help As String
 
+Public IsHidden As Boolean
+Public IsEvent As Boolean
+Public IsStatic As Boolean
+Public IsProperty As Boolean
+Public IsFunction As Boolean
+
 Private $sArgBefore As String
 Private $sArgAfter As String
 Private $iArg As Integer
@@ -50,21 +56,28 @@ Static Public Sub NameToType(sType As String) As String
   
 End
 
-Public Sub _new(hDoc As CDocumentation)
+Public Sub _new(hDoc As CDocumentation, sName As String, sKind As String)
   
   Documentation = hDoc
+  
+  Name = sName
+  Kind = sKind
+  
+  IsHidden = _IsHidden()
+  IsEvent = _IsEvent()
+  IsStatic = _IsStatic()
+  IsProperty = _IsProperty()
+  IsFunction = _IsFunction()
   
 End
 
 
 Public Sub Copy(sType As String, sNewType As String) As CSymbolInfo
   
-  Dim hSym As New CSymbolInfo(Documentation)
+  Dim hSym As New CSymbolInfo(Documentation, Name, Kind)
   
   With hSym
-    .Name = Name
     .Type = Replace(Type, sType, sNewType)
-    .Kind = Kind
     .Signature = Replace(Signature, sType, sNewType)
     .Value = Value
     .Class = Class
@@ -78,33 +91,33 @@ Public Sub Copy(sType As String, sNewType As String) As CSymbolInfo
 End
 
 
-Public Function IsHidden() As Boolean
+Private Function _IsHidden() As Boolean
 
   If Left(Name) = "_" Then Return True
   Return InStr(Name, "_") > 0 And Kind <> "C"
 
 End
 
-Public Sub IsEvent() As Boolean
+Private Sub _IsEvent() As Boolean
   
   Return InStr(":eE", Kind) > 0
   
 End
 
 
-Public Function IsStatic() As Boolean
+Private Function _IsStatic() As Boolean
 
   If UCase(Kind) = Kind And If Kind <> ":" Then Return True
 
 End
 
-Public Sub IsProperty() As Boolean
+Private Sub _IsProperty() As Boolean
   
   Return InStr("rpRPv", Kind) > 0
   
 End
 
-Public Sub IsFunction() As Boolean
+Private Sub _IsFunction() As Boolean
   
   Return InStr("mMx", Kind) > 0
   

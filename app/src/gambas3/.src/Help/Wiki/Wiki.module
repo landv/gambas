@@ -461,7 +461,7 @@ Public Function GetSymbolLink(hClass As CClassInfo, sSym As String, Optional sMy
   ' Endif
   If Not sComp Then sComp = hSym.Component
 
-  If hSym.IsStatic() And If sMyStaticTitle Then sMyTitle = sMyStaticTitle
+  If hSym.IsStatic And If sMyStaticTitle Then sMyTitle = sMyStaticTitle
   
   'sPath = GetSymbolPath(hSym)
   sPath = "/comp" &/ LCase(sComp &/ hSym.Class &/ Replace(hSym.Name, ":", "."))

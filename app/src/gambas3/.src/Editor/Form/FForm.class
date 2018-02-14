@@ -1990,6 +1990,8 @@ Private Sub ArrangeContainer(hParent As Container, sArr As String, Optional bInv
   Dim hCont As Container
   Dim aCtrl As New Control[]
   Dim hTab As Object
+  Dim sKey As String
+  Dim cSortKey As New Collection
 
   If hParent Then
     If iIndex < 0 Then
@@ -2028,7 +2030,9 @@ Private Sub ArrangeContainer(hParent As Container, sArr As String, Optional bInv
         ArrangeContainer(hCtrl, sArr, bInvert)
       Endif
     Endif
-    aPos.Add(GetSortKey(hCtrl, sArr, bInvert))
+    sKey = GetSortKey(hCtrl, sArr, bInvert)
+    cSortKey[hCtrl.Name] = sKey
+    aPos.Add(sKey)
   Next
 
   If aPos.Count Then 
@@ -2037,7 +2041,7 @@ Private Sub ArrangeContainer(hParent As Container, sArr As String, Optional bInv
   
     For Each sPos In aPos
       For Each hCtrl In aCtrl
-        If GetSortKey(hCtrl, sArr, bInvert) = sPos Then
+        If cSortKey[hCtrl.Name] = sPos Then
           hCtrl.Lower
           Break
         Endif

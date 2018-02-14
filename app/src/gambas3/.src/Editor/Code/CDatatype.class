@@ -77,7 +77,7 @@ Public Sub _property() As Boolean
   Dim hSymbol As CSymbolInfo  
 
   Try hSymbol = Project.Documentation.GetClassSymbols($sType)[Param.Name]
-  If hSymbol Then Return hSymbol.IsProperty()
+  If hSymbol Then Return hSymbol.IsProperty
   
 End
 

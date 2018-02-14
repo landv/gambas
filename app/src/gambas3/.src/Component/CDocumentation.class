@@ -386,7 +386,7 @@ Public Sub MakeInheritance(hModule As Object, cSymbol As Collection, sParent As 
   If cClassSymbol Then
     For Each hSymbol In cClassSymbol
       cSymbol[hSymbol.Name] = hSymbol
-      If hSymbol.IsEvent() And If Not hSymbol.IsHidden() Then $bScanFoundEvent = True
+      If hSymbol.IsEvent And If Not hSymbol.IsHidden Then $bScanFoundEvent = True
     Next
   Endif
   
@@ -466,11 +466,9 @@ Private Sub ScanStruct(hModule As Object, iLine As Integer) As Integer
     If aSym.Count = 0 Then Continue
     If Highlight.Types[0] <> Highlight.Symbol Then Continue
     
-    hSymbol = New CSymbolInfo(Me)
+    hSymbol = New CSymbolInfo(Me, aSym[0], "v")
     With hSymbol
-      .Name = aSym[0]
       .Class = sClass
-      .Kind = "v"
       .NotPublic = False
       .LineNumber = iLine + 1
       .Type = FEditor.ReadSymbolType(aSym, 1)
@@ -643,11 +641,9 @@ Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule As Boole
       For iInd = iInd To aSym.Count - 1
         If Highlight.Types[iInd] = Highlight.Symbol Then
           
-          hSymbol = New CSymbolInfo(Me)
+          hSymbol = New CSymbolInfo(Me, aSym[iInd], "C")
           With hSymbol
-            .Name = aSym[iInd]
             .Class = hModule.Name
-            .Kind = "C"
             .NotPublic = Not bPublic
             .LineNumber = iLine + 1
             .Type = "i"
@@ -719,11 +715,9 @@ Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule As Boole
     
     If sKind = ":" Then sName = ":" & sName
     
-    hSymbol = New CSymbolInfo(Me)
+    hSymbol = New CSymbolInfo(Me, sName, sKind)
     With hSymbol
-      .Name = sName
       .Class = hModule.Name
-      .Kind = sKind
       .NotPublic = Not bPublic
       .LineNumber = iLine + 1
       
@@ -789,7 +783,10 @@ Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule As Boole
         
       Endif
       
-      If bStatic Then .Kind = UCase(.Kind)
+      If bStatic Then 
+        .Kind = UCase(.Kind)
+        .IsStatic = True
+      Endif
       
       cSymbol[.Name] = hSymbol
 
@@ -855,12 +852,11 @@ Private Sub ScanForm(hForm As FForm, cSymbol As Collection)
   
   For Each hControl In hForm.Control
     If hControl.Name = hForm.Name Then Continue
-    hSymbol = New CSymbolInfo(Me)
+    hSymbol = New CSymbolInfo(Me, hControl.Name, "t")
     With hSymbol
       .Name = hControl.Name
       .Type = hControl.Kind
       .Class = hForm.Name
-      .Kind = "t"
       .NotPublic = (Not Project.ControlPublic) And Not hControl.Public
       cSymbol[.Name] = hSymbol
     End With

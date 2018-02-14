@@ -122,6 +122,7 @@ Public Sub _new()
     [btnIntegratedHelp, "/PropertyHelp", 1],
     [btnHelpCompletion, "/ShowHelpInPopup", 1],
     [btnMinimize, "/MinimizeOnRun", 0],
+    [btnSeparateStatic, "/Editor/SeparateStaticMethod", 1],
     [btnUpperCaseKeywords, "/Editor/KeywordsUseUpperCase", 0],
     [btnControlStructCompletion, "/Editor/ControlStructCompletion", 1],
     [btnLocalVarDecl, "/Editor/LocalVariableDeclaration", 0],
@@ -1391,5 +1392,19 @@ Public Sub btnVersionControl_Click()
   Settings["/VersionControl/Enabled"] = btnVersionControl.Value
   VersionControl.Refresh
   Project.Refresh
+
+End
+
+Public Sub btnSeparateStatic_Click()
+
+  Dim hFile As Object
+  Dim hEditor As FEditor
+  
+  Settings["/Editor/SeparateStaticMethod"] = btnSeparateStatic.Value
+  For Each hFile In Project.Files
+    Try hEditor = hFile
+    If Error Then Continue
+    hEditor.ResetProcList
+  Next  
 
 End

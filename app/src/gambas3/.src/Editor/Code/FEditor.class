@@ -27,7 +27,7 @@ Static Public ExpressionStart As Integer
 
 Static Private $cStructClose As New Collection(gb.IgnoreCase)
 
-Static Private $hVirtualSymbol As New CSymbolInfo(Project.Documentation)
+Static Private $hVirtualSymbol As New CSymbolInfo(Project.Documentation, "", "")
 
 Static Private $bPublic As Boolean
 Static Private $bStatic As Boolean
@@ -237,13 +237,20 @@ End
 '
 ' End
 
+Public Sub ResetProcList()
+  
+  $cProc.Clear
+  $aProc.Clear
+  
+End
+
+
 Private Sub ResetIfModified()
 
   If Not $bModify Then Return
   If $iScanTimeStamp = Project.TimeStamp Then Return
   
-  $cProc.Clear
-  $aProc.Clear
+  ResetProcList
   Scan = Null
   $iScanTimeStamp = Project.TimeStamp
 
@@ -2692,6 +2699,7 @@ Private Sub FillProcCombo()
   Dim aStaticPrivate As String[]
   Dim aStaticPublic As String[]
   Dim aPublic As String[]
+  Dim bSeparateStatic As Boolean
 
   'DIM fTime AS Float
   'DIM iInd AS Integer
@@ -2707,6 +2715,8 @@ Private Sub FillProcCombo()
   sText = btnProc.Text
 
   'cmbProc.Clear
+
+  bSeparateStatic = Settings["/Editor/SeparateStaticMethod", 1]
 
   $cProc = New Collection(gb.IgnoreCase)
   $aProc = New String[]
@@ -2735,7 +2745,7 @@ Private Sub FillProcCombo()
     
     sName = hSymbol.Name
     
-    If hSymbol.IsStatic() Then
+    If bSeparateStatic And If hSymbol.IsStatic Then
       If hSymbol.NotPublic Then
         aStaticPrivate.Add(sName)
       Else
@@ -3398,7 +3408,7 @@ Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As S
           sType = GetSymbolType(aSym[I], True)
         Else
           sType = GetSymbolType(aSym[I])
-          If $hSymbol And If $hSymbol.IsFunction() And If I < aSym.Max And If aSym[I + 1] = "(" Then
+          If $hSymbol And If $hSymbol.IsFunction And If I < aSym.Max And If aSym[I + 1] = "(" Then
             I = FindNextBracket(aSym, I, "(", ")")
           Endif
         Endif
