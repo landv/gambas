@@ -77,7 +77,7 @@ Public Sub Form_Open()
     cmbTranslate.Index = If(.Localize, 0, 1)
     cmbType.Index = .Type
     cmbDefaultLanguage.Text = Language.ToName(System.Language)
-    Try cmbDefaultLanguage.Text = Language.ToName(Project.Language)
+    Try cmbDefaultLanguage.Text = Language.ToName(Project.DefaultLanguage)
     ' Select Case .Type
     '   Case .TYPE_NORMAL
     '     radTypeNormal.Value = True

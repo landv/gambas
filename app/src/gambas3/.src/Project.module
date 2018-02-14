@@ -93,7 +93,7 @@ Public Version As String
 Public FullVersion As String
 Public FullVersionWithRevision As String
 Public SourcePath As String
-Public Language As String
+Public DefaultLanguage As String
 Public Type As Integer
 Public Authors As String
 Public VersionFile As Boolean
@@ -2652,6 +2652,7 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, 
       iPos = InStr(sTrans, "#,")
       If iPos Then sTrans = Mid$(sTrans, iPos)
       File.Save(sDir &/ ".lang/.pot", sTrans)
+      CompileTranslation(bAll)
     Endif
 
     'SetMessage(("OK"))
@@ -3335,7 +3336,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Type = TYPE_NORMAL
   CreateShortcut = False
   RunAfterMakingExec = ""
-  Language = ""
+  DefaultLanguage = ""
   VersionFile = False
   'Stack = 0
   'StackTrace = False
@@ -3438,7 +3439,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         Localize = CInt(sVal) <> 0
 
       Case "language"
-        Language = sVal
+        DefaultLanguage = sVal
 
       Case "keepdebuginfo"
         KeepDebugInfo = CInt(sVal) <> 0
@@ -3771,7 +3772,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
 
   Print #hFic, "TabSize="; CStr(TabSize)
   If Localize Then Print #hFic, "Translate=1"
-  If Language Then Print #hFic, "Language="; Language
+  If DefaultLanguage Then Print #hFic, "Language="; DefaultLanguage
   If Not KeepDebugInfo Then Print #hFic, "KeepDebugInfo=0"
   If CreateShortcut Then Print #hFic, "CreateShortcut=1"
   If RunAfterMakingExec Then Print #hFic, "RunAfter="; RunAfterMakingExec
@@ -6638,5 +6639,28 @@ Public Sub FindProjectPath(sPath As String) As String
   Loop
   
 Catch
+  
+End
+
+Public Sub CompileTranslation(bForce As Boolean, Optional sLang As String)
+  
+  Dim iPos As Integer
+  Dim sPath As String
+  
+  If Not sLang Then
+    iPos = Project.Environment.Find("LANG=*", gb.Like)
+    If iPos >= 0 Then
+      sLang = Mid$(Project.Environment[iPos], 6)
+    Else
+      sLang = System.Language
+    Endif
+    sLang = Language.Find(sLang)
+  Endif
+  
+  sPath = Language.GetPath(sLang, "mo")
+  If Exist(sPath) And If Not bForce Then Return
+  
+  Try Kill sPath
+  Shell "msgfmt -o " & Shell$(sPath) & " " & File.SetExt(sPath, "po") Wait
   
 End

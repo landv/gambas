@@ -267,7 +267,7 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
     Next
   Endif
   
-  If Project.Language Then AddLanguageTag(aTag, Project.Language)
+  If Project.DefaultLanguage Then AddLanguageTag(aTag, Project.DefaultLanguage)
   
   If Project.Type = Project.TYPE_LIBRARY Then AddTag(aTag, "library")
   

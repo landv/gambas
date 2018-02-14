@@ -438,7 +438,7 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
 
   Project.CreateLangDirectory()
 
-  sPathMO = Left$($sPath, -3) & ".mo"
+  sPathMO = File.SetExt($sPath, "mo")
   bExistMO = Exist(sPathMO)
 
   If $nTrans = 0 Then
@@ -462,9 +462,11 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
 
     Move $sPath & ".new" To $sPath
 
-    Shell "msgfmt -o " & Shell$(sPathMO) & " " & Shell$($sPath) Wait
+    Project.CompileTranslation(True, $sLang)
 
-    If Not bExistMO Then VersionControl.AddFile(sPathMO)
+    'Shell "msgfmt -o " & Shell$(sPathMO) & " " & Shell$($sPath) Wait
+
+    'If Not bExistMO Then VersionControl.AddFile(sPathMO)
 
   Else
 
