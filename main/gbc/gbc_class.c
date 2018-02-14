@@ -246,7 +246,7 @@ void CLASS_check_unused_global(CLASS *class)
 		else
 		{
 			if (TYPE_get_kind(type) == TK_VARIABLE)
-				COMPILE_print(MSG_WARNING, sym->global.line, "unitialized global variable: &1", SYMBOL_get_name(&sym->symbol));
+				COMPILE_print(MSG_WARNING, sym->global.line, "uninitialized global variable: &1", SYMBOL_get_name(&sym->symbol));
 		}
 	}
 }
