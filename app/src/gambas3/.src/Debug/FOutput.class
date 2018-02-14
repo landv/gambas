@@ -284,7 +284,7 @@ End
 Public Sub txtEnter_Activate()
 
   Dim sText As String
-  Dim bSemiColon As Boolean
+  'Dim bSemiColon As Boolean
   Dim sVal As String
 
   sText = txtEnter.Text
@@ -327,8 +327,8 @@ Public Sub txtEnter_Activate()
         $bGotError = True
       Else
         sVal = DConv$(sVal)
-        If Not bSemiColon Then sVal &= "\n"
-        Insert(sVal)
+        'If Not bSemiColon Then sVal &= "\n"
+        Insert(sVal & "\n")
       Endif
       Stop Event
 

@@ -47,7 +47,7 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
   Dim hBrush As PaintBrush
   Dim bExtent As Boolean
   Dim I As Integer
-  Dim iMode As Integer
+  ' Dim iMode As Integer
   Dim fDashOffset As Float
   Dim iFillRule As Integer
   
@@ -173,7 +173,7 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
   Else
     
     For I = 0 To Shapes.Max
-      If Current < 0 Or If Current = I Or If bAll Then Shapes[I].Paint(Me, iMode, iAction = ACTION_SELECT)
+      If Current < 0 Or If Current = I Or If bAll Then Shapes[I].Paint(Me, False, iAction = ACTION_SELECT)
     Next
   
     If bExtent Then $hExtents = Paint.PathExtents

@@ -1915,7 +1915,7 @@ Private Sub MakeTgzPackage(sSys As String)
   Dim sVendor As String
   Dim sBuildDir As String
   Dim hFile As File
-  Dim sPrefix As String
+  'Dim sPrefix As String
   Dim sCmd As String
   Dim sIcon As String
   Dim sData As String
@@ -2077,7 +2077,7 @@ Private Sub MakeTgzPackage(sSys As String)
   If Process.LastValue Then Error.Raise(("'tar' has returned the following error code:") & " " & Process.LastValue)
 
   AddLog("")
-  sPackage = sPrefix & Subst("&1-&2-noarch-&3.tgz", sPackageName, $sVersion, CStr(Project.PackageVersion))
+  sPackage = Subst("&1-&2-noarch-&3.tgz", sPackageName, $sVersion, CStr(Project.PackageVersion))
   MoveFile(sTempPackage, Path &/ sPackage)
   AddLog(sPackage)
   
@@ -2089,7 +2089,7 @@ Private Sub MakeTgzSupportPackage((sSys) As String, sSupport As String, aComp As
   Dim sVendor As String
   Dim sBuildDir As String
   Dim hFile As File
-  Dim sPrefix As String
+  'Dim sPrefix As String
   Dim sCmd As String
   Dim sData As String
   Dim sTempPackage As String
@@ -2163,7 +2163,7 @@ Private Sub MakeTgzSupportPackage((sSys) As String, sSupport As String, aComp As
   If Process.LastValue Then Error.Raise(("'tar' has returned the following error code:") & " " & Process.LastValue)
 
   AddLog("")
-  sPackage = sPrefix & Subst("&1-&2-noarch-&3.tgz", sPackageName, $sVersion, CStr(Project.PackageVersion))
+  sPackage = Subst("&1-&2-noarch-&3.tgz", sPackageName, $sVersion, CStr(Project.PackageVersion))
   MoveFile(sTempPackage, Path &/ sPackage)
   AddLog(sPackage)
   

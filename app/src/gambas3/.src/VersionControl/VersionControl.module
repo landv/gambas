@@ -88,7 +88,7 @@ End
 
 Public Sub Run(aCmd As String[], Optional bIdent As Boolean, Optional bOutput As Boolean, Optional aEnv As String[]) As Integer
 
-  Dim sPassword As String
+  ' Dim sPassword As String
   Dim hProcess As Process
   Dim sCmd As String
   
@@ -115,7 +115,7 @@ Public Sub Run(aCmd As String[], Optional bIdent As Boolean, Optional bOutput As
   hProcess = Exec aCmd With aEnv For Input Output As "Process" 
   
   sCmd = aCmd.Join(" ")
-  If sPassword Then sCmd = Replace(sCmd, sPassword, "********")
+  'If sPassword Then sCmd = Replace(sCmd, sPassword, "********")
 
   Insert(sCmd & "\n")
 

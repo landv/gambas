@@ -2899,7 +2899,8 @@ End
 Public Sub UpdateBorder()
 
   Dim hCtrl As CControl
-  Dim H, HM As Integer
+  Dim H As Integer
+  Dim HM As Integer = 0
 
   hCtrl = RootControl
   If Not hCtrl Then Return

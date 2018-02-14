@@ -13,7 +13,7 @@ Private $aEnv As String[]
 Private $aComponents As String[]
 Private $aLibraries As String[]
 
-Private $iDoNotRefreshComponent As Integer
+'Private $iDoNotRefreshComponent As Integer
 
 Private Const COMPONENT_PROPERTIES_TAB As Integer = 1
 Private Const LIBRARY_TAB As Integer = 3
@@ -205,7 +205,7 @@ End
 
 Private Function DoApply() As Boolean
 
-  Dim bRefreshForm As Boolean
+  ' Dim bRefreshForm As Boolean
   Dim bRefreshEditor As Boolean
 
   If choComponent.CheckSelection() Then Return True
@@ -275,7 +275,7 @@ Private Function DoApply() As Boolean
   Project.Compile
 
   Project.RefreshRoot
-  If bRefreshForm Then Project.RefreshForm
+  ' If bRefreshForm Then Project.RefreshForm
   If bRefreshEditor Then Project.RefreshEditor
   FMain.OnRefreshComponents
   
@@ -786,7 +786,7 @@ Private Sub RefreshLibraries()
   
   Dim Y As Integer
   
-  If $iDoNotRefreshComponent Then Return
+  'If $iDoNotRefreshComponent Then Return
   
   gvwLibrary.Columns.Count = 1
   gvwLibrary.Rows.Count = $aLibraries.Count
