@@ -873,7 +873,7 @@ void gControl::updateCursor(GdkCursor *cursor)
 
 GdkCursor *gControl::getGdkCursor()
 {
-	GdkPixbuf *pix;
+	const char *name;
 	GdkCursor *cr = NULL;
 	int m = _mouse;
 
@@ -888,9 +888,36 @@ GdkCursor *gControl::getGdkCursor()
 
 	if (m != CURSOR_DEFAULT)
 	{
+		switch(m)
+		{
+			case GDK_BLANK_CURSOR: name = "none"; break;
+			case GDK_LEFT_PTR: name = "default"; break;
+			case GDK_CROSSHAIR: name = "crosshair"; break;
+			case GDK_WATCH: name = "wait"; break;
+			case GDK_XTERM: name = "text"; break;
+			case GDK_FLEUR: name = "move"; break;
+			case GDK_SB_H_DOUBLE_ARROW: name = "ew-resize"; break;
+			case GDK_SB_V_DOUBLE_ARROW: name = "ns-resize"; break;
+			case GDK_TOP_SIDE: name = "n-resize"; break;
+			case GDK_BOTTOM_SIDE: name = "s-resize"; break;
+			case GDK_LEFT_SIDE: name = "w-resize"; break;
+			case GDK_RIGHT_SIDE: name = "e-resize"; break;
+			case GDK_TOP_LEFT_CORNER: name = "nw-resize"; break;
+			case GDK_BOTTOM_RIGHT_CORNER: name = "se-resize"; break;
+			case GDK_TOP_RIGHT_CORNER: name = "ne-resize"; break;
+			case GDK_BOTTOM_LEFT_CORNER: name = "sw-resize"; break;
+			case GDK_LAST_CURSOR+1: name = "nwse-resize"; break;
+			case GDK_LAST_CURSOR+2: name = "nesw-resize"; break;
+			case GDK_HAND2: name = "pointer"; break;
+			default: name = "default";
+		}
+		
+		cr = gdk_cursor_new_from_name(gdk_display_get_default(), name);
+		
+		/*
 		if (m < GDK_LAST_CURSOR)
 		{
-			cr = gdk_cursor_new((GdkCursorType)m);
+			cr = gdk_cursor_new_for_display(gdk_display_get_default(), (GdkCursorType)m);
 		}
 		else
 		{
@@ -906,7 +933,7 @@ GdkCursor *gControl::getGdkCursor()
 				cr = gdk_cursor_new_from_pixbuf(gdk_display_get_default(), pix, 8, 8);
 				g_object_unref(pix);
 			}
-		}
+		}*/
 	}
 
 	return cr;

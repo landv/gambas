@@ -2,7 +2,7 @@
 
 	CMenu.cpp
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@ static CMENU_EXT *alloc_ext(CMENU *_object)
 static void register_proxy(void *_object, CMENU *proxy)
 {
 	void *check = proxy;
+	CMENU *old_proxy = NULL;
 
 	while (check)
 	{
@@ -89,7 +90,10 @@ static void register_proxy(void *_object, CMENU *proxy)
 	//	EXT(THIS_EXT->proxy)->proxy_for = NULL;
 	
 	if (THIS_EXT && THIS_EXT->proxy)
-		GB.Unref(POINTER(&THIS_EXT->proxy));
+	{
+		old_proxy = (CMENU *)THIS_EXT->proxy;
+		THIS_EXT->proxy = NULL;
+	}
 	
 	if (proxy)
 	{
@@ -103,7 +107,13 @@ static void register_proxy(void *_object, CMENU *proxy)
 			ACTION->setMenu(THIS->menu);
 		else
 			ACTION->setMenu(proxy->menu);
+	
+		if (old_proxy)
+			((QAction *)old_proxy->widget.widget)->setMenu(old_proxy->menu);
 	}
+	
+	if (old_proxy)
+		GB.Unref(POINTER(&old_proxy));
 }
 
 static int check_menu(void *_object)
@@ -461,9 +471,9 @@ BEGIN_METHOD_VOID(Menu_free)
 	qDebug("Menu_free: item = %p", THIS);
 #endif
 
-	delete_menu(THIS);
-
 	//qDebug("Menu_free: (%s %p)", THIS->widget.name, THIS);
+
+	delete_menu(THIS);
 
 	GB.StoreObject(NULL, POINTER(&(THIS->picture)));
 
@@ -1007,6 +1017,7 @@ void CMenu::slotShown(void)
 {
 	static bool init = FALSE;
 
+	//qDebug("slotShown: sender = %p  menuAction = %p", sender(), ((QMenu *)sender())->menuAction());
 	GET_MENU_SENDER(menu);
 	HANDLE_PROXY(menu);
 	
@@ -1028,6 +1039,7 @@ void CMenu::slotShown(void)
 
 void CMenu::slotHidden(void)
 {
+	//qDebug("slotHidden: sender = %p  menuAction = %p", sender(), ((QMenu *)sender())->menuAction());
 	GET_MENU_SENDER(menu);
 	HANDLE_PROXY(menu);
 

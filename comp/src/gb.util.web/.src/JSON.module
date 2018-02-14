@@ -46,12 +46,12 @@ Private Sub ReadToken() As String
   Dim sToken As String
   Dim sCar As String
 
-  sCar = ReadChar()
+  GoSub READ_CHAR
   If Not IsLetter(sCar) Then Return sCar
   
   sToken = sCar
   Do
-    sCar = GetChar()
+    GoSub GET_CHAR
     If Not sCar Then Break
     If Not IsLetter(sCar) Then 
       Dec $iPos
@@ -61,6 +61,24 @@ Private Sub ReadToken() As String
   Loop
   
   Return sToken
+
+READ_CHAR:
+
+  Do
+    GoSub GET_CHAR
+    If Not sCar Or If sCar > " " Then Return
+  Loop
+  Return
+
+GET_CHAR:
+  
+  If $iPos > Len($sStr) Then 
+    sCar = ""
+    Return
+  Endif
+  sCar = Mid$($sStr, $iPos, 1)
+  Inc $iPos
+  Return
   
 End
 
@@ -68,15 +86,14 @@ Private Sub ReadString() As String
   
   Dim sCar As String
   Dim sString As String
+  Dim sBuffer As String
   Dim iPos As Integer
   
   Do
-    sCar = GetChar()
-    If Not sCar Then Error.Raise("Non terminated string")
-    If sCar = Chr$(34) Then Return sString
+    GoSub GET_CHAR
+    If sCar = Chr$(34) Then Return sString & sBuffer
     If sCar = "\\" Then
-      sCar = GetChar()
-      If Not sCar Then Error.Raise("Non terminated string")
+      GoSub GET_CHAR
       iPos = InStr("bfrtn", sCar)
       If iPos Then
         sCar = Mid$("\b\f\r\t\n", iPos, 1)
@@ -87,8 +104,19 @@ Private Sub ReadString() As String
         ' Keep character
       Endif
     Endif
-    sString &= sCar
+    sBuffer &= sCar
+    If Len(sBuffer) > 512 Then
+      sString &= sBuffer
+      sBuffer = ""
+    Endif
   Loop
+
+GET_CHAR:
+  
+  If $iPos > Len($sStr) Then Error.Raise("Non terminated string")
+  sCar = Mid$($sStr, $iPos, 1)
+  Inc $iPos
+  Return
   
 End
 
@@ -105,17 +133,35 @@ Private Sub ReadObject() As Collection
   Endif
   
   Do
-    sCar = ReadChar()
+    GoSub READ_CHAR
     If sCar = "}" Then Return cObject
     If sCar <> Chr$(34) Then Error.Raise("String expected")
     sKey = ReadString()
-    sCar = ReadChar()
+    GoSub READ_CHAR
     If sCar <> ":" Then Error.Raise("Colon expected")
     cObject[sKey] = ReadValue()
-    sCar = ReadChar()
+    GoSub READ_CHAR
     If sCar = "}" Then Return cObject
     If sCar <> "," Then Error.Raise("Comma expected")
   Loop
+  
+READ_CHAR:
+
+  Do
+    GoSub GET_CHAR
+    If Not sCar Or If sCar > " " Then Return
+  Loop
+  Return
+
+GET_CHAR:
+  
+  If $iPos > Len($sStr) Then 
+    sCar = ""
+    Return
+  Endif
+  sCar = Mid$($sStr, $iPos, 1)
+  Inc $iPos
+  Return
   
 End
 
@@ -143,7 +189,7 @@ Private Sub ReadNumber(sNumber As String) As Variant
   Dim bFloat As Boolean
   
   Do
-    sCar = GetChar()
+    GoSub GET_CHAR
     If Not sCar Then Break
     If InStr(".eE", sCar) Then
       bFloat = True
@@ -165,6 +211,16 @@ Private Sub ReadNumber(sNumber As String) As Variant
   Endif
   
   Error.Raise("Incorrect number")
+  
+GET_CHAR:
+  
+  If $iPos > Len($sStr) Then 
+    sCar = ""
+    Return
+  Endif
+  sCar = Mid$($sStr, $iPos, 1)
+  Inc $iPos
+  Return
   
 End
 
@@ -261,6 +317,8 @@ Private Sub WriteValue(vVal As Variant)
           Inc iPos
         Next
         Write #$hStream, "}"
+      Else If IsNull(vVal) Then
+        Write #$hStream, "null"
       Else
         Write #$hStream, "undefined"
       Endif
@@ -283,6 +341,13 @@ Public Sub Decode(JSONString As String, Optional UseNull As Boolean) As Variant
   
 End
 
+Public Sub FromString(JSONString As String, Optional UseNull As Boolean) As Variant
+  
+  Return Decode(JSONString, UseNull)
+  
+End
+
+
 Public Sub Encode(Value As Variant) As String
   
   Dim sStr As String
@@ -293,6 +358,13 @@ Public Sub Encode(Value As Variant) As String
   Return sStr
   
 End
+
+Public Sub ToString(Value As Variant) As String
+  
+  Return Encode(Value)
+  
+End
+
 
 Private Function Null_Read() As Variant
 

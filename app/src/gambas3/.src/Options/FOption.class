@@ -99,6 +99,10 @@ Public Sub _new()
     [cmbToolbox, "/ToolboxSize", 0],
     [btnSortProperty, "/SortProperties", 1],
     [txtTabSize, "/DefaultTabSize", 2],
+    [btnFoldProc, "/Editor/CollapseByDefault", 0],
+    [btnWrapText, "/Editor/WrapTextByDefault", 0],
+    [btnTabIndent, "/Editor/TabIndentByDefault", 0],
+    [btnVersionControl, "/VersionControl/Enabled", 1],
     [btnShowLimit, "/Editor/ProcedureLimit", 1],
     [btnShowLineNumber, "/Editor/ShowLineNumbers", 0],
     [btnShowChange, "/Editor/ShowChange", 1],
@@ -107,8 +111,7 @@ Public Sub _new()
     [btnShowIndent, "/Editor/ShowIndent", 1],
     [btnShowPreview, "/Editor/ShowPreview", 0],
     [btnFold, "/Editor/ShowExpand", 1],
-    [btnFoldProc, "/Editor/CollapseByDefault", 0],
-    [btnWrapText, "/Editor/WrapTextByDefault", 0],
+    [btnInvertTheme, "/Editor/InvertTheme", 0],
     [btnOutput, "/QuietExternalCommands", 0],
     [btnUtility, "/UseUtilityWindows", 1],
     [btnStartupLoad, "/RestoreFiles", 1],
@@ -119,10 +122,12 @@ Public Sub _new()
     [btnIntegratedHelp, "/PropertyHelp", 1],
     [btnHelpCompletion, "/ShowHelpInPopup", 1],
     [btnMinimize, "/MinimizeOnRun", 0],
+    [btnSeparateStatic, "/Editor/SeparateStaticMethod", 1],
     [btnUpperCaseKeywords, "/Editor/KeywordsUseUpperCase", 0],
     [btnControlStructCompletion, "/Editor/ControlStructCompletion", 1],
     [btnLocalVarDecl, "/Editor/LocalVariableDeclaration", 0],
     [btnComment, "/Editor/AutoComment", 1],
+    [btnCloseBraces, "/Editor/CloseBraces", 1],
     [btnIndentDim, "/FormatCode/IndentLocal", 1],
     [btnRemoveSpace, "/FormatCode/RemoveSpaces", 0],
     [btnKeepVoidLine, "/FormatCode/KeepVoidLines", 0],
@@ -150,7 +155,6 @@ Public Sub _new()
   Else
     cmbTheme.Index = 0
   Endif
-  chkInvertTheme.Value = Settings["/Editor/InvertTheme", 0]
   
   panDownloadHelp.Visible = btnOfflineHelp.Value
   
@@ -700,6 +704,13 @@ Public Sub btnComment_Click()
 
 End
 
+Public Sub btnCloseBraces_Click()
+
+  Settings["/Editor/CloseBraces"] = btnCloseBraces.Value
+  RefreshEditor
+
+End
+
 Public Sub btnFold_Click()
 
   Settings["/Editor/ShowExpand"] = btnFold.Value
@@ -716,6 +727,12 @@ End
 Public Sub btnWrapText_Click()
 
   Settings["/Editor/WrapTextByDefault"] = btnWrapText.Value
+
+End
+
+Public Sub btnTabIndent_Click()
+
+  Settings["/Editor/TabIndentByDefault"] = btnTabIndent.Value
 
 End
 
@@ -1363,9 +1380,31 @@ Public Sub Form_Activate()
 
 End
 
-Public Sub chkInvertTheme_Click()
+Public Sub btnInvertTheme_Click()
 
-  Settings["/Editor/InvertTheme"] = chkInvertTheme.Value
+  Settings["/Editor/InvertTheme"] = btnInvertTheme.Value
   RefreshEditor
+
+End
+
+Public Sub btnVersionControl_Click()
+
+  Settings["/VersionControl/Enabled"] = btnVersionControl.Value
+  VersionControl.Refresh
+  Project.Refresh
+
+End
+
+Public Sub btnSeparateStatic_Click()
+
+  Dim hFile As Object
+  Dim hEditor As FEditor
+  
+  Settings["/Editor/SeparateStaticMethod"] = btnSeparateStatic.Value
+  For Each hFile In Project.Files
+    Try hEditor = hFile
+    If Error Then Continue
+    hEditor.ResetProcList
+  Next  
 
 End

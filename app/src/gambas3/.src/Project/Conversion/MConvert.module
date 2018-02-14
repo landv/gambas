@@ -651,7 +651,7 @@ Private Sub ConvertClass(sPath As String)
     
     If Left(LTrim(sLine)) <> "'" Then
       
-      sIndent = Space$(hEditor.GetIndent(sLine))
+      sIndent = FEditor.GetIndent(sLine)
       sLine = Trim(sLine)
       
       Do

@@ -2,7 +2,7 @@
 
   gbc_trans_expr.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -44,6 +44,9 @@ static bool _must_drop_vargs = FALSE;
 static TYPE _type[MAX_EXPR_LEVEL];
 static int _type_level = 0;
 static TYPE _last_type;
+
+static CLASS_SYMBOL *_last_symbol_used = NULL;
+static bool _last_symbol_global = FALSE;
 
 static void trans_expression(bool check_statement);
 
@@ -255,18 +258,29 @@ static void trans_identifier(int index, bool point, PATTERN next)
 	fprintf(stderr, "trans_identifier: %.*s\n", sym->symbol.len, sym->symbol.name);
 #endif
 	
+	_last_symbol_used = NULL;
+	//fprintf(stderr, "_last_symbol_used = NULL\n");
+	
 	if (!TYPE_is_null(sym->local.type) && !point)
 	{
 		CODE_push_local(sym->local.value);
 		push_type(sym->local.type);
 		sym->local_used = TRUE;
+		_last_symbol_used = sym;
+		_last_symbol_global = FALSE;
+		//fprintf(stderr, "_last_symbol_used = %.*s / local\n", sym->symbol.len, sym->symbol.name);
 	}
 	else if (!TYPE_is_null(sym->global.type) && !point)
 	{
 		type = TYPE_get_kind(sym->global.type);
 		if (!TYPE_is_public(sym->global.type))
+		{
 			sym->global_used = TRUE;
-
+			_last_symbol_used = sym;
+			_last_symbol_global = TRUE;
+			//fprintf(stderr, "_last_symbol_used = %.*s / global\n", sym->symbol.len, sym->symbol.name);
+		}
+		
 		if (type == TK_CONST)
 		{
 			if (PATTERN_is_point(next))
@@ -609,7 +623,7 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 		}
 		else if (PATTERN_is(pattern, RS_AT))
 		{
-			if (!CODE_popify_last())
+			if (TRANS_popify_last())
 				THROW("This expression cannot be passed by reference");
 		}
 		else if (PATTERN_is(pattern, RS_COMMA))
@@ -821,10 +835,12 @@ static void trans_expression(bool check_statement)
 	}
 }
 
+
 void TRANS_ignore_expression()
 {
 	TRANS_tree(FALSE, NULL, NULL);
 }
+
 
 TYPE TRANS_variable_get_type()
 {
@@ -859,11 +875,27 @@ TYPE TRANS_variable_get_type()
 }
 
 
+bool TRANS_popify_last()
+{
+	if (!CODE_popify_last())
+		return TRUE;
+	
+	if (_last_symbol_used)
+	{
+		if (_last_symbol_global)
+			_last_symbol_used->global_assigned = TRUE;
+		else
+			_last_symbol_used->local_assigned = TRUE;
+	}
+	
+	return FALSE;
+}
+
+
 void TRANS_reference(void)
 {
 	TRANS_expression(FALSE);
-
-	if (!CODE_popify_last())
+	if (TRANS_popify_last())
 		THROW("Invalid assignment");
 }
 
@@ -939,9 +971,9 @@ bool TRANS_affectation(bool dup)
 	{
 		if (TRANS_is(RS_NEW))
 		{
-			TRANS_in_affectation++;
+			TRANS_in_assignment++;
 			TRANS_new();
-			TRANS_in_affectation--;
+			TRANS_in_assignment--;
 			id = RS_NEW;
 			stat = TRUE;
 		}
@@ -952,9 +984,9 @@ bool TRANS_affectation(bool dup)
 				if (TRANS_is(st->id))
 				{
 					id = st->id;
-					TRANS_in_affectation++;
+					TRANS_in_assignment++;
 					(*st->func)();
-					TRANS_in_affectation--;
+					TRANS_in_assignment--;
 					stat = TRUE;
 					break;
 				}

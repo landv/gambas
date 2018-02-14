@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <memory.h>
 
-#if defined(OS_MACOSX) || defined(__CYGWIN__)
+#if defined(OS_MACOSX)
 void *memrchr(const char *s, int c, size_t n)
 {
     const char *start=s,*end=(s+n-1);
@@ -189,33 +189,18 @@ bool GB_MatchString(const char *str, size_t lenStr, const char *pattern, size_t 
 {
     if(mode == GB_STRCOMP_NOCASE || mode == GB_STRCOMP_LANG + GB_STRCOMP_NOCASE)
     {
-        if(lenStr == lenPattern)
-        {
-            if(!strncasecmp(str, pattern, lenPattern))
-            {
-                return true;
-            }
-        }
+        if(lenStr != lenPattern) return false;
+        return strncasecmp(str, pattern, lenPattern) == 0;
     }
     else if(mode == GB_STRCOMP_LIKE)
     {
-        if(GB.MatchString(pattern, lenPattern, str, lenStr) == true)
-        {
-            return true;
-        }
+        return GB.MatchString(pattern, lenPattern, str, lenStr) == true;
     }
     else
     {
-        if(lenStr == lenPattern)
-        {
-            if(!memcmp(str, pattern, lenPattern))
-            {
-                return true;
-            }
-        }
+        if(lenStr != lenPattern) return false;
+        return memcmp(str, pattern, lenPattern) == 0;
     }
-
-    return false;
 }
 
 

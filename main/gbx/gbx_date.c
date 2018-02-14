@@ -2,7 +2,7 @@
 
   gbx_date.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -113,7 +113,7 @@ static double get_monotonic_timer(void)
 {
 #ifdef HAVE_MONOTONIC_CLOCK
 	struct timespec tv;
-	#if OS_LINUX
+	#if OS_LINUX && defined(CLOCK_MONOTONIC_RAW)
 	if (clock_gettime(CLOCK_MONOTONIC_RAW, &tv) == 0)
 	#else
 	if (clock_gettime(CLOCK_MONOTONIC, &tv) == 0)

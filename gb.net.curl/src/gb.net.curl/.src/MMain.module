@@ -2,4 +2,22 @@
 
 Public Sub Main()
 
+  'Print HttpClient.Download("https://www.w3schools.com/cssref/")
+
+  Dim ftptest As New FtpClient
+  Dim tmp As String
+
+  tmp = Temp()
+  ftptest.URL = "ftps://intersindical-clm.org"
+  ftptest.User = "benoit"
+  ftptest.Password = "vohW827!"
+  ftptest.SSL.VerifyHost = True
+  ftptest.SSL.VerifyPeer = False
+  ftptest.debug = True
+  ftptest.Async = False
+  ftptest.get(tmp)
+  If ftptest.ErrorText > "" Then
+    Print "Connection failed"
+  Endif
+
 End

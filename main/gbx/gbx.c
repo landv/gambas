@@ -2,7 +2,7 @@
 
   gbx.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -116,6 +116,8 @@ static void init(const char *file, int argc, char **argv)
 
 static void main_exit(bool silent)
 {
+	silent |= EXEC_task;
+	
 	// If the stack has not been initialized because the project could not be started, do it now
 	if (!SP)
 		STACK_init();
@@ -256,8 +258,12 @@ int main(int argc, char *argv[])
 		else if (is_long_option(argv[1], 'V', "version"))
 		{
 #ifdef TRUNK_VERSION
+#ifdef TRUNK_VERSION_GIT
+			printf(VERSION " " TRUNK_VERSION "\n");
+#else /* from svn */
 			printf(VERSION " r" TRUNK_VERSION "\n");
-#else
+#endif
+#else /* no TRUNK_VERSION */
 			printf(VERSION "\n");
 #endif
 			my_exit(0);
@@ -462,10 +468,11 @@ int main(int argc, char *argv[])
 
 	main_exit(FALSE);
 
-	MEMORY_exit();
+	if (!EXEC_task)
+		MEMORY_exit();
 
 	fflush(NULL);
-
+	
 	return ret;
 }
 

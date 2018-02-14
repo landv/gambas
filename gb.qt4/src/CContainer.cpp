@@ -2,7 +2,7 @@
 
   CContainer.cpp
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <QChildEvent>
 #include <QFrame>
 #include <QHash>
-#include <QStyleOptionFrameV3>
 #include <QGroupBox>
 
 #include "gambas.h"
@@ -45,6 +44,14 @@
 #include "CColor.h"
 
 #include "CContainer.h"
+
+#if QT5
+#include <QStyleOptionFrame>
+#define QStyleOptionFrameV3 QStyleOptionFrame
+#else
+#include <QStyleOptionFrameV3>
+#endif
+
 
 //#define DEBUG_ME
 //#define USE_CACHE 1

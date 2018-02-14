@@ -2,7 +2,7 @@
 
 	gbx_stream_buffer.c
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -100,9 +100,18 @@ static int stream_close(STREAM *stream)
 
 static int stream_read(STREAM *stream, char *buffer, int len)
 {
-	size_t eff_read;
-	size_t len_read;
+	int eff;
 
+	eff = (int)fread(buffer, 1, len, FD);
+	if (eff < len)
+	{
+		if (ferror(FD) == 0)
+			errno = 0;
+	}
+	
+	return eff;
+
+	/*
 	while (len > 0)
 	{
 		len_read = Min(len, MAX_IO);
@@ -128,18 +137,7 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 	}
 
 	return FALSE;
-}
-
-
-static int stream_getchar(STREAM *stream, char *buffer)
-{
-	int c = getc(FD);
-
-	if (c == EOF)
-		return TRUE;
-
-	*buffer = (char)c;
-	return FALSE;
+	*/
 }
 
 
@@ -151,10 +149,9 @@ static int stream_flush(STREAM *stream)
 
 static int stream_write(STREAM *stream, char *buffer, int len)
 {
-	size_t eff_write;
-	size_t len_write;
+	return fwrite(buffer, 1, len, FD);
 
-	while (len > 0)
+	/*while (len > 0)
 	{
 		len_write = Min(len, MAX_IO);
 		eff_write = fwrite(buffer, 1, len_write, FD);
@@ -172,7 +169,7 @@ static int stream_write(STREAM *stream, char *buffer, int len)
 	if (EXEC_debug)
 		return stream_flush(stream);
 	else
-		return FALSE;
+		return FALSE;*/
 }
 
 

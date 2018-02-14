@@ -310,10 +310,11 @@ Private Sub Design_Write(Value As Boolean)
 
 End
 
-Public Sub ZoomFit()
+Public Sub ZoomFit(Optional Margin As Integer)
   
   If Not $hImage Then Return
-  Zoom_Write(Min(($hView.W - Desktop.Scale * 2) / $hImage.W, ($hView.H - Desktop.Scale * 2) / $hImage.H))
+  'If IsMissing(Margin) Then Margin = Desktop.Scale
+  Zoom_Write(Min(($hView.W - Margin * 2) / $hImage.W, ($hView.H - Margin * 2) / $hImage.H))
   
 End
 

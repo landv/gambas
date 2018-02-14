@@ -2,7 +2,7 @@
 
 	gbx_compare.c
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@
 #include "gbx_exec.h"
 #include "gbx_regexp.h"
 #include "gbx_c_string.h"
+
 
 static bool _descent = FALSE;
 
@@ -75,10 +76,7 @@ int compare_short(short *a, short *b)
 	else
 		return 0;
 
-	if (_descent)
-		comp = -comp;
-
-	return comp;
+	return _descent ? (-comp) : comp;
 }
 
 
@@ -93,10 +91,7 @@ int compare_byte(unsigned char *a, unsigned char *b)
 	else
 		return 0;
 
-	if (_descent)
-		comp = -comp;
-
-	return comp;
+	return _descent ? (-comp) : comp;
 }
 
 
@@ -111,10 +106,7 @@ int compare_long(int64_t *a, int64_t *b)
 	else
 		return 0;
 
-	if (_descent)
-		comp = -comp;
-
-	return comp;
+	return _descent ? (-comp) : comp;
 }
 
 
@@ -129,10 +121,7 @@ int compare_float(double *a, double *b)
 	else
 		return 0;
 
-	if (_descent)
-		comp = -comp;
-
-	return comp;
+	return _descent ? (-comp) : comp;
 }
 
 
@@ -147,10 +136,7 @@ int compare_single(float *a, float *b)
 	else
 		return 0;
 
-	if (_descent)
-		comp = -comp;
-
-	return comp;
+	return _descent ? (-comp) : comp;
 }
 
 
@@ -160,10 +146,7 @@ int compare_date(DATE *a, DATE *b)
 
 	comp = DATE_comp(a, b);
 
-	if (_descent)
-		comp = -comp;
-
-	return comp;
+	return _descent ? (-comp) : comp;
 }
 
 int COMPARE_string_lang(const char *s1, int l1, const char *s2, int l2, bool nocase, bool throw)
@@ -397,7 +380,7 @@ int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool no
 }
 
 
-#define IMPLEMENT_COMPARE_STRING(_name, _func) \
+/*#define IMPLEMENT_COMPARE_STRING(_name, _func) \
 int compare_string_##_name(char **pa, char **pb) \
 { \
 	char *a; \
@@ -419,60 +402,96 @@ int compare_string_##_name(char **pa, char **pb) \
 }
 
 IMPLEMENT_COMPARE_STRING(binary, strcmp)
-IMPLEMENT_COMPARE_STRING(case, strcasecmp)
+IMPLEMENT_COMPARE_STRING(case, strcasecmp)*/
+
+static int compare_string_binary(char **pa, char **pb)
+{
+	int comp = TABLE_compare(*pa, STRING_length(*pa), *pb, STRING_length(*pb));
+	return _descent ? -comp : comp;
+}
+
+static int compare_string_case(char **pa, char **pb)
+{
+	int comp = TABLE_compare_ignore_case(*pa, STRING_length(*pa), *pb, STRING_length(*pb));
+	return _descent ? -comp : comp;
+}
 
 static int compare_string_lang(char **pa, char **pb)
 {
-	int diff = COMPARE_string_lang(*pa, -1, *pb, -1, FALSE, TRUE);
-	return _descent ? (-diff) : diff;
+	int comp = COMPARE_string_lang(*pa, STRING_length(*pa), *pb, STRING_length(*pb), FALSE, TRUE);
+	return _descent ? (-comp) : comp;
 }
 
 static int compare_string_lang_case(char **pa, char **pb)
 {
-	int diff = COMPARE_string_lang(*pa, -1, *pb, -1, TRUE, TRUE);
-	return _descent ? (-diff) : diff;
+	int comp = COMPARE_string_lang(*pa, STRING_length(*pa), *pb, STRING_length(*pb), TRUE, TRUE);
+	return _descent ? (-comp) : comp;
 }
 
-int COMPARE_string_like(const char *s1, int l1, const char *s2, int l2)
+int COMPARE_string_like(const char *s1, int l1, const char *s2, int l2, bool nocase)
 {
 	int result;
 
-	if (REGEXP_match(s2, l2, s1, l1))
-		return 0;
+	if (nocase)
+	{
+		if (REGEXP_match_pcre(s2, l2, s1, l1))
+			return 0;
+	}
+	else
+	{
+		if (REGEXP_match(s2, l2, s1, l1))
+			return 0;
+	}
 	result = TABLE_compare_ignore_case(s1, l1, s2, l2);
 	return (result < 0) ? -1 : (result > 0) ? 1 : 0;
 }
 
 static int compare_string_like(char **pa, char **pb)
 {
-	int la = *pa ? strlen(*pa) : 0;
-	int lb = *pb ? strlen(*pb) : 0;
-	int diff = COMPARE_string_like(*pa, la, *pb, lb);
-	if (_descent)
-		return (-diff);
-	else
-		return diff;
-//return REGEXP_match(*pb, lb, *pa, la) ? 0 : TABLE_compare_ignore_case(*pa, la, *pb, lb);
+	int comp = COMPARE_string_like(*pa, STRING_length(*pa), *pb, STRING_length(*pb), FALSE);
+	return _descent ? (-comp) : comp;
 }
 
-#define IMPLEMENT_COMPARE_STRING_NATURAL(_name, _nocase) \
+static int compare_string_match(char **pa, char **pb)
+{
+	int comp = COMPARE_string_like(*pa, STRING_length(*pa), *pb, STRING_length(*pb), TRUE);
+	return _descent ? (-comp) : comp;
+}
+
+/*#define IMPLEMENT_COMPARE_STRING_CASE(_name, _nocase), _func \
 static int compare_string_##_name(char **pa, char **pb) \
 { \
 	int la = *pa ? strlen(*pa) : 0; \
 	int lb = *pb ? strlen(*pb) : 0; \
-	int diff = COMPARE_string_natural(*pa, la, *pb, lb, _nocase); \
+	int diff = _func(*pa, la, *pb, lb, _nocase); \
 	if (_descent) \
 		return (-diff); \
 	else \
 		return diff; \
 }
 
-IMPLEMENT_COMPARE_STRING_NATURAL(natural, FALSE)
-IMPLEMENT_COMPARE_STRING_NATURAL(natural_case, TRUE)
+IMPLEMENT_COMPARE_STRING_CASE(like, FALSE, COMPARE_string_like)
+IMPLEMENT_COMPARE_STRING_CASE(match, TRUE, COMPARE_string_like)
+IMPLEMENT_COMPARE_STRING_CASE(natural, FALSE, COMPARE_string_natural)
+IMPLEMENT_COMPARE_STRING_CASE(natural_case, TRUE, COMPARE_string_natural)*/
+
+static int compare_string_natural(char **pa, char **pb)
+{
+	int comp = COMPARE_string_natural(*pa, STRING_length(*pa), *pb, STRING_length(*pb), FALSE);
+	return _descent ? (-comp) : comp;
+}
+
+static int compare_string_natural_case(char **pa, char **pb)
+{
+	int comp = COMPARE_string_natural(*pa, STRING_length(*pa), *pb, STRING_length(*pb), TRUE);
+	return _descent ? (-comp) : comp;
+}
+
 
 int COMPARE_object(void **a, void **b)
 {
 	bool comp;
+	bool desc = _descent;
 	CLASS *ca, *cb;
 
 	/*{
@@ -521,13 +540,15 @@ int COMPARE_object(void **a, void **b)
 			comp = (- SP->_integer.value);
 			goto __RETURN;
 		}
+		
+		_descent = desc;
 	}
 
 	comp = (*a == *b) ? 0 : (*a > *b) ? 1 : -1;
 
 __RETURN:
 
-	return _descent ? (-comp) : comp;
+	return desc ? (-comp) : comp;
 }
 
 int COMPARE_variant(VARIANT *a, VARIANT *b)
@@ -552,7 +573,7 @@ int COMPARE_variant(VARIANT *a, VARIANT *b)
 		return -1;
 
 	if (a->type == b->type)
-		return (*COMPARE_get(a->type, 0))(&a->value, &b->value);
+		return (*COMPARE_get_func(a->type, 0))(&a->value, &b->value);
 
 	type = Max(a->type, b->type);
 
@@ -573,14 +594,33 @@ int COMPARE_variant(VARIANT *a, VARIANT *b)
 	BORROW(&value);
 	VALUE_conv(&value, type);
 	VALUE_conv_variant(&value);
-	comp = (*COMPARE_get(type, 0))(&a->value, &value._variant.value);
+	comp = (*COMPARE_get_func(type, 0))(&a->value, &value._variant.value);
 	RELEASE(&value);
 
 	return comp;
 }
 
+static COMPARE_FUNC _string_func[] = {
+	/*  0 */ compare_string_binary,
+	/*  1 */ compare_string_case,
+	/*  2 */ compare_string_lang,
+	/*  3 */ compare_string_lang_case,
+	/*  4 */ compare_string_like,
+	/*  5 */ compare_string_match,
+	/*  6 */ compare_string_like,
+	/*  7 */ compare_string_match,
+	/*  8 */ compare_string_natural,
+	/*  9 */ compare_string_natural_case,
+	/* 10 */ compare_string_natural,
+	/* 11 */ compare_string_natural_case,
+	/* 12 */ compare_string_natural,
+	/* 13 */ compare_string_natural_case,
+	/* 14 */ compare_string_natural,
+	/* 15 */ compare_string_natural_case,
+};
 
-COMPARE_FUNC COMPARE_get(TYPE type, int mode)
+
+COMPARE_FUNC COMPARE_get_func(TYPE type, int mode)
 {
 	_descent = (mode & GB_COMP_DESCENT) != 0;
 	mode &= GB_COMP_TYPE_MASK;
@@ -613,15 +653,7 @@ COMPARE_FUNC COMPARE_get(TYPE type, int mode)
 			return (COMPARE_FUNC)compare_date;
 
 		case T_STRING:
-
-			if (mode & GB_COMP_NATURAL)
-				return (COMPARE_FUNC)((mode & GB_COMP_NOCASE) ? compare_string_natural_case : compare_string_natural);
-			else if (mode & GB_COMP_LIKE)
-				return (COMPARE_FUNC)compare_string_like;
-			else if (mode & GB_COMP_LANG)
-				return (COMPARE_FUNC)((mode & GB_COMP_NOCASE) ? compare_string_lang_case : compare_string_lang);
-			else
-				return (COMPARE_FUNC)((mode & GB_COMP_NOCASE) ? compare_string_case : compare_string_binary);
+			return _string_func[mode];
 
 		case T_POINTER:
 			#ifdef OS_64BITS
@@ -635,5 +667,26 @@ COMPARE_FUNC COMPARE_get(TYPE type, int mode)
 
 		default:
 			return (COMPARE_FUNC)compare_nothing;
+	}
+}
+
+COMPARE_STRING_FUNC COMPARE_get_string_func(int mode)
+{
+	mode &= GB_COMP_TYPE_MASK;
+	
+	if (mode == GB_COMP_BINARY)
+		return (COMPARE_STRING_FUNC)STRING_compare;
+	else if (mode == GB_COMP_NOCASE)
+		return (COMPARE_STRING_FUNC)STRING_compare_ignore_case;
+	else
+	{
+		if (mode & GB_COMP_NATURAL)
+			return (COMPARE_STRING_FUNC)COMPARE_string_natural;
+		else if (mode & GB_COMP_LIKE)
+			return (COMPARE_STRING_FUNC)COMPARE_string_like;
+		else if (mode & GB_COMP_LANG)
+			return (COMPARE_STRING_FUNC)COMPARE_string_lang;
+		else
+			THROW(E_ARG);
 	}
 }

@@ -59,8 +59,6 @@ GB_STREAM_DESC SerialStream =
 	seek: CSerialPort_stream_seek,
 	tell: CSerialPort_stream_tell,
 	flush: CSerialPort_stream_flush,
-	eof: CSerialPort_stream_eof,
-	lof: CSerialPort_stream_lof,
 	handle: CSerialPort_stream_handle
 };
 
@@ -232,7 +230,7 @@ int CSerialPort_stream_close(GB_STREAM *stream)
 	return 0;
 }
 
-int CSerialPort_stream_lof(GB_STREAM *stream, int64_t *len)
+/*int CSerialPort_stream_lof(GB_STREAM *stream, int64_t *len)
 {
 	void *_object = stream->tag;
 	int bytes;
@@ -255,9 +253,15 @@ int CSerialPort_stream_eof(GB_STREAM *stream)
 	if (ioctl(THIS->port,FIONREAD,&bytes)) return -1;
 	if (!bytes) return -1;
 	return 0;
-}
+}*/
 
 int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, int len)
+{
+	void *_object = stream->tag;
+	return read(THIS->port, (void*)buffer, len);
+}
+
+/*int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
 	void *_object = stream->tag;
 	int npos = -1;
@@ -284,9 +288,16 @@ int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, int len)
 		return -1;
 
 	return 0;
-}
+}*/
 
 int CSerialPort_stream_write(GB_STREAM *stream, char *buffer, int len)
+{
+	void *_object = stream->tag;
+	return write(THIS->port, (void*)buffer, len);
+}
+
+
+/*int CSerialPort_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
 	void *_object = stream->tag;
 	int npos = -1;
@@ -306,7 +317,7 @@ int CSerialPort_stream_write(GB_STREAM *stream, char *buffer, int len)
 		return -1;
 
 	return 0;
-}
+}*/
 
 static bool check_open(CSERIALPORT *_object)
 {

@@ -2,7 +2,7 @@
 
 	gbx_archive.c
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -332,6 +332,7 @@ void ARCHIVE_delete(ARCHIVE *arch)
 
 	TABLE_delete(&arch->classes);
 	STRING_free(&arch->domain);
+	STRING_free(&arch->version);
 
 	FREE(&arch);
 }
@@ -524,9 +525,9 @@ void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info)
 }
 
 
-bool ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len)
+void ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len)
 {
-	return ARCH_read(arch->arch, pos, buffer, len);
+	ARCH_read(arch->arch, pos, buffer, len);
 }
 
 
@@ -557,7 +558,7 @@ void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int
 		return;
 	}
 
-	if (pattern == NULL)
+	if (pattern == NULL || !*pattern)
 		pattern = "*";
 
 	arch = find.arch;
@@ -712,4 +713,45 @@ void ARCHIVE_browse(ARCHIVE *arch, void (*found)(const char *path, int64_t size)
 		(*found)(path, size);
 		STRING_free(&path);
 	}
+}
+
+char *ARCHIVE_get_version(ARCHIVE *arch)
+{
+	COMPONENT *current;
+	char *buffer;
+	int len;
+	int n;
+	char *line;
+	
+	if (!arch->version_loaded)
+	{
+		current = COMPONENT_current;
+		COMPONENT_current = (COMPONENT *)arch->current_component;
+
+		ON_ERROR_1(error_ARCHIVE_load_exported_class, current)
+		{
+			STREAM_load(".startup", &buffer, &len);
+			
+			n = 0;
+			line = strtok(buffer, "\n");
+			while (line)
+			{
+				n++;
+				if (n == 5)
+				{
+					arch->version = STRING_new_zero(line);
+					break;
+				}
+				line = strtok(NULL, "\n");
+			}
+
+			FREE(&buffer);
+		}
+		END_ERROR
+
+		COMPONENT_current = current;
+		arch->version_loaded = TRUE;
+	}
+
+	return arch->version;
 }

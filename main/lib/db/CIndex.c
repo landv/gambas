@@ -2,7 +2,7 @@
 
   CIndex.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -234,10 +234,7 @@ BEGIN_METHOD(CINDEX_add, GB_STRING name; GB_OBJECT fields; GB_BOOLEAN unique)
 			q_add(",");
 
 		q_add(table->driver->GetQuote());
-		if (table->conn->db.flags.no_case)
-			q_add_lower(field);
-		else
-			q_add(field);
+		q_add(field);
 		q_add(table->driver->GetQuote());
 	}
 

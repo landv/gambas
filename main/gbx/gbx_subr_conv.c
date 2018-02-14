@@ -2,7 +2,7 @@
 
   gbx_subr_conv.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -237,17 +237,36 @@ void SUBR_format(ushort code)
 
 void SUBR_hex_bin(ushort code)
 {
-	static const int base[] = { 2, 16, 8 };
-	static const int max_prec[] = { 64, 16, 22 };
-
-	int mode;
   int prec = 0;
+  int base;
+  int max_prec;
 
   SUBR_ENTER();
 
   VALUE_conv(PARAM, T_LONG);
 
-	mode = (code >> 8) - CODE_BIN;
+	switch(code >> 8)
+	{
+		case CODE_BIN:
+			base = 2;
+			max_prec = 64;
+			break;
+			
+		case CODE_HEX:
+			base = 16;
+			max_prec = 16;
+			break;
+			
+		default:
+			if (NPARAM == 0) // Compatibility with 2010 bytecode
+			{
+				SUBR_upper(1);
+				return;
+			}
+			base = 8;
+			max_prec = 22;
+			break;
+	}
 
   if (NPARAM == 2)
   {
@@ -255,11 +274,11 @@ void SUBR_hex_bin(ushort code)
 
     prec = PARAM[1]._integer.value;
 
-    if (prec < 1 || prec > max_prec[mode])
+    if (prec < 1 || prec > max_prec)
       THROW(E_ARG);
   }
 
-  NUMBER_int_to_string(PARAM->_long.value, prec, base[mode], RETURN);
+  NUMBER_int_to_string(PARAM->_long.value, prec, base, RETURN);
 
   SUBR_LEAVE();
 }

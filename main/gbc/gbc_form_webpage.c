@@ -2,7 +2,7 @@
 
   gbc_form_webpage.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -323,7 +323,7 @@ void FORM_webpage(char *source)
 	char c;
 	const char *p;
 	int line;
-	char buf[8];
+	char buf[16];
 	bool has_contents = FALSE;
 	
 	line = FORM_FIRST_LINE;

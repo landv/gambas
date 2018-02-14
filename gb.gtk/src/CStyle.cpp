@@ -2,7 +2,7 @@
 
   CStyle.cpp
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,35 +31,57 @@
 #ifdef GTK3
 
 static cairo_t *_cr = NULL;
+static GtkWidget *_button = NULL;
+static GtkWidget *_check_button = NULL;
+static GtkWidget *_entry = NULL;
+static GtkWidget *_radio_button = NULL;
+static GtkStyleProvider *_css = NULL;
 
 #else
 
 static GdkDrawable *_dr = NULL;
 static int _dr_x = 0;
 static int _dr_y = 0;
+static GtkWidget *_widget = NULL;
 
 #endif
 
 static STYLE_T *_stl = NULL;
-static GtkWidget *_widget = NULL;
 
 #ifdef GTK3
 static GtkStyleContext *get_style(GType type = G_TYPE_NONE)
 {
-	_stl = gt_get_style(type);
-
-	gtk_style_context_save(_stl);
-
+	GtkWidget *widget = NULL;
+	
 	if (type == GTK_TYPE_BUTTON)
-		gtk_style_context_add_class(_stl, GTK_STYLE_CLASS_BUTTON);
+	{
+		if (!_button) _button = gtk_button_new();
+		widget = _button;
+	}
 	else if (type == GTK_TYPE_CHECK_BUTTON)
-		gtk_style_context_add_class(_stl, GTK_STYLE_CLASS_CHECK);
+	{
+		if (!_check_button) _check_button = gtk_check_button_new();
+		widget = _check_button;
+	}
 	else if (type == GTK_TYPE_ENTRY)
-		gtk_style_context_add_class(_stl, GTK_STYLE_CLASS_ENTRY);
+	{
+		if (!_entry) 
+		{
+			_entry = gtk_entry_new();
+			gtk_widget_set_name(_entry, "se");
+		}
+		widget = _entry;
+	}
 	else if (type == GTK_TYPE_RADIO_BUTTON)
-		gtk_style_context_add_class(_stl, GTK_STYLE_CLASS_RADIO);
-
-	return _stl;
+	{
+		if (!_radio_button) _radio_button = gtk_radio_button_new(NULL);
+		widget = _radio_button;
+	}
+	
+	if (!_css)
+		_css = GTK_STYLE_PROVIDER(gtk_css_provider_new());
+	
+	return widget ? gtk_widget_get_style_context(widget) : NULL;
 }
 #else
 static GtkStyle *attach_style(GtkStyle *style)
@@ -112,13 +134,12 @@ static bool begin_draw(int *x, int *y)
 			return TRUE;
 		}
 
-		_widget = wid->widget;
+		//_widget = wid->widget;
 	}
 	else
 	{
-		_widget = NULL;
+		//_widget = NULL;
 	}
-
 
 	return FALSE;
 }
@@ -199,8 +220,8 @@ static void end_draw()
 		g_object_unref(G_OBJECT(_stl));
 		_stl = NULL;
 	}
-#endif
 	_widget = NULL;
+#endif
 
 #ifndef GTK3
 	cairo_t *context = PAINT_get_current_context();
@@ -585,71 +606,44 @@ static void style_handle(int x, int y, int w, int h, int vertical, int state)
 static void style_box(int x, int y, int w, int h, int state, GB_COLOR color)
 {
 	STYLE_T *style = get_style(GTK_TYPE_ENTRY);
-#ifdef GTK3
-	bool oxygen = false;
-#endif
 
 	if (strcmp(gApplication::getStyleName(), "oxygen-gtk") == 0)
 	{
 		x -= 3;
 		w += 6;
-#ifdef GTK3
-		oxygen = true;
-#endif
 	}
 
-	#ifdef GTK3
-	static const char *_name = NULL;
-	static const char *_bg_names[] = { "base_color", "theme_base_color", NULL };
-
+#ifdef GTK3
+	
 	set_state(style, state);
+	
 	if (color != GB_COLOR_DEFAULT)
 	{
+		char *css = NULL;
 		char buffer[256];
-		int alpha = ((color >> 24) ^ 0xFF);
-
-		if (oxygen)
-		{
-			if (alpha == 255)
-				sprintf(buffer, "GtkEntry { background-color: #%06x; }", color);
-			else
-				sprintf(buffer, "GtkEntry { background-color: alpha(#%06x, 0.%03i); }", color & 0xFFFFFF, alpha * 1000 / 255);
-		}
-		else
-		{
-			if (!_name)
-			{
-				GdkRGBA rgba;
-				GtkWidget *entry = gtk_entry_new();
-				gt_style_lookup_color(gtk_widget_get_style_context(entry), _bg_names, &_name, &rgba);
-				//fprintf(stderr, "name = %s\n", _name);
-				gtk_widget_destroy(entry);
-			}
-
-			if (alpha == 255)
-				sprintf(buffer, "@define-color %s #%06x;", _name, color);
-			else
-				sprintf(buffer, "@define-color %s alpha(#%06x, 0.%03i);", _name, color & 0xFFFFFF, alpha * 1000 / 255);
-		}
-
-		//fprintf(stderr, "style = %p buffer = %s\n", style, buffer);
-		GtkCssProvider *provider = gtk_css_provider_new();
-		gtk_css_provider_load_from_data(provider, buffer, strlen(buffer), NULL);
-		gtk_style_context_add_provider(style, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+		
+		g_stradd(&css, "#se:not(:selected) { background-color:");
+		gt_to_css_color(buffer, color);
+		g_stradd(&css, buffer);
+		g_stradd(&css, "; background-image:none; }\n");
+		gtk_css_provider_load_from_data(GTK_CSS_PROVIDER(_css), css, -1, NULL);
+		gtk_style_context_add_provider(style, _css, GTK_STYLE_PROVIDER_PRIORITY_USER);
+		
 #if GTK_CHECK_VERSION(3, 12, 0)
 #else
 		gtk_style_context_invalidate(style);
 #endif
 		gtk_render_background(style, _cr, x, y, w, h);
-		gtk_style_context_remove_provider(style, GTK_STYLE_PROVIDER(provider));
+		gtk_style_context_remove_provider(style, GTK_STYLE_PROVIDER(_css));
 #if GTK_CHECK_VERSION(3, 12, 0)
 #else
 		gtk_style_context_invalidate(style);
 #endif
-		g_object_unref(G_OBJECT(provider));
 	}
 
 	gtk_render_frame(style, _cr, x, y, w, h);
+	gtk_style_context_remove_provider(style, _css);
+	
 #else
 	GtkStateType st = get_state(state);
 

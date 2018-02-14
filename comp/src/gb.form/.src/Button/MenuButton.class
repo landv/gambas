@@ -46,8 +46,6 @@ Static Private $hCurrentMenu As Menu
 
 Public Sub _new()
   
-  'Dim hObs As Observer
-  
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
   $hDrawingArea.Focus = True
   
@@ -55,17 +53,8 @@ Public Sub _new()
   $bArrow = True
 
   Me.Proxy = $hDrawingArea
-  'hObs = New Observer($hDrawingArea)
-  'Object.Attach(hObs, Me.Parent, sEventName)   
   
 End
-
-' Public Sub Watcher_Resize()
-'   
-'   $hArrow.Move(Me.W - $hArrow.W, 0, $hArrow.W, Me.H)
-'   
-' End
-
 
 Private Function Picture_Read() As Picture
 
@@ -158,7 +147,7 @@ Public Sub WatchTimer_Timer()
   If X < 0 Or If Y < 0 Or If X >= Me.Parent.W Or If Y >= Me.Parent.H Then Return
   
   Try hMenuButton = Me.Parent.FindChild(X, Y)
-  If hMenuButton And If hMenuButton <> $hCurrent And If hMenuButton.Enabled Then
+  If hMenuButton And If hMenuButton <> $hCurrent And If hMenuButton.Enabled And If Not hMenuButton.Arrow Then
     If Main.FindMenu(hMenuButton, hMenuButton.Menu) Then
       $hCurrentMenu.Close
       $hCurrent.Refresh
@@ -179,10 +168,14 @@ Static Private Sub HandleMenu(hCurrent As MenuButton)
   
   While hCurrent
     
-    hMenu = Main.FindMenu(hCurrent, hCurrent.Menu)
+    hMenu = Null
+    If hCurrent.Menu Then hMenu = Main.FindMenu(hCurrent, hCurrent.Menu)
+    If Not hMenu Then Break
     
     $hCurrent = hCurrent
     $hCurrentMenu = hMenu
+    
+    hCurrent.SetFocus ' Should refresh old and new menus
     
     hMenu.Popup(hCurrent.ScreenX, hCurrent.ScreenY + hCurrent.H)
     
@@ -203,15 +196,16 @@ End
 
 Private Sub Arrow_Click()
 
-  If Not $sMenu Then
+  If Not $sMenu Or If Not Main.FindMenu(Me, $sMenu) Then
+    $hCurrent = Me
+    $hCurrentMenu = Null
+    Me.SetFocus
+    Me.Refresh
     Raise Click
+    $hCurrent = Null
     Return
   Endif
-
-  If Not Main.FindMenu(Me, $sMenu) Then
-    Raise Click
-    Return
-  Endif
+  
   
   HandleMenu(Me)
   
@@ -388,8 +382,10 @@ Public Sub DrawingArea_Draw()
   Dim bFlat As Boolean
   Dim bDrawArrow As Boolean
   Dim iFg As Integer
+  Dim hFont As Font
+  Dim bMenu As Boolean
   
-  iFlag = Style.StateOf(Last)
+  iFlag = Style.StateOf($hDrawingArea)
   
   If $hCurrent Then
     If $hCurrent = Me Then iFlag = iFlag Or Draw.Hover
@@ -398,15 +394,18 @@ Public Sub DrawingArea_Draw()
   Endif
   'If $bInside And If Me.Enabled And If Not Me.Design Then iFlag += Draw.Hover
   'If Not Me.Enabled Then iFlag += Draw.Disabled
-  'If $hDrawingArea.HasFocus Then iFlag += Draw.Focus
+  If $hDrawingArea.HasFocus Then iFlag += Draw.Hover
   
   bDrawArrow = $bArrow And (Me.W > Desktop.Scale * 4)
   
   '' TODO: System.RightToLeft
 
   bFlat = Not $bBorder 'And Not $bInside
+  If Me = $hCurrent Then bMenu = True
 
-  If $bInsideArrow Or If $bMenuOnly Then
+  If bMenu Then
+    Paint.FillRect(1, 1, Me.W - 2, Me.H - 2, Color.SelectedBackground)
+  Else If $bInsideArrow Or If $bMenuOnly Then
     Style.PaintButton(0, 0, Me.W, Me.H, False, iFlag, bFlat)
   Else
     Style.PaintButton(0, 0, Me.W, Me.H, $bPressed, iFlag, bFlat)
@@ -432,17 +431,20 @@ Public Sub DrawingArea_Draw()
     If bDrawArrow Then Paint.ClipRect = Rect(0, 0, Me.W - Desktop.Scale * 3, Me.H)
     iFg = Style.ForegroundOf(Me)
     If Not Me.Enabled Then iFg = Color.Merge(Color.ButtonBackground, iFg)
+    If bMenu Then iFg = Color.SelectedForeground
+    Paint.Background = iFg
     sText = $sText
     If $iShortcutPos Then sText = String.Left($sText, $iShortcutPos - 1) & String.Mid$($sText, $iShortcutPos + 1)
     If Not $hPicture And If Not $bArrow Then
       X = (Me.W - Draw.Font.TextWidth(sText)) \ 2
     Endif
-    Draw.Text(sText, X, 0, Me.W - X, Me.H, Align.Left)
+    Paint.DrawText(sText, X, 0, Me.W - X, Me.H, Align.Left)
     If $iShortcutPos Then
-      X2 = X + Draw.Font.TextWidth(String.Left(sText, $iShortcutPos))
-      X += Draw.Font.TextWidth(String.Left(sText, $iShortcutPos - 1))
-      Y = (Me.H - Draw.Font.Height) / 2 + Draw.Font.Ascent + 1
-      Draw.Line(X, Y, X2, Y)
+      hFont = Paint.Font
+      X2 = X + hFont.TextWidth(String.Left(sText, $iShortcutPos))
+      X += hFont.TextWidth(String.Left(sText, $iShortcutPos - 1))
+      Y = (Me.H - hFont.Height) / 2 + hFont.Ascent + 1
+      Paint.FillRect(X, Y, X2 - X, 1, iFg)
     Endif
   Endif
   

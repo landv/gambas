@@ -442,6 +442,7 @@ gw = {
     {
       clearInterval(gw.timers[id]);
       gw.timers[id] = undefined;
+      gw.timers[id + '!'] = undefined;
     }
   },
   
@@ -1398,6 +1399,18 @@ gw = {
       gw.textbox.setText(id, '');
       gw.setFocus(id);
       gw.raise(id, 'activate', [], false);
+    },
+    
+    copy: function(id)
+    {
+      var ret = false;
+      var elt = $(id);
+      var save = gw.saveFocus();
+      gw.setFocus(id);
+      gw.setSelection(elt, [0, elt.value.length]);
+      try { document.execCommand('copy'); } catch(e) { gw.log('Unable to copy: ' + e); ret = true; }
+      gw.restoreFocus(save);
+      return ret;
     }
   }
 }

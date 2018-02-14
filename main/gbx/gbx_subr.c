@@ -2,7 +2,7 @@
 
   gbx_subr.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -159,6 +159,8 @@ static TYPE conv_type(TYPE type)
 		type = T_BYTE;*/
 	if (type == T_CSTRING) // || type == T_NULL)
 		type = T_STRING;
+	else if (type == T_CLASS || type == T_FUNCTION)
+		type = T_VARIANT;
 
 	return type;
 }
@@ -172,6 +174,9 @@ TYPE SUBR_check_good_type(VALUE *param, int count)
 		goto __VARIANT;
 
 	type = conv_type(param[0].type);
+	
+	if (type == T_VARIANT)
+		goto __VARIANT;
 	
 	if (TYPE_is_value(type))
 	{

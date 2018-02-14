@@ -1,0 +1,634 @@
+' Gambas module file
+
+Property Read Name As String
+Property Read Enabled As Boolean
+Property Read Output As String
+Property Read DoNotPush As Boolean
+
+Private $hVC As CVersionControl
+
+Private $bEnabled As Boolean
+Private $bEnd As Boolean
+Private $hEditor As TextEditor
+Private $bOutput As Boolean
+Private $sOutput As String
+Private $dOutput As Date
+Private $bIdent As Boolean
+
+Private $bAuth As Boolean
+Private $sUser As String
+Private $sPassword As String
+
+Private $sLastResult As String
+
+'Public (User) As String
+'Public Password As String
+'Public UseTerminal As Boolean
+
+Public LANG_ENV As String[] = ["LC_ALL=C.UTF-8", "LANG=C.UTF-8", "LANGUAGE=C.UTF-8"]
+Public Const DELIM_CHANGE As String = ("This line and the following will be ignored")
+Public Enum ACCEPT_OURS = 1, ACCEPT_THEIRS = 2
+
+Public Sub Refresh()
+
+  $hVC = CVersionControl
+  $bEnabled = False
+  
+  If Settings["/VersionControl/Enabled", 1] Then
+    If CVersionControlSubversion.Check() Then
+      $hVC = CVersionControlSubversion
+      $bEnabled = True
+    Else If CVersionControlGit.Check() Then
+      $hVC = CVersionControlGit
+      $bEnabled = True
+    Endif
+  Endif
+  
+  $bAuth = False
+  CheckPaths
+  FMain.OnVersionControlChange
+  
+End
+
+Public Sub Disable()
+  
+  If $hVC And If $hVC Is CVersionControl Then Return
+  
+  $hVC = CVersionControl
+  $bEnabled = False
+  FMain.OnVersionControlChange
+  
+End
+
+
+Public Sub Insert(sText As String)
+
+  If $hEditor Then
+    $hEditor.Print(DConv(sText))
+  Else
+    If Not Settings["/QuietExternalCommands", False] Then FOutput.Insert(sText)
+  Endif
+
+End
+
+Public Sub Shell(sCmd As String, Optional bSilent As Boolean, Optional aEnv As String[]) As String
+  
+  Dim sResult As String
+  
+  If Not bSilent Then Insert(sCmd & "\n")
+  Shell sCmd With aEnv To sResult
+  If Process.LastValue Then 
+    $sLastResult = sResult
+    Insert(sResult)
+  Endif
+  Return sResult
+  
+End
+
+
+Public Sub Run(aCmd As String[], Optional bIdent As Boolean, Optional bOutput As Boolean, Optional aEnv As String[]) As Integer
+
+  ' Dim sPassword As String
+  Dim hProcess As Process
+  Dim sCmd As String
+  
+  $bEnd = False
+  $bIdent = bIdent
+  $sOutput = ""
+  $bOutput = bOutput
+  $dOutput = Now
+  $sLastResult = ""
+  
+  ' If bIdent Then
+  '   'aCmd.Add("--non-interactive")
+  '   If User Then
+  '     aCmd.Add("--username")
+  '     aCmd.Add(User)
+  '     If Password Then
+  '       sPassword = " --password " & Password
+  '       aCmd.Add("--password")
+  '       aCmd.Add(Password)
+  '     Endif
+  '   Endif
+  ' Endif
+  
+  hProcess = Exec aCmd With aEnv For Input Output As "Process" 
+  
+  sCmd = aCmd.Join(" ")
+  'If sPassword Then sCmd = Replace(sCmd, sPassword, "********")
+
+  Insert(sCmd & "\n")
+
+  Do
+    Wait
+    
+    If $bEnd Then Break
+    
+    If DateDiff($dOutput, Now, gb.Second) >= 30 Then
+      Close #hProcess
+      hProcess.Kill
+      Insert("** " & ("command timeout") & " **\n")
+    Endif
+    
+    Sleep 0.1
+  Loop
+  
+  If Process.LastValue Then $sLastResult = $sOutput
+  
+  Return Process.LastValue
+
+End
+
+Public Sub Process_Error(({Error}) As String)
+  
+  $sLastResult &= {Error}
+  Insert({Error})
+  
+End
+
+
+Public Sub Process_Read()
+
+  Dim sData As String
+  Dim iPos As Integer
+  Dim sLine As String
+
+  sData = Read #Last, -1024
+  $sOutput &= Replace(sData, "\r", "")
+  If $bOutput Then Insert(sData)
+  'Insert(sData)
+  $dOutput = Now
+  
+  iPos = RInStr($sOutput, "\n")
+  If iPos = 0 Then
+    sLine = $sOutput
+  Else
+    sLine = Mid$($sOutput, iPos + 1)
+  Endif
+  
+  If $bIdent Then
+    If Right(RTrim(sLine)) = ":" Then
+      If InStr(sLine, "username", 1, gb.IgnoreCase) Then 
+        'If $bOutput Then Insert(sLine)
+        If Not $bAuth Then GetAuthentication()
+        If Not $sUser Then Goto CANCEL
+        Print #Last, $sUser
+        Insert(User & "\n")
+        $sOutput = ""
+      Else If InStr(sLine, "password", 1, gb.IgnoreCase) Then 
+        'If $bOutput Then Insert(sLine)
+        If Not $bAuth Then GetAuthentication()
+        Print #Last, $sPassword
+        Insert("********" & "\n")
+        $sOutput = ""
+      Else If InStr(sLine, "passphrase", 1, gb.IgnoreCase) Then 
+        'If $bOutput Then Insert(sLine)
+        If Not $bAuth Then GetAuthentication(True)
+        Print #Last, $sPassword
+        Insert("********" & "\n")
+        $sOutput = ""
+      Endif
+    Else If RTrim(sLine) Ends "(yes/no)?" Then
+      Print #Last, "yes"
+      Insert("yes\n")
+      $sOutput = ""
+    Endif
+  Endif
+  
+  Return
+  
+CANCEL:
+
+  Last.Kill
+
+End
+
+Public Sub Process_Kill()
+
+  $bEnd = True
+
+End
+
+Public Sub AddFile(sPath As String, Optional bForce As Boolean)
+
+  $hVC.AddFile(sPath, bForce)
+
+  ' If $bCVS Then
+  '   'NB: For CVS file must already exist
+  '   Run(["cvs", "add", sPath])
+  ' Endif
+
+End
+
+Public Sub AddDir(sPath As String)
+
+  $hVC.AddDir(sPath)
+
+  ' If $bCVS Then
+  '   'NB: For CVS, directory must already exist
+  '   Run(["cvs", "add", sPath])
+  ' Endif
+
+End
+
+' Must be called *after* the file has been deleted
+
+Public Sub RemoveFile(sPath As String, Optional (bForce) As Boolean)
+
+  $hVC.RemoveFile(sPath, bForce)
+  ' If $bCVS Then
+  '   'NB: For CVS do 'cvs remove file' first then delete file
+  '   Run(["cvs", "remove", sPath])
+  ' Endif
+  CheckPaths
+
+End
+
+' Must be called *after* the directory has been deleted
+' The directory must be empty
+
+Public Sub RemoveDir(sPath As String)
+
+  $hVC.RemoveDir(sPath)
+  ' If $bCVS Then
+  '   'NB: For CVS do 'cvs remove dirname' first then delete dirname
+  '   Run(["cvs", "remove", sPath])
+  ' Endif
+  CheckPaths
+
+End
+
+' Must be called *after* the file has been moved
+
+Public Sub MoveFile(sOld As String, sNew As String)
+
+  $hVC.MoveFile(sOld, sNew)
+
+  ' If $bCVS Then
+  '   'NB: make sure the file is added BEFORE
+  '   AddFile(sNew)
+  '   'NB: make sure the file deleted AFTER
+  '   RemoveFile(sOld)
+  ' Endif
+  CheckPaths
+
+End
+
+Public Sub CheckPaths()
+
+  Project.ResetFlags
+  If Not $bEnabled Then Return
+  $hVC.CheckPaths()
+
+End
+
+Public Sub UpdatePath(sPath As String, Optional sPath2 As String)
+  
+  If Not $bEnabled Then Return
+  Project.ResetFlags(sPath)
+  If sPath2 Then Project.ResetFlags(sPath2)
+  $hVC.UpdatePath(sPath, sPath2)
+  
+End
+
+
+Public Sub MoveDir(sOld As String, sNew As String) As Boolean
+
+  $hVC.MoveDir(sOld, sNew)
+  CheckPaths
+
+End
+
+Public Sub Status(Optional sPath As String) As String
+
+  Return $hVC.Status(sPath)
+
+End
+
+Public Sub Commit(sChange As String, bDoNotPush As Boolean) As Boolean
+
+  Dim bRes As Boolean
+  
+  Inc Application.Busy
+  bRes = $hVC.Commit(sChange, bDoNotPush)
+  If Not bRes Then Project.Refresh
+  Dec Application.Busy
+  
+  If bRes Then
+    ShowError(("The project could not be committed."))
+  Endif
+  
+  Return bRes
+
+End
+
+Public Sub Update()
+
+  Dim bErr As Boolean
+  Dim hFile As Object
+  Dim sFile As String
+  Dim sPath As String
+  Dim aRemove As String[]
+
+  Inc Application.Busy
+  bErr = $hVC.Update()
+  CheckPaths
+  Project.Refresh
+  Dec Application.Busy
+
+  If bErr Then  
+    ShowError(("Unable to update project from repository."))
+  Else
+    Message.Info(("Project has been updated from repository successfully."))
+  Endif
+  
+  For Each sFile In [".project", ".startup", ".component", ".info"]
+    sPath = Project.Dir &/ sFile
+    If Exist(sPath) And If Project.IsConflict(sPath) Then SolveConflict(sPath, ACCEPT_THEIRS)
+  Next
+  For Each sFile In [".settings"]
+    sPath = Project.Dir &/ sFile
+    If Exist(sPath) And If Project.IsConflict(sPath) Then SolveConflict(sPath, ACCEPT_OURS)
+  Next
+
+  aRemove = New String[]
+  Project.Workspace.Lock
+  For Each hFile In Project.Files
+    If hFile Is FConflictEditor Then Continue
+    sPath = hFile.Path
+    If Project.IsConflict(sPath) Then aRemove.Add(sPath)
+  Next
+  Project.Workspace.Unlock
+  
+  If aRemove.Count Then
+    
+    Project.Reload
+    FMain.DoFilter(Project.FILTER_CONFLICT)
+    
+  Endif
+
+End
+
+Public Sub Revert(Optional sPath As String) As Boolean
+
+  If sPath Then Return $hVC.Revert(sPath)
+
+  If Message.Warning(("You are going to cancel your changes!"), ("Continue"), ("Cancel")) = 2 Then Return
+
+  Inc Application.Busy
+  
+  $hVC.Revert()
+  'Project.Refresh
+  Project.Reload
+  
+  Dec Application.Busy
+
+End
+
+Public Sub CheckoutSVN(sPath As String, sDir As String, hEditor As TextEditor)
+
+  $hEditor = hEditor
+  CVersionControlSubversion.Checkout(sPath, sDir)
+  $hEditor = Null
+
+End
+
+Public Sub InConflict(sPath As String) As Boolean
+
+  Return $hVC.InConflict(sPath)
+
+End
+
+Public Sub SolveConflict(sPath As String, Optional iAccept As Integer) As Boolean
+
+  If $hVC.SolveConflict(sPath, iAccept) Then Return True
+  
+  CheckPaths
+  If Project.HasConflict Then
+    Project.Refresh
+  Else
+    Project.Reload
+  Endif
+
+End
+
+Public Sub GetVersion(sDir As String) As String
+
+  Return $hVC.GetVersion(sDir)
+
+End
+
+' Private Sub RemoveFirstLines(sStr As String, iCount As Integer) As String
+' 
+'   Dim iPos As Integer
+' 
+'   While iCount
+'     iPos = InStr(sStr, "\n", iPos + 1)
+'     If iPos = 0 Then Return
+'     Dec iCount
+'   Wend
+' 
+'   Return Mid$(sStr, iPos + 1)
+' 
+' End
+
+Public Sub Diff(Optional sPath As String) As String
+
+  If Not sPath Then sPath = Project.Dir
+  Return $hVC.Diff(sPath)
+
+End
+
+Public Sub CanControlProject() As Boolean
+
+  Return False
+
+  ' Dim sDir As String
+  ' 
+  ' If $hVC <> CVersionControl Then Return
+  ' 
+  ' If $bSvn17 Then
+  '   sDir = $sRealDir
+  '   Do
+  '     sDir = File.Dir(sDir)
+  '     If Exist(sDir &/ ".svn") Then Return True
+  '     If sDir = "/" Then Return False
+  '   Loop
+  ' Else
+  '   If Exist($sRealDir &/ "../.svn") Then Return True
+  ' Endif
+  ' 
+  ' If Exist($sRealDir &/ "../CVS") Or Exist($sRealDir &/ "../CVSROOT") Then Return True
+
+End
+
+Public Sub ControlProject(sType As String)
+
+  Dim hVC As CVersionControl
+  Dim bErr As Boolean
+  
+  Select Case sType
+    
+    Case CVersionControlSubversion.Name
+      hVC = CVersionControlSubversion
+    
+    Case CVersionControlGit.Name
+      hVC = CVersionControlGit
+      
+    Default
+      Return
+    
+  End Select
+
+  If Not hVC.CanControlProject() Then Return
+
+  If Message.Question(Subst(("Do you really want to put this project under version control with &1?"), hVC.LongName), ("Yes"), ("No")) = 2 Then Return
+  
+  Project.CleanUp
+  Try Kill Project.Dir &/ ".settings"
+
+  bErr = hVC.ControlProject()
+
+  Project.Config.Save
+  
+  If Not bErr Then
+    Refresh
+    Project.Refresh
+    FVersionControl.Run()
+  Else
+    ShowError(("The project could not be put under version control."))
+  Endif
+
+End
+
+Public Sub Info() As Collection
+
+  Return $hVC.Info()
+  
+End
+
+Public Sub CleanUp(sPath As String)
+
+  $hVC.CleanUp(sPath)
+  
+End
+
+Private Function Enabled_Read() As Boolean
+
+  Return $bEnabled
+
+End
+
+Private Function Output_Read() As String
+
+  Return $sOutput
+
+End
+
+Public Sub GetBranches(ByRef sCurrent As String) As String[]
+  
+  Return $hVC.GetBranches(ByRef sCurrent)
+  
+End
+
+Private Function Name_Read() As String
+
+  Return $hVC.Name
+
+End
+
+Public Sub GetDefaultJournal() As String
+  
+  Return $hVC.GetDefaultJournal()
+  
+End
+
+Public Sub GetDelimChange() As String
+
+  Dim sStr As String
+
+  sStr = String.Left("-------- " & DELIM_CHANGE & " ", 77)
+  sStr &= String$(78 - String.Len(sStr), "-")
+  Return sStr
+
+End
+
+Private Sub GetAuthentication(Optional bNoUser As Boolean) 
+
+  Dialog.NoUser = bNoUser
+  Dialog.Key = Project.Name &/ "VersionControl"
+  If Dialog.AskPassword() Then Return
+  $sUser = Dialog.User
+  $sPassword = Dialog.Password
+  $bAuth = True
+
+End
+
+Private Function DoNotPush_Read() As Boolean
+
+  Return $hVC.DoNotPush
+
+End
+
+Public Sub SetBranch(sBranch As String)
+
+  Dim sCurrent As String
+
+  Inc Application.Busy  
+  $hVC.SetBranch(sBranch)
+  GetBranches(ByRef sCurrent)
+  If sCurrent = sBranch Then Project.Reload
+  Dec Application.Busy
+  
+  If sCurrent <> sBranch Then
+    ShowError(Subst(("Unable to switch to branch `&1`."), sBranch))
+  Endif
+  
+End
+
+Public Sub InitControlProjectMenu(hParent As Menu)
+  
+  Dim hMenu As Menu
+  Dim hVC As CVersionControl
+  
+  hVC = CVersionControlSubversion
+  GoSub CHECK_CONTROL
+  hVC = CVersionControlGit
+  GoSub CHECK_CONTROL
+  Return
+  
+CHECK_CONTROL:
+
+  If hVC.CanControlProject() Then
+    hMenu = New Menu(hParent) As "ControlProject"
+    hMenu.Text = Subst(("With &1"), hVC.LongName)
+    hMenu.Tag = hVC.Name
+  Endif
+  
+  Return
+  
+End
+
+Public Sub ControlProject_Click()
+  
+  ControlProject(Last.Tag)
+  
+End
+
+Public Sub ShowError(sErr As String)
+  
+  FVersionError.Run(sErr, $sLastResult)
+  
+End
+
+Public Sub HasRemote() As Boolean
+  
+  Return $hVC.HasRemote()
+  
+End
+
+Public Sub GetSolveConflictMessage() As String
+  
+  Return $hVC.GetSolveConflictMessage()
+  
+End

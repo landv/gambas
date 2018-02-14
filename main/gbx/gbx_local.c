@@ -2,7 +2,7 @@
 
   gbx_local.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -283,13 +283,14 @@ static int search(const char *src, int len, const char *list, int start, bool no
 	for (i = start; i < len; i++)
 	{
 		c = src[i];
-
+		
 		if (c == '\\')
 		{
 			i++;
 			if (i >= len)
 				break;
 			c = src[i];
+			continue;
 		}
 
 		if ((index(list, c) != NULL) ^ not)
@@ -378,8 +379,6 @@ static void fill_local_info(void)
 	const char *lang;
 	char *am_pm;
 	bool got_second;
-
-	/* Localisation courante */
 
 	free_local_info();
 
@@ -693,7 +692,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	char *buf_start;
 
 	int pos;
-	int pos2;
+	//int pos2;
 	int thousand;
 	int *thousand_ptr;
 
@@ -772,7 +771,10 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	if (len_fmt >= COMMON_BUF_MAX)
 		return TRUE;
 
-	/* on recherche les formats de nombre négatif et nul */
+	// Remove, not documented!
+	
+#if 0
+	/* looking for negative and null numbers formats */
 
 	pos = search(fmt, len_fmt, ";", 0, FALSE);
 
@@ -790,7 +792,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 				else
 					len_fmt = pos;
 			}
-			else /* nombre �al �0 */
+			else
 			{
 				pos2 = search(fmt, len_fmt, ";", pos + 1, FALSE);
 				if (pos2 < len_fmt)
@@ -808,9 +810,9 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	}
 	else if (pos < len_fmt)
 		len_fmt = pos;
+#endif
 
-
-	/* on transcrit le format pour sprintf */
+	/* translate Gambas format to sprintf format */
 
 	sign = 0;
 	comma = FALSE;
@@ -827,13 +829,13 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 
 	begin();
 
-	/* Recherche du '%' */
+	/* Looking for '%' */
 
 	pos = search(fmt, len_fmt, "%", 0, FALSE);
 	if (pos < len_fmt)
 		number *= 100;
 
-	/* préfixe de formatage */
+	/* format prefix */
 
 	pos = search(fmt, len_fmt, "-+#0.,($", 0, FALSE);
 
@@ -843,7 +845,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	if (pos > 0)
 		add_string(fmt, pos, NULL);
 
-	/* on détermine le signe */
+	/* specify the sign */
 
 	if (fmt[pos] == '-')
 	{
@@ -864,7 +866,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	if (pos >= len_fmt)
 		return TRUE;
 
-	/* monétaire */
+	/* currency */
 
 	if (fmt[pos] == '$')
 	{
@@ -878,7 +880,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 		}
 	}
 
-	/* Les chiffres avant la virgule */
+	/* decimal digits */
 
 	for(; pos < len_fmt; pos++)
 	{
@@ -904,7 +906,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	if (pos >= len_fmt)
 		goto _FORMAT;
 
-	/* La virgule */
+	/* the point */
 
 	if (fmt[pos] != '.')
 		goto _FORMAT;
@@ -915,7 +917,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	if (pos >= len_fmt)
 		goto _FORMAT;
 
-	/* Les chiffres après la virgule */
+	/* digits after point */
 
 	for(; pos < len_fmt; pos++)
 	{
@@ -935,7 +937,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	if (pos >= len_fmt)
 		goto _FORMAT;
 
-	/* L'exposant */
+	/* exponent */
 
 	if (fmt[pos] == 'e' || fmt[pos] == 'E')
 	{
@@ -979,7 +981,7 @@ _FORMAT:
 	if (before == 0 && after == 0)
 		return TRUE;
 
-	/* le signe */
+	/* sign */
 
 	number_sign = fsgn(number);
 
@@ -1068,7 +1070,7 @@ _FORMAT:
 				ndigit--;
 		}
 
-		/* les chiffres avant la virgule */
+		/* digits before point */
 
 		thousand = Max(before, Max(before_zero, number_exp));
 		thousand_ptr = comma ? &thousand : NULL;
@@ -1187,7 +1189,7 @@ _FORMAT:
 	if (pos < len_fmt)
 		add_string(&fmt[pos], len_fmt - pos, NULL);
 
-	/* on retourne le r�ultat */
+	/* return the result */
 
 	end(str, len_str);
 	return FALSE;
@@ -1409,7 +1411,7 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 	if (len_fmt >= COMMON_BUF_MAX)
 		return TRUE;
 
-	/* recherche de AM/PM */
+	/* looking for AM/PM */
 
 	for (pos = 0; pos < len_fmt - 4; pos++)
 	{
@@ -1430,7 +1432,7 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 		}
 	}
 
-	/* Formatage */
+	/* Formatting */
 
 	begin();
 
@@ -1454,7 +1456,7 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 		{
 			add_date_token(&vdate, &token, token_count);
 
-			/* passage en struct tm */
+			/* convert to struct tm */
 
 			date_tm.tm_sec = date->sec;
 			date_tm.tm_min = date->min;
@@ -1497,7 +1499,7 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 
 	add_date_token(&vdate, &token, token_count);
 
-	/* on retourne le r�ultat */
+	/* return the result */
 
 	end(str, len_str);
 	return FALSE;

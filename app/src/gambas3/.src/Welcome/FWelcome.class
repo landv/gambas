@@ -1,5 +1,7 @@
 ' Gambas class file
 
+Static Public Filter As String
+
 Static Private $sPath As String
 Static Private $hLogo As Image
 
@@ -29,17 +31,17 @@ Private $hRecent As CProjectList
 Private $hExample As CProjectList
 Private $hSoft As CProjectList
 
-Static Public Function Run() As String
-
-  'DIM hForm AS Form
-
-  $sPath = ""
-  'hForm = NEW FWelcome
-  FWelcome.ShowModal()
-  Return $sPath
-
-End
-
+' Static Public Function Run() As String
+' 
+'   'DIM hForm AS Form
+' 
+'   $sPath = ""
+'   'hForm = NEW FWelcome
+'   FWelcome.ShowModal()
+'   Return $sPath
+' 
+' End
+' 
 Public Sub _new()
   
   $hRecent = New CProjectList(lstRecent, txtFilter, CProjectList.TYPE_RECENT, Arrange.Row) As "ProjectItem"
@@ -234,10 +236,11 @@ Public Sub Form_KeyPress()
 End
 
 
-Public Sub Form_Close()
+Public Sub Form_Hide()
 
   'Settings.Write(Me)
   Settings["/FWelcome/SortRecent"] = $iSort
+  Settings["/FWelcome/Filter"] = txtFilter.Text
 
 End
 

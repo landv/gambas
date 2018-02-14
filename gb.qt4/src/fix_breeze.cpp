@@ -2,7 +2,7 @@
 
 	fix_breeze.cpp
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include <QApplication>
 
 #include "gb_common.h"
+#include "CStyle.h"
 #include "fix_breeze.h"
 
 QFontMetrics *FixBreezeStyle::fm = NULL;
@@ -64,8 +65,13 @@ QRect FixBreezeStyle::subControlRect(ComplexControl element, const QStyleOptionC
 
 			// remove right side line editor margins
 			const int frameWidth( pixelMetric( PM_SpinBoxFrameWidth, option, widget ) );
-			if( !flat)
-				labelRect.adjust( frameWidth, 2, 0, -2 );
+			if (!flat)
+			{
+				if (CSTYLE_fix_breeze)
+					labelRect.adjust(frameWidth, 2, 0, -2 );
+				else if (CSTYLE_fix_oxygen)
+					labelRect.adjust(frameWidth, 4, 0, -4 );
+			}
 
 			return visualRect( option, labelRect );
 		}
@@ -107,8 +113,13 @@ QRect FixBreezeStyle::subControlRect(ComplexControl element, const QStyleOptionC
 					rect.height() );
 
 			// remove margins
-			if( !flat)
-				labelRect.adjust(frameWidth, 2, 0, -2 );
+			if (!flat)
+			{
+				if (CSTYLE_fix_breeze)
+					labelRect.adjust(frameWidth, 2, 0, -2 );
+				else if (CSTYLE_fix_oxygen)
+					labelRect.adjust(frameWidth, 4, 0, -4 );
+			}
 
 			return visualRect( option, labelRect );
 		}
@@ -178,7 +189,7 @@ void FixBreezeStyle::drawComplexControl(ComplexControl element, const QStyleOpti
 		QProxyStyle::drawComplexControl(element, option, painter, widget);
 		return;
 	}
-	
+		
 	if (element == CC_ComboBox)
 	{
 		QStyleOptionComboBox newOption;	
@@ -198,7 +209,7 @@ void FixBreezeStyle::drawComplexControl(ComplexControl element, const QStyleOpti
 				}
 			}
 		}
-		
+	
 		QProxyStyle::drawComplexControl(element, option, painter, widget);
 		return;
 	}

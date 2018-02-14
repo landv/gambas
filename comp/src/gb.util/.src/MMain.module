@@ -2,11 +2,16 @@
 
 Public Sub Main()
 
-  'Print Date.ToRFC822(Date.FromRFC822("23 Apr 17 19:55:10 +0200"), "-0100")
-  
-  Dim sEpochSeconds As String
-  Shell "date +%s" To sEpochSeconds
-  Print Trim(sEpochSeconds)
-  Print Date.ToUnixTime(Now)
-  
+  Dim I As Integer
+  Dim fTimer As Float
+  Dim sData As String
+
+  sData = File.Load("~/.local/share/gambas3/wiki/data/en/doc/object-model/~page")
+
+  fTimer = Timer
+  For I = 1 To 1000
+    String.RemoveDiacritics(sData)
+  Next
+  Print Timer - fTimer
+
 End

@@ -2,7 +2,7 @@
 
   gb.form.font.h
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,6 +28,9 @@
 #define GRADE_TO_SIZE(_grade, _desktop) ((int)(powf(_desktop, 1.0 + ((_grade) / (double)FONT_STEP)) + 0.5))
 #define SIZE_TO_GRADE(_size, _desktop)  ((int)(FONT_STEP * (logf(_size) / logf(_desktop)) + 0.5) - FONT_STEP)
 #define GET_DESKTOP_SCALE(_font_size, _dpi) (1 + ((_font_size) * (_dpi) * 2 / 3 / 96))
+
+#define FONT_GRADE_MIN -8
+#define FONT_GRADE_MAX 24
 
 #endif
 

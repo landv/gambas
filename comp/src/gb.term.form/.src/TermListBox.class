@@ -3,42 +3,199 @@
 Export
 Inherits TermControl
 
-
 Property List As String[]
 Property Index As Integer
 Property Read Count As Integer
-
+Property Read Text As String
 Private $iIndex As Integer
 Private $aList As New String[]
-
-
+Private $iFirstVisible As Integer
+Private $iPrevIndex As Integer
+Event Activate
+Event Change
+Class Rect
 
 Private Function List_Read() As String[]
-
   
-
+  Return $aList
+  
 End
 
 Private Sub List_Write(Value As String[])
-
   
-
+  $aList = Value
+  
 End
 
 Private Function Index_Read() As Integer
-
   
-
+  Return $iIndex
+  
 End
 
 Private Sub Index_Write(Value As Integer)
 
+  Dim iNewIndex As Integer
+  iNewIndex = Min($aList.Max, Max(0, Value))
+  If iNewIndex <> $iIndex Then
+    $iPrevIndex = $iIndex
+    $iIndex = iNewIndex
+    EnsureVisible
+  Endif
   
-
 End
 
 Private Function Count_Read() As Integer
-
   
+  Return $aList.Count
+  
+End
 
+Public Sub _Render()
+  
+  Dim hAttr As New Attr
+  Dim iAttr, iAttr2 As Integer
+  Dim i, il, k, ilen As Integer
+  Dim s As String
+  Dim hRectC As Rect = Me._GetClientRect()
+  Dim hRect As Rect = Me._GetClientRect()
+  Dim iCursorPos As Integer
+
+  If Not Me._NeedRender Then Return
+  Super._Render
+  
+  hAttr.FillFrom(Me._Content[0][0].Attr)
+  
+  Swap hAttr.Background, hAttr.Foreground
+  iAttr = hAttr.GetInteger()
+  k = $iFirstVisible
+  For i = 0 To Me._Content.Max
+    If k > $aList.Max Then Break
+    s = $aList[k]
+    ilen = String.Len(s)
+    For il = 0 To IIf(k = $iIndex, hRect.width - 2, Min(hRect.width - 2, ilen))
+      'iAttr = Me._Content[i][il].
+      If k = $iIndex Then Me._Content[i][il].Attr = iAttr
+      If il < ilen Then Me._Content[i][il].c = String.Code(String.Mid(s, il + 1, 1))
+    Next
+    
+    Inc k
+  Next
+  
+  ilen = Me._Content[0].Max 
+  'Render the scrollbar
+  For i = 1 To Me._Content.Max - 2
+    Me._Content[i][ilen].c = &H2591
+  Next
+  Me._Content[0][ilen].c = &H25B2
+  Me._Content[Me._Content.Max - 1][ilen].c = &H25BC
+  
+  hAttr.Foreground = TermColor.Black
+  iAttr = hAttr.GetInteger()
+  iCursorPos = ($iFirstVisible + hRect.height) / $aList.Count * (hRect.Height - 3)
+  Try Me._Content[iCursorPos][hRect.width - 1] = Char(String.Chr(&H2588), iAttr)
+  
+  Me._NeedRender = False
+Fin:
+  
+End
+
+Public Sub _KeyPress()
+  
+  Select Key.Code
+    Case Key.Up
+      Dec Me.Index
+      Raise Change
+    Case Key.Down
+      Inc Me.Index
+      Raise Change
+    Case Key.Return, Key.Enter
+      Raise Activate
+      
+    Default
+      
+  End Select
+  Super._KeyPress
+
+End
+
+Public Sub _MouseDown()
+  
+  Super._MouseDown
+  Me.Index = $iFirstVisible + Mouse.Row
+  Raise Change
+  'EnsureVisible
+
+End
+
+Public Sub _MouseUp()
+
+  Super._MouseUp
+  Raise Activate
+  Raise Click
+  
+End
+
+Public Sub _MouseMove()
+
+  Super._MouseMove
+  _MouseDown
+  
+End
+
+Public Sub EnsureVisible()
+  
+  Dim hRect As Rect
+  Dim hRectSc As Rect 
+  
+  If IsVisible($iIndex) Then 
+    hRectSC = Me._GetScreenClientRect()
+    Me.Refresh(Rect(hRectSc.X, GetRowByIndex($iPrevIndex), hRectSc.Width, 1))
+    Me.Refresh(Rect(hRectSc.X, GetRowByIndex($iIndex), hRectSc.Width, 1))
+    Return
+  Endif
+  
+  hRect = Me._GetClientRect()
+  If $iFirstVisible + (hRect.Height - 1) < $iIndex Then
+    $iFirstVisible = $iIndex - hRect.Height + 1
+  Endif
+  If $iIndex < $iFirstVisible Then 
+    $iFirstVisible = $iIndex
+  Endif
+  Me.Refresh
+  
+End
+
+Public Sub _put(Value As String, Index As Integer)
+
+  Dim hRect As Rect = Me._GetScreenClientRect()
+  $aList[Index] = Value
+  If IsVisible(Index) Then 
+    Me.Refresh(Rect(hRect.X, hRect.Y + GetRowByIndex(Index), hRect.Width, 1))
+  Endif
+
+End
+
+Public Function _get(Index As Integer) As String
+  
+  Return $aList[Index]
+  
+End
+
+Private Sub IsVisible(Index As Integer) As Boolean
+  
+  If Index >= $iFirstVisible And If Index < $iFirstVisible + Me._ClientHeight Then Return True
+  
+End
+
+Private Function Text_Read() As String
+  
+  Return $aList[$iIndex]
+  
+End
+
+Private Function GetRowByIndex(Index As Integer) As Integer
+  
+  Return Index - $iFirstVisible
+  
 End

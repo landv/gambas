@@ -4,7 +4,7 @@
 
   gb.media component
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -336,6 +336,34 @@ static void return_value(const GValue *value)
 				
 				GB.ReturnObject(array);
 			}
+#ifdef G_TYPE_VALUE_ARRAY
+			else if (G_VALUE_HOLDS(value, G_TYPE_VALUE_ARRAY))
+			{
+				GValueArray *garray = (GValueArray *)g_value_get_boxed(value);
+				guint len = garray->n_values;
+				GB_ARRAY array;
+				
+				GB.Array.New(&array, GB_T_VARIANT, len);
+				
+				if (len <= 0)
+				{
+					GB.Array.New(&array, GB_T_VARIANT, 0);
+				}
+				else
+				{
+					GB_VALUE val;
+					int i;
+					for (i = 0; i < len; i++)
+					{
+						to_gambas_value(g_value_array_get_nth(garray, i), &val);
+						GB.Store(GB_T_VARIANT, &val, GB.Array.Get(array, i));
+						GB.ReleaseValue(&val);
+					}
+				}
+				
+				GB.ReturnObject(array);
+			}
+#endif
 			else
 			{
 				fprintf(stderr, "gb.media: warning: unsupported datatype: %s\n", G_VALUE_TYPE_NAME(value));
@@ -498,11 +526,13 @@ GB_IMG *MEDIA_get_image_from_sample(GstSample *sample, bool convert)
 	switch (IMAGE.GetDefaultFormat())
 	{
 		case GB_IMAGE_BGRA:
+		case GB_IMAGE_BGRP:
 			format = "BGR";
 			gb_format = GB_IMAGE_BGR;
 			break;
 
 		case GB_IMAGE_RGBA:
+		case GB_IMAGE_RGBP:
 			format = "RGB";
 			gb_format = GB_IMAGE_RGB;
 			break;

@@ -158,6 +158,7 @@ Private Sub DrawItem(hCtrl As Control, sAction As String, bScreenshot As Boolean
   Dim sText As String
   Dim W As Integer
   Dim bText As Boolean
+  Dim H As Integer
   
   'If hItem.Tag Then hAction = MAction.Actions[hItem.Tag]
   bText = Draw.W > Draw.H
@@ -172,6 +173,7 @@ Private Sub DrawItem(hCtrl As Control, sAction As String, bScreenshot As Boolean
   Endif
   
   Draw.Foreground = hCtrl.Foreground
+  Draw.Font = hCtrl.Font
   
   hAction = MAction.Actions[sAction]
   
@@ -179,12 +181,13 @@ Private Sub DrawItem(hCtrl As Control, sAction As String, bScreenshot As Boolean
     
     hIcon = hAction.GetConfigIcon(If(bScreenshot, $hForm.GetRealIconSize(), 0))
     If hIcon Then 
+      H = Stock.GetSize("small")
       If bText Then
-        Draw.Picture(hIcon, 8, (Draw.H - hIcon.H) / 2)
+        Draw.Picture(hIcon, 8, (Draw.H - H) / 2, H, H)
       Else
-        Draw.Picture(hIcon, (Draw.W - hIcon.W) / 2, (Draw.H - hIcon.H) / 2)
+        Draw.Picture(hIcon, (Draw.W - H) / 2, (Draw.H - H) / 2, H, H)
       Endif
-      W = hIcon.W
+      W = H
     Else
       W = $hForm.GetIconSize()
     Endif

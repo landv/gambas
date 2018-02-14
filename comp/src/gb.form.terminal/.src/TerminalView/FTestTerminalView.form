@@ -1,18 +1,18 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,150,97)
+  MoveScaled(0,0,140,55)
   Icon = Picture["terminalview.png"]
   Arrangement = Arrange.Vertical
   { TerminalView1 TerminalView
-    MoveScaled(6,1,59,52)
+    MoveScaled(6,1,59,32)
     Font = Font["Gambas,10"]
     Expand = True
     Border = False
     Limit = 0
   }
   { Panel1 HBox
-    MoveScaled(2,55,120,5)
+    MoveScaled(2,45,120,5)
     { TextBox1 TextBox
       MoveScaled(1,0,43,5)
       Expand = True
@@ -43,7 +43,7 @@
     }
   }
   { Timer1 #Timer
-    #MoveScaled(4,63)
+    #MoveScaled(87,14)
     Delay = 50
   }
 }

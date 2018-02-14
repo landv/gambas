@@ -2,7 +2,7 @@
 
   gbx_c_array.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -953,7 +953,7 @@ BEGIN_METHOD(Array_Sort, GB_INTEGER mode)
 
 	if (THIS->count > 1)
 	{
-		compare = COMPARE_get(THIS->type, mode);
+		compare = COMPARE_get_func(THIS->type, mode);
 		qsort(data, THIS->count, THIS->size, compare);
 	}
 
@@ -964,7 +964,7 @@ END_METHOD
 
 static int find(CARRAY *_object, int mode, void *value, int start)
 {
-	COMPARE_FUNC compare = COMPARE_get(THIS->type, mode);
+	COMPARE_FUNC compare = COMPARE_get_func(THIS->type, mode);
 	int i;
 
 	if (start < 0)
@@ -1133,11 +1133,12 @@ static int find_string(CARRAY *_object, int mode, const char *value, int len_val
 	}
 	else
 	{
-		COMPARE_FUNC compare = COMPARE_get(THIS->type, mode);
+		COMPARE_STRING_FUNC compare = COMPARE_get_string_func(mode);
+		bool nocase = mode & GB_COMP_NOCASE;
 		
 		for (i = start; i < THIS->count; i++)
 		{
-			if ((*compare)(&data[i], &value) == 0)
+			if ((*compare)(data[i], STRING_length(data[i]), value, len_value, nocase, FALSE) == 0)
 				return i;
 		}
 	}
@@ -1499,11 +1500,9 @@ BEGIN_METHOD_VOID(ArrayOfStruct_next)
 
 END_METHOD
 
-static CARRAY *_converted_array;
-
-static void error_convert()
+static void error_convert(CARRAY *array)
 {
-	OBJECT_UNREF(_converted_array);
+	OBJECT_UNREF(array);
 }
 
 static bool _convert(CARRAY *src, CLASS *class, VALUE *conv)
@@ -1519,17 +1518,17 @@ static bool _convert(CARRAY *src, CLASS *class, VALUE *conv)
 	
 	CLASS_load(class); // Force creation of array classes
 	
-	if (!class->is_array) //CLASS_inherits(class, CLASS_Array))
+	if (!class->is_array)
 		return TRUE;
 	
-	_converted_array = array = OBJECT_create(class, NULL, NULL, 0);
+	array = OBJECT_create(class, NULL, NULL, 0);
 	
 	if (src->count)
 	{
 		ARRAY_add_many_void(&array->data, src->count);
 		array->count = src->count;
 		
-		ON_ERROR(error_convert)
+		ON_ERROR_1(error_convert, array)
 		{
 			for (i = 0; i < src->count; i++)
 			{

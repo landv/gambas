@@ -2,7 +2,7 @@
 
   gbx_c_process.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -150,6 +150,7 @@ static void remove_process_from_running_list(CPROCESS *process)
 		_running_process_list = process->next;
 
 	process->running = FALSE;
+	
 	_running_process--;
 	if (process->ignore)
 		_ignore_process--;
@@ -226,7 +227,7 @@ static void update_stream(CPROCESS *process)
 
 static void init_process(CPROCESS *process)
 {
-	process->watch = GB_WATCH_NONE;
+	//process->watch = GB_WATCH_NONE;
 	process->in = process->out = process->err = -1;
 	update_stream(process);
 }
@@ -246,7 +247,7 @@ static void exit_process(CPROCESS *_object)
 
 	close_fd(&THIS->out);
 	close_fd(&THIS->err);
-
+	
 	STREAM_close(&THIS->ob.stream);
 }
 
@@ -405,19 +406,21 @@ static void abort_child(int error)
 static void init_child_tty(int fd)
 {
 	struct termios terminal = { 0 };
+	struct termios check;
+	
 	tcgetattr(fd, &terminal);
 
-	terminal.c_iflag |= ICRNL | IXON | IXOFF;
+	terminal.c_iflag |= IXON | IXOFF | ICRNL;
 	#ifdef IUTF8
 	if (LOCAL_is_UTF8)
 		terminal.c_iflag |= IUTF8;
 	#endif
 
 	terminal.c_oflag |= OPOST;
-	terminal.c_oflag &= ~ONLCR;
+	//terminal.c_oflag &= ~ONLCR;
 
-	terminal.c_lflag |= ISIG | ICANON | IEXTEN; // | ECHO;
-	terminal.c_lflag &= ~ECHO;
+	terminal.c_lflag |= ISIG | ICANON | IEXTEN | ECHO;
+	///terminal.c_lflag &= ~ECHO;
 
 	#ifdef DEBUG_CHILD
 	fprintf(stderr, "init_child_tty: %s\n", isatty(fd) ? ttyname(fd) : "not a tty!");
@@ -432,6 +435,10 @@ static void init_child_tty(int fd)
 		#endif
 		abort_child(CHILD_CANNOT_INIT_TTY);
 	}
+	
+	tcgetattr(fd, &check);
+	if (check.c_iflag != terminal.c_iflag || check.c_oflag != terminal.c_oflag || check.c_lflag != terminal.c_lflag)
+		abort_child(CHILD_CANNOT_INIT_TTY);
 }
 
 const char *CPROCESS_search_program_in_path(char *name)
@@ -596,6 +603,18 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		#ifdef DEBUG_ME
 		fprintf(stderr, "run_process: slave = %s\n", slave);
 		#endif
+		
+		if (mode & PM_TERM)
+		{
+			if (tcgetattr(fd_master, &termios_master))
+				goto __ABORT_ERRNO;
+
+			cfmakeraw(&termios_master);
+			//termios_master.c_lflag &= ~ECHO;
+
+			if (tcsetattr(fd_master, TCSANOW, &termios_master))
+				goto __ABORT_ERRNO;
+		}
 	}
 	else
 	{
@@ -645,18 +664,6 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		#ifdef DEBUG_ME
 		fprintf(stderr, "fork: pid = %d\n", pid);
 		#endif
-
-		if (mode & PM_TERM)
-		{
-			if (tcgetattr(fd_master, &termios_master))
-				goto __ABORT_ERRNO;
-
-			cfmakeraw(&termios_master);
-			//termios_master.c_lflag &= ~ECHO;
-
-			if (tcsetattr(fd_master, TCSANOW, &termios_master))
-				goto __ABORT_ERRNO;
-		}
 
 		if (mode & PM_WRITE)
 		{
@@ -725,6 +732,8 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 			fd_slave = open(slave, O_RDWR);
 			if (fd_slave < 0)
 				abort_child(CHILD_CANNOT_OPEN_TTY);
+			
+			init_child_tty(fd_slave);
 
 			/*#ifdef DEBUG_ME
 			fprintf(stderr, "run_process (child): slave = %s isatty = %d\n", slave, isatty(fd_slave));
@@ -747,10 +756,10 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 			// Terminal initialization must be done on STDIN_FILENO after using dup2().
 			// If it is done on fd_slave, before using dup2(), it sometimes fails with no error.
 
-			if (mode & PM_WRITE)
+			/*if (mode & PM_WRITE)
 				init_child_tty(STDIN_FILENO);
 			else if (mode & PM_READ)
-				init_child_tty(STDOUT_FILENO);
+				init_child_tty(STDOUT_FILENO);*/
 
 			/*puts("---------------------------------");
 			if (stdin_isatty) puts("STDIN is a tty");*/
@@ -830,6 +839,10 @@ void CPROCESS_check(void *_object)
 	usleep(100);
 	if (wait_child(THIS))
 	{
+		#ifdef DEBUG_ME
+		fprintf(stderr, "CPROCESS_check: stop process later\n");
+		#endif
+		stop_process_after(THIS);
 		EVENT_post(stop_process, (intptr_t)THIS);
 		throw_last_child_error();
 	}
@@ -841,13 +854,18 @@ static bool wait_child(CPROCESS *process)
 {
 	int status;
 
+	#ifdef DEBUG_ME
+	fprintf(stderr, "wait_child: check process %d\n", process->pid);
+	#endif
+
 	if (wait4(process->pid, &status, WNOHANG, NULL) == process->pid)
 	{
 		process->status = status;
+		process->wait = TRUE;
 		_last_status = status;
 
 		#ifdef DEBUG_ME
-		fprintf(stderr, "Process %d has returned %d\n", process->pid, status);
+		fprintf(stderr, "wait_child: process %d has returned %d\n", process->pid, status);
 		#endif
 
 		return TRUE;
@@ -919,21 +937,19 @@ static void exit_child(void)
 }
 
 
-static CPROCESS *_CPROCESS_create_process;
-
-static void error_CPROCESS_create()
+static void error_CPROCESS_create(CPROCESS *process)
 {
-	OBJECT_UNREF(_CPROCESS_create_process);
+	OBJECT_UNREF(process);
 }
 
 CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 {
 	CPROCESS *process;
 
-	_CPROCESS_create_process = process = OBJECT_new(CLASS_Process, name, OP  ? (OBJECT *)OP : (OBJECT *)CP);
+	process = OBJECT_new(CLASS_Process, name, OP  ? (OBJECT *)OP : (OBJECT *)CP);
 	//fprintf(stderr, "CPROCESS_create: %p\n", process);
 
-	ON_ERROR(error_CPROCESS_create)
+	ON_ERROR_1(error_CPROCESS_create, process)
 	{
 		init_process(process);
 		run_process(process, mode, cmd, env);
@@ -948,11 +964,6 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 	return process;
 }
 
-static void error_CPROCESS_wait_for(CPROCESS *process)
-{
-	OBJECT_UNREF(process);
-}
-
 void CPROCESS_wait_for(CPROCESS *process, int timeout)
 {
 	int ret;
@@ -961,12 +972,18 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 	#ifdef DEBUG_ME
 	fprintf(stderr, "Waiting for %d\n", process->pid);
 	#endif
+	
+	// If CPROCESS_check() catched the process end, process->running is not set yet, because 
+	// stop_process() will be raised at the next event loop. So no need to wait for it.
+	
+	if (process->wait)
+		return;
 
 	OBJECT_REF(process);
 
 	sigfd = SIGNAL_get_fd();
 
-	ON_ERROR_1(error_CPROCESS_wait_for, process)
+	ON_ERROR_1(error_CPROCESS_create, process)
 	{
 		while (process->running)
 		{
@@ -975,7 +992,7 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 			#endif
 			ret = WATCH_process(sigfd, process->out, timeout);
 			#ifdef DEBUG_ME
-			fprintf(stderr, "Watch process %d -> %d\n", process->pid, ret);
+			fprintf(stderr, "Watch process %d ->%s%s%s\n", process->pid, ret & WP_END ? " END" : "", ret & WP_OUTPUT ? " OUTPUT" : "", ret & WP_TIMEOUT ? " TIMEOUT" : "");
 			#endif
 
 			if (ret & WP_OUTPUT)
@@ -1273,7 +1290,7 @@ GB_DESC NATIVE_Process[] =
 	GB_METHOD("CloseInput", NULL, Process_CloseInput, NULL),
 
 	GB_PROPERTY("Ignore", "b", Process_Ignore),
-
+	
 	/*GB_METHOD("Exec", NULL, Process_Exec, "(Command)String[];[(Mode)i(Environment)String[];]"),
 	GB_METHOD("Shell", NULL, Process_Shell, "(Command)s;[(Mode)i(Environment)String[];]"),*/
 	

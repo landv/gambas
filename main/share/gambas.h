@@ -2,7 +2,7 @@
 
   gambas.h
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -743,7 +743,6 @@ typedef
 		int (*open)(struct GB_STREAM *stream, const char *path, int mode, void *data);
 		int (*close)(struct GB_STREAM *stream);
 		int (*read)(struct GB_STREAM *stream, char *buffer, int len);
-		int (*getchar)(struct GB_STREAM *stream, char *buffer);
 		int (*write)(struct GB_STREAM *stream, char *buffer, int len);
 		int (*seek)(struct GB_STREAM *stream, int64_t pos, int whence);
 		int (*tell)(struct GB_STREAM *stream, int64_t *pos);
@@ -977,6 +976,7 @@ typedef
 		bool (*ExistClassLocal)(const char *);
 		GB_CLASS (*FindClassLocal)(const char *);
 		GB_TYPE (*GetArrayType)(GB_CLASS);
+		GB_CLASS (*GetArrayClass)(GB_CLASS);
 		bool (*Is)(void *, GB_CLASS);
 		void (*Ref)(void *);
 		void (*Unref)(void **);
@@ -1105,6 +1105,7 @@ typedef
 			void (*HasForked)(void);
 			bool (*Debug)(void);
 			char *(*Home)(void);
+			int (*TimeZone)(void);
 			}
 		System;
 
@@ -1134,12 +1135,12 @@ typedef
 			void (*Remove)(GB_HASHTABLE, const char *, int);
 			bool (*Get)(GB_HASHTABLE, const char *, int, void **);
 			void (*Enum)(GB_HASHTABLE, GB_HASHTABLE_ENUM_FUNC);
+			bool (*First)(GB_HASHTABLE, void **);
 			}
 		HashTable;
 
 		struct {
 			GB_STREAM *(*Get)(void *object);
-			void (*SetBytesRead)(GB_STREAM *stream, int length);
 			void (*SetSwapping)(GB_STREAM *stream, int swap);
 			void (*SetAvailableNow)(GB_STREAM *stream, int available_now);
 			bool (*Block)(GB_STREAM *stream, int block);

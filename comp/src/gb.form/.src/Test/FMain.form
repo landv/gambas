@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,64,64)
+  MoveScaled(0,0,100,72)
   { Menu1 Menu
     { Menu2 Menu
       Text = ("Menu2")
@@ -11,23 +11,51 @@
     }
   }
   { SidePanel1 SidePanel
-    MoveScaled(1,1,29,61)
+    MoveScaled(0,3,29,61)
     Orientation = Align.Left
     { DirView1 DirView
       MoveScaled(2,2,25,32)
       PopupMenu = "Menu1"
     }
     { TreeView1 TreeView
-      MoveScaled(2,43,16,16)
+      MoveScaled(2,41,20,16)
       PopupMenu = "Menu1"
     }
   }
   { DirView2 DirView
-    MoveScaled(36,3,16,16)
+    MoveScaled(40,11,16,16)
     PopupMenu = "Menu1"
   }
   { TreeView2 TreeView
-    MoveScaled(36,45,16,16)
+    MoveScaled(32,30,21,26)
     PopupMenu = "Menu1"
+  }
+  { ColorButton1 ColorButton
+    MoveScaled(62,5,19,5)
+  }
+  { ComboBox1 ComboBox
+    MoveScaled(61,23,32,3)
+    List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
+    Text = ("ComboBox1")
+  }
+  { ComboBox2 ComboBox
+    MoveScaled(61,30,32,5)
+    Text = ("ComboBox2")
+  }
+  { TextBox1 TextBox
+    MoveScaled(61,37,32,4)
+    Background = &HBFBF8F&
+    Text = ("TextBox1")
+  }
+  { Button1 Button
+    MoveScaled(61,45,19,4)
+    Text = ("Button1")
+  }
+  { MenuButton1 MenuButton
+    MoveScaled(62,14,23,6)
+    Text = ("MenuButton1")
+  }
+  { DateBox1 DateBox
+    MoveScaled(62,53,28,5)
   }
 }

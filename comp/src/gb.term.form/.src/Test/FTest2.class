@@ -1,0 +1,61 @@
+' Gambas class file
+
+Inherits TermForm
+Private aList As New String[]
+Private hTim As New Timer As "Tim"
+Private hList As TermListBox
+Private k As Integer
+ Private hLbl As TermLabel
+
+Public Sub _new()
+  Dim i As Integer
+'aList = ["Chien", "Chat", "Eléphant", "Hiène", "Phoque", "Canard", "Hippoppo"]
+  Me.Spacing = 1
+  
+   hList = New TermListBox(Me) As "ListBox1"
+   hLbl = New TermLabel(Me)
+   
+  For i = 1 To 200
+    aList.Add("Item" & i)
+  Next
+  'hList._Shadow = True
+  hList.List = aList
+  Me.Move(0, 0, 60, 20)
+  Me._Arrangement = Arrange.Vertical
+  hList.Move(1, 1, 3, 3)
+  'Me._Arrangement = Arrange.Fill
+  hList.Expand = True
+  Me.Border = 0
+  hList.Background = termColor.Blue
+  Me.Center
+  Me.Show
+  'Me.Title = "Test 1"
+  Me.Maximized = True
+  hTim.Delay = 500
+  hTim.Start
+  
+  hLbl.Background = TermColor.Green
+  hLbl.Foreground = TermColor.Black
+  TermWindows.Debug = TermWindows.DebugOutput
+End
+
+
+Public Sub tim_Timer()
+  
+  'hList[5] = k
+  Inc k
+End
+
+
+Public Sub ListBox1_Change()
+  
+  hLbl.Text = Last.Text
+  
+End
+
+Public Sub Form_close()
+  
+  hTim.Stop
+  
+End
+

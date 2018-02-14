@@ -154,7 +154,8 @@ Public Sub _Render()
       hattr.Background = bg
       hChar.Attr = hattr.GetInteger()
       hChar.c = &H2580
-      Try Me._Content[hClientRect.Top + y / 2][hClientRect.Left + x] = hChar
+      'Try
+       Me._Content[hClientRect.Top + y / 2][hClientRect.Left + x] = hChar
     Next
   Next
 

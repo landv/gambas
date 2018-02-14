@@ -2,7 +2,7 @@
 
   CHighlight.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -210,7 +210,7 @@ static void analyze(const char *src, int len_src, bool rewrite, int state)
 	_analyze_text = result.str;
 }
 
-BEGIN_METHOD_VOID(CHIGHLIGHT_exit)
+BEGIN_METHOD_VOID(Highlight_exit)
 
 	GB.Unref(&_analyze_symbol);
 	GB.Unref(&_analyze_type);
@@ -222,7 +222,7 @@ END_METHOD
 
 
 
-BEGIN_METHOD(CHIGHLIGHT_purge, GB_STRING text; GB_BOOLEAN comment; GB_BOOLEAN string)
+BEGIN_METHOD(Highlight_Purge, GB_STRING text; GB_BOOLEAN comment; GB_BOOLEAN string)
 
 	bool comment = VARGOPT(comment, FALSE);
 	bool string = VARGOPT(string, FALSE);
@@ -234,32 +234,32 @@ BEGIN_METHOD(CHIGHLIGHT_purge, GB_STRING text; GB_BOOLEAN comment; GB_BOOLEAN st
 
 END_METHOD
 
-BEGIN_METHOD(CHIGHLIGHT_analyze, GB_STRING text; GB_BOOLEAN rewrite; GB_INTEGER state)
+BEGIN_METHOD(Highlight_Analyze, GB_STRING text; GB_BOOLEAN rewrite; GB_INTEGER state)
 
 	analyze(STRING(text), LENGTH(text), VARGOPT(rewrite, FALSE), VARGOPT(state, HIGHLIGHT_NORMAL));
 	GB.ReturnObject(_analyze_symbol);
 
 END_METHOD
 
-BEGIN_PROPERTY(CHIGHLIGHT_analyze_symbols)
+BEGIN_PROPERTY(Highlight_Symbols)
 
 	GB.ReturnObject(_analyze_symbol);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CHIGHLIGHT_analyze_types)
+BEGIN_PROPERTY(Highlight_Types)
 
 	GB.ReturnObject(_analyze_type);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CHIGHLIGHT_analyze_positions)
+BEGIN_PROPERTY(Highlight_Positions)
 
 	GB.ReturnObject(_analyze_pos);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CHIGHLIGHT_analyze_text)
+BEGIN_PROPERTY(Highlight_TextAfter)
 
 	GB.ReturnString(_analyze_text);
 
@@ -294,15 +294,17 @@ GB_DESC CHighlightDesc[] =
 	GB_CONSTANT("Error", "i", HIGHLIGHT_ERROR),
 	GB_CONSTANT("Help", "i", HIGHLIGHT_HELP),
 	GB_CONSTANT("Preprocessor", "i", HIGHLIGHT_PREPROCESSOR),
+	GB_CONSTANT("Custom", "i", HIGHLIGHT_NUM_COLOR),
+	
 	GB_STATIC_PROPERTY_READ("Alternate", "i", Highlight_Alternate),
 	
-	GB_STATIC_METHOD("_exit", NULL, CHIGHLIGHT_exit, NULL),
-	GB_STATIC_METHOD("Analyze", "String[]", CHIGHLIGHT_analyze, "(Code)s[(Rewrite)b(State)i]"),
-	GB_STATIC_PROPERTY_READ("Symbols", "String[]", CHIGHLIGHT_analyze_symbols),
-	GB_STATIC_PROPERTY_READ("Types", "Integer[]", CHIGHLIGHT_analyze_types),
-	GB_STATIC_PROPERTY_READ("Positions", "Integer[]", CHIGHLIGHT_analyze_positions),
-	GB_STATIC_PROPERTY_READ("TextAfter", "s", CHIGHLIGHT_analyze_text),
-	GB_STATIC_METHOD("Purge", "s", CHIGHLIGHT_purge, "(Code)s[(Comment)b(String)b]"),
+	GB_STATIC_METHOD("_exit", NULL, Highlight_exit, NULL),
+	GB_STATIC_METHOD("Analyze", "String[]", Highlight_Analyze, "(Code)s[(Rewrite)b(State)i]"),
+	GB_STATIC_PROPERTY_READ("Symbols", "String[]", Highlight_Symbols),
+	GB_STATIC_PROPERTY_READ("Types", "Integer[]", Highlight_Types),
+	GB_STATIC_PROPERTY_READ("Positions", "Integer[]", Highlight_Positions),
+	GB_STATIC_PROPERTY_READ("TextAfter", "s", Highlight_TextAfter),
+	GB_STATIC_METHOD("Purge", "s", Highlight_Purge, "(Code)s[(Comment)b(String)b]"),
 
 	GB_END_DECLARE
 };

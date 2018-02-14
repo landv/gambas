@@ -128,17 +128,23 @@ static void destroy_watch_list(WATCH_LIST *list)
 
 static void exit_inotify(void)
 {
+	WATCH_LIST *list;
+	int fd = _ino.fd; // prevent a recursion
+	
 	if (_ino.fd < 0)
 		return;
+	
+	_ino.fd = -1;
 	
 #if DEBUG_ME
 	fprintf(stderr, "exit_inotify\n");
 #endif
 	
-	GB.HashTable.Enum(_ino.watches, (GB_HASHTABLE_ENUM_FUNC)destroy_watch_list);
-	GB.Watch(_ino.fd, GB_WATCH_NONE, NULL, 0);
-	close(_ino.fd);
-	_ino.fd = -1;
+	while (!GB.HashTable.First(_ino.watches, (void **)&list))
+		destroy_watch_list(list);
+	
+	GB.Watch(fd, GB_WATCH_NONE, NULL, 0);
+	close(fd);
 	GB.HashTable.Free(&_ino.watches);
 }
 

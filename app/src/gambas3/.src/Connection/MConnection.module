@@ -21,10 +21,12 @@ Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Opt
     hConn.Host = hConfig["Connection/Host"]
     hConn.Port = hConfig["Connection/Port"]
     hConn.User = hConfig["Connection/User"]
-    If sPassword Then 
-      hConn.Password = sPassword
-    Else
-      hConn.Password = LoadPassword(sName, hConfig["Connection/RememberPassword"])
+    If Not hConfig["Connection/NoPassword"] Then
+      If sPassword Then 
+        hConn.Password = sPassword
+      Else
+        hConn.Password = LoadPassword(sName, hConfig["Connection/RememberPassword"])
+      Endif
     Endif
   Endif
   
@@ -413,7 +415,7 @@ Public Sub CheckPassword(sPath As String) As Boolean
   
   hConfig = New Settings(sPath)
   InitFrom(hConn, hConfig, File.BaseName(sPath))
-  If NeedPassword(hConn.Type) And If Not hConn.Password Then 
+  If NeedPassword(hConn.Type) And If Not hConfig["Connection/NoPassword"] And If Not hConn.Password Then 
     bRet = FNewConnection.Run(sPath, True)
   Endif
   

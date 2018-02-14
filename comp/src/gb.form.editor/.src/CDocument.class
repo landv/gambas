@@ -1,17 +1,19 @@
 ' Gambas class file
 
-Event Fake
+Event _Fake
 
 Property Text As String
 Property Read Count As Integer
 Property Read Max As Integer
 Property Read Current As TextEditor
 Property Highlight As String
+Property Mode As String
 Property Read Length As Integer
 Property Read Keywords As String[]
 Property Breakpoints As Integer[]
 Property Bookmarks As Integer[]
 Property EndOfLine As Integer
+Property CloseBraces As Boolean
 
 Public Lines As String[]
 Public LinesInfo As CLineInfo[]
@@ -33,11 +35,16 @@ Private $cHighlightLater As Collection
 Private $iNoHighlight As Integer
 Private $iBegin As Integer
 
+Public _Mode As TextEditorMode
+Private $sMode As String
+Private $bCloseBraces As Boolean
+
 Private $iEndOfLine As Integer = gb.Unix
 Private $sEndOfLine As String = "\n"
 
 Public Sub _new()
   
+  _Mode = New TextEditorMode 
   Clear
   
 End
@@ -854,6 +861,7 @@ Public Sub HighlightFrom(Y As Integer)
   Dim bCustom As Boolean
   Dim bRefresh As Boolean
   Dim bBegin As Boolean
+  Dim bEndOfLine As Boolean
   
   If $bHighlighting Then Return
   
@@ -887,7 +895,6 @@ Public Sub HighlightFrom(Y As Integer)
       With Info(Y - 1)
         TextHighlighter.State = .State
         TextHighlighter.Tag = .Tag
-        TextHighlighter.Alternate = .Alternate
       End With
     Endif
     TextHighlighter.Limit = False
@@ -918,7 +925,8 @@ Public Sub HighlightFrom(Y As Integer)
       If TextHighlighter.TextAfter And If Lines[Y] <> TextHighlighter.TextAfter Then
         If Not bBegin Then
           bBegin = True
-          Me.Current._SaveCursor
+          bEndOfLine = Me.Current.Column >= LineLength[Me.Current.Line]
+          Me.Current.SaveCursor
           Begin()
         Endif
         Me.Current.Goto(0, Y)
@@ -944,7 +952,8 @@ Public Sub HighlightFrom(Y As Integer)
   Loop
 
   If bBegin Then 
-    Me.Current._RestoreCursor
+    Me.Current.RestoreCursor
+    If bEndOfLine Then Me.Current.Goto(-1, Me.Current.Line)
     End()
   Endif
 
@@ -1335,5 +1344,66 @@ Public Sub HasLimit(Y As Integer) As Boolean
   
   Endif
     
+End
+
+
+Private Function Mode_Read() As String
+
+  Return $sMode
+
+End
+
+Private Sub Mode_Write(Value As String)
+
+  Value = LCase(Value)
+  If Value And If Value <> "none" Then
+    If Value == "c++" Then Value = "cplusplus"
+    _Mode = TextEditorMode[Value]
+  Else
+    _Mode = New TextEditorMode
+  Endif
+  
+  Highlight_Write(Value)
+  
+  _Mode.CloseBraces = $bCloseBraces
+  $sMode = Value
+
+End
+
+Private Function CloseBraces_Read() As Boolean
+
+  Return $bCloseBraces
+
+End
+
+Private Sub CloseBraces_Write(Value As Boolean)
+
+  $bCloseBraces = Value
+  _Mode.CloseBraces = Value
+
+End
+
+Public Sub GetIndentText(iStart As Integer, iEnd As Integer) As String
+
+  Dim iLine As Integer
+  Dim sLine As String
+  Dim sIndent As String
+  Dim sResult As String
+
+  For iLine = iStart To iEnd - 1
+    sLine = Lines[iLine]
+    If LTrim(sLine) Then
+      sIndent = Left(sLine, Len(sLine) - Len(LTrim(sLine)))
+      If Not sResult Then
+        sResult = sIndent
+      Else If sIndent Begins sResult Then
+      Else
+        Return
+      Endif
+    Endif
+  Next
+
+  Return sResult
+
 End
 

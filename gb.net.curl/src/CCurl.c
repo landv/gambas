@@ -3,7 +3,7 @@
   CCurl.c
 
   (c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -162,9 +162,7 @@ int CCURL_stream_read(GB_STREAM *stream, char *buffer, int len)
 	GB.FreeString(&THIS->data);
 	THIS->data = new_data;
 
-	GB.Stream.SetBytesRead(stream, len);
-	
-	return 0;
+	return len;
 }
 
 static void raise_event(void *_object, int event)
@@ -569,9 +567,6 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Curl_URL)
 
-	char *url, *tmp;
-	char *protocol;
-	
 	if (READ_PROPERTY)
 	{
 		GB.ReturnString(THIS_URL);
@@ -581,41 +576,7 @@ BEGIN_PROPERTY(Curl_URL)
 	if (CURL_check_active(THIS))
 		return;
 
-	if (PLENGTH() == 0)
-		goto UNKNOWN_PROTOCOL;
-	
-	url = GB.NewString(PSTRING(), PLENGTH());
-	
-	if (GB.Is(THIS, GB.FindClass("FtpClient")))
-	{
-		protocol = CURL_get_protocol(url, "ftp://");
-		if (strcmp(protocol, "ftp://") && strcmp(protocol, "ftps://"))
-			goto UNKNOWN_PROTOCOL;
-	}
-	else if (GB.Is(THIS, GB.FindClass("HttpClient")))
-	{
-		protocol = CURL_get_protocol(url, "http://");
-		if (strcmp(protocol, "http://") && strcmp(protocol, "https://"))
-			goto UNKNOWN_PROTOCOL;
-	}
-	else
-		goto UNKNOWN_PROTOCOL;
-
-	if (strncmp(url, protocol, strlen(protocol)))
-	{
-		tmp = GB.NewZeroString(protocol);
-		tmp = GB.AddString(tmp, url, GB.StringLength(url));
-		GB.FreeString(&url);
-		url = tmp;
-	}
-	
-	GB.FreeString(&THIS_URL);
-	THIS_URL = url;
-	return;
-	
-UNKNOWN_PROTOCOL:
-
-	GB.Error("Unknown protocol");
+	CURL_set_url(THIS, PSTRING(), PLENGTH());
 	
 END_PROPERTY
 

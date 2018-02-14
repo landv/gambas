@@ -2,7 +2,7 @@
 
   CStyle.cpp
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #endif
 
 bool CSTYLE_fix_breeze = false;
+bool CSTYLE_fix_oxygen = false;
 
 static char *_style_name = NULL;
 
@@ -61,6 +62,10 @@ static char *get_style_name()
 		if (CSTYLE_fix_breeze)
 		{
 			_style_name = GB.NewZeroString("Breeze");
+		}
+		else if (CSTYLE_fix_oxygen)
+		{
+			_style_name = GB.NewZeroString("Oxygen");
 		}
 		else
 		{

@@ -22,6 +22,7 @@ Private $sLastURL As String
 Private $hHelp As WebView
 Private $hCurrent As ProjectBox
 Private $iCount As Integer
+Private $bNoFilter As Boolean
 
 Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Optional iArrange As Integer = Arrange.Row)
   
@@ -29,6 +30,8 @@ Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Opt
   $hFilter = hFilter
   $iType = iType
   $iArrange = iArrange
+  
+  $bNoFilter = Not $hFilter.Enabled
   
   $hObserver = New Observer($hFilter) As "Filter"
   $hObsList = New Observer(hList) As "ScrollView"
@@ -86,7 +89,7 @@ Private Sub FillWithExample()
   ' Dim sLastDir As String
   ' Dim hDrawingArea As DrawingArea
   Dim hProjectItem As ProjectBox
-  Dim sGroup As String
+  ' Dim sGroup As String
   Dim aExamples As String[]
   
   Inc Application.Busy
@@ -143,7 +146,7 @@ Private Sub FillWithExample()
       Endif
       hProjectItem.ShowAuthors = True
       hProjectItem.Path = sExample
-      hProjectItem.Group = sGroup
+      'hProjectItem.Group = sGroup
     
     Next
   
@@ -444,7 +447,7 @@ Public Sub ApplyFilter(sFilter As String)
 
   $hList.Arrangement = Arrange.None
   
-  If Not sFilter Then
+  If $bNoFilter Or If Not sFilter Then
     sFilter = "*"
   Else
     sFilter = "*" & String.LCase(sFilter) & "*"
@@ -496,11 +499,10 @@ End
 
 Public Sub dwgTitle_Draw()
   
-  Dim P As Integer
   Dim hDrawingArea As DrawingArea = Last  
   
   Paint.Background = Color.LightForeground
-  Paint.DrawText(hDrawingArea.Tag, 1, 0, Paint.W - P * 2, Paint.H, Align.BottomNormal)
+  Paint.DrawText(hDrawingArea.Tag, 1, 0, Paint.W, Paint.H, Align.BottomNormal)
   
 End
 
@@ -528,6 +530,8 @@ Public Sub ProjectItem_RemoveClick()
   
   Dim hItem As ProjectBox = Last
   Dim sErr As String
+  
+  If $hCurrent = hItem Then $hCurrent = Null
   
   If $iType = TYPE_RECENT Then 
     

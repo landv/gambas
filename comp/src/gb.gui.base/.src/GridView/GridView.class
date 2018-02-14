@@ -705,7 +705,7 @@ Public Sub ScrollArea_Draw()
       Endif
       
       If Not hClip.Intersection(hSpan) Then Goto NEXT_CELL
-        
+      
       hData = _GetCellData(R, C)
       
       Paint.Save
@@ -1421,13 +1421,15 @@ Public Sub MoveTo(Row As Integer, Column As Integer)
   If $iMode = Select.Single Then 
     Raise Select
   Else If $bMoveSelect Or $bMoveUnSelect Then
-    $hRows._RestoreSelection($hMoveOldSelection)
-    S = Min($iRow, $iMoveSelectRow)
-    L = Max($iRow, $iMoveSelectRow) - Min($iRow, $iMoveSelectRow) + 1
-    If $bMoveSelect Then
-      $hRows.Select(S, L)
-    Else
-      $hRows.UnSelect(S, L)
+    If $hMoveOldSelection Then
+      $hRows._RestoreSelection($hMoveOldSelection)
+      S = Min($iRow, $iMoveSelectRow)
+      L = Max($iRow, $iMoveSelectRow) - Min($iRow, $iMoveSelectRow) + 1
+      If $bMoveSelect Then
+        $hRows.Select(S, L)
+      Else
+        $hRows.UnSelect(S, L)
+      Endif
     Endif
   Else If $bKeyEvent And If $iMode = Select.Multiple Then
     $hRows._GetSel().UnSelectAll
@@ -2027,7 +2029,6 @@ Public Sub _GetTextHeight() As Integer
   
 End
 
-
 ' Private Function Mouse_Read() As Integer
 ' 
 '   Return Super.Mouse
@@ -2347,8 +2348,10 @@ End
 
 Public Sub ScrollArea_Font()
   
+  'Debug Me.Name
   $iTextHeight = 0
   $hColumns._Layout
+  $hRows._Clear
   _ResizeContents
   
 End

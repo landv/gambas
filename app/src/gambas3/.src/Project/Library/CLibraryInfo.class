@@ -17,9 +17,29 @@ Private $sDesc As String
 Static Private $cAll As New Collection
 Static Private $sInfo As String
 
+Public Sub Check(sPath As String) As Boolean
+
+  Dim bNotFound As Boolean
+
+  sPath = SolvePath(sPath)
+  If sPath Then
+    bNotFound = False
+  Else
+    bNotFound = True
+  Endif
+  
+  Return bNotFound <> NotFound
+  
+End
+
 Static Public Sub _get(sPath As String) As CLibraryInfo
   
   Dim hLib As CLibraryInfo = $cAll[sPath]
+  
+  If hLib Then
+    If hLib.Check(sPath) Then hLib = Null
+  Endif
+  
   If Not hLib Then 
     hLib = New CLibraryInfo(sPath)
     $cAll[sPath] = hLib
@@ -202,3 +222,4 @@ Static Private Function UserPath_Read() As String
   Return Desktop.DataDir &/ "gambas3/lib"
 
 End
+

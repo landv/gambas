@@ -2,7 +2,7 @@
 
   CImage.cpp
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -195,9 +195,7 @@ BEGIN_METHOD_VOID(CIMAGE_despeckle)
 
 	QImage src(THIS);
 	QImage dest = KImageEffect::despeckle(src);
-	GB_IMAGE img = dest.object();
-
-	GB.ReturnObject(img);
+	GB.ReturnObject(dest.object());
 
 END_METHOD
 

@@ -2,7 +2,7 @@
 
 	gb_error.c
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -570,7 +570,7 @@ void ERROR_panic(const char *error, ...)
 	{
 		ERROR_print();
 	}
-	fprintf(stderr, "** Program aborting. Sorry! :-(\n** Please send a bug report at gambas@users.sourceforge.net\n");
+	fprintf(stderr, "** Program aborting. Sorry! :-(\n** Please send a bug report at g4mba5@gmail.com\n");
 	_exit(1);
 }
 

@@ -23,9 +23,6 @@ Private $sCmdStart As String
 Private $sAddBreakpoint As String
 Private $sRemoveBreakpoint As String
 
-Private $bResult As Boolean
-Private $sResult As String
-
 Private $bIgnoreNextInfo As Boolean
 
 Private $bConsole As Boolean
@@ -773,7 +770,7 @@ Private Sub Start(sCmd As String)
   Dim hForm As Object
   'Dim hEdit As FEditor
   Dim aExec As String[]
-  Dim bValgrind As Boolean '= True
+  Dim bValgrind As Boolean = False
   Dim sTitle As String
   Dim sProg As String
   Dim sBreakpoint As String
@@ -925,8 +922,8 @@ Private Sub Start(sCmd As String)
   
     sProg = Settings["/Terminal"]
     
-    If Not sProg Then
-  
+    If Not sProg Or If Project.CheckProgram(sProg) Then
+    
       Select Case Desktop.Type
       
         Case Like "KDE*"
@@ -946,14 +943,14 @@ Private Sub Start(sCmd As String)
       
       End Select
       
-    Endif
-    
-    If Project.CheckProgram(sProg) Then 
-      sProg = "xterm"
-      If Project.CheckProgram(sProg) Then
-        FMain.ShowWarning(("No terminal emulator found."))
-        sProg = ""
+      If Project.CheckProgram(sProg) Then 
+        sProg = "xterm"
+        If Project.CheckProgram(sProg) Then
+          FMain.ShowWarning(("No terminal emulator found."))
+          sProg = ""
+        Endif
       Endif
+      
     Endif
     
     If Project.RedirectStderr Then
@@ -967,7 +964,8 @@ Private Sub Start(sCmd As String)
   Select Case sProg
   
     Case "konsole"
-      aExec.Insert(["konsole", "--nofork", "--caption", sTitle, "--hold", "--name", Project.Name & "-output", "-e"], 0)
+      '  "--caption", sTitle
+      aExec = ["konsole", "--nofork", "--hold", "--name", Project.Name & "-output", "-e", aExec.Join(" ")]
       
     Case "gnome-terminal"
       ' gnome terminal cannot hold at end
@@ -1207,20 +1205,6 @@ End
 '   ENDIF
 ' 
 ' END
-
-Public Sub Eval(sExpr As String) As String
-
-  $bResult = False  
-  Command("!" & sExpr)
-
-  Wait
-  While Not $bResult
-    Wait 
-  Wend
-  
-  Return $sResult
-  
-End
 
 Public Sub ReadDebugSettings()
   

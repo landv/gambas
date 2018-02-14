@@ -6,23 +6,23 @@ Property Text As String
 Property Alignment As Integer
 
 Private $hTextArea As TextArea
+Private $iPadding As Integer
 
 Public Sub _new(iPadding As Integer)
 
-  Me.Padding = Max(0, iPadding - 1)
-  Me.Arrangement = Arrange.Fill
+  $iPadding = Max(0, iPadding - 1)
   Me.Ignore = True
   Me.Border = Border.Plain
   Me.Background = Color.TextBackground
   
-  $hTextArea = New TextArea(Me)
+  $hTextArea = New TextArea(Me) As "TextArea"
   $hTextArea.ScrollBar = Scroll.None
   $hTextArea.Wrap = True
   $hTextArea.Border = False
   $hTextArea.Background = Color.TextBackground
   
   Me.Proxy = $hTextArea
-
+  
 End
 
 
@@ -51,3 +51,29 @@ Private Sub Alignment_Write(Value As Integer)
   $hTextArea.Alignment = Value
 
 End
+
+Public Sub TextArea_Change()
+  
+  ResizeTextArea
+  
+End
+
+Public Sub TextArea_GotFocus()
+  
+  ResizeTextArea
+  
+End
+
+
+Private Sub ResizeTextArea()
+
+  Dim Y As Integer
+  Dim H As Integer
+
+  Y = Max(1, (Me.H - $hTextArea.Font.TextHeight($hTextArea.Text)) \ 2)
+  H = Me.H - Y * 2
+
+  $hTextArea.Move(1, Y, Me.W - 2, H)
+
+End
+

@@ -2,7 +2,7 @@
 
 Static Public Value As String[]
 
-Static Private $aChoice As String[]
+'Static Private $aChoice As String[]
 Static Private $sTitle As String
 
 Private $bCombo As Boolean
@@ -26,16 +26,16 @@ Public Sub Form_Open()
 
   If $sTitle Then Me.Title = $sTitle
   
-  If $aChoice Then
-    cmbValue.Show
-    cmbValue.List = $aChoice
-    txtValue.Hide
-    $bCombo = True
-  Else
+  ' If $aChoice Then
+  '   cmbValue.Show
+  '   cmbValue.List = $aChoice
+  '   txtValue.Hide
+  '   $bCombo = True
+  ' Else
     txtValue.Show
     cmbValue.Hide
     $bCombo = False
-  Endif
+  ' Endif
   
   $aUndo = Value
   SetList(Value)

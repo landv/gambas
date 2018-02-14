@@ -2,7 +2,7 @@
 
   gbx_compare.h
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #define GB_COMP_NOCASE   1
 #define GB_COMP_LANG     2
 #define GB_COMP_LIKE     4
+#define GB_COMP_MATCH    5
 #define GB_COMP_NATURAL  8
 
 #define GB_COMP_TYPE_MASK  15
@@ -41,15 +42,22 @@
 #define GB_COMP_DESCENT  16
 
 #ifndef GBX_INFO
+
 typedef
   int (*COMPARE_FUNC)();
 
-COMPARE_FUNC COMPARE_get(TYPE type, int mode);
+typedef
+  int (*COMPARE_STRING_FUNC)();
+
+COMPARE_FUNC COMPARE_get_func(TYPE type, int mode);
+COMPARE_STRING_FUNC COMPARE_get_string_func(int mode);
+
 int COMPARE_object(void **a, void **b);
 int COMPARE_string_lang(const char *s1, int l1, const char *s2, int l2, bool nocase, bool throw);
-int COMPARE_string_like(const char *s1, int l1, const char *s2, int l2);
+int COMPARE_string_like(const char *s1, int l1, const char *s2, int l2, bool nocase);
 int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool nocase);
 int COMPARE_variant(VARIANT *a, VARIANT *b);
+
 #endif
 
 #endif

@@ -33,7 +33,7 @@ Public Sub _new()
   Dim hObs As Observer
   
   hObs = New Observer(Me) As "GridView"
-  $hWatcher = New Watcher(Me) As "GridView"
+  $hWatcher = New Watcher(Me) As "Watcher"
   
   $hPanel = New Panel(Me.Window)
   $hPanel.Background = Color.TextBackground
@@ -206,13 +206,13 @@ Public Sub GridView_Arrange()
   
 End
 
-Public Sub GridView_Resize()
+Public Sub Watcher_Resize()
   
   HideEditor
   
 End
 
-Public Sub GridView_Hide()
+Public Sub Watcher_Hide()
 
   HideEditor
   
@@ -251,6 +251,11 @@ Public Sub Edit(Optional List As String[], Optional ReadOnly As Boolean)
   If $bTextBox Then $hEditor.SelectAll
   MoveEditor
   Try $hEditor.SetFocus
+  
+  If Not $bDoNotHideEditor Then
+    $bDoNotHideEditor = True
+    $hTimer.Trigger
+  Endif
   
 End
 

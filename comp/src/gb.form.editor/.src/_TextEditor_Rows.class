@@ -80,7 +80,7 @@ Public Sub _GetRowY(iRow As Integer) As Integer
       
       I = $iLastRow
       While I < iRow
-        If hView._IsRowVisible(I) Then Try Y += CInt($cHeight[I]) - 1
+        If hView._IsRowVisible(I) Then Y += CInt($cHeight[I]) - 1
         Inc I
       Wend
       
@@ -89,7 +89,7 @@ Public Sub _GetRowY(iRow As Integer) As Integer
       I = $iLastRow
       While I > iRow
         Dec I
-        If hView._IsRowVisible(I) Then Try Y -= CInt($cHeight[I]) - 1
+        If hView._IsRowVisible(I) Then Y -= CInt($cHeight[I]) - 1
       Wend
 
     Endif
@@ -161,7 +161,7 @@ Public Sub _SetRowHeight(iRow As Integer, H As Integer)
   
   If Not $cHeight Then 
     $cHeight = New Collection
-    '$cHeight.Default = 1
+    $cHeight.Default = 1
     $aHeight = New Integer[]
   Endif
   
@@ -178,8 +178,11 @@ Public Sub _SetRowHeight(iRow As Integer, H As Integer)
       hView._ResizeContents()
     Endif
   Else
-    OH = -1
-    Try OH = $cHeight[iRow]
+    If $cHeight.Exist(iRow) Then
+      OH = $cHeight[iRow]
+    Else
+      OH = -1
+    Endif
     If H <> OH Then
       If OH < 0 Then AddSorted(iRow)
       $cHeight[iRow] = H

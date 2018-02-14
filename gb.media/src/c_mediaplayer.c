@@ -4,7 +4,7 @@
 
   gb.media component
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -161,10 +161,12 @@ static GB_IMG *get_frame(void *_object)
 	switch (IMAGE.GetDefaultFormat())
 	{
 		case GB_IMAGE_BGRA:
+		case GB_IMAGE_BGRP:
 			format = "BGR";
 			break;
 
 		case GB_IMAGE_RGBA:
+		case GB_IMAGE_RGBP:
 			format = "RGB";
 			break;
 

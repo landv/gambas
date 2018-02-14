@@ -3,7 +3,7 @@
 { Form Form
   MoveScaled(0,0,77,54)
   { SwitchButton1 SwitchButton
-    MoveScaled(3,8,16,4)
+    MoveScaled(5,6,17,5)
     Value = True
     Animated = True
   }
@@ -12,17 +12,16 @@
     Animated = True
   }
   { SwitchButton2 SwitchButton
-    MoveScaled(4,18,16,4)
+    MoveScaled(10,20,16,4)
     Enabled = False
-    Value = True
     Animated = True
   }
   { TextBox1 TextBox
-    MoveScaled(10,26,24,4)
+    MoveScaled(15,33,24,4)
     Text = ("TextBox1")
   }
   { URLLabel1 URLLabel
-    MoveScaled(32,7,27,6)
+    MoveScaled(33,10,27,6)
     Link = "http://gambaswiki.org"
     Border = True
     Alignment = Align.TopNormal
@@ -33,11 +32,13 @@
   { Label1 Label
     MoveScaled(44,33,11,5)
     Background = Color.LinkForeground
+    Text = ("Label1")
     Border = Border.Plain
   }
   { Label2 Label
     MoveScaled(44,40,11,5)
     Background = Color.VisitedForeground
+    Text = ("Label2")
     Border = Border.Plain
   }
 }

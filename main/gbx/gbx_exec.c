@@ -2,7 +2,7 @@
 
   gbx_exec.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -1256,9 +1256,9 @@ void EXEC_native_quick(void)
 }
 
 
-static void error_EXEC_native(void)
+static void error_EXEC_native(intptr_t nparam)
 {
-	RELEASE_MANY(SP, EXEC.nparam);
+	RELEASE_MANY(SP, (int)nparam);
 }
 
 void EXEC_native(void)
@@ -1278,7 +1278,7 @@ void EXEC_native(void)
 	fprintf(stderr, "| >> EXEC_native: %s.%s (%p)\n", EXEC.class->name, desc->name, &desc);
 	#endif
 
-	ON_ERROR(error_EXEC_native)
+	ON_ERROR_1(error_EXEC_native, nparam)
 	{
 		n = desc->npmin;
 		nm = desc->npmax;

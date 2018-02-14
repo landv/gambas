@@ -8,6 +8,7 @@
   Margin = True
   { Button1 Button
     MoveScaled(1,0,16,4)
+    Visible = False
     Text = ("Refresh")
   }
   { DataSource2 DataSource
@@ -15,7 +16,7 @@
     Expand = True
     Arrangement = Arrange.Vertical
     Spacing = True
-    Connection = Connections["Connection2"]
+    Connection = Connections["Connection4"]
     Table = "color"
     { DataBrowser2 DataBrowser
       MoveScaled(7,2,54,16)

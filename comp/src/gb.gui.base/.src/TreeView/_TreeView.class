@@ -64,6 +64,8 @@ Public Sub _new()
   $hView.Mode = Select.Single
   $hView.Grid = False
   $hView.AutoResize = True
+  $hView.Name = Me.Name & ":gridView"
+  '$hView.Padding = 0
   
   Me.Proxy = $hView
   
@@ -97,6 +99,7 @@ End
 
 Private Sub ResizeColumns()
   
+  If Not $hView.AutoResize Then Return
   If Not $hResizeColumnTimer Then
     $hResizeColumnTimer = New Timer As "ResizeColumns"
     $hResizeColumnTimer.Trigger
@@ -150,7 +153,7 @@ Public Sub _Add((Key) As String, Text As String, Optional (Picture) As Picture, 
   $bNoUpdateHeight = False
 
   If After Then 
-    _MoveItem(hItem, After, False)
+    If _MoveItem(hItem, After, False) Then _UpdateItemHeight(hItem)
   Else
     _UpdateItemHeight(hItem, True)
   Endif
@@ -483,12 +486,23 @@ Public Sub _GetItemHeight(hItem As _TreeView_Item) As Integer
   
 End
 
+Public Sub GridView_Data(Row As Integer, (Column) As Integer)
+  
+  Dim hItem As _TreeView_Item = RowToItem(Row)
+  If Not hItem Then Return
+  
+  $hView.Data.Background = hItem.Background
+  
+End
+
 Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer, Row As Integer, Column As Integer)
   
   Dim hItem As _TreeView_Item = RowToItem(Row)
   Dim sText As String
   
   If Not hItem Then Return
+  
+  'Debug Row;; Column;; System.Backtrace.Join(" ")
   
   If Column = 0 Then
   
@@ -539,19 +553,25 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer,
     
     Endif
     
+    If hItem.Foreground <> Color.Default Then Paint.Background = hItem.Foreground
+    If hItem.Font Then Paint.Font = hItem.Font
+    
     'Draw.Text(hItem.Text & " (" & hItem._Index & ") [" & hItem._Rows & "] {" & hItem._GrandChildren & "}", X, Y, W, H, $hView.Columns[Column].Alignment)
     sText = hItem.RichText
     If sText Then
-      Draw.RichText(sText, X, Y, W, H, Align.Normal)
+      Paint.DrawRichText(sText, X, Y, W, H, Align.Normal)
     Else
-      Draw.Text(hItem.Text, X, Y, W, H, Align.Normal) '$hView.Columns[Column].Alignment)
+      Paint.DrawText(hItem.Text, X, Y, W, H, Align.Normal)
     Endif
     
   Else
     
-    Draw.Text(hItem[Column], X, Y, W, H, $hView.Columns[Column].Alignment)
+    If hItem.Foreground <> Color.Default Then Paint.Background = hItem.Foreground
+    Paint.DrawText(hItem[Column], X, Y, W, H, $hView.Columns[Column].Alignment)
     
   Endif
+  
+  Stop Event
   
 End
 
@@ -658,10 +678,12 @@ End
 Private Sub ScrollBar_Write(Value As Integer)
 
   $hView.Scrollbar = Value
-  If $hView.ScrollBar And Scroll.Horizontal Then
-    $hView.AutoResize = False
-  Else
-    $hView.AutoResize = True
+  If Not Me Is ColumnView Then
+    If $hView.ScrollBar And Scroll.Horizontal Then
+      $hView.AutoResize = False
+    Else
+      $hView.AutoResize = True
+    Endif
   Endif
 
 End
@@ -769,6 +791,7 @@ Public Sub ResizeColumns_Timer()
   $hResizeColumnTimer = Null
   
   If $cItem.Count = 0 Then Return
+  If Not $hView.AutoResize Then Return
   
   If $hView.Columns.Count = 1 Then
     If ($hView.ScrollBar And Scroll.Horizontal) = 0 Then Return
@@ -1068,7 +1091,7 @@ Public Sub FindAt((X) As Integer, Y As Integer) As Boolean
   
 End
 
-Public Sub _MoveItem(hItem As _TreeView_Item, sKey As String, bBefore As Boolean)
+Public Sub _MoveItem(hItem As _TreeView_Item, sKey As String, bBefore As Boolean) As Boolean
   
   Dim hParent As _TreeView_Item = _GetParentItem(hItem)
   Dim aChildren As String[]
@@ -1103,7 +1126,7 @@ Public Sub _MoveItem(hItem As _TreeView_Item, sKey As String, bBefore As Boolean
     Endif
   Endif
   
-  If iPos = iNewPos Then Return
+  If iPos = iNewPos Then Return True
   
   aChildren.Remove(iPos)
   aChildren.Add(hItem.Key, iNewPos)
@@ -1220,6 +1243,7 @@ Private Sub Cancel(Optional bOK As Boolean)
   Dim sCursor As String 
   
   If Not $hRenameBox Then Return
+  
   $hRenameBox.Delete
   $hRenameBox = Null
   $hView.SetFocus

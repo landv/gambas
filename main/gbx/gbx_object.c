@@ -2,7 +2,7 @@
 
   gbx_object.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -381,32 +381,23 @@ void OBJECT_exit(void)
 	#endif
 }
 
-static void *_object;
-static char *_object_name;
-
-static void error_OBJECT_create(void)
+static void error_OBJECT_create(const char *name, void *object)
 {
-	OBJECT_UNREF_KEEP(_object);
-	EVENT_leave_name(_object_name);
+	OBJECT_UNREF_KEEP(object);
+	EVENT_leave_name(name);
 }
 
 void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam)
 {
 	void *object;
-	void *save;
-	char *save_name;
+	const char *save;
 
 	// The "no create" flag only concerns users of NEW
 	//if (class->no_create)
 	//	THROW(E_CSTATIC, CLASS_get_name(class));
 
-	save = _object;
-	save_name = _object_name;
-
-	ON_ERROR(error_OBJECT_create)
+	ON_ERROR_2(error_OBJECT_create, save = EVENT_enter_name(name), object = OBJECT_new(class, name, parent))
 	{
-		_object_name = EVENT_enter_name(name);
-		_object = object = OBJECT_new(class, name, parent);
 		if (OBJECT_set_pointer)
 		{
 			*OBJECT_set_pointer = object;
@@ -420,12 +411,9 @@ void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam)
 
 		EXEC_special(SPEC_READY, class, object, 0, TRUE);
 
-		error_OBJECT_create();
+		error_OBJECT_create(save, object);
 	}
 	END_ERROR
-
-	_object = save;
-	_object_name = save_name;
 
 	return object;
 }

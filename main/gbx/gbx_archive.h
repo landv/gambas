@@ -2,7 +2,7 @@
 
 	gbx_archive.h
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ typedef
 		LIST list;
 		ARCH *arch;
 		const char *name;
+		char *version;
 		char *domain;
 		TABLE *classes;
 		const char *path;
@@ -48,6 +49,7 @@ typedef
 		struct _CLASS **exported;
 		unsigned translation_loaded : 1;
 		unsigned exported_classes_loaded : 1;
+		unsigned version_loaded : 1;
 		}
 	ARCHIVE;
 
@@ -76,10 +78,11 @@ ARCHIVE *ARCHIVE_create(const char *name, const char *path);
 void ARCHIVE_delete(ARCHIVE *arch);
 void ARCHIVE_load(ARCHIVE *arch, bool load_exp);
 void ARCHIVE_load_exported_class(ARCHIVE *arch, int pass);
+char *ARCHIVE_get_version(ARCHIVE *arch);
 
 bool ARCHIVE_get(ARCHIVE *arch, const char **ppath, ARCHIVE_FIND *find);
 
-bool ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len);
+void ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len);
 
 bool ARCHIVE_exist(ARCHIVE *arch, const char *path);
 void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info);

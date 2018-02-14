@@ -6,7 +6,7 @@ Static Private $bAnother As Boolean
 Static Public InAnotherWindow As Boolean
 
 Private $iSort As Integer
-Private $bControl As Boolean
+'Private $bControl As Boolean
 Private $hRecent As CProjectList
 Private $hExample As CProjectList
 
@@ -30,6 +30,8 @@ Public Sub _new()
   $hExample = New CProjectList(lstExample, txtFilterExample, CProjectList.TYPE_EXAMPLE, Arrange.Row) As "ProjectItem"
   
   tabProject[2].Visible = False
+  
+  txtFilter.Text = Settings["FWelcome/Filter"]
   
 End
 
@@ -138,7 +140,8 @@ End
 
 Public Sub ProjectItem_Click(sPath As String, bAnother As Boolean)
   
-  InAnotherWindow = $bControl Or bAnother
+  'InAnotherWindow = $bControl Or bAnother
+  InAnotherWindow = bAnother
   $sPath = sPath
   btnOpen_Click
   

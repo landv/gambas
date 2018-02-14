@@ -24,54 +24,57 @@ Public WrapMode As Boolean
 Public HideCursor As Boolean
 
 Static Private $aColor As Integer[] = [
-&H000000, &H800000, &H008000, &H808000, &H000080, &H800080, &H008080, &Hc0c0c0,
-&H808080, &Hff0000, &H00ff00, &Hffff00, &H0000ff, &Hff00ff, &H00ffff, &Hffffff,
-&H000000, &H00005f, &H000087, &H0000af, &H0000d7, &H0000ff,
-&H005f00, &H005f5f, &H005f87, &H005faf, &H005fd7, &H005fff,
-&H008700, &H00875f, &H008787, &H0087af, &H0087d7, &H0087ff,
-&H00af00, &H00af5f, &H00af87, &H00afaf, &H00afd7, &H00afff,
-&H00d700, &H00d75f, &H00d787, &H00d7af, &H00d7d7, &H00d7ff,
-&H00ff00, &H00ff5f, &H00ff87, &H00ffaf, &H00ffd7, &H00ffff,
-&H5f0000, &H5f005f, &H5f0087, &H5f00af, &H5f00d7, &H5f00ff,
-&H5f5f00, &H5f5f5f, &H5f5f87, &H5f5faf, &H5f5fd7, &H5f5fff,
-&H5f8700, &H5f875f, &H5f8787, &H5f87af, &H5f87d7, &H5f87ff,
-&H5faf00, &H5faf5f, &H5faf87, &H5fafaf, &H5fafd7, &H5fafff,
-&H5fd700, &H5fd75f, &H5fd787, &H5fd7af, &H5fd7d7, &H5fd7ff,
-&H5fff00, &H5fff5f, &H5fff87, &H5fffaf, &H5fffd7, &H5fffff,
-&H870000, &H87005f, &H870087, &H8700af, &H8700d7, &H8700ff,
-&H875f00, &H875f5f, &H875f87, &H875faf, &H875fd7, &H875fff,
-&H878700, &H87875f, &H878787, &H8787af, &H8787d7, &H8787ff,
-&H87af00, &H87af5f, &H87af87, &H87afaf, &H87afd7, &H87afff,
-&H87d700, &H87d75f, &H87d787, &H87d7af, &H87d7d7, &H87d7ff,
-&H87ff00, &H87ff5f, &H87ff87, &H87ffaf, &H87ffd7, &H87ffff,
-&Haf0000, &Haf005f, &Haf0087, &Haf00af, &Haf00d7, &Haf00ff,
-&Haf5f00, &Haf5f5f, &Haf5f87, &Haf5faf, &Haf5fd7, &Haf5fff,
-&Haf8700, &Haf875f, &Haf8787, &Haf87af, &Haf87d7, &Haf87ff,
-&Hafaf00, &Hafaf5f, &Hafaf87, &Hafafaf, &Hafafd7, &Hafafff,
-&Hafd700, &Hafd75f, &Hafd787, &Hafd7af, &Hafd7d7, &Hafd7ff,
-&Hafff00, &Hafff5f, &Hafff87, &Hafffaf, &Hafffd7, &Hafffff,
-&Hd70000, &Hd7005f, &Hd70087, &Hd700af, &Hd700d7, &Hd700ff,
-&Hd75f00, &Hd75f5f, &Hd75f87, &Hd75faf, &Hd75fd7, &Hd75fff,
-&Hd78700, &Hd7875f, &Hd78787, &Hd787af, &Hd787d7, &Hd787ff,
-&Hd7af00, &Hd7af5f, &Hd7af87, &Hd7afaf, &Hd7afd7, &Hd7afff,
-&Hd7d700, &Hd7d75f, &Hd7d787, &Hd7d7af, &Hd7d7d7, &Hd7d7ff,
-&Hd7ff00, &Hd7ff5f, &Hd7ff87, &Hd7ffaf, &Hd7ffd7, &Hd7ffff,
-&Hff0000, &Hff005f, &Hff0087, &Hff00af, &Hff00d7, &Hff00ff,
-&Hff5f00, &Hff5f5f, &Hff5f87, &Hff5faf, &Hff5fd7, &Hff5fff,
-&Hff8700, &Hff875f, &Hff8787, &Hff87af, &Hff87d7, &Hff87ff,
-&Hffaf00, &Hffaf5f, &Hffaf87, &Hffafaf, &Hffafd7, &Hffafff,
-&Hffd700, &Hffd75f, &Hffd787, &Hffd7af, &Hffd7d7, &Hffd7ff,
-&Hffff00, &Hffff5f, &Hffff87, &Hffffaf, &Hffffd7, &Hffffff,
-&H080808, &H121212, &H1c1c1c, &H262626, &H303030, &H3a3a3a,
-&H444444, &H4e4e4e, &H585858, &H606060, &H666666, &H767676,
-&H808080, &H8a8a8a, &H949494, &H9e9e9e, &Ha8a8a8, &Hb2b2b2,
-&Hbcbcbc, &Hc6c6c6, &Hd0d0d0, &Hdadada, &He4e4e4, &Heeeeee]
+  &H000000, &H800000, &H008000, &H808000, &H000080, &H800080, &H008080, &Hc0c0c0,
+  &H808080, &Hff0000, &H00ff00, &Hffff00, &H0000ff, &Hff00ff, &H00ffff, &Hffffff,
+  &H000000, &H00005f, &H000087, &H0000af, &H0000d7, &H0000ff,
+  &H005f00, &H005f5f, &H005f87, &H005faf, &H005fd7, &H005fff,
+  &H008700, &H00875f, &H008787, &H0087af, &H0087d7, &H0087ff,
+  &H00af00, &H00af5f, &H00af87, &H00afaf, &H00afd7, &H00afff,
+  &H00d700, &H00d75f, &H00d787, &H00d7af, &H00d7d7, &H00d7ff,
+  &H00ff00, &H00ff5f, &H00ff87, &H00ffaf, &H00ffd7, &H00ffff,
+  &H5f0000, &H5f005f, &H5f0087, &H5f00af, &H5f00d7, &H5f00ff,
+  &H5f5f00, &H5f5f5f, &H5f5f87, &H5f5faf, &H5f5fd7, &H5f5fff,
+  &H5f8700, &H5f875f, &H5f8787, &H5f87af, &H5f87d7, &H5f87ff,
+  &H5faf00, &H5faf5f, &H5faf87, &H5fafaf, &H5fafd7, &H5fafff,
+  &H5fd700, &H5fd75f, &H5fd787, &H5fd7af, &H5fd7d7, &H5fd7ff,
+  &H5fff00, &H5fff5f, &H5fff87, &H5fffaf, &H5fffd7, &H5fffff,
+  &H870000, &H87005f, &H870087, &H8700af, &H8700d7, &H8700ff,
+  &H875f00, &H875f5f, &H875f87, &H875faf, &H875fd7, &H875fff,
+  &H878700, &H87875f, &H878787, &H8787af, &H8787d7, &H8787ff,
+  &H87af00, &H87af5f, &H87af87, &H87afaf, &H87afd7, &H87afff,
+  &H87d700, &H87d75f, &H87d787, &H87d7af, &H87d7d7, &H87d7ff,
+  &H87ff00, &H87ff5f, &H87ff87, &H87ffaf, &H87ffd7, &H87ffff,
+  &Haf0000, &Haf005f, &Haf0087, &Haf00af, &Haf00d7, &Haf00ff,
+  &Haf5f00, &Haf5f5f, &Haf5f87, &Haf5faf, &Haf5fd7, &Haf5fff,
+  &Haf8700, &Haf875f, &Haf8787, &Haf87af, &Haf87d7, &Haf87ff,
+  &Hafaf00, &Hafaf5f, &Hafaf87, &Hafafaf, &Hafafd7, &Hafafff,
+  &Hafd700, &Hafd75f, &Hafd787, &Hafd7af, &Hafd7d7, &Hafd7ff,
+  &Hafff00, &Hafff5f, &Hafff87, &Hafffaf, &Hafffd7, &Hafffff,
+  &Hd70000, &Hd7005f, &Hd70087, &Hd700af, &Hd700d7, &Hd700ff,
+  &Hd75f00, &Hd75f5f, &Hd75f87, &Hd75faf, &Hd75fd7, &Hd75fff,
+  &Hd78700, &Hd7875f, &Hd78787, &Hd787af, &Hd787d7, &Hd787ff,
+  &Hd7af00, &Hd7af5f, &Hd7af87, &Hd7afaf, &Hd7afd7, &Hd7afff,
+  &Hd7d700, &Hd7d75f, &Hd7d787, &Hd7d7af, &Hd7d7d7, &Hd7d7ff,
+  &Hd7ff00, &Hd7ff5f, &Hd7ff87, &Hd7ffaf, &Hd7ffd7, &Hd7ffff,
+  &Hff0000, &Hff005f, &Hff0087, &Hff00af, &Hff00d7, &Hff00ff,
+  &Hff5f00, &Hff5f5f, &Hff5f87, &Hff5faf, &Hff5fd7, &Hff5fff,
+  &Hff8700, &Hff875f, &Hff8787, &Hff87af, &Hff87d7, &Hff87ff,
+  &Hffaf00, &Hffaf5f, &Hffaf87, &Hffafaf, &Hffafd7, &Hffafff,
+  &Hffd700, &Hffd75f, &Hffd787, &Hffd7af, &Hffd7d7, &Hffd7ff,
+  &Hffff00, &Hffff5f, &Hffff87, &Hffffaf, &Hffffd7, &Hffffff,
+  &H080808, &H121212, &H1c1c1c, &H262626, &H303030, &H3a3a3a,
+  &H444444, &H4e4e4e, &H585858, &H606060, &H666666, &H767676,
+  &H808080, &H8a8a8a, &H949494, &H9e9e9e, &Ha8a8a8, &Hb2b2b2,
+  &Hbcbcbc, &Hc6c6c6, &Hd0d0d0, &Hdadada, &He4e4e4, &Heeeeee]
 
 Static Private $aGraphicCharset As Integer[] = [&H0020&, &H25C6&, &H2592&, &H2409&, &H240c&, &H240d&, &H240a&, &H00b0&,
   &H00b1&, &H2424&, &H240b&, &H2518&, &H2510&, &H250c&, &H2514&, &H253c&,
   &HF800&, &HF801&, &H2500&, &HF803&, &HF804&, &H251c&, &H2524&, &H2534&,
   &H252c&, &H2502&, &H2264&, &H2265&, &H03C0&, &H2260&, &H00A3&, &H00b7&]
 
+Static Private $aInvertColor As Integer[] = [
+  &H000000, &H804040, &H408040, &H808040, &H404080, &H804080, &H408080, &Hc0c0c0,
+  &H808080, &Hff8080, &H80ff80, &Hffff80, &H8080ff, &Hff80ff, &H80ffff, &Hffffff]
 
 Static Private $sControlChar As String
 
@@ -130,9 +133,9 @@ Public Sub _new()
 End
 
 Private Sub GetView() As TerminalView
-
+  
   Return Object.Parent(Me)
-
+  
 End
 
 Public Sub Clear()
@@ -169,7 +172,7 @@ Public Sub Resize(W As Integer, H As Integer) As Boolean
 End
 
 Public Sub GetLine(Y As Integer) As CTerminalLine
-
+  
   Dim hLine As CTerminalLine
   
   If Y > Lines.Max Then
@@ -183,7 +186,7 @@ Public Sub GetLine(Y As Integer) As CTerminalLine
   Endif
   
   Return hLine
-
+  
 End
 
 Private Sub ClearLine(Y As Integer)
@@ -198,9 +201,8 @@ Private Sub ClearLine(Y As Integer)
   
 End
 
-
 Private Sub Insert(sText As String, Optional X As Integer = $X)
-
+  
   Dim hLine As CTerminalLine
   Dim iLen As Integer = String.Len(sText)
   
@@ -247,7 +249,7 @@ Private Sub Insert(sText As String, Optional X As Integer = $X)
 End
 
 Public Sub Print(sText As String)
-
+  
   Dim aText As String[]
   Dim sElt As String
   Dim iLen As Integer
@@ -284,11 +286,9 @@ Public Sub Print(sText As String)
         CursorLeft
       Case 9
         Tab()
-      Case 10, 12
-        Goto(0, $Y)
+      Case 10, 11, 12
         NewLine()
-      ' Case 12
-      '   EraseScreen()
+        'Goto(0, $Y)
       Case 13
         Goto(0, $Y)
       Case 14
@@ -301,8 +301,9 @@ Public Sub Print(sText As String)
     Inc iLen
   Next
   
+  'Debug "[";; $X;; ":";; $Y;; "]"
+  
 End
-
 
 Private Sub NewLine()
   
@@ -330,10 +331,10 @@ Public Sub Goto(X As Integer, Y As Integer)
   If Y < 0 Then Y = 0
   
   With GetView()
-  
+    
     ._ShowCursor()
     ._RefreshLine($Y)
-  
+    
     $X = X
     If Y <> $Y Then
       $Y = Y
@@ -348,19 +349,19 @@ Public Sub Goto(X As Integer, Y As Integer)
 End
 
 Private Function Column_Read() As Integer
-
+  
   Return $X
-
+  
 End
 
 Private Function Line_Read() As Integer
-
+  
   Return Max(0, $Y - ScreenTop())
-
+  
 End
 
 Public Sub ApplyLimit(iLimit As Integer)
-
+  
   Dim iDel As Integer
   
   iDel = Lines.Count - iLimit
@@ -407,10 +408,10 @@ Public Sub CursorGoto(X As Integer, Y As Integer)
   Endif
   
   With GetView()
-  
+    
     ._ShowCursor()
     ._RefreshLine($Y)
-  
+    
     $X = X
     Y += ScreenTop()
     
@@ -440,18 +441,27 @@ End
 
 Public Sub CursorLeft(Optional Count As Integer = 1)
   
-  CursorGoto($X - Count, $Y)
+  CursorGoto($X - Count, Me.Line)
   
 End
 
 Public Sub CursorRight(Optional Count As Integer = 1)
   
-  CursorGoto($X + Count, $Y)
+  CursorGoto($X + Count, Me.Line)
+  
+End
+
+Public Sub CursorHome()
+  
+  Dim P As Integer
+  
+  If Origin And If $iScrollStart >= 0 Then P = $iScrollStart
+  CursorGoto(0, P)
   
 End
 
 Public Sub InsertSpace(N As Integer)
-
+  
   Dim hLine As CTerminalLine
   
   hLine = GetLine($Y)
@@ -466,9 +476,8 @@ Public Sub InsertSpace(N As Integer)
   
 End
 
-
 Public Sub DeleteChar(Optional N As Integer = 1)
-
+  
   Dim hLine As CTerminalLine
   
   hLine = GetLine($Y)
@@ -484,7 +493,7 @@ Public Sub DeleteChar(Optional N As Integer = 1)
 End
 
 Public Sub EraseChar(Optional N As Integer = 1)
-
+  
   Dim hLine As CTerminalLine
   
   hLine = GetLine($Y)
@@ -498,9 +507,9 @@ Public Sub EraseChar(Optional N As Integer = 1)
 End
 
 Public Sub EraseEndOfLine()
-
+  
   Dim hLine As CTerminalLine
-
+  
   hLine = GetLine($Y)
   If hLine.Length <= $X Then 
     If $hAttr.IsVoid() Then Return
@@ -511,13 +520,13 @@ Public Sub EraseEndOfLine()
   hLine.Length = $X
   If Not $hAttr.IsVoid() Then Insert(Space$($W - $X), $X)
   GetView()._RefreshLine($Y)
-
+  
 End
 
 Public Sub EraseStartOfLine()
-
+  
   Dim hLine As CTerminalLine
-
+  
   hLine = GetLine($Y)
   If hLine.Length <= $X Then
     hLine.Clear()
@@ -525,13 +534,13 @@ Public Sub EraseStartOfLine()
     hLine.Text = Space$($X + 1) & String.Mid$(hLine.Text, $X + 1)
   Endif
   GetView()._RefreshLine($Y)
-
+  
 End
 
 Public Sub EraseLine()
-
+  
   Dim hLine As CTerminalLine
-
+  
   hLine = GetLine($Y)
   If $hAttr.IsVoid() Then
     hLine.Clear()
@@ -540,18 +549,18 @@ Public Sub EraseLine()
   Endif
   
   GetView()._RefreshLine($Y)
-
+  
 End
 
 Public Sub EraseScreen()
-
+  
   Dim Y As Integer
   
   For Y = ScreenTop() To Lines.Max
     ClearLine(Y)
   Next
   
-  CursorGoto(0, 0)
+  CursorHome
   GetView()._ShowScreen()
   
 End
@@ -570,9 +579,8 @@ Public Sub EraseDown()
   
 End
 
-
 Public Sub EraseUp()
-
+  
   Dim Y As Integer
   
   EraseStartOfLine
@@ -594,6 +602,7 @@ Public Sub ScrollScreen(Optional Start As Integer, {End} As Integer)
     $iScrollStart = Start
     $iScrollEnd = {End}
   Endif
+  CursorHome()
   
 End
 
@@ -603,15 +612,16 @@ Private Sub GetScreen(ByRef Y1 As Integer, ByRef Y2 As Integer)
     Y1 = ScreenTop()
     Y2 = Y1 + $H - 1
   Else
-    Y1 = Max(ScreenTop(), $iScrollStart)
-    Y2 = Min(ScreenTop() + $H - 1, $iScrollEnd)
+    Y1 = ScreenTop() + $iScrollStart
+    Y2 = ScreenTop() + Min($H - 1, $iScrollEnd)
   Endif
+  
+  If Y2 < Y1 Then Y2 = Y1
   
 End
 
-
 Private Sub Scroll(bUp As Boolean, Optional iFrom As Integer)
-
+  
   Dim hView As TerminalView = GetView()
   Dim Y1, Y2 As Integer
   
@@ -656,7 +666,7 @@ Public Sub ScrollDown(Optional N As Integer)
 End
 
 Public Sub InsertLine(N As Integer)
-
+  
   While N > 0  
     Scroll(False, $Y)
     Dec N
@@ -665,7 +675,7 @@ Public Sub InsertLine(N As Integer)
 End
 
 Public Sub DeleteLine(N As Integer)
-
+  
   While N > 0  
     Scroll(True, $Y)
     Dec N
@@ -676,9 +686,9 @@ End
 Public Sub Index()
   
   Dim Y1, Y2 As Integer
-
+  
   GetScreen(ByRef Y1, ByRef Y2)
-
+  
   If $Y >= Y2 Then
     Scroll(True)
   Else
@@ -690,9 +700,9 @@ End
 Public Sub ReverseIndex()
   
   Dim Y1, Y2 As Integer
-
+  
   GetScreen(ByRef Y1, ByRef Y2)
-
+  
   If $Y <= Y1 Then
     ScrollDown
   Else
@@ -701,33 +711,32 @@ Public Sub ReverseIndex()
   
 End
 
-
 Private Function Attr_Read() As TerminalAttr
-
+  
   Return $hAttr
-
+  
 End
 
 Private Function Geometry_Read() As Rect
-
+  
   Return Rect(0, ScreenTop(), $W, $H)
-
+  
 End
 
 Private Function Width_Read() As Integer
-
+  
   Return $W
-
+  
 End
 
 Private Function Height_Read() As Integer
-
+  
   Return $H
-
+  
 End
 
-Private Sub DrawLine(hView As TerminalView, L As Integer, X As Integer, Y As Integer, LH As Integer, CW As Integer, (LA) As Integer, hFontCache As Image)
-
+Private Sub DrawLine(hView As TerminalView, L As Integer, X As Integer, Y As Integer, LH As Integer, CW As Integer, (LA) As Integer, hFontCache As Image, bInvertColor As Boolean)
+  
   Dim hLine As CTerminalLine
   Dim I, J, K As Integer
   'Dim sText As String
@@ -747,12 +756,15 @@ Private Sub DrawLine(hView As TerminalView, L As Integer, X As Integer, Y As Int
   Dim XC As Integer
   Dim bNoText As Boolean
   Dim XB, WB As Integer
-
+  Dim iMaxLen As Integer
+  
   hLine = Lines[L]
   If Not hLine Then 
     Paint.FillRect(X, Y, Paint.W, LH, iBg)
     Return
   Endif
+  
+  iMaxLen = Min($W, hLine.Length)
   
   hFont = Paint.Font
   aAttr = hLine.GetAttr()
@@ -760,12 +772,12 @@ Private Sub DrawLine(hView As TerminalView, L As Integer, X As Integer, Y As Int
   P = 1
   
   For I = 0 To aAttr.Max
-  
-    If P > hLine.Length Then Break
-  
+    
+    If P > iMaxLen Then Break
+    
     hAttr._FillFrom(aAttr[I])
-    iLen = Min((Lsr(aAttr[I], 8) And 255), hLine.Length - P) + 1
-  
+    iLen = Min((Lsr(aAttr[I], 8) And 255), iMaxLen - P) + 1
+    
     iBg = hAttr.Background
     If iBg >= 0 Then
       iBg = $aColor[iBg]
@@ -775,8 +787,11 @@ Private Sub DrawLine(hView As TerminalView, L As Integer, X As Integer, Y As Int
     
     iFg = hAttr.Foreground
     If iFg >= 0 Then
-      'Debug iFg
-      iFg = $aColor[iFg]
+      If iFg < 16 And If bInvertColor Then
+        iFg = $aInvertColor[iFg]
+      Else
+        iFg = $aColor[iFg]
+      Endif
     Else
       iFg = hView.Foreground
     Endif
@@ -784,7 +799,7 @@ Private Sub DrawLine(hView As TerminalView, L As Integer, X As Integer, Y As Int
     If hAttr.Reverse Then Swap iBg, iFg
     
     bNoText = False
-
+    
     If hAttr.Blink Then
       hView._HasBlink = True
       If hView._Blink Then 
@@ -802,32 +817,32 @@ Private Sub DrawLine(hView As TerminalView, L As Integer, X As Integer, Y As Int
     Else
       HC = 0
     Endif
-      
+    
     GoSub DRAW_TEXT
     
   Next
   
-  If P <= hLine.Length Then
-    iLen = hLine.Length - P + 1
+  iLen = iMaxLen - P + 1
+  If iLen > 0 Then
     iFg = hView.Foreground
     iBg = hView.Background
     HC = 0
     hAttr._FillFrom(0)
     GoSub DRAW_TEXT
   Endif
-    
-  Paint.FillRect(X, Y, Paint.W - X, LH, hView.Background)
+  
+  If Paint.W > X Then Paint.FillRect(X, Y, Paint.W - X, LH, hView.Background)
   
   Return
   
 DRAW_TEXT:
-
+  
   If iLen <= 0 Then Return
   
   W = iLen * CW
   
   If IsSpace(String.Mid$(hLine.Text, P, iLen)) Then 
-  
+    
     Paint.FillRect(X, Y, W, LH, iBg)
     
   Else
@@ -835,14 +850,14 @@ DRAW_TEXT:
     Paint.Begin($hLineCache)
     Paint.Font = hFont
     
-    Paint.FillRect(0, 0, W, LH, iFg)
-  
+    Paint.FillRect(0, 0, $hLineCache.W, LH, iFg)
+    
     XT = 0
     
     hRect = Rect(0, 0, CW, LH)
     
     Paint.Operator = Paint.OperatorDestATop
-    For J = P To P + iLen - 1
+    For J = P To Min(P + iLen - 1, $W)
       'sCar = String.Mid$(hLine.Text, J, 1)
       
       C = String.Code(hLine.Text, J)
@@ -851,7 +866,7 @@ DRAW_TEXT:
         
         hRect.Move(C * CW, HC)
         Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
-      
+        
       Else If C >= &H2500 And If C <= &H259F Then
         
         If C >= &H2591 And If C <= &H2593 Then
@@ -860,7 +875,7 @@ DRAW_TEXT:
           hRect.Move((C - &H2500 + 256) * CW, HC)
           Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
         Endif
-      
+        
       Else
         
         If $cCharCache.Exist(C) Then
@@ -884,7 +899,7 @@ DRAW_TEXT:
             
             XC = OC * CW
             YC = 0
-          
+            
             Paint.Begin(hFontCache)
             Paint.Font = hFont
             
@@ -895,9 +910,9 @@ DRAW_TEXT:
             Paint.ClipRect = Rect(XC, YC, CW, LH)
             'Paint.Background = Color.White
             GoSub DRAW_CHAR
-          
+            
             YC += LH
-          
+            
             Paint.ClipRect = Rect(XC, YC, CW, LH)
             GoSub DRAW_BOLD_CHAR
             
@@ -908,12 +923,12 @@ DRAW_TEXT:
             ' Inc XC
             ' GoSub DRAW_CHAR
             ' Dec XC
-          
+            
             Paint.End
             
             hRect.Move(XC, HC)
             Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
-
+            
             $cCharCache[C] = OC
             
           Else
@@ -937,7 +952,7 @@ DRAW_TEXT:
       XT += CW
       
     Next
-      
+    
     Paint.End
     
     XT = X
@@ -954,7 +969,7 @@ DRAW_TEXT:
   Return
   
 DRAW_NO_TEXT:
-
+  
   W = iLen * CW
   Paint.FillRect(X, Y, W, LH, iBg)
   X += W
@@ -962,14 +977,14 @@ DRAW_NO_TEXT:
   Return
   
 DRAW_CHAR:
-
+  
   Paint.DrawText(String.Chr(C), XC, YC, CW, LH, Align.Center)
   Return
   
 DRAW_BOLD_CHAR:
-
+  
   GoSub DRAW_CHAR
-
+  
   XB = XC
   WB = CW \ 8 + 1
   
@@ -982,14 +997,14 @@ DRAW_BOLD_CHAR:
     Inc XC
     GoSub DRAW_CHAR
   Endif
-
+  
   XC = XB
   Return
   
 End
 
 Private Sub GetSelection(ByRef X1 As Integer, ByRef Y1 As Integer, ByRef X2 As Integer, ByRef Y2 As Integer) As Boolean
-
+  
   Y1 = $Y1
   Y2 = $Y2
   X1 = $X1
@@ -1011,13 +1026,13 @@ Private Sub GetSelection(ByRef X1 As Integer, ByRef Y1 As Integer, ByRef X2 As I
     Y2 = Max($H, Lines.Count) - 1
     X2 = $W
   Endif
-
+  
   If Y2 > Y1 Or If X2 > X1 Then Return True
   
 End
 
 Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHideCursor As Boolean, hFont As Image)
-
+  
   Dim hView As TerminalView = GetView()
   Dim L, L1, L2 As Integer
   Dim Y As Integer
@@ -1025,23 +1040,26 @@ Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHide
   Dim X2 As Integer
   Dim Y1 As Integer
   Dim Y2 As Integer
-
+  Dim bInvertColor As Boolean
+  
   If Not $hLineCache Then $hLineCache = New Image($W * CW, LH)
   $cCharCache.Clear
-
+  
+  If Color[hView.Background].Value < Color[hView.Foreground].Value Then bInvertColor = True
+  
   L1 = (SY + Paint.ClipRect.Y) \ LH
   L2 = (SY + Paint.ClipRect.Y + Paint.ClipRect.H - 1) \ LH
-
+  
   'Debug L1;; L2
   
   Y = L1 * LH - SY + SY Mod LH
   
   For L = L1 To L2
     
-    If L < Lines.Count Then DrawLine(hView, L, 0, Y, LH, CW, LA, hFont)
-
+    If L < Lines.Count Then DrawLine(hView, L, 0, Y, LH, CW, LA, hFont, bInvertColor)
+    
     ' Cursor
-
+    
     If L = $Y And If Not bHideCursor And If Not HideCursor Then
       Paint.FillRect($X * CW, Y, CW, LH, Color.SetAlpha(Color.Merge(Color.SelectedBackground, hView.Foreground), 64))
     Endif
@@ -1049,7 +1067,7 @@ Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHide
     ' Selection
     
     If GetSelection(ByRef X1, ByRef Y1, ByRef X2, ByRef Y2) Then
-    
+      
       If L >= Y1 And If L <= Y2 Then
         If L = Y1 Then
           X1 *= CW
@@ -1065,28 +1083,27 @@ Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHide
       Endif
       
     Endif
-  
+    
     Y += LH
-      
+    
   Next
   
 End
 
-
 Private Function X_Read() As Integer
-
+  
   Return $X
-
+  
 End
 
 Private Function Y_Read() As Integer
-
+  
   Return $Y
-
+  
 End
 
 Public Sub GotoMouse(X As Integer, Y As Integer, bStart As Boolean)
-
+  
   X = Max(0, Min($W, X))
   Y = Max(0, Min(Max(Lines.Count, $H), Y))
   
@@ -1103,7 +1120,7 @@ Public Sub GotoMouse(X As Integer, Y As Integer, bStart As Boolean)
       ._EnsureVisibleAt(X, Y)
     End With
   Endif
-
+  
 End
 
 Public Sub SaveCursor()
@@ -1120,7 +1137,7 @@ Public Sub RestoreCursor()
 End
 
 Public Sub Reset()
-
+  
   $X = 0
   $Y = 0
   $SX = 0
@@ -1129,10 +1146,10 @@ Public Sub Reset()
   $Y1 = 0
   $X2 = 0
   $Y2 = 0
-
+  
   $iScrollStart = -1
   $iScrollEnd = -1
-
+  
   $hAttr.Reset
   
   AppCursorKey = False
@@ -1151,6 +1168,7 @@ End
 Public Sub DebugRefresh()
   
   If DEBUG_FILTER Then
+    Return
     GetView().Refresh
     Inc GetView()._DisableFilter
     Wait
@@ -1160,11 +1178,10 @@ Public Sub DebugRefresh()
   
 End
 
-
 Private Function HasMode_Read() As Boolean
-
+  
   If AppCursorKey Or If AppKeypad Or If Origin Or If InsertMode Or If NewlineMode Or If WrapMode Or If HideCursor Then Return True
-
+  
 End
 
 Public Sub GetSelectedText() As String
@@ -1199,7 +1216,6 @@ Public Sub UseCharset(iNum As Integer)
   
 End
 
-
 Public Sub SetCharset(iNum As Integer, sCharset As String)
   
   $aCharset[iNum] = Asc(sCharset)
@@ -1208,7 +1224,7 @@ Public Sub SetCharset(iNum As Integer, sCharset As String)
 End
 
 Private Sub ApplyGraphicCharset(sStr As String) As String
-
+  
   Dim sResult As String
   Dim I As Integer
   Dim C As Integer
@@ -1223,7 +1239,7 @@ Private Sub ApplyGraphicCharset(sStr As String) As String
   Next
   
   Return sResult
-
+  
 End
 
 Static Public Sub DrawLineChar(C As Integer, X As Integer, Y As Integer, W As Integer, H As Integer, XB As Integer, YB As Integer, bBold As Boolean) 
@@ -1240,7 +1256,7 @@ Static Public Sub DrawLineChar(C As Integer, X As Integer, Y As Integer, W As In
   
   iBg = Paint.Background
   hFont = Paint.Font
-
+  
   hChar = New Image(W, H, Color.Transparent)
   Paint.Begin(hChar)
   Paint.Background = iBg
@@ -1260,11 +1276,11 @@ Static Public Sub DrawLineChar(C As Integer, X As Integer, Y As Integer, W As In
   YC = H \ 2
   
   If C <= &H256F Then
-  
+    
     On C - &H2500 GoSub _2500, _2501, _2502, _2503, _2504, _2505, _2506, _2507, _2508, _2509, _250A, _250B, _250C, _250D, _250E, _250F, _2510, _2511, _2512, _2513, _2514, _2515, _2516, _2517, _2518, _2519, _251A, _251B, _251C, _251D, _251E, _251F, _2520, _2521, _2522, _2523, _2524, _2525, _2526, _2527, _2528, _2529, _252A, _252B, _252C, _252D, _252E, _252F, _2530, _2531, _2532, _2533, _2534, _2535, _2536, _2537, _2538, _2539, _253A, _253B, _253C, _253D, _253E, _253F, _2540, _2541, _2542, _2543, _2544, _2545, _2546, _2547, _2548, _2549, _254A, _254B, _254C, _254D, _254E, _254F, _2550, _2551, _2552, _2553, _2554, _2555, _2556, _2557, _2558, _2559, _255A, _255B, _255C, _255D, _255E, _255F, _2560, _2561, _2562, _2563, _2564, _2565, _2566, _2567, _2568, _2569, _256A, _256B, _256C, _256D, _256E, _256F
-
+    
   Else
-
+    
     On C - &H2570 GoSub _2570, _2571, _2572, _2573, _2574, _2575, _2576, _2577, _2578, _2579, _257A, _257B, _257C, _257D, _257E, _257F, _2580, _2581, _2582, _2583, _2584, _2585, _2586, _2587, _2588, _2589, _258A, _258B, _258C, _258D, _258E, _258F, _2590, _2591, _2592, _2593, _2594, _2595, _2596, _2597, _2598, _2599, _259A, _259B, _259C, _259D, _259E, _259F
     
   Endif
@@ -1304,7 +1320,7 @@ _2508:
 _2509:
 _254C:
 _254D:
-
+  
   If C = &H2504 Or If C = &H2505 Then
     D = W / 6
   Else If C = &H2508 Or If C = &H2509 Then
@@ -1312,7 +1328,7 @@ _254D:
   Else
     D = W / 4
   Endif
-
+  
   P = 0
   While P < W
     If Odd(C) Then
@@ -1324,16 +1340,16 @@ _254D:
   Wend
   Paint.Background = iBg
   Paint.Fill
-
+  
   Return
-
+  
 _2506:
 _2507:
 _250A:
 _250B:
 _254E:
 _254F:
-
+  
   If C = &H2506 Or If C = &H2507 Then
     D = H / 6
   Else If C = &H250A Or If C = &H250B Then
@@ -1341,7 +1357,7 @@ _254F:
   Else
     D = H / 4
   Endif
-
+  
   P = 0
   While P < H
     If Odd(C) Then
@@ -1353,9 +1369,9 @@ _254F:
   Wend
   Paint.Background = iBg
   Paint.Fill
-
+  
   Return
-
+  
 _250C:
   GoSub _RIGHT_S
   Goto _BOTTOM_S
@@ -1474,7 +1490,6 @@ _2523:
   GoSub _BOTTOM_H
   Goto _RIGHT_H
   
-
 _2524:
   GoSub _TOP_S
   GoSub _BOTTOM_S
@@ -1516,8 +1531,7 @@ _252B:
   GoSub _TOP_H
   GoSub _BOTTOM_H
   Goto _LEFT_H
-
-
+  
 _252C:
   GoSub _LEFT_S
   GoSub _RIGHT_S
@@ -1560,7 +1574,6 @@ _2533:
   GoSub _RIGHT_H
   Goto _BOTTOM_H
   
-  
 _2534:
   GoSub _LEFT_S
   GoSub _RIGHT_S
@@ -1602,8 +1615,7 @@ _253B:
   GoSub _LEFT_H
   GoSub _RIGHT_H
   Goto _BOTTOM_H
-
-
+  
 _253C:
   GoSub _LEFT_S
   GoSub _RIGHT_S
@@ -1718,21 +1730,21 @@ _2551:
   Paint.Operator = Paint.OperatorClear
   GoSub _TOP_S
   Goto _BOTTOM_S
-
+  
 _2552:
   GoSub _RIGHT_H
   Paint.Operator = Paint.OperatorClear
   GoSub _RIGHT_S
   Paint.Operator = Paint.OperatorOver
   Goto _BOTTOM_S
-
+  
 _2553:
   GoSub _BOTTOM_H
   Paint.Operator = Paint.OperatorClear
   GoSub _BOTTOM_S
   Paint.Operator = Paint.OperatorOver
   Goto _RIGHT_S
-
+  
 _2554:
   GoSub _CENTER_H
   GoSub _RIGHT_H
@@ -1747,14 +1759,14 @@ _2555:
   GoSub _LEFT_S
   Paint.Operator = Paint.OperatorOver
   Goto _BOTTOM_S
-
+  
 _2556:
   GoSub _BOTTOM_H
   Paint.Operator = Paint.OperatorClear
   GoSub _BOTTOM_S
   Paint.Operator = Paint.OperatorOver
   Goto _LEFT_S
-
+  
 _2557:
   GoSub _CENTER_H
   GoSub _LEFT_H
@@ -1769,14 +1781,14 @@ _2558:
   GoSub _RIGHT_S
   Paint.Operator = Paint.OperatorOver
   Goto _TOP_S
-
+  
 _2559:
   GoSub _TOP_H
   Paint.Operator = Paint.OperatorClear
   GoSub _TOP_S
   Paint.Operator = Paint.OperatorOver
   Goto _RIGHT_S
-
+  
 _255A:
   GoSub _CENTER_H
   GoSub _RIGHT_H
@@ -1791,14 +1803,14 @@ _255B:
   GoSub _LEFT_S
   Paint.Operator = Paint.OperatorOver
   Goto _TOP_S
-
+  
 _255C:
   GoSub _TOP_H
   Paint.Operator = Paint.OperatorClear
   GoSub _TOP_S
   Paint.Operator = Paint.OperatorOver
   Goto _LEFT_S
-
+  
 _255D:
   GoSub _CENTER_H
   GoSub _LEFT_H
@@ -1814,7 +1826,7 @@ _255E:
   Paint.Operator = Paint.OperatorOver
   GoSub _TOP_S
   Goto _BOTTOM_S
-
+  
 _255F:
   GoSub _RIGHT_S
   GoSub _TOP_H
@@ -1822,7 +1834,7 @@ _255F:
   Paint.Operator = Paint.OperatorClear
   GoSub _TOP_S
   Goto _BOTTOM_S
-
+  
 _2560:
   GoSub _TOP_H
   GoSub _BOTTOM_H
@@ -1839,7 +1851,7 @@ _2561:
   Paint.Operator = Paint.OperatorOver
   GoSub _TOP_S
   Goto _BOTTOM_S
-
+  
 _2562:
   GoSub _LEFT_S
   GoSub _TOP_H
@@ -1847,7 +1859,7 @@ _2562:
   Paint.Operator = Paint.OperatorClear
   GoSub _TOP_S
   Goto _BOTTOM_S
-
+  
 _2563:
   GoSub _TOP_H
   GoSub _BOTTOM_H
@@ -1856,7 +1868,7 @@ _2563:
   GoSub _TOP_S
   GoSub _BOTTOM_S
   Goto _LEFT_S
-
+  
 _2564:
   GoSub _BOTTOM_S
   GoSub _LEFT_H
@@ -1864,7 +1876,7 @@ _2564:
   Paint.Operator = Paint.OperatorClear
   GoSub _LEFT_S
   Goto _RIGHT_S
-
+  
 _2565:
   GoSub _BOTTOM_H
   Paint.Operator = Paint.OperatorClear
@@ -1872,7 +1884,7 @@ _2565:
   Paint.Operator = Paint.OperatorOver
   GoSub _LEFT_S
   Goto _RIGHT_S
-
+  
 _2566:
   GoSub _LEFT_H
   GoSub _RIGHT_H
@@ -1881,7 +1893,7 @@ _2566:
   GoSub _LEFT_S
   GoSub _RIGHT_S
   Goto _BOTTOM_S
-
+  
 _2567:
   GoSub _TOP_S
   GoSub _LEFT_H
@@ -1889,7 +1901,7 @@ _2567:
   Paint.Operator = Paint.OperatorClear
   GoSub _LEFT_S
   Goto _RIGHT_S
-
+  
 _2568:
   GoSub _TOP_H
   Paint.Operator = Paint.OperatorClear
@@ -1897,7 +1909,7 @@ _2568:
   Paint.Operator = Paint.OperatorOver
   GoSub _LEFT_S
   Goto _RIGHT_S
-
+  
 _2569:
   GoSub _LEFT_H
   GoSub _RIGHT_H
@@ -1906,7 +1918,7 @@ _2569:
   GoSub _LEFT_S
   GoSub _RIGHT_S
   Goto _TOP_S
-
+  
 _256A:
   GoSub _TOP_S
   GoSub _BOTTOM_S
@@ -1915,7 +1927,7 @@ _256A:
   Paint.Operator = Paint.OperatorClear
   GoSub _LEFT_S
   Goto _RIGHT_S
-
+  
 _256B:
   GoSub _LEFT_S
   GoSub _RIGHT_S
@@ -1924,7 +1936,7 @@ _256B:
   Paint.Operator = Paint.OperatorClear
   GoSub _TOP_S
   Goto _BOTTOM_S
-
+  
 _256C:
   GoSub _LEFT_H
   GoSub _RIGHT_H
@@ -1935,7 +1947,7 @@ _256C:
   GoSub _RIGHT_S
   GoSub _TOP_S
   Goto _BOTTOM_S
-
+  
 _256D:
 _256E:
 _256F:
@@ -1949,7 +1961,7 @@ _2571:
   Paint.LineTo(W, 0)
   Paint.Stroke
   Return
-
+  
 _2572:
   Paint.AntiAlias = False
   Paint.LineWidth = L
@@ -1961,7 +1973,7 @@ _2572:
 _2573:
   GoSub _2571
   Goto _2572
-
+  
 _2574:
   Goto _LEFT_S
   
@@ -2001,7 +2013,7 @@ _257E:
 _257F:
   GoSub _BOTTOM_S
   Goto _TOP_H
-
+  
 _2580:
   Paint.FillRect(0, 0, W, H / 2, iBg)
   Return
@@ -2016,7 +2028,7 @@ _2587:
 _2588:
   Paint.FillRect(0, H, W, - Max(1, (C - &H2580) * H / 8), iBg)
   Return
-
+  
 _2589:
 _258A:
 _258B:
@@ -2026,29 +2038,29 @@ _258E:
 _258F:
   Paint.FillRect(0, 0, Max(1, W - (C - &H2588) * W / 8), H, iBg)
   Return
-
+  
 _2590:
   Paint.FillRect(W, 0, - W / 2, H, iBg)
   Return
-
+  
 _2591:
-
+  
   If Not $hBrushLight Then $hBrushLight = Image.Load("brush_light.png")
   Paint.Brush = Paint.Image($hBrushLight, - XB, - YB)
   Goto _DRAW_BRUSH
   
 _2592:
-
+  
   If Not $hBrushMedium Then $hBrushMedium = Image.Load("brush_medium.png")
   Paint.Brush = Paint.Image($hBrushMedium, - XB, - YB)
   Goto _DRAW_BRUSH
   
 _2593:
-
+  
   If Not $hBrushDark Then $hBrushDark = Image.Load("brush_dark.png")
   Paint.Brush = Paint.Image($hBrushDark, - XB, - YB)
   Goto _DRAW_BRUSH
-
+  
 _2594:
   Paint.FillRect(0, 0, W, H / 8, iBg)
   Return
@@ -2056,8 +2068,7 @@ _2594:
 _2595:
   Paint.FillRect(W * 7 / 8, 0, W / 8, H, iBg)
   Return
-
-
+  
 _2596:
   Paint.FillRect(0, H / 2, W / 2, H / 2, iBg)
   Return
@@ -2091,7 +2102,7 @@ _259C:
 _259D:
   Paint.FillRect(W / 2, 0, W / 2, H / 2, iBg)
   Return
-
+  
 _259E:
   GoSub _259D
   Goto _2596
@@ -2100,73 +2111,117 @@ _259F:
   Paint.FillRect(W, 0, - W / 2, H, iBg)
   Paint.FillRect(0, H, W, - H / 2, iBg)
   Return
-
-
+  
 _DRAW_BRUSH:  
-
+  
   Paint.Rectangle(0, 0, W, H)
   Paint.Fill
   Return
-
+  
 _LEFT_S:
-
+  
   Paint.FillRect(0, YC - DL, XC + L - DL, L, iBg)
   Return
   
 _RIGHT_S:
-
+  
   Paint.FillRect(XC - DL, YC - DL, W - XC + DL, L, iBg)
   Return
   
 _TOP_S:
-
+  
   Paint.FillRect(XC - DL, 0, L, YC + L - DL, iBg)
   Return
   
 _BOTTOM_S:
-
+  
   Paint.FillRect(XC - DL, YC - DL, L, H - YC + DL, iBg)
   Return
   
 _LEFT_H:
-
+  
   Paint.FillRect(0, YC - DL3, XC + L - DL, L3, iBg)
   Return
   
 _RIGHT_H:
-
+  
   Paint.FillRect(XC - DL, YC - DL3, W - XC + DL, L3, iBg)
   Return
   
 _TOP_H:
-
+  
   Paint.FillRect(XC - DL3, 0, L3, YC + L - DL, iBg)
   Return
   
 _BOTTOM_H:
-
+  
   Paint.FillRect(XC - DL3, YC - DL, L3, H - YC + DL, iBg)
   Return
   
 _CENTER_H:
-
+  
   Paint.FillRect(XC - DL3, YC - DL3, L3, L3, iBg)
   Return
   
 _CENTER_SH:
-
+  
   Paint.FillRect(XC - DL3, YC - DL, L3, L, iBg)
   Return
   
 _CENTER_SV:
-
+  
   Paint.FillRect(XC - DL, YC - DL3, L, L3, iBg)
   Return
-
+  
 _DRAW_CHAR:
-
+  
   Paint.Font = hFont
   Paint.DrawText(String.Chr$(C), 0, 0, W, H, Align.Center)
   Return
+  
+End
+
+Private Sub IsWordChar(C As String) As Boolean
+
+  If Len(C) = 1 Then
+    If IsLetter(C) Or If IsDigit(C) Then Return True
+    If InStr(":@-./_~?&=%+#", C) Then Return True
+  Else
+    Return True
+  Endif
+
+End
+
+Public Sub SelectCurrentWord(X As Integer, Y As Integer)
+
+  Dim hLine As CTerminalLine
+  Dim XR As Integer
+  Dim C As String
+  Dim XL As Integer
+  Dim bCheck As Boolean
+
+  Try hLine = Lines[Y]
+  If Error Then Return
+  If X < 0 Or If X >= $W Or If X >= hLine.Length Then Return
+  
+  C = String.Mid$(hLine.Text, X, 1)
+  bCheck = Not IsWordChar(C)
+
+  XR = X + 1
+  While XR <= hLine.Length
+    C = String.Mid$(hLine.Text, XR, 1)
+    If IsWordChar(C) = bCheck Then Break
+    Inc XR
+  Wend
+
+  XL = X - 1
+  While XL > 0
+    C = String.Mid$(hLine.Text, XL, 1)
+    If IsWordChar(C) = bCheck Then Break
+    Dec XL
+  Wend
+
+  GotoMouse(XL, Y, True)
+  GotoMouse(XR - 1, Y, False)
 
 End

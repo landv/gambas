@@ -2,7 +2,7 @@
 
   gbx_api.h
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -193,13 +193,14 @@ void GB_HashTableAdd(GB_HASHTABLE hash, const char *key, int len, void *data);
 void GB_HashTableRemove(GB_HASHTABLE hash, const char *key, int len);
 bool GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data);
 void GB_HashTableEnum(GB_HASHTABLE hash, GB_HASHTABLE_ENUM_FUNC func);
+bool GB_HashTableFirst(GB_HASHTABLE hash, void **data);
 
 void GB_NewArray(void *pdata, int size, int count);
 int GB_CountArray(void *data);
 void *GB_Add(void *pdata);
 
 GB_STREAM *GB_StreamGet(void *);
-void GB_StreamSetBytesRead(GB_STREAM *, int);
+//void GB_StreamSetBytesRead(GB_STREAM *, int);
 void GB_StreamSetSwapping(GB_STREAM *, int);
 void GB_StreamSetAvailableNow(GB_STREAM *, int);
 bool GB_StreamBlock(GB_STREAM *, int);

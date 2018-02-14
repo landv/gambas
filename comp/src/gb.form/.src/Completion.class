@@ -68,6 +68,13 @@ Public Sub Open()
 
 End
 
+Public Sub Close()
+  
+  HideList
+  
+End
+
+
 Public Sub TextBox_Change()
 
   If Last.Length = 0 Then HideList
@@ -104,6 +111,10 @@ Public Sub TextBox_KeyPress()
         iRow = Max(0, $hList.Row - If(Key.Code = Key.Up, 1, $hList.ClientH \ $hList.Rows.H))
         $hList.Row = iRow
         Stop Event
+        Return
+        
+      Case Key.Left, Key.Right
+        HideList
         Return
 
       Case Key.Home

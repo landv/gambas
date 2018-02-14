@@ -69,6 +69,7 @@ End
 Public Sub ShowButton(iTab As Integer, bShow As Boolean)
   
   Dim hButton As ToolButton = Me.Children[iTab]
+  If hButton.Value And If Not bShow Then FMain.ShowDebug(False)
   hButton.Visible = bShow
   
 End

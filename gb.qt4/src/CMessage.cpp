@@ -2,7 +2,7 @@
 
   CMessage.cpp
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@ static int make_message(int type, int nbmax, void *_param)
 	QWidget *parent;
 	int i, n;
 	QMessageBox *mb;
+	bool busy = FALSE;
 	
 	if (MAIN_CHECK_INIT())
 		return 0;
@@ -198,9 +199,19 @@ static int make_message(int type, int nbmax, void *_param)
 	
 	// Run the message box
 	
+	if (qApp->overrideCursor())
+	{
+		qApp->restoreOverrideCursor();
+		busy = TRUE;
+	}
+			
+	
 	GB.Debug.EnterEventLoop();
 	mb->exec();
 	GB.Debug.LeaveEventLoop();
+	
+	if (busy)
+		qApp->setOverrideCursor(Qt::WaitCursor);
 	
 	//CWINDOW_ensure_active_window();
 	if (parent)

@@ -41,6 +41,8 @@ Public Sub Form_Open()
     fchIcon.Root = Project.Dir
   Endif
   
+  fchIcon.Filter = aFilter
+  
   cmbSize.List = ["small", "medium", "large", "huge", "16", "22", "32", "48", "64", "96", "128"]
   
   tabIcon[1].Visible = $iOption And SELECT_STOCK

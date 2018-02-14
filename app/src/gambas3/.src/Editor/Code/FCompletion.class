@@ -30,6 +30,25 @@ Private $bGambas As Boolean
 
 Private $bHideLater As Boolean
 
+Private $cFindStrings As Collection
+Static Private $sWordSeparators As String
+Private $bStatic As Boolean
+Private $bPrivate As Boolean
+
+Static Public Sub _init()
+
+  Dim I As Integer
+  Dim sCar As String
+  
+  For I = 0 To 127
+    sCar = Chr$(I)
+    If IsDigit(sCar) Or If IsLetter(sCar) Or If sCar = "_" Or If sCar = "$" Then Continue
+    $sWordSeparators &= sCar
+  Next
+  
+End
+
+
 Public Sub _new()
   
   gvwComp.Columns.Count = 1
@@ -67,7 +86,7 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
 
   $hForm = hForm
   $hEditor = hForm.GetEditor()
-  Me.Font = $hEditor.font
+  Me.Font = $hEditor.Font
 
   Inc Application.Busy
 
@@ -90,6 +109,8 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
         Return
       Endif 
       $sClass = sClass
+      $bStatic = bStatic
+      $bPrivate = bPrivate
       FillWithSymbol(sClass, bStatic, bPrivate)
     Case " "
       $bGambas = True
@@ -224,10 +245,15 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
 End
 
 
-Public Sub SetText(sText As String)
+Public Sub SetText(sText As String, Optional bInsert As Boolean) As Boolean
   
   $sText = sText
-  FindItem(True)
+  
+  If $sMode = "." And If $sText Begins "_" Then
+    FillWithSymbol($sClass, $bStatic, $bPrivate, True)
+  Endif
+
+  Return FindItem(Not bInsert)
   
 End
 
@@ -384,12 +410,13 @@ End
 '   }
 ' }
 
-Private Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Boolean)
+Private Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Boolean, Optional bHidden As Boolean)
 
   Dim cSymbol As Collection
   Dim hSymbol As CSymbolInfo
   Dim aSymbol As New String[]
   Dim sSymbol As String
+  Dim sName As String
 
   ClearRows
 
@@ -399,16 +426,31 @@ Private Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Boo
   If Project.Documentation.IsAutoCreatable(sClass) Then bStatic = False
 
   For Each hSymbol In cSymbol
+    
     If hSymbol.NotPublic <> bPrivate Then Continue
-    If Left(hSymbol.Name) = "_" And If hSymbol.Component Then Continue
-    If hSymbol.Kind = "m" And If InStr(hSymbol.Name, "_") Then Continue
+    
+    sName = hSymbol.Name
+    
+    If bHidden Then
+      If Left(sName) = "_" And If hSymbol.Component Then Continue
+    Else
+      If hSymbol.Kind = "C" Then
+        If sName Begins "_" Then Continue
+      Else
+        If InStr(sName, "_") Then Continue
+      Endif
+    Endif
+    
     If hSymbol.Kind = ":" Then Continue
+    
     If bStatic Then
       If UCase(hSymbol.Kind) <> hSymbol.Kind Then
         Continue
       Endif
     Endif
-    aSymbol.Add(hSymbol.Name)
+    
+    aSymbol.Add(sName)
+    
   Next
 
   aSymbol.Sort(gb.IgnoreCase + gb.Natural)
@@ -476,7 +518,6 @@ Private Sub FillWithIdent(sWord As String)
 
   Dim sLine As String
   Dim iPos As Integer
-  Dim iPos2 As Integer
   Dim sCar As String
   Dim aResult As New String[]
   Dim cKey As New Collection
@@ -484,9 +525,13 @@ Private Sub FillWithIdent(sWord As String)
   Dim cSymbol As Collection
   Dim sOrg As String
   Dim iLine As Integer
-  Dim sUCaseLine As String
   Dim aKeywords As String[]
   Dim aFind As Integer[]
+  Dim fTimer As Float
+  Dim sSearchLine As String
+  Dim sSearchWord As String
+  Dim aSearchWord As String[]
+  Dim aResultWord As String[]
 
   ClearRows
 
@@ -544,37 +589,72 @@ Private Sub FillWithIdent(sWord As String)
     Next
   Endif
   
-  aFind = $hEditor.FindStrings(Left(sWord, 3))
+  If Not $hEditor.IsSameFindStrings(String.Left(sWord, 3)) Then
   
-  For Each iLine In aFind
+    fTimer = Timer
   
-    If $bGambas Then
-      sLine = Highlight.Purge($hEditor[iLine].Text)
-    Else
-      sLine = $hEditor[iLine].Text
-    Endif
-    sUCaseLine = String.UCase(sLine) ' Only ASCII characters are interesting there...
-  
-    iPos = 0
-    Do
-      Inc iPos
-      iPos = String.InStr(sUCaseLine, sWord, iPos)
-      If iPos = 0 Then Break
-      If iPos > 1 Then
-        sCar = String.Mid$(sLine, iPos - 1, 1)
-        If $hForm.IsWordChar(sCar) Then Break
-      Endif
-      For iPos2 = iPos + String.Len(sWord) To String.Len(sLine)
-        sCar = String.Mid$(sLine, iPos2, 1)
-        If Not $hForm.IsWordChar(sCar) Then Break
-      Next
-      sCar = String.Mid$(sLine, iPos, iPos2 - iPos)
-      If IsDigit(Left$(sCar)) Then Continue 
-      If cKey.Exist(sCar) Then Continue
-      aResult.Add(sCar & " " & MHelp.TYPE_SYMBOL)
-      cKey[sCar] = True
-    Loop
-  
+    $cFindStrings = New Collection
+    aFind = $hEditor.FindStrings(String.Left(sWord, 3))
+    
+    fTimer = Timer
+    
+    For Each iLine In aFind
+    
+      If iLine = $hEditor.Line Then Continue
+      'If $bGambas Then
+        'sLine = Highlight.Purge($hEditor[iLine].Text)
+      'Else
+        sLine = $hEditor[iLine].Text
+      'Endif
+      
+      sSearchLine = String.RemoveDiacritics(sLine)
+      sSearchWord = LCase(String.RemoveDiacritics(sWord))
+      
+      aSearchWord = Split(sSearchLine, $sWordSeparators, "", True)
+      aResultWord = Split(sLine, $sWordSeparators, "", True)
+      
+      iPos = -1
+      Do
+        iPos = aSearchWord.Find(sSearchWord & "*", gb.Like, iPos + 1)
+        If iPos < 0 Then Break
+        sCar = aResultWord[iPos]
+        If IsDigit(Left$(sCar)) Then Continue 
+        If $cFindStrings.Exist(sCar) Then Continue
+        $cFindStrings[sCar] = True
+      Loop
+      
+      ' sUCaseLine = String.UCase(sLine) ' Only ASCII characters are interesting there...
+      ' 
+      ' iPos = 0
+      ' Do
+      '   Inc iPos
+      '   iPos = String.InStr(sUCaseLine, sWord, iPos)
+      '   If iPos = 0 Then Break
+      '   If iPos > 1 Then
+      '     sCar = String.Mid$(sLine, iPos - 1, 1)
+      '     If $hForm.IsWordChar(sCar) Then Break
+      '   Endif
+      '   For iPos2 = iPos + String.Len(sWord) To String.Len(sLine)
+      '     sCar = String.Mid$(sLine, iPos2, 1)
+      '     If Not $hForm.IsWordChar(sCar) Then Break
+      '   Next
+      '   sCar = String.Mid$(sLine, iPos, iPos2 - iPos)
+      '   If IsDigit(Left$(sCar)) Then Continue 
+      '   
+      '   If $cFindStrings.Exist(sCar) Then Continue
+      '   $cFindStrings[sCar] = True
+      '   
+      ' Loop
+    
+    Next
+    
+  Endif
+    
+  For Each $cFindStrings
+    sCar = $cFindStrings.Key
+    If cKey.Exist(sCar) Then Continue
+    aResult.Add(sCar & " " & MHelp.TYPE_SYMBOL)
+    cKey[sCar] = True
   Next
 
   If $bGambas Then
@@ -736,8 +816,7 @@ Public Function ManageKey() As Boolean
     Case Key.Backspace
       'Debug $iLen;; $sText
       If String.Len($sText) > $iLen Then
-        $sText = String.Left$($sText, -1)
-        FindItem
+        SetText(String.Left$($sText, -1))
       Else
         $bHideLater = True
         timHideLater.Trigger
@@ -757,25 +836,37 @@ Public Function ManageKey() As Boolean
       If Key.Text Then
 
         If $sMode = "/" Then
+          
           $sText &= Key.Text
           Return FindItem()
+          
         Else If InStr(FEditor.IDENT_CAR, Key.Text) Then
+          
           If Key.Text = "_" Then 
             If GetEvents($sText) Then 
               Me.Hide
               Return 
             Endif
           Endif
-          $sText &= Key.Text
-          Return FindItem()
+        
+          Return SetText($sText & Key.Text, True)
+          
         Else If Key.Text = "[" And If Not $sText Then
+          
           Me.Hide
+          
         Else If $bGambas And If InStr("([.!", Key.Text) > 0 And If InStr(". A<", $sMode) Then
+          
           InsertItem
+          
         Else
+          
           Me.Hide
+          
         Endif
+        
         Return False
+        
       Endif
 
   End Select

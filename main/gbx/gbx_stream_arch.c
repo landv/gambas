@@ -2,7 +2,7 @@
 
 	gbx_stream_arch.c
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -79,31 +79,25 @@ static int stream_close(STREAM *stream)
 
 static int stream_read(STREAM *stream, char *buffer, int len)
 {
-	bool strip = FALSE;
 	int max;
 
 	max = stream->arch.size - stream->arch.pos;
 
 	if (len > max)
 	{
-		strip = TRUE;
 		len = max;
 		errno = 0;
 	}
 
-	if (ARCHIVE_read(stream->arch.arch, stream->arch.start + stream->arch.pos, buffer, len))
-		strip = TRUE;
-
+	ARCHIVE_read(stream->arch.arch, stream->arch.start + stream->arch.pos, buffer, len);
 	stream->arch.pos += len;
-	STREAM_eff_read = len;
-
-	return strip;
+	return len;
 }
 
 
 static int stream_write(STREAM *stream, char *buffer, int len)
 {
-	return TRUE;
+	return -1;
 }
 
 
@@ -135,9 +129,6 @@ static int stream_seek(STREAM *stream, int64_t pos, int whence)
 	stream->arch.pos = (int)new_pos;
 	return FALSE;
 }
-
-#define stream_getchar NULL
-
 
 static int stream_tell(STREAM *stream, int64_t *pos)
 {

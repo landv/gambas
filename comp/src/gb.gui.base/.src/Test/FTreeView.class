@@ -11,6 +11,7 @@ Public Sub Form_Open()
   Dim hDirPict As Picture
   Dim hFilePict As Picture
   Dim sParent As String
+  Dim bDark As Boolean
   
   Component.Load("gb.form")
   
@@ -27,7 +28,12 @@ Public Sub Form_Open()
     'Print File.Name(sPath); " -> "; File.Dir(sPath)
     sParent = File.Dir(sPath)
     If sParent = sDir Then sParent = ""
-    tvwTest.Add(sPath, File.Name(sPath), If(IsDir(sPath), hDirPict, hFilePict), sParent)[1] = Stat(sPath).Size
+    With tvwTest.Add(sPath, File.Name(sPath), If(IsDir(sPath), hDirPict, hFilePict), sParent)
+      .[1] = Stat(sPath).Size
+      bDark = Not bDark
+      If bDark Then .Background = Color.RGB(245, 245, 245)
+      If InStr(sPath, "zip") Then .Foreground = Color.Red
+    End With
     'ListView1.Add(sPath, File.Name(sPath), If(IsDir(sPath), hDirPict, hFilePict))
   Next
   
@@ -130,6 +136,6 @@ End
 
 Public Sub Button5_Click()
 
-  tvwTest.Key = $sKey
+  tvwTest.Current.Rename
 
 End

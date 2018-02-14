@@ -116,7 +116,7 @@ Public Sub Request_Finished()
   Endif
   
   sResult = $hForm.Peek()
-  aResult = Split(sResult, "\r\n", "", True)
+  aResult = Split(Replace(sResult, "\r", ""), "\n")
   If aResult.Count = 0 Or If aResult[0] <> "10 OK" Then
     If aResult.Count Then
       iPos = InStr(aResult[0], " ")
@@ -267,7 +267,7 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
     Next
   Endif
   
-  If Project.Language Then AddLanguageTag(aTag, Project.Language)
+  If Project.DefaultLanguage Then AddLanguageTag(aTag, Project.DefaultLanguage)
   
   If Project.Type = Project.TYPE_LIBRARY Then AddTag(aTag, "library")
   

@@ -2,7 +2,7 @@
 
   qimage.h
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -73,10 +73,11 @@ public:
 	QImage(const QSize &size, bool t);
 	QImage(GB_IMAGE img);
 	~QImage();
+	QImage(const QImage &copy);
 	void reset() { };
 	void release();
 	void create(int w, int h, bool t);
-	GB_IMAGE object() { created = false; MODIFY_IMAGE(img); return (GB_IMAGE)img; }
+	GB_IMAGE object() const { return (GB_IMAGE)img; }
 	int depth() const { return 32; }
 	int width() const { return img->width; }
 	int height() const { return img->height; }
@@ -97,12 +98,11 @@ public:
 private:
 
 	void init();
-	void getInfo();
+	void check();
 
 	GB_IMG *img;
 	int bpl;
 	bool inv;
-	bool created;
 	uchar **jt;
 };
 

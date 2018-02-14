@@ -10,6 +10,13 @@ trunk_version.h:
 		if test ../.svn/wc.db -nt trunk_version.h || test ../.svn/entries -nt trunk_version.h; then \
 			echo '#define TRUNK_VERSION "'`LC_ALL=C svn info 2>/dev/null | grep Revision | egrep -wo [0-9]+`'"' > trunk_version.h; \
 		fi \
+	elif test -d ../.git ; then \
+		GIT_BRANCH=`git rev-parse --abbrev-ref HEAD`; \
+		if test ../.git/refs/heads/$$GIT_BRANCH -nt trunk_version.h; then \
+			GIT_HASH=`git rev-parse --short HEAD`; \
+			echo '#define TRUNK_VERSION "'$$GIT_HASH' ('$$GIT_BRANCH')"' > trunk_version.h; \
+			echo '#define TRUNK_VERSION_GIT 1' >> trunk_version.h; \
+		fi; \
 	else \
 		touch trunk_version.h; \
 	fi

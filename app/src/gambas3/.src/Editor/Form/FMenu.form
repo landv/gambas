@@ -92,6 +92,7 @@
         Border = False
         Mode = Select.Multiple
         Grid = False
+        Padding = 0
       }
       { Separator5 Separator
         MoveScaled(34,11,0,21)
@@ -100,6 +101,13 @@
         MoveScaled(41,1,64,59)
         Spacing = True
         Margin = True
+        { lblCreate Label
+          MoveScaled(3,2,37,4)
+          Font = Font["Italic"]
+          AutoResize = True
+          Text = ("Click on Insert to add a new menu.")
+          Alignment = Align.TopNormal
+        }
         { panMenu HPanel
           MoveScaled(2,1,59,56)
           Expand = True
@@ -271,13 +279,6 @@
             #Translate = False
             Expand = True
           }
-        }
-        { lblCreate Label
-          MoveScaled(3,2,37,4)
-          Font = Font["Italic"]
-          AutoResize = True
-          Text = ("Click on Insert to add a new menu.")
-          Alignment = Align.TopNormal
         }
       }
     }

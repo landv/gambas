@@ -2,7 +2,7 @@
 
   helper.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -41,8 +41,6 @@ typedef
 	COLLECTION_ADD;
 
 bool DBUS_Debug = FALSE;
-
-static int _watch_count = 0;
 
 static void handle_message(int fd, int type, DBusConnection *connection)
 {
@@ -245,6 +243,7 @@ static char *array_from_dbus_type(const char *signature)
 			
 			if (type_contents != type)
 				strcpy(type, type_contents);
+			GB.GetArrayClass(GB.FindClass(type));
 			strcat(type, "[]");
 			return type;
 		}
@@ -1275,15 +1274,32 @@ static bool get_socket(DBusConnection *connection, int *socket)
 
 bool DBUS_watch(DBusConnection *connection, bool on)
 {
+	intptr_t count;
 	int socket;
+	static dbus_int32_t slot = -1;
 	
+	if (!dbus_connection_allocate_data_slot(&slot))
+	{
+		GB.Error("Unable to allocate DBusConnection data slot");
+		return TRUE;
+	}
+		
 	if (get_socket(connection, &socket))
 		return TRUE;
 	
+	count = (intptr_t)dbus_connection_get_data(connection, slot);
+	
 	if (on)
 	{
-		if (_watch_count == 0)
+		if (count == 0)
 		{
+			count++;
+			if (!dbus_connection_set_data(connection, slot, (void *)count, NULL))
+			{
+				GB.Error("Unable to increment watch count");
+				return TRUE;
+			}
+			
 			if (!dbus_connection_add_filter(connection, filter_func, NULL, NULL))
 			{
 				GB.Error("Unable to watch the DBus connection");
@@ -1296,12 +1312,17 @@ bool DBUS_watch(DBusConnection *connection, bool on)
 			GB.Watch(socket, GB_WATCH_READ, (void *)handle_message, (intptr_t)connection);
 			check_message(connection);
 		}
-		_watch_count++;
 	}
 	else
 	{
-		_watch_count--;
-		if (_watch_count == 0)
+		count--;
+		if (!dbus_connection_set_data(connection, slot, (void *)count, NULL))
+		{
+			GB.Error("Unable to decrement watch count");
+			return TRUE;
+		}
+			
+		if (count == 0)
 		{
 			if (DBUS_Debug)
 				fprintf(stderr, "gb.dbus: stop watching connection\n");

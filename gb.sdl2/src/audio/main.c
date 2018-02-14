@@ -2,7 +2,7 @@
 
   main.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ bool AUDIO_initialized = FALSE;
 
 //-------------------------------------------------------------------------
 
-static void init_mixer(int flag, const char *name)
+static void init_mixer(int flag)
 {
 	if ((Mix_Init(flag) & flag) != flag)
 		fprintf(stderr, "gb.sdl2.audio: warning: %s\n", Mix_GetError());
@@ -54,11 +54,16 @@ bool AUDIO_init()
 	if (AUDIO_initialized)
 		return FALSE;
 
-	init_mixer(MIX_INIT_MP3, "MP3");
-	init_mixer(MIX_INIT_OGG, "OGG");
-	init_mixer(MIX_INIT_MOD, "MOD");
-	init_mixer(MIX_INIT_FLAC, "FLAC");
-	init_mixer(MIX_INIT_FLUIDSYNTH, "FLUIDSYNTH");
+	init_mixer(MIX_INIT_MP3);
+	init_mixer(MIX_INIT_OGG);
+	init_mixer(MIX_INIT_MOD);
+	init_mixer(MIX_INIT_FLAC);
+#ifdef MIX_INIT_FLUIDSYNTH
+	init_mixer(MIX_INIT_FLUIDSYNTH);
+#endif
+#ifdef MIX_INIT_MID
+	init_mixer(MIX_INIT_MID);
+#endif
 
 	if (Mix_OpenAudio(AUDIO_frequency, MIX_DEFAULT_FORMAT, 2, AUDIO_buffer_size))
 	{

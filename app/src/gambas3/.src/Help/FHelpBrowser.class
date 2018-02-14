@@ -1,10 +1,10 @@
 ' Gambas class file
 
-Property Read {Error} As Boolean
+'Property Read {Error} As Boolean
 
 Static Private $aLang As String[] = ["en", "fr", "de", "es", "it", "nl", "pl", "pt", "pt_BR", "mk", "sq", "ca", "hu", "tr", "ar", "fa", "vi", "ko", "ja", "ru", "zh", "zh_TW", "eo"]
 
-Private $bError As Boolean
+'Private $bError As Boolean
 Private $bPrint As Boolean
 Private mnuLang As Menu
 Private $bFirstTime As Boolean
@@ -183,11 +183,11 @@ Public Sub btnWebSite_Click()
   
 End
 
-Private Function Error_Read() As Boolean
-  
-  Return $bError
-  
-End
+' Private Function Error_Read() As Boolean
+'   
+'   Return $bError
+'   
+' End
 
 ' Public Sub btnModify_Click()
 '   

@@ -33,6 +33,41 @@ Static Public Sub SubstHeader(sHeader As String, Optional sLang As String) As St
   
 End
 
+Private Sub CheckTranslate(sMsgComment As String, cCache As Collection) As String
+
+  Dim iPos As Integer
+  Dim sFile As String
+  Dim sPath As String
+  Dim aFile As String[]
+  Dim I As Integer
+  Dim aResult As New String[]
+  Dim bShouldTranslate As Boolean
+  
+  aFile = Split(sMsgComment, " ", "", True)
+  For I = 0 To aFile.Max
+    sFile = aFile[I]
+    If sFile Begins "." Then 
+      aResult.Add(sFile)
+    Else
+      sPath = sFile
+      iPos = InStr(sPath, ":")
+      If iPos Then sPath = Left(sPath, iPos - 1)
+      
+      If cCache.Exist(sPath) Then 
+        bShouldTranslate = cCache[sPath]
+      Else
+        bShouldTranslate = Project.ShouldTranslate(Project.FindPath(sPath), True)
+        cCache[sPath] = bShouldTranslate
+      Endif
+      
+      If bShouldTranslate Then aResult.Add(sFile)
+      
+    Endif
+  Next
+  
+  Return aResult.Join(" ")
+  
+End
 
 Private Sub LoadTranslation(sLang As String) 
   
@@ -45,6 +80,8 @@ Private Sub LoadTranslation(sLang As String)
   Dim iMode As Integer
   Dim bFuzzy As Boolean
   Dim iPos As Integer
+  Dim cCache As New Collection
+  Dim cKey As New Collection
   
   sPath = Language.GetPath(sLang, "po")
   If Not Exist(sPath) Then Return 
@@ -72,7 +109,7 @@ Private Sub LoadTranslation(sLang As String)
       If Left$(sLine) = "#" Then
 
         If Left$(sLine, 2) = "#:" Then
-          sMsgComment = Trim(Mid$(sLine, 3))
+          sMsgComment = Trim(sMsgComment & " " & Mid$(sLine, 3))
           Continue
         Endif
 
@@ -110,8 +147,23 @@ Private Sub LoadTranslation(sLang As String)
 
     If Trim(sMsgId) Then
 
+      If sMsgComment Then
+        sMsgComment = CheckTranslate(sMsgComment, cCache)
+        If Not sMsgComment Then 
+          sMsgId = ""
+          sMsgComment = ""
+          sMsgStr = ""
+          Continue
+        Endif
+      Endif
+
       'Inc iIndex
-      Keys.Add(sMsgId)
+      If Not cKey.Exist(sMsgId) Then
+        Keys.Add(sMsgId)
+        cKey[sMsgId] = True
+      Else
+        Error "gambas3: warning: duplicate translation: "; sMsgId
+      Endif
 
       If sMsgStr = "-\\n" Then sMsgStr = "-"
       

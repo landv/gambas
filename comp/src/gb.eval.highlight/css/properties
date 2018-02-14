@@ -1,185 +1,232 @@
-background-attachment
-background-color
-background-image
-background-position
-background-repeat
-background
-border-collapse
-border-color
-border-spacing
-border-style
-border-top border-right border-bottom border-left
-border-top-color border-right-color border-bottom-color border-left-color
-border-top-style border-right-style border-bottom-style border-left-style
-border-top-width border-right-width border-bottom-width border-left-width 
-border-width 
-border 
-bottom 
-caption-side 
-clear 
-clip 
-color 
-content 
-counter-increment 
-counter-reset 
-cursor 
-direction 
-display 
-empty-cells 
-float 
-font-family 
-font-size 
-font-style 
-font-variant 
-font-weight 
-font 
-height 
-left 
-letter-spacing 
-line-height 
-list-style-image 
-list-style-position 
-list-style-type 
-list-style 
-margin-right margin-left 
-margin-top margin-bottom 
-margin 
-max-height 
-max-width 
-min-height 
-min-width 
-opacity 
-orphans 
-outline-color 
-outline-style 
-outline-width 
-outline 
-overflow overflow-x overflow-y
-padding-top padding-right padding-bottom padding-left 
-padding 
-page-break-after 
-page-break-before 
-page-break-inside 
-position 
-quotes 
-right 
-table-layout 
-text-align 
-text-decoration 
-text-indent 
-text-transform 
-top 
-unicode-bidi 
-vertical-align 
-visibility 
-white-space 
-widows 
-width 
-word-spacing 
-z-index
-
-background 
-background-attachment 
-background-clip 
-background-color 
-background-image 
-background-origin 
-background-position 
-background-repeat 
-background-size 
-border 
-border-color 
-border-image 
-border-image-outset 
-border-image-repeat 
-border-image-slice 
-border-image-source 
-border-image-width 
-border-radius 
-border-style 
-border-top, border-right, border-bottom, border-left 
-border-top-color , border-right-color, border-bottom-color, border-left-color 
-border-top-right-radius, border-bottom-right-radius, border-bottom-left-radius, border-top-left-radius 
-border-top-style, border-right-style, border-bottom-style, border-left-style 
-border-top-width, border-right-width, border-bottom-width, border-left-width 
-border-width 
-box-decoration-break 
-box-shadow
-box-sizing
-
-hanging-punctuation 
-hyphens 
-letter-spacing 
-line-break 
-overflow-wrap 
-tab-size 
-text-align 
-text-align-last 
-text-decoration 
-text-decoration-color 
-text-decoration-line 
-text-decoration-skip 
-text-decoration-style 
-text-emphasis 
-text-emphasis-color 
-text-emphasis-position 
-text-emphasis-style 
-text-indent 
-text-justify 
-text-shadow 
-text-space-collapse 
-text-transform 
-text-underline-position 
-text-wrap 
-white-space 
-word-break 
-word-spacing 
-
-font 
-font-family 
-font-feature-settings 
-font-kerning 
-font-language-override 
-font-size 
-font-size-adjust 
-font-stretch 
-font-style 
-font-synthesis 
-font-variant 
-font-variant-alternates 
-font-variant-caps 
-font-variant-east-asian 
-font-variant-ligatures 
-font-variant-numeric 
-font-variant-position 
-font-weight
-
-animation 
-animation-delay 
-animation-direction 
-animation-duration 
-animation-fill-mode 
-animation-iteration-count 
-animation-name 
-animation-play-state 
-animation-timing-function
-
-flex 
-flex-align 
-flex-direction 
-flex-flow 
-flex-item-align 
-flex-line-pack 
-flex-order 
-flex-pack 
-flex-wrap
-flex-grow
-flex-shrink
-
-transition
-pointer-events
-resize
-align-items
-justify-content
-text-overflow
-object-fit
+@font-face font-family,src,font-stretch,font-style,font-weight,unicode-range,inherit,initial,unset
+@font-feature-values inherit,initial,unset
+@keyframes #animationname,#keyframes-selector,#css-styles,inherit,initial,unset
+align-content stretch,center,flex-start,flex-end,space-between,space-around,initial,inherit,unset
+align-items stretch,center,flex-start,flex-end,baseline,initial,inherit,unset
+align-self auto,stretch,center,flex-start,flex-end,baseline,initial,inherit,unset
+animation @animation-name,@animation-duration,@animation-timing-function,@animation-delay,@animation-iteration-count,@animation-direction,@animation-fill-mode,@animation-play-state,initial,inherit,unset
+animation-delay #time,initial,inherit,unset
+animation-direction normal,reverse,alternate,alternate-reverse,initial,inherit,unset
+animation-duration #time,initial,inherit,unset
+animation-fill-mode none,forwards,backwards,both,initial,inherit,unset
+animation-iteration-count #number,infinite,initial,inherit,unset
+animation-name #keyframename,none,initial,inherit,unset
+animation-play-state paused,running,initial,inherit,unset
+animation-timing-function linear,ease,ease-in,ease-out,ease-in-out,step-start,step-end,steps,cubic-bezier,initial,inherit,unset
+backface-visibility visible,hidden,initial,inherit,unset
+background @background-color,@background-image,@background-position,@background-size,@background-repeat,@background-origin,@background-clip,@background-attachment,initial,inherit,unset
+background-attachment scroll,fixed,local,initial,inherit,unset
+background-blend-mode normal,multiply,screen,overlay,darken,lighten,color-dodge,saturation,color,luminosity,inherit,initial,unset
+background-clip border-box,padding-box,content-box,initial,inherit,unset
+background-color #color,transparent,initial,inherit,unset
+background-image url,none,initial,inherit,unset
+background-origin padding-box,border-box,content-box,initial,inherit,unset
+background-position lefttop,leftcenter,leftbottom,righttop,rightcenter,rightbottom,centertop,centercenter,centerbottom,#x%y%,#xposypos,initial,inherit,unset
+background-repeat repeat,repeat-x,repeat-y,no-repeat,initial,inherit,unset
+background-size auto,#length,#percentage,cover,contain,initial,inherit,unset
+border @border-width,@border-style,@border-color,initial,inherit,unset
+border-bottom @border-bottom-width,@border-bottom-style,@border-bottom-color,initial,inherit,unset
+border-bottom-color #color,transparent,initial,inherit,unset
+border-bottom-left-radius #length,#%,initial,inherit,unset
+border-bottom-right-radius #length,#%,initial,inherit,unset
+border-bottom-style none,hidden,dotted,dashed,solid,double,groove,ridge,inset,outset,initial,inherit,unset
+border-bottom-width medium,thin,thick,#length,initial,inherit,unset
+border-collapse separate,collapse,initial,inherit,unset
+border-color #color,transparent,initial,inherit,unset
+border-image @border-image-source,@border-image-slice,@border-image-width,@border-image-outset,@border-image-repeat,initial,inherit,unset
+border-image-outset #length,#number,initial,inherit,unset
+border-image-repeat stretch,repeat,round,space,initial,inherit,unset
+border-image-slice #number,#%,fill,initial,inherit,unset
+border-image-source none,#image,initial,inherit,unset
+border-image-width #length,#number,#%,auto,initial,inherit,unset
+border-left @border-left-width,@border-left-style,@border-left-color,initial,inherit,unset
+border-left-color #color,transparent,initial,inherit,unset
+border-left-style none,hidden,dotted,dashed,solid,double,groove,ridge,inset,outset,initial,inherit,unset
+border-left-width medium,thin,thick,#length,initial,inherit,unset
+border-radius #length,#%,initial,inherit,unset
+border-right @border-right-width,@border-right-style,@border-right-color,initial,inherit,unset
+border-right-color #color,transparent,initial,inherit,unset
+border-right-style none,hidden,dotted,dashed,solid,double,groove,ridge,inset,outset,initial,inherit,unset
+border-right-width medium,thin,thick,#length,initial,inherit,unset
+border-spacing #lengthlength,initial,inherit,unset
+border-style none,hidden,dotted,dashed,solid,double,groove,ridge,inset,outset,initial,inherit,unset
+border-top @border-top-width,@border-top-style,@border-top-color,initial,inherit,unset
+border-top-color #color,transparent,initial,inherit,unset
+border-top-left-radius #length,#%,initial,inherit,unset
+border-top-right-radius #length,#%,initial,inherit,unset
+border-top-style none,hidden,dotted,dashed,solid,double,groove,ridge,inset,outset,initial,inherit,unset
+border-top-width medium,thin,thick,#length,initial,inherit,unset
+border-width medium,thin,thick,#length,initial,inherit,unset
+bottom auto,#length,#%,initial,inherit,unset
+box-decoration-break inherit,initial,unset
+box-shadow none,#h-shadow,#v-shadow,#blur,#spread,#color,inset,initial,inherit,unset
+box-sizing content-box,border-box,initial,inherit,unset
+break-after inherit,initial,unset
+break-before inherit,initial,unset
+break-inside inherit,initial,unset
+caption-side top,bottom,initial,inherit,unset
+clear none,left,right,both,initial,inherit,unset
+clip auto,#shape,initial,inherit,unset
+color #color,initial,inherit,unset
+column-count #number,auto,initial,inherit,unset
+column-fill balance,auto,initial,inherit,unset
+column-gap #length,normal,initial,inherit,unset
+column-rule @column-rule-width,@column-rule-style,@column-rule-color,initial,inherit,unset
+column-rule-color #color,initial,inherit,unset
+column-rule-style none,hidden,dotted,dashed,solid,double,groove,ridge,inset,outset,initial,inherit,unset
+column-rule-width medium,thin,thick,#length,initial,inherit,unset
+column-span none,all,initial,inherit,unset
+column-width auto,#length,initial,inherit,unset
+columns auto,@column-width,@column-count,initial,inherit,unset
+content normal,none,counter,attr,#string,open-quote,close-quote,no-open-quote,no-close-quote,url,initial,inherit,unset
+counter-increment none,#idnumber,initial,inherit,unset
+counter-reset none,#name,#number,initial,inherit,unset
+cursor alias,all-scroll,auto,cell,context-menu,col-resize,copy,crosshair,default,e-resize,ew-resize,grab,grabbing,help,move,n-resize,ne-resize,nesw-resize,ns-resize,nw-resize,nwse-resize,no-drop,none,not-allowed,pointer,progress,row-resize,s-resize,se-resize,sw-resize,text,#URL,vertical-text,w-resize,wait,zoom-in,zoom-out,initial,inherit,unset
+direction ltr,rtl,initial,inherit,unset
+display inline,block,flex,inline-block,inline-flex,inline-table,list-item,run-in,table,table-caption,table-column-group,table-header-group,table-footer-group,table-row-group,table-cell,table-column,table-row,none,initial,inherit,unset
+empty-cells show,hide,initial,inherit,unset
+filter none,blur,brightness,contrast,drop-shadow,grayscale,hue-rotate,invert,opacity,saturate,sepia,url,initial,inherit,unset
+flex @flex-grow,@flex-shrink,@flex-basis,auto,initial,none,inherit,unset
+flex-basis #number,auto,initial,inherit,unset
+flex-direction row,row-reverse,column,column-reverse,initial,inherit,unset
+flex-flow #flex-direction,#flex-wrap,initial,inherit,unset
+flex-grow #number,initial,inherit,unset
+flex-shrink #number,initial,inherit,unset
+flex-wrap nowrap,wrap,wrap-reverse,initial,inherit,unset
+float none,left,right,initial,inherit,unset
+font #font-style,#font-variant,#font-weight,#font-size/line-height,#font-family,caption,icon,menu,message-box,small-caption,status-bar,initial,inherit,unset
+font-family #family-name,generic-family,initial,inherit,unset
+font-feature-settings inherit,initial,unset
+font-kerning inherit,initial,unset
+font-language-override inherit,initial,unset
+font-size medium,xx-small,x-small,small,large,x-large,xx-large,smaller,larger,#length,#%,initial,inherit,unset
+font-size-adjust #number,none,initial,inherit,unset
+font-stretch ultra-condensed,extra-condensed,condensed,semi-condensed,normal,semi-expanded,expanded,extra-expanded,ultra-expanded,initial,inherit,unset
+font-style normal,italic,oblique,initial,inherit,unset
+font-synthesis inherit,initial,unset
+font-variant normal,small-caps,initial,inherit,unset
+font-variant-alternates inherit,initial,unset
+font-variant-caps inherit,initial,unset
+font-variant-east-asian inherit,initial,unset
+font-variant-ligatures inherit,initial,unset
+font-variant-numeric inherit,initial,unset
+font-variant-position inherit,initial,unset
+font-weight normal,bold,bolder,lighter,initial,inherit,unset
+hanging-punctuation none,first,last,allow-end,force-end,initial,inherit,unset
+height auto,#length,#%,initial,inherit,unset
+hyphens inherit,initial,unset
+image-orientation inherit,initial,unset
+image-rendering inherit,initial,unset
+image-resolution inherit,initial,unset
+ime-mode inherit,initial,unset
+justify-content flex-start,flex-end,center,space-between,space-around,initial,inherit,unset
+left auto,#length,#%,initial,inherit,unset
+letter-spacing normal,#length,initial,inherit,unset
+line-break inherit,initial,unset
+line-height normal,#number,#length,#%,initial,inherit,unset
+list-style #list-style-type,#list-style-position,#list-style-image,initial,inherit,unset
+list-style-image none,url,initial,inherit,unset
+list-style-position inside,outside,initial,inherit,unset
+list-style-type disc,armenian,circle,cjk-ideographic,decimal,decimal-leading-zero,georgian,hebrew,hiragana,hiragana-iroha,katakana,katakana-iroha,lower-alpha,lower-greek,lower-latin,lower-roman,none,square,upper-alpha,upper-greek,upper-latin,upper-roman,initial,inherit,unset
+margin #length,#%,auto,initial,inherit,unset
+margin-bottom #length,#%,auto,initial,inherit,unset
+margin-left #length,#%,auto,initial,inherit,unset
+margin-right #length,#%,auto,initial,inherit,unset
+margin-top #length,#%,auto,initial,inherit,unset
+mark inherit,initial,unset
+mark-after inherit,initial,unset
+mark-before inherit,initial,unset
+marks inherit,initial,unset
+marquee-direction inherit,initial,unset
+marquee-play-count inherit,initial,unset
+marquee-speed inherit,initial,unset
+marquee-style inherit,initial,unset
+mask inherit,initial,unset
+mask-type inherit,initial,unset
+max-height none,#length,#%,initial,inherit,unset
+max-width none,#length,#%,initial,inherit,unset
+min-height #length,#%,initial,inherit,unset
+min-width #length,#%,initial,inherit,unset
+nav-down auto,#id,#target-name,initial,inherit,unset
+nav-index auto,#number,initial,inherit,unset
+nav-left auto,#id,#target-name,initial,inherit,unset
+nav-right auto,#id,#target-name,initial,inherit,unset
+nav-up auto,#id,#target-name,initial,inherit,unset
+object-fit inherit,initial,unset
+object-position inherit,initial,unset
+opacity #number,initial,inherit,unset
+order #number,initial,inherit,unset
+orphans inherit,initial,unset
+outline @outline-color,@outline-style,@outline-width,initial,inherit,unset
+outline-color invert,#color,initial,inherit,unset
+outline-offset #length,initial,inherit,unset
+outline-style none,hidden,dotted,dashed,solid,double,groove,ridge,inset,outset,initial,inherit,unset
+outline-width medium,thin,thick,#length,initial,inherit,unset
+overflow visible,hidden,scroll,auto,initial,inherit,unset
+overflow-wrap inherit,initial,unset
+overflow-x visible,hidden,scroll,auto,initial,inherit,unset
+overflow-y visible,hidden,scroll,auto,initial,inherit,unset
+padding #length,#%,initial,inherit,unset
+padding-bottom #length,#%,initial,inherit,unset
+padding-left #length,#%,initial,inherit,unset
+padding-right #length,#%,initial,inherit,unset
+padding-top #length,#%,initial,inherit,unset
+page-break-after auto,always,avoid,left,right,initial,inherit,unset
+page-break-before auto,always,avoid,left,right,initial,inherit,unset
+page-break-inside auto,avoid,initial,inherit,unset
+perspective #length,none,initial,inherit,unset
+perspective-origin #x-axis,#y-axis,initial,inherit,unset
+phonemes inherit,initial,unset
+pointer-events auto,none,inherit,initial,unset
+position static,absolute,fixed,relative,sticky,initial,inherit,unset
+quotes none,#stringstringstringstring,initial,inherit,unset
+resize none,both,horizontal,vertical,initial,inherit,unset
+rest inherit,initial,unset
+rest-after inherit,initial,unset
+rest-before inherit,initial,unset
+right auto,#length,#%,initial,inherit,unset
+tab-size #number,#length,initial,inherit,unset
+table-layout auto,fixed,initial,inherit,unset
+text-align left,right,center,justify,initial,inherit,unset
+text-align-last auto,left,right,center,justify,start,end,initial,inherit,unset
+text-combine-upright inherit,initial,unset
+text-combine-upright inherit,initial,unset
+text-decoration none,underline,overline,line-through,initial,inherit,unset
+text-decoration-color #color,initial,inherit,unset
+text-decoration-line none,underline,overline,line-through,initial,inherit,unset
+text-decoration-style solid,double,dotted,dashed,wavy,initial,inherit,unset
+text-indent #length,#%,initial,inherit,unset
+text-justify auto,inter-word,inter-ideograph,inter-cluster,distribute,kashida,trim,none,initial,inherit,unset
+text-orientation inherit,initial,unset
+text-overflow clip,ellipsis,#string,initial,inherit,unset
+text-shadow #h-shadow,#v-shadow,#blur-radius,#color,none,initial,inherit,unset
+text-transform none,capitalize,uppercase,lowercase,initial,inherit,unset
+text-underline-position inherit,initial,unset
+top auto,#length,#%,initial,inherit,unset
+transform none,matrix,matrix3d,,translate,translate3d,translateX,translateY,translateZ,scale,scale3d,scaleX,scaleY,scaleZ,rotate,rotate3d,rotateX,rotateY,rotateZ,skew,skewX,skewY,perspective,initial,inherit,unset
+transform-origin #x-axis,#y-axis,#z-axis,initial,inherit,unset
+transform-style flat,preserve-3d,initial,inherit,unset
+transition @transition-property,@transition-duration,@transition-timing-function,@transition-delay,initial,inherit,unset
+transition-delay #time,initial,inherit,unset
+transition-duration #time,initial,inherit,unset
+transition-property none,all,#property,initial,inherit,unset
+transition-timing-function ease,linear,ease-in,ease-out,ease-in-out,step-start,step-end,steps,cubic-bezier,initial,inherit,unset
+unicode-bidi normal,embed,bidi-override,initial,inherit,unset
+user-select auto,none,text,all,inherit,initial,unset
+vertical-align baseline,#length,%,sub,super,top,text-top,middle,bottom,text-bottom,initial,inherit,unset
+visibility visible,hidden,collapse,initial,inherit,unset
+voice-balance inherit,initial,unset
+voice-duration inherit,initial,unset
+voice-pitch inherit,initial,unset
+voice-pitch-range inherit,initial,unset
+voice-rate inherit,initial,unset
+voice-stress inherit,initial,unset
+voice-volume inherit,initial,unset
+white-space normal,nowrap,pre,pre-line,pre-wrap,initial,inherit,unset
+widows inherit,initial,unset
+width auto,#length,#%,initial,inherit,unset
+word-break normal,break-all,keep-all,initial,inherit,unset
+word-spacing normal,#length,initial,inherit,unset
+word-wrap normal,break-word,initial,inherit,unset
+writing-mode inherit,initial,unset
+z-index auto,#number,initial,inherit,unset

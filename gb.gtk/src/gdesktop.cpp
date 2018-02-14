@@ -400,4 +400,3 @@ void gDesktop::availableGeometry(int screen, GdkRectangle *rect)
 		geometry(screen, rect);
 #endif
 }
-

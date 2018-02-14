@@ -26,10 +26,10 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gb.form 3.9.90\n"
-"POT-Creation-Date: 2016-11-16 08:52 UTC\n"
-"PO-Revision-Date: 2016-09-13 02:12 UTC\n"
-"Last-Translator: Benoît Minisini <gambas@users.sourceforge.net>\n"
+"Project-Id-Version: gb.form 3.10.90\n"
+"POT-Creation-Date: 2017-10-01 00:38 UTC\n"
+"PO-Revision-Date: 2017-09-19 13:22 UTC\n"
+"Last-Translator: benoit <benoit@benoit-kubuntu>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -267,7 +267,7 @@ msgstr "Signets"
 msgid "OK"
 msgstr "OK"
 
-#: FDirChooser.form:242 FEditBookmark.class:113 FInputBox.form:51
+#: FDirChooser.form:242 FEditBookmark.class:119 FInputBox.form:51
 #: FSidePanel.class:978 FWizard.form:53
 msgid "Cancel"
 msgstr "Annuler"
@@ -320,12 +320,12 @@ msgstr ""
 msgid "Vertical"
 msgstr ""
 
-#: FDocumentView.form:96 FFontChooser.form:123
+#: FDocumentView.form:96 FFontChooser.form:123 FMain.form:66
 msgid "ComboBox1"
 msgstr "-"
 
-#: FDocumentView.form:101 FTestBalloon.form:17 FTestCompletion.form:23
-#: FTestMessageView.form:32 FTestWizard.form:23
+#: FDocumentView.form:101 FMain.form:82 FTestBalloon.form:18
+#: FTestCompletion.form:23 FTestMessageView.form:32 FTestWizard.form:23
 msgid "Button1"
 msgstr "-"
 
@@ -337,123 +337,123 @@ msgstr ""
 msgid "Autocenter"
 msgstr ""
 
-#: FEditBookmark.class:20 FileView.class:122
+#: FEditBookmark.class:23 FileView.class:122
 msgid "Name"
 msgstr "Nom"
 
-#: FEditBookmark.class:21
+#: FEditBookmark.class:24
 msgid "Path"
 msgstr "Emplacement"
 
-#: FEditBookmark.class:113
+#: FEditBookmark.class:119
 msgid "Do you really want to remove this bookmark?"
 msgstr "Désirez-vous réellement supprimer ce signet ?"
 
-#: FEditBookmark.form:14
+#: FEditBookmark.form:15
 msgid "Edit bookmarks"
 msgstr "Edition des signets"
 
-#: FEditBookmark.form:33
+#: FEditBookmark.form:34
 msgid "Up"
 msgstr "Haut"
 
-#: FEditBookmark.form:39
+#: FEditBookmark.form:40
 msgid "Down"
 msgstr "Bas"
 
-#: FEditBookmark.form:45
+#: FEditBookmark.form:46
 msgid "Remove"
 msgstr "Supprimer"
 
-#: FEditBookmark.form:56 FFileProperties.form:253 MessageView.class:51
+#: FEditBookmark.form:57 FFileProperties.form:269 MessageView.class:51
 msgid "Close"
 msgstr "Fermer"
 
-#: FFileProperties.class:91
-msgid "Symbolic link"
-msgstr "Lien symbolique"
-
-#: FFileProperties.class:120
+#: FFileProperties.class:114
 msgid "Image"
 msgstr "Image"
 
-#: FFileProperties.class:125
+#: FFileProperties.class:119
 msgid "Audio"
 msgstr "Audio"
 
-#: FFileProperties.class:129
+#: FFileProperties.class:123
 msgid "Video"
 msgstr "Vidéo"
 
-#: FFileProperties.class:178
+#: FFileProperties.class:182
 msgid "&1 properties"
 msgstr "Propriétés de &1"
 
-#: FFileProperties.class:209 Main.module:50
+#: FFileProperties.class:213 Main.module:50
 msgid "&1 B"
 msgstr "&1 o"
 
-#: FFileProperties.class:214
+#: FFileProperties.class:218
 msgid "no file"
 msgstr "aucun fichier"
 
-#: FFileProperties.class:216
+#: FFileProperties.class:220
 msgid "one file"
 msgstr "un fichier"
 
-#: FFileProperties.class:218
+#: FFileProperties.class:222
 msgid "files"
 msgstr "fichiers"
 
-#: FFileProperties.class:222
+#: FFileProperties.class:226
 msgid "no directory"
 msgstr "aucun répertoire"
 
-#: FFileProperties.class:224
+#: FFileProperties.class:228
 msgid "one directory"
 msgstr "un répertoire"
 
-#: FFileProperties.class:226
+#: FFileProperties.class:230
 msgid "directories"
 msgstr "répertoires"
 
-#: FFileProperties.form:50
+#: FFileProperties.form:52
 msgid "General"
 msgstr "Général"
 
-#: FFileProperties.form:79
+#: FFileProperties.form:81
 msgid "Type"
 msgstr "Type"
 
-#: FFileProperties.form:91
+#: FFileProperties.form:94
+msgid "Link"
+msgstr "Lien"
+
+#: FFileProperties.form:107
 msgid "Directory"
 msgstr "Répertoire"
 
-#: FFileProperties.form:103 FileView.class:124
+#: FFileProperties.form:119 FileView.class:124
 msgid "Size"
 msgstr "Taille"
 
-#: FFileProperties.form:115 FileView.class:126
+#: FFileProperties.form:131 FileView.class:126
 msgid "Last modified"
 msgstr "Modifié le"
 
-#: FFileProperties.form:127
+#: FFileProperties.form:143
 msgid "Permissions"
 msgstr "Permissions"
 
-#: FFileProperties.form:140
+#: FFileProperties.form:156
 msgid "Owner"
 msgstr "Propriétaire"
 
-#: FFileProperties.form:152
+#: FFileProperties.form:168
 msgid "Group"
 msgstr "Groupe"
 
-#: FFileProperties.form:163
+#: FFileProperties.form:179
 msgid "Preview"
 msgstr "Aperçu"
 
-#: FFileProperties.form:228
+#: FFileProperties.form:244
 msgid "Errors"
 msgstr "Erreurs"
 
@@ -481,19 +481,23 @@ msgstr "Barré"
 msgid "Relative"
 msgstr "Relatif"
 
-#: FIconPanel.form:15
+#: FIconPanel.form:17
 msgid "Item 0"
 msgstr ""
 
-#: FIconPanel.form:17
+#: FIconPanel.form:21
+msgid "Toto"
+msgstr ""
+
+#: FIconPanel.form:24
 msgid "Item 1"
 msgstr ""
 
-#: FIconPanel.form:19
+#: FIconPanel.form:26
 msgid "Item 2"
 msgstr ""
 
-#: FIconPanel.form:25
+#: FIconPanel.form:32
 msgid "Item 3"
 msgstr ""
 
@@ -517,6 +521,43 @@ msgstr "Déplacer l'élément vers le haut"
 msgid "Move item down"
 msgstr "Déplacer l'élément vers le bas"
 
+#: FMain.form:26 FTestFileView.form:31 FTestMenuButton.form:35 Form5.form:22
+msgid "Menu2"
+msgstr "-"
+
+#: FMain.form:30 FTestFileView.form:36 FTestMenuButton.form:39 Form5.form:26
+msgid "Menu3"
+msgstr "-"
+
+#: FMain.form:65
+msgid "Élément 1"
+msgstr ""
+
+#: FMain.form:65
+msgid "Élément 2"
+msgstr ""
+
+#: FMain.form:65
+msgid "Élément 3"
+msgstr ""
+
+#: FMain.form:65
+msgid "Élément 4"
+msgstr ""
+
+#: FMain.form:71
+msgid "ComboBox2"
+msgstr ""
+
+#: FMain.form:77 FSwitchButton.form:36 FTestBalloon.form:12
+#: FTestFileView.form:86
+msgid "TextBox1"
+msgstr "-"
+
+#: FMain.form:87 Form2.form:122
+msgid "MenuButton1"
+msgstr "-"
+
 #: FMessage.form:39
 msgid "Do not display this message again"
 msgstr "Ne pas afficher ce message de nouveau"
@@ -529,27 +570,27 @@ msgstr "Masqué"
 msgid "Transparent"
 msgstr "Transparent"
 
-#: FSpinBar.form:14
+#: FSpinBar.form:24
 msgid "Test"
 msgstr ""
 
-#: FSwitchButton.form:34 FTestBalloon.form:12 FTestFileView.form:86
-msgid "TextBox1"
-msgstr "-"
+#: FTabPanel.form:34
+msgid "Text"
+msgstr ""
 
-#: FSwitchButton.form:41
-msgid "http://gambaswiki.org"
-msgstr "-"
-
-#: FTabPanel.form:37
+#: FTabPanel.form:47
 msgid "Border"
 msgstr ""
 
-#: FTabPanel.form:42
+#: FTabPanel.form:52
 msgid "Orientation"
 msgstr ""
 
-#: FTestColorChooser.form:20
+#: FTestBalloon.form:17
+msgid "Ceci est une bulle d'aide"
+msgstr ""
+
+#: FTestColorChooser.form:21
 msgid "Resizable"
 msgstr ""
 
@@ -560,14 +601,6 @@ msgstr ""
 #: FTestFileView.form:28 FTestMenuButton.form:31
 msgid "Menu1"
 msgstr ""
-
-#: FTestFileView.form:31 FTestMenuButton.form:35 Form5.form:22
-msgid "Menu2"
-msgstr "-"
-
-#: FTestFileView.form:36 FTestMenuButton.form:39 Form5.form:26
-msgid "Menu3"
-msgstr "-"
 
 #: FTestFileView.form:41 FTestMenuButton.form:65
 msgid "Menu7"
@@ -661,16 +694,8 @@ msgstr "Précédent"
 msgid "Cannot rename file."
 msgstr "Impossible de renommer le fichier."
 
-#: Form2.form:122
-msgid "MenuButton1"
-msgstr "-"
-
 #: Form2.form:127
 msgid "ButtonBox2"
-msgstr "-"
-
-#: Form3.form:19
-msgid "1"
 msgstr "-"
 
 #: Help.module:71

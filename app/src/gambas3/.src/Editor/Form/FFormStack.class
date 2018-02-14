@@ -88,8 +88,6 @@ Private Sub FillTree(hCtrl As CControl, Optional sParent As String)
   Dec $iNoSelect
   tvwControl.Add(hCtrl.Name, hCtrl.Name, hPict, sParent)
 
-  'If hCtrl.Kind = "DataControl" Then Stop
-
   If Not hCtrl.IsContainer() Then Return
 
   'IF hCtrl.Kind = "TabStrip" THEN
@@ -159,7 +157,7 @@ Public Sub DoRefreshAll(Optional (sKey) As String, Optional bForce As Boolean)
   FillTree($hForm.Control[$hForm.Name])
   tvwControl.Show
   'sepControl.Show
-  lblMessage.Hide
+  'lblMessage.Hide
   RefreshReadOnly
   SelectCurrent
   
@@ -192,7 +190,7 @@ Public Sub HideAll()
   tvwControl.Hide
   panControl.Hide
   'sepControl.Hide
-  lblMessage.Show
+  'lblMessage.Show
 
 End
 

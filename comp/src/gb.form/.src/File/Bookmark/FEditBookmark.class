@@ -2,6 +2,7 @@
 
 Private $hBookmarkList As CBookmarkList
 Private $hBookmarks As CBookmark[]
+Private $hCompletion As FileCompletion
 
 Public Sub Run(hBookmarkList As CBookmarkList) 
   
@@ -12,6 +13,8 @@ End
 
 
 Public Sub Form_Open()
+
+  $hCompletion = New FileCompletion(txtPath)
 
   $hBookmarks = $hBookmarkList.GetEditableBookmarks()
 
@@ -60,6 +63,9 @@ Public Sub tvwBookmark_Click()
   
   If tvwBookmark.Column = 0 Then
     tvwBookmark.Edit
+  Else
+    tvwBookmark.EditWith(txtPath)
+    $hCompletion.Close
   Endif
 
 End
@@ -127,6 +133,8 @@ Public Sub tvwBookmark_Save(Row As Integer, Column As Integer, Value As String)
 
   If Column = 0 Then
     If Value Then $hBookmarks[Row].SetName(Trim(Value))
+  Else
+    If Value Then $hBookmarks[Row].Link = Value
   Endif
 
 End

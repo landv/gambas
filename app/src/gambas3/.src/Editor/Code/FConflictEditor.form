@@ -1,0 +1,637 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,170,94)
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  { mnuEditor Menu
+    Enabled = False
+    { mnuUndo Menu
+      Action = ".undo"
+      Text = ("Undo")
+      Picture = Picture["icon:/small/undo"]
+      Shortcut = "Ctrl+Z"
+    }
+    { mnuRedo Menu
+      Action = ".redo"
+      Text = ("Redo")
+      Picture = Picture["icon:/small/redo"]
+      Shortcut = "Ctrl+Y"
+    }
+    { mnuSep2 Menu
+    }
+    { mnuCut Menu
+      Action = ".cut"
+      Text = ("Cut")
+      Picture = Picture["icon:/small/cut"]
+      Shortcut = "Ctrl+X"
+    }
+    { mnuCopy Menu
+      Action = ".copy"
+      Text = ("Copy")
+      Picture = Picture["icon:/small/copy"]
+      Shortcut = "Ctrl+C"
+    }
+    { mnuPaste Menu
+      Action = ".paste"
+      Text = ("Paste")
+      Picture = Picture["icon:/small/paste"]
+      Shortcut = "Ctrl+V"
+    }
+    { mnuAdvanced Menu
+      Text = ("Advanced")
+      { mnuUpperCase Menu
+        Action = ".ucase"
+        Text = ("Upper case")
+        Picture = Picture["img/16/ucase.png"]
+        Shortcut = "Ctrl+Alt+U"
+      }
+      { mnuLowerCase Menu
+        Action = ".lcase"
+        Text = ("Lower case")
+        Picture = Picture["img/16/lcase.png"]
+        Shortcut = "Ctrl+Alt+L"
+      }
+      { Menu7 Menu
+      }
+      { mnuComment Menu
+        Action = ".comment"
+        Text = ("Comment")
+        Picture = Picture["img/32/comment.png"]
+        Shortcut = "Ctrl+K"
+      }
+      { mnuUncomment Menu
+        Action = ".uncomment"
+        Text = ("Uncomment")
+        Picture = Picture["img/32/uncomment.png"]
+        Shortcut = "Ctrl+U"
+      }
+      { mnuSep5 Menu
+      }
+      { mnuPasteSpecial Menu
+        Action = ".paste-special"
+        Text = ("Paste special") & "..."
+        Picture = Picture["icon:/small/paste"]
+        Shortcut = "Ctrl+Shift+V"
+      }
+    }
+    { mnuSep3 Menu
+    }
+    { mnuSelectAll Menu
+      Action = ".select-all"
+      Text = Shortcut(("Select All"), "A")
+      Picture = Picture["icon:/small/select-all"]
+      Shortcut = "Ctrl+A"
+    }
+    { Menu4 Menu
+    }
+    { mnuGotoLine Menu
+      Action = ".goto-line"
+      Text = ("Go to line") & "..."
+      Shortcut = "Ctrl+G"
+    }
+    { mnuBookmark Menu
+      Text = ("Bookmarks")
+    }
+    { Menu2 Menu
+    }
+    { mnuFindNext Menu
+      Action = "find-next"
+      Text = ("Find next")
+      Picture = Picture["icon:/small/down"]
+      Shortcut = "F3"
+    }
+    { mnuFindPrevious Menu
+      Action = "find-previous"
+      Text = ("Find previous")
+      Picture = Picture["icon:/small/up"]
+      Shortcut = "Shift+F3"
+    }
+    { mnuSep4 Menu
+    }
+    { mnuEditorView Menu
+      Text = ("View")
+      { mnuWrap Menu
+        Action = ".wrap"
+        Text = ("Automatic word wrap")
+        Picture = Picture["img/32/wrap.png"]
+        Toggle = True
+      }
+      { mnuTabIndent Menu
+        Action = ".tab-indent"
+        Text = ("Indent with tab")
+        Picture = Picture["img/32/tab.png"]
+        Toggle = True
+      }
+      { mnuNoSplit Menu
+        Action = ".view-nosplit"
+        Text = ("No split")
+        Picture = Picture["icon:/small/view-normal"]
+      }
+      { mnuHorizontalSplit Menu
+        Action = ".view-hsplit"
+        Text = ("Horizontal split")
+        Picture = Picture["icon:/small/view-split-h"]
+        Shortcut = "Ctrl+H"
+      }
+      { mnuVerticalSplit Menu
+        Action = ".view-vsplit"
+        Text = ("Vertical split")
+        Picture = Picture["icon:/small/view-split-v"]
+        Shortcut = "Ctrl+J"
+      }
+    }
+    { mnuEndOfLine Menu
+      Text = ("End of line")
+      { mnuEolUnix Menu
+        Text = ("Unix")
+        Radio = True
+      }
+      { mnuEolWindows Menu
+        Text = ("Windows")
+        Radio = True
+      }
+      { mnuEolMac Menu
+        Text = ("MAC")
+        Radio = True
+      }
+    }
+    { Menu3 Menu
+    }
+    { mnuShowCode Menu
+      Action = ".show-code"
+      Text = ("Open code")
+      Picture = Picture["icon:/small/next"]
+      Shortcut = "F12"
+    }
+    { Menu5 Menu
+    }
+    { mnuReload Menu
+      Action = ".reload"
+      Text = ("Reload")
+      Picture = Picture["icon:/small/revert"]
+    }
+    { mnuSave Menu
+      Action = ".save"
+      Text = ("Save")
+      Picture = Picture["icon:/small/save"]
+      Shortcut = "Ctrl+S"
+    }
+    { mnuClose Menu
+      Action = ".close"
+      Text = ("Close")
+      Picture = Picture["icon:/small/close"]
+      Shortcut = "Ctrl+W"
+    }
+  }
+  { mnuPasteAs Menu
+    { mnuPasteAsString Menu
+      Action = ".paste-string"
+      Text = ("Paste as string")
+    }
+    { mnuPasteAsStringSplit Menu
+      Action = ".paste-string-split"
+      Text = ("Paste as multi-line string")
+    }
+    { mnuPasteAsComment Menu
+      Action = ".paste-comment"
+      Text = ("Paste as comments")
+    }
+    { Menu8 Menu
+    }
+    { mnuPasteSpecial2 Menu mnuPasteSpecial
+      Name = "mnuPasteSpecial2"
+      Text = ("Paste special") & "..."
+      Picture = Picture["icon:/small/paste"]
+    }
+  }
+  { panToolBar ToolBar
+    MoveScaled(0,0,139,4)
+    Key = "conflict"
+    Text = ("Text editor")
+    Separator = True
+    { btnShowCode ToolButton mnuShowCode
+      Name = "btnShowCode"
+      MoveScaled(0,0,4,4)
+      ToolTip = ("Code")
+      Action = ".show-class"
+      Picture = Picture["icon:/small/next"]
+    }
+    { btnSave ToolButton mnuSave
+      Name = "btnSave"
+      MoveScaled(3,0,4,4)
+      ToolTip = ("Save")
+      Action = ".save"
+      Picture = Picture["icon:/small/save"]
+    }
+    { btnReload ToolButton mnuReload
+      Name = "btnReload"
+      MoveScaled(6,0,4,4)
+      ToolTip = ("Reload")
+      Action = ".reload"
+      Picture = Picture["icon:/small/revert"]
+    }
+    { Separator3 Separator
+      MoveScaled(10,0,1,4)
+    }
+    { btnSolve ToolButton
+      MoveScaled(11,0,17,4)
+      Action = ".solve"
+      AutoResize = True
+      Text = ("Conflict solved")
+      Picture = Picture["icon:/small/save"]
+    }
+    { Separator4 Separator
+      MoveScaled(28,0,1,4)
+    }
+    { btnCut ToolButton mnuCut
+      Name = "btnCut"
+      MoveScaled(30,0,4,4)
+      Visible = False
+      ToolTip = ("Cut")
+      Action = ".cut"
+      Picture = Picture["icon:/small/cut"]
+    }
+    { btnCopy ToolButton mnuCopy
+      Name = "btnCopy"
+      MoveScaled(33,0,4,4)
+      Visible = False
+      ToolTip = ("Copy")
+      Action = ".copy"
+      Picture = Picture["icon:/small/copy"]
+    }
+    { btnPaste ToggleButton mnuPaste
+      Name = "btnPaste"
+      MoveScaled(36,0,4,4)
+      ToolTip = ("Paste")
+      Action = ".paste"
+      Picture = Picture["icon:/small/paste"]
+      Border = False
+    }
+    { btnUndo ToolButton mnuUndo
+      Name = "btnUndo"
+      MoveScaled(39,0,4,4)
+      ToolTip = ("Undo")
+      Action = ".undo"
+      Picture = Picture["icon:/small/undo"]
+    }
+    { btnRedo ToolButton mnuRedo
+      Name = "btnRedo"
+      MoveScaled(42,0,4,4)
+      ToolTip = ("Redo")
+      Action = ".redo"
+      Picture = Picture["icon:/small/redo"]
+    }
+    { btnBookmark MenuButton
+      MoveScaled(45,0,6,4)
+      Visible = False
+      ToolTip = ("Bookmarks")
+      Action = ".bookmark"
+      Picture = Picture["icon:/small/bookmark"]
+      Border = False
+      Menu = "mnuBookmark"
+    }
+    { btnIndent ToolButton
+      MoveScaled(50,0,4,4)
+      Visible = False
+      ToolTip = ("Indent")
+      Action = ".indent"
+      Picture = Picture["icon:/small/indent"]
+    }
+    { btnUnindent ToolButton
+      MoveScaled(53,0,4,4)
+      Visible = False
+      ToolTip = ("Unindent")
+      Action = ".unindent"
+      Picture = Picture["icon:/small/unindent"]
+    }
+    { btnComment ToolButton mnuComment
+      Name = "btnComment"
+      MoveScaled(56,0,4,4)
+      ToolTip = ("Comment")
+      Action = ".comment"
+      Picture = Picture["img/32/comment.png"]
+    }
+    { btnUncomment ToolButton mnuUncomment
+      Name = "btnUncomment"
+      MoveScaled(59,0,4,4)
+      ToolTip = ("Uncomment")
+      Action = ".uncomment"
+      Picture = Picture["img/32/uncomment.png"]
+    }
+    { Separator2 Separator
+      MoveScaled(63,0,1,4)
+      Visible = False
+    }
+    { btnNoSplit ToolButton mnuNoSplit
+      Name = "btnNoSplit"
+      MoveScaled(64,0,4,4)
+      Visible = False
+      ToolTip = ("No split")
+      Action = ".view-nosplit"
+      Picture = Picture["icon:/small/view-normal"]
+    }
+    { btnHorizontalSplit ToolButton mnuHorizontalSplit
+      Name = "btnHorizontalSplit"
+      MoveScaled(67,0,4,4)
+      Visible = False
+      ToolTip = ("Horizontal split")
+      Action = ".view-hsplit"
+      Picture = Picture["icon:/small/view-split-h"]
+    }
+    { btnVerticalSplit ToolButton mnuVerticalSplit
+      Name = "btnVerticalSplit"
+      MoveScaled(70,0,4,4)
+      Visible = False
+      ToolTip = ("Vertical split")
+      Action = ".view-vsplit"
+      Picture = Picture["icon:/small/view-split-v"]
+    }
+    { Separator1 Separator
+      MoveScaled(75,0,1,4)
+    }
+    { btnPrevious ToolButton
+      MoveScaled(76,0,5,4)
+      Action = ".previous"
+      AutoResize = True
+      Text = ("Previous conflict")
+      Picture = Picture["icon:/small/up"]
+    }
+    { btnNext ToolButton
+      MoveScaled(81,0,6,4)
+      Action = ".next"
+      AutoResize = True
+      Text = ("Next conflict")
+      Picture = Picture["icon:/small/down"]
+    }
+    { btnKeepMine ToolButton
+      MoveScaled(88,0,6,4)
+      Background = &H7FFF7F&
+      Action = ".mine"
+      AutoResize = True
+      Text = ("Keep my changes")
+    }
+    { btnTakeTheir ToolButton
+      MoveScaled(95,0,5,4)
+      Background = &HFF7F7F&
+      Action = ".their"
+      AutoResize = True
+      Text = ("Take their changes")
+    }
+    { btnKeepMineAll ToolButton
+      MoveScaled(101,0,6,4)
+      Background = &H5FBF5F&
+      Action = ".mine-all"
+      AutoResize = True
+      Text = ("Keep all my changes")
+      Picture = Picture["icon:/small/top"]
+    }
+    { btnTakeTheirAll ToolButton
+      MoveScaled(108,0,5,4)
+      Background = &HBF5F5F&
+      Action = ".their-all"
+      AutoResize = True
+      Text = ("Take all their changes")
+      Picture = Picture["icon:/small/bottom"]
+    }
+    { Panel2 Panel
+      MoveScaled(115,0,6,4)
+      Expand = True
+    }
+    { btnWrap ToolButton
+      MoveScaled(121,0,4,4)
+      ToolTip = ("Automatic word wrap")
+      Action = ".wrap"
+      Picture = Picture["img/32/wrap.png"]
+      Toggle = True
+    }
+    { btnTabIndent ToolButton
+      MoveScaled(126,0,4,4)
+      ToolTip = ("Indent with tab")
+      Action = ".tab-indent"
+      Picture = Picture["img/32/tab.png"]
+      Toggle = True
+    }
+    { btnEndOfLine MenuButton
+      MoveScaled(131,0,7,4)
+      Visible = False
+      ToolTip = ("End of line")
+      Action = ".eol"
+      AutoResize = True
+      Picture = Picture["img/32/eol.png"]
+      Border = False
+      Menu = "mnuEndOfLine"
+      MenuOnly = True
+    }
+  }
+  { Panel1 Panel
+    MoveScaled(9,6,38,63)
+    Background = Color.TextBackground
+    Expand = True
+    Arrangement = Arrange.Fill
+    { splVertical VSplit
+      MoveScaled(2,41,22,18)
+      Visible = False
+      Expand = True
+    }
+    { edtEditor TextEditor Editors
+      Name = "edtEditor"
+      MoveScaled(3,1,24,16)
+      Expand = True
+      Border = False
+      ShowPreview = True
+    }
+    { splHorizontal HSplit
+      MoveScaled(3,19,22,18)
+      Visible = False
+      Expand = True
+    }
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action bookmark
+    Text = "Bookmarks"
+    Picture = "icon:/small/bookmark"
+  }
+  { Action close
+    Text = "Close"
+    Shortcut = "Ctrl+W"
+    Picture = "icon:/small/close"
+  }
+  { Action comment
+    Text = "Comment"
+    Shortcut = "Ctrl+K"
+    Picture = "img/32/comment.png"
+  }
+  { Action copy
+    Text = "Copy"
+    Shortcut = "Ctrl+C"
+    Picture = "icon:/small/copy"
+  }
+  { Action cut
+    Text = "Cut"
+    Shortcut = "Ctrl+X"
+    Picture = "icon:/small/cut"
+  }
+  { Action eol
+    Text = "End of line"
+    Picture = "img/32/eol.png"
+  }
+  { Action find-next
+    Text = "Find next"
+    Shortcut = "F3"
+    Picture = "icon:/small/down"
+  }
+  { Action find-previous
+    Text = "Find previous"
+    Shortcut = "Shift+F3"
+    Picture = "icon:/small/up"
+  }
+  { Action goto-line
+    Text = "Go to line"
+    Shortcut = "Ctrl+G"
+  }
+  { Action indent
+    Text = "Indent"
+    Picture = "icon:/small/indent"
+  }
+  { Action lcase
+    Text = "Lower case"
+    Shortcut = "Ctrl+Alt+L"
+    Picture = "img/16/lcase.png"
+  }
+  { Action mine
+    Text = "Keep my changes"
+    Picture = "$ToolButton"
+  }
+  { Action mine-all
+    Text = "Keep all my changes"
+    Picture = "icon:/small/top"
+  }
+  { Action next
+    Text = "Next conflict"
+    Picture = "icon:/small/down"
+  }
+  { Action paste
+    Text = "Paste"
+    Shortcut = "Ctrl+V"
+    Picture = "icon:/small/paste"
+  }
+  { Action paste-comment
+    Text = "Paste as comments"
+    Shortcut = ""
+  }
+  { Action paste-special
+    Text = "Paste special"
+    Shortcut = "Ctrl+Shift+V"
+    Picture = "icon:/small/paste"
+  }
+  { Action paste-string
+    Text = "Paste as string"
+    Shortcut = ""
+  }
+  { Action paste-string-split
+    Text = "Paste as multi-line string"
+    Shortcut = ""
+  }
+  { Action previous
+    Text = "Previous conflict"
+    Picture = "icon:/small/up"
+  }
+  { Action redo
+    Text = "Redo"
+    Shortcut = "Ctrl+Y"
+    Picture = "icon:/small/redo"
+  }
+  { Action reload
+    Text = "Reload"
+    Shortcut = ""
+    Picture = "icon:/small/revert"
+  }
+  { Action save
+    Text = "Save"
+    Shortcut = "Ctrl+S"
+    Picture = "icon:/small/save"
+  }
+  { Action select-all
+    Text = "Select All"
+    Shortcut = "Ctrl+A"
+    Picture = "icon:/small/select-all"
+  }
+  { Action show-class
+    Text = "Code"
+    Picture = "icon:/small/next"
+  }
+  { Action show-code
+    Text = "Open code"
+    Shortcut = "F12"
+    Picture = "icon:/small/next"
+  }
+  { Action solve
+    Text = "Conflict solved"
+    Picture = "icon:/small/save"
+  }
+  { Action tab-indent
+    Text = "Indent with tab"
+    Shortcut = ""
+    Picture = "img/32/tab.png"
+  }
+  { Action their
+    Text = "Take their changes"
+    Picture = "$ToolButton"
+  }
+  { Action their-all
+    Text = "Take all their changes"
+    Picture = "icon:/small/bottom"
+  }
+  { Action ucase
+    Text = "Upper case"
+    Shortcut = "Ctrl+Alt+U"
+    Picture = "img/16/ucase.png"
+  }
+  { Action uncomment
+    Text = "Uncomment"
+    Shortcut = "Ctrl+U"
+    Picture = "img/32/uncomment.png"
+  }
+  { Action undo
+    Text = "Undo"
+    Shortcut = "Ctrl+Z"
+    Picture = "icon:/small/undo"
+  }
+  { Action unindent
+    Text = "Unindent"
+    Picture = "icon:/small/unindent"
+  }
+  { Action view-hsplit
+    Text = "Horizontal split"
+    Shortcut = "Ctrl+H"
+    Picture = "icon:/small/view-split-h"
+  }
+  { Action view-nosplit
+    Text = "No split"
+    Shortcut = ""
+    Picture = "icon:/small/view-normal"
+  }
+  { Action view-vsplit
+    Text = "Vertical split"
+    Shortcut = "Ctrl+J"
+    Picture = "icon:/small/view-split-v"
+  }
+  { Action wrap
+    Text = "Automatic word wrap"
+    Shortcut = ""
+    Picture = "img/32/wrap.png"
+  }
+}
+
+{ Toolbars
+  { Toolbar conflict
+    Text = "Text editor"
+    List = "show-class,save,reload,solve,cut,copy,paste,undo,redo,bookmark,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,previous,next,mine,their,mine-all,their-all,wrap,tab-indent,eol"
+    Default = "show-class,save,reload,|,solve,|,paste,undo,redo,comment,uncomment,|,previous,next,mine,their,mine-all,their-all,~,wrap,tab-indent"
+  }
+}

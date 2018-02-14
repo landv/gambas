@@ -2,7 +2,7 @@
 
 	CPicture.cpp
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -78,6 +78,16 @@ static CPICTURE *create()
 }
 
 
+bool CPICTURE_from_string(QImage **p, const char *addr, int len)
+{
+	bool ok;
+	
+	*p = 0;
+	CREATE_IMAGE_FROM_MEMORY(*p, addr, len, ok)
+	return ok;
+}
+
+
 bool CPICTURE_load_image(QImage **p, const char *path, int lenp)
 {
 	char *addr;
@@ -92,13 +102,11 @@ bool CPICTURE_load_image(QImage **p, const char *path, int lenp)
 		return FALSE;
 	}
 	
-	CREATE_IMAGE_FROM_MEMORY(*p, addr, len, ok)
+	ok = CPICTURE_from_string(p, addr, len);
 	
 	GB.ReleaseFile(addr, len);
 	return ok;
 }
-
-
 
 CPICTURE *CPICTURE_grab(QWidget *wid, int screen, int x, int y, int w, int h)
 {
@@ -152,7 +160,7 @@ CPICTURE *CPICTURE_create(const QPixmap *pixmap)
 *******************************************************************************/
 
 
-BEGIN_METHOD(CPICTURE_new, GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN trans)
+BEGIN_METHOD(Picture_new, GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN trans)
 
 	int w, h;
 
@@ -181,7 +189,7 @@ BEGIN_METHOD(CPICTURE_new, GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN trans)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CPICTURE_free)
+BEGIN_METHOD_VOID(Picture_free)
 
 	delete THIS->pixmap;
 	THIS->pixmap = 0;
@@ -189,7 +197,7 @@ BEGIN_METHOD_VOID(CPICTURE_free)
 END_METHOD
 
 
-BEGIN_METHOD(CPICTURE_resize, GB_INTEGER width; GB_INTEGER height)
+BEGIN_METHOD(Picture_Resize, GB_INTEGER width; GB_INTEGER height)
 
 	QPixmap *pixmap = new QPixmap(VARG(width), VARG(height));
 	
@@ -203,28 +211,28 @@ BEGIN_METHOD(CPICTURE_resize, GB_INTEGER width; GB_INTEGER height)
 END_METHOD
 
 
-BEGIN_PROPERTY(CPICTURE_width)
+BEGIN_PROPERTY(Picture_Width)
 
 	GB.ReturnInteger(THIS->pixmap->width());
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CPICTURE_height)
+BEGIN_PROPERTY(Picture_Height)
 
 	GB.ReturnInteger(THIS->pixmap->height());
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CPICTURE_depth)
+BEGIN_PROPERTY(Picture_Depth)
 
 	GB.ReturnInteger(THIS->pixmap->depth());
 
 END_PROPERTY
 
 
-BEGIN_METHOD(CPICTURE_load, GB_STRING path)
+BEGIN_METHOD(Picture_Load, GB_STRING path)
 
 	CPICTURE *pict;
 	QImage *img;
@@ -241,8 +249,24 @@ BEGIN_METHOD(CPICTURE_load, GB_STRING path)
 
 END_METHOD
 
+BEGIN_METHOD(Picture_FromString, GB_STRING data)
 
-BEGIN_METHOD(CPICTURE_save, GB_STRING path; GB_INTEGER quality)
+	CPICTURE *pict;
+	QImage *img;
+
+	if (!CPICTURE_from_string(&img, STRING(data), LENGTH(data)))
+	{
+		GB.Error("Unable to load picture");
+		return;
+	}
+		
+	CREATE_PICTURE_FROM_IMAGE(pict, img);
+	DELETE_IMAGE(img);
+	GB.ReturnObject(pict);
+
+END_METHOD
+
+BEGIN_METHOD(Picture_Save, GB_STRING path; GB_INTEGER quality)
 
 	QString path = TO_QSTRING(GB.FileName(STRING(path), LENGTH(path)));
 	bool ok = false;
@@ -262,7 +286,7 @@ BEGIN_METHOD(CPICTURE_save, GB_STRING path; GB_INTEGER quality)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CPICTURE_clear)
+BEGIN_METHOD_VOID(Picture_Clear)
 
 	delete THIS->pixmap;
 	THIS->pixmap = new QPixmap;
@@ -270,7 +294,7 @@ BEGIN_METHOD_VOID(CPICTURE_clear)
 END_METHOD
 
 
-BEGIN_METHOD(CPICTURE_fill, GB_INTEGER col)
+BEGIN_METHOD(Picture_Fill, GB_INTEGER col)
 
 	int col = VARG(col);
 	QBitmap mask;
@@ -280,7 +304,7 @@ BEGIN_METHOD(CPICTURE_fill, GB_INTEGER col)
 END_METHOD
 
 
-BEGIN_METHOD(CPICTURE_copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
+BEGIN_METHOD(Picture_Copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
 	CPICTURE *pict;
 	int x = VARGOPT(x, 0);
@@ -301,7 +325,7 @@ BEGIN_METHOD(CPICTURE_copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER
 END_METHOD
 
 
-BEGIN_PROPERTY(CPICTURE_image)
+BEGIN_PROPERTY(Picture_Image)
 
 	QImage *image = new QImage();
 	
@@ -313,7 +337,7 @@ BEGIN_PROPERTY(CPICTURE_image)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CPICTURE_transparent)
+BEGIN_PROPERTY(Picture_Transparent)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(THIS->pixmap->hasAlpha());
@@ -337,27 +361,28 @@ GB_DESC CPictureDesc[] =
 {
 	GB_DECLARE("Picture", sizeof(CPICTURE)),
 
-	GB_METHOD("_new", NULL, CPICTURE_new, "[(Width)i(Height)i(Transparent)b]"),
-	GB_METHOD("_free", NULL, CPICTURE_free, NULL),
+	GB_METHOD("_new", NULL, Picture_new, "[(Width)i(Height)i(Transparent)b]"),
+	GB_METHOD("_free", NULL, Picture_free, NULL),
 
-	GB_PROPERTY_READ("W", "i", CPICTURE_width),
-	GB_PROPERTY_READ("Width", "i", CPICTURE_width),
-	GB_PROPERTY_READ("H", "i", CPICTURE_height),
-	GB_PROPERTY_READ("Height", "i", CPICTURE_height),
-	GB_PROPERTY_READ("Depth", "i", CPICTURE_depth),
+	GB_PROPERTY_READ("W", "i", Picture_Width),
+	GB_PROPERTY_READ("Width", "i", Picture_Width),
+	GB_PROPERTY_READ("H", "i", Picture_Height),
+	GB_PROPERTY_READ("Height", "i", Picture_Height),
+	GB_PROPERTY_READ("Depth", "i", Picture_Depth),
 
-	GB_STATIC_METHOD("Load", "Picture", CPICTURE_load, "(Path)s"),
-	GB_METHOD("Save", NULL, CPICTURE_save, "(Path)s[(Quality)i]"),
-	GB_METHOD("Resize", NULL, CPICTURE_resize, "(Width)i(Height)i"),
+	GB_STATIC_METHOD("Load", "Picture", Picture_Load, "(Path)s"),
+	GB_STATIC_METHOD("FromString", "Picture", Picture_FromString, "(Data)s"),
+	GB_METHOD("Save", NULL, Picture_Save, "(Path)s[(Quality)i]"),
+	GB_METHOD("Resize", NULL, Picture_Resize, "(Width)i(Height)i"),
 
-	GB_METHOD("Clear", NULL, CPICTURE_clear, NULL),
-	GB_METHOD("Fill", NULL, CPICTURE_fill, "(Color)i"),
+	GB_METHOD("Clear", NULL, Picture_Clear, NULL),
+	GB_METHOD("Fill", NULL, Picture_Fill, "(Color)i"),
 	//GB_METHOD("Mask", NULL, CPICTURE_mask, "[(Color)i]"),
 
-	GB_PROPERTY("Transparent", "b", CPICTURE_transparent),
+	GB_PROPERTY("Transparent", "b", Picture_Transparent),
 
-	GB_METHOD("Copy", "Picture", CPICTURE_copy, "[(X)i(Y)i(Width)i(Height)i]"),
-	GB_PROPERTY_READ("Image", "Image", CPICTURE_image),
+	GB_METHOD("Copy", "Picture", Picture_Copy, "[(X)i(Y)i(Width)i(Height)i]"),
+	GB_PROPERTY_READ("Image", "Image", Picture_Image),
 	
 	//GB_INTERFACE("Draw", &DRAW_Interface),
 	GB_INTERFACE("Paint", &PAINT_Interface),

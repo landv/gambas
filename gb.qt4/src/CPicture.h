@@ -2,7 +2,7 @@
 
   CPicture.h
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@ extern GB_DESC CPictureDesc[];
 CPICTURE *CPICTURE_grab(QWidget *wid, int screen = -1, int x = 0, int y = 0, int w = -1, int h = -1);
 CPICTURE *CPICTURE_get_picture(const char *path);
 bool CPICTURE_load_image(QImage **p, const char *path, int lenp);
+bool CPICTURE_from_string(QImage **p, const char *addr, int len);
 CPICTURE *CPICTURE_create(const QPixmap *pixmap);
 
 #endif

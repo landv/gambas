@@ -1,7 +1,19 @@
 ' Gambas module file
 
-Public Sub Main()
+Public Function GetNullVariant() As Variant
 
-  Print JSON.Encode(["a": JSON.Null])
+  Return Null
+
+End
+
+Public Function GetNullObject() As Object
+
+  Return Null
+
+End
+
+Public Sub Main()
   
+  Print URL.Decode("ordre+de+travail+avec+interventions+dont+la+date+planifi%C3%A9e+est+comprise+entre+le+01%2F03%2F2017+et+31%2F03%2F2017+et+type+est+Campagne+dont+agence+est+AG.CIG.GONESSE")
+
 End

@@ -2,7 +2,7 @@
 
   gbx_c_class.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -96,6 +96,21 @@ BEGIN_PROPERTY(Component_Name)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Component_Version)
+
+	if (OBJECT(COMPONENT)->user)
+		GB_ReturnString(ARCHIVE_get_version(OBJECT(COMPONENT)->archive));
+	else
+		GB_ReturnConstZeroString(VERSION);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Component_Library)
+
+	GB_ReturnBoolean(OBJECT(COMPONENT)->user);
+
+END_PROPERTY
+
 BEGIN_PROPERTY(Component_Path)
 
 	GB_ReturnString(COMPONENT_path);
@@ -169,6 +184,19 @@ BEGIN_METHOD(Class_Load, GB_STRING name)
 	class = CLASS_get(GB_ToZeroString(ARG(name)));
 	GB_ReturnObject(class);
 
+END_METHOD
+
+
+BEGIN_METHOD(Class_IsLoaded, GB_STRING name)
+
+	const char *name = GB_ToZeroString(ARG(name));
+	CLASS *class = NULL;
+
+	if (name != NULL)
+		class = CLASS_look(name, LENGTH(name));
+
+	GB_ReturnBoolean(class && CLASS_is_loaded(class));
+	
 END_METHOD
 
 
@@ -885,6 +913,8 @@ GB_DESC NATIVE_Component[] =
 	GB_STATIC_PROPERTY_READ("Path", "s", Component_Path),
 
 	GB_PROPERTY_READ("Name", "s", Component_Name),
+	GB_PROPERTY_READ("Version", "s", Component_Version),
+	GB_PROPERTY_READ("Library", "b", Component_Library),
 
 	GB_END_DECLARE
 };
@@ -906,6 +936,7 @@ GB_DESC NATIVE_Class[] =
 	GB_NOT_CREATABLE(),
 
 	GB_STATIC_METHOD("Load", "Class", Class_Load, "(Name)s"),
+	GB_STATIC_METHOD("IsLoaded", "b", Class_IsLoaded, "(Name)s"),
 
 	GB_METHOD("_get", ".Symbol", Class_get, "(Symbol)s"),
 

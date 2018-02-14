@@ -2,7 +2,7 @@
 
 	cterm.c
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -185,24 +185,27 @@ IMPLEMENT_TSP(PARENB, c_cflag)
 IMPLEMENT_TSP(PARODD, c_cflag)
 IMPLEMENT_TSP(HUPCL, c_cflag)
 IMPLEMENT_TSP(CLOCAL, c_cflag)
-IMPLEMENT_TSP(CMSPAR, c_cflag)
 IMPLEMENT_TSP(CRTSCTS, c_cflag)
 
 IMPLEMENT_TSP(ISIG, c_lflag)
 IMPLEMENT_TSP(ICANON, c_lflag)
-IMPLEMENT_TSP(XCASE, c_lflag)
 IMPLEMENT_TSP(ECHO, c_lflag)
 IMPLEMENT_TSP(ECHOE, c_lflag)
 IMPLEMENT_TSP(ECHOK, c_lflag)
 IMPLEMENT_TSP(ECHONL, c_lflag)
 IMPLEMENT_TSP(ECHOCTL, c_lflag)
-IMPLEMENT_TSP(ECHOPRT, c_lflag)
 IMPLEMENT_TSP(ECHOKE, c_lflag)
 IMPLEMENT_TSP(FLUSHO, c_lflag)
 IMPLEMENT_TSP(NOFLSH, c_lflag)
 IMPLEMENT_TSP(TOSTOP, c_lflag)
-IMPLEMENT_TSP(PENDIN, c_lflag)
 IMPLEMENT_TSP(IEXTEN, c_lflag)
+
+#ifndef OS_CYGWIN
+IMPLEMENT_TSP(CMSPAR, c_cflag)
+IMPLEMENT_TSP(XCASE, c_lflag)
+IMPLEMENT_TSP(ECHOPRT, c_lflag)
+IMPLEMENT_TSP(PENDIN, c_lflag)
+#endif
 
 IMPLEMENT_TSP_C(VDISCARD)
 IMPLEMENT_TSP_C(VEOF)
@@ -251,7 +254,7 @@ BEGIN_METHOD_VOID(StreamTerm_GetAttr)
 
 	CTERMINALSETTINGS *settings;
 
-	fprintf(stderr, "fd = %d\n", STREAM_FD);
+	//fprintf(stderr, "fd = %d\n", STREAM_FD);
 	
 	settings = (CTERMINALSETTINGS *)GB.New(GB.FindClass("TerminalSettings"), NULL, NULL);
 	if (check_error(tcgetattr(STREAM_FD, &settings->settings)))
@@ -267,12 +270,17 @@ END_PROPERTY
 BEGIN_METHOD(StreamTerm_SetAttr, GB_INTEGER mode; GB_OBJECT settings)
 
 	CTERMINALSETTINGS *settings;
+	struct termios check;
 
 	settings = (CTERMINALSETTINGS *)VARG(settings);
 	if (GB.CheckObject(settings))
 		return;
 		
 	check_error(tcsetattr(STREAM_FD, VARG(mode), &settings->settings));
+	
+	tcgetattr(STREAM_FD, &check);
+	if (check.c_iflag != settings->settings.c_iflag || check.c_oflag != settings->settings.c_oflag || check.c_lflag != settings->settings.c_lflag)
+		GB.Error("Unable to set terminal attributes");
 
 END_PROPERTY
 
@@ -326,7 +334,10 @@ GB_DESC TermDesc[] =
 	
 	GB_CONSTANT("VDISABLE", "i", _POSIX_VDISABLE),
 	
-	__TC(B0), __TC(B50), __TC(B75), __TC(B110), __TC(B134), __TC(B150), __TC(B200), __TC(B300), __TC(B600), __TC(B1200), __TC(B1800), __TC(B2400), __TC(B4800), __TC(B9600), __TC(B19200), __TC(B38400), __TC(B57600), __TC(B115200), __TC(B230400), __TC(B460800), __TC(B500000), __TC(B576000), __TC(B921600), __TC(B1000000), __TC(B1152000), __TC(B1500000), __TC(B2000000), __TC(B2500000), __TC(B3000000), __TC(B3500000), __TC(B4000000),
+	__TC(B0), __TC(B50), __TC(B75), __TC(B110), __TC(B134), __TC(B150), __TC(B200), __TC(B300), __TC(B600), __TC(B1200), __TC(B1800), __TC(B2400), __TC(B4800), __TC(B9600), __TC(B19200), __TC(B38400), __TC(B57600), __TC(B115200), __TC(B230400), __TC(B460800), __TC(B500000), __TC(B576000), __TC(B921600), __TC(B1000000), __TC(B1152000), __TC(B1500000), __TC(B2000000), __TC(B2500000), __TC(B3000000),
+#ifndef OS_CYGWIN 
+__TC(B3500000), __TC(B4000000),
+#endif
 
 	GB_END_DECLARE
 };
@@ -376,24 +387,27 @@ GB_DESC TerminalSettingsDesc[] =
 	__TSP(PARODD),
 	__TSP(HUPCL),
 	__TSP(CLOCAL),
-	__TSP(CMSPAR),
 	__TSP(CRTSCTS),
 	
 	__TSP(ISIG),
 	__TSP(ICANON),
-	__TSP(XCASE),
 	__TSP(ECHO),
 	__TSP(ECHOE),
 	__TSP(ECHOK),
 	__TSP(ECHONL),
 	__TSP(ECHOCTL),
-	__TSP(ECHOPRT),
 	__TSP(ECHOKE),
 	__TSP(FLUSHO),
 	__TSP(NOFLSH),
 	__TSP(TOSTOP),
-	__TSP(PENDIN),
 	__TSP(IEXTEN),
+
+#ifndef OS_CYGWIN
+	__TSP(CMSPAR),
+	__TSP(XCASE),
+	__TSP(ECHOPRT),
+	__TSP(PENDIN),
+#endif
 
 	__TSP_I(VDISCARD),
 	__TSP_I(VEOF),

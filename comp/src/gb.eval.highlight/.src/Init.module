@@ -1,0 +1,167 @@
+' Gambas module file
+
+Private Sub HandleValue(sLink As String) As String[]
+
+  Dim sHtml As String
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim sCell As String
+  Dim iPos3 As Integer
+  Dim iPos4 As Integer
+  Dim sValue As String
+  Dim aValue As String[]
+
+  sHtml = HttpClient.Download("https://www.w3schools.com/cssref" &/ sLink)
+  
+  iPos = InStr(sHtml, "<h2>Browser Support</h2>")
+  If iPos = 0 Then Return
+  iPos = InStr(sHtml, "<table class=\"w3-table-all", iPos + 1)
+  If iPos = 0 Then Return
+  iPos2 = InStr(sHtml, "</table>", iPos + 1)
+  If iPos2 = 0 Then Return
+  
+  aValue = New String[]
+  
+  sHtml = Mid$(sHtml, iPos, iPos2 - iPos)
+  iPos = 0
+  
+  Do
+    
+    iPos = InStr(sHtml, "<tr>", iPos + 1)
+    If iPos = 0 Then Break
+    iPos = InStr(sHtml, "<td>", iPos + 1)
+    If iPos = 0 Then Break
+    iPos2 = InStr(sHtml, "</td>", iPos + 1)
+    If iPos2 = 0 Then Break
+    
+    sCell = Trim(Mid$(sHtml, iPos + 4, iPos2 - iPos - 4))
+    
+    iPos3 = InStr(sCell, "<a")
+    If iPos3 Then
+      iPos3 = InStr(sCell, ">", iPos3 + 2)
+      If iPos3 = 0 Then Break
+      iPos4 = InStr(sCell, "<", iPos3 + 1)
+      If iPos4 = 0 Then Break
+      sValue = Mid$(sCell, iPos3 + 1, iPos4 - iPos3 - 1)
+      If sValue Begins "<i>" And If sValue Ends "</i>" Then sValue = Mid$(sValue, 4, -4)
+      If sValue Begins "<em>" And If sValue Ends "</em>" Then sValue = Mid$(sValue, 5, -5)
+      sValue = "@" & sValue
+    Else If sCell Begins "<i>" Then
+      sValue = "#" & Scan(sCell, "<i>*</i>*")[0]
+    Else If sCell Begins "<em>" Then
+      sValue = "#" & Scan(sCell, "<em>*</em>*")[0]
+    Else
+      sValue = sCell
+    Endif
+    
+    iPos3 = InStr(sValue, "<i>(")
+    If iPos3 = 0 Then iPos3 = InStr(sValue, "(")
+    If iPos3 Then sValue = Left(sValue, iPos3 - 1)
+    
+    sValue = Replace(sValue, "<br>", ",")
+    sValue = Replace(sValue, "\n", "")
+    sValue = Replace(sValue, "&nbsp;", "")
+    sValue = Replace(sValue, " ", "")
+    sValue = Trim(sValue)
+    
+    For Each sValue In Split(sValue)
+      sValue = Trim(sValue)
+      If IsDigit(sValue) Then Continue
+      aValue.Add(sValue)
+    Next
+    
+    
+  Loop
+  
+  Return aValue
+
+End
+
+Public Sub Main()
+
+  Dim sHtml As String
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim sLink As String
+  Dim sProp As String
+  Dim sCell As String
+  Dim iPos3 As Integer
+  Dim iPos4 As Integer
+  Dim aProp As String[]
+  Dim aValue As String[]
+  Dim cValue As Collection
+  Dim I As Integer
+  Dim sValue As String
+  Dim aValProp As Variant
+
+  aProp = New String[]
+  aValue = New String[]
+  cValue = New Collection
+
+  sHtml = HttpClient.Download("https://www.w3schools.com/cssref/")
+  
+  iPos = InStr(sHtml, "<table class=\"w3-table-all")
+  
+  Do
+    iPos = InStr(sHtml, "<tr>", iPos + 1)
+    If iPos = 0 Then Break
+    iPos = InStr(sHtml, "<td>", iPos + 1)
+    If iPos = 0 Then Break
+    iPos2 = InStr(sHtml, "</td>", iPos + 1)
+    If iPos2 = 0 Then Break
+    
+    sCell = Trim(Mid$(sHtml, iPos + 4, iPos2 - iPos - 4))
+    
+    If sCell Begins "<a" Then
+      
+      iPos3 = InStr(sCell, ">")
+      If iPos3 = 0 Then Break
+      iPos4 = InStr(sCell, "<", iPos3 + 1)
+      If iPos4 = 0 Then Break
+      sProp = Mid$(sCell, iPos3 + 1, iPos4 - iPos3 - 1)
+      
+      sLink = Scan(sCell, "*href=['\"]*['\"]*")[1]
+      cValue[sProp] = HandleValue(sLink)
+      
+    Else
+      sProp = sCell
+    Endif
+    
+    aProp.Add(sProp)
+    Print sProp
+    iPos = iPos2
+    
+  Loop
+  
+  aProp.Add("pointer-events")
+  cValue["pointer-events"] = ["auto", "none"]
+  
+  aProp.Sort
+  
+  aValue = New String[]
+  
+  For I = 0 To aProp.Max
+    sProp = aProp[I]
+    aValProp = cValue[sProp]
+    If Not aValProp Then aValProp = New String[]
+    If Not aValProp.Exist("inherit") Then aValProp.Add("inherit")
+    If Not aValProp.Exist("initial") Then aValProp.Add("initial")
+    If Not aValProp.Exist("unset") Then aValProp.Add("unset")
+    'aValProp.Sort()
+    aProp[I] = sProp & " " & aValProp.Join()
+    For Each sValue In aValProp
+      If IsLetter(Left(sValue)) Or IsDigit(Left(sValue)) Then
+        If Not aValue.Exist(sValue) Then aValue.Add(sValue)
+      Endif
+    Next
+  Next
+  
+  aValue.Sort
+  
+  Print aProp.Count; " properties"
+  Print aValue.Count; " values"
+  
+  File.Save("~/gambas/git/master/comp/src/gb.eval.highlight/css/properties", aProp.Join("\n"))
+  File.Save("~/gambas/git/master/comp/src/gb.eval.highlight/css/values", aValue.Join("\n"))
+
+End

@@ -2,7 +2,7 @@
 
 	gb_arch_temp.h
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -357,13 +357,6 @@ bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
 
 bool ARCH_read(ARCH *arch, int pos, void *buffer, int len)
 {
-	/*if (lseek(arch->fd, pos, SEEK_SET) < 0)
-		return TRUE;
-
-	if (read(arch->fd, buffer, len) != len)
-		return TRUE;*/
-
 	memcpy(buffer, &arch->addr[pos], len);
-
 	return FALSE;
 }

@@ -2,7 +2,7 @@
 
 	gbc_trans.h
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -40,16 +40,15 @@ enum {
 	};
 
 enum {
-	TS_MODE_READ = 1,
-	TS_MODE_WRITE = 2,
-	TS_MODE_APPEND = 4,
-	TS_MODE_CREATE = 8,
-	TS_MODE_DIRECT = 16,
-	TS_MODE_LINE = 32,
-	TS_MODE_WATCH = 64,
-	TS_MODE_PIPE = 128,
-	TS_MODE_MEMORY = 256,
-	TS_MODE_STRING = 512
+	TS_MODE_READ   = (1 << 0),
+	TS_MODE_WRITE  = (1 << 1),
+	TS_MODE_APPEND = (1 << 2),
+	TS_MODE_CREATE = (1 << 3),
+	TS_MODE_DIRECT = (1 << 4),
+	TS_MODE_WATCH  = (1 << 6),
+	TS_MODE_PIPE   = (1 << 7),
+	TS_MODE_MEMORY = (1 << 8),
+	TS_MODE_STRING = (1 << 9)
 	};
 
 enum {
@@ -119,9 +118,9 @@ enum {
 #define TS_NO_SUBR ((void (*)())-1)
 
 #ifndef __GBC_TRANS_C
-EXTERN int TRANS_in_affectation;
+EXTERN short TRANS_in_assignment;
+EXTERN short TRANS_in_left_value;
 EXTERN bool TRANS_in_try;
-//EXTERN int TRANS_in_expression;
 #endif
 
 #define TRANS_newline() (PATTERN_is_newline(*JOB->current) ? JOB->line = PATTERN_index(*JOB->current) + 1, JOB->current++, TRUE : FALSE)
@@ -153,9 +152,10 @@ void TRANS_init_optional(TRANS_PARAM *param);
 /* trans_expr.c */
 
 void TRANS_expression(bool check);
-void TRANS_ignore_expression();
+void TRANS_ignore_expression(void);
+bool TRANS_popify_last(void);
 void TRANS_reference(void);
-bool TRANS_affectation(bool check);
+bool TRANS_affectation(bool dup);
 void TRANS_operation(short op, short nparam, bool output, PATTERN previous);
 void TRANS_new(void);
 TYPE TRANS_variable_get_type(void);

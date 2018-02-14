@@ -2,7 +2,7 @@
 
   gbx_c_file.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -609,12 +609,9 @@ BEGIN_METHOD(File_SetBaseName, GB_STRING path; GB_STRING new_basename)
 
 END_METHOD
 
-static STREAM *_stream;
-
-static void error_CFILE_load_save(void)
+static void error_CFILE_load_save(STREAM *stream)
 {
-	if (_stream)
-		STREAM_close(_stream);
+	STREAM_close(stream);
 }
 
 BEGIN_METHOD(File_Load, GB_STRING path)
@@ -622,21 +619,19 @@ BEGIN_METHOD(File_Load, GB_STRING path)
 	STREAM stream;
 	int64_t len;
 	int rlen;
-	char *str;
+	char *str = NULL;
 
-	ON_ERROR(error_CFILE_load_save)
+	STREAM_open(&stream, STRING_conv_file_name(STRING(path), LENGTH(path)), ST_READ);
+	
+	ON_ERROR_1(error_CFILE_load_save, &stream)
 	{
-		_stream = NULL;
-		STREAM_open(&stream, STRING_conv_file_name(STRING(path), LENGTH(path)), ST_READ);
-		_stream = &stream;
-
 		STREAM_lof(&stream, &len);
 		if (len >> 31)
 			THROW(E_MEMORY);
 		
 		if (len == 0)
 		{
-			char buffer[4096];
+			char buffer[256];
 			
 			str = NULL;
 			
@@ -647,8 +642,6 @@ BEGIN_METHOD(File_Load, GB_STRING path)
 				if (len < sizeof(buffer))
 					break;
 			}
-			
-			if (str) STRING_free_later(str);
 		}
 		else
 		{
@@ -657,12 +650,11 @@ BEGIN_METHOD(File_Load, GB_STRING path)
 			str = STRING_new(NULL, rlen);
 			rlen = STREAM_read_max(&stream, str, rlen);
 			str = STRING_extend(str, rlen);
-			STRING_free_later(str);
 		}
 		
 		STREAM_close(&stream);
-		_stream = NULL;
 
+		STRING_free_later(str);
 		GB_ReturnString(str);
 	}
 	END_ERROR
@@ -673,11 +665,10 @@ BEGIN_METHOD(File_Save, GB_STRING path; GB_STRING data)
 
 	STREAM stream;
 
-	ON_ERROR(error_CFILE_load_save)
+	STREAM_open(&stream, STRING_conv_file_name(STRING(path), LENGTH(path)), ST_CREATE);
+	
+	ON_ERROR_1(error_CFILE_load_save, &stream)
 	{
-		_stream = NULL;
-		STREAM_open(&stream, STRING_conv_file_name(STRING(path), LENGTH(path)), ST_CREATE);
-		_stream = &stream;
 		STREAM_write(&stream, STRING(data), LENGTH(data));
 		STREAM_close(&stream);
 	}

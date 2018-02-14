@@ -55,7 +55,7 @@ Private $hPaste As Image
 Private $hPasteCurrent As CImageSelection
 Private $hPasteSelect As CImageSelection
 
-Private $iAngle As Integer
+'Private $iAngle As Integer
 
 Private $hChangeRect As RectF
 Private $iChangeAction As Integer
@@ -1869,13 +1869,13 @@ Public Sub imvImage_Draw(hZoom As Image)
       
   Endif
   
-  If $iAngle Then
-    
-    hImage = hZoom.Rotate(Rad($iAngle))
-    imvImage._Paint(hImage, hOffset.X + (hZoom.W - hImage.W) / 2 * imvImage.Zoom, hOffset.Y + (hZoom.H - hImage.H) / 2 * imvImage.Zoom)
-    'imvImage._Paint(hImage, hOffset.X, hOffset.Y)
-    
-  Endif
+  ' If $iAngle Then
+  '   
+  '   hImage = hZoom.Rotate(Rad($iAngle))
+  '   imvImage._Paint(hImage, hOffset.X + (hZoom.W - hImage.W) / 2 * imvImage.Zoom, hOffset.Y + (hZoom.H - hImage.H) / 2 * imvImage.Zoom)
+  '   'imvImage._Paint(hImage, hOffset.X, hOffset.Y)
+  '   
+  ' Endif
   
   timSelect.Enabled = bAnts
   Return

@@ -2,7 +2,7 @@
 
   gbx_class.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -201,91 +201,58 @@ static void class_replace_global(CLASS *class)
 	char *old_name;
 	CLASS *old_class;
 	int len;
-	//int index;
 	CLASS swap;
 	char *swap_name;
 	bool swap_free_name;
 	int nprefix;
 	int i;
 
-	if (CLASS_is_loaded(class))
+	if (!CLASS_is_loaded(class))
+		return;
+		
+	name = class->name;
+	len = strlen(name);
+
+	parent = class->parent;
+	if (parent)
 	{
-		//fprintf(stderr, "class_replace_global: %p %s\n", class, name);
-
-		name = class->name;
-		len = strlen(name);
-
-		nprefix = 0;
-		parent = class;
-		do
+		for (nprefix = 0;; nprefix++)
 		{
-			nprefix++;
-			parent = parent->parent;
-		}
-		while (parent);
-
-		ALLOC(&old_name, len + nprefix + 1);
-		for (i = 0; i < nprefix; i++)
-			old_name[i] = '>';
-		strcpy(&old_name[i], name);
-
-		old_class = CLASS_find_global(old_name);
-		//fprintf(stderr, "-> %p %s\n", old_class, old_name);
-
-		FREE(&old_name);
-		/*FREE(&old_class->name, "class_replace_global");
-		old_class->free_name = FALSE;
-		old_class->name = class->name;*/
-
-		//new_name = (char *)new_class->name;
-
-		/*if (TABLE_find_symbol(&_global_table, name, len, &index))
-		{
-			csym = (CLASS_SYMBOL *)TABLE_get_symbol(&_global_table, index);
-			csym->class = new_class;
-		}
-
-		if (TABLE_find_symbol(&_global_table, new_name, len + 1, &index))
-		{
-			csym = (CLASS_SYMBOL *)TABLE_get_symbol(&_global_table, index);
-			csym->class = class;
-		}
-
-		new_class->name = class->name;
-		class->name = new_name;*/
-
-		swap = *class;
-		*class = *old_class;
-		*old_class = swap;
-
-		SWAP_FIELD(swap_name, class, old_class, name);
-		SWAP_FIELD(swap_free_name, class, old_class, free_name);
-		SWAP_FIELD(parent, class, old_class, next);
-		SWAP_FIELD(i, class, old_class, count);
-		SWAP_FIELD(i, class, old_class, ref);
-
-		for (i = 0; i < old_class->n_desc; i++)
-		{
-			cds = &old_class->table[i];
-			if (cds->desc && cds->desc->method.class == class)
-				cds->desc->method.class = old_class;
-		}
-
-		CLASS_inheritance(class, old_class, FALSE);
-
-		/*for(;;)
-		{
-			class->override = new_class;
-			parent = class->parent;
-			if (!parent || parent->override != class)
+			if (parent->name[nprefix] != '^')
 				break;
-			class = parent;
 		}
+		nprefix++;
+	}
+	else
+		nprefix = 1;
+	
+	ALLOC(&old_name, len + nprefix + 1);
+	for (i = 0; i < nprefix; i++)
+		old_name[i] = '^';
+	strcpy(&old_name[i], name);
 
-		class = new_class;*/
+	old_class = CLASS_find_global(old_name);
+	
+	FREE(&old_name);
+
+	swap = *class;
+	*class = *old_class;
+	*old_class = swap;
+
+	SWAP_FIELD(swap_name, class, old_class, name);
+	SWAP_FIELD(swap_free_name, class, old_class, free_name);
+	SWAP_FIELD(parent, class, old_class, next);
+	SWAP_FIELD(i, class, old_class, count);
+	SWAP_FIELD(i, class, old_class, ref);
+
+	for (i = 0; i < old_class->n_desc; i++)
+	{
+		cds = &old_class->table[i];
+		if (cds->desc && cds->desc->method.class == class)
+			cds->desc->method.class = old_class;
 	}
 
-	//return class;
+	CLASS_inheritance(class, old_class, FALSE);
 }
 
 static void release_class(CLASS *class)
@@ -736,10 +703,9 @@ char *CLASS_DESC_get_signature(CLASS_DESC *cd)
 
 // NOTE: The _free method can be called during a conversion, so we must save the EXEC structure
 
-static void error_CLASS_free()
+static void error_CLASS_free(void *object, EXEC_GLOBAL *save)
 {
-	void *object = (void *)ERROR_handler->arg1;
-	EXEC = *((EXEC_GLOBAL *)ERROR_handler->arg2);
+	EXEC = *save;
 	((OBJECT *)object)->ref = 0;
 	OBJECT_release(OBJECT_class(object), object);
 }
@@ -754,10 +720,10 @@ void CLASS_free(void *object)
 		((OBJECT *)object)->ref = 1; // Prevents anybody from freeing the object!
 
 		EXEC_special_inheritance(SPEC_FREE, class, object, 0, TRUE);
-
-		((OBJECT *)object)->ref = 0;
+		error_CLASS_free(object, &save);
+		/*((OBJECT *)object)->ref = 0;
 		EXEC = save;
-		OBJECT_release(class, object);
+		OBJECT_release(class, object);*/
 	}
 	END_ERROR
 }
@@ -1558,7 +1524,7 @@ char *CLASS_get_name(CLASS *class)
 {
 	char *name = class->name;
 
-	while (*name == '>')
+	while (*name == '^')
 		name++;
 
 	return name;

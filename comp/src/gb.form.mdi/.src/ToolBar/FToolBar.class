@@ -7,6 +7,7 @@ Public $bDesign As Boolean
 
 Static Private $cRegister As New Collection
 Static Private $hExpanderBg As Picture
+Static Private $hConfigureImage As Image
 
 Private Const SEPARATOR_SIZE As Integer = 5
 
@@ -40,6 +41,8 @@ Public Sub _new()
   $hObserverParent = New Observer(Me.Parent.Parent) As "Container"
   $bAutoResize = True
   UpdateHandle
+  
+  panWhere.Background = Color.SetAlpha(Color.TextForeground, 192)
   
 End
 
@@ -1641,10 +1644,20 @@ End
 Public Sub panToolbar_Draw()
 
   If $bConfigure Then
-    Draw.Foreground = panWhere.Background
-    'Draw.LineStyle = Line.Solid
-    Draw.Rect(0, 0, panToolBar.W, panToolBar.H)
-    Draw.Rect(1, 1, panToolBar.W - 2, panToolBar.H - 2)
+    If Not $hConfigureImage Then 
+      If Color[Color.Background].Luminance > 127 Then
+        $hConfigureImage = Image.Load("img/configure.png")
+      Else
+        $hConfigureImage = Image.Load("img/configure_dark.png")
+      Endif
+    Endif
+    Paint.Brush = Paint.Image($hConfigureImage)
+    Paint.Rectangle(0, 0, panToolBar.W, panToolBar.H)
+    Paint.Fill
+    ' Draw.Foreground = panWhere.Background
+    ' 'Draw.LineStyle = Line.Solid
+    ' Draw.Rect(0, 0, panToolBar.W, panToolBar.H)
+    ' Draw.Rect(1, 1, panToolBar.W - 2, panToolBar.H - 2)
   Endif
 
 End

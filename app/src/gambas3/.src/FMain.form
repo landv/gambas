@@ -5,6 +5,7 @@
   Icon = Picture["img/logo/logo-ide.png"]
   Arrangement = Arrange.Vertical
   { mnuFile Menu
+    Action = "menu-file"
     Text = Shortcut(("File"), "F")
     { mnuNewProject Menu
       Action = "new-project"
@@ -52,6 +53,13 @@
       Shortcut = "Ctrl+Shift+Alt+S"
     }
     { mnuSepSave Menu
+    }
+    { mnuReload Menu
+      Action = "reload-project"
+      Text = Shortcut(("Reload project"), "R")
+      Picture = Picture["icon:/small/revert"]
+    }
+    { Menu43 Menu
     }
     { mnuQuit Menu
       Action = "quit"
@@ -105,12 +113,14 @@
     }
   }
   { mnuEdit Menu
+    Action = "menu-edit"
     Text = Shortcut(("Edit"), "E")
     Visible = False
     { Menu38 Menu
     }
   }
   { mnuProject Menu
+    Action = "menu-project"
     Text = Shortcut(("Project"), "P")
     Visible = False
     { mnuCompile Menu
@@ -167,6 +177,45 @@
         Picture = Picture["icon:/small/pen"]
       }
     }
+    { mnuVersionControl Menu
+      Action = "version-control"
+      Text = ("Version control")
+      Picture = Picture["icon:/small/record"]
+      { mnuVcCommit Menu
+        Action = "vc-commit"
+        Text = ("Commit") & "..."
+        Picture = Picture["icon:/small/save"]
+      }
+      { mnuVcUpdate Menu
+        Action = "vc-update"
+        Text = ("Synchronize")
+        Picture = Picture["icon:/small/refresh"]
+      }
+      { mnuVcCancelUpdate Menu
+        Action = "vc-undo-update"
+        Text = ("Undo synchronization")
+        Picture = Picture["icon:/small/undo"]
+        Visible = False
+      }
+      { mnuVcRevert Menu
+        Action = "vc-revert"
+        Text = ("Undo all changes")
+        Picture = Picture["icon:/small/undo"]
+      }
+      { mnuVcAddAll Menu mnuAddVersionAll
+        Name = "mnuVcAddAll"
+        Text = ("Add everything to repository")
+        Picture = Picture["img/32/added.png"]
+      }
+      { mnuVcBranch Menu
+        Action = "vc-branch"
+        Text = ("Branch")
+      }
+    }
+    { mnuVersionControlWith Menu
+      Text = ("Put under version control")
+      Picture = Picture["icon:/small/record"]
+    }
     { mnuPublish Menu
       Action = "publish"
       Text = ("Publish") & "..."
@@ -184,12 +233,6 @@
       Text = Shortcut(("Refresh"), "R")
       Picture = Picture["icon:/small/refresh"]
     }
-    { mnuVersionControl Menu
-      Action = "version-control"
-      Text = Shortcut(("Put on version control"), "v")
-      Picture = Picture["icon:/small/add"]
-      Visible = False
-    }
     { Menu1 Menu
     }
     { mnuProperty Menu
@@ -198,13 +241,9 @@
       Picture = Picture["icon:/small/edit"]
       Shortcut = "Ctrl+P"
     }
-    { mnuVersion Menu
-      Action = "project-version"
-      Text = Shortcut(("Version control"), "V") & "..."
-      Picture = Picture["icon:/small/calendar"]
-    }
   }
   { mnuDebug Menu
+    Action = "menu-debug"
     Text = Shortcut(("Debug"), "D")
     Visible = False
     { mnuRun Menu
@@ -217,7 +256,6 @@
       Text = ("Run with")
       { mnuRunWithNoArg Menu
         Text = ("No argument")
-        Radio = True
         Checked = True
       }
     }
@@ -324,6 +362,7 @@
     }
   }
   { mnuView Menu
+    Action = "menu-view"
     Text = Shortcut(("View"), "V")
     Visible = False
     { mnuViewProject Menu
@@ -383,6 +422,7 @@
     }
   }
   { mnuTool Menu
+    Action = "menu-tool"
     Text = Shortcut(("Tools"), "T")
     Visible = False
     { mnuFind Menu
@@ -491,6 +531,12 @@
         Picture = Picture["img/module/webform.png"]
         Tag = "webform"
       }
+      { mnuNewTermForm Menu mnuNewFile
+        Name = "mnuNewTermForm"
+        Text = ("TermForm") & "..."
+        Picture = Picture["img/module/termform.png"]
+        Tag = "termform"
+      }
       { Menu18 Menu
       }
       { mnuNewImage Menu mnuNewFile
@@ -547,6 +593,9 @@
       Action = "open-file-manager"
       Text = ("Open in file manager") & "..."
       Picture = Picture["icon:/small/file-manager"]
+    }
+    { mnuOpenInProject Menu
+      Text = ("Open in project") & "..."
     }
     { mnuEditWith Menu
       Text = ("Open with")
@@ -607,7 +656,7 @@
     { mnuStartup Menu
       Action = "startup-class"
       Text = Shortcut(("Startup class"), "S")
-      Picture = Picture["img/16/startup-class.png"]
+      Picture = Picture["img/32/startup.png"]
       Shortcut = "Alt+S"
     }
     { mnuRunThat Menu
@@ -625,15 +674,19 @@
       Text = ("Filter")
       { mnuFilterExport Menu
         Text = ("Show exported classes")
-        Picture = Picture["img/16/exported.png"]
+        Picture = Picture["img/32/exported.png"]
       }
       { mnuFilterAdd Menu
         Text = ("Show added files")
-        Picture = Picture["icon:/small/add"]
+        Picture = Picture["img/32/added.png"]
+      }
+      { mnuFilterModified Menu
+        Text = ("Show modified files")
+        Picture = Picture["img/32/modified.png"]
       }
       { mnuFilterConflict Menu
         Text = ("Show files in conflict")
-        Picture = Picture["icon:/small/important"]
+        Picture = Picture["img/32/conflict.png"]
       }
       { Menu13 Menu
       }
@@ -644,7 +697,13 @@
     }
     { mnuAddVersionAll Menu
       Text = ("Add everything to repository")
-      Picture = Picture["icon:/small/add"]
+      Picture = Picture["img/32/added.png"]
+    }
+    { mnuDoNotTranslate Menu
+      Action = "do-not-translate"
+      Text = ("Do not translate")
+      Picture = Picture["img/32/do-not-translate.png"]
+      Toggle = True
     }
     { mnuInformation Menu
       Action = "info"
@@ -682,7 +741,7 @@
     { mnuAddVersionConnection Menu mnuAddVersion
       Name = "mnuAddVersionConnection"
       Text = Shortcut(("Add to repository"), "A")
-      Picture = Picture["icon:/16/add"]
+      Picture = Picture["img/32/added.png"]
     }
     { mnuInfoConnection Menu
       Text = Shortcut(("Properties"), "P") & "..."
@@ -719,6 +778,7 @@
     }
   }
   { mnuHelp Menu
+    Action = "menu-help"
     Text = Shortcut(("?"), "?")
     { mnuViewExplorer Menu
       Action = "help"
@@ -794,12 +854,6 @@
       Action = "project-property"
       Picture = Picture["icon:/small/edit"]
     }
-    { btnVersion ToolButton
-      MoveScaled(17,0,4,4)
-      ToolTip = ("Project version control")
-      Action = "project-version"
-      Picture = Picture["icon:/small/calendar"]
-    }
     { ToolButton7 ToolButton
       MoveScaled(22,0,4,4)
       Visible = False
@@ -860,7 +914,6 @@
       Action = "project"
       Picture = Picture["icon:/small/view-split-h"]
       Toggle = True
-      Value = True
     }
     { ToolButton8 ToolButton
       MoveScaled(48,0,4,4)
@@ -1044,8 +1097,9 @@
       Arrow = False
       Border = False
       Menu = "mnuFile"
+      MenuOnly = True
     }
-    { btnMenuEdit MenuButton
+    { btnMnuEdit MenuButton
       MoveScaled(32,4,8,4)
       Visible = False
       Action = "menu-edit"
@@ -1075,7 +1129,7 @@
       Border = False
       Menu = "mnuDebug"
     }
-    { btnMenuView MenuButton
+    { btnMnuView MenuButton
       MoveScaled(58,4,7,4)
       Visible = False
       Action = "menu-view"
@@ -1104,6 +1158,16 @@
       Arrow = False
       Border = False
       Menu = "mnuHelp"
+    }
+    { btnVersionControl MenuButton
+      MoveScaled(84,4,8,4)
+      ToolTip = ("Version control")
+      Action = "version-control"
+      AutoResize = True
+      Picture = Picture["icon:/small/record"]
+      Border = False
+      Menu = "mnuVersionControl"
+      MenuOnly = True
     }
   }
   { sepMessage Separator
@@ -1148,7 +1212,7 @@
         Border = False
       }
       { timSearchProject #Timer
-        #MoveScaled(21,8)
+        #MoveScaled(21,9)
         Delay = 500
       }
     }
@@ -1170,7 +1234,7 @@
               Visible = False
             }
             { wrkProject Workspace
-              MoveScaled(2,0,81,31)
+              MoveScaled(3,1,81,31)
               Background = Color.LightForeground
               Expand = True
               Border = False
@@ -1189,6 +1253,11 @@
             Separator = True
             Transparent = True
             Hidden = True
+            { btnClosePanel ToolButton
+              MoveScaled(59,4,4,4)
+              Ignore = True
+              Picture = Picture["icon:/small/close"]
+            }
           }
           { Separator1 Separator
             MoveScaled(19,52,29,0)
@@ -1349,6 +1418,11 @@
     Shortcut = "Del"
     Picture = "icon:/small/delete"
   }
+  { Action do-not-translate
+    Text = "Do not translate"
+    Shortcut = ""
+    Picture = "img/32/do-not-translate.png"
+  }
   { Action exec
     Text = "Executable"
     Shortcut = "Ctrl+Alt+X"
@@ -1413,30 +1487,37 @@
   }
   { Action menu-debug
     Text = "Debug"
+    Shortcut = ""
     Picture = "$MenuButton"
   }
   { Action menu-edit
     Text = "Edit"
+    Shortcut = ""
     Picture = "$MenuButton"
   }
   { Action menu-file
     Text = "File"
+    Shortcut = ""
     Picture = "$MenuButton"
   }
   { Action menu-help
     Text = "?"
+    Shortcut = ""
     Picture = "$MenuButton"
   }
   { Action menu-project
     Text = "Project"
+    Shortcut = ""
     Picture = "$MenuButton"
   }
   { Action menu-tool
     Text = "Tools"
+    Shortcut = ""
     Picture = "$MenuButton"
   }
   { Action menu-view
     Text = "View"
+    Shortcut = ""
     Picture = "$MenuButton"
   }
   { Action new-other
@@ -1503,11 +1584,6 @@
     Shortcut = "Ctrl+P"
     Picture = "icon:/small/edit"
   }
-  { Action project-version
-    Text = "Version control"
-    Shortcut = ""
-    Picture = "icon:/small/calendar"
-  }
   { Action property
     Text = "Properties"
     Shortcut = "F4"
@@ -1531,6 +1607,11 @@
     Text = "Refresh"
     Shortcut = ""
     Picture = "icon:/small/refresh"
+  }
+  { Action reload-project
+    Text = "Reload project"
+    Shortcut = ""
+    Picture = "icon:/small/revert"
   }
   { Action rename
     Text = "Rename"
@@ -1580,7 +1661,7 @@
   { Action startup-class
     Text = "Startup class"
     Shortcut = "Alt+S"
-    Picture = "img/16/startup-class.png"
+    Picture = "img/32/startup.png"
   }
   { Action step
     Text = "Step"
@@ -1620,17 +1701,41 @@
     Shortcut = ""
     Picture = "icon:/small/refresh"
   }
-  { Action version-control
-    Text = "Put on version control"
+  { Action vc-branch
+    Text = "Branch"
     Shortcut = ""
-    Picture = "icon:/small/add"
+  }
+  { Action vc-commit
+    Text = "Commit"
+    Shortcut = ""
+    Picture = "icon:/small/save"
+  }
+  { Action vc-revert
+    Text = "Undo all changes"
+    Shortcut = ""
+    Picture = "icon:/small/undo"
+  }
+  { Action vc-undo-update
+    Text = "Undo synchronization"
+    Shortcut = ""
+    Picture = "icon:/small/undo"
+  }
+  { Action vc-update
+    Text = "Synchronize"
+    Shortcut = ""
+    Picture = "icon:/small/refresh"
+  }
+  { Action version-control
+    Text = "Version control"
+    Shortcut = ""
+    Picture = "icon:/small/record"
   }
 }
 
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,publish,farm,gui,menu-file,menu-edit,menu-project,menu-debug,menu-view,menu-tool,menu-help"
-    Default = "new-project,open-project,save-project,save-project-as,project-property,project-version,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,-,find-project,go-back,go-forward"
+    List = "new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,publish,farm,gui,menu-file,menu-edit,menu-project,menu-debug,menu-view,menu-tool,menu-help,version-control"
+    Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,-,find-project,go-back,go-forward,version-control"
   }
 }

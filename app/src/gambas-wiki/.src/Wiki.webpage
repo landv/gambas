@@ -8,11 +8,17 @@
   <%If System.RightToLeft Then%>
   <link rel="stylesheet" href="<%/%>/style-rtl.css">
   <%Endif%>
+  <%If Request.Exist("nh") Then%>
+  <link rel="stylesheet" href="<%/%>/style-nh.css">
+  <%Endif%>
   <link rel="icon" href="<%/%>/logo.png" type="image/png">
   <title><%=("Gambas Documentation")%> - <%_PrintTitle%></title>
+  <%If Request["ht"]%>
+  <script src="<%/%>/hilitor.js"></script>
+  <%Endif%>
 </head>
 
-<body <%If Main.Edit Then%>style="overflow:hidden;"<%Endif%>>
+<body<%If Main.Edit Then%> style="overflow:hidden;"<%Endif%><%If Request["ht"]%> onload="highlight_text()"<%Endif%>>
 
 <%If Request.Exist("nt")%>
 <style type="text/css">
@@ -20,6 +26,7 @@ H1 { display: none; }
 </style>
 <%Endif%>
 
+<div id="page-frame">
 <form name="form" method="post" enctype="multipart/form-data">
 
 <%If Not Main.Edit And If Request["ident"] Then%>
@@ -27,7 +34,6 @@ H1 { display: none; }
     <input type="submit" name="ok" value="<%=("OK")%>" style="position:absolute;width:0px;height:0px;margin:0px;padding:0px;outline:none;border:none;">
   <%Endif%>
 <%Endif%>
-  
 
 <%If Request.Exist("v") Or If Request.Exist("nh") Then%>
 
@@ -62,10 +68,10 @@ H1 { display: none; }
 
 <%Else%>
 
-<div class="header">
+<div class="header<%If Main.Edit Then%> header-edit<%Endif%>">
 
   <div class="header-inside">
-    
+  
     <div class="header-bar">
       <div class="up">
         <%If Main.Edit Then%>
@@ -117,6 +123,7 @@ H1 { display: none; }
             <input type="submit" name="create" value="<%= ("Create")%>">
             <%--<input type="submit" name="undo" value="<%= ("Undo")%>">--%>
           <%Endif%>
+          <input id="search" name="search" type="text" placeholder="<%=("Enter a word to search through the wiki...")%>" onblur="this.value='';"/>
         </div>
       <%Endif%>
       <div style="float:right;">
@@ -137,12 +144,16 @@ H1 { display: none; }
         <div id="user" class="label-login" align="left"><%=Main.UserName%></div>
         <div class="command"><input type="submit" name="logout" value="<%=("Logout")%>"></div>
       <%Else%>
+        <div id="welcome">Gambas Wiki</div>
+        <div align="center"><img id="logo" src="<%/%>/gambas.png"></div>
         <div class="label-login" align="left"><%=("Login")%>&nbsp;</div>
-        <input type="text" name="login" id="login" maxlength="16">
+        <input type="text" name="login" id="login" maxlength="16" autofocus><br>
         <div class="label-login" align="left"><%=("Password")%>&nbsp;</div>
-        <input type="password" name="password" id="password" maxlength="16">
-        <div class="command"><input type="submit" name="ok" id="ok" value="<%=("OK")%>"></div>
-        <div class="command"><input type="submit" id="cancel" value="<%=("Cancel")%>"></div>
+        <input type="password" name="password" id="password" maxlength="16"><br>
+        <div id="login-buttons">
+          <input type="submit" name="ok" id="ok" value="<%=("OK")%>">
+          <input type="submit" id="cancel" value="<%=("Cancel")%>">
+        </div>
       <%Endif%>
     </div></div>
   <%Endif%>
@@ -154,7 +165,7 @@ H1 { display: none; }
 <%If Main.Edit Then%>
 <div class="page-edit">
 <%Else%>
-<div class="page">
+<div id="page" class="page">
 <%Endif%>
 
 <%Endif%>
@@ -195,9 +206,12 @@ H1 { display: none; }
     <%Endif%>
   <%Endif%>
 
+<div></div>
+
 </div>
 
 </form>
+</div>
 
 </body>
 </html>

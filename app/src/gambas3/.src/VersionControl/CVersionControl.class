@@ -1,0 +1,104 @@
+' Gambas class file
+
+Create Static
+
+Public Const Name As String = ""
+Public Const LongName As String = ""
+Public Const DoNotPush As Boolean = False
+Public Const CancelUpdate As Boolean = False
+
+Public Sub AddFile((sPath) As String, Optional (bForce) As Boolean)
+  
+End
+
+Public Sub AddDir((sPath) As String)
+  
+End
+
+Public Sub RemoveFile((sPath) As String, Optional (bForce) As Boolean)
+  
+End
+
+Public Sub RemoveDir((sPath) As String)
+  
+End
+
+Public Sub MoveFile((sOld) As String, (sNew) As String)
+  
+End
+
+Public Sub MoveDir((sOld) As String, (sNew) As String) As Boolean
+  
+End
+
+Public Sub CheckPaths()
+
+End
+
+Public Sub UpdatePath((sPath) As String, Optional (sPath2) As String)
+  
+End
+
+Public Sub Status(Optional (sPath) As String) As String
+  
+End
+
+Public Sub Commit((sChange) As String, (bDoNotPush) As Boolean) As Boolean
+
+End
+
+Public Sub Update() As Boolean
+  
+End
+
+Public Sub Revert(Optional (sPath) As String) As Boolean
+  
+End
+
+Public Sub InConflict((sPath) As String) As Boolean
+  
+End
+
+Public Sub SolveConflict((sPath) As String, Optional (iAccept) As Integer) As Boolean
+  
+End
+
+Public Sub GetVersion((sDir) As String) As String
+  
+End
+
+Public Sub Diff((sPath) As String) As String
+  
+End
+
+Public Sub Info() As Collection
+  
+End
+
+Public Sub CleanUp((sPath) As String)
+  
+End
+
+Public Sub GetBranches(ByRef (sCurrent) As String) As String[]
+  
+End
+
+Public Sub GetDefaultJournal() As String
+  
+End
+
+Public Sub SetBranch((sBranch) As String)
+  
+End
+
+Public Sub CanControlProject() As Boolean
+  
+End
+
+Public Sub ControlProject() As Boolean
+  
+End
+
+Public Sub HasRemote() As Boolean
+  
+End

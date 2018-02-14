@@ -7,7 +7,7 @@ inspired by Visual Basic and Java.
 Go to http://gambas.sourceforge.net to get more information: how to compile 
 and install it, where to find binary packages, how to report a bug...
 
-Go to http://gambasdoc.org for language documentation.
+Go to http://gambaswiki.org for language documentation.
 
 The following pieces of code were borrowed and adapted:
 
@@ -19,9 +19,6 @@ The following pieces of code were borrowed and adapted:
 
 - The HTML entities parsing in gb.gtk comes from KHTML sources.
 
-- The gb.net.smtp component is a debugged and reworked version of an 
-  unmaintained library made by Kevin Read <obsidian@berlios.de> in 2002.
-
 - The gb.image.effect sources are adapted from KDE 3 image effect routines.
 
 - The blur image algorithm was adapted from the StackBlur javascript 
@@ -29,6 +26,9 @@ The following pieces of code were borrowed and adapted:
 
 - The gb.clipper library embeds the Clipper library. See
   http://www.angusj.com/delphi/clipper.php for mode details.
+
+- The function that computes the easter day of a specific year uses an
+  algorithm made by Aloysius Lilius And Christophorus Clavius.
 
 If I forget some borrowed code in the list above, just tell me.
 

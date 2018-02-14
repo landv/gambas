@@ -2,7 +2,7 @@
 
   gbx_c_gambas.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -183,6 +183,7 @@ GB_DESC NATIVE_Gambas[] =
 	GB_CONSTANT("IgnoreCase", "i", GB_COMP_NOCASE),
 	GB_CONSTANT("Language", "i", GB_COMP_LANG),
 	GB_CONSTANT("Like", "i", GB_COMP_LIKE),
+	GB_CONSTANT("Match", "i", GB_COMP_MATCH),
 	GB_CONSTANT("Natural", "i", GB_COMP_NATURAL),
 
 	GB_CONSTANT("Ascent", "i", GB_COMP_ASCENT),

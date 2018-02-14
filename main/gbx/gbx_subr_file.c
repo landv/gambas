@@ -2,7 +2,7 @@
 
 	gbx_subr_file.c
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@
 #include "gbx_string.h"
 #include "gbx_c_file.h"
 #include "gbx_math.h"
+
+#include <sys/file.h>
 
 typedef
 	struct _stream {
@@ -454,6 +456,7 @@ void SUBR_read(ushort code)
 {
 	STREAM *stream;
 	int len = 0;
+	int eff;
 
 	SUBR_ENTER_PARAM(2);
 
@@ -482,19 +485,19 @@ void SUBR_read(ushort code)
 			RETURN->_string.start = 0;
 			RETURN->_string.len = len;
 			
-			STREAM_read_max(stream, RETURN->_string.addr, len);
+			eff = STREAM_read_max(stream, RETURN->_string.addr, len);
 			
-			if (STREAM_eff_read == 0)
+			if (eff == 0)
 			{
 				RETURN->type = T_NULL;
 				STRING_free(&RETURN->_string.addr);
 			}
 			else
 			{
-				if (STREAM_eff_read < len)
+				if (eff < len)
 				{
-					RETURN->_string.addr = STRING_extend(RETURN->_string.addr, STREAM_eff_read);
-					RETURN->_string.len = STREAM_eff_read;
+					RETURN->_string.addr = STRING_extend(RETURN->_string.addr, eff);
+					RETURN->_string.len = eff;
 				}
 				STRING_extend_end(RETURN->_string.addr);
 			}
@@ -997,13 +1000,15 @@ void SUBR_lock(ushort code)
 			wait += SUBR_get_float(&PARAM[1]);
 		}
 
-		STREAM_open(&stream, path, ST_WRITE | ST_CREATE | ST_DIRECT);
-
 		for(;;)
 		{
-			if (!STREAM_lock(&stream))
+			STREAM_open(&stream, path, ST_LOCK);
+			
+			if (!STREAM_lock_all(&stream) && FILE_exist(path))
 				break;
-
+			
+			STREAM_close(&stream);
+			
 			if (code == 2)
 			{
 				DATE_timer(&timer, FALSE);
@@ -1014,11 +1019,10 @@ void SUBR_lock(ushort code)
 				}
 			}
 
-			STREAM_close(&stream);
 			THROW(E_LOCK);
 		}
 
-		file = CFILE_create(&stream, ST_WRITE | ST_CREATE | ST_DIRECT);
+		file = CFILE_create(&stream, ST_LOCK);
 		OBJECT_put(RETURN, file);
 		SUBR_LEAVE();
 	}

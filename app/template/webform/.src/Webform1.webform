@@ -1,0 +1,27 @@
+# Gambas Form File 3.0
+
+{ WebForm WebForm
+  #MoveScaled(0,0,67,56)
+  Arrangement = Arrange.Vertical
+  Margin = True
+  Spacing = True
+  { WebHtml1 WebHtml
+    #MoveScaled(1,1,65,5)
+    Text = ("<h2>Hello world!</h2>")
+  }
+  { WebLabel1 WebLabel
+    #MoveScaled(1,7,65,4)
+    Font = "monospace"
+  }
+  { WebContainer1 WebContainer
+    #MoveScaled(1,12,65,6)
+    { WebButton1 WebButton
+      #MoveScaled(0,0,16,4)
+      Text = ("Click me")
+    }
+  }
+  { WebTimer1 WebTimer
+    #MoveScaled(39,20)
+    Enabled = True
+  }
+}

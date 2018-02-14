@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Action,Text,Type{ValueBox.*}=Number,ReadOnly,Border=True"
+Public Const _Properties As String = "*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,Type{ValueBox.*}=Number,ReadOnly,Border=True"
 Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
 
@@ -15,6 +15,7 @@ Property Value As Variant
 Property Border As Boolean
 Property ReadOnly As Boolean
 Property Text As String
+Property Alignment As Integer
 
 Public Enum {Number}, {Date}, {Time}, Currency, DateTime, IPAddress
 
@@ -70,7 +71,6 @@ Private Sub UpdateType()
     Case {Number}
       $hTextBox = New TextBox(Me) As "NumberBox"
       $hCtrl = $hTextBox
-      $hTextBox.Alignment = Align.Right
       $hTextBox.Text = "0"
       $sDecimalSep = Left$(Format$(0, ".0"))
       
@@ -86,7 +86,6 @@ Private Sub UpdateType()
     Case Currency
       $hMaskBox = New MaskBox(Me) As "CurrencyBox"
       $hCtrl = $hMaskBox
-      $hMaskBox.Alignment = Align.Right
       $sDecimalSep = Left$(Format$(0, ".0"))
       sMask = Replace(Format(10, "$#0.00"), "1", "########")
       $hMaskBox.Mask = Replace(sMask, $sDecimalSep, "<!" & $sDecimalSep)
@@ -100,7 +99,6 @@ Private Sub UpdateType()
     Case IpAddress
       $hMaskBox = New MaskBox(Me) As "IpAddressBox"
       $hCtrl = $hMaskBox
-      $hMaskBox.Alignment = Align.Right
       $hMaskBox.Mask = "##0<.##0<.##0<.##0<"
       If Not $hMaskBox.Font.Fixed Then $hMaskBox.Font.Name = "Monospace"
   
@@ -376,4 +374,19 @@ Public Sub IpAddressBox_Change()
   
   Raise Change
   
+End
+
+Private Function Alignment_Read() As Integer
+
+  Dim hCtrl As Object = $hCtrl
+  Try Return hCtrl.Alignment
+  Return Align.Normal
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  Dim hCtrl As Object = $hCtrl
+  Try hCtrl.Alignment = Value
+
 End

@@ -2,23 +2,26 @@
 
 { Form Form
   MoveScaled(0,0,64,64)
-  { SpinBar1 SpinBar
-    MoveScaled(3,3,56,5)
-    Text = ("Test")
-  }
-  { SpinBar2 SpinBar
-    MoveScaled(5,18,32,4)
-    Visible = False
-    Enabled = False
-    Value = 0.5
-    Text = ("Test")
-  }
   { SpinBox1 SpinBox
     MoveScaled(23,39,9,4)
   }
-  { SpinBar3 SpinBar
-    MoveScaled(3,10,56,5)
-    Border = False
-    Text = ("Test")
+  { Panel1 ScrollView
+    MoveScaled(3,3,61,15)
+    ScrollBar = Scroll.Vertical
+    { SpinBar3 SpinBar
+      MoveScaled(0,7,56,5)
+      Border = False
+      Text = ("Test")
+    }
+    { SpinBar1 SpinBar
+      MoveScaled(0,0,56,5)
+      Text = ("Test")
+    }
+    { SpinBar2 SpinBar
+      MoveScaled(3,14,32,4)
+      Enabled = False
+      Value = 0.5
+      Text = ("Test")
+    }
   }
 }

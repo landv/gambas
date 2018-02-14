@@ -2,7 +2,7 @@
 
   gbx_string.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -139,13 +139,14 @@ static char _pool_count[POOL_SIZE] = { 0 };
 
 #ifdef DEBUG_ME
 
-static STRING *alloc_string(_len) \
+static STRING *alloc_string(int _len) \
 { \
 	STRING *str; \
 	int size = REAL_SIZE((_len) + 1 + sizeof(STRING)); \
 	int pool = (size / SIZE_INC) - 1; \
 	\
 	MEMORY_count++; \
+	fprintf(stderr, "[%d]\n", MEMORY_count); \
 	\
 	if (pool < POOL_SIZE && (_pool_count[pool])) \
 	{ \
@@ -208,6 +209,9 @@ void STRING_free_real(char *ptr)
 	}
 
 	MEMORY_count--;
+#ifdef DEBUG_ME
+	fprintf(stderr, "[%d]\n", MEMORY_count);
+#endif
 
 	if (pool < POOL_SIZE)
 	{

@@ -1,0 +1,82 @@
+' Gambas class file
+
+Inherits TextEditorMode
+
+Static Public Const Name As String = "html"
+
+Static Private $aDoNotClose As String[] = ["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"]
+
+Private Sub InsertClosingMarkup(hEditor As TextEditor)
+
+  Dim sLine As String
+  Dim X, X1, X2 As Integer
+  Dim iLen As Integer
+  Dim sCar As String
+  Dim sMarkup As String
+  
+  sLine = hEditor.Current.Text
+  iLen = hEditor.Current.Length
+  
+  X = hEditor.Column
+  
+  X1 = X
+  While X1 > 0
+    If String.Mid$(sLine, X1, 1) = "<" Then Break
+    Dec X1
+  Wend
+  
+  If X1 = 0 Then Return
+  
+  X2 = X1
+  Do
+    Inc X2
+    If X2 > iLen Then Break
+    sCar = String.Mid$(sLine, X2, 1)
+    If sCar = " " Or If sCar = ">" Then Break
+  Loop
+  
+  sMarkup = String.Mid$(sLine, X1 + 1, X2 - X1 - 1)
+  
+  If Not sMarkup Then Return
+  If sMarkup Begins "/" Then Return
+  If sMarkup Begins "%" Then Return
+  If $aDoNotClose.Exist(sMarkup, gb.IgnoreCase) Then Return
+  
+  hEditor.Insert("</" & sMarkup & ">")
+  hEditor.Goto(X, hEditor.Line)
+  
+End
+
+Public Sub BetweenBraces(hEditor As TextEditor) As Boolean
+
+  Dim sLine As String
+  Dim X As Integer
+  Dim iLen As Integer
+  
+  If Me.InsideString(hEditor) Then Return
+  
+  sLine = hEditor.Current.Text
+  iLen = hEditor.Current.Length
+  X = hEditor.Column
+  
+  If X = 0 Or If X = iLen Then Return
+  
+  If String.Mid$(sLine, X, 1) = ">" And If String.Mid$(sLine, X + 1, 2) = "</" Then Return True
+  
+  Return Super.BetweenBraces(hEditor)
+  
+End
+
+Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
+
+  If Key.Text = ">" Then 
+    hEditor.Insert(">")
+    If Me.CanCloseBraces(hEditor) Then
+      InsertClosingMarkup(hEditor)
+      Return True
+    Endif
+  Endif
+  
+  Return Super.OnKeyPress(hEditor)
+  
+End

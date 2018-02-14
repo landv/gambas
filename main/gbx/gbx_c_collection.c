@@ -2,7 +2,7 @@
 
   gbx_c_collection.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -272,6 +272,30 @@ BEGIN_PROPERTY(Collection_Default)
 
 END_PROPERTY
 
+static void return_node_key(HASH_TABLE *hash_table, HASH_NODE *node)
+{
+	char *key;
+	int len;
+	
+	HASH_TABLE_get_key(hash_table, node, &key, &len);
+	if (len)
+		GB_ReturnNewString(key, len);
+	else
+		GB_ReturnNull();
+
+}
+
+BEGIN_PROPERTY(Collection_First)
+
+	return_node_key(THIS->hash_table, THIS->hash_table->sfirst);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Collection_Last)
+
+	return_node_key(THIS->hash_table, THIS->hash_table->slast);
+
+END_PROPERTY
 
 #endif
 
@@ -285,6 +309,8 @@ GB_DESC NATIVE_Collection[] =
 
 	GB_PROPERTY_READ("Count", "i", Collection_Count),
 	GB_PROPERTY_READ("Length", "i", Collection_Count),
+	GB_PROPERTY_READ("First", "s", Collection_First),
+	GB_PROPERTY_READ("Last", "s", Collection_Last),
 	GB_PROPERTY("Key", "s", Collection_Key),
 	GB_PROPERTY("Default", "v", Collection_Default),
 

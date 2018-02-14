@@ -228,7 +228,7 @@
     { mnuShowCode Menu
       Action = ".code-form"
       Text = ("Open code")
-      Picture = Picture["img/16/class.png"]
+      Picture = Picture["icon:/small/next"]
       Shortcut = "F12"
     }
     { mnuRun Menu
@@ -357,7 +357,7 @@
       Picture = Picture["icon:/small/redo"]
     }
     { ToolButton31 ToolButton
-      MoveScaled(43,0,4,4)
+      MoveScaled(43,0,5,4)
       ToolTip = ("Menu editor")
       Action = ".menu"
       AutoResize = True
@@ -737,7 +737,7 @@
   { Action code-form
     Text = "Open code"
     Shortcut = "F12"
-    Picture = "img/16/class.png"
+    Picture = "icon:/small/next"
   }
   { Action copy
     Text = "Copy"

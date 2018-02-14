@@ -1,8 +1,13 @@
 ' Gambas class file
 
 Export
+Create Private
 Inherits TermControl
 Class Rect
+
+Public Const _IsContainer As Boolean = True
+Public Const _Group As String = "Container"
+Public Const _Properties As String = "*"
 
 Property Read Children As TermControl[]
 Property Read ClientWidth, CLientW As Integer
@@ -17,7 +22,7 @@ Private $iSpacing As Integer '= 1
 Private $bInvert As Boolean
 Private $aChildren As New Object[]
 
-Public _Arrangement As Integer = Arrange.Vertical
+Public _Arrangement As Integer '= Arrange.Vertical
 
 Public Sub _new()
   
@@ -89,14 +94,16 @@ Public Sub _Arrange()
         iHExp = (hrectClient.Height - iHExp) / iNExp
       Endif
       
-      h = hrectClient.Top 
+      H = 0 'hrectClient.Top 
       For Each hChild In $aChildren
         'If hChild Is TermPictureBox Then Stop
-        hChild.X = hrectClient.Left
-        hChild.Y = H
-        hChild.Width = hrectClient.Width
-        If hChild.Expand Then hChild.H = iHExp
-        H += hChild.H + $iSpacing
+        If Not hChild.Ignore Then 
+          hChild.X = 0 'hrectClient.Left
+          hChild.Y = H
+          hChild.Width = hrectClient.Width
+          If hChild.Expand Then hChild.H = iHExp
+          H += hChild.H + $iSpacing
+        Endif
         hChild._Arrange()
         'If H >= Me.ClientHeight Then Break
       Next
@@ -127,10 +134,8 @@ Public Sub _Arrange()
       H = hrectClient.Width - Me.Width
       Endif
       For Each hChild In $aChildren
+        If Not hChild.Ignore Then 
         If $bInvert Then H -= hChild.W
-          
-        
-        
         hChild.Y = hrectClient.Top 
         
         hChild.X = H
@@ -141,6 +146,7 @@ Public Sub _Arrange()
           H -= $iSpacing
         Else
           H += hChild.W + $iSpacing
+        Endif
         Endif
         hChild._Arrange()
         'If H >= Me.ClientHeight Then Break

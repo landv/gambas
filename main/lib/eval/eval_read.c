@@ -2,7 +2,7 @@
 
   eval_read.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -324,6 +324,8 @@ static bool add_number()
 			goto READ_HEXA;
 		else if (car == 'X')
 			goto READ_BINARY;
+		else if (car == 'O')
+			goto READ_OCTAL;
 		else
 		{
 			source_ptr--;
@@ -344,6 +346,19 @@ READ_BINARY:
 	{
 		car = next_char();
 		if (car != '0' && car != '1')
+			break;
+		has_digit = TRUE;
+	}
+
+	goto END_BINARY_HEXA;
+
+READ_OCTAL:
+
+	has_digit = FALSE;
+	for (;;)
+	{
+		car = next_char();
+		if (car < '0' || car > '7')
 			break;
 		has_digit = TRUE;
 	}

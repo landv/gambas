@@ -2,7 +2,7 @@
 
 	CWidget.cpp
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -2323,6 +2323,9 @@ void CWidget::destroy()
 	CLEAN_POINTER(CWIDGET_previous_control);
 	CLEAN_POINTER(CWIDGET_hovered);
 	CLEAN_POINTER(_old_active_control);
+#if QT5
+	CLEAN_POINTER(_last_entered);
+#endif
 
 	if (THIS_EXT)
 	{
@@ -2696,7 +2699,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		GB.Ref(control);
 		cancel = false;
 
-		if (GB.CanRaise(control, event_id))
+		if (GB.CanRaise(control, event_id) || (event_id == EVENT_DblClick && GB.CanRaise(control, EVENT_MouseDown)))
 		{
 			/*if (!design && CWIDGET_test_flag(control, WF_SCROLLVIEW))
 			{
@@ -2720,7 +2723,11 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			//if (type == QEvent::MouseButtonPress)
 			//	qDebug("GB.Raise on %p (%s %p) %d", widget, control ? GB.GetClassName(control) : "-", control, event_id);
 			
-			cancel = GB.Raise(control, event_id, 0); //, GB_T_INTEGER, p.x(), GB_T_INTEGER, p.y(), GB_T_INTEGER, state);
+			if (event_id == EVENT_DblClick)
+				cancel = GB.Raise(control, EVENT_MouseDown, 0); //, GB_T_INTEGER, p.x(), GB_T_INTEGER, p.y(), GB_T_INTEGER, state);
+				
+			if (!cancel)
+				cancel = GB.Raise(control, event_id, 0); //, GB_T_INTEGER, p.x(), GB_T_INTEGER, p.y(), GB_T_INTEGER, state);
 
 			CMOUSE_clear(false);
 			
@@ -2894,6 +2901,19 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	{
 		QKeyEvent *kevent = (QKeyEvent *)event;
 
+		if (MAIN_key_debug)
+		{
+#ifdef QT5
+			qDebug("gb.qt5"
+#else
+			qDebug("gb.qt4"
+#endif
+				": %s: real = %d original = %d no_keyboard = %d",
+				(type == QEvent::KeyRelease ? "KeyRelease" :
+				 (type == QEvent::KeyPress ? "KeyPress" : "?")),
+				real, original, control->flag.no_keyboard);
+		}
+		
 		#if QT_VERSION <= 0x030005
 		if (!real || !original)
 			goto _DESIGN;
@@ -2913,12 +2933,14 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
 		if (type == QEvent::KeyRelease && kevent->isAutoRepeat())
 			goto __NEXT;
-			
-		/*qDebug("QKeyEvent: %s: (%s %s) -> %d %s %s",
-			type == QEvent::KeyPress ? "KeyPress" : "KeyRelease",
-			GB.GetClassName(control), control->name,
-			kevent->key(), (const char *)kevent->text().toLatin1(), kevent->isAutoRepeat() ? "AR" : "--");*/
-
+		
+		if (MAIN_key_debug)
+		{
+			qDebug("       " 
+				"(%s %s) -> %d `%s' %s",
+				GB.GetClassName(control), control->name,
+				kevent->key(), (const char *)kevent->text().toLatin1(), kevent->isAutoRepeat() ? "AR" : "--");
+		}
 		//qDebug("CWidget::eventFilter: KeyPress on %s %p", GB.GetClassName(control), control);
 			
 	__KEY_TRY_PROXY:
@@ -2979,6 +3001,17 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	{
 		QInputMethodEvent *imevent = (QInputMethodEvent *)event;
 
+		if (MAIN_key_debug)
+		{
+#ifdef QT5
+			qDebug("gb.qt5"
+#else
+			qDebug("gb.qt4"
+#endif
+				": InputMethod: real = %d original = %d no_keyboard = %d",
+				real, original, control->flag.no_keyboard);
+		}
+		
 		#if QT_VERSION <= 0x030005
 		if (!real || !original)
 			goto _DESIGN;
@@ -2986,11 +3019,14 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
 		if (!imevent->commitString().isEmpty())
 		{
-
-			// 		qDebug("QIMEvent: IMEnd (%s %p) (%s %p) TL:%d",
-			// 			widget->className(), widget, GB.GetClassName(control), control,
-			// 			((QWidget *)widget)->isWindow());
-	
+			if (MAIN_key_debug)
+			{
+				qDebug("       " 
+					"(%s %s) -> `%s'",
+					GB.GetClassName(control), control->name,
+					(const char *)imevent->commitString().toUtf8());
+			}
+		
 			event_id = EVENT_KeyPress;
 			cancel = false;
 			

@@ -1,0 +1,105 @@
+' Gambas class file
+
+Public Sub Run() As Boolean
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  Dim sChange As String
+  Dim iPos As Integer
+
+  sChange = Trim(edtJournal.Text)
+  iPos = InStr(sChange, "- " & VersionControl.DELIM_CHANGE & " -")
+  If iPos Then
+    iPos = RInStr(sChange, "\n", iPos)
+    If iPos Then
+      sChange = Left(sChange, iPos - 1)
+    Else
+      sChange = ""
+    Endif
+  Endif
+  
+  If Not Trim(sChange) Then
+    tabVersionControl.Index = 0
+    edtJournal.Goto(0, 0)
+    edtJournal.SetFocus
+    Balloon.Warning(("Please enter the journal."), btnOK)
+    Return
+  Endif
+  
+  Project.Config["/FCommit/LastCommit"] = RTrim(sChange)
+  
+  If VersionControl.Commit(sChange, chkDoNotPush.Value) Then Return
+  
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub Form_Open()
+
+  Dim sDiff As String
+  Dim DS As Integer
+  
+  Inc Application.Busy
+  sDiff = VersionControl.Diff()
+  edtDiff.Text = sDiff
+  
+  edtJournal.ReadConfig
+  edtDiff.ReadConfig
+  Project.SetEditorFont(trmShell)
+
+  edtJournal.Text = RTrim(Project.Config["/FCommit/LastCommit"]) & "\n\n" & VersionControl.GetDefaultJournal()
+  edtJournal.Goto(0, 0)
+  
+  tabVersionControl_Click
+  Dec Application.Busy
+  
+  chkDoNotPush.Visible = VersionControl.DoNotPush And VersionControl.HasRemote()
+  
+  If Not sDiff Then
+    If chkDoNotPush.Visible Then
+      If Message.Question(("There is nothing to commit.") & "\n\n" & ("Do you want to push the repository?"), ("Push"), ("Cancel")) = 1 Then 
+        VersionControl.Commit("", False)
+      Endif
+    Else
+      Message.Info(("There is nothing to commit."))
+    Endif
+    Me.Close
+    Return
+  Endif
+  
+  DS = Desktop.Scale
+  Me.Resize(FMain.W - DS * 16, FMain.H - DS * 16)
+  
+End
+
+Public Sub Form_Close()
+  
+  Try trmShell.Kill
+  
+End
+
+
+Public Sub tabVersionControl_Click()
+
+  Select Case tabVersionControl.Index
+    Case 0
+      edtJournal.SetFocus
+    Case 1
+      edtDiff.SetFocus
+    Case 2
+      Try trmShell.Exec(["bash"], ["PWD=" & Project.Dir])
+      trmShell.SetFocus
+  End Select
+
+End

@@ -2,7 +2,7 @@
 
   main.cpp
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,6 +29,9 @@
 #include <string.h>
 
 #include "main.h"
+
+#include "CLCDNumber.h"
+#include "CDial.h"
 #include "CTextEdit.h"
 
 extern "C" {
@@ -38,6 +41,10 @@ QT_INTERFACE QT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
+	CLCDNumberDesc,
+	
+	CDialDesc,
+
 	CTextEditSelectionDesc,
 	CTextEditFormatDesc,
 	CTextEditDesc,

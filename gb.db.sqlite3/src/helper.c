@@ -2,7 +2,7 @@
 
   helper.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -153,16 +153,15 @@ GB_TYPE sqlite_get_type(const char *type, int *length)
 	if (length)
 		*length = 0;
 
+	if (!type || !*type)
+		return GB_T_STRING;
+	
 	upper = GB.NewZeroString(type);
 	for (i = 0; i < GB.StringLength(upper); i++)
 		upper[i] = toupper(upper[i]);
-
 	type = upper;
-	if (!type || !*type)
-	{
-		gtype = GB_T_STRING;
-	}
-	else if (strstr(type, "CHAR(")			/* note the opening bracket */
+
+	if (strstr(type, "CHAR(")			/* note the opening bracket */
 					|| strstr(type, "CLOB") || strstr(type, "TEXT")	/* also catches TINYTEXT */
 					|| strstr(type, "VARCHAR") || strstr(type, "VARYING CHAR")
 					|| strstr(type, "ENUM") || strstr(type, "SET") || strstr(type, "YEAR"))
@@ -259,6 +258,9 @@ static int my_sqlite3_exec(
 	int nRetry = 0;
 	int nCallback;
 	int i;
+	const char *decltype;
+	int n_unknown = 0;
+	int type;
 
 	//fprintf(stderr, "my_sqlite3_exec: %s\n", zSql);
 
@@ -312,7 +314,19 @@ static int my_sqlite3_exec(
 					if (need_types)
 					{
 						for (i = 0; i < ncol; i++)
-							result->types[i] = sqlite_get_type(sqlite3_column_decltype(pStmt, i), &result->lengths[i]);
+						{
+							decltype = sqlite3_column_decltype(pStmt, i);
+							if (!decltype)
+							{
+								result->types[i] = 0;
+								result->lengths[i] = 0;
+								n_unknown++;
+							}
+							else
+							{
+								result->types[i] = (int)sqlite_get_type(decltype, &result->lengths[i]);
+							}
+						}
 					}
 
 					nCallback++;
@@ -328,7 +342,22 @@ static int my_sqlite3_exec(
 
 					for (i = 0; i < ncol; i++)
 					{
-						if (sqlite3_column_type(pStmt, i) == SQLITE_BLOB)
+						type = sqlite3_column_type(pStmt, i);
+						
+						if (n_unknown && result->types[i] == 0)
+						{
+							switch(type)
+							{
+								case SQLITE_INTEGER: result->types[i] = GB_T_INTEGER; break;
+								case SQLITE_FLOAT: result->types[i] = GB_T_FLOAT; break;
+								case SQLITE_BLOB: result->types[i] = (int)DB_T_BLOB; break;
+								default: result->types[i] = GB_T_STRING;
+							}
+							
+							n_unknown--;
+						}
+						
+						if (type == SQLITE_BLOB)
 							value = (char *)sqlite3_column_blob(pStmt, i);
 						else
 							value = (char *)sqlite3_column_text(pStmt, i);

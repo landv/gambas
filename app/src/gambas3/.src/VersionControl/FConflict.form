@@ -1,0 +1,121 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,102,74)
+  Text = ("Version conflict")
+  Icon = Picture["icon:/small/warning"]
+  Arrangement = Arrange.Vertical
+  { mnuOpen Menu
+    Visible = False
+  }
+  { panConflict VBox
+    MoveScaled(1,10,86,52)
+    Expand = True
+    Spacing = True
+    { fprInfo FileProperties
+      MoveScaled(2,2,54,21)
+      Expand = True
+      Border = False
+    }
+    { panImage Panel
+      MoveScaled(58,6,25,15)
+      Visible = False
+      Arrangement = Arrange.Fill
+      { imvImage ImageView
+        MoveScaled(2,2,16,10)
+      }
+    }
+    { panEditor Panel
+      MoveScaled(4,25,71,24)
+      Visible = False
+      Arrangement = Arrange.Vertical
+      { HBox4 HBox
+        MoveScaled(4,2,63,4)
+        { btnCut ToolButton
+          MoveScaled(4,0,4,4)
+          ToolTip = ("Cut")
+          Picture = Picture["icon:/small/cut"]
+        }
+        { btnCopy ToolButton
+          MoveScaled(8,0,4,4)
+          ToolTip = ("Copy")
+          Picture = Picture["icon:/small/copy"]
+        }
+        { btnPaste ToolButton
+          MoveScaled(12,0,4,4)
+          ToolTip = ("Paste")
+          Picture = Picture["icon:/small/paste"]
+        }
+        { btnUndo ToolButton
+          MoveScaled(16,0,4,4)
+          ToolTip = ("Undo")
+          Picture = Picture["icon:/small/undo"]
+        }
+        { btnRedo ToolButton
+          MoveScaled(20,0,4,4)
+          ToolTip = ("Redo")
+          Picture = Picture["icon:/small/redo"]
+        }
+        { btnIndent ToolButton
+          MoveScaled(24,0,4,4)
+          ToolTip = ("Indent")
+          Picture = Picture["icon:/small/indent"]
+        }
+        { btnUnindent ToolButton
+          MoveScaled(28,0,4,4)
+          ToolTip = ("Unindent")
+          Picture = Picture["icon:/small/unindent"]
+        }
+        { Panel2 Panel
+          MoveScaled(32,0,4,4)
+          Expand = True
+        }
+      }
+      { Separator1 Separator
+        MoveScaled(29,7,20,0)
+      }
+      { edtConflict TextEditor
+        MoveScaled(4,10,19,12)
+        Expand = True
+        Border = False
+        Highlight = "Custom"
+      }
+    }
+    { lblPath Label
+      MoveScaled(44,2,12,4)
+      Ignore = True
+    }
+  }
+  { panButton HBox
+    MoveScaled(1,64,96,6)
+    Spacing = True
+    Margin = True
+    { btnOpen MenuButton
+      MoveScaled(0,0,15,4)
+      ToolTip = ("Open")
+      AutoResize = True
+      Text = ("Open") & "..."
+      Picture = Picture["icon:/small/open"]
+    }
+    { btnSave Button
+      MoveScaled(22,0,16,4)
+      Text = Shortcut(("Save"), "S")
+      Picture = Picture["icon:/small/save-as"]
+    }
+    { Panel1 Panel
+      MoveScaled(48,0,3,3)
+      Expand = True
+    }
+    { btnSolve Button
+      MoveScaled(58,0,16,4)
+      Text = Shortcut(("Solve"), "v")
+      Picture = Picture["icon:/small/apply"]
+    }
+    { btnClose Button
+      MoveScaled(75,0,16,4)
+      Text = ("Close")
+      Picture = Picture["icon:/small/close"]
+      Cancel = True
+    }
+  }
+}

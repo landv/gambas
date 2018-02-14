@@ -5,10 +5,9 @@ Inherits UserContainer
 
 Property Layout, Settings As Integer[]
 Property Border As Boolean
+Property MinSize As Integer
 
 Event Resize
-
-Private Const MIN_SIZE As Integer = 8
 
 Private $hObs As Observer
 Private $hObsPanel As Observer
@@ -22,6 +21,7 @@ Private $XMax As Integer
 Private $iNoArrange As Integer
 Private $bVertical As Boolean
 Private $bBorder As Boolean = True
+Private $iMinSize As Integer = Desktop.Scale * 2
 
 Public Sub _new()
   
@@ -219,7 +219,7 @@ Private Sub DoLayout()
     hChild = aChildren[I]
     If Not hChild.Visible Then Continue
     
-    W = Max(MIN_SIZE, CInt($cWeight[Object.Address(hChild)] * WMax / fTotalWeight + 0.5))
+    W = Max($iMinSize, CInt($cWeight[Object.Address(hChild)] * WMax / fTotalWeight + 0.5))
     WTotal += W
     
     If $bVertical Then
@@ -359,7 +359,7 @@ Public Sub Resize_MouseMove()
   
   If $bVertical Then
     
-    X = Min(Max(Mouse.ScreenY, $XMin + MIN_SIZE), $XMax - MIN_SIZE)
+    X = Min(Max(Mouse.ScreenY, $XMin + $iMinSize), $XMax - $iMinSize)
     
     aChildren[I].H = X - $XMin - SW
     aChildren[I + 1].Move(0, X - Me.ScreenY, Me.W, $XMax - X - SW)
@@ -374,7 +374,7 @@ Public Sub Resize_MouseMove()
     
   Else
     
-    X = Min(Max(Mouse.ScreenX, $XMin + MIN_SIZE), $XMax - MIN_SIZE)
+    X = Min(Max(Mouse.ScreenX, $XMin + $iMinSize), $XMax - $iMinSize)
     
     If System.RightToLeft Then
       I2 = I
@@ -431,5 +431,18 @@ Private Sub Border_Write(Value As Boolean)
   If $bBorder = Value Then Return
   $bBorder = Value
   DoLayout
+
+End
+
+Private Function MinSize_Read() As Integer
+
+  Return $iMinSize
+
+End
+
+Private Sub MinSize_Write(Value As Integer)
+
+  $iMinSize = Value
+  Layout_Write(Layout_Read())
 
 End

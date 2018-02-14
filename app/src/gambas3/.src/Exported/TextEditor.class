@@ -14,6 +14,10 @@ Private $hLabelTimer As Timer
 Private $hObserver As Observer
 Private $iLastLine As Integer = -1
 
+Private $bLabelBottom As Boolean
+Private $iLabelX As Integer
+Private $iLabelY As Integer
+
 Static Private $sFindPrefix As String
 Static Private $aFind As Integer[]
 
@@ -44,6 +48,7 @@ Public Sub ReadConfig(Optional bPreview As Boolean)
   Endif
   'Me.Flags[Editor.NoFolding] = Not Settings["/Editor/ShowFolding", True]
   Me.ShowBraces = True
+  Me.CloseBraces = Settings["/Editor/CloseBraces", 1]
   
   'Me.KeywordsUseUpperCase = Settings["/Editor/KeywordsUseUpperCase"]
   
@@ -150,13 +155,6 @@ Public Sub GetSelection() As String
   
 End
 
-Static Public Sub GetIndent(sLine As String) As Integer
-  
-  Return Len(sLine) - Len(LTrim(sLine))
-  
-End
-
-
 Public Sub StoreSelection(Optional bNoFullLines As Boolean)
 
   With Me
@@ -211,6 +209,30 @@ Public Sub Label_MouseDown()
 
 End
 
+Private Sub MoveMessageLabel()
+
+  Dim X As Integer
+  Dim Y As Integer
+  
+  If Not $hLabel Then Return
+  If Not $hLabel.Visible Then Return
+  
+  If $bLabelBottom Then
+    X = 0
+    Y = Container(Me.Proxy).ClientH - $hLabel.H
+  Else
+    X = $iLabelX
+    Y = $iLabelY
+  Endif
+
+  X = Me.ScreenX + X - $hLabel.Parent.ScreenX
+  Y = Me.ScreenY + Y - $hLabel.Parent.ScreenY
+  
+  If (Y + $hLabel.H) > $hLabel.Parent.ClientH Then Y -= $hLabel.H + Me.LineHeight
+  $hLabel.Move(X, Y)
+  
+End
+
 
 Public Sub ShowMessageLabel(sStr As String, Optional X As Integer, Y As Integer, iStyle As Integer)
 
@@ -237,19 +259,19 @@ Public Sub ShowMessageLabel(sStr As String, Optional X As Integer, Y As Integer,
   $hLabel.Background = Color.Merge(Me.Styles[iStyle].Color, Style.BackgroundOf(Me), 0.3)
   $hLabel.Text = "&nbsp;&nbsp;" & Replace(Replace(sStr, "<p>", " "), "<br>", " ") & "&nbsp;&nbsp;"
 
-  If IsMissing(X) Then X = 0
-  If IsMissing(Y) Then Y = Container(Me.Proxy).ClientH - $hLabel.H
-
-  X = Me.ScreenX + X - $hLabel.Parent.ScreenX
-  Y = Me.ScreenY + Y - $hLabel.Parent.ScreenY
-  
-  If (Y + $hLabel.H) > $hLabel.Parent.ClientH Then Y -= $hLabel.H + Me.LineHeight
-  $hLabel.Move(X, Y)
+  If IsMissing(X) And If IsMissing(Y) Then
+    $bLabelBottom = True
+  Else
+    $bLabelBottom = False
+    $iLabelX = X
+    $iLabelY = Y
+  Endif
   
   $hLabel.Show
   $hLabel.Raise
-  $hLabelTimer.Stop
-  $hLabelTimer.Start
+  MoveMessageLabel
+  
+  $hLabelTimer.Restart
   Me.SetFocus
 
 End
@@ -268,8 +290,8 @@ Public Sub Editor_Cursor()
   
   If Me.Line <> $iLastLine Then
     $iLastLine = Me.Line
-    $aFind = Null
-    $sFindPrefix = ""
+    '$aFind = Null
+    '$sFindPrefix = ""
     'Raise LineChange
   Endif
   
@@ -288,59 +310,12 @@ Public Sub HideMessageLabel()
   
 End
 
-Private Sub ToggleAroundCurrentWord(sIdentCar As String, sBraces As String)
-
-  Dim sLine As String
-  Dim X1, X2 As Integer
-  Dim iLen As Integer
+Public Sub IsSameFindStrings(sPrefix As String) As String
   
-  sLine = Me.Current.Text
-  iLen = Me.Current.Length
-  
-  X1 = Me.Column
-  While X1 > 0
-    If InStr(sIdentCar, String.Mid$(sLine, X1, 1)) = 0 Then Break
-    Dec X1
-  Wend
-  
-  X2 = Me.Column
-  While X2 < iLen
-    If InStr(sIdentCar, String.Mid$(sLine, X2 + 1, 1)) = 0 Then Break
-    Inc X2
-  Wend
-  
-  If X1 = X2 Then Return
-  
-  If X1 >= 1 And If String.Mid$(sLine, X1, 1) = Left(sBraces) And If X2 < iLen And If String.Mid$(sLine, X2 + 1, 1) = Right(sBraces) Then
-    sLine = String.Left(sLine, X1 - 1) & String.Mid$(sLine, X1 + 1, X2 - X1) & String.Mid$(sLine, X2 + 2)
-    X1 = Me.Column - 1
-  Else
-    sLine = String.Left(sLine, X1) & Left(sBraces) & String.Mid$(sLine, X1 + 1, X2 - X1) & Right$(sBraces) & String.Mid$(sLine, X2 + 1)
-    X1 = Me.Column + 1
-  Endif
-  
-  Me[Me.Line].Text = sLine
-  Me.Goto(X1, Me.Line)
+  Return sPrefix = $sFindPrefix
   
 End
 
-Public Sub Editor_KeyPress()
-  
-  Dim sBraces As String
-  
-  If Key.Alt Then
-  
-    For Each sBraces In ["()", "{}", "[]", "<>"]
-      If InStr(sBraces, Key.Text) Then
-        ToggleAroundCurrentWord(FEditor.IDENT_CAR, sBraces)
-        Stop Event
-        Return
-      Endif
-    Next
-    
-  Endif
-  
-End
 
 Public Sub FindStrings(sPrefix As String) As Integer[]
   
@@ -356,12 +331,18 @@ Public Sub FindStrings(sPrefix As String) As Integer[]
   
     iLine = Me.FindNextString(sPrefix, iLine + 1)
     If iLine < 0 Then Break 
-    If iLine = Me.Line Then Continue
+    'If iLine = Me.Line Then Continue
     
     $aFind.Add(iLine)
   
   Loop 
   
   Return $aFind
+  
+End
+
+Public Sub Editor_Arrange()
+  
+  MoveMessageLabel
   
 End

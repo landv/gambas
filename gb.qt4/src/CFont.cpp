@@ -2,7 +2,7 @@
 
 	CFont.cpp
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -219,10 +219,6 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
 					GB.ReturnFloat(SIZE_REAL_TO_VIRTUAL(f->pointSizeF()));
 				break;
 			case CFONT::Grade:
-				/*{
-					float r = logf(f->pointSizeFloat()) / logf(qApp->font().pointSizeFloat());
-					GB.ReturnInteger((int)(10 * r + 0.5) - 10);
-				}*/
 				GB.ReturnInteger(SIZE_TO_GRADE(f->pointSizeF(), qApp->font().pointSizeF()));
 				break;
 			case CFONT::Bold: GB.ReturnBoolean(f->bold()); break;
@@ -253,11 +249,10 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
 			case CFONT::Grade:
 				{
 					int g = VPROP(GB_INTEGER);
-					if (g < -4)
-						g = -4;
-					else if (g > 24)
-						g = 24;
-					//f->setPointSizeFloat((int)(powf(qApp->font().pointSizeFloat(), 1.0 + ((int)g / 16.0)) + 0.5));
+					if (g < FONT_GRADE_MIN)
+						g = FONT_GRADE_MIN;
+					else if (g > FONT_GRADE_MAX)
+						g = FONT_GRADE_MAX;
 					f->setPointSizeF(GRADE_TO_SIZE(g, qApp->font().pointSizeF()));
 				}
 				break;
@@ -425,9 +420,9 @@ END_METHOD
 
 BEGIN_METHOD(Font_TextWidth, GB_STRING text)
 
-	QFontMetrics fm(*(THIS->font));
+	QFontMetricsF fm(*(THIS->font));
 	QStringList sl;
-	int w, width = 0;
+	qreal w, width = 0;
 	int i;
 
 	QString str = QSTRING_ARG(text);
@@ -440,7 +435,7 @@ BEGIN_METHOD(Font_TextWidth, GB_STRING text)
 		if (w > width) width = w;
 	}
 
-	GB.ReturnInteger(width);
+	GB.ReturnInteger((int)(width + 0.5));
 
 END_METHOD
 

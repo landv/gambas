@@ -2,7 +2,7 @@
 
   gbc.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -112,8 +112,12 @@ static void get_arguments(int argc, char **argv)
 		{
 			case 'V':
 				#ifdef TRUNK_VERSION
+				#ifdef TRUNK_VERSION_GIT
+				printf(VERSION " " TRUNK_VERSION "\n");
+				#else /* from svn */
 				printf(VERSION " r" TRUNK_VERSION "\n");
-				#else
+				#endif
+				#else /* no TRUNK_VERSION */
 				printf(VERSION "\n");
 				#endif
 				exit(0);
@@ -374,7 +378,6 @@ static void fill_files(const char *root, bool recursive)
 	char *path;
 	struct dirent *dirent;
 	char *file_name;
-	const char *name;
 	const char *file;
 	struct stat info;
 	const char *ext;
@@ -415,9 +418,6 @@ static void fill_files(const char *root, bool recursive)
 					|| (strcmp(ext, "class") == 0))
 			{
 				*((char **)ARRAY_add(&_files)) = STR_copy(file);
-				// Add the class to the list of classes
-				name = FILE_get_basename(file_name);
-				COMPILE_add_class(name, strlen(name));
 			}
 		}
 	}
@@ -429,6 +429,8 @@ static void fill_files(const char *root, bool recursive)
 static void init_files(const char *first)
 {
 	bool recursive;
+	const char *name;
+	int i, n;
 
 	ARRAY_create(&_files);
 
@@ -440,7 +442,15 @@ static void init_files(const char *first)
 	if (recursive) FILE_chdir("..");
 
 	// Sort paths
-	qsort(_files, ARRAY_count(_files), sizeof(*_files), (int (*)(const void *, const void *))compare_path);
+	n = ARRAY_count(_files);
+	qsort(_files, n, sizeof(*_files), (int (*)(const void *, const void *))compare_path);
+
+	// Add the classes to the list of classes
+	for (i = 0; i < n; i++)
+	{
+		name = FILE_get_basename(_files[i]);
+		COMPILE_add_class(name, strlen(name));
+	}
 
 	// End the list of classes
 	COMPILE_end_class();

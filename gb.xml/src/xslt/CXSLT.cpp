@@ -36,7 +36,7 @@ extern XML_INTERFACE XML;
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>
 
-void XSLT_Transform(Document* doc, Document* stylesheet,char* &outDocument, size_t &outDocumentLen) throw(XSLTException)
+void XSLT_Transform(Document* doc, Document* stylesheet,char* &outDocument, size_t &outDocumentLen)
 {
     if(!doc->childCount) throw XSLTException("Void document");
     if(!stylesheet->childCount) throw XSLTException("Void style sheet");

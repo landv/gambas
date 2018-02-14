@@ -2,7 +2,7 @@
 
 	gbc_trans_code.c
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@
 
 static FUNCTION *func;
 
-static void add_local(int sym_index, TYPE type, int value, bool used)
+static CLASS_SYMBOL *add_local(int sym_index, TYPE type, int value, bool used)
 {
 	CLASS_SYMBOL *sym;
 	PARAM *loc;
@@ -61,6 +61,8 @@ static void add_local(int sym_index, TYPE type, int value, bool used)
 	sym->local.type = type;
 	sym->local.value = value;
 	sym->local_used = used;
+	
+	return sym;
 }
 
 
@@ -73,9 +75,7 @@ static void create_local_from_param()
 	for (i = 0; i < func->nparam; i++)
 	{
 		if (TYPE_get_id(func->param[i].type) != T_VOID)
-		{
 			add_local(func->param[i].index, func->param[i].type, (i - func->nparam), func->param[i].ignore);
-		}
 	}
 
 	JOB->line++;
@@ -97,6 +97,11 @@ static void remove_local()
 			else
 				COMPILE_print(MSG_WARNING, sym->local.line, "unused variable: &1", SYMBOL_get_name(&sym->symbol));
 		}
+		else if (!sym->local_assigned)
+		{
+			if (sym->local.value >= 0)
+				COMPILE_print(MSG_WARNING, sym->local.line, "uninitialized variable: &1", SYMBOL_get_name(&sym->symbol));
+		}
 
 		TYPE_clear(&sym->local.type);
 	}
@@ -107,7 +112,8 @@ static bool TRANS_local(void)
 {
 	int sym_index;
 	TRANS_DECL decl;
-	PATTERN *sym;
+	PATTERN *pattern;
+	CLASS_SYMBOL *sym;
 	int f;
 	bool no_warning;
 	bool save_warnings;
@@ -121,7 +127,7 @@ static bool TRANS_local(void)
 	for(;;)
 	{
 		//many = FALSE;
-		sym = JOB->current;
+		pattern = JOB->current;
 
 		for(;;)
 		{
@@ -152,9 +158,9 @@ static bool TRANS_local(void)
 
 		for(;;)
 		{
-			if (PATTERN_is(*sym, RS_LBRA))
+			if (PATTERN_is(*pattern, RS_LBRA))
 			{
-				sym++;
+				pattern++;
 				no_warning = TRUE;
 				save_warnings = JOB->warnings;
 				JOB->warnings = FALSE;
@@ -162,27 +168,30 @@ static bool TRANS_local(void)
 			else
 				no_warning = FALSE;
 
-			sym_index = PATTERN_index(*sym);
-			add_local(sym_index, decl.type, func->nlocal, FALSE);
-			sym++;
+			sym_index = PATTERN_index(*pattern);
+			sym = add_local(sym_index, decl.type, func->nlocal, FALSE);
+			pattern++;
 
 			if (no_warning)
 			{
-				sym++;
+				pattern++;
 				JOB->warnings = save_warnings;
 			}
 
 			func->nlocal++;
 
 			if (TRANS_init_var(&decl))
+			{
 				CODE_pop_local(func->nlocal - 1);
+				sym->local_assigned = TRUE;
+			}
 
 			if (JOB->verbose)
 				printf("LOCAL %s AS %s\n", TABLE_get_symbol_name(JOB->class->table, sym_index), TYPE_get_desc(decl.type));
 
-			if (!PATTERN_is(*sym, RS_COMMA))
+			if (!PATTERN_is(*pattern, RS_COMMA))
 				break;
-			sym++;
+			pattern++;
 		}
 
 		/*if (!many)
@@ -547,7 +556,7 @@ void TRANS_code(void)
 			printf("Compiling %s()...\n", TABLE_get_symbol_name(JOB->class->table, func->name));
 
 		/* Do not debug implicit or generated functions */
-		if (!func->start || func->name == NO_SYMBOL || TABLE_get_symbol_name(JOB->class->table, func->name)[0] == '$')
+		if (!func->start || func->name == NO_SYMBOL || TABLE_get_symbol_name(JOB->class->table, func->name)[0] == '@')
 			JOB->nobreak = TRUE;
 		else
 			JOB->nobreak = FALSE;

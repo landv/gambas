@@ -2,7 +2,7 @@
 
 	gba.c
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -91,8 +91,12 @@ static void get_arguments(int argc, char **argv)
 		{
 			case 'V':
 				#ifdef TRUNK_VERSION
+				#ifdef TRUNK_VERSION_GIT
+				printf(VERSION " " TRUNK_VERSION "\n");
+				#else /* from svn */
 				printf(VERSION " r" TRUNK_VERSION "\n");
-				#else
+				#endif
+				#else /* no TRUNK_VERSION */
 				printf(VERSION "\n");
 				#endif
 				exit(0);
@@ -223,8 +227,9 @@ static int path_count(void)
 
 int main(int argc, char **argv)
 {
-	DIR *dir;
 	const char *path;
+	int nfile;
+	struct dirent **filelist;
 	struct dirent *dirent;
 	char *file_name;
 	const char *file;
@@ -236,6 +241,7 @@ int main(int argc, char **argv)
 	const char **remove_ext;
 	ARCH *arch;
 	ARCH_FIND find;
+	int i;
 
 	get_arguments(argc, argv);
 	COMMON_init();
@@ -275,22 +281,26 @@ int main(int argc, char **argv)
 					break;
 
 				path = path_list[path_current++];
-				dir = opendir(path);
-
-				if (dir == NULL)
-				{
-					fprintf(stderr, "gba: warning: Cannot open dir: %s\n", path);
-					goto _NEXT_PATH;
-				}
-
+				
 				if (chdir(path) != 0)
 				{
-					fprintf(stderr, "gba: warning: Cannot change dir: %s\n", path);
+					fprintf(stderr, "gba: warning: cannot change to directory: %s\n", path);
 					goto _NEXT_PATH;
 				}
 
-				while ((dirent = readdir(dir)) != NULL)
+				filelist = NULL;
+				nfile = scandir(path, &filelist, NULL, alphasort);
+
+				if (nfile < 0)
 				{
+					fprintf(stderr, "gba: warning: cannot scan directory: %s\n", path);
+					goto _NEXT_PATH;
+				}
+				
+				for (i = 0; i < nfile; i++)
+				{
+					dirent = filelist[i];
+					
 					file_name = dirent->d_name;
 					len = strlen(file_name);
 
@@ -374,10 +384,14 @@ int main(int argc, char **argv)
 
 						ARCH_add_file(file);
 					}
+					
+					free(dirent);
 				}
 
 	_NEXT_PATH:
-				if (dir != NULL) closedir(dir);
+				if (filelist != NULL) 
+					free(filelist);
+					
 				FREE((char **)&path);
 			}
 

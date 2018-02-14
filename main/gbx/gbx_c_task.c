@@ -2,7 +2,7 @@
 
   gbx_c_task.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -250,6 +250,12 @@ static void prepare_task(CTASK *_object)
 	THIS->fd_err = -1;
 }
 
+static void exit_child(int ret)
+{
+	FILE_exit();
+	_exit(ret);
+}
+
 static bool start_task(CTASK *_object)
 {
 	const char *err = NULL;
@@ -339,7 +345,7 @@ static bool start_task(CTASK *_object)
 			close(fd_out[0]);
 
 			if (dup2(fd_out[1], STDOUT_FILENO) == -1)
-				exit(CHILD_STDOUT);
+				exit_child(CHILD_STDOUT);
 			
 			setlinebuf(stdout);
 		}
@@ -351,7 +357,7 @@ static bool start_task(CTASK *_object)
 			close(fd_err[0]);
 
 			if (dup2(fd_err[1], STDERR_FILENO) == -1)
-				exit(CHILD_STDERR);
+				exit_child(CHILD_STDERR);
 			
 			setlinebuf(stderr);
 		}
@@ -377,7 +383,7 @@ static bool start_task(CTASK *_object)
 					#if DEBUG_ME
 					fprintf(stderr, "gb.task: serialization has failed\n");
 					#endif
-					exit(CHILD_RETURN);
+					exit_child(CHILD_RETURN);
 				}
 			}
 		}
@@ -393,12 +399,12 @@ static bool start_task(CTASK *_object)
 					fclose(f);
 				}
 				
-				exit(CHILD_ERROR);
+				exit_child(CHILD_ERROR);
 			}
 		}
 		END_TRY
 		
-		_exit(CHILD_OK);
+		exit_child(CHILD_OK);
 	}
 	
 	return FALSE;
@@ -424,6 +430,81 @@ static void close_fd(int *pfd)
 		close(fd);
 		*pfd = -1;
 	}
+}
+
+static bool get_return_value(CTASK *_object, bool cleanup)
+{
+	char path[PATH_MAX];
+	GB_VALUE value;
+	bool fail = FALSE;
+	struct stat info;
+	char *err = NULL;
+	int fd;
+	int n;
+	
+	sprintf(path, RETURN_FILE_PATTERN, getuid(), getpid(), THIS->pid);
+	
+	if (!cleanup)
+	{
+		switch (THIS->status)
+		{
+			case CHILD_OK:
+				
+				#if DEBUG_ME
+				fprintf(stderr,"unserialize from: %s\n", path);
+				#endif
+				if (!THIS->got_value)
+				{
+					fail = GB_UnSerialize(path, &value);
+					if (!fail)
+						GB_StoreVariant(&value._variant, &THIS->ret);
+					THIS->got_value = TRUE;
+				}
+				break;
+				
+			case CHILD_ERROR:
+				
+				if (stat(path, &info))
+				{
+					fail = TRUE;
+				}
+				else
+				{
+					err = STRING_new_temp(NULL, info.st_size);
+					
+					fd = open(path, O_RDONLY);
+					if (fd < 0)
+					{
+						fail = TRUE;
+						break;
+					}
+					else
+					{
+						for(;;)
+						{
+							n = read(fd, err, info.st_size);
+							if (n == info.st_size || errno != EINTR)
+								break;
+						}
+						close(fd);
+						
+						if (n == info.st_size)
+							GB_Error("Task has failed: &1", err);
+						else
+							fail = TRUE;
+					}
+				}
+				
+				if (fail)
+					GB_Error("Unable to get task error");
+				
+				break;
+		}
+	}
+
+	unlink(path);
+	
+	return fail;
 }
 
 static void cleanup_task(CTASK *_object)
@@ -521,6 +602,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Task_free)
 
+	get_return_value(THIS, TRUE);
 	GB_StoreVariant(NULL, &THIS->ret);
 
 END_METHOD
@@ -573,35 +655,16 @@ END_METHOD
 
 BEGIN_PROPERTY(Task_Value)
 
-	char path[PATH_MAX];
-	GB_VALUE ret;
-	FILE_STAT info;
-	char *err = NULL;
-	int fd;
-	
 	if (!THIS->child && THIS->stopped)
 	{
-		sprintf(path, RETURN_FILE_PATTERN, getuid(), getpid(), THIS->pid);
-		#if DEBUG_ME
-		fprintf(stderr,"unserialize from: %s\n", path);
-		#endif
-		
 		if (WIFEXITED(THIS->status))
 		{
 			switch (WEXITSTATUS(THIS->status))
 			{
 				case CHILD_OK:
 
-					if (!THIS->got_value)
-					{
-						bool fail = GB_UnSerialize(path, &ret);
-						if (!fail)
-							GB_StoreVariant(&ret._variant, &THIS->ret);
-						unlink(path);
-						THIS->got_value = TRUE;
-						if (fail)
-							break;
-					}
+					if (get_return_value(THIS, FALSE))
+						break;
 					GB_ReturnVariant(&THIS->ret);
 					return;
 					
@@ -622,18 +685,8 @@ BEGIN_PROPERTY(Task_Value)
 					
 				case CHILD_ERROR:
 					
-					FILE_stat(path, &info, FALSE);
-					
-					err = STRING_new_temp(NULL, info.size);
-					
-					fd = open(path, O_RDONLY);
-					if (fd < 0) goto __ERROR;
-					
-					STREAM_read_direct(fd, err, info.size);
-					close(fd);
-					
-					GB_Error("Task has failed: &1", err);
-					return;
+					get_return_value(THIS, FALSE);
+					break;
 			}
 		}
 		else if (WIFSIGNALED(THIS->status))
@@ -642,8 +695,6 @@ BEGIN_PROPERTY(Task_Value)
 			return;
 		}
 	}
-	
-__ERROR:
 	
 	GB_ReturnNull();
 	GB_ReturnConvVariant();

@@ -2,7 +2,7 @@
 
   gbx_regexp.h
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ typedef
 	void (*REGEXP_SCAN_FUNC)(const char *, int);
 
 bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int len_string);
+bool REGEXP_match_pcre(const char *pattern, int len_pattern, const char *string, int len_string);
 bool REGEXP_scan(CARRAY *array, const char *pattern, int len_pattern, const char *string, int len_string);
 
 #endif

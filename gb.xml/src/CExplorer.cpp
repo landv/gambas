@@ -139,16 +139,16 @@ GB_DESC CExplorerDesc[] =
 {
     GB_DECLARE("XmlExplorer", sizeof(CExplorer)),
 
-    GB_METHOD("_new", "", CExplorer_new, "[(Document)XmlDocument]"),
-    GB_METHOD("_free", "", CExplorer_free, ""),
-    GB_METHOD("Load", "", CExplorer_load, "(Document)XmlDocument"),
+    GB_METHOD("_new", NULL, CExplorer_new, "[(Document)XmlDocument]"),
+    GB_METHOD("_free", NULL, CExplorer_free, ""),
+    GB_METHOD("Load", NULL, CExplorer_load, "(Document)XmlDocument"),
     GB_PROPERTY("Document", "XMLDocument", CExplorer_document),
     GB_PROPERTY_SELF("ReadFlags", ".XmlExplorerReadFlags"),
     GB_PROPERTY_READ("Node", "XmlNode", CExplorer_Node),
     GB_PROPERTY_READ("Eof", "b", CExplorer_eof),
     GB_PROPERTY_READ("State", "i", CExplorer_state),
     GB_METHOD("Read", "i", CExplorer_Read, ""),
-    GB_METHOD("Open", "", CExplorer_open, "(Path)s"),
+    GB_METHOD("Open", NULL, CExplorer_open, "(Path)s"),
 
     GB_END_DECLARE
 };

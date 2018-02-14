@@ -1,7 +1,15 @@
 ' Gambas class file
 
 Export
+Create Private
 Class Rect
+
+Public Const _IsControl As Boolean = True
+Public Const _IsContainer As Boolean = False
+Public Const _Properties As String = "X{Position},Y{Position},Width{Dimension},Height{Dimension},Background{Color},Foreground{Color},Ignore"
+'"Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Margin,Ignore,Expand,AutoResize,Tag,Range"
+Public Const _Family As String = "TermForm"
+
 Static Public _IdToControl As New Collection
 Static Private $iLastId As Integer = 1
 
@@ -28,17 +36,22 @@ Property _Border As Integer
 Property _Padding As Integer
 Property _ColorMode As Integer
 Property Visible As Boolean
+Property Ignore As Boolean
+
 Property Read Next As TermControl
 Property Read Previous As TermControl
 Property Read HaveFocus As Boolean
 Property Read _DefaultBackground As Integer
 Property Read _DefaultForeGround As Integer
 
+Property Read _ClientHeight As Integer
+Property Read _ClientWidth As Integer
+
 Private $iColorMode As Integer
 Private $iBorder As Integer
 
 Private $bShadow As Boolean
-
+Private $bIgnore As Boolean
 Private _RecalcPos As Boolean
 Private $rectControl As New Rect
 Private $iId As Integer
@@ -67,7 +80,7 @@ Event GotFocus
 Event LostFocus
 
 Public Sub _new(Optional hParent As TermContainer)
-
+  
   $iId = $iLastId
   Inc $iLastId
   If hParent Then
@@ -98,10 +111,10 @@ Public Sub _new(Optional hParent As TermContainer)
 End
 
 Private Sub ResizeBuffer(Width As Integer, Height As Integer)
-
+  
   Dim i As Integer
   Dim aLine As Char[]
-
+  
   'Debug "Resize", Object.Type(Me)
   _Content = New Char[][]
   For i = 0 To Height
@@ -109,44 +122,44 @@ Private Sub ResizeBuffer(Width As Integer, Height As Integer)
     _Content.Add(aLine)
   Next
   Me._NeedRender = True
-
+  
 End
 
 Public Sub _Render()
-
+  
   Dim i, j As Integer
   Dim hAttr As New Attr
   Dim iAttr As Integer
   Dim hRectC As Rect
   Dim iShadow As Integer = IIf($bShadow, 1, 0)
   Dim iBC As Integer
-
+  
   If Not Me._NeedRender Then Return
   'If Me Is TermContainer Then
   hRectC = $rectControl
   'Else
   ' hRectC = $rectClient
   'Endif
-
+  
   If Not _Content Then ResizeBuffer(hRectC.Width, hRectC.Height)
-
+  
   iBC = Me._GetBackGround()
   If Me.HaveFocus Then iBC = TermColor.Focus
   hAttr.Background = iBC
-
+  
   iAttr = hAttr.GetInteger()
-
+  
   For i = 0 To _Content.Max
-      hAttr.Foreground = TermColor.Border
+    hAttr.Foreground = TermColor.Border
     For j = 0 To _Content[0].Max
       _Content[i][j] = Char(" ", iAttr)
     Next
   Next
-
+  
   Select Case $iBorder
     Case Border.Simple
       hAttr.Background = iBC
-
+      
       iAttr = hAttr.GetInteger()
       For j = 1 To hRectC.width - 2 '_Content[0].Max - 1
         _Content[0][j] = Char(String.Chr(&h2500), iAttr)
@@ -155,7 +168,7 @@ Public Sub _Render()
         _Content[hRectC.Height - 1 - iShadow][j] = Char(String.Chr(&h2500), iAttr)
       Next
       For i = 1 To hRectC.Height - 2 - iShadow
-
+        
         _Content[i][0] = Char(String.chr(&H2502), iAttr)
         _Content[i][hRectC.Width - 1 - iShadow] = Char(String.chr(&H2502), iAttr)
       Next
@@ -163,9 +176,10 @@ Public Sub _Render()
       _Content[0][hRectC.Width - 1 - iShadow] = Char(String.chr(&H2510), iAttr)
       _Content[hRectC.Height - 1 - iShadow][0] = Char(String.chr(&H2514), iAttr)
       _Content[hRectC.Height - 1 - iShadow][hRectC.Width - 1 - iShadow] = Char(String.chr(&H2518), iAttr)
+    
     Case Border.Double
       hAttr.Background = iBC
-
+      
       iAttr = hAttr.GetInteger()
       For j = 1 To hRectC.width - 2 '_Content[0].Max - 1
         _Content[0][j] = Char(String.Chr(&h2550), iAttr)
@@ -174,7 +188,7 @@ Public Sub _Render()
         _Content[hRectC.Height - 1 - iShadow][j] = Char(String.Chr(&h2550), iAttr)
       Next
       For i = 1 To hRectC.Height - 2 - iShadow
-
+        
         _Content[i][0] = Char(String.chr(&H2551), iAttr)
         _Content[i][hRectC.Width - 1 - iShadow] = Char(String.chr(&H2551), iAttr)
       Next
@@ -183,9 +197,9 @@ Public Sub _Render()
       _Content[hRectC.Height - 1 - iShadow][0] = Char(String.chr(&H255A), iAttr)
       _Content[hRectC.Height - 1 - iShadow][hRectC.Width - 1 - iShadow] = Char(String.chr(&H255D), iAttr)
     Case Else
-
+      
   End Select
-
+  
   If $bShadow Then
     ' If Me Is TermButton Then Stop
     hAttr.Foreground = TermColor.Black
@@ -194,45 +208,45 @@ Public Sub _Render()
     Else
       hAttr.Background = Me.Parent.Background
     Endif
-
+    
     iAttr = hAttr.GetInteger()
     For i = 1 To _Content[0].Max
-
+      
       _Content[_Content.Max - 1][i] = Char(String.chr(&H2580), iAttr)
-
+      
     Next
     For i = 1 To _Content.Max - 2
       _Content[i][_Content[0].Max] = Char(String.chr(&H2588), iAttr)
-
+      
     Next
     'hAttr.Background = If(IsNull(Me.Parent), Desktop.BackGround, Me.Parent.Background)
     _Content[0][_Content[0].Max] = Char(String.chr(&H2584), iAttr)
     _Content[_Content.Max - 1][0] = Char(" ", iAttr)
-
+    
   Endif
-
+  
 End
 
 Private Function id_Read() As Integer
-
+  
   Return $iId
-
+  
 End
 
 Private Function Parent_Read() As TermContainer
-
+  
   Return _IdToControl[$iParent]
-
+  
 End
 
 Private Function Left_Read() As Integer
-
+  
   Return $rectControl.X
-
+  
 End
 
 Private Sub Left_Write(Value As Integer)
-
+  
   If $rectControl.Left = Value Then Return
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   $rectControl.X = Value
@@ -240,60 +254,60 @@ Private Sub Left_Write(Value As Integer)
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   _RecalcPos = True
   If Not $bLockRender Then TermWindows._Render
-
+  
 End
 
 Private Function Top_Read() As Integer
-
+  
   'If Me.tag = "--" Then Stop
-
+  
   Return $rectControl.Y
-
+  
 End
 
 Private Sub Top_Write(Value As Integer)
-
+  
   If $rectControl.Top = Value Then Return
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   $rectControl.Y = Value
-
+  
   Me._DefineRect
   _RecalcPos = True
-
+  
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   If Not $bLockRender Then TermWindows._Render
-
+  
 End
 
 Private Function Width_Read() As Integer
-
+  
   Return $rectControl.Width
-
+  
 End
 
 Private Sub Width_Write(Value As Integer)
-
+  
   If $rectControl.Width = Value Then Return
   If Value < 1 Then Return
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   $rectControl.Width = Value
-
+  
   '$rectDrawing.width = Value + IIf($bShadow, 1, 0)
   Me._DefineRect
   ResizeBuffer($rectControl.Width, $rectControl.Height)
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   If Not $bLockRender Then TermWindows._Render 'If Me Is TermContainer Then Me._SetClientRect()
-
+  
 End
 
 Private Function Height_Read() As Integer
-
+  
   Return $rectControl.Height
-
+  
 End
 
 Private Sub Height_Write(Value As Integer)
-
+  
   If $rectControl.Height = Value Then Return
   If Value < 1 Then Return
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
@@ -303,33 +317,35 @@ Private Sub Height_Write(Value As Integer)
   ResizeBuffer($rectControl.Width, $rectControl.Height)
   TermWindows.SetRefreshArea(Rect(Me.ScreenX, Me.ScreenY, $rectControl.Width, $rectControl.Height))
   If Not $bLockRender Then TermWindows._Render 'If Me Is TermContainer Then Me._SetClientRect()
-
+  
 End
 
 Private Function ScreenX_Read() As Integer
 
-  If $iParent > 0 Then
-    Return _IdToControl[$iParent].ScreenX + Me.Left
-  Else
-    Return Me.Left
-  Endif
+  Dim hParent As TermControl
+  Dim iBorder As Integer
 
+  hParent = _IdToControl[$iParent]
+  If hParent._Border > 0 Then iBorder = 1
+  Return _IdToControl[$iParent].ScreenX + iBorder + Me.Left
+  
 End
 
 Private Function ScreenY_Read() As Integer
 
-  If $iParent > 0 Then
-    Return _IdToControl[$iParent].ScreenY + Me.Top
-  Else
-    Return Me.Top
-  Endif
+  Dim hParent As TermControl
+  Dim iBorder As Integer
 
+  hParent = _IdToControl[$iParent]
+  If hParent._Border > 0 Then iBorder = 1
+  Return hParent.ScreenY + iBorder + Me.Top
+  
 End
 
 Private Sub GetWindow()
-
+  
   Dim hCont As Object = Me.Parent
-
+  
   Do
     If hCont.Parent = Null Then
       $iWindow = hCont.Id
@@ -337,13 +353,13 @@ Private Sub GetWindow()
     Endif
     hCont = hCont.Parent
   Loop
-
+  
 End
 
 Private Sub ComputeScreenXY()
-
+  
   Dim hC As TermControl = Me.Parent
-
+  
   If Me Is TermLabel Then Stop
   If hC Then
     $iScreenX = hC.ScreenX + $rectControl.Left
@@ -353,86 +369,87 @@ Private Sub ComputeScreenXY()
     $iScreenY = $rectControl.Top
   Endif
   _RecalcPos = False
-
+  
 End
 
 Private Function Window_Read() As TermWindow
-
+  
   Return _IdToControl[$iWindow]
-
+  
 End
 
 Public Function _GetScreenClientRect() As Rect
-
+  
   Dim iCorner As Integer = IIf($iBorder > 0, 1, 0) + $iPadding
   Dim iSize As Integer = iCorner * 2 + IIf($bShadow, 1, 0)
-
+  
   Return rect(Me.ScreenX + iCorner, Me.ScreenY + iCorner, $rectControl.Width - iSize, $rectControl.Height - iSize)
-
+  
 End
 
 Public Function _GetScreenRect() As Rect
-
+  
   Return Rect(Me.ScreenX, Me.ScreenY, $rectControl.width, $rectControl.Height)
-
+  
 End
 
 Public Function _GetRect() As Rect
-
+  
   Return $rectControl.Copy()
-
+  
 End
 
 Private Function Background_Read() As Integer
-
+  
   Return $iBackGround
-
+  
 End
 
 Private Sub Background_Write(Value As Integer)
-
+  
   $iBackGround = Value
   Me.Refresh
-
+  
 End
 
 Private Function Foreground_Read() As Integer
-
+  
   Return $iForeGround
+
 End
 
 Private Sub Foreground_Write(Value As Integer)
-
-  $iBackGround = Value
+  
+  $iForeground = Value
   Me.Refresh
-
+  
 End
 
 Public Sub _GetChar(c As Integer, l As Integer) As Char
   'If Me.Tag = "#" Then Stop
-
+  
   Return _Content[l - Me.ScreenY][c - Me.ScreenX]
-
+  
 End
 
 Private Function Tag_Read() As Variant
-
+  
   Return $vTag
-
+  
 End
 
 Private Sub Tag_Write(Value As Variant)
-
+  
   $vTag = Value
-
+  
 End
 
 Public Sub _Arrange()
-
+  
 End
 
 Public Sub Move(Left As Integer, Top As Integer, Optional Width As Integer, Height As Integer)
-
+  
   $bLockRender = True
   Me.Left = Left
   Me.Top = Top
@@ -440,92 +457,93 @@ Public Sub Move(Left As Integer, Top As Integer, Optional Width As Integer, Heig
   If Not IsMissing(Height) Then Me.Height = Height
   $bLockRender = False
   TermWindows._Render
-
+  
 End
 
 Private Function Expand_Read() As Boolean
-
+  
   Return $bExpand
-
+  
 End
 
 Private Sub Expand_Write(Value As Boolean)
- Dim hParent As TermContainer
+
+  Dim hParent As TermContainer
   $bExpand = Value
   hParent = Me.Parent
   If hParent Then 
     TermWindows.SetRefreshArea(hParent._GetScreenRect())
     TermWindows._Render
     
-    
   Endif
-
+  
 End
 
 Public Sub _Initialize()
-
+  
   'Here generate the content Array to the right size
   'Define the true size for the Client content
-
+  
 End
 
 Private Function _Shadow_Read() As Boolean
-
+  
   Return $bShadow
-
+  
 End
 
 Private Sub _Shadow_Write(Value As Boolean)
-
+  
   $bShadow = Value
   Me._NeedRender = True
-
+  
 End
 
 Public Sub _DefineRect()
   'If Me Is TermPictureBox Then Stop
-
+  
   $rectClient = Rect($iPadding + $yBorder, $iPadding + $yBorder, $rectControl.Width - ($iPadding + $yBorder) * 2 - IIf($bShadow, 1, 0), $rectControl.Height - ($iPadding + $yBorder) * 2 - IIf($bShadow, 1, 0))
-
+  
 End
 
 Private Function _Border_Read() As Integer
-
+  
   Return $iBorder
-
+  
 End
 
 Private Sub _Border_Write(Value As Integer)
-
+  
   $iBorder = Value
   $yBorder = IIf($iBorder > Border.None, 1, 0)
-
+  Me.Refresh
+  
 End
 
 Public Sub _GetClientRect() As Rect
   '  If Me Is TermFrame Then Stop
   '_DefineRect
-
+  
   Return $rectClient.Copy()
-
+  
 End
 
 Private Function _Padding_Read() As Integer
-
+  
   Return $iPadding
-
+  
 End
 
 Private Sub _Padding_Write(Value As Integer)
-
+  
   $iPadding = Value
-
+  
 End
 
 Public Sub _GetBackGround() As Integer
-
+  
   Dim i As Integer
-
+  
   If $iBackGround = -1 Then
     If $iParent > 0 Then
       i = Me.Parent._GetBackGround()
@@ -536,13 +554,13 @@ Public Sub _GetBackGround() As Integer
   Else
     Return $iBackGround
   Endif
-
+  
 End
 
 Public Sub _GetForeground() As Integer
   
-    Dim i As Integer
-
+  Dim i As Integer
+  
   If $iForeground = -1 Then
     If $iParent > 0 Then
       i = Me.Parent._GetForeground()
@@ -556,139 +574,144 @@ Public Sub _GetForeground() As Integer
   
 End
 
-
 Private Function _ColorMode_Read() As Integer
-
+  
   Return $iColorMode
-
+  
 End
 
 Private Sub _ColorMode_Write(Value As Integer)
-
+  
   $iColorMode = Value
-
+  
 End
 
 Public Sub _MouseDown()
+
   Dim hwindow As TermWindow
   
-  If TermWindows.Debug Then Error "Mouse Down Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  If TermWindows.Debug = TermWindows.DebugInput Then Error "Mouse Down Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
   
   If Not Me.Window.Active Then
     Me.Window.Activate
   Endif
   Me.SetFocus
   Raise MouseDown
-
+  
 End
 
 Public Sub _MouseUp()
-
-  If TermWindows.Debug Then Error "Mouse Up Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  
+  If TermWindows.Debug = TermWindows.DebugInput Then Error "Mouse Up Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
   Raise MouseUp
-
+  
 End
 
 Public Sub _MouseMove()
-
-  If TermWindows.Debug Then Error "Mouse Move Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  
+  If TermWindows.Debug = TermWindows.DebugInput Then Error "Mouse Move Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
   Raise MouseMove
-
+  
 End
 
 Public Sub _MouseWheel()
-
-  If TermWindows.Debug Then Error "Mouse Wheel Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  
+  If TermWindows.Debug = TermWindows.DebugInput Then Error "Mouse Wheel Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
   Raise MouseWheel
-
+  
 End
 
 Public Sub _Click()
-
-  If TermWindows.Debug Then Error "Mouse Click Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
+  
+  If TermWindows.Debug = TermWindows.DebugInput Then Error "Mouse Click Event Raised on : " & Me.id & "  Type: " & Object.Type(Me)
   Raise Click
-
+  
 End
 
 Private Function Visible_Read() As Boolean
-
+  
   Return $iVisible
-
+  
 End
 
 Private Sub Visible_Write(Value As Boolean)
-
+  
   If $iVisible <> Value Then
     $iVisible = Value
     TermWindows.SetRefreshArea($rectControl)
     TermWindows._Render
   Endif
-
+  
 End
 
 Public Sub Show()
-
+  ' If Me Is Termform Then Stop
   Me.Visible = True
-
+  
 End
 
 Public Sub Hide()
-
+  
   Me.Visible = False
-
+  
 End
 
 Public Sub Resize(Width As Integer, Height As Integer)
-
+  
   $bLockRender = True
   Me.Width = Width
   Me.Height = Height
   $bLockRender = False
   TermWindows._Render
-
+  
 End
 
-Public Sub Refresh()
-
+Public Sub Refresh(Optional hScreenRect As Rect)
+  
   Me._NeedRender = True
-  TermWindows.SetRenderArea(Me._GetScreenRect())
+  If hScreenRect Then 
+    TermWindows.SetRenderArea(hScreenRect)
+  Else
+    TermWindows.SetRenderArea(Me._GetScreenRect())
+  Endif
   TermWindows._Render
-
+  
 End
 
 Public Sub _KeyPress()
-
+  
   Raise KeyPress
-
+  
 End
 
 Private Function Next_Read() As TermControl
-
+  
   Dim iPos As Integer
   Dim hChildren As TermControl[]
-
+  
   hChildren = Me.Parent.Children
   ipos = hChildren.Find(Me)
   If ipos = hChildren.Max Then Return Null
   Return hChildren[iPos + 1]
-
+  
 End
 
 Private Function Previous_Read() As TermControl
-
+  
   Dim iPos As Integer
   Dim hChildren As TermControl[]
-
+  
   hChildren = Me.Parent.Children
   iPos = hChildren.Find(Me)
   If iPos = 0 Then Return Null
   Return hChildren[iPos - 1]
-
+  
 End
 
 Public Sub SetFocus()
-
+  
   Dim hPrev As TermControl
+
   If Me.HaveFocus Then Return
   If _AllowFocus Then
     hPrev = TermControl._IdToControl[Me.Window._GetCurrentFocusId()]
@@ -698,42 +721,63 @@ Public Sub SetFocus()
     Me._GotFocus
     Me.Refresh
   Endif
-
+  
 End
 
 Private Sub HaveFocus_Read() As Boolean
-
+  
   Return $bHaveFocus
-
+  
 End
 
 Public Sub _LostFocus()
-
+  
   $bHaveFocus = False
-
+  
   Raise LostFocus
-
+  
 End
 
 Public Sub _GotFocus()
-
+  
   $bHaveFocus = True
-
+  
   Raise GotFocus
-
+  
 End
 
 Private Function _DefaultBackground_Read() As Integer
-
+  
   Return TermColor.Background
+
 End
 
 Private Function _DefaultForeGround_Read() As Integer
-
+  
   Return TermColor.ForeGround
-
+  
 End
 
+Private Function _ClientHeight_Read() As Integer
+  
+  Return $rectClient.Height
+  
+End
 
+Private Function _ClientWidth_Read() As Integer
+  
+  Return $rectClient.Width
+  
+End
 
+Private Function Ignore_Read() As Boolean
+  
+  Return $bIgnore
+  
+End
 
+Private Sub Ignore_Write(Value As Boolean)
+  
+  $bIgnore = Value
+  
+End

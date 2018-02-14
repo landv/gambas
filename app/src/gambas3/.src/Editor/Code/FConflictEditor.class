@@ -1,0 +1,1579 @@
+' Gambas class file
+
+Public Path As String
+Public RichText As String
+Public Age As Integer
+
+Property Read ReadOnly As Boolean
+
+'Static Private $aExt As String[] = ["htm", "html", "xml", "kml", "svg", "css", "webpage", "js", "c", "h", "cpp", "gbs"]
+
+Private $hEditor As TextEditor
+Private $bNoHighlight As Boolean
+Private $bModule As Boolean
+
+Private $bShowComment As Boolean
+
+Private $bModify As Boolean
+
+Private $iViewMode As Integer
+Private Const VIEWMODE_NORMAL As Integer = 0 
+Private Const VIEWMODE_HORIZONTAL As Integer = 1
+Private Const VIEWMODE_VERTICAL As Integer = 2
+
+Private $hEditor1 As TextEditor
+Private $hEditor2 As TextEditor
+Private $hBookmark As CBookmark
+
+Private $bWebPage As Boolean
+Private $iLastLine As Integer
+
+Private $bInsideConflict As Boolean
+
+Public Sub _new(sPath As String, Optional bModule As Boolean)
+
+  $iLastLine = -1
+
+  Path = sPath
+  $hEditor = edtEditor
+  
+  If bModule Then
+    mnuShowCode.Show
+    Me.Name = File.BaseName(Path)
+  Else
+    mnuShowCode.Hide
+    Me.Name = File.Name(Path)
+  Endif
+  
+  $bModule = bModule
+  
+End
+
+Public Sub GetEditor() As TextEditor
+  
+  Return $hEditor
+  
+End
+
+
+Public Sub LoadFile() As Boolean
+  
+  With edtEditor
+    .Clear
+    .ShowBraces = True
+  End With
+  
+  $bWebPage = False
+  $bNoHighlight = True
+  $bShowComment = False
+  
+  ' If Path Then
+  ' 
+  '   sExt = LCase(File.Ext(Path))
+  '   
+  '   If $aExt.Exist(sExt) Then
+  ' 
+  '     Select Case sExt
+  '       Case "css"
+  '         edtEditor.Mode = "css"
+  '       Case "webpage"
+  '         edtEditor.Mode = "webpage"
+  '         $bWebPage = True
+  '       Case "js"
+  '         edtEditor.Mode = "javascript"
+  '       Case "c"
+  '         edtEditor.Mode = "c"
+  '       Case "cpp", "h"
+  '         edtEditor.Mode = "c++"
+  '       Case "gbs"
+  '         edtEditor.Mode = "gambas"
+  '       Case Else 
+  '         edtEditor.Mode = "html"
+  '     End Select
+  '     
+  '     $bShowComment = True
+  '     '$bShowPretty = True
+  '     $bNoHighlight = False
+  '     
+  '   Endif
+  '   
+  ' Endif
+
+  $hBookmark = New CBookmark(Me, btnBookmark, mnuBookmark)
+
+  ReadConfig
+
+  Reload
+
+  $bModify = False
+  edtEditor.SetFocus
+
+  SetReadOnly
+  
+End
+
+Public Sub Form_Arrange()
+  
+  Dim iToolbarOffset As Integer
+  
+  'If we add the ability to hide the toolbar then uncomment this code 
+  'IF $bToolbar THEN
+  '  panToolBar.Move(0, 0, ME.CLientW)
+  '  iToolbarOffset = panToolBar.H
+  'ELSE
+  '  iToolbarOffset = 0
+  'ENDIF
+  
+  iToolbarOffset = panToolBar.H
+  
+  Select Case $iViewMode
+    Case 0
+      edtEditor.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
+    Case 1
+      splHorizontal.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
+    Case 2
+      splVertical.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
+  End Select 
+
+End
+
+Public Sub ReadConfig()
+
+  Project.SetSmallFont(panToolbar)
+  InitEditor(edtEditor)
+  If $hEditor1 Then InitEditor($hEditor1)
+  If $hEditor2 Then InitEditor($hEditor2)
+
+End
+
+Public Function Save() As Boolean
+
+  If Not $bModify Then Return
+
+  Save.Begin(Path)
+
+  $hEditor.Save(Path)
+  ' TODO: Editor.Reset
+  $bModify = False
+  DrawTitle
+
+  Save.End()
+
+Catch
+
+  Return Save.Error()
+
+End
+
+Private Sub DrawTitle()
+
+  Project.DrawTitle(Me)
+
+End
+
+Public Sub Modify(Optional bReset As Boolean)
+
+  If Project.ReadOnly Then Return
+  
+  $bModify = True
+  Inc Project.TimeStamp
+  Inc Age
+  FSearch.OnFileChange(Me.Path)
+  
+  If bReset Then
+    $bModify = False
+  Endif
+
+  DrawTitle
+  
+End
+
+
+Public Function IsModified() As Boolean
+
+  Return $bModify
+
+End
+
+
+Public Sub Editors_Change()
+
+  Modify
+
+End
+
+
+Private Sub InAlternate() As Boolean
+
+  Dim sText As String = String.Left($hEditor.Current.Text, $hEditor.Column)
+  Dim bAlt As Boolean
+  Dim I As Integer
+  Dim bQuote As Boolean
+  Dim sCar As String
+  
+  bAlt = $hEditor.Current.InitialState.Alternate
+  
+  I = 1
+  While I <= String.Len(sText)
+    
+    sCar = String.Mid$(sText, I, 1)
+    
+    If bAlt Then
+      
+      If bQuote Then
+        If sCar = "\\" Then
+          Inc I
+        Else If sCar = Chr$(34) Then
+          bQuote = False
+        Endif
+      Else
+        If sCar = Chr$(34) Then
+          bQuote = True
+        Else If String.Mid$(sText, I, 2) = "%>" Then
+          bAlt = False
+        Endif
+      Endif
+      
+    Else
+      If String.Mid$(sText, I, 2) = "<%" Then
+        bAlt = True
+        Inc I
+      Endif
+    Endif
+    
+    Inc I
+    
+  Wend
+  
+  Return bAlt
+
+End
+
+Private Sub FindCloseAlternate() As Boolean
+  
+  Dim sLine As String
+  Dim I, J, A, B As Integer
+  
+  I = $hEditor.Line 
+  J = $hEditor.Column
+  
+  While I < $hEditor.Count
+    sLine = $hEditor[I].Text
+    A = String.InStr(sLine, "<%", J + 1)
+    B = String.InStr(sLine, "%>", J + 1)
+    If B > 0 And If A = 0 Or A > B Then Return True
+    If A > 0 Then Return False
+    Inc I
+    J = 0
+  Wend
+    
+End
+
+
+Public Sub Editors_KeyPress()
+  
+  If Key.Code = Key.Escape Then 
+    
+    Action["find"].Value = False
+  
+  ' Else If Key.Code = Key.Return Then 
+  '     
+  '   If Key.Control Then
+  '     
+  '     If Key.Shift Then 
+  '       If Editor.Lines[Editor.Line].Expanded Then
+  '         Editor.CollapseAll
+  '       Else
+  '         Editor.ExpandAll
+  '       Endif
+  '     Else
+  '       Editor.Lines[Editor.Line].Expanded = Not Editor.Lines[Editor.Line].Expanded
+  '     Endif
+  '     Stop Event
+  '     
+  '   Endif
+    
+  Endif 
+  
+  If $hEditor.ReadOnly Then Return
+   
+  If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
+    If Key.Normal Then
+      If $bWebPage Then
+        If InAlternate() And If Not FindCloseAlternate() Then
+          $hEditor.Insert("\n%>")
+          $hEditor.Goto(0, $hEditor.Line)
+          Stop Event
+        Endif
+      Endif
+    Endif
+  Endif
+  
+End
+
+Public Sub Form_GotFocus()
+  
+  $hEditor.SetFocus
+  
+End
+
+Public Sub Goto(iLine As Integer, Optional iColumn As Integer = -1)
+
+  'DEC iLine
+  If iColumn < 0 Then iColumn = $hEditor.Column
+  $hEditor.Goto(iColumn, iLine)
+
+End
+
+
+Public Sub GotoCenter(iLine As Integer, Optional iColumn As Integer = -1)
+
+  Goto(iLine, iColumn)
+
+End
+
+
+Public Sub Editors_Menu()
+
+  mnuEditor.Popup
+
+End
+
+Private Sub RefreshBackground()
+
+  Dim aEditor As TextEditor[] = [$hEditor1, $hEditor2]
+  Dim hEditor As TextEditor
+  Dim bHasFocus As Boolean
+
+  If aEditor.Exist($hEditor) Then
+
+    For Each hEditor In aEditor
+      If hEditor And If hEditor.HasFocus Then 
+        bHasFocus = True
+        Break
+      Endif
+    Next
+  
+    For Each hEditor In aEditor
+  
+      If Not hEditor Then Continue
+  
+      hEditor.ReadConfig(True)
+      If Not hEditor.HasFocus Then
+        If bHasFocus Then MTheme.InitEditor(hEditor, True)
+        $hEditor.ShowCurrent = False
+        $hEditor.ShowModified = False
+      Endif
+  
+    Next
+    
+  Endif
+
+End
+
+Public Sub Editors_GotFocus()
+
+  $hEditor = Last
+  Project.SetCurrentPopup(mnuEditor)
+  RefreshBackground
+
+End
+
+Public Sub Editors_LostFocus()
+  
+  RefreshBackground
+  
+End
+
+Public Sub mnuSave_Click()
+
+  Save
+
+End
+
+
+' PUBLIC SUB mnuFind_Click()
+'
+'   DIM sSel AS String
+'   DIM iPos AS Integer
+'
+'   sSel = Left$(Trim(edtEditor.Selection.Text), 64)
+'   iPos = Instr(sSel, gb.NewLine)
+'   IF iPos THEN sSel = Left$(sSel, iPos - 1)
+'
+'   Project.FindForm.Find(sSel)
+'
+' END
+'
+'
+' PUBLIC SUB mnuFindNext_Click()
+'
+'   Project.FindForm.FindNext
+'
+' END
+'
+'
+' PUBLIC SUB mnuFindPrevious_Click()
+'
+'   Project.FindForm.FindPrevious
+'
+' END
+
+
+Public Sub Rename(sNewName As String, sNewPath As String)
+
+  Me.Name = sNewName
+  Path = sNewPath 'File.Dir(Path) &/ sNewName & "." & File.Ext(Path)
+  DrawTitle
+
+End
+
+
+Public Sub mnuCut_Click()
+
+  $hEditor.Cut
+
+End
+
+Public Sub mnuCopy_Click()
+
+  $hEditor.Copy
+
+End
+
+Public Sub mnuPaste_Click()
+
+  $hEditor.Paste
+  $hEditor.SetFocus
+
+End
+
+' Public Sub mnuPasteSpecial_Click()
+' 
+'   FPasteSpecial.Run($hEditor)
+' 
+' End
+' 
+' Public Sub mnuPasteAsString_Click()
+' 
+'   FPasteSpecial.Run($hEditor, FPasteSpecial.MODE_STRING)
+' 
+' End
+' 
+' Public Sub mnuPasteAsStringSplit_Click()
+' 
+'   FPasteSpecial.Run($hEditor, FPasteSpecial.MODE_STRING_SPLIT)
+' 
+' End
+' 
+' Public Sub mnuPasteAsComment_Click()
+' 
+'   FPasteSpecial.Run($hEditor, FPasteSpecial.MODE_COMMENT)
+' 
+' End
+
+Public Sub mnuUndo_Click()
+
+  $hEditor.Undo
+
+End
+
+Public Sub mnuRedo_Click()
+
+  $hEditor.Redo
+
+End
+
+
+Public Sub mnuGotoLine_Click()
+
+  Dim iLine As Integer
+
+  iLine = FGotoLine.Run($hEditor.Line + 1)
+  If iLine <= 0 Then Return
+  GotoCenter(iLine - 1)
+
+End
+
+
+' PUBLIC SUB mnuWordWrap_Click()
+'
+'   edtEditor.Wrap = NOT edtEditor.Wrap
+'   mnuWordWrap.Checked = edtEditor.Wrap
+'
+' END
+
+
+Public Sub mnuSelectAll_Click()
+
+  $hEditor.SelectAll
+
+End
+
+
+Public Sub SetReadOnly()
+
+  Dim bReadOnly As Boolean
+
+  If Project.ReadOnly Or If Project.Running Or If Project.IsReadOnly(Path) Then
+    bReadOnly = True
+  Endif
+
+  edtEditor.ReadOnly = bReadOnly
+  If $hEditor1 Then $hEditor1.ReadOnly = bReadOnly
+  If $hEditor2 Then $hEditor2.ReadOnly = bReadOnly
+
+  Project.UpdateLockedAction(Me)
+
+  UpdateMenu
+  DrawTitle
+
+End
+
+Public Sub OnProjectDebug()
+
+  SetReadOnly
+
+End
+
+Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean)
+  
+  ' TODO: OnShowString
+  Return
+  
+  edtEditor.ShowString(sStr, bIgnoreCase)
+  If $hEditor1 Then $hEditor1.ShowString(sStr, bIgnoreCase)
+  If $hEditor2 Then $hEditor2.ShowString(sStr, bIgnoreCase)
+  
+End
+
+' Private Sub AnalyzeCode(sText As String) As String
+'   
+'   Dim iInd As Integer
+'   Dim iPos As Integer
+'   Dim iLen As Integer
+'   
+'   If Not sText Then Return
+'   
+'   Highlight.Analyze(sText, True)
+'   
+'   iPos = 0
+'   For iInd = 0 To Highlight.Symbols.Max
+'     
+'     If iPos < Highlight.Positions[iInd] Then 
+'       Highlight.Add(Highlight.Normal, Highlight.Positions[iInd] - iPos)
+'       iPos = Highlight.Positions[iInd]
+'     Endif
+'     
+'     iLen = String.Len(Highlight.Symbols[iInd])
+'     Highlight.Add(Highlight.Types[iInd], iLen)
+'     iPos += iLen
+'     
+'   Next
+' 
+'   If iPos < String.Len(Highlight.TextAfter) Then 
+'     Highlight.Add(Highlight.Normal, String.Len(Highlight.TextAfter) - iPos)
+'   Endif
+'   
+'   Return Highlight.TextAfter
+' 
+' End
+
+
+Public Sub Form_Activate()
+
+  RefreshLineInfo(True)
+  Project.SetCurrentPopup(mnuEditor)
+
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return edtEditor.ReadOnly  
+
+End
+
+Private Sub UpdateEndOfLine()
+
+  Select Case edtEditor.EndOfLine
+    Case gb.Windows
+      mnuEolWindows.Checked = True
+      btnEndOfLine.Text = mnuEolWindows.Text
+    Case gb.Mac
+      mnuEolMac.Checked = True
+      btnEndOfLine.Text = mnuEolMac.Text
+    Default
+      mnuEolUnix.Checked = True
+      btnEndOfLine.Text = mnuEolUnix.Text
+  End Select
+
+End
+  
+Public Sub Reload()
+
+  Dim sText As String = File.Load(Path)
+  
+  $bInsideConflict = False
+  edtEditor.Text = sText
+  
+  UpdateEndOfLine
+  
+  $hEditor.SetFocus
+  Editors_Cursor
+  Modify(True)
+
+End
+
+Public Sub mnuReload_Click()
+
+  Project.ReloadFile(Me)
+
+End
+
+Public Sub GetState() As String
+  
+  Return CStr($hEditor.Column) & "." & CStr($hEditor.Line)
+  
+End
+
+Public Sub SetState(sState As String)
+  
+  Dim aState As String[] = Split(sState, ".")
+  
+  GotoCenter(CInt(aState[1]), CInt(aState[0]))
+  
+End
+
+Private Sub InitEditor(hEditor As TextEditor)
+  
+  With hEditor
+    .Border = False
+    .View = edtEditor
+    .Mode = edtEditor.Mode
+    
+    .ReadConfig(True)
+    .ShowExpand = False
+    
+    If Color[.Styles[Highlight.Background].Color].Luminance >= 128 Then
+      .Styles[Highlight.Custom].Background = Color.SetAlpha(Color.Green, 224)
+      .Styles[Highlight.Custom + 1].Background = Color.SetAlpha(Color.Red, 224)
+    Else
+      .Styles[Highlight.Custom].Background = Color.SetAlpha(Color.Green, 160)
+      .Styles[Highlight.Custom + 1].Background = Color.SetAlpha(Color.Red, 160)
+    Endif
+    .Styles[Highlight.Custom].Color = .Styles[Highlight.Normal].Color
+    .Styles[Highlight.Custom + 1].Color = .Styles[Highlight.Normal].Color
+    
+  End With 
+  
+End
+
+Private Sub SetViewMode(iViewMode As Integer)
+
+  If $iViewMode = iViewMode Then iViewMode = VIEWMODE_NORMAL
+  $iViewMode = iViewMode
+
+  If $iViewMode <> VIEWMODE_NORMAL And If Not $hEditor1 Then
+    $hEditor1 = New TextEditor(Me) As "Editors"
+    InitEditor($hEditor1)
+    $hEditor2 = New TextEditor(Me) As "Editors"
+    InitEditor($hEditor2)
+    FSearch.OnNewForm(Me)
+  Endif
+
+  Select Case $iViewMode
+
+    Case VIEWMODE_NORMAL
+      edtEditor.Show
+      splHorizontal.Hide
+      splVertical.Hide
+      edtEditor.Goto($hEditor.Column, $hEditor.Line)
+      $hEditor = edtEditor
+
+    Case VIEWMODE_HORIZONTAL
+      $hEditor1.Reparent(splHorizontal)
+      $hEditor2.Reparent(splHorizontal)
+      edtEditor.Hide
+      splHorizontal.Show
+      splVertical.Hide
+      $hEditor1.Goto($hEditor.Column, $hEditor.Line)
+      $hEditor2.Goto($hEditor.Column, $hEditor.Line)
+      $hEditor = $hEditor1
+
+    Case VIEWMODE_VERTICAL
+      $hEditor1.Reparent(splVertical)
+      $hEditor2.Reparent(splVertical)
+      edtEditor.Hide
+      splHorizontal.Hide
+      splVertical.Show
+      $hEditor1.Goto($hEditor.Column, $hEditor.Line)
+      $hEditor2.Goto($hEditor.Column, $hEditor.Line)
+      $hEditor = $hEditor1
+
+  End Select
+
+  $hEditor.SetFocus
+  Form_Arrange
+  Editors_Cursor
+
+End
+
+
+Public Sub mnuNoSplit_Click()
+  
+  SetViewMode(VIEWMODE_NORMAL)
+
+End
+
+Public Sub mnuHorizontalSplit_Click()
+
+  SetViewMode(VIEWMODE_HORIZONTAL)
+
+End
+
+Public Sub mnuVerticalSplit_Click()
+
+  SetViewMode(VIEWMODE_VERTICAL)
+
+End
+
+Public Sub mnuShowCode_Click()
+
+  Project.OpenFile(Me.Name)
+
+End
+
+Public Sub GetText() As String
+  
+  Return $hEditor.Text
+  
+End
+
+Public Sub GetPosition() As Integer
+  
+  Return $hEditor.GetPosition()
+
+End
+
+Public Sub SetPosition(hResult As CFindResult, Optional bJustCheck As Boolean) As Boolean
+  
+  Return $hEditor.SetPosition(hResult, bJustCheck)
+  
+End
+
+Public Sub Replace(sReplace As String)
+  
+  $hEditor.Replace(sReplace)
+  
+End
+
+Public Sub GetSelection() As String
+  
+  Return $hEditor.GetSelection()
+  
+End
+
+Private Sub RefreshLineInfo(Optional bForce As Boolean) As Boolean
+
+  Dim bNewLine As Boolean
+  Dim bInsideConflict As Boolean
+
+  If bForce Then
+    $iLastLine = -1
+  Endif
+
+  If $hEditor.Line <> $iLastLine Then
+
+    $iLastLine = $hEditor.Line
+    bInsideConflict = InsideConflict()
+    If bInsideConflict <> $bInsideConflict Then
+      $bInsideConflict = bInsideConflict
+      UpdateButtons
+    Endif
+    bNewLine = True
+
+  Endif
+
+  Return bNewLine
+
+End
+
+Private Sub InsideConflict() As Boolean
+
+  Dim Y As Integer
+  Dim sLine As String
+
+  Y = $hEditor.Line
+  
+  sLine = $hEditor[Y].Text
+  Do
+    If sLine Begins "<<<<<<" Then Return True
+    Dec Y
+    If Y < 0 Then Return False
+    sLine = $hEditor[Y].Text
+    If sLine Begins "======" Then Return True
+    If sLine Begins ">>>>>>" Then Return False
+  Loop
+
+End
+
+Public Sub Editors_Cursor()
+
+  RefreshLineInfo()
+  CPosition.SaveCurrent(Me)
+
+End
+
+Public Sub Editors_MouseDown()
+  
+  CPosition.Disable
+  
+End
+
+Public Sub Editors_MouseUp()
+  
+  CPosition.Enable
+  CPosition.SaveCurrent(Me)
+  
+End
+
+
+
+Public Sub mnuLowerCase_Click()
+  
+  If $hEditor.ReadOnly Then Return
+  If Not $hEditor.Selected Then Return
+  
+  $hEditor.StoreSelection(True)
+  $hEditor.Begin
+  $hEditor.Insert(String.LCase($hEditor.SelectedText))
+  $hEditor.End
+  $hEditor.RecallSelection
+  
+End
+
+Public Sub mnuUpperCase_Click()
+  
+  If $hEditor.ReadOnly Then Return
+  If Not $hEditor.Selected Then Return
+  
+  $hEditor.StoreSelection(True)
+  $hEditor.Begin
+  $hEditor.Insert(String.UCase($hEditor.SelectedText))
+  $hEditor.End
+  $hEditor.RecallSelection
+  
+End
+
+Public Sub ShowErrorMessage(sMsg As String, (sIcon) As String)
+
+  $hEditor.SetFocus
+  Wait
+  $hEditor.ShowMessageLabel(Html(sMsg), $hEditor.ToPosX(), $hEditor.ToPosY() + $hEditor.LineHeight, Highlight.Breakpoint)
+
+End
+
+' Private Sub RemoveFromBegin(sStr As String, sBegin As String) As String
+'   
+'   If sStr Begins sBegin Then
+'     Return Mid$(sStr, Len(sBegin) + 1)
+'   Else
+'     Return sStr
+'   Endif
+'   
+' End
+
+Private Sub GetProc(sLine As String) As String
+
+  Dim iPos As Integer
+  Dim aStr As String[]
+  Dim iInd As Integer
+  Dim sStr As String
+  Dim sProc As String
+
+  sLine = Trim(sLine)
+
+  Select Case $hEditor.Highlight
+    
+    Case "css"
+      
+      iPos = InStr(sLine, "{")
+      If iPos Then sProc = Trim(Left(sLine, iPos - 1))      
+      
+    Case "html", "webpage"
+      
+      If Left(sLine) = "<" Then
+        iPos = InStr(sLine, " ")
+        If iPos Then sProc = Left$(sLine, iPos - 1) & ">"
+      Endif
+      
+    Case "javascript"
+      
+      If sLine Begins "function " Then
+        sLine = Mid$(sLine, 10)
+        iPos = InStr(sLine, "(")
+        If iPos Then
+          sProc = Trim(Left$(sLine, iPos - 1))
+        Endif
+      Else If sLine Like "*: function(*" Then
+        sLine = Trim(sLine)
+        iPos = InStr(sLine, ":")
+        sLine = RTrim(Left(sLine, iPos - 1))
+        If Left(sLine) = "'" Or If Left(sLine) = Chr$(34) Then sLine = Mid$(sLine, 2, -1)
+        sProc = sLine
+      Endif
+      
+    Case "c", "c++"
+      
+      aStr = Split(sLine & " (", " ")
+      For iInd = 0 To aStr.Max
+        sStr = aStr[iInd]
+        iPos = InStr(sStr, "(") 
+        If iPos > 0 Then
+          sProc = Trim(Left$(sStr, iPos - 1))
+          If Not sProc And If iInd > 0 Then sProc = aStr[iInd - 1]
+          Break
+        Endif
+      Next
+      
+  End Select 
+
+  Return Trim(sProc)
+
+End
+
+Private Sub GetCurrentProc(Optional iLine As Integer = $hEditor.Line) As String
+  
+  Dim sProc As String
+  
+  If $bNoHighlight Then Return
+  
+  While iLine >= 0
+    
+    If $hEditor[iLine].Limit Then 
+      sProc = GetProc($hEditor[iLine].Text)  
+      Break
+    Endif
+    Dec iLine
+    
+  Wend
+  
+  If Not sProc Then sProc = ("(Declarations)")
+  Return sProc
+  
+End
+
+Public Sub GetProcAt(iLine As Integer) As String
+
+  Return GetCurrentProc(iLine)
+
+End
+
+Public Sub panToolBar_Configure()
+
+  UpdateMenu
+
+  If $bModule Then
+    'Action[".show-class"].Picture = Project.GetFileIcon(File.SetExt(Path, "class"), 16)
+    btnShowCode.Show
+    mnuShowCode.Show
+  Else
+    btnShowCode.Hide
+    mnuShowCode.Hide
+  Endif
+
+End
+
+Public Sub mnuClose_Click()
+
+  Me.Close
+
+End
+
+Private Sub UpdateButtons()
+
+  Action[".mine,.their", Me].Visible = $bInsideConflict
+
+End
+
+Private Sub UpdateMenu()
+
+  Dim bVisible As Boolean
+
+  bVisible = Not edtEditor.ReadOnly
+
+  Action[".save,.undo,.redo,.cut,.paste,.color,.indent,.unindent,.lcase,.ucase,.sort-ascent,.sort-descent,.eol,.date", Me].Visible = bVisible
+  mnuAdvanced.Visible = bVisible
+  mnuEndOfLine.Visible = bVisible
+
+  Action[".proc", Me].Visible = Not $bNoHighlight
+  Action[".comment,.uncomment", Me].Visible = $bShowComment And bVisible
+  
+  UpdateButtons
+  
+End
+
+Public Sub Form_Open()
+
+  ReadConfig
+  SetReadOnly
+  Action[".wrap", Me].Value = Settings["/Editor/WrapTextByDefault", False]
+  Action[".tab-indent", Me].Value = Settings["/Editor/TabIndentByDefault", False]
+
+End
+
+Public Sub btnIndent_Click()
+
+  $hEditor.Indent
+
+End
+
+Public Sub btnUnindent_Click()
+
+  $hEditor.Unindent
+
+End
+
+Public Sub IsWordChar(sCar As String) As Boolean
+  
+  If Len(sCar) = 1 And If Asc(sCar) <= 32 Then Return False
+  If IsDigit(sCar) Then Return True
+  If InStr("_", sCar) Then Return True
+  If IsLetter(String.RemoveDiacritics(sCar)) Then Return True
+  'Return InStr("&~\"#'{([|`\\^@)]°=+}€$£%*!§:/;.,?<>¢«»¥·©®¬¿×·÷¡ø", sCar) = 0
+  
+End
+
+Public Sub GetKeywords() As String[]
+  
+  Return $hEditor.Keywords
+  
+End
+
+Public Sub Delete()
+
+  $hBookmark = Null
+  Super.Delete
+
+End
+
+Private Sub SortText(bDescent As Boolean)
+
+  Dim aText As String[]
+  Dim aPos As Integer[]
+  Dim aVoid As String[]
+  Dim iMode As Integer
+  Dim I As Integer
+  
+  If $hEditor.ReadOnly Then Return
+  If Not $hEditor.Selected Then Return
+  
+  $hEditor.StoreSelection
+  $hEditor.Begin
+  
+  aText = Split($hEditor.SelectedText, "\n")
+  
+  aPos = New Integer[]
+  aVoid = New String[]
+  For I = aText.Max DownTo 0
+    If Not Trim(aText[I]) Then 
+      aPos.Add(I)
+      aVoid.Add(aText[I])
+      aText.Remove(I)
+    Endif
+  Next
+  
+  iMode = gb.Natural
+  If bDescent Then iMode += gb.Descent
+  aText.Sort(iMode)
+  
+  For I = 0 To aVoid.Max
+    aText.Add(aVoid[I], aPos[I])
+  Next
+  
+  $hEditor.Insert(aText.Join("\n"))
+  $hEditor.End
+  $hEditor.RecallSelection
+  
+End
+
+Public Sub mnuSortAscent_Click()
+  
+  SortText(False)
+  
+End
+
+Public Sub mnuSortDescent_Click()
+  
+  SortText(True)
+  
+End
+
+Public Sub Action_Activate((Key) As String) As Boolean
+  
+  Select Case Key
+    
+    Case ".wrap"
+      $hEditor.Wrap = mnuWrap.Value
+      If $hEditor1 Then
+        $hEditor1.Wrap = $hEditor.Wrap
+        $hEditor2.Wrap = $hEditor.Wrap
+      Endif
+    
+    Case ".tab-indent"
+      $hEditor.TabIndent = mnuTabIndent.Value
+      If $hEditor1 Then
+        $hEditor1.TabIndent = $hEditor.TabIndent
+        $hEditor2.TabIndent = $hEditor.TabIndent
+      Endif
+      
+    Case ".previous"
+      FindPreviousConflict
+    
+    Case ".next"
+      FindNextConflict
+      
+    Case ".mine"
+      RemoveConflict(True)
+      
+    Case ".their"
+      RemoveConflict(False)
+      
+    Case ".mine-all"
+      RemoveConflictAll(True)
+      
+    Case ".their-all"
+      RemoveConflictAll(False)
+      
+    Case ".solve"
+      If HasConflict() Then
+        Message.Warning(("There are still conflicts in this file."))
+      Else
+        If Not Me.Save() Then
+          VersionControl.SolveConflict(Path)
+        Endif
+      Endif
+    
+    Case Else
+      Return True
+  
+  End Select
+  
+End
+
+Public Sub Form_Close()
+
+  Project.AddRecentFile(Me)
+
+End
+
+Public Sub mnuEolUnix_Click()
+  
+  edtEditor.EndOfLine = gb.Unix
+  UpdateEndOfLine
+  Modify
+  
+End
+
+Public Sub mnuEolWindows_Click()
+  
+  edtEditor.EndOfLine = gb.Windows
+  UpdateEndOfLine
+  Modify
+  
+End
+
+Public Sub mnuEolMac_Click()
+  
+  edtEditor.EndOfLine = gb.Mac
+  UpdateEndOfLine
+  Modify
+  
+End
+
+Public Sub GetFoldedProc() As Integer[]
+
+  Dim aFold As New Integer[]
+  Dim iLine As Integer
+  
+  Do
+    If Not $hEditor[iLine].Expanded Then
+      'DEBUG Name;; iLine
+      aFold.Add(iLine)
+    Endif
+    iLine = $hEditor.FindNextLimit(iLine)
+    If iLine < 0 Then Break
+  Loop
+  
+  Return aFold
+
+End
+
+Public Sub SetFoldedProc(aFold As Integer[])
+
+  Dim iLine As Integer
+  
+  $hEditor.ExpandAll
+  For Each iLine In aFold
+    'DEBUG Name;; iLine
+    $hEditor[iLine].Expanded = False
+  Next
+
+End
+
+Public Sub GetPopupMenu() As Menu
+  
+  Return mnuEditor
+  
+End
+
+Public Sub mnuComment_Click()
+
+  Dim iStartLine As Integer
+  Dim iEndLine As Integer
+  Dim iLine As Integer
+  Dim sIndent As String
+
+  If $hEditor.ReadOnly Then Return
+  'IF NOT Editor.Selected THEN RETURN
+
+  If $hEditor.Selected Then
+
+    $hEditor.StoreSelection
+
+    iStartLine = Min($hEditor.SelectionLine, $hEditor.Line)
+    iEndLine = Max($hEditor.SelectionLine, $hEditor.Line)
+    sIndent = $hEditor.GetIndent(iStartLine, iEndLine)
+
+    $hEditor.Begin
+    
+    Select Case $hEditor.Mode
+      Case "webpage", "html"
+        $hEditor[iStartLine].Text = sIndent & "<!-- " & Mid$($hEditor[iStartLine].Text, Len(sIndent) + 1)
+        $hEditor[iEndLine - 1].Text = $hEditor[iEndLine - 1].Text & " -->"
+      Case "c", "c++", "javascript", "css"
+        $hEditor[iStartLine].Text = sIndent & "/* " & Mid$($hEditor[iStartLine].Text, Len(sIndent) + 1)
+        $hEditor[iEndLine - 1].Text = $hEditor[iEndLine - 1].Text & " */"
+      Case "gbs"
+        For iLine = iStartLine To iEndLine - 1
+          $hEditor[iLine].Text = sIndent & "' " & Mid$($hEditor[iLine].Text, Len(sIndent) + 1)
+        Next
+    End Select
+
+    $hEditor.End
+    $hEditor.RecallSelection
+    
+  Else
+    
+    'Comment only the current line
+    iLine = $hEditor.Line
+    sIndent = $hEditor.GetIndent(iLine, iLine + 1)
+    
+    Select Case $hEditor.Mode
+      Case "css"
+        $hEditor[iLine].Text = sIndent & "/* " & Mid$($hEditor[iLine].Text, Len(sIndent) + 1) & " */"
+      Case "webpage", "html"
+        $hEditor[iLine].Text = sIndent & "<!-- " & Mid$($hEditor[iLine].Text, Len(sIndent) + 1) & " -->"
+      Case "c", "c++", "javascript"
+        $hEditor[iLine].Text = sIndent & "// " & Mid$($hEditor[iLine].Text, Len(sIndent) + 1)
+      Case "gbs"
+        $hEditor[iLine].Text = sIndent & "' " & Mid$($hEditor[iLine].Text, Len(sIndent) + 1)
+    End Select
+    
+  Endif
+
+End
+
+
+Public Sub mnuUncomment_Click()
+
+  Dim iLine As Integer
+  Dim sLine As String
+  Dim iStartLine As Integer
+  Dim iEndLine As Integer
+  Dim sIndent As String
+  Dim sLineStart As String
+  Dim sLineEnd As String
+
+  If $hEditor.ReadOnly Then Return
+  'IF NOT Editor.Selected THEN RETURN
+
+  If $hEditor.Selected Then
+    
+    $hEditor.StoreSelection
+
+    iStartLine = Min($hEditor.SelectionLine, $hEditor.Line)
+    iEndLine = Max($hEditor.SelectionLine, $hEditor.Line)
+
+    sIndent = $hEditor.GetIndent(iStartLine, iEndLine)
+
+    Select Case $hEditor.Mode
+      
+      Case "css", "c", "c++", "javascript"
+      
+        sLineStart = LTrim($hEditor[iStartLine].Text)
+        If sLineStart Begins "/*" Then
+          sLineEnd = RTrim($hEditor[iEndLine - 1].Text)
+          If sLineEnd Ends "*/" Then
+            sLineStart = Mid$(sLineStart, 3)
+            If sLineStart Begins " " Then sLineStart = Mid$(sLineStart, 2)
+            sLineEnd = Left(sLineEnd, -2)
+            If sLineEnd Ends " " Then sLineEnd = Left(sLineEnd, -1)
+            $hEditor[iStartLine].Text = sIndent & sLineStart
+            $hEditor[iEndLine - 1].Text = sLineEnd
+          Endif
+        Endif
+        
+      Case "html", "webpage"
+      
+        sLineStart = LTrim($hEditor[iStartLine].Text)
+        If sLineStart Begins "<!--" Then
+          sLineEnd = RTrim($hEditor[iEndLine - 1].Text)
+          If sLineEnd Ends "-->" Then
+            sLineStart = Mid$(sLineStart, 5)
+            If sLineStart Begins " " Then sLineStart = Mid$(sLineStart, 2)
+            sLineEnd = Left(sLineEnd, -3)
+            If sLineEnd Ends " " Then sLineEnd = Left(sLineEnd, -1)
+            $hEditor[iStartLine].Text = sIndent & sLineStart
+            $hEditor[iEndLine - 1].Text = sLineEnd
+          Endif
+        Endif
+      
+      Case "gbs"
+      
+        For iLine = iStartLine To iEndLine - 1
+          sLine = $hEditor[iLine].Text
+          'If Len(sLine) < (iIndent + 1) Then Break
+          If Left(LTrim(sLine), 1) <> "'" Then Break
+        Next
+  
+        If iLine = iEndLine Then
+          $hEditor.Begin
+          For iLine = iStartLine To iEndLine - 1
+            If Left(LTrim($hEditor[iLine].Text), 2) = "' " Then
+              $hEditor[iLine].Text = sIndent & Mid$(LTrim($hEditor[iLine].Text), 3)
+            Else
+              $hEditor[iLine].Text = sIndent & Mid$(LTrim($hEditor[iLine].Text), 2)
+            Endif
+          Next
+          $hEditor.End
+          'Modify
+        Endif
+
+    End Select
+
+    $hEditor.RecallSelection
+    
+  Else
+    
+    iLine = $hEditor.Line
+    sIndent = $hEditor.GetIndent(iLine, iLine + 1)
+    sLine = LTrim($hEditor[iLine].Text)
+    If Not sLine Then Return
+    
+    Select Case $hEditor.Mode
+      
+      Case "css"
+        
+        If sLine Like "/[*]*[*]/" Then
+          sLine = Mid$(sLine, 3, -2)
+          If Left(sLine) = " " And If Right(sLine) = " " Then sLine = Mid$(sLine, 2, -1)
+          $hEditor[iLine].Text = sIndent & sLine
+        Endif
+        
+      Case "html", "webpage"
+        
+        If sLine Like "<!--*-->" Then
+          sLine = Mid$(sLine, 5, -3)
+          If sLine Begins " " And If sLine Ends " " Then sLine = Mid$(sLine, 2, -1)
+          $hEditor[iLine].Text = sIndent & sLine
+        Endif
+        
+      Case "c", "c++", "javascript"
+        
+        If sLine Begins "//" Then
+          sLine = Mid$(sLine, 3)
+          If sLine Begins " " Then sLine = Mid$(sLine, 2)
+          $hEditor[iLine].Text = sIndent & sLine
+        Else If sLine Like "/[*]*[*]/" Then
+          sLine = Mid$(sLine, 3, -2)
+          If Left(sLine) = " " And If Right(sLine) = " " Then sLine = Mid$(sLine, 2, -1)
+          $hEditor[iLine].Text = sIndent & sLine
+        Endif
+        
+      Case "gbs"
+        
+        If sLine Begins "'" Then
+          sLine = Mid$(sLine, 2)
+          If sLine Begins " " Then sLine = Mid$(sLine, 2)
+          $hEditor[iLine].Text = sIndent & sLine
+        Endif
+        
+    End Select
+    
+  Endif
+
+End
+
+Public Sub mnuPretty_Click()
+
+  MPrettyCode.Run($hEditor)
+
+End
+
+Public Sub Editors_Highlight(Text As String)
+  
+  If Text Begins "<<<<<<" Then 
+    TextHighlighter.Add(Highlight.Custom, String.Len(Text))
+    TextHighlighter.State = Highlight.Custom
+  Else If Text Begins "======" Then
+    TextHighlighter.Add(Highlight.Comment, String.Len(Text))
+    TextHighlighter.State = Highlight.Normal
+    TextHighlighter.Tag = 1
+  Else If Text Begins ">>>>>>" Then
+    TextHighlighter.Add(Highlight.Custom + 1, String.Len(Text))
+    TextHighlighter.State = Highlight.Custom + 1
+    TextHighlighter.Tag = 2
+  Else
+    If TextHighlighter.Tag = 1 Then 
+      TextHighlighter.State = Highlight.Custom + 1
+      TextHighlighter.Tag = 0
+    Else If TextHighlighter.Tag = 2 Then 
+      TextHighlighter.State = Highlight.Normal
+      TextHighlighter.Tag = 0
+    Endif
+    TextHighlighter.Add(TextHighlighter.State, String.Len(Text))
+  Endif
+  
+End
+
+Private Sub FindPreviousConflict()
+
+  Dim Y As Integer
+  Dim sLine As String
+
+  Y = $hEditor.Line
+  
+  Do
+    sLine = $hEditor[Y].Text
+    If sLine Begins "<<<<<<" Or If sLine Begins ">>>>>>" Then Break
+    Dec Y
+    If Y < 0 Then Return
+  Loop
+  
+  Do
+    Dec Y
+    If Y < 0 Then Return
+    sLine = $hEditor[Y].Text
+    If sLine Begins "======" Then Break
+  Loop
+  
+  $hEditor.Goto(0, Y)
+
+End
+
+Private Sub FindNextConflict()
+
+  Dim Y As Integer
+  Dim sLine As String
+
+  Y = $hEditor.Line
+  
+  Do
+    sLine = $hEditor[Y].Text
+    If sLine Begins "<<<<<<" Or If sLine Begins ">>>>>>" Then Break
+    Inc Y
+    If Y >= $hEditor.Count Then Return
+  Loop
+  
+  Do
+    Inc Y
+    If Y >= $hEditor.Count Then Return
+    sLine = $hEditor[Y].Text
+    If sLine Begins "======" Then Break
+  Loop
+  
+  $hEditor.Goto(0, Y)
+
+End
+
+Private Sub RemoveConflict(bKeepMine As Boolean)
+
+  Dim Y, Y1, Y2 As Integer
+  Dim sLine As String
+  Dim aKeep As String[]
+  Dim bMine As Boolean
+
+  Y1 = $hEditor.Line
+  Do
+    sLine = $hEditor[Y1].Text
+    If sLine Begins "<<<<<<" Then Break
+    Dec Y1
+    If Y1 < 0 Then Return
+  Loop
+  
+  Y2 = Y1
+  Do
+    Inc Y2
+    If Y2 >= $hEditor.Count Then Return
+    sLine = $hEditor[Y2].Text
+    If sLine Begins ">>>>>>" Then Break
+  Loop
+
+  aKeep = New String[]
+  Y = Y1
+  While Y <= Y2
+    sLine = $hEditor[Y].Text
+    If sLine Begins "<<<<<<" Then
+      bMine = True
+    Else If sLine Begins "======" Then
+      bMine = False
+    Else If sLine Begins ">>>>>>" Then
+      Break
+    Else
+      If bMine = bKeepMine Then aKeep.Add(sLine)
+    Endif
+    Inc Y
+  Wend
+  
+  $hEditor.Begin
+  $hEditor.Select(0, Y1, 0, Y2 + 1)
+  $hEditor.Insert(aKeep.Join("\n") & "\n")
+  $hEditor.End
+  
+End
+
+Private Sub RemoveConflictAll(bKeepMine As Boolean)
+
+  Dim Y As Integer
+
+  $hEditor.Begin
+
+  $hEditor.SaveCursor()
+
+  While Y < $hEditor.Count
+    If $hEditor[Y].Text Begins "<<<<<<" Then
+      $hEditor.Goto(0, Y)
+      RemoveConflict(bKeepMine)
+    Else
+      Inc Y
+    Endif
+  Wend
+  
+  $hEditor.RestoreCursor()
+  
+  $hEditor.End
+
+End
+
+Private Sub HasConflict() As Boolean
+
+  Dim Y As Integer
+  Dim sLine As String
+  
+  For Y = 0 To $hEditor.Count - 1
+    sLine = Left($hEditor[Y].Text, 6)
+    If sLine = "<<<<<<" Or If sLine = "======" Or If sLine = ">>>>>>" Then Return True
+  Next
+  
+End

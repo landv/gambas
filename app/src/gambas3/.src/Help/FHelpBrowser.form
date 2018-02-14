@@ -81,9 +81,6 @@
       Picture = Picture["icon:/small/print"]
     }
   }
-  { Printer1 #Printer
-    #MoveScaled(4,2)
-  }
   { Panel1 Panel
     MoveScaled(2,9,81,30)
     Expand = True
@@ -111,6 +108,9 @@
     Ignore = True
     Path = "img/waiting.gif"
     Alignment = Align.Center
+  }
+  { Printer1 #Printer
+    #MoveScaled(4,2)
   }
 }
 

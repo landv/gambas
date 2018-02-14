@@ -1,12 +1,12 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,72,68)
+  MoveScaled(0,0,87,68)
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
   { HBox1 HBox
-    MoveScaled(6,1,55,4)
+    MoveScaled(6,1,75,4)
     { txtPadding SpinBox
       MoveScaled(3,0,8,4)
     }
@@ -17,10 +17,17 @@
       MoveScaled(34,0,16,4)
       Text = ("Border")
     }
+    { Label1 Label
+      MoveScaled(53,0,13,4)
+      AutoResize = True
+      Text = ("Drag me")
+      Border = Border.Plain
+    }
   }
   { gvwInfo GridView
     MoveScaled(8,11,51,31)
     Foreground = Color.Orange
+    Drop = True
     Expand = True
     Border = False
     Mode = Select.Multiple

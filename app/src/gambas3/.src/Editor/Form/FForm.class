@@ -195,14 +195,16 @@ Public Sub UpdateSnap()
   Dim iColor As Integer
   Dim X, Y As Integer
   Dim nPts As Integer
+  Dim iSnap As Integer
 
   If Action[".grid", Me].Value Then
 
-    While nPts * Project.Snap < 32
+    iSnap = $hFamily.GetSnap()
+    While nPts * iSnap < 32
       Inc nPts
     Wend
 
-    hGrid = New Image(Project.Snap * nPts, Project.Snap * nPts)
+    hGrid = New Image(iSnap * nPts, iSnap * nPts)
     iColor = $hFamily.Background
     If iColor = Color.Default Then iColor = Color.Background
     hGrid.Fill(iColor)
@@ -214,8 +216,8 @@ Public Sub UpdateSnap()
       iColor = Color[iColor].Value + &H70
       iColor = Color.RGB(iColor, iColor, iColor)
     Endif
-    For X = 0 To Project.Snap * nPts - 1 Step Project.Snap
-      For Y = 0 To Project.Snap * nPts - 1 Step Project.Snap
+    For X = 0 To iSnap * nPts - 1 Step iSnap
+      For Y = 0 To iSnap * nPts - 1 Step iSnap
         hGrid[X, Y] = iColor
       Next
     Next
@@ -246,9 +248,9 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
   Dim aVal As String[]
   Dim iLevel As Integer
   Dim sEventName As String
-  Dim cCoord As String[]
+  Dim aCoord As String[]
   Dim eW, eH As Float
-  Dim iW, iH As Integer
+  Dim X, Y, W, H As Integer
   Dim bFirst As Boolean
   Dim bPublic As Boolean
   Dim sProp As String
@@ -324,7 +326,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
       If bPublic Then hCtrl.SetProperty(CPropertyInfo.PUBLIC_NAME, bPublic)
 
       If sOldClass Then
-        Print sOldClass; " -> "; sClass
+        Error "gambas3: warning: "; sOldClass; " -> "; sClass
         If sOldClass = "TextView" Then
           hCtrl.SetProperty("ReadOnly", True)
         Else If sOldClass = "DateBox" Then
@@ -481,14 +483,15 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
       Else If sLine Begins "Move(" Or If sLine Begins "#Move(" Then
 
         If Left(sLine) = "#" Then sLine = Mid$(sLine, 2)
-        cCoord = Split(Mid$(sLine, 6, -1))
-        'TRY PRINT cCoord[0]; ","; cCoord[1]; ","; cCoord[2]; ","; cCoord[3]
-        'TRY hCtrl.SetProperty("X", Val(cCoord[0]))
-        'TRY hCtrl.SetProperty("Y", Val(cCoord[1]))
-        If cCoord.Count = 4 Then
-          Try hCtrl.MoveAndResize(CInt(cCoord[0]) / Project.Snap * DS, CInt(cCoord[1]) / Project.Snap * DS, CInt(cCoord[2]) / Project.Snap * DS, CInt(cCoord[3]) / Project.Snap * DS, True)
+        aCoord = Split(Mid$(sLine, 6, -1))
+        X = CInt(aCoord[0])
+        Y = CInt(aCoord[1])
+        If aCoord.Count = 4 Then
+          W = CInt(aCoord[2])
+          H = CInt(aCoord[3])
+          Try hCtrl.MoveAndResize(X, Y, W, H)
         Else
-          Try hCtrl.Move(CInt(cCoord[0]) / Project.Snap * DS, CInt(cCoord[1]) / Project.Snap * DS, True)
+          Try hCtrl.Move(X, Y)
         Endif
 
         If Error Then Print "Error: Syntax error: "; sLine
@@ -496,31 +499,31 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
       Else If sLine Begins "MoveScaled(" Or If sLine Begins "#MoveScaled(" Then
 
         If Left(sLine) = "#" Then sLine = Mid$(sLine, 2)
-        cCoord = Split(Mid$(sLine, 12, -1))
+        aCoord = Split(Mid$(sLine, 12, -1))
         'TRY PRINT cCoord[0]; ","; cCoord[1]; ","; cCoord[2]; ","; cCoord[3]
         'Try hCtrl.Move(Round(CFloat(cCoord[0]) * DS), Round(CFloat(cCoord[1]) * DS), True)
         'TRY hCtrl.SetProperty("X", Val(cCoord[0]))
         'TRY hCtrl.SetProperty("Y", Val(cCoord[1]))
-        If cCoord.Count = 4 Then
-          eW = CFloat(cCoord[2])
-          eH = CFloat(cCoord[3])
+        If aCoord.Count = 4 Then
+          eW = CFloat(aCoord[2])
+          eH = CFloat(aCoord[3])
           If $bConvert Then
             If eW <= 3 Then Inc eW
             If eH <= 3 Then Inc eH
           Endif
           If eW = 0 Then
-            iW = 1
+            W = 1
           Else
-            iW = Round(eW * DS)
+            W = Round(eW * DS)
           Endif
           If eH = 0 Then
-            iH = 1
+            H = 1
           Else
-            iH = Round(eH * DS)
+            H = Round(eH * DS)
           Endif
-          Try hCtrl.MoveAndResize(Round(CFloat(cCoord[0]) * DS), Round(CFloat(cCoord[1]) * DS), iW, iH, True)
+          Try hCtrl.MoveAndResize(Round(CFloat(aCoord[0]) * DS), Round(CFloat(aCoord[1]) * DS), W, H)
         Else
-          Try hCtrl.Move(Round(CFloat(cCoord[0]) * DS), Round(CFloat(cCoord[1]) * DS), True)
+          Try hCtrl.Move(Round(CFloat(aCoord[0]) * DS), Round(CFloat(aCoord[1]) * DS))
         Endif
 
         If Error Then
@@ -876,13 +879,17 @@ End
 Public Sub Control_Resize()
 
   Dim hCtrl As Control = Last
+  Dim W As Integer
+  Dim H As Integer
 
   With RootControl
     If hCtrl <> .Control Then Return
     If Not $hUndo Then Return
     $hUndo.Begin
-    If hCtrl.Width <> .GetProperty("#Width") Then .SetProperty("#Width", hCtrl.Width)
-    If hCtrl.Height <> .GetProperty("#Height") Then .SetProperty("#Height", hCtrl.Height)
+    W = $hFamily.ConvertCoord(hCtrl.Width, True)
+    H = $hFamily.ConvertCoord(hCtrl.Height, True)
+    If W <> .GetProperty("#Width") Then .SetProperty("#Width", W)
+    If H <> .GetProperty("#Height") Then .SetProperty("#Height", H)
     $hUndo.End
   End With
 
@@ -1055,8 +1062,8 @@ Public Sub Control_MouseMove()
       '   $Y = $Y + hParent.Control.ScrollY
       ' ENDIF
 
-      $hCurrent.Move($X, $Y)
-      $hCurrent.Resize(MIN_WIDTH, MIN_HEIGHT)
+      $hCurrent.MoveCoord($X, $Y)
+      $hCurrent.ResizeCoord(MIN_WIDTH, MIN_HEIGHT)
       $hCurrent.Control.Mouse = Mouse.Cross
       
       UnselectAll
@@ -1085,12 +1092,12 @@ Public Sub Control_MouseMove()
     Endif
 
     If bMoveX Or bMoveY Then
-      $hCurrent.Move(X, Y)
+      $hCurrent.MoveCoord(X, Y)
       If bMoveX Then W = W + X - $hCurrent.Control.X
       If bMoveY Then H = H + Y - $hCurrent.Control.Y
     Endif
 
-    $hCurrent.Resize(Max(MIN_WIDTH, W), Max(MIN_HEIGHT, H))
+    $hCurrent.ResizeCoord(Max(MIN_WIDTH, W), Max(MIN_HEIGHT, H))
     
     If Not $hUndo.IsDisabled() Then $hUndo.Disable
 
@@ -1106,7 +1113,7 @@ Public Sub Control_MouseMove()
         iDepY = Master.Control.Y
 
         Master.StartMoveResize
-        Master.Move($X + Mouse.ScreenX - $MX, $Y + Mouse.ScreenY - $MY)
+        Master.MoveCoord($X + Mouse.ScreenX - $MX, $Y + Mouse.ScreenY - $MY)
 
         iDepX = Master.Control.X - iDepX
         iDepY = Master.Control.Y - iDepY
@@ -1115,7 +1122,7 @@ Public Sub Control_MouseMove()
           For Each hCtrl In Selection
             If hCtrl <> Master Then
               hCtrl.StartMoveResize
-              hCtrl.Move(hCtrl.Control.X + iDepX, hCtrl.Control.Y + iDepY, True)
+              hCtrl.MoveCoord(hCtrl.Control.X + iDepX, hCtrl.Control.Y + iDepY, True)
             Endif
           Next
           
@@ -1561,11 +1568,11 @@ Public Sub HideFrame()
 
 End
 
-Private Sub DrawFrame(hCtrl As Control, Optional X As Integer, Y As Integer, W As Integer, H As Integer)
+Private Sub DrawFrame(hCtrl As Control, Optional X As Integer, Y As Integer, W As Integer, H As Integer, Optional bInside As Boolean)
   
   Dim hRoot As Container = panBorder 'RootControl.Control
   Dim S As Integer = 2
-
+  
   If W = 0 Or If H = 0 Then
     X = 0
     Y = 0
@@ -1573,10 +1580,12 @@ Private Sub DrawFrame(hCtrl As Control, Optional X As Integer, Y As Integer, W A
     H = hCtrl.H
   Endif
   
-  X -= S
-  Y -= S
-  W += 2 * S
-  H += 2 * S
+  If Not bInside Then
+    X -= S
+    Y -= S
+    W += 2 * S
+    H += 2 * S
+  Endif
   
   panSelectN.Move(hCtrl.ScreenX - hRoot.ScreenX + X, hCtrl.ScreenY - hRoot.ScreenY + Y, W, S)
   panSelectS.Move(panSelectN.X, panSelectN.Y + H - S, panSelectN.W, S)
@@ -1604,8 +1613,8 @@ Private Sub DrawDropFrame()
   
   FindContainer($hDropTarget, X, Y, COORD_INSIDE_TO_CONTROL)
   hParent = $hContainer.Control
-  X = CControl.Grid($iContX, Project.Snap) + hParent.ClientX
-  Y = CControl.Grid($iContY, Project.Snap) + hParent.ClientY
+  X = $hDropTarget.Grid($iContX) + hParent.ClientX
+  Y = $hDropTarget.Grid($iContY) + hParent.ClientY
   'Debug X;; Y;; "->";; $iContX;; $iContY
 
   With Project.Documentation.Classes[sClass]
@@ -1613,7 +1622,7 @@ Private Sub DrawDropFrame()
     H = .DefaultHeight
   End With
   
-  DrawFrame(hParent, X - W \ 2, Y - H \ 2, W, H)
+  DrawFrame(hParent, X - $hDropTarget.Grid(W \ 2), Y - $hDropTarget.Grid(H \ 2), W, H, True)
   
 End
 
@@ -1981,6 +1990,8 @@ Private Sub ArrangeContainer(hParent As Container, sArr As String, Optional bInv
   Dim hCont As Container
   Dim aCtrl As New Control[]
   Dim hTab As Object
+  Dim sKey As String
+  Dim cSortKey As New Collection
 
   If hParent Then
     If iIndex < 0 Then
@@ -2019,7 +2030,9 @@ Private Sub ArrangeContainer(hParent As Container, sArr As String, Optional bInv
         ArrangeContainer(hCtrl, sArr, bInvert)
       Endif
     Endif
-    aPos.Add(GetSortKey(hCtrl, sArr, bInvert))
+    sKey = GetSortKey(hCtrl, sArr, bInvert)
+    cSortKey[hCtrl.Name] = sKey
+    aPos.Add(sKey)
   Next
 
   If aPos.Count Then 
@@ -2028,7 +2041,7 @@ Private Sub ArrangeContainer(hParent As Container, sArr As String, Optional bInv
   
     For Each sPos In aPos
       For Each hCtrl In aCtrl
-        If GetSortKey(hCtrl, sArr, bInvert) = sPos Then
+        If cSortKey[hCtrl.Name] = sPos Then
           hCtrl.Lower
           Break
         Endif
@@ -2054,14 +2067,14 @@ Private Sub CenterChildren(aCCtrl As CControl[], bVertical As Boolean)
 
   If Not bVertical Then
 
-    iSize = aCCtrl[0].Control.Parent.ClientWidth
+    iSize = $hFamily.ConvertCoord(aCCtrl[0].Control.Parent.ClientWidth, True)
     For Each hCCtrl In aCCtrl
       iSize -= hCCtrl.Width
     Next
 
   Else
 
-    iSize = aCCtrl[0].Control.Parent.ClientHeight
+    iSize = $hFamily.ConvertCoord(aCCtrl[0].Control.Parent.ClientHeight, True)
     For Each hCCtrl In aCCtrl
       iSize -= hCCtrl.Height
     Next
@@ -2080,10 +2093,10 @@ Private Sub CenterChildren(aCCtrl As CControl[], bVertical As Boolean)
     Dec nSpace
 
     If Not bVertical Then
-      hCCtrl.Move(iPos, hCCtrl.Y, True)
+      hCCtrl.Move(iPos, hCCtrl.Y)
       iPos += hCCtrl.W
     Else
-      hCCtrl.Move(hCCtrl.X, iPos, True)
+      hCCtrl.Move(hCCtrl.X, iPos)
       iPos += hCCtrl.H
     Endif
 
@@ -2188,7 +2201,7 @@ Private Sub ResetSave()
   If $hFamily.AllowScaledProperty Then
     $bScaled = RootControl.GetPropertyDefault(CPropertyInfo.SCALE_NAME)
   Else
-    $bScaled = True
+    $bScaled = $hFamily.UseMoveScaled
   Endif
   $cAction = New Collection
   $cToolbar = New Collection
@@ -2688,50 +2701,50 @@ Private Sub DoAlign(sKey As String)
 
     Case ".align-top"
 
-      iPos = Master.Control.Y
+      iPos = Master.Y
 
       For Each hCtrl In Selection
-        hCtrl.Move(hCtrl.Control.X, iPos, True)
+        hCtrl.Move(hCtrl.X, iPos)
       Next
 
     Case ".align-bottom"
 
-      iPos = Master.Control.Y + Master.Control.H
+      iPos = Master.Y + Master.H
 
       For Each hCtrl In Selection
-        hCtrl.Move(hCtrl.Control.X, iPos - hCtrl.Control.H, True)
+        hCtrl.Move(hCtrl.X, iPos - hCtrl.H)
       Next
 
     Case ".align-left"
 
-      iPos = Master.Control.X
+      iPos = Master.X
 
       For Each hCtrl In Selection
-        hCtrl.Move(iPos, hCtrl.Control.Y, True)
+        hCtrl.Move(iPos, hCtrl.Y)
       Next
 
     Case ".align-right"
 
-      iPos = Master.Control.X + Master.Control.W
+      iPos = Master.X + Master.W
 
       For Each hCtrl In Selection
-        hCtrl.Move(iPos - hCtrl.Control.W, hCtrl.Control.Y, True)
+        hCtrl.Move(iPos - hCtrl.W, hCtrl.Y)
       Next
 
     Case ".same-width"
 
-      iPos = Master.Control.W
+      iPos = Master.W
 
       For Each hCtrl In Selection
-        hCtrl.Resize(iPos, hCtrl.Control.H, True)
+        hCtrl.Resize(iPos, hCtrl.H)
       Next
 
     Case ".same-height"
 
-      iPos = Master.Control.H
+      iPos = Master.H
 
       For Each hCtrl In Selection
-        hCtrl.Resize(hCtrl.Control.W, iPos, True)
+        hCtrl.Resize(hCtrl.W, iPos)
       Next
 
   End Select
@@ -2797,7 +2810,7 @@ Private Sub MoveSelection(DX As Integer, DY As Integer, Optional bFree As Boolea
 
   $hUndo.Begin
   For Each hCtrl In Selection
-    hCtrl.Move(hCtrl.Control.X + DX, hCtrl.Control.Y + DY, bFree)
+    hCtrl.MoveCoord(hCtrl.Control.X + DX, hCtrl.Control.Y + DY, bFree)
   Next
   $hUndo.End
 
@@ -2818,7 +2831,7 @@ Private Sub ResizeSelection(DW As Integer, DH As Integer, Optional bFree As Bool
 
   $hUndo.Begin
   For Each hCtrl In Selection
-    hCtrl.Resize(hCtrl.Control.W + DW, hCtrl.Control.H + DH, bFree)
+    hCtrl.ResizeCoord(hCtrl.Control.W + DW, hCtrl.Control.H + DH, bFree)
   Next
   $hUndo.End
 
@@ -2890,7 +2903,8 @@ End
 Public Sub UpdateBorder()
 
   Dim hCtrl As CControl
-  Dim H, HM As Integer
+  Dim H As Integer
+  Dim HM As Integer = 0
 
   hCtrl = RootControl
   If Not hCtrl Then Return
@@ -3095,8 +3109,8 @@ Public Sub Handle_MouseMove()
     W = Max(1, W)
     H = Max(1, H)
 
-    If Not Mouse.Shift Then
-      G = Project.Snap
+    If Not Mouse.Shift Or $hFamily.ForceGrid Then
+      G = $hFamily.GetSnap()
       If G Then
         W = Max(1, Int(W / G + 0.5)) * G
         H = Max(1, Int(H / G + 0.5)) * G
@@ -3106,7 +3120,7 @@ Public Sub Handle_MouseMove()
     'PRINT #File.Err, "(";; W;; H;; ")"
 
     If W <> .W Or If H <> .H Then
-      RootControl.Resize(W, H)
+      RootControl.ResizeCoord(W, H)
       If Not $hUndo.IsDisabled() Then $hUndo.Disable
     Endif
 
@@ -3344,6 +3358,7 @@ Public Sub Control_Drop()
 
     $hUndo.Begin
     hCtrl = CreateControl($hFamily.DropImageClass, hParent,, True)
+    ' TODO: Use $hFamily.ConvertCoord()
     hCtrl.MoveAndResize(Max(0, X - hImage.Width / 2), Max(0, Y - hImage.Height / 2), hImage.Width, hImage.Height)
     hCtrl.SetProperty($hFamily.DropImageProperty, Mid$(sPath, Len(Project.Dir) + 2))
     $hUndo.End
@@ -3362,20 +3377,23 @@ Public Sub Control_Drop()
     ' ENDIF
     
     hParent = $hContainer
-    X = $iContX
-    Y = $iContY
+    X = hParent.Grid($iContX)
+    Y = hParent.Grid($iContY)
 
     FindContainer(hParent, X, Y, COORD_INSIDE_TO_CONTROL)
 
     sClass = Drag.Data
+    
+    X = $hFamily.ConvertCoord(X, True)
+    Y = $hFamily.ConvertCoord(Y, True)
     
     With Project.Documentation.Classes[sClass]
       W = .DefaultWidth
       H = .DefaultHeight
     End With
 
-    X -= W \ 2
-    Y -= H \ 2
+    X -= hParent.Grid(W \ 2)
+    Y -= hParent.Grid(H \ 2)
 
     $hCurrent = AddControl(sClass, hParent, X, Y)
     FToolBox.SetTool()
@@ -3747,6 +3765,7 @@ Private Sub EmbedIntoContainer()
   Dim hParent As CControl
   Dim X1, Y1, X2, Y2 As Integer
   Dim sChildren As String
+  Dim D As Integer
 
   X1 = Master.X
   Y1 = Master.Y
@@ -3762,7 +3781,8 @@ Private Sub EmbedIntoContainer()
   
   $hUndo.Begin
   hParent = CreateControl($hFamily.EmbedContainer, Master.Parent)
-  hParent.MoveAndResize(X1, Y1, X2 - X1 + Desktop.Scale, Y2 - Y1 + Desktop.Scale)
+  D = $hFamily.GetSnap()
+  hParent.MoveAndResize(X1, Y1, X2 - X1 + D, Y2 - Y1 + D)
   
   DeleteSelection
   UnselectAll

@@ -53,6 +53,8 @@ Public Sub Load() As Boolean
   $hConn.Name = File.Name($sPath)
   
   $hConn.Open
+  $hConn.Exec("PRAGMA journal_mode=WAL;")
+  $hConn.Exec("PRAGMA synchronous=OFF;")
   
   rConf = $hConn.Find("config")
 

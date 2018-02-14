@@ -2,7 +2,7 @@
 
   CWindow.cpp
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -1672,9 +1672,10 @@ void MyMainWindow::activateLater()
 
 void MyMainWindow::present(QWidget *parent)
 {
-	//CWIDGET *_object = CWidget::get(this);
-	//CWIDGET *_parent = parent ? CWidget::get(parent) : 0;
-	//qDebug("present: %p %s: parent = %p %s", THIS, _object->name, _parent, _parent ? _parent->name : "");
+	/*CWIDGET *_object = CWidget::get(this);
+	CWIDGET *_parent = parent ? CWidget::get(parent) : 0;
+	
+	qDebug("present: %p %s: parent = %p %s", THIS, _object->name, _parent, _parent ? _parent->name : "");*/
 
 	if (parent)
 		_screen = QApplication::desktop()->screenNumber(parent);
@@ -1837,7 +1838,11 @@ void MyMainWindow::showModal(void)
 
 	parent = CWINDOW_Current;
 	if (!parent)
+	{
 		parent = CWINDOW_Main;
+		if (!parent)
+			parent = CWINDOW_Active;
+	}
 
 	present(parent ? CWidget::getTopLevel((CWIDGET *)parent)->widget.widget : 0);
 	setEventLoop();

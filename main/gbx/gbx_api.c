@@ -2,7 +2,7 @@
 
 	gbx_api.c
 
-	(c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -131,6 +131,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_ExistClassLocal,
 	(void *)CLASS_find,
 	(void *)GB_GetArrayType,
+	(void *)CLASS_get_array_class,
 	(void *)GB_Is,
 	(void *)GB_Ref,
 	(void *)GB_Unref,
@@ -255,6 +256,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_SystemHasForked,
 	(void *)GB_SystemDebug,
 	(void *)FILE_get_home,
+	(void *)DATE_get_timezone,
 
 	(void *)GB_ArrayNew,
 	(void *)GB_ArrayCount,
@@ -275,9 +277,9 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_HashTableRemove,
 	(void *)GB_HashTableGet,
 	(void *)GB_HashTableEnum,
+	(void *)GB_HashTableFirst,
 
 	(void *)GB_StreamGet,
-	(void *)GB_StreamSetBytesRead,
 	(void *)GB_StreamSetSwapping,
 	(void *)GB_StreamSetAvailableNow,
 	(void *)GB_StreamBlock,
@@ -925,11 +927,9 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 
 static GB_RAISE_HANDLER *_GB_Raise_handler = NULL;
 
-static void error_GB_Raise()
+static void error_GB_Raise(void *object, intptr_t nparam)
 {
-	void *object = (void *)ERROR_handler->arg1;
-
-	RELEASE_MANY(SP, (int)(ERROR_handler->arg2));
+	RELEASE_MANY(SP, (int)nparam);
 	OBJECT_UNREF(object);
 
 	_raise_event_level--;
@@ -2134,22 +2134,37 @@ bool GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data)
 		return TRUE;
 }
 
-
 void GB_HashTableEnum(GB_HASHTABLE hash, GB_HASHTABLE_ENUM_FUNC func)
 {
 	HASH_ENUM iter;
-	void **data;
+	void **pdata;
 
 	CLEAR(&iter);
 
 	for(;;)
 	{
-		data = (void **)HASH_TABLE_next((HASH_TABLE *)hash, &iter, FALSE);
-		if (!data)
+		pdata = (void **)HASH_TABLE_next((HASH_TABLE *)hash, &iter, FALSE);
+		if (!pdata)
 			break;
 
-		(*func)(*data);
+		(*func)(*pdata);
 	}
+}
+
+bool GB_HashTableFirst(GB_HASHTABLE hash, void **data)
+{
+	HASH_ENUM iter;
+	void **pdata;
+
+	CLEAR(&iter);
+	pdata = (void **)HASH_TABLE_next((HASH_TABLE *)hash, &iter, FALSE);
+	if (pdata)
+	{
+		*data = *pdata;
+		return FALSE;
+	}
+	else
+		return TRUE;
 }
 
 void GB_NewArray(void *pdata, int size, int count)
@@ -2249,11 +2264,6 @@ GB_STREAM *GB_StreamGet(void *object)
 	return (GB_STREAM *)CSTREAM_stream(object);
 }
 
-void GB_StreamSetBytesRead(GB_STREAM *stream, int length)
-{
-	STREAM_eff_read += length;
-}
-
 void GB_StreamSetSwapping(GB_STREAM *stream, int v)
 {
 	((STREAM *)stream)->common.swap = v;
@@ -2279,10 +2289,7 @@ int GB_StreamRead(GB_STREAM *stream, void *addr, int len)
 		if (len < 0)
 			ret = STREAM_read_max((STREAM *)stream, addr, -len);
 		else
-		{
-			STREAM_read((STREAM *)stream, addr, len);
-			ret = STREAM_eff_read;
-		}
+			ret = STREAM_read((STREAM *)stream, addr, len);
 	}
 	END_CATCH_ERROR_INT
 }

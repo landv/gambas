@@ -2,7 +2,7 @@
 
   gbx_stream_string.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -62,14 +62,12 @@ static int stream_close(STREAM *stream)
 
 static int stream_read(STREAM *stream, char *buffer, int len)
 {
-  bool strip = FALSE;
   int max;
 
   max = stream->string.size - stream->string.pos;
 
   if (len > max)
   {
-    strip = TRUE;
     len = max;
     errno = 0;
   }
@@ -78,12 +76,8 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 		memcpy(buffer, stream->string.buffer + stream->string.pos, len);
 
   stream->string.pos += len;
-  STREAM_eff_read = len;
-
-  return strip;
+  return len;
 }
-
-#define stream_getchar NULL
 
 static int stream_write(STREAM *stream, char *buffer, int len)
 {
@@ -95,7 +89,7 @@ static int stream_write(STREAM *stream, char *buffer, int len)
 	stream->string.size += len;
 	stream->string.pos = stream->string.size;
 
-  return FALSE;
+  return len;
 }
 
 

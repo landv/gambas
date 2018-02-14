@@ -7,9 +7,9 @@ gblib_LTLIBRARIES = gb.la
 
 libgbx_a_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS_OPT)
 
-gbx3_LDADD = @C_LIB@ @GBX_THREAD_LIB@ libgbx.a @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @FFI_LIB@ @RT_LIB@
+gbx3_LDADD = @C_LIB@ @GBX_THREAD_LIB@ libgbx.a @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @FFI_LIB@ @RT_LIB@ 
 gbx3_LDFLAGS = @LD_FLAGS@ @GBX_THREAD_LDFLAGS@ @INTL_LDFLAGS@ @CONV_LDFLAGS@ @GETTEXT_LDFLAGS@ @FFI_LDFLAGS@ @RT_LDFLAGS@
-gbx3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
+gbx3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS) -flto
 
 gb_la_LIBADD = @C_LIB@ @GBX_THREAD_LIB@ @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @FFI_LIB@ @RT_LIB@
 gb_la_LDFLAGS = -module @LD_FLAGS@ @INTL_LDFLAGS@ @CONV_LDFLAGS@ @GETTEXT_LDFLAGS@ @FFI_LDFLAGS@ @RT_LDFLAGS@
@@ -37,7 +37,7 @@ gbx3_SOURCES = \
  gbx_class_load.c gbx_class_load.h \
  gbx_event.h gbx_event.c \
  gb_file.h gb_file.c \
- gbx_stream.h gbx_stream.c gbx_stream_direct.c gbx_stream_buffer.c gbx_stream_memory.c \
+ gbx_stream.h gbx_stream.c gbx_stream_direct.c gbx_stream_lock.c gbx_stream_buffer.c gbx_stream_memory.c \
  gbx_stream_arch.c gbx_stream_process.c gbx_stream_pipe.c gbx_stream_string.c \
  gbx_project.h gbx_project.c \
  gbx_library.h gbx_library.c \

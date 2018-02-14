@@ -73,7 +73,7 @@ GB_DESC CTextNodeDesc[] =
 {
     GB_DECLARE("XmlTextNode", sizeof(CNode)), GB_INHERITS("XmlNode"),
     
-    GB_METHOD("_new", "", CTextNode_new, "[(Content)s]"),
+    GB_METHOD("_new", NULL, CTextNode_new, "[(Content)s]"),
 
     GB_END_DECLARE
 };

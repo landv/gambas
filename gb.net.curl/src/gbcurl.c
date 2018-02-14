@@ -31,8 +31,9 @@
 #include <string.h>
 #include <curl/curl.h>
 #include "gbcurl.h"
+#include "CCurl.h"
 
-static char *_protocols[] = { "ftp://", "http://", "https://", NULL };
+static char *_protocols[] = { "ftp://", "ftps://", "http://", "https://", NULL };
 
 static void warning(const char *msg)
 {
@@ -60,7 +61,7 @@ static void warning_proxy_auth(void)
 }
 
 
-char *CURL_get_protocol(char *url, char *default_protocol)
+static char *CURL_get_protocol(char *url, char *default_protocol)
 {
 	char **p;
 	char *pos;
@@ -76,6 +77,48 @@ char *CURL_get_protocol(char *url, char *default_protocol)
 		return "?";
 	
 	return default_protocol;
+}
+
+bool CURL_set_url(void *_object, const char *src, int len)
+{
+	char *url, *tmp, *protocol;
+	
+	if (len == 0)
+		goto UNKNOWN_PROTOCOL;
+	
+	url = GB.NewString(src, len);
+	
+	if (GB.Is(THIS, GB.FindClass("FtpClient")))
+	{
+		protocol = CURL_get_protocol(url, "ftp://");
+		if (strcmp(protocol, "ftp://") && strcmp(protocol, "ftps://"))
+			goto UNKNOWN_PROTOCOL;
+	}
+	else if (GB.Is(THIS, GB.FindClass("HttpClient")))
+	{
+		protocol = CURL_get_protocol(url, "http://");
+		if (strcmp(protocol, "http://") && strcmp(protocol, "https://"))
+			goto UNKNOWN_PROTOCOL;
+	}
+	else
+		goto UNKNOWN_PROTOCOL;
+
+	if (strncmp(url, protocol, strlen(protocol)))
+	{
+		tmp = GB.NewZeroString(protocol);
+		tmp = GB.AddString(tmp, url, GB.StringLength(url));
+		GB.FreeString(&url);
+		url = tmp;
+	}
+	
+	GB.FreeString(&THIS_URL);
+	THIS_URL = url;
+	return FALSE;
+	
+UNKNOWN_PROTOCOL:
+
+	GB.Error("Unknown protocol");
+	return TRUE;
 }
 
 #if 0

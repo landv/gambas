@@ -2,7 +2,7 @@
 
   gbc_trans_tree.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -289,6 +289,13 @@ static void analyze_make_array()
 		}
 	}
 
+	while (PATTERN_is_newline(*current))
+	{
+		add_pattern(PATTERN_make(RT_NEWLINE, 0));
+		JOB->line++;
+		current++;
+	}
+		
 	if (!PATTERN_is(*current, RS_RSQR))
 		THROW(E_MISSING, "']'");
 	current++;

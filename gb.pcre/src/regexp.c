@@ -3,7 +3,7 @@
   regexp.c
 
   (c) 2004 Rob Kudla <pcre-component@kudla.org>
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ static void compile(void *_object)
 static void exec(void *_object, int lsubject)
 {
 	int ret;
-	char code[8];
+	char code[16];
 	
 	if (!THIS->code) 
 	{

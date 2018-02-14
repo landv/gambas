@@ -311,7 +311,7 @@ GET_KIND:
         For Each hSym In Documentation.Classes[ConstantClass].Symbols
 
           If hSym.Kind = "C" Then
-            If Not hSym.IsHidden() Then
+            If Not hSym.IsHidden Then
               ConstantList["#" & CStr(hSym.Value)] = hSym.Name
               If Not sFirst Then sFirst = hSym.Name
             Endif
@@ -373,7 +373,7 @@ GET_KIND:
 Catch
 
   Error "gambas3: "; sComponent; ": "; sClass; "."; sName; ": "; Error.Text
-  'Error Error.Backtrace.Join(" ")
+  Error Error.Backtrace.Join(" ")
   'hSym = CComponent.Classes["System"].Symbols["Language"]
 
   Type = "s"

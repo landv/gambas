@@ -2,7 +2,7 @@
 
   gb_pcode.h
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -142,11 +142,13 @@
 #define CODE_NEW_ARRAY  0x40
 #define CODE_NEW_EVENT  0x80
 
+#define CODE_OCT         (CODE_FIRST_SUBR + 8)
 #define CODE_RINSTR      (CODE_FIRST_SUBR + 12)
 #define CODE_ABS         (CODE_FIRST_SUBR + 20)
 #define CODE_MAX         (CODE_FIRST_SUBR + 30)
 #define CODE_CONV        (CODE_FIRST_SUBR + 39)
 #define CODE_BIN         (CODE_FIRST_SUBR + 40)
+#define CODE_HEX         (CODE_FIRST_SUBR + 41)
 
 
 typedef

@@ -10,10 +10,13 @@ Static Private $aKeywords As String[]
 Static Public Sub _init()
   
   Dim sProp As String
+  Dim iPos As Integer
   
   $aKeywords = New String[]
   
   For Each sProp In Split(File.Load("css/properties"), ", \n", "", True)
+    iPos = InStr(sProp, " ")
+    If iPos Then sProp = Left(sProp, iPos - 1)
     $cProp[sProp] = True
     $aKeywords.Add(sProp)
   Next
@@ -164,7 +167,12 @@ Public Sub Run(sText As String)
         
       Case Highlight.Symbol
         
-        If sCar = ":" Then
+        If sCar = "." Then 
+          
+          iState = Highlight.Datatype
+          iNextState = iState
+          
+        Else If sCar = ":" Then
           
           iState = Highlight.Keyword
           iNextState = Highlight.Number
@@ -192,12 +200,18 @@ Public Sub Run(sText As String)
           iPos = Min(iPos, iPos2)
         
           Dec iPos
-          sProperty = RTrim(String.Left$(sProperty, iPos))
+          sProperty = String.Left$(sProperty, iPos)
           
           If Not sProperty Then Goto NEXT_STATE
           
           If sProperty Then
-            TextHighlighter.Add(IIf($cProp.Exist(sProperty), Highlight.Symbol, Highlight.Error), iPos)
+            If $cProp.Exist(sProperty) Then
+              TextHighlighter.Add(Highlight.Symbol, iPos)
+            Else If sProperty Begins "-" And If sProperty Like "-*-*" Then
+              TextHighlighter.Add(Highlight.Symbol, iPos)
+            Else
+              TextHighlighter.Add(Highlight.Error, iPos)
+            Endif
           Else
             TextHighlighter.Add(Highlight.Symbol, iPos)
           Endif

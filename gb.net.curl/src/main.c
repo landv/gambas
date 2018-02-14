@@ -42,7 +42,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
   CProxyDesc,
   CurlSSLDesc,
   CurlDesc,
-  CHttpClientDesc,
+  HttpClientDesc,
   CFtpClientDesc,
   NULL
 };

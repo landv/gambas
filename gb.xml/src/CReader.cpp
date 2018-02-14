@@ -420,8 +420,8 @@ GB_DESC CReaderDesc[] =
 {
     GB_DECLARE("_XmlReader", sizeof(CReader)),
 
-    GB_METHOD("_new", "", CReader_new, ""),
-    GB_METHOD("_free", "", CReader_free, ""),
+    GB_METHOD("_new", NULL, CReader_new, ""),
+    GB_METHOD("_free", NULL, CReader_free, ""),
     GB_METHOD("_ReadChar", "i", CReader_ReadChar, "(Char)s"),
     GB_METHOD("_Close", "i", CReader_Close, ""),
 

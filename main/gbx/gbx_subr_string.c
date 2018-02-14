@@ -2,7 +2,7 @@
 
   gbx_subr_string.c
 
-  (c) 2000-2017 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -38,23 +38,8 @@
 #include "gbx_c_array.h"
 #include "gbx_local.h"
 #include "gbx_compare.h"
-#include "gb.pcre.h"
 
 //static int _count = 0;
-
-static PCRE_INTERFACE PCRE;
-
-static void init_pcre()
-{
-	static bool init = FALSE;
-
-	if (init)
-		return;
-
-	COMPONENT_load(COMPONENT_create("gb.pcre"));
-	LIBRARY_get_interface_by_name("gb.pcre", PCRE_INTERFACE_VERSION, &PCRE);
-	init = TRUE;
-}
 
 //---------------------------------------------------------------------------
 
@@ -404,11 +389,6 @@ void SUBR_upper(ushort code)
 	}
 }
 
-void SUBR_lower(void)
-{
-	SUBR_upper(1);
-}
-
 void SUBR_chr(void)
 {
 	int car;
@@ -539,8 +519,7 @@ __ENDS:
 
 __MATCH:
 
-	init_pcre();
-	ret = PCRE.Match(string, len_string, pattern, len_pattern, 0, 0);
+	ret = REGEXP_match_pcre(pattern, len_pattern, string, len_string);
 	goto __RETURN;
 
 __RETURN:

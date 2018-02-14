@@ -31,7 +31,7 @@
       { lblPrint Label
         MoveScaled(11,0,14,4)
         AutoResize = True
-        Text = ("Printing...")
+        Text = ("Printing") & "..."
       }
       { Panel11 Panel
         MoveScaled(26,0,25,4)
@@ -194,11 +194,12 @@
           }
           { cmbResolution ComboBox
             MoveScaled(15,0,14,4)
+            #Translate = False
             ReadOnly = True
-            List = [("75"), ("150"), ("300"), ("600"), ("1200")]
+            List = ["75", "150", "300", "600", "1200"]
           }
           { Label11 Label
-            MoveScaled(29,-1,4,4)
+            MoveScaled(30,0,4,4)
             Text = ("dpi")
           }
         }
@@ -292,7 +293,7 @@
             }
           }
           { Panel17 HBox
-            MoveScaled(1,4.1429,31,4)
+            MoveScaled(1,4.125,31,4)
             Spacing = True
             { Label6 Label
               MoveScaled(0,0,12,4)

@@ -72,8 +72,6 @@ typedef
 
 int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, int len);
 int CSerialPort_stream_write(GB_STREAM *stream, char *buffer, int len);
-int CSerialPort_stream_eof(GB_STREAM *stream);
-int CSerialPort_stream_lof(GB_STREAM *stream, int64_t *len);
 int CSerialPort_stream_open(GB_STREAM *stream, const char *path, int mode, void *data);
 int CSerialPort_stream_seek(GB_STREAM *stream, int64_t pos, int whence);
 int CSerialPort_stream_tell(GB_STREAM *stream, int64_t *pos);

@@ -39,8 +39,19 @@ End
 
 
 Public Sub _get((Style) As Integer) As TextEditorStyle
+
+  Dim hStyle As TextEditorStyle
   
-  Try Return $aStyle[Style]
+  Try hStyle = $aStyle[Style]
+  If Error Then Error.Raise("Invalid argument")
+  If Not hStyle Then
+    With $aStyle[Highlight.Normal]
+      hStyle = New TextEditorStyle(.Color, .Bold, .Underline, .Background)
+      $aStyle[Style] = hStyle
+    End With
+  Endif
+  
+  Return hStyle
   
 End
 
