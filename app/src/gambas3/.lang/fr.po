@@ -222,7 +222,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.10.90\n"
-"PO-Revision-Date: 2018-02-14 19:21 UTC\n"
+"PO-Revision-Date: 2018-02-14 19:36 UTC\n"
 "Last-Translator: benoit <benoit@benoit-kubuntu>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -1581,7 +1581,7 @@ msgstr "Entier long"
 msgid "Serial"
 msgstr "Série"
 
-#: FConnectionEditor.class:800 MConnection.module:130 MErrorMessage.module:159
+#: FConnectionEditor.class:800 MConnection.module:130 MErrorMessage.module:161
 msgid "String"
 msgstr "Chaîne"
 
@@ -6342,658 +6342,674 @@ msgid "Illegal instruction"
 msgstr "Instruction illégale"
 
 #: MErrorMessage.module:104
+msgid "Integer expected"
+msgstr "Entier attendu"
+
+#: MErrorMessage.module:105
 msgid "Internal compiler error: bad stack usage computed!"
 msgstr "Erreur interne du compilateur : calcul d'utilisation de pile incorrect !"
 
-#: MErrorMessage.module:105
+#: MErrorMessage.module:106
 msgid "Invalid assignment"
 msgstr "Affectation invalide"
 
-#: MErrorMessage.module:106
+#: MErrorMessage.module:107
 msgid "Invalid date"
 msgstr "Date invalide"
 
-#: MErrorMessage.module:107
+#: MErrorMessage.module:108
 msgid "Invalid object"
 msgstr "Object invalide"
 
-#: MErrorMessage.module:108
+#: MErrorMessage.module:109
 msgid "Invalid path"
 msgstr "Chemin invalide"
 
-#: MErrorMessage.module:109
+#: MErrorMessage.module:110
 msgid "IsMissing() requires a function argument"
 msgstr "IsMissing() nécessite un argument de fonction"
 
-#: MErrorMessage.module:110
+#: MErrorMessage.module:111
 msgid "Jump is too far"
 msgstr "Saut trop éloigné"
 
-#: MErrorMessage.module:111
+#: MErrorMessage.module:112
 msgid "Label '&1' not declared"
 msgstr "L'étiquette '&1' n'est pas déclarée"
 
-#: MErrorMessage.module:112
+#: MErrorMessage.module:113
 msgid "Library name must be a string"
 msgstr "Le nom de la bibliothèque doit être une chaîne de caractères"
 
-#: MErrorMessage.module:113
+#: MErrorMessage.module:114
 msgid "Loop variable already in use"
 msgstr "Variable de boucle déjà utilisée"
 
-#: MErrorMessage.module:114
+#: MErrorMessage.module:115
 msgid "Loop variable must be local"
 msgstr "La variable de boucle doit être une variable locale"
 
-#: MErrorMessage.module:115
+#: MErrorMessage.module:116
 msgid "ME cannot be used in a static function"
 msgstr "ME ne peut être utilisé au sein d'une fonction statique"
 
-#: MErrorMessage.module:116
+#: MErrorMessage.module:117
 msgid "Mathematic error"
 msgstr "Erreur mathématique"
 
-#: MErrorMessage.module:117
+#: MErrorMessage.module:118
 msgid "Missing #Endif"
 msgstr "#Endif manquant"
 
-#: MErrorMessage.module:118
+#: MErrorMessage.module:119
 msgid "Missing ']'"
 msgstr "']' manquant"
 
-#: MErrorMessage.module:119
+#: MErrorMessage.module:120
 msgid "Missing '}'"
 msgstr "'}' manquant"
 
-#: MErrorMessage.module:120
+#: MErrorMessage.module:121
 msgid "Missing operator"
 msgstr "Opérateur manquant"
 
-#: MErrorMessage.module:121
+#: MErrorMessage.module:122
 msgid "Missing right brace"
 msgstr "Parenthèse fermante manquante"
 
-#: MErrorMessage.module:122
+#: MErrorMessage.module:123
 msgid "NEW cannot have arguments passed by reference"
 msgstr "Les arguments de NEW ne peuvent être passés par référence"
 
-#: MErrorMessage.module:123
+#: MErrorMessage.module:124
 msgid "No instantiation method"
 msgstr "Aucune méthode d'instanciation"
 
-#: MErrorMessage.module:124
+#: MErrorMessage.module:125
 msgid "No parent class"
 msgstr "Classe parente introuvable"
 
-#: MErrorMessage.module:125
+#: MErrorMessage.module:126
 msgid "No return value"
 msgstr "Aucune valeur de retour"
 
-#: MErrorMessage.module:126
+#: MErrorMessage.module:127
 msgid "No startup method"
 msgstr "Méthode de démarrage introuvable"
 
-#: MErrorMessage.module:127
+#: MErrorMessage.module:128
 msgid "Non terminated string"
 msgstr "Chaîne de caractères non terminée"
 
-#: MErrorMessage.module:128
+#: MErrorMessage.module:129
 msgid "Not a directory: &1"
 msgstr "'&1' n'est pas un répertoire"
 
-#: MErrorMessage.module:129
+#: MErrorMessage.module:130
 msgid "Not a function"
 msgstr "Fonction attendue"
 
-#: MErrorMessage.module:130
+#: MErrorMessage.module:131
 msgid "Not a procedure"
 msgstr "Procédure attendue"
 
-#: MErrorMessage.module:131
+#: MErrorMessage.module:132
 msgid "Not an array"
 msgstr "Tableau attendu"
 
-#: MErrorMessage.module:132
+#: MErrorMessage.module:133
 msgid "Not an enumeration"
 msgstr "Enumération attendue"
 
-#: MErrorMessage.module:133
+#: MErrorMessage.module:134
 msgid "Not an object"
 msgstr "Objet attendu"
 
-#: MErrorMessage.module:134
+#: MErrorMessage.module:135
 msgid "Not enough argument to New()"
 msgstr "Pas assez d'arguments à New()"
 
-#: MErrorMessage.module:135
+#: MErrorMessage.module:136
 msgid "Not enough arguments"
 msgstr "Pas assez d'arguments"
 
-#: MErrorMessage.module:136
+#: MErrorMessage.module:137
 msgid "Not enough arguments to &1()"
 msgstr "Pas assez d'arguments à &1()"
 
-#: MErrorMessage.module:137
+#: MErrorMessage.module:138
 msgid "Not implemented yet"
 msgstr "Fonctionnalité non encore implémentée"
 
-#: MErrorMessage.module:138
+#: MErrorMessage.module:139
 msgid "Not supported"
 msgstr "Fonctionnalité non supportée"
 
-#: MErrorMessage.module:139
+#: MErrorMessage.module:140
 msgid "Null object"
 msgstr "Référence d'objet NULL"
 
-#: MErrorMessage.module:140
+#: MErrorMessage.module:141
 msgid "Number"
 msgstr "Nombre"
 
-#: MErrorMessage.module:141
+#: MErrorMessage.module:142
+msgid "Number or Date expected"
+msgstr "Nombre ou date attendu"
+
+#: MErrorMessage.module:143
 msgid "Number or date"
 msgstr "Nombre ou date"
 
-#: MErrorMessage.module:142
+#: MErrorMessage.module:144
 msgid "Number, Date or String"
 msgstr "Nombre, Date ou String"
 
-#: MErrorMessage.module:143
+#: MErrorMessage.module:145
 msgid "Number, String or Object"
 msgstr "Nombre, String ou Object"
 
-#: MErrorMessage.module:144
+#: MErrorMessage.module:146
 msgid "Object"
 msgstr "Object"
 
-#: MErrorMessage.module:145
+#: MErrorMessage.module:147
 msgid "Out of bounds"
 msgstr "Dépassement de tableau"
 
-#: MErrorMessage.module:146
+#: MErrorMessage.module:148
 msgid "Out of memory"
 msgstr "Mémoire pleine"
 
-#: MErrorMessage.module:147
+#: MErrorMessage.module:149
 msgid "Out of range"
 msgstr "Dépassement de capacité"
 
-#: MErrorMessage.module:148
+#: MErrorMessage.module:150
 msgid "Overflow"
 msgstr "Dépassement de capacité"
 
-#: MErrorMessage.module:149
+#: MErrorMessage.module:151
 msgid "Overriding an already inherited class is forbidden"
 msgstr "Réimplémenter une classe déjà héritée est interdit"
 
-#: MErrorMessage.module:150
+#: MErrorMessage.module:152
 msgid "Pointer"
 msgstr "Pointer"
 
-#: MErrorMessage.module:151
+#: MErrorMessage.module:153
 msgid "Read error"
 msgstr "Erreur de lecture"
 
-#: MErrorMessage.module:152
+#: MErrorMessage.module:154
 msgid "Return value datatype not specified in function declaration"
 msgstr "Le type de la valeur de retour n'a pas été spécifié dans la déclaration de la fonction"
 
-#: MErrorMessage.module:153
+#: MErrorMessage.module:155
 msgid "STOP instruction encountered"
 msgstr "Instruction STOP rencontrée"
 
-#: MErrorMessage.module:154
+#: MErrorMessage.module:156
 msgid "SUPER cannot be used alone"
 msgstr "SUPER ne peut être utilisé seul"
 
-#: MErrorMessage.module:155
+#: MErrorMessage.module:157
 msgid "Serialization error"
 msgstr "Erreur de sérialisation"
 
-#: MErrorMessage.module:156
+#: MErrorMessage.module:158
 msgid "Stack overflow"
 msgstr "Débordement de pile"
 
-#: MErrorMessage.module:157
+#: MErrorMessage.module:159
 msgid "Standard type"
 msgstr "Type standard"
 
-#: MErrorMessage.module:158
+#: MErrorMessage.module:160
 msgid "Stream is closed"
 msgstr "Flux déjà fermé"
 
-#: MErrorMessage.module:160
+#: MErrorMessage.module:162
 msgid "String expected"
 msgstr "Chaîne de caractères attendue"
 
-#: MErrorMessage.module:161
+#: MErrorMessage.module:163
 msgid "Structures must be public"
 msgstr "Les structures doivent être publiques"
 
-#: MErrorMessage.module:162
+#: MErrorMessage.module:164
 msgid "Subroutine arguments cannot be passed by reference"
 msgstr "Les arguments des routines prédéfinies ne peuvent être passées par référence"
 
-#: MErrorMessage.module:163
+#: MErrorMessage.module:165
 msgid "Syntax error"
 msgstr "Erreur de syntaxe"
 
-#: MErrorMessage.module:164
+#: MErrorMessage.module:166
 msgid "Syntax error at function declaration"
 msgstr "Erreur de syntaxe dans la déclaration de fonction"
 
-#: MErrorMessage.module:165
+#: MErrorMessage.module:167
 msgid "Syntax error in event name"
 msgstr "Erreur de syntaxe dans le nom d'évènement"
 
-#: MErrorMessage.module:166
+#: MErrorMessage.module:168
 msgid "Syntax error in file open mode"
 msgstr "Erreur de syntaxe dans le mode d'ouverture du fichier"
 
-#: MErrorMessage.module:167
+#: MErrorMessage.module:169
 msgid "Syntax error in return type"
 msgstr "Erreur de syntaxe dans le type de retour"
 
-#: MErrorMessage.module:168
+#: MErrorMessage.module:170
 msgid "Syntax error. &1 expected"
 msgstr "Erreur de syntaxe. &1 attendu"
 
-#: MErrorMessage.module:169
+#: MErrorMessage.module:171
 msgid "Syntax error. '...' must be the last argument"
 msgstr "Erreur de syntaxe. '...' doit être le dernier argument"
 
-#: MErrorMessage.module:170
+#: MErrorMessage.module:172
 msgid "Syntax error. Bad property type"
 msgstr "Erreur de syntaxe. Type de propriété incorrect"
 
-#: MErrorMessage.module:171
+#: MErrorMessage.module:173
 msgid "Syntax error. CASE or DEFAULT expected after SELECT"
 msgstr "Erreur de syntaxe. CASE ou DEFAULT attendu après SELECT"
 
-#: MErrorMessage.module:172
+#: MErrorMessage.module:174
 msgid "Syntax error. CLASS needs an identifier"
 msgstr "Erreur de syntaxe. CLASS doit être suivi d'un identificateur"
 
-#: MErrorMessage.module:173
+#: MErrorMessage.module:175
 msgid "Syntax error. Cannot use this syntax in assignment"
 msgstr "Erreur de syntaxe. Impossible d'utiliser cette syntaxe au sein d'une affection"
 
-#: MErrorMessage.module:174
+#: MErrorMessage.module:176
 msgid "Syntax error. INHERITS needs a class name"
 msgstr "Erreur de syntaxe. INHERITS doit être suivi d'un nom de classe"
 
-#: MErrorMessage.module:175
+#: MErrorMessage.module:177
 msgid "Syntax error. Identifier expected."
 msgstr "Erreur de syntaxe. Identificateur attendu."
 
-#: MErrorMessage.module:176
+#: MErrorMessage.module:178
 msgid "Syntax error. Invalid identifier in function name"
 msgstr "Erreur de syntaxe. Le nom de fonction est un identificateur invalide"
 
-#: MErrorMessage.module:177
+#: MErrorMessage.module:179
 msgid "Syntax error. Invalid identifier in property name"
 msgstr "Erreur de syntaxe. Le nom de la propriété est un identificateur invalide"
 
-#: MErrorMessage.module:178
+#: MErrorMessage.module:180
 msgid "Syntax error. Invalid optional parameter"
 msgstr "Erreur de syntaxe. Paramètre optionnel invalide"
 
-#: MErrorMessage.module:179
+#: MErrorMessage.module:181
 msgid "Syntax error. Invalid return type"
 msgstr "Erreur de syntaxe. Type de retour invalide"
 
-#: MErrorMessage.module:180
+#: MErrorMessage.module:182
 msgid "Syntax error. Invalid type description of &1 argument"
 msgstr "Erreur de syntaxe. Description du type du &1 argument incorrecte"
 
-#: MErrorMessage.module:181
+#: MErrorMessage.module:183
 msgid "Syntax error. Invalid type description of &1 field"
 msgstr "Erreur de syntaxe. Description du type du &1 champ incorrecte"
 
-#: MErrorMessage.module:182
+#: MErrorMessage.module:184
 msgid "Syntax error. Needless arguments"
 msgstr "Erreur de syntaxe. Argument inutile"
 
-#: MErrorMessage.module:183
+#: MErrorMessage.module:185
 msgid "Syntax error. Point syntax used outside of WITH / END WITH"
 msgstr "Erreur de syntaxe. Une expression ne peut commencer par un point en dehors d'un bloc WITH / END WITH"
 
-#: MErrorMessage.module:184
+#: MErrorMessage.module:186
 msgid "Syntax error. STRUCT needs an identifier"
 msgstr "Erreur de syntaxe. STRUCT doit être suivi d'un identificateur"
 
-#: MErrorMessage.module:185
+#: MErrorMessage.module:187
 msgid "Syntax error. The &1 argument is not a valid identifier"
 msgstr "Erreur de syntaxe. Le &1 argument n'est pas un identificateur valide"
 
-#: MErrorMessage.module:186
+#: MErrorMessage.module:188
 msgid "Syntax error. The &1 field is not a valid identifier"
 msgstr "Erreur de syntaxe. Le &1 champ n'est pas un identificateur valide"
 
-#: MErrorMessage.module:187
+#: MErrorMessage.module:189
 msgid "Syntax error. VarPtr() takes only one identifier"
 msgstr "Erreur de syntaxe. VarPtr() ne prend qu'un seul identificateur"
 
-#: MErrorMessage.module:188
+#: MErrorMessage.module:190
 msgid "System error #&1: &2"
 msgstr "Erreur système n°&1: &2"
 
-#: MErrorMessage.module:189
+#: MErrorMessage.module:191
 msgid "The '!' operator must be followed by an identifier"
 msgstr "L'opérateur '!' doit être suivi d'un identificateur"
 
-#: MErrorMessage.module:190
+#: MErrorMessage.module:192
 msgid "The '.' operator must be followed by an identifier"
 msgstr "L'opérateur '.' doit être suivi d'un identificateur"
 
-#: MErrorMessage.module:191
+#: MErrorMessage.module:193
 msgid "The function must take a fixed number of arguments"
 msgstr "La fonction doit prendre un nombre d'arguments fixe"
 
-#: MErrorMessage.module:192
+#: MErrorMessage.module:194
 msgid "The special method &1 cannot be a function"
 msgstr "La méthode spéciale &1 ne peut être une fonction"
 
-#: MErrorMessage.module:193
+#: MErrorMessage.module:195
 msgid "The special method &1 cannot be implemented"
 msgstr "La méthode spéciale &1 ne peut être implémentée"
 
-#: MErrorMessage.module:194
+#: MErrorMessage.module:196
 msgid "The special method &1 cannot be static"
 msgstr "La méthode spéciale &1 ne peut être statique"
 
-#: MErrorMessage.module:195
+#: MErrorMessage.module:197
 msgid "The special method &1 must be a function"
 msgstr "La méthode spéciale &1 doit être une fonction"
 
-#: MErrorMessage.module:196
+#: MErrorMessage.module:198
 msgid "The special method &1 must be public"
 msgstr "La méthode spéciale &1 doit être publique"
 
-#: MErrorMessage.module:197
+#: MErrorMessage.module:199
 msgid "The special method &1 must be static"
 msgstr "La méthode spéciale &1 doit être statique"
 
-#: MErrorMessage.module:198
+#: MErrorMessage.module:200
 msgid "The special method &1 must return a boolean"
 msgstr "La méthode spéciale &1 doit retourner un Boolean"
 
-#: MErrorMessage.module:199
+#: MErrorMessage.module:201
 msgid "The special method &1 must take a variable number of arguments only"
 msgstr "La méthode spéciale &1 doit prendre un nombre variable d'arguments"
 
-#: MErrorMessage.module:200
+#: MErrorMessage.module:202
 msgid "The special method &1 must take at least one argument"
 msgstr "La méthode spéciale &1 doit prendre au moins un argument"
 
-#: MErrorMessage.module:201
+#: MErrorMessage.module:203
 msgid "The special method &1 takes no arguments"
 msgstr "La méthode spéciale &1 ne prend pas d'arguments"
 
-#: MErrorMessage.module:202
+#: MErrorMessage.module:204
 msgid "The special method must return an integer"
 msgstr "La méthode spéciale doit retourner un Integer"
 
-#: MErrorMessage.module:203
+#: MErrorMessage.module:205
 msgid "The special method must take exactly one argument"
 msgstr "La méthode spéciale doit prendre un argument et un seul"
 
-#: MErrorMessage.module:204
+#: MErrorMessage.module:206
 msgid "The special method must take exactly two arguments"
 msgstr "La méthode spéciale doit prendre deux arguments exactement"
 
-#: MErrorMessage.module:205
+#: MErrorMessage.module:207
 msgid "The special method signature is incorrect"
 msgstr "La signature de la méthode spéciale est incorrecte"
 
-#: MErrorMessage.module:206
+#: MErrorMessage.module:208
 msgid "This expression cannot be a statement"
 msgstr "Cette expression ne peut être une instruction"
 
-#: MErrorMessage.module:207
+#: MErrorMessage.module:209
 msgid "This expression cannot be passed by reference"
 msgstr "Cette expression ne peut pas être passée par référence"
 
-#: MErrorMessage.module:208
+#: MErrorMessage.module:210
 msgid "Too many arguments"
 msgstr "Trop d'arguments"
 
-#: MErrorMessage.module:209
+#: MErrorMessage.module:211
 msgid "Too many arguments to &1()"
 msgstr "Trop d'arguments à &1()"
 
-#: MErrorMessage.module:210
+#: MErrorMessage.module:212
 msgid "Too many array declarations"
 msgstr "Trop de déclarations de tableaux"
 
-#: MErrorMessage.module:211
+#: MErrorMessage.module:213
 msgid "Too many constants"
 msgstr "Trop de constantes"
 
-#: MErrorMessage.module:212
+#: MErrorMessage.module:214
 msgid "Too many different classes used"
 msgstr "Trop de classes différentes utilisées"
 
-#: MErrorMessage.module:213
+#: MErrorMessage.module:215
 msgid "Too many dimensions"
 msgstr "Trop de dimensions"
 
-#: MErrorMessage.module:214
+#: MErrorMessage.module:216
 msgid "Too many dynamic variables"
 msgstr "Trop de variables dynamiques"
 
-#: MErrorMessage.module:215
+#: MErrorMessage.module:217
 msgid "Too many events"
 msgstr "Trop d'évènements"
 
-#: MErrorMessage.module:216
+#: MErrorMessage.module:218
 msgid "Too many expressions in CASE"
 msgstr "Trop d'expressions dans CASE"
 
-#: MErrorMessage.module:217
+#: MErrorMessage.module:219
 msgid "Too many external functions"
 msgstr "Trop de fonctions externes"
 
-#: MErrorMessage.module:218
+#: MErrorMessage.module:220
 msgid "Too many functions"
 msgstr "Trop de fonctions"
 
-#: MErrorMessage.module:219
+#: MErrorMessage.module:221
 msgid "Too many imbricated #If...#Endif"
 msgstr "Trop d'imbrications de #If...#Endif"
 
-#: MErrorMessage.module:220
+#: MErrorMessage.module:222
 msgid "Too many labels"
 msgstr "Trop d'étiquettes"
 
-#: MErrorMessage.module:221
+#: MErrorMessage.module:223
 msgid "Too many local variables"
 msgstr "Trop de variables locales"
 
-#: MErrorMessage.module:222
+#: MErrorMessage.module:224
 msgid "Too many nested control structures."
 msgstr "Trop de structure de contrôles imbriquées"
 
-#: MErrorMessage.module:223
+#: MErrorMessage.module:225
 msgid "Too many property synonymous"
 msgstr "Trop de synonymes à la propriété"
 
-#: MErrorMessage.module:224
+#: MErrorMessage.module:226
 msgid "Too many simultaneous new strings"
 msgstr "Trop de créations simultanées de chaînes de caractères"
 
-#: MErrorMessage.module:225
+#: MErrorMessage.module:227
 msgid "Too many static variables"
 msgstr "Trop de variables statiques"
 
-#: MErrorMessage.module:226
+#: MErrorMessage.module:228
 msgid "Too many unknown symbols"
 msgstr "Trop de symboles inconnus"
 
-#: MErrorMessage.module:227
+#: MErrorMessage.module:229
 msgid "Trailing backslash"
 msgstr "'\\' en fin de chaîne"
 
-#: MErrorMessage.module:228
+#: MErrorMessage.module:230
 msgid "Type mismatch"
 msgstr "Type incorrect"
 
-#: MErrorMessage.module:229
+#: MErrorMessage.module:231
 msgid "Type mismatch: wanted &1, got &2 instead"
 msgstr "Type incorrect: &1 attendu à la place de &2"
 
-#: MErrorMessage.module:230
+#: MErrorMessage.module:232
 msgid "Unable to create closure"
 msgstr "Impossible de créer la fermeture"
 
-#: MErrorMessage.module:231
+#: MErrorMessage.module:233
 msgid "Unable to get file position"
 msgstr "Impossible de lire la position du fichier"
 
-#: MErrorMessage.module:232
+#: MErrorMessage.module:234
 msgid "Unable to load class file"
 msgstr "Impossible de charger le fichier classe"
 
-#: MErrorMessage.module:233
+#: MErrorMessage.module:235
 msgid "Unable to prepare function description"
 msgstr "Impossible de préparer la description de la fonction"
 
-#: MErrorMessage.module:234
+#: MErrorMessage.module:236
 msgid "Unexpected &1"
 msgstr "&1 inattendu"
 
-#: MErrorMessage.module:235
+#: MErrorMessage.module:237
 msgid "Unexpected end of line"
 msgstr "Fin de ligne inattendue"
 
-#: MErrorMessage.module:236
+#: MErrorMessage.module:238
 msgid "Unexpected string"
 msgstr "Chaîne de caractères inattendue"
 
-#: MErrorMessage.module:237
+#: MErrorMessage.module:239
 msgid "Unknown error"
 msgstr "Erreur inconnue"
 
-#: MErrorMessage.module:238
+#: MErrorMessage.module:240
 msgid "Unknown file extension"
 msgstr "Extension de fichier inconnue"
 
-#: MErrorMessage.module:239
+#: MErrorMessage.module:241
 msgid "Unknown identifier: &1"
 msgstr "Identificateur inconnu: &1"
 
-#: MErrorMessage.module:240
+#: MErrorMessage.module:242
 msgid "Unknown operator"
 msgstr "Opérateur inconnu"
 
-#: MErrorMessage.module:241
+#: MErrorMessage.module:243
 msgid "Unknown symbol '&2' in class '&1'"
 msgstr "Symbole '&2' inconnu dans la classe '&1'"
 
-#: MErrorMessage.module:242
+#: MErrorMessage.module:244
 msgid "Unknown user or group"
 msgstr "Utilisateur ou groupe inconnu"
 
-#: MErrorMessage.module:243
+#: MErrorMessage.module:245
 msgid "Unsupported datatype"
 msgstr "Type de donnée non supporté"
 
-#: MErrorMessage.module:244
+#: MErrorMessage.module:246
 msgid "Unsupported string conversion"
 msgstr "Conversion de chaîne de caractères non supportée"
 
-#: MErrorMessage.module:245
+#: MErrorMessage.module:247
 msgid "Useless LOCK"
 msgstr "LOCK inutile"
 
-#: MErrorMessage.module:246
+#: MErrorMessage.module:248
 msgid "VarPtr() argument must be a dynamic, a static or a local variable"
 msgstr "L'argument de VarPtr() doit être une variable dynamique, une variable statique ou bien une variable locale"
 
-#: MErrorMessage.module:247
+#: MErrorMessage.module:249
 msgid "Variant"
 msgstr "Variant"
 
-#: MErrorMessage.module:248
+#: MErrorMessage.module:250
 msgid "Void key"
 msgstr "Clef vide"
 
-#: MErrorMessage.module:249
+#: MErrorMessage.module:251
 msgid "Write error"
 msgstr "Erreur d'écriture"
 
-#: MErrorMessage.module:250
+#: MErrorMessage.module:252
 msgid "cannot find component"
 msgstr "impossible de trouver le composant"
 
-#: MErrorMessage.module:251
+#: MErrorMessage.module:253
 msgid "cannot find library"
 msgstr "impossible de trouver la bibliothèque"
 
-#: MErrorMessage.module:252
+#: MErrorMessage.module:254
 msgid "class name hidden by global declaration: &1"
 msgstr "Nom de classe masqué par une déclaration globale : &1"
 
-#: MErrorMessage.module:253
+#: MErrorMessage.module:255
 msgid "class name hidden by local declaration: &1"
 msgstr "Nom de classe masqué par une déclaration locale : &1"
 
-#: MErrorMessage.module:254
+#: MErrorMessage.module:256
 msgid "constant hidden by local declaration: &1"
 msgstr "Contante masquée par une déclaration locale : &1"
 
-#: MErrorMessage.module:255
+#: MErrorMessage.module:257
 msgid "extern function hidden by local declaration: &1"
 msgstr "Fonction externe masquée par une déclaration locale : &1"
 
-#: MErrorMessage.module:256
+#: MErrorMessage.module:258
 msgid "function hidden by local declaration: &1"
 msgstr "Fonction masquée par une déclaration locale : &1"
 
-#: MErrorMessage.module:257
+#: MErrorMessage.module:259
 msgid "global variable hidden by local declaration: &1"
 msgstr "variable globale masquée par une déclaration locale : &1"
 
-#: MErrorMessage.module:258
+#: MErrorMessage.module:260
+msgid "uninitialized global variable: &1"
+msgstr "variable globale non initialisée: &1"
+
+#: MErrorMessage.module:261
+msgid "uninitialized variable: &1"
+msgstr "variable non initialisée: &1"
+
+#: MErrorMessage.module:262
 msgid "unknown error"
 msgstr "erreur inconnue"
 
-#: MErrorMessage.module:259
+#: MErrorMessage.module:263
 msgid "unused argument: &1"
 msgstr "argument inutilisé : &1"
 
-#: MErrorMessage.module:260
+#: MErrorMessage.module:264
 msgid "unused extern function: &1"
 msgstr "fonction externe inutilisée : &1"
 
-#: MErrorMessage.module:261
+#: MErrorMessage.module:265
 msgid "unused function: &1"
 msgstr "fonction inutilisée : &1"
 
-#: MErrorMessage.module:262
+#: MErrorMessage.module:266
 msgid "unused global variable: &1"
 msgstr "variable globale inutilisée : &1"
 
-#: MErrorMessage.module:263
+#: MErrorMessage.module:267
 msgid "unused variable: &1"
 msgstr "variable inutilisée : &1"
 
-#: MErrorMessage.module:267
+#: MErrorMessage.module:271
 msgid "cannot open slave pseudo-terminal: "
 msgstr "impossible d'ouvrir le pseudo-terminal esclave: "
 
-#: MErrorMessage.module:268
+#: MErrorMessage.module:272
 msgid "cannot initialize pseudo-terminal: "
 msgstr "impossible d'initialiser le pseudo-terminal: "
 
-#: MErrorMessage.module:269
+#: MErrorMessage.module:273
 msgid "cannot plug standard input: "
 msgstr "impossible de connecter l'entrée standard: "
 
-#: MErrorMessage.module:270
+#: MErrorMessage.module:274
 msgid "cannot plug standard output and standard error: "
 msgstr "impossible de connecter la sortie standard et la sortie d'erreur: "
 
-#: MErrorMessage.module:271
+#: MErrorMessage.module:275
 msgid "cannot run executable: "
 msgstr "impossible de démarrer l'exécutable: "
 
