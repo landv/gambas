@@ -43,7 +43,8 @@
 
 #define IS_PURE_INTEGER(_int64_val) ((_int64_val) == ((int)(_int64_val)))
 
-int TRANS_in_affectation = 0;
+short TRANS_in_assignment = 0;
+short TRANS_in_left_value = 0;
 bool TRANS_in_try = FALSE;
 
 void TRANS_reset(void)
@@ -673,7 +674,6 @@ bool TRANS_check_declaration(void)
 }
 
 
-
 PATTERN *TRANS_get_constant_value(TRANS_DECL *decl, PATTERN *current)
 {
 	int index;
@@ -786,7 +786,6 @@ PATTERN *TRANS_get_constant_value(TRANS_DECL *decl, PATTERN *current)
 }
 
 
-
 void TRANS_want(int reserved, char *msg)
 {
 	if (!PATTERN_is(*JOB->current, reserved))
@@ -818,6 +817,7 @@ bool TRANS_is_end_function(bool is_proc, PATTERN *look)
 	else
 		return PATTERN_is(*look, RS_FUNCTION);
 }
+
 
 char *TRANS_get_num_desc(int num)
 {

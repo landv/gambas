@@ -1007,18 +1007,10 @@ void TRANS_for(void)
 
 	control_add_current_pos();
 	CODE_jump_next();
+	
 	CODE_pop_local(local);
-
-	/*
-	current = JOB->current;
-	JOB->current = loop_var;
-	TRANS_expression(FALSE);
-
-	if (!CODE_popify_last())
-		ERROR_panic("Cannot popify FOR expression ??");
-
-	JOB->current = current;
-	*/
+	CLASS_get_local_symbol(local)->local_assigned = TRUE;
+	
 }
 
 
@@ -1060,10 +1052,7 @@ void TRANS_for_each(void)
 		save = JOB->current;
 		JOB->current = iterator;
 
-		TRANS_expression(FALSE);
-
-		if (!CODE_popify_last())
-			THROW("Invalid assignment");
+		TRANS_reference();
 
 		TRANS_want(RS_IN, "IN");
 
@@ -1275,6 +1264,6 @@ void TRANS_raise(void)
 
 	CODE_call(np);
 
-	if (TRANS_in_affectation == 0)
+	if (!TRANS_in_assignment)
 		CODE_drop();
 }

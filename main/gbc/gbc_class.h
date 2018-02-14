@@ -48,8 +48,10 @@ typedef
 		int class;
 		int unknown;
 		unsigned global_used : 1;
+		unsigned global_assigned : 1;
 		unsigned local_used : 1;
-		unsigned _reserved : 30;
+		unsigned local_assigned : 1;
+		unsigned _reserved : 28;
 		}
 	PACKED
 	CLASS_SYMBOL;
@@ -255,6 +257,9 @@ int CLASS_add_symbol(CLASS *class, const char *name);
 
 void CLASS_sort_declaration(CLASS *class);
 void CLASS_check_properties(CLASS *class);
+
+CLASS_SYMBOL *CLASS_get_local_symbol(int local);
+
 
 // gbc_dump.c
 

@@ -195,7 +195,7 @@ void TRANS_error(void)
 	
 		trans_subr(TS_SUBR_ERROR_TO, 1);
 	
-		if (TRANS_in_affectation == 0)
+		if (!TRANS_in_assignment)
 			CODE_drop();
 	}
 	else
@@ -297,7 +297,7 @@ void TRANS_output_to()
 
 	trans_subr(TS_SUBR_OUTPUT_TO, 1);
 
-	if (TRANS_in_affectation == 0)
+	if (!TRANS_in_assignment)
 		CODE_drop();
 }
 
@@ -310,7 +310,7 @@ void TRANS_input_from()
 
 	trans_subr(TS_SUBR_INPUT_FROM, 1);
 
-	if (TRANS_in_affectation == 0)
+	if (!TRANS_in_assignment)
 		CODE_drop();
 }
 
@@ -462,7 +462,7 @@ void TRANS_open(void)
 
 	trans_subr(TS_SUBR_OPEN, 2);
 
-	/*if (TRANS_in_affectation == 0)
+	/*if (!TRANS_in_assignment)
 	{
 		//CODE_drop();
 
@@ -569,7 +569,7 @@ void TRANS_close(void)
 
 	trans_subr(TS_SUBR_CLOSE, 1);
 
-	if (TRANS_in_affectation == 0)
+	if (!TRANS_in_assignment)
 		CODE_drop();
 }
 
@@ -579,7 +579,7 @@ void TRANS_lock(void)
 	if (PATTERN_is_newline(*JOB->current))
 		THROW(E_SYNTAX);
 	
-	if (!TRANS_in_affectation)
+	if (!TRANS_in_assignment)
 		THROW("Useless LOCK");
 		
 	TRANS_expression(FALSE);
@@ -712,7 +712,7 @@ static void trans_exec_shell(bool shell)
 	}
 	else if (TRANS_is(RS_TO))
 	{
-		if (TRANS_in_affectation)
+		if (TRANS_in_assignment)
 			THROW("Syntax error. Cannot use this syntax in assignment");
 
 		mode = TS_EXEC_STRING;
@@ -732,7 +732,7 @@ static void trans_exec_shell(bool shell)
 
 	if (mode & TS_EXEC_STRING)
 		TRANS_reference();
-	else if (TRANS_in_affectation == 0)
+	else if (!TRANS_in_assignment)
 		CODE_drop();
 }
 

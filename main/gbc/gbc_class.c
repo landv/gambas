@@ -228,18 +228,26 @@ void CLASS_check_unused_global(CLASS *class)
 		sym = CLASS_get_symbol(class, i);
 		type = sym->global.type;
 		
-		if (sym->global_used)
+		if (sym->global_used && sym->global_assigned)
 			continue;
 		
 		if (TYPE_is_null(type) || TYPE_is_public(type))
 			continue;
 		
-		if (TYPE_get_kind(type) == TK_VARIABLE)
-			COMPILE_print(MSG_WARNING, sym->global.line, "unused global variable: &1", SYMBOL_get_name(&sym->symbol));
-		else if (TYPE_get_kind(type) == TK_FUNCTION)
-			COMPILE_print(MSG_WARNING, sym->global.line, "unused function: &1", SYMBOL_get_name(&sym->symbol));
-		else if (TYPE_get_kind(type) == TK_EXTERN)
-			COMPILE_print(MSG_WARNING, sym->global.line, "unused extern function: &1", SYMBOL_get_name(&sym->symbol));
+		if (!sym->global_used)
+		{
+			if (TYPE_get_kind(type) == TK_VARIABLE)
+				COMPILE_print(MSG_WARNING, sym->global.line, "unused global variable: &1", SYMBOL_get_name(&sym->symbol));
+			else if (TYPE_get_kind(type) == TK_FUNCTION)
+				COMPILE_print(MSG_WARNING, sym->global.line, "unused function: &1", SYMBOL_get_name(&sym->symbol));
+			else if (TYPE_get_kind(type) == TK_EXTERN)
+				COMPILE_print(MSG_WARNING, sym->global.line, "unused extern function: &1", SYMBOL_get_name(&sym->symbol));
+		}
+		else
+		{
+			if (TYPE_get_kind(type) == TK_VARIABLE)
+				COMPILE_print(MSG_WARNING, sym->global.line, "unitialized global variable: &1", SYMBOL_get_name(&sym->symbol));
+		}
 	}
 }
 
@@ -721,6 +729,7 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 			FUNCTION_add_all_pos_line();
 			TRANS_init_var(decl);
 			CODE_pop_global(sym->global.value, TRUE);
+			sym->global_assigned = TRUE;
 		}
 		class->has_static = TRUE;
 	}
@@ -747,6 +756,7 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 			FUNCTION_add_all_pos_line();
 			TRANS_init_var(decl);
 			CODE_pop_global(sym->global.value, FALSE);
+			sym->global_assigned = TRUE;
 		}
 	}
 }
@@ -944,6 +954,15 @@ void CLASS_check_properties(CLASS *class)
 				prop->write = NO_SYMBOL;
 		}
 	}
+}
+
+
+CLASS_SYMBOL *CLASS_get_local_symbol(int local)
+{
+	PARAM *param;
+	
+	param = &JOB->func->local[local];
+	return (CLASS_SYMBOL *)TABLE_get_symbol(JOB->class->table, param->index);
 }
 
 

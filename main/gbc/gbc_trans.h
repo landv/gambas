@@ -118,9 +118,9 @@ enum {
 #define TS_NO_SUBR ((void (*)())-1)
 
 #ifndef __GBC_TRANS_C
-EXTERN int TRANS_in_affectation;
+EXTERN short TRANS_in_assignment;
+EXTERN short TRANS_in_left_value;
 EXTERN bool TRANS_in_try;
-//EXTERN int TRANS_in_expression;
 #endif
 
 #define TRANS_newline() (PATTERN_is_newline(*JOB->current) ? JOB->line = PATTERN_index(*JOB->current) + 1, JOB->current++, TRUE : FALSE)
@@ -152,7 +152,8 @@ void TRANS_init_optional(TRANS_PARAM *param);
 /* trans_expr.c */
 
 void TRANS_expression(bool check);
-void TRANS_ignore_expression();
+void TRANS_ignore_expression(void);
+bool TRANS_popify_last(void);
 void TRANS_reference(void);
 bool TRANS_affectation(bool dup);
 void TRANS_operation(short op, short nparam, bool output, PATTERN previous);
