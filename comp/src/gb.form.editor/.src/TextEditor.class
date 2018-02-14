@@ -127,7 +127,7 @@ Private $YMO As Integer
 
 Private $bReadOnly As Boolean
 Private $bOverwrite As Boolean
-Private $bTerminal As Boolean
+'Private $bTerminal As Boolean
 
 Private $iBackground As Integer
 Private $iForeground As Integer
@@ -3232,12 +3232,10 @@ End
 
 Private Sub PrintNewLine()
   
-  Dim X As Integer
-  
-  X = $X
+  'Dim X As Integer = $X
   Goto(-1, $Y)
   Insert("\n")
-  If $bTerminal Then Goto(X, $Y)
+  'If $bTerminal Then Goto(X, $Y)
   
 End
 

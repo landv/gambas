@@ -870,7 +870,7 @@ Public Sub Process_Read()
     $sBuffer &= sData
   Endif
   
-  If (Timer - $fStart) > 0.5 Then
+  If (Timer - $fStart) > 0.25 Then
     $hOutputTimer.Trigger
   Else
     $hOutputTimer.Restart

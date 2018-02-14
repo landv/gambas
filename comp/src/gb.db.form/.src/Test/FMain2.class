@@ -25,17 +25,17 @@ End
 ' End
 
 
-Public Sub Button1_Click()
-
-  Dim hConn As New Connection
-  
-  hConn.Type = "sqlite"
-  hConn.Host = "/home/benoit"
-  hConn.Name = "test"
-  
-  DataSource2.Connection = hConn
-
-End
+' Public Sub Button1_Click()
+' 
+'   Dim hConn As New Connection
+'   
+'   hConn.Type = "sqlite"
+'   hConn.Host = "/home/benoit"
+'   hConn.Name = "test.db"
+'   
+'   DataSource2.Connection = hConn
+' 
+' End
 
 Public Sub DataBrowser1_Data((Row) As Integer, Column As Integer, Value As Variant)
 

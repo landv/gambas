@@ -2,18 +2,22 @@
 
 { Form Form
   MoveScaled(0,0,64,64)
+  Arrangement = Arrange.Vertical
   { ValueBox1 ValueBox
     MoveScaled(9,11,17,4)
     Alignment = Align.Left
+  }
+  { ValueBox2 ValueBox
+    MoveScaled(9,16,17,4)
   }
   { TextBox1 TextBox
     MoveScaled(11,26,24,4)
     Text = ("Hello world!")
   }
+  { Spring1 Spring
+    MoveScaled(32,33,4,6)
+  }
   { Button1 Button
     MoveScaled(26,42,16,4)
-  }
-  { ValueBox2 ValueBox
-    MoveScaled(9,16,17,4)
   }
 }
