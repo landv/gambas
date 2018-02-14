@@ -186,7 +186,7 @@ Public Sub Search(Filters As String[]) As Long[]
   Dim alRet As Long[]
   Dim s As String
   $colMime.Clear 
-  hImap.Refresh
+  hImap.Refresh 
   Me.Select
   
   aret = hImap.Call("UID SEARCH " & (IIf(Filters.Count > 1, "CHARSET UTF-8 ", "")) & Filters[0], "search")
