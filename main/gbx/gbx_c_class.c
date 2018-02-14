@@ -187,6 +187,19 @@ BEGIN_METHOD(Class_Load, GB_STRING name)
 END_METHOD
 
 
+BEGIN_METHOD(Class_IsLoaded, GB_STRING name)
+
+	const char *name = GB_ToZeroString(ARG(name));
+	CLASS *class = NULL;
+
+	if (name != NULL)
+		class = CLASS_look(name, LENGTH(name));
+
+	GB_ReturnBoolean(class && CLASS_is_loaded(class));
+	
+END_METHOD
+
+
 BEGIN_METHOD_VOID(Classes_next)
 
 	CLASS **pcurrent = (CLASS **)GB_GetEnum();
@@ -923,6 +936,7 @@ GB_DESC NATIVE_Class[] =
 	GB_NOT_CREATABLE(),
 
 	GB_STATIC_METHOD("Load", "Class", Class_Load, "(Name)s"),
+	GB_STATIC_METHOD("IsLoaded", "b", Class_IsLoaded, "(Name)s"),
 
 	GB_METHOD("_get", ".Symbol", Class_get, "(Symbol)s"),
 
