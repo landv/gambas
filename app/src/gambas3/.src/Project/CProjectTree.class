@@ -72,6 +72,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
   Dim bExtern As Boolean
   Dim sTitle As String
   Dim hStat As Stat
+  Dim bParentLink As Boolean
 
   sPath = sDir &/ sFile
   
@@ -152,6 +153,8 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
                   Else 
                     sParent = ""
                   Endif
+                Else If File.Dir(sParent) <> sDir Then
+                  bParentLink = True
                 Endif
               Endif
             Endif
@@ -208,7 +211,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
 
     If Not bIgnore Then
 
-      hPict = GetFileIcon(sPath,, hStat)
+      hPict = GetFileIcon(sPath,, hStat,, bParentLink)
 
       If bAfter Then 
         With $hTree
@@ -470,8 +473,12 @@ End
 
 Public Sub Refresh(Optional bDoNotRefreshCache As Boolean, cFilter As Collection)
   
+  Dim vLayout As Variant
+  
   $cFilter = cFilter
+  vLayout = $hTree.Layout
   FillTree(bDoNotRefreshCache)
+  $hTree.Layout = vLayout
   
 End
 
@@ -706,7 +713,7 @@ End
 ' 
 ' End
 
-Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat, bNoEmblem As Boolean) As Picture
+Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat, bNoEmblem As Boolean, bParentLink As Boolean) As Picture
 
   Dim hImage As Image
   Dim hPict As Picture
@@ -744,7 +751,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
   If Not hStat Then hStat = Stat(sPath)
   With hStat
 
-    bLink = .Type = gb.Link
+    bLink = .Type = gb.Link Or bParentLink
     bConflict = False
     If $bCurrentProject Then
       bLocked = Project.IsLocked(sPath)

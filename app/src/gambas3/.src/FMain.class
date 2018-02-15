@@ -2111,6 +2111,7 @@ Public Sub ShowMessage(sMsg As String, sIcon As String, Optional sKey As String)
   If FMain.Visible And If panProject.Visible And If Not panProject.Hidden Then
     
     msgError.Open(sMsg, Picture["icon:/32/" & sIcon])
+    'msgError.Move((Me.ClientW - msgError.W) \ 2, (Me.ClientH - msgError.H) \ 2)
     
   Else
     
