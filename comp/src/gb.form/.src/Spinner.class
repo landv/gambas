@@ -57,7 +57,7 @@ End
 
 Public Sub DrawingArea_Draw()
   
-  Dim iFlag As Integer
+  'Dim iFlag As Integer
   Dim A As Float
   Dim X As Float
   Dim Y As Float
@@ -113,7 +113,7 @@ Public Sub DrawingArea_Draw()
   
 DRAW_BORDER:
   
-  If $bBorder Then Style.PaintPanel(0, 0, Paint.W, Paint.H, Border.Plain, iFlag)
+  If $bBorder Then Style.PaintPanel(0, 0, Paint.W, Paint.H, Border.Plain) ', iFlag)
   
 End
 

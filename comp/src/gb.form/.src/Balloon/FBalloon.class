@@ -21,7 +21,6 @@ Private $DX As Integer
 Private $DY As Integer
 Private $fShow As Float
 Private $sOld As String
-Private $bInside As Boolean
 
 ' Private Sub DrawRoundRect(X As Integer, Y As Integer, W As Integer, H As Integer)
 ' 
@@ -385,7 +384,7 @@ End
 
 Public Sub timCheck_Timer()
 
-  If $bInside Or If Not Object.IsValid($hCtrl) Or If (Timer - $fShow) > ($iDelay / 1000) Then
+  If Not Object.IsValid($hCtrl) Or If (Timer - $fShow) > ($iDelay / 1000) Then
     Me.Close
     Return 
   Endif 
