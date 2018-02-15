@@ -54,6 +54,13 @@ Private Sub UpdateButton()
 
 End
 
+Private Sub GetTextWidth() As Integer
+  
+  Return Max(16, Me.Parent.ClientW - $hIcon.W - $hClose.W - Desktop.Scale * 6)
+  
+End
+
+
 Private Sub DoOpen()
   
   Dim fTime As Float
@@ -62,7 +69,7 @@ Private Sub DoOpen()
   Me.H = 1
   Me.Show
   
-  $H = Max($hIcon.H + Desktop.Scale * 2, Me.Font.RichTextHeight($sText, Me.Parent.ClientW - Desktop.Scale * 4 - $hIcon.W) + Desktop.Scale * 4)
+  $H = Max($hIcon.H + Desktop.Scale * 2, Me.Font.RichTextHeight($sText, GetTextWidth()) + Desktop.Scale * 4)
   
   If $bAnimate Then
   
@@ -170,6 +177,8 @@ Public Sub View_Draw()
     X += $hIcon.W + Desktop.Scale * 3
     W -= $hIcon.W - Desktop.Scale * 2
   Endif
+  
+  W = GetTextWidth()
   
   Paint.DrawRichText($sText, X, Desktop.Scale * 2, W, Me.H - Desktop.Scale * 2, Align.TopLeft)
   

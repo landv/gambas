@@ -1739,11 +1739,19 @@ End
 Private Sub RefreshSources()
 
   Dim hForm As Object
+  Dim sPath As Variant
 
   Tree.RefreshSources
 
-  For Each hForm In Files
-    If IsSourcePath(hForm.Path) Then hForm.Path = Tree.Sources[File.Name(hForm.Path)]
+  For Each hForm In Files.Copy()
+    If IsSourcePath(hForm.Path) Then
+      sPath = Tree.Sources[File.Name(hForm.Path)]
+      If sPath <> hForm.Path Then
+        Files[sPath] = hForm
+        Files[hForm.Path] = Null
+        hForm.Path = sPath
+      Endif
+    Endif
   Next
 
   VersionControl.CheckPaths()
@@ -4323,52 +4331,6 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
 
   RenamePaths(sPath, sNewPath)
 
-  ' ' Update source cache
-  ' 
-  ' aRename = New String[]
-  ' For Each sCheck In Tree.Sources
-  '   If sCheck = sPath Or If sCheck Begins sPath &/ "/" Then aRename.Add(sCheck)
-  ' Next
-  ' 
-  ' For Each sCheck In aRename
-  ' 
-  '   If sCheck = sPath Then
-  '     Tree.Sources[File.Name(sPath)] = Null
-  '     Tree.Sources[File.Name(sNewPath)] = sNewPath
-  '   Else
-  '     sNewFormPath = sNewPath &/ Mid$(sCheck, Len(sPath) + 1)
-  '     Tree.Sources[File.Name(sPath)] = Null
-  '     Tree.Sources[File.Name(sNewFormPath)] = sNewFormPath
-  '   Endif
-  ' 
-  ' Next
-
-  ' ' Update Files collection
-  ' 
-  ' aRename.Clear
-  ' For Each hForm In Files
-  '   sCheck = hForm.Path
-  '   If sCheck = sPath Or If sCheck Begins sPath &/ "/" Then
-  '     If Not aRename.Exist(sCheck) Then aRename.Add(sCheck)
-  '   Endif
-  ' Next
-  ' 
-  ' For Each sCheck In aRename
-  ' 
-  '   hForm = Files[sCheck]
-  '   Files[sCheck] = Null
-  ' 
-  '   If sCheck = sPath Then
-  '     hForm.Rename(sNewName, sNewPath)
-  '     Files[sNewPath] = hForm
-  '   Else
-  '     sNewFormPath = sNewPath &/ Mid$(sCheck, Len(sPath) + 1)
-  '     hForm.Rename(hForm.Name, sNewFormPath)
-  '     Files[sNewFormPath] = hForm
-  '   Endif
-  ' 
-  ' Next
-
   If sExt And If IsExported(sNewPath) Then
     UpdateAllForms(sName, sNewName)
   Endif
@@ -4455,11 +4417,13 @@ Public Sub RenameFile(sPath As String, sNewName As String)
   Dim sNewPath As String
   Dim sMsg As String
   Dim sFamily As String
+  Dim bIsDir As Boolean
 
   sDir = File.Dir(sPath)
   sExt = File.Ext(sPath)
+  bIsDir = IsDir(sPath)
 
-  If Not IsDir(sPath) And If Project.IsSourcePath(sPath) Then
+  If Not bIsDir And If Project.IsSourcePath(sPath) Then
 
     sName = File.BaseName(sPath)
     If sName = sNewName Then Return
@@ -4498,7 +4462,12 @@ Public Sub RenameFile(sPath As String, sNewName As String)
 
   Endif
 
-  RefreshKey(sNewPath, sPath)
+  If bIsDir Then
+    Refresh
+  Else
+    RefreshKey(sNewPath, sPath)
+  Endif
+  
   'AddFile(File.Dir(sNewPath), File.Name(sNewPath), TRUE)
   'IF IsDir(sNewPath) THEN AddDir(sNewPath)
 
@@ -5115,8 +5084,12 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
 
   RenamePaths(sSrc, sDst)
 
-  Tree.RefreshKey(sDst, sSrc)
-  Tree.SelectKey(sDst)
+  If bIsDir Then
+    Refresh()
+  Else
+    Tree.RefreshKey(sDst, sSrc)
+    Tree.SelectKey(sDst)
+  Endif
 
 Catch
 

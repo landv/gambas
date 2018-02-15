@@ -29,7 +29,7 @@ Event Click
 Event Activate
 Event Select
 
-Static Private $bNoEvent As Boolean
+'Static Private $bNoEvent As Boolean
 
 Private $hView As GridView
 Private $aText As New String[]
@@ -186,7 +186,7 @@ End
 
 Public Sub GridView_Select()
   
-  If $bNoEvent Then Return
+  'If $bNoEvent Then Return
   If $hView.Row < 0 Then Return
   
   Raise Select

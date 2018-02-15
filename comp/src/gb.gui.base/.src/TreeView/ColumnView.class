@@ -9,6 +9,7 @@ Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "16,16"
 Public Const _Similar As String = "ListView"
 
+Property Layout As Variant
 Property Header As Boolean
 Property Resizable As Boolean
 Property AutoResize As Boolean
@@ -204,3 +205,15 @@ Public Sub AddColumn(Text As String, Optional Width As Integer, Alignment As Int
   
 End
 
+
+Private Function Layout_Read() As Variant
+
+  Return Super._GetLayout()
+
+End
+
+Private Sub Layout_Write(Value As Variant)
+
+  Super._SetLayout(Value)
+
+End

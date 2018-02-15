@@ -461,7 +461,7 @@ End
 Private Sub DrawEllipse(iAction As Integer, X As Float, Y As Float, W As Float, H As Float, Start As Float, ({End}) As Float)
   
   Dim hInfo As DrawInfo
-  Dim Angle As Float
+  'Dim Angle As Float
   Dim fOffset As Float
   
   If W <= 0 Or If H <= 0 Then Return
@@ -469,7 +469,7 @@ Private Sub DrawEllipse(iAction As Integer, X As Float, Y As Float, W As Float, 
   hInfo = _GetInfo()
   
   If Start = 0 And If {End} = 0 Then
-    Paint.Ellipse(X, Y, W - 1, H - 1, Angle, Pi(2), False)
+    Paint.Ellipse(X, Y, W - 1, H - 1, 0, Pi(2), False)
   Else
     Paint.Ellipse(X, Y, W - 1, H - 1, Start, {End} - Start, True)
   Endif

@@ -30,7 +30,7 @@ Private $hBookmarkList As CBookmarkList
 Private $hCurrentBookmark As CBookmark
 Private $bShowBookmark As Boolean
 Private $hWatch As Watcher
-Private $bPressed As Boolean
+'Private $bPressed As Boolean
 
 Private $sLast As String
 Private $aHistory As New String[]
@@ -1233,7 +1233,7 @@ End
 
 Public Sub mnuUncompress_Click()
   
-  Dim sResult As String
+  'Dim sResult As String
   Dim sOutput As String
   Dim iMsg As Integer
   Dim sPath As String
@@ -1247,6 +1247,7 @@ Public Sub mnuUncompress_Click()
   Select Case File.Name(fvwChoose.Current)
     
     Case Like "*.tar.gz", "*.tar.bz2", "*.tgz", "*.tar"
+      
       Shell "cd " & Shell(fvwChoose.Dir) & ";tar tf " & Shell$(fvwChoose.Current) To sOutput
   
       For Each sOutput In Split(Trim(sOutput), "\n")
@@ -1356,7 +1357,7 @@ Public Sub mnuUncompress_Click()
 _CANNOT_UNCOMPRESS:
 
   Application.Busy = 0
-  Message.Error(("Cannot uncompress file.") & "\n\n" & sResult)
+  Message.Error(("Cannot uncompress file."))
   Return
 
 Catch
@@ -1457,7 +1458,7 @@ Public Sub btnParent_Draw()
   If Not btnParent.Enabled Then iFlag += Draw.Disabled
   If btnParent.HasFocus Then iFlag += Draw.Focus
   
-  If btnParent.Hovered Then Draw.Style.Button(0, 0, btnParent.W, btnParent.H, $bPressed, iFlag, True)
+  If btnParent.Hovered Then Draw.Style.Button(0, 0, btnParent.W, btnParent.H, False, iFlag, True)
   Draw.Style.Arrow((btnParent.W - 8) \ 2, (btnParent.H - 8) \ 2, 8, 8, Align.Left, iFlag)
 
 End
