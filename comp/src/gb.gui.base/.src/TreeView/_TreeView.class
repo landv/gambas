@@ -1514,3 +1514,32 @@ Public Sub _UpdateItemHeight(hItem As _TreeView_Item, Optional bNext As Boolean)
   
 End
 
+
+Public Function _GetLayout() As Variant
+
+  Dim hItem As _TreeView_Item
+  Dim cLayout As New Collection
+
+  For Each hItem In $cItem
+    If hItem.Expanded Then cLayout[hItem.Key] = True
+  Next
+  
+  Return cLayout
+
+End
+
+Public Sub _SetLayout(Value As Variant)
+
+  Dim cLayout As Collection
+  Dim hItem As _TreeView_Item
+  
+  Try cLayout = Value
+  If Error Then Error.Raise("Bad layout")
+  
+  _SaveSelection
+  For Each hItem In $cItem
+    hItem.Expanded = cLayout.Exist(hItem.Key)
+  Next
+  _RestoreSelection
+
+End
