@@ -232,6 +232,7 @@ __OPEN:
 	stream->common.available_now = FALSE;
 	stream->common.redirected = FALSE;
 	stream->common.redirect = NULL;
+	stream->common.no_read_ahead = FALSE;
 
 	if ((*(sclass->open))(stream, path, mode, NULL))
 		THROW_SYSTEM(errno, path);
