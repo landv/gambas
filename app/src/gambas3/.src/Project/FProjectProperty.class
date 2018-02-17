@@ -251,7 +251,7 @@ Private Function DoApply() As Boolean
       Project.DeleteCompiledFiles()
     Endif
     .Localize = cmbTranslate.Index = 0
-    .Language = Language.FromName(cmbDefaultLanguage.Text)
+    .DefaultLanguage = Language.FromName(cmbDefaultLanguage.Text)
     
     .Type = cmbType.Index
 
