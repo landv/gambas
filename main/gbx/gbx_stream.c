@@ -1815,6 +1815,7 @@ void STREAM_end(STREAM *stream)
 
 	stream->common.redirected = FALSE;
 	STREAM_write(stream, stream->common.redirect->string.buffer, STRING_length(stream->common.redirect->string.buffer));
+	stream->common.redirected = TRUE;
 	STREAM_cancel(stream);
 }
 
