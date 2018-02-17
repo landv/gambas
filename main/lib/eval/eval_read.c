@@ -698,17 +698,6 @@ static void add_identifier()
 			break;
 		}
 	}
-	else
-	{
-		for(;;)
-		{
-			source_ptr++;
-			car = get_char();
-			if (!ident_car[car])
-				break;
-			len++;
-		}
-	}
 
 	not_first = (flag & RSF_POINT) != 0;
 
@@ -886,16 +875,27 @@ static void add_quoted_identifier(void)
 	{
 		source_ptr++;
 		car = get_char();
+		len++;
 		if (!ident_car[car])
 			break;
-		len++;
 	}
 
-	if (get_char() != '}')
-		THROW("Missing '}'");
-	
 	source_ptr++;
-
+	
+	if (!EVAL->analyze)
+	{
+		if (car != '}')
+			THROW("Missing '}'");
+		
+		if (len == 2)
+			THROW("Void identifier");
+	}
+	else
+	{
+		if (!car)
+			len--;
+	}
+	
 	if (!EVAL->analyze && PATTERN_is(last_pattern, RS_EXCL))
 	{
 		TABLE_add_symbol(EVAL->string, start + 1, len - 2, &index);
@@ -1336,7 +1336,6 @@ PUBLIC void EVAL_read(void)
 
 	__QUOTED_IDENT:
 
-		source_ptr++;
 		add_quoted_identifier();
 		_begin_line = FALSE;
 		continue;

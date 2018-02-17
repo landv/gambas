@@ -852,21 +852,24 @@ static void add_quoted_identifier(void)
 	type = RT_IDENTIFIER;
 
 	start = source_ptr;
-	len = 1;
+	len = 0;
 
 	for(;;)
 	{
-		source_ptr++;
-		car = get_char();
+		car = next_char();
 		if (!ident_car[car])
 			break;
 		len++;
 	}
 
-	if (get_char() != '}')
+	if (car != '}')
 		THROW("Missing '}'");
 	
+	if (len == 0)
+		THROW("Void identifier");
+	
 	source_ptr++;
+	start++;
 
 	if (PATTERN_is(last_pattern, RS_EVENT) || PATTERN_is(last_pattern, RS_RAISE))
 	{
@@ -1164,7 +1167,6 @@ void READ_do(void)
 
 	__QUOTED_IDENT:
 	
-		source_ptr++;
 		add_quoted_identifier();
 		_begin_line = FALSE;
 		continue;
