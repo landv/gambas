@@ -661,20 +661,27 @@ static void add_identifier()
 	type = RT_IDENTIFIER;
 
 	start = source_ptr;
-	len = 1;
+	for(;;)
+	{
+		source_ptr++;
+		if (!ident_car[get_char()])
+			break;
+	}
+	
+	len = source_ptr - start;
 
 	last_class = (flag & RSF_CLASS) != 0;
 	last_type = (flag & RSF_AS) != 0;
 
 	if (last_type)
 	{
+		source_ptr--;
+		
 		for(;;)
 		{
 			source_ptr++;
 			len++;
 			car = get_char();
-			if (ident_car[car])
-				continue;
 			if (car == '[')
 			{
 				car = get_char_offset(1);
@@ -869,6 +876,7 @@ static void add_quoted_identifier(void)
 	PATTERN last_pattern;
 
 	last_pattern = get_last_pattern();
+	
 	type = RT_IDENTIFIER;
 
 	start = source_ptr;
@@ -878,28 +886,15 @@ static void add_quoted_identifier(void)
 	{
 		source_ptr++;
 		car = get_char();
-		if (!car || car == '\n')
+		if (!ident_car[car])
 			break;
 		len++;
-		if (car == '}')
-		{
-			source_ptr++;
-			break;
-		}
 	}
 
-	/*if (car == '}')
-	{
-		source_ptr++;
-		len++;
-	}*/
-
-	/*if (PATTERN_is(last_pattern, RS_EVENT) || PATTERN_is(last_pattern, RS_RAISE))
-	{
-		start--;
-		len++;
-		*((char *)start) = ':';
-	}*/
+	if (get_char() != '}')
+		THROW("Missing '}'");
+	
+	source_ptr++;
 
 	if (!EVAL->analyze && PATTERN_is(last_pattern, RS_EXCL))
 	{
@@ -946,7 +941,8 @@ static void add_operator()
 		}
 
 		car = get_char();
-		if (!isascii(car) || !ispunct(car))
+		//if (!isascii(car) || !ispunct(car))
+		if (noop_car[car])
 			break;
 		len++;
 	}
@@ -982,7 +978,7 @@ static void add_string()
 	const char *start;
 	int len;
 	int index;
-	int newline;
+	ushort newline;
 	bool jump;
 	char *p;
 	int i;
@@ -1323,7 +1319,6 @@ PUBLIC void EVAL_read(void)
 		_begin_line = FALSE;
 		continue;
 
-
 	__STRING:
 
 		if (EVAL->analyze)
@@ -1341,6 +1336,7 @@ PUBLIC void EVAL_read(void)
 
 	__QUOTED_IDENT:
 
+		source_ptr++;
 		add_quoted_identifier();
 		_begin_line = FALSE;
 		continue;

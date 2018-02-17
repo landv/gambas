@@ -939,6 +939,7 @@ static int xdigit_val(unsigned char c)
 		return (-1);
 }
 
+
 static void add_string()
 {
 	unsigned char car;

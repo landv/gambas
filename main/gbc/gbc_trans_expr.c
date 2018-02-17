@@ -392,6 +392,11 @@ static void trans_subr(int subr, short nparam)
 		case RST_BCLR:
 			type = get_type(0, nparam);
 			break;
+		
+		case RST_MIN:
+			type = Max(get_type(0, nparam), get_type(1, nparam));
+			if (type > T_DATE && type != T_VARIANT)
+				THROW("Number or Date expected");
 	}
 	
 	if (nparam)
@@ -480,7 +485,7 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 			
 		case RST_AND:
 			type = Max(get_type(0, nparam), get_type(1, nparam));
-			if (type > T_LONG && type != T_VARIANT && type != T_STRING)
+			if (type > T_LONG && type != T_VARIANT) // && type != T_STRING) Why ?
 				THROW("Integer expected");
 			break;
 
@@ -489,11 +494,6 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 			if (type == T_STRING || type == T_OBJECT)
 				type = T_BOOLEAN;
 			break;
-			
-		case RST_MIN:
-			type = Max(get_type(0, nparam), get_type(1, nparam));
-			if (type > T_DATE && type != T_VARIANT)
-				THROW("Number or Date expected");
 	}
 	
 	if (nparam)

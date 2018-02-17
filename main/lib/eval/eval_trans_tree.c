@@ -439,8 +439,10 @@ static void analyze_array()
 	for(i = 0; i < MAX_ARRAY_DIM; i++)
 	{
 		analyze_expr(0, RS_NONE);
+		
 		if (!PATTERN_is(*current, RS_COMMA))
 			break;
+			
 		current++;
 	}
 
@@ -468,13 +470,14 @@ static void analyze_expr_check_first(int op_curr)
 
 static void analyze_expr(short priority, short op_main)
 {
-	int op, op_curr, op_not;
-	int prio;
-	int nparam;
+	short op, op_curr, op_not;
+	short prio;
+	short nparam;
 
 	inc_level();
 
 	op_curr = op_main;
+	op_not = RS_NONE;
 	nparam = (op_main == RS_NONE || op_main == RS_UNARY) ? 0 : 1;
 
 	/* Special NEW case */
@@ -573,7 +576,7 @@ READ_OPERATOR:
 		else
 		{
 			if (RES_is_only(op_curr) || RES_is_only(op))
-				THROW("Ambiguous expression. Please use braces");
+				THROW("Ambiguous expression. Please use brackets");
 
 			nparam = 1;
 			op_curr = op;
@@ -587,6 +590,8 @@ READ_OPERATOR:
 		{
 			add_operator(op_curr, nparam);
 			current--;
+			if (op_not != RS_NONE)
+				current--;
 			goto END;
 		}
 
