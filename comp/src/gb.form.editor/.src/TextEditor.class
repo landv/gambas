@@ -997,7 +997,7 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
     If Not RTrim($hDoc.Lines[Row]) And If Row < $hDoc.Max Then
       If $hDoc.HasLimit(_ViewToReal(_RealToView(Row) + 1)) Then YL = Y + Height \ 2
     Else
-      If bLimit And RTrim($hDoc.Lines[_ViewToReal(_RealToView(Row) - 1)]) Then YL = Y
+      If bLimit And If RTrim($hDoc.Lines[_ViewToReal(_RealToView(Row) - 1)]) Then YL = Y
     Endif
   Endif
   
