@@ -1537,7 +1537,7 @@ Public Sub _SetLayout(Value As Variant)
   If Error Then Error.Raise("Bad layout")
   
   _SaveSelection
-  For Each hItem In $cItem
+  For Each hItem In $cItem.Copy()
     hItem.Expanded = cLayout.Exist(hItem.Key)
   Next
   _RestoreSelection

@@ -284,11 +284,12 @@ Private Sub Expanded_Write(Value As Boolean)
   hTree._UpdateItemHeight(Me, True)
 
   hTree._UpdateCurrent(sCurrent)
-  hTree._RaiseExpand($sKey, $bExpanded)
 
   hTree._RestoreSelection
   
   If Value Then hTree._EnsureVisible(Me, True)
+  
+  hTree._RaiseExpand($sKey, $bExpanded)
   
 End
 
