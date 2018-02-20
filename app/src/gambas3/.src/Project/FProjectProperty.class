@@ -67,14 +67,14 @@ Public Sub Form_Open()
     txtTitle.Text = .Title
     txtDesc.Text = .Description
     txtAuthor.Text = .Authors
-    cmbControlPublic.Index = If(.ControlPublic, 0, 1)
-    cmbModulePublic.Index = If(.ModulePublic, 0, 1)
-    cmbShowDeprecated.Index = If(.ShowDeprecated, 0, 1)
-    cmbWarning.Index = If(.Warnings, 0, 1)
+    btnControlPublic.Value = .ControlPublic
+    btnModulePublic.Value = .ModulePublic
+    btnShowDeprecated.Value = .ShowDeprecated
+    btnWarning.Value = .Warnings
     txtMajor.Value = .MajorVersion
     txtMinor.Value = .MinorVersion
     txtRelease.Value = .ReleaseVersion
-    cmbTranslate.Index = If(.Localize, 0, 1)
+    btnTranslate.Value = .Localize
     cmbType.Index = .Type
     cmbDefaultLanguage.Text = Language.ToName(System.Language)
     Try cmbDefaultLanguage.Text = Language.ToName(Project.DefaultLanguage)
@@ -222,19 +222,19 @@ Private Function DoApply() As Boolean
     '.RedirectStderr = cmbRedirect.Index = 0
     '.UseHttpServer = cmbHttpServer.Index = 0
     
-    If .ControlPublic <> (cmbControlPublic.Index = 0) Or If .ModulePublic <> (cmbModulePublic.Index = 0) Then
-      .ControlPublic = cmbControlPublic.Index = 0
-      .ModulePublic = cmbModulePublic.Index = 0
+    If .ControlPublic <> btnControlPublic.Value Or If .ModulePublic <> btnModulePublic.Value Then
+      .ControlPublic = btnControlPublic.Value
+      .ModulePublic = btnModulePublic.Value
       Project.ResetScan
       Project.DeleteCompiledFiles
     Endif
     
-    If .ShowDeprecated <> (cmbShowDeprecated.Index = 0) Then
-      .ShowDeprecated = cmbShowDeprecated.Index = 0
+    If .ShowDeprecated <> btnShowDeprecated.Value Then
+      .ShowDeprecated = btnShowDeprecated.Value
       FToolBox.RefreshToolbar(True)
     Endif
     
-    .Warnings = cmbWarning.Index = 0
+    .Warnings = btnWarning.Value
     .MajorVersion = txtMajor.Value
     .MinorVersion = txtMinor.Value
     .ReleaseVersion = txtRelease.Value
@@ -247,10 +247,10 @@ Private Function DoApply() As Boolean
 
     '.ShowGrid = chkShowGrid.Value
     '.Snap = txtGrid.Value
-    If cmbTranslate.Index = 0 And Not .Localize Then
+    If btnTranslate.Value And Not .Localize Then
       Project.DeleteCompiledFiles()
     Endif
-    .Localize = cmbTranslate.Index = 0
+    .Localize = btnTranslate.Value
     .DefaultLanguage = Language.FromName(cmbDefaultLanguage.Text)
     
     .Type = cmbType.Index
@@ -984,7 +984,7 @@ Private Sub ReadComponentFile()
   If cComp.Exist("Exclude") Then $aExclude = cComp["Exclude"]
   If cComp.Exist("Implement") Then $aImplement = cComp["Implement"]
   cmbComponentState.Index = cComp["State"]
-  cmbHidden.Index = If(cComp["Hidden"], 0, 1)
+  btnHidden.Value = cComp["Hidden"]
   If cComp.Exist("Include") Then txtIncludeInfo.Text = cComp["Include"].Join(",")
 
   Try aVer = Split(cComp["CompatibleUntil"], ".")
@@ -1024,7 +1024,7 @@ Private Sub WriteComponent()
     WriteFeatures(panNeed, $aNeed)
     WriteFeatures(panNeed2, $aNeed)
   
-    cComp["Hidden"] = cmbHidden.Index = 0
+    cComp["Hidden"] = btnHidden.Value
     cComp["Implement"] = $aImplement
     cComp["Need"] = $aNeed
     cComp["Require"] = $aRequire
@@ -1403,9 +1403,9 @@ Public Sub btnMoveDownArg_Click()
 
 End
 
-Public Sub cmbShowDeprecated_Click()
+Public Sub btnShowDeprecated_Click()
 
-  choComponent.ShowDeprecated = cmbShowDeprecated.Index = 0
+  choComponent.ShowDeprecated = btnShowDeprecated.Value
 
 End
 
