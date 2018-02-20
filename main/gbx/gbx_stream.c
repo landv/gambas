@@ -509,7 +509,7 @@ void STREAM_write(STREAM *stream, void *addr, int len)
 
 	if (len <= 0)
 		return;
-
+	
 	if (stream->common.redirected)
 		stream = stream->common.redirect;
 

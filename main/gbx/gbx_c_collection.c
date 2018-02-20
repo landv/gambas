@@ -69,6 +69,7 @@ static void remove_key(CCOLLECTION *col, const char *key, int len)
 {
 	void *value;
 	HASH_NODE *last;
+	HASH_NODE *save;
 	void *save_enum;
 
 	if (len == 0)
@@ -77,11 +78,15 @@ static void remove_key(CCOLLECTION *col, const char *key, int len)
 		return;
 	}
 
-	value = HASH_TABLE_lookup(col->hash_table, key, len, FALSE);
+	save = col->hash_table->last;
+	
+	value = HASH_TABLE_lookup(col->hash_table, key, len, TRUE);
+	
+	last = col->hash_table->last;
+	col->hash_table->last = save;
+	
 	if (value == NULL)
 		return;
-
-	last = col->hash_table->last;
 
 	if (last)
 	{
