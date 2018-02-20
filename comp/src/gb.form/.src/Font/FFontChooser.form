@@ -4,9 +4,15 @@
   MoveScaled(0,0,80,65)
   Arrangement = Arrange.Fill
   { panBorder Panel
-    MoveScaled(1,1,77,58)
+    MoveScaled(1,3,77,58)
     Arrangement = Arrange.Vertical
     Border = Border.Plain
+    { cmbFamily ComboBox
+      MoveScaled(40,1,27,4)
+      Visible = False
+      ReadOnly = True
+      Text = ("ComboBox1")
+    }
     { lblFont Label
       MoveScaled(3,1,32,4)
       Padding = 4
@@ -64,25 +70,20 @@
     { sepFamily Separator
       MoveScaled(17,14,35,0)
     }
-    { lstFamily ListView
-      MoveScaled(6,16,59,9)
+    { tvwFamily TreeView
+      MoveScaled(5,16,66,14)
       Expand = True
       Border = False
+      ScrollBar = Scroll.Vertical
     }
     { sepExample Separator
-      MoveScaled(16,28,35,0)
+      MoveScaled(16,34,35,0)
     }
     { txtExample Label
       MoveScaled(4,36,62,8)
       Background = Color.TextBackground
       Foreground = Color.TextForeground
       Alignment = Align.Center
-    }
-    { cmbFamily ComboBox
-      MoveScaled(40,1,27,4)
-      Visible = False
-      ReadOnly = True
-      Text = ("ComboBox1")
     }
   }
 }
