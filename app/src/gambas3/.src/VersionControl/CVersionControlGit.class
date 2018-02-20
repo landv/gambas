@@ -311,6 +311,7 @@ End
 Public Sub MoveDir(sOld As String, sNew As String) As Boolean
 
   MoveFile(sOld, sNew)
+  If Exist(sOld) And If Not Exist(sNew) Then Move sOld To sNew
 
 End
 
