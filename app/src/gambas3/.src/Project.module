@@ -5411,7 +5411,7 @@ Public Sub OpenWebPage(sLink As String, Optional bNewInstance As Boolean) As Pro
     
   Endif
   
-  hProcess = Shell sExec & " " & Chr$(34) & sLink & Chr$(34)
+  hProcess = Shell sExec & " " & Shell(sLink)
   Return hProcess
   'End If
 
@@ -5460,7 +5460,7 @@ Public Sub OpenImage(sLink As String, sEditor As String) As Boolean
 
   If Not bCheck Then Return
 
-  hProcess = Shell sExec & " " & Chr$(34) & sLink & Chr$(34) As "Process"
+  hProcess = Shell sExec & " " & Shell(sLink) As "Process"
   hProcess.Tag = sLink
 
 Catch
@@ -6634,6 +6634,6 @@ Public Sub CompileTranslation(bForce As Boolean, Optional sLang As String)
   If Exist(sPath) And If Not bForce Then Return
   
   Try Kill sPath
-  Shell "msgfmt -o " & Shell$(sPath) & " " & File.SetExt(sPath, "po") Wait
+  Shell "msgfmt -o " & Shell$(sPath) & " " & Shell(File.SetExt(sPath, "po")) Wait
   
 End
