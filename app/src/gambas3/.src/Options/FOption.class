@@ -81,7 +81,7 @@ Public Sub _new()
   cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
   cmbTheme.Add(("Custom"), 0)
   
-  cmbIconTheme.List = [("Desktop"), "Gambas", "Gambas-Mono", "Gnome", "KDE", "Trinity", "KDE4", "KDE5", "LXDE", "Mate", "XFCE"].Insert(Stock.Themes)
+  cmbIconTheme.List = [("Desktop"), "Gnome", "KDE", "Trinity", "KDE4", "KDE5", "LXDE", "Mate", "XFCE"].Insert(Stock.Themes)
   cmbBrowser.List = [("(Default)"), "Konqueror", "Rekonq", "Firefox", "Iceweasel", "Epiphany", "SeaMonkey", "Opera", "Chromium"]
   cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "lxterminal", "XTerm"]
   txtEditorFont.Default = Project.DEFAULT_FONT

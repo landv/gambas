@@ -769,6 +769,7 @@ Static Private Function Themes_Read() As String[]
     Next
   Next
   
+  aTheme.Insert(["Gambas", "Gambas-Mono"])
   aTheme.Sort(gb.IgnoreCase)
   Return aTheme
   
