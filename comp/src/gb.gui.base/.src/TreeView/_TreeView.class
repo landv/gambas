@@ -1228,7 +1228,7 @@ Public Sub _Rename(hItem As _TreeView_Item)
     $hView.ScrollX = SX
   Loop
   
-  $hRenameBox = New RenameBox(Me, $hView.Padding) As "Editor"
+  $hRenameBox = New RenameBox(Me, $hView.Padding, False) As "Editor"
   $hRenameBox.Text = hItem.Text
   $hRenameBox.SetFocus
   

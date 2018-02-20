@@ -8,7 +8,7 @@ Property Alignment As Integer
 Private $hTextArea As TextArea
 Private $iPadding As Integer
 
-Public Sub _new(iPadding As Integer)
+Public Sub _new(iPadding As Integer, bWrap As Boolean)
 
   $iPadding = Max(0, iPadding - 1)
   Me.Ignore = True
@@ -17,7 +17,7 @@ Public Sub _new(iPadding As Integer)
   
   $hTextArea = New TextArea(Me) As "TextArea"
   $hTextArea.ScrollBar = Scroll.None
-  $hTextArea.Wrap = True
+  $hTextArea.Wrap = bWrap
   $hTextArea.Border = False
   $hTextArea.Background = Color.TextBackground
   
@@ -70,8 +70,13 @@ Private Sub ResizeTextArea()
   Dim Y As Integer
   Dim H As Integer
 
-  Y = Max(1, (Me.H - $hTextArea.Font.TextHeight($hTextArea.Text)) \ 2)
-  H = Me.H - Y * 2
+  If $hTextArea.Wrap Then
+    Y = 1 'Max(1, (Me.H - $hTextArea.Font.TextHeight($hTextArea.Text)) \ 2)
+    H = Me.H - Y * 2
+  Else
+    Y = Max(1, (Me.H - $hTextArea.Font.TextHeight($hTextArea.Text)) \ 2)
+    H = Me.H - Y * 2
+  Endif
 
   $hTextArea.Move(1, Y, Me.W - 2, H)
 
