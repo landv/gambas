@@ -5,10 +5,30 @@ Export
 Class Image
 Class SvgImage
 
+Static Private $cSynonymous As New Collection
+
+Static Public Sub _init()
+
+  Dim hFile As File
+  Dim sLine As String
+  Dim iPos As Integer
+  
+  hFile = Open "links" For Input
+  For Each sLine In hFile.Lines
+    sLine = Trim(sLine)
+    iPos = InStr(sLine, " -> ")
+    If iPos < 2 Then Continue
+    $cSynonymous[Trim(Left(sLine, iPos - 1))] = Trim(Mid$(sLine, iPos + 4))
+  Next
+  
+End
+
+
 Static Public Sub LoadImage(sKey As String, iSize As Integer, Optional sStock As String) As Image
 
   Dim sPath As String
   
+  If $cSynonymous.Exist(sKey) Then sKey = $cSynonymous[sKey]
   If Not sStock Or If Not IsDir(sStock) Then sStock = "gambas"
   sPath = sStock &/ CStr(iSize) &/ sKey
   If System.RightToLeft And If Exist(sPath & "-rtl.png") Then sPath &= "-rtl"
@@ -21,6 +41,7 @@ Static Public Sub LoadSvgImage(sKey As String, Optional sStock As String) As Svg
 
   Dim sPath As String
   
+  If $cSynonymous.Exist(sKey) Then sKey = $cSynonymous[sKey]
   If Not sStock Or If Not IsDir(sStock) Then sStock = "gambas"
   sPath = sStock &/ "scalable" &/ sKey
   If System.RightToLeft And If Exist(sPath & "-rtl.svg") Then sPath &= "-rtl"
