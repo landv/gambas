@@ -88,8 +88,8 @@ Private Sub RefreshPath()
       Else
       
         If .Link Then
-          lblType.Text = .Link
-          lblType.Font.Italic = True
+          lblType.Text = ("Link")
+          'lblType.Font.Italic = True
           hMime = DesktopMime.FromFile($sPath)
           Try picIcon.Picture = hMime.GetIcon(64).Picture
         Else If IsDir($sPath) Then
