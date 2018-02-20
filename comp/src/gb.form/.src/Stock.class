@@ -284,7 +284,12 @@ Static Private Sub SearchTheme(sDesktop As String)
     
       AddPath("gnome", "/usr/share/icons/gnome")
       
-    'Case "gambas"
+    Case "gambas", "gambas-mono"
+      
+      $aIconPath.Add("#" & sDesktop)
+      AddPath("", "stock", "&1")
+      Return
+      
     Case Else
       
       If sDesktop <> "gambas" Then
@@ -549,7 +554,7 @@ Static Public Function _get((Key) As String, Optional {Default} As String) As Pi
  
   For Each sPath In $aIconPath
     
-    If sPath = "#" Then
+    If sPath Begins "#" Then
       
       If Key Begins "$(mime)/" Then
         Key = Mid$(Key, 9)
@@ -567,11 +572,11 @@ Static Public Function _get((Key) As String, Optional {Default} As String) As Pi
       
       'If Key = "tools" Then Error "Using default stock"
       
-      Try hPict = _DefaultStock.LoadImage(Key, iSize).Picture
+      Try hPict = _DefaultStock.LoadImage(Key, iSize, Mid$(sPath, 2)).Picture
       If Not Error Then Goto __RETURN
-      Try hPict = PictureFromSvg(_DefaultStock.LoadSvgImage(Key), iSize)
+      Try hPict = PictureFromSvg(_DefaultStock.LoadSvgImage(Key, Mid$(sPath, 2)), iSize)
       If Not Error Then Goto __RETURN
-      Try hPict = _DefaultStock.LoadImage(Key, 32).Stretch(iSize, iSize).Picture
+      Try hPict = _DefaultStock.LoadImage(Key, 32, Mid$(sPath, 2)).Stretch(iSize, iSize).Picture
       If Not Error Then Goto __RETURN
       
       'If Key = "tools" Then Error "...failed"
@@ -752,6 +757,9 @@ Static Private Function Themes_Read() As String[]
   Dim sPath As String
   Dim sTheme As String
   Dim sRoot As String
+  Dim I As Integer
+  Dim sName As String
+  Dim sCar As String
   
   For Each sRoot In ["~/.icons", "~/.local/share/icons", "/usr/share/icons"]
     If Not IsDir(sRoot) Then Continue
@@ -766,6 +774,7 @@ Static Private Function Themes_Read() As String[]
   
 ADD_THEME:
   
+  If Stat(sPath).Type = gb.Link Then Return
   If Exist(sPath &/ "cursors") Then Return
   sPath &/= "index.theme"
   If Not Exist(sPath) Then Return
@@ -773,7 +782,17 @@ ADD_THEME:
   Try sTheme = File.Load(sPath)
   If Error Then Return
   If InStr(sTheme, "\nHidden=True") Then Return
-  If Not aTheme.Exist(sDir) Then aTheme.Add(sDir)
+  
+  sName = ""
+  For I = 1 To Len(sDir)
+    sCar = Mid$(sDir, I, 1)
+    If I = 1 Or If InStr(" -", Mid$(sDir, I - 1, 1)) Then
+      sCar = UCase(sCar)
+    Endif
+    sName &= sCar
+  Next
+  
+  If Not aTheme.Exist(sName) Then aTheme.Add(sName)
   Return
   
 End
