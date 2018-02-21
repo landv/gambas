@@ -27,7 +27,8 @@ End
 Static Public Sub LoadImage(sKey As String, iSize As Integer, Optional sStock As String) As Image
 
   Dim sPath As String
-  
+
+  Debug sKey
   If $cSynonymous.Exist(sKey) Then sKey = $cSynonymous[sKey]
   If Not sStock Or If Not IsDir(sStock) Then sStock = "gambas"
   sPath = sStock &/ CStr(iSize) &/ sKey
