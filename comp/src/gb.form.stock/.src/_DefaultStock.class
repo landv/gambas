@@ -32,6 +32,7 @@ Static Public Sub LoadImage(sKey As String, iSize As Integer, Optional sStock As
   If Not sStock Or If Not IsDir(sStock) Then sStock = "gambas"
   sPath = sStock &/ CStr(iSize) &/ sKey
   If System.RightToLeft And If Exist(sPath & "-rtl.png") Then sPath &= "-rtl"
+  'If iSize = 32 And If Not Exist(sPath & ".png") Then Debug sKey
   'If sKey = "tools" Then Debug sPath
   Return Image.Load(sPath & ".png")
   
