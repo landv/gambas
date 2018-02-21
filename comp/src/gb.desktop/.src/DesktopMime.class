@@ -32,7 +32,7 @@ Property Read IsSuffix As Boolean                          ''Return true if the 
 
 Public Function _compare(Other As DesktopMime) As Integer
   
-  Return Comp(_$sPattern, Other._$sPattern, gb.IgnoreCase)
+  Return String.Comp(_$sPattern, Other._$sPattern, gb.IgnoreCase)
   
 End
 
@@ -116,14 +116,15 @@ Static Private Function ReadMimeFile(sPath As String) As Boolean
   
   If Not Exist(sPath) Then Return True
   
-  hfile = Open sPath For Read
+  hFile = Open sPath For Read
     
     'Load the file into Class tables
-    While Not Eof(hfile)
+    While Not Eof(hFile)
       
-      Line Input #hfile, s
+      Line Input #hFile, s
       If Trim(s) Begins "#" Then Continue
-      ars = Scan(s, "*:*:*")
+      ars = Split(s, ":")
+      
       If ars[2] Begins "*." Then
         hMInfo = New DesktopMime
         hMInfo._$iWeight = ars[0]
@@ -144,6 +145,9 @@ Static Private Function ReadMimeFile(sPath As String) As Boolean
         hMInfo._$sPattern = ars[2]
         $aMimesSpecial.Add(hMInfo)
       Endif
+      
+      'If ars.Count >= 4 And If Split(ars[3]).Exist("cs") Then hMInfo._CaseSensitive = True
+      
       If InStr(hMInfo._$sType, "/") Then 
         hMInfo._$sGenericIcon = Left(hMInfo._$sType, InStr(hMInfo._$sType, "/") - 1) & "-x-generic"
       Endif
@@ -152,21 +156,20 @@ Static Private Function ReadMimeFile(sPath As String) As Boolean
     Wend
     
     'Sort the Globs by pattern
-    $aMimesSuffix.Sort
+    $aMimesSuffix.Sort()
     
     'Make the quick access hash table
-    s = Left($aMimesSuffix[0]._$sPattern)
-    $cHash.Add(0, s)
-    For i = 0 To $aMimesSuffix.max
-      ss = Left($aMimesSuffix[i]._$sPattern)
+    s = ""
+    For i = 0 To $aMimesSuffix.Max
+      ss = String.LCase(String.Left($aMimesSuffix[i]._$sPattern))
       If ss = s Then Continue
-      $cHash.Add(i, ss)
+      $cHash[ss] = i
       s = ss
     Next
     ' For Each hMInfo In $aMimesSpecial
     '   Print hMInfo.Pattern
     ' Next
-    Close #hfile
+    Close #hFile
     
     If $bPreciseSearch Then
       'Chargement du fichier Magic
@@ -182,7 +185,7 @@ Static Private Function ReadMimeFile(sPath As String) As Boolean
           If IsNull(hMInfo) Then Continue
           hMInfo._$aMagic.Add(s)
         Wend
-        Close #hfile
+        Close #hFile
       Endif
     Endif
     
@@ -195,7 +198,7 @@ Static Private Function ReadMimeFile(sPath As String) As Boolean
         ars = Split(s, ":")
         Try TypeToMInfo[ars[0]]._$sGenericIcon = ars[1]
       Wend
-      Close #hfile
+      Close #hFile
     Endif
   
   Catch
@@ -211,23 +214,47 @@ Static Private Function FindByExt(sFile As String) As DesktopMime[]
   Dim i As Integer 
   Dim sExt As String
   Dim s As String 
+  Dim hMInfo As DesktopMime
+  Dim sExtLCase As String
+  Dim iPos As Integer
   
   sExt = Right(sFile, - InStr(sFile, "."))
+  sExtLCase = String.LCase(sExt)
+  
   Do
-    If sExt = "" Then Return aMInfo
-    s = Left(sExt)
+    
+    If Not sExt Then Return aMInfo
+    
+    s = String.Left(sExt)
+    
     If $cHash.Exist(s) Then
+      
       i = $cHash[s]
-      Do
-        If sExt = $aMimesSuffix[i].Pattern Then aMInfo.Add($aMimesSuffix[i])
+      
+      Repeat
+        
+        hMInfo = $aMimesSuffix[i]
+        
+        If String.LCase(String.Left(hMInfo.Pattern)) <> s Then Break
+        
+        'If hMInfo._CaseSensitive Then
+          If sExt = hMInfo.Pattern Then aMInfo.Add(hMInfo)
+        'Else
+        '  If sExtLCase = String.LCase(hMInfo.Pattern) Then aMInfo.Add(hMInfo)
+        'Endif
+        
         Inc i 
-        If i > $aMimesSuffix.Max Then Break
-        If Left($aMimesSuffix[i].Pattern) <> s Then Break
-      Loop
+        
+      Until i > $aMimesSuffix.Max 
+      
     Endif
-    If Not InStr(sExt, ".") Then Break
-    sExt = Right(sExt, - InStr(sExt, "."))
+    
+    iPos = InStr(sExt, ".")
+    If iPos = 0 Then Break
+    sExt = Right(sExt, - iPos)
+    
   Loop
+  
   Return aMInfo
   
 End

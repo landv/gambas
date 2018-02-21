@@ -153,14 +153,18 @@ End
 
 Public Sub Main()
 
-  ' Dim hMime As DesktopMime
-  ' 
   ' hMime = DesktopMime.FromFile("/bin/ls")
   ' Print hMime.Pattern
   ' Print hMime.Type
   'Print Desktop.Passwords["guygle.cgi/Connection/IndexMySQL"]
   'Desktop.OpenTerminal
-  Desktop.SendMail(Null,,,,, "/home/benoit/Translate.module, comma")
+  'Desktop.SendMail(Null,,,,, "/home/benoit/Translate.module, comma")
+
+  Dim hMime As DesktopMime
+  
+  hMime = DesktopMime.FromFile("/home/benoit/gambas/git/master/main/gbx/gb_alloc.c")
+  Stop
+  
   
 End
 

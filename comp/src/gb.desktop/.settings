@@ -2,13 +2,37 @@
 Count=0
 
 [DebugWindow]
-Count=0
+Count=1
+DebugWindow[1]="aMInfo"
 
 [DebugWindow/$aDataDir]
 Geometry=[848,380,224,280]
 
+[DebugWindow/$aMimesSpecial]
+Geometry=[832,362,256,603]
+
 [DebugWindow/$aMimesSuffix]
-Geometry=[848,380,473,553]
+Geometry=[1217,357,473,553]
+
+[DebugWindow/$aMimesSuffix[100]]
+Geometry=[1233,373,473,553]
+ShowHidden=True
+
+[DebugWindow/$aMimesSuffix[101]]
+Geometry=[864,396,473,553]
+
+[DebugWindow/$aMimesSuffix[102]]
+Geometry=[864,396,473,553]
+
+[DebugWindow/$aMimesSuffix[98]]
+Geometry=[1233,373,473,553]
+ShowHidden=True
+
+[DebugWindow/$aMimesSuffix[99]]
+Geometry=[1233,373,473,553]
+
+[DebugWindow/$aMimesSuffix[i]]
+Geometry=[1054,223,256,320]
 
 [DebugWindow/$cHash]
 Geometry=[848,380,553,549]
@@ -22,8 +46,27 @@ Geometry=[1285,145,224,280]
 [DebugWindow/aCmd]
 Geometry=[772,380,376,280]
 
+[DebugWindow/aMInfo]
+Geometry=[1654,644,256,320]
+
+[DebugWindow/aMInfo[0]]
+Geometry=[1192,617,256,320]
+
+[DebugWindow/aMInfo[1]]
+Geometry=[1192,617,256,320]
+
+[DebugWindow/hMInfo]
+ShowHidden=True
+Geometry=[1219,191,317,505]
+
+[DebugWindow/hMInfo.Magic]
+Geometry=[1336,291,256,320]
+
 [DebugWindow/hMime]
-Geometry=[848,380,224,280]
+Geometry=[848,380,256,320]
+
+[DebugWindow/hMime.Magic]
+Geometry=[864,396,256,320]
 
 [Executable]
 Path="gb.desktop.gambas"
