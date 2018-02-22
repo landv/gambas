@@ -462,6 +462,9 @@ Private Sub SetTool(sAction As String)
     Case "draw", "erase", "rectangle", "ellipse"
       $iMouse = Mouse.Cross
     
+    Case "line"
+      $hLastPoint = Null
+    
     Case "magic"
       $iMouse = Mouse.Custom
       $hCursor = New Cursor(Picture["img/draw/magic.png"], 0, 0)
@@ -642,10 +645,11 @@ Private Sub GetImagePos() As PointF
     
   Else
     
-    'If Not $bShift Then
+    If $sTool = "line" And If $bShift Then
+    Else
       X = CInt(X * 2) / 2
       Y = CInt(Y * 2) / 2
-    'Endif
+    Endif
   
   Endif
   
@@ -757,7 +761,7 @@ Public Sub imvImage_MouseDown()
     
     Case "draw", "erase"
       
-      If Not Mouse.Shift Then 
+      If Not $bShift Then 
         $hLastPoint = GetImagePos()
         If $hMagnet Then $hLastPoint = $hMagnet
       Endif
@@ -777,7 +781,7 @@ Public Sub imvImage_MouseDown()
       $hCurrentPoint = GetImagePos()
       If $hMagnet Then $hCurrentPoint = $hMagnet
       
-      If Not Mouse.Shift Or If Not $hLastPoint Or If $hSelect.Count = 0 Then 
+      If Not $bFrame Or If Not $hLastPoint Or If $hSelect.Count = 0 Then 
         $hSelect.MoveTo($hCurrentPoint.X, $hCurrentPoint.Y)
       Else
         $hSelect.LineTo($hCurrentPoint.X, $hCurrentPoint.Y)
@@ -1317,12 +1321,18 @@ Private Sub UpdateTool()
 
   Select Case $sTool
     
-    Case "draw", "erase", "line"
+    Case "draw", "erase"
       If $bShift <> $bFrame Then
         $bFrame = $bShift
         imvImage.Refresh
       Endif
-    
+      
+    Case "line"
+      If $bCtrl <> $bFrame Then
+        $bFrame = $bCtrl
+        imvImage.Refresh
+      Endif
+      
   End Select
 
 End
@@ -1572,9 +1582,9 @@ Public Sub imvImage_Draw(hZoom As Image)
     
     If bBalance Then
       
-      If $hSelect.IsInverted() Then
-        hImage = hZoom.Copy()
-      Else
+      ' If $hSelect.IsInverted() Then
+      '   hImage = hZoom.Copy()
+      ' Else
         hRect = $hSelect.GetExtentsInt(True)
         If hRect.X < 0 Then
           hRect.W += hRect.X
@@ -1585,25 +1595,26 @@ Public Sub imvImage_Draw(hZoom As Image)
           hRect.Y = 0
         Endif
         hImage = hZoom.Copy(hRect.X, hRect.Y, hRect.Width, hRect.Height)
-      Endif
+      'Endif
       
       FImageProperty.ApplyBalance(hImage)
       
-      If $hSelect.IsInverted() Then
-        Paint.Save
-        Paint.Reset
-        imvImage._Paint(hImage, hOffset.X, hOffset.Y)
-        Paint.Restore
-      Endif
+      ' If $hSelect.IsInverted() Then
+      '   Paint.Save
+      '   Paint.Reset
+      '   imvImage._Paint(hImage, hOffset.X, hOffset.Y)
+      '   Paint.Restore
+      ' Endif
       
       Paint.Save
+      Paint.FillRule = FImageProperty.GetFillRule()
       $hSelect.Paint($hImage, CImageSelection.ACTION_CLIP)
       Paint.Reset
-      If $hSelect.IsInverted() Then
-        imvImage._Paint(hZoom, hOffset.X, hOffset.Y)
-      Else
+      ' If $hSelect.IsInverted() Then
+      '   imvImage._Paint(hZoom, hOffset.X, hOffset.Y)
+      ' Else
         imvImage._Paint(hImage, hOffset.X + hRect.X * imvImage.Zoom, hOffset.Y + hRect.Y * imvImage.Zoom)
-      Endif
+      ' Endif
       Paint.Restore
       
     Endif
@@ -1900,7 +1911,7 @@ Public Sub btnInvert_Click()
 
   CreateSelection
   AddUndo($hSelect.Copy())
-  $hSelect.Invert
+  $hSelect.Invert($hImage)
   If $hSelect.IsVoid() Then ClearSelection
   RefreshSelection
 
@@ -1949,7 +1960,7 @@ Public Sub btnCrop_Click()
   
   If $hSelect Then
     
-    $hSelect.Invert
+    $hSelect.Invert($hImage)
     
     hImage = $hImage.Copy()
     
@@ -1958,12 +1969,12 @@ Public Sub btnCrop_Click()
     $hSelect.Paint(hImage, CImageSelection.ACTION_CLEAR)
     Paint.End
 
-    $hSelect.Invert
+    $hSelect.Invert($hImage)
 
-    If Not $hSelect.IsInverted() Then
-      hRect = $hSelect.GetExtentsInt(True)
-      If hRect Then hImage = hImage.Copy(hRect.X, hRect.Y, hRect.Width, hRect.Height)
-    Endif
+    ' If Not $hSelect.IsInverted() Then
+    '   hRect = $hSelect.GetExtentsInt(True)
+    '   If hRect Then hImage = hImage.Copy(hRect.X, hRect.Y, hRect.Width, hRect.Height)
+    ' Endif
     
     BeginUndo
     AddUndo($hSelect.Copy())
@@ -2252,7 +2263,7 @@ Public Sub btnCopy_Click()
   
   If $hSelect Then
     
-    $hSelect.Invert
+    $hSelect.Invert($hImage)
     
     hImage = $hImage.Copy()
     
@@ -2261,12 +2272,12 @@ Public Sub btnCopy_Click()
     $hSelect.Paint(hImage, CImageSelection.ACTION_CLEAR)
     Paint.End
 
-    $hSelect.Invert
+    $hSelect.Invert($hImage)
 
-    If Not $hSelect.IsInverted() Then
+    ' If Not $hSelect.IsInverted() Then
       hExt = $hSelect.GetExtentsInt(True)
       If hExt Then hImage = hImage.Copy(hExt.X, hExt.Y, hExt.Width, hExt.Height)
-    Endif
+    ' Endif
     
     Inc $iClipboard
     FImageProperty.AddClipboard(hImage, Me.Name & " [" & CStr($iClipboard) & "]")
@@ -2392,16 +2403,16 @@ Public Sub ApplyEffect(iEffect As Integer)
   
   If $hSelect Then
 
-    If $hSelect.IsInverted() Then
-      
-      Paint.Begin(hEffect)
-      $hSelect.Paint(hEffect, CImageSelection.ACTION_CLIP)
-      Paint.DrawImage($hImage, 0, 0)
-      Paint.End
-      
-      hImage = hEffect
-      
-    Else
+    ' If $hSelect.IsInverted() Then
+    '   
+    '   Paint.Begin(hEffect)
+    '   $hSelect.Paint(hEffect, CImageSelection.ACTION_CLIP)
+    '   Paint.DrawImage($hImage, 0, 0)
+    '   Paint.End
+    '   
+    '   hImage = hEffect
+    '   
+    ' Else
     
       hImage = $hImage.Copy()
       
@@ -2410,7 +2421,7 @@ Public Sub ApplyEffect(iEffect As Integer)
       Paint.DrawImage(hEffect, 0, 0)
       Paint.End
 
-    Endif
+    ' Endif
 
   Else
     

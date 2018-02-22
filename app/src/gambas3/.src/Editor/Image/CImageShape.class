@@ -319,3 +319,13 @@ Public Sub GetOrientation() As Boolean
   Return hPolygon.Orientation
   
 End
+
+Public Sub ToPolygons() As Polygon[]
+
+  Dim aPoly As Polygon[]
+  
+  aPoly = New Polygon[]
+  aPoly.Add(Points)
+  Return aPoly
+  
+End

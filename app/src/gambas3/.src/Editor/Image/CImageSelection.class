@@ -8,7 +8,7 @@ Private Enum CMD_MOVE_TO, CMD_LINE_TO ', CMD_RECTANGLE, CMD_ELLIPSE
 
 Public Name As String
 Public Shapes As New CImageShape[]
-Public _Invert As Boolean
+'Public _Invert As Boolean
 Public _Magnets As New PointF[]
 Public _Matrix As New PaintMatrix
 Public _BrushMatrix As New PaintMatrix
@@ -83,14 +83,14 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
     
     Paint.Brush = hBrush
    
-    If _Invert Then
-      
-      Paint.Rectangle(0, 0, hTemp.W, hTemp.H)
-      Paint.Fill
-    
-      Paint.Operator = Paint.OperatorClear
-      
-    Endif
+    ' If _Invert Then
+    '   
+    '   Paint.Rectangle(0, 0, hTemp.W, hTemp.H)
+    '   Paint.Fill
+    ' 
+    '   Paint.Operator = Paint.OperatorClear
+    '   
+    ' Endif
     
   Else If iAction = ACTION_CLEAR Then
 
@@ -101,27 +101,27 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
     Endif
     'Paint.Brush = Paint.Color(Color.Black)
           
-    If _Invert Then
+    ' If _Invert Then
+    '   
+    '   Paint.Operator = Paint.OperatorDestOut
+    '   hBrush = Paint.Brush
+    '   
+    '   hTemp = New Image(hImage.W, hImage.H, Color.Transparent)
+    '   
+    '   Paint.Begin(hTemp)
+    '   
+    '   Paint.Brush = hBrush
+    '   Paint.Rectangle(0, 0, hTemp.W, hTemp.H)
+    '   Paint.Fill
+    '   
+    '   Paint.Brush = Paint.Color(Color.Black)
+    '   Paint.Operator = Paint.OperatorDestOut
+    '   
+    ' Else
       
       Paint.Operator = Paint.OperatorDestOut
-      hBrush = Paint.Brush
       
-      hTemp = New Image(hImage.W, hImage.H, Color.Transparent)
-      
-      Paint.Begin(hTemp)
-      
-      Paint.Brush = hBrush
-      Paint.Rectangle(0, 0, hTemp.W, hTemp.H)
-      Paint.Fill
-      
-      Paint.Brush = Paint.Color(Color.Black)
-      Paint.Operator = Paint.OperatorDestOut
-      
-    Else
-      
-      Paint.Operator = Paint.OperatorDestOut
-      
-    Endif
+    ' Endif
     
   Endif
 
@@ -170,6 +170,15 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
       If I = Current Then Shapes[I].PaintMagnet
     Next
     
+  Else If iAction = ACTION_CLIP Then
+    
+    For I = 0 To Shapes.Max
+      If Current < 0 Or If Current = I Or If bAll Then 
+        Shapes[I].Paint(Me, False, iAction = ACTION_SELECT)
+      Endif
+    Next
+    Paint.Clip
+  
   Else
     
     For I = 0 To Shapes.Max
@@ -193,40 +202,31 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
     'Paint.FillRule = Paint.FillRuleWinding
     Paint.Fill
     
-    If _Invert Then
-      
-      Paint.End
-      
-      Paint.DrawImage(hTemp, 0, 0)
-      
-    Endif
+    ' If _Invert Then
+    '   
+    '   Paint.End
+    '   
+    '   Paint.DrawImage(hTemp, 0, 0)
+    '   
+    ' Endif
     
   Else If iAction = ACTION_STROKE Then
 
-    If _Invert Then
-      Paint.MoveTo(0, 0)
-      Paint.LineTo(0, hImage.H)
-      Paint.LineTo(hImage.W, hImage.H)
-      Paint.LineTo(hImage.W, 0)
-      Paint.LineTo(0, 0)
-    Endif
+    ' If _Invert Then
+    '   Paint.MoveTo(0, 0)
+    '   Paint.LineTo(0, hImage.H)
+    '   Paint.LineTo(hImage.W, hImage.H)
+    '   Paint.LineTo(hImage.W, 0)
+    '   Paint.LineTo(0, 0)
+    ' Endif
     
     'Paint.LineJoin = Paint.LineJoinMiter
   
     Paint.Stroke
     
-  Else If iAction = ACTION_CLIP Then
-    
-    ' If _Invert Then
-    '   Paint.MoveTo(0, 0)
-    '   Paint.LineTo(hImage.W, 0)
-    '   Paint.LineTo(hImage.W, hImage.H)
-    '   Paint.LineTo(0, hImage.H)
-    '   Paint.LineTo(0, 0)
-    ' Endif
-  
-    'Paint.FillRule = Paint.FillRuleWinding
-    Paint.Clip
+  ' Else If iAction = ACTION_CLIP Then
+  '   
+  '   Paint.Clip
     
   Else If iAction = ACTION_HANDLE Or If iAction = ACTION_MAGNET Then
     
@@ -241,13 +241,13 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
     Paint.Background = Color.White 'Color.SetAlpha(Color.White, 128)
     Paint.Dash = Null
     
-    If _Invert Then
-      Paint.MoveTo(0, 0)
-      Paint.LineTo(0, hImage.H)
-      Paint.LineTo(hImage.W, hImage.H)
-      Paint.LineTo(hImage.W, 0)
-      Paint.LineTo(0, 0)
-    Endif
+    ' If _Invert Then
+    '   Paint.MoveTo(0, 0)
+    '   Paint.LineTo(0, hImage.H)
+    '   Paint.LineTo(hImage.W, hImage.H)
+    '   Paint.LineTo(hImage.W, 0)
+    '   Paint.LineTo(0, 0)
+    ' Endif
     
     Paint.Stroke(True)
     
@@ -282,7 +282,7 @@ Public Sub Copy() As CImageSelection
     hSelect.Shapes[I] = Shapes[I].Copy()
   Next
   
-  hSelect._Invert = _Invert
+  ' hSelect._Invert = _Invert
 
   hSelect._Magnets = New PointF[_Magnets.Count]
   For I = 0 To _Magnets.Max
@@ -298,19 +298,49 @@ Public Sub Copy() As CImageSelection
   
 End
 
-Public Sub Invert()
+Public Sub Invert(hImage As Image)
+  
+  Dim I As Integer
+  Dim hShape As CImageShape
+  Dim hAll As Polygon
+  Dim aAll As Polygon[]
+  Dim aClip As New Polygon[]
   
   If Current >= 0 Then
+    
     Shapes[Current].Invert
+    
   Else
-    _Invert = Not _Invert
+  
+    hAll = New Polygon
+    hAll.Add(0, 0)
+    hAll.Add(0, hImage.H)
+    hAll.Add(hImage.W, hImage.H)
+    hAll.Add(hImage.W, 0)
+    hAll.Add(0, 0)
+    
+    aAll = [hAll]
+    
+    For I = 0 To Shapes.Max
+      aClip.Insert(Shapes[I].ToPolygons())
+    Next
+    
+    aClip = Clipper.ExclusiveOr(aClip, aAll)
+    
+    Clear()
+    For I = 0 To aClip.Max
+      hShape = New CImageShape
+      hShape.Points = aClip[I]
+      AddShape(hShape)
+    Next
+    
   Endif
   
 End
 
 Public Sub IsVoid() As Boolean
   
-  If _Invert Then Return
+  ' If _Invert Then Return
   Return Shapes.Count = 0
   
 End
@@ -640,11 +670,11 @@ Public Sub FindPoint(hSearch As PointF, D As Float, Optional bMidSegment As Bool
 End
 
 
-Public Sub IsInverted() As Boolean
-  
-  Return _Invert
-  
-End
+' Public Sub IsInverted() As Boolean
+'   
+'   Return _Invert
+'   
+' End
 
 Public Sub GetExtents(Optional bAll As Boolean) As RectF
   
@@ -1055,7 +1085,6 @@ Public Sub Operation(iOp As Integer)
   Next
   
   aClip.Add(Shapes[Shapes.Max].Points)
-  
   
   Select Case iOp
     Case OP_UNION
