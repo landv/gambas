@@ -7,6 +7,8 @@ Class SvgImage
 
 Static Private $cSynonymous As New Collection
 
+Static Private $bDebug As Boolean
+
 Static Public Sub _init()
 
   Dim hFile As File
@@ -21,6 +23,8 @@ Static Public Sub _init()
     $cSynonymous[Trim(Left(sLine, iPos - 1))] = Trim(Mid$(sLine, iPos + 4))
   Next
   
+  $bDebug = Env["GB_STOCK_DEBUG"] = "1"
+  
 End
 
 
@@ -32,7 +36,7 @@ Static Public Sub LoadImage(sKey As String, iSize As Integer, Optional sStock As
   If Not sStock Or If Not IsDir(sStock) Then sStock = "gambas"
   sPath = sStock &/ CStr(iSize) &/ sKey
   If System.RightToLeft And If Exist(sPath & "-rtl.png") Then sPath &= "-rtl"
-  'If iSize = 32 And If Not Exist(sPath & ".png") Then Debug sKey
+  If $bDebug And If iSize = 32 And If Not Exist(sPath & ".png") Then Error "gb.form.stock: unknown icon: " & sKey
   'If sKey = "tools" Then Debug sPath
   Return Image.Load(sPath & ".png")
   
