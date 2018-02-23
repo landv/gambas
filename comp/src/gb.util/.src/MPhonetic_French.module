@@ -1,5 +1,17 @@
 ' Gambas module file
 
+Public Sub Before(sStr As String) As String
+  
+  ' R0  substitution des caractères accentués par les voyelles "simples"
+  
+  sStr = Replace(sStr, "ç", "ss")
+  sStr = Replace(sStr, "Ç", "ss")
+  
+  Return sStr
+  
+End
+
+
 
 Public Sub Run(sStr As String) As String
   
@@ -9,19 +21,9 @@ Public Sub Run(sStr As String) As String
   Dim sPat As String
   Dim sResult As String
   
-  ' R1   
-  ' 
-  '     substitution des caractères accentués par les voyelles "simples"
-  '     remplacement du "ç" par "ss"
-  '     remplacement du "y" par un "i"
-  '     tous les caractères sont convertis en minuscules
+  If IsDigit(sStr) Then Return "(" & sStr & ")"
   
-  sStr = Replace(sStr, "ç", "ss")
-  sStr = Replace(sStr, "Ç", "ss")
-
-  sStr = LCase(String.RemoveDiacritics(sStr))
-  
-  If Not IsLetter(sStr) Then Return sStr
+  ' R1   remplacement du "y" par un "i"
   
   sStr = Replace(sStr, "y", "i")
 
@@ -190,9 +192,11 @@ Public Sub Run(sStr As String) As String
   sStr = Replace(sStr, "c", "k")
   sStr = Replace(sStr, "qu", "k")
   sStr = Replace(sStr, "q", "k")
-  sStr = Replace(sStr, "gu", "k")
-  sStr = Replace(sStr, "ga", "ka")
+  sStr = Replace(sStr, "ga", "ga")
+  sStr = Replace(sStr, "ge", "je")
+  sStr = Replace(sStr, "gi", "ji")
   sStr = Replace(sStr, "go", "go")
+  sStr = Replace(sStr, "gu", "g")
 
   ' R15   
   ' 
@@ -205,18 +209,22 @@ Public Sub Run(sStr As String) As String
   '   depart -> tetord
   ' homme -> one
 
-  sStr = Replace(sStr, "a", "o")
-  sStr = Replace(sStr, "d", "t")
-  sStr = Replace(sStr, "p", "t")
-  sStr = Replace(sStr, "j", "g")
-  sStr = Replace(sStr, "b", "f")
-  sStr = Replace(sStr, "v", "f")
-  sStr = Replace(sStr, "w", "f")
-  sStr = Replace(sStr, "m", "n")
+  'sStr = Replace(sStr, "a", "o")
+  'sStr = Replace(sStr, "d", "t")
+  'sStr = Replace(sStr, "p", "t")
+  'sStr = Replace(sStr, "j", "g")
+  'sStr = Replace(sStr, "b", "f")
+  'sStr = Replace(sStr, "v", "f")
+  'sStr = Replace(sStr, "m", "n")
+  'sStr = Replace(sStr, "w", "v")
+  
+  ' R15.1
+  
+  sStr = Replace(sStr, "w", "3")
 
   ' R16 (optionnelle)   remplacement des "y" (les sons "é") par "e"   nez -> nyz -> nez
   
-  sStr = Replace(sStr, "y", "e")
+  'sStr = Replace(sStr, "y", "e")
   
   ' R17   
   ' 
@@ -226,15 +234,15 @@ Public Sub Run(sStr As String) As String
   '   heureux -> ere
   ' tetard -> tetor
 
-  If InStr("rtxsz", Right(sStr)) Then sStr = Left(sStr, -1)
+  If Len(sStr) >= 2 And If InStr("rdptxsz", Right(sStr)) Then sStr = Left(sStr, -1)
 
-  If Len(sStr) >= 2 Then
-    If Right(sStr) = "e" And InStr("aeiouy", Left(Right(sStr, 2))) = 0 Then
-      sStr = Left(sStr, -1)
-    Endif
-  Endif
-
-  If InStr("rtxsz", Right(sStr)) Then sStr = Left(sStr, -1)
+  ' If Len(sStr) >= 2 Then
+  '   If Right(sStr) = "e" And InStr("aeiouy", Left(Right(sStr, 2))) = 0 Then
+  '     sStr = Left(sStr, -1)
+  '   Endif
+  ' Endif
+  ' 
+  ' If Len(sStr) >= 2 And If InStr("rtxsz", Right(sStr)) Then sStr = Left(sStr, -1)
   
   ' R18   suppression des lettres doubles (pour la 2ème fois)   arrivee -> arive
 
@@ -248,9 +256,9 @@ Public Sub Run(sStr As String) As String
   sResult = ""
   For I = 1 To Len(sStr)
     sPat = Mid$(sStr, I, 1)
-    If InStr("12345efghiklnorstuwxyz", sPat) Then
+    If InStr("12345abdefghijklmnoprstuvxyz", sPat) Then
       sResult &= sPat
-      If Len(sResult) = 16 Then Break
+      'If Len(sResult) = 16 Then Break
     Endif
   Next
   
