@@ -513,7 +513,7 @@ void STREAM_write(STREAM *stream, void *addr, int len)
 	if (stream->common.redirected)
 		stream = stream->common.redirect;
 
-	while (len > 0)
+	do
 	{
 		n = ((*(stream->type->write))(stream, addr, len));
 		
@@ -531,7 +531,12 @@ void STREAM_write(STREAM *stream, void *addr, int len)
 		
 		addr += n;
 		len -= n;
+	
+		if (STREAM_is_closed_for_writing(stream))
+			THROW(E_CLOSED);
 	}
+	while (len > 0);
+	
 }
 
 void STREAM_write_zeros(STREAM *stream, int len)
