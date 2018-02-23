@@ -226,3 +226,22 @@ READ_CHAR:
   Return
   
 End
+
+Static Public Sub ToPhonetic({String} As String, Optional Language As String = System.Language) As String
+
+  Try Language = LCase(Split(Language, "-._")[0])
+  
+  Select Case Language
+    
+    Case "c", "en"
+      Error.Raise("Unsupported language")
+    
+    Case "fr"
+      Return MPhonetic_French.Run({String})
+    
+    Default
+      Error.Raise("Unsupported language")
+      
+  End Select
+  
+End

@@ -1,0 +1,273 @@
+' Gambas module file
+
+
+Public Sub Run(sStr As String) As String
+  
+  Dim sSuff As String
+  Dim sPref As String
+  Dim I As Integer
+  Dim sPat As String
+  Dim sResult As String
+  
+  ' R1   
+  ' 
+  '     substitution des caractères accentués par les voyelles "simples"
+  '     remplacement du "ç" par "ss"
+  '     remplacement du "y" par un "i"
+  '     tous les caractères sont convertis en minuscules
+  
+  sStr = Replace(sStr, "ç", "ss")
+  sStr = Replace(sStr, "Ç", "ss")
+
+  sStr = LCase(String.RemoveDiacritics(sStr))
+  
+  If Not IsLetter(sStr) Then Return sStr
+  
+  sStr = Replace(sStr, "y", "i")
+
+  ' R2   remplacement du son "ph" par un simple "f"
+
+  sStr = Replace(sStr, "ph", "f")
+
+  ' R3   suppression des "h" muets, c'est à dire ceux qui ne sont ni précédés d'un "c" ni d'un "s"
+  
+  sStr = Replace(sStr, "ch", "cH")
+  sStr = Replace(sStr, "sh", "sH")
+  sStr = Replace(sStr, "h", "")
+  sStr = Replace(sStr, "H", "h")
+  
+  ' R4   remplacement du "g" par "k" devant "an/am/ain/aim"   gamin -> kamin
+  
+  sStr = Replace(sStr, "gan", "kan")
+  sStr = Replace(sStr, "gam", "kam")
+  sStr = Replace(sStr, "gain", "kain")
+  sStr = Replace(sStr, "gaim", "kaim")
+  
+  ' R5   
+  ' 
+  '     remplacement de aina,eina,aima,eima par yna
+  '     remplacement de aine,eine,aime,eime par yne
+  '     remplacement de aini,eini,aimi,eimi par yni
+  '     remplacement de aino,eino,aimo,eimo par yno
+  '     remplacement de ainu,einu,aimu,eimu par ynu
+
+  For Each sSuff In ["na", "ne", "ni", "no", "nu"]
+    For Each sPref In ["a", "e", "i", "o", "u"]
+      sStr = Replace(sStr, sPref & "i" & sSuff, "y" & sSuff)
+    Next
+  Next
+' 
+  ' R6   
+  ' 
+  '     remplacement de eau par o
+  '     remplacement de oua par 2
+  '     remplacement de ein par 4
+  '     remplacement de ain par 4
+  
+  sStr = Replace(sStr, "eau", "o")
+  sStr = Replace(sStr, "oua", "2")
+  sStr = Replace(sStr, "ein", "4")
+  sStr = Replace(sStr, "ain", "4")
+  
+  ' R7   
+  ' 
+  '     remplacement de ai par y
+  '     remplacement de ei par y
+  '     remplacement de ee par y
+  '     remplacement de er par yr
+  '     remplacement de ess par yss
+  '     remplacement de et par yt
+  '     remplacement de ez par yz
+  
+  sStr = Replace(sStr, "ai", "y")
+  sStr = Replace(sStr, "ei", "y")
+  sStr = Replace(sStr, "ee", "y")
+  sStr = Replace(sStr, "er", "yr")
+  sStr = Replace(sStr, "ess", "yss")
+  sStr = Replace(sStr, "et", "yt")
+  sStr = Replace(sStr, "ez", "yz")
+  
+  ' R8   suppression des lettres doublées   pelle -> pele
+
+  GoSub REMOVE_DOUBLE
+
+  ' R9   
+  ' 
+  '     remplacement de "an" par "1"
+  '     remplacement de "am" par "1"
+  '     remplacement de "en" par "1"
+  '     remplacement de "em" par "1"
+  '     remplacement de "in" par "4"
+  ' à condition que ces modèles ne soient ni suivis d'une voyelle ni d'un son "1" à "4"   
+  ' patient - > pati1t
+
+  For Each sPat In ["an", "am", "en", "em", "in"]
+    I = 0
+    Do
+      I = InStr(sStr, sPat, I + 1)
+      If I = 0 Then Break
+      If InStr("aeiouy1234", Mid$(sStr, I + 2, 1)) Then 
+        I += 2
+      Else
+        sStr = Left(sStr, I - 1) & If(sPat = "in", "4", "1") & Mid$(sStr, I + 2)
+      Endif
+    Loop
+  Next
+
+  ' R10   remplacement du "z" par "s" s'il est en tête de mot ou précédé et suivi d'une voyelle ou d'un son "1" à "4"
+  ' zebu -> zebu
+  ' azteque -> azteque
+  ' bizarre -> bisarre
+  
+  I = 0
+  Do
+    I = InStr(sStr, "z", I + 1)
+    If I = 0 Then Break
+    If I = 1
+      sStr = "s" & Mid$(sStr, 2)
+    Else If InStr("aeiouy1234", Mid$(sStr, I - 1, 1)) And If InStr("aeiouy1234", Mid$(sStr, I + 1, 1)) Then
+      sStr = Left(sStr, I - 1) & "s" & Mid(sStr, I + 1)
+      I += 1
+    Endif
+  Loop
+
+  ' R11   
+  ' 
+  '     remplacement de "oe" par "e"
+  '     remplacement de "eu" par "e"
+  '     remplacement de "au" par "o"
+  '     remplacement de "oi" par "2"
+  '     remplacement de "ou" par "3"
+  ' 
+  ' heureux -> erex
+  ' paul -> pol
+  ' roue -> r3e
+
+  sStr = Replace(sStr, "oe", "e")
+  sStr = Replace(sStr, "eu", "e")
+  sStr = Replace(sStr, "au", "o")
+  sStr = Replace(sStr, "oi", "2")
+  sStr = Replace(sStr, "ou", "3")
+
+  ' R12   
+  ' 
+  '     remplacement de "ch" par "5"
+  '     remplacement de "sch" par "5"
+  '     remplacement de "sh" par "5"
+  '     remplacement de "ss" par "s"
+  '     remplacement de "sc" par "s" si suivi d'un "i" ou d'un "e"
+  ' 
+  '   chat -> 5at
+  ' scaralatine -> scarlatine
+  ' scie -> sie
+
+  sStr = Replace(sStr, "ch", "5")
+  sStr = Replace(sStr, "sch", "5")
+  sStr = Replace(sStr, "sh", "5")
+  sStr = Replace(sStr, "ss", "s")
+  sStr = Replace(sStr, "sci", "si")
+  sStr = Replace(sStr, "sce", "se")
+
+  ' R13   remplacement du "c" par "s" s'il est suivi dun "e" ou d'un "i"
+  ' car -> car
+  ' innocence -> inosense
+
+  sStr = Replace(sStr, "ce", "se")
+  sStr = Replace(sStr, "ci", "si")
+  
+  ' R14   
+  ' 
+  '     remplacement de "c" par "k"
+  '     remplacement de "q" par "k"
+  '     remplacement de "qu" par "k"
+  '     remplacement de "gu" par "k"
+  '     remplacement de "ga" par "ka"
+  '     remplacement de "go" par "ko"
+  ' 
+  '   car -> kar
+  ' gateau -> kato
+  
+  sStr = Replace(sStr, "c", "k")
+  sStr = Replace(sStr, "qu", "k")
+  sStr = Replace(sStr, "q", "k")
+  sStr = Replace(sStr, "gu", "k")
+  sStr = Replace(sStr, "ga", "ka")
+  sStr = Replace(sStr, "go", "go")
+
+  ' R15   
+  ' 
+  '     remplacement de "a" par "o"
+  '     remplacement de "d" et "p" par "t"
+  '     remplacement de "j" par "g"
+  '     remplacement de "b" et "v" par "f"
+  '     remplacement de "m" par "n"
+  ' 
+  '   depart -> tetord
+  ' homme -> one
+
+  sStr = Replace(sStr, "a", "o")
+  sStr = Replace(sStr, "d", "t")
+  sStr = Replace(sStr, "p", "t")
+  sStr = Replace(sStr, "j", "g")
+  sStr = Replace(sStr, "b", "f")
+  sStr = Replace(sStr, "v", "f")
+  sStr = Replace(sStr, "w", "f")
+  sStr = Replace(sStr, "m", "n")
+
+  ' R16 (optionnelle)   remplacement des "y" (les sons "é") par "e"   nez -> nyz -> nez
+  
+  sStr = Replace(sStr, "y", "e")
+  
+  ' R17   
+  ' 
+  '     suppression des finales "t","x","s","z"
+  '     (optionnelle) suppression du "e" final après une consonne (fait en deux fois pour eliminer les finales "ez" par exemple)
+  ' 
+  '   heureux -> ere
+  ' tetard -> tetor
+
+  If InStr("rtxsz", Right(sStr)) Then sStr = Left(sStr, -1)
+
+  If Len(sStr) >= 2 Then
+    If Right(sStr) = "e" And InStr("aeiouy", Left(Right(sStr, 2))) = 0 Then
+      sStr = Left(sStr, -1)
+    Endif
+  Endif
+
+  If InStr("rtxsz", Right(sStr)) Then sStr = Left(sStr, -1)
+  
+  ' R18   suppression des lettres doubles (pour la 2ème fois)   arrivee -> arive
+
+  GoSub REMOVE_DOUBLE
+
+  ' R19   retourne une chaine d'une taille maximale de 16 caractères et ne contenant que les caractères autorisés.
+  ' Au vu des traductions décrites, les caractères obtenus font partie de l'alphabet réduit:
+  ' 12345efghiklnorstuwxyz
+  ' Les caractères qui n'appartiennent pas à cet ensemble sont supprimés
+  
+  sResult = ""
+  For I = 1 To Len(sStr)
+    sPat = Mid$(sStr, I, 1)
+    If InStr("12345efghiklnorstuwxyz", sPat) Then
+      sResult &= sPat
+      If Len(sResult) = 16 Then Break
+    Endif
+  Next
+  
+  Return sResult
+
+REMOVE_DOUBLE:
+
+  I = 1
+  While I < Len(sStr)
+    If Mid$(sStr, I, 1) = Mid$(sStr, I + 1, 1) Then
+      sStr = Left(sStr, I) & Mid$(sStr, I + 2)
+    Else
+      Inc I
+    Endif
+  Wend
+  Return
+
+  
+End
+
