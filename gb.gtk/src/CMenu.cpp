@@ -520,6 +520,14 @@ BEGIN_PROPERTY(Menu_Proxy)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Menu_Closed)
+
+	GB.ReturnBoolean(MENU->isClosed());
+
+END_PROPERTY
+
+
+
 //---------------------------------------------------------------------------
 
 GB_DESC CMenuChildrenDesc[] =
@@ -572,6 +580,8 @@ GB_DESC CMenuDesc[] =
 	GB_METHOD("Delete", 0, Menu_Delete, 0),
 	GB_METHOD("Show", 0, Menu_Show, 0),
 	GB_METHOD("Hide", 0, Menu_Hide, 0),
+
+	GB_PROPERTY_READ("Closed", "b", Menu_Closed),
 
 	GB_EVENT("Click", 0, 0, &EVENT_Click),
 	GB_EVENT("Show", 0, 0, &EVENT_Show),

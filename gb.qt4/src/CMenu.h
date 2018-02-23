@@ -80,6 +80,7 @@ typedef
 		unsigned disabled : 1;
 		unsigned visible : 1;
 		unsigned init_shortcut : 1;
+		unsigned opened : 1;
 		}
 	CMENU;
 

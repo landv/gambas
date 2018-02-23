@@ -60,6 +60,7 @@ public:
 	bool topLevel() const { return top_level; }
 	bool isSeparator() const { return _style == SEPARATOR; }
 	void *parent() const { return pr; }
+	bool isClosed() const { return !_opened; }
 
 	void setChecked(bool vl);
 	void setToggle(bool vl);
