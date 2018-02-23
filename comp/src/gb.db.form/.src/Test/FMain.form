@@ -4,12 +4,14 @@
   MoveScaled(0,0,110,64)
   { DataSource1 DataSource
     MoveScaled(1,1,107,54)
+    Connection = Connections["Connection1"]
+    Table = "Client"
     { DataBrowser1 DataBrowser
       MoveScaled(1,6,104,42)
     }
     { DataControl1 DataControl
       MoveScaled(1,49,24,4)
-      Field = "scodearticle"
+      Field = "ContactClient"
     }
   }
 }
