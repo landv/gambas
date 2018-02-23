@@ -974,10 +974,11 @@ Public Sub txtProperty_Click()
   Dim sTable As String
 
   $bIgnoreHide = True
-
+  
   Select $sType
 
     Case "s"
+      SaveProperty
       If FText.Run($sOldVal) Then Goto _EXIT
       $hEditor.Text = FText.Value
 
