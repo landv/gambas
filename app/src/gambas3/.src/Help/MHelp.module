@@ -975,3 +975,16 @@ Catch
   hWebView.Html = "<h2>" & ("This page does not exist.") & "</h2>"
   
 End
+
+Public Sub LoadCustom(sPage As String) As String
+
+  Dim sHtml As String
+
+  sHtml = File.Load("help" &/ sPage)
+  sHtml = Replace(sHtml, "$(style)", File.Load("help/wiki/style.css") & File.Load("help/wiki/style-custom.css"))
+  
+  Return sHtml
+
+  
+
+End

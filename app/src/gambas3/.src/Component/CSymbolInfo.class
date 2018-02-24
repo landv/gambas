@@ -1008,7 +1008,7 @@ Public Function GetHelpHTML() As String
     If Error Then sHelp = "<b>" & Error.Text & "</b>"
   Endif
   
-  sHTML = File.Load("help/symbol-help.html")
+  sHTML = MHelp.LoadCustom("symbol-help.html")
   sHTML = Replace(sHTML, "$(hide-title)", "")
   sHTML = Replace(sHTML, "$(class)", {Class})
   sHTML = Replace(sHTML, "$(name)", Name)
@@ -1366,7 +1366,7 @@ Public Sub WikiGetSyntax() As String[]
 
     Case Else
 
-      If IsStatic() And Kind <> "C" Then
+      If IsStatic And Kind <> "C" Then
         sSyntax = Keyword("Static") & " "
       Endif
 

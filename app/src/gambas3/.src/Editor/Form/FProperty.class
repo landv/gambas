@@ -47,6 +47,8 @@ Public Sub _new()
   $iBgSet = Color.Merge(Color.TextBackground, Color.LightForeground, 0.25)
   $iBgModified = Color.Merge(Color.TextBackground, Color.LightBackground, 0.25)
   
+  webHelp.Zoom = 0.8
+  
 End
 
 Public Sub Form_Open()
@@ -605,6 +607,7 @@ Private Sub ShowProperty(Optional sFocus As String)
   Dim sHelp, sHelpType, sHelpLcType As String
   Dim sHTML As String
   Dim iRow As Integer
+  Dim bWarning As Boolean
 
   If Project.Running Then Return
   If Not $hForm Then Return
@@ -623,7 +626,9 @@ Private Sub ShowProperty(Optional sFocus As String)
   $bButton = False
 
   If grdProperty.Row = 0 Then Return
-
+  
+  bWarning = True
+  
   If grdProperty.Row = 1 Then
 
     If $hObject.Name = $hForm.Name Then Return
@@ -635,6 +640,7 @@ Private Sub ShowProperty(Optional sFocus As String)
     sHelp = ("The name of the control.")
     sHelpType = "String"
     sHelpLcType = "string"
+    bWarning = False
 
   Else If grdProperty.Row = 2 Then
 
@@ -680,13 +686,17 @@ Private Sub ShowProperty(Optional sFocus As String)
 
   If sHelp Then
     If sHelp <> "?" Then
-      sHTML = File.Load("help/property-help.html")
+      sHTML = MHelp.LoadCustom("property-help.html")
       sHTML = Replace(sHTML, "$(class)", "Control")
       sHTML = Replace(sHTML, "$(name)", grdProperty[grdProperty.Row, 0].Text)
       sHTML = Replace(sHTML, "$(help)", Html(sHelp))
       sHTML = Replace(sHTML, "$(type)", sHelpType)
       sHTML = Replace(sHTML, "$(lctype)", sHelpLcType)
-      sHTML = Replace(sHTML, "$(warning)", ("This property is virtual: it is only implemented in the IDE, and has no existence at runtime."))
+      If bWarning Then 
+        sHTML = Replace(sHTML, "$(warning)", ("This property is virtual: it is only implemented in the IDE, and has no existence at runtime."))
+      Else
+        sHTML = Replace(sHTML, "$(warning)", "")
+      Endif
     Endif
     If Not $hWebView Then
       If Class.IsLoaded("FHelpBrowser") And If FHelpBrowser.Visible Then
@@ -694,7 +704,8 @@ Private Sub ShowProperty(Optional sFocus As String)
         FHelpBrowser.webHelp.HTML = sHTML
       Endif
     Else
-      sHTML = Replace(sHTML, "$(hide-title)", "style=\"display:none;\"")
+      'sHTML = Replace(sHTML, "$(hide-title)", "style=\"display:none;\"")
+      sHTML = Replace(sHTML, "$(hide-title)", "")
       $hWebView.HTML = sHTML
     Endif
   Endif

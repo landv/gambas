@@ -257,6 +257,7 @@ Private Sub RefreshEditor()
   MTheme.WriteSettings(Settings, "Highlight", $cCurrent)
   Settings["/Editor/Font"] = txtEditorFont.Value
   
+  Project.InitWebView
   Project.RefreshBreakpointPicture
   
   For Each hFile In Project.Files
