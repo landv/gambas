@@ -22,6 +22,7 @@ Private $aRedo As New Variant[]
 Private Enum BEGIN_UNDO, END_UNDO
 
 Private $sTool As String
+Private $sToolBefore As String
 Private $hFirstPoint As PointF
 Private $hLastPoint As PointF
 Private $hCurrentPoint As PointF
@@ -298,8 +299,7 @@ Private Sub ApplyTransformation(iTrans As Integer)
           '$hPasteSelect.Rotate(Rad(-90))
       End Select
       
-      $hChangeRect = $hPasteCurrent.GetExtents()
-      $hPasteSelect = $hPasteCurrent.Copy()
+      UpdatePasteCurrent
      
     Endif
     
@@ -434,6 +434,8 @@ Private Sub SetTool(sAction As String)
   Dim hCtrl As ToolButton
   Dim hImage As Image
   
+  If Not sAction Then Return
+  
   'If $sTool = sAction Then Return
 
   For Each hCtrl In [btnMove, btnDraw, btnErase, btnRectangle, btnEllipse, btnLine, btnMagic, btnPaste, btnEditSelection, btnText]
@@ -470,6 +472,7 @@ Private Sub SetTool(sAction As String)
       $hCursor = New Cursor(Picture["img/draw/magic.png"], 0, 0)
       
     Case "paste"
+      If $sTool <> "paste" Then $sToolBefore = $sTool
       hImage = FImageProperty.GetClipboard()
       If hImage Then 
   
@@ -479,15 +482,12 @@ Private Sub SetTool(sAction As String)
         $hPasteCurrent.Rectangle(0, 0, $hPaste.W, $hPaste.H)
         $hPasteCurrent.Translate(($hImage.W - $hPaste.W) \ 2, ($hImage.H - $hPaste.H) \ 2)
         
-        $hPasteSelect = $hPasteCurrent.Copy()
-        
-        $hChangeRect = $hPasteCurrent.GetExtents()
-
-        imvImage.Refresh
+        UpdatePasteCurrent
         
       Endif
       
     Case "change"
+      If $sTool <> "paste" Then $sToolBefore = $sTool
       If $hSelect And If Not $hSelect.IsVoid() Then
         $hChangeRect = $hSelect.GetExtents()
       Endif
@@ -505,7 +505,8 @@ Private Sub SetTool(sAction As String)
   
   FImageProperty.OnToolChange($sTool)
   
-
+  imvImage.Refresh
+  
 End
 
 Public Sub btnTool_Click()
@@ -623,7 +624,7 @@ Private Sub GetImagePos() As PointF
     
   If $bShowGrid Then
   
-    iSnap = FImageProperty.GetGridResolution() \ FImageProperty.GetGridSubdivision()
+    iSnap = FImageProperty.GetGridSnap()
   
     X = (CInt(X + iSnap \ 2) \ iSnap) * iSnap
     Y = (CInt(Y + iSnap \ 2) \ iSnap) * iSnap
@@ -1337,8 +1338,19 @@ Private Sub UpdateTool()
 
 End
 
+Private Sub UpdatePasteCurrent()
+
+  $hChangeRect = $hPasteCurrent.GetExtents()
+  $hPasteSelect = $hPasteCurrent.Copy()
+  imvImage.Refresh
+
+End
+
 Public Sub Form_KeyPress()
 
+  Dim DY As Integer
+  Dim DX As Integer
+  
   $bShift = Key.Shift
   $bCtrl = Key.Control
   $bAlt = Key.Alt
@@ -1358,14 +1370,38 @@ Public Sub Form_KeyPress()
     Endif
   Endif
   
-  If $hPaste Then
-    If Key.Code = Key.Escape Then ClearSelection
-  Endif
-  
   If $sTool = "draw" Then
     If LCase(Key.Text) = "x" Then
       FImageProperty.SetColor($sLastColor)
     Endif
+  Endif
+  
+  If $sTool = "change" Or If $sTool = "paste" Then
+    
+    Select Case Key.Code
+      Case Key.Up
+        DY = -1
+      Case Key.Down
+        DY = 1
+      Case Key.Left
+        DX = -1
+      Case Key.Right
+        DX = 1
+    End Select
+    
+    If DX Or If DY Then
+      
+      If $sTool = "paste" Then
+        $hPasteCurrent.Translate(DX, DY)
+        UpdatePasteCurrent
+      Else
+        AddUndo($hSelect.Copy())
+        $hSelect.Translate(DX, DY)
+        RefreshSelection
+      Endif
+      
+    Endif
+    
   Endif
   
   imvImage_MouseMove
@@ -2289,7 +2325,7 @@ Public Sub btnCopy_Click()
     Clipboard.Copy($hImage)
     
   Endif
-
+  
 End
 
 Public Sub btnCut_Click()
@@ -2341,8 +2377,8 @@ Private Sub DoPaste()
   Paint.End
   
   SetImage(hImage)
-  ClearPaste
-  SetTool("paste")
+  'ClearPaste
+  'SetTool("paste")
   
 End
 
@@ -2463,11 +2499,13 @@ End
 
 Public Sub mnuHideSelection_Click()
   
-  If $hSelect Then
-    ClearSelection
-  Else If $hPaste Then
+  If $sTool = "paste" Then
     ClearPaste
-    SetTool("paste")
+    SetTool($sToolBefore)
+  Else If $sTool = "change" Then
+    SetTool($sToolBefore)
+  Else If $hSelect Then
+    ClearSelection
   Else
     FMain.HidePanels
   Endif
@@ -2771,6 +2809,7 @@ Private Sub ClearPaste()
     $hChangeRect = Null
     imvImage.Refresh
     $iChangeAction = CHANGE_NOTHING
+    FImageProperty.ClearPaste
   Endif
 
 End

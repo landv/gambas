@@ -790,12 +790,13 @@ Public Sub AddClipboard(hImage As Image, sText As String)
   Endif
   hClip.MakeThumb(hImage)
   
-  $aClipboard.Add(hClip)
+  $aClipboard.Add(hClip, 1)
+  If $aClipboard.Count > 16 Then $aClipboard.Remove($aClipboard.Max)
   gvwClipboard.Rows.Count = $aClipboard.Count
   
   If $aClipboard.Count > 1 Then
-    gvwClipboard.Row = $aClipboard.Max
-    tabBrush.Index = 2
+    gvwClipboard.Row = 1
+    'tabBrush.Index = 2
   Endif
   
 End
@@ -877,6 +878,8 @@ Private Sub RefreshClipboard()
   'Dim aFormat As String[]
   'Dim iFormat As Integer
   
+  If Not Clipboard.HasChanged Then Return
+  
   Inc Application.Busy
   'aFormat = Clipboard.Formats
   'iFormat = aFormat.Find("image/*", gb.Like)
@@ -914,7 +917,7 @@ Public Sub GetClipboard() As Image
 
   Dim hImage As Image
   
-  If tabBrush.Index <> 2 Then Return
+  If tabBrush.Index <> 2 Then tabBrush.Index = 2
   
   Try hImage = $aClipboard[gvwClipboard.Row].Image
   If Not hImage Then Return
@@ -1256,13 +1259,14 @@ End
 
 Public Sub txtGridRes_Change()
 
+  txtGridSnap.MaxValue = txtGridRes.Value
   Try GetCurrent().UpdateGrid
 
 End
 
-Public Sub cmbGridSub_Click()
+Public Sub txtGridSnap_Change()
 
-  Try GetCurrent().UpdateGrid
+  'Try GetCurrent().UpdateGrid
 
 End
 
@@ -1272,9 +1276,9 @@ Public Sub GetGridResolution() As Integer
   
 End
 
-Public Sub GetGridSubdivision() As Integer
+Public Sub GetGridSnap() As Integer
   
-  Return CInt(cmbGridSub.Text)
+  Return txtGridSnap.Value
   
 End
 
@@ -1476,5 +1480,11 @@ End
 Public Sub GetFillRule() As Integer
   
   Return $iFillRule
+  
+End
+
+Public Sub ClearPaste()
+  
+  tabBrush.Index = 0
   
 End
