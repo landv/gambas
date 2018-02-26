@@ -203,6 +203,7 @@ Public Sub Main()
   Dim sPath As String
   Dim hImage As Image
   
+  Quit
   sDir = "~/gambas/git/master/comp/src/gb.form.stock/gambas-mono/32"
   For Each sFile In Dir(sDir, "*.png")
     sPath = sDir &/ sFile
