@@ -259,7 +259,7 @@ Public Sub InitWebView()
   'hFont = Font[Settings["/Editor/Font", Application.Font]]
   WebSettings.Fonts.SerifFont = Application.Font.Name
   WebSettings.Fonts.SansSerifFont = Application.Font.Name
-  WebSettings.Fonts.DefaultFontSize = Application.Font.Ascent
+  WebSettings.Fonts.DefaultFontSize = Application.Font.Ascent * 0.9
 
   hFont = Font[Settings["/ConsoleFont", DEFAULT_FONT]]
   WebSettings.Fonts.FixedFont = hFont.Name

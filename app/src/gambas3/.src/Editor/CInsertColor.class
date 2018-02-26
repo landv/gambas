@@ -7,10 +7,80 @@
 'Public Const MODE_C As Integer = 2
 
 Private $hModule As Object
-Private $sPattern As String
-Private $aPattern As String[]
 Private $hMenu As Menu
 Private $hObs As Observer
+
+Private $sPattern As String
+Private $aPattern As String[]
+'Private $aPatternAlpha As String[]
+Private $aPatternSearch As String[]
+
+Static Public Sub FormatColor(iColor As Integer, sFormat As String) As String
+
+  Dim I As Integer
+  Dim sCar As String
+  Dim sType As String
+  Dim sResult As String
+  Dim iVal As Integer
+  
+  For I = 1 To Len(sFormat)
+    sCar = Mid$(sFormat, I, 1)
+    If InStr("RGBA", sCar) Then
+      sType = Mid$(sFormat, I + 1, 1)
+      Select Case sCar
+        Case "R"
+          iVal = Color[iColor].Red
+        Case "G"
+          iVal = Color[iColor].Green
+        Case "B"
+          iVal = Color[iColor].Blue
+        Case "A"
+          iVal = Color[iColor].Alpha Xor 255
+      End Select
+      Select Case sType
+        Case "x"
+          sCar = Hex$(iVal, 2)
+        Case "i"
+          sCar = CStr(iVal)
+        Case "f"
+          sCar = Format(iVal / 255, "0.###")
+      End Select
+      Inc I
+    Endif
+    sResult &= sCar
+  Next
+  
+  Return sResult
+  
+End
+
+Static Private Sub GetColorFromString(sRgb As String) As Integer
+  
+  Dim aScan As String[]
+  
+  If sRgb Begins "rgba(" Then
+    aScan = Scan(sRgb, "rgba(*,*,*,*)")
+    Return Color.RGB(CInt(aScan[0]), CInt(aScan[1]), CInt(aScan[2]), CInt(255 * CFloat(aScan[3])) Xor 255)
+  Else If sRgb Begins "rgb(" Then
+    aScan = Scan(sRgb, "rgb(*,*,*)")
+    Return Color.RGB(CInt(aScan[0]), CInt(aScan[1]), CInt(aScan[2]))
+  Else If sRgb Begins "&H" Then
+    Return Val("&H" & Mid$(sRgb, 3, 6))
+  Else If sRgb Begins "&" Then
+    Return Val("&H" & Mid$(sRgb, 2, 6))
+  Else If sRgb Begins "#" Then
+    If Len(sRgb) = 4 Then
+      Return Val("&H" & Mid$(sRgb, 2, 1) & Mid$(sRgb, 2, 1) & Mid$(sRgb, 2, 2) & Mid$(sRgb, 2, 2) & Mid$(sRgb, 2, 3) & Mid$(sRgb, 2, 3))
+    Else If Len(sRgb) = 7 Then
+      Return Val("&H" & Mid$(sRgb, 2, 6))
+    Endif
+  Endif
+  
+Catch
+  
+End
+
+
 
 Public Sub _new(hModule As Object, hMenuButton As MenuButton)
   
@@ -18,15 +88,19 @@ Public Sub _new(hModule As Object, hMenuButton As MenuButton)
   
   $hModule = hModule
   
-  Select Case GetEditor().Highlight
+  Select Case GetEditor().Mode
     Case "gambas"
-      $aPattern = ["&H", "#", "&"]
-    Case "css", "webpage", "html"
-      $aPattern = ["#"]
-    Case "javascript"
-      $aPattern = ["#"]
+      $aPattern = ["&HRxGxBx", "#RxGxBx", "&RxGxBx"]
+      $aPatternSearch = ["&H", "#", "&"]
+    Case "css", "html"
+      $aPattern = ["#RxGxBx", "rgb(Ri,Gi,Bi)"]
+      $aPatternSearch = ["#", "rgb(", "rgba("]
+    Case "webpage"
+      $aPattern = ["&HRxGxBx", "#RxGxBx", "&RxGxBx", "rgb(Ri,Gi,Bi)"]
+      $aPatternSearch = ["&H", "#", "&", "rgb(", "rgba("]
     Case Else
-      $aPattern = ["#"]
+      $aPattern = ["#RxGxBx"]
+      $aPatternSearch = ["#"]
   End Select 
   $sPattern = $aPattern[0]
   
@@ -51,59 +125,102 @@ Public Sub Menu_Show()
   Dim sText As String
   Dim iPos As Integer
   Dim sPattern As String
-  Dim sDigit As String
-  Dim aColor As String[]
+  Dim sColor As String
+  Dim aColor As New String[]
   Dim hMenu As Menu
   Dim hImage As Image
+  Dim aScan As String[]
+  Dim I As Integer
   Dim iColor As Integer
+  Dim hPattern As Image
   
   sText = GetEditor().Text
-  aColor = [$sPattern & "000000", $sPattern & "FFFFFF", $sPattern & "808080"]
   
-  For Each sPattern In $aPattern
+  For Each sPattern In $aPatternSearch
     iPos = 0
     Do
       iPos = InStr(sText, sPattern, iPos + 1)
       If iPos = 0 Then Break
       
-      iPos += Len(sPattern)
-      sDigit = ""
-      While IsHexa(Mid$(sText, iPos, 1)) And Len(sDigit) < 6
-        sDigit &= Mid$(sText, iPos, 1)
-        Inc iPos
-      Wend
-      If Len(sDigit) = 0 Then Continue
-      If IsLetter(Mid$(sText, iPos, 1)) Then Continue
-      If Len(sDigit) = 1 Then Continue
+      If sPattern Begins "rgb" Then
+        
+        If sPattern Begins "rgba(" Then
+          aScan = Scan(Mid$(sText, iPos), sPattern & "*,*,*,*)*")
+          If aScan.Count <> 5 Then Continue
+        Else
+          aScan = Scan(Mid$(sText, iPos), sPattern & "*,*,*)*")
+          If aScan.Count <> 4 Then Continue
+        Endif
+        aScan.Pop()
+        sColor = sPattern & aScan.Join() & ")"
+        
+      Else
+        
+        iPos += Len(sPattern)
+        sColor = ""
+        While IsHexa(Mid$(sText, iPos, 1)) And Len(sColor) < 6
+          sColor &= Mid$(sText, iPos, 1)
+          Inc iPos
+        Wend
+        If Len(sColor) = 0 Then Continue
+        If IsLetter(Mid$(sText, iPos, 1)) Then Continue
+        If Len(sColor) = 1 Then Continue
       
-      sDigit = String$(6 - Len(sDigit), "0") & sDigit
-      
-      sDigit = sPattern & UCase$(sDigit)
-      If Not aColor.Exist(sDigit) Then 
-        aColor.Add(sDigit)
-        If aColor.Count = 100 Then Break
+        'sColor = String$(6 - Len(sColor), "0") & sColor
+        sColor = sPattern & sColor
+        
       Endif
+      
+      iColor = GetColorFromString(sColor)
+      GoSub ADD_COLOR
+      If aColor.Count >= 100 Then Break
       
     Loop
   Next
   
+  For Each iColor In [Color.Black, Color.White, Color.Gray]
+    sColor = FormatColor(iColor, $sPattern)
+    GoSub ADD_COLOR
+  Next
+  
   aColor.Sort
+  
+  For I = 0 To aColor.Max
+    sColor = aColor[I] 
+    sColor = Mid$(sColor, InStr(sColor, ":") + 1)
+    aColor[I] = sColor
+  Next
 
   $hMenu.Children.Clear
   
-  For Each sDigit In aColor
+  hPattern = Image.Load("img/16/tile.png")
+  hPattern.FillRect(0, 0, 16, 1, Color.Gray)
+  hPattern.FillRect(0, 0, 1, 16, Color.Gray)
+  hPattern.FillRect(0, 15, 16, 1, Color.Gray)
+  hPattern.FillRect(15, 0, 1, 16, Color.Gray)
+  
+  For Each sColor In aColor
     hMenu = New Menu($hMenu) As "MenuColor"
-    hMenu.Text = Replace(sDigit, "&", "&&")
-    hMenu.Tag = sDigit
-    hImage = New Image(12, 12)
-    hImage.FillRect(0, 0, hImage.W, hImage.H, &H808080)
-    While Not IsHexa(Left(sDigit))
-      sDigit = Mid$(sDigit, 2)
-    Wend
-    iColor = Val("&H" & sDigit & "&")
-    hImage.FillRect(1, 1, hImage.W - 2, hImage.H - 2, iColor)
+    hMenu.Text = Replace(sColor, "&", "&&")
+    hMenu.Tag = sColor
+    hImage = hPattern.Copy()
+    hImage.PaintRect(1, 1, hImage.W - 2, hImage.H - 2, GetColorFromString(sColor))
     hMenu.Picture = hImage.Picture
   Next
+  
+  Return
+  
+ADD_COLOR:
+
+  With Color[iColor]
+    If .Saturation = 0 Then
+      sColor = "0000" & Hex$(.Value, 2) & Hex$(.Alpha, 2) & ":" & sColor
+    Else
+      sColor = Hex$(.Hue, 2) & Hex$(.Saturation, 2) & Hex$(.Value, 2) & Hex$(.Alpha, 2) & ":" & sColor
+    Endif
+  End With
+  If Not aColor.Exist(sColor) Then aColor.Add(sColor)
+  Return
   
 End
 
@@ -121,7 +238,7 @@ Public Sub Button_Click()
   If FColorChooser.Run("", False, ("Insert color"), $aPattern) Then Return
   
   With GetEditor()
-    .Insert(FColorChooser.Prefix & Hex$(FColorChooser.Value, 6))
+    .Insert(FColorChooser.Pattern)
     .SetFocus
   End With
   
