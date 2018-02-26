@@ -177,7 +177,7 @@ static QtMessageHandler _previousMessageHandler;
 
 static void myMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg )
 {
-	fprintf(stderr, "---- `%s'\n", QT_ToUtf8(msg));
+	//fprintf(stderr, "---- `%s'\n", QT_ToUtf8(msg));
 	
 	if (msg == "QXcbClipboard: SelectionRequest too old")
 		return;
