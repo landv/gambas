@@ -673,31 +673,45 @@ End
 
 Static Private Sub GetInheritance(aPath As String[], sTheme As String) As String[]
   
-  Dim aInheritance As String[] = [sTheme]
-  Dim sPath As String
+  Dim aInheritance As New String[]
   Dim sLine As String
   Dim sChildTheme As String
+  Dim sName As String
+  Dim sDir As String
   
-  For Each sPath In aPath
-  
-    If Exist(sPath &/ sTheme &/ "index.theme") Then 
+  For Each sDir In aPath
     
-      For Each sLine In Split(File.Load(sPath &/ sTheme &/ "index.theme"), "\n")
-        
-        If InStr(sLine, "Inherits") Then 
-          For Each sChildTheme In Split(Scan(sLine, "*=*")[1])
-            If sChildTheme = sTheme Then Continue
-            If aInheritance.Exist(sChildTheme) Then Continue
-            aInheritance.Insert(GetInheritance(aPath, sChildTheme))
-          Next
-          Break
-        Endif
-        
-      Next
+    If Not IsDir(sDir) Then Continue
+  
+    For Each sName In Dir(sDir, "*", gb.Directory)
       
-      Break
+      If LCase(sName) <> sTheme Then Continue
+  
+      If Exist(sDir &/ sName &/ "index.theme") Then 
+        
+        aInheritance.Add(sName)
       
-    Endif
+        For Each sLine In Split(File.Load(sDir &/ sName &/ "index.theme"), "\n")
+          
+          If InStr(sLine, "Inherits") Then 
+            
+            For Each sChildTheme In Split(Scan(sLine, "*=*")[1])
+              If LCase(sChildTheme) = sTheme Then Continue
+              If aInheritance.Exist(sChildTheme) Then Continue
+              aInheritance.Insert(GetInheritance(aPath, sChildTheme))
+            Next
+            
+            Break
+            
+          Endif
+          
+        Next
+        
+        Return aInheritance
+        
+      Endif
+      
+    Next
     
   Next
   
@@ -709,7 +723,7 @@ Static Private Sub GetAllThemePath(sMap As String, aPath As String[], sTheme As 
   
   Dim sPath As String
   
-  For Each sTheme In GetInheritance(aPath, sTheme)
+  For Each sTheme In GetInheritance(aPath, LCase(sTheme))
     For Each sPath In aPath
       AddPath(sMap, sPath &/ sTheme)
     Next
