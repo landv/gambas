@@ -62,6 +62,7 @@ typedef
 static int _current_clipboard = gClipboard::Clipboard;
 static GtkClipboard *_clipboard = NULL;
 static GtkClipboard *_selection = NULL;
+static bool _clipboard_has_changed[2] = { FALSE };
 
 static char *convert_format(char *fmt)
 {
@@ -99,20 +100,37 @@ static GList *gdk_drag_context_list_targets(GdkDragContext *context)
 
 ************************************************************************/
 
+static void cb_change(GtkClipboard *clipboard, GdkEvent *, gpointer)
+{
+	_clipboard_has_changed[clipboard == _selection ? gClipboard::Clipboard : gClipboard::Selection] = TRUE;
+}
+
+
 static GtkClipboard *get_clipboard()
 {
 	if (_current_clipboard == gClipboard::Selection)
 	{
 		if (!_selection)
+		{
 			_selection = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
+			g_signal_connect(G_OBJECT(_selection), "owner-changed", G_CALLBACK(cb_change), (gpointer)gClipboard::Clipboard);
+		}
 		return _selection;
 	}
 	else
 	{
 		if (!_clipboard)
+		{
 			_clipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+			g_signal_connect(G_OBJECT(_selection), "owner-changed", G_CALLBACK(cb_change), (gpointer)gClipboard::Selection);
+		}
 		return _clipboard;
 	}
+}
+
+bool gClipboard::hasChanged()
+{
+	return _clipboard_has_changed[_current_clipboard];
 }
 
 void gClipboard::setCurrent(int clipboard)
@@ -184,6 +202,7 @@ void gClipboard::setImage(gPicture *image)
 
 gPicture * gClipboard::getImage()
 {
+	_clipboard_has_changed[_current_clipboard] = FALSE;
   return new gPicture(gtk_clipboard_wait_for_image(get_clipboard()));
 }
 
@@ -270,6 +289,8 @@ char *gClipboard::getText(int *len, const char *format)
 	memcpy(text, gtk_selection_data_get_data(data), *len);
 	
 	gtk_selection_data_free(data);
+	
+	_clipboard_has_changed[_current_clipboard] = FALSE;
 	
 	return gt_free_later(text);
 }
