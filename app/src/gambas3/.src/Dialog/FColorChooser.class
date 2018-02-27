@@ -14,7 +14,7 @@ Static Private $aPattern As String[]
 
 Private Const DEFAULT_COLOR As String = "-"
 
-Private $aButtonPrefix As Button[]
+Private $aButtonPattern As Button[]
 
 Static Private Sub GetColor(sName As String) As Integer
   
@@ -83,12 +83,12 @@ Public Sub Form_Open()
 
   If $aPattern And If $aPattern.Count Then
     
-    $aButtonPrefix = New Button[$aPattern.Count]
+    $aButtonPattern = New Button[$aPattern.Count]
     For I = 0 To $aPattern.Max
-      $aButtonPrefix[I] = New Button(panColor) As "Color"
-      $aButtonPrefix[I].AutoResize = True
-      '$aButtonPrefix[I].H = Desktop.Scale * 4
-      Project.SetEditorFont($aButtonPrefix[I])
+      $aButtonPattern[I] = New Button(panColor) As "Color"
+      $aButtonPattern[I].AutoResize = True
+      '$aButtonPattern[I].H = Desktop.Scale * 4
+      Project.SetEditorFont($aButtonPattern[I])
     Next
     
     btnOK.Hide
@@ -157,7 +157,11 @@ End
 
 Public Sub dlgColor_Activate()
 
-  btnOK.Value = True
+  If $aPattern Then
+    $aButtonPattern[0].Value = True
+  Else
+    btnOK.Value = True
+  Endif
 
 End
 
@@ -168,11 +172,11 @@ Public Sub Form_Close()
   
   If $aPattern Then
     
-    For Each hButton In $aButtonPrefix
+    For Each hButton In $aButtonPattern
       hButton.Delete
     Next
     
-    $aButtonPrefix = Null
+    $aButtonPattern = Null
     
     btnOK.Show
     
@@ -212,11 +216,11 @@ Private Sub UpdateColor()
     
     For I = 0 To $aPattern.Max
       sColor = CInsertColor.FormatColor(Value, $aPattern[I])
-      $aButtonPrefix[I].Text = Replace(sColor, "&", "&&")
-      $aButtonPrefix[I].Tag = sColor
+      $aButtonPattern[I].Text = Replace(sColor, "&", "&&")
+      $aButtonPattern[I].Tag = sColor
     Next
 
-    'Me.Width = Max(Me.Width, $aButtonPrefix[$aPattern.Max].X + $aButtonPrefix[$aPattern.Max].W + Desktop.Scale * 40)
+    'Me.Width = Max(Me.Width, $aButtonPattern[$aPattern.Max].X + $aButtonPattern[$aPattern.Max].W + Desktop.Scale * 40)
 
   Endif
 

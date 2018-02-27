@@ -164,7 +164,7 @@ Public Sub Menu_Show()
         Wend
         If Len(sColor) = 0 Then Continue
         If IsLetter(Mid$(sText, iPos, 1)) Then Continue
-        If Len(sColor) = 1 Then Continue
+        If Len(sColor) < 3 Then Continue
       
         'sColor = String$(6 - Len(sColor), "0") & sColor
         sColor = sPattern & sColor
