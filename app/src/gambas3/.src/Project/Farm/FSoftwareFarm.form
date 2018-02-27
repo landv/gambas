@@ -61,11 +61,13 @@
     Animated = True
     Index = 0
     Text = ("")
-    { panGroup HPanel
+    { panGroup ScrollView
       MoveScaled(4,17,85,36)
       Expand = True
-      Spacing = True
+      Arrangement = Arrange.Row
       Margin = True
+      Border = False
+      ScrollBar = Scroll.Vertical
     }
     Index = 1
     Text = ("")
