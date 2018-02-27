@@ -1415,7 +1415,7 @@ Public Sub SetCompilation(Optional sOutput As String)
     If aLine.Count <> 3 Then Continue
     
     gvwCompilation[I, 0].Text = Trim(File.BaseName(aLine[0]))
-    gvwCompilation[I, 1].Text = CStr(CInt(aLine[1]) + 1)
+    gvwCompilation[I, 1].Text = CStr(CInt(aLine[1]))
     gvwCompilation[I, 2].Text = String.UCaseFirst(Project.TranslateMessage(Trim(aLine[2])))
     gvwCompilation[I, 2].Font = Project.GetEditorFont()
     Inc I
@@ -1438,7 +1438,7 @@ Public Sub gvwCompilation_Select()
 
   Dim I As Integer = gvwCompilation.Row
   
-  Project.OpenFile(gvwCompilation[I, 0].Text, CInt(gvwCompilation[I, 1].Text) - 1)
+  Project.OpenFile(gvwCompilation[I, 0].Text, CInt(gvwCompilation[I, 1].Text))
 
 Catch  
 
