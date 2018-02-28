@@ -410,6 +410,7 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 {
 	COMP_INFO *info = &COMP_res_info[op];
 	int type = info->type;
+	int type1, type2;
 
 	switch (info->value)
 	{
@@ -484,14 +485,25 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 			break;
 			
 		case RST_AND:
-			type = Max(get_type(0, nparam), get_type(1, nparam));
-			if (type > T_LONG && type != T_VARIANT) // && type != T_STRING) Why ?
-				THROW("Integer expected");
+			type1 = get_type(0, nparam);
+			type2 = get_type(1, nparam);
+			
+			if ((type1 > T_BOOLEAN && type1 <= T_LONG) ^ (type2 > T_BOOLEAN && type2 <= T_LONG))
+				COMPILE_print(MSG_WARNING, JOB->line, "integer and boolean mixed with `&1' operator", info->name);
+				
+			type = Max(type1, type2);
+			
+			if (type > T_LONG)
+			{
+				if (type != T_VARIANT)
+					type = T_BOOLEAN;
+			}
+			
 			break;
 
 		case RST_NOT:
 			type = get_type(0, nparam);
-			if (type == T_STRING || type == T_OBJECT)
+			if (type == T_STRING || type == T_OBJECT || type == T_DATE)
 				type = T_BOOLEAN;
 			break;
 	}
