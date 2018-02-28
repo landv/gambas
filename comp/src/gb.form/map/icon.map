@@ -2,10 +2,12 @@ access                  preferences/preferences-desktop-accessibility;apps/prefe
 add                     actions/list-add
 align-bottom            actions/align-vertical-bottom
 align-center            actions/align-horizontal-center
+align-height            actions/object-columns
 align-left              actions/align-horizontal-left
 align-middle            actions/align-vertical-center
 align-right             actions/align-horizontal-right
 align-top               actions/align-vertical-top
+align-width             actions/object-rows
 apply                   actions/dialog-apply;actions/dialog-ok-apply
 archive                 $(mime)/package-x-generic;apps/utilities-file-archiver
 attach                  status/mail-attachment;actions/mail-attachment
@@ -84,6 +86,7 @@ left                    actions/go-previous
 link                    emblems/emblem-symbolic-link
 linux                   #
 lock                    actions/object-locked;status/object-locked
+lower                   actions/object-ordre-lower
 mail                    apps/evolution-mail;actions/mail-mark-unread
 make                    actions/arrow-down
 make-all                actions/arrow-down-double
@@ -122,6 +125,7 @@ program                 $(mime)/application-x-executable
 properties              actions/document-properties
 question                status/dialog-question;actions/svn-status
 quit                    actions/application-exit
+raise                   actions/object-ordre-raise
 recent                  [breeze*]actions/appointment-new;actions/document-open-recent
 record                  actions/media-record
 redo                    actions/edit-redo

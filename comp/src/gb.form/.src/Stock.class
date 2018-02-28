@@ -8,6 +8,7 @@ Static Property Read Themes As String[]
 Static Property Read Icons As String[]
 
 Static Private $bInit As Boolean
+Static Private $bDarkTheme As Boolean = False
 'Static Private $sTheme As String
 Static Private $aIconPath As String[]
 Static Private $cIconMap As Collection
@@ -319,6 +320,10 @@ Static Private Sub InitTheme()
   
   SearchTheme(Application.Theme)
   
+  ' If Color[Color.Background].Luminance < 128 Or If Env["GB_GUI_DARK_THEME"] = "1" Then 
+  '   If InStr(LCase(Application.Theme), "dark") = 0 Then $bDarkTheme = True
+  ' Endif
+  
   $bInit = True
   
 End
@@ -327,7 +332,9 @@ Static Public Function GetSize(Size As String) As Integer
   
   Dim iSize As Integer
   
-  Select Case Size
+  Select Case LCase(Size)
+    Case "very small"
+      iSize = (CInt(Desktop.Scale * 2) \ 4) * 4 '16 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 4
     Case "small"
       iSize = (CInt(Desktop.Scale * 2.5) \ 4) * 4 '16 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 4
     Case "medium"
@@ -378,6 +385,7 @@ Static Private Sub DoLoadIcon(sPath As String, iSize As Integer, iRealSize As In
     sName = File.SetExt(sName, "png")
     Try hImage = Image.Load(sDir &/ sName)
     If Not Error Then 
+      If $bDarkTheme Then hImage.Invert(Color.Background, Color.Foreground)
       hPict = hImage.Stretch(iRealSize, iRealSize).Picture
       Goto RETURN_PICT
     Endif
@@ -387,6 +395,7 @@ Static Private Sub DoLoadIcon(sPath As String, iSize As Integer, iRealSize As In
     sName = sName & ".png" 'File.SetExt(sName, "png")  'Warning this change is for files than have a point in the name
     Try hImage = Image.Load(sDir &/ sName)
     If Not Error Then 
+      If $bDarkTheme Then hImage.Invert(Color.Background, Color.Foreground)
       hPict = hImage.Picture
       Goto RETURN_PICT
     Endif
@@ -740,6 +749,8 @@ Static Private Function PictureFromSvg(hSvg As SvgImage, iSize As Integer) As Pi
   Paint.Scale(iSize / hSvg.Width, iSize / hSvg.Height)
   hSvg.Paint()
   Paint.End
+  
+  If $bDarkTheme Then hImage.Invert(Color.Background, Color.Foreground)
 
   Return hImage.Picture
   
