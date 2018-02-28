@@ -462,14 +462,16 @@ Private Sub SetTool(sAction As String)
       $iMouse = Mouse.SizeAll
     
     Case "draw", "erase", "rectangle", "ellipse"
-      $iMouse = Mouse.Cross
+      '$iMouse = Mouse.Cross
+      $iMouse = Mouse.Custom
+      $hCursor = New Cursor(Picture["img/32/cross.png"], 15, 15)
     
     Case "line"
       $hLastPoint = Null
     
     Case "magic"
       $iMouse = Mouse.Custom
-      $hCursor = New Cursor(Picture["img/draw/magic.png"], 0, 0)
+      $hCursor = New Cursor(Picture["img/32/magic.png"], 11, 11)
       
     Case "paste"
       If $sTool <> "paste" Then $sToolBefore = $sTool
@@ -493,7 +495,9 @@ Private Sub SetTool(sAction As String)
       Endif
       
     Case "text"
-      $iMouse = Mouse.Cross
+      '$iMouse = Mouse.Cross
+      $iMouse = Mouse.Custom
+      $hCursor = New Cursor(Picture["img/32/cross.png"], 15, 15)
       CreateSelection
       $hTextSelect = $hSelect.Copy()
       $hLastPoint = imvImage.ViewToImage(Point(imvImage.ScrollX + imvImage.ClientW / 2, imvImage.ScrollY + imvImage.ClientH / 2))
