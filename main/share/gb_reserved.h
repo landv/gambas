@@ -65,7 +65,8 @@ enum {
 	RST_AND,
 	RST_NOT,
 	RST_BCLR,
-	RST_MIN
+	RST_MIN,
+	RST_MOD
 };
 
 #define RES_is_operator(value) (COMP_res_info[value].flag & RSF_OP)
