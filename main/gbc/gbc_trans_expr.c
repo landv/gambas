@@ -516,7 +516,7 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 
 			if (type1 != T_VARIANT && type2 != T_VARIANT)
 			{
-				if ((type1 <= T_BOOLEAN || type1 > T_LONG) || (type2 <= T_BOOLEAN && type2 > T_LONG))
+				if (type1 <= T_BOOLEAN || type1 > T_LONG || type2 <= T_BOOLEAN || type2 > T_LONG)
 					THROW("Type mismatch");
 			}
 				
