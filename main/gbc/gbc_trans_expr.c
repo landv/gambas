@@ -488,8 +488,11 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 			type1 = get_type(0, nparam);
 			type2 = get_type(1, nparam);
 			
-			if ((type1 > T_BOOLEAN && type1 <= T_LONG) ^ (type2 > T_BOOLEAN && type2 <= T_LONG))
-				COMPILE_print(MSG_WARNING, JOB->line, "integer and boolean mixed with `&1' operator", info->name);
+			if (type1 != T_VARIANT && type2 != T_VARIANT)
+			{
+				if ((type1 > T_BOOLEAN && type1 <= T_LONG) ^ (type2 > T_BOOLEAN && type2 <= T_LONG))
+					COMPILE_print(MSG_WARNING, JOB->line, "integer and boolean mixed with `&1' operator", info->name);
+			}
 				
 			type = Max(type1, type2);
 			
@@ -505,6 +508,19 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 			type = get_type(0, nparam);
 			if (type == T_STRING || type == T_OBJECT || type == T_DATE)
 				type = T_BOOLEAN;
+			break;
+			
+		case RST_MOD:
+			type1 = get_type(0, nparam);
+			type2 = get_type(1, nparam);
+
+			if (type1 != T_VARIANT && type2 != T_VARIANT)
+			{
+				if ((type1 <= T_BOOLEAN || type1 > T_LONG) || (type2 <= T_BOOLEAN && type2 > T_LONG))
+					THROW("Type mismatch");
+			}
+				
+			type = Max(type1, type2);
 			break;
 	}
 	
