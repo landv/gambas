@@ -271,7 +271,7 @@ Public Sub Javascript(sText As String) As String
               SubstIdent(sIdent)
             Else
               If Right(sRes) = "." Then Goto NO_SUBST
-              If Left(RTrim(Mid$(sText, iPos))) = ":" And InStr(",{", Right(RTrim(sRes))) Then Goto NO_SUBST
+              If Left(RTrim(Mid$(sText, iPos))) = ":" And If InStr(",{", Right(RTrim(sRes))) Then Goto NO_SUBST
             Endif
             
             sSubst = GetSubstIdent(sIdent)
