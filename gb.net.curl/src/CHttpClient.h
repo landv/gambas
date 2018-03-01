@@ -60,7 +60,8 @@ typedef
 		char *target;
 		size_t len_data;
 		size_t len_sent;
-		bool send_file;
+		unsigned send_file : 1;
+		unsigned redirect : 1;
 		}
 	CHTTPCLIENT;
 

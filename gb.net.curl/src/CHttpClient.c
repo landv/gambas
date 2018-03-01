@@ -1,24 +1,24 @@
 /***************************************************************************
 
-  CHttpClient.c
+	CHttpClient.c
 
-  (c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
-  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
+	(c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -204,6 +204,7 @@ static void http_initialize_curl_handle(void *_object, GB_ARRAY custom_headers)
 	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEDATA, _object);
 	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEHEADER, _object);
 	curl_easy_setopt(THIS_CURL, CURLOPT_COOKIEFILE, THIS_HTTP->cookiesfile);
+	curl_easy_setopt(THIS_CURL, CURLOPT_FOLLOWLOCATION, (long)THIS_HTTP->redirect);
 	
 	if (THIS_HTTP->updatecookies)
 		curl_easy_setopt(THIS_CURL, CURLOPT_COOKIEJAR, THIS_HTTP->cookiesfile);
@@ -426,7 +427,7 @@ BEGIN_PROPERTY(HttpClient_UpdateCookies)
 	{
 		GB.Error ("UpdateCookies property can not be changed if the client is active");
 		return;
-  	}
+		}
 
 	if (VPROP(GB_BOOLEAN))
 		THIS_HTTP->updatecookies=1;
@@ -660,42 +661,53 @@ BEGIN_METHOD(HttpClient_Download, GB_STRING url; GB_OBJECT headers)
 	
 END_METHOD
 
+
+BEGIN_PROPERTY(HttpClient_Redirect)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS_HTTP->redirect);
+	else
+		THIS_HTTP->redirect = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
+
 GB_DESC HttpClientDesc[] =
 {
-  GB_DECLARE("HttpClient", sizeof(CHTTPCLIENT)),
+	GB_DECLARE("HttpClient", sizeof(CHTTPCLIENT)),
 
-  GB_INHERITS("Curl"),
+	GB_INHERITS("Curl"),
 
-  GB_METHOD("_new", NULL, HttpClient_new, NULL),
-  GB_METHOD("_free", NULL, HttpClient_free, NULL),
-  GB_METHOD("Stop", NULL, HttpClient_Stop, NULL),
-  GB_METHOD("Get", NULL, HttpClient_Get, "[(Headers)String[];(TargetFile)s]"),
-  GB_METHOD("Head", NULL, HttpClient_Head, "[(Headers)String[]]"),
-  GB_METHOD("Post", NULL, HttpClient_Post, "(ContentType)s(Data)s[(Headers)String[];(TargetFile)s]"),
-  GB_METHOD("Put", NULL, HttpClient_Put, "(ContentType)s(Data)s[(Headers)String[];(TargetFile)s]"),
-  GB_METHOD("PostFile", NULL, HttpClient_PostFile, "(ContentType)s(Path)s[(Headers)String[];(TargetFile)s]"),
-  GB_METHOD("PutFile", NULL, HttpClient_PutFile, "(ContentType)s(Path)s[(Headers)String[];(TargetFile)s]"),
+	GB_METHOD("_new", NULL, HttpClient_new, NULL),
+	GB_METHOD("_free", NULL, HttpClient_free, NULL),
+	GB_METHOD("Stop", NULL, HttpClient_Stop, NULL),
+	GB_METHOD("Get", NULL, HttpClient_Get, "[(Headers)String[];(TargetFile)s]"),
+	GB_METHOD("Head", NULL, HttpClient_Head, "[(Headers)String[]]"),
+	GB_METHOD("Post", NULL, HttpClient_Post, "(ContentType)s(Data)s[(Headers)String[];(TargetFile)s]"),
+	GB_METHOD("Put", NULL, HttpClient_Put, "(ContentType)s(Data)s[(Headers)String[];(TargetFile)s]"),
+	GB_METHOD("PostFile", NULL, HttpClient_PostFile, "(ContentType)s(Path)s[(Headers)String[];(TargetFile)s]"),
+	GB_METHOD("PutFile", NULL, HttpClient_PutFile, "(ContentType)s(Path)s[(Headers)String[];(TargetFile)s]"),
 
-  GB_PROPERTY("Auth", "i", HttpClient_Auth),
-  GB_PROPERTY("CookiesFile", "s",HttpClient_CookiesFile),
-  GB_PROPERTY("UpdateCookies", "b",HttpClient_UpdateCookies),
-  GB_PROPERTY_READ("Headers", "String[]", HttpClient_Headers),
-  GB_PROPERTY("UserAgent", "s", HttpClient_UserAgent),
-  GB_PROPERTY("Encoding", "s", HttpClient_Encoding),
-  GB_PROPERTY("TargetFile", "s", HttpClient_TargetFile),
+	GB_PROPERTY("Auth", "i", HttpClient_Auth),
+	GB_PROPERTY("CookiesFile", "s",HttpClient_CookiesFile),
+	GB_PROPERTY("UpdateCookies", "b",HttpClient_UpdateCookies),
+	GB_PROPERTY_READ("Headers", "String[]", HttpClient_Headers),
+	GB_PROPERTY("UserAgent", "s", HttpClient_UserAgent),
+	GB_PROPERTY("Encoding", "s", HttpClient_Encoding),
+	GB_PROPERTY("TargetFile", "s", HttpClient_TargetFile),
+	GB_PROPERTY("Redirect", "b", HttpClient_Redirect),
 
-  GB_PROPERTY_READ("Code", "i", HttpClient_ReturnCode),
-  GB_PROPERTY_READ("Reason", "s", HttpClient_ReturnString),
+	GB_PROPERTY_READ("Code", "i", HttpClient_ReturnCode),
+	GB_PROPERTY_READ("Reason", "s", HttpClient_ReturnString),
 
-  GB_METHOD("CopyFrom", NULL, HttpClient_CopyFrom, "(HttpClient)Source"),
-  
-  GB_STATIC_METHOD("Download", "s", HttpClient_Download, "(URL)s[(Headers)String[];]"),
-  
-  GB_CONSTANT("_IsControl", "b", TRUE),
-  GB_CONSTANT("_IsVirtual", "b", TRUE),
-  GB_CONSTANT("_Group", "s", "Network"),
-  GB_CONSTANT("_Properties", "s", HTTP_PROPERTIES),
-  GB_CONSTANT("_DefaultEvent", "s", "Read"),
-  
-  GB_END_DECLARE
+	GB_METHOD("CopyFrom", NULL, HttpClient_CopyFrom, "(HttpClient)Source"),
+	
+	GB_STATIC_METHOD("Download", "s", HttpClient_Download, "(URL)s[(Headers)String[];]"),
+	
+	GB_CONSTANT("_IsControl", "b", TRUE),
+	GB_CONSTANT("_IsVirtual", "b", TRUE),
+	GB_CONSTANT("_Group", "s", "Network"),
+	GB_CONSTANT("_Properties", "s", HTTP_PROPERTIES),
+	GB_CONSTANT("_DefaultEvent", "s", "Read"),
+	
+	GB_END_DECLARE
 };
