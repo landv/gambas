@@ -426,6 +426,7 @@ static int TRANS_get_class(PATTERN pattern, bool array)
 {
 	int index = PATTERN_index(pattern);
 	int index_array;
+	//CLASS_REF *cref;
 
 	if (!CLASS_exist_class(JOB->class, index))
 	{
@@ -448,10 +449,20 @@ static int TRANS_get_class(PATTERN pattern, bool array)
 					if (TABLE_find_symbol(JOB->class->table, sym->symbol.name, i, &index_array))
 					{
 						index_array = TRANS_get_class(PATTERN_make(RT_CLASS, index_array), TRUE);
+						
 						if (JOB->class->class[index_array].exported)
-							return CLASS_add_class_exported(JOB->class, index);
+							index = CLASS_add_class_exported(JOB->class, index);
 						else
-							return CLASS_add_class(JOB->class, index);
+							index = CLASS_add_class(JOB->class, index);
+						
+						/*cref = &JOB->class->class[index];
+						if (TYPE_is_null(cref->array))
+						{
+							cref->array.t.id = T_OBJECT;
+							cref->array.t.value = index_array;
+						}*/
+						
+						return index;
 					}
 				}
 			}

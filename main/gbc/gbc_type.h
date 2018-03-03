@@ -100,7 +100,6 @@ EXTERN char *TYPE_name[];
 
 /*PUBLIC long TYPE_get_class(TYPE type);*/
 //TYPE TYPE_make(TYPE_ID id, short value, int flag);
-char *TYPE_get_desc(TYPE type);
 const char *TYPE_get_short_desc(TYPE type);
 size_t TYPE_sizeof(TYPE type);
 

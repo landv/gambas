@@ -186,6 +186,7 @@ typedef
 		unsigned structure : 1;
 		unsigned has_static : 1;
 		unsigned _reserved : 28;
+		//TYPE array;                    // if the class is an array, the type of an element
 		}
 	CLASS_REF;
 
@@ -260,6 +261,7 @@ void CLASS_check_properties(CLASS *class);
 
 CLASS_SYMBOL *CLASS_get_local_symbol(int local);
 
+char *TYPE_get_desc(TYPE type);
 
 // gbc_dump.c
 

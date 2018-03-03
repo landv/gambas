@@ -72,7 +72,7 @@ static void _drop_type(int n)
 #define push_type_id(_id) fprintf(stderr, "push_type_id: %d in %s.%d\n", (_id), __func__, __LINE__), _push_type(TYPE_make_simple(_id))
 #define pop_type() (fprintf(stderr, "pop_type: in %s.%d\n", __func__, __LINE__),(_type[--_type_level]))
 #define drop_type(_n) fprintf(stderr, "drop_type: %d in %s.%d\n", (_n), __func__, __LINE__),_drop_type(_n)
-#define get_type(_i, _nparam) (fprintf(stderr, "get_type(%d,%d): %d in %s.%d\n", (_i), (_nparam), (_type[_type_level + (_i) - (_nparam)].t.id), __func__, __LINE__),(_type[_type_level + (_i) - (_nparam)].t.id))
+#define get_type_id(_i, _nparam) (fprintf(stderr, "get_type(%d,%d): %d in %s.%d\n", (_i), (_nparam), (_type[_type_level + (_i) - (_nparam)].t.id), __func__, __LINE__),(_type[_type_level + (_i) - (_nparam)].t.id))
 #define dup_type() fprintf(stderr, "dup_type: in %s.%d\n", __func__, __LINE__),push_type(_type[_type_level - 1])
 
 #else
@@ -94,7 +94,8 @@ static void drop_type(int n)
 
 #define push_type_id(_id) push_type(TYPE_make_simple(_id))
 #define pop_type() (_type[--_type_level])
-#define get_type(_i, _nparam) (_type[_type_level + (_i) - (_nparam)].t.id)
+#define get_type(_i, _nparam) (_type[_type_level + (_i) - (_nparam)])
+#define get_type_id(_i, _nparam) (get_type(_i, _nparam).t.id)
 #define dup_type() push_type(_type[_type_level - 1])
 
 #endif
@@ -386,15 +387,15 @@ static void trans_subr(int subr, short nparam)
 	switch(type)
 	{
 		case RST_SAME:
-			type = get_type(0, nparam);
+			type = get_type_id(0, nparam);
 			break;
 			
 		case RST_BCLR:
-			type = get_type(0, nparam);
+			type = get_type_id(0, nparam);
 			break;
 		
 		case RST_MIN:
-			type = Max(get_type(0, nparam), get_type(1, nparam));
+			type = Max(get_type_id(0, nparam), get_type_id(1, nparam));
 			if (type > T_DATE && type != T_VARIANT)
 				THROW("Number or Date expected");
 	}
@@ -411,6 +412,7 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 	COMP_INFO *info = &COMP_res_info[op];
 	int type = info->type;
 	int type1, type2;
+	TYPE ftype;
 
 	switch (info->value)
 	{
@@ -424,7 +426,7 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 				THROW(E_SYNTAX);
 			else
 			{
-				switch(get_type(0, nparam))
+				switch(get_type_id(0, nparam))
 				{
 					case T_OBJECT:
 					case T_VARIANT:
@@ -475,18 +477,19 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 	switch(type)
 	{
 		case RST_SAME:
-			type = get_type(0, nparam);
+			ftype = get_type(0, nparam);
 			break;
 			
 		case RST_ADD:
-			type = Max(get_type(0, nparam), get_type(1, nparam));
+			type = Max(get_type_id(0, nparam), get_type_id(1, nparam));
 			if (type == T_DATE)
 				type = T_FLOAT;
+			ftype = TYPE_make_simple(type);
 			break;
 			
 		case RST_AND:
-			type1 = get_type(0, nparam);
-			type2 = get_type(1, nparam);
+			type1 = get_type_id(0, nparam);
+			type2 = get_type_id(1, nparam);
 			
 			if (type1 != T_VARIANT && type2 != T_VARIANT)
 			{
@@ -502,17 +505,19 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 					type = T_BOOLEAN;
 			}
 			
+			ftype = TYPE_make_simple(type);
 			break;
 
 		case RST_NOT:
-			type = get_type(0, nparam);
+			type = get_type_id(0, nparam);
 			if (type == T_STRING || type == T_OBJECT || type == T_DATE)
 				type = T_BOOLEAN;
+			ftype = TYPE_make_simple(type);
 			break;
 			
 		case RST_MOD:
-			type1 = get_type(0, nparam);
-			type2 = get_type(1, nparam);
+			type1 = get_type_id(0, nparam);
+			type2 = get_type_id(1, nparam);
 
 			if (type1 != T_VARIANT && type2 != T_VARIANT)
 			{
@@ -520,14 +525,36 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 					THROW("Type mismatch");
 			}
 				
-			type = Max(type1, type2);
+			ftype = TYPE_make_simple(Max(type1, type2));
 			break;
+			
+		case RST_GET:
+			ftype = TYPE_make_simple(T_VARIANT);
+			break;
+			
+		/*case RST_GET:
+			ftype = get_type(0, nparam);
+			if (ftype.t.id == T_OBJECT)
+			{
+				ftype = JOB->class->class[ftype.t.value].array;
+				if (TYPE_is_null(ftype))
+					ftype = TYPE_make_simple(T_VARIANT);
+			}
+			else
+				ftype = TYPE_make_simple(T_VARIANT);
+			
+			fprintf(stderr, "RST_GET: %s\n", TYPE_get_desc(ftype));
+			break;*/
+		
+		default:
+			ftype = TYPE_make_simple(type);
+			
 	}
 	
 	if (nparam)
 		drop_type(nparam);
 	
-	push_type_id(type);
+	push_type(ftype);
 }
 
 

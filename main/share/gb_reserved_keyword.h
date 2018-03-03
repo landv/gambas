@@ -182,7 +182,7 @@ COMP_INFO COMP_res_info[] =
 	{ ">=",           RSF_OP2S,                 OP_GE,        0,   4,   T_BOOLEAN,      C_GE          },
 	{ "<=",           RSF_OP2S,                 OP_LE,        0,   4,   T_BOOLEAN,      C_LE          },
 	{ "<>",           RSF_OP2S,                 OP_NE,        0,   4,   T_BOOLEAN,      C_NE          },
-	{ "[",            RSF_OPP,                  OP_LSQR,      0,   12,  T_VARIANT                     },
+	{ "[",            RSF_OPP,                  OP_LSQR,      0,   12,  RST_GET                       },
 	{ "]",            RSF_NONE,                 OP_RSQR,      0,   0,   T_OBJECT                      },  // Use for the immediate array syntax
 	{ "And",          RSF_OP2SM,                OP_AND,       0,   2,   RST_AND,        C_AND         },
 	{ "Or",           RSF_OP2SM,                OP_OR,        0,   2,   RST_AND,        C_OR          },
