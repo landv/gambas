@@ -124,6 +124,20 @@ QRect FixBreezeStyle::subControlRect(ComplexControl element, const QStyleOptionC
 			return visualRect( option, labelRect );
 		}
 	}
+	else if (element == CC_Slider)
+	{
+		const QStyleOptionSlider *sliderOption( qstyleoption_cast<const QStyleOptionSlider*>( option ) );
+		const bool horizontal( sliderOption->orientation == Qt::Horizontal );
+		
+		QRect result(QProxyStyle::subControlRect(element, option, subControl, widget));
+		
+		if (horizontal)
+			result.moveTop((widget->height() - result.height()) / 2);
+		else
+			result.moveLeft((widget->width() - result.width()) / 2);
+		
+		return result;
+	}
 	
 	return QProxyStyle::subControlRect(element, option, subControl, widget);
 }
@@ -185,12 +199,8 @@ void FixBreezeStyle::drawComplexControl(ComplexControl element, const QStyleOpti
 				}
 			}
 		}
-		
-		QProxyStyle::drawComplexControl(element, option, painter, widget);
-		return;
 	}
-		
-	if (element == CC_ComboBox)
+	else if (element == CC_ComboBox)
 	{
 		QStyleOptionComboBox newOption;	
 		const QStyleOptionComboBox* comboBoxOption( qstyleoption_cast<const QStyleOptionComboBox*>( option ) );
@@ -209,9 +219,30 @@ void FixBreezeStyle::drawComplexControl(ComplexControl element, const QStyleOpti
 				}
 			}
 		}
-	
-		QProxyStyle::drawComplexControl(element, option, painter, widget);
-		return;
+	}
+	else if (element == CC_Slider)
+	{
+		//QStyleOptionSlider newOption;
+		const QStyleOptionSlider *sliderOption( qstyleoption_cast<const QStyleOptionSlider*>( option ) );
+		const bool horizontal( sliderOption->orientation == Qt::Horizontal );
+		
+		if (!(sliderOption->subControls & SC_SliderTickmarks))
+		{
+			QRect handle(QProxyStyle::subControlRect(element, option, SC_SliderHandle, widget));
+			//newOption = *sliderOption;
+			//option = &newOption;
+			
+			painter->save();
+			if (horizontal)
+				painter->translate(0, (widget->height() - handle.height()) / 2);
+			else
+				painter->translate((option->rect.width() - handle.width()) / 2, 0);
+				//newOption.rect = QRect(newOption.rect.x(), (newOption.rect.height() - handle.height()) / 2, newOption.rect.width(), handle.height());
+			
+			QProxyStyle::drawComplexControl(element, option, painter, widget);
+			painter->restore();
+			return;
+		}
 	}
 	
 	QProxyStyle::drawComplexControl(element, option, painter, widget);
