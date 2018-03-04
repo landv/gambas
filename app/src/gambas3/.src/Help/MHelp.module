@@ -476,6 +476,17 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   
 End
 
+Public Sub LoadHelpBrowser()
+  
+  If Not Class.IsLoaded("FHelpBrowser") Then
+    Inc Application.Busy
+    FHelpBrowser.Load
+    Dec Application.Busy
+  Endif
+  
+End
+
+
 '' # Description
 '' 
 '' Initialize the help browser with the help on a specific symbol, and show it automatically.
@@ -502,6 +513,7 @@ End
 
 Public Sub ShowHelpBrowserWith(iType As Integer, sSymbol As String, Optional sClass As String, Optional sMore As String)
   
+  LoadHelpBrowser
   FHelpBrowser.Show
   InitWebViewWith(Null, iType, sSymbol, sClass, sMore)
   

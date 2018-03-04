@@ -2924,10 +2924,6 @@ End
 
 Public Sub mnuViewExplorer_Click()
 
-  If Not Class.IsLoaded("FHelpBrowser") Then
-    Inc Application.Busy
-    FHelpBrowser.Load
-    Dec Application.Busy
-  Endif
+  MHelp.LoadHelpBrowser
 
 End

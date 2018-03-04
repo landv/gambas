@@ -469,7 +469,7 @@ INSTALL_SOURCE:
   
 Catch
   
-  sErr = Error.Text
+  sErr = Error.Text & "\n\n" & Error.Backtrace.Join(" ")
   
 LEAVE_INSTALL:
   
