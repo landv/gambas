@@ -268,6 +268,7 @@ Private Sub CalcSizes()
   
   Dim I As Integer
   Dim sText As String
+  Dim hParent As Control
   
   $hFont = $hView.Font
   
@@ -278,7 +279,15 @@ Private Sub CalcSizes()
   $BW = 1 + $LH \ 6
   $hRows.Height = $LH
   
-  $hFontNumber = Me.Parent.Font.Copy()
+  hParent = Me
+  Do
+    hParent = hParent.Parent
+    If Not hParent Is TextEditor Then 
+      $hFontNumber = hParent.Font.Copy()
+      Break
+    Endif
+  Loop
+  
   $hFontNumber.Size *= $LH / $hFontNumber.Height
   
   $iAscent = $hFont.Ascent
@@ -1046,7 +1055,11 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
       
       If hInfo.Breakpoint Then
         Paint.Ellipse(0, 0, S, S)
-        Paint.Background = Color.SetAlpha($hStyles[Highlight.Breakpoint].Color, 128)
+        If hInfo.Disabled Then
+          Paint.Background = Color.SetAlpha($hStyles[Highlight.Normal].Color, 228)
+        Else
+          Paint.Background = Color.SetAlpha($hStyles[Highlight.Breakpoint].Color, 128)
+        Endif
         Paint.Fill(True)
         Paint.Stroke
       Endif

@@ -13,6 +13,7 @@ Property Read InitialState As _TextEditor_State
 Property Read Height, H As Integer
 Property Expanded As Boolean
 Property Breakpoint As Boolean
+Property Disabled As Boolean
 Property Bookmark As Boolean
 
 Private Sub GetView() As TextEditor
@@ -167,5 +168,18 @@ End
 Private Function Height_Read() As Integer
 
   Return GetView()._GetRowHeight(_Line)
+
+End
+
+Private Function Disabled_Read() As Boolean
+
+  Return GetDoc().Info(_Line).Disabled
+
+End
+
+Private Sub Disabled_Write(Value As Boolean)
+
+  GetDoc().SetInfo(_Line).Disabled = Value
+  Refresh
 
 End
