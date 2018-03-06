@@ -147,9 +147,6 @@ Public Sub WatchTimer_Timer()
   X = Mouse.ScreenX - Me.Parent.ScreenX
   Y = Mouse.ScreenY - Me.Parent.ScreenY
   
-  
-  'Debug X;; Y
-  
   If X < 0 Or If Y < 0 Or If X >= Me.Parent.W Or If Y >= Me.Parent.H Then Return
   
   Try hMenuButton = Me.Parent.FindChild(X, Y)

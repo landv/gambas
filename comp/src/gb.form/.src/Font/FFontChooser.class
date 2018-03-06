@@ -133,7 +133,7 @@ Private Sub FillFamily()
     
   Next
   
-  aFont.Sort(gb.Natural)
+  aFont.Sort(gb.Natural + gb.IgnoreCase)
   ' For Each sFont In aFont
   '   Print cFont[sFont];; sFont
   ' Next
