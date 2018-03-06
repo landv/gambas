@@ -38,6 +38,9 @@ DECLARE_EVENT(EVENT_Hide);
 static CMENU *_popup_menu_clicked = NULL;
 static GB_FUNCTION _init_shortcut_func;
 
+#define HANDLE_PROXY(_ob) \
+	while (((CMENU *)(_ob))->proxy) \
+		_ob = (__typeof__ _ob)(((CMENU *)(_ob))->proxy);
 
 static void register_proxy(void *_object, CMENU *proxy)
 {
@@ -418,6 +421,8 @@ END_PROPERTY
 
 BEGIN_METHOD(Menu_Popup, GB_INTEGER x; GB_INTEGER y)
 
+	HANDLE_PROXY(_object);
+
 	if (!MISSING(x) && !MISSING(y))
 		MENU->popup(VARG(x), VARG(y));
 	else
@@ -429,6 +434,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Menu_Close)
 
+	HANDLE_PROXY(_object);
 	MENU->close();
 
 END_METHOD
@@ -522,6 +528,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Menu_Closed)
 
+	HANDLE_PROXY(_object);
 	GB.ReturnBoolean(MENU->isClosed());
 
 END_PROPERTY
