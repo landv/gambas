@@ -896,6 +896,7 @@ END_METHOD
 
 BEGIN_PROPERTY(Menu_Closed)
 
+	HANDLE_PROXY(_object);
 	GB.ReturnBoolean(!THIS->opened);
 
 END_PROPERTY
