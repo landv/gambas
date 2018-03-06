@@ -1415,7 +1415,7 @@ Public Sub LoadConfig(Optional bInit As Boolean)
       $iIconSize = ICON_SMALL
       iDim = 12
   End Select
-  iDim += Max(Me.Font.Height, GetRealIconSize())
+  iDim += Max(Me.Font.Height * 0.8, GetRealIconSize())
   $iButtonWidth = iDim
   
   aConfig = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Layout"]
