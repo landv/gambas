@@ -626,9 +626,9 @@ Private Sub GetImagePos() As PointF
     If Abs($hMagnet - PointF(X, Y)) <= 8 / imvImage.Zoom Then Return $hMagnet
   Endif
     
-  If $bShowGrid Then
+  iSnap = FImageProperty.GetGridSnap()
   
-    iSnap = FImageProperty.GetGridSnap()
+  If $bShowGrid And If iSnap Then
   
     X = (CInt(X + iSnap \ 2) \ iSnap) * iSnap
     Y = (CInt(Y + iSnap \ 2) \ iSnap) * iSnap

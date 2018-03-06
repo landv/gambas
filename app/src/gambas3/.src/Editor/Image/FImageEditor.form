@@ -469,14 +469,12 @@
     }
     { btnUnion ToolButton
       MoveScaled(91,0,4,4)
-      Visible = False
       ToolTip = ("Union")
       Action = ".union"
       Picture = Picture["img/draw/union.png"]
     }
     { btnDifference ToolButton
       MoveScaled(94,0,4,4)
-      Visible = False
       ToolTip = ("Difference")
       Action = ".difference"
       Picture = Picture["img/draw/difference.png"]
@@ -518,6 +516,7 @@
     }
     { btnCrop ToolButton
       MoveScaled(116,0,4,4)
+      Visible = False
       ToolTip = ("Crop")
       Action = ".crop"
       Picture = Picture["img/draw/crop.png"]
@@ -554,7 +553,7 @@
       Picture = Picture["img/draw/resize.png"]
     }
     { btnRotate ToolButton
-      MoveScaled(135,0,4,4)
+      MoveScaled(134,0,4,4)
       Visible = False
       ToolTip = ("Rotate image")
       Action = ".rotate"
@@ -804,6 +803,6 @@
   { Toolbar image
     Text = "Image editor"
     List = "save,reload,locked,undo,redo,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,copy,cut,tool-paste,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,union,difference,intersection,exclusive,invert,duplicate,offset,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
-    Default = "save,reload,locked,undo,redo,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,copy,cut,tool-paste,|,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,|,invert,duplicate,offset,|,crop,flip-h,flip-v,rotate-r,rotate-l,resize"
+    Default = "save,reload,locked,undo,redo,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,copy,cut,tool-paste,|,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,|,union,difference,invert,duplicate,offset,|,flip-h,flip-v,rotate-r,rotate-l,resize"
   }
 }

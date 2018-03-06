@@ -1221,7 +1221,7 @@ Public Sub WriteDebugSettings()
 End
 
 
-Public Sub SetBreakpoint(sClass As String, iLine As Integer, bOn As Boolean) 
+Public Sub SetBreakpoint(sClass As String, iLine As Integer, bOn As Boolean, Optional bDisabled As Boolean) 
   
   Dim hEditor As FEditor
   Dim sPath As String
@@ -1235,7 +1235,7 @@ Public Sub SetBreakpoint(sClass As String, iLine As Integer, bOn As Boolean)
   If Not sPath Then Return
   Try hEditor = Project.LoadFile(sPath)
   If Not hEditor Then Return 
-  If hEditor.SetBreakpoint(iLine, bOn) Then Return 
+  If hEditor.SetBreakpoint(iLine, bOn, bDisabled) Then Return 
   
   'IF $iState = STATE_STOP THEN RETURN
 
@@ -1243,7 +1243,7 @@ Public Sub SetBreakpoint(sClass As String, iLine As Integer, bOn As Boolean)
 
   ' Update debugger
 
-  If bOn Then
+  If bOn And If Not bDisabled Then
     'DEBUG "+" & sClass & "." & CStr(iLine)
     WriteCommand("+" & sClass & "." & CStr(iLine))
   Else
@@ -1253,13 +1253,13 @@ Public Sub SetBreakpoint(sClass As String, iLine As Integer, bOn As Boolean)
 
 End
 
-Private Sub SetBreakpointFromString(sKey As String, bOn As Boolean)
+Private Sub SetBreakpointFromString(sKey As String, bOn As Boolean, bDisabled As Boolean)
   
   Dim aBreak As String[]
   
   aBreak = Scan(sKey, "*.*")
   If aBreak.Count <> 2 Then Return 
-  SetBreakpoint(aBreak[0], CInt(aBreak[1]), bOn)
+  SetBreakpoint(aBreak[0], CInt(aBreak[1]), bOn, bDisabled)
   
 End
 
@@ -1280,10 +1280,19 @@ End
 Public Sub ReadBreakpoints()
 
   Dim iInd As Integer
+  Dim sBreakpoint As String
+  Dim bDisabled As Boolean
 
   FDebugInfo.ClearBreakpoints
   For iInd = 1 To Project.Config["/Breakpoints/Count", 0]
-    SetBreakpointFromString(Project.Config["/Breakpoints/Breakpoint[" & CStr(iInd) & "]"], True)
+    sBreakpoint = Project.Config["/Breakpoints/Breakpoint[" & CStr(iInd) & "]"]
+    If Left(sBreakpoint) = "!" Then
+      sBreakpoint = Mid$(sBreakpoint, 2)
+      bDisabled = True
+    Else
+      bDisabled = False
+    Endif
+    SetBreakpointFromString(sBreakpoint, True, bDisabled)
   Next
   
 End
@@ -1294,6 +1303,7 @@ Public Sub WriteBreakpoints()
   Dim hEditor As FEditor
   Dim iLine As Integer
   Dim iCount As Integer
+  Dim sBreakpoint As String
 
   'IF NOT Project.Config THEN RETURN
 
@@ -1304,7 +1314,9 @@ Public Sub WriteBreakpoints()
     hEditor = hFile
     For Each iLine In hEditor.GetBreakpoints(True)
       Inc iCount
-      Project.Config["/Breakpoints/Breakpoint[" & CStr(iCount) & "]"] = hEditor.Name & "." & CStr(iLine)
+      sBreakpoint = hEditor.Name & "." & CStr(iLine)
+      If hEditor.IsBreakpointDisabled(iLine) Then sBreakpoint = "!" & sBreakpoint
+      Project.Config["/Breakpoints/Breakpoint[" & CStr(iCount) & "]"] = sBreakpoint
     Next
   Next
 

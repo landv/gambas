@@ -504,6 +504,7 @@
             Picture = Picture["icon:/small/text-center"]
             Radio = True
             Toggle = True
+            Value = True
           }
           { btnTextRight ToolButton btnTextAlign
             Name = "btnTextRight"
@@ -520,7 +521,6 @@
             Picture = Picture["icon:/small/text-left"]
             Radio = True
             Toggle = True
-            Value = True
           }
         }
         { panTextAlign Panel
@@ -529,24 +529,24 @@
             Name = "btnTextTop"
             MoveScaled(0,0,4,4)
             ToolTip = ("Top align")
-            Picture = Picture["img/draw/text-top.png"]
+            Picture = Picture["icon:/small/text-top"]
             Radio = True
             Toggle = True
-            Value = True
           }
           { btnTextMiddle ToolButton btnTextAlign
             Name = "btnTextMiddle"
             MoveScaled(4,0,4,4)
             ToolTip = ("Middle align")
-            Picture = Picture["img/draw/text-middle.png"]
+            Picture = Picture["icon:/small/text-middle"]
             Radio = True
             Toggle = True
+            Value = True
           }
           { btnTextBase ToolButton btnTextAlign
             Name = "btnTextBase"
             MoveScaled(8,0,4,4)
             ToolTip = ("Baseline align")
-            Picture = Picture["img/draw/text-base.png"]
+            Picture = Picture["icon:/small/text-baseline"]
             Radio = True
             Toggle = True
           }
@@ -554,7 +554,7 @@
             Name = "btnTextBottom"
             MoveScaled(12,0,4,4)
             ToolTip = ("Bottom align")
-            Picture = Picture["img/draw/text-bottom.png"]
+            Picture = Picture["icon:/small/text-bottom"]
             Radio = True
             Toggle = True
           }
@@ -603,7 +603,6 @@
         }
         { txtGridSnap SpinBox
           MoveScaled(29,0,9,4)
-          MinValue = 1
           MaxValue = 512
           Step = 8
           Value = 8

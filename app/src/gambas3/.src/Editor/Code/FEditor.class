@@ -1059,15 +1059,16 @@ Public Function CanSetBreakpoint(iLine As Integer) As Boolean
 
 End
 
-Public Sub SetBreakpoint(iLine As Integer, bVal As Boolean) As Boolean
+Public Sub SetBreakpoint(iLine As Integer, bVal As Boolean, bDisabled As Boolean) As Boolean
 
   If bVal And If Not CanSetBreakpoint(iLine) Then Return True
 
   ' Update debug window
-  FDebugInfo.AddBreakpoint(Me.Name, GetProcAt(iLine), iLine, bVal)
+  FDebugInfo.AddBreakpoint(Me.Name, GetProcAt(iLine), iLine, bVal, bDisabled)
 
   'Editor.Lines.SetFlag(iLine, Editor.Breakpoint, bVal)
   $hEditor[iLine].Breakpoint = bVal
+  $hEditor[iLine].Disabled = bDisabled
   If iLine = $hEditor.Line Then RefreshLineInfo(True)
 
 End
@@ -1094,6 +1095,13 @@ Public Function GetBreakpoints(Optional bCheck As Boolean) As Integer[]
   Return $hEditor.Breakpoints
   
 End
+
+Public Sub IsBreakpointDisabled(iLine As Integer) As Boolean
+  
+  Return $hEditor[iLine].Disabled
+  
+End
+
 
 Private Sub GetIndentWidth(iStart As Integer, iEnd As Integer) As Integer
 

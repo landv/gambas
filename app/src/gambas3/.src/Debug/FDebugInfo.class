@@ -11,6 +11,8 @@ Private Const TAB_COMPILATION As Integer = 5
 Private Const TAB_TASK As Integer = 6
 Private Const TAB_SEARCH As Integer = 7
 
+Private $aBreakpoint As New String[]
+Private $cDisabled As New Collection
 Private $cRefreshBreakpoint As New Collection
 
 Private $cRefreshTask As New Collection
@@ -32,9 +34,7 @@ Private $iY As Integer
 
 Public Sub _new()
 
-  Dim DS As Integer
-  
-  DS = Desktop.Scale
+  Dim DS As Integer = Desktop.Scale
   
   With tbvObject
     .Columns.Count = 2
@@ -50,14 +50,11 @@ Public Sub _new()
     .Columns[1].Text = ("Value")
   End With
   
-  With cvwBreak
-    .Columns.Count = 3
-    .Columns[0].Text = ("Class")
-    .Columns[0].Width = DS * 16
-    .Columns[1].Text = ("Function")
-    .Columns[1].Width = DS * 16
-    .Columns[2].Text = ("Line")
-    .Columns[2].Width = DS * 6
+  With gvwBreakpoint
+    .AddColumn("", DS * 3)
+    .AddColumn(("Class"))
+    .AddColumn(("Function"))
+    .AddColumn(("Line"))
   End With
   
   With gvwFind
@@ -141,10 +138,11 @@ End
 
 Public Sub ClearBreakpoints()
   
-  cvwBreak.Clear
+  $aBreakpoint.Clear
+  $cDisabled.Clear
+  gvwBreakpoint.Rows.Count = 0
   
 End
-
 
 
 Public Sub EnableStack(bOn As Boolean)
@@ -613,7 +611,7 @@ Public Sub ReadConfig()
   tbvObject.Font = tbvLocal.Font
   lvwStack.Font = tbvLocal.Font
   cvwWatch.Font = tbvLocal.Font
-  cvwBreak.Font = tbvLocal.Font
+  gvwBreakpoint.Font = tbvLocal.Font
   gvwTask.Font = tbvLocal.Font
   gvwCompilation.Font = tbvLocal.Font
   panBacktrace.Font = tbvLocal.Font
@@ -628,64 +626,31 @@ Public Sub ReadConfig()
   
 End
 
-Public Sub AddBreakpoint(sName As String, sProc As String, iLine As Integer, bOn As Boolean)
+Public Sub AddBreakpoint(sClass As String, sProc As String, iLine As Integer, bOn As Boolean, bDisabled As Boolean)
   
   Dim sText As String
   Dim bExist As Boolean
 
-  sText = sName & "." & sProc & "." & CStr(iLine)
-  bExist = cvwBreak.Exist(sText) 
+  sText = sClass & "." & sProc & "." & CStr(iLine)
+  bExist = $cDisabled.Exist(sText) 
   
   If bOn Then
     If Not bExist Then
-      cvwBreak.Add(sText, sName)
-      cvwBreak.Item[1] = sProc
-      cvwBreak.Item[2] = iLine + 1
+      $cDisabled[sText] = bDisabled
+      $aBreakpoint.Add(sText)
+      $aBreakpoint.Sort()
     Endif
   Else
     If bExist Then
-      cvwBreak.Remove(sText)
+      $cDisabled.Remove(sText)
+      $aBreakpoint.Remove($aBreakpoint.Find(sText))
     Endif 
   Endif
   
+  gvwBreakpoint.Rows.Count = $aBreakpoint.Count
+  gvwBreakpoint.Columns.Width = -1
   'cvwBreak.Columns[0].Width = -1
   'cvwBreak.Columns[1].Width = -1
-
-End
-
-Public Sub btnRemoveBreak_Click()
-
-  Dim aText As String[]
-  Dim sText As String
-  
-  sText = cvwBreak.Key
-  If Not sText Then Return
-  
-  aText = Scan(sText, "*.*.*")
-  Design.SetBreakpoint(aText[0], CInt(aText[2]), False)
-
-End
-
-Public Sub btnClearBreak_Click()
-
-  If Project.Running Then Return
-  
-  While cvwBreak.Count
-    cvwBreak.MoveFirst
-    cvwBreak.Item.Selected = True
-    btnRemoveBreak_Click
-  Wend  
-
-End
-
-Public Sub cvwBreak_Activate()
-
-  Dim aText As String[]
-  
-  aText = Scan(cvwBreak.Key, "*.*.*")
-  Project.OpenFile(aText[0], CInt(aText[2]) + 1)
-
-Catch
 
 End
 
@@ -888,29 +853,25 @@ End
 Public Sub timBreakpoint_Timer()
 
   Dim sClass As String
-  Dim iInd As Integer
   Dim hEditor As FEditor
-  Dim sKey As String
-  Dim sProc As String
-  Dim sText As String
+  Dim I As Integer
+  Dim iLine As Integer
   
   For Each sClass In $cRefreshBreakpoint
     
-    cvwBreak.MoveFirst
-    While cvwBreak.Available
-      sKey = cvwBreak.Item.Key
-      sText = cvwBreak.Item.Text
-      cvwBreak.MoveNext
-      If sText = sClass Then cvwBreak.Remove(sKey)
+    While I < $aBreakpoint.Count
+      If $aBreakpoint[I] Begins (sClass & ".") Then
+        $cDisabled.Remove($aBreakpoint[I])
+        $aBreakpoint.Remove(I)
+      Else
+        Inc I
+      Endif
     Wend
     
     hEditor = Project.Files[Project.FindPath(sClass)]
     If Not hEditor Then Continue
-    For Each iInd In hEditor.GetBreakpoints()
-      sProc = hEditor.GetProcAt(iInd)
-      cvwBreak.Add(sClass & "." & sProc & "." & CStr(iInd), sClass)
-      cvwBreak.Item[1] = sProc
-      cvwBreak.Item[2] = CStr(iInd + 1)
+    For Each iLine In hEditor.GetBreakpoints()
+      AddBreakpoint(sClass, hEditor.GetProcAt(iLine), iLine, True, hEditor.IsBreakpointDisabled(iLine))
     Next
     
   Next
@@ -925,37 +886,20 @@ End
 
 Public Sub GetBreakpoints() As String[]
 
-  Dim aBreak As String[]
-  Dim aBreakPoint As New String[]
-  Dim hEditor As FEditor
-  Dim sClass As String
-  Dim aClass As New String[]
+  Dim sBreakpoint As String
+  Dim aResult As New String[]
+  Dim aBreakPoint As String[]
 
   timBreakpoint_Timer
   
-  cvwBreak.MoveFirst
-  While cvwBreak.Available
-    aBreak = Split(cvwBreak.Item.Key, "*.*.*")
-    If sClass <> aBreak[0] Then
-      sClass = aBreak[0]
-      aClass.Add(sClass)
+  For Each sBreakpoint In $aBreakpoint
+    If Not $cDisabled[sBreakpoint] Then
+      aBreakPoint = Split(sBreakpoint, ".")
+      aResult.Add(aBreakPoint[0] & "." & aBreakPoint[2])
     Endif
-    cvwBreak.MoveNext
-  Wend
-  
-  For Each sClass In aClass
-    hEditor = Project.Files[Project.FindPath(sClass)]
-    hEditor.CheckBreakpoints
   Next
-  
-  cvwBreak.MoveFirst
-  While cvwBreak.Available
-    aBreak = Split(cvwBreak.Item.Key, "*.*.*")
-    aBreakPoint.Add(aBreak[0] & "." & CStr(CInt(aBreak[2]) + 1))
-    cvwBreak.MoveNext
-  Wend
-  
-  Return aBreakPoint
+
+  Return aResult
   
 End
 
@@ -1562,3 +1506,110 @@ Public Sub btnCloseSearch_Click()
   FMain.ShowDebug(False)
 
 End
+
+Public Sub gvwBreakpoint_Data(Row As Integer, Column As Integer)
+
+  Select Case Column
+    
+    Case 0
+      gvwBreakpoint.Data.Picture = Picture[If($cDisabled[$aBreakpoint[Row]], "img/16/unchecked.png", "img/16/checked.png")]
+      
+    Case 1, 2
+      gvwBreakpoint.Data.Text = Split($aBreakpoint[Row], ".")[Column - 1]
+      
+    Case 3
+      gvwBreakpoint.Data.Text = CStr(CInt(Split($aBreakpoint[Row], ".")[2]) + 1)
+    
+  End Select
+
+End
+
+Public Sub gvwBreakpoint_Click()
+
+  Dim sBreakpoint As String
+  Dim aBreakPoint As String[]
+  
+  If gvwBreakpoint.Row < 0 Then Return
+  
+  sBreakpoint = $aBreakpoint[gvwBreakpoint.Row]
+  aBreakPoint = Split(sBreakpoint, ".")
+  
+  If gvwBreakpoint.Column = 0 Then
+    
+    $cDisabled[sBreakpoint] = Not $cDisabled[sBreakpoint]
+    gvwBreakpoint.Rows[gvwBreakpoint.Row].Refresh
+
+    Design.SetBreakpoint(aBreakpoint[0], CInt(aBreakpoint[2]), True, $cDisabled[sBreakpoint])
+    
+  Endif
+  
+  Try Project.OpenFile(aBreakpoint[0], CInt(aBreakPoint[2]) + 1)
+
+End
+
+Public Sub btnRemoveBreakpoint_Click()
+
+  Dim sBreakpoint As String
+  Dim aBreakPoint As String[]
+  Dim iRow As Integer
+  
+  For Each iRow In gvwBreakpoint.Rows.Selection.Reverse()
+    
+    sBreakpoint = $aBreakpoint[iRow]
+    $cDisabled.Remove(sBreakpoint)
+    $aBreakpoint.Remove(iRow)
+    
+    aBreakPoint = Split(sBreakpoint, ".")
+    Design.SetBreakpoint(aBreakpoint[0], CInt(aBreakpoint[2]), False)
+    
+  Next
+  
+  gvwBreakpoint.Rows.Count = $aBreakpoint.Count
+  gvwBreakpoint.Columns.Width = -1
+
+End
+
+Private Sub ToggleBreakpoints(bDisable As Boolean)
+  
+  Dim sBreakpoint As String
+  Dim aBreakPoint As String[]
+  Dim iRow As Integer
+  
+  For Each iRow In gvwBreakpoint.Rows.Selection.Reverse()
+    
+    sBreakpoint = $aBreakpoint[iRow]
+    $cDisabled[sBreakpoint] = bDisable
+    
+    aBreakPoint = Split(sBreakpoint, ".")
+    Design.SetBreakpoint(aBreakpoint[0], CInt(aBreakpoint[2]), True, bDisable)
+    
+  Next
+  
+  gvwBreakpoint.Refresh
+  
+End
+
+
+Public Sub btnEnableBreakpoint_Click()
+
+  ToggleBreakpoints(False)
+
+End
+
+Public Sub btnDisableBreakpoint_Click()
+
+  ToggleBreakpoints(True)
+
+End
+
+Public Sub btnRemoveAllBreakpoint_Click()
+
+  If Project.Running Then Return
+  
+  While $aBreakpoint.Count
+    gvwBreakpoint.Row = 0
+    btnRemoveBreakpoint_Click
+  Wend  
+
+End
+

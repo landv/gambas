@@ -130,16 +130,30 @@
       Text = ("Breakpoints")
       Picture = Picture["img/16/breakpoint.png"]
       { panBreakpoint HBox
-        MoveScaled(0,0,55,4)
-        { btnRemoveBreak ToolButton
-          MoveScaled(0,0,27,4)
-          ToolTip = ("Remove current breakpoint")
+        MoveScaled(0,0,76,4)
+        { btnRemoveBreakpoint ToolButton
+          MoveScaled(3,0,11,4)
+          ToolTip = ("Remove breakpoint")
           AutoResize = True
-          Text = ("Remove current breakpoint")
+          Text = ("Remove")
           Picture = Picture["icon:/small/remove"]
         }
-        { btnClearBreak ToolButton
-          MoveScaled(27,0,13,4)
+        { btnDisableBreakpoint ToolButton
+          MoveScaled(14,0,11,4)
+          ToolTip = ("Disable breakpoint")
+          AutoResize = True
+          Text = ("Disable")
+          Picture = Picture["icon:/small/cancel"]
+        }
+        { btnEnableBreakpoint ToolButton
+          MoveScaled(25,0,11,4)
+          ToolTip = ("Enable breakpoint")
+          AutoResize = True
+          Text = ("Enable")
+          Picture = Picture["icon:/small/apply"]
+        }
+        { btnRemoveAllBreakpoint ToolButton
+          MoveScaled(37,0,13,4)
           ToolTip = ("Remove all breakpoints")
           AutoResize = True
           Text = ("Remove all")
@@ -149,11 +163,12 @@
       { Separator1 Separator
         MoveScaled(34,5,8,0)
       }
-      { cvwBreak ColumnView
-        MoveScaled(1,6,38,25)
+      { gvwBreakpoint GridView
+        MoveScaled(7,9,53,28)
         Expand = True
-        Sorted = True
         Border = False
+        Mode = Select.Multiple
+        Header = GridView.Horizontal
       }
       { timBreakpoint #Timer
         #MoveScaled(74,8)
