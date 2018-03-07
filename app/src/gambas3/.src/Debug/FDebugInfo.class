@@ -1606,10 +1606,8 @@ Public Sub btnRemoveAllBreakpoint_Click()
 
   If Project.Running Then Return
   
-  While $aBreakpoint.Count
-    gvwBreakpoint.Row = 0
-    btnRemoveBreakpoint_Click
-  Wend  
+  gvwBreakpoint.SelectAll
+  btnRemoveBreakpoint_Click
 
 End
 
