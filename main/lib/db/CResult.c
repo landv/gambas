@@ -437,6 +437,65 @@ BEGIN_METHOD(Result_get, GB_STRING field)
 END_METHOD
 
 
+BEGIN_METHOD(Result_GetAll, GB_STRING field)
+
+	int index;
+	int pos;
+	GB_TYPE type, atype;
+	GB_ARRAY result;
+	GB_VARIANT_VALUE *val;
+
+	index = CRESULTFIELD_find(THIS, GB.ToZeroString(ARG(field)), TRUE);
+	if (index < 0)
+		return;
+
+	atype = type = get_field_type(THIS, index);
+	if (atype == DB_T_SERIAL)
+		atype = GB_T_LONG;
+	else if (atype == DB_T_BLOB)
+		atype = GB_T_OBJECT;
+	
+	GB.Array.New(POINTER(&result), atype, 0);
+
+	pos = THIS->pos;
+	load_buffer(THIS, 0);
+	
+	while (THIS->available)
+	{
+		if (type == DB_T_BLOB)
+			check_blob(THIS, index);
+
+		val = &THIS->buffer[index];
+		
+		switch (atype)
+		{
+			case GB_T_BOOLEAN: *(char *)GB.Array.Add(result) = val->value._boolean; break;
+			case GB_T_INTEGER: *(int *)GB.Array.Add(result) = val->value._integer; break;
+			case GB_T_LONG: *(int64_t *)GB.Array.Add(result) = val->value._long; break;
+			case GB_T_FLOAT: *(double *)GB.Array.Add(result) = val->value._float; break;
+			case GB_T_DATE: *(GB_DATE_VALUE *)GB.Array.Add(result) = val->value._date; break;
+			
+			case GB_T_STRING:
+				if (val->type == GB_T_CSTRING)
+					*(char **)GB.Array.Add(result) = GB.NewString(val->value._string, strlen(val->value._string));
+				else
+					*(char **)GB.Array.Add(result) = GB.RefString(val->value._string);
+				break;
+				
+			case GB_T_OBJECT: *(void **)GB.Array.Add(result) = val->value._object; GB.Ref(val->value._object); break;
+		}
+		
+		load_buffer(THIS, THIS->pos + 1);
+	}
+	
+	if (THIS->count >= 0)
+		load_buffer(THIS, pos);
+	
+	GB.ReturnObject(result);
+
+END_METHOD
+
+
 BEGIN_METHOD(Result_put, GB_VARIANT value; GB_STRING field)
 
 	int index;
@@ -796,6 +855,8 @@ GB_DESC CResultDesc[] =
 	GB_METHOD("Update", NULL, Result_Update, NULL),
 	GB_METHOD("Delete", NULL, Result_Delete, "[(Keep)b]"),
 	
+	GB_METHOD("GetAll", "Array", Result_GetAll, "(Field)s"),
+	
 	GB_PROPERTY_READ("Fields", ".Result.Fields", Result_Fields),
 	GB_PROPERTY_READ("Connection", "Connection", Result_Connection),
 
@@ -933,5 +994,3 @@ GB_DESC CBlobDesc[] =
 
 	GB_END_DECLARE
 };
-
-
