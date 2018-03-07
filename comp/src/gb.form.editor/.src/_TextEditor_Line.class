@@ -75,26 +75,26 @@ End
 
 Private Function Breakpoint_Read() As Boolean
 
-  Return GetDoc().Info(_Line).Breakpoint
+  Return GetDoc().HasBreakpoint(_Line)
 
 End
 
 Private Sub Breakpoint_Write(Value As Boolean)
 
-  GetDoc().SetInfo(_Line).Breakpoint = Value
+  GetDoc().SetBreakpoint(_Line, Value, GetDoc().IsBreakpointDisabled(_Line))
   Refresh
 
 End
 
 Private Function Bookmark_Read() As Boolean
 
-  Return GetDoc().Info(_Line).Bookmark
+  Return GetDoc().HasBookmark(_Line)
 
 End
 
 Private Sub Bookmark_Write(Value As Boolean)
 
-  GetDoc().SetInfo(_Line).Bookmark = Value
+  GetDoc().SetBookmark(_Line, Value)
   Refresh
 
 End
@@ -173,13 +173,13 @@ End
 
 Private Function Disabled_Read() As Boolean
 
-  Return GetDoc().Info(_Line).Disabled
+  Return GetDoc().IsBreakpointDisabled(_Line)
 
 End
 
 Private Sub Disabled_Write(Value As Boolean)
 
-  GetDoc().SetInfo(_Line).Disabled = Value
+  GetDoc().SetBreakpoint(_Line, GetDoc().HasBreakpoint(_Line), Value)
   Refresh
 
 End

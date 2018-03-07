@@ -42,6 +42,9 @@ Private $bCloseBraces As Boolean
 Private $iEndOfLine As Integer = gb.Unix
 Private $sEndOfLine As String = "\n"
 
+Private $cBreakpoint As New Collection
+Private $cBookmark As New Collection
+
 Public Sub _new()
   
   _Mode = New TextEditorMode 
@@ -210,12 +213,71 @@ Public Sub Refresh(Optional Y As Integer = -1)
   
 End
 
+Private Sub RemoveCollection(cCol As Collection, Y As Integer, N As Integer) As Collection
+  
+  Dim cNew As Collection
+  Dim bValue As Boolean
+  Dim iLine As Integer
+  
+  If cCol.Count = 0 Then Return cCol
+  
+  cNew = New Collection
+  For Each bValue In cCol
+    iLine = CInt(cCol.Key)
+    If iLine < Y Then
+    Else If iLine >= (Y + N) Then
+      iLine -= N
+    Else
+      Continue
+    Endif
+    cNew[iLine] = bValue
+  Next
+  
+  Return cNew
+  
+End
+
+
+Private Sub RemoveLines(Y As Integer, N As Integer)
+
+  Lines.Remove(Y, N)
+  LinesInfo.Remove(Y, N)
+  LineLength.Remove(Y, N)
+  
+  $cBookmark = RemoveCollection($cBookmark, Y, N)
+  $cBreakpoint = RemoveCollection($cBreakpoint, Y, N)
+  
+End
+
+Private Sub InsertCollection(cCol As Collection, Y As Integer) As Collection
+  
+  Dim bValue As Boolean
+  Dim iLine As Integer
+  Dim cNew As Collection
+  
+  If cCol.Count = 0 Then Return cCol
+  
+  cNew = New Collection
+  For Each bValue In cCol
+    iLine = CInt(cCol.Key)
+    If iLine >= Y Then Inc iLine
+    cNew[iLine] = bValue
+  Next
+  
+  Return cNew
+  
+End
+
+
 Private Sub InsertLine(Y As Integer)
   
   Lines.Add("", Y)
   LineLength.Add(0, Y)
   LinesInfo.Add(CLineInfo(), Y)
   LinesInfo[Y].Modified = True
+  
+  $cBookmark = InsertCollection($cBookmark, Y)
+  $cBreakpoint = InsertCollection($cBreakpoint, Y)
   
 End
 
@@ -515,9 +577,7 @@ Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
     
     SetLine(Y1, String.Left(Lines[Y1], X1) & String.Mid$(Lines[Y2], X2 + 1), True)
     
-    Lines.Remove(Y1 + 1, Y2 - Y1)
-    LinesInfo.Remove(Y1 + 1, Y2 - Y1)
-    LineLength.Remove(Y1 + 1, Y2 - Y1)
+    RemoveLines(Y1 + 1, Y2 - Y1)
     
     For Each hView In GetAllViews()
       hView._RaiseChange
@@ -983,16 +1043,34 @@ Private Function Keywords_Read() As String[]
 
 End
 
+Public Sub HasBreakpoint(iLine As Integer) As Boolean
+  
+  Return $cBreakpoint.Exist(iLine)
+  
+End
+
+Public Sub IsBreakpointDisabled(iLine As Integer) As Boolean
+  
+  If $cBreakpoint.Exist(iLine) Then Return Not CBool($cBreakpoint[iLine])
+  
+End
+
+Public Sub SetBreakpoint(iLine As Integer, bOn As Boolean, Optional bDisable As Boolean)
+  
+  If bOn Then
+    $cBreakpoint[iLine] = Not bDisable
+  Else
+    $cBreakpoint.Remove(iLine)
+  Endif
+  
+End
+
 Private Function Breakpoints_Read() As Integer[]
 
-  Dim Y As Integer
-  Dim aRes As Integer[]
+  Dim aRes As New Integer[]
 
-  aRes = New Integer[]
-  For Y = 0 To Lines.Max
-    If Info(Y).Breakpoint Then
-      aRes.Add(Y)
-    Endif
+  For Each $cBreakpoint
+    aRes.Add(CInt($cBreakpoint.Key))
   Next
   
   Return aRes
@@ -1002,31 +1080,43 @@ End
 Private Sub Breakpoints_Write(Value As Integer[])
 
   Dim Y As Integer
-
-  For Y = 0 To Lines.Max
-    If Info(Y).Breakpoint Then SetInfo(Y).Breakpoint = False
-  Next
   
+  $cBreakpoint.Clear
+
   If Value Then
     For Each Y In Value
-      SetInfo(Y).Breakpoint = True
+      $cBreakpoint[Y] = True
     Next
   Endif
+  
+  Refresh
 
+End
+
+Public Sub HasBookmark(iLine As Integer) As Boolean
+  
+  Return $cBookmark.Exist(iLine)
+  
+End
+
+Public Sub SetBookmark(iLine As Integer, bOn As Boolean)
+  
+  If bOn Then
+    $cBookmark[iLine] = True
+  Else
+    $cBookmark.Remove(iLine)
+  Endif
+  
 End
 
 Private Function Bookmarks_Read() As Integer[]
 
-  Dim Y As Integer
-  Dim aRes As Integer[]
-
-  aRes = New Integer[]
-  For Y = 0 To Lines.Max
-    If Info(Y).Bookmark Then
-      aRes.Add(Y)
-    Endif
-  Next
+  Dim aRes As New Integer[]
   
+  For Each $cBookmark
+    aRes.Add(CInt($cBookmark.Key))
+  Next
+  aRes.Sort
   Return aRes
 
 End
@@ -1034,16 +1124,16 @@ End
 Private Sub Bookmarks_Write(Value As Integer[])
 
   Dim Y As Integer
-
-  For Y = 0 To Lines.Max
-    If Info(Y).Bookmark Then SetInfo(Y).Bookmark = False
-  Next
   
+  $cBookmark.Clear
+
   If Value Then
     For Each Y In Value
-      SetInfo(Y).Bookmark = True
+      $cBookmark[Y] = True
     Next
   Endif
+  
+  Refresh
 
 End
 
@@ -1406,4 +1496,3 @@ Public Sub GetIndentText(iStart As Integer, iEnd As Integer) As String
   Return sResult
 
 End
-

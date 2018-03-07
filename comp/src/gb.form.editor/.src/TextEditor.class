@@ -1014,63 +1014,34 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
   
   'Paint.FillRect(X, Y, $MW, Height, $iBackground)
   
-  If $bShowModified Then
-    If hInfo.Modified Or If hInfo.Saved Then
-      If hInfo.Modified Then
-        iCol = Color.Merge($iBackground, Color.Red, 0.2)
-      Else If hInfo.Saved Then
-        iCol = Color.Merge($iBackground, Color.Green, 0.2)
-      Endif
-      Paint.FillRect(X + $MW - 5, Y, 4, Height, iCol)
-    Endif
-  Endif
-  
-  If YL < 0 Or If YL = Y Then
-    If $bShowLineNumber Then
-      If (Row + 1) Mod 10 = 0 Then
-        iCol = $iForeground
-      Else
-        iCol = $iLimitColor
-      Endif
-      Paint.Background = iCol
-      sStr = CStr(Row + 1 + $iLineNumberOffset)
-      Paint.DrawText(sStr, X, Y, $iWidthLineNumber - 4, H, Align.Right)
-      ' If Row = $Y Then
-      '   Paint.Background = Color.SetAlpha(iCol, 128)
-      '   Paint.DrawText(sStr, X + 1, Y, $iWidthLineNumber - 4, H, Align.Right)
-      ' Endif
-    Endif
-  Endif
-  
-  If YL >= 0 Then Paint.FillRect(X, YL, Width, 1, $iLimitColor)
-  
   If $bShowIcon Or If $bShowExpand Then
     
-    If hInfo.Breakpoint Or If hInfo.Bookmark Or If hInfo.Limit Then
+    If $hDoc.HasBreakpoint(Row) Or If $hDoc.HasBookmark(Row) Or If hInfo.Limit Then
+      
+      If $hDoc.HasBookmark(Row) Then
+        ' SS = S / 3
+        ' Paint.MoveTo(0, SS)
+        ' Paint.RelLineTo(SS, SS)
+        ' Paint.RelLineTo(2 * SS, - SS * 2)
+        ' Paint.LineWidth = SS / 2
+        ' Paint.Background = $hStyles[Highlight.Current].Color
+        ' Paint.Stroke
+        Paint.FillRect(X, Y, $MW, Height, $hStyles[Highlight.Selection].Color)
+      Endif
       
       Paint.Save
       Paint.Translate(X + $iPosIcon + H / 4, Y + H / 4)
       S = H / 2
       Paint.LineWidth = S / 6
       
-      If hInfo.Breakpoint Then
+      If $hDoc.HasBreakpoint(Row) Then
         Paint.Ellipse(0, 0, S, S)
-        If hInfo.Disabled Then
+        If $hDoc.IsBreakpointDisabled(Row) Then
           Paint.Background = Color.SetAlpha($hStyles[Highlight.Normal].Color, 228)
         Else
           Paint.Background = Color.SetAlpha($hStyles[Highlight.Breakpoint].Color, 128)
         Endif
         Paint.Fill(True)
-        Paint.Stroke
-      Endif
-      
-      If hInfo.Bookmark Then
-        SS = S / 3
-        Paint.MoveTo(0, SS)
-        Paint.RelLineTo(SS, SS)
-        Paint.RelLineTo(2 * SS, - SS * 2)
-        Paint.LineWidth = SS / 2
-        Paint.Background = $hStyles[Highlight.Current].Color
         Paint.Stroke
       Endif
       
@@ -1095,6 +1066,36 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
       
     Endif
     
+  Endif
+  
+  If $bShowModified Then
+    If hInfo.Modified Or If hInfo.Saved Then
+      If hInfo.Modified Then
+        iCol = Color.Merge($iBackground, Color.Red, 0.2)
+      Else If hInfo.Saved Then
+        iCol = Color.Merge($iBackground, Color.Green, 0.2)
+      Endif
+      Paint.FillRect(X + $MW - 5, Y, 4, Height, iCol)
+    Endif
+  Endif
+  
+  If YL >= 0 Then Paint.FillRect(X, YL, Width, 1, $iLimitColor)
+  
+  If YL < 0 Or If YL = Y Then
+    If $bShowLineNumber Then
+      If (Row + 1) Mod 10 = 0 Then
+        iCol = $iForeground
+      Else
+        iCol = $iLimitColor
+      Endif
+      Paint.Background = iCol
+      sStr = CStr(Row + 1 + $iLineNumberOffset)
+      Paint.DrawText(sStr, X, Y, $iWidthLineNumber - 4, H, Align.Right)
+      ' If Row = $Y Then
+      '   Paint.Background = Color.SetAlpha(iCol, 128)
+      '   Paint.DrawText(sStr, X + 1, Y, $iWidthLineNumber - 4, H, Align.Right)
+      ' Endif
+    Endif
   Endif
   
 End
