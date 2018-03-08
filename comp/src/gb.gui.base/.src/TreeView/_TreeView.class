@@ -1554,3 +1554,13 @@ Public Sub _SetLayout(Value As Variant)
   _RestoreSelection
 
 End
+
+Public Sub GridView_Font()
+
+  Dim hItem As _TreeView_Item
+  
+  For Each hItem In $cItem
+    _UpdateItemHeight(hItem)
+  Next
+  
+End
