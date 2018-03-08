@@ -3,41 +3,33 @@
 { Form Form
   MoveScaled(0,0,127,7)
   Arrangement = Arrange.Horizontal
-  { btnConsole ToolButton btnDebug
-    Name = "btnConsole"
-    MoveScaled(0,0,12,4)
-    AutoResize = True
-    Text = ("Console")
-    Picture = Picture["icon:/small/terminal"]
-    Toggle = True
-  }
   { btnLocal ToolButton btnDebug
     Name = "btnLocal"
-    MoveScaled(13,0,17,4)
+    MoveScaled(0,0,17,4)
     AutoResize = True
-    Text = ("Local variables")
-    Picture = Picture["img/16/local.png"]
-    Toggle = True
-  }
-  { btnCurrent ToolButton btnDebug
-    Name = "btnCurrent"
-    MoveScaled(30,0,17,4)
-    AutoResize = True
-    Text = ("Current object")
-    Picture = Picture["img/16/current.png"]
+    Text = ("Debugging")
+    Picture = Picture["icon:/small/monitor"]
     Toggle = True
   }
   { btnWatch ToolButton btnDebug
     Name = "btnWatch"
-    MoveScaled(47,0,11,4)
+    MoveScaled(18,0,11,4)
     AutoResize = True
     Text = ("Watch")
     Picture = Picture["icon:/small/watch"]
     Toggle = True
   }
+  { btnConsole ToolButton btnDebug
+    Name = "btnConsole"
+    MoveScaled(31,0,12,4)
+    AutoResize = True
+    Text = ("Console")
+    Picture = Picture["icon:/small/terminal"]
+    Toggle = True
+  }
   { btnBreakpoints ToolButton btnDebug
     Name = "btnBreakpoints"
-    MoveScaled(58,0,16,4)
+    MoveScaled(45,0,16,4)
     AutoResize = True
     Text = ("Breakpoints")
     Picture = Picture["icon:/small/halt"]
@@ -45,7 +37,7 @@
   }
   { btnWarnings ToolButton btnDebug
     Name = "btnWarnings"
-    MoveScaled(74,0,12,4)
+    MoveScaled(63,0,12,4)
     AutoResize = True
     Text = ("Warnings")
     Picture = Picture["icon:/small/warning"]
@@ -53,7 +45,7 @@
   }
   { btnTasks ToolButton btnDebug
     Name = "btnTasks"
-    MoveScaled(86,0,10,4)
+    MoveScaled(77,0,10,4)
     AutoResize = True
     Text = ("Tasks")
     Picture = Picture["icon:/small/apply"]
@@ -61,7 +53,7 @@
   }
   { btnSearchList ToolButton btnDebug
     Name = "btnSearchList"
-    MoveScaled(96,0,16,4)
+    MoveScaled(88,0,16,4)
     AutoResize = True
     Text = ("Search result")
     Picture = Picture["icon:/small/find"]

@@ -2,14 +2,13 @@
 
 Public Shown As Boolean
 
-Private Const TAB_CONSOLE As Integer = 0
-Private Const TAB_LOCAL As Integer = 1
-Private Const TAB_ME As Integer = 2
-Private Const TAB_WATCH As Integer = 3
-Private Const TAB_BREAK As Integer = 4
-Private Const TAB_COMPILATION As Integer = 5
-Private Const TAB_TASK As Integer = 6
-Private Const TAB_SEARCH As Integer = 7
+Private Const TAB_DEBUG As Integer = 0
+Private Const TAB_WATCH As Integer = 1
+Private Const TAB_CONSOLE As Integer = 2
+Private Const TAB_BREAK As Integer = 3
+Private Const TAB_COMPILATION As Integer = 4
+Private Const TAB_TASK As Integer = 5
+Private Const TAB_SEARCH As Integer = 6
 
 Private $aBreakpoint As New String[]
 Private $cDisabled As New Collection
@@ -23,24 +22,21 @@ Private $aValLocal As New String[]
 Private $cLocal As New Collection ' key -> row
 'Private $bSortLocal As Boolean
 
-Private $aObject As New String[]
-Private $aValObject As New String[]
-Private $cObject As New Collection
 'Private $bSortObject As Boolean
 
 Private $hForm As FEditor
 Private $iX As Integer
 Private $iY As Integer
 
+Private $sLastLocal As String
+Private $sLastObject As String
+
 Public Sub _new()
 
   Dim DS As Integer = Desktop.Scale
   
-  With tbvObject
+  With cvwVariable
     .Columns.Count = 2
-    .Columns[0].Width = 192
-    .Columns[0].Text = ("Name")
-    .Columns[1].Text = ("Value")
   End With
 
   With cvwWatch
@@ -87,13 +83,11 @@ Public Sub _new()
     .Columns[2].Text = ("Message")
   End With
   
-  panDebug.MinSize = 24 * DS
-  
   HideTab(TAB_COMPILATION)
   'wizDebug[TAB_SEARCH].Closable = True
   
   ReadConfig
-  UpdateLocal
+  'UpdateLocal
   
 End
 
@@ -107,31 +101,11 @@ Public Sub Form_Open()
 
 End
 
-Private Sub ClearView(hView As TableView)
-  
-  hView.Rows.Count = 0
-  'hView.Clear
-  If hView = tbvLocal Then
-    $cLocal.Clear
-    $aLocal.Clear
-    $aValLocal.Clear
-  Else
-    $cObject.Clear
-    $aObject.Clear
-    $aValObject.Clear
-  Endif
-  
-End
-
 Public Sub Clear()
-
-  ClearView(tbvLocal)
-  tbvLocal.Tag = ""
-  ClearView(tbvObject)
-  tbvObject.Tag = ""
 
   lvwStack.Clear
   cvwWatch.Clear
+  cvwVariable.Clear
   $cRefreshBreakpoint.Clear
 
 End
@@ -157,6 +131,7 @@ Public Sub FillStack(aPos As String[]) As Boolean
   Dim sPos As String
   Dim iInd As Integer
   Dim sKey As String
+  Dim W As Integer
 
   Object.Lock(lvwStack)
 
@@ -168,14 +143,18 @@ Public Sub FillStack(aPos As String[]) As Boolean
   
   lvwStack.Clear
 
+  W = Desktop.Scale * 8
   For Each sPos In aPos
     If sPos = "?" Then
       lvwStack.Add(iInd, "(" & ("native code") & ")")
     Else
       lvwStack.Add(iInd, sPos)
+      W = Max(W, lvwStack.Font.TextWidth(sPos))
     Endif
     Inc iInd
   Next
+  
+  lvwStack.W = W + Desktop.Scale * 2
   
   If lvwStack.Exist(sKey) Then
     lvwStack[sKey].Selected = True
@@ -205,172 +184,172 @@ Catch
 
 End
 
-Private Sub SortVariable(aVar As String[])
-  
-  Dim iStart As Integer
-  Dim iEnd As Integer
-  Dim iPos As Integer
-  
-  Do
-    
-    If iPos > aVar.Max Or If Right(aVar[iPos]) = ":" Then
-      iEnd = iPos
-      If iEnd > iStart Then
-        aVar.Insert(aVar.Extract(iStart, iEnd - iStart).Sort(), iStart)
-      Endif
-      iStart = iPos + 1
-    Endif
-    
-    If iPos > aVar.Max Then Break
-    Inc iPos
-    
-  Loop
-  
-End
+' Private Sub SortVariable(aVar As String[])
+'   
+'   Dim iStart As Integer
+'   Dim iEnd As Integer
+'   Dim iPos As Integer
+'   
+'   Do
+'     
+'     If iPos > aVar.Max Or If Right(aVar[iPos]) = ":" Then
+'       iEnd = iPos
+'       If iEnd > iStart Then
+'         aVar.Insert(aVar.Extract(iStart, iEnd - iStart).Sort(), iStart)
+'       Endif
+'       iStart = iPos + 1
+'     Endif
+'     
+'     If iPos > aVar.Max Then Break
+'     Inc iPos
+'     
+'   Loop
+'   
+' End
 
 
-Private Sub DefineVar(hView As TableView, sList As String, sCmd As String, iIndex As Integer)
-
-  Dim sVar As String
-  Dim aVar As String[]
-  Dim bFill As Boolean
-  Dim iPos As Integer
-  Dim cCol As Collection
-  Dim bSort As Boolean
-
-  If sList <> "*" Then
-
-    aVar = Split(sList, " ")
-  
-    If sList <> hView.Tag Then 
-  
-      hView.Tag = sList
-      bFill = True
-      
-    Endif
-  
-  Else 
-  
-    aVar = Split(hView.Tag, " ")
-    
-    bFill = True
-    
-  Endif
-    
-  If bFill Then
-    
-    ClearView(hView)
-    
-    If hView = tbvLocal Then
-      $aLocal = aVar
-      $aValLocal = New String[$aLocal.Count]
-      cCol = $cLocal
-      bSort = True 'chkSortLocal.Value
-    Else
-      $aObject = aVar
-      $aValObject = New String[$aObject.Count]
-      cCol = $cObject
-      bSort = True 'chkSortObject.Value
-    Endif
-    
-    While iPos <= aVar.Max
-      sVar = aVar[iPos]
-      If Right(sVar) = ":" Then 
-        If iPos = aVar.Max Or If Right(aVar[iPos + 1]) = ":" Then
-          aVar.Remove(iPos)
-          Continue
-        Endif
-      Endif
-      Inc iPos
-    Wend
-    
-    If bSort Then SortVariable(aVar)
-    
-    If hView = tbvLocal Then
-      UpdateLocal
-    Else
-      hView.Rows.Count = aVar.Count
-    Endif
-
-    For iPos = 0 To aVar.Max
-      cCol[aVar[iPos]] = iPos
-      If Right(aVar[iPos]) = ":" Then hView[iPos, 0].ColumnSpan = 2
-    Next
-    
-  Endif
-  
-  If wizDebug.Index <> iIndex Then Return
-  
-  For Each sVar In aVar
-    If Right(sVar) = ":" Then Continue
-    Design.Command("&" & sCmd & sVar & "\t" & sVar)
-  Next
-    
-End
-
-Public Sub AddVar(hView As TableView, sVar As String, sValue As String)
-
-  Dim cCol As Collection
-  Dim aVal As String[]
-  Dim iRow As Integer
-
-  If hView = tbvLocal Then
-    cCol = $cLocal
-    aVal = $aValLocal
-  Else
-    cCol = $cObject
-    aVal = $aValObject
-  Endif
-  
-  Try iRow = cCol[sVar]
-  If Error Then Return
-  
-  If aVal[iRow] <> sValue Then
-    aVal[iRow] = sValue
-    hView[iRow, 1].Refresh
-  Endif
-  
-End
-
-Public Sub DefineLocal(Optional sList As String = "*")
-  
-  DefineVar(tbvLocal, sList, "L", TAB_LOCAL)
-  
-End
-
-Public Sub AddLocal(sVar As String, sValue As String, Optional bAssign As Boolean)
-
-  Dim iRow As Integer
-  Dim iCol As Integer
-  Dim nRow As Variant
-    
-  If bAssign Then
-    If Left(sValue) = "!" Then
-      Try iRow = $cLocal[sVar]
-      
-      If btnLocalLayout.Value Then
-        nRow = Max(1, tbvLocal.ClientH \ tbvLocal.Rows.Height)
-        iCol = 0
-        While iRow >= nRow
-          iRow -= nRow
-          iCol += 2
-        Wend
-      Endif
-      
-      If Not Error Then
-        With tbvLocal[iRow, iCol + 1]
-          Balloon.Error(Mid$(sValue, 2), tbvLocal, .X + .W / 2, .Y + .H / 2)
-        End With
-      Endif
-    Else
-      Design.Command("&L" & sVar & "\t" & sVar)
-    Endif
-  Else
-    AddVar(tbvLocal, sVar, sValue)
-  Endif
-  
-End
-
+' Private Sub DefineVar(hView As TableView, sList As String, sCmd As String, iIndex As Integer)
+' 
+'   Dim sVar As String
+'   Dim aVar As String[]
+'   Dim bFill As Boolean
+'   Dim iPos As Integer
+'   Dim cCol As Collection
+'   Dim bSort As Boolean
+' 
+'   If sList <> "*" Then
+' 
+'     aVar = Split(sList, " ")
+'   
+'     If sList <> hView.Tag Then 
+'   
+'       hView.Tag = sList
+'       bFill = True
+'       
+'     Endif
+'   
+'   Else 
+'   
+'     aVar = Split(hView.Tag, " ")
+'     
+'     bFill = True
+'     
+'   Endif
+'     
+'   If bFill Then
+'     
+'     ClearView(hView)
+'     
+'     If hView = tbvLocal Then
+'       $aLocal = aVar
+'       $aValLocal = New String[$aLocal.Count]
+'       cCol = $cLocal
+'       bSort = True 'chkSortLocal.Value
+'     Else
+'       $aObject = aVar
+'       $aValObject = New String[$aObject.Count]
+'       cCol = $cObject
+'       bSort = True 'chkSortObject.Value
+'     Endif
+'     
+'     While iPos <= aVar.Max
+'       sVar = aVar[iPos]
+'       If Right(sVar) = ":" Then 
+'         If iPos = aVar.Max Or If Right(aVar[iPos + 1]) = ":" Then
+'           aVar.Remove(iPos)
+'           Continue
+'         Endif
+'       Endif
+'       Inc iPos
+'     Wend
+'     
+'     If bSort Then SortVariable(aVar)
+'     
+'     If hView = tbvLocal Then
+'       UpdateLocal
+'     Else
+'       hView.Rows.Count = aVar.Count
+'     Endif
+' 
+'     For iPos = 0 To aVar.Max
+'       cCol[aVar[iPos]] = iPos
+'       If Right(aVar[iPos]) = ":" Then hView[iPos, 0].ColumnSpan = 2
+'     Next
+'     
+'   Endif
+'   
+'   If wizDebug.Index <> iIndex Then Return
+'   
+'   For Each sVar In aVar
+'     If Right(sVar) = ":" Then Continue
+'     Design.Command("&" & sCmd & sVar & "\t" & sVar)
+'   Next
+'     
+' End
+' 
+' Public Sub AddVar(hView As TableView, sVar As String, sValue As String)
+' 
+'   Dim cCol As Collection
+'   Dim aVal As String[]
+'   Dim iRow As Integer
+' 
+'   If hView = tbvLocal Then
+'     cCol = $cLocal
+'     aVal = $aValLocal
+'   Else
+'     cCol = $cObject
+'     aVal = $aValObject
+'   Endif
+'   
+'   Try iRow = cCol[sVar]
+'   If Error Then Return
+'   
+'   If aVal[iRow] <> sValue Then
+'     aVal[iRow] = sValue
+'     hView[iRow, 1].Refresh
+'   Endif
+'   
+' End
+' 
+' Public Sub DefineLocal(Optional sList As String = "*")
+'   
+'   DefineVar(tbvLocal, sList, "L", TAB_LOCAL)
+'   
+' End
+' 
+' Public Sub AddLocal(sVar As String, sValue As String, Optional bAssign As Boolean)
+' 
+'   Dim iRow As Integer
+'   Dim iCol As Integer
+'   Dim nRow As Variant
+'     
+'   If bAssign Then
+'     If Left(sValue) = "!" Then
+'       Try iRow = $cLocal[sVar]
+'       
+'       If btnLocalLayout.Value Then
+'         nRow = Max(1, tbvLocal.ClientH \ tbvLocal.Rows.Height)
+'         iCol = 0
+'         While iRow >= nRow
+'           iRow -= nRow
+'           iCol += 2
+'         Wend
+'       Endif
+'       
+'       If Not Error Then
+'         With tbvLocal[iRow, iCol + 1]
+'           Balloon.Error(Mid$(sValue, 2), tbvLocal, .X + .W / 2, .Y + .H / 2)
+'         End With
+'       Endif
+'     Else
+'       Design.Command("&L" & sVar & "\t" & sVar)
+'     Endif
+'   Else
+'     AddVar(tbvLocal, sVar, sValue)
+'   Endif
+'   
+' End
+' 
 Public Function LocalExists(sExpr As String) As Boolean
   
   If Not sExpr Then Return
@@ -378,32 +357,32 @@ Public Function LocalExists(sExpr As String) As Boolean
 
 End
 
-Public Sub DefineObject(Optional sList As String = "*")
-  
-  DefineVar(tbvObject, sList, "O", TAB_ME)
-  
-End
-
-Public Sub AddObject(sVar As String, sValue As String, Optional bAssign As Boolean)
-  
-  Dim iRow As Integer
-  
-  If bAssign Then
-    If Left(sValue) = "!" Then
-      Try iRow = $cObject[sVar]
-      If Not Error Then
-        With tbvObject[iRow, 1]
-          Balloon.Error(Mid$(sValue, 2), tbvObject, .X + .W / 2, .Y + .H / 2)
-        End With
-      Endif
-    Else
-      Design.Command("&O" & sVar & "\t" & sVar)
-    Endif
-  Else
-    AddVar(tbvObject, sVar, sValue)
-  Endif
-  
-End
+' Public Sub DefineObject(Optional sList As String = "*")
+'   
+'   DefineVar(tbvObject, sList, "O", TAB_ME)
+'   
+' End
+' 
+' Public Sub AddObject(sVar As String, sValue As String, Optional bAssign As Boolean)
+'   
+'   Dim iRow As Integer
+'   
+'   If bAssign Then
+'     If Left(sValue) = "!" Then
+'       Try iRow = $cObject[sVar]
+'       If Not Error Then
+'         With tbvObject[iRow, 1]
+'           Balloon.Error(Mid$(sValue, 2), tbvObject, .X + .W / 2, .Y + .H / 2)
+'         End With
+'       Endif
+'     Else
+'       Design.Command("&O" & sVar & "\t" & sVar)
+'     Endif
+'   Else
+'     AddVar(tbvObject, sVar, sValue)
+'   Endif
+'   
+' End
 
 
 ' PUBLIC SUB RefreshAllLocal()
@@ -603,18 +582,18 @@ Public Sub ReadConfig()
 
   'Dim hButton As ToolButton
   Dim hCtrl As Control
+  Dim hFont As Font
 
   Settings.Read(panDebug)
   wizDebug.TextFont = Project.GetSmallFont()
   
-  Project.SetSmallFont(tbvLocal)
-  tbvObject.Font = tbvLocal.Font
-  lvwStack.Font = tbvLocal.Font
-  cvwWatch.Font = tbvLocal.Font
-  gvwBreakpoint.Font = tbvLocal.Font
-  gvwTask.Font = tbvLocal.Font
-  gvwCompilation.Font = tbvLocal.Font
-  panBacktrace.Font = tbvLocal.Font
+  Project.SetSmallFont(lvwStack)
+  hFont = lvwStack.Font
+  cvwWatch.Font = hFont
+  gvwBreakpoint.Font = hFont
+  gvwTask.Font = hFont
+  gvwCompilation.Font = hFont
+  cvwVariable.Font = hFont
   
   FDebugButton.ReadConfig
   
@@ -622,7 +601,7 @@ Public Sub ReadConfig()
     Project.SetSmallFont(hCtrl)
   Next
 
-  btnLocalLayout.Value = Settings["/FDebugInfo/LocalColumnView", 0]
+  'btnLocalLayout.Value = Settings["/FDebugInfo/LocalColumnView", 0]
   
 End
 
@@ -665,10 +644,8 @@ Public Sub wizDebug_Click()
   Endif
 
   Select Case wizDebug.Index
-    Case TAB_LOCAL
-      DefineLocal
-    Case TAB_ME
-      DefineObject
+    Case TAB_DEBUG
+      DefineVariable($sLastLocal, $sLastObject)
     Case TAB_CONSOLE
       If FMain.IsDebugVisible() Then FOutput.SetFocus
     Case TAB_BREAK
@@ -710,7 +687,7 @@ End
 
 Public Sub IsEditing() As Boolean
   
-  Return Not IsNull(tbvLocal.Editor)
+  'Return Not IsNull(tbvLocal.Editor)
   
 End
 
@@ -789,26 +766,25 @@ Public Sub UpdateView()
   Endif
 
   ShowTab(TAB_CONSOLE, Not bUndock)
-  ShowTab(TAB_LOCAL, Project.Running)
-  ShowTab(TAB_ME, Project.Running)
+  ShowTab(TAB_DEBUG, Project.Running)
   ShowTab(TAB_WATCH, Project.Running)
   ShowTab(TAB_BREAK)
   
-  If panStack.Visible <> Project.Running Then
-    If Project.Running Then
-      panStack.Visible = True
-      Settings.Read(panDebug)
-      'Settings.Read(splDebug,, [4, 1])
-    Else 
-      Settings.Write(panDebug)
-      'Settings.Write(splDebug)
-      panStack.Visible = False
-    Endif
-  Endif
+  ' If panStack.Visible <> Project.Running Then
+  '   If Project.Running Then
+  '     panStack.Visible = True
+  '     Settings.Read(panDebug)
+  '     'Settings.Read(splDebug,, [4, 1])
+  '   Else 
+  '     Settings.Write(panDebug)
+  '     'Settings.Write(splDebug)
+  '     panStack.Visible = False
+  '   Endif
+  ' Endif
   
-  panButtonCompilation.Visible = Not Project.Running
-  panButtonTask.Visible = Not Project.Running
-  panButtonSearch.Visible = Not Project.Running
+  ' panButtonCompilation.Visible = Not Project.Running
+  ' panButtonTask.Visible = Not Project.Running
+  ' panButtonSearch.Visible = Not Project.Running
         
   If Not bUndock Then 
     If Not FOutput.Parent Then 
@@ -904,80 +880,80 @@ Public Sub GetBreakpoints() As String[]
 End
 
 
-Public Sub tbvLocal_Data(Row As Integer, Column As Integer)
+' Public Sub tbvLocal_Data(Row As Integer, Column As Integer)
+' 
+'   Dim hView As TableView = Last
+'   Dim aVar As String[]
+'   Dim aValue As String[]
+'   Dim sVar As String
+' 
+'   If hView = tbvLocal Then
+'     aVar = $aLocal
+'     aValue = $aValLocal
+'   Else
+'     aVar = $aObject
+'     aValue = $aValObject
+'   Endif
+' 
+'   If hView = tbvLocal And If btnLocalLayout.Value Then
+'     While Column >= 2 
+'       Column -= 2
+'       Row += hView.Rows.Count
+'     Wend
+'   Endif
+' 
+'   Try sVar = aVar[Row]
+'   If Not sVar Then Return
+'   
+'   With hView.Data
+'   
+'     If Column = 0 Then
+'       If Right(sVar) = ":" Then
+'         .Font.Bold = True
+'         .Font.Underline = True
+'         .Text = If(UCase(sVar) = "S:", ("Static variables"), ("Dynamic variables"))
+'       Else
+'         .Text = sVar
+'         .Foreground = Color.Gradient(Color.TextBackground, Color.TextForeground, 0.7)
+'       Endif
+'     Else
+'       Try .Text = aValue[Row]
+'     Endif
+'     
+'   End With
+' 
+' End
 
-  Dim hView As TableView = Last
-  Dim aVar As String[]
-  Dim aValue As String[]
-  Dim sVar As String
+' Public Sub tbvObject_Data(Row As Integer, Column As Integer)
+' 
+'   tbvLocal_Data(Row, Column)
+' 
+' End
 
-  If hView = tbvLocal Then
-    aVar = $aLocal
-    aValue = $aValLocal
-  Else
-    aVar = $aObject
-    aValue = $aValObject
-  Endif
+' Public Sub tbvLocal_Save(Row As Integer, (Column) As Integer, Value As String)
+' 
+'   Dim sVar As String 
+'   Dim iCol As Integer
+'   
+'   iCol = Column And Not 1
+'   sVar = tbvLocal[Row, iCol].Text
+'   With tbvLocal[Row, iCol + 1]
+'     Design.SetBalloon(tbvLocal, .X + .W / 2, .Y + .H / 2)
+'   End With
+'   Design.Command("=L" & sVar & "\t" & sVar & " = " & Value)
+' 
+' End
 
-  If hView = tbvLocal And If btnLocalLayout.Value Then
-    While Column >= 2 
-      Column -= 2
-      Row += hView.Rows.Count
-    Wend
-  Endif
-
-  Try sVar = aVar[Row]
-  If Not sVar Then Return
-  
-  With hView.Data
-  
-    If Column = 0 Then
-      If Right(sVar) = ":" Then
-        .Font.Bold = True
-        .Font.Underline = True
-        .Text = If(UCase(sVar) = "S:", ("Static variables"), ("Dynamic variables"))
-      Else
-        .Text = sVar
-        .Foreground = Color.Gradient(Color.TextBackground, Color.TextForeground, 0.7)
-      Endif
-    Else
-      Try .Text = aValue[Row]
-    Endif
-    
-  End With
-
-End
-
-Public Sub tbvObject_Data(Row As Integer, Column As Integer)
-
-  tbvLocal_Data(Row, Column)
-
-End
-
-Public Sub tbvLocal_Save(Row As Integer, (Column) As Integer, Value As String)
-
-  Dim sVar As String 
-  Dim iCol As Integer
-  
-  iCol = Column And Not 1
-  sVar = tbvLocal[Row, iCol].Text
-  With tbvLocal[Row, iCol + 1]
-    Design.SetBalloon(tbvLocal, .X + .W / 2, .Y + .H / 2)
-  End With
-  Design.Command("=L" & sVar & "\t" & sVar & " = " & Value)
-
-End
-
-Public Sub tbvObject_Save(Row As Integer, (Column) As Integer, Value As String)
-
-  Dim sVar As String = tbvObject[Row, 0].Text
-  Design.Command("=O" & sVar & "\t" & sVar & " = " & Value)
-  With tbvObject[Row, 1]
-    Design.SetBalloon(tbvObject, .X + .W / 2, .Y + .H / 2)
-  End With
-  Design.Command("&O" & sVar & "\t" & sVar)
-
-End
+' Public Sub tbvObject_Save(Row As Integer, (Column) As Integer, Value As String)
+' 
+'   Dim sVar As String = tbvObject[Row, 0].Text
+'   Design.Command("=O" & sVar & "\t" & sVar & " = " & Value)
+'   With tbvObject[Row, 1]
+'     Design.SetBalloon(tbvObject, .X + .W / 2, .Y + .H / 2)
+'   End With
+'   Design.Command("&O" & sVar & "\t" & sVar)
+' 
+' End
 
 Public Sub tbvLocal_Scroll()
 
@@ -1415,49 +1391,43 @@ Public Sub btnLocalCopy_Click()
 
 End
 
-Private Sub UpdateLocal()
+' Private Sub UpdateLocal()
+' 
+'   Dim nCol As Integer
+'   Dim I As Integer
+'   Dim nRow As Integer
+' 
+'   With tbvLocal
+'     
+'     If btnLocalLayout.Value Then
+'       nRow = Max(1, .ClientH \ .Rows.Height)
+'       nCol = Max(1, ($aLocal.Count + nRow - 1) \ nRow)
+'       If nCol = 1 Then nRow = $aLocal.Count
+'     Else
+'       nRow = $aLocal.Count
+'       nCol = 1
+'     Endif
+'     
+'     .Columns.Count = nCol * 2
+'     For I = 0 To nCol - 1
+'       .Columns[1 + I * 2].Expand = True
+'     Next
+'     
+'     .Rows.Count = nRow
+'     For I = 0 To nCol - 1
+'       .Columns[I * 2].W = -1
+'     Next
+'     
+'   End With
+' 
+' End
 
-  Dim nCol As Integer
-  Dim I As Integer
-  Dim nRow As Integer
-
-  With tbvLocal
-    
-    If btnLocalLayout.Value Then
-      nRow = Max(1, .ClientH \ .Rows.Height)
-      nCol = Max(1, ($aLocal.Count + nRow - 1) \ nRow)
-      If nCol = 1 Then nRow = $aLocal.Count
-    Else
-      nRow = $aLocal.Count
-      nCol = 1
-    Endif
-    
-    .Columns.Count = nCol * 2
-    For I = 0 To nCol - 1
-      .Columns[1 + I * 2].Expand = True
-    Next
-    
-    .Rows.Count = nRow
-    For I = 0 To nCol - 1
-      .Columns[I * 2].W = -1
-    Next
-    
-  End With
-
-End
-
-Public Sub btnLocalLayout_Click()
-
-  UpdateLocal
-  Settings["/FDebugInfo/LocalColumnView"] = btnLocalLayout.Value 
-
-End
-
-Public Sub wizDebug_Arrange()
-
-  If wizDebug.Index = TAB_LOCAL Then UpdateLocal
-
-End
+' Public Sub btnLocalLayout_Click()
+' 
+'   UpdateLocal
+'   Settings["/FDebugInfo/LocalColumnView"] = btnLocalLayout.Value 
+' 
+' End
 
 Private Sub CloseSearch()
 
@@ -1611,3 +1581,207 @@ Public Sub btnRemoveAllBreakpoint_Click()
 
 End
 
+Public Sub DefineVariable(sLocal As String, sObject As String)
+  
+  Dim aLocal As String[]
+  Dim aObject As String[]
+  Dim sVar As String
+  Dim hPict As Picture
+  Dim sParent As String
+  Dim bBold As Boolean
+  Dim hBold As Font
+  Dim vLayout As Variant
+  Dim I As Integer
+  Dim sPrefix As String
+  
+  If cvwVariable.Count Then vLayout = cvwVariable.Layout
+ 
+  aLocal = Split(sLocal, " ")
+  aObject = Split(sObject, " ")
+
+  If sObject <> $sLastObject Then
+  
+    $sLastObject = sObject
+  
+    Try cvwVariable.Remove("^")
+  
+    hBold = cvwVariable.Font.Copy()
+    hBold.Bold = True
+    
+    cvwVariable.Add("^", ("Current object"), Picture["img/16/current.png"]).Expanded = True
+    
+    sPrefix = " :"
+    For I = 0 To aObject.Max
+      sVar = aObject[I]
+      If Right(sVar) = ":" Then
+        sPrefix = sVar
+      Else
+        aObject[I] = sPrefix & aObject[I]
+      Endif
+    Next
+    
+    aObject.Sort
+    
+    sParent = "^"
+    For I = 0 To aObject.Max
+      sVar = aObject[I]
+      If Right(sVar) = ":" Then
+        sVar = Left(sVar)
+        bBold = sVar = UCase(sVar)
+        hPict = Picture["img/symbol/" & If(sVar == "S", "s-", "") & "variable.png"]
+      Else
+        sVar = Mid$(sVar, 3)
+        aObject[I] = sVar
+        With cvwVariable.Add("^" & sVar, sVar, hPict, sParent)
+          If bBold Then .Font = hBold
+        End With
+      Endif
+    Next
+    
+  Endif
+  
+  If sLocal <> $sLastLocal Then
+  
+    $sLastLocal = sLocal
+  
+    Try cvwVariable.Remove("~")
+  
+    hBold = cvwVariable.Font.Copy()
+    hBold.Bold = True
+    
+    cvwVariable.Add("~", ("Local variables"), Picture["img/16/local.png"]).Expanded = True
+    
+    For Each sVar In aLocal
+      cvwVariable.Add("~" & sVar, sVar, Picture["img/symbol/symbol.png"], "~")
+    Next
+    
+  Endif
+  
+  If vLayout Then cvwVariable.Layout = vLayout
+  
+  If wizDebug.Index <> TAB_DEBUG Then Return
+
+  For Each sVar In aObject
+    If Right(sVar) = ":" Then Continue
+    Design.Command("&V^" & sVar & "\t" & sVar)
+  Next
+  
+  For Each sVar In aLocal
+    Design.Command("&V~" & sVar & "\t" & sVar)
+  Next
+  
+  ' If bFill Then
+  '   
+  '   ClearView(hView)
+  '   
+  '   If hView = tbvLocal Then
+  '     $aLocal = aVar
+  '     $aValLocal = New String[$aLocal.Count]
+  '     cCol = $cLocal
+  '     bSort = True 'chkSortLocal.Value
+  '   Else
+  '     $aObject = aVar
+  '     $aValObject = New String[$aObject.Count]
+  '     cCol = $cObject
+  '     bSort = True 'chkSortObject.Value
+  '   Endif
+  '   
+  '   While iPos <= aVar.Max
+  '     sVar = aVar[iPos]
+  '     If Right(sVar) = ":" Then 
+  '       If iPos = aVar.Max Or If Right(aVar[iPos + 1]) = ":" Then
+  '         aVar.Remove(iPos)
+  '         Continue
+  '       Endif
+  '     Endif
+  '     Inc iPos
+  '   Wend
+  '   
+  '   If bSort Then SortVariable(aVar)
+  '   
+  '   If hView = tbvLocal Then
+  '     UpdateLocal
+  '   Else
+  '     hView.Rows.Count = aVar.Count
+  '   Endif
+  ' 
+  '   For iPos = 0 To aVar.Max
+  '     cCol[aVar[iPos]] = iPos
+  '     If Right(aVar[iPos]) = ":" Then hView[iPos, 0].ColumnSpan = 2
+  '   Next
+  '   
+  ' Endif
+  ' 
+  ' If wizDebug.Index <> iIndex Then Return
+  ' 
+  ' For Each sVar In aVar
+  '   If Right(sVar) = ":" Then Continue
+  '   Design.Command("&" & sCmd & sVar & "\t" & sVar)
+  ' Next
+  '   
+  
+  
+End
+
+Public Sub AddVariable(sVar As String, sValue As String, Optional bAssign As Boolean)
+  
+  If Not cvwVariable.Exist(sVar) Then Return
+  
+  If bAssign Then
+    If Left(sValue) = "!" Then
+      With cvwVariable[sVar]
+        Balloon.Error(Mid$(sValue, 2), cvwVariable, Design.BalloonX, Design.BalloonY)
+      End With
+    Endif
+    Design.Command("&V" & sVar & "\t" & Mid$(sVar, 2))
+  Else
+    cvwVariable[sVar][1] = sValue
+  Endif
+  
+End
+
+Public Sub cvwVariable_Activate()
+
+  Dim sExpr As String 
+  Dim sVal As String 
+
+  With cvwVariable.Current
+    If .Children Then Return
+    sExpr = .Text
+    sVal = .[1]
+  
+    If Left(sVal) = "(" Then 
+      Design.Command("#X" & sExpr & "\t" & sExpr)
+    Else
+      .Editable = True
+      .Rename(1)
+      .Editable = False
+    Endif
+  
+  End With
+  
+End
+
+Public Sub OnProjectDebug()
+  
+  $sLastLocal = ""
+  $sLastObject = ""
+  FDebugButton.SelectButton(TAB_DEBUG)
+  
+End
+
+Public Sub cvwVariable_Rename()
+
+  Dim sVar As String
+  
+  With cvwVariable.Current
+  
+    sVar = .Key
+  
+    Design.SetBalloon(cvwVariable, cvwVariable.Columns[1].X + Desktop.Scale, .Y + .H / 2)
+    Design.Command("=V" & sVar & "\t" & .Text & " = " & .[1])
+    'Design.Command("&V" & sVar & "\t" & .Text)
+    
+  End With
+    
+End

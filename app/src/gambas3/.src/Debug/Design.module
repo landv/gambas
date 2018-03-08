@@ -282,8 +282,7 @@ Public Sub Debug_Read(Data As String)
         Endif
       Endif
   
-      FDebugInfo.DefineLocal(Trim(aData[3]))
-      FDebugInfo.DefineObject(Trim(aData[4]))
+      FDebugInfo.DefineVariable(Trim(aData[3]), Trim(aData[4]))
 
       If FDebugInfo.FillStack(aPos) Then
         If aData[1] Then 
@@ -313,6 +312,9 @@ Public Sub Debug_Read(Data As String)
  
         Case "O"
           FDebugInfo.AddObject(Mid$(sVar, 2), aData[1])
+          
+        Case "V"
+          FDebugInfo.AddVariable(Mid$(sVar, 2), aData[1])
 
         Case "W"
           FDebugInfo.AddResultWatch(Mid$(sVar, 2), aData[1])
@@ -340,6 +342,9 @@ Public Sub Debug_Read(Data As String)
         Case "O"
           FDebugInfo.AddObject(Mid$(sVar, 2), aData[1], True)
  
+        Case "V"
+          FDebugInfo.AddVariable(Mid$(sVar, 2), aData[1], True)
+
       End Select
       
     Case "#"
@@ -354,6 +359,7 @@ Public Sub Debug_Read(Data As String)
             Command("?I" & Mid$(sVar, 2) & ":\t" & Mid$(sVar, 2))  
             
           Else
+            
             If Left(aData[1]) = "!" Then
                           
               If FDebugExpr.Exist(Mid$(sVar, 2)) Then
@@ -841,6 +847,7 @@ Private Sub Start(sCmd As String)
 
   FMain.ShowDebug(True)
   FDebugInfo.UpdateView
+  FDebugInfo.OnProjectDebug
 
   aEnv = Project.Environment.Copy()
   
