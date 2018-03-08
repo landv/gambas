@@ -402,10 +402,10 @@ Private Sub Selected_Write(Value As Boolean)
 End
 
 
-Public Sub Rename()
+Public Sub Rename(Optional Column As Integer = 0)
   
   If Not $bEditable Then Return
-  GetTree()._Rename(Me)
+  GetTree()._Rename(Me, Column)
   
 End
 
