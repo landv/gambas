@@ -48,28 +48,27 @@ Public Sub GetIcon(Optional Size As Integer = 16) As Image
   sKey = sMime & ":" & CStr(Size)
   sMime = Replace(sMime, "/", "-")
   hImage = $cIconCache[sKey]
+  If hImage Then Return hImage
   
   For Each sDir In [Desktop.DataDir &/ "icons", "/usr/share/icons"]
     For Each sSize In [CStr(Size), "128", "64", "32"]      
       sPath = Subst(sDir &/ "hicolor/&1x&1/mimetypes/&2.png", sSize, sMime)
-      If Exist(sPath) Then 
-        Try hImage = Image.Load(sPath)
-        If hImage Then Break
-      Endif
+      Try hImage = Image.Load(sPath)
+      If hImage Then Break
     Next
     If hImage Then Break
   Next
   
   If Not hImage Then
     sPath = Subst("/usr/share/pixmaps/&1.png", sMime)
-    If Exist(sPath) Then Try hImage = Image.Load(sPath)
+    Try hImage = Image.Load(sPath)
   Endif
 
   If Not hImage Then
     Try hImage = Stock[CStr(Size) &/ "$(mime)" &/ sMime, CStr(Size) &/ "$(mime)" &/ _$sGenericIcon].Image
   Endif
   
-  If hImage.W <> Size Or If hImage.H <> 16 Then hImage = hImage.Stretch(Size, Size)
+  If hImage.W <> Size Or If hImage.H <> Size Then hImage = hImage.Stretch(-1, Size)
   
   $cIconCache[sKey] = hImage
   Return hImage
@@ -152,7 +151,7 @@ Static Private Function ReadMimeFile(sPath As String) As Boolean
         hMInfo._$sGenericIcon = Left(hMInfo._$sType, InStr(hMInfo._$sType, "/") - 1) & "-x-generic"
       Endif
       'If ars.Count = 3 Then hMInfo.GenericIcon = ars[0] & "-" & ars[2] & "-generic"
-      TypeToMInfo[hMInfo.Type] = hMInfo
+      TypeToMInfo[hMInfo._$sType] = hMInfo
     Wend
     
     'Sort the Globs by pattern
@@ -235,10 +234,10 @@ Static Private Function FindByExt(sFile As String) As DesktopMime[]
         
         hMInfo = $aMimesSuffix[i]
         
-        If String.LCase(String.Left(hMInfo.Pattern)) <> s Then Break
+        If String.LCase(String.Left(hMInfo._$sPattern)) <> s Then Break
         
         'If hMInfo._CaseSensitive Then
-          If sExt = hMInfo.Pattern Then aMInfo.Add(hMInfo)
+          If sExt = hMInfo._$sPattern Then aMInfo.Add(hMInfo)
         'Else
         '  If sExtLCase = String.LCase(hMInfo.Pattern) Then aMInfo.Add(hMInfo)
         'Endif
@@ -265,7 +264,7 @@ Static Private Function FindByPrefix(sFile As String) As DesktopMime[]
   Dim i As Integer
   
   For i = 0 To $aMimesPrefix.Max
-    If LCase(sFile) Begins Left($aMimesPrefix[i].Pattern, -1) Then aMInfo.Add($aMimesPrefix[i])
+    If LCase(sFile) Begins Left($aMimesPrefix[i]._$sPattern, -1) Then aMInfo.Add($aMimesPrefix[i])
   Next
   Return aMInfo
   
@@ -277,7 +276,7 @@ Static Private Function FindBySpecial(sFile As String) As DesktopMime[]
   Dim i As Integer
   
   For i = 0 To $aMimesSpecial.Max
-    If LCase(sFile) Like $aMimesSpecial[i].Pattern Then aMInfo.Add($aMimesSpecial[i])
+    If LCase(sFile) Like $aMimesSpecial[i]._$sPattern Then aMInfo.Add($aMimesSpecial[i])
   Next
   Return aMInfo
   

@@ -2,8 +2,8 @@
 
 Export
 
-'STATIC PROPERTY READ Menus AS _DesktopMenus
-'STATIC PROPERTY READ Icons AS _DesktopIcons
+Class X11
+
 Static Property Read ScreenSaver As _Desktop_ScreenSaver
 Static Property Count As Integer
 Static Property Current As Integer
@@ -11,10 +11,6 @@ Static Property Read Windows As _Desktop_Windows
 Static Property ActiveWindow As Integer
 Static Property Read RootWindow As Integer
 Static Property Showing As Boolean
-'Static Property Read Width As Integer
-'Static Property Read Height As Integer
-'Static Property Read W As Integer
-'Static Property Read H As Integer
 Static Property Read Passwords As _Desktop_Passwords
 Static Property Read Path As String
 
@@ -24,15 +20,23 @@ Static Property Read CacheDir As String
 Static Property Read RuntimeDir As String
 
 Static Property Read NetworkAvailable As Boolean
+Static Property Read RemoteDisplay As Boolean
 
 Static Private $sDesktop As String
 Static Private $cDesktop As Collection
 Static Private $cExt As Collection
 Static Private $aImgExt As String[]
+Static Private $sSessionType As String
+Static Private $bRemoteDisplay As Boolean
+Static Private $bRemoteDisplayChecked As Boolean
 
 Static Public Sub _init()
   
-  Component.Load("gb.desktop.x11")
+  $sSessionType = LCase(Env["XDG_SESSION_TYPE"])
+  If $sSessionType <> "wayland" Then
+    $sSessionType = "x11"
+    Component.Load("gb.desktop.x11")
+  Endif
   
 End
 
@@ -470,7 +474,9 @@ Static Public Sub GetFileIcon(Path As String, Size As Integer, Optional Preview 
 
   If IsDir(Path) Then Return Picture["icon:/" & CStr(Size) & "/directory"]
 
-  If Preview And If $aImgExt.Exist(File.Ext(Path)) < 0 Then
+  If Not $cExt Then InitFileExt
+
+  If Preview And If $aImgExt.Exist(File.Ext(Path)) Then
     If Stat(Path).Size <= 65536 Then
 
       Try hImage = Image.Load(Path)
@@ -482,6 +488,8 @@ Static Public Sub GetFileIcon(Path As String, Size As Integer, Optional Preview 
             hImage = hImage.Stretch((Size * hImage.Width) \ hImage.Height, Size)
           Endif
         Endif
+        
+        If Size <= 24 Then Return hImage.Picture
 
         hIcon = New Image(hImage.W + 4, hImage.H + 4, Color.Transparent)
         Paint.Begin(hIcon)
@@ -493,8 +501,11 @@ Static Public Sub GetFileIcon(Path As String, Size As Integer, Optional Preview 
         hIcon.DrawImage(hImage, 2, 2)
 
         Return hIcon.Picture
+        
       Else
+        
         Return Picture["icon:/" & Size & "/image"]
+        
       Endif
 
     Endif
@@ -503,8 +514,6 @@ Static Public Sub GetFileIcon(Path As String, Size As Integer, Optional Preview 
 
   Try hPict = DesktopMime.FromFile(Path).GetIcon(Size).Picture
   If hPict Then Return hPict
-
-  If Not $cExt Then InitFileExt
 
   Try sIcon = $cExt[File.Ext(Path)]
   If sIcon Then Return Picture["icon:/" & CStr(Size) &/ sIcon]
@@ -535,6 +544,8 @@ Static Private Sub InitFileExt()
   $cExt["zip"] = "archive"
   $cExt["xz"] = "archive"
   $cExt["txt"] = "text"
+  $cExt["log"] = "text"
+  $cExt["md"] = "text"
   $cExt["mp3"] = "audio"
   $cExt["ogg"] = "audio"
   $cExt["wav"] = "audio"
@@ -546,6 +557,7 @@ Static Private Sub InitFileExt()
   $cExt["gambas"] = "gambas"
   $cExt["c"] = "text"
   $cExt["cpp"] = "text"
+  $cExt["cc"] = "text"
   $cExt["h"] = "text"
   $cExt["java"] = "text"
   $cExt["perl"] = "text"
@@ -617,8 +629,6 @@ Static Private Sub FindExec(sExec As String) As String
   
 End
 
-
-
 Static Private Function NetworkAvailable_Read() As Boolean
 
   Dim sOutput As String
@@ -641,5 +651,21 @@ End
 Static Public Sub GetDirectory(Type As String) As String
   
   Return Main.GetDesktopPath(Type)
+  
+End
+
+Static Private Function RemoteDisplay_Read() As Boolean
+
+  Dim sDisplay As String
+  
+  If Not $bRemoteDisplayChecked Then
+    If $sSessionType = "x11" Then
+      sDisplay = Env["DISPLAY"]
+      If sDisplay And If Left(sDisplay) <> ":" Then $bRemoteDisplay = True
+    Endif
+    $bRemoteDisplayChecked = True
+  Endif
+  
+  Return $bRemoteDisplay
   
 End
