@@ -16,6 +16,7 @@ battery                 devices/battery
 book                    [-breeze*]actions/address-book-new;apps/accessories-dictionary
 bookmark                places/bookmarks;actions/bookmark-new;places/user-bookmarks
 bottom                  actions/go-bottom
+c                       $(mime)/text-x-csrc
 calculator              apps/accessories-calculator
 calendar                actions/office-calendar;apps/evolution-calendar;actions/view-pim-calendar
 camera                  devices/camera-photo
@@ -30,6 +31,8 @@ component               [-breeze*]actions/document-share;categories/applications
 computer                devices/computer
 connect                 actions/network-connect
 copy                    actions/edit-copy
+cpp                     $(mime)/text-x-c++src
+css                     $(mime)/text-css
 cut                     actions/edit-cut
 delete                  actions/edit-delete
 desktop                 places/user-desktop
@@ -62,6 +65,7 @@ game                    categories/applications-games;apps/preferences-desktop-g
 gnu                     #
 grid                    actions/view-grid;actions/games-config-board
 group                   [-breeze*]actions/user-group-new;apps/system-users
+h                       $(mime)/text-x-chdr
 halt                    actions/process-stop
 harddisk                devices/drive-harddisk
 hardware                devices/audio-card
@@ -77,6 +81,7 @@ insert-image            actions/insert-image
 insert-link             actions/insert-link
 insert-text             actions/insert-text
 internet                [-breeze*]places/folder-html;categories/applications-internet
+js                      $(mime)/application-javascript
 jump                    actions/go-jump
 keyboard                preferences/preferences-desktop-keyboard;apps/preferences-desktop-keyboard
 lamp                    actions/help-hint
