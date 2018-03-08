@@ -1590,7 +1590,7 @@ Public Sub DefineVariable(sLocal As String, sObject As String)
     hBold = cvwVariable.Font.Copy()
     hBold.Bold = True
     
-    With cvwVariable.Add("^", ("Current object"), Picture["img/16/current.png"])
+    With cvwVariable.Add("^", ("Current object")) ', Picture["img/16/current.png"])
       .Expanded = True
       .Font = lvwStack.Font
     End With
@@ -1634,7 +1634,7 @@ Public Sub DefineVariable(sLocal As String, sObject As String)
     hBold = cvwVariable.Font.Copy()
     hBold.Bold = True
     
-    With cvwVariable.Add("~", ("Local variables"), Picture["img/16/local.png"])
+    With cvwVariable.Add("~", ("Local variables")) ', Picture["img/16/local.png"])
       .Expanded = True
       .Font = lvwStack.Font
     End With

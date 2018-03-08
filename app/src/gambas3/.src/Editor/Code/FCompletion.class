@@ -701,6 +701,8 @@ Private Sub FillWithFiles(sWord As String)
   Dim hPictFile As Picture = Picture["icon:/16/file"]
   Dim hPictDir As Picture = Picture["icon:/16/directory"]
   Dim aDir As String[]
+  Dim bProject As Boolean
+  Dim hPict As Picture
   
   ClearRows
   
@@ -732,6 +734,7 @@ Private Sub FillWithFiles(sWord As String)
     
     If sDir And If Left(sDir) <> "/" And If sDir Not Begins "~/" Then
       sDir = Project.Dir &/ sDir
+      bProject = True
     Endif
     
     iPos = RInStr(sDir, "/")
@@ -741,9 +744,12 @@ Private Sub FillWithFiles(sWord As String)
     aDir = Dir(sDir, "*").Sort(gb.IgnoreCase + gb.Natural)
   
     For Each sName In aDir
-      'hPict = Desktop.GetFileIcon(sDir &/ sName, 16)
-      'If Not hPict Then hPict = hPictFile
-      AddRow(CStr(MHelp.TYPE_FILE) & sName, sName, If(IsDir(sDir &/ sName), hPictDir, hPictFile))
+      If bProject Then
+        If sName Ends "~" Then Continue
+      Endif
+      hPict = Desktop.GetFileIcon(sDir &/ sName, 16, True)
+      If Not hPict Then hPict = hPictFile
+      AddRow(CStr(MHelp.TYPE_FILE) & sName, sName, If(IsDir(sDir &/ sName), hPictDir, hPict))
       $iMaxLen = Max($iMaxLen, String.Len(sName))
     Next
   
