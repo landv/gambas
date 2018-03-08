@@ -11,17 +11,9 @@
     Picture = Picture["icon:/small/monitor"]
     Toggle = True
   }
-  { btnWatch ToolButton btnDebug
-    Name = "btnWatch"
-    MoveScaled(18,0,11,4)
-    AutoResize = True
-    Text = ("Watch")
-    Picture = Picture["icon:/small/watch"]
-    Toggle = True
-  }
   { btnConsole ToolButton btnDebug
     Name = "btnConsole"
-    MoveScaled(31,0,12,4)
+    MoveScaled(17,0,12,4)
     AutoResize = True
     Text = ("Console")
     Picture = Picture["icon:/small/terminal"]
@@ -29,7 +21,7 @@
   }
   { btnBreakpoints ToolButton btnDebug
     Name = "btnBreakpoints"
-    MoveScaled(45,0,16,4)
+    MoveScaled(29,0,16,4)
     AutoResize = True
     Text = ("Breakpoints")
     Picture = Picture["icon:/small/halt"]
@@ -37,7 +29,7 @@
   }
   { btnWarnings ToolButton btnDebug
     Name = "btnWarnings"
-    MoveScaled(63,0,12,4)
+    MoveScaled(45,0,12,4)
     AutoResize = True
     Text = ("Warnings")
     Picture = Picture["icon:/small/warning"]
@@ -45,7 +37,7 @@
   }
   { btnTasks ToolButton btnDebug
     Name = "btnTasks"
-    MoveScaled(77,0,10,4)
+    MoveScaled(58,0,10,4)
     AutoResize = True
     Text = ("Tasks")
     Picture = Picture["icon:/small/apply"]
@@ -53,7 +45,7 @@
   }
   { btnSearchList ToolButton btnDebug
     Name = "btnSearchList"
-    MoveScaled(88,0,16,4)
+    MoveScaled(69,0,16,4)
     AutoResize = True
     Text = ("Search result")
     Picture = Picture["icon:/small/find"]

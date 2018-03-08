@@ -3,12 +3,11 @@
 Public Shown As Boolean
 
 Private Const TAB_DEBUG As Integer = 0
-Private Const TAB_WATCH As Integer = 1
-Private Const TAB_CONSOLE As Integer = 2
-Private Const TAB_BREAK As Integer = 3
-Private Const TAB_COMPILATION As Integer = 4
-Private Const TAB_TASK As Integer = 5
-Private Const TAB_SEARCH As Integer = 6
+Private Const TAB_CONSOLE As Integer = 1
+Private Const TAB_BREAK As Integer = 2
+Private Const TAB_COMPILATION As Integer = 3
+Private Const TAB_TASK As Integer = 4
+Private Const TAB_SEARCH As Integer = 5
 
 Private $aBreakpoint As New String[]
 Private $cDisabled As New Collection
@@ -17,9 +16,7 @@ Private $cRefreshBreakpoint As New Collection
 Private $cRefreshTask As New Collection
 Private $aTask As CTask[]
 
-Private $aLocal As New String[] ' keys
-Private $aValLocal As New String[]
-Private $cLocal As New Collection ' key -> row
+'Private $cLocal As New Collection ' key -> row
 'Private $bSortLocal As Boolean
 
 'Private $bSortObject As Boolean
@@ -39,13 +36,6 @@ Public Sub _new()
     .Columns.Count = 2
   End With
 
-  With cvwWatch
-    .Columns.Count = 2
-    .Columns[0].Width = 192
-    .Columns[0].Text = ("Expression")
-    .Columns[1].Text = ("Value")
-  End With
-  
   With gvwBreakpoint
     .AddColumn("", DS * 3)
     .AddColumn(("Class"))
@@ -104,7 +94,6 @@ End
 Public Sub Clear()
 
   lvwStack.Clear
-  cvwWatch.Clear
   cvwVariable.Clear
   $cRefreshBreakpoint.Clear
 
@@ -143,7 +132,7 @@ Public Sub FillStack(aPos As String[]) As Boolean
   
   lvwStack.Clear
 
-  W = Desktop.Scale * 8
+  W = Desktop.Scale * 16
   For Each sPos In aPos
     If sPos = "?" Then
       lvwStack.Add(iInd, "(" & ("native code") & ")")
@@ -350,12 +339,12 @@ End
 '   
 ' End
 ' 
-Public Function LocalExists(sExpr As String) As Boolean
-  
-  If Not sExpr Then Return
-  Return $cLocal.Exist(sExpr)
-
-End
+' Public Function LocalExists(sExpr As String) As Boolean
+'   
+'   If Not sExpr Then Return
+'   Return $cLocal.Exist(sExpr)
+' 
+' End
 
 ' Public Sub DefineObject(Optional sList As String = "*")
 '   
@@ -397,7 +386,7 @@ End
 
 
 
-Public Sub AddResultWatch(sCmd As String, sRes As String, Optional bInstant As Boolean)
+Public Sub AddResultWatch(sCmd As String, Optional sRes As String, Optional bInstant As Boolean)
 
   Dim sVal As String
   
@@ -424,10 +413,21 @@ Public Sub AddResultWatch(sCmd As String, sRes As String, Optional bInstant As B
     Else 
       Design.Command("#X" & sCmd & "\t" & sCmd)  
     Endif 
-  Else  
-    Try cvwWatch.Add(sCmd, sCmd)
-    If Left(sVal) = "!" Then sVal = Mid$(sVal, 2)
-    cvwWatch[sCmd][1] = sVal
+  Else
+    
+    If Not cvwVariable.Exist("@") Then
+      With cvwVariable.Add("@", ("Watch expressions"), Picture["icon:/16/watch"])
+        .MoveFirst()
+        .Font = lvwStack.Font
+      End With
+    Endif
+    
+    Try cvwVariable.Add("@" & sCmd, sCmd,, "@").EnsureVisible
+    
+    With cvwVariable["@" & sCmd]
+      If Left(sVal) = "!" Then sVal = Mid$(sVal, 2)
+      .[1] = sVal
+    End With
   
   Endif
 
@@ -470,16 +470,12 @@ End
 
 Public Sub RefreshAllWatch()
 
-  If Not cvwWatch.MoveFirst() Then
-
-    Do
-
-      Design.Command("?W" & cvwWatch.Item.Text & "\t" & cvwWatch.Item.Text)
-      If cvwWatch.MoveNext() Then Return
-
-    Loop
-
-  Endif
+  If cvwVariable.MoveTo("@") Then Return
+  If cvwVariable.MoveChild() Then Return
+  
+  Repeat
+    Design.Command("?W" & cvwVariable.Item.Text & "\t" & cvwVariable.Item.Text)
+  Until cvwVariable.MoveNext()
 
 End
 
@@ -491,7 +487,6 @@ Public Sub AddWatch(sExpr As String)
   Endif
 
   Design.Command("?W" & sExpr & "\t" & sExpr)
-  SelectTab(TAB_WATCH)
 
 End
 
@@ -516,6 +511,7 @@ Public Sub cmbWatch_Activate()
   If Not sExpr Then Return
 
   AddWatch(sExpr)
+  cmbWatch.Text = ""
 
 End
 
@@ -529,15 +525,16 @@ End
 
 Public Sub btnKillWatch_Click()
 
-  Try cvwWatch.Remove(cvwWatch.Key)
+  Dim sKey As String
 
-End
-
-Public Sub btnKillAllWatch_Click()
-
-  If Message.Question(("Do you want to clear the expression list ?"), ("Clear"), ("Cancel")) = 2 Then Return
-
-  cvwWatch.Clear
+  sKey = cvwVariable.Key
+  If sKey Begins "@" Then 
+    If sKey = "@" Then
+      If Message.Question(("Do you want to clear the expression list ?"), ("Clear"), ("Cancel")) = 2 Then Return
+    Endif
+    cvwVariable.Remove(sKey)
+    If sKey <> "@" And If cvwVariable["@"].Children = 0 Then cvwVariable.Remove("@")
+  Endif
 
 End
 
@@ -553,52 +550,49 @@ Private Sub WatchExpression(sText As String)
   
 End
 
-Public Sub cvwWatch_Click()
-  
-  cmbWatch.Text = cvwWatch.Current.Text
-  
-End
-
-
-Public Sub cvwWatch_Activate()
-
-  Dim sText As String = cvwWatch.Item.Text
-
-  If Right(sText) = ":" Then Return
-  If Left(cvwWatch.Item[1]) = "(" Then
-    WatchExpression(sText)
-  Endif
-
-End
-
-Public Sub ClearWatchpoint()
-  
-  cmbWatch.Clear
-  
-End
-
+' Public Sub cvwWatch_Activate()
+' 
+'   Dim sText As String = cvwWatch.Item.Text
+' 
+'   If Right(sText) = ":" Then Return
+'   If Left(cvwWatch.Item[1]) = "(" Then
+'     WatchExpression(sText)
+'   Endif
+' 
+' End
 
 Public Sub ReadConfig()
 
   'Dim hButton As ToolButton
   Dim hCtrl As Control
   Dim hFont As Font
+  Dim H As Integer
+  Dim hChild As Control
 
   Settings.Read(panDebug)
   wizDebug.TextFont = Project.GetSmallFont()
   
   Project.SetSmallFont(lvwStack)
   hFont = lvwStack.Font
-  cvwWatch.Font = hFont
   gvwBreakpoint.Font = hFont
   gvwTask.Font = hFont
   gvwCompilation.Font = hFont
-  cvwVariable.Font = hFont
+  
+  Project.SetEditorFont(cvwVariable)
+  cmbWatch.Font = cvwVariable.Font
+  btnShowMe.Font.Bold = True
   
   FDebugButton.ReadConfig
   
-  For Each hCtrl In [panBreakpoint, panSearch, panWatch, panLocal]
+  For Each hCtrl In [panBreakpoint, panSearch]
     Project.SetSmallFont(hCtrl)
+  Next
+
+  H = Max(Stock.GetSize("small"), cmbWatch.Font.H) * 1.2
+  
+  panWatch.H = H
+  For Each hChild In panWatch.Children
+    If hChild Is PictureBox Or If hChild Is ToolButton Then hChild.W = hChild.H
   Next
 
   'btnLocalLayout.Value = Settings["/FDebugInfo/LocalColumnView", 0]
@@ -702,20 +696,24 @@ Public Sub WriteWatchSettings()
 
   Dim iInd As Integer
   Dim sFlag As String
+  Dim iCount As Integer
 
   sFlag = "/Watches"
   iInd = 0
   Project.Config.Clear(sFlag)
 
-  Project.Config[sFlag &/ "Count"] = cvwWatch.Count
-  If Not cvwWatch.MoveFirst() Then
+  Try iCount = cvwVariable["@"].Children
+  
+  Project.Config[sFlag &/ "Count"] = iCount
+  If iCount Then
 
-    Do
+    cvwVariable.MoveTo("@")
+    cvwVariable.MoveChild()
+    While cvwVariable.Available
       Inc iInd
-      Project.Config[sFlag &/ "Watch[" & CStr(iInd) & "]"] = cvwWatch.item.Text
-      If cvwWatch.MoveNext() Then Break 
-
-    Loop
+      Project.Config[sFlag &/ "Watch[" & CStr(iInd) & "]"] = cvwVariable.item.Text
+      cvwVariable.MoveNext()
+    Wend
 
   Endif
 
@@ -725,21 +723,18 @@ Public Sub ReadWatchSettings()
 
   Dim iCount As Integer
   Dim iInd As Integer
-  Dim sString As String
   Dim sFlag As String
+  Dim sExpr As Variant
 
   sFlag = "/Watches"
   iInd = 0
   iCount = Project.Config[sFlag &/ "Count", "0"]
-  ClearWatchpoint()
+  
+  Try cvwVariable.Remove("@")
+  
   For iInd = 1 To iCount
-    sString = Project.Config[sFlag &/ "Watch[" & CStr(iInd) & "]"]
-    'IF sString THEN 
-      'IF cmbWatch.Find(sString) < 0 THEN
-        'cmbWatch.Add(sString)
-      Try cvwWatch.Add(sString, sString)
-      'ENDIF
-    'ENDIF 
+    sExpr = Project.Config[sFlag &/ "Watch[" & CStr(iInd) & "]"]
+    AddResultWatch(sExpr)
   Next
   
 End
@@ -767,7 +762,6 @@ Public Sub UpdateView()
 
   ShowTab(TAB_CONSOLE, Not bUndock)
   ShowTab(TAB_DEBUG, Project.Running)
-  ShowTab(TAB_WATCH, Project.Running)
   ShowTab(TAB_BREAK)
   
   ' If panStack.Visible <> Project.Running Then
@@ -977,12 +971,6 @@ Public Sub tbvObject_Select()
 
   Balloon.Hide(Last)
 
-End
-
-Public Sub ShowWatchTab()
-  
-  SelectTab(TAB_WATCH)
-  
 End
 
 Public Sub btnShow_Click()
@@ -1372,24 +1360,18 @@ Public Sub GotoFirstWarning()
   
 End
 
-Public Sub btnCopy_Click()
-
-  Try Clipboard.Copy(cvwWatch.Current[1])
-
-End
-
-Public Sub btnLocalCopy_Click()
-
-  Dim sText As String
-  Dim I As Integer
-  
-  For I = 0 To $aLocal.Max
-    sText &= $aLocal[I] & " = " & $aValLocal[I] & "\n"
-  Next
-  
-  Clipboard.Copy(sText)
-
-End
+' Public Sub btnLocalCopy_Click()
+' 
+'   Dim sText As String
+'   Dim I As Integer
+'   
+'   For I = 0 To $aLocal.Max
+'     sText &= $aLocal[I] & " = " & $aValLocal[I] & "\n"
+'   Next
+'   
+'   Clipboard.Copy(sText)
+' 
+' End
 
 ' Private Sub UpdateLocal()
 ' 
@@ -1608,7 +1590,10 @@ Public Sub DefineVariable(sLocal As String, sObject As String)
     hBold = cvwVariable.Font.Copy()
     hBold.Bold = True
     
-    cvwVariable.Add("^", ("Current object"), Picture["img/16/current.png"]).Expanded = True
+    With cvwVariable.Add("^", ("Current object"), Picture["img/16/current.png"])
+      .Expanded = True
+      .Font = lvwStack.Font
+    End With
     
     sPrefix = " :"
     For I = 0 To aObject.Max
@@ -1649,7 +1634,10 @@ Public Sub DefineVariable(sLocal As String, sObject As String)
     hBold = cvwVariable.Font.Copy()
     hBold.Bold = True
     
-    cvwVariable.Add("~", ("Local variables"), Picture["img/16/local.png"]).Expanded = True
+    With cvwVariable.Add("~", ("Local variables"), Picture["img/16/local.png"])
+      .Expanded = True
+      .Font = lvwStack.Font
+    End With
     
     For Each sVar In aLocal
       cvwVariable.Add("~" & sVar, sVar, Picture["img/symbol/symbol.png"], "~")
@@ -1746,13 +1734,16 @@ Public Sub cvwVariable_Activate()
   Dim sVal As String 
 
   With cvwVariable.Current
+    
     If .Children Then Return
+    
     sExpr = .Text
     sVal = .[1]
   
     If Left(sVal) = "(" Then 
       Design.Command("#X" & sExpr & "\t" & sExpr)
     Else
+      If .Key Begins "@" Then Return
       .Editable = True
       .Rename(1)
       .Editable = False
@@ -1769,6 +1760,13 @@ Public Sub OnProjectDebug()
   FDebugButton.SelectButton(TAB_DEBUG)
   
 End
+
+Public Sub ShowDebugging()
+  
+  FDebugButton.SelectButton(TAB_DEBUG)
+  
+End
+
 
 Public Sub cvwVariable_Rename()
 
