@@ -221,8 +221,10 @@ Public Sub _new()
   Endif
   
   If Not $bRemoteDisplayChecked Then
-    sDisplay = Env["DISPLAY"]
-    If sDisplay And If Left(sDisplay) <> ":" Then $bRemoteDisplay = True
+    If Env["XDG_SESSION_TYPE"] <> "wayland" Then
+      sDisplay = Env["DISPLAY"]
+      If sDisplay And If Left(sDisplay) <> ":" Then $bRemoteDisplay = True
+    Endif
     $bRemoteDisplayChecked = True
   Endif
   
@@ -2783,7 +2785,7 @@ End
 
 Private Function Count_Read() As Integer
   
-  Return $hDoc.Count
+  Try Return $hDoc.Count
   
 End
 
