@@ -6,6 +6,7 @@ Static Property Debug As Boolean
 Static Property Read List As String[]
 Static Property Read Themes As String[]
 Static Property Read Icons As String[]
+Static Property Read Sizes As String[]
 
 Static Private $bInit As Boolean
 Static Private $bDarkTheme As Boolean = False
@@ -333,7 +334,7 @@ Static Public Function GetSize(Size As String) As Integer
   Dim iSize As Integer
   
   Select Case LCase(Size)
-    Case "very small"
+    Case "tiny"
       iSize = (CInt(Desktop.Scale * 2) \ 4) * 4 '16 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 4
     Case "small"
       iSize = (CInt(Desktop.Scale * 2.5) \ 4) * 4 '16 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 4
@@ -828,4 +829,10 @@ Static Private Function Icons_Read() As String[]
   If Not $aList Then LoadMap
   Return $aList
   
+End
+
+Static Private Function Sizes_Read() As String[]
+
+  Return ["tiny", "small", "medium", "large", "huge"]
+
 End
