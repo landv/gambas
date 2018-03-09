@@ -30,35 +30,38 @@
         Expand = True
         { panWatch HBox
           MoveScaled(1,1,71,3)
-          { picWatch PictureBox
-            MoveScaled(0,0,3,3)
+          Drop = True
+          { Panel5 HBox
+            MoveScaled(1,0,41,3)
             Background = Color.TextBackground
-            Picture = Picture["icon:/small/watch"]
-            Alignment = Align.Center
-          }
-          { cmbWatch ComboBox
-            MoveScaled(8,0,27,3)
             Expand = True
-            Border = False
+            { btnKillWatch ToolButton
+              MoveScaled(0,0,3,3)
+              ToolTip = ("Remove current expression")
+              Picture = Picture["icon:/tiny/remove"]
+            }
+            { btnAddWatch ToolButton
+              MoveScaled(3,0,3,3)
+              ToolTip = ("Add expression")
+              Picture = Picture["icon:/tiny/watch"]
+            }
+            { cmbWatch ComboBox
+              MoveScaled(6,0,27,3)
+              Expand = True
+              Border = False
+            }
           }
           { Separator6 Separator
-            MoveScaled(38,0,0,3)
-          }
-          { btnAddWatch ToolButton
-            MoveScaled(39,0,3,3)
-            ToolTip = ("Add expression")
-            Picture = Picture["icon:/small/add"]
-          }
-          { btnKillWatch ToolButton
-            MoveScaled(43,0,3,3)
-            ToolTip = ("Remove current expression")
-            Picture = Picture["icon:/small/remove"]
+            MoveScaled(52,0,0,3)
           }
           { btnShowMe ToolButton
-            MoveScaled(47,0,5,3)
+            MoveScaled(56,0,4,3)
+            Font = Font["-1"]
             ToolTip = ("Display ME")
-            AutoResize = True
             Text = ("ME")
+          }
+          { Separator3 Separator
+            MoveScaled(63,0,0,3)
           }
         }
         { Separator4 Separator

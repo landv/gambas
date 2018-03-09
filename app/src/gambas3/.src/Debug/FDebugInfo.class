@@ -425,7 +425,12 @@ Public Sub AddResultWatch(sCmd As String, Optional sRes As String, Optional bIns
     Try cvwVariable.Add("@" & sCmd, sCmd,, "@").EnsureVisible
     
     With cvwVariable["@" & sCmd]
-      If Left(sVal) = "!" Then sVal = Mid$(sVal, 2)
+      If Left(sVal) = "!" Then 
+        sVal = Mid$(sVal, 2)
+        .Foreground = Color.Red
+      Else
+        .Foreground = Color.Default
+      Endif
       .[1] = sVal
     End With
   
@@ -580,7 +585,6 @@ Public Sub ReadConfig()
   
   Project.SetEditorFont(cvwVariable)
   cmbWatch.Font = cvwVariable.Font
-  btnShowMe.Font.Bold = True
   
   FDebugButton.ReadConfig
   
@@ -588,7 +592,7 @@ Public Sub ReadConfig()
     Project.SetSmallFont(hCtrl)
   Next
 
-  H = Max(Stock.GetSize("small"), cmbWatch.Font.H) * 1.2
+  H = Max(Stock.GetSize("tiny"), cmbWatch.Font.H) * 1.4
   
   panWatch.H = H
   For Each hChild In panWatch.Children

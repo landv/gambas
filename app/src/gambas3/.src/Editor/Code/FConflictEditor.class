@@ -1442,7 +1442,9 @@ Public Sub Editors_Highlight(Text As String)
       TextHighlighter.State = Highlight.Normal
       TextHighlighter.Tag = 0
     Endif
+    
     TextHighlighter.Add(TextHighlighter.State, String.Len(Text))
+    
   Endif
   
 End

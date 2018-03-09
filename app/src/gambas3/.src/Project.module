@@ -497,7 +497,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean, sOpen
   Endif
 
   If bInAnotherWindow Then
-    
+
     Try Config.Save
     Try Settings.Save
 
@@ -512,7 +512,9 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean, sOpen
     Else
       Exec [sExec, sDir]
     Endif
+    
     Return True
+    
   Endif
 
   sOldPath = Project.Path

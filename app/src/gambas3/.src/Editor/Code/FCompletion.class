@@ -710,7 +710,7 @@ Private Sub FillWithFiles(sWord As String)
   
   If sDir = "icon:/" Then
     
-    aDir = ["small", "medium", "large", "huge", "16", "22", "32", "48", "96", "128", "256"]
+    aDir = Stock.Sizes.Insert(["16", "22", "32", "48", "96", "128", "256"])
     
     For Each sName In aDir.Sort(gb.Natural)
       'hPict = Desktop.GetFileIcon(sDir &/ sName, 16)

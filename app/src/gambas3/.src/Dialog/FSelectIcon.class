@@ -43,7 +43,7 @@ Public Sub Form_Open()
   
   fchIcon.Filter = aFilter
   
-  cmbSize.List = ["small", "medium", "large", "huge", "16", "22", "32", "48", "64", "96", "128"]
+  cmbSize.List = Stock.Sizes.Insert(["16", "22", "32", "48", "64", "96", "128"])
   
   tabIcon[1].Visible = $iOption And SELECT_STOCK
   
@@ -129,7 +129,7 @@ Private Sub SetSize(sSize As String) As Boolean
   sSize = LCase(sSize)
   Try iSize = CInt(sSize)
   If Error Then 
-    If Not ["small", "medium", "large", "huge"].Exist(sSize) Then 
+    If Not Stock.Sizes.Exist(sSize) Then 
       cmbSize.Text = $sSize
       Return True
     Endif
