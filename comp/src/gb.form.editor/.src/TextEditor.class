@@ -125,6 +125,10 @@ Private $YM As Integer = -1
 Private $XMO As Integer
 Private $YMO As Integer
 
+Private $IY1 As Integer
+Private $IY2 As Integer
+Private $IP As Integer
+
 Private $bReadOnly As Boolean
 Private $bOverwrite As Boolean
 'Private $bTerminal As Boolean
@@ -134,6 +138,7 @@ Private $iForeground As Integer
 Private $iSelectedBackground As Integer
 Private $iLimitColor As Integer
 Private $iIndentColor As Integer
+Private $iMatchColor As Integer
 
 Private $iLineNumberOffset As Integer
 Private $hTabImage As Image
@@ -511,7 +516,7 @@ Private Sub DrawMatch(X As Integer, Y As Integer, H As Integer, XM As Integer, Y
   
   XY = LinePos(YM, XM)
   WW = TextWidth($hDoc.Lines[YM], XM + 1, 1)
-  Paint.FillRect(X + XY.X, Y + XY.Y, WW, H, $hStyles[Highlight.Highlight].Color)
+  Paint.FillRect(X + XY.X, Y + XY.Y, WW, H, $iMatchColor)
   
 End
 
@@ -771,7 +776,7 @@ Private Sub GetTabSizeAround(Row As Integer) As Integer
   
 End
 
-Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, RY As Integer)
+Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer)
   
   Dim X1 As Integer
   Dim Y1 As Integer
@@ -783,7 +788,7 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   Dim sCar As String
   Dim aLayout As Integer[]
   Dim I As Integer
-  Dim P As Integer
+  Dim P, D As Integer
   Dim sText As String
   Dim YY As Integer
   Dim H As Integer
@@ -795,6 +800,7 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   Dim XX As Integer
   Dim hPos As Point
   Dim iEndingSpaceLimit As Integer
+  Dim XP, IP As Integer
   
   'Debug Row
   H = $LH
@@ -928,27 +934,42 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   
   If $bShowIndent Then
     
-    P = Len(LTrim(sText))
+    P = GetLineIndentMark(Row, sText)
+    D = $iSpaceWidth \ 2
+    If $IP And If Row >= $IY1 And If Row <= $IY2 Then IP = X + $IP
     
-    If P = 0 Then
-      P = GetTabSizeAround(Row) + 1
-      P = LinePos(Row, String.Len(sText)).X + (P - String.Len(sText)) * $iSpaceWidth
-    Else
-      P = Len(sText) - P
-      P = LinePos(Row, P).X
-    Endif
-    
-    Paint.Background = $iLimitColor
-    Paint.Dash = [2]
-    Paint.DashOffset = RY
-    XX = $iTabWidth + X + $iSpaceWidth \ 2
-    While XX < P
-      Paint.MoveTo(XX + 0.5, Y + 0.5)
-      Paint.RelLineTo(0, Height)
-      Paint.Stroke
+    XP = 0
+    Do
+      
+      If $bTabIndent Then
+        Inc XP
+        XX = X + XP * $iTabWidth
+      Else
+        XP += $iTabSize
+        XX = X + $hFont.TextWidth(String$(XP, " "))
+      Endif
+      
+      If XX >= P Then Break
+      
+      If IP And If XX = IP Then
+        IP = 0
+        Paint.FillRect(XX + D, Y, D, Height, $iMatchColor)
+      Else
+        Paint.FillRect(XX + D, Y, D / 2, Height, $iIndentColor)
+      Endif
       iEndingSpaceLimit = XX
-      XX += $iTabWidth
-    Wend
+      
+    Loop
+    
+    ' If IP Then
+    '   If Row = $IY1 Then
+    '     Paint.FillRect(IP - D * 3, Y + H \ 2, D, Height - H \ 2, $iMatchColor)
+    '     Paint.FillRect(IP - D * 3, Y + H \ 2, D * 2, D, $iMatchColor)
+    '   Else If Row = $IY2 Then
+    '     Paint.FillRect(IP - D * 3, Y, D, Height - H \ 2, $iMatchColor)
+    '     Paint.FillRect(IP - D * 3, Y + Height - H \ 2 - D, D * 2, D, $iMatchColor)
+    '   Endif
+    ' Endif
     
   Endif
   
@@ -1627,6 +1648,7 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
   If Not $bReadOnly Then $hTimerCursor.Start
   
   CheckMatch
+  CheckIndentMark
   _RaiseCursor
   
 End
@@ -2318,6 +2340,134 @@ FOUND:
   
 End
 
+Private Sub GetLineIndentMark(Y As Integer, Optional sText As String) As Integer
+  
+  Dim P As Integer
+  
+  If IsMissing(sText) Then sText = $hDoc.Lines[Y]
+  
+  P = Len(LTrim(sText))
+  
+  If P = 0 Then
+
+    P = GetTabSizeAround(Y) + 1
+    P = LinePos(Y, String.Len(sText)).X + (P - String.Len(sText)) * $iSpaceWidth
+
+  Else
+
+    P = Len(sText) - P
+    P = LinePos(Y, P).X
+
+  Endif
+  
+  Return P
+  
+End
+
+Private Sub CheckIndentMark()
+
+  Dim Y1, Y2 As Integer
+  Dim IM1, IM2 As Integer
+  Dim IY1 As Integer
+  Dim IY2 As Integer
+  Dim IP As Integer
+  Dim IM0 As Integer
+  Dim bStop As Boolean
+  Dim bLimit1 As Boolean
+  Dim bLimit2 As Boolean
+  Dim bEqual2 As Boolean
+  Dim bEqual1 As Boolean
+  
+  'If $Y = 501 Then Stop
+  
+  IM0 = GetLineIndentMark($Y)
+  If IM0 = 0 Then Goto SET_RESULT
+  
+  bStop = False
+  Y1 = $Y
+  While Y1 > 0
+    Dec Y1
+    If Not Trim($hDoc.Lines[Y1]) Then Continue
+    IM1 = GetLineIndentMark(Y1)
+    If IM1 < IM0 Then 
+      bLimit1 = True
+      Break
+    Else If IM1 > IM0 Then
+      If Not bEqual1 Then bStop = True
+    Else
+      If bStop Then 
+        bLimit1 = True
+        Break
+      Endif
+      bEqual1 = True
+    Endif
+  Wend
+  
+  bStop = False
+  Y2 = $Y
+  While Y2 < $hDoc.Max
+    Inc Y2
+    If Not Trim($hDoc.Lines[Y2]) Then Continue
+    IM2 = GetLineIndentMark(Y2)
+    If IM2 < IM0 Then 
+      bLimit2 = True
+      Break
+    Else If IM2 > IM0 Then
+      If Not bEqual2 Then bStop = True
+    Else
+      If bStop Then 
+        bLimit2 = True
+        Break
+      Endif
+      bEqual2 = True
+    Endif
+  Wend
+  
+  'Debug "----"
+  'Debug "Y1=";; Y1 + 1;; "Y2=";; Y2 + 1;; "bLimit1=";; bLimit1;; "bLimit2=";; bLimit2;; "bEqual1=";; bEqual1;; "bEqual2=";; bEqual2
+  
+  If bLimit1 And If bLimit2 Then
+    IM1 = GetLineIndentMark(Y1)
+    IM2 = GetLineIndentMark(Y2)
+    If IM1 < IM2 Then
+      If IM2 = IM0 Then Y1 = $Y
+    Else If IM1 > IM2 Then
+      If IM1 = IM0 Then Y2 = $Y
+    Endif
+  Else If bLimit1 Then
+    Y2 = $Y
+  Else If bLimit2 Then
+    Y1 = $Y
+  Endif
+  
+  'If bEqual1 Or If bEqual2 Then
+    IP = Max(GetLineIndentMark(Y1), GetLineIndentMark(Y2))
+  'Else
+    'IP = Min(GetLineIndentMark(Y1), GetLineIndentMark(Y2))
+  'Endif
+  
+  If IP = 0 Then
+    IY1 = 0
+    IY2 = 0
+  Else
+    IY1 = Y1
+    IY2 = Y2
+  Endif
+  'Debug "=> "; IY1 + 1;; IY2 + 1;; IP
+  
+SET_RESULT:
+  
+  If IP <> $IP Or If IY1 <> $IY1 Or If IY2 <> $IY2 Then
+    If $IP Then _RefreshLine($IY1, $IY2 - $IY1 + 1)
+    $IP = IP
+    $IY1 = IY1
+    $IY2 = IY2
+    If $IP Then _RefreshLine($IY1, $IY2 - $IY1 + 1)
+  Endif
+    
+End
+
+
 Public Sub _RefreshLine(Y As Integer, Optional N As Integer = 1)
   
   Dim I As Integer
@@ -2604,7 +2754,9 @@ Public Sub View_Draw()
     $iForeground = $hStyles[Highlight.Normal].Color
     $iSelectedBackground = $hStyles[Highlight.Selection].Color
     $iLimitColor = Color.Gradient($iBackground, $hStyles[Highlight.Comment].Color)
-    $iIndentColor = Color.Gradient($iBackground, $iForeground)
+    $iIndentColor = Color.SetAlpha($iLimitColor, 192)
+    $iMatchColor = $hStyles[Highlight.Highlight].Color
+    '$iIndentColor = Color.Gradient($iBackground, $iForeground)
     $iMarginColor = Color.Merge($iLimitColor, $iBackground, 0.8)
     $bStyleChanged = False
   Endif
@@ -2654,10 +2806,10 @@ Public Sub View_Draw()
   For I = 0 To iMaxRow
     iRow = aRow[I]
     H = $hRows._GetRowHeight(iRow)
-    
+  
     If H >= $hView.ClientH Or If $bRemoteDisplay Then
       Paint.Save
-      DrawLine(XX, Y, $iWidth, H, iRow, Y)
+      DrawLine(XX, Y, $iWidth, H, iRow) ',Y)
       Paint.Restore
     Else
       hPict = $cCacheLine[iRow]
@@ -2666,7 +2818,7 @@ Public Sub View_Draw()
         hPict.Fill($iBackground)
         Paint.Begin(hPict)
         Paint.Font = $hFont
-        DrawLine(0, 0, $iWidth, H, iRow, Y)
+        DrawLine(0, 0, $iWidth, H, iRow) ', Y)
         Paint.End
         $cCacheLine[iRow] = hPict
         $iCacheLineH += H
