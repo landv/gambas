@@ -430,7 +430,7 @@ Public Sub OpenMenu(hToolbar As ToolBar)
       mnuLargeSize.Checked = True
     Case FToolBar.ICON_MEDIUM
       mnuMediumSize.Checked = True
-    Case FToolBar.ICON_VERY_SMALL
+    Case FToolBar.ICON_TINY
       mnuVerySmallSize.Checked = True
     Case Else
       mnuSmallSize.Checked = True
@@ -468,7 +468,7 @@ End
 
 Public Sub mnuVerySmallSize_Click()
   
-  GetForm($hPopupToolbar).SetIconSize(FToolBar.ICON_VERY_SMALL)
+  GetForm($hPopupToolbar).SetIconSize(FToolBar.ICON_TINY)
   
 End
 

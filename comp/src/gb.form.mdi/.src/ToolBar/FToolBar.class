@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Public Enum ICON_VERY_SMALL, ICON_SMALL, ICON_MEDIUM, ICON_LARGE, ICON_HUGE
+Public Enum ICON_TINY, ICON_SMALL, ICON_MEDIUM, ICON_LARGE, ICON_HUGE
 
 Public ToolbarKey As String
 Public $bDesign As Boolean
@@ -1274,8 +1274,8 @@ Private Sub CalcIconSize(iIconSize As Integer) As Integer
       Return Stock.GetSize("large")
     Case ICON_HUGE
       Return Stock.GetSize("huge")
-    Case ICON_VERY_SMALL
-      Return Stock.GetSize("very small")
+    Case ICON_TINY
+      Return Stock.GetSize("tiny")
     Default
       Return Stock.GetSize("small")
   End Select
@@ -1408,8 +1408,8 @@ Public Sub LoadConfig(Optional bInit As Boolean)
     Case "huge"
       $iIconSize = ICON_HUGE
       iDim = 12
-    Case "very small"
-      $iIconSize = ICON_VERY_SMALL
+    Case "tiny"
+      $iIconSize = ICON_TINY
       iDim = 12
     Case Else
       $iIconSize = ICON_SMALL
@@ -1524,7 +1524,7 @@ Public Sub SaveConfig(Optional bReset As Boolean)
   ' Endif
   'Print "Default config is ";; FindToolbar().DefaultConfig.Join(",")
 
-  sVal = Choose($iIconSize + 1, "Very small", "", "Medium", "Large", "Huge")
+  sVal = Choose($iIconSize + 1, "Tiny", "", "Medium", "Large", "Huge")
   If sVal <> Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"] Then
     Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"] = sVal
     bChange = True
