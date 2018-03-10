@@ -1182,12 +1182,18 @@ Private Sub Breakpoints_Write(Value As Integer[])
 
   Dim Y As Integer
   
+  If $iBegin Then StartBefore
+  
   $cBreakpoint.Clear
   
   If Value Then
     For Each Y In Value
       $cBreakpoint[Y] = True
     Next
+  Endif
+  
+  If $iBegin And If $iNoUndo = 0 Then
+    AddUndo(CCommand(Me, CCommand.CHANGE,,,,,, EndBefore()))
   Endif
   
   Refresh
@@ -1236,12 +1242,18 @@ Private Sub Bookmarks_Write(Value As Integer[])
 
   Dim Y As Integer
   
+  If $iBegin Then StartBefore
+  
   $cBookmark.Clear
 
   If Value Then
     For Each Y In Value
       $cBookmark[Y] = True
     Next
+  Endif
+  
+  If $iBegin And If $iNoUndo = 0 Then
+    AddUndo(CCommand(Me, CCommand.CHANGE,,,,,, EndBefore()))
   Endif
   
   Refresh
@@ -1625,10 +1637,16 @@ Private Sub DisabledBreakpoints_Write(Value As Integer[])
 
   Dim Y As Integer
   
+  If $iBegin Then StartBefore
+  
   If Value Then
     For Each Y In Value
       If $cBreakpoint.Exist(Y) Then $cBreakpoint[Y] = False
     Next
+  Endif
+  
+  If $iBegin And If $iNoUndo = 0 Then
+    AddUndo(CCommand(Me, CCommand.CHANGE,,,,,, EndBefore()))
   Endif
   
   Refresh
