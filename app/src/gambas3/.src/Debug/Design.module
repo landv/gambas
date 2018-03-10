@@ -45,17 +45,22 @@ Private $hPipeError As File
 Private $hBrowser As Process
 Private $iProcessId As Integer
 
+Private $hTimerDebugPanel As Timer
 
 Public Sub Init()
  
   $sFifo = Debug.Begin()
   SetState(STATE_STOP)
+  
+  $hTimerDebugPanel = New Timer As "TimerDebugPanel"
+  $hTimerDebugPanel.Delay = 50
 
 End
 
 
 Public Sub Exit()
 
+  $hTimerDebugPanel = Null
   Debug.End
 
 End
@@ -81,29 +86,45 @@ End
 
 Private Sub SetState(iState As Integer)
 
-  Dim bDebug As Boolean
+  'Dim bDebug As Boolean
   Dim bEnable As Boolean
 
   'PRINT "SetState:"; iState
   
-  bDebug = $iState <> STATE_STOP And $iState <> STATE_STARTING
+  'bDebug = $iState <> STATE_STOP And $iState <> STATE_STARTING
 
-  $iState = iState
-
-  Action["pause"].Enabled = $iState = STATE_RUNNING
-  bEnable = $iState <> STATE_RUNNING And $iState <> STATE_STARTING
+  Action["pause"].Enabled = iState = STATE_RUNNING
+  bEnable = iState <> STATE_RUNNING And iState <> STATE_STARTING
   Action["forward"].Enabled = bEnable
   Action["step"].Enabled = bEnable
-  Action["return"].Enabled = bEnable And $iState <> STATE_STOP
+  Action["return"].Enabled = bEnable And iState <> STATE_STOP
   Action["start"].Enabled = bEnable
 
-  Action["stop"].Enabled = $iState <> STATE_STOP
+  Action["stop"].Enabled = iState <> STATE_STOP
   'btnInfo.Enabled = btnStop.Enabled
 
   If iState = $iState Then Return
+  
+  $iState = iState
+
   FOutput.OnProjectDebugState
   
+  $hTimerDebugPanel.Restart
+  
 End
+
+Public Sub TimerDebugPanel_Timer()
+  
+  If $iState = STATE_RUNNING Then 
+    FDebugInfo.ShowConsole
+  Else
+    FDebugInfo.ShowDebugging
+  Endif
+  
+  $hTimerDebugPanel.Stop
+  
+End
+
 
 
 ' PRIVATE SUB HideForm(hForm AS Form)
@@ -483,6 +504,8 @@ Private Sub AfterStop()
 
   FMain.ActivateCurrentWindow
 
+  $hTimerDebugPanel.Stop
+  
   'IF Project.ActiveForm THEN
   '  TRY Project.ActiveForm.Show
   'ENDIF
@@ -651,17 +674,15 @@ Public Sub RunUntil(hForm As FEditor, iLine As Integer)
     bOn = Not .[iLine].Breakpoint
   End With
 
-  Inc iLine
-
   If bOn Then
     'PRINT "RunUntil "; sClass; "."; iLine
     sBreak = sClass & "." & CStr(iLine)
     If $iState <> STATE_DEBUG Then
-      $sAddBreakpoint = "+" & sBreak
+      $sAddBreakpoint = MakeBreakpoint(sBreak, True)
     Else
-      WriteCommand("+" & sBreak)
+      WriteCommand(MakeBreakpoint(sBreak, True))
     Endif
-    $sRemoveBreakpoint = "-" & sBreak
+    $sRemoveBreakpoint = MakeBreakpoint(sBreak, False)
   Endif
 
   Run
@@ -773,6 +794,15 @@ End
 '   
 ' END
 
+Private Sub MakeBreakpoint(sBreakpoint As String, bOn As Boolean) As String
+
+  Dim aBreak As String[]
+  
+  aBreak = Split(sBreakpoint, ".")
+  Return If(bOn, "+", "-") & aBreak[0] & "." & CStr(CInt(aBreak[1]) + 1)
+  
+End
+
 
 Private Sub Start(sCmd As String)
 
@@ -826,7 +856,7 @@ Private Sub Start(sCmd As String)
   
   For Each sBreakpoint In $aBreakpoint
     If $cDisabledBreakpoint.Exist(sBreakpoint) Then Continue
-    $sCmdStart &= "+" & sBreakpoint & "\n"
+    $sCmdStart &= MakeBreakpoint(sBreakpoint, True) & "\n"
   Next
 
   If $sAddBreakpoint Then
@@ -1269,10 +1299,10 @@ Public Sub SetBreakpoint(sBreakpoint As String, bOn As Boolean, Optional bDisabl
 
   If bOn And If Not bDisabled Then
     'Debug "+" & sClass & "." & CStr(iLine);; System.Backtrace.Join(" ")
-    WriteCommand("+" & aBreak[0] & "." & aBreak[1])
+    WriteCommand(MakeBreakpoint(sBreakpoint, True))
   Else
     'Debug "-" & sClass & "." & CStr(iLine);; System.Backtrace.Join(" ")
-    WriteCommand("-" & aBreak[0] & "." & aBreak[1])
+    WriteCommand(MakeBreakpoint(sBreakpoint, False))
   Endif
 
 End
@@ -1409,3 +1439,4 @@ Public Sub SetBalloon(hCtrl As Control, Optional X As Integer = -1, Y As Integer
   BalloonY = Y  
   
 End
+

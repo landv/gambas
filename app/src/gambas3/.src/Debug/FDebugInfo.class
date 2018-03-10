@@ -35,7 +35,7 @@ Public Sub _new()
   End With
 
   With gvwBreakpoint
-    .AddColumn("", DS * 3)
+    .AddColumn("  ", DS * 3)
     .AddColumn(("Class"))
     .AddColumn(("Line"))
     '.AddColumn(("Function"))
@@ -1741,7 +1741,7 @@ Public Sub OnProjectDebug()
   
   $sLastLocal = ""
   $sLastObject = ""
-  FDebugButton.SelectButton(TAB_DEBUG)
+  FDebugButton.SelectButton(TAB_CONSOLE)
   
 End
 

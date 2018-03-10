@@ -45,6 +45,7 @@ End
 Public Sub Clear()
 
   trmOutput.Clear
+  btnSuspend.Value = False
   txtEnter.Clear
   $iHistory = $aHistory.Count
   SetFocus
@@ -188,7 +189,13 @@ Public Sub OnProjectDebugState()
   txtEnter.ReadOnly = Design.IsRunning()  
   If txtEnter.HasFocus Then trmOutput.SetFocus
   
-  If Design.IsStop() Then trmOutput.Reset()
+  If Design.IsStop() Then 
+    trmOutput.Reset(True)
+    btnSuspend.Value = False
+    btnSuspend.Hide
+  Else
+    btnSuspend.Show
+  Endif
   
 End
 
@@ -485,4 +492,10 @@ Public Sub GetTerminal() As TerminalView
   
   Return trmOutput
   
+End
+
+Public Sub btnSuspend_Click()
+
+  trmOutput.Suspended = btnSuspend.Value
+
 End
