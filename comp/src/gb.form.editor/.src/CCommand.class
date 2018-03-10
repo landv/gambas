@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Public Enum BEGIN, {END}, INSERT, DELETE
+Public Enum BEGIN, {END}, INSERT, DELETE, CHANGE
 
 'Public View As Editor
 Public Type As Integer
@@ -11,6 +11,7 @@ Public SY As Integer
 Public XA As Integer
 Public YA As Integer
 Public Text As String
+Public State As CCommandBefore
 
 ' /**---- GCommand -----------------------------------------------------------*/
 ' 
@@ -33,7 +34,7 @@ Public Text As String
 ' };
 ' 
 
-Public Sub _new(hDoc As CDocument, iType As Integer, Optional sText As String, X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
+Public Sub _new(hDoc As CDocument, iType As Integer, Optional sText As String, X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer, hState As CCommandBefore)
   
   With hDoc.Current
     Type = iType
@@ -44,6 +45,7 @@ Public Sub _new(hDoc As CDocument, iType As Integer, Optional sText As String, X
     SX = .SelectionColumn
     SY = .SelectionLine
     Text = sText
+    State = hState
   End With
   
 End
@@ -52,13 +54,13 @@ Public Sub Print(sPrefix As String)
   
   Print sPrefix;
   Print ["BEGIN", "END", "INSERT", "DELETE"][Type];;
-  Print "X =";; X;; "Y =";; Y;; "SX =";; SX;; "SY =";; SY;; "XA =";; XA;; "YA =";; YA;; "Text =";; Quote(Text)
+  Print "X =";; X;; "Y =";; Y;; "SX =";; SX;; "SY =";; SY;; "XA =";; XA;; "YA =";; YA;; "Text =";; Quote(Str(Text));
   
 End
 
-Static Public Sub _call(hDoc As CDocument, iType As Integer, Optional sText As String, X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer) As CCommand
+Static Public Sub _call(hDoc As CDocument, iType As Integer, Optional sText As String, X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer, hState As CCommandBefore) As CCommand
   
-  Return New CCommand(hDoc, iType, sText, X1, Y1, X2, Y2)
+  Return New CCommand(hDoc, iType, sText, X1, Y1, X2, Y2, hState)
 
 End
 
@@ -70,7 +72,6 @@ Public Sub MoveCursor(hDoc As CDocument)
   Else
     hDoc.Current.Goto(X, Y)
   Endif
-
   
 End
 

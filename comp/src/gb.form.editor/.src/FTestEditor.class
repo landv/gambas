@@ -179,3 +179,9 @@ Public Sub TextEditor1_Highlight(Text As String)
   Endif
   
 End
+
+Public Sub Button6_Click()
+
+  TextEditor1[TextEditor1.Line].Bookmark = Not TextEditor1[TextEditor1.Line].Bookmark
+
+End

@@ -11,6 +11,7 @@ Property Mode As String
 Property Read Length As Integer
 Property Read Keywords As String[]
 Property Breakpoints As Integer[]
+Property DisabledBreakpoints As Integer[]
 Property Bookmarks As Integer[]
 Property EndOfLine As Integer
 Property CloseBraces As Boolean
@@ -42,8 +43,9 @@ Private $bCloseBraces As Boolean
 Private $iEndOfLine As Integer = gb.Unix
 Private $sEndOfLine As String = "\n"
 
-Private $cBreakpoint As New Collection
-Private $cBookmark As New Collection
+Private $cBreakpoint As Collection
+Private $cBookmark As Collection
+Private $hCommandBefore As CCommandBefore
 
 Public Sub _new()
   
@@ -62,6 +64,8 @@ Public Sub Clear()
   $iBegin = 0
   $iNoHighlight = 0
   $cHighlightLater = Null
+  $cBreakpoint = New Collection
+  $cBookmark = New Collection
   
 End
 
@@ -244,6 +248,7 @@ Private Sub RemoveLines(Y As Integer, N As Integer)
   LinesInfo.Remove(Y, N)
   LineLength.Remove(Y, N)
   
+  StartBefore()
   $cBookmark = RemoveCollection($cBookmark, Y, N)
   $cBreakpoint = RemoveCollection($cBreakpoint, Y, N)
   
@@ -268,6 +273,67 @@ Private Sub InsertCollection(cCol As Collection, Y As Integer) As Collection
   
 End
 
+Private Sub SameCollection(cCol1 As Collection, cCol2 As Collection) As Boolean
+  
+  Dim vVal As Variant
+  
+  If cCol1.Count <> cCol2.Count Then Return
+  If cCol1.Count = 0 Then Return True
+  
+  If cCol1.Count > cCol2.Count Then Swap cCol1, cCol2
+  
+  For Each vVal In cCol1
+    If cCol2[cCol1.Key] <> vVal Then Return
+  Next
+  
+  Return True
+  
+End
+
+
+Private Sub StartBefore()
+
+  If $iNoUndo Then Return
+  
+  If Not $hCommandBefore Then
+    $hCommandBefore = New CCommandBefore
+    With $hCommandBefore
+      .BreakpointBefore = $cBreakpoint.Copy()
+      .BookmarkBefore = $cBookmark.Copy()
+    End With
+  Endif
+  
+End
+
+Private Sub EndBefore() As CCommandBefore
+  
+  Dim hCommandBefore As CCommandBefore = $hCommandBefore
+  
+  If $iNoUndo Then Return
+  
+  $hCommandBefore = Null
+  If Not hCommandBefore Then Return
+  
+  With hCommandBefore
+    If SameCollection(.BreakpointBefore, $cBreakpoint) Then
+      .BreakpointBefore = Null
+    Else
+      .BreakpointAfter = $cBreakpoint.Copy()
+    Endif
+    If SameCollection(.BookmarkBefore, $cBookmark) Then 
+      .BookmarkBefore = Null
+    Else
+      .BookmarkAfter = $cBookmark.Copy()
+    Endif
+    
+    If Not .BookmarkBefore And If Not .BreakpointBefore Then Return
+    
+  End With
+  
+  Return hCommandBefore
+  
+End
+
 
 Private Sub InsertLine(Y As Integer)
   
@@ -276,6 +342,7 @@ Private Sub InsertLine(Y As Integer)
   LinesInfo.Add(CLineInfo(), Y)
   LinesInfo[Y].Modified = True
   
+  StartBefore()
   $cBookmark = InsertCollection($cBookmark, Y)
   $cBreakpoint = InsertCollection($cBreakpoint, Y)
   
@@ -368,7 +435,7 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   YAfter = YA
   
   If $iNoUndo = 0 Then 
-    AddUndo(CCommand(Me, CCommand.INSERT, sText, XO, YO, XA, YA))
+    AddUndo(CCommand(Me, CCommand.INSERT, sText, XO, YO, XA, YA, EndBefore()))
   Endif
   
   For Each hView In GetAllViews()
@@ -579,10 +646,8 @@ Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
     
     RemoveLines(Y1 + 1, Y2 - Y1)
     
-    For Each hView In GetAllViews()
-      hView._RaiseChange
-    Next
-  
+    RaiseChange
+    
     Refresh
   
   Endif
@@ -591,7 +656,7 @@ Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
   YAfter = Y1
   
   If $iNoUndo = 0 Then
-    AddUndo(CCommand(Me, CCommand.DELETE, sText, X1, Y1, X2, Y2))
+    AddUndo(CCommand(Me, CCommand.DELETE, sText, X1, Y1, X2, Y2, EndBefore()))
   Endif
   
   For Each hView In GetAllViews()
@@ -758,7 +823,7 @@ Private Sub AddUndo(hCmd As CCommand)
   
   'hCmd.Print("AddUndo: ")
   
-  If hCmd.Type = CCommand.END And If $aUndo.Count And If $aUndo[$aUndo.Max].Type = CCommand.Begin Then
+  If hCmd.Type = CCommand.END And If $aUndo.Count And If $aUndo[$aUndo.Max].Type = CCommand.BEGIN Then
     $aUndo.Pop
   Else
     $aUndo.Add(hCmd)
@@ -773,6 +838,7 @@ Public Sub Undo()
   Dim hCmd As CCommand
   Dim L As Integer
   Dim bOverwrite As Boolean
+  Dim hCommandBefore As CCommandBefore
   
   If $aUndo.Count = 0 Then Return
   
@@ -816,6 +882,18 @@ Public Sub Undo()
           Endif
         
       End Select
+      
+      hCommandBefore = .State
+      If hCommandBefore Then 
+        With hCommandBefore
+          If .BreakpointBefore Then $cBreakpoint = .BreakpointBefore.Copy()
+          If .BookmarkBefore Then $cBookmark = .BookmarkBefore.Copy()
+          If .BookmarkBefore Or If .BreakpointBefore Then
+            Refresh
+            RaiseChange
+          Endif
+        End With
+      Endif
   
     End With
     
@@ -835,6 +913,7 @@ Public Sub Redo()
   Dim hCmd As CCommand
   Dim L As Integer
   Dim bOverwrite As Boolean
+  Dim hCommandBefore As CCommandBefore
   
   If $aRedo.Count = 0 Then Return
   
@@ -876,6 +955,18 @@ Public Sub Redo()
           Me.Current.Insert(.Text)
         
       End Select
+  
+      hCommandBefore = .State
+      If hCommandBefore Then 
+        With hCommandBefore
+          If .BreakpointAfter Then $cBreakpoint = .BreakpointAfter.Copy()
+          If .BookmarkAfter Then $cBookmark = .BookmarkAfter.Copy()
+          If .BookmarkAfter Or If .BreakpointAfter Then
+            Refresh
+            RaiseChange
+          Endif
+        End With
+      Endif
   
     End With
     
@@ -1058,11 +1149,21 @@ End
 Public Sub SetBreakpoint(iLine As Integer, bOn As Boolean, Optional bDisable As Boolean)
   
   If bOn Then
+    If $cBreakpoint.Exist(iLine) And If $cBreakpoint[iLine] = Not bDisable Then Return
+    StartBefore
     $cBreakpoint[iLine] = Not bDisable
   Else
+    If Not $cBreakpoint.Exist(iLine) Then Return
+    StartBefore
     $cBreakpoint.Remove(iLine)
   Endif
   
+  If $iNoUndo = 0 Then
+    AddUndo(CCommand(Me, CCommand.CHANGE,,,,,, EndBefore()))
+  Endif
+  
+  RaiseChange
+
 End
 
 Private Function Breakpoints_Read() As Integer[]
@@ -1082,7 +1183,7 @@ Private Sub Breakpoints_Write(Value As Integer[])
   Dim Y As Integer
   
   $cBreakpoint.Clear
-
+  
   If Value Then
     For Each Y In Value
       $cBreakpoint[Y] = True
@@ -1102,11 +1203,21 @@ End
 Public Sub SetBookmark(iLine As Integer, bOn As Boolean)
   
   If bOn Then
+    If $cBookmark.Exist(iLine) Then Return
+    StartBefore
     $cBookmark[iLine] = True
   Else
+    If Not $cBookmark.Exist(iLine) Then Return
+    StartBefore
     $cBookmark.Remove(iLine)
   Endif
   
+  If $iNoUndo = 0 Then
+    AddUndo(CCommand(Me, CCommand.CHANGE,,,,,, EndBefore()))
+  Endif
+  
+  RaiseChange
+
 End
 
 Private Function Bookmarks_Read() As Integer[]
@@ -1494,5 +1605,42 @@ Public Sub GetIndentText(iStart As Integer, iEnd As Integer) As String
   Next
 
   Return sResult
+
+End
+
+Private Function DisabledBreakpoints_Read() As Integer[]
+
+  Dim aRes As New Integer[]
+  Dim bOn As Boolean
+
+  For Each bOn In $cBreakpoint
+    If Not bOn Then aRes.Add(CInt($cBreakpoint.Key))
+  Next
+  
+  Return aRes
+
+End
+
+Private Sub DisabledBreakpoints_Write(Value As Integer[])
+
+  Dim Y As Integer
+  
+  If Value Then
+    For Each Y In Value
+      If $cBreakpoint.Exist(Y) Then $cBreakpoint[Y] = False
+    Next
+  Endif
+  
+  Refresh
+
+End
+
+Private Sub RaiseChange()
+
+  Dim hView As TextEditor
+
+  For Each hView In GetAllViews()
+    hView._RaiseChange
+  Next
 
 End

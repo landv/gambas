@@ -41,6 +41,7 @@ Property Font As Font
 Property StopLine As Integer
 Property EndOfLine As Integer
 Property Breakpoints As Integer[]
+Property DisabledBreakpoints As Integer[]
 Property Bookmarks As Integer[]
 Property Read Styles As _TextEditor_Styles
 Property View As TextEditor
@@ -92,6 +93,7 @@ Private $LH As Integer
 Private $BW As Integer ' bold width
 Private $MW As Integer
 Private $iWidthLineNumber As Integer
+Private $iWidthModified As Integer
 Private $iPosIcon As Integer
 
 Private $iTabSize As Integer = 2
@@ -430,7 +432,10 @@ Private Sub UpdateMargin()
     $iPosIcon = MW
     MW += $LH
   Endif
-  If $bShowModified Then MW += 4
+  If $bShowModified Then
+    $iWidthModified = $hFont.H \ 2
+    MW += $iWidthModified
+  Endif
   
   If MW <> $MW Then
     $MW = MW
@@ -1015,6 +1020,8 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
   Dim H As Integer
   Dim sStr As String
   Dim bLimit As Boolean
+  Dim X1 As Float
+  Dim X2 As Integer
   
   hInfo = $hDoc.Info(Row)
   bLimit = $hDoc.HasLimit(Row)
@@ -1049,7 +1056,16 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
         ' Paint.LineWidth = SS / 2
         ' Paint.Background = $hStyles[Highlight.Current].Color
         ' Paint.Stroke
-        Paint.FillRect(X, Y, $MW, Height, $hStyles[Highlight.Selection].Color)
+        X1 = X + $MW - $LH / 2 - $iWidthModified
+        X2 = X + $MW - $iWidthModified
+        Paint.MoveTo(X, Y)
+        Paint.LineTo(X1, Y)
+        Paint.LineTo(X2, Y + Height / 2)
+        Paint.LineTo(X1, Y + Height)
+        Paint.LineTo(X, Y + Height)
+        Paint.LineTo(X, Y)
+        Paint.Background = $hStyles[Highlight.Selection].Color
+        Paint.Fill
       Endif
       
       Paint.Save
@@ -1098,7 +1114,7 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
       Else If hInfo.Saved Then
         iCol = Color.Merge($iBackground, Color.Green, 0.2)
       Endif
-      Paint.FillRect(X + $MW - 5, Y, 4, Height, iCol)
+      Paint.FillRect(X + $MW - $iWidthModified, Y, $iWidthModified - 1, Height, iCol)
     Endif
   Endif
   
@@ -1786,7 +1802,7 @@ Public Sub View_MouseDown()
   
   If Y >= 0 Then
     MW = $MW
-    If $bShowModified Then MW -= 4
+    If $bShowModified Then MW -= $iWidthModified
     If Mouse.X < MW And If Mouse.X >= $iPosIcon Then
       If Mouse.Left Then
         Goto(0, Y, Mouse.Shift)
@@ -2840,7 +2856,7 @@ Public Sub View_Draw()
   Next
   
   W = $MW
-  If $bShowModified Then W -= 4
+  If $bShowModified Then W -= $iWidthModified
   If W > 0 Then Paint.FillRect(XX + $hView.ScrollX, hClip.Y, W, hClip.H, $iMarginColor)
   
   If $MW Then
@@ -5717,4 +5733,16 @@ Public Sub GetHighlight(Y As Integer, ByRef Symbols As String[], ByRef Types As 
     P += aColors[I + 1]
   Next
   
+End
+
+Private Function DisabledBreakpoints_Read() As Integer[]
+
+  Return $hDoc.DisabledBreakpoints  
+
+End
+
+Private Sub DisabledBreakpoints_Write(Value As Integer[])
+
+  $hDoc.DisabledBreakpoints = Value
+
 End
