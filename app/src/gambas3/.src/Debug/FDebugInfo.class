@@ -26,19 +26,28 @@ Private $iY As Integer
 Private $sLastLocal As String
 Private $sLastObject As String
 
+Private $hBreakpoint As Picture
+Private $hDisabledBreakpoint As Picture
+
 Public Sub _new()
 
   Dim DS As Integer = Desktop.Scale
+  
+  If Not $hDisabledBreakpoint Then
+    $hBreakpoint = Picture["icon:/small/halt"]
+    $hDisabledBreakpoint = $hBreakpoint.Image.Desaturate().Gamma(0.3).Picture
+  Endif
+  
   
   With cvwVariable
     .Columns.Count = 2
   End With
 
   With gvwBreakpoint
-    .AddColumn("  ", DS * 3)
+    .AddColumn("", DS * 3).Resizable = False
     .AddColumn(("Class"))
     .AddColumn(("Line"))
-    '.AddColumn(("Function"))
+    .AddColumn(("Function"))
   End With
   
   With gvwFind
@@ -162,219 +171,6 @@ Catch
 
 End
 
-' Private Sub SortVariable(aVar As String[])
-'   
-'   Dim iStart As Integer
-'   Dim iEnd As Integer
-'   Dim iPos As Integer
-'   
-'   Do
-'     
-'     If iPos > aVar.Max Or If Right(aVar[iPos]) = ":" Then
-'       iEnd = iPos
-'       If iEnd > iStart Then
-'         aVar.Insert(aVar.Extract(iStart, iEnd - iStart).Sort(), iStart)
-'       Endif
-'       iStart = iPos + 1
-'     Endif
-'     
-'     If iPos > aVar.Max Then Break
-'     Inc iPos
-'     
-'   Loop
-'   
-' End
-
-
-' Private Sub DefineVar(hView As TableView, sList As String, sCmd As String, iIndex As Integer)
-' 
-'   Dim sVar As String
-'   Dim aVar As String[]
-'   Dim bFill As Boolean
-'   Dim iPos As Integer
-'   Dim cCol As Collection
-'   Dim bSort As Boolean
-' 
-'   If sList <> "*" Then
-' 
-'     aVar = Split(sList, " ")
-'   
-'     If sList <> hView.Tag Then 
-'   
-'       hView.Tag = sList
-'       bFill = True
-'       
-'     Endif
-'   
-'   Else 
-'   
-'     aVar = Split(hView.Tag, " ")
-'     
-'     bFill = True
-'     
-'   Endif
-'     
-'   If bFill Then
-'     
-'     ClearView(hView)
-'     
-'     If hView = tbvLocal Then
-'       $aLocal = aVar
-'       $aValLocal = New String[$aLocal.Count]
-'       cCol = $cLocal
-'       bSort = True 'chkSortLocal.Value
-'     Else
-'       $aObject = aVar
-'       $aValObject = New String[$aObject.Count]
-'       cCol = $cObject
-'       bSort = True 'chkSortObject.Value
-'     Endif
-'     
-'     While iPos <= aVar.Max
-'       sVar = aVar[iPos]
-'       If Right(sVar) = ":" Then 
-'         If iPos = aVar.Max Or If Right(aVar[iPos + 1]) = ":" Then
-'           aVar.Remove(iPos)
-'           Continue
-'         Endif
-'       Endif
-'       Inc iPos
-'     Wend
-'     
-'     If bSort Then SortVariable(aVar)
-'     
-'     If hView = tbvLocal Then
-'       UpdateLocal
-'     Else
-'       hView.Rows.Count = aVar.Count
-'     Endif
-' 
-'     For iPos = 0 To aVar.Max
-'       cCol[aVar[iPos]] = iPos
-'       If Right(aVar[iPos]) = ":" Then hView[iPos, 0].ColumnSpan = 2
-'     Next
-'     
-'   Endif
-'   
-'   If wizDebug.Index <> iIndex Then Return
-'   
-'   For Each sVar In aVar
-'     If Right(sVar) = ":" Then Continue
-'     Design.Command("&" & sCmd & sVar & "\t" & sVar)
-'   Next
-'     
-' End
-' 
-' Public Sub AddVar(hView As TableView, sVar As String, sValue As String)
-' 
-'   Dim cCol As Collection
-'   Dim aVal As String[]
-'   Dim iRow As Integer
-' 
-'   If hView = tbvLocal Then
-'     cCol = $cLocal
-'     aVal = $aValLocal
-'   Else
-'     cCol = $cObject
-'     aVal = $aValObject
-'   Endif
-'   
-'   Try iRow = cCol[sVar]
-'   If Error Then Return
-'   
-'   If aVal[iRow] <> sValue Then
-'     aVal[iRow] = sValue
-'     hView[iRow, 1].Refresh
-'   Endif
-'   
-' End
-' 
-' Public Sub DefineLocal(Optional sList As String = "*")
-'   
-'   DefineVar(tbvLocal, sList, "L", TAB_LOCAL)
-'   
-' End
-' 
-' Public Sub AddLocal(sVar As String, sValue As String, Optional bAssign As Boolean)
-' 
-'   Dim iRow As Integer
-'   Dim iCol As Integer
-'   Dim nRow As Variant
-'     
-'   If bAssign Then
-'     If Left(sValue) = "!" Then
-'       Try iRow = $cLocal[sVar]
-'       
-'       If btnLocalLayout.Value Then
-'         nRow = Max(1, tbvLocal.ClientH \ tbvLocal.Rows.Height)
-'         iCol = 0
-'         While iRow >= nRow
-'           iRow -= nRow
-'           iCol += 2
-'         Wend
-'       Endif
-'       
-'       If Not Error Then
-'         With tbvLocal[iRow, iCol + 1]
-'           Balloon.Error(Mid$(sValue, 2), tbvLocal, .X + .W / 2, .Y + .H / 2)
-'         End With
-'       Endif
-'     Else
-'       Design.Command("&L" & sVar & "\t" & sVar)
-'     Endif
-'   Else
-'     AddVar(tbvLocal, sVar, sValue)
-'   Endif
-'   
-' End
-' 
-' Public Function LocalExists(sExpr As String) As Boolean
-'   
-'   If Not sExpr Then Return
-'   Return $cLocal.Exist(sExpr)
-' 
-' End
-
-' Public Sub DefineObject(Optional sList As String = "*")
-'   
-'   DefineVar(tbvObject, sList, "O", TAB_ME)
-'   
-' End
-' 
-' Public Sub AddObject(sVar As String, sValue As String, Optional bAssign As Boolean)
-'   
-'   Dim iRow As Integer
-'   
-'   If bAssign Then
-'     If Left(sValue) = "!" Then
-'       Try iRow = $cObject[sVar]
-'       If Not Error Then
-'         With tbvObject[iRow, 1]
-'           Balloon.Error(Mid$(sValue, 2), tbvObject, .X + .W / 2, .Y + .H / 2)
-'         End With
-'       Endif
-'     Else
-'       Design.Command("&O" & sVar & "\t" & sVar)
-'     Endif
-'   Else
-'     AddVar(tbvObject, sVar, sValue)
-'   Endif
-'   
-' End
-
-
-' PUBLIC SUB RefreshAllLocal()
-' 
-'   DIM sVar AS String
-' 
-'   FOR EACH sVar IN $aLocal
-'     Design.Command("l" & sVar, TRUE,, "L")
-'   NEXT
-' 
-' END
-
-
-
 Public Sub AddResultWatch(sCmd As String, Optional sRes As String, Optional bInstant As Boolean)
 
   Dim sVal As String
@@ -426,41 +222,6 @@ Public Sub AddResultWatch(sCmd As String, Optional sRes As String, Optional bIns
   Endif
 
 End
-
-' Private Sub ShowAsBalloon(sMsg As String)
-' 
-'   Dim hIcon As Picture
-'   Dim iInd As Integer
-'   Dim iPos As Integer
-' 
-'   If Left(sMsg) = "!" Then
-'     sMsg = Design.MakeErrorMessage(Mid$(sMsg, 2))
-'     hIcon = Picture["icon:/32/error"]
-'   Else
-'     hIcon = Picture["icon:/32/info"]
-'   Endif 
-'   
-'   sMsg = Replace(sMsg, "&", "&amp;")
-'   sMsg = Replace(sMsg, "<", "&lt;")
-'   sMsg = Replace(sMsg, ">", "&gt;")
-'   
-'   iPos = 0
-'   While iInd < String.Len(sMsg)
-'     Inc iInd
-'     If InStr(" -\n\t", Mid$(sMsg, iInd, 1)) Then
-'       iPos = iInd
-'     Else If (iInd - iPos) >= 32 Then
-'       sMsg = String.Left$(sMsg, iInd) & " <br>" & String.Mid$(sMsg, iInd + 1)
-'       iInd += 4
-'       iPos = iInd
-'     Endif
-'   Wend
-' 
-'   'sMsg = Replace(sMsg, "\t", "\n")
-'   'sMsg = Replace(sMsg, "    ", "&nbsp;")
-'   Balloon(sMsg, Design.BalloonControl, hIcon, Design.BalloonX, Design.BalloonY)
-' 
-' End
 
 Public Sub RefreshAllWatch()
 
@@ -544,17 +305,6 @@ Private Sub WatchExpression(sText As String)
   
 End
 
-' Public Sub cvwWatch_Activate()
-' 
-'   Dim sText As String = cvwWatch.Item.Text
-' 
-'   If Right(sText) = ":" Then Return
-'   If Left(cvwWatch.Item[1]) = "(" Then
-'     WatchExpression(sText)
-'   Endif
-' 
-' End
-
 Public Sub ReadConfig()
 
   'Dim hButton As ToolButton
@@ -592,34 +342,6 @@ Public Sub ReadConfig()
   
 End
 
-' Public Sub AddBreakpoint(sClass As String, sProc As String, iLine As Integer, bOn As Boolean, bDisabled As Boolean)
-'   
-'   Dim sText As String
-'   Dim bExist As Boolean
-' 
-'   sText = sClass & "." & sProc & "." & CStr(iLine)
-'   bExist = $cDisabled.Exist(sText) 
-'   
-'   If bOn Then
-'     If Not bExist Then
-'       $cDisabled[sText] = bDisabled
-'       $aBreakpoint.Add(sText)
-'       $aBreakpoint.Sort()
-'     Endif
-'   Else
-'     If bExist Then
-'       $cDisabled.Remove(sText)
-'       $aBreakpoint.Remove($aBreakpoint.Find(sText))
-'     Endif 
-'   Endif
-'   
-'   gvwBreakpoint.Rows.Count = $aBreakpoint.Count
-'   gvwBreakpoint.Columns.Width = -1
-'   'cvwBreak.Columns[0].Width = -1
-'   'cvwBreak.Columns[1].Width = -1
-' 
-' End
-
 Public Sub wizDebug_Click()
 
   If Design.IsRunning() Then 
@@ -637,6 +359,7 @@ Public Sub wizDebug_Click()
       If FMain.IsDebugVisible() Then FOutput.SetFocus
     Case TAB_BREAK
       timBreakpoint_Timer
+      RefreshBreakpointView
     Case TAB_COMPILATION
     Case TAB_TASK
       If Not $aTask Then
@@ -674,7 +397,7 @@ End
 
 Public Sub IsEditing() As Boolean
   
-  'Return Not IsNull(tbvLocal.Editor)
+  Return cvwVariable.Renaming
   
 End
 
@@ -831,101 +554,6 @@ Public Sub timBreakpoint_Timer()
   timBreakpoint.Stop
 
 End
-
-' Public Sub GetBreakpoints() As String[]
-' 
-'   Dim sBreakpoint As String
-'   Dim aResult As New String[]
-'   Dim aBreakPoint As String[]
-' 
-'   timBreakpoint_Timer
-'   
-'   For Each sBreakpoint In $aBreakpoint
-'     If Not $cDisabled[sBreakpoint] Then
-'       aBreakPoint = Split(sBreakpoint, ".")
-'       aResult.Add(aBreakPoint[0] & "." & CStr(CInt(aBreakPoint[2]) + 1))
-'     Endif
-'   Next
-' 
-'   Return aResult
-'   
-' End
-
-
-' Public Sub tbvLocal_Data(Row As Integer, Column As Integer)
-' 
-'   Dim hView As TableView = Last
-'   Dim aVar As String[]
-'   Dim aValue As String[]
-'   Dim sVar As String
-' 
-'   If hView = tbvLocal Then
-'     aVar = $aLocal
-'     aValue = $aValLocal
-'   Else
-'     aVar = $aObject
-'     aValue = $aValObject
-'   Endif
-' 
-'   If hView = tbvLocal And If btnLocalLayout.Value Then
-'     While Column >= 2 
-'       Column -= 2
-'       Row += hView.Rows.Count
-'     Wend
-'   Endif
-' 
-'   Try sVar = aVar[Row]
-'   If Not sVar Then Return
-'   
-'   With hView.Data
-'   
-'     If Column = 0 Then
-'       If Right(sVar) = ":" Then
-'         .Font.Bold = True
-'         .Font.Underline = True
-'         .Text = If(UCase(sVar) = "S:", ("Static variables"), ("Dynamic variables"))
-'       Else
-'         .Text = sVar
-'         .Foreground = Color.Gradient(Color.TextBackground, Color.TextForeground, 0.7)
-'       Endif
-'     Else
-'       Try .Text = aValue[Row]
-'     Endif
-'     
-'   End With
-' 
-' End
-
-' Public Sub tbvObject_Data(Row As Integer, Column As Integer)
-' 
-'   tbvLocal_Data(Row, Column)
-' 
-' End
-
-' Public Sub tbvLocal_Save(Row As Integer, (Column) As Integer, Value As String)
-' 
-'   Dim sVar As String 
-'   Dim iCol As Integer
-'   
-'   iCol = Column And Not 1
-'   sVar = tbvLocal[Row, iCol].Text
-'   With tbvLocal[Row, iCol + 1]
-'     Design.SetBalloon(tbvLocal, .X + .W / 2, .Y + .H / 2)
-'   End With
-'   Design.Command("=L" & sVar & "\t" & sVar & " = " & Value)
-' 
-' End
-
-' Public Sub tbvObject_Save(Row As Integer, (Column) As Integer, Value As String)
-' 
-'   Dim sVar As String = tbvObject[Row, 0].Text
-'   Design.Command("=O" & sVar & "\t" & sVar & " = " & Value)
-'   With tbvObject[Row, 1]
-'     Design.SetBalloon(tbvObject, .X + .W / 2, .Y + .H / 2)
-'   End With
-'   Design.Command("&O" & sVar & "\t" & sVar)
-' 
-' End
 
 Public Sub tbvLocal_Scroll()
 
@@ -1351,44 +979,6 @@ End
 ' 
 ' End
 
-' Private Sub UpdateLocal()
-' 
-'   Dim nCol As Integer
-'   Dim I As Integer
-'   Dim nRow As Integer
-' 
-'   With tbvLocal
-'     
-'     If btnLocalLayout.Value Then
-'       nRow = Max(1, .ClientH \ .Rows.Height)
-'       nCol = Max(1, ($aLocal.Count + nRow - 1) \ nRow)
-'       If nCol = 1 Then nRow = $aLocal.Count
-'     Else
-'       nRow = $aLocal.Count
-'       nCol = 1
-'     Endif
-'     
-'     .Columns.Count = nCol * 2
-'     For I = 0 To nCol - 1
-'       .Columns[1 + I * 2].Expand = True
-'     Next
-'     
-'     .Rows.Count = nRow
-'     For I = 0 To nCol - 1
-'       .Columns[I * 2].W = -1
-'     Next
-'     
-'   End With
-' 
-' End
-
-' Public Sub btnLocalLayout_Click()
-' 
-'   UpdateLocal
-'   Settings["/FDebugInfo/LocalColumnView"] = btnLocalLayout.Value 
-' 
-' End
-
 Private Sub CloseSearch()
 
   FSearch.ResetBrowse
@@ -1439,26 +1029,34 @@ End
 
 Public Sub gvwBreakpoint_Data(Row As Integer, Column As Integer)
 
-  Dim aBreakpoint As String[]
   Dim sBreakpoint As String
+  Dim hEditor As FEditor
+  Dim aBreak As String[]
 
-  aBreakpoint = Design.GetBreakpoints()
-  Try sBreakpoint = aBreakPoint[Row]
+  Try sBreakpoint = Design.GetBreakpoints()[Row]
   If Not sBreakpoint Then Return
+  aBreak = Split(sBreakpoint, ".")
 
   Select Case Column
     
     Case 0
-      gvwBreakpoint.Data.Picture = Picture[If(Design.IsBreakpointDisabled(sBreakpoint), "img/16/unchecked.png", "img/16/checked.png")]
+      gvwBreakpoint.Data.Picture = If(Design.IsBreakpointDisabled(sBreakpoint), $hDisabledBreakpoint, $hBreakpoint)
       
     Case 1
-      gvwBreakpoint.Data.Text = Split(sBreakpoint, ".")[0]
+      gvwBreakpoint.Data.Text = aBreak[0]
       
     Case 2
-      gvwBreakpoint.Data.Text = CStr(CInt(Split(sBreakpoint, ".")[1]) + 1)
+      gvwBreakpoint.Data.Text = CStr(CInt(aBreak[1]) + 1)
       
-    ' Case 3
-    '   gvwBreakpoint.Data.Text = CStr(CInt(Split($aBreakpoint[Row], ".")[2]) + 1)
+    Case 3
+      Try hEditor = Project.Files[Project.FindPath(aBreak[0])]
+      If hEditor Then
+        gvwBreakpoint.Data.Text = hEditor.GetProcAt(CInt(aBreak[1]))
+      Else
+        gvwBreakpoint.Data.Text = ("File not loaded")
+        gvwBreakpoint.Data.Foreground = Color.LightForeground
+        gvwBreakpoint.Data.Font.Italic = True
+      Endif
     
   End Select
 
@@ -1490,8 +1088,11 @@ End
 
 Public Sub RefreshBreakpointView()
 
+  If wizDebug.Index <> TAB_BREAK Then Return
+
   gvwBreakpoint.Rows.Count = Design.GetBreakpoints().Count
-  gvwBreakpoint.Columns.Width = -1
+  gvwBreakpoint.Columns[1].Width = -1
+  gvwBreakpoint.Columns[2].Width = -1
   gvwBreakpoint.Refresh
 
 End
@@ -1520,8 +1121,6 @@ Private Sub ToggleBreakpoints(bDisable As Boolean)
   For Each iRow In gvwBreakpoint.Rows.Selection.Reverse()
     Design.SetBreakpoint(aBreakpoint[iRow], True, bDisable)
   Next
-  
-  gvwBreakpoint.Refresh
   
 End
 

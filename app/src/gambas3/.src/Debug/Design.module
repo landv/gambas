@@ -1283,6 +1283,8 @@ Public Sub SetBreakpoint(sBreakpoint As String, bOn As Boolean, Optional bDisabl
     If bDisabled Then $cDisabledBreakpoint[sBreakpoint] = True
   Endif
   
+  FDebugInfo.RefreshBreakpointView
+  
   If $iState = STATE_RUNNING Then Return
 
   aBreak = Split(sBreakpoint, ".")
@@ -1311,6 +1313,7 @@ Public Sub ClearBreakpoints()
 
   $aBreakpoint = New String[]
   $cDisabledBreakpoint = New Collection
+  FDebugInfo.RefreshBreakpointView
   
 End
 
