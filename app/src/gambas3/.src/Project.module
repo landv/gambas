@@ -679,6 +679,15 @@ _INIT_AGAIN:
   CLibraryInfo.Clear
   ' Component loading needs to know which classes are declared by the project, in the case of a component project that uses itself
   RefreshSources
+  
+  If Not $bTesting
+    If Not bIsFake Then
+      Design.ClearOutput
+      Design.ReadBreakpoints
+    Endif
+  Endif
+  
+  
   ReadProject
 
   If Not ReadOnly Then
@@ -711,8 +720,6 @@ _INIT_AGAIN:
     'FOpenProject.OnUpdateRecent
     
     If Not bIsFake Then
-      Design.ClearOutput
-      Design.ReadBreakpoints
       FDebugInfo.OnProjectChange
     Endif
     

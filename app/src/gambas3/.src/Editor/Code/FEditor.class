@@ -1063,9 +1063,6 @@ Public Sub SetBreakpoint(iLine As Integer, bVal As Boolean, bDisabled As Boolean
 
   If bVal And If Not CanSetBreakpoint(iLine) Then Return True
 
-  ' Update debug window
-  FDebugInfo.AddBreakpoint(Me.Name, GetProcAt(iLine), iLine, bVal, bDisabled)
-
   'Editor.Lines.SetFlag(iLine, Editor.Breakpoint, bVal)
   $hEditor[iLine].Breakpoint = bVal
   $hEditor[iLine].Disabled = bDisabled
@@ -1084,7 +1081,7 @@ Public Sub CheckBreakpoints()
   Dim iLine As Integer
 
   For Each iLine In $hEditor.Breakpoints
-    If Not CanSetBreakpoint(iLine) Then SetBreakpoint(iLine, False)
+    If Not CanSetBreakpoint(iLine) Then SetBreakpoint(iLine, False, False)
   Next
 
 End
@@ -2186,12 +2183,8 @@ End
 
 Public Sub Reload()
 
-  Dim aBreakpoint As Integer[]
-
-  aBreakpoint = edtEditor.Breakpoints
   edtEditor.Load(Path, True)
-  edtEditor.Breakpoints = aBreakpoint
-  CheckBreakpoints()
+  Design.InitEditorWithBreakpoints(Me)
   $hBookmark.Load()
   ' If Not Project.RestoringFiles Then
   '   If Settings["/Editor/Fold"] Then edtEditor.CollapseAll
@@ -2618,7 +2611,7 @@ Public Sub Editors_Margin()
 
   Dim Y As Integer
   Y = Last.Line
-  Design.SetBreakpoint(Me.Name, Y, Not HasBreakpoint(Y))
+  Design.SetBreakpoint(Me.Name & "." & CStr(Y), Not HasBreakpoint(Y))
 
 End
 
@@ -3300,7 +3293,7 @@ End
 
 Public Sub mnuBreakpoint_Click()
 
-  Design.SetBreakpoint(Me.Name, $hEditor.Line, Not HasBreakpoint($hEditor.Line))
+  Design.SetBreakpoint(Me.Name & "." & CStr($hEditor.Line), Not HasBreakpoint($hEditor.Line))
 
 End
 
@@ -3319,7 +3312,7 @@ End
 
 Public Sub mnuPretty_Click()
 
-  MPrettyCode.Run($hEditor)
+  MPrettyCode.Run(Me)
 
 End
 
