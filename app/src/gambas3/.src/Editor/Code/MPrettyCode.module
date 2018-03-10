@@ -164,6 +164,8 @@ Public Sub Run(hModule As FEditor)
         bBreakpoint = True
       Endif
       
+      If Y >= (iLine + 1) Then Y += aLine.Max
+      
       iLine += aLine.Count
       iEnd += aLine.Count
       bModified = True
@@ -193,6 +195,8 @@ Public Sub Run(hModule As FEditor)
           RemoveLine(aBreakpoint, iLine)
           bBreakpoint = True
         Endif
+        
+        If Y > iLine Then Dec Y
         
       Else
         
