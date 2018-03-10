@@ -131,27 +131,11 @@ End
 
 Public Sub Main()
 
-  Dim a As String[]
-  Dim s As String
-  Dim sIcon As String
-  Dim hDBusPixmap As Variant[][]
+  Dim hDBusProxy As DBusProxy
 
-  DBus.Debug = True
-  a = DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].RegisteredStatusNotifierItems
- 
-  For Each s In a
-    
-    Print s
-    'sIcon = DBus[File.Dir(s)]["/" & File.Name(s), "org.kde.StatusNotifierItem"].IconThemePath
-    sIcon = DBus[File.Dir(s)]["/" & File.Name(s), "org.kde.StatusNotifierItem"].IconName
-    If sIcon Then 
-      Print sIcon
-    Else
-      hDBusPixmap = DBus[File.Dir(s)]["/" & File.Name(s), "org.kde.StatusNotifierItem"].IconPixmap
-    Endif
-    
-  Next
-
+  hDBusProxy = DBus["org.gambas.test3"]["/export1"]
+  hDBusProxy.Trigger1 = 44
+  Print hDBusProxy.Trigger1
 
 End
 

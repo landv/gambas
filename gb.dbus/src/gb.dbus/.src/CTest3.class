@@ -1,0 +1,15 @@
+' Gambas class file
+
+Inherits DBusObject
+Create Static
+
+Property Trigger1 As Float
+Private $fTrigger1 As Float = Pi(4)
+
+Private Sub Trigger1_Read() As Float
+  Return $fTrigger1
+End
+
+Private Sub Trigger1_Write(Value As Float)
+  $fTrigger1 = Value
+End

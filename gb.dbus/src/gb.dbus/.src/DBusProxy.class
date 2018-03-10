@@ -195,6 +195,7 @@ Public Sub _Invoke(sName As String, aArg As Variant[]) As Variant
   Dim vVal As Variant
   Dim sSign As String
   Dim bProperty As Boolean
+  Dim hVariant As DBusVariant
   
   hApp = DBus._ApplicationCache[$hAppIndex]
   
@@ -220,7 +221,9 @@ Public Sub _Invoke(sName As String, aArg As Variant[]) As Variant
       aArg = New Variant[3]
       aArg[0] = $sInterface
       aArg[1] = sName
-      aArg[2] = DBusVariant(vVal, aSign[0])
+      hVariant = New DBusVariant
+      hVariant.Value = vVal
+      aArg[2] = hVariant
       hApp.Connection._CallMethod(hApp.Name, $sObjectPath, "org.freedesktop.DBus.Properties", "Set", "ssv", "", aArg)
     Endif
   
