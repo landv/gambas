@@ -27,6 +27,7 @@ Property Background As Integer
 Property Foreground As Integer
 Property Read Count As Integer
 Property Title As String
+Property Suspended As Boolean
 
 Private $hPanel As Panel
 Private $hView As DrawingArea
@@ -131,13 +132,26 @@ Public Sub _new()
   
 End
 
-Public Sub Reset()
+Public Sub Reset(Optional KeepCursor As Boolean)
+  
+  Dim X As Integer
+  Dim Y As Integer
+  
+  If KeepCursor Then
+    X = $hScreen.Column
+    Y = $hScreen.Line + $hScreen.ScreenTop()
+  Endif
   
   _Suspend(False)
   _UseMouse(False)
   $hFilter.Reset
   $hScreen.Reset
   UpdateFont
+  
+  If KeepCursor Then
+    $hScreen.Goto(X, Y)
+  Endif
+  
   Refresh
   
 End
@@ -1024,6 +1038,7 @@ Public Sub _Suspend(bSuspend As Boolean)
   
   If Not $hProcess Then Return
   If Not $hProcess.Term.FlowControl Then Return
+  
   $bSuspend = bSuspend
   Refresh
   
@@ -1117,5 +1132,27 @@ Private Sub Title_Write(Value As String)
 
   $sTitle = Value
   Raise Title($sTitle)
+
+End
+
+Private Function Suspended_Read() As Boolean
+
+  Return $bSuspend
+
+End
+
+Private Sub Suspended_Write(Value As Boolean)
+
+  If $bSuspend = Value Then Return
+  
+  _Suspend(Value)
+  
+  If $hProcess Then
+    If $bSuspend Then
+      Print #$hProcess, Chr$(19);
+    Else
+      Print #$hProcess, Chr$(17);
+    Endif
+  Endif
 
 End
