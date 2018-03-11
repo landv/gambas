@@ -467,7 +467,7 @@ Private Function Selection_Read() As Integer[]
       Return [hView.Row]
     Endif
   Else If hView.Mode = Select.Multiple Then
-    Return $hSel._GetSelectedRows()
+    Return $hSel._GetSelectedRows($nRows)
   Endif
 
   Return New Integer[]
