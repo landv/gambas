@@ -3273,9 +3273,9 @@ Public Sub SetPosition(hResult As CFindResult, Optional bJustCheck As Boolean) A
 
 End
 
-Public Sub Replace(sReplace As String)
+Public Sub Replace(sReplace As String) As Boolean
 
-  $hEditor.Replace(sReplace)
+  Return $hEditor.Replace(sReplace)
 
 End
 

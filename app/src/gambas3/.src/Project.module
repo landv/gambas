@@ -242,7 +242,8 @@ End
 Public Sub InitWebView()
 
   Dim sPath As String
-  Dim hFont As Font
+  Dim sFont As String
+  Dim sDefaultFont As String
 
   If Not WebSettings.Cache.Path Then
     sPath = System.User.Home &/ ".cache"
@@ -257,13 +258,26 @@ Public Sub InitWebView()
 
   'WebSettings.Fonts.StandardFont = Application.Font.Name
   'hFont = Font[Settings["/Editor/Font", Application.Font]]
-  WebSettings.Fonts.SerifFont = Application.Font.Name
-  WebSettings.Fonts.SansSerifFont = Application.Font.Name
+  
+  sDefaultFont = Application.Font.Name
+  
+  WebSettings.Fonts.SerifFont = sDefaultFont
+  WebSettings.Fonts.SansSerifFont = sDefaultFont
   WebSettings.Fonts.DefaultFontSize = Application.Font.Ascent * 0.9
 
-  hFont = Font[Settings["/ConsoleFont", DEFAULT_FONT]]
-  WebSettings.Fonts.FixedFont = hFont.Name
-  WebSettings.Fonts.DefaultFixedFontSize = hFont.Ascent
+  sFont = Replace(sDefaultFont, "Sans", "Mono")
+  If sFont = sDefaultFont Or If Not Fonts.Exist(sFont) Then
+    sFont = Application.Font.Name & "Mono"
+    If Not Fonts.Exist(sFont) Then
+      sFont = Application.Font.Name & " Mono"
+      If Not Fonts.Exist(sFont) Then
+        sFont = ""
+      Endif
+    Endif
+  Endif
+  
+  If sFont Then WebSettings.Fonts.FixedFont = sFont
+  WebSettings.Fonts.DefaultFixedFontSize = Font[sFont].Ascent * 0.8
 
 End
 
@@ -1056,9 +1070,8 @@ End
 Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup As Boolean) As Image
 
   Dim hImage As Image
-  'Dim hImageModule As Image
-  'Dim hImageStartup As Image
   Dim sKey As String
+  'Dim hStartup As Image
 
   'If Not $cImageCache["base"] Then $cImageCache["base"] = Picture["icon:/32/file"].Image
 
@@ -1067,23 +1080,17 @@ Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup
   sKey = sModule & "-" & iSize & If(bStartup, "s", "") & ".png"
   hImage = $cImageCache[sKey]
   If Not hImage Then
-    'hImage = Picture["icon:/" &/ CStr(iSize) &/ "file"].Image '$cImageCache["base"]
-    'hImage = New Image(iSize, iSize, Color.Transparent)
-    ' Paint.Begin(hImage)
-    ' Paint.Background = Color.LightForeground 'Color.Merge(Color.TextBackground, Color.LightForeground, 0.333)
-    ' Paint.Rectangle(0.5, 0.5, Paint.W - 1, Paint.H - 1, iSize / 16)
-    ' Paint.LineWidth = iSize / 16
-    ' Paint.Stroke
-    ' Paint.End
-    'hImage = hImage.Stretch(iSize, iSize)
-    'hImageModule = Image.Load("img/module" &/ sModule & ".png") '.Stretch(iSize / 2, iSize / 2)
-    'hImage.PaintImage(hImageModule, iSize / 16, iSize / 16, iSize * 0.75, iSize * 0.75)
+    
     hImage = Picture["img/module" &/ sModule & ".png"].Image
     hImage = hImage.Stretch(iSize, iSize)
 
     'If bExported Then MakeExportedIcon(hImage)
 
     If bStartup Then
+      ' hStartup = New Image(hImage.W, hImage.H, Color.Transparent)
+      ' hStartup.FillRect(2, 2, hImage.W - 4, hImage.H - 4, &HFF7F7F)
+      ' hStartup.PaintImage(hImage.Copy().Colorize(&HFF7F7F), 0, 0)
+      ' hImage = hStartup
       hImage = AddEmblem(hImage, "img/32/startup.png")
       'hImageStartup = Image.Load("img/16/startup.png").Stretch((iSize * 2) \ 3, (iSize * 2) \ 3)
       'hImage.PaintImage(hImageStartup, 0, (hImage.H - hImageStartup.H) \ 2)
