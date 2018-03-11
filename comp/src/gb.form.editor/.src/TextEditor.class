@@ -793,7 +793,8 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   Dim sCar As String
   Dim aLayout As Integer[]
   Dim I As Integer
-  Dim P, D As Integer
+  Dim P As Integer
+  Dim D As Float
   Dim sText As String
   Dim YY As Integer
   Dim H As Integer
@@ -940,8 +941,10 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   If $bShowIndent Then
     
     P = GetLineIndentMark(Row, sText)
-    D = $iSpaceWidth \ 2
+    D = $iSpaceWidth / 4
     If $IP And If Row >= $IY1 And If Row <= $IY2 Then IP = X + $IP
+    
+    Paint.Translate($iSpaceWidth \ 2, 0)
     
     XP = 0
     Do
@@ -951,20 +954,31 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
         XX = X + XP * $iTabWidth
       Else
         XP += $iTabSize
-        XX = X + $hFont.TextWidth(String$(XP, " "))
+        If $fCharWidth Then
+          XX = X + CInt($fCharWidth * XP)
+        Else
+          XX = X + $hFont.TextWidth(String$(XP, " "))
+        Endif
       Endif
       
       If XX >= P Then Break
       
       If IP And If XX = IP Then
         IP = 0
-        Paint.FillRect(XX + D, Y, D, Height, $iMatchColor)
+        Paint.Rectangle(XX, Y, D, Height)
+        Paint.Background = Color.SetAlpha($iMatchColor, 64)
+        Paint.Fill
+        'Paint.FillRect(XX + D, Y, D, Height, $iMatchColor)
       Else
-        Paint.FillRect(XX + D, Y, D / 2, Height, $iIndentColor)
+        Paint.Rectangle(XX, Y, D / 2, Height)
+        Paint.Background = $iIndentColor
+        Paint.Fill
       Endif
       iEndingSpaceLimit = XX
       
     Loop
+    
+    Paint.Translate(- $iSpaceWidth \ 2, 0)
     
     ' If IP Then
     '   If Row = $IY1 Then
@@ -2469,6 +2483,7 @@ Private Sub CheckIndentMark()
     IY1 = Y1
     IY2 = Y2
   Endif
+  
   'Debug "=> "; IY1 + 1;; IY2 + 1;; IP
   
 SET_RESULT:
@@ -2770,7 +2785,7 @@ Public Sub View_Draw()
     $iForeground = $hStyles[Highlight.Normal].Color
     $iSelectedBackground = $hStyles[Highlight.Selection].Color
     $iLimitColor = Color.Gradient($iBackground, $hStyles[Highlight.Comment].Color)
-    $iIndentColor = Color.SetAlpha($iLimitColor, 192)
+    $iIndentColor = Color.SetAlpha($iLimitColor, 160)
     $iMatchColor = $hStyles[Highlight.Highlight].Color
     '$iIndentColor = Color.Gradient($iBackground, $iForeground)
     $iMarginColor = Color.Merge($iLimitColor, $iBackground, 0.8)
