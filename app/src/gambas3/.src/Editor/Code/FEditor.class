@@ -12,10 +12,13 @@ Property Read ReadOnly As Boolean '' If the editor is read-only.
 ' Metadata
 
 Public Scan As Collection '' The result of the class symbol analyze.
+
 Private $cProc As New Collection(gb.IgnoreCase)
 Private $aProc As New String[]
 Private $iFirstProcLine As Integer
 Private $iScanTimeStamp As Integer
+
+Private Enum PROC_HIDDEN, PROC_EVENT, PROC_DYNAMIC, PROC_PRIVATE
 
 Public Const IDENT_CAR As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_$"
 Public Const NBR_COLOR As Integer = 15
@@ -2696,11 +2699,15 @@ Private Sub FillProcCombo()
   Dim cSymbol As Collection
   Dim sText As String
   Dim sName As String
-  Dim aPrivate As String[]
-  Dim aStaticPrivate As String[]
-  Dim aStaticPublic As String[]
-  Dim aPublic As String[]
+  Dim aSymbol As New String[][16]
+  ' Dim aPrivate As String[]
+  ' Dim aStaticPrivate As String[]
+  ' Dim aStaticPublic As String[]
+  ' Dim aPublic As String[]
   Dim bSeparateStatic As Boolean
+  Dim I As Integer
+  Dim iType As Integer
+  Dim sTitle As String
 
   'DIM fTime AS Float
   'DIM iInd AS Integer
@@ -2733,10 +2740,14 @@ Private Sub FillProcCombo()
 
   If Not cSymbol Then cSymbol = New Collection
 
-  aStaticPrivate = New String[]
-  aPrivate = New String[]
-  aStaticPublic = New String[]
-  aPublic = New String[]
+  ' aStaticPrivate = New String[]
+  ' aPrivate = New String[]
+  ' aStaticPublic = New String[]
+  ' aPublic = New String[]
+  
+  For I = 0 To 15
+    aSymbol[I] = New String[]
+  Next
   
   For Each hSymbol In cSymbol
 
@@ -2746,43 +2757,84 @@ Private Sub FillProcCombo()
     
     sName = hSymbol.Name
     
-    If bSeparateStatic And If hSymbol.IsStatic Then
-      If hSymbol.NotPublic Then
-        aStaticPrivate.Add(sName)
-      Else
-        aStaticPublic.Add(sName)
-      Endif
+    iType = 0
+    If hSymbol.IsStatic And If bSeparateStatic Then
     Else
-      If hSymbol.NotPublic Then
-        aPrivate.Add(sName)
-      Else
-        aPublic.Add(sName)
-      Endif
+      iType = BSet(iType, PROC_DYNAMIC)
     Endif
+    If hSymbol.NotPublic Then iType = BSet(iType, PROC_PRIVATE)
+    If Left(sName) = "_" Then
+      If Not hSymbol.NotPublic Then iType = BSet(iType, PROC_HIDDEN)
+    Else If InStr(sName, "_") Then
+      iType = BSet(iType, PROC_EVENT)
+    Endif
+    
+    aSymbol[iType].Add(sName)
+    
+    ' If bSeparateStatic And If hSymbol.IsStatic Then
+    '   If hSymbol.NotPublic Then
+    '     aStaticPrivate.Add(sName)
+    '   Else
+    '     aStaticPublic.Add(sName)
+    '   Endif
+    ' Else
+    '   If hSymbol.NotPublic Then
+    '     aPrivate.Add(sName)
+    '   Else
+    '     aPublic.Add(sName)
+    '   Endif
+    ' Endif
     
   Next
 
-  aStaticPrivate.Sort(gb.IgnoreCase)
-  aPrivate.Sort(gb.IgnoreCase)
-  aStaticPublic.Sort(gb.IgnoreCase)
-  aPublic.Sort(gb.IgnoreCase)
+  For I = 0 To 15
+    aSymbol[I].Sort(gb.IgnoreCase)
+  Next
 
-  If aStaticPublic.Count Then
-    $aProc.Add("-STATIC PUBLIC")
-    $aProc.Insert(aStaticPublic)
-  Endif
-  If aPublic.Count Then
-    $aProc.Add("-PUBLIC")
-    $aProc.Insert(aPublic)
-  Endif
-  If aStaticPrivate.Count Then
-    $aProc.Add("-STATIC PRIVATE")
-    $aProc.Insert(aStaticPrivate)
-  Endif
-  If aPrivate.Count Then
-    $aProc.Add("-PRIVATE")
-    $aProc.Insert(aPrivate)
-  Endif
+  ' aStaticPrivate.Sort(gb.IgnoreCase)
+  ' aPrivate.Sort(gb.IgnoreCase)
+  ' aStaticPublic.Sort(gb.IgnoreCase)
+  ' aPublic.Sort(gb.IgnoreCase)
+
+  For I = 0 To 15
+    If aSymbol[I].Count = 0 Then Continue
+    sTitle = ""
+    If Not BTst(I, PROC_DYNAMIC) Then sTitle &= " STATIC"
+    If BTst(I, PROC_EVENT) Then
+      If BTst(I, PROC_PRIVATE) Then
+        sTitle &= " PROPERTY"
+      Else
+        sTitle &= " EVENT"
+      Endif
+    Else If BTst(I, PROC_HIDDEN) And If Not BTst(I, PROC_PRIVATE) Then
+      sTitle &= " HIDDEN"
+    Else
+      If BTst(I, PROC_PRIVATE) Then
+        sTitle &= " PRIVATE"
+      Else
+        sTitle &= " PUBLIC"
+      Endif
+    Endif
+    $aProc.Add("-" & LTrim(sTitle))
+    $aProc.Insert(aSymbol[I])
+  Next
+
+  ' If aStaticPublic.Count Then
+  '   $aProc.Add("-STATIC PUBLIC")
+  '   $aProc.Insert(aStaticPublic)
+  ' Endif
+  ' If aPublic.Count Then
+  '   $aProc.Add("-PUBLIC")
+  '   $aProc.Insert(aPublic)
+  ' Endif
+  ' If aStaticPrivate.Count Then
+  '   $aProc.Add("-STATIC PRIVATE")
+  '   $aProc.Insert(aStaticPrivate)
+  ' Endif
+  ' If aPrivate.Count Then
+  '   $aProc.Add("-PRIVATE")
+  '   $aProc.Insert(aPrivate)
+  ' Endif
 
   For Each sName In $aProc
 
