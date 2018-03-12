@@ -4258,3 +4258,9 @@ Public Sub mnuSetFont_Click()
   DoAction(".text-set-font")
   
 End
+
+Public Sub lblTitle_DblClick()
+
+  Action[".menu", Me].Value = True
+
+End
