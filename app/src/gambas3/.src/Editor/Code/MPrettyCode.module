@@ -57,7 +57,7 @@ Private Sub InsertLine(aPos As Integer[], iLine As Integer, Optional iCount As I
 End
 
 
-Public Sub Run(hModule As FEditor)
+Public Sub Run(hModule As Object)
   
   Dim sLine As String
   Dim aLine As String[]
@@ -221,7 +221,7 @@ Public Sub Run(hModule As FEditor)
     hEditor.End
     hEditor.Goto(X, Y)
 
-    FDebugInfo.RefreshTabs(hModule.Path, hModule.Name)
+    If hModule Is FEditor Then FDebugInfo.RefreshTabs(hModule.Path, hModule.Name)
     
   Endif
   

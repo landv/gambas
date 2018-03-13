@@ -207,7 +207,7 @@ Public Function Save() As Boolean
   $hEditor.End
   
   If Settings["/FormatCode/FormatOnLoad"] Then 
-    MPrettyCode.Run(edtEditor)
+    MPrettyCode.Run(Me)
   Endif
 
   ' Now the Editor.Save() method automatically cancels pending Change events.
@@ -2193,7 +2193,7 @@ Public Sub Reload()
   '   If Settings["/Editor/Fold"] Then edtEditor.CollapseAll
   ' Endif
 
-  If Settings["/FormatCode/FormatOnLoad"] Then MPrettyCode.Run(edtEditor)
+  If Settings["/FormatCode/FormatOnLoad"] Then MPrettyCode.Run(Me)
 
   $hEditor.SetFocus
   Modify(True)
