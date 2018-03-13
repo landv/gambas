@@ -788,7 +788,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
         Case "form", "class", "module", "webpage", "report", "webform", "termform"
           If IsSourcePath(sPath) Then
             sModule = sExt
-            sIcon = sExt & "-" & iSize
+            sIcon = sExt
             bStartup = File.BaseName(sPath) = $sStartup 'And Not bNoStartup
             bExported = Project.IsExported(sPath)
           Endif
@@ -908,7 +908,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
     If Not hPict Then
 
       If sModule Then
-        hImage = Project.MakeModuleIcon(sModule, iSize, bStartup)
+        hImage = Project.MakeModuleIcon(sModule, iSize, bStartup And Not bNoEmblem)
       Else
         Try hImage = Picture[sIcon].Image
         If Error Then hImage = Picture[sPrefix &/ "file"].Image
