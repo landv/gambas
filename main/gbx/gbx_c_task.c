@@ -455,6 +455,12 @@ static bool get_return_value(CTASK *_object, bool cleanup)
 				#endif
 				if (!THIS->got_value)
 				{
+					if (stat(path, &info))
+					{
+						GB_Error((char *)E_NRETURN);
+						return TRUE;
+					}
+					
 					fail = GB_UnSerialize(path, &value);
 					if (!fail)
 						GB_StoreVariant(&value._variant, &THIS->ret);
