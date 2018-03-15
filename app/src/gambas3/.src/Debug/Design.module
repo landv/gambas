@@ -22,6 +22,7 @@ Private $sCmdStart As String
 
 Private $aBreakpoint As String[]
 Private $cDisabledBreakpoint As Collection
+Private $cClassHasBreakpoint As Collection
 Private $sAddBreakpoint As String
 Private $sRemoveBreakpoint As String
 
@@ -1279,15 +1280,16 @@ Public Sub SetBreakpoint(sBreakpoint As String, bOn As Boolean, Optional bDisabl
   
   If bOn Then
     $aBreakpoint.Add(sBreakpoint)
-    $aBreakpoint.Sort()
+    $aBreakpoint.Sort(gb.Natural)
     If bDisabled Then $cDisabledBreakpoint[sBreakpoint] = True
   Endif
   
+  aBreak = Split(sBreakpoint, ".")
+  $cClassHasBreakpoint[aBreak[0]] = $aBreakpoint.Exist(aBreak[0] & ".*", gb.Like)
+
   FDebugInfo.RefreshBreakpointView
   
   If $iState = STATE_RUNNING Then Return
-
-  aBreak = Split(sBreakpoint, ".")
 
   ' Update editor
   
@@ -1313,6 +1315,7 @@ Public Sub ClearBreakpoints()
 
   $aBreakpoint = New String[]
   $cDisabledBreakpoint = New Collection
+  $cClassHasBreakpoint = New Collection
   FDebugInfo.RefreshBreakpointView
   
 End
@@ -1376,7 +1379,7 @@ Public Sub RefreshBreakpointFromEditor(hEditor As FEditor)
     Next
   End With
   
-  $aBreakpoint.Sort()
+  $aBreakpoint.Sort(gb.Natural)
   
   FDebugInfo.RefreshBreakpointView()
   
@@ -1443,3 +1446,8 @@ Public Sub SetBalloon(hCtrl As Control, Optional X As Integer = -1, Y As Integer
   
 End
 
+Public Sub HasBreakpoint(sClass As String) As Boolean
+  
+  Return $cClassHasBreakpoint[sClass]
+  
+End

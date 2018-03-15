@@ -526,11 +526,16 @@ Public Sub btnShowMe_Click()
 End
 
 Public Sub RefreshBreakpoint(sClass As String)
+
+  Dim hEditor As FEditor
+  
+  hEditor = Project.Files[Project.FindPath(sClass)]
+  If Not hEditor Then Return
+  
+  If hEditor.GetEditor().Breakpoints.Count = 0 And If Not Design.HasBreakpoint(sClass) Then Return
   
   $cRefreshBreakpoint[sClass] = sClass
-  If wizDebug.Index = TAB_BREAK Then 
-    timBreakpoint.Restart
-  Endif
+  timBreakpoint.Restart
   'timBreakpoint.Start
   
 End
@@ -541,8 +546,7 @@ Public Sub timBreakpoint_Timer()
   Dim hEditor As FEditor
   
   For Each sClass In $cRefreshBreakpoint
-    hEditor = Null
-    Try hEditor = Project.Files[Project.FindPath(sClass)]
+    hEditor = Project.Files[Project.FindPath(sClass)]
     If Not hEditor Then Continue
     Design.RefreshBreakpointFromEditor(hEditor)
   Next
