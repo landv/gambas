@@ -1359,6 +1359,7 @@ Public Sub RefreshBreakpointFromEditor(hEditor As FEditor)
   Dim I As Integer
   Dim sPrefix As String
   Dim iLine As Integer
+  Dim aBreakpoints As Integer[]
   
   sPrefix = hEditor.Name & "."
   While I < $aBreakpoint.Count
@@ -1371,12 +1372,14 @@ Public Sub RefreshBreakpointFromEditor(hEditor As FEditor)
   Wend
   
   With hEditor.GetEditor()
-    For Each iLine In .Breakpoints
+    aBreakpoints = .Breakpoints
+    For Each iLine In aBreakpoints
       $aBreakpoint.Add(hEditor.Name & "." & CStr(iLine))
     Next
     For Each iLine In .DisabledBreakpoints
       $cDisabledBreakpoint[hEditor.Name & "." & CStr(iLine)] = True
     Next
+    $cClassHasBreakpoint[hEditor.Name] = aBreakpoints.Count > 0
   End With
   
   $aBreakpoint.Sort(gb.Natural)
