@@ -1,18 +1,8 @@
 ' Gambas class file
 
 
-Public Sub Button1_Click()
-
-  ValueBox1.Type = ValueBox.Date
-
-End
-
-Public Sub ValueBox1_Change()
-
-  Debug
-
-End
-
 Public Sub Form_Open()
+
+  DateBox1.Value = Date(30, 1, 1)
 
 End

@@ -20,7 +20,7 @@ Private $hPicture As Picture
 Private $bShowClose As Boolean
 Private $bInClose As Boolean
 
-Private Const BUTTON_SIZE As Integer = 14
+Static Private BUTTON_SIZE As Integer
 
 Static Private $bDragging As Boolean
 Private $bDrag As Boolean
@@ -33,6 +33,8 @@ Private $bClosable As Boolean
 Private $bInside As Boolean
 
 Public Sub _new()
+  
+  If BUTTON_SIZE = 0 Then BUTTON_SIZE = Desktop.Scale * 2
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
   $hDrawingArea.Mouse = Mouse.Pointing
@@ -69,9 +71,9 @@ Public Sub DrawingArea_Draw()
   Dim bHighlight As Boolean
   Dim bFirst As Boolean
   Dim iIndex As Integer
-  Dim hPict As Picture
   Dim iBg As Integer
   Dim hFont As Font
+  Dim S As Float
   
   hTabPanel = GetParent()
   
@@ -175,12 +177,29 @@ Public Sub DrawingArea_Draw()
   End Select
 
   If $bShowClose And If Not $bDragging Then
-    hPict = Picture[If($bInClose, "img/delete-h.png", "img/delete.png")]
+    
+    Paint.Save
+    
     If System.RightToLeft Then
-      Draw.Picture(hPict, 2, (Me.H - hPict.H) \ 2)
+      Paint.Translate(4, (Me.H - BUTTON_SIZE) \ 2)
     Else
-      Draw.Picture(hPict, Me.W - hPict.W - 2, (Me.H - hPict.H) \ 2)
+      Paint.Translate(Me.W - BUTTON_SIZE - 4, (Me.H - BUTTON_SIZE) \ 2)
     Endif
+    
+    S = BUTTON_SIZE / 4
+    Paint.MoveTo(S, S)
+    Paint.RelLineTo(S * 2, S * 2)
+    Paint.MoveTo(S * 3, S)
+    Paint.RelLineTo(- S * 2, S * 2)
+    
+    Paint.LineWidth = Desktop.Scale / 4
+    Paint.LineCap = Paint.LineCapRound
+    Paint.Background = If($bInClose, Color.TextForeground, Color.LightForeground)
+    
+    Paint.Stroke
+    
+    Paint.Restore
+    
   Endif
   
   If $bSelected And If Me.Parent.HasFocus Then
@@ -224,19 +243,19 @@ Public Sub UpdateLayout()
   Dim bClosable As Boolean = IsClosable()
   
   If $bRichText Then
-    S = Me.Parent.Font.RichTextWidth($sText) + 16
+    S = Me.Parent.Font.RichTextWidth($sText) + Desktop.Scale * 2
   Else
-    S = Me.Parent.Font.TextWidth($sText) + 16
+    S = Me.Parent.Font.TextWidth($sText) + Desktop.Scale * 2
   Endif
 
   Select Case $iOrientation
     Case Align.Left, Align.Right
-      If $hPicture Then S += $hPicture.W '- 4
-      If bClosable Then S += BUTTON_SIZE - 4
+      If $hPicture Then S += $hPicture.H '- 4
+      If bClosable Then S += BUTTON_SIZE
       Me.H = S
     Case Else
       If $hPicture Then S += $hPicture.W '- 4
-      If bClosable Then S += BUTTON_SIZE - 4
+      If bClosable Then S += BUTTON_SIZE
       Me.W = S
   End Select
   
