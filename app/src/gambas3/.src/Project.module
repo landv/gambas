@@ -3757,7 +3757,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   hFic = Open sPath & ".tmp" For Create
 
   Print #hFic, PROJECT_MAGIC
-  Print #hFic, "# Compiled with Gambas "; FullVersion
+  'Print #hFic, "# Compiled with Gambas "; FullVersion
   'PRINT #hFic, "Project="; Name
 
   If Title Then Print #hFic, "Title="; Title
