@@ -355,7 +355,7 @@ int DATE_to_string(char *buffer, VALUE *value)
 }
 
 
-static bool read_integer(int *number)
+static bool read_integer(int *number, bool *zero)
 {
 	int nbr = 0;
 	int nbr2;
@@ -375,6 +375,9 @@ static bool read_integer(int *number)
 	if ((c < 0) || !isdigit(c))
 		return TRUE;
 
+	if (zero)
+		*zero = (c == '0');
+	
 	for(;;)
 	{
 		nbr2 = nbr * 10 + (c - '0');
@@ -436,11 +439,11 @@ static bool read_msec(int *number)
 }
 
 
-static void set_date(DATE_SERIAL *date, int which, int value)
+static void set_date(DATE_SERIAL *date, int which, int value, bool zero)
 {
 	if (which == LO_YEAR)
 	{
-		if (value >= 0 && value <= 99)
+		if (!zero && value >= 0 && value <= 99)
 		{
 			if (value > 30)
 				value += 1900;
@@ -474,6 +477,7 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 	int nbr, nbr2;
 	int c, i;
 	bool has_date = FALSE;
+	bool zero, zero2;
 	//bool has_time = FALSE;
 
 	if (!len)
@@ -487,7 +491,7 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 	buffer_init(str, len);
 	jump_space();
 
-	if (read_integer(&nbr))
+	if (read_integer(&nbr, &zero))
 		return TRUE;
 
 	c = COMMON_get_unicode_char();
@@ -496,32 +500,32 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 	{
 		has_date = TRUE;
 
-		if (read_integer(&nbr2))
+		if (read_integer(&nbr2, &zero2))
 			return TRUE;
 
 		c = COMMON_get_unicode_char();
 
 		if (c == info->date_sep)
 		{
-			set_date(&date, info->date_order[0], nbr);
-			set_date(&date, info->date_order[1], nbr2);
+			set_date(&date, info->date_order[0], nbr, zero);
+			set_date(&date, info->date_order[1], nbr2, zero2);
 
-			if (read_integer(&nbr))
+			if (read_integer(&nbr, &zero))
 				return TRUE;
 
-			set_date(&date, info->date_order[2], nbr);
+			set_date(&date, info->date_order[2], nbr, zero);
 		}
 		else if ((c < 0) || isspace(c))
 		{
 			i = 0;
 
-			set_date(&date, LO_YEAR, get_current_year());
+			set_date(&date, LO_YEAR, get_current_year(), TRUE);
 
 			if (info->date_order[i] == LO_YEAR) i++;
-			set_date(&date, info->date_order[i], nbr); i++;
+			set_date(&date, info->date_order[i], nbr, zero); i++;
 
 			if (info->date_order[i] == LO_YEAR) i++;
-			set_date(&date, info->date_order[i], nbr2);
+			set_date(&date, info->date_order[i], nbr2, zero2);
 		}
 
 		jump_space();
@@ -530,7 +534,7 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 		if (c < 0)
 			goto _OK;
 
-		if (read_integer(&nbr))
+		if (read_integer(&nbr, NULL))
 			return TRUE;
 
 		c = COMMON_get_unicode_char();
@@ -540,7 +544,7 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 	{
 		//has_time = TRUE;
 
-		if (read_integer(&nbr2))
+		if (read_integer(&nbr2, NULL))
 			return TRUE;
 
 		c = COMMON_get_unicode_char();
@@ -550,7 +554,7 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 			set_time(&date, info->time_order[0], nbr);
 			set_time(&date, info->time_order[1], nbr2);
 
-			if (read_integer(&nbr))
+			if (read_integer(&nbr, NULL))
 				return TRUE;
 
 			set_time(&date, info->time_order[2], nbr);
