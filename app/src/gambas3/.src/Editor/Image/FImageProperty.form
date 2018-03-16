@@ -1,11 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,68,170)
+  MoveScaled(0,0,68,177)
   Persistent = True
   Arrangement = Arrange.Fill
   { Panel10 ScrollView
-    MoveScaled(1,1,65,168)
+    MoveScaled(1,1,65,175)
     Arrangement = Arrange.Vertical
     Border = False
     ScrollBar = Scroll.Vertical
@@ -574,7 +574,7 @@
       MoveScaled(19,157,15,0)
     }
     { panGrid VBox
-      MoveScaled(2,158,62,10)
+      MoveScaled(2,158,62,15)
       Visible = False
       Margin = True
       { Panel1 HBox
@@ -607,6 +607,10 @@
           Step = 8
           Value = 8
         }
+      }
+      { chkGridDiag CheckBox
+        MoveScaled(1,9,40,4)
+        Text = ("Draw diagonals")
       }
     }
   }

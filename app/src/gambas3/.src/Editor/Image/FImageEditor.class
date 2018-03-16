@@ -1574,6 +1574,7 @@ Public Sub imvImage_Draw(hZoom As Image)
   Dim iGrid As Integer
   Dim W As Float
   Dim hZoomOrg As Image
+  Dim bDiag As Boolean
     
   If Project.ActiveForm = Me And If FImageProperty.HasBalance() Then bBalance = True
   
@@ -1697,7 +1698,11 @@ Public Sub imvImage_Draw(hZoom As Image)
     Paint.Translate(hOffset.X, hOffset.Y)
     Paint.Scale(imvImage.Zoom, imvImage.Zoom)
       
+    Paint.Rectangle(0, 0, $hImage.W, $hImage.H)
+    Paint.Clip()
+    
     iGrid = FImageProperty.GetGridResolution()
+    bDiag = FImageProperty.GetGridDiagonal()
       
     For X = iGrid To $hImage.W Step iGrid
       Paint.MoveTo(X, 0)
@@ -1708,6 +1713,17 @@ Public Sub imvImage_Draw(hZoom As Image)
       Paint.MoveTo(0, Y)
       Paint.LineTo($hImage.W, Y)
     Next
+    
+    If bDiag 
+      For X = 0 To $hImage.W - 1 Step iGrid
+        For Y = 0 To $hImage.H - 1 Step iGrid
+          Paint.MoveTo(X, Y)
+          Paint.RelLineTo(iGrid, iGrid)
+          Paint.MoveTo(X + iGrid, Y)
+          Paint.RelLineTo(- iGrid, iGrid)
+        Next
+      Next
+    Endif
     
     Paint.Background = &H808080&
     Paint.Stroke

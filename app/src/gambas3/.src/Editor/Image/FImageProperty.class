@@ -1261,6 +1261,7 @@ End
 Public Sub txtGridRes_Change()
 
   txtGridSnap.MaxValue = txtGridRes.Value
+  txtGridSnap.Step = Lsl(1, Max(0, CInt(Log2(txtGridRes.Value)) - 3))
   Try GetCurrent().UpdateGrid
 
 End
@@ -1269,6 +1270,12 @@ Public Sub txtGridSnap_Change()
 
   'Try GetCurrent().UpdateGrid
 
+End
+
+Public Sub GetGridDiagonal() As Boolean
+  
+  Return chkGridDiag.Value
+  
 End
 
 Public Sub GetGridResolution() As Integer
@@ -1488,4 +1495,10 @@ Public Sub ClearPaste()
   
   tabBrush.Index = 0
   
+End
+
+Public Sub chkGridDiag_Click()
+
+  Try GetCurrent().UpdateGrid
+
 End
