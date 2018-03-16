@@ -74,6 +74,8 @@ Public Sub DrawingArea_Draw()
   Dim iBg As Integer
   Dim hFont As Font
   Dim S As Float
+  Dim HP As Integer
+  Dim WP As Float
   
   hTabPanel = GetParent()
   
@@ -115,13 +117,15 @@ Public Sub DrawingArea_Draw()
   W = Me.W
   
   If $hPicture Then
+    HP = Min($hPicture.H, Me.H - Desktop.Scale)
+    WP = $hPicture.W * HP / $hPicture.H
     If System.RightToLeft Then
       W -= $hPicture.W
-      Paint.DrawPicture($hPicture, Me.W - $hPicture.W - 4, (Me.H - $hPicture.H) / 2)
+      Paint.DrawPicture($hPicture, Me.W - WP - 4, (Me.H - HP) / 2, WP, HP)
     Else
       X += $hPicture.W
       W = Me.W - X
-      Paint.DrawPicture($hPicture, 4, (Me.H - $hPicture.H) / 2)
+      Paint.DrawPicture($hPicture, 4, (Me.H - HP) / 2, WP, HP)
     Endif
   Endif
   
