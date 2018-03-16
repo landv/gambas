@@ -5369,7 +5369,7 @@ Public Sub SideBar_Draw()
     Paint.Background = Color.TooltipForeground
     'Paint.DrawText(_ViewToReal((Row + 1)) & "\n-\n" & _ViewToReal(Min((Row + NL), iCount)), X + 3, y + 3, W - 6, H - 6, Align.Center)
     Paint.DrawText(CStr(PosToLine(0) + 1), X, Y, W, H \ 2, Align.Center)
-    Paint.DrawText(CStr(PosToLine($hView.ClientH) + 1), X, Y + H - H \ 2, W, H \ 2, Align.Center)
+    Paint.DrawText(CStr(PosToLine($hView.ClientH - $LH \ 2) + 1), X, Y + H - H \ 2, W, H \ 2, Align.Center)
     Paint.FillRect(X + D / 4, Y + H \ 2, W - D / 2, 1, Color.SetAlpha(Color.TooltipForeground, 128))
   Endif
   
