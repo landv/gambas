@@ -1380,9 +1380,9 @@ int EXPORT GB_INIT(void)
 
 	// Do not disable GLib support
 
-	env = getenv("KDE_FULL_SESSION");
+	/*env = getenv("KDE_FULL_SESSION");
 	if (env && !strcasecmp(env, "true"))
-		putenv((char *)"QT_NO_GLIB=1");
+		putenv((char *)"QT_NO_GLIB=1");*/
 
 	env = getenv("GB_GUI_BUSY");
 	if (env && atoi(env))
