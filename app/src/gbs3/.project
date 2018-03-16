@@ -1,14 +1,14 @@
 # Gambas Project File 3.0
-# Compiled with Gambas 3.8.90
 Title=gbs3
 Startup=MMain
 Icon=icon.png
-Version=3.8.90
+Version=3.10.90
 VersionFile=1
 Component=gb.eval
 Description="Gambas Script"
 Authors="Fabien Bodard, Benoit Minisini"
-Arguments="-e\n-p\nfor each {s}s in dir(\"/\"):print s:next"
+Arguments=[["-e","-p","for each {s}s in dir(\"/\"):print s:next"]]
+CurrentArgument=0
 TabSize=2
 Language=fr
 Maintainer=benoit
