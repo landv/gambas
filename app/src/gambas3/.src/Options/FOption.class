@@ -281,6 +281,7 @@ Private Sub RefreshConsole()
   
   Settings["/ConsoleFont"] = txtConsoleFont.Value
   FOutput.ReadConfig
+  FDebugInfo.ReadConfig
   Project.InitWebView
   
 End

@@ -5876,6 +5876,13 @@ Public Sub SetEditorFont(hCtrl As Control)
 
 End
 
+Public Sub SetConsoleFont(hCtrl As Control)
+  
+  hCtrl.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
+  
+End
+
+
 Public Sub UpdateLibraries(aLib As String[]) As Boolean
 
   Dim sPath As String
