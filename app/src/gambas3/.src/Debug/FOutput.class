@@ -64,7 +64,7 @@ Public Sub Insert(sText As String, Optional bCurrent As Boolean)
     'edtOutput.Goto(edtOutput.Lines.Count, 10000)
   Endif
   
-  If Not Action["console"].Value Then Action["console"].Value = True
+  'If Not Action["console"].Value Then Action["console"].Value = True
 
   trmOutput.Print(Replace(sText, "\n", "\r\n"))
   

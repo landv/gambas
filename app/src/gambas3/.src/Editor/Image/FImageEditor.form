@@ -572,7 +572,7 @@
       Expand = True
       Arrangement = Arrange.Fill
       { dwgBackground DrawingArea
-        MoveScaled(30,6,24,24)
+        MoveScaled(29,6,24,24)
         Background = Color.LightForeground
       }
       { imvImage ImageView
@@ -583,7 +583,8 @@
       }
       { dwgInfo DrawingArea
         MoveScaled(34,23,17,5)
-        Background = Color.ButtonBackground
+        Background = Color.TooltipBackground
+        Foreground = Color.TooltipForeground
         Ignore = True
       }
     }

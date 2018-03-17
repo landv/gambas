@@ -498,8 +498,8 @@ Public Sub UpdateView()
       'If bVisible Then FMain.ShowDebug(True)
     Endif
     
-    SelectTab(TAB_CONSOLE)
-    FOutput.SetFocus
+    'SelectTab(TAB_CONSOLE)
+    'FOutput.SetFocus
     
   Endif 
   
@@ -970,8 +970,10 @@ End
 Private Sub CloseSearch()
   
   FSearch.ResetBrowse
-  GotoConsole
-  HideTab(TAB_SEARCH)
+  If wizDebug[TAB_SEARCH].Enabled Then
+    If wizDebug.Index = TAB_SEARCH Then GotoConsole
+    HideTab(TAB_SEARCH) 
+  Endif
   
 End
 
@@ -995,7 +997,7 @@ Private Sub ShowTab(iTab As Integer, Optional bShow As Boolean = True)
   
 End
 
-Private Sub HideTab(iTab As Integer)
+Private Sub HideTab(iTab As Integer) As Boolean
   
   wizDebug[iTab].Enabled = False
   FDebugButton.ShowButton(iTab, False)

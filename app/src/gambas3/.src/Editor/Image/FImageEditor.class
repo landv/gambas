@@ -26,10 +26,13 @@ Private $sToolBefore As String
 Private $hFirstPoint As PointF
 Private $hLastPoint As PointF
 Private $hCurrentPoint As PointF
+
+Private $bDblClick As Boolean
 Private $bPress As Boolean
 Private $bShift As Boolean
 Private $bCtrl As Boolean
 Private $bAlt As Boolean
+Private $bNormal As Boolean = True
 
 Private $bFrame As Boolean
 Private $fDashOffset As Float
@@ -43,8 +46,8 @@ Private $hStrokeExtents As Rect
 'Private $hStrokeOrigin As Point
 
 Private $hSelect As CImageSelection
-Private $iLastSelectW As Integer
-Private $iLastSelectH As Integer
+Private $fLastSelectW As Float
+Private $fLastSelectH As Float
 
 Private $hLastMagnet As PointF
 Private $hMagnet As PointF
@@ -525,8 +528,7 @@ Public Sub imvImage_Scroll()
   
 End
 
-
-Public Sub btnUndo_Click()
+Private Sub Undo()
 
   Dim vUndo As Variant
   Dim iLevel As Integer
@@ -562,7 +564,13 @@ Public Sub btnUndo_Click()
 
   RefreshSelection
   UpdateInfo
-  
+
+End
+
+Public Sub btnUndo_Click()
+
+  Undo
+
 End
 
 Public Sub btnRedo_Click()
@@ -712,8 +720,7 @@ Private Sub AddStroke(hPoint As PointF)
  
   FImageProperty.PaintForStroke(Null, True)
   
-  If Not Paint.AntiAlias Then Paint.Translate(0.5, 0.5)
-  
+  If Not Paint.AntiAlias Then Paint.Translate(0.499, 0.499)
   Paint.MoveTo($hLastPoint.X, $hLastPoint.Y)
   Paint.LineTo(hPoint.X, hPoint.Y)
   
@@ -755,6 +762,7 @@ Public Sub imvImage_MouseDown()
 
   Me.SetFocus
   $bPress = Mouse.Left
+  If $bDblClick Then Return
   If Not $bPress Then Return
   
   Select Case $sTool
@@ -766,7 +774,7 @@ Public Sub imvImage_MouseDown()
     
     Case "draw", "erase"
       
-      If Not $bShift Then 
+      If Not $bCtrl Then 
         $hLastPoint = GetImagePos()
         If $hMagnet Then $hLastPoint = $hMagnet
       Endif
@@ -861,10 +869,14 @@ Private Sub UpdateInfo()
 
   If $hCurrentPoint Then
     If $hCurrentPoint.InRect(RectF(0, 0, $hImage.W, $hImage.H)) Or If $bPress Then
-      sInfo = CStr(CInt($hCurrentPoint.X)) & ":" & CStr(CInt($hCurrentPoint.Y))
+      If $sTool = "draw" Or $sTool = "erase" And If FImageProperty.GetSize() = 0 Then
+        sInfo = CStr(CInt($hCurrentPoint.X)) & " / " & CStr(CInt($hCurrentPoint.Y))
+      Else
+        sInfo = Format($hCurrentPoint.X, "0.###") & " / " & Format($hCurrentPoint.Y, "0.###")
+      Endif
       If $bPress Then
-        If $sTool = "rectangle" Or If $sTool = "ellipse" Or If $sTool = "line" Then
-          sInfo &= " " & $iLastSelectW & "×" & $iLastSelectH
+        If $sTool = "rectangle" Or If $sTool = "ellipse" Then
+          sInfo &= "  [ " & Format($fLastSelectW, "0.###") & " × " & Format($fLastSelectH, "0.###") & " ]"
         Endif
       Endif
       
@@ -880,6 +892,8 @@ Private Sub UpdateInfo()
     $sInfo = GetImageInfo()
   Endif
 
+  dwgInfo.Resize(dwgInfo.Font.TextWidth($sInfo) + Desktop.Scale * 2, dwgInfo.Font.Height * 2 + Desktop.Scale)
+  MoveInfo
   dwgInfo.Refresh
   
 End
@@ -955,7 +969,7 @@ Private Sub FindBestMagnet(hCurrent As PointF) As PointF
   iIgnoreFrom = -1
   If $bPress Then
     If $sTool = "rectangle" Or If $sTool = "ellipse" Or If $sTool = "line" Then
-      iIgnoreFrom = $hSelect.Count - 1
+      If $hSelect Then iIgnoreFrom = $hSelect.Count - 1
     Else If $sTool = "text" Then
       iIgnoreFrom = $hTextSelect.Count
     Endif
@@ -1052,10 +1066,26 @@ Public Sub imvImage_MouseMove()
   Dim hSelect As CImageSelection
   Dim I As Integer
   Dim X1, X2, Y1, Y2 As Float
+  Dim D As Float
+  
+  If $bDblClick Then Return
   
   $hCurrentPoint = FindBestMagnet(GetImagePos())
   UpdateInfo
   
+  If $bFrame Then
+    If $bAlt Then
+      
+      A = Ang($hCurrentPoint.X - $hLastPoint.X, $hCurrentPoint.Y - $hLastPoint.Y)
+      D = Mag($hCurrentPoint.X - $hLastPoint.X, $hCurrentPoint.Y - $hLastPoint.Y)
+      If A < 0 Then A += Pi(2)
+      A = Rad(Int(Deg(A) / 15 + 0.5) * 15)
+      
+      $hCurrentPoint = PointF(CInt(($hLastPoint.X + Cos(A) * D) * 2 + 0.5) / 2, CInt(($hLastPoint.Y + Sin(A) * D) * 2 + 0.5) / 2)
+      
+    Endif
+  Endif
+    
   If $bPress Then
     
     If $sTool <> "move" Then imvImage.EnsureVisible(imvImage.ScrollX + hPos.X - 32, imvImage.ScrollY + hPos.Y - 32, 64, 64)
@@ -1074,8 +1104,8 @@ Public Sub imvImage_MouseMove()
       
       Case "line"
         
-        $iLastSelectW = $hCurrentPoint.X - $hLastPoint.X
-        $iLastSelectH = $hCurrentPoint.Y - $hLastPoint.Y
+        $fLastSelectW = $hCurrentPoint.X - $hLastPoint.X
+        $fLastSelectH = $hCurrentPoint.Y - $hLastPoint.Y
 
         If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
           $hSelect.LineTo($hCurrentPoint.X, $hCurrentPoint.Y)
@@ -1117,9 +1147,9 @@ Public Sub imvImage_MouseMove()
           If $sTool = "ellipse" Then
           
             If $bShift Then
-              'WW *= 2 'Sqr(2)
-              'HH *= 2 'Sqr(2)
               $hSelect.Ellipse($hLastPoint.X - WW, $hLastPoint.Y - HH, WW * 2, HH * 2)
+              WW *= 2
+              HH *= 2
             Else
               $hSelect.Ellipse(Min($hLastPoint.X, $hCurrentPoint.X), Min($hLastPoint.Y, $hCurrentPoint.Y), WW, HH)
             Endif
@@ -1127,9 +1157,9 @@ Public Sub imvImage_MouseMove()
           Else
             
             If $bShift Then
+              $hSelect.Rectangle(X1 - WW, Y1 - HH, WW * 2, HH * 2, FImageProperty.GetRoundness())
               WW *= 2
               HH *= 2
-              $hSelect.Rectangle(X1 - WW, Y1 - HH, WW, HH, FImageProperty.GetRoundness())
             Else
               $hSelect.Rectangle(X1, Y1, WW, HH, FImageProperty.GetRoundness())
             Endif
@@ -1137,9 +1167,9 @@ Public Sub imvImage_MouseMove()
           Endif
             
           imvImage.Refresh
-          $iLastSelectW = WW
-          $iLastSelectH = HH
-            
+          $fLastSelectW = WW
+          $fLastSelectH = HH
+          UpdateInfo
           
         Endif
       
@@ -1163,8 +1193,8 @@ Public Sub imvImage_MouseMove()
       '       $hSelect.Ellipse(CInt(Min($hLastPoint.X, $hCurrentPoint.X)), CInt(Min($hLastPoint.Y, $hCurrentPoint.Y)), WW, HH)
       '     Endif
       '     imvImage.Refresh
-      '     $iLastSelectW = WW
-      '     $iLastSelectH = HH
+      '     $fLastSelectW = WW
+      '     $fLastSelectH = HH
       '   Endif
         
       Case "change", "paste"
@@ -1229,7 +1259,7 @@ Public Sub imvImage_MouseMove()
                 A = ACos(A)
                 If ($hCurrentPoint.X - XC) / ($hLastPoint.X - XC) > ($hCurrentPoint.Y - YC) / ($hLastPoint.Y - YC) Then A = - A
               
-                If $bCtrl Then A = Rad(Int(Deg(A) / 15) * 15)
+                If $bAlt Then A = Rad(Int(Deg(A) / 15) * 15)
               
                 hSelect.Rotate(- A)
                 
@@ -1327,8 +1357,8 @@ Private Sub UpdateTool()
   Select Case $sTool
     
     Case "draw", "erase"
-      If $bShift <> $bFrame Then
-        $bFrame = $bShift
+      If $bCtrl <> $bFrame Then
+        $bFrame = $bCtrl
         imvImage.Refresh
       Endif
       
@@ -1358,6 +1388,8 @@ Public Sub Form_KeyPress()
   $bShift = Key.Shift
   $bCtrl = Key.Control
   $bAlt = Key.Alt
+  $bNormal = Key.Normal
+  
   UpdateTool
   
   If $hSelect And If $hChangeRect Then
@@ -1417,6 +1449,7 @@ Public Sub Form_KeyRelease()
   $bShift = Key.Shift
   $bCtrl = Key.Control
   $bAlt = Key.Alt
+  $bNormal = Key.Normal
   UpdateTool
   imvImage_MouseMove
   
@@ -1428,6 +1461,13 @@ Public Sub imvImage_MouseUp()
 
   If Not $bPress Then Return
 
+  $bPress = False
+  
+  If $bDblClick Then 
+    $bDblClick = False
+    Return
+  Endif
+  
   imvImage_MouseMove()
 
   Select Case $sTool
@@ -1454,13 +1494,14 @@ Public Sub imvImage_MouseUp()
         $hSelect.AddMagnet($hLastPoint)
         If $hFirstPoint Then $hSelect.AddMagnet($hFirstPoint)
       Endif
+      
       $hSelect.CleanLastShape
-
+      
     Case "rectangle", "ellipse"
       If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
         imvImage.Refresh
       Else
-        ClearSelection
+        'ClearSelection
       Endif
     
     Case "change"
@@ -1479,8 +1520,6 @@ Public Sub imvImage_MouseUp()
       Endif
       
   End Select
-  
-  $bPress = False
   
   imvImage_MouseMove()
   
@@ -1688,50 +1727,6 @@ Public Sub imvImage_Draw(hZoom As Image)
     
   Endif
   
-  If $bShowGrid Then
-    
-    Paint.Save
-    Paint.AntiAlias = False
-  
-    Paint.LineWidth = 1 / imvImage.Zoom
-
-    Paint.Translate(hOffset.X, hOffset.Y)
-    Paint.Scale(imvImage.Zoom, imvImage.Zoom)
-      
-    Paint.Rectangle(0, 0, $hImage.W, $hImage.H)
-    Paint.Clip()
-    
-    iGrid = FImageProperty.GetGridResolution()
-    bDiag = FImageProperty.GetGridDiagonal()
-      
-    For X = iGrid To $hImage.W Step iGrid
-      Paint.MoveTo(X, 0)
-      Paint.LineTo(X, $hImage.H)
-    Next
-    
-    For Y = iGrid To $hImage.H Step iGrid
-      Paint.MoveTo(0, Y)
-      Paint.LineTo($hImage.W, Y)
-    Next
-    
-    If bDiag 
-      For X = 0 To $hImage.W - 1 Step iGrid
-        For Y = 0 To $hImage.H - 1 Step iGrid
-          Paint.MoveTo(X, Y)
-          Paint.RelLineTo(iGrid, iGrid)
-          Paint.MoveTo(X + iGrid, Y)
-          Paint.RelLineTo(- iGrid, iGrid)
-        Next
-      Next
-    Endif
-    
-    Paint.Background = &H808080&
-    Paint.Stroke
-    
-    Paint.Restore
-    
-  Endif
-    
   If $hMagnet Then
     
     Paint.Save
@@ -1824,6 +1819,37 @@ Public Sub imvImage_Draw(hZoom As Image)
     
   Endif
   
+  If $hLastPoint Then
+  
+    Select Case $sTool
+      
+      Case "draw", "erase", "line"
+      
+        Paint.Save
+        Paint.Antialias = False
+        
+        If $sTool = "line" Then
+          Paint.Ellipse($hLastPoint.X * imvImage.Zoom + hOffset.X - 4, $hLastPoint.Y * imvImage.Zoom + hOffset.Y - 4, 8, 8)
+        Else
+          If FImageProperty.GetSize() Then
+            Paint.Rectangle(($hLastPoint.X - 0.5) * imvImage.Zoom + hOffset.X, ($hLastPoint.Y - 0.5) * imvImage.Zoom + hOffset.Y, imvImage.Zoom, imvImage.Zoom)
+          Else
+            Paint.Rectangle($hLastPoint.X * imvImage.Zoom + hOffset.X, $hLastPoint.Y * imvImage.Zoom + hOffset.Y, imvImage.Zoom, imvImage.Zoom)
+          Endif
+        Endif
+        
+        Paint.LineWidth = 1
+        Paint.Background = Color.White
+        Paint.Stroke(True)
+        Paint.Background = Color.Black
+        Paint.Dash = [4, 4]
+        Paint.Stroke
+        Paint.Restore
+      
+    End Select
+    
+  Endif
+  
   If $hPaste Then
     
     Paint.Save
@@ -1875,11 +1901,55 @@ Public Sub imvImage_Draw(hZoom As Image)
     
   Endif
   
+  If $bShowGrid Then
+    
+    Paint.Save
+    Paint.AntiAlias = False
+  
+    Paint.LineWidth = 1 / imvImage.Zoom
+
+    Paint.Translate(hOffset.X, hOffset.Y)
+    Paint.Scale(imvImage.Zoom, imvImage.Zoom)
+      
+    Paint.Rectangle(0, 0, $hImage.W, $hImage.H)
+    Paint.Clip()
+    
+    iGrid = FImageProperty.GetGridResolution()
+    bDiag = FImageProperty.GetGridDiagonal()
+      
+    For X = iGrid To $hImage.W Step iGrid
+      Paint.MoveTo(X, 0)
+      Paint.LineTo(X, $hImage.H)
+    Next
+    
+    For Y = iGrid To $hImage.H Step iGrid
+      Paint.MoveTo(0, Y)
+      Paint.LineTo($hImage.W, Y)
+    Next
+    
+    If bDiag 
+      For X = 0 To $hImage.W - 1 Step iGrid
+        For Y = 0 To $hImage.H - 1 Step iGrid
+          Paint.MoveTo(X, Y)
+          Paint.RelLineTo(iGrid, iGrid)
+          Paint.MoveTo(X + iGrid, Y)
+          Paint.RelLineTo(- iGrid, iGrid)
+        Next
+      Next
+    Endif
+    
+    Paint.Background = &H808080&
+    Paint.Stroke
+    
+    Paint.Restore
+    
+  Endif
+    
   If $hChangeRect Then
     
     Paint.Save
     
-    Paint.Translate(hOffset.X, hOffset.Y)
+    Paint.Translate(hOffset.X + 0.5, hOffset.Y + 0.5)
     Paint.Scale(imvImage.Zoom, imvImage.Zoom)
     
     Paint.LineWidth = 2 / imvImage.Zoom
@@ -3014,20 +3084,24 @@ Public Sub ExecAction(sAction As String)
   
 End
 
-Public Sub panBackground_Arrange()
+Private Sub MoveInfo()
 
   Dim D As Integer
-  Dim W As Integer
 
   If imvImage.ScrollH > imvImage.ClientH Then D = Style.ScrollbarSize
-  W = (Max(Len(CStr($hImage.Width) & CStr($hImage.Height)) * 2 + 2, 23)) * dwgBackground.Font.TextWidth("9")
-  dwgInfo.Move(panBackground.W - W - Desktop.Scale - D, Desktop.Scale, W, dwgInfo.H)
+  dwgInfo.Move(panBackground.W - dwgInfo.W - Desktop.Scale - D, Desktop.Scale)
+
+End
+
+Public Sub panBackground_Arrange()
+
+  MoveInfo
 
 End
 
 Public Sub dwgInfo_Draw()
 
-  Paint.DrawText($sInfo, 0, 0, dwgInfo.W - Desktop.Scale, dwgInfo.H, Align.TopRight)
+  Paint.DrawText($sInfo, Desktop.Scale, Desktop.Scale \ 2, dwgInfo.W - Desktop.Scale * 2, dwgInfo.H - Desktop.Scale, Align.Right)
 
 End
 
@@ -3070,4 +3144,11 @@ Public Sub GetPopupMenu() As Menu
   
   Return mnuEditor
   
+End
+
+Public Sub imvImage_DblClick()
+
+  ClearSelection
+  $bDblClick = True
+
 End
