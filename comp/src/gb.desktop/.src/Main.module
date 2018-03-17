@@ -155,12 +155,7 @@ End
 
 Public Sub Main()
 
-  Dim sFile As String
-  Dim hPict As Picture
-
-  For Each sFile In Dir("~")
-    hPict = Desktop.GetFileIcon("~" &/ sFile, 16)
-  Next
+  Print DesktopMime.FromFile("~/gambas/git/master/app/src/gambas3/img/broken.svg").GetIcon()
   
 End
 
