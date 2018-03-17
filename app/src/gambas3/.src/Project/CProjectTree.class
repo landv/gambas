@@ -582,7 +582,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
             sIcon = sPath
           Endif
 
-        Case "svg"
+        Case "svg", "svgz"
           sIcon = sPrefix &/ "vector"
 
         Case "htm", "html", "css"

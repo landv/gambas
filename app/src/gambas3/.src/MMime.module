@@ -67,6 +67,8 @@ Public Sub GetMime(sPath As String) As String
       Return "image/png"
     Case "svg"
       Return "image/svg+xml"
+    Case "svgz"
+      Return "image/svg+xml-compressed"
     Case "gif"
       Return "image/gif"
     Case "tiff", "tif"
