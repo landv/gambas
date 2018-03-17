@@ -1394,7 +1394,7 @@ Public Sub _RenameItem(hItem As _IconView_Item)
   
   If Not $hRenameBox Then 
     Object.Lock(Me)
-    $hRenameBox = New RenameBox(Me, 0) As "RenameBox"
+    $hRenameBox = New RenameBox(Me, 0, True) As "RenameBox"
     Object.Unlock(Me)
   Endif
   

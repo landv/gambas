@@ -128,7 +128,7 @@ static QString get_first_format(const QMimeData *src)
 	return format;
 }
 
-static void paste(const QMimeData *data, const char *fmt)
+static bool paste(const QMimeData *data, const char *fmt)
 {
 	QString format;
 	QByteArray ba;
@@ -146,7 +146,7 @@ static void paste(const QMimeData *data, const char *fmt)
 	if (!data->hasFormat(format))
 	{
 		GB.ReturnVariant(NULL);
-		return;
+		return TRUE;
 	}
 
 	if (format.startsWith("text/"))
@@ -192,6 +192,7 @@ static void paste(const QMimeData *data, const char *fmt)
 	}
 	
 	GB.ReturnConvVariant();
+	return FALSE;
 }
 
 
@@ -203,6 +204,7 @@ static void paste(const QMimeData *data, const char *fmt)
 ***************************************************************************/
 
 static GB_ARRAY _clipboard_formats[2] = { NULL };
+static bool _clipboard_has_changed[2] = { FALSE };
 
 #define CURRENT_MODE() (_current_clipboard == CLIPBOARD_SELECTION ? QClipboard::Selection : QClipboard::Clipboard)
 
@@ -211,6 +213,7 @@ void CLIPBOARD_has_changed(QClipboard::Mode mode)
 	int clipboard = mode == QClipboard::Selection ? CLIPBOARD_SELECTION : CLIPBOARD_DEFAULT;
 	GB.Unref(POINTER(&_clipboard_formats[clipboard]));
 	_clipboard_formats[clipboard] = NULL;
+	_clipboard_has_changed[clipboard] = TRUE;
 }
 
 static GB_ARRAY load_clipboard_formats()
@@ -256,14 +259,14 @@ BEGIN_METHOD_VOID(Clipboard_exit)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CCLIPBOARD_clear)
+BEGIN_METHOD_VOID(Clipboard_Clear)
 
 	QApplication::clipboard()->clear(CURRENT_MODE());
 
 END_METHOD
 
 
-BEGIN_PROPERTY(CCLIPBOARD_format)
+BEGIN_PROPERTY(Clipboard_Format)
 
 	GB_ARRAY formats = load_clipboard_formats();
 	
@@ -275,21 +278,21 @@ BEGIN_PROPERTY(CCLIPBOARD_format)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CCLIPBOARD_formats)
+BEGIN_PROPERTY(Clipboard_Formats)
 
 	GB.ReturnObject(load_clipboard_formats());
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CCLIPBOARD_type)
+BEGIN_PROPERTY(Clipboard_Type)
 
 	GB.ReturnInteger(get_clipboard_type());
 
 END_PROPERTY
 
 
-BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
+BEGIN_METHOD(Clipboard_Copy, GB_VARIANT data; GB_STRING format)
 
 	QString format;
 	QMimeData *data = new QMimeData();
@@ -334,9 +337,10 @@ _BAD_FORMAT:
 END_METHOD
 
 
-BEGIN_METHOD(CCLIPBOARD_paste, GB_STRING format)
+BEGIN_METHOD(Clipboard_Paste, GB_STRING format)
 
-	paste(QApplication::clipboard()->mimeData(CURRENT_MODE()), MISSING(format) ?  NULL : GB.ToZeroString(ARG(format)));
+	if (!paste(QApplication::clipboard()->mimeData(CURRENT_MODE()), MISSING(format) ?  NULL : GB.ToZeroString(ARG(format))))
+		_clipboard_has_changed[_current_clipboard] = FALSE;
 
 END_METHOD
 
@@ -345,14 +349,26 @@ BEGIN_PROPERTY(Clipboard_Current)
 	if (READ_PROPERTY)
 		GB.ReturnInteger(_current_clipboard);
 	else
-		_current_clipboard = VPROP(GB_INTEGER);
+	{
+		int val = VPROP(GB_INTEGER);
+		if (val != CLIPBOARD_DEFAULT && val != CLIPBOARD_SELECTION)
+			GB.Error(GB_ERR_ARG);
+		else
+			_current_clipboard = val;
+	}
 
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Clipboard_HasChanged)
+
+	GB.ReturnBoolean(_clipboard_has_changed[_current_clipboard]);
+
+END_PROPERTY
+
 GB_DESC CClipboardDesc[] =
 {
-	GB_DECLARE("Clipboard", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE_STATIC("Clipboard"),
 
 	GB_STATIC_METHOD("_exit", NULL, Clipboard_exit, NULL),
 
@@ -363,16 +379,17 @@ GB_DESC CClipboardDesc[] =
 	GB_CONSTANT("Default", "i", 0),
 	GB_CONSTANT("Selection", "i", 1),
 
-	GB_STATIC_METHOD("Clear", NULL, CCLIPBOARD_clear, NULL),
+	GB_STATIC_METHOD("Clear", NULL, Clipboard_Clear, NULL),
 
-	GB_STATIC_PROPERTY_READ("Format", "s", CCLIPBOARD_format),
-	GB_STATIC_PROPERTY_READ("Formats", "String[]", CCLIPBOARD_formats),
-	GB_STATIC_PROPERTY_READ("Type", "i", CCLIPBOARD_type),
+	GB_STATIC_PROPERTY_READ("Format", "s", Clipboard_Format),
+	GB_STATIC_PROPERTY_READ("Formats", "String[]", Clipboard_Formats),
+	GB_STATIC_PROPERTY_READ("Type", "i", Clipboard_Type),
+	GB_STATIC_PROPERTY_READ("HasChanged", "b", Clipboard_HasChanged),
 	
 	GB_STATIC_PROPERTY("Current", "i", Clipboard_Current),
 
-	GB_STATIC_METHOD("Copy", NULL, CCLIPBOARD_copy, "(Data)v[(Format)s]"),
-	GB_STATIC_METHOD("Paste", "v", CCLIPBOARD_paste, "[(Format)s]"),
+	GB_STATIC_METHOD("Copy", NULL, Clipboard_Copy, "(Data)v[(Format)s]"),
+	GB_STATIC_METHOD("Paste", "v", Clipboard_Paste, "[(Format)s]"),
 
 	GB_END_DECLARE
 };
@@ -723,20 +740,20 @@ bool CDRAG_drag_drop(QWidget *w, CWIDGET *control, QDropEvent *e)
 	return true;
 }
 
-BEGIN_METHOD(CDRAG_call, GB_OBJECT source; GB_VARIANT data; GB_STRING format)
+BEGIN_METHOD(Drag_call, GB_OBJECT source; GB_VARIANT data; GB_STRING format)
 
 	GB.ReturnObject(CDRAG_drag((CWIDGET *)VARG(source), &VARG(data), MISSING(format) ? NULL : ARG(format)));
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CDRAG_exit)
+BEGIN_METHOD_VOID(Drag_exit)
 
 	hide_frame(NULL);
 	GB.Unref(POINTER(&_picture));
 
 END_METHOD
 
-BEGIN_PROPERTY(CDRAG_icon)
+BEGIN_PROPERTY(Drag_Icon)
 
 	if (READ_PROPERTY)
 		GB.ReturnObject(_picture);
@@ -745,7 +762,7 @@ BEGIN_PROPERTY(CDRAG_icon)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CDRAG_icon_x)
+BEGIN_PROPERTY(Drag_IconX)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(_picture_x);
@@ -754,7 +771,7 @@ BEGIN_PROPERTY(CDRAG_icon_x)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CDRAG_icon_y)
+BEGIN_PROPERTY(Drag_IconY)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(_picture_y);
@@ -771,7 +788,7 @@ END_PROPERTY
 	}
 
 
-BEGIN_PROPERTY(CDRAG_type)
+BEGIN_PROPERTY(Drag_Type)
 
 	CHECK_VALID();
 
@@ -780,7 +797,7 @@ BEGIN_PROPERTY(CDRAG_type)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDRAG_format)
+BEGIN_PROPERTY(Drag_Format)
 
 	CHECK_VALID();
 
@@ -789,7 +806,7 @@ BEGIN_PROPERTY(CDRAG_format)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDRAG_formats)
+BEGIN_PROPERTY(Drag_Formats)
 
 	GB_ARRAY array;
 	
@@ -802,7 +819,7 @@ BEGIN_PROPERTY(CDRAG_formats)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDRAG_data)
+BEGIN_PROPERTY(Drag_Data)
 
 	if (!CDRAG_info.valid)
 	{
@@ -828,7 +845,7 @@ BEGIN_METHOD(CDRAG_paste, GB_STRING format)
 END_METHOD
 
 
-BEGIN_PROPERTY(CDRAG_action)
+BEGIN_PROPERTY(Drag_Action)
 
 	CHECK_VALID();
 
@@ -850,7 +867,7 @@ BEGIN_PROPERTY(CDRAG_action)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDRAG_source)
+BEGIN_PROPERTY(Drag_Source)
 
 	CHECK_VALID();
 
@@ -859,7 +876,7 @@ BEGIN_PROPERTY(CDRAG_source)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDRAG_x)
+BEGIN_PROPERTY(Drag_X)
 
 	CHECK_VALID();
 
@@ -868,7 +885,7 @@ BEGIN_PROPERTY(CDRAG_x)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDRAG_y)
+BEGIN_PROPERTY(Drag_Y)
 
 	CHECK_VALID();
 
@@ -876,13 +893,13 @@ BEGIN_PROPERTY(CDRAG_y)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CDRAG_pending)
+BEGIN_PROPERTY(Drag_Pending)
 
 	GB.ReturnBoolean(CDRAG_dragging);
 
 END_PROPERTY
 
-BEGIN_METHOD(CDRAG_show, GB_OBJECT control; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
+BEGIN_METHOD(Drag_Show, GB_OBJECT control; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
 	if (GB.CheckObject(VARG(control)))
 		return;
@@ -900,7 +917,7 @@ BEGIN_METHOD(CDRAG_show, GB_OBJECT control; GB_INTEGER x; GB_INTEGER y; GB_INTEG
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CDRAG_hide)
+BEGIN_METHOD_VOID(Drag_Hide)
 
 	hide_frame(NULL);
 
@@ -909,7 +926,7 @@ END_METHOD
 
 GB_DESC CDragDesc[] =
 {
-	GB_DECLARE("Drag", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE_STATIC("Drag"),
 
 	GB_CONSTANT("None", "i", MIME_UNKNOWN),
 	GB_CONSTANT("Text", "i", MIME_TEXT),
@@ -919,24 +936,24 @@ GB_DESC CDragDesc[] =
 	GB_CONSTANT("Link", "i", 1),
 	GB_CONSTANT("Move", "i", 2),
 
-	GB_STATIC_PROPERTY("Icon", "Picture", CDRAG_icon),
-	GB_STATIC_PROPERTY("IconX", "i", CDRAG_icon_x),
-	GB_STATIC_PROPERTY("IconY", "i", CDRAG_icon_y),
+	GB_STATIC_PROPERTY("Icon", "Picture", Drag_Icon),
+	GB_STATIC_PROPERTY("IconX", "i", Drag_IconX),
+	GB_STATIC_PROPERTY("IconY", "i", Drag_IconY),
 
-	GB_STATIC_PROPERTY_READ("Data", "v", CDRAG_data),
-	GB_STATIC_PROPERTY_READ("Format", "s", CDRAG_format),
-	GB_STATIC_PROPERTY_READ("Formats", "String[]", CDRAG_formats),
-	GB_STATIC_PROPERTY_READ("Type", "i", CDRAG_type),
-	GB_STATIC_PROPERTY_READ("Action", "i", CDRAG_action),
-	GB_STATIC_PROPERTY_READ("Source", "Control", CDRAG_source),
-	GB_STATIC_PROPERTY_READ("X", "i", CDRAG_x),
-	GB_STATIC_PROPERTY_READ("Y", "i", CDRAG_y),
-	GB_STATIC_PROPERTY_READ("Pending", "b", CDRAG_pending),
+	GB_STATIC_PROPERTY_READ("Data", "v", Drag_Data),
+	GB_STATIC_PROPERTY_READ("Format", "s", Drag_Format),
+	GB_STATIC_PROPERTY_READ("Formats", "String[]", Drag_Formats),
+	GB_STATIC_PROPERTY_READ("Type", "i", Drag_Type),
+	GB_STATIC_PROPERTY_READ("Action", "i", Drag_Action),
+	GB_STATIC_PROPERTY_READ("Source", "Control", Drag_Source),
+	GB_STATIC_PROPERTY_READ("X", "i", Drag_X),
+	GB_STATIC_PROPERTY_READ("Y", "i", Drag_Y),
+	GB_STATIC_PROPERTY_READ("Pending", "b", Drag_Pending),
 
-	GB_STATIC_METHOD("_call", "Control", CDRAG_call, "(Source)Control;(Data)v[(Format)s]"),
-	GB_STATIC_METHOD("_exit", NULL, CDRAG_exit, NULL),
-	GB_STATIC_METHOD("Show", NULL, CDRAG_show, "(Control)Control;[(X)i(Y)i(Width)i(Height)i]"),
-	GB_STATIC_METHOD("Hide", NULL, CDRAG_hide, NULL),
+	GB_STATIC_METHOD("_call", "Control", Drag_call, "(Source)Control;(Data)v[(Format)s]"),
+	GB_STATIC_METHOD("_exit", NULL, Drag_exit, NULL),
+	GB_STATIC_METHOD("Show", NULL, Drag_Show, "(Control)Control;[(X)i(Y)i(Width)i(Height)i]"),
+	GB_STATIC_METHOD("Hide", NULL, Drag_Hide, NULL),
 	GB_STATIC_METHOD("Paste", "v", CDRAG_paste, "[(Format)s]"),
 
 	GB_END_DECLARE

@@ -417,6 +417,7 @@ Public Sub OpenMenu(hToolbar As ToolBar)
   $hPopupToolbar = hToolbar
 
   'mnuConfigure.Text = Me.Title & "..." 'Subst(("Configure '&1' toolbar..."), hToolbar.Key)
+  mnuVerySmallSize.Checked = False
   mnuSmallSize.Checked = False
   mnuMediumSize.Checked = False
   mnuLargeSize.Checked = False
@@ -429,6 +430,8 @@ Public Sub OpenMenu(hToolbar As ToolBar)
       mnuLargeSize.Checked = True
     Case FToolBar.ICON_MEDIUM
       mnuMediumSize.Checked = True
+    Case FToolBar.ICON_TINY
+      mnuVerySmallSize.Checked = True
     Case Else
       mnuSmallSize.Checked = True
   End Select
@@ -462,6 +465,13 @@ Public Sub mnuHugeSize_Click()
   GetForm($hPopupToolbar).SetIconSize(FToolBar.ICON_HUGE)
   
 End
+
+Public Sub mnuVerySmallSize_Click()
+  
+  GetForm($hPopupToolbar).SetIconSize(FToolBar.ICON_TINY)
+  
+End
+
 
 Public Sub mnuConfigure_Click()
   

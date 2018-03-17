@@ -12,10 +12,13 @@ Property Read ReadOnly As Boolean '' If the editor is read-only.
 ' Metadata
 
 Public Scan As Collection '' The result of the class symbol analyze.
+
 Private $cProc As New Collection(gb.IgnoreCase)
 Private $aProc As New String[]
 Private $iFirstProcLine As Integer
 Private $iScanTimeStamp As Integer
+
+Private Enum PROC_HIDDEN, PROC_EVENT, PROC_DYNAMIC, PROC_PRIVATE
 
 Public Const IDENT_CAR As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_$"
 Public Const NBR_COLOR As Integer = 15
@@ -204,7 +207,7 @@ Public Function Save() As Boolean
   $hEditor.End
   
   If Settings["/FormatCode/FormatOnLoad"] Then 
-    MPrettyCode.Run(edtEditor)
+    MPrettyCode.Run(Me)
   Endif
 
   ' Now the Editor.Save() method automatically cancels pending Change events.
@@ -1059,15 +1062,13 @@ Public Function CanSetBreakpoint(iLine As Integer) As Boolean
 
 End
 
-Public Sub SetBreakpoint(iLine As Integer, bVal As Boolean) As Boolean
+Public Sub SetBreakpoint(iLine As Integer, bVal As Boolean, bDisabled As Boolean) As Boolean
 
   If bVal And If Not CanSetBreakpoint(iLine) Then Return True
 
-  ' Update debug window
-  FDebugInfo.AddBreakpoint(Me.Name, GetProcAt(iLine), iLine, bVal)
-
   'Editor.Lines.SetFlag(iLine, Editor.Breakpoint, bVal)
   $hEditor[iLine].Breakpoint = bVal
+  $hEditor[iLine].Disabled = bDisabled
   If iLine = $hEditor.Line Then RefreshLineInfo(True)
 
 End
@@ -1083,7 +1084,7 @@ Public Sub CheckBreakpoints()
   Dim iLine As Integer
 
   For Each iLine In $hEditor.Breakpoints
-    If Not CanSetBreakpoint(iLine) Then SetBreakpoint(iLine, False)
+    If Not CanSetBreakpoint(iLine) Then SetBreakpoint(iLine, False, False)
   Next
 
 End
@@ -1094,6 +1095,13 @@ Public Function GetBreakpoints(Optional bCheck As Boolean) As Integer[]
   Return $hEditor.Breakpoints
   
 End
+
+Public Sub IsBreakpointDisabled(iLine As Integer) As Boolean
+  
+  Return $hEditor[iLine].Disabled
+  
+End
+
 
 Private Sub GetIndentWidth(iStart As Integer, iEnd As Integer) As Integer
 
@@ -2178,18 +2186,14 @@ End
 
 Public Sub Reload()
 
-  Dim aBreakpoint As Integer[]
-
-  aBreakpoint = edtEditor.Breakpoints
   edtEditor.Load(Path, True)
-  edtEditor.Breakpoints = aBreakpoint
-  CheckBreakpoints()
+  Design.InitEditorWithBreakpoints(Me)
   $hBookmark.Load()
   ' If Not Project.RestoringFiles Then
   '   If Settings["/Editor/Fold"] Then edtEditor.CollapseAll
   ' Endif
 
-  If Settings["/FormatCode/FormatOnLoad"] Then MPrettyCode.Run(edtEditor)
+  If Settings["/FormatCode/FormatOnLoad"] Then MPrettyCode.Run(Me)
 
   $hEditor.SetFocus
   Modify(True)
@@ -2610,7 +2614,7 @@ Public Sub Editors_Margin()
 
   Dim Y As Integer
   Y = Last.Line
-  Design.SetBreakpoint(Me.Name, Y, Not HasBreakpoint(Y))
+  If CanSetBreakpoint(Y) Then Design.SetBreakpoint(Me.Name & "." & CStr(Y), Not HasBreakpoint(Y))
 
 End
 
@@ -2695,11 +2699,15 @@ Private Sub FillProcCombo()
   Dim cSymbol As Collection
   Dim sText As String
   Dim sName As String
-  Dim aPrivate As String[]
-  Dim aStaticPrivate As String[]
-  Dim aStaticPublic As String[]
-  Dim aPublic As String[]
+  Dim aSymbol As New String[][16]
+  ' Dim aPrivate As String[]
+  ' Dim aStaticPrivate As String[]
+  ' Dim aStaticPublic As String[]
+  ' Dim aPublic As String[]
   Dim bSeparateStatic As Boolean
+  Dim I As Integer
+  Dim iType As Integer
+  Dim sTitle As String
 
   'DIM fTime AS Float
   'DIM iInd AS Integer
@@ -2732,10 +2740,14 @@ Private Sub FillProcCombo()
 
   If Not cSymbol Then cSymbol = New Collection
 
-  aStaticPrivate = New String[]
-  aPrivate = New String[]
-  aStaticPublic = New String[]
-  aPublic = New String[]
+  ' aStaticPrivate = New String[]
+  ' aPrivate = New String[]
+  ' aStaticPublic = New String[]
+  ' aPublic = New String[]
+  
+  For I = 0 To 15
+    aSymbol[I] = New String[]
+  Next
   
   For Each hSymbol In cSymbol
 
@@ -2745,43 +2757,84 @@ Private Sub FillProcCombo()
     
     sName = hSymbol.Name
     
-    If bSeparateStatic And If hSymbol.IsStatic Then
-      If hSymbol.NotPublic Then
-        aStaticPrivate.Add(sName)
-      Else
-        aStaticPublic.Add(sName)
-      Endif
+    iType = 0
+    If hSymbol.IsStatic And If bSeparateStatic Then
     Else
-      If hSymbol.NotPublic Then
-        aPrivate.Add(sName)
-      Else
-        aPublic.Add(sName)
-      Endif
+      iType = BSet(iType, PROC_DYNAMIC)
     Endif
+    If hSymbol.NotPublic Then iType = BSet(iType, PROC_PRIVATE)
+    If Left(sName) = "_" Then
+      If Not hSymbol.NotPublic Then iType = BSet(iType, PROC_HIDDEN)
+    Else If InStr(sName, "_") Then
+      iType = BSet(iType, PROC_EVENT)
+    Endif
+    
+    aSymbol[iType].Add(sName)
+    
+    ' If bSeparateStatic And If hSymbol.IsStatic Then
+    '   If hSymbol.NotPublic Then
+    '     aStaticPrivate.Add(sName)
+    '   Else
+    '     aStaticPublic.Add(sName)
+    '   Endif
+    ' Else
+    '   If hSymbol.NotPublic Then
+    '     aPrivate.Add(sName)
+    '   Else
+    '     aPublic.Add(sName)
+    '   Endif
+    ' Endif
     
   Next
 
-  aStaticPrivate.Sort(gb.IgnoreCase)
-  aPrivate.Sort(gb.IgnoreCase)
-  aStaticPublic.Sort(gb.IgnoreCase)
-  aPublic.Sort(gb.IgnoreCase)
+  For I = 0 To 15
+    aSymbol[I].Sort(gb.IgnoreCase)
+  Next
 
-  If aStaticPublic.Count Then
-    $aProc.Add("-STATIC PUBLIC")
-    $aProc.Insert(aStaticPublic)
-  Endif
-  If aPublic.Count Then
-    $aProc.Add("-PUBLIC")
-    $aProc.Insert(aPublic)
-  Endif
-  If aStaticPrivate.Count Then
-    $aProc.Add("-STATIC PRIVATE")
-    $aProc.Insert(aStaticPrivate)
-  Endif
-  If aPrivate.Count Then
-    $aProc.Add("-PRIVATE")
-    $aProc.Insert(aPrivate)
-  Endif
+  ' aStaticPrivate.Sort(gb.IgnoreCase)
+  ' aPrivate.Sort(gb.IgnoreCase)
+  ' aStaticPublic.Sort(gb.IgnoreCase)
+  ' aPublic.Sort(gb.IgnoreCase)
+
+  For I = 0 To 15
+    If aSymbol[I].Count = 0 Then Continue
+    sTitle = ""
+    If Not BTst(I, PROC_DYNAMIC) Then sTitle &= " STATIC"
+    If BTst(I, PROC_EVENT) Then
+      If BTst(I, PROC_PRIVATE) Then
+        sTitle &= " PROPERTY"
+      Else
+        sTitle &= " EVENT"
+      Endif
+    Else If BTst(I, PROC_HIDDEN) And If Not BTst(I, PROC_PRIVATE) Then
+      sTitle &= " HIDDEN"
+    Else
+      If BTst(I, PROC_PRIVATE) Then
+        sTitle &= " PRIVATE"
+      Else
+        sTitle &= " PUBLIC"
+      Endif
+    Endif
+    $aProc.Add("-" & LTrim(sTitle))
+    $aProc.Insert(aSymbol[I])
+  Next
+
+  ' If aStaticPublic.Count Then
+  '   $aProc.Add("-STATIC PUBLIC")
+  '   $aProc.Insert(aStaticPublic)
+  ' Endif
+  ' If aPublic.Count Then
+  '   $aProc.Add("-PUBLIC")
+  '   $aProc.Insert(aPublic)
+  ' Endif
+  ' If aStaticPrivate.Count Then
+  '   $aProc.Add("-STATIC PRIVATE")
+  '   $aProc.Insert(aStaticPrivate)
+  ' Endif
+  ' If aPrivate.Count Then
+  '   $aProc.Add("-PRIVATE")
+  '   $aProc.Insert(aPrivate)
+  ' Endif
 
   For Each sName In $aProc
 
@@ -3272,9 +3325,9 @@ Public Sub SetPosition(hResult As CFindResult, Optional bJustCheck As Boolean) A
 
 End
 
-Public Sub Replace(sReplace As String)
+Public Sub Replace(sReplace As String) As Boolean
 
-  $hEditor.Replace(sReplace)
+  Return $hEditor.Replace(sReplace)
 
 End
 
@@ -3292,14 +3345,14 @@ End
 
 Public Sub mnuBreakpoint_Click()
 
-  Design.SetBreakpoint(Me.Name, $hEditor.Line, Not HasBreakpoint($hEditor.Line))
+  Design.SetBreakpoint(Me.Name & "." & CStr($hEditor.Line), Not HasBreakpoint($hEditor.Line))
 
 End
 
 Public Sub mnuWatch_Click()
 
   WatchExpression
-  FDebugInfo.ShowWatchTab
+  FDebugInfo.ShowDebugging
 
 End
 
@@ -3311,7 +3364,7 @@ End
 
 Public Sub mnuPretty_Click()
 
-  MPrettyCode.Run($hEditor)
+  MPrettyCode.Run(Me)
 
 End
 

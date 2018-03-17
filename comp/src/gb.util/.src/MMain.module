@@ -1,17 +1,25 @@
 ' Gambas module file
 
+' Public Sub Main()
+' 
+'   Dim I As Integer
+'   Dim fTimer As Float
+'   Dim sData As String
+' 
+'   sData = File.Load("~/.local/share/gambas3/wiki/data/en/doc/object-model/~page")
+' 
+'   fTimer = Timer
+'   For I = 1 To 1000
+'     String.RemoveDiacritics(sData)
+'   Next
+'   Print Timer - fTimer
+' 
+' End
+
 Public Sub Main()
 
-  Dim I As Integer
-  Dim fTimer As Float
-  Dim sData As String
+  'Print MPhonetic_French.Run("des")
 
-  sData = File.Load("~/.local/share/gambas3/wiki/data/en/doc/object-model/~page")
-
-  fTimer = Timer
-  For I = 1 To 1000
-    String.RemoveDiacritics(sData)
-  Next
-  Print Timer - fTimer
+  Print String.ToPhonetic("12 boulevard des batignolles")
 
 End

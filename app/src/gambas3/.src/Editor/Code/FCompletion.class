@@ -52,7 +52,7 @@ End
 Public Sub _new()
   
   gvwComp.Columns.Count = 1
-  webHelp.Zoom = 0.7
+  webHelp.Zoom = 0.8
 
 End
 
@@ -701,6 +701,8 @@ Private Sub FillWithFiles(sWord As String)
   Dim hPictFile As Picture = Picture["icon:/16/file"]
   Dim hPictDir As Picture = Picture["icon:/16/directory"]
   Dim aDir As String[]
+  Dim bProject As Boolean
+  Dim hPict As Picture
   
   ClearRows
   
@@ -708,7 +710,7 @@ Private Sub FillWithFiles(sWord As String)
   
   If sDir = "icon:/" Then
     
-    aDir = ["small", "medium", "large", "huge", "16", "22", "32", "48", "96", "128", "256"]
+    aDir = Stock.Sizes.Insert(["16", "22", "32", "48", "96", "128", "256"])
     
     For Each sName In aDir.Sort(gb.Natural)
       'hPict = Desktop.GetFileIcon(sDir &/ sName, 16)
@@ -732,6 +734,7 @@ Private Sub FillWithFiles(sWord As String)
     
     If sDir And If Left(sDir) <> "/" And If sDir Not Begins "~/" Then
       sDir = Project.Dir &/ sDir
+      bProject = True
     Endif
     
     iPos = RInStr(sDir, "/")
@@ -741,9 +744,12 @@ Private Sub FillWithFiles(sWord As String)
     aDir = Dir(sDir, "*").Sort(gb.IgnoreCase + gb.Natural)
   
     For Each sName In aDir
-      'hPict = Desktop.GetFileIcon(sDir &/ sName, 16)
-      'If Not hPict Then hPict = hPictFile
-      AddRow(CStr(MHelp.TYPE_FILE) & sName, sName, If(IsDir(sDir &/ sName), hPictDir, hPictFile))
+      If bProject Then
+        If sName Ends "~" Then Continue
+      Endif
+      hPict = Desktop.GetFileIcon(sDir &/ sName, 16, True)
+      If Not hPict Then hPict = hPictFile
+      AddRow(CStr(MHelp.TYPE_FILE) & sName, sName, If(IsDir(sDir &/ sName), hPictDir, hPict))
       $iMaxLen = Max($iMaxLen, String.Len(sName))
     Next
   

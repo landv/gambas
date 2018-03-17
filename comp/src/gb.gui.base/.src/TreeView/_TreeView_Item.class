@@ -284,11 +284,12 @@ Private Sub Expanded_Write(Value As Boolean)
   hTree._UpdateItemHeight(Me, True)
 
   hTree._UpdateCurrent(sCurrent)
-  hTree._RaiseExpand($sKey, $bExpanded)
 
   hTree._RestoreSelection
   
   If Value Then hTree._EnsureVisible(Me, True)
+  
+  hTree._RaiseExpand($sKey, $bExpanded)
   
 End
 
@@ -365,13 +366,13 @@ End
 
 Public Sub MoveFirst()
   
-  MoveBefore()
+  MoveAfter()
   
 End
 
 Public Sub MoveLast()
   
-  MoveAfter()
+  MoveBefore()
   
 End
 
@@ -401,10 +402,10 @@ Private Sub Selected_Write(Value As Boolean)
 End
 
 
-Public Sub Rename()
+Public Sub Rename(Optional Column As Integer = 0)
   
   If Not $bEditable Then Return
-  GetTree()._Rename(Me)
+  GetTree()._Rename(Me, Column)
   
 End
 

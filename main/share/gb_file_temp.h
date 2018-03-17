@@ -835,7 +835,7 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 	char *temp;
 	bool is_dir;
 	#if OPT_NLINK
-	int nsubdir = 0;
+	int nsubdir = -1;
 	#endif
 
 	if (!dir || *dir == 0)
@@ -849,7 +849,7 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 	FILE_dir_first(dir, NULL, attr != GB_STAT_DIRECTORY ? 0 : GB_STAT_DIRECTORY);
 
 	#if OPT_NLINK
-	if (file_dir)
+	if (file_dir && !FILE_is_relative(dir))
 	{
 		struct stat dinfo;
 		fstat(dirfd(file_dir), &dinfo);

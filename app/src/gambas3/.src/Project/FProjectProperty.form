@@ -244,10 +244,9 @@
           MoveScaled(0,0,33,4)
           Text = ("This component is hidden")
         }
-        { cmbHidden ComboBox
-          MoveScaled(34,0,10,4)
-          ReadOnly = True
-          List = [("Yes"), ("No")]
+        { btnHidden SwitchButton
+          MoveScaled(34,0,8,4)
+          Animated = True
         }
       }
       { panCompatible HBox
@@ -547,10 +546,9 @@
           MoveScaled(0,0,46,4)
           Text = ("Show deprecated components and controls")
         }
-        { cmbShowDeprecated ComboBox
-          MoveScaled(47,0,10,4)
-          ReadOnly = True
-          List = [("Yes"), ("No")]
+        { btnShowDeprecated SwitchButton
+          MoveScaled(47,0,8,4)
+          Animated = True
         }
       }
       { Label8 Label
@@ -568,10 +566,9 @@
           MoveScaled(0,0,46,4)
           Text = ("Module symbols are public by default")
         }
-        { cmbModulePublic ComboBox
-          MoveScaled(47,0,10,4)
-          ReadOnly = True
-          List = [("Yes"), ("No")]
+        { btnModulePublic SwitchButton
+          MoveScaled(47,0,8,4)
+          Animated = True
         }
       }
       { HBox11 HBox
@@ -582,10 +579,9 @@
           MoveScaled(0,0,46,4)
           Text = ("Form controls are public")
         }
-        { cmbControlPublic ComboBox
-          MoveScaled(47,0,10,4)
-          ReadOnly = True
-          List = [("Yes"), ("No")]
+        { btnControlPublic SwitchButton
+          MoveScaled(47,0,8,4)
+          Animated = True
         }
       }
       { HBox5 HBox
@@ -596,10 +592,9 @@
           MoveScaled(0,0,46,4)
           Text = ("Activate warnings")
         }
-        { cmbWarning ComboBox
-          MoveScaled(47,0,10,4)
-          ReadOnly = True
-          List = [("Yes"), ("No")]
+        { btnWarning SwitchButton
+          MoveScaled(47,0,8,4)
+          Animated = True
         }
       }
       { Label19 Label
@@ -617,10 +612,9 @@
           MoveScaled(0,0,46,4)
           Text = ("Project is translatable")
         }
-        { cmbTranslate ComboBox
-          MoveScaled(47,0,10,4)
-          ReadOnly = True
-          List = [("Yes"), ("No")]
+        { btnTranslate SwitchButton
+          MoveScaled(47,0,8,4)
+          Animated = True
         }
       }
       { HBox8 HBox

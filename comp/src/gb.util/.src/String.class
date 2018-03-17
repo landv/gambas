@@ -226,3 +226,66 @@ READ_CHAR:
   Return
   
 End
+
+Static Public Sub ToPhonetic({String} As String, Optional Language As String = System.Language) As String
+
+  Dim I As Integer
+  Dim sStr As String
+  Dim sCar As String
+  Dim J As Integer
+  Dim sWord As String
+  Dim sResult As String
+  
+  sStr = Trim({String})
+  If Not sStr Then Return
+  
+  Try Language = LCase(Split(Language, "-._")[0])
+  
+  Select Case Language
+    
+    Case "c", "en"
+      Error.Raise("Unsupported language")
+    
+    Case "fr"
+      sStr = MPhonetic_French.Before(sStr)
+    
+    Default
+      Error.Raise("Unsupported language")
+      
+  End Select
+
+  sStr = LCase(RemoveDiacritics(sStr)) & " "
+  
+  For I = 1 To Len(sStr)
+    
+    sCar = Mid$(sStr, I, 1)
+    
+    If IsLetter(sCar) Or IsDigit(sCar) Then 
+      If J = 0 Then J = I
+      Continue
+    Endif
+    
+    If J = 0 Then Continue
+    
+    sWord = Mid$(sStr, J, I - J)
+    J = 0
+  
+    If sResult And If Right(sResult) <> " " Then sResult &= " "
+    Select Case Language
+      
+      Case "c", "en"
+        Error.Raise("Unsupported language")
+      
+      Case "fr"
+        sResult &= MPhonetic_French.Run(sWord)
+      
+      Default
+        Error.Raise("Unsupported language")
+        
+    End Select
+  
+  Next
+  
+  Return sResult
+  
+End

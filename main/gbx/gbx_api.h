@@ -177,6 +177,7 @@ void GB_Realloc(void **addr, int len);
 
 char *GB_NewZeroString(char *src);
 char *GB_TempString(char *src, int len);
+char *GB_RefString(char *str);
 void GB_FreeString(char **str);
 int GB_StringLength(const char *str);
 bool GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst);

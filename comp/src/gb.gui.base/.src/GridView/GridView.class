@@ -44,6 +44,7 @@ Event Select
 Event Click
 Event Activate
 Event Scroll
+Event Font
 
 Event ColumnClick(Column As Integer)
 Event ColumnResize(Column As Integer)
@@ -2351,8 +2352,9 @@ Public Sub ScrollArea_Font()
   'Debug Me.Name
   $iTextHeight = 0
   $hColumns._Layout
-  $hRows._Clear
+  '$hRows._Clear
   _ResizeContents
+  Raise Font
   
 End
 

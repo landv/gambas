@@ -13,10 +13,10 @@ Private Sub Reload()
 
   'TextEditor1.Highlight = "gambas"
   'TextEditor1.Load("~/gambas/3.0/test/test-git/CHANGELOG", True)
-  'TextEditor1.Load("~/gambas/git/master/comp/src/gb.form.editor/.src/CLineInfo.class", True)
+  TextEditor1.Load("~/gambas/git/master/comp/src/gb.form.editor/.src/TextEditor.class", True)
   'TextEditor1.Load("~/Fichier texte")
-  TextEditor1.Styles[Highlight.Custom].Background = Color.SetAlpha(Color.Red, 224)
-  TextEditor1.Styles[Highlight.Custom + 1].Background = Color.SetAlpha(Color.Green, 224)
+  'TextEditor1.Styles[Highlight.Custom].Background = Color.SetAlpha(Color.Red, 224)
+  'TextEditor1.Styles[Highlight.Custom + 1].Background = Color.SetAlpha(Color.Green, 224)
   
 End
 
@@ -178,4 +178,10 @@ Public Sub TextEditor1_Highlight(Text As String)
     TextHighlighter.Add(TextHighlighter.State, String.Len(Text))
   Endif
   
+End
+
+Public Sub Button6_Click()
+
+  TextEditor1[TextEditor1.Line].Bookmark = Not TextEditor1[TextEditor1.Line].Bookmark
+
 End

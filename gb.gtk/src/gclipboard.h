@@ -49,6 +49,7 @@ public:
 	static char *getText(int *len, const char *format);
 	static void setImage(gPicture *image);
 	static gPicture *getImage();
+	static bool hasChanged();
 };
 
 #endif

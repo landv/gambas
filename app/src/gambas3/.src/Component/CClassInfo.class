@@ -701,7 +701,7 @@ Public Sub GetHelpHTML() As String
   sTitle = sClass
   If sWhere Then sTitle = "<a href=\"" & sWhere & "\">" & sTitle & "</a>"
   
-  sHtml = File.Load("help/class-help.html")
+  sHtml = MHelp.LoadCustom("class-help.html")
   sHtml = Replace(sHtml, "$(help)", sHelp)
   
   If sInfo Then 

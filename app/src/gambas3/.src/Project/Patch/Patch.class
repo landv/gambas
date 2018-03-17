@@ -87,7 +87,7 @@ Static Public Function GenerateForOld(sOldSource As String) As String
   sCmd = Subst$("cd &1; ", File.Dir(sOld))
   sCmd &= Subst$("diff -urNaX &1 &2 &3", $sIgnoreFile, File.Name(sOld), File.Name(sNew))
   Shell sCmd To sPatch
-  Shell Subst$("rm -r &1 &2", sOld, sNew)
+  Shell Subst$("rm -r &1 &2", Shell(sOld), Shell(sNew))
   Return sPatch
 
 End
@@ -180,7 +180,7 @@ Private Sub DoPatch(Optional sOpt As String = "")
   Else
     Project.ReloadAll()
   Endif
-  Shell "rm -r " & sBackup
+  Shell "rm -r " & Shell(sBackup)
 
 End
 

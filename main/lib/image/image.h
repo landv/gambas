@@ -82,6 +82,7 @@ void IMAGE_transform(GB_IMG *dst, GB_IMG *src, double sx, double sy, double sdx,
 void IMAGE_set_opacity(GB_IMG *dst, uchar opacity);
 void IMAGE_blur(GB_IMG *img, int radius);
 void IMAGE_balance(GB_IMG *img, int brightness, int contrast, int gamma, int hue, int saturation, int lightness);
+void IMAGE_invert(GB_IMG *img, bool keep_hue);
 
 #define IMAGE_is_void(_image) ((_image)->is_void)
 

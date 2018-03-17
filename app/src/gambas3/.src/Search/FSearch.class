@@ -114,31 +114,21 @@ Public Sub Update(Optional bForce As Boolean)
   If hWindow = Me Then Return
   $hCurrent = hWindow
   
-  ' If $hCurrent Is FOutput Then
-  '   radCurrentProcedure.Enabled = False
-  '   radCurrentFile.Enabled = True
-  '   radCurrentFile.Value = True
-  '   btnReplace.Enabled = False
-  '   btnReplaceAll.Enabled = False
-  '   cmbReplace.Enabled = False
-  ' Else 
-    $hCurrent = Project.ActiveForm
-    If $hCurrent Then
-      If $hCurrent Is FEditor Or If $hCurrent Is FTextEditor Then
-        bCode = $hCurrent.GetEditor().Highlight 
-      Endif
-      radCurrentProcedure.Enabled = bCode
-      radCurrentFile.Enabled = True
-      'radCurrentFile.Value = True
-    Else
-      bAllProject = True
-      radCurrentProcedure.Enabled = False
-      radCurrentFile.Enabled = False
+  $hCurrent = Project.ActiveForm
+  If $hCurrent Then
+    If $hCurrent Is FEditor Or If $hCurrent Is FTextEditor Then
+      bCode = $hCurrent.GetEditor().Highlight 
     Endif
-    
-    UpdateReplaceState
-    
-  'Endif
+    radCurrentProcedure.Enabled = bCode
+    radCurrentFile.Enabled = True
+    'radCurrentFile.Value = True
+  Else
+    bAllProject = True
+    radCurrentProcedure.Enabled = False
+    radCurrentFile.Enabled = False
+  Endif
+  
+  UpdateReplaceState
   
   If radCurrentProcedure.Value And If Not radCurrentProcedure.Enabled Then
     radCurrentFile.Value = True
@@ -430,9 +420,10 @@ Private Sub Run(iAction As Integer)
       If $hCurrent.SetPosition(aResult[0], False) Then 
         aResult.Remove(0)
       Else
-        Inc nReplace
-        $hCurrent.Replace(ReplaceString)
-        DoReplace(aResult, 0, ReplaceString)
+        If Not $hCurrent.Replace(ReplaceString) Then
+          Inc nReplace
+          DoReplace(aResult, 0, ReplaceString)
+        Endif
       Endif
     Wend
     Try hTextEditor.End
@@ -483,8 +474,9 @@ Private Sub Run(iAction As Integer)
         If $hCurrent.SetPosition(aResult[iInd], False) Then Goto FIND_NEXT
         
         If iAction And DO_REPLACE And If iPos = iLastPos Then 
-          $hCurrent.Replace(ReplaceString)
-          DoReplace(aResult, iInd, ReplaceString)
+          If Not $hCurrent.Replace(ReplaceString) Then
+            DoReplace(aResult, iInd, ReplaceString)
+          Endif
           iAction = iAction And Not DO_REPLACE
         Else
           Return
@@ -734,6 +726,8 @@ Private Sub Browse(Optional bReplace As Boolean, Optional bAgain As Boolean)
     If sName Begins "cachegrind.out." Then Continue
     
     If Not Project.IsTextFile(sPath) Then Continue
+    
+    If bReplace And If Not Access(sPath) Then Continue
     
     If sFile Begins ".src/" Then
       FDebugInfo.SetSearchListInfo(sName)
@@ -1114,9 +1108,25 @@ End
 
 Public Sub UpdateReplaceState()
   
-  btnReplace.Enabled = Not Project.Running
-  btnReplaceAll.Enabled = btnReplace.Enabled
-  cmbReplace.Enabled = btnReplace.Enabled
+  Dim bEnable As Boolean
+  
+  If radEverywhere.Value Or If radSourceFileOnly.Value Then
+  
+    bEnable = Not Project.Running
+    
+    btnReplaceAll.Enabled = bEnable
+    cmbReplace.Enabled = bEnable
+    
+  Else
+    
+    bEnable = Not Project.Running
+    If $hCurrent And If $hCurrent.ReadOnly Then bEnable = False
+    
+    btnReplace.Enabled = bEnable
+    btnReplaceAll.Enabled = bEnable
+    cmbReplace.Enabled = bEnable
+    
+  Endif
   
 End
 
@@ -1133,6 +1143,8 @@ Public Sub radSearch_Click()
   btnReplace.Visible = Not btnBrowse.Visible
   btnNext.Visible = Not btnBrowse.Visible
   btnPrevious.Visible = Not btnBrowse.Visible
+  
+  UpdateReplaceState
   
   cmbSearch.SelectAll
   cmbSearch.SetFocus

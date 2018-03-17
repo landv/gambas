@@ -622,6 +622,7 @@ Public Sub DBusObserver_Message()
       Return
     Else If sMethod = "Set" Then
       SetProperty()
+      hObs.Reply()
       Return
     Else If sMethod = "GetAll" Then
       GetAllProperties()

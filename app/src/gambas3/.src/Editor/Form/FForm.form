@@ -75,6 +75,7 @@
     { mnuSelectAll Menu
       Action = ".select-all"
       Text = ("Select all")
+      Picture = Picture["icon:/16/select-all"]
       Shortcut = "Ctrl+A"
     }
     { mnuSelectParent Menu
@@ -93,13 +94,13 @@
       { mnuRaise Menu
         Action = ".raise"
         Text = ("Bring to foreground")
-        Picture = Picture["img/16/raise.png"]
+        Picture = Picture["icon:/16/raise"]
         Shortcut = "Home"
       }
       { mnuLower Menu
         Action = ".lower"
         Text = ("Send to background")
-        Picture = Picture["img/16/lower.png"]
+        Picture = Picture["icon:/16/lower"]
         Shortcut = "End"
       }
       { mnuArrangeSep Menu
@@ -144,34 +145,34 @@
       { mnuAlignLeft Menu
         Action = ".align-left"
         Text = Shortcut(("Align to left"), "l")
-        Picture = Picture["img/16/align-left.png"]
+        Picture = Picture["icon:/16/align-left"]
       }
       { mnuAlignRight Menu
         Action = ".align-right"
         Text = Shortcut(("Align to right"), "r")
-        Picture = Picture["img/16/align-right.png"]
+        Picture = Picture["icon:/16/align-right"]
       }
       { mnuAlignTop Menu
         Action = ".align-top"
         Text = Shortcut(("Align to top"), "t")
-        Picture = Picture["img/16/align-top.png"]
+        Picture = Picture["icon:/16/align-top"]
       }
       { mnuAlignBottom Menu
         Action = ".align-bottom"
         Text = Shortcut(("Align to bottom"), "b")
-        Picture = Picture["img/16/align-bottom.png"]
+        Picture = Picture["icon:/16/align-bottom"]
       }
       { Menu5 Menu
       }
       { mnuAlignWidth Menu
         Action = ".same-width"
         Text = Shortcut(("Same width"), "w")
-        Picture = Picture["img/16/same-width.png"]
+        Picture = Picture["icon:/16/align-width"]
       }
       { mnuAlignHeight Menu
         Action = ".same-height"
         Text = Shortcut(("Same height"), "h")
-        Picture = Picture["img/16/same-height.png"]
+        Picture = Picture["icon:/16/align-height"]
       }
     }
     { mnuSepUndo Menu
@@ -228,7 +229,7 @@
     { mnuShowCode Menu
       Action = ".code-form"
       Text = ("Open code")
-      Picture = Picture["icon:/small/next"]
+      Picture = Picture["icon:/small/right"]
       Shortcut = "F12"
     }
     { mnuRun Menu
@@ -280,7 +281,7 @@
       MoveScaled(0,0,4,4)
       ToolTip = ("Code")
       Action = ".show-class"
-      Picture = Picture["icon:/small/next"]
+      Picture = Picture["icon:/small/right"]
     }
     { ToolButton9 ToolButton mnuSave
       Name = "ToolButton9"
@@ -379,49 +380,49 @@
       MoveScaled(53,0,4,4)
       ToolTip = ("Bring to foreground")
       Action = ".raise"
-      Picture = Picture["img/16/raise.png"]
+      Picture = Picture["icon:/16/raise"]
     }
     { ToolButton20 ToolButton
       MoveScaled(57,0,4,4)
       ToolTip = ("Send to background")
       Action = ".lower"
-      Picture = Picture["img/16/lower.png"]
+      Picture = Picture["icon:/16/lower"]
     }
     { ToolButton21 ToolButton
       MoveScaled(65,0,4,4)
       ToolTip = ("Align to top")
       Action = ".align-top"
-      Picture = Picture["img/16/align-top.png"]
+      Picture = Picture["icon:/16/align-top"]
     }
     { ToolButton22 ToolButton
       MoveScaled(69,0,4,4)
       ToolTip = ("Align to bottom")
       Action = ".align-bottom"
-      Picture = Picture["img/16/align-bottom.png"]
+      Picture = Picture["icon:/16/align-bottom"]
     }
     { ToolButton23 ToolButton
       MoveScaled(73,0,4,4)
       ToolTip = ("Align to left")
       Action = ".align-left"
-      Picture = Picture["img/16/align-left.png"]
+      Picture = Picture["icon:/16/align-left"]
     }
     { ToolButton24 ToolButton
       MoveScaled(77,0,4,4)
       ToolTip = ("Align to right")
       Action = ".align-right"
-      Picture = Picture["img/16/align-right.png"]
+      Picture = Picture["icon:/16/align-right"]
     }
     { ToolButton29 ToolButton
       MoveScaled(81,0,4,4)
       ToolTip = ("Same width")
       Action = ".same-width"
-      Picture = Picture["img/16/same-width.png"]
+      Picture = Picture["icon:/16/align-width"]
     }
     { ToolButton30 ToolButton
       MoveScaled(85,0,4,4)
       ToolTip = ("Same height")
       Action = ".same-height"
-      Picture = Picture["img/16/same-height.png"]
+      Picture = Picture["icon:/16/align-height"]
     }
     { ToolButton25 ToolButton
       MoveScaled(89,0,4,4)
@@ -682,22 +683,22 @@
   { Action align-bottom
     Text = "Align to bottom"
     Shortcut = ""
-    Picture = "img/16/align-bottom.png"
+    Picture = "icon:/16/align-bottom"
   }
   { Action align-left
     Text = "Align to left"
     Shortcut = ""
-    Picture = "img/16/align-left.png"
+    Picture = "icon:/16/align-left"
   }
   { Action align-right
     Text = "Align to right"
     Shortcut = ""
-    Picture = "img/16/align-right.png"
+    Picture = "icon:/16/align-right"
   }
   { Action align-top
     Text = "Align to top"
     Shortcut = ""
-    Picture = "img/16/align-top.png"
+    Picture = "icon:/16/align-top"
   }
   { Action arrange-column
     Text = "Columns"
@@ -737,7 +738,7 @@
   { Action code-form
     Text = "Open code"
     Shortcut = "F12"
-    Picture = "icon:/small/next"
+    Picture = "icon:/small/right"
   }
   { Action copy
     Text = "Copy"
@@ -788,7 +789,7 @@
   { Action lower
     Text = "Send to background"
     Shortcut = "End"
-    Picture = "img/16/lower.png"
+    Picture = "icon:/16/lower"
   }
   { Action menu
     Text = "Menu editor"
@@ -823,7 +824,7 @@
   { Action raise
     Text = "Bring to foreground"
     Shortcut = "Home"
-    Picture = "img/16/raise.png"
+    Picture = "icon:/16/raise"
   }
   { Action redo
     Text = "Redo"
@@ -843,12 +844,12 @@
   { Action same-height
     Text = "Same height"
     Shortcut = ""
-    Picture = "img/16/same-height.png"
+    Picture = "icon:/16/align-height"
   }
   { Action same-width
     Text = "Same width"
     Shortcut = ""
-    Picture = "img/16/same-width.png"
+    Picture = "icon:/16/align-width"
   }
   { Action save
     Text = "Save"
@@ -858,6 +859,7 @@
   { Action select-all
     Text = "Select all"
     Shortcut = "Ctrl+A"
+    Picture = "icon:/16/select-all"
   }
   { Action select-parent
     Text = "Select parent"
@@ -865,7 +867,7 @@
   }
   { Action show-class
     Text = "Code"
-    Picture = "icon:/small/next"
+    Picture = "icon:/small/right"
   }
   { Action show-tab
     Text = "Show tab"

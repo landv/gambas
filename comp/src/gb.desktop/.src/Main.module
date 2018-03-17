@@ -1,5 +1,7 @@
 ' Gambas module file
 
+Class X11
+
 Public Result As String
 
 Private $cTool As New Collection
@@ -153,14 +155,7 @@ End
 
 Public Sub Main()
 
-  ' Dim hMime As DesktopMime
-  ' 
-  ' hMime = DesktopMime.FromFile("/bin/ls")
-  ' Print hMime.Pattern
-  ' Print hMime.Type
-  'Print Desktop.Passwords["guygle.cgi/Connection/IndexMySQL"]
-  'Desktop.OpenTerminal
-  Desktop.SendMail(Null,,,,, "/home/benoit/Translate.module, comma")
+  Print DesktopMime.FromFile("~/gambas/git/master/app/src/gambas3/img/broken.svg").GetIcon()
   
 End
 
@@ -168,7 +163,7 @@ End
 
 Public Sub X11_PropertyNotify((Window) As Integer, Atom As Integer)
   
-  Debug Window;; X11.GetAtomName(Atom)
+  'Debug Window;; X11.GetAtomName(Atom)
   
   If Window = X11.RootWindow And If Atom = _NET_CLIENT_LIST Then
   Endif

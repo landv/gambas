@@ -35,6 +35,14 @@ End
 
 Static Public Sub _init()
 
+  Application.Theme = "gambas"
   Component.Load("gb.inotify")
+
+End
+
+
+Public Sub Form_Open()
+
+  FileChooser1.SelectedPath = "/home/benoit/gambas/git/master/app/src/gambas3/img/broken.svg"
 
 End

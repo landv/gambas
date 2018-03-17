@@ -6,8 +6,10 @@ Static Property Debug As Boolean
 Static Property Read List As String[]
 Static Property Read Themes As String[]
 Static Property Read Icons As String[]
+Static Property Read Sizes As String[]
 
 Static Private $bInit As Boolean
+Static Private $bDarkTheme As Boolean = False
 'Static Private $sTheme As String
 Static Private $aIconPath As String[]
 Static Private $cIconMap As Collection
@@ -284,7 +286,12 @@ Static Private Sub SearchTheme(sDesktop As String)
     
       AddPath("gnome", "/usr/share/icons/gnome")
       
-    'Case "gambas"
+    Case "gambas", "gambas-mono"
+      
+      $aIconPath.Add("#" & sDesktop)
+      AddPath("", "stock", "&1")
+      Return
+      
     Case Else
       
       If sDesktop <> "gambas" Then
@@ -314,6 +321,10 @@ Static Private Sub InitTheme()
   
   SearchTheme(Application.Theme)
   
+  ' If Color[Color.Background].Luminance < 128 Or If Env["GB_GUI_DARK_THEME"] = "1" Then 
+  '   If InStr(LCase(Application.Theme), "dark") = 0 Then $bDarkTheme = True
+  ' Endif
+  
   $bInit = True
   
 End
@@ -322,7 +333,9 @@ Static Public Function GetSize(Size As String) As Integer
   
   Dim iSize As Integer
   
-  Select Case Size
+  Select Case LCase(Size)
+    Case "tiny"
+      iSize = (CInt(Desktop.Scale * 2) \ 4) * 4 '16 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 4
     Case "small"
       iSize = (CInt(Desktop.Scale * 2.5) \ 4) * 4 '16 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 4
     Case "medium"
@@ -373,6 +386,7 @@ Static Private Sub DoLoadIcon(sPath As String, iSize As Integer, iRealSize As In
     sName = File.SetExt(sName, "png")
     Try hImage = Image.Load(sDir &/ sName)
     If Not Error Then 
+      If $bDarkTheme Then hImage.Invert(Color.Background, Color.Foreground)
       hPict = hImage.Stretch(iRealSize, iRealSize).Picture
       Goto RETURN_PICT
     Endif
@@ -382,6 +396,7 @@ Static Private Sub DoLoadIcon(sPath As String, iSize As Integer, iRealSize As In
     sName = sName & ".png" 'File.SetExt(sName, "png")  'Warning this change is for files than have a point in the name
     Try hImage = Image.Load(sDir &/ sName)
     If Not Error Then 
+      If $bDarkTheme Then hImage.Invert(Color.Background, Color.Foreground)
       hPict = hImage.Picture
       Goto RETURN_PICT
     Endif
@@ -549,7 +564,7 @@ Static Public Function _get((Key) As String, Optional {Default} As String) As Pi
  
   For Each sPath In $aIconPath
     
-    If sPath = "#" Then
+    If sPath Begins "#" Then
       
       If Key Begins "$(mime)/" Then
         Key = Mid$(Key, 9)
@@ -567,9 +582,11 @@ Static Public Function _get((Key) As String, Optional {Default} As String) As Pi
       
       'If Key = "tools" Then Error "Using default stock"
       
-      Try hPict = _DefaultStock.LoadImage(Key, iSize).Picture
+      Try hPict = _DefaultStock.LoadImage(Key, iSize, Mid$(sPath, 2)).Picture
       If Not Error Then Goto __RETURN
-      Try hPict = PictureFromSvg(_DefaultStock.LoadSvgImage(Key), iSize)
+      Try hPict = PictureFromSvg(_DefaultStock.LoadSvgImage(Key, Mid$(sPath, 2)), iSize)
+      If Not Error Then Goto __RETURN
+      Try hPict = _DefaultStock.LoadImage(Key, 32, Mid$(sPath, 2)).Stretch(iSize, iSize).Picture
       If Not Error Then Goto __RETURN
       
       'If Key = "tools" Then Error "...failed"
@@ -666,31 +683,45 @@ End
 
 Static Private Sub GetInheritance(aPath As String[], sTheme As String) As String[]
   
-  Dim aInheritance As String[] = [sTheme]
-  Dim sPath As String
+  Dim aInheritance As New String[]
   Dim sLine As String
   Dim sChildTheme As String
+  Dim sName As String
+  Dim sDir As String
   
-  For Each sPath In aPath
-  
-    If Exist(sPath &/ sTheme &/ "index.theme") Then 
+  For Each sDir In aPath
     
-      For Each sLine In Split(File.Load(sPath &/ sTheme &/ "index.theme"), "\n")
-        
-        If InStr(sLine, "Inherits") Then 
-          For Each sChildTheme In Split(Scan(sLine, "*=*")[1])
-            If sChildTheme = sTheme Then Continue
-            If aInheritance.Exist(sChildTheme) Then Continue
-            aInheritance.Insert(GetInheritance(aPath, sChildTheme))
-          Next
-          Break
-        Endif
-        
-      Next
+    If Not IsDir(sDir) Then Continue
+  
+    For Each sName In Dir(sDir, "*", gb.Directory)
       
-      Break
+      If LCase(sName) <> sTheme Then Continue
+  
+      If Exist(sDir &/ sName &/ "index.theme") Then 
+        
+        aInheritance.Add(sName)
       
-    Endif
+        For Each sLine In Split(File.Load(sDir &/ sName &/ "index.theme"), "\n")
+          
+          If InStr(sLine, "Inherits") Then 
+            
+            For Each sChildTheme In Split(Scan(sLine, "*=*")[1])
+              If LCase(sChildTheme) = sTheme Then Continue
+              If aInheritance.Exist(sChildTheme) Then Continue
+              aInheritance.Insert(GetInheritance(aPath, sChildTheme))
+            Next
+            
+            Break
+            
+          Endif
+          
+        Next
+        
+        Return aInheritance
+        
+      Endif
+      
+    Next
     
   Next
   
@@ -702,7 +733,7 @@ Static Private Sub GetAllThemePath(sMap As String, aPath As String[], sTheme As 
   
   Dim sPath As String
   
-  For Each sTheme In GetInheritance(aPath, sTheme)
+  For Each sTheme In GetInheritance(aPath, LCase(sTheme))
     For Each sPath In aPath
       AddPath(sMap, sPath &/ sTheme)
     Next
@@ -719,6 +750,8 @@ Static Private Function PictureFromSvg(hSvg As SvgImage, iSize As Integer) As Pi
   Paint.Scale(iSize / hSvg.Width, iSize / hSvg.Height)
   hSvg.Paint()
   Paint.End
+  
+  If $bDarkTheme Then hImage.Invert(Color.Background, Color.Foreground)
 
   Return hImage.Picture
   
@@ -750,6 +783,9 @@ Static Private Function Themes_Read() As String[]
   Dim sPath As String
   Dim sTheme As String
   Dim sRoot As String
+  Dim I As Integer
+  Dim sName As String
+  Dim sCar As String
   
   For Each sRoot In ["~/.icons", "~/.local/share/icons", "/usr/share/icons"]
     If Not IsDir(sRoot) Then Continue
@@ -759,11 +795,13 @@ Static Private Function Themes_Read() As String[]
     Next
   Next
   
+  aTheme.Insert(["Gambas", "Gambas-Mono"])
   aTheme.Sort(gb.IgnoreCase)
   Return aTheme
   
 ADD_THEME:
   
+  If Stat(sPath).Type = gb.Link Then Return
   If Exist(sPath &/ "cursors") Then Return
   sPath &/= "index.theme"
   If Not Exist(sPath) Then Return
@@ -771,7 +809,17 @@ ADD_THEME:
   Try sTheme = File.Load(sPath)
   If Error Then Return
   If InStr(sTheme, "\nHidden=True") Then Return
-  If Not aTheme.Exist(sDir) Then aTheme.Add(sDir)
+  
+  sName = ""
+  For I = 1 To Len(sDir)
+    sCar = Mid$(sDir, I, 1)
+    If I = 1 Or If InStr(" -", Mid$(sDir, I - 1, 1)) Then
+      sCar = UCase(sCar)
+    Endif
+    sName &= sCar
+  Next
+  
+  If Not aTheme.Exist(sName) Then aTheme.Add(sName)
   Return
   
 End
@@ -781,4 +829,10 @@ Static Private Function Icons_Read() As String[]
   If Not $aList Then LoadMap
   Return $aList
   
+End
+
+Static Private Function Sizes_Read() As String[]
+
+  Return ["tiny", "small", "medium", "large", "huge"]
+
 End

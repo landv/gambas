@@ -2388,4 +2388,51 @@ void IMAGE_balance(GB_IMG *img, int brightness, int contrast, int gamma, int hue
 
 //---------------------------------------------------------------------------
 
+void IMAGE_invert(GB_IMG *img, bool keep_hue) // GB_COLOR bg, GB_COLOR fg)
+{
+	GET_POINTER(img, p, pm);
+	uint col;
+	int format = img->format;
+	int h, s, v;
+	int r, g, b;
+	
+	SYNCHRONIZE(img);
+	
+	if (!keep_hue) //bg == COLOR_DEFAULT || fg == COLOR_DEFAULT)
+	{
+		while (p != pm) 
+		{
+			col = BGRA_from_format(*p, format);
+			*p++ = BGRA_to_format(RGBA(255 - RED(col), 255 - GREEN(col), 255 - BLUE(col), ALPHA(col)), format);
+		}
+	}
+	else
+	{
+		while (p != pm) 
+		{
+			col = BGRA_from_format(*p, format);
+			COLOR_rgb_to_hsv(RED(col), GREEN(col), BLUE(col), &h, &s, &v);
+			v = (int)sqrt(255 * 255 - v * v);
+			//if (h >= 0) s = (int)sqrt(255 * 255 - s * s);;
+			COLOR_hsv_to_rgb(h, s, v, &r, &g, &b);
+			*p++ = BGRA_to_format(RGBA(r, g, b, ALPHA(col)), format);
+		}
+	}
+	/*else
+	{
+		bl = COLOR_get_luminance(bg);
+		fl = COLOR_get_luminance(fg);
+		
+		for (i = 0; i < 256; i++)
+			lum[i] = (int)sqrt(fl * fl - (i * i - bl * bl));
 
+		while (p != pm) 
+		{
+			col = BGRA_from_format(*p, format);
+			col = COLOR_set_luminance(col, lum[COLOR_get_luminance(col)]);
+			*p++ = BGRA_to_format(col, format);
+		}
+	}*/
+
+	MODIFY(img);
+}

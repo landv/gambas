@@ -2094,7 +2094,7 @@ Private Sub GetKeyTitle(sKey As String) As String
   
 Catch
   
-  Return sKey & "?"
+  Return sKey
 
 End
 
@@ -2536,7 +2536,7 @@ Private Sub CompressAll(sPath As String, bUncompress As Boolean)
   
 End
 
-Public Sub OpenExternFile(Optional sPath As String)
+Public Sub OpenExternFile(Optional sPath As String) As Boolean
   
   If Not sPath Then
     Dialog.Title = ("Select a file")
@@ -2564,11 +2564,11 @@ Public Sub OpenExternFile(Optional sPath As String)
     sPath = MConnection.CreateSQLite(sPath)
   Endif              
   
-  If Not Project.OpenFile(sPath) Then
+  If Not Project.OpenFile(sPath) Then Goto CANNOT_OPEN
     'If Project.IsFake() Then
       'Project.CloseProject
     'Endif
-  Endif
+  'Endif
 
   '$bInOpenExtern = False
   'OnProjectChange ??
@@ -2576,7 +2576,7 @@ Public Sub OpenExternFile(Optional sPath As String)
   
 CANNOT_OPEN:
 
-  '$bInOpenExtern = False
+  Return True
   
 End
 
@@ -2924,10 +2924,6 @@ End
 
 Public Sub mnuViewExplorer_Click()
 
-  If Not Class.IsLoaded("FHelpBrowser") Then
-    Inc Application.Busy
-    FHelpBrowser.Load
-    Dec Application.Busy
-  Endif
+  MHelp.LoadHelpBrowser
 
 End

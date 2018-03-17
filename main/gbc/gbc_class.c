@@ -587,6 +587,7 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 		};
 
 	int index;
+	//CLASS_REF *cref;
 
 	if (value < 0)
 	{
@@ -601,7 +602,6 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 				index = CLASS_add_symbol(class, names[type]);
 			index = CLASS_add_class_exported(class, index);
 			_array_class[type] = index;
-			//printf("%s -> %ld\n", name[type], index);
 		}
 	}
 	else
@@ -625,6 +625,13 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 			index = CLASS_add_class(JOB->class, index);
 	}
 
+	/*cref = &class->class[index];
+	if (TYPE_is_null(cref->array))
+	{
+		cref->array.t.id = type;
+		cref->array.t.value = value;
+	}*/
+	
 	return index;
 }
 
@@ -963,6 +970,42 @@ CLASS_SYMBOL *CLASS_get_local_symbol(int local)
 	
 	param = &JOB->func->local[local];
 	return (CLASS_SYMBOL *)TABLE_get_symbol(JOB->class->table, param->index);
+}
+
+
+
+char *TYPE_get_desc(TYPE type)
+{
+  static char buf[256];
+
+  TYPE_ID id;
+  int value;
+	CLASS_SYMBOL *sym;
+
+  id = TYPE_get_id(type);
+  value = TYPE_get_value(type);
+
+  if (id == T_ARRAY)
+  {
+    strcpy(buf, TYPE_name[JOB->class->array[value].type.t.id]);
+    strcat(buf, "[]");
+  }
+  else if (id == T_OBJECT)
+	{
+		if (value == -1)
+			strcpy(buf, "Object");
+		else
+		{
+			sym = CLASS_get_symbol(JOB->class, JOB->class->class[value].index);
+			sprintf(buf, "%.*s", sym->symbol.len, sym->symbol.name);
+		}
+	}
+  else
+  {
+    strcpy(buf, TYPE_name[id]);
+  }
+  
+  return buf;
 }
 
 

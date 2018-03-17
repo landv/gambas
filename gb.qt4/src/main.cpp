@@ -171,6 +171,21 @@ static int _utf8_count = 0;
 static int _utf8_length = 0;
 
 
+#ifdef QT5
+
+static QtMessageHandler _previousMessageHandler;
+
+static void myMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg )
+{
+	//fprintf(stderr, "---- `%s'\n", QT_ToUtf8(msg));
+	
+	if (msg == "QXcbClipboard: SelectionRequest too old")
+		return;
+
+	_previousMessageHandler(type, context, msg);
+}
+#endif
+
 //static MyApplication *myApp;
 
 /***************************************************************************
@@ -885,6 +900,10 @@ static void QT_Init(void)
 
 	X11_init(QX11Info::display(), QX11Info::appRootWindow());
 
+#ifdef QT5
+	_previousMessageHandler = qInstallMessageHandler(myMessageHandler);
+#endif
+	
 	/*QX11Info::setAppDpiX(0, 92);
 	QX11Info::setAppDpiY(0, 92);*/
 
@@ -1353,23 +1372,6 @@ void *GB_QT4_1[] EXPORT =
 	NULL
 };
 
-#if 0
-#if QT_VERSION >= 0x030304
-static void myMessageHandler(QtMsgType type, const char *msg )
-{
-	if ((::strncmp(msg, "QMultiInputContext::", strlen("QMultiInputContext::")) == 0)
-			|| (::strncmp(msg, "sending IM", strlen("sending IM")) == 0)
-			|| (::strncmp(msg, "receiving IM", strlen("receiving IM")) == 0)
-			|| (::strncmp(msg, "QInputContext: ", strlen("QInputContext: ")) == 0))
-		return;
-
-	fprintf(stderr, "%s\n", msg);
-	if (type == QtFatalMsg)
-		abort();
-}
-#endif
-#endif
-
 const char *GB_INCLUDE EXPORT = "gb.draw,gb.gui.base";
 
 int EXPORT GB_INIT(void)
@@ -1378,9 +1380,9 @@ int EXPORT GB_INIT(void)
 
 	// Do not disable GLib support
 
-	env = getenv("KDE_FULL_SESSION");
+	/*env = getenv("KDE_FULL_SESSION");
 	if (env && !strcasecmp(env, "true"))
-		putenv((char *)"QT_NO_GLIB=1");
+		putenv((char *)"QT_NO_GLIB=1");*/
 
 	env = getenv("GB_GUI_BUSY");
 	if (env && atoi(env))

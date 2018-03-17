@@ -52,12 +52,13 @@ End
 Private Sub Border_Write(Value As Boolean)
 
   $hView.Border = If(Value, Border.Plain, Border.None)
+  UpdateColors
 
 End
 
 Private Sub UpdateColors()
 
-  $hView.ResizeContents($aColors.Count * (CUSTOM_W + CUSTOM_D) + CUSTOM_D, $hView.H)
+  $hView.ResizeContents($aColors.Count * (CUSTOM_W + CUSTOM_D) + CUSTOM_D, $hView.ClientH)
   $hView.Refresh
 
 End
@@ -279,7 +280,7 @@ End
 
 Public Sub View_Arrange()
 
-  CUSTOM_W = $hView.H - CUSTOM_D * 2
+  CUSTOM_W = $hView.ClientH - CUSTOM_D * 2
   UpdateColors
 
 End

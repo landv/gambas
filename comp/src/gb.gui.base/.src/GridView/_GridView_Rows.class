@@ -151,7 +151,6 @@ End
 
 Public Sub _GetRowHeight(iRow As Integer) As Integer
   
-  'Debug iRow;; System.Backtrace.Join("|")
   Try Return $cHeight[iRow]
   Return _GetDefaultRowHeight()
   
@@ -468,7 +467,7 @@ Private Function Selection_Read() As Integer[]
       Return [hView.Row]
     Endif
   Else If hView.Mode = Select.Multiple Then
-    Return $hSel._GetSelectedRows()
+    Return $hSel._GetSelectedRows($nRows)
   Endif
 
   Return New Integer[]

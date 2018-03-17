@@ -116,7 +116,7 @@ Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As I
     Paint.Background = Color.White
     Paint.Fill
     
-    Paint.Rectangle(0.5, F + 0.5, hImage.W - 1, hImage.H - F * 2 - 1, 2)
+    Paint.Rectangle(0.5, F + 0.5, hImage.W - 1, hImage.H - F * 2 - 1)
     Paint.Background = Color.Gray
     Paint.LineWidth = 1
     Paint.Stroke
@@ -128,32 +128,10 @@ Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As I
     Paint.Background = Color.Black
     Paint.DrawText(sClass, 0, 0, hImage.W, hImage.H, Align.Center)
     
-    ' Paint.Font.Size = 8 * (hImage.H - 6) / (Paint.Font.Height - 1) / 3
-    ' Paint.AntiAlias = False
-    ' Paint.Brush = Paint.Color(Color.Black)
-    ' sText = sClass
-    ' While Len(sText) < 48
-    '   sText &= sClass
-    ' Wend
-    ' X = 3
-    ' Y = Paint.Font.Ascent + 3
-    ' 
-    ' For I = 1 To 3
-    '   
-    '   Paint.DrawText(sText, X, Y)
-    '   'Paint.Fill
-    '   Y += Paint.Font.Height - 1
-    '   
-    '   For iInd = 1 To Len(sText)
-    '     If Paint.TextExtents(Left$(sText, iInd)).Width >= (hImage.W - 6) Then Break
-    '   Next
-    '   sText = Mid$(sText, iInd)
-    ' 
-    ' Next
-    
     Paint.End
     
     hPict = hImage.Picture
+    
   Endif
 
   If iSize Then

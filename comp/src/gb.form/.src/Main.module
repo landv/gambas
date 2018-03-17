@@ -129,10 +129,7 @@ Public Sub PaintColor(X As Integer, Y As Integer, W As Integer, H As Integer, iC
     
   Endif
   
-  
 End
-
-
 
 #If False
 Private Sub AddUnique(aStr As String[], sVal As String)
@@ -203,8 +200,9 @@ Public Sub Main()
 
   Dim hPicture As Picture
 
-  Application.Theme = "Papyrus-Light"
-  hPicture = Picture["icon:/large/trash"]
+  Application.Theme = "Elementary"
+  hPicture = Picture["icon:/32/align-top"]
+  Print hPicture
   
 End
 

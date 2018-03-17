@@ -73,7 +73,9 @@ Static Public Sub _init()
   $cExt["z"] = "archive"
   $cExt["zip"] = "archive"
   $cExt["txt"] = "text"
+  $cExt["json"] = "text"
   $cExt["mp3"] = "audio"
+  $cExt["aac"] = "audio"
   $cExt["ogg"] = "audio"
   $cExt["wav"] = "audio"
   $cExt["mpg"] = "video"
@@ -97,6 +99,10 @@ Static Public Sub _init()
   $cExt["ico"] = "image"
   $cExt["xcf"] = "image"
   $cExt["svg"] = "image"
+  $cExt["pdf"] = "pdf"
+  $cExt["ttf"] = "font"
+  $cExt["otf"] = "font"
+  $cExt["bdf"] = "font"
 
 End
 
@@ -115,6 +121,7 @@ Public Sub _new()
   
   With $hIconView = New IconView(Me) As "View"
     .Sorted = True
+    .IconLines = 3
   End With
   
   With $hColumnView = New ColumnView(Me) As "View"

@@ -131,7 +131,10 @@ static void set_font_from_string(CFONT *_object, QString &str)
 			size = elt.toDouble(&number);
 
 			if (flag == "BOLD")
+			{
 				f.setBold(true);
+				f.setStyleName("Bold");
+			}
 			else if (flag == "ITALIC")
 				f.setItalic(true);
 			else if (flag == "UNDERLINE")
@@ -147,6 +150,7 @@ static void set_font_from_string(CFONT *_object, QString &str)
 				f.setPointSizeF(SIZE_VIRTUAL_TO_REAL(size));
 			else if (elt.length())
 			{
+				f.setStyleName("");
 				f.setBold(false);
 				f.setItalic(false);
 				f.setUnderline(false);

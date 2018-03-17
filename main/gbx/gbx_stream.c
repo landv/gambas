@@ -232,6 +232,7 @@ __OPEN:
 	stream->common.available_now = FALSE;
 	stream->common.redirected = FALSE;
 	stream->common.redirect = NULL;
+	stream->common.no_read_ahead = FALSE;
 
 	if ((*(sclass->open))(stream, path, mode, NULL))
 		THROW_SYSTEM(errno, path);
@@ -508,11 +509,11 @@ void STREAM_write(STREAM *stream, void *addr, int len)
 
 	if (len <= 0)
 		return;
-
+	
 	if (stream->common.redirected)
 		stream = stream->common.redirect;
 
-	while (len > 0)
+	do
 	{
 		n = ((*(stream->type->write))(stream, addr, len));
 		
@@ -530,7 +531,12 @@ void STREAM_write(STREAM *stream, void *addr, int len)
 		
 		addr += n;
 		len -= n;
+	
+		if (STREAM_is_closed_for_writing(stream))
+			THROW(E_CLOSED);
 	}
+	while (len > 0);
+	
 }
 
 void STREAM_write_zeros(STREAM *stream, int len)
@@ -1814,6 +1820,7 @@ void STREAM_end(STREAM *stream)
 
 	stream->common.redirected = FALSE;
 	STREAM_write(stream, stream->common.redirect->string.buffer, STRING_length(stream->common.redirect->string.buffer));
+	stream->common.redirected = TRUE;
 	STREAM_cancel(stream);
 }
 

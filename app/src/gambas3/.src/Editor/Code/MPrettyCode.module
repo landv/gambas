@@ -57,7 +57,7 @@ Private Sub InsertLine(aPos As Integer[], iLine As Integer, Optional iCount As I
 End
 
 
-Public Sub Run(hEditor As TextEditor)
+Public Sub Run(hModule As Object)
   
   Dim sLine As String
   Dim aLine As String[]
@@ -73,8 +73,11 @@ Public Sub Run(hEditor As TextEditor)
   Dim aSymbols As String[]
   Dim aTypes As Integer[]
   Dim iStart, iEnd As Integer
+  Dim hEditor As TextEditor
   
   Inc Application.Busy
+  
+  hEditor = hModule.GetEditor()
   
   If hEditor.Selected Then
     iStart = Min(hEditor.Line, hEditor.SelectionLine)
@@ -161,6 +164,8 @@ Public Sub Run(hEditor As TextEditor)
         bBreakpoint = True
       Endif
       
+      If Y >= (iLine + 1) Then Y += aLine.Max
+      
       iLine += aLine.Count
       iEnd += aLine.Count
       bModified = True
@@ -188,8 +193,10 @@ Public Sub Run(hEditor As TextEditor)
         Endif
         If aBreakpoint.Count Then
           RemoveLine(aBreakpoint, iLine)
-          bBookmark = True
+          bBreakpoint = True
         Endif
+        
+        If Y > iLine Then Dec Y
         
       Else
         
@@ -201,15 +208,21 @@ Public Sub Run(hEditor As TextEditor)
     
   Endif
   
-  If bBookmark Then hEditor.Bookmarks = aBookmark
-  If bBreakpoint Then hEditor.Breakpoints = aBreakpoint
-  
   If bModified Then
+    
     hEditor.Begin
+    
     hEditor.SelectAll
     hEditor.Insert(aText.Join("\n"))
+    
+    hEditor.Bookmarks = aBookmark
+    hEditor.Breakpoints = aBreakpoint
+    
     hEditor.End
     hEditor.Goto(X, Y)
+
+    If hModule Is FEditor Then FDebugInfo.RefreshTabs(hModule.Path, hModule.Name)
+    
   Endif
   
   Dec Application.Busy

@@ -46,6 +46,13 @@
       ToolTip = ("Clear console")
       Picture = Picture["icon:/small/clear"]
     }
+    { btnSuspend ToolButton
+      MoveScaled(12,0,4,4)
+      Visible = False
+      ToolTip = ("Suspend terminal")
+      Picture = Picture["icon:/small/lock"]
+      Toggle = True
+    }
     { btnCopy ToolButton
       MoveScaled(16,0,4,4)
       ToolTip = ("Copy")

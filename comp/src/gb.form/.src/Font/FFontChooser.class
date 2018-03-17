@@ -12,14 +12,14 @@ Public ShowFixed As Boolean
 Public StylePanel As Container
 Public Preview As Control
 
-Private $bNoChange As Boolean
+Private $iNoChange As Integer
 Private $bNoRefresh As Boolean
 Private $sLast As String
 Private $bShowLabel As Boolean
 
 Public Sub _new()
 
-  $bNoChange = True
+  Inc $iNoChange
   $bNoRefresh = True
   
   'lstSize.List = ["6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "18", "20", "24", "28", "32", "36", "40", "48", "56", "64", "72", "80", "96", "112", "128"]
@@ -28,8 +28,6 @@ Public Sub _new()
   Preview = txtExample
   
   SetFont("")
-
-  $bNoChange = False
 
 End
 
@@ -40,6 +38,7 @@ Public Sub Form_Open()
   RefreshFamily
   UpdateRelative
   txtSize_Change
+  Dec $iNoChange
 
 End
 
@@ -74,6 +73,99 @@ End
 ' 
 ' End
 
+Private Sub SplitFont(sFont As String, N As Integer) As String
+
+  Dim I As Integer
+  Dim sCar As String
+  Dim S As Integer
+
+  For I = 1 To Len(sFont)
+    sCar = Mid$(sFont, I, 1)
+    If IsUCase(sCar) Or If IsPunct(sCar) Or If sCar = " " Then
+      If S Then
+        If (I - S) >= 2 Or If sCar = " " Or If IsPunct(sCar) Then 
+          Dec N
+          If N = 0 Then Return RTrim(Left$(sFont, I - 1))
+        Endif
+      Endif
+      S = I
+    Endif
+  Next
+
+End
+
+Private Sub FillFamily()
+  
+  Dim sFont As String
+  Dim cFont As Collection
+  Dim aFont As String[]
+  Dim I As Integer
+  Dim sParentFont As String
+  Dim hParent As Menu
+  Dim iCount As Variant
+  Dim cParent As New Collection
+  
+  tvwFamily.Clear
+  
+  cFont = New Collection
+  aFont = New String[]
+  
+  For Each sFont In Fonts
+    
+    If ShowFixed Then
+      If Not Font[sFont].Fixed Then Continue
+    Endif
+    
+    For I = 16 DownTo 1
+      sParentFont = SplitFont(sFont, I)
+      If Not sParentFont Then Continue
+      If Not cFont.Exist(sParentFont) Then
+        cFont[sParentFont] = 0
+        aFont.Add(sParentFont)
+      Else
+        Inc cFont[sParentFont]
+        Break
+      Endif
+    Next
+    
+    cFont[sFont] = 1000
+    aFont.Add(sFont)
+    
+  Next
+  
+  aFont.Sort(gb.Natural + gb.IgnoreCase)
+  ' For Each sFont In aFont
+  '   Print cFont[sFont];; sFont
+  ' Next
+  
+  For Each sFont In aFont
+
+    iCount = cFont[sFont]
+    If iCount = 0 Then Continue
+    
+    hParent = Null
+    For I = 16 DownTo 1
+      sParentFont = SplitFont(sFont, I)
+      If Not sParentFont Then Continue
+      If cParent.Exist(sParentFont) Then Break
+      sParentFont = ""
+    Next
+    
+    If sParentFont And If tvwFamily[sParentFont].Children = 0 Then
+      tvwFamily[sParentFont].Foreground = Color.LightForeground
+      If cFont[sParentFont] >= 1000 Then
+        tvwFamily.Add("." & sParentFont, sParentFont,, sParentFont)
+      Endif
+    Endif
+    
+    tvwFamily.Add(sFont, sFont,, sParentFont)
+    cParent[sFont] = True
+    
+  Next
+  
+End
+
+
 Public Sub RefreshFamily()
 
   Dim hFont As Font
@@ -85,29 +177,20 @@ Public Sub RefreshFamily()
 
   sKey = Family 'lstFamily.Current.Key
 
-  $bNoChange = True
+  Inc $iNoChange
 
-  If lstFamily.Visible Then
+  If tvwFamily.Visible Then
 
-    lstFamily.Clear
-    
-    For Each sFamily In Fonts
-      hFont = Font[sFamily]
-      If ShowFixed And Not hFont.Fixed Then Continue
-      'IF NOT hFont.Scalable THEN CONTINUE
-      lstFamily.Add(sFamily, sFamily) ', Picture[If(hFont.Fixed, "img/fixed.png", "img/scalable.png")])
-      If sFamily = sKey Then bExist = True
-    Next
-  
-    If bExist Then
-      lstFamily[sKey].Selected = True
-    Else
-      lstFamily.MoveFirst
-      lstFamily.Item.Selected = True
+    FillFamily
+
+    Try tvwFamily[sKey].Selected = True
+    If Error Then
+      tvwFamily.MoveFirst
+      tvwFamily.Item.Selected = True
     Endif
     
-    Family = lstFamily.Current.Key
-    Try lstFamily[Family].EnsureVisible
+    Family = tvwFamily.Key
+    Try tvwFamily.Current.EnsureVisible
     
   Else
     
@@ -130,7 +213,7 @@ Public Sub RefreshFamily()
     
   Endif
 
-  $bNoChange = False
+  Dec $iNoChange
 
   RefreshExample
 
@@ -163,8 +246,8 @@ Public Sub SetFont(sFont As String)
 
   btnRelative.Value = bRelative
 
-  Try lstFamily[Family].Selected = True
-  Try lstFamily[Family].EnsureVisible
+  Try tvwFamily[Family].Selected = True
+  Try tvwFamily[Family].EnsureVisible
 
   btnBold.Value = Bold
   btnItalic.Value = Italic
@@ -232,7 +315,7 @@ Private Sub RefreshExample()
   
   sldSize.Value = txtSize.Value
 
-  If Not $bNoChange Then GetParent()._Change
+  If $iNoChange = 0 Then GetParent()._Change
   If Not txtExample.Visible Then GetParent()._Activate
 
   $sLast = sFont
@@ -241,10 +324,16 @@ Private Sub RefreshExample()
 
 End
 
+Public Sub tvwFamily_Click()
 
-Public Sub lstFamily_Select()
+  If Not tvwFamily.Current Then Return
 
-  Family = lstFamily.Current.Key
+  If tvwFamily.Current.Children Then
+    Return
+  Endif
+
+  Family = tvwFamily.Key
+  If Family Begins "." Then Family = Mid$(Family, 2)
   RefreshExample
 
 End
@@ -403,7 +492,7 @@ Public Sub panBorder_BeforeArrange()
   If panBorder.H < (Desktop.Scale * 20) Then
   
     If txtExample.Visible Then
-      lstFamily.Hide
+      tvwFamily.Hide
       sepFamily.Hide
       lblFont.Hide
       sepToolbar.Hide
@@ -426,7 +515,7 @@ Public Sub panBorder_BeforeArrange()
       cmbFamily.Hide
       txtExample.Show
       sepExample.Show
-      lstFamily.Show
+      tvwFamily.Show
       sepFamily.Show
       lblFont.Show
       sepToolbar.Show

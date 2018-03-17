@@ -1576,8 +1576,7 @@ Public Sub GetHelpHTML() As String
     Return
   Endif
 
-  sHtml = File.Load("help/component-help.html")
-  
+  sHtml = MHelp.LoadCustom("component-help.html")
   sHtml = Replace(sHtml, "$(help)", sHelp)
   
   sDesc = ""

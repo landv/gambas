@@ -359,17 +359,17 @@ Private Sub UpdateSoftware()
   
     If .CanUpgrade() Then
       btnInstall.Text = ("Upgrade")
-      btnInstall.Picture = Picture["icon:/medium/up"]
+      btnInstall.Picture = Picture["icon:/small/up"]
       btnDownload.Hide
       btnInstall.Show
     Else If .IsReallyInstalled() Then
       btnInstall.Text = ("Uninstall")
-      btnInstall.Picture = Picture["icon:/medium/undo"]
+      btnInstall.Picture = Picture["icon:/small/undo"]
       btnDownload.Hide
       btnInstall.Show
     Else If Not .IsInstalled() Then
       btnInstall.Text = ("Install")
-      btnInstall.Picture = Picture["icon:/medium/add"]
+      btnInstall.Picture = Picture["icon:/small/add"]
       btnDownload.Show
       btnInstall.Show
     Else

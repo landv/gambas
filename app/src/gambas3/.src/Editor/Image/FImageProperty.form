@@ -326,7 +326,7 @@
       MoveScaled(19,87,26,0)
     }
     { Panel13 Panel
-      MoveScaled(1,88,64,53)
+      MoveScaled(1,88,64,43)
       Arrangement = Arrange.Vertical
       Margin = True
       { panEffect Expander
@@ -486,10 +486,10 @@
       }
     }
     { sepText Separator
-      MoveScaled(21,142,15,0)
+      MoveScaled(21,132,15,0)
     }
     { panText VBox
-      MoveScaled(3,143,60,23)
+      MoveScaled(3,133,60,23)
       Visible = False
       Margin = True
       { Panel11 HBox
@@ -504,6 +504,7 @@
             Picture = Picture["icon:/small/text-center"]
             Radio = True
             Toggle = True
+            Value = True
           }
           { btnTextRight ToolButton btnTextAlign
             Name = "btnTextRight"
@@ -520,7 +521,6 @@
             Picture = Picture["icon:/small/text-left"]
             Radio = True
             Toggle = True
-            Value = True
           }
         }
         { panTextAlign Panel
@@ -529,24 +529,24 @@
             Name = "btnTextTop"
             MoveScaled(0,0,4,4)
             ToolTip = ("Top align")
-            Picture = Picture["img/draw/text-top.png"]
+            Picture = Picture["icon:/small/text-top"]
             Radio = True
             Toggle = True
-            Value = True
           }
           { btnTextMiddle ToolButton btnTextAlign
             Name = "btnTextMiddle"
             MoveScaled(4,0,4,4)
             ToolTip = ("Middle align")
-            Picture = Picture["img/draw/text-middle.png"]
+            Picture = Picture["icon:/small/text-middle"]
             Radio = True
             Toggle = True
+            Value = True
           }
           { btnTextBase ToolButton btnTextAlign
             Name = "btnTextBase"
             MoveScaled(8,0,4,4)
             ToolTip = ("Baseline align")
-            Picture = Picture["img/draw/text-base.png"]
+            Picture = Picture["icon:/small/text-baseline"]
             Radio = True
             Toggle = True
           }
@@ -554,7 +554,7 @@
             Name = "btnTextBottom"
             MoveScaled(12,0,4,4)
             ToolTip = ("Bottom align")
-            Picture = Picture["img/draw/text-bottom.png"]
+            Picture = Picture["icon:/small/text-bottom"]
             Radio = True
             Toggle = True
           }
@@ -571,36 +571,46 @@
       }
     }
     { sepGrid Separator
-      MoveScaled(19,167,15,0)
+      MoveScaled(19,157,15,0)
     }
-    { panGrid HBox
-      MoveScaled(2,168,62,6)
+    { panGrid VBox
+      MoveScaled(2,158,62,15)
       Visible = False
-      Spacing = True
       Margin = True
-      { Label12 Label
-        MoveScaled(0,0,15,4)
-        AutoResize = True
-        Text = ("Grid resolution")
+      { Panel1 HBox
+        MoveScaled(1,1,27,4)
+        { Label12 Label
+          MoveScaled(0,0,15,4)
+          Expand = True
+          AutoResize = True
+          Text = ("Grid resolution")
+        }
+        { txtGridRes SpinBox
+          MoveScaled(17,0,9,4)
+          MinValue = 8
+          MaxValue = 512
+          Step = 8
+          Value = 64
+        }
       }
-      { txtGridRes SpinBox
-        MoveScaled(17,0,9,4)
-        MinValue = 16
-        MaxValue = 512
-        Step = 16
-        Value = 64
+      { Panel5 HBox
+        MoveScaled(1,5,40,4)
+        { Label13 Label
+          MoveScaled(0,0,14,4)
+          Expand = True
+          AutoResize = True
+          Text = ("Grid snap")
+        }
+        { txtGridSnap SpinBox
+          MoveScaled(29,0,9,4)
+          MaxValue = 512
+          Step = 8
+          Value = 8
+        }
       }
-      { Label13 Label
-        MoveScaled(31,0,14,4)
-        AutoResize = True
-        Text = ("Subdivision")
-      }
-      { cmbGridSub ComboBox
-        MoveScaled(51,0,6,4)
-        #Translate = False
-        ReadOnly = True
-        List = ["1", "2", "4", "8"]
-        Text = "4"
+      { chkGridDiag CheckBox
+        MoveScaled(1,9,40,4)
+        Text = ("Draw diagonals")
       }
     }
   }

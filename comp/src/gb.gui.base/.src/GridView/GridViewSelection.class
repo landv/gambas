@@ -117,7 +117,7 @@ Public Sub IsSelected(iIndex As Integer) As Boolean
   
 End
 
-Public Function _GetSelectedRows() As Integer[]
+Public Function _GetSelectedRows(iCount As Integer) As Integer[]
   
   Dim aRet As New Integer[]
   Dim I, J, S, L As Integer
@@ -127,6 +127,7 @@ Public Function _GetSelectedRows() As Integer[]
     L = $aSel[I + 1]
     
     For J = 0 To L - 1
+      If (S + J) >= iCount Then Break
       aRet.Add(S + J)
     Next
   Next

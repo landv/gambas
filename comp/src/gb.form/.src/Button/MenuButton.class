@@ -139,10 +139,13 @@ Public Sub WatchTimer_Timer()
   Dim X As Integer
   Dim Y As Integer
   
+  If Not $hCurrentMenu Or If $hCurrentMenu.Closed Then
+    Last.Stop
+    Return
+  Endif
+  
   X = Mouse.ScreenX - Me.Parent.ScreenX
   Y = Mouse.ScreenY - Me.Parent.ScreenY
-  
-  'Debug X;; Y
   
   If X < 0 Or If Y < 0 Or If X >= Me.Parent.W Or If Y >= Me.Parent.H Then Return
   

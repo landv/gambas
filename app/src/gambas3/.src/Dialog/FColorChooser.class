@@ -2,7 +2,7 @@
 
 Static Public (Color) As String
 Static Public Value As Integer
-Static Public Prefix As String
+Static Public Pattern As String
 
 Static Private $sColor As String
 Static Private $bAlpha As Boolean
@@ -10,9 +10,11 @@ Static Private $bAlpha As Boolean
 Static Private $aColorName As String[]
 Static Private $aPict As Picture[]
 Static Private $sTitle As String
-Static Private $aPrefix As String[]
+Static Private $aPattern As String[]
 
 Private Const DEFAULT_COLOR As String = "-"
+
+Private $aButtonPattern As Button[]
 
 Static Private Sub GetColor(sName As String) As Integer
   
@@ -49,7 +51,7 @@ Static Public Function Run(Optional sColor As String, Optional bAlpha As Boolean
   $sColor = sColor
   $bAlpha = bAlpha
   $sTitle = sTitle
-  $aPrefix = aPrefix
+  $aPattern = aPrefix
 
   Return Not FColorChooser.ShowModal() 
 
@@ -59,12 +61,6 @@ End
 
 Public Sub btnOK_Click()
 
-  If $aPrefix And If $aPrefix.Count Then
-    Prefix = $aPrefix[cmbPrefix.Index]
-  Else
-    Prefix = ""
-  Endif
-  
   Me.Close(True)
 
 End
@@ -81,14 +77,24 @@ Public Sub Form_Open()
   Dim hSym As CSymbolInfo
   Dim sColor As String
   Dim iIndex As Integer
+  Dim I As Integer
   
   Settings.Read(Me)
 
-  cmbPrefix.List = $aPrefix
-  If $aPrefix Then
-    cmbPrefix.Show
-  Else
-    cmbPrefix.Hide
+  If $aPattern And If $aPattern.Count Then
+    
+    $aButtonPattern = New Button[$aPattern.Count]
+    For I = 0 To $aPattern.Max
+      $aButtonPattern[I] = New Button(panColor) As "Color"
+      $aButtonPattern[I].AutoResize = True
+      '$aButtonPattern[I].H = Desktop.Scale * 4
+      Project.SetEditorFont($aButtonPattern[I])
+    Next
+    
+    btnOK.Hide
+    sprColor.Raise
+    btnCancel.Raise
+    
   Endif
 
   $aColorName = New String[]
@@ -151,12 +157,30 @@ End
 
 Public Sub dlgColor_Activate()
 
-  btnOK.Value = True
+  If $aPattern Then
+    $aButtonPattern[0].Value = True
+  Else
+    btnOK.Value = True
+  Endif
 
 End
 
 
 Public Sub Form_Close()
+
+  Dim hButton As Button
+  
+  If $aPattern Then
+    
+    For Each hButton In $aButtonPattern
+      hButton.Delete
+    Next
+    
+    $aButtonPattern = Null
+    
+    btnOK.Show
+    
+  Endif
 
   Settings.Write(Me)  
 
@@ -165,7 +189,6 @@ End
 Private Sub UpdateColor()
 
   Dim sColor As String
-  Dim iSel As Integer
   Dim I As Integer
 
   If tabColor.Index = 0 Then
@@ -177,27 +200,28 @@ Private Sub UpdateColor()
   If Not sColor Then
     Color = ""
     Value = -1
-    sColor = "FFFFFF"
   Else If IsLetter(Left(sColor)) Then
     Color = sColor
     Value = GetColor(sColor)
-    sColor = Hex$(Value, 6)
   Else
     Value = Val(sColor)
     If $bAlpha Then
       Color = "&H" & Hex$(Value, 8) & "&"
-      sColor = Hex$(Value, 8)
     Else
       Color = "&H" & Hex$(Value, 6) & "&"
-      sColor = Hex$(Value, 6)
     Endif
   Endif
 
-  If $aPrefix Then
-    iSel = cmbPrefix.Index
-    For I = 0 To $aPrefix.Max
-      cmbPrefix[I].Text = $aPrefix[I] & sColor
+  If $aPattern Then
+    
+    For I = 0 To $aPattern.Max
+      sColor = CInsertColor.FormatColor(Value, $aPattern[I])
+      $aButtonPattern[I].Text = Replace(sColor, "&", "&&")
+      $aButtonPattern[I].Tag = sColor
     Next
+
+    'Me.Width = Max(Me.Width, $aButtonPattern[$aPattern.Max].X + $aButtonPattern[$aPattern.Max].W + Desktop.Scale * 40)
+
   Endif
 
 End
@@ -262,4 +286,11 @@ Public Sub gvwColor_Activate()
 
   btnOK.Value = True
 
+End
+
+Public Sub Color_Click()
+  
+  Pattern = Last.Tag
+  Me.Close(True)
+  
 End

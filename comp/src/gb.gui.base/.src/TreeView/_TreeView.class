@@ -47,6 +47,7 @@ Private $iCompare As Integer
 Private $bEditable As Boolean
 Private $hRenameBox As RenameBox
 Private $sKeyRenaming As String
+Private $iColRenaming As Integer
 Private $bSorted As Boolean
 Private $cSort As Collection
 Private $bSortRoot As Boolean
@@ -1200,9 +1201,15 @@ Private Sub UpdateRenameBox() As Boolean
   
   hItem = $cItem[$sKeyRenaming]
   
-  X = hItem.X - $hView.ScrollX
-  If hItem.Picture Then X += hItem.Picture.W + 2
-  W = Min($hView.ClientW, $hView.Columns[0].Width) - X
+  If $iColRenaming = 0 Then
+    X = hItem.X - $hView.ScrollX
+    If hItem.Picture Then X += hItem.Picture.W + 2
+    W = Min($hView.ClientW, $hView.Columns[0].Width) - X
+  Else
+    X = $hView.Columns[$iColRenaming].X - $hView.ScrollX
+    W = Min($hView.ClientW - X, $hView.Columns[$iColRenaming].Width)
+  Endif
+  
   If W < 32 Then 
     Cancel
     Return
@@ -1212,27 +1219,31 @@ Private Sub UpdateRenameBox() As Boolean
 
 End
 
-Public Sub _Rename(hItem As _TreeView_Item)
+Public Sub _Rename(hItem As _TreeView_Item, iCol As Integer)
   
   Dim X As Integer
   Dim SX As Integer
+  
+  If iCol < 0 Or If iCol >= $hView.Columns.Count Then Error.Raise("Out of bounds")
   
   _EnsureVisible(hItem)
   Wait
   Key_Write(hItem.Key)
   
   Do
-    X = hItem.X '(hItem._Depth + 1) * 16
+    X = hItem.X 
+    If iCol Then X += $hView.Columns[iCol].X
     SX = Max(0, X - $hView.ClientW - 32)
     If SX = $hView.ScrollX Then Break
     $hView.ScrollX = SX
   Loop
   
-  $hRenameBox = New RenameBox(Me, $hView.Padding) As "Editor"
-  $hRenameBox.Text = hItem.Text
+  $hRenameBox = New RenameBox(Me, $hView.Padding, False) As "Editor"
+  $hRenameBox.Text = hItem[iCol]
   $hRenameBox.SetFocus
   
   $sKeyRenaming = hItem.Key
+  $iColRenaming = iCol
   
   UpdateRenameBox
   
@@ -1274,7 +1285,7 @@ Public Sub Editor_KeyPress()
     Cancel
     Stop Event
   Else If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
-    Try $cItem[$sKeyRenaming].Text = $hRenameBox.Text
+    Try $cItem[$sKeyRenaming][$iColRenaming] = $hRenameBox.Text
     If Not Error Then Cancel(True)
     Stop Event
   Endif
@@ -1537,9 +1548,19 @@ Public Sub _SetLayout(Value As Variant)
   If Error Then Error.Raise("Bad layout")
   
   _SaveSelection
-  For Each hItem In $cItem
+  For Each hItem In $cItem.Copy()
     hItem.Expanded = cLayout.Exist(hItem.Key)
   Next
   _RestoreSelection
 
+End
+
+Public Sub GridView_Font()
+
+  Dim hItem As _TreeView_Item
+  
+  For Each hItem In $cItem
+    _UpdateItemHeight(hItem)
+  Next
+  
 End

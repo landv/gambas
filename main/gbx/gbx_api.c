@@ -179,6 +179,7 @@ const void *const GAMBAS_Api[] =
 	(void *)STRING_new,
 	(void *)GB_NewZeroString,
 	(void *)GB_TempString,
+	(void *)GB_RefString,
 	(void *)GB_FreeString,
 	(void *)STRING_free_later,
 	(void *)STRING_extend,
@@ -2194,6 +2195,12 @@ char *GB_NewZeroString(char *src)
 char *GB_TempString(char *src, int len)
 {
 	return STRING_new_temp(src, len);
+}
+
+char *GB_RefString(char *str)
+{
+	STRING_ref(str);
+	return str;
 }
 
 void GB_FreeString(char **str)

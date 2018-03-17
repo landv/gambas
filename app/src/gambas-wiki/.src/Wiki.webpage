@@ -37,11 +37,11 @@ H1 { display: none; }
 
 <%If Request.Exist("v") Or If Request.Exist("nh") Then%>
 
+  <%If Not Request.Exist("nh") Then%>
+  
   <style type="text/css">
   BODY { letter-spacing: 1px; line-height: 1.4em; }
   </style>
-
-  <%If Not Request.Exist("nh") Then%>
   
   <div class="header">
     <div class="header-inside-v">

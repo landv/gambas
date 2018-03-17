@@ -6,8 +6,6 @@ Public Age As Integer
 
 Property Read ReadOnly As Boolean
 
-'Static Private $aExt As String[] = ["htm", "html", "xml", "kml", "svg", "css", "webpage", "js", "c", "h", "cpp", "gbs"]
-
 Private $hEditor As TextEditor
 Private $bNoHighlight As Boolean
 Private $bModule As Boolean
@@ -1417,7 +1415,7 @@ End
 
 Public Sub mnuPretty_Click()
 
-  MPrettyCode.Run($hEditor)
+  MPrettyCode.Run(Me)
 
 End
 
@@ -1442,7 +1440,9 @@ Public Sub Editors_Highlight(Text As String)
       TextHighlighter.State = Highlight.Normal
       TextHighlighter.Tag = 0
     Endif
+    
     TextHighlighter.Add(TextHighlighter.State, String.Len(Text))
+    
   Endif
   
 End

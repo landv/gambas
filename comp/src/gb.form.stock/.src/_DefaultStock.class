@@ -5,22 +5,86 @@ Export
 Class Image
 Class SvgImage
 
-Static Public Sub LoadImage(sKey As String, iSize As Integer) As Image
+Static Private $cSynonymous As New Collection
 
-  Dim sPath As String
+Static Private $bDebug As Boolean
+Static Private $bDarkTheme As Boolean
+Static Private $bInit As Boolean
+
+Static Public Sub _init()
+
+  Dim hFile As File
+  Dim sLine As String
+  Dim iPos As Integer
   
-  sPath = "stock" &/ CStr(iSize) &/ sKey
-  If System.RightToLeft And If Exist(sPath & "-rtl.png") Then sPath &= "-rtl"
-  'If sKey = "tools" Then Debug sPath
-  Return Image.Load(sPath & ".png")
+  hFile = Open "links" For Input
+  For Each sLine In hFile.Lines
+    sLine = Trim(sLine)
+    iPos = InStr(sLine, " -> ")
+    If iPos < 2 Then Continue
+    $cSynonymous[Trim(Left(sLine, iPos - 1))] = Trim(Mid$(sLine, iPos + 4))
+  Next
+  
+  $bDebug = Env["GB_STOCK_DEBUG"] = "1"
   
 End
 
-Static Public Sub LoadSvgImage(sKey As String) As SvgImage
+' Static Private Sub MakeDark(hImage As Image) As Image
+'   
+'   Dim X As Integer
+'   Dim Y As Integer
+'   Dim hColor As ColorInfo
+'   Dim iLum As Integer
+'   Dim iFg As Integer
+'   Dim iBg As Integer
+'   
+'   iFg = Color[Color.Foreground].Luminance
+'   iBg = Color[Color.Background].Luminance
+'   hImage = hImage.Copy()
+'   
+'   For X = 0 To hImage.W
+'     For Y = 0 To hImage.H
+'       hColor = Color[hImage[X, Y]]
+'       iLum = hColor.Luminance 
+'       hColor.Luminance = iFg - (hColor.Luminance - iBg)
+'       hImage[X, Y] = hColor.Color
+'     Next
+'   Next
+'   
+'   Return hImage
+'   
+' End
+' 
+' 
+Static Public Sub LoadImage(sKey As String, iSize As Integer, Optional sStock As String) As Image
+
+  Dim sPath As String
+  Dim hImage As Image
+
+  If Not $bInit Then
+    If Color[Color.Background].Luminance < 128 Or If Env["GB_GUI_DARK_THEME"] = "1" Then $bDarkTheme = True
+    $bInit = True
+  Endif
+
+  If $cSynonymous.Exist(sKey) Then sKey = $cSynonymous[sKey]
+  If Not sStock Or If Not IsDir(sStock) Then sStock = "gambas"
+  sPath = sStock &/ CStr(iSize) &/ sKey
+  If System.RightToLeft And If Exist(sPath & "-rtl.png") Then sPath &= "-rtl"
+  If $bDebug And If iSize = 32 And If Not Exist(sPath & ".png") Then Error "gb.form.stock: unknown icon: " & sKey
+  'If sKey = "tools" Then Debug sPath
+  hImage = Image.Load(sPath & ".png")
+  If $bDarkTheme And If hImage Then hImage = hImage.Invert(True) 'Color.Background, Color.Foreground)
+  Return hImage
+  
+End
+
+Static Public Sub LoadSvgImage(sKey As String, Optional sStock As String) As SvgImage
 
   Dim sPath As String
   
-  sPath = "stock" &/ "scalable" &/ sKey
+  If $cSynonymous.Exist(sKey) Then sKey = $cSynonymous[sKey]
+  If Not sStock Or If Not IsDir(sStock) Then sStock = "gambas"
+  sPath = sStock &/ "scalable" &/ sKey
   If System.RightToLeft And If Exist(sPath & "-rtl.svg") Then sPath &= "-rtl"
   'If sKey = "tools" Then Debug sPath
   Return SvgImage.Load(sPath & ".svg")

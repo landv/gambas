@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2.125,51,64)
+  MoveScaled(0,2.125,63,63)
   Text = ("Select a color")
   Persistent = True
   Arrangement = Arrange.Vertical
@@ -34,25 +34,19 @@
     }
     Index = 0
   }
-  { Panel2 Panel
-    MoveScaled(0,58,49,4)
-    Arrangement = Arrange.Horizontal
+  { panColor HBox
+    MoveScaled(1,58,46,4)
     Spacing = True
-    { cmbPrefix ComboBox
-      MoveScaled(0,0,15,4)
-      ReadOnly = True
-    }
-    { Panel1 Panel
-      MoveScaled(16,0,1,4)
-      Expand = True
+    { sprColor Spring
+      MoveScaled(10,0,4,4)
     }
     { btnOK Button
-      MoveScaled(18,0,15,4)
+      MoveScaled(15,0,15,4)
       Text = ("OK")
       Default = True
     }
     { btnCancel Button
-      MoveScaled(34,0,15,4)
+      MoveScaled(31,0,15,4)
       Text = ("Cancel")
       Cancel = True
     }

@@ -11,6 +11,7 @@ Static Private $cVal As Collection
 Static Private $cFiles As Collection
 Static Private $aField As New String[]
 
+Static Private $bNoContentLength As Boolean
 Static Private $iMaxLength As Integer
 Static Private $sBuffer As String
 Static Private $bEOF As Boolean
@@ -80,6 +81,7 @@ Private Sub Decode()
   sType = CGI["CONTENT_TYPE"]
   $iMaxLength = 0
   Try $iMaxLength = CInt(CGI["CONTENT_LENGTH"])
+  If Error Then $bNoContentLength = True
   
   iPos = InStr(sType, ";")
   If iPos Then
@@ -89,7 +91,11 @@ Private Sub Decode()
   Endif
   
   If sType = "application/x-www-form-urlencoded" Then 
-    sStr = Read $iMaxLength
+    If $bNoContentLength Then
+      sStr = Read -8192
+    Else
+      sStr = Read $iMaxLength
+    Endif
     If Request.Debug Then $sContents = sStr
     If sCharset Then Try sStr = Conv(sStr, sCharset, "UTF-8")
     'LINE INPUT sStr

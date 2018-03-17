@@ -131,11 +131,12 @@ Public Sub SetPosition(hFindResult As CFindResult, bJustCheck As Boolean) As Boo
   
 End
 
-Public Sub Replace(sReplace As String)
+Public Sub Replace(sReplace As String) As Boolean
   
   Dim iLine, iColumn As Integer
   
-  If Not Me.Selected Then Return
+  If Me.ReadOnly Then Return True
+  If Not Me.Selected Then Return True
   
   iLine = Me.SelectionLine
   iColumn = Me.SelectionColumn

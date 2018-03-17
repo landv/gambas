@@ -96,7 +96,7 @@ Public Function Merge(Bound As MapBounds) As MapBounds
   Dim hBound As New MapBounds
   hBound.Lon = Min($mpTopLeft.Lon, Bound.Lon)
   hBound.Lon2 = Max($mpBottomRight.Lon, Bound.Lon2)
-  hBound.Lat = Min($mpTopLeft, Bound.Lat)
+  hBound.Lat = Min($mpTopLeft.Lat, Bound.Lat)
   hBound.Lat2 = Max($mpBottomRight.Lat, Bound.Lat2)
   Return hBound
   

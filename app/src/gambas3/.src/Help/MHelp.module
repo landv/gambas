@@ -476,6 +476,17 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   
 End
 
+Public Sub LoadHelpBrowser()
+  
+  If Not Class.IsLoaded("FHelpBrowser") Then
+    Inc Application.Busy
+    FHelpBrowser.Load
+    Dec Application.Busy
+  Endif
+  
+End
+
+
 '' # Description
 '' 
 '' Initialize the help browser with the help on a specific symbol, and show it automatically.
@@ -502,6 +513,7 @@ End
 
 Public Sub ShowHelpBrowserWith(iType As Integer, sSymbol As String, Optional sClass As String, Optional sMore As String)
   
+  LoadHelpBrowser
   FHelpBrowser.Show
   InitWebViewWith(Null, iType, sSymbol, sClass, sMore)
   
@@ -974,4 +986,17 @@ Catch
   Output To Default
   hWebView.Html = "<h2>" & ("This page does not exist.") & "</h2>"
   
+End
+
+Public Sub LoadCustom(sPage As String) As String
+
+  Dim sHtml As String
+
+  sHtml = File.Load("help" &/ sPage)
+  sHtml = Replace(sHtml, "$(style)", File.Load("help/wiki/style.css") & File.Load("help/wiki/style-custom.css"))
+  
+  Return sHtml
+
+  
+
 End

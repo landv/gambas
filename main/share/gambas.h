@@ -1024,6 +1024,7 @@ typedef
 		char *(*NewString)(const char *, int);
 		char *(*NewZeroString)(const char *);
 		char *(*TempString)(const char *, int);
+		char *(*RefString)(char *);
 		void (*FreeString)(char **);
 		char *(*FreeStringLater)(char *);
 		char *(*ExtendString)(char *, int);

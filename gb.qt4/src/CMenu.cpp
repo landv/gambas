@@ -893,6 +893,14 @@ BEGIN_PROPERTY(Menu_Tag)
 
 END_METHOD
 
+
+BEGIN_PROPERTY(Menu_Closed)
+
+	HANDLE_PROXY(_object);
+	GB.ReturnBoolean(!THIS->opened);
+
+END_PROPERTY
+
 //---------------------------------------------------------------------------
 
 GB_DESC CMenuChildrenDesc[] =
@@ -942,6 +950,8 @@ GB_DESC CMenuDesc[] =
 	GB_METHOD("Delete", NULL, Menu_Delete, NULL),
 	GB_METHOD("Show", NULL, Menu_Show, NULL),
 	GB_METHOD("Hide", NULL, Menu_Hide, NULL),
+
+	GB_PROPERTY_READ("Closed", "b", Menu_Closed),
 
 	//GB_EVENT("Delete", NULL, NULL, &EVENT_Destroy), // Must be first
 	GB_EVENT("Click", NULL, NULL, &EVENT_Click),
@@ -1022,6 +1032,8 @@ void CMenu::slotShown(void)
 	HANDLE_PROXY(menu);
 	
 	GB.Ref(menu);
+	
+	menu->opened = TRUE;
 
 	GB.Raise(menu, EVENT_Show, 0);
 
@@ -1042,6 +1054,8 @@ void CMenu::slotHidden(void)
 	//qDebug("slotHidden: sender = %p  menuAction = %p", sender(), ((QMenu *)sender())->menuAction());
 	GET_MENU_SENDER(menu);
 	HANDLE_PROXY(menu);
+
+	menu->opened = FALSE;
 
 	if (GB.CanRaise(menu, EVENT_Hide))
 	{

@@ -81,7 +81,7 @@ Public Sub _new()
   cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
   cmbTheme.Add(("Custom"), 0)
   
-  cmbIconTheme.List = [("Desktop"), "Gambas", "Gnome", "KDE", "Trinity", "KDE4", "KDE5", "LXDE", "Mate", "XFCE"].Insert(Stock.Themes)
+  cmbIconTheme.List = [("Desktop"), "Gnome", "KDE", "Trinity", "KDE4", "KDE5", "LXDE", "Mate", "XFCE"].Insert(Stock.Themes)
   cmbBrowser.List = [("(Default)"), "Konqueror", "Rekonq", "Firefox", "Iceweasel", "Epiphany", "SeaMonkey", "Opera", "Chromium"]
   cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "lxterminal", "XTerm"]
   txtEditorFont.Default = Project.DEFAULT_FONT
@@ -257,6 +257,7 @@ Private Sub RefreshEditor()
   MTheme.WriteSettings(Settings, "Highlight", $cCurrent)
   Settings["/Editor/Font"] = txtEditorFont.Value
   
+  Project.InitWebView
   Project.RefreshBreakpointPicture
   
   For Each hFile In Project.Files
@@ -269,6 +270,8 @@ Private Sub RefreshEditor()
   FFormStack.ReadConfig
   FOutput.ReadConfig
   FProfile.ReadConfig
+  FDebugInfo.ReadConfig
+  FDebugExpr.ReadConfig
 
 End
 
@@ -278,6 +281,7 @@ Private Sub RefreshConsole()
   
   Settings["/ConsoleFont"] = txtConsoleFont.Value
   FOutput.ReadConfig
+  FDebugInfo.ReadConfig
   Project.InitWebView
   
 End
@@ -1075,7 +1079,7 @@ End
 Public Sub tvwIgnore_Change()
 
   While tvwIgnore.Rows.Count 
-    If Trim(tvwIgnore[tvwIgnore.Rows.Max, 0].Text) Or tvwIgnore.Row = tvwIgnore.Rows.Max Then Return
+    If Trim(tvwIgnore[tvwIgnore.Rows.Max, 0].Text) Or If tvwIgnore.Row = tvwIgnore.Rows.Max Then Return
     Dec tvwIgnore.Rows.Count
   Wend
 

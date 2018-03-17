@@ -173,6 +173,74 @@ void COLOR_hsv_to_rgb(int h, int s, int v, int *R, int *G, int *B)
 	}
 }
 
+static int get_luminance(CCOLOR *_object)
+{
+	return (int)(0.299 * THIS->r + 0.587 * THIS->g + 0.114 * THIS->b + 0.5);
+}
+
+
+int COLOR_get_luminance(GB_COLOR col)
+{
+	CCOLOR info;
+	gt_color_to_rgba(col, &info.r, &info.g, &info.b, &info.a);
+	return get_luminance(&info);
+}
+
+
+static void set_luminance(CCOLOR *_object, int l)
+{
+	int c;
+	
+	if (l <= 0)
+	{
+		THIS->r = 0;
+		THIS->g = 0;
+		THIS->b = 0;
+		return;
+	}
+	else if (l >= 255)
+	{
+		THIS->r = 255;
+		THIS->g = 255;
+		THIS->b = 255;
+		return;
+	}
+	
+	for(;;)
+	{
+		c = get_luminance(THIS);
+		if (c == l)
+			return;
+		if (c == (l + 1) || c == (l - 1))
+			break;
+		THIS->r = MinMax(THIS->r + l - c, 0, 255);
+		THIS->g = MinMax(THIS->g + l - c, 0, 255);
+		THIS->b = MinMax(THIS->b + l - c, 0, 255);
+	}
+	
+	THIS->g = MinMax(THIS->g + ((l > c) ? 1 : -1), 0, 255);
+	c = get_luminance(THIS);
+	if (c == l)
+		return;
+	
+	THIS->r = MinMax(THIS->r + ((l > c) ? 1 : -1), 0, 255);
+	c = get_luminance(THIS);
+	if (c == l)
+		return;
+	
+	THIS->b = MinMax(THIS->b + ((l > c) ? 1 : -1), 0, 255);
+}
+
+
+GB_COLOR COLOR_set_luminance(GB_COLOR col, int l)
+{
+	CCOLOR info;
+	gt_color_to_rgba(col, &info.r, &info.g, &info.b, &info.a);
+	set_luminance(&info, l);
+	return gt_rgba_to_color(info.r, info.g, info.b, info.a);
+}
+
+
 GB_COLOR COLOR_merge(GB_COLOR col1, GB_COLOR col2, double weight)
 {
 	int r, g, b;
@@ -285,9 +353,12 @@ END_METHOD
 
 BEGIN_METHOD(Color_get, GB_INTEGER color)
 
+	static GB_CLASS klass = 0;
 	CCOLOR *info;
 
-	info = GB.New(GB.FindClass("ColorInfo"), NULL, NULL);
+	if (!klass) klass = GB.FindClass("ColorInfo");
+	info = GB.New(klass, NULL, NULL);
+	
 	gt_color_to_rgba(VARG(color), &info->r, &info->g, &info->b, &info->a);
   GB.ReturnObject(info);
 
@@ -400,7 +471,10 @@ END_PROPERTY
 
 BEGIN_PROPERTY(ColorInfo_Luminance)
 
-	GB.ReturnInteger((int)(0.299 * THIS->r + 0.587 * THIS->g + 0.114 * THIS->b + 0.5));
+	if (READ_PROPERTY)
+		GB.ReturnInteger(get_luminance(THIS));
+	else
+		set_luminance(THIS, VPROP(GB_INTEGER));
 
 END_PROPERTY
 

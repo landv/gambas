@@ -35,6 +35,8 @@ Private $iLineCap As Integer
 Private $iLineJoin As Integer
 Private $iFillRule As Integer
 
+Private $iNoUpdateBalance As Integer
+
 'Static Public Value As String  '"radialgradient(0.5,0.5,1,0.5,0.5,[&hFFFFFF,&h000000,&h00FF00],[0,0.5,1])" '"lineargradient(0,0.5,1,0.5,[&hFFFFFF,&h000000,&h00FF00],[0,0.5,1])"
 
 Private Sub GetCurrent() As FImageEditor
@@ -74,6 +76,7 @@ Public Sub _new()
   SetLineCap(Paint.LineCapRound)
   SetLineJoin(Paint.LineJoinRound)
   SetFillRule(Paint.FillRuleWinding)
+  'RefreshTextOption
   
 End
 
@@ -788,12 +791,13 @@ Public Sub AddClipboard(hImage As Image, sText As String)
   Endif
   hClip.MakeThumb(hImage)
   
-  $aClipboard.Add(hClip)
+  $aClipboard.Add(hClip, 1)
+  If $aClipboard.Count > 16 Then $aClipboard.Remove($aClipboard.Max)
   gvwClipboard.Rows.Count = $aClipboard.Count
   
   If $aClipboard.Count > 1 Then
-    gvwClipboard.Row = $aClipboard.Max
-    tabBrush.Index = 2
+    gvwClipboard.Row = 1
+    'tabBrush.Index = 2
   Endif
   
 End
@@ -875,6 +879,8 @@ Private Sub RefreshClipboard()
   'Dim aFormat As String[]
   'Dim iFormat As Integer
   
+  If Not Clipboard.HasChanged Then Return
+  
   Inc Application.Busy
   'aFormat = Clipboard.Formats
   'iFormat = aFormat.Find("image/*", gb.Like)
@@ -912,7 +918,7 @@ Public Sub GetClipboard() As Image
 
   Dim hImage As Image
   
-  If tabBrush.Index <> 2 Then Return
+  If tabBrush.Index <> 2 Then tabBrush.Index = 2
   
   Try hImage = $aClipboard[gvwClipboard.Row].Image
   If Not hImage Then Return
@@ -939,9 +945,14 @@ Public Sub btnBalanceReset_Click()
 
   Dim hCtrl As SliderBox
   
+  Inc $iNoUpdateBalance
+  
   For Each hCtrl In [slbBrightness, slbContrast, slbGamma, slbHue, slbSaturation, slbLightness, slbBlur, slbTransparency]
     hCtrl.Value = 0
   Next
+  
+  Dec $iNoUpdateBalance
+  UpdateBalance
   
 End
 
@@ -980,6 +991,8 @@ Private Sub UpdateBalance()
 
   Dim hFile As Object
   Dim hImageEditor As FImageEditor
+  
+  If $iNoUpdateBalance Then Return
   
   For Each hFile In Project.Files
     Try hImageEditor = hFile
@@ -1247,14 +1260,22 @@ End
 
 Public Sub txtGridRes_Change()
 
+  txtGridSnap.MaxValue = txtGridRes.Value
+  txtGridSnap.Step = Lsl(1, Max(0, CInt(Log2(txtGridRes.Value)) - 3))
   Try GetCurrent().UpdateGrid
 
 End
 
-Public Sub cmbGridSub_Click()
+Public Sub txtGridSnap_Change()
 
-  Try GetCurrent().UpdateGrid
+  'Try GetCurrent().UpdateGrid
 
+End
+
+Public Sub GetGridDiagonal() As Boolean
+  
+  Return chkGridDiag.Value
+  
 End
 
 Public Sub GetGridResolution() As Integer
@@ -1263,9 +1284,9 @@ Public Sub GetGridResolution() As Integer
   
 End
 
-Public Sub GetGridSubdivision() As Integer
+Public Sub GetGridSnap() As Integer
   
-  Return CInt(cmbGridSub.Text)
+  Return txtGridSnap.Value
   
 End
 
@@ -1462,4 +1483,22 @@ Public Sub btnFillRule_Click()
   
   SetFillRule(1 - $iFillRule)
   
+End
+
+Public Sub GetFillRule() As Integer
+  
+  Return $iFillRule
+  
+End
+
+Public Sub ClearPaste()
+  
+  tabBrush.Index = 0
+  
+End
+
+Public Sub chkGridDiag_Click()
+
+  Try GetCurrent().UpdateGrid
+
 End

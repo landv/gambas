@@ -87,18 +87,9 @@ End
 Public Sub Load()
   
   Dim aBook As Integer[]
-  Dim iLine As Integer
-  Dim hEditor As TextEditor
   
   aBook = Project.Config["Bookmarks/" &/ $sName]
-  If aBook Then
-    aBook.Sort
-    hEditor = GetEditor()    
-    For Each iLine In aBook
-      Try hEditor[iLine].Bookmark = True
-    Next
-  Endif
-  
+  If aBook Then GetEditor().Bookmarks = aBook
   FillMenu(aBook)
   
 End

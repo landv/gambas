@@ -1297,7 +1297,7 @@ static bool add_date_token(DATE_SERIAL *date, char *token, int count)
 			if (count <= 2 && date->year >= 1939 && date->year <= 2038)
 				add_number(date->year - (date->year >= 2000 ? 2000 : 1900), 2);
 			else
-				add_number(date->year, 0);
+				add_number(date->year, (count == 1 ? 0 : count));
 
 			break;
 

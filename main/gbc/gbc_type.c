@@ -107,30 +107,6 @@ size_t TYPE_sizeof(TYPE type)
 
 
 
-char *TYPE_get_desc(TYPE type)
-{
-  static char buf[256];
-
-  TYPE_ID id;
-  int value;
-
-  id = TYPE_get_id(type);
-  value = TYPE_get_value(type);
-
-  if (id == T_ARRAY)
-  {
-    strcpy(buf, TYPE_name[JOB->class->array[value].type.t.id]);
-    strcat(buf, "[]");
-  }
-  else
-  {
-    strcpy(buf, TYPE_name[id]);
-  }
-
-  return buf;
-}
-
-
 const char *TYPE_get_short_desc(TYPE type)
 {
   static const char *name[] = {
