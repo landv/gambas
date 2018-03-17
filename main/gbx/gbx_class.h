@@ -295,7 +295,8 @@ typedef
 		unsigned has_convert : 1;         //          If the _convert interface is implemented
 		unsigned has_operators : 1;       //          If the _operators interface is implemented
 		unsigned is_simple : 1;           //          Class has no parent, no child, is not virtual, and has no 'check' function.
-		unsigned _reserved : 2;           //  24  36
+		unsigned has_free : 1;            //          The class has a free function
+		unsigned _reserved : 1;           //  24  36
 
 		short n_desc;                     //  26  38  number of descriptions
 		short n_event;                    //  28  40  number of events

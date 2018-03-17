@@ -768,7 +768,7 @@ _PUSH_ME:
 			SP->_class.class = CP;
 		}
 	}
-
+	
 	if (GET_UX() & 2)
 	{
 		// The used class must be in the stack, because it is tested by exec_push && exec_pop
