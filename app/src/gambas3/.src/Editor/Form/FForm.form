@@ -678,9 +678,12 @@
   { dwgInfo DrawingArea
     MoveScaled(65,15,20,6)
     Visible = False
-    Background = Color.TooltipBackground
+    Font = Font["-1"]
     Foreground = Color.TooltipForeground
     Ignore = True
+  }
+  { timMoveInfo #Timer
+    #MoveScaled(108,16)
   }
 }
 

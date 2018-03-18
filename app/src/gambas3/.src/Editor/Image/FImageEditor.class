@@ -70,7 +70,7 @@ Private $bShowGrid As Boolean
 Private $hTextSelect As CImageSelection
 
 Private $sLastColor As Integer
-Private $sInfo As String
+Private $cInfo As New Collection
 
 Public Sub _new(sPath As String)
   
@@ -760,6 +760,8 @@ End
 
 Public Sub imvImage_MouseDown()
 
+  Dim hPoint As PointF
+  
   Me.SetFocus
   $bPress = Mouse.Left
   If $bDblClick Then Return
@@ -774,12 +776,14 @@ Public Sub imvImage_MouseDown()
     
     Case "draw", "erase"
       
-      If Not $bCtrl Then 
-        $hLastPoint = GetImagePos()
-        If $hMagnet Then $hLastPoint = $hMagnet
+      If Not $bShift Then
+        If Not $bCtrl Then 
+          $hLastPoint = GetImagePos()
+          If $hMagnet Then $hLastPoint = $hMagnet
+        Endif
+        
+        StartStroke()
       Endif
-      
-      StartStroke()
       'AddStroke($hLastPoint)
       
     Case "line"
@@ -865,34 +869,35 @@ End
 
 Private Sub UpdateInfo()
   
-  Dim sInfo As String
+  $cInfo.Clear
 
   If $hCurrentPoint Then
     If $hCurrentPoint.InRect(RectF(0, 0, $hImage.W, $hImage.H)) Or If $bPress Then
       If $sTool = "draw" Or $sTool = "erase" And If FImageProperty.GetSize() = 0 Then
-        sInfo = CStr(CInt($hCurrentPoint.X)) & " / " & CStr(CInt($hCurrentPoint.Y))
+        $cInfo!X = CStr(CInt($hCurrentPoint.X))
+        $cInfo!Y = CStr(CInt($hCurrentPoint.Y))
       Else
-        sInfo = Format($hCurrentPoint.X, "0.###") & " / " & Format($hCurrentPoint.Y, "0.###")
+        $cInfo!X = Format($hCurrentPoint.X, "0.##")
+        $cInfo!Y = Format($hCurrentPoint.Y, "0.##")
       Endif
       If $bPress Then
         If $sTool = "rectangle" Or If $sTool = "ellipse" Then
-          sInfo &= "  [ " & Format($fLastSelectW, "0.###") & " × " & Format($fLastSelectH, "0.###") & " ]"
+          $cInfo!Width = Format($fLastSelectW, "0.#")
+          $cInfo!Height = Format($fLastSelectH, "0.#")
         Endif
       Endif
       
-      With Color[$hImage[$hCurrentPoint.X, $hCurrentPoint.Y]]
-        sInfo &= "\nR:" & CStr(.Red) & " G:" & CStr(.Green) & " B:" & CStr(.Blue) & " A:" & CStr(.Alpha)
-      End With
+      $cInfo!Color = $hImage[$hCurrentPoint.X, $hCurrentPoint.Y]
     Endif
   Endif
-    
-  If sInfo Then 
-    $sInfo = sInfo
-  Else
-    $sInfo = GetImageInfo()
+  
+  If $cInfo.Count = 0 Then
+    $cInfo!Width = $hImage.Width
+    $cInfo!Height = $hImage.Height
+    $cInfo!Size = Util.GetFileSize($hImage.Width * $hImage.Height * 4)
   Endif
-
-  dwgInfo.Resize(dwgInfo.Font.TextWidth($sInfo) + Desktop.Scale * 2, dwgInfo.Font.Height * 2 + Desktop.Scale)
+  
+  dwgInfo.Resize(dwgInfo.Font.TextWidth("99999") * 4 + Desktop.Scale * 4, dwgInfo.Font.Height * 2 + Desktop.Scale * 2)
   MoveInfo
   dwgInfo.Refresh
   
@@ -1098,8 +1103,14 @@ Public Sub imvImage_MouseMove()
       
       Case "draw", "erase"
         
-        If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
-          AddStroke($hCurrentPoint)
+        If $bShift And If $sTool = "draw" Then
+          With GetImagePos()
+            FImageProperty.SetColor($hImage[.X, .Y])
+          End With
+        Else
+          If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
+            AddStroke($hCurrentPoint)
+          Endif
         Endif
       
       Case "line"
@@ -1474,19 +1485,23 @@ Public Sub imvImage_MouseUp()
     
     Case "draw", "erase"
       
-      If $sTool = "draw" Then
-        If $hImage[$hLastPoint.X, $hLastPoint.Y] <> FImageProperty.GetColor() Then
-          $sLastColor = $hImage[$hLastPoint.X, $hLastPoint.Y]
+      If Not $bShift Then
+        
+        If $sTool = "draw" Then
+          If $hLastPoint And If $hImage[$hLastPoint.X, $hLastPoint.Y] <> FImageProperty.GetColor() Then
+            $sLastColor = $hImage[$hLastPoint.X, $hLastPoint.Y]
+          Endif
         Endif
+        
+        hImage = $hImage.Copy()
+        Paint.Begin(hImage)
+        If $sTool = "erase" Then Paint.Operator = Paint.OperatorDestOut
+        Paint.DrawImage($hStrokeImage, 0, 0,,, FImageProperty.GetOpacity() / 255)
+        Paint.End
+        SetImage(hImage)
+        $hStrokeImage = Null
+        
       Endif
-      
-      hImage = $hImage.Copy()
-      Paint.Begin(hImage)
-      If $sTool = "erase" Then Paint.Operator = Paint.OperatorDestOut
-      Paint.DrawImage($hStrokeImage, 0, 0,,, FImageProperty.GetOpacity() / 255)
-      Paint.End
-      SetImage(hImage)
-      $hStrokeImage = Null
       
     Case "line"
       If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
@@ -2735,12 +2750,6 @@ Public Sub btnOffset_Click()
 
 End
 
-Public Sub GetImageInfo() As String
-  
-  Return CStr($hImage.Width) & "×" & CStr($hImage.Height) & "\n" & Util.GetFileSize($hImage.Width * $hImage.Height * 4)
-  
-End
-
 Fast Private Sub CreateSelectionFromMask(hImage As Image) As Polygon[]
   
   Dim X, Y As Integer
@@ -3101,7 +3110,76 @@ End
 
 Public Sub dwgInfo_Draw()
 
-  Paint.DrawText($sInfo, Desktop.Scale, Desktop.Scale \ 2, dwgInfo.W - Desktop.Scale * 2, dwgInfo.H - Desktop.Scale, Align.Right)
+  Dim DS As Integer = Desktop.Scale
+  Dim X As Integer
+  Dim Y As Integer
+  Dim W As Float
+  Dim H As Integer
+  Dim iCol As Integer
+  
+  'dwgInfo.Background = 
+
+  If Not $cInfo Then Return
+
+  iCol = Color.SetAlpha(Color.TooltipBackground, 128)
+  
+  H = Paint.Font.Height + DS
+  Paint.FillRect(0, 0, Paint.W, H, iCol)
+  Paint.FillRect(0, H + 1, Paint.W, Paint.H - H - 1, iCol)
+  
+  X = DS
+  Y = DS \ 2
+  W = (Paint.W - DS * 2) / 4
+  H = Paint.Font.Height
+  
+  If $cInfo.Exist("Color") Then
+    
+    Paint.DrawText($cInfo!X, X, Y, W - DS, H, Align.Right)
+    Paint.DrawText("•", X, Y, W * 2, H, Align.Center)
+    X += W
+    Paint.DrawText($cInfo!Y, X + DS, Y, W, H, Align.Left)
+    X += W
+    
+    If $cInfo.Exist("Width") Then
+      Paint.DrawText($cInfo!Width, X, Y, W - DS, H, Align.Right)
+      Paint.DrawText("×", X, Y, W * 2, H, Align.Center)
+      X += W
+      Paint.DrawText($cInfo!Height, X + DS, Y, W, H, Align.Left)
+      X += W
+    Endif
+    
+    X = DS
+    Y += H + DS
+    
+    With Color[$cInfo!Color]
+      
+      X += (DS * 3) \ 2
+      Paint.DrawText(CStr(.Red), X, Y, W, H, Align.Left)
+      X += W
+      Paint.DrawText(CStr(.Green), X, Y, W, H, Align.Left)
+      X += W
+      Paint.DrawText(CStr(.Blue), X, Y, W, H, Align.Left)
+      X += W
+      Paint.DrawText(CStr(.Alpha), X, Y, W, H, Align.Left)
+      
+      X = DS
+      Y += (H - DS) / 2
+      For Each iCol In [Color.Red, Color.Green, Color.Blue, Color.White]
+        Paint.Ellipse(X, Y, DS, DS)
+        Paint.Background = Color.SetAlpha(iCol, 64)
+        Paint.Fill
+        X += W
+      Next
+      
+    End With
+    
+  Else
+    
+    Paint.DrawText($cInfo!Width & " × " & $cInfo!Height, X, Y, Paint.W - X, H, Align.Center)
+    Y += H + DS
+    Paint.DrawText($cInfo!Size, X, Y, Paint.W - X, H, Align.Center)
+    
+  Endif
 
 End
 

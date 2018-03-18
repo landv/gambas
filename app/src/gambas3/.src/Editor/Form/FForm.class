@@ -93,6 +93,8 @@ Private $hCtrlFrame As Control
 Private $hDropTarget As CControl
 Private $bLockArrangement As Boolean
 
+Private $cInfo As Collection
+
 ' Static Private Sub Shortcut(Text As String, sShortcut As String) As String
 ' 
 '   Dim iPos As Integer
@@ -124,8 +126,6 @@ Public Sub _new(sPath As String)
   $hFamily = CFamily.Get(File.Ext(sPath))
   Family = $hFamily.Name
   panBorder.Background = $hFamily.Background
-
-  dwgInfo.Background = Color.SetAlpha(dwgInfo.Background, 128)
 
   Container = panBorder
   
@@ -1643,8 +1643,10 @@ Public Sub UpdateInfo(hCCtrl As CControl)
 
   dwgInfo.Show
   dwgInfo.Refresh
-  sText = Subst("<b>&1</b> &2<br>&3:&4 &5×&6", hCCtrl.Name, hCCtrl.Kind, hCCtrl.X, hCCtrl.Y, hCtrl.Width, hCtrl.Height)
-  dwgInfo.Resize(dwgInfo.Font.RichTextWidth(sText) + Desktop.Scale * 2, dwgInfo.Font.Height * 2 + Desktop.Scale)
+  
+  $cInfo = ["Name": hCCtrl.Name, "Kind": hCCtrl.Kind, "X": hCCtrl.X, "Y": hCCtrl.Y, "Width": hCCtrl.Width, "Height": hCCtrl.Height]
+  
+  dwgInfo.Resize(dwgInfo.Font.TextWidth("99999") * 4 + Desktop.Scale * 4, dwgInfo.Font.Height * 3 + Desktop.Scale * 2)
   dwgInfo.Tag = sText
   MoveInfo
 
@@ -3863,10 +3865,17 @@ Private Sub MoveInfo()
 
 End
 
+Public Sub timMoveInfo_Timer()
+  
+  MoveInfo
+  
+End
+
+
 Public Sub svwWorkspace_Arrange()
 
   dwgBackground.Move(0, 0, svwWorkspace.ScrollW, svwWorkspace.ScrollH)
-  MoveInfo
+  timMoveInfo.Trigger
 
 End
 
@@ -4306,6 +4315,46 @@ End
 
 Public Sub dwgInfo_Draw()
 
-  Paint.DrawRichText(dwgInfo.Tag, Desktop.Scale, Desktop.Scale \ 2, Paint.W, Paint.H - Desktop.Scale, Align.Normal)
+  Dim DS As Integer = Desktop.Scale
+  Dim X As Integer
+  Dim Y As Integer
+  Dim W As Float
+  Dim H As Integer
+  Dim iCol As Integer
+  
+  'dwgInfo.Background = 
+
+  If Not $cInfo Then Return
+
+  iCol = Color.SetAlpha(Color.TooltipBackground, 128)
+  
+  H = Paint.Font.Height * 2 + DS
+  Paint.FillRect(0, 0, Paint.W, H, iCol)
+  Paint.FillRect(0, H + 1, Paint.W, Paint.H - H - 1, iCol)
+
+  Paint.ClipRect = Rect(DS, DS \ 2, Paint.W - DS * 2, Paint.H - DS)
+
+  Y = DS \ 2
+  Paint.Font.Bold = True
+  Paint.DrawText($cInfo!Name, DS, Y, Paint.W - DS * 2, Paint.Font.Height, Align.Center)
+  Paint.Font.Bold = False
+  Y += Paint.Font.Height
+  Paint.DrawText($cInfo!Kind, DS, Y, Paint.W - DS * 2, Paint.Font.Height, Align.Center)
+  
+  X = DS
+  Y = DS + Paint.Font.Height * 2
+  W = (Paint.W - DS * 2) / 4
+  H = Paint.H - Y
+  
+  Paint.DrawText($cInfo!X, X, Y, W - DS, H, Align.Right)
+  Paint.DrawText("•", X, Y, W * 2, H, Align.Center)
+  X += W
+  Paint.DrawText($cInfo!Y, X + DS, Y, W, H, Align.Left)
+  X += W
+  
+  Paint.DrawText($cInfo!Width, X, Y, W - DS, H, Align.Right)
+  Paint.DrawText("×", X, Y, W * 2, H, Align.Center)
+  X += W
+  Paint.DrawText($cInfo!Height, X + DS, Y, W, H, Align.Left)
 
 End

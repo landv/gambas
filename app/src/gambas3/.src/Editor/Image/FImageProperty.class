@@ -134,6 +134,7 @@ End
 Public Sub SetColor(iColor As Integer)
   
   cchColor.Value = Color.SetAlpha(iColor, 0)
+  slbOpacity.Value = 255 - Color[iColor].Alpha
   
 End
 
