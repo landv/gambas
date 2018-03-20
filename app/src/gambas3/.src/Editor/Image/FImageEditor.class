@@ -78,7 +78,8 @@ Public Sub _new(sPath As String)
   Path = sPath
   
   dwgBackground.Lower
-  dwgInfo.Background = Color.SetAlpha(dwgInfo.Background, 128)
+  
+  Project.InitTooltip(dwgInfo)
   
   'Reload
   
@@ -760,8 +761,6 @@ End
 
 Public Sub imvImage_MouseDown()
 
-  Dim hPoint As PointF
-  
   Me.SetFocus
   $bPress = Mouse.Left
   If $bDblClick Then Return
@@ -1449,6 +1448,10 @@ Public Sub Form_KeyPress()
       
     Endif
     
+  Endif
+  
+  If Key.Code = Key.F6 Then
+    Action[".tooltip", Me].Value = Not Action[".tooltip", Me].Value
   Endif
   
   imvImage_MouseMove
@@ -3015,6 +3018,8 @@ Public Sub Action_Activate((Key) As String) As Boolean
   Select Case Key
     Case ".locked"
       Project.SetReadOnly(Path, Action[Key, Me].Value)
+    Case ".tooltip"
+      dwgInfo.Visible = Action[".tooltip", Me].Value
     Case Else
       Return True
   End Select

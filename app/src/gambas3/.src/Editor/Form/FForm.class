@@ -129,6 +129,8 @@ Public Sub _new(sPath As String)
 
   Container = panBorder
   
+  Project.InitTooltip(dwgInfo)
+  
 End
 
 Public Sub Reload() As Boolean
@@ -1641,7 +1643,6 @@ Public Sub UpdateInfo(hCCtrl As CControl)
   
   hCtrl = hCCtrl.Control
 
-  dwgInfo.Show
   dwgInfo.Refresh
   
   $cInfo = ["Name": hCCtrl.Name, "Kind": hCCtrl.Kind, "X": hCCtrl.X, "Y": hCCtrl.Y, "Width": hCCtrl.Width, "Height": hCCtrl.Height]
@@ -2914,21 +2915,13 @@ Public Sub Form_KeyPress()
         MoveSelection(D, 0, bFree)
       Endif
       Stop Event
+    Case Key.F6
+      Action[".tooltip", Me].Value = Not Action[".tooltip", Me].Value
     ' Case Key["L"]
     '   If Key.Control Then FMain.SearchProject
   End Select
 
 End
-
-' Public Sub Form_KeyRelease()
-'   
-'   If Key.Code = 0 And If Key.Shift Then
-'     $bShowControlFrame = False
-'     DrawControlFrame
-'   Endif
-' 
-' End
-
 
 Public Sub UpdateBorder()
 
@@ -3237,6 +3230,9 @@ Public Sub Action_Activate((Key) As String) As Boolean
 
     Case ".grid"
       UpdateSnap
+      
+    Case ".tooltip"
+      dwgInfo.Visible = Action[".tooltip", Me].Value
 
     Case ".move-tab-first"
       MoveTab(Master, MOVE_FIRST)
@@ -4322,8 +4318,6 @@ Public Sub dwgInfo_Draw()
   Dim H As Integer
   Dim iCol As Integer
   
-  'dwgInfo.Background = 
-
   If Not $cInfo Then Return
 
   iCol = Color.SetAlpha(Color.TooltipBackground, 128)
