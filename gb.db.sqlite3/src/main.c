@@ -793,6 +793,27 @@ static int exec_query(DB_DATABASE *db, const char *query, DB_RESULT *result, con
 
 /*****************************************************************************
 
+	get_last_insert_id()
+
+	Return the value of the last serial field used in an INSERT statement
+
+	<db> is the database handle, as returned by open_database()
+
+*****************************************************************************/
+
+static int64_t get_last_insert_id(DB_DATABASE *db)
+{
+	SQLITE_RESULT *res;
+
+	if (do_query(db, "Unable to retrieve last insert id", &res, "select last_insert_rowid();", 0))
+		return -1;
+
+	return atoll(sqlite_query_get_string(res, 0, 0));
+}
+
+
+/*****************************************************************************
+
   query_init()
 
   Initialize an info structure from a query result.

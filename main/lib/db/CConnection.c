@@ -763,6 +763,13 @@ BEGIN_PROPERTY(Connection_Handle)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Connection_LastInsertId)
+
+	CHECK_DB();
+	GB.ReturnLong((*THIS->driver->GetLastInsertId)(&THIS->db));
+
+END_PROPERTY
+
 GB_DESC CConnectionDesc[] =
 {
 	GB_DECLARE("_Connection", sizeof(CCONNECTION)),
@@ -786,7 +793,9 @@ GB_DESC CConnectionDesc[] =
 	//GB_PROPERTY_READ("Transaction", "i", Connection_Transaction),
 	GB_PROPERTY("IgnoreCharset", "b", CCONNECTION_ignore_charset),
 	GB_PROPERTY_READ("Collations", "String[]", Connection_Collations),
-	GB_STATIC_PROPERTY_READ("Handle", "p", Connection_Handle),
+	GB_PROPERTY_READ("Handle", "p", Connection_Handle),
+	
+	GB_PROPERTY_READ("LastInsertId", "l", Connection_LastInsertId),
 
 	GB_METHOD("Open", NULL, CCONNECTION_open, NULL),
 	GB_METHOD("Close", NULL, CCONNECTION_close, NULL),
@@ -865,7 +874,7 @@ GB_DESC CDBDesc[] =
 	//GB_STATIC_PROPERTY("Views", ".ConnectionViews", CCONNECTION_views),
 	GB_STATIC_PROPERTY("Databases", ".Connection.Databases", CCONNECTION_databases),
 	GB_STATIC_PROPERTY("Users", ".Connection.Users", CCONNECTION_users),
-
+	
 	GB_END_DECLARE
 };
 
