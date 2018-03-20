@@ -584,10 +584,6 @@ Static Public Function _get((Key) As String, Optional {Default} As String) As Pi
       
       Try hPict = _DefaultStock.LoadImage(Key, iSize, Mid$(sPath, 2)).Picture
       If Not Error Then Goto __RETURN
-      Try hPict = PictureFromSvg(_DefaultStock.LoadSvgImage(Key, Mid$(sPath, 2)), iSize)
-      If Not Error Then Goto __RETURN
-      Try hPict = _DefaultStock.LoadImage(Key, 32, Mid$(sPath, 2)).Stretch(iSize, iSize).Picture
-      If Not Error Then Goto __RETURN
       
       'If Key = "tools" Then Error "...failed"
       

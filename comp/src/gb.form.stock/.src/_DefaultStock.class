@@ -56,9 +56,28 @@ End
 ' End
 ' 
 ' 
-Static Public Sub LoadImage(sKey As String, iSize As Integer, Optional sStock As String) As Image
+
+Static Private Sub Stretch(hImage As Image, iSize As Integer) As Image
+  
+  If hImage.W = iSize And If hImage.H = iSize Then Return hImage
+  Return hImage.Stretch(iSize, iSize)
+  
+End
+
+Static Private Sub LoadIcon(sKey As String, iSize As Integer, sStock As String) As Image
 
   Dim sPath As String
+  
+  sPath = sStock &/ CStr(iSize) &/ sKey
+  If System.RightToLeft And If Exist(sPath & "-rtl.png") Then sPath &= "-rtl"
+  If $bDebug And If iSize = 32 And If Not Exist(sPath & ".png") Then Error "gb.form.stock: unknown icon: " & sKey
+  Return Image.Load(sPath & ".png")
+  
+End
+
+
+Static Public Sub LoadImage(sKey As String, iSize As Integer, Optional sStock As String) As Image
+
   Dim hImage As Image
 
   If Not $bInit Then
@@ -68,11 +87,19 @@ Static Public Sub LoadImage(sKey As String, iSize As Integer, Optional sStock As
 
   If $cSynonymous.Exist(sKey) Then sKey = $cSynonymous[sKey]
   If Not sStock Or If Not IsDir(sStock) Then sStock = "gambas"
-  sPath = sStock &/ CStr(iSize) &/ sKey
-  If System.RightToLeft And If Exist(sPath & "-rtl.png") Then sPath &= "-rtl"
-  If $bDebug And If iSize = 32 And If Not Exist(sPath & ".png") Then Error "gb.form.stock: unknown icon: " & sKey
+  
   'If sKey = "tools" Then Debug sPath
-  hImage = Image.Load(sPath & ".png")
+  
+  If iSize > 32 Then
+    Try hImage = LoadIcon(sKey, 128, sStock)
+    If Not Error Then Goto RETURN_IMAGE
+  Endif
+  
+  hImage = LoadIcon(sKey, 32, sStock)
+  
+RETURN_IMAGE:
+
+  hImage = Stretch(hImage, iSize)
   If $bDarkTheme And If hImage Then hImage = hImage.Invert(True) 'Color.Background, Color.Foreground)
   Return hImage
   

@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,171,56)
+  MoveScaled(0,0,143,56)
   Icon = Picture["img/16/form.png"]
   Persistent = True
   Arrangement = Arrange.Vertical
@@ -272,7 +272,7 @@
     }
   }
   { tlbForm ToolBar
-    MoveScaled(0,0,169,9)
+    MoveScaled(0,0,140,9)
     Key = "form"
     Text = ("Form")
     Separator = True
@@ -373,17 +373,25 @@
       Toggle = True
       Value = True
     }
+    { ToolButton40 ToolButton
+      MoveScaled(52,0,4,4)
+      ToolTip = ("Toggle information tooltip")
+      Action = ".tooltip"
+      Picture = Picture["icon:/small/info"]
+      Toggle = True
+      Value = True
+    }
     { Separator2 Separator
-      MoveScaled(52,0,1,4)
+      MoveScaled(57,0,1,4)
     }
     { ToolButton19 ToolButton
-      MoveScaled(53,0,4,4)
+      MoveScaled(57,0,4,4)
       ToolTip = ("Bring to foreground")
       Action = ".raise"
       Picture = Picture["icon:/16/raise"]
     }
     { ToolButton20 ToolButton
-      MoveScaled(57,0,4,4)
+      MoveScaled(61,0,4,4)
       ToolTip = ("Send to background")
       Action = ".lower"
       Picture = Picture["icon:/16/lower"]
@@ -675,6 +683,13 @@
       Background = Color.Background
     }
   }
+  { dwgInfo DrawingArea
+    MoveScaled(65,15,20,6)
+    Ignore = True
+  }
+  { timMoveInfo #Timer
+    #MoveScaled(108,16)
+  }
 }
 
 # Gambas Action File 3.0
@@ -901,6 +916,10 @@
     Text = "Smaller font"
     Picture = "icon:/small/zoom-out"
   }
+  { Action tooltip
+    Text = "Toggle information tooltip"
+    Picture = "icon:/small/info"
+  }
   { Action undo
     Text = "Undo"
     Shortcut = "Ctrl+Z"
@@ -915,7 +934,7 @@
 { Toolbars
   { Toolbar form
     Text = "Form"
-    List = "show-class,save,reload,locked,run-me,cut,copy,paste,delete,undo,redo,menu,grid,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-vertical,arrange-horizontal,arrange-column,arrange-row,arrange-hcenter,arrange-vcenter,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,text-font,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
-    Default = "show-class,save,reload,locked,undo,redo,menu,grid,|,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-hcenter,arrange-vcenter,|,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,|,text-font,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
+    List = "show-class,save,reload,locked,run-me,cut,copy,paste,delete,undo,redo,menu,grid,tooltip,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-vertical,arrange-horizontal,arrange-column,arrange-row,arrange-hcenter,arrange-vcenter,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,text-font,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
+    Default = "show-class,save,reload,locked,undo,redo,menu,grid,tooltip,|,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-hcenter,arrange-vcenter,|,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,|,text-font,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
   }
 }

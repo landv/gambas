@@ -1175,7 +1175,7 @@
     Visible = False
   }
   { msgError MessageView
-    MoveScaled(28,10,57,6)
+    MoveScaled(57,10,57,6)
     Animated = True
   }
   { panGlobal Panel
@@ -1246,7 +1246,6 @@
           }
           { panDebug SidePanel
             MoveScaled(3,37,81,14)
-            Visible = False
             ToolTip = ("Debug")
             Arrangement = Arrange.Fill
             Orientation = Align.Bottom
@@ -1254,7 +1253,7 @@
             Transparent = True
             Hidden = True
             { btnClosePanel ToolButton
-              MoveScaled(59,4,4,4)
+              MoveScaled(73,3,4,4)
               Ignore = True
               Picture = Picture["icon:/small/close"]
             }

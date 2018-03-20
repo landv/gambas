@@ -108,7 +108,8 @@ enum {
 	E_CHILD,
 	E_USER,
 	E_NEMPTY,
-	E_UTYPE
+	E_UTYPE,
+	E_FREEREF
 	};
 
 #ifndef __GB_ERROR_C

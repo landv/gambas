@@ -515,8 +515,7 @@ static void query_get_param(int index, char **str, int *len, char quote)
 
 /* Internal function to run a query */
 
-static int do_query(DB_DATABASE *db, const char *error, PGresult **pres,
-										const char *qtemp, int nsubst, ...)
+static int do_query(DB_DATABASE *db, const char *error, PGresult **pres, const char *qtemp, int nsubst, ...)
 {
 	PGconn *conn = (PGconn *)db->handle;
 	va_list args;
@@ -951,6 +950,25 @@ static int exec_query(DB_DATABASE *db, const char *query, DB_RESULT *result, con
 }
 
 
+/*****************************************************************************
+
+	get_last_insert_id()
+
+	Return the value of the last serial field used in an INSERT statement
+
+	<db> is the database handle, as returned by open_database()
+
+*****************************************************************************/
+
+static int64_t get_last_insert_id(DB_DATABASE *db)
+{
+	PGresult *res;
+
+	if (do_query(db, "Unable to retrieve last insert id: &1", &res, "select lastval()", 0))
+		return -1;
+
+	return atoll(PQgetvalue(res, 0, 0));
+}
 
 
 /*****************************************************************************

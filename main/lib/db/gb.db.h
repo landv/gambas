@@ -151,6 +151,7 @@ typedef
 		int (*Rollback)(DB_DATABASE *db);
 		GB_ARRAY (*GetCollations)(DB_DATABASE *db);
 		const char *(*GetQuote)(void);
+		int64_t (*GetLastInsertId)(DB_DATABASE *db);
 
 		struct {
 			void (*Init)(DB_RESULT result, DB_INFO *info, int *count);

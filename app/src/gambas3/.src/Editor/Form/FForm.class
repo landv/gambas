@@ -93,6 +93,8 @@ Private $hCtrlFrame As Control
 Private $hDropTarget As CControl
 Private $bLockArrangement As Boolean
 
+Private $cInfo As Collection
+
 ' Static Private Sub Shortcut(Text As String, sShortcut As String) As String
 ' 
 '   Dim iPos As Integer
@@ -126,6 +128,8 @@ Public Sub _new(sPath As String)
   panBorder.Background = $hFamily.Background
 
   Container = panBorder
+  
+  Project.InitTooltip(dwgInfo)
   
 End
 
@@ -1101,6 +1105,8 @@ Public Sub Control_MouseMove()
     
     If Not $hUndo.IsDisabled() Then $hUndo.Disable
 
+    UpdateInfo($hCurrent)
+    
   Else If $iMode = MODE_MOVE Then
 
     If Last = $hCurrent.Control Then
@@ -1128,10 +1134,12 @@ Public Sub Control_MouseMove()
           
           If Not $hUndo.IsDisabled() Then $hUndo.Disable
         Endif
-
+        
       End With
       
       $bSelectParent = False
+      
+      UpdateInfo($hCurrent)
 
     Endif
 
@@ -1626,22 +1634,41 @@ Private Sub DrawDropFrame()
   
 End
 
+Public Sub UpdateInfo(hCCtrl As CControl)
+
+  Dim hCtrl As Control
+  Dim sText As String
+
+  If Not hCCtrl Then Return
+  
+  hCtrl = hCCtrl.Control
+
+  dwgInfo.Refresh
+  
+  $cInfo = ["Name": hCCtrl.Name, "Kind": hCCtrl.Kind, "X": hCCtrl.X, "Y": hCCtrl.Y, "Width": hCCtrl.Width, "Height": hCCtrl.Height]
+  
+  dwgInfo.Resize(dwgInfo.Font.TextWidth("99999") * 4 + Desktop.Scale * 4, dwgInfo.Font.Height * 3 + Desktop.Scale * 2)
+  dwgInfo.Tag = sText
+  MoveInfo
+
+End
+
 Private Sub DrawControlFrame(hCCtrl As CControl)
   
   Dim hCtrl As Control = hCCtrl.Control
   
-  If hCCtrl = RootControl Or If hCtrl.W < 3 Or If hCtrl.H < 3 Or If hCCtrl.Selected Then
+  If hCCtrl = RootControl Or If hCCtrl.Selected Then
     
     HideFrame
     
   Else 
     
     $hCtrlFrame = hCtrl
-    Try hCtrl.ToolTip = Subst("&1 ( &2 x &3 )", hCCtrl.Name, hCtrl.Width, hCtrl.Height)
-    
     DrawFrame(hCtrl)
     
   Endif
+  
+  UpdateInfo(hCCtrl)
   
 End
 
@@ -2813,6 +2840,8 @@ Private Sub MoveSelection(DX As Integer, DY As Integer, Optional bFree As Boolea
     hCtrl.MoveCoord(hCtrl.Control.X + DX, hCtrl.Control.Y + DY, bFree)
   Next
   $hUndo.End
+  
+  UpdateInfo(Master)
 
 End
 
@@ -2834,6 +2863,8 @@ Private Sub ResizeSelection(DW As Integer, DH As Integer, Optional bFree As Bool
     hCtrl.ResizeCoord(hCtrl.Control.W + DW, hCtrl.Control.H + DH, bFree)
   Next
   $hUndo.End
+
+  UpdateInfo(Master)
 
 End
 
@@ -2884,21 +2915,13 @@ Public Sub Form_KeyPress()
         MoveSelection(D, 0, bFree)
       Endif
       Stop Event
+    Case Key.F6
+      Action[".tooltip", Me].Value = Not Action[".tooltip", Me].Value
     ' Case Key["L"]
     '   If Key.Control Then FMain.SearchProject
   End Select
 
 End
-
-' Public Sub Form_KeyRelease()
-'   
-'   If Key.Code = 0 And If Key.Shift Then
-'     $bShowControlFrame = False
-'     DrawControlFrame
-'   Endif
-' 
-' End
-
 
 Public Sub UpdateBorder()
 
@@ -3122,6 +3145,7 @@ Public Sub Handle_MouseMove()
     If W <> .W Or If H <> .H Then
       RootControl.ResizeCoord(W, H)
       If Not $hUndo.IsDisabled() Then $hUndo.Disable
+      UpdateInfo(RootControl)
     Endif
 
   End With
@@ -3206,6 +3230,9 @@ Public Sub Action_Activate((Key) As String) As Boolean
 
     Case ".grid"
       UpdateSnap
+      
+    Case ".tooltip"
+      dwgInfo.Visible = Action[".tooltip", Me].Value
 
     Case ".move-tab-first"
       MoveTab(Master, MOVE_FIRST)
@@ -3825,9 +3852,26 @@ Public Sub panSelect_Draw()
   
 End
 
+Private Sub MoveInfo()
+
+  Dim D As Integer
+
+  If svwWorkspace.ScrollH > svwWorkspace.ClientH Then D = Style.ScrollbarSize
+  dwgInfo.Move(svwWorkspace.W - dwgInfo.W - Desktop.Scale - D, svwWorkspace.Y + Desktop.Scale)
+
+End
+
+Public Sub timMoveInfo_Timer()
+  
+  MoveInfo
+  
+End
+
+
 Public Sub svwWorkspace_Arrange()
 
   dwgBackground.Move(0, 0, svwWorkspace.ScrollW, svwWorkspace.ScrollH)
+  timMoveInfo.Trigger
 
 End
 
@@ -4262,5 +4306,49 @@ End
 Public Sub lblTitle_DblClick()
 
   Action[".menu", Me].Value = True
+
+End
+
+Public Sub dwgInfo_Draw()
+
+  Dim DS As Integer = Desktop.Scale
+  Dim X As Integer
+  Dim Y As Integer
+  Dim W As Float
+  Dim H As Integer
+  Dim iCol As Integer
+  
+  If Not $cInfo Then Return
+
+  iCol = Color.SetAlpha(Color.TooltipBackground, 128)
+  
+  H = Paint.Font.Height * 2 + DS
+  Paint.FillRect(0, 0, Paint.W, H, iCol)
+  Paint.FillRect(0, H + 1, Paint.W, Paint.H - H - 1, iCol)
+
+  Paint.ClipRect = Rect(DS, DS \ 2, Paint.W - DS * 2, Paint.H - DS)
+
+  Y = DS \ 2
+  Paint.Font.Bold = True
+  Paint.DrawText($cInfo!Name, DS, Y, Paint.W - DS * 2, Paint.Font.Height, Align.Center)
+  Paint.Font.Bold = False
+  Y += Paint.Font.Height
+  Paint.DrawText($cInfo!Kind, DS, Y, Paint.W - DS * 2, Paint.Font.Height, Align.Center)
+  
+  X = DS
+  Y = DS + Paint.Font.Height * 2
+  W = (Paint.W - DS * 2) / 4
+  H = Paint.H - Y
+  
+  Paint.DrawText($cInfo!X, X, Y, W - DS, H, Align.Right)
+  Paint.DrawText("•", X, Y, W * 2, H, Align.Center)
+  X += W
+  Paint.DrawText($cInfo!Y, X + DS, Y, W, H, Align.Left)
+  X += W
+  
+  Paint.DrawText($cInfo!Width, X, Y, W - DS, H, Align.Right)
+  Paint.DrawText("×", X, Y, W * 2, H, Align.Center)
+  X += W
+  Paint.DrawText($cInfo!Height, X + DS, Y, W, H, Align.Left)
 
 End

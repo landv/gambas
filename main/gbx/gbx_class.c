@@ -713,17 +713,23 @@ static void error_CLASS_free(void *object, EXEC_GLOBAL *save)
 void CLASS_free(void *object)
 {
 	CLASS *class = OBJECT_class(object);
-	EXEC_GLOBAL save = EXEC;
+	EXEC_GLOBAL save;
+	
+	if (!class->has_free)
+	{
+		OBJECT_release(class, object);
+		return;
+	}
+	
+	save = EXEC;
 
 	ON_ERROR_2(error_CLASS_free, object, &save)
 	{
 		((OBJECT *)object)->ref = 1; // Prevents anybody from freeing the object!
-
 		EXEC_special_inheritance(SPEC_FREE, class, object, 0, TRUE);
+		if (((OBJECT *)object)->ref != 1)
+			THROW(E_FREEREF);
 		error_CLASS_free(object, &save);
-		/*((OBJECT *)object)->ref = 0;
-		EXEC = save;
-		OBJECT_release(class, object);*/
 	}
 	END_ERROR
 }
@@ -947,6 +953,10 @@ void CLASS_inheritance(CLASS *class, CLASS *parent, bool in_jit_compilation)
 		class->check = class->parent->check;
 		class->must_check = class->parent->must_check;
 	}
+	
+	if (!class->has_free)
+		class->has_free = class->parent->has_free;
+	
 	// CREATE STATIC is inherited, but not CREATE PRIVATE
 
 	if (parent->auto_create)
@@ -1356,6 +1366,8 @@ void CLASS_search_special(CLASS *class)
 		class->unknown_static = CLASS_DESC_get_type(CLASS_get_desc(class, class->special[SPEC_UNKNOWN])) == CD_STATIC_METHOD;
 	if (class->special[SPEC_PROPERTY] != NO_SYMBOL)
 		class->property_static = CLASS_DESC_get_type(CLASS_get_desc(class, class->special[SPEC_PROPERTY])) == CD_STATIC_METHOD;
+	if (class->special[SPEC_FREE] != NO_SYMBOL)
+		class->has_free = TRUE;
 }
 
 

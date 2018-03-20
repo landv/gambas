@@ -6463,3 +6463,16 @@ Public Sub CompileTranslation(bForce As Boolean, Optional sLang As String)
   Shell "msgfmt -o " & Shell$(sPath) & " " & Shell(File.SetExt(sPath, "po")) Wait
   
 End
+
+Public Sub InitTooltip(hTooltip As Control)
+  
+  With hTooltip
+    
+    .Foreground = Color.TextBackground
+    .Background = Color.SetAlpha(Color.TextForeground, 248)
+    .Font.Grade = -1
+    
+  End With
+  
+  
+End

@@ -64,7 +64,7 @@ Public Sub Insert(sText As String, Optional bCurrent As Boolean)
     'edtOutput.Goto(edtOutput.Lines.Count, 10000)
   Endif
   
-  If Not Action["console"].Value Then Action["console"].Value = True
+  'If Not Action["console"].Value Then Action["console"].Value = True
 
   trmOutput.Print(Replace(sText, "\n", "\r\n"))
   
@@ -120,6 +120,7 @@ End
 
 Public Sub Form_Show()
 
+  trmOutput.AutoResize = True
   'Action["console"].Value = TRUE
 
 End
@@ -498,4 +499,13 @@ Public Sub btnSuspend_Click()
 
   trmOutput.Suspended = btnSuspend.Value
 
+End
+
+Public Sub UpdateWidth(W As Integer)
+  
+  If trmOutput.AutoResize Then Return
+  If Me.W <> W Then
+    trmOutput.ScreenWidth = (W - Style.ScrollbarSize) \ trmOutput.CharWidth
+  Endif
+  
 End

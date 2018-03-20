@@ -855,7 +855,7 @@ GB_DESC CResultDesc[] =
 	GB_METHOD("Update", NULL, Result_Update, NULL),
 	GB_METHOD("Delete", NULL, Result_Delete, "[(Keep)b]"),
 	
-	GB_METHOD("GetAll", "Array", Result_GetAll, "(Field)s"),
+	GB_METHOD("All", "Array", Result_GetAll, "(Field)s"),
 	
 	GB_PROPERTY_READ("Fields", ".Result.Fields", Result_Fields),
 	GB_PROPERTY_READ("Connection", "Connection", Result_Connection),
