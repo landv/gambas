@@ -4,7 +4,7 @@ Inherits UserControl
 
 Export
 
-Public Const _Properties As String = "*,Border=True,Limit=1000,Blink,ShowScrollBar"
+Public Const _Properties As String = "*,Border=True,AutoResize=True,Limit=1000,Blink,ShowScrollBar"
 Public Const _DrawWith As String = "-"
 Public Const _Group As String = "View"
 
@@ -28,6 +28,10 @@ Property Foreground As Integer
 Property Read Count As Integer
 Property Title As String
 Property Suspended As Boolean
+Property AutoResize As Boolean
+Property ScreenWidth As Integer
+Property Read CharWidth As Integer
+Property Read LineHeight As Integer
 
 Private $hPanel As Panel
 Private $hView As DrawingArea
@@ -36,6 +40,8 @@ Private $hScroll As ScrollBar
 Private $aScreen As New TerminalScreen[2]
 Private $hScreen As TerminalScreen
 Private $H As Integer
+Private $W As Integer = 80
+Private $bAutoResize As Boolean = True
 
 Private $LH As Integer
 Private $iAscent As Integer
@@ -191,9 +197,22 @@ Private Sub UpdateScreen()
   
   Dim W, H As Integer
   
-  W = $hView.ClientW
-  W = Max(1, CInt(W / $CW))
-  H = Max(1, $hView.ClientH \ $LH)
+  H = Me.H
+  If Me.Border Then H -= 2
+  H = Max(1, H \ $LH)
+  
+  If $bAutoResize Then
+  
+    W = Me.W
+    If Me.Border Then W -= 2
+    If $bShowScrollBar Then W -= $hScroll.W
+    W = Max(1, W \ $CW)
+    
+  Else
+    
+    W = $W
+    
+  Endif
   
   If $hScreen.Resize(W, H) Then
     $H = H
@@ -203,7 +222,6 @@ Private Sub UpdateScreen()
     If $hProcess Then $hResizeTimer.Restart
     Raise Resize(W, H)
   Endif
-  
   
 End
 
@@ -326,7 +344,7 @@ Public Sub View_Font()
 End
 
 Public Sub Panel_Arrange()
-  
+
   If System.RightToLeft Then
     $hScroll.Move(0, 0, Style.ScrollbarSize, $hPanel.ClientH)
   Else
@@ -585,6 +603,13 @@ Public Sub View_MouseMove()
   Endif
   
 End
+
+Public Sub ScrollBar_Leave()
+  
+  If Not $bShowScrollBar Then $hScroll.Hide
+  
+End
+
 
 Public Sub View_MouseUp()
   
@@ -894,6 +919,7 @@ End
 
 Public Sub Print(Text As String)
   
+  UpdateScreen
   $hFilter.OutputTo(Me, $hScreen, File.Out, Text)
   EnsureVisible
   
@@ -1154,5 +1180,45 @@ Private Sub Suspended_Write(Value As Boolean)
       Print #$hProcess, Chr$(17);
     Endif
   Endif
+
+End
+
+Private Function AutoResize_Read() As Boolean
+
+  Return $bAutoResize
+
+End
+
+Private Sub AutoResize_Write(Value As Boolean)
+
+  If $bAutoResize = Value Then Return
+  $bAutoResize = Value
+  UpdateScreen
+
+End
+
+Private Function ScreenWidth_Read() As Integer
+
+  Return $hScreen.Width
+
+End
+
+Private Sub ScreenWidth_Write(Value As Integer)
+
+  If $W = Value Then Return
+  $W = Value
+  UpdateScreen
+
+End
+
+Private Function CharWidth_Read() As Integer
+
+  Return $CW
+
+End
+
+Private Function LineHeight_Read() As Integer
+
+  Return $LH
 
 End
