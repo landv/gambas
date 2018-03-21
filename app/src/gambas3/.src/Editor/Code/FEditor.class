@@ -3892,3 +3892,10 @@ CHECK_LINE:
   
 End
 
+Public Sub btnInsertChar_Click()
+
+  FInsertChar.ShowPopup(btnInsertChar.ScreenX, btnInsertChar.ScreenY + btnInsertChar.H)
+  If FInsertChar.Char Then $hEditor.Insert(FInsertChar.Char)
+  $hEditor.SetFocus
+
+End
