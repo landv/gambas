@@ -1784,3 +1784,10 @@ Public Sub mnuPretty_Click()
   MPrettyCode.Run(Me)
 
 End
+
+
+Public Sub btnInsertChar_Click()
+
+  FInsertChar.Run($hEditor, btnInsertChar.ScreenX, btnInsertChar.ScreenY + btnInsertChar.H)
+
+End

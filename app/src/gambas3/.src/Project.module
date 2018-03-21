@@ -4255,6 +4255,7 @@ Public Sub RenameFile(sPath As String, sNewName As String)
     If sName = Startup Then
       Startup = sNewName
       WriteProject(True)
+      Tree.DefineStartup(Startup)
     Endif
 
     sNewPath = RenameOneFile(sDir, sName, sNewName, sExt)

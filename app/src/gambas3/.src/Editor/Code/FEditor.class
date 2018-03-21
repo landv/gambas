@@ -3892,3 +3892,8 @@ CHECK_LINE:
   
 End
 
+Public Sub btnInsertChar_Click()
+
+  FInsertChar.Run($hEditor, btnInsertChar.ScreenX, btnInsertChar.ScreenY + btnInsertChar.H)
+
+End
