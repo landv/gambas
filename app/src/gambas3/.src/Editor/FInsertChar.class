@@ -8,11 +8,23 @@ Private $WC As Integer
 Private $HC As Integer
 Private $iCurrent As Integer
 Private $iLen As Integer
+Private $bKeepOpen As Boolean
+Private $hEditor As TextEditor
+
+Public Sub Run(hEditor As TextEditor, X As Integer, Y As Integer)
+  
+  $hEditor = hEditor
+  Me.ShowPopup(X, Y)
+  hEditor.SetFocus
+  $hEditor = Null
+  
+End
+
 
 Public Sub _new()
   
   'Project.SetEditorFont(dwgCharSelect)
-  dwgCharSelect.Font.Size *= 2
+  dwgCharSelect.Font.Size *= 1.5
   $WC = dwgCharSelect.Font.TextWidth("0") * 2.5
   $HC = dwgCharSelect.Font.H + Desktop.Scale
   $iLen = String.Len(CHAR_LIST)
@@ -61,6 +73,8 @@ Public Sub dwgCharSelect_MouseMove()
 
   Dim N As Integer
 
+  If Not Mouse.Left Then $bKeepOpen = True
+
   N = 1 + (Mouse.Y \ $HC) * 16 + Mouse.X \ $WC
   If N <> $iCurrent Then
     $iCurrent = N
@@ -78,13 +92,22 @@ End
 
 Public Sub dwgCharSelect_MouseUp()
 
-  Char = String.Mid$(CHAR_LIST, $iCurrent, 1)
-  Me.Close
+  Dim sCar As String
+
+  sCar = String.Mid$(CHAR_LIST, $iCurrent, 1)
+  If sCar Then $hEditor.Insert(sCar)
+  If Not $bKeepOpen Then Me.Close
 
 End
 
 Public Sub Form_Open()
 
   Char = ""
+
+End
+
+Public Sub Form_KeyPress()
+
+  If Key.Code = Key.Escape Then Me.Close
 
 End
