@@ -159,6 +159,7 @@ Public Sub btnOK_Click()
       If Left($sIcon) = "/" Then $sIcon = Mid$($sIcon, 2)
   
     Case 1
+      If Not icwStock.Key Then Return
       $sIcon = "icon:/" &/ $sSize &/ icwStock.Key
       Settings["FSelectIcon/Size"] = $sSize
       

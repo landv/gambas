@@ -143,6 +143,9 @@ End
 Public Sub tvwProject_Activate()
   
   Dim sKey As String
+  Dim sMime As String
+  Dim hProgList As DesktopFile[]
+  Dim hProcess As Process
   
   sKey = tvwProject.Key
   
@@ -154,7 +157,17 @@ Public Sub tvwProject_Activate()
           sKey = File.SetExt(sKey, "class")
         Endif
       Endif
-      Project.OpenFile(sKey)
+      Project.OpenFile(sKey,,, True)
+      If Project.FileWasUnknown() Then
+        sMime = MMime.GetMime(sKey)
+        If sMime Then
+          hProgList = DesktopFile.FromMime(sMime)
+          If hProgList.Count Then
+            hProcess = hProgList[0].Run(sKey)
+            hProcess.Ignore = True
+          Endif
+        Endif
+      Endif
     Endif
   Endif
   
