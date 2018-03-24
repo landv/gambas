@@ -286,8 +286,12 @@ Private Procedure AddDir(Optional sDir As String)
   Repeat
 
     sDir = cDir[0]
-    aFile.Clear
+    cDir.Remove(0)
+    
+    If Not IsDir(sDir) Then Continue
 
+    aFile.Clear
+    
     '$bGetSource = FALSE
 
     For Each sFile In Dir(sDir, "*")
@@ -311,8 +315,6 @@ Private Procedure AddDir(Optional sDir As String)
     Next
     
     DoRefreshAfter
-    
-    cDir.Remove(0)
     
   Until cDir.Count = 0
 

@@ -381,7 +381,11 @@ Public Sub mnuPopup_Show()
   sCurrent = GetCurrent()
   bCurrent = sCurrent
   sRoot = GetRootKey($sKey)
-  If sCurrent Then bLink = Stat(sCurrent).Type = gb.Link
+  
+  If sCurrent Then 
+    Try bLink = Stat(sCurrent).Type = gb.Link
+    If Error Then Return
+  Endif
   
   UpdateMenu
   
