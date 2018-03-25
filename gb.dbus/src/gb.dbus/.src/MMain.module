@@ -121,7 +121,7 @@ End
 ' 
 ' End
 
-Public Sub Main()
+Public Sub Main3()
 
   DBus.Debug = True
   DBus.Name = "org.mpris.MediaPlayer2.xt7"
@@ -139,3 +139,16 @@ Public Sub Main1()
 
 End
 
+Public Sub Main()
+
+  Dim hDBusApplication As DBusApplication
+  Dim hDBusProxy As DBusProxy
+  Dim iState As Integer
+
+  hDBusApplication = New DBusApplication(DBus.System, "org.freedesktop.NetworkManager")
+  hDBusProxy = New DBusProxy(hDBusApplication, "/org/freedesktop/NetworkManager", "org.freedesktop.NetworkManager")
+  Try Print hDBusProxy.Version
+  Print hDBusProxy.state()
+  Print hDBusProxy.State() 'Should be invalid
+
+End

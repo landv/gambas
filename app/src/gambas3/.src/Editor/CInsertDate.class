@@ -85,7 +85,7 @@ Private Sub FillMenu()
   If $hMenu.Children.Count <= 1 Then
     $hMenu.Children.Clear
     For I = 0 To 18
-      hMenu = New Menu($hMenu)
+      hMenu = New Menu($hMenu) As "MenuDate"
     Next
   Endif
 

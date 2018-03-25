@@ -920,14 +920,13 @@ Public Sub Editors_KeyPress()
     If DoStructControlCompletion(iLine, sLine, aSymbol) Then Return
     
     
-  Else If Key.Code = Key.Space Then
+  Else If Key.Code = Key.Space Or If InStr("(),[]", Key.Text) Then
 
-    $bCheckSignature = True
+    sLine = String.Left$(Highlight.Purge($hEditor.Current.Text, False, True), $hEditor.Column)
+    If Not GetRightString(sLine) Then
+      $bCheckSignature = True
+    Endif
     
-  Else If InStr("(),[]", Key.Text) Then
-
-    $bCheckSignature = True
-
   Else If Key.Code = Key.Tab Then
 
     If Not $hEditor.Selected Or If $hEditor.Line = $hEditor.SelectionLine Then
@@ -3145,7 +3144,7 @@ Private Sub ToggleProcList()
   iCurrent = FProcedureList.Popup(Me, Me.Name, $aProc, iCurrent, btnProc.ScreenX, btnProc.ScreenY + btnProc.H, btnProc.W, Me.ClientH - panToolbar.H - Desktop.Scale)
   If iCurrent >= 0 Then
     Try iLine = $cProc[$aProc[iCurrent]]
-    GotoFunction(iLine)
+    If Not Error Then GotoFunction(iLine)
   Endif
 
 End

@@ -1647,7 +1647,7 @@ Public Sub UpdateInfo(hCCtrl As CControl)
   
   $cInfo = ["Name": hCCtrl.Name, "Kind": hCCtrl.Kind, "X": hCCtrl.X, "Y": hCCtrl.Y, "Width": hCCtrl.Width, "Height": hCCtrl.Height]
   
-  dwgInfo.Resize(dwgInfo.Font.TextWidth("99999") * 4 + Desktop.Scale * 4, dwgInfo.Font.Height * 3 + Desktop.Scale * 2)
+  dwgInfo.Resize(dwgInfo.Font.TextWidth("99999") * 4 + Desktop.Scale * 8, dwgInfo.Font.Height * 2 + Desktop.Scale * 2)
   dwgInfo.Tag = sText
   MoveInfo
 
@@ -4322,21 +4322,25 @@ Public Sub dwgInfo_Draw()
 
   iCol = Color.SetAlpha(Color.TooltipBackground, 128)
   
-  H = Paint.Font.Height * 2 + DS
+  H = Paint.Font.Height + DS
   Paint.FillRect(0, 0, Paint.W, H, iCol)
   Paint.FillRect(0, H + 1, Paint.W, Paint.H - H - 1, iCol)
 
   Paint.ClipRect = Rect(DS, DS \ 2, Paint.W - DS * 2, Paint.H - DS)
 
+  X = DS
   Y = DS \ 2
+  W = (Paint.W - DS * 2) / 2 - DS
   Paint.Font.Bold = True
-  Paint.DrawText($cInfo!Name, DS, Y, Paint.W - DS * 2, Paint.Font.Height, Align.Center)
+  Paint.DrawText($cInfo!Name, X, Y, W, Paint.Font.Height, Align.Right)
+  X += W
   Paint.Font.Bold = False
-  Y += Paint.Font.Height
-  Paint.DrawText($cInfo!Kind, DS, Y, Paint.W - DS * 2, Paint.Font.Height, Align.Center)
+  Paint.DrawText($cInfo!Kind, X + DS, Y, W, Paint.Font.Height, Align.Left)
+  'Y += Paint.Font.Height
+  '  Paint.DrawText($cInfo!Kind, DS, Y, Paint.W - DS * 2, Paint.Font.Height, Align.Center)
   
   X = DS
-  Y = DS + Paint.Font.Height * 2
+  Y = DS + Paint.Font.Height
   W = (Paint.W - DS * 2) / 4
   H = Paint.H - Y
   

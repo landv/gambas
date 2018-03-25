@@ -216,6 +216,8 @@ Private $bBackgroundValid As Boolean
 ' Another one is created for the offline wiki
 Public Documentation As CDocumentation
 
+Private $bFileIsUnknown As Boolean
+
 ' If GetFileIcon() has been called on an added file
 'Private $bLastAdded As Boolean
 
@@ -1943,7 +1945,7 @@ Public Sub IsPatchFile(sPath As String) As Boolean
 
 End
 
-Public Function LoadFile(sPath As String) As Object
+Public Function LoadFile(sPath As String, Optional bNoErrorIfUnknown As Boolean) As Object
 
   Dim hForm As Object
   Dim bError As Boolean
@@ -2012,7 +2014,11 @@ Public Function LoadFile(sPath As String) As Object
             
             Dec Application.Busy
             Files[sPath] = Null
-            FMain.ShowError(("Cannot open a binary file."), sPath)
+            If bNoErrorIfUnknown Then
+              $bFileIsUnknown = True
+            Else
+              FMain.ShowError(("Cannot open a binary file."), sPath)
+            Endif
             Return
             
           Endif
@@ -2079,7 +2085,14 @@ Public Sub ShowFile(hForm As Form)
 
 End
 
-Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn As Integer = -1) As Object
+Public Sub FileWasUnknown() As Boolean
+  
+  Return $bFileIsUnknown
+  
+End
+
+
+Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn As Integer = -1, Optional bNoErrorIfUnknown As Boolean) As Object
 
   Dim hForm As Object
   Dim bAlreadyLoaded As Boolean
@@ -2107,7 +2120,8 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   
   If Files[sPath] Then bAlreadyLoaded = True
 
-  LoadFile(sPath)
+  $bFileIsUnknown = False
+  If Not LoadFile(sPath, bNoErrorIfUnknown) Then Return
 
   If Not InsideDirectory(sPath, Project.Dir) Then Tree.AddExtern(sPath)
 

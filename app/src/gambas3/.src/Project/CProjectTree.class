@@ -286,8 +286,12 @@ Private Procedure AddDir(Optional sDir As String)
   Repeat
 
     sDir = cDir[0]
-    aFile.Clear
+    cDir.Remove(0)
+    
+    If Not IsDir(sDir) Then Continue
 
+    aFile.Clear
+    
     '$bGetSource = FALSE
 
     For Each sFile In Dir(sDir, "*")
@@ -311,8 +315,6 @@ Private Procedure AddDir(Optional sDir As String)
     Next
     
     DoRefreshAfter
-    
-    cDir.Remove(0)
     
   Until cDir.Count = 0
 
@@ -549,7 +551,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
       'bConflict = VersionControl.InConflict(sPath)
       If $bCurrentProject Then bConflict = Project.IsConflict(sPath)
 
-      sIcon = sPrefix &/ "file"
+      sIcon = "" 'sPrefix &/ "file"
 
       sExt = File.Ext(sPath)
       Select Case sExt
@@ -603,7 +605,15 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
           
         Case "console"
           sIcon = sLocalPrefix &/ "console.png"
-
+          
+        Case Else
+          hImage = DesktopMime.FromFile(sPath).GetIcon(If(iSize, iSize, 16))
+          If hImage Then
+            sIcon = "//"
+          Else
+            sIcon = sPrefix &/ "file"
+          Endif
+          
       End Select
 
     Endif
@@ -612,7 +622,8 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
 
   If Left$(sIcon) = "/" Then
 
-    Try hImage = Image.Load(sIcon)
+    If Not hImage Then Try hImage = Image.Load(sIcon)
+    
     If hImage Then
 
       fRapport = hImage.Width / hImage.Height
@@ -711,7 +722,6 @@ ADD_EMBLEM:
   Endif
   
   Return
-
 
 End
 
