@@ -898,7 +898,7 @@ Public Function CloseProject() As Boolean
 
     Inc Application.Busy
 
-    Design.WriteBreakpoints
+    If Not IsFake() Then Design.WriteBreakpoints
 
     If Settings["/RestoreFiles", 1] Then
 
