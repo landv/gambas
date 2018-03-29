@@ -607,7 +607,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
           sIcon = sLocalPrefix &/ "console.png"
           
         Case Else
-          hImage = DesktopMime.FromFile(sPath).GetIcon(If(iSize, iSize, 16))
+          Try hImage = DesktopMime.FromFile(sPath).GetIcon(If(iSize, iSize, 16))
           If hImage Then
             sIcon = "//"
           Else
