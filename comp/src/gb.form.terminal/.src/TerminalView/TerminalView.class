@@ -88,6 +88,8 @@ Private $nClick As Integer
 Private $fLastMouseDownX As Integer
 Private $fLastMouseDownY As Integer
 
+Private mnuPopup As Menu
+
 'Private $bDoubleFont As Boolean = True
 
 Public Sub _new()
@@ -698,6 +700,20 @@ Public Sub View_KeyPress()
   
   Dim hOutput As Stream
   
+  If Key.Control And If Key.Shift Then
+    
+    If Key.Code = Key["C"] Then
+      Copy()
+      Stop Event
+      Return
+    Else If Key.Code = Key["V"] Then
+      Paste()
+      Stop Event
+      Return
+    Endif
+    
+  Endif
+  
   hOutput = GetOutputStream()
   If Not hOutput Then Return
   
@@ -1221,4 +1237,55 @@ Private Function LineHeight_Read() As Integer
 
   Return $LH
 
+End
+
+Public Sub View_Menu()
+  
+  Dim hMenu As Menu
+  
+  If Me.PopupMenu Then Return
+  
+  If Not mnuPopup Then
+    
+    mnuPopup = New Menu(Me.Window, True)
+    
+    hMenu = New Menu(mnuPopup) As "mnuCopy"
+    hMenu.Text = ("Copy")
+    hMenu.Picture = Picture["icon:/small/copy"]
+    hMenu.Shortcut = "CTRL+SHIFT+C"
+    
+    hMenu = New Menu(mnuPopup) As "mnuPaste"
+    hMenu.Text = ("Paste")
+    hMenu.Picture = Picture["icon:/small/paste"]
+    hMenu.Shortcut = "CTRL+SHIFT+V"
+    
+    hMenu = New Menu(mnuPopup)
+    
+    hMenu = New Menu(mnuPopup) As "mnuClear"
+    hMenu.Text = ("Clear")
+    hMenu.Picture = Picture["icon:/small/clear"]
+    
+  Endif
+  
+  mnuPopup.Popup
+  
+End
+
+
+Public Sub mnuCopy_Click()
+  
+  Copy()
+  
+End
+
+Public Sub mnuPaste_Click()
+  
+  Paste()
+  
+End
+
+Public Sub mnuClear_Click()
+  
+  Clear()
+  
 End
