@@ -1454,3 +1454,43 @@ Public Sub HasBreakpoint(sClass As String) As Boolean
   Return $cClassHasBreakpoint[sClass]
   
 End
+
+Public Sub RenameClass(sOld As String, sNew As String)
+
+  Dim I As Integer
+  Dim sBreakpoint As String
+  Dim aBreakpoint As String[]
+  Dim bDisabled As Boolean
+  Dim bExist As Variant
+  Dim bHasBreakpoint As Boolean
+  
+  For I = 0 To $aBreakpoint.Max
+    
+    sBreakpoint = $aBreakpoint[I]
+    aBreakpoint = Split(sBreakpoint, ".")
+    
+    If aBreakpoint[0] = sOld Then
+      
+      bDisabled = $cDisabledBreakpoint.Exist(sBreakpoint)
+      $cDisabledBreakpoint.Remove(sBreakpoint)
+      
+      aBreakpoint[0] = sNew
+      sBreakpoint = aBreakpoint.Join(".")
+      
+      $aBreakpoint[I] = sBreakpoint
+      If bDisabled Then $cDisabledBreakpoint[sBreakpoint] = True
+      
+      bHasBreakpoint = True
+      
+    Endif
+    
+  Next
+  
+  $cClassHasBreakpoint.Remove(sOld)
+  $cClassHasBreakpoint[sNew] = bHasBreakpoint
+  
+  $aBreakpoint.Sort(gb.Natural)
+  
+  FDebugInfo.RefreshBreakpointView()
+  
+End

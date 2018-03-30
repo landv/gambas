@@ -6427,6 +6427,12 @@ Private Sub RenamePaths(sOld As String, sNew As String)
   
     Next
   
+  ' Rename breakpoints
+  
+  If IsSourcePath(sOld) And If File.Ext(sOld) = "class" Then
+    Design.RenameClass(File.BaseName(sOld), File.BaseName(sNew))
+  Endif
+  
 End
 
 Public Sub FindProjectPath(sPath As String) As String
