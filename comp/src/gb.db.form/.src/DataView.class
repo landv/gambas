@@ -410,7 +410,7 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
       .Text = "Blob"
       .Foreground = Color.LightForeground
       Return
-    Else If iType = db.Integer Or If iType = db.Float Then
+    Else If iType = db.Integer Or If iType = db.Float Or If iType = db.Long Then
       .Alignment = Align.Right
     Endif
 
