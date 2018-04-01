@@ -1332,6 +1332,14 @@ Public Sub OnProjectDebug()
   
 End
 
+Public Sub OnProjectDebugState()
+  
+  panBreakpoint.Enabled = Not Design.IsRunning()
+  gvwBreakpoint.Enabled = panBreakpoint.Enabled
+  
+End
+
+
 Public Sub ShowDebugging()
   
   FDebugButton.SelectButton(TAB_DEBUG)

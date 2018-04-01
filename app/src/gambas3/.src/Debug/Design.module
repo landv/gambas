@@ -109,6 +109,7 @@ Private Sub SetState(iState As Integer)
   $iState = iState
 
   FOutput.OnProjectDebugState
+  FDebugInfo.OnProjectDebugState
   
   $hTimerDebugPanel.Restart
   
