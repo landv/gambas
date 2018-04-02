@@ -6382,6 +6382,7 @@ Private Sub RenamePaths(sOld As String, sNew As String)
   Dim hForm As Object
   Dim sCheck As String
   Dim sNewFormPath As String
+  Dim sExt As String
   
   ' Rename DoNotTranslate
   
@@ -6429,8 +6430,11 @@ Private Sub RenamePaths(sOld As String, sNew As String)
   
   ' Rename breakpoints
   
-  If IsSourcePath(sOld) And If File.Ext(sOld) = "class" Then
-    Design.RenameClass(File.BaseName(sOld), File.BaseName(sNew))
+  If IsSourcePath(sOld) Then
+    sExt = File.Ext(sOld)
+    If sExt = "class" Or If sExt = "module" Then
+      Design.RenameClass(File.BaseName(sOld), File.BaseName(sNew))
+    Endif
   Endif
   
 End
