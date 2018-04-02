@@ -46,22 +46,22 @@ Private $hPipeError As File
 Private $hBrowser As Process
 Private $iProcessId As Integer
 
-Private $hTimerDebugPanel As Timer
+Private $hTimerShowConsole As Timer
 
 Public Sub Init()
  
   $sFifo = Debug.Begin()
   SetState(STATE_STOP)
   
-  $hTimerDebugPanel = New Timer As "TimerDebugPanel"
-  $hTimerDebugPanel.Delay = 50
+  $hTimerShowConsole = New Timer As "TimerShowConsole"
+  $hTimerShowConsole.Delay = 50
 
 End
 
 
 Public Sub Exit()
 
-  $hTimerDebugPanel = Null
+  $hTimerShowConsole = Null
   Debug.End
 
 End
@@ -111,33 +111,21 @@ Private Sub SetState(iState As Integer)
   FOutput.OnProjectDebugState
   FDebugInfo.OnProjectDebugState
   
-  $hTimerDebugPanel.Restart
+  '$hTimerDebugPanel.Restart
   
 End
 
-Public Sub TimerDebugPanel_Timer()
-  
-  If $iState = STATE_RUNNING Then 
-    FDebugInfo.ShowConsole
-  Else
-    FDebugInfo.ShowDebugging
-  Endif
-  
-  $hTimerDebugPanel.Stop
-  
-End
-
-
-
-' PRIVATE SUB HideForm(hForm AS Form)
-' 
-'    IF NOT hForm.Visible THEN RETURN
-' 
-'    $cShow.Add(hForm)
-'    hForm.Hide
-' 
-' END
-
+' Public Sub TimerDebugPanel_Timer()
+'   
+'   If $iState = STATE_RUNNING Then 
+'     FDebugInfo.ShowConsole
+'   Else
+'     FDebugInfo.ShowDebugging
+'   Endif
+'   
+'   $hTimerDebugPanel.Stop
+'   
+' End
 
 Public Sub Pause()
 
@@ -176,9 +164,24 @@ Public Sub File_Read()
   Dim sData As String
   
   sData = Read #$hPipeError, Lof($hPipeError)
-  Insert(sData)
+  FOutput.Insert(sData)
   
 End
+
+Public Sub Process_Read()
+  
+  $hTimerShowConsole.Restart
+  
+End
+
+Public Sub TimerShowConsole_Timer()
+  
+  FDebugInfo.ShowConsole
+  $hTimerShowConsole.Stop
+  
+End
+
+
 
 
 ' Public Sub Process_Read()
@@ -506,7 +509,7 @@ Private Sub AfterStop()
 
   FMain.ActivateCurrentWindow
 
-  $hTimerDebugPanel.Stop
+  '$hTimerShowConsole.Stop
   
   'IF Project.ActiveForm THEN
   '  TRY Project.ActiveForm.Show
@@ -1057,6 +1060,8 @@ Private Sub Start(sCmd As String)
     'If $hBrowser Then Object.Attach($hBrowser, Me, "Browser")
   Endif
 
+  FDebugInfo.ShowDebugging
+
   'PRINT "Debug.Start"
   'PRINT "Debug.Start -> OK"
 
@@ -1178,39 +1183,6 @@ Public Sub ClearOutput()
   FOutput.Clear
 
 End
-
-
-Private Sub Insert(sText As String)
-
-  'TRY sText = DConv$(sText)
-  FOutput.Insert(sText)
-
-End
-
-
-
-' Private Sub ToggleChild(hChild As Object)
-' 
-'   'hChild.Visible = TRUE 'NOT hChild.Visible
-'   hChild.Show
-' 
-' End
-
-
-' PRIVATE SUB SaveChild(hChild AS Object)
-' 
-'   hChild.Shown = hChild.Visible
-'   hChild.Hide
-' 
-' END
-' 
-' 
-' PRIVATE SUB RestoreChild(hChild AS Object)
-' 
-'   hChild.Visible = hChild.Shown
-' 
-' END
-
 
 Public Function IsRunning() As Boolean
 
@@ -1462,7 +1434,6 @@ Public Sub RenameClass(sOld As String, sNew As String)
   Dim sBreakpoint As String
   Dim aBreakpoint As String[]
   Dim bDisabled As Boolean
-  Dim bExist As Variant
   Dim bHasBreakpoint As Boolean
   
   For I = 0 To $aBreakpoint.Max
