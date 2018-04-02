@@ -811,6 +811,8 @@ Public Sub EnsureKey(sKey As String)
   Dim sPath As String
   Dim sElt As String
 
+  If Not $hTree Then Return
+  
   sPath = "/"
   For Each sElt In Split(sKey, "/")
     sPath &/= sElt
@@ -823,6 +825,8 @@ Public Sub SelectKey(sKey As String)
 
   Dim hModule As CModule
   Dim sBase As String
+
+  If Not $hTree Then Return
 
   EnsureKey(sKey)
 
@@ -913,7 +917,6 @@ Public Sub RefreshKey(sKey As String, Optional sOld As String)
   Dim sOpen As String
   
   If Not $hTree Then Return
-
   If Not sKey Then Return
   
   If Not $hTree.Exist(sKey) And If Not Exist(sKey) And If IsSourcePath(sKey) Then

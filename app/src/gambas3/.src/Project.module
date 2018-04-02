@@ -623,7 +623,10 @@ _INIT_AGAIN:
 
     ' Needed for MoveFile()
     RefreshSources
+    Design.ClearBreakpoints
 
+    ReadProject(True)
+    
     If Not Exist(SourceDir) Then
 
       InsertDirectory(SourceDir)
@@ -639,7 +642,6 @@ _INIT_AGAIN:
 
     Endif
 
-    ReadProject(True)
     WriteProject(True)
 
     MakeDirectoryIcon
@@ -795,7 +797,7 @@ Catch
   Application.Busy = 0
 
   If Error.Text Then
-    Message.Error(("Cannot open project file :\n") & sDir & "\n\n" & Error.Text & "\n" & Error.Where)
+    Message.Error(("Cannot open project file :") & "\n" & sDir & "\n\n<tt>" & Error.Text & "\n" & Error.Backtrace.Join(" ") & "</tt>")
   Endif
 
 _CANCEL:
@@ -4927,7 +4929,7 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
 
 Catch
 
-  FMain.ShowError(Subst(("Cannot move file &1."), File.Name(sSrc)) & "\n\n" & Error.Text, sSrc)
+  FMain.ShowError(Subst(("Cannot move file &1."), File.Name(sSrc)) & "\n\n" & Error.Text & "\n" & Error.Backtrace.Join(" "), sSrc)
 
 End
 
