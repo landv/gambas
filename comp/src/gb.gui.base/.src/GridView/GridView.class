@@ -406,9 +406,9 @@ Public Sub ScrollArea_Draw()
   Endif
   
   If $hView.HasFocus Then
-    iBgSel = Color.SetAlpha(Color.SelectedBackground, 192)
+    iBgSel = Color.SetAlpha(Color.SelectedBackground, &HC0)
   Else
-    iBgSel = Color.SetAlpha(Color.LightForeground, 192)
+    iBgSel = Color.SetAlpha(Color.SelectedBackground, &HE0)
   Endif
   
   If $hColumns.Count = 0 And If $hRows.Count = 0 Then Return

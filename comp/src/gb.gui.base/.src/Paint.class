@@ -316,3 +316,33 @@ End
 '   
 ' End
 ' 
+
+' Static Public Sub Cross(X As Float, Y As Float, Width As Float, Height As Float, Size As Float)
+' 
+'   Dim XC As Float
+'   Dim YC As Float
+'   Dim DH As Float
+'   Dim DW As Float
+'   
+'   XC = X + Width / 2
+'   YC = Y + Width / 2
+'   
+'   DW = (Width - Size) / 2
+'   DH = (Height - Size) / 2
+'   
+'   Paint.MoveTo(XC - Size / 2, Y)
+'   Paint.RelLineTo(Size, 0)
+'   Paint.RelLineTo(0, DH)
+'   Paint.RelLineTo(DW, 0)
+'   Paint.RelLineTo(0, Size)
+'   Paint.RelLineTo(- DW, 0)
+'   Paint.RelLineTo(0, DH)
+'   Paint.RelLineTo(- Size, 0)
+'   Paint.RelLineTo(0, - DH)
+'   Paint.RelLineTo(- DW, 0)
+'   Paint.RelLineTo(0, - Size)
+'   Paint.RelLineTo(DW, 0)
+'   Paint.RelLineTo(0, - DH)
+'   
+' End
+' 
