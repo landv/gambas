@@ -3050,9 +3050,8 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
   Endif
 
   Exec ["rm", "-rf", Project.Dir &/ ".gambas"] Wait
-  Try Move Project.Dir &/ ".gambas.save" To Project.Dir &/ ".gambas"
-  If Error Then Debug Error.Text
-
+  Move Project.Dir &/ ".gambas.save" To Project.Dir &/ ".gambas"
+  
 _ERROR:
 
   EnableRefresh
