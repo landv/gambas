@@ -1247,7 +1247,7 @@ Private Sub UpdateMenu()
 
   bVisible = Not edtEditor.ReadOnly
 
-  Action[".save,.undo,.redo,.cut,.paste,.color,.indent,.unindent,.lcase,.ucase,.sort-ascent,.sort-descent,.eol,.date", Me].Visible = bVisible
+  Action[".save,.undo,.redo,.cut,.paste,.color,.indent,.unindent,.lcase,.ucase,.sort-ascent,.sort-descent,.eol,.date,.char", Me].Visible = bVisible
   mnuAdvanced.Visible = bVisible
   mnuEndOfLine.Visible = bVisible
 

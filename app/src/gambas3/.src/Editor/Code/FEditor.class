@@ -462,7 +462,7 @@ Private Sub UpdateMenu()
 
   bVisible = Not edtEditor.ReadOnly
 
-  Action[".save,.undo,.redo,.cut,.paste,.paste-special,.comment,.uncomment,.color,.indent,.unindent,.lcase,.ucase,.pretty,.date", Me].Visible = bVisible
+  Action[".save,.undo,.redo,.cut,.paste,.paste-special,.comment,.uncomment,.color,.indent,.unindent,.lcase,.ucase,.pretty,.date,.char", Me].Visible = bVisible
   Action[".watch", Me].Visible = Project.Running
   
   mnuAdvanced.Visible = bVisible
@@ -2612,6 +2612,8 @@ End
 Public Sub Editors_Margin()
 
   Dim Y As Integer
+
+  If Design.IsRunning() Then Return  
   Y = Last.Line
   If CanSetBreakpoint(Y) Then Design.SetBreakpoint(Me.Name & "." & CStr(Y), Not HasBreakpoint(Y))
 

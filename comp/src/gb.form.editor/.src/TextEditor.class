@@ -3288,9 +3288,16 @@ End
 Public Sub _GetViews() As TextEditor[]
   
   Dim aView As New TextEditor[]
+  Dim hView As TextEditor
   
-  aView.Add(Me)
-  If _Views Then aView.Insert(_Views)
+  If Object.IsValid(Me) Then aView.Add(Me)
+  
+  If _Views Then
+    For Each hView In _Views
+      If Object.IsValid(hView) Then aView.Add(hView)
+    Next
+  Endif
+  
   Return aView
   
 End

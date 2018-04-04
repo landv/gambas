@@ -1084,6 +1084,7 @@ Public Sub RefreshBreakpointView()
   gvwBreakpoint.Columns[1].Width = -1
   gvwBreakpoint.Columns[2].Width = -1
   gvwBreakpoint.Refresh
+  gvwBreakpoint_Click
   
 End
 
@@ -1331,6 +1332,14 @@ Public Sub OnProjectDebug()
   FDebugButton.SelectButton(TAB_CONSOLE)
   
 End
+
+Public Sub OnProjectDebugState()
+  
+  panBreakpoint.Enabled = Not Design.IsRunning()
+  gvwBreakpoint.Enabled = panBreakpoint.Enabled
+  
+End
+
 
 Public Sub ShowDebugging()
   

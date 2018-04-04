@@ -348,7 +348,7 @@ static int my_sqlite3_exec(
 						{
 							switch(type)
 							{
-								case SQLITE_INTEGER: result->types[i] = GB_T_INTEGER; break;
+								case SQLITE_INTEGER: result->types[i] = GB_T_LONG; break;
 								case SQLITE_FLOAT: result->types[i] = GB_T_FLOAT; break;
 								case SQLITE_BLOB: result->types[i] = (int)DB_T_BLOB; break;
 								default: result->types[i] = GB_T_STRING;

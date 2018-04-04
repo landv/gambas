@@ -623,7 +623,10 @@ _INIT_AGAIN:
 
     ' Needed for MoveFile()
     RefreshSources
+    Design.ClearBreakpoints
 
+    ReadProject(True)
+    
     If Not Exist(SourceDir) Then
 
       InsertDirectory(SourceDir)
@@ -639,7 +642,6 @@ _INIT_AGAIN:
 
     Endif
 
-    ReadProject(True)
     WriteProject(True)
 
     MakeDirectoryIcon
@@ -795,7 +797,7 @@ Catch
   Application.Busy = 0
 
   If Error.Text Then
-    Message.Error(("Cannot open project file :\n") & sDir & "\n\n" & Error.Text & "\n" & Error.Where)
+    Message.Error(("Cannot open project file :") & "\n" & sDir & "\n\n<tt>" & Error.Text & "\n" & Error.Backtrace.Join(" ") & "</tt>")
   Endif
 
 _CANCEL:
@@ -898,7 +900,7 @@ Public Function CloseProject() As Boolean
 
     Inc Application.Busy
 
-    Design.WriteBreakpoints
+    If Not IsFake() Then Design.WriteBreakpoints
 
     If Settings["/RestoreFiles", 1] Then
 
@@ -3048,9 +3050,8 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
   Endif
 
   Exec ["rm", "-rf", Project.Dir &/ ".gambas"] Wait
-  Try Move Project.Dir &/ ".gambas.save" To Project.Dir &/ ".gambas"
-  If Error Then Debug Error.Text
-
+  Move Project.Dir &/ ".gambas.save" To Project.Dir &/ ".gambas"
+  
 _ERROR:
 
   EnableRefresh
@@ -4927,7 +4928,7 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
 
 Catch
 
-  FMain.ShowError(Subst(("Cannot move file &1."), File.Name(sSrc)) & "\n\n" & Error.Text, sSrc)
+  FMain.ShowError(Subst(("Cannot move file &1."), File.Name(sSrc)) & "\n\n" & Error.Text & "\n" & Error.Backtrace.Join(" "), sSrc)
 
 End
 
@@ -6382,6 +6383,7 @@ Private Sub RenamePaths(sOld As String, sNew As String)
   Dim hForm As Object
   Dim sCheck As String
   Dim sNewFormPath As String
+  Dim sExt As String
   
   ' Rename DoNotTranslate
   
@@ -6426,6 +6428,15 @@ Private Sub RenamePaths(sOld As String, sNew As String)
       Endif
   
     Next
+  
+  ' Rename breakpoints
+  
+  If IsSourcePath(sOld) Then
+    sExt = File.Ext(sOld)
+    If sExt = "class" Or If sExt = "module" Then
+      Design.RenameClass(File.BaseName(sOld), File.BaseName(sNew))
+    Endif
+  Endif
   
 End
 

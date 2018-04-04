@@ -9,6 +9,7 @@ Property Read Keys As String[]
 Property Read Count As Integer
 Property Sort As String
 Property Ascending As Boolean
+Property Read Request As Boolean
 
 Property Read CacheSize As Integer
 
@@ -28,6 +29,8 @@ Private $rData As Result
 Private $iDataIndex As Integer
 
 Private $aCol As String[]
+
+Private $sError As String
 
 Public Sub _new(hConn As DataConnection, Table As String, Filter As String)
   
@@ -261,9 +264,15 @@ Public Function _get(Index As Integer) As Result
   
   If iBusy <> Application.Busy Then Dec Application.Busy
   Return $rData
-  
+
 Finally
+
   If iBusy <> Application.Busy Then Dec Application.Busy
+
+Catch
+
+  $sError = Error.Text
+
 End
 
 Private Function Keys_Read() As String[]
@@ -343,11 +352,22 @@ Private Sub Sort_Write(Value As String)
 
 End
 
+Private Sub GetFirstResult() As Result
+
+  Dim rData As Result
+
+  $sError = ""
+  rData = Me[0]
+  If Not rData And If $sError Then Error.Raise($sError)
+  Return rData
+
+End
+
 Private Function Count_Read() As Integer
 
   If $iCount < 0 Then
     If $bRequest Then
-      $iCount = Me[0].Count
+      $iCount = GetFirstResult().Count
     Else
       '$iCount = $DB.Exec(Request.Select("COUNT(*) AS nRecord").From($sTable).Where($sFilter).Get($DB))[0]
       $iCount = $DB.Exec($DB.SQL.Select("COUNT(*) AS nRecord").From($sTable).Where($sFilter)())[0]
@@ -365,7 +385,7 @@ Public Sub GetFields() As String[]
   
   If $bRequest Then
     aField = New String[]
-    For Each hField In Me[0].Fields
+    For Each hField In GetFirstResult().Fields
       aField.Add(hField.Name)
     Next
     Return aField
@@ -381,7 +401,7 @@ Public Sub GetFieldInfo(sField As String) As DataField
   
   If $bRequest Then
     hField = New DataField
-    hField.FromField(Me[0].Fields[sField])
+    hField.FromField(GetFirstResult().Fields[sField])
     Return hField
   Else
     Return $hConn[$sTable, sField]
@@ -424,5 +444,11 @@ Private Sub Ascending_Write(Value As Boolean)
   If $bAscent = Value Then Return
   $bAscent = Value
   RefreshKey
+
+End
+
+Private Function Request_Read() As Boolean
+
+  Return $bRequest
 
 End

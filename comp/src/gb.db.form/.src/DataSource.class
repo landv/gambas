@@ -32,6 +32,7 @@ Public Const _Group As String = "Data"
 Private $sTable As String
 Private $sFilter As String
 Private $bReadOnly As Boolean
+Private $bRequest As Boolean
 
 Private $bCreate As Boolean
 
@@ -304,6 +305,8 @@ Private Function Load() As Boolean
     Goto VOID
   Endif
 
+  $bRequest = $hTable.Request
+  
   $iIndex = -1
   
   Redraw(True)
@@ -545,7 +548,7 @@ End
 Public Function _get((Key) As String) As Variant
   
   If $iIndex < 0 Then
-    Return $hConn.GetDefaultValue($sTable, Key)
+    If Not $bRequest Then Return $hConn.GetDefaultValue($sTable, Key)
   Else 
     Try Return $hTable[$iIndex][Key]
   Endif
@@ -555,7 +558,8 @@ End
 Public Function _GetInfo((Key) As String) As DataField
   
   If _Check() Then Return
-  Return $hConn[$sTable, Key, $bCreate]
+  If Not $bRequest Then Return $hConn[$sTable, Key, $bCreate]
+  Return $hTable.GetFieldInfo(Key)
   
 End
 
@@ -666,7 +670,7 @@ End
 
 Private Function ReadOnly_Read() As Boolean
   
-  Return $bReadOnly
+  Return $bReadOnly Or $bRequest
   
 End
 

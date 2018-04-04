@@ -33,10 +33,14 @@
 
 Public Sub Main()
 
-  Dim sEnv As String
-
-  For Each sEnv In Env
-    Print sEnv; "="; Env[sEnv]
-  Next
+  ' Dim hImage As Image
+  ' 
+  ' hImage = New Image(256, 256, Color.Transparent)
+  ' Paint.Begin(hImage)
+  ' Paint.Background = Color.Red
+  ' Paint.Cross(16, 16, 224, 224, 64)
+  ' Paint.Fill
+  ' Paint.End
+  ' hImage.Save("~/test.png")
 
 End
