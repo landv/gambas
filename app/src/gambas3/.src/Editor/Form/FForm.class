@@ -96,22 +96,6 @@ Private $bLockArrangement As Boolean
 
 Private $cInfo As Collection
 
-' Static Private Sub Shortcut(Text As String, sShortcut As String) As String
-' 
-'   Dim iPos As Integer
-'   
-'   iPos = String.InStr(Text, "&")
-'   If iPos Then 
-'     sShortcut = String.Mid$(Text, iPos + 1, 1)
-'     Text = Left(Text, iPos - 1) & Mid$(Text, iPos + 1)
-'   Endif
-'   
-'   iPos = InStr(Text, sShortcut, 1, gb.IgnoreCase)
-'   If iPos = 0 Then Return Text '& " (&" & String.UCase(sShortcut) & ")"
-'   Return Left(Text, iPos - 1) & "&" & Mid$(Text, iPos)
-'   
-' End
-
 Public Sub _new(sPath As String)
 
   'dim sFamily as string
@@ -3882,10 +3866,13 @@ End
 
 Private Sub MoveInfo()
 
-  Dim D As Integer
+  Dim DX As Integer
+  Dim DY As Integer
 
-  If svwWorkspace.ScrollH > svwWorkspace.ClientH Then D = Style.ScrollbarSize
-  dwgInfo.Move(svwWorkspace.W - dwgInfo.W - Desktop.Scale - D, svwWorkspace.Y + Desktop.Scale)
+  If svwWorkspace.ScrollH > svwWorkspace.ClientH Then DX = Style.ScrollbarSize
+  If svwWorkspace.ScrollW > svwWorkspace.ClientW Then DY = Style.ScrollbarSize
+  
+  dwgInfo.Move(svwWorkspace.X + svwWorkspace.W - dwgInfo.W - Desktop.Scale - DX, svwWorkspace.Y + svwWorkspace.H - dwgInfo.H - Desktop.Scale - DY)
 
 End
 
@@ -3895,10 +3882,10 @@ Public Sub timMoveInfo_Timer()
   
 End
 
-
 Public Sub svwWorkspace_Arrange()
 
-  dwgBackground.Move(0, 0, svwWorkspace.ScrollW, svwWorkspace.ScrollH)
+  dwgBackground.Move(svwWorkspace.X, svwWorkspace.Y, svwWorkspace.W, svwWorkspace.H)
+  dwgBackground.Lower
   timMoveInfo.Trigger
 
 End

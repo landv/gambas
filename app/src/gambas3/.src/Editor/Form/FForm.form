@@ -574,13 +574,9 @@
   }
   { svwWorkspace ScrollView
     MoveScaled(3,14,58,39)
-    Background = Color.LightForeground
+    Background = Color.Transparent
     Expand = True
     Border = False
-    { dwgBackground DrawingArea
-      MoveScaled(4,25,12,9)
-      Ignore = True
-    }
     { panRight Panel Handle
       Name = "panRight"
       MoveScaled(8,16,1,1)
@@ -637,7 +633,7 @@
       }
     }
     { panBorder DrawingArea
-      MoveScaled(23,12,24,24)
+      MoveScaled(29,13,24,24)
       Background = Color.Background
       { panSelectN DrawingArea panSelect
         Name = "panSelectN"
@@ -677,13 +673,18 @@
       }
     }
     { panMenuBar DrawingArea
-      MoveScaled(21,7,25,3)
+      MoveScaled(27,8,25,3)
       Visible = False
       Background = Color.Background
     }
   }
   { dwgInfo DrawingArea
-    MoveScaled(65,15,20,6)
+    MoveScaled(59,14,20,6)
+    Ignore = True
+  }
+  { dwgBackground DrawingArea
+    MoveScaled(76,26,12,9)
+    Background = Color.LightForeground
     Ignore = True
   }
   { timMoveInfo #Timer
