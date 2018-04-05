@@ -52,18 +52,18 @@ Private $iNoActivate As Integer
 Private $iHighlight As Integer
 Private $bHighlight As Boolean
 
-Private $hObserver As Observer
+'Private $hObserver As Observer
 Private $iLastSize As Integer
 'Private $hTimer As Timer
 Private $hCreateTimer As Timer
 
-Private $bAdjust As Boolean
+'Private $bAdjust As Boolean
 Private $iLastRow As Integer = -1
 
 Private $sCharset As String
 
 Private $hTextArea As TextArea
-Private $hComboBox As MenuButton
+'Private $hComboBox As MenuButton
 Private $hButtonBox As ButtonBox
 
 Private $bEditable As Boolean
@@ -189,13 +189,12 @@ Private Sub RefreshColumns()
   
 End
 
-Private Sub UpdateObserver()
-  
-  If Not $bAdjust Then Return
-  $hObserver = New Observer($hTable) As "Table"
-  
-End
-
+' Private Sub UpdateObserver()
+'   
+'   If Not $bAdjust Then Return
+'   $hObserver = New Observer($hTable) As "Table"
+'   
+' End
 
 Private Sub Load()
   
@@ -219,7 +218,7 @@ Private Sub Load()
     If hTable <> $hTable Then
       $hTable = hTable
       bReset = True
-      UpdateObserver
+      'UpdateObserver
       $hCtrl.Rows.Count = 0
       $hCtrl.Columns.Count = 0
       If $hTable Then RefreshColumns
@@ -1224,11 +1223,11 @@ Private Sub Background_Write(Value As Integer)
 
 End
 
-Public Sub mnuComboBox_Click()
-  
-  $hComboBox.Text = Last.Text
-  
-End
+' Public Sub mnuComboBox_Click()
+'   
+'   $hComboBox.Text = Last.Text
+'   
+' End
 
 Private Function Data_Read() As _GridView_Data
 

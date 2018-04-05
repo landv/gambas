@@ -291,7 +291,6 @@ End
 
 Private Sub SetValue(vVal As Variant)
 
-  Dim sText As String
   Dim I As Integer
   Dim hView As TableView
 
@@ -435,8 +434,6 @@ Public Sub DrawingArea_Draw()
   
   Dim X As Integer
   Dim iFlag As Integer
-  Dim sText As String
-  Dim bFlat As Boolean
   Dim I As Integer
   Dim X2 As Integer
   
@@ -446,7 +443,7 @@ Public Sub DrawingArea_Draw()
   
   '' TODO: System.RightToLeft
 
-  Style.PaintButton(0, 0, Me.W, Me.H, $bPressed, iFlag, bFlat)
+  Style.PaintButton(0, 0, Me.W, Me.H, $bPressed, iFlag)
   Style.PaintArrow(Me.W - Desktop.Scale * 2, 0, Desktop.Scale, Me.H, Align.Bottom, iFlag)
     
   If $aText Then 
