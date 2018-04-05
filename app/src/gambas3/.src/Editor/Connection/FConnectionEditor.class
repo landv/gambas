@@ -1623,7 +1623,7 @@ Public Sub btnNewTable_Click()
   
   If MConnection.CreateTable($hConn, sName, FNewTable.TableType) Then Return
   
-  lvwTable.Add("T" & sName, sName, Picture["img/16/table.png"])
+  lvwTable.Add("T" & sName, sName, Picture["icon:/16/table"])
   'lvwTable["T" & sName].Selected = True
   LoadTable(sName)
   

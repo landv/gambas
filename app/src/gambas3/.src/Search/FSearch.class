@@ -954,7 +954,7 @@ Public Sub gvwFind_Data(Row As Integer, Column As Integer)
         .Text = $aBrowse[Row].File
         .Alignment = Align.Normal
       Case 1
-        .Text = $aBrowse[Row].GetProcedure()
+        .Text = $aBrowse[Row].GetLocation()
         .Alignment = Align.Normal
       Case 2
         .Text = CStr($aBrowse[Row].Line + 1) & " "
@@ -1008,8 +1008,8 @@ Public Sub gvwFind_Select()
   Try hForm = Project.OpenFile(hFind.Path)
   If Not hForm Then Return
   
-  hForm.SetPosition(hFind, False)
   Project.Activate(hForm)
+  hForm.SetPosition(hFind, False)
 
   gvwFind.ScrollX = 0
   

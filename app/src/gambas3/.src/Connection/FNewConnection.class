@@ -261,7 +261,7 @@ Private Sub FillDatabaseList()
 
   lvwDatabase.Clear
   For Each sName In aName
-    lvwDatabase.Add(sName, sName, Picture["img/16/database.png"]).Selected = sName = Trim(txtDatabase.Text)
+    lvwDatabase.Add(sName, sName, Picture["icon:/16/database"]).Selected = sName = Trim(txtDatabase.Text)
   Next
   Try lvwDatabase[Trim(txtDatabase.Text)].Selected = True
   UpdateCreateDatabase

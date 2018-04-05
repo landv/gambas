@@ -11,7 +11,7 @@
     { btnTitle ToolButton
       MoveScaled(0,0,4,4)
       Action = ".database"
-      Picture = Picture["img/16/database.png"]
+      Picture = Picture["icon:/small/database"]
     }
     { btnShowSystem ToolButton
       MoveScaled(4,0,4,4)
@@ -225,7 +225,7 @@
             Index = 0
           }
           { panRequest VBox
-            MoveScaled(6,10,61,24)
+            MoveScaled(6,8,61,24)
             Visible = False
             Background = Color.Background
             { tlbData2 ToolBar
@@ -401,7 +401,7 @@
 { Actions
   { Action database
     Text = ""
-    Picture = "img/16/database.png"
+    Picture = "icon:/small/database"
   }
   { Action reload
     Text = "Reload"

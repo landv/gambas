@@ -612,9 +612,6 @@ Private Sub ShowProperty(Optional sFocus As String)
   If Project.Running Then Return
   If Not $hForm Then Return
   If $hForm.ReadOnly Then Return
-  If grdProperty.Row < 0 Then Return
-
-  If $sLast Then HideProperty()
 
   If $sFocus Then sFocus = $sFocus
 
@@ -622,6 +619,10 @@ Private Sub ShowProperty(Optional sFocus As String)
     iRow = FindProperty(sFocus)
     If iRow >= 0 Then grdProperty.Row = iRow
   Endif
+
+  If grdProperty.Row < 0 Then Return
+
+  If $sLast Then HideProperty()
 
   $bButton = False
 
@@ -846,14 +847,14 @@ Private Sub ShowProperty(Optional sFocus As String)
   txtProperty.Button = bButton
   'btnProperty.Raise
 
-  $hEditor.SetFocus
-
   If $hEditor = txtProperty Then
-    'IF NOT txtProperty.ReadOnly THEN
+    txtProperty.Editor.SetFocus
     txtProperty.Editor.SelectAll
-    'ENDIF
   Else If $hEditor = spnProperty Then
+    spnProperty.SetFocus
     spnProperty.SelectAll
+  Else
+    $hEditor.SetFocus
   Endif
 
 End
