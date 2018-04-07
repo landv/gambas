@@ -6,13 +6,13 @@ Private $aMonth As String[]
 
 Public Sub ToUnixTime({Date} As Date) As Long
 
-  Return DateDiff(Date(1970, 1, 1), {Date}, gb.Second) + System.TimeZone
+  Return DateDiff(Date(1970, 1, 1), {Date}, gb.Second) - System.TimeZone
 
 End
 
 Public Sub FromUnixTime(UnixTime As Long) As Date
 
-  Return Date(1970, 1, 1) + (- System.TimeZone + UnixTime) / 86400
+  Return Date(1970, 1, 1) + (System.TimeZone + UnixTime) / 86400
 
 End
 
