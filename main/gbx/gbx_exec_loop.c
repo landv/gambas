@@ -2330,7 +2330,7 @@ _SUBR_COMPI:
 
 _SUBR_CONV:
 
-  VALUE_convert(SP - 1, code & 0x3F);
+  VALUE_conv(SP - 1, code & 0x3F);
 	goto _NEXT;
 
 /*-----------------------------------------------*/

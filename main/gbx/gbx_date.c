@@ -155,7 +155,7 @@ DATE_SERIAL *DATE_split_local(VALUE *value, bool local)
 	nmsec = value->_date.time;
 
 	if (local && nday > 0)
-		nmsec += DATE_get_timezone() * 1000;
+		nmsec -= DATE_get_timezone() * 1000;
 
 	if (nmsec < 0)
 	{
@@ -253,7 +253,7 @@ bool DATE_make_local(DATE_SERIAL *date, VALUE *val, bool local)
 	val->_date.date = nday;
 	val->_date.time = ((date->hour * 60) + date->min) * 60 + date->sec;
 	if (timezone)
-		val->_date.time -= DATE_get_timezone();
+		val->_date.time += DATE_get_timezone();
 
 	if (val->_date.time < 0)
 	{

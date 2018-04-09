@@ -3,16 +3,19 @@
 Export
 Private $aDay As String[]
 Private $aMonth As String[]
+Private $dEpoch As Date
 
 Public Sub ToUnixTime({Date} As Date) As Long
 
-  Return DateDiff(Date(1970, 1, 1), {Date}, gb.Second) - System.TimeZone
+  If Not $dEpoch Then $dEpoch = DateAdd(Date(1970, 1, 1), gb.Second, - System.TimeZone)
+  Return DateDiff($dEpoch, {Date}, gb.Second)
 
 End
 
 Public Sub FromUnixTime(UnixTime As Long) As Date
 
-  Return Date(1970, 1, 1) + (System.TimeZone + UnixTime) / 86400
+  If Not $dEpoch Then $dEpoch = DateAdd(Date(1970, 1, 1), gb.Second, - System.TimeZone)
+  Return $dEpoch + UnixTime / 86400
 
 End
 
