@@ -183,7 +183,7 @@ void CHANNEL_exit()
 			continue;
 
 		free_channel(ch);
-		GB.Unref(POINTER(&ch));
+		GB.Unref(POINTER(&_cache[i]));
 	}
 
 	if (_pipe_usage)
@@ -259,6 +259,12 @@ BEGIN_METHOD_VOID(Channel_new)
 	THIS->channel = channel;
 	_cache[channel] = THIS;
 	GB.Ref(THIS);
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Channel_exit)
+
+	CHANNEL_exit();
 
 END_METHOD
 
@@ -387,7 +393,7 @@ GB_DESC ChannelDesc[] =
 
 	GB_METHOD("_new", NULL, Channel_new, NULL),
 
-	//GB_STATIC_METHOD("_exit", NULL, Channel_exit, NULL),
+	GB_STATIC_METHOD("_exit", NULL, Channel_exit, NULL),
 	GB_METHOD("Play", NULL, Channel_Play, "[(Sound)Sound;(Loops)i(FadeIn)f]"),
 	GB_METHOD("Pause", NULL, Channel_Pause, NULL),
 	GB_METHOD("Stop", NULL, Channel_Stop, "[(FadeOut)f]"),
