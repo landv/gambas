@@ -3100,10 +3100,13 @@ End
 
 Private Sub MoveInfo()
 
-  Dim D As Integer
+  Dim DX As Integer
+  Dim DY As Integer
 
-  If imvImage.ScrollH > imvImage.ClientH Then D = Style.ScrollbarSize
-  dwgInfo.Move(panBackground.W - dwgInfo.W - Desktop.Scale - D, Desktop.Scale)
+  If imvImage.ScrollH > imvImage.ClientH Then DX = Style.ScrollbarSize
+  If imvImage.ScrollW > imvImage.ClientW Then DY = Style.ScrollbarSize
+  
+  dwgInfo.Move(panBackground.W - dwgInfo.W - Desktop.Scale - DX, panBackground.H - dwgInfo.H - Desktop.Scale - DY)
 
 End
 

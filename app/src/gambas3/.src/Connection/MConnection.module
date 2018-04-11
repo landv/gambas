@@ -387,7 +387,7 @@ Public Sub FillViewWithTables(lvwTable As TreeView, hConn As Connection, bShowSy
     If hTable.System Then
       lvwTable.Add("S" & hTable.Name, sName, Picture["img/16/system-table.png"], sParent)
     Else
-      lvwTable.Add("T" & hTable.Name, sName, Picture["img/16/table.png"], sParent)
+      lvwTable.Add("T" & hTable.Name, sName, Picture["icon:/16/table"], sParent)
     Endif
   Next
   

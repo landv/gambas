@@ -12,18 +12,24 @@ Public Dark As Boolean
 Public Control As String
 Public {Property} As String
 
-Private $sProc As String
+Private $sWhere As String
 
-Public Sub GetProcedure() As String
+Public Sub GetLocation() As String
   
-  Dim hFile As FEditor
+  Dim hFile As Object
   
   If Not Project.IsSourcePath(Path) Then Return
-  If $sProc Then Return $sProc
+  If $sWhere Then Return $sWhere
   
-  $sProc = "-"
+  $sWhere = "-"
   Try hFile = Project.LoadFile(Path)
-  If hFile Then $sProc = hFile.GetProcAt({Line})
-  Return $sProc
+  If hFile Then
+    If hFile Is FEditor Or If hFile Is FTextEditor Then
+      $sWhere = hFile.GetProcAt({Line})
+    Else If hFile Is FForm Then
+      $sWhere = hFile.GetLocation({Line})
+    Endif
+  Endif
+  Return $sWhere
   
 End

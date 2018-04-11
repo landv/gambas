@@ -28,7 +28,7 @@ Private $bAscent As Boolean
 Private $rData As Result
 Private $iDataIndex As Integer
 
-Private $aCol As String[]
+'Private $aCol As String[]
 
 Private $sError As String
 
@@ -191,13 +191,13 @@ Public Function _get(Index As Integer) As Result
   Dim iBusy As Integer = Application.Busy
   Dim hReq As SQLRequest
   Dim aSort As String[]
-  Dim aCol As String[]
+  ' Dim aCol As String[]
   
-  If $aCol And If $aCol.Count Then
-    aCol = $aCol.Copy()
-  Else
-    aCol = Null
-  Endif
+  ' If $aCol And If $aCol.Count Then
+  '   aCol = $aCol.Copy()
+  ' Else
+  '   aCol = Null
+  ' Endif
   
   If $aKey.Count = 0 Then
   
@@ -214,10 +214,10 @@ Public Function _get(Index As Integer) As Result
         Endif
       Else
         If $sSort Then
-          If aCol Then aCol.Add($sSort, 0)
-          hReq = $DB.SQL.Select(aCol).From($sTable).Where($sFilter).OrderBy($sSort & If($bAscent, "", " DESC"))
+          'If aCol Then aCol.Add($sSort, 0)
+          hReq = $DB.SQL.Select().From($sTable).Where($sFilter).OrderBy($sSort & If($bAscent, "", " DESC"))
         Else
-          hReq = $DB.SQL.Select(aCol).From($sTable).Where($sFilter)
+          hReq = $DB.SQL.Select().From($sTable).Where($sFilter)
         Endif
         
         $rData = $DB.Exec(hReq())
@@ -248,9 +248,9 @@ Public Function _get(Index As Integer) As Result
     aSort = GetSortKeys()
   
     If $iDataIndex = 0 Then
-      hReq = $DB.SQL.Select(aCol).From($sTable).Where($sFilter).OrderBy(aSort)
+      hReq = $DB.SQL.Select().From($sTable).Where($sFilter).OrderBy(aSort)
     Else
-      hReq = $DB.SQL.Select(aCol).From($sTable).Where($sFilter).And().Where(Common.MakeNextWhere(aSort, $aVal[$iDataIndex - 1])).OrderBy(aSort)
+      hReq = $DB.SQL.Select().From($sTable).Where($sFilter).And().Where(Common.MakeNextWhere(aSort, $aVal[$iDataIndex - 1])).OrderBy(aSort)
     Endif
     
     $rData = $DB.Limit(LIMIT_INC).Exec(hReq.Get())

@@ -1418,7 +1418,7 @@ END_PROPERTY
 static QWidget *get_color_widget(CWIDGET *_object)
 {
 	if (qobject_cast<MyScrollView *>(WIDGET))
-		return ((CSCROLLVIEW *)THIS)->container;
+		return WIDGET; //((CSCROLLVIEW *)THIS)->container;
 	
 	QWidget *view = get_viewport(WIDGET);
 	if (view)

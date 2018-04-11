@@ -4,6 +4,7 @@ Class Shortcut
 
 Public Path As String
 Public Family As String
+Public Age As Integer '' The text age. It is incremented each time the text is modified
 
 Public Master As CControl
 Public Selection As New Collection
@@ -94,22 +95,6 @@ Private $hDropTarget As CControl
 Private $bLockArrangement As Boolean
 
 Private $cInfo As Collection
-
-' Static Private Sub Shortcut(Text As String, sShortcut As String) As String
-' 
-'   Dim iPos As Integer
-'   
-'   iPos = String.InStr(Text, "&")
-'   If iPos Then 
-'     sShortcut = String.Mid$(Text, iPos + 1, 1)
-'     Text = Left(Text, iPos - 1) & Mid$(Text, iPos + 1)
-'   Endif
-'   
-'   iPos = InStr(Text, sShortcut, 1, gb.IgnoreCase)
-'   If iPos = 0 Then Return Text '& " (&" & String.UCase(sShortcut) & ")"
-'   Return Left(Text, iPos - 1) & "&" & Mid$(Text, iPos)
-'   
-' End
 
 Public Sub _new(sPath As String)
 
@@ -1647,7 +1632,7 @@ Public Sub UpdateInfo(hCCtrl As CControl)
   
   $cInfo = ["Name": hCCtrl.Name, "Kind": hCCtrl.Kind, "X": hCCtrl.X, "Y": hCCtrl.Y, "Width": hCCtrl.Width, "Height": hCCtrl.Height]
   
-  dwgInfo.Resize(dwgInfo.Font.TextWidth("99999") * 4 + Desktop.Scale * 8, dwgInfo.Font.Height * 2 + Desktop.Scale * 2)
+  dwgInfo.Resize(dwgInfo.Font.TextWidth("999999") * 4 + Desktop.Scale * 8, dwgInfo.Font.Height * 2 + Desktop.Scale * 2)
   dwgInfo.Tag = sText
   MoveInfo
 
@@ -1930,6 +1915,9 @@ Public Sub Modify(Optional bReset As Boolean)
 
   ResetClassScan
   Inc Project.TimeStamp
+  Inc Age
+  
+  FSearch.OnFileChange(Me.Path)
 
   $bModify = Not bReset
   DrawTitle
@@ -3729,7 +3717,19 @@ End
 
 Public Sub GetText() As String
 
-  Return
+  Dim sSave As String
+  
+  ResetSave
+
+  AddLine(Project.FORM_MAGIC)
+  AddLine()
+
+  SaveOne(RootControl)
+  'SaveAction
+
+  sSave = $sSave
+  $sSave = ""
+  Return sSave
 
   ' Dim bModify As Boolean = $bModify
   ' ResetSave
@@ -3744,12 +3744,24 @@ Public Sub GetPosition() As Integer
 
 End
 
-Public Sub SetPosition((hResult) As CFindResult, Optional (bJustCheck) As Boolean) As Boolean
+Public Sub SetPosition(hResult As CFindResult, Optional bJustCheck As Boolean) As Boolean
+
+  Dim sName As String = hResult.GetLocation()
+  Dim aName As String[]
+  
+  If bJustCheck Then
+    If Not sName Then Return True
+  Else
+    aName = Split(sName, ".")
+    Try SelectControl(aName[0])
+    If Not Error Then FProperty.FocusOn(aName[1])
+  Endif
 
 End
 
-Public Sub Replace((sReplace) As String)
+Public Sub Replace((sReplace) As String) As Boolean
 
+  Return True
   'Editor.Replace(sReplace)
 
 End
@@ -3854,10 +3866,13 @@ End
 
 Private Sub MoveInfo()
 
-  Dim D As Integer
+  Dim DX As Integer
+  Dim DY As Integer
 
-  If svwWorkspace.ScrollH > svwWorkspace.ClientH Then D = Style.ScrollbarSize
-  dwgInfo.Move(svwWorkspace.W - dwgInfo.W - Desktop.Scale - D, svwWorkspace.Y + Desktop.Scale)
+  If svwWorkspace.ScrollH > svwWorkspace.ClientH Then DX = Style.ScrollbarSize
+  If svwWorkspace.ScrollW > svwWorkspace.ClientW Then DY = Style.ScrollbarSize
+  
+  dwgInfo.Move(svwWorkspace.X + svwWorkspace.W - dwgInfo.W - Desktop.Scale - DX, svwWorkspace.Y + svwWorkspace.H - dwgInfo.H - Desktop.Scale - DY)
 
 End
 
@@ -3867,10 +3882,10 @@ Public Sub timMoveInfo_Timer()
   
 End
 
-
 Public Sub svwWorkspace_Arrange()
 
-  dwgBackground.Move(0, 0, svwWorkspace.ScrollW, svwWorkspace.ScrollH)
+  dwgBackground.Move(svwWorkspace.X, svwWorkspace.Y, svwWorkspace.W, svwWorkspace.H)
+  dwgBackground.Lower
   timMoveInfo.Trigger
 
 End
@@ -4355,4 +4370,36 @@ Public Sub dwgInfo_Draw()
   X += W
   Paint.DrawText($cInfo!Height, X + DS, Y, W, H, Align.Left)
 
+End
+
+Public Sub GetLocation(iLine As Integer) As String
+
+  Dim aText As String[]
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sProperty As String
+  Dim iLevel As Integer
+  
+  aText = Split(GetText(), "\n")
+  Dec iLine
+  If iLine > aText.Max Then Return
+  sLine = Trim(aText[iLine])
+  iPos = InStr(sLine, " = ")
+  If iPos = 0 Then Return
+  sProperty = Left(sLine, iPos - 1)
+  
+  While iLine >= 0
+    sLine = Trim(aText[iLine])
+    If sLine = "}" Then
+      Inc iLevel
+    Else If sLine Begins "{ " Then
+      If iLevel Then 
+        Dec iLevel
+      Else
+        Return Split(sLine, " ")[1] & "." & sProperty
+      Endif
+    Endif
+    Dec iLine
+  Wend
+  
 End

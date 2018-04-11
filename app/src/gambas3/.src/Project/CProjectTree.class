@@ -601,10 +601,10 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
 
         Case "connection"
           If Exist(File.SetExt(sPath, "template")) Then bExported = True
-          sIcon = sLocalPrefix &/ "database.png"
+          sIcon = sPrefix &/ "database"
           
         Case "console"
-          sIcon = sLocalPrefix &/ "console.png"
+          sIcon = sPrefix &/ "terminal"
           
         Case Else
           Try hImage = DesktopMime.FromFile(sPath).GetIcon(If(iSize, iSize, 16))
