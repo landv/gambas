@@ -488,6 +488,7 @@ Private Sub ReloadTable()
   Dim hResult As Result
   Dim cDescField As Collection
   Dim cDescIndex As Collection
+  Dim iCount As Integer
   
   'UpdateDefinition($sTable)
   
@@ -576,6 +577,15 @@ Private Sub ReloadTable()
   
   datData.Table = $sTable
   datData.Refresh
+  
+  iCount = datData.Count
+  If iCount = 0 Then
+    lblCount.Text = ("No record") & " "
+  Else If iCount = 1 Then
+    lblCount.Text = ("One record") & " "
+  Else
+    lblCount.Text = Subst(("&1 records"), Format(iCount, ",0")) & " "
+  Endif
   
   splTable.Enabled = True
   
