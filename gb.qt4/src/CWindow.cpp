@@ -2764,7 +2764,7 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 		{
 			MyMainWindow *w = (MyMainWindow *)o;
 
-			if (THIS->toplevel && !THIS->popup && (!THIS->moved || w->isModal()))
+			if (THIS->toplevel && !THIS->popup && !THIS->moved)
 				w->center();
 
 			//handle_focus(THIS);
