@@ -32,6 +32,7 @@ Private $iHandleSize As Integer
 Private $iLock As Integer
 
 Private $aHidden As Control[]
+Private $aDisabled As Control[]
 
 Public Sub _new()
   
@@ -727,12 +728,19 @@ Public Sub SetConfigureMode(bConfigure As Boolean)
 
   Lock()
   If $bConfigure Then
+    
     $aHidden = New Control[]
+    $aDisabled = New Control[]
+    
     For Each hChild In panToolBar.Children
       If hChild Is Separator Then Continue
       If Not hChild.Visible Then 
         $aHidden.Add(hChild)
         hChild.Show
+      Endif
+      If Not hChild.Enabled Then
+        $aDisabled.Add(hChild)
+        hChild.Enabled = True
       Endif
     Next
     ' For Each hChild In panHide.Children
@@ -743,12 +751,20 @@ Public Sub SetConfigureMode(bConfigure As Boolean)
     '   Endif
     ' Next
   Else
+    
     For Each hChild In $aHidden
       hChild.Hide
     Next
     $aHidden = Null
+
+    For Each hChild In $aDisabled
+      hChild.Enabled = False
+    Next
+    $aDisabled = Null
+
     SaveConfig
     'panToolBar.Refresh
+    
   Endif
   Unlock()
   
