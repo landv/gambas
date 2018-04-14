@@ -248,6 +248,34 @@ Static Public Sub StretchImage((Image) As Image, X As Float, Y As Float, Width A
   
 End
 
+Static Public Sub DrawRect(X As Float, Y As Float, Width As Float, Height As Float, Color As Integer, Optional Size As Float = 1)
+  
+  If Size = 0 Then Return
+  
+  If Size < 0 Then
+    Size = - Size
+    X -= Size
+    Y -= Size
+    Width += Size * 2
+    Height += Size * 2
+  Endif
+  
+  If Size >= Min(Width, Height) / 2 Then
+    Paint.FillRect(X, Y, Width, Height, Color)
+    Return
+  Endif
+  
+  Paint.Save
+  Paint.Rectangle(X, Y, Width, Size)
+  Paint.Rectangle(X + Width - Size, Y + Size, Size, Height - Size)
+  Paint.Rectangle(X, Y + Height - Size, Width - Size, Size)
+  Paint.Rectangle(X, Y + Size, Size, Height - Size * 2)
+  Paint.Background = Color
+  Paint.Fill
+  Paint.Restore
+  
+End
+
 
 ' Static Public Debug As Boolean
 ' 
