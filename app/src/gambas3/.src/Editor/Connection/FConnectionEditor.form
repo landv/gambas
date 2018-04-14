@@ -11,13 +11,12 @@
     { btnTitle ToolButton
       MoveScaled(0,0,4,4)
       Action = ".database"
-      Picture = Picture["icon:/small/database"]
+      Picture = Picture["icon:/small/server"]
     }
     { btnShowSystem ToolButton
       MoveScaled(4,0,4,4)
       ToolTip = ("Show system tables")
       Action = ".show-system"
-      Picture = Picture["img/16/system-table.png"]
       Toggle = True
     }
     { Separator3 Separator
@@ -430,7 +429,7 @@
   }
   { Action database
     Text = ""
-    Picture = "icon:/small/database"
+    Picture = "icon:/small/server"
   }
   { Action delete-data
     Text = "Delete"
@@ -486,7 +485,7 @@
   }
   { Action show-system
     Text = "Show system tables"
-    Picture = "img/16/system-table.png"
+    Picture = "$ToolButton"
   }
   { Action unselect-all-data
     Text = "Unselect all"

@@ -46,6 +46,7 @@ Private $hStrokeExtents As Rect
 'Private $hStrokeOrigin As Point
 
 Private $hSelect As CImageSelection
+Static Private $hNullSelection As CImageSelection
 Private $fLastSelectW As Float
 Private $fLastSelectH As Float
 
@@ -250,6 +251,7 @@ Private Sub AddUndo(hObject As Object)
   
   If Not hObject Then Return
   If $aUndo.Count = 256 Then $aUndo.Remove(0)
+  
   $aUndo.Add(hObject)
   $aRedo.Clear
   
@@ -553,7 +555,12 @@ Private Sub Undo()
       imvImage.Update($hImage)
       Modify
     Else If vUndo Is CImageSelection Then
-      $aRedo.Add($hSelect)
+      If Not $hSelect Then
+        If Not $hNullSelection Then $hNullSelection = New CImageSelection
+        $aRedo.Add($hNullSelection)
+      Else
+        $aRedo.Add($hSelect)
+      Endif
       $hSelect = vUndo
       imvImage.Refresh
     Else If vUndo Is PointF Then
@@ -600,6 +607,7 @@ Public Sub btnRedo_Click()
     Else If vUndo Is CImageSelection Then
       $aUndo.Add($hSelect)
       $hSelect = vUndo
+      If $hSelect = $hNullSelection Then $hSelect = Null
       imvImage.Refresh
     Else If vUndo Is PointF Then
       $aUndo.Add($hLastPoint)
@@ -763,8 +771,10 @@ Public Sub imvImage_MouseDown()
 
   Me.SetFocus
   $bPress = Mouse.Left
-  If $bDblClick Then Return
+  
   If Not $bPress Then Return
+  
+  BeginUndo
   
   Select Case $sTool
     
@@ -1479,6 +1489,7 @@ Public Sub imvImage_MouseUp()
   
   If $bDblClick Then 
     $bDblClick = False
+    EndUndo
     Return
   Endif
   
@@ -1542,6 +1553,7 @@ Public Sub imvImage_MouseUp()
   imvImage_MouseMove()
   
   UpdateInfo
+  EndUndo
 
 End
 
@@ -2201,6 +2213,24 @@ Private Sub EndUndo()
   Endif
   
   $aRedo.Clear
+  
+End
+
+Private Sub RemoveLastEndBeginUndo()
+  
+  Dim vUndo As Variant
+  Dim I As Integer
+  
+  For I = $aUndo.Max DownTo 1
+    vUndo = $aUndo[I]
+    If TypeOf(vUndo) = gb.Integer And If vUndo = BEGIN_UNDO Then
+      vUndo = $aUndo[I - 1]
+      If TypeOf(vUndo) = gb.Integer And If vUndo = END_UNDO Then
+        $aUndo.Remove(I - 1, 2)
+        Return
+      Endif
+    Endif
+  Next
   
 End
 
@@ -3234,6 +3264,7 @@ End
 
 Public Sub imvImage_DblClick()
 
+  RemoveLastEndBeginUndo
   ClearSelection
   $bDblClick = True
 

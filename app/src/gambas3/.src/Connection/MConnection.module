@@ -381,13 +381,13 @@ Public Sub FillViewWithTables(lvwTable As TreeView, hConn As Connection, bShowSy
     Endif
     
     If sParent And If Not lvwTable.Exist(sParent) Then
-      lvwTable.Add(sParent, Mid$(sParent, 2), Picture["icon:/16/directory"])
+      lvwTable.Add(sParent, Mid$(sParent, 2), Picture["icon:/tiny/directory"])
     Endif
     
     If hTable.System Then
-      lvwTable.Add("S" & hTable.Name, sName, Picture["img/16/system-table.png"], sParent)
+      lvwTable.Add("S" & hTable.Name, sName, FConnectionEditor.GetSystemTablePicture(Stock.GetSize("tiny")), sParent)
     Else
-      lvwTable.Add("T" & hTable.Name, sName, Picture["icon:/16/table"], sParent)
+      lvwTable.Add("T" & hTable.Name, sName, Picture["icon:/tiny/table"], sParent)
     Endif
   Next
   
