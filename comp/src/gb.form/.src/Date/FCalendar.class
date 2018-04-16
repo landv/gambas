@@ -449,6 +449,8 @@ Public Sub dwgMonth_MouseDown()
   
   $dDate = $dCurrentDate
   SetDate
+  
+  GetParent()._Click
 
 End
 
