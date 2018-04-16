@@ -593,31 +593,34 @@ DB_DATABASE *DB_GetCurrent()
 	return DB_CurrentDatabase;
 }
 
-char *DB_GetQuotedTable(DB_DRIVER *driver, DB_DATABASE *db, const char *table)
+char *DB_GetQuotedTable(DB_DRIVER *driver, DB_DATABASE *db, const char *table, int len)
 {
-	int len;
 	char *point = NULL;
 	char *res;
 	const char *quote;
 	
-	if (!table || !*table)
+	if (!table)
 		return "";
 	
-	len = strlen(table);
+	if (len < 0)
+		len = strlen(table);
+	
+	if (len == 0)
+		return "";
+	
 	if (db->flags.schema)
 		point = index(table, '.');
 	
 	quote = (*driver->GetQuote)();
 	
+	res = GB.TempString(NULL, len + 2);
+	
 	if (!point)
-	{
-		res = GB.TempString(NULL, len + 2);
-		sprintf(res, "%s%s%s", quote, table, quote);
-	}
+		sprintf(res, "%s%.*s%s", quote, len, table, quote);
 	else
 	{
-		res = GB.TempString(NULL, len + 2);
-		sprintf(res, "%.*s.%s%s%s", (int)(point - table), table, quote, point + 1, quote);
+		int len_schema = (int)(point - table);
+		sprintf(res, "%.*s.%s%.*s%s", len_schema, table, quote, len - len_schema - 1, point + 1, quote);
 	}
 	
 	return res;
