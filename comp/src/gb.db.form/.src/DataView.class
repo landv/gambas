@@ -631,7 +631,7 @@ Public Sub TableView_Change()
   
 End
 
-Private Sub _Warning(sTitle As String, Optional sMsg As String, Optional bError As Boolean)
+Private Sub _Warning(sTitle As String, Optional sMsg As String, Optional bError As Boolean, iRow As Integer, iCol As Integer)
   
   Dim X, Y As Integer
   
@@ -642,7 +642,10 @@ Private Sub _Warning(sTitle As String, Optional sMsg As String, Optional bError 
   X = $hCtrl.Rows.Width - $hCtrl.ScrollX + $hCtrl.ClientX
   Y = $hCtrl.Columns.Height - $hCtrl.ScrollY + $hCtrl.ClientY
   
-  With $hCtrl[$hCtrl.Row, $hCtrl.Column]
+  If IsMissing(iRow) Then iRow = $hCtrl.Row
+  If IsMissing(iCol) Then iCol = $hCtrl.Column
+  
+  With $hCtrl[iRow, iCol]
     If bError Then
       Balloon.Error(sMsg, $hCtrl, X + .X + .W \ 2, Y + .Y + .H \ 2) 
     Else
@@ -732,9 +735,9 @@ Public Sub TableView_Save(Row As Integer, Column As Integer, Value As String)
 Catch
 
   If bPrintError Then
-    _Warning(("Unable to save value."), Error.Text)
+    _Warning(("Unable to save value."), Error.Text,, Row, Column)
   Else
-    _Warning(("Incorrect value."))
+    _Warning(("Incorrect value."), Error.Where & ": " & Error.Text,, Row, Column)
   Endif
   Stop Event
 
