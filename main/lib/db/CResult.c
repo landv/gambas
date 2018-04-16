@@ -161,7 +161,9 @@ static bool load_buffer(CRESULT *_object, int vpos)
 			{
 				ind = THIS->info.index[i];
 				if (i > 0) q_add(" AND ");
+				q_add(THIS->driver->GetQuote());
 				q_add(THIS->info.field[ind].name);
+				q_add(THIS->driver->GetQuote());
 				if (THIS->buffer[ind].type == GB_T_NULL)
 					q_add(" IS NULL");
 				else
