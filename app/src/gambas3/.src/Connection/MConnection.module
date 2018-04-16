@@ -416,7 +416,11 @@ Public Sub CheckPassword(sPath As String) As Boolean
   hConfig = New Settings(sPath)
   InitFrom(hConn, hConfig, File.BaseName(sPath))
   If NeedPassword(hConn.Type) And If Not hConfig["Connection/NoPassword"] And If Not hConn.Password Then 
-    bRet = FNewConnection.Run(sPath, True)
+    If FNewConnection.Closed Then
+      bRet = FNewConnection.Run(sPath, True)
+    Else
+      bRet = True
+    Endif
   Endif
   
   Application.Busy = iBusy
