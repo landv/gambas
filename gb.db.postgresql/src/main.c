@@ -177,8 +177,8 @@ static char *get_quoted_table(const char *table)
 	}
 	else
 	{
-		res = GB.TempString(NULL, len + 2);
-		sprintf(res, "%.*s.\"%s\"", (int)(point - table), table, point + 1);
+		res = GB.TempString(NULL, len + 4);
+		sprintf(res, "\"%.*s\".\"%s\"", (int)(point - table), table, point + 1);
 	}
 
 	return res;
@@ -187,6 +187,7 @@ static char *get_quoted_table(const char *table)
 static bool get_table_schema(const char **table, char **schema)
 {
 	char *point;
+	int len;
 
 	//fprintf(stderr, "get_table_schema: %s\n", *table);
 
@@ -201,14 +202,19 @@ static bool get_table_schema(const char **table, char **schema)
 	point = strchr(*table, '.');
 	if (!point)
 	{
-		//fprintf(stderr, "get_table_schema: -> No point\n");
 		*schema = "public";
-		return FALSE;
 	}
-
-	*schema = GB.TempString(*table, point - *table);
-	*table = point + 1;
-	//fprintf(stderr, "get_table_schema: -> %s / %s\n", *schema, *table);
+	else
+	{
+		len = point - *table;
+		if (len >= 3 && **table == '"' && (*table)[len - 1] == '"')
+			*schema = GB.TempString(*table + 1, len - 2);
+		else
+			*schema = GB.TempString(*table, len);
+		
+		*table = point + 1;
+	}
+		
 	return FALSE;
 }
 

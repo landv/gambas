@@ -613,14 +613,17 @@ char *DB_GetQuotedTable(DB_DRIVER *driver, DB_DATABASE *db, const char *table, i
 	
 	quote = (*driver->GetQuote)();
 	
-	res = GB.TempString(NULL, len + 2);
 	
 	if (!point)
+	{
+		res = GB.TempString(NULL, len + 2);
 		sprintf(res, "%s%.*s%s", quote, len, table, quote);
+	}
 	else
 	{
 		int len_schema = (int)(point - table);
-		sprintf(res, "%.*s.%s%.*s%s", len_schema, table, quote, len - len_schema - 1, point + 1, quote);
+		res = GB.TempString(NULL, len + 4);
+		sprintf(res, "%s%.*s%s.%s%.*s%s", quote, len_schema, table, quote, quote, len - len_schema - 1, point + 1, quote);
 	}
 	
 	return res;
