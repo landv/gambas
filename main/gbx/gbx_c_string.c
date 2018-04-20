@@ -192,6 +192,7 @@ int COMMON_get_unicode_char()
 
 char *STRING_utf8_current = NULL;
 static const char *_utf8_current_start = NULL;
+static int _utf8_current_len = 0;
 
 #define UTF8_MAX_COUNT 256
 #define UTF8_MAX_CACHE 64
@@ -220,10 +221,11 @@ static int utf8_get_pos(const char *ref, const char *start, int len, int index)
 	if (index <= 0)
 		return 0;
 
-	if (ref != STRING_utf8_current || start != _utf8_current_start)
+	if (ref != STRING_utf8_current || start != _utf8_current_start || len != _utf8_current_len)
 	{
 		STRING_utf8_current = (char *)ref;
 		_utf8_current_start = start;
+		_utf8_current_len = len;
 #ifdef DEBUG_CACHE
 		fprintf(stderr, "current -> %p / %ld\n", STRING_utf8_current, _utf8_current_start - STRING_utf8_current);
 #endif
