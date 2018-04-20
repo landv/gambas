@@ -850,7 +850,7 @@ Public Sub Editors_KeyPress()
   If $hEditor.ReadOnly Then Return
 
   If Asc(Key.Text) = 13 Then
-
+    
     sLine = $hEditor[iLine].Text
 
     If AutoComment And If IsComment(sLine) And If Key.Shift Then

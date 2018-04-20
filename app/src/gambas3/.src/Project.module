@@ -1034,12 +1034,26 @@ Public Sub AddLinkEmblem(hSource As Image) As Image
   iSize = Min(hSource.H, hSource.W) \ 2
 
   Paint.Begin(hImage)
+  
+  Paint.MoveTo(hImage.W, hImage.H)
+  Paint.RelLineTo(0, - iSize)
+  Paint.RelLineTo(- iSize, iSize)
+  Paint.RelLineTo(iSize, 0)
+  Paint.Background = Color.Black
+  'Paint.Background = Color.SetAlpha(Color.TextForeground, 64)
+  Paint.Operator = Paint.OperatorDestOut
+  Paint.Fill
+  
+  iSize *= 0.85
+  
   Paint.MoveTo(hImage.W, hImage.H)
   Paint.RelLineTo(0, - iSize)
   Paint.RelLineTo(- iSize, iSize)
   Paint.RelLineTo(iSize, 0)
   Paint.Background = Color.SetAlpha(Color.TextForeground, 64)
+  Paint.Operator = Paint.OperatorOver
   Paint.Fill
+  
   Paint.End
   Return hImage
 
@@ -4297,17 +4311,21 @@ Public Sub RenameFile(sPath As String, sNewName As String)
 
   Endif
 
-  If bIsDir Then
-    Refresh
-  Else
-    RefreshKey(sNewPath, sPath)
-  Endif
+  If Not IsFake() Then
+    
+    If bIsDir Then
+      Refresh
+    Else
+      RefreshKey(sNewPath, sPath)
+    Endif
   
-  'AddFile(File.Dir(sNewPath), File.Name(sNewPath), TRUE)
-  'IF IsDir(sNewPath) THEN AddDir(sNewPath)
-
-  Try ProjectTree[sNewPath].Selected = True
-  Try ProjectTree[sNewPath].EnsureVisible
+    'AddFile(File.Dir(sNewPath), File.Name(sNewPath), TRUE)
+    'IF IsDir(sNewPath) THEN AddDir(sNewPath)
+  
+    Try ProjectTree[sNewPath].Selected = True
+    Try ProjectTree[sNewPath].EnsureVisible
+    
+  Endif
 
 Catch
 

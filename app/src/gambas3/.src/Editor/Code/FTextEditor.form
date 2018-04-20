@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,168,76)
+  MoveScaled(0,0,178,76)
   Icon = Picture["icon:/small/text"]
   Persistent = True
   Arrangement = Arrange.Vertical
@@ -246,7 +246,7 @@
     }
   }
   { panToolBar ToolBar
-    MoveScaled(0,0,165,4)
+    MoveScaled(0,0,174,4)
     Key = "text"
     Text = ("Text editor")
     Separator = True
@@ -271,12 +271,8 @@
       Action = ".reload"
       Picture = Picture["icon:/small/revert"]
     }
-    { ToolButton7 ToolButton
-      MoveScaled(12,0,4,4)
-      ToolTip = ("Lock / unlock file")
-      Action = ".locked"
-      Picture = Picture["icon:/small/lock"]
-      Toggle = True
+    { Separator4 Separator
+      MoveScaled(13,0,1,4)
     }
     { btnCut ToolButton mnuCut
       Name = "btnCut"
@@ -442,25 +438,25 @@
       Border = False
     }
     { Panel2 Panel
-      MoveScaled(142,0,6,4)
+      MoveScaled(145,0,6,4)
       Expand = True
     }
     { btnWrap ToolButton
-      MoveScaled(148,0,4,4)
+      MoveScaled(151,0,4,4)
       ToolTip = ("Automatic word wrap")
       Action = ".wrap"
       Picture = Picture["img/32/wrap.png"]
       Toggle = True
     }
     { btnTabIndent ToolButton
-      MoveScaled(153,0,4,4)
+      MoveScaled(156,0,4,4)
       ToolTip = ("Indent with tab")
       Action = ".tab-indent"
       Picture = Picture["img/32/tab.png"]
       Toggle = True
     }
     { btnEndOfLine MenuButton
-      MoveScaled(158,0,7,4)
+      MoveScaled(161,0,7,4)
       Visible = False
       ToolTip = ("End of line")
       Action = ".eol"
@@ -469,6 +465,13 @@
       Border = False
       Menu = "mnuEndOfLine"
       MenuOnly = True
+    }
+    { ToolButton7 ToolButton
+      MoveScaled(167,0,4,4)
+      ToolTip = ("Lock / unlock file")
+      Action = ".locked"
+      Picture = Picture["icon:/small/lock"]
+      Toggle = True
     }
   }
   { Panel1 Panel
@@ -697,7 +700,7 @@
 { Toolbars
   { Toolbar text
     Text = "Text editor"
-    List = "show-class,save,reload,locked,cut,copy,paste,undo,redo,bookmark,color,date,char,indent,unindent,comment,uncomment,pretty,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,wrap,tab-indent,eol"
-    Default = "show-class,save,reload,locked,paste,undo,redo,color,date,char,comment,uncomment,|,compress,uncompress,|,|,proc,~,wrap,tab-indent"
+    List = "show-class,save,reload,cut,copy,paste,undo,redo,bookmark,color,date,char,indent,unindent,comment,uncomment,pretty,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,wrap,tab-indent,eol,locked"
+    Default = "show-class,save,reload,|,paste,undo,redo,color,date,char,comment,uncomment,|,compress,uncompress,|,|,proc,~,wrap,tab-indent,locked"
   }
 }

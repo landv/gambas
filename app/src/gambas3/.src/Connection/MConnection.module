@@ -366,11 +366,11 @@ Public Sub FillViewWithTables(lvwTable As TreeView, hConn As Connection, bShowSy
   'lvwTable.Add("$", ("SQL request"), Picture["img/16/sql.png"])
   For Each hTable In hConn.Tables
     
-    If Not bShowSystem Then
-      If hTable.System Or If hTable.Name Begins METADATA_TABLE_PREFIX Then Continue
-    Endif
-    
     sName = hTable.Name
+    
+    If Not bShowSystem Then
+      If hTable.System Or If sName Begins METADATA_TABLE_PREFIX Then Continue
+    Endif
     
     iPos = InStr(sName, ".")
     If iPos Then
