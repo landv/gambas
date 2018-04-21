@@ -102,7 +102,7 @@ Sub FillCboTests(Optional TestContainerName As String)
 
     Dim ContainerNames As String[]
     Dim TestNames As New String[]
-    Dim C As ATestContainer
+    Dim C As UnitTest
     Dim i As Integer
 
     TestNames.Add(("All Test Cases"))
@@ -235,6 +235,7 @@ Sub RunTests()
     $Runner._RunTests($Result, ContainerName, CaseName, Null, $DoSelftest)
 
     ' ------------------------------------------------- Also Print on Console
+
     $Runner._PrintResult($Result)
 
 End

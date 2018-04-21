@@ -10,17 +10,17 @@ Inherits ITestCase
 
 '' Member variables
 Private $Name As String
-Private $MyContainer As ATestContainer
+Private $MyContainer As UnitTest
 Private $Debug As Boolean
 
 '' Name of the test case
 Property Read Name As String
 
 '' Reference to the test container containing the test method to be executed.
-Property Read Container As ATestContainer
+Property Read Container As UnitTest
 
 '' Initializes the TestCase.  Used in lieu of a constructor.
-Public Sub _new(sName As String, oTestContainer As ATestContainer)
+Public Sub _new(sName As String, oTestContainer As UnitTest)
 
     $Name = sName
     $MyContainer = oTestContainer
@@ -84,7 +84,7 @@ Public Function CountTestCases() As Integer
 
 End Function
 
-Private Function Container_Read() As ATestContainer
+Private Function Container_Read() As UnitTest
 
     Return $MyContainer
 

@@ -1,54 +1,3 @@
-#ATestContainer
-
-C
-'This abstract class identifies TestContainer classes. TestContainers are a
-'classes that hold different test case methods.
-Name
-r
-s
-
-CaseNames
-p
-String[]
-
-Result
-p
-TestResult
-
-'The current test case
-R
-p
-TestResult
-
-'The current test case
-Debug
-p
-b
-
-_new
-m
-
-[(ShowDebug)b]
-RunCase
-m
-
-(oCase)ITestCase;(oTestResult)TestResult;
-SetupEach
-m
-
-
-TearDownEach
-m
-
-
-SetupContainer
-m
-
-
-TearDownContainer
-m
-
-
 #TestResult
 
 C
@@ -234,41 +183,74 @@ m
 #UnitTest
 
 C
-'This class controls the unittesting.
-Suite
-p
-TestSuite
-
-DoSelfTest
-p
-b
-
-'Normal name for testclasses starts with _GuTest, here it can be redefined
-_new
-m
-
-
 ShowTestForm
 m
 
 
+'Normal name for testclasses starts with _GuTest, here it can be redefined
 'Show the Test Runner Form
-Test
-m
+Run
+M
 
-[(ContainerName)s(CaseName)s(ShowDebug)b]
+[(ContainerName)s(CaseName)s(ShowDebug)b(DoSelfTest)b]
 'Runs the Unittest and prints the result to the console. Optional limited to one testclass and/or one testmethod.
 _RunTests
-m
+M
 
 (Result)TestResult;[(ContainerName)s(CaseName)s(ShowDebug)b(DoSelfTest)b]
 'Run all tests, optional limited by Container or TestCaseName. TestResult contains .
 _PrintResult
-m
+M
 
 (Res)TestResult;
 'Prints a result.
+Result
+p
+TestResult
+
+'The current test case
 GetAllTestContainerNames
 M
 String[]
 [(DoSelfTest)b]
+Name
+r
+s
+
+CaseNames
+p
+String[]
+
+R
+p
+TestResult
+
+'The current test case
+Debug
+p
+b
+
+_new
+m
+
+[(ShowDebug)b]
+RunCase
+m
+
+(oCase)ITestCase;(oTestResult)TestResult;
+SetupEach
+m
+
+
+TearDownEach
+m
+
+
+SetupContainer
+m
+
+
+TearDownContainer
+m
+
+

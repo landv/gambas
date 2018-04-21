@@ -23,7 +23,7 @@ End Sub
 Public Sub Run(oTestResult As TestResult, Optional ShowDebug As Boolean)
 
     Dim oTest As ITestCase
-    Dim CurrentContainer, LastContainer As ATestContainer
+    Dim CurrentContainer, LastContainer As UnitTest
 
     For Each oTest In $Tests
         oTest.Container.Debug = ShowDebug
@@ -70,7 +70,7 @@ Public Sub AddTestCase(oTestCase As ITestCase)
 End Sub
 
 '' Create a new test case and add it to the suite.
-Public Function AddNewTestCase(sName As String, oTestContainer As ATestContainer)
+Public Function AddNewTestCase(sName As String, oTestContainer As UnitTest)
 
     Dim test As TestCase
 
@@ -80,7 +80,7 @@ Public Function AddNewTestCase(sName As String, oTestContainer As ATestContainer
 End
 
 '' Create all test cases that are contained in the specified TestContainer and add them to the suite.
-Public Function AddAllTestCases(oTestContainer As ATestContainer)
+Public Function AddAllTestCases(oTestContainer As UnitTest)
 
     Dim sTests As Variant
     Dim i As Integer

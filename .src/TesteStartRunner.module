@@ -9,8 +9,8 @@ Public Sub Main()
     'Debug str
 
     ' Do Selftest:
-    r.DoSelfTest = True
-    r.Test()
+    'r.DoSelfTest = True
+    r.Run(Null, Null, False, True)
     'r.ShowTestForm()
 
 End
