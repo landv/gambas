@@ -9,6 +9,7 @@ Private Enum MODE_AppScreen, MODE_AppCuKeys, MODE_AppKeyPad, MODE_Mouse1000, MOD
 Private $aMode As New Boolean[13]
 'Private $aSavedMode As New Boolean[13]
 Private $sLeft As String
+Private $iCpt As Integer
 
 Public Sub Reset()
   
@@ -43,8 +44,10 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hOutput As
     For iPos = Len(sData) DownTo 1
       If Asc(sData, iPos) >= 192 Then Break 
     Next
-    'Debug "not valid";; iPos; " / "; Len(sData)
-    'Debug Quote(Right(sData, 256))
+    If TerminalScreen.DEBUG_FILTER Then
+      Debug "not valid";; iPos; " / "; Len(sData)
+      Debug Quote(Right(sData, 256))
+    Endif
     If iPos = 0 Then Return
     $sLeft = Mid$(sData, iPos)
     sData = Left(sData, iPos - 1)
@@ -55,7 +58,7 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hOutput As
   'Debug If(hProcess.Term.GetAttr().ONLCR, "+", "-"); "ONLCR"
   
   'If Len(sData) >= 4096 Then
-    iPosEraseScreen = RInStr(sData, "\e[2J")
+    'iPosEraseScreen = RInStr(sData, "\e[2J")
     'If iPosEraseScreen > 0 Then Debug "erase screen at "; iPosEraseScreen
   'Endif
   
@@ -174,12 +177,19 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hOutput As 
   sStr = Mid$(sData, iPos, iLen)
   
   If hScreen.DEBUG_FILTER Then
-    Debug "ESC";
+    Inc $iCpt
+    Error Format($iCpt, "######0"); " | ";
+    Error "ESC";
     For I = 1 To Len(sStr)
       Error " "; Mid$(sStr, I, 1);
     Next
     Error
-    hScreen.DebugRefresh
+    If $iCpt > 5120 Then 
+      hScreen.DebugRefresh
+      hView.Suspended = True
+      Stop
+      hView.Suspended = False
+    Endif
   Endif
   
   Select Case Left(sStr)
@@ -477,7 +487,7 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hOutput As 
                   Case "12"
                     'Ignored
                   Case "25" ' Hide cursor
-                    hScreen.HideCursor = True
+                    If Not hScreen.DEBUG_FILTER Then hScreen.HideCursor = True
                   Case "47"
                     $aMode[MODE_AppScreen] = False
                     hView.AlternateScreen = False
