@@ -10,22 +10,25 @@ Export
 ' Private $DoSelfTest As Boolean
 
 '' Show the Test Runner Form
-Public Sub ShowTestForm()
+Static Public Sub ShowTestForm(Optional DoSelfTest As Boolean)
 
     Dim fm As FmRunner
 
-    fm = New FmRunner(Null, Me.DoSelfTest)
+    fm = New FmRunner(Null, DoSelfTest)
     fm.Show()
 
 End
 '' Runs the Unittest and prints the result to the console. Optional limited to one testclass and/or one testmethod.
 
-Static Public Sub Run(Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean, Optional DoSelfTest As Boolean)
+Static Public Sub Run(Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean, Optional DoSelfTest As Boolean) As TestSuite
 
     Dim Res As New TestResult
+    Dim Suite As TestSuite
 
-    Me._RunTests(Res, ContainerName, CaseName, ShowDebug, DoSelfTest)
+    Suite = Me._RunTests(Res, ContainerName, CaseName, ShowDebug, DoSelfTest)
     Me._PrintResult(Res)
+
+    Return Suite
 
 End
 
@@ -73,7 +76,7 @@ Static Public Sub _PrintResult(Res As TestResult)
 End
 
 '' Run all tests, optional limited by Container or TestCaseName. TestResult contains .
-Static Public Sub _RunTests(Result As TestResult, Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean, Optional DoSelfTest As Boolean)
+Static Public Function _RunTests(Result As TestResult, Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean, Optional DoSelfTest As Boolean) As TestSuite
 
     Dim Container As UnitTest
     Dim Suite As New TestSuite
@@ -95,6 +98,7 @@ Static Public Sub _RunTests(Result As TestResult, Optional ContainerName As Stri
     Endif
 
     Suite.Run(Result, ShowDebug)
+    Return Suite
 
 End
 

@@ -184,19 +184,19 @@ m
 
 C
 ShowTestForm
-m
+M
 
-
+[(DoSelfTest)b]
 'Normal name for testclasses starts with _GuTest, here it can be redefined
 'Show the Test Runner Form
 Run
 M
-
+TestSuite
 [(ContainerName)s(CaseName)s(ShowDebug)b(DoSelfTest)b]
 'Runs the Unittest and prints the result to the console. Optional limited to one testclass and/or one testmethod.
 _RunTests
 M
-
+TestSuite
 (Result)TestResult;[(ContainerName)s(CaseName)s(ShowDebug)b(DoSelfTest)b]
 'Run all tests, optional limited by Container or TestCaseName. TestResult contains .
 _PrintResult

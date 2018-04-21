@@ -220,7 +220,7 @@ Sub RunTests()
     $Result = New Testresult As "Result"
 
     $FmTrace.Result = $Result
-    $Suite = $Runner.Suite
+    $Suite = $Runner.Run(Null, Null, False, $DoSelftest)
 
     ' ------------------------------------------------- Container name
     If CboContainers.Index > 0 Then

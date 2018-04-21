@@ -2,15 +2,15 @@
 
 Public Sub Main()
 
-    Dim r As New UnitTest
-    Dim str As String[]
+    ' Dim r As New UnitTest
+    ' Dim str As String[]
 
     'str = Dir(".gambas")
     'Debug str
 
     ' Do Selftest:
     'r.DoSelfTest = True
-    r.Run(Null, Null, False, True)
-    'r.ShowTestForm()
+    'UnitTest.Run(Null, Null, False, True)
+    UnitTest.ShowTestForm(True)
 
 End
