@@ -6,7 +6,7 @@ Public Result As String
 
 Private $cTool As New Collection
 
-Private _NET_CLIENT_LIST As Integer
+'Private _NET_CLIENT_LIST As Integer
 
 Private $aDataDir As String[]
 
@@ -155,20 +155,23 @@ End
 
 Public Sub Main()
 
-  Print DesktopMime.FromFile("~/gambas/git/master/app/src/gambas3/img/broken.svg").GetIcon()
+  Dim hInfo As DesktopMime
+
+  hInfo = DesktopMime.FromFile("/bin/ls")
+  Print hInfo.Pattern
   
 End
 
 
 
-Public Sub X11_PropertyNotify((Window) As Integer, Atom As Integer)
-  
-  'Debug Window;; X11.GetAtomName(Atom)
-  
-  If Window = X11.RootWindow And If Atom = _NET_CLIENT_LIST Then
-  Endif
-  
-End
+' Public Sub X11_PropertyNotify((Window) As Integer, Atom As Integer)
+'   
+'   'Debug Window;; X11.GetAtomName(Atom)
+'   
+'   If Window = X11.RootWindow And If Atom = _NET_CLIENT_LIST Then
+'   Endif
+'   
+' End
 
 Public Sub X11_ConfigureNotify((Window) As Integer, X As Integer, Y As Integer, W As Integer, H As Integer)
   
