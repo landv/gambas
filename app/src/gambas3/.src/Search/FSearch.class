@@ -108,13 +108,14 @@ Public Sub Update(Optional bForce As Boolean)
   Dim hWindow As Window
   Dim bAllProject As Boolean
   
+  $hCurrent = Project.ActiveForm
+  
   If Not Me.Visible And If Not bForce Then Return
   
-  Try hWindow = Application.ActiveControl.Window
-  If hWindow = Me Then Return
-  $hCurrent = hWindow
+  ' Try hWindow = Application.ActiveControl.Window
+  ' If hWindow = Me Then Return
+  ' $hCurrent = hWindow
   
-  $hCurrent = Project.ActiveForm
   If $hCurrent Then
     If $hCurrent Is FEditor Or If $hCurrent Is FTextEditor Then
       bCode = $hCurrent.GetEditor().Highlight 
