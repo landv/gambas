@@ -1,21 +1,6 @@
-# gb.deg.unittest – A Gambas Unittest
+# gb.unittest – A Gambas Unittest
 
 A Gambas component for unittesting and test-driven programming. Forked and inspired from quite an old program: [COMUnit](http://comunit.sourceforge.net) and mainly JUnit. Currently alpha state. With an unittest component one can develop software in a test-driven matter and is able to ensure that on refactoring the desired results of methods and classes stay the same.
-
-Scroll down to understand how it works.
-
-## Runner
-
-Here you can see the Unittest tests itself. The testclasses (here called TestContainer) have to produce some failures and one error, to prove all is working fine.
-
-![Unittest Runner](runner-screen.png)
-
-## Tracer
-
-The Trace tab gives a quick overview:
-
-![Unittest Tracer](tracer-screen.png)
-
 
 ## How it works
 
@@ -25,14 +10,14 @@ The following example you also find in [this simple Gambas project](unittesthell
 
 ### Example TestContainer
 
-Start by creating a class with a name like "_Test", for example "_TestHelloWorld". This class contains one or more public testmethod(s). It has to inherit from ATestContainer and it has to be exported to ensure that Unittest will recognize it. The trailing underscore ensures that the Gambas interpreter hides these classnames, even when they are exported. But you can take any other name for it. This class is the so called TestContainer:
+Start by creating a class with a name like "_Test", for example "_TestHelloWorld". This class contains one or more public testmethod(s). It has to inherit from UnitTest and it has to be exported to ensure that Unittest will recognize it. The trailing underscore ensures that the Gambas interpreter hides these classnames, even when they are exported. But you can take any other name for it. This class is the so called TestContainer:
 
 ----
     ' Gambas class file
     ''' TestContainer _TestHelloWorld
     
     Export
-    Inherits ATestContainer
+    Inherits UnitTest
         
     Public Sub TestHelloWorld()
     
@@ -73,16 +58,13 @@ The simple way to execute the Unittest is to create another module, name it "Tes
     
     Public Sub Main()
         
-        Dim U as New Unittest
-        
-        U.Test
-        
+        Unittest.Run()
     
     End
 
 ----
 
-If you did all this correctly and now hit < F5 >, Gambas will execute the startfunction in module Test, which works through the method(s) of our TestContainer and presents the test result in the console:
+If you did all this correctly and now hit &lt;F5&gt;, Gambas will execute the startfunction in module Test, which works through the method(s) of our TestContainer and presents the test result in the console:
 
     ----------------------- Test Results ----------------------- 
      1 Tests done
@@ -96,27 +78,9 @@ If you did all this correctly and now hit < F5 >, Gambas will execute the startf
     
 ----
 
-Sooo ... and if you want to see the beautiful form, alter the startclass (erm ... startmodule)
+## Unittesting with gb.unittest
 
-----
-    Public Sub Main()
-    
-      Dim U As New Unittest
-      
-      'U.Test is now replaced by
-      U.ShowTestForm
-    
-    End
-----
-
-If you now hit < F5 > you'll see the testform where you can choose and run your tests. Afterwards have a look at the Trace tab:
-
-
-![Unittest Tracer](trace-helloworld.png)
-
-## Unittesting with gb.deg.unittest
-
-Look around by positioning the cursor on "Unittest" and hit < F1 >. The relevant methods to test your code are in the class TestResult:
+Look around by positioning the cursor on "Unittest" and hit &lt;F1&gt;. The relevant methods to test your code are in the class TestResult:
 
 AddError AddFailure AddTrace Assert AssertEmpty AssertEqualsFloat AssertEqualsLong AssertEqualsObject AssertEqualsString AssertEqualsVariant AssertError AssertExists AssertFalse AssertNotEmpty AssertNotNull
 
