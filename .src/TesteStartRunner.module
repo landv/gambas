@@ -10,7 +10,9 @@ Public Sub Main()
 
     ' Do Selftest:
     'r.DoSelfTest = True
-    'UnitTest.Run(Null, Null, False, True)
-    UnitTest.ShowTestForm(True)
+
+    'UnitTest.Run("D8E8FCA2DC0F896FD7CB4CB0031BA249TESTERRORSANDFAILURES", "TestLongFailure", True, True)
+    UnitTest.Run(Null, Null, False, True)
+    'UnitTest.ShowTestForm(True)
 
 End
