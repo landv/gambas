@@ -249,8 +249,8 @@ End Sub
 
 Public Sub AssertError(ErrorNumber As Long, ErrorMessage As String, Optional ErrorNumberExpected As Long, Optional StrMessage As String)
 
-    If (ErrorNumberExpected = 0 And ErrorNumber = 0) Then
-        AddFailure(StrMessage & " - Expected Error did not occur.")
+    If (ErrorNumberExpected <> 0 And ErrorNumber = 0) Then
+        AddFailure("Expected Error did not occur. " & StrMessage)
 
     Else If (ErrorNumberExpected <> 0 And ErrorNumber <> ErrorNumberExpected) Then
 
@@ -267,7 +267,7 @@ End Sub
 '' Build a message about a failed equality check
 Private Function NotEqualsMessage(sMessage As String, sExpected As Variant, sActual As Variant) As String
 
-    Return sMessage & " Expected: " & CString(sExpected) & ", but was " & CStr(sActual)
+    Return "Expected " & CString(sExpected) & ", but was " & CStr(sActual) & ". " & sMessage
 
 End Function
 

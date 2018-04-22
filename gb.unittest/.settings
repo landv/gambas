@@ -1,9 +1,14 @@
+[Bookmarks]
+TestResult=[]
+
 [Breakpoints]
-Count=1
-Breakpoint[1]="FmRunner.238"
+Count=0
 
 [DebugWindow]
-Count=0
+Count=3
+DebugWindow[1]="Suite"
+DebugWindow[2]="Suite.Tests"
+DebugWindow[3]="Suite.Tests[0]"
 
 [DebugWindow/$MyContainer]
 Geometry=[30,98,345,280]
@@ -81,7 +86,10 @@ Geometry=[325,103,224,280]
 Geometry=[339,117,224,280]
 
 [DebugWindow/Errs.Items[0]]
-Geometry=[339,117,381,280]
+Geometry=[339,117,413,294]
+
+[DebugWindow/Errs.Items[0].TestCase]
+Geometry=[353,131,413,294]
 
 [DebugWindow/Errs.Items[1]]
 Geometry=[339,117,224,280]
@@ -141,19 +149,19 @@ Geometry=[188,56,351,280]
 Geometry=[202,70,263,280]
 
 [DebugWindow/Res]
-Geometry=[311,89,545,280]
+Geometry=[82,805,545,280]
 
 [DebugWindow/Res.Errors]
-Geometry=[325,103,545,280]
+Geometry=[96,819,545,280]
 
 [DebugWindow/Res.Errors.Items]
-Geometry=[121,331,545,280]
+Geometry=[110,833,545,280]
 
 [DebugWindow/Res.Errors.Items[0]]
-Geometry=[159,492,545,280]
+Geometry=[124,847,545,280]
 
 [DebugWindow/Res.Errors.Items[0].TestCase]
-Geometry=[173,506,545,280]
+Geometry=[138,861,545,280]
 
 [DebugWindow/Res.Failures]
 Geometry=[325,103,545,280]
@@ -175,6 +183,12 @@ Geometry=[177,128,224,280]
 
 [DebugWindow/Suite]
 Geometry=[118,131,224,280]
+
+[DebugWindow/Suite.Tests]
+Geometry=[132,145,302,572]
+
+[DebugWindow/Suite.Tests[0]]
+Geometry=[146,159,302,572]
 
 [DebugWindow/T1]
 Geometry=[311,89,548,280]
@@ -336,29 +350,23 @@ Geometry=[169,39,378,730]
 Path="gb.deg.unit.gambas"
 
 [OpenFile]
-File[1]=".src/TestRunner/FmRunner.form"
-File[2]=".src/TestRunner/FmTrace.form"
-File[3]=".src/TestRunner/FmRunner.class:17.238"
-File[4]=".src/TestRunner/FmTrace.class:9.121"
-Count=21
-Active=5
-File[5]=".src/TesteStartRunner.module:0.14"
-File[6]=".src/TestSuite/UnitTest.class:8.56"
-File[7]=".src/TestMyself/d8e8fca2dc0f896fd7cb4cb0031ba249TestAllAsserts.class:0.10"
-File[8]=".src/TestSuite/TestResult.class:26.27"
-File[9]=".src/TestSuite/TestCase.class:16.37"
-File[10]=".src/TestMyself/d8e8fca2dc0f896fd7cb4cb0031ba249TestIntentionalError.class:17.16"
-File[11]=".src/TestSuite/TestErrors.class:0.28"
-File[12]=".src/TestRunner/FmRunnerResult.class:0.116"
-File[13]=".src/TestRunner/DegFormHelper.class:40.28"
-File[14]=".src/TestRunner/FmRunnerResult.form"
-File[15]=".src/TestRunner/FmRunnerSetup.form"
-File[16]=".src/TestMyself/d8e8fca2dc0f896fd7cb4cb0031ba249TestErrorsAndFailures.class:64.16"
-File[17]=".src/TestMyself/d8e8fca2dc0f896fd7cb4cb0031ba249TestExample1.class:0.0"
-File[18]=".src/TestSuite/TestError.class:0.42"
-File[19]=".src/TestSuite/ITest.class:0.19"
-File[20]=".src/TestSuite/TestSuite.class:0.9"
-File[21]=".src/TestSuite/ITestCase.class:0.0"
+File[1]=".src/TesteStartRunner.module:0.7"
+File[2]=".src/TestSuite/UnitTest.class:0.92"
+File[3]=".src/TestSuite/TestResult.class:50.252"
+File[4]=".src/TestSuite/TestCase.class:18.8"
+Count=15
+Active=3
+File[5]=".src/TestMyself/d8e8fca2dc0f896fd7cb4cb0031ba249TestIntentionalError.class:18.23"
+File[6]=".src/TestSuite/TestErrors.class:20.29"
+File[7]=".src/TestMyself/d8e8fca2dc0f896fd7cb4cb0031ba249TestErrorsAndFailures.class:15.8"
+File[8]=".src/TestMyself/d8e8fca2dc0f896fd7cb4cb0031ba249TestExample1.class:0.0"
+File[9]=".src/TestSuite/TestError.class:0.42"
+File[10]=".src/TestSuite/ITest.class:0.19"
+File[11]=".src/TestSuite/TestSuite.class:0.9"
+File[12]=".src/TestSuite/ITestCase.class:0.0"
+File[13]=".src/TestMyself/d8e8fca2dc0f896fd7cb4cb0031ba249TestExample2.class:0.65"
+File[14]=".src/TestSuite/TestParameters.class:0.0"
+File[15]=".src/TestSuite/TestParameter.class:18.23"
 
 [Watches]
 Count=0

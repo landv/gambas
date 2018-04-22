@@ -46,6 +46,8 @@ Static Private Sub PrintTapResult(Suite As TestSuite, Res As TestResult)
     Dim sName As String
     Dim NotOk As Boolean
     Dim sDesc As String
+    Dim FailedNumbers As New String[]
+    Dim sFailedNumbers As String
 
     'TS.Run(Res)
     Errs = Res.Errors
@@ -63,20 +65,11 @@ Static Private Sub PrintTapResult(Suite As TestSuite, Res As TestResult)
         GoSub FindErrorForName
 
         If Fail = Null And If Err = Null Then
-            Print "ok " & i & " - " & sName
+            Print "ok " & i & " " & sName
         Endif
 
         Inc i
     Next
-
-    If NotOk = True Then
-        Print ""
-        Print "# ------- " & "No success!  -------"
-    Else
-        Print ""
-        Print "# ------- " & "Success!  -------"
-
-    Endif
 
     Goto TheEnd
 
@@ -86,10 +79,11 @@ FindFailureForName:
         If Fail.TestCase.Name = sName Then
             sDesc = Null
             If Fail.Description Then
-                sDesc = " # " & Fail.Description
+                sDesc = " " & Fail.Description
             Endif
-            Print "not ok " & i & " - " & sName & sDesc
+            Print "not ok " & i & " " & sName & sDesc
             NotOk = True
+            FailedNumbers.Add(i)
             Break
         Else
             Fail = Null
@@ -103,10 +97,11 @@ FindErrorForName:
         If Err.TestCase.Name = sName Then
             sDesc = Null
             If err.Description Then
-                sDesc = " # " & Err.Description
+                sDesc = " " & Err.Description
             Endif
-            Print "not ok " & i & " - " & sName & sDesc
+            Print "not ok " & i & " " & sName & sDesc
             NotOk = True
+            FailedNumbers.Add(i)
             Break
         Else
             err = Null
@@ -114,9 +109,22 @@ FindErrorForName:
     Next
     Return
 
-    Return
+    'Return
 
 TheEnd:
+
+    If FailedNumbers.Count > 0 Then
+        sFailedNumbers = FailedNumbers.Join(",")
+    Endif
+
+    If NotOk = True Then
+        Print ""
+        Print "# Failed tests " & sFailedNumbers
+        Print "# ------- " & "No success!  -------"
+    Else
+        Print ""
+        Print "# ------- " & "Success!  -------"
+    Endif
 
 End
 
