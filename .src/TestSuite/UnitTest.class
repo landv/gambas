@@ -2,22 +2,6 @@
 
 Export
 
-' Property Suite As TestSuite
-' Private $Suite As TestSuite
-
-'' Normal name for testclasses starts with _GuTest, here it can be redefined
-' Property DoSelfTest As Boolean
-' Private $DoSelfTest As Boolean
-
-' '' Show the Test Runner Form
-' Static Public Sub ShowTestForm(Optional DoSelfTest As Boolean)
-'
-'     Dim fm As FmRunner
-'
-'     fm = New FmRunner(Null, DoSelfTest)
-'     fm.Show()
-'
-' End
 '' Runs the Unittest and prints the result to the console. Optional limited to one testclass and/or one testmethod.
 
 Static Public Sub Run(Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean, Optional DoSelfTest As Boolean)
@@ -236,7 +220,7 @@ Static Public Function GetAllTestContainerNames(Optional DoSelfTest As Boolean) 
     Endif
 
     For Each strName In strClassnames
-        If Left(Lower(strName), Len("d8e8fca2dc0f896fd7cb4cb0031ba249")) = "d8e8fca2dc0f896fd7cb4cb0031ba249" Then
+        If Left(Lower(strName), Len("d8e8")) = "d8e8" Then
             If DoSelfTest = True Then
                 If Not TestContainernames.Exist(strName) Then
                     TestContainernames.Add(strName)

@@ -31,13 +31,6 @@ Private $colParameters As TestParameters
 Private $iCountRunnedTests As Integer
 Private $oCurrentTestCase As ITestCase
 
-' '' Events
-' Event AfterStartTest(oTestCase As ITestCase)
-' Event AfterEndTest()
-' Event AfterAddError(oError As TestError)
-' Event AfterAddFailure(oError As TestError)
-' Event AfterAddTrace(sMessage As String)
-
 '' Initialize Variables
 Public Sub _new()
 
@@ -54,7 +47,6 @@ Property Read WasSuccessful As Boolean
 Public Sub StartTest(oTestCase As ITestCase)
 
     $oCurrentTestCase = oTestCase
-    'Raise AfterStartTest(oTestCase)
 
 End Sub
 
@@ -63,7 +55,6 @@ Public Sub EndTest()
 
     $oCurrentTestCase = Null
     $iCountRunnedTests = $iCountRunnedTests + 1
-    'Raise AfterEndTest
 
 End Sub
 
@@ -78,7 +69,6 @@ Public Sub AddFailure(sDescription As String)
 
     'Failures use Error number 0
     oNewError = $colFailures.Add($oCurrentTestCase, 0, source, "Failure: " & sDescription)
-    'Raise AfterAddFailure(oNewError)
     oNewError = Null
 
 End Sub
@@ -89,7 +79,6 @@ Public Sub AddError(lNumber As Long, sSource As String, sDescription As String)
     Dim oNewError As TestError
 
     oNewError = $colErrors.Add($oCurrentTestCase, lNumber, sSource, "Error: " & sDescription)
-    'Raise AfterAddError(oNewError)
     oNewError = Null
 
 End Sub
@@ -97,7 +86,6 @@ End Sub
 ' '' Add trace message
 ' Public Sub AddTrace(sMessage As String)
 '
-'     'Raise AfterAddTrace(sMessage)
 '     AddTrace(sMessage)
 '
 ' End Sub
