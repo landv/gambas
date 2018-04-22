@@ -25,27 +25,6 @@ p
 TestParameters
 
 'Set and Returns parameter collection
-:AfterStartTest
-:
-
-(oTestCase)ITestCase;
-'Events
-:AfterEndTest
-:
-
-
-:AfterAddError
-:
-
-(oError)TestError;
-:AfterAddFailure
-:
-
-(oError)TestError;
-:AfterAddTrace
-:
-
-(sMessage)s
 _new
 m
 
@@ -76,11 +55,6 @@ m
 
 (lNumber)l(sSource)s(sDescription)s
 'Adds a error to the collection of errors.
-AddTrace
-m
-
-(sMessage)s
-'Add trace message
 Assert
 m
 
@@ -183,27 +157,16 @@ m
 #UnitTest
 
 C
-ShowTestForm
-M
-
-[(DoSelfTest)b]
-'Normal name for testclasses starts with _GuTest, here it can be redefined
-'Show the Test Runner Form
 Run
 M
-TestSuite
-[(ContainerName)s(CaseName)s(ShowDebug)b(DoSelfTest)b]
-'Runs the Unittest and prints the result to the console. Optional limited to one testclass and/or one testmethod.
-_RunTests
-M
-TestSuite
-(Result)TestResult;[(ContainerName)s(CaseName)s(ShowDebug)b(DoSelfTest)b]
-'Run all tests, optional limited by Container or TestCaseName. TestResult contains .
-_PrintResult
-M
 
-(Res)TestResult;
-'Prints a result.
+[(ContainerName)s(CaseName)s(ShowDebug)b(DoSelfTest)b]
+'Normal name for testclasses starts with _GuTest, here it can be redefined
+'Runs the Unittest and prints the result to the console. Optional limited to one testclass and/or one testmethod.
+Name
+r
+s
+
 Result
 p
 TestResult
@@ -213,10 +176,6 @@ GetAllTestContainerNames
 M
 String[]
 [(DoSelfTest)b]
-Name
-r
-s
-
 CaseNames
 p
 String[]

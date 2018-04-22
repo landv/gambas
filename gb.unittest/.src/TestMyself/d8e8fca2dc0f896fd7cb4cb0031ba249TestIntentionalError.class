@@ -21,11 +21,11 @@ Public Sub TestError()
 
 End
 
-Public Sub TestDivisionByZeroError()
+Public Sub TestDoACrash()
 
     Dim a As Long
 
-    Me.Result.AddTrace("This will be a crash, then its ok")
+    'Me.Result.AddTrace("This will be a crash, then its ok")
 
     'This is a crash
     a = 3 / 0

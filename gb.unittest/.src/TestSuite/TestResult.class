@@ -31,12 +31,12 @@ Private $colParameters As TestParameters
 Private $iCountRunnedTests As Integer
 Private $oCurrentTestCase As ITestCase
 
-'' Events
-Event AfterStartTest(oTestCase As ITestCase)
-Event AfterEndTest()
-Event AfterAddError(oError As TestError)
-Event AfterAddFailure(oError As TestError)
-Event AfterAddTrace(sMessage As String)
+' '' Events
+' Event AfterStartTest(oTestCase As ITestCase)
+' Event AfterEndTest()
+' Event AfterAddError(oError As TestError)
+' Event AfterAddFailure(oError As TestError)
+' Event AfterAddTrace(sMessage As String)
 
 '' Initialize Variables
 Public Sub _new()
@@ -54,7 +54,7 @@ Property Read WasSuccessful As Boolean
 Public Sub StartTest(oTestCase As ITestCase)
 
     $oCurrentTestCase = oTestCase
-    Raise AfterStartTest(oTestCase)
+    'Raise AfterStartTest(oTestCase)
 
 End Sub
 
@@ -63,7 +63,7 @@ Public Sub EndTest()
 
     $oCurrentTestCase = Null
     $iCountRunnedTests = $iCountRunnedTests + 1
-    Raise AfterEndTest
+    'Raise AfterEndTest
 
 End Sub
 
@@ -77,8 +77,8 @@ Public Sub AddFailure(sDescription As String)
         "." & $oCurrentTestCase.Name
 
     'Failures use Error number 0
-    oNewError = $colFailures.Add($oCurrentTestCase, 0, source, sDescription)
-    Raise AfterAddFailure(oNewError)
+    oNewError = $colFailures.Add($oCurrentTestCase, 0, source, "Failure: " & sDescription)
+    'Raise AfterAddFailure(oNewError)
     oNewError = Null
 
 End Sub
@@ -88,18 +88,19 @@ Public Sub AddError(lNumber As Long, sSource As String, sDescription As String)
 
     Dim oNewError As TestError
 
-    oNewError = $colErrors.Add($oCurrentTestCase, lNumber, sSource, sDescription)
-    Raise AfterAddError(oNewError)
+    oNewError = $colErrors.Add($oCurrentTestCase, lNumber, sSource, "Error: " & sDescription)
+    'Raise AfterAddError(oNewError)
     oNewError = Null
 
 End Sub
 
-'' Add trace message
-Public Sub AddTrace(sMessage As String)
-
-    Raise AfterAddTrace(sMessage)
-
-End Sub
+' '' Add trace message
+' Public Sub AddTrace(sMessage As String)
+'
+'     'Raise AfterAddTrace(sMessage)
+'     AddTrace(sMessage)
+'
+' End Sub
 
 '' Asserts that a condition is true. If it isn't it raises a failure with the given message.
 '' bCondition: condition to be asserted
@@ -250,11 +251,14 @@ Public Sub AssertError(ErrorNumber As Long, ErrorMessage As String, Optional Err
 
     If (ErrorNumberExpected = 0 And ErrorNumber = 0) Then
         AddFailure(StrMessage & " - Expected Error did not occur.")
+
     Else If (ErrorNumberExpected <> 0 And ErrorNumber <> ErrorNumberExpected) Then
-        AddFailure(StrMessage &
+
+        If ErrorMessage <> Null Then ErrorMessage = " ErrorMessage: " & ErrorMessage
+
+        AddFailure(ErrorMessage & " - " & StrMessage &
             " - Expected Error (" & ErrorNumberExpected & ") but Error (" &
-            ErrorNumber & ") was thrown instead.  Description: " &
-            ErrorMessage)
+            ErrorNumber & ") was thrown instead.")
     End If
     Error.Clear
 
@@ -263,7 +267,7 @@ End Sub
 '' Build a message about a failed equality check
 Private Function NotEqualsMessage(sMessage As String, sExpected As Variant, sActual As Variant) As String
 
-    Return sMessage & " expected: " & CString(sExpected) & " but was: " & CStr(sActual)
+    Return sMessage & " Expected: " & CString(sExpected) & ", but was " & CStr(sActual)
 
 End Function
 

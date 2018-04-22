@@ -8,24 +8,24 @@ Public Const constDegUnittestSelftest As Boolean = True
 
 Public Sub TestStringFailure()
 
-    Me.Result.AssertEqualsString("Lisa", "Paul", "Intentional Failure: Strings are different")
+    Me.Result.AssertEqualsString("Lisa", "Paul", "Intentional Failure: Strings are different.")
 
 End
 
 Public Sub TestLongFailure()
 
-    Me.Result.AssertEqualsLong(2, 3, "Intentional Failure: Long are different")
+    Me.Result.AssertEqualsLong(2, 3, "Intentional Failure: Long integer are different.")
 
 End
 
 Public Sub TestAddError()
 
-    Me.Result.AddError(12333, Me.Name, "I wanted a TestAddError")
+    Me.Result.AddError(12333, Me.Name, "This Error is created intentionally")
 
 End
 
-Public Sub TestAddTrace()
-
-    Me.Result.AddTrace("This is a trace message")
-
-End
+' Public Sub TestAddTrace()
+'
+'     Me.Result.AddTrace("This is a trace message")
+'
+' End

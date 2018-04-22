@@ -9,7 +9,8 @@ Public Const constDegUnittestSelftest As Boolean = True
 
 Public Sub TestAssert()
 
-    Me.R.Assert("True", "Shall be True")
+    Me.R.Assert("True", "String \"True\" must be true")
+    Me.R.Assert(True, "True must be True")
 
 End
 
@@ -17,7 +18,7 @@ Public Sub TestAssertEmpty()
 
     Dim s As String = ""
 
-    Me.R.AssertEmpty(s, "Shall be Empty")
+    Me.R.AssertEmpty(s, "String must be empty")
 
 End
 
