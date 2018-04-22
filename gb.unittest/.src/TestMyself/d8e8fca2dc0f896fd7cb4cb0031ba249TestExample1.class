@@ -1,0 +1,48 @@
+' Gambas class file
+
+'' Name of this class has to start with d8e8fca2dc0f896fd7cb4cb0031ba249 to signal that its an internal test
+Inherits UnitTest
+
+Public Const constDegUnittestSelftest As Boolean = True
+
+Public Sub SetupEach()
+
+    If Me.Debug Then
+        Print "Setup Each"
+    Endif
+
+End
+
+Public Sub TeardownEach()
+
+    If Me.Debug Then
+        Print "Teardown Each"
+    Endif
+
+End
+
+Public Sub TestStringNull()
+
+    If Me.Debug Then
+        Print "GuTestExample1::Test First Test"
+    Endif
+    Me.R.AssertEmpty(Null, "Diskussion ohne Ergebnis")
+
+End
+
+Public Sub TestStringOk()
+
+    If Me.Debug Then
+        Print "GuTestExample1::Test Second Test"
+    Endif
+    Me.R.AssertEqualsString("ja", "ja", "Diskussion")
+
+End
+
+' Public Sub TestError()
+'
+'     Error.Raise("Intentional error")
+' Catch
+'     Me.R.AssertEqualsError( Error )
+'
+' End

@@ -1,0 +1,89 @@
+' Gambas class file
+
+''' The TestErrors class is the collection class for TestError objects.
+''' It holds the test case failures and errors that have been collected
+''' by the TestResult object.
+
+Property Read Items As TestError[]
+
+Private $Errors As TestError[]
+
+'' Initialize variables
+Public Sub _new()
+
+    $Errors = New TestError[]
+
+End Sub
+
+'' Add a new error or failure to the error collection.
+Public Function Add(oTestCase As ITestCase, lNumber As Long, sSource As String, sDescription As String) As TestError
+
+    Dim oNewError As TestError
+
+    oNewError = New TestError
+
+    'Set values
+    With oNewError
+        .TestCase = oTestCase
+        .ErrNumber = lNumber
+        .Source = sSource
+        .Description = sDescription
+    End With
+
+    'Add to the collection
+    $Errors.Add(oNewError)
+
+    'Return New Error and cleanup
+    Return oNewError
+    oNewError = Null
+
+End Function
+
+' '' Add a new TestError object to the collection.
+' Sub AddError(oError As TestError)
+'
+'     $Errors.Add(oError)
+'
+' End Sub
+
+'' Return a TestError object from the collection by index - one-based
+'Property Read Item(iIndex As Integer) As TestError
+
+' Function Item(iIndex As Integer) As TestError
+'     'Function Item_Read() As TestError
+'     'Attribute Item.VB_UserMemId = 0
+'
+'     If iIndex <= $Errors.Count Then
+'         Return $Errors(iIndex)
+'     End If
+'
+' End
+
+'' Return number of TestError objects in the collection.
+Property Read Count As Long
+
+Function Count_Read() As Long
+
+    Return $Errors.Count
+
+End
+
+'' This property allows you to enumerate
+'' this collection with the For...Each syntax
+
+'' FIXME: Enum
+'' Property Read NewEnum As Enum
+'
+'' Private Function NewEnum_Read() As Enum
+'
+''     '' Attribute NewEnum.VB_UserMemId = -4
+''     '' Attribute NewEnum.VB_MemberFlags = "40"
+''     Return $Errors.[_NewEnum]
+'
+'' End
+
+Private Function Items_Read() As TestError[]
+
+    Return $Errors
+
+End

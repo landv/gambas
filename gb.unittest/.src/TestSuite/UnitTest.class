@@ -1,0 +1,354 @@
+' Gambas class file
+
+Export
+
+' Property Suite As TestSuite
+' Private $Suite As TestSuite
+
+'' Normal name for testclasses starts with _GuTest, here it can be redefined
+' Property DoSelfTest As Boolean
+' Private $DoSelfTest As Boolean
+
+'' Show the Test Runner Form
+Static Public Sub ShowTestForm(Optional DoSelfTest As Boolean)
+
+    Dim fm As FmRunner
+
+    fm = New FmRunner(Null, DoSelfTest)
+    fm.Show()
+
+End
+'' Runs the Unittest and prints the result to the console. Optional limited to one testclass and/or one testmethod.
+
+Static Public Sub Run(Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean, Optional DoSelfTest As Boolean) As TestSuite
+
+    Dim Res As New TestResult
+    Dim Suite As TestSuite
+
+    Suite = Me._RunTests(Res, ContainerName, CaseName, ShowDebug, DoSelfTest)
+    Me._PrintResult(Res)
+
+    Return Suite
+
+End
+
+'' Prints a result.
+Static Public Sub _PrintResult(Res As TestResult)
+
+    Dim Errs As TestErrors
+    Dim Fails As TestErrors
+    Dim Err As TestError
+    Dim Fail As TestError
+    '     Dim C As Class
+
+    'TS.Run(Res)
+    Errs = Res.Errors
+    Fails = Res.Failures
+
+    Print ("--------------------------------- Test Result ----------------------------------")
+    Print " " & res.CountRunnedTests & " " & ("Tests done")
+    '80 Zeichen
+    Print ("--------------------------------------------------------------------------------")
+    If Errs.Count > 0 Then
+        For Each Err In Errs.Items
+            Print " " & ("Error in:");; Err.Source
+            Print " " & ("Error:");; Err.Description
+        Next
+    Else
+        Print " " & ("No Errors")
+    Endif
+    Print "\n"
+    If Fails.Count > 0 Then
+        For Each Fail In Fails.Items
+            Print " " & ("Failure in:");; Fail.Source
+            Print " " & ("Failure:");; Fail.Description
+        Next
+    Else
+        Print " " & ("No Failures")
+    Endif
+    Print ("---------------------------------  Test End  -----------------------------------")
+    If res.WasSuccessful = True Then
+        Print " " & ("Success!")
+    Else
+        Print " " & ("Not successful... :-(")
+    Endif
+
+End
+
+'' Run all tests, optional limited by Container or TestCaseName. TestResult contains .
+Static Public Function _RunTests(Result As TestResult, Optional ContainerName As String, Optional CaseName As String, Optional ShowDebug As Boolean, Optional DoSelfTest As Boolean) As TestSuite
+
+    Dim Container As UnitTest
+    Dim Suite As New TestSuite
+
+    If ContainerName = Null Then
+        If CaseName = Null Then
+            For Each ContainerName In UnitTest.GetAllTestContainerNames(DoSelfTest)
+                Container = Object.New(ContainerName)
+                Suite.AddAllTestCases(Container)
+            Next
+        Endif
+    Else
+        Container = Object.New(ContainerName)
+        If CaseName = Null Then
+            Suite.AddAllTestCases(Container)
+        Else
+            Suite.AddNewTestCase(CaseName, Container)
+        Endif
+    Endif
+
+    Suite.Run(Result, ShowDebug)
+    Return Suite
+
+End
+
+' Static Public Function GetAllTestContainerNamesOld(Optional DoSelfTest As Boolean) As String[]
+'
+'     Dim ret As New String[]
+'     Dim C As Class
+'
+'     For Each C In Classes
+'         If C.Parent Then
+'             If C.Parent.Name = "UnitTest" Then
+'                 If C.Exist("constDegUnittestSelftest") = True And DoSelfTest = True Then
+'                     ret.add(C.Name)
+'                 Else If C.Exist("constDegUnittestSelftest") = False Then
+'                     ret.add(C.Name)
+'                 Endif
+'             Endif
+'         Endif
+'     Next
+'     ret.Sort()
+'
+'     Return ret
+'
+' End
+
+Static Public Function GetAllTestContainerNames(Optional DoSelfTest As Boolean) As String[]
+
+    Dim hFile As File
+    Dim sLine As String
+    Dim TestClass As Class
+    Dim TestContainernames As New String[]
+    Dim strClassnames As String[]
+    Dim strName As String
+
+    If DoSelfTest = False Then
+        strClassnames = Dir("../.gambas")
+    Else
+        strClassnames = Dir(".gambas")
+    Endif
+
+    For Each strName In strClassnames
+        If Left(Lower(strName), Len("d8e8fca2dc0f896fd7cb4cb0031ba249")) = "d8e8fca2dc0f896fd7cb4cb0031ba249" Then
+            If DoSelfTest = True Then
+                If Not TestContainernames.Exist(strName) Then
+                    TestContainernames.Add(strName)
+                Endif
+            Endif
+        Else
+            If DoSelfTest = False Then
+                Try TestClass = Class.Load(strName)
+                If TestClass Then
+                    If TestClass.Parent Then
+                        If TestClass.Parent.Name = "UnitTest" Then
+                            strName = String.UCaseFirst(String.Lower(TestClass.Name))
+                            'Debug "Add to testclasses: ";; strName
+                            If Not TestContainernames.Exist(strName) Then
+                                TestContainernames.Add(strName)
+                            Endif
+                        Endif
+                    Endif
+                Endif
+            Endif
+        Endif
+    Next
+
+    Return TestContainernames
+Catch
+    Message.Error(Error.Text)
+
+End
+
+' Private Function Suite_Read() As TestSuite
+'
+'     Return $Suite
+'
+' End
+'
+' Private Sub Suite_Write(Value As TestSuite)
+'
+'     $Suite = Value
+'
+' End
+
+' Private Function DoSelfTest_Read() As Boolean
+'
+'     Return $DoSelfTest
+'
+' End
+'
+' Private Sub DoSelfTest_Write(Value As Boolean)
+'
+'     $DoSelfTest = Value
+'
+' End
+
+''' This abstract class identifies TestContainer classes. TestContainers are a
+''' classes that hold different test case methods.
+'''
+''' A TestContainer class hast to inherit UnitTest, its name has to start
+''' with "_GuTest"
+
+Property Read Name As String
+
+' Return the name of the different test case methods in this test container
+Property CaseNames As String[]
+Private $CaseNames As String[]
+
+'' The current test case
+'Property Case As ITestCase
+Property Result, R As TestResult
+
+''Set true for debug messages
+Property Debug As Boolean
+
+Private $Case As ITestCase
+Private $Result As TestResult
+Private $Debug As Boolean
+
+Public Sub _new(Optional ShowDebug As Boolean)
+
+    Dim symbols As String[]
+    Dim symbol As String
+
+    '$Suite = New TestSuite
+
+    $Debug = ShowDebug
+
+    ' ------------------------------------------------- Fill Cases by listing all Testmethods
+    $CaseNames = New String[]
+    symbols = Object.Class(Me).Symbols
+
+    For Each symbol In symbols
+        If Left(symbol, 4) = "Test" Then
+            $CaseNames.Add(symbol)
+        Endif
+    Next
+
+End
+
+' Run the specified test case methods in this test container
+Public Sub RunCase(oCase As ITestCase, oTestResult As TestResult)
+
+    Dim MethodName As String
+    Dim hClass As Class
+
+    $Case = oCase
+    Me.Result = oTestResult
+
+    ' ------------------------------------------------- Iterate through test methods
+    hClass = Object.Class(Me)
+    For Each MethodName In $CaseNames
+        If hClass[MethodName].Kind = Class.Method Then
+            If MethodName = $Case.Name Then
+                If Me.Debug Then
+                    Debug "Call";; MethodName
+                Endif
+                Object.Call(Me, MethodName)
+            Endif
+        Endif
+    Next
+
+End Sub
+
+'Initialize the test fixture
+Public Sub SetupEach()
+
+    If Me.Debug Then
+        Debug "Setup single Test"
+    Endif
+
+End Sub
+
+'Destroy the test fixture
+Public Sub TearDownEach()
+
+    If Me.Debug Then
+        Debug "Teardown single Test"
+    Endif
+
+End Sub
+
+'Initialize the test fixture for container
+Public Sub SetupContainer()
+
+    If Me.Debug Then
+        Debug "Setup Container " & Object.Class(Me).Name
+    Endif
+
+End Sub
+
+'Destroy the test fixture for container
+Public Sub TearDownContainer()
+
+    If Me.Debug Then
+        Debug "Teardown Container " & Object.Class(Me).Name
+    Endif
+
+End Sub
+
+Private Function CaseNames_Read() As String[]
+
+    Return $CaseNames
+
+End
+
+Private Sub CaseNames_Write(Value As String[])
+
+    $CaseNames = value
+
+End
+
+' Private Function Case_Read() As ITestCase
+'
+'     Return $Case
+'
+' End
+'
+' Private Sub Case_Write(Value As ITestCase)
+'
+'     $Case = Value
+'
+' End
+
+Private Function Result_Read() As TestResult
+
+    Return $Result
+
+End
+
+Private Sub Result_Write(Value As TestResult)
+
+    $Result = Value
+
+End
+
+'' Returns the classname of the TestContainer
+Private Function Name_Read() As String
+
+    Return Object.Class(Me).Name
+
+End
+
+Private Function Debug_Read() As Boolean
+
+    Return $Debug
+
+End
+
+Private Sub Debug_Write(Value As Boolean)
+
+    $Debug = Value
+
+End

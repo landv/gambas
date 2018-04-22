@@ -1,0 +1,274 @@
+' Gambas class file
+
+Property Suite As TestSuite
+Private $Suite As TestSuite
+Private $Result As TestResult
+Private $FmResult As FmRunnerResult
+Private $FmTrace As FmTrace
+Private $Runner As UnitTest
+Private $DoSelftest As Boolean
+
+'' Deganius Formhelper Class
+Private $FH As DegFormHelper
+
+Public Sub _new(Optional DoSelftest As Boolean)
+
+    $FH = New DegFormHelper(Me)
+    $DoSelftest = DoSelftest
+    $Result = New Testresult As "Result"
+    FillForm()
+
+End
+
+Public Sub Result_AfterStartTest(oTestCase As ITestCase)
+
+    Wait
+    '$FmTrace.ResultEventAfterStartTest(oTestCase)
+
+End
+
+Public Sub Result_AfterEndTest()
+
+    UpdateProgress()
+    $FmResult.Result = $Result
+    Wait
+
+End
+
+Public Sub Result_AfterAddTrace(sMessage As String)
+
+    $FmResult.Result = $Result
+    Wait
+
+End
+
+Public Sub Result_AfterAddError(oError As TestError)
+
+    $FmResult.Result = $Result
+    Wait
+
+End
+
+Public Sub Result_AfterAddFailure(oError As TestError)
+
+    $FmResult.Result = $Result
+    Wait
+
+End
+
+Sub UpdateProgress()
+
+    Dim Runs As New Integer[]
+
+    Runs.Add($Result.CountRunnedTests)
+    Runs.Add($Suite.CountTestCases())
+    $FmResult.Runs = Runs
+    Wait
+
+End
+
+Sub FillForm()
+
+    FillCbos()
+    FillTabs()
+
+End
+
+Sub FillCbos()
+
+    FillCboContainers()
+    FillCboTests()
+
+End
+
+Sub FillCboContainers()
+
+    Dim ContainerNames As New String[]
+    ' ------------------------------------------------- CboContainers
+    With ContainerNames
+        .Add(("All Test Containers"))
+        .Insert(UnitTest.GetAllTestContainerNames($DoSelftest))
+    End With
+
+    With CboContainers
+        .List = ContainerNames
+        .Index = 0
+        .Show()
+    End With
+
+End
+
+Sub FillCboTests(Optional TestContainerName As String)
+
+    Dim ContainerNames As String[]
+    Dim TestNames As New String[]
+    Dim C As UnitTest
+    Dim i As Integer
+
+    TestNames.Add(("All Test Cases"))
+
+    If Not TestContainerName Then
+        'all Tests
+        ContainerNames = UnitTest.GetAllTestContainerNames($DoSelftest)
+
+    Else
+        'only tests from one container
+        ContainerNames = New String[]
+        ContainerNames.Add(TestContainerName)
+    Endif
+
+    For Each ContainerNames
+        C = Object.New(ContainerNames[i])
+        TestNames.Insert(C.CaseNames)
+        Inc i
+    Next
+
+    TestNames.Sort
+    With CboTestCases
+        .List = TestNames
+        .Index = 0
+        .Show()
+    End With
+Catch
+    Message.Error(Error.Text)
+
+End
+
+Sub FillTabs()
+
+    ' ------------------------------------------------- FmResult
+    $FmResult = New FmRunnerResult
+
+    With $FmResult
+        .Expand = True
+    End With
+
+    With TabPanel1
+        .Count = 1
+        .Arrangement = Arrange.Fill
+        .Index = 0
+        .Text = ("Results")
+        .Show()
+    End With
+
+    $FmResult.Reparent(TabPanel1)
+
+    ' ------------------------------------------------- FmTrace
+    $FmTrace = New FmTrace
+
+    With $FmTrace
+        .Expand = True
+        .Show
+    End With
+
+    With TabPanel1
+        .Count = 2
+        .Arrangement = Arrange.Fill
+        .Index = 1
+        .Text = ("Trace")
+    End With
+
+    $FmTrace.Reparent(TabPanel1)
+
+    ' ------------------------------------------------- Index 0
+
+    With TabPanel1
+        .Index = 0
+        .Show
+    End With
+
+End
+
+Private Function Suite_Read() As TestSuite
+
+    Return $Suite
+
+End
+
+Private Sub Suite_Write(Value As TestSuite)
+
+    $Suite = Value
+    FillCbos()
+
+End
+
+Public Sub CboContainers_Change()
+
+    Dim ContainerName As String
+
+    If CboContainers.Index > 0 Then
+        ContainerName = UnitTest.GetAllTestContainerNames($DoSelftest)[CboContainers.Index - 1]
+    Endif
+
+    FillCboTests(ContainerName)
+
+End
+
+Public Sub BtRun_Click()
+
+    RunTests()
+
+End
+
+Sub RunTests()
+
+    Dim ContainerName, CaseName As String
+
+    $FmResult.Reset
+
+    $Runner = New UnitTest
+    $Result = New Testresult As "Result"
+
+    $FmTrace.Result = $Result
+    $Suite = $Runner.Run(Null, Null, False, $DoSelftest)
+
+    ' ------------------------------------------------- Container name
+    If CboContainers.Index > 0 Then
+        ContainerName = CboContainers.List[CboContainers.Index]
+    Endif
+
+    ' ------------------------------------------------- Case name
+    If CboTestCases.Index > 0 Then
+        CaseName = CboTestCases.List[CboTestCases.Index]
+    Endif
+
+    $Runner._RunTests($Result, ContainerName, CaseName, Null, $DoSelftest)
+
+    ' ------------------------------------------------- Also Print on Console
+
+    $Runner._PrintResult($Result)
+
+End
+
+Public Sub BtRun_KeyPress()
+
+    If $FH.DetectEnter() Then
+        RunTests()
+    Endif
+
+End
+
+Public Sub Form_Close()
+
+    $FH.SizeSave()
+    $FH = Null
+
+End
+
+Public Sub Form_Open()
+
+    $FH.SizeLoad()
+
+End
+
+Public Sub Form_KeyPress()
+
+    If $FH.DetectControl(Key["r"]) Then
+        RunTests()
+    Endif
+
+    If $FH.DetectEscape() Then
+        Me.Close
+    Endif
+
+End

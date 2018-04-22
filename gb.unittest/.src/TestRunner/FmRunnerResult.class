@@ -1,0 +1,135 @@
+' Gambas class file
+
+'' Store Runs[0] = number if done, Runs[1] = count of tests
+Property Runs As Integer[]
+Property Result As TestResult
+
+Public Sub Reset()
+
+    ProgressBar1.Value = 0
+    LblErrors.Text = Null
+    LblFailures.Text = Null
+    LblRuns.Text = Null
+    LblTestName.Text = Null
+    GridViewTests.Clear
+
+End
+
+Private Function Runs_Read() As Integer[]
+
+End
+
+Private Sub Runs_Write(Value As Integer[])
+
+    Dim all, done As Integer
+
+    done = Value[0]
+    all = Value[1]
+
+    ProgressBar1.Value = done / all
+    LblRuns.Text = "Runs: " & done & "/" & all
+
+End
+
+Private Function Result_Read() As TestResult
+
+End
+
+Private Sub Result_Write(Res As TestResult)
+
+    Dim Errs As TestErrors
+    Dim Fails As TestErrors
+    Dim Err As TestError
+    Dim Fail As TestError
+    '     Dim C As Class
+
+    If Res Then
+        Errs = Res.Errors
+        Fails = Res.Failures
+
+        LblErrors.Text = "Errors: " & Errs.Count
+        LblFailures.Text = "Failures: " & Fails.Count
+
+        FillGrid(Res)
+
+        If Errs.Count > 0 Or If Fails.Count > 0 Then
+            LblTestName.Text = "No success!"
+        Else
+            LblTestName.Text = "Success!"
+        Endif
+        Wait
+    Endif
+
+End
+
+Sub FillGrid(Res As TestResult)
+
+    Dim err As TestError
+    Dim fail As TestError
+    Dim i, j, rheight As Integer
+    Dim rowcount As Integer
+
+    rheight = 28
+
+    If Res.Errors Then
+        rowcount = Res.Errors.Count
+    Endif
+
+    If Res.Failures Then
+        rowcount += Res.Failures.Count
+    Endif
+
+    With Me.GridViewTests
+        .Clear
+        .Rows.Count = 0
+        .Rows[0].H = rheight
+        .Columns.Count = 3
+        .Columns[0].Width = 80
+        .Columns[1].Width = 300
+        .Columns[2].Width = 600
+        .Rows.Count = rowcount
+
+        If Res.Failures Then
+            For i = 0 To Res.Failures.Count - 1
+                .Rows[i].Height = rheight
+                GridViewTests[i, 0].Text = "Failure"
+                GridViewTests[i, 1].Text = Res.Failures.Items[i].Source
+                GridViewTests[i, 2].Text = Res.Failures.Items[i].Description
+                GridViewTests[i, 0].Background = &HFFFCCA
+            Next
+        End If
+
+        If Res.Errors Then
+            For i = i To Res.Errors.Count + i
+                .Rows[i].Height = rheight
+                GridViewTests[i, 0].Text = "Error"
+                GridViewTests[i, 0].Foreground = Color.TextForeground
+                GridViewTests[i, 1].Text = Res.Errors.Items[j].Source
+                GridViewTests[i, 2].Text = Res.Errors.Items[j].Description
+                GridViewTests[i, 0].Background = &HFF8F9A
+                Inc j
+            Next
+        Endif
+        Debug i
+
+    End With
+
+    ' GridView1.Rows.Count = 3
+    ' GridView1.Columns.Width = 52
+    ' GridView1.Rows[1].Height = 52
+    ' GridView1[0, 0].Text = "0,0"
+    ' GridView1[0, 0].Alignment = Align.Right
+    ' GridView1[1, 1].Text = "1,1"
+    ' GridView1[0, 1].Text = "0,1"
+    ' GridView1[1, 0].Picture = Picture["image.png"]
+Catch
+    Error.Clear
+
+End
+
+Public Sub Form_Close()
+
+    GridViewTests = Null
+    ProgressBar1 = Null
+
+End

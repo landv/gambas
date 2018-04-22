@@ -1,0 +1,477 @@
+' Gambas class file
+
+''' Formhelper some methods for forms, for instance saving and loading of sizes
+''' in settings, finding of controls
+'''
+''' copied from Deganius deglib
+
+'' Array mit den Feldern für
+'' JumpToNext und - Previous,
+'' es können Controls oder Strings (die Namen)
+'' übergeben werden.
+
+Property Fields As Variant[]
+
+Private $CurrentControl As Control
+Private $CurrentContainer As Container
+
+Private $Form As Form
+Private $Fields As String[]
+
+Public Sub _new(MyForm As Object)
+
+    $Form = MyForm
+
+End
+
+' ------------------------------------------------- Größen
+
+'' Lädt die Height und Width von Settings,
+'' muss in Form.Open stehen, damit es verkleinert werden kann
+Public Sub SizeLoad()
+
+    Dim h, w As Integer
+
+    If Not $Form.Parent Then
+
+        'Initial (and so minimum) size
+        'http://osdir.com/ml/gambas-development-environment-basic/2015-03/msg00099.html
+
+        $Form.h = 600
+        $Form.w = 1024
+
+        h = Settings["UnitTest/Window/" & $Form.Name & "/Height", $Form.Height]
+        w = Settings["UnitTest/Window/" & $Form.Name & "/Width", $Form.Width]
+        $Form.Resize(w, h)
+        $Form.Resizable = True
+    Endif
+
+End
+
+'' Speichert  Height und Width in Settings
+Public Sub SizeSave()
+
+    If Not $Form.Parent Then
+        Settings["UnitTest/Window/" & $Form.Name & "/Height"] = $Form.Height
+        Settings["UnitTest/Window/" & $Form.Name & "/Width"] = $Form.Width
+    Endif
+
+End
+
+'' Lädt H-oder Vsplit Layout
+Public Sub SplitLayoutLoad(NameSplit As Container, Optional DefaultLayout As Integer[])
+
+    Dim Split As Container
+    Dim VS As VSplit
+    Dim HS As HSplit
+    Dim Layout As Integer[]
+
+    If Not DefaultLayout Then
+        DefaultLayout = [50, 50]
+    Endif
+
+    Layout = Settings["UnitTest/Window/" & $Form.Name & "/" & NameSplit.Name & "/Layout", DefaultLayout]
+    Split = NameSplit
+
+    If Object.Is(Split, "HSplit") Then
+        HS = Split
+        HS.Layout = Layout
+    Else If Object.Is(Split, "VSplit") Then
+        VS = Split
+        VS.Layout = Layout
+    Endif
+
+Catch
+    Message.Error(Error.Text)
+
+End
+
+'' Speichert H-oder Vsplit Layout
+Public Sub SplitLayoutSave(NameSplit As Container)
+
+    Dim Split As Container
+    Dim VS As VSplit
+    Dim HS As HSplit
+    Dim Layout As Integer[]
+
+    Split = NameSplit
+
+    If Object.Is(Split, "HSplit") Then
+        HS = Split
+        Layout = HS.Layout
+    Else If Object.Is(Split, "VSplit") Then
+        VS = Split
+        Layout = VS.Layout
+    Endif
+
+    If Layout Then
+        Settings["UnitTest/Window/" & $Form.Name & "/" & NameSplit.Name & "/Layout"] = Layout
+    End If
+
+End
+
+'' Speichert die Position (Form.Top und Form.Left)
+Public Sub PositionSave()
+
+    Dim pos As New Integer[]
+
+    Pos.Add($Form.Top)
+    Pos.Add($Form.Left)
+    Settings["UnitTest/Window/" & $Form.Name & "/Position"] = Pos
+
+End
+
+'' Lädt die letzte Position (Form.Top und Form.Left)
+Public Sub PositionLoad()
+
+    Dim pos As New Integer[]
+
+    Pos = Settings["UnitTest/Window/" & $Form.Name & "/Position"]
+    If Not IsNull(Pos) Then
+        $Form.Top = Pos[0]
+        $Form.Left = Pos[1]
+    Endif
+
+End
+
+' ------------------------------------------------- Elemente Finden
+
+'' Findet das Control in einem Form mit Focus
+Public Function FindFocusedControl() As Control
+
+    SearchFocusedControl($Form)
+    Return $CurrentControl
+
+End
+
+Sub SearchFocusedControl(Mother As Object)
+    '' Searches through controls in mother, reports the
+    '' one which has focus
+
+    Dim child As Object
+    Dim contr As Control
+    Dim testctr As Control
+    Dim childcount As Integer
+    Dim chname As String
+
+    For Each child In Mother.Children
+        childcount = 0
+        chname = ""
+        If Object.Is(child, "Container") Then
+            childcount = child.Children.Count
+        Endif
+        If childcount > 0 Then
+            'found container
+            SearchFocusedControl(child)
+        Else
+            'found control
+            contr = child
+            If contr.HasFocus Then
+                'look upwards, wheather control is
+                'part of a parent UserControl
+                testctr = contr
+                While Object.IsValid(testctr.Parent)
+                    If Object.Is(testctr, "UserControl") = True Then
+                        contr = testctr
+                    End If
+                    testctr = testctr.Parent
+                Wend
+                'Debug "I am in "; contr.Name
+                $CurrentControl = contr
+                Break
+            Endif
+        Endif
+    Next
+
+End
+
+'' Findet ein Control mit Namen "Name" im Objekt "Mother", Fuzzy findet "String" in "strStringyxz"
+Public Function FindControlByName(Mother As Object, Name As String, Optional Fuzzy As Boolean) As Control
+
+    '' Searches through controls in Mother, returns the
+    '' one which has the name Name
+
+    Dim child As Object
+    Dim contr As Control
+    Dim childcount As Integer
+    Dim chname As String
+    Dim Irrelevant As Control
+    Dim found As Boolean
+
+    For Each child In Mother.Children
+
+        childcount = 0
+        chname = ""
+
+        If Fuzzy Then
+            If InStr(child.name, Name) > 0 Then found = True
+        Else
+            If child.name = Name Then found = True
+        Endif
+
+        If found Then
+            'found, auch wenn Container
+            'z.B. bei Compound Components
+            contr = child
+            $CurrentControl = contr
+            Break
+        Endif
+
+        If Object.Is(child, "Container") Then
+            childcount = child.Children.Count
+        Endif
+
+        If childcount > 0 Then
+            'found container
+            Irrelevant = FindControlByName(child, Name, Fuzzy)
+        Else
+            'found control
+            contr = child
+
+            If Fuzzy Then
+                If InStr(contr.name, Name) > 0 Then found = True
+            Else
+                If contr.name = Name Then found = True
+            Endif
+
+            If found Then
+                'Debug "I am in "; contr.Name
+                $CurrentControl = contr
+                Break
+            Endif
+        Endif
+    Next
+
+    Return $CurrentControl
+
+End
+
+'' Findet einen Container mit Namen "Name" im Objekt "Mother", Fuzzy findet "String" in "strStringyxz"
+Public Function FindContainerByName(Mother As Object, Name As String, Optional Fuzzy As Boolean) As Container
+
+    '' Searches through controls in Mother, returns the
+    '' one which has the name Name
+
+    Dim child As Object
+    Dim childcount As Integer
+    Dim chname As String
+    Dim Irrelevant As Container
+    Dim found As Boolean
+
+    For Each child In Mother.Children
+        childcount = 0
+        chname = ""
+        If Object.Is(child, "Container") Then
+            If Fuzzy Then
+                If InStr(child.name, Name) > 0 Then found = True
+            Else
+                If child.name = Name Then found = True
+            Endif
+            If found Then
+                'Container found
+                $CurrentContainer = child
+                Return $CurrentContainer
+            Endif
+            childcount = child.Children.Count
+            If childcount > 0 Then
+                'found container
+                Irrelevant = FindContainerByName(child, Name, Fuzzy)
+            Else
+                Return Null
+            Endif
+        Endif
+    Next
+    Return $CurrentContainer
+
+End
+
+' ------------------------------------------------- Jump around
+
+'' Jump to next field in Fields, at end loop to first
+Public Sub JumpToNext()
+
+    Dim i As Integer
+    Dim c As Control
+
+    c = FindFocusedControl()
+
+    If c <> Null Then
+        For i = 0 To $Fields.count - 1
+            If $Fields[i] = c.Name Then
+                If i < $Fields.Count - 1 Then
+                    c = $Form[$Fields[i + 1]]
+                    If c.Visible = True And If c.Enabled = True
+                        c.SetFocus
+                        Break
+                    Endif
+                Else
+                    $Form[$Fields[0]].SetFocus
+                    Break
+                Endif
+            Endif
+        Next
+    Endif
+
+Catch
+    Message.Error(Error.Text)
+
+End
+
+'' Jump to previous field in Fields, stops at the first
+
+Public Sub JumpToPrevious()
+
+    Dim i As Integer
+    Dim c As Control
+    Dim tempc As Control
+
+    c = FindFocusedControl()
+
+    If c <> Null Then
+        For i = $Fields.count - 1 DownTo 0
+            If $Fields[i] = c.Name Then
+                'Debug i;; $Fields[i];; c.Name
+                If i > 0 Then
+                    tempc = $Form[$Fields[i - 1]]
+                    If tempc.Visible = True And If tempc.Enabled = True Then
+                        tempc.SetFocus
+                        Break
+                    Else
+                        c = tempc
+                    Endif
+                Else
+                    tempc = $Form[$Fields[$Fields.Count - 1]]
+                    If tempc.Visible = True And If tempc.Enabled = True Then
+                        tempc.SetFocus
+                    Else
+                        c = tempc
+                    Endif
+                Endif
+            Endif
+        Next
+    Endif
+
+Catch
+    Message.Error(Error.Text)
+
+End
+
+Private Function Fields_Read() As Variant[]
+
+    Return $Fields
+
+End
+
+'' True wenn "Enter" oder "Return" eingegeben wurde
+Static Public Function DetectEnter() As Boolean
+    ' braucht man ständig in Key.release
+
+    Select Case Key.Code
+        Case Key.Return
+            Goto Enter
+        Case Key.Enter
+        Enter:
+            Return True
+    End Select
+
+End
+
+'' True wenn "Esc" eingegeben wurde
+Static Public Function DetectEscape() As Boolean
+    ' braucht man ständig in Key.release
+
+    If Key.Code = Key.Esc Then
+        Return True
+    Endif
+
+End
+
+'' True wenn "F1" eingegeben wurde
+Static Public Function DetectF1() As Boolean
+
+    If Key.Code = Key.F1 Then
+        Return True
+    Endif
+
+End
+
+'' True wenn "Pos1/Home" eingegeben wurde
+Static Public Function DetectHome() As Boolean
+
+    If Key.Code = Key.Home Then
+        Return True
+    Endif
+
+End
+
+'' True wenn "End" eingegeben wurde
+Static Public Function DetectEnd() As Boolean
+
+    If Key.Code = Key.End Then
+        Return True
+    Endif
+
+End
+
+'' True wenn die Tastenkombination Ctrl-KeyCode gedrückt wird
+'' Gewünschten KeyCode eingeben als Array, z.B.: Key["S"]
+''
+'' z.B. so: if DetectControl(Key["S"]) = true then ...
+
+Static Public Function DetectControl(KeyCode As Integer) As Boolean
+
+    If Key.Control And If Key.Code = KeyCode Then
+        Return True
+    Endif
+
+End
+
+Private Sub Fields_Write(Value As Variant[])
+
+    Dim f As Variant
+    Dim fnames As New String[]
+
+    For Each f In Value
+        If TypeOf(f) = gb.String Then
+            fnames.Add(f)
+        Else If Object.Is(f, "Control") Then
+            fnames.Add(Object.GetProperty(f, "Name"))
+        Endif
+    Next
+
+    $Fields = fnames
+
+End
+
+'' Setzt alle Controls in dem übergebenen Container
+'' und dessen Childs auf NoTabFocus, sodass sie nicht mehr mit Tab
+'' angesprungen werden können.
+
+Static Public Sub NoTabFocusForAll(C As Container)
+    '' Recursive Funktion, loopt durch alle Controls und
+    '' schaltet Tab aus
+
+    Dim mother As Object
+    Dim child As Object
+    Dim childs As Collection
+    Dim childcount As Integer
+
+    ' If Me.Debug Then
+    '     Debug "Start"
+    ' Endif
+
+    mother = C
+
+    For Each child In mother.Children
+        Try childs = child.Children
+        childcount = 0
+        Try childcount = child.Children.Count
+        If childcount > 0 Then
+            NoTabFocusForAll(child)
+        Endif
+        Try child.NoTabFocus = True
+    Next
+Catch
+    Message.Error(Error.Text)
+
+End
