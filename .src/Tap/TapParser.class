@@ -1,6 +1,7 @@
 ' Gambas class file
 
 ''' Low-level parser for Test Anything Protocol ([TAP]) output.
+''' It can only be used for one test process.
 ''' 
 ''' [TAP]: http://testanything.org/tap-specification.html
 
@@ -21,7 +22,7 @@ Event Else({Line} As String)
 
 Private $hTapStream As Stream
 
-Private $iTestsRun As Integer
+Private $iTestsRun As Integer = 0
 
 Public Sub _new(TapStream As Stream)
 
@@ -40,8 +41,6 @@ Public Sub Parse()
     Dim sDescription As String
     Dim iDirective As Integer
     Dim sComment As String
-
-    $iTestsRun = 0
 
     For Each sLine In $hTapStream.Lines
         If iLine = 0 And If sLine Begins "TAP version " Then

@@ -1,0 +1,171 @@
+' Gambas class file
+
+''' Base class for a test harness. It collects statistics about the tests, inspired by perl's Test::Harness.
+
+Export
+
+Public Struct TestStats
+    '' Name of the test
+    Name As String
+    '' Exit status of the test process
+    ExitCode As Integer
+    '' Whether the test was successful (all tests passed and at least one test was executed)
+    Success As Boolean
+    '' Difference between planned and run tests
+    Delta As Integer
+    '' Whether the test bailed out (aborted gracefully)
+    BailedOut As Boolean
+    '' If BailedOut, this contains the optional attached message
+    BailMessage As String
+    '' When the test started
+    Started As Date
+    '' When the test ended
+    Ended As Date
+
+    '' TAP version in use
+    Version As Integer
+    '' Number of tests planned
+    Planned As Integer
+    '' Test range
+    Plan As Integer[]
+    '' Number of successful tests (not accounting for Todo or Skipped ones)
+    Passed As Integer
+    '' Number of failed tests (not accounting for Todo or Skipped ones)
+    Failed As Integer
+    '' Number of tested marked as to-do
+    Todo As Integer
+    '' Number of skipped tests
+    Skipped As Integer
+    '' Number of Todo tests which passed
+    Bonus As Integer
+
+    '' Descriptions of failed tests
+    Failures As String[]
+End Struct
+
+Property Read Tests As TestStats[]
+Private $aTests As New TestStats[]
+Private $hCurrent As TestStats
+Private $bLastOk As Boolean
+
+Public Sub RunAll(Project As String)
+
+    ' TODO: How to reliably find all classes in a project that are unit tests? Conventions?
+    Error.Raise(("NYI"))
+
+End
+
+Public Sub Run(Project As String, Test As String)
+
+    ' Dim hProc As Process
+    Dim sOutput As String, hStream As Stream
+    Dim hParser As TapParser
+
+    $hCurrent = New TestStats
+    ' TODO: Ask Benoit to give me Process.Out As Stream
+    $hCurrent.Name = Test
+    $hCurrent.Started = Now()
+      Exec ["gbx3", "-s", Test, Project] To sOutput
+    $hCurrent.Ended = Now()
+    $hCurrent.ExitCode = Process.LastValue
+
+    hStream = Open String sOutput For Read
+    ' FIXME: If a class inherits this, it can override/claim event handlers and our statistics aren't accurate.
+    hParser = New TapParser(hStream) As "Parser"
+    Close #hStream
+
+    ' Important: Do not replace the last condition with $hCurrent.Failed = 0.
+    ' That wouldn't verify if all tests actually ran or if the plan was wrong.
+    With $hCurrent
+        .Success = .ExitCode = 0 And .Planned > 0 And .Passed = .Planned
+        .Delta = .Planned - .Passed - .Failed - .Todo - .Skipped
+    End With
+    $aTests.Push($hCurrent)
+
+    Catch
+        Debug Subst$(("Test harness failure: [&1:&2] &3"), Error.Class, Error.Where, Error.Text)
+        Debug Error.Backtrace.Join("\n")
+        Error.Raise(Subst$(("Test harness failure: [&1:&2] &3"), Error.Class, Error.Where, Error.Text))
+
+End
+
+Public Sub Parser_Version(Version As Integer)
+
+    $hCurrent.Version = Version
+
+End
+
+Public Sub Parser_Plan(Start As Integer, {End} As Integer)
+
+    $hCurrent.Plan = [Start, {End}]
+    $hCurrent.Planned = 1 + {End} - Start
+
+End
+
+Public Sub Parser_Ok(TestNr As Integer, Description As String)
+
+    Inc $hCurrent.Passed
+    $bLastOk = True
+
+End
+
+Public Sub Parser_NotOk(TestNr As Integer, Description As String)
+
+    Inc $hCurrent.Failed
+    $hCurrent.Failures.Push(Description)
+    $bLastOk = False
+
+End
+
+'' Undoes the last increment.
+'' FIXME: This relies on an implementation detail of TapParser: a Todo or Skip event
+'' is always raised immediately after the Ok or NotOk event for that test.
+'' More properly, we would use the TestNr argument to determine which one to undo.
+Private Sub UndoOk()
+
+    If $bLastOk Then
+        Dec $hCurrent.Passed
+    Else
+        Dec $hCurrent.Failed
+        $hCurrent.Failures.Pop()
+    Endif
+
+End
+
+Public Sub Parser_Todo(TestNr As Integer, Comment As String)
+
+    UndoOk()
+    Inc $hCurrent.Todo
+    Inc $hCurrent.Bonus
+    ' TODO: Add TestStats.Todos As String[], but list Description and Comment?
+
+End
+
+Public Sub Parser_Skip(TestNr As Integer, Comment As String)
+
+    UndoOk()
+    Inc $hCurrent.Skipped
+    ' TODO: Add TestStats.Skips As String[], but list Description and Comment?
+
+End
+
+Public Sub Parser_BailOut(Comment As String)
+
+    $hCurrent.BailedOut = True
+    $hCurrent.BailMessage = Comment
+
+End
+
+' Diagnostic and Else messages are not handled here.
+
+Private Function Tests_Read() As TestStats[]
+
+    Return $aTests
+
+End
+
+Private Function Current_Read() As TestStats
+
+    Return $hCurrent
+
+End
