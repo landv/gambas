@@ -26,10 +26,10 @@ Static Public Sub FromKey() As String
   Dim sSymbol As String
   Dim hClass As Class
   
-  If Key.Control Then sShortcut &= "CTRL+"
-  If Key.Shift Then sShortcut &= "SHIFT+"
-  If Key.Alt Then sShortcut &= "ALT+"
-  If Key.Meta Then sShortcut &= "META+"
+  If Key.Control Then sShortcut &= "Ctrl+"
+  If Key.Shift Then sShortcut &= "Shift+"
+  If Key.Alt Then sShortcut &= "Alt+"
+  If Key.Meta Then sShortcut &= "Meta+"
   
   hClass = Classes["Key"]
   For Each sSymbol In hClass.Symbols
