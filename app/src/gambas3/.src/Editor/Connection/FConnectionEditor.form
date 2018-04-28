@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,123,92)
+  MoveScaled(0,0,151,92)
   Arrangement = Arrange.Vertical
   { panToolBar ToolBar
     MoveScaled(1,1,116,4)
@@ -11,13 +11,12 @@
     { btnTitle ToolButton
       MoveScaled(0,0,4,4)
       Action = ".database"
-      Picture = Picture["icon:/small/database"]
+      Picture = Picture["icon:/small/server"]
     }
     { btnShowSystem ToolButton
       MoveScaled(4,0,4,4)
       ToolTip = ("Show system tables")
       Action = ".show-system"
-      Picture = Picture["img/16/system-table.png"]
       Toggle = True
     }
     { Separator3 Separator
@@ -26,6 +25,7 @@
     { btnNewTable ToolButton
       MoveScaled(9,0,8,4)
       ToolTip = ("New table")
+      Action = ".new-table"
       AutoResize = True
       Text = ("New table") & "..."
       Picture = Picture["icon:/small/new"]
@@ -50,6 +50,7 @@
     { btnKill ToolButton
       MoveScaled(27,0,11,4)
       ToolTip = ("Delete table")
+      Action = ".remove-table"
       AutoResize = True
       Text = ("Remove")
       Picture = Picture["icon:/small/delete"]
@@ -57,6 +58,7 @@
     { btnRename ToolButton
       MoveScaled(39,0,11,4)
       ToolTip = ("Rename table")
+      Action = ".rename-table"
       AutoResize = True
       Text = ("Rename") & "..."
       Picture = Picture["icon:/small/edit"]
@@ -64,6 +66,7 @@
     { btnCopyTable ToolButton
       MoveScaled(51,0,6,4)
       ToolTip = ("Copy table")
+      Action = ".copy-table"
       AutoResize = True
       Text = ("Copy")
       Picture = Picture["icon:/small/copy"]
@@ -71,6 +74,7 @@
     { btnPasteTable ToolButton
       MoveScaled(58,0,4,4)
       ToolTip = ("Paste table")
+      Action = ".paste-table"
       AutoResize = True
       Text = ("Paste") & "..."
       Picture = Picture["icon:/small/paste"]
@@ -78,13 +82,14 @@
     { btnImport ToolButton
       MoveScaled(64,0,12,4)
       ToolTip = ("Import text file")
+      Action = ".import-table"
       AutoResize = True
       Text = ("Import") & "..."
       Picture = Picture["icon:/small/open"]
     }
   }
   { HBox1 HBox
-    MoveScaled(2,12,120,79)
+    MoveScaled(2,12,148,79)
     Expand = True
     { spnTable SidePanel
       MoveScaled(1,1,37,73)
@@ -98,10 +103,10 @@
       }
     }
     { VBox1 VBox
-      MoveScaled(39,1,80,77)
+      MoveScaled(39,1,108,77)
       Expand = True
       { splTable VSplit
-        MoveScaled(1,1,78,72)
+        MoveScaled(1,1,106,72)
         Expand = True
         { panTable Panel
           MoveScaled(2,2,71,35)
@@ -303,16 +308,18 @@
           }
         }
         { panData Panel
-          MoveScaled(2,39,75,31)
+          MoveScaled(2,39,103,31)
           Arrangement = Arrange.Fill
           { datData DataSource
-            MoveScaled(1,1,73,20)
+            MoveScaled(1,1,101,20)
             Arrangement = Arrange.Vertical
             { tlbData ToolBar
-              MoveScaled(2,2,70,4)
+              MoveScaled(2,2,97,4)
+              Key = "connection-data"
               Separator = True
               { btnEditData ToolButton
                 MoveScaled(0,0,7,4)
+                Action = ".edit-data"
                 AutoResize = True
                 Text = ("Edit")
                 Picture = Picture["icon:/small/edit"]
@@ -321,6 +328,7 @@
               { btnExportData ToolButton
                 MoveScaled(8,0,11,4)
                 ToolTip = ("Export to CSV file")
+                Action = ".export-data"
                 AutoResize = True
                 Text = ("Export") & "..."
                 Picture = Picture["icon:/small/save-as"]
@@ -328,6 +336,7 @@
               { btnSaveData ToolButton
                 MoveScaled(19,0,9,4)
                 Enabled = False
+                Action = ".save-data"
                 AutoResize = True
                 Text = ("Save")
                 Picture = Picture["icon:/small/save"]
@@ -335,6 +344,7 @@
               { btnAddData ToolButton
                 MoveScaled(28,0,8,4)
                 Enabled = False
+                Action = ".add-data"
                 AutoResize = True
                 Text = ("Add")
                 Picture = Picture["icon:/small/add"]
@@ -342,21 +352,29 @@
               { btnRemoveData ToolButton
                 MoveScaled(36,0,10,4)
                 Enabled = False
+                Action = ".delete-data"
                 AutoResize = True
                 Text = ("Delete")
                 Picture = Picture["icon:/small/remove"]
               }
               { btnSelectAll ToolButton
                 MoveScaled(47,0,12,4)
+                Action = ".select-all-data"
                 AutoResize = True
                 Text = ("Select all")
                 Picture = Picture["icon:/small/select-all"]
               }
               { btnUnselectAll ToolButton
                 MoveScaled(59,0,12,4)
+                Action = ".unselect-all-data"
                 AutoResize = True
                 Text = ("Unselect all")
                 Picture = Picture["icon:/small/undo"]
+              }
+              { lblCount Label
+                MoveScaled(84,0,10,4)
+                Expand = True
+                Alignment = Align.Right
               }
             }
             { dvwData DataView
@@ -373,10 +391,12 @@
             Arrangement = Arrange.Vertical
             { tlbData3 ToolBar
               MoveScaled(2,1,61,4)
+              Key = "connection-export"
               Separator = True
               { btnExportRequest ToolButton
                 MoveScaled(0,0,12,4)
                 ToolTip = ("Export to CSV file")
+                Action = ".export-request"
                 AutoResize = True
                 Text = ("Export") & "..."
                 Picture = Picture["icon:/small/save-as"]
@@ -399,28 +419,94 @@
 # Gambas Action File 3.0
 
 { Actions
+  { Action add-data
+    Text = "Add"
+    Picture = "icon:/small/add"
+  }
+  { Action copy-table
+    Text = "Copy"
+    Picture = "icon:/small/copy"
+  }
   { Action database
     Text = ""
-    Picture = "icon:/small/database"
+    Picture = "icon:/small/server"
+  }
+  { Action delete-data
+    Text = "Delete"
+    Picture = "icon:/small/remove"
+  }
+  { Action edit-data
+    Text = "Edit"
+    Picture = "icon:/small/edit"
+  }
+  { Action export-data
+    Text = "Export"
+    Picture = "icon:/small/save-as"
+  }
+  { Action export-request
+    Text = "Export"
+    Picture = "icon:/small/save-as"
+  }
+  { Action import-table
+    Text = "Import"
+    Picture = "icon:/small/open"
+  }
+  { Action new-table
+    Text = "New table"
+    Picture = "icon:/small/new"
+  }
+  { Action paste-table
+    Text = "Paste"
+    Picture = "icon:/small/paste"
   }
   { Action reload
     Text = "Reload"
     Picture = "icon:/small/refresh"
   }
+  { Action remove-table
+    Text = "Remove"
+    Picture = "icon:/small/delete"
+  }
+  { Action rename-table
+    Text = "Rename"
+    Picture = "icon:/small/edit"
+  }
   { Action save
     Text = "Save"
     Picture = "icon:/small/save"
   }
+  { Action save-data
+    Text = "Save"
+    Picture = "icon:/small/save"
+  }
+  { Action select-all-data
+    Text = "Select all"
+    Picture = "icon:/small/select-all"
+  }
   { Action show-system
     Text = "Show system tables"
-    Picture = "img/16/system-table.png"
+    Picture = "$ToolButton"
+  }
+  { Action unselect-all-data
+    Text = "Unselect all"
+    Picture = "icon:/small/undo"
   }
 }
 
 { Toolbars
   { Toolbar connection
     Text = "Connection editor"
-    List = "database,show-system,save,reload"
-    Default = "database,show-system,|,$btnNewTable,save,reload,|,$btnKill,$btnRename,$btnCopyTable,$btnPasteTable,$btnImport"
+    List = "database,show-system,new-table,save,reload,remove-table,rename-table,copy-table,paste-table,import-table"
+    Default = "database,show-system,|,new-table,save,reload,|,remove-table,rename-table,copy-table,paste-table,import-table"
+  }
+  { Toolbar connection-data
+    Text = ""
+    List = "edit-data,export-data,save-data,add-data,delete-data,select-all-data,unselect-all-data"
+    Default = "edit-data,export-data,save-data,add-data,delete-data,select-all-data,unselect-all-data,$lblCount"
+  }
+  { Toolbar connection-export
+    Text = ""
+    List = "export-request"
+    Default = "export-request"
   }
 }

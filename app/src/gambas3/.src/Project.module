@@ -1034,12 +1034,26 @@ Public Sub AddLinkEmblem(hSource As Image) As Image
   iSize = Min(hSource.H, hSource.W) \ 2
 
   Paint.Begin(hImage)
+  
+  Paint.MoveTo(hImage.W, hImage.H)
+  Paint.RelLineTo(0, - iSize)
+  Paint.RelLineTo(- iSize, iSize)
+  Paint.RelLineTo(iSize, 0)
+  Paint.Background = Color.Black
+  'Paint.Background = Color.SetAlpha(Color.TextForeground, 64)
+  Paint.Operator = Paint.OperatorDestOut
+  Paint.Fill
+  
+  iSize *= 0.85
+  
   Paint.MoveTo(hImage.W, hImage.H)
   Paint.RelLineTo(0, - iSize)
   Paint.RelLineTo(- iSize, iSize)
   Paint.RelLineTo(iSize, 0)
   Paint.Background = Color.SetAlpha(Color.TextForeground, 64)
+  Paint.Operator = Paint.OperatorOver
   Paint.Fill
+  
   Paint.End
   Return hImage
 
@@ -4297,17 +4311,21 @@ Public Sub RenameFile(sPath As String, sNewName As String)
 
   Endif
 
-  If bIsDir Then
-    Refresh
-  Else
-    RefreshKey(sNewPath, sPath)
-  Endif
+  If Not IsFake() Then
+    
+    If bIsDir Then
+      Refresh
+    Else
+      RefreshKey(sNewPath, sPath)
+    Endif
   
-  'AddFile(File.Dir(sNewPath), File.Name(sNewPath), TRUE)
-  'IF IsDir(sNewPath) THEN AddDir(sNewPath)
-
-  Try ProjectTree[sNewPath].Selected = True
-  Try ProjectTree[sNewPath].EnsureVisible
+    'AddFile(File.Dir(sNewPath), File.Name(sNewPath), TRUE)
+    'IF IsDir(sNewPath) THEN AddDir(sNewPath)
+  
+    Try ProjectTree[sNewPath].Selected = True
+    Try ProjectTree[sNewPath].EnsureVisible
+    
+  Endif
 
 Catch
 
@@ -4460,13 +4478,12 @@ Public Function CheckProjectName(sName As String, Optional sDir As String) As St
 
 End
 
-Public Sub MakeSourcePackageFromTo(sFrom As String, sPath As String, Optional bWait As Boolean)
+Public Sub MakeSourcePackageFromTo(sFrom As String, sPath As String)
 
   Dim sCmd As String
   Dim sOpt As String
   Dim sIgnore As String
   Dim sTemp As String
-  Dim hProcess As Process
 
   Inc Application.Busy
 
@@ -4482,29 +4499,14 @@ Public Sub MakeSourcePackageFromTo(sFrom As String, sPath As String, Optional bW
 
   sCmd = "cd " & Shell$(File.Dir(sFrom)) & ";"
   sCmd &= " tar cfvh" & sOpt & " " & Shell$(sTemp)
-  sCmd &= " --exclude=" & Shell$(".gambas/*")
-  sCmd &= " --exclude=" & Shell$("*~")
-  sCmd &= " --exclude=" & Shell$("core")
-  sCmd &= " --exclude=" & Shell$("core*.*")
-  sCmd &= " --exclude=" & Shell$("vgcore*.*")
-  sCmd &= " --exclude=" & Shell$(".lock")
-  sCmd &= " --exclude=" & Shell$(".lang/*.pot")
-  sCmd &= " --exclude=" & Shell$(".lang/.pot")
-  sCmd &= " --exclude=" & Shell$(".xvpics")
-  sCmd &= " --exclude=" & Shell$(File.Name(GetExecPath()))
-  For Each sIgnore In GetIgnoreFiles()
+  For Each sIgnore In [
+    File.Name(GetExecPath()), ".gambas/*", ".settings", ".info", ".list", "*~", "core", "core.*", "vgcore*.*", ".lock", ".lang/*.pot", ".lang/.ot", ".xvpics", ".bzr", ".bzrignore", ".hg", ".hgignore", ".hgtags", "hgrc", ".git", ".gitignore", ".svn", "CVS", "CVSROOT"
+    ]
     sCmd &= " --exclude=" & Shell$(sIgnore)
   Next
   sCmd &= " " & Shell$(File.Name(sFrom)) & " > /dev/null"
 
-  If bWait Then
-    hProcess = Shell sCmd
-    While hProcess.State = Process.Running
-      Wait 0.1
-    Wend
-  Else
-    Shell sCmd Wait
-  Endif
+  Shell sCmd Wait
   
   If Not Exist(sTemp) Then Error.Raise(Subst$(("The '&1' command has failed."), "tar"))
 
@@ -4521,11 +4523,11 @@ Catch
 
 End
 
-Public Sub MakeSourcePackageTo(sPath As String, Optional bWait As Boolean)
+Public Sub MakeSourcePackageTo(sPath As String)
 
   Save
   WriteProject(True)
-  MakeSourcePackageFromTo(Project.Dir, sPath, bWait)
+  MakeSourcePackageFromTo(Project.Dir, sPath)
 
 End
 
@@ -5645,12 +5647,6 @@ Catch
   Application.Busy = 0
   Message.Error("<b>" & Subst(("Unable to convert &1"), File.Name(sPath)) & "</b><p>" & Error.Text & "<br>" & Error.Where)
   Return True
-
-End
-
-Public Sub GetIgnoreFiles() As String[]
-
-  Return Settings["/IgnoreFiles", [".bzr", ".bzrignore", ".hg", ".hgignore", ".hgtags", "hgrc", ".git", ".gitignore", ".svn", "CVS", "CVSROOT"]]
 
 End
 

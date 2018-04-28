@@ -32,6 +32,7 @@ Private $iHandleSize As Integer
 Private $iLock As Integer
 
 Private $aHidden As Control[]
+Private $aDisabled As Control[]
 
 Public Sub _new()
   
@@ -727,28 +728,43 @@ Public Sub SetConfigureMode(bConfigure As Boolean)
 
   Lock()
   If $bConfigure Then
+    
     $aHidden = New Control[]
+    $aDisabled = New Control[]
+    
     For Each hChild In panToolBar.Children
       If hChild Is Separator Then Continue
       If Not hChild.Visible Then 
         $aHidden.Add(hChild)
         hChild.Show
       Endif
+      If Not hChild.Enabled Then
+        $aDisabled.Add(hChild)
+        hChild.Enabled = True
+      Endif
     Next
-    ' For Each hChild In panHide.Children
-    '   If hChild Is Separator Then Continue
-    '   If Not hChild.Visible Then 
-    '     $aHidden.Add(hChild)
-    '     'hChild.Show
-    '   Endif
-    ' Next
+    For Each hChild In panHide.Children
+      If hChild Is Separator Then Continue
+      If Not hChild.Enabled Then
+        $aDisabled.Add(hChild)
+        hChild.Enabled = True
+      Endif
+    Next
   Else
+    
     For Each hChild In $aHidden
       hChild.Hide
     Next
     $aHidden = Null
+
+    For Each hChild In $aDisabled
+      hChild.Enabled = False
+    Next
+    $aDisabled = Null
+
     SaveConfig
     'panToolBar.Refresh
+    
   Endif
   Unlock()
   
@@ -1070,6 +1086,7 @@ Public Sub DragEnd(bAnim As Boolean)
       If hCtrl Then 
         ShowControl(hCtrl)
         hCtrl.Show
+        hCtrl.Enabled = True
         hCtrl.Next = panWhere.Next
       Endif
     Endif
@@ -1263,22 +1280,26 @@ Public Sub Form_Close()
 
 End
 
+Private Sub ToolbarToStockSize(iSize As Integer) As String
+
+  Select Case iSize
+    Case ICON_HUGE
+      Return "huge"
+    Case ICON_MEDIUM
+      Return "medium"
+    Case ICON_LARGE
+      Return "large"
+    Case ICON_TINY
+      Return "tiny"
+    Default
+      Return "small"
+  End Select
+
+End
+
 Private Sub CalcIconSize(iIconSize As Integer) As Integer
   
-  Select Case iIconSize
-    Case ICON_HUGE
-      Return Stock.GetSize("huge")
-    Case ICON_MEDIUM
-      Return Stock.GetSize("medium")
-    Case ICON_LARGE
-      Return Stock.GetSize("large")
-    Case ICON_HUGE
-      Return Stock.GetSize("huge")
-    Case ICON_TINY
-      Return Stock.GetSize("tiny")
-    Default
-      Return Stock.GetSize("small")
-  End Select
+  Return Stock.GetSize(ToolbarToStockSize(iIconSize))
   
 End
 
@@ -1377,6 +1398,25 @@ Private Sub CheckSeparators()
   
 End
 
+Private Sub StockToToolbarSize(sSize As String) As Integer
+  
+  Select Case LCase(sSize)
+    Case "huge"
+      Return ICON_HUGE
+    Case "medium"
+      Return ICON_MEDIUM
+    Case "large"
+      Return ICON_LARGE
+    Case "huge"
+      Return ICON_HUGE
+    Case "tiny"
+      Return ICON_TINY
+    Case Else
+      Return ICON_SMALL
+  End Select
+  
+End
+
 
 Public Sub LoadConfig(Optional bInit As Boolean)
   
@@ -1395,27 +1435,8 @@ Public Sub LoadConfig(Optional bInit As Boolean)
   
   MAction.InitAction
 
-  Select Case LCase(Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"])
-    Case "huge"
-      $iIconSize = ICON_HUGE
-      iDim = 12
-    Case "medium"
-      $iIconSize = ICON_MEDIUM
-      iDim = 12
-    Case "large"
-      $iIconSize = ICON_LARGE
-      iDim = 12
-    Case "huge"
-      $iIconSize = ICON_HUGE
-      iDim = 12
-    Case "tiny"
-      $iIconSize = ICON_TINY
-      iDim = 12
-    Case Else
-      $iIconSize = ICON_SMALL
-      iDim = 12
-  End Select
-  iDim += Max(Me.Font.Height * 0.8, GetRealIconSize())
+  $iIconSize = StockToToolbarSize(Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"])
+  iDim = 12 + Max(Me.Font.Height * 0.8, GetRealIconSize())
   $iButtonWidth = iDim
   
   aConfig = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Layout"]
@@ -1600,6 +1621,13 @@ Public Sub GetIconSize() As Integer
   
 End
 
+Public Sub GetStockIconSize() As String
+  
+  Return ToolbarToStockSize($iIconSize)
+  
+End
+
+
 Public Sub GetRealIconSize() As Integer
   
   Return CalcIconSize(GetIconSize())
@@ -1614,6 +1642,13 @@ Public Sub SetIconSize(iSize As Integer)
   UpdateSize
   
 End
+
+Public Sub SetStockIconSize(sSize As String)
+  
+  SetIconSize(StockToToolbarSize(sSize))
+  
+End
+
 
 Private Sub UpdateSize()
 

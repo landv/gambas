@@ -31,6 +31,8 @@ Private $bTemplate As Variant
 Private Const KEY_REQUEST As String = "$"
 Private $bInCheckCurrent As Boolean
 
+Static Private $hSystemTableImage As Image
+
 Public Sub _new(sPath As String)
   
   Path = sPath
@@ -92,6 +94,17 @@ Public Sub _new(sPath As String)
     End With
     
   End With
+  
+End
+
+Static Public Sub GetSystemTablePicture(iSize As Integer) As Picture
+  
+  If Not $hSystemTableImage Then
+    $hSystemTableImage = Picture["icon:/32/table"].Image
+    $hSystemTableImage.PaintRect(0, 0, 32, 32, Color.RGB(255, 127, 127, 192))
+  Endif
+  
+  Return $hSystemTableImage.Stretch(iSize, iSize).Picture
   
 End
 
@@ -488,6 +501,7 @@ Private Sub ReloadTable()
   Dim hResult As Result
   Dim cDescField As Collection
   Dim cDescIndex As Collection
+  Dim iCount As Integer
   
   'UpdateDefinition($sTable)
   
@@ -576,6 +590,15 @@ Private Sub ReloadTable()
   
   datData.Table = $sTable
   datData.Refresh
+  
+  iCount = datData.Count
+  If iCount = 0 Then
+    lblCount.Text = ("No record") & " "
+  Else If iCount = 1 Then
+    lblCount.Text = ("One record") & " "
+  Else
+    lblCount.Text = Subst(("&1 records"), Format(iCount, ",0")) & " "
+  Endif
   
   splTable.Enabled = True
   
@@ -1959,5 +1982,11 @@ End
 Public Sub btnUnselectAll_Click()
 
   dvwData.View.UnSelectAll
+
+End
+
+Public Sub panToolBar_Configure()
+
+  btnShowSystem.Picture = GetSystemTablePicture(Stock.GetSize(panToolBar.Size))
 
 End

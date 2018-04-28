@@ -33,7 +33,6 @@ Private $bHideLater As Boolean
 Private $cFindStrings As Collection
 Static Private $sWordSeparators As String
 Private $bStatic As Boolean
-Private $bPrivate As Boolean
 
 Static Public Sub _init()
 
@@ -71,7 +70,7 @@ Private Function GetClass() As String
   
 End
 
-Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Optional bStatic As Boolean, Optional bPrivate As Boolean)
+Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Optional bStatic As Boolean, Optional bHidden As Boolean)
 
   Dim iX As Integer
   Dim iY As Integer
@@ -110,8 +109,8 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
       Endif 
       $sClass = sClass
       $bStatic = bStatic
-      $bPrivate = bPrivate
-      FillWithSymbol(sClass, bStatic, bPrivate)
+      '$bPrivate = bPrivate
+      FillWithSymbol(sClass, bStatic, False, bHidden)
     Case " "
       $bGambas = True
       $sText = ""
@@ -250,7 +249,7 @@ Public Sub SetText(sText As String, Optional bInsert As Boolean) As Boolean
   $sText = sText
   
   If $sMode = "." And If $sText Begins "_" Then
-    FillWithSymbol($sClass, $bStatic, $bPrivate, True)
+    FillWithSymbol($sClass, $bStatic, False, True)
   Endif
 
   Return FindItem(Not bInsert)

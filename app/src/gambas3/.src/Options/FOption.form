@@ -31,7 +31,7 @@
     MoveScaled(1,1,94,61)
     Arrangement = Arrange.Vertical
     Spacing = True
-    Count = 11
+    Count = 10
     Border = True
     Index = 0
     Text = ("Identity")
@@ -1042,51 +1042,6 @@
       { cmbTerminal ComboBox
         MoveScaled(46,0,20,4)
         ReadOnly = True
-      }
-    }
-    Index = 10
-    Text = ("Source archives")
-    Picture = Picture["icon:/medium/archive"]
-    { Label49 Label
-      MoveScaled(1,1,63,3)
-      Font = Font["Bold"]
-      Text = ("Source archives")
-    }
-    { Label39 TextLabel
-      MoveScaled(1,5,66,5)
-      Font = Font["Italic"]
-      AutoResize = True
-      Text = ("These files will be ignored when making source archives.")
-    }
-    { HBox41 HBox
-      MoveScaled(1,9,65,25)
-      Expand = True
-      Spacing = True
-      { tvwIgnore TableView
-        MoveScaled(3,1,39,22)
-        Expand = True
-      }
-      { VBox3 VBox
-        MoveScaled(46,1,17,20)
-        Spacing = True
-        { btnInsertIgnore Button
-          MoveScaled(0,0,17,4)
-          AutoResize = True
-          Text = Shortcut(("Add"), "A")
-          Picture = Picture["icon:/small/new"]
-        }
-        { btnRemoveIgnore Button
-          MoveScaled(0,5,17,4)
-          AutoResize = True
-          Text = Shortcut(("Remove"), "R")
-          Picture = Picture["icon:/small/delete"]
-        }
-        { btnResetIgnore Button
-          MoveScaled(0,10,17,4)
-          AutoResize = True
-          Text = Shortcut(("Reset"), "s")
-          Picture = Picture["icon:/small/undo"]
-        }
       }
     }
     Index = 0

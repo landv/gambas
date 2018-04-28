@@ -44,7 +44,7 @@ Public Function MakeWhere(aKey As String[], aVal As Variant[]) As String
   
   For iInd = 0 To aKey.Max
     If iInd Then sReq &= " AND "
-    sReq &= DB.Subst(aKey[iInd] & " = &1", aVal[iInd])
+    sReq &= DB.Quote(aKey[iInd]) & " " & DB.Subst("= &1", aVal[iInd])
   Next
   
   Return sReq
@@ -71,15 +71,17 @@ Public Function MakeNextWhere(aKey As String[], aVal As Variant[]) As String
       sOp = ">"
     Endif
     
+    sReq &= DB.Quote(sKey) & " "
+    
     If IsNull(aVal[iInd]) Then 
-      sReq &= DB.Subst(sKey & " IS NOT NULL")
+      sReq &= "IS NOT NULL"
     Else
-      sReq &= DB.Subst(sKey & " " & sOp & " &1 ", aVal[iInd])
+      sReq &= DB.Subst(sOp & " &1 ", aVal[iInd])
     Endif
     
     If sTest Then sReq &= ") "
     If sTest Then sTest &= " AND "
-    sTest &= DB.Subst(sKey & " = &1", aVal[iInd])
+    sTest &= DB.Quote(sKey) & " " & DB.Subst("= &1", aVal[iInd])
   Next
   
   Return sReq

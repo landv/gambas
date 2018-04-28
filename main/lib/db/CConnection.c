@@ -531,9 +531,7 @@ static char *get_query(char *prefix, CCONNECTION *_object, char *table, int len_
 
 	q_add(prefix);
 	q_add(" ");
-	q_add(THIS->driver->GetQuote());
-	q_add_length(table, len_table);
-	q_add(THIS->driver->GetQuote());
+	q_add(DB_GetQuotedTable(THIS->driver, &THIS->db, table, len_table));
 
 	if (query && len_query > 0)
 	{
@@ -630,7 +628,7 @@ BEGIN_METHOD(CCONNECTION_quote, GB_STRING name; GB_BOOLEAN is_table)
 	CHECK_OPEN();
 
 	if (VARGOPT(is_table, FALSE)) // && THIS->db.flags.schema)
-		GB.ReturnNewZeroString(DB_GetQuotedTable(THIS->driver, &THIS->db, GB.ToZeroString(ARG(name))));
+		GB.ReturnNewZeroString(DB_GetQuotedTable(THIS->driver, &THIS->db, STRING(name), LENGTH(name)));
 	else
 	{
 		q_init();

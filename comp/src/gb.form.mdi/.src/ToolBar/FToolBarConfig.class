@@ -67,6 +67,7 @@ Public Sub AddAction(sAction As String)
   
   Dim hItem As Control
   Dim W As Integer
+  Dim sText As String
 
   'Debug sAction
 
@@ -83,8 +84,11 @@ Public Sub AddAction(sAction As String)
   hItem.Tag = sAction
   hItem.Mouse = Mouse.Pointing
   
-  W = hItem.Font.TextWidth(GetActionText(sAction)) + Stock.GetSize("small") + Desktop.Scale * 3
-  hItem.Resize(W, Desktop.Scale * 5)
+  W = Stock.GetSize("small") + Desktop.Scale * 2
+  
+  sText = GetActionText(sAction)
+  If sText Then W += hItem.Font.TextWidth(sText) + Desktop.Scale
+  hItem.Resize(W, Desktop.Scale * 4)
   
 End
 
@@ -163,13 +167,11 @@ Private Sub DrawItem(hCtrl As Control, sAction As String, bScreenshot As Boolean
   'If hItem.Tag Then hAction = MAction.Actions[hItem.Tag]
   bText = Draw.W > Draw.H
   
-  Draw.FillRect(1, 1, Draw.W - 2, Draw.H - 2, Color.Background)
+  Paint.FillRect(2, 2, Paint.W - 4, Paint.H - 4, Color.TextBackground)
+  Paint.DrawRect(1, 1, Paint.W - 2, Paint.H - 2, Color.LightForeground)
   
-  Draw.Foreground = hCtrl.Foreground
-  Draw.Rect(1, 1, Draw.W - 2, Draw.H - 2)
   If hCtrl.Hovered Then
-    Draw.Foreground = Color.LightForeground
-    Draw.Rect(0, 0, Draw.W, Draw.H)
+    Paint.DrawRect(0, 0, Paint.W, Paint.H, Color.LightBackground)
   Endif
   
   Draw.Foreground = hCtrl.Foreground
@@ -389,12 +391,12 @@ Public Sub btnReset_Click()
 
 End
 
-Public Sub btnUndo_Click()
-
-  $hForm.LoadConfig
-  InitAction
-
-End
+' Public Sub btnUndo_Click()
+' 
+'   $hForm.LoadConfig
+'   InitAction
+' 
+' End
 
 ' Public Sub cmbSize_Click()
 ' 

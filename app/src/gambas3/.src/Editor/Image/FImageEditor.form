@@ -285,14 +285,10 @@
       MoveScaled(5,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
-      Picture = Picture["icon:/small/refresh"]
+      Picture = Picture["icon:/small/revert"]
     }
-    { ToolButton7 ToolButton
-      MoveScaled(8,0,4,4)
-      ToolTip = ("Lock / unlock file")
-      Action = ".locked"
-      Picture = Picture["icon:/small/lock"]
-      Toggle = True
+    { Separator6 Separator
+      MoveScaled(10,0,1.125,4)
     }
     { btnUndo ToolButton
       MoveScaled(12,0,4,4)
@@ -568,6 +564,16 @@
       AutoResize = True
       Picture = Picture["img/draw/rotate.png"]
     }
+    { Spring1 Spring
+      MoveScaled(153,0,8,4)
+    }
+    { ToolButton7 ToolButton
+      MoveScaled(165,0,4,4)
+      ToolTip = ("Lock / unlock file")
+      Action = ".locked"
+      Picture = Picture["icon:/small/lock"]
+      Toggle = True
+    }
   }
   { Separator1 Separator
     MoveScaled(68,9,18,0)
@@ -688,7 +694,7 @@
   { Action reload
     Text = "Reload"
     Shortcut = ""
-    Picture = "icon:/small/refresh"
+    Picture = "icon:/small/revert"
   }
   { Action resize
     Text = "Resize"
@@ -813,7 +819,7 @@
 { Toolbars
   { Toolbar image
     Text = "Image editor"
-    List = "save,reload,locked,undo,redo,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,tooltip,copy,cut,tool-paste,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,union,difference,intersection,exclusive,invert,duplicate,offset,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
-    Default = "save,reload,locked,undo,redo,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,tooltip,|,copy,cut,tool-paste,|,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,|,union,difference,invert,duplicate,offset,|,flip-h,flip-v,rotate-r,rotate-l,resize"
+    List = "save,reload,undo,redo,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,tooltip,copy,cut,tool-paste,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,union,difference,intersection,exclusive,invert,duplicate,offset,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate,locked"
+    Default = "save,reload,|,undo,redo,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,tooltip,|,copy,cut,tool-paste,|,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,|,union,difference,invert,duplicate,offset,|,flip-h,flip-v,rotate-r,rotate-l,resize,~,locked"
   }
 }

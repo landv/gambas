@@ -925,10 +925,14 @@ Public Sub Process_Read()
     $sBuffer &= sData
   Endif
   
-  If (Timer - $fStart) >= 0.05 Then
-    $hOutputTimer.Trigger
+  If TerminalScreen.DEBUG_FILTER Then
+    If _DisableFilter = 0 Then $hOutputTimer.Trigger
   Else
-    $hOutputTimer.Restart
+    If (Timer - $fStart) >= 0.05 Then
+      $hOutputTimer.Trigger
+    Else
+      $hOutputTimer.Restart
+    Endif
   Endif
   
 End
@@ -944,14 +948,17 @@ End
 Public Sub OutputTimer_Timer()
   
   Dim hOutput As Stream
+  Dim sBuffer As String
   
   $fStart = Timer
   
-  hOutput = GetOutputStream()
-  If hOutput Then $hFilter.OutputTo(Me, $hScreen, hOutput, $sBuffer)
-  
-  $sBuffer = ""
   $hOutputTimer.Stop
+  
+  hOutput = GetOutputStream()
+  sBuffer = $sBuffer
+  $sBuffer = ""
+  If hOutput Then $hFilter.OutputTo(Me, $hScreen, hOutput, sBuffer)
+  
   EnsureVisible
   
 End

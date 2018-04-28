@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(9,2,41,32)
+  MoveScaled(0,0,41,32)
   Visible = False
   Ignore = True
   Persistent = True
@@ -36,14 +36,14 @@
         Expand = True
         NoHeader = True
       }
-      { panResizeTop Panel
-        MoveScaled(32,2,2,2)
-        Mouse = Mouse.SizeNESW
-        Ignore = True
-      }
       { panResizeBottom Panel
         MoveScaled(32,13,2,2)
         Mouse = Mouse.SizeNWSE
+        Ignore = True
+      }
+      { panResizeTop Panel
+        MoveScaled(32,2,2,2)
+        Mouse = Mouse.SizeNESW
         Ignore = True
       }
     }

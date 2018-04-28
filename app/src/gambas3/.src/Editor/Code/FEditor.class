@@ -850,7 +850,7 @@ Public Sub Editors_KeyPress()
   If $hEditor.ReadOnly Then Return
 
   If Asc(Key.Text) = 13 Then
-
+    
     sLine = $hEditor[iLine].Text
 
     If AutoComment And If IsComment(sLine) And If Key.Shift Then
@@ -1871,6 +1871,7 @@ Public Sub CheckCompletion(sMode As String)
   Dim aTypes As Integer[]
   Dim sWord As String
   Dim iPos As Integer
+  Dim bHidden As Boolean
 
   'IF Key.Code = Key.Backspace THEN
   '  IF FCompletion.IsMine(edtEditor) THEN
@@ -1905,8 +1906,11 @@ Public Sub CheckCompletion(sMode As String)
     aTypes.Remove(aTypes.Count - 1)
     sType = GetExpressionType(aSymbols, aTypes, True)
     If sType Then
+      If aSymbols[aSymbols.Max] = "SUPER" Or If aSymbols[aSymbols.Max] = "ME" Then
+        bHidden = True
+      Endif
       'PRINT "Type: "; sType
-      FCompletion.Open(Me, sMode, sType, $bLastStatic, False) 'LCase(sType) = LCase(ME.Name))
+      FCompletion.Open(Me, sMode, sType, $bLastStatic, bHidden) 'LCase(sType) = LCase(ME.Name))
     Endif
     
   Else If sMode = "A" Then

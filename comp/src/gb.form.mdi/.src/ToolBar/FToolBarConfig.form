@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,91,40)
+  MoveScaled(0,0,71,30)
   Visible = False
   Utility = True
   Arrangement = Arrange.Vertical
@@ -41,7 +41,7 @@
     }
   }
   { panAction Panel
-    MoveScaled(1,12,53,16)
+    MoveScaled(1,3,53,16)
     Background = Color.TextBackground
     Drop = True
     Expand = True
@@ -55,10 +55,10 @@
     }
   }
   { Separator2 Separator
-    MoveScaled(20,29,10,0)
+    MoveScaled(20,22,10,0)
   }
   { HBox2 HBox
-    MoveScaled(1,31,89,6)
+    MoveScaled(1,23,69,6)
     Spacing = True
     Margin = True
     { Label2 Label
@@ -72,21 +72,21 @@
       List = [("Tiny"), ("Small"), ("Medium"), ("Large"), ("Huge")]
     }
     { Spring1 Spring
-      MoveScaled(35,0,4,4)
-    }
-    { btnReset Button
-      MoveScaled(39,0,16,4)
-      Text = Shortcut(("Reset"), "R")
-      Picture = Picture["icon:/small/refresh"]
+      MoveScaled(32,0,2,4)
     }
     { btnUndo Button
-      MoveScaled(56,0,16,4)
+      MoveScaled(35,0,16,4)
       Visible = False
       Text = Shortcut(("Undo"), "U")
       Picture = Picture["icon:/small/undo"]
     }
+    { btnReset Button
+      MoveScaled(36,0,16,4)
+      Text = Shortcut(("Reset"), "R")
+      Picture = Picture["icon:/small/refresh"]
+    }
     { btnClose Button
-      MoveScaled(73,0,16,4)
+      MoveScaled(53,0,16,4)
       Text = Shortcut(("Close"), "C")
       Default = True
       Cancel = True

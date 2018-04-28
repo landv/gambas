@@ -32,7 +32,7 @@ Private Sub RefreshTable()
   
     tvwShortcut[iInd, 0].Text = hAction.Display
     tvwShortcut[iInd, 0].Padding = 4
-    hIcon = hAction.Icon
+    hIcon = hAction.GetConfigIcon(Desktop.Scale * 2)
     If Not hIcon Then hIcon = $hVoid
     tvwShortcut[iInd, 0].Picture = hIcon
     tvwShortcut[iInd, 1].Text = hAction.Shortcut
@@ -150,7 +150,7 @@ Public Sub btnFind_KeyPress()
   Dim iRow As Integer
 
   If btnFind.Value Then
-    sShortcut = MAction.FindShortcut()
+    sShortcut = Shortcut.FromKey() 'MAction.FindShortcut()
     If sShortcut Then
       For iRow = 0 To tvwShortcut.Rows.Count - 1
         If tvwShortcut[iRow, 1].Text = sShortcut Then

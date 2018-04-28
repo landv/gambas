@@ -262,7 +262,7 @@ Public Sub Print(sText As String)
     If sElt Then 
       
       If DEBUG_FILTER Then
-        Debug Quote(sElt)
+        Error Quote(sElt)
         DebugRefresh
       Endif
       
@@ -276,7 +276,7 @@ Public Sub Print(sText As String)
     iCode = Asc(sText, iLen + 1)
     
     If DEBUG_FILTER Then
-      Debug "^" & Chr$(64 + iCode)
+      Error "^" & Chr$(64 + iCode)
       DebugRefresh
     Endif
     
@@ -531,7 +531,7 @@ Public Sub EraseStartOfLine()
   If hLine.Length <= $X Then
     hLine.Clear()
   Else
-    hLine.Text = Space$($X + 1) & String.Mid$(hLine.Text, $X + 1)
+    hLine.Text = Space$($X + 1) & String.Mid$(hLine.Text, $X + 2)
   Endif
   GetView()._RefreshLine($Y)
   
@@ -1168,7 +1168,7 @@ End
 Public Sub DebugRefresh()
   
   If DEBUG_FILTER Then
-    Return
+    If GetView()._DisableFilter Then Return
     GetView().Refresh
     Inc GetView()._DisableFilter
     Wait
