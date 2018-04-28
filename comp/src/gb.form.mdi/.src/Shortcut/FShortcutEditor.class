@@ -41,7 +41,7 @@ Public Sub Form_KeyPress()
   Dim sShortcut As String
   
   If Not FShortcut.HandleKey() Then 
-    sShortcut = MAction.FindShortcut()
+    sShortcut = Shortcut.FromKey() 'MAction.FindShortcut()
     If sShortcut Then 
       lblShortcut.Text = sShortcut
       CheckShortcut
