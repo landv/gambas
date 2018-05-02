@@ -419,7 +419,7 @@ Static Public Sub FormatDate({Date} As Date) As String
   Dim dDate As Date = {Date}
 
   If Not dDate Then dDate = Now
-  dDate -= Frac(Date(Now)) ' Go to GMT
+  dDate += System.TimeZone / 86400 ' go to UTC
 
   If Not $aDay Then 
     $aDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
