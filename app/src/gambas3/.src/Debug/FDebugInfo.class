@@ -1091,7 +1091,6 @@ End
 Public Sub RemoveAllBreakpoints()
   
   Dim aBreakPoint As String[]
-  Dim I As Integer
   
   aBreakpoint = Design.GetBreakpoints()
   While aBreakpoint.Count
