@@ -235,6 +235,8 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
   Dim sLang As String
   Dim sSave As String
   
+  If Project.Compile(True) Then Return
+  
   $sTitle = ("Publish project")
   $iProgress = PROGRESS_UPLOAD
   
