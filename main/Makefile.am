@@ -12,7 +12,7 @@ trunk_version.h:
 		fi \
 	elif test -d ../.git ; then \
 		GIT_BRANCH=`git rev-parse --abbrev-ref HEAD`; \
-		if test ../.git/refs/heads/$$GIT_BRANCH -nt trunk_version.h; then \
+		if test \! -e ../.git/refs/heads/$$GIT_BRANCH -o ../.git/refs/heads/$$GIT_BRANCH -nt trunk_version.h; then \
 			GIT_HASH=`git rev-parse --short HEAD`; \
 			echo '#define TRUNK_VERSION "'$$GIT_HASH' ('$$GIT_BRANCH')"' > trunk_version.h; \
 			echo '#define TRUNK_VERSION_GIT 1' >> trunk_version.h; \
