@@ -322,6 +322,18 @@ AC_DEFUN([GB_INIT],
     AC_DEFINE(HAVE_GCC_VISIBILITY, 1, [Whether gcc supports -fvisibility=hidden])
   fi
 
+  dnl ---- check for -flto compiler flag
+  
+  GB_CFLAGS_GCC_OPTION([-flto],,
+    [
+      GB_CFLAGS_LTO=" -flto"
+      have_gcc_lto=yes
+    ])
+  
+  if test "$have_gcc_lto" = "yes"; then
+    AC_DEFINE(HAVE_GCC_LTO, 1, [Whether gcc supports -flto])
+  fi
+  
   dnl ---- Debug flags
 
   if test "$gambas_debug" = "yes"; then
@@ -350,6 +362,7 @@ AC_DEFUN([GB_INIT],
   AC_SUBST(AM_CFLAGS_OPT)
   AC_SUBST(AM_CXXFLAGS)
   AC_SUBST(AM_CXXFLAGS_OPT)
+  AC_SUBST(GB_CFLAGS_LTO)
 
   rm -f DISABLED DISABLED.*
 ])
