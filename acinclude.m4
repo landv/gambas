@@ -330,9 +330,22 @@ AC_DEFUN([GB_INIT],
       have_gcc_lto=yes
     ])
   
+  AC_ARG_ENABLE(
+    lto,
+    [  --enable-lto                   enable link time optimization (default: no)],
+    gambas_lto=$enableval,
+    gambas_lto=no
+  )
+  
+  if test "$gambas_lto" = "no"; then
+    have_gcc_lto=no;
+    GB_CFLAGS_LTO="";
+  fi
+  
   if test "$have_gcc_lto" = "yes"; then
     AC_DEFINE(HAVE_GCC_LTO, 1, [Whether gcc supports -flto])
   fi
+  
   
   dnl ---- Debug flags
 
