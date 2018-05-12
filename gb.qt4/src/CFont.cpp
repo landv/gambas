@@ -133,7 +133,9 @@ static void set_font_from_string(CFONT *_object, QString &str)
 			if (flag == "BOLD")
 			{
 				f.setBold(true);
+#if QT_VERSION >= QT_VERSION_CHECK(4, 8, 0)
 				f.setStyleName("Bold");
+#endif
 			}
 			else if (flag == "ITALIC")
 				f.setItalic(true);
@@ -150,12 +152,14 @@ static void set_font_from_string(CFONT *_object, QString &str)
 				f.setPointSizeF(SIZE_VIRTUAL_TO_REAL(size));
 			else if (elt.length())
 			{
-				f.setStyleName("");
 				f.setBold(false);
 				f.setItalic(false);
 				f.setUnderline(false);
 				f.setStrikeOut(false);
 				f.setFamily(elt);
+#if QT_VERSION >= QT_VERSION_CHECK(4, 8, 0)
+				f.setStyleName("");
+#endif
 			}
 		}
 	}
