@@ -1429,7 +1429,11 @@ void gMainWindow::setUtility(bool v)
 	// TODO: works only if the window is not mapped!
 
 	_utility = v;
+#if GTK_CHECK_VERSION(2, 20, 0)
 	if (gtk_widget_get_mapped(border))
+#else
+    if (GTK_WIDGET_MAPPED(border))
+#endif
 	{
 		remap = true;
 		gtk_widget_unmap(border);
