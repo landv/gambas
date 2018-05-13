@@ -121,22 +121,11 @@ void Reader::DestroyReader()
     ClearReader();
 }
 
-static void addchars(TextNode *node, char car, size_t num)
-{
-    char *&textContent = node->content;
-    size_t &lenTextContent = node->lenContent;
-    textContent = (char*)realloc(textContent, lenTextContent + num);
-    for (unsigned int i = 0; i < num; ++i)
-        textContent[lenTextContent + i] = car;
-    lenTextContent += num;
-}
-
 int Reader::ReadChar(char car)
 {
     #define APPEND(elmt) if(curElmt == 0){}\
     else {XMLNode_appendChild(curElmt, elmt);}
 
-    
     ++(this->pos);
     
     if(waitClosingElmt)
@@ -146,26 +135,6 @@ int Reader::ReadChar(char car)
         depth--;
 //        this->state = READ_END_CUR_ELEMENT;
         return 0;
-    }
-    
-    /* [T. Boege, 02 Apr 2017]: Reset specialTagLevel, which tries to recognise a sequence
-     *   of characters, when this sequence is interrupted, so that e.g. <![CDATA[ab]x]>
-     *   does *not* finish the CDATA tag at ]x]>. We want a literal ]]>. */
-    if (inCDATA)
-    {
-        if (specialTagLevel > CDATA_TAG_STARTCHAR_8 && car != ']' && car != '>')
-        {
-            addchars((TextNode *) curNode, ']', specialTagLevel - CDATA_TAG_STARTCHAR_8);
-            specialTagLevel = CDATA_TAG_STARTCHAR_8;
-        }
-    }
-    if (inComment)
-    {
-        if (specialTagLevel > COMMENT_TAG_STARTCHAR_3 && car != '-' && car != '-')
-        {
-            addchars((TextNode *) curNode, '-', specialTagLevel - COMMENT_TAG_STARTCHAR_3);
-            specialTagLevel = COMMENT_TAG_STARTCHAR_3;
-        }
     }
 
     if(car == '<' && !inComment && !inCDATA)//Début de tag
@@ -504,13 +473,25 @@ int Reader::ReadChar(char car)
         
         else if(XML_isTextNode(curNode))
         {
-            char *&textContent = ((TextNode*)curNode)->content;
-            size_t &lenTextContent = ((TextNode*)curNode)->lenContent;
-            textContent = (char*)realloc(textContent, lenTextContent + 1);
-            textContent[lenTextContent] = car;
-            ++lenTextContent;
-            if(curNode->type == Node::Comment) specialTagLevel = COMMENT_TAG_STARTCHAR_3; //En cas de "-" non significatifs
-            else if(inXMLProlog) specialTagLevel = 0;//En cas de "?" non significatifs
+            if(curNode->type == Node::Comment) { //In case of extra "-"
+                switch (specialTagLevel) {
+                case COMMENT_TAG_ENDCHAR_1: XMLTextNode_appendTextContent((TextNode*)curNode, "-", 1); break;
+                case COMMENT_TAG_ENDCHAR_2: XMLTextNode_appendTextContent((TextNode*)curNode, "--", 2); break;
+                default: break;
+                }
+                specialTagLevel = COMMENT_TAG_STARTCHAR_3;
+            }
+            else if(curNode->type == Node::CDATA) {//In case of exra CDATA chars
+                switch (specialTagLevel) {
+                case CDATA_TAG_ENDCHAR_1: XMLTextNode_appendTextContent((TextNode*)curNode, "]", 1); break;
+                case CDATA_TAG_ENDCHAR_2: XMLTextNode_appendTextContent((TextNode*)curNode, "]]", 2); break;
+                default: break;
+                }
+                specialTagLevel = CDATA_TAG_STARTCHAR_8;
+            }
+            else if(inXMLProlog) specialTagLevel = 0;//In case of extra "?"
+
+            XMLTextNode_appendTextContent((TextNode*)curNode, &car, 1);
         }
     }
 

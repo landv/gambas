@@ -126,6 +126,7 @@ void XMLDocument_SetContent(Document *doc, const char *content, const size_t len
     {
         //On cherche le début du prologue XML
         posStart = (char*)memchrs(content, len, "<!DOCTYPE ", 10);
+        if(!posStart) posStart = (char*)memchrs(content, len, "<!doctype ", 10);
 
         //On cherche la fin du prologue XML
         if(posStart)

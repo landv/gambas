@@ -310,6 +310,7 @@ void addTextContentLen(Node *node, size_t &len)
         }
         break;
     case Node::NodeText:
+    case Node::Comment:
     case Node::CDATA:
         XMLTextNode_checkContent((TextNode*)node);
         len += ((TextNode*)node)->lenContent;
@@ -335,6 +336,7 @@ void addTextContent(Node *node, char *&data)
         }
         break;
     case Node::NodeText:
+    case Node::Comment:
     case Node::CDATA:
         memcpy(data, ((TextNode*)node)->content, ((TextNode*)node)->lenContent);
         data += ((TextNode*)node)->lenContent;
