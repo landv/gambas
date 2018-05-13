@@ -32,6 +32,7 @@ TextNode* XMLTextNode_New();
 TextNode* XMLTextNode_New(const char *ncontent, const size_t nlen);
 void XMLTextNode_Free(TextNode *node);
 
+void XMLTextNode_appendTextContent(TextNode *node, const char *content, const size_t len);
 void XMLTextNode_checkEscapedContent(TextNode *node);
 void XMLTextNode_checkContent(TextNode *node);
 void XMLTextNode_setEscapedTextContent(TextNode *node, const char *ncontent, const size_t nlen);

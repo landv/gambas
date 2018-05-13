@@ -115,6 +115,8 @@ else
 
 if(attr == 0) {GB.StopEnum(); THIS->curAttrEnum = 0; (THIS->depth)--; return;}
 
+THIS->curAttrEnum = attr;
+
 if((attr->attrValue && attr->lenAttrValue))
 {
         GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
@@ -123,10 +125,6 @@ else
 {
     GB.ReturnNewZeroString(0);
 }
-
-
-THIS->curAttrEnum = attr;
-
 
 END_METHOD
 

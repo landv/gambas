@@ -280,6 +280,14 @@ void XMLTextNode_setTextContent(TextNode *node, const char *ncontent, const size
     node->content[node->lenContent] = 0;
 }
 
+void XMLTextNode_appendTextContent(TextNode *node, const char *content, const size_t len)
+{
+    size_t newLen = node->lenContent + len;
+    node->content = (char*)realloc(node->content, newLen);
+    memcpy(node->content + node->lenContent, content, len);
+    node->lenContent = newLen;
+}
+
 /*************************************** Comment ***************************************/
 
 CommentNode* XMLComment_New()
