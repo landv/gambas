@@ -740,17 +740,18 @@ Private Sub FillWithFiles(sWord As String)
     sDir = Left(sDir, iPos)
     If Not IsDir(sDir) Then Return
     
-    aDir = Dir(sDir, "*").Sort(gb.IgnoreCase + gb.Natural)
-  
-    For Each sName In aDir
-      If bProject Then
-        If sName Ends "~" Then Continue
-      Endif
-      hPict = Desktop.GetFileIcon(sDir &/ sName, 16, True)
-      If Not hPict Then hPict = hPictFile
-      AddRow(CStr(MHelp.TYPE_FILE) & sName, sName, If(IsDir(sDir &/ sName), hPictDir, hPict))
-      $iMaxLen = Max($iMaxLen, String.Len(sName))
-    Next
+    Try aDir = Dir(sDir, "*").Sort(gb.IgnoreCase + gb.Natural)
+    If Not Error Then
+      For Each sName In aDir
+        If bProject Then
+          If sName Ends "~" Then Continue
+        Endif
+        hPict = Desktop.GetFileIcon(sDir &/ sName, 16, True)
+        If Not hPict Then hPict = hPictFile
+        AddRow(CStr(MHelp.TYPE_FILE) & sName, sName, If(IsDir(sDir &/ sName), hPictDir, hPict))
+        $iMaxLen = Max($iMaxLen, String.Len(sName))
+      Next
+    Endif
   
   Endif
   
