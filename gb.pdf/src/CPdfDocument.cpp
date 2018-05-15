@@ -99,7 +99,7 @@ END_PROPERTY
 
 ****************************************************************************/
 
-static void return_unicode_string(Unicode *unicode, int len)
+static void return_unicode_string(const Unicode *unicode, int len)
 {
 	static UnicodeMap *uMap = NULL;
 	
@@ -128,7 +128,7 @@ static void aux_return_string_info(void *_object, const char *key)
 {
 	Object obj;
 	Object dst;
-	GooString *goo_value;
+	const GooString *goo_value;
 	Dict *info_dict;
 	char *tmpstr;
 
@@ -170,7 +170,7 @@ static void aux_return_date_info(void *_object, const char *key)
 	GB_DATE ret;
 	Object obj;
 	Object dst;
-	GooString *goo;
+	const GooString *goo;
 	Dict *info_dict;
 	char *datestr=NULL,*tofree=NULL;
 	int nnum;
@@ -221,7 +221,7 @@ static void aux_return_date_info(void *_object, const char *key)
 	#endif
 }
 
-static LinkDest *get_dest(LinkAction *act)
+static const LinkDest *get_dest(const LinkAction *act)
 {
 	if (!act)
 		return 0;
@@ -234,12 +234,12 @@ static LinkDest *get_dest(LinkAction *act)
 	}
 }
 
-static uint32_t aux_get_page_from_action(void *_object, LinkAction *act)
+static uint32_t aux_get_page_from_action(void *_object, const LinkAction *act)
 {
 	Ref pref;       
-	LinkDest *dest = get_dest(act);
+	const LinkDest *dest = get_dest(act);
 	#if POPPLER_VERSION_0_6
-	GooString *name;
+	const GooString *name;
 	#else
 	UGooString *name;
 	#endif
@@ -270,9 +270,9 @@ static uint32_t aux_get_page_from_action(void *_object, LinkAction *act)
 }
 
 
-static void aux_get_dimensions_from_action(LinkAction *act, CPDFRECT *rect)
+static void aux_get_dimensions_from_action(const LinkAction *act, CPDFRECT *rect)
 {
-	LinkDest *dest = get_dest(act);
+	const LinkDest *dest = get_dest(act);
 	if (!dest)
 		return;
 	
@@ -282,20 +282,20 @@ static void aux_get_dimensions_from_action(LinkAction *act, CPDFRECT *rect)
 	rect->h = dest->getBottom() - rect->y;
 }
 
-static double aux_get_zoom_from_action(LinkAction *act)
+static double aux_get_zoom_from_action(const LinkAction *act)
 {
-	LinkDest *dest = get_dest(act);
+	const LinkDest *dest = get_dest(act);
 	if (dest)
 		return dest->getZoom();
 	else
 		return 1;
 }
 
-static char* aux_get_target_from_action(LinkAction *act)
+static char* aux_get_target_from_action(const LinkAction *act)
 {
 	char *vl=NULL;
 	char *uni=NULL;	
-	GooString *tmp=NULL;
+	const GooString *tmp=NULL;
 
 	switch (act->getKind())
 	{

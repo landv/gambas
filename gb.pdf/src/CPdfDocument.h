@@ -79,18 +79,18 @@ typedef
 		SplashOutputDev *dev;
 		Page *page;
 		uint currpage;
-			
-		void **pindex;       // Parent of current index entries
-		GooList *index;      // Current entries
-		uint currindex;      // Current entry
-		uint *oldindex;      // Parent entry
 
-		Links *links;        // Page bookmarks
-		uint lcurrent;       // Current bookmark
+		void **pindex;            // Parent of current index entries
+		const GooList *index;     // Current entries
+		uint currindex;           // Current entry
+		uint *oldindex;           // Parent entry
 
-		CPDFFIND *Found;    // Found text elements
+		Links *links;             // Page bookmarks
+		uint lcurrent;            // Current bookmark
 
-		LinkAction *action;  // Current link action 
+		CPDFFIND *Found;          // Found text elements
+
+		const LinkAction *action; // Current link action
 
 		double scale;
 		int rotation;
