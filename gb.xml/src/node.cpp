@@ -340,7 +340,7 @@ void XMLNode_addGBChildrenByAttributeValue(Node *node, const char *attrName, con
     for(Node *tNode = node->firstChild; tNode != 0; tNode = tNode->nextNode)
     {
         if(tNode->type != Node::ElementNode) continue;
-        Attribute *attr = XMLElement_GetAttribute((Element*)node, attrName, lenAttrName);
+        Attribute *attr = XMLElement_GetAttribute((Element*)tNode, attrName, lenAttrName);
         if(attr)
         {
             if(GB_MatchString(attr->attrValue, attr->lenAttrValue, attrValue, lenAttrValue, mode))
