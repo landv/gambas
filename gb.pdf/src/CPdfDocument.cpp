@@ -252,8 +252,15 @@ static uint32_t aux_get_page_from_action(void *_object, const LinkAction *act)
 		if (act->getKind () == actionGoTo)
 		{
 			name = ((LinkGoTo*)act)->getNamedDest();
-			if (name)
+			if (name) {
+			#if POPPLER_VERSION_0_64
 				dest = THIS->doc->findDest(name);
+			#elif POPPLER_VERSION_0_6
+				dest = THIS->doc->findDest((GooString *) name);
+			#else
+				dest = THIS->doc->findDest((UGooString *) name);
+			#endif
+			}
 		}
 	}
 

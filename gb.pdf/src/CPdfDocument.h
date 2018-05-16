@@ -81,7 +81,11 @@ typedef
 		uint currpage;
 
 		void **pindex;            // Parent of current index entries
+#if POPPLER_VERSION_0_64
 		const GooList *index;     // Current entries
+#else /* <= 0.64 */
+		GooList *index;           // Current entries
+#endif
 		uint currindex;           // Current entry
 		uint *oldindex;           // Parent entry
 
@@ -90,7 +94,11 @@ typedef
 
 		CPDFFIND *Found;          // Found text elements
 
+#if POPPLER_VERSION_0_64
 		const LinkAction *action; // Current link action
+#else /* <= 0.64 */
+		LinkAction *action;       // Current link action
+#endif
 
 		double scale;
 		int rotation;
