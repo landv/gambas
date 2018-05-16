@@ -1041,6 +1041,7 @@ Public Function CanSetBreakpoint(iLine As Integer) As Boolean
   Dim sLine As String
   Dim iPos As Integer
 
+  If Project.IsFake() Then Return
   If iLine < 0 Or If iLine >= $hEditor.Count Then Return
 
   '$hEditor[iLine].Refresh
@@ -1082,6 +1083,7 @@ Public Sub CheckBreakpoints()
 
   Dim iLine As Integer
 
+  If Project.IsFake() Then Return
   For Each iLine In $hEditor.Breakpoints
     If Not CanSetBreakpoint(iLine) Then SetBreakpoint(iLine, False, False)
   Next
@@ -3350,6 +3352,7 @@ End
 
 Public Sub mnuBreakpoint_Click()
 
+  If Not CanSetBreakpoint($hEditor.Line) Then Return
   Design.SetBreakpoint(Me.Name & "." & CStr($hEditor.Line), Not HasBreakpoint($hEditor.Line))
 
 End
