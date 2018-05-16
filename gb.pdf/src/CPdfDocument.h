@@ -32,6 +32,16 @@
 #include <goo/GooList.h>
 #include <stdint.h>
 
+#if POPPLER_VERSION_0_64
+#define const_LinkAction const LinkAction
+#define const_LinkDest const LinkDest
+#define const_GooList const GooList
+#else
+#define const_LinkAction LinkAction
+#define const_LinkDest LinkDest
+#define const_GooList GooList
+#endif
+
 #ifndef __CPDFDOCUMENT_C
 
 extern GB_DESC PdfRectDesc[];
@@ -81,11 +91,8 @@ typedef
 		uint currpage;
 
 		void **pindex;            // Parent of current index entries
-#if POPPLER_VERSION_0_64
-		const GooList *index;     // Current entries
-#else /* <= 0.64 */
-		GooList *index;           // Current entries
-#endif
+		const_GooList *index;     // Current entries
+		
 		uint currindex;           // Current entry
 		uint *oldindex;           // Parent entry
 
@@ -94,11 +101,7 @@ typedef
 
 		CPDFFIND *Found;          // Found text elements
 
-#if POPPLER_VERSION_0_64
-		const LinkAction *action; // Current link action
-#else /* <= 0.64 */
-		LinkAction *action;       // Current link action
-#endif
+		const_LinkAction *action; // Current link action
 
 		double scale;
 		int rotation;

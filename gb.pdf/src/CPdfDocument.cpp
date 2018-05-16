@@ -48,14 +48,6 @@
 #include <UnicodeMap.h>
 
 
-#if POPPLER_VERSION_0_64
-#define const_LinkAction const LinkAction
-#define const_LinkDest const LinkDest
-#else
-#define const_LinkAction LinkAction
-#define const_LinkDest LinkDest
-#endif
-
 /***************************************************************************/
 
 static CPDFRECT *create_rect(void)
