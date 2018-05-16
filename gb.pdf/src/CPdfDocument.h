@@ -32,6 +32,18 @@
 #include <goo/GooList.h>
 #include <stdint.h>
 
+#if POPPLER_VERSION_0_64
+#define const_LinkAction const LinkAction
+#define const_LinkDest const LinkDest
+#define const_GooList const GooList
+#define const_GooString const GooString
+#else
+#define const_LinkAction LinkAction
+#define const_LinkDest LinkDest
+#define const_GooList GooList
+#define const_GooString GooString
+#endif
+
 #ifndef __CPDFDOCUMENT_C
 
 extern GB_DESC PdfRectDesc[];
@@ -79,18 +91,19 @@ typedef
 		SplashOutputDev *dev;
 		Page *page;
 		uint currpage;
-			
-		void **pindex;       // Parent of current index entries
-		GooList *index;      // Current entries
-		uint currindex;      // Current entry
-		uint *oldindex;      // Parent entry
 
-		Links *links;        // Page bookmarks
-		uint lcurrent;       // Current bookmark
+		void **pindex;            // Parent of current index entries
+		const_GooList *index;     // Current entries
+		
+		uint currindex;           // Current entry
+		uint *oldindex;           // Parent entry
 
-		CPDFFIND *Found;    // Found text elements
+		Links *links;             // Page bookmarks
+		uint lcurrent;            // Current bookmark
 
-		LinkAction *action;  // Current link action 
+		CPDFFIND *Found;          // Found text elements
+
+		const_LinkAction *action; // Current link action
 
 		double scale;
 		int rotation;

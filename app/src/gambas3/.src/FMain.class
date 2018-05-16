@@ -146,6 +146,7 @@ Public Sub tvwProject_Activate()
   Dim sMime As String
   Dim hProgList As DesktopFile[]
   Dim hProcess As Process
+  Dim sKeyClass As String
   
   sKey = tvwProject.Key
   
@@ -153,8 +154,9 @@ Public Sub tvwProject_Activate()
     tvwProject[sKey].Expanded = True
     If CanEdit(sKey) Then
       If $bCtrl Then
-        If File.Ext(sKey) <> "module" Then
-          sKey = File.SetExt(sKey, "class")
+        If Project.IsSourcePath(sKey) And If File.Ext(sKey) <> "module" Then
+          sKeyClass = File.SetExt(sKey, "class")
+          If Project.IsSourcePath(sKeyClass) Then sKey = sKeyClass
         Endif
       Endif
       Project.OpenFile(sKey,,, True)

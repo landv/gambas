@@ -1371,6 +1371,8 @@ Public Sub InitEditorWithBreakpoints(hEditor As FEditor)
   Dim I As Integer
   Dim sPrefix As String
   
+  If Project.IsFake() Then Return
+  
   sPrefix = hEditor.Name & "."
   While I < $aBreakpoint.Count
     sBreakpoint = $aBreakpoint[I]
