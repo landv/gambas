@@ -48,6 +48,14 @@
 #include <UnicodeMap.h>
 
 
+#if POPPLER_VERSION_0_64
+#define const_LinkAction const LinkAction
+#define const_LinkDest const LinkDest
+#else
+#define const_LinkAction LinkAction
+#define const_LinkDest LinkDest
+#endif
+
 /***************************************************************************/
 
 static CPDFRECT *create_rect(void)
@@ -221,7 +229,7 @@ static void aux_return_date_info(void *_object, const char *key)
 	#endif
 }
 
-static const LinkDest *get_dest(const LinkAction *act)
+static const_LinkDest *get_dest(const_LinkAction *act)
 {
 	if (!act)
 		return 0;
@@ -234,10 +242,10 @@ static const LinkDest *get_dest(const LinkAction *act)
 	}
 }
 
-static uint32_t aux_get_page_from_action(void *_object, const LinkAction *act)
+static uint32_t aux_get_page_from_action(void *_object, const_LinkAction *act)
 {
 	Ref pref;       
-	const LinkDest *dest = get_dest(act);
+	const_LinkDest *dest = get_dest(act);
 	#if POPPLER_VERSION_0_6
 	const GooString *name;
 	#else
@@ -277,9 +285,9 @@ static uint32_t aux_get_page_from_action(void *_object, const LinkAction *act)
 }
 
 
-static void aux_get_dimensions_from_action(const LinkAction *act, CPDFRECT *rect)
+static void aux_get_dimensions_from_action(const_LinkAction *act, CPDFRECT *rect)
 {
-	const LinkDest *dest = get_dest(act);
+	const_LinkDest *dest = get_dest(act);
 	if (!dest)
 		return;
 	
@@ -289,16 +297,16 @@ static void aux_get_dimensions_from_action(const LinkAction *act, CPDFRECT *rect
 	rect->h = dest->getBottom() - rect->y;
 }
 
-static double aux_get_zoom_from_action(const LinkAction *act)
+static double aux_get_zoom_from_action(const_LinkAction *act)
 {
-	const LinkDest *dest = get_dest(act);
+	const_LinkDest *dest = get_dest(act);
 	if (dest)
 		return dest->getZoom();
 	else
 		return 1;
 }
 
-static char* aux_get_target_from_action(const LinkAction *act)
+static char* aux_get_target_from_action(const_LinkAction *act)
 {
 	char *vl=NULL;
 	char *uni=NULL;	
