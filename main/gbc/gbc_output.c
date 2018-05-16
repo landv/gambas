@@ -1151,10 +1151,8 @@ char *OUTPUT_get_file(const char *file)
 {
 	char *output;
 	char *p;
-	//char *dir;
 	char *name;
 
-	//dir = STR_copy(FILE_get_dir(file));
 	name = STR_copy(FILE_get_name(file));
 
 	for (p = name; *p; p++)

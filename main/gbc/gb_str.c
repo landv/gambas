@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <stdarg.h>
+#include <ctype.h>
 
 #include "gb_common.h"
 #include "gb_error.h"
@@ -94,6 +95,37 @@ char *STR_cat(const char *str, ...)
   va_end(args);
   
   return cpy;
+}
+
+char *STR_upper(const char *str)
+{
+	char *s;
+	char *p;
+	
+	p = s = STR_copy(str);
+	while (*p)
+	{
+		*p = toupper(*p);
+		p++;
+	}
+	
+	return s;
+}
+
+
+char *STR_lower(const char *str)
+{
+	char *s;
+	char *p;
+	
+	p = s = STR_copy(str);
+	while (*p)
+	{
+		*p = tolower(*p);
+		p++;
+	}
+	
+	return s;
 }
 
 

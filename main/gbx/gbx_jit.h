@@ -31,7 +31,7 @@
 #include "gbx_object.h"
 #include "gbx_exec.h"
 
-#include "../../gb.jit/src/gb.jit.h"
+#include "../../gb.jit.llvm/src/gb.jit.h"
 
 #ifndef __GBX_JIT_C
 

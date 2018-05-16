@@ -688,7 +688,9 @@ static bool header_function(TRANS_FUNC *func)
 	if (is_static) TYPE_set_flag(&func->type, TF_STATIC);
 	if (is_public) TYPE_set_flag(&func->type, TF_PUBLIC);
 	
-	func->fast = is_fast;
+	func->fast = is_fast || JOB->class->all_fast;
+	if (func->fast)
+		JOB->class->has_fast = TRUE;
 
 	// Check special methods
 
@@ -887,7 +889,6 @@ static bool header_option(void)
 	{
 		JOB->current++;
 		JOB->class->all_fast = TRUE;
-		
 		return TRUE;
 	}
 

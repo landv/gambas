@@ -202,7 +202,8 @@ typedef
 		unsigned nocreate : 1;         // class cannot be instantiated
 		unsigned all_fast : 1;         // all methods have the Fast option (JIT)
 		unsigned has_static : 1;       // has static methods, properties or variables
-		unsigned _reserved : 10;
+		unsigned has_fast : 1;         // has at least one fast method
+		unsigned _reserved : 9;
 		VARIABLE *stat;                // static variables
 		VARIABLE *dyn;                 // dynamic variables
 		CONSTANT *constant;            // constants
