@@ -128,7 +128,7 @@ static void aux_return_string_info(void *_object, const char *key)
 {
 	Object obj;
 	Object dst;
-	const GooString *goo_value;
+	const_GooString *goo_value;
 	Dict *info_dict;
 	char *tmpstr;
 
@@ -170,7 +170,7 @@ static void aux_return_date_info(void *_object, const char *key)
 	GB_DATE ret;
 	Object obj;
 	Object dst;
-	const GooString *goo;
+	const_GooString *goo;
 	Dict *info_dict;
 	char *datestr=NULL,*tofree=NULL;
 	int nnum;
@@ -239,7 +239,7 @@ static uint32_t aux_get_page_from_action(void *_object, const_LinkAction *act)
 	Ref pref;       
 	const_LinkDest *dest = get_dest(act);
 	#if POPPLER_VERSION_0_6
-	const GooString *name;
+	const_GooString *name;
 	#else
 	UGooString *name;
 	#endif
@@ -302,7 +302,7 @@ static char* aux_get_target_from_action(const_LinkAction *act)
 {
 	char *vl=NULL;
 	char *uni=NULL;	
-	const GooString *tmp=NULL;
+	const_GooString *tmp=NULL;
 
 	switch (act->getKind())
 	{
