@@ -1,0 +1,111 @@
+' Gambas module file
+
+Public Sub Main()
+    Dim hPrinter As TapPrinter
+
+    Dim hStream As Stream
+    Dim hParser As TapParser
+    Dim sTap As String = ""
+"ok - created Board\n"
+"ok\n"
+"ok\n"
+"ok\n"
+"ok\n"
+"ok\n"
+"ok\n"
+"ok\n"
+"not ok - gladly it's todo # TODO test\n"
+"# +------+------+------+------+\n"
+"# |      |16G   |      |05C   |\n"
+"# |      |G N C |      |C C G |\n"
+"# |      |  G   |      |  C  +|\n"
+"# +------+------+------+------+\n"
+"# |10C   |01G   |      |03C   |\n"
+"# |R N G |G A G |      |C C C |\n"
+"# |  R   |  G   |      |  C  +|\n"
+"# +------+------+------+------+\n"
+"# |      |01G   |17C   |00C   |\n"
+"# |      |G A G |G N R |R N R |\n"
+"# |      |  G   |  R   |  G   |\n"
+"# +------+------+------+------+\n"
+"ok - board has 7 tiles + starter tile\n"
+"1..9"
+
+    hStream = Open String sTap For Read
+    hParser = New TapParser(hStream) As "Parser"
+    hParser.Parse()
+    Close #hStream
+
+    Print String$(50, "-")
+
+    hStream = Open String For Write
+    hPrinter = New TapPrinter(4, "", hStream)
+    hPrinter.Test(12 = 12)
+    hPrinter.Test(True,, "True is true")
+    hPrinter.Test(False,, "False is true", Tap.SKIP, "This is impossible")
+    hPrinter.Diagnostic("Omitting a test intentionally")
+    hPrinter.Finish()
+    sTap = Close #hStream
+    Print sTap
+
+    Print String$(50, "-")
+
+    hStream = Open String sTap For Read
+    hParser = New TapParser(hStream) As "Parser"
+    hParser.Parse()
+    Close #hStream
+End
+
+Public Sub Parser_Ok(TestNr As Integer, Description As String)
+
+    Debug "OK("; TestNr; ")";; Description
+
+End
+
+Public Sub Parser_NotOk(TestNr As Integer, Description As String)
+
+    Debug "NOTOK("; TestNr; ")";; Description
+
+End
+
+Public Sub Parser_Todo(TestNr As Integer, Comment As String)
+
+    Debug "TODO("; TestNr; ")";; Comment
+
+End
+
+Public Sub Parser_Skip(TestNr As Integer, Comment As String)
+
+    Debug "SKIP("; TestNr; ")";; Comment
+
+End
+
+Public Sub Parser_Version(Version As Integer)
+
+    Debug "TAP version";; Version
+
+End
+
+Public Sub Parser_Plan(Start As Integer, {End} As Integer)
+
+    Debug "PLAN";; Start; ".."; {End}
+
+End
+
+Public Sub Parser_BailOut(Comment As String)
+
+    Debug "BAIL";; Comment
+
+End
+
+Public Sub Parser_Diagnostic(Comment As String)
+
+    Debug "DIAG";; Comment
+
+End
+
+Public Sub Parser_Else({Line} As String)
+
+    Debug "ELSE";; {Line}
+
+End

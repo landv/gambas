@@ -1,0 +1,65 @@
+' Gambas class file
+
+'' Name of this class has to start with d8e8 to signal that its an internal test
+Inherits UnitTest
+
+Public Const constDegUnittestSelftest As Boolean = True
+
+Public Sub SetupContainer()
+
+    If Me.Debug Then
+        Print "Setup Container"
+    Endif
+
+End
+
+Public Sub TeardownContainer()
+
+    If Me.Debug Then
+        Print "GuTestExample2::Teardown Container"
+    Endif
+
+End
+
+Public Sub SetupEach()
+
+    If Me.Debug Then
+        Print "GuTestExample2::Setup Each"
+    Endif
+
+End
+
+Public Sub TeardownEach()
+
+    If Me.Debug Then
+        Print "GuTestExample2::Teardown Each"
+    Endif
+
+End
+
+Public Sub TestFirstTest()
+
+    If Me.Debug Then
+        Print "GuTestExample2::Test First Test"
+    Endif
+    Me.Result.AssertEmpty("", "Empty")
+
+End
+
+Public Sub TestThirdTest()
+
+    If Me.Debug Then
+        Print "GuTestExample2::Test Third Test"
+    Endif
+    Me.Result.AssertEqualsLong(200, 200)
+
+End
+
+' Public Sub TestSecondTest()
+'
+'     If Me.Debug Then
+'         Print "GuTestExample2::Test Second Test"
+'     Endif
+'     Me.Result.AddTrace("GuTestExample2::Test Second Test Intentional Tracemessage")
+'
+' End

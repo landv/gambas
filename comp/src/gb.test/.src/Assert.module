@@ -1,0 +1,124 @@
+' Gambas module file
+
+''' Assertions which print TAP.
+
+Export
+
+Struct Directive
+    Directive As Integer
+    Comment As String
+End Struct
+
+Private $hPrinter As New TapPrinter
+Private $aDirectives As Directive[]
+
+Public Sub Setup(Optional Tests As Integer, Optional Comment As String, Optional {Output} As Stream = File.Out)
+
+    $hPrinter = New TapPrinter(Tests, Comment, {Output})
+
+End
+
+Public Sub Plan(Tests As Integer, Optional Comment As String)
+
+    $hPrinter.Plan(Tests, Comment)
+
+End
+
+Public Sub Finish()
+
+    $hPrinter.Finish()
+
+End
+
+Public Sub Ok(Result As Boolean, Optional Description As String)
+
+    Dim hDir As Directive
+
+    If $aDirectives.Count Then
+        hDir = $aDirectives.Pop()
+        $hPrinter.Test(Result,, Description, hDir.Directive, hDir.Comment)
+    Else
+        $hPrinter.Test(Result,, Description)
+    Endif
+
+End
+
+Public Sub Todo(Optional Comment As String)
+
+    Dim hDir As New Directive
+    hDir.Directive = Tap.TODO
+    hDir.Comment = Comment
+    $aDirectives.Push(hDir)
+
+End
+
+Public Sub Skip(Optional Comment As String)
+
+    Dim hDir As New Directive
+    hDir.Directive = Tap.SKIP
+    hDir.Comment = Comment
+    $aDirectives.Push(hDir)
+
+End
+
+Public Sub Diagnostic(Comment As String)
+
+    $hPrinter.Diagnostic(Comment)
+
+End
+
+Public Sub Print({Line} As String)
+
+    $hPrinter.Print({Line})
+
+End
+
+' -------------------- High-level test functions --------------------
+
+Public Sub NotOk(Result As Boolean, Optional Description As String)
+
+    Ok(Not Result, Description)
+
+End
+
+Public Sub Equals(Got As Variant, Expected As Variant, Description As String)
+
+    Ok(Got = Expected, Description)
+
+End
+
+Public Sub Approximate(Got As Float, Expected As Float, Precision As Float, Description As String)
+
+    Ok(Abs(Got - Expected) <= Precision, Description)
+
+End
+
+Public Sub RelativeApproximate(Got As Float, Expected As Float, RelPrecision As Float, Description As String)
+
+    Ok(Abs((Got - Expected) / Expected) <= RelPrecision, Description)
+
+End
+
+Public Sub IsType(Got As Variant, Type As Integer, Description As String)
+
+    Ok(TypeOf(Got) = Type, Description)
+
+End
+
+Public Sub Like(Got As String, Pattern As String, Description As String)
+
+    Ok(Got Like Pattern, Description)
+
+End
+
+Public Sub Match(Got As String, Pattern As String, Description)
+
+    Ok(Got Match Pattern, Description)
+
+End
+
+' Public Sub IsDeeply()
+'     
+'     
+'     
+' End

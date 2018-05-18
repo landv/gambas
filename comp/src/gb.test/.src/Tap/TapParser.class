@@ -1,0 +1,174 @@
+' Gambas class file
+
+''' Low-level parser for Test Anything Protocol ([TAP]) output.
+''' It can only be used for one test process.
+''' 
+''' [TAP]: http://testanything.org/tap-specification.html
+
+Export
+
+Event Version(Version As Integer)
+
+Event Plan(Start As Integer, {End} As Integer)
+
+Event Ok(TestNr As Integer, Description As String)
+Event NotOk(TestNr As Integer, Description As String)
+Event Todo(TestNr As Integer, Comment As String)
+Event Skip(TestNr As Integer, Comment As String)
+
+Event BailOut(Comment As String)
+Event Diagnostic(Comment As String)
+Event Else({Line} As String)
+
+Private $hTapStream As Stream
+
+Private $iTestsRun As Integer = 0
+
+Public Sub _new(TapStream As Stream)
+
+    $hTapStream = TapStream
+
+End
+
+Public Sub Parse()
+
+    Dim sLine As String
+    Dim iLine As Integer = 0
+    Dim iVersion As Integer
+
+    Dim bResult As Boolean
+    Dim iTestNr As Integer
+    Dim sDescription As String
+    Dim iDirective As Integer
+    Dim sComment As String
+
+    For Each sLine In $hTapStream.Lines
+        If iLine = 0 And If sLine Begins "TAP version " Then
+            Try iVersion = CInt(Trim$(Mid$(sLine, 13)))
+            ' At present a "TAP version" line is always an error:
+            '   1. It might not be an integer, which is an error
+            '   2. A version lower than 13 is an error by the specification
+            '   3. We don't support version 13 or above.
+            If Error Then Error.Raise(Subst$(("Unrecognised TAP version '&1'"), Trim$(Mid$(sLine, 13))))
+            If iVersion < 13 Then Error.Raise(Subst$(("Illegal TAP version '&1'"), iVersion))
+            If iVersion > 12 Then Error.Raise(Subst$(("Unsupported TAP version &1"), iVersion))
+        Endif
+        If iLine = 0 Then Raise Version(12)
+
+        If sLine Match "\\d+..\\d+" Then
+            With Scan(sLine, "*..*")
+                If Not IsInteger(.[0]) Or If Not IsInteger(.[1]) Then Error.Raise(Subst$(("Couldn't extract test plan from '&1'"), sLine))
+                Raise Plan(CInt(.[0]), CInt(.[1]))
+            End With
+
+        Else If sLine Begins "ok" Or If sLine Begins "not ok" Then
+            bResult = ParseTest(sLine, ByRef iTestNr, ByRef sDescription, ByRef iDirective, ByRef sComment)
+            ' A single line may raise two events: Ok or NotOk, depending on the result
+            ' and Todo or Skip or none of the two depending on the directive.
+            ' Use the TestNr argument to link the two when counting tests for statistics.
+            If bResult Then
+                Raise Ok(iTestNr, sDescription)
+            Else
+                Raise NotOk(iTestNr, sDescription)
+            Endif
+
+            If iDirective = Tap.TODO Then
+                Raise Todo(iTestNr, sComment)
+            Else If iDirective = Tap.SKIP Then
+                Raise Skip(iTestNr, sComment)
+            Endif
+
+        Else If sLine Begins "Bail out!" Then
+            Raise BailOut(Trim$(Mid$(sLine, 10)))
+
+        Else If sLine Begins "#" Then
+            Raise Diagnostic(Trim$(Mid$(sLine, 2)))
+
+        Else
+            Raise Else(sLine)
+        Endif
+
+        Inc iLine
+    Next
+
+End
+
+    ' This pattern works in perl but not in gb.pcre... So doing it by hand below.
+    ' Dim rTest As RegExp
+    ' Try rTest = New RegExp(sLine, Replace$("(ok|not ok)WS(\\d+WS)?([^#]+WS)?(?:#\\s*((?i)TODO|SKIP(?-i))WS(.*)?)?", "WS", "(?:\\s+|$)"))
+    ' Inc $iTestsRun
+    ' Try TestNr = CInt(rTest[2].Text)
+    ' If Error Then TestNr = $iTestsRun
+    ' Description = rTest[3].Text
+    ' Directive = IIf(rTest[4].Text, IIf(Upper$(rTest[4].Text) = "TODO", Tap.TODO, Tap.SKIP), Tap.NONE)
+    ' Comment = rTest[5].Text
+    ' 
+    ' Return rTest[1].Text = "ok"
+
+Private Function ParseTest(sLine As String, ByRef TestNr As Integer, ByRef Description As String, ByRef Directive As Integer, ByRef Comment As String) As Boolean
+
+    Dim bResult As Boolean
+    Dim aWords As String[]
+    Dim sWord As String
+
+    ' Tidy up caller's local variables
+    TestNr = 0
+    Description = ""
+    Directive = Tap.NONE
+    Comment = ""
+
+    Inc $iTestsRun
+
+    ' "ok" or "not ok"
+    If sLine Begins "ok" Then
+        bResult = True
+        sLine = Trim$(Mid$(sLine, 3))
+    Else If sLine Begins "not ok"
+        bResult = False
+        sLine = Trim$(Mid$(sLine, 7))
+    Else
+        Error.Raise(Subst$(("Not a test line '&1'"), sLine))
+    Endif
+
+    ' Make sure that if a "#" occurs, it will be after a space
+    sLine = Replace$(sLine, "#", " #")
+    aWords = Split(sLine, " ", "", True).Reverse()
+
+    ' TestNr
+    Try sWord = aWords.Pop()
+    Try TestNr = CInt(sWord)
+    If Error Then
+        aWords.Push(sWord)
+        TestNr = $iTestsRun
+    Endif
+
+    ' Description
+    While aWords.Count
+        sWord = aWords.Pop()
+        If sWord Begins "#" Then Break
+        Description &= sWord & " "
+    Wend
+    Description = Trim$(Description)
+
+    ' Directive
+    If sWord Begins "#" Then
+        If sWord = "#" Then
+            Try sWord = aWords.Pop()
+            If Error Then Error.Raise(("Premature end of directive"))
+        Endif
+        Select Case Lower$(sWord)
+            Case "todo"
+                Directive = Tap.TODO
+            Case "skip"
+                Directive = Tap.SKIP
+            Default
+                Error.Raise(Subst$(("Invalid directive '&1'"), sWord))
+        End Select
+    Endif
+
+    ' Comment
+    Comment = Trim$(aWords.Reverse().Join(" "))
+
+    Return bResult
+
+End
