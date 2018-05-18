@@ -14,7 +14,7 @@ Private $iTestsRun As Integer = 0
 Private $iLast As Integer = 0
 
 Property {Output} As Stream
-Property Read Plan As Integer
+Property Read Planned As Integer
 Property Read Count As Integer
 Property Read Last As Integer
 
@@ -104,7 +104,7 @@ Private Sub Output_Write(Value As Stream)
 
 End
 
-Private Function Plan_Read() As Integer
+Private Function Planned_Read() As Integer
 
     Return $iPlan
 

@@ -4,13 +4,13 @@
 
 Export
 
-Struct Directive
+Public Struct Directive
     Directive As Integer
     Comment As String
 End Struct
 
 Private $hPrinter As New TapPrinter
-Private $aDirectives As Directive[]
+Private $aDirectives As New Directive[]
 
 Public Sub Setup(Optional Tests As Integer, Optional Comment As String, Optional {Output} As Stream = File.Out)
 
@@ -111,7 +111,7 @@ Public Sub Like(Got As String, Pattern As String, Description As String)
 
 End
 
-Public Sub Match(Got As String, Pattern As String, Description)
+Public Sub Match(Got As String, Pattern As String, Description As String)
 
     Ok(Got Match Pattern, Description)
 

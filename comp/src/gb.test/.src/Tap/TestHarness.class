@@ -44,6 +44,8 @@ Public Struct TestStats
 End Struct
 
 Property Read Tests As TestStats[]
+Property Read Current As TestStats
+
 Private $aTests As New TestStats[]
 Private $hCurrent As TestStats
 Private $bLastOk As Boolean
