@@ -62,7 +62,7 @@ Public Sub Run(Project As String, Test As String)
     Dim hParser As TapParser
 
     $hCurrent = New TestStats
-    ' TODO: Ask Benoit to give me Process.Out As Stream
+    ' TODO: Process Is Stream but what about error management when the TapParser tries to read from a crashed process?
     $hCurrent.Name = Test
     $hCurrent.Started = Now()
       Exec ["gbx3", "-s", Test, Project] To sOutput

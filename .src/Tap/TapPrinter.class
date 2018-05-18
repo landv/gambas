@@ -11,6 +11,12 @@ Private Const NO_PLAN As Integer = -1
 Private $hOutput As Stream
 Private $iPlan As Integer = NO_PLAN
 Private $iTestsRun As Integer = 0
+Private $iLast As Integer = 0
+
+Property {Output} As Stream
+Property Read Plan As Integer
+Property Read Count As Integer
+Property Read Last As Integer
 
 Public Sub _new(Optional Tests As Integer, Optional Comment As String, Optional {Output} As Stream = File.Out)
 
@@ -34,7 +40,8 @@ End
 Public Sub Finish()
 
     If $iPlan > NO_PLAN Then Return ' already printed the "plan" line
-    Print #$hOutput, "1.."; $iTestsRun
+    $iPlan = $iTestsRun
+    Print #$hOutput, "1.."; $iPlan
 
 End
 
@@ -55,6 +62,7 @@ Public Sub Test(Result As Boolean, Optional TestNr As Integer, Optional Descript
 
     Inc $iTestsRun
     If Not TestNr Then TestNr = $iTestsRun
+    $iLast = TestNr
     If Not IsMissing(Directive) Then
         ' Matches the values of the Enum Tap.Todo, Tap.Skip
         sDirective = Choose(Directive, "TODO", "SKIP")
@@ -75,5 +83,41 @@ End
 Public Sub Diagnostic(Comment As String)
 
     Print #$hOutput, "#";; Comment
+
+End
+
+Public Sub Print({Line} As String)
+
+    Print #$hOutput, {Line}
+
+End
+
+Private Function Output_Read() As Stream
+
+    Return $hOutput
+
+End
+
+Private Sub Output_Write(Value As Stream)
+
+    $hOutput = Value
+
+End
+
+Private Function Plan_Read() As Integer
+
+    Return $iPlan
+
+End
+
+Private Function Count_Read() As Integer
+
+    Return $iTestsRun
+
+End
+
+Private Function Last_Read() As Integer
+
+    Return $iLast
 
 End
