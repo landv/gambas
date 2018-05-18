@@ -87,6 +87,30 @@ Public Sub Equals(Got As Variant, Expected As Variant, Description As String)
 
 End
 
+Public Sub LessEqual(Got As Variant, Bound As Variant, Description As String)
+
+    Ok(Got <= Bound, Description)
+
+End
+
+Public Sub Less(Got As Variant, Bound As Variant, Description As String)
+
+    Ok(Got < Bound, Description)
+
+End
+
+Public Sub GreaterEqual(Got As Variant, Bound As Variant, Description As String)
+
+    NotOk(Less(Got, Bound), Description)
+
+End
+
+Public Sub Greater(Got As Variant, Bound As Variant, Description As String)
+
+    NotOk(LessEqual(Got, Bound), Description)
+
+End
+
 Public Sub Approximate(Got As Float, Expected As Float, Precision As Float, Description As String)
 
     Ok(Abs(Got - Expected) <= Precision, Description)
@@ -117,7 +141,7 @@ Public Sub Match(Got As String, Pattern As String, Description As String)
 
 End
 
-' Public Sub IsDeeply()
+' Public Sub EqualsDeeply()
 '     
 '     
 '     

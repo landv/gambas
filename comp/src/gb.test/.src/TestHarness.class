@@ -54,6 +54,7 @@ Public Sub RunAll(Project As String)
 
     ' TODO: How to reliably find all classes in a project that are unit tests? Conventions?
     Error.Raise(("NYI"))
+    ' Then iterate over tests, re-initialising the parser for every TAP stream.
 
 End
 
