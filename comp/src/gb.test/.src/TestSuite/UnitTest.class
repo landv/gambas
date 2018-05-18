@@ -246,7 +246,7 @@ Static Public Function GetAllTestContainerNames(Optional DoSelfTest As Boolean) 
 
     Return TestContainernames
 Catch
-    Message.Error(Error.Text)
+    Error Error.Text
 
 End
 
