@@ -26,13 +26,20 @@
 
 #include "gbc_class.h"
 
+// gbc_jit.c
+
 void JIT_begin(void);
 void JIT_end(void);
 void JIT_declare_func(FUNCTION *func);
-void JIT_begin_func(FUNCTION *func);
-void JIT_end_func(void);
+void JIT_translate_func(FUNCTION *func);
+
 void JIT_print(const char *str, ...);
 void JIT_section(const char *str);
+
+// gbc_jit_body.c
+
+void JIT_translate_body(FUNCTION *func);
+
 
 #endif
 

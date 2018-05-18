@@ -32,7 +32,7 @@ typedef
 		short value;
 		unsigned ignore : 1;
 		}
-	TRANS_PARAM;  /* must be the same as PARAM in class.h */
+	TRANS_PARAM;
 
 typedef
 	PATTERN TRANS_TREE;

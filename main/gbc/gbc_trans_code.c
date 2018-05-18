@@ -599,9 +599,6 @@ void TRANS_code(void)
 			continue;
 		}
 		
-		if (fast)
-			JIT_begin_func(_func);
-
 		create_local_from_param();
 
 		translate_body();
@@ -624,7 +621,7 @@ void TRANS_code(void)
 		remove_local();
 		
 		if (fast)
-			JIT_end_func();
+			JIT_translate_func(_func);
 	}
 
 	if (fast)
