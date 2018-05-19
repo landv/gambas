@@ -1,0 +1,105 @@
+' Gambas module file
+
+' TODO: These should be in external files.
+
+Private Const TAP_INPUT As String = ""
+"ok - created Board\n"
+"ok\n"
+"ok - message\n"
+"ok 17\n"
+"ok\n"
+"ok\n"
+"not ok - gladly it's todo # TODO test\n"
+"# +------+------+------+------+\n"
+"# |      |16G   |      |05C   |\n"
+"# |      |G N C |      |C C G |\n"
+"# |      |  G   |      |  C  +|\n"
+"# +------+------+------+------+\n"
+"# |10C   |01G   |      |03C   |\n"
+"# |R N G |G A G |      |C C C |\n"
+"# |  R   |  G   |      |  C  +|\n"
+"# +------+------+------+------+\n"
+"# |      |01G   |17C   |00C   |\n"
+"# |      |G A G |G N R |R N R |\n"
+"# |      |  G   |  R   |  G   |\n"
+"# +------+------+------+------+\n"
+"ok - board has 7 tiles + starter tile\n"
+"1..8"
+
+Private Const EXPECTED As String = ""
+"TAP version 12\n"
+"OK(1) - created Board\n"
+"OK(2) \n"
+"OK(3) - message\n"
+"OK(17) \n"
+"OK(5) \n"
+"OK(6) \n"
+"NOTOK(7) - gladly it's todo\n"
+"TODO(7) test\n"
+"DIAG +------+------+------+------+\n"
+"DIAG |      |16G   |      |05C   |\n"
+"DIAG |      |G N C |      |C C G |\n"
+"DIAG |      |  G   |      |  C  +|\n"
+"DIAG +------+------+------+------+\n"
+"DIAG |10C   |01G   |      |03C   |\n"
+"DIAG |R N G |G A G |      |C C C |\n"
+"DIAG |  R   |  G   |      |  C  +|\n"
+"DIAG +------+------+------+------+\n"
+"DIAG |      |01G   |17C   |00C   |\n"
+"DIAG |      |G A G |G N R |R N R |\n"
+"DIAG |      |  G   |  R   |  G   |\n"
+"DIAG +------+------+------+------+\n"
+"OK(8) - board has 7 tiles + starter tile\n"
+"PLAN(1,8)"
+
+Private $aEvents As New String[]
+
+Public Sub Main()
+    Dim hStream As Stream
+    Dim hParser As TapParser
+
+    Assert.Plan(1)
+
+    hStream = Open String TAP_INPUT For Read
+    hParser = New TapParser(hStream) As "Parser"
+    hParser.Parse()
+    Close #hStream
+
+    Assert.Equals($aEvents.Join("\n"), EXPECTED, "TAP Parser events")
+End
+
+Public Sub Parser_Ok(TestNr As Integer, Description As String)
+    $aEvents.Push(Subst$("OK(&1) &2", TestNr, Description))
+End
+
+Public Sub Parser_NotOk(TestNr As Integer, Description As String)
+    $aEvents.Push(Subst$("NOTOK(&1) &2", TestNr, Description))
+End
+
+Public Sub Parser_Todo(TestNr As Integer, Comment As String)
+    $aEvents.Push(Subst$("TODO(&1) &2", TestNr, Comment))
+End
+
+Public Sub Parser_Skip(TestNr As Integer, Comment As String)
+    $aEvents.Push(Subst$("SKIP(&1) &2", TestNr, Comment))
+End
+
+Public Sub Parser_Version(Version As Integer)
+    $aEvents.Push(Subst$("TAP version &1", Version))
+End
+
+Public Sub Parser_Plan(Start As Integer, {End} As Integer)
+    $aEvents.Push(Subst$("PLAN(&1,&2)", Start, {End}))
+End
+
+Public Sub Parser_BailOut(Comment As String)
+    $aEvents.Push(Subst$("BAIL &1", Comment))
+End
+
+Public Sub Parser_Diagnostic(Comment As String)
+    $aEvents.Push(Subst$("DIAG &1", Comment))
+End
+
+Public Sub Parser_Else({Line} As String)
+    $aEvents.Push(Subst$("ELSE &1", {Line}))
+End

@@ -2,6 +2,45 @@
 
 Public Sub Main()
 
-    
+    Dim hHarness As New TestHarness
+    Dim sClass As String
+    Dim iTest As Integer = 1
+    Dim sFail As String
+
+    Dim iGood, iBad As Integer = 0
+
+    ' TODO: Get a proper API from the interpreter(?) to list tests.
+    For Each sClass In Dir("./.src/SelfTest", "*.module")
+        hHarness.Run(Application.Path, File.BaseName(sClass))
+        With hHarness.Current
+            Print "Test #";; iTest; ":";; hHarness.Current.Name
+            Print "Planned tests:";; .Planned
+            Print "Exit code:    ";; .ExitCode
+            Print "Run tests:    ";; 1 + .Plan[1] - .Plan[0]
+            Print "Duration:     ";; DateDiff(.Started, .Ended, gb.Second); "s"
+            Print String$(20, "-")
+            Print "Passed tests: ";; .Passed
+            Print "Failed tests: ";; .Failed
+            Print "Skipped tests:";; .Skipped
+            Print "To-do tests:  ";; .Todo
+            Print "Bonus:        ";; .Bonus
+            For Each sFail In .Failures
+                Print "Failure:      ";; sFail
+            Next
+            Print "Status:       ";;
+            If .Success Then
+                Print "PASSED"
+                Inc iGood
+            Else
+                Print "FAILED"
+                Inc iBad
+            Endif
+        End With
+        Print String$(40, "*")
+        Inc iTest
+    Next
+
+    Print "Summary:"
+    Print "Good:";; iGood; ",";; "Bad:";; iBad
 
 End

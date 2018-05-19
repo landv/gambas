@@ -1,0 +1,24 @@
+' Gambas module file
+
+Public Sub Main()
+
+    Assert.Setup(10)
+
+    Assert.Ok(True, "True is ok")
+    Assert.NotOk(False, "False is not ok")
+
+    Assert.Equals(7 * 6, 42, "Multiplication")
+    Assert.Less(Timer, 10, "Gambas is sufficiently fast")
+    Assert.Approximate(0.555555, 0.555556, 1e-6, "Float absolute error")
+    Assert.Skip("Intentionally wrong")
+    Assert.RelativeApproximate(0.5555555, 0.5555565, 1e-6, "Float relative error")
+    Assert.RelativeApproximate(0.5555555, 0.5555565, 1e-5, "Float relative error")
+
+    Assert.IsType(CStr(42), gb.String, "CStr returns a String")
+
+    Assert.Like("test@gambas-basic.org", "*@*", "LIKE email address")
+    Assert.Match("test@gambas-basic.org", "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", "MATCH email address")
+    ' TODO: Do we need "Not" variants for all assertions...?
+    Assert.NotOk("???@gambas-basic.org" Match "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", "not MATCH email address")
+
+End

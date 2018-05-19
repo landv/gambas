@@ -67,6 +67,8 @@ Public Sub Run(Project As String, Test As String)
     $hCurrent = New TestStats
     ' TODO: Process Is Stream but what about error management when the TapParser tries to read from a crashed process?
     $hCurrent.Name = Test
+    $hCurrent.Plan = [1, 0]
+    $hCurrent.Failures = New String[]
     $hCurrent.Started = Now()
       Exec ["gbx3", "-s", Test, Project] To sOutput
     $hCurrent.Ended = Now()
@@ -75,6 +77,7 @@ Public Sub Run(Project As String, Test As String)
     hStream = Open String sOutput For Read
     ' FIXME: If a class inherits this, it can override/claim event handlers and our statistics aren't accurate.
     hParser = New TapParser(hStream) As "Parser"
+    hParser.Parse()
     Close #hStream
 
     ' Important: Do not replace the last condition with $hCurrent.Failed = 0.

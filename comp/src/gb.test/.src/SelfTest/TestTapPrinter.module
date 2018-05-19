@@ -1,0 +1,31 @@
+' Gambas module file
+
+' TODO: This should go into a file which is ignored when packaging the project.
+Private Const EXPECTED As String = ""
+"1..4\n"
+"# Testing TAP printer\n"
+"ok 1 - \n"
+"ok 2 - True is true\n"
+"not ok 3 - False is true # SKIP This is impossible\n"
+"# Omitting a test intentionally\n"
+
+Public Sub Main()
+    Dim hStream As Stream
+    Dim hPrinter As TapPrinter
+    Dim sTap As String
+
+    Assert.Plan(1)
+
+    hStream = Open String For Write
+    hPrinter = New TapPrinter(4, "", hStream)
+    hPrinter.Diagnostic("Testing TAP printer")
+    hPrinter.Test(12 = 12)
+    hPrinter.Test(True,, "True is true")
+    hPrinter.Test(False,, "False is true", Tap.SKIP, "This is impossible")
+    hPrinter.Diagnostic("Omitting a test intentionally")
+    hPrinter.Finish()
+    sTap = Close #hStream
+
+    Assert.Equals(sTap, EXPECTED, "TAP output")
+
+End
