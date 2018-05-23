@@ -473,7 +473,11 @@ void SUBR_read(ushort code)
 		}
 		else if (len > 0)
 		{
-			STRING_new_temp_value(RETURN, NULL, len);
+			RETURN->type = T_STRING;
+			RETURN->_string.addr = STRING_new(NULL, len);
+			RETURN->_string.start = 0;
+			RETURN->_string.len = len;
+			
 			STREAM_read(stream, RETURN->_string.addr, len);
 		}
 		else

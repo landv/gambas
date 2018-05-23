@@ -461,8 +461,7 @@ bool STRING_extend_will_realloc(char *str, int new_len)
 void STRING_new_temp_value(VALUE *value, const char *src, int len)
 {
 	value->_string.addr = STRING_new_temp(src, len);
-
-	value->_string.len = STRING_length(value->_string.addr);
+	value->_string.len = len; //STRING_length(value->_string.addr);
 	value->_string.start = 0;
 	value->type = T_STRING;
 }
