@@ -142,6 +142,29 @@ Public Sub Match(Got As String, Pattern As String, Description As String) As Boo
 
 End
 
+Public Sub StringEquals(Got As String, Expected As String, Description As String) As Boolean
+
+    Dim bRes As Boolean
+    Dim iPos As Integer
+
+    bRes = Equals(Got, Expected, Description)
+    If Not bRes Then
+        If Len(Got) <> Len(Expected) Then
+            Diagnostic("Strings are of different length.")
+            Diagnostic("  Got:      " & Len(Got))
+            Diagnostic("  Expected: " & Len(Expected))
+        Endif
+        For iPos = 1 To Min(Len(Got), Len(Expected))
+            If Mid$(Got, iPos, 1) <> Mid$(Expected, iPos, 1) Then Break
+        Next
+        Diagnostic("Strings differ at position " & iPos)
+        Diagnostic("  Got:      " & Quote$(Mid$(Got, iPos, 20)) & IIf(Len(Got) > iPos + 20, "...", ""))
+        Diagnostic("  Expected: " & Quote$(Mid$(Expected, iPos, 20)) & IIf(Len(Expected) > iPos + 20, "...", ""))
+    Endif
+    Return bRes
+
+End
+
 ' Public Sub EqualsDeeply()
 '     
 '     
