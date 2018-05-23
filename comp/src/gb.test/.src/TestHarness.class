@@ -41,6 +41,9 @@ Public Struct TestStats
 
     '' Descriptions of failed tests
     Failures As String[]
+
+    '' A copy of the TAP stream
+    Lines As String[]
 End Struct
 
 Property Read Tests As TestStats[]
@@ -71,6 +74,7 @@ Public Sub Run(Project As String, Test As String)
     $hCurrent.Name = Test
     $hCurrent.Plan = [1, 0]
     $hCurrent.Failures = New String[]
+    $hCurrent.Lines = New String[]
     $hCurrent.Started = Now()
         hProc = Exec ["gbx3", "-s", Test, Project] For Read As "TapStream"
         hProc.Wait()
@@ -96,6 +100,7 @@ Public Sub TapStream_Read()
 
     Dim sLine As String = Last.ReadLine()
 
+    $hCurrent.Lines.Add(sLine)
     $hParser.ParseLine(sLine)
 
 End
@@ -107,6 +112,7 @@ Public Sub TapStream_Error(Message As String)
     ' Inject stderr as diagnostic messages
     For Each sLine In Split(Message, "\n")
         sLine = "# " & sLine
+        $hCurrent.Lines.Add(sLine)
         $hParser.ParseLine(sLine)
     Next
 

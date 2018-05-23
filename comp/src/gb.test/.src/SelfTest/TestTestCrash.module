@@ -1,0 +1,25 @@
+' Gambas module file
+
+Private Const EXPECTED As String = ""
+"1..1\n"
+"# This is intended to fail\n"
+"# TestCrash.Main.7: Like this Debug statement, the division by zero error should be captured and converted to a diagnostic\n"
+"# TestCrash.Main.9: #26: Division by zero\n"
+"# TestCrash.Main.9 \n"
+"# "
+
+Public Sub Main()
+
+    Dim hHarness As New TestHarness
+
+    Assert.Setup(6)
+    hHarness.Run(Application.Path, "TestCrash")
+    With hHarness.Current
+        Assert.Equals(.ExitCode, 1, "exit code")
+        Assert.Equals(.Planned, 1, "planned 1 test")
+        Assert.Equals(.Delta, 1, "none run")
+        Assert.Equals(.Passed, 0, "none passed")
+        Assert.Equals(.Failed, 0, "none failed")
+        Assert.StringEquals(.Lines.Join("\n"), EXPECTED, "complete diagnostics")
+    End With
+End

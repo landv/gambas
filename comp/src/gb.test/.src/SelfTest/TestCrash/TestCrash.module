@@ -1,0 +1,11 @@
+' Gambas module file
+
+Public Sub Main()
+
+    Assert.Setup(1)
+    Assert.Diagnostic("This is intended to fail")
+    Debug "Like this Debug statement, the division by zero error should be captured and converted to a diagnostic"
+    Assert.Skip("0 is not invertible in the Integers")
+    Assert.IsType(1 / 0, gb.Integer, "Division by zero")
+
+End
