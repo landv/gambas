@@ -30,7 +30,7 @@ Public Sub Finish()
 
 End
 
-Public Sub Ok(Result As Boolean, Optional Description As String)
+Public Sub Ok(Result As Boolean, Optional Description As String) As Boolean
 
     Dim hDir As Directive
 
@@ -40,6 +40,7 @@ Public Sub Ok(Result As Boolean, Optional Description As String)
     Else
         $hPrinter.Test(Result,, Description)
     Endif
+    Return Result
 
 End
 
@@ -75,69 +76,69 @@ End
 
 ' -------------------- High-level test functions --------------------
 
-Public Sub NotOk(Result As Boolean, Optional Description As String)
+Public Sub NotOk(Result As Boolean, Optional Description As String) As Boolean
 
-    Ok(Not Result, Description)
-
-End
-
-Public Sub Equals(Got As Variant, Expected As Variant, Description As String)
-
-    Ok(Got = Expected, Description)
+    Return Ok(Not Result, Description)
 
 End
 
-Public Sub LessEqual(Got As Variant, Bound As Variant, Description As String)
+Public Sub Equals(Got As Variant, Expected As Variant, Description As String) As Boolean
 
-    Ok(Got <= Bound, Description)
-
-End
-
-Public Sub Less(Got As Variant, Bound As Variant, Description As String)
-
-    Ok(Got < Bound, Description)
+    Return Ok(Got = Expected, Description)
 
 End
 
-Public Sub GreaterEqual(Got As Variant, Bound As Variant, Description As String)
+Public Sub LessEqual(Got As Variant, Bound As Variant, Description As String) As Boolean
 
-    NotOk(Less(Got, Bound), Description)
-
-End
-
-Public Sub Greater(Got As Variant, Bound As Variant, Description As String)
-
-    NotOk(LessEqual(Got, Bound), Description)
+    Return Ok(Got <= Bound, Description)
 
 End
 
-Public Sub Approximate(Got As Float, Expected As Float, Precision As Float, Description As String)
+Public Sub Less(Got As Variant, Bound As Variant, Description As String) As Boolean
 
-    Ok(Abs(Got - Expected) <= Precision, Description)
-
-End
-
-Public Sub RelativeApproximate(Got As Float, Expected As Float, RelPrecision As Float, Description As String)
-
-    Ok(Abs((Got - Expected) / Expected) <= RelPrecision, Description)
+    Return Ok(Got < Bound, Description)
 
 End
 
-Public Sub IsType(Got As Variant, Type As Integer, Description As String)
+Public Sub GreaterEqual(Got As Variant, Bound As Variant, Description As String) As Boolean
 
-    Ok(TypeOf(Got) = Type, Description)
-
-End
-
-Public Sub Like(Got As String, Pattern As String, Description As String)
-
-    Ok(Got Like Pattern, Description)
+    Return NotOk(Less(Got, Bound), Description)
 
 End
 
-Public Sub Match(Got As String, Pattern As String, Description As String)
+Public Sub Greater(Got As Variant, Bound As Variant, Description As String) As Boolean
 
-    Ok(Got Match Pattern, Description)
+    Return NotOk(LessEqual(Got, Bound), Description)
+
+End
+
+Public Sub Approximate(Got As Float, Expected As Float, Precision As Float, Description As String) As Boolean
+
+    Return Ok(Abs(Got - Expected) <= Precision, Description)
+
+End
+
+Public Sub RelativeApproximate(Got As Float, Expected As Float, RelPrecision As Float, Description As String) As Boolean
+
+    Return Ok(Abs((Got - Expected) / Expected) <= RelPrecision, Description)
+
+End
+
+Public Sub IsType(Got As Variant, Type As Integer, Description As String) As Boolean
+
+    Return Ok(TypeOf(Got) = Type, Description)
+
+End
+
+Public Sub Like(Got As String, Pattern As String, Description As String) As Boolean
+
+    Return Ok(Got Like Pattern, Description)
+
+End
+
+Public Sub Match(Got As String, Pattern As String, Description As String) As Boolean
+
+    Return Ok(Got Match Pattern, Description)
 
 End
 
