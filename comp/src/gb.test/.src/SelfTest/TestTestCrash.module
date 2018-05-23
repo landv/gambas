@@ -17,7 +17,7 @@ Public Sub Main()
     With hHarness.Current
         Assert.Equals(.ExitCode, 1, "exit code")
         Assert.Equals(.Planned, 1, "planned 1 test")
-        Assert.Equals(.Delta, 1, "none run")
+        Assert.Equals(.Run, 0, "none run")
         Assert.Equals(.Passed, 0, "none passed")
         Assert.Equals(.Failed, 0, "none failed")
         Assert.StringEquals(.Lines.Join("\n"), EXPECTED, "complete diagnostics")

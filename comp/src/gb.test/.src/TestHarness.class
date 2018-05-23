@@ -11,6 +11,8 @@ Public Struct TestStats
     ExitCode As Integer
     '' Whether the test was successful (all tests passed and at least one test was executed)
     Success As Boolean
+    '' Number of run tests
+    Run As Integer
     '' Difference between planned and run tests
     Delta As Integer
     '' Whether the test bailed out (aborted gracefully)
@@ -85,7 +87,8 @@ Public Sub Run(Project As String, Test As String)
         ' Important: Do not replace the last condition with $hCurrent.Failed = 0.
         ' That wouldn't verify if all tests actually ran or if the plan was wrong.
         .Success = .ExitCode = 0 And .Planned > 0 And .Passed = .Planned
-        .Delta = .Planned - .Passed - .Failed - .Todo - .Skipped
+        .Run = .Passed + .Failed + .Todo + .Skipped
+        .Delta = .Planned - .Run
     End With
     $aTests.Push($hCurrent)
 

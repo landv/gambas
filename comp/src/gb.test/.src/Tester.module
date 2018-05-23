@@ -15,7 +15,7 @@ Public Sub Main()
         With hHarness.Current
             Print "Test #";; iTest; ":";; hHarness.Current.Name
             Print "Planned tests:";; .Planned
-            Print "Run tests:    ";; .Planned - .Delta
+            Print "Run tests:    ";; .Run
             Print "Exit code:    ";; .ExitCode
             Print "Duration:     ";; DateDiff(.Started, .Ended, gb.Second); "s"
             Print String$(20, "-")
