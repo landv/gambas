@@ -20,20 +20,20 @@ Event BailOut(Comment As String)
 Event Diagnostic(Comment As String)
 Event Else({Line} As String)
 
-Private $hTapStream As Stream
-
+Private $iLine As Integer = 0
 Private $iTestsRun As Integer = 0
 
-Public Sub _new(TapStream As Stream)
+Public Sub Parse(TapStream As Stream)
 
-    $hTapStream = TapStream
+    While Not Eof(TapStream)
+        ParseLine(TapStream.ReadLine())
+    Wend
 
 End
 
-Public Sub Parse()
+Public Sub ParseLine({Line} As String)
 
-    Dim sLine As String
-    Dim iLine As Integer = 0
+    Dim sLine As String = {Line}
     Dim iVersion As Integer
 
     Dim bResult As Boolean
@@ -42,54 +42,52 @@ Public Sub Parse()
     Dim iDirective As Integer
     Dim sComment As String
 
-    For Each sLine In $hTapStream.Lines
-        If iLine = 0 And If sLine Begins "TAP version " Then
-            Try iVersion = CInt(Trim$(Mid$(sLine, 13)))
-            ' At present a "TAP version" line is always an error:
-            '   1. It might not be an integer, which is an error
-            '   2. A version lower than 13 is an error by the specification
-            '   3. We don't support version 13 or above.
-            If Error Then Error.Raise(Subst$(("Unrecognised TAP version '&1'"), Trim$(Mid$(sLine, 13))))
-            If iVersion < 13 Then Error.Raise(Subst$(("Illegal TAP version '&1'"), iVersion))
-            If iVersion > 12 Then Error.Raise(Subst$(("Unsupported TAP version &1"), iVersion))
-        Endif
-        If iLine = 0 Then Raise Version(12)
+    If $iLine = 0 And If sLine Begins "TAP version " Then
+        Try iVersion = CInt(Trim$(Mid$(sLine, 13)))
+        ' At present a "TAP version" line is always an error:
+        '   1. It might not be an integer, which is an error
+        '   2. A version lower than 13 is an error by the specification
+        '   3. We don't support version 13 or above.
+        If Error Then Error.Raise(Subst$(("Unrecognised TAP version '&1'"), Trim$(Mid$(sLine, 13))))
+        If iVersion < 13 Then Error.Raise(Subst$(("Illegal TAP version '&1'"), iVersion))
+        If iVersion > 12 Then Error.Raise(Subst$(("Unsupported TAP version &1"), iVersion))
+    Endif
+    If $iLine = 0 Then Raise Version(12)
 
-        If sLine Match "\\d+..\\d+" Then
-            With Scan(sLine, "*..*")
-                If Not IsInteger(.[0]) Or If Not IsInteger(.[1]) Then Error.Raise(Subst$(("Couldn't extract test plan from '&1'"), sLine))
-                Raise Plan(CInt(.[0]), CInt(.[1]))
-            End With
+    If sLine Match "^\\d+..\\d+" Then
+        With Scan(sLine, "*..*")
+            If Not IsInteger(.[0]) Or If Not IsInteger(.[1]) Then Error.Raise(Subst$(("Couldn't extract test plan from '&1'"), sLine))
+            Raise Plan(CInt(.[0]), CInt(.[1]))
+        End With
 
-        Else If sLine Begins "ok" Or If sLine Begins "not ok" Then
-            bResult = ParseTest(sLine, ByRef iTestNr, ByRef sDescription, ByRef iDirective, ByRef sComment)
-            ' A single line may raise two events: Ok or NotOk, depending on the result
-            ' and Todo or Skip or none of the two depending on the directive.
-            ' Use the TestNr argument to link the two when counting tests for statistics.
-            If bResult Then
-                Raise Ok(iTestNr, sDescription)
-            Else
-                Raise NotOk(iTestNr, sDescription)
-            Endif
-
-            If iDirective = Tap.TODO Then
-                Raise Todo(iTestNr, sComment)
-            Else If iDirective = Tap.SKIP Then
-                Raise Skip(iTestNr, sComment)
-            Endif
-
-        Else If sLine Begins "Bail out!" Then
-            Raise BailOut(Trim$(Mid$(sLine, 10)))
-
-        Else If sLine Begins "#" Then
-            Raise Diagnostic(Trim$(Mid$(sLine, 2)))
-
+    Else If sLine Begins "ok" Or If sLine Begins "not ok" Then
+        bResult = ParseTest(sLine, ByRef iTestNr, ByRef sDescription, ByRef iDirective, ByRef sComment)
+        ' A single line may raise two events: Ok or NotOk, depending on the result
+        ' and Todo or Skip or none of the two depending on the directive.
+        ' Use the TestNr argument to link the two when counting tests for statistics.
+        If bResult Then
+            Raise Ok(iTestNr, sDescription)
         Else
-            Raise Else(sLine)
+            Raise NotOk(iTestNr, sDescription)
         Endif
 
-        Inc iLine
-    Next
+        If iDirective = Tap.TODO Then
+            Raise Todo(iTestNr, sComment)
+        Else If iDirective = Tap.SKIP Then
+            Raise Skip(iTestNr, sComment)
+        Endif
+
+    Else If sLine Begins "Bail out!" Then
+        Raise BailOut(Trim$(Mid$(sLine, 10)))
+
+    Else If sLine Begins "#" Then
+        Raise Diagnostic(Trim$(Mid$(sLine, 2)))
+
+    Else
+        Raise Else(sLine)
+    Endif
+
+    Inc $iLine
 
 End
 

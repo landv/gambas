@@ -34,6 +34,7 @@ Public Sub Plan(Tests As Integer, Optional Comment As String)
     $iPlan = Tests
     Print #$hOutput, "1.."; $iPlan;
     Print #$hOutput, IIf(Comment, " # " & Comment, "")
+    Flush #$hOutput
 
 End
 
@@ -42,6 +43,7 @@ Public Sub Finish()
     If $iPlan > NO_PLAN Then Return ' already printed the "plan" line
     $iPlan = $iTestsRun
     Print #$hOutput, "1.."; $iPlan
+    Flush #$hOutput
 
 End
 
@@ -71,24 +73,28 @@ Public Sub Test(Result As Boolean, Optional TestNr As Integer, Optional Descript
 
     Print #$hOutput, Subst$("&1 &2 - &3", IIf(Result, "ok", "not ok"), TestNr, Description);
     Print #$hOutput, IIf(sDirective, Subst$(" # &1&2", sDirective, IIf(Comment, " " & Comment, "")), "")
+    Flush #$hOutput
 
 End
 
 Public Sub BailOut(Optional Comment As String)
 
     Print #$hOutput, "Bail out!";; Comment
+    Flush #$hOutput
 
 End
 
 Public Sub Diagnostic(Comment As String)
 
     Print #$hOutput, "#";; Comment
+    Flush #$hOutput
 
 End
 
 Public Sub Print({Line} As String)
 
     Print #$hOutput, {Line}
+    Flush #$hOutput
 
 End
 

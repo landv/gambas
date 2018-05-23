@@ -61,8 +61,8 @@ Public Sub Main()
     Assert.Plan(1)
 
     hStream = Open String TAP_INPUT For Read
-    hParser = New TapParser(hStream) As "Parser"
-    hParser.Parse()
+    hParser = New TapParser As "Parser"
+    hParser.Parse(hStream)
     Close #hStream
 
     Assert.Equals($aEvents.Join("\n"), EXPECTED, "TAP Parser events")

@@ -46,6 +46,7 @@ End Struct
 Property Read Tests As TestStats[]
 Property Read Current As TestStats
 
+Private $hParser As TapParser
 Private $aTests As New TestStats[]
 Private $hCurrent As TestStats
 Private $bLastOk As Boolean
@@ -60,9 +61,10 @@ End
 
 Public Sub Run(Project As String, Test As String)
 
-    ' Dim hProc As Process
-    Dim sOutput As String, hStream As Stream
-    Dim hParser As TapParser
+    Dim hProc As Process
+
+    ' FIXME: If a class inherits this, it can override/claim event handlers and our statistics aren't accurate.
+    $hParser = New TapParser As "Parser"
 
     $hCurrent = New TestStats
     ' TODO: Process Is Stream but what about error management when the TapParser tries to read from a crashed process?
@@ -70,28 +72,43 @@ Public Sub Run(Project As String, Test As String)
     $hCurrent.Plan = [1, 0]
     $hCurrent.Failures = New String[]
     $hCurrent.Started = Now()
-      Exec ["gbx3", "-s", Test, Project] To sOutput
+        hProc = Exec ["gbx3", "-s", Test, Project] For Read As "TapStream"
+        hProc.Wait()
     $hCurrent.Ended = Now()
-    $hCurrent.ExitCode = Process.LastValue
 
-    hStream = Open String sOutput For Read
-    ' FIXME: If a class inherits this, it can override/claim event handlers and our statistics aren't accurate.
-    hParser = New TapParser(hStream) As "Parser"
-    hParser.Parse()
-    Close #hStream
-
-    ' Important: Do not replace the last condition with $hCurrent.Failed = 0.
-    ' That wouldn't verify if all tests actually ran or if the plan was wrong.
     With $hCurrent
+        .ExitCode = hProc.Value
+        ' Important: Do not replace the last condition with $hCurrent.Failed = 0.
+        ' That wouldn't verify if all tests actually ran or if the plan was wrong.
         .Success = .ExitCode = 0 And .Planned > 0 And .Passed = .Planned
         .Delta = .Planned - .Passed - .Failed - .Todo - .Skipped
     End With
     $aTests.Push($hCurrent)
 
-    Catch
-        Debug Subst$(("Test harness failure: [&1:&2] &3"), Error.Class, Error.Where, Error.Text)
-        Debug Error.Backtrace.Join("\n")
-        Error.Raise(Subst$(("Test harness failure: [&1:&2] &3"), Error.Class, Error.Where, Error.Text))
+    ' Catch
+    '     Debug Subst$(("Test harness failure: [&1] &2"), Error.Where, Error.Text)
+    '     Debug Error.Backtrace.Join("\n")
+    '     Error.Raise(Subst$(("Test harness failure: [&1] &2"), Error.Where, Error.Text))
+
+End
+
+Public Sub TapStream_Read()
+
+    Dim sLine As String = Last.ReadLine()
+
+    $hParser.ParseLine(sLine)
+
+End
+
+Public Sub TapStream_Error(Message As String)
+
+    Dim sLine As String
+
+    ' Inject stderr as diagnostic messages
+    For Each sLine In Split(Message, "\n")
+        sLine = "# " & sLine
+        $hParser.ParseLine(sLine)
+    Next
 
 End
 
