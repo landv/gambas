@@ -49,10 +49,10 @@ static const char *_type_name[] =
 static const char *_ctype_name[] = 
 {
 	"void" , "char", "uchar", "short", "int", "int64_t", "float", "double",
-	"GB_DATE", "string", "string", "intptr_t", "GB_VARIANT", "?", "?", "?", "void *"
+	"GB_DATE", "GB_STRING", "GB_STRING", "intptr_t", "GB_VARIANT", "?", "?", "?", "void *"
 };
 
-static const char *get_type(TYPE type)
+const char *JIT_get_type(TYPE type)
 {
 	return _type_name[TYPE_get_id(type)];
 }
@@ -122,14 +122,14 @@ void JIT_translate_func(FUNCTION *func)
 	JIT_print("  ");
 	
 	if (!TYPE_is_void(func->type))
-		JIT_print("%s ret = ", get_ctype(func->type));
+		JIT_print("RETURN_%s(", JIT_get_type(func->type));
 	
 	JIT_print("%s_%s_IMPL(", _prefix, name);
 	
 	for (i = 0; i < func->npmin; i++)
 	{
 		if (i) JIT_print(", ");
-		JIT_print("PARAM_%s(%d)", get_type(func->param[i].type), i);
+		JIT_print("PARAM_%s(%d)", JIT_get_type(func->param[i].type), i);
 	}
 	
 	if (i < func->nparam)
@@ -137,13 +137,13 @@ void JIT_translate_func(FUNCTION *func)
 		JIT_print(", OPT(%d, %d)", i, func->nparam);
 		
 		for (; i < func->nparam; i++)
-			JIT_print("; P%s(%d)", get_type(func->param[i].type), i);
+			JIT_print("; P%s(%d)", JIT_get_type(func->param[i].type), i);
 	}
 	
 	if (func->vararg)
 		THROW("Not supported");
 	
-	JIT_print(");\n");
+	JIT_print("));\n");
 	JIT_print("}\n\n");
 	
 	JIT_print("static %s %s_%s_IMPL(", get_ctype(func->type), _prefix, name);
@@ -164,9 +164,29 @@ void JIT_translate_func(FUNCTION *func)
 	
 	JIT_print(")\n{\n");
 
-	for (i = 0; i < func->nlocal; i++)
+	JIT_print("  bool t;\n");
+	for (i = -1; i < func->nlocal; i++)
 	{
-		JIT_print("  %s l%d;\n", get_ctype(func->local[i].type), i);
+		if (i < 0)
+		{
+			if (TYPE_is_void(func->type))
+				continue;
+			JIT_print("  %s r = ", get_ctype(func->type));
+		}
+		else
+			JIT_print("  %s l%d = ", get_ctype(func->local[i].type), i);
+		
+		switch(TYPE_get_id(func->local[i].type))
+		{
+			case T_DATE:
+			case T_STRING:
+			case T_VARIANT:
+				JIT_print("{0}");
+				break;
+			default:
+				JIT_print("0");
+		}
+		JIT_print(";\n");
 	}
 	if (func->nlocal)
 		JIT_print("\n");
@@ -175,16 +195,28 @@ void JIT_translate_func(FUNCTION *func)
 	
 	JIT_translate_body(func);
 	
+	JIT_print("__RETURN:\n");
+	
+	if (!TYPE_is_void(func->type))
+		JIT_print("  return r;\n");
+	
 	JIT_print("}\n");
+}
+
+void JIT_vprint(const char *str, va_list args)
+{
+	vprintf(str, args);
 }
 
 void JIT_print(const char *str, ...)
 {
   va_list args;
-  va_start(args, str);
+  /*va_start(args, str);
   vfprintf(_file, str, args);
+	va_end(args);*/
   va_start(args, str);
 	vprintf(str, args);
+	va_end(args);
 }
 
 void JIT_section(const char *str)

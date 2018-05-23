@@ -33,8 +33,13 @@ void JIT_end(void);
 void JIT_declare_func(FUNCTION *func);
 void JIT_translate_func(FUNCTION *func);
 
-void JIT_print(const char *str, ...);
 void JIT_section(const char *str);
+
+void JIT_print(const char *str, ...);
+void JIT_vprint(const char *str, va_list args);
+
+
+const char *JIT_get_type(TYPE type);
 
 // gbc_jit_body.c
 

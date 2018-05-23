@@ -436,8 +436,8 @@ SUBR_INFO COMP_subr_info[] =
 
 	{ ".Wait",             55,  0, T_VOID,         0,  1 },
 
-	{ ".Open",             56,  0, T_VOID,         2     },
-	{ ".OpenMemory",       56,  1, T_VOID,         2     },
+	{ ".Open",             56,  0, T_OBJECT,       2     },
+	{ ".OpenMemory",       56,  1, T_OBJECT,       2     },
 	{ ".Close",            57,  0, T_VOID,         1     },
 	{ ".Input",            58,  0, T_VOID,         0,  1 },
 	{ ".LineInput",        59,  0, T_VOID,         1     },

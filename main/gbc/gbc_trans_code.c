@@ -37,6 +37,8 @@
 
 /*#define DEBUG*/
 
+ushort *TRANS_labels = NULL;
+
 static FUNCTION *_func;
 
 static CLASS_SYMBOL *add_local(int sym_index, TYPE type, int value, bool used)
@@ -546,7 +548,7 @@ static void trans_call(const char *name, int nparam)
 void TRANS_code(void)
 {
 	int i;
-	bool fast;
+	bool fast = FALSE;
 
 	if (JOB->class->has_fast)
 	{
@@ -599,6 +601,9 @@ void TRANS_code(void)
 			continue;
 		}
 		
+		if (fast)
+			ARRAY_create(&TRANS_labels);
+		
 		create_local_from_param();
 
 		translate_body();
@@ -621,7 +626,10 @@ void TRANS_code(void)
 		remove_local();
 		
 		if (fast)
+		{
 			JIT_translate_func(_func);
+			ARRAY_delete(&TRANS_labels);
+		}
 	}
 
 	if (fast)

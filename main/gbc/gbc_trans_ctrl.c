@@ -60,6 +60,13 @@ static TRANS_LABEL *label_info;
 static short *ctrl_parent;
 
 
+static void jump_length(ushort src, ushort dst)
+{
+	CODE_jump_length(src, dst);
+	TRANS_add_label(dst);
+}
+
+
 static void control_set_value(int value)
 {
 	if (ctrl_level <= 0)
@@ -106,7 +113,7 @@ static void control_jump_each_pos_with(ushort *tab_pos)
 		return;
 
 	for (i = 0; i < ARRAY_count(tab_pos); i++)
-		CODE_jump_length(tab_pos[i], CODE_get_current_pos());
+		jump_length(tab_pos[i], CODE_get_current_pos());
 }
 
 
@@ -360,7 +367,7 @@ void TRANS_control_exit(void)
 				}
 			}
 			
-			CODE_jump_length(goto_info[i].pos, label->pos);
+			jump_length(goto_info[i].pos, label->pos);
 		}
 
 		JOB->line = line;
@@ -425,7 +432,7 @@ static ushort trans_jump_if(bool if_true)
 static void trans_endif(void)
 {
 	if (current_ctrl->state == 0)
-		CODE_jump_length(control_get_value(), CODE_get_current_pos());
+		jump_length(control_get_value(), CODE_get_current_pos());
 
 	control_jump_each_pos();
 }
@@ -439,7 +446,7 @@ static void trans_else(void)
 	}
 	END_NO_BREAK
 
-	CODE_jump_length(control_get_value(), CODE_get_current_pos());
+	jump_length(control_get_value(), CODE_get_current_pos());
 
 	current_ctrl->state = 1;
 }
@@ -747,13 +754,13 @@ void TRANS_loop(int type)
 			
 		pos = trans_jump_if(!is_until);
 		
-		CODE_jump_length(pos, control_get_value());
+		jump_length(pos, control_get_value());
 	}
 	else
 	{
 		pos = CODE_get_current_pos();
 		CODE_jump();
-		CODE_jump_length(pos, control_get_value());
+		jump_length(pos, control_get_value());
 	}
 
 	control_jump_each_pos();
@@ -773,7 +780,7 @@ static void trans_select_break(bool do_not_add_pos)
 				CODE_jump();
 			}
 
-			CODE_jump_length(current_ctrl->value, CODE_get_current_pos());
+			jump_length(current_ctrl->value, CODE_get_current_pos());
 		}
 	}
 	END_NO_BREAK
@@ -897,7 +904,7 @@ void TRANS_end_select(void)
 
 	/*
 	if (current_ctrl->value)
-		CODE_jump_length(current_ctrl->value, CODE_get_current_pos());
+		jump_length(current_ctrl->value, CODE_get_current_pos());
 	*/
 
 	trans_select_break(TRUE);
@@ -1078,7 +1085,7 @@ void TRANS_next(void)
 
 		pos = CODE_get_current_pos();
 		CODE_jump();
-		CODE_jump_length(pos, control_get_value());
+		jump_length(pos, control_get_value());
 
 		control_jump_each_pos();
 		control_leave();
@@ -1090,7 +1097,7 @@ void TRANS_next(void)
 
 	pos = CODE_get_current_pos();
 	CODE_jump();
-	CODE_jump_length(pos, control_get_value());
+	jump_length(pos, control_get_value());
 
 	control_jump_each_pos();
 	control_leave();
@@ -1110,7 +1117,7 @@ void TRANS_try(void)
 	TRANS_statement();
 	TRANS_in_try = FALSE;
 
-	CODE_jump_length(pos, CODE_get_current_pos());
+	jump_length(pos, CODE_get_current_pos());
 	CODE_end_try();
 }
 
