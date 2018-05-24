@@ -455,6 +455,7 @@ void SUBR_seek(ushort code)
 void SUBR_read(ushort code)
 {
 	STREAM *stream;
+	char *data;
 	int len = 0;
 	int eff;
 
@@ -473,37 +474,42 @@ void SUBR_read(ushort code)
 		}
 		else if (len > 0)
 		{
+			data = STRING_new_temp(NULL, len);
+			
+			STREAM_read(stream, data, len);
+			
 			RETURN->type = T_STRING;
-			RETURN->_string.addr = STRING_new(NULL, len);
+			RETURN->_string.addr = data;
 			RETURN->_string.start = 0;
 			RETURN->_string.len = len;
-			
-			STREAM_read(stream, RETURN->_string.addr, len);
 		}
 		else
 		{
 			len = (-len);
 			
-			RETURN->type = T_STRING;
-			RETURN->_string.addr = STRING_new(NULL, len);
-			RETURN->_string.start = 0;
-			RETURN->_string.len = len;
+			data = STRING_new(NULL, len);
 			
-			eff = STREAM_read_max(stream, RETURN->_string.addr, len);
+			eff = STREAM_read_max(stream, data, len);
 			
 			if (eff == 0)
 			{
 				RETURN->type = T_NULL;
-				STRING_free(&RETURN->_string.addr);
+				STRING_free(&data);
 			}
 			else
 			{
 				if (eff < len)
 				{
-					RETURN->_string.addr = STRING_extend(RETURN->_string.addr, eff);
-					RETURN->_string.len = eff;
+					data = STRING_extend(data, eff);
+					len = eff;
 				}
-				STRING_extend_end(RETURN->_string.addr);
+				
+				STRING_extend_end(data);
+				
+				RETURN->type = T_STRING;
+				RETURN->_string.addr = data;
+				RETURN->_string.start = 0;
+				RETURN->_string.len = len;
 			}
 		}
 	}
