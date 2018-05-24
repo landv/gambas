@@ -218,11 +218,11 @@ Public Sub _new()
     $cShortcut = [
       "CTRL+A": "SelectAll",
       "CTRL+C": "Copy",
-      "CTRL+Ins": "Copy",
+      "CTRL+INS": "Copy",
       "CTRL+V": "Paste",
-      "SHIFT+Ins": "Paste",
+      "SHIFT+INS": "Paste",
       "CTRL+X": "Cut",
-      "SHIFT+Del": "Cut",
+      "SHIFT+DEL": "Cut",
       "CTRL+Y": "Redo",
       "CTRL+Z": "Undo"]
   Endif
@@ -1348,7 +1348,7 @@ Public Sub View_KeyPress()
   bCancel = Raise KeyPress
   If bCancel Then Goto STOP_EVENT
   
-  Try sAction = $cShortcut[Shortcut.FromKey()]
+  Try sAction = $cShortcut[String.UCase(Shortcut.FromKey())]
   If sAction Then
     Select Case sAction
       Case "Copy"
