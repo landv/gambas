@@ -163,33 +163,31 @@ void throwODBCError(const char *failedODBCFunctionName,
                     SQLSMALLINT handleType
                    )
 {
+	SQLINTEGER	i = 0;
+	SQLINTEGER	native;
+	SQLTCHAR	state[7];
+	SQLTCHAR	text[512];
+	char	*errorText = NULL; //GB.NewString("gb.db.odbc: ", 12);
+	SQLSMALLINT	len;
+	SQLRETURN	ret;
 
-    SQLINTEGER	i = 0;
-    SQLINTEGER	native;
-    SQLTCHAR	state[7];
-    SQLTCHAR	text[512];
-    char	*errorText = GB.NewString("gb.db.odbc: ", 12);
-    SQLSMALLINT	len;
-    SQLRETURN	ret;
+	errorText = GB.AddString(errorText, (char *)failedODBCFunctionName, 0),
+	errorText = GB.AddString(errorText, " failed:", 0);
 
-    errorText = GB.AddString(errorText, (char *)failedODBCFunctionName, 0),
-    errorText = GB.AddString(errorText, " failed:", 0);
+	do
+	{
+		ret = SQLGetDiagRec(handleType, handle, ++i, state, &native, text, sizeof(text), &len);
+		if (SQL_SUCCEEDED(ret))
+		{
+				errorText = GB.AddString(errorText, "\n", 1);
+				errorText = GB.AddString(errorText, (char *)state, 0);
+				errorText = GB.AddString(errorText, (char *)text, len);
+		}
+	}
+	while (ret == SQL_SUCCESS);
 
-    do
-    {
-	ret = SQLGetDiagRec(handleType, handle, ++i, state, &native, text, sizeof(text), &len);
-        if (SQL_SUCCEEDED(ret))
-        {
-            errorText = GB.AddString(errorText, "\n", 1);
-            errorText = GB.AddString(errorText, (char *)state, 0);
-            errorText = GB.AddString(errorText, (char *)text, len);
-        }
-    }
-    while (ret == SQL_SUCCESS);
-
-    GB.Error(errorText);
-    GB.FreeString(&errorText);
-
+	GB.Error(errorText);
+	GB.FreeString(&errorText);
 }
 
 
@@ -823,11 +821,9 @@ fflush(stderr);
         //zxMarce: Must bail out NOW if failed to connect, or nonsense errors will appear.
 	if (!SQL_SUCCEEDED(retcode))
 	{
-                throwODBCError((hostIsAConnString ? "SQLDriverConnect" : "SQLConnect"),
-				odbc->odbcHandle,
-				SQL_HANDLE_DBC
-			       );
-	        //GB.Error("Error connecting to database");
+		throwODBCError((hostIsAConnString ? "SQLDriverConnect" : "SQLConnect"), odbc->odbcHandle, SQL_HANDLE_DBC);
+		free(odbc);
+		//GB.Error("Error connecting to database");
 		return TRUE;
 	}
 
@@ -851,10 +847,8 @@ fflush(stderr);
 	retcode = SQLGetFunctions(odbc->odbcHandle, SQL_API_SQLFETCHSCROLL, &odbc->FetchScroll_exist);
         if (!SQL_SUCCEEDED(retcode))
 	{
-                throwODBCError("SQLGetFunctions SQL_API_SQLFETCHSCROLL",
-				odbc->odbcHandle,
-				SQL_HANDLE_DBC
-			      );
+		throwODBCError("SQLGetFunctions SQL_API_SQLFETCHSCROLL", odbc->odbcHandle, SQL_HANDLE_DBC);
+		free(odbc);
 		//GB.Error("Error calling the ODBC SQLGetFunctions API");
 		return TRUE;
 	}
@@ -868,8 +862,8 @@ fflush(stderr);
 
 	db->handle = odbc;
 	return FALSE;
-
 }
+
 
 /*****************************************************************************
 
