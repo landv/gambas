@@ -1330,7 +1330,7 @@ static bool add_date_token(DATE_SERIAL *date, char *token, int count)
 
 			if (count <= 2)
 			{
-				time_t t = (time_t)0L;
+				time_t t = time(NULL);
 				localtime_r(&t, &tm);
 				add_strftime(count == 2 ? "%z" : "%Z", &tm);
 			}
