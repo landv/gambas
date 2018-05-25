@@ -43,13 +43,15 @@ static char *_prefix;
 static const char *_type_name[] = 
 {
 	"" , "b", "c", "h", "i", "l", "g", "f",
-	"d", "s", "t", "p", "v", "A", "S", "n", "o"
+	"d", "s", "t", "p", "v", "A", "S", "n", "o",
+	"u"
 };
 
 static const char *_ctype_name[] = 
 {
 	"void" , "char", "uchar", "short", "int", "int64_t", "float", "double",
-	"GB_DATE", "GB_STRING", "GB_STRING", "intptr_t", "GB_VARIANT", "?", "?", "?", "void *"
+	"GB_DATE", "GB_STRING", "GB_STRING", "intptr_t", "GB_VARIANT", "?", "?", "?", "void *",
+	"GB_VALUE"
 };
 
 const char *JIT_get_type(TYPE type)
@@ -109,6 +111,10 @@ void JIT_translate_func(FUNCTION *func)
 	const char *fname = TABLE_get_symbol_name(JOB->class->table, func->name);
 	char *name = STR_lower(fname);
 	int i;
+	TYPE type;
+	int nopt;
+	int opt;
+		
 	
 	JIT_section(fname);
 	
@@ -134,10 +140,18 @@ void JIT_translate_func(FUNCTION *func)
 	
 	if (i < func->nparam)
 	{
-		JIT_print(", OPT(%d, %d)", i, func->nparam);
+		nopt = 0;
 		
 		for (; i < func->nparam; i++)
-			JIT_print("; P%s(%d)", JIT_get_type(func->param[i].type), i);
+		{
+			if (nopt == 0)
+				JIT_print(", OPT(%d,%d)", i, Min(func->nparam, i + 8) - i);
+			
+			JIT_print(", PARAM_OPT_%s(%d)", JIT_get_type(func->param[i].type), i);
+			nopt++;
+			if (nopt >= 8)
+				nopt == 0;
+		}
 	}
 	
 	if (func->vararg)
@@ -156,27 +170,42 @@ void JIT_translate_func(FUNCTION *func)
 	
 	if (i < func->nparam)
 	{
-		JIT_print(", uint64_t _opt");
+		opt = nopt = 0;
 		
 		for (; i < func->nparam; i++)
-			JIT_print("%s p%d", get_ctype(func->param[i].type), i);
+		{
+			if (nopt == 0)
+			{
+				JIT_print(", uchar _o%d", opt);
+				opt++;
+			}
+			
+			JIT_print(", %s p%d", get_ctype(func->param[i].type), i);
+			
+			nopt++;
+			if (nopt >= 8)
+				nopt = 0;
+		}
 	}
 	
 	JIT_print(")\n{\n");
 
-	JIT_print("  bool t;\n");
 	for (i = -1; i < func->nlocal; i++)
 	{
 		if (i < 0)
 		{
 			if (TYPE_is_void(func->type))
 				continue;
-			JIT_print("  %s r = ", get_ctype(func->type));
+			type = func->type;
+			JIT_print("  %s r = ", get_ctype(type));
 		}
 		else
-			JIT_print("  %s l%d = ", get_ctype(func->local[i].type), i);
+		{
+			type = func->local[i].type;
+			JIT_print("  %s l%d = ", get_ctype(type), i);
+		}
 		
-		switch(TYPE_get_id(func->local[i].type))
+		switch(TYPE_get_id(type))
 		{
 			case T_DATE:
 			case T_STRING:
@@ -210,13 +239,14 @@ void JIT_vprint(const char *str, va_list args)
 
 void JIT_print(const char *str, ...)
 {
-  va_list args;
-  /*va_start(args, str);
-  vfprintf(_file, str, args);
-	va_end(args);*/
+  va_list args, copy;
+	
   va_start(args, str);
-	vprintf(str, args);
+	va_copy(copy, args);
+  vfprintf(_file, str, args);
 	va_end(args);
+	vprintf(str, copy);
+	va_end(copy);
 }
 
 void JIT_section(const char *str)

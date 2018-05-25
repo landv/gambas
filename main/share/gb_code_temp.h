@@ -180,7 +180,7 @@ void CODE_begin_function()
 void CODE_end_function()
 {
 	if (CODE_stack)
-		THROW("Internal compiler error: bad stack usage computed!");
+		THROW("Internal compiler error: bad stack usage computed");
 }
 
 #else
@@ -199,7 +199,11 @@ void CODE_begin_function(FUNCTION *func)
 void CODE_end_function(FUNCTION *func)
 {
 	if (CODE_stack)
-		THROW("Internal compiler error: bad stack usage computed!");
+	{
+		char buffer[16];
+		sprintf(buffer, "%d", CODE_stack);
+		THROW("Internal compiler error: bad stack usage computed: &1", buffer);
+	}
 }
 
 #endif

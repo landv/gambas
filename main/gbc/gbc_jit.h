@@ -26,6 +26,8 @@
 
 #include "gbc_class.h"
 
+#define T_UNKNOWN (T_OBJECT + 1)
+
 // gbc_jit.c
 
 void JIT_begin(void);

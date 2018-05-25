@@ -41,6 +41,7 @@ static char *_free_later = NULL;
 static char *_last_str = NULL;
 static int _last_len = 0;
 
+
 void STR_vadd(char **str, const char *fmt, va_list args)
 {
 	va_list copy;
@@ -67,6 +68,7 @@ void STR_vadd(char **str, const char *fmt, va_list args)
 	_last_len = len + add;
 }
 
+
 void STR_add(char **str, const char *fmt, ...)
 {
 	va_list args;
@@ -75,6 +77,7 @@ void STR_add(char **str, const char *fmt, ...)
 	STR_vadd(str, fmt, args);
 	va_end(args);
 }
+
 
 char *STR_copy_len(const char *str, int len)
 {
@@ -85,10 +88,12 @@ char *STR_copy_len(const char *str, int len)
   return cpy;
 }
 
+
 char *STR_copy(const char *str)
 {
 	return STR_copy_len(str, strlen(str));
 }
+
 
 static char *str_add(char *d, const char *s)
 {
@@ -103,6 +108,7 @@ static char *str_add(char *d, const char *s)
 
   return d;
 }
+
 
 char *STR_cat(const char *str, ...)
 {
@@ -137,6 +143,7 @@ char *STR_cat(const char *str, ...)
   
   return cpy;
 }
+
 
 char *STR_upper(const char *str)
 {
@@ -175,6 +182,18 @@ char *STR_free_later(char *str)
 	if (_free_later)
 		STR_free(_free_later);
 	_free_later = str;
+	return str;
+}
+
+
+char *STR_print(const char *fmt, ...)
+{
+	va_list args;
+	char *str = NULL;
+	
+	va_start(args, fmt);
+	STR_vadd(&str, fmt, args);
+	va_end(args);
 	return str;
 }
 

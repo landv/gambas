@@ -42,17 +42,51 @@
 #include "gbc_jit.h"
 
 #define MAX_STACK 256
-#define T_UNKNOWN (T_OBJECT + 1)
 
 typedef
 	struct {
-		char *expr;
 		TYPE type;
+		char *expr;
 	}
 	STACK_SLOT;
 
 static STACK_SLOT _stack[MAX_STACK];
 static int _stack_current = 0;
+
+static bool _decl_t;
+static int _subr_count;
+
+
+static void init(void)
+{
+	_decl_t = FALSE;
+	_subr_count = 0;
+}
+
+
+static void free_stack(int n)
+{
+	if (n < 0) n = _stack_current - n;
+	STR_free(_stack[n].expr);
+}
+
+
+static void check_stack(int n)
+{
+	if (_stack_current < n)
+		THROW("Stack mismatch");
+}
+
+
+static void pop_stack(int n)
+{
+	int i;
+	
+	for (i = 1; i <= n; i++)
+		free_stack(-i);
+	
+	_stack_current -= n;
+}
 
 
 static void check_labels(ushort pos)
@@ -67,6 +101,16 @@ static void check_labels(ushort pos)
 			break;
 		}
 	}
+}
+
+
+static void declare(const char *expr, bool *flag)
+{
+	if (*flag)
+		return;
+	
+	JIT_print("  %s;\n", expr);
+	*flag = TRUE;
 }
 
 
@@ -112,44 +156,152 @@ static void push(TYPE type, const char *fmt, ...)
 }
 
 
-static char *peek(int n, TYPE type, const char *fmt, va_list args)
+static TYPE get_type(int n)
+{
+	if (n < 0) n += _stack_current;
+	return _stack[n].type;
+}
+
+
+static char *get_conv(TYPE src, TYPE dest)
+{
+	static char buffer[16];
+	char s, d;
+	
+	s = TYPE_get_id(src);
+	d = TYPE_get_id(dest);
+	
+	if (s == T_UNKNOWN)
+	{
+		sprintf(buffer, "CONV(%%s,%d)", d);
+		return buffer;
+	}
+	
+	switch(d)
+	{
+		case T_BOOLEAN:
+			
+			switch(s)
+			{
+				case T_BYTE: case T_SHORT: case T_INTEGER: case T_LONG: case T_SINGLE: case T_FLOAT: case T_POINTER:
+					return "((%s)!=0)";
+			}
+			break;
+			
+		case T_BYTE:
+			
+			switch(s)
+			{
+				case T_BOOLEAN:
+					return "((uchar)(%s)?255:0)";
+				case T_SHORT: case T_INTEGER: case T_LONG: case T_SINGLE: case T_FLOAT:
+					return "((uchar)(%s))";
+			}
+			break;
+			
+		case T_SHORT:
+			
+			switch(s)
+			{
+				case T_BOOLEAN:
+					return "((short)(%s)?-1:0)";
+				case T_BYTE: case T_INTEGER: case T_LONG: case T_SINGLE: case T_FLOAT:
+					return "((short)(%s))";
+			}
+			break;
+
+		case T_INTEGER:
+			
+			switch(s)
+			{
+				case T_BOOLEAN:
+					return "((int)(%s)?-1:0)";
+				case T_BYTE: case T_SHORT: case T_LONG: case T_SINGLE: case T_FLOAT: case T_POINTER:
+					return "((int)(%s))";
+			}
+			break;
+		
+		case T_LONG:
+			
+			switch(s)
+			{
+				case T_BOOLEAN:
+					return "((int64_t)(%s)?-1:0)";
+				case T_BYTE: case T_SHORT: case T_INTEGER: case T_SINGLE: case T_FLOAT: case T_POINTER:
+					return "((int64_t)(%s))";
+			}
+			break;
+			
+		case T_SINGLE:
+			
+			switch(s)
+			{
+				case T_BOOLEAN:
+					return "((float)(%s)?-1:0)";
+				case T_BYTE: case T_SHORT: case T_INTEGER: case T_LONG: case T_FLOAT:
+					return "((float)(%s))";
+			}
+			break;
+			
+		case T_FLOAT:
+			
+			switch(s)
+			{
+				case T_BOOLEAN:
+					return "((double)(%s)?-1:0)";
+				case T_BYTE: case T_SHORT: case T_INTEGER: case T_LONG: case T_SINGLE:
+					return "((double)(%s))";
+			}
+			break;
+			
+	}
+	
+	sprintf(buffer, "CONV_%s_%s(%%s)", JIT_get_type(src), JIT_get_type(dest));
+	return buffer;
+}
+
+static char *peek(int n, TYPE conv, const char *fmt, va_list args)
 {
 	char *dest = NULL;
 	char *expr;
+	TYPE type;
 	
 	if (n < 0) n += _stack_current;
 	
+	expr = _stack[n].expr;
+	type = _stack[n].type;
+	
 	if (fmt)
-		STR_vadd(&dest, fmt, args);
-
-	switch (TYPE_get_id(type))
 	{
-		case T_STRING:
-		case T_VARIANT:
-		case T_OBJECT:
-			JIT_print("  RELEASE_%s(%s);\n", JIT_get_type(type), dest);
-			break;
+		STR_vadd(&dest, fmt, args);
+		JIT_print("  ");
+	
+		switch (TYPE_get_id(type))
+		{
+			case T_STRING:
+			case T_VARIANT:
+			case T_OBJECT:
+				JIT_print("RELEASE_%s(%s), ", JIT_get_type(type), dest);
+				break;
+		}
 	}
 	
-	expr = _stack[n].expr;
-	
-	if (!TYPE_compare(&type, &_stack[n].type))
+	if (!TYPE_compare(&type, &conv))
 	{
 		char *expr2 = NULL;
-		STR_add(&expr2, "CONV_%s_%s(%s)", JIT_get_type(_stack[n].type), JIT_get_type(type), expr);
+		STR_add(&expr2, get_conv(type, conv), expr);
 		STR_free(expr);
 		expr = expr2;
+		_stack[n].expr = expr2;
 	}
 	
 	if (fmt)
 	{
-		JIT_print("  %s = %s;\n", dest, expr);
+		JIT_print("%s = %s;\n", dest, expr);
 		STR_free(dest);
-		STR_free(expr);
-		return NULL;
 	}
-	else
-		return expr;
+	
+	return expr;
 }
 
 
@@ -158,73 +310,89 @@ static void pop(TYPE type, const char *fmt, ...)
 	va_list args;
 	char *expr;
 	
-	if (_stack_current == 0)
-		THROW("Stack mismatch");
+	check_stack(1);
 	
 	_stack_current--;
 	
 	va_start(args, fmt);
 	expr = peek(_stack_current, type, fmt, args);
-	if (!fmt)
-	{
-		JIT_print("  %s;\n", expr);
-		STR_free(expr);
-	}
 	va_end(args);
+
+	if (!fmt)
+		JIT_print("  %s;\n", expr);
+	
+	free_stack(_stack_current);
 }
 
 
 static void push_subr(ushort code, const char *call)
 {
-	SUBR_INFO *info;
+	char type;
 	int i, narg;
 	char *expr = NULL;
 	
-	info = SUBR_get_from_opcode((code >> 8) - CODE_FIRST_SUBR, code & 0x3F);
-	if (info->min_param != info->max_param)
-		narg = code & 0x3F;
-	else
-		narg = info->min_param;
-
-	if (_stack_current < narg)
-		THROW("Stack mismatch");
+	JIT_print("  static ushort s%d = 0x%04X;\n", _subr_count, code);
 	
-	//printf("narg = %d\n", narg);
+	if ((code >> 8) < CODE_FIRST_SUBR)
+	{
+		int index = RESERVED_get_from_opcode(code);
+		
+		if (index < 0)
+			THROW("Unknown operator");
+		
+		if (RES_is_unary(index))
+			narg = 1;
+		else if (RES_is_binary(index))
+			narg = 2;
+		else
+			narg = code & 0x3F;
+
+		type = COMP_res_info[index].type;
+	}
+	else
+	{
+		SUBR_INFO *info = SUBR_get_from_opcode((code >> 8) - CODE_FIRST_SUBR, code & 0x3F);
+		if (info->min_param != info->max_param)
+			narg = code & 0x3F;
+		else
+			narg = info->min_param;
+		type = info->type;
+	}
+
+	check_stack(narg);
 	
 	STR_add(&expr, "(");
 	for (i = _stack_current - narg; i < _stack_current; i++)
 	{
 		STR_add(&expr, "PUSH_%s(%s),", JIT_get_type(_stack[i].type), _stack[i].expr);
-		STR_free(_stack[i].expr);
+		free_stack(i);
 	}
 	
 	_stack_current -= narg;
 	
-	STR_add(&expr, "%s(0x%04X))", call, code);
+	STR_add(&expr, "%s(s%d))", call, _subr_count);
 	
-	if (info->type > T_OBJECT)
+	if (type > T_OBJECT)
 		push(TYPE_make_simple(T_UNKNOWN), "%s", expr);
 	else
-		push(TYPE_make_simple(info->type), "%s", expr);
+		push(TYPE_make_simple(type), "%s", expr);
 	
 	STR_free(expr);
+	
+	_subr_count++;
 }
 
 
 static void push_subr_add(ushort code, const char *op, const char *opb, bool allow_pointer)
 {
-	char *expr = NULL;
+	char *expr;
 	char *expr1, *expr2;
-	STACK_SLOT *s1, *s2;
 	TYPE type1, type2, type;
 	
-	if (_stack_current < 2)
-		THROW("Stack mismatch");
+	check_stack(2);
 	
-	s1 = &_stack[_stack_current - 2];
-	s2 = &_stack[_stack_current - 1];
-	type1 = s1->type;
-	type2 = s2->type;
+	type1 = get_type(-2);
+	type2 = get_type(-1);
 	
 	if (TYPE_get_id(type1) > TYPE_get_id(type2))
 		type = type1;
@@ -255,17 +423,15 @@ static void push_subr_add(ushort code, const char *op, const char *opb, bool all
 	switch(TYPE_get_id(type))
 	{
 		case T_BOOLEAN:
-			STR_add(&expr, "%s %s %s", expr1, opb, expr2);
+			expr = STR_print("%s %s %s", expr1, opb, expr2);
 			break;
 			
 		case T_BYTE: case T_SHORT: case T_INTEGER: case T_LONG: case T_SINGLE: case T_FLOAT: case T_POINTER:
-			STR_add(&expr, "%s %s %s", expr1, op, expr2);
+			expr = STR_print("%s %s %s", expr1, op, expr2);
 			break;
 	}
 	
-	STR_free(expr1);
-	STR_free(expr2);
-	_stack_current -= 2;
+	pop_stack(2);
 	
 	push(type, "(%s)", expr);
 	STR_free(expr);
@@ -274,18 +440,14 @@ static void push_subr_add(ushort code, const char *op, const char *opb, bool all
 
 static void push_subr_div(ushort code)
 {
-	char *expr = NULL;
+	char *expr;
 	char *expr1, *expr2;
-	STACK_SLOT *s1, *s2;
 	TYPE type1, type2, type;
 	
-	if (_stack_current < 2)
-		THROW("Stack mismatch");
+	check_stack(2);
 	
-	s1 = &_stack[_stack_current - 2];
-	s2 = &_stack[_stack_current - 1];
-	type1 = s1->type;
-	type2 = s2->type;
+	type1 = get_type(-2);
+	type2 = get_type(-1);
 	
 	if (TYPE_get_id(type1) > TYPE_get_id(type2))
 		type = type1;
@@ -308,13 +470,184 @@ static void push_subr_div(ushort code)
 	
 	expr1 = peek(-2, type, NULL, NULL);
 	expr2 = peek(-1, type, NULL, NULL);
-	STR_add(&expr, "%s / %s", expr1, expr2);
+	expr = STR_print("%s / %s", expr1, expr2);
 
-	STR_free(expr1);
-	STR_free(expr2);
-	_stack_current -= 2;
+	pop_stack(2);
 	
 	push(type, "(%s)", expr);
+	STR_free(expr);
+}
+
+
+static void push_subr_neg(ushort code)
+{
+	TYPE type;
+	char *expr;
+	
+	check_stack(1);
+	
+	type = get_type(-1);
+	
+	switch(TYPE_get_id(type))
+	{
+		case T_BOOLEAN:
+			return;
+
+		case T_BYTE: case T_SHORT: case T_INTEGER: case T_LONG: case T_SINGLE: case T_FLOAT:
+			break;
+
+		default:
+			push_subr(code, "CALL_SUBR_CODE");
+			return;
+	}
+	
+	expr = STR_copy(peek(-1, type, NULL, NULL));
+	
+	pop_stack(1);
+	push(type, "(- %s)", expr);
+	STR_free(expr);
+}
+
+
+
+static void push_subr_and(ushort code, const char *op)
+{
+	char *expr;
+	char *expr1, *expr2;
+	TYPE type1, type2, type;
+	
+	check_stack(2);
+	
+	type1 = get_type(-2);
+	type2 = get_type(-1);
+	
+	if (TYPE_get_id(type1) > TYPE_get_id(type2))
+		type = type1;
+	else
+		type = type2;
+	
+	switch(TYPE_get_id(type))
+	{
+		case T_BOOLEAN: case T_BYTE: case T_SHORT: case T_INTEGER: case T_LONG:
+			break;
+			
+		case T_DATE: case T_STRING: case T_CSTRING:
+			type = TYPE_make_simple(T_BOOLEAN);
+			break;
+			
+		default:
+			push_subr(code, "CALL_SUBR_CODE");
+			return;
+	}
+	
+	expr1 = peek(-2, type, NULL, NULL);
+	expr2 = peek(-1, type, NULL, NULL);
+
+	expr = STR_print("%s %s %s", expr1, op, expr2);
+	
+	pop_stack(2);
+	push(type, "(%s)", expr);
+	STR_free(expr);
+}
+
+
+static void push_subr_not(ushort code)
+{
+	TYPE type;
+	char *expr;
+	char *op;
+	
+	check_stack(1);
+	
+	type = get_type(-1);
+	
+	switch(TYPE_get_id(type))
+	{
+		case T_BOOLEAN:
+			op = "!";
+			break;
+
+		case T_BYTE: case T_SHORT: case T_INTEGER: case T_LONG:
+			op = "~";
+			break;
+
+		default:
+			push_subr(code, "CALL_SUBR_CODE");
+			return;
+	}
+	
+	expr = STR_print("%s%s", op, peek(-1, type, NULL, NULL));
+	
+	pop_stack(1);
+	push(type, "(%s)", expr);
+	STR_free(expr);
+}
+
+
+static void push_subr_comp(ushort code)
+{
+	char *op;
+	char *expr;
+	char *expr1, *expr2;
+	TYPE type1, type2, type;
+	
+	check_stack(2);
+	
+	type1 = get_type(-2);
+	type2 = get_type(-1);
+	
+	if (TYPE_get_id(type1) > TYPE_get_id(type2))
+		type = type1;
+	else
+		type = type2;
+	
+	switch(TYPE_get_id(type))
+	{
+		case T_BOOLEAN: case T_BYTE: case T_SHORT: case T_INTEGER: case T_LONG: case T_SINGLE: case T_FLOAT: case T_POINTER:
+			
+			switch(code & 0xFF00)
+			{
+				case C_EQ: op = "=="; break;
+				case C_NE: op = "!="; break;
+				case C_GT: op = ">"; break;
+				case C_LT: op = "<"; break;
+				case C_GE: op = ">="; break;
+				case C_LE: op = "<="; break;
+			}
+			break;
+			
+		default:
+			push_subr(code, "CALL_SUBR_CODE");
+			return;
+	}
+	
+	expr1 = peek(-2, type, NULL, NULL);
+	expr2 = peek(-1, type, NULL, NULL);
+
+	expr = STR_print("%s %s %s", expr1, op, expr2);
+
+	pop_stack(2);
+	
+	push(TYPE_make_simple(T_BOOLEAN), "(%s)", expr);
+	STR_free(expr);
+}
+
+
+static void push_subr_conv(ushort code)
+{
+	char *expr;
+	TYPE type;
+	TYPE conv = TYPE_make_simple(code & 0x3F);
+
+	check_stack(1);
+	type = get_type(-1);
+	
+	if (TYPE_compare(&type, &conv))
+		return;
+	
+	expr = peek(-1, conv, NULL, NULL);
+	pop_stack(1);
+	push(conv, "(%s)", expr);
 	STR_free(expr);
 }
 
@@ -596,6 +929,7 @@ void JIT_translate_body(FUNCTION *func)
 	ushort code;
 	int index;
 	
+	init();
 	goto _MAIN;
 	
 _MAIN:
@@ -633,7 +967,7 @@ _PUSH_PARAM:
 _POP_PARAM:
 
 	index = func->nparam + GET_XX();
-	pop(func->local[index].type, "p%d", index);
+	pop(func->param[index].type, "p%d", index);
 	goto _MAIN;
 
 _PUSH_QUICK:
@@ -677,6 +1011,50 @@ _POP_DYNAMIC:
 	pop(type, "SET_DYNAMIC_%s(%d)", JIT_get_type(type), GET_7XX());
 	goto _MAIN;
 
+_PUSH_MISC:
+
+	switch (GET_UX())
+	{
+		case 0:
+			push(TYPE_make_simple(T_OBJECT), "NULL");
+			break;
+			
+		case 1:
+			push(TYPE_make_simple(T_VOID), "");
+			break;
+			
+		case 2:
+			push(TYPE_make_simple(T_BOOLEAN), "1");
+			break;
+		
+		case 3:
+			push(TYPE_make_simple(T_BOOLEAN), "0");
+			break;
+			
+		default:
+			goto _ILLEGAL;
+	}
+	goto _MAIN;
+	
+_PUSH_CHAR:
+
+	push(TYPE_make_simple(T_CSTRING), "GET_CHAR(%d)", GET_UX());
+	goto _MAIN;
+
+_POP_OPTIONAL:
+
+	check_stack(1);
+	if (TYPE_get_id(get_type(-1)) == T_VOID)
+		pop_stack(1);
+	else
+	{
+		index = func->nparam + GET_XX() - func->npmin;
+		JIT_print("  if (o%d & %d)\n  ", index / 8, (1 << (index % 8)));
+		index = func->nparam + GET_XX();
+		pop(func->param[index].type, "p%d", index);
+	}
+	goto _MAIN;
+	
 _SUBR:
 
 	push_subr(code, "CALL_SUBR");
@@ -688,6 +1066,7 @@ _SUBR_CODE:
 	goto _MAIN;
 
 _DROP:
+
 	pop(TYPE_make_simple(T_VOID), NULL);
 	goto _MAIN;
 
@@ -717,12 +1096,14 @@ _JUMP:
 	
 _JUMP_IF_TRUE:
 
+	declare("bool t", &_decl_t);
 	pop(TYPE_make_simple(T_BOOLEAN), "t");
 	JIT_print("  if (t) goto __L%d;\n", p + (signed short)PC[0] + 1);
 	goto _MAIN;
 
 _JUMP_IF_FALSE:
 
+	declare("bool t", &_decl_t);
 	pop(TYPE_make_simple(T_BOOLEAN), "t");
 	JIT_print("  if (!t) goto __L%d;\n", p + (signed short)PC[0] + 1);
 	goto _MAIN;
@@ -741,6 +1122,10 @@ _PUSH_CONST_EX:
 	type = class->constant[index].type;
 	push(type, "CONSTANT_%s(%d)", JIT_get_type(type), index);
 	goto _MAIN;
+
+_ADD_QUICK:
+
+	push(TYPE_make_simple(T_INTEGER), "%d", GET_XXX());
 
 _SUBR_ADD:
 
@@ -762,6 +1147,49 @@ _SUBR_DIV:
 	push_subr_div(code);
 	goto _MAIN;
 
+_SUBR_NEG:
+
+	push_subr_neg(code);
+	goto _MAIN;
+
+_SUBR_AND:
+
+	push_subr_and(code, "&");
+	goto _MAIN;
+	
+_SUBR_OR:
+
+	push_subr_and(code, "|");
+	goto _MAIN;
+	
+_SUBR_XOR:
+
+	push_subr_and(code, "^");
+	goto _MAIN;
+	
+_SUBR_NOT:
+
+	push_subr_not(code);
+	goto _MAIN;
+
+_SUBR_COMPE:
+_SUBR_COMPN:
+_SUBR_COMPGT:
+_SUBR_COMPLE:
+_SUBR_COMPLT:
+_SUBR_COMPGE:
+
+	push_subr_comp(code);
+	goto _MAIN;
+
+_BREAK:
+	goto _MAIN;
+
+_SUBR_CONV:
+	
+	push_subr_conv(code);
+	goto _MAIN;
+	
 _PUSH_ARRAY:
 _PUSH_UNKNOWN:
 _PUSH_EXTERN:
@@ -770,11 +1198,7 @@ _PUSH_EVENT:
 _QUIT:
 _POP_ARRAY:
 _POP_UNKNOWN:
-_POP_OPTIONAL:
 _POP_CTRL:
-_BREAK:
-_PUSH_CHAR:
-_PUSH_MISC:
 _PUSH_ME:
 _TRY:
 _END_TRY:
@@ -790,27 +1214,14 @@ _JUMP_FIRST:
 _JUMP_NEXT:
 _ENUM_FIRST:
 _ENUM_NEXT:
-_SUBR_COMPE:
-_SUBR_COMPN:
-_SUBR_COMPGT:
-_SUBR_COMPLE:
-_SUBR_COMPLT:
-_SUBR_COMPGE:
-_SUBR_CONV:
 _SUBR_LEFT:
 _SUBR_MID:
 _SUBR_RIGHT:
 _SUBR_LEN:
-_ADD_QUICK:
 _PUSH_CLASS:
 _PUSH_FUNCTION:
-_SUBR_NEG:
 _SUBR_QUO:
 _SUBR_REM:
-_SUBR_AND:
-_SUBR_OR:
-_SUBR_XOR:
-_SUBR_NOT:
 _ILLEGAL:
 	{
 		char opcode[8];

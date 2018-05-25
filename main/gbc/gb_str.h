@@ -36,6 +36,7 @@ char *STR_lower(const char *str);
 char *STR_free_later(char *str);
 
 void STR_add(char **str, const char *fmt, ...);
+char *STR_print(const char *fmt, ...);
 void STR_vadd(char **str, const char *fmt, va_list args);
 
 #endif

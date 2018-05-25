@@ -99,9 +99,24 @@ static void control_add_current_pos(void)
 	control_add_pos(&current_ctrl->pos, CODE_get_current_pos());
 }
 
+static void control_add_current_pos_break()
+{
+	control_add_pos(&current_ctrl->pos_break, CODE_get_current_pos());
+}
+
+static void control_add_current_pos_continue()
+{
+	control_add_pos(&current_ctrl->pos_continue, CODE_get_current_pos());
+}
+
 static void control_add_this_pos(ushort pos)
 {
 	control_add_pos(&current_ctrl->pos, pos);
+}
+
+static void control_add_this_pos_continue(ushort pos)
+{
+	control_add_pos(&current_ctrl->pos_continue, pos);
 }
 
 
@@ -429,117 +444,81 @@ static ushort trans_jump_if(bool if_true)
 	return pos;
 }
 
-static void trans_endif(void)
+/*static void trans_endif(void)
 {
 	if (current_ctrl->state == 0)
 		jump_length(control_get_value(), CODE_get_current_pos());
 
 	control_jump_each_pos();
-}
+}*/
 
 static void trans_else(void)
 {
 	BEGIN_NO_BREAK
 	{
-		control_add_current_pos();
+		control_add_current_pos_break();
 		CODE_jump();
 	}
 	END_NO_BREAK
 
-	jump_length(control_get_value(), CODE_get_current_pos());
+	control_jump_each_pos_with(current_ctrl->pos_continue);
+	ARRAY_delete(&current_ctrl->pos_continue);
+	//jump_length(control_get_value(), CODE_get_current_pos());
 
 	current_ctrl->state = 1;
 }
 
 static void trans_if(void)
 {
-	int mode = RS_NONE;
-	char *msg;
-
 	TRANS_expression(FALSE);
 
 	if (PATTERN_is(*JOB->current, RS_AND))
 	{
-		mode = RS_AND;
-		msg = "AND IF";
+		for(;;)
+		{
+			control_add_this_pos_continue(trans_jump_if(FALSE));
+			
+			if (!PATTERN_is(*JOB->current, RS_AND))
+				break;
+			
+			JOB->current++;
+			
+			TRANS_want(RS_IF, "AND IF");
+			
+			TRANS_expression(FALSE);
+		}
 	}
 	else if (PATTERN_is(*JOB->current, RS_OR))
 	{
-		mode = RS_OR;
-		msg = "OR IF";
-	}
-
-	if (mode != RS_NONE)
-	{
-		control_enter(RS_IF);
-
-		// IF NOT A THEN
-
-		/*control_set_value(CODE_get_current_pos());
-
-		if (mode == RS_AND)
-			CODE_jump_if_true();
-		else
-			CODE_jump_if_false();*/
-			
-		control_set_value(trans_jump_if(mode == RS_AND));
-
-		//   FALSE
-		CODE_ignore_next_stack_usage();
-		CODE_push_boolean(mode != RS_AND);
-
 		for(;;)
 		{
-			if (!PATTERN_is(*JOB->current, mode))
+			control_add_this_pos(trans_jump_if(TRUE));
+			
+			if (!PATTERN_is(*JOB->current, RS_OR))
 				break;
+			
 			JOB->current++;
-
-			TRANS_want(RS_IF, msg);
-
-			// ELSE IF NOT B THEN
-
-			trans_else();
-
+			
+			TRANS_want(RS_IF, "OR IF");
+			
 			TRANS_expression(FALSE);
-
-			/*control_set_value(CODE_get_current_pos());
-
-			if (mode == RS_AND)
-				CODE_jump_if_true();
-			else
-				CODE_jump_if_false();*/
-				
-			control_set_value(trans_jump_if(mode == RS_AND));
-
-			//   FALSE
-			CODE_ignore_next_stack_usage();
-			CODE_push_boolean(mode != RS_AND);
-
-			if (PATTERN_is(*JOB->current, RS_THEN) || PATTERN_is_newline(*JOB->current))
-				break;
 		}
-
-		// ELSE
-
-		trans_else();
-
-		//   TRUE
-		// ENDIF
-
-		CODE_push_boolean(mode == RS_AND);
-		trans_endif();
-
-		control_leave();
+		
+		control_add_current_pos_continue();
+		CODE_jump();
 	}
-
+	else
+	{
+		control_add_this_pos_continue(trans_jump_if(FALSE));
+	}
+	
 	if (PATTERN_is(*JOB->current, RS_THEN))
 		JOB->current++;
 	else if (!PATTERN_is_newline(*JOB->current))
 		THROW(E_EXPECTED, "THEN");
-
-	/*control_set_value(CODE_get_current_pos());
-	CODE_jump_if_false();*/
-	control_set_value(trans_jump_if(FALSE));
+	
+	control_jump_each_pos();
+	ARRAY_delete(&current_ctrl->pos);
 }
 
 static void trans_else_if(void)
@@ -607,7 +586,7 @@ void TRANS_else(void)
 void TRANS_endif(void)
 {
 	control_check(RS_IF, "ENDIF without IF", "ENDIF");
-	trans_endif();
+	control_jump_each_pos_with(current_ctrl->pos_continue);
 	control_leave();
 }
 
