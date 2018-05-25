@@ -84,11 +84,9 @@ Public Sub Run(Project As String, Test As String)
 
     With $hCurrent
         .ExitCode = hProc.Value
-        ' Important: Do not replace the last condition with $hCurrent.Failed = 0.
-        ' That wouldn't verify if all tests actually ran or if the plan was wrong.
-        .Success = .ExitCode = 0 And .Planned > 0 And .Passed = .Planned
         .Run = .Passed + .Failed + .Todo + .Skipped
         .Delta = .Planned - .Run
+        .Success = .ExitCode = 0 And .Planned > 0 And .Run = .Planned And .Failed = 0
     End With
     $aTests.Push($hCurrent)
 
@@ -168,7 +166,7 @@ Public Sub Parser_Todo(TestNr As Integer, Comment As String)
 
     UndoOk()
     Inc $hCurrent.Todo
-    Inc $hCurrent.Bonus
+    If $bLastOk Then Inc $hCurrent.Bonus
     ' TODO: Add TestStats.Todos As String[], but list Description and Comment?
 
 End

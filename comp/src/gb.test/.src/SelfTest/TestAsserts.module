@@ -2,13 +2,14 @@
 
 Public Sub Main()
 
-    Assert.Setup(10)
+    Assert.Setup(11)
 
     Assert.Ok(True, "True is ok")
     Assert.NotOk(False, "False is not ok")
 
     Assert.Equals(7 * 6, 42, "Multiplication")
-    Assert.Less(Timer, 10, "Gambas is sufficiently fast")
+    Assert.Todo("We might need JIT")
+    Assert.Less(Timer, 0.1, "Gambas is sufficiently fast")
     Assert.Approximate(0.555555, 0.555556, 1e-6, "Float absolute error")
     Assert.Skip("Intentionally wrong")
     Assert.RelativeApproximate(0.5555555, 0.5555565, 1e-6, "Float relative error")
