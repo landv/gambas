@@ -1,0 +1,55 @@
+' Gambas module file
+
+Export
+
+Private $sCompiler As String
+
+Private Sub FindCompiler()
+
+  $sCompiler = System.Find("gcc")
+
+End
+
+Public Sub Compile() As String
+
+  Dim sFile As String
+  Dim sDir As String
+  Dim sName As String
+  Dim sPath As String
+  Dim hFile As File
+  Dim sResult As String
+  
+  sName = Component.FindFromPath("..")
+  sDir = File.Dir(Temp$()) &/ "jit"
+  Try Mkdir sDir
+  sPath = sDir &/ sName & ".c"
+  
+  hFile = Open sPath For Output Create
+  
+  Print #hFile, File.Load("gambas.h");
+  Print #hFile, File.Load("jit.h");
+  
+  sDir = "../.jit"
+  For Each sFile In Dir(sDir, "*.c")
+    Print #hFile, File.Load(sDir &/ sFile);
+  Next
+  
+  Close #hFile
+  
+  FindCompiler
+  'gcc -c -fPIC -o foo.o foo.c
+  Exec [$sCompiler, "-c", "-fPIC", "-o", File.SetExt(sPath, "o"), sPath] To sResult
+  If Process.LastValue Then 
+    Error("gb.jit: warning: unable to compile JIT code: " & sResult)
+    Return
+  Endif
+  'gcc -shared -o libfoo.so foo.o
+  Exec [$sCompiler, "-shared", "-o", File.SetExt(sPath, "so"), File.SetExt(sPath, "o")] To sResult
+  If Process.LastValue Then 
+    Error("gb.jit: warning: unable to link JIT code: " & sResult)
+    Return
+  Endif
+  
+  Return File.SetExt(sPath, "so")
+  
+End
