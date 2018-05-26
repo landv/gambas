@@ -24,7 +24,7 @@
 #ifndef __GB_COMMON_BUFFER_H
 #define __GB_COMMON_BUFFER_H
 
-#define COMMON_BUF_MAX 256
+#define COMMON_BUF_MAX 512
 
 #ifndef __COMMON_BUFFER_C
 EXTERN int COMMON_pos;

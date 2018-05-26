@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  gbx_jit.c
+  gbx_jit.h
 
-  (c) 2012 Emil Lenngren <emil.lenngren [at] gmail.com>
+  (c) 2018 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,15 +31,11 @@
 #include "gbx_object.h"
 #include "gbx_exec.h"
 
-#include "../../gb.jit.llvm/src/gb.jit.h"
+typedef
+	void (*JIT_FUNC)(uchar nparam);
 
-#ifndef __GBX_JIT_C
-
-EXTERN JIT_INTERFACE JIT;
-
-#endif
-
-bool JIT_load(void);
-void JIT_default_jit_function(void);
+bool JIT_compile(ARCHIVE *arch);
+void *JIT_get_function(ARCHIVE *arch, CLASS *class, int index);
+void JIT_hello(void);
 
 #endif

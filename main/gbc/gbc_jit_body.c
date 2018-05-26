@@ -55,7 +55,7 @@ static int _stack_current = 0;
 
 static bool _decl_t;
 static int _subr_count;
-
+static ushort _pc;
 
 static void init(void)
 {
@@ -68,6 +68,7 @@ static void free_stack(int n)
 {
 	if (n < 0) n = _stack_current - n;
 	STR_free(_stack[n].expr);
+	_stack[n].expr = NULL;
 }
 
 
@@ -97,7 +98,7 @@ static void check_labels(ushort pos)
 	{
 		if (TRANS_labels[i] == pos)
 		{
-			JIT_print("__L%d:\n", pos);
+			JIT_print("__L%d:;\n", pos);
 			break;
 		}
 	}
@@ -426,7 +427,7 @@ static void push_subr_add(ushort code, const char *op, const char *opb, bool all
 			expr = STR_print("%s %s %s", expr1, opb, expr2);
 			break;
 			
-		case T_BYTE: case T_SHORT: case T_INTEGER: case T_LONG: case T_SINGLE: case T_FLOAT: case T_POINTER:
+		default:
 			expr = STR_print("%s %s %s", expr1, op, expr2);
 			break;
 	}
@@ -586,7 +587,7 @@ static void push_subr_not(ushort code)
 
 static void push_subr_comp(ushort code)
 {
-	char *op;
+	char *op = NULL;
 	char *expr;
 	char *expr1, *expr2;
 	TYPE type1, type2, type;
@@ -615,10 +616,12 @@ static void push_subr_comp(ushort code)
 				case C_LE: op = "<="; break;
 			}
 			break;
-			
-		default:
-			push_subr(code, "CALL_SUBR_CODE");
-			return;
+	}
+	
+	if (!op)
+	{
+		push_subr(code, "CALL_SUBR_CODE");
+		return;
 	}
 	
 	expr1 = peek(-2, type, NULL, NULL);
@@ -945,6 +948,7 @@ _MAIN:
 		return;
 	}
 	
+	_pc = p;
 	code = func->code[p++];
 	goto *jump_table[code >> 8];
 

@@ -45,6 +45,7 @@
 #include "gbx_c_array.h"
 #include "gbx_struct.h"
 #include "gbx_variant.h"
+#include "gbx_jit.h"
 
 //#define DEBUG_PCODE 1
 
@@ -84,7 +85,7 @@ static void _SUBR_right(ushort code);
 
 //---- Subroutine dispatch table --------------------------------------------
 
-static const void *SubrTable[] =
+const void *EXEC_subr_table[] =
 {
 	/* 00 */ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 	/* 10 */ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -511,7 +512,7 @@ _MAIN:
 _SUBR_CODE:
 
 	//fprintf(stderr, "gbx3: %02X: %s\n", (code >> 8), DEBUG_get_current_position());
-	(*(EXEC_FUNC_CODE)SubrTable[code >> 8])(code);
+	(*(EXEC_FUNC_CODE)EXEC_subr_table[code >> 8])(code);
 
 	//if (PCODE_is_void(code))
 	//  POP();
@@ -555,7 +556,7 @@ _NEXT:
 
 _SUBR:
 
-	(*(EXEC_FUNC)SubrTable[code >> 8])();
+	(*(EXEC_FUNC)EXEC_subr_table[code >> 8])();
 	goto _NEXT;
 
 /*-----------------------------------------------*/
@@ -1131,6 +1132,7 @@ _CALL:
 
 			EXEC.native = FALSE;
 			EXEC.index = val->_function.index;
+			EXEC.func = &EXEC.class->load->func[EXEC.index];
 
 			goto __EXEC_ENTER;
 
@@ -1140,19 +1142,22 @@ _CALL:
 			EXEC.desc = &EXEC.class->table[val->_function.index].desc->method;
 			EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
 			EXEC.class = EXEC.desc->class;
+			EXEC.func = &EXEC.class->load->func[EXEC.index];
 
 			goto __EXEC_ENTER;
 
 		__EXEC_ENTER:
 
-			EXEC_enter_check(val->_function.defined);
-			if (FP->fast)
+			if (EXEC.func->fast)
 			{
-				(*CP->jit_functions[EXEC.index])();
+				(*((JIT_FUNC)(EXEC.func->code)))(EXEC.nparam);
 				goto _NEXT;
 			}
 			else
+			{
+				EXEC_enter_check(val->_function.defined);
 				goto _MAIN;
+			}
 
 		__EXEC_NATIVE:
 
@@ -1227,14 +1232,18 @@ _CALL:
 			{
 				EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
 				EXEC.class = EXEC.desc->class;
-				EXEC_enter();
-				if (FP->fast)
+				EXEC.func = &EXEC.class->load->func[EXEC.index];
+				
+				if (EXEC.func->fast)
 				{
-					(*CP->jit_functions[EXEC.index])();
+					(*((JIT_FUNC)(EXEC.func->code)))(EXEC.nparam);
 					goto _NEXT;
 				}
 				else
+				{
+					EXEC_enter();
 					goto _MAIN;
+				}
 			}
 
 		__CALL_EXTERN:
@@ -1295,13 +1304,7 @@ _CALL_QUICK:
 		__EXEC_ENTER_Q:
 
 			EXEC_enter_quick();
-			if (FP->fast)
-			{
-				(*CP->jit_functions[EXEC.index])();
-				goto _NEXT;
-			}
-			else
-				goto _MAIN;
+			goto _MAIN;
 
 		__CALL_NATIVE_Q:
 
@@ -1410,13 +1413,7 @@ _CALL_SLOW:
 		__EXEC_ENTER_S:
 
 			EXEC_enter();
-			if (FP->fast)
-			{
-				(*CP->jit_functions[EXEC.index])();
-				goto _NEXT;
-			}
-			else
-				goto _MAIN;
+			goto _MAIN;
 
 		__CALL_NATIVE_S:
 

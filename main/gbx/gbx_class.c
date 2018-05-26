@@ -167,8 +167,6 @@ static void unload_class(CLASS *class)
 		if (class->load)
 			FREE(&class->load->prof);
 
-		FREE(&class->jit_functions);
-
 		FREE(&class->load);
 		//if (!class->mmapped)
 		FREE(&class->data);
@@ -937,10 +935,7 @@ void CLASS_inheritance(CLASS *class, CLASS *parent, bool in_jit_compilation)
 
 	TRY
 	{
-		if (!in_jit_compilation)
-			CLASS_load(class->parent);
-		else
-			JIT.LoadClass(class->parent);
+		CLASS_load(class->parent);
 	}
 	CATCH
 	{

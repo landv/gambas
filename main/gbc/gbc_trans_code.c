@@ -560,7 +560,7 @@ void TRANS_code(void)
 			_func = &JOB->class->function[i];
 			if (!_func->start || !_func->fast)
 				continue;
-			JIT_declare_func(_func);
+			JIT_declare_func(_func, i);
 		}
 	}
 	
@@ -627,7 +627,7 @@ void TRANS_code(void)
 		
 		if (fast)
 		{
-			JIT_translate_func(_func);
+			JIT_translate_func(_func, i);
 			ARRAY_delete(&TRANS_labels);
 		}
 	}

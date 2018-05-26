@@ -47,6 +47,7 @@ typedef
 		const char *path;
 		void *current_component;
 		struct _CLASS **exported;
+		void *jit_library;
 		unsigned translation_loaded : 1;
 		unsigned exported_classes_loaded : 1;
 		unsigned version_loaded : 1;

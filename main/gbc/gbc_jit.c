@@ -93,34 +93,28 @@ void JIT_end(void)
 	STR_free(_prefix);
 }
 
-void JIT_declare_func(FUNCTION *func)
+void JIT_declare_func(FUNCTION *func, int index)
 {
-	char *name = STR_lower(TABLE_get_symbol_name(JOB->class->table, func->name));
-	
-	JIT_print("static %s %s_%s_IMPL();\n", get_ctype(func->type), _prefix, name);
-	
 	if (!TYPE_is_public(func->type))
 		JIT_print("static ");
-	JIT_print("void %s_%s();\n", _prefix, name);
+	JIT_print("void %s_%d(uchar n);\n", _prefix, index);
 	
-	STR_free(name);
+	JIT_print("static %s %s_%d_IMPL();\n", get_ctype(func->type), _prefix, index);
 }
 
-void JIT_translate_func(FUNCTION *func)
+void JIT_translate_func(FUNCTION *func, int index)
 {
 	const char *fname = TABLE_get_symbol_name(JOB->class->table, func->name);
-	char *name = STR_lower(fname);
 	int i;
 	TYPE type;
 	int nopt;
 	int opt;
 		
-	
 	JIT_section(fname);
 	
 	if (!TYPE_is_public(func->type))
 		JIT_print("static ");
-	JIT_print("void %s_%s(ushort n)\n{\n", _prefix, name);
+	JIT_print("void %s_%d(uchar n)\n{\n", _prefix, index);
 	
 	/*if (func->nlocal)
 		JIT_print("  GB_VALUE L[%d];\n", func->nlocal);*/
@@ -130,7 +124,7 @@ void JIT_translate_func(FUNCTION *func)
 	if (!TYPE_is_void(func->type))
 		JIT_print("RETURN_%s(", JIT_get_type(func->type));
 	
-	JIT_print("%s_%s_IMPL(", _prefix, name);
+	JIT_print("%s_%d_IMPL(", _prefix, index);
 	
 	for (i = 0; i < func->npmin; i++)
 	{
@@ -157,10 +151,10 @@ void JIT_translate_func(FUNCTION *func)
 	if (func->vararg)
 		THROW("Not supported");
 	
-	JIT_print("));\n");
+	JIT_print(");\n");
 	JIT_print("}\n\n");
 	
-	JIT_print("static %s %s_%s_IMPL(", get_ctype(func->type), _prefix, name);
+	JIT_print("static %s %s_%d_IMPL(", get_ctype(func->type), _prefix, index);
 	
 	for (i = 0; i < func->npmin; i++)
 	{
@@ -220,14 +214,14 @@ void JIT_translate_func(FUNCTION *func)
 	if (func->nlocal)
 		JIT_print("\n");
 	
-	STR_free(name);
-	
 	JIT_translate_body(func);
 	
 	JIT_print("__RETURN:\n");
 	
 	if (!TYPE_is_void(func->type))
 		JIT_print("  return r;\n");
+	else
+		JIT_print("  return;\n");
 	
 	JIT_print("}\n");
 }
@@ -239,14 +233,20 @@ void JIT_vprint(const char *str, va_list args)
 
 void JIT_print(const char *str, ...)
 {
-  va_list args, copy;
+  va_list args;
+	va_list copy;
 	
   va_start(args, str);
-	va_copy(copy, args);
+	
+	if (JOB->verbose)
+	{
+		va_copy(copy, args);
+		vprintf(str, copy);
+		va_end(copy);
+	}
+	
   vfprintf(_file, str, args);
 	va_end(args);
-	vprintf(str, copy);
-	va_end(copy);
 }
 
 void JIT_section(const char *str)

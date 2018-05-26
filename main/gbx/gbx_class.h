@@ -337,9 +337,7 @@ typedef
 
 		COMPONENT *component;             // 128 208  The component the class belongs to
 
-		void (**jit_functions)(void);     // 132 216  array of jit functions
-
-		struct _CLASS *next;              // 136 224  next class
+		struct _CLASS *next;              // 132 216  next class
 		}
 	CLASS;
 

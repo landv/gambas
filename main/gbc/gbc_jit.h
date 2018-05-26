@@ -32,8 +32,8 @@
 
 void JIT_begin(void);
 void JIT_end(void);
-void JIT_declare_func(FUNCTION *func);
-void JIT_translate_func(FUNCTION *func);
+void JIT_declare_func(FUNCTION *func, int index);
+void JIT_translate_func(FUNCTION *func, int index);
 
 void JIT_section(const char *str);
 

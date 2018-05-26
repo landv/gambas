@@ -18,15 +18,18 @@ Public Sub Compile() As String
   Dim sPath As String
   Dim hFile As File
   Dim sResult As String
+  Dim sPathO As String
+  Dim sPathSO As String
   
   sName = Component.FindFromPath("..")
   sDir = File.Dir(Temp$()) &/ "jit"
   Try Mkdir sDir
   sPath = sDir &/ sName & ".c"
   
+  Error "gb.jit: generating "; sPath
+  
   hFile = Open sPath For Output Create
   
-  Print #hFile, File.Load("gambas.h");
   Print #hFile, File.Load("jit.h");
   
   sDir = "../.jit"
@@ -36,17 +39,24 @@ Public Sub Compile() As String
   
   Close #hFile
   
+  sPathO = File.SetExt(sPath, "o")
+  sPathSO = File.SetExt(sPath, "so")
+  
   FindCompiler
   'gcc -c -fPIC -o foo.o foo.c
-  Exec [$sCompiler, "-c", "-fPIC", "-o", File.SetExt(sPath, "o"), sPath] To sResult
-  If Process.LastValue Then 
-    Error("gb.jit: warning: unable to compile JIT code: " & sResult)
+  'Exec [$sCompiler, "-c", "-fPIC", "-o", File.SetExt(sPath, "o"), sPath] To sResult
+  Shell $sCompiler & " -c -fPIC -o " & Shell(sPathO) & " " & Shell(sPath) & " 2>&1" To sResult
+  If Not Exist(sPathO) Then 
+    Error "gb.jit: warning: unable to compile JIT code:"
+    Error sResult
     Return
   Endif
   'gcc -shared -o libfoo.so foo.o
-  Exec [$sCompiler, "-shared", "-o", File.SetExt(sPath, "so"), File.SetExt(sPath, "o")] To sResult
-  If Process.LastValue Then 
-    Error("gb.jit: warning: unable to link JIT code: " & sResult)
+  'Exec [$sCompiler, "-shared", "-o", File.SetExt(sPath, "so"), File.SetExt(sPath, "o")] To sResult
+  Shell $sCompiler & " -shared -o " & Shell(sPathSO) & " " & Shell(sPathO) & " 2>&1" To sResult
+  If Not Exist(sPathSO) Then 
+    Error "gb.jit: warning: unable to link JIT code:"
+    Error sResult
     Return
   Endif
   

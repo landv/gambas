@@ -44,13 +44,14 @@ typedef
 
 typedef
 	void (*EXEC_FUNC_CODE)(ushort);
-
+	
 typedef
 	struct {
 		CLASS *class;
 		OBJECT *object;
-		int index;
 		CLASS_DESC_METHOD *desc;
+		FUNCTION *func;
+		int index;
 		char nparam;
 		bool native;
 		bool use_stack;
@@ -118,6 +119,8 @@ extern char EXEC_unknown_nparam;
 extern uchar EXEC_quit_value;
 
 extern EXEC_GLOBAL EXEC;
+
+extern const void *EXEC_subr_table[];
 
 #endif
 
@@ -209,7 +212,6 @@ void EXEC_native_check(bool defined);
 void EXEC_native_quick(void);
 void EXEC_native(void);
 void EXEC_function_real(void);
-void EXEC_jit_function_loop(void);
 void EXEC_function_loop(void);
 
 #define EXEC_function() EXEC_function_real(), EXEC_release_return_value()
