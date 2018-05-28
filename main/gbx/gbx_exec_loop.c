@@ -1051,7 +1051,7 @@ _RETURN:
 
 		EXEC_leave_keep();
 
-		if (PC == NULL || FP->fast)
+		if (PC == NULL)
 			return;
 
 		goto _NEXT;
@@ -1150,7 +1150,7 @@ _CALL:
 
 			if (EXEC.func->fast)
 			{
-				(*((JIT_FUNC)(EXEC.func->code)))(EXEC.nparam);
+				JIT_exec();
 				goto _NEXT;
 			}
 			else
@@ -1236,7 +1236,7 @@ _CALL:
 				
 				if (EXEC.func->fast)
 				{
-					(*((JIT_FUNC)(EXEC.func->code)))(EXEC.nparam);
+					JIT_exec();
 					goto _NEXT;
 				}
 				else

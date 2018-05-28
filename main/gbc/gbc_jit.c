@@ -95,8 +95,6 @@ void JIT_end(void)
 
 void JIT_declare_func(FUNCTION *func, int index)
 {
-	if (!TYPE_is_public(func->type))
-		JIT_print("static ");
 	JIT_print("void %s_%d(uchar n);\n", _prefix, index);
 	
 	JIT_print("static %s %s_%d_IMPL();\n", get_ctype(func->type), _prefix, index);
@@ -112,8 +110,6 @@ void JIT_translate_func(FUNCTION *func, int index)
 		
 	JIT_section(fname);
 	
-	if (!TYPE_is_public(func->type))
-		JIT_print("static ");
 	JIT_print("void %s_%d(uchar n)\n{\n", _prefix, index);
 	
 	/*if (func->nlocal)

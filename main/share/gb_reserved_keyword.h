@@ -332,8 +332,8 @@ SUBR_INFO COMP_subr_info[] =
 	{ "Min",               29,  0, RST_MIN,        2,    },
 	{ "Max",               30,  0, RST_MIN,        2,    },   // CODE_MAX
 
-	{ "If",                31,  0, RST_SAME,       3,    },
-	{ "IIf",               31,  0, RST_SAME,       3,    },
+	{ "If",                31,  0, T_VARIANT,      3,    },
+	{ "IIf",               31,  0, T_VARIANT,      3,    },
 	{ "Choose",            32,  0, T_VARIANT,      1, 63 },
 
 	{ ".Array",            33,  0, T_OBJECT,       0, 63 },   // Needed for Eval("[...]")

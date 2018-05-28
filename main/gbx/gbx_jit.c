@@ -27,6 +27,8 @@
 #include "gb_common_buffer.h"
 #include "gb_common_case.h"
 #include "gbx_component.h"
+#include "gbx_exec.h"
+#include "gbx_object.h"
 #include "gbx_api.h"
 #include "gbx_jit.h"
 
@@ -80,7 +82,7 @@ bool JIT_compile(ARCHIVE *arch)
 	if (!*path)
 		ERROR_panic("Unable to compile jit source file");
 	
-	fprintf(stderr, "gbx3: shared jit library is: %s\n", path);
+	//fprintf(stderr, "gbx3: shared jit library is: %s\n", path);
 
 	lib = dlopen(path, RTLD_NOW);
 	if (!lib)
@@ -91,9 +93,11 @@ bool JIT_compile(ARCHIVE *arch)
 	else
 		_jit_library = lib;
 	
+  iface = dlsym(lib, "GB_PTR");
+	if (iface) *((void **)iface) = &GAMBAS_Api;
+	
   iface = dlsym(lib, "JIT_PTR");
-	if (iface)
-		*((void **)iface) = &GAMBAS_JitApi;
+	if (iface) *((void **)iface) = &GAMBAS_JitApi;
 	
 	return FALSE;
 }
@@ -121,7 +125,38 @@ void *JIT_get_function(ARCHIVE *arch, CLASS *class, int index)
 	return addr;
 }
 
-void JIT_hello(void)
+
+void JIT_exec(void)
 {
-	fprintf(stderr, "Hello JIT!\n");
+	CLASS *class = CP;
+	void *object = OP;
+	VALUE *sp = SP;
+	
+	CP = EXEC.class;
+	OP = (void *)EXEC.object;
+	
+	(*((JIT_FUNC)(EXEC.func->code)))(EXEC.nparam);
+	
+	if (SP != sp)
+		fprintf(stderr, "SP: %+ld !\n", (SP - sp) / sizeof(VALUE));
+	
+	CP = class;
+	OP = object;
+}
+
+void *JIT_get_dynamic_addr(int index)
+{
+	CLASS_VAR *var = &CP->load->dyn[index];
+	return &OP[var->pos];
+}
+
+void *JIT_get_static_addr(int index)
+{
+	CLASS_VAR *var = &CP->load->stat[index];
+	return &((char *)CP->stat)[var->pos];
+}
+
+CLASS_CONST *JIT_get_constant(int index)
+{
+	return &CP->load->cst[index];
 }

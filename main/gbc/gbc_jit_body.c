@@ -57,6 +57,8 @@ static bool _decl_t;
 static int _subr_count;
 static ushort _pc;
 
+static bool _no_release = FALSE;
+
 static void init(void)
 {
 	_decl_t = FALSE;
@@ -163,6 +165,8 @@ static TYPE get_type(int n)
 	return _stack[n].type;
 }
 
+#define get_type_id(_n) TYPE_get_id(get_type(_n))
+
 
 static char *get_conv(TYPE src, TYPE dest)
 {
@@ -180,6 +184,9 @@ static char *get_conv(TYPE src, TYPE dest)
 	
 	switch(d)
 	{
+		case T_VOID:
+			return "((void)%s)";
+			
 		case T_BOOLEAN:
 			
 			switch(s)
@@ -255,6 +262,21 @@ static char *get_conv(TYPE src, TYPE dest)
 			}
 			break;
 			
+		case T_STRING:
+			
+			switch(s)
+			{
+				case T_CSTRING: return "%s";
+			}
+			break;
+
+		case T_CSTRING:
+			
+			switch(s)
+			{
+				case T_STRING: return "%s";
+			}
+			break;
 	}
 	
 	sprintf(buffer, "CONV_%s_%s(%%s)", JIT_get_type(src), JIT_get_type(dest));
@@ -277,13 +299,16 @@ static char *peek(int n, TYPE conv, const char *fmt, va_list args)
 		STR_vadd(&dest, fmt, args);
 		JIT_print("  ");
 	
-		switch (TYPE_get_id(type))
+		if (!_no_release)
 		{
-			case T_STRING:
-			case T_VARIANT:
-			case T_OBJECT:
-				JIT_print("RELEASE_%s(%s), ", JIT_get_type(type), dest);
-				break;
+			switch (TYPE_get_id(conv))
+			{
+				case T_STRING:
+				case T_VARIANT:
+				case T_OBJECT:
+					JIT_print("RELEASE_%s(%s), ", JIT_get_type(conv), dest);
+					break;
+			}
 		}
 	}
 	
@@ -298,7 +323,13 @@ static char *peek(int n, TYPE conv, const char *fmt, va_list args)
 	
 	if (fmt)
 	{
-		JIT_print("%s = %s;\n", dest, expr);
+		if (_no_release)
+		{
+			JIT_print(dest, expr);
+			JIT_print(";\n");
+		}
+		else
+			JIT_print("%s = %s;\n", dest, expr);
 		STR_free(dest);
 	}
 	
@@ -362,7 +393,22 @@ static void push_subr(ushort code, const char *call)
 
 	check_stack(narg);
 	
-	STR_add(&expr, "(");
+	switch(type)
+	{
+		case RST_SAME:
+		case RST_BCLR:
+			type = get_type_id(-narg);
+			break;
+			
+		case RST_MIN:
+			type = Max(get_type_id(-1), get_type_id(-2));
+			if (type > T_DATE && type != T_VARIANT)
+				type = T_UNKNOWN;
+	}
+	
+	if (type > T_OBJECT)
+		type = T_UNKNOWN;
+	
 	for (i = _stack_current - narg; i < _stack_current; i++)
 	{
 		STR_add(&expr, "PUSH_%s(%s),", JIT_get_type(_stack[i].type), _stack[i].expr);
@@ -371,12 +417,13 @@ static void push_subr(ushort code, const char *call)
 	
 	_stack_current -= narg;
 	
-	STR_add(&expr, "%s(s%d))", call, _subr_count);
-	
-	if (type > T_OBJECT)
-		push(TYPE_make_simple(T_UNKNOWN), "%s", expr);
+	STR_add(&expr, "%s(s%d)", call, _subr_count);
+	if (type == T_VOID)
+		STR_add(&expr, ",SP--");
 	else
-		push(TYPE_make_simple(type), "%s", expr);
+		STR_add(&expr, ",POP_%s()", JIT_get_type(TYPE_make_simple(type)));
+	
+	push(TYPE_make_simple(type), "(%s)", expr);
 	
 	STR_free(expr);
 	
@@ -1006,13 +1053,17 @@ _PUSH_DYNAMIC:
 _POP_STATIC:
 
 	type = class->stat[GET_7XX()].type;
-	pop(type, "SET_STATIC_%s(%d)", JIT_get_type(type), GET_7XX());
+	_no_release = TRUE;
+	pop(type, "SET_STATIC_%s(%d, %%s)", JIT_get_type(type), GET_7XX());
+	_no_release = FALSE;
 	goto _MAIN;
 
 _POP_DYNAMIC:
 
 	type = class->stat[GET_7XX()].type;
-	pop(type, "SET_DYNAMIC_%s(%d)", JIT_get_type(type), GET_7XX());
+	_no_release = TRUE;
+	pop(type, "SET_DYNAMIC_%s(%d, %%s)", JIT_get_type(type), GET_7XX());
+	_no_release = FALSE;
 	goto _MAIN;
 
 _PUSH_MISC:
@@ -1116,7 +1167,7 @@ _PUSH_CONST:
 
 	index = GET_UXX();
 	type = class->constant[index].type;
-	push(type, "CONSTANT_%s(%d)", JIT_get_type(type), index);
+	push(TYPE_get_id(type) == T_STRING ? TYPE_make_simple(T_CSTRING) : type, "CONSTANT_%s(%d)", JIT_get_type(type), index);
 	goto _MAIN;
 
 _PUSH_CONST_EX:
@@ -1124,7 +1175,7 @@ _PUSH_CONST_EX:
 	index = PC[0];
 	p++;
 	type = class->constant[index].type;
-	push(type, "CONSTANT_%s(%d)", JIT_get_type(type), index);
+	push(TYPE_get_id(type) == T_STRING ? TYPE_make_simple(T_CSTRING) : type, "CONSTANT_%s(%d)", JIT_get_type(type), index);
 	goto _MAIN;
 
 _ADD_QUICK:

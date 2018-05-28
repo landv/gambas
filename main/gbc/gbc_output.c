@@ -756,7 +756,7 @@ static void output_method(void)
 		write_byte(func->npmin);
 		write_byte(func->vararg);
 
-		flag = func->fast || Class->all_fast;
+		flag = func->fast;
 		if (func->use_is_missing)
 			flag += 2;
 

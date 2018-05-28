@@ -28,7 +28,9 @@
 #include <strings.h>
 #endif
 
+#ifndef NO_CONFIG_H
 #include "config.h"
+#endif
 #include <stdint.h>
 #include <stddef.h>
 #include <sys/types.h>

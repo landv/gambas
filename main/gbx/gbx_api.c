@@ -308,7 +308,7 @@ const void *const GAMBAS_Api[] =
 	NULL
 };
 
-const void *GAMBAS_DebugApi[] =
+const void *const GAMBAS_DebugApi[] =
 {
 	(void *)GB_DebugGetExec,
 	(void *)STACK_get_frame,
@@ -332,10 +332,15 @@ const void *GAMBAS_DebugApi[] =
 	NULL
 };
 
-void *GAMBAS_JitApi[] =
+const void *const GAMBAS_JitApi[] =
 {
 	(void *)&SP,
 	(void *)&PC,
+	(void *)&CP,
+	(void *)&OP,
+	(void *)JIT_get_static_addr,
+	(void *)JIT_get_dynamic_addr,
+	(void *)JIT_get_constant,
 	(void *)EXEC_subr_table,
 	(void *)STRING_char_table,
 	NULL

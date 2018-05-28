@@ -20,6 +20,9 @@ Public Sub Compile() As String
   Dim sResult As String
   Dim sPathO As String
   Dim sPathSO As String
+  Dim fTime As Float
+  
+  fTime = Timer
   
   sName = Component.FindFromPath("..")
   sDir = File.Dir(Temp$()) &/ "jit"
@@ -30,7 +33,17 @@ Public Sub Compile() As String
   
   hFile = Open sPath For Output Create
   
+  
+  Print #hFile, "#define NO_CONFIG_H"
+  Print #hFile, File.Load("gambas.h");
   Print #hFile, File.Load("jit.h");
+  Print #hFile, File.Load("gb.jit.h");
+
+  Print #hFile, "GB_INTERFACE *GB_PTR;"
+  Print #hFile, "#define GB (*GB_PTR)"
+
+  Print #hFile, "JIT_INTERFACE *JIT_PTR;"
+  Print #hFile, "#define JIT (*JIT_PTR)"
   
   sDir = "../.jit"
   For Each sFile In Dir(sDir, "*.c")
@@ -43,6 +56,9 @@ Public Sub Compile() As String
   sPathSO = File.SetExt(sPath, "so")
   
   FindCompiler
+  
+  Error "gb.jit: compiling to "; sPathO
+  
   'gcc -c -fPIC -o foo.o foo.c
   'Exec [$sCompiler, "-c", "-fPIC", "-o", File.SetExt(sPath, "o"), sPath] To sResult
   Shell $sCompiler & " -c -fPIC -o " & Shell(sPathO) & " " & Shell(sPath) & " 2>&1" To sResult
@@ -51,6 +67,9 @@ Public Sub Compile() As String
     Error sResult
     Return
   Endif
+
+  Error "gb.jit: linking to "; sPathSO
+  
   'gcc -shared -o libfoo.so foo.o
   'Exec [$sCompiler, "-shared", "-o", File.SetExt(sPath, "so"), File.SetExt(sPath, "o")] To sResult
   Shell $sCompiler & " -shared -o " & Shell(sPathSO) & " " & Shell(sPathO) & " 2>&1" To sResult
@@ -59,6 +78,8 @@ Public Sub Compile() As String
     Error sResult
     Return
   Endif
+  
+  Error "gb.jit: done in "; Format(Timer - fTime, "0.000"); "s"
   
   Return File.SetExt(sPath, "so")
   

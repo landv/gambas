@@ -26,7 +26,7 @@ libgbx_a_SOURCES = \
 
 gbx3_SOURCES = \
  gbx_debug.h gbx_debug.c \
- gbx_jit.h gbx_jit.c \
+ gbx_jit.h gbx_jit.c gb.jit.h \
  gb_alloc.c gb_array.c \
  gbx_stack.h gbx_stack.c \
  gb_buffer.c gbx_replace.c \

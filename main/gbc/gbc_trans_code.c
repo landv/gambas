@@ -558,7 +558,9 @@ void TRANS_code(void)
 		for (i = 0; i < ARRAY_count(JOB->class->function); i++)
 		{
 			_func = &JOB->class->function[i];
-			if (!_func->start || !_func->fast)
+			if (JOB->class->all_fast)
+				_func->fast = TRUE;
+			if (!_func->fast)
 				continue;
 			JIT_declare_func(_func, i);
 		}
@@ -598,6 +600,10 @@ void TRANS_code(void)
 			CODE_op(C_RETURN, 0, 0, TRUE);
 			if (JOB->verbose)
 				CODE_dump(_func->code, _func->ncode);
+
+			if (fast)
+				JIT_translate_func(_func, i);
+			
 			continue;
 		}
 		
@@ -632,7 +638,7 @@ void TRANS_code(void)
 		}
 	}
 
-	if (fast)
+	if (JOB->class->has_fast)
 		JIT_end();
 	
 	CLASS_check_properties(JOB->class);
