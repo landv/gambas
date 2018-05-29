@@ -59,7 +59,7 @@ const char *JIT_get_type(TYPE type)
 	return _type_name[TYPE_get_id(type)];
 }
 
-static const char *get_ctype(TYPE type)
+const char *JIT_get_ctype(TYPE type)
 {
 	return _ctype_name[TYPE_get_id(type)];
 }
@@ -97,7 +97,7 @@ void JIT_declare_func(FUNCTION *func, int index)
 {
 	JIT_print("void %s_%d(uchar n);\n", _prefix, index);
 	
-	JIT_print("static %s %s_%d_IMPL();\n", get_ctype(func->type), _prefix, index);
+	JIT_print("static %s %s_%d_IMPL();\n", JIT_get_ctype(func->type), _prefix, index);
 }
 
 void JIT_translate_func(FUNCTION *func, int index)
@@ -150,12 +150,12 @@ void JIT_translate_func(FUNCTION *func, int index)
 	JIT_print(");\n");
 	JIT_print("}\n\n");
 	
-	JIT_print("static %s %s_%d_IMPL(", get_ctype(func->type), _prefix, index);
+	JIT_print("static %s %s_%d_IMPL(", JIT_get_ctype(func->type), _prefix, index);
 	
 	for (i = 0; i < func->npmin; i++)
 	{
 		if (i) JIT_print(", ");
-		JIT_print("%s p%d", get_ctype(func->param[i].type), i);
+		JIT_print("%s p%d", JIT_get_ctype(func->param[i].type), i);
 	}
 	
 	if (i < func->nparam)
@@ -170,7 +170,7 @@ void JIT_translate_func(FUNCTION *func, int index)
 				opt++;
 			}
 			
-			JIT_print(", %s p%d", get_ctype(func->param[i].type), i);
+			JIT_print(", %s p%d", JIT_get_ctype(func->param[i].type), i);
 			
 			nopt++;
 			if (nopt >= 8)
@@ -187,12 +187,12 @@ void JIT_translate_func(FUNCTION *func, int index)
 			if (TYPE_is_void(func->type))
 				continue;
 			type = func->type;
-			JIT_print("  %s r = ", get_ctype(type));
+			JIT_print("  %s r = ", JIT_get_ctype(type));
 		}
 		else
 		{
 			type = func->local[i].type;
-			JIT_print("  %s l%d = ", get_ctype(type), i);
+			JIT_print("  %s l%d = ", JIT_get_ctype(type), i);
 		}
 		
 		switch(TYPE_get_id(type))
@@ -211,8 +211,6 @@ void JIT_translate_func(FUNCTION *func, int index)
 		JIT_print("\n");
 	
 	JIT_translate_body(func);
-	
-	JIT_print("__RETURN:\n");
 	
 	if (!TYPE_is_void(func->type))
 		JIT_print("  return r;\n");

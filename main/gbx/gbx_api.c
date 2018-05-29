@@ -338,11 +338,13 @@ const void *const GAMBAS_JitApi[] =
 	(void *)&PC,
 	(void *)&CP,
 	(void *)&OP,
+	(void *)JIT_debug,
 	(void *)JIT_get_static_addr,
 	(void *)JIT_get_dynamic_addr,
 	(void *)JIT_get_constant,
 	(void *)EXEC_subr_table,
 	(void *)STRING_char_table,
+	(void *)UNBORROW,
 	NULL
 };
 

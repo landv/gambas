@@ -138,7 +138,7 @@ void JIT_exec(void)
 	(*((JIT_FUNC)(EXEC.func->code)))(EXEC.nparam);
 	
 	if (SP != sp)
-		fprintf(stderr, "SP: %+ld !\n", (SP - sp) / sizeof(VALUE));
+		fprintf(stderr, "SP: %+ld (%ld) !\n", (SP - sp) / sizeof(VALUE), SP - sp);
 	
 	CP = class;
 	OP = object;
@@ -159,4 +159,13 @@ void *JIT_get_static_addr(int index)
 CLASS_CONST *JIT_get_constant(int index)
 {
 	return &CP->load->cst[index];
+}
+
+void JIT_debug(const char *fmt, ...)
+{
+	va_list args;
+	
+	va_start(args, fmt);
+	vfprintf(stderr, fmt, args);
+	va_end(args);
 }

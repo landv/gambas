@@ -43,11 +43,13 @@ typedef
 		PCODE **pc;
 		void **cp;
 		void **op;
+		void (*debug)(const char *fmt, ...);
 		void *(*get_static_addr)(int index);
 		void *(*get_dynamic_addr)(int index);
 		JIT_CONSTANT *(*get_constant)(int index);
 		void **subr_table;
 		const char *char_table;
+		void *(*unborrow)(VALUE *val);
 	}
 	JIT_INTERFACE;
 

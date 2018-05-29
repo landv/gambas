@@ -79,10 +79,6 @@ static void _SUBR_sub(ushort code);
 static void _SUBR_mul(ushort code);
 static void _SUBR_div(ushort code);
 
-static void _SUBR_left(ushort code);
-static void _SUBR_mid(ushort code);
-static void _SUBR_right(ushort code);
-
 //---- Subroutine dispatch table --------------------------------------------
 
 const void *EXEC_subr_table[] =
@@ -98,9 +94,9 @@ const void *EXEC_subr_table[] =
 	/* 38 */  SUBR_and_,            SUBR_and_,            SUBR_and_,            SUBR_not,
 	/* 3C */  SUBR_cat,             SUBR_like,            SUBR_file,            SUBR_is,
 
-	NULL,            /* 00 40 */
-	NULL,            /* 01 41 */
-	NULL,            /* 02 42 */
+	SUBR_left,       /* 00 40 */
+	SUBR_mid,        /* 01 41 */
+	SUBR_right,      /* 02 42 */
 	NULL,            /* 03 43 */
 	SUBR_space,      /* 04 44 */
 	SUBR_string,     /* 05 45 */
@@ -2346,21 +2342,21 @@ _SUBR_CONV:
 
 _SUBR_LEFT:
 
-	_SUBR_left(code);
+	SUBR_left(code);
 	goto _NEXT;
 
 /*-----------------------------------------------*/
 
 _SUBR_RIGHT:
 
-	_SUBR_right(code);
+	SUBR_right(code);
 	goto _NEXT;
 
 /*-----------------------------------------------*/
 
 _SUBR_MID:
 
-	_SUBR_mid(code);
+	SUBR_mid(code);
 	goto _NEXT;
 
 /*-----------------------------------------------*/
@@ -4001,7 +3997,7 @@ static void _break(ushort code)
 		*PC = C_NOP;
 }
 
-void _SUBR_left(ushort code)
+void SUBR_left(ushort code)
 {
 	int val;
 
@@ -4027,7 +4023,7 @@ void _SUBR_left(ushort code)
 	SP++;
 }
 
-void _SUBR_mid(ushort code)
+void SUBR_mid(ushort code)
 {
 	int start;
 	int len;
@@ -4082,7 +4078,7 @@ _SUBR_MID_FIN:
 	SP++;
 }
 
-void _SUBR_right(ushort code)
+void SUBR_right(ushort code)
 {
 	int val;
 	int new_len;

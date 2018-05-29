@@ -343,4 +343,8 @@ void EXEC_operator_object_sgn(VALUE *P1);
 void EXEC_operator_object_fabs(VALUE *P1);
 void EXEC_operator_object_single(uchar op, VALUE *P1);
 
+void SUBR_left(ushort code);
+void SUBR_mid(ushort code);
+void SUBR_right(ushort code);
+
 #endif /* */

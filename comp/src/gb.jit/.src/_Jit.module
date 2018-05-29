@@ -24,7 +24,8 @@ Public Sub Compile() As String
   
   fTime = Timer
   
-  sName = Component.FindFromPath("..")
+  sName = Component.FindFromPath("../.jit")
+  If Not sName Then sName = "gb"
   sDir = File.Dir(Temp$()) &/ "jit"
   Try Mkdir sDir
   sPath = sDir &/ sName & ".c"
@@ -55,13 +56,18 @@ Public Sub Compile() As String
   sPathO = File.SetExt(sPath, "o")
   sPathSO = File.SetExt(sPath, "so")
   
-  FindCompiler
+  If Not $sCompiler Then FindCompiler
   
+  ' Error "gb.jit: preprocessing:"
+  ' 
+  ' Shell $sCompiler & " -E " & Shell(sPath) & " 2>&1" To sResult
+  ' Error sResult
+
   Error "gb.jit: compiling to "; sPathO
   
   'gcc -c -fPIC -o foo.o foo.c
   'Exec [$sCompiler, "-c", "-fPIC", "-o", File.SetExt(sPath, "o"), sPath] To sResult
-  Shell $sCompiler & " -c -fPIC -o " & Shell(sPathO) & " " & Shell(sPath) & " 2>&1" To sResult
+  Shell $sCompiler & " -c -fPIC -g -O3 -o " & Shell(sPathO) & " " & Shell(sPath) & " 2>&1" To sResult
   If Not Exist(sPathO) Then 
     Error "gb.jit: warning: unable to compile JIT code:"
     Error sResult
@@ -72,7 +78,7 @@ Public Sub Compile() As String
   
   'gcc -shared -o libfoo.so foo.o
   'Exec [$sCompiler, "-shared", "-o", File.SetExt(sPath, "so"), File.SetExt(sPath, "o")] To sResult
-  Shell $sCompiler & " -shared -o " & Shell(sPathSO) & " " & Shell(sPathO) & " 2>&1" To sResult
+  Shell $sCompiler & " -shared -g -O3 -o " & Shell(sPathSO) & " " & Shell(sPathO) & " 2>&1" To sResult
   If Not Exist(sPathSO) Then 
     Error "gb.jit: warning: unable to link JIT code:"
     Error sResult
@@ -81,6 +87,9 @@ Public Sub Compile() As String
   
   Error "gb.jit: done in "; Format(Timer - fTime, "0.000"); "s"
   
-  Return File.SetExt(sPath, "so")
+  'Shell "objdump -S " & Shell(sPathSO) To sResult
+  'Error sResult
+  
+  Return sPathSO
   
 End
