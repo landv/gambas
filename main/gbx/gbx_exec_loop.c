@@ -66,8 +66,6 @@
 
 static void my_VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype, void *ref);
 static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind);
-static void _push_array(ushort code);
-static void _pop_array(ushort code);
 static void _quit(ushort code);
 static void _break(ushort code);
 
@@ -577,7 +575,7 @@ _PUSH_PARAM:
 
 _PUSH_ARRAY:
 
-	_push_array(code);
+	EXEC_push_array(code);
 	goto _NEXT;
 
 /*-----------------------------------------------*/
@@ -668,7 +666,7 @@ _POP_CTRL:
 
 _POP_ARRAY:
 
-	_pop_array(code);
+	EXEC_pop_array(code);
 	goto _NEXT;
 
 /*-----------------------------------------------*/
@@ -3520,7 +3518,7 @@ __LE:
 }
 #endif
 
-static void _push_array(ushort code)
+void EXEC_push_array(ushort code)
 {
 	static const void *jump[] = {
 		&&__PUSH_GENERIC, &&__PUSH_GENERIC, &&__PUSH_GENERIC, &&__PUSH_GENERIC,
@@ -3710,7 +3708,7 @@ __PUSH_ARRAY_2:
 		VALUE_conv_variant(&SP[-1]);
 }
 
-static void _pop_array(ushort code)
+void EXEC_pop_array(ushort code)
 {
 	static const void *jump[] = {
 		&&__POP_GENERIC, &&__POP_GENERIC, &&__POP_GENERIC, &&__POP_GENERIC,

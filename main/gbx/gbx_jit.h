@@ -41,5 +41,6 @@ void JIT_exec(void);
 void *JIT_get_static_addr(int index);
 void *JIT_get_dynamic_addr(int index);
 CLASS_CONST *JIT_get_constant(int index);
+void *JIT_get_class_ref(int index);
 
 #endif

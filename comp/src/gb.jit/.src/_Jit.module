@@ -34,7 +34,6 @@ Public Sub Compile() As String
   
   hFile = Open sPath For Output Create
   
-  
   Print #hFile, "#define NO_CONFIG_H"
   Print #hFile, File.Load("gambas.h");
   Print #hFile, File.Load("jit.h");

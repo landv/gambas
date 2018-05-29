@@ -43,15 +43,15 @@ static char *_prefix;
 static const char *_type_name[] = 
 {
 	"" , "b", "c", "h", "i", "l", "g", "f",
-	"d", "s", "t", "p", "v", "A", "S", "n", "o",
-	"u"
+	"d", "s", "t", "p", "v", "A", "S", "n",
+	"o", "u", "C"
 };
 
 static const char *_ctype_name[] = 
 {
 	"void" , "char", "uchar", "short", "int", "int64_t", "float", "double",
-	"GB_DATE", "GB_STRING", "GB_STRING", "intptr_t", "GB_VARIANT", "?", "?", "?", "void *",
-	"GB_VALUE"
+	"GB_DATE", "GB_STRING", "GB_STRING", "intptr_t", "GB_VARIANT", "?", "?", "?", 
+	"GB_OBJECT", "GB_VALUE", "?"
 };
 
 const char *JIT_get_type(TYPE type)
@@ -199,6 +199,7 @@ void JIT_translate_func(FUNCTION *func, int index)
 		{
 			case T_DATE:
 			case T_STRING:
+			case T_OBJECT:
 			case T_VARIANT:
 				JIT_print("{0}");
 				break;
@@ -211,6 +212,22 @@ void JIT_translate_func(FUNCTION *func, int index)
 		JIT_print("\n");
 	
 	JIT_translate_body(func);
+	
+	if (func->nlocal)
+	{
+		for (i = 0; i < func->nlocal; i++)
+		{
+			type = func->local[i].type;
+			switch(TYPE_get_id(type))
+			{
+				case T_STRING:
+				case T_OBJECT:
+				case T_VARIANT:
+					JIT_print("  RELEASE_%s(l%d);\n", JIT_get_type(type), i);
+					break;
+			}
+		}
+	}
 	
 	if (!TYPE_is_void(func->type))
 		JIT_print("  return r;\n");

@@ -227,12 +227,10 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 void EXEC_nop(void);
 
 void EXEC_push_unknown(void);
-void EXEC_push_array(ushort code);
 int EXEC_push_unknown_event(bool unknown);
 //void EXEC_push_special(void);
 
 void EXEC_pop_unknown(void);
-void EXEC_pop_array(ushort code);
 
 void EXEC_enum_first(PCODE code);
 bool EXEC_enum_next(PCODE code);
@@ -346,5 +344,8 @@ void EXEC_operator_object_single(uchar op, VALUE *P1);
 void SUBR_left(ushort code);
 void SUBR_mid(ushort code);
 void SUBR_right(ushort code);
+
+void EXEC_push_array(ushort code);
+void EXEC_pop_array(ushort code);
 
 #endif /* */

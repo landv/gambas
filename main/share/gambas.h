@@ -96,6 +96,8 @@
 #define GB_T_CSTRING      10
 #define GB_T_POINTER      11
 #define GB_T_VARIANT      12
+#define GB_T_FUNCTION     13
+#define GB_T_CLASS        14
 #define GB_T_NULL         15
 #define GB_T_OBJECT       16
 

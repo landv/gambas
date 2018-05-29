@@ -47,9 +47,13 @@ typedef
 		void *(*get_static_addr)(int index);
 		void *(*get_dynamic_addr)(int index);
 		JIT_CONSTANT *(*get_constant)(int index);
+		void *(*get_class_ref)(int index);
 		void **subr_table;
 		const char *char_table;
 		void *(*unborrow)(VALUE *val);
+		void (*new)(void);
+		void (*push_array)(ushort code);
+		void (*pop_array)(ushort code);
 	}
 	JIT_INTERFACE;
 

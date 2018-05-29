@@ -293,6 +293,7 @@ _FIN:
   PC++;
 }
 
+#if 0
 void EXEC_pop_array(ushort code)
 {
   CLASS *class;
@@ -315,3 +316,4 @@ void EXEC_pop_array(ushort code)
 
 	POP(); /* free the object */
 }
+#endif

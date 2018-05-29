@@ -378,7 +378,26 @@ static char *peek(int n, TYPE conv, const char *fmt, va_list args)
 			else
 				op = "";
 			
-			JIT_print("  %s%s %s;\n", dest, op, expr);
+			switch (TYPE_get_id(conv))
+			{
+				case T_STRING:
+					JIT_print("  %s%s BORROW_s(%s);\n", dest, op, expr);
+					break;
+					
+				case T_OBJECT:
+					JIT_print("  %s%s BORROW_o(%s);\n", dest, op, expr);
+					break;
+
+				case T_VARIANT:
+					JIT_print("  %s%s BORROW_v(%s);\n", dest, op, expr);
+					break;
+					
+				default:
+					JIT_print("  %s%s %s;\n", dest, op, expr);
+			}
+
+			
+			
 			if (!_no_release)
 			{
 				switch (TYPE_get_id(conv))
@@ -417,15 +436,36 @@ static void pop(TYPE type, const char *fmt, ...)
 
 static void push_subr(ushort code, const char *call)
 {
-	char type;
+	char type_id;
+	TYPE type;
 	int i, narg;
 	char *expr = NULL;
+	ushort op;
+	bool rst = FALSE;
 	
 	declare_sp();
 	
 	JIT_print("  static ushort s%d = 0x%04X;\n", _subr_count, code);
 	
-	if ((code >> 8) < CODE_FIRST_SUBR)
+	op = code >> 8;
+	
+	if (op == (C_NEW >> 8))
+	{
+		narg = code & 0x3F;
+		type_id = T_OBJECT;
+		type = get_type(-narg);
+	}
+	else if (op == (C_PUSH_ARRAY >> 8))
+	{
+		narg = code & 0x3F;
+		type_id = T_UNKNOWN;
+	}
+	else if (op == (C_POP_ARRAY >> 8))
+	{
+		narg = (code & 0x3F) + 1;
+		type_id = T_VOID;
+	}
+	else if (op < CODE_FIRST_SUBR)
 	{
 		int index = RESERVED_get_from_opcode(code);
 		
@@ -439,35 +479,41 @@ static void push_subr(ushort code, const char *call)
 		else
 			narg = code & 0x3F;
 
-		type = COMP_res_info[index].type;
+		type_id = COMP_res_info[index].type;
+		rst = TRUE;
 	}
 	else
 	{
-		SUBR_INFO *info = SUBR_get_from_opcode((code >> 8) - CODE_FIRST_SUBR, code & 0x3F);
+		SUBR_INFO *info = SUBR_get_from_opcode(op - CODE_FIRST_SUBR, code & 0x3F);
 		if (info->min_param != info->max_param)
 			narg = code & 0x3F;
 		else
 			narg = info->min_param;
-		type = info->type;
+		
+		type_id = info->type;
+		rst = TRUE;
 	}
 
 	check_stack(narg);
 	
-	switch(type)
+	if (rst)
 	{
-		case RST_SAME:
-		case RST_BCLR:
-			type = get_type_id(-narg);
-			break;
-			
-		case RST_MIN:
-			type = Max(get_type_id(-1), get_type_id(-2));
-			if (type > T_DATE && type != T_VARIANT)
-				type = T_UNKNOWN;
+		switch(type_id)
+		{
+			case RST_SAME:
+			case RST_BCLR:
+				type_id = get_type_id(-narg);
+				break;
+				
+			case RST_MIN:
+				type_id = Max(get_type_id(-1), get_type_id(-2));
+				if (type_id > T_DATE && type_id != T_VARIANT)
+					type_id = T_UNKNOWN;
+		}
 	}
 	
-	if (type > T_OBJECT)
-		type = T_UNKNOWN;
+	if (type_id > T_OBJECT)
+		type_id = T_UNKNOWN;
 	
 	for (i = _stack_current - narg; i < _stack_current; i++)
 	{
@@ -478,12 +524,22 @@ static void push_subr(ushort code, const char *call)
 	_stack_current -= narg;
 	
 	STR_add(&expr, "%s(s%d)", call, _subr_count);
-	if (type == T_VOID)
+	if (type_id == T_VOID)
 		STR_add(&expr, ",sp--");
 	else
-		STR_add(&expr, ",POP_%s()", JIT_get_type(TYPE_make_simple(type)));
+		STR_add(&expr, ",POP_%s()", JIT_get_type(TYPE_make_simple(type_id)));
 	
-	push(TYPE_make_simple(type), "(%s)", expr);
+	if (op == (C_NEW >> 8))
+	{
+		if (TYPE_get_id(type) == T_CLASS)
+			TYPE_set_id(&type, T_OBJECT);
+		else
+			type = TYPE_make_simple(T_OBJECT);
+	}
+	else
+		type = TYPE_make_simple(type_id);
+	
+	push(type, "(%s)", expr);
 	
 	STR_free(expr);
 	
@@ -1227,6 +1283,14 @@ _POP_OPTIONAL:
 	}
 	goto _MAIN;
 	
+_PUSH_CLASS:
+
+	index = GET_7XX();
+	type = TYPE_make(T_OBJECT, index, 0);
+	TYPE_set_id(&type, T_CLASS);
+	push(type, "GET_CLASS(%d)", index);
+	goto _MAIN;
+
 _SUBR:
 
 	push_subr(code, "CALL_SUBR");
@@ -1240,6 +1304,11 @@ _SUBR_CODE:
 _DROP:
 
 	pop(TYPE_make_simple(T_VOID), NULL);
+	goto _MAIN;
+
+_NEW:
+
+	push_subr(code, "CALL_NEW");
 	goto _MAIN;
 
 _RETURN:
@@ -1284,7 +1353,7 @@ _JUMP_FIRST:
 
 	index = PC[2] & 0xFF;
 	type = func->local[index].type;
-	pop(type, "%s c%d", JIT_get_ctype(type), _ctrl_count);
+	pop(type, "const %s c%d", JIT_get_ctype(type), _ctrl_count);
 	
 	goto _MAIN;
 
@@ -1318,6 +1387,17 @@ _PUSH_CONST_EX:
 	p++;
 	type = class->constant[index].type;
 	push(TYPE_get_id(type) == T_STRING ? TYPE_make_simple(T_CSTRING) : type, "CONSTANT_%s(%d)", JIT_get_type(type), index);
+	goto _MAIN;
+
+_PUSH_ARRAY:
+
+	push_subr(code, "CALL_PUSH_ARRAY");
+	goto _MAIN;
+
+_POP_ARRAY:
+
+	push_subr(code, "CALL_POP_ARRAY");
+	pop(TYPE_make_simple(T_VOID), NULL);
 	goto _MAIN;
 
 _ADD_QUICK:
@@ -1379,10 +1459,6 @@ _SUBR_COMPGE:
 	push_subr_comp(code);
 	goto _MAIN;
 
-_BREAK:
-
-	goto _MAIN;
-
 _SUBR_CONV:
 	
 	push_subr_conv(code);
@@ -1393,13 +1469,15 @@ _SUBR_LEN:
 	push_subr_len(code);
 	goto _MAIN;
 
-_PUSH_ARRAY:
+_BREAK:
+
+	goto _MAIN;
+
 _PUSH_UNKNOWN:
 _PUSH_EXTERN:
 _BYREF:
 _PUSH_EVENT:
 _QUIT:
-_POP_ARRAY:
 _POP_UNKNOWN:
 _POP_CTRL:
 _PUSH_ME:
@@ -1407,7 +1485,6 @@ _TRY:
 _END_TRY:
 _CATCH:
 _DUP:
-_NEW:
 _CALL:
 _CALL_QUICK:
 _CALL_SLOW:
@@ -1415,7 +1492,6 @@ _ON_GOTO_GOSUB:
 _GOSUB:
 _ENUM_FIRST:
 _ENUM_NEXT:
-_PUSH_CLASS:
 _PUSH_FUNCTION:
 _SUBR_QUO:
 _SUBR_REM:

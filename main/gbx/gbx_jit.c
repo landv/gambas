@@ -156,6 +156,11 @@ void *JIT_get_static_addr(int index)
 	return &((char *)CP->stat)[var->pos];
 }
 
+void *JIT_get_class_ref(int index)
+{
+	return CP->load->class_ref[index];
+}
+
 CLASS_CONST *JIT_get_constant(int index)
 {
 	return &CP->load->cst[index];

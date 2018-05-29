@@ -26,7 +26,8 @@
 
 #include "gbc_class.h"
 
-#define T_UNKNOWN (T_OBJECT + 1)
+#define T_UNKNOWN  17
+#define T_CLASS    18
 
 // gbc_jit.c
 
