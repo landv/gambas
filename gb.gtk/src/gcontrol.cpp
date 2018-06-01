@@ -62,6 +62,7 @@ typedef
 	}
 	PATCH_FUNCS;
 
+#if 0
 static const char *_cursor_fdiag[] =
 {
 "16 16 4 1",
@@ -111,7 +112,7 @@ static const char *_cursor_bdiag[] =
 "#aaaaaaaa#......",
 "##########......"
 };
-
+#endif
 
 // Geometry optimization hack - Sometimes fails, so it is disabled...
 #define GEOMETRY_OPTIMIZATION 0
