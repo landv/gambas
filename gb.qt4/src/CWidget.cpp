@@ -662,14 +662,15 @@ void CWIDGET_move_cached(void *_object, int x, int y)
 void CWIDGET_resize(void *_object, int w, int h)
 {
 	QWidget *wid = get_widget_resize(THIS);
-	bool window;
+	bool window, toplevel;
 	bool resizable = true;
 	bool decide_w, decide_h;
 
 	if (!wid)
 		return;
 	
-	window = wid->isTopLevel();
+	window = GB.Is(THIS, CLASS_Window);
+	toplevel = wid->isTopLevel();
 	
 	if (w < 0 && h < 0)
 		return;
@@ -689,41 +690,35 @@ void CWIDGET_resize(void *_object, int w, int h)
 
 	if (window)
 	{
-		resizable = ((MyMainWindow *)wid)->isResizable();
-		if (!resizable)
-			((MyMainWindow *)wid)->setResizable(true);
-	}
+		MyMainWindow *win = (MyMainWindow *)wid;
+		
+		if (toplevel)
+		{
+			resizable = win->isResizable();
+			if (!resizable)
+				win->setResizable(true);
+		}
 	
-	wid->resize(qMax(0, w), qMax(0, h));
+		wid->resize(qMax(0, w), qMax(0, h));
 
-	if (window)
-	{
-		((MyMainWindow *)wid)->setResizable(resizable);
 		((CWINDOW *)_object)->w = w;
 		((CWINDOW *)_object)->h = h;
-		// menu bar height is ignored
-		//((CWINDOW *)_object)->container->resize(w, h);
+		win->configure();
+		
+		if (toplevel)
+			((MyMainWindow *)wid)->setResizable(resizable);
 	}
+	else
+		wid->resize(qMax(0, w), qMax(0, h));
 
 	CWIDGET_after_geometry_change(THIS, true);
 }
 
-/*
-void CWIDGET_resize_cached(void *_object, int w, int h)
-{
-	if (GB.Is(THIS, CLASS_Window))
-	{
-		((CWINDOW *)_object)->w = w;
-		((CWINDOW *)_object)->h = h;
-	}
-
-	CWIDGET_after_geometry_change(THIS, true);
-}
-*/
 
 void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 {
 	QWidget *wid = get_widget(THIS);
+	bool window, toplevel;
 
 	if (wid)
 	{
@@ -734,7 +729,10 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 			h = wid->height();
 	}
 
-	if (GB.Is(THIS, CLASS_Window))
+	window = GB.Is(THIS, CLASS_Window);
+	toplevel = wid->isTopLevel();
+	
+	if (window)
 	{
 		CWINDOW *win = (CWINDOW *)_object;
 		win->x = x;
@@ -750,21 +748,40 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 
 	if (wid)
 	{
-		if (w < 0)
+		if (w < 0) // || decide_w)
 			w = wid->width();
 
-		if (h < 0)
+		if (h < 0) // || decide_h)
 			h = wid->height();
 
 		if (x == wid->x() && y == wid->y() && w == wid->width() && h == wid->height())
 			return;
 		
-		if (wid->isTopLevel())
+		if (window)
 		{
+			MyMainWindow *win = (MyMainWindow *)wid;
+			bool resize = w != wid->width() || h != wid->height();
+			bool resizable = true;
+			
 			if (x != wid->x() || y != wid->y())
 				wid->move(x, y);
-			if (w != wid->width() || y != wid->height())
+			
+			if (resize)
+			{
+				if (toplevel)
+				{
+					resizable = win->isResizable();
+					if (!resizable)
+						win->setResizable(true);
+				}
+				
 				wid->resize(qMax(0, w), qMax(0, h));
+
+				if (toplevel)
+					win->setResizable(resizable);
+				
+				win->configure();
+			}
 		}
 		else
 			wid->setGeometry(x, y, qMax(0, w), qMax(0, h));
