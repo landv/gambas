@@ -497,7 +497,6 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	int len;
 	uchar flag;
 	int jit_count = 0;
-	void *jit_func;
 
 	ALLOC_ZERO(&class->load, sizeof(CLASS_LOAD));
 
@@ -931,15 +930,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 				if (!func->fast)
 					continue;
 				
-				jit_func = JIT_get_function(arch, class, i);
-				if (jit_func)
-				{
-					func->code = (PCODE *)jit_func;
-					if (func->debug)
-						fprintf(stderr, "gbx3: loading jit function: %s\n", func->debug->name);
-				}
-				else
-					func->fast = FALSE;
+				JIT_create_function(arch, class, i);
 			}
 		}
 	}

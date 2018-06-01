@@ -4,7 +4,7 @@ Export
 
 Private $sCompiler As String
 
-Private Sub FindCompiler()
+Private Sub Init()
 
   $sCompiler = System.Find("gcc")
 
@@ -21,8 +21,12 @@ Public Sub Compile() As String
   Dim sPathO As String
   Dim sPathSO As String
   Dim fTime As Float
+  Dim sFlag As String
+  Dim bDebug As Boolean
   
-  fTime = Timer
+  Try bDebug = CInt(Env["GB_JIT_DEBUG"])
+  
+  If bDebug Then fTime = Timer
   
   sName = Component.FindFromPath("../.jit")
   If Not sName Then sName = "gb"
@@ -30,7 +34,7 @@ Public Sub Compile() As String
   Try Mkdir sDir
   sPath = sDir &/ sName & ".c"
   
-  Error "gb.jit: generating "; sPath
+  If bDebug Then Error "gb.jit: generating "; sPath
   
   hFile = Open sPath For Output Create
   
@@ -55,39 +59,42 @@ Public Sub Compile() As String
   sPathO = File.SetExt(sPath, "o")
   sPathSO = File.SetExt(sPath, "so")
   
-  If Not $sCompiler Then FindCompiler
+  If Not $sCompiler Then Init
   
   ' Error "gb.jit: preprocessing:"
   ' 
   ' Shell $sCompiler & " -E " & Shell(sPath) & " 2>&1" To sResult
   ' Error sResult
 
-  Error "gb.jit: compiling to "; sPathO
+  If bDebug Then Error "gb.jit: compiling to "; sPathO
+  
+  sFlag = Env["GB_JIT_CFLAGS"] 
+  If Not sFlag Then sFlag = "-O3"
   
   'gcc -c -fPIC -o foo.o foo.c
   'Exec [$sCompiler, "-c", "-fPIC", "-o", File.SetExt(sPath, "o"), sPath] To sResult
-  Shell $sCompiler & " -c -fPIC -g -O3 -o " & Shell(sPathO) & " " & Shell(sPath) & " 2>&1" To sResult
+  Shell $sCompiler & " -c -fPIC " & sFlag & " -o " & Shell(sPathO) & " " & Shell(sPath) & " 2>&1" To sResult
   If Not Exist(sPathO) Then 
     Error "gb.jit: warning: unable to compile JIT code:"
     Error sResult
     Return
   Endif
 
-  Error "gb.jit: linking to "; sPathSO
+  If bDebug Then Error "gb.jit: linking to "; sPathSO
   
   'gcc -shared -o libfoo.so foo.o
   'Exec [$sCompiler, "-shared", "-o", File.SetExt(sPath, "so"), File.SetExt(sPath, "o")] To sResult
-  Shell $sCompiler & " -shared -g -O3 -o " & Shell(sPathSO) & " " & Shell(sPathO) & " 2>&1" To sResult
+  Shell $sCompiler & " -shared " & sFlag & " -lm -o " & Shell(sPathSO) & " " & Shell(sPathO) & " 2>&1" To sResult
   If Not Exist(sPathSO) Then 
     Error "gb.jit: warning: unable to link JIT code:"
     Error sResult
     Return
   Endif
   
-  Error "gb.jit: done in "; Format(Timer - fTime, "0.000"); "s"
+  If bDebug Then Error "gb.jit: done in "; Format(Timer - fTime, "0.000"); "s"
   
-  'Shell "objdump -S " & Shell(sPathSO) To sResult
-  'Error sResult
+  ' Shell "objdump -S " & Shell(sPathSO) To sResult
+  ' Error sResult
   
   Return sPathSO
   

@@ -37,8 +37,32 @@
 #include "gbc_class.h"
 #include "gbc_jit.h"
 
+typedef
+	struct {
+		const char *name;
+		char type;
+	}
+	CLASS_TYPE;
+
+char *JIT_prefix;
+
 static FILE *_file = NULL;
-static char *_prefix;
+
+static const CLASS_TYPE _class_type[] = {
+	{ "Boolean[]", T_BOOLEAN },
+	{ "Byte[]", T_BYTE },
+	{ "Short[]", T_SHORT },
+	{ "Integer[]", T_INTEGER },
+	{ "Long[]", T_LONG },
+	{ "Single[]", T_SINGLE },
+	{ "Float[]", T_FLOAT },
+	{ "Date[]", T_DATE },
+	{ "String[]", T_STRING },
+	{ "Pointer[]", T_POINTER },
+	{ "Object[]", T_OBJECT },
+	{ "Variant[]", T_VARIANT },
+	{ NULL, 0 }
+};
 
 static const char *_type_name[] = 
 {
@@ -64,9 +88,25 @@ const char *JIT_get_ctype(TYPE type)
 	return _ctype_name[TYPE_get_id(type)];
 }
 
+static TYPE get_array_type(SYMBOL *sym)
+{
+	const CLASS_TYPE *p;
+	
+	for(p = _class_type; p->name; p++)
+	{
+		if (SYMBOL_compare_ignore_case(sym, p->name))
+			return TYPE_make_simple(p->type);
+	}
+	
+	return (TYPE)0;
+}
+
 void JIT_begin(void)
 {
 	const char *path;
+	int i;
+	CLASS_REF *cr;
+	SYMBOL *sym;
 	
 	if (_file)
 		return;
@@ -74,13 +114,32 @@ void JIT_begin(void)
 	if (mkdir(".jit", 0777) == 0)
 		FILE_set_owner(".jit", COMP_project);
 	
-	_prefix = STR_lower(JOB->class->name);
-	path = FILE_cat(".jit", _prefix, NULL);
+	JIT_prefix = STR_lower(JOB->class->name);
+	path = FILE_cat(".jit", JIT_prefix, NULL);
 	path = FILE_set_ext(path, "c");
 	
 	_file = fopen(path, "w");
 	if (!_file)
 		THROW("Cannot create file: &1", path);
+	
+	// detect classes for optimizations
+	
+	for (i = 0; i < ARRAY_count(JOB->class->class); i++)
+	{
+		cr = &JOB->class->class[i];
+		if (!TYPE_is_null(cr->type))
+			continue;
+		
+		sym = (SYMBOL *)CLASS_get_symbol(JOB->class, cr->index);
+		
+		if (SYMBOL_compare_ignore_case(sym, "Collection") == 0)
+		{
+			cr->is_collection = TRUE;
+			continue;
+		}
+		
+		cr->type = get_array_type(sym);
+	}
 }
 
 void JIT_end(void)
@@ -90,14 +149,14 @@ void JIT_end(void)
 	
 	fclose(_file);
 	_file = NULL;
-	STR_free(_prefix);
+	STR_free(JIT_prefix);
 }
 
 void JIT_declare_func(FUNCTION *func, int index)
 {
-	JIT_print("void %s_%d(uchar n);\n", _prefix, index);
+	JIT_print("void %s_%d(uchar n);\n", JIT_prefix, index);
 	
-	JIT_print("static %s %s_%d_IMPL();\n", JIT_get_ctype(func->type), _prefix, index);
+	JIT_print("static %s %s_%d_IMPL();\n", JIT_get_ctype(func->type), JIT_prefix, index);
 }
 
 void JIT_translate_func(FUNCTION *func, int index)
@@ -110,17 +169,17 @@ void JIT_translate_func(FUNCTION *func, int index)
 		
 	JIT_section(fname);
 	
-	JIT_print("void %s_%d(uchar n)\n{\n", _prefix, index);
+	JIT_print("void %s_%d(uchar n)\n{\n", JIT_prefix, index);
 	
-	/*if (func->nlocal)
-		JIT_print("  GB_VALUE L[%d];\n", func->nlocal);*/
+	if (func->nparam)
+		JIT_print("  VALUE *sp = SP;\n");
 	
 	JIT_print("  ");
 	
 	if (!TYPE_is_void(func->type))
 		JIT_print("RETURN_%s(", JIT_get_type(func->type));
 	
-	JIT_print("%s_%d_IMPL(", _prefix, index);
+	JIT_print("%s_%d_IMPL(", JIT_prefix, index);
 	
 	for (i = 0; i < func->npmin; i++)
 	{
@@ -150,7 +209,7 @@ void JIT_translate_func(FUNCTION *func, int index)
 	JIT_print(");\n");
 	JIT_print("}\n\n");
 	
-	JIT_print("static %s %s_%d_IMPL(", JIT_get_ctype(func->type), _prefix, index);
+	JIT_print("static %s %s_%d_IMPL(", JIT_get_ctype(func->type), JIT_prefix, index);
 	
 	for (i = 0; i < func->npmin; i++)
 	{
@@ -191,7 +250,7 @@ void JIT_translate_func(FUNCTION *func, int index)
 		}
 		else
 		{
-			type = func->local[i].type;
+			type = func->local[func->nparam + i].type;
 			JIT_print("  %s l%d = ", JIT_get_ctype(type), i);
 		}
 		
@@ -217,7 +276,7 @@ void JIT_translate_func(FUNCTION *func, int index)
 	{
 		for (i = 0; i < func->nlocal; i++)
 		{
-			type = func->local[i].type;
+			type = func->local[func->nparam + i].type;
 			switch(TYPE_get_id(type))
 			{
 				case T_STRING:
@@ -264,3 +323,4 @@ void JIT_section(const char *str)
 {
 	JIT_print("\n// %s\n\n", str);
 }
+

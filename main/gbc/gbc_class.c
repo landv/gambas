@@ -603,6 +603,8 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 			index = CLASS_add_class_exported(class, index);
 			_array_class[type] = index;
 		}
+	
+		JOB->class->class[index].type = TYPE_make_simple(type);
 	}
 	else
 	{
@@ -625,6 +627,7 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 			index = CLASS_add_class(JOB->class, index);
 	}
 
+	
 	/*cref = &class->class[index];
 	if (TYPE_is_null(cref->array))
 	{

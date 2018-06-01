@@ -35,12 +35,15 @@ typedef
 	void (*JIT_FUNC)(uchar nparam);
 
 bool JIT_compile(ARCHIVE *arch);
-void *JIT_get_function(ARCHIVE *arch, CLASS *class, int index);
+void JIT_create_function(ARCHIVE *arch, CLASS *class, int index);
+
 void JIT_debug(const char *fmt, ...);
 void JIT_exec(void);
 void *JIT_get_static_addr(int index);
 void *JIT_get_dynamic_addr(int index);
 CLASS_CONST *JIT_get_constant(int index);
 void *JIT_get_class_ref(int index);
+
+void JIT_exit(void);
 
 #endif

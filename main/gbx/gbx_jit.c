@@ -32,11 +32,25 @@
 #include "gbx_api.h"
 #include "gbx_jit.h"
 
+typedef
+	struct {
+		JIT_FUNC addr;
+		PCODE *code;
+	}
+	JIT_FUNCTION;
+
 static bool _component_loaded = FALSE;
-static GB_FUNCTION _jit_func;
+static GB_FUNCTION _jit_compile_func;
 
 static bool _no_jit = FALSE;
 static void *_jit_library = NULL;
+
+static JIT_FUNCTION *_jit_func = NULL;
+
+void JIT_exit(void)
+{
+	ARRAY_delete(&_jit_func);
+}
 
 bool JIT_compile(ARCHIVE *arch)
 {
@@ -73,11 +87,11 @@ bool JIT_compile(ARCHIVE *arch)
 		
 		fprintf(stderr, "gbx3: loading gb.jit component\n");
 		COMPONENT_load(COMPONENT_create("gb.jit"));
-		if (GB_GetFunction(&_jit_func, CLASS_find_global("_Jit"), "Compile", "", "s"))
+		if (GB_GetFunction(&_jit_compile_func, CLASS_find_global("_Jit"), "Compile", "", "s"))
 			ERROR_panic("Unable to find _Jit.Compile method");
 	}
 	
-	ret = GB_Call(&_jit_func, 0, FALSE);
+	ret = GB_Call(&_jit_compile_func, 0, FALSE);
 	path = GB_ToZeroString((GB_STRING *)ret);
 	if (!*path)
 		ERROR_panic("Unable to compile jit source file");
@@ -102,12 +116,16 @@ bool JIT_compile(ARCHIVE *arch)
 	return FALSE;
 }
 
-void *JIT_get_function(ARCHIVE *arch, CLASS *class, int index)
+void JIT_create_function(ARCHIVE *arch, CLASS *class, int index)
 {
+	FUNCTION *func;
+	JIT_FUNCTION *jit;
 	void *lib;
 	void *addr;
 	int i;
 	int len;
+	
+	func = &class->load->func[index];
 	
 	if (!arch)
 		lib = _jit_library;
@@ -120,9 +138,24 @@ void *JIT_get_function(ARCHIVE *arch, CLASS *class, int index)
 		COMMON_buffer[i] = tolower(COMMON_buffer[i]);
 	
 	addr = dlsym(lib, COMMON_buffer);
-	/*if (!addr)
-		ERROR_panic("Unable to find jit function %s", COMMON_buffer);*/
-	return addr;
+	if (!addr)
+	{
+		func->fast = FALSE;
+		return;
+	}
+	
+	if (func->debug)
+		fprintf(stderr, "gbx3: loading jit function: %s.%s\n", class->name, func->debug->name);
+
+	if (!_jit_func)
+		ARRAY_create(&_jit_func);
+	
+	jit = (JIT_FUNCTION *)ARRAY_add(&_jit_func);
+	
+	jit->addr = addr;
+	jit->code = func->code;
+	
+	func->code = (PCODE *)jit;
 }
 
 
@@ -131,11 +164,15 @@ void JIT_exec(void)
 	CLASS *class = CP;
 	void *object = OP;
 	VALUE *sp = SP;
+	JIT_FUNCTION *jit;
 	
 	CP = EXEC.class;
 	OP = (void *)EXEC.object;
 	
-	(*((JIT_FUNC)(EXEC.func->code)))(EXEC.nparam);
+	jit = (JIT_FUNCTION *)(EXEC.func->code);
+	PC = jit->code;
+	
+	(*(jit->addr))(EXEC.nparam);
 	
 	if (SP != sp)
 		fprintf(stderr, "SP: %+ld (%ld) !\n", (SP - sp) / sizeof(VALUE), SP - sp);

@@ -44,6 +44,7 @@ typedef
 		void **cp;
 		void **op;
 		void (*debug)(const char *fmt, ...);
+		void (*throw)(int code, ...) NORETURN;
 		void *(*get_static_addr)(int index);
 		void *(*get_dynamic_addr)(int index);
 		JIT_CONSTANT *(*get_constant)(int index);

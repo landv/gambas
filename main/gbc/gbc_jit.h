@@ -29,6 +29,23 @@
 #define T_UNKNOWN  17
 #define T_CLASS    18
 
+enum
+{
+  FUNCTION_NULL,
+  FUNCTION_NATIVE,
+  FUNCTION_PRIVATE,
+  FUNCTION_PUBLIC,
+  FUNCTION_EVENT,
+  FUNCTION_EXTERN,
+  FUNCTION_UNKNOWN,
+  FUNCTION_CALL,
+	FUNCTION_SUBR
+};
+
+#ifndef __GBC_JIT_C
+EXTERN char *JIT_prefix;
+#endif
+
 // gbc_jit.c
 
 void JIT_begin(void);

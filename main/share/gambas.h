@@ -321,6 +321,7 @@ typedef
 #define GB_ERR_TYPE       ((char *)6)
 #define GB_ERR_OVERFLOW   ((char *)7)
 #define GB_ERR_NSYMBOL    ((char *)11)
+#define GB_ERR_NOBJECT    ((char *)12)
 #define GB_ERR_NWRITE     ((char *)16)
 #define GB_ERR_NPROPERTY  ((char *)17)
 #define GB_ERR_ARG        ((char *)20)

@@ -180,13 +180,14 @@ typedef
 
 typedef
 	struct {
-		int index;
+		int index;                     // class name
 		unsigned used : 1;
 		unsigned exported : 1;
 		unsigned structure : 1;
 		unsigned has_static : 1;
-		unsigned _reserved : 28;
-		//TYPE array;                    // if the class is an array, the type of an element
+		unsigned is_collection : 1;    // if the class is Collection (for JIT)
+		unsigned _reserved : 20;
+		TYPE type;                     // if the class is an array, the type of the array contents (for JIT)
 		}
 	CLASS_REF;
 
