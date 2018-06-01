@@ -43,6 +43,7 @@ typedef
 		PCODE **pc;
 		void **cp;
 		void **op;
+		VALUE *ret;
 		void (*debug)(const char *fmt, ...);
 		void (*throw)(int code, ...) NORETURN;
 		void *(*get_static_addr)(int index);

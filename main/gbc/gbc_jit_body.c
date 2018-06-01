@@ -1605,7 +1605,10 @@ _POP_ARRAY:
 
 _ADD_QUICK:
 
-	push(TYPE_make_simple(T_INTEGER), "%d", GET_XXX());
+	index = GET_XXX();
+	push(TYPE_make_simple(T_INTEGER), "%d", abs(index));
+	if (index < 0)
+		goto _SUBR_SUB;
 
 _SUBR_ADD:
 

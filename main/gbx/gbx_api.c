@@ -338,6 +338,7 @@ const void *const GAMBAS_JitApi[] =
 	(void *)&PC,
 	(void *)&CP,
 	(void *)&OP,
+	(void *)&TEMP,
 	(void *)JIT_debug,
 	(void *)THROW,
 	(void *)JIT_get_static_addr,

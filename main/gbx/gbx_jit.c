@@ -165,6 +165,7 @@ void JIT_exec(void)
 	void *object = OP;
 	VALUE *sp = SP;
 	JIT_FUNCTION *jit;
+	char nparam = EXEC.nparam;
 	
 	CP = EXEC.class;
 	OP = (void *)EXEC.object;
@@ -172,10 +173,12 @@ void JIT_exec(void)
 	jit = (JIT_FUNCTION *)(EXEC.func->code);
 	PC = jit->code;
 	
-	(*(jit->addr))(EXEC.nparam);
+	(*(jit->addr))(nparam);
 	
 	if (SP != sp)
 		fprintf(stderr, "SP: %+ld (%ld) !\n", (SP - sp) / sizeof(VALUE), SP - sp);
+	
+	RELEASE_MANY(SP, nparam);
 	
 	CP = class;
 	OP = object;
