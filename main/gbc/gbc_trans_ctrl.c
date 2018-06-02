@@ -1175,8 +1175,8 @@ void TRANS_label(void)
 
 void TRANS_with(void)
 {
-        if (!TRANS_affectation(TRUE))
-            TRANS_expression(FALSE);
+	if (!TRANS_affectation(TRUE))
+		TRANS_expression(FALSE);
 
 	control_enter(RS_WITH);
 

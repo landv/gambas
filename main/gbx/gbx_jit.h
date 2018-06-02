@@ -39,10 +39,12 @@ void JIT_create_function(ARCHIVE *arch, CLASS *class, int index);
 
 void JIT_debug(const char *fmt, ...);
 void JIT_exec(void);
+PCODE *JIT_get_code(int index);
 void *JIT_get_static_addr(int index);
 void *JIT_get_dynamic_addr(int index);
 CLASS_CONST *JIT_get_constant(int index);
 void *JIT_get_class_ref(int index);
+void JIT_call_unknown(PCODE *pc, VALUE *sp);
 
 void JIT_exit(void);
 

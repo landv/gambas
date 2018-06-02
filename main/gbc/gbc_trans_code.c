@@ -550,10 +550,10 @@ void TRANS_code(void)
 	int i;
 	bool fast = FALSE;
 
+	JIT_begin(JOB->class->has_fast);
+		
 	if (JOB->class->has_fast)
 	{
-		JIT_begin();
-		
 		JIT_section("Declarations");
 		for (i = 0; i < ARRAY_count(JOB->class->function); i++)
 		{
@@ -638,8 +638,7 @@ void TRANS_code(void)
 		}
 	}
 
-	if (JOB->class->has_fast)
-		JIT_end();
+	JIT_end();
 	
 	CLASS_check_properties(JOB->class);
 	CLASS_check_unused_global(JOB->class);

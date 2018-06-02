@@ -31,15 +31,8 @@
 
 enum
 {
-  FUNCTION_NULL,
-  FUNCTION_NATIVE,
-  FUNCTION_PRIVATE,
-  FUNCTION_PUBLIC,
-  FUNCTION_EVENT,
-  FUNCTION_EXTERN,
-  FUNCTION_UNKNOWN,
-  FUNCTION_CALL,
-	FUNCTION_SUBR
+	CALL_UNKNOWN,
+  CALL_PRIVATE
 };
 
 #ifndef __GBC_JIT_C
@@ -48,7 +41,7 @@ EXTERN char *JIT_prefix;
 
 // gbc_jit.c
 
-void JIT_begin(void);
+void JIT_begin(bool has_fast);
 void JIT_end(void);
 void JIT_declare_func(FUNCTION *func, int index);
 void JIT_translate_func(FUNCTION *func, int index);
@@ -63,7 +56,7 @@ const char *JIT_get_ctype(TYPE type);
 
 // gbc_jit_body.c
 
-void JIT_translate_body(FUNCTION *func);
+void JIT_translate_body(FUNCTION *func, int index);
 
 
 #endif

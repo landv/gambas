@@ -2,8 +2,9 @@
 
 #define NORETURN __attribute__((noreturn))
 
-#define E_NOBJECT  12
-#define E_BOUND    21
+#define E_OVERFLOW   7
+#define E_NOBJECT   12
+#define E_BOUND     21
 
 
 typedef
@@ -28,7 +29,15 @@ typedef
     void *super;
     }
   GB_VALUE_CLASS;
-
+  
+typedef
+  struct {
+    GB_TYPE type;
+    void *addr;
+    void *gp;
+  }
+  GB_VALUE_GOSUB;
+  
 typedef
 	struct {
 		GB_BASE object;
@@ -43,6 +52,8 @@ typedef
 
 #define SP (*(JIT.sp))
 #define PC (*(JIT.pc))
+#define CP (*(JIT.cp))
+#define OP (*(JIT.op))
 
 #define GET_STRING(_addr, _start, _len) ({ \
   GB_STRING temp; \
@@ -62,9 +73,11 @@ typedef
   
 #define GET_OBJECT(_addr, _type) ({ \
   GB_OBJECT temp; \
-  temp.type = (_type); \
+  temp.type = (GB_TYPE)(_type); \
   temp.value = (_addr); \
   temp; })
+
+#define CHECK_FINITE(_val) (isfinite(_val) ? (_val) : JIT.throw(E_OVERFLOW))
 
 #define PARAM_b(_p) (sp[-n + (_p)]._boolean.value)
 #define PARAM_c(_p) (sp[-n + (_p)]._byte.value)
@@ -78,14 +91,25 @@ typedef
 #define PARAM_s(_p) (*(GB_STRING *)&sp[-n + (_p)])
 #define PARAM_o(_p) (*(GB_OBJECT *)&sp[-n + (_p)])
 
-#define PUSH_b(_val) (sp->type = GB_T_BOOLEAN, sp->_boolean.value = -(_val), sp++)
-#define PUSH_c(_val) (sp->type = GB_T_BYTE, sp->_byte.value = (_val), sp++)
-#define PUSH_h(_val) (sp->type = GB_T_SHORT, sp->_short.value = (_val), sp++)
-#define PUSH_i(_val) (sp->type = GB_T_INTEGER, sp->_integer.value = (_val), sp++)
-#define PUSH_l(_val) (sp->type = GB_T_LONG, sp->_long.value = (_val), sp++)
-#define PUSH_g(_val) (sp->type = GB_T_SINGLE, sp->_single.value = (_val), sp++)
-#define PUSH_f(_val) (sp->type = GB_T_FLOAT, sp->_float.value = (_val), sp++)
-#define PUSH_p(_val) (sp->type = GB_T_POINTER, sp->_pointer.value = (_val), sp++)
+#define RETURN_b(_val) (GB.ReturnBoolean(_val))
+#define RETURN_c(_val) (GB.Return(GB_T_BYTE, (int)(_val)))
+#define RETURN_h(_val) (GB.Return(GB_T_SHORT, (int)(_val)))
+#define RETURN_i(_val) (GB.ReturnInteger(_val))
+#define RETURN_l(_val) (GB.ReturnLong(_val))
+#define RETURN_g(_val) (GB.ReturnSingle(_val))
+#define RETURN_f(_val) (GB.ReturnFloat(_val))
+#define RETURN_d(_val) ({ GB_DATE _v = (_val); GB.ReturnDate(&_v); })
+#define RETURN_p(_val) (GB.ReturnPointer(_val))
+#define RETURN_o(_val) (GB.ReturnObject((_val).value))
+
+#define PUSH_b(_val) ({ char _v = -(_val); sp->_boolean.value = v; sp->type = GB_T_BOOLEAN; sp++; })
+#define PUSH_c(_val) ({ uchar _v = (_val); sp->_byte.value = _v; sp->type = GB_T_BYTE; sp++; })
+#define PUSH_h(_val) ({ short _v = (_val); sp->_short.value = _v; sp->type = GB_T_SHORT; sp++; })
+#define PUSH_i(_val) ({ int _v = (_val); sp->_integer.value = _v; sp->type = GB_T_INTEGER; sp++; })
+#define PUSH_l(_val) ({ int64_t _v = (_val); sp->_long.value = _v; sp->type = GB_T_LONG; sp++; })
+#define PUSH_g(_val) ({ float _v = (_val); sp->_single.value = _v; sp->type = GB_T_SINGLE; sp++; })
+#define PUSH_f(_val) ({ double _v = (_val); sp->_float.value = _v; sp->type = GB_T_FLOAT; sp++; })
+#define PUSH_p(_val) ({ intptr_t _v = (_val); sp->_pointer.value = _v; sp->type = GB_T_POINTER; sp++; })
 #define PUSH_d(_val) (*((GB_DATE *)sp) = (_val), sp++)
 #define PUSH_t(_val) (*((GB_STRING *)sp) = (_val), sp++)
 #define PUSH_s(_val) ({ GB_STRING _v = (_val); GB.RefString(_v.value.addr); *((GB_STRING *)sp) = _v; sp++; })
@@ -101,7 +125,7 @@ typedef
 #define POP_g() (sp--, sp->_single.value)
 #define POP_f() (sp--, sp->_float.value)
 #define POP_p() (sp--, sp->_pointer.value)
-#define POP_d() (sp--, *((GB_DATE*)sp)
+#define POP_d() (sp--, *((GB_DATE*)sp))
 #define POP_s() (sp--, JIT.unborrow(sp), *((GB_STRING*)sp))
 #define POP_o() (sp--, JIT.unborrow(sp), *((GB_OBJECT*)sp))
 #define POP_t() (sp--, *((GB_STRING*)sp))
@@ -197,13 +221,13 @@ typedef
 
 #define GET_ARRAY_NO_CHECK(_type, _array, _index) ({ \
   GB_ARRAY_IMPL *_a = (_array).value; \
-  int _i =(_index); \
+  int _i = (_index); \
   &((_type *)_a->data)[_i]; \
 })
 
 #define GET_ARRAY(_type, _array, _index) ({ \
   GB_ARRAY_IMPL *_a = (_array).value; \
-  int _i =(_index); \
+  int _i = (_index); \
   if (!_a) JIT.throw(E_NOBJECT); \
   if (_i < 0 || _i > _a->count) JIT.throw(E_BOUND); \
   &((_type *)_a->data)[_i]; \
@@ -233,4 +257,55 @@ typedef
 #define POP_ARRAY_p(_array, _index, _val) POP_ARRAY(intptr_t, _array, _index, _val)
 
 #define POP_ARRAY_s(_array, _index, _val) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.Store(GB_T_STRING, &temp, GET_ARRAY(char *, _array, _index)); })
+
+#define CONV_d_b(_val) ({ GB_DATE _v = (_val); _v.value.date != 0 || _v.value.time != 0; })
+#define CONV_d_c(_val) ((uchar)((_val).value.date))
+#define CONV_d_h(_val) ((short)((_val).value.date))
+#define CONV_d_i(_val) ((_val).value.date)
+#define CONV_d_l(_val) ((int64_t)((_val).value.date))
+#define CONV_d_g(_val) ({ GB_DATE _v = (_val); (float)((float)_v.value.date + (float)_v.value.time / 86400000.0); })
+#define CONV_d_f(_val) ({ GB_DATE _v = (_val); (double)((double)_v.value.date + (double)_v.value.time / 86400000.0); })
+#define CONV_d_p(_val) (JIT.throw(E_CONV))
+#define CONV_d_s(_val) (PUSH_d(_val),JIT.conv(sp - 1, GB_T_STRING),POP_s())
+#define CONV_d_o(_val) (JIT.throw(E_CONV))
+
+#define CONV_u_b(_val) (PUSH_u(_val),JIT.conv(sp - 1, GB_T_BOOLEAN),POP_b())
+#define CONV_u_c(_val) (PUSH_u(_val),JIT.conv(sp - 1, GB_T_BYTE),POP_c())
+#define CONV_u_h(_val) (PUSH_u(_val),JIT.conv(sp - 1, GB_T_SHORT),POP_h())
+#define CONV_u_i(_val) (PUSH_u(_val),JIT.conv(sp - 1, GB_T_INTEGER),POP_i())
+#define CONV_u_l(_val) (PUSH_u(_val),JIT.conv(sp - 1, GB_T_LONG),POP_l())
+#define CONV_u_g(_val) (PUSH_u(_val),JIT.conv(sp - 1, GB_T_SINGLE),POP_g())
+#define CONV_u_f(_val) (PUSH_u(_val),JIT.conv(sp - 1, GB_T_FLOAT),POP_f())
+#define CONV_u_d(_val) (PUSH_u(_val),JIT.conv(sp - 1, GB_T_DATE),POP_d())
+#define CONV_u_p(_val) (PUSH_u(_val),JIT.conv(sp - 1, GB_T_POINTER),POP_p())
+#define CONV_u_s(_val) (PUSH_u(_val),JIT.conv(sp - 1, GB_T_STRING),POP_s())
+#define CONV_u_O(_val, _class) (PUSH_u(_val),JIT.conv(sp - 1,GET_CLASS(_class)),POP_o())
+
+#define CONV_o_O(_val, _class) (PUSH_o(_val),JIT.conv(sp - 1,GET_CLASS(_class)),POP_o())
+
+#define PUSH_GOSUB(_label) ({ \
+  GB_VALUE_GOSUB *_p = (GB_VALUE_GOSUB *)sp; \
+  _p->type = GB_T_VOID; \
+  _p->addr = &&_label; \
+  _p->gp = gp; \
+  gp = _p; \
+  sp++; \
+})
+
+#define RETURN_GOSUB() ({ \
+  void *_addr; \
+  if (!gp) goto __RETURN; \
+  _addr = gp->addr; \
+  sp = (GB_VALUE *)gp; \
+  gp = gp->gp; \
+  goto *_addr; \
+})
+
+#define PUSH_UNKNOWN(_pc) (PC = &pc[_pc], SP = sp, JIT.push_unknown(), sp = SP, POP_u())
+#define POP_UNKNOWN(_pc) (PC = &pc[_pc], SP = sp, JIT.pop_unknown(), sp = SP)
+
+#define GET_ME_STATIC() (CP)
+#define GET_ME() ({ GB_OBJECT _v; _v.type = CP; _v.value = OP; _v; })
+
+#define CALL_UNKNOWN(_pc) (JIT.call_unknown(&pc[_pc], sp), sp = SP, POP_u())
 

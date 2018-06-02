@@ -45,6 +45,7 @@ typedef
 		void **op;
 		VALUE *ret;
 		void (*debug)(const char *fmt, ...);
+		PCODE *(*get_code)(int index);
 		void (*throw)(int code, ...) NORETURN;
 		void *(*get_static_addr)(int index);
 		void *(*get_dynamic_addr)(int index);
@@ -56,6 +57,10 @@ typedef
 		void (*new)(void);
 		void (*push_array)(ushort code);
 		void (*pop_array)(ushort code);
+		void (*conv)(GB_VALUE *value, GB_TYPE type);
+		void (*push_unknown)(void);
+		void (*call_unknown)(ushort *pc, GB_VALUE *sp);
+		void (*pop_unknown)(void);
 	}
 	JIT_INTERFACE;
 

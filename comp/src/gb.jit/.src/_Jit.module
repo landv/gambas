@@ -71,6 +71,9 @@ Public Sub Compile() As String
   sFlag = Env["GB_JIT_CFLAGS"] 
   If Not sFlag Then sFlag = "-O3"
   
+  'Shell $sCompiler & " -E " & Shell(sPath) & " 2>&1" To sResult
+  'Error sResult
+
   'gcc -c -fPIC -o foo.o foo.c
   'Exec [$sCompiler, "-c", "-fPIC", "-o", File.SetExt(sPath, "o"), sPath] To sResult
   Shell $sCompiler & " -c -fPIC " & sFlag & " -o " & Shell(sPathO) & " " & Shell(sPath) & " 2>&1" To sResult

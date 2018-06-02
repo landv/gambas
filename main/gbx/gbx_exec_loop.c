@@ -794,7 +794,7 @@ _PUSH_MISC:
 	{
 		static const void *_jump[] =
 			{ &&__PUSH_NULL, &&__PUSH_VOID, &&__PUSH_FALSE, &&__PUSH_TRUE, &&__PUSH_LAST, &&__PUSH_STRING, &&__PUSH_PINF, &&__PUSH_MINF, &&__PUSH_COMPLEX,
-				&&__PUSH_VARGS, &&__PUSH_DROP_VARGS };
+				&&__PUSH_VARGS, &&__PUSH_DROP_VARGS, &&__JIT_RETURN };
 			//, &&__POP_LAST };
 
 		goto *_jump[GET_UX()];
@@ -870,6 +870,9 @@ _PUSH_MISC:
 
 		EXEC_drop_vargs();
 		goto _NEXT;
+		
+	__JIT_RETURN:
+		return;
 
 	/*__POP_LAST:
 

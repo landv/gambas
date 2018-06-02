@@ -132,7 +132,7 @@ void JIT_create_function(ARCHIVE *arch, CLASS *class, int index)
 	else
 		lib = arch->jit_library;
 	
-	len = sprintf(COMMON_buffer, "%s_%d", class->name, index);
+	len = sprintf(COMMON_buffer, "jit_%s_%d", class->name, index);
 	
 	for (i = 0; i < len; i++)
 		COMMON_buffer[i] = tolower(COMMON_buffer[i]);
@@ -161,27 +161,44 @@ void JIT_create_function(ARCHIVE *arch, CLASS *class, int index)
 
 void JIT_exec(void)
 {
-	CLASS *class = CP;
-	void *object = OP;
 	VALUE *sp = SP;
 	JIT_FUNCTION *jit;
 	char nparam = EXEC.nparam;
+	VALUE ret;
+	FUNCTION *func = EXEC.func;
+	
+	STACK_push_frame(&EXEC_current, func->stack_usage);
 	
 	CP = EXEC.class;
 	OP = (void *)EXEC.object;
+	//FP = EXEC.func;
 	
-	jit = (JIT_FUNCTION *)(EXEC.func->code);
-	PC = jit->code;
+	jit = (JIT_FUNCTION *)(func->code);
 	
 	(*(jit->addr))(nparam);
 	
 	if (SP != sp)
 		fprintf(stderr, "SP: %+ld (%ld) !\n", (SP - sp) / sizeof(VALUE), SP - sp);
 	
+	if (func->type != T_VOID)
+	{
+		ret = TEMP;
+		BORROW(&ret);
+	}
+	else
+		ret.type = T_VOID;
+	
 	RELEASE_MANY(SP, nparam);
 	
-	CP = class;
-	OP = object;
+	*SP++ = ret;
+	
+	STACK_pop_frame(&EXEC_current);
+}
+
+PCODE *JIT_get_code(int index)
+{
+	JIT_FUNCTION *jit = (JIT_FUNCTION *)CP->load->func[index].code;
+	return jit->code;
 }
 
 void *JIT_get_dynamic_addr(int index)
@@ -214,3 +231,19 @@ void JIT_debug(const char *fmt, ...)
 	vfprintf(stderr, fmt, args);
 	va_end(args);
 }
+
+void JIT_call_unknown(PCODE *pc, VALUE *sp)
+{
+	PCODE save;
+	
+	PC = pc;
+	SP = sp;
+	
+	save = pc[1];
+	pc[1] = 0x140B;
+	
+	EXEC_loop();
+	
+	pc[1] = save;
+}
+

@@ -94,29 +94,32 @@ static TYPE get_array_type(SYMBOL *sym)
 	
 	for(p = _class_type; p->name; p++)
 	{
-		if (SYMBOL_compare_ignore_case(sym, p->name))
+		if (SYMBOL_compare_ignore_case(sym, p->name) == 0)
 			return TYPE_make_simple(p->type);
 	}
 	
 	return (TYPE)0;
 }
 
-void JIT_begin(void)
+void JIT_begin(bool has_fast)
 {
 	const char *path;
 	int i;
 	CLASS_REF *cr;
 	SYMBOL *sym;
 	
-	if (_file)
-		return;
-	
-	if (mkdir(".jit", 0777) == 0)
-		FILE_set_owner(".jit", COMP_project);
-	
 	JIT_prefix = STR_lower(JOB->class->name);
 	path = FILE_cat(".jit", JIT_prefix, NULL);
 	path = FILE_set_ext(path, "c");
+
+	if (!has_fast)
+	{
+		FILE_unlink(path);
+		return;
+	}
+	
+	if (mkdir(".jit", 0777) == 0)
+		FILE_set_owner(".jit", COMP_project);
 	
 	_file = fopen(path, "w");
 	if (!_file)
@@ -127,8 +130,8 @@ void JIT_begin(void)
 	for (i = 0; i < ARRAY_count(JOB->class->class); i++)
 	{
 		cr = &JOB->class->class[i];
-		if (!TYPE_is_null(cr->type))
-			continue;
+		/*if (!TYPE_is_null(cr->type))
+			continue;*/
 		
 		sym = (SYMBOL *)CLASS_get_symbol(JOB->class, cr->index);
 		
@@ -144,19 +147,20 @@ void JIT_begin(void)
 
 void JIT_end(void)
 {
-	if (!_file)
-		return;
-	
-	fclose(_file);
-	_file = NULL;
 	STR_free(JIT_prefix);
+
+	if (_file)
+	{
+		fclose(_file);
+		_file = NULL;
+	}
 }
 
 void JIT_declare_func(FUNCTION *func, int index)
 {
-	JIT_print("void %s_%d(uchar n);\n", JIT_prefix, index);
+	JIT_print("void jit_%s_%d(uchar n);\n", JIT_prefix, index);
 	
-	JIT_print("static %s %s_%d_IMPL();\n", JIT_get_ctype(func->type), JIT_prefix, index);
+	JIT_print("static %s jit_%s_%d_();\n", JIT_get_ctype(func->type), JIT_prefix, index);
 }
 
 void JIT_translate_func(FUNCTION *func, int index)
@@ -169,7 +173,7 @@ void JIT_translate_func(FUNCTION *func, int index)
 		
 	JIT_section(fname);
 	
-	JIT_print("void %s_%d(uchar n)\n{\n", JIT_prefix, index);
+	JIT_print("void jit_%s_%d(uchar n)\n{\n", JIT_prefix, index);
 	
 	if (func->nparam)
 		JIT_print("  VALUE *sp = SP;\n");
@@ -179,7 +183,7 @@ void JIT_translate_func(FUNCTION *func, int index)
 	if (!TYPE_is_void(func->type))
 		JIT_print("RETURN_%s(", JIT_get_type(func->type));
 	
-	JIT_print("%s_%d_IMPL(", JIT_prefix, index);
+	JIT_print("jit_%s_%d_(", JIT_prefix, index);
 	
 	for (i = 0; i < func->npmin; i++)
 	{
@@ -206,10 +210,13 @@ void JIT_translate_func(FUNCTION *func, int index)
 	if (func->vararg)
 		THROW("Not supported");
 	
+	if (!TYPE_is_void(func->type))
+		JIT_print(")");
+	
 	JIT_print(");\n");
 	JIT_print("}\n\n");
 	
-	JIT_print("static %s %s_%d_IMPL(", JIT_get_ctype(func->type), JIT_prefix, index);
+	JIT_print("static %s jit_%s_%d_(", JIT_get_ctype(func->type), JIT_prefix, index);
 	
 	for (i = 0; i < func->npmin; i++)
 	{
@@ -256,21 +263,18 @@ void JIT_translate_func(FUNCTION *func, int index)
 		
 		switch(TYPE_get_id(type))
 		{
-			case T_DATE:
-			case T_STRING:
-			case T_OBJECT:
-			case T_VARIANT:
-				JIT_print("{0}");
-				break;
-			default:
-				JIT_print("0");
+			case T_DATE: JIT_print("{GB_T_DATE}"); break;
+			case T_STRING: JIT_print("{GB_T_STRING}"); break;
+			case T_OBJECT: JIT_print("{GB_T_NULL}"); break;
+			case T_VARIANT:  JIT_print("{GB_T_VARIANT,{GB_T_NULL}}"); break;
+			default: JIT_print("0");
 		}
 		JIT_print(";\n");
 	}
 	if (func->nlocal)
 		JIT_print("\n");
 	
-	JIT_translate_body(func);
+	JIT_translate_body(func, index);
 	
 	if (func->nlocal)
 	{
@@ -289,7 +293,18 @@ void JIT_translate_func(FUNCTION *func, int index)
 	}
 	
 	if (!TYPE_is_void(func->type))
+	{
+		switch(TYPE_get_id(func->type))
+		{
+			case T_STRING:
+			case T_OBJECT:
+			case T_VARIANT:
+				JIT_print("  JIT.unborrow((GB_VALUE *)&r);\n");
+				break;
+		}
+		
 		JIT_print("  return r;\n");
+	}
 	else
 		JIT_print("  return;\n");
 	
