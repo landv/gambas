@@ -356,6 +356,8 @@ const void *const GAMBAS_JitApi[] =
 	(void *)EXEC_push_unknown,
 	(void *)JIT_call_unknown,
 	(void *)EXEC_pop_unknown,
+	(void *)EXEC_enum_first,
+	(void *)EXEC_enum_next,
 	NULL
 };
 

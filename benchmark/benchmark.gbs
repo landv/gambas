@@ -73,7 +73,7 @@ For Each sBenchmark In Dir(Application.Dir, "*.gbs")
   aResult.Add(cResult)
   
   cResult!name = sBenchmark
-  If Not bGambasOnly Then cResult!gambasjit = RunScript(sBenchmark & ".gbs", "gbs3 -f -c", bGambasOnly)
+  cResult!gambasjit = RunScript(sBenchmark & ".gbs", "gbs3 -f -c", bGambasOnly)
   cResult!gambas = RunScript(sBenchmark & ".gbs", "gbs3 -c", bGambasOnly)
   If Not bGambasOnly Then cResult!python = RunScript(sBenchmark & ".py", "python", bGambasOnly)
   If Not bGambasOnly Then cResult!perl = RunScript(sBenchmark & ".pl", "perl", bGambasOnly)
@@ -101,7 +101,7 @@ Next
 If bGambasOnly Then
 
   For Each cResult In aResult
-    Print cResult!name; Space$(20 - Len(cResult!name)); ": "; Format(cResult!gambas, "0.00")
+    Print cResult!name; Space$(20 - Len(cResult!name)); ": "; Format(cResult!gambas, "0.00"); " / ";Format(cResult!gambasjit, "0.00");" (jit)"
   Next
 
 Else

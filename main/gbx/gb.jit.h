@@ -61,6 +61,8 @@ typedef
 		void (*push_unknown)(void);
 		void (*call_unknown)(ushort *pc, GB_VALUE *sp);
 		void (*pop_unknown)(void);
+		void (*enum_first)(ushort code, GB_VALUE *local, GB_VALUE *penum);
+		bool (*enum_next)(ushort code, GB_VALUE *local, GB_VALUE *penum);
 	}
 	JIT_INTERFACE;
 

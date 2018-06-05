@@ -38,7 +38,7 @@ bool JIT_compile(ARCHIVE *arch);
 void JIT_create_function(ARCHIVE *arch, CLASS *class, int index);
 
 void JIT_debug(const char *fmt, ...);
-void JIT_exec(void);
+void JIT_exec(bool ret_on_stack);
 PCODE *JIT_get_code(int index);
 void *JIT_get_static_addr(int index);
 void *JIT_get_dynamic_addr(int index);

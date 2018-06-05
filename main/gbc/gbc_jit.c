@@ -66,9 +66,16 @@ static const CLASS_TYPE _class_type[] = {
 
 static const char *_type_name[] = 
 {
-	"" , "b", "c", "h", "i", "l", "g", "f",
+	"V" , "b", "c", "h", "i", "l", "g", "f",
 	"d", "s", "t", "p", "v", "A", "S", "n",
 	"o", "u", "C"
+};
+
+static const char *_gtype_name[] = 
+{
+	"GB_T_VOID" , "GB_T_BOOLEAN", "GB_T_BYTE", "GB_T_SHORT", "GB_T_INTEGER", "GB_T_LONG", "GB_T_SINGLE", "GB_T_FLOAT",
+	"GB_T_DATE", "GB_T_CSTRING", "GB_T_STRING", "GB_T_POINTER", "GB_T_VARIANT", "?", "?", "?", 
+	"GB_T_OBJECT"
 };
 
 static const char *_ctype_name[] = 
@@ -80,7 +87,14 @@ static const char *_ctype_name[] =
 
 const char *JIT_get_type(TYPE type)
 {
-	return _type_name[TYPE_get_id(type)];
+	int index = TYPE_get_id(type);
+	//if (index <= 0 || index > 18) THROW("Unknown type");
+	return _type_name[index];
+}
+
+const char *JIT_get_gtype(TYPE type)
+{
+	return _gtype_name[TYPE_get_id(type)];
 }
 
 const char *JIT_get_ctype(TYPE type)
@@ -130,8 +144,8 @@ void JIT_begin(bool has_fast)
 	for (i = 0; i < ARRAY_count(JOB->class->class); i++)
 	{
 		cr = &JOB->class->class[i];
-		/*if (!TYPE_is_null(cr->type))
-			continue;*/
+		if (!TYPE_is_null(cr->type))
+			continue;
 		
 		sym = (SYMBOL *)CLASS_get_symbol(JOB->class, cr->index);
 		
@@ -156,11 +170,49 @@ void JIT_end(void)
 	}
 }
 
+static void declare_implementation(FUNCTION *func, int index)
+{
+	int i;
+	int nopt;
+	int opt;
+	
+	JIT_print("static %s jit_%s_%d_(", JIT_get_ctype(func->type), JIT_prefix, index);
+	
+	for (i = 0; i < func->npmin; i++)
+	{
+		if (i) JIT_print(", ");
+		JIT_print("%s p%d", JIT_get_ctype(func->param[i].type), i);
+	}
+	
+	if (i < func->nparam)
+	{
+		opt = nopt = 0;
+		
+		for (; i < func->nparam; i++)
+		{
+			if (nopt == 0)
+			{
+				JIT_print(", uchar _o%d", opt);
+				opt++;
+			}
+			
+			JIT_print(", %s p%d", JIT_get_ctype(func->param[i].type), i);
+			
+			nopt++;
+			if (nopt >= 8)
+				nopt = 0;
+		}
+	}
+	
+	JIT_print(")");
+}
+
 void JIT_declare_func(FUNCTION *func, int index)
 {
 	JIT_print("void jit_%s_%d(uchar n);\n", JIT_prefix, index);
 	
-	JIT_print("static %s jit_%s_%d_();\n", JIT_get_ctype(func->type), JIT_prefix, index);
+	declare_implementation(func, index);
+	JIT_print(";\n");
 }
 
 void JIT_translate_func(FUNCTION *func, int index)
@@ -169,14 +221,13 @@ void JIT_translate_func(FUNCTION *func, int index)
 	int i;
 	TYPE type;
 	int nopt;
-	int opt;
 		
 	JIT_section(fname);
 	
 	JIT_print("void jit_%s_%d(uchar n)\n{\n", JIT_prefix, index);
 	
 	if (func->nparam)
-		JIT_print("  VALUE *sp = SP;\n");
+		JIT_print("  VALUE *sp = *(JIT.sp);\n");
 	
 	JIT_print("  ");
 	
@@ -216,35 +267,8 @@ void JIT_translate_func(FUNCTION *func, int index)
 	JIT_print(");\n");
 	JIT_print("}\n\n");
 	
-	JIT_print("static %s jit_%s_%d_(", JIT_get_ctype(func->type), JIT_prefix, index);
-	
-	for (i = 0; i < func->npmin; i++)
-	{
-		if (i) JIT_print(", ");
-		JIT_print("%s p%d", JIT_get_ctype(func->param[i].type), i);
-	}
-	
-	if (i < func->nparam)
-	{
-		opt = nopt = 0;
-		
-		for (; i < func->nparam; i++)
-		{
-			if (nopt == 0)
-			{
-				JIT_print(", uchar _o%d", opt);
-				opt++;
-			}
-			
-			JIT_print(", %s p%d", JIT_get_ctype(func->param[i].type), i);
-			
-			nopt++;
-			if (nopt >= 8)
-				nopt = 0;
-		}
-	}
-	
-	JIT_print(")\n{\n");
+	declare_implementation(func, index);
+	JIT_print("\n{\n");
 
 	for (i = -1; i < func->nlocal; i++)
 	{
@@ -286,7 +310,7 @@ void JIT_translate_func(FUNCTION *func, int index)
 				case T_STRING:
 				case T_OBJECT:
 				case T_VARIANT:
-					JIT_print("  RELEASE_%s(l%d);\n", JIT_get_type(type), i);
+					JIT_print("  RELEASE_FAST_%s(l%d);\n", JIT_get_type(type), i);
 					break;
 			}
 		}

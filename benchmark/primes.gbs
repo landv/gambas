@@ -25,9 +25,11 @@ Sub GetPrimes(N As Integer) As Integer[]
   While M <= iMRoot
 
     If S[I] Then
+      
       For J = (M * M - 3) \ 2 To iHalf Step M
         S[J] = 0
       Next
+      
     Endif
 
     Inc I
@@ -47,8 +49,11 @@ End
 
 Dim aRes As Integer[]
 Dim I As Integer
+dim T as Float = Timer
 
 For I = 1 To 5
   aRes = GetPrimes(10000000)
   Print aRes.Count
 Next
+
+Print Format(Timer - T, "0.000 s")

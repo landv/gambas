@@ -1147,7 +1147,7 @@ _CALL:
 
 			if (EXEC.func->fast)
 			{
-				JIT_exec();
+				JIT_exec(TRUE);
 				goto _NEXT;
 			}
 			else
@@ -1233,7 +1233,7 @@ _CALL:
 				
 				if (EXEC.func->fast)
 				{
-					JIT_exec();
+					JIT_exec(TRUE);
 					goto _NEXT;
 				}
 				else
@@ -1558,15 +1558,17 @@ _JUMP_NEXT:
 
 _ENUM_FIRST:
 
-	_pop_ctrl(GET_XX());
-	EXEC_enum_first(code);
+	ind = GET_XX();
+	_pop_ctrl(ind);
+	EXEC_enum_first(code, &BP[ind], &BP[ind + 1]);
 	goto _NEXT;
 
 /*-----------------------------------------------*/
 
 _ENUM_NEXT:
 
-	if (EXEC_enum_next(code))
+	ind = PC[-1] & 0xFF;
+	if (EXEC_enum_next(code, &BP[ind], &BP[ind + 1]))
 		goto _JUMP;
 	else
 	{

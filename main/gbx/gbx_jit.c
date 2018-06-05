@@ -159,7 +159,7 @@ void JIT_create_function(ARCHIVE *arch, CLASS *class, int index)
 }
 
 
-void JIT_exec(void)
+void JIT_exec(bool ret_on_stack)
 {
 	VALUE *sp = SP;
 	JIT_FUNCTION *jit;
@@ -190,9 +190,21 @@ void JIT_exec(void)
 	
 	RELEASE_MANY(SP, nparam);
 	
-	*SP++ = ret;
+	RET = ret;
 	
 	STACK_pop_frame(&EXEC_current);
+	
+	if (ret_on_stack)
+	{
+		if (SP[-1].type == T_FUNCTION)
+		{
+			SP--;
+			OBJECT_UNREF(SP->_function.object);
+		}
+
+		*SP++ = ret;
+		ret.type = T_VOID;
+	}
 }
 
 PCODE *JIT_get_code(int index)

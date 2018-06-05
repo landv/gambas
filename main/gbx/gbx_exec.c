@@ -881,7 +881,7 @@ void EXEC_function_real()
 	EXEC.func = &EXEC.class->load->func[EXEC.index];
 	if (EXEC.func->fast)
 	{
-		JIT_exec();
+		JIT_exec(FALSE);
 		return;
 	}
 	

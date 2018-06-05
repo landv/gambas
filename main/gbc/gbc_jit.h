@@ -52,6 +52,7 @@ void JIT_print(const char *str, ...);
 void JIT_vprint(const char *str, va_list args);
 
 const char *JIT_get_type(TYPE type);
+const char *JIT_get_gtype(TYPE type);
 const char *JIT_get_ctype(TYPE type);
 
 // gbc_jit_body.c

@@ -232,8 +232,8 @@ int EXEC_push_unknown_event(bool unknown);
 
 void EXEC_pop_unknown(void);
 
-void EXEC_enum_first(PCODE code);
-bool EXEC_enum_next(PCODE code);
+void EXEC_enum_first(PCODE code, VALUE *local, VALUE *penum);
+bool EXEC_enum_next(PCODE code, VALUE *local, VALUE *penum);
 
 void *EXEC_create_object(CLASS *class, int np, char *event);
 void EXEC_new(void);
