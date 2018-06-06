@@ -7,12 +7,9 @@ AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.db.sqlite3)
 AC_PROG_LIBTOOL
 
-GB_COMPONENT_SEARCH(
+GB_COMPONENT_PKG_CONFIG(
   sqlite3, SQLITE3, gb.db.sqlite3, [src],
-  sqlite3 ">= 3.0",
-  [GB_FIND(sqlite3.h, /usr/local/lib /usr/local /opt /usr/lib /usr, include sqlite*/include)],
-  [GB_FIND(libsqlite3.$SHLIBEXT, /usr/local /opt /usr, lib sqlite*/lib)],
-  [$C_LIB -lsqlite3])
+  'sqlite3 >= 3.0')
  
 AC_OUTPUT( \
 Makefile \
