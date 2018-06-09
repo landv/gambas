@@ -982,6 +982,7 @@ typedef
 		GB_CLASS (*FindClassLocal)(const char *);
 		GB_TYPE (*GetArrayType)(GB_CLASS);
 		GB_CLASS (*GetArrayClass)(GB_CLASS);
+		GB_CLASS (*LoadClassFrom)(const char *, const char*);
 		bool (*Is)(void *, GB_CLASS);
 		void (*Ref)(void *);
 		void (*Unref)(void **);

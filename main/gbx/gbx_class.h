@@ -25,7 +25,6 @@
 #define __GBX_CLASS_H
 
 #include "gb_error.h"
-#include "gb_alloc.h"
 #include "gbx_type.h"
 #include "gb_table.h"
 #include "gbx_class_desc.h"
@@ -111,9 +110,10 @@ typedef
 		char npmin;
 		char vararg;
 		unsigned fast : 1;
+		unsigned fast_linked : 1;
 		unsigned optional : 1;
 		unsigned use_is_missing : 1;
-		unsigned _reserved : 5;
+		unsigned _reserved : 4;
 		short n_local;
 		short n_ctrl;
 		short stack_usage;
@@ -509,6 +509,8 @@ void CLASS_create_array_of_struct_class(CLASS *class);
 CLASS *CLASS_get_array_of_struct_class(CLASS *class);
 
 int CLASS_sizeof(CLASS *class);
+
+CLASS *CLASS_find_load_from(const char *name, const char *from);
 
 /* class_init.c */
 

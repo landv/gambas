@@ -23,6 +23,7 @@
 
 #define __GBX_STRUCT_C
 
+#include "gb_alloc.h"
 #include "gbx_struct.h"
 
 void *CSTRUCT_create_static(void *ref, CLASS *class, char *addr)

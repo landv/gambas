@@ -688,7 +688,7 @@ static bool header_function(TRANS_FUNC *func)
 	if (is_static) TYPE_set_flag(&func->type, TF_STATIC);
 	if (is_public) TYPE_set_flag(&func->type, TF_PUBLIC);
 	
-	func->fast = is_fast && !JOB->no_jit;
+	func->fast = is_fast || JOB->class->all_fast;
 	if (func->fast)
 		JOB->class->has_fast = TRUE;
 
@@ -888,11 +888,8 @@ static bool header_option(void)
 	if (PATTERN_is(JOB->current[0], RS_FAST))
 	{
 		JOB->current++;
-		if (!JOB->no_jit)
-		{
-			JOB->class->all_fast = TRUE;
-			JOB->class->has_fast = TRUE;
-		}
+		JOB->class->all_fast = TRUE;
+		JOB->class->has_fast = TRUE;
 		return TRUE;
 	}
 

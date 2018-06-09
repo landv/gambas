@@ -357,6 +357,7 @@ static void output_class(void)
 	if (Class->autocreate) flag |= 2;
 	if (Class->optional) flag |= 4;
 	if (Class->nocreate) flag |= 8;
+	if (Class->has_fast) flag |= 16;
 	write_short(flag);
 	
 	// Static size

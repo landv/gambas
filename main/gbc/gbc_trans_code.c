@@ -31,7 +31,6 @@
 #include "gb_error.h"
 #include "gbc_compile.h"
 #include "gbc_trans.h"
-#include "gbc_jit.h"
 #include "gb_code.h"
 #include "gb_limit.h"
 
@@ -550,22 +549,6 @@ void TRANS_code(void)
 	int i;
 	bool fast = FALSE;
 
-	JIT_begin(JOB->class->has_fast);
-		
-	if (JOB->class->has_fast)
-	{
-		JIT_section("Declarations");
-		for (i = 0; i < ARRAY_count(JOB->class->function); i++)
-		{
-			_func = &JOB->class->function[i];
-			if (JOB->class->all_fast)
-				_func->fast = TRUE;
-			if (!_func->fast)
-				continue;
-			JIT_declare_func(_func, i);
-		}
-	}
-	
 	for (i = 0; i < ARRAY_count(JOB->class->function); i++)
 	{
 		_func = &JOB->class->function[i];
@@ -574,7 +557,11 @@ void TRANS_code(void)
 		CODE_begin_function(_func);
 
 		if (JOB->verbose)
+		{
 			printf("Compiling %s()...\n", TABLE_get_symbol_name(JOB->class->table, _func->name));
+			if (fast)
+				printf("Fast\n");
+		}
 
 		/* Do not debug implicit or generated functions */
 		if (!_func->start || _func->name == NO_SYMBOL || TABLE_get_symbol_name(JOB->class->table, _func->name)[0] == '@')
@@ -601,14 +588,8 @@ void TRANS_code(void)
 			if (JOB->verbose)
 				CODE_dump(_func->code, _func->ncode);
 
-			if (fast)
-				JIT_translate_func(_func, i);
-			
 			continue;
 		}
-		
-		if (fast)
-			ARRAY_create(&TRANS_labels);
 		
 		create_local_from_param();
 
@@ -630,16 +611,8 @@ void TRANS_code(void)
 		}
 
 		remove_local();
-		
-		if (fast)
-		{
-			JIT_translate_func(_func, i);
-			ARRAY_delete(&TRANS_labels);
-		}
 	}
 
-	JIT_end();
-	
 	CLASS_check_properties(JOB->class);
 	CLASS_check_unused_global(JOB->class);
 

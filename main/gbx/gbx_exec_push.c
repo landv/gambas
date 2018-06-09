@@ -146,8 +146,6 @@ _PUSH_GENERIC:
 				{
 					if ((PC[-1] & 0xF800) == C_PUSH_CLASS)
 					{
-						// FIXME: Does not work with JIT
-						
 						if (desc->constant.type == T_BOOLEAN)
 						{
 							PC[-1] = C_PUSH_MISC | (desc->constant.value._integer ? CPM_TRUE : CPM_FALSE);

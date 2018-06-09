@@ -72,7 +72,6 @@ static struct option Long_options[] =
 	{ "root", 1, NULL, 'r' },
 	{ "all", 0, NULL, 'a' },
 	{ "translate-errors", 0, NULL, 'e' },
-	{ "no-jit", 0, NULL, 'j' },
 	{ "no-old-read-write-syntax", 0, NULL, 1 },
 	{ 0 }
 };
@@ -88,7 +87,6 @@ static bool main_public = FALSE;
 static bool main_public_module = FALSE;
 static bool main_swap = FALSE;
 static bool main_no_old_read_syntax = FALSE;
-static bool main_no_jit = FALSE;
 //static char *main_class_file = NULL;
 
 static char **_files = NULL;
@@ -104,9 +102,9 @@ static void get_arguments(int argc, char **argv)
 	for(;;)
 	{
 		#if HAVE_GETOPT_LONG
-			opt = getopt_long(argc, argv, "gxvaVhLwtpmsejr:", Long_options, &index);
+			opt = getopt_long(argc, argv, "gxvaVhLwtpmser:", Long_options, &index);
 		#else
-			opt = getopt(argc, argv, "gxvaVhLwtpmsejr:");
+			opt = getopt(argc, argv, "gxvaVhLwtpmser:");
 		#endif
 		if (opt < 0) break;
 
@@ -177,10 +175,6 @@ static void get_arguments(int argc, char **argv)
 				ERROR_translate = TRUE;
 				break;
 				
-			case 'j':
-				main_no_jit = TRUE;
-				break;
-
 			case 1:
 				main_no_old_read_syntax = TRUE;
 				break;
@@ -207,7 +201,7 @@ static void get_arguments(int argc, char **argv)
 					"  -p  --public-control       form controls are public\n"
 					"  -m  --public-module        module symbols are public by default\n"
 					"  -s  --swap                 swap endianness\n"
-					"  -j  --no-jit               disable just-in-time\n"
+
 					"  -r  --root <directory>     gives the gambas installation directory\n"
 					"  -e  --translate-errors     display translatable error messages\n"
 					"  -x  --exec                 define the 'Exec' preprocessor constant\n"
@@ -224,7 +218,6 @@ static void get_arguments(int argc, char **argv)
 					"  -p                         form controls are public\n"
 					"  -m                         module symbols are public by default\n"
 					"  -s                         swap endianness\n"
-					"  -j                         disable just-in-time\n"
 					"  -r <directory>             gives the gambas installation directory\n"
 					"  -e                         display translatable error messages\n"
 					"  -x                         define the 'Exec' preprocessor constant\n"
@@ -307,7 +300,6 @@ static void compile_file(const char *file)
 	JOB->swap = main_swap;
 	JOB->public_module = main_public_module;
 	JOB->no_old_read_syntax = main_no_old_read_syntax;
-	JOB->no_jit = main_no_jit;
 	//JOB->class_file = main_class_file;
 
 	if (JOB->verbose)

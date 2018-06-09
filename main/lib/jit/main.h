@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  gbx_jit.h
+  main.h
 
-  (c) 2018 Benoît Minisini <g4mba5@gmail.com>
+  (c) 2000-2018 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,29 +21,19 @@
 
 ***************************************************************************/
 
-#ifndef __GBX_JIT_H
-#define __GBX_JIT_H
+#ifndef __MAIN_H
+#define __MAIN_H
 
-#include "gbx_class.h"
-#include "gbx_type.h"
-#include "gbx_value.h"
-#include "gbx_stack.h"
-#include "gbx_object.h"
-#include "gbx_exec.h"
+#include "gb_common.h"
+#include "gambas.h"
+#include "gb.jit.h"
 
-typedef
-	void (*JIT_FUNC)(uchar nparam);
-
-bool JIT_compile(ARCHIVE *arch);
-void JIT_debug(const char *fmt, ...);
-void JIT_exec(bool ret_on_stack);
-PCODE *JIT_get_code(CLASS *class, int index);
-CLASS_CONST *JIT_get_constant(int index);
-void *JIT_get_class_ref(int index);
-void JIT_call_unknown(PCODE *pc, VALUE *sp);
-
-void JIT_exit(void);
-
-bool JIT_can_compile(ARCHIVE *arch);
-
+#ifndef __MAIN_C
+extern GB_INTERFACE *GB_PTR;
+extern JIT_INTERFACE *JIT_PTR;
 #endif
+
+#define GB (*GB_PTR)
+#define JIT (*JIT_PTR)
+
+#endif /* __MAIN_H */

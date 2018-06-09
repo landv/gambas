@@ -129,6 +129,7 @@ lib/complex/Makefile \
 lib/data/Makefile \
 lib/clipper/Makefile \
 lib/inotify/Makefile \
+lib/jit/Makefile \
 ])
 AC_OUTPUT
 

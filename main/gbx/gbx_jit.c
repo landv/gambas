@@ -43,13 +43,21 @@ static bool _component_loaded = FALSE;
 static GB_FUNCTION _jit_compile_func;
 
 static bool _no_jit = FALSE;
+static bool _jit_compiling = FALSE;
 static void *_jit_library = NULL;
 
 static JIT_FUNCTION *_jit_func = NULL;
 
+static bool _debug = FALSE;
+
 void JIT_exit(void)
 {
 	ARRAY_delete(&_jit_func);
+}
+
+bool JIT_can_compile(ARCHIVE *arch)
+{
+	return arch ? !arch->jit_compiling : !_jit_compiling;
 }
 
 bool JIT_compile(ARCHIVE *arch)
@@ -58,6 +66,7 @@ bool JIT_compile(ARCHIVE *arch)
 	char *path;
 	void *lib;
 	void **iface;
+	COMPONENT *current;
 	
 	if (_no_jit)
 		return TRUE;
@@ -75,26 +84,44 @@ bool JIT_compile(ARCHIVE *arch)
 	
 	if (!_component_loaded)
 	{
-		char *var = getenv("GB_NO_JIT");
+		char *var;
 		
 		_component_loaded = TRUE;
 		
+		var =  getenv("GB_NO_JIT");
 		if (var && var[0] && !(var[0] == '0' && var[1] == 0))
 		{
 			_no_jit = TRUE;
 			return TRUE;
 		}
 		
-		fprintf(stderr, "gbx3: loading gb.jit component\n");
+		var = getenv("GB_JIT_DEBUG");
+		if (var && var[0] && !(var[0] == '0' && var[1] == 0))
+			_debug = TRUE;
+		
+		if (_debug)
+			fprintf(stderr, "gbx3: loading gb.jit component\n");
+		
 		COMPONENT_load(COMPONENT_create("gb.jit"));
-		if (GB_GetFunction(&_jit_compile_func, CLASS_find_global("_Jit"), "Compile", "", "s"))
+		if (GB_GetFunction(&_jit_compile_func, CLASS_find_global("_Jit"), "Compile", "s", "s"))
 			ERROR_panic("Unable to find _Jit.Compile method");
 	}
 	
-	ret = GB_Call(&_jit_compile_func, 0, FALSE);
+	arch ? (arch->jit_compiling = TRUE) : (_jit_compiling = TRUE);
+	
+	current = COMPONENT_current;
+	COMPONENT_current = NULL;
+	
+	GB_Push(1, T_STRING, arch ? arch->name : "", -1);
+	ret = GB_Call(&_jit_compile_func, 1, FALSE);
 	path = GB_ToZeroString((GB_STRING *)ret);
+	
+	COMPONENT_current = current;
+	
 	if (!*path)
 		ERROR_panic("Unable to compile jit source file");
+	
+	arch ? (arch->jit_compiling = FALSE) : (_jit_compiling = FALSE);
 	
 	//fprintf(stderr, "gbx3: shared jit library is: %s\n", path);
 
@@ -116,23 +143,32 @@ bool JIT_compile(ARCHIVE *arch)
 	return FALSE;
 }
 
-void JIT_create_function(ARCHIVE *arch, CLASS *class, int index)
+static bool create_function(CLASS *class, int index)
 {
+	ARCHIVE *arch;
 	FUNCTION *func;
 	JIT_FUNCTION *jit;
 	void *lib;
 	void *addr;
 	int i;
 	int len;
+	char *name;
+	
+	arch = class->component ? class->component->archive : NULL;
 	
 	func = &class->load->func[index];
+	func->fast_linked = TRUE;
 	
 	if (!arch)
 		lib = _jit_library;
 	else
 		lib = arch->jit_library;
 	
-	len = sprintf(COMMON_buffer, "jit_%s_%d", class->name, index);
+	name = class->name;
+	while (*name == '^')
+		name++;
+	
+	len = sprintf(COMMON_buffer, "jit_%s_%d", name, index);
 	
 	for (i = 0; i < len; i++)
 		COMMON_buffer[i] = tolower(COMMON_buffer[i]);
@@ -141,10 +177,10 @@ void JIT_create_function(ARCHIVE *arch, CLASS *class, int index)
 	if (!addr)
 	{
 		func->fast = FALSE;
-		return;
+		return TRUE;
 	}
 	
-	if (func->debug)
+	if (_debug && func->debug)
 		fprintf(stderr, "gbx3: loading jit function: %s.%s\n", class->name, func->debug->name);
 
 	if (!_jit_func)
@@ -156,6 +192,8 @@ void JIT_create_function(ARCHIVE *arch, CLASS *class, int index)
 	jit->code = func->code;
 	
 	func->code = (PCODE *)jit;
+	
+	return FALSE;
 }
 
 
@@ -163,15 +201,21 @@ void JIT_exec(bool ret_on_stack)
 {
 	VALUE *sp = SP;
 	JIT_FUNCTION *jit;
+	CLASS *class = EXEC.class;
 	char nparam = EXEC.nparam;
 	VALUE ret;
 	FUNCTION *func = EXEC.func;
 	
+	if (!func->fast_linked)
+	{
+		if (create_function(class, EXEC.index))
+			return;
+	}
+	
 	STACK_push_frame(&EXEC_current, func->stack_usage);
 	
-	CP = EXEC.class;
+	CP = class;
 	OP = (void *)EXEC.object;
-	//FP = EXEC.func;
 	
 	jit = (JIT_FUNCTION *)(func->code);
 	
@@ -207,22 +251,14 @@ void JIT_exec(bool ret_on_stack)
 	}
 }
 
-PCODE *JIT_get_code(int index)
+PCODE *JIT_get_code(CLASS *class, int index)
 {
-	JIT_FUNCTION *jit = (JIT_FUNCTION *)CP->load->func[index].code;
-	return jit->code;
-}
-
-void *JIT_get_dynamic_addr(int index)
-{
-	CLASS_VAR *var = &CP->load->dyn[index];
-	return &OP[var->pos];
-}
-
-void *JIT_get_static_addr(int index)
-{
-	CLASS_VAR *var = &CP->load->stat[index];
-	return &((char *)CP->stat)[var->pos];
+	FUNCTION *func = &class->load->func[index];
+	
+	if (func->fast_linked)
+		return ((JIT_FUNCTION *)(func->code))->code;
+	else
+		return func->code;
 }
 
 void *JIT_get_class_ref(int index)
@@ -258,4 +294,3 @@ void JIT_call_unknown(PCODE *pc, VALUE *sp)
 	
 	pc[1] = save;
 }
-

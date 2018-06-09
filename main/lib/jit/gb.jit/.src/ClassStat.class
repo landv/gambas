@@ -1,6 +1,8 @@
 ' Gambas class file
 
-Export
+Static Public Name As String
+Static Public Parent As String
+Static Public HasFast As Boolean
 
 Static Private $iSectionSize As Integer
 Static Private $iSectionPos As Integer
@@ -29,31 +31,21 @@ End
 
 
 
-Static Public Sub Stat(Name As String) As ClassStat
+Static Public Sub Stat(sDir As String, sName As String) 
 
   Dim sPath As String
   Dim hFile As File
-  Dim hStat As ClassStat
   Dim iVal As Integer
   Dim iParent As Integer
   Dim iFlag As Short
   Dim bDebug As Boolean
   Dim iStringPos As Integer
-  Dim sDir As String
   
-  While Name Begins "../" 
-    Name = Mid(Name, 4)
-    sDir &= "../"
-  Wend
-  
-  sPath = ".." &/ sDir &/ ".gambas" &/ UCase(Name)
-  If Not Exist(sPath) Then Error.Raise("Class not found")
+  sPath = sDir &/ ".gambas" &/ UCase(sName)
+  If Not Exist(sPath) Then Error.Raise("Class not found: " & sPath)
   
   $iSectionPos = 0
   $iSectionSize = 0
-  
-  hStat = New ClassStat
-  hStat.Name = Name
   
   hFile = Open sPath
   
@@ -71,11 +63,11 @@ Static Public Sub Stat(Name As String) As ClassStat
   iParent = Read #hFile As Short
   iFlag = Read #hFile As Short
   
-  hStat.Exported = BTst(iFlag, 0)
-  hStat.AutoCreate = BTst(iFlag, 1)
-  hStat.Optional = BTst(iFlag, 2)
-  hStat.NoCreate = BTst(iFlag, 3)
-  hStat.HasFast = BTst(iFlag, 4)
+  'hStat.Exported = BTst(iFlag, 0)
+	'hStat.AutoCreate = BTst(iFlag, 1)
+	'hStat.Optional = BTst(iFlag, 2)
+	'hStat.NoCreate = BTst(iFlag, 3)
+  HasFast = BTst(iFlag, 4)
   
   GotoNextSection(hFile) ' description
   GotoNextSection(hFile) ' constant
@@ -96,17 +88,15 @@ Static Public Sub Stat(Name As String) As ClassStat
   Loop
   
   Seek #hFile, iStringPos
-  hStat.Name = ReadZeroString(hFile)
+  Name = ReadZeroString(hFile)
   
   If iParent > 0 Then
   
     Seek #hFile, iStringPos + iParent
-    hStat.Parent = ReadZeroString(hFile)
+    Parent = ReadZeroString(hFile)
     
   Endif
   
   Close hFile
-  
-  Return hStat
   
 End

@@ -133,6 +133,7 @@ const void *const GAMBAS_Api[] =
 	(void *)CLASS_find,
 	(void *)GB_GetArrayType,
 	(void *)CLASS_get_array_class,
+	(void *)CLASS_find_load_from,
 	(void *)GB_Is,
 	(void *)GB_Ref,
 	(void *)GB_Unref,
@@ -342,8 +343,6 @@ const void *const GAMBAS_JitApi[] =
 	(void *)JIT_debug,
 	(void *)JIT_get_code,
 	(void *)THROW,
-	(void *)JIT_get_static_addr,
-	(void *)JIT_get_dynamic_addr,
 	(void *)JIT_get_constant,
 	(void *)JIT_get_class_ref,
 	(void *)EXEC_subr_table,
@@ -358,6 +357,8 @@ const void *const GAMBAS_JitApi[] =
 	(void *)EXEC_pop_unknown,
 	(void *)EXEC_enum_first,
 	(void *)EXEC_enum_next,
+	(void *)SYMBOL_find,
+	(void *)CLASS_load_real,
 	NULL
 };
 

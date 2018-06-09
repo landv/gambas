@@ -66,8 +66,7 @@ typedef
 		unsigned column : 1;               // search column where there is an error
 		unsigned exec : 1;                 // we are compiling for an executable
 		unsigned warnings : 1;             // if warnings must be printed
-		unsigned no_jit : 1;               // if jit is disabled
-		unsigned _reserved : 15;           // reserved
+		unsigned _reserved : 16;           // reserved
 		char *output;                      // output file
 		PATTERN *pattern;                  // lexical analyze
 		int pattern_count;                 // number of patterns

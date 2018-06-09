@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  gbx_jit.h
+  gb_str.h
 
-  (c) 2018 Benoît Minisini <g4mba5@gmail.com>
+  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,29 +21,22 @@
 
 ***************************************************************************/
 
-#ifndef __GBX_JIT_H
-#define __GBX_JIT_H
+#ifndef __GB_STR_H
+#define __GB_STR_H
 
-#include "gbx_class.h"
-#include "gbx_type.h"
-#include "gbx_value.h"
-#include "gbx_stack.h"
-#include "gbx_object.h"
-#include "gbx_exec.h"
+#include <stdarg.h>
 
-typedef
-	void (*JIT_FUNC)(uchar nparam);
+char *STR_copy(const char *str);
+char *STR_copy_len(const char *str, int len);
+char *STR_cat(const char *str, ...);
+char *STR_upper(const char *str);
+char *STR_lower(const char *str);
 
-bool JIT_compile(ARCHIVE *arch);
-void JIT_debug(const char *fmt, ...);
-void JIT_exec(bool ret_on_stack);
-PCODE *JIT_get_code(CLASS *class, int index);
-CLASS_CONST *JIT_get_constant(int index);
-void *JIT_get_class_ref(int index);
-void JIT_call_unknown(PCODE *pc, VALUE *sp);
+void STR_free(char *str);
+char *STR_free_later(char *str);
 
-void JIT_exit(void);
-
-bool JIT_can_compile(ARCHIVE *arch);
+void STR_add(char **str, const char *fmt, ...);
+char *STR_print(const char *fmt, ...);
+void STR_vadd(char **str, const char *fmt, va_list args);
 
 #endif

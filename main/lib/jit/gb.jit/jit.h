@@ -5,6 +5,7 @@
 
 #define E_OVERFLOW   7
 #define E_NOBJECT   12
+#define E_NULL      13
 #define E_MATH      19
 #define E_BOUND     21
 #define E_ZERO      26
@@ -37,11 +38,22 @@ typedef
 typedef
   struct {
     GB_TYPE type;
-    void *class;
+    GB_CLASS class;
     void *super;
     }
   GB_VALUE_CLASS;
   
+typedef
+  struct {
+    GB_TYPE type;
+    void *class;
+    void *object;
+    char kind;
+    char defined;
+    short index;
+    }
+  GB_VALUE_FUNCTION;
+
 typedef
   struct {
     GB_TYPE type;
@@ -69,20 +81,46 @@ typedef
 
 #define CHECK_FINITE(_val) (isfinite(_val) ? (_val) : JIT.throw(E_OVERFLOW))
 
-#define PARAM_b(_p) (sp[-n + (_p)]._boolean.value)
-#define PARAM_c(_p) (sp[-n + (_p)]._byte.value)
-#define PARAM_h(_p) (sp[-n + (_p)]._short.value)
-#define PARAM_i(_p) (sp[-n + (_p)]._integer.value)
-#define PARAM_l(_p) (sp[-n + (_p)]._long.value)
-#define PARAM_g(_p) (sp[-n + (_p)]._single.value)
-#define PARAM_f(_p) (sp[-n + (_p)]._float.value)
-#define PARAM_p(_p) (sp[-n + (_p)]._pointer.value)
-#define PARAM_d(_p) (*(GB_DATE *)&sp[-n + (_p)])
-#define PARAM_s(_p) (*(GB_STRING *)&sp[-n + (_p)])
-#define PARAM_o(_p) (*(GB_OBJECT *)&sp[-n + (_p)])
-#define PARAM_v(_p) (*(GB_VARIANT *)&sp[-n + (_p)])
+#define PARAM_b(_p) (sp[-n+(_p)]._boolean.value)
+#define PARAM_c(_p) (sp[-n+(_p)]._byte.value)
+#define PARAM_h(_p) (sp[-n+(_p)]._short.value)
+#define PARAM_i(_p) (sp[-n+(_p)]._integer.value)
+#define PARAM_l(_p) (sp[-n+(_p)]._long.value)
+#define PARAM_g(_p) (sp[-n+(_p)]._single.value)
+#define PARAM_f(_p) (sp[-n+(_p)]._float.value)
+#define PARAM_p(_p) (sp[-n+(_p)]._pointer.value)
+#define PARAM_d(_p) (*(GB_DATE *)&sp[-n+(_p)])
+#define PARAM_s(_p) (*(GB_STRING *)&sp[-n+(_p)])
+#define PARAM_o(_p) (*(GB_OBJECT *)&sp[-n+(_p)])
+#define PARAM_v(_p) (*(GB_VARIANT *)&sp[-n+(_p)])
 
-#define RETURN_b(_val) (GB.ReturnBoolean(_val))
+#define PARAM_OPT(_p, _type, _default) ((sp[-n+(_p)].type == GB_T_VOID) ? (_default) : PARAM_##_type(_p))
+#define PARAM_OPT_b(_p) PARAM_OPT(_p, b, 0)
+#define PARAM_OPT_c(_p) PARAM_OPT(_p, c, 0)
+#define PARAM_OPT_h(_p) PARAM_OPT(_p, h, 0)
+#define PARAM_OPT_i(_p) PARAM_OPT(_p, i, 0)
+#define PARAM_OPT_l(_p) PARAM_OPT(_p, l, 0)
+#define PARAM_OPT_g(_p) PARAM_OPT(_p, g, 0)
+#define PARAM_OPT_f(_p) PARAM_OPT(_p, f, 0)
+#define PARAM_OPT_p(_p) PARAM_OPT(_p, p, 0)
+#define PARAM_OPT_d(_p) PARAM_OPT(_p, d, ({ GB_DATE _v; _v.type = GB_T_DATE; _v.value.time = _v.value.date = 0; _v; }))
+#define PARAM_OPT_s(_p) PARAM_OPT(_p, d, GET_CSTRING("", 0, 0))
+#define PARAM_OPT_o(_p) PARAM_OPT(_p, d, GET_OBJECT(GB_T_OBJECT, 0))
+#define PARAM_OPT_v(_p) PARAM_OPT(_p, d, ({ GB_VARIANT _v; _v.type = GB_T_VARIANT; _v.value.type = GB_T_NULL; _v; }))
+
+#define OPT(_p, _n) ({ \
+  char _opt = 0; \
+  GB_VALUE *_param = &sp[-n+(_p)]; \
+  for (int _i = 0; _i < (_n); _i++) \
+  { \
+    if (((_i + (_p)) >= n) || _param->type == GB_T_VOID) \
+      _opt |= (1 << _i); \
+    _param++; \
+  } \
+  _opt; \
+})
+
+#define RETURN_b(_val) (GB.ReturnBoolean((int)_val))
 #define RETURN_c(_val) (GB.Return(GB_T_BYTE, (int)(_val)))
 #define RETURN_h(_val) (GB.Return(GB_T_SHORT, (int)(_val)))
 #define RETURN_i(_val) (GB.ReturnInteger(_val))
@@ -110,6 +148,31 @@ typedef
 #define PUSH_C(_val) ({ GB_VALUE_CLASS _v; _v.type = GB_T_CLASS; _v.class = (_val); *((GB_VALUE_CLASS *)sp) = _v; sp++; })
 #define PUSH_u(_val) (*sp = (_val), GB.BorrowValue(sp), sp++)
 
+enum
+{
+  FUNCTION_NULL,
+  FUNCTION_NATIVE,
+  FUNCTION_PRIVATE,
+  FUNCTION_PUBLIC,
+  FUNCTION_EVENT,
+  FUNCTION_EXTERN,
+  FUNCTION_UNKNOWN,
+  FUNCTION_CALL,
+	FUNCTION_SUBR
+};
+
+#define PUSH_PRIVATE_FUNCTION(_index) ({ \
+  GB_VALUE_FUNCTION *f = (GB_VALUE_FUNCTION *)sp; \
+  f->type = GB_T_FUNCTION; \
+  f->class = CP; \
+  f->object = OP; \
+  f->kind = FUNCTION_PRIVATE; \
+  f->index = (_index); \
+  f->defined = 1; \
+  GB.Ref(OP); \
+  sp++; \
+})
+
 #define POP_b() (sp--, sp->_boolean.value)
 #define POP_c() (sp--, sp->_byte.value)
 #define POP_h() (sp--, sp->_short.value)
@@ -128,6 +191,7 @@ typedef
 #define POP_BORROW_v() (sp--, *((GB_VARIANT*)sp))
 #define POP_u() (sp--, JIT.unborrow(sp), *sp)
 #define POP_BORROW_u() (sp--, *sp)
+#define POP_V() (sp--)
 
 #define BORROW_s(_val) ({ GB_STRING _v = (_val); GB.RefString(_v.value.addr); _v; })
 #define BORROW_o(_val) ({ GB_OBJECT _v = (_val); GB.Ref(_v.value); _v; })
@@ -141,32 +205,10 @@ typedef
 #define RELEASE_FAST_o(_val) GB.Unref(&((_val).value))
 #define RELEASE_FAST_v(_val) GB.ReleaseValue(&(_val))
 
-#define GET_CLASS(_index) (JIT.get_class_ref(_index))
+#define CLASS(_class) ((GB_CLASS)(_class))
 
-#define CONSTANT_l(_index) ({ \
-  JIT_CONSTANT *_cc = JIT.get_constant(_index); \
-  _cc->_long.value; \
-})
-
-#define CONSTANT_g(_index) ({ \
-  JIT_CONSTANT *_cc = JIT.get_constant(_index); \
-  _cc->_single.value; \
-})
-
-#define CONSTANT_f(_index) ({ \
-  JIT_CONSTANT *_cc = JIT.get_constant(_index); \
-  _cc->_float.value; \
-})
-
-#define CONSTANT_s(_index) ({ \
-  JIT_CONSTANT *_cc = JIT.get_constant(_index); \
-  GET_CSTRING(_cc->_string.addr, 0, _cc->_string.len); \
-})
-
-#define CONSTANT_t(_index) ({ \
-  JIT_CONSTANT *_cc = JIT.get_constant(_index); \
-  GET_CSTRING(GB.Translate(_cc->_string.addr), 0, strlen(temp.value.addr)); \
-})
+#define CONSTANT_s(_addr, _len) GET_CSTRING(_addr, 0, _len)
+#define CONSTANT_t(_addr, _len) GET_CSTRING(GB.Translate(_addr), 0, strlen(temp.value.addr))
 
 #define GET_CHAR(_char) GET_CSTRING(&JIT.char_table[(_char) * 2], 0, 1)
   
@@ -198,57 +240,35 @@ typedef
   temp.value = (_val); \
   temp; })
 
-#define GET_STATIC(_index)  (JIT.get_static_addr(_index))
+#define ADDR(_val) ({ \
+  char *_object = (_val).value; \
+  if (!_object) JIT.throw(E_NULL); \
+  _object; \
+})
 
-#define GET_STATIC_b(_index) (*(bool *)GET_STATIC(_index))
-#define GET_STATIC_c(_index) (*(uchar *)GET_STATIC(_index))
-#define GET_STATIC_h(_index) (*(short *)GET_STATIC(_index))
-#define GET_STATIC_i(_index) (*(int *)GET_STATIC(_index))
-#define GET_STATIC_l(_index) (*(int64_t *)GET_STATIC(_index))
-#define GET_STATIC_g(_index) (*(float *)GET_STATIC(_index))
-#define GET_STATIC_f(_index) (*(double *)GET_STATIC(_index))
-#define GET_STATIC_p(_index) (*(intrptr_t *)GET_STATIC(_index))
-#define GET_STATIC_s(_index) GET_STRING((*(char **)GET_STATIC(_index)), 0, GB.StringLength(temp.value.addr))
-#define GET_STATIC_o(_index, _type) GET_OBJECT((*(char **)GET_STATIC(_index)), _type)
-#define GET_STATIC_v(_index) GET_VARIANT((*(GB_VARIANT_VALUE *)GET_STATIC(_index)))
+#define GET_b(_addr) (*(bool *)(_addr))
+#define GET_c(_addr) (*(uchar *)()_addr))
+#define GET_h(_addr) (*(short *)(_addr))
+#define GET_i(_addr) (*(int *)(_addr))
+#define GET_l(_addr) (*(int64_t *)(_addr))
+#define GET_g(_addr) (*(float *)(_addr))
+#define GET_f(_addr) (*(double *)(_addr))
+#define GET_p(_addr) (*(intrptr_t *)(_addr))
+#define GET_s(_addr) GET_STRING((*(char **)(_addr)), 0, GB.StringLength(temp.value.addr))
+#define GET_o(_addr, _type) GET_OBJECT((*(char **)(_addr)), _type)
+#define GET_v(_addr) GET_VARIANT((*(GB_VARIANT_VALUE *)(_addr)))
 
-#define SET_STATIC_b(_index, _val) (GET_STATIC_b(_index) = (_val))
-#define SET_STATIC_c(_index, _val) (GET_STATIC_c(_index) = (_val))
-#define SET_STATIC_h(_index, _val) (GET_STATIC_h(_index) = (_val))
-#define SET_STATIC_i(_index, _val) (GET_STATIC_i(_index) = (_val))
-#define SET_STATIC_l(_index, _val) (GET_STATIC_l(_index) = (_val))
-#define SET_STATIC_g(_index, _val) (GET_STATIC_g(_index) = (_val))
-#define SET_STATIC_f(_index, _val) (GET_STATIC_f(_index) = (_val))
-#define SET_STATIC_p(_index, _val) (GET_STATIC_p(_index) = (_val))
-#define SET_STATIC_s(_index, _val) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreString((GB_STRING *)&temp, (char **)GET_STATIC(_index)); })
-#define SET_STATIC_o(_index, _val) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreObject((GB_OBJECT *)&temp, GET_STATIC(_index)); })
-#define SET_STATIC_v(_index, _val) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreVariant((GB_VARIANT *)&temp, GET_STATIC(_index)); })
-
-#define GET_DYNAMIC(_index)  (JIT.get_dynamic_addr(_index))
-
-#define GET_DYNAMIC_b(_index) *(bool *)GET_DYNAMIC(_index)
-#define GET_DYNAMIC_c(_index) *(uchar *)GET_DYNAMIC(_index)
-#define GET_DYNAMIC_h(_index) *(short *)GET_DYNAMIC(_index)
-#define GET_DYNAMIC_i(_index) *(int *)GET_DYNAMIC(_index)
-#define GET_DYNAMIC_l(_index) *(int64_t *)GET_DYNAMIC(_index)
-#define GET_DYNAMIC_g(_index) *(float *)GET_DYNAMIC(_index)
-#define GET_DYNAMIC_f(_index) *(double *)GET_DYNAMIC(_index)
-#define GET_DYNAMIC_p(_index) *(intptr_t *)GET_DYNAMIC(_index)
-#define GET_DYNAMIC_s(_index) GET_STRING((*(char **)GET_DYNAMIC(_index)), 0, GB.StringLength(temp.value.addr))
-#define GET_DYNAMIC_o(_index, _type) GET_OBJECT((*(char **)GET_DYNAMIC(_index)), _type)
-#define GET_DYNAMIC_v(_index) GET_VARIANT((*(GB_VARIANT_VALUE *)GET_DYNAMIC(_index)))
-
-#define SET_DYNAMIC_b(_index, _val) (GET_DYNAMIC_b(_index) = (_val))
-#define SET_DYNAMIC_c(_index, _val) (GET_DYNAMIC_c(_index) = (_val))
-#define SET_DYNAMIC_h(_index, _val) (GET_DYNAMIC_h(_index) = (_val))
-#define SET_DYNAMIC_i(_index, _val) (GET_DYNAMIC_i(_index) = (_val))
-#define SET_DYNAMIC_l(_index, _val) (GET_DYNAMIC_l(_index) = (_val))
-#define SET_DYNAMIC_g(_index, _val) (GET_DYNAMIC_g(_index) = (_val))
-#define SET_DYNAMIC_f(_index, _val) (GET_DYNAMIC_f(_index) = (_val))
-#define SET_DYNAMIC_p(_index, _val) (GET_DYNAMIC_p(_index) = (_val))
-#define SET_DYNAMIC_s(_index, _val) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreString((GB_STRING *)&temp, (char **)GET_DYNAMIC(_index)); })
-#define SET_DYNAMIC_o(_index, _val) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreObject((GB_OBJECT *)&temp, GET_DYNAMIC(_index)); })
-#define SET_DYNAMIC_v(_index, _val) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreVariant((GB_VARIANT *)&temp, GET_DYNAMIC(_index)); })
+#define SET_b(_addr, _val) (GET_b(_addr) = (_val))
+#define SET_c(_addr, _val) (GET_c(_addr) = (_val))
+#define SET_h(_addr, _val) (GET_h(_addr) = (_val))
+#define SET_i(_addr, _val) (GET_i(_addr) = (_val))
+#define SET_l(_addr, _val) (GET_l(_addr) = (_val))
+#define SET_g(_addr, _val) (GET_g(_addr) = (_val))
+#define SET_f(_addr, _val) (GET_f(_addr) = (_val))
+#define SET_p(_addr, _val) (GET_p(_addr) = (_val))
+#define SET_s(_addr, _val) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreString((GB_STRING *)&temp, (char **)(_addr)); })
+#define SET_o(_addr, _val) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreObject((GB_OBJECT *)&temp, (void **)(_addr)); })
+#define SET_v(_addr, _val) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreVariant((GB_VARIANT *)&temp, (GB_VARIANT_VALUE *)(_addr)); })
 
 #define GET_ARRAY_NO_CHECK(_type, _array, _index) ({ \
   GB_ARRAY_IMPL *_a = (_array).value; \
@@ -305,7 +325,7 @@ typedef
 #define CONV_d_s(_val) CONV(_val, d, s, GB_T_STRING)
 #define CONV_d_o(_val) (JIT.throw(E_CONV))
 
-#define CONV_o_O(_val, _class) CONV(_val, o, o, GET_CLASS(_class))
+#define CONV_o_O(_val, _class) CONV(_val, o, o, CLASS(_class))
 
 #define PUSH_GOSUB(_label) ({ \
   GB_VALUE_GOSUB *_p = (GB_VALUE_GOSUB *)sp; \
@@ -327,6 +347,7 @@ typedef
 
 #define CALL_SUBR(_pc, _code) (PC = &pc[_pc], SP = sp, (*(EXEC_FUNC)JIT.subr_table[(_code) >> 8])(), sp = SP)
 #define CALL_SUBR_CODE(_pc, _code) (PC = &pc[_pc], SP = sp, (*(EXEC_FUNC_CODE)JIT.subr_table[(_code) >> 8])(_code), sp = SP)
+#define CALL_SUBR_UNKNOWN(_pc, _code) (JIT.call_unknown(&pc[_pc], sp), sp = SP)
 
 #define CALL_NEW(_pc, _code) (PC = &pc[_pc], SP = sp, (*(EXEC_FUNC)JIT.new)(), sp = SP)
 #define CALL_PUSH_ARRAY(_pc, _code) (PC = &pc[_pc], SP = sp, (*(EXEC_FUNC)JIT.push_array)(_code), sp = SP)

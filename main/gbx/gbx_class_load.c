@@ -496,7 +496,6 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	char *name;
 	int len;
 	uchar flag;
-	int jit_count = 0;
 
 	ALLOC_ZERO(&class->load, sizeof(CLASS_LOAD));
 
@@ -583,9 +582,6 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 		func->fast = (flag & 1) != 0;
 		func->optional = (func->npmin < func->n_param);
 		func->use_is_missing = (flag & 2) != 0;
-
-		if (func->fast)
-			jit_count++;
 
 		if (func->use_is_missing)
 		{
@@ -907,33 +903,6 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 
 	*pstart = start;
 	*pndesc = n_desc;
-
-	/* JIT function pointers */
-
-	if (jit_count)
-	{
-		ARCHIVE *arch = class->component ? class->component->archive : NULL;
-		
-		if (JIT_compile(arch))
-		{
-			for(i = 0; i < class->load->n_func; i++)
-			{
-				func = &class->load->func[i];
-				func->fast = FALSE;
-			}
-		}
-		else
-		{
-			for(i = 0; i < class->load->n_func; i++)
-			{
-				func = &class->load->func[i];
-				if (!func->fast)
-					continue;
-				
-				JIT_create_function(arch, class, i);
-			}
-		}
-	}
 }
 
 
@@ -989,7 +958,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 		if (CP)
 			class->component = CP->component;
 		else
-			class->component = NULL;
+			class->component = COMPONENT_current;
 	}
 
 	#if DEBUG_COMP
@@ -1045,7 +1014,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 
 	load_and_relocate(class, len_data, &start, &n_desc, in_jit_compilation);
 
-	/* Information on static and dynamic variables */
+	// Information on static and dynamic variables
 
 	if (class->parent)
 		offset = class->parent->off_event;
@@ -1058,7 +1027,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 		var->pos += offset;
 	}
 
-	/* Constant conversion & relocation */
+	// Constant conversion & relocation
 
 	for (i = 0; i < class->load->n_cst; i++)
 	{
@@ -1113,14 +1082,14 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 		}
 	}
 
-	/* Event description */
+	// Event description
 
 	CLASS_make_event(class, &first_event);
 
 	if (class->free_event && class->n_event > first_event)
 		memcpy(&class->event[first_event], class->load->event, (class->n_event - first_event) * sizeof(CLASS_EVENT));
 
-	/* Class public description */
+	// Class public description
 
 	for (i = 0; i < n_desc; i++)
 	{
@@ -1228,11 +1197,11 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 		}
 	}
 
-	/* Inheritance */
+	// Inheritance
 
 	CLASS_make_description(class, start, n_desc, &first);
 
-	/* Transfer symbol kind into symbol name (which is stored in the symbol table now), like native classes */
+	// Transfer symbol kind into symbol name (which is stored in the symbol table now), like native classes
 	// Define event index
 
 	for (i = 0; i < n_desc; i++)
@@ -1242,24 +1211,45 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 		desc->method.class = class;
 	}
 
-	/* Sort the class description */
+	// Sort the class description
 
 	CLASS_sort(class);
 
-	/* Special methods */
+	// Special methods
 
 	CLASS_search_special(class);
 
-	/* Class is loaded... */
+	// JIT compilation
+
+	for(i = 0; i < class->load->n_func; i++)
+	{
+		if (class->load->func[i].fast)
+		{
+			ARCHIVE *arch = class->component ? class->component->archive : NULL;
+			
+			if (JIT_can_compile(arch))
+			{
+				if (JIT_compile(arch))
+				{
+					for(i = 0; i < class->load->n_func; i++)
+						class->load->func[i].fast = FALSE;
+				}
+			}
+			
+			break;
+		}
+	}
+	
+	// Class is loaded...
 
 	class->in_load = FALSE;
 
-	/* ...and usable ! */
+	// ...and usable !
 
 	class->loaded = TRUE;
 	class->error = FALSE;
 
-	/* Init breakpoints */
+	// Init breakpoints
 
 	if (EXEC_debug)
 		DEBUG.InitBreakpoints(class);

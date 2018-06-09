@@ -149,7 +149,8 @@ Class NBodySystem
       Next
     Next
 
-    For Each iBody in Bodies
+    For I = 0 To Bodies.Max
+      iBody = Bodies[i]
       iBody.x += dt * iBody.vx
       iBody.y += dt * iBody.vy
       iBody.z += dt * iBody.vz

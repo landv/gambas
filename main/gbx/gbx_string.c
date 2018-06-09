@@ -127,7 +127,8 @@ static iconv_t _conv_utf8_unicode = (iconv_t)-1;
 ****************************************************************************/
 
 #define SIZE_INC 16
-#define REAL_SIZE(_len) (((_len) + (SIZE_INC - 1)) & ~(SIZE_INC - 1))
+#define SIZE_INC2 256
+#define REAL_SIZE(_len) ((_len) >= 256 ? (((_len) + (SIZE_INC2 - 1)) & ~(SIZE_INC2 - 1)) : (((_len) + (SIZE_INC - 1)) & ~(SIZE_INC - 1)))
 
 #define POOL_SIZE  16
 #define POOL_MAX   64
