@@ -6,21 +6,28 @@
 
 Export
 
-Private Const NO_PLAN As Integer = -1
-
-Private $hOutput As Stream
-Private $iPlan As Integer = NO_PLAN
-Private $iTestsRun As Integer = 0
-Private $iLast As Integer = 0
+Event Filter
 
 Property {Output} As Stream
 Property Read Planned As Integer
 Property Read Count As Integer
 Property Read Last As Integer
+Property Line As String
+
+Private $hOutput As Stream
+Private $iPlan As Integer
+Private $iTestsRun As Integer
+Private $iLast As Integer
+Private $bFinished As Boolean
+Private $sLine As String
 
 Public Sub _new(Optional Tests As Integer, Optional Comment As String, Optional {Output} As Stream = File.Out)
 
     $hOutput = {Output}
+    $iPlan = Tap.NO_PLAN
+    $iTestsRun = 0
+    $iLast = 0
+    $bFinished = False
     If Not IsMissing(Tests) Then Plan(Tests, Comment)
 
 End
@@ -30,26 +37,26 @@ Public Sub Plan(Tests As Integer, Optional Comment As String)
     If $iTestsRun Then Error.Raise(Subst$(("Tests already started, at test #&1"), $iTestsRun))
     ' TAP specification lists '1..0 # Skipped: WWW::Mechanize not installed'
     ' as a valid example.
-    If Tests <= NO_PLAN Then Error.Raise(("Number of tests must be non-negative"))
+    If Tests <= Tap.NO_PLAN Then Error.Raise(("Number of tests must be non-negative"))
     $iPlan = Tests
-    Print #$hOutput, "1.."; $iPlan;
-    Print #$hOutput, IIf(Comment, " # " & Comment, "")
-    Flush #$hOutput
+    Print(Subst$("1..&1&2", $iPlan, IIf(Comment, " # " & Comment, "")))
 
 End
 
 Public Sub Finish()
 
-    If $iPlan > NO_PLAN Then Return ' already printed the "plan" line
+    If $iPlan > Tap.NO_PLAN Then Return ' already printed the "plan" line
+    If $bFinished Then Error.Raise(("Tests already finished"))
     $iPlan = $iTestsRun
-    Print #$hOutput, "1.."; $iPlan
-    Flush #$hOutput
+    Print("1.." & $iPlan)
+    $bFinished = True
 
 End
 
 Public Sub Test(Result As Boolean, Optional TestNr As Integer, Optional Description As String, Optional Directive As Integer, Optional Comment As String)
 
     Dim sDirective As String
+    Dim sLine As String
 
     ' It is not advised to start a description with a number token because
     ' it will be interpreted as the (optional) test number. We issue a warning
@@ -65,35 +72,40 @@ Public Sub Test(Result As Boolean, Optional TestNr As Integer, Optional Descript
     Inc $iTestsRun
     If Not TestNr Then TestNr = $iTestsRun
     $iLast = TestNr
+    sLine = Subst$("&1 &2 - &3", IIf(Result, "ok", "not ok"), TestNr, Description)
+
     If Not IsMissing(Directive) Then
         ' Matches the values of the Enum Tap.Todo, Tap.Skip
         sDirective = Choose(Directive, "TODO", "SKIP")
         If Not sDirective Then Error.Raise(Subst$(("Unsupported directive '&1'"), Directive))
+        sLine &= " # " & sDirective
+        If Comment Then sLine &= " " & Comment
     Endif
 
-    Print #$hOutput, Subst$("&1 &2 - &3", IIf(Result, "ok", "not ok"), TestNr, Description);
-    Print #$hOutput, IIf(sDirective, Subst$(" # &1&2", sDirective, IIf(Comment, " " & Comment, "")), "")
-    Flush #$hOutput
+    Print(sLine)
 
 End
 
 Public Sub BailOut(Optional Comment As String)
 
-    Print #$hOutput, "Bail out!";; Comment
-    Flush #$hOutput
+    Print("Bail out!" & IIf(Comment, " " & Comment, ""))
 
 End
 
 Public Sub Diagnostic(Comment As String)
 
-    Print #$hOutput, "#";; Comment
-    Flush #$hOutput
+    Print("# " & Comment)
 
 End
 
 Public Sub Print({Line} As String)
 
-    Print #$hOutput, {Line}
+    Dim bCancel As Boolean
+
+    $sLine = {Line}
+    bCancel = Raise Filter
+    If bCancel Then Return
+    Print #$hOutput, $sLine
     Flush #$hOutput
 
 End
@@ -125,5 +137,17 @@ End
 Private Function Last_Read() As Integer
 
     Return $iLast
+
+End
+
+Private Function Line_Read() As String
+
+    Return $sLine
+
+End
+
+Private Sub Line_Write(Value As String)
+
+    $sLine = Value
 
 End

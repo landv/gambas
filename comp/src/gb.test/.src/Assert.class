@@ -1,76 +1,124 @@
-' Gambas module file
+' Gambas class file
 
 ''' Assertions which print TAP.
 
 Export
+Create Static
 
-Public Struct Directive
+Public Struct Subtest
+    Printer As TapPrinter
+    Description As String
+    Indent As Integer
+    Success As Boolean
+    ' Directive to apply to the next "ok" line
     Directive As Integer
     Comment As String
 End Struct
 
-Private $hPrinter As New TapPrinter
-Private $aDirectives As New Directive[]
+Private $aActiveTests As New Subtest[]
+Private $hCurrent As New Subtest
 
-Public Sub Setup(Optional Tests As Integer, Optional Comment As String, Optional {Output} As Stream = File.Out)
+Public Sub _new()
 
-    $hPrinter = New TapPrinter(Tests, Comment, {Output})
+    With $hCurrent = New Subtest
+        .Printer = New TapPrinter As "Printer"
+        .Indent = 0
+        .Success = True
+        .Directive = Tap.NONE
+    End With
 
 End
 
-Public Sub Plan(Tests As Integer, Optional Comment As String)
+Public Sub Setup(Optional Tests As Integer, Optional Comment As String, Optional {Output} As Stream)
 
-    $hPrinter.Plan(Tests, Comment)
+    If IsMissing({Output}) Then
+        {Output} = $hCurrent.Printer.Output
+        If Not {Output} Then {Output} = File.Out
+    Endif
+    $hCurrent.Printer.Output = {Output}
+    Plan(Tests, Comment)
+
+End
+
+Public Sub Subtest(Description As String)
+
+    Dim iIndent As Integer = $hCurrent.Indent
+
+    $aActiveTests.Push($hCurrent)
+    With $hCurrent = New Subtest
+        .Printer = New TapPrinter As "Printer"
+        .Description = Description
+        .Indent = iIndent + 1
+        .Success = True
+        .Directive = Tap.NONE
+    End With
 
 End
 
 Public Sub Finish()
 
-    $hPrinter.Finish()
+    Dim hFinished As Subtest
+
+    $hCurrent.Printer.Finish()
+    hFinished = $hCurrent
+    Try $hCurrent = $aActiveTests.Pop()
+    If Not Error Then
+        $hCurrent.Printer.Test(hFinished.Success,, hFinished.Description)
+    Endif
+
+End
+
+Public Sub Printer_Filter()
+
+    Last.Line = String$($hCurrent.Indent, "\t") & Last.Line
+
+End
+
+Public Sub Plan(Tests As Integer, Optional Comment As String)
+
+    $hCurrent.Printer.Plan(Tests, Comment)
 
 End
 
 Public Sub Ok(Result As Boolean, Optional Description As String) As Boolean
 
-    Dim hDir As Directive
-
-    If $aDirectives.Count Then
-        hDir = $aDirectives.Pop()
-        $hPrinter.Test(Result,, Description, hDir.Directive, hDir.Comment)
-    Else
-        $hPrinter.Test(Result,, Description)
-    Endif
+    With $hCurrent
+        If .Directive <> Tap.NONE Then
+            .Printer.Test(Result,, Description, .Directive, .Comment)
+        Else
+            .Printer.Test(Result,, Description)
+            .Success = .Success And Result
+        Endif
+        .Directive = Tap.NONE
+        .Comment = Null
+    End With
     Return Result
 
 End
 
 Public Sub Todo(Optional Comment As String)
 
-    Dim hDir As New Directive
-    hDir.Directive = Tap.TODO
-    hDir.Comment = Comment
-    $aDirectives.Push(hDir)
+    $hCurrent.Directive = Tap.TODO
+    $hCurrent.Comment = Comment
 
 End
 
 Public Sub Skip(Optional Comment As String)
 
-    Dim hDir As New Directive
-    hDir.Directive = Tap.SKIP
-    hDir.Comment = Comment
-    $aDirectives.Push(hDir)
+    $hCurrent.Directive = Tap.SKIP
+    $hCurrent.Comment = Comment
 
 End
 
 Public Sub Diagnostic(Comment As String)
 
-    $hPrinter.Diagnostic(Comment)
+    $hCurrent.Printer.Diagnostic(Comment)
 
 End
 
 Public Sub Print({Line} As String)
 
-    $hPrinter.Print({Line})
+    $hCurrent.Printer.Print({Line})
 
 End
 
