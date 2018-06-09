@@ -40,7 +40,7 @@ Public Sub Setup(Optional Tests As Integer, Optional Comment As String, Optional
 
 End
 
-Public Sub Subtest(Description As String)
+Public Sub Subtest(Description As String, Optional Tests As Integer)
 
     Dim iIndent As Integer = $hCurrent.Indent
 
@@ -52,6 +52,7 @@ Public Sub Subtest(Description As String)
         .Success = True
         .Directive = Tap.NONE
     End With
+    If Tests Then Plan(Tests)
 
 End
 
@@ -150,13 +151,13 @@ End
 
 Public Sub GreaterEqual(Got As Variant, Bound As Variant, Description As String) As Boolean
 
-    Return NotOk(Less(Got, Bound), Description)
+    Return Ok(Got >= Bound, Description)
 
 End
 
 Public Sub Greater(Got As Variant, Bound As Variant, Description As String) As Boolean
 
-    Return NotOk(LessEqual(Got, Bound), Description)
+    Return Ok(Got > Bound, Description)
 
 End
 
