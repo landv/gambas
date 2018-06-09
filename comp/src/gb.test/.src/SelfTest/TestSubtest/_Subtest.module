@@ -1,0 +1,37 @@
+' Gambas module file
+
+Public Sub Main()
+
+    ' TODO: This is a template for how the TestHarness should call test methods!
+    Assert.Plan(2)
+
+    Assert.Subtest("TestMethod1")
+        TestMethod1()
+    Assert.Finish()
+
+    Assert.Subtest("TestMethod2")
+        TestMethod2()
+    Assert.Finish()
+
+End
+
+Public Sub TestMethod1()
+
+    Assert.Plan(3)
+    Assert.Approximate(Now, Now, 1e-1, "Now is around Now")
+    Assert.IsType(Now, gb.Date, "Now is a date")
+    Assert.GreaterEqual(Now, Date(1970), "It is past 1970")
+
+End
+
+Public Sub TestMethod2()
+
+    Assert.Plan(2)
+
+    Assert.Subtest("a subtest", 2)
+        Assert.Greater(2, -1, "2 > -1")
+        Assert.Approximate(2, -1, 10, "2 is around -1")
+    Assert.Finish()
+    Assert.Ok(True, "True")
+
+End

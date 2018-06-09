@@ -3,9 +3,9 @@
 Private Const EXPECTED As String = ""
 "1..1\n"
 "# This is intended to fail\n"
-"# Crash.Main.7: Like this Debug statement, the division by zero error should be captured and converted to a diagnostic\n"
-"# Crash.Main.9: #26: Division by zero\n"
-"# Crash.Main.9 \n"
+"# _Crash.Main.7: Like this Debug statement, the division by zero error should be captured and converted to a diagnostic\n"
+"# _Crash.Main.9: #26: Division by zero\n"
+"# _Crash.Main.9 \n"
 "# "
 
 Public Sub Main()
@@ -13,7 +13,7 @@ Public Sub Main()
     Dim hHarness As New TestHarness
 
     Assert.Setup(6)
-    hHarness.Run(Application.Path, "Crash")
+    hHarness.Run(Application.Path, "_Crash")
     With hHarness.Current
         Assert.Equals(.ExitCode, 1, "exit code")
         Assert.Equals(.Planned, 1, "planned 1 test")

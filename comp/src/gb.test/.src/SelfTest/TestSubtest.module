@@ -1,0 +1,26 @@
+' Gambas module file
+
+Private Const EXPECTED As String = ""
+"1..2\n"
+"\t1..3\n"
+"\tok 1 - Now is around Now\n"
+"\tok 2 - Now is a date\n"
+"\tok 3 - It is past 1970\n"
+"ok 1 - TestMethod1\n"
+"\t1..2\n"
+"\t\t1..2\n"
+"\t\tok 1 - 2 > -1\n"
+"\t\tok 2 - 2 is around -1\n"
+"\tok 1 - a subtest\n"
+"\tok 2 - True\n"
+"ok 2 - TestMethod2\n"
+
+Public Sub Main()
+
+    Dim sOut As String
+
+    Assert.Plan(1)
+    Exec ["gbx3", "-s", "_Subtest", Application.Path] To sOut
+    Assert.StringEquals(sOut, EXPECTED, "Subtest printer")
+
+End
