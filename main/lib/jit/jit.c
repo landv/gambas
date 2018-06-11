@@ -139,7 +139,7 @@ static void declare_implementation(FUNCTION *func, int index)
 	
 	for (i = 0; i < func->npmin; i++)
 	{
-		if (i) JIT_print(", ");
+		if (i) JIT_print(",");
 		JIT_print("%s p%d", JIT_get_ctype(func->param[i].type), i);
 	}
 	
@@ -149,13 +149,15 @@ static void declare_implementation(FUNCTION *func, int index)
 		
 		for (; i < func->n_param; i++)
 		{
+			if (i) JIT_print(",");
+			
 			if (nopt == 0)
 			{
-				JIT_print(", uchar o%d", opt);
+				JIT_print("uchar o%d,", opt);
 				opt++;
 			}
 			
-			JIT_print(", %s p%d", JIT_get_ctype(func->param[i].type), i);
+			JIT_print("%s p%d", JIT_get_ctype(func->param[i].type), i);
 			
 			nopt++;
 			if (nopt >= 8)
@@ -172,6 +174,18 @@ void JIT_declare_func(FUNCTION *func, int index)
 	
 	declare_implementation(func, index);
 	JIT_print(";\n");
+}
+
+const char *JIT_get_default_value(TYPE type)
+{
+	switch(TYPEID(type))
+	{
+		case T_DATE: return "{GB_T_DATE}";
+		case T_STRING: return "{GB_T_STRING}";
+		case T_OBJECT: return "{GB_T_NULL}";
+		case T_VARIANT: return "{GB_T_VARIANT,{GB_T_NULL}}";
+		default: return "0";
+	}
 }
 
 static bool JIT_translate_func(FUNCTION *func, int index)
@@ -197,7 +211,7 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 	
 	for (i = 0; i < func->npmin; i++)
 	{
-		if (i) JIT_print(", ");
+		if (i) JIT_print(",");
 		JIT_print("PARAM_%s(%d)", JIT_get_type(func->param[i].type), i);
 	}
 	
@@ -207,13 +221,15 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 		
 		for (; i < func->n_param; i++)
 		{
+		if (i) JIT_print(",");
+		
 			if (nopt == 0)
-				JIT_print(", OPT(%d,%d)", i, Min(func->n_param, i + 8) - i);
+				JIT_print("OPT(%d,%d),", i, Min(func->n_param, i + 8) - i);
 			
-			JIT_print(", PARAM_OPT_%s(%d)", JIT_get_type(func->param[i].type), i);
+			JIT_print("PARAM_OPT_%s(%d)", JIT_get_type(func->param[i].type), i);
 			nopt++;
 			if (nopt >= 8)
-				nopt == 0;
+				nopt = 0;
 		}
 	}
 	
@@ -247,14 +263,7 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 			JIT_print("  %s l%d = ", JIT_get_ctype(type), i);
 		}
 		
-		switch(TYPEID(type))
-		{
-			case T_DATE: JIT_print("{GB_T_DATE}"); break;
-			case T_STRING: JIT_print("{GB_T_STRING}"); break;
-			case T_OBJECT: JIT_print("{GB_T_NULL}"); break;
-			case T_VARIANT:  JIT_print("{GB_T_VARIANT,{GB_T_NULL}}"); break;
-			default: JIT_print("0");
-		}
+		JIT_print(JIT_get_default_value(type));
 		JIT_print(";\n");
 	}
 	if (func->n_local)
@@ -406,7 +415,7 @@ void JIT_load_class(CLASS *class)
 	save_cp = *(JIT.cp);
 	*(JIT.cp) = JIT_class;
 	
-	fprintf(stderr, "gb.jit: load class: %s (%p)\n", class->name, class);
+	//fprintf(stderr, "gb.jit: load class: %s (%p)\n", class->name, class);
 	JIT.load_class(class);
 	
 	*(JIT.cp) = save_cp;

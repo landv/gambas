@@ -69,6 +69,7 @@ const char *JIT_get_type(TYPE type);
 const char *JIT_get_gtype(TYPE type);
 const char *JIT_get_ctype(TYPE type);
 TYPE JIT_ctype_to_type(CTYPE ctype);
+const char *JIT_get_default_value(TYPE type);
 
 void JIT_panic(const char *fmt, ...) NORETURN;
 

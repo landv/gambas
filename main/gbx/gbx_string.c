@@ -800,180 +800,6 @@ char *STRING_add_char(char *str, char c)
 }
 
 
-int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase)
-{
-	int pos, ip;
-
-	if (lp > ls)
-		return 0;
-
-	if (is < 0)
-		is += ls;
-	else if (is == 0)
-		is = right ? ls : 1;
-
-	ls = ls - lp + 1; /* Longueur du début du texte où effectuer la recherche */
-
-	if (is > ls)
-	{
-		if (!right)
-			return 0;
-		else
-			is = ls;
-	}
-	else if (is < lp)
-	{
-		if (right)
-			return 0;
-		else if (is < 1)
-			is = 1;
-	}
-
-	is--;
-
-	if (lp == 1)
-	{
-		char cp = *pp;
-
-		if (nocase)
-		{
-			cp = tolower(cp);
-
-			if (right)
-			{
-				for (; is >= 0; is--)
-				{
-					if (tolower(ps[is]) == cp)
-						return is + 1;
-				}
-			}
-			else
-			{
-				for (; is < ls; is++)
-				{
-					if (tolower(ps[is]) == cp)
-						return is + 1;
-				}
-			}
-		}
-		else
-		{
-			if (right)
-			{
-				for (; is >= 0; is--)
-				{
-					if (ps[is] == cp)
-						return is + 1;
-				}
-			}
-			else
-			{
-				for (; is < ls; is++)
-				{
-					if (ps[is] == cp)
-						return is + 1;
-				}
-			}
-		}
-
-		return 0;
-	}
-
-	pos = 0;
-	ps += is;
-
-	if (right)
-	{
-		if (nocase)
-		{
-			for (; is >= 0; is--, ps--)
-			{
-				if (tolower(ps[0]) != tolower(pp[0]))
-					goto __NEXT_RN;
-
-				for (ip = 1; ip < lp; ip++)
-				{
-					if (tolower(ps[ip]) != tolower(pp[ip]))
-						goto __NEXT_RN;
-				}
-
-				pos = is + 1;
-				goto __FOUND;
-
-		__NEXT_RN:
-			;
-			}
-		}
-		else
-		{
-			for (; is >= 0; is--, ps--)
-			{
-				if (ps[0] != pp[0])
-					goto __NEXT_R;
-
-				for (ip = 1; ip < lp; ip++)
-				{
-					if (ps[ip] != pp[ip])
-						goto __NEXT_R;
-				}
-
-				pos = is + 1;
-				goto __FOUND;
-
-		__NEXT_R:
-			;
-			}
-		}
-	}
-	else
-	{
-		if (nocase)
-		{
-			for (; is < ls; is++, ps++)
-			{
-				if (tolower(ps[0]) != tolower(pp[0]))
-					goto __NEXT_LN;
-
-				for (ip = 1; ip < lp; ip++)
-				{
-					if (tolower(ps[ip]) != tolower(pp[ip]))
-						goto __NEXT_LN;
-				}
-
-				pos = is + 1;
-				goto __FOUND;
-
-		__NEXT_LN:
-			;
-			}
-		}
-		else
-		{
-			for (; is < ls; is++, ps++)
-			{
-				if (ps[0] != pp[0])
-					goto __NEXT_L;
-
-				for (ip = 1; ip < lp; ip++)
-				{
-					if (ps[ip] != pp[ip])
-						goto __NEXT_L;
-				}
-
-				pos = is + 1;
-				goto __FOUND;
-
-		__NEXT_L:
-			;
-			}
-		}
-	}
-
-__FOUND:
-
-	return pos;
-}
-
 void STRING_start_len(int len)
 {
 	_make.inc = 32;
@@ -988,12 +814,14 @@ void STRING_start_len(int len)
 	_make.ntemp = 0;
 }
 
+
 void STRING_make_dump()
 {
 	int n = _make.ntemp;
 	_make.ntemp = 0;
 	STRING_make(_make.temp, n);
 }
+
 
 // len == 0 est possible ! On peut vouloir ajouter une chaîne vide.
 
@@ -1064,6 +892,7 @@ char *STRING_end_temp()
 
 	return _make.buffer;
 }
+
 
 /****************************************************************************
 
@@ -1288,4 +1117,200 @@ char *STRING_conv_file_name(const char *name, int len)
 		return "";
 }
 
+int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase)
+{
+	int pos, ip, apos;
+	char *p;
 
+	if (lp > ls)
+		return 0;
+
+	if (is < 0)
+		is += ls;
+	else if (is == 0)
+		is = right ? ls : 1;
+
+	ls = ls - lp + 1; /* Longueur du début du texte où effectuer la recherche */
+
+	if (is > ls)
+	{
+		if (!right)
+			return 0;
+		else
+			is = ls;
+	}
+	else if (is < lp)
+	{
+		if (right)
+			return 0;
+		else if (is < 1)
+			is = 1;
+	}
+
+	is--;
+
+	if (lp == 1)
+	{
+		char cp = *pp;
+
+		if (nocase)
+		{
+			cp = tolower(cp);
+
+			if (right)
+			{
+				for (; is >= 0; is--)
+				{
+					if (tolower(ps[is]) == cp)
+						return is + 1;
+				}
+			}
+			else
+			{
+				for (; is < ls; is++)
+				{
+					if (tolower(ps[is]) == cp)
+						return is + 1;
+				}
+			}
+		}
+		else
+		{
+			if (right)
+			{
+				for (; is >= 0; is--)
+				{
+					if (ps[is] == cp)
+						return is + 1;
+				}
+			}
+			else
+			{
+				for (; is < ls; is++)
+				{
+					if (ps[is] == cp)
+						return is + 1;
+				}
+			}
+		}
+
+		return 0;
+	}
+
+	pos = 0;
+	apos = 0;
+
+	if (!nocase || pp[0] == tolower(pp[0]))
+	{
+		p = memchr(right ? ps : ps + is, (uchar)pp[0], ls);
+		if (!p)
+			goto __FOUND;
+		ls -= (int)(p - ps);
+		is -= (int)(p - ps);
+		if (is < 0) is = 0;
+		apos = (int)(p - ps);
+		ps = p;
+		
+		p = memrchr(ps, (uchar)pp[0], right ? is : ls);
+		if (!p)
+			goto __FOUND;
+		ls = (int)(p - ps + 1);
+		if (is > ls) is = ls;
+	}
+	
+	ps += is;
+
+	if (right)
+	{
+		if (nocase)
+		{
+			for (; is >= 0; is--, ps--)
+			{
+				if (tolower(ps[0]) != tolower(pp[0]))
+					goto __NEXT_RN;
+
+				for (ip = 1; ip < lp; ip++)
+				{
+					if (tolower(ps[ip]) != tolower(pp[ip]))
+						goto __NEXT_RN;
+				}
+
+				pos = is + 1;
+				goto __FOUND;
+
+		__NEXT_RN:
+			;
+			}
+		}
+		else
+		{
+			for (; is >= 0; is--, ps--)
+			{
+				if (ps[0] != pp[0])
+					goto __NEXT_R;
+
+				for (ip = 1; ip < lp; ip++)
+				{
+					if (ps[ip] != pp[ip])
+						goto __NEXT_R;
+				}
+
+				pos = is + 1;
+				goto __FOUND;
+
+		__NEXT_R:
+			;
+			}
+		}
+	}
+	else
+	{
+		if (nocase)
+		{
+			for (; is < ls; is++, ps++)
+			{
+				if (tolower(ps[0]) != tolower(pp[0]))
+					goto __NEXT_LN;
+
+				for (ip = 1; ip < lp; ip++)
+				{
+					if (tolower(ps[ip]) != tolower(pp[ip]))
+						goto __NEXT_LN;
+				}
+
+				pos = is + 1;
+				goto __FOUND;
+
+		__NEXT_LN:
+			;
+			}
+		}
+		else
+		{
+			for (; is < ls; is++, ps++)
+			{
+				if (ps[0] != pp[0])
+					goto __NEXT_L;
+
+				if (memcmp(ps + 1, pp + 1, lp - 1))
+					goto __NEXT_L;
+				
+				/*for (ip = 1; ip < lp; ip++)
+				{
+					if (ps[ip] != pp[ip])
+						goto __NEXT_L;
+				}*/
+
+				pos = is + 1;
+				goto __FOUND;
+
+		__NEXT_L:
+			;
+			}
+		}
+	}
+
+__FOUND:
+
+	return pos + apos;
+}

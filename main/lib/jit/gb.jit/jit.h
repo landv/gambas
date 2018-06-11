@@ -1,12 +1,15 @@
 #include <math.h>
-/*#include <stdio.h>*/
+#include <stdio.h>
 
 #define NORETURN __attribute__((noreturn))
 
+#define E_NEPARAM    4
+#define E_TMPARAM    5
 #define E_OVERFLOW   7
 #define E_NOBJECT   12
 #define E_NULL      13
 #define E_MATH      19
+#define E_ARG       20
 #define E_BOUND     21
 #define E_ZERO      26
 
@@ -82,8 +85,8 @@ typedef
 #define CHECK_FINITE(_val) (isfinite(_val) ? (_val) : JIT.throw(E_OVERFLOW))
 
 #define PARAM_b(_p) (sp[-n+(_p)]._boolean.value)
-#define PARAM_c(_p) (sp[-n+(_p)]._byte.value)
-#define PARAM_h(_p) (sp[-n+(_p)]._short.value)
+#define PARAM_c(_p) ((uchar)(sp[-n+(_p)]._integer.value))
+#define PARAM_h(_p) ((short)(sp[-n+(_p)]._integer.value))
 #define PARAM_i(_p) (sp[-n+(_p)]._integer.value)
 #define PARAM_l(_p) (sp[-n+(_p)]._long.value)
 #define PARAM_g(_p) (sp[-n+(_p)]._single.value)
@@ -94,7 +97,7 @@ typedef
 #define PARAM_o(_p) (*(GB_OBJECT *)&sp[-n+(_p)])
 #define PARAM_v(_p) (*(GB_VARIANT *)&sp[-n+(_p)])
 
-#define PARAM_OPT(_p, _type, _default) ((sp[-n+(_p)].type == GB_T_VOID) ? (_default) : PARAM_##_type(_p))
+#define PARAM_OPT(_p, _type, _default) (((_p) >= n || (sp[-n+(_p)].type == GB_T_VOID)) ? (_default) : PARAM_##_type(_p))
 #define PARAM_OPT_b(_p) PARAM_OPT(_p, b, 0)
 #define PARAM_OPT_c(_p) PARAM_OPT(_p, c, 0)
 #define PARAM_OPT_h(_p) PARAM_OPT(_p, h, 0)
@@ -109,7 +112,7 @@ typedef
 #define PARAM_OPT_v(_p) PARAM_OPT(_p, d, ({ GB_VARIANT _v; _v.type = GB_T_VARIANT; _v.value.type = GB_T_NULL; _v; }))
 
 #define OPT(_p, _n) ({ \
-  char _opt = 0; \
+  uchar _opt = 0; \
   GB_VALUE *_param = &sp[-n+(_p)]; \
   for (int _i = 0; _i < (_n); _i++) \
   { \
@@ -132,9 +135,9 @@ typedef
 #define RETURN_o(_val) (GB.ReturnObject((_val).value))
 #define RETURN_v(_val) ({ GB_VARIANT _v = (_val); GB.ReturnVariant(&_v.value); })
 
-#define PUSH_b(_val) ({ char _v = -(_val); sp->_boolean.value = v; sp->type = GB_T_BOOLEAN; sp++; })
-#define PUSH_c(_val) ({ uchar _v = (_val); sp->_byte.value = _v; sp->type = GB_T_BYTE; sp++; })
-#define PUSH_h(_val) ({ short _v = (_val); sp->_short.value = _v; sp->type = GB_T_SHORT; sp++; })
+#define PUSH_b(_val) ({ char _v = -(_val); sp->_boolean.value = _v; sp->type = GB_T_BOOLEAN; sp++; })
+#define PUSH_c(_val) ({ uchar _v = (_val); sp->_integer.value = _v; sp->type = GB_T_BYTE; sp++; })
+#define PUSH_h(_val) ({ short _v = (_val); sp->_integer.value = _v; sp->type = GB_T_SHORT; sp++; })
 #define PUSH_i(_val) ({ int _v = (_val); sp->_integer.value = _v; sp->type = GB_T_INTEGER; sp++; })
 #define PUSH_l(_val) ({ int64_t _v = (_val); sp->_long.value = _v; sp->type = GB_T_LONG; sp++; })
 #define PUSH_g(_val) ({ float _v = (_val); sp->_single.value = _v; sp->type = GB_T_SINGLE; sp++; })
@@ -174,8 +177,8 @@ enum
 })
 
 #define POP_b() (sp--, sp->_boolean.value)
-#define POP_c() (sp--, sp->_byte.value)
-#define POP_h() (sp--, sp->_short.value)
+#define POP_c() (sp--, (uchar)sp->_integer.value)
+#define POP_h() (sp--, (short)sp->_integer.value)
 #define POP_i() (sp--, sp->_integer.value)
 #define POP_l() (sp--, sp->_long.value)
 #define POP_g() (sp--, sp->_single.value)
@@ -193,15 +196,15 @@ enum
 #define POP_BORROW_u() (sp--, *sp)
 #define POP_V() (sp--)
 
-#define BORROW_s(_val) ({ GB_STRING _v = (_val); GB.RefString(_v.value.addr); _v; })
+#define BORROW_s(_val) ({ GB_STRING _v = (_val); if ((_v).type == GB_T_STRING) GB.RefString(_v.value.addr); _v; })
 #define BORROW_o(_val) ({ GB_OBJECT _v = (_val); GB.Ref(_v.value); _v; })
 #define BORROW_v(_val) ({ GB_VARIANT _v = (_val); GB.BorrowValue(&_v); _v; })
 
-#define RELEASE_s(_val) ({ GB_STRING _v = (_val); GB.FreeString(&_v.value.addr); _v; })
+#define RELEASE_s(_val) ({ GB_STRING _v = (_val); if ((_v).type == GB_T_STRING) GB.FreeString(&_v.value.addr); _v; })
 #define RELEASE_o(_val) ({ GB_OBJECT _v = (_val); GB.Unref(&_v.value); _v; })
 #define RELEASE_v(_val) ({ GB_VARIANT _v = (_val); GB.ReleaseValue(&_v)); _v; })
 
-#define RELEASE_FAST_s(_val) GB.FreeString(&(_val).value.addr)
+#define RELEASE_FAST_s(_val) ({ if ((_val).type == GB_T_STRING) GB.FreeString(&(_val).value.addr); })
 #define RELEASE_FAST_o(_val) GB.Unref(&((_val).value))
 #define RELEASE_FAST_v(_val) GB.ReleaseValue(&(_val))
 

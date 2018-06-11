@@ -1,6 +1,7 @@
 # Gambas Project File 3.0
 Title=Gambas Terminal control
 Startup=FTestTerminalView
+Profiling=1
 Icon=.hidden/control/terminalview.png
 Version=3.10.90
 VersionFile=1
@@ -10,6 +11,7 @@ Component=gb.form
 Component=gb.term
 Component=gb.net
 Authors="Benoît Minisini\nFabien Bodard"
+Environment="GB_NO_JIT=1"
 TabSize=2
 Language=fr
 Type=Component

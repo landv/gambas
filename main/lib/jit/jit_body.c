@@ -41,6 +41,7 @@ typedef
 		char *expr;
 		int func;
 		int index;
+		TYPE call;
 	}
 	STACK_SLOT;
 
@@ -166,7 +167,7 @@ static void push_one(TYPE type, const char *fmt, va_list args)
 	if (_stack_current > MAX_STACK)
 		JIT_panic("Expression too complex");
 	
-	_stack[_stack_current].expr = NULL;
+	CLEAR(&_stack[_stack_current]);
 	
 	if (fmt)
 		STR_vadd(&_stack[_stack_current].expr, fmt, args);
@@ -238,17 +239,7 @@ static char *get_conv(TYPE src, TYPE dest)
 	{
 		case T_VOID:
 			
-			switch(TYPEID(src))
-			{
-				case T_STRING:
-					return "RELEASE_s(%s)";
-				case T_OBJECT:
-					return "RELEASE_o(%s)";
-				case T_VARIANT:
-					return "RELEASE_v(%s)";
-				default:
-					return "((void)%s)";
-			}
+			return "((void)%s)";
 			
 		case T_BOOLEAN:
 			
@@ -612,6 +603,7 @@ static void push_function(int func, int index)
 static void push_unknown(int index)
 {
 	TYPE type = T_UNKNOWN;
+	TYPE call_type = T_UNKNOWN;
 	char *expr;
 	CLASS *class;
 	
@@ -706,6 +698,12 @@ static void push_unknown(int index)
 					
 					type = desc->property.type;
 					break;
+					
+				case CD_METHOD:
+				case CD_STATIC_METHOD:
+					
+					call_type = desc->property.type;
+					break;
 			}
 		}
 		else
@@ -715,6 +713,8 @@ static void push_unknown(int index)
 	expr = STR_copy(push_expr(-1, get_type(-1)));
 	pop_stack(1);
 	push(type, "(%s,PUSH_UNKNOWN(%d),POP_%s())", expr, _pc, JIT_get_type(type));
+	
+	_stack[_stack_current - 1].call = call_type;
 
 __RETURN:
 
@@ -1315,6 +1315,105 @@ static void push_subr_comp(ushort code)
 }
 
 
+static void push_subr_bit(ushort code)
+{
+	static const char *_actions[] = {
+		NULL,
+		"_v &= ~((%s)1 << _b)", // BClr
+		"_v |= ((%s)1 << _b)", // BSet
+		"((_v & ((%s)1 << _b)) != 0)", // BTst
+		"_v ^= ((%s)1 << _b)", // BChg
+		"_v = (((%s)_v << _b) & 0x%s) | (((%s)_v) & 0x%s)", // Asl
+		"_v = (((%s)_v >> _b) & 0x%s) | (((%s)_v) & 0x%s)", // Asr
+		"_v = ((%s)_v << _b) | ((%s)_v >> (%d - _b))", // Rol
+		"_v = ((%s)_v >> _b) | ((%s)_v << (%d - _b))", // Ror
+		"_v = ((%s)_v << _b)", // Lsl
+		"_v = ((%s)_v >> _b)", // Lsr
+	};
+
+	const char *action;
+	char *expr;
+	char *expr1, *expr2;
+	TYPE type;
+	const char *ctype, *uctype, *mask, *mask2;
+	int nbits;
+	
+	check_stack(2);
+	
+	type = get_type(-2);
+	
+	switch(type)
+	{
+		case T_BYTE:
+			ctype = "uchar"; uctype = "uchar";
+			mask = "7F"; mask2 = "80";
+			nbits = 8;
+			break;
+
+		case T_SHORT:
+			ctype = "short"; uctype=  "ushort";
+			mask = "7FFF"; mask2 = "8000";
+			nbits = 16;
+			break;
+
+		case T_INTEGER:
+			ctype = "int"; uctype =  "uint"; 
+			mask = "7FFFFFFF"; mask2 = "80000000";
+			nbits = 32;
+			break;
+
+		case T_LONG:
+			ctype = "int64_t"; uctype=  "uint64_t";
+			mask = "7FFFFFFFFFFFFFFFLL"; mask2 = "8000000000000000LL";
+			nbits = 64;
+			break;
+
+		default:
+			push_subr(code, "CALL_SUBR_CODE");
+			return;
+	}
+			
+	expr1 = peek(-2, type, NULL, NULL);
+	expr2 = peek(-1, T_INTEGER, NULL, NULL);
+
+	code &= 0x3F;
+	
+	action = _actions[code];
+	
+	expr = STR_print("({ %s _v = %s; int _b = %s; if ((_b < 0) || (_b >= %d)) JIT.throw(E_ARG); ", ctype, expr1, expr2, nbits);
+	
+	
+	switch(code)
+	{
+		case 1: case 2: case 3: case 4:
+			STR_add(&expr, action, uctype);
+			break;
+			
+		case 5: case 6:
+			STR_add(&expr, action, uctype, mask, uctype, mask2);
+			break;
+			
+		case 7: case 8:
+			STR_add(&expr, action, uctype, uctype, nbits);
+			break;
+
+		case 9: case 10:
+			STR_add(&expr, action, uctype);
+			break;
+	}
+	
+	if (code == 3)
+		STR_add(&expr, "; })");
+	else
+		STR_add(&expr, "; _v; })");
+
+	pop_stack(2);
+	
+	push(code == 3 ? T_BOOLEAN : type, "(%s)", expr);
+	STR_free(expr);
+}
+
+
 static void push_subr_conv(ushort code)
 {
 	char *expr;
@@ -1385,39 +1484,94 @@ static void push_subr_len(ushort code)
 static void push_call(ushort code)
 {
 	char *call = NULL;
-	int i;
+	const char *def;
+	int i, j;
 	int narg;
 	FUNCTION *func;
-	int func_type, func_index;
+	int func_kind, func_index;
+	TYPE func_type;
+	int nopt, opt;
 	
 	narg = code & 0x3F;
 	
 	if (_stack_current > narg && get_type(- narg - 1) == T_FUNCTION)
 	{
 		STACK_SLOT *s = &_stack[_stack_current - narg - 1];
-		func_type = s->func;
+		func_kind = s->func;
 		func_index = s->index;
+		func_type = T_UNKNOWN;
 	}
 	else
-		func_type = CALL_UNKNOWN;
+	{
+		STACK_SLOT *s = &_stack[_stack_current - narg - 1];
+		func_kind = CALL_UNKNOWN;
+		func_type = s->call;
+	}
 	
-	switch (func_type)
+	switch (func_kind)
 	{
 		case CALL_PRIVATE:
 			
 			func = &JIT_class->load->func[func_index];
 			if (func->fast)
 			{
-				STR_add(&call,"SP = sp, jit_%s_%d_(", JIT_prefix, func_index);
+				if (narg < func->npmin)
+				{
+					pop_stack(narg + 1);
+					push(T_UNKNOWN, "(JIT.throw(E_NEPARAM))");
+				}
+				else if (narg > func->n_param)
+				{
+					pop_stack(narg + 1);
+					push(T_UNKNOWN, "(JIT.throw(E_TMPARAM))");
+				}
+				else
+				{
+					STR_add(&call,"SP = sp, jit_%s_%d_(", JIT_prefix, func_index);
+					
+					for (i = 0; i < func->npmin; i++)
+					{
+						if (i) STR_add(&call, ",");
+						STR_add(&call, "%s", peek(i - narg, func->param[i].type, NULL, NULL));
+					}
+					
+					nopt = 0;
+					for (; i < func->n_param; i++)
+					{
+						if (i) STR_add(&call, ",");
+						
+						if (nopt == 0)
+						{
+							opt = 0;
+							for (j = 0; j < 8; j++)
+							{
+								if ((i + j) >= func->n_param)
+									break;
+								if (((i + j) >= narg) || get_type(i + j - narg) == T_VOID)
+									opt |= 1 << j;
+							}
+							STR_add(&call, "%d,", opt);
+						}
+						
+						if (i < narg)
+							STR_add(&call, "%s", peek(i - narg, func->param[i].type, NULL, NULL));
+						else
+						{
+							def = JIT_get_default_value(func->param[i].type);
+							STR_add(&call, "%s", def);
+						}
+						
+						nopt++;
+						if (nopt >= 8)
+							nopt = 0;
+					}
+					
+					STR_add(&call, ")");
+					
+					pop_stack(narg + 1);
 				
-				for (i = 0; i < narg; i++)
-					STR_add(&call, ((i < (narg - 1)) ? "%s," : "%s"), peek(i - narg, func->param[i].type, NULL, NULL));
-				
-				STR_add(&call, ")");
-				
-				pop_stack(narg + 1);
-				
-				push(func->type, "(%s)", call);
+					push(func->type, "(%s)", call);
+				}
 			}
 			else
 			{
@@ -1443,9 +1597,9 @@ static void push_call(ushort code)
 			
 			pop_stack(narg);
 			
-			STR_add(&call, "CALL_UNKNOWN(%d),POP_u()", _pc);
+			STR_add(&call, "CALL_UNKNOWN(%d),POP_%s()", _pc, JIT_get_type(func_type));
 	
-			push(T_UNKNOWN, "(%s)", call);
+			push(func_type, "(%s)", call);
 			
 			break;
 	
@@ -1622,7 +1776,7 @@ bool JIT_translate_body(FUNCTION *func, int ind)
 		/* 61 Array           */  &&_SUBR_CODE,
 		/* 62 ATan2...        */  &&_SUBR_CODE,
 		/* 63 IsAscii...      */  &&_SUBR_CODE,
-		/* 64 BClr...         */  &&_SUBR_CODE,
+		/* 64 BClr...         */  &&_SUBR_BIT,
 		/* 65 IsBoolean...    */  &&_SUBR_CODE,
 		/* 66 TypeOf          */  &&_SUBR_CODE,
 		/* 67 CBool...        */  &&_SUBR_CONV,
@@ -1947,7 +2101,7 @@ _PUSH_MISC:
 			break;
 			
 		case 1:
-			push(T_VOID, "");
+			push(T_VOID, NULL);
 			break;
 			
 		case 2:
@@ -2292,6 +2446,11 @@ _SUBR_MATH:
 
 	push_subr_math(code);
 	goto _MAIN;
+	
+_SUBR_BIT:
+
+	push_subr_bit(code);
+	goto _MAIN;
 
 _BREAK:
 
@@ -2310,6 +2469,6 @@ _CALL_SLOW:
 _ON_GOTO_GOSUB:
 _ILLEGAL:
 
-JIT_panic("unsupported opcode %04X", code);
+	JIT_panic("unsupported opcode %04X", code);
 }
 

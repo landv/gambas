@@ -170,6 +170,7 @@ static QByteArray _utf8_buffer[UTF8_NBUF];
 static int _utf8_count = 0;
 static int _utf8_length = 0;
 
+static void QT_Init(void);
 
 #ifdef QT5
 
@@ -887,74 +888,6 @@ static void QT_InitEventLoop(void)
 
 //extern void qt_x11_set_global_double_buffer(bool);
 
-static void QT_Init(void)
-{
-	static bool init = false;
-	QFont f;
-	char *env;
-
-	if (init)
-		return;
-
-	//qApp->setAttribute(Qt::AA_ImmediateWidgetCreation);
-
-	X11_init(QX11Info::display(), QX11Info::appRootWindow());
-
-#ifdef QT5
-	_previousMessageHandler = qInstallMessageHandler(myMessageHandler);
-#endif
-	
-	/*QX11Info::setAppDpiX(0, 92);
-	QX11Info::setAppDpiY(0, 92);*/
-
-	/*fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, FD_CLOEXEC);*/
-
-	if (::strcmp(qApp->style()->metaObject()->className(), "Breeze::Style") == 0)
-	{
-		env = getenv("GB_QT_NO_BREEZE_FIX");
-		if (!env || atoi(env) == 0)
-		{
-			CSTYLE_fix_breeze = TRUE;
-			qApp->setStyle(new FixBreezeStyle);
-		}
-	}
-	else if (::strcmp(qApp->style()->metaObject()->className(), "Oxygen::Style") == 0)
-	{
-		env = getenv("GB_QT_NO_OXYGEN_FIX");
-		if (!env || atoi(env) == 0)
-		{
-			CSTYLE_fix_oxygen = TRUE;
-			qApp->setStyle(new FixBreezeStyle);
-		}
-	}
-
-	MAIN_update_scale(qApp->desktop()->font());
-
-	qApp->installEventFilter(&CWidget::manager);
-#ifdef QT5
-	qApp->installNativeEventFilter(&MyNativeEventFilter::manager);
-#endif
-
-	MyApplication::setEventFilter(true);
-
-	if (GB.GetFunction(&_application_keypress_func, (void *)GB.Application.StartupClass(), "Application_KeyPress", "", "") == 0)
-	{
-		_application_keypress = true;
-		MyApplication::setEventFilter(true);
-	}
-
-	//qt_x11_set_global_double_buffer(false);
-
-	qApp->setQuitOnLastWindowClosed(false);
-
-	MyApplication::initClipboard();
-
-	env = getenv("GB_QT_KEY_DEBUG");
-	if (env && atoi(env) != 0)
-		MAIN_key_debug = TRUE;
-	
-	init = true;
-}
 
 static bool try_to_load_translation(QString &locale)
 {
@@ -1185,6 +1118,82 @@ static void hook_error(int code, char *error, char *where)
 	//qApp->exit();
 }
 
+static void QT_Init(void)
+{
+	static bool init = false;
+	QFont f;
+	char *env;
+
+	if (init)
+		return;
+
+	//qApp->setAttribute(Qt::AA_ImmediateWidgetCreation);
+
+	X11_init(QX11Info::display(), QX11Info::appRootWindow());
+
+#ifdef QT5
+	_previousMessageHandler = qInstallMessageHandler(myMessageHandler);
+#endif
+	
+	/*QX11Info::setAppDpiX(0, 92);
+	QX11Info::setAppDpiY(0, 92);*/
+
+	/*fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, FD_CLOEXEC);*/
+
+	if (::strcmp(qApp->style()->metaObject()->className(), "Breeze::Style") == 0)
+	{
+		env = getenv("GB_QT_NO_BREEZE_FIX");
+		if (!env || atoi(env) == 0)
+		{
+			CSTYLE_fix_breeze = TRUE;
+			qApp->setStyle(new FixBreezeStyle);
+		}
+	}
+	else if (::strcmp(qApp->style()->metaObject()->className(), "Oxygen::Style") == 0)
+	{
+		env = getenv("GB_QT_NO_OXYGEN_FIX");
+		if (!env || atoi(env) == 0)
+		{
+			CSTYLE_fix_oxygen = TRUE;
+			qApp->setStyle(new FixBreezeStyle);
+		}
+	}
+
+	MAIN_update_scale(qApp->desktop()->font());
+
+	qApp->installEventFilter(&CWidget::manager);
+#ifdef QT5
+	qApp->installNativeEventFilter(&MyNativeEventFilter::manager);
+#endif
+
+	MyApplication::setEventFilter(true);
+
+	if (GB.GetFunction(&_application_keypress_func, (void *)GB.Application.StartupClass(), "Application_KeyPress", "", "") == 0)
+	{
+		_application_keypress = true;
+		MyApplication::setEventFilter(true);
+	}
+
+	//qt_x11_set_global_double_buffer(false);
+
+	qApp->setQuitOnLastWindowClosed(false);
+
+	MyApplication::initClipboard();
+
+	env = getenv("GB_QT_KEY_DEBUG");
+	if (env && atoi(env) != 0)
+		MAIN_key_debug = TRUE;
+	
+	GB.Hook(GB_HOOK_LOOP, (void *)hook_loop);
+	GB.Hook(GB_HOOK_WAIT, (void *)hook_wait);
+	GB.Hook(GB_HOOK_TIMER, (void *)hook_timer);
+	GB.Hook(GB_HOOK_WATCH, (void *)hook_watch);
+	GB.Hook(GB_HOOK_POST, (void *)hook_post);
+
+	init = true;
+}
+
+
 static void QT_InitWidget(QWidget *widget, void *object, int fill_bg)
 {
 	((CWIDGET *)object)->flag.fillBackground = fill_bg;
@@ -1391,11 +1400,6 @@ int EXPORT GB_INIT(void)
 	//putenv((char *)"QT_SLOW_TOPLEVEL_RESIZE=1");
 
 	_old_hook_main = GB.Hook(GB_HOOK_MAIN, (void *)hook_main);
-	GB.Hook(GB_HOOK_LOOP, (void *)hook_loop);
-	GB.Hook(GB_HOOK_WAIT, (void *)hook_wait);
-	GB.Hook(GB_HOOK_TIMER, (void *)hook_timer);
-	GB.Hook(GB_HOOK_WATCH, (void *)hook_watch);
-	GB.Hook(GB_HOOK_POST, (void *)hook_post);
 	GB.Hook(GB_HOOK_QUIT, (void *)hook_quit);
 	GB.Hook(GB_HOOK_ERROR, (void *)hook_error);
 	GB.Hook(GB_HOOK_LANG, (void *)hook_lang);

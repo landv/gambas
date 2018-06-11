@@ -599,21 +599,51 @@ void SUBR_replace(ushort code)
 		return;
 	}
 
-	if (lp == 1 && lr == 1)
+	if (lp == lr)
 	{
-		char cp = *pp;
-		char cr = *pr;
-
 		ps = STRING_new_temp(ps, ls);
-
-		for (pos = 0; pos < ls; pos++)
-		{
-			if (ps[pos] == cp)
-				ps[pos] = cr;
-		}
-
 		RETURN->_string.addr = ps;
 		RETURN->_string.len = ls;
+
+		if (lp == 1)
+		{
+			char cp = *pp;
+			char cr = *pr;
+
+			if (nocase)
+			{
+				char cpl = tolower(cp);
+				cp = toupper(cp);
+				
+				for (pos = 0; pos < ls; pos++)
+				{
+					if (ps[pos] == cp || ps[pos] == cpl)
+						ps[pos] = cr;
+				}
+			}
+			else
+			{
+				for (pos = 0; pos < ls; pos++)
+				{
+					if (ps[pos] == cp)
+						ps[pos] = cr;
+				}
+			}
+		}
+		else
+		{
+			for(;;)
+			{
+				pos = STRING_search(ps, ls, pp, lp, 0, FALSE, nocase);
+				if (pos == 0)
+					break;
+				pos--;
+				memcpy(&ps[pos], pr, lp);
+				pos += lp;
+				ps += pos;
+				ls -= pos;
+			}
+		}
 	}
 	else
 	{
