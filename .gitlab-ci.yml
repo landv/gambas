@@ -13,7 +13,7 @@ build:archlinux:
        zlib
   script:
     - ./reconf-all
-    - ./configure -C
+    - GAMBAS_CONFIG_FAILURE=1 ./configure -C --disable-sqlite2 --disable-qtwebkit --disable-qtopengl --disable-jit
     - make -j$(nproc)
     - make install
 
