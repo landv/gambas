@@ -603,7 +603,7 @@ mode_t FILE_mode_from_string(mode_t mode, const char *str)
 		if (!c)
 			break;
 
-		for (i = 0; i < 3; i++)
+		for (i = 0; i <= 3; i++)
 		{
 			test = d->test[i];
 			if (!test)
