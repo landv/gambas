@@ -1,0 +1,1 @@
+../../../share/gambas.h

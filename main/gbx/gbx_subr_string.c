@@ -435,12 +435,11 @@ void SUBR_instr(ushort code)
 {
 	bool right, nocase = FALSE;
 	int is, pos;
+	//int pos2;
 	char *ps, *pp;
 	int ls, lp;
 
 	SUBR_ENTER();
-
-	/* Knuth Morris Pratt one day maybe ? */
 
 	pos = 0;
 
@@ -469,6 +468,13 @@ void SUBR_instr(ushort code)
 	pp = PARAM[1]._string.addr + PARAM[1]._string.start;
 
 	pos = STRING_search(ps, ls, pp, lp, is, right, nocase);
+	/*pos2 = STRING_search2(ps, ls, pp, lp, is, right, nocase);
+	
+	if (pos != pos2)
+	{
+		for(;;)
+			usleep(1000);
+	}*/
 
 __FOUND:
 
@@ -599,21 +605,51 @@ void SUBR_replace(ushort code)
 		return;
 	}
 
-	if (lp == 1 && lr == 1)
+	if (lp == lr)
 	{
-		char cp = *pp;
-		char cr = *pr;
-
 		ps = STRING_new_temp(ps, ls);
-
-		for (pos = 0; pos < ls; pos++)
-		{
-			if (ps[pos] == cp)
-				ps[pos] = cr;
-		}
-
 		RETURN->_string.addr = ps;
 		RETURN->_string.len = ls;
+
+		if (lp == 1)
+		{
+			char cp = *pp;
+			char cr = *pr;
+
+			if (nocase)
+			{
+				char cpl = tolower(cp);
+				cp = toupper(cp);
+				
+				for (pos = 0; pos < ls; pos++)
+				{
+					if (ps[pos] == cp || ps[pos] == cpl)
+						ps[pos] = cr;
+				}
+			}
+			else
+			{
+				for (pos = 0; pos < ls; pos++)
+				{
+					if (ps[pos] == cp)
+						ps[pos] = cr;
+				}
+			}
+		}
+		else
+		{
+			for(;;)
+			{
+				pos = STRING_search(ps, ls, pp, lp, 0, FALSE, nocase);
+				if (pos == 0)
+					break;
+				pos--;
+				memcpy(&ps[pos], pr, lp);
+				pos += lp;
+				ps += pos;
+				ls -= pos;
+			}
+		}
 	}
 	else
 	{

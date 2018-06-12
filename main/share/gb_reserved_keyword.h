@@ -332,8 +332,8 @@ SUBR_INFO COMP_subr_info[] =
 	{ "Min",               29,  0, RST_MIN,        2,    },
 	{ "Max",               30,  0, RST_MIN,        2,    },   // CODE_MAX
 
-	{ "If",                31,  0, RST_SAME,       3,    },
-	{ "IIf",               31,  0, RST_SAME,       3,    },
+	{ "If",                31,  0, T_VARIANT,      3,    },
+	{ "IIf",               31,  0, T_VARIANT,      3,    },
 	{ "Choose",            32,  0, T_VARIANT,      1, 63 },
 
 	{ ".Array",            33,  0, T_OBJECT,       0, 63 },   // Needed for Eval("[...]")
@@ -436,8 +436,8 @@ SUBR_INFO COMP_subr_info[] =
 
 	{ ".Wait",             55,  0, T_VOID,         0,  1 },
 
-	{ ".Open",             56,  0, T_VOID,         2     },
-	{ ".OpenMemory",       56,  1, T_VOID,         2     },
+	{ ".Open",             56,  0, T_OBJECT,       2     },
+	{ ".OpenMemory",       56,  1, T_OBJECT,       2     },
 	{ ".Close",            57,  0, T_VOID,         1     },
 	{ ".Input",            58,  0, T_VOID,         0,  1 },
 	{ ".LineInput",        59,  0, T_VOID,         1     },

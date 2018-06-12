@@ -55,7 +55,7 @@ Public Sub ReadIdentifier(sText As String, iPos As Integer, sIdentCar As String)
   iPos = 1
   
   If InStr(sIdentCar, Left(sText)) Then
-    While InStr(sIdentCar, Mid$(sText, iPos, 1)) And Asc(Mid$(sText, iPos, 1)) > 32
+    While InStr(sIdentCar, Mid$(sText, iPos, 1)) > 0 And Asc(Mid$(sText, iPos, 1)) > 32
       Inc iPos
     Wend
   Else

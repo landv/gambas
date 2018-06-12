@@ -54,6 +54,7 @@
 #include "gb_common_buffer.h"
 #include "gbx_api.h"
 #include "gbx_signal.h"
+#include "gbx_jit.h"
 
 #if USE_PROFILE
 #include "gbx_profile.h"
@@ -146,6 +147,7 @@ static void main_exit(bool silent)
 		EVENT_exit();
 		FILE_exit();
 		STACK_exit();
+		JIT_exit();
 		ERROR_exit();
 	}
 	CATCH

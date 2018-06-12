@@ -12,8 +12,8 @@ While I < M + 1000
   Inc I
   G &= S
   G = Replace(G, "efgh", "____")
-  L = Len(S) * I
-  If L Mod (1024*256) = 0 Then
+  L = Len(G)
+  If L Mod (1024*64) = 0 Then
     Print CInt(Timer - F);"sec\t\t";L \ 1024;"kb"
     Flush
   Endif

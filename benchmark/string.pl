@@ -13,7 +13,6 @@ while($i++ < $imax+1000)
 
         $gstr.=$str;
         $gstr=~s/efgh/____/g;
-        my $lngth=length($str)*$i;   ##     my $lngth=length($gstr);        # Perhaps that would be a slower way
-        print time()-$starttime,"sec\t\t",$lngth/1024,"kb\n" unless $lngth % (1024*256); #print out every 256kb
+        my $lngth=length($gstr);   ##     my $lngth=length($gstr);        # Perhaps that would be a slower way
+        print time()-$starttime,"sec\t\t",$lngth/1024,"kb\n" unless $lngth % (1024*64); #print out every 256kb
 }
-

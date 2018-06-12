@@ -357,6 +357,7 @@ static void output_class(void)
 	if (Class->autocreate) flag |= 2;
 	if (Class->optional) flag |= 4;
 	if (Class->nocreate) flag |= 8;
+	if (Class->has_fast) flag |= 16;
 	write_short(flag);
 	
 	// Static size
@@ -756,7 +757,7 @@ static void output_method(void)
 		write_byte(func->npmin);
 		write_byte(func->vararg);
 
-		flag = func->fast || Class->all_fast;
+		flag = func->fast;
 		if (func->use_is_missing)
 			flag += 2;
 
@@ -1151,10 +1152,8 @@ char *OUTPUT_get_file(const char *file)
 {
 	char *output;
 	char *p;
-	//char *dir;
 	char *name;
 
-	//dir = STR_copy(FILE_get_dir(file));
 	name = STR_copy(FILE_get_name(file));
 
 	for (p = name; *p; p++)

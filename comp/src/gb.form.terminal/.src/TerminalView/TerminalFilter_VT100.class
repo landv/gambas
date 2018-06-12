@@ -155,7 +155,7 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hOutput As
   
 NOT_IMPLEMENTED:
   
-  Debug "Not implemented: "; Quote(sStr)
+  Error "gb.form.terminal: warning: not implemented: "; Quote(sStr)
   Return
   
 End
@@ -657,7 +657,7 @@ GET_ARGS:
   
 NOT_IMPLEMENTED:
   
-  Debug "Not implemented: "; Quote(sStr)
+  Error "gb.form.terminal: warning: not implemented: "; Quote(sStr)
   
 End
 

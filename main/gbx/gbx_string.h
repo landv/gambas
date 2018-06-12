@@ -64,7 +64,7 @@ typedef
 
 #ifndef __STRING_C
 extern STRING_MAKE STRING_make_buffer;
-extern const char STRING_char_string[];
+extern const char STRING_char_table[];
 #endif
 
 void STRING_init(void);
@@ -133,7 +133,7 @@ void STRING_new_constant_value(VALUE *value, const char *src, int len);
 #define STRING_char_value(_value, _car) \
 do { \
 	_value->type = T_CSTRING; \
-	_value->_string.addr = (char *)&STRING_char_string[(_car) * 2]; \
+	_value->_string.addr = (char *)&STRING_char_table[(_car) * 2]; \
 	_value->_string.start = 0; \
 	_value->_string.len = 1; \
 } while(0)
@@ -205,6 +205,7 @@ void STRING_unref_real(char **ptr);
 void STRING_unref_keep(char **ptr);
 
 int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase);
+int STRING_search2(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase);
 
 void STRING_start_len(int len);
 #define STRING_start() STRING_start_len(0)

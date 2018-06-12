@@ -29,8 +29,14 @@
 char *STR_copy(const char *str);
 char *STR_copy_len(const char *str, int len);
 char *STR_cat(const char *str, ...);
-char *STR_add(char *d, const char *s);
+char *STR_upper(const char *str);
+char *STR_lower(const char *str);
 
 #define STR_free(_str) IFREE(_str)
+char *STR_free_later(char *str);
+
+void STR_add(char **str, const char *fmt, ...);
+char *STR_print(const char *fmt, ...);
+void STR_vadd(char **str, const char *fmt, va_list args);
 
 #endif

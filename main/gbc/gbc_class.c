@@ -625,6 +625,8 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 			index = CLASS_add_class(JOB->class, index);
 	}
 
+	JOB->class->class[index].type = TYPE_make(type, value, 0);
+	
 	/*cref = &class->class[index];
 	if (TYPE_is_null(cref->array))
 	{

@@ -28,7 +28,9 @@
 #include <strings.h>
 #endif
 
+#ifndef NO_CONFIG_H
 #include "config.h"
+#endif
 #include <stdint.h>
 #include <stddef.h>
 #include <sys/types.h>
@@ -94,6 +96,8 @@
 #define GB_T_CSTRING      10
 #define GB_T_POINTER      11
 #define GB_T_VARIANT      12
+#define GB_T_FUNCTION     13
+#define GB_T_CLASS        14
 #define GB_T_NULL         15
 #define GB_T_OBJECT       16
 
@@ -317,6 +321,7 @@ typedef
 #define GB_ERR_TYPE       ((char *)6)
 #define GB_ERR_OVERFLOW   ((char *)7)
 #define GB_ERR_NSYMBOL    ((char *)11)
+#define GB_ERR_NOBJECT    ((char *)12)
 #define GB_ERR_NWRITE     ((char *)16)
 #define GB_ERR_NPROPERTY  ((char *)17)
 #define GB_ERR_ARG        ((char *)20)
@@ -977,6 +982,7 @@ typedef
 		GB_CLASS (*FindClassLocal)(const char *);
 		GB_TYPE (*GetArrayType)(GB_CLASS);
 		GB_CLASS (*GetArrayClass)(GB_CLASS);
+		GB_CLASS (*LoadClassFrom)(const char *, const char*);
 		bool (*Is)(void *, GB_CLASS);
 		void (*Ref)(void *);
 		void (*Unref)(void **);

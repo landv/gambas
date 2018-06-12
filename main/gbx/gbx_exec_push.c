@@ -676,6 +676,7 @@ __PUSH_ARRAY_2:
 }
 #endif
 
+#if 0
 // JIT needs it
 void EXEC_push_array(ushort code)
 {
@@ -700,6 +701,7 @@ void EXEC_push_array(ushort code)
 	if (!defined)
 		VALUE_conv_variant(&SP[-1]);
 }
+#endif
 
 int EXEC_push_unknown_event(bool unknown)
 {

@@ -43,12 +43,12 @@ EXTERN int NPARAM;
 #endif
 */
 
-#define SUBR_ENTER() \
-  int NPARAM = code & 0x3F; \
-  VALUE *PARAM = (SP - NPARAM)
-
 #define SUBR_GET_PARAM(nparam) \
   VALUE *PARAM = (SP - nparam);
+
+#define SUBR_ENTER() \
+  int NPARAM = code & 0x3F; \
+  SUBR_GET_PARAM(NPARAM);
 
 #define SUBR_ENTER_PARAM(nparam) \
   const int NPARAM = nparam; \

@@ -174,7 +174,7 @@ static void get_arguments(int argc, char **argv)
 			case 'e':
 				ERROR_translate = TRUE;
 				break;
-
+				
 			case 1:
 				main_no_old_read_syntax = TRUE;
 				break;
@@ -201,6 +201,7 @@ static void get_arguments(int argc, char **argv)
 					"  -p  --public-control       form controls are public\n"
 					"  -m  --public-module        module symbols are public by default\n"
 					"  -s  --swap                 swap endianness\n"
+
 					"  -r  --root <directory>     gives the gambas installation directory\n"
 					"  -e  --translate-errors     display translatable error messages\n"
 					"  -x  --exec                 define the 'Exec' preprocessor constant\n"

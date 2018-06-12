@@ -167,8 +167,6 @@ static void unload_class(CLASS *class)
 		if (class->load)
 			FREE(&class->load->prof);
 
-		FREE(&class->jit_functions);
-
 		FREE(&class->load);
 		//if (!class->mmapped)
 		FREE(&class->data);
@@ -534,7 +532,7 @@ CLASS *CLASS_get(const char *name)
 {
 	CLASS *class = CLASS_find(name);
 
-	if (!CLASS_is_loaded(class))
+	if (!CLASS_is_loaded(class) && !class->in_load)
 		CLASS_load(class);
 
 	return class;
@@ -937,10 +935,7 @@ void CLASS_inheritance(CLASS *class, CLASS *parent, bool in_jit_compilation)
 
 	TRY
 	{
-		if (!in_jit_compilation)
-			CLASS_load(class->parent);
-		else
-			JIT.LoadClass(class->parent);
+		CLASS_load(class->parent);
 	}
 	CATCH
 	{
@@ -1433,8 +1428,6 @@ void CLASS_create_array_class(CLASS *class)
 	GB_DESC *desc;
 	CLASS *array_type = (CLASS *)class->array_type;
 
-	//fprintf(stderr, "CLASS_create_array_class: create %s\n", class->name);
-
 	name_joker = STRING_new(class->name, strlen(class->name) - 2);
 
 	if (!array_type)
@@ -1541,3 +1534,27 @@ char *CLASS_get_name(CLASS *class)
 
 	return name;
 }
+
+
+CLASS *CLASS_find_load_from(const char *name, const char *from)
+{
+	COMPONENT *save;
+	CLASS *save_cp;
+	COMPONENT *comp = NULL;
+	CLASS *class;
+	
+	comp = COMPONENT_find(from);
+	
+	save = COMPONENT_current;
+	save_cp = CP;
+	
+	COMPONENT_current = comp;
+	CP = NULL;
+	class = CLASS_get(name);
+	
+	COMPONENT_current = save;
+	CP = save_cp;
+	
+	return class;
+}
+

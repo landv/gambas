@@ -88,3 +88,6 @@ void SYMBOL_compute_keys(void *symbol, int n_symbol, size_t s_symbol, int flag);
 #define SYMBOL_compute_keys(_symbol, _nsymbol, _ssymbol, _flag)
 #endif
 #endif
+
+#define SYMBOL_compare(_sym, _name) TABLE_compare((_sym)->name, (_sym)->len, (_name), strlen(_name))
+#define SYMBOL_compare_ignore_case(_sym, _name) TABLE_compare_ignore_case((_sym)->name, (_sym)->len, (_name), strlen(_name))

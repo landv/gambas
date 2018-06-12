@@ -22,11 +22,12 @@ libgbx_a_SOURCES = \
  gb_hash.c \
  gb_common_check.h gb_common.c \
  gbx_exec.h gbx_exec.c gbx_exec_push.c gbx_exec_enum.c gbx_exec_pop.c gbx_exec_operator.c \
+ gbx_string.h gbx_string.c \
  gbx_value.h gbx_value.c
 
 gbx3_SOURCES = \
  gbx_debug.h gbx_debug.c \
- gbx_jit.h gbx_jit.c \
+ gbx_jit.h gbx_jit.c gb.jit.h \
  gb_alloc.c gb_array.c \
  gbx_stack.h gbx_stack.c \
  gb_buffer.c gbx_replace.c \
@@ -56,7 +57,6 @@ gbx3_SOURCES = \
  gbx.c \
  gbx_number.h gbx_number.c \
  gbx_object.h gbx_object.c \
- gbx_string.h gbx_string.c \
  gbx_variant.h \
  gbx_date.h gbx_date.c \
  gbx_c_class.h gbx_c_class.c \

@@ -229,7 +229,7 @@ Private Sub Insert(sText As String, Optional X As Integer = $X)
   If hLine.Length <= X Then 
     hLine.Text &= Space$(X - hLine.Length) & sText '& String.Mid(hLine.Text, X + iLen)
     hLine.Length = X + iLen 'String.Len(hLine.Text)
-    hLine.SetAttr($hAttr, X, iLen)
+    hLine.SetAttr($hAttr, X, iLen, False)
   Else
     If InsertMode Then
       hLine.Text = String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + 1)
@@ -238,7 +238,7 @@ Private Sub Insert(sText As String, Optional X As Integer = $X)
     Else
       hLine.Text = String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + iLen + 1)
       hLine.Length = Max(hLine.Length, X + iLen)
-      hLine.SetAttr($hAttr, X, iLen)
+      hLine.SetAttr($hAttr, X, iLen, False)
     Endif
   Endif
   
@@ -501,7 +501,7 @@ Public Sub EraseChar(Optional N As Integer = 1)
     hLine.Text = String.Left(hLine.Text, $X) & Space$(N) & String.Mid$(hLine.Text, $X + N + 1)
     hLine.Length = String.Len(hLine.Text)
   Endif
-  hLine.SetAttr($hAttr, $X, N)
+  hLine.SetAttr($hAttr, $X, N, False)
   GetView()._RefreshLine($Y)
   
 End

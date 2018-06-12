@@ -79,6 +79,7 @@
 #define CPM_COMPLEX      8
 #define CPM_VARGS        9
 #define CPM_DROP_VARGS   10
+#define CPM_RETURN       11
 
 #define C_TRY                   0x1600
 #define C_END_TRY               0x1700
@@ -149,7 +150,6 @@
 #define CODE_CONV        (CODE_FIRST_SUBR + 39)
 #define CODE_BIN         (CODE_FIRST_SUBR + 40)
 #define CODE_HEX         (CODE_FIRST_SUBR + 41)
-
 
 typedef
   ushort PCODE;

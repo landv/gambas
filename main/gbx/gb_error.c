@@ -561,7 +561,7 @@ void ERROR_panic(const char *error, ...)
 
 	fflush(NULL);
 
-	fprintf(stderr, "\n** Oops! Internal error! **\n** ");
+	fprintf(stderr, "\n** OOPS! INTERNAL ERROR\n** ");
 	vfprintf(stderr, error, args);
 
 	va_end(args);
@@ -569,9 +569,10 @@ void ERROR_panic(const char *error, ...)
 	putc('\n', stderr);
 	if (ERROR_current->info.code)
 	{
+		fprintf(stderr, "** ");
 		ERROR_print();
 	}
-	fprintf(stderr, "** Program aborting. Sorry! :-(\n** Please send a bug report at g4mba5@gmail.com\n");
+	fprintf(stderr, "** Program aborting. Sorry! :-(\n** Please send a bug report at g4mba5@gmail.com\n\n");
 	_exit(1);
 }
 

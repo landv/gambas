@@ -180,13 +180,14 @@ typedef
 
 typedef
 	struct {
-		int index;
+		int index;                     // class name
 		unsigned used : 1;
 		unsigned exported : 1;
 		unsigned structure : 1;
 		unsigned has_static : 1;
-		unsigned _reserved : 28;
-		//TYPE array;                    // if the class is an array, the type of an element
+		unsigned is_collection : 1;    // if the class is Collection (for JIT)
+		unsigned _reserved : 20;
+		TYPE type;                     // if the class is an array, the type of the array contents (for JIT)
 		}
 	CLASS_REF;
 
@@ -202,7 +203,8 @@ typedef
 		unsigned nocreate : 1;         // class cannot be instantiated
 		unsigned all_fast : 1;         // all methods have the Fast option (JIT)
 		unsigned has_static : 1;       // has static methods, properties or variables
-		unsigned _reserved : 10;
+		unsigned has_fast : 1;         // has at least one fast method
+		unsigned _reserved : 9;
 		VARIABLE *stat;                // static variables
 		VARIABLE *dyn;                 // dynamic variables
 		CONSTANT *constant;            // constants

@@ -455,6 +455,8 @@ static int TRANS_get_class(PATTERN pattern, bool array)
 						else
 							index = CLASS_add_class(JOB->class, index);
 						
+						JOB->class->class[index].type = TYPE_make(T_OBJECT, index_array, 0);
+						
 						/*cref = &JOB->class->class[index];
 						if (TYPE_is_null(cref->array))
 						{

@@ -118,6 +118,23 @@ SUBR_INFO *SUBR_get_from_opcode(ushort opcode, ushort optype)
 }
 
 
+int RESERVED_get_from_opcode(ushort code)
+{
+	COMP_INFO *ci;
+	int n;
+	
+	code = code & 0xFF00;
+
+	for (ci = COMP_res_info, n = 0; ci->name; ci++, n++)
+	{
+		if (ci->code == code)
+			return n;
+	}
+
+	return -1;
+}
+
+
 int RESERVED_find_word(const char *word, int len)
 {
 	int ind;
