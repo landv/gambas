@@ -938,7 +938,11 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
 
     done
 
-  else
+    if test "$gb_enable_$1" = "yes" && test "x${GAMBAS_CONFIG_FAILURE}" != "x" && test "$gb_in_component_search" != "yes"; then
+       AC_MSG_ERROR([Failed to configure $3])
+    fi
+
+else
 
     AC_DEFINE(HAVE_$2_COMPONENT, 1, [Have $3 component])
 
@@ -1111,7 +1115,11 @@ AC_DEFUN([GB_COMPONENT],
     touch DISABLED
     touch DISABLED.$3
 
-  fi
+    if test "$gb_enable_$1" = "yes" && test "x${GAMBAS_CONFIG_FAILURE}" != "x"; then
+       AC_MSG_ERROR([Failed to configure $3])
+    fi
+
+    fi
 
   if test "$have_$1" = "no"; then
 
