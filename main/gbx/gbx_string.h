@@ -205,6 +205,7 @@ void STRING_unref_real(char **ptr);
 void STRING_unref_keep(char **ptr);
 
 int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase);
+int STRING_search2(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase);
 
 void STRING_start_len(int len);
 #define STRING_start() STRING_start_len(0)

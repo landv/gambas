@@ -1117,10 +1117,12 @@ char *STRING_conv_file_name(const char *name, int len)
 		return "";
 }
 
-int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase)
+// Warning! Returns the index starting from 1, and 0 if no match is found.
+
+#if 0
+int STRING_search2(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase)
 {
 	int pos, ip, apos;
-	char *p;
 
 	if (lp > ls)
 		return 0;
@@ -1153,7 +1155,7 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 	{
 		char cp = *pp;
 
-		if (nocase)
+		if (nocase && cp != tolower(cp))
 		{
 			cp = tolower(cp);
 
@@ -1200,7 +1202,7 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 	pos = 0;
 	apos = 0;
 
-	if (!nocase || pp[0] == tolower(pp[0]))
+	/*if (!nocase || pp[0] == tolower(pp[0]))
 	{
 		p = memchr(right ? ps : ps + is, (uchar)pp[0], ls);
 		if (!p)
@@ -1211,12 +1213,12 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 		apos = (int)(p - ps);
 		ps = p;
 		
-		p = memrchr(ps, (uchar)pp[0], right ? is : ls);
+		p = memrchr(ps, (uchar)pp[0], right ? is + 1 : ls);
 		if (!p)
 			goto __FOUND;
 		ls = (int)(p - ps + 1);
-		if (is > ls) is = ls;
-	}
+		if (is >= ls) is = ls - 1;
+	}*/
 	
 	ps += is;
 
@@ -1235,7 +1237,7 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 						goto __NEXT_RN;
 				}
 
-				pos = is + 1;
+				pos = apos + is + 1;
 				goto __FOUND;
 
 		__NEXT_RN:
@@ -1255,7 +1257,7 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 						goto __NEXT_R;
 				}
 
-				pos = is + 1;
+				pos = apos + is + 1;
 				goto __FOUND;
 
 		__NEXT_R:
@@ -1278,7 +1280,7 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 						goto __NEXT_LN;
 				}
 
-				pos = is + 1;
+				pos = apos + is + 1;
 				goto __FOUND;
 
 		__NEXT_LN:
@@ -1301,7 +1303,7 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 						goto __NEXT_L;
 				}*/
 
-				pos = is + 1;
+				pos = apos + is + 1;
 				goto __FOUND;
 
 		__NEXT_L:
@@ -1312,5 +1314,210 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 
 __FOUND:
 
-	return pos + apos;
+	return pos;
+}
+#endif
+
+int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase)
+{
+	int pos, ip, apos;
+	char *p;
+
+	if (lp > ls)
+		return 0;
+
+	if (is < 0)
+		is += ls;
+	else if (is == 0)
+		is = right ? ls : 1;
+
+	ls = ls - lp + 1;
+
+	if (is > ls)
+	{
+		if (!right)
+			return 0;
+		else
+			is = ls;
+	}
+	else if (is < lp)
+	{
+		if (right)
+			return 0;
+		else if (is < 1)
+			is = 1;
+	}
+
+	is--;
+
+	if (lp == 1)
+	{
+		char cp = *pp;
+
+		if (nocase && cp != tolower(cp))
+		{
+			cp = tolower(cp);
+
+			if (right)
+			{
+				for (; is >= 0; is--)
+				{
+					if (tolower(ps[is]) == cp)
+						return is + 1;
+				}
+			}
+			else
+			{
+				for (; is < ls; is++)
+				{
+					if (tolower(ps[is]) == cp)
+						return is + 1;
+				}
+			}
+		}
+		else
+		{
+			if (right)
+			{
+				p = memrchr(ps, (uchar)cp, is + 1);
+				return p ? p - ps + 1 : 0;
+				
+				/*for (; is >= 0; is--)
+				{
+					if (ps[is] == cp)
+						return is + 1;
+				}*/
+			}
+			else
+			{
+				p = memchr(ps + is, (uchar)cp, ls - is);
+				return p ? p - ps + 1 : 0;
+				
+				/*for (; is < ls; is++)
+				{
+					if (ps[is] == cp)
+						return is + 1;
+				}*/
+			}
+		}
+
+		return 0;
+	}
+
+	pos = 0;
+	apos = 0;
+
+	if (!nocase || pp[0] == tolower(pp[0]))
+	{
+		p = memchr(right ? ps : ps + is, (uchar)pp[0], right ? ls : ls - is);
+		if (!p)
+			goto __FOUND;
+		ls -= (int)(p - ps);
+		is -= (int)(p - ps);
+		if (is < 0) is = 0;
+		apos = (int)(p - ps);
+		ps = p;
+		
+		p = memrchr(ps, (uchar)pp[0], right ? is + 1 : ls);
+		if (!p)
+			goto __FOUND;
+		ls = (int)(p - ps + 1);
+		if (is >= ls) is = ls - 1;
+	}
+	
+	ps += is;
+
+	if (right)
+	{
+		if (nocase)
+		{
+			for (; is >= 0; is--, ps--)
+			{
+				if (tolower(ps[0]) != tolower(pp[0]))
+					goto __NEXT_RN;
+
+				for (ip = 1; ip < lp; ip++)
+				{
+					if (tolower(ps[ip]) != tolower(pp[ip]))
+						goto __NEXT_RN;
+				}
+
+				pos = apos + is + 1;
+				goto __FOUND;
+
+		__NEXT_RN:
+			;
+			}
+		}
+		else
+		{
+			for (; is >= 0; is--, ps--)
+			{
+				if (ps[0] != pp[0])
+					goto __NEXT_R;
+
+				for (ip = 1; ip < lp; ip++)
+				{
+					if (ps[ip] != pp[ip])
+						goto __NEXT_R;
+				}
+
+				pos = apos + is + 1;
+				goto __FOUND;
+
+		__NEXT_R:
+			;
+			}
+		}
+	}
+	else
+	{
+		if (nocase)
+		{
+			for (; is < ls; is++, ps++)
+			{
+				if (tolower(ps[0]) != tolower(pp[0]))
+					goto __NEXT_LN;
+
+				for (ip = 1; ip < lp; ip++)
+				{
+					if (tolower(ps[ip]) != tolower(pp[ip]))
+						goto __NEXT_LN;
+				}
+
+				pos = apos + is + 1;
+				goto __FOUND;
+
+		__NEXT_LN:
+			;
+			}
+		}
+		else
+		{
+			for (; is < ls; is++, ps++)
+			{
+				if (ps[0] != pp[0])
+					goto __NEXT_L;
+
+				if (memcmp(ps + 1, pp + 1, lp - 1))
+					goto __NEXT_L;
+				
+				/*for (ip = 1; ip < lp; ip++)
+				{
+					if (ps[ip] != pp[ip])
+						goto __NEXT_L;
+				}*/
+
+				pos = apos + is + 1;
+				goto __FOUND;
+
+		__NEXT_L:
+			;
+			}
+		}
+	}
+
+__FOUND:
+
+	return pos;
 }

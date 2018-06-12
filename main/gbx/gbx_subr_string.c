@@ -435,12 +435,11 @@ void SUBR_instr(ushort code)
 {
 	bool right, nocase = FALSE;
 	int is, pos;
+	//int pos2;
 	char *ps, *pp;
 	int ls, lp;
 
 	SUBR_ENTER();
-
-	/* Knuth Morris Pratt one day maybe ? */
 
 	pos = 0;
 
@@ -469,6 +468,13 @@ void SUBR_instr(ushort code)
 	pp = PARAM[1]._string.addr + PARAM[1]._string.start;
 
 	pos = STRING_search(ps, ls, pp, lp, is, right, nocase);
+	/*pos2 = STRING_search2(ps, ls, pp, lp, is, right, nocase);
+	
+	if (pos != pos2)
+	{
+		for(;;)
+			usleep(1000);
+	}*/
 
 __FOUND:
 

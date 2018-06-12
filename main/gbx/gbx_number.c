@@ -47,6 +47,7 @@
 #define get_current COMMON_get_current
 #define buffer_pos COMMON_pos
 #define get_size_left COMMON_get_size_left
+#define has_string COMMON_has_string
 
 #define IS_PURE_INTEGER(_int64_val) ((_int64_val) == ((int)(_int64_val)))
 
@@ -54,11 +55,13 @@ static bool read_integer(int base, bool minus, int64_t *result, bool local)
 {
 	uint64_t nbr2, nbr;
 	int d, n, c, nmax;
-	char thsep;
+	const char *thsep;
+	int lthsep;
 	int ndigit_thsep;
 	bool first_thsep;
 
 	thsep = LOCAL_get(local)->thousand_sep;
+	lthsep = LOCAL_get(local)->len_thousand_sep;
 	ndigit_thsep = 0;
 	first_thsep = FALSE;
 
@@ -81,8 +84,9 @@ static bool read_integer(int base, bool minus, int64_t *result, bool local)
 		{
 			if (local)
 			{
-				if (c == thsep && (ndigit_thsep == 3 || (!first_thsep && ndigit_thsep >= 1 && ndigit_thsep <= 3)))
+				if (has_string(thsep, lthsep) && (ndigit_thsep == 3 || (!first_thsep && ndigit_thsep >= 1 && ndigit_thsep <= 3)))
 				{
+					COMMON_pos += lthsep;
 					c = get_char();
 					first_thsep = TRUE;
 					ndigit_thsep = 0;
@@ -184,7 +188,8 @@ static bool read_float(double *result, bool local)
 {
 	LOCAL_INFO *local_info;
 	char point;
-	char thsep;
+	const char *thsep;
+	int lthsep;
 	int ndigit_thsep;
 	bool first_thsep;
 	int c, n;
@@ -201,6 +206,7 @@ static bool read_float(double *result, bool local)
 	local_info = LOCAL_get(local);
 	point = local_info->decimal_point;
 	thsep = local_info->thousand_sep;
+	lthsep = local_info->len_thousand_sep;
 	ndigit_thsep = 0;
 	first_thsep = FALSE;
 
@@ -231,11 +237,12 @@ static bool read_float(double *result, bool local)
 
 		if (local && !frac)
 		{
-			if (c == thsep && (ndigit_thsep == 3 || (!first_thsep && ndigit_thsep >= 1 && ndigit_thsep <= 3)))
+			if (has_string(thsep, lthsep) && (ndigit_thsep == 3 || (!first_thsep && ndigit_thsep >= 1 && ndigit_thsep <= 3)))
 			{
-				c = get_char();
+				COMMON_pos += lthsep;
 				first_thsep = TRUE;
 				ndigit_thsep = 0;
+				c = get_char();
 			}
 		}
 		

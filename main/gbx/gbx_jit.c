@@ -216,10 +216,15 @@ void JIT_exec(bool ret_on_stack)
 	
 	CP = class;
 	OP = (void *)EXEC.object;
+	FP = func;
 	
 	jit = (JIT_FUNCTION *)(func->code);
 	
+	PROFILE_ENTER_FUNCTION();
+	
 	(*(jit->addr))(nparam);
+	
+	PROFILE_LEAVE_FUNCTION();
 	
 	if (SP != sp)
 		fprintf(stderr, "SP: %+ld (%ld) !\n", (SP - sp) / sizeof(VALUE), SP - sp);
