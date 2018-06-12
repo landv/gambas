@@ -9,6 +9,11 @@ GB_MATH_FUNC
 LT_INIT 
 AM_PROG_CC_C_O
 
+if test "x${GAMBAS_CONFIG_FAILURE}" != "x"; then
+  SAVE_GAMBAS_CONFIG_FAILURE=${GAMBAS_CONFIG_FAILURE}
+  GAMBAS_CONFIG_FAILURE=''
+fi
+
 dnl ---- Check for internationalization library
 
 GB_COMPONENT(
@@ -75,6 +80,11 @@ fi
 dnl ---- Remove DISABLED file that could have been generated before
 
 rm -f DISABLED DISABLED.*
+
+if test "x${SAVE_GAMBAS_CONFIG_FAILURE}" != "x"; then
+  GAMBAS_CONFIG_FAILURE=${SAVE_GAMBAS_CONFIG_FAILURE}
+  SAVE_GAMBAS_CONFIG_FAILURE=''
+fi
 
 dnl ---- Check for the Linux inotify headers
 
