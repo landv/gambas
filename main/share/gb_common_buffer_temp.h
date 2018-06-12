@@ -104,3 +104,10 @@ int COMMON_get_size_left(void)
 }
 
 
+bool COMMON_has_string(const char *str, int len)
+{
+	if (COMMON_get_size_left() > len)
+		return FALSE;
+	
+	return memcmp(&common_buffer[COMMON_pos], str, len) == 0;
+}

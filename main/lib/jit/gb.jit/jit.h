@@ -84,18 +84,19 @@ typedef
 
 #define CHECK_FINITE(_val) (isfinite(_val) ? (_val) : JIT.throw(E_OVERFLOW))
 
-#define PARAM_b(_p) (sp[-n+(_p)]._boolean.value)
-#define PARAM_c(_p) ((uchar)(sp[-n+(_p)]._integer.value))
-#define PARAM_h(_p) ((short)(sp[-n+(_p)]._integer.value))
-#define PARAM_i(_p) (sp[-n+(_p)]._integer.value)
-#define PARAM_l(_p) (sp[-n+(_p)]._long.value)
-#define PARAM_g(_p) (sp[-n+(_p)]._single.value)
-#define PARAM_f(_p) (sp[-n+(_p)]._float.value)
-#define PARAM_p(_p) (sp[-n+(_p)]._pointer.value)
-#define PARAM_d(_p) (*(GB_DATE *)&sp[-n+(_p)])
-#define PARAM_s(_p) (*(GB_STRING *)&sp[-n+(_p)])
-#define PARAM_o(_p) (*(GB_OBJECT *)&sp[-n+(_p)])
-#define PARAM_v(_p) (*(GB_VARIANT *)&sp[-n+(_p)])
+#define PARAM_b(_p) (JIT.conv(&sp[-n+(_p)], GB_T_BOOLEAN), sp[-n+(_p)]._boolean.value)
+#define PARAM_c(_p) (JIT.conv(&sp[-n+(_p)], GB_T_BYTE), (uchar)(sp[-n+(_p)]._integer.value))
+#define PARAM_h(_p) (JIT.conv(&sp[-n+(_p)], GB_T_SHORT), (short)(sp[-n+(_p)]._integer.value))
+#define PARAM_i(_p) (JIT.conv(&sp[-n+(_p)], GB_T_INTEGER), sp[-n+(_p)]._integer.value)
+#define PARAM_l(_p) (JIT.conv(&sp[-n+(_p)], GB_T_LONG), sp[-n+(_p)]._long.value)
+#define PARAM_g(_p) (JIT.conv(&sp[-n+(_p)], GB_T_SINGLE), sp[-n+(_p)]._single.value)
+#define PARAM_f(_p) (JIT.conv(&sp[-n+(_p)], GB_T_FLOAT), sp[-n+(_p)]._float.value)
+#define PARAM_p(_p) (JIT.conv(&sp[-n+(_p)], GB_T_POINTER), sp[-n+(_p)]._pointer.value)
+#define PARAM_d(_p) (JIT.conv(&sp[-n+(_p)], GB_T_DATE), *(GB_DATE *)&sp[-n+(_p)])
+#define PARAM_s(_p) (JIT.conv(&sp[-n+(_p)], GB_T_STRING), *(GB_STRING *)&sp[-n+(_p)])
+#define PARAM_o(_p) (JIT.conv(&sp[-n+(_p)], GB_T_OBJECT), *(GB_OBJECT *)&sp[-n+(_p)])
+#define PARAM_v(_p) (JIT.conv(&sp[-n+(_p)], GB_T_VARIANT), *(GB_VARIANT *)&sp[-n+(_p)])
+#define PARAM_O(_p, _type) (JIT.conv(&sp[-n+(_p)], (GB_TYPE)(_type)), *(GB_OBJECT *)&sp[-n+(_p)])
 
 #define PARAM_OPT(_p, _type, _default) (((_p) >= n || (sp[-n+(_p)].type == GB_T_VOID)) ? (_default) : PARAM_##_type(_p))
 #define PARAM_OPT_b(_p) PARAM_OPT(_p, b, 0)
@@ -110,6 +111,7 @@ typedef
 #define PARAM_OPT_s(_p) PARAM_OPT(_p, d, GET_CSTRING("", 0, 0))
 #define PARAM_OPT_o(_p) PARAM_OPT(_p, d, GET_OBJECT(GB_T_OBJECT, 0))
 #define PARAM_OPT_v(_p) PARAM_OPT(_p, d, ({ GB_VARIANT _v; _v.type = GB_T_VARIANT; _v.value.type = GB_T_NULL; _v; }))
+#define PARAM_OPT_O(_p, _type) (((_p) >= n || (sp[-n+(_p)].type == GB_T_VOID)) ? GET_OBJECT(GB_T_OBJECT, 0) : PARAM_O(_p, _type))
 
 #define OPT(_p, _n) ({ \
   uchar _opt = 0; \
@@ -132,7 +134,7 @@ typedef
 #define RETURN_f(_val) (GB.ReturnFloat(_val))
 #define RETURN_d(_val) ({ GB_DATE _v = (_val); GB.ReturnDate(&_v); })
 #define RETURN_p(_val) (GB.ReturnPointer(_val))
-#define RETURN_o(_val) (GB.ReturnObject((_val).value))
+#define RETURN_o(_val) ({ GB_OBJECT _v = (_val); GB.Return(_v.type, _v.value); })
 #define RETURN_v(_val) ({ GB_VARIANT _v = (_val); GB.ReturnVariant(&_v.value); })
 
 #define PUSH_b(_val) ({ char _v = -(_val); sp->_boolean.value = _v; sp->type = GB_T_BOOLEAN; sp++; })
@@ -150,6 +152,7 @@ typedef
 #define PUSH_v(_val) ({ *((GB_VARIANT *)sp) = (_val); GB.BorrowValue(sp); sp++; })
 #define PUSH_C(_val) ({ GB_VALUE_CLASS _v; _v.type = GB_T_CLASS; _v.class = (_val); *((GB_VALUE_CLASS *)sp) = _v; sp++; })
 #define PUSH_u(_val) (*sp = (_val), GB.BorrowValue(sp), sp++)
+#define PUSH_V() (sp->type = GB_T_VOID, sp++)
 
 enum
 {
@@ -339,7 +342,7 @@ enum
   sp++; \
 })
 
-#define RETURN_GOSUB() ({ \
+#define RETURN() ({ \
   void *_addr; \
   if (!gp) goto __RETURN; \
   _addr = gp->addr; \

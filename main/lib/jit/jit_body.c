@@ -173,6 +173,7 @@ static void push_one(TYPE type, const char *fmt, va_list args)
 		STR_vadd(&_stack[_stack_current].expr, fmt, args);
 	
 	_stack[_stack_current].type = type;
+	_stack[_stack_current].call = T_UNKNOWN;
 	_stack_current++;
 }
 
@@ -478,6 +479,10 @@ static char *push_expr(int n, TYPE type)
 	type_name = JIT_get_type(type);
 	
 	expr = peek(n, type, NULL, NULL);
+	
+	if (type == T_VOID)
+		return "PUSH_V()";
+	
 	len = strlen(expr);
 	if ((strncmp(&expr[len - 3], "())", 3) == 0) && (strncmp(&expr[len - 8], "POP_", 4) == 0) && (expr[len - 4] == *type_name))
 		new_expr = STR_print("%.*s)", len - 9, expr);
@@ -1994,7 +1999,7 @@ _POP_LOCAL:
 
 _POP_CTRL:
 
-	pop_ctrl(GET_XX(), T_VOID);
+	pop_ctrl(GET_XX() - func->n_local, T_VOID);
 	goto _MAIN;
 
 _PUSH_PARAM:
@@ -2226,7 +2231,7 @@ _RETURN:
 	switch(code & 0xFF)
 	{
 		case 0:
-			JIT_print("  RETURN_GOSUB();\n");
+			JIT_print("  RETURN();\n");
 			break;
 			
 		case 1:
@@ -2245,8 +2250,8 @@ _RETURN:
 
 _GOSUB:
 
-	JIT_print("  PUSH_GOSUB(__L%dg); goto __L%d;\n", p, p + (signed short)PC[0] + 1);
-	JIT_print("__L%dg:;\n", p);
+	JIT_print("  PUSH_GOSUB(__L%d); goto __L%d;\n", p + 1, p + (signed short)PC[0] + 1);
+	JIT_print("__L%d:;\n", p + 1);
 	p++;
 	goto _MAIN;
 
@@ -2312,7 +2317,7 @@ _JUMP_NEXT:
 
 _ENUM_FIRST:
 
-	index = GET_XX();
+	index = GET_XX() - func->n_local;
 	pop_ctrl(index, T_OBJECT);
 	add_ctrl(index + 1, T_OBJECT);
 	JIT_print("  ENUM_FIRST(0x%04X, c%d, c%d);\n", code, _ctrl_index[index], _ctrl_index[index + 1]);
@@ -2320,7 +2325,7 @@ _ENUM_FIRST:
 
 _ENUM_NEXT:
 
-	index = PC[-2] & 0xFF;
+	index = (PC[-2] & 0xFF) - func->n_local;
 	
 	JIT_print("  ENUM_NEXT(0x%04X, c%d, c%d, __L%d);\n", code, _ctrl_index[index], _ctrl_index[index + 1], p + (signed short)PC[0] + 1);
 	if ((code & 1) == 0) 

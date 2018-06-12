@@ -218,14 +218,14 @@ COMP_INFO COMP_res_info[] =
 
 SUBR_INFO COMP_subr_info[] =
 {
-	{ "Left$",              0,  0, T_CSTRING,      1,  2 },
-	{ "Left",               0,  0, T_CSTRING,      1,  2 },
+	{ "Left$",              0,  0, T_STRING,       1,  2 },
+	{ "Left",               0,  0, T_STRING,       1,  2 },
 
-	{ "Mid$",               1,  0, T_CSTRING,      2,  3 },
-	{ "Mid",                1,  0, T_CSTRING,      2,  3 },
+	{ "Mid$",               1,  0, T_STRING,       2,  3 },
+	{ "Mid",                1,  0, T_STRING,       2,  3 },
 
-	{ "Right$",             2,  0, T_CSTRING,      1,  2 },
-	{ "Right",              2,  0, T_CSTRING,      1,  2 },
+	{ "Right$",             2,  0, T_STRING,       1,  2 },
+	{ "Right",              2,  0, T_STRING,       1,  2 },
 
 	{ "Len",                3,  0, T_INTEGER,      1     },
 

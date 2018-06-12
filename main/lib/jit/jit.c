@@ -212,7 +212,11 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 	for (i = 0; i < func->npmin; i++)
 	{
 		if (i) JIT_print(",");
-		JIT_print("PARAM_%s(%d)", JIT_get_type(func->param[i].type), i);
+		type = func->param[i].type;
+		if (TYPE_is_pure_object(type))
+			JIT_print("PARAM_O(%d, CLASS(%p))", i, type);
+		else
+			JIT_print("PARAM_%s(%d)", JIT_get_type(type), i);
 	}
 	
 	if (i < func->n_param)
@@ -226,7 +230,12 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 			if (nopt == 0)
 				JIT_print("OPT(%d,%d),", i, Min(func->n_param, i + 8) - i);
 			
-			JIT_print("PARAM_OPT_%s(%d)", JIT_get_type(func->param[i].type), i);
+			type = func->param[i].type;
+			if (TYPE_is_pure_object(type))
+				JIT_print("PARAM_OPT_O(%d, CLASS(%p))", i, type);
+			else
+				JIT_print("PARAM_OPT_%s(%d)", JIT_get_type(type), i);
+			
 			nopt++;
 			if (nopt >= 8)
 				nopt = 0;
@@ -269,6 +278,16 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 	if (func->n_local)
 		JIT_print("\n");
 	
+	for (i = 0; i < func->n_param; i++)
+	{
+		type = func->param[i].type;
+		switch(TYPEID(type))
+		{
+			case T_STRING: case T_OBJECT: case T_VARIANT:
+				JIT_print("  BORROW_%s(p%d);\n", JIT_get_type(type), i);
+		}
+	}
+	
 	if (JIT_translate_body(func, index))
 		return TRUE;
 	
@@ -285,6 +304,16 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 					JIT_print("  RELEASE_FAST_%s(l%d);\n", JIT_get_type(type), i);
 					break;
 			}
+		}
+	}
+	
+	for (i = 0; i < func->n_param; i++)
+	{
+		type = func->param[i].type;
+		switch(TYPEID(type))
+		{
+			case T_STRING: case T_OBJECT: case T_VARIANT:
+				JIT_print("  RELEASE_FAST_%s(p%d);\n", JIT_get_type(type), i);
 		}
 	}
 	
@@ -311,18 +340,18 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 
 void JIT_vprint(const char *fmt, va_list args)
 {
-	va_list copy;
 	int len, add;
+	va_list copy;
 	
 	va_copy(copy, args);
-	add = vsnprintf(NULL, 0, fmt, args);
+	add = vsnprintf(NULL, 0, fmt, copy);
+	va_end(copy);
 	
 	len = GB.StringLength(_buffer);
 	
 	_buffer = GB.ExtendString(_buffer, len + add);
-
-	vsprintf(&_buffer[len], fmt, copy);
-	va_end(copy);
+	
+	vsprintf(&_buffer[len], fmt, args);
 	
 	JIT_last_print_is_label = (strncmp(fmt, "__L", 3) == 0);
 }
