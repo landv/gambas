@@ -84,28 +84,28 @@ char *ERROR_get(void)
 }
 
 
+  void _add_char(uchar c, int *n)
+  {
+    if (*n >= MAX_ERROR_MSG)
+      return;
+
+    ERROR_info.msg[*n++] = c;
+  }
+
+  void _add_string(const char *s, int *n)
+  {
+    while (*s)
+    {
+      _add_char(*s, n);
+      s++;
+    }
+  }
+
 void ERROR_define(const char *pattern, const char *arg[])
 {
   int i, n;
   uchar c;
   bool subst;
-
-  void _add_char(uchar c)
-  {
-    if (n >= MAX_ERROR_MSG)
-      return;
-
-    ERROR_info.msg[n++] = c;
-  }
-
-  void _add_string(const char *s)
-  {
-    while (*s)
-    {
-      _add_char(*s);
-      s++;
-    }
-  }
 
   if ((intptr_t)pattern > 0 && (intptr_t)pattern < 256)
   {
@@ -123,7 +123,7 @@ void ERROR_define(const char *pattern, const char *arg[])
 	{
 		int nsubst = 0;
 		
-		_add_string(pattern);
+		_add_string(pattern, &n);
 
 		for (;;)
 		{
@@ -149,8 +149,8 @@ void ERROR_define(const char *pattern, const char *arg[])
 		
 		for (i = 0; i < nsubst; i++)
 		{
-			_add_char('\t');
-			_add_string(arg[i]);
+			_add_char('\t', &n);
+			_add_string(arg[i], &n);
 		}
 	}
 	else
@@ -164,11 +164,11 @@ void ERROR_define(const char *pattern, const char *arg[])
 			if (subst)
 			{
 				if (c >= '1' && c <= '4')
-					_add_string(arg[c - '1']);
+					_add_string(arg[c - '1'], &n);
 				else
 				{
-					_add_char('&');
-					_add_char(c);
+					_add_char('&', &n);
+					_add_char(c, &n);
 				}
 				subst = FALSE;
 			}
@@ -177,12 +177,12 @@ void ERROR_define(const char *pattern, const char *arg[])
 				if (c == '&')
 					subst = TRUE;
 				else
-					_add_char(c);
+					_add_char(c, &n);
 			}
 		}
 	}
 
-  _add_char(0);
+  _add_char(0, &n);
 }
 
 void PROPAGATE()
