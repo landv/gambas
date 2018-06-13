@@ -65,10 +65,7 @@
 #define EXPORT
 #endif
 
-#if defined(__cplusplus) && !defined(__clang__)
-/*	#undef NULL
-	#define NULL ((intptr_t)0)*/
-#else
+#if !defined(__cplusplus)
 	#ifdef bool
 		#undef bool
 	#endif
