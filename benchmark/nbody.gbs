@@ -119,33 +119,37 @@ Class NBodySystem
     Dim I, J As Integer
     Dim iBody, jBody As Body
     Dim dx, dy, dz As Float
+    Dim ix, iy, iz As Float
     Dim dSquared, fMag As Float
     Dim iMass, jMass, iMag, jMag As Float
 
     For I = 0 To Bodies.Max
       iBody = Bodies[I]
       iMass = iBody.mass
+      ix = iBody.x
+      iy = iBody.y
+      iz = iBody.z
 
       For J = I + 1 To Bodies.Max
         jBody = Bodies[J]
-	jMass = jBody.mass
+        jMass = jBody.mass
 
-        dx = iBody.x - jBody.x
-        dy = iBody.y - jBody.y
-        dz = iBody.z - jBody.z
+        dx = ix - jBody.x
+        dy = iy - jBody.y
+        dz = iz - jBody.z
 
         dSquared = dx * dx + dy * dy + dz * dz
         fMag = dt / (dSquared * Sqr(dSquared))
-	iMag = iMass * fMag
-	jMag = jMass * fMag
+        iMag = iMass * fMag
+        jMag = jMass * fMag
 
         iBody.vx -= dx * jMag
-	iBody.vy -= dy * jMag
-	iBody.vz -= dz * jMag
+        iBody.vy -= dy * jMag
+        iBody.vz -= dz * jMag
 
-	jBody.vx += dx * iMag
-	jBody.vy += dy * iMag
-	jBody.vz += dz * iMag
+        jBody.vx += dx * iMag
+        jBody.vy += dy * iMag
+        jBody.vz += dz * iMag
       Next
     Next
 
@@ -171,7 +175,7 @@ Class NBodySystem
 
       For J = I + 1 To Bodies.Max
 
-	jBody = Bodies[J]
+        jBody = Bodies[J]
         dx = iBody.x - jBody.x
         dy = iBody.y - jBody.y
         dz = iBody.z - jBody.z

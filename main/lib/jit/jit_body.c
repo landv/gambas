@@ -107,7 +107,10 @@ static bool end(FUNCTION *func, int index)
 	GB.FreeArray((void **)&_ctrl_type);
 	
 	if (_stack_current)
-		fprintf(stderr, "gb.jit: warning: stack mismatch!\n");
+	{
+		fprintf(stderr, "gb.jit: warning: stack mismatch! (%d)\n", _stack_current);
+		_stack_current = 0;
+	}
 	
 	return FALSE;
 }
@@ -161,6 +164,11 @@ static void declare(bool *flag, const char *expr)
 	*flag = TRUE;
 }
 
+
+static void print_label(ushort pc)
+{
+	JIT_print("__L%d:;\n", pc);
+}
 
 static void push_one(TYPE type, const char *fmt, va_list args)
 {
@@ -1956,10 +1964,8 @@ bool JIT_translate_body(FUNCTION *func, int ind)
 	
 _MAIN:
 
-	if (!JIT_last_print_is_label)
-		JIT_print("__L%d:;\n", p);
-	//check_labels(p);
-	
+	//fprintf(stderr, "[%d] %d\n", p, _stack_current);
+
 	if (p >= (size - 1)) // ignore the last opcode which is RETURN
 		return end(func, ind);
 	
@@ -2265,12 +2271,14 @@ _JUMP_IF_TRUE:
 
 	JIT_print("  if (%s) goto __L%d;\n", peek(-1, T_BOOLEAN, NULL, NULL), p + (signed short)PC[0] + 1);
 	pop_stack(1);
+	p++;
 	goto _MAIN;
 
 _JUMP_IF_FALSE:
 
 	JIT_print("  if (!(%s)) goto __L%d;\n", peek(-1, T_BOOLEAN, NULL, NULL), p + (signed short)PC[0] + 1);
 	pop_stack(1);
+	p++;
 	goto _MAIN;
 
 _JUMP_FIRST:
@@ -2293,6 +2301,7 @@ _JUMP_FIRST:
 
 _JUMP_NEXT:
 
+	print_label(_pc);
 	JIT_print("  l%d += i%d;\n", index, _loop_count);
 	JIT_print("__L%ds:\n", p);
 	
@@ -2325,6 +2334,7 @@ _ENUM_FIRST:
 
 _ENUM_NEXT:
 
+	print_label(_pc);
 	index = (PC[-2] & 0xFF) - func->n_local;
 	
 	JIT_print("  ENUM_NEXT(0x%04X, c%d, c%d, __L%d);\n", code, _ctrl_index[index], _ctrl_index[index + 1], p + (signed short)PC[0] + 1);
@@ -2459,6 +2469,7 @@ _SUBR_BIT:
 
 _BREAK:
 
+	print_label(_pc);
 	goto _MAIN;
 
 _PUSH_EXTERN:
