@@ -67,15 +67,22 @@ BEGIN_METHOD(MimePart_new, GB_STRING ctype)
 
 	GMimeObject *part;
 	GMimeContentType *ctype;
+	const char *content_type;
 	
 	if (_do_not_create_part)
 		return;
 	
 	if (MISSING(ctype))
-		ctype = g_mime_content_type_new_from_string("text/plain;charset=utf-8");
+		content_type = "text/plain;charset=utf-8";
 	else
-		ctype = g_mime_content_type_new_from_string(GB.ToZeroString(ARG(ctype)));
-	
+		content_type = GB.ToZeroString(ARG(ctype));
+
+#if GMIME_MAJOR_VERSION < 3
+	ctype = g_mime_content_type_new_from_string(content_type);
+#else
+	ctype = g_mime_content_type_parse(NULL, content_type);
+#endif
+
 	if (g_mime_content_type_is_type(ctype, "multipart", "*"))
 		part = (GMimeObject *)g_mime_multipart_new_with_subtype(g_mime_content_type_get_media_subtype(ctype));
 	else if (g_mime_content_type_is_type(ctype, "message", "*"))
@@ -124,13 +131,21 @@ BEGIN_PROPERTY(MimePart_ContentType)
 	if (READ_PROPERTY)
 	{
 		ctype = g_mime_object_get_content_type(PART);
+	#if GMIME_MAJOR_VERSION < 3
 		char *str = g_mime_content_type_to_string(ctype);
+	#else
+		char *str = g_mime_content_type_encode(ctype, NULL);
+	#endif
 		GB.ReturnNewZeroString(str);
 		g_free(str);
 	}
 	else
 	{
+	#if GMIME_MAJOR_VERSION < 3
 		ctype = g_mime_content_type_new_from_string(GB.ToZeroString(PROP(GB_STRING)));
+	#else
+		ctype = g_mime_content_type_parse(NULL, GB.ToZeroString(PROP(GB_STRING)));
+	#endif
 		g_mime_object_set_content_type(PART, ctype);
 		g_object_unref(ctype);
 	}
@@ -145,7 +160,12 @@ BEGIN_PROPERTY(MimePart_ContentDisposition)
 	//if (READ_PROPERTY)
 	//{
 		cdisp = g_mime_object_get_content_disposition(PART);
-		char *str = g_mime_content_disposition_to_string(cdisp, TRUE);
+		char *str;
+	#if GMIME_MAJOR_VERSION < 3
+		str = g_mime_content_disposition_to_string(cdisp, TRUE);
+	#else
+		str = g_mime_content_disposition_encode(cdisp, NULL);
+	#endif
 		GB.ReturnNewZeroString(str);
 		g_free(str);
 	/*}
@@ -161,7 +181,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(MimePart_ToString)
 
-	char *str = g_mime_object_to_string(PART);
+	char *str = g_mime_object_to_string(PART NULLGM3);
 	GB.ReturnNewZeroString(str);
 	g_free(str);
 
@@ -197,8 +217,12 @@ BEGIN_PROPERTY(MimePart_Data)
 			GB.ReturnNull();
 			return;
 		}
-		
+
+	#if GMIME_MAJOR_VERSION < 3
 		content = g_mime_part_get_content_object(MPART);
+	#else
+		content = g_mime_part_get_content(MPART);
+	#endif
 	
 		array = g_byte_array_new();
 		
@@ -233,7 +257,11 @@ BEGIN_PROPERTY(MimePart_Data)
 		g_object_unref (stream);
 	
 		/* set the content object on the new mime part */
+	#if GMIME_MAJOR_VERSION < 3
 		g_mime_part_set_content_object(MPART, content);
+	#else
+		g_mime_part_set_content(MPART, content);
+	#endif
 		g_object_unref(content);
 	
 		/* if we want, we can tell GMime that the content should be base64 encoded when written to disk... */
@@ -377,7 +405,7 @@ END_METHOD
 BEGIN_METHOD(MimePart_Headers_put, GB_STRING value; GB_STRING name)
 
 	if (LENGTH(name))
-		g_mime_object_set_header(PART, GB.ToZeroString(ARG(name)), GB.ToZeroString(ARG(value)));
+		g_mime_object_set_header(PART, GB.ToZeroString(ARG(name)), GB.ToZeroString(ARG(value)) NULLGM3);
 	else
 		g_mime_object_remove_header(PART, GB.ToZeroString(ARG(name)));
 
