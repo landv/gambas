@@ -1963,6 +1963,9 @@ _MAIN:
 
 	//fprintf(stderr, "[%d] %d\n", p, _stack_current);
 
+	if (!JIT_last_print_is_label)
+		print_label(p);
+	
 	if (p >= (size - 1)) // ignore the last opcode which is RETURN
 		return end(func, ind);
 	
@@ -2298,7 +2301,6 @@ _JUMP_FIRST:
 
 _JUMP_NEXT:
 
-	print_label(_pc);
 	JIT_print("  l%d += i%d;\n", index, _loop_count);
 	JIT_print("__L%ds:\n", p);
 	
@@ -2331,7 +2333,6 @@ _ENUM_FIRST:
 
 _ENUM_NEXT:
 
-	print_label(_pc);
 	index = (PC[-2] & 0xFF) - func->n_local;
 	
 	JIT_print("  ENUM_NEXT(0x%04X, c%d, c%d, __L%d);\n", code, _ctrl_index[index], _ctrl_index[index + 1], p + (signed short)PC[0] + 1);
@@ -2467,7 +2468,6 @@ _SUBR_BIT:
 
 _BREAK:
 
-	print_label(_pc);
 	goto _MAIN;
 
 _PUSH_EXTERN:
