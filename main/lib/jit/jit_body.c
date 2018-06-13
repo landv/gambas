@@ -107,10 +107,7 @@ static bool end(FUNCTION *func, int index)
 	GB.FreeArray((void **)&_ctrl_type);
 	
 	if (_stack_current)
-	{
-		fprintf(stderr, "gb.jit: warning: stack mismatch! (%d)\n", _stack_current);
-		_stack_current = 0;
-	}
+		JIT_panic("Stack mismatch: stack is not void");
 	
 	return FALSE;
 }
@@ -140,7 +137,7 @@ static void free_stack(int n)
 static void check_stack(int n)
 {
 	if (_stack_current < n)
-		JIT_panic("Stack mismatch");
+		JIT_panic("Stack mismatch: stack is void");
 }
 
 
@@ -2341,6 +2338,7 @@ _ENUM_NEXT:
 	if ((code & 1) == 0) 
 		push(T_UNKNOWN, "POP_u()");
 	
+	p++;
 	goto _MAIN;
 
 _PUSH_CONST:
