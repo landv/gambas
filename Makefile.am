@@ -34,7 +34,6 @@ SUBDIRS = \
  @gmp_dir@ \
  @ncurses_dir@ \
  @media_dir@ \
- @jitllvm_dir@ \
  @httpd_dir@ \
  @openssl_dir@ \
  @openal_dir@ \
