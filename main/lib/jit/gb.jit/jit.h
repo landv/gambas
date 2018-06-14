@@ -1,5 +1,8 @@
 #include <math.h>
-#include <stdio.h>
+#include <setjmp.h>
+
+#define TRUE 1
+#define FALSE 0
 
 #define NORETURN __attribute__((noreturn))
 
@@ -21,7 +24,6 @@ static inline double frac(double x)
   x = fabs(x);
   return x - floor(x);
 }
-
 
 typedef
   unsigned char uchar;
@@ -377,3 +379,9 @@ enum
 })
 
 #define CALL_MATH(_func, _val) ({ double _v = _func(_val); if (!isfinite(_v)) JIT.throw(E_MATH); _v; })
+
+
+#define ERROR_current (*(ERROR_CONTEXT **)(JIT.error_current))
+#define ERROR_handler (*(ERROR_HANDLER **)(JIT.error_handler))
+#define ERROR_reset JIT.error_reset
+  

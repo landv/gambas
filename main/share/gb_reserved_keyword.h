@@ -431,7 +431,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ "Eval",              52,  0, T_VARIANT,      1,  2 },
 
 #ifndef __EVAL_RESERVED_C
-	{ ".Error",            53,  0, T_VOID,         0,  2 },
+	{ ".Error",            53,  0, T_BOOLEAN,      0     },
 	{ ".Debug",            54,  0, T_VOID,         0     },
 
 	{ ".Wait",             55,  0, T_VOID,         0,  1 },

@@ -46,14 +46,14 @@ Public Sub Compile(sArch As String) As String
   Print #hFile, "#define NO_CONFIG_H"
   Print #hFile, File.Load("gambas.h");
   Print #hFile, File.Load("jit.h");
+  Print #hFile, File.Load("gb_error_common.h");
   Print #hFile, File.Load("gb.jit.h");
 
-  Print #hFile, "GB_INTERFACE *GB_PTR;"
+  Print #hFile, "GB_INTERFACE * GB_PTR;"
   Print #hFile, "#define GB (*GB_PTR)"
-
-  Print #hFile, "JIT_INTERFACE *JIT_PTR;"
+  Print #hFile, "JIT_INTERFACE * JIT_PTR;"
   Print #hFile, "#define JIT (*JIT_PTR)"
-  
+
   If sArch Then
     sDir = "." &/ sArch
   Else
