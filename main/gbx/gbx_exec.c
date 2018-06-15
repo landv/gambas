@@ -1848,7 +1848,7 @@ void *EXEC_create_object(CLASS *class, int np, char *event)
 }
 
 
-void EXEC_new(void)
+void EXEC_new(ushort code)
 {
 	CLASS *class;
 	int np;
@@ -1858,7 +1858,7 @@ void EXEC_new(void)
 	char *cname = NULL;
 	char *save;
 
-	np = *PC & 0xFF;
+	np = code & 0xFF;
 	event = np & CODE_NEW_EVENT;
 	np &= 0x3F;
 

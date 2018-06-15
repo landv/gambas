@@ -353,11 +353,10 @@ enum
   goto *_addr; \
 })
 
-#define CALL_SUBR(_pc, _code) (PC = &pc[_pc], SP = sp, (*(EXEC_FUNC)JIT.subr_table[(_code) >> 8])(), sp = SP)
-#define CALL_SUBR_CODE(_pc, _code) (PC = &pc[_pc], SP = sp, (*(EXEC_FUNC_CODE)JIT.subr_table[(_code) >> 8])(_code), sp = SP)
-#define CALL_SUBR_UNKNOWN(_pc, _code) (JIT.call_unknown(&pc[_pc], sp), sp = SP)
+#define CALL_SUBR(_pc, _func) (PC = &pc[_pc], SP = sp, (*((EXEC_FUNC)_func))(), sp = SP)
+#define CALL_SUBR_CODE(_pc, _func, _code) (PC = &pc[_pc], SP = sp, (*((EXEC_FUNC_CODE)_func))(_code), sp = SP)
+#define CALL_SUBR_UNKNOWN(_pc) (JIT.call_unknown(&pc[_pc], sp), sp = SP)
 
-#define CALL_NEW(_pc, _code) (PC = &pc[_pc], SP = sp, (*(EXEC_FUNC)JIT.new)(), sp = SP)
 #define CALL_PUSH_ARRAY(_pc, _code) (PC = &pc[_pc], SP = sp, (*(EXEC_FUNC)JIT.push_array)(_code), sp = SP)
 #define CALL_POP_ARRAY(_pc, _code) (PC = &pc[_pc], SP = sp, (*(EXEC_FUNC)JIT.pop_array)(_code), sp = SP, sp++)
 

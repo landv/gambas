@@ -45,6 +45,15 @@ typedef
 	}
 	STACK_SLOT;
 
+enum {
+	CALL_SUBR,
+	CALL_SUBR_CODE,
+	CALL_SUBR_UNKNOWN,
+	CALL_NEW,
+	CALL_PUSH_ARRAY,
+	CALL_POP_ARRAY
+};
+	
 static STACK_SLOT _stack[MAX_STACK];
 static int _stack_current = 0;
 
@@ -66,14 +75,19 @@ static int *_ctrl_index;
 static TYPE *_ctrl_type;
 
 static bool _has_gosub;
+static bool _has_finally;
+static bool _has_catch;
 
+static bool _must_release;
 
-static void start(FUNCTION *func, int index)
+static void enter_function(FUNCTION *func, int index)
 {
 	_decl_rs = FALSE;
 	_decl_ro = FALSE;
 	_decl_rv = FALSE;
 	_has_gosub = FALSE;
+	_has_catch = FALSE;
+	_has_finally = FALSE;
 	
 	_loop_count = 0;
 	
@@ -93,11 +107,33 @@ static void start(FUNCTION *func, int index)
 	//JIT_print("  VALUE *sp = SP; fprintf(stderr, \"> %d: sp = %%p\\n\", sp);\n", index);
 	JIT_print("  ushort *pc = (ushort *)%p;\n", JIT.get_code(JIT_class, index));
 	JIT_print("  GB_VALUE_GOSUB *gp = 0;\n");
+	
+	_must_release = JIT_must_release(func);
+	
+	JIT_print("  bool error;\n");
+	
+	JIT_print("\n  TRY {\n\n");
 }
 
 
-static bool end(FUNCTION *func, int index)
+static void print_catch(void)
 {
+	JIT_print("\n  } CATCH {\n\n");
+	if (_has_catch || _has_finally)
+		JIT_print("  JIT.error_set_last(FALSE); \n");
+	JIT_print("  error = TRUE;\n");
+	JIT_print("  goto __FINALLY;\n");
+	JIT_print("\n  } END_TRY\n\n");
+	JIT_print("  error = FALSE;\n");
+	JIT_print("__FINALLY:\n");
+}
+
+
+static bool leave_function(FUNCTION *func, int index)
+{
+	int i;
+	TYPE type;
+	
 	STR_free_later(NULL);
 	JIT_print("__RETURN:\n");
 	//JIT_print("__RETURN: fprintf(stderr, \"< %d: sp = %%p\\n\", sp);\n", ind);
@@ -108,6 +144,43 @@ static bool end(FUNCTION *func, int index)
 	
 	if (_stack_current)
 		JIT_panic("Stack mismatch: stack is not void");
+	
+	if (!_has_catch && !_has_finally)
+		print_catch();
+	
+	JIT_print("\n__RELEASE:;\n");
+	
+	if (_must_release)
+	{
+		if (func->n_local)
+		{
+			for (i = 0; i < func->n_local; i++)
+			{
+				type = JIT_ctype_to_type(func->local[i].type);
+				switch(TYPEID(type))
+				{
+					case T_STRING:
+					case T_OBJECT:
+					case T_VARIANT:
+						JIT_print("  RELEASE_FAST_%s(l%d);\n", JIT_get_type(type), i);
+						break;
+				}
+			}
+		}
+		
+		for (i = 0; i < func->n_param; i++)
+		{
+			type = func->param[i].type;
+			switch(TYPEID(type))
+			{
+				case T_STRING: case T_OBJECT: case T_VARIANT:
+					JIT_print("  RELEASE_FAST_%s(p%d);\n", JIT_get_type(type), i);
+			}
+		}
+	}
+	
+	if (!_has_catch && !_has_finally)
+		JIT_print("  if (error) GB.Propagate();\n");
 	
 	return FALSE;
 }
@@ -394,7 +467,30 @@ static char *borrow_expr(char *expr, TYPE type)
 }
 
 
-static char *peek(int n, TYPE conv, const char *fmt, va_list args)
+static char *peek(int n, TYPE conv)
+{
+	char *expr;
+	TYPE type;
+	
+	if (n < 0) n += _stack_current;
+	
+	expr = _stack[n].expr;
+	type = _stack[n].type;
+	
+	if (type != conv)
+	{
+		char *expr2 = NULL;
+		STR_add(&expr2, get_conv(type, conv), expr);
+		STR_free(expr);
+		expr = expr2;
+		_stack[n].expr = expr2;
+	}
+	
+	return expr;
+}
+
+
+static char *peek_pop(int n, TYPE conv, const char *fmt, va_list args)
 {
 	char *dest = NULL;
 	char *expr;
@@ -494,7 +590,7 @@ static char *push_expr(int n, TYPE type)
 	
 	type_name = JIT_get_type(type);
 	
-	expr = peek(n, type, NULL, NULL);
+	expr = peek(n, type);
 	
 	if (type == T_VOID)
 		return "PUSH_V()";
@@ -524,7 +620,7 @@ static void pop(TYPE type, const char *fmt, ...)
 	_stack_current--;
 	
 	va_start(args, fmt);
-	expr = peek(_stack_current, type, fmt, args);
+	expr = peek_pop(_stack_current, type, fmt, args);
 	va_end(args);
 
 	if (!fmt)
@@ -543,12 +639,12 @@ static bool check_swap(TYPE type, const char *fmt, ...)
 	if (_stack_current < 2)
 		return TRUE;
 	
-	STR_add(&expr, "({ %s _t = %s; ", JIT_get_ctype(type), peek(-2, type, NULL, NULL));
+	STR_add(&expr, "({ %s _t = %s; ", JIT_get_ctype(type), peek(-2, type));
 	
 	va_start(args, fmt);
 	STR_vadd(&swap, fmt, args);
 	va_end(args);
-	STR_add(&expr, swap, peek(-1, type, NULL, NULL));
+	STR_add(&expr, swap, peek(-1, type));
 	STR_add(&expr, "; _t; })");
 	
 	pop_stack(2);
@@ -670,7 +766,7 @@ static void push_unknown(int index)
 					
 				case CD_VARIABLE:
 					
-					expr = STR_copy(peek(-1, (TYPE)class, NULL, NULL));
+					expr = STR_copy(peek(-1, (TYPE)class));
 					pop_stack(1);
 					
 					pos = desc->variable.offset;
@@ -785,7 +881,7 @@ static void pop_unknown(int index)
 					
 				case CD_VARIABLE:
 					
-					expr = STR_copy(peek(-1, (TYPE)class, NULL, NULL));
+					expr = STR_copy(peek(-1, (TYPE)class));
 					pop_stack(1);
 					
 					pos = desc->variable.offset;
@@ -837,7 +933,7 @@ static void push_array(ushort code)
 	{
 		CLASS *class = (CLASS *)type;
 
-		JIT_print("  // %s %d\n", class->name, class->is_array);
+		//JIT_print("  // %s %d\n", class->name, class->is_array);
 		
 		if (class->is_array)
 		{
@@ -845,8 +941,8 @@ static void push_array(ushort code)
 			
 			if (narg == 2)
 			{
-				expr1 = peek(-2, get_type(-2), NULL, NULL);
-				expr2 = peek(-1, T_INTEGER, NULL, NULL);
+				expr1 = peek(-2, get_type(-2));
+				expr2 = peek(-1, T_INTEGER);
 				
 				if (TYPE_is_pure_object(type))
 					expr = STR_print("PUSH_ARRAY_o(%s,%s,CLASS(%p))", expr1, expr2, (CLASS *)type);
@@ -908,10 +1004,10 @@ static void pop_array(ushort code)
 		
 			if (narg == 2)
 			{
-				expr1 = peek(-2, get_type(-2), NULL, NULL);
-				expr2 = peek(-1, T_INTEGER, NULL, NULL);
+				expr1 = peek(-2, get_type(-2));
+				expr2 = peek(-1, T_INTEGER);
 				
-				STR_add(&expr, "POP_ARRAY_%s(%s,%s,%s)", JIT_get_type(type), expr1, expr2, peek(-3, type, NULL, NULL));
+				STR_add(&expr, "POP_ARRAY_%s(%s,%s,%s)", JIT_get_type(type), expr1, expr2, peek(-3, type));
 				
 				pop_stack(3);
 				
@@ -947,20 +1043,42 @@ CHECK_SWAP:
 	STR_free(expr);
 }
 
-static void push_subr(ushort code, const char *call)
+static void push_subr(char mode, ushort code)
 {
+	const char *call;
 	TYPE type;
 	int i, narg;
 	char *expr = NULL;
 	ushort op;
 	bool rst = FALSE;
 	char type_id = 0;
+	void *addr;
 	
 	//declare_sp();
 	
 	//JIT_print("  static ushort s%d = 0x%04X;\n", _subr_count, code);
 	
 	op = code >> 8;
+	
+	switch(mode)
+	{
+		case CALL_SUBR_CODE:
+			call = "CALL_SUBR_CODE(%d, %p, 0x%04X)";
+			addr = JIT.subr_table[op];
+			break;
+		case CALL_SUBR:
+			call = "CALL_SUBR(%d, %p)";
+			addr = JIT.subr_table[op];
+			break;
+		case CALL_SUBR_UNKNOWN:
+			call = "CALL_SUBR_UNKNOWN(%d)";
+			addr = NULL;
+			break;
+		case CALL_NEW:
+			call = "CALL_SUBR_CODE(%d, %p, 0x%04X)";
+			addr = JIT.new;
+			break;
+	}
 	
 	if (op == (C_NEW >> 8))
 	{
@@ -1035,7 +1153,7 @@ static void push_subr(ushort code, const char *call)
 	
 	_stack_current -= narg;
 	
-	STR_add(&expr, "%s(%d, 0x%04X)", call, _pc, code);
+	STR_add(&expr, call, _pc, addr, code);
 	STR_add(&expr, ",POP_%s()", JIT_get_type(type));
 	
 	push(type, "(%s)", expr);
@@ -1074,12 +1192,12 @@ static void push_subr_add(ushort code, const char *op, const char *opb, bool all
 				break;
 			
 		default:
-			push_subr(code, "CALL_SUBR_CODE");
+			push_subr(CALL_SUBR_CODE, code);
 			return;
 	}
 	
-	expr1 = peek(-2, type, NULL, NULL);
-	expr2 = peek(-1, type, NULL, NULL);
+	expr1 = peek(-2, type);
+	expr2 = peek(-1, type);
 
 	if (type == T_BOOLEAN)
 		op = opb;
@@ -1119,12 +1237,12 @@ static void push_subr_div(ushort code)
 			break;
 			
 		default:
-			push_subr(code, "CALL_SUBR_CODE");
+			push_subr(CALL_SUBR_CODE, code);
 			return;
 	}
 	
-	expr1 = peek(-2, type, NULL, NULL);
-	expr2 = peek(-1, type, NULL, NULL);
+	expr1 = peek(-2, type);
+	expr2 = peek(-1, type);
 	expr = STR_print("({%s _a = %s; %s _b = %s; _a /= _b; if (!isfinite(_a)) JIT.throw(E_ZERO); _a;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2);
 
 	pop_stack(2);
@@ -1152,11 +1270,11 @@ static void push_subr_neg(ushort code)
 			break;
 
 		default:
-			push_subr(code, "CALL_SUBR_CODE");
+			push_subr(CALL_SUBR_CODE, code);
 			return;
 	}
 	
-	expr = STR_copy(peek(-1, type, NULL, NULL));
+	expr = STR_copy(peek(-1, type));
 	
 	pop_stack(1);
 	push(type, "(- %s)", expr);
@@ -1186,12 +1304,12 @@ static void push_subr_quo(ushort code, const char *op)
 			break;
 			
 		default:
-			push_subr(code, "CALL_SUBR_CODE");
+			push_subr(CALL_SUBR_CODE, code);
 			return;
 	}
 	
-	expr1 = peek(-2, type, NULL, NULL);
-	expr2 = peek(-1, type, NULL, NULL);
+	expr1 = peek(-2, type);
+	expr2 = peek(-1, type);
 
 	expr = STR_print("({%s _a = %s; %s _b = %s; if (_b == 0) JIT.throw(E_ZERO); _a %s _b;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2, op);
 	
@@ -1227,12 +1345,12 @@ static void push_subr_and(ushort code, const char *op)
 			break;
 			
 		default:
-			push_subr(code, "CALL_SUBR_CODE");
+			push_subr(CALL_SUBR_CODE, code);
 			return;
 	}
 	
-	expr1 = peek(-2, type, NULL, NULL);
-	expr2 = peek(-1, type, NULL, NULL);
+	expr1 = peek(-2, type);
+	expr2 = peek(-1, type);
 
 	expr = STR_print("({%s _a = %s; %s _b = %s; _a %s _b;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2, op);
 	
@@ -1263,11 +1381,11 @@ static void push_subr_not(ushort code)
 			break;
 
 		default:
-			push_subr(code, "CALL_SUBR_CODE");
+			push_subr(CALL_SUBR_CODE, code);
 			return;
 	}
 	
-	expr = STR_print("%s%s", op, peek(-1, type, NULL, NULL));
+	expr = STR_print("%s%s", op, peek(-1, type));
 	
 	pop_stack(1);
 	push(type, "(%s)", expr);
@@ -1313,19 +1431,19 @@ static void push_subr_comp(ushort code)
 		switch(code & 0xFF00)
 		{
 			case C_EQ: case C_NE:
-				push_subr(code, "CALL_SUBR_CODE");
+				push_subr(CALL_SUBR_CODE, code);
 				break;
 				
 			case C_GT: case C_LT: case C_GE: case C_LE:
-				push_subr(code, "CALL_SUBR_UNKNOWN");
+				push_subr(CALL_SUBR_UNKNOWN, code);
 				break;
 		}
 		
 		return;
 	}
 	
-	expr1 = peek(-2, type, NULL, NULL);
-	expr2 = peek(-1, type, NULL, NULL);
+	expr1 = peek(-2, type);
+	expr2 = peek(-1, type);
 
 	expr = STR_print("({%s _a = %s; %s _b = %s; _a %s _b;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2, op);
 
@@ -1390,12 +1508,12 @@ static void push_subr_bit(ushort code)
 			break;
 
 		default:
-			push_subr(code, "CALL_SUBR_CODE");
+			push_subr(CALL_SUBR_CODE, code);
 			return;
 	}
 			
-	expr1 = peek(-2, type, NULL, NULL);
-	expr2 = peek(-1, T_INTEGER, NULL, NULL);
+	expr1 = peek(-2, type);
+	expr2 = peek(-1, T_INTEGER);
 
 	code &= 0x3F;
 	
@@ -1447,7 +1565,7 @@ static void push_subr_conv(ushort code)
 	if (type == conv)
 		return;
 	
-	expr = STR_copy(peek(-1, conv, NULL, NULL));
+	expr = STR_copy(peek(-1, conv));
 	pop_stack(1);
 	push(conv, "(%s)", expr);
 	STR_free(expr);
@@ -1460,7 +1578,7 @@ static void push_subr_len(ushort code)
 
 	check_stack(1);
 	
-	expr = STR_copy(peek(-1, T_STRING, NULL, NULL));
+	expr = STR_copy(peek(-1, T_STRING));
 	pop_stack(1);
 	push(T_INTEGER, "((%s).value.len)", expr);
 	STR_free(expr);
@@ -1481,12 +1599,12 @@ static void push_subr_len(ushort code)
 	
 	if (_stack_current >= 2)
 	{
-		expr_len = peek(-1, T_INTEGER, NULL, NULL);
+		expr_len = peek(-1, T_INTEGER);
 		pop_stack(1);
 	}
 	
 	type = get_type(-1);
-	expr_str = peek(-1, T_CSTRING, NULL, NULL);
+	expr_str = peek(-1, T_CSTRING);
 	pop_stack(1);
 	
 	STR_add(&expr, "(PUSH_t(%s)", expr_str);
@@ -1553,7 +1671,7 @@ static void push_call(ushort code)
 					for (i = 0; i < func->npmin; i++)
 					{
 						if (i) STR_add(&call, ",");
-						STR_add(&call, "%s", peek(i - narg, func->param[i].type, NULL, NULL));
+						STR_add(&call, "%s", peek(i - narg, func->param[i].type));
 					}
 					
 					nopt = 0;
@@ -1575,7 +1693,7 @@ static void push_call(ushort code)
 						}
 						
 						if (i < narg)
-							STR_add(&call, "%s", peek(i - narg, func->param[i].type, NULL, NULL));
+							STR_add(&call, "%s", peek(i - narg, func->param[i].type));
 						else
 						{
 							def = JIT_get_default_value(func->param[i].type);
@@ -1651,11 +1769,11 @@ static void push_subr_isnan(ushort code)
 			break;
 		
 		default:
-			push_subr(code, "CALL_SUBR_CODE");
+			push_subr(CALL_SUBR_CODE, code);
 			return;
 	}
 
-	expr = STR_print("%s(%s) != 0", func, peek(-1, T_FLOAT, NULL, NULL));
+	expr = STR_print("%s(%s) != 0", func, peek(-1, T_FLOAT));
 	
 	pop_stack(1);
 	push(T_BOOLEAN, "(%s)", expr);
@@ -1675,7 +1793,7 @@ static void push_subr_math(ushort code)
 	
 	check_stack(1);
 	
-	expr = STR_copy(peek(-1, T_FLOAT, NULL, NULL));
+	expr = STR_copy(peek(-1, T_FLOAT));
 	pop_stack(1);
 	
 	push(T_FLOAT, "CALL_MATH(%s, %s)", func[code & 0x1F], expr);
@@ -1964,7 +2082,7 @@ bool JIT_translate_body(FUNCTION *func, int ind)
 	void *addr;
 	int pos;
 	
-	start(func, ind);
+	enter_function(func, ind);
 	
 	//JIT_print("  JIT.debug(\"SP = %%p\\n\", SP);\n");
 	
@@ -1973,12 +2091,18 @@ bool JIT_translate_body(FUNCTION *func, int ind)
 _MAIN:
 
 	//fprintf(stderr, "[%d] %d\n", p, _stack_current);
+	
+	if (p && p == func->error)
+	{
+		_has_finally = TRUE;
+		print_catch();
+	}
 
 	if (!JIT_last_print_is_label)
 		print_label(p);
 	
 	if (p >= (size - 1)) // ignore the last opcode which is RETURN
-		return end(func, ind);
+		return leave_function(func, ind);
 	
 	_pc = p;
 	code = func->code[p++];
@@ -2225,12 +2349,12 @@ _CALL:
 
 _SUBR:
 
-	push_subr(code, "CALL_SUBR");
+	push_subr(CALL_SUBR, code);
 	goto _MAIN;
 
 _SUBR_CODE:
 
-	push_subr(code, "CALL_SUBR_CODE");
+	push_subr(CALL_SUBR_CODE, code);
 	goto _MAIN;
 
 _DROP:
@@ -2240,7 +2364,7 @@ _DROP:
 
 _NEW:
 
-	push_subr(code, "CALL_NEW");
+	push_subr(CALL_NEW, code);
 	goto _MAIN;
 
 _RETURN:
@@ -2280,14 +2404,14 @@ _JUMP:
 	
 _JUMP_IF_TRUE:
 
-	JIT_print("  if (%s) goto __L%d;\n", peek(-1, T_BOOLEAN, NULL, NULL), p + (signed short)PC[0] + 1);
+	JIT_print("  if (%s) goto __L%d;\n", peek(-1, T_BOOLEAN), p + (signed short)PC[0] + 1);
 	pop_stack(1);
 	p++;
 	goto _MAIN;
 
 _JUMP_IF_FALSE:
 
-	JIT_print("  if (!(%s)) goto __L%d;\n", peek(-1, T_BOOLEAN, NULL, NULL), p + (signed short)PC[0] + 1);
+	JIT_print("  if (!(%s)) goto __L%d;\n", peek(-1, T_BOOLEAN), p + (signed short)PC[0] + 1);
 	pop_stack(1);
 	p++;
 	goto _MAIN;
@@ -2312,6 +2436,7 @@ _JUMP_FIRST:
 
 _JUMP_NEXT:
 
+	index = PC[1] & 0xFF;
 	JIT_print("  l%d += i%d;\n", index, _loop_count);
 	JIT_print("__L%ds:\n", p);
 	
@@ -2325,7 +2450,7 @@ _JUMP_NEXT:
 			JIT_print("  if (l%d < e%d) goto __L%d;\n", index, _loop_count, p + (signed short)PC[0] + 1);
 			break;
 			
-		default:
+		case LOOP_UNKNOWN:
 			JIT_print("  if (((i%d > 0) && (l%d > e%d)) || ((i%d < 0) && (l%d < e%d))) goto __L%d;\n", _loop_count, index, _loop_count, _loop_count, index, _loop_count, p + (signed short)PC[0] + 1);
 	}
 	
@@ -2483,7 +2608,7 @@ _BREAK:
 
 _TRY:
 
-	JIT_print("  TRY {\n");
+	JIT_print("  TRY {\n", _pc);
 	p++;
 	goto _MAIN;
 	
@@ -2496,11 +2621,19 @@ _END_TRY:
 	JIT_print("  } END_TRY\n");
 	goto _MAIN;
 
+_CATCH:
+
+	if (!_has_finally)
+		print_catch();
+	else
+		JIT_print(" if (!error) goto __RELEASE;\n");
+	
+	goto _MAIN;
+
 _PUSH_EXTERN:
 _BYREF:
 _PUSH_EVENT:
 _QUIT:
-_CATCH:
 _DUP:
 _CALL_QUICK:
 _CALL_SLOW:

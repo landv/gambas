@@ -191,7 +191,7 @@ const char *JIT_get_default_value(TYPE type)
 }
 
 
-static bool has_release(FUNCTION *func)
+bool JIT_must_release(FUNCTION *func)
 {
 	int i;
 	TYPE type;
@@ -233,7 +233,6 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 	int i;
 	TYPE type;
 	int nopt;
-	bool release;
 		
 	if (func->debug)
 		JIT_section(func->debug->name);
@@ -298,11 +297,6 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 	declare_implementation(func, index);
 	JIT_print("\n{\n");
 
-	release = has_release(func);
-	
-	if (release)
-		JIT_print("  bool propagate;\n");
-
 	for (i = -1; i < func->n_local; i++)
 	{
 		if (i < 0)
@@ -332,58 +326,9 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 		}
 	}
 	
-	JIT_print("\n  TRY {\n\n");
-	
 	if (JIT_translate_body(func, index))
 		return TRUE;
 	
-	JIT_print("\n  } CATCH {\n\n");
-	
-	if (release)
-	{
-		JIT_print("  propagate = TRUE;\n");
-		JIT_print("  goto __RELEASE;\n");
-	}
-	else
-	{
-		JIT_print("  GB.Propagate();\n");
-	}
-	
-	JIT_print("\n  } END_TRY\n");
-	
-	if (release)
-	{
-		JIT_print("  propagate = FALSE;\n");
-		JIT_print("\n__RELEASE:;\n");
-		
-		if (func->n_local)
-		{
-			for (i = 0; i < func->n_local; i++)
-			{
-				type = JIT_ctype_to_type(func->local[i].type);
-				switch(TYPEID(type))
-				{
-					case T_STRING:
-					case T_OBJECT:
-					case T_VARIANT:
-						JIT_print("  RELEASE_FAST_%s(l%d);\n", JIT_get_type(type), i);
-						break;
-				}
-			}
-		}
-		
-		for (i = 0; i < func->n_param; i++)
-		{
-			type = func->param[i].type;
-			switch(TYPEID(type))
-			{
-				case T_STRING: case T_OBJECT: case T_VARIANT:
-					JIT_print("  RELEASE_FAST_%s(p%d);\n", JIT_get_type(type), i);
-			}
-		}
-		
-		JIT_print("  if (propagate) GB.Propagate();\n");
-	}
 	
 	if (!TYPE_is_void(func->type))
 	{

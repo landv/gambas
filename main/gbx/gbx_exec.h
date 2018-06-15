@@ -236,7 +236,7 @@ void EXEC_enum_first(PCODE code, VALUE *local, VALUE *penum);
 bool EXEC_enum_next(PCODE code, VALUE *local, VALUE *penum);
 
 void *EXEC_create_object(CLASS *class, int np, char *event);
-void EXEC_new(void);
+void EXEC_new(ushort code);
 
 void EXEC_release_return_value(void);
 void EXEC_quit(void);

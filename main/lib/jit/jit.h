@@ -74,7 +74,7 @@ const char *JIT_get_default_value(TYPE type);
 void JIT_panic(const char *fmt, ...) NORETURN;
 
 int JIT_get_code_size(FUNCTION *func);
-
+bool JIT_must_release(FUNCTION *func);
 int JIT_find_symbol(CLASS *class, const char *name);
 void JIT_load_class(CLASS *class);
 
