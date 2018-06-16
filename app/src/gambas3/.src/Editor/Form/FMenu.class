@@ -956,8 +956,6 @@ Public Sub gvwMenu_Draw(X As Integer, Y As Integer, Width As Integer, Height As 
   Dim sText As String
   Dim hPict As Picture
 
-  
-
   With $aMenu[Row]
     
     If .Level = 0 And If Row > 0 Then
@@ -974,10 +972,11 @@ Public Sub gvwMenu_Draw(X As Integer, Y As Integer, Width As Integer, Height As 
 
     iCol = GetMenuColor($aMenu[Row])
     
-    D = .Level * Desktop.Scale * 4
-    X += D + $iIconSize + Desktop.Scale
-    Width -= D + $iIconSize + Desktop.Scale
-    
+    D = .Level * Desktop.Scale * 4 + Desktop.Scale
+    If .Level Then D += Desktop.Scale
+    X += D
+    Width -= D
+  
     If .Picture Then
       Try hPict = Project.GetPicture(.Picture)
       If hPict Then hPict = hPict.Image.Stretch($iIconSize, $iIconSize).Picture

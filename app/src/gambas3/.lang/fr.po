@@ -222,7 +222,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.10.90\n"
-"POT-Creation-Date: 2018-05-06 15:34 UTC\n"
+"POT-Creation-Date: 2018-06-16 14:06 UTC\n"
 "PO-Revision-Date: 2018-04-11 02:45 UTC\n"
 "Last-Translator: benoit <benoit@benoit-kubuntu>\n"
 "Language: fr\n"
@@ -971,7 +971,7 @@ msgstr "Extension de l'EDI"
 #: FFarmRegister.form:141 FFarmRequest.form:43 FFieldChooser.form:144
 #: FFileProperty.class:144 FFontChooser.form:40 FGotoLine.form:23
 #: FHelpBrowser.form:60 FImageOffsetSelection.form:33 FImageQuality.form:30
-#: FImageResize.form:49 FImageRotate.form:32 FList.form:128 FMain.class:243
+#: FImageResize.form:49 FImageRotate.form:32 FList.form:128 FMain.class:245
 #: FMakeInstall.class:345 FMenu.form:405 FNewConnection.form:319
 #: FNewTable.form:86 FNewTranslation.form:21 FOption.class:751
 #: FPasteSpecial.form:86 FPasteTable.form:105 FProjectChooser.form:73
@@ -982,7 +982,7 @@ msgstr "Extension de l'EDI"
 #: FSaveProjectAs.form:81 FSearch.class:891 FSelectComponent.form:39
 #: FSelectExtraFile.form:43 FSelectIcon.form:87 FSelectLibrary.form:66
 #: FSnippet.form:57 FSoftwareFarm.class:538 FTableChooser.form:68 FText.form:41
-#: FTranslate.class:631 FVersionControl.form:77 FWebFontChooser.form:129
+#: FTranslate.class:652 FVersionControl.form:77 FWebFontChooser.form:129
 #: Project.module:548 VersionControl.module:376
 msgid "Cancel"
 msgstr "Annuler"
@@ -1028,7 +1028,7 @@ msgstr "Public"
 msgid "Data"
 msgstr "Données"
 
-#: CRecentProject.class:68 FMain.class:712
+#: CRecentProject.class:68 FMain.class:714
 msgid "Today"
 msgstr "Aujourd'hui"
 
@@ -1064,7 +1064,7 @@ msgstr "Impossible de décompresser l'archive source."
 msgid "Abort"
 msgstr "Abandonner"
 
-#: CSoftware.class:360 FMain.class:2708 FMenu.class:75
+#: CSoftware.class:360 FMain.class:2710 FMenu.class:75
 msgid "Ignore"
 msgstr "Ignorer"
 
@@ -1080,7 +1080,7 @@ msgstr "Impossible de compiler le projet."
 msgid "Unable to make executable."
 msgstr "Impossible de générer l'exécutable."
 
-#: CSoftware.class:462
+#: CSoftware.class:463
 msgid "Unable to install source directory"
 msgstr "Impossible d'installer le répertoire source"
 
@@ -1292,7 +1292,7 @@ msgstr "Afficher les composants dépréciés"
 #: FComponentChooser.form:104 FConflictEditor.form:293
 #: FConnectionEditor.form:119 FEditor.form:353 FForm.form:437
 #: FHelpBrowser.form:66 FImageEditor.form:377 FMain.form:363
-#: FTextEditor.form:350 FTranslate.form:77 Project.module:839
+#: FTextEditor.form:350 FTranslate.form:82 Project.module:839
 msgid "Reload"
 msgstr "Recharger"
 
@@ -1371,6 +1371,7 @@ msgstr "Couper"
 #: FEditor.form:130 FForm.form:163 FImageEditor.form:146 FList.form:99
 #: FMain.form:1020 FMakeInstall.form:903 FMenu.form:117 FOutput.form:40
 #: FProjectVersion.form:240 FSystemInfo.form:62 FTextEditor.form:131
+#: FTranslate.form:95
 msgid "Copy"
 msgstr "Copier"
 
@@ -1422,11 +1423,11 @@ msgstr "Résoudre"
 #: FConflict.form:166 FConflictEditor.form:306 FDebugInfo.form:274
 #: FEditor.form:346 FFileProperty.form:76 FForm.form:430 FImageEditor.form:391
 #: FMain.form:388 FPatch.form:88 FProjectVersion.form:322 FSystemInfo.form:68
-#: FTextEditor.form:363 FTips.form:83 FTranslate.form:305
+#: FTextEditor.form:363 FTips.form:83 FTranslate.form:338
 msgid "Close"
 msgstr "Fermer"
 
-#: FConflictEditor.class:959 FEditor.class:2693 FTextEditor.class:1122
+#: FConflictEditor.class:959 FEditor.class:2695 FTextEditor.class:1122
 msgid "(Declarations)"
 msgstr "(Déclarations)"
 
@@ -1774,7 +1775,7 @@ msgid "Import text file"
 msgstr "Importer un fichier texte"
 
 #: FConnectionEditor.form:169 FImportTable.form:48 FMain.form:956
-#: FOption.form:1262 FTranslate.form:325
+#: FOption.form:1262 FTranslate.form:358
 msgid "Import"
 msgstr "Importer"
 
@@ -1782,7 +1783,7 @@ msgstr "Importer"
 msgid "Fields"
 msgstr "Champs"
 
-#: FConnectionEditor.form:228 FMain.class:2181 FMakeInstall.form:738
+#: FConnectionEditor.form:228 FMain.class:2183 FMakeInstall.form:738
 #: FProjectProperty.form:635 FPublish.form:159
 msgid "Add"
 msgstr "Ajouter"
@@ -1818,7 +1819,7 @@ msgid "New query"
 msgstr "Nouvelle requête"
 
 #: FConnectionEditor.form:360 FMain.form:851 FOption.form:1254
-#: FTranslate.form:72
+#: FTranslate.form:77
 msgid "New"
 msgstr "Nouveau"
 
@@ -1841,13 +1842,13 @@ msgstr "Éditer"
 msgid "Export to CSV file"
 msgstr "Exporter vers un fichier CSV"
 
-#: FConnectionEditor.form:458 FTranslate.form:90
+#: FConnectionEditor.form:458 FTranslate.form:112
 msgid "Export"
 msgstr "Exporter"
 
 #: FConnectionEditor.form:485 FForm.form:183 FList.form:65 FMain.form:1041
 #: FMenu.form:101 FNewConnection.class:390 FOption.class:916
-#: FSoftwareFarm.class:640 FTranslate.form:82
+#: FSoftwareFarm.class:640 FTranslate.form:87
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -1944,15 +1945,15 @@ msgstr "Extension automatique"
 msgid "Project checkout has failed."
 msgstr "La récupération du projet a échoué."
 
-#: FCreateProject.class:141
+#: FCreateProject.class:143
 msgid "Cannot create project!"
 msgstr "Impossible de créer le projet !"
 
-#: FCreateProject.class:168
+#: FCreateProject.class:170
 msgid "Please choose a template"
 msgstr "Veuillez choisir un modèle"
 
-#: FCreateProject.class:196
+#: FCreateProject.class:198
 msgid "Please enter the location of the repository."
 msgstr "Veuillez saisir l'emplacement du référentiel."
 
@@ -2164,7 +2165,7 @@ msgstr "Rechercher de nouveau"
 msgid "Show search window"
 msgstr "Afficher la fenêtre de recherche"
 
-#: FDebugInfo.form:332 FSearch.class:498 FTranslate.class:593
+#: FDebugInfo.form:332 FSearch.class:498 FTranslate.class:614
 msgid "Search string cannot be found."
 msgstr "La chaîne recherchée est introuvable."
 
@@ -2388,7 +2389,7 @@ msgstr "Propriétés de &1"
 msgid "Changes"
 msgstr "Modifications"
 
-#: FFileProperty.class:92 FProjectProperty.form:887 FTranslate.form:311
+#: FFileProperty.class:92 FProjectProperty.form:887 FTranslate.form:344
 msgid "Statistics"
 msgstr "Statistiques"
 
@@ -2681,7 +2682,7 @@ msgstr "Raccourcis claviers de l'EDI"
 msgid "Debugger"
 msgstr "Débogueur"
 
-#: FHelpShortcut.form:28 FProjectProperty.form:848 FTranslate.form:112
+#: FHelpShortcut.form:28 FProjectProperty.form:848 FTranslate.form:135
 msgid "Translation"
 msgstr "Traduction"
 
@@ -3113,7 +3114,7 @@ msgstr "Importer des fichiers"
 msgid "Create symbolic links"
 msgstr "Créer des liens symboliques"
 
-#: FImportTable.class:58 FSearch.form:173 FTranslate.class:1283
+#: FImportTable.class:58 FSearch.form:173 FTranslate.class:1330
 msgid "All files"
 msgstr "Tous les fichiers"
 
@@ -3209,51 +3210,51 @@ msgstr "Insérer"
 msgid "Invert"
 msgstr "Inverser"
 
-#: FMain.class:243
+#: FMain.class:245
 msgid "Do you really want to delete this link ?"
 msgstr "Voulez-vous vraiment supprimer ce lien ?"
 
-#: FMain.class:246
+#: FMain.class:248
 msgid "Do you really want to delete this directory ?"
 msgstr "Voulez-vous vraiment supprimer ce répertoire ?"
 
-#: FMain.class:258
+#: FMain.class:260
 msgid "Do you really want to delete this file ?"
 msgstr "Voulez-vous vraiment supprimer ce fichier ?"
 
-#: FMain.class:265
+#: FMain.class:267
 msgid "Cannot delete file or directory"
 msgstr "Impossible de supprimer le fichier ou le répertoire"
 
-#: FMain.class:283
+#: FMain.class:285
 msgid "File or directory does not exist anymore."
 msgstr "Le fichier ou le répertoire n'existe plus."
 
-#: FMain.class:733
+#: FMain.class:735
 msgid "Sort history"
 msgstr "Trier l'historique"
 
-#: FMain.class:737 FOpenProject.form:77 FWelcome.form:33
+#: FMain.class:739 FOpenProject.form:77 FWelcome.form:33
 msgid "Sort by date"
 msgstr "Trier par date"
 
-#: FMain.class:737 FOpenProject.form:86 FWelcome.form:41
+#: FMain.class:739 FOpenProject.form:86 FWelcome.form:41
 msgid "Sort by name"
 msgstr "Trier par nom"
 
-#: FMain.class:737 FOpenProject.form:94 FWelcome.form:48
+#: FMain.class:739 FOpenProject.form:94 FWelcome.form:48
 msgid "Sort by path"
 msgstr "Trier dans l'ordre des chemins"
 
-#: FMain.class:749
+#: FMain.class:751
 msgid "&Clear history"
 msgstr "&Effacer l'historique"
 
-#: FMain.class:933
+#: FMain.class:935
 msgid "New folder"
 msgstr "Nouveau dossier"
 
-#: FMain.class:1004
+#: FMain.class:1006
 msgid ""
 "The GNU translation tools are not installed on your system.\n"
 "\n"
@@ -3263,39 +3264,39 @@ msgstr ""
 "\n"
 "Veuillez les installer pour pouvoir effectuer la traduction."
 
-#: FMain.class:1739
+#: FMain.class:1741
 msgid "Unable to drop file into the project."
 msgstr "Impossible de déposer le fichier à l'intérieur du projet."
 
-#: FMain.class:1864
+#: FMain.class:1866
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "Les fichiers de sauvegarde et les fichiers générés du projet vont être supprimés."
 
-#: FMain.class:1864
+#: FMain.class:1866
 msgid "Clean"
 msgstr "Nettoyer"
 
-#: FMain.class:2181
+#: FMain.class:2183
 msgid "Do you really want to add every file to the repository?"
 msgstr "Voulez-vous vraiment ajouter tous les fichiers au référentiel ?"
 
-#: FMain.class:2321
+#: FMain.class:2323
 msgid "Choose a profile"
 msgstr "Choisissez un profilage"
 
-#: FMain.class:2322
+#: FMain.class:2324
 msgid "Profile for &1 project"
 msgstr "Profilage pour le projet &1"
 
-#: FMain.class:2559 FProperty.class:1050
+#: FMain.class:2561 FProperty.class:1050
 msgid "Select a file"
 msgstr "Choisissez un fichier"
 
-#: FMain.class:2574
+#: FMain.class:2576
 msgid "This file is located inside the project."
 msgstr "Le fichier est situé à l'intérieur du projet."
 
-#: FMain.class:2708 Project.module:839
+#: FMain.class:2710 Project.module:839
 msgid ""
 "The file has been modified.\n"
 "\n"
@@ -3305,7 +3306,7 @@ msgstr ""
 "\n"
 "Toutes les modifications seront perdues."
 
-#: FMain.class:2819
+#: FMain.class:2821
 msgid "Edit arguments"
 msgstr "Éditer les arguments"
 
@@ -4097,7 +4098,7 @@ msgstr "Nom de groupe incorrect !"
 msgid "This menu is too deep !"
 msgstr "Ce menu est trop profond !"
 
-#: FMenu.class:1056 Project.module:5401
+#: FMenu.class:1055 Project.module:5401
 msgid "modified"
 msgstr "modifié"
 
@@ -5593,115 +5594,115 @@ msgstr "Fichiers de traduction"
 msgid "Cannot read translation file for language '&1'"
 msgstr "Impossible de lire le fichier de traduction pour la langue « &1 »"
 
-#: FTranslate.class:518
+#: FTranslate.class:539
 msgid "Cannot save translation."
 msgstr "Impossible de sauvegarder la traduction."
 
-#: FTranslate.class:631
+#: FTranslate.class:652
 msgid "Do you really want to delete this translation ?"
 msgstr "Voulez-vous vraiment supprimer cette traduction ?"
 
-#: FTranslate.class:727
+#: FTranslate.class:748
 msgid "Do you really want to reload this translation ?"
 msgstr "Voulez-vous vraiment recharger cette traduction ?"
 
-#: FTranslate.class:741
+#: FTranslate.class:762
 msgid "Export a translation"
 msgstr "Exporter une traduction"
 
-#: FTranslate.class:930
+#: FTranslate.class:977
 msgid "Please select the translation file to import."
 msgstr "Veuillez sélectionner le fichier de traduction à importer."
 
-#: FTranslate.class:968
+#: FTranslate.class:1015
 msgid "No translation were picked up."
 msgstr "Aucune traduction n'a été récupérée."
 
-#: FTranslate.class:970
+#: FTranslate.class:1017
 msgid "One translation was picked up."
 msgstr "Une traduction a été récupérée."
 
-#: FTranslate.class:972
+#: FTranslate.class:1019
 msgid "&1 translations were picked up."
 msgstr "&1 traductions ont été récupérées."
 
-#: FTranslate.class:980
+#: FTranslate.class:1027
 msgid "Cannot import translation file."
 msgstr "Impossible d'importer le fichier de traduction."
 
-#: FTranslate.class:1029
+#: FTranslate.class:1076
 msgid "Everything seems to be correct."
 msgstr "Tout semble correct."
 
-#: FTranslate.class:1039
+#: FTranslate.class:1086
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr "Les symboles de la chaîne traduite ne correspondent pas à ceux de la chaîne non traduite."
 
-#: FTranslate.class:1065
+#: FTranslate.class:1112
 msgid "&1 strings. Everything is translated!"
 msgstr "&1 chaînes de caractères. Tout est traduit !"
 
-#: FTranslate.class:1067
+#: FTranslate.class:1114
 msgid "&1 strings. One is not translated. &3% done."
 msgstr "&1 chaînes de caractères. Une n'est pas traduite. &3% effectué."
 
-#: FTranslate.class:1069
+#: FTranslate.class:1116
 msgid "&1 strings. &2 are not translated. &3% done."
 msgstr "&1 chaînes de caractères. &2 ne sont pas traduites. &3% effectué."
 
-#: FTranslate.form:61
+#: FTranslate.form:66
 msgid "Project translation"
 msgstr "Traduction du projet"
 
-#: FTranslate.form:93
+#: FTranslate.form:99
 msgid "Untranslated strings"
 msgstr "Chaînes non traduites"
 
-#: FTranslate.form:97
+#: FTranslate.form:103
 msgid "Translated strings"
 msgstr "Chaînes traduites"
 
-#: FTranslate.form:101
+#: FTranslate.form:107
 msgid "All strings"
 msgstr "Toutes les chaînes"
 
-#: FTranslate.form:163
+#: FTranslate.form:186
 msgid "Save translation"
 msgstr "Enregistrer la traduction"
 
-#: FTranslate.form:169
+#: FTranslate.form:192
 msgid "Clear this translation"
 msgstr "Effacer cette traduction"
 
-#: FTranslate.form:175
+#: FTranslate.form:198
 msgid "This string must not be translated"
 msgstr "Cette chaîne ne doit pas être traduite"
 
-#: FTranslate.form:181
+#: FTranslate.form:204
 msgid "Copy untranslated string"
 msgstr "Copier la chaîne non traduite"
 
-#: FTranslate.form:187
+#: FTranslate.form:210
 msgid "Verify the translation"
 msgstr "Vérifier la traduction"
 
-#: FTranslate.form:193
+#: FTranslate.form:216
 msgid "Find next untranslated string"
 msgstr "Rechercher la chaîne non traduite suivante"
 
-#: FTranslate.form:199
+#: FTranslate.form:222
 msgid "Find previous untranslated string"
 msgstr "Rechercher la chaîne non traduite précédente"
 
-#: FTranslate.form:352
+#: FTranslate.form:385
 msgid "Import all translations  recursively"
 msgstr "Importer toutes les traductions récursivement"
 
-#: FTranslate.form:358
+#: FTranslate.form:391
 msgid "Replace existing translations"
 msgstr "Remplacer les traductions existantes"
 
-#: FTranslate.form:374
+#: FTranslate.form:407
 msgid "Import a translation file"
 msgstr "Importer un fichier de traduction"
 
@@ -7755,14 +7756,14 @@ msgstr "Cette classe n'existe pas."
 msgid "This symbol does not exist."
 msgstr "Ce symbole n'existe pas."
 
-#~ msgid "These files will be ignored when making source archives."
-#~ msgstr "Ces fichiers seront ignorés lors de la génération d'une archive des sources."
-
-#~ msgid "Source archives"
-#~ msgstr "Archives sources"
+#~ msgid "System informations"
+#~ msgstr "Informations système"
 
 #~ msgid "Do you really want to reset the list to its default value?"
 #~ msgstr "Voulez-vous vraiment réinitialiser la liste à sa valeur par défaut ?"
 
-#~ msgid "System informations"
-#~ msgstr "Informations système"
+#~ msgid "Source archives"
+#~ msgstr "Archives sources"
+
+#~ msgid "These files will be ignored when making source archives."
+#~ msgstr "Ces fichiers seront ignorés lors de la génération d'une archive des sources."
