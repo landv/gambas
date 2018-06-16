@@ -117,6 +117,8 @@ Private Sub CreateProject() As Boolean
         Continue
       Else If sLine Begins "Icon=" Then
         Continue
+      Else If sLine Begins "TabSize=" Then
+        Continue
       Endif
       
       Print #hDest, sLine
