@@ -364,6 +364,10 @@ const void *const GAMBAS_JitApi[] =
 	(void *)ERROR_reset,
 	(void *)ERROR_set_last,
 	(void *)&EXEC_got_error,
+	(void *)&EVENT_Last,
+	(void *)EXEC_push_complex,
+	(void *)EXEC_push_vargs,
+	(void *)EXEC_drop_vargs,
 	NULL
 };
 

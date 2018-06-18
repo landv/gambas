@@ -363,8 +363,11 @@ enum
 #define PUSH_UNKNOWN(_pc) (PC = &pc[_pc], SP = sp, JIT.push_unknown(), sp = SP)
 #define POP_UNKNOWN(_pc) (PC = &pc[_pc], SP = sp, JIT.pop_unknown(), sp = SP)
 
+#define PUSH_COMPLEX(_val) (PUSH_f(_val),SP = sp,JIT.push_complex(),POP_o())
+
 #define GET_ME_STATIC() (CP)
 #define GET_ME() ({ GB_OBJECT _v; _v.type = (GB_TYPE)CP; _v.value = OP; _v; })
+#define GET_LAST() ({ GB_OBJECT _v; _v.type = GB_T_OBJECT; _v.value = *(JIT.event_last); _v; })
 
 #define CALL_UNKNOWN(_pc) (JIT.call_unknown(&pc[_pc], sp), sp = SP)
 
@@ -378,7 +381,6 @@ enum
 })
 
 #define CALL_MATH(_func, _val) ({ double _v = _func(_val); if (!isfinite(_v)) JIT.throw(E_MATH); _v; })
-
 
 #define ERROR_current (*(ERROR_CONTEXT **)(JIT.error_current))
 #define ERROR_handler (*(ERROR_HANDLER **)(JIT.error_handler))

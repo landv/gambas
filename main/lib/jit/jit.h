@@ -63,7 +63,9 @@ char *JIT_translate(const char *name, const char *from);
 void JIT_section(const char *str);
 
 void JIT_print(const char *fmt, ...);
-void JIT_vprint(const char *fmt, va_list args);
+void JIT_print_decl(const char *fmt, ...);
+void JIT_print_body(const char *fmt, ...);
+void JIT_declare(TYPE type, const char *fmt, ...);
 
 const char *JIT_get_type(TYPE type);
 const char *JIT_get_gtype(TYPE type);
@@ -74,7 +76,6 @@ const char *JIT_get_default_value(TYPE type);
 void JIT_panic(const char *fmt, ...) NORETURN;
 
 int JIT_get_code_size(FUNCTION *func);
-bool JIT_must_release(FUNCTION *func);
 int JIT_find_symbol(CLASS *class, const char *name);
 void JIT_load_class(CLASS *class);
 

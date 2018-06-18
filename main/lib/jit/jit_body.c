@@ -33,6 +33,8 @@
 
 #include "jit.h"
 
+#define JIT_print JIT_print_body
+
 #define MAX_STACK 256
 
 typedef
@@ -67,6 +69,8 @@ static bool _no_release = FALSE;
 
 static int _loop_count;
 
+static TYPE *_dup_type;
+
 enum { LOOP_UNKNOWN, LOOP_UP, LOOP_DOWN };
 
 static int _loop_type;
@@ -78,7 +82,8 @@ static bool _has_gosub;
 static bool _has_finally;
 static bool _has_catch;
 
-static bool _must_release;
+static bool _has_just_dup;
+
 
 static void enter_function(FUNCTION *func, int index)
 {
@@ -88,31 +93,25 @@ static void enter_function(FUNCTION *func, int index)
 	_has_gosub = FALSE;
 	_has_catch = FALSE;
 	_has_finally = FALSE;
-	
 	_loop_count = 0;
+	_has_just_dup = FALSE;
+	
+	GB.NewArray((void **)&_dup_type, sizeof(TYPE), 0);
+	GB.NewArray((void **)&_ctrl_type, sizeof(TYPE), 0);
 	
 	if (func->n_ctrl)
-	{
 		 GB.AllocZero((void **)&_ctrl_index, sizeof(int) * func->n_ctrl);
-		 GB.NewArray((void **)&_ctrl_type, sizeof(TYPE), 0);
-	}
 	else
-	{
 		_ctrl_index = NULL;
-		_ctrl_type = NULL;
-	}
 	
-	JIT_print("  VALUE **psp = (VALUE **)%p;\n", JIT.sp);
-	JIT_print("  VALUE *sp = SP;\n");
+	JIT_print_decl("  VALUE **psp = (VALUE **)%p;\n", JIT.sp);
+	JIT_print_decl("  VALUE *sp = SP;\n");
 	//JIT_print("  VALUE *sp = SP; fprintf(stderr, \"> %d: sp = %%p\\n\", sp);\n", index);
-	JIT_print("  ushort *pc = (ushort *)%p;\n", JIT.get_code(JIT_class, index));
-	JIT_print("  GB_VALUE_GOSUB *gp = 0;\n");
+	JIT_print_decl("  ushort *pc = (ushort *)%p;\n", JIT.get_code(JIT_class, index));
+	JIT_print_decl("  GB_VALUE_GOSUB *gp = 0;\n");
+	JIT_print_decl("  bool error;\n");
 	
-	_must_release = JIT_must_release(func);
-	
-	JIT_print("  bool error;\n");
-	
-	JIT_print("\n  TRY {\n\n");
+	JIT_print("  TRY {\n\n");
 }
 
 
@@ -128,20 +127,24 @@ static void print_catch(void)
 	JIT_print("__FINALLY:\n");
 }
 
+#define RELEASE_FAST(_expr, _type, _index) ({ \
+	TYPE _t = (_type); \
+  switch(TYPEID(_t)) \
+	{ \
+		case T_STRING: case T_OBJECT: case T_VARIANT: \
+			JIT_print((_expr), JIT_get_type(_t), (_index)); \
+	} \
+})
 
 static bool leave_function(FUNCTION *func, int index)
 {
 	int i;
-	TYPE type;
 	
 	STR_free_later(NULL);
 	JIT_print("__RETURN:\n");
 	//JIT_print("__RETURN: fprintf(stderr, \"< %d: sp = %%p\\n\", sp);\n", ind);
 	JIT_print("  SP = sp;\n");
 		
-	GB.Free((void **)&_ctrl_index);
-	GB.FreeArray((void **)&_ctrl_type);
-	
 	if (_stack_current)
 		JIT_panic("Stack mismatch: stack is not void");
 	
@@ -150,37 +153,24 @@ static bool leave_function(FUNCTION *func, int index)
 	
 	JIT_print("\n__RELEASE:;\n");
 	
-	if (_must_release)
-	{
-		if (func->n_local)
-		{
-			for (i = 0; i < func->n_local; i++)
-			{
-				type = JIT_ctype_to_type(func->local[i].type);
-				switch(TYPEID(type))
-				{
-					case T_STRING:
-					case T_OBJECT:
-					case T_VARIANT:
-						JIT_print("  RELEASE_FAST_%s(l%d);\n", JIT_get_type(type), i);
-						break;
-				}
-			}
-		}
-		
-		for (i = 0; i < func->n_param; i++)
-		{
-			type = func->param[i].type;
-			switch(TYPEID(type))
-			{
-				case T_STRING: case T_OBJECT: case T_VARIANT:
-					JIT_print("  RELEASE_FAST_%s(p%d);\n", JIT_get_type(type), i);
-			}
-		}
-	}
+	for (i = 0; i < func->n_local; i++)
+		RELEASE_FAST("  RELEASE_FAST_%s(l%d);\n", JIT_ctype_to_type(func->local[i].type), i); 
+	
+	for (i = 0; i < func->n_param; i++)
+		RELEASE_FAST("  RELEASE_FAST_%s(p%d);\n", func->param[i].type, i);
+	
+	for (i = 0; i < GB.Count(_ctrl_type); i++)
+		RELEASE_FAST("  RELEASE_FAST_%s(c%d);\n", _ctrl_type[i], i);
+	
+	for (i = 0; i < GB.Count(_dup_type); i++)
+		RELEASE_FAST("  RELEASE_FAST_%s(d%d);\n", _dup_type[i], i);
 	
 	if (!_has_catch && !_has_finally)
 		JIT_print("  if (error) GB.Propagate();\n");
+	
+	GB.Free((void **)&_ctrl_index);
+	GB.FreeArray((void **)&_ctrl_type);
+	GB.FreeArray((void **)&_dup_type);
 	
 	return FALSE;
 }
@@ -230,7 +220,7 @@ static void declare(bool *flag, const char *expr)
 	if (*flag)
 		return;
 	
-	JIT_print("  %s;\n", expr);
+	JIT_print_decl("  %s;\n", expr);
 	*flag = TRUE;
 }
 
@@ -636,6 +626,12 @@ static bool check_swap(TYPE type, const char *fmt, ...)
 	char *expr = NULL;
 	char *swap = NULL;
 	
+	if (_has_just_dup)
+	{
+		_has_just_dup = FALSE;
+		return TRUE;
+	}
+	
 	if (_stack_current < 2)
 		return TRUE;
 	
@@ -667,7 +663,8 @@ static int add_ctrl(int index, TYPE type)
 	*(TYPE *)GB.Add(&_ctrl_type) = type;
 	_ctrl_index[index] = index_ctrl;
 	
-	JIT_print("  %s c%d;\n", JIT_get_ctype(type), index_ctrl);
+	//JIT_print_decl("  %s c%d;\n", JIT_get_ctype(type), index_ctrl);
+	JIT_declare(type, "c%d", index_ctrl);
 	
 	return index_ctrl;
 }
@@ -682,9 +679,9 @@ static void pop_ctrl(int index, TYPE type)
 	
 	index_ctrl = add_ctrl(index, type);
 	
-	_no_release = TRUE;
-	pop(type, "c%d = %%s", index_ctrl);
-	_no_release = FALSE;
+	//_no_release = TRUE;
+	pop(type, "c%d", index_ctrl);
+	//_no_release = FALSE;
 }
 
 
@@ -1802,6 +1799,19 @@ static void push_subr_math(ushort code)
 }
 
 
+static void push_complex(void)
+{
+	char *expr;
+	
+	expr = STR_copy(peek(-1, T_FLOAT));
+	pop_stack(1);
+	
+	push(T_OBJECT, "PUSH_COMPLEX(%s)", expr);
+	
+	STR_free(expr);
+}
+
+
 #define GET_XXX()   (((signed short)(code << 4)) >> 4)
 #define GET_UXX()   (code & 0xFFF)
 #define GET_7XX()   (code & 0x7FF)
@@ -2109,6 +2119,25 @@ _MAIN:
 	//fprintf(stderr, "--------—-------------------- %d / %04X\n", _stack_current, code);
 	goto *jump_table[code >> 8];
 
+_DUP:
+
+	check_stack(1);
+	
+	_has_just_dup = TRUE;
+	
+	index = GB.Count(_dup_type);
+	*(TYPE *)GB.Add(&_dup_type) = type = get_type(-1);
+
+	//JIT_print_decl("  %s d%d;\n", JIT_get_ctype(type), index);
+	JIT_declare(type, "d%d", index);
+	//_no_release = TRUE;
+	pop(type, "d%d", index);
+	//_no_release = FALSE;
+	push(type, "d%d", index);
+	push(type, "d%d", index);
+	
+	goto _MAIN;
+
 _PUSH_LOCAL:
 
 	index = GET_XX();
@@ -2258,9 +2287,33 @@ _PUSH_MISC:
 			push(T_BOOLEAN, "1");
 			break;
 			
+		case 4:
+			push(T_OBJECT, "GET_LAST()");
+			break;
+			
 		case 5:
 			push(T_CSTRING, "GET_CSTRING(\"\", 0, 0)");
 			break;
+		
+		case 6:
+			push(T_FLOAT, "INFINITY");
+			break;
+
+		case 7:
+			push(T_FLOAT, "-INFINITY");
+			break;
+
+		case 8:
+			push_complex();
+			break;
+
+		/*case 9:
+			EXEC_push_vargs();
+			break;
+
+		case 10:
+			EXEC_drop_vargs();
+			break;*/
 			
 		default:
 			goto _ILLEGAL;
@@ -2634,7 +2687,6 @@ _PUSH_EXTERN:
 _BYREF:
 _PUSH_EVENT:
 _QUIT:
-_DUP:
 _CALL_QUICK:
 _CALL_SLOW:
 _ON_GOTO_GOSUB:

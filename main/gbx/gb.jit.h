@@ -71,6 +71,10 @@ typedef
 		void (*error_reset)(void *);
 		void (*error_set_last)(bool);
 		bool *got_error;
+		void **event_last;
+		void (*push_complex)(void);
+		void (*push_vargs)(void);
+		void (*pop_vargs)(void);
 	}
 	JIT_INTERFACE;
 

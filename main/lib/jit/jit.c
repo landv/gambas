@@ -44,6 +44,8 @@ char *JIT_prefix;
 bool JIT_last_print_is_label;
 
 static char *_buffer = NULL;
+static char *_buffer_decl = NULL;
+static char *_buffer_body = NULL;
 
 /*static const CLASS_TYPE _class_type[] = {
 	{ "Boolean[]", T_BOOLEAN },
@@ -115,6 +117,7 @@ static void JIT_begin(void)
 {
 	JIT_prefix = STR_lower(JIT_class->name);
 	_buffer = NULL;
+	_buffer_decl = NULL;
 	JIT_print("\n//////// %s\n\n", JIT_class->name);
 }
 
@@ -191,43 +194,6 @@ const char *JIT_get_default_value(TYPE type)
 }
 
 
-bool JIT_must_release(FUNCTION *func)
-{
-	int i;
-	TYPE type;
-	
-	if (func->n_local || func->n_param)
-	{
-		if (func->n_local)
-		{
-			for (i = 0; i < func->n_local; i++)
-			{
-				type = JIT_ctype_to_type(func->local[i].type);
-				switch(TYPEID(type))
-				{
-					case T_STRING:
-					case T_OBJECT:
-					case T_VARIANT:
-						return TRUE;
-				}
-			}
-		}
-		
-		for (i = 0; i < func->n_param; i++)
-		{
-			type = func->param[i].type;
-			switch(TYPEID(type))
-			{
-				case T_STRING: case T_OBJECT: case T_VARIANT:
-					return TRUE;
-			}
-		}
-	}
-	
-	return FALSE;
-}
-
-
 static bool JIT_translate_func(FUNCTION *func, int index)
 {
 	int i;
@@ -297,6 +263,9 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 	declare_implementation(func, index);
 	JIT_print("\n{\n");
 
+	_buffer_decl = NULL;
+	_buffer_body = NULL;
+	
 	for (i = -1; i < func->n_local; i++)
 	{
 		if (i < 0)
@@ -304,16 +273,16 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 			if (TYPE_is_void(func->type))
 				continue;
 			type = func->type;
-			JIT_print("  %s r = ", JIT_get_ctype(type));
+			JIT_print_decl("  %s r = ", JIT_get_ctype(type));
 		}
 		else
 		{
 			type = JIT_ctype_to_type(func->local[i].type);
-			JIT_print("  %s l%d = ", JIT_get_ctype(type), i);
+			JIT_print_decl("  %s l%d = ", JIT_get_ctype(type), i);
 		}
 		
-		JIT_print(JIT_get_default_value(type));
-		JIT_print(";\n");
+		JIT_print_decl(JIT_get_default_value(type));
+		JIT_print_decl(";\n");
 	}
 	
 	for (i = 0; i < func->n_param; i++)
@@ -322,13 +291,12 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 		switch(TYPEID(type))
 		{
 			case T_STRING: case T_OBJECT: case T_VARIANT:
-				JIT_print("  BORROW_%s(p%d);\n", JIT_get_type(type), i);
+				JIT_print_body("  BORROW_%s(p%d);\n", JIT_get_type(type), i);
 		}
 	}
 	
 	if (JIT_translate_body(func, index))
 		return TRUE;
-	
 	
 	if (!TYPE_is_void(func->type))
 	{
@@ -337,21 +305,29 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 			case T_STRING:
 			case T_OBJECT:
 			case T_VARIANT:
-				JIT_print("  JIT.unborrow((GB_VALUE *)&r);\n");
+				JIT_print_body("  JIT.unborrow((GB_VALUE *)&r);\n");
 				break;
 		}
 		
-		JIT_print("  return r;\n");
+		JIT_print_body("  return r;\n");
 	}
 	else
-		JIT_print("  return;\n");
+		JIT_print_body("  return;\n");
+	
+	_buffer = GB.AddString(_buffer, _buffer_decl, GB.StringLength(_buffer_decl));
+	JIT_print("\n");
+	_buffer = GB.AddString(_buffer, _buffer_body, GB.StringLength(_buffer_body));
+	
+	GB.FreeString(&_buffer_decl);
+	GB.FreeString(&_buffer_body);
 	
 	JIT_print("}\n");
 	
 	return FALSE;
 }
 
-void JIT_vprint(const char *fmt, va_list args)
+
+void JIT_vprint(char **buffer, const char *fmt, va_list args)
 {
 	int len, add;
 	va_list copy;
@@ -360,27 +336,71 @@ void JIT_vprint(const char *fmt, va_list args)
 	add = vsnprintf(NULL, 0, fmt, copy);
 	va_end(copy);
 	
-	len = GB.StringLength(_buffer);
+	len = GB.StringLength(*buffer);
 	
-	_buffer = GB.ExtendString(_buffer, len + add);
+	*buffer = GB.ExtendString(*buffer, len + add);
 	
-	vsprintf(&_buffer[len], fmt, args);
+	vsprintf(*buffer + len, fmt, args);
 	
 	JIT_last_print_is_label = (strncmp(fmt, "__L", 3) == 0);
 }
+
 
 void JIT_print(const char *fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
-	JIT_vprint(fmt, args);
+	JIT_vprint(&_buffer, fmt, args);
 	va_end(args);
 }
+
+
+void JIT_print_decl(const char *fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+	JIT_vprint(&_buffer_decl, fmt, args);
+	va_end(args);
+}
+
+
+void JIT_print_body(const char *fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+	JIT_vprint(&_buffer_body, fmt, args);
+	va_end(args);
+}
+
 
 void JIT_section(const char *str)
 {
 	JIT_print("\n// %s\n\n", str);
 }
+
+
+void JIT_declare(TYPE type, const char *fmt, ...)
+{
+	va_list args;
+	
+	JIT_print_decl("  %s ", JIT_get_ctype(type));
+	
+  va_start(args, fmt);
+	JIT_vprint(&_buffer_decl, fmt, args);
+	va_end(args);
+	
+	switch (TYPEID(type))
+	{
+		case T_STRING:
+		case T_OBJECT:
+		case T_VARIANT:
+			JIT_print_decl(" = %s", JIT_get_default_value(type));
+			break;
+	}
+	
+	JIT_print_decl(";\n");
+}
+
 
 
 char *JIT_translate(const char *name, const char *from)
