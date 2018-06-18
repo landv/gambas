@@ -295,7 +295,7 @@ Public Sub Exist(Key As String) As Boolean
   If $cDelete.Exist(Key) Then Return
   If $cValues.Exist(Key) Then Return True
   
-  Return $hConn.Exec("SELECT 1 FROM values WHERE sKey = &1", Key).Available
+  Return $hConn.Exec("SELECT 1 FROM \"values\" WHERE sKey = &1", Key).Available
   
 End
 
