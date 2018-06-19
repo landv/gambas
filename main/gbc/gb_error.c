@@ -84,22 +84,22 @@ char *ERROR_get(void)
 }
 
 
-  void _add_char(uchar c, int *n)
-  {
-    if (*n >= MAX_ERROR_MSG)
-      return;
+void _add_char(uchar c, int *n)
+{
+	if (*n >= MAX_ERROR_MSG)
+		return;
 
-    ERROR_info.msg[*n++] = c;
-  }
+	ERROR_info.msg[(*n)++] = c;
+}
 
-  void _add_string(const char *s, int *n)
-  {
-    while (*s)
-    {
-      _add_char(*s, n);
-      s++;
-    }
-  }
+void _add_string(const char *s, int *n)
+{
+	while (*s)
+	{
+		_add_char(*s, n);
+		s++;
+	}
+}
 
 void ERROR_define(const char *pattern, const char *arg[])
 {
