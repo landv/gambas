@@ -5,6 +5,7 @@
   gb.mime component
 
   (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
+  (c) 2018      Bastian Germann <bastiangermann@fishpost.de>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -81,7 +82,7 @@ BEGIN_METHOD(MimeMessage_new, GB_STRING contents)
 			g_object_unref(stream);
 		
 			/* parse the message from the stream */
-			message = g_mime_parser_construct_message (parser);
+			message = g_mime_parser_construct_message (parser NULLGM3);
 		
 			/* free the parser (and the stream) */
 			g_object_unref(parser);
@@ -111,6 +112,16 @@ BEGIN_METHOD_VOID(MimeMessage_free)
 END_METHOD
 
 
+BEGIN_PROPERTY(MimeMessage_Subject)
+
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(g_mime_message_get_subject(MESSAGE));
+	else
+		g_mime_message_set_subject(MESSAGE, GB.ToZeroString(PROP(GB_STRING)) NULLGM3);
+
+END_PROPERTY
+
+
 #define IMPLEMENT_STRING_PROPERTY(_name, _func) \
 BEGIN_PROPERTY(MimeMessage_##_name) \
 \
@@ -121,20 +132,46 @@ BEGIN_PROPERTY(MimeMessage_##_name) \
 \
 END_PROPERTY
 
-IMPLEMENT_STRING_PROPERTY(Sender, sender)
-IMPLEMENT_STRING_PROPERTY(ReplyTo, reply_to)
-IMPLEMENT_STRING_PROPERTY(Subject, subject)
-IMPLEMENT_STRING_PROPERTY(Id, message_id)
 
-
-#define IMPLEMENT_RECIPIENT_PROPERTY(_name, _type) \
+#define IMPLEMENT_LIST_PROPERTY(_name, _func) \
 BEGIN_PROPERTY(MimeMessage_##_name) \
 \
-	InternetAddressList *addr = g_mime_message_get_recipients(MESSAGE, _type); \
+	InternetAddressList *list; \
+	InternetAddress *addr; \
+	if (READ_PROPERTY) \
+	{ \
+		list = g_mime_message_get_##_func(MESSAGE); \
+		addr = internet_address_list_get_address(list, 0); \
+		GB.ReturnNewZeroString(internet_address_to_string(addr, NULL, FALSE)); \
+	} \
+	else \
+	{ \
+		addr = internet_address_mailbox_new("", GB.ToZeroString(PROP(GB_STRING))); \
+		list = g_mime_message_get_##_func(MESSAGE); \
+		internet_address_list_set_address(list, 0, addr); \
+	} \
+\
+END_PROPERTY
+
+#if GMIME_MAJOR_VERSION < 3
+	IMPLEMENT_STRING_PROPERTY(Sender, sender)
+	IMPLEMENT_STRING_PROPERTY(ReplyTo, reply_to)
+	IMPLEMENT_STRING_PROPERTY(Id, message_id)
+#else
+	IMPLEMENT_LIST_PROPERTY(Sender, sender)
+	IMPLEMENT_LIST_PROPERTY(ReplyTo, reply_to)
+	IMPLEMENT_STRING_PROPERTY(Id, message_id)
+#endif
+
+
+#define IMPLEMENT_RECIPIENT_PROPERTY(_name, _type, _adr_func, _string) \
+BEGIN_PROPERTY(MimeMessage_##_name) \
+\
+	InternetAddressList *addr = g_mime_message_get_##_adr_func(MESSAGE, _type); \
 	\
 	if (READ_PROPERTY) \
 	{ \
-		char *list = internet_address_list_to_string(addr, FALSE); \
+		char *list = internet_address_list_to_string(addr NULLGM3, FALSE); \
 		GB.ReturnNewZeroString(list); \
 		g_free(list); \
 	} \
@@ -144,16 +181,22 @@ BEGIN_PROPERTY(MimeMessage_##_name) \
 		\
 		internet_address_list_clear(addr); \
 		\
-		new_addr = internet_address_list_parse_string(GB.ToZeroString(PROP(GB_STRING))); \
+		new_addr = internet_address_list_parse##_string(GM3NULL GB.ToZeroString(PROP(GB_STRING))); \
 		internet_address_list_append(addr, new_addr); \
 		g_object_unref(new_addr); \
 	} \
 \
 END_PROPERTY
 
-IMPLEMENT_RECIPIENT_PROPERTY(To, GMIME_RECIPIENT_TYPE_TO);
-IMPLEMENT_RECIPIENT_PROPERTY(Cc, GMIME_RECIPIENT_TYPE_CC);
-IMPLEMENT_RECIPIENT_PROPERTY(Bcc, GMIME_RECIPIENT_TYPE_BCC);
+#if GMIME_MAJOR_VERSION < 3
+	IMPLEMENT_RECIPIENT_PROPERTY(To, GMIME_RECIPIENT_TYPE_TO, recipients, _string);
+	IMPLEMENT_RECIPIENT_PROPERTY(Cc, GMIME_RECIPIENT_TYPE_CC, recipients, _string);
+	IMPLEMENT_RECIPIENT_PROPERTY(Bcc, GMIME_RECIPIENT_TYPE_BCC, recipients, _string);
+#else
+	IMPLEMENT_RECIPIENT_PROPERTY(To, GMIME_ADDRESS_TYPE_TO, addresses,);
+	IMPLEMENT_RECIPIENT_PROPERTY(Cc, GMIME_ADDRESS_TYPE_CC, addresses,);
+	IMPLEMENT_RECIPIENT_PROPERTY(Bcc, GMIME_ADDRESS_TYPE_BCC, addresses,);
+#endif
 
 BEGIN_PROPERTY(MimeMessage_Part)
 
@@ -175,7 +218,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(MimeMessage_ToString)
 
-	char *str = g_mime_object_to_string((GMimeObject *)MESSAGE);
+	char *str = g_mime_object_to_string((GMimeObject *)MESSAGE NULLGM3);
 	GB.ReturnNewZeroString(str);
 	g_free(str);
 
@@ -214,7 +257,7 @@ END_METHOD
 BEGIN_METHOD(MimeMessage_Headers_put, GB_STRING value; GB_STRING name)
 
 	if (LENGTH(name))
-		g_mime_object_set_header((GMimeObject *)MESSAGE, GB.ToZeroString(ARG(name)), GB.ToZeroString(ARG(value)));
+		g_mime_object_set_header((GMimeObject *)MESSAGE, GB.ToZeroString(ARG(name)), GB.ToZeroString(ARG(value)) NULLGM3);
 	else
 		g_mime_object_remove_header((GMimeObject *)MESSAGE, GB.ToZeroString(ARG(name)));
 

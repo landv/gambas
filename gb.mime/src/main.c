@@ -46,7 +46,11 @@ GB_DESC *GB_CLASSES[] EXPORT =
 
 int EXPORT GB_INIT()
 {
-	g_mime_init(0);
+	g_mime_init(
+	#if GMIME_MAJOR_VERSION < 3
+		0
+	#endif
+	);
 	return 0;
 }
 

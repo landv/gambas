@@ -35,4 +35,12 @@
 extern GB_INTERFACE GB;
 #endif
 
+#if GMIME_MAJOR_VERSION < 3
+#define NULLGM3
+#define GM3NULL
+#else
+#define NULLGM3 ,NULL
+#define GM3NULL NULL,
+#endif
+
 #endif /* __MAIN_H */
