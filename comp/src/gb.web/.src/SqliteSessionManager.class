@@ -11,7 +11,7 @@ Private $hConn As Connection
 Private $cValues As Collection
 Private $cDelete As Collection
 
-Private Sub GetPath(Optional sId As String) As String
+Public Sub GetPath(Optional sId As String) As String
 
   Dim sPath As String
   
@@ -278,7 +278,7 @@ Public Sub _get(Key As String) As Variant
 
   If $cDelete.Exist(Key) Then Return
   vVal = $cValues[Key]
-  If vVal Then Return vVal
+  If Not IsNull(vVal) Then Return vVal
 
   rValue = $hConn.Find("values", "sKey = &1", Key)
   If rValue.Available Then 
