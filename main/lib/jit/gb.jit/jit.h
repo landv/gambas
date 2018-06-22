@@ -215,8 +215,8 @@ enum
 
 #define CLASS(_class) ((GB_CLASS)(_class))
 
-#define CONSTANT_s(_addr, _len) GET_CSTRING(_addr, 0, _len)
-#define CONSTANT_t(_addr, _len) GET_CSTRING(GB.Translate(_addr), 0, strlen(temp.value.addr))
+#define CONSTANT_s(_addr, _len) GET_CSTRING((char *)_addr, 0, _len)
+#define CONSTANT_t(_addr, _len) GET_CSTRING(GB.Translate((const char *)_addr), 0, strlen(temp.value.addr))
 
 #define GET_CHAR(_char) GET_CSTRING(&JIT.char_table[(_char) * 2], 0, 1)
   

@@ -1038,7 +1038,7 @@ void EXEC_function_loop()
 					while (PC != NULL && EC == NULL && FP->fast)
 						EXEC_leave_drop();
 					ERROR_unlock();*/
-
+					
 					// We can only leave stack frames for non-JIT functions.
 					ERROR_lock();
 					while (PC != NULL && EC == NULL && !FP->fast)
@@ -1048,13 +1048,9 @@ void EXEC_function_loop()
 					// If the JIT function has set up an exception handler, call that now.
 					// If not, we must still propagate past that JIT function.
 					
-					/*if (PC != NULL && FP->fast)
-						PROPAGATE();*/
-
 					// If we got the void stack frame, then we remove it and raise the error again
-					if (PC == NULL)
+					if (PC == NULL || FP->fast)
 					{
-						/*printf("try to propagate\n");*/
 						STACK_pop_frame(&EXEC_current);
 
 						//ERROR_restore(&save);

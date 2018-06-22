@@ -91,10 +91,11 @@ static void enter_function(FUNCTION *func, int index)
 	_decl_ro = FALSE;
 	_decl_rv = FALSE;
 	_has_gosub = FALSE;
-	_has_catch = FALSE;
-	_has_finally = FALSE;
 	_loop_count = 0;
 	_has_just_dup = FALSE;
+	
+	_has_catch = FALSE;
+	_has_finally = func->error && (func->code[func->error - 1] != C_CATCH);
 	
 	GB.NewArray((void **)&_dup_type, sizeof(TYPE), 0);
 	GB.NewArray((void **)&_ctrl_type, sizeof(TYPE), 0);
@@ -111,7 +112,7 @@ static void enter_function(FUNCTION *func, int index)
 	JIT_print_decl("  GB_VALUE_GOSUB *gp = 0;\n");
 	JIT_print_decl("  bool error;\n");
 	
-	JIT_print("  TRY {\n\n");
+	JIT_print("\n  TRY {\n\n");
 }
 
 
@@ -123,7 +124,7 @@ static void print_catch(void)
 	JIT_print("  error = TRUE;\n");
 	JIT_print("  goto __FINALLY;\n");
 	JIT_print("\n  } END_TRY\n\n");
-	JIT_print("  error = FALSE;\n");
+	JIT_print("  error = FALSE;\n\n");
 	JIT_print("__FINALLY:\n");
 }
 
@@ -2091,6 +2092,7 @@ bool JIT_translate_body(FUNCTION *func, int ind)
 	int size = JIT_get_code_size(func);
 	void *addr;
 	int pos;
+	int i;
 	
 	enter_function(func, ind);
 	
@@ -2102,11 +2104,8 @@ _MAIN:
 
 	//fprintf(stderr, "[%d] %d\n", p, _stack_current);
 	
-	if (p && p == func->error)
-	{
-		_has_finally = TRUE;
+	if (_has_finally && p == func->error)
 		print_catch();
-	}
 
 	if (!JIT_last_print_is_label)
 		print_label(p);
@@ -2676,20 +2675,57 @@ _END_TRY:
 
 _CATCH:
 
+	_has_catch = TRUE;
 	if (!_has_finally)
 		print_catch();
-	else
-		JIT_print(" if (!error) goto __RELEASE;\n");
+
+	JIT_print("  if (!error) goto __RELEASE;\n");
 	
 	goto _MAIN;
 
+_ON_GOTO_GOSUB:
+
+	index = GET_XX();
+
+	JIT_print("  {\n");
+	JIT_print("    static void *jump[] = { ");
+	
+	for (i = 0; i < index; i++)
+	{
+		if (i) JIT_print(", ");
+		JIT_print("&&__L%d", PC[i] + p + i);
+	}
+	
+	JIT_print(" };\n");
+	
+	pop(T_INTEGER, "  int n");
+	
+	p += index + 2;
+	
+	JIT_print("    if (n >= 0 && n < %d)\n", index);
+	
+	if ((PC[index + 1] & 0xFF00) == C_GOSUB)
+	{
+		JIT_print("    {\n");
+		JIT_print("      PUSH_GOSUB(__L%d);\n", p);
+	}
+	
+	JIT_print("      goto *jump[n];\n");
+	
+	if ((PC[index + 1] & 0xFF00) == C_GOSUB)
+		JIT_print("    }\n");
+	
+	JIT_print("  }\n");
+	
+	JIT_print("__L%d:;\n", p);
+	goto _MAIN;
+
+_PUSH_EVENT:
 _PUSH_EXTERN:
 _BYREF:
-_PUSH_EVENT:
 _QUIT:
 _CALL_QUICK:
 _CALL_SLOW:
-_ON_GOTO_GOSUB:
 _ILLEGAL:
 
 	JIT_panic("unsupported opcode %04X", code);

@@ -222,7 +222,18 @@ void JIT_exec(bool ret_on_stack)
 	
 	PROFILE_ENTER_FUNCTION();
 	
-	(*(jit->addr))(nparam);
+	TRY
+	{
+		(*(jit->addr))(nparam);
+	}
+	CATCH
+	{
+		PROFILE_LEAVE_FUNCTION();
+		RELEASE_MANY(SP, nparam);
+		STACK_pop_frame(&EXEC_current);
+		PROPAGATE();
+	}
+	END_TRY
 	
 	PROFILE_LEAVE_FUNCTION();
 	
@@ -285,6 +296,11 @@ void JIT_debug(const char *fmt, ...)
 	va_end(args);
 }
 
+static void error_JIT_call_unknown(intptr_t pc, intptr_t save)
+{
+	((PCODE *)pc)[1] = (PCODE)save;
+}
+
 void JIT_call_unknown(PCODE *pc, VALUE *sp)
 {
 	PCODE save;
@@ -295,7 +311,11 @@ void JIT_call_unknown(PCODE *pc, VALUE *sp)
 	save = pc[1];
 	pc[1] = 0x140B;
 	
-	EXEC_loop();
+	ON_ERROR_2(error_JIT_call_unknown, pc, save)
+	{
+		EXEC_function_loop();
+	}
+	END_ERROR
 	
 	pc[1] = save;
 }
