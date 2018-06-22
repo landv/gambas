@@ -239,7 +239,7 @@ void *EXEC_create_object(CLASS *class, int np, char *event);
 void EXEC_new(ushort code);
 
 void EXEC_release_return_value(void);
-void EXEC_quit(void);
+void EXEC_do_quit(void);
 
 void EXEC_dup(int n);
 
@@ -344,6 +344,9 @@ void EXEC_operator_object_single(uchar op, VALUE *P1);
 void SUBR_left(ushort code);
 void SUBR_mid(ushort code);
 void SUBR_right(ushort code);
+
+void EXEC_quit(ushort code);
+void EXEC_break(ushort code);
 
 void EXEC_push_array(ushort code);
 void EXEC_pop_array(ushort code);

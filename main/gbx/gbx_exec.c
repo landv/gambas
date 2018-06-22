@@ -1943,7 +1943,7 @@ void EXEC_new(ushort code)
 }
 
 
-void EXEC_quit(void)
+void EXEC_do_quit(void)
 {
 	GAMBAS_DoNotRaiseEvent = TRUE;
 

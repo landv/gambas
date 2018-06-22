@@ -47,6 +47,7 @@ typedef
 		void **cp;
 		char **op;
 		GB_VALUE *ret;
+		bool *exec_debug;
 		void (*debug)(const char *fmt, ...);
 		JIT_PCODE *(*get_code)(void *class, int index);
 		void (*throw)(int code, ...) NORETURN;
@@ -75,6 +76,8 @@ typedef
 		void (*push_complex)(void);
 		void (*push_vargs)(void);
 		void (*pop_vargs)(void);
+		void (*exec_quit)(ushort code);
+		void (*exec_break)(ushort code);
 	}
 	JIT_INTERFACE;
 

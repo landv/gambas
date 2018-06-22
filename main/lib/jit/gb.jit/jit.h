@@ -386,3 +386,5 @@ enum
 #define ERROR_handler (*(ERROR_HANDLER **)(JIT.error_handler))
 #define ERROR_reset JIT.error_reset
   
+#define BREAK(_pc, _code) (PC = &pc[_pc], SP = sp, JIT.exec_break(_code))
+#define QUIT(_code) (SP = sp, JIT.exec_quit(_code))

@@ -2656,11 +2656,27 @@ _SUBR_BIT:
 
 _BREAK:
 
+	/*if (*(JIT.exec_debug))
+		JIT_print("  BREAK(%d,0x%04X);\n", _pc, code);*/
+	goto _MAIN;
+
+_QUIT:
+
+	JIT_print("  ");
+	
+	if ((code & 3) == 3)
+	{
+		check_stack(1);
+		JIT_print("%s,", push_expr(-1, T_BYTE));
+		pop_stack(1);
+	}
+	
+	JIT_print("  QUIT(0x%04X);\n", code);
 	goto _MAIN;
 
 _TRY:
 
-	JIT_print("  TRY {\n", _pc);
+	JIT_print("  TRY {\n");
 	p++;
 	goto _MAIN;
 	
@@ -2723,7 +2739,6 @@ _ON_GOTO_GOSUB:
 _PUSH_EVENT:
 _PUSH_EXTERN:
 _BYREF:
-_QUIT:
 _CALL_QUICK:
 _CALL_SLOW:
 _ILLEGAL:

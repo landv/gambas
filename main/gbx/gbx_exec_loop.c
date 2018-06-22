@@ -66,8 +66,6 @@
 
 static void my_VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype, void *ref);
 static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind);
-static void _quit(ushort code);
-static void _break(ushort code);
 
 //static void _SUBR_comp(ushort code);
 static void _SUBR_compe(ushort code);
@@ -1860,14 +1858,14 @@ _CATCH:
 
 _BREAK:
 
-	_break(code);
+	EXEC_break(code);
 	goto _NEXT;
 
 /*-----------------------------------------------*/
 
 _QUIT:
 
-	_quit(code);
+	EXEC_quit(code);
 	goto _NEXT;
 
 /*-----------------------------------------------*/
@@ -3927,12 +3925,12 @@ __POP_ARRAY_2:
 	POP(); /* free the object */
 }
 
-static void _quit(ushort code)
+void EXEC_quit(ushort code)
 {
 	switch(code & 3)
 	{
 		case 0:
-			EXEC_quit();
+			EXEC_do_quit();
 			break;
 
 		case 1:
@@ -3948,12 +3946,12 @@ static void _quit(ushort code)
 			VALUE_conv(&SP[-1], T_BYTE);
 			SP--;
 			EXEC_quit_value = (uchar)SP->_integer.value;
-			EXEC_quit();
+			EXEC_do_quit();
 			break;
 	}
 }
 
-static void _break(ushort code)
+void EXEC_break(ushort code)
 {
 	if (EXEC_debug)
 	{
