@@ -2656,8 +2656,6 @@ _SUBR_BIT:
 
 _BREAK:
 
-	/*if (*(JIT.exec_debug))
-		JIT_print("  BREAK(%d,0x%04X);\n", _pc, code);*/
 	goto _MAIN;
 
 _QUIT:

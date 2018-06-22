@@ -346,7 +346,6 @@ void SUBR_mid(ushort code);
 void SUBR_right(ushort code);
 
 void EXEC_quit(ushort code);
-void EXEC_break(ushort code);
 
 void EXEC_push_array(ushort code);
 void EXEC_pop_array(ushort code);

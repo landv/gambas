@@ -370,7 +370,6 @@ const void *const GAMBAS_JitApi[] =
 	(void *)EXEC_push_vargs,
 	(void *)EXEC_drop_vargs,
 	(void *)EXEC_quit,
-	(void *)EXEC_break,
 	NULL
 };
 

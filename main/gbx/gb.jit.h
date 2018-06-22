@@ -77,7 +77,6 @@ typedef
 		void (*push_vargs)(void);
 		void (*pop_vargs)(void);
 		void (*exec_quit)(ushort code);
-		void (*exec_break)(ushort code);
 	}
 	JIT_INTERFACE;
 

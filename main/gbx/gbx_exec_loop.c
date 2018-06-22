@@ -66,6 +66,7 @@
 
 static void my_VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype, void *ref);
 static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind);
+static void _break(ushort code);
 
 //static void _SUBR_comp(ushort code);
 static void _SUBR_compe(ushort code);
@@ -1858,7 +1859,7 @@ _CATCH:
 
 _BREAK:
 
-	EXEC_break(code);
+	_break(code);
 	goto _NEXT;
 
 /*-----------------------------------------------*/
@@ -3951,7 +3952,7 @@ void EXEC_quit(ushort code)
 	}
 }
 
-void EXEC_break(ushort code)
+static void _break(ushort code)
 {
 	if (EXEC_debug)
 	{
