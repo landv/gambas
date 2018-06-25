@@ -54,6 +54,7 @@ typedef
 		unsigned running : 1;
 		unsigned wait : 1;
 		unsigned to_string : 1;
+		unsigned with_error : 1;
 		unsigned process_group : 1;
 		unsigned ignore : 1;
 		unsigned error : 1;
@@ -64,13 +65,13 @@ typedef
 
 enum
 {
-	PM_READ = 1,
-	PM_WRITE = 2,
-	PM_TERM = 4,
+	PM_READ   = 1,
+	PM_WRITE  = 2,
+	PM_TERM   = 4,
 	PM_STRING = 8,
-	PM_WAIT = 16,
-	PM_CONTINUE = 32,
-	PM_SHELL = 128
+	PM_WAIT   = 16,
+	PM_ERROR  = 32,
+	PM_SHELL  = 128
 };
 
 CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env);

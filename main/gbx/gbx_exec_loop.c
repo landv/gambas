@@ -986,7 +986,7 @@ _JUMP_IF_FALSE:
 
 	VALUE_conv_boolean(&SP[-1]);
 	SP--;
-	if (!SP->_boolean.value & 1)
+	if ((SP->_boolean.value & 1) == 0)
 		PC += (signed short)PC[1];
 
 	PC += 2;

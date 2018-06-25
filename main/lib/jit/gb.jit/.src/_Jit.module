@@ -4,12 +4,47 @@ Export
 Class __Jit
 
 Private $sCompiler As String
+Private $aFlags As String[]
 
 Private Sub Init()
 
+  Dim sFlag As String
+  
   $sCompiler = System.Find("gcc")
 
+  sFlag = Env["GB_JIT_CFLAGS"] 
+  If Not sFlag Then sFlag = "-O3"
+  
+  $aFlags = Split(sFlag, " ")
+   
 End
+
+Private Sub RunCompiler(sInput As String, Optional sOutput As String, sOption As String) As String
+
+  Dim aExec As String[]
+  Dim sResult As String
+  Dim I As Integer
+  
+  aExec = [$sCompiler]
+  If sOption Then aExec.Insert(Split(sOption, " "))
+  aExec.Insert($aFlags)
+  aExec.Add(sInput)
+  If sOutput Then 
+    aExec.Add("-o")
+    aExec.Add(sOutput)
+  Endif
+  
+  For I = 0 To aExec.Max
+    aExec[I] = Shell$(aExec[I])
+  Next
+  
+  'Exec aExec Error To sResult
+  Shell aExec.Join(" ") To sResult
+  
+  Return sResult
+  
+End
+
 
 Public Sub Compile(sArch As String) As String
 
@@ -22,7 +57,6 @@ Public Sub Compile(sArch As String) As String
   Dim sPathO As String
   Dim sPathSO As String
   Dim fTime As Float
-  Dim sFlag As String
   Dim bDebug As Boolean
   
   Try bDebug = CInt(Env["GB_JIT_DEBUG"])
@@ -32,27 +66,61 @@ Public Sub Compile(sArch As String) As String
     Error "gb.jit: translating "; If(sArch, sArch, "project")
   Endif
   
+  If Not $sCompiler Then Init
+  
+  
   sName = sArch
   If Not sName Then sName = "gb"
   
   sDir = File.Dir(Temp$()) &/ "jit"
   Try Mkdir sDir
-  sPath = sDir &/ sName & ".c"
   
+  sPath = sDir &/ "jit.h"
+  
+  If Not Exist(sPath) Then
+    
+    If bDebug Then Error "gb.jit: generating header"
+    
+    hFile = Open sPath For Output Create
+    
+    Print #hFile, "#define NO_CONFIG_H"
+    Print #hFile, File.Load("gambas.h");
+    Print #hFile, File.Load("jit.h");
+    Print #hFile, File.Load("gb_error_common.h");
+    Print #hFile, File.Load("gb.jit.h");
+  
+    Print #hFile, "GB_INTERFACE * GB_PTR;"
+    Print #hFile, "#define GB (*GB_PTR)"
+    Print #hFile, "JIT_INTERFACE * JIT_PTR;"
+    Print #hFile, "#define JIT (*JIT_PTR)"
+    
+    Close #hFile
+    
+    ' 'Shell $sCompiler & " -fPIC " & Shell(sPath) To sResult
+    ' sResult = RunCompiler(sPath,, "-fPIC")
+    ' If Not Exist(sPath & ".gch") Then
+    '   Error "gb.jit: error: unable to generate precompiled header"
+    '   Error sResult
+    '   Return
+    ' Endif
+    ' 
+    ' If bDebug Then 
+    '   Try Kill "/tmp/" & File.Name(sPath)
+    '   Copy sPath To "/tmp/" & File.Name(sPath)
+    '   Try Kill "/tmp/" & File.Name(sPath & ".gch")
+    '   Copy sPath & ".gch" To "/tmp/" & File.Name(sPath & ".gch")
+    ' Endif
+    
+  Endif
+  
+  sPath = sDir &/ sName & ".c"
+
   If bDebug Then Error "gb.jit: generating "; sPath
   
   hFile = Open sPath For Output Create
   
-  Print #hFile, "#define NO_CONFIG_H"
-  Print #hFile, File.Load("gambas.h");
-  Print #hFile, File.Load("jit.h");
-  Print #hFile, File.Load("gb_error_common.h");
-  Print #hFile, File.Load("gb.jit.h");
-
-  Print #hFile, "GB_INTERFACE * GB_PTR;"
-  Print #hFile, "#define GB (*GB_PTR)"
-  Print #hFile, "JIT_INTERFACE * JIT_PTR;"
-  Print #hFile, "#define JIT (*JIT_PTR)"
+  Print #hFile, "#include \"jit.h\""
+  Print #hFile
 
   If sArch Then
     sDir = "." &/ sArch
@@ -78,40 +146,29 @@ Public Sub Compile(sArch As String) As String
   sPathO = File.SetExt(sPath, "o")
   sPathSO = File.SetExt(sPath, "so")
   
-  If Not $sCompiler Then Init
-  
-  ' Error "gb.jit: preprocessing:"
-  ' 
-  ' Shell $sCompiler & " -E " & Shell(sPath) & " 2>&1" To sResult
-  ' Error sResult
-
   If bDebug Then Error "gb.jit: compiling to "; sPathO
   
-  sFlag = Env["GB_JIT_CFLAGS"] 
-  If Not sFlag Then sFlag = "-O3"
-  
-  'Shell $sCompiler & " -E " & Shell(sPath) & " 2>&1" To sResult
-  'Error sResult
-
   'gcc -c -fPIC -o foo.o foo.c
   'Exec [$sCompiler, "-c", "-fPIC", "-o", File.SetExt(sPath, "o"), sPath] To sResult
-  Shell $sCompiler & " -c -fPIC " & sFlag & " -o " & Shell(sPathO) & " " & Shell(sPath) & " 2>&1" To sResult
-  If Not Exist(sPathO) Then 
+  'Shell $sCompiler & " -c -fPIC " & sFlag & " -o " & Shell(sPathO) & " " & Shell(sPath) & " 2>&1" To sResult
+  sResult = RunCompiler(sPath, sPathSO, "-fPIC -shared -lm")
+  If Not Exist(sPathSO) Then 
     Error "gb.jit: error: unable to compile JIT code:"
     Error sResult
     Return
   Endif
 
-  If bDebug Then Error "gb.jit: linking to "; sPathSO
-  
-  'gcc -shared -o libfoo.so foo.o
-  'Exec [$sCompiler, "-shared", "-o", File.SetExt(sPath, "so"), File.SetExt(sPath, "o")] To sResult
-  Shell $sCompiler & " -shared " & sFlag & " -lm -o " & Shell(sPathSO) & " " & Shell(sPathO) & " 2>&1" To sResult
-  If Not Exist(sPathSO) Then 
-    Error "gb.jit: warning: unable to link JIT code:"
-    Error sResult
-    Return
-  Endif
+  ' If bDebug Then Error "gb.jit: linking to "; sPathSO
+  ' 
+  ' 'gcc -shared -o libfoo.so foo.o
+  ' 'Exec [$sCompiler, "-shared", "-o", File.SetExt(sPath, "so"), File.SetExt(sPath, "o")] To sResult
+  ' 'Shell $sCompiler & " -shared " & sFlag & " -lm -o " & Shell(sPathSO) & " " & Shell(sPathO) & " 2>&1" To sResult
+  ' RunCompiler(sPathO, sPathSO, "-shared -lm")
+  ' If Not Exist(sPathSO) Then 
+  '   Error "gb.jit: warning: unable to link JIT code:"
+  '   Error sResult
+  '   Return
+  ' Endif
   
   If bDebug Then Error "gb.jit: done in "; Format(Timer - fTime, "0.000"); "s"
   

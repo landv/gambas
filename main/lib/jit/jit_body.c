@@ -1739,6 +1739,22 @@ static void push_call(ushort code)
 			push(func_type, "(%s)", call);
 			
 			break;
+			
+		case CALL_EVENT:
+			
+			for (i = 0; i < narg; i++)
+				STR_add(&call, "%s,", push_expr(i - narg, get_type(i - narg)));
+			
+			pop_stack(narg + 1);
+			
+			if (func_index != NO_SYMBOL)
+				STR_add(&call, "RAISE_EVENT(%d,%d)", func_index, narg);
+			else
+				STR_add(&call, "RAISE_UNKNOWN_EVENT(%d)", _pc);
+	
+			push(T_BOOLEAN, "(%s)", call);
+			
+			break;
 	
 		default:
 			
@@ -1810,6 +1826,32 @@ static void push_complex(void)
 	push(T_OBJECT, "PUSH_COMPLEX(%s)", expr);
 	
 	STR_free(expr);
+}
+
+
+static void push_event(bool unknown, int index)
+{
+	CLASS_DESC *desc;
+	const char *name;
+	
+	if (unknown)
+	{
+		name = JIT_class->load->unknown[index];
+		// The ':' is already in the name, thanks to the compiler.
+		index = CLASS_find_symbol(JIT_class, name);
+		if (index != NO_SYMBOL)
+		{
+			desc = JIT_class->table[index].desc;
+			if (CLASS_DESC_get_type(desc) == CD_EVENT)
+				index = desc->event.index;
+			else
+				index = NO_SYMBOL;
+		}
+	}
+	else if (JIT_class->parent)
+		index += JIT_class->parent->n_event;
+
+	push_function(CALL_EVENT, index);
 }
 
 
@@ -2735,6 +2777,18 @@ _ON_GOTO_GOSUB:
 	goto _MAIN;
 
 _PUSH_EVENT:
+
+	index = GET_UX();
+	if (index == 0xFF)
+	{
+		push_event(TRUE, PC[0]);
+		p++;
+	}
+	else
+		push_event(FALSE, index);
+	
+	goto _MAIN;
+
 _PUSH_EXTERN:
 _BYREF:
 _CALL_QUICK:

@@ -46,7 +46,8 @@
 enum
 {
 	CALL_UNKNOWN,
-  CALL_PRIVATE
+	CALL_PRIVATE,
+	CALL_EVENT
 };
 
 #ifndef __GBC_JIT_C
@@ -79,7 +80,7 @@ int JIT_get_code_size(FUNCTION *func);
 int JIT_find_symbol(CLASS *class, const char *name);
 void JIT_load_class(CLASS *class);
 
-// jit_translate.c
+// jit_body.c
 
 bool JIT_translate_body(FUNCTION *func, int index);
 

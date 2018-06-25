@@ -202,6 +202,24 @@ static void callback_error(int fd, int type, CPROCESS *process)
 	fprintf(stderr, "callback_error: %d %p\n", fd, process);
 	#endif
 
+	if (process->to_string && process->with_error)
+	{
+		int n;
+
+		for(;;)
+		{
+			n = read(fd, COMMON_buffer, 256);
+			if (n >= 0 || errno != EINTR)
+				break;
+		}
+
+		if (n > 0)
+		{
+			process->result = STRING_add(process->result, COMMON_buffer, n);
+			return;
+		}
+	}
+
 	if (GB_CanRaise(process, EVENT_Error))
 	{
 		n = read(fd, buffer, sizeof(buffer));
@@ -581,6 +599,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	if (mode & PM_STRING)
 	{
 		process->to_string = TRUE;
+		process->with_error = (mode & PM_ERROR) != 0;
 		process->result = NULL;
 		mode |= PM_READ;
 	}

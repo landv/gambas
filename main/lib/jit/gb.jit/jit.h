@@ -363,7 +363,7 @@ enum
 #define PUSH_UNKNOWN(_pc) (PC = &pc[_pc], SP = sp, JIT.push_unknown(), sp = SP)
 #define POP_UNKNOWN(_pc) (PC = &pc[_pc], SP = sp, JIT.pop_unknown(), sp = SP)
 
-#define PUSH_COMPLEX(_val) (PUSH_f(_val),SP = sp,JIT.push_complex(),POP_o())
+#define PUSH_COMPLEX(_val) (PUSH_f(_val), SP = sp, JIT.push_complex(), POP_o())
 
 #define GET_ME_STATIC() (CP)
 #define GET_ME() ({ GB_OBJECT _v; _v.type = (GB_TYPE)CP; _v.value = OP; _v; })
@@ -387,3 +387,8 @@ enum
 #define ERROR_reset JIT.error_reset
   
 #define QUIT(_code) (SP = sp, JIT.exec_quit(_code))
+
+#define RAISE_EVENT(_event, _narg) (SP = sp, GB.Raise(OP, (_event), -(_narg)), sp = SP)
+#define RAISE_UNKNOWN_EVENT(_pc) (PC = &pc[_pc], SP = sp, JIT.push_unknown_event(0), sp = SP)
+
+

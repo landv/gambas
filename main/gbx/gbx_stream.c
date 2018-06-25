@@ -954,7 +954,7 @@ static STREAM *enter_temp_stream(STREAM *stream)
 	{
 		_temp_save = stream;
 		_temp_level = 0;
-		if (&_temp_stream.type)
+		if (_temp_stream.type)
 			STREAM_close(&_temp_stream);
 		STREAM_open(&_temp_stream, NULL, ST_STRING | ST_WRITE);
 	}
