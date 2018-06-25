@@ -36,7 +36,6 @@ gbc3_SOURCES = \
  gbc_pcode.c \
  gb_file.h gb_file.c \
  gbc_form.h gbc_form.c gbc_form_webpage.c \
- gbc_jit.h gbc_jit.c gbc_jit_body.c \
  gb_str.h gb_str.c \
  gbc_chown.h gbc_chown.c \
  gb_common.c \

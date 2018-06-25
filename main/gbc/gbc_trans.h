@@ -48,16 +48,17 @@ enum {
 	TS_MODE_WATCH  = (1 << 6),
 	TS_MODE_PIPE   = (1 << 7),
 	TS_MODE_MEMORY = (1 << 8),
-	TS_MODE_STRING = (1 << 9)
+	TS_MODE_STRING = (1 << 9),
 	};
 
 enum {
-	TS_EXEC_NONE = 0,
-	TS_EXEC_READ = 1,
-	TS_EXEC_WRITE = 2,
-	TS_EXEC_TERM = 4,
-	TS_EXEC_STRING = 8,
-	TS_EXEC_WAIT = 16
+	TS_EXEC_NONE   = 0,
+	TS_EXEC_READ   = (1 << 0),
+	TS_EXEC_WRITE  = (1 << 1),
+	TS_EXEC_TERM   = (1 << 2),
+	TS_EXEC_STRING = (1 << 3),
+	TS_EXEC_WAIT   = (1 << 4),
+	TS_EXEC_ERROR  = (1 << 5)
 	};
 
 enum {

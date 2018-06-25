@@ -383,7 +383,7 @@ static PATTERN *trans_embedded_array(PATTERN *look, int mode, TRANS_DECL *result
 
 	look++;
 
-	if (mode && TT_CAN_ARRAY)
+	if (mode & TT_CAN_ARRAY)
 	{
 		for (i = 0;; i++)
 		{

@@ -710,14 +710,36 @@ static void trans_exec_shell(bool shell)
 				mode |= TS_EXEC_WRITE;
 		}
 	}
-	else if (TRANS_is(RS_TO))
+	else
 	{
-		if (TRANS_in_assignment)
-			THROW("Syntax error. Cannot use this syntax in assignment");
-
-		mode = TS_EXEC_STRING;
-		wait = TRUE;
-		as = FALSE;
+		/*if (TRANS_is(RS_ERROR))
+		{
+			mode = TS_EXEC_STRING + TS_EXEC_ERROR;
+			TRANS_want(RS_TO, "TO expected");
+		}
+		else if (TRANS_is(RS_TO))
+		{
+			mode = TS_EXEC_STRING;
+		}
+		
+		if (mode & TS_EXEC_STRING)
+		{
+			if (TRANS_in_assignment)
+				THROW("Syntax error. Cannot use this syntax in assignment");
+			
+			wait = TRUE;
+			as = FALSE;
+		}*/
+		
+		if (TRANS_is(RS_TO))
+		{
+			if (TRANS_in_assignment)
+				THROW("Syntax error. Cannot use this syntax in assignment");
+			
+			mode = TS_EXEC_STRING;
+			wait = TRUE;
+			as = FALSE;
+		}
 	}
 	
 	if (wait) mode |= TS_EXEC_WAIT;
