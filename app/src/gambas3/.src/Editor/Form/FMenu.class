@@ -74,6 +74,10 @@ Public Sub Form_Close()
   If $bModified Then
     Select Case Message.Warning(("Menus have been modified!"), ("Save"), ("Ignore"), ("Cancel"))
       Case 1
+        If CheckMenu() Then 
+          Stop Event
+          Return
+        Endif
         SaveAllMenu
       Case 2
       Case 3
