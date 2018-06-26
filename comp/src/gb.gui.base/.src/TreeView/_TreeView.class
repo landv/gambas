@@ -1302,12 +1302,13 @@ End
 
 Public Sub Sort_Timer()
   
-  Dim hItem As _TreeView_Item
+  'Dim hItem As _TreeView_Item
   
   $hSortTimer = Null
   If Not $cSort Then Return
   
-  hItem = Current_Read()
+  'hItem = Current_Read()
+  _SaveSelection
   
   For Each $cSort
     SortItem($cItem[$cSort.Key])
@@ -1318,7 +1319,8 @@ Public Sub Sort_Timer()
   $bSortRoot = False
   $cSort.Clear
   
-  If hItem Then _SetItemSelected(hItem, True)
+  'If hItem Then _SetItemSelected(hItem, True)
+  _RestoreSelection
   
 End
 
