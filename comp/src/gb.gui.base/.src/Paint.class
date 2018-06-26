@@ -248,7 +248,7 @@ Static Public Sub StretchImage((Image) As Image, X As Float, Y As Float, Width A
   
 End
 
-Static Public Sub DrawRect(X As Float, Y As Float, Width As Float, Height As Float, Color As Integer, Optional Size As Float = 1)
+Static Public Sub DrawRect(X As Float, Y As Float, Width As Float, Height As Float, (Color) As Integer, Optional Size As Float = 1)
   
   If Size = 0 Then Return
   
