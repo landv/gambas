@@ -47,7 +47,15 @@ typedef
     void *super;
     }
   GB_VALUE_CLASS;
-  
+
+typedef
+  struct {
+    GB_TYPE type;
+    void *object;
+    void *super;
+    }
+  GB_VALUE_OBJECT;
+
 typedef
   struct {
     GB_TYPE type;
@@ -155,6 +163,7 @@ typedef
 #define PUSH_C(_val) ({ GB_VALUE_CLASS _v; _v.type = GB_T_CLASS; _v.class = (_val); *((GB_VALUE_CLASS *)sp) = _v; sp++; })
 #define PUSH_u(_val) (*sp = (_val), GB.BorrowValue(sp), sp++)
 #define PUSH_V() (sp->type = GB_T_VOID, sp++)
+#define PUSH_n(_val) ({ sp->type = GB_T_NULL; sp++; })
 
 enum
 {
@@ -303,7 +312,8 @@ enum
 #define PUSH_ARRAY_f(_array, _index) PUSH_ARRAY(double, _array, _index)
 #define PUSH_ARRAY_p(_array, _index) PUSH_ARRAY(intptr_t, _array, _index)
 #define PUSH_ARRAY_s(_array, _index) GET_STRING(PUSH_ARRAY(char *, _array, _index), 0, GB.StringLength(temp.value.addr))
-#define PUSH_ARRAY_o(_array, _index, _type) GET_OBJECT(PUSH_ARRAY(void *, _array, _index), _type)
+#define PUSH_ARRAY_o(_array, _index) GET_OBJECT(PUSH_ARRAY(void *, _array, _index), GB_T_OBJECT)
+#define PUSH_ARRAY_O(_array, _index, _type) GET_OBJECT(PUSH_ARRAY(void *, _array, _index), _type)
 #define PUSH_ARRAY_v(_array, _index) GET_VARIANT(PUSH_ARRAY(GB_VARIANT_VALUE, _array, _index))
 
 #define POP_ARRAY(_type, _array, _index, _val) (*GET_ARRAY(_type, _array, _index) = (_val))
@@ -365,9 +375,42 @@ enum
 
 #define PUSH_COMPLEX(_val) (PUSH_f(_val), SP = sp, JIT.push_complex(), POP_o())
 
-#define GET_ME_STATIC() (CP)
-#define GET_ME() ({ GB_OBJECT _v; _v.type = (GB_TYPE)CP; _v.value = OP; _v; })
-#define GET_LAST() ({ GB_OBJECT _v; _v.type = GB_T_OBJECT; _v.value = *(JIT.event_last); _v; })
+#define GET_LAST() GET_OBJECT(*(JIT.event_last), GB_T_OBJECT)
+
+#define GET_ME(_type) ({ \
+  GB_OBJECT _temp; \
+  if (OP) \
+  { \
+    GB_VALUE_OBJECT *_p = (GB_VALUE_OBJECT *)&_temp; \
+    _p->type = (GB_TYPE)(_type); \
+    _p->object = OP; \
+  } \
+  else \
+  { \
+    GB_VALUE_CLASS *_p = (GB_VALUE_CLASS *)&_temp; \
+    _p->type = GB_T_CLASS; \
+    _p->class = (GB_TYPE)(_type); \
+  } \
+  _temp; })
+
+#define GET_SUPER(_type) ({ \
+  GB_OBJECT _temp; \
+  if (OP) \
+  { \
+    GB_VALUE_OBJECT *_p = (GB_VALUE_OBJECT *)&_temp; \
+    _p->type = (GB_TYPE)(_type); \
+    _p->object = OP; \
+    _p->super = *JIT.exec_super; \
+  } \
+  else \
+  { \
+    GB_VALUE_CLASS *_p = (GB_VALUE_CLASS *)&_temp; \
+    _p->type = GB_T_CLASS; \
+    _p->class = (GB_TYPE)(_type); \
+    _p->super = *JIT.exec_super; \
+  } \
+  *JIT.exec_super = sp; \
+  _temp; })
 
 #define CALL_UNKNOWN(_pc) (JIT.call_unknown(&pc[_pc], sp), sp = SP)
 
@@ -391,4 +434,23 @@ enum
 #define RAISE_EVENT(_event, _narg) (SP = sp, GB.Raise(OP, (_event), -(_narg)), sp = SP)
 #define RAISE_UNKNOWN_EVENT(_pc) (PC = &pc[_pc], SP = sp, JIT.push_unknown_event(0), sp = SP)
 
+#define MATH_ABS(_val) ({ \
+  __typeof(_val) _v = (_val); \
+  (_v < 0) ? (- _v) : _v; \
+})
+
+#define MATH_SGN(_val) ({ \
+  __typeof(_val) _v = (_val); \
+  (_v < 0) ? -1 : ((_v > 0) ? 1 : 0); \
+})
+
+#define MATH_FIX_g(_val) ({ \
+  __typeof(_val) _v = (_val); \
+  (_v >= 0) ? floorf(_v) : -floorf(fabsf(_v)); \
+})
+
+#define MATH_FIX_f(_val) ({ \
+  __typeof(_val) _v = (_val); \
+  (_v >= 0) ? floor(_v) : -floor(fabs(_v)); \
+})
 

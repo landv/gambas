@@ -39,7 +39,7 @@ Private Sub RunCompiler(sInput As String, Optional sOutput As String, sOption As
   Next
   
   'Exec aExec Error To sResult
-  Shell aExec.Join(" ") To sResult
+  Shell aExec.Join(" ") & " 2>&1" To sResult
   
   Return sResult
   

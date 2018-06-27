@@ -55,6 +55,14 @@ enum {
 	CALL_PUSH_ARRAY,
 	CALL_POP_ARRAY
 };
+
+enum {
+	MATH_NEG,
+	MATH_ABS,
+	MATH_SGN,
+	MATH_INT,
+	MATH_FIX
+};
 	
 static STACK_SLOT _stack[MAX_STACK];
 static int _stack_current = 0;
@@ -112,7 +120,7 @@ static void enter_function(FUNCTION *func, int index)
 	JIT_print_decl("  GB_VALUE_GOSUB *gp = 0;\n");
 	JIT_print_decl("  bool error;\n");
 	
-	JIT_print("\n  TRY {\n\n");
+	JIT_print("  TRY {\n\n");
 }
 
 
@@ -724,6 +732,11 @@ static void push_unknown(int index)
 	
 	check_stack(1);
 
+	// TODO: Check object
+	// if (!class->is_simple && ...
+	// if (UNLIKELY(class->must_check && (*(class->check))(object)))
+	//   THROW(E_IOBJECT);
+
 	class = get_class(-1);
 	
 	if (class)
@@ -943,7 +956,7 @@ static void push_array(ushort code)
 				expr2 = peek(-1, T_INTEGER);
 				
 				if (TYPE_is_pure_object(type))
-					expr = STR_print("PUSH_ARRAY_o(%s,%s,CLASS(%p))", expr1, expr2, (CLASS *)type);
+					expr = STR_print("PUSH_ARRAY_O(%s,%s,CLASS(%p))", expr1, expr2, (CLASS *)type);
 				else
 					expr = STR_print("PUSH_ARRAY_%s(%s,%s)", JIT_get_type(type), expr1, expr2);
 				
@@ -1250,19 +1263,29 @@ static void push_subr_div(ushort code)
 }
 
 
-static void push_subr_neg(ushort code)
+static void push_subr_arithmetic(char op, ushort code)
 {
 	TYPE type;
 	char *expr;
+	const char *func;
 	
 	check_stack(1);
 	
 	type = get_type(-1);
 	
+	switch (op)
+	{
+		case MATH_ABS: func = "MATH_ABS"; break;
+		case MATH_NEG: func = "- "; break;
+		case MATH_SGN: func = "MATH_SGN"; break;
+	}
+	
 	switch(type)
 	{
 		case T_BOOLEAN:
-			return;
+			if (op == MATH_NEG)
+				return;
+			break;
 
 		case T_BYTE: case T_SHORT: case T_INTEGER: case T_LONG: case T_SINGLE: case T_FLOAT:
 			break;
@@ -1275,7 +1298,43 @@ static void push_subr_neg(ushort code)
 	expr = STR_copy(peek(-1, type));
 	
 	pop_stack(1);
-	push(type, "(- %s)", expr);
+	push(type, "(%s(%s))", func, expr);
+	STR_free(expr);
+}
+
+
+static void push_subr_float_arithmetic(char op, ushort code)
+{
+	TYPE type;
+	char *expr;
+	const char *func;
+	
+	check_stack(1);
+	
+	type = get_type(-1);
+	
+	switch(type)
+	{
+		case T_BOOLEAN: case T_BYTE: case T_SHORT: case T_INTEGER: case T_LONG:
+			return;
+		
+		case T_SINGLE:
+			func = op == MATH_FIX ? "MATH_FIX_g" : "floorf";
+			break;
+		
+		case T_FLOAT:
+			func = op == MATH_FIX ? "MATH_FIX_f" : "floor";
+			break;
+
+		default:
+			push_subr(CALL_SUBR_CODE, code);
+			return;
+	}
+	
+	expr = STR_copy(peek(-1, type));
+	
+	pop_stack(1);
+	push(type, "(%s(%s))", func, expr);
 	STR_free(expr);
 }
 
@@ -1625,6 +1684,7 @@ static void push_call(ushort code)
 	int i, j;
 	int narg;
 	FUNCTION *func;
+	CLASS_EXTERN *ext;
 	int func_kind, func_index;
 	TYPE func_type;
 	int nopt, opt;
@@ -1657,7 +1717,7 @@ static void push_call(ushort code)
 					pop_stack(narg + 1);
 					push(T_UNKNOWN, "(JIT.throw(E_NEPARAM))");
 				}
-				else if (narg > func->n_param)
+				else if (narg > func->n_param && !func->vararg)
 				{
 					pop_stack(narg + 1);
 					push(T_UNKNOWN, "(JIT.throw(E_TMPARAM))");
@@ -1755,6 +1815,39 @@ static void push_call(ushort code)
 			push(T_BOOLEAN, "(%s)", call);
 			
 			break;
+			
+		case CALL_EXTERN:
+			
+			ext = &JIT_class->load->ext[func_index];
+			
+			if (narg < ext->n_param)
+			{
+				pop_stack(narg + 1);
+				push(T_UNKNOWN, "(JIT.throw(E_NEPARAM))");
+			}
+			else if (narg > ext->n_param && !ext->vararg)
+			{
+				pop_stack(narg + 1);
+				push(T_UNKNOWN, "(JIT.throw(E_TMPARAM))");
+			}
+			else
+			{
+				STR_add(&call,"SP = sp, (*(void (*)())%p)(", JIT.get_extern(ext));
+				
+				for (i = 0; i < ext->n_param; i++)
+				{
+					if (i) STR_add(&call, ",");
+					STR_add(&call, "%s", peek(i - narg, ext->param[i].type));
+				}
+				
+				STR_add(&call, ")");
+				
+				pop_stack(narg + 1);
+			
+				push(ext->type, "(%s)", call);
+			}
+				
+			break;
 	
 		default:
 			
@@ -1811,6 +1904,27 @@ static void push_subr_math(ushort code)
 	pop_stack(1);
 	
 	push(T_FLOAT, "CALL_MATH(%s, %s)", func[code & 0x1F], expr);
+	
+	STR_free(expr);
+}
+
+
+static void push_subr_pi(ushort code)
+{
+	char *expr;
+	
+	if ((code & 0xFF) == 0)
+	{
+		push(T_FLOAT, "M_PI");
+		return;
+	}
+	
+	check_stack(1);
+	
+	expr = STR_copy(peek(-1, T_FLOAT));
+	pop_stack(1);
+	
+	push(T_FLOAT, "(M_PI * (%s))", expr);
 	
 	STR_free(expr);
 }
@@ -1952,12 +2066,12 @@ bool JIT_translate_body(FUNCTION *func, int ind)
 		/* 51 Comp            */  &&_SUBR_CODE,
 		/* 52 Conv            */  &&_SUBR,
 		/* 53 DConv           */  &&_SUBR_CODE,
-		/* 54 Abs             */  &&_SUBR_CODE,
-		/* 55 Int             */  &&_SUBR_CODE,
-		/* 56 Fix             */  &&_SUBR_CODE,
-		/* 57 Sgn             */  &&_SUBR_CODE,
+		/* 54 Abs             */  &&_SUBR_ABS,
+		/* 55 Int             */  &&_SUBR_INT,
+		/* 56 Fix             */  &&_SUBR_FIX,
+		/* 57 Sgn             */  &&_SUBR_SGN,
 		/* 58 Frac...         */  &&_SUBR_MATH,
-		/* 59 Pi              */  &&_SUBR_CODE,
+		/* 59 Pi              */  &&_SUBR_PI,
 		/* 5A Round           */  &&_SUBR_CODE,
 		/* 5B Randomize       */  &&_SUBR_CODE,
 		/* 5C Rnd             */  &&_SUBR_CODE,
@@ -2395,9 +2509,10 @@ _PUSH_FUNCTION:
 _PUSH_ME:
 
 	index = GET_UX();
-	push(T_OBJECT, "GET_ME()");
-	
-	// TODO: SUPER
+	if (index & 2)
+		push((TYPE)(JIT_class->parent), "GET_SUPER(%p)", JIT_class->parent);
+	else
+		push((TYPE)JIT_class, "GET_ME(%p)", JIT_class);
 	
 	goto _MAIN;
 	
@@ -2628,7 +2743,7 @@ _SUBR_DIV:
 
 _SUBR_NEG:
 
-	push_subr_neg(code);
+	push_subr_arithmetic(MATH_NEG, code);
 	goto _MAIN;
 
 _SUBR_QUO:
@@ -2661,6 +2776,26 @@ _SUBR_NOT:
 	push_subr_not(code);
 	goto _MAIN;
 
+_SUBR_ABS:
+
+	push_subr_arithmetic(MATH_ABS, code);
+	goto _MAIN;
+
+_SUBR_SGN:
+
+	push_subr_arithmetic(MATH_SGN, code);
+	goto _MAIN;
+
+_SUBR_INT:
+
+	push_subr_float_arithmetic(MATH_INT, code);
+	goto _MAIN;
+
+_SUBR_FIX:
+	
+	push_subr_float_arithmetic(MATH_FIX, code);
+	goto _MAIN;
+
 _SUBR_COMPE:
 _SUBR_COMPN:
 _SUBR_COMPGT:
@@ -2691,11 +2826,16 @@ _SUBR_MATH:
 	push_subr_math(code);
 	goto _MAIN;
 	
+_SUBR_PI:
+
+	push_subr_pi(code);
+	goto _MAIN;
+	
 _SUBR_BIT:
 
 	push_subr_bit(code);
 	goto _MAIN;
-
+	
 _BREAK:
 
 	goto _MAIN;
@@ -2790,6 +2930,11 @@ _PUSH_EVENT:
 	goto _MAIN;
 
 _PUSH_EXTERN:
+
+	index = GET_UX();
+	push_function(CALL_EXTERN, index);
+	goto _MAIN;
+
 _BYREF:
 _CALL_QUICK:
 _CALL_SLOW:

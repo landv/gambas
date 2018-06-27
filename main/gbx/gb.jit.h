@@ -48,6 +48,7 @@ typedef
 		char **op;
 		GB_VALUE *ret;
 		bool *exec_debug;
+		GB_VALUE **exec_super;
 		void (*debug)(const char *fmt, ...);
 		JIT_PCODE *(*get_code)(void *class, int index);
 		void (*throw)(int code, ...) NORETURN;
@@ -78,6 +79,7 @@ typedef
 		void (*pop_vargs)(void);
 		void (*exec_quit)(ushort code);
 		void (*push_unknown_event)(bool);
+		void *(*get_extern)(void *ext);
 	}
 	JIT_INTERFACE;
 

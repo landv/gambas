@@ -47,7 +47,8 @@ enum
 {
 	CALL_UNKNOWN,
 	CALL_PRIVATE,
-	CALL_EVENT
+	CALL_EVENT,
+	CALL_EXTERN
 };
 
 #ifndef __GBC_JIT_C

@@ -341,6 +341,7 @@ const void *const GAMBAS_JitApi[] =
 	(void *)&OP,
 	(void *)&TEMP,
 	(void *)&EXEC_debug,
+	(void *)&EXEC_super,
 	(void *)JIT_debug,
 	(void *)JIT_get_code,
 	(void *)THROW,
@@ -371,6 +372,7 @@ const void *const GAMBAS_JitApi[] =
 	(void *)EXEC_drop_vargs,
 	(void *)EXEC_quit,
 	(void *)EXEC_push_unknown_event,
+	(void *)EXTERN_get_addr,
 	NULL
 };
 

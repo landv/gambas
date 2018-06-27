@@ -59,6 +59,7 @@
 static bool _load_class_from_jit = FALSE;
 static const char *_class_name;
 static bool _swap;
+static bool _last_ctype_is_static;
 
 #define _b "\x1"
 #define _s "\x2"
@@ -149,6 +150,7 @@ static void conv_type(CLASS *class, void *ptype)
 		SWAP_type(&ctype);
 	}
 
+	_last_ctype_is_static = CTYPE_is_static(ctype);
 	*((TYPE *)ptype) = CLASS_ctype_to_type(class, ctype);
 }
 
@@ -682,7 +684,9 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	for (i = 0; i < class->load->n_func; i++)
 	{
 		func = &class->load->func[i];
+		
 		conv_type(class, &func->type);
+		func->is_static = _last_ctype_is_static;
 
 		if (func->n_param > 0)
 		{

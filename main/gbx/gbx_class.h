@@ -113,7 +113,8 @@ typedef
 		unsigned fast_linked : 1;
 		unsigned optional : 1;
 		unsigned use_is_missing : 1;
-		unsigned _reserved : 4;
+		unsigned is_static : 1;
+		unsigned _reserved : 3;
 		short n_local;
 		short n_ctrl;
 		short stack_usage;
