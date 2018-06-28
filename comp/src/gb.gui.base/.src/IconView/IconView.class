@@ -1103,9 +1103,9 @@ Public Sub ScrollArea_MouseUp()
     If $iCurrent >= 0 Then 
       If $iCurrent = $iCurrentBefore Then
         '$aItems[$iCurrent].Rename
-      Else
-        RaiseEvent(EVENT_CLICK, $iCurrent)
       Endif
+      ' Click is always raised, Select may not
+      RaiseEvent(EVENT_CLICK, $iCurrent)
     Endif
     
   Endif
