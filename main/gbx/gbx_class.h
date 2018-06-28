@@ -110,11 +110,12 @@ typedef
 		char npmin;
 		char vararg;
 		unsigned fast : 1;
+		unsigned unsafe : 1;
 		unsigned fast_linked : 1;
 		unsigned optional : 1;
 		unsigned use_is_missing : 1;
 		unsigned is_static : 1;
-		unsigned _reserved : 3;
+		unsigned _reserved : 2;
 		short n_local;
 		short n_ctrl;
 		short stack_usage;

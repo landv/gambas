@@ -311,6 +311,7 @@ void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
 	func->npmin = -1;
 	func->vararg = decl->vararg;
 	func->fast = decl->fast;
+	func->unsafe = decl->unsafe;
 
 	// Function startup
 

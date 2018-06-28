@@ -760,6 +760,8 @@ static void output_method(void)
 		flag = func->fast;
 		if (func->use_is_missing)
 			flag += 2;
+		if (func->unsafe)
+			flag += 4;
 
 		write_byte(flag);
 

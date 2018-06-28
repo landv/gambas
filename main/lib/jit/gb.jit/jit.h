@@ -15,6 +15,7 @@
 #define E_ARG       20
 #define E_BOUND     21
 #define E_ZERO      26
+#define E_IOBJECT   29
 
 #define deg(_x) ((_x) * 180 / M_PI)
 #define rad(_x) ((_x) * M_PI / 180)
@@ -263,6 +264,15 @@ enum
   _object; \
 })
 
+#define ADDR_CHECK(_check, _val) ({ \
+  char *_object = (_val).value; \
+  if (!_object) JIT.throw(E_NULL); \
+  if (((void (*)())_check)(_object)) JIT.throw(E_IOBJECT); \
+  _object; \
+})
+
+#define ADDR_UNSAFE(_val) ((char *)((_val).value))
+
 #define GET_b(_addr) (*(bool *)(_addr))
 #define GET_c(_addr) (*(uchar *)()_addr))
 #define GET_h(_addr) (*(short *)(_addr))
@@ -287,7 +297,7 @@ enum
 #define SET_o(_addr, _val) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreObject((GB_OBJECT *)&temp, (void **)(_addr)); })
 #define SET_v(_addr, _val) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreVariant((GB_VARIANT *)&temp, (GB_VARIANT_VALUE *)(_addr)); })
 
-#define GET_ARRAY_NO_CHECK(_type, _array, _index) ({ \
+#define GET_ARRAY_UNSAFE(_type, _array, _index) ({ \
   GB_ARRAY_IMPL *_a = (_array).value; \
   int _i = (_index); \
   &((_type *)_a->data)[_i]; \
@@ -301,34 +311,34 @@ enum
   &((_type *)_a->data)[_i]; \
 })
 
-#define PUSH_ARRAY(_type, _array, _index) *GET_ARRAY(_type, _array, _index)
+#define PUSH_ARRAY(_type, _array, _index, _unsafe) *GET_ARRAY##_unsafe(_type, _array, _index)
 
-#define PUSH_ARRAY_b(_array, _index) PUSH_ARRAY(bool, _array, _index)
-#define PUSH_ARRAY_c(_array, _index) PUSH_ARRAY(uchar, _array, _index)
-#define PUSH_ARRAY_h(_array, _index) PUSH_ARRAY(short, _array, _index)
-#define PUSH_ARRAY_i(_array, _index) PUSH_ARRAY(int, _array, _index)
-#define PUSH_ARRAY_l(_array, _index) PUSH_ARRAY(int64_t, _array, _index)
-#define PUSH_ARRAY_g(_array, _index) PUSH_ARRAY(float, _array, _index)
-#define PUSH_ARRAY_f(_array, _index) PUSH_ARRAY(double, _array, _index)
-#define PUSH_ARRAY_p(_array, _index) PUSH_ARRAY(intptr_t, _array, _index)
-#define PUSH_ARRAY_s(_array, _index) GET_STRING(PUSH_ARRAY(char *, _array, _index), 0, GB.StringLength(temp.value.addr))
-#define PUSH_ARRAY_o(_array, _index) GET_OBJECT(PUSH_ARRAY(void *, _array, _index), GB_T_OBJECT)
-#define PUSH_ARRAY_O(_array, _index, _type) GET_OBJECT(PUSH_ARRAY(void *, _array, _index), _type)
-#define PUSH_ARRAY_v(_array, _index) GET_VARIANT(PUSH_ARRAY(GB_VARIANT_VALUE, _array, _index))
+#define PUSH_ARRAY_b(_array, _index, _unsafe) PUSH_ARRAY(bool, _array, _index, _unsafe)
+#define PUSH_ARRAY_c(_array, _index, _unsafe) PUSH_ARRAY(uchar, _array, _index, _unsafe)
+#define PUSH_ARRAY_h(_array, _index, _unsafe) PUSH_ARRAY(short, _array, _index, _unsafe)
+#define PUSH_ARRAY_i(_array, _index, _unsafe) PUSH_ARRAY(int, _array, _index, _unsafe)
+#define PUSH_ARRAY_l(_array, _index, _unsafe) PUSH_ARRAY(int64_t, _array, _index, _unsafe)
+#define PUSH_ARRAY_g(_array, _index, _unsafe) PUSH_ARRAY(float, _array, _index, _unsafe)
+#define PUSH_ARRAY_f(_array, _index, _unsafe) PUSH_ARRAY(double, _array, _index, _unsafe)
+#define PUSH_ARRAY_p(_array, _index, _unsafe) PUSH_ARRAY(intptr_t, _array, _index, _unsafe)
+#define PUSH_ARRAY_s(_array, _index, _unsafe) GET_STRING(PUSH_ARRAY(char *, _array, _index, _unsafe), 0, GB.StringLength(temp.value.addr))
+#define PUSH_ARRAY_o(_array, _index, _unsafe) GET_OBJECT(PUSH_ARRAY(void *, _array, _index, _unsafe), GB_T_OBJECT)
+#define PUSH_ARRAY_O(_array, _index, _type, _unsafe) GET_OBJECT(PUSH_ARRAY(void *, _array, _index, _unsafe), _type)
+#define PUSH_ARRAY_v(_array, _index, _unsafe) GET_VARIANT(PUSH_ARRAY(GB_VARIANT_VALUE, _array, _index, _unsafe))
 
-#define POP_ARRAY(_type, _array, _index, _val) (*GET_ARRAY(_type, _array, _index) = (_val))
+#define POP_ARRAY(_type, _array, _index, _val, _unsafe) (*GET_ARRAY##_unsafe(_type, _array, _index) = (_val))
 
-#define POP_ARRAY_b(_array, _index, _val) POP_ARRAY(bool, _array, _index, _val)
-#define POP_ARRAY_c(_array, _index, _val) POP_ARRAY(uchar, _array, _index, _val)
-#define POP_ARRAY_h(_array, _index, _val) POP_ARRAY(short, _array, _index, _val)
-#define POP_ARRAY_i(_array, _index, _val) POP_ARRAY(int, _array, _index, _val)
-#define POP_ARRAY_l(_array, _index, _val) POP_ARRAY(int64_t, _array, _index, _val)
-#define POP_ARRAY_g(_array, _index, _val) POP_ARRAY(float, _array, _index, _val)
-#define POP_ARRAY_f(_array, _index, _val) POP_ARRAY(double, _array, _index, _val)
-#define POP_ARRAY_p(_array, _index, _val) POP_ARRAY(intptr_t, _array, _index, _val)
-#define POP_ARRAY_s(_array, _index, _val) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreString((GB_STRING *)&temp, GET_ARRAY(char *, _array, _index)); })
-#define POP_ARRAY_o(_array, _index, _val) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreObject((GB_OBJECT *)&temp, GET_ARRAY(void *, _array, _index)); })
-#define POP_ARRAY_v(_array, _index, _val) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreVariant((GB_VARIANT *)&temp, GET_ARRAY(GB_VARIANT_VALUE, _array, _index)); })
+#define POP_ARRAY_b(_array, _index, _val, _unsafe) POP_ARRAY(bool, _array, _index, _val, _unsafe)
+#define POP_ARRAY_c(_array, _index, _val, _unsafe) POP_ARRAY(uchar, _array, _index, _val, _unsafe)
+#define POP_ARRAY_h(_array, _index, _val, _unsafe) POP_ARRAY(short, _array, _index, _val, _unsafe)
+#define POP_ARRAY_i(_array, _index, _val, _unsafe) POP_ARRAY(int, _array, _index, _val, _unsafe)
+#define POP_ARRAY_l(_array, _index, _val, _unsafe) POP_ARRAY(int64_t, _array, _index, _val, _unsafe)
+#define POP_ARRAY_g(_array, _index, _val, _unsafe) POP_ARRAY(float, _array, _index, _val, _unsafe)
+#define POP_ARRAY_f(_array, _index, _val, _unsafe) POP_ARRAY(double, _array, _index, _val, _unsafe)
+#define POP_ARRAY_p(_array, _index, _val, _unsafe) POP_ARRAY(intptr_t, _array, _index, _val, _unsafe)
+#define POP_ARRAY_s(_array, _index, _val, _unsafe) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreString((GB_STRING *)&temp, GET_ARRAY##_unsafe(char *, _array, _index)); })
+#define POP_ARRAY_o(_array, _index, _val, _unsafe) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreObject((GB_OBJECT *)&temp, GET_ARRAY##_unsafe(void *, _array, _index)); })
+#define POP_ARRAY_v(_array, _index, _val, _unsafe) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreVariant((GB_VARIANT *)&temp, GET_ARRAY##_unsafe(GB_VARIANT_VALUE, _array, _index)); })
 
 #define CONV(_val, _src, _dest, _type) (PUSH_##_src(_val),JIT.conv(sp - 1, (GB_TYPE)(_type)),POP_##_dest())
 
@@ -424,6 +434,7 @@ enum
 })
 
 #define CALL_MATH(_func, _val) ({ double _v = _func(_val); if (!isfinite(_v)) JIT.throw(E_MATH); _v; })
+#define CALL_MATH_UNSAFE(_func, _val) (_func(_val))
 
 #define ERROR_current (*(ERROR_CONTEXT **)(JIT.error_current))
 #define ERROR_handler (*(ERROR_HANDLER **)(JIT.error_handler))

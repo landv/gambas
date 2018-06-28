@@ -64,6 +64,7 @@ enum {
 	MATH_FIX
 };
 	
+
 static STACK_SLOT _stack[MAX_STACK];
 static int _stack_current = 0;
 
@@ -92,6 +93,8 @@ static bool _has_catch;
 
 static bool _has_just_dup;
 
+static bool _unsafe;
+
 
 static void enter_function(FUNCTION *func, int index)
 {
@@ -104,6 +107,8 @@ static void enter_function(FUNCTION *func, int index)
 	
 	_has_catch = FALSE;
 	_has_finally = func->error && (func->code[func->error - 1] != C_CATCH);
+	
+	_unsafe = func->unsafe;
 	
 	GB.NewArray((void **)&_dup_type, sizeof(TYPE), 0);
 	GB.NewArray((void **)&_ctrl_type, sizeof(TYPE), 0);
@@ -383,7 +388,10 @@ static char *get_conv(TYPE src, TYPE dest)
 				case T_BYTE: case T_SHORT: case T_INTEGER:
 					return "((float)(%s))";
 				case T_LONG: case T_FLOAT:
-					return "(CHECK_FINITE((float)(%s)))";
+					if (_unsafe)
+						return "((float)(%s))";
+					else
+						return "(CHECK_FINITE((float)(%s)))";
 			}
 			break;
 			
@@ -746,6 +754,7 @@ static void push_unknown(int index)
 		int pos;
 		TYPE utype;
 		char *sym;
+		char *get_addr;
 		
 		sym = JIT_class->load->unknown[index];
 		index = JIT_find_symbol(class, sym);
@@ -754,7 +763,7 @@ static void push_unknown(int index)
 		{
 			desc = class->table[index].desc;
 			utype = JIT_ctype_to_type(desc->variable.ctype);
-
+			
 			switch (CLASS_DESC_get_type(desc))
 			{
 				case CD_STATIC_VARIABLE:
@@ -777,22 +786,32 @@ static void push_unknown(int index)
 					
 				case CD_VARIABLE:
 					
-					expr = STR_copy(peek(-1, (TYPE)class));
-					pop_stack(1);
+					expr = peek(-1, (TYPE)class);
 					
 					pos = desc->variable.offset;
+					
+					if (_unsafe)
+						get_addr = STR_print("ADDR_UNSAFE(%s)", expr);
+					else if (class->must_check)
+						get_addr = STR_print("ADDR_CHECK(%p, %s)", class->must_check, expr);
+					else
+						get_addr = STR_print("ADDR(%s)", expr);
+						
+					pop_stack(1);
 					
 					if (TYPE_is_object(utype))
 					{
 						if (TYPE_is_pure_object(utype))
-							push(utype, "GET_o(ADDR(%s) + %d, CLASS(%p))", expr, pos, (CLASS *)utype);
+							push(utype, "GET_o(%s + %d, CLASS(%p))", get_addr, pos, (CLASS *)utype);
 						else
-							push(utype, "GET_o(ADDR(%s) + %d, GB_T_OBJECT)", expr, pos);
+							push(utype, "GET_o(%s + %d, GB_T_OBJECT)", get_addr, pos);
 					}
 					else
-						push(utype, "GET_%s(ADDR(%s) + %d)", JIT_get_type(utype), expr, pos);
+						push(utype, "GET_%s(%s + %d)", JIT_get_type(utype), get_addr, pos);
 					
-					goto __RETURN;
+					STR_free(get_addr);
+					
+					return;
 					
 				case CD_CONSTANT:
 					
@@ -844,8 +863,6 @@ static void push_unknown(int index)
 	
 	_stack[_stack_current - 1].call = call_type;
 
-__RETURN:
-
 	STR_free(expr);
 }
 
@@ -867,6 +884,7 @@ static void pop_unknown(int index)
 		int pos;
 		TYPE utype;
 		const char *sym;
+		char *get_addr;
 		
 		sym = JIT_class->load->unknown[index];
 		index = JIT_find_symbol(class, sym);
@@ -892,17 +910,27 @@ static void pop_unknown(int index)
 					
 				case CD_VARIABLE:
 					
-					expr = STR_copy(peek(-1, (TYPE)class));
+					expr = peek(-1, (TYPE)class);
+					
+					if (_unsafe)
+						get_addr = STR_print("ADDR_UNSAFE(%s)", expr);
+					else if (class->must_check)
+						get_addr = STR_print("ADDR_CHECK(%p, %s)", class->must_check, expr);
+					else
+						get_addr = STR_print("ADDR(%s)", expr);
+
 					pop_stack(1);
 					
 					pos = desc->variable.offset;
 					
 					_no_release = TRUE;
-					if (check_swap(utype, "SET_%s(ADDR(%s) + %d, %%s)", JIT_get_type(utype), expr, pos))
-						pop(utype, "SET_%s(ADDR(%s) + %d, %%s)", JIT_get_type(utype), expr, pos);
+					if (check_swap(utype, "SET_%s(%s + %d, %%s)", JIT_get_type(utype), get_addr, pos))
+						pop(utype, "SET_%s(%s + %d, %%s)", JIT_get_type(utype), get_addr, pos);
 					_no_release = FALSE;
 					
-					goto __RETURN;
+					STR_free(get_addr);
+					
+					return;
 			}
 		}
 		else
@@ -922,8 +950,6 @@ static void pop_unknown(int index)
 	if (check_swap(T_UNKNOWN, "%s", expr))
 		pop(T_VOID, NULL);
 	
-__RETURN:
-	
 	STR_free(expr);
 }
 
@@ -934,6 +960,7 @@ static void push_array(ushort code)
 	int i, narg;
 	char *expr = NULL;
 	char *expr1, *expr2;
+	const char *unsafe = _unsafe ? "_UNSAFE" : "";
 	
 	narg = code & 0x3F;
 	check_stack(narg);
@@ -956,9 +983,9 @@ static void push_array(ushort code)
 				expr2 = peek(-1, T_INTEGER);
 				
 				if (TYPE_is_pure_object(type))
-					expr = STR_print("PUSH_ARRAY_O(%s,%s,CLASS(%p))", expr1, expr2, (CLASS *)type);
+					expr = STR_print("PUSH_ARRAY_O(%s,%s,CLASS(%p),%s)", expr1, expr2, (CLASS *)type, unsafe);
 				else
-					expr = STR_print("PUSH_ARRAY_%s(%s,%s)", JIT_get_type(type), expr1, expr2);
+					expr = STR_print("PUSH_ARRAY_%s(%s,%s,%s)", JIT_get_type(type), expr1, expr2, unsafe);
 				
 				pop_stack(2);
 				
@@ -999,6 +1026,7 @@ static void pop_array(ushort code)
 	int i, narg;
 	char *expr = NULL;
 	char *expr1, *expr2;
+	const char *unsafe = _unsafe ? "_UNSAFE" : "";
 	
 	narg = code & 0x3F;
 	check_stack(narg + 1);
@@ -1018,7 +1046,7 @@ static void pop_array(ushort code)
 				expr1 = peek(-2, get_type(-2));
 				expr2 = peek(-1, T_INTEGER);
 				
-				STR_add(&expr, "POP_ARRAY_%s(%s,%s,%s)", JIT_get_type(type), expr1, expr2, peek(-3, type));
+				STR_add(&expr, "POP_ARRAY_%s(%s,%s,%s,%s)", JIT_get_type(type), expr1, expr2, peek(-3, type), unsafe);
 				
 				pop_stack(3);
 				
@@ -1254,7 +1282,11 @@ static void push_subr_div(ushort code)
 	
 	expr1 = peek(-2, type);
 	expr2 = peek(-1, type);
-	expr = STR_print("({%s _a = %s; %s _b = %s; _a /= _b; if (!isfinite(_a)) JIT.throw(E_ZERO); _a;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2);
+	
+	if (_unsafe)
+		expr = STR_print("({%s _a = %s; %s _b = %s; _a /= _b; _a;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2);
+	else
+		expr = STR_print("({%s _a = %s; %s _b = %s; _a /= _b; if (!isfinite(_a)) JIT.throw(E_ZERO); _a;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2);
 
 	pop_stack(2);
 	
@@ -1368,7 +1400,10 @@ static void push_subr_quo(ushort code, const char *op)
 	expr1 = peek(-2, type);
 	expr2 = peek(-1, type);
 
-	expr = STR_print("({%s _a = %s; %s _b = %s; if (_b == 0) JIT.throw(E_ZERO); _a %s _b;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2, op);
+	if (_unsafe)
+		expr = STR_print("({%s _a = %s; %s _b = %s; _a %s _b;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2, op);
+	else
+		expr = STR_print("({%s _a = %s; %s _b = %s; if (_b == 0) JIT.throw(E_ZERO); _a %s _b;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2, op);
 	
 	pop_stack(2);
 	push(type, "(%s)", expr);
@@ -1576,7 +1611,10 @@ static void push_subr_bit(ushort code)
 	
 	action = _actions[code];
 	
-	expr = STR_print("({ %s _v = %s; int _b = %s; if ((_b < 0) || (_b >= %d)) JIT.throw(E_ARG); ", ctype, expr1, expr2, nbits);
+	if (_unsafe)
+		expr = STR_print("({ %s _v = %s; int _b = %s; ", ctype, expr1, expr2, nbits);
+	else
+		expr = STR_print("({ %s _v = %s; int _b = %s; if ((_b < 0) || (_b >= %d)) JIT.throw(E_ARG); ", ctype, expr1, expr2, nbits);
 	
 	
 	switch(code)
@@ -1903,7 +1941,7 @@ static void push_subr_math(ushort code)
 	expr = STR_copy(peek(-1, T_FLOAT));
 	pop_stack(1);
 	
-	push(T_FLOAT, "CALL_MATH(%s, %s)", func[code & 0x1F], expr);
+	push(T_FLOAT, "%s(%s, %s)", _unsafe ? "CALL_MATH_UNSAFE" : "CALL_MATH", func[code & 0x1F], expr);
 	
 	STR_free(expr);
 }

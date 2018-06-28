@@ -813,13 +813,6 @@ void TRANS_want_newline()
 }
 
 
-void TRANS_ignore(int reserved)
-{
-	if (PATTERN_is(*JOB->current, reserved))
-		JOB->current++;
-}
-
-
 bool TRANS_is_end_function(bool is_proc, PATTERN *look)
 {
 	if (PATTERN_is_newline(*look))

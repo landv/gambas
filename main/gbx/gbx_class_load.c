@@ -584,6 +584,8 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 		func->fast = (flag & 1) != 0;
 		func->optional = (func->npmin < func->n_param);
 		func->use_is_missing = (flag & 2) != 0;
+		func->unsafe = (flag & 4) != 0;
+		func->fast_linked = FALSE;
 
 		if (func->use_is_missing)
 		{

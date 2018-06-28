@@ -629,6 +629,7 @@ static bool header_function(TRANS_FUNC *func)
 	bool is_static = FALSE;
 	bool is_public = FALSE;
 	bool is_fast = FALSE;
+	bool is_unsafe = FALSE;
 
 	// fast ?
 	
@@ -636,6 +637,12 @@ static bool header_function(TRANS_FUNC *func)
 	{
 		is_fast = TRUE;
 		look++;
+		
+		if (PATTERN_is(*look, RS_UNSAFE))
+		{
+			is_unsafe = TRUE;
+			look++;
+		}
 	}
 	
 	// static ?
@@ -691,6 +698,8 @@ static bool header_function(TRANS_FUNC *func)
 	func->fast = is_fast || JOB->class->all_fast;
 	if (func->fast)
 		JOB->class->has_fast = TRUE;
+	
+	func->unsafe = is_unsafe || JOB->class->all_unsafe;
 
 	// Check special methods
 
@@ -852,44 +861,39 @@ static bool header_inherits(void)
 
 static bool header_option(void)
 {
-	if (PATTERN_is(JOB->current[0], RS_EXPORT))
+	if (TRANS_is(RS_EXPORT))
 	{
-		JOB->current++;
 		JOB->class->exported = TRUE;
 
-		if (PATTERN_is(JOB->current[0], RS_OPTIONAL))
-		{
-			JOB->current++;
+		if (TRANS_is(RS_OPTIONAL))
 			JOB->class->optional = TRUE;
-		}
 
 		return TRUE;
 	}
 
-	if (PATTERN_is(JOB->current[0], RS_CREATE))
+	if (TRANS_is(RS_CREATE))
 	{
-		JOB->current++;
-		
 		if (PATTERN_is_newline(JOB->current[0]) || PATTERN_is(JOB->current[0], RS_STATIC))
 		{
 			JOB->class->autocreate = TRUE;
-			if (PATTERN_is(JOB->current[0], RS_STATIC))
-				JOB->current++;
+			TRANS_ignore(RS_STATIC);
 			return TRUE;
 		}
-		else if (PATTERN_is(JOB->current[0], RS_PRIVATE))
+		else if (TRANS_is(RS_PRIVATE))
 		{
 			JOB->class->nocreate = TRUE;
-			JOB->current++;
 			return TRUE;
 		}
 	}
 	
-	if (PATTERN_is(JOB->current[0], RS_FAST))
+	if (TRANS_is(RS_FAST))
 	{
-		JOB->current++;
 		JOB->class->all_fast = TRUE;
 		JOB->class->has_fast = TRUE;
+		
+		if (TRANS_is(RS_UNSAFE))
+			JOB->class->all_unsafe = TRUE;
+		
 		return TRUE;
 	}
 

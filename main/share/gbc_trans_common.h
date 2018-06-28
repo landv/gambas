@@ -83,6 +83,7 @@ typedef
 		int line;
 		uint64_t byref;
 		unsigned fast : 1;
+		unsigned unsafe : 1;
 		}
 	PACKED
 	TRANS_FUNC;

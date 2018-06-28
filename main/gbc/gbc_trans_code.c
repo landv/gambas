@@ -547,19 +547,17 @@ static void trans_call(const char *name, int nparam)
 void TRANS_code(void)
 {
 	int i;
-	bool fast = FALSE;
 
 	for (i = 0; i < ARRAY_count(JOB->class->function); i++)
 	{
 		_func = &JOB->class->function[i];
-		fast = _func->fast;
 		
 		CODE_begin_function(_func);
 
 		if (JOB->verbose)
 		{
 			printf("Compiling %s()...\n", TABLE_get_symbol_name(JOB->class->table, _func->name));
-			if (fast)
+			if (_func->fast)
 				printf("Fast\n");
 		}
 

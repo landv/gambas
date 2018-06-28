@@ -94,8 +94,9 @@ typedef
 		char npmin;                    // Minimum number of arguments
 		unsigned vararg : 1;           // If this function accepts extra arguments
 		unsigned fast : 1;             // If this function is jit compiled
+		unsigned unsafe : 1;           // If this function is unsafe
 		unsigned use_is_missing : 1;   // If this function uses IsMissing()
-		unsigned _reserved : 13;
+		unsigned _reserved : 12;
 		short nlocal;                  // Local variable count
 		short nctrl;                   // Control structure variable count
 		
@@ -202,9 +203,10 @@ typedef
 		unsigned optional : 1;         // class is optional
 		unsigned nocreate : 1;         // class cannot be instantiated
 		unsigned all_fast : 1;         // all methods have the Fast option (JIT)
+		unsigned all_unsafe : 1;       // all methods are unsafe
 		unsigned has_static : 1;       // has static methods, properties or variables
 		unsigned has_fast : 1;         // has at least one fast method
-		unsigned _reserved : 9;
+		unsigned _reserved : 8;
 		VARIABLE *stat;                // static variables
 		VARIABLE *dyn;                 // dynamic variables
 		CONSTANT *constant;            // constants
