@@ -150,6 +150,7 @@
 #define CODE_CONV        (CODE_FIRST_SUBR + 39)
 #define CODE_BIN         (CODE_FIRST_SUBR + 40)
 #define CODE_HEX         (CODE_FIRST_SUBR + 41)
+#define CODE_DEBUG       (CODE_FIRST_SUBR + 54)
 
 typedef
   ushort PCODE;

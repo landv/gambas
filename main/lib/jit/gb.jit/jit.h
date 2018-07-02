@@ -1,5 +1,8 @@
+#define GB_JIT 1
+
 #include <math.h>
 #include <setjmp.h>
+#include <stdio.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -16,9 +19,6 @@
 #define E_BOUND     21
 #define E_ZERO      26
 #define E_IOBJECT   29
-
-#define deg(_x) ((_x) * 180 / M_PI)
-#define rad(_x) ((_x) * M_PI / 180)
 
 static inline double frac(double x)
 {
@@ -89,11 +89,14 @@ typedef
 	GB_ARRAY_IMPL;
 
 #define SP (*psp)
-#define PC (*(JIT.pc))
-#define CP (*(JIT.cp))
-#define OP (*(JIT.op))
+#define PC (JIT.exec->pc)
+#define CP (JIT.exec->cp)
+#define OP (JIT.exec->op)
+#define FP (JIT.exec->fp)
+#define PP (JIT.exec->pp)
+#define BP (JIT.exec->bp)
 
-#define CHECK_FINITE(_val) (isfinite(_val) ? (_val) : JIT.throw(E_OVERFLOW))
+#define CHECK_FINITE(_val) ({ if (!isfinite(_val)) JIT.throw(E_OVERFLOW); (_val); })
 
 #define PARAM_b(_p) (JIT.conv(&sp[-n+(_p)], GB_T_BOOLEAN), sp[-n+(_p)]._boolean.value)
 #define PARAM_c(_p) (JIT.conv(&sp[-n+(_p)], GB_T_BYTE), (uchar)(sp[-n+(_p)]._integer.value))
@@ -158,7 +161,7 @@ typedef
 #define PUSH_p(_val) ({ intptr_t _v = (_val); sp->_pointer.value = _v; sp->type = GB_T_POINTER; sp++; })
 #define PUSH_d(_val) (*((GB_DATE *)sp) = (_val), sp++)
 #define PUSH_t(_val) (*((GB_STRING *)sp) = (_val), sp++)
-#define PUSH_s(_val) ({ *((GB_STRING *)sp) = (_val); GB.RefString(sp->_string.value.addr); sp++; })
+#define PUSH_s(_val) ({ *((GB_STRING *)sp) = (_val); if (sp->type == GB_T_STRING) GB.RefString(sp->_string.value.addr); sp++; })
 #define PUSH_o(_val) ({ *((GB_OBJECT *)sp) = (_val); GB.Ref(sp->_object.value); sp++; })
 #define PUSH_v(_val) ({ *((GB_VARIANT *)sp) = (_val); GB.BorrowValue(sp); sp++; })
 #define PUSH_C(_val) ({ GB_VALUE_CLASS _v; _v.type = GB_T_CLASS; _v.class = (_val); *((GB_VALUE_CLASS *)sp) = _v; sp++; })
@@ -252,6 +255,15 @@ enum
   temp.value = (_addr); \
   temp; })
 
+#define GET_DATE(_addr) ({ \
+  GB_DATE temp; \
+  int *_val = (int *)(_addr); \
+  temp.type = GB_T_DATE; \
+  temp.value.date = _val[0]; \
+  temp.value.time = _val[1]; \
+  temp; \
+})
+
 #define GET_VARIANT(_val) ({ \
   GB_VARIANT temp; \
   temp.type = GB_T_VARIANT; \
@@ -321,6 +333,7 @@ enum
 #define PUSH_ARRAY_g(_array, _index, _unsafe) PUSH_ARRAY(float, _array, _index, _unsafe)
 #define PUSH_ARRAY_f(_array, _index, _unsafe) PUSH_ARRAY(double, _array, _index, _unsafe)
 #define PUSH_ARRAY_p(_array, _index, _unsafe) PUSH_ARRAY(intptr_t, _array, _index, _unsafe)
+#define PUSH_ARRAY_d(_array, _index, _unsafe) GET_DATE(GET_ARRAY##_unsafe(int, _array, _index))
 #define PUSH_ARRAY_s(_array, _index, _unsafe) GET_STRING(PUSH_ARRAY(char *, _array, _index, _unsafe), 0, GB.StringLength(temp.value.addr))
 #define PUSH_ARRAY_o(_array, _index, _unsafe) GET_OBJECT(PUSH_ARRAY(void *, _array, _index, _unsafe), GB_T_OBJECT)
 #define PUSH_ARRAY_O(_array, _index, _type, _unsafe) GET_OBJECT(PUSH_ARRAY(void *, _array, _index, _unsafe), _type)
@@ -336,6 +349,7 @@ enum
 #define POP_ARRAY_g(_array, _index, _val, _unsafe) POP_ARRAY(float, _array, _index, _val, _unsafe)
 #define POP_ARRAY_f(_array, _index, _val, _unsafe) POP_ARRAY(double, _array, _index, _val, _unsafe)
 #define POP_ARRAY_p(_array, _index, _val, _unsafe) POP_ARRAY(intptr_t, _array, _index, _val, _unsafe)
+#define POP_ARRAY_d(_array, _index, _val, _unsafe) ({ GB_DATE temp = (GB_DATE)(_val); int *_p = (int *)GET_ARRAY##_unsafe(int, _array, _index)); _p[0] = temp.value.date; _p[1] = temp.value.time; })
 #define POP_ARRAY_s(_array, _index, _val, _unsafe) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreString((GB_STRING *)&temp, GET_ARRAY##_unsafe(char *, _array, _index)); })
 #define POP_ARRAY_o(_array, _index, _val, _unsafe) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreObject((GB_OBJECT *)&temp, GET_ARRAY##_unsafe(void *, _array, _index)); })
 #define POP_ARRAY_v(_array, _index, _val, _unsafe) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreVariant((GB_VARIANT *)&temp, GET_ARRAY##_unsafe(GB_VARIANT_VALUE, _array, _index)); })
@@ -362,6 +376,17 @@ enum
   _p->gp = gp; \
   gp = _p; \
   sp++; \
+})
+
+#define LEAVE_TRY() ERROR_leave(__err)
+
+#define RETURN_LEAVE_TRY() ({ \
+  void *_addr; \
+  if (!gp) { LEAVE_TRY(); goto __RETURN; } \
+  _addr = gp->addr; \
+  sp = (GB_VALUE *)gp; \
+  gp = gp->gp; \
+  goto *_addr; \
 })
 
 #define RETURN() ({ \
@@ -424,7 +449,7 @@ enum
 
 #define CALL_UNKNOWN(_pc) (JIT.call_unknown(&pc[_pc], sp), sp = SP)
 
-#define ENUM_FIRST(_code, _plocal, _penum) ((_penum).type = 0,JIT.enum_first(_code, (GB_VALUE *)&_plocal, (GB_VALUE*)&_penum))
+#define ENUM_FIRST(_code, _plocal, _penum) (GB.Unref(&(_penum).value),(_penum).type = 0,JIT.enum_first(_code, (GB_VALUE *)&_plocal, (GB_VALUE*)&_penum))
 
 #define ENUM_NEXT(_code, _plocal, _penum, _label) ({ \
   SP = sp; \
@@ -433,8 +458,8 @@ enum
   if (_t) goto _label; \
 })
 
-#define CALL_MATH(_func, _val) ({ double _v = _func(_val); if (!isfinite(_v)) JIT.throw(E_MATH); _v; })
-#define CALL_MATH_UNSAFE(_func, _val) (_func(_val))
+#define CALL_MATH(_func) ({ double _v = _func; if (!isfinite(_v)) JIT.throw(E_MATH); _v; })
+#define CALL_MATH_UNSAFE(_func) (_func)
 
 #define ERROR_current (*(ERROR_CONTEXT **)(JIT.error_current))
 #define ERROR_handler (*(ERROR_HANDLER **)(JIT.error_handler))

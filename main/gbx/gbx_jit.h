@@ -37,7 +37,7 @@ typedef
 bool JIT_compile(ARCHIVE *arch);
 void JIT_debug(const char *fmt, ...);
 void JIT_exec(bool ret_on_stack);
-PCODE *JIT_get_code(CLASS *class, int index);
+PCODE *JIT_get_code(FUNCTION *func);
 CLASS_CONST *JIT_get_constant(int index);
 void *JIT_get_class_ref(int index);
 void JIT_call_unknown(PCODE *pc, VALUE *sp);

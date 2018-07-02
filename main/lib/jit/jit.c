@@ -73,14 +73,14 @@ static const char *_type_name[] =
 static const char *_gtype_name[] = 
 {
 	"GB_T_VOID" , "GB_T_BOOLEAN", "GB_T_BYTE", "GB_T_SHORT", "GB_T_INTEGER", "GB_T_LONG", "GB_T_SINGLE", "GB_T_FLOAT",
-	"GB_T_DATE", "GB_T_CSTRING", "GB_T_STRING", "GB_T_POINTER", "GB_T_VARIANT", "?", "?", "?", 
+	"GB_T_DATE", "GB_T_STRING", "GB_T_CSTRING", "GB_T_POINTER", "GB_T_VARIANT", "?", "GB_T_CLASS", "?", 
 	"GB_T_OBJECT"
 };
 
 static const char *_ctype_name[] = 
 {
 	"void" , "bool", "uchar", "short", "int", "int64_t", "float", "double",
-	"GB_DATE", "GB_STRING", "GB_STRING", "intptr_t", "GB_VARIANT", "?", "?", "?", 
+	"GB_DATE", "GB_STRING", "GB_STRING", "intptr_t", "GB_VARIANT", "?", "void *", "?", 
 	"GB_OBJECT", "GB_VALUE", "?"
 };
 
@@ -168,6 +168,9 @@ static void declare_implementation(FUNCTION *func, int index)
 		}
 	}
 	
+	if (func->vararg)
+		JIT_print(",uchar nv,GB_VALUE *v");
+	
 	JIT_print(")");
 }
 
@@ -249,10 +252,7 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 	}
 	
 	if (func->vararg)
-	{
-		GB.Error("Not supported");
-		return TRUE;
-	}
+		JIT_print(",n - %d,&sp[-n+%d]", i, i);
 	
 	if (!TYPE_is_void(func->type))
 		JIT_print(")");
@@ -474,11 +474,11 @@ void JIT_load_class(CLASS *class)
 	if (class->ready || class->in_load)
 		return;
 	
-	save_cp = *(JIT.cp);
-	*(JIT.cp) = JIT_class;
+	save_cp = JIT.exec->cp;
+	JIT.exec->cp = JIT_class;
 	
 	//fprintf(stderr, "gb.jit: load class: %s (%p)\n", class->name, class);
 	JIT.load_class(class);
 	
-	*(JIT.cp) = save_cp;
+	JIT.exec->cp = save_cp;
 }

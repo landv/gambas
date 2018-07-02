@@ -106,9 +106,9 @@ SUBR_INFO *SUBR_get_from_opcode(ushort opcode, ushort optype)
 	{
 		if (si->opcode == opcode)
 		{
-			if (si->min_param != si->max_param)
+			if (si->min_param < si->max_param)
 				return si;
-			else if (si->optype == optype || si->optype == 0)
+			else if (si->optype == optype)
 				return si;
 		}
 	}

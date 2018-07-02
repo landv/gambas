@@ -276,7 +276,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ "Split",             15,  0, T_OBJECT,       1,  5 },
 	{ "Scan",              16,  0, T_OBJECT,       2     },
 
-	{ "Comp",              17,  0, T_BOOLEAN,      2,  3 },
+	{ "Comp",              17,  0, T_INTEGER,      2,  3 },
 
 	{ "Conv",              18,  0, T_STRING,       3     },
 	{ "Conv$",             18,  0, T_STRING,       3     },
@@ -433,18 +433,18 @@ SUBR_INFO COMP_subr_info[] =
 
 #ifndef __EVAL_RESERVED_C
 	{ ".Error",            53,  0, T_BOOLEAN,      0     },
-	{ ".Debug",            54,  0, T_VOID,         0     },
+	{ ".Debug",            54,  0, T_VOID,         0     },  // CODE_DEBUG
 
 	{ ".Wait",             55,  0, T_VOID,         0,  1 },
 
 	{ ".Open",             56,  0, T_OBJECT,       2     },
 	{ ".OpenMemory",       56,  1, T_OBJECT,       2     },
 	{ ".Close",            57,  0, T_VOID,         1     },
-	{ ".Input",            58,  0, T_VOID,         0,  1 },
-	{ ".LineInput",        59,  0, T_VOID,         1     },
+	{ ".Input",            58,  0, T_STRING,       0,  1 },
+	{ ".LineInput",        59,  0, T_STRING,       1     },
 	{ ".Print",            60,  0, T_VOID,         1, 63 },
-	{ ".Read",             61,  0, T_VOID,         2,    },
-	{ ".ReadBytes",        61,  1, T_VOID,         2,    },
+	{ ".Read",             61,  0, RST_READ,       2,    },
+	{ ".ReadBytes",        61,  1, T_STRING,       2,    },
 	{ ".Write",            62,  0, T_VOID,         3,    },
 	{ ".WriteBytes",       62,  1, T_VOID,         3,    },
 	{ ".Flush",            63,  0, T_VOID,         1     },
@@ -499,8 +499,8 @@ SUBR_INFO COMP_subr_info[] =
 	{ "RDir",              82,  0, T_OBJECT,       1,  4 },
 
 #ifndef __EVAL_RESERVED_C
-	{ ".Exec",             83,  0, T_VOID,         4     },
-	{ ".Shell",            83,  1, T_VOID,         4     },
+	{ ".Exec",             83,  0, RST_EXEC,       4     },
+	{ ".Shell",            83,  1, RST_EXEC,       4     },
 #endif
 
 	{ "Alloc",             84,  0, T_POINTER,      1,  2 },
@@ -518,7 +518,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ "VarPtr",            89,  0, T_POINTER,      1     },
 	{ "IsMissing",         89,  1, T_BOOLEAN,      1     },
 
-	{ ".Collection",       90,  0, T_VOID,         1, 63 },
+	{ ".Collection",       90,  0, RST_COLLECTION, 1, 63 },
 	
 	{ "Tr",                91,  0, T_STRING,       1     },
 	{ "Tr$",               91,  0, T_STRING,       1     },

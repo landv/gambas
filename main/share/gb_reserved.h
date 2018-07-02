@@ -68,6 +68,9 @@ enum {
 	RST_MIN,
 	RST_MOD,
 	RST_GET,
+	RST_COLLECTION,
+	RST_EXEC,
+	RST_READ
 };
 
 #define RES_is_operator(value) (COMP_res_info[value].flag & RSF_OP)

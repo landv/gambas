@@ -336,9 +336,7 @@ const void *const GAMBAS_DebugApi[] =
 const void *const GAMBAS_JitApi[] =
 {
 	(void *)&SP,
-	(void *)&PC,
-	(void *)&CP,
-	(void *)&OP,
+	(void *)&EXEC_current,
 	(void *)&TEMP,
 	(void *)&EXEC_debug,
 	(void *)&EXEC_super,
@@ -373,6 +371,8 @@ const void *const GAMBAS_JitApi[] =
 	(void *)EXEC_quit,
 	(void *)EXEC_push_unknown_event,
 	(void *)EXTERN_get_addr,
+	(void *)DEBUG_get_position,
+	(void *)RELEASE_many,
 	NULL
 };
 

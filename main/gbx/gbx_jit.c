@@ -238,7 +238,7 @@ void JIT_exec(bool ret_on_stack)
 	PROFILE_LEAVE_FUNCTION();
 	
 	if (SP != sp)
-		fprintf(stderr, "SP: %+ld (%ld) !\n", (SP - sp) / sizeof(VALUE), SP - sp);
+		fprintf(stderr, "SP: %+ld !\n", SP - sp);
 	
 	if (func->type != T_VOID)
 	{
@@ -267,10 +267,8 @@ void JIT_exec(bool ret_on_stack)
 	}
 }
 
-PCODE *JIT_get_code(CLASS *class, int index)
+PCODE *JIT_get_code(FUNCTION *func)
 {
-	FUNCTION *func = &class->load->func[index];
-	
 	if (func->fast_linked)
 		return ((JIT_FUNCTION *)(func->code))->code;
 	else

@@ -25,6 +25,7 @@
 
 #define _GNU_SOURCE
 
+#include "config.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -46,6 +47,13 @@ typedef
 		TYPE call;
 	}
 	STACK_SLOT;
+	
+typedef 
+	struct {
+		TYPE type;
+		char *expr;
+	}
+	CTRL_INFO;
 
 enum {
 	CALL_SUBR,
@@ -65,12 +73,15 @@ enum {
 };
 	
 
+static FUNCTION *_func;
+
 static STACK_SLOT _stack[MAX_STACK];
 static int _stack_current = 0;
 
 static bool _decl_rs;
 static bool _decl_ro;
 static bool _decl_rv;
+static bool _decl_tp;
 
 static ushort _pc;
 
@@ -85,11 +96,12 @@ enum { LOOP_UNKNOWN, LOOP_UP, LOOP_DOWN };
 static int _loop_type;
 
 static int *_ctrl_index;
-static TYPE *_ctrl_type;
+static CTRL_INFO *_ctrl_info;
 
 static bool _has_gosub;
 static bool _has_finally;
 static bool _has_catch;
+static bool _try_finished;
 
 static bool _has_just_dup;
 
@@ -98,9 +110,12 @@ static bool _unsafe;
 
 static void enter_function(FUNCTION *func, int index)
 {
+	_func = func;
+	
 	_decl_rs = FALSE;
 	_decl_ro = FALSE;
 	_decl_rv = FALSE;
+	_decl_tp = FALSE;
 	_has_gosub = FALSE;
 	_loop_count = 0;
 	_has_just_dup = FALSE;
@@ -111,7 +126,7 @@ static void enter_function(FUNCTION *func, int index)
 	_unsafe = func->unsafe;
 	
 	GB.NewArray((void **)&_dup_type, sizeof(TYPE), 0);
-	GB.NewArray((void **)&_ctrl_type, sizeof(TYPE), 0);
+	GB.NewArray((void **)&_ctrl_info, sizeof(CTRL_INFO), 0);
 	
 	if (func->n_ctrl)
 		 GB.AllocZero((void **)&_ctrl_index, sizeof(int) * func->n_ctrl);
@@ -120,25 +135,32 @@ static void enter_function(FUNCTION *func, int index)
 	
 	JIT_print_decl("  VALUE **psp = (VALUE **)%p;\n", JIT.sp);
 	JIT_print_decl("  VALUE *sp = SP;\n");
+	JIT_print_decl("  VALUE *ep = sp;\n");
 	//JIT_print("  VALUE *sp = SP; fprintf(stderr, \"> %d: sp = %%p\\n\", sp);\n", index);
-	JIT_print_decl("  ushort *pc = (ushort *)%p;\n", JIT.get_code(JIT_class, index));
+	JIT_print_decl("  ushort *pc = (ushort *)%p;\n", JIT.get_code(func));
 	JIT_print_decl("  GB_VALUE_GOSUB *gp = 0;\n");
-	JIT_print_decl("  bool error;\n");
+	JIT_print_decl("  bool error = FALSE;\n");
 	
 	JIT_print("  TRY {\n\n");
+	_try_finished = FALSE;
+
+	if (func->vararg)
+		JIT_print("  PP = v; BP = v + nv;\n");
 }
 
 
 static void print_catch(void)
 {
 	JIT_print("\n  } CATCH {\n\n");
+	JIT_print("  FP = (void *)%p;\n", _func);
 	if (_has_catch || _has_finally)
 		JIT_print("  JIT.error_set_last(FALSE); \n");
 	JIT_print("  error = TRUE;\n");
-	JIT_print("  goto __FINALLY;\n");
+	JIT_print("  if (SP > sp) sp = SP; else SP = sp;\n");
+	JIT_print("  JIT.release_many(sp, sp - ep); sp = ep;\n");
 	JIT_print("\n  } END_TRY\n\n");
-	JIT_print("  error = FALSE;\n\n");
 	JIT_print("__FINALLY:\n");
+	_try_finished = TRUE;
 }
 
 #define RELEASE_FAST(_expr, _type, _index) ({ \
@@ -173,8 +195,12 @@ static bool leave_function(FUNCTION *func, int index)
 	for (i = 0; i < func->n_param; i++)
 		RELEASE_FAST("  RELEASE_FAST_%s(p%d);\n", func->param[i].type, i);
 	
-	for (i = 0; i < GB.Count(_ctrl_type); i++)
-		RELEASE_FAST("  RELEASE_FAST_%s(c%d);\n", _ctrl_type[i], i);
+	for (i = 0; i < GB.Count(_ctrl_info); i++)
+	{
+		RELEASE_FAST("  RELEASE_FAST_%s(c%d);\n", _ctrl_info[i].type, i);
+		if (_ctrl_info[i].expr)
+			STR_free(_ctrl_info[i].expr);
+	}
 	
 	for (i = 0; i < GB.Count(_dup_type); i++)
 		RELEASE_FAST("  RELEASE_FAST_%s(d%d);\n", _dup_type[i], i);
@@ -183,8 +209,10 @@ static bool leave_function(FUNCTION *func, int index)
 		JIT_print("  if (error) GB.Propagate();\n");
 	
 	GB.Free((void **)&_ctrl_index);
-	GB.FreeArray((void **)&_ctrl_type);
+	GB.FreeArray((void **)&_ctrl_info);
 	GB.FreeArray((void **)&_dup_type);
+	
+	_func = NULL;
 	
 	return FALSE;
 }
@@ -197,7 +225,7 @@ static TYPE get_local_type(FUNCTION *func, int index)
 	if (index < func->n_local)
 		type = JIT_ctype_to_type(func->local[index].type);
 	else
-		type = _ctrl_type[_ctrl_index[index - func->n_local]];
+		type = _ctrl_info[_ctrl_index[index - func->n_local]].type;
 	
 	return type;
 }
@@ -239,10 +267,12 @@ static void declare(bool *flag, const char *expr)
 }
 
 
-static void print_label(ushort pc)
+static void print_label(FUNCTION *func, ushort pc)
 {
-	JIT_print("__L%d:;\n", pc);
+	JIT_print("__L%d:; // %s\n", pc, JIT.get_position(JIT_class, func, &func->code[pc]));
+	//JIT_print("__L%d:; fprintf(stderr, \"[%s]\\n\", ERROR_current, ERROR_current->info.code); // %s\n", pc, JIT.get_position(JIT_class, func, &func->code[pc]), JIT.get_position(JIT_class, func, &func->code[pc]));
 }
+
 
 static void push_one(TYPE type, const char *fmt, va_list args)
 {
@@ -519,7 +549,7 @@ static char *peek_pop(int n, TYPE conv, const char *fmt, va_list args)
 			{
 				case T_STRING:
 					declare(&_decl_rs, "char *rs");
-					JIT_print("  rs = (%s).value.addr;\n", dest);
+					JIT_print("  if ((%s).type == GB_T_STRING) rs = (%s).value.addr; else rs = NULL;\n", dest, dest);
 					break;
 					
 				case T_OBJECT:
@@ -671,13 +701,21 @@ static bool check_swap(TYPE type, const char *fmt, ...)
 }
 
 
-static int add_ctrl(int index, TYPE type)
+static int add_ctrl(int index, TYPE type, const char *expr)
 {
 	int index_ctrl;
+	CTRL_INFO *info;
 	
-	index_ctrl = GB.Count(_ctrl_type);
+	index_ctrl = GB.Count(_ctrl_info);
 	
-	*(TYPE *)GB.Add(&_ctrl_type) = type;
+	info = (CTRL_INFO *)GB.Add(&_ctrl_info);
+	
+	info->type = type;
+	if (expr)
+		info->expr = STR_copy(expr);
+	else
+		info->expr = NULL;
+	
 	_ctrl_index[index] = index_ctrl;
 	
 	//JIT_print_decl("  %s c%d;\n", JIT_get_ctype(type), index_ctrl);
@@ -690,14 +728,23 @@ static int add_ctrl(int index, TYPE type)
 static void pop_ctrl(int index, TYPE type)
 {
 	int index_ctrl;
+	char *expr;
 
 	if (type == T_VOID)
 		type = get_type(-1);
 	
-	index_ctrl = add_ctrl(index, type);
+	if (type == T_CLASS)
+		expr = get_expr(-1);
+	else
+		expr = NULL;
+	
+	index_ctrl = add_ctrl(index, type, expr);
 	
 	//_no_release = TRUE;
-	pop(type, "c%d", index_ctrl);
+	if (expr)
+		pop_stack(1);
+	else
+		pop(type, "c%d", index_ctrl);
 	//_no_release = FALSE;
 }
 
@@ -712,7 +759,7 @@ static void push_constant(CLASS *class, int index)
 		case T_BYTE: push(T_BYTE, "(uchar)%d", cc->_integer.value); break;
 		case T_SHORT: push(T_SHORT, "(short)%d", cc->_integer.value); break;
 		case T_INTEGER: push(T_INTEGER, "(int)%d", cc->_integer.value); break;
-		case T_LONG: push(T_LONG, "(int64_t)%d", cc->_long.value); break;
+		case T_LONG: push(T_LONG, "(int64_t)%" PRId64, cc->_long.value); break;
 		case T_SINGLE: push(T_SINGLE, "(*(float *)%p)", &cc->_single.value); break;
 		case T_FLOAT: push(T_FLOAT, "(*(double *)%p)", &cc->_float.value); break;
 		case T_STRING: push(T_CSTRING, "CONSTANT_s(%p, %d)", cc->_string.addr, cc->_string.len); break;
@@ -757,6 +804,23 @@ static void push_unknown(int index)
 		char *get_addr;
 		
 		sym = JIT_class->load->unknown[index];
+
+		if (class == (CLASS *)GB.FindClass("Param"))
+		{
+			if (!strcasecmp(sym, "Count"))
+			{
+				pop_stack(1);
+				push(T_INTEGER, _func->vararg ? "nv" : "0");
+				return;
+			}
+			else if (!strcasecmp(sym, "Max"))
+			{
+				pop_stack(1);
+				push(T_INTEGER, _func->vararg ? "(nv - 1)" : "-1");
+				return;
+			}
+		}
+		
 		index = JIT_find_symbol(class, sym);
 		
 		if (index != NO_SYMBOL)
@@ -1170,7 +1234,27 @@ static void push_subr(char mode, ushort code)
 				type = Max(get_type(-1), get_type(-2));
 				if (type > T_DATE && type != T_VARIANT)
 					type = T_UNKNOWN;
+				break;
 			
+			case RST_COLLECTION:
+				type = GB.FindClass("Collection");
+				break;
+				
+			case RST_EXEC:
+				if (atoi(get_expr(-2)) & PM_WAIT)
+					type = T_STRING;
+				else
+					type = GB.FindClass("Process");
+				break;
+				
+			case RST_READ:
+				type = get_type(-1);
+				if (type == T_INTEGER)
+					type = atoi(get_expr(-1));
+				else if (type == T_CLASS)
+					type = (TYPE)get_class(-1);
+				break;
+				
 			default:
 				type = (type_id >= T_UNKNOWN) ? T_UNKNOWN : type_id;
 		}
@@ -1182,6 +1266,10 @@ static void push_subr(char mode, ushort code)
 			type = (TYPE)get_class(-narg);
 		else
 			type = T_OBJECT;
+	}
+	else if (op == CODE_DEBUG)
+	{
+		STR_add(&expr, "FP=(void *)%p,PC=&pc[%d],", _func, _pc);
 	}
 	
 	for (i = _stack_current - narg; i < _stack_current; i++)
@@ -1726,6 +1814,7 @@ static void push_call(ushort code)
 	int func_kind, func_index;
 	TYPE func_type;
 	int nopt, opt;
+	int nv;
 	
 	narg = code & 0x3F;
 	
@@ -1762,7 +1851,23 @@ static void push_call(ushort code)
 				}
 				else
 				{
-					STR_add(&call,"SP = sp, jit_%s_%d_(", JIT_prefix, func_index);
+					nv = 0;
+					if (func->vararg && (narg > func->n_param))
+					{
+						if (func->type != T_VOID)
+							STR_add(&call, "({ %s _r; ", JIT_get_ctype(func->type));
+						
+						nv = narg - func->n_param;
+						for (i = 0; i < nv; i++)
+							STR_add(&call, "%s,", push_expr(i - nv, get_type(i - nv)));
+					}
+					
+					STR_add(&call,"SP = sp,");
+					
+					if (nv && func->type != T_VOID)
+						STR_add(&call, "_r = ");
+					
+					STR_add(&call, "jit_%s_%d_(", JIT_prefix, func_index);
 					
 					for (i = 0; i < func->npmin; i++)
 					{
@@ -1801,7 +1906,17 @@ static void push_call(ushort code)
 							nopt = 0;
 					}
 					
+					if (func->vararg)
+						STR_add(&call, ",%d,&sp[-%d]", nv, nv);
+					
 					STR_add(&call, ")");
+					
+					if (nv)
+					{
+						STR_add(&call, ",JIT.release_many(sp,%d),sp -= %d", nv ,nv);
+						if (func->type != T_VOID)
+							STR_add(&call, "; _r; })");
+					}
 					
 					pop_stack(narg + 1);
 				
@@ -1870,7 +1985,7 @@ static void push_call(ushort code)
 			}
 			else
 			{
-				STR_add(&call,"SP = sp, (*(void (*)())%p)(", JIT.get_extern(ext));
+				STR_add(&call,"SP = sp, (*(%s (*)())%p)(", JIT_get_ctype(ext->type), JIT.get_extern(ext));
 				
 				for (i = 0; i < ext->n_param; i++)
 				{
@@ -1925,23 +2040,44 @@ static void push_subr_isnan(ushort code)
 	STR_free(expr);
 }
 
+#define deg(_x) ((_x) * 180 / M_PI)
+#define rad(_x) ((_x) * M_PI / 180)
 
 static void push_subr_math(ushort code)
 {
 	static const char *func[] = {
-		NULL, "frac", "log", "exp", "sqrt", "sin", "cos", "tan", "atan", "asin", "acos",
-		"deg", "rad", "log10", "sinh", "cosh", "tanh", "asinh", "acosh", "atanh",
-		"exp2", "exp10", "log2", "cbrt", "expm1", "log1p", "floor", "ceil"
+		NULL, "frac(%s)", "__builtin_log(%s)", "__builtin_exp(%s)", "__builtin_sqrt(%s)", "__builtin_sin(%s)", "__builtin_cos(%s)", "__builtin_tan(%s)", 
+		"__builtin_atan(%s)", "__builtin_asin(%s)", "__builtin_acos(%s)",
+		"((%s) * 180 / M_PI)", 
+		"((%s) * M_PI / 180)", 
+		"log10(%s)", 
+		"__builtin_sinh(%s)", "__builtin_cosh(%s)", "__builtin_tanh(%s)", "__builtin_asinh(%s)", "__builtin_acosh(%s)", "__builtin_atanh(%s)",
+#ifndef HAVE_EXP2
+		"pow(2, (%s))",
+#else
+		"__builtin_exp2(%s)",
+#endif
+#ifndef HAVE_EXP10
+		"pow(10, (%s))",
+#else
+		"__builtin_exp10(%s)",
+#endif
+#ifndef HAVE_LOG2
+		"(log(%s) / M_LN2)",
+#else
+		"__builtin_log2(%s)", 
+#endif
+		"__builtin_cbrt(%s)", "__builtin_expm1(%s)", "__builtin_log1p(%s)", "__builtin_floor(%s)", "__builtin_ceil(%s)"
 	};
 
 	char *expr;
 	
 	check_stack(1);
 	
-	expr = STR_copy(peek(-1, T_FLOAT));
+	expr = STR_print(func[code & 0x1F], peek(-1, T_FLOAT));
 	pop_stack(1);
 	
-	push(T_FLOAT, "%s(%s, %s)", _unsafe ? "CALL_MATH_UNSAFE" : "CALL_MATH", func[code & 0x1F], expr);
+	push(T_FLOAT, "%s(%s)", _unsafe ? "CALL_MATH_UNSAFE" : "CALL_MATH", expr);
 	
 	STR_free(expr);
 }
@@ -2004,6 +2140,89 @@ static void push_event(bool unknown, int index)
 		index += JIT_class->parent->n_event;
 
 	push_function(CALL_EVENT, index);
+}
+
+
+static void push_subr_varptr(ushort code)
+{
+	ushort op;
+	char var[16];
+	int index;
+	TYPE type;
+	char *expr;
+	
+	check_stack(1);
+	
+	op = (ushort)atoi(get_expr(-1));
+	pop_stack(1);
+	
+	if ((code & 0xFF) == 1) // IsMissing
+	{
+		push(T_BOOLEAN, "(o%d & %d)", op / 8, 1 << (op % 8));
+		return;
+	}
+
+	if ((op & 0xFF00) == C_PUSH_LOCAL || (op & 0xFF00) == C_PUSH_PARAM)
+	{
+		if ((op & 0xFF00) == C_PUSH_PARAM)
+		{
+			index = _func->n_param + (op & 0xFF);
+			type = _func->param[index].type;
+			sprintf(var, "p%d", index);
+		}
+		else
+		{
+			index = op & 0xFF;
+			type = get_local_type(_func, index);
+			sprintf(var, "l%d", index);
+		}
+
+		switch(TYPEID(type))
+		{
+			case T_BOOLEAN:
+			case T_BYTE:
+			case T_SHORT:
+			case T_INTEGER:
+			case T_LONG:
+			case T_SINGLE:
+			case T_FLOAT:
+			case T_POINTER:
+				expr = STR_print("&%s", var);
+				break;
+
+			case T_DATE:
+			case T_OBJECT:
+				expr = STR_print("&%s.value", var);
+				break;
+
+			case T_STRING:
+			case T_CSTRING:
+				expr = STR_print("(%s.value.addr + %s.value.start)", var, var);
+				break;
+				
+			default:
+				goto _ILLEGAL;
+		}
+	}
+	else if ((op & 0xF800) == C_PUSH_DYNAMIC)
+	{
+		expr = STR_print("(&OP[%d])", JIT_class->load->dyn[op & 0x7FF].pos);
+	}
+	else if ((op & 0xF800) == C_PUSH_STATIC)
+	{
+		expr = STR_print("%p", JIT_class->stat + JIT_class->load->stat[op & 0x7FF].pos);
+	}
+	else
+		goto _ILLEGAL;
+
+	push(T_POINTER, "((intptr_t)%s)", expr);
+	
+	STR_free(expr);
+	return;
+	
+_ILLEGAL:
+
+	JIT_panic("unsupported VarPtr()");
 }
 
 
@@ -2173,7 +2392,7 @@ bool JIT_translate_body(FUNCTION *func, int ind)
 		/* 96 Realloc         */  &&_SUBR_CODE,
 		/* 97 StrPtr          */  &&_SUBR_CODE,
 		/* 98 Sleep...        */  &&_SUBR_CODE,
-		/* 99 VarPtr          */  &&_SUBR_CODE,
+		/* 99 VarPtr          */  &&_SUBR_VARPTR,
 		/* 9A Collection      */  &&_SUBR_CODE,
 		/* 9B Tr$             */  &&_SUBR,
 		/* 9C Quote$...       */  &&_SUBR_CODE,
@@ -2302,7 +2521,7 @@ _MAIN:
 		print_catch();
 
 	if (!JIT_last_print_is_label)
-		print_label(p);
+		print_label(func, p);
 	
 	if (p >= (size - 1)) // ignore the last opcode which is RETURN
 		return leave_function(func, ind);
@@ -2337,7 +2556,15 @@ _PUSH_LOCAL:
 	type = get_local_type(func, index);
 
 	if (index >= func->n_local)
-		push(type, "c%d", _ctrl_index[index - func->n_local]);
+	{
+		index = _ctrl_index[index - func->n_local];
+		CTRL_INFO *info = &_ctrl_info[index];
+		
+		if (info->expr)
+			push(type, info->expr);
+		else
+			push(type, "c%d", index);
+	}
 	else
 		push(type, "l%d", index);
 	
@@ -2477,7 +2704,7 @@ _PUSH_MISC:
 			break;
 		
 		case 3:
-			push(T_BOOLEAN, "1");
+			push(T_BOOLEAN, "(-1)");
 			break;
 			
 		case 4:
@@ -2619,15 +2846,20 @@ _RETURN:
 	switch(code & 0xFF)
 	{
 		case 0:
-			JIT_print("  RETURN();\n");
+			if (_try_finished)
+				JIT_print("  RETURN();\n");
+			else
+				JIT_print("  RETURN_LEAVE_TRY();\n");
 			break;
 			
 		case 1:
 			pop(func->type, "r");
+			if (!_try_finished) JIT_print("  LEAVE_TRY();\n");
 			JIT_print("  goto __RETURN;\n");
 			break;
 		
 		case 2:
+			if (!_try_finished) JIT_print("  LEAVE_TRY();\n");
 			JIT_print("  goto __RETURN;\n");
 			break;
 			
@@ -2710,7 +2942,7 @@ _ENUM_FIRST:
 
 	index = GET_XX() - func->n_local;
 	pop_ctrl(index, T_OBJECT);
-	add_ctrl(index + 1, T_OBJECT);
+	add_ctrl(index + 1, T_OBJECT, NULL);
 	JIT_print("  ENUM_FIRST(0x%04X, c%d, c%d);\n", code, _ctrl_index[index], _ctrl_index[index + 1]);
 	goto _MAIN;
 
@@ -2874,6 +3106,11 @@ _SUBR_BIT:
 	push_subr_bit(code);
 	goto _MAIN;
 	
+_SUBR_VARPTR:
+
+	push_subr_varptr(code);
+	goto _MAIN;
+	
 _BREAK:
 
 	goto _MAIN;
@@ -2894,6 +3131,8 @@ _QUIT:
 
 _TRY:
 
+	declare(&_decl_tp, "VALUE *tp");
+	JIT_print("  tp = sp;\n");
 	JIT_print("  TRY {\n");
 	p++;
 	goto _MAIN;
@@ -2902,6 +3141,8 @@ _END_TRY:
 
 	JIT_print("  *JIT.got_error = 0;\n");
 	JIT_print("  } CATCH {\n");
+	JIT_print("  if (SP > sp) sp = SP; else SP = sp;\n");
+	JIT_print("  JIT.release_many(sp, sp - tp); sp = tp;\n");
 	JIT_print("  *JIT.got_error = 1;\n");
 	JIT_print("  JIT.error_set_last(FALSE); \n");
 	JIT_print("  } END_TRY\n");

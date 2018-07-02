@@ -51,6 +51,9 @@ enum
 	CALL_EXTERN
 };
 
+#define PM_WAIT 16
+
+
 #ifndef __GBC_JIT_C
 EXTERN char *JIT_prefix;
 EXTERN CLASS *JIT_class;

@@ -42,15 +42,29 @@ typedef
 	
 typedef
 	struct {
+		void *next;
+		GB_VALUE *bp;
+		GB_VALUE *pp;
+		void *cp;
+		char *op;
+		GB_VALUE *ep;
+		void *fp;
+		JIT_PCODE *pc;
+		JIT_PCODE *ec;
+		JIT_PCODE *et;
+		GB_VALUE *gp;
+		}
+	JIT_CONTEXT;
+	
+typedef
+	struct {
 		GB_VALUE **sp;
-		JIT_PCODE **pc;
-		void **cp;
-		char **op;
+		JIT_CONTEXT *exec;
 		GB_VALUE *ret;
 		bool *exec_debug;
 		GB_VALUE **exec_super;
 		void (*debug)(const char *fmt, ...);
-		JIT_PCODE *(*get_code)(void *class, int index);
+		JIT_PCODE *(*get_code)(void *func);
 		void (*throw)(int code, ...) NORETURN;
 		JIT_CONSTANT *(*get_constant)(int index);
 		void *(*get_class_ref)(int index);
@@ -80,6 +94,8 @@ typedef
 		void (*exec_quit)(ushort code);
 		void (*push_unknown_event)(bool);
 		void *(*get_extern)(void *ext);
+		const char *(*get_position)(void *cp, void *fp, ushort *pc);
+		void (*release_many)(GB_VALUE *, int);
 	}
 	JIT_INTERFACE;
 
