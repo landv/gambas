@@ -111,6 +111,7 @@ static const CLASS_INIT init_list[] =
   { NATIVE_App, &CLASS_Application },
   { NATIVE_Process, &CLASS_Process },
   { NATIVE_System, NULL },
+  { NATIVE_Jit, NULL },
   { NATIVE_User, NULL },
   { NATIVE_String, NULL },
   { TaskDesc, NULL },

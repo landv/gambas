@@ -368,6 +368,7 @@ extern GB_DESC NATIVE_AppEnv[];
 extern GB_DESC NATIVE_AppArgs[];
 extern GB_DESC NATIVE_App[];
 extern GB_DESC NATIVE_System[];
+extern GB_DESC NATIVE_Jit[];
 extern GB_DESC NATIVE_User[];
 extern GB_DESC NATIVE_ArrayBounds[];
 extern GB_DESC NATIVE_Array[];
@@ -416,6 +417,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	NATIVE_AppArgs,
 	NATIVE_App,
 	NATIVE_System,
+	NATIVE_Jit,
 	NATIVE_User,
 	NATIVE_ArrayBounds,
 	NATIVE_Array,

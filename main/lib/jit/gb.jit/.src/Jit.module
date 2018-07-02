@@ -3,6 +3,9 @@
 Export
 Class __Jit
 
+Property Read Time As Float
+
+Private $fTime As Float
 Private $sCompiler As String
 Private $aFlags As String[]
 
@@ -46,7 +49,7 @@ Private Sub RunCompiler(sInput As String, Optional sOutput As String, sOption As
 End
 
 
-Public Sub Compile(sArch As String) As String
+Public Sub _Compile(sArch As String) As String
 
   Dim sFile As String
   Dim sDir As String
@@ -59,12 +62,11 @@ Public Sub Compile(sArch As String) As String
   Dim fTime As Float
   Dim bDebug As Boolean
   
+  fTime = Timer
+  
   Try bDebug = CInt(Env["GB_JIT_DEBUG"])
   
-  If bDebug Then 
-    fTime = Timer
-    Error "gb.jit: translating "; If(sArch, sArch, "project")
-  Endif
+  If bDebug Then Error "gb.jit: translating "; If(sArch, sArch, "project")
   
   If Not $sCompiler Then Init
   
@@ -172,11 +174,22 @@ Public Sub Compile(sArch As String) As String
   '   Return
   ' Endif
   
-  If bDebug Then Error "gb.jit: done in "; Format(Timer - fTime, "0.000"); "s"
+  fTime = Timer - fTime
+  $fTime += fTime
+  
+  If bDebug Then Error "gb.jit: done in "; Format(fTime, "0.000"); "s"
   
   ' Shell "objdump -S " & Shell(sPathSO) To sResult
   ' Error sResult
   
+  
+  
   Return sPathSO
   
+End
+
+Private Function Time_Read() As Float
+
+  Return $fTime
+
 End

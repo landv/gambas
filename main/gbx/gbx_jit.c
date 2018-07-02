@@ -103,8 +103,8 @@ bool JIT_compile(ARCHIVE *arch)
 			fprintf(stderr, "gbx3: loading gb.jit component\n");
 		
 		COMPONENT_load(COMPONENT_create("gb.jit"));
-		if (GB_GetFunction(&_jit_compile_func, CLASS_find_global("_Jit"), "Compile", "s", "s"))
-			ERROR_panic("Unable to find _Jit.Compile method");
+		if (GB_GetFunction(&_jit_compile_func, CLASS_find_global("Jit"), "_Compile", "s", "s"))
+			ERROR_panic("Unable to find JIT compilation method");
 	}
 	
 	arch ? (arch->jit_compiling = TRUE) : (_jit_compiling = TRUE);
@@ -119,7 +119,7 @@ bool JIT_compile(ARCHIVE *arch)
 	COMPONENT_current = current;
 	
 	if (!*path)
-		ERROR_panic("Unable to compile jit source file");
+		ERROR_panic("Unable to compile JIT source file");
 	
 	arch ? (arch->jit_compiling = FALSE) : (_jit_compiling = FALSE);
 	
@@ -127,7 +127,7 @@ bool JIT_compile(ARCHIVE *arch)
 
 	lib = dlopen(path, RTLD_NOW);
 	if (!lib)
-		ERROR_panic("Unable to load jit library: %s", dlerror());
+		ERROR_panic("Unable to load JIT library: %s", dlerror());
 	
 	if (arch)
 		arch->jit_library = lib;
