@@ -1,7 +1,10 @@
 #!/usr/bin/env gbs3
 
+Private $fCompileTime as Float
+
 Private Sub RunScript(sScript As String, sRun As String, bGambasOnly As Boolean) As Float
 
+	Dim aResult as String[]
   Dim sResult As String
   Dim fTime As Float
   
@@ -13,12 +16,16 @@ Private Sub RunScript(sScript As String, sRun As String, bGambasOnly As Boolean)
   
   Shell "/usr/bin/time -v " & sRun & " " & sScript & " 2>&1 >/dev/null" To sResult
   If Not sResult Then Error.Raise("Script '" & sRun & " " & sScript & "' failed!")
-  For Each sResult In Split(sResult, "\n")
+  aResult = Split(sResult, "\n")
+  For Each sResult In aResult
     sResult = Trim(sResult)
     If sResult Begins "User time" Or If sResult Begins "System time" Then
       fTime += CFloat(Mid$(sResult, InStr(sResult, ":") + 2))
     Endif
   Next
+  
+  $fCompileTime = 0
+  Try $fCompileTime = CFloat(Trim(aResult[0]))
   
   Return fTime
 
@@ -74,6 +81,7 @@ For Each sBenchmark In Dir(Application.Dir, "*.gbs")
   
   cResult!name = sBenchmark
   cResult!gambasjit = RunScript(sBenchmark & ".gbs", "gbs3 -f -c", bGambasOnly)
+  cResult!gambasjitwct = cResult!gambasjit - $fCompileTime
   cResult!gambas = RunScript(sBenchmark & ".gbs", "gbs3 -c", bGambasOnly)
   If Not bGambasOnly Then cResult!python = RunScript(sBenchmark & ".py", "python", bGambasOnly)
   If Not bGambasOnly Then cResult!perl = RunScript(sBenchmark & ".pl", "perl", bGambasOnly)
@@ -101,14 +109,14 @@ Next
 If bGambasOnly Then
 
   For Each cResult In aResult
-    Print cResult!name; Space$(20 - Len(cResult!name)); ": "; Format(cResult!gambas, "0.00"); " / ";Format(cResult!gambasjit, "0.00");" (jit)"
+    Print cResult!name; Space$(20 - Len(cResult!name)); ": "; Format(cResult!gambas, "0.00"); " / ";Format(cResult!gambasjit, "0.00");" (jit)"; " / ";Format(cResult!gambasjitwct, "0.00");" (jit without compilation time)"
   Next
 
 Else
 
   Print "<table class=\"table\">"
   Print "<tr>\n<th>Benchmark</th>"
-  For Each sLang In ["Python", "Perl", "Gambas", "Gambas + JIT"]
+  For Each sLang In ["Python", "Perl", "Gambas", "Gambas JIT", "Gambas JIT without compilation time"]
     Print "<th style=\"width:12em;\">"; Html(sLang); "</th>"
   Next
   Print "</tr>"
@@ -119,6 +127,7 @@ Else
     Print "<td align=\"right\">"; FormatResult(cResult, "perl"); "&nbsp;</td>"
     Print "<td align=\"right\">"; FormatResult(cResult, "gambas"); "&nbsp;</td>"
     Print "<td align=\"right\">"; Format(cResult!gambasjit, "0.00"); "&nbsp;</td>"
+    Print "<td align=\"right\">"; Format(cResult!gambasjitwct, "0.00"); "&nbsp;</td>"
     Print "</tr>"
   Next
   Print "</table>"
