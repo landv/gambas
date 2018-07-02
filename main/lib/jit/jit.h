@@ -51,7 +51,8 @@ enum
 	CALL_EXTERN
 };
 
-#define PM_WAIT 16
+#define PM_STRING  8
+#define PM_WAIT    16
 
 
 #ifndef __GBC_JIT_C

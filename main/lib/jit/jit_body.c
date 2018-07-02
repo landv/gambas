@@ -344,7 +344,24 @@ static CLASS *get_class(int n)
 }
 
 
-static char *get_conv(TYPE src, TYPE dest)
+static char *borrow_expr(char *expr, TYPE type)
+{
+	const char *type_name = JIT_get_type(type);
+	int len;
+	char *new_expr;
+	
+	len = strlen(expr);
+	if ((strncmp(&expr[len - 3], "())", 3) == 0) && (strncmp(&expr[len - 8], "POP_", 4) == 0) && (expr[len - 4] == *type_name))
+		new_expr = STR_print("%.*sPOP_BORROW_%s())", len - 8, expr, type_name);
+	else
+		new_expr = STR_print("BORROW_%s(%s)", type_name, expr);
+	
+	STR_free(expr);
+	return new_expr;
+}
+
+
+static char *get_conv_format(TYPE src, TYPE dest)
 {
 	static char buffer[64];
 	
@@ -486,23 +503,29 @@ static char *get_conv(TYPE src, TYPE dest)
 	return buffer;
 }
 
-
-static char *borrow_expr(char *expr, TYPE type)
+static char *get_conv(TYPE src, TYPE dest, char *expr)
 {
-	const char *type_name = JIT_get_type(type);
-	int len;
 	char *new_expr;
+	char *borrow;
 	
-	len = strlen(expr);
-	if ((strncmp(&expr[len - 3], "())", 3) == 0) && (strncmp(&expr[len - 8], "POP_", 4) == 0) && (expr[len - 4] == *type_name))
-		new_expr = STR_print("%.*sPOP_BORROW_%s())", len - 8, expr, type_name);
-	else
-		new_expr = STR_print("BORROW_%s(%s)", type_name, expr);
-	
+	if (dest == T_VOID)
+	{
+		switch (TYPEID(src))
+		{
+			case T_OBJECT:
+			case T_STRING:
+			case T_VARIANT:
+				borrow = borrow_expr(expr, src);
+				new_expr = STR_print("RELEASE_%s(%s)", JIT_get_type(src), borrow);
+				STR_free(borrow);
+				return new_expr;
+		}
+	}
+
+	new_expr = STR_print(get_conv_format(src, dest), expr);
 	STR_free(expr);
 	return new_expr;
 }
-
 
 static char *peek(int n, TYPE conv)
 {
@@ -515,13 +538,7 @@ static char *peek(int n, TYPE conv)
 	type = _stack[n].type;
 	
 	if (type != conv)
-	{
-		char *expr2 = NULL;
-		STR_add(&expr2, get_conv(type, conv), expr);
-		STR_free(expr);
-		expr = expr2;
-		_stack[n].expr = expr2;
-	}
+		_stack[n].expr = expr = get_conv(type, conv, expr);
 	
 	return expr;
 }
@@ -566,13 +583,7 @@ static char *peek_pop(int n, TYPE conv, const char *fmt, va_list args)
 	}
 	
 	if (type != conv)
-	{
-		char *expr2 = NULL;
-		STR_add(&expr2, get_conv(type, conv), expr);
-		STR_free(expr);
-		expr = expr2;
-		_stack[n].expr = expr2;
-	}
+		_stack[n].expr = expr = get_conv(type, conv, expr);;
 	
 	if (fmt)
 	{
@@ -1241,7 +1252,8 @@ static void push_subr(char mode, ushort code)
 				break;
 				
 			case RST_EXEC:
-				if (atoi(get_expr(-2)) & PM_WAIT)
+				i = atoi(get_expr(-2));
+				if ((i & PM_WAIT) && (i & PM_STRING))
 					type = T_STRING;
 				else
 					type = GB.FindClass("Process");
