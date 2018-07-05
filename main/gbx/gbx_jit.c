@@ -238,7 +238,7 @@ void JIT_exec(bool ret_on_stack)
 	PROFILE_LEAVE_FUNCTION();
 	
 	if (SP != sp)
-		fprintf(stderr, "SP: %+ld !\n", SP - sp);
+		ERROR_panic("Stack mismatch in JIT function (sp %+ld)\n", SP - sp);
 	
 	if (func->type != T_VOID)
 	{

@@ -157,7 +157,7 @@ static void print_catch(void)
 		JIT_print("  JIT.error_set_last(FALSE); \n");
 	JIT_print("  error = TRUE;\n");
 	JIT_print("  if (SP > sp) sp = SP; else SP = sp;\n");
-	JIT_print("  JIT.release_many(sp, sp - ep); sp = ep;\n");
+	JIT_print("  if (sp > ep) { JIT.release_many(sp, sp - ep); sp = ep; }\n");
 	JIT_print("\n  } END_TRY\n\n");
 	JIT_print("__FINALLY:\n");
 	_try_finished = TRUE;
@@ -188,6 +188,7 @@ static bool leave_function(FUNCTION *func, int index)
 		print_catch();
 	
 	JIT_print("\n__RELEASE:;\n");
+	JIT_print("  RELEASE_GOSUB();\n");
 	
 	for (i = 0; i < func->n_local; i++)
 		RELEASE_FAST("  RELEASE_FAST_%s(l%d);\n", JIT_ctype_to_type(func->local[i].type), i); 
@@ -351,8 +352,8 @@ static char *borrow_expr(char *expr, TYPE type)
 	char *new_expr;
 	
 	len = strlen(expr);
-	if ((strncmp(&expr[len - 3], "())", 3) == 0) && (strncmp(&expr[len - 8], "POP_", 4) == 0) && (expr[len - 4] == *type_name))
-		new_expr = STR_print("%.*sPOP_BORROW_%s())", len - 8, expr, type_name);
+	if ((strncmp(&expr[len - 5], "();})", 5) == 0) && (strncmp(&expr[len - 10], "POP_", 4) == 0) && (expr[len - 6] == *type_name))
+		new_expr = STR_print("%.*sPOP_BORROW_%s();})", len - 10, expr, type_name);
 	else
 		new_expr = STR_print("BORROW_%s(%s)", type_name, expr);
 	
@@ -934,7 +935,7 @@ static void push_unknown(int index)
 	
 	expr = STR_copy(push_expr(-1, get_type(-1)));
 	pop_stack(1);
-	push(type, "(%s,PUSH_UNKNOWN(%d),POP_%s())", expr, _pc, JIT_get_type(type));
+	push(type, "({%s;PUSH_UNKNOWN(%d);POP_%s();})", expr, _pc, JIT_get_type(type));
 	
 	_stack[_stack_current - 1].call = call_type;
 
@@ -1013,16 +1014,16 @@ static void pop_unknown(int index)
 	}
 
 	arg = push_expr(-2, get_type(-2));
-	STR_add(&expr,"(%s", arg);
+	STR_add(&expr,"%s;", arg);
 	
 	arg = push_expr(-1, get_type(-1));
-	STR_add(&expr, ",%s,POP_UNKNOWN(%d))", arg, _pc);
+	STR_add(&expr, "%s;POP_UNKNOWN(%d);", arg, _pc);
 
 	pop_stack(2);
 	
-	push(T_VOID, "%s", expr);
+	push(T_VOID, "({%s})", expr);
 	
-	if (check_swap(T_UNKNOWN, "%s", expr))
+	if (check_swap(T_UNKNOWN, "({%s})", expr))
 		pop(T_VOID, NULL);
 	
 	STR_free(expr);
@@ -1081,15 +1082,15 @@ static void push_array(ushort code)
 	
 	for (i = _stack_current - narg; i < _stack_current; i++)
 	{
-		STR_add(&expr, "%s,", push_expr(i, get_type(i)));
+		STR_add(&expr, "%s;", push_expr(i, get_type(i)));
 		free_stack(i);
 	}
 	
 	_stack_current -= narg;
 	
-	STR_add(&expr, "CALL_PUSH_ARRAY(%d, 0x%04X),POP_%s()", _pc, code, JIT_get_type(type));
+	STR_add(&expr, "CALL_PUSH_ARRAY(%d, 0x%04X);POP_%s();", _pc, code, JIT_get_type(type));
 	
-	push(type, "(%s)", expr);
+	push(type, "({%s})", expr);
 	
 	STR_free(expr);
 }
@@ -1121,7 +1122,7 @@ static void pop_array(ushort code)
 				expr1 = peek(-2, get_type(-2));
 				expr2 = peek(-1, T_INTEGER);
 				
-				STR_add(&expr, "POP_ARRAY_%s(%s,%s,%s,%s)", JIT_get_type(type), expr1, expr2, peek(-3, type), unsafe);
+				STR_add(&expr, "POP_ARRAY_%s(%s,%s,%s,%s);", JIT_get_type(type), expr1, expr2, peek(-3, type), unsafe);
 				
 				pop_stack(3);
 				
@@ -1139,23 +1140,24 @@ static void pop_array(ushort code)
 	
 	for (i = _stack_current - narg; i < _stack_current; i++)
 	{
-		STR_add(&expr, "%s,", push_expr(i, get_type(i)));
+		STR_add(&expr, "%s;", push_expr(i, get_type(i)));
 		free_stack(i);
 	}
 	
 	_stack_current -= narg;
 	
-	STR_add(&expr, "CALL_POP_ARRAY(%d, 0x%04X),sp--", _pc, code);
+	STR_add(&expr, "CALL_POP_ARRAY(%d, 0x%04X);sp--;", _pc, code);
 	
 CHECK_SWAP:
 	
-	push(T_VOID, "(%s)", expr);
+	push(T_VOID, "({%s})", expr);
 	
-	if (check_swap(type, "(%s)", expr))
+	if (check_swap(type, "({%s})", expr))
 		pop(T_VOID, NULL);
 	
 	STR_free(expr);
 }
+
 
 static void push_subr(char mode, ushort code)
 {
@@ -1281,21 +1283,21 @@ static void push_subr(char mode, ushort code)
 	}
 	else if (op == CODE_DEBUG)
 	{
-		STR_add(&expr, "FP=(void *)%p,PC=&pc[%d],", _func, _pc);
+		STR_add(&expr, "FP=(void *)%p;PC = &pc[%d];", _func, _pc);
 	}
 	
 	for (i = _stack_current - narg; i < _stack_current; i++)
 	{
-		STR_add(&expr, "%s,", push_expr(i, get_type(i)));
+		STR_add(&expr, "%s;", push_expr(i, get_type(i)));
 		free_stack(i);
 	}
 	
 	_stack_current -= narg;
 	
 	STR_add(&expr, call, _pc, addr, code);
-	STR_add(&expr, ",POP_%s()", JIT_get_type(type));
+	STR_add(&expr, ";POP_%s();", JIT_get_type(type));
 	
-	push(type, "(%s)", expr);
+	push(type, "({%s})", expr);
 	
 	STR_free(expr);
 }
@@ -1867,17 +1869,17 @@ static void push_call(ushort code)
 					if (func->vararg && (narg > func->n_param))
 					{
 						if (func->type != T_VOID)
-							STR_add(&call, "({ %s _r; ", JIT_get_ctype(func->type));
+							STR_add(&call, "%s _r;", JIT_get_ctype(func->type));
 						
 						nv = narg - func->n_param;
 						for (i = 0; i < nv; i++)
-							STR_add(&call, "%s,", push_expr(i - nv, get_type(i - nv)));
+							STR_add(&call, "%s;", push_expr(i - nv, get_type(i - nv)));
 					}
 					
-					STR_add(&call,"SP = sp,");
+					STR_add(&call,"SP=sp;");
 					
 					if (nv && func->type != T_VOID)
-						STR_add(&call, "_r = ");
+						STR_add(&call, "_r=");
 					
 					STR_add(&call, "jit_%s_%d_(", JIT_prefix, func_index);
 					
@@ -1921,32 +1923,32 @@ static void push_call(ushort code)
 					if (func->vararg)
 						STR_add(&call, ",%d,&sp[-%d]", nv, nv);
 					
-					STR_add(&call, ")");
+					STR_add(&call, ");");
 					
 					if (nv)
 					{
-						STR_add(&call, ",JIT.release_many(sp,%d),sp -= %d", nv ,nv);
+						STR_add(&call, "JIT.release_many(sp,%d);sp -= %d;", nv ,nv);
 						if (func->type != T_VOID)
-							STR_add(&call, "; _r; })");
+							STR_add(&call, "_r;");
 					}
 					
 					pop_stack(narg + 1);
 				
-					push(func->type, "(%s)", call);
+					push(func->type, "({%s})", call);
 				}
 			}
 			else
 			{
-				STR_add(&call, "PUSH_PRIVATE_FUNCTION(%d),", func_index);
+				STR_add(&call, "PUSH_PRIVATE_FUNCTION(%d);", func_index);
 				
 				for (i = 0; i < narg; i++)
-					STR_add(&call, "%s,", push_expr(i - narg, get_type(i - narg)));
+					STR_add(&call, "%s;", push_expr(i - narg, get_type(i - narg)));
 				
 				pop_stack(narg + 1);
 				
-				STR_add(&call, "CALL_UNKNOWN(%d),POP_%s()", _pc, JIT_get_type(func->type));
+				STR_add(&call, "CALL_UNKNOWN(%d);POP_%s();", _pc, JIT_get_type(func->type));
 		
-				push(func->type, "(%s)", call);
+				push(func->type, "({%s})", call);
 			}
 			
 			break;
@@ -1955,29 +1957,29 @@ static void push_call(ushort code)
 			
 			narg++;
 			for (i = 0; i < narg; i++)
-				STR_add(&call, "%s,", push_expr(i - narg, get_type(i - narg)));
+				STR_add(&call, "%s;", push_expr(i - narg, get_type(i - narg)));
 			
 			pop_stack(narg);
 			
-			STR_add(&call, "CALL_UNKNOWN(%d),POP_%s()", _pc, JIT_get_type(func_type));
+			STR_add(&call, "CALL_UNKNOWN(%d);POP_%s();", _pc, JIT_get_type(func_type));
 	
-			push(func_type, "(%s)", call);
+			push(func_type, "({%s})", call);
 			
 			break;
 			
 		case CALL_EVENT:
 			
 			for (i = 0; i < narg; i++)
-				STR_add(&call, "%s,", push_expr(i - narg, get_type(i - narg)));
+				STR_add(&call, "%s;", push_expr(i - narg, get_type(i - narg)));
 			
 			pop_stack(narg + 1);
 			
 			if (func_index != NO_SYMBOL)
-				STR_add(&call, "RAISE_EVENT(%d,%d)", func_index, narg);
+				STR_add(&call, "RAISE_EVENT(%d,%d);", func_index, narg);
 			else
-				STR_add(&call, "RAISE_UNKNOWN_EVENT(%d)", _pc);
+				STR_add(&call, "RAISE_UNKNOWN_EVENT(%d);", _pc);
 	
-			push(T_BOOLEAN, "(%s)", call);
+			push(T_BOOLEAN, "({%s})", call);
 			
 			break;
 			
@@ -1997,7 +1999,7 @@ static void push_call(ushort code)
 			}
 			else
 			{
-				STR_add(&call,"SP = sp, (*(%s (*)())%p)(", JIT_get_ctype(ext->type), JIT.get_extern(ext));
+				STR_add(&call,"SP = sp;(*(%s (*)())%p)(", JIT_get_ctype(ext->type), JIT.get_extern(ext));
 				
 				for (i = 0; i < ext->n_param; i++)
 				{
@@ -2005,11 +2007,11 @@ static void push_call(ushort code)
 					STR_add(&call, "%s", peek(i - narg, ext->param[i].type));
 				}
 				
-				STR_add(&call, ")");
+				STR_add(&call, ");");
 				
 				pop_stack(narg + 1);
 			
-				push(ext->type, "(%s)", call);
+				push(ext->type, "({%s})", call);
 			}
 				
 			break;
@@ -2110,7 +2112,7 @@ static void push_subr_pi(ushort code)
 	expr = STR_copy(peek(-1, T_FLOAT));
 	pop_stack(1);
 	
-	push(T_FLOAT, "(M_PI * (%s))", expr);
+	push(T_FLOAT, "(M_PI*(%s))", expr);
 	
 	STR_free(expr);
 }
@@ -3154,7 +3156,9 @@ _END_TRY:
 	JIT_print("  *JIT.got_error = 0;\n");
 	JIT_print("  } CATCH {\n");
 	JIT_print("  if (SP > sp) sp = SP; else SP = sp;\n");
-	JIT_print("  JIT.release_many(sp, sp - tp); sp = tp;\n");
+	JIT_print("  if (sp > tp) {\n");
+	JIT_print("    JIT.release_many(sp, sp - tp); sp = tp;\n");
+	JIT_print("  }\n");
 	JIT_print("  *JIT.got_error = 1;\n");
 	JIT_print("  JIT.error_set_last(FALSE); \n");
 	JIT_print("  } END_TRY\n");

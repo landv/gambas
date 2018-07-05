@@ -137,13 +137,14 @@ static void declare_implementation(FUNCTION *func, int index)
 	int i;
 	int nopt;
 	int opt;
+	const char *vol = func->error ? "volatile " : "";
 	
 	JIT_print("static %s jit_%s_%d_(", JIT_get_ctype(func->type), JIT_prefix, index);
 	
 	for (i = 0; i < func->npmin; i++)
 	{
 		if (i) JIT_print(",");
-		JIT_print("%s p%d", JIT_get_ctype(func->param[i].type), i);
+		JIT_print("%s%s p%d", vol, JIT_get_ctype(func->param[i].type), i);
 	}
 	
 	if (i < func->n_param)
@@ -160,7 +161,7 @@ static void declare_implementation(FUNCTION *func, int index)
 				opt++;
 			}
 			
-			JIT_print("%s p%d", JIT_get_ctype(func->param[i].type), i);
+			JIT_print("%s%s p%d", vol, JIT_get_ctype(func->param[i].type), i);
 			
 			nopt++;
 			if (nopt >= 8)
@@ -202,6 +203,7 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 	int i;
 	TYPE type;
 	int nopt;
+	const char *vol = func->error ? "volatile " : "";
 		
 	if (func->debug)
 		JIT_section(func->debug->name);
@@ -278,7 +280,7 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 		else
 		{
 			type = JIT_ctype_to_type(func->local[i].type);
-			JIT_print_decl("  %s l%d = ", JIT_get_ctype(type), i);
+			JIT_print_decl("  %s%s l%d = ", vol, JIT_get_ctype(type), i);
 		}
 		
 		JIT_print_decl(JIT_get_default_value(type));

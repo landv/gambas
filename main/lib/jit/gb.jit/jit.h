@@ -7,7 +7,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#define NORETURN __attribute__((noreturn))
+#define NORETURN 
 
 #define E_NEPARAM    4
 #define E_TMPARAM    5
@@ -25,6 +25,14 @@ static inline double frac(double x)
   x = fabs(x);
   return x - floor(x);
 }
+
+#ifdef __clang__
+#define __builtin_exp10 exp10
+static inline double exp10(double x)
+{
+  return pow(10, x);
+}
+#endif
 
 typedef
   unsigned char uchar;
@@ -150,6 +158,7 @@ typedef
 #define RETURN_p(_val) (GB.ReturnPointer(_val))
 #define RETURN_o(_val) ({ GB_OBJECT _v = (_val); GB.Return(_v.type, _v.value); })
 #define RETURN_v(_val) ({ GB_VARIANT _v = (_val); GB.ReturnVariant(&_v.value); })
+#define RETURN_s(_val) (*(GB_STRING *)GB.GetReturnValue() = (_val))
 
 #define PUSH_b(_val) ({ char _v = -(_val); sp->_boolean.value = _v; sp->type = GB_T_BOOLEAN; sp++; })
 #define PUSH_c(_val) ({ uchar _v = (_val); sp->_integer.value = _v; sp->type = GB_T_BYTE; sp++; })
@@ -159,14 +168,14 @@ typedef
 #define PUSH_g(_val) ({ float _v = (_val); sp->_single.value = _v; sp->type = GB_T_SINGLE; sp++; })
 #define PUSH_f(_val) ({ double _v = (_val); sp->_float.value = _v; sp->type = GB_T_FLOAT; sp++; })
 #define PUSH_p(_val) ({ intptr_t _v = (_val); sp->_pointer.value = _v; sp->type = GB_T_POINTER; sp++; })
-#define PUSH_d(_val) (*((GB_DATE *)sp) = (_val), sp++)
-#define PUSH_t(_val) (*((GB_STRING *)sp) = (_val), sp++)
+#define PUSH_d(_val) ({ *((GB_DATE *)sp) = (_val); sp++; })
+#define PUSH_t(_val) ({ *((GB_STRING *)sp) = (_val); sp++; })
 #define PUSH_s(_val) ({ *((GB_STRING *)sp) = (_val); if (sp->type == GB_T_STRING) GB.RefString(sp->_string.value.addr); sp++; })
 #define PUSH_o(_val) ({ *((GB_OBJECT *)sp) = (_val); GB.Ref(sp->_object.value); sp++; })
 #define PUSH_v(_val) ({ *((GB_VARIANT *)sp) = (_val); GB.BorrowValue(sp); sp++; })
 #define PUSH_C(_val) ({ GB_VALUE_CLASS _v; _v.type = GB_T_CLASS; _v.class = (_val); *((GB_VALUE_CLASS *)sp) = _v; sp++; })
-#define PUSH_u(_val) (*sp = (_val), GB.BorrowValue(sp), sp++)
-#define PUSH_V() (sp->type = GB_T_VOID, sp++)
+#define PUSH_u(_val) ({ *sp = (_val); GB.BorrowValue(sp); sp++; })
+#define PUSH_V() ({ sp->type = GB_T_VOID; sp++; })
 #define PUSH_n(_val) ({ sp->type = GB_T_NULL; sp++; })
 
 enum
@@ -194,24 +203,24 @@ enum
   sp++; \
 })
 
-#define POP_b() (sp--, sp->_boolean.value)
-#define POP_c() (sp--, (uchar)sp->_integer.value)
-#define POP_h() (sp--, (short)sp->_integer.value)
-#define POP_i() (sp--, sp->_integer.value)
-#define POP_l() (sp--, sp->_long.value)
-#define POP_g() (sp--, sp->_single.value)
-#define POP_f() (sp--, sp->_float.value)
-#define POP_p() (sp--, sp->_pointer.value)
-#define POP_d() (sp--, *((GB_DATE*)sp))
-#define POP_s() (sp--, JIT.unborrow(sp), *((GB_STRING*)sp))
-#define POP_t() (sp--, *((GB_STRING*)sp))
-#define POP_BORROW_s() (sp--, *((GB_STRING*)sp))
-#define POP_o() (sp--, JIT.unborrow(sp), *((GB_OBJECT*)sp))
-#define POP_BORROW_o() (sp--, *((GB_OBJECT*)sp))
-#define POP_v() (sp--, JIT.unborrow(sp), *((GB_VARIANT*)sp))
-#define POP_BORROW_v() (sp--, *((GB_VARIANT*)sp))
-#define POP_u() (sp--, JIT.unborrow(sp), *sp)
-#define POP_BORROW_u() (sp--, *sp)
+#define POP_b() ({ sp--; sp->_boolean.value; })
+#define POP_c() ({ sp--; (uchar)sp->_integer.value; })
+#define POP_h() ({ sp--; (short)sp->_integer.value; })
+#define POP_i() ({ sp--; sp->_integer.value; })
+#define POP_l() ({ sp--; sp->_long.value; })
+#define POP_g() ({ sp--; sp->_single.value; })
+#define POP_f() ({ sp--; sp->_float.value; })
+#define POP_p() ({ sp--; sp->_pointer.value; })
+#define POP_d() ({ sp--; *((GB_DATE*)sp); })
+#define POP_s() ({ sp--; JIT.unborrow(sp); *((GB_STRING*)sp); })
+#define POP_t() ({ sp--; *((GB_STRING*)sp); })
+#define POP_BORROW_s() ({ sp--; *((GB_STRING*)sp); })
+#define POP_o() ({ sp--; JIT.unborrow(sp); *((GB_OBJECT*)sp); })
+#define POP_BORROW_o() ({ sp--; *((GB_OBJECT*)sp); })
+#define POP_v() ({ sp--; JIT.unborrow(sp); *((GB_VARIANT*)sp); })
+#define POP_BORROW_v() ({ sp--; *((GB_VARIANT*)sp); })
+#define POP_u() ({ sp--; JIT.unborrow(sp); *sp; })
+#define POP_BORROW_u() ({ sp--; *sp })
 #define POP_V() (sp--)
 
 #define BORROW_s(_val) ({ GB_STRING _v = (_val); if ((_v).type == GB_T_STRING) GB.RefString(_v.value.addr); _v; })
@@ -354,7 +363,7 @@ enum
 #define POP_ARRAY_o(_array, _index, _val, _unsafe) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreObject((GB_OBJECT *)&temp, GET_ARRAY##_unsafe(void *, _array, _index)); })
 #define POP_ARRAY_v(_array, _index, _val, _unsafe) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreVariant((GB_VARIANT *)&temp, GET_ARRAY##_unsafe(GB_VARIANT_VALUE, _array, _index)); })
 
-#define CONV(_val, _src, _dest, _type) (PUSH_##_src(_val),JIT.conv(sp - 1, (GB_TYPE)(_type)),POP_##_dest())
+#define CONV(_val, _src, _dest, _type) ({ PUSH_##_src(_val); JIT.conv(sp - 1, (GB_TYPE)(_type)); POP_##_dest(); })
 
 #define CONV_d_b(_val) ({ GB_DATE _v = (_val); _v.value.date != 0 || _v.value.time != 0; })
 #define CONV_d_c(_val) ((uchar)((_val).value.date))
@@ -381,7 +390,7 @@ enum
 #define LEAVE_TRY() ERROR_leave(__err)
 
 #define RETURN_LEAVE_TRY() ({ \
-  void *_addr; \
+  void *_addr = &&__L0; \
   if (!gp) { LEAVE_TRY(); goto __RETURN; } \
   _addr = gp->addr; \
   sp = (GB_VALUE *)gp; \
@@ -398,17 +407,25 @@ enum
   goto *_addr; \
 })
 
-#define CALL_SUBR(_pc, _func) (PC = &pc[_pc], SP = sp, (*((EXEC_FUNC)_func))(), sp = SP)
-#define CALL_SUBR_CODE(_pc, _func, _code) (PC = &pc[_pc], SP = sp, (*((EXEC_FUNC_CODE)_func))(_code), sp = SP)
-#define CALL_SUBR_UNKNOWN(_pc) (JIT.call_unknown(&pc[_pc], sp), sp = SP)
+#define RELEASE_GOSUB() ({ \
+  while(gp) \
+  { \
+    gp = gp->gp; \
+    SP--; \
+  } \
+})
 
-#define CALL_PUSH_ARRAY(_pc, _code) (PC = &pc[_pc], SP = sp, (*(EXEC_FUNC)JIT.push_array)(_code), sp = SP)
-#define CALL_POP_ARRAY(_pc, _code) (PC = &pc[_pc], SP = sp, (*(EXEC_FUNC)JIT.pop_array)(_code), sp = SP, sp++)
+#define CALL_SUBR(_pc, _func) ({ PC = &pc[_pc]; SP = sp; (*((EXEC_FUNC)_func))(); sp = SP; })
+#define CALL_SUBR_CODE(_pc, _func, _code) ({ PC = &pc[_pc]; SP = sp; (*((EXEC_FUNC_CODE)_func))(_code); sp = SP; })
+#define CALL_SUBR_UNKNOWN(_pc) ({ JIT.call_unknown(&pc[_pc], sp); sp = SP; })
 
-#define PUSH_UNKNOWN(_pc) (PC = &pc[_pc], SP = sp, JIT.push_unknown(), sp = SP)
-#define POP_UNKNOWN(_pc) (PC = &pc[_pc], SP = sp, JIT.pop_unknown(), sp = SP)
+#define CALL_PUSH_ARRAY(_pc, _code) ({ PC = &pc[_pc]; SP = sp; (*(EXEC_FUNC)JIT.push_array)(_code); sp = SP; })
+#define CALL_POP_ARRAY(_pc, _code) ({ PC = &pc[_pc]; SP = sp; (*(EXEC_FUNC)JIT.pop_array)(_code); sp = SP; sp++; })
 
-#define PUSH_COMPLEX(_val) (PUSH_f(_val), SP = sp, JIT.push_complex(), POP_o())
+#define PUSH_UNKNOWN(_pc) ({ PC = &pc[_pc]; SP = sp; JIT.push_unknown(); sp = SP; })
+#define POP_UNKNOWN(_pc) ({ PC = &pc[_pc]; SP = sp; JIT.pop_unknown(); sp = SP; })
+
+#define PUSH_COMPLEX(_val) ({ PUSH_f(_val); SP = sp; JIT.push_complex(); POP_o(); })
 
 #define GET_LAST() GET_OBJECT(*(JIT.event_last), GB_T_OBJECT)
 
@@ -447,9 +464,9 @@ enum
   *JIT.exec_super = sp; \
   _temp; })
 
-#define CALL_UNKNOWN(_pc) (JIT.call_unknown(&pc[_pc], sp), sp = SP)
+#define CALL_UNKNOWN(_pc) ({ JIT.call_unknown(&pc[_pc], sp); sp = SP; })
 
-#define ENUM_FIRST(_code, _plocal, _penum) (GB.Unref(&(_penum).value),(_penum).type = 0,JIT.enum_first(_code, (GB_VALUE *)&_plocal, (GB_VALUE*)&_penum))
+#define ENUM_FIRST(_code, _plocal, _penum) ({ GB.Unref(&(_penum).value); (_penum).type = 0; JIT.enum_first(_code, (GB_VALUE *)&_plocal, (GB_VALUE*)&_penum); })
 
 #define ENUM_NEXT(_code, _plocal, _penum, _label) ({ \
   SP = sp; \
@@ -467,8 +484,8 @@ enum
   
 #define QUIT(_code) (SP = sp, JIT.exec_quit(_code))
 
-#define RAISE_EVENT(_event, _narg) (SP = sp, GB.Raise(OP, (_event), -(_narg)), sp = SP)
-#define RAISE_UNKNOWN_EVENT(_pc) (PC = &pc[_pc], SP = sp, JIT.push_unknown_event(0), sp = SP)
+#define RAISE_EVENT(_event, _narg) ({ SP = sp; GB.Raise(OP, (_event), -(_narg)); sp = SP; })
+#define RAISE_UNKNOWN_EVENT(_pc) ({ PC = &pc[_pc]; SP = sp; JIT.push_unknown_event(0); sp = SP; })
 
 #define MATH_ABS(_val) ({ \
   __typeof(_val) _v = (_val); \
