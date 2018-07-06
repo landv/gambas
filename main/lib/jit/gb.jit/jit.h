@@ -280,6 +280,8 @@ enum
   temp.value = (_val); \
   temp; })
 
+#define GET_FUNCTION(_pc) ({ CALL_UNKNOWN(_pc); POP_u(); })
+
 #define ADDR(_val) ({ \
   char *_object = (_val).value; \
   if (!_object) JIT.throw(E_NULL); \

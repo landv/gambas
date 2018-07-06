@@ -42,7 +42,8 @@ typedef
 	struct {
 		TYPE type;
 		char *expr;
-		int func;
+		ushort func;
+		ushort pc;
 		int index;
 		TYPE call;
 	}
@@ -302,14 +303,17 @@ static void push(TYPE type, const char *fmt, ...)
 	va_end(args);
 }
 
+static STACK_SLOT *get_stack(int n)
+{
+	if (n < 0) n += _stack_current;
+	return &_stack[n];
+}
 
 static TYPE get_type(int n)
 {
 	TYPE type;
 	
-	if (n < 0) n += _stack_current;
-	
-	type = _stack[n].type;
+	type = get_stack(n)->type;
 	
 	if (TYPE_is_pure_object(type))
 		JIT_load_class((CLASS *)type);
@@ -320,8 +324,7 @@ static TYPE get_type(int n)
 
 static char *get_expr(int n)
 {
-	if (n < 0) n += _stack_current;
-	return _stack[n].expr;
+	return get_stack(n)->expr;
 }
 
 
@@ -530,16 +533,20 @@ static char *get_conv(TYPE src, TYPE dest, char *expr)
 
 static char *peek(int n, TYPE conv)
 {
+	STACK_SLOT *ss;
 	char *expr;
 	TYPE type;
 	
-	if (n < 0) n += _stack_current;
+	ss = get_stack(n);
 	
-	expr = _stack[n].expr;
-	type = _stack[n].type;
+	expr = ss->expr;
+	type = ss->type;
+	
+	if (type == T_FUNCTION && !expr)
+		expr = ss->expr = STR_print("GET_FUNCTION(%d)", ss->pc);
 	
 	if (type != conv)
-		_stack[n].expr = expr = get_conv(type, conv, expr);
+		ss->expr = expr = get_conv(type, conv, expr);
 	
 	return expr;
 }
@@ -644,12 +651,19 @@ static char *push_expr(int n, TYPE type)
 	if (type == T_VOID)
 		return "PUSH_V()";
 	
-	len = strlen(expr);
-	if ((strncmp(&expr[len - 3], "())", 3) == 0) && (strncmp(&expr[len - 8], "POP_", 4) == 0) && (expr[len - 4] == *type_name))
-		new_expr = STR_print("%.*s)", len - 9, expr);
+	if (type == T_FUNCTION)
+	{
+		new_expr = STR_print("CALL_UNKNOWN(%d)", get_stack(n)->pc);
+	}
 	else
-		new_expr = STR_print("PUSH_%s(%s)", type_name, expr);
-	
+	{
+		len = strlen(expr);
+		if ((strncmp(&expr[len - 5], "();})", 5) == 0) && (strncmp(&expr[len - 10], "POP_", 4) == 0) && (expr[len - 6] == *type_name))
+			new_expr = STR_print("%.*s})", len - 10, expr);
+		else
+			new_expr = STR_print("PUSH_%s(%s)", type_name, expr);
+	}
+
 	STR_free(expr);
 	set_expr(n, new_expr);
 	
@@ -787,6 +801,7 @@ static void push_function(int func, int index)
 	push(T_FUNCTION, NULL);
 	_stack[_stack_current - 1].func = func;
 	_stack[_stack_current - 1].index = index;
+	_stack[_stack_current - 1].pc = _pc;
 }
 
 
