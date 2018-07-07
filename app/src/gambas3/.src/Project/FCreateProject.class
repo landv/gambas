@@ -20,6 +20,8 @@ End
 
 Public Sub Form_Open()
 
+  dchProject.Bookmarks = Project.GetBookmarks()
+
   'dchProject.SelectedPath = Settings["/FCreateProject/Path", System.User.Home]
   Settings.Read(Me)
   wizProject.Index = 0
@@ -35,7 +37,7 @@ Public Sub Form_Open()
   txtFilter.SetFocus
 
   $sTemplate = ""
-
+  
   Dec Application.Busy
 
 End

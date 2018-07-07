@@ -11,6 +11,7 @@ Public SearchString As String
 Public ReplaceString As String
 Public BrowseTimeStamp As Integer
 Public OnlySource As Boolean
+Public OnlyData As Boolean
 
 Public InBrowse As Boolean
 
@@ -48,13 +49,13 @@ Public Sub Form_Open()
   Settings.Read(Me)
   
   chkCaseSensitive.Value = Settings["/FSearch/CaseSensitive", False]
-  radCurrentProcedure.Value = Settings["/FSearch/CurrentProcedure", False]
+  'radCurrentProcedure.Value = Settings["/FSearch/CurrentProcedure", False]
   chkHighlight.Value = Settings["/FSearch/Highlight", False]
   chkIgnoreComments.Value = Settings["/FSearch/IgnoreComments", False]
   chkIgnoreStrings.Value = Settings["/FSearch/IgnoreStrings", False]
   chkRegularExpression.Value = Settings["/FSearch/RegularExpression", False]
   chkWordOnly.Value = Settings["/FSearch/WordOnly", False]
-  radSourceFileOnly.Value = Settings["/FSearch/SourceOnly", False]
+  'radSourceFileOnly.Value = Settings["/FSearch/SourceOnly", False]
   
 End
 
@@ -63,13 +64,13 @@ Public Sub Form_Close()
   Settings.Write(Me)
 
   Settings["/FSearch/CaseSensitive"] = CBool(chkCaseSensitive.Value)
-  Settings["/FSearch/CurrentProcedure"] = CBool(radCurrentProcedure.Value)
+  'Settings["/FSearch/CurrentProcedure"] = CBool(radCurrentProcedure.Value)
   Settings["/FSearch/Highlight"] = CBool(chkHighlight.Value)
   Settings["/FSearch/IgnoreComments"] = CBool(chkIgnoreComments.Value)
   Settings["/FSearch/IgnoreStrings"] = CBool(chkIgnoreStrings.Value)
   Settings["/FSearch/RegularExpression"] = CBool(chkRegularExpression.Value)
   Settings["/FSearch/WordOnly"] = CBool(chkWordOnly.Value)
-  Settings["/FSearch/SourceOnly"] = CBool(radSourceFileOnly.Value)
+  'Settings["/FSearch/SourceOnly"] = CBool(radSourceFileOnly.Value)
 
 End
 
@@ -141,8 +142,9 @@ Public Sub Update(Optional bForce As Boolean)
   
   If Project.IsFake() Then
     radSourceFileOnly.Enabled = False
+    radDataFileOnly.Enabled = False
     radEverywhere.Enabled = False
-    If radSourceFileOnly.Value Or If radEverywhere.Value Then radCurrentFile.Value = True
+    If radSourceFileOnly.Value Or If radEverywhere.Value Or If radDataFileOnly.Value Then radCurrentFile.Value = True
   Endif
   
   UpdateTitle
@@ -370,6 +372,7 @@ Private Sub InitSearch() As Boolean
   WordOnly = chkWordOnly.Value
   CurrentProcedure = radCurrentProcedure.Value
   OnlySource = radSourceFileOnly.Value
+  OnlyData = radDataFileOnly.Value
   
   If Not SearchString Then Return True
   
@@ -709,9 +712,13 @@ Private Sub Browse(Optional bReplace As Boolean, Optional bAgain As Boolean)
   
   For Each sFile In RDir(sDir).Sort()
   
-    If Left(sFile) = "." And If Not (sFile Begins ".src/") Then Continue
+    If Left(sFile) = "." Then
+      If OnlyData Then Continue
+      If Not (sFile Begins ".src/") Then Continue
+    Endif
+    
     If Right(sFile) = "~" Then Continue
-      
+    
     sPath = sDir &/ sFile
   
     If IsDir(sPath) Then Continue
@@ -1111,7 +1118,7 @@ Public Sub UpdateReplaceState()
   
   Dim bEnable As Boolean
   
-  If radEverywhere.Value Or If radSourceFileOnly.Value Then
+  If radEverywhere.Value Or If radSourceFileOnly.Value Or If radDataFileOnly.Value Then
   
     bEnable = Not Project.Running
     
@@ -1140,7 +1147,7 @@ End
 
 Public Sub radSearch_Click()
 
-  btnBrowse.Visible = radEverywhere.Value Or radSourceFileOnly.Value
+  btnBrowse.Visible = radEverywhere.Value Or radSourceFileOnly.Value Or radDataFileOnly.Value
   btnReplace.Visible = Not btnBrowse.Visible
   btnNext.Visible = Not btnBrowse.Visible
   btnPrevious.Visible = Not btnBrowse.Visible

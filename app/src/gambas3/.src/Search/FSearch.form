@@ -108,9 +108,14 @@
           MoveScaled(0,12,25,4)
           Text = Shortcut(("Source files"), "S")
         }
+        { radDataFileOnly RadioButton radSearch
+          Name = "radDataFileOnly"
+          MoveScaled(0,16,25,4)
+          Text = Shortcut(("Data files"), "D")
+        }
         { radEverywhere RadioButton radSearch
           Name = "radEverywhere"
-          MoveScaled(0,16,25,4)
+          MoveScaled(0,20,25,4)
           Text = Shortcut(("All files"), "l")
         }
       }
