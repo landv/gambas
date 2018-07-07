@@ -164,7 +164,7 @@ typedef
 #define PUSH_b(_val) ({ char _v = -(_val); sp->_boolean.value = _v; sp->type = GB_T_BOOLEAN; sp++; })
 #define PUSH_c(_val) ({ uchar _v = (_val); sp->_integer.value = _v; sp->type = GB_T_BYTE; sp++; })
 #define PUSH_h(_val) ({ short _v = (_val); sp->_integer.value = _v; sp->type = GB_T_SHORT; sp++; })
-#define PUSH_i(_val) ({ int _v = (_val); sp->_integer.value = _v; sp->type = GB_T_INTEGER; sp++; })
+#define PUSH_i(_val) ({ sp->_integer.value = (_val); sp->type = GB_T_INTEGER; sp++; })
 #define PUSH_l(_val) ({ int64_t _v = (_val); sp->_long.value = _v; sp->type = GB_T_LONG; sp++; })
 #define PUSH_g(_val) ({ float _v = (_val); sp->_single.value = _v; sp->type = GB_T_SINGLE; sp++; })
 #define PUSH_f(_val) ({ double _v = (_val); sp->_float.value = _v; sp->type = GB_T_FLOAT; sp++; })
@@ -308,6 +308,14 @@ enum
 #define GET_s(_addr) GET_STRING((*(char **)(_addr)), 0, GB.StringLength(temp.value.addr))
 #define GET_o(_addr, _type) GET_OBJECT((*(char **)(_addr)), _type)
 #define GET_v(_addr) GET_VARIANT((*(GB_VARIANT_VALUE *)(_addr)))
+#define GET_S(_ref, _addr, _type) GET_OBJECT(JIT.static_struct((_ref), (_type), (_addr)), _type)
+
+#define GET_A(_class, _ref, _addr, _type, _desc) ({ \
+  SP = sp; \
+  GB.Unref(&ra); \
+  ra = JIT.static_array((_class), (_ref), (void *)(_desc), (_addr)); \
+  GET_OBJECT(ra, _type); \
+})
 
 #define SET_b(_addr, _val) (GET_b(_addr) = (_val))
 #define SET_c(_addr, _val) (GET_c(_addr) = (_val))

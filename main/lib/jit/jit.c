@@ -104,8 +104,10 @@ TYPE JIT_ctype_to_type(CTYPE ctype)
 	if (ctype.id == T_OBJECT && ctype.value >= 0)
 		return (TYPE)(JIT_class->load->class_ref[ctype.value]);
 	else if (ctype.id == TC_ARRAY)
-		JIT_panic("Static array not implemented");
-		//return (TYPE)CARRAY_get_array_class(class, class->load->array[ctype.value]->ctype);
+	{
+		CLASS_ARRAY *desc = JIT_class->load->array[ctype.value];
+		return (TYPE)JIT.get_array_class(JIT_class, *(JIT_CTYPE *)&desc->ctype);
+	}
 	else if (ctype.id == TC_STRUCT)
 		return (TYPE)(JIT_class->load->class_ref[ctype.value]);
 	else

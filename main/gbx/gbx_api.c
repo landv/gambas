@@ -373,6 +373,9 @@ const void *const GAMBAS_JitApi[] =
 	(void *)EXTERN_get_addr,
 	(void *)DEBUG_get_position,
 	(void *)RELEASE_many,
+	(void *)CSTRUCT_create_static,
+	(void *)CARRAY_create_static,
+	(void *)CARRAY_get_array_class,
 	NULL
 };
 

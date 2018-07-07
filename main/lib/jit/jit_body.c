@@ -83,6 +83,7 @@ static bool _decl_rs;
 static bool _decl_ro;
 static bool _decl_rv;
 static bool _decl_tp;
+static bool _decl_ra;
 
 static ushort _pc;
 
@@ -117,6 +118,8 @@ static void enter_function(FUNCTION *func, int index)
 	_decl_ro = FALSE;
 	_decl_rv = FALSE;
 	_decl_tp = FALSE;
+	_decl_ra = FALSE;
+	
 	_has_gosub = FALSE;
 	_loop_count = 0;
 	_has_just_dup = FALSE;
@@ -206,6 +209,9 @@ static bool leave_function(FUNCTION *func, int index)
 	
 	for (i = 0; i < GB.Count(_dup_type); i++)
 		RELEASE_FAST("  RELEASE_FAST_%s(d%d);\n", _dup_type[i], i);
+	
+	if (_decl_ra)
+		JIT_print("  GB.Unref(&ra);\n");
 	
 	if (!_has_catch && !_has_finally)
 		JIT_print("  if (error) GB.Propagate();\n");
@@ -742,7 +748,8 @@ static int add_ctrl(int index, TYPE type, const char *expr)
 	else
 		info->expr = NULL;
 	
-	_ctrl_index[index] = index_ctrl;
+	if (index >= 0)
+		_ctrl_index[index] = index_ctrl;
 	
 	//JIT_print_decl("  %s c%d;\n", JIT_get_ctype(type), index_ctrl);
 	JIT_declare(type, "c%d", index_ctrl);
@@ -2528,6 +2535,7 @@ bool JIT_translate_body(FUNCTION *func, int ind)
 
 	CLASS *class = JIT_class;
 	TYPE type;
+	CTYPE ctype;
 	uint p = 0;
 	ushort code;
 	int index;
@@ -2657,18 +2665,31 @@ _PUSH_INTEGER:
 _PUSH_STATIC:
 
 	index = GET_7XX();
-	type = JIT_ctype_to_type(class->load->stat[index].type);
+	ctype = class->load->stat[index].type;
+	type = JIT_ctype_to_type(ctype);
 	addr = &class->stat[class->load->stat[index].pos];
 
-	if (TYPE_is_object(type))
+	switch(ctype.id)
 	{
-		if (TYPE_is_pure_object(type))
-			push(type, "GET_o(%p, CLASS(%p))", addr, (CLASS *)type);
-		else
-			push(type, "GET_o(%p, GB_T_OBJECT)", addr);
+		case TC_STRUCT:
+			push(type, "GET_S(CP, %p, CLASS(%p))", addr, (CLASS *)type);
+			break;
+			
+		case TC_ARRAY:
+			declare(&_decl_ra, "void *ra = NULL");
+			push(type, "GET_A(CP, CP, %p, CLASS(%p), %p)", addr, (CLASS *)type, JIT_class->load->array[ctype.value]);
+			break;
+			
+		case T_OBJECT:
+			if (TYPE_is_pure_object(type))
+				push(type, "GET_o(%p, CLASS(%p))", addr, (CLASS *)type);
+			else
+				push(type, "GET_o(%p, GB_T_OBJECT)", addr);
+			break;
+			
+		default:
+			push(type, "GET_%s(%p)", JIT_get_type(type), addr);
 	}
-	else
-		push(type, "GET_%s(%p)", JIT_get_type(type), addr);
 
 	goto _MAIN;
 
@@ -2688,19 +2709,31 @@ _POP_STATIC:
 _PUSH_DYNAMIC:
 
 	index = GET_7XX();
-	type = JIT_ctype_to_type(class->load->dyn[index].type);
 	pos = class->load->dyn[index].pos;
-
-	if (TYPE_is_object(type))
-	{
-		if (TYPE_is_pure_object(type))
-			push(type, "GET_o(&OP[%d], CLASS(%p))", pos, (CLASS *)type);
-		else
-			push(type, "GET_o(&OP[%d], GB_T_OBJECT)", pos);
-	}
-	else
-		push(type, "GET_%s(&OP[%d])", JIT_get_type(type), pos);
+	ctype = class->load->dyn[index].type;
+	type = JIT_ctype_to_type(ctype);
 	
+	switch(ctype.id)
+	{
+		case TC_STRUCT:
+			push(type, "GET_S(OP, &OP[%d], CLASS(%p))", pos, (CLASS *)type);
+			break;
+			
+		case TC_ARRAY:
+			push(type, "GET_A(CP, OP, &OP[%d], CLASS(%p), %p)", pos, (CLASS *)type, JIT_class->load->array[ctype.value]);
+			break;
+			
+		case T_OBJECT:
+			if (TYPE_is_pure_object(type))
+				push(type, "GET_o(&OP[%d], CLASS(%p))", pos, (CLASS *)type);
+			else
+				push(type, "GET_o(&OP[%d], GB_T_OBJECT)", pos);
+			break;
+			
+		default:
+			push(type, "GET_%s(&OP[%d])", JIT_get_type(type), pos);
+	}
+
 	goto _MAIN;
 
 _POP_DYNAMIC:

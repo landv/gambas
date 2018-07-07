@@ -42,6 +42,14 @@ typedef
 	
 typedef
 	struct {
+		unsigned char flag;
+		unsigned char id;
+		short value;
+		}
+	JIT_CTYPE;
+
+typedef
+	struct {
 		void *next;
 		GB_VALUE *bp;
 		GB_VALUE *pp;
@@ -96,6 +104,9 @@ typedef
 		void *(*get_extern)(void *ext);
 		const char *(*get_position)(void *cp, void *fp, ushort *pc);
 		void (*release_many)(GB_VALUE *, int);
+		void *(*static_struct)(void *ref, GB_CLASS type, char *addr);
+		void *(*static_array)(void *cp, void *ref, GB_CLASS type, char *addr);
+		void *(*get_array_class)(void *cp, JIT_CTYPE ctype);
 	}
 	JIT_INTERFACE;
 
