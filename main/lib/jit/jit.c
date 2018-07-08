@@ -99,17 +99,17 @@ const char *JIT_get_ctype(TYPE type)
 	return _ctype_name[TYPEID(type)];
 }
 
-TYPE JIT_ctype_to_type(CTYPE ctype)
+TYPE JIT_ctype_to_type(CLASS *class, CTYPE ctype)
 {
 	if (ctype.id == T_OBJECT && ctype.value >= 0)
-		return (TYPE)(JIT_class->load->class_ref[ctype.value]);
+		return (TYPE)(class->load->class_ref[ctype.value]);
 	else if (ctype.id == TC_ARRAY)
 	{
-		CLASS_ARRAY *desc = JIT_class->load->array[ctype.value];
-		return (TYPE)JIT.get_array_class(JIT_class, *(JIT_CTYPE *)&desc->ctype);
+		CLASS_ARRAY *desc = class->load->array[ctype.value];
+		return (TYPE)JIT.get_array_class(class, *(JIT_CTYPE *)&desc->ctype);
 	}
 	else if (ctype.id == TC_STRUCT)
-		return (TYPE)(JIT_class->load->class_ref[ctype.value]);
+		return (TYPE)(class->load->class_ref[ctype.value]);
 	else
 		return (TYPE)(ctype.id);
 }
@@ -281,7 +281,7 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 		}
 		else
 		{
-			type = JIT_ctype_to_type(func->local[i].type);
+			type = JIT_ctype_to_type(JIT_class, func->local[i].type);
 			JIT_print_decl("  %s%s l%d = ", vol, JIT_get_ctype(type), i);
 		}
 		

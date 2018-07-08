@@ -282,6 +282,7 @@ enum
 
 #define GET_FUNCTION(_pc) ({ CALL_UNKNOWN(_pc); POP_u(); })
 
+// TODO: automatic class
 #define ADDR(_val) ({ \
   char *_object = (_val).value; \
   if (!_object) JIT.throw(E_NULL); \

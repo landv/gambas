@@ -195,7 +195,7 @@ static bool leave_function(FUNCTION *func, int index)
 	JIT_print("  RELEASE_GOSUB();\n");
 	
 	for (i = 0; i < func->n_local; i++)
-		RELEASE_FAST("  RELEASE_FAST_%s(l%d);\n", JIT_ctype_to_type(func->local[i].type), i); 
+		RELEASE_FAST("  RELEASE_FAST_%s(l%d);\n", JIT_ctype_to_type(JIT_class, func->local[i].type), i); 
 	
 	for (i = 0; i < func->n_param; i++)
 		RELEASE_FAST("  RELEASE_FAST_%s(p%d);\n", func->param[i].type, i);
@@ -231,7 +231,7 @@ static TYPE get_local_type(FUNCTION *func, int index)
 	TYPE type;
 	
 	if (index < func->n_local)
-		type = JIT_ctype_to_type(func->local[index].type);
+		type = JIT_ctype_to_type(JIT_class, func->local[index].type);
 	else
 		type = _ctrl_info[_ctrl_index[index - func->n_local]].type;
 	
@@ -860,7 +860,8 @@ static void push_unknown(int index)
 		if (index != NO_SYMBOL)
 		{
 			desc = class->table[index].desc;
-			utype = JIT_ctype_to_type(desc->variable.ctype);
+			class = desc->method.class;
+			utype = JIT_ctype_to_type(class, desc->variable.ctype);
 			
 			switch (CLASS_DESC_get_type(desc))
 			{
@@ -883,6 +884,8 @@ static void push_unknown(int index)
 					return;
 					
 				case CD_VARIABLE:
+					
+					// TODO: automatic class
 					
 					expr = peek(-1, (TYPE)class);
 					
@@ -947,7 +950,7 @@ static void push_unknown(int index)
 				case CD_METHOD:
 				case CD_STATIC_METHOD:
 					
-					call_type = desc->property.type;
+					call_type = desc->method.type;
 					break;
 			}
 		}
@@ -989,7 +992,7 @@ static void pop_unknown(int index)
 		if (index != NO_SYMBOL)
 		{
 			desc = class->table[index].desc;
-			utype = JIT_ctype_to_type(desc->variable.ctype);
+			utype = JIT_ctype_to_type(class, desc->variable.ctype);
 
 			switch (CLASS_DESC_get_type(desc))
 			{
@@ -1007,6 +1010,8 @@ static void pop_unknown(int index)
 					return;
 					
 				case CD_VARIABLE:
+					
+					// TODO: automatic class
 					
 					expr = peek(-1, (TYPE)class);
 					
@@ -2666,7 +2671,7 @@ _PUSH_STATIC:
 
 	index = GET_7XX();
 	ctype = class->load->stat[index].type;
-	type = JIT_ctype_to_type(ctype);
+	type = JIT_ctype_to_type(class, ctype);
 	addr = &class->stat[class->load->stat[index].pos];
 
 	switch(ctype.id)
@@ -2696,7 +2701,7 @@ _PUSH_STATIC:
 _POP_STATIC:
 
 	index = GET_7XX();
-	type = JIT_ctype_to_type(class->load->stat[index].type);
+	type = JIT_ctype_to_type(class, class->load->stat[index].type);
 	addr = &class->stat[class->load->stat[index].pos];
 
 	_no_release = TRUE;
@@ -2711,7 +2716,7 @@ _PUSH_DYNAMIC:
 	index = GET_7XX();
 	pos = class->load->dyn[index].pos;
 	ctype = class->load->dyn[index].type;
-	type = JIT_ctype_to_type(ctype);
+	type = JIT_ctype_to_type(class, ctype);
 	
 	switch(ctype.id)
 	{
@@ -2739,7 +2744,7 @@ _PUSH_DYNAMIC:
 _POP_DYNAMIC:
 
 	index = GET_7XX();
-	type = JIT_ctype_to_type(class->load->dyn[index].type);
+	type = JIT_ctype_to_type(class, class->load->dyn[index].type);
 	pos = class->load->dyn[index].pos;
 	
 	_no_release = TRUE;
