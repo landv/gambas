@@ -17,6 +17,7 @@ Private $bVerbose As Boolean
 Private $aImplemented As New String[]
 Private $bExecuteFromArgs As Boolean
 Private $bFast As Boolean
+Private $bUnsafe As Boolean
 Private $sUse As String
 Private $bPrecompiler As Boolean
 Private $aVarsDecl As New String[]
@@ -178,6 +179,10 @@ Private Function ParseArgs() As String
       Case "-f", "--fast"
 
         $bFast = True
+        
+      Case "-U", "--unsafe"
+        
+        $bUnsafe = True
 
       Case "-u"
 
@@ -229,7 +234,11 @@ Private Sub MakeVirtualProject()
 
   $hOutFile = Open $sPrjPath &/ ".src/MMain.module" For Write Create
   Print #$hOutFile, "' Gambas module file\n"
-  If $bFast Then Print #$hOutFile, "Fast"
+  If $bFast Then 
+    Print #$hOutFile, "Fast";
+    If $bUnsafe Then Print #$hOutFile, " Unsafe";
+    Print #$hOutFile
+  Endif
 
   $iLevel = 0
   If $bExecuteFromArgs Then
