@@ -610,6 +610,8 @@ Private Sub Current_Write(sFile As String)
   
   'Debug sFile
   
+  If sFile = Current_Read() Then Return
+  
   EnsureRefresh
   
   GetView().UnselectAll

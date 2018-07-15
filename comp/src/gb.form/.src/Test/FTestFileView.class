@@ -28,8 +28,11 @@ End
 
 Public Sub FileChooser1_Change()
 
-  
-  FileProperties1.Path = FileChooser1.SelectedPath
+  If FileChooser1.SelectedPath Then
+    FileProperties1.Path = FileChooser1.SelectedPath
+  Else
+    FileProperties1.Path = FileChooser1.Dir
+  Endif
 
 End
 

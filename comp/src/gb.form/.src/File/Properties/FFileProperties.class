@@ -22,6 +22,7 @@ Private TAB_MEDIA_PREVIEW As Integer = 2
 Private TAB_ERROR As Integer = 3
 
 Private $bMedia As Boolean
+Private $bIgnoreNextTaskError As Boolean
 
 Public Sub Run(sPath As String) As Boolean
   
@@ -52,6 +53,8 @@ End
 
 Public Sub SetPath(sPath As String)
   
+  $bIgnoreNextTaskError = True
+  Try $hTask.Stop
   $sPath = sPath
   $bPreview = False
   RefreshPath
@@ -238,6 +241,7 @@ End
 
 Public Sub Form_Close()
 
+  $bIgnoreNextTaskError = True
   Try $hTask.Stop
 
 End
@@ -251,6 +255,10 @@ End
 
 Private Sub ShowError(Optional sErr As String)
 
+  If $bIgnoreNextTaskError Then
+    $bIgnoreNextTaskError = False
+    Return
+  Endif
   If sErr Then $sError &= sErr
   tabInfo[TAB_ERROR].Visible = True
   txtError.Text = $sError
