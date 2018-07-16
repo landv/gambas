@@ -688,8 +688,10 @@ void GetConnectedDBName(DB_DESC *desc, ODBC_CONN *odbc)
 
 	if (SQL_SUCCEEDED(retcode))
 	{
-		dbName = malloc(sizeof(SQLTCHAR) * charsNeeded++);
-		dbName[sizeof(SQLTCHAR) * charsNeeded++] = 0;
+		charsNeeded++;
+		
+		dbName = malloc(sizeof(SQLTCHAR) * charsNeeded);
+		
 		/*zxMarce: We call the function again, this time specifying a
 		  hopefully big enough buffer for storing the catalog name.
 		*/
@@ -697,8 +699,11 @@ void GetConnectedDBName(DB_DESC *desc, ODBC_CONN *odbc)
 					    dbName, charsNeeded,
 					    &charsNeeded
 					   );
+		dbName[sizeof(SQLTCHAR) * charsNeeded] = 0;
+		
 		GB.FreeString(&desc->name);
 		desc->name = GB.NewZeroString((char *)dbName);
+		free(dbName);
 	}
 
 	if (DB.IsDebug())
