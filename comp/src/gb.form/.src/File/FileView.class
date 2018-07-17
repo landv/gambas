@@ -998,6 +998,13 @@ Public Sub Rename()
   
 End
 
+Public Sub View_Cancel()
+  
+  Reload
+  
+End
+
+
 Public Sub View_Rename()
   
   Dim hView As Object = GetView()
@@ -1011,6 +1018,7 @@ Public Sub View_Rename()
   sMsg = Help.CheckFileName(sNewName)
   If sMsg Then
     Balloon.Warning(sMsg, hView, hView.Item.X + Min(32 + Desktop.Scale * 8, hView.Item.W) / 2, hView.Item.Y + hView.Item.H / 2)
+    Stop Event
     Return
   Endif
   

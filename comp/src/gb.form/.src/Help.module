@@ -68,6 +68,7 @@ End
 
 Public Sub CheckFileName(sName As String) As String
 
+  If Not sName Then Return ("A file or directory name cannot be void.")
   If InStr(sName, "/") Then Return ("The '/' character is forbidden inside file or directory names.")
   
 End
