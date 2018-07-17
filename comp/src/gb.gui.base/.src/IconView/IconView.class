@@ -1177,9 +1177,10 @@ Private Function Available_Read() As Boolean
 
 End
 
-Private Sub RaiseEvent(iEvent As Integer, iItem As Integer)
+Private Sub RaiseEvent(iEvent As Integer, iItem As Integer) As Boolean
   
   Dim iSave As Integer = $iIntern
+  Dim bCancel As Boolean
   
   $iIntern = iItem
   Select Case iEvent
@@ -1188,9 +1189,11 @@ Private Sub RaiseEvent(iEvent As Integer, iItem As Integer)
     Case EVENT_CLICK
       Raise Click
     Case EVENT_RENAME
-      Raise Rename
+      bCancel = Raise Rename
   End Select
   $iIntern = iSave
+  
+  Return bCancel
   
 End
 
@@ -1422,9 +1425,11 @@ End
 
 Public Sub RenameBox_Activate()
   
+  Dim bCancel As Boolean
+  
   $aItems[$iRename].Text = $hRenameBox.Text
-  RaiseEvent(EVENT_RENAME, $iRename)
-  ExitRename
+  bCancel = RaiseEvent(EVENT_RENAME, $iRename)
+  If Not bCancel Then ExitRename
   
 End
 
@@ -1435,6 +1440,7 @@ Public Sub RenameBox_KeyPress()
     Raise Cancel
   Else If Key.Code = Key.Enter Or If Key.Code = Key.Return Then
     RenameBox_Activate
+    Stop Event
   Endif
   
 End
