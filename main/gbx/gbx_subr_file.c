@@ -88,30 +88,28 @@ static CSTREAM *pop_stream(void **list)
 
 static STREAM *get_default(intptr_t val)
 {
-	STREAM *stream;
+	STREAM *stream = NULL;
 
 	switch(val)
 	{
 		case 0:
 			if (_default_in)
 				stream = CSTREAM_stream(((CSTREAM_NODE *)_default_in)->stream);
-			else
+			else if (CFILE_in)
 				stream = CSTREAM_stream(CFILE_in);
 			break;
 		case 1:
 			if (_default_out)
 				stream = CSTREAM_stream(((CSTREAM_NODE *)_default_out)->stream);
-			else
+			else if (CFILE_out)
 				stream = CSTREAM_stream(CFILE_out);
 			break;
 		case 2:
 			if (_default_err)
 				stream = CSTREAM_stream(((CSTREAM_NODE *)_default_err)->stream);
-			else
+			else if (CFILE_err)
 				stream = CSTREAM_stream(CFILE_err);
 			break;
-		default:
-			stream = NULL;
 	}
 
 	if (!stream)
@@ -120,7 +118,32 @@ static STREAM *get_default(intptr_t val)
 	return stream;
 }
 
-#define _get_stream(_value, _can_default) \
+static inline STREAM *_get_stream(VALUE *value, bool can_default)
+{
+	STREAM *stream;
+	
+	VARIANT_undo(value);
+	
+	if ((can_default) && TYPE_is_integer(value->type) && value->_integer.value >= 0 && value->_integer.value <= 2)
+		stream = get_default((intptr_t)(value->_integer.value));
+	else
+	{
+		if (TYPE_is_object(value->type) && value->_object.object && OBJECT_class(value->_object.object)->is_stream)
+			stream = CSTREAM_stream(value->_object.object);
+		else
+		{
+			if (VALUE_is_null(value))
+				THROW(E_NULL);
+			
+			VALUE_conv_object(value, (TYPE)CLASS_Stream);
+			stream = NULL;
+		}
+	}
+	
+	return stream;
+}
+
+/*#define _get_stream(_value, _can_default) \
 	STREAM *stream; \
 	\
 	VARIANT_undo(_value); \
@@ -139,26 +162,26 @@ static STREAM *get_default(intptr_t val)
 			VALUE_conv_object((_value), (TYPE)CLASS_Stream); \
 			stream = NULL; \
 		} \
-	}
+	}*/
 
 #define get_stream(_value, _can_default) \
 ({ \
-	_get_stream(_value, _can_default); \
+	STREAM *_stream = _get_stream(_value, _can_default); \
 	\
-	if (STREAM_is_closed(stream)) \
+	if (STREAM_is_closed(_stream)) \
 		THROW(E_CLOSED); \
 	\
-	stream; \
+	_stream; \
 })
 
 #define get_stream_for_writing(_value, _can_default) \
 ({ \
-	_get_stream(_value, _can_default); \
+	STREAM *_stream = _get_stream(_value, _can_default); \
 	\
-	if (STREAM_is_closed_for_writing(stream)) \
+	if (STREAM_is_closed_for_writing(_stream)) \
 		THROW(E_CLOSED); \
 	\
-	stream; \
+	_stream; \
 })
 
 static char *get_path(VALUE *param)
