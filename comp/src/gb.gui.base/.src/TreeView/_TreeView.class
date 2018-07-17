@@ -1252,6 +1252,8 @@ End
 Private Sub Cancel(Optional bOK As Boolean)
   
   Dim sCursor As String 
+  Dim bStop As Boolean
+  Dim hItem As _TreeView_Item
   
   If Not $hRenameBox Then Return
   
@@ -1262,13 +1264,15 @@ Private Sub Cancel(Optional bOK As Boolean)
   sCursor = $sCursor
   $sCursor = $sKeyRenaming
   If bOK Then
-    Raise Rename
+    bStop = Raise Rename
   Else
     Raise Cancel
   Endif
   $sCursor = sCursor
   
+  hItem = $cItem[$sKeyRenaming]
   $sKeyRenaming = ""
+  If bStop Then _Rename(hItem, $iColRenaming)
   
 End
 
