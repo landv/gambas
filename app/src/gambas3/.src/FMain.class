@@ -2918,7 +2918,11 @@ End
 
 Public Sub panDebug_Arrange()
 
-  btnClosePanel.Move(panDebug.W - btnClosePanel.W, 0)
+  If System.RightToLeft Then
+    btnClosePanel.Move(0, 0)
+  Else
+    btnClosePanel.Move(panDebug.W - btnClosePanel.W, 0)
+  Endif
   btnClosePanel.Raise
 
 End

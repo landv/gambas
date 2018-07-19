@@ -72,6 +72,7 @@ Private $hTextSelect As CImageSelection
 
 Private $sLastColor As Integer
 Private $cInfo As New Collection
+Private $bInfoTop As Boolean
 
 Public Sub _new(sPath As String)
   
@@ -3130,13 +3131,22 @@ End
 
 Private Sub MoveInfo()
 
+  Dim X, Y As Integer
   Dim DX As Integer
   Dim DY As Integer
 
   If imvImage.ScrollH > imvImage.ClientH Then DX = Style.ScrollbarSize
   If imvImage.ScrollW > imvImage.ClientW Then DY = Style.ScrollbarSize
   
-  dwgInfo.Move(panBackground.W - dwgInfo.W - Desktop.Scale - DX, panBackground.H - dwgInfo.H - Desktop.Scale - DY)
+  If System.RightToLeft Then
+    X = Desktop.Scale
+  Else
+    X = panBackground.W - dwgInfo.W - Desktop.Scale - DX
+  Endif
+  Y = Desktop.Scale
+  If Not $bInfoTop Then Y = Max(Y, panBackground.H - dwgInfo.H - Desktop.Scale - DY)
+
+  dwgInfo.Move(X, Y)
 
 End
 
@@ -3267,5 +3277,12 @@ Public Sub imvImage_DblClick()
   RemoveLastEndBeginUndo
   ClearSelection
   $bDblClick = True
+
+End
+
+Public Sub dwgInfo_Enter()
+
+  $bInfoTop = Not $bInfoTop
+  MoveInfo
 
 End
