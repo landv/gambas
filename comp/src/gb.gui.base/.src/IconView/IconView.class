@@ -170,7 +170,6 @@ Private Sub SetIntern(iIntern As Integer)
   
 End
 
-
 Public Function MoveTo((Key) As String) As Boolean
   
   If Not $cItems.Exist(Key) Then 
@@ -471,12 +470,13 @@ Public Sub ScrollArea_Draw()
       If hClip Then
         bHover = iPos = $iHover
         'If $iMode = Select.Multiple And If iPos = $iStart Then bHover = True
-        hItem._Draw(hRect, hClip, Me, $bHorizontal, bFocus, bHover) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
+        hItem._Draw(hRect, hClip, Me, $bHorizontal, bFocus, bHover, iPos = $iCurrent) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
         If bRaiseDraw Then
           Paint.Save
           Raise Draw(hRect.X, hRect.Y, hRect.W, hRect.H, hItem.Key)
           Paint.Restore
         Endif
+        
       Endif
       
     Endif
@@ -664,10 +664,13 @@ End
 
 Private Sub ToggleCurrentItem(iPos As Integer)
   
+  Dim iOld As Integer
+  
   $aItems[iPos].Selected = Not $aItems[iPos].Selected
-  RefreshIcon($iCurrent)
+  iOld = $iCurrent
   $iCurrent = iPos
   $iStart = iPos
+  RefreshIcon(iOld)
   RefreshIcon($iCurrent)
   
   If $iCurrent >= 0 Then _EnsureVisible($iCurrent)
@@ -676,8 +679,12 @@ End
 
 Private Sub SetCurrentItem(iCurrent As Integer, Optional bIgnoreOutside As Boolean, Optional bSelect As Boolean)
   
+  Dim iOld As Integer
+  
   If $bSelRect Then Return
   If iCurrent = $iCurrent Then Return
+  
+  iOld = $iCurrent
   
   If iCurrent < 0 Or If iCurrent > $aItems.Max Then
     iCurrent = -1
@@ -686,10 +693,13 @@ Private Sub SetCurrentItem(iCurrent As Integer, Optional bIgnoreOutside As Boole
   
   If Not bSelect Then 
   
-    UnselectAll
+    If $iMode = Select.Single Then 
+      UnselectAll
+    Else If $iMode = Select.Multiple Then
+      If iCurrent < 0 Or If Not $aItems[iCurrent].Selected Then UnselectAll
+    Endif
   
     If iCurrent >= 0 Then
-      RefreshIcon($iCurrent)
       $aItems[iCurrent].Selected = True
       $iCurrent = iCurrent
       $iStart = $iCurrent
@@ -706,6 +716,9 @@ Private Sub SetCurrentItem(iCurrent As Integer, Optional bIgnoreOutside As Boole
   Endif
   
   If $iCurrent >= 0 Then _EnsureVisible($iCurrent)
+  
+  RefreshIcon(iOld)
+  RefreshIcon($iCurrent)
   
 End
 
@@ -909,11 +922,7 @@ Public Sub ScrollArea_MouseDown()
     If bCtrl Then
       ToggleCurrentItem(iPos)
     Else
-      If $aItems[iPos].Selected Then
-        ' do nothing when clicking inside the selection
-      Else
-        SetCurrentItem(iPos)
-      Endif
+      SetCurrentItem(iPos)
     Endif
     
   Else
@@ -1026,8 +1035,8 @@ Private Sub SelectRect(Optional iSelect As Integer = 1)
     $X1 = hRect.X + hRect.W \ 2
     $Y1 = hRect.Y + hRect.H \ 2
     GetIconGeometry($iCurrent, hRect)
-    $X2 = hRect.X + hRect.W \ 2 + 1
-    $Y2 = hRect.Y + hRect.H \ 2 + 1
+    $X2 = hRect.X + hRect.W \ 2 
+    $Y2 = hRect.Y + hRect.H \ 2 
   Endif
   
   If $X1 = $X2 And If $Y1 = $Y2 Then Return
@@ -1046,29 +1055,31 @@ Private Sub SelectRect(Optional iSelect As Integer = 1)
     nCol = FindIcon(X + W - 1, Y, True) - iPos + 1
   Endif
   iLast = FindIcon(X + W - 1, Y + H - 1, True)
-    
+  
   iCol = 0
   
   While iPos <= iLast
     
     If iPos >= 0 And If iPos < $aItems.Count Then
+      If $bSelRect Or If iPos <> $iStart Then
       
-      GetIconGeometry(iPos, hRect)
-      hRect.Adjust(2)
-      
-      hSelRect = hRect.Intersection(hSel)
-      
-      If hSelRect Then
-        hItem = $aItems[iPos]
-        If hItem._Intersect(hRect, hSelRect, $bHorizontal) Then
-          If iSelect = 1 Then
-            hItem.Selected = Not hItem.Selected
-          Else
-            hItem.Selected = iSelect
+        GetIconGeometry(iPos, hRect)
+        hRect.Adjust(2)
+        
+        hSelRect = hRect.Intersection(hSel)
+        
+        If hSelRect Then
+          hItem = $aItems[iPos]
+          If Not $bSelRect Or If hItem._Intersect(hRect, hSelRect, $bHorizontal) Then
+            If iSelect = 1 Then
+              hItem.Selected = Not hItem.Selected
+            Else
+              hItem.Selected = iSelect
+            Endif
           Endif
         Endif
-      Endif
       
+      Endif
     Endif
     
     Inc iCol
@@ -1611,5 +1622,15 @@ End
 Public Sub ScrollArea_LostFocus()
   
   $hView.Refresh
+  
+End
+
+Public Sub ScrollArea_Font()
+
+  Dim hItem As _IconView_Item
+  
+  For Each hItem In $aItems
+    hItem._Invalidate
+  Next
   
 End
