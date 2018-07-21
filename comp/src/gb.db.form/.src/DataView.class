@@ -737,7 +737,7 @@ Catch
   If bPrintError Then
     _Warning(("Unable to save value."), Error.Text,, Row, Column)
   Else
-    _Warning(("Incorrect value."), Error.Where & ": " & Error.Text,, Row, Column)
+    _Warning(("Invalid value."), Error.Where & ": " & Error.Text,, Row, Column)
   Endif
   Stop Event
 
