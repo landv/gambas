@@ -60,6 +60,7 @@ Private $bRefreshIcon As Boolean
 Private $bRefreshAll As Boolean
 Private $hWatcher As Watcher
 Private $bVisible As Boolean
+Private $bInvalidate As Boolean
 
 Static Public Sub _init()
   
@@ -283,7 +284,7 @@ Static Public Sub _GetHiddenColor() As Integer
   
 End
 
-Private Sub RefreshView(Optional bInvalidate As Boolean)
+Private Sub RefreshView()
   
   Dim sFile As String
   Dim sDir As String
@@ -339,7 +340,10 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
   Endif
   
   hCache = DirCache[sDir]
-  If bInvalidate Then hCache.Invalidate
+  If $bInvalidate Then 
+    hCache.Invalidate
+    $bInvalidate = False
+  Endif
   
   'Try aDir = Dir(sDir, "*").Sort()
   Try aDir = hCache.GetFiles()
@@ -520,6 +524,7 @@ End
 
 Public Sub Reload()
   
+  $bInvalidate = True
   RefreshViewLater(True)
   
 End

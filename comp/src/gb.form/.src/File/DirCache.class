@@ -6,7 +6,10 @@ Static Private $cCache As New Collection
 
 Private $sDir As String
 Private $aList As String[]
+
 Private $dDate As Date
+Private $dLastModified As Date
+
 Private $cStat As New Collection
 Private $cIcon As New Collection
 Private $cIsDir As New Collection
@@ -50,14 +53,15 @@ End
 
 Private Sub CheckValid() As Boolean
   
-  Dim dNewDate As Date 
+  Dim dLastModified As Date 
   
   If $iLock Then Return
   
-  dNewDate = Stat($sDir).LastModified
+  dLastModified = Stat($sDir).LastModified
   
-  If IsNull($dDate) Or If dNewDate > $dDate Then
-    $dDate = dNewDate
+  If IsNull($dLastModified) Or If dLastModified > $dLastModified Or If Now >= DateAdd($dDate, gb.Second, 5) Then
+    $dDate = Now
+    $dLastModified = dLastModified
     $cStat.Clear
     $aList = Null
   Endif
@@ -66,6 +70,7 @@ End
 
 Public Sub Invalidate()
   
+  $dLastModified = Null
   $dDate = Null
   
 End
