@@ -1349,7 +1349,7 @@ Public Sub View_KeyPress()
   If bCancel Then Goto STOP_EVENT
   
   Try sAction = $cShortcut[String.UCase(Shortcut.FromKey())]
-  If sAction Then
+  If sAction Then 
     Select Case sAction
       Case "Copy"
         Copy()
@@ -1980,37 +1980,40 @@ Public Sub Insert(Text As String)
   Dim aText As String[]
   Dim I As Integer
   
-  DeleteSelection
-  If Not Text Then Return
-  
-  '$X = NormalizeColumn($X, $Y)
-  
   $hDoc.Begin
   
-  If $bOverwrite Then
+  DeleteSelection
+  If Text Then 
+  
+    '$X = NormalizeColumn($X, $Y)
     
-    aText = Split(Text, "\n")
+    If $bOverwrite Then
+      
+      aText = Split(Text, "\n")
+      
+      For I = 0 To aText.Max - 1
+        Remove($X, $Y, $X + String.Len(aText[I]), $Y)
+        If $Y = $hDoc.Max Then
+          $hDoc.Insert(aText[I] & "\n", $X, $Y)
+        Else
+          $hDoc.Insert(aText[I], $X, $Y)
+        Endif
+        Goto(0, $Y + 1)
+      Next
+      
+      Remove($X, $Y, $X + String.Len(aText[aText.Max]), $Y)
+      $hDoc.Insert(aText[aText.Max], $X, $Y)
+      
+    Else
+      
+      $hDoc.Insert(Text, $X, $Y)
+      
+    Endif
     
-    For I = 0 To aText.Max - 1
-      Remove($X, $Y, $X + String.Len(aText[I]), $Y)
-      If $Y = $hDoc.Max Then
-        $hDoc.Insert(aText[I] & "\n", $X, $Y)
-      Else
-        $hDoc.Insert(aText[I], $X, $Y)
-      Endif
-      Goto(0, $Y + 1)
-    Next
-    
-    Remove($X, $Y, $X + String.Len(aText[aText.Max]), $Y)
-    $hDoc.Insert(aText[aText.Max], $X, $Y)
-    
-  Else
-    
-    $hDoc.Insert(Text, $X, $Y)
+    Goto($hDoc.XAfter, $hDoc.YAfter)
     
   Endif
   
-  Goto($hDoc.XAfter, $hDoc.YAfter)
   $hDoc.End
   
 End
