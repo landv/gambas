@@ -2,7 +2,7 @@
 
 #include <math.h>
 #include <setjmp.h>
-#include <stdio.h>
+//#include <stdio.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -475,6 +475,11 @@ enum
   } \
   *JIT.exec_super = sp; \
   _temp; })
+
+#define LEAVE_SUPER() { \
+  while (sp < *JIT.exec_super) \
+    *JIT.exec_super = ((GB_VALUE_OBJECT *)*JIT.exec_super)->super; \
+}
 
 #define CALL_UNKNOWN(_pc) ({ JIT.call_unknown(&pc[_pc], sp); sp = SP; })
 

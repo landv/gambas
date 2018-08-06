@@ -1926,6 +1926,7 @@ void EXEC_new(ushort code)
 
 		SP->_object.class = class;
 		SP->_object.object = object;
+		SP->_object.super = NULL;
 		SP++;
 	}
 	CATCH

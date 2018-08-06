@@ -162,6 +162,7 @@ static void print_catch(void)
 	JIT_print("  error = TRUE;\n");
 	JIT_print("  if (SP > sp) sp = SP; else SP = sp;\n");
 	JIT_print("  if (sp > ep) { JIT.release_many(sp, sp - ep); sp = ep; }\n");
+	JIT_print("  LEAVE_SUPER();\n");
 	JIT_print("\n  } END_TRY\n\n");
 	JIT_print("__FINALLY:\n");
 	_try_finished = TRUE;
@@ -3213,7 +3214,8 @@ _END_TRY:
 	JIT_print("    JIT.release_many(sp, sp - tp); sp = tp;\n");
 	JIT_print("  }\n");
 	JIT_print("  *JIT.got_error = 1;\n");
-	JIT_print("  JIT.error_set_last(FALSE); \n");
+	JIT_print("  JIT.error_set_last(FALSE);\n");
+	JIT_print("  LEAVE_SUPER();\n");
 	JIT_print("  } END_TRY\n");
 	goto _MAIN;
 
