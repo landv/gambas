@@ -12,7 +12,7 @@ Public Const TYPE_SPECIAL As Integer = 6
 Public Const TYPE_COMPONENT As Integer = 7
 Public Const TYPE_FILE As Integer = 8
 
-Public Enum OFFLINE_NO_NETWORK, OFFLINE_NOT_AVAILABLE, OFFLINE_UP_TO_DATE, OFFLINE_NEW_AVAILABLE, OFFLINE_NO_WGET
+Public Enum OFFLINE_NO_NETWORK, OFFLINE_NOT_AVAILABLE, OFFLINE_UP_TO_DATE, OFFLINE_NEW_AVAILABLE
 
 Public $PopupHelpCache As Collection
 
@@ -860,17 +860,24 @@ End
 
 Public Sub GetOfflineState() As Integer
 
+  Dim hClient As HttpClient
   Dim sTimestamp As String
   Dim sDir As String
   Dim sDate As String
 
   If Not Desktop.NetworkAvailable Then Return OFFLINE_NO_NETWORK
-
-  If Not System.Exist("wget") Then Return OFFLINE_NO_WGET
   
   Inc Application.Busy
   
-  Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp
+  hClient = New HttpClient As "hClient"
+  hClient.Async = False
+  hClient.Timeout = 20
+
+  hClient.URL = "http://gambaswiki.org/timestamp"
+  hClient.Get
+  If hClient.Status >= 0 Then
+    If Lof(hClient) Then sTimestamp = Read #hClient, Lof(hClient)
+  End If
   
   Dec Application.Busy
   

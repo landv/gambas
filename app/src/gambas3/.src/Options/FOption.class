@@ -1175,6 +1175,8 @@ End
 
 Public Sub btnDownloadHelp_Click()
 
+  Dim hClient As HttpClient
+  Dim sHeaders As New String[0]
   Dim sMsg As String
   Dim sFile As String
   Dim sDir As String
@@ -1183,21 +1185,8 @@ Public Sub btnDownloadHelp_Click()
 
   Inc Application.Busy
   
-  sMsg = Project.RequireProgram(["wget", "tar"])
+  sMsg = Project.RequireProgram(["tar"])
   If sMsg Then Goto FAIL
-  
-  ' Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp
-  ' sTimestamp = Trim(sTimestamp)
-  ' If Not sTimestamp Then 
-  '   sMsg = ("The documentation is not available at the moment. Try again later.")
-  '   Goto FAIL
-  ' Endif
-  ' 
-  ' Try dDate = Stat(MHelp.GetOfflineDir()).LastModified
-  ' If dDate And If Format(dDate, "yyyymmdd") >= sTimestamp Then
-  '   sMsg = ("The documentation is up to date.")
-  '   Goto FAIL
-  ' Endif
   
   sDir = MHelp.GetOfflineDir()
   sParentDir = File.Dir(sDir)
@@ -1206,9 +1195,19 @@ Public Sub btnDownloadHelp_Click()
   sFile = sParentDir &/ "wiki.tar.bz2"
   Try Kill sFile
   
-  Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp
+  hClient = New HttpClient As "hClient"
+  hClient.Async = False
+  hClient.Timeout = 20
+
+  hClient.URL = "http://gambaswiki.org/timestamp"
+  hClient.Get
+  If hClient.Status >= 0 Then
+    If Lof(hClient) Then sTimestamp = Read #hClient, Lof(hClient)
+  End If
   
-  Exec ["wget", "-q", "-O", sFile, "http://gambaswiki.org/gambas-wiki.tar.bz2"] Wait
+  hClient.URL = "http://gambaswiki.org/gambas-wiki.tar.bz2"
+  hClient.Get(sHeaders, sFile)
+
   If Not Exist(sFile) Then
     sMsg = ("Unable to download documentation.")
     Goto FAIL
@@ -1260,11 +1259,6 @@ Private Sub UpdateDocumentationState()
     
     Case MHelp.OFFLINE_UP_TO_DATE
       lblDocumentation.Text = ("Documentation is up to date.")
-      lblDocumentation.Foreground = Color.Foreground
-      btnDownloadHelp.Enabled = False
-    
-    Case MHelp.OFFLINE_NO_WGET
-      lblDocumentation.Text = ("'wget' is not found.")
       lblDocumentation.Foreground = Color.Foreground
       btnDownloadHelp.Enabled = False
     
