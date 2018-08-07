@@ -66,6 +66,8 @@
 #define buffer_pos COMMON_pos
 #define get_size_left COMMON_get_size_left
 
+static void add_string(const char *src, int len, int *before);
+
 /* System encoding*/
 char *LOCAL_encoding = NULL;
 
@@ -75,10 +77,9 @@ bool LOCAL_is_UTF8;
 /* Default 'C' localization */
 LOCAL_INFO LOCAL_default = {
 	'.', '.',
-	0, 0,
+	NULL, 0, NULL, 0,
 	3, 3,
 	0,
-	{ 0 },
 	'/', ':',
 	"",
 	"",
@@ -199,11 +200,16 @@ static void stradd_sep(char *dst, const char *src, const char *sep)
 static void add_thousand_sep(int *before)
 {
 	int group;
+	const char *thsep;
+	int lthsep;
 
 	if (before == NULL)
 		return;
 
-	if (local_current->thousand_sep != 0)
+	thsep = _currency ? local_current->thousand_sep : local_current->currency_thousand_sep;
+	lthsep = _currency ? local_current->len_thousand_sep : local_current->len_currency_thousand_sep;
+	
+	if (thsep && thsep)
 	{
 		group = _currency ? local_current->currency_group_size : local_current->group_size;
 
@@ -212,7 +218,7 @@ static void add_thousand_sep(int *before)
 			if (buffer_pos > 0 && (get_current()[-1] == ' '))
 				put_char(' ');
 			else
-				put_char(_currency ? local_current->currency_thousand_sep : local_current->thousand_sep);
+				add_string(thsep, lthsep, NULL);
 		}
 	}
 
@@ -222,7 +228,7 @@ static void add_thousand_sep(int *before)
 
 static void add_string(const char *src, int len, int *before)
 {
-	if (len == 0)
+	if (len <= 0)
 		len = strlen(src);
 
 	while (len > 0)
@@ -357,15 +363,18 @@ static void free_local_info(void)
 	CLEAR(&LOCAL_local);
 }
 
-static char fix_separator(const char *str)
+static const char *fix_separator(const char *str)
 {
-	if (!*str || !str[1])
-		return str[0];
+	if (!str || !*str)
+		return " ";
 
 	if ((uchar)str[0] == 0xC2 && (uchar)str[1] == 0xA0 && str[2] == 0)
-		return ' ';
+		return " ";
 
-	return '?';
+	if ((uchar)str[0] == 0xE2 && (uchar)str[1] == 0x80 && (uchar)str[2] == 0xAF && str[3] == 0)
+		return " ";
+
+	return "_";
 }
 
 static void fill_local_info(void)
@@ -410,8 +419,8 @@ static void fill_local_info(void)
 
 	LOCAL_local.decimal_point = *(info->decimal_point);
 	LOCAL_local.thousand_sep = fix_separator(info->thousands_sep);
-	if (LOCAL_local.thousand_sep == 0)
-		LOCAL_local.thousand_sep = ' ';
+	LOCAL_local.len_thousand_sep = strlen(LOCAL_local.thousand_sep);
+	
 	LOCAL_local.group_size = *(info->grouping);
 	if (LOCAL_local.group_size == 0)
 		LOCAL_local.group_size = 3;
@@ -563,8 +572,8 @@ static void fill_local_info(void)
 	// Currency format
 
 	LOCAL_local.currency_thousand_sep = fix_separator(info->mon_thousands_sep);
-	if (LOCAL_local.currency_thousand_sep == 0)
-		LOCAL_local.currency_thousand_sep = ' ';
+	LOCAL_local.len_currency_thousand_sep = strlen(LOCAL_local.currency_thousand_sep);
+	
 	LOCAL_local.currency_group_size = *(info->mon_grouping);
 	if (LOCAL_local.currency_group_size == 0)
 		LOCAL_local.currency_group_size = 3;
@@ -1330,7 +1339,7 @@ static bool add_date_token(DATE_SERIAL *date, char *token, int count)
 
 			if (count <= 2)
 			{
-				time_t t = (time_t)0L;
+				time_t t = time(NULL);
 				localtime_r(&t, &tm);
 				add_strftime(count == 2 ? "%z" : "%Z", &tm);
 			}
