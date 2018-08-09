@@ -374,7 +374,7 @@ static const char *fix_separator(const char *str)
 	if ((uchar)str[0] == 0xE2 && (uchar)str[1] == 0x80 && (uchar)str[2] == 0xAF && str[3] == 0)
 		return " ";
 
-	return "_";
+	return str[1] ? "_" : str;
 }
 
 static void fill_local_info(void)
