@@ -485,7 +485,13 @@ static char *get_conv_format(TYPE src, TYPE dest)
 			if (src == T_NULL)
 			{
 				if (dest == T_OBJECT)
-					return "GET_OBJECT(NULL, GB_T_OBJECT)";
+					return "GET_NULL_o()";
+				else if (dest == T_VARIANT)
+					return "GET_NULL_v()";
+				else if (dest == T_DATE)
+					return "GET_NULL_d()";
+				else if (dest == T_STRING || dest == T_CSTRING)
+					return "GET_NULL_s()";
 				else
 				{
 					sprintf(buffer, "GET_OBJECT(NULL, CLASS(%p))", (CLASS *)dest);

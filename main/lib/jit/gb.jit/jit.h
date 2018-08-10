@@ -226,7 +226,7 @@ enum
 
 #define BORROW_s(_val) ({ GB_STRING _v = (_val); if ((_v).type == GB_T_STRING) GB.RefString(_v.value.addr); _v; })
 #define BORROW_o(_val) ({ GB_OBJECT _v = (_val); GB.Ref(_v.value); _v; })
-#define BORROW_v(_val) ({ GB_VARIANT _v = (_val); GB.BorrowValue(&_v); _v; })
+#define BORROW_v(_val) ({ GB_VARIANT _v = (_val); GB.BorrowValue((GB_VALUE *)&_v); _v; })
 
 #define RELEASE_s(_val) ({ GB_STRING _v = (_val); if ((_v).type == GB_T_STRING) GB.FreeString(&_v.value.addr); _v; })
 #define RELEASE_o(_val) ({ GB_OBJECT _v = (_val); GB.Unref(&_v.value); _v; })
@@ -389,6 +389,11 @@ enum
 #define CONV_d_o(_val) (JIT.throw(E_CONV))
 
 #define CONV_o_O(_val, _class) CONV(_val, o, o, CLASS(_class))
+
+#define GET_NULL_o() ({ GB_OBJECT temp; temp.type = GB_T_OBJECT; temp.value = NULL; temp; })
+#define GET_NULL_v() ({ GB_VARIANT temp; temp.type = GB_T_VARIANT; temp.value.type = GB_T_NULL; temp; })
+#define GET_NULL_s() GET_CSTRING("", 0, 0)
+#define GET_NULL_d() ({ GB_DATE temp; temp.type = GB_T_DATE; temp.value.date = 0; temp.value.time = 0; temp; })
 
 #define PUSH_GOSUB(_label) ({ \
   GB_VALUE_GOSUB *_p = (GB_VALUE_GOSUB *)sp; \
