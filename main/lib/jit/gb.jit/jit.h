@@ -230,11 +230,11 @@ enum
 
 #define RELEASE_s(_val) ({ GB_STRING _v = (_val); if ((_v).type == GB_T_STRING) GB.FreeString(&_v.value.addr); _v; })
 #define RELEASE_o(_val) ({ GB_OBJECT _v = (_val); GB.Unref(&_v.value); _v; })
-#define RELEASE_v(_val) ({ GB_VARIANT _v = (_val); GB.ReleaseValue(&_v)); _v; })
+#define RELEASE_v(_val) ({ GB_VARIANT _v = (_val); GB.ReleaseValue((GB_VALUE *)&_v); _v; })
 
 #define RELEASE_FAST_s(_val) ({ if ((_val).type == GB_T_STRING) GB.FreeString(&(_val).value.addr); })
 #define RELEASE_FAST_o(_val) GB.Unref(&((_val).value))
-#define RELEASE_FAST_v(_val) GB.ReleaseValue(&(_val))
+#define RELEASE_FAST_v(_val) GB.ReleaseValue((GB_VALUE *)&(_val))
 
 #define CLASS(_class) ((GB_CLASS)(_class))
 
