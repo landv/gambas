@@ -143,9 +143,13 @@ End
 
 Public Sub GetDataDir() As String[]
   
+  Dim sDir As String
+  
   If Not $aDataDir Then
-    $aDataDir = Split(Desktop.DataDir, ":", "", True)
-    $aDataDir.Insert(Split(Env["XDG_DATA_DIRS"], ":", "", True))
+    $aDataDir = [Desktop.DataDir] 'Split(Desktop.DataDir, ":", "", True)
+    sDir = Env["XDG_DATA_DIRS"]
+    If Not sDir Then sDir = "/usr/local/share:/usr/share"
+    $aDataDir.Insert(Split(sDir, ":", "", True))
   Endif
   
   Return $aDataDir
