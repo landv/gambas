@@ -46,6 +46,7 @@ int ERROR_depth = 0;
 #endif
 
 static int _lock = 0;
+static char *_print_prefix = NULL;
 
 static const char *const _message[73] =
 {
@@ -565,23 +566,33 @@ void ERROR_panic(const char *error, ...)
 	vfprintf(stderr, error, args);
 
 	va_end(args);
+	
+	fputc('\n', stderr);
 
-	fprintf(stderr, "** \n");
 	if (ERROR_current->info.code)
 	{
-		fprintf(stderr, "** ");
+		fprintf(stderr, "** \n");
+		_print_prefix = "** ";
 		ERROR_print();
+		_print_prefix = NULL;
 	}
-	fprintf(stderr, "** Please send a bug report to the gambas bugtracker [1] or to the gambas mailing-list [2].\n** [1] http://gambaswiki.org/bugtracker\n** [2] https://lists.gambas-basic.org/listinfo/user\n** \n\n");
+	fprintf(stderr, "** \n** Please send a bug report to the gambas bugtracker [1] or to the gambas mailing-list [2].\n** [1] http://gambaswiki.org/bugtracker\n** [2] https://lists.gambas-basic.org/listinfo/user\n** \n\n");
 	_exit(1);
 }
 
+
+static void print_prefix(FILE *where)
+{
+	if (_print_prefix) fputs(_print_prefix, where);
+}
 
 void ERROR_print_at(FILE *where, bool msgonly, bool newline)
 {
 	if (!ERROR_current->info.code)
 		return;
 
+	print_prefix(where);
+	
 	if (!msgonly)
 	{
 		if (ERROR_current->info.cp && ERROR_current->info.fp && ERROR_current->info.pc)
@@ -629,7 +640,10 @@ void ERROR_print(void)
 	ERROR_print_at(stderr, FALSE, TRUE);
 
 	if (ERROR_backtrace)
+	{
+		print_prefix(stderr);
 		DEBUG_print_backtrace(ERROR_backtrace);
+	}
 }
 
 static void ERROR_copy(ERROR_INFO *save, ERROR_INFO *last)

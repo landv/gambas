@@ -131,9 +131,9 @@ typedef
 #define PARAM_OPT_f(_p) PARAM_OPT(_p, f, 0)
 #define PARAM_OPT_p(_p) PARAM_OPT(_p, p, 0)
 #define PARAM_OPT_d(_p) PARAM_OPT(_p, d, ({ GB_DATE _v; _v.type = GB_T_DATE; _v.value.time = _v.value.date = 0; _v; }))
-#define PARAM_OPT_s(_p) PARAM_OPT(_p, d, GET_CSTRING("", 0, 0))
-#define PARAM_OPT_o(_p) PARAM_OPT(_p, d, GET_OBJECT(GB_T_OBJECT, 0))
-#define PARAM_OPT_v(_p) PARAM_OPT(_p, d, ({ GB_VARIANT _v; _v.type = GB_T_VARIANT; _v.value.type = GB_T_NULL; _v; }))
+#define PARAM_OPT_s(_p) PARAM_OPT(_p, s, GET_CSTRING("", 0, 0))
+#define PARAM_OPT_o(_p) PARAM_OPT(_p, o, GET_OBJECT(GB_T_OBJECT, 0))
+#define PARAM_OPT_v(_p) PARAM_OPT(_p, v, ({ GB_VARIANT _v; _v.type = GB_T_VARIANT; _v.value.type = GB_T_NULL; _v; }))
 #define PARAM_OPT_O(_p, _type) (((_p) >= n || (sp[-n+(_p)].type == GB_T_VOID)) ? GET_OBJECT(GB_T_OBJECT, 0) : PARAM_O(_p, _type))
 
 #define OPT(_p, _n) ({ \
