@@ -164,7 +164,7 @@ static void print_catch(void)
 	JIT_print("  LEAVE_SUPER();\n");
 	JIT_print("  if (sp > ep) { JIT.release_many(sp, sp - ep); SP = sp = ep; }\n");
 	JIT_print("\n  } END_TRY\n\n");
-	JIT_print("__FINALLY:\n");
+	JIT_print("__FINALLY:;\n");
 	_try_finished = TRUE;
 }
 
@@ -182,9 +182,8 @@ static bool leave_function(FUNCTION *func, int index)
 	int i;
 	
 	STR_free_later(NULL);
-	JIT_print("__RETURN:\n");
+	JIT_print("\n__RETURN:;\n");
 	//JIT_print("__RETURN: fprintf(stderr, \"< %d: sp = %%p\\n\", sp);\n", ind);
-	JIT_print("  SP = sp;\n");
 		
 	if (_stack_current)
 		JIT_panic("Stack mismatch: stack is not void");
@@ -192,7 +191,8 @@ static bool leave_function(FUNCTION *func, int index)
 	if (!_has_catch && !_has_finally)
 		print_catch();
 	
-	JIT_print("\n__RELEASE:;\n");
+	JIT_print("__RELEASE:;\n");
+	JIT_print("  SP = sp;\n");
 	JIT_print("  RELEASE_GOSUB();\n");
 	
 	for (i = 0; i < func->n_local; i++)
@@ -2168,7 +2168,7 @@ static void push_event(bool unknown, int index)
 	{
 		name = JIT_class->load->unknown[index];
 		// The ':' is already in the name, thanks to the compiler.
-		index = CLASS_find_symbol(JIT_class, name);
+		index = JIT_find_symbol(JIT_class, name);
 		if (index != NO_SYMBOL)
 		{
 			desc = JIT_class->table[index].desc;

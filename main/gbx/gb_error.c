@@ -561,18 +561,18 @@ void ERROR_panic(const char *error, ...)
 
 	fflush(NULL);
 
-	fprintf(stderr, "\n** OOPS! INTERNAL ERROR\n** ");
+	fprintf(stderr, "\n** \n** OOPS! INTERNAL ERROR. Program aborting, sorry! :-(\n** ");
 	vfprintf(stderr, error, args);
 
 	va_end(args);
 
-	putc('\n', stderr);
+	fprintf(stderr, "** \n");
 	if (ERROR_current->info.code)
 	{
 		fprintf(stderr, "** ");
 		ERROR_print();
 	}
-	fprintf(stderr, "** Program aborting. Sorry! :-(\n** Please send a bug report at g4mba5@gmail.com\n\n");
+	fprintf(stderr, "** Please send a bug report to the gambas bugtracker [1] or to the gambas mailing-list [2].\n** [1] http://gambaswiki.org/bugtracker\n** [2] https://lists.gambas-basic.org/listinfo/user\n** \n\n");
 	_exit(1);
 }
 

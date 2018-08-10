@@ -299,7 +299,7 @@ static void error_JIT_call_unknown(intptr_t pc, intptr_t save)
 	((PCODE *)pc)[1] = (PCODE)save;
 }
 
-void JIT_call_unknown(PCODE *pc, VALUE *sp)
+VALUE *JIT_call_unknown(PCODE *pc, VALUE *sp)
 {
 	PCODE save;
 	
@@ -316,4 +316,5 @@ void JIT_call_unknown(PCODE *pc, VALUE *sp)
 	END_ERROR
 	
 	pc[1] = save;
+	return SP;
 }

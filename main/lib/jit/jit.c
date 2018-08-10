@@ -465,12 +465,6 @@ int JIT_get_code_size(FUNCTION *func)
 }
 
 
-int JIT_find_symbol(CLASS *class, const char *name)
-{
-	return JIT.find_symbol(class->table, class->sort, class->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, name, strlen(name), NULL);
-}
-
-
 void JIT_load_class(CLASS *class)
 {
 	void *save_cp;
@@ -486,3 +480,12 @@ void JIT_load_class(CLASS *class)
 	
 	JIT.exec->cp = save_cp;
 }
+
+
+int JIT_find_symbol(CLASS *class, const char *name)
+{
+	JIT_load_class(class);
+	return JIT.find_symbol(class->table, class->sort, class->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, name, strlen(name), NULL);
+}
+
+
