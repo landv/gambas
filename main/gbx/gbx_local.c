@@ -1015,7 +1015,12 @@ _FORMAT:
 	{
 		number_mant = frexp10(fabs(number), &number_exp);
 		ndigit = after;
-		if (!exposant) ndigit += number_exp;
+		
+		if (!exposant) 
+			ndigit += number_exp;
+		else
+			ndigit++;
+		
 		ndigit = MinMax(ndigit, 0, MAX_FLOAT_DIGIT);
 		//fprintf(stderr, "number_mant = %.24g  number_exp = %d  ndigit = %d\n", number_mant, number_exp, ndigit);
 
