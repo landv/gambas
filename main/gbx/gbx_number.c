@@ -84,6 +84,8 @@ static bool read_integer(int base, bool minus, int64_t *result, bool local)
 		{
 			if (local)
 			{
+				COMMON_pos--;
+				
 				if (has_string(thsep, lthsep) && (ndigit_thsep == 3 || (!first_thsep && ndigit_thsep >= 1 && ndigit_thsep <= 3)))
 				{
 					COMMON_pos += lthsep;
@@ -91,6 +93,8 @@ static bool read_integer(int base, bool minus, int64_t *result, bool local)
 					first_thsep = TRUE;
 					ndigit_thsep = 0;
 				}
+				else
+					COMMON_pos++;
 			}
 
 			if (c >= '0' && c <= '9')
@@ -237,6 +241,8 @@ static bool read_float(double *result, bool local)
 
 		if (local && !frac)
 		{
+			COMMON_pos--;
+			
 			if (has_string(thsep, lthsep) && (ndigit_thsep == 3 || (!first_thsep && ndigit_thsep >= 1 && ndigit_thsep <= 3)))
 			{
 				COMMON_pos += lthsep;
@@ -244,6 +250,8 @@ static bool read_float(double *result, bool local)
 				ndigit_thsep = 0;
 				c = get_char();
 			}
+			else
+				COMMON_pos++;
 		}
 		
 		if (!isdigit(c) || (c < 0))
