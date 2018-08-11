@@ -394,6 +394,7 @@ enum
 #define GET_NULL_v() ({ GB_VARIANT temp; temp.type = GB_T_VARIANT; temp.value.type = GB_T_NULL; temp; })
 #define GET_NULL_s() GET_CSTRING("", 0, 0)
 #define GET_NULL_d() ({ GB_DATE temp; temp.type = GB_T_DATE; temp.value.date = 0; temp.value.time = 0; temp; })
+#define GET_NULL_p() ((intptr_t)0)
 
 #define PUSH_GOSUB(_label) ({ \
   GB_VALUE_GOSUB *_p = (GB_VALUE_GOSUB *)sp; \

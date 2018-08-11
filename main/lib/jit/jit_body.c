@@ -469,6 +469,7 @@ static char *get_conv_format(TYPE src, TYPE dest)
 			switch(src)
 			{
 				case T_CSTRING: return "%s";
+				case T_NULL: return "GET_NULL_s()";
 			}
 			break;
 
@@ -477,6 +478,7 @@ static char *get_conv_format(TYPE src, TYPE dest)
 			switch(src)
 			{
 				case T_STRING: return "%s";
+				case T_NULL: return "GET_NULL_s()";
 			}
 			break;
 		
@@ -484,18 +486,17 @@ static char *get_conv_format(TYPE src, TYPE dest)
 			
 			if (src == T_NULL)
 			{
-				if (dest == T_OBJECT)
-					return "GET_NULL_o()";
-				else if (dest == T_VARIANT)
-					return "GET_NULL_v()";
-				else if (dest == T_DATE)
-					return "GET_NULL_d()";
-				else if (dest == T_STRING || dest == T_CSTRING)
-					return "GET_NULL_s()";
-				else
+				switch(dest)
 				{
-					sprintf(buffer, "GET_OBJECT(NULL, CLASS(%p))", (CLASS *)dest);
-					return buffer;
+					case T_DATE:
+					case T_POINTER:
+					case T_VARIANT:
+					case T_OBJECT:
+						sprintf(buffer,"GET_NULL_%s()", JIT_get_type(dest));
+						return buffer;
+					default:
+						sprintf(buffer, "GET_OBJECT(NULL, CLASS(%p))", (CLASS *)dest);
+						return buffer;
 				}
 			}
 			
