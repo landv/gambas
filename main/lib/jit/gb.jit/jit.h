@@ -301,7 +301,7 @@ enum
 #define ADDR_UNSAFE(_val) ((char *)((_val).value))
 
 #define GET_b(_addr) (*(bool *)(_addr))
-#define GET_c(_addr) (*(uchar *)()_addr))
+#define GET_c(_addr) (*(uchar *)(_addr))
 #define GET_h(_addr) (*(short *)(_addr))
 #define GET_i(_addr) (*(int *)(_addr))
 #define GET_l(_addr) (*(int64_t *)(_addr))
