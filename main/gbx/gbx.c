@@ -243,6 +243,7 @@ int main(int argc, char *argv[])
 				"  -p <path>        activate profiling and debugging mode\n"
 				"  -k               do not unload shared libraries\n"
 				"  -H --httpd       run through an embedded http server\n"
+				"  -j               disable just-in-time compiler\n"
 				);
 
 			if (!EXEC_arch)
@@ -342,6 +343,10 @@ int main(int argc, char *argv[])
 		else if (is_long_option(argv[i], 'H', "httpd"))
 		{
 			PROJECT_run_httpd = TRUE;
+		}
+		else if (is_option(argv[i], 'j'))
+		{
+			JIT_disabled = TRUE;
 		}
 		else if (is_option(argv[i], '-'))
 		{

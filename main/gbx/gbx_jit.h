@@ -34,6 +34,10 @@
 typedef
 	void (*JIT_FUNC)(uchar nparam);
 
+#ifndef __GBX_JIT_C
+extern bool JIT_disabled;
+#endif
+	
 bool JIT_compile(ARCHIVE *arch);
 void JIT_debug(const char *fmt, ...);
 void JIT_exec(bool ret_on_stack);

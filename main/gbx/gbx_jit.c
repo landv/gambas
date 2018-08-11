@@ -39,10 +39,11 @@ typedef
 	}
 	JIT_FUNCTION;
 
+bool JIT_disabled = FALSE;
+
 static bool _component_loaded = FALSE;
 static GB_FUNCTION _jit_compile_func;
 
-static bool _no_jit = FALSE;
 static bool _jit_compiling = FALSE;
 static void *_jit_library = NULL;
 
@@ -68,7 +69,7 @@ bool JIT_compile(ARCHIVE *arch)
 	void **iface;
 	COMPONENT *current;
 	
-	if (_no_jit)
+	if (JIT_disabled)
 		return TRUE;
 	
 	if (arch)
@@ -91,7 +92,7 @@ bool JIT_compile(ARCHIVE *arch)
 		var =  getenv("GB_NO_JIT");
 		if (var && var[0] && !(var[0] == '0' && var[1] == 0))
 		{
-			_no_jit = TRUE;
+			JIT_disabled = TRUE;
 			return TRUE;
 		}
 		
