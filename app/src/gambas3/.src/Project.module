@@ -6467,6 +6467,7 @@ Public Sub CompileTranslation(bForce As Boolean, Optional sLang As String)
   
   Dim iPos As Integer
   Dim sPath As String
+  Dim sTrans As String
   
   If Not sLang Then
     iPos = Project.Environment.Find("LANG=*", gb.Like)
@@ -6481,8 +6482,11 @@ Public Sub CompileTranslation(bForce As Boolean, Optional sLang As String)
   sPath = Language.GetPath(sLang, "mo")
   If Exist(sPath) And If Not bForce Then Return
   
+  sTrans = File.SetExt(sPath, "po")
+  If Not Exist(sTrans) Then Return
+  
   Try Kill sPath
-  Shell "msgfmt -o " & Shell$(sPath) & " " & Shell(File.SetExt(sPath, "po")) Wait
+  Shell "msgfmt -o " & Shell$(sPath) & " " & Shell(sTrans) Wait
   
 End
 

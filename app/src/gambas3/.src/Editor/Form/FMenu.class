@@ -43,11 +43,10 @@ End
 Public Sub Form_Open()
 
   Settings.Read(Me)
-  'PRINT "_new"
+
   Me.Title = $hForm.Name & " - " & ("Menu editor")
 
   $iIconSize = Stock.GetSize("small")
-
   
   $bFreeze = True
   gvwMenu.UnSelectAll
