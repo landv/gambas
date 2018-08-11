@@ -1876,7 +1876,7 @@ void EXEC_new(ushort code)
 		SP->type = T_NULL;
 	}
 	else
-		THROW(E_TYPE, "String", TYPE_get_name(SP->type));
+		THROW_TYPE(T_STRING, SP->type);
 
 	SP += np;
 
@@ -1891,7 +1891,7 @@ void EXEC_new(ushort code)
 		SP--;
 
 		if (!TYPE_is_string(SP->type))
-			THROW(E_TYPE, "String", TYPE_get_name(SP->type));
+			THROW_TYPE(T_STRING, SP->type);
 
 		name = STRING_copy_from_value_temp(SP);
 		//printf("**** name %s\n", class->name);

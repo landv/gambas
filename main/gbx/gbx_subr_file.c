@@ -211,7 +211,7 @@ void SUBR_open(ushort code)
 		if (TYPE_is_pointer(PARAM->type))
 			addr = (void *)PARAM->_pointer.value;
 		else
-			THROW(E_TYPE, "Pointer", TYPE_get_name(PARAM->type));
+			THROW_TYPE(T_POINTER, PARAM->type);
 		
 		STREAM_open(&stream, (char *)addr, mode | ST_MEMORY);
 	}

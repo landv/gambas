@@ -515,6 +515,8 @@ static char *get_conv_format(TYPE src, TYPE dest)
 	
 	if (TYPE_is_pure_object(dest))
 		sprintf(buffer, "CONV(%%s, %s, %s, CLASS(%p))", JIT_get_type(src), JIT_get_type(dest), (CLASS *)dest);
+	else if (src == T_FUNCTION)
+		sprintf(buffer, "CONV(NULL, F, %s, %s)", JIT_get_type(dest), JIT_get_gtype(dest));
 	else
 		sprintf(buffer, "CONV(%%s, %s, %s, %s)", JIT_get_type(src), JIT_get_type(dest), JIT_get_gtype(dest));
 	
@@ -1911,7 +1913,7 @@ static void push_call(ushort code)
 							STR_add(&call, "%s;", push_expr(i - nv, get_type(i - nv)));
 					}
 					
-					STR_add(&call,"SP=sp;");
+					STR_add(&call, "SP=sp;");
 					
 					if (nv && func->type != T_VOID)
 						STR_add(&call, "_r=");

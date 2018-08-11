@@ -66,19 +66,9 @@ static bool unknown_function(VALUE *value)
 }
 #endif
 
-void THROW_TYPE_INTEGER(TYPE type)
+void THROW_TYPE(TYPE wanted, TYPE got)
 {
-	THROW(E_TYPE, TYPE_get_name(T_INTEGER), TYPE_get_name(type));
-}
-
-void THROW_TYPE_FLOAT(TYPE type)
-{
-	THROW(E_TYPE, TYPE_get_name(T_FLOAT), TYPE_get_name(type));
-}
-
-void THROW_TYPE_STRING(TYPE type)
-{
-	THROW(E_TYPE, TYPE_get_name(T_STRING), TYPE_get_name(type));
+	THROW(E_TYPE, TYPE_get_name(wanted), TYPE_get_name(got));
 }
 
 static void undo_variant(VALUE *value)
@@ -1000,7 +990,7 @@ __RETRY:
 		}
 	}
 
-	THROW(E_TYPE, TYPE_get_name(type), TYPE_get_name((TYPE)class));
+	THROW_TYPE(type, (TYPE)class);
 
 __TYPE:
 
@@ -1012,7 +1002,7 @@ __OK:
 
 __N:
 
-	THROW(E_TYPE, TYPE_get_name(type), TYPE_get_name(value->type));
+	THROW_TYPE(type, value->type);
 
 __NR:
 
@@ -1196,7 +1186,13 @@ __VARIANT:
 	goto __CONV;
 
 __VOID:
+
+	THROW(E_NRETURN);
+
 __FUNCTION:
+
+	THROW_TYPE(T_VARIANT, type);
+
 __NULL:
 
 	ERROR_panic("Bad type (%d) for VALUE_write", type);
@@ -1729,7 +1725,7 @@ __func:
 
 __N:
 
-	THROW(E_TYPE, "Boolean", TYPE_get_name(type));
+	THROW_TYPE(T_BOOLEAN, type);
 
 __NR:
 
@@ -1809,7 +1805,7 @@ __OK:
 
 __N:
 
-	THROW_TYPE_INTEGER(value->type);
+	THROW_TYPE(T_INTEGER, value->type);
 
 __NR:
 
@@ -1888,7 +1884,7 @@ __func:
 
 __N:
 
-	THROW_TYPE_FLOAT(value->type);
+	THROW_TYPE(T_FLOAT, value->type);
 
 __NR:
 
@@ -1984,7 +1980,7 @@ __OK:
 
 __N:
 
-	THROW_TYPE_STRING(value->type);
+	THROW_TYPE(T_STRING, value->type);
 
 __NR:
 
@@ -2052,7 +2048,7 @@ __OK:
 
 __N:
 
-	THROW(E_TYPE, "Variant", TYPE_get_name(value->type));
+	THROW_TYPE(T_VARIANT, value->type);
 
 __NR:
 

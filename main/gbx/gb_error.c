@@ -541,6 +541,7 @@ void THROW_SYSTEM(int err, const char *path)
 	}
 }
 
+
 void ERROR_fatal(const char *error, ...)
 {
 	va_list args;

@@ -2295,7 +2295,7 @@ _SUBR_COMPI:
 			{
 				TYPE typem = Min(P1->type, P2->type);
 				if (!TYPE_is_string(typem))
-					THROW(E_TYPE, TYPE_get_name(typem), TYPE_get_name(type));
+					THROW_TYPE(typem, type);
 			}
 			else if (TYPE_is_object(type))
 				THROW(E_TYPE, "Number, Date or String", TYPE_get_name(type));
@@ -3298,7 +3298,7 @@ __SC_VARIANT:
 		if (TYPE_is_object_null(P1->type) && TYPE_is_object_null(P2->type))
 			type = T_OBJECT;
 		else if (TYPE_is_object(type))
-			THROW(E_TYPE, "Object", TYPE_get_name(Min(P1->type, P2->type)));
+			THROW_TYPE(T_OBJECT, Min(P1->type, P2->type));
 		else if (TYPE_is_void(type))
 			THROW(E_NRETURN);
 

@@ -343,6 +343,7 @@ const void *const GAMBAS_JitApi[] =
 	(void *)JIT_debug,
 	(void *)JIT_get_code,
 	(void *)THROW,
+	(void *)THROW_TYPE,
 	(void *)JIT_get_constant,
 	(void *)JIT_get_class_ref,
 	(void *)EXEC_subr_table,

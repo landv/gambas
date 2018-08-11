@@ -12,6 +12,7 @@
 
 #define E_NEPARAM    4
 #define E_TMPARAM    5
+#define E_TYPE       6
 #define E_OVERFLOW   7
 #define E_NOBJECT   12
 #define E_NULL      13
@@ -178,6 +179,7 @@ typedef
 #define PUSH_u(_val) ({ *sp = (_val); GB.BorrowValue(sp); sp++; })
 #define PUSH_V() ({ sp->type = GB_T_VOID; sp++; })
 #define PUSH_n(_val) ({ sp->type = GB_T_NULL; sp++; })
+#define PUSH_F(_val) ({ sp->type = GB_T_FUNCTION; ((GB_VALUE_FUNCTION *)sp)->class = ((GB_VALUE_FUNCTION *)sp)->object = NULL; sp++; })
 
 enum
 {
@@ -384,9 +386,9 @@ enum
 #define CONV_d_l(_val) ((int64_t)((_val).value.date))
 #define CONV_d_g(_val) ({ GB_DATE _v = (_val); (float)((float)_v.value.date + (float)_v.value.time / 86400000.0); })
 #define CONV_d_f(_val) ({ GB_DATE _v = (_val); (double)((double)_v.value.date + (double)_v.value.time / 86400000.0); })
-#define CONV_d_p(_val) (JIT.throw(E_CONV))
+#define CONV_d_p(_val) (JIT.throw_type(T_DATE, T_POINTER))
 #define CONV_d_s(_val) CONV(_val, d, s, GB_T_STRING)
-#define CONV_d_o(_val) (JIT.throw(E_CONV))
+#define CONV_d_o(_val) (JIT.throw_type(T_DATE, T_OBJECT))
 
 #define CONV_o_O(_val, _class) CONV(_val, o, o, CLASS(_class))
 

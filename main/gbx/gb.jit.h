@@ -74,6 +74,7 @@ typedef
 		void (*debug)(const char *fmt, ...);
 		JIT_PCODE *(*get_code)(void *func);
 		void (*throw)(int code, ...) NORETURN;
+		void (*throw_type)(GB_TYPE want, GB_TYPE got) NORETURN;
 		JIT_CONSTANT *(*get_constant)(int index);
 		void *(*get_class_ref)(int index);
 		void **subr_table;

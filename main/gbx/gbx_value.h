@@ -262,9 +262,7 @@ bool VALUE_is_null(VALUE *val);
 		*(_ptext) = NULL; \
 })
 
-void THROW_TYPE_INTEGER(TYPE type) NORETURN;
-void THROW_TYPE_FLOAT(TYPE type) NORETURN;
-void THROW_TYPE_STRING(TYPE type) NORETURN;
+void THROW_TYPE(TYPE wanted, TYPE got) NORETURN;
 
 #define VALUE_conv(_value, _type) \
 ({ \
