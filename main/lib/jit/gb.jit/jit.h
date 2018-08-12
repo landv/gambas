@@ -280,6 +280,7 @@ enum
   GB_VARIANT temp; \
   temp.type = GB_T_VARIANT; \
   temp.value = (_val); \
+  if (temp.value.type == GB_T_VOID) temp.value.type = GB_T_NULL; \
   temp; })
 
 #define GET_FUNCTION(_pc) ({ CALL_UNKNOWN(_pc); POP_u(); })
