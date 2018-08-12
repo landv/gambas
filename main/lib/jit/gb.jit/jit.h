@@ -308,7 +308,7 @@ enum
 #define GET_l(_addr) (*(int64_t *)(_addr))
 #define GET_g(_addr) (*(float *)(_addr))
 #define GET_f(_addr) (*(double *)(_addr))
-#define GET_p(_addr) (*(intrptr_t *)(_addr))
+#define GET_p(_addr) (*(intptr_t *)(_addr))
 #define GET_s(_addr) GET_STRING((*(char **)(_addr)), 0, GB.StringLength(temp.value.addr))
 #define GET_o(_addr, _type) GET_OBJECT((*(char **)(_addr)), _type)
 #define GET_v(_addr) GET_VARIANT((*(GB_VARIANT_VALUE *)(_addr)))
