@@ -934,7 +934,7 @@ static void push_unknown(int index)
 						case T_BYTE: push(T_BYTE, "(uchar)%d", desc->constant.value._integer); break;
 						case T_SHORT: push(T_SHORT, "(short)%d", desc->constant.value._integer); break;
 						case T_INTEGER: push(T_INTEGER, "(int)%d", desc->constant.value._integer); break;
-						case T_LONG: push(T_LONG, "(int64_t)%d", desc->constant.value._long); break;
+						case T_LONG: push(T_LONG, "(int64_t)%" PRId64, desc->constant.value._long); break;
 						case T_SINGLE: push(T_SINGLE, "(*(float *)%p)", &desc->constant.value._single); break;
 						case T_FLOAT: push(T_FLOAT, "(*(double *)%p)", &desc->constant.value._float); break;
 						case T_POINTER: push(T_POINTER, "(intptr_t)%p", desc->constant.value._pointer); break;
