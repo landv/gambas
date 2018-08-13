@@ -22,7 +22,6 @@ Static Property Read RuntimeDir As String
 Static Property Read NetworkAvailable As Boolean
 Static Property Read RemoteDisplay As Boolean
 
-Static Private $sDesktop As String
 Static Private $cDesktop As Collection
 Static Private $cExt As Collection
 Static Private $aImgExt As String[]
@@ -189,62 +188,6 @@ Catch
 
 End
 
-Static Private Sub GetDesktop() As String
-
-  If Not $sDesktop Then
-
-    If Application.Env["KDE_FULL_SESSION"] Then
-      
-      If Application.Env["KDE_SESSION_VERSION"] = "4" Then
-        $sDesktop = "KDE4"
-      Else If Application.Env["KDE_SESSION_VERSION"] = "5" Then
-        $sDesktop = "KDE5"
-      Else
-        $sDesktop = "KDE"
-      Endif
-
-    Else
-      
-      Select Case UCase(Application.Env["XDG_CURRENT_DESKTOP"])
-        Case "LXDE"
-          $sDesktop = "LXDE"
-        Case "UNITY"
-          $sDesktop = "UNITY"
-        Default
-          $sDesktop = UCase(Application.Env["XDG_CURRENT_DESKTOP"])
-          If $sDesktop Begins "X-" Then $sDesktop = Mid$($sDesktop, 3)
-      End Select
-      
-    Endif
-    
-    If Not $sDesktop Then
-    
-      If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then
-        $sDesktop = "GNOME"
-      Else If Application.Env["MATE_DESKTOP_SESSION_ID"] Or If Application.Env["MATECORBA_SOCKETDIR"] Then
-        $sDesktop = "MATE"
-      Else If Application.Env["E_BIN_DIR"] And If Application.Env["E_LIB_DIR"] Then
-        $sDesktop = "ENLIGHTENMENT"
-      Else If Application.Env["WMAKER_BIN_NAME"] Then
-        $sDesktop = "WINDOWMAKER"
-      Else If Application.Env["DESKTOP_SESSION"] = "LXDE" Then
-        $sDesktop = "LXDE"
-      Else If UCase(Env["DESKTOP_SESSION"]) = "XCFE" Then
-        $sDesktop = "XFCE"
-      Else If UCase(Env["XDG_MENU_PREFIX"]) Begins "XCFE" Then
-        $sDesktop = "XFCE"
-      Else If InStr(Env["XDG_DATA_DIR"], "/xfce") Then
-        $sDesktop = "XFCE"
-      Endif
-      
-    Endif
-
-  Endif
-
-  Return $sDesktop
-
-End
-
 Static Public Sub OpenTerminal(Optional {Dir} As String) ', Optional Command As String)
 
   Dim sExec As String
@@ -255,7 +198,7 @@ Static Public Sub OpenTerminal(Optional {Dir} As String) ', Optional Command As 
   Dim sProg As String
   Dim sDesktop As String
 
-  sDesktop = GetDesktop()
+  sDesktop = Main.GetDesktop()
 
   Select Case sDesktop
 
@@ -444,7 +387,7 @@ Static Public Sub RunAsRoot(Command As String)
 
   Dim sExec As String
   
-  Select Case GetDesktop()
+  Select Case Main.GetDesktop()
     
     Case "KDE", "KDE4", "KDE5"
       sExec = "kdesudo"
