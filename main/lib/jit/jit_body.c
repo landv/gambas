@@ -904,7 +904,7 @@ static void push_unknown(int index)
 					if (_unsafe)
 						get_addr = STR_print("ADDR_UNSAFE(%s)", expr);
 					else if (class->must_check)
-						get_addr = STR_print("ADDR_CHECK(%p, %s)", class->must_check, expr);
+						get_addr = STR_print("ADDR_CHECK(%p, %s)", class->check, expr);
 					else
 						get_addr = STR_print("ADDR(%s)", expr);
 						
@@ -1028,7 +1028,7 @@ static void pop_unknown(int index)
 					if (_unsafe)
 						get_addr = STR_print("ADDR_UNSAFE(%s)", expr);
 					else if (class->must_check)
-						get_addr = STR_print("ADDR_CHECK(%p, %s)", class->must_check, expr);
+						get_addr = STR_print("ADDR_CHECK(%p, %s)", class->check, expr);
 					else
 						get_addr = STR_print("ADDR(%s)", expr);
 

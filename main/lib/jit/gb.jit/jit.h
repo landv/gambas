@@ -295,7 +295,7 @@ enum
 #define ADDR_CHECK(_check, _val) ({ \
   char *_object = (_val).value; \
   if (!_object) JIT.throw(E_NULL); \
-  if (((void (*)())_check)(_object)) JIT.throw(E_IOBJECT); \
+  if (((int (*)())_check)(_object)) JIT.throw(E_IOBJECT); \
   _object; \
 })
 
