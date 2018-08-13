@@ -603,6 +603,8 @@ Private Sub UpdateSearchList()
   Else
     FDebugInfo.SetSearchListInfo(Subst(("&1 matches"), iLen))
   Endif
+  
+  gvwFind.Columns[4].W = -1
     
 End
 
