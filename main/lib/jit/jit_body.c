@@ -1959,7 +1959,7 @@ static void push_call(ushort code)
 						else
 						{
 							def = JIT_get_default_value(func->param[i].type);
-							STR_add(&call, "%s", def);
+							STR_add(&call, "({ %s temp = %s; temp; })", JIT_get_ctype(func->param[i].type), def);
 						}
 						
 						nopt++;
