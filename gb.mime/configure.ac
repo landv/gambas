@@ -16,8 +16,6 @@ GB_COMPONENT_PKG_CONFIG(
   [src],
   gmime-3.0)
 
-gb_in_component_search=no
-
 if test "$have_mime" = "no"; then
 
   rm -f DISABLED DISABLED.gb.mime
@@ -31,6 +29,25 @@ if test "$have_mime" = "no"; then
 
   if test "$have_mime" = "yes"; then
     GB_WARNING([But gmime 2.6 has been detected!])
+  fi
+
+fi
+
+gb_in_component_search=no
+
+if test "$have_mime" = "no"; then
+
+  rm -f DISABLED DISABLED.gb.mime
+
+  GB_COMPONENT_PKG_CONFIG(
+    mime,
+    MIME,
+    gb.mime,
+    [src],
+    gmime-2.4)
+
+  if test "$have_mime" = "yes"; then
+    GB_WARNING([But gmime 2.4 has been detected!])
   fi
 
 fi
