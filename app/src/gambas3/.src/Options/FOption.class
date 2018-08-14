@@ -98,6 +98,7 @@ Public Sub _new()
     [cmbTitleFontSize, "/TitleFontSize", 0],
     [cmbToolbox, "/ToolboxSize", 0],
     [btnSortProperty, "/SortProperties", 1],
+    [btnCloseWithMiddleClick, "/CloseWithMiddleClick", 0],
     [txtTabSize, "/DefaultTabSize", 2],
     [btnFoldProc, "/Editor/CollapseByDefault", 0],
     [btnWrapText, "/Editor/WrapTextByDefault", 0],
@@ -427,6 +428,13 @@ Public Sub btnSortProperty_Click()
 
   Settings["/SortProperties"] = btnSortProperty.Value
   FProperty.ReadConfig
+
+End
+
+Public Sub btnCloseWithMiddleClick_Click()
+
+  Settings["/CloseWithMiddleClick"] = btnCloseWithMiddleClick.Value
+  FMain.ReadConfig
 
 End
 

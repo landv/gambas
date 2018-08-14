@@ -1174,20 +1174,10 @@ End
 Public Sub ReadConfig()
   
   Project.SetNormalFont(tvwProject)
-  'lblMessage.Font = tvwProject.Font
   tabProperty.TextFont = Project.GetSmallFont()
   wrkProject.Font = tabProperty.TextFont
-  'wrkProject.Font = tvwProject.Font
-  'tabProperty.Font = tvwProject.Font
-  '$bCanShowBalloon = Settings["/ShowBalloon", TRUE]
-  'IF NOT $bCanShowBalloon THEN HideBalloon
-  
-  'panMessage.Height = lblMessage.Font.Height + lblMessage.Padding * 2 + 2
-  ' bShow = Settings["/ShowMessages", True]
-  ' panMessage.Visible = bShow
-  ' mnuStatusBar.Value = bShow
-  
   Me.Menus.Visible = Settings["/ShowMenus", True]
+  wrkProject.CloseWithMouse = Settings["/CloseWithMiddleClick", False]
   
 End
 
