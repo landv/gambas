@@ -57,12 +57,11 @@ typedef
 	CTRL_INFO;
 
 enum {
-	CALL_SUBR,
-	CALL_SUBR_CODE,
-	CALL_SUBR_UNKNOWN,
-	CALL_NEW,
-	CALL_PUSH_ARRAY,
-	CALL_POP_ARRAY
+	CALL_SUBR            = 0,
+	CALL_SUBR_CODE       = 1,
+	CALL_SUBR_UNKNOWN    = 2,
+	CALL_NEW             = 3,
+	CALL_RETURN_UNKNWON  = 128
 };
 
 enum {
@@ -1213,7 +1212,7 @@ static void push_subr(char mode, ushort code)
 	
 	op = code >> 8;
 	
-	switch(mode)
+	switch(mode & 7)
 	{
 		case CALL_SUBR_CODE:
 			call = "CALL_SUBR_CODE(%d, %p, 0x%04X)";
@@ -1332,6 +1331,10 @@ static void push_subr(char mode, ushort code)
 	_stack_current -= narg;
 	
 	STR_add(&expr, call, _pc, addr, code);
+	
+	if (mode & CALL_RETURN_UNKNWON)
+		type = T_UNKNOWN;
+	
 	STR_add(&expr, ";POP_%s();", JIT_get_type(type));
 	
 	push(type, "({%s})", expr);
@@ -1370,7 +1373,7 @@ static void push_subr_add(ushort code, const char *op, const char *opb, bool all
 				break;
 			
 		default:
-			push_subr(CALL_SUBR_CODE, code);
+			push_subr(CALL_SUBR_CODE + CALL_RETURN_UNKNWON, code);
 			return;
 	}
 	
@@ -1415,7 +1418,7 @@ static void push_subr_div(ushort code)
 			break;
 			
 		default:
-			push_subr(CALL_SUBR_CODE, code);
+			push_subr(CALL_SUBR_CODE + CALL_RETURN_UNKNWON, code);
 			return;
 	}
 	
@@ -1462,7 +1465,7 @@ static void push_subr_arithmetic(char op, ushort code)
 			break;
 
 		default:
-			push_subr(CALL_SUBR_CODE, code);
+			push_subr(CALL_SUBR_CODE + CALL_RETURN_UNKNWON, code);
 			return;
 	}
 	
@@ -1498,7 +1501,7 @@ static void push_subr_float_arithmetic(char op, ushort code)
 			break;
 
 		default:
-			push_subr(CALL_SUBR_CODE, code);
+			push_subr(CALL_SUBR_CODE + CALL_RETURN_UNKNWON, code);
 			return;
 	}
 	
@@ -1532,7 +1535,7 @@ static void push_subr_quo(ushort code, const char *op)
 			break;
 			
 		default:
-			push_subr(CALL_SUBR_CODE, code);
+			push_subr(CALL_SUBR_CODE + CALL_RETURN_UNKNWON, code);
 			return;
 	}
 	
@@ -1576,7 +1579,7 @@ static void push_subr_and(ushort code, const char *op)
 			break;
 			
 		default:
-			push_subr(CALL_SUBR_CODE, code);
+			push_subr(CALL_SUBR_CODE + CALL_RETURN_UNKNWON, code);
 			return;
 	}
 	
@@ -1612,7 +1615,7 @@ static void push_subr_not(ushort code)
 			break;
 
 		default:
-			push_subr(CALL_SUBR_CODE, code);
+			push_subr(CALL_SUBR_CODE + CALL_RETURN_UNKNWON, code);
 			return;
 	}
 	
@@ -1662,11 +1665,11 @@ static void push_subr_comp(ushort code)
 		switch(code & 0xFF00)
 		{
 			case C_EQ: case C_NE:
-				push_subr(CALL_SUBR_CODE, code);
+				push_subr(CALL_SUBR_CODE + CALL_RETURN_UNKNWON, code);
 				break;
 				
 			case C_GT: case C_LT: case C_GE: case C_LE:
-				push_subr(CALL_SUBR_UNKNOWN, code);
+				push_subr(CALL_SUBR_UNKNOWN + CALL_RETURN_UNKNWON, code);
 				break;
 		}
 		
@@ -1739,7 +1742,7 @@ static void push_subr_bit(ushort code)
 			break;
 
 		default:
-			push_subr(CALL_SUBR_CODE, code);
+			push_subr(CALL_SUBR_CODE + CALL_RETURN_UNKNWON, code);
 			return;
 	}
 			
