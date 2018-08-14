@@ -56,7 +56,7 @@
 //#define DEBUG_LOAD 1
 //#define DEBUG_STRUCT 1
 
-static bool _load_class_from_jit = FALSE;
+static bool _load_without_init = FALSE;
 static const char *_class_name;
 static bool _swap;
 static bool _last_ctype_is_static;
@@ -478,7 +478,7 @@ __MISMATCH:
 }
 
 
-static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, int *pndesc, bool in_jit_compilation)
+static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, int *pndesc)
 {
 	char *section;
 	CLASS_INFO *info;
@@ -896,7 +896,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	if (info->parent >= 0)
 	{
 		//printf("%s inherits %s\n", class->name, (class->load->class_ref[info->parent])->name);
-		CLASS_inheritance(class, class->load->class_ref[info->parent], in_jit_compilation);
+		CLASS_inheritance(class, class->load->class_ref[info->parent]);
 	}
 
 	/* If there is no dynamic variable, then the class is not instanciable */
@@ -912,7 +912,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 }
 
 
-static void load_without_inits(CLASS *class, bool in_jit_compilation)
+static void load_without_inits(CLASS *class)
 {
 	int i;
 	FUNCTION *func;
@@ -1018,7 +1018,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 
 	class->init_dynamic = TRUE;
 
-	load_and_relocate(class, len_data, &start, &n_desc, in_jit_compilation);
+	load_and_relocate(class, len_data, &start, &n_desc);
 
 	// Information on static and dynamic variables
 
@@ -1302,11 +1302,11 @@ void CLASS_run_inits(CLASS *class)
 
 void CLASS_load_real(CLASS *class)
 {
-	bool load_from_jit = _load_class_from_jit;
+	bool load_without_init = _load_without_init;
 	char *name = class->name;
 	int len = strlen(name);
 
-	_load_class_from_jit = FALSE;
+	_load_without_init = FALSE;
 
 	if (!CLASS_is_loaded(class))
 	{
@@ -1317,25 +1317,22 @@ void CLASS_load_real(CLASS *class)
 		}
 	}
 
-	load_without_inits(class, load_from_jit);
+	load_without_inits(class);
+	class->loaded = TRUE;
+	class->ready = FALSE;
 
-	if (load_from_jit)
-	{
-		class->loaded = TRUE;
-		class->ready = FALSE;
-	}
-	else
-	{
-		class->loaded = TRUE;
-		class->ready = TRUE;
+	if (load_without_init)
+		return;
 
-		CLASS_run_inits(class);
-	}
-	//EXEC_public(class, NULL, "_init", 0);
+	class->ready = TRUE;
+	CLASS_run_inits(class);
 }
 
-void CLASS_load_from_jit(CLASS *class)
+void CLASS_load_without_init(CLASS *class)
 {
-	_load_class_from_jit = TRUE;
+	if (CLASS_is_loaded(class))
+		return;
+	
+	_load_without_init = TRUE;
 	CLASS_load_real(class);
 }

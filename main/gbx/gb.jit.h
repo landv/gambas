@@ -91,6 +91,7 @@ typedef
 		bool (*enum_next)(ushort code, GB_VALUE *local, GB_VALUE *penum);
 		int (*find_symbol)(void *symbol, ushort *sort, int n_symbol, size_t s_symbol, int flag, const char *name, int len, const char *prefix);
 		void (*load_class)(void *class);
+		void (*load_class_without_init)(void *class);
 		void *error_current;
 		void *error_handler;
 		void (*error_reset)(void *);

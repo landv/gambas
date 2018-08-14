@@ -491,7 +491,7 @@ int CLASS_return_zero();
 
 void CLASS_sort(CLASS *class);
 
-void CLASS_inheritance(CLASS *class, CLASS *parent, bool in_jit_compilation);
+void CLASS_inheritance(CLASS *class, CLASS *parent);
 void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, int *first);
 void CLASS_make_event(CLASS *class, int *first);
 void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, bool all, int size_static);
@@ -523,7 +523,6 @@ void CLASS_init_native(void);
 TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype);
 int CLASS_sizeof_ctype(CLASS *class, CTYPE ctype);
 
-//void CLASS_load_without_init(CLASS *class);
 void CLASS_load_real(CLASS *class);
 #define CLASS_load(_class) \
 ({ \
@@ -531,7 +530,7 @@ void CLASS_load_real(CLASS *class);
 		CLASS_load_real(_class); \
 })
 void CLASS_run_inits(CLASS *class);
-void CLASS_load_from_jit(CLASS *class);
+void CLASS_load_without_init(CLASS *class);
 
 /* class_native.c */
 

@@ -465,9 +465,12 @@ int JIT_get_code_size(FUNCTION *func)
 }
 
 
-void JIT_load_class(CLASS *class)
+void JIT_load_class(CLASS *class, bool init)
 {
 	void *save_cp;
+	
+	if (!init && class->loaded)
+		return;
 	
 	if (class->ready || class->in_load)
 		return;
@@ -476,7 +479,10 @@ void JIT_load_class(CLASS *class)
 	JIT.exec->cp = JIT_class;
 	
 	//fprintf(stderr, "gb.jit: load class: %s (%p)\n", class->name, class);
-	JIT.load_class(class);
+	if (init)
+		JIT.load_class(class);
+	else
+		JIT.load_class_without_init(class);
 	
 	JIT.exec->cp = save_cp;
 }
@@ -484,7 +490,7 @@ void JIT_load_class(CLASS *class)
 
 int JIT_find_symbol(CLASS *class, const char *name)
 {
-	JIT_load_class(class);
+	JIT_load_class(class, FALSE);
 	return JIT.find_symbol(class->table, class->sort, class->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, name, strlen(name), NULL);
 }
 

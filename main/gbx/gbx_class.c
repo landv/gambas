@@ -250,7 +250,7 @@ static void class_replace_global(CLASS *class)
 			cds->desc->method.class = old_class;
 	}
 
-	CLASS_inheritance(class, old_class, FALSE);
+	CLASS_inheritance(class, old_class);
 }
 
 static void release_class(CLASS *class)
@@ -925,7 +925,7 @@ void CLASS_sort(CLASS *class)
 	#endif
 }
 
-void CLASS_inheritance(CLASS *class, CLASS *parent, bool in_jit_compilation)
+void CLASS_inheritance(CLASS *class, CLASS *parent)
 {
 	if (class->parent != NULL)
 		THROW_CLASS(class, "Multiple inheritance", "");

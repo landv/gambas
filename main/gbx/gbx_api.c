@@ -360,6 +360,7 @@ const void *const GAMBAS_JitApi[] =
 	(void *)EXEC_enum_next,
 	(void *)SYMBOL_find,
 	(void *)CLASS_load_real,
+	(void *)CLASS_load_without_init,
 	(void *)&ERROR_current,
 	(void *)&ERROR_handler,
 	(void *)ERROR_reset,
