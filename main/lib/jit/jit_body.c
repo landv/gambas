@@ -194,12 +194,6 @@ static bool leave_function(FUNCTION *func, int index)
 	JIT_print("  SP = sp;\n");
 	JIT_print("  RELEASE_GOSUB();\n");
 	
-	for (i = 0; i < func->n_local; i++)
-		RELEASE_FAST("  RELEASE_FAST_%s(l%d);\n", JIT_ctype_to_type(JIT_class, func->local[i].type), i); 
-	
-	for (i = 0; i < func->n_param; i++)
-		RELEASE_FAST("  RELEASE_FAST_%s(p%d);\n", func->param[i].type, i);
-	
 	for (i = 0; i < GB.Count(_ctrl_info); i++)
 	{
 		RELEASE_FAST("  RELEASE_FAST_%s(c%d);\n", _ctrl_info[i].type, i);
@@ -210,11 +204,22 @@ static bool leave_function(FUNCTION *func, int index)
 	for (i = 0; i < GB.Count(_dup_type); i++)
 		RELEASE_FAST("  RELEASE_FAST_%s(d%d);\n", _dup_type[i], i);
 	
+	for (i = 0; i < func->n_local; i++)
+		RELEASE_FAST("  RELEASE_FAST_%s(l%d);\n", JIT_ctype_to_type(JIT_class, func->local[i].type), i); 
+	
+	for (i = 0; i < func->n_param; i++)
+		RELEASE_FAST("  RELEASE_FAST_%s(p%d);\n", func->param[i].type, i);
+	
 	if (_decl_ra)
 		JIT_print("  GB.Unref(&ra);\n");
 	
 	if (!_has_catch && !_has_finally)
-		JIT_print("  if (error) GB.Propagate();\n");
+	{
+		JIT_print("  if (error) { ");
+		if (func->n_param)
+			JIT_print("SP -= %d; ", func->n_param);
+		JIT_print("GB.Propagate(); }\n");
+	}
 	
 	GB.Free((void **)&_ctrl_index);
 	GB.FreeArray((void **)&_ctrl_info);
@@ -388,7 +393,7 @@ static char *get_conv_format(TYPE src, TYPE dest)
 				case T_BYTE: case T_SHORT: case T_INTEGER: case T_LONG: case T_SINGLE: case T_FLOAT: case T_POINTER:
 					return "((%s)!=0)";
 				case T_OBJECT:
-					return "((%s).value!=0)";
+					return "({ void *_addr = (%s).value; if (_addr) GB.Unref(&_addr); (_addr) != 0; })";
 			}
 			break;
 			
@@ -1230,6 +1235,8 @@ static void push_subr(char mode, ushort code)
 			call = "CALL_SUBR_CODE(%d, %p, 0x%04X)";
 			addr = JIT.new;
 			break;
+		default:
+			return;
 	}
 	
 	if (op == (C_NEW >> 8))
