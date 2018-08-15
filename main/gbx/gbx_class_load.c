@@ -672,13 +672,25 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 					offset = (- offset);
 			}
 		}
-
-		if (offset >= 0)
-			class->load->class_ref[i] = CLASS_find(&class->string[offset]);
-		else if (offset < -1)
-			class->load->class_ref[i] = CLASS_find_global(&class->string[-offset]);
-		else
-			class->load->class_ref[i] = 0; //0x31415926; //CLASS_find(&class->string[-offset]);
+		
+		{
+			CLASS *ref;
+		
+			if (offset >= 0)
+			{
+				ref = CLASS_find(&class->string[offset]);
+				//fprintf(stderr, "%s: %s -> %p (%s)\n", class->name, &class->string[offset], ref, ref->component ? ref->component->name : "NULL");
+			}
+			else if (offset < -1)
+			{
+				ref = CLASS_find_global(&class->string[-offset]);
+				//fprintf(stderr, "%s: %s -> %p (%s)\n", class->name, &class->string[-offset], ref, ref->component ? ref->component->name : "NULL");
+			}
+			else
+				ref = 0; //0x31415926; //CLASS_find(&class->string[-offset]);
+			
+			class->load->class_ref[i] = ref;
+		}
 	}
 
 	/* Datatype conversion */
@@ -962,18 +974,28 @@ static void load_without_inits(CLASS *class)
 	if (!class->component)
 	{
 		if (CP)
+		{
 			class->component = CP->component;
+			#if DEBUG_COMP
+			fprintf(stderr, "Load class %s -> component %s from CP\n", class->name, class->component ? class->component->name : "NULL");
+			#endif
+		}
 		else
+		{
 			class->component = COMPONENT_current;
+			#if DEBUG_COMP
+			fprintf(stderr, "Load class %s -> component %s from COMPONENT_current\n", class->name, class->component ? class->component->name : "NULL");
+			#endif
+		}
 	}
 
 	#if DEBUG_COMP
 	if (class->component)
-		fprintf(stderr, "class %s -> component %s\n", class->name, class->component->name);
+		fprintf(stderr, "Load class %s -> component %s\n", class->name, class->component->name);
 	else
-		fprintf(stderr, "class %s -> no component\n", class->name);
+		fprintf(stderr, "Load class %s -> no component\n", class->name);
 	#endif
-
+	
 	save = COMPONENT_current;
 	COMPONENT_current = class->component;
 	#if DEBUG_LOAD

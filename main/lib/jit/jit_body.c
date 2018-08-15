@@ -327,7 +327,7 @@ static TYPE get_type(int n)
 	type = get_stack(n)->type;
 	
 	if (TYPE_is_pure_object(type))
-		JIT_load_class((CLASS *)type, FALSE);
+		JIT_load_class((CLASS *)type);
 	
 	return type;
 }

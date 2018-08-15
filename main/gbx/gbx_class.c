@@ -420,12 +420,6 @@ CLASS *CLASS_look(const char *name, int len)
 	fprintf(stderr, "CLASS_look: %s in %s", name, _global ? "global" : "local");
 	#endif
 
-	/*if (strncasecmp(name, "listbox", 7) == 0)
-	{
-		name = "MyListBox";
-		len = 9;
-	}*/
-
 	//if (CP && CP->component && CP->component->archive)
 	if (!_global && !ARCHIVE_get_current(&arch))
 	{
@@ -518,6 +512,9 @@ CLASS *CLASS_find(const char *name)
 	class->class = _first;
 
 	class->global = global;
+	
+	if (arch)
+		class->component = arch->current_component;
 
 	return class;
 }
