@@ -1903,12 +1903,12 @@ static void push_call(ushort code)
 				if (narg < func->npmin)
 				{
 					pop_stack(narg + 1);
-					push(T_UNKNOWN, "(JIT.throw(E_NEPARAM))");
+					push(T_UNKNOWN, "({ GB_VALUE temp; JIT.throw(E_NEPARAM); temp; })");
 				}
 				else if (narg > func->n_param && !func->vararg)
 				{
 					pop_stack(narg + 1);
-					push(T_UNKNOWN, "(JIT.throw(E_TMPARAM))");
+					push(T_UNKNOWN, "({ GB_VALUE temp; JIT.throw(E_TMPARAM); temp; })");
 				}
 				else
 				{
@@ -2037,12 +2037,12 @@ static void push_call(ushort code)
 			if (narg < ext->n_param)
 			{
 				pop_stack(narg + 1);
-				push(T_UNKNOWN, "(JIT.throw(E_NEPARAM))");
+				push(T_UNKNOWN, "({ GB_VALUE temp; JIT.throw(E_NEPARAM); temp })");
 			}
 			else if (narg > ext->n_param && !ext->vararg)
 			{
 				pop_stack(narg + 1);
-				push(T_UNKNOWN, "(JIT.throw(E_TMPARAM))");
+				push(T_UNKNOWN, "({ GB_VALUE temp; JIT.throw(E_TMPARAM); temp })");
 			}
 			else
 			{
