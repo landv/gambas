@@ -393,7 +393,7 @@ static char *get_conv_format(TYPE src, TYPE dest)
 				case T_BYTE: case T_SHORT: case T_INTEGER: case T_LONG: case T_SINGLE: case T_FLOAT: case T_POINTER:
 					return "((%s)!=0)";
 				case T_OBJECT:
-					return "({ void *_addr = (%s).value; if (_addr) GB.Unref(&_addr); (_addr) != 0; })";
+					return "({ void *_addr = (%s).value; if (_addr) { GB.Ref(_addr); GB.Unref(&_addr); } (_addr) != 0; })";
 			}
 			break;
 			
