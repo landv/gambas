@@ -327,7 +327,7 @@ static TYPE get_type(int n)
 	type = get_stack(n)->type;
 	
 	if (TYPE_is_pure_object(type))
-		JIT_load_class((CLASS *)type);
+		JIT_load_class_without_init((CLASS *)type);
 	
 	return type;
 }
@@ -888,12 +888,12 @@ static void push_unknown(int index)
 					if (TYPE_is_object(utype))
 					{
 						if (TYPE_is_pure_object(utype))
-							push(utype, "GET_o(%p, CLASS(%p))", addr, (CLASS *)utype);
+							push(utype, "({ JIT.load_class(%p); GET_o(%p, CLASS(%p)); })", class, addr, (CLASS *)utype);
 						else
-							push(utype, "GET_o(%p, GB_T_OBJECT)", addr);
+							push(utype, "({ JIT.load_class(%p); GET_o(%p, GB_T_OBJECT); })", class, addr);
 					}
 					else
-						push(utype, "GET_%s(%p)", JIT_get_type(utype), addr);
+						push(utype, "({ JIT.load_class(%p); GET_%s(%p); })", class, JIT_get_type(utype), addr);
 					
 					return;
 					

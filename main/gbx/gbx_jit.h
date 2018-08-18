@@ -50,4 +50,6 @@ void JIT_exit(void);
 
 bool JIT_can_compile(ARCHIVE *arch);
 
+void JIT_load_class(CLASS *class);
+
 #endif

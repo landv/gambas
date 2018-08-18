@@ -238,7 +238,7 @@ enum
 #define RELEASE_FAST_o(_val) GB.Unref(&((_val).value))
 #define RELEASE_FAST_v(_val) GB.ReleaseValue((GB_VALUE *)&(_val))
 
-#define CLASS(_class) ((GB_CLASS)(_class))
+#define CLASS(_class) ({ JIT.load_class(_class); (GB_CLASS)(_class); })
 
 #define CONSTANT_s(_addr, _len) GET_CSTRING((char *)_addr, 0, _len)
 #define CONSTANT_t(_addr, _len) GET_CSTRING(GB.Translate((const char *)_addr), 0, strlen(temp.value.addr))

@@ -83,7 +83,7 @@ void JIT_panic(const char *fmt, ...) NORETURN;
 
 int JIT_get_code_size(FUNCTION *func);
 int JIT_find_symbol(CLASS *class, const char *name);
-void JIT_load_class(CLASS *class);
+void JIT_load_class_without_init(CLASS *class);
 
 // jit_body.c
 

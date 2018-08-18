@@ -319,3 +319,8 @@ VALUE *JIT_call_unknown(PCODE *pc, VALUE *sp)
 	pc[1] = save;
 	return SP;
 }
+
+void JIT_load_class(CLASS *class)
+{
+	CLASS_load(class);
+}
