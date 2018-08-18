@@ -2842,7 +2842,9 @@ _POP_OPTIONAL:
 		index = func->n_param + GET_XX() - func->npmin;
 		JIT_print("  if (o%d & %d)\n  ", index / 8, (1 << (index % 8)));
 		index = func->n_param + GET_XX();
-		pop(func->param[index].type, "p%d", index);
+		_no_release = TRUE;
+		pop(func->param[index].type, "p%d = %%s", index);
+		_no_release = FALSE;
 	}
 	goto _MAIN;
 	
