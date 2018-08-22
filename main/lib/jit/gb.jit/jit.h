@@ -440,7 +440,7 @@ enum
 
 #define CALL_SUBR(_pc, _func) ({ PC = &pc[_pc]; SP = sp; (*((EXEC_FUNC)_func))(); sp = SP; })
 #define CALL_SUBR_CODE(_pc, _func, _code) ({ PC = &pc[_pc]; SP = sp; (*((EXEC_FUNC_CODE)_func))(_code); sp = SP; })
-#define CALL_SUBR_UNKNOWN(_pc) ({ sp = JIT.call_unknown(&pc[_pc], sp); })
+#define CALL_SUBR_UNKNOWN(_pc) ({ JIT.call_unknown(&pc[_pc], &sp); })
 
 #define CALL_PUSH_ARRAY(_pc, _code) ({ PC = &pc[_pc]; SP = sp; (*(EXEC_FUNC)JIT.push_array)(_code); sp = SP; })
 #define CALL_POP_ARRAY(_pc, _code) ({ PC = &pc[_pc]; SP = sp; (*(EXEC_FUNC)JIT.pop_array)(_code); sp = SP; sp++; })
@@ -493,7 +493,7 @@ enum
     *JIT.exec_super = ((GB_VALUE_OBJECT *)*JIT.exec_super)->super; \
 }
 
-#define CALL_UNKNOWN(_pc) ({ sp = JIT.call_unknown(&pc[_pc], sp); })
+#define CALL_UNKNOWN(_pc) ({ JIT.call_unknown(&pc[_pc], &sp); })
 
 #define ENUM_FIRST(_code, _plocal, _penum) ({ GB.Unref(&(_penum).value); (_penum).type = 0; JIT.enum_first(_code, (GB_VALUE *)&_plocal, (GB_VALUE*)&_penum); })
 

@@ -478,7 +478,7 @@ void THROW(int code, ...)
 	ERROR_define((char *)(intptr_t)code, arg);
 
 	va_end(args);
-
+	
 	PROPAGATE();
 }
 

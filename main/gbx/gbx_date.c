@@ -308,7 +308,7 @@ void DATE_from_time(time_t time, int usec, VALUE *val)
 	date.msec = usec / 1000;
 
 	if (DATE_make(&date, val))
-		val->type = T_NULL;
+		VALUE_default(val, T_DATE);
 }
 
 
@@ -317,7 +317,7 @@ void DATE_now(VALUE *val)
 	struct timeval tv;
 
 	if (gettimeofday(&tv, NULL))
-		val->type = T_NULL;
+		VALUE_default(val, T_DATE);
 	else
 	{
 		//fprintf(stderr, "DATE_now: %d %d\n", tv.tv_sec, tv.tv_usec);

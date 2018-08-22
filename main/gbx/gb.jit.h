@@ -85,7 +85,7 @@ typedef
 		void (*pop_array)(ushort code);
 		void (*conv)(GB_VALUE *value, GB_TYPE type);
 		void (*push_unknown)(void);
-		GB_VALUE *(*call_unknown)(ushort *pc, GB_VALUE *sp);
+		void (*call_unknown)(ushort *pc, GB_VALUE **psp);
 		void (*pop_unknown)(void);
 		void (*enum_first)(ushort code, GB_VALUE *local, GB_VALUE *penum);
 		bool (*enum_next)(ushort code, GB_VALUE *local, GB_VALUE *penum);

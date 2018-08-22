@@ -1682,7 +1682,7 @@ void GB_ReturnNewZeroString(const char *src)
 
 void GB_ReturnNull(void)
 {
-	TEMP.type = T_NULL;
+	VALUE_null(&TEMP);
 }
 
 void GB_ReturnVoidString(void)

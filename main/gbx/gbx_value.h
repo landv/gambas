@@ -250,6 +250,7 @@ void VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype, void 
 void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype);
 void VALUE_class_constant(CLASS *class, VALUE *value, int ind);
 
+#define VALUE_null(_val) ({ (_val)->type = T_NULL; (_val)->_object.object = NULL; })
 bool VALUE_is_null(VALUE *val);
 
 //void VALUE_get_string(VALUE *val, char **text, int *length);

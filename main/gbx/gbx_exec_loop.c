@@ -747,7 +747,7 @@ _PUSH_ME:
 			}
 		}
 		else
-			SP->type = T_NULL;
+			VALUE_null(SP);
 	}
 	else
 	{
@@ -800,8 +800,7 @@ _PUSH_MISC:
 
 	__PUSH_NULL:
 
-		SP->type = T_NULL;
-		//SP->_integer.value = 0;
+		VALUE_null(SP);
 		SP++;
 		goto _NEXT;
 
@@ -1109,7 +1108,7 @@ _CALL:
 			//if (!PCODE_is_void(code))
 			{
 				/*VALUE_default(SP, (TYPE)(val->_function.function));*/
-				SP->type = T_NULL;
+				VALUE_null(SP);
 				SP++;
 			}
 

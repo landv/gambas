@@ -44,7 +44,7 @@ void JIT_exec(bool ret_on_stack);
 PCODE *JIT_get_code(FUNCTION *func);
 CLASS_CONST *JIT_get_constant(int index);
 void *JIT_get_class_ref(int index);
-VALUE *JIT_call_unknown(PCODE *pc, VALUE *sp);
+void JIT_call_unknown(PCODE *pc, VALUE **psp);
 
 void JIT_exit(void);
 

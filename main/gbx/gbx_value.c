@@ -1473,36 +1473,36 @@ __FUNCTION:
 
 void VALUE_from_string(VALUE *value, const char *addr, int len)
 {
-	value->type = T_NULL;
-
 	while (len > 0 && isspace(*addr))
 		addr++, len--;
 
 	while (len > 0 && isspace(addr[len - 1]))
 		len--;
 
-	if (len <= 0)
-		return;
-
-	if (!DATE_from_string(addr, len, value, TRUE))
-		return;
-
-	if (!NUMBER_from_string(NB_READ_ALL | NB_READ_HEX_BIN | NB_LOCAL, addr, len, value))
-		return;
-
-	if (len == LOCAL_local.len_true_str && strncasecmp(addr, LOCAL_local.true_str, len) == 0)
+	if (len > 0)
 	{
-		value->type = T_BOOLEAN;
-		value->_boolean.value = -1;
-		return;
+		if (!DATE_from_string(addr, len, value, TRUE))
+			return;
+
+		if (!NUMBER_from_string(NB_READ_ALL | NB_READ_HEX_BIN | NB_LOCAL, addr, len, value))
+			return;
+
+		if (len == LOCAL_local.len_true_str && strncasecmp(addr, LOCAL_local.true_str, len) == 0)
+		{
+			value->type = T_BOOLEAN;
+			value->_boolean.value = -1;
+			return;
+		}
+
+		if (len == LOCAL_local.len_false_str && strncasecmp(addr, LOCAL_local.false_str, len) == 0)
+		{
+			value->type = T_BOOLEAN;
+			value->_boolean.value = 0;
+			return;
+		}
 	}
 
-	if (len == LOCAL_local.len_false_str && strncasecmp(addr, LOCAL_local.false_str, len) == 0)
-	{
-		value->type = T_BOOLEAN;
-		value->_boolean.value = 0;
-		return;
-	}
+	VALUE_null(value);
 }
 
 

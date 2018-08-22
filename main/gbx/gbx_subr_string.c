@@ -771,7 +771,7 @@ void SUBR_iconv(void)
 	STRING_conv(&result, str, len, src, dst, TRUE);
 
 	if (!result)
-		RETURN->type = T_NULL;
+		VALUE_null(RETURN);
 	else
 	{
 		RETURN->type = T_STRING;
@@ -813,7 +813,7 @@ void SUBR_sconv(ushort code)
 	STRING_conv(&result, str, len, src, dst, TRUE);
 
 	if (!result)
-		RETURN->type = T_NULL;
+		VALUE_null(RETURN);
 	else
 	{
 		RETURN->type = T_STRING;

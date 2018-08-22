@@ -163,7 +163,7 @@ void SUBR_val(void)
   SUBR_ENTER_PARAM(1);
 
   if (SUBR_check_string(PARAM))
-		RETURN->type = T_NULL;
+		VALUE_null(RETURN);
 	else
 	{
 		VALUE_get_string(PARAM, &addr, &len);

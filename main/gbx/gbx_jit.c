@@ -295,29 +295,40 @@ void JIT_debug(const char *fmt, ...)
 	va_end(args);
 }
 
-static void error_JIT_call_unknown(intptr_t pc, intptr_t save)
+typedef
+	struct {
+		PCODE *pc;
+		VALUE **psp;
+		PCODE code;
+	}
+	JIT_call_unknown_ERROR;
+
+static void error_JIT_call_unknown(JIT_call_unknown_ERROR *save)
 {
-	((PCODE *)pc)[1] = (PCODE)save;
+	save->pc[1] = (PCODE)save->code;
+	*save->psp = SP;
 }
 
-VALUE *JIT_call_unknown(PCODE *pc, VALUE *sp)
+void JIT_call_unknown(PCODE *pc, VALUE **psp)
 {
-	PCODE save;
+	JIT_call_unknown_ERROR save;
 	
 	PC = pc;
-	SP = sp;
+	SP = *psp;
 	
-	save = pc[1];
+	save.pc = pc;
+	save.psp = psp;
+	save.code = pc[1];
+	
 	pc[1] = 0x140B;
 	
-	ON_ERROR_2(error_JIT_call_unknown, pc, save)
+	ON_ERROR_1(error_JIT_call_unknown, &save)
 	{
-		EXEC_function_loop();
+		EXEC_loop();
 	}
 	END_ERROR
-	
-	pc[1] = save;
-	return SP;
+
+	error_JIT_call_unknown(&save);
 }
 
 void JIT_load_class(CLASS *class)

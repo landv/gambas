@@ -591,7 +591,7 @@ static void callback(ffi_cif *cif, void *result, void **args, void *user_data)
 	__VOID:
 	__CLASS:
 	__FUNCTION:
-		arg->type = T_NULL;
+		VALUE_null(arg);
 	}
 
 	EXEC = cb->exec;
