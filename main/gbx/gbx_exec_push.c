@@ -101,6 +101,10 @@ _PUSH_GENERIC:
 			object = EXEC_auto_create(class, TRUE);
 		}
 
+		index = CLASS_find_symbol(class, name);
+		if (index != NO_SYMBOL)
+			THROW(E_NSYMBOL, CLASS_get_name(val->_object.class), name);
+			
 		if (class->special[SPEC_PROPERTY] != NO_SYMBOL)
 		{
 			EXEC_unknown_name = name;

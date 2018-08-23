@@ -813,9 +813,6 @@ __2v:
 
 __func:
 
-	//if (unknown_function(value))
-	//	goto __CONV;
-	//else
 	goto __N;
 
 __i2p:
