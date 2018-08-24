@@ -11,11 +11,9 @@ AC_PROG_LIBTOOL
 
 dnl ---- SQLite driver
 
-GB_COMPONENT(
+GB_COMPONENT_PKG_CONFIG(
   sqlite2, SQLITE2, gb.db.sqlite2, [src],
-  [GB_FIND(sqlite.h, /usr/local/lib /usr/local /opt /usr/lib /usr /opt/local, include sqlite*/include)],
-  [GB_FIND(libsqlite.$SHLIBEXT, /usr/local /opt /usr /opt/local, lib sqlite*/lib)],
-  [$C_LIB $CXX_LIB -lsqlite])
+  sqlite)
 
 dnl ---- Create makefiles
 
