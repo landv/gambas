@@ -15,6 +15,7 @@ Public State As Integer
 Public Id As Integer
 Public Name As String
 Public Version As String
+Public LastVersion As Boolean
 Public Vendor As String
 Public UploadDate As Date
 Public Description As String
@@ -129,8 +130,8 @@ Public Sub Request_Finished()
   Name = UnQuote(cResult["Name"])
   $sVersion = cResult["Version"]
   Version = $sVersion & "." & cResult["Release"]
+  LastVersion = CInt(cResult["LastVersion"])
   Vendor = UnQuote$(cResult["Vendor"])
-  
   UploadDate = FarmRequest.GetDate(cResult["UploadDate"])
   Description = UnQuote(cResult["Description"])
   URL = Trim(UnQuote$(cResult["URL"]))

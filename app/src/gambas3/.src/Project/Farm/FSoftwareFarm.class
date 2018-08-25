@@ -244,8 +244,12 @@ Public Sub SoftwareBox_Ready()
   hSoft = hSoftwareBox.Software
   
   If cmbSort.Index = SORT_INSTALLED And If Not hSoft.IsInstalled() Then Goto DELETE
-  If Not chkShowAllVersion.Value Then
-    If hSoft.IsInstalled() And If Comp(hSoft.Version, hSoft.GetInstallVersion(), gb.Natural) < 0 Then Goto DELETE
+  If chkShowAllVersion.Value = CheckBox.False Then
+    If Not hSoft.LastVersion Then
+      If Not hSoft.IsInstalled() Or If Comp(hSoft.Version, hSoft.GetInstallVersion(), gb.Natural) Then 
+        Goto DELETE
+      Endif
+    Endif
   Endif
   hSoftwareBox.Show
   Return
