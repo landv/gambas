@@ -1360,7 +1360,11 @@ Public Sub GetDebugPanel() As SidePanel
 End
 
 
-Public Sub ShowDebug(bShow As Boolean)
+Public Sub ShowDebug(bShow As Boolean, Optional bAutomatic As Boolean)
+  
+  If bAutomatic Then
+    If Not Settings["/ShowDebugPanelAutomatically", True] Then Return
+  Endif
   
   panDebug.Hidden = Not bShow
   

@@ -495,7 +495,7 @@ Private Sub AfterStop()
   'Settings["/FMain/Splitter"] = hForm.Layout
   'FDebugInfo.Hide
   
-  If Not $bConsole Then FMain.ShowDebug(False)
+  If Not $bConsole Then FMain.ShowDebug(False, True)
   FDebugInfo.UpdateView
 
   ' FOR EACH hForm IN $cShow
@@ -884,7 +884,8 @@ Private Sub Start(sCmd As String)
   FMain.OnProjectDebug
   FSearch.OnProjectDebug
 
-  FMain.ShowDebug(True)
+  FMain.ShowDebug(True, True)
+  
   FDebugInfo.UpdateView
   FDebugInfo.OnProjectDebug
 

@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,96,64)
+  MoveScaled(0,0,98,64)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -294,7 +294,7 @@
         Text = ("Toolbox size")
       }
       { cmbToolbox ComboBox
-        MoveScaled(43,0,16,4)
+        MoveScaled(43,0,15,4)
         ReadOnly = True
         List = [("Normal"), ("Small"), ("Large")]
       }
@@ -379,6 +379,20 @@
         Text = ("Close tabs with middle mouse click")
       }
       { btnCloseWithMiddleClick SwitchButton
+        MoveScaled(48,0,8,4)
+        Animated = True
+      }
+    }
+    { HBox57 HBox
+      MoveScaled(1,55,66,4)
+      Spacing = True
+      Indent = True
+      { Label49 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Show debugging panel if needed")
+      }
+      { btnShowDebug SwitchButton
         MoveScaled(48,0,8,4)
         Animated = True
       }

@@ -114,6 +114,7 @@ Public Sub _new()
     [btnFold, "/Editor/ShowExpand", 1],
     [btnInvertTheme, "/Editor/InvertTheme", 0],
     [btnOutput, "/QuietExternalCommands", 0],
+    [btnShowDebug, "/ShowDebugPanelAutomatically", 1],
     [btnUtility, "/UseUtilityWindows", 1],
     [btnStartupLoad, "/RestoreFiles", 1],
     [btnOptional, "/AlwaysDisplayOptionalMessages", 0],
@@ -511,6 +512,12 @@ End
 Public Sub btnOutput_Click()
 
   Settings["/QuietExternalCommands"] = btnOutput.Value
+
+End
+
+Public Sub btnShowDebug_Click()
+
+  Settings["/ShowDebugPanelAutomatically"] = btnShowDebug.Value
 
 End
 
