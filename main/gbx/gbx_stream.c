@@ -141,7 +141,7 @@ int STREAM_get_readable(STREAM *stream, int *len)
 	return (-1);
 }
 
-static int default_eof(STREAM *stream)
+bool STREAM_default_eof(STREAM *stream)
 {
 	int fd;
 	int ilen;
@@ -1710,7 +1710,7 @@ bool STREAM_eof(STREAM *stream)
 	if (stream->type->eof)
 		return ((*(stream->type->eof))(stream));
 	else
-		return default_eof(stream);
+		return STREAM_default_eof(stream);
 }
 
 

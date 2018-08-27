@@ -83,6 +83,8 @@ typedef
 		int64_t size;
 		int fd;
 		unsigned watch : 1;
+		unsigned has_size : 1;
+		unsigned use_size : 1;
 		}
 	STREAM_DIRECT;
 
@@ -224,6 +226,7 @@ void STREAM_flush(STREAM *stream);
 int STREAM_handle(STREAM *stream);
 void STREAM_lof(STREAM *stream, int64_t *len);
 bool STREAM_eof(STREAM *stream);
+bool STREAM_default_eof(STREAM *stream);
 
 void STREAM_load(const char *path, char **buffer, int *len);
 

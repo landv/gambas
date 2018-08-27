@@ -119,6 +119,8 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 			stream->common.available_now = TRUE;
 	}
 
+	stream->direct.has_size = FALSE;
+	
 	FD = fd;
 	return FALSE;
 }
@@ -167,7 +169,33 @@ static int stream_flush(STREAM *stream)
 }
 
 
-#define stream_eof NULL
+static int stream_eof(STREAM *stream)
+{
+	struct stat info;
+	off_t pos;
+
+	if (!stream->direct.has_size)
+	{
+		if (fstat(FD, &info) == 0)
+		{
+			stream->direct.use_size = TRUE;
+			stream->direct.size = info.st_size;
+		}
+		
+		stream->direct.has_size = TRUE;
+	}
+	
+	if (stream->direct.use_size && !stream->common.no_lseek)
+	{
+		pos = lseek(FD, 0, SEEK_CUR);
+		if (pos >= 0)
+			return pos >= stream->direct.size;
+		
+		stream->common.no_lseek = TRUE;
+	}
+		
+	return STREAM_default_eof(stream);
+}
 
 
 static int stream_lof(STREAM *stream, int64_t *len)
