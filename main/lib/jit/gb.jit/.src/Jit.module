@@ -162,9 +162,9 @@ Public Sub _Compile(sArch As String) As String
   Endif
   
   For Each sFile In Dir(sDir &/ ".gambas")
-    ClassStat.Stat(sDir, sFile)
-    If Not ClassStat.HasFast Then Continue 
-    sFile = ClassStat.Name
+    _ClassStat.Stat(sDir, sFile)
+    If Not _ClassStat.HasFast Then Continue 
+    sFile = _ClassStat.Name
     If $bDebug Then Error "gb.jit: translating class "; sFile
     Print #hFile, __Jit.Translate(sFile, sArch)
   Next
