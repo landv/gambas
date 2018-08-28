@@ -15,6 +15,12 @@ Public InsideStringDelim As String
 'Private $bCanCloseBraces As Boolean
 'Private $bCanCloseBracesComputed As Boolean
 
+Static Public Sub _init()
+  
+  Try Component.Load("gb.util")
+  
+End
+
 
 Static Public Sub _get(Type As String) As TextEditorMode
 
@@ -91,9 +97,23 @@ End
 
 Public Sub CanCloseBraces(hEditor As TextEditor) As Boolean
   
+  Dim sLine As String
+  Dim X As Integer
+  Dim iLen As Integer
+  Dim sCar As String
+
   If Not CloseBraces Then Return
   
-  If InsideString(hEditor) Then Return
+  sLine = hEditor.Current.Text
+  iLen = hEditor.Current.Length
+  X = hEditor.Column
+  
+  If X >= iLen Then Return True
+  
+  sCar = String.RemoveDiacritics(String.Mid$(sLine, X + 1, 1))
+  If IsLetter(sCar) Or If IsNumber(sCar) Then Return False
+  
+  'If InsideString(hEditor) Then Return
   
   Return True
   
@@ -102,7 +122,37 @@ End
 
 Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
   
+  Dim sLine As String
+  Dim X As Integer
+  Dim sCar As String
   Dim iPos As Integer
+  
+  If Key.Code = Key.BackSpace Then
+    
+    If Not CloseBraces Then Return
+
+    If hEditor.Selected Then Return
+    
+    X = hEditor.Column
+    If X = 0 Then Return
+
+    sLine = hEditor.Current.Text
+    sCar = String.Mid$(sLine, X, 1)
+    iPos = InStr(Me.BRACES_OPEN, sCar)
+    If iPos = 0 Then Return
+    
+    sCar = String.Mid$(sLine, X + 1, 1)
+    If sCar <> Mid$(Me.BRACES_CLOSE, iPos, 1) Then Return
+        
+    hEditor.SaveCursor()
+    hEditor.Select(X - 1, hEditor.Line, X + 1, hEditor.Line)
+    hEditor.Insert("")
+    hEditor.RestoreCursor()
+    hEditor.Goto(X - 1, hEditor.Line)
+    
+    Return True
+    
+  Endif
   
   InsideStringEscape = False
   
@@ -116,11 +166,13 @@ Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
       Endif
     Endif
     If CanCloseBraces(hEditor) Then
+      hEditor.Begin
       hEditor.SaveCursor()
       hEditor.Insert(Key.Text)
       hEditor.Insert(Mid$(Me.BRACES_CLOSE, iPos, 1))
       hEditor.RestoreCursor()
       hEditor.Goto(hEditor.Column + 1, hEditor.Line)
+      hEditor.End
       '$bCanCloseBracesComputed = False
       Return True
     Endif

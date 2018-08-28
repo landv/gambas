@@ -1549,6 +1549,7 @@ Public Sub View_KeyPress()
         DeleteWordLeft
       Else If Key.Normal Then
         If $bReadOnly Then Goto STOP_EVENT
+        If $hDoc._Mode And If $hDoc._Mode.OnKeyPress(Me) Then Goto STOP_EVENT
         DeleteLeft
       Endif
       
