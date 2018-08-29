@@ -30,10 +30,6 @@
 
 #include "gb_common.h"
 
-#ifndef OS_BSD
-  #include <crypt.h>
-#endif
-
 #include "c_crypt.h"
 #include "main.h"
 

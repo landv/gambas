@@ -9,7 +9,6 @@ AC_PROG_LIBTOOL
 
 GB_COMPONENT(
   crypt, CRYPT, gb.crypt, [src],
-  [GB_FIND(crypt.h, $prefix /usr/lib /usr, include)],
   [GB_FIND(libcrypt.$SHLIBEXT, $prefix /usr/local /usr, lib)],
   [-lcrypt])
  
