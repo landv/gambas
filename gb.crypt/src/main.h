@@ -24,7 +24,6 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
-
 #include "gb_common.h"
 #include "gambas.h"
 
