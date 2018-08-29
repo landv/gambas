@@ -51,9 +51,9 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 
 	if (mode & ST_CREATE)
 		fmode = "w+";
-	else if (mode & ST_APPEND)
+	else if (mode & ST_APPENDING)
 		fmode = "a+";
-	else if (mode & ST_WRITE)
+	else if (mode & ST_WRIT)
 		fmode = "r+";
 	else
 		fmode = "r";

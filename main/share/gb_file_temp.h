@@ -39,11 +39,7 @@
 
 #ifdef PROJECT_EXEC
 
-#if defined(OS_FREEBSD) || defined(OS_OPENBSD)
-#include <sys/mount.h>
-#else
-#include <sys/statfs.h>
-#endif
+#include <sys/statvfs.h>
 
 #include <sys/types.h>
 #include <grp.h>
@@ -1082,12 +1078,12 @@ void FILE_link(const char *src, const char *dst)
 
 int64_t FILE_free(const char *path)
 {
-	struct statfs info;
+	struct statvfs info;
 
 	if (FILE_is_relative(path))
 		return 0;
 
-	statfs(path, &info);
+	statvfs(path, &info);
 	return (int64_t)(getuid() == 0 ? info.f_bfree : info.f_bavail) * info.f_bsize;
 }
 

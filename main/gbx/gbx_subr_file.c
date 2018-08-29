@@ -225,7 +225,7 @@ void SUBR_open(ushort code)
 		{
 			str = SUBR_get_string(PARAM);
 			
-			if (mode & ST_WRITE)
+			if (mode & ST_WRIT)
 			{
 				stream.string.buffer = STRING_new(str, STRING_length(str));
 			}

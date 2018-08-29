@@ -51,7 +51,7 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 	
 	if (mode & ST_CREATE)
 		fmode = O_CREAT | O_TRUNC; // | O_EXCL;
-	else if (mode & ST_APPEND)
+	else if (mode & ST_APPENDING)
 		fmode = O_APPEND | O_CREAT;
 	else
 		fmode = 0;
@@ -59,14 +59,14 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 	switch (mode & ST_MODE)
 	{
 		case ST_READ: fmode |= O_RDONLY; break;
-		case ST_WRITE: fmode |= O_WRONLY; break;
+		case ST_WRIT: fmode |= O_WRONLY; break;
 		case ST_READ_WRITE: fmode |= O_RDWR; break;
 		default: fmode |= O_RDONLY;
 	}
 
 	if (path[0] == '.' && isdigit(path[1]))
 	{
-		if ((mode & ST_CREATE) || (mode & ST_APPEND))
+		if ((mode & ST_CREATE) || (mode & ST_APPENDING))
 			THROW(E_ACCESS);
 		
 		if (NUMBER_from_string(NB_READ_INTEGER, &path[1], strlen(path) - 1, &val) || val._integer.value < 0)
@@ -81,7 +81,7 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 			return TRUE;
 		
 		if (((mode & ST_MODE) == ST_READ && (omode & O_ACCMODE) == O_WRONLY)
-			  || ((mode & ST_MODE) == ST_WRITE && (omode & O_ACCMODE) == O_RDONLY)
+			  || ((mode & ST_MODE) == ST_WRIT && (omode & O_ACCMODE) == O_RDONLY)
 			  || ((mode & ST_MODE) == ST_READ_WRITE && (omode & O_ACCMODE) != O_RDWR))
 			THROW(E_ACCESS);
 		

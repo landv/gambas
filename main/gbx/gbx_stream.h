@@ -146,10 +146,10 @@ typedef
 
 enum {
 	ST_READ        = (1 << 0),
-	ST_WRITE       = (1 << 1),
-	ST_READ_WRITE  = ST_READ + ST_WRITE,
+	ST_WRIT        = (1 << 1),
+	ST_READ_WRITE  = ST_READ + ST_WRIT,
 	ST_MODE        = 0x3,
-	ST_APPEND      = (1 << 2),
+	ST_APPENDING   = (1 << 2),
 	ST_CREATE      = (1 << 3),
 	ST_ACCESS      = 0xF,
 	ST_DIRECT      = (1 << 4),

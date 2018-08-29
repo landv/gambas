@@ -98,7 +98,7 @@ static void watch_stream(CSTREAM *_object, int mode, bool on)
 	if (mode & ST_READ)
 		GB_Watch(fd, GB_WATCH_READ, (void *)(on ? callback_read : NULL), (intptr_t)THIS);
 
-	if (mode & ST_WRITE)
+	if (mode & ST_WRIT)
 		GB_Watch(fd, GB_WATCH_WRITE, (void *)(on ? callback_write : NULL), (intptr_t)THIS);
 }
 
@@ -143,8 +143,8 @@ static CFILE *create_default_stream(FILE *file, int mode)
 void CFILE_init(void)
 {
 	CFILE_in = create_default_stream(stdin, ST_READ);
-	CFILE_out = create_default_stream(stdout, ST_WRITE);
-	CFILE_err = create_default_stream(stderr, ST_WRITE);
+	CFILE_out = create_default_stream(stdout, ST_WRIT);
+	CFILE_err = create_default_stream(stderr, ST_WRIT);
 }
 
 void CFILE_exit(void)
@@ -860,7 +860,7 @@ BEGIN_METHOD(Stream_Watch, GB_INTEGER mode; GB_BOOLEAN on)
 	if (mode == R_OK)
 		mode = ST_READ;
 	else if (mode == W_OK)
-		mode = ST_WRITE;
+		mode = ST_WRIT;
 	else
 	{
 		GB_Error("Unknown watch");

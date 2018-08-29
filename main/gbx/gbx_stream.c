@@ -956,7 +956,7 @@ static STREAM *enter_temp_stream(STREAM *stream)
 		_temp_level = 0;
 		if (_temp_stream.type)
 			STREAM_close(&_temp_stream);
-		STREAM_open(&_temp_stream, NULL, ST_STRING | ST_WRITE);
+		STREAM_open(&_temp_stream, NULL, ST_STRING | ST_WRIT);
 	}
 
 	_temp_level++;
@@ -1807,7 +1807,7 @@ void STREAM_begin(STREAM *stream)
 	if (!stream->common.redirect)
 	{
 		ALLOC_ZERO(&stream->common.redirect, sizeof(STREAM));
-		STREAM_open(stream->common.redirect, NULL, ST_STRING | ST_WRITE);
+		STREAM_open(stream->common.redirect, NULL, ST_STRING | ST_WRIT);
 	}
 
 	stream->common.redirected = TRUE;

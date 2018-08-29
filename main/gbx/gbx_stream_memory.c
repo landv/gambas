@@ -96,7 +96,7 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 
 static int stream_write(STREAM *stream, char *buffer, int len)
 {
-	if ((stream->common.mode & ST_WRITE) == 0)
+	if ((stream->common.mode & ST_WRIT) == 0)
 		THROW(E_ACCESS);
 	
   CHECK_enter();
