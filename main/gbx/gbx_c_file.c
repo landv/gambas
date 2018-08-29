@@ -31,7 +31,7 @@
 #include <pwd.h>
 #include <grp.h>
 #include <sys/stat.h>
-#include <pty.h>
+#include <sys/ioctl.h>
 #include <termios.h>
 
 #include "gb_common.h"
