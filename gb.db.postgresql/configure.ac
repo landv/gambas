@@ -13,8 +13,8 @@ dnl ---- PostgreSQL driver
 
 GB_COMPONENT(
   postgresql, POSTGRESQL, gb.db.postgresql, [src],
-  [GB_FIND(libpq-fe.h postgres.h pg_type.h, /usr/local/lib /usr/local /opt /usr/lib /usr, include/pgsql* pgsql*/include include/postgresql* postgresql*/include include/postgresql/*/server/catalog include/postgresql/*/server include)],
-  [GB_FIND(libpq.$SHLIBEXT, /usr/local /opt /usr, lib pgsql*/lib postgresql*/lib)],
+  [GB_FIND(libpq-fe.h postgres.h pg_type.h, $prefix /usr/local/lib /usr/local /opt /usr/lib /usr, include/pgsql* pgsql*/include include/postgresql* postgresql*/include include/postgresql/*/server/catalog include/postgresql/*/server include)],
+  [GB_FIND(libpq.$SHLIBEXT, $prefix /usr/local /opt /usr, lib pgsql*/lib postgresql*/lib)],
   [$C_LIB -lpq])
  
 dnl ---- Create makefiles
