@@ -11,8 +11,8 @@ dnl ---- bzlib2 compression driver
 
 GB_COMPONENT(
   bzlib2, BZLIB2, gb.compress.bzlib2, [src],
-  [GB_FIND(bzlib.h, /usr/local/lib /usr/local /opt /usr/lib /usr, include)],
-  [GB_FIND(libbz2.$SHLIBEXT, /usr/local /opt /usr, lib)],
+  [GB_FIND(bzlib.h, $prefix /usr/local/lib /usr/local /opt /usr/lib /usr, include)],
+  [GB_FIND(libbz2.$SHLIBEXT, $prefix /usr/local /opt /usr, lib)],
   [$C_LIB -lbz2])
  
 dnl ---- Create makefiles

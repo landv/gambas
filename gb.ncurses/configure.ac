@@ -9,7 +9,7 @@ AC_PROG_LIBTOOL
 
 GB_COMPONENT_PKG_CONFIG(
   ncurses, NCURSES, gb.ncurses, [src],
-  ncurses)
+  ncurses panel)
 
 AC_OUTPUT( \
 Makefile \
