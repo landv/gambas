@@ -28,6 +28,10 @@
 #include <errno.h>
 #include <time.h>
 
+#ifndef OS_BSD
+#include <crypt.h>
+#endif
+
 #include "gb_common.h"
 
 #include "c_crypt.h"
