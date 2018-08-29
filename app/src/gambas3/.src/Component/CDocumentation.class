@@ -184,12 +184,11 @@ Public Sub GetSimilars(sCtrl As String) As String[]
   
 End
 
-Private Sub InitComponent(sFile As String)
+Private Sub InitComponent(sFile As String, Optional sKey As String)
   
   Dim hComponent As CComponent
   Dim hFic As File
   Dim sLig As String
-  Dim sKey As String
   Dim sPath As String
   Dim iPos As Integer
   Dim sGroup As String
@@ -208,7 +207,8 @@ Private Sub InitComponent(sFile As String)
   If sLig = "[Component]" Then
     
     hComponent = New CComponent(Me)
-    hComponent.Key = File.BaseName(sFile)
+    If Not sKey Then sKey = File.BaseName(sFile)
+    hComponent.Key = sKey
     hComponent.ThirdParty = Not $cName.Exist(hComponent.key)
     hComponent.Name = $cName[hComponent.Key]
     
@@ -313,6 +313,8 @@ Public Sub _new(Optional sName As String)
   Dim aComp As String[]
   Dim sFile As String
   Dim hComp As CComponent
+  Dim sComp As String
+  Dim sCompSubst As String
   
   Name = sName
   
@@ -323,6 +325,19 @@ Public Sub _new(Optional sName As String)
     'If Not $cName.Exist(File.BaseName(sFile)) Then Continue
     InitComponent(sFile)
   Next
+  
+  For Each sCompSubst In ["gb.qt4", "gb.qt5", "gb.gtk", "gb.gtk3"]
+    If Components.Exist(sCompSubst) Then Break
+    sCompSubst = ""
+  Next
+  
+  If sCompSubst Then
+    For Each sComp In ["gb.qt4", "gb.qt5", "gb.gtk", "gb.gtk3"]
+      If Not Components.Exist(sComp) Then 
+        InitComponent(sCompSubst & ".component", sComp)
+      Endif
+    Next
+  Endif
   
   hComp = New CComponent(Me)
   hComp.Key = CComponent.PROJECT_NAME

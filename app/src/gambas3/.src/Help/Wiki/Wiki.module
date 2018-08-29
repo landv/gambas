@@ -812,7 +812,9 @@ Public Sub PrintPage()
   '   Endif
   ' Endif
   
-  If Wiki.Component And If Not Documentation[Wiki.Component].Loaded Then Documentation.Reset
+  If Wiki.Component Then
+    If Not Documentation.Exist(Wiki.Component) Or If Not Documentation[Wiki.Component].Loaded Then Documentation.Reset
+  Endif
   
   sData = LTrim(File.Load(Wiki.GetPagePathFrom(sPath)))
   If Wiki.Class Then
