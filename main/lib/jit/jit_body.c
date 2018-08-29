@@ -376,10 +376,15 @@ static char *borrow_expr(char *expr, TYPE type)
 }
 
 
-static char *get_conv_format(TYPE src, TYPE dest)
+static const char *get_conv_format(TYPE src, TYPE dest)
 {
 	static char buffer[64];
 	
+	if (src == T_VOID)
+	{
+		return JIT_get_default_value(TYPEID(dest));
+	}
+			
 	switch(dest)
 	{
 		case T_VOID:
