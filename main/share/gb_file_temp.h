@@ -999,8 +999,8 @@ void FILE_copy(const char *src, const char *dst)
 
 	TRY
 	{
-		STREAM_open(&stream_src, src, ST_READ);
-		STREAM_open(&stream_dst, dst, ST_CREATE);
+		STREAM_open(&stream_src, src, STO_READ);
+		STREAM_open(&stream_dst, dst, STO_CREATE);
 
 		STREAM_lof(&stream_src, &len);
 

@@ -81,7 +81,7 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 
 static int stream_write(STREAM *stream, char *buffer, int len)
 {
-	if ((stream->common.mode & ST_WRIT) == 0)
+	if ((stream->common.mode & STO_WRITE) == 0)
 		THROW(E_ACCESS);
 
 	stream->string.buffer = STRING_add(stream->string.buffer, buffer, len);
