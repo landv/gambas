@@ -713,13 +713,13 @@ static char *input(STREAM *stream, bool line, char *escape)
 	ec = escape ? *escape : 0;
 
 	if (!line)
-		test = &&__TESTO_INPUT;
+		test = &&__TEST_INPUT;
 	else
 	{
 		switch(stream->common.eol)
 		{
-			case GB_EOL_WINDOWS: test = &&__TESTO_WINDOWS; break;
-			case GB_EOL_MAC: test = &&__TESTO_MAC; break;
+			case GB_EOL_WINDOWS: test = &&__TEST_WINDOWS; break;
+			case GB_EOL_MAC: test = &&__TEST_MAC; break;
 			default: test = NULL; mode = ec ? 1 : 0; break;
 		}
 	}
@@ -807,7 +807,7 @@ static char *input(STREAM *stream, bool line, char *escape)
 
 				goto *test;
 
-			__TESTO_INPUT:
+			__TEST_INPUT:
 
 				if (c <= ' ')
 				{
@@ -817,7 +817,7 @@ static char *input(STREAM *stream, bool line, char *escape)
 				else
 					continue;
 
-			__TESTO_MAC:
+			__TEST_MAC:
 
 				if (c == '\r')
 				{
@@ -827,7 +827,7 @@ static char *input(STREAM *stream, bool line, char *escape)
 				else
 					continue;
 
-			__TESTO_WINDOWS:
+			__TEST_WINDOWS:
 
 				if ((lc == '\r') && (c == '\n'))
 				{
