@@ -216,14 +216,28 @@ Public Sub DrawingArea_Draw()
     sText = .Description
     Paint.Font.Grade = -1
     
+    HN = Max(CSoftware.IconSize, HN)
+    
     W = Paint.W - X - P * 2
-    H = Paint.H - Y - CSoftware.IconSize - P * 2
-    If .URL Then H -= Desktop.Scale
+    Y += HN
+    H = Paint.H - Y - P * 3
+    'If .URL Then H -= Desktop.Scale
     
     Paint.Background = Color.TextForeground
-    Paint.DrawText(Paint.TrimText(sText, W, H), X, Y + Max(CSoftware.IconSize, HN) + P, W, H)
+    Paint.DrawText(Paint.TrimText(sText, W, H), X, Y, W, H)
     
-    PaintStat($hSoft, GetBackgroundColor())
+    If $hSoft.IsFinished() Then
+    
+      Y = Paint.H - P * 2
+      H = P
+      Paint.Font.Grade = -3
+      Paint.Font.Italic = True
+  
+      Paint.DrawText(Subst(("Published &1"), .GetUploadAge()), X, Y, W, H)
+      
+      PaintStat($hSoft, GetBackgroundColor())
+      
+    Endif
     
   End With
   

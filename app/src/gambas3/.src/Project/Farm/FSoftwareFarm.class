@@ -372,7 +372,7 @@ Private Sub UpdateSoftware()
       btnDownload.Hide
       btnInstall.Show
     Else If Not .IsInstalled() Then
-      btnInstall.Text = ("Install")
+      btnInstall.Text = ("Download and install")
       btnInstall.Picture = Picture["icon:/small/add"]
       btnDownload.Show
       btnInstall.Show
@@ -398,6 +398,9 @@ Private Sub UpdateSoftware()
     Endif
     
     lblDesc.Visible = txtDescription.Visible
+    
+    lblUploadDate.Text = Subst(("Published &1 (on &2)"), .GetUploadAge(), Format(.UploadDate, gb.LongDate))
+    'lblUploadDate.Foreground = Color.Merge(Color.TextForeground, Color.LightForeground)
     
     Try picIcon.Picture = .Icon.Picture
   
