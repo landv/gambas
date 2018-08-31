@@ -31,6 +31,18 @@
 #include "c_system.h"
 /*#define DEBUG*/
 
+static const uchar _utf8_char_length[256] =
+{
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+	3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,6,6,1,1
+};
+
 static char _analyze_buffer[256];
 static int _analyze_buffer_pos;
 
@@ -38,6 +50,8 @@ static int _analyze_buffer_pos;
 static EVAL_COLOR _colors[COLOR_BUFFER_SIZE];
 static int _colors_len = 0;
 static EVAL_COLOR *_color_buffer = NULL;
+
+#define NEXT_UTF8_CHAR(_p) (_p += _utf8_char_length[(uchar)*(_p)])
 
 static int get_type(PATTERN *pattern)
 {
@@ -308,6 +322,7 @@ static void analyze(EVAL_ANALYZE *result)
 	bool empty = FALSE;
 	int type, old_type, next_type;
 	const char *symbol;
+	const char *p;
 	bool space_before, space_after;
 	int len, i, l;
 	bool preprocessor;
@@ -556,24 +571,31 @@ static void analyze(EVAL_ANALYZE *result)
 			{
 				add_data(RT_STRING, 1);
 				len -= 2;
-				for (i = 0; i < len; i++)
+				for (i = 0, p = symbol; i < len; i++)
 				{
-					if (symbol[i] == '\\')
+					if (*p == '\\')
 					{
 						i++;
+						NEXT_UTF8_CHAR(p);
+						
 						add_data(RT_ESCAPE, 1);
 						if (i < len)
 						{
-							if (symbol[i] == 'x')
-								l = Min(3, len - i + 1);
+							if (*p == 'x' && i < (len - 2) && isxdigit(p[1]) && isxdigit(p[2]))
+								l = 3;
 							else
 								l = 1;
 							add_data(RT_ESCAPE, l);
-							i += l;
+							
+							while (l--)
+								NEXT_UTF8_CHAR(p);
 						}
 					}
 					else
+					{
+						NEXT_UTF8_CHAR(p);
 						add_data(RT_STRING, 1);
+					}
 				}
 				add_data(RT_STRING, 1);
 				goto __NEXT_PATTERN;

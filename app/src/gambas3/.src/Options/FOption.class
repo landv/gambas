@@ -234,10 +234,12 @@ End
 Private Sub RefreshStyle()
   
   Dim hHBox As HBox
+  Dim H As Integer
   
-  'panTheme.Background = CStyle[$cCurrent["Background"]].Foreground
+  H = Max(Project.GetEditorFont().Height + Desktop.Scale * 2, Desktop.Scale * 4)
   
   For Each hHBox In svwTheme.Children
+    hHBox.H = H
     hHBox.Children[0].Refresh
   Next  
   
@@ -251,10 +253,10 @@ Private Sub RefreshEditor()
 
   If $bNoChange Then Return
 
-  RefreshStyle
-  
-  MTheme.WriteSettings(Settings, "Highlight", $cCurrent)
   Settings["/Editor/Font"] = txtEditorFont.Value
+  
+  RefreshStyle
+  MTheme.WriteSettings(Settings, "Highlight", $cCurrent)
   
   Project.InitWebView
   Project.RefreshBreakpointPicture
@@ -592,6 +594,7 @@ Public Sub dwgStyle_Draw()
   Dim iBackground As Integer
   Dim bInvert As Boolean
   Dim iBg As Integer
+  Dim D As Integer
 
   sName = MTheme.ColorNames[MTheme.ColorKeys.Find(sKey)]
   bInvert = Settings["/Editor/InvertTheme", 0]
@@ -600,7 +603,7 @@ Public Sub dwgStyle_Draw()
     If Color[iBg].Value < 128 Then bInvert = False
   Endif
 
-  Paint.Font = Font[txtEditorFont.Value]
+  Paint.Font = Project.GetEditorFont()
   If hStyle.Underline Then Paint.Font.Underline = True
   
   If MTheme.IsBackgroundStyle(sKey) Then
@@ -621,12 +624,14 @@ Public Sub dwgStyle_Draw()
   
   
   Paint.FillRect(0, 0, hDraw.W, hDraw.H, iBackground)
+  D = Desktop.Scale
+  
   If hStyle.Bold Then
     Paint.Background = Color.SetAlpha(iForeground, 128)
-    Paint.DrawText(sName, 5, 0, hDraw.Width - 8, hDraw.Height, Align.Normal)
+    Paint.DrawText(sName, D + 1, 0, hDraw.Width - D * 2, hDraw.Height, Align.Normal)
   Endif
   Paint.Background = iForeground
-  Paint.DrawText(sName, 4, 0, hDraw.Width - 8, hDraw.Height, Align.Normal)
+  Paint.DrawText(sName, D, 0, hDraw.Width - D * 2, hDraw.Height, Align.Normal)
   
 End
 

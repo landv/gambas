@@ -2,8 +2,8 @@
 
 Public Const DEFAULT_THEME As String = "gambas"
 
-Public ColorKeys As String[] = ["Background", "Normal", "Keyword", "Datatype", "Function", "Operator", "Symbol", "Number", "String", "Comment", "Help", "Preprocessor", "Breakpoint", "Current", "Selection", "Highlight", "CurrentLine", "Error"]
-Public ColorNames As String[] = [("Background"), ("Normal text"), ("Keywords"), ("Data types"), ("Subroutines"), ("Operators"), ("Symbols"), ("Numbers"), ("Strings"), ("Comments"), ("Help"), ("Preprocessor"), ("Breakpoints"), ("Current line"), ("Selection"), ("Highlighting"), ("Editing line"), ("Errors")]
+Public ColorKeys As String[] = ["Background", "Normal", "Keyword", "Constant", "Datatype", "Function", "Operator", "Symbol", "Label", "Number", "String", "Escape", "Comment", "Help", "Preprocessor", "Breakpoint", "Current", "Selection", "Highlight", "CurrentLine", "Error"]
+Public ColorNames As String[] = [("Background"), ("Normal text"), ("Keywords"), ("Constants"), ("Data types"), ("Subroutines"), ("Operators"), ("Symbols"), ("Labels"), ("Numbers"), ("Strings"), ("Characters"), ("Comments"), ("Help"), ("Preprocessor"), ("Breakpoints"), ("Current line"), ("Selection"), ("Highlighting"), ("Editing line"), ("Errors")]
 
 Private $cDefault As Collection
 
@@ -24,6 +24,7 @@ Public Function ReadSettings(hSettings As Settings, sParent As String, Optional 
   Dim cColor As New Collection
   Dim sKey As String
   Dim sColor As String
+  Dim aColor As String[]
   
   For Each sKey In ColorKeys
     If bDefault Then
@@ -32,6 +33,17 @@ Public Function ReadSettings(hSettings As Settings, sParent As String, Optional 
       sColor = hSettings[sParent &/ sKey]
     Endif
     cColor[sKey] = sColor
+  Next
+  
+  For Each sKey In ColorKeys
+    Do
+      sColor = cColor[sKey]
+      If Not sColor Then Break
+      If Left(sColor) = "#" Then Break
+      aColor = Split(sColor)
+      aColor[0] = cColor[aColor[0]]
+      cColor[sKey] = aColor.Join()
+    Loop
   Next
   
   Return cColor

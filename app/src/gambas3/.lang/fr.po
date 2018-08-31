@@ -222,7 +222,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.11.90\n"
-"PO-Revision-Date: 2018-08-30 00:38 UTC\n"
+"PO-Revision-Date: 2018-08-31 22:07 UTC\n"
 "Last-Translator: benoit <benoit@benoit-kubuntu>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -265,7 +265,7 @@ msgstr "Variables statiques"
 msgid "Static methods"
 msgstr "Méthodes statiques"
 
-#: CClassInfo.class:606
+#: CClassInfo.class:606 MTheme.module:6
 msgid "Constants"
 msgstr "Constantes"
 
@@ -961,7 +961,7 @@ msgstr "ici"
 msgid "IDE extensions"
 msgstr "Extension de l'EDI"
 
-#: CProjectList.class:543 CVersionControlGit.class:344 CWaitingAnimation.class:63 FColorChooser.form:68 FComponentChooser.form:98 FConflict.class:197 FConnectionEditor.class:470 FCrash.form:97 FCreateFile.form:204 FDebugExpr.form:46 FDebugInfo.form:267 FExportData.class:126 FFarmConfig.form:38 FFarmLogin.form:126 FFarmRegister.form:141 FFarmRequest.form:43 FFieldChooser.form:144 FFileProperty.class:144 FFontChooser.form:40 FGotoLine.form:23 FHelpBrowser.form:60 FImageOffsetSelection.form:33 FImageQuality.form:30 FImageResize.form:49 FImageRotate.form:32 FList.form:128 FMain.class:245 FMakeInstall.class:345 FMenu.form:405 FNewConnection.form:319 FNewTable.form:86 FNewTranslation.form:21 FOption.class:766 FPasteSpecial.form:86 FPasteTable.form:105 FProjectChooser.form:73 FProjectProperty.form:929 FProjectVersion.class:211 FProxy.form:57 FPublish.class:273 FReportBorderChooser.form:48 FReportBoxShadowChooser.form:27 FReportBrushChooser.form:36 FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28 FSaveProjectAs.form:81 FSearch.class:900 FSelectComponent.form:39 FSelectExtraFile.form:43 FSelectIcon.form:87 FSelectLibrary.form:66 FSnippet.form:57 FSoftwareFarm.class:545 FTableChooser.form:68 FText.form:41 FTranslate.class:652 FVersionControl.form:77 FWebFontChooser.form:129 Project.module:548 VersionControl.module:376
+#: CProjectList.class:543 CVersionControlGit.class:344 CWaitingAnimation.class:63 FColorChooser.form:68 FComponentChooser.form:98 FConflict.class:197 FConnectionEditor.class:470 FCrash.form:97 FCreateFile.form:204 FDebugExpr.form:46 FDebugInfo.form:267 FExportData.class:126 FFarmConfig.form:38 FFarmLogin.form:126 FFarmRegister.form:141 FFarmRequest.form:43 FFieldChooser.form:144 FFileProperty.class:144 FFontChooser.form:40 FGotoLine.form:23 FHelpBrowser.form:60 FImageOffsetSelection.form:33 FImageQuality.form:30 FImageResize.form:49 FImageRotate.form:32 FList.form:128 FMain.class:245 FMakeInstall.class:345 FMenu.form:405 FNewConnection.form:319 FNewTable.form:86 FNewTranslation.form:21 FOption.class:771 FPasteSpecial.form:86 FPasteTable.form:105 FProjectChooser.form:73 FProjectProperty.form:929 FProjectVersion.class:211 FProxy.form:57 FPublish.class:273 FReportBorderChooser.form:48 FReportBoxShadowChooser.form:27 FReportBrushChooser.form:36 FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28 FSaveProjectAs.form:81 FSearch.class:900 FSelectComponent.form:39 FSelectExtraFile.form:43 FSelectIcon.form:87 FSelectLibrary.form:66 FSnippet.form:57 FSoftwareFarm.class:545 FTableChooser.form:68 FText.form:41 FTranslate.class:652 FVersionControl.form:77 FWebFontChooser.form:129 Project.module:548 VersionControl.module:376
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -1765,7 +1765,7 @@ msgstr "Nouveau"
 msgid "Remove query"
 msgstr "Supprimer la requête"
 
-#: FConnectionEditor.form:374 FDebugInfo.class:279 FImageProperty.form:378 FList.form:93 FMakeInstall.form:762 FOption.class:766 FOutput.form:54 FPublish.form:171
+#: FConnectionEditor.form:374 FDebugInfo.class:279 FImageProperty.form:378 FList.form:93 FMakeInstall.form:762 FOption.class:771 FOutput.form:54 FPublish.form:171
 msgid "Clear"
 msgstr "Effacer"
 
@@ -1781,7 +1781,7 @@ msgstr "Exporter vers un fichier CSV"
 msgid "Export"
 msgstr "Exporter"
 
-#: FConnectionEditor.form:485 FForm.form:183 FList.form:65 FMain.form:1041 FMenu.form:101 FNewConnection.class:402 FOption.class:931 FSoftwareFarm.class:647 FTranslate.form:87
+#: FConnectionEditor.form:485 FForm.form:183 FList.form:65 FMain.form:1041 FMenu.form:101 FNewConnection.class:402 FOption.class:936 FSoftwareFarm.class:647 FTranslate.form:87
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -4181,59 +4181,59 @@ msgstr "Fichiers thèmes de coloration de Gambas"
 msgid "Export a theme file"
 msgstr "Exporter un fichier thème"
 
-#: FOption.class:414
+#: FOption.class:416
 msgid "Select a theme file"
 msgstr "Choisissez un fichier thème"
 
-#: FOption.class:444
+#: FOption.class:446
 msgid "You need to restart the application to see your changes."
 msgstr "Vous devez redémarrer l'application pour que vos changements prennent effet."
 
-#: FOption.class:766
+#: FOption.class:771
 msgid "Do you really want to clear the documentation cache?"
 msgstr "Voulez-vous réellement vider le cache de la documentation ?"
 
-#: FOption.class:775
+#: FOption.class:780
 msgid "Unable to clear documentation cache."
 msgstr "Impossible de vider le cache de la documentation."
 
-#: FOption.class:931
+#: FOption.class:936
 msgid "Do you really want to delete this snippet?"
 msgstr "Voulez-vous vraiment supprimer ce fragment ?"
 
-#: FOption.class:1118
+#: FOption.class:1123
 msgid "Do you really want to install the Gambas font to your personal font directory?"
 msgstr "Voulez-vous vraiment installer la police Gambas dans votre répertoire personnel de polices ?"
 
-#: FOption.class:1118 FSoftwareFarm.class:586
+#: FOption.class:1123 FSoftwareFarm.class:586
 msgid "Install"
 msgstr "Installer"
 
-#: FOption.class:1221
+#: FOption.class:1226
 msgid "Unable to download documentation."
 msgstr "Impossible de télécharger la documentation."
 
-#: FOption.class:1231
+#: FOption.class:1236
 msgid "Unable to uncompress documentation."
 msgstr "Impossible de décompresser la documentation."
 
-#: FOption.class:1240
+#: FOption.class:1245
 msgid "Unable to install documentation."
 msgstr "Impossible d'installer la documentation."
 
-#: FOption.class:1265
+#: FOption.class:1270
 msgid "Network is not available."
 msgstr "Le réseau est indisponible."
 
-#: FOption.class:1270
+#: FOption.class:1275
 msgid "Documentation is up to date."
 msgstr "La documentation est à-jour."
 
-#: FOption.class:1275
+#: FOption.class:1280
 msgid "A new documentation is available!"
 msgstr "Une nouvelle documentation est disponible !"
 
-#: FOption.class:1280 MHelp.module:904
+#: FOption.class:1285 MHelp.module:904
 msgid "Documentation is not available."
 msgstr "La documentation n'est pas disponible."
 
@@ -7106,6 +7106,10 @@ msgid "Unknown format"
 msgstr "Format inconnu"
 
 #: MTheme.module:6
+msgid "Characters"
+msgstr "Caractères"
+
+#: MTheme.module:6
 msgid "Comments"
 msgstr "Commentaires"
 
@@ -7132,6 +7136,10 @@ msgstr "Mise en évidence"
 #: MTheme.module:6
 msgid "Keywords"
 msgstr "Mots-clés"
+
+#: MTheme.module:6
+msgid "Labels"
+msgstr "Étiquettes"
 
 #: MTheme.module:6
 msgid "Normal text"
