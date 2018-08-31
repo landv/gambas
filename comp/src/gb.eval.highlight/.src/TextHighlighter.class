@@ -44,6 +44,26 @@ Static Public Sub Add((State) As Integer, Optional Count As Integer = 1)
   
 End
 
+' Static Public Sub Remove(Count As Integer)
+'   
+'   Dim N As Integer
+'   
+'   Do
+'     
+'     If Count = 0 Or If _Highlight.Count = 0 Then Return
+'     
+'     N = Min(Count, _Highlight[_Highlight.Max])
+'     If N = _Highlight[_Highlight.Max] Then
+'       _Highlight.Delete(_Highlight.Max - 1, 2)
+'     Else
+'       _Highlight[_Highlight.Max] -= N
+'     Endif
+'     Count -= N
+'     
+'   Loop
+'   
+' End
+
 Static Public Sub _get(Type As String) As TextHighlighter
 
 	Try Return Class.Load("TextHighlighter_" & Type).AutoCreate()
@@ -180,6 +200,9 @@ Static Private Function DefaultStyle_Read() As TextHighlighterStyle[]
     $aStyle[Highlight.Highlight] = TextHighlighterStyle(&H7FFF00&)
     $aStyle[Highlight.CurrentLine] = TextHighlighterStyle(&HE7F3FF&)
     $aStyle[Highlight.Error] = TextHighlighterStyle(&HBF0303&, False, True)
+    $aStyle[Highlight.Escape] = TextHighlighterStyle(&H7F0000&, False, True)
+    $aStyle[Highlight.Label] = TextHighlighterStyle(&H000000&, False, True)
+    $aStyle[Highlight.Constant] = TextHighlighterStyle(&HA00000&, True)
     
   Endif
   

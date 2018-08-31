@@ -191,7 +191,7 @@ static void push_string(int index, bool trans)
 	SYMBOL *sym;
 	int len;
 
-	if (index == VOID_STRING)
+	if (index == VOID_STRING_INDEX)
 		len = 0;
 	else
 	{

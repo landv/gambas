@@ -1,6 +1,6 @@
 /***************************************************************************
 
-	CExpression.c
+	c_expression.c
 
 	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
@@ -21,7 +21,7 @@
 
 ***************************************************************************/
 
-#define __CEXPRESSION_C
+#define __C_EXPRESSION_C
 
 #include "gb_common.h"
 #include "gambas.h"
@@ -29,7 +29,7 @@
 #include "eval.h"
 #include "main.h"
 
-#include "CExpression.h"
+#include "c_expression.h"
 
 /*#define DEBUG*/
 

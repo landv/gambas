@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  CHighlight.c
+  c_highlight.c
 
   (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
@@ -21,14 +21,14 @@
 
 ***************************************************************************/
 
-#define __CHIGHLIGHT_CPP
+#define __C_HIGHLIGHT_CPP
 
 #include "gb_common.h"
 #include "main.h"
 #include "gb.eval.h"
 #include "eval_analyze.h"
 
-#include "CHighlight.h"
+#include "c_highlight.h"
 
 static void *_analyze_symbol = 0;
 static void *_analyze_type = 0;
@@ -133,19 +133,22 @@ static int convState(int state)
 {
 	switch(state)
 	{
-		case EVAL_TYPE_END: return HIGHLIGHT_NORMAL;
-		case EVAL_TYPE_RESERVED: return HIGHLIGHT_KEYWORD;
-		case EVAL_TYPE_IDENTIFIER: return HIGHLIGHT_SYMBOL;
-		case EVAL_TYPE_CLASS: return HIGHLIGHT_DATATYPE;
-		case EVAL_TYPE_NUMBER: return HIGHLIGHT_NUMBER;
-		case EVAL_TYPE_STRING: return HIGHLIGHT_STRING;
-		case EVAL_TYPE_SUBR: return HIGHLIGHT_SUBR;
-		case EVAL_TYPE_COMMENT: return HIGHLIGHT_COMMENT;
-		case EVAL_TYPE_OPERATOR: return HIGHLIGHT_OPERATOR;
-		case EVAL_TYPE_DATATYPE: return HIGHLIGHT_DATATYPE;
-		case EVAL_TYPE_ERROR: return HIGHLIGHT_ERROR;
-		case EVAL_TYPE_HELP: return HIGHLIGHT_HELP;
-		case EVAL_TYPE_PREPROCESSOR: return HIGHLIGHT_PREPROCESSOR;
+		case RT_END: return HIGHLIGHT_NORMAL;
+		case RT_RESERVED: return HIGHLIGHT_KEYWORD;
+		case RT_IDENTIFIER: return HIGHLIGHT_SYMBOL;
+		case RT_CLASS: return HIGHLIGHT_DATATYPE;
+		case RT_NUMBER: return HIGHLIGHT_NUMBER;
+		case RT_STRING: return HIGHLIGHT_STRING;
+		case RT_SUBR: return HIGHLIGHT_SUBR;
+		case RT_COMMENT: return HIGHLIGHT_COMMENT;
+		case RT_OPERATOR: return HIGHLIGHT_OPERATOR;
+		case RT_DATATYPE: return HIGHLIGHT_DATATYPE;
+		case RT_ERROR: return HIGHLIGHT_ERROR;
+		case RT_HELP: return HIGHLIGHT_HELP;
+		case RT_PREPROCESSOR: return HIGHLIGHT_PREPROCESSOR;
+		case RT_ESCAPE: return HIGHLIGHT_ESCAPE;
+		case RT_CONSTANT: return HIGHLIGHT_CONSTANT;
+		case RT_LABEL: return HIGHLIGHT_LABEL;
 		default: return HIGHLIGHT_NORMAL;
 	}
 }
@@ -157,12 +160,12 @@ static void analyze(const char *src, int len_src, bool rewrite, int state)
 	char *str;
 	EVAL_ANALYZE result;
 
-	EVAL_analyze(src, len_src, state == HIGHLIGHT_COMMENT ? EVAL_TYPE_COMMENT : EVAL_TYPE_END, &result, rewrite);
+	EVAL_analyze(src, len_src, state == HIGHLIGHT_COMMENT ? RT_COMMENT : RT_END, &result, rewrite);
 	
 	n = 0;
 	for (i = 0; i < result.len; i++)
 	{
-		if (result.color[i].state != EVAL_TYPE_END)
+		if (result.color[i].state != RT_END)
 			n++;
 	}
 
@@ -181,7 +184,7 @@ static void analyze(const char *src, int len_src, bool rewrite, int state)
 		for (l = 0; l < len; l++)
 			ulen += get_char_length(result.str[upos + ulen]);
 		
-		if (result.color[p].state != EVAL_TYPE_END)
+		if (result.color[p].state != RT_END)
 		{
 			str = GB.NewString(&result.str[upos], ulen);
 			*((char **)GB.Array.Get(garray, i)) = str;
@@ -294,6 +297,9 @@ GB_DESC CHighlightDesc[] =
 	GB_CONSTANT("Error", "i", HIGHLIGHT_ERROR),
 	GB_CONSTANT("Help", "i", HIGHLIGHT_HELP),
 	GB_CONSTANT("Preprocessor", "i", HIGHLIGHT_PREPROCESSOR),
+	GB_CONSTANT("Escape", "i", HIGHLIGHT_ESCAPE),
+	GB_CONSTANT("Label", "i", HIGHLIGHT_LABEL),
+	GB_CONSTANT("Constant", "i", HIGHLIGHT_CONSTANT),
 	GB_CONSTANT("Custom", "i", HIGHLIGHT_NUM_COLOR),
 	
 	GB_STATIC_PROPERTY_READ("Alternate", "i", Highlight_Alternate),

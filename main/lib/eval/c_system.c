@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  CSystem.c
+  c_system.c
 
   (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
@@ -21,12 +21,12 @@
 
 ***************************************************************************/
 
-#define __CSYSTEM_C
+#define __C_SYSTEM_C
 
 #include "gambas.h"
 #include "gb_common.h"
 #include "gb_reserved.h"
-#include "CSystem.h"
+#include "c_system.h"
 
 static GB_ARRAY _keywords = 0;
 static GB_ARRAY _datatypes = 0;

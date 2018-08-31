@@ -24,15 +24,13 @@
 #ifndef __GBX_EVAL_H
 #define __GBX_EVAL_H
 
-#define PATTERN void
-
 #include "gb_table.h"
 #include "gbx_class.h"
 #include "gb_reserved.h"
 #include "gbx_c_collection.h"
 
-#include "gbx_expression.h"
 #include "../lib/eval/gb.eval.h"
+#include "gbx_expression.h"
 
 #ifndef __GBX_EVAL_C
 EXTERN bool EVAL_debug;

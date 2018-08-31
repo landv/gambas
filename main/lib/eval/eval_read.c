@@ -1080,7 +1080,7 @@ static void add_string()
 		add_pattern(RT_STRING, index);
 	}
 	else
-		add_pattern(RT_STRING, VOID_STRING);
+		add_pattern(RT_STRING, VOID_STRING_INDEX);
 
 	for (i = 0; i < newline; i++)
 		add_newline();

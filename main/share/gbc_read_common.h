@@ -38,9 +38,9 @@ enum {
 	RT_PARAM = 7,
 	RT_SUBR = 8,
 	RT_CLASS = 9,
-	RT_COMMENT = 10, /* Used by Eval() */
-	RT_OPERATOR = 11, /* Used by Eval() */
-	RT_COMMAND = 12,
+	RT_COMMENT = 10,    // Used by Eval()
+	RT_OPERATOR = 11,   // Used by Eval()
+	RT_COMMAND = 12,    // unused
 	RT_OUTPUT = 0x20,
 	RT_POINT = 0x40,
 	RT_FIRST = 0x80
@@ -53,6 +53,8 @@ enum {
 #define NULL_PATTERN ((PATTERN)0L)
 
 #define PATTERN_make(type, index) ((PATTERN)((type) | ((index) << 8)))
+
+#define VOID_STRING_INDEX 0xFFFFFF
 
 #define PATTERN_flag(pattern)   ((pattern) & 0xF0)
 #define PATTERN_type(pattern)   ((pattern) & 0xF)
@@ -87,7 +89,5 @@ enum {
 
 #define PATTERN_is_operand(pattern)   (PATTERN_is_reserved(pattern) && RES_is_operand(PATTERN_index(pattern)))
 #define PATTERN_is_type(pattern)      (PATTERN_is_reserved(pattern) && RES_is_type(PATTERN_index(pattern)))
-
-#define VOID_STRING 0xFFFFFF
 
 #endif

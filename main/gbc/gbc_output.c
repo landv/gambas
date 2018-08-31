@@ -547,7 +547,7 @@ static void output_constant(void)
 
 			case T_STRING: case T_CSTRING:
 				
-				if (constant->value == VOID_STRING)
+				if (constant->value == VOID_STRING_INDEX)
 				{
 					write_int(0);
 					write_int(0);

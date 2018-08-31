@@ -28,6 +28,9 @@ Public Sub _new()
   $aStyle[Highlight.Highlight] = New TextEditorStyle(&H7FFF00&) As "Style"
   $aStyle[Highlight.CurrentLine] = New TextEditorStyle(&HE7F3FF&) As "Style"
   $aStyle[Highlight.Error] = New TextEditorStyle(&HBF0303&, False, True) As "Style"
+  $aStyle[Highlight.Escape] = New TextEditorStyle(&H7F0000&, False, True) As "Style"
+  $aStyle[Highlight.Label] = New TextEditorStyle(Color.Black, False, True) As "Style"
+  $aStyle[Highlight.Constant] = New TextEditorStyle(&HA00000&, True) As "Style"
   
 End
 

@@ -1,6 +1,6 @@
 /***************************************************************************
 
-	CExpression.h
+	c_expression.h
 
 	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
@@ -21,13 +21,13 @@
 
 ***************************************************************************/
 
-#ifndef __CEXPRESSION_H
-#define __CEXPRESSION_H
+#ifndef __C_EXPRESSION_H
+#define __C_EXPRESSION_H
 
 #include "gambas.h"
 #include "eval.h"
 
-#ifndef __CEXPRESSION_C
+#ifndef __C_EXPRESSION_C
 extern GB_DESC CExpressionDesc[];
 #else
 

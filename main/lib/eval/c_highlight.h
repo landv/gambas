@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  CSystem.h
+  c_highlight.h
 
   (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
@@ -21,15 +21,16 @@
 
 ***************************************************************************/
 
-#ifndef __CSYSTEM_H
-#define __CSYSTEM_H
+#ifndef __C_HIGHLIGHT_H
+#define __C_HIGHLIGHT_H
 
 #include "gambas.h"
-#include "gb_common.h"
-#include "eval.h"
+#include "gb.eval.h"
 
-#ifndef __CSYSTEM_C
-extern GB_DESC CSystemDesc[];
+#ifndef __C_HIGHLIGHT_C
+
+extern GB_DESC CHighlightDesc[];
+
 #endif
 
 #endif

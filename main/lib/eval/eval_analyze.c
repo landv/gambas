@@ -28,7 +28,7 @@
 #include "gb_array.h"
 #include "eval_analyze.h"
 
-#include "CSystem.h"
+#include "c_system.h"
 /*#define DEBUG*/
 
 static char _analyze_buffer[256];
@@ -44,20 +44,20 @@ static int get_type(PATTERN *pattern)
 	int type = PATTERN_type(*pattern);
 	int index = PATTERN_index(*pattern);
 
-	if (type == EVAL_TYPE_RESERVED)
+	if (type == RT_RESERVED)
 	{
 		if (index >= RS_COLON)
 		{
 			if (!((index == RS_AND || index == RS_OR) && PATTERN_is(pattern[1], RS_IF)))
-				type = EVAL_TYPE_OPERATOR;
+				type = RT_OPERATOR;
 		}
 		else if (RES_is_type(index))
-			type = EVAL_TYPE_DATATYPE;
+			type = RT_DATATYPE;
 		else if (index == RS_WITH && pattern > EVAL->pattern)
 		{
 			index = PATTERN_index(pattern[-1]);
 			if (index == RS_BEGINS || index == RS_ENDS)
-				type = EVAL_TYPE_OPERATOR;
+				type = RT_OPERATOR;
 		}
 	}
 
@@ -116,7 +116,7 @@ static void get_symbol(PATTERN pattern, const char **symbol, int *len)
 		case RT_STRING:
 		case RT_TSTRING:
 		case RT_COMMENT:
-		case EVAL_TYPE_ERROR:
+		case RT_ERROR:
 			sym = TABLE_get_symbol(EVAL->string, index);
 			break;
 			
@@ -154,14 +154,18 @@ static void add_data(int state, int len)
 		memcpy(color, _colors, sizeof(EVAL_COLOR) * COLOR_BUFFER_SIZE);
 		_colors_len = 0;
 	}
-
-	//printf("[%d] %d %d\n", colors_len, state, len);
-
-	color = &_colors[_colors_len];
-	color->state = state;
-	color->len = len;
-	color->alternate = FALSE;
-	_colors_len++;
+	else if (_colors_len > 0 && _colors[_colors_len - 1].state == state && (_colors[_colors_len - 1].len + len) < EVAL_COLOR_MAX_LEN)
+	{
+	  _colors[_colors_len - 1].len += len;
+	}
+	else
+  {
+		color = &_colors[_colors_len];
+		color->state = state;
+		color->len = len;
+		color->alternate = FALSE;
+		_colors_len++;
+	}
 }
 
 static void flush_colors(EVAL_ANALYZE *result)
@@ -305,7 +309,7 @@ static void analyze(EVAL_ANALYZE *result)
 	int type, old_type, next_type;
 	const char *symbol;
 	bool space_before, space_after;
-	int len, i;
+	int len, i, l;
 	bool preprocessor;
 
 	_colors_len = 0;
@@ -321,7 +325,7 @@ static void analyze(EVAL_ANALYZE *result)
 	if (!EVAL->comment)
 	{
 		nspace = get_indent(&empty);
-		add_data(EVAL_TYPE_END, nspace);
+		add_data(RT_END, nspace);
 	}
 
 	if (empty)
@@ -335,8 +339,9 @@ static void analyze(EVAL_ANALYZE *result)
 	if (nspace)
 		add_result(result, EVAL->source, nspace);
 
-	type = EVAL->comment ? EVAL_TYPE_COMMENT : EVAL_TYPE_END;
-	next_type = EVAL_TYPE_END;
+	type = EVAL->comment ? RT_COMMENT : RT_END;
+	next_type = RT_END;
+	old_type = RT_END;
 	space_after = FALSE;
 
 	for(;;)
@@ -349,28 +354,28 @@ static void analyze(EVAL_ANALYZE *result)
 		space_before = space_after;
 		space_after = FALSE;
 
-		if (type == EVAL_TYPE_END)
+		if (type == RT_END)
 			break;
 
-		//if (in_quote && (type == EVAL_TYPE_RESERVED || type == EVAL_TYPE_DATATYPE || type == EVAL_TYPE_SUBR))
-		//	type = EVAL_TYPE_IDENTIFIER;
+		//if (in_quote && (type == RT_RESERVED || type == RT_DATATYPE || type == RT_SUBR))
+		//	type = RT_IDENTIFIER;
 
 		switch(type)
 		{
-			case EVAL_TYPE_RESERVED:
+			case RT_RESERVED:
 				//state = Keyword;
-				//if (old_type != EVAL_TYPE_OPERATOR)
+				//if (old_type != RT_OPERATOR)
 				//me = is_me_last(*pattern);
 				
 				if (is_me_last_kind(*pattern))
 				{
-					if (old_type != EVAL_TYPE_OPERATOR)
+					if (old_type != RT_OPERATOR)
 						space_before = TRUE;
-					next_type = EVAL_TYPE_IDENTIFIER;
+					next_type = RT_IDENTIFIER;
 				}
 				else if (is_optional_kind(*pattern))
 				{
-					if (old_type != EVAL_TYPE_OPERATOR)
+					if (old_type != RT_OPERATOR)
 						space_before = TRUE;
 				}
 				else
@@ -381,7 +386,7 @@ static void analyze(EVAL_ANALYZE *result)
 				else
 				{
 					if (*pattern != RS_OPTIONAL)
-					if (old_type != EVAL_TYPE_OPERATOR)
+					if (old_type != RT_OPERATOR)
 						space_before = TRUE;
 				}*/
 				
@@ -401,47 +406,47 @@ static void analyze(EVAL_ANALYZE *result)
 
 				break;
 
-			case EVAL_TYPE_DATATYPE:
+			case RT_DATATYPE:
 				//state = Datatype;
 				if (PATTERN_is(pattern[-1], RS_OPEN))
-					type = EVAL_TYPE_RESERVED;
+					type = RT_RESERVED;
 
-				if (old_type != EVAL_TYPE_OPERATOR)
+				if (old_type != RT_OPERATOR)
 					space_before = TRUE;
 				
 				break;
 
-			case EVAL_TYPE_IDENTIFIER:
-			case EVAL_TYPE_CLASS:
+			case RT_IDENTIFIER:
+			case RT_CLASS:
 				//state = Symbol;
-				if (old_type != EVAL_TYPE_OPERATOR)
+				if (old_type != RT_OPERATOR)
 					space_before = TRUE;
 				break;
 
-			case EVAL_TYPE_NUMBER:
+			case RT_NUMBER:
 				//state = Number;
-				if (old_type != EVAL_TYPE_OPERATOR)
+				if (old_type != RT_OPERATOR)
 					space_before = TRUE;
 				break;
 
-			case EVAL_TYPE_STRING:
+			case RT_STRING:
 				//state = String;
-				if (old_type != EVAL_TYPE_OPERATOR)
+				if (old_type != RT_OPERATOR)
 					space_before = TRUE;
 				break;
 
-			case EVAL_TYPE_SUBR:
+			case RT_SUBR:
 				//state = Subr;
-				if (old_type != EVAL_TYPE_OPERATOR)
+				if (old_type != RT_OPERATOR)
 					space_before = TRUE;
 				break;
 
-			case EVAL_TYPE_COMMENT:
+			case RT_COMMENT:
 				//state = Commentary;
 				space_before = *symbol != ' ';
 				i = get_symbol_indent(symbol, len);
 				if (i <= (len - 2) && symbol[i + 1] == '\'')
-					type = EVAL_TYPE_HELP;
+					type = RT_HELP;
 				else
 				{
 					while (i < len && (uchar)symbol[i] == '\'')
@@ -455,12 +460,12 @@ static void analyze(EVAL_ANALYZE *result)
 						if (symbol_starts_with(symbol, len, i, "NOTE:")
 								|| symbol_starts_with(symbol, len, i, "TODO:")
 								|| symbol_starts_with(symbol, len, i, "FIXME:"))
-							type = EVAL_TYPE_HELP;
+							type = RT_HELP;
 					}
 				}
 				break;
 
-			case EVAL_TYPE_OPERATOR:
+			case RT_OPERATOR:
 
 				if (index("([)]@", *symbol))
 				{
@@ -473,12 +478,12 @@ static void analyze(EVAL_ANALYZE *result)
 				}
 				else if (index("#{", *symbol))
 				{
-					if (old_type != EVAL_TYPE_OPERATOR)
+					if (old_type != RT_OPERATOR)
 						space_before = TRUE;
 					space_after = FALSE;
 					//in_quote = *symbol == '{';
 					
-					if (!preprocessor && *symbol == '#' && old_type == EVAL_TYPE_END)
+					if (!preprocessor && *symbol == '#' && old_type == RT_END)
 						preprocessor = TRUE;
 				}
 				else if (index("}", *symbol))
@@ -494,7 +499,7 @@ static void analyze(EVAL_ANALYZE *result)
 				}
 				else if (PATTERN_is(*pattern, RS_NOT) || *symbol == '-')
 				{
-					if (old_type == EVAL_TYPE_OPERATOR && (PATTERN_is(pattern[-1], RS_LBRA) || PATTERN_is(pattern[-1],RS_LSQR)))
+					if (old_type == RT_OPERATOR && (PATTERN_is(pattern[-1], RS_LBRA) || PATTERN_is(pattern[-1],RS_LSQR)))
 						space_before = FALSE;
 					else
 						space_before = TRUE;
@@ -507,28 +512,28 @@ static void analyze(EVAL_ANALYZE *result)
 					space_after = TRUE;
 				}
 
-				if (old_type == EVAL_TYPE_RESERVED)
+				if (old_type == RT_RESERVED)
 					space_before = TRUE;
 
 				break;
 
-			case EVAL_TYPE_ERROR:
+			case RT_ERROR:
 				space_before = TRUE;
 				break;
 		}
 
-		if (space_before && old_type != EVAL_TYPE_END)
+		if (space_before && old_type != RT_END)
 		{
 			add_result_char(result, ' ');
-			add_data(preprocessor ? EVAL_TYPE_PREPROCESSOR : EVAL_TYPE_END, 1);
+			add_data(preprocessor ? RT_PREPROCESSOR : RT_END, 1);
 		}
 
-		if (type == EVAL_TYPE_STRING)
+		if (type == RT_STRING)
 			add_result_char(result, '"');
 
 		if (len)
 		{
-			if (EVAL->rewrite && type == EVAL_TYPE_CLASS)
+			if (EVAL->rewrite && type == RT_CLASS)
 			{
 				add_result_char(result, toupper(symbol[0]));
 				if (len > 1) add_result(result, &symbol[1], len - 1);
@@ -539,18 +544,75 @@ static void analyze(EVAL_ANALYZE *result)
 			len = get_utf8_length(symbol, len);
 		}
 
-		if (type == EVAL_TYPE_STRING)
+		if (type == RT_STRING)
 		{
 			add_result_char(result, '"');
 			len += 2;
 		}
 
-		if (preprocessor && type != EVAL_TYPE_COMMENT && type != EVAL_TYPE_HELP)
-			add_data(EVAL_TYPE_PREPROCESSOR, len);
+		if (EVAL->rewrite)
+		{
+			if (type == RT_STRING)
+			{
+				add_data(RT_STRING, 1);
+				len -= 2;
+				for (i = 0; i < len; i++)
+				{
+					if (symbol[i] == '\\')
+					{
+						i++;
+						add_data(RT_ESCAPE, 1);
+						if (i < len)
+						{
+							if (symbol[i] == 'x')
+								l = Min(3, len - i + 1);
+							else
+								l = 1;
+							add_data(RT_ESCAPE, l);
+							i += l;
+						}
+					}
+					else
+						add_data(RT_STRING, 1);
+				}
+				add_data(RT_STRING, 1);
+				goto __NEXT_PATTERN;
+			}
+			else if (type == RT_IDENTIFIER)
+			{
+				if (PATTERN_is(pattern[1], RS_COLON))
+				{
+					add_result_char(result, ':');
+					add_data(RT_LABEL, len + 1);
+					space_after = TRUE;
+					pattern ++;
+					goto __NEXT_PATTERN;
+				}
+				else if (old_type == RT_RESERVED && (PATTERN_is(pattern[-1], RS_GOTO) || PATTERN_is(pattern[-1], RS_GOSUB)))
+				{
+					type = RT_LABEL;
+				}
+			}
+			else if (type == RT_RESERVED)
+			{
+				if (PATTERN_is(*pattern, RS_NULL)
+						|| PATTERN_is(*pattern, RS_TRUE)
+						|| PATTERN_is(*pattern, RS_FALSE)
+						|| PATTERN_is(*pattern, RS_PINF)
+						|| PATTERN_is(*pattern, RS_MINF))
+				{
+					type = RT_CONSTANT;
+				}
+			}
+		}
+		
+		if (preprocessor && type != RT_COMMENT && type != RT_HELP)
+			add_data(RT_PREPROCESSOR, len);
 		else
 			add_data(type, len);
 		//printf("add_data: %.d (%d)\n", type, len);
 
+	__NEXT_PATTERN:
 		pattern++;
 	}
 
@@ -572,11 +634,11 @@ static void add_end_pattern(void)
 	if (len > 0)
 	{
 		TABLE_add_symbol(EVAL->string, READ_source_ptr, len, &index);
-		add_pattern(EVAL_TYPE_ERROR, index);
+		add_pattern(RT_ERROR, index);
 	}
 	
-	add_pattern(EVAL_TYPE_END, 0);
-	//get_symbol(PATTERN_make(EVAL_TYPE_ERROR, index), &sym, &len);
+	add_pattern(RT_END, 0);
+	//get_symbol(PATTERN_make(RT_ERROR, index), &sym, &len);
 }
 
 
@@ -611,7 +673,7 @@ PUBLIC void EVAL_analyze(const char *src, int len, int state, EVAL_ANALYZE *resu
 		
 		EVAL->analyze = TRUE;
 		EVAL->rewrite = rewrite;
-		EVAL->comment = state == EVAL_TYPE_COMMENT;
+		EVAL->comment = state == RT_COMMENT;
 		
 		//fprintf(stderr, "EVAL_analyze: [%d] %.*s\n", EVAL->comment, len, src);
 
@@ -629,7 +691,7 @@ PUBLIC void EVAL_analyze(const char *src, int len, int state, EVAL_ANALYZE *resu
 
 		analyze(result);
 		result->proc = is_proc();
-		result->state = EVAL->comment ? EVAL_TYPE_COMMENT : EVAL_TYPE_END;
+		result->state = EVAL->comment ? RT_COMMENT : RT_END;
 
 		//fprintf(stderr, "--> [%d]\n", EVAL->comment);
 		
