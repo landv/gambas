@@ -1342,6 +1342,8 @@ Public Sub mnuUncompress_Click()
   
   If Process.LastValue Then Goto _CANNOT_UNCOMPRESS
   
+  Wait ' Let watch events proceed
+  
   Dec Application.Busy
   
   Reload
