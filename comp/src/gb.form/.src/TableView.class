@@ -142,7 +142,7 @@ Private Sub MoveEditor()
     
     X += .X
     Y += .Y
-    W = Min(Me.ClientW - Me.Rows.W, .Width)
+    W = Min(Me.ClientW - Me.Rows.W, .Width) - 1
     H = Min(Me.ClientH - Me.Columns.H, .Height)
     
     P = Max(Me.Padding, .Padding)
@@ -155,9 +155,17 @@ Private Sub MoveEditor()
     
     $hPanel.Move(X, Y, W, H)
     $hEditor.Move(P, P, W - P * 2, H - P * 2)
-    $hPanel.Background = Style.BackgroundOf($hEditor)
     
-    $hEditor.Font = Me.Font
+    If $hEditor.Background = Color.Default Then
+      If Me.Background = Color.Default Then
+        $hPanel.Background = Color.TextBackground
+      Else
+        $hPanel.Background = Me.Background
+      Endif
+    Else
+      $hPanel.Background = $hEditor.Background
+    Endif
+    
     $hEditor.Show
     $hPanel.Show
     $hPanel.Raise
@@ -224,6 +232,23 @@ Public Sub GridView_Change()
   
 End
 
+Private Sub InitEditor()
+
+  With Me[$iRow, $iCol]
+    Try $hEditor.Text = .Text
+    If Error Then
+      $hEditor = Null
+      Error.Raise("The TableView editor must have a Text public property")
+    Endif
+    $hEditor.Font = .Font
+    $hEditor.Foreground = .Foreground
+    $hEditor.Background = .Background
+    Try $hEditor.Alignment = .Alignment
+    Try $hEditor.WordWrap = .WordWrap
+  End With
+
+End
+
 Public Sub Edit(Optional List As String[], Optional ReadOnly As Boolean)
   
   'DEBUG  
@@ -244,10 +269,7 @@ Public Sub Edit(Optional List As String[], Optional ReadOnly As Boolean)
     $bTextBox = True
   Endif
   
-  With Me[$iRow, $iCol]
-    $hEditor.Text = .Text
-    Try $hEditor.Alignment = .Alignment
-  End With
+  InitEditor
   If $bTextBox Then $hEditor.SelectAll
   MoveEditor
   Try $hEditor.SetFocus
@@ -280,12 +302,7 @@ Public Sub EditWith(Editor As Control)
     $bTextBox = True
   Endif
   
-  Try $hEditor.Text = Me[$iRow, $iCol].Text
-  If Error Then
-    $hEditor = Null
-    Error.Raise("The TableView editor must have a Text public property")
-  Endif
-  
+  InitEditor
   hObs = New Observer($hEditor) As "Editor"
   
   Try $hEditor.SelectAll
