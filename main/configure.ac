@@ -97,7 +97,7 @@ GB_COMPONENT(
 dnl ---- We do not use libtool to load shared libraries anymore!
 
 AC_DEFINE(DONT_USE_LTDL, 1, [Do not use libtool to load shared libraries])
-if test "$SYSTEM" != "OPENBSD" && test "$SYSTEM" != "FREEBSD"; then
+if test "$SYSTEM" != "OPENBSD" && test "$SYSTEM" != "FREEBSD" && test "$SYSTEM" != "NETBSD"; then
   DL_LIB="-ldl"
 else
   DL_LIB=""

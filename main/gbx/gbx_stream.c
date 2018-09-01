@@ -168,19 +168,19 @@ void STREAM_open(STREAM *stream, const char *path, int mode)
 
 	stream->type = NULL;
 
-	if (mode & ST_PIPE)
+	if (mode & STO_PIPE)
 		sclass = &STREAM_pipe;
-	else if (mode & ST_MEMORY)
+	else if (mode & STO_MEMORY)
 		sclass = &STREAM_memory;
-	else if (mode & ST_STRING)
+	else if (mode & STO_STRING)
 		sclass = &STREAM_string;
-	else if (mode & ST_LOCK)
+	else if (mode & STO_LOCK)
 		sclass = &STREAM_lock;
 	else
 	{
 		// ".99" is used for opening a file descriptor in direct mode
 
-		if (FILE_is_relative(path) && !((mode & ST_DIRECT) && path[0] == '.' && isdigit(path[1])))
+		if (FILE_is_relative(path) && !((mode & STO_DIRECT) && path[0] == '.' && isdigit(path[1])))
 		{
 			ARCHIVE *arch = NULL;
 			const char *tpath = path;
@@ -198,7 +198,7 @@ void STREAM_open(STREAM *stream, const char *path, int mode)
 				goto _OPEN;
 			}*/
 
-			if ((mode & ST_ACCESS) != ST_READ || mode & ST_PIPE)
+			if ((mode & STO_ACCESS) != STO_READ || mode & STO_PIPE)
 				THROW(E_ACCESS);
 
 			if (!ARCHIVE_find_from_path(&arch, &tpath))
@@ -210,7 +210,7 @@ void STREAM_open(STREAM *stream, const char *path, int mode)
 			path = tpath;
 		}
 
-		if (mode & ST_DIRECT)
+		if (mode & STO_DIRECT)
 			sclass = &STREAM_direct;
 		else
 			sclass = &STREAM_buffer;
@@ -956,7 +956,7 @@ static STREAM *enter_temp_stream(STREAM *stream)
 		_temp_level = 0;
 		if (_temp_stream.type)
 			STREAM_close(&_temp_stream);
-		STREAM_open(&_temp_stream, NULL, ST_STRING | ST_WRITE);
+		STREAM_open(&_temp_stream, NULL, STO_STRING | STO_WRITE);
 	}
 
 	_temp_level++;
@@ -1549,7 +1549,7 @@ void STREAM_load(const char *path, char **buffer, int *rlen)
 	STREAM stream;
 	int64_t len;
 
-	STREAM_open(&stream, path, ST_READ);
+	STREAM_open(&stream, path, STO_READ);
 	STREAM_lof(&stream, &len);
 
 	if (len >> 31)
@@ -1573,7 +1573,7 @@ bool STREAM_map(const char *path, char **paddr, int *plen)
 	size_t len;
 	bool ret = TRUE;
 
-	STREAM_open(&stream, path, ST_READ + ST_DIRECT);
+	STREAM_open(&stream, path, STO_READ + STO_DIRECT);
 
 	if (stream.type == &STREAM_arch)
 	{
@@ -1807,7 +1807,7 @@ void STREAM_begin(STREAM *stream)
 	if (!stream->common.redirect)
 	{
 		ALLOC_ZERO(&stream->common.redirect, sizeof(STREAM));
-		STREAM_open(stream->common.redirect, NULL, ST_STRING | ST_WRITE);
+		STREAM_open(stream->common.redirect, NULL, STO_STRING | STO_WRITE);
 	}
 
 	stream->common.redirected = TRUE;

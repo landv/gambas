@@ -54,11 +54,11 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 
 	fmode = 0;
 
-	switch (mode & ST_MODE)
+	switch (mode & STO_MODE)
 	{
-		case ST_READ: fmode |= O_RDONLY; break;
-		case ST_WRITE: fmode |= O_WRONLY; break;
-		case ST_READ_WRITE: fmode |= O_RDWR; break;
+		case STO_READ: fmode |= O_RDONLY; break;
+		case STO_WRITE: fmode |= O_WRONLY; break;
+		case STO_READ_WRITE: fmode |= O_RDWR; break;
 		default: fmode |= O_RDONLY;
 	}
 

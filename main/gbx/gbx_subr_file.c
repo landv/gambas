@@ -213,9 +213,9 @@ void SUBR_open(ushort code)
 		else
 			THROW_TYPE(T_POINTER, PARAM->type);
 		
-		STREAM_open(&stream, (char *)addr, mode | ST_MEMORY);
+		STREAM_open(&stream, (char *)addr, mode | STO_MEMORY);
 	}
-	else if (mode & ST_STRING)
+	else if (mode & STO_STRING)
 	{
 		char *str;
 
@@ -225,7 +225,7 @@ void SUBR_open(ushort code)
 		{
 			str = SUBR_get_string(PARAM);
 			
-			if (mode & ST_WRITE)
+			if (mode & STO_WRITE)
 			{
 				stream.string.buffer = STRING_new(str, STRING_length(str));
 			}
@@ -1035,7 +1035,7 @@ void SUBR_lock(ushort code)
 
 		for(;;)
 		{
-			STREAM_open(&stream, path, ST_LOCK);
+			STREAM_open(&stream, path, STO_LOCK);
 			
 			if (!STREAM_lock_all(&stream) && FILE_exist(path))
 				break;
@@ -1055,7 +1055,7 @@ void SUBR_lock(ushort code)
 			THROW(E_LOCK);
 		}
 
-		file = CFILE_create(&stream, ST_LOCK);
+		file = CFILE_create(&stream, STO_LOCK);
 		OBJECT_put(RETURN, file);
 		SUBR_LEAVE();
 	}

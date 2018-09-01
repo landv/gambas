@@ -49,24 +49,24 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 	int fmode, omode;
 	VALUE val;
 	
-	if (mode & ST_CREATE)
+	if (mode & STO_CREATE)
 		fmode = O_CREAT | O_TRUNC; // | O_EXCL;
-	else if (mode & ST_APPEND)
+	else if (mode & STO_APPEND)
 		fmode = O_APPEND | O_CREAT;
 	else
 		fmode = 0;
 
-	switch (mode & ST_MODE)
+	switch (mode & STO_MODE)
 	{
-		case ST_READ: fmode |= O_RDONLY; break;
-		case ST_WRITE: fmode |= O_WRONLY; break;
-		case ST_READ_WRITE: fmode |= O_RDWR; break;
+		case STO_READ: fmode |= O_RDONLY; break;
+		case STO_WRITE: fmode |= O_WRONLY; break;
+		case STO_READ_WRITE: fmode |= O_RDWR; break;
 		default: fmode |= O_RDONLY;
 	}
 
 	if (path[0] == '.' && isdigit(path[1]))
 	{
-		if ((mode & ST_CREATE) || (mode & ST_APPEND))
+		if ((mode & STO_CREATE) || (mode & STO_APPEND))
 			THROW(E_ACCESS);
 		
 		if (NUMBER_from_string(NB_READ_INTEGER, &path[1], strlen(path) - 1, &val) || val._integer.value < 0)
@@ -80,9 +80,9 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 		if (omode < 0)
 			return TRUE;
 		
-		if (((mode & ST_MODE) == ST_READ && (omode & O_ACCMODE) == O_WRONLY)
-			  || ((mode & ST_MODE) == ST_WRITE && (omode & O_ACCMODE) == O_RDONLY)
-			  || ((mode & ST_MODE) == ST_READ_WRITE && (omode & O_ACCMODE) != O_RDWR))
+		if (((mode & STO_MODE) == STO_READ && (omode & O_ACCMODE) == O_WRONLY)
+			  || ((mode & STO_MODE) == STO_WRITE && (omode & O_ACCMODE) == O_RDONLY)
+			  || ((mode & STO_MODE) == STO_READ_WRITE && (omode & O_ACCMODE) != O_RDWR))
 			THROW(E_ACCESS);
 		
 		stream->direct.watch = TRUE;
