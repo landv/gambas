@@ -168,10 +168,6 @@ static void add_data(int state, int len)
 		memcpy(color, _colors, sizeof(EVAL_COLOR) * COLOR_BUFFER_SIZE);
 		_colors_len = 0;
 	}
-	else if (_colors_len > 0 && _colors[_colors_len - 1].state == state && (_colors[_colors_len - 1].len + len) < EVAL_COLOR_MAX_LEN)
-	{
-	  _colors[_colors_len - 1].len += len;
-	}
 	else
   {
 		color = &_colors[_colors_len];
@@ -180,6 +176,14 @@ static void add_data(int state, int len)
 		color->alternate = FALSE;
 		_colors_len++;
 	}
+}
+
+static void add_data_merge(int state, int len)
+{
+	if (_colors_len > 0 && _colors[_colors_len - 1].state == state && (_colors[_colors_len - 1].len + len) < EVAL_COLOR_MAX_LEN)
+	  _colors[_colors_len - 1].len += len;
+	else
+		add_data(state, len);
 }
 
 static void flush_colors(EVAL_ANALYZE *result)
@@ -578,14 +582,14 @@ static void analyze(EVAL_ANALYZE *result)
 						i++;
 						NEXT_UTF8_CHAR(p);
 						
-						add_data(RT_ESCAPE, 1);
+						add_data_merge(RT_ESCAPE, 1);
 						if (i < len)
 						{
 							if (*p == 'x' && i < (len - 2) && isxdigit(p[1]) && isxdigit(p[2]))
 								l = 3;
 							else
 								l = 1;
-							add_data(RT_ESCAPE, l);
+							add_data_merge(RT_ESCAPE, l);
 							
 							while (l--)
 								NEXT_UTF8_CHAR(p);
@@ -594,10 +598,10 @@ static void analyze(EVAL_ANALYZE *result)
 					else
 					{
 						NEXT_UTF8_CHAR(p);
-						add_data(RT_STRING, 1);
+						add_data_merge(RT_STRING, 1);
 					}
 				}
-				add_data(RT_STRING, 1);
+				add_data_merge(RT_STRING, 1);
 				goto __NEXT_PATTERN;
 			}
 			else if (type == RT_IDENTIFIER)
