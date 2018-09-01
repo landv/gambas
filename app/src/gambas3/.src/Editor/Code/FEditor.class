@@ -2367,7 +2367,7 @@ Private Sub FindDefinition() As Boolean
 
     If sKeyword Begins "{" And If sKeyword Ends "}" Then sKeyword = Mid$(sKeyword, 2, -1)
     
-    If iCpt >= 1 And If Highlight.Types[iCpt] = Highlight.Symbol Then
+    If iCpt >= 1 And If Highlight.Types[iCpt] = Highlight.Label Then
       
       If aSymbols[iCpt - 1] = "GOTO" Or If aSymbols[iCpt - 1] = "GOSUB" Then
         
