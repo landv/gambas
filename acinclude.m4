@@ -346,6 +346,17 @@ AC_DEFUN([GB_INIT],
     AC_DEFINE(HAVE_GCC_LTO, 1, [Whether gcc supports -flto])
   fi
   
+  dnl ---- check for -std=c++11 compiler flag
+  
+  GB_CFLAGS_GCC_OPTION([-std=c++11],,
+    [
+      GB_CXXFLAGS_STD_CPP11=" -std=c11x"
+      have_gcc_std_c11x=yes
+    ])
+  
+  if test "$have_gcc_std_cpp11" = "yes"; then
+    AC_DEFINE(HAVE_GCC_STD_CPP11, 1, [Whether g++ supports -std=c++11])
+  fi
   
   dnl ---- Debug flags
 
@@ -376,6 +387,7 @@ AC_DEFUN([GB_INIT],
   AC_SUBST(AM_CXXFLAGS)
   AC_SUBST(AM_CXXFLAGS_OPT)
   AC_SUBST(GB_CFLAGS_LTO)
+  AC_SUBST(GB_CXXFLAGS_STD_CPP11)
 
   rm -f DISABLED DISABLED.*
 ])

@@ -22,7 +22,7 @@ GB_COMPONENT(
   [GB_FIND(libintl.$SHLIBEXT, /opt/local /usr/local /usr /, lib)],
   [-lintl],
   [],
-  [This library may be located inside the system C library, so you can ignore that warning...])
+  [Cannot find 'libintl' library. It may be located inside the system C library, so you can ignore that warning...])
 
 dnl ---- Remove DISABLED file that could have been generated before
 
@@ -36,7 +36,7 @@ GB_COMPONENT(
   [GB_FIND(libiconv.$SHLIBEXT, /opt/local /usr/local /usr, lib)],
   [-liconv],
   [],
-  [This library may be located inside the system C library, so you can ignore that warning...])
+  [Cannot find 'libiconv' library. It may be located inside the system C library, so you can ignore that warning...])
 
 dnl ---- Remove DISABLED file that could have been generated before
 
@@ -52,7 +52,7 @@ GB_COMPONENT(
   [GB_FIND(libgettextlib.$SHLIBEXT, /opt/local /usr/local /usr, lib)],
   [-lgettextlib],
   [],
-  [This library may be located inside the system C library, so you can ignore that warning...])
+  [Cannot find 'libgettextlib' library. It may be located inside the system C library, so you can ignore that warning...])
   
 fi
 
