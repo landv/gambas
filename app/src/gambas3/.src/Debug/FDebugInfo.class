@@ -1208,6 +1208,8 @@ Public Sub DefineVariable(sLocal As String, sObject As String)
       Endif
     Next
     
+    If cvwVariable["^"].Children = 0 Then cvwVariable.Remove("^")
+    
   Endif
   
   If sLocal <> $sLastLocal Then

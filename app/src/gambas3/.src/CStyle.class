@@ -48,6 +48,9 @@ Public Sub FromString(sStyle As String)
       Bold = True
     Else If sStr = "Underline" Then
       Underline = True
+    Else If sStr = "Normal" Then
+      Bold = False
+      Underline = False
     Endif
   Next
   

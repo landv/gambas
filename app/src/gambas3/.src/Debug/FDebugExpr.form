@@ -36,9 +36,16 @@
       Border = False
     }
     { btnShowAll ToolButton
-      MoveScaled(22,0,4,4)
+      MoveScaled(18,0,4,4)
       ToolTip = ("Show all symbols")
-      Picture = Picture["icon:/small/jump"]
+      Picture = Picture["icon:/small/add"]
+      Toggle = True
+    }
+    { btnHexa ToolButton
+      MoveScaled(22,0,4,4)
+      Font = Font["Bold"]
+      ToolTip = ("Show all symbols")
+      Text = ("&&H")
       Toggle = True
     }
   }
