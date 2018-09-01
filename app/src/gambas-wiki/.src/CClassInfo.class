@@ -308,7 +308,7 @@ Public Function GetSymbols() As String[]
   Dim bDynamic As Boolean
   Dim bStatic As Boolean
   Dim sBreak As String
-  Dim sPrefix As String
+  Dim sPrefix As String = ""
   Dim aArray As String[]
   Dim bHasSymbols As Boolean
   Dim bHasDynamicVariable As Boolean
