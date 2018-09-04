@@ -4,6 +4,7 @@ Static Public (Color) As String
 Static Public Value As Integer
 Static Public Pattern As String
 
+Static Private $bInsert As Boolean
 Static Private $sColor As String
 Static Private $bAlpha As Boolean
 'Static Private $aDefaultColors As String[] = ["Background", "Foreground", "SelectedBackground", "SelectedForeground", "LightBackground", "LightForeground", "TextBackground", "TextForeground", "ButtonBackground", "ButtonForeground", "TooltipBackground", "TooltipForeground", "LinkForeground", "VisitedForeground"]
@@ -48,6 +49,7 @@ End
 
 Static Public Function Run(Optional sColor As String, Optional bAlpha As Boolean, Optional sTitle As String, Optional aPrefix As String[]) As Boolean
 
+  $bInsert = False
   $sColor = sColor
   $bAlpha = bAlpha
   $sTitle = sTitle
@@ -56,6 +58,19 @@ Static Public Function Run(Optional sColor As String, Optional bAlpha As Boolean
   Return Not FColorChooser.ShowModal() 
 
 End
+
+Static Public Sub Insert(bAlpha As Boolean, sTitle As String, aPrefix As String[]) As Boolean
+  
+  $bInsert = True
+  $sColor = ""
+  $bAlpha = bAlpha
+  $sTitle = sTitle
+  $aPattern = aPrefix
+
+  Return Not FColorChooser.ShowModal() 
+  
+End
+
 
 
 
@@ -140,7 +155,7 @@ Public Sub Form_Open()
     tabColor[0].Visible = False
   Endif
   
-  tabColor.Index = iIndex
+  If Not $bInsert Then tabColor.Index = iIndex
   
   dlgColor.ShowAlpha = $bAlpha
   
