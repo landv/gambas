@@ -2073,7 +2073,9 @@ GtkStyleContext *gt_get_style(GType type)
 			gtk_style_context_add_class(style, klass);
 
 		gtk_widget_path_append_type(path, type);
+#if GTK_CHECK_VERSION(3, 20, 0)
 		gtk_widget_path_iter_set_object_name(path, -1, klass);
+#endif
 		gtk_style_context_set_path(style, path);
 		//gtk_widget_path_unref(path);
 
