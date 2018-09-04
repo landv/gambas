@@ -1,17 +1,36 @@
 ' Gambas class file
 
-Private cmbTest As MyComboBox
-
-
 Public Sub Form_Open()
 
-  cmbTest = New MyComboBox(Me) As "cmbTest"
-  cmbTest.MoveScaled(2, 8, 24, 4)
+  Dim hSpinBox As SpinBox
+
+  hSpinBox = New SpinBox(Me)
+  hSpinBox.MoveScaled(1, 1, 7, 4)
+  hSpinBox.MinValue = -100
+  
+  Debug Style.Name
+  
+  'hSpinBox.Border = False
+  'hSpinBox.Foreground = Color.Red
+  'hSpinBox.Background = Color.LightBackground
+
+End
+
+Public Sub Panel1_MouseDown()
+
+  
 
 End
 
 Public Sub Button1_Click()
 
-  ComboBox1.ReadOnly = Not ComboBox1.ReadOnly
+  ComboBox2.H -= Desktop.Scale
+
+End
+
+Public Sub Button2_Click()
+
+  ComboBox2.W -= Desktop.Scale
+  Debug ComboBox2.W
 
 End

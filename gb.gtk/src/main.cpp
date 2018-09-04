@@ -63,7 +63,6 @@
 #include "CTabStrip.h"
 #include "CTrayIcon.h"
 #include "CScrollView.h"
-#include "CSpinBox.h"
 #include "CStock.h"
 #include "CSeparator.h"
 #include "cprinter.h"
@@ -185,7 +184,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CTabStripContainerChildrenDesc,
 	CPluginDesc,
 	CScrollViewDesc,
-	CSpinBoxDesc,
 	CSeparatorDesc,
 	CStockDesc,
 	PrinterDesc,

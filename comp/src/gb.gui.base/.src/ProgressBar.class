@@ -71,11 +71,11 @@ Public Sub DrawingArea_Draw()
   'Paint.FillRect(F, F, Paint.W - F * 2, Paint.H - F * 2, iCol)
   
   If $bBorder Then
-    Paint.AntiAlias = False
+    'Paint.AntiAlias = False
     Paint.Background = Color.LightForeground
-    Paint.Rectangle(0, 0, Paint.W - 1, Paint.H - 1)
+    Paint.Rectangle(0.5, 0.5, Paint.W - 1, Paint.H - 1)
     Paint.Stroke
-    Paint.AntiAlias = True
+    'Paint.AntiAlias = True
     F = 2
   Else
     F = 0

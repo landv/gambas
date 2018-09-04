@@ -18,7 +18,6 @@ gb_gtk3_la_SOURCES = \
 	gcontrol.cpp gcontainer.cpp gseparator.cpp \
 	gbutton.cpp gslider.cpp glabel.cpp gsignals.cpp \
 	gpicturebox.cpp gcombobox.cpp gtextbox.cpp gtextarea.cpp \
-	gspinbox.cpp \
 	gframe.cpp gtabstrip.cpp gscrollview.cpp \
 	gmenu.cpp gtrayicon.cpp gmainwindow.cpp \
 	gtree.h gtree.cpp \
@@ -46,7 +45,6 @@ gb_gtk3_la_SOURCES = \
 	CPictureBox.h CPictureBox.cpp \
 	CTextBox.h CTextBox.cpp \
 	CTextArea.h CTextArea.cpp \
-	CSpinBox.h CSpinBox.cpp \
 	CFrame.h CFrame.cpp \
 	CTabStrip.h CTabStrip.cpp \
 	CScrollView.h CScrollView.cpp \
@@ -70,7 +68,6 @@ gb_gtk3_la_SOURCES = \
 	gbutton.h \
 	gmoviebox.h \
 	gpicturebox.h \
-	gspinbox.h \
 	gcombobox.h \
 	gtextbox.h \
 	gtextarea.h \

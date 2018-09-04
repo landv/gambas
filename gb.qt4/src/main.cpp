@@ -89,7 +89,6 @@
 #include "CSlider.h"
 #include "CScrollBar.h"
 #include "CMovieBox.h"
-#include "CSpinBox.h"
 #include "CWatcher.h"
 #include "cprinter.h"
 #include "csvgimage.h"
@@ -1331,7 +1330,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CTabStripContainerChildrenDesc, CTabStripContainerDesc, CTabStripDesc,
 	CScrollViewDesc,
 	CDrawingAreaDesc,
-	CSliderDesc, CSpinBoxDesc, CMovieBoxDesc, CScrollBarDesc,
+	CSliderDesc, CMovieBoxDesc, CScrollBarDesc,
 	CWindowMenusDesc, CWindowControlsDesc, CWindowDesc, CWindowsDesc, CFormDesc,
 	CDialogDesc,
 #ifndef QT5

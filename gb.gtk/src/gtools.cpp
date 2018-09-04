@@ -2073,6 +2073,7 @@ GtkStyleContext *gt_get_style(GType type)
 			gtk_style_context_add_class(style, klass);
 
 		gtk_widget_path_append_type(path, type);
+		gtk_widget_path_iter_set_object_name(path, -1, klass);
 		gtk_style_context_set_path(style, path);
 		//gtk_widget_path_unref(path);
 

@@ -50,7 +50,6 @@ gb_qt4_la_SOURCES = \
  CSlider.h CSlider_moc.cpp CSlider.cpp \
  CScrollBar.h CScrollBar_moc.cpp CScrollBar.cpp \
  CMovieBox.h CMovieBox_moc.cpp CMovieBox.cpp \
- CSpinBox.h CSpinBox_moc.cpp CSpinBox.cpp \
  ctrayicon.h ctrayicon_moc.cpp ctrayicon.cpp \
  CWatcher.h CWatcher_moc.cpp CWatcher.cpp \
  cprinter.h cprinter_moc.cpp cprinter.cpp \

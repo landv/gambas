@@ -64,6 +64,7 @@
 #include <QListWidget>
 #include <QComboBox>
 #include <QSpinBox>
+#include <QCheckBox>
 #include <QSet>
 #include <QScrollBar>
 #include <QLineEdit>
@@ -1484,7 +1485,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 				palette.setColor(QPalette::Base, TO_QCOLOR(bg));
 				palette.setColor(QPalette::Window, TO_QCOLOR(bg));
 				palette.setColor(QPalette::Button, TO_QCOLOR(bg));
-				w->setAutoFillBackground(true);
+				//w->setAutoFillBackground(true);
 			}
 			else
 				w->setAutoFillBackground(false);
@@ -1504,14 +1505,10 @@ void CWIDGET_reset_color(CWIDGET *_object)
 			palette = QPalette();
 
 			if (bg != COLOR_DEFAULT)
-			{
 				palette.setColor(QPalette::Base, TO_QCOLOR(bg));
-			}
 
 			if (fg != COLOR_DEFAULT)
-			{
 				palette.setColor(QPalette::Text, TO_QCOLOR(fg));
-			}
 
 			w->setPalette(palette);
 		}
@@ -1526,6 +1523,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 				palette.setColor(w->foregroundRole(), TO_QCOLOR(fg));
 		
 			w->setAutoFillBackground(!THIS->flag.noBackground && (THIS->flag.fillBackground || ((THIS_EXT && THIS_EXT->bg != COLOR_DEFAULT) && w->backgroundRole() == QPalette::Window)));
+			//qDebug("%s: %d bg role = %d", THIS->name, w->autoFillBackground(), w->backgroundRole());
 			w->setPalette(palette);
 		}
 
