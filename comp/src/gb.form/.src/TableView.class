@@ -118,7 +118,7 @@ Private Sub MoveEditor()
   Dim X, Y, W, H As Integer
   Dim MX, MY As Integer
   Dim hEditor As Object
-  Dim P As Variant
+  Dim P As Integer
   
   If Not $hEditor Then Return 
   
@@ -153,9 +153,6 @@ Private Sub MoveEditor()
       Return
     Endif
     
-    $hPanel.Move(X, Y, W, H)
-    $hEditor.Move(P, P, W - P * 2, H - P * 2)
-    
     If $hEditor.Background = Color.Default Then
       If Me.Background = Color.Default Then
         $hPanel.Background = Color.TextBackground
@@ -166,12 +163,14 @@ Private Sub MoveEditor()
       $hPanel.Background = $hEditor.Background
     Endif
     
+    $hPanel.Move(X, Y, W, H)
+    $hEditor.Move(P, P, W - P * 2, H - P * 2)
     $hEditor.Show
     $hPanel.Show
     $hPanel.Raise
     $hEditor.Raise
     
-    'Debug $iRow;; $iCol; " : ";; .Width;; .Height; " / "; $hEditor.Width;; $hEditor.Height
+    
   End With
   
 End
@@ -273,6 +272,7 @@ Public Sub Edit(Optional List As String[], Optional ReadOnly As Boolean)
   If $bTextBox Then $hEditor.SelectAll
   MoveEditor
   Try $hEditor.SetFocus
+  Try $hEditor.Pos = $hEditor.Length
   
   If Not $bDoNotHideEditor Then
     $bDoNotHideEditor = True

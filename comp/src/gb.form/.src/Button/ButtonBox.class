@@ -238,7 +238,7 @@ Public Sub Background_Arrange()
       $hTextBox.Move(X, FH, Me.W - FW - X - H, H)
       $hFilter.Move(Me.W - H - FW, FH, H, H)
     Else
-      $hTextBox.Move(X, FH, Me.W - FW - X, H)
+      $hTextBox.Move(X, FH, Me.W - Style.BoxFrameWidth - X, H)
     Endif
   Else
     X = Me.W - FW
@@ -249,9 +249,9 @@ Public Sub Background_Arrange()
     Next
     If $hFilter Then 
       $hFilter.Move(FW, FH, H, H)
-      $hTextBox.Move(FW + H, FH, X - FW - H, H)
+      $hTextBox.Move(FW + H, FH, X - Style.BoxFrameWidth - H, H)
     Else
-      $hTextBox.Move(FW, FH, X - FW, H)
+      $hTextBox.Move(Style.BoxFrameWidth, FH, X - Style.BoxFrameWidth, H)
     Endif
   Endif
   
