@@ -1624,13 +1624,22 @@ static void _name##size_allocate(GtkWidget *widget, GtkAllocation *allocation) \
 	gtk_widget_set_clip(widget, allocation); \
 }
 
-#define PATCH_DECLARE(type) PATCH_DECLARE_COMMON(type, type##_) PATCH_DECLARE_SIZE(type, type##_)
+#elif GTK_CHECK_VERSION(3, 10, 0)
+
+#define PATCH_DECLARE_SIZE(_type, _name) \
+static void _name##size_allocate(GtkWidget *widget, GtkAllocation *allocation) \
+{ \
+	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(_type); \
+	(*OLD_FUNC->size_allocate)(widget, allocation); \
+}
 
 #else
 
-#define PATCH_DECLARE(type) PATCH_DECLARE_COMMON(type, type##_)
+#define PATCH_DECLARE_SIZE(_type, _name) 
 
 #endif
+
+#define PATCH_DECLARE(type) PATCH_DECLARE_COMMON(type, type##_) PATCH_DECLARE_SIZE(type, type##_)
 
 #define PATCH_DECLARE_BASELINE(type) \
 static void type##_get_preferred_height_and_baseline_for_width(GtkWidget *widget, gint width, gint *minimum, gint *natural, gint *minimum_baseline, gint *natural_baseline) \
