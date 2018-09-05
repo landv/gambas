@@ -6,7 +6,7 @@ Public Sub Form_Open()
   Print Style.ScrollbarSize
   Print Style.ScrollbarSpacing
   
-  ScrollArea1.ResizeContents(400, 400)
+  ScrollArea1.ResizeContents(800, 800)
 
 End
 
@@ -17,6 +17,6 @@ Public Sub ScrollArea1_Draw()
   Draw.FillColor = Color.Red
   'Draw.Transparent = True
   'Draw.Ellipse(55, 78, 190, 300)
-  Draw.Ellipse(0, 0, 400, 400)
+  Draw.Ellipse(0, 0, 800, 800)
 
 End

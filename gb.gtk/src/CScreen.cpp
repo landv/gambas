@@ -48,6 +48,8 @@ static int _busy = 0;
 #define MAX_SCREEN 16
 static CSCREEN *_screens[MAX_SCREEN] = { NULL };
 
+static bool _animations = FALSE;
+
 static CSCREEN *get_screen(int num)
 {
 	if (num < 0 || num >= MAX_SCREEN || num >= gDesktop::count())
@@ -223,6 +225,16 @@ BEGIN_PROPERTY(Application_ShowTooltips)
 		GB.ReturnBoolean(gApplication::areTooltipsEnabled());
 	else
 		gApplication::enableTooltips(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Application_Animations)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(_animations);
+	else
+		_animations = VPROP(GB_BOOLEAN);
 
 END_PROPERTY
 
@@ -438,6 +450,7 @@ GB_DESC ApplicationDesc[] =
 	GB_STATIC_PROPERTY("MainWindow", "Window", Application_MainWindow),
 	GB_STATIC_PROPERTY("Busy", "i", Application_Busy),
 	GB_STATIC_PROPERTY("ShowTooltips", "b", Application_ShowTooltips),
+	GB_STATIC_PROPERTY("Animations", "b", Application_Animations),
 	GB_STATIC_PROPERTY("Embedder", "i", Application_Embedder),
 	GB_STATIC_PROPERTY("Theme", "s", Application_Theme),
 	GB_STATIC_PROPERTY("Restart", "String[]", Application_Restart),

@@ -51,7 +51,7 @@ Private $bVBarVisible As Boolean
 Private $hObserver As Observer
 Private $iScroll As Integer = Scroll.Both
 Private $iBackground As Integer = Color.Default
-Private $hTimerScroll As Timer
+Private $hTimerAutoScroll As Timer
 Private $hTimerArrange As Timer
 Private $DX As Integer
 Private $DY As Integer
@@ -66,6 +66,10 @@ Private $iShadowW As Integer
 Private $iShadowE As Integer
 Private $hCorner As DrawingArea
 Private $hBorder As DrawingArea
+
+Private $iScrollX As Integer
+Private $iScrollY As Integer
+Private $hTimerScroll As Timer
 
 Private Sub LoadFades()
   
@@ -397,12 +401,51 @@ Public Sub Scroll(X As Integer, Y As Integer)
 
   If $hHBar.Value = X And If $hVBar.Value = Y Then Return
   
-  $hHBar.Value = X
-  $hVBar.Value = Y
+  If Application.Animations Then
+  
+    $iScrollX = Max($hHBar.MinValue, Min($hHBar.MaxValue, X))
+    $iScrollY = Max($hVBar.MinValue, Min($hVBar.MaxValue, Y))
+    
+    If Not $hTimerScroll Then
+      $hTimerScroll = New Timer As "TimerScroll"
+      $hTimerScroll.Delay = 20
+    Endif
+    $hTimerScroll.Start
+  
+  Else
+    
+    $hHBar.Value = X
+    $hVBar.Value = Y
+    $hDrawingArea.Refresh
+    
+  Endif
+  
+End
+
+Public Sub TimerScroll_Timer()
+  
+  Dim D As Integer
+  
+  D = Abs($hHBar.Value - $iScrollX)
+  If False 'D < 16 Or If D > 400 Then
+    $hHBar.Value = $iScrollX
+  Else
+    $hHBar.Value += ($iScrollX - $hHBar.Value + Sgn($iScrollX - $hHBar.Value)) \ 2
+  Endif
+
+  D = Abs($hVBar.Value - $iScrollY)
+  If False 'D < 16 Or D > 400 Then
+    $hVBar.Value = $iScrollY
+  Else
+    $hVBar.Value += ($iScrollY - $hVBar.Value + Sgn($iScrollY - $hVBar.Value)) \ 2
+  Endif
   
   $hDrawingArea.Refresh
   
+  If $hHBar.Value = $iScrollX And If $hVBar.Value = $iScrollY Then $hTimerScroll.Stop
+  
 End
+
 
 Public Sub DrawingArea_Draw()
   
@@ -626,9 +669,9 @@ Public Sub DrawingArea_MouseWheel()
   If Not $bUseMouse Then Return
   
   If Mouse.Orientation = Mouse.Horizontal Or If $H <= $hDrawingArea.H Then
-    $hHBar.Value -= Mouse.Delta * $hHBar.PageStep / 4
+    Scroll($hHBar.Value - Mouse.Delta * $hHBar.PageStep / 4, $hVBar.Value)
   Else
-    $hVBar.Value -= Mouse.Delta * $hVBar.PageStep / 4
+    Scroll($hHBar.Value, $hVBar.Value - Mouse.Delta * $hVBar.PageStep / 4)
   Endif
   
 End
@@ -760,10 +803,10 @@ End
 
 Public Sub DrawingArea_DragMove()
   
-  If Not $hTimerScroll Then
-    $hTimerScroll = New Timer As "TimerScroll"
-    $hTimerScroll.Delay = 50
-    $hTimerScroll.Start
+  If Not $hTimerAutoScroll Then
+    $hTimerAutoScroll = New Timer As "TimerAutoScroll"
+    $hTimerAutoScroll.Delay = 50
+    $hTimerAutoScroll.Start
   Endif
   
   $DX = Drag.X
@@ -773,9 +816,9 @@ End
 
 Public Sub DrawingArea_DragLeave()
   
-  If $hTimerScroll Then
-    $hTimerScroll.Stop
-    $hTimerScroll = Null
+  If $hTimerAutoScroll Then
+    $hTimerAutoScroll.Stop
+    $hTimerAutoScroll = Null
   Endif
   
 End
@@ -788,7 +831,7 @@ Public Sub _EnsureVisibleScroll(X As Integer, Y As Integer)
 End
 
 
-Public Sub TimerScroll_Timer()
+Public Sub TimerAutoScroll_Timer()
   
   Me._EnsureVisibleScroll($DX, $DY)
   

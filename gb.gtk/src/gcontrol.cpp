@@ -801,31 +801,34 @@ void gControl::setFont(gFont *ft)
 	//fprintf(stderr, "--> %s: _font = %s\n", name(), _font ? _font->toFullString() : NULL);
 }
 
+#ifdef GTK3
+
+void gControl::updateFont()
+{
+	resolveFont();
+	updateStyleSheet();
+	updateSize();
+}
+
+#else
+
 static void cb_update_font(GtkWidget *widget, gpointer data)
 {
 	PangoFontDescription *desc = (PangoFontDescription *)data;
-#ifdef GTK3
-	gtk_widget_override_font(widget, desc);
-#else
 	gtk_widget_modify_font(widget, desc);
-#endif
 }
 
 void gControl::updateFont()
 {
 	resolveFont();
-#ifdef GTK3
-	gtk_widget_override_font(widget, font()->desc());
-#else
 	gtk_widget_modify_font(widget, font()->desc());
-#endif
-
 	if (!isContainer() && GTK_IS_CONTAINER(widget))
 		gtk_container_forall(GTK_CONTAINER(widget), (GtkCallback)cb_update_font, (gpointer)font()->desc());
-
 	refresh();
 	updateSize();
 }
+
+#endif
 
 void gControl::updateSize()
 {
@@ -2011,11 +2014,12 @@ void gControl::updateStyleSheet()
 	char *css = NULL;
 	const char *name;
 	char buffer[128];
+	int s;
 	
 	wid = getStyleSheetWidget();
 	context = gtk_widget_get_style_context(wid);
 	
-	if (_bg == COLOR_DEFAULT && _fg == COLOR_DEFAULT)
+	if (_bg == COLOR_DEFAULT && _fg == COLOR_DEFAULT && !_font)
 	{
 		if (_css)
 			gtk_style_context_remove_provider(context, _css);
@@ -2034,7 +2038,7 @@ void gControl::updateStyleSheet()
 			gtk_style_context_remove_provider(context, _css);
 		
 		name = gtk_widget_get_name(wid);
-		sprintf(buffer, "#%s {\n", name);
+		sprintf(buffer, "#%s {\ntransition:none;\n", name);
 		g_stradd(&css, buffer);
 		
 		if (_bg != COLOR_DEFAULT)
@@ -2051,6 +2055,50 @@ void gControl::updateStyleSheet()
 			gt_to_css_color(buffer, _fg);
 			g_stradd(&css, buffer);
 			g_stradd(&css, ";\n");
+		}
+		
+		if (_font)
+		{
+			if (_font->_name_set)
+			{
+				g_stradd(&css, "font-family:\"");
+				g_stradd(&css, _font->name());
+				g_stradd(&css, "\";\n");
+			}
+			
+			if (_font->_size_set)
+			{
+				g_stradd(&css, "font-size:");
+				s = (int)(_font->size() * 10 + 0.5);
+				sprintf(buffer, "%dpt;\n", s / 10); //, s % 10);
+				g_stradd(&css, buffer);
+			}
+
+			if (_font->_bold_set)
+			{
+				g_stradd(&css, "font-weight:");
+				g_stradd(&css, _font->bold() ? "bold" : "normal");
+				g_stradd(&css, ";\n");
+			}
+			
+			if (_font->_italic_set)
+			{
+				g_stradd(&css, "font-style:");
+				g_stradd(&css, _font->italic() ? "italic" : "normal");
+				g_stradd(&css, ";\n");
+			}
+
+			if (_font->_underline_set || _font->_strikeout_set)
+			{
+				g_stradd(&css, "text-decoration-line:");
+				if (_font->strikeout())
+					g_stradd(&css, "line-through");
+				else if (_font->underline())
+					g_stradd(&css, "underline");
+				else
+					g_stradd(&css, "none");
+				g_stradd(&css, ";\n");
+			}
 		}
 		
 		g_stradd(&css, "}\n");

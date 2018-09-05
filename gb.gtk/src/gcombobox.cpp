@@ -561,9 +561,7 @@ void gComboBox::updateFont()
 	gControl::updateFont();
 	if (cell)
 		g_object_set(G_OBJECT(cell), "font-desc", font()->desc(), (void *)NULL);
-	if (entry)
 #ifdef GTK3
-		gtk_widget_override_font(entry, font()->desc());
 #else
 		gtk_widget_modify_font(entry, font()->desc());
 #endif

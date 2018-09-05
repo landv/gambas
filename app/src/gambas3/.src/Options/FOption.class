@@ -120,6 +120,7 @@ Public Sub _new()
     [btnOptional, "/AlwaysDisplayOptionalMessages", 0],
     [btnOfflineHelp, "/UseOfflineHelp", 0],
     [btnTooltip, "/ShowTooltip", 0],
+    [btnAnimation, "/Animations", 0],
     [btnShowFileInTitle, "/ShowFileInTitle", 1],
     [btnIntegratedHelp, "/PropertyHelp", 1],
     [btnHelpCompletion, "/ShowHelpInPopup", 1],
@@ -336,6 +337,13 @@ Public Sub btnTooltip_Click()
 
   Settings["/ShowTooltip"] = btnTooltip.Value
   Application.ShowTooltips = btnTooltip.Value
+  
+End
+
+Public Sub btnAnimation_Click()
+
+  Settings["/Animations"] = btnAnimation.Value
+  Application.Animations = btnAnimation.Value
   
 End
 

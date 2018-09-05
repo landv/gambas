@@ -2,12 +2,6 @@
 
 Public Sub Form_Open()
 
-  Dim hSpinBox As SpinBox
-
-  hSpinBox = New SpinBox(Me)
-  hSpinBox.MoveScaled(1, 1, 7, 4)
-  hSpinBox.MinValue = -100
-  
   Debug Style.Name
   
   'hSpinBox.Border = False
