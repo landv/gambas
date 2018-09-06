@@ -87,6 +87,7 @@ static bool _decl_ra;
 static ushort _pc;
 
 static bool _no_release = FALSE;
+static bool _no_release_but_borrow = FALSE;
 
 static int _loop_count;
 
@@ -620,6 +621,18 @@ static char *peek_pop(int n, TYPE conv, const char *fmt, va_list args)
 	
 	if (fmt)
 	{
+		if (!_no_release || _no_release_but_borrow)
+		{
+			switch (TYPEID(conv))
+			{
+				case T_STRING:
+				case T_OBJECT:
+				case T_VARIANT:
+					_stack[n].expr = expr = borrow_expr(expr, conv);
+					break;
+			}
+		}
+		
 		if (_no_release)
 		{
 			JIT_print("  ");
@@ -633,25 +646,13 @@ static char *peek_pop(int n, TYPE conv, const char *fmt, va_list args)
 			else
 				op = "";
 			
-			switch (TYPEID(conv))
-			{
-				case T_STRING:
-				case T_OBJECT:
-				case T_VARIANT:
-					_stack[n].expr = expr = borrow_expr(expr, conv);
-					break;
-			}
-					
 			JIT_print("  %s%s %s;\n", dest, op, expr);
 			
-			if (!_no_release)
+			switch (TYPEID(conv))
 			{
-				switch (TYPEID(conv))
-				{
-					case T_STRING: JIT_print("  GB.FreeString(&rs);\n"); break;
-					case T_OBJECT: JIT_print("  GB.Unref(&ro);\n"); break;
-					case T_VARIANT:  JIT_print("  GB.ReleaseValue((GB_VALUE *)&rv);\n"); break;
-				}
+				case T_STRING: JIT_print("  GB.FreeString(&rs);\n"); break;
+				case T_OBJECT: JIT_print("  GB.Unref(&ro);\n"); break;
+				case T_VARIANT:  JIT_print("  GB.ReleaseValue((GB_VALUE *)&rv);\n"); break;
 			}
 		}
 		
@@ -2847,8 +2848,11 @@ _POP_OPTIONAL:
 		index = func->n_param + GET_XX() - func->npmin;
 		JIT_print("  if (o%d & %d)\n  ", index / 8, (1 << (index % 8)));
 		index = func->n_param + GET_XX();
+		type = func->param[index].type;
 		_no_release = TRUE;
-		pop(func->param[index].type, "p%d = %%s", index);
+		_no_release_but_borrow = TRUE;
+		pop(type, "p%d = %%s", index);
+		_no_release_but_borrow = FALSE;
 		_no_release = FALSE;
 	}
 	goto _MAIN;
