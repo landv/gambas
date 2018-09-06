@@ -17,10 +17,11 @@ Property Background As Integer
 
 Private $hDrawingArea As DrawingArea
 Private $fValue As Float
-Private $fInc As Float
+Private $fTargetValue As Float
 Private $hTimer As Timer
 Private $bPressed As Boolean
 Private $iBg As Integer = Color.Default
+Private $bAnimated As Boolean
 
 Public Sub _new()
   
@@ -32,19 +33,14 @@ End
 
 Private Function Animated_Read() As Boolean
 
-  Return Not IsNull($hTimer)
+  Return $bAnimated
 
 End
 
 Private Sub Animated_Write(Value As Boolean)
 
-  If Value Then
-    $hTimer = New Timer As "Timer"
-    $hTimer.Delay = 20
-  Else
-    $hTimer = Null
-  Endif
-
+  $bAnimated = Value
+  
 End
 
 Private Function Value_Read() As Boolean
@@ -197,7 +193,7 @@ End
 Public Sub DrawingArea_Enter()
   
   $hDrawingArea.Refresh
-  
+
 End
 
 Public Sub DrawingArea_Leave()
@@ -209,7 +205,7 @@ End
 Public Sub DrawingArea_GotFocus()
   
   $hDrawingArea.Refresh
-  
+
 End
 
 Public Sub DrawingArea_LostFocus()
@@ -246,14 +242,19 @@ End
 
 Private Sub ToggleAnimate()
   
-  If $hTimer Then
+  If $bAnimated And If Application.Animations Then
     If $fValue < 0.5 Then
-      $fInc = 0.2
+      $fTargetValue = 1
     Else
-      $fInc = -0.2
+      $fTargetValue = 0
+    Endif
+    If Not $hTimer Then
+      $hTimer = New Timer As "Timer"
+      $hTimer.Delay = 20
     Endif
     $hTimer.Start
   Else
+    $hTimer = Null
     Me.Value = Not Me.Value
   Endif
   
@@ -271,12 +272,18 @@ Public Sub DrawingArea_MouseUp()
   Endif
   
   ToggleAnimate
-  
+
 End
 
 Public Sub Timer_Timer()
+
+  Dim fInc As Float
   
-  $fValue += $fInc
+  fInc = ($fTargetValue - $fValue) / 2
+  If Abs(fInc) < 0.01 Then fInc = 0.05 * Sgn(fInc)
+  $fValue += fInc
+  Debug $fValue
+  
   If $fValue < 0 Then
     $fValue = 0
     $hTimer.Stop
