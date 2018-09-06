@@ -179,10 +179,10 @@ Private Sub SetValue(iValue As Integer, Optional bFocus As Boolean)
   Else If iValue > $iMax Then
     iValue = If($bWrap, $iMin, $iMax)
   Endif
-  $iValue = iValue
-  sValue = CStr($iValue)
-  If $hTextBox.Text <> sValue Then 
-    $hTextBox.Text = sValue
+  sValue = CStr(iValue)
+  If $hTextBox.Text <> sValue Then $hTextBox.Text = sValue
+  If $iValue <> iValue Then
+    $iValue = iValue
     Raise Change
   Endif
 
@@ -358,7 +358,9 @@ Public Sub TextBox_KeyPress()
     SetValue($iMax, True)
     Stop Event
   Else If Key.Text Then  
-    If IsDigit(Key.Text) Or If Key.Text = "-" Then
+    If IsDigit(Key.Text) Then
+    Else If Key.Text = "-" Then
+      If $iMin >= 0 Then Stop Event
     Else If Len(Key.Text) >= 2 Or Asc(Key.Text) >= 32 Then
       Stop Event
     Endif
