@@ -1735,7 +1735,7 @@ if (G_OBJECT_TYPE(widget) == type) \
 	} \
 }
 
-#define PATCH_CLASS_BASELINE(widget, type) PATCH_CLASS(widget, type)
+#define PATCH_CLASS_BASELINE PATCH_CLASS
 
 #endif
 
