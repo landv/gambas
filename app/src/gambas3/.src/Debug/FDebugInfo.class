@@ -185,7 +185,7 @@ Public Sub AddResultWatch(sCmd As String, Optional sRes As String, Optional bIns
       
       'ShowAsBalloon(sVal)
       If $hForm Then 
-        $hForm.ShowWatchResult(sVal, $iX, $iY)
+        $hForm.ShowWatchResult(sVal) ', $iX, $iY)
         $hForm = Null
       Else
         FOutput.Insert(sVal)
@@ -240,13 +240,11 @@ Public Sub AddWatch(sExpr As String)
   
 End
 
-Public Sub InstantWatch(sExpr As String, hForm As FEditor, X As Integer, Y As Integer)
+Public Sub InstantWatch(sExpr As String, hForm As FEditor)
   
   If Not sExpr Then Return
   
   $hForm = hForm
-  $iX = X
-  $iY = Y
   Design.Command("?I" & sExpr & "\t" & sExpr)
   
 End

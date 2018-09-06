@@ -867,7 +867,7 @@ Public Sub ShowErrorMessage(sMsg As String, (sIcon) As String)
 
   $hEditor.SetFocus
   Wait
-  $hEditor.ShowMessageLabel(Html(sMsg), $hEditor.ToPosX(), $hEditor.ToPosY() + $hEditor.LineHeight, Highlight.Breakpoint)
+  $hEditor.ShowMessageLabel(Html(sMsg), Highlight.Breakpoint)
 
 End
 

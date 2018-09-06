@@ -15,8 +15,6 @@ Private $hObserver As Observer
 Private $iLastLine As Integer = -1
 
 Private $bLabelBottom As Boolean
-Private $iLabelX As Integer
-Private $iLabelY As Integer
 
 Static Private $sFindPrefix As String
 Static Private $aFind As Integer[]
@@ -198,7 +196,7 @@ End
 Public Sub LabelTimer_Timer()
 
   If $hLabel.Visible Then
-    $hLabel.Hide
+    HideMessageLabel
     $hLabelTimer.Stop
   Endif
 
@@ -222,8 +220,8 @@ Private Sub MoveMessageLabel()
     X = 0
     Y = Container(Me.Proxy).ClientH - $hLabel.H
   Else
-    X = $iLabelX
-    Y = $iLabelY
+    X = Me.ToPosX()
+    Y = Me.ToPosY() + Me.LineHeight
   Endif
 
   X = Me.ScreenX + X - $hLabel.Parent.ScreenX
@@ -235,7 +233,7 @@ Private Sub MoveMessageLabel()
 End
 
 
-Public Sub ShowMessageLabel(sStr As String, Optional X As Integer, Y As Integer, iStyle As Integer)
+Public Sub ShowMessageLabel(sStr As String, iStyle As Integer, Optional bBottom As Boolean)
 
   Dim hParent As Container
 
@@ -247,7 +245,7 @@ Public Sub ShowMessageLabel(sStr As String, Optional X As Integer, Y As Integer,
     $hLabel = New TextLabel(hParent) As "Label"
     $hLabel.Ignore = True
     $hLabel.AutoResize = True
-    $hLabel.Border = If(IsMissing(Y), Border.None, Border.Plain)
+    $hLabel.Border = If(bBottom, Border.None, Border.Plain)
     $hLabel.Padding = 2
     $hLabel.Wrap = False
     $hLabelTimer = New Timer As "LabelTimer"
@@ -260,13 +258,7 @@ Public Sub ShowMessageLabel(sStr As String, Optional X As Integer, Y As Integer,
   $hLabel.Background = Color.Merge(Me.Styles[iStyle].Color, Style.BackgroundOf(Me), 0.3)
   $hLabel.Text = "&nbsp;&nbsp;" & Replace(Replace(sStr, "<p>", " "), "<br>", " ") & "&nbsp;&nbsp;"
 
-  If IsMissing(X) And If IsMissing(Y) Then
-    $bLabelBottom = True
-  Else
-    $bLabelBottom = False
-    $iLabelX = X
-    $iLabelY = Y
-  Endif
+  $bLabelBottom = bBottom
   
   $hLabel.Show
   $hLabel.Raise
@@ -287,7 +279,7 @@ End
 
 Public Sub Editor_Cursor()
   
-  Try $hLabel.Hide
+  HideMessageLabel
   
   If Me.Line <> $iLastLine Then
     $iLastLine = Me.Line
@@ -301,13 +293,15 @@ End
 
 Public Sub Editor_Scroll()
   
-  Try $hLabel.Hide
+  MoveMessageLabel
+  'Try $hLabel.Hide
   
 End
 
 Public Sub HideMessageLabel()
   
-  Try $hLabel.Hide
+  If Not $hLabel Or If Not $hLabel.Visible Then Return
+  $hLabel.Hide
   
 End
 

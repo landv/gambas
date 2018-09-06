@@ -2572,34 +2572,11 @@ Public Sub Editors_MouseUp()
     Return
   Endif
 
-  FDebugInfo.InstantWatch(Trim($hEditor.SelectedText), Me, $hEditor.ToPosX($hEditor.Column), $hEditor.ToPosY() + $hEditor.LineHeight)
+  FDebugInfo.InstantWatch(Trim($hEditor.SelectedText)) ', Me, $hEditor.ToPosX($hEditor.Column), $hEditor.ToPosY() + $hEditor.LineHeight)
 
 End
 
-' Private Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional bError As Boolean)
-' 
-'   X = Editor.ScreenX + X - lblWatch.Parent.ScreenX
-'   Y = Editor.ScreenY + Y - lblWatch.Parent.ScreenY
-'   
-'   lblWatch.Foreground = Editor.Styles[Highlight.Normal].Foreground
-'   If bError Then
-'     lblWatch.Background = Editor.Styles[Highlight.Breakpoint].Foreground
-'   Else
-'     lblWatch.Background = Editor.Styles[Highlight.CurrentLine].Foreground
-'   Endif
-'   lblWatch.Text = Replace(Replace(sStr, "<p>", " "), "<br>", " ")
-' 
-'   If (Y + lblWatch.H) > lblWatch.Parent.ClientH Then Y -= lblWatch.H + Editor.LineHeight
-'   lblWatch.Move(X, Y)
-'   
-'   lblWatch.Show
-'   lblWatch.Raise
-'   timWatch.Start
-'   Editor.SetFocus
-' 
-' End
-
-Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
+Public Sub ShowWatchResult(sStr As String)
 
   Dim bError As Boolean
 
@@ -2611,7 +2588,7 @@ Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
     bError = True
   Endif
 
-  $hEditor.ShowMessageLabel(Html(sStr), X, Y, If(bError, Highlight.Breakpoint, Highlight.CurrentLine))
+  $hEditor.ShowMessageLabel(Html(sStr), If(bError, Highlight.Breakpoint, Highlight.CurrentLine))
 
 End
 
@@ -2660,7 +2637,7 @@ Public Sub ShowErrorMessage(sMsg As String, (sIcon) As String)
 
   $hEditor.SetFocus
   Wait
-  $hEditor.ShowMessageLabel(sMsg, $hEditor.ToPosX(), $hEditor.ToPosY() + $hEditor.LineHeight, Highlight.Breakpoint)
+  $hEditor.ShowMessageLabel(sMsg, Highlight.Breakpoint)
 
 End
 

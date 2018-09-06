@@ -119,8 +119,8 @@ Public Sub _new()
     [btnStartupLoad, "/RestoreFiles", 1],
     [btnOptional, "/AlwaysDisplayOptionalMessages", 0],
     [btnOfflineHelp, "/UseOfflineHelp", 0],
-    [btnTooltip, "/ShowTooltip", 0],
-    [btnAnimation, "/Animations", 0],
+    [btnTooltip, "/ShowTooltip", 1],
+    [btnAnimation, "/Animations", 1],
     [btnShowFileInTitle, "/ShowFileInTitle", 1],
     [btnIntegratedHelp, "/PropertyHelp", 1],
     [btnHelpCompletion, "/ShowHelpInPopup", 1],
@@ -603,6 +603,10 @@ Public Sub dwgStyle_Draw()
   Dim bInvert As Boolean
   Dim iBg As Integer
   Dim D As Integer
+  Dim Y As Integer
+  Dim W As Integer
+  Dim LB As Integer
+  Dim XB As Integer
 
   sName = MTheme.ColorNames[MTheme.ColorKeys.Find(sKey)]
   bInvert = Settings["/Editor/InvertTheme", 0]
@@ -612,7 +616,6 @@ Public Sub dwgStyle_Draw()
   Endif
 
   Paint.Font = Project.GetEditorFont()
-  If hStyle.Underline Then Paint.Font.Underline = True
   
   If MTheme.IsBackgroundStyle(sKey) Then
     iBackground = hStyle.Foreground
@@ -634,12 +637,39 @@ Public Sub dwgStyle_Draw()
   Paint.FillRect(0, 0, hDraw.W, hDraw.H, iBackground)
   D = Desktop.Scale
   
-  If hStyle.Bold Then
-    Paint.Background = Color.SetAlpha(iForeground, 128)
-    Paint.DrawText(sName, D + 1, 0, hDraw.Width - D * 2, hDraw.Height, Align.Normal)
-  Endif
+  W = hDraw.Width - D * 2
+  
   Paint.Background = iForeground
-  Paint.DrawText(sName, D, 0, hDraw.Width - D * 2, hDraw.Height, Align.Normal)
+  If hStyle.Bold Then
+    LB = 1 + Paint.Font.H \ 6
+    XB = D
+    While LB >= 2
+      Paint.DrawText(sName, XB, 0, W, hDraw.H, Align.Normal) 'DrawText(sStr, SX, X + 1, Y)
+      Inc XB
+      LB -= 2
+    Wend
+    If LB Then
+      Paint.Background = Color.SetAlpha(iForeground, 128)
+      Paint.DrawText(sName, XB, 0, W, hDraw.H, Align.Normal)
+    Endif
+  Else
+    Paint.DrawText(sName, D, 0, W, hDraw.Height, Align.Normal)
+  Endif
+
+
+  Y = hDraw.H - (hDraw.H - Paint.Font.H) \ 2
+  W = Paint.Font.TextWidth(sName)
+
+  If hStyle.Underline Then 
+    Paint.FillRect(D, Y, W, 1, Color.SetAlpha(iForeground, 128))
+  Else If hStyle.Dotted Then
+    Paint.Background = Color.SetAlpha(iForeground, 128)
+    Paint.LineWidth = 1
+    Paint.Dash = [1]
+    Paint.MoveTo(D, Y - 0.5)
+    Paint.RelLineTo(W, 0)
+    Paint.Stroke
+  Endif
   
 End
 
@@ -657,6 +687,7 @@ Public Sub mnuPopup_Show()
   
     mnuBold.Checked = .Bold
     mnuUnderline.Checked = .Underline
+    mnuDotted.Checked = .Dotted
 
   End With 
   
@@ -669,6 +700,7 @@ Private Sub UpdateStyle()
   With hStyle
     .Bold = mnuBold.Checked
     .Underline = mnuUnderline.Checked
+    .Dotted = mnuDotted.Checked
   End With
   
   $cCurrent[$sStyle] = hStyle.ToString()
@@ -687,6 +719,13 @@ End
 Public Sub mnuUnderline_Click()
   
   mnuUnderline.Checked = Not mnuUnderline.Checked
+  UpdateStyle
+  
+End
+
+Public Sub mnuDotted_Click()
+  
+  mnuDotted.Checked = Not mnuDotted.Checked
   UpdateStyle
   
 End
