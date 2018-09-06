@@ -2572,7 +2572,7 @@ Public Sub Editors_MouseUp()
     Return
   Endif
 
-  FDebugInfo.InstantWatch(Trim($hEditor.SelectedText)) ', Me, $hEditor.ToPosX($hEditor.Column), $hEditor.ToPosY() + $hEditor.LineHeight)
+  FDebugInfo.InstantWatch(Trim($hEditor.SelectedText), Me) ', Me, $hEditor.ToPosX($hEditor.Column), $hEditor.ToPosY() + $hEditor.LineHeight)
 
 End
 
