@@ -705,7 +705,16 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
     '   Paint.DrawImage(hTemp, X + 1, Y)
     ' Endif
     
-    If hStyle.Underline Then Paint.FillRect(XX, YY + H - 1, X2 - XX, 1, Color.SetAlpha(hStyle.Color, 128))
+    If hStyle.Underline Then 
+      Paint.FillRect(XX, YY + H - 1, X2 - XX, 1, Color.SetAlpha(hStyle.Color, 128))
+    Else If hStyle.Dotted Then
+      Paint.Background = Color.SetAlpha(hStyle.Color, 128)
+      Paint.LineWidth = 1
+      Paint.Dash = [1]
+      Paint.MoveTo(XX, YY + H - 0.5)
+      Paint.RelLineTo(X2 - XX, 0)
+      Paint.Stroke
+    Endif
     
     ' If $YM >= 0 Then
     '   If Row = $YMO And If $XMO >= P And If $XMO < (P + iLen) Then DrawMatch(SX, Y, H, $XMO, $YMO)

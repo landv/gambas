@@ -28,8 +28,8 @@ Public Sub _new()
   $aStyle[Highlight.Highlight] = New TextEditorStyle(&H7FFF00&) As "Style"
   $aStyle[Highlight.CurrentLine] = New TextEditorStyle(&HE7F3FF&) As "Style"
   $aStyle[Highlight.Error] = New TextEditorStyle(&HBF0303&, False, True) As "Style"
-  $aStyle[Highlight.Escape] = New TextEditorStyle(&H7F0000&, False, True) As "Style"
-  $aStyle[Highlight.Label] = New TextEditorStyle(Color.Black, False, True) As "Style"
+  $aStyle[Highlight.Escape] = New TextEditorStyle(&H7F0000&, True, False, True) As "Style"
+  $aStyle[Highlight.Label] = New TextEditorStyle(Color.Black, False, False, True) As "Style"
   $aStyle[Highlight.Constant] = New TextEditorStyle(&HA00000&, True) As "Style"
   
 End
@@ -48,10 +48,7 @@ Public Sub _get((Style) As Integer) As TextEditorStyle
   Try hStyle = $aStyle[Style]
   If Error Then Error.Raise("Invalid argument")
   If Not hStyle Then
-    With $aStyle[Highlight.Normal]
-      hStyle = New TextEditorStyle(.Color, .Bold, .Underline, .Background)
-      $aStyle[Style] = hStyle
-    End With
+    $aStyle[Style] = $aStyle[Highlight.Normal].Copy()
   Endif
   
   Return hStyle
