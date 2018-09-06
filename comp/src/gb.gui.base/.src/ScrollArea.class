@@ -29,6 +29,7 @@ Property Tablet As Boolean
 Property Shadow As Boolean
 Property Read View As DrawingArea
 Property UseMouse As Boolean
+Property Read Scrolling As Boolean
 
 Event Scroll
 Event Draw
@@ -70,6 +71,7 @@ Private $hBorder As DrawingArea
 Private $iScrollX As Integer
 Private $iScrollY As Integer
 Private $hTimerScroll As Timer
+Private $bAllowAnimations As Boolean
 
 Private Sub LoadFades()
   
@@ -379,7 +381,11 @@ End
 
 Private Sub ScrollX_Write(Value As Integer)
 
-  Scroll(Value, $hVBar.Value)
+  If Application.Animations Then
+    Scroll(Value, $iScrollY)
+  Else
+    Scroll(Value, $hVBar.Value)
+  Endif
 
 End
 
@@ -391,7 +397,11 @@ End
 
 Private Sub ScrollY_Write(Value As Integer)
 
-  Scroll($hHBar.Value, Value)
+  If Application.Animations Then
+    Scroll($iScrollX, Value)
+  Else
+    Scroll($hHBar.Value, Value)
+  Endif
 
 End
 
@@ -401,7 +411,7 @@ Public Sub Scroll(X As Integer, Y As Integer)
 
   If $hHBar.Value = X And If $hVBar.Value = Y Then Return
   
-  If Application.Animations Then
+  If Application.Animations And If $bAllowAnimations Then
   
     $iScrollX = Max($hHBar.MinValue, Min($hHBar.MaxValue, X))
     $iScrollY = Max($hVBar.MinValue, Min($hVBar.MaxValue, Y))
@@ -427,18 +437,10 @@ Public Sub TimerScroll_Timer()
   Dim D As Integer
   
   D = Abs($hHBar.Value - $iScrollX)
-  If False 'D < 16 Or If D > 400 Then
-    $hHBar.Value = $iScrollX
-  Else
-    $hHBar.Value += ($iScrollX - $hHBar.Value + Sgn($iScrollX - $hHBar.Value)) \ 2
-  Endif
+  $hHBar.Value += ($iScrollX - $hHBar.Value + Sgn($iScrollX - $hHBar.Value)) \ 2
 
   D = Abs($hVBar.Value - $iScrollY)
-  If False 'D < 16 Or D > 400 Then
-    $hVBar.Value = $iScrollY
-  Else
-    $hVBar.Value += ($iScrollY - $hVBar.Value + Sgn($iScrollY - $hVBar.Value)) \ 2
-  Endif
+  $hVBar.Value += ($iScrollY - $hVBar.Value + Sgn($iScrollY - $hVBar.Value)) \ 2
   
   $hDrawingArea.Refresh
   
@@ -533,6 +535,8 @@ Public Sub DrawingArea_Draw()
 
   Endif
   
+  $bAllowAnimations = True
+  
 End
 
 Public Sub DrawingArea_Enter()
@@ -555,7 +559,11 @@ End
 
 Public Sub Scrollbar_Change()
   
-  Raise Scroll
+  'If Application.Animations Then
+  '  If $hHBar.Value = $iScrollX And If $hVBar.Value = $iScrollY Then Raise Scroll
+  'Else
+    Raise Scroll
+  'Endif
   $hDrawingArea.Refresh
   
 End
@@ -922,4 +930,12 @@ Public Sub Border_Draw()
   
   Style.PaintPanel(0, 0, $hBorder.W, $hBorder.H, Border.Plain, Style.StateOf($hDrawingArea)) 'If(Me.HasFocus, Draw.Focus, Draw.Normal))
   
+End
+
+Private Function Scrolling_Read() As Boolean
+
+  If Application.Animations Then
+    If $hHBar.Value <> $iScrollX Or If $hVBar.Value <> $iScrollY Then Return True
+  Endif
+
 End
