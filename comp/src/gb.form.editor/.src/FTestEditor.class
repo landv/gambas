@@ -22,6 +22,8 @@ End
 
 Public Sub Form_Open()
 
+  Application.Animations = True
+
   'TextEditor1.LineNumberOffset = 10000
   
   'Image.Debug = True
@@ -183,5 +185,14 @@ End
 Public Sub Button6_Click()
 
   TextEditor1[TextEditor1.Line].Bookmark = Not TextEditor1[TextEditor1.Line].Bookmark
+
+End
+
+Public Sub Button5_Click()
+
+  TextEditor1.Goto(0, TextEditor1.Count)
+  TextEditor1.Insert("\nPublic Sub Toto()\n  \n  \n  \nEnd")
+  TextEditor1.GotoCenter(-1, TextEditor1.Count - 3)
+  TextEditor1.SetFocus
 
 End

@@ -1620,7 +1620,6 @@ End
 
 Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
   
-  Dim bRaiseCursor As Boolean
   Dim SX As Integer
   Dim SY As Integer
   Dim SXY As Point
@@ -1669,7 +1668,6 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
     $XY = LinePos($Y, $X)
     '$XM = 0
     '$YM = -1
-    bRaiseCursor = True
   Endif
   
   $X0 = $XY.X
@@ -1718,10 +1716,10 @@ End
 Public Sub GotoCenter(NX As Integer, NY As Integer)
   
   Goto(NX, NY)
-  If Not $hTimerEnsureVisible Then
-    $hTimerEnsureVisible = New Timer As "EnsureVisible"
-    $hTimerEnsureVisible.Trigger
-  Endif
+  ' If Not $hTimerEnsureVisible Then
+  '   $hTimerEnsureVisible = New Timer As "EnsureVisible"
+  '   $hTimerEnsureVisible.Trigger
+  ' Endif
   
 End
 
@@ -4842,7 +4840,6 @@ Public Sub _UpdateAllHeight(Optional bNow As Boolean)
   Endif
   
   If bNow Then
-    '$hTimerHeight.Trigger
     TimerHeight_Timer
   Else
     $hTimerHeight.Start
@@ -4856,6 +4853,8 @@ Public Sub TimerHeight_Timer()
   Dim CY, TY As Integer
   
   'Debug Me.Window.Title;; $iWidth;; $hView.ClientW
+  
+  If $hView.Scrolling Then Return
   
   Y = $hRows._GetRowY($Y)
   If Y < $hView.ScrollY Then
