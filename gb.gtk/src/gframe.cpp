@@ -27,6 +27,7 @@
 
 static void cb_frame_resize (GtkWidget *wid, GtkAllocation *req, gFrame *data)
 {
+	fprintf(stderr, "cb_frame_resize: %d %d\n", req->width, req->height);
 	gtk_widget_set_size_request(data->fr, req->width, req->height);
 } 
 
@@ -161,7 +162,7 @@ gFrame::gFrame(gContainer *parent) : gContainer(parent)
 	
   realize(false);
 
-	g_signal_connect(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_frame_resize), (gpointer)this);
+	//g_signal_connect(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_frame_resize), (gpointer)this);
 }
 
 const char *gFrame::text()
@@ -178,31 +179,7 @@ void gFrame::setText(const char *vl)
 		vl = "";
 
 	gtk_frame_set_label(GTK_FRAME(fr), vl);
-
-	/*bool remove = false;
-	
-	remove = !vl || !*vl;
-	
-	if (remove)
-	{
-		if (label) 
-		{
-			gtk_frame_set_label_widget(GTK_FRAME(fr), NULL);
-			label = NULL;
-		}
-		return;
-	}
-	
-	if (!label)
-	{
-		label = gtk_label_new(vl);
-		gtk_frame_set_label_widget(GTK_FRAME(fr), label);
-		updateFont();
-		setForeground(foreground());
-		gtk_widget_show(label);
-	}
-	else
-		gtk_label_set_text(GTK_LABEL(label), (const gchar*)vl);*/
+	gtk_frame_set_label_align(GTK_FRAME(fr), 0.5, 0.0);
 }
 
 void gFrame::updateFont()
@@ -247,6 +224,11 @@ int gFrame::clientWidth()
 	return width(); // - gApplication::getFrameWidth() * 2;
 }
 
+int gFrame::containerWidth()
+{
+	return clientWidth() - gApplication::getFrameWidth() * 2;
+}
+
 int gFrame::containerY()
 {
 	int y = gApplication::getFrameWidth();
@@ -265,4 +247,15 @@ int gFrame::clientY()
 int gFrame::clientHeight()
 {
 	return height(); // - clientY() - gApplication::getFrameWidth();
+}
+
+int gFrame::containerHeight()
+{
+	return clientHeight() - containerY() - gApplication::getFrameWidth();
+}
+
+void gFrame::resize(int w, int h)
+{
+	gContainer::resize(w, h);
+	gtk_widget_set_size_request(fr, w, h);
 }

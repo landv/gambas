@@ -81,14 +81,19 @@ gSlider::gSlider(gContainer *par, bool scrollbar) : gControl(par)
 	_min = 0;
 	_max = 100;
 	_tracking = true;
-	
+
+/*#ifdef GTK3
+	border = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+#else	
 	border = gtk_alignment_new(0, 0, 1, 1);
+#endif*/
 	
 	if (scrollbar)
 		return;
 	
 #ifdef GTK3
 	widget = gtk_scale_new(GTK_ORIENTATION_VERTICAL, NULL);
+	//gtk_widget_set_hexpand(widget, TRUE);
 #else
 	widget = gtk_vscale_new(NULL);
 #endif
@@ -289,38 +294,8 @@ void gSlider::resize(int w, int h)
 
 void gScrollBar::resize(int w, int h)
 {
-	//GtkAdjustment* adj;
-	//GType type;
-	
 	gControl::resize(w, h);
 	gtk_orientable_set_orientation(GTK_ORIENTABLE(widget),  (w < h) ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL);
-
-	/*type = (w < h) ? GTK_TYPE_VSCROLLBAR : GTK_TYPE_HSCROLLBAR;
-	
-	if (type != G_OBJECT_TYPE(widget))
-	{
-		adj = gtk_range_get_adjustment(GTK_RANGE(widget));
-		g_object_ref(adj);
-
-		g_object_ref(widget);
-		gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(widget)), widget);
-		gtk_widget_destroy(widget);
-		g_object_unref(widget);
-		
-		if (type == GTK_TYPE_VSCROLLBAR)
-			widget = gtk_vscrollbar_new(adj);
-		else
-			widget = gtk_hscrollbar_new(adj);
-		
-		gtk_container_add(GTK_CONTAINER(border), widget);
-		gtk_widget_show(widget);
-		widgetSignals();
-		g_signal_connect(G_OBJECT(widget), "value-changed", G_CALLBACK(cb_change), (gpointer)this);
-		
-		g_object_unref(adj);	
-		
-		init();
-	}*/
 }
 
 int gSlider::getDefaultSize()

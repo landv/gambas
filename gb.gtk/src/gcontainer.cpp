@@ -95,8 +95,8 @@ static void resize_container(gControl *cont, int w, int h)
 
 #define GET_WIDGET_CONTENTS(_widget, _x, _y, _w, _h) _x=((gContainer*)_widget)->containerX(); \
                                                      _y=((gContainer*)_widget)->containerY(); \
-                                                     _w=((gContainer*)_widget)->clientWidth(); \
-                                                     _h=((gContainer*)_widget)->clientHeight()
+                                                     _w=((gContainer*)_widget)->containerWidth(); \
+                                                     _h=((gContainer*)_widget)->containerHeight()
 
 #define GET_WIDGET_X(_widget)  (((gControl*)_widget)->left())
 #define GET_WIDGET_Y(_widget)  (((gControl*)_widget)->top())
@@ -509,6 +509,11 @@ int gContainer::clientWidth()
 	return width() - getFrameWidth() * 2;
 }
 
+int gContainer::containerWidth()
+{
+	return clientWidth();
+}
+
 int gContainer::clientHeight()
 {
 	GtkWidget *cont = getContainer();
@@ -543,6 +548,11 @@ int gContainer::clientHeight()
 		return (int)gtk_adjustment_get_page_size(gtk_scrolled_window_get_vadjustment(_scroll));
 	
 	return height() - getFrameWidth() * 2;
+}
+
+int gContainer::containerHeight()
+{
+	return clientHeight();
 }
 
 void gContainer::insert(gControl *child, bool realize)

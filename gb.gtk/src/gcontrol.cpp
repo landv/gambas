@@ -1746,7 +1746,7 @@ PATCH_DECLARE(GTK_TYPE_SPIN_BUTTON)
 PATCH_DECLARE(GTK_TYPE_BUTTON)
 PATCH_DECLARE(GTK_TYPE_FIXED)
 PATCH_DECLARE(GTK_TYPE_EVENT_BOX)
-PATCH_DECLARE(GTK_TYPE_ALIGNMENT)
+//PATCH_DECLARE(GTK_TYPE_ALIGNMENT)
 PATCH_DECLARE(GTK_TYPE_BOX)
 PATCH_DECLARE(GTK_TYPE_TOGGLE_BUTTON)
 PATCH_DECLARE(GTK_TYPE_SCROLLED_WINDOW)
@@ -1756,6 +1756,7 @@ PATCH_DECLARE(GTK_TYPE_NOTEBOOK)
 PATCH_DECLARE(GTK_TYPE_SOCKET)
 PATCH_DECLARE(GTK_TYPE_TEXT_VIEW)
 PATCH_DECLARE(GTK_TYPE_SCROLLBAR)
+PATCH_DECLARE(GTK_TYPE_SCALE)
 
 #if GTK_CHECK_VERSION(3,10,0)
 PATCH_DECLARE_BASELINE(GTK_TYPE_ENTRY)
@@ -1785,7 +1786,12 @@ void gControl::realize(bool make_frame)
 		}
 		else if (!frame)
 		{
-			frame = gtk_alignment_new(0, 0, 1, 1);
+#if GTK3
+			border = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+			gtk_widget_set_hexpand(widget, TRUE);
+#else
+			border = gtk_alignment_new(0, 0, 1, 1);
+#endif
 			gtk_widget_set_redraw_on_allocate(frame, TRUE);
 		}
 
@@ -1819,7 +1825,7 @@ void gControl::realize(bool make_frame)
 	else PATCH_CLASS_BASELINE(border, GTK_TYPE_BUTTON)
 	else PATCH_CLASS(border, GTK_TYPE_FIXED)
 	else PATCH_CLASS(border, GTK_TYPE_EVENT_BOX)
-	else PATCH_CLASS(border, GTK_TYPE_ALIGNMENT)
+	//else PATCH_CLASS(border, GTK_TYPE_ALIGNMENT)
 	else PATCH_CLASS(border, GTK_TYPE_BOX)
 	else PATCH_CLASS(border, GTK_TYPE_TOGGLE_BUTTON)
 	else PATCH_CLASS(border, GTK_TYPE_SCROLLED_WINDOW)
@@ -1829,7 +1835,11 @@ void gControl::realize(bool make_frame)
 	else PATCH_CLASS(border, GTK_TYPE_SOCKET)
 	else PATCH_CLASS(border, GTK_TYPE_TEXT_VIEW)
 	else PATCH_CLASS(border, GTK_TYPE_SCROLLBAR)
-	else fprintf(stderr, "gb.gtk3: warning: class %s was not patched\n", G_OBJECT_TYPE_NAME(border));
+	else PATCH_CLASS(border, GTK_TYPE_SCALE)
+	else 
+	{
+		fprintf(stderr, "gb.gtk3: warning: class %s was not patched\n", G_OBJECT_TYPE_NAME(border));
+	}
 
 	PATCH_CLASS_BASELINE(widget, GTK_TYPE_COMBO_BOX)
 	else PATCH_CLASS(widget, GTK_TYPE_TEXT_VIEW)
@@ -1881,12 +1891,17 @@ void gControl::realizeScrolledWindow(GtkWidget *wid, bool doNotRealize)
 {
 	_scroll = GTK_SCROLLED_WINDOW(gtk_scrolled_window_new(NULL, NULL));
 
-#ifdef GTK3	
+#ifdef GTK3
 	PATCH_CLASS(_scroll, GTK_TYPE_SCROLLED_WINDOW)
 	PATCH_CLASS(wid, GTK_TYPE_TEXT_VIEW)
 #endif
 
-	border = gtk_alignment_new(0, 0, 1, 1);
+#ifdef GTK3
+		border = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+		gtk_widget_set_hexpand(wid, TRUE);
+#else
+		border = gtk_alignment_new(0, 0, 1, 1);
+#endif
 	gtk_widget_set_redraw_on_allocate(border, TRUE);
 	widget = wid;
 	frame = border;
@@ -1913,7 +1928,11 @@ void gControl::updateBorder()
 	if (!frame)
 		return;
 
+#if GTK3
+	if (!GTK_IS_BOX(frame))
+#else
 	if (!GTK_IS_ALIGNMENT(frame))
+#endif
 	{
 		refresh();
 		return;
@@ -1929,8 +1948,12 @@ void gControl::updateBorder()
 	if ((int)frame_padding > pad)
 		pad = frame_padding;
 
+#if GTK3
+	g_object_set(widget, "margin", pad, NULL);
+#else
 	gtk_alignment_set_padding(GTK_ALIGNMENT(frame), pad, pad, pad, pad);
 	refresh();
+#endif
 	//gtk_widget_queue_draw(frame);
 }
 
@@ -1938,10 +1961,21 @@ int gControl::getFrameWidth()
 {
 	guint p;
 
-	if (frame && GTK_IS_ALIGNMENT(frame))
+	if (frame)
 	{
-		gtk_alignment_get_padding(GTK_ALIGNMENT(frame), &p, NULL, NULL, NULL);
-		return p;
+#if GTK3
+		if (GTK_IS_BOX(frame))
+		{
+			g_object_get(widget, "margin", &p, NULL);
+			return p;
+		}
+#else
+		if (GTK_IS_ALIGNMENT(frame))
+		{
+			gtk_alignment_get_padding(GTK_ALIGNMENT(frame), &p, NULL, NULL, NULL);
+			return p;
+		}
+#endif
 	}
 
 	/*if (_scroll)

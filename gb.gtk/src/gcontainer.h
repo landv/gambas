@@ -63,6 +63,8 @@ public:
 	virtual int clientY();
 	virtual int containerX();
 	virtual int containerY();
+	virtual int containerWidth();
+	virtual int containerHeight();
 
 	void setArrange(int vl);
 	void setUser(bool vl);
