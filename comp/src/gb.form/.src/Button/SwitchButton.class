@@ -282,7 +282,6 @@ Public Sub Timer_Timer()
   fInc = ($fTargetValue - $fValue) / 2
   If Abs(fInc) < 0.01 Then fInc = 0.05 * Sgn(fInc)
   $fValue += fInc
-  Debug $fValue
   
   If $fValue < 0 Then
     $fValue = 0

@@ -200,7 +200,11 @@ Public Sub View_MouseMove()
 
   Dim I As Integer
   Dim sColor As String
+  Dim Y As Integer
 
+  Y = Mouse.ScreenY - $hView.ScreenY
+  If Y < 0 Or If Y >= $hView.H Then Return
+  
   I = ((Mouse.ScreenX - $hView.ScreenX + $hView.ScrollX - (CUSTOM_D \ 2)) \ (CUSTOM_W + CUSTOM_D))
   If I < 0 Or If I > $aColors.Max Then I = -1
   
@@ -315,6 +319,9 @@ End
 Private Sub Current_Write(Value As Integer)
 
   $iCurrent = $aColors.Find(Value)
+  If $iCurrent >= 0 Then
+    $hView.EnsureVisible(CUSTOM_D + (CUSTOM_W + CUSTOM_D) * ($iCurrent - 1) + CUSTOM_W \ 2, 1, 1, $hView.ClientH)
+  Endif
   $hView.Refresh
 
 End
