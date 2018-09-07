@@ -409,13 +409,13 @@ Public Sub Scroll(X As Integer, Y As Integer)
   
   If System.RightToLeft Then X = $hHBar.MaxValue - X
 
-  If $hHBar.Value = X And If $hVBar.Value = Y Then Return
+  If $iScrollX = X And If $iScrollY = Y Then Return
   
+  $iScrollX = Max($hHBar.MinValue, Min($hHBar.MaxValue, X))
+  $iScrollY = Max($hVBar.MinValue, Min($hVBar.MaxValue, Y))
+    
   If Application.Animations And If $bAllowAnimations Then
   
-    $iScrollX = Max($hHBar.MinValue, Min($hHBar.MaxValue, X))
-    $iScrollY = Max($hVBar.MinValue, Min($hVBar.MaxValue, Y))
-    
     If Not $hTimerScroll Then
       $hTimerScroll = New Timer As "TimerScroll"
       $hTimerScroll.Delay = 20
@@ -424,8 +424,8 @@ Public Sub Scroll(X As Integer, Y As Integer)
   
   Else
     
-    $hHBar.Value = X
-    $hVBar.Value = Y
+    $hHBar.Value = $iScrollX
+    $hVBar.Value = $iScrollY
     $hDrawingArea.Refresh
     
   Endif
@@ -434,12 +434,7 @@ End
 
 Public Sub TimerScroll_Timer()
   
-  Dim D As Integer
-  
-  D = Abs($hHBar.Value - $iScrollX)
   $hHBar.Value += ($iScrollX - $hHBar.Value + Sgn($iScrollX - $hHBar.Value)) \ 2
-
-  D = Abs($hVBar.Value - $iScrollY)
   $hVBar.Value += ($iScrollY - $hVBar.Value + Sgn($iScrollY - $hVBar.Value)) \ 2
   
   $hDrawingArea.Refresh
@@ -684,6 +679,19 @@ Public Sub DrawingArea_MouseWheel()
   
 End
 
+Private Sub GetActualScroll(ByRef SX As Integer, ByRef SY As Integer)
+  
+  If Application.Animations Then
+    SX = $iScrollX
+    SY = $iScrollY
+  Else
+    SX = Me.ScrollX
+    SY = Me.ScrollY
+  Endif
+  
+End
+
+
 Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer) As Boolean
   
   Dim PW, PH, CX, CY, CW, CH As Integer
@@ -697,7 +705,7 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   '   H += F * 2
   ' Endif
   
-  'Debug X;; Y;; W;; H;; "[";; $hDrawingArea.W;; $hDrawingArea.H;; "]"
+  'Debug Me;; X;; Y;; W;; H;; "[";; $hDrawingArea.W;; $hDrawingArea.H;; "]";; System.Backtrace.Join(" ")
   
   WW = W / 2
   HH = H / 2
@@ -707,8 +715,9 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   PW = Me.ClientW '$hDrawingArea.W '- F * 2
   PH = Me.ClientH '$hDrawingArea.H '- F * 2
 
-  CX = - Me.ScrollX 
-  CY = - Me.ScrollY
+  GetActualScroll(ByRef CX, ByRef CY)
+  CX = - CX
+  CY = - CY
   CW = Me.ScrollWidth
   CH = Me.ScrollHeight
 
@@ -749,8 +758,15 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
     CY = PH - CH
   Endif
 
-  If $hHBar.Value = - CX And If $hVBar.Value = - CY Then Return True
-  Scroll(- CX, - CY)
+  CX = - CX
+  CY = - CY
+
+  If Application.Animations Then
+    If $iScrollX = CX And If $iScrollY = CY Then Return True
+  Else
+    If $hHBar.Value = CX And If $hVBar.Value = CY Then Return True
+  Endif
+  Scroll(CX, CY)
   
 End
 
@@ -833,7 +849,10 @@ End
 
 Public Sub _EnsureVisibleScroll(X As Integer, Y As Integer)
   
-  If EnsureVisible(Me.ScrollX + X - 16, Me.ScrollY + Y - 16, 32, 32) Then Return
+  Dim SX, SY As Integer
+
+  GetActualScroll(ByRef SX, ByRef SY)
+  If EnsureVisible(SX + X - 16, SY + Y - 16, 32, 32) Then Return
   Drag.Hide
   
 End
@@ -906,8 +925,10 @@ Public Sub DrawingArea_Font()
 End
 
 Public Sub RefreshRect(X As Integer, Y As Integer, Width As Integer, Height As Integer)
-  
-  $hDrawingArea.Refresh(X - Me.ScrollX, Y - Me.ScrollY, Width, Height)
+
+  Dim SX, SY As Integer  
+  GetActualScroll(ByRef SX, ByRef SY)
+  $hDrawingArea.Refresh(X - SX, Y - SY, Width, Height)
   
 End
 

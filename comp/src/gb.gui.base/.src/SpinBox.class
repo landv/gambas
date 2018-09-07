@@ -185,6 +185,7 @@ Private Sub SetValue(iValue As Integer, Optional bFocus As Boolean)
     $iValue = iValue
     Raise Change
   Endif
+  $hView.Refresh
 
   If bFocus Then
     $hTextBox.SetFocus
