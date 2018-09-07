@@ -33,6 +33,7 @@ Private $bHideLater As Boolean
 Private $cFindStrings As Collection
 Static Private $sWordSeparators As String
 Private $bStatic As Boolean
+Private $fOpenTime As Float
 
 Static Public Sub _init()
 
@@ -179,6 +180,8 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
   
   If $bShowHelp Then
     sepHelp.Show
+    webHelp.Enabled = False
+    timEnable.Start
     webHelp.Show
     panResizeTop.Show
     panResizeBottom.Show
@@ -1142,5 +1145,12 @@ Public Sub panComp_Arrange()
   panResizeBottom.Move(panComp.W - panResizeBottom.W, panComp.H - panResizeBottom.H)
   panResizeTop.Raise
   panResizeBottom.Raise
+
+End
+
+Public Sub timEnable_Timer()
+
+  webHelp.Enabled = True
+  timEnable.Stop
 
 End

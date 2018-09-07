@@ -1503,3 +1503,9 @@ Public Sub chkGridDiag_Click()
   Try GetCurrent().UpdateGrid
 
 End
+
+Public Sub cchColor_Change()
+
+  palColor.Current = cchColor.Value
+
+End

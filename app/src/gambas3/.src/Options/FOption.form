@@ -245,31 +245,31 @@
       Font = Font["Bold"]
       Text = ("Interface")
     }
-    { HBox8 HBox
+    { HBox3 HBox
       MoveScaled(1,5,66,4)
       Spacing = True
       Indent = True
-      { Label2 Label
+      { Label10 Label
         MoveScaled(0,0,42,4)
         Expand = True
-        Text = ("Sort properties")
+        Text = ("Show tooltips")
       }
-      { btnSortProperty SwitchButton
-        MoveScaled(51,0,8,4)
+      { btnTooltip SwitchButton
+        MoveScaled(43,0,8,4)
         Animated = True
       }
     }
-    { HBox21 HBox
+    { HBox58 HBox
       MoveScaled(1,10,66,4)
       Spacing = True
       Indent = True
-      { Label21 Label
+      { Label57 Label
         MoveScaled(0,0,42,4)
         Expand = True
-        Text = ("Minimize at runtime")
+        Text = ("Show animations")
       }
-      { btnMinimize SwitchButton
-        MoveScaled(51,0,8,4)
+      { btnAnimation SwitchButton
+        MoveScaled(43,0,8,4)
         Animated = True
       }
     }
@@ -287,8 +287,36 @@
         Animated = True
       }
     }
-    { HBox44 HBox
+    { HBox8 HBox
       MoveScaled(1,20,66,4)
+      Spacing = True
+      Indent = True
+      { Label2 Label
+        MoveScaled(0,0,42,4)
+        Expand = True
+        Text = ("Sort properties")
+      }
+      { btnSortProperty SwitchButton
+        MoveScaled(51,0,8,4)
+        Animated = True
+      }
+    }
+    { HBox21 HBox
+      MoveScaled(1,25,66,4)
+      Spacing = True
+      Indent = True
+      { Label21 Label
+        MoveScaled(0,0,42,4)
+        Expand = True
+        Text = ("Minimize at runtime")
+      }
+      { btnMinimize SwitchButton
+        MoveScaled(51,0,8,4)
+        Animated = True
+      }
+    }
+    { HBox44 HBox
+      MoveScaled(1,30,66,4)
       Spacing = True
       Indent = True
       { Label53 Label
@@ -297,34 +325,6 @@
         Text = ("Restore files when loading a project")
       }
       { btnStartupLoad SwitchButton
-        MoveScaled(43,0,8,4)
-        Animated = True
-      }
-    }
-    { HBox3 HBox
-      MoveScaled(1,25,66,4)
-      Spacing = True
-      Indent = True
-      { Label10 Label
-        MoveScaled(0,0,42,4)
-        Expand = True
-        Text = ("Show tooltips")
-      }
-      { btnTooltip SwitchButton
-        MoveScaled(43,0,8,4)
-        Animated = True
-      }
-    }
-    { HBox58 HBox
-      MoveScaled(1,30,66,4)
-      Spacing = True
-      Indent = True
-      { Label57 Label
-        MoveScaled(0,0,42,4)
-        Expand = True
-        Text = ("Show animations")
-      }
-      { btnAnimation SwitchButton
         MoveScaled(43,0,8,4)
         Animated = True
       }
