@@ -988,7 +988,7 @@ int STRING_conv(char **result, const char *str, int len, const char *src, const 
 			out = COMMON_buffer;
 			out_len = COMMON_BUF_MAX;
 
-			#if defined(OS_SOLARIS) || defined(OS_FREEBSD) || defined(OS_OPENBSD)
+			#if defined(OS_SOLARIS) || defined(OS_BSD)
 			ret = iconv(handle, &in, &in_len, &out, &out_len);
 			#else
 			ret = iconv(handle, (char **)&in, &in_len, &out, &out_len);

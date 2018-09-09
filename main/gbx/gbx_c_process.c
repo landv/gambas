@@ -38,13 +38,6 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 
-#ifdef OS_OPENBSD
-/* granpt(), unlockpt() and ptsname() unavailable under OpenBSD
-	and are replaced with openpty() implementation because of security
-	issues */
-#include <util.h>
-#endif
-
 #include "gb_replace.h"
 #include "gb_limit.h"
 #include "gb_array.h"
@@ -606,18 +599,12 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 
 	if (mode & PM_TERM)
 	{
-		#ifdef OS_OPENBSD
-		int fd_slave;
-		if (openpty(&fd_master, &fd_slave, NULL, NULL, NULL) < 0)
-			goto __ABORT_ERRNO;
-		#else
 		fd_master = posix_openpt(O_RDWR | O_NOCTTY);
 		if (fd_master < 0)
 			goto __ABORT_ERRNO;
 
 		grantpt(fd_master);
 		unlockpt(fd_master);
-		#endif
 		slave = ptsname(fd_master);
 		#ifdef DEBUG_ME
 		fprintf(stderr, "run_process: slave = %s\n", slave);

@@ -59,7 +59,7 @@
 #include <sys/param.h>
 #include <limits.h>
 
-#if defined(__GNU_LIBRARY__) || defined(OS_FREEBSD)
+#if defined(__GNU_LIBRARY__) || defined(OS_BSD)
 
 #include <getopt.h>
 #define HAVE_GETOPT_LONG 1
@@ -73,7 +73,7 @@
 
 #endif
 
-#if defined(OS_FREEBSD) || defined(OS_OPENBSD)
+#if defined(OS_BSD)
 
 	/* sighandler_t is replaced by sig_t */
 	#define sighandler_t sig_t
