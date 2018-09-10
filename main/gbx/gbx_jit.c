@@ -324,7 +324,7 @@ void JIT_call_unknown(PCODE *pc, VALUE **psp)
 	
 	ON_ERROR_1(error_JIT_call_unknown, &save)
 	{
-		EXEC_loop();
+		EXEC_function_loop();
 	}
 	END_ERROR
 

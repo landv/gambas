@@ -156,6 +156,7 @@ static void enter_function(FUNCTION *func, int index)
 static void print_catch(void)
 {
 	JIT_print("\n  } CATCH {\n\n");
+	JIT_print("  CP = (void *)%p;\n", JIT_class);
 	JIT_print("  FP = (void *)%p;\n", _func);
 	if (_has_catch || _has_finally)
 		JIT_print("  JIT.error_set_last(FALSE); \n");
@@ -163,6 +164,7 @@ static void print_catch(void)
 	JIT_print("  if (SP > sp) sp = SP; else SP = sp;\n");
 	JIT_print("  LEAVE_SUPER();\n");
 	JIT_print("  if (sp > ep) { JIT.release_many(sp, sp - ep); SP = sp = ep; }\n");
+	//JIT_print("  PP = SP;\n");
 	JIT_print("\n  } END_TRY\n\n");
 	JIT_print("__FINALLY:;\n");
 	_try_finished = TRUE;
@@ -283,8 +285,8 @@ static void declare(bool *flag, const char *expr)
 
 static void print_label(FUNCTION *func, ushort pc)
 {
+	//JIT_print("__L%d:; fprintf(stderr, \"[%s]\\n\");\n", pc, JIT.get_position(JIT_class, func, &func->code[pc]));
 	JIT_print("__L%d:; // %s\n", pc, JIT.get_position(JIT_class, func, &func->code[pc]));
-	//JIT_print("__L%d:; fprintf(stderr, \"[%s]\\n\", ERROR_current, ERROR_current->info.code); // %s\n", pc, JIT.get_position(JIT_class, func, &func->code[pc]), JIT.get_position(JIT_class, func, &func->code[pc]));
 }
 
 

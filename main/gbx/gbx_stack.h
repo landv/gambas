@@ -85,9 +85,6 @@ while (0);
 
 #endif
 
-void STACK_push_frame(STACK_CONTEXT *context, int check);
-void STACK_pop_frame(STACK_CONTEXT *context);
-
 bool STACK_has_error_handler(void);
 
 STACK_BACKTRACE *STACK_get_backtrace(void);
