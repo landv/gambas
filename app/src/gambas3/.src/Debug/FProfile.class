@@ -421,7 +421,7 @@ Fast Public Sub Init(sPath As String)
   $aAll.Add($sPath)
   
   Me.Show
-  
+
   Dec Application.Busy
   
 Catch
@@ -518,7 +518,7 @@ Private Sub GetNumberOfLines(sClass As String) As Integer
   
   Try hEditor = Project.LoadFile(sPath)
   If IsNull(hEditor) Then Return
-  
+
   Return hEditor.GetEditor().Count
   
 End
