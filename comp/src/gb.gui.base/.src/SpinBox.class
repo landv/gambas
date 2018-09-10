@@ -226,7 +226,6 @@ End
 
 Public Sub View_Enter()
   
-  'Debug
   $hView.Tracking = True
   $hView.Refresh
   
@@ -234,7 +233,7 @@ End
 
 Public Sub View_Leave()
   
-  'Debug
+  $iInsideArrow = ARROW_NONE
   $hView.Tracking = False
   $hView.Refresh
   
