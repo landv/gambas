@@ -27,6 +27,7 @@ End
 Public Sub Form_Open()
 
   'Exec ["stty", "onlcr"] Wait
+  Application.Animations = True
   TerminalView1.Exec(["bash"])
 
 End
