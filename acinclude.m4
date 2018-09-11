@@ -401,7 +401,7 @@ AC_DEFUN([GB_INIT],
 AC_DEFUN([GB_THREAD],
 [
   case "${host}" in
-    *-*-freebsd* | *-*-darwin* )
+    *-*-freebsd* | *-*-netbsd* | *-*-darwin* )
       THREAD_LIB=""
       THREAD_INC="-pthread -D_REENTRANT"
       GBX_THREAD_LIB=""
@@ -413,13 +413,6 @@ AC_DEFUN([GB_THREAD],
       THREAD_INC=""
       GBX_THREAD_LIB=""
       GBX_THREAD_INC=""
-      GBX_THREAD_LDFLAGS=""
-      ;;
-    *-*-netbsd* )
-      THREAD_LIB=""
-      THREAD_INC="-pthread -D_REENTRANT"
-      GBX_THREAD_LIB=""
-      GBX_THREAD_INC="-pthread -D_REENTRANT"
       GBX_THREAD_LDFLAGS=""
       ;;
     *)
