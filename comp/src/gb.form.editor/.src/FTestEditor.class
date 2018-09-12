@@ -23,6 +23,7 @@ End
 Public Sub Form_Open()
 
   Application.Animations = True
+  Application.Shadows = True
 
   'TextEditor1.LineNumberOffset = 10000
   
@@ -71,7 +72,8 @@ End
 
 Public Sub txtPrint_Activate()
 
-  TextEditor1.Print(UnQuote(txtPrint.Text))
+  'TextEditor1.Print(UnQuote(txtPrint.Text))
+  TextEditor1.HighlightString(txtPrint.Text, True)
 
 End
 

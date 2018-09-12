@@ -208,7 +208,11 @@ Private $bSideBarLockViewer As Boolean
 Private $iSideBarNBLines As Integer
 'Private System.RightToLeft As Boolean = True
 Private $bSideBarMouseDown As Boolean
-Private $imgSmallARrow As Image
+
+Private $sHighlightString As String
+Private $iHighlightStringMode As Integer
+Private $iHighlightStringLen As Integer
+Private $bHighlightWordOnly As Boolean
 
 Public Sub _new()
   
@@ -245,10 +249,6 @@ Public Sub _new()
   $hView.Tracking = True
   $hView.Mouse = Mouse.Text
   $hView.Expand = True
-  ' If $bShowPreview Then
-  '   InitSideBar
-  ' Endif
-  $imgSmallARrow = Image.Load("./smallarrow.png")
   
   Me.Proxy = $hView
   $iScrollBar = $hView.ScrollBar
@@ -439,6 +439,7 @@ Private Sub UpdateMargin()
   
   If MW <> $MW Then
     $MW = MW
+    $hView._SetShadowOffset(0, 0, $MW - $iWidthModified, 0)
     If $cLineLayout Then
       _UpdateAllHeight
       UpdateWidth
@@ -802,7 +803,7 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   Dim sCar As String
   Dim aLayout As Integer[]
   Dim I As Integer
-  Dim P As Integer
+  Dim P, L As Integer
   Dim D As Float
   Dim sText As String
   Dim YY As Integer
@@ -816,6 +817,7 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   Dim hPos As Point
   Dim iEndingSpaceLimit As Integer
   Dim XP, IP As Integer
+  Dim XY As Point
   
   'Debug Row
   H = $LH
@@ -839,6 +841,36 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   Paint.Clip
   
   Paint.Translate($MW, 0)
+  
+  sText = $hDoc.Lines[Row]
+  
+  ' Highlighted string
+  
+  If $sHighlightString Then
+    
+    P = 0
+    L = $hDoc.LineLength[Row]
+    
+    Do
+      
+      P = String.InStr(sText, $sHighlightString, P + 1, $iHighlightStringMode)
+      If P = 0 Then Break
+      
+      If $bHighlightWordOnly Then
+        If P > 1 And If Not IsWordLimit(String.Mid$(sText, P - 1, 1)) Then Goto NEXT_SEARCH
+        If (P + $iHighlightStringLen) < L And If Not IsWordLimit(String.Mid$(sText, P + $iHighlightStringLen, 1)) Then Goto NEXT_SEARCH
+      Endif
+      
+      XY = LinePos(Row, P - 1)
+      Paint.FillRect(X + XY.X, Y + XY.Y, TextWidth(sText, P, $iHighlightStringLen), H, $iMatchColor)
+      
+    NEXT_SEARCH:
+    
+      P += $iHighlightStringLen
+      
+    Loop
+    
+  Endif
   
   ' Selection
   
@@ -904,16 +936,7 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
     If Row = $YM Then DrawMatch(X, Y, H, $XM, $YM)
   Endif
   
-  ' ' Tab
-  '
-  ' If Row = $Y Then
-  '   XX = LineStartPos(Row)
-  '   If XX Then Paint.FillRect(X, Y, XX - X, Height, Color.SetAlpha($iMultiLineColor, 128))
-  ' Endif
-  
   ' Text
-  
-  sText = $hDoc.Lines[Row]
   
   If hInfo.Colors Then
     
@@ -3035,17 +3058,20 @@ End
 
 Private Sub ShowPosition_Write(Value As Boolean)
   
+  Dim hSave As Container
+  
   $bShowPosition = Value
   If $bShowPosition Then
     If Not $hLabel Then
-      $hLabelFrame = New Panel(Me)
+      hSave = $hView._Container
+      $hView._Container = Null
+      $hLabelFrame = New Panel($hView)
+      $hView._Container = hSave
       $hLabelFrame.Background = Color.SetAlpha($hStyles[Highlight.Background].Color, 64)
       $hLabelFrame.Ignore = True
       $hLabel = New Label($hLabelFrame) ' TODO: NULL + gb.gtk => crash!
       $hLabel.AutoResize = True
-      '$hLabel.Padding = 0
-      $hLabel.Font = Me.Parent.Font
-      '$hLabel.Font.Bold = True
+      $hLabel.Font = Font[Me.Parent.Font.ToString()] ' TODO: Setting font directly sets nothing
       $hLabel.Foreground = $hStyles[Highlight.Normal].Color
       $hLabel.Show
     Endif
@@ -5255,7 +5281,7 @@ End
 '           Paint.RelLineTo(Paint.Width - 6, 0)
 '           Paint.Background = $iMarginColor
 '           Paint.Stroke
-'           Paint.DrawImage($imgSmallARrow, 0, y - fRowHeight - 1)
+'           Paint.DrawImage($hSmallArrow, 0, y - fRowHeight - 1)
 '           
 '         Endif
 '       Endif
@@ -5788,3 +5814,24 @@ Private Sub DisabledBreakpoints_Write(Value As Integer[])
   $hDoc.DisabledBreakpoints = Value
 
 End
+
+Public Sub HighlightString(Text As String, Optional IgnoreCase As Boolean, Optional WordOnly As Boolean)
+  
+  $sHighlightString = Text
+  $iHighlightStringLen = String.Len(Text)
+  $iHighlightStringMode = If(IgnoreCase, gb.IgnoreCase, gb.Binary)
+  $bHighlightWordOnly = WordOnly
+  
+  ClearCacheText
+  $hView.Refresh
+  
+End
+
+Private Sub IsWordLimit(sCar As String) As Boolean
+  
+  sCar = String.RemoveDiacritics(sCar)
+  If IsLetter(sCar) Or IsDigit(sCar) Or If InStr("_$", sCar) Then Return
+  Return True
+  
+End
+
