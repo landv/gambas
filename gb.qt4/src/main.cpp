@@ -83,7 +83,6 @@
 #include "CClipboard.h"
 #include "CDraw.h"
 #include "CWatch.h"
-#include "CScrollView.h"
 #include "CDrawingArea.h"
 #include "CMessage.h"
 #include "CSlider.h"
@@ -143,7 +142,6 @@ GB_CLASS CLASS_Picture;
 GB_CLASS CLASS_Drawing;
 GB_CLASS CLASS_DrawingArea;
 GB_CLASS CLASS_Printer;
-GB_CLASS CLASS_ScrollView;
 GB_CLASS CLASS_Image;
 GB_CLASS CLASS_SvgImage;
 GB_CLASS CLASS_TextArea;
@@ -1328,7 +1326,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CTextAreaSelectionDesc, CTextAreaDesc,
 	CFrameDesc, CPanelDesc, CHBoxDesc, CVBoxDesc, CHPanelDesc, CVPanelDesc,
 	CTabStripContainerChildrenDesc, CTabStripContainerDesc, CTabStripDesc,
-	CScrollViewDesc,
 	CDrawingAreaDesc,
 	CSliderDesc, CMovieBoxDesc, CScrollBarDesc,
 	CWindowMenusDesc, CWindowControlsDesc, CWindowDesc, CWindowsDesc, CFormDesc,
@@ -1425,7 +1422,6 @@ int EXPORT GB_INIT(void)
 	CLASS_Drawing = GB.FindClass("Drawing");
 	CLASS_DrawingArea = GB.FindClass("DrawingArea");
 	CLASS_Printer = GB.FindClass("Printer");
-	CLASS_ScrollView = GB.FindClass("ScrollView");
 	CLASS_Image = GB.FindClass("Image");
 	CLASS_SvgImage = GB.FindClass("SvgImage");
 	CLASS_TextArea = GB.FindClass("TextArea");

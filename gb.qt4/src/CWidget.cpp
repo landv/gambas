@@ -40,7 +40,6 @@
 #include "CColor.h"
 #include "CClipboard.h"
 #include "CMenu.h"
-#include "CScrollView.h"
 #include "CDrawingArea.h"
 #include "CTextArea.h"
 
@@ -1435,9 +1434,6 @@ END_PROPERTY
 
 static QWidget *get_color_widget(CWIDGET *_object)
 {
-	if (qobject_cast<MyScrollView *>(WIDGET))
-		return WIDGET; //((CSCROLLVIEW *)THIS)->container;
-	
 	QWidget *view = get_viewport(WIDGET);
 	if (view)
 		return view;
@@ -2378,6 +2374,16 @@ void CWidget::destroy()
 	GB.Unref(POINTER(&_object));
 }
 
+void CWidget::each(void (*func)(CWIDGET *))
+{
+	QHashIterator<QObject *, CWIDGET *> i(dict);
+	while (i.hasNext())
+	{
+		i.next();
+		(*func)(i.value());
+	}
+}
+
 /*static void post_dblclick_event(void *control)
 {
 	GB.Raise(control, EVENT_DblClick, 0);
@@ -3129,6 +3135,10 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			control = (CWIDGET *)(EXT(control)->proxy_for);
 			goto __MOUSE_WHEEL_TRY_PROXY;
 		}
+		
+		control = (CWIDGET *)CWIDGET_get_parent(control);
+		if (control)
+			goto __MOUSE_WHEEL_TRY_PROXY;
 		
 		goto __NEXT;
 	}

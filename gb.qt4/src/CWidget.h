@@ -276,6 +276,8 @@ public:
 
 	static CWINDOW *getWindow(CWIDGET *object);
 	static CWINDOW *getTopLevel(CWIDGET *object);
+	
+	static void each(void (*func)(CWIDGET *));
 
 	//static void setName(CWIDGET *, const char *);
 	//static void installFilter(QObject *);

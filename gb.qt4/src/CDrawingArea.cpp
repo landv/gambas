@@ -50,6 +50,20 @@
 
 DECLARE_EVENT(EVENT_Draw);
 DECLARE_EVENT(EVENT_Font);
+DECLARE_EVENT(EVENT_Change);
+
+
+static void send_change_event_widget(CWIDGET *widget)
+{
+	if (GB.Is(widget, CLASS_DrawingArea))
+		GB.Raise(widget, EVENT_Change, 0);
+}
+
+void CDRAWINGAREA_send_change_event()
+{
+	CWidget::each(send_change_event_widget);
+}
+
 
 /***************************************************************************
 
@@ -543,7 +557,7 @@ void MyDrawingArea::changeEvent(QEvent *e)
 
 ***************************************************************************/
 
-BEGIN_METHOD(CDRAWINGAREA_new, GB_OBJECT parent)
+BEGIN_METHOD(DrawingArea_new, GB_OBJECT parent)
 
 	MyDrawingArea *wid = new MyDrawingArea(QCONTAINER(VARG(parent)));
 
@@ -556,7 +570,7 @@ BEGIN_METHOD(CDRAWINGAREA_new, GB_OBJECT parent)
 END_METHOD
 
 
-BEGIN_PROPERTY(CDRAWINGAREA_cached)
+BEGIN_PROPERTY(DrawingArea_Cached)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(WIDGET->isCached());
@@ -579,7 +593,7 @@ END_PROPERTY
 DECLARE_METHOD(Control_Background);
 
 
-BEGIN_METHOD_VOID(CDRAWINGAREA_clear)
+BEGIN_METHOD_VOID(DrawingArea_Clear)
 
 	WIDGET->clearBackground();
 
@@ -606,7 +620,7 @@ BEGIN_PROPERTY(DrawingArea_NoBackground)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDRAWINGAREA_border)
+BEGIN_PROPERTY(DrawingArea_Border)
 
 	Container_Border(_object, _param);
 
@@ -617,7 +631,7 @@ BEGIN_PROPERTY(CDRAWINGAREA_border)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CDRAWINGAREA_enabled)
+BEGIN_PROPERTY(DrawingArea_Enabled)
 
 	Control_Enabled(_object, _param);
 
@@ -626,7 +640,7 @@ BEGIN_PROPERTY(CDRAWINGAREA_enabled)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CDRAWINGAREA_focus)
+BEGIN_PROPERTY(DrawingArea_Focus)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(CWIDGET_get_allow_focus(THIS));
@@ -635,7 +649,7 @@ BEGIN_PROPERTY(CDRAWINGAREA_focus)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CDRAWINGAREA_painted)
+BEGIN_PROPERTY(DrawingArea_Painted)
 
 	static bool deprecated = false;
 
@@ -705,13 +719,14 @@ BEGIN_PROPERTY(DrawingArea_Tablet)
 
 END_PROPERTY
 
+
 GB_DESC CDrawingAreaDesc[] =
 {
 	GB_DECLARE("DrawingArea", sizeof(CDRAWINGAREA)), GB_INHERITS("Container"),
 
-	GB_METHOD("_new", NULL, CDRAWINGAREA_new, "(Parent)Container;"),
+	GB_METHOD("_new", NULL, DrawingArea_new, "(Parent)Container;"),
 
-	GB_PROPERTY("Cached", "b", CDRAWINGAREA_cached),
+	GB_PROPERTY("Cached", "b", DrawingArea_Cached),
 
 	GB_PROPERTY("Arrangement", "i", Container_Arrangement),
 	GB_PROPERTY("AutoResize", "b", Container_AutoResize),
@@ -721,20 +736,21 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_PROPERTY("Indent", "b", Container_Indent),
   GB_PROPERTY("Invert", "b", Container_Invert),
 
-	GB_PROPERTY("Border", "i", CDRAWINGAREA_border),
+	GB_PROPERTY("Border", "i", DrawingArea_Border),
 	GB_PROPERTY("NoBackground", "b", DrawingArea_NoBackground),
 	GB_PROPERTY("Background", "i", DrawingArea_Background),
 
-	GB_PROPERTY("Focus", "b", CDRAWINGAREA_focus),
-	GB_PROPERTY("Enabled", "b", CDRAWINGAREA_enabled),
-	GB_PROPERTY("Painted", "b", CDRAWINGAREA_painted),
+	GB_PROPERTY("Focus", "b", DrawingArea_Focus),
+	GB_PROPERTY("Enabled", "b", DrawingArea_Enabled),
+	GB_PROPERTY("Painted", "b", DrawingArea_Painted),
 	GB_PROPERTY("Tablet", "b", DrawingArea_Tablet),
 
-	GB_METHOD("Clear", NULL, CDRAWINGAREA_clear, NULL),
+	GB_METHOD("Clear", NULL, DrawingArea_Clear, NULL),
 	GB_METHOD("Refresh", NULL, DrawingArea_Refresh, "[(X)i(Y)i(Width)i(Height)i]"),
 
 	GB_EVENT("Draw", NULL, NULL, &EVENT_Draw),
 	GB_EVENT("Font", NULL, NULL, &EVENT_Font),
+	GB_EVENT("Change", NULL, NULL, &EVENT_Change),
 
 	//GB_INTERFACE("Draw", &DRAW_Interface),
 	GB_INTERFACE("Paint", &PAINT_Interface),

@@ -39,7 +39,6 @@
 #include "CWidget.h"
 #include "CWindow.h"
 #include "CConst.h"
-#include "CScrollView.h"
 #include "CTabStrip.h"
 #include "CColor.h"
 
@@ -338,8 +337,6 @@ void CCONTAINER_arrange(void *_object)
 
 	if (GB.Is(THIS, CLASS_TabStrip))
 		CTABSTRIP_arrange(THIS);
-	else if (GB.Is(THIS, CLASS_ScrollView))
-		CSCROLLVIEW_arrange(THIS);
 
 	CCONTAINER_arrange_real(_object);
 	

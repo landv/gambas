@@ -44,7 +44,6 @@ gb_qt4_la_SOURCES = \
  CDraw.h CDraw.cpp \
  cpaint_impl.h cpaint_impl.cpp \
  CWatch.h CWatch_moc.cpp CWatch.cpp \
- CScrollView.h CScrollView_moc.cpp CScrollView.cpp \
  CDrawingArea.h CDrawingArea_moc.cpp CDrawingArea.cpp \
  CMessage.h CMessage_moc.cpp CMessage.cpp \
  CSlider.h CSlider_moc.cpp CSlider.cpp \
