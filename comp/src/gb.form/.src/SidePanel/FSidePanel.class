@@ -193,11 +193,11 @@ Private Sub RefreshPanel()
   'If $bTransparent Then panSide.Move(0, 0, Me.ClientW, Me.ClientH)
   
   If $bTransparent Then
-    If $bSeparator Then
-      D = 1
-    Else
+    'If $bSeparator Then
+    '  D = 1
+    'Else
       D = 0
-    Endif
+    'Endif
   Else
     D = BUTTON_H
   Endif
@@ -376,7 +376,7 @@ Private Sub RefreshAll()
     panSide.Hide 'Enabled = FALSE
     
     If $bTransparent Then
-      D = If($bSeparator, 1, 0)
+      D = 0 'If($bSeparator, 1, 0)
     Else
       D = BUTTON_H
     Endif

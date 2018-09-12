@@ -201,7 +201,9 @@ Public Sub View_MouseMove()
   Dim I As Integer
   Dim sColor As String
   Dim Y As Integer
-
+  
+  'Debug
+  
   Y = Mouse.ScreenY - $hView.ScreenY
   If Y < 0 Or If Y >= $hView.H Then Return
   
@@ -284,7 +286,7 @@ End
 
 Public Sub View_Arrange()
 
-  CUSTOM_W = $hView.ClientH - CUSTOM_D * 2
+  CUSTOM_W = Max(CUSTOM_D, $hView.ClientH - CUSTOM_D * 2)
   UpdateColors
 
 End
