@@ -3,7 +3,7 @@
 Export
 Inherits UserContainer
 
-Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Focus,NoBackground,Tablet"
+Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Focus,NoBackground,Tablet,Shadow"
 Public Const _DefaultEvent As String = "Draw"
 Public Const _DefaultSize As String = "24,24"
 Public Const _Similar As String = "DrawingArea,ScrollView"
@@ -11,8 +11,8 @@ Public Const _Similar As String = "DrawingArea,ScrollView"
 
 Property ScrollX As Integer
 Property ScrollY As Integer
-Property Read ScrollWidth, ScrollW As Integer
-Property Read ScrollHeight, ScrollH As Integer
+Property Read ScrollWidth, ScrollW, ContentsWidth, ContentsW As Integer
+Property Read ScrollHeight, ScrollH, ContentsHeight, ContentsH As Integer
 
 Property Read ClientWidth, ClientW As Integer
 Property Read ClientHeight, ClientH As Integer
@@ -65,11 +65,17 @@ Private $iShadowN As Integer
 Private $iShadowS As Integer
 Private $iShadowW As Integer
 Private $iShadowE As Integer
+Private $hShadowN As DrawingArea
+Private $hShadowS As DrawingArea
+Private $hShadowW As DrawingArea
+Private $hShadowE As DrawingArea
 Private $hCorner As DrawingArea
 Private $hBorder As DrawingArea
 
 Private $iScrollX As Integer
 Private $iScrollY As Integer
+Private $iTargetX As Integer
+Private $iTargetY As Integer
 Private $hTimerScroll As Timer
 Private $bAllowAnimations As Boolean
 
@@ -312,7 +318,121 @@ RETRY:
   
   $bNoArrange = False
   
+  LayoutShadows
+  
 End
+
+Private Sub LayoutShadows()
+
+  Dim hSave As Container
+  Dim bShadow As Boolean
+  
+  bShadow = $bShadow Or Application.Shadows
+  
+  If Not bShadow Then 
+    
+    If $hShadowN Then 
+      $hShadowN.Delete
+      $hShadowN = Null
+    Endif
+    If $hShadowS Then
+      $hShadowS.Delete
+      $hShadowS = Null
+    Endif
+    If $hShadowW Then
+      $hShadowW.Delete
+      $hShadowW = Null
+    Endif
+    If $hShadowE Then
+      $hShadowE.Delete
+      $hShadowE = Null
+    Endif
+    Return
+    
+  Endif
+  
+  If Not $hShadowN Then
+    hSave = Me._Container
+    Me._Container = Null
+    $hShadowN = New DrawingArea(Me) As "Shadow"
+    $hShadowN.Ignore = True
+    $hShadowS = New DrawingArea(Me) As "Shadow"
+    $hShadowS.Ignore = True
+    $hShadowW = New DrawingArea(Me) As "Shadow"
+    $hShadowW.Ignore = True
+    $hShadowE = New DrawingArea(Me) As "Shadow"
+    $hShadowE.Ignore = True
+    Me._Container = hSave
+  Endif
+  
+  'If $bVBarVisible Then
+    LoadFades()
+    $hShadowN.Move($hDrawingArea.X + $iShadowW, $hDrawingArea.Y + $iShadowN, Me.ClientW - $iShadowE - $iShadowW, $hFadeN.H)
+    $hShadowN.Raise
+    $hShadowS.Move($hDrawingArea.X + $iShadowW, $hDrawingArea.Y + Me.ClientH - $iShadowS - $hFadeS.H, Me.ClientW - $iShadowE - $iShadowW, $hFadeS.H)
+    $hShadowS.Raise
+    'Paint.Rectangle(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
+    'Paint.Clip()
+    $hShadowN.Visible = $iScrollY > $hVBar.MinValue 'Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, $hFadeN.H - ($iScrollY - $hVBar.MinValue)), DW, $hFadeN.H)
+    $hShadowS.Visible = $iScrollY < $hVBar.MaxValue 'Then Draw.Tile($hFadeS, 0, DH - $hFadeS.H - $iShadowS + Max(0, $hFadeS.H - ($hVBar.MaxValue - $iScrollY)), DW, $hFadeS.H)
+  'Else
+  '  $hShadowN.Hide
+  '  $hShadowS.Hide
+  'Endif
+  
+  'If $bHBarVisible Then
+    LoadFades()
+    $hShadowW.Move($hDrawingArea.X + $iShadowW, $hDrawingArea.Y + $iShadowN, $hFadeW.W, Me.ClientH - $iShadowS - $iShadowN)
+    $hShadowW.Raise
+    $hShadowE.Move($hDrawingArea.X + Me.ClientW - $iShadowE - $hFadeE.W, $hDrawingArea.Y + $iShadowN, $hFadeE.W, Me.ClientH - $iShadowS - $iShadowN)
+    $hShadowE.Raise
+    'Paint.Rectangle(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
+    'Paint.Clip()
+    If System.RightToLeft Then
+      $hShadowE.Visible = $iScrollX > $hHBar.MinValue 'Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, $hFadeN.H - ($iScrollY - $hVBar.MinValue)), DW, $hFadeN.H)
+      $hShadowW.Visible = $iScrollX < $hHBar.MaxValue 'Then Draw.Tile($hFadeS, 0, DH - $hFadeS.H - $iShadowS + Max(0, $hFadeS.H - ($hVBar.MaxValue - $iScrollY)), DW, $hFadeS.H)
+    Else
+      $hShadowW.Visible = $iScrollX > $hHBar.MinValue 'Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, $hFadeN.H - ($iScrollY - $hVBar.MinValue)), DW, $hFadeN.H)
+      $hShadowE.Visible = $iScrollX < $hHBar.MaxValue 'Then Draw.Tile($hFadeS, 0, DH - $hFadeS.H - $iShadowS + Max(0, $hFadeS.H - ($hVBar.MaxValue - $iScrollY)), DW, $hFadeS.H)
+    Endif
+  'Else
+  '  $hShadowW.Hide
+  '  $hShadowE.Hide
+  'Endif
+  
+  ' If $bHBarVisible Then
+  '   LoadFades()
+  '   Paint.Rectangle(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
+  '   Paint.Clip()
+  '   bWestShadow = $iScrollX > $hHBar.MinValue
+  '   bEastShadow = $iScrollX < $hHBar.MaxValue
+  '   iWestWidth = $iScrollX - $hHBar.MinValue
+  '   iEastWidth = $hHBar.MaxValue - $iScrollX
+  '   If System.RightToLeft Then
+  '     Swap bWestShadow, bEastShadow
+  '     Swap iWestWidth, iEastWidth
+  '   Endif
+  '   If bWestShadow Then Draw.Tile($hFadeW, $iShadowW - Max(0, $hFadeW.W - iWestWidth), 0, $hFadeW.W, DH)
+  '   If bEastShadow Then Draw.Tile($hFadeE, DW - $hFadeE.W - $iShadowE + Max(0, $hFadeE.W - iEastWidth), 0, $hFadeE.W, DH)
+  ' Endif
+  
+End
+
+Public Sub Shadow_Draw()
+  
+  Select Case Last
+    Case $hShadowN
+      Draw.Tile($hFadeN, 0, 0, Paint.W, Paint.H)
+    Case $hShadowS
+      Draw.Tile($hFadeS, 0, 0, Paint.W, Paint.H)
+    Case $hShadowW
+      Draw.Tile($hFadeW, 0, 0, Paint.W, Paint.H)
+    Case $hShadowE
+      Draw.Tile($hFadeE, 0, 0, Paint.W, Paint.H)
+  End Select
+  
+End
+
 
 Public Sub TimerArrange_Timer()
   
@@ -353,16 +473,12 @@ Public Sub ResizeContents(Width As Integer, Height As Integer)
   
   If $W = Width And If $H = Height Then Return 
   
-  'Debug $W;; $H;; System.Backtrace.Join(" ")
-  
   $W = Width
   $H = Height
   
+  'Debug $W;; $H;; System.Backtrace.Join(" ")
+  
   LayoutScrollbars
-  ' If Not $hTimerArrange Then
-  '   $hTimerArrange = New Timer As "TimerArrange"
-  '   $hTimerArrange.Trigger
-  ' Endif
   
   $hDrawingArea.Refresh
   
@@ -372,9 +488,9 @@ End
 Private Function ScrollX_Read() As Integer
 
   If System.RightToLeft Then
-    Return $hHBar.MaxValue - $hHBar.Value
+    Return $hHBar.MaxValue - $iScrollX
   Else
-    Return $hHBar.Value
+    Return $iScrollX
   Endif
 
 End
@@ -382,25 +498,25 @@ End
 Private Sub ScrollX_Write(Value As Integer)
 
   If Application.Animations Then
-    Scroll(Value, $iScrollY)
+    Scroll(Value, $iTargetY)
   Else
-    Scroll(Value, $hVBar.Value)
+    Scroll(Value, $iScrollY)
   Endif
 
 End
 
 Private Function ScrollY_Read() As Integer
 
-  Return $hVBar.Value
+  Return $iScrollY
 
 End
 
 Private Sub ScrollY_Write(Value As Integer)
 
   If Application.Animations Then
-    Scroll($iScrollX, Value)
+    Scroll($iTargetX, Value)
   Else
-    Scroll($hHBar.Value, Value)
+    Scroll($iScrollX, Value)
   Endif
 
 End
@@ -409,37 +525,64 @@ Public Sub Scroll(X As Integer, Y As Integer)
   
   If System.RightToLeft Then X = $hHBar.MaxValue - X
 
-  If $iScrollX = X And If $iScrollY = Y Then Return
+  X = Max($hHBar.MinValue, Min($hHBar.MaxValue, X))
+  Y = Max($hVBar.MinValue, Min($hVBar.MaxValue, Y))
+
+  'If $iTargetX = X And If $iTargetY = Y Then Return
   
-  $iScrollX = Max($hHBar.MinValue, Min($hHBar.MaxValue, X))
-  $iScrollY = Max($hVBar.MinValue, Min($hVBar.MaxValue, Y))
+  $hHBar.Value = X
+  $hVBar.Value = Y
+  
+End
+
+Private Sub UpdateScroll(DX As Integer, DY As Integer)
+  
+  Dim hChild As Control
+  
+  $iScrollX += DX
+  $iScrollY += DY
+  
+  For Each hChild In $hDrawingArea.Children
+    hChild.Move(hChild.X - DX, hChild.Y - DY)
+  Next
+  
+  LayoutShadows
+  
+  $hDrawingArea.Refresh
+  
+End
+
+Public Sub Scrollbar_Change()
+
+  $iTargetX = $hHBar.Value
+  $iTargetY = $hVBar.Value
+  
+  If $iTargetX <> $iScrollX Or If $iTargetY <> $iScrollY Then
     
-  If Application.Animations And If $bAllowAnimations Then
-  
-    If Not $hTimerScroll Then
-      $hTimerScroll = New Timer As "TimerScroll"
-      $hTimerScroll.Delay = 20
+    If Application.Animations And If $bAllowAnimations Then
+    
+      If Not $hTimerScroll Then
+        $hTimerScroll = New Timer As "TimerScroll"
+        $hTimerScroll.Delay = 20
+      Endif
+      $hTimerScroll.Start
+    
+    Else
+      
+      UpdateScroll($iTargetX - $iScrollX, $iTargetY - $iScrollY)
+      
     Endif
-    $hTimerScroll.Start
-  
-  Else
     
-    $hHBar.Value = $iScrollX
-    $hVBar.Value = $iScrollY
-    $hDrawingArea.Refresh
+    Raise Scroll
     
   Endif
   
 End
 
 Public Sub TimerScroll_Timer()
-  
-  $hHBar.Value += ($iScrollX - $hHBar.Value + Sgn($iScrollX - $hHBar.Value)) \ 2
-  $hVBar.Value += ($iScrollY - $hVBar.Value + Sgn($iScrollY - $hVBar.Value)) \ 2
-  
-  $hDrawingArea.Refresh
-  
-  If $hHBar.Value = $iScrollX And If $hVBar.Value = $iScrollY Then $hTimerScroll.Stop
+
+  UpdateScroll(($iTargetX - $iScrollX + Sgn($iTargetX - $iScrollX)) \ 2, ($iTargetY - $iScrollY + Sgn($iTargetY - $iScrollY)) \ 2)
+  If $iScrollX = $iTargetX And If $iScrollY = $iTargetY Then $hTimerScroll.Stop
   
 End
 
@@ -451,10 +594,6 @@ Public Sub DrawingArea_Draw()
   Dim FW As Integer
   Dim hClip As Rect
   Dim hFrame As Rect
-  Dim bWestShadow As Boolean
-  Dim bEastShadow As Boolean
-  Dim iWestWidth As Integer
-  Dim iEastWidth As Integer
   
   DW = Draw.W
   'If $bVBarVisible Then DW -= $hVBar.W
@@ -486,47 +625,9 @@ Public Sub DrawingArea_Draw()
 
     'Draw.ClipRect = hClip '(hClip.X, hClip.Y, hClip.W, hClip.H)
 
-    If $bShadow Then Paint.Save
+    'If $bShadow Then Paint.Save
 
     Raise Draw
-
-    If $bShadow Then
-      
-      Paint.Restore
-      
-      ' Draw.Clip(hClip.X, hClip.Y + $iShadowN, hClip.W, hClip.H - $iShadowN - $iShadowS)
-      ' If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, 16 - ($hVBar.Value - $hVBar.MinValue)), Draw.W, 16)
-      ' If $hVBar.Value < $hVBar.MaxValue Then Draw.Tile($hFadeS, 0, Draw.H - 16 - $iShadowS + Max(0, 16 - ($hVBar.MaxValue - $hVBar.Value)), Draw.W, 16)
-      ' 
-      ' Draw.Clip(hClip.X + $iShadowW, hClip.Y, hClip.W - $iShadowW - $iShadowE, hClip.H)
-      ' If $hHBar.Value > $hHBar.MinValue Then Draw.Tile($hFadeW, $iShadowW - Max(0, 16 - ($hHBar.Value - $hHBar.MinValue)), 0, 16, Draw.H)
-      ' If $hHBar.Value < $hHBar.MaxValue Then Draw.Tile($hFadeE, Draw.W - 16 - $iShadowE + Max(0, 16 - ($hHBar.MaxValue - $hHBar.Value)), 0, 16, Draw.H)
-  
-      If $bVBarVisible Then
-        LoadFades()
-        Paint.Rectangle(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
-        Paint.Clip()
-        If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, $hFadeN.H - ($hVBar.Value - $hVBar.MinValue)), DW, $hFadeN.H)
-        If $hVBar.Value < $hVBar.MaxValue Then Draw.Tile($hFadeS, 0, DH - $hFadeS.H - $iShadowS + Max(0, $hFadeS.H - ($hVBar.MaxValue - $hVBar.Value)), DW, $hFadeS.H)
-      Endif
-      
-      If $bHBarVisible Then
-        LoadFades()
-        Paint.Rectangle(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
-        Paint.Clip()
-        bWestShadow = $hHBar.Value > $hHBar.MinValue
-        bEastShadow = $hHBar.Value < $hHBar.MaxValue
-        iWestWidth = $hHBar.Value - $hHBar.MinValue
-        iEastWidth = $hHBar.MaxValue - $hHBar.Value
-        If System.RightToLeft Then
-          Swap bWestShadow, bEastShadow
-          Swap iWestWidth, iEastWidth
-        Endif
-        If bWestShadow Then Draw.Tile($hFadeW, $iShadowW - Max(0, $hFadeW.W - iWestWidth), 0, $hFadeW.W, DH)
-        If bEastShadow Then Draw.Tile($hFadeE, DW - $hFadeE.W - $iShadowE + Max(0, $hFadeE.W - iEastWidth), 0, $hFadeE.W, DH)
-      Endif
-      
-    Endif
 
   Endif
   
@@ -549,17 +650,6 @@ End
 Public Sub DrawingArea_Arrange()
   
   Raise Resize
-  
-End
-
-Public Sub Scrollbar_Change()
-  
-  'If Application.Animations Then
-  '  If $hHBar.Value = $iScrollX And If $hVBar.Value = $iScrollY Then Raise Scroll
-  'Else
-    Raise Scroll
-  'Endif
-  $hDrawingArea.Refresh
   
 End
 
@@ -672,9 +762,9 @@ Public Sub DrawingArea_MouseWheel()
   If Not $bUseMouse Then Return
   
   If Mouse.Orientation = Mouse.Horizontal Or If $H <= $hDrawingArea.H Then
-    Scroll($hHBar.Value - Mouse.Delta * $hHBar.PageStep / 4, $hVBar.Value)
+    Scroll($iScrollX - Mouse.Delta * $hHBar.PageStep / 4, $iScrollY)
   Else
-    Scroll($hHBar.Value, $hVBar.Value - Mouse.Delta * $hVBar.PageStep / 4)
+    Scroll($iScrollX, $iScrollY - Mouse.Delta * $hVBar.PageStep / 4)
   Endif
   
 End
@@ -690,7 +780,6 @@ Private Sub GetActualScroll(ByRef SX As Integer, ByRef SY As Integer)
   Endif
   
 End
-
 
 Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer) As Boolean
   
@@ -762,9 +851,9 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   CY = - CY
 
   If Application.Animations Then
-    If $iScrollX = CX And If $iScrollY = CY Then Return True
+    If $iTargetX = CX And If $iTargetY = CY Then Return True
   Else
-    If $hHBar.Value = CX And If $hVBar.Value = CY Then Return True
+    If $iScrollX = CX And If $iScrollY = CY Then Return True
   Endif
   Scroll(CX, CY)
   
@@ -821,7 +910,9 @@ End
 
 Private Sub Shadow_Write(Value As Boolean)
 
+  If $bShadow = Value Then Return
   $bShadow = Value
+  LayoutShadows
 
 End
 
@@ -868,21 +959,11 @@ Private Function ClientWidth_Read() As Integer
 
   Return $hDrawingArea.W
 
-  'Dim W As Integer
-  'W = Me.W
-  'If $bVBarVisible Then W -= $hVBar.W + Style.ScrollbarSpacing
-  'Return Max(0, W)
-
 End
 
 Private Function ClientHeight_Read() As Integer
 
   Return $hDrawingArea.H
-  
-  ' Dim H As Integer
-  ' H = Me.H
-  ' If $bHBarVisible Then H -= $hHBar.H + Style.ScrollbarSpacing
-  ' Return Max(0, H)
 
 End
 
@@ -956,7 +1037,13 @@ End
 Private Function Scrolling_Read() As Boolean
 
   If Application.Animations Then
-    If $hHBar.Value <> $iScrollX Or If $hVBar.Value <> $iScrollY Then Return True
+    If $iTargetX <> $iScrollX Or If $iTargetY <> $iScrollY Then Return True
   Endif
 
+End
+
+Public Sub DrawingArea_Change()
+  
+  LayoutShadows
+  
 End

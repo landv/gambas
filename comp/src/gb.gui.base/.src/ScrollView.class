@@ -1,0 +1,90 @@
+' Gambas class file
+
+Export
+Inherits ScrollArea
+
+Public Const _Properties As String = "*"
+Public Const _DefaultEvent As String = "Draw"
+Public Const _DefaultSize As String = "24,24"
+Public Const _Similar As String = "DrawingArea,ScrollView"
+
+Private $hCont As Panel
+Private $hObs As Observer
+Private $hTimer As Timer
+
+Public Sub _new()
+  
+  $hObs = New Observer(Me) As "Observer"
+  $hCont = New Panel(Me) As "Panel"
+  $hCont.Move(0, 0)
+  '$hCont.Background = Color.Yellow
+  Me._Container = $hCont
+  $hTimer = New Timer As "TimerArrange"
+  $hTimer.Trigger
+  
+End
+
+Public Sub Panel_Arrange()
+  
+  AutoResizeContents
+  
+End
+
+Public Sub TimerArrange_Timer()
+  
+  AutoResizeContents
+  $hTimer = Null
+  
+End
+
+
+Private Sub AutoResizeContents()
+
+  Dim W, H As Integer
+  Dim hChild As Control
+  
+  'Debug
+  
+  Object.Lock($hCont)
+  
+  Do
+    
+    For Each hChild In $hCont.Children
+      If Not hChild.Visible Then Continue
+      W = Max(W, hChild.X + hChild.W)
+      H = Max(H, hChild.Y + hChild.H)
+    Next
+    
+    Select Case Me.Arrangement
+      Case Arrange.Horizontal, Arrange.TopBottom
+        H = Me.ClientH
+      Case Arrange.Vertical, Arrange.LeftRight
+        W = Me.ClientW
+    End Select
+    
+    If W = Me.ScrollW And If H = Me.ScrollH Then Break
+    
+    Me.ResizeContents(W, H)
+    
+  Loop
+  
+  W = Max(Me.ClientW, W)
+  H = Max(Me.ClientH, H)
+  Object.Unlock($hCont)
+  
+  'Debug W;; H
+  $hCont.Resize(W, H)
+  
+End
+
+Public Sub Panel_MouseWheel()
+  
+  Me.DrawingArea_MouseWheel
+  
+End
+
+Public Sub Observer_Arrange()
+  
+  AutoResizeContents
+  
+End
