@@ -786,6 +786,10 @@ __FOUND_WIDGET:
 				control = control->_proxy_for;
 				goto __SCROLL_TRY_PROXY;
 			}
+			
+			control = control->parent();
+			if (control)
+				goto __SCROLL_TRY_PROXY;
 
 			if (widget != save_control->border && widget != save_control->widget)
 			{

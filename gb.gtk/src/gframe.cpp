@@ -25,12 +25,6 @@
 #include "gapplication.h"
 #include "gframe.h"
 
-static void cb_frame_resize (GtkWidget *wid, GtkAllocation *req, gFrame *data)
-{
-	fprintf(stderr, "cb_frame_resize: %d %d\n", req->width, req->height);
-	gtk_widget_set_size_request(data->fr, req->width, req->height);
-} 
-
 /****************************************************************************
 
 Panel
