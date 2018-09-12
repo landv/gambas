@@ -469,7 +469,7 @@ Private Sub GotoMouse(bStart As Boolean)
   Dim Y As Integer
   
   X = CInt((Mouse.ScreenX - $hView.ScreenX) / $CW + 0.4)
-  Y = GetScrollY() + (Mouse.ScreenY - $hView.ScreenY) \ $LH
+  Y = (GetScrollY() + Mouse.ScreenY - $hView.ScreenY) \ $LH
   'Print x, y
   $hScreen.GotoMouse(X, Y, bStart)
   
@@ -479,7 +479,7 @@ Private Sub SelectCurrentLine()
   
   Dim Y As Integer
   
-  Y = GetScrollY() + CInt((Mouse.ScreenY - $hView.ScreenY) / $LH)
+  Y = (GetScrollY() + Mouse.ScreenY - $hView.ScreenY) \ $LH
   'Print x, y
   $hScreen.GotoMouse(0, Y, True)
   $hScreen.GotoMouse(0, Y + 1, False)
@@ -492,7 +492,7 @@ Private Sub SelectCurrentWord()
   Dim Y As Integer
   
   X = CInt((Mouse.ScreenX - $hView.ScreenX) / $CW + 0.4)
-  Y = GetScrollY() + CInt((Mouse.ScreenY - $hView.ScreenY) / $LH)
+  Y = CInt((GetScrollY() + Mouse.ScreenY - $hView.ScreenY) / $LH)
   'Print x, y
   $hScreen.SelectCurrentWord(X, Y)
   
