@@ -113,6 +113,7 @@
     Border = True
     Index = 0
     Text = ("General")
+    Picture = Picture["icon:/medium/gambas"]
     { Panel1 Panel
       MoveScaled(1,0,85,9)
       { btnIcon ToolButton
@@ -213,6 +214,7 @@
     }
     Index = 1
     Text = ("Information")
+    Picture = Picture["icon:/medium/info"]
     { Panel5 VBox
       MoveScaled(1,1,82,65)
       Expand = True
@@ -375,12 +377,14 @@
     }
     Index = 2
     Text = ("Components")
+    Picture = Picture["icon:/medium/component"]
     { choComponent ComponentChooser
       MoveScaled(6,9,67,37)
       Expand = True
     }
     Index = 3
     Text = ("Libraries")
+    Picture = Picture["icon:/medium/plugin"]
     { Panel4 Panel
       MoveScaled(3,2,80,7)
       Visible = False
@@ -444,6 +448,7 @@
     }
     Index = 4
     Text = ("Environment")
+    Picture = Picture["icon:/medium/select"]
     { tvwEnv TableView
       MoveScaled(3,6,68,20)
       Expand = True
@@ -467,6 +472,7 @@
     }
     Index = 5
     Text = ("Arguments")
+    Picture = Picture["icon:/medium/play"]
     { Panel8 Panel
       MoveScaled(2,1,83,43)
       Expand = True
@@ -510,6 +516,7 @@
     }
     Index = 6
     Text = ("Options")
+    Picture = Picture["icon:/medium/options"]
     { Panel6 VBox
       MoveScaled(0,0,86,47)
       Spacing = True
@@ -635,6 +642,7 @@
     }
     Index = 7
     Text = ("Statistics")
+    Picture = Picture["icon:/medium/monitor"]
     { gvwStat GridView
       MoveScaled(10,7,62,25)
       Expand = True
@@ -642,6 +650,7 @@
     }
     Index = 8
     Text = ("Version control")
+    Picture = Picture["icon:/medium/record"]
     { gvwVcInfo GridView
       MoveScaled(3,7,62,25)
       Expand = True

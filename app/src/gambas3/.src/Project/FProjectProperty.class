@@ -155,7 +155,6 @@ Private Sub InitEnvironment()
   
   tvwEnv.Columns.Count = 2
   tvwEnv.Columns[0].Text = ("Variable")
-  tvwEnv.Columns[0].Width = -1
   tvwEnv.Columns[0].Width = Max(tvwEnv.Columns[0].Width, Desktop.Scale * 20)
   tvwEnv.Columns[1].Text = ("Value")
   
@@ -163,6 +162,7 @@ Private Sub InitEnvironment()
     
   tvwEnv.Rows.Count = $aEnv.Count
   tvwEnv.Rows.Resizable = False
+  tvwEnv.Columns[0].Width = -1
   
 End
 

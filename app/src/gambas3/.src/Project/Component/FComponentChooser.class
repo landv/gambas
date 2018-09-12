@@ -45,8 +45,6 @@ Public Sub _new()
   gvwComponent.Columns[4].Width = 24
   'gvwComponent.Columns[3].Expand = False
 
-  ScrollArea(gvwComponent.Proxy).Shadow = True
-  
   SetCheckable(False)
 
   RefreshList

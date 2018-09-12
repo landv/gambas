@@ -41,8 +41,6 @@ Public Sub _new()
   grdProperty.ScrollBar = Scroll.Vertical
   grdProperty.Columns.Resizable = True
 
-  ScrollArea(grdProperty.Proxy).Shadow = True
-  
   $iBgDefault = Color.TextBackground
   $iBgSet = Color.Merge(Color.TextBackground, Color.LightForeground, 0.25)
   $iBgModified = Color.Merge(Color.TextBackground, Color.LightBackground, 0.25)

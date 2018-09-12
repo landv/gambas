@@ -121,6 +121,7 @@ Public Sub _new()
     [btnOfflineHelp, "/UseOfflineHelp", 0],
     [btnTooltip, "/ShowTooltip", 1],
     [btnAnimation, "/Animations", 1],
+    [btnShadow, "/Shadows", 1],
     [btnShowFileInTitle, "/ShowFileInTitle", 1],
     [btnIntegratedHelp, "/PropertyHelp", 1],
     [btnHelpCompletion, "/ShowHelpInPopup", 1],
@@ -344,6 +345,13 @@ Public Sub btnAnimation_Click()
 
   Settings["/Animations"] = btnAnimation.Value
   Application.Animations = btnAnimation.Value
+  
+End
+
+Public Sub btnShadow_Click()
+
+  Settings["/Shadows"] = btnShadow.Value
+  Application.Shadows = btnShadow.Value
   
 End
 

@@ -207,14 +207,14 @@ End
 '   
 ' End
 
-Public Sub Grep_Read()
-  
-  Dim sData As String
-  
-  sData = Read #Last, Lof(Last)
-  $sGrep &= sData
-  
-End
+' Public Sub Grep_Read()
+'   
+'   Dim sData As String
+'   
+'   sData = Read #Last, Lof(Last)
+'   $sGrep &= sData
+'   
+' End
 
 ' Private Sub MakeResult(sResult As String) As CFindResult
 '   
@@ -239,6 +239,25 @@ End
 '   
 ' End
 
+Private Sub GrepQuote(sStr As String) As String
+
+  Dim I As Integer
+  Dim sCar As String
+  Dim sResult As String
+
+  For I = 1 To String.Len(sStr)
+    sCar = String.Mid$(sStr, I, 1)
+    If Len(sCar) > 1 Or If IsLetter(sCar) Or If IsDigit(sCar) Then
+      sResult &= sCar
+    Else
+      sResult &= "\\" & sCar
+    Endif
+  Next
+  
+  Return sResult
+
+End
+
 Private Sub GrepFile(hFile As Object, Optional sPath As String, Optional bUseReplaceString As Boolean) As CFindResult[]
   
   Dim sText As String
@@ -250,6 +269,7 @@ Private Sub GrepFile(hFile As Object, Optional sPath As String, Optional bUseRep
   Dim iAge As Integer
   Dim hGrepResult As CGrepResult
   Dim iPos As Integer
+  Dim sSearch As String
 
   If sPath Then
     If Not hFile Or If Not hFile.IsModified() Then
@@ -272,14 +292,18 @@ Private Sub GrepFile(hFile As Object, Optional sPath As String, Optional bUseRep
     aGrep.Add(ReplaceString)
   Else
     If Not CaseSensitive Then aGrep.Add("-i")
-    If WordOnly Then aGrep.Add("-w")
     If RegularExpression Then 
+      aGrep.Add("-E")
+    Else If WordOnly Then 
       aGrep.Add("-E")
     Else
       aGrep.Add("-F")
     Endif
     aGrep.Add("--")
-    aGrep.Add(SearchString)
+    
+    sSearch = SearchString
+    If WordOnly Then sSearch = "(^|[^_$[:alnum:]])" & GrepQuote(SearchString) & "($|[^_$[:alnum:]])"
+    aGrep.Add(sSearch)
   Endif
   
   aGrep.Add(sTemp)
@@ -335,8 +359,14 @@ Private Sub GrepFile(hFile As Object, Optional sPath As String, Optional bUseRep
     hResult.Pos = CInt(Left(sFind, iPos - 1))
     sFind = Mid$(sFind, iPos + 1)
 
+    If WordOnly Then
+      If String.Left(sFind) <> String.Left(SearchString) Then hResult.Pos += String.Len(String.Left(sFind))
+      sFind = SearchString
+    Endif
+    
     hResult.Bytes = Len(sFind)
     hResult.Length = String.Len(sFind)
+    
     aResult.Add(hResult)
     
   Next
@@ -847,12 +877,13 @@ Private Sub ShowString()
 
   Dim hForm As Object
   Dim bIgnoreCase As Boolean = chkCaseSensitive.Value = False
+  Dim bWordOnly As Boolean = chkWordOnly.Value
   Dim sStr As String
   
-  If chkHighlight.Value And If Me.Visible Then sStr = cmbSearch.Text
+  If chkHighlight.Value And If Me.Visible And If chkRegularExpression.Value = False Then sStr = cmbSearch.Text
   
   For Each hForm In Project.Files
-    Try hForm.OnShowString(sStr, bIgnoreCase)
+    Try hForm.OnShowString(sStr, bIgnoreCase, bWordOnly)
   Next
   
 End
@@ -870,9 +901,9 @@ Public Sub OnNewForm(hForm As Object)
   
   Dim sStr As String
   
-  If chkHighlight.Value And If Me.Visible Then sStr = cmbSearch.Text
+  If chkHighlight.Value And If Me.Visible And If chkRegularExpression.Value = False Then sStr = cmbSearch.Text
   
-  Try hForm.OnShowString(sStr, chkCaseSensitive.Value = False)
+  Try hForm.OnShowString(sStr, chkCaseSensitive.Value = False, chkWordOnly.Value)
   
 End
 
@@ -1172,3 +1203,15 @@ End
 '   Endif
 ' 
 ' End
+
+Public Sub chkWordOnly_Click()
+
+  ShowString
+
+End
+
+Public Sub chkRegularExpression_Click()
+
+  ShowString
+
+End

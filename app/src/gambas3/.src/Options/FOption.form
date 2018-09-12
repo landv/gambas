@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,98,64)
+  MoveScaled(0,0,98,68)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -31,7 +31,7 @@
     }
   }
   { ipnOption IconPanel
-    MoveScaled(1,1,94,61)
+    MoveScaled(1,1,94,65)
     Arrangement = Arrange.Vertical
     Spacing = True
     Count = 10
@@ -245,22 +245,8 @@
       Font = Font["Bold"]
       Text = ("Interface")
     }
-    { HBox3 HBox
-      MoveScaled(1,5,66,4)
-      Spacing = True
-      Indent = True
-      { Label10 Label
-        MoveScaled(0,0,42,4)
-        Expand = True
-        Text = ("Show tooltips")
-      }
-      { btnTooltip SwitchButton
-        MoveScaled(43,0,8,4)
-        Animated = True
-      }
-    }
     { HBox58 HBox
-      MoveScaled(1,10,66,4)
+      MoveScaled(1,5,66,4)
       Spacing = True
       Indent = True
       { Label57 Label
@@ -273,8 +259,36 @@
         Animated = True
       }
     }
-    { HBox26 HBox
+    { HBox59 HBox
+      MoveScaled(1,10,66,4)
+      Spacing = True
+      Indent = True
+      { Label71 Label
+        MoveScaled(0,0,42,4)
+        Expand = True
+        Text = ("Show shadows")
+      }
+      { btnShadow SwitchButton
+        MoveScaled(43,0,8,4)
+        Animated = True
+      }
+    }
+    { HBox3 HBox
       MoveScaled(1,15,66,4)
+      Spacing = True
+      Indent = True
+      { Label10 Label
+        MoveScaled(0,0,42,4)
+        Expand = True
+        Text = ("Show tooltips")
+      }
+      { btnTooltip SwitchButton
+        MoveScaled(43,0,8,4)
+        Animated = True
+      }
+    }
+    { HBox26 HBox
+      MoveScaled(1,20,66,4)
       Spacing = True
       Indent = True
       { Label15 Label
@@ -287,50 +301,22 @@
         Animated = True
       }
     }
-    { HBox8 HBox
-      MoveScaled(1,20,66,4)
-      Spacing = True
-      Indent = True
-      { Label2 Label
-        MoveScaled(0,0,42,4)
-        Expand = True
-        Text = ("Sort properties")
-      }
-      { btnSortProperty SwitchButton
-        MoveScaled(51,0,8,4)
-        Animated = True
-      }
-    }
-    { HBox21 HBox
+    { HBox41 HBox
       MoveScaled(1,25,66,4)
       Spacing = True
       Indent = True
-      { Label21 Label
-        MoveScaled(0,0,42,4)
+      { Label39 Label
+        MoveScaled(0,0,47,4)
         Expand = True
-        Text = ("Minimize at runtime")
+        Text = ("Close tabs with middle mouse click")
       }
-      { btnMinimize SwitchButton
-        MoveScaled(51,0,8,4)
-        Animated = True
-      }
-    }
-    { HBox44 HBox
-      MoveScaled(1,30,66,4)
-      Spacing = True
-      Indent = True
-      { Label53 Label
-        MoveScaled(0,0,42,4)
-        Expand = True
-        Text = ("Restore files when loading a project")
-      }
-      { btnStartupLoad SwitchButton
-        MoveScaled(43,0,8,4)
+      { btnCloseWithMiddleClick SwitchButton
+        MoveScaled(48,0,8,4)
         Animated = True
       }
     }
     { HBox48 HBox
-      MoveScaled(1,35,66,4)
+      MoveScaled(1,30,66,4)
       Spacing = True
       Indent = True
       { Label58 Label
@@ -339,6 +325,20 @@
         Text = ("Show file name in window title")
       }
       { btnShowFileInTitle SwitchButton
+        MoveScaled(43,0,8,4)
+        Animated = True
+      }
+    }
+    { HBox44 HBox
+      MoveScaled(1,35,66,4)
+      Spacing = True
+      Indent = True
+      { Label53 Label
+        MoveScaled(0,0,42,4)
+        Expand = True
+        Text = ("Restore files when loading a project")
+      }
+      { btnStartupLoad SwitchButton
         MoveScaled(43,0,8,4)
         Animated = True
       }
@@ -371,22 +371,36 @@
         Animated = True
       }
     }
-    { HBox41 HBox
+    { HBox8 HBox
       MoveScaled(1,50,66,4)
       Spacing = True
       Indent = True
-      { Label39 Label
-        MoveScaled(0,0,47,4)
+      { Label2 Label
+        MoveScaled(0,0,42,4)
         Expand = True
-        Text = ("Close tabs with middle mouse click")
+        Text = ("Sort properties")
       }
-      { btnCloseWithMiddleClick SwitchButton
-        MoveScaled(48,0,8,4)
+      { btnSortProperty SwitchButton
+        MoveScaled(51,0,8,4)
+        Animated = True
+      }
+    }
+    { HBox21 HBox
+      MoveScaled(1,55,66,4)
+      Spacing = True
+      Indent = True
+      { Label21 Label
+        MoveScaled(0,0,42,4)
+        Expand = True
+        Text = ("Minimize at runtime")
+      }
+      { btnMinimize SwitchButton
+        MoveScaled(51,0,8,4)
         Animated = True
       }
     }
     { HBox57 HBox
-      MoveScaled(1,55,66,4)
+      MoveScaled(1,60,66,4)
       Spacing = True
       Indent = True
       { Label49 Label
@@ -583,7 +597,7 @@
       }
     }
     { svwTheme ScrollView
-      MoveScaled(1,34,64,29)
+      MoveScaled(1,27,64,29)
       Foreground = Color.TextForeground
       Expand = True
       Arrangement = Arrange.Vertical
