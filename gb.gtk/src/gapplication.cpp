@@ -1201,8 +1201,8 @@ void gApplication::enterLoop(void *owner, bool showIt, GtkWindow *modal)
 
 void gApplication::enterPopup(gMainWindow *owner)
 {
-	void *old_owner = _loop_owner;
-	int l = _loopLevel;
+	void *old_owner;
+	int l;
 	//GtkWindowGroup *oldGroup;
 	GtkWindow *window = GTK_WINDOW(owner->border);
 	GtkWidget *old_popup_grab;
@@ -1216,33 +1216,45 @@ void gApplication::enterPopup(gMainWindow *owner)
 
 	gtk_window_set_modal(window, true);
 	gdk_window_set_override_redirect(gtk_widget_get_window(owner->border), true);
+	
 	owner->show();
-
-	old_popup_grab = _popup_grab;
-	_popup_grab = owner->border;
-
-	if (_in_popup == 1)
-		gApplication::grabPopup();
-
-	_loopLevel++;
-	_loop_owner = owner;
-
-	(*onEnterEventLoop)();
-	do
+	
+	if (!owner->isDestroyed())
 	{
-		MAIN_do_iteration(false);
+		old_popup_grab = _popup_grab;
+		_popup_grab = owner->border;
+
+		if (_in_popup == 1)
+			gApplication::grabPopup();
+
+		l = _loopLevel;
+		old_owner = _loop_owner;
+
+		_loopLevel++;
+		_loop_owner = owner;
+
+		(*onEnterEventLoop)();
+		do
+		{
+			MAIN_do_iteration(false);
+		}
+		while (_loopLevel > l);
+		(*onLeaveEventLoop)();
+
+		gApplication::ungrabPopup();
+		_popup_grab = old_popup_grab;
+
+		_loop_owner = old_owner;
+
+		if (owner->border)
+		{
+			gdk_window_set_override_redirect(gtk_widget_get_window(owner->border), false);
+			gtk_window_set_modal(window, false);
+		}
+		//exitGroup(oldGroup);
 	}
-	while (_loopLevel > l);
-	(*onLeaveEventLoop)();
-
-	gApplication::ungrabPopup();
-	_popup_grab = old_popup_grab;
-
-	_loop_owner = old_owner;
-
-	gdk_window_set_override_redirect(gtk_widget_get_window(owner->border), false);
-	gtk_window_set_modal(window, false);
-	//exitGroup(oldGroup);
+	else
+		gControl::cleanRemovedControls();
 
 	_in_popup--;
 }

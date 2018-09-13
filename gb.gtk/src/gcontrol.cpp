@@ -422,7 +422,7 @@ void gControl::destroy()
 	hide();
 
 	//fprintf(stderr, "added to destroy list: %p\n", this);
-	controls_destroyed = g_list_prepend(controls_destroyed,(gpointer)this);
+	controls_destroyed = g_list_prepend(controls_destroyed, (gpointer)this);
 	_destroyed = true;
 }
 
@@ -651,7 +651,7 @@ void gControl::resize(int w, int h)
 	if (pr)
 		pr->performArrange();
 
-	send_configure(this);
+	//send_configure(this);
 }
 
 void gControl::moveResize(int x, int y, int w, int h)
