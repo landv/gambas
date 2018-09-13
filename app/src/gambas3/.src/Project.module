@@ -4162,10 +4162,10 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
       Move sPath To sNewPath
     Endif
   Else If Stat(sPath).Type = gb.Link Then
-    Move sPath To sNewPath
+    If VersionControl.NeedMove() Then Move sPath To sNewPath
     VersionControl.MoveFile(sPath, sNewPath)
   Else
-    Copy sPath To sNewPath
+    If VersionControl.NeedMove() Then Copy sPath To sNewPath
     VersionControl.MoveFile(sPath, sNewPath)
     Try Kill sPath
   Endif
@@ -4909,7 +4909,7 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
     Endif
     'If Exist(sSrc) Then LockedPaths[sSrc] = True
   Else
-    Copy sSrc To sDst
+    If VersionControl.NeedMove() Then Copy sSrc To sDst
     If Right(sSrc) <> "~" Then VersionControl.MoveFile(sSrc, sDst)
     Try Kill sSrc
   Endif
