@@ -791,6 +791,9 @@ static void string_search(const char *str, const char *ref, int len, const char 
 		if (convert_to_unicode(&wpattern, &lpattern, pattern, lenp, TRUE))
 			goto __ERROR;
 		
+		if (!start)
+			start = right ? lstr : 1;
+		
 		pos = STRING_search((char *)wstr, lstr * sizeof(wchar_t), (char *)wpattern, lpattern * sizeof(wchar_t), 1 + (start - 1) * sizeof(wchar_t), right, FALSE);
 		if (pos)
 			pos = (pos - 1) / sizeof(wchar_t) + 1;
