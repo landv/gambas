@@ -1739,6 +1739,7 @@ End
 Public Sub GotoCenter(NX As Integer, NY As Integer)
   
   Goto(NX, NY)
+  EnsureVisible(True)
   ' If Not $hTimerEnsureVisible Then
   '   $hTimerEnsureVisible = New Timer As "EnsureVisible"
   '   $hTimerEnsureVisible.Trigger
@@ -5635,6 +5636,7 @@ Private Sub ShowPreview_Write(Value As Boolean)
     $hSideBarViewer.Ignore = True
     $hSideBarViewer.Enabled = False
     $hSideBarViewer.ScrollBar = Scroll.None
+    ScrollArea($hSideBarViewer.Proxy).NoShadow = True
     
     $hSideBar = New DrawingArea($hPanel) As "SideBar"
     $hSideBar.Width = Desktop.Scale * 8
@@ -5822,7 +5824,7 @@ Public Sub HighlightString(Text As String, Optional IgnoreCase As Boolean, Optio
   $iHighlightStringMode = If(IgnoreCase, gb.IgnoreCase, gb.Binary)
   $bHighlightWordOnly = WordOnly
   
-  ClearCacheText
+  ClearCacheLine
   $hView.Refresh
   
 End
