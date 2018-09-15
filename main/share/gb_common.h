@@ -80,8 +80,10 @@
 
 	typedef unsigned long ulong;
 
-	#if (defined(__amd64__) || defined(__ia64__) || defined(__sparc64__))
-		#define __WORDSIZE 64
+	#if defined(UINTPTR_MAX) && defined(UINT64_MAX) && (UINTPTR_MAX == UINT64_MAX)
+		#define	__WORDSIZE 64
+	#else
+		#define	__WORDSIZE 32
 	#endif
 	
 #endif
