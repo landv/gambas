@@ -469,9 +469,6 @@ AC_DEFUN([GB_LIBC],
 AC_DEFUN([GB_MATH],
 [
   case "${host}" in
-    *-*-freebsd* )
-      MATH_LIB="-lm"
-      ;;
     *-*-haiku* )
       MATH_LIB=""
       ;;
