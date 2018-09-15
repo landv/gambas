@@ -3,7 +3,7 @@
 Export
 Inherits UserContainer
 
-Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Focus,NoBackground,Tablet,Shadow"
+Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Focus,NoBackground,Tablet,Shadow,NoShadow"
 Public Const _DefaultEvent As String = "Draw"
 Public Const _DefaultSize As String = "24,24"
 Public Const _Similar As String = "DrawingArea,ScrollView"
@@ -27,6 +27,7 @@ Property Background As Integer
 Property Foreground As Integer
 Property Tablet As Boolean
 Property Shadow As Boolean
+Property NoShadow As Boolean
 Property Read View As DrawingArea
 Property UseMouse As Boolean
 Property Read Scrolling As Boolean
@@ -61,6 +62,7 @@ Private $W As Integer
 Private $H As Integer
 
 Private $bShadow As Boolean
+Private $bNoShadow As Boolean
 Private $iShadowN As Integer
 Private $iShadowS As Integer
 Private $iShadowW As Integer
@@ -77,7 +79,7 @@ Private $iScrollY As Integer
 Private $iTargetX As Integer
 Private $iTargetY As Integer
 Private $hTimerScroll As Timer
-Private $bAllowAnimations As Boolean
+Private $bIgnoreNextAnimation As Boolean
 
 Private Sub LoadFades()
   
@@ -129,6 +131,8 @@ Public Sub _new()
   Me._Container = $hDrawingArea
 
   Border_Write(True)
+  
+  $bIgnoreNextAnimation = True
   'ScrollArea_Arrange
   '
   'Debug "<<<<<"
@@ -327,7 +331,7 @@ Private Sub LayoutShadows()
   Dim hSave As Container
   Dim bShadow As Boolean
   
-  bShadow = $bShadow Or Application.Shadows
+  If Not $bNoShadow Then bShadow = $bShadow Or Application.Shadows
   
   If Not bShadow Then 
     
@@ -471,6 +475,8 @@ End
 
 Public Sub ResizeContents(Width As Integer, Height As Integer)
   
+  $bIgnoreNextAnimation = True
+
   If $W = Width And If $H = Height Then Return 
   
   $W = Width
@@ -479,6 +485,7 @@ Public Sub ResizeContents(Width As Integer, Height As Integer)
   'Debug $W;; $H;; System.Backtrace.Join(" ")
   
   LayoutScrollbars
+
   
   $hDrawingArea.Refresh
   
@@ -559,7 +566,7 @@ Public Sub Scrollbar_Change()
   
   If $iTargetX <> $iScrollX Or If $iTargetY <> $iScrollY Then
     
-    If Application.Animations And If $bAllowAnimations Then
+    If Application.Animations And If Not $bIgnoreNextAnimation Then
     
       If Not $hTimerScroll Then
         $hTimerScroll = New Timer As "TimerScroll"
@@ -631,7 +638,7 @@ Public Sub DrawingArea_Draw()
 
   Endif
   
-  $bAllowAnimations = True
+  $bIgnoreNextAnimation = False
   
 End
 
@@ -1046,4 +1053,19 @@ Public Sub DrawingArea_Change()
   
   LayoutShadows
   
+End
+
+Private Function NoShadow_Read() As Boolean
+
+  Return $bNoShadow
+
+End
+
+Private Sub NoShadow_Write(Value As Boolean)
+
+  If $bNoShadow = Value Then Return
+  $bNoShadow = Value
+  LayoutShadows
+  
+
 End
