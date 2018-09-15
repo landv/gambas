@@ -599,7 +599,7 @@ void gControl::move(int x, int y)
 	updateGeometry();
 	#endif
 
-	send_configure(this);
+	send_configure(this); // needed for Watcher and Form Move events
 }
 
 void gControl::resize(int w, int h)
@@ -651,7 +651,7 @@ void gControl::resize(int w, int h)
 	if (pr)
 		pr->performArrange();
 
-	//send_configure(this);
+	send_configure(this); // needed for Watcher and Form Resize events
 }
 
 void gControl::moveResize(int x, int y, int w, int h)
@@ -923,6 +923,8 @@ GdkCursor *gControl::getGdkCursor()
 		}
 		
 		cr = gdk_cursor_new_from_name(gdk_display_get_default(), name);
+		if (!cr)
+			cr = gdk_cursor_new((GdkCursorType)m);
 		
 		/*
 		if (m < GDK_LAST_CURSOR)

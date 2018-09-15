@@ -45,11 +45,6 @@ static gControl* get_next_child_widget (gContainer *gtk_control, int *gtk_list, 
 		if (!ctrl->border || !ctrl->widget || !ctrl->isVisible())
 			continue;
 		
-		// Useless, as gTabStrip reimplements child() and childCount()
-		//if (gtk_widget_get_parent(ctrl->border) != cont)
-		//	continue;
-		
-		//fprintf(stderr, "get_next_child_widget: ==> %p\n", ctrl);
 		return ctrl;
 	}
 	
@@ -71,7 +66,7 @@ static void cb_before_arrange(gContainer *sender)
 
 static void resize_container(gControl *cont, int w, int h)
 {
-	if (w > 0 && h > 0)
+	if (w >= 0 && h >= 0)
 		cont->resize(w, h);
 }
 
