@@ -23,6 +23,7 @@ Property Design As Boolean
 Property Settings As Variant[]
 Property Transparent As Boolean
 Property MinSize As Integer
+Private $hObs As Observer
 
 Private $hForm As FSidePanel
 
@@ -30,10 +31,18 @@ Public Sub _new()
 
   $hForm = New FSidePanel(Me)
   $hForm.Move(0, 0)
+  $hObs = New Observer(Me.Parent) As "Observer"
   'Object.Attach($hForm, ME, "Form")
   Me._Container = $hForm.GetContainer()
 
 End
+
+Public Sub Observer_Arrange()
+  
+  $hForm.RefreshAll
+  
+End
+
 
 Private Function Orientation_Read() As Integer
 

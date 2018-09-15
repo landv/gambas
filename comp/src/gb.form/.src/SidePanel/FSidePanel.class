@@ -23,13 +23,16 @@ Private $bDblClick As Boolean
 Private $bTransparent As Boolean
 Private $iMinSize As Integer
 
-Private BUTTON_H As Integer = 6
-Private BUTTON_H_TRANS As Integer = 4
-Private BUTTON_W As Integer = 24
+Private BUTTON_H As Integer
+Private TRANS_H As Integer
+Private BUTTON_W As Integer
 
 Private $hShowPanel As Panel
 Private $hShowButtonLeft As DrawingArea
 Private $hShowButtonRight As DrawingArea
+
+Private $hTimerAnim As Timer
+Private $iTarget As Integer
 
 ' Static Public Sub _init()
 '   
@@ -44,8 +47,10 @@ Public Sub _new()
   $bVisible = True
   $iOrientation = Align.Top
   $iMinSize = Desktop.Scale * 8
-  'btnSide.Transparent = True
-  'btnSide2.Transparent = True
+  
+  BUTTON_H = Desktop.Scale * 0.75
+  BUTTON_W = BUTTON_H * 4
+  TRANS_H = Max(2, BUTTON_H * 0.5)
 
 End
 
@@ -114,7 +119,7 @@ Private Sub RefreshPanel()
       D = Me.ClientH
 
   End Select
-
+  
   'D = Max(0, D - 8)
 
   If D < (BUTTON_W * 2 + 16) Then
@@ -144,7 +149,7 @@ Private Sub RefreshPanel()
 
       panMove.Move(0, Y, Me.ClientW, BUTTON_H)
 
-      If $bVisible Then
+      If $bVisible Or If Not $bTransparent Then
         If W2 Then
           btnSide.Move(0, 0, W, BUTTON_H)
           btnSide2.Move(Me.ClientW - W2, 0, W2, BUTTON_H)
@@ -168,7 +173,7 @@ Private Sub RefreshPanel()
 
       panMove.Move(Y, 0, BUTTON_H, Me.ClientH)
 
-      If $bVisible Then
+      If $bVisible Or If Not $bTransparent Then
         If W2 Then
           btnSide.Move(0, 0, BUTTON_H, W)
           btnSide2.Move(0, Me.ClientH - W2, BUTTON_H, W2)
@@ -193,11 +198,7 @@ Private Sub RefreshPanel()
   'If $bTransparent Then panSide.Move(0, 0, Me.ClientW, Me.ClientH)
   
   If $bTransparent Then
-    'If $bSeparator Then
-    '  D = 1
-    'Else
-      D = 0
-    'Endif
+    D = 0
   Else
     D = BUTTON_H
   Endif
@@ -294,11 +295,11 @@ Private Sub RefreshArrow()
 
 End
 
-Private Sub CreateShowButton() As DrawingArea
+Private Sub CreateShowButton(hParent As Container) As DrawingArea
   
   Dim hCtrl As DrawingArea
   
-  hCtrl = New DrawingArea($hShowPanel) As "ShowButton"
+  hCtrl = New DrawingArea(hParent) As "ShowButton"
   hCtrl.Ignore = True
   'hCtrl.Painted = True
   hCtrl.Resize(Desktop.Scale, Desktop.Scale)
@@ -311,38 +312,59 @@ End
 Private Sub MoveShowButton()
 
   Dim D As Integer
+  Dim PH As Integer
+  Dim X, Y, W, H As Integer
 
   If $bVisible Then Return
+  If Not $bTransparent Then Return
   If Not $hShowPanel Then Return
 
-  D = If($bTransparent, BUTTON_H_TRANS, 0)
-
+  D = If($bTransparent, TRANS_H, 0)
+  PH = If($bTransparent, TRANS_H, BUTTON_H)
+  
+  With Me.Parent
+    X = .X
+    Y = .Y
+    W = .W
+    H = .H
+  End With
+  
+  ' If Not $bVisible And If $bTransparent Then
+  '   If Me.Parent.Parent.
+  '   Select Case $iOrientation
+  '     Case Align.Top
+  '       Y = 0
+  '     Case Align.Bottom
+  '       
+  '   End Select
+  ' Endif
+  
   With Me.Parent
   
     Select Case $iOrientation
       Case Align.Top
-        $hShowPanel.Move(.X, .Y, .W, BUTTON_H)
+        $hShowPanel.Move(.X, .Y, .W, PH)
         If $hShowButtonLeft Then
-          $hShowButtonLeft.Move(0, 0, BUTTON_W, BUTTON_H)
-          $hShowButtonRight.Move(.W - BUTTON_W, 0, BUTTON_W, BUTTON_H)
+          $hShowButtonLeft.Move($hShowPanel.X, $hShowPanel.Y, BUTTON_W, BUTTON_H)
+          $hShowButtonRight.Move($hShowPanel.X + .W - BUTTON_W, $hShowPanel.Y, BUTTON_W, BUTTON_H)
         Endif
       Case Align.Bottom
-        $hShowPanel.Move(.X, .Y - D, .W, BUTTON_H)
+        $hShowPanel.Move(.X, .Y - D, .W, PH)
         If $hShowButtonLeft Then
-          $hShowButtonLeft.Move(0, 0, BUTTON_W, BUTTON_H)
-          $hShowButtonRight.Move(.W - BUTTON_W, 0, BUTTON_W, BUTTON_H)
+          $hShowButtonLeft.Move($hShowPanel.X, .Y - BUTTON_H, BUTTON_W, BUTTON_H)
+          $hShowButtonRight.Move($hShowPanel.X + .W - BUTTON_W, .Y - BUTTON_H, BUTTON_W, BUTTON_H)
         Endif
       Case Align.Left
-        $hShowPanel.Move(.X, .Y, BUTTON_H, .H)
+        $hShowPanel.Move(.X, .Y, PH, .H)
         If $hShowButtonLeft Then
-          $hShowButtonLeft.Move(0, 0, BUTTON_H, BUTTON_W)
-          $hShowButtonRight.Move(0, .H - BUTTON_W, BUTTON_H, BUTTON_W)
+          $hShowButtonLeft.Move($hShowPanel.X, $hShowPanel.Y, BUTTON_H, BUTTON_W)
+          $hShowButtonRight.Move($hShowPanel.X, $hShowPanel.Y + .H - BUTTON_W, BUTTON_H, BUTTON_W)
         Endif
       Case Align.Right
-        $hShowPanel.Move(.X - D, .Y, BUTTON_H, .H)
+        $hShowPanel.Move(.X - D, .Y, PH, .H)
         If $hShowButtonLeft Then
-          $hShowButtonLeft.Move(0, 0, BUTTON_H, BUTTON_W)
-          $hShowButtonRight.Move(0, .H - BUTTON_W, BUTTON_H, BUTTON_W)
+          $hShowButtonLeft.Move(.X - BUTTON_H, $hShowPanel.Y, BUTTON_H, BUTTON_W)
+          $hShowButtonRight.Move(.X - BUTTON_H, $hShowPanel.Y + .H - BUTTON_W, BUTTON_H, BUTTON_W)
         Endif
     End Select
     
@@ -352,36 +374,94 @@ Private Sub MoveShowButton()
 
   $hShowPanel.Show
   $hShowPanel.Raise
+  If $hShowButtonLeft Then
+    $hShowButtonLeft.Show
+    $hShowButtonLeft.Raise
+    $hShowButtonRight.Show
+    $hShowButtonRight.Raise
+  Endif
     
 End
 
-Private Sub RefreshAll()
+Private Sub UpdatePanelSize(D As Integer, Optional bAnimate As Boolean) As Boolean
 
-  Dim D As Integer
+  Dim DD As Integer
+  
+  Select Case $iOrientation
+    
+    Case Align.Top, Align.Bottom
+      
+      If Me.Parent.H = D Then Return True
+      
+    Case Align.Left, Align.Right
+
+      If Me.Parent.W = D Then Return True
+
+  End Select
+
+  'bParentIgnore = Me.Parent.Ignore
+  'Me.Parent.Ignore = True
+  
+  Select Case $iOrientation
+    
+    Case Align.Top, Align.Bottom
+      
+      If bAnimate Then
+        DD = (D - Me.Parent.H + Sgn(D - Me.Parent.H)) \ 2
+      Else
+        DD = D - Me.Parent.H
+      Endif
+      
+      Me.Parent.H += DD
+      If $iOrientation = Align.Bottom Then Me.Parent.Y -= DD
+
+    Case Align.Left, Align.Right
+
+      If bAnimate Then
+        DD = (D - Me.Parent.W + Sgn(D - Me.Parent.W)) \ 2
+      Else
+        DD = D - Me.Parent.W
+      Endif
+      
+      Me.Parent.W += DD
+      If $iOrientation = Align.Right Then Me.Parent.X -= DD
+
+  End Select
+  
+  'Me.Parent.Ignore = bParentIgnore
+  
+End
+
+
+Public Sub RefreshAll()
+
   Dim hParent As Container
   Dim hTabStrip As TabStrip
   Dim iIndex As Integer
+  Dim D As Integer
+
+  btnSide.Visible = Not $bTransparent Or $bVisible
+  btnSide2.Visible = btnSide.Visible
 
   If Not $bOpened Then Return
+  'Debug Me.Parent.Name;; Me.X;; Me.Y;; Me.W;; panMove.W;; Me.Parent.ClientH
   
   If $bVisible Then
     
-    panSide.Show 'Enabled = TRUE
+    'panSide.Show 'Enabled = TRUE
     
     If $hShowPanel Then $hShowPanel.Hide
+    If $hShowButtonLeft Then
+      $hShowButtonLeft.Hide
+      $hShowButtonRight.Hide
+    Endif
 
   Else
     
     'DEBUG ME.Parent.W;; ME.CLientW
-    panSide.Hide 'Enabled = FALSE
+    'panSide.Hide 'Enabled = FALSE
     
-    If $bTransparent Then
-      D = 0 'If($bSeparator, 1, 0)
-    Else
-      D = BUTTON_H
-    Endif
-    
-    If Not $hShowPanel Then
+    If Not $hShowPanel And If $bTransparent Then
       
       hParent = Me.Parent.Parent
       
@@ -391,35 +471,26 @@ Private Sub RefreshAll()
         hTabStrip.Index = hTabStrip.FindIndex(Me.Parent)
       Endif
       
+      $hShowButtonLeft = CreateShowButton(hParent)
+      $hShowButtonRight = CreateShowButton(hParent)
+      
       $hShowPanel = New Panel(hParent) As "panMove"
+      $hShowPanel.Ignore = True
+      $hShowPanel.Mouse = Mouse.Pointing
       
       If hTabStrip Then hTabStrip.Index = iIndex
       
-      $hShowPanel.Ignore = True
-      $hShowPanel.Mouse = Mouse.Pointing
-      $hShowButtonLeft = CreateShowButton()
-      $hShowButtonRight = CreateShowButton()
-      
     Endif
     
-    Select Case $iOrientation
-      Case Align.Top
-        Me.Parent.H = D
-      Case Align.Bottom
-        Me.Parent.Y += Me.Parent.H - D
-        Me.Parent.H = D
-      Case Align.Left
-        Me.Parent.W = D
-      Case Align.Right
-        Me.Parent.X += Me.Parent.W - D
-        Me.Parent.W = D
-    End Select
-    
+    If Not $hTimerAnim Then
+      D = If($bTransparent, 0, BUTTON_H)
+      UpdatePanelSize(D)
+    Endif
     MoveShowButton
     
   Endif
 
-  UpdateBackground
+  'UpdateBackground
   RefreshArrow
   RefreshPanel
   RefreshButtons
@@ -429,16 +500,43 @@ Private Sub RefreshAll()
   
 End
 
+Private Sub AfterTogglePanel()
+
+  Dim W, H As Integer
+
+  If Not $bVisible Then
+  
+    RefreshAll
+    
+  Else
+    
+    If $W And If $H Then 
+      W = $W
+      H = $H
+      If IsVertical() Then 
+        W = Me.Parent.W
+      Else
+        H = Me.Parent.H
+      Endif
+      Me.Parent.Move($X, $Y, W, H)
+      $W = 0
+      $H = 0
+    Endif
+      
+    RefreshAll
+    
+  Endif
+  
+End
+
 
 Private Sub TogglePanel()
 
   If Me.Parent.Design Then Return
+  If $hTimerAnim Then Return
 
   If $bVisible Then
 
-    btnSide.Hide
-    btnSide2.Hide
-    
     With Me.Parent
       $X = .X
       $Y = .Y
@@ -446,28 +544,52 @@ Private Sub TogglePanel()
       $H = .Height
     End With
     
+    'Debug $X;; $Y;; $W;; $H
+    
     $bVisible = False
     
-    RefreshAll
-    
-    Action.Raise(Me.Parent)
-
-    GetParent()._Hide
-    
-  Else
-
-    btnSide.Show
-    btnSide2.Show
-    
-    $bVisible = True
-    
-    If $W And If $H Then 
-      Me.Parent.Move($X, $Y, $W, $H)
-      $W = 0
-      $H = 0
+    If Application.Animations Then
+      
+      $iTarget = If($bTransparent, 0, BUTTON_H)
+      
+      $hTimerAnim = New Timer As "TimerAnim"
+      $hTimerAnim.Delay = 20
+      $hTimerAnim.Start
+      
+    Else
+      
+      AfterTogglePanel
+      
     Endif
     
-    RefreshAll
+    Action.Raise(Me.Parent)
+  
+    GetParent()._Hide
+  
+  Else
+    
+    $bVisible = True
+
+    If Application.Animations Then
+      
+      panSide.Show
+      sepSide.Visible = $bSeparator
+      
+      If $iOrientation = Align.Top Or If $iOrientation = Align.Bottom Then
+        $iTarget = $H
+      Else
+        $iTarget = $W
+      Endif
+      
+      $hTimerAnim = New Timer As "TimerAnim"
+      $hTimerAnim.Delay = 20
+      $hTimerAnim.Start
+      
+    Else
+
+      AfterTogglePanel
+      
+    Endif
     
     Action.Raise(Me.Parent)    
 
@@ -476,6 +598,17 @@ Private Sub TogglePanel()
   Endif
 
 End
+
+Public Sub TimerAnim_Timer()
+
+  If UpdatePanelSize($iTarget, True) Then
+    $hTimerAnim.Stop
+    $hTimerAnim = Null
+    AfterTogglePanel
+  Endif
+  
+End
+
 
 Public Sub btnSide_MouseUp()
 
@@ -736,9 +869,14 @@ End
 
 Public Sub btnSide_Draw()
 
+  Dim iOrientation As Integer
+  
   If Me.Parent.Design Or If Not $bTransparent Or If $bInside Then 
     
-    DrawArrow(Last, $iOrientation)
+    iOrientation = $iOrientation
+    If Not $bVisible Then iOrientation = InvertOrientation(iOrientation)
+    
+    DrawArrow(Last, iOrientation)
   
     ' If $hArrow Then 
     '   Draw.Image($hArrow, (Last.W - $hArrow.W) / 2, (Last.H - $hArrow.H) / 2)
@@ -786,15 +924,15 @@ Public Sub SetSeparator(bVisible As Boolean)
   
 End
 
-Private Sub UpdateBackground()
-
-  ' If $bInside And If Not $bVisible Then
-  '   panMove.Background = Color.SelectedBackground
-  ' Else
-  '  panMove.Background = Color.Default
-  'Endif
-
-End
+' Private Sub UpdateBackground()
+' 
+'   ' If $bInside And If Not $bVisible Then
+'   '   panMove.Background = Color.SelectedBackground
+'   ' Else
+'   '  panMove.Background = Color.Default
+'   'Endif
+' 
+' End
 
 Private Sub RefreshButtons()
   
@@ -815,7 +953,7 @@ Public Sub panMove_Enter()
 
   'Debug
   $bInside = True
-  UpdateBackground
+  'UpdateBackground
   RefreshButtons
   
 End
@@ -824,7 +962,7 @@ Public Sub panMove_Leave()
 
   'Debug
   $bInside = False
-  UpdateBackground
+  'UpdateBackground
   RefreshButtons
   
 End
@@ -858,12 +996,14 @@ End
 Public Sub ShowButton_Enter()
   
   Last.Refresh
+  panMove_Enter
   
 End
 
 Public Sub ShowButton_Leave()
   
   Last.Refresh
+  panMove_Leave
   
 End
 
@@ -952,6 +1092,7 @@ End
 
 Public Sub SetTransparent(bTransparent As Boolean)
   
+  If $bTransparent = bTransparent Then Return
   $bTransparent = bTransparent
   RefreshAll
   
@@ -1006,4 +1147,3 @@ Public Sub SetMinSize(iMinSize As Integer)
   $iMinSize = Max(Desktop.Scale, iMinSize)
   
 End
-
