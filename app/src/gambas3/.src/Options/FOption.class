@@ -160,8 +160,6 @@ Public Sub _new()
     cmbTheme.Index = 0
   Endif
   
-  panDownloadHelp.Visible = btnOfflineHelp.Value
-  
   UpdateFont(txtGlobalFont.Value)
   
   $bNoChange = False
@@ -558,12 +556,19 @@ Public Sub btnOptional_Click()
 
 End
 
+Private Sub UpdateOfflineHelp()
+
+  MHelp.ReadConfig
+  panDownloadHelp.Visible = btnOfflineHelp.Value
+  panProxyConfig.Visible = Not panDownloadHelp.Visible
+  UpdateDocumentationState
+
+End
+
 Public Sub btnOfflineHelp_Click()
 
   Settings["/UseOfflineHelp"] = btnOfflineHelp.Value
-  MHelp.ReadConfig
-  panDownloadHelp.Visible = btnOfflineHelp.Value
-  UpdateDocumentationState
+  UpdateOfflineHelp
   FHelpBrowser.GotoHome
 
 End
@@ -1073,7 +1078,7 @@ Public Sub ipnOption_Click()
     
   Else If ipnOption.Text = ("Help & applications") Then
     
-    UpdateDocumentationState
+    UpdateOfflineHelp
     
   Endif
   

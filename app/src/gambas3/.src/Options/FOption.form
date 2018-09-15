@@ -530,12 +530,12 @@
       }
     }
     Index = 4
-    Text = ("Theme")
+    Text = ("Themes")
     Picture = Picture["icon:/medium/color"]
     { Label27 Label
       MoveScaled(0,1,63,3)
       Font = Font["Bold"]
-      Text = ("Theme")
+      Text = ("Themes")
     }
     { HBox11 HBox
       MoveScaled(1,5,65,4)
@@ -547,7 +547,7 @@
         Text = ("Icon theme")
       }
       { cmbIconTheme ComboBox
-        MoveScaled(20,0,45,4)
+        MoveScaled(27,0,38,4)
         ReadOnly = True
       }
     }
@@ -555,12 +555,12 @@
       MoveScaled(1,10,65,4)
       Indent = True
       { Label54 Label
-        MoveScaled(0,0,18,4)
+        MoveScaled(0,0,22,4)
         Expand = True
-        Text = ("Color theme")
+        Text = ("Highlighting theme")
       }
       { cmbTheme ComboBox
-        MoveScaled(20,0,32,4)
+        MoveScaled(27,0,25,4)
         ReadOnly = True
       }
       { Panel1 Panel
@@ -1010,14 +1010,19 @@
         Animated = True
       }
     }
+    { Label72 Label
+      MoveScaled(0,20,63,3)
+      Font = Font["Bold"]
+      Text = ("Documentation")
+    }
     { HBox49 HBox
-      MoveScaled(1,19,66,4)
+      MoveScaled(1,24,66,4)
       Spacing = True
       Indent = True
       { Label59 Label
         MoveScaled(0,0,47,4)
         Expand = True
-        Text = ("Use offline help")
+        Text = ("Use offline documentation")
       }
       { btnOfflineHelp SwitchButton
         MoveScaled(48,0,8,4)
@@ -1025,12 +1030,12 @@
       }
     }
     { panDownloadHelp HBox
-      MoveScaled(1,24,66,5)
+      MoveScaled(1,29,66,4)
       Visible = False
       Spacing = True
       Indent = True
       { btnDownloadHelp Button
-        MoveScaled(0,0,31,5)
+        MoveScaled(0,0,31,4)
         AutoResize = True
         Text = ("Download documentation")
         Picture = Picture["icon:/small/down"]
@@ -1041,33 +1046,33 @@
         Expand = True
       }
     }
-    { Panel4 HBox
-      MoveScaled(1,30,66,5)
-      Indent = True
-      { btnClearCache Button
-        MoveScaled(0,0,31,5)
-        AutoResize = True
-        Text = ("Clear documentation cache")
-        Picture = Picture["icon:/small/trash"]
-      }
-    }
-    { Panel5 HBox
-      MoveScaled(1,36,66,5)
+    { panProxyConfig HBox
+      MoveScaled(1,34,66,4)
       Indent = True
       { btnProxy Button
-        MoveScaled(0,0,31,5)
+        MoveScaled(0,0,31,4)
         AutoResize = True
         Text = ("Proxy configuration") & "..."
         Picture = Picture["icon:/small/internet"]
       }
     }
+    { Panel4 HBox
+      MoveScaled(1,39,66,4)
+      Indent = True
+      { btnClearCache Button
+        MoveScaled(0,0,31,4)
+        AutoResize = True
+        Text = ("Clear documentation cache")
+        Picture = Picture["icon:/small/trash"]
+      }
+    }
     { Label45 Label
-      MoveScaled(1,43,63,3)
+      MoveScaled(1,50,63,3)
       Font = Font["Bold"]
       Text = ("Applications")
     }
     { HBox12 HBox
-      MoveScaled(1,48,66,4)
+      MoveScaled(1,55,66,4)
       Spacing = True
       Indent = True
       { Label13 Label
@@ -1081,7 +1086,7 @@
       }
     }
     { HBox2 HBox
-      MoveScaled(1,53,66,4)
+      MoveScaled(1,60,66,4)
       Spacing = True
       Indent = True
       { Label4 Label
