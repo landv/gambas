@@ -113,9 +113,9 @@ END_METHOD
 static void handle_font_size(QWebSettings::FontSize size, void *_object, void *_param)
 {
 	if (READ_PROPERTY)
-		GB.ReturnInteger(get_settings(_object)->fontSize(size));
+		GB.ReturnInteger(get_settings(_object)->fontSize(size) - 3);
 	else
-		get_settings(_object)->setFontSize(size, VPROP(GB_INTEGER));
+		get_settings(_object)->setFontSize(size, VPROP(GB_INTEGER) + 3);
 }
 
 BEGIN_PROPERTY(WebSettingsFonts_DefaultFixedFontSize)
