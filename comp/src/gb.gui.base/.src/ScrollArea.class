@@ -557,6 +557,8 @@ Private Sub UpdateScroll(DX As Integer, DY As Integer)
   
   $hDrawingArea.Refresh
   
+  Raise Scroll
+    
 End
 
 Public Sub Scrollbar_Change()
@@ -579,8 +581,6 @@ Public Sub Scrollbar_Change()
       UpdateScroll($iTargetX - $iScrollX, $iTargetY - $iScrollY)
       
     Endif
-    
-    Raise Scroll
     
   Endif
   

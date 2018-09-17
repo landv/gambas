@@ -42,8 +42,7 @@ Private Sub AutoResizeContents()
 
   Dim W, H As Integer
   Dim hChild As Control
-  
-  'Debug
+  Dim iSaveArr As Integer
   
   Object.Lock($hCont)
   
@@ -70,10 +69,12 @@ Private Sub AutoResizeContents()
   
   W = Max(Me.ClientW, W)
   H = Max(Me.ClientH, H)
-  Object.Unlock($hCont)
-  
-  'Debug W;; H
+
   $hCont.Resize(W, H)
+  iSaveArr = $hCont.Arrangement
+  $hCont.Arrangement = Arrange.None
+  $hCont.Arrangement = iSaveArr
+  Object.Unlock($hCont)
   
 End
 
