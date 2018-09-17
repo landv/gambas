@@ -244,8 +244,8 @@ End
 Public Sub InitWebView()
 
   Dim sPath As String
-  Dim sFont As String
-  Dim sDefaultFont As String
+  Dim hDefaultFont As Font
+  Dim hFixedFont As Font
 
   If Not WebSettings.Cache.Path Then
     sPath = System.User.Home &/ ".cache"
@@ -261,25 +261,26 @@ Public Sub InitWebView()
   'WebSettings.Fonts.StandardFont = Application.Font.Name
   'hFont = Font[Settings["/Editor/Font", Application.Font]]
   
-  sDefaultFont = Application.Font.Name
+  hDefaultFont = Font[Settings["/Browser/Font"]]
+  hFixedFont = Font[Settings["/Browser/FixedFont", DEFAULT_FONT]]
   
-  WebSettings.Fonts.SerifFont = sDefaultFont
-  WebSettings.Fonts.SansSerifFont = sDefaultFont
-  WebSettings.Fonts.DefaultFontSize = Application.Font.Ascent * 0.9
+  WebSettings.Fonts.SerifFont = hDefaultFont.Name
+  WebSettings.Fonts.SansSerifFont = hDefaultFont.Name
+  WebSettings.Fonts.DefaultFontSize = hDefaultFont.Size
 
-  sFont = Replace(sDefaultFont, "Sans", "Mono")
-  If sFont = sDefaultFont Or If Not Fonts.Exist(sFont) Then
-    sFont = Application.Font.Name & "Mono"
-    If Not Fonts.Exist(sFont) Then
-      sFont = Application.Font.Name & " Mono"
-      If Not Fonts.Exist(sFont) Then
-        sFont = ""
-      Endif
-    Endif
-  Endif
+  ' sFont = Replace(sDefaultFont, "Sans", "Mono")
+  ' If sFont = sDefaultFont Or If Not Fonts.Exist(sFont) Then
+  '   sFont = Application.Font.Name & "Mono"
+  '   If Not Fonts.Exist(sFont) Then
+  '     sFont = Application.Font.Name & " Mono"
+  '     If Not Fonts.Exist(sFont) Then
+  '       sFont = ""
+  '     Endif
+  '   Endif
+  ' Endif
   
-  If sFont Then WebSettings.Fonts.FixedFont = sFont
-  WebSettings.Fonts.DefaultFixedFontSize = Font[sFont].Ascent * 0.8
+  WebSettings.Fonts.FixedFont = hFixedFont.Name
+  WebSettings.Fonts.DefaultFixedFontSize = hFixedFont.Size
 
 End
 
@@ -5656,7 +5657,7 @@ Public Sub GetSmallFont() As Font
 
   Dim hFont As Font = Font[Settings["/Font"]]
 
-  Try hFont.Size *= 1 - Settings["/TitleFontSize", 0] / 20
+  Try hFont.Size *= GetPercentFontSize("/TitleFontSize", 80)
   Return hFont
 
 End
@@ -5667,11 +5668,21 @@ Public Sub SetSmallFont(hCtrl As Control)
 
 End
 
+Private Sub GetPercentFontSize(sSettings As String, iDefault As Integer) As Float
+
+  Dim iVal As Integer
+
+  Try iVal = Settings[sSettings, iDefault]
+  If iVal < 10 Then iVal = iDefault
+  Return iVal / 100
+
+End
+
 Public Sub SetNormalFont(hCtrl As Control)
 
   Dim hFont As Font = Font[Settings["/Font"]]
 
-  Try hFont.Size *= 1 - Settings["/ProjectFontSize", 0] / 20
+  Try hFont.Size *= GetPercentFontSize("/ProjectFontSize", 100)
   If hFont.ToString() = Application.Font.ToString() Then
     hCtrl.Font = Null
   Else

@@ -86,6 +86,7 @@ Public Sub _new()
   cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "lxterminal", "XTerm"]
   txtEditorFont.Default = Project.DEFAULT_FONT
   txtConsoleFont.Default = Project.DEFAULT_FONT
+  txtHelpFixedFont.Default = Project.DEFAULT_FONT
   
   $cLast = MTheme.ReadSettings(Settings, "/Highlight", True)
   $cCurrent = MTheme.Copy($cLast)
@@ -94,8 +95,8 @@ Public Sub _new()
     [txtEditorFont, "/Editor/Font", ""],
     [txtConsoleFont, "/ConsoleFont", ""],
     [txtGlobalFont, "/Font", ""],
-    [cmbProjectFontSize, "/ProjectFontSize", 0],
-    [cmbTitleFontSize, "/TitleFontSize", 0],
+    [txtHelpDefaultFont, "/Browser/Font", ""],
+    [txtHelpFixedFont, "/Browser/FixedFont", ""],
     [cmbToolbox, "/ToolboxSize", 0],
     [btnSortProperty, "/SortProperties", 1],
     [btnCloseWithMiddleClick, "/CloseWithMiddleClick", 0],
@@ -152,6 +153,10 @@ Public Sub _new()
   cmbIconTheme.Index = Max(0, cmbIconTheme.List.Find(Settings["/Theme"]))
   cmbBrowser.Index = $aBrowser.Find(Settings["/Browser"]) + 1
   cmbTerminal.Index = $aTerminal.Find(Settings["/Terminal"]) + 1
+
+  SetPercentSize(cmbProjectFontSize, Settings["/ProjectFontSize", 100])    
+  SetPercentSize(cmbTitleFontSize, Settings["/TitleFontSize", 80])    
+  SetPercentSize(cmbHelpZoom, Settings["/Help/Zoom", 80])
   
   iInd = $aTheme.Find(Settings["/Editor/Theme"])
   If iInd >= 0 Then
@@ -273,6 +278,7 @@ Private Sub RefreshEditor()
   FProfile.ReadConfig
   FDebugInfo.ReadConfig
   FDebugExpr.ReadConfig
+  FCompletion.ReadConfig
 
 End
 
@@ -318,16 +324,28 @@ Private Sub RefreshWindow()
 
 End
 
+Private Sub SetPercentSize(hCombo As ComboBox, iSize As Integer)
+
+  Try hCombo.Text = CStr(iSize) & " %"
+
+End
+
+Private Sub GetPercentSize(hCombo As ComboBox) As Integer
+
+  Return CInt(Trim(Left(hCombo.Text, -1)))
+
+End
+
 Public Sub cmbProjectFontSize_Click()
 
-  Settings["/ProjectFontSize"] = cmbProjectFontSize.Index
+  Settings["/ProjectFontSize"] = GetPercentSize(cmbProjectFontSize)
   RefreshWindow
 
 End
 
 Public Sub cmbTitleFontSize_Click()
 
-  Settings["/TitleFontSize"] = cmbTitleFontSize.Index
+  Settings["/TitleFontSize"] = GetPercentSize(cmbTitleFontSize)
   RefreshWindow
 
 End
@@ -1397,3 +1415,35 @@ Public Sub btnSeparateStatic_Click()
   Next  
 
 End
+
+Private Sub RefreshBrowser()
+
+  If $bNoChange Then Return
+
+  Settings["/Browser/Font"] = txtHelpDefaultFont.Value
+  Settings["/Browser/FixedFont"] = txtHelpFixedFont.Value
+  
+  Project.InitWebView
+
+End
+
+Public Sub txtHelpDefaultFont_Change()
+
+  RefreshBrowser
+
+End
+
+Public Sub txtHelpFixedFont_Change()
+
+  RefreshBrowser
+
+End
+
+Public Sub cmbHelpZoom_Click()
+
+  Settings["/Help/Zoom"] = GetPercentSize(cmbHelpZoom)
+  FProperty.ReadConfig
+  FCompletion.ReadConfig
+
+End
+

@@ -6,7 +6,7 @@ Public Struct ComponentChooserItem
   Dependencies As String[]
 End Struct
 
-Static Private Const DEFAULT_ZOOM As Float = 0.8
+Static Private Const DEFAULT_ZOOM As Float = 1
 
 Static Private $aPict As Picture[]
 Static Private $hPictLocked As Picture
@@ -131,13 +131,13 @@ End
 
 Public Sub btnZoomIn_Click()
   
-  webAboutComponent.TextZoom = Round(webAboutComponent.TextZoom * 1.25, -2)
+  webAboutComponent.TextZoom = Round(webAboutComponent.TextZoom * 1.125, -3)
   
 End
 
 Public Sub btnZoomOut_Click()
   
-  webAboutComponent.TextZoom = Round(webAboutComponent.TextZoom / 1.25, -2)
+  webAboutComponent.TextZoom = Round(webAboutComponent.TextZoom / 1.125, -3)
   
 End
 
@@ -453,6 +453,7 @@ Public Sub gvwComponent_Click()
   Else If gvwComponent.Column = 4 Then
     
     MHelp.InitWebViewWith(webAboutComponent, MHelp.TYPE_COMPONENT, GetCurrent(),, "v&nh")
+    webAboutComponent.Zoom = Settings["/Help/Zoom", 80] / 100
     wizComponent.MoveNext
   
   Endif

@@ -58,7 +58,7 @@ End
 
 Public Sub SetLanguage(sLang As String)
   
-  Settings["/HelpLanguage"] = sLang
+  Settings["/Help/Language"] = sLang
   
 End
 
@@ -67,7 +67,7 @@ Public Sub GetLanguage(Optional bReturnVoidIfDefault As Boolean) As String
   Dim sLang As String
   Dim iPos As Integer
   
-  sLang = Settings["/HelpLanguage"]
+  sLang = Settings["/Help/Language"]
   If sLang Then Return sLang
   If bReturnVoidIfDefault Then Return
   

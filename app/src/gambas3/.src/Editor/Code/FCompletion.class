@@ -51,7 +51,6 @@ End
 Public Sub _new()
   
   gvwComp.Columns.Count = 1
-  webHelp.Zoom = 0.8
 
 End
 
@@ -84,8 +83,9 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
   $bHideLater = False
 
   $hForm = hForm
+  
   $hEditor = hForm.GetEditor()
-  Me.Font = $hEditor.Font
+  ReadConfig
 
   Inc Application.Busy
 
@@ -1152,4 +1152,11 @@ Public Sub timEnable_Timer()
   webHelp.Enabled = True
   timEnable.Stop
 
+End
+
+Public Sub ReadConfig()
+  
+  webHelp.Zoom = Settings["/Help/Zoom", 80] / 100
+  If $hEditor Then Me.Font = $hEditor.Font
+  
 End
