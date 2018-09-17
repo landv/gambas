@@ -149,7 +149,7 @@ Private Sub RefreshPanel()
 
       panMove.Move(0, Y, Me.ClientW, BUTTON_H)
 
-      If $bVisible Or If Not $bTransparent Then
+      If Not $bTransparent Or If $bVisible Then
         If W2 Then
           btnSide.Move(0, 0, W, BUTTON_H)
           btnSide2.Move(Me.ClientW - W2, 0, W2, BUTTON_H)
@@ -173,7 +173,7 @@ Private Sub RefreshPanel()
 
       panMove.Move(Y, 0, BUTTON_H, Me.ClientH)
 
-      If $bVisible Or If Not $bTransparent Then
+      If Not $bTransparent Or If $bVisible Then
         If W2 Then
           btnSide.Move(0, 0, BUTTON_H, W)
           btnSide2.Move(0, Me.ClientH - W2, BUTTON_H, W2)
@@ -301,9 +301,9 @@ Private Sub CreateShowButton(hParent As Container) As DrawingArea
   
   hCtrl = New DrawingArea(hParent) As "ShowButton"
   hCtrl.Ignore = True
-  'hCtrl.Painted = True
   hCtrl.Resize(Desktop.Scale, Desktop.Scale)
   hCtrl.Mouse = Mouse.Pointing
+  hCtrl.Tooltip = Me.Parent.NAme
   
   Return hCtrl
   
@@ -318,6 +318,7 @@ Private Sub MoveShowButton()
   If $bVisible Then Return
   If Not $bTransparent Then Return
   If Not $hShowPanel Then Return
+  If Not Me.Parent.Visible Then Return
 
   D = If($bTransparent, TRANS_H, 0)
   PH = If($bTransparent, TRANS_H, BUTTON_H)
@@ -440,12 +441,12 @@ Public Sub RefreshAll()
   Dim iIndex As Integer
   Dim D As Integer
 
-  btnSide.Visible = Not $bTransparent Or $bVisible
-  btnSide2.Visible = btnSide.Visible
-
   If Not $bOpened Then Return
   'Debug Me.Parent.Name;; Me.X;; Me.Y;; Me.W;; panMove.W;; Me.Parent.ClientH
   
+  btnSide.Visible = Not $bTransparent Or $bVisible
+  btnSide2.Visible = btnSide.Visible
+
   If $bVisible Then
     
     'panSide.Show 'Enabled = TRUE
