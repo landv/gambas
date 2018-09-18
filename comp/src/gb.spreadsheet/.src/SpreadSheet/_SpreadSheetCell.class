@@ -1,0 +1,189 @@
+' Gambas class file
+
+Static Public _Cells As New Collection
+Static Private $aIsAbon As New String[]
+Static Private $aAbonTo As New String[]
+'Static Private $hBaseCell As New _SpreadSheetCell
+Property Alignment As Integer
+Property Border As SpreadSheetCellBorder
+Property Text, Formula As String
+Property Read Value As Variant
+Property Font As Font
+Property Format As String
+Property Read IsError As Boolean
+Property Foreground As Integer
+Property BackGround As Integer
+
+Private $iForeground As Integer
+Private $iBackGround As Integer = -1
+Private $iAlignment As Integer
+Private $hBorder As SpreadSheetCellBorder
+Private $hFont As Font
+Private $sFormula As String
+Private $vValue As Variant
+Private $sFormat As String
+Public _Key As String
+Event Change
+
+Static Public Function _call(sKey As String) As _SpreadSheetCell
+
+  Dim hCell As New _SpreadSheetCell
+
+  hCell._Key = sKey
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return $iAlignment
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  If $iAlignment = Value Then Return
+  
+    $iAlignment = Value
+    Raise Change
+
+
+End
+
+Private Function Border_Read() As SpreadSheetCellBorder
+
+  Return $hBorder
+
+End
+
+Private Sub Border_Write(Value As SpreadSheetCellBorder)
+
+  If $hBorder = Value Then Return
+    
+    $hBorder = Value
+    Raise Change
+
+
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sFormula
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  If Value = $sFormula Then Return
+  
+    $sFormula = Value
+    Raise Change
+
+
+End
+
+Private Function Value_Read() As Variant
+
+  Return $vValue
+
+End
+
+Private Function Font_Read() As Font
+
+  Return $hFont
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  If $hFont = Value Then Return
+  
+    $hFont = Value
+    Raise Change
+  
+End
+
+Private Function Format_Read() As String
+
+  Return $sFormat
+
+End
+
+Private Sub Format_Write(Value As String)
+
+  If $sFormat = Value Then Return
+  
+    $sFormat = Value
+    Raise Change
+
+End
+
+Private Function IsError_Read() As Boolean
+
+End
+
+Public Sub AbonTo(l As Long)
+
+  $aIsAbon.Add(Me._Index)
+  $aAbonTo.Add(l)
+
+End
+
+Public Function GetFollowers() As String[]
+
+  Dim iPos, ifind As Integer
+  Dim aret As New String[]
+
+  Repeat
+    ifind = $aAbonTo.Find(_key,, iPos)
+    If ifind > -1 Then
+      iPos = ifind + 1
+      aret.Add($aIsAbon[iPos])
+    Endif
+  Until ifind > -1
+
+End
+
+Public Function RemoveRegister()
+
+End
+
+Private Function Foreground_Read() As Integer
+
+  Return $iForeground
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  If $iForeground = Value Then Return
+  
+  $iForeground = Value
+  Raise Change
+
+End
+
+Private Function BackGround_Read() As Integer
+
+  Return $iBackGround
+
+End
+
+Private Sub BackGround_Write(Value As Integer)
+
+  If $iBackGround = Value Then Return 
+  
+  $iBackGround = Value
+  Raise Change
+
+End
+
+Public Function NeedSave() As Boolean
+  
+  If $sFormula <> "" Then Return True
+  If $iBackGround <> Color.Background Then Return True
+  If $iForeground <> Color.Foreground Then Return True
+  If $iAlignment <> Align.Normal Then Return True
+  If $hBorder <> Null Then Return True
+  If $hFont <> Null Then Return True
+End

@@ -1,0 +1,50 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+
+
+'SpreadSheet1.ShowGrid = False
+SpreadSheet1[1, 1].Text = "toto"
+'SpreadSheet1[1, 1].BackGround = Color.Green
+'SpreadSheet1[1, 1].Border = SpreadSheetCellBorder("right-style:solid;width:0;right-Width:3;toprightradius:5")
+SpreadSheet1.MoveTo(3, 3)
+End
+
+Public Sub SpreadSheet1_Click()
+
+  
+
+End
+
+Public Sub Button1_Click()
+
+  
+
+End
+
+Public Sub ColorButton1_Change()
+
+  'For Each hCell In SpreadSheet
+
+End
+
+Public Sub DrawingArea1_Draw()
+
+  Paint.Rectangle(10, 10, paint.Width - 20, Paint.Height - 20)
+  Paint.Stroke
+  
+  Paint.MoveTo(10, Paint.Height / 2)
+  Paint.RelLineTo(Paint.Width - 20, 0)
+  Paint.MoveTo(Paint.Width / 2, 10)
+  Paint.RelLineTo(0, Paint.Height - 20)
+  Paint.Stroke
+
+End
+
+Public Sub SpreadSheet1_MouseDown()
+
+  
+
+End

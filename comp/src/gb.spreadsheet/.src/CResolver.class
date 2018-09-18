@@ -1,0 +1,104 @@
+' Gambas class file
+
+Inherits Expression
+Public Data As Variant
+Event Data(Name As String)
+Static Private $aFunctions As String[]
+Private $hSP As SpreadSheet
+'Static Private $aAllowedIdentifiers As String[] = ["page", "pages", "index"]
+
+Static Private Sub LoadFunctions()
+
+  $aFunctions = Split(File.Load("FunctionsList.txt"), "\n")
+
+End
+
+Static Public Sub IsIdentifier(Name As String) As Boolean
+
+  Print "Identifier : " & Name
+  Print IsAvailableCellName(Name)
+  Return IsAvailableCellName(Name)
+
+  'Return $aAllowedIdentifiers.Exist(LCase(Name))
+End
+
+Static Public Sub IsSubr(Name As String) As Boolean
+
+  If Not $aFunctions Then LoadFunctions
+  ' Return if a the 'Name' Gambas subroutine is allowed.
+  Return $aFunctions.Exist(LCase(Name))
+  'Print Name
+
+End
+
+Public Sub GetValue(Name As String) As Variant
+
+  'Return the value Of the 'Name' identifier.
+  Data = 0
+  'Print object.parent(Me)
+  Raise Data(Name)
+  Return Data
+  'Print "Get Value : " & Name
+  'Return "2"
+
+End
+
+' Public Sub Coucou(Value As String) As String
+'
+'   Return "Coucou " & Value
+'
+' End
+
+Static Private Function IsAvailableCellName(sName As String) As Boolean
+
+  Dim i As Integer
+  Dim s As String
+
+  For i = 1 To Len(sName)
+    s = Mid(sName, i, 1)
+    If Not IsLetter(s) Then Break
+  Next
+
+  Return IsDigit(Mid(sName, i))
+
+End
+
+Private Sub GetParent() As SpreadSheet
+
+  Return Object.Parent(Me)
+
+End
+
+Private Function ConvertToCells(sName As String) As Integer
+
+  Dim i As Integer
+  Dim s, ss As String
+
+  For i = 1 To Len(sName)
+    s = Mid(sName, i, 1)
+    If Not IsLetter(s) Then Break
+    ss &= s
+  Next
+
+End
+
+Private Sub ColLetterToInt(sValue As String) As Integer
+
+  Dim iLetter As Integer
+  Dim iResult As Integer
+
+  If sValue = "" Then Return
+  sValue = UCase(sValue)
+  Select Case Len(sValue)
+    Case 1
+      Return Asc(sValue) - 65
+
+    Case 2
+      Return Asc(Left(sValue) - 65) * 26 + (Asc(Right(sValue)) - 65)
+
+    Case 3
+      Return (Asc(Left(sValue) - 65) * (26 * 26)) + (Asc(Mid(sValue, 2, 1) - 65) * 26) + (Asc(Right(sValue)) - 65)
+
+  End Select
+
+End

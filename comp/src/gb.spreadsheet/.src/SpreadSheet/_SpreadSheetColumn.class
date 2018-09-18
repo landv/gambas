@@ -1,0 +1,26 @@
+' Gambas class file
+
+Property Width As Integer
+Static Public _BaseWidth As Integer = 100
+Private $iWidth As Integer = _BaseWidth
+Public _X As Integer
+Event _Foo
+
+Private Function Width_Read() As Integer
+
+  Return $iWidth
+
+End
+
+Private Sub Width_Write(Value As Integer)
+
+  $iWidth = Value
+  GetParent().SetColumnsPos()
+
+End
+
+Private Function GetParent() As _SpreadSheetColumns
+
+  Return Object.Parent(Me)
+
+End

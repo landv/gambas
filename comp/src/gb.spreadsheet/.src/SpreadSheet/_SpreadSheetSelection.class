@@ -1,0 +1,19 @@
+' Gambas class file
+
+Public StartColumn As Integer
+Public StartRow As Integer
+Public EndRow As Integer
+Public EndColumn As Integer
+
+Static Public Function _call(StartRow As Integer, StartColumn As Integer, EndRow As Integer, EndColumn As Integer) As _SpreadSheetSelection
+  
+  Dim hRet As New _SpreadSheetSelection
+  
+  hRet.StartRow = StartRow
+  hRet.StartColumn = StartColumn
+  hRet.EndRow = EndRow
+  hRet.EndColumn = EndColumn
+  
+  Return hRet
+End
+

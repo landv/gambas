@@ -1,0 +1,108 @@
+' Gambas class file
+
+Private $hRows As New _SpreadSheetRow[]
+Private $iFullHeight As Integer
+Property Read _FullHeight As Integer
+Property Read Max As Integer
+Property Read Count As Integer
+
+Event _Foo
+
+Public Sub _New(Optional NbrRow As Integer)
+
+  Dim i As Integer
+
+  If NbrRow = 0 Then Return
+  $hRows.Resize(NbrRow)
+  For i = 0 To $hRows.Max
+
+    $hRows[i] = New _SpreadSheetRow(GetParent().Font.Height + 5) As "Row"
+
+  Next
+  SetRowsPos
+  GetParent()._NumbersWidth = GetParent().Font.TextWidth($hRows.Count) + 5
+
+End
+
+Private Function GetParent() As SpreadSheet
+
+  Return Object.Parent(Me)
+
+End
+
+Public Function _next() As _SpreadSheetRow
+
+  If IsNull(Enum.Index) Then Enum.Index = -1
+  Enum.Index += 1
+  If Enum.Index > $hRows.Max Then
+    Enum.Stop
+    Return
+  Endif
+  Return $hRows[Enum.Index]
+
+End
+
+Public Sub _get(Index As Integer) As _SpreadSheetRow
+
+  Return $hRows[Index]
+
+End
+
+Public Sub SetRowsPos(Optional iFrom As Integer = 0)
+
+  Dim i As Integer
+  Dim iY As Integer = GetParent()._NumbersHeight
+
+  If iFrom > 0 Then iY = $hRows[iFrom - 1]._Y + $hRows[iFrom - 1].Height
+  For i = iFrom To $hRows.Max
+    $hRows[i]._Y = iY
+    iY += $hRows[i].Height
+  Next
+  $iFullHeight = iY
+
+End
+
+Public Sub FindRowByPos(Y As Integer) As Integer
+
+  Dim iStart, iMiddle As Integer
+  Dim iEnd As Integer = $hRows.Max
+  Dim iRow As Integer = -1
+
+  Repeat
+    iMiddle = Int(iStart + (iEnd - iStart) / 2)
+    If Y > $hRows[iMiddle]._Y - 1 And If Y < $hRows[iMiddle]._Y + $hRows[iMiddle].Height Then
+      'trouvé
+      iRow = iMiddle
+    Else
+      If Y < $hRows[iMiddle]._Y Then
+        iEnd = iMiddle - 1
+      Else
+        iStart = iMiddle + 1
+      Endif
+
+    Endif
+  Until iRow <> -1 Or iMiddle > iEnd + 1 Or iStart > iEnd
+
+  If Y > $iFullHeight Then iRow = $hRows.Max
+
+  Return iRow
+
+End
+
+Private Function _FullHeight_Read() As Integer
+
+  Return $iFullHeight
+
+End
+
+Private Function Max_Read() As Integer
+
+  Return $hRows.Max
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return $hRows.Count
+
+End

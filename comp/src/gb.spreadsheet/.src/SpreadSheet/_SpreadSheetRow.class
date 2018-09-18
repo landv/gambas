@@ -1,0 +1,33 @@
+' Gambas class file
+
+Property Height As Integer
+Static Public _BaseHeight As Integer = 22
+Private $iHeight As Integer = _BaseHeight
+Public _Y As Integer
+
+Event _Foo
+
+Public Sub _New(Optional iHeight As Integer)
+
+  $iHeight = iHeight
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return $iHeight
+
+End
+
+Private Sub Height_Write(Value As Integer)
+
+  $iHeight = Value
+  GetParent().SetRowsPos
+
+End
+
+Private Function GetParent() As _SpreadSheetRows
+
+  Return Object.Parent(Me)
+
+End

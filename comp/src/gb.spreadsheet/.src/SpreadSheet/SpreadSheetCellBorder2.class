@@ -1,0 +1,120 @@
+' Gambas class file
+
+Public Enum Solid = 1, Dotted = 2, Dashed = 3, Double = 16
+
+Property Width As Single
+
+Property Style As Integer
+Property Color As Integer
+
+Public LeftStyle As Byte = Solid
+Public RightStyle As Byte = Solid
+Public TopStyle As Byte = Solid
+Public BottomStyle As Byte = Solid
+
+Public LeftWidth As Single = 1
+Public RightWidth As Single = 1
+Public TopWidth As Single = 1
+Public BottomWidth As Single = 1
+
+Public LeftColor As Integer
+Public RightColor As Integer
+Public TopColor As Integer
+Public BottomColor As Integer
+
+Public TopLeftRadius As Single
+Public TopRightRadius As Single
+Public BottomLeftRadius As Single
+Public BottomRightRadius As Single
+
+Public LeftPadding As Single
+Public RightPadding As Single
+Public TopPadding As Single
+Public BottomPadding As Single
+
+Public LeftMargin As Single
+Public RightMargin As Single
+Public TopMargin As Single
+Public BottomMargin As Single
+
+Public SlashStyle As Byte
+Public BackslashStyle As Byte
+Public SlashColor As Integer
+Public BackslashColor As Integer
+Public SlashWidth As Single
+Public BackslashWidth As Single
+
+Static Private $aProp As String[] = ["width", "color", "radius", "style", "padding", "margin", "slash"]
+
+Private Const CURVE_MUL As Single = 0.44771525
+
+Private Function Width_Read() As Single
+
+  Return LeftWidth
+
+End
+
+Private Sub Width_Write(Value As Single)
+
+  LeftWidth = Value
+  RightWidth = Value
+  TopWidth = Value
+  BottomWidth = Value
+  
+End
+
+Private Function Radius_Read() As Single
+
+  Return TopLeftRadius
+
+End
+
+Private Sub Radius_Write(Value As Single)
+
+  TopLeftRadius = Value
+  TopRightRadius = Value
+  BottomLeftRadius = Value
+  BottomRightRadius = Value
+
+End
+
+Private Function Style_Read() As Integer
+
+  Return LeftStyle
+
+End
+
+Private Sub Style_Write(Value As Integer)
+
+  LeftStyle = Value
+  RightStyle = Value
+  TopStyle = Value
+  BottomStyle = value
+
+End
+
+Private Function Color_Read() As Integer
+
+  Return LeftColor
+
+End
+
+Private Sub Color_Write(Value As Integer)
+
+  LeftColor = Value
+  RightColor = value
+  TopColor = Value
+  BottomColor = value
+
+End
+
+Public Sub IsVoid() As Boolean
+  
+  If TopStyle And If TopWidth Then Return
+  If BottomStyle And If BottomWidth Then Return
+  If LeftStyle And If LeftWidth Then Return
+  If RightStyle And If RightWidth Then Return
+  
+  Return True
+  
+End

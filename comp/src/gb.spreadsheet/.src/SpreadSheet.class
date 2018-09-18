@@ -1,0 +1,740 @@
+' Gambas class file
+
+'Fast
+Export
+Inherits UserControl
+Public _NumbersWidth As Integer = 30
+Public _NumbersHeight As Integer = 20
+
+Property Read Columns As _SpreadSheetColumns
+Property Read Rows As _SpreadSheetRows
+Property Read Current As _SpreadSheetCell
+Property ShowGrid As Boolean
+
+Property Row As Integer
+Property Column As Integer
+
+Private $hRows As _SpreadSheetRows
+Private $hColumns As _SpreadSheetColumns
+Private $hView As New ScrollArea(Me) As "View"
+
+Private $iFirstVisibleRow As Integer
+Private $iFirstVisibleCol As Integer
+Private $iLastVisibleCol As Integer
+Private $iLastVisibleRow As Integer
+
+Private $iCurrCellRow As Integer = 3
+Private $iCurrCellCol As Integer = 3
+Private $bShowGrid As Boolean = True
+
+Private $hCursorCol As Cursor
+Private $hCursorRow As Cursor
+Private $hCursorCross As Cursor
+Private iChangeColWidth As Integer = -1
+Private iChangeRowHeight As Integer = -1
+
+Private $hCurSelection As _SpreadSheetSelection
+Private $aSelections As New _SpreadSheetSelection[]
+Private $bSelMode As Boolean
+Private $fScale As Float = 1
+Private $hTimerScroll As Timer
+Private $SX As Integer
+Private $SY As Integer
+Private $hObs As Observer
+Private $hEditor As TextBox
+Private $hResolver As CResolver
+
+Private $htmrEnsureVisible As Timer
+Private $iRowEV As Integer
+Private $iColEv As Integer
+
+Static Public _Cells As New Collection
+
+'Private $hColumns As _SpreadSheetColumns
+
+Public Sub _new()
+  
+  $hView.ScrollBar = Scroll.Both
+  $hView.Background = Color.White
+  $hView.Tracking = True
+  $hView.Focus = True
+  '_NumbersWidth = $hView.Font.TextWidth(5000) + 5
+  $hRows = New _SpreadSheetRows(150) As "Rows"
+  $hColumns = New _SpreadSheetColumns(150) As "Columns"
+  
+  $hCursorCol = New Cursor(Picture["cursorcol.png"])
+  $hCursorrow = New Cursor(Picture["cursorrow.png"])
+  $hCursorCross = New Cursor(Picture["cross.png"])
+  $hObs = New Observer($hView.View) As "OBS"
+  
+  $hEditor = New TextBox(Me) As "Editor"
+  $hEditor.Ignore = True
+  $hEditor.Border = False
+  
+  $hResolver = New CResolver As "Resolver"
+  
+End
+
+Private Function Columns_Read() As _SpreadSheetColumns
+  
+  Return $hColumns
+  
+End
+
+Private Function Rows_Read() As _SpreadSheetRows
+  
+  Return $hRows
+  
+End
+
+Public Sub View_Draw()
+  
+  Dim Column As _SpreadSheetColumn
+  Dim Row As _SpreadSheetRow
+  Dim X, Y, H, W As Integer
+  Dim i, j As Integer
+  Dim hSelection As _SpreadSheetSelection
+  Dim iSR, iER, iSC, iEC As Integer
+  Dim iRow, iCol As Integer
+  Dim hCell As Variant
+  
+  Paint.Scale($fScale, $fScale)
+  '_NumbersWidth = draw.TextWidth($hRows.Count) + 5
+  
+  $hView.ResizeContents($hColumns._FullWidth * $fScale, $hRows._FullHeight * $fScale)
+  
+  'Calcul de la zone visible
+  $iFirstVisibleCol = Max(0, $hColumns.FindColumnByPos($hView.ScrollX + _NumbersWidth))
+  $iLastVisibleCol = $hColumns.FindColumnByPos($hView.ScrollX + $hView.ClientWidth / $fScale)
+  'Print $iFirstVisibleCol, $iLastVisibleCol
+  If $iLastVisibleCol = -1 Then $iLastVisibleCol = $hColumns.Max
+  
+  $iFirstVisibleRow = $hRows.FindRowByPos($hView.ScrollY + _NumbersHeight * 2)
+  'Print "FirstVisible " & $hRows.FindRowByPos($hView.ScrollY)
+  $iLastVisibleRow = $hRows.FindRowByPos($hView.ScrollY + $hView.ClientHeight / $fScale + _NumbersHeight)
+  
+  If $iLastVisibleRow = -1 Then $iLastVisibleRow = $hRows.Max
+  
+  Paint.AntiAlias = False
+  
+  'Dessin du fond des barre d'entetes
+  Paint.Brush = Paint.Color(Color.Lighter(Color.Lighter(Color.LightGray)))
+  Paint.Rectangle(0, 0, Paint.Width / $fScale, _NumbersHeight)
+  Paint.Rectangle(0, 0, _NumbersWidth, Paint.Height / $fScale)
+  Paint.Fill
+  
+  Paint.Brush = Paint.Color(Color.Lighter(Color.LightGray))
+  Paint.Rectangle(_NumbersWidth / 2, _NumbersHeight / 2, Paint.Width / $fScale, _NumbersHeight / 2)
+  Paint.Rectangle(_NumbersWidth / 2, _NumbersHeight / 2, _NumbersWidth / 2, Draw.Height / $fScale)
+  Paint.Fill
+  
+  Paint.Brush = Paint.Color(Color.Gray)
+  Paint.Rectangle(0, 0, _NumbersWidth, _NumbersHeight)
+  Paint.Stroke
+  
+  DrawColsHeader($iFirstVisibleCol, $iLastVisibleCol, $iCurrCellCol)
+  DrawRowsHeader(Max(0, $iFirstVisibleRow - 1), $iLastVisibleRow, $iCurrCellRow)
+  
+  'Dessiner les cellules connues
+  Paint.ClipRect = Rect(_NumbersWidth, _NumbersHeight, (Paint.Width / $fScale) - _NumbersWidth, (Paint.Height / $fScale) - _NumbersHeight)
+  'Paint.Rectangle(_NumbersWidth + 6, _NumbersHeight, Paint.Width - _NumbersWidth, Paint.Height - _NumbersHeight)
+  
+  For iCol = $iFirstVisibleCol To $iLastVisibleCol
+    For iRow = Max(0, $iFirstVisibleRow - 1) To $iLastVisibleRow
+      hCell = _Cells[GetCellKey(iRow, iCol)]
+      If hCell Then DrawCell(hCell, irow, iCol)
+    Next
+  Next
+  
+  Paint.Background = Color.SetAlpha(Color.Violet, 180)
+  
+  'Dessiner les selections
+  For Each hSelection In $aSelections
+    iSR = Min(hSelection.StartRow, hSelection.EndRow)
+    iER = Max(hSelection.StartRow, hSelection.EndRow)
+    iSC = Min(hSelection.StartColumn, hSelection.EndColumn)
+    iEC = Max(hSelection.StartColumn, hSelection.EndColumn)
+    
+    X = $hColumns[Max($iFirstVisibleCol, iSC)]._X - $hView.ScrollX
+    Y = $hRows[Max($iFirstVisibleRow - 1, iSR)]._Y - $hView.ScrollY
+    W = ($hColumns[Min($iLastVisibleCol, iEC)]._X + $hColumns[iEC].Width) - (X + $hView.ScrollX)
+    H = ($hRows[Min($iLastVisibleRow, iER)]._Y + $hRows[iER].Height) - (Y + $hView.ScrollY)
+    paint.Rectangle(X, Y, W, H)
+    Paint.Fill
+    
+  Next
+  
+  'Dessinner la grille
+  Paint.Brush = Paint.Color(Color.LightGray)
+  If $bShowGrid Then
+    For i = $iFirstVisibleRow To $iLastVisibleRow
+      Paint.MoveTo(_NumbersWidth, $hRows[i]._Y - $hView.ScrollY)
+      Paint.LineTo(Paint.Width / $fScale, $hRows[i]._Y - $hView.ScrollY)
+    Next
+    
+    For j = $iFirstVisibleCol To $iLastVisibleCol
+      Paint.MoveTo($hColumns[j]._X - $hView.ScrollX, _NumbersHeight)
+      Paint.LineTo($hColumns[j]._X - $hView.ScrollX, Paint.Height / $fScale)
+    Next
+    Paint.Stroke
+  Endif
+  
+  'Dessiner la cellule courante
+  column = $hColumns[$iCurrCellCol]
+  row = $hRows[$iCurrCellRow]
+  X = column._X - $hView.ScrollX
+  Y = Row._Y - $hView.ScrollY
+  Paint.Rectangle(x, y, column.Width + 1, row.Height + 1)
+  Paint.LineWidth = 3
+  Paint.Brush = Paint.Color(Color.Black)
+  Paint.Stroke
+  Paint.Rectangle(x + column.Width - 3, Y + row.Height - 3, 6, 6)
+  Paint.LineWidth = 1
+  Paint.Background = Color.Red
+  Paint.Fill(True)
+  Paint.Background = Color.Black
+  Paint.Stroke
+  
+  Paint.ClipRect = Null
+  
+End
+
+Private Sub DrawRowsHeader(iFirstRow As Integer, iLastRow As Integer, iCurRow As Integer)
+  
+  Dim i As Integer
+  ' Dim iHeight As Integer = _NumbersHeight
+  ' Dim iWidth As Integer = _NumbersWidth
+  
+  Dim hRect As New Rect(0, _NumbersHeight, _NumbersWidth + 1, (Paint.Height / $fScale) - _NumbersHeight)
+  'Dim j As Integer
+  
+  Paint.ClipRect = hRect
+  
+  For i = iFirstRow To iLastRow
+    
+    If i = iCurRow Then
+      Paint.Font.Bold = True
+      Paint.Rectangle(0, $hRows[i]._Y - $hView.ScrollY, _NumbersWidth, $hRows[i].Height)
+      
+      Paint.Brush = Paint.Color(Color.Lighter(Color.Blue))
+      Paint.Fill(True)
+      Paint.Brush = Paint.Color(Color.Gray)
+      Paint.Stroke
+      Paint.Brush = Paint.Color(Color.White)
+      
+    Else
+      
+      Paint.Font.Bold = False
+      Paint.Brush = Paint.Color(Color.Gray)
+      Paint.Rectangle(0, $hRows[i]._Y - $hView.ScrollY, _NumbersWidth, $hRows[i].Height)
+      Paint.Stroke
+    Endif
+    Paint.DrawText(i + 1, 0, $hRows[i]._Y - $hView.ScrollY, _NumbersWidth, $hRows[i].Height, Align.Center)
+  Next
+  Paint.ClipRect = Null
+  ' For i = $iFirstVisibleRow To $iLastVisibleRow
+  '   For j = $iFirstVisibleCol To $iLastVisibleCol
+  '     If i = $iCurrCellRown anf If j = $iCurrCellCol Then
+  '     Endif
+  '   Next
+  ' Next
+  
+End
+
+Private Sub DrawColsHeader(iFirstCol As Integer, iLastCol As Integer, iCurCol As Integer)
+  
+  Dim i As Integer
+  Dim iHeight As Integer = _NumbersHeight
+  'Dim iWidth As Integer = _NumbersWidth
+  Dim hRect As New Rect(_NumbersWidth, 0, (Paint.Width / $fScale) - _NumbersWidth, _NumbersHeight)
+  
+  Paint.ClipRect = hRect
+  For i = iFirstCol To iLastCol
+    Paint.Rectangle($hColumns[i]._X - $hView.ScrollX, 0, $hColumns[i].Width, iHeight)
+    If i = iCurCol Then
+      
+      Paint.Font.Bold = True
+      Paint.Brush = Paint.Color(Color.Lighter(Color.Blue))
+      Paint.Fill(True)
+      Paint.Brush = Paint.Color(Color.Gray)
+      Paint.Stroke
+      Paint.Brush = Paint.Color(Color.White)
+    Else
+      Paint.Brush = Paint.Color(Color.Gray)
+      Paint.Stroke
+      Paint.Font.Bold = False
+    Endif
+    Paint.DrawText(ConvIntToText(i), $hColumns[i]._X - $hView.ScrollX, 0, $hColumns[i].Width, iHeight, Align.Center)
+    Paint.Fill
+  Next
+  
+  Paint.ClipRect = Null
+  
+End
+
+Private Function ConvIntToText(iValue As Integer) As String
+  
+  Dim Nombre As String
+  
+  While (iValue >= 26)
+    
+    nombre = Chr((iValue Mod 26) + 65) & nombre ' on fait une s érie de division successives
+    iValue = iValue Div 26 'pour calculer chaque chiffre du nombre
+    
+  Wend
+  
+  If iValue >= 0 Then
+    If nombre Then
+      nombre = Chr(iValue Mod 26 + 64) & nombre
+    Else
+      nombre = Chr(iValue Mod 26 + 65) & nombre
+    Endif
+  Endif
+  
+  Return nombre
+  
+End
+
+Public Sub View_MouseMove()
+  
+  Dim i, j, iMouse As Integer
+  Dim iMarge As Integer = 5 * $fScale
+  Dim X, Y As Integer
+  Dim hRect As Rect
+  
+  $SX = Mouse.X
+  $SY = Mouse.Y
+  
+  If iChangeColWidth > -1 Then
+    $hColumns[iChangeColWidth].Width = Max(10, (Mouse.x / $fScale + $hView.ScrollX) - $hColumns[iChangeColWidth]._X)
+    $hView.Refresh
+  Endif
+  If iChangeRowHeight > -1 Then
+    $hRows[iChangeRowHeight].Height = Max(10, (Mouse.Y / $fScale + $hView.ScrollY) - $hRows[iChangeRowHeight]._Y)
+    $hView.Refresh
+  Endif
+  'Are we in the column header ?
+  If Mouse.y < _NumbersHeight * $fScale Then
+    i = $hColumns.FindColumnByPos(Mouse.x / $fScale + $hView.ScrollX)
+    If i > 0 Then
+      If Mouse.x + $hView.ScrollX < ($hColumns[i]._X + 5) * $fScale Or If Mouse.x + $hView.ScrollX > ($hColumns[i]._X + $hColumns[i].Width - 5) * $fScale Then
+        iMouse = Mouse.SizeH
+      Else
+        iMouse = Mouse.Custom
+        $hView.Cursor = $hCursorCol
+      Endif
+    Endif
+  Else
+    'are we in the row header ?
+    If Mouse.X < _NumbersWidth * $fScale Then
+      i = $hRows.FindRowByPos(Mouse.y / $fScale + $hView.ScrollY)
+      If i > 0 Then
+        If Mouse.y + $hView.ScrollY < ($hRows[i]._y + 5) * $fScale Or If Mouse.y + $hView.ScrollY > ($hRows[i]._y + $hRows[i].Height - 5) * $fScale Then
+          iMouse = Mouse.SizeV
+        Else
+          iMouse = Mouse.Custom
+          $hView.Cursor = $hCursorRow
+        Endif
+        
+      Endif
+    Else
+      If $bSelMode Then
+        i = $hRows.FindRowByPos(Mouse.y / $fScale + $hView.ScrollY)
+        j = $hColumns.FindColumnByPos(Mouse.X / $fScale + $hView.ScrollX)
+        If $hCurSelection = Null Then
+          If (i <> $iCurrCellRow Or j <> $iCurrCellCol) Then
+            $hCurSelection = _SpreadSheetSelection($iCurrCellRow, $iCurrCellCol, $iCurrCellRow, $iCurrCellCol)
+            $aSelections.Add($hCurSelection)
+          Endif
+        Else
+          If i > -1 Then $hCurSelection.EndRow = i
+          If j > -1 Then $hCurSelection.EndColumn = j
+        Endif
+        $hView.Refresh
+      Endif
+      If Mouse.Left And If Not $hTimerScroll Then
+        $hTimerScroll = New Timer As "TimerScroll"
+        $hTimerScroll.Delay = 50
+        $hTimerScroll.Start
+      Endif
+    Endif
+    
+    X = $hColumns[$iCurrCellCol]._X + $hColumns[$iCurrCellCol].Width
+    Y = $hRows[$iCurrCellRow]._Y + $hRows[$iCurrCellRow].Height
+    hRect = Rect(X, Y, 6, 6)
+    If hRect.Contains(Mouse.x, Mouse.y) Then
+      iMouse = Mouse.Custom
+      $hView.Cursor = $hCursorCross
+    Endif
+  Endif
+  
+  If $hView.Mouse <> iMouse Then $hView.Mouse = iMouse
+  
+End
+
+Public Sub View_MouseDown()
+  
+  Dim i As Integer
+  
+  If $hEditor.Visible Then
+    HideEditor
+  Endif
+  
+  If Not Mouse.Left Then Return
+  'selection de l'ensemble (coin gauche)
+  If Mouse.y < _NumbersHeight Then
+    If Mouse.x < _NumbersWidth Then
+      $aSelections.Clear
+      $aSelections.Add(_SpreadSheetSelection(0, 0, $hRows.Max, $hColumns.Max))
+      $hView.Refresh
+      Return
+    Endif
+    
+    i = $hColumns.FindColumnByPos(Mouse.x / $fScale + $hView.ScrollX)
+    
+    If i > 0 Then
+      If Mouse.x + $hView.ScrollX < ($hColumns[i]._X + 5) * $fScale Then iChangeColWidth = i - 1
+      If Mouse.x + $hView.ScrollX > ($hColumns[i]._X + $hColumns[i].Width - 5) * $fScale Then iChangeColWidth = i
+    Endif
+    
+    If iChangeColWidth > -1 Then
+      $hView.Mouse = Mouse.SizeH
+    Else
+      'selection d'une colonne
+      $aSelections.Clear
+      $aSelections.Add(_SpreadSheetSelection(0, i, $hRows.Max, i))
+      $hView.Refresh
+    Endif
+  Else
+    If Mouse.X < _NumbersWidth Then
+      i = $hRows.FindRowByPos(Mouse.y / $fScale + $hView.ScrollY)
+      If i > 0 Then
+        If Mouse.Y + $hView.ScrollY < ($hRows[i]._y + 5) * $fScale Then iChangeRowHeight = i - 1
+        If Mouse.Y + $hView.ScrollY > ($hRows[i]._y + $hRows[i].Height - 5) * $fScale Then iChangeRowHeight = i
+        
+      Endif
+      If iChangeRowHeight > -1 Then
+        $hView.Mouse = Mouse.SizeV
+      Else
+        'selection d'une ligne
+        $aSelections.Clear
+        $aSelections.Add(_SpreadSheetSelection(i, 0, i, $hColumns.Max))
+        $hView.Refresh
+        
+      Endif
+    Else
+      $iCurrCellCol = $hColumns.FindColumnByPos(Mouse.X / $fScale + $hView.ScrollX)
+      $iCurrCellRow = $hRows.FindRowByPos(Mouse.Y / $fScale + $hView.ScrollY)
+      $bSelMode = True
+      
+      If Not Mouse.Control Then
+        $aSelections.Clear
+        $hCurSelection = Null
+      Else
+        $hCurSelection = _SpreadSheetSelection($iCurrCellRow, $iCurrCellCol, $iCurrCellRow, $iCurrCellCol)
+        $aSelections.Add($hCurSelection)
+      Endif
+      
+      $hView.Refresh
+    Endif
+  Endif
+  
+End
+
+Public Sub View_MouseUp()
+  
+  If Mouse.Left Then
+    If iChangeColWidth > -1 Then
+      iChangeColWidth = -1
+      $hView.Mouse = Mouse.Default
+    Endif
+    If iChangeRowHeight > -1 Then
+      iChangeRowHeight = -1
+      $hView.Mouse = Mouse.Default
+    Endif
+    If $bSelMode Then
+      'hSelBlocs.Add(hCurSelection)
+      $bSelMode = False
+    Endif
+    If $hTimerScroll Then
+      $hTimerScroll.Stop
+      $hTimerScroll = Null
+    Endif
+    'Raise MouseUp()
+    'Raise Click
+  Else
+    'Raise MouseUp()
+  Endif
+  
+End
+
+Public Sub View_MouseWheel()
+  
+  If Mouse.Control Then
+    $fScale = Min(1.0, Max($fScale + (Mouse.Delta * 0.1), 0.1))
+    $hView.Refresh
+    Return
+  Endif
+  'If Mouse.Control Then Stop Event
+  
+End
+
+Public Sub View_DblClick()
+  
+  ShowEditor
+  
+End
+
+Public Sub TimerScroll_Timer()
+  
+  Dim X As Integer = $SX + _NumbersWidth + $hView.ScrollX
+  Dim Y As Integer = $SY + _NumbersHeight + $hView.ScrollY
+  Dim iCol As Integer
+  Dim iRow As Integer
+  'Print X, Y
+  iCol = Min($hColumns.Max, Max(0, $hColumns.FindColumnByPos(X / $fScale)))
+  iRow = Min($hRows.Max, Max(0, $hRows.FindRowByPos(Y / $fScale)))
+  'Print icol, iRow
+  'TODO: ajouter la fin du code
+  
+  SetVisible(irow, iCol)
+
+End
+
+Private Sub SetVisible(iRow As Integer, iCol As Integer)
+  
+  If iRow > $iLastVisibleRow Then
+    $hView.ScrollY = Min($hView.ScrollHeight, Max(0, ($hRows[iRow]._Y + $hRows[iRow].Height) - $hView.ClientHeight))
+  Else If iRow < $iFirstVisibleRow Then
+    'Print "inferieur"
+    $hView.ScrollY = Min($hView.ScrollHeight, Max(0, ($hRows[iRow]._Y - $hView.ClientHeight)))
+    'Print $hRows[iRow]._Y - $hView.ScrollH
+  Endif
+  If iCol > $iLastVisibleCol Or If iRow < $iFirstVisibleCol Then
+    $hView.ScrollX = Min($hView.ScrollWidth, Max(0, ($hColumns[iCol]._X + $hColumns[iCol].Width) - $hView.ClientWidth))
+  Endif
+  
+End
+
+Public Sub OBS_MouseWheel()
+  
+  If Mouse.Control Then
+    $hView.UseMouse = False
+    'Stop Event
+  Else
+    'Stop Event
+    $hView.UseMouse = True
+  Endif
+  
+End
+
+Public Sub _Get(Row As Integer, Column As Integer) As _SpreadSheetCell
+  
+  Dim sKey As String = GetCellKey(Row, Column)
+  Dim hCell As _SpreadSheetCell
+  
+  hCell = _Cells[sKey]
+  
+  If Not hCell Then
+    hCell = New _SpreadSheetCell As "Cells"
+    hCell._Key = sKey
+  Endif
+  Return hCell
+  
+End
+
+Private Function Current_Read() As _SpreadSheetCell
+  
+  Return _get($iCurrCellRow, $iCurrCellCol)
+  
+End
+
+Private Sub GetCellKey(iRow As Integer, iCol As Integer) As String
+  
+  'If iRow >= iCol Then
+  '  Return CLong(iRow) * iRow + iCol * 2
+  'Else
+  '  Return CLong(iCol) * iCol + iRow * 2 + 1
+  'Endif
+  Return ConvIntToText(irow) & CStr(iCol)
+  
+End
+
+Private Sub DrawCell(hCell As _SpreadSheetCell, iRow As Integer, iCol As Integer)
+  
+  Dim hRow As _SpreadSheetRow = $hRows[iRow]
+  Dim hCol As _SpreadSheetColumn = $hColumns[iCol]
+  Dim hRect As New Rectf(hCol._X - $hView.ScrollX, hRow._Y - $hView.ScrollY, hCol.Width, hRow.Height)
+  'Paint.ClipRect = hRect
+  
+  If hCell.BackGround > -1 Then
+    Paint.Rectangle(hRect.x, hRect.y, hRect.Width, hRect.Height)
+    Paint.Background = hCell.BackGround
+    Paint.Fill
+  Else
+    'Paint.Background = Color.White
+  Endif
+  
+  If hCell.Text Then
+    Paint.Background = Color.TextForeground
+    Paint.DrawText(hCell.Text, hRect.x + 3, hRect.Y + 3, hRect.W - 6, hRect.H - 6, hCell.Alignment)
+  Endif
+  ' hCell.Border = Border("6px")
+  If hCell.Border Then hCell.Border.Paint(hRect)
+  
+  'Paint.ClipRect = Null
+  
+End
+
+Public Sub Cells_Change()
+  
+  If Not _Cells.Exist(Last._Key) Then
+    _Cells[Last._Key] = Last
+  Endif
+  
+End
+
+Public Sub View_KeyPress()
+  
+  Select Case Key.Code
+    Case Key.Enter, Key.Return
+      
+    Case Key.Down
+      Inc Me.Row
+      _EnsureVisible
+    Case Key.Up
+      Dec Me.Row
+      _EnsureVisible
+    Case Key.Left
+      Dec Me.Column
+      _EnsureVisible
+    Case Key.Right
+      Inc Me.Column
+      _EnsureVisible
+    Case Key.Home
+      Me.Row = 0
+      Me.Column = 0
+      _EnsureVisible
+    Case Key.Tab
+      
+    Case Key.End
+      Me.Row = $hRows.Max
+      If Key.Control Then
+        Me.Column = $hColumns.Max
+      Endif
+      _EnsureVisible
+      
+    Case Else
+      '$hEditor.Background = Color.Green
+      If IsAscii(Key.Text) Then ShowEditor
+  End Select
+  
+End
+
+Public Sub Editor_LostFocus()
+  
+  If Last.Visible Then HideEditor
+  
+End
+
+Public Sub Editor_KeyPress()
+  
+  Select Case Key.Code
+    Case Key.Enter, Key.Return
+      HideEditor
+      $hView.SetFocus
+      Inc $iCurrCellRow
+      $hView.Refresh
+  End Select
+  
+End
+
+Private Sub ShowEditor()
+  
+  Dim s As String
+  
+  $hEditor.Move($hColumns[$iCurrCellCol]._X + 1, $hRows[$iCurrCellRow]._Y + 1, $hColumns[$iCurrCellCol].Width - 2, $hRows[$iCurrCellRow].Height - 2)
+  Try s = Key.Text
+  If Error Then
+    $hEditor.Text = Me[$iCurrCellRow, $iCurrCellCol].Text
+    $hEditor.Select
+  Else
+    $hEditor.Text = s
+    
+  Endif
+  
+  $hEditor.Show
+  $hEditor.SetFocus
+  
+End
+
+Private Sub HideEditor()
+  
+  Me[$iCurrCellRow, $iCurrCellCol].Text = $hEditor.Text
+  $hEditor.Text = ""
+  $hEditor.Hide
+  $hView.SetFocus
+  
+End
+
+Public Sub MoveTo(Row As Integer, Column As Integer)
+  
+  $iCurrCellRow = Min(Max(Row, 0), $hRows.Max)
+  $iCurrCellCol = Min(Max(Column, 0), $hColumns.Max)
+  $hView.Refresh
+  
+End
+
+Private Function ShowGrid_Read() As Boolean
+  
+  Return $bShowGrid
+  
+End
+
+Private Sub ShowGrid_Write(Value As Boolean)
+  
+  $bShowGrid = Value
+  $hView.Refresh
+  
+End
+
+Private Function Row_Read() As Integer
+  
+  Return $iCurrCellRow
+  
+End
+
+Private Sub Row_Write(Value As Integer)
+  
+  $iCurrCellRow = Max(0, Min($hRows.Max, Value))
+  $hView.Refresh
+  
+End
+
+Private Function Column_Read() As Integer
+  
+  Return $iCurrCellCol
+  
+End
+
+Private Sub Column_Write(Value As Integer)
+  
+  $iCurrCellCol = Max(0, Min($hColumns.Count, Value))
+  $hView.Refresh
+  
+End
+
+Public Sub _EnsureVisible()
+
+  If Not $htmrEnsureVisible Then $htmrEnsureVisible = New Timer As "TimerEnsureVisible"
+  $iRowEV = $iCurrCellRow
+  $iColEv = $iCurrCellCol
+  $htmrEnsureVisible.Trigger
+  
+End
+
+Public Sub TimerEnsureVisible_Timer()
+  
+  $hView.EnsureVisible($hColumns[$iColEv]._X - _NumbersWidth, $hRows[$iRowEV]._Y - _NumbersHeight, $hColumns[$iColEv].Width, $hRows[$iRowEV].Height)
+  
+End

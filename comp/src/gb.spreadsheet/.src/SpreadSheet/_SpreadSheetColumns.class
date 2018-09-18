@@ -1,0 +1,111 @@
+' Gambas class file
+
+Private $hColumns As New _SpreadSheetColumn[]
+Private $iFullWidth As Integer
+Property Read _FullWidth As Integer
+Property Read Max As Integer
+Property Read Count As Integer
+
+Event _Foo
+
+Public Sub _New(Optional NbreColumn As Integer)
+
+  Dim i As Integer
+
+  If NbreColumn = 0 Then Return
+  $hColumns.Resize(NbreColumn)
+  For i = 0 To $hColumns.Max
+    $hColumns[i] = New _SpreadSheetColumn As "Column"
+
+  Next
+  SetColumnsPos
+
+End
+
+Public Sub _get(Index As Integer) As _SpreadSheetColumn
+
+  Return $hColumns[Index]
+
+End
+
+Public Function _Next() As _SpreadSheetColumn
+
+  If IsNull(Enum.Index) Then Enum.Index = -1
+  Enum.Index += 1
+  If Enum.Index > $hColumns.Max Then
+    Enum.Stop
+    Return
+  Endif
+  Return $hColumns[Enum.Index]
+
+End
+
+Private Function GetParent() As SpreadSheet
+
+  Return Object.Parent(Me)
+
+End
+
+Public Sub SetColumnsPos(Optional iFrom As Integer = 0)
+
+  Dim i As Integer
+  Dim iX As Integer = GetParent()._NumbersWidth
+
+  If iFrom > 0 Then iX = $hColumns[iFrom - 1]._X + $hColumns[iFrom - 1].Width
+  For i = iFrom To $hColumns.Max
+    $hColumns[i]._X = iX
+    iX += $hColumns[i].Width
+  Next
+  $iFullWidth = iX
+
+End
+
+Public Function FindColumnByPos(X As Integer) As Integer
+
+  Dim iStart, iMiddle As Integer
+  Dim iEnd As Integer = $hColumns.Max
+  Dim iCol As Integer = -1
+
+
+  Repeat
+    iMiddle = Int(iStart + (iEnd - iStart) / 2)
+    If x > $hColumns[iMiddle]._X - 1 And If x < $hColumns[iMiddle]._X + $hColumns[iMiddle].Width Then
+      'trouvé
+      iCol = iMiddle
+    Else
+      If x < $hColumns[iMiddle]._X Then
+        iEnd = iMiddle - 1
+      Else
+        iStart = iMiddle + 1
+      Endif
+
+    Endif
+  Until iCol <> -1 Or iMiddle > iEnd + 1 Or iStart > iEnd
+
+  
+  If iCol = -1 Then
+    If X > $iFullWidth Then Return $hColumns.Max
+  Endif
+  
+  
+  Return iCol
+
+End
+
+Private Function _FullWidth_Read() As Integer
+
+  Return $iFullWidth
+
+End
+
+Private Function Max_Read() As Integer
+
+  Return $hColumns.Max
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return $hColumns.Count
+
+End
