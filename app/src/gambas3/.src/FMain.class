@@ -2524,22 +2524,41 @@ Private Sub CompressAll(sPath As String, bUncompress As Boolean)
   
   Dim sFile As String
   Dim hTextEditor As FTextEditor
+  Dim hForm As Object
   
   If sPath = Project.KEY_MISC Then sPath = Project.Dir
   
   If Not IsDir(sPath) Then
-    Try hTextEditor = Project.LoadFile(sPath)
-    If hTextEditor Then 
-      If bUncompress Then
-        hTextEditor.Uncompress()
-      Else
-        If hTextEditor.Compress() Then
-          If $sCompressMessage Then $sCompressMessage &= "<p>"
-          $sCompressMessage &= "<tt>" & Mid$(sPath, Len(Project.Dir) + 2) & "</tt><p>" & FTextEditor.CompressMessage
+    
+    If MCompressFile.CanCompress(sPath, True) Then
+    
+      Try hTextEditor = Project.LoadFile(sPath)
+      If hTextEditor Then 
+        If bUncompress Then
+          hTextEditor.Uncompress()
+        Else
+          If hTextEditor.Compress() Then
+            If $sCompressMessage Then $sCompressMessage &= "<p>"
+            $sCompressMessage &= "<tt>" & Mid$(sPath, Len(Project.Dir) + 2) & "</tt><p>" & FTextEditor.CompressMessage
+          Endif
         Endif
       Endif
+      
+    Else 
+    
+      hForm = Project.Files[sPath]
+      If hForm Then
+        hForm.Save
+      Else
+        Save.Begin(sPath, True)
+        MCompressFile.Compress(sPath)
+        Save.End()
+      Endif
+      
     Endif
+      
     Return
+    
   Endif
   
   For Each sFile In Dir(sPath)

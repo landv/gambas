@@ -251,6 +251,21 @@
         Animated = True
       }
     }
+    { panCompressPng HBox
+      MoveScaled(1,35,66,4)
+      Spacing = True
+      Indent = True
+      { Label77 TextLabel
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Compress PNG images with '<tt>pngquant</tt>'")
+        Alignment = Align.Normal
+      }
+      { btnCompressPng SwitchButton
+        MoveScaled(50,0,8,4)
+        Animated = True
+      }
+    }
     Index = 2
     Text = ("Interface")
     Picture = Picture["icon:/medium/menu"]

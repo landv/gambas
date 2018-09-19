@@ -12,10 +12,19 @@ Private $cSubst As Collection
 Private $cIdent As Collection
 Private $iSubst As Integer
 Private $iDoNotCompress As Integer
+Private $sPngQuant As String
 
-Public Sub CanCompress(sPath As String) As Boolean
+Public Sub _init()
+  
+  $sPngQuant = System.Find("pngquant")
+  
+End
+
+
+Public Sub CanCompress(sPath As String, Optional bTextOnly As Boolean) As Boolean
   
   Dim sFile As String
+  Dim sExt As String
   
   If IsDir(sPath) Then
     For Each sFile In Dir(sPath)
@@ -25,7 +34,12 @@ Public Sub CanCompress(sPath As String) As Boolean
     Return False
   Endif
   
-  Return $aExt.Exist(File.Ext(sPath))
+  sExt = File.Ext(sPath)
+
+  If $aExt.Exist(sExt) Then Return True
+  If Not bTextOnly Then 
+    If sExt = "png" And If Settings["/CompressPng", 1] Then Return $sPngQuant
+  Endif
   
 End
 
@@ -515,4 +529,20 @@ Public Sub Html(sText As String) As String
   
   Return sRes
   
+End
+
+Public Sub Compress(sPath As String)
+  
+  Select Case File.Ext(sPath)
+  
+    Case "png"
+      
+      If Not $sPngQuant Then Return
+      If Not Exist(sPath) Then Return
+      If Settings["/CompressPng", 1] = 0 Then Return
+      ' pngquant -f --ext .png --quality 70-95 image.png
+      Exec [$sPngQuant, "-f", "--ext", ".png", sPath] Wait
+      
+  End Select
+      
 End

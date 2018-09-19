@@ -144,7 +144,8 @@ Public Sub _new()
     [txtVendorPrefix, "/Packager/VendorPrefix", ""],
     [txtLicense, "/Packager/License", "General Public License"],
     [txtURL, "/Packager/URL", "www.endoftheinternet.com"],
-    [cmbPrefix, "/Packager/UsePrefix", 0]]
+    [cmbPrefix, "/Packager/UsePrefix", 0],
+    [btnCompressPng, "/CompressPng", 1]]
   
   $bNoChange = True
   
@@ -1081,24 +1082,30 @@ End
 
 Public Sub ipnOption_Click()
 
-  If ipnOption.Text = ("Code snippets") Then
+  Select Case ipnOption.Text
+
+    Case ("Project")
+      
+      panCompressPng.Enabled = System.Exist("pngquant")
+
+    Case ("Code snippets") 
     
-    If gvwSnippet.Rows.Count = 0 Then
-      RefreshSnippet
-      UpdateSnippet
-    Endif
+      If gvwSnippet.Rows.Count = 0 Then
+        RefreshSnippet
+        UpdateSnippet
+      Endif
+      
+    Case ("Background") 
+      
+      If svwBackground.Children.Count = 0 Then
+        RefreshBackground
+      Endif
+      
+    Case ("Help & applications")
+      
+      UpdateOfflineHelp
     
-  Else If ipnOption.Text = ("Background") Then
-    
-    If svwBackground.Children.Count = 0 Then
-      RefreshBackground
-    Endif
-    
-  Else If ipnOption.Text = ("Help & applications") Then
-    
-    UpdateOfflineHelp
-    
-  Endif
+  End Select
   
 End
 
@@ -1447,3 +1454,9 @@ Public Sub cmbHelpZoom_Click()
 
 End
 
+
+Public Sub btnCompressPng_Click()
+
+  Settings["/CompressPng"] = btnCompressPng.Value
+
+End

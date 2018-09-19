@@ -3,13 +3,17 @@
 Private $sPath As String
 Private $bRename As Boolean
 
-Public Sub Begin(sPath As String)
+Public Sub Begin(sPath As String, Optional bKeep As Boolean)
   
   $bRename = False
   $sPath = sPath
     
   Try Kill sPath & "~"
-  Move sPath To sPath & "~"
+  If bKeep Then
+    Copy sPath To sPath & "~"
+  Else
+    Move sPath To sPath & "~"
+  Endif
   
   $bRename = True
 
@@ -40,6 +44,7 @@ Public Function Error() As Boolean
   Debug sError
   
   If $bRename Then 
+    Try Kill $sPath
     Try Move $sPath & "~" To $sPath
   Endif
   

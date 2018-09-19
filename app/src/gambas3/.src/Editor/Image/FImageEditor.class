@@ -376,6 +376,7 @@ Public Function Save(Optional bForce As Boolean) As Boolean
   Save.Begin(Path)
 
   $hImage.Save(Path)
+  MCompressFile.Compress(Path)
 
   'Project.RefreshKey(Path)
 
