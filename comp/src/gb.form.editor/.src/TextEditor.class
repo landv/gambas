@@ -372,7 +372,6 @@ End
 
 Private Sub Text_Write(Value As String)
   
-  Goto(0, 0)
   $hDoc.Text = Value
   Init
   If $bShowPreview Then $hTimerSideBarRefresh.Trigger
@@ -2809,6 +2808,7 @@ Public Sub View_Draw()
   Dim W, NL As Integer
   'Dim hImage As Image
   Dim hPict As Picture
+  Dim iCount As Integer
   
   If Not $bUpdateHeightAllowed Then
     $bUpdateHeightAllowed = True
@@ -2829,10 +2829,11 @@ Public Sub View_Draw()
   
   'Debug Me.Font.ToString();; Draw.Font.ToString()
   
+  iCount = $hDoc.Count
   NL = $hView.ClientH \ $hRows.H + 1
   
   hClip = Paint.ClipRect
-  If $hDoc.Count < NL Then Paint.FillRect(hClip.X, hClip.Y, hClip.W, hClip.H, $iBackground)
+  If iCount < NL Then Paint.FillRect(hClip.X, hClip.Y, hClip.W, hClip.H, $iBackground)
   
   iRow = $hRows._FindRowFromPos($hView.ScrollY + hClip.Y)
   If iRow < 0 Then Return
@@ -2871,6 +2872,8 @@ Public Sub View_Draw()
   Y = YY
   For I = 0 To iMaxRow
     iRow = aRow[I]
+    If iRow >= iCount Then Break
+    
     H = $hRows._GetRowHeight(iRow)
   
     If H >= $hView.ClientH Or If $bRemoteDisplay Then
@@ -2915,9 +2918,11 @@ Public Sub View_Draw()
     
     Y = YY
     For I = 0 To iMaxRow
+      iRow = aRow[I]
+      If iRow >= iCount Then Break
       Paint.Save
-      H = $hRows._GetRowHeight(aRow[I])
-      DrawMargin(XX, Y, $iWidth, H, aRow[I])
+      H = $hRows._GetRowHeight(iRow)
+      DrawMargin(XX, Y, $iWidth, H, iRow)
       Paint.Restore
       Y += H
     Next

@@ -56,6 +56,9 @@ End
 
 Public Sub Clear()
   
+  Dim hView As TextEditor
+  Dim aViews As TextEditor[]
+  
   Lines = New String[1]
   LinesInfo = New CLineInfo[1]
   LineLength = New Integer[1]
@@ -66,6 +69,13 @@ Public Sub Clear()
   $cHighlightLater = Null
   $cBreakpoint = New Collection
   $cBookmark = New Collection
+  
+  Try aViews = GetAllViews()
+  If aViews Then
+    For Each hView In aViews
+      hView.Goto(0, 0)
+    Next
+  Endif
   
 End
 
