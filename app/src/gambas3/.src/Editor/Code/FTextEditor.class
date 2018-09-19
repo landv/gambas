@@ -927,7 +927,8 @@ Public Sub mnuCompress_Click()
   If Compress() Then
     FMain.ShowError(CompressMessage)
   Else
-    If CompressMessage Then $hEditor.ShowMessageLabel(CompressMessage, Highlight.Background, True)
+    'If CompressMessage Then $hEditor.ShowMessageLabel(CompressMessage, Highlight.Background, True)
+    If CompressMessage Then Balloon(CompressMessage, btnCompress)
   Endif
   
 End

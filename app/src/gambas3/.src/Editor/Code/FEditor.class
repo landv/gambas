@@ -2357,6 +2357,9 @@ Private Sub FindDefinition() As Boolean
           If hClass Then
             'MHelp.GotoClass(hClass.Component, hClass.Name)
             MHelp.ShowHelpBrowserWith(MHelp.TYPE_CLASS, hClass.Name)
+          Else If Project.ExistClass(sKeyword) Then
+            CPosition.SaveCurrent(Me)
+            hForm = Project.OpenFile(sKeyword)
           Endif
         Endif
         Return
