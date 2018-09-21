@@ -457,13 +457,17 @@ DIV.syntax {
   display: inline-block;
   border: solid #D8D8D8 1px;
   background-color: #F8F8F8;
-  padding: 0 0.75em;
+  padding: 0.25em 0.75em;
   font-family: monospace;
   white-space: pre-wrap;
 }
 
 DIV.syntax > P:last-child {
   margin-bottom: -0.75em;
+}
+
+DIV.syntax > P {
+  line-height: 1.1em;
 }
 
 DIV.since {
@@ -480,6 +484,11 @@ DIV.since {
 .letter {
   font-weight: bold;
   vertical-align: baseline;
+  color: white;
+  background-color: #606060;
+  padding: 0 0.25em;
+  margin-right: 0.25em;
+  text-align: center;
 }
 
 TR {
