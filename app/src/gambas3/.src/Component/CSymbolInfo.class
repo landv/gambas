@@ -1276,7 +1276,7 @@ Public Sub WikiGetSyntax() As String[]
 
     Case "_get"
 
-      If IsStatic() Then
+      If IsStatic Then
         sName = Class
         If sVirtual Then sName = Mid$(sName, 2)
       Else
@@ -1301,7 +1301,7 @@ Public Sub WikiGetSyntax() As String[]
 
       sType = Documentation[Component][Class].Symbols["_get"].Type
 
-      If IsStatic() Then
+      If IsStatic Then
         sName = Class
         If sVirtual Then sName = Mid$(sName, 2)
       Else
@@ -1328,7 +1328,7 @@ Public Sub WikiGetSyntax() As String[]
 
     Case "_next"
 
-      If IsStatic() Then
+      If IsStatic Then
         sName = Class
         If sVirtual Then sName = Mid$(sName, 2)
       Else
