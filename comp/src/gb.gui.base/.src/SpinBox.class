@@ -161,6 +161,7 @@ End
 Public Sub View_MouseWheel()
   
   ChangeValue(Mouse.Delta > 0, True)
+  Stop Event
   
 End
 

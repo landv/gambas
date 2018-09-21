@@ -67,6 +67,11 @@ Private Sub AutoResizeContents()
     
   Loop
   
+  If Me.Margin Then
+    W += Desktop.Scale
+    H += Desktop.Scale
+  Endif
+  
   W = Max(Me.ClientW, W)
   H = Max(Me.ClientH, H)
 
