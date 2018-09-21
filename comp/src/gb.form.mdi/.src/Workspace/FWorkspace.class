@@ -109,9 +109,6 @@ Public Sub Add(hWin As Window, Optional bResize As Boolean, Optional iGrid As In
     tabWorkspace.Index = iInd
     tabWorkspace.Current.Text = ""
     
-    hTabButton = tabWorkspace._GetButton(iInd)
-    hObserver = New Observer(hTabButton.Children[0]) As "Button"
-    
     Object.Unlock(tabWorkspace)
     
     UpdateSize
@@ -123,6 +120,9 @@ Public Sub Add(hWin As Window, Optional bResize As Boolean, Optional iGrid As In
   Endif
   
   'DEBUG "ADD "; hWin
+  
+  hTabButton = tabWorkspace._GetButton(tabWorkspace.Count - 1)
+  hObserver = New Observer(hTabButton.Children[0]) As "Button"
   
   hWindow.Observer = New Observer(hWin, True) As "Watcher"
   UpdateTitle(hWin)

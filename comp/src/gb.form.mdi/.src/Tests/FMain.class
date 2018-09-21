@@ -12,6 +12,8 @@ Public Sub Form_Open()
 
   Application.MainWindow = Me
 
+  Workspace1.CloseWithMouse = True
+
   $hWatcher = New Watcher(ToolButton1) As "Watcher"
 
   Workspace1.Lock
