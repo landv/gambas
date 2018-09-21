@@ -124,19 +124,15 @@ static char *_lang = NULL;
 
 static void init_currency_flag(struct lconv *info)
 {
-#ifndef OS_OPENBSD
+#ifndef OS_BSD
 	add_currency_flag(info->int_n_cs_precedes); // 7
 	add_currency_flag(info->int_p_cs_precedes); // 6
-	//add_currency_flag(info->int_n_sep_by_space); // 5
-	//add_currency_flag(info->int_p_sep_by_space); // 4
-	add_currency_flag(1); // 5
-	add_currency_flag(1); // 4
 #else
 	add_currency_flag(info->n_cs_precedes); // 7
 	add_currency_flag(info->p_cs_precedes); // 6
+#endif
 	add_currency_flag(1); // 5
 	add_currency_flag(1); // 4
-#endif
 	add_currency_flag(info->n_cs_precedes); // 3
 	add_currency_flag(info->p_cs_precedes); // 2
 	add_currency_flag(info->n_sep_by_space); // 1

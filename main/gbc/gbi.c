@@ -765,12 +765,6 @@ int main(int argc, char **argv)
 	int opt;
 	int ind = 0;
 
-	/*#ifdef __FreeBSD__
-	optind = 1;
-	#else
-	optind = 0;
-	#endif*/
-
 	//dup(STDOUT_FILENO);
 
 	//_verbose = TRUE;
