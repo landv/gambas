@@ -192,7 +192,7 @@ BEGIN_PROPERTY(WebSettingsCache_Path)
 		GB.ReturnString(_cache_path);
 	else
 	{
-		QString path = QSTRING_PROP();
+		QString path = QString(GB.FileName(PSTRING(), PLENGTH()));
 		QString root = QString(GB.System.Home());
 
 		if (root.at(root.length() - 1) != '/')
