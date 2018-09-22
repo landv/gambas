@@ -59,7 +59,7 @@
 #include <sys/param.h>
 #include <limits.h>
 
-#if defined(__GNU_LIBRARY__) || defined(OS_FREEBSD)
+#if defined(__GNU_LIBRARY__) || defined(OS_BSD)
 
 #include <getopt.h>
 #define HAVE_GETOPT_LONG 1
@@ -73,15 +73,17 @@
 
 #endif
 
-#if defined(OS_FREEBSD) || defined(OS_OPENBSD)
+#if defined(OS_BSD)
 
 	/* sighandler_t is replaced by sig_t */
 	#define sighandler_t sig_t
 
 	typedef unsigned long ulong;
 
-	#if (defined(__amd64__) || defined(__ia64__) || defined(__sparc64__))
-		#define __WORDSIZE 64
+	#if defined(UINTPTR_MAX) && defined(UINT64_MAX) && (UINTPTR_MAX == UINT64_MAX)
+		#define	__WORDSIZE 64
+	#else
+		#define	__WORDSIZE 32
 	#endif
 	
 #endif
