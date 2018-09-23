@@ -1465,6 +1465,11 @@ CLASS *EXEC_object_variant(VALUE *val, OBJECT **pobject)
 		class = object->class;
 		goto __CHECK;
 	}
+	else if (val->_variant.vtype == T_STRING || val->_variant.vtype == T_CSTRING)
+	{
+		*pobject = NULL;
+		return CLASS_BoxedString;
+	}
 	else
 		goto __ERROR;
 
@@ -1492,7 +1497,7 @@ bool EXEC_object_other(VALUE *val, CLASS **pclass, OBJECT **pobject)
 {
 	static const void *jump[] = {
 		&&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR,
-		&&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__FUNCTION, &&__CLASS, &&__NULL,
+		&&__STRING, &&__CSTRING, &&__ERROR, &&__ERROR, &&__FUNCTION, &&__CLASS, &&__NULL,
 		&&__OBJECT,
 		};
 
@@ -1549,6 +1554,13 @@ __OBJECT:
 	defined = FALSE;
 
 	goto __CHECK;
+	
+__STRING:
+__CSTRING:
+
+	*pclass = CLASS_BoxedString;
+	*pobject = NULL;
+	return TRUE;
 
 __ERROR:
 
@@ -1650,10 +1662,18 @@ bool EXEC_special(int special, CLASS *class, void *object, int nparam, bool drop
 
 	if (FUNCTION_is_native(&desc->method))
 	{
-		EXEC.desc = &desc->method;
-		EXEC.use_stack = FALSE;
-		EXEC.native = TRUE;
-		EXEC_native();
+		if (desc->method.subr)
+		{
+			((EXEC_FUNC_CODE)(EXEC.class->table[index].desc->method.exec))(nparam);
+		}
+		else
+		{
+			EXEC.desc = &desc->method;
+			EXEC.use_stack = FALSE;
+			EXEC.native = TRUE;
+			EXEC_native();
+		}
+		
 		if (drop)
 			POP();
 	}

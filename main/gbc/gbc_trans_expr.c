@@ -431,6 +431,7 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 					case T_OBJECT:
 					case T_VARIANT:
 					case T_STRUCT:
+					case T_STRING:
 						break;
 						
 					default:

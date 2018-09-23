@@ -60,6 +60,7 @@ CLASS *CLASS_Process = NULL;
 CLASS *CLASS_Component = NULL;
 CLASS *CLASS_Observer = NULL;
 CLASS *CLASS_Timer = NULL;
+CLASS *CLASS_BoxedString = NULL;
 
 CLASS *CLASS_Array = NULL;
 CLASS *CLASS_BooleanArray = NULL;
@@ -113,7 +114,8 @@ static const CLASS_INIT init_list[] =
   { NATIVE_System, NULL },
   { NATIVE_Jit, NULL },
   { NATIVE_User, NULL },
-  { NATIVE_String, NULL },
+  { StringDesc, NULL },
+	{ BoxedStringDesc, &CLASS_BoxedString, CQA_STRING },
   { TaskDesc, NULL },
   { NATIVE_Timer, &CLASS_Timer },
   { NATIVE_Observer, &CLASS_Observer },

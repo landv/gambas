@@ -43,6 +43,7 @@
 #include "gbx_subr.h"
 #include "gbx_math.h"
 #include "gbx_c_array.h"
+#include "gbx_c_string.h"
 #include "gbx_struct.h"
 #include "gbx_variant.h"
 #include "gbx_jit.h"
@@ -62,6 +63,7 @@
 #define GET_XX()    ((signed char)code)
 #define GET_UX()    ((unsigned char)code)
 #define GET_3X()    (code & 0x3F)
+#define GET_0X()    (code & 0xF)
 #define TEST_XX()   (code & 1)
 
 static void my_VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype, void *ref);
@@ -3527,7 +3529,7 @@ void EXEC_push_array(ushort code)
 		&&__PUSH_GENERIC, &&__PUSH_GENERIC, &&__PUSH_GENERIC, &&__PUSH_GENERIC,
 		&&__PUSH_ARRAY, &&__PUSH_ARRAY, &&__PUSH_ARRAY, &&__PUSH_ARRAY,
 		&&__PUSH_NATIVE_ARRAY, NULL, &&__PUSH_NATIVE_ARRAY_SIMPLE, &&__PUSH_NATIVE_ARRAY_SIMPLE,
-		&&__PUSH_NATIVE_COLLECTION, &&__PUSH_NATIVE_ARRAY_INTEGER, &&__PUSH_NATIVE_ARRAY_FLOAT, NULL
+		&&__PUSH_NATIVE_COLLECTION, &&__PUSH_NATIVE_ARRAY_INTEGER, &&__PUSH_NATIVE_ARRAY_FLOAT, &&__PUSH_NATIVE_STRING
 	};
 
 	CLASS *class;
@@ -3550,6 +3552,19 @@ __PUSH_GENERIC:
 
 	defined = EXEC_object(val, &class, &object);
 
+	if (class->quick_array == CQA_STRING)
+	{
+		if (np < 1)
+			THROW(E_NEPARAM);
+		else if (np > 2)
+			THROW(E_TMPARAM);
+
+		if (defined)
+			*PC = (*PC & 0xFF00) | (0xF1 + np);
+		
+		goto __PUSH_NATIVE_STRING;
+	}
+	
 	fast = 0x41 + np;
 
 	if (defined)
@@ -3597,7 +3612,7 @@ __PUSH_GENERIC:
 			}
 		}
 	}
-
+	
 	*PC = (*PC & 0xFF00) | fast;
 
 	goto __PUSH_ARRAY_2;
@@ -3630,6 +3645,11 @@ __PUSH_NATIVE_COLLECTION:
 
 	RELEASE_STRING(&val[1]);
 	goto __PUSH_NATIVE_END;
+
+__PUSH_NATIVE_STRING:
+
+	BoxedString_get(GET_0X() - 1);
+	return;
 
 __PUSH_NATIVE_ARRAY_SIMPLE:
 

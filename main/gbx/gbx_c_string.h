@@ -28,7 +28,9 @@
 
 #ifndef __GBX_C_STRING_C
 
-EXTERN GB_DESC NATIVE_String[];
+EXTERN GB_DESC StringDesc[];
+EXTERN GB_DESC BoxedStringDesc[];
+
 EXTERN const char STRING_char_length[];
 
 #endif
@@ -42,5 +44,7 @@ uint STRING_utf8_to_unicode(const char *sstr, int len);
 #define STRING_utf8_get_char_length(_c) ((int)STRING_char_length[(unsigned char)(_c)])
 
 int COMMON_get_unicode_char();
+
+void BoxedString_get(ushort code);
 
 #endif
