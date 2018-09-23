@@ -43,6 +43,10 @@ Private Sub AutoResizeContents()
   Dim W, H As Integer
   Dim hChild As Control
   Dim iSaveArr As Integer
+
+  If Object.IsLocked($hCont) Then Return
+  
+  'Debug Me.Name;; System.Backtrace.Join(" ")
   
   Object.Lock($hCont)
   
@@ -75,10 +79,13 @@ Private Sub AutoResizeContents()
   W = Max(Me.ClientW, W)
   H = Max(Me.ClientH, H)
 
-  $hCont.Resize(W, H)
-  iSaveArr = $hCont.Arrangement
-  $hCont.Arrangement = Arrange.None
-  $hCont.Arrangement = iSaveArr
+  If $hCont.W <> W Or If $hCont.H <> H Then
+    $hCont.Resize(W, H)
+    iSaveArr = $hCont.Arrangement
+    $hCont.Arrangement = Arrange.None
+    $hCont.Arrangement = iSaveArr
+  Endif
+  
   Object.Unlock($hCont)
   
 End
