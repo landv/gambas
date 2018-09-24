@@ -423,6 +423,8 @@ void gControl::destroy()
 
 	//fprintf(stderr, "added to destroy list: %p\n", this);
 	controls_destroyed = g_list_prepend(controls_destroyed, (gpointer)this);
+	if (pr)
+		pr->remove(this);
 	_destroyed = true;
 }
 
@@ -924,7 +926,7 @@ GdkCursor *gControl::getGdkCursor()
 		
 		cr = gdk_cursor_new_from_name(gdk_display_get_default(), name);
 		if (!cr)
-			cr = gdk_cursor_new((GdkCursorType)m);
+			cr = gdk_cursor_new_for_display(gdk_display_get_default(), (GdkCursorType)m);
 		
 		/*
 		if (m < GDK_LAST_CURSOR)
