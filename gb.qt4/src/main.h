@@ -58,6 +58,7 @@ extern int MAIN_x11_last_key_code;
 
 extern GB_CLASS CLASS_Control;
 extern GB_CLASS CLASS_Container;
+extern GB_CLASS CLASS_ContainerChildren;
 extern GB_CLASS CLASS_UserControl;
 extern GB_CLASS CLASS_UserContainer;
 extern GB_CLASS CLASS_TabStrip;

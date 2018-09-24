@@ -71,6 +71,7 @@
 #include <string.h>
 
 GB_CLASS CLASS_Control;
+GB_CLASS CLASS_ContainerChildren;
 GB_CLASS CLASS_Picture;
 GB_CLASS CLASS_Image;
 GB_CLASS CLASS_DrawingArea;
@@ -112,8 +113,8 @@ GEOM_INTERFACE GEOM EXPORT;
 
 static void declare_tray_icon()
 {
-GB.Component.Declare(TrayIconsDesc);
-GB.Component.Declare(TrayIconDesc);
+	GB.Component.Declare(TrayIconsDesc);
+	GB.Component.Declare(TrayIconDesc);
 }
 
 GB_DESC *GB_CLASSES[] EXPORT =
@@ -143,12 +144,12 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CDialogDesc,
 	CWatcherDesc,
 	CWidgetDesc,
-	CChildrenDesc,
-	CContainerDesc,
+	ContainerChildrenDesc,
+	ContainerDesc,
 	CDrawingAreaDesc,
 	CFrameDesc,
-	CUserControlDesc,
-	CUserContainerDesc,
+	UserControlDesc,
+	UserContainerDesc,
 	CPanelDesc,
 	CHBoxDesc,
 	CVBoxDesc,
@@ -229,7 +230,7 @@ int EXPORT GB_INIT(void)
 	CWatcher::init();
 
 	CLASS_Control = GB.FindClass("Control");
-	//CLASS_Container = GB.FindClass("Container");
+	CLASS_ContainerChildren = GB.FindClass("ContainerChildren");
 	//CLASS_UserControl = GB.FindClass("UserControl");
 	//CLASS_UserContainer = GB.FindClass("UserContainer");
 	CLASS_Window = GB.FindClass("Window");

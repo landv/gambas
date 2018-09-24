@@ -80,6 +80,8 @@ public:
 	
 	int childIndex(gControl *ch) const;
 	
+	void clear();
+	
 	virtual gControl *find(int x, int y);
 	
 	gContainerArrangement *getArrangement() { return &arrangement; }

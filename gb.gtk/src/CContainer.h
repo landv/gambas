@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  CContainer.h
+	CContainer.h
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -32,14 +32,15 @@
 
 #ifndef __CCONTAINER_CPP
 
-extern GB_DESC CChildrenDesc[];
-extern GB_DESC CContainerDesc[];
-extern GB_DESC CUserControlDesc[];
-extern GB_DESC CUserContainerDesc[];
+extern GB_DESC ContainerChildrenDesc[];
+extern GB_DESC ContainerDesc[];
+extern GB_DESC UserControlDesc[];
+extern GB_DESC UserContainerDesc[];
 
 #else
 
 #define THIS ((CCONTAINER *)_object)
+#define THIS_CHILDREN ((CCONTAINERCHILDREN *)_object)
 #define THIS_UC ((CUSERCONTROL *)_object)
 #define WIDGET ((gContainer*)THIS->ob.widget)
 #define PANEL ((gPanel *)(THIS->ob.widget))
@@ -51,20 +52,29 @@ extern GB_DESC CUserContainerDesc[];
 
 
 typedef 
-  struct
-  {
-  	CWIDGET ob;
-  }  
-  CCONTAINER;
+	struct
+	{
+		CWIDGET ob;
+	}  
+	CCONTAINER;
+
+typedef 
+	struct
+	{
+		GB_BASE ob;
+		CCONTAINER *container;
+		CWIDGET **children;
+	}  
+	CCONTAINERCHILDREN;
 
 typedef  
 	struct
-  {
-    CWIDGET widget;
-    CCONTAINER *container;
-    gContainerArrangement save;
-  }
-  CUSERCONTROL;
+	{
+		CWIDGET widget;
+		CCONTAINER *container;
+		gContainerArrangement save;
+	}
+	CUSERCONTROL;
 
 
 DECLARE_PROPERTY(Container_Arrangement);

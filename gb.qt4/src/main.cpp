@@ -133,6 +133,7 @@ bool MAIN_key_debug = false;
 
 GB_CLASS CLASS_Control;
 GB_CLASS CLASS_Container;
+GB_CLASS CLASS_ContainerChildren;
 GB_CLASS CLASS_UserControl;
 GB_CLASS CLASS_UserContainer;
 GB_CLASS CLASS_TabStrip;
@@ -1316,8 +1317,8 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CClipboardDesc, CDragDesc,
 	StyleDesc, ScreenDesc, ScreensDesc, DesktopDesc,
 	ApplicationDesc,
-	CControlDesc, CChildrenDesc, CContainerDesc,
-	CUserControlDesc, CUserContainerDesc,
+	CControlDesc, ContainerChildrenDesc, ContainerDesc,
+	UserControlDesc, UserContainerDesc,
 	CMenuChildrenDesc, CMenuDesc,
 	CLabelDesc, CTextLabelDesc, CPictureBoxDesc, CSeparatorDesc,
 	CButtonDesc, CToggleButtonDesc, CToolButtonDesc,
@@ -1413,6 +1414,7 @@ int EXPORT GB_INIT(void)
 
 	CLASS_Control = GB.FindClass("Control");
 	CLASS_Container = GB.FindClass("Container");
+	CLASS_ContainerChildren = GB.FindClass("ContainerChildren");
 	CLASS_UserControl = GB.FindClass("UserControl");
 	CLASS_UserContainer = GB.FindClass("UserContainer");
 	CLASS_TabStrip = GB.FindClass("TabStrip");

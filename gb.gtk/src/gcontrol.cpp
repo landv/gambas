@@ -266,9 +266,6 @@ void gControl::cleanRemovedControls()
 		if (!iter)
 			break;
 		control = (gControl *)iter->data;
-		if (control->parent())
-			control->parent()->remove(control);
-		//controls_destroyed = g_list_remove(controls_destroyed, (gpointer)control);
 		gtk_widget_destroy(control->border);
 	}
 

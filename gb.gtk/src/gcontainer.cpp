@@ -824,3 +824,18 @@ void gContainer::reparent(gContainer *newpr, int x, int y)
 	gControl::reparent(newpr, x, y);
 	hideHiddenChildren();
 }
+
+
+void gContainer::clear()
+{
+	gContainer *cont = proxyContainer();
+	gControl *ch;
+	
+	for(;;)
+	{
+		ch = cont->child(0);
+		if (!ch)
+			break;
+		ch->destroy();
+	}
+}
