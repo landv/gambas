@@ -91,7 +91,7 @@ build:ubuntu-latest:
 
   script:
     - ./reconf-all
-    - ./configure -C
+    - GAMBAS_CONFIG_FAILURE=1 ./configure -C
     - make -j$(nproc)
     - make install
 
@@ -103,7 +103,7 @@ build:ubuntu-xenial:
 
   script:
     - ./reconf-all
-    - ./configure -C
+    - GAMBAS_CONFIG_FAILURE=1 ./configure -C
     - make -j$(nproc)
     - make install
 
@@ -115,6 +115,6 @@ build:ubuntu-trusty:
 
   script:
     - ./reconf-all
-    - ./configure -C
+    - GAMBAS_CONFIG_FAILURE=1 ./configure -C --disable-qt5
     - make -j$(nproc)
     - make install
