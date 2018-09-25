@@ -192,19 +192,21 @@ BEGIN_PROPERTY(WebSettingsCache_Path)
 		GB.ReturnString(_cache_path);
 	else
 	{
-		QString path = QString(GB.FileName(PSTRING(), PLENGTH()));
+		char *path = GB.FileName(PSTRING(), PLENGTH());
+		QString qpath = QString(path);
 		QString root = QString(GB.System.Home());
 
 		if (root.at(root.length() - 1) != '/')
 			root += '/';
 		root += ".cache/";
-		if (!path.startsWith(root))
+		if (!qpath.startsWith(root))
 		{
 			GB.Error("Cache directory must be located inside ~/.cache");
 			return;
 		}
 
-		GB.StoreString(PROP(GB_STRING), &_cache_path);
+		GB.FreeString(&_cache_path);
+		_cache_path = GB.NewZeroString(path);
 		set_cache(_cache_enabled);
 	}
 
