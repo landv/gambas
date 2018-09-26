@@ -520,7 +520,7 @@ Private Sub DrawMatch(X As Integer, Y As Integer, H As Integer, XM As Integer, Y
   
   XY = LinePos(YM, XM)
   WW = TextWidth($hDoc.Lines[YM], XM + 1, 1)
-  Paint.FillRect(X + XY.X, Y + XY.Y, WW, H, $iMatchColor)
+  Paint.FillRect(X + XY.X, Y + XY.Y + H - 1, WW, 1, $iForeground)
   
 End
 
@@ -4890,6 +4890,7 @@ End
 '
 Public Sub Styles_Change()
   
+  If $bStyleChanged Then Return
   $bStyleChanged = True
   ClearCacheText
   If $hLabelFrame Then
