@@ -248,7 +248,7 @@ Public Sub InitWebView()
   Dim hFixedFont As Font
 
   If Not WebSettings.Cache.Path Then
-    sPath = System.User.Home &/ ".cache"
+    sPath = "~/.cache"
     Try Mkdir sPath
     sPath &/= "gambas3"
     Try Mkdir sPath
@@ -5668,7 +5668,7 @@ Public Sub SetSmallFont(hCtrl As Control)
 
 End
 
-Private Sub GetPercentFontSize(sSettings As String, iDefault As Integer) As Float
+Public Sub GetPercentFontSize(sSettings As String, iDefault As Integer) As Float
 
   Dim iVal As Integer
 
@@ -5678,16 +5678,18 @@ Private Sub GetPercentFontSize(sSettings As String, iDefault As Integer) As Floa
 
 End
 
-Public Sub SetNormalFont(hCtrl As Control)
+Public Sub SetNormalFont(hCtrl As Control, Optional fSize As Float)
 
   Dim hFont As Font = Font[Settings["/Font"]]
 
-  Try hFont.Size *= GetPercentFontSize("/ProjectFontSize", 100)
-  If hFont.ToString() = Application.Font.ToString() Then
-    hCtrl.Font = Null
-  Else
-    hCtrl.Font = hFont
-  Endif
+  If fSize = 0 Then fSize = GetPercentFontSize("/ProjectFontSize", 100) 
+  Try hFont.Size *= fSize
+  hCtrl.Font = hFont
+  ' If hFont.ToString() = Application.Font.ToString() Then
+  '   hCtrl.Font = Null
+  ' Else
+  '   hCtrl.Font = hFont
+  ' Endif
 
 End
 

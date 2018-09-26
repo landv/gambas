@@ -176,7 +176,7 @@ End
 
 Public Sub TimerShowConsole_Timer()
   
-  FDebugInfo.ShowConsole
+  If $hProcess Then FDebugInfo.ShowConsole
   $hTimerShowConsole.Stop
   
 End

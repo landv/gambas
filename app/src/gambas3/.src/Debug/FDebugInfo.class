@@ -299,17 +299,28 @@ Public Sub ReadConfig()
   Dim hFont As Font
   Dim H As Integer
   Dim hChild As Control
+  Dim sKey As String
+  Dim fSize As Float
   
   Settings.Read(panDebug)
   wizDebug.TextFont = Project.GetSmallFont()
   
-  Project.SetSmallFont(lvwStack)
-  hFont = lvwStack.Font
-  gvwBreakpoint.Font = hFont
+  Project.SetSmallFont(gvwBreakpoint)
+  hFont = gvwBreakpoint.Font
   gvwTask.Font = hFont
   gvwCompilation.Font = hFont
   
+  fSize = Project.GetPercentFontSize("/DebuggerFontSize", 80)
+  
+  Project.SetNormalFont(lvwStack, fSize)
+
   Project.SetConsoleFont(cvwVariable)
+  
+  For Each sKey In cvwVariable.Keys
+    If cvwVariable[sKey].Font Then cvwVariable[sKey].Font.Size = cvwVariable.Font.Size * fSize
+  Next
+  cvwVariable.Font.Size *= fSize
+  
   cmbWatch.Font = cvwVariable.Font
   
   FDebugButton.ReadConfig

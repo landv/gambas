@@ -1353,26 +1353,13 @@ Public Sub ShowTool(sType As String)
   
 End
 
-Public Sub GetDebugPanel() As SidePanel
-  
-  Return panDebug
-  
-End
-
-
 Public Sub ShowDebug(bShow As Boolean, Optional bAutomatic As Boolean)
-  
-  If bAutomatic Then
+
+   If bAutomatic Then
     If Not Settings["/ShowDebugPanelAutomatically", True] Then Return
   Endif
   
   panDebug.Hidden = Not bShow
-  
-End
-
-Public Sub HideDebug(bHide As Boolean)
-  
-  panDebug.Visible = Not bHide
   
 End
 

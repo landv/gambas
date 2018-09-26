@@ -157,6 +157,7 @@ Public Sub _new()
 
   SetPercentSize(cmbProjectFontSize, Settings["/ProjectFontSize", 100])    
   SetPercentSize(cmbTitleFontSize, Settings["/TitleFontSize", 80])    
+  SetPercentSize(cmbDebuggerFontSize, Settings["/DebuggerFontSize", 80])    
   SetPercentSize(cmbHelpZoom, Settings["/Help/Zoom", 80])
   
   iInd = $aTheme.Find(Settings["/Editor/Theme"])
@@ -348,6 +349,13 @@ Public Sub cmbTitleFontSize_Click()
 
   Settings["/TitleFontSize"] = GetPercentSize(cmbTitleFontSize)
   RefreshWindow
+
+End
+
+Public Sub cmbDebuggerFontSize_Click()
+
+  Settings["/DebuggerFontSize"] = GetPercentSize(cmbDebuggerFontSize)
+  FDebugInfo.ReadConfig
 
 End
 
