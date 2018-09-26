@@ -516,6 +516,6 @@ End
 
 Private Sub Font_Write(Value As Font)
 
-  $hFont = Value
+  $hFont = Value.Copy()
 
 End

@@ -10,6 +10,7 @@ Property Border As Boolean
 Property Sorted As Boolean
 Property Read Current As _TreeView_Item
 Property Key As String
+Property Read Keys As String[]
 Property Read Item As _TreeView_Item
 Property Read Available As Boolean
 Property Read Renaming As Boolean
@@ -502,8 +503,6 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer,
   Dim sText As String
   
   If Not hItem Then Return
-  
-  'Debug Row;; Column;; System.Backtrace.Join(" ")
   
   If Column = 0 Then
   
@@ -1569,4 +1568,15 @@ Public Sub GridView_Font()
     _UpdateItemHeight(hItem)
   Next
   
+End
+
+Private Function Keys_Read() As String[]
+
+  Dim aKeys As New String[]
+
+  For Each $cItem
+    aKeys.Add($cItem.Key)
+  Next
+  Return aKeys
+
 End
