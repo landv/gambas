@@ -21,6 +21,7 @@ Property Read Current As _IconView_Item
 Property Read Item As _IconView_Item
 Property Read Available As Boolean
 Property Key As String
+Property Read Keys As String[]
 Property Compare As Integer
 Property Editable As Boolean
 Property Sorted As Boolean
@@ -1633,4 +1634,15 @@ Public Sub ScrollArea_Font()
     hItem._Invalidate
   Next
   
+End
+
+Private Function Keys_Read() As String[]
+
+  Dim aKeys As New String[]
+
+  For Each $cItems
+    aKeys.Add($cItems.Key)
+  Next
+  Return aKeys
+
 End
