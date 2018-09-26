@@ -534,7 +534,6 @@ End
 Private Sub TogglePanel()
 
   If Me.Parent.Design Then Return
-  If $hTimerAnim Then Return
 
   If $bVisible Then
 
@@ -545,7 +544,17 @@ Private Sub TogglePanel()
       $H = .Height
     End With
     
-    'Debug $X;; $Y;; $W;; $H
+    If $hTimerAnim Then 
+      If $iOrientation = Align.Top Or If $iOrientation = Align.Bottom Then
+        $H = $iTarget 
+      Else
+        $W = $iTarget 
+      Endif
+      $hTimerAnim.Stop
+      $hTimerAnim = Null
+    Endif
+    
+    'Debug "HidePanel:";; $X;; $Y;; $W;; $H
     
     $bVisible = False
     
@@ -569,8 +578,15 @@ Private Sub TogglePanel()
   
   Else
     
+    'Debug "ShowPanel:";; $X;; $Y;; $W;; $H
+    
     $bVisible = True
 
+    If $hTimerAnim Then
+      $hTimerAnim.Stop
+      $hTimerAnim = Null
+    Endif
+    
     If Application.Animations Then
       
       panSide.Show

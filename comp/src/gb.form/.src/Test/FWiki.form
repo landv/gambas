@@ -1,8 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,19,13)
-  Border = False
+  MoveScaled(0,0,30,6)
   TakeFocus = False
   SkipTaskbar = True
   Margin = True
@@ -20,13 +19,9 @@
       Text = ("Menu5")
     }
   }
-  { SwitchButton1 SwitchButton
-    MoveScaled(1,1,17,5)
-    Value = True
-    Animated = True
-  }
-  { SwitchButton2 SwitchButton
-    MoveScaled(1,7,17,5)
-    Animated = True
+  { SpinBar1 SpinBar
+    MoveScaled(1,1,28,4)
+    MaxValue = 100
+    Step = 1
   }
 }
