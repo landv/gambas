@@ -160,6 +160,8 @@ End
 
 Public Sub View_MouseWheel()
   
+  If Object.CanRaise(Me, "MouseWheel") Then Return
+  
   ChangeValue(Mouse.Delta > 0, True)
   Stop Event
   
