@@ -1198,6 +1198,11 @@ static void QT_InitWidget(QWidget *widget, void *object, int fill_bg)
 	CWIDGET_new(widget, object);
 }
 
+static void QT_SetWheelFlag(void *object)
+{
+	((CWIDGET *)object)->flag.wheel = true;
+}
+
 void *QT_GetObject(QWidget *widget)
 {
 	return CWidget::get((QObject *)widget);
@@ -1351,6 +1356,7 @@ void *GB_QT4_1[] EXPORT =
 	(void *)QT_InitEventLoop,
 	(void *)QT_Init,
 	(void *)QT_InitWidget,
+	(void *)QT_SetWheelFlag,
 	(void *)QT_GetObject,
 	(void *)QT_GetContainer,
 	(void *)CWIDGET_border_simple,

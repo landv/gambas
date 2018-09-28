@@ -76,7 +76,8 @@ typedef
 			unsigned has_action : 1;
 			unsigned drop : 1;
 			unsigned resized : 1;
-			unsigned _reserved : 4;
+			unsigned wheel : 1; // eat wheel events
+			unsigned _reserved : 3;
 			} flag;
 		int level;
 		char *name;
@@ -103,7 +104,7 @@ enum {
 	WF_CLOSED           = (1 << 3),
 	WF_DELETED          = (1 << 4),
 	WF_VISIBLE          = (1 << 5),  // Only for menus
-	WF_SCROLLVIEW       = (1 << 6)   // Inherits QScrollView
+	WF_SCROLLVIEW       = (1 << 6),  // Inherits QScrollView
 	};
 
 

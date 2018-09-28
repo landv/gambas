@@ -81,6 +81,8 @@ BEGIN_METHOD(TextBox_new, GB_OBJECT parent)
 
 	QLineEdit *wid = new QLineEdit(QCONTAINER(VARG(parent)));
 
+	THIS->widget.flag.wheel = true;
+	
 	QObject::connect(wid, SIGNAL(textChanged(const QString &)), &CTextBox::manager, SLOT(onChange()));
 	QObject::connect(wid, SIGNAL(returnPressed()), &CTextBox::manager, SLOT(onActivate()));
 	QObject::connect(wid, SIGNAL(selectionChanged()), &CTextBox::manager, SLOT(onSelectionChanged()));
@@ -514,6 +516,8 @@ BEGIN_METHOD(ComboBox_new, GB_OBJECT parent)
 
 	MyComboBox *wid = new MyComboBox(QCONTAINER(VARG(parent)));
 
+	THIS->widget.flag.wheel = true;
+	
 	QObject::connect(wid, SIGNAL(editTextChanged(const QString &)), &CTextBox::manager, SLOT(onChange()));
 	QObject::connect(wid, SIGNAL(activated(int)), &CTextBox::manager, SLOT(onClick()));
 

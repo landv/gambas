@@ -174,6 +174,7 @@ BEGIN_METHOD(CTEXTAREA_new, GB_OBJECT parent)
 	wid->setLineWrapMode(QTextEdit::NoWrap);
 	wid->setAcceptRichText(false);
 	
+	THIS->widget.flag.wheel = true;
 	THIS->widget.flag.fillBackground = true;
 	CWIDGET_new(wid, (void *)_object);
 	

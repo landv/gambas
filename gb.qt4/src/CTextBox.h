@@ -44,6 +44,7 @@ extern GB_DESC CComboBoxItemDesc[];
 
 #define TEXTBOX ((QLineEdit *)((CWIDGET *)_object)->widget)
 #define COMBOBOX ((MyComboBox *)((CWIDGET *)_object)->widget)
+#define THIS ((CTEXTBOX *)_object)
 
 #endif
 

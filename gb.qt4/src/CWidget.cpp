@@ -3136,7 +3136,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			goto __MOUSE_WHEEL_TRY_PROXY;
 		}
 		
-		if (((QWidget *)widget)->focusPolicy() != Qt::WheelFocus)
+		if (!control->flag.wheel)
 		{
 			control = (CWIDGET *)CWIDGET_get_parent(control);
 			if (control)
