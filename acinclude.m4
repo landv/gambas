@@ -924,11 +924,11 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
   if test "$have_$1" = "no"; then
 
     if test "$gb_in_component_search" != "yes"; then
-      touch DISABLED
+      dnl touch DISABLED
       touch DISABLED.$3
     fi
 
-    AC_MSG_RESULT(no)
+    AC_MSG_RESULT([** NOT FOUND **])
 
     for pkgcmp in $5
     do
@@ -1114,7 +1114,6 @@ AC_DEFUN([GB_COMPONENT],
   else
 
     have_$1=no
-    touch DISABLED
     touch DISABLED.$3
 
     if test "$gb_enable_$1" = "yes" && test "x${GAMBAS_CONFIG_FAILURE}" != "x"; then

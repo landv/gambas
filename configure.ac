@@ -74,15 +74,16 @@ AC_OUTPUT(Makefile)
 GB_CLEAR_MESSAGES
 
 for gb_dir in gb.*; do
-  if test -e $gb_dir/DISABLED; then
-    for gb_comp in $gb_dir/DISABLED.*; do
+  for gb_comp in $gb_dir/DISABLED.*; do
+    gb_comp=`basename "$gb_comp"`
+    gb_comp=${gb_comp#DISABLED.}
+    if test "$gb_comp" != '*'; then
       if ! test -s $srcdir/warnings.log; then
         GB_MESSAGE([THESE COMPONENTS ARE DISABLED:])
       fi
-      gb_comp=`basename "$gb_comp"`
-      GB_MESSAGE([- ${gb_comp#DISABLED.}])
-    done
-  fi
+      GB_MESSAGE([- $gb_comp])
+    fi
+  done
 done
 
 if ! test -s $srcdir/warnings.log; then
