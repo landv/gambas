@@ -548,6 +548,11 @@ AC_DEFUN([GB_SYSTEM],
       AC_DEFINE(OS_LINUX, 1, [Target system is Linux])
       AC_DEFINE(SYSTEM, "Linux", [Operating system])
       ;;
+    *-*-linux* )
+      SYSTEM=LINUX
+      AC_DEFINE(OS_LINUX, 1, [Target system is Linux])
+      AC_DEFINE(SYSTEM, "Linux", [Operating system])
+      ;;
     *-*-freebsd* )
       SYSTEM=FREEBSD
       AC_DEFINE(OS_BSD, 1, [Target system is of BSD family])
