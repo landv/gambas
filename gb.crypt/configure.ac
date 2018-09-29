@@ -11,8 +11,14 @@ GB_COMPONENT(
   crypt, CRYPT, gb.crypt, [src],
   [],
   [GB_FIND(libcrypt.$SHLIBEXT, $prefix /usr/local /usr, lib)],
-  [-lcrypt])
- 
+  [-lcrypt],
+  [],
+  [Cannot find 'libcrypt' library. It may be merged inside the system C library, so you can ignore that warning...])
+
+dnl ---- Remove DISABLED file that could have been generated before
+
+rm -f DISABLED DISABLED.*
+
 AC_OUTPUT( \
 Makefile \
 src/Makefile \

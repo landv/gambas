@@ -928,7 +928,7 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
       touch DISABLED.$3
     fi
 
-    AC_MSG_RESULT([** NOT FOUND **])
+    AC_MSG_RESULT(no)
 
     for pkgcmp in $5
     do
