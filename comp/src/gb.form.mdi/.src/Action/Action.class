@@ -25,16 +25,7 @@ End
 
 Static Private Function List_Read() As String[]
 
-  Dim aList As New String[]
-  Dim hAction As CAction
-  
-  MAction.InitAction
-  
-  For Each hAction In MAction.Actions
-    aList.Add(MAction.Actions.Key)
-  Next
-  aList.Sort
-  Return aList
+  Return MAction.GetList()
 
 End
 
@@ -46,6 +37,7 @@ Static Public Sub _Register(Control As Object, Old As String, (Key) As String)
   Super._Register(Control, Old, Key)
   
   If Key Then
+    
     If Control Is Menu Then
       hWin = Control.Window
       If Not $aWindow.Exist(hWin) Then
@@ -54,6 +46,7 @@ Static Public Sub _Register(Control As Object, Old As String, (Key) As String)
         hObs = New Observer(hWin) As "Window"
       Endif
     Endif
+    
   Endif
   
 End
@@ -90,3 +83,30 @@ Static Public Sub Window_Close()
   Try $aWindow.Remove($aWindow.Find(Last))
   
 End
+
+
+Static Public Sub Add(Action As String, Text As String, Optional (Picture) As String, Optional HasShortcut As Boolean, DefaultShortcut As String)
+
+  MAction.Add(Action, Text, Picture, HasShortcut, DefaultShortcut)
+
+End
+
+Static Public Sub AddFrom(Control As Object)
+
+  Dim sAction As String
+  Dim sText As String
+  Dim sShortcut As String
+  Dim bHasShortcut As Boolean
+
+  sAction = Control.Action
+  If Not sAction Then Return
+  
+  Try sText = Control.Text
+  Try sShortcut = Control.Shortcut
+  
+  If sShortcut Or If Control Is Menu Then bHasShortcut = True
+  
+  Add(sAction, sText,, bHasShortcut, sShortcut)
+
+End
+

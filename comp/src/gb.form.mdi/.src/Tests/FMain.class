@@ -22,6 +22,9 @@ Public Sub Form_Open()
   Button2_Click
   Button2_Click
   Workspace1.Unlock
+  
+  Button3.Action = "orientation"
+  Action.AddFrom(Button3)
 
 End
 
