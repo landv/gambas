@@ -348,7 +348,7 @@ AC_DEFUN([GB_INIT],
   
   dnl ---- check for -std=c++11 compiler flag
   
-  GB_CFLAGS_GCC_OPTION([-std=c++11],,
+  GB_CXXFLAGS_GCC_OPTION([-std=c++11],,
     [
       GB_CXXFLAGS_STD_CPP11=" -std=c++11"
       have_gcc_std_cpp11x=yes
