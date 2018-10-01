@@ -583,7 +583,9 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
     iNextBreak = aLayout[0]
   Else
     iLayoutCount = 0
-    iNextBreak = Len(sText) + 1 ' Always greater than String.Len(), and faster
+     ' Always greater than String.Len(), and faster
+     ' Add a big number in the case of an incorrect highlighting
+    iNextBreak = Len(sText) + 1000000
   Endif
   
   For I = 0 To aColor.Max Step 2
