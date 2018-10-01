@@ -898,8 +898,8 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
   dnl   [  gb_lib_$1="$withval" ])
 
   have_$1=no
-
-  if test "$gb_enable_$1"="yes" && test ! -e DISABLED && test ! -e DISABLED.$3; then
+  
+  if test "$gb_enable_$1" = "yes" && test ! -e DISABLED && test ! -e DISABLED.$3; then
 
     AC_MSG_CHECKING(for $3 component with pkg-config)
 
@@ -934,12 +934,14 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
 
     if test "$gb_in_component_search" != "yes"; then
       touch DISABLED.$3
-      if test "$gb_enable_$1"="yes"; then
+      if test "$gb_enable_$1" = "yes"; then
         touch FAILED
       fi
     fi
 
-    AC_MSG_RESULT(no)
+    if test "$gb_enable_$1" = "yes"; then
+      AC_MSG_RESULT(no)
+    fi
 
     for pkgcmp in $5
     do
@@ -951,7 +953,7 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
 
     done
 
-else
+  else
 
     AC_DEFINE(HAVE_$2_COMPONENT, 1, [Have $3 component])
 
@@ -1122,7 +1124,7 @@ AC_DEFUN([GB_COMPONENT],
 
     have_$1=no
     touch DISABLED.$3
-    if test "$gb_enable_$1"="yes"; then
+    if test "$gb_enable_$1" = "yes"; then
       touch FAILED
     fi
 
