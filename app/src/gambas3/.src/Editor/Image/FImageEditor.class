@@ -637,9 +637,12 @@ Private Sub GetImagePos() As PointF
   Dim X As Float
   Dim Y As Float
   Dim iSnap As Integer
+
+  X = (hPos.X - hOrg.X) / imvImage.Zoom
+  Y = (hPos.Y - hOrg.Y) / imvImage.Zoom
   
-  X = hPoint.X + Frac((hPos.X - hOrg.X) / imvImage.Zoom)
-  Y = hPoint.Y + Frac((hPos.Y - hOrg.Y) / imvImage.Zoom)
+  X = hPoint.X + X - Floor(X)
+  Y = hPoint.Y + Y - Floor(Y)
   
   If $hMagnet Then
     If Abs($hMagnet - PointF(X, Y)) <= 8 / imvImage.Zoom Then Return $hMagnet
@@ -649,34 +652,35 @@ Private Sub GetImagePos() As PointF
   
   If $bShowGrid And If iSnap Then
   
-    X = (CInt(X + iSnap \ 2) \ iSnap) * iSnap
-    Y = (CInt(Y + iSnap \ 2) \ iSnap) * iSnap
+    X = (CInt(Floor(X + iSnap \ 2)) \ iSnap) * iSnap
+    Y = (CInt(Floor(Y + iSnap \ 2)) \ iSnap) * iSnap
     
   Else If $sTool = "paste" Then
     
-    X = CInt(X)
-    Y = CInt(Y)
+    X = Floor(X)
+    Y = Floor(Y)
   
   Else If $sTool = "draw" Or If $sTool = "erase" Then
     
     If FImageProperty.GetSize() Then
-      X = CInt(X * 2) / 2
-      Y = CInt(Y * 2) / 2
+      X = Floor(X * 2) / 2
+      Y = Floor(Y * 2) / 2
     Else
-      X = CInt(X)
-      Y = CInt(Y)
+      X = Floor(X)
+      Y = Floor(Y)
     Endif
     
   Else
     
     If $sTool = "line" And If $bShift Then
     Else
-      X = CInt(X * 2) / 2
-      Y = CInt(Y * 2) / 2
+      X = Floor(X * 2) / 2
+      Y = Floor(Y * 2) / 2
     Endif
   
   Endif
   
+  Debug X;; Y
   Return PointF(X, Y)
   
 End
@@ -888,13 +892,13 @@ Private Sub UpdateInfo()
         $cInfo!X = CStr(CInt($hCurrentPoint.X))
         $cInfo!Y = CStr(CInt($hCurrentPoint.Y))
       Else
-        $cInfo!X = Format($hCurrentPoint.X, "0.##")
-        $cInfo!Y = Format($hCurrentPoint.Y, "0.##")
+        $cInfo!X = Format($hCurrentPoint.X, "0.0")
+        $cInfo!Y = Format($hCurrentPoint.Y, "0.0")
       Endif
       If $bPress Then
         If $sTool = "rectangle" Or If $sTool = "ellipse" Then
-          $cInfo!Width = Format($fLastSelectW, "0.#")
-          $cInfo!Height = Format($fLastSelectH, "0.#")
+          $cInfo!Width = Format($fLastSelectW, "0.0")
+          $cInfo!Height = Format($fLastSelectH, "0.0")
         Endif
       Endif
       
