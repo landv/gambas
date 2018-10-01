@@ -17,7 +17,7 @@ GB_COMPONENT(
 
 dnl ---- Remove DISABLED file that could have been generated before
 
-rm -f DISABLED DISABLED.*
+rm -f DISABLED DISABLED.* FAILED.*
 
 AC_OUTPUT( \
 Makefile \

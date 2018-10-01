@@ -26,7 +26,7 @@ GB_COMPONENT(
 
 dnl ---- Remove DISABLED file that could have been generated before
 
-rm -f DISABLED DISABLED.*
+rm -f FAILED DISABLED DISABLED.*
 
 dnl ---- Check for charset conversion library
 
@@ -40,7 +40,7 @@ GB_COMPONENT(
 
 dnl ---- Remove DISABLED file that could have been generated before
 
-rm -f DISABLED DISABLED.*
+rm -f FAILED DISABLED DISABLED.*
 
 dnl ---- Check for gettext library
 
@@ -58,7 +58,7 @@ fi
 
 dnl ---- Remove DISABLED file that could have been generated before
 
-rm -f DISABLED DISABLED.*
+rm -f FAILED DISABLED DISABLED.*
 
 dnl ---- Check for ffi library
 
@@ -79,7 +79,7 @@ fi
 
 dnl ---- Remove DISABLED file that could have been generated before
 
-rm -f DISABLED DISABLED.*
+rm -f FAILED DISABLED DISABLED.*
 
 if test "x${SAVE_GAMBAS_CONFIG_FAILURE}" != "x"; then
   GAMBAS_CONFIG_FAILURE=${SAVE_GAMBAS_CONFIG_FAILURE}
