@@ -169,13 +169,6 @@ AC_DEFUN([GB_INIT],
 
   AC_CHECK_HEADERS(unistd.h)
   
-  dnl ---- Checks for programs
-
-  AC_PROG_CPP
-  AC_PROG_CXX
-  AC_PROG_CC
-  AC_PROG_MAKE_SET
-
   dnl ---- Checks for header files.
 
   dnl AC_HEADER_DIRENT
@@ -381,6 +374,13 @@ AC_DEFUN([GB_INIT],
 
   CFLAGS=""
   CXXFLAGS=""
+
+  dnl ---- Checks for programs
+
+  AC_PROG_CPP
+  AC_PROG_CXX
+  AC_PROG_CC
+  AC_PROG_MAKE_SET
 
   AC_SUBST(AM_CFLAGS)
   AC_SUBST(AM_CFLAGS_OPT)
