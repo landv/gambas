@@ -586,7 +586,10 @@ static void analyze(EVAL_ANALYZE *result)
 						if (i < len)
 						{
 							if (*p == 'x' && i < (len - 2) && isxdigit(p[1]) && isxdigit(p[2]))
+							{
 								l = 3;
+								i += 2;
+							}
 							else
 								l = 1;
 							add_data_merge(RT_ESCAPE, l);
