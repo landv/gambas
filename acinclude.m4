@@ -55,6 +55,10 @@ AC_DEFUN([GB_PRINT_MESSAGES],
     echo "||"
     echo
   fi
+  
+  if test -e DISABLED.* && test "x${GAMBAS_CONFIG_FAILURE}" != "x"; then
+     AC_MSG_ERROR([Failed to configure $3])
+  fi
 ])
 
 ## ---------------------------------------------------------------------------
@@ -945,10 +949,6 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
 
     done
 
-    if test "$gb_enable_$1" = "yes" && test "x${GAMBAS_CONFIG_FAILURE}" != "x" && test "$gb_in_component_search" != "yes"; then
-       AC_MSG_ERROR([Failed to configure $3])
-    fi
-
 else
 
     AC_DEFINE(HAVE_$2_COMPONENT, 1, [Have $3 component])
@@ -1120,10 +1120,6 @@ AC_DEFUN([GB_COMPONENT],
 
     have_$1=no
     touch DISABLED.$3
-
-    if test "$gb_enable_$1" = "yes" && test "x${GAMBAS_CONFIG_FAILURE}" != "x"; then
-       AC_MSG_ERROR([Failed to configure $3])
-    fi
 
     fi
 
