@@ -3,7 +3,7 @@
 Export
 Inherits ScrollArea
 
-Public Const _Properties As String = "*"
+Public Const _Properties As String = "*,Arrangement{Arrange.None;Horizontal;Vertical;Row;Column;Fill},Spacing,Margin,Padding{Range:0;63},Indent"
 Public Const _DefaultEvent As String = "Draw"
 Public Const _DefaultSize As String = "24,24"
 Public Const _Similar As String = "DrawingArea,ScrollView"
@@ -11,10 +11,11 @@ Public Const _Similar As String = "DrawingArea,ScrollView"
 Private $hCont As Panel
 Private $hObs As Observer
 Private $hTimer As Timer
+Private $bLock As Boolean
 
 Public Sub _new()
   
-  $hObs = New Observer(Me) As "Observer"
+  $hObs = New Observer(Me.Proxy) As "Observer"
   $hCont = New Panel(Me) As "Panel"
   $hCont.Move(0, 0)
   '$hCont.Background = Color.Yellow
@@ -24,7 +25,7 @@ Public Sub _new()
   
 End
 
-Public Sub Panel_Arrange()
+Public Sub Panel_BeforeArrange()
   
   AutoResizeContents
   
@@ -43,12 +44,13 @@ Private Sub AutoResizeContents()
   Dim W, H As Integer
   Dim hChild As Control
   Dim iSaveArr As Integer
+  Dim D As Integer
 
-  If Object.IsLocked($hCont) Then Return
+  'If Me.Name = "svwTheme" Then Debug Object.IsLocked($hCont);; Me.ClientW;; Me.ClientH ';; System.Backtrace.Join(" ")
   
-  'Debug Me.Name;; System.Backtrace.Join(" ")
+  If $bLock Then Return
   
-  Object.Lock($hCont)
+  $bLock = True
   
   Do
     
@@ -72,21 +74,24 @@ Private Sub AutoResizeContents()
   Loop
   
   If Me.Margin Then
-    W += Desktop.Scale
-    H += Desktop.Scale
+    D = Me.Padding
+    If D = 0 Then D = Desktop.Scale
+    W += D
+    H += D
   Endif
   
   W = Max(Me.ClientW, W)
   H = Max(Me.ClientH, H)
 
   If $hCont.W <> W Or If $hCont.H <> H Then
+    'If Me.Name = "svwTheme" Then Debug "Resize cont "; W;; H
     $hCont.Resize(W, H)
     iSaveArr = $hCont.Arrangement
     $hCont.Arrangement = Arrange.None
     $hCont.Arrangement = iSaveArr
   Endif
   
-  Object.Unlock($hCont)
+  $bLock = False
   
 End
 

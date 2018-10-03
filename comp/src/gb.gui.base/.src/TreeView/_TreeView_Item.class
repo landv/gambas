@@ -41,6 +41,7 @@ Public _Index As Integer
 Public _GrandChildren As Integer
 
 Event _Refresh
+Private $iLock As Integer
 
 Private Sub GetTree() As _TreeView
   
@@ -185,6 +186,8 @@ Private Sub Text_Write(Value As String)
   Dim hTree As _TreeView = GetTree()
 
   $sText = Value
+  If $iLock Then Return
+
   If hTree.Sorted Then hTree._SortParent($sParent)
   hTree._UpdateItemHeight(Me)
   hTree._RefreshView
@@ -202,6 +205,8 @@ Private Sub RichText_Write(Value As String)
   Dim hTree As _TreeView = GetTree()
 
   $sRichText = Value
+  If $iLock Then Return
+  
   If hTree.Sorted Then hTree._SortParent($sParent)
   hTree._UpdateItemHeight(Me)
   hTree._RefreshView
@@ -217,7 +222,10 @@ End
 Private Sub Picture_Write(Value As Picture)
 
   Dim hTree As _TreeView = GetTree()
+  
   $hPicture = Value
+  If $iLock Then Return
+  
   hTree._UpdateItemHeight(Me)
   hTree._RefreshView
   
@@ -456,6 +464,7 @@ Public Sub _put(Text As String, Column As Integer)
     $aText[Column - 1] = Text
   Endif
   
+  If $iLock Then Return
   hTree._RefreshView()
   
 End
@@ -518,4 +527,24 @@ Private Sub Font_Write(Value As Font)
 
   $hFont = Value.Copy()
 
+End
+
+Public Sub _Lock()
+  
+  Inc $iLock
+  
+End
+
+Public Sub _Unlock()
+  
+  Dim hTree As _TreeView
+  
+  Dec $iLock
+  If $iLock = 0 Then
+    hTree = GetTree()
+    If hTree.Sorted Then hTree._SortParent($sParent)
+    hTree._UpdateItemHeight(Me)
+    hTree._RefreshView
+  Endif
+  
 End

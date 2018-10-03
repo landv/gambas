@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Export
+'Export
 Inherits UserControl
 
 Class Watch
@@ -261,7 +261,7 @@ End
 Private Sub GetIconSize() As Integer
 
   If $hColumnView.Visible Then
-    Return Stock.GetSize("small")
+    Return 16 'Stock.GetSize("small")
   Else
     Return $iIconSize
   Endif
@@ -1027,7 +1027,7 @@ Public Sub View_Rename()
   
   sMsg = Help.CheckFileName(sNewName)
   If sMsg Then
-    Balloon.Warning(sMsg, hView, hView.Item.X + Min(32 + Desktop.Scale * 8, hView.Item.W) / 2, hView.Item.Y + hView.Item.H / 2)
+    'Balloon.Warning(sMsg, hView, hView.Item.X + Min(32 + Desktop.Scale * 8, hView.Item.W) / 2, hView.Item.Y + hView.Item.H / 2)
     Stop Event
     Return
   Endif

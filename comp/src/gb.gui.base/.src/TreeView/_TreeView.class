@@ -66,7 +66,8 @@ Public Sub _new()
   $hView.Mode = Select.Single
   $hView.Grid = False
   $hView.AutoResize = True
-  $hView.Name = Me.Name & ":gridView"
+  $hView.Name = Me.Name & ":gridview"
+  $hView.Rows.H = GetDefaultItemHeight()
   '$hView.Padding = 0
   
   Me.Proxy = $hView
@@ -476,6 +477,13 @@ Public Sub _GetItemWidth(hItem As _TreeView_Item) As Integer
   Return W + Me.Font.TextWidth(hItem.Text)
   
 End
+
+Private Sub GetDefaultItemHeight() As Integer
+  
+  Return Me.Font.Height + (Desktop.Scale \ 4) * 2 + 2
+  
+End
+
 
 Public Sub _GetItemHeight(hItem As _TreeView_Item) As Integer
   
@@ -1563,6 +1571,8 @@ End
 Public Sub GridView_Font()
 
   Dim hItem As _TreeView_Item
+  
+  $hView.Rows.Height = GetDefaultItemHeight()
   
   For Each hItem In $cItem
     _UpdateItemHeight(hItem)

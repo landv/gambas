@@ -44,3 +44,22 @@ Public Sub Main()
   ' hImage.Save("~/test.png")
 
 End
+
+Public Sub GetFileSize(iSize As Long, Optional nDigit As Integer = 1) As String
+
+  Dim sFormat As String
+  
+  sFormat = "0." & String$(nDigit, "#")
+  
+  If iSize < 1024 Then
+    Return Subst(("&1 B"), CStr(iSize))
+  Else If iSize < 1048576 Then
+    Return Subst(("&1 KiB"), Format(iSize / 1024, sFormat))
+  Else If iSize < 1073741824 Then
+    Return Subst(("&1 MiB"), Format(iSize / 1048576, sFormat))
+  Else
+    Return Subst(("&1 GiB"), Format(iSize / 1073741824, sFormat))
+  Endif
+  
+End
+
