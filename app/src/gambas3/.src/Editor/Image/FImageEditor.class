@@ -210,6 +210,8 @@ Public Sub SetReadOnly()
   
   UpdateMenu
   DrawTitle
+  
+  FImageProperty.OnProjectActivate
 
 End
 
@@ -680,7 +682,6 @@ Private Sub GetImagePos() As PointF
   
   Endif
   
-  Debug X;; Y
   Return PointF(X, Y)
   
 End

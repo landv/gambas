@@ -38,8 +38,6 @@ Public (Shortcut) As Boolean
 Public Arrangement As Boolean
 'PUBLIC Control AS Boolean
 
-
-
 Static Public Sub _init()
 
   $cRedirect["Visible"] = True
@@ -63,6 +61,7 @@ Static Public Sub _init()
   $cRedirect["Height"] = True
 
   $cRedirect["Label.Padding"] = False
+  $cRedirect["PictureBox.Padding"] = False
   $cRedirect["LCDLabel.Padding"] = False
   $cRedirect["TextLabel.Padding"] = False
   $cRedirect["GridView.Padding"] = False

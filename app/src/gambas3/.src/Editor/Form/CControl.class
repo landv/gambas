@@ -189,7 +189,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
     Case "picturebox"
       hCtrl = New PictureBox(hParent)
-      hCtrl.Picture = Picture["img/control/picturebox.png"]
+      'hCtrl.Picture = Picture["img/control/picturebox.png"]
 
     Case "treeview"
       hCtrl = New TreeView(hParent)

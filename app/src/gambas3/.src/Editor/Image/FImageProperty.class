@@ -1027,6 +1027,7 @@ Public Sub OnProjectActivate()
   If hCurrent Then
     ShowGridOption(hCurrent.HasGrid())
     ShowTextOption(hCurrent.GetTool() = "text")
+    Me.Enabled = Not hCurrent.ReadOnly
   Endif
   
 End
