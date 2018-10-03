@@ -261,7 +261,7 @@ End
 Private Sub GetIconSize() As Integer
 
   If $hColumnView.Visible Then
-    Return 16
+    Return Stock.GetSize("small")
   Else
     Return $iIconSize
   Endif
@@ -318,6 +318,7 @@ Private Sub RefreshView()
     SX = $hColumnView.ScrollX
     SY = $hColumnView.ScrollY
     If Not $bWatch Or If $bRefreshAll Then $hColumnView.Clear
+    $hColumnView.Sorted = False
     hPictFile = Picture["icon:/small/file"]
     hPictFolder = Picture["icon:/small/directory"]
   Else
@@ -432,7 +433,11 @@ Finally
   
   $bRefreshIcon = False
   $bRefreshAll = False
-  If Not $hColumnView.Visible Then $hIconView._End
+  If $hColumnView.Visible Then 
+    $hColumnView.Sorted = True
+  Else
+    $hIconView._End
+  Endif
   Try GetView().Scroll(SX, SY)
   Dec Application.Busy
   

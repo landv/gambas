@@ -14,6 +14,7 @@ Event Hide
 
 Property Read Editor As Control
 Property NoKeyboard As Boolean
+Property ShowCursor As Boolean
 
 Private $hTextBox As TextBox
 Private $hComboBox As ComboBox
@@ -27,6 +28,7 @@ Private $hWatcher As Watcher
 Private $bNoKeyboard As Boolean
 Private $hTimer As Timer
 Private $bDoNotHideEditor As Boolean
+Private $bShowCursor As Boolean
 
 Public Sub _new()
   
@@ -109,6 +111,8 @@ Private Sub HideEditor(Optional bNoSave As Boolean) As Boolean
     Endif
   Endif
   
+  UpdateShowCursor
+  
   Return bCancel
   
 End
@@ -140,10 +144,15 @@ Private Sub MoveEditor()
   
   With Me[$iRow, $iCol]
     
-    X += .X
-    Y += .Y
-    W = Min(Me.ClientW - Me.Rows.W, .Width) - 1
-    H = Min(Me.ClientH - Me.Columns.H, .Height)
+    X += .X + 1
+    Y += .Y + 1
+    W = Min(Me.ClientW - Me.Rows.W, .Width) - 2
+    H = Min(Me.ClientH - Me.Columns.H, .Height) - 2
+    
+    If Not Me.Grid Then
+      Dec W
+      Dec H
+    Endif
     
     P = Max(Me.Padding, .Padding)
     P = Max(0, P - 1)
@@ -163,13 +172,14 @@ Private Sub MoveEditor()
       $hPanel.Background = $hEditor.Background
     Endif
     
+    UpdateShowCursor
+    
     $hPanel.Move(X, Y, W, H)
     $hEditor.Move(P, P, W - P * 2, H - P * 2)
     $hEditor.Show
     $hPanel.Show
     $hPanel.Raise
     $hEditor.Raise
-    
     
   End With
   
@@ -526,4 +536,23 @@ Public Sub Clear()
   Cancel
   Super.Clear
   
+End
+
+Private Function ShowCursor_Read() As Boolean
+
+  Return $bShowCursor
+
+End
+
+Private Sub UpdateShowCursor()
+
+  Super.ShowCursor = $bShowCursor 'And IsNull($hEditor)
+
+End
+
+Private Sub ShowCursor_Write(Value As Boolean)
+
+  $bShowCursor = Value
+  UpdateShowCursor
+
 End
