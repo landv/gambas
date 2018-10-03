@@ -51,14 +51,12 @@
 #define CMENU_PROPERTIES "Action,Text,Picture,Enabled=True,Radio,Toggle,Checked,Visible=True,Tag,Shortcut"
 #define CMOVIEBOX_PROPERTIES "*,Path,Playing,Alignment{Align.*}=TopLeft,Border{Border.None;Plain;Sunken;Raised;Etched}"
 #define CPANEL_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Border{Border.None;Plain;Sunken;Raised;Etched}"
-#define CPICTUREBOX_PROPERTIES "*,Padding{Range:0;64},Picture,Stretch,AutoResize,Alignment{Align.*}=TopLeft,Border{Border.None;Plain;Sunken;Raised;Etched}"
 #define CPRINTER_PROPERTIES "Orientation{Printer.Portrait;Landscape}=Portrait,Paper{Printer.A3;A4;A5;B5;Letter;Executive}=A4,CollateCopies,ReverseOrder,Duplex{Printer.Simplex;Horizontal;Vertical}=Simplex,GrayScale,FullPage"
 #define CRADIOBUTTON_PROPERTIES "*,AutoResize,Text,Value"
 #define CSCROLLBAR_PROPERTIES "*,MinValue=0,MaxValue=100,Step=1,PageStep=10,Tracking=True"
 #define CSCROLLVIEW_PROPERTIES "*," CARRANGEMENT_PROPERTY "," CPADDING_PROPERTIES ",Border=True,ScrollBar{Scroll.*}=Both"
 #define CSEPARATOR_PROPERTIES "*"
 #define CSLIDER_PROPERTIES "*,Action,MinValue=0,MaxValue=100,Step=1,PageStep=10,Tracking=True,Mark,Value"
-#define CSPINBOX_PROPERTIES "*,Action,MinValue=0,MaxValue=100,Step=1,Wrap,Value,Border=True"
 #define CTABSTRIP_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom;Left;Right}=Top,Closable"
 #define CTEXTAREA_PROPERTIES "*,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,ReadOnly,Wrap,Border=True,ScrollBar{Scroll.*}=Both"
 #define CTEXTBOX_PROPERTIES "*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,ReadOnly,Password,MaxLength,Border=True"
@@ -131,7 +129,6 @@
 #define LISTBOX_DESCRIPTION DESCRIBE_CONTROL(CLISTBOX_PROPERTIES, "Click", "16,16")
 #define MOVIEBOX_DESCRIPTION DESCRIBE_CONTROL(CMOVIEBOX_PROPERTIES, "MouseDown", "16,16")
 #define PANEL_DESCRIPTION DESCRIBE_CONTAINER_ARR(CPANEL_PROPERTIES, "MouseDown", "F")
-#define PICTUREBOX_DESCRIPTION DESCRIBE_CONTROL(CPICTUREBOX_PROPERTIES, "MouseDown", "16,16")
 #define RADIOBUTTON_DESCRIPTION DESCRIBE_CONTROL(CRADIOBUTTON_PROPERTIES, "Click", "24,4"), SIMILAR("Button")
 #define SCROLLBAR_DESCRIPTION DESCRIBE_CONTROL(CSCROLLBAR_PROPERTIES, "Change", "36,4"), SIMILAR("Slider")
 #define SCROLLVIEW_DESCRIPTION DESCRIBE_CONTAINER_ARR(CSCROLLVIEW_PROPERTIES, "MouseDown", "F"), SIMILAR("Panel")

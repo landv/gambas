@@ -1,8 +1,9 @@
 /***************************************************************************
 
-  gpicturebox.cpp
+  gmovie.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+  (c) 2004-2006 Daniel Campos Fernández <dcamposf@gmail.com>
+  (c) 2018 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,7 +25,6 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include "widgets.h"
 #include "gmoviebox.h"
-#include "gpicturebox.h"
 
 /****************************************************************************************
 
@@ -156,130 +156,6 @@ void gMovieBox::setAlignment(int al)
 }
 
 gColor gMovieBox::getFrameColor()
-{
-	return realForeground();
-}
-
-
-/****************************************************************************************
-
-gPictureBox
-
-*****************************************************************************************/
-
-gPictureBox::gPictureBox(gContainer *parent) : gControl(parent)
-{
-	_picture = NULL;
-	g_typ=Type_gPictureBox;
-	
-	border = gtk_alignment_new(0,0,1,1);
-	widget = gtk_image_new();
-	gtk_image_set_pixel_size(GTK_IMAGE(widget),0);
-	realize(true);
-	
-	setAlignment(ALIGN_TOP_LEFT);
-	_autoresize = false;
-}
-
-gPictureBox::~gPictureBox()
-{
-  setPicture(NULL);
-}
-
-void gPictureBox::setPicture(gPicture *pic)
-{
-  gPicture::assign(&_picture, pic);
-  adjust();
-	redraw();
-}
-
-/*int gPictureBox::getBorder()
-{
-	return Frame_getBorder(GTK_FRAME(widget->parent));
-}
-
-void gPictureBox::setBorder(int vl)
-{
-	Frame_setBorder(GTK_FRAME(widget->parent),vl);
-}*/
-
-int gPictureBox::alignment()
-{
-	gfloat x, y;
-	
-	gtk_misc_get_alignment(GTK_MISC(widget), &x, &y);
-	return gt_to_alignment(x, y);
-}
-
-void gPictureBox::setAlignment(int al)
-{
-	gtk_misc_set_alignment(GTK_MISC(widget), gt_from_alignment(al, false), gt_from_alignment(al, true));
-}
-
-bool gPictureBox::stretch()
-{
-	return (bool)gtk_image_get_pixel_size(GTK_IMAGE(widget));
-}
-
-void gPictureBox::setStretch(bool vl)
-{
-	if (vl)
-		gtk_image_set_pixel_size(GTK_IMAGE(widget),-1);
-	else
-		gtk_image_set_pixel_size(GTK_IMAGE(widget),0);
-	
-	adjust();
-	redraw();
-}
-
-void gPictureBox::resize(int w, int h)
-{
-	gControl::resize(w,h);
-	if ( stretch() ) redraw();
-}
-
-void gPictureBox::redraw()
-{
-	GdkPixbuf *buf;
-	
-	if (!_picture)
-	{
-		gtk_image_set_from_pixbuf(GTK_IMAGE(widget), NULL);
-		return;
-	}
-	
-	if ( gtk_image_get_pixel_size(GTK_IMAGE(widget)) )
-	{
-		buf = gdk_pixbuf_scale_simple(_picture->getPixbuf(), width(), height(), GDK_INTERP_NEAREST);
-		gtk_image_set_from_pixbuf(GTK_IMAGE(widget), buf);
-		g_object_unref(G_OBJECT(buf));
-	}
-	else
-		gtk_image_set_from_pixbuf(GTK_IMAGE(widget), _picture->getPixbuf());
-}
-
-
-void gPictureBox::setAutoResize(bool v)
-{
-	_autoresize = v;
-	adjust();	
-}
-
-void gPictureBox::adjust()
-{
-	if (!_autoresize || stretch() || !_picture)
-		return;
-		
-	resize(_picture->width() + getFrameWidth() * 2, _picture->height() + getFrameWidth() * 2);
-}
-
-void gPictureBox::updateBorder()
-{
-	gControl::updateBorder();
-	adjust();
-}
-
-gColor gPictureBox::getFrameColor()
 {
 	return realForeground();
 }

@@ -40,7 +40,6 @@
 #include "gdrawingarea.h"
 #include "gmainwindow.h"
 #include "gmoviebox.h"
-#include "gpicturebox.h"
 #include "gplugin.h"
 #include "gscrollbar.h"
 #include "gslider.h"

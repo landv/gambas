@@ -42,6 +42,7 @@
 #include "CFont.h"
 #include "CKey.h"
 #include "CPicture.h"
+#include "CMovieBox.h"
 #include "CImage.h"
 #include "CClipboard.h"
 #include "CMouse.h"
@@ -56,7 +57,6 @@
 #include "CWindow.h"
 #include "CLabel.h"
 #include "CButton.h"
-#include "CPictureBox.h"
 #include "CTextBox.h"
 #include "CTextArea.h"
 #include "CSlider.h"
@@ -171,7 +171,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CCheckBoxDesc,
 	CRadioButtonDesc,
 	CToolButtonDesc,
-	CPictureBoxDesc,
 	CMovieBoxDesc,
 	CTextBoxSelectionDesc,
 	CTextBoxDesc,

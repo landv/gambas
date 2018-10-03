@@ -224,6 +224,7 @@ BEGIN_METHOD(WebView_new, GB_OBJECT parent)
 	}
 
   QT.InitWidget(wid, _object, false);
+	QT.SetWheelFlag(_object);
 	
 	WEBVIEW_get_network_manager();
 	

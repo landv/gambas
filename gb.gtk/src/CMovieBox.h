@@ -1,8 +1,9 @@
 /***************************************************************************
 
-  CPictureBox.h
+  CMovieBox.h
 
   (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+  (c) 2018 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,34 +22,22 @@
 
 ***************************************************************************/
 
-#ifndef __CPICTUREBOX_H
-#define __CPICTUREBOX_H
+#ifndef __CMOVIEBOX_H
+#define __CMOVIEBOX_H
 
 #include "main.h"
 #include "CWidget.h"
 #include "CPicture.h"
-#include "gpicturebox.h"
 #include "gmoviebox.h"
 
-#ifndef __CPICTUREBOX_CPP
-extern GB_DESC CPictureBoxDesc[];
+#ifndef __CMOVIEBOX_CPP
 extern GB_DESC CMovieBoxDesc[];
 #else
 
-#define THIS ((CPICTUREBOX *)_object)
 #define MTHIS ((CMOVIEBOX *)_object)
-#define PBOX ((gPictureBox*)THIS->ob.widget)
 #define MBOX ((gMovieBox*)MTHIS->ob.widget)
 
 #endif
-
-typedef  
-	struct 
-	{
-		CWIDGET ob;
-		CPICTURE *picture;
-	} 
-	CPICTUREBOX;
 
 typedef  
 	struct 
