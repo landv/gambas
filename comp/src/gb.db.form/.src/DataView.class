@@ -927,11 +927,23 @@ End
 
 Private Sub UpdateMode()
   
+  Dim iRow As Integer
+  Dim iCol As Integer
+  
+  iRow = $hCtrl.Row
+  iCol = $hCtrl.Column
+  
+  Object.Lock($hCtrl)
+  
   If $bCreate And If HasNewRecord() Then
     $hCtrl.Mode = Select.None
   Else
     $hCtrl.Mode = $iMode
   Endif
+  
+  $hCtrl.MoveTo(iRow, iCol)
+  
+  Object.Unlock($hCtrl)
   
 End
 
@@ -1175,7 +1187,7 @@ Private Sub Editable_Write(Value As Boolean)
   $hCtrl.ShowCursor = $bEditable
   'If Value Then 
     'CreateNewRecord
-   Create()
+  Create()
   'Endif
 
 End
