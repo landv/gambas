@@ -318,9 +318,39 @@ Private Function Y_Read() As Integer
 
 End
 
+Public Sub _GetWidth() As Integer
+  
+  Dim W As Integer
+  Dim hFont As Font
+  
+  If $hPicture Then W += $hPicture.W + 2
+  hFont = $hFont
+  If Not hFont Then hFont = GetTree().Font
+  
+  If $sRichText Then
+    Return W + hFont.RichTextWidth($sRichText)
+  Else
+    Return W + hFont.TextWidth($sText)
+  Endif
+  
+End
+
+Public Sub _GetHeight() As Integer
+  
+  Dim PH As Integer
+  Dim hFont As Font
+
+  hFont = $hFont
+  If Not hFont Then hFont = GetTree().Font
+  PH = hFont.Height + (Desktop.Scale \ 4) * 2 + 2
+  If $hPicture Then PH = Max(PH, $hPicture.H + (Desktop.Scale \ 4) * 2 + 2)
+  Return PH
+  
+End
+
 Private Function Width_Read() As Integer
 
-  Return GetTree()._GetItemWidth(Me)
+  Return _GetWidth()
   
 End
 
