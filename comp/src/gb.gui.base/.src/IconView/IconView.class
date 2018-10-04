@@ -534,8 +534,11 @@ Public Sub ScrollArea_Arrange()
   
   Dim W, H As Integer
   Dim nRow As Integer
+  Dim DS As Integer
   
   If $iLock Then Return
+  
+  DS = Desktop.Scale
   
   W = $hView.ClientWidth
   H = $hView.ClientHeight
@@ -550,16 +553,16 @@ Public Sub ScrollArea_Arrange()
   
   If $bHorizontal Then
     
-    $iGridHeight = Max(8, $iIconSize) + 16
-    $iGridHeight = Max($iGridHeight, Me.Font.Height * $iIconLines + 8)
+    $iGridHeight = Max(DS, $iIconSize) + DS * 2
+    $iGridHeight = Max($iGridHeight, Me.Font.Height * $iIconLines + DS)
     
     If $iGridSize Then
-      $iGridWidth = $iGridSize * Desktop.Scale
+      $iGridWidth = $iGridSize * DS
     Else
-      $iGridWidth = $iIconSize + 16
+      $iGridWidth = $iIconSize + DS * 2
     Endif
 
-    $iGridWidth = Max($iGridWidth, $iIconSize + 8)
+    $iGridWidth = Max($iGridWidth, $iIconSize + DS)
     
     $nColumn = Max(1, (H - $iPad * 2) \ $iGridHeight)
     nRow = ($aItems.Count + $nColumn - 1) \ $nColumn
@@ -574,14 +577,14 @@ Public Sub ScrollArea_Arrange()
     
   Else
     
-    $iGridHeight = Max(8, $iIconSize) + $iIconLines * Me.Font.Height + 28
+    $iGridHeight = Max(DS * 4, $iIconSize) + $iIconLines * Me.Font.Height + DS * 3
     
     If $iGridSize Then
-      $iGridWidth = $iGridSize * Desktop.Scale
+      $iGridWidth = $iGridSize * DS
     Else
-      $iGridWidth = $iIconSize + 16
+      $iGridWidth = $iIconSize + DS * 2
     Endif
-    $iGridWidth = Max($iGridWidth, Me.Font.Height * 8)
+    $iGridWidth = Max($iGridWidth, Me.Font.Height * DS)
     
     $nColumn = Max(1, (W - $iPad * 2) \ $iGridWidth)
     $iGridWidth = Max(1, (W - $iPad * 2) \ $nColumn)

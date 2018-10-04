@@ -33,6 +33,7 @@ Private $hShowButtonRight As DrawingArea
 
 Private $hTimerAnim As Timer
 Private $iTarget As Integer
+Private $bLockRefresh As Boolean
 
 ' Static Public Sub _init()
 '   
@@ -303,7 +304,7 @@ Private Sub CreateShowButton(hParent As Container) As DrawingArea
   hCtrl.Ignore = True
   hCtrl.Resize(Desktop.Scale, Desktop.Scale)
   hCtrl.Mouse = Mouse.Pointing
-  hCtrl.Tooltip = Me.Parent.NAme
+  hCtrl.Tooltip = Me.Parent.Tooltip
   
   Return hCtrl
   
@@ -436,13 +437,18 @@ End
 
 Public Sub RefreshAll()
 
-  Dim hParent As Container
+  Dim hParent As SidePanel
   Dim hTabStrip As TabStrip
   Dim iIndex As Integer
   Dim D As Integer
-
+  Dim hCont As Container
+  
   If Not $bOpened Then Return
-  'Debug Me.Parent.Name;; Me.X;; Me.Y;; Me.W;; panMove.W;; Me.Parent.ClientH
+  
+  If $bLockRefresh Then Return
+  $bLockRefresh = True
+  
+  hParent = GetParent()
   
   btnSide.Visible = Not $bTransparent Or $bVisible
   btnSide2.Visible = btnSide.Visible
@@ -464,20 +470,21 @@ Public Sub RefreshAll()
     
     If Not $hShowPanel And If $bTransparent Then
       
-      hParent = Me.Parent.Parent
+      hCont = Me.Parent.Parent
       
-      If hParent Is TabStrip Then
-        hTabStrip = hParent
+      If hCont Is TabStrip Then
+        hTabStrip = hCont
         iIndex = hTabStrip.Index
         hTabStrip.Index = hTabStrip.FindIndex(Me.Parent)
       Endif
       
-      $hShowButtonLeft = CreateShowButton(hParent)
-      $hShowButtonRight = CreateShowButton(hParent)
+      $hShowButtonLeft = CreateShowButton(hCont)
+      $hShowButtonRight = CreateShowButton(hCont)
       
-      $hShowPanel = New Panel(hParent) As "panMove"
+      $hShowPanel = New Panel(hCont) As "panMove"
       $hShowPanel.Ignore = True
       $hShowPanel.Mouse = Mouse.Pointing
+      $hShowPanel.Tooltip = GetParent().Tooltip
       
       If hTabStrip Then hTabStrip.Index = iIndex
       
@@ -490,14 +497,15 @@ Public Sub RefreshAll()
     MoveShowButton
     
   Endif
-
-  'UpdateBackground
+  
   RefreshArrow
   RefreshPanel
   RefreshButtons
   
   sepSide.Raise
   panMove.Raise
+  
+  $bLockRefresh = False
   
 End
 
@@ -837,6 +845,11 @@ Public Sub SetTooltip(Value As String)
   btnSide.ToolTip = Value
   btnSide2.ToolTip = Value
   panMove.ToolTip = Value
+  If $hShowButtonLeft Then
+    $hShowButtonLeft.Tooltip = Value
+    $hShowButtonRight.Tooltip = Value
+    $hShowPanel.Tooltip = Value
+  Endif
   
 End
 

@@ -33,6 +33,7 @@ Event Collapse
 Event Rename
 Event Cancel
 Event Compare(Key As String, OtherKey As String)
+Event BeforeSort
 
 Static Private $iNoEvent As Integer
 
@@ -54,7 +55,7 @@ Private $cSort As Collection
 Private $bSortRoot As Boolean
 Private $hSortTimer As Timer
 Private $bNoRoot As Boolean
-Private $bNoUpdateHeight As Boolean
+Private $iLock As Integer
 
 Private $iSaveSelection As Integer
 Private $aSaveSelection As String[]
@@ -145,15 +146,15 @@ Public Sub _Add((Key) As String, Text As String, Optional (Picture) As Picture, 
   Endif
   
   hParent._AddChild(Key)
-  
-  $bNoUpdateHeight = True
+
+  Inc $iLock
   
   hItem._Index = hParent.Count - 1
   hItem.Editable = $bEditable
   hItem.Text = Text
   hItem.Picture = Picture
   
-  $bNoUpdateHeight = False
+  Dec $iLock
 
   If After Then 
     If _MoveItem(hItem, After, False) Then _UpdateItemHeight(hItem)
@@ -271,7 +272,7 @@ Public Sub _ReparentItem(hItem As _TreeView_Item, Parent As String)
     hCheck = $cItem[sKey]
   Wend
   
-  $bNoUpdateHeight = True
+  Inc $iLock
 
   bExpanded = hItem.Expanded
   hItem.Expanded = False
@@ -289,7 +290,7 @@ Public Sub _ReparentItem(hItem As _TreeView_Item, Parent As String)
   hParent._ComputeGrandChildren()
   hItem.Expanded = bExpanded
 
-  $bNoUpdateHeight = False
+  Dec $iLock
   
   _UpdateItemHeight(hItem, True)
   
@@ -467,32 +468,9 @@ Public Sub _GetItemX(hItem As _TreeView_Item) As Integer
 
 End
 
-Public Sub _GetItemWidth(hItem As _TreeView_Item) As Integer
-  
-  Dim W As Integer
-  
-  'W = hItem._Depth * 16
-  'If Not $bNoRoot Then W += 16
-  If hItem.Picture Then W += hItem.Picture.W + 2
-  Return W + Me.Font.TextWidth(hItem.Text)
-  
-End
-
 Private Sub GetDefaultItemHeight() As Integer
   
   Return Me.Font.Height + (Desktop.Scale \ 4) * 2 + 2
-  
-End
-
-
-Public Sub _GetItemHeight(hItem As _TreeView_Item) As Integer
-  
-  Dim PH As Integer
-
-  If Not hItem Then Return
-  PH = Me.Font.Height + (Desktop.Scale \ 4) * 2 + 2
-  If hItem.Picture Then PH = Max(PH, hItem.Picture.H + (Desktop.Scale \ 4) * 2 + 2)
-  Return PH
   
 End
 
@@ -1313,12 +1291,11 @@ End
 
 Public Sub Sort_Timer()
   
-  'Dim hItem As _TreeView_Item
-  
   $hSortTimer = Null
   If Not $cSort Then Return
   
-  'hItem = Current_Read()
+  Raise BeforeSort
+  
   _SaveSelection
   
   For Each $cSort
@@ -1358,6 +1335,8 @@ End
 
 
 Public Sub GridView_Sort()
+
+  Raise BeforeSort
 
   _SaveSelection
   
@@ -1490,7 +1469,7 @@ Public Sub GridView_ColumnSize(Column As Integer)
   If Column = 0 Then
     For Each hItem In $cItem
       If Not IsItemVisible(hItem) Then Continue
-      W = Max(W, _GetItemWidth(hItem) + _GetItemX(hItem))
+      W = Max(W, hItem._GetWidth() + _GetItemX(hItem))
     Next
   Else
     For Each hItem In $cItem
@@ -1513,12 +1492,12 @@ Private Sub UpdateRowHeight(hItem As _TreeView_Item, iStart As Integer, Optional
   Endif
   
   If hItem Then
-    $hView.Rows[iStart].H = _GetItemHeight(hItem)
+    $hView.Rows[iStart].H = hItem._GetHeight()
     Inc iStart
   Endif
   
   While iStart <= iEnd
-    $hView.Rows[iStart].H = _GetItemHeight(RowToItem(iStart))
+    $hView.Rows[iStart].H = RowToItem(iStart)._GetHeight()
     Inc iStart
   Wend
   
@@ -1529,7 +1508,7 @@ Public Sub _UpdateItemHeight(hItem As _TreeView_Item, Optional bNext As Boolean)
 
   Dim iRow As Integer
 
-  If $bNoUpdateHeight Then Return
+  If $iLock Then Return
   
   iRow = _ItemToRow(hItem)
   If iRow < 0 Then Return
@@ -1570,13 +1549,8 @@ End
 
 Public Sub GridView_Font()
 
-  Dim hItem As _TreeView_Item
-  
   $hView.Rows.Height = GetDefaultItemHeight()
-  
-  For Each hItem In $cItem
-    _UpdateItemHeight(hItem)
-  Next
+  UpdateRowHeight(Null, 0, -1)
   
 End
 
@@ -1590,3 +1564,19 @@ Private Function Keys_Read() As String[]
   Return aKeys
 
 End
+
+Public Sub _Begin()
+  
+  Inc $iLock
+  
+End
+
+Public Sub _End()
+  
+  Dec $iLock
+  If $iLock = 0 Then
+    UpdateRowHeight(Null, 0, -1)
+  Endif
+  
+End
+
