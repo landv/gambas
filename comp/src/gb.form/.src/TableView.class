@@ -14,7 +14,7 @@ Event Hide
 
 Property Read Editor As Control
 Property NoKeyboard As Boolean
-Property ShowCursor As Boolean
+'Property ShowCursor As Boolean
 
 Private $hTextBox As TextBox
 Private $hComboBox As ComboBox
@@ -28,7 +28,7 @@ Private $hWatcher As Watcher
 Private $bNoKeyboard As Boolean
 Private $hTimer As Timer
 Private $bDoNotHideEditor As Boolean
-Private $bShowCursor As Boolean
+'Private $bShowCursor As Boolean
 
 Public Sub _new()
   
@@ -111,7 +111,7 @@ Private Sub HideEditor(Optional bNoSave As Boolean) As Boolean
     Endif
   Endif
   
-  UpdateShowCursor
+  'UpdateShowCursor
   
   Return bCancel
   
@@ -172,7 +172,7 @@ Private Sub MoveEditor()
       $hPanel.Background = $hEditor.Background
     Endif
     
-    UpdateShowCursor
+    'UpdateShowCursor
     
     $hPanel.Move(X, Y, W, H)
     $hEditor.Move(P, P, W - P * 2, H - P * 2)
@@ -538,21 +538,21 @@ Public Sub Clear()
   
 End
 
-Private Function ShowCursor_Read() As Boolean
-
-  Return $bShowCursor
-
-End
-
-Private Sub UpdateShowCursor()
-
-  Super.ShowCursor = $bShowCursor 'And IsNull($hEditor)
-
-End
-
-Private Sub ShowCursor_Write(Value As Boolean)
-
-  $bShowCursor = Value
-  UpdateShowCursor
-
-End
+' Private Function ShowCursor_Read() As Boolean
+' 
+'   Return $bShowCursor
+' 
+' End
+' 
+' Private Sub UpdateShowCursor()
+' 
+'   Super.ShowCursor = $bShowCursor 'And IsNull($hEditor)
+' 
+' End
+' 
+' Private Sub ShowCursor_Write(Value As Boolean)
+' 
+'   $bShowCursor = Value
+'   UpdateShowCursor
+' 
+' End

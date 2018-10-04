@@ -42,9 +42,12 @@ Private $bShowHidden As Boolean
 Private $bShowDir As Boolean
 Private $bShowPreview As Boolean
 Private $hIconView As IconView
+
 Private $hColumnView As ColumnView
+Private $sSortDir As String
 Private $iSort As Integer
 Private $bAsc As Boolean = True
+
 Private $aFilter As String[]
 Private $hPict As Picture
 Private $hRefresh As Timer
@@ -61,6 +64,9 @@ Private $bRefreshAll As Boolean
 Private $hWatcher As Watcher
 Private $bVisible As Boolean
 Private $bInvalidate As Boolean
+
+Static Private $iIconExecSize As Integer
+Static Private $hIconExec As Picture
 
 Static Public Sub _init()
   
@@ -225,7 +231,13 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
     
   With DirCache[File.Dir(sPath)].GetInfo(File.Name(sPath))
     
-    If InStr(.Perm[System.User.Name], "x") Then Return Picture["icon:/" & CStr(iSize) &/ "exec"]
+    If InStr(.Perm[System.User.Name], "x") Then 
+      If Not $hIconExec Or If $iIconExecSize <> iSize Then
+        $iIconExecSize = iSize
+        $hIconExec = Picture["icon:/" & CStr(iSize) &/ "exec"]
+      Endif
+      Return $hIconExec
+    Endif
     
   End With
   
@@ -317,7 +329,10 @@ Private Sub RefreshView()
   If $hColumnView.Visible Then
     SX = $hColumnView.ScrollX
     SY = $hColumnView.ScrollY
-    If Not $bWatch Or If $bRefreshAll Then $hColumnView.Clear
+    If Not $bWatch Or If $bRefreshAll Then 
+      $hColumnView.Clear
+      $hColumnView._Begin()
+    Endif
     $hColumnView.Sorted = False
     hPictFile = Picture["icon:/small/file"]
     hPictFolder = Picture["icon:/small/directory"]
@@ -434,6 +449,7 @@ Finally
   $bRefreshIcon = False
   $bRefreshAll = False
   If $hColumnView.Visible Then 
+    $hColumnView._End
     $hColumnView.Sorted = True
   Else
     $hIconView._End
@@ -705,14 +721,9 @@ Public Sub View_Menu()
   
 End
 
-Public Sub View_Compare((Key) As String, OtherKey As String)
+Public Sub View_BeforeSort()
   
-  Dim hStat As Stat
-  Dim hStat2 As Stat
-  Dim sDir As String
-  Dim iComp As Integer
-  
-  sDir = GetCurrentDir()
+  $sSortDir = GetCurrentDir()
   
   If $hColumnView.Visible Then
     $iSort = $hColumnView.Columns.Sort
@@ -721,13 +732,22 @@ Public Sub View_Compare((Key) As String, OtherKey As String)
     $hIconView.Ascending = $bAsc
   Endif
   
+End
+
+
+Public Sub View_Compare((Key) As String, OtherKey As String)
+  
+  Dim hStat As Stat
+  Dim hStat2 As Stat
+  Dim iComp As Integer
+  
   iComp = Comp(Asc(Key), Asc(OtherKey))
   
   If iComp = 0 Then
     
     If $iSort Then
-      hStat = DirCache[sDir].GetInfo(Mid$(Key, 2))
-      hStat2 = DirCache[sDir].GetInfo(Mid$(OtherKey, 2))
+      hStat = DirCache[$sSortDir].GetInfo(Mid$(Key, 2))
+      hStat2 = DirCache[$sSortDir].GetInfo(Mid$(OtherKey, 2))
     Endif
     
     Select $iSort
