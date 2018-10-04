@@ -212,7 +212,7 @@ End
 
 Public Sub _get(Name As String) As Object
   
-  Return $aLayers[$aLayerNames.Find(Name)]
+  Try Return $aLayers[$aLayerNames.Find(Name)]
   
 End
 
