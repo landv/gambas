@@ -1015,6 +1015,11 @@ static bool check_signature(char type, const CLASS_DESC *desc, const CLASS_DESC 
 			sp = pdesc->ext.signature;
 			nsp = pdesc->ext.npmax;
 			break;
+			
+		case CD_VARIABLE:
+		case CD_STATIC_VARIABLE:
+			
+			return TRUE;
 
 		default:
 

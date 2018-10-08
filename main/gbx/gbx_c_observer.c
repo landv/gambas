@@ -64,7 +64,6 @@ void COBSERVER_detach(COBSERVER *this)
 BEGIN_METHOD(Observer_new, GB_OBJECT object; GB_BOOLEAN after)
 
 	OBJECT *object;
-	//void *proxy = NULL;
 	OBJECT_EVENT *ev;
 	char *name;
 	CLASS *class;
@@ -74,22 +73,7 @@ BEGIN_METHOD(Observer_new, GB_OBJECT object; GB_BOOLEAN after)
 	if (GB_CheckObject(object))
 		return;
 	
-	#if 0
-	if (OBJECT_class(THIS) == CLASS_Proxy && OBJECT_has_events(OP))
-		proxy = OP;
-	#endif
-	
-	/*if (proxy)
-	{
-		//fprintf(stderr, "proxy = (%s %p) %s %s\n", GB_GetClassName(proxy), proxy, EVENT_Name, EVENT_PreviousName);
-		parent = OBJECT_parent(proxy);
-		name = EVENT_PreviousName;
-	}
-	else*/
-	{
-		parent = OBJECT_parent(THIS);
-		name = EVENT_Name;
-	}
+	parent = OBJECT_parent(THIS);
 	
 	if (!parent)
 		return;
@@ -98,6 +82,7 @@ BEGIN_METHOD(Observer_new, GB_OBJECT object; GB_BOOLEAN after)
 	if (class->n_event == 0)
 		return;
 	
+	name = EVENT_Name;
 	if (!name || !*name)
 		return;
 	
@@ -118,15 +103,6 @@ BEGIN_METHOD(Observer_new, GB_OBJECT object; GB_BOOLEAN after)
 	LIST_insert((void **)&ev->observer, THIS, &THIS->list);
   OBJECT_REF(THIS);
 	
-	#if 0
-	if (proxy)
-	{
-		// The proxy object is not referenced. It means that destroying the proxy implies
-		// that the observer won't raise events anymore. IS IT SURE?
-		THIS->proxy = proxy;
-	}
-	#endif
-
 END_METHOD
 
 
@@ -170,15 +146,3 @@ GB_DESC NATIVE_Observer[] =
   
   GB_END_DECLARE
 };
-
-#if 0
-GB_DESC NATIVE_Proxy[] =
-{
-  GB_DECLARE("Proxy", sizeof(COBSERVER)), 
-
-  GB_METHOD("_new", NULL, Observer_new, "(Object)o[(After)b]"),
-  GB_METHOD("_free", NULL, Observer_free, NULL),
-  
-  GB_END_DECLARE
-};
-#endif

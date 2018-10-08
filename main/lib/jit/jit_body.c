@@ -354,7 +354,11 @@ static CLASS *get_class(int n)
 	TYPE type = get_type(n);
 	
 	if (type == T_CLASS)
+	{
 		sscanf(get_expr(n), "CLASS(%p)", (void **)&type);
+		if (type)
+			JIT_load_class_without_init((CLASS *)type);
+	}
 	else if (!TYPE_is_pure_object(type))
 		type = 0;
 	
@@ -858,6 +862,9 @@ static void push_unknown(int index)
 		TYPE utype;
 		char *sym;
 		char *get_addr;
+		bool static_class;
+		
+		static_class = get_type(-1) == T_CLASS;
 		
 		sym = JIT_class->load->unknown[index];
 
@@ -937,6 +944,12 @@ static void push_unknown(int index)
 					return;
 					
 				case CD_CONSTANT:
+					
+					if (!static_class)
+					{
+						type = desc->constant.type;
+						break;
+					}
 					
 					pop_stack(1);
 					
