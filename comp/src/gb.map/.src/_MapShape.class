@@ -338,9 +338,12 @@ Private Function Count_Read() As Integer
 End
 
 Public Sub Remove(Key As String)
-  
+
+  If Not $colKeyShape.Exist(Key) Then Return
+
   $aShapes.Remove($colKeyShape[Key])
   $colKeyShape.Remove(Key)
+  Load
   
 End
 
