@@ -3096,44 +3096,44 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
 	__MOUSE_WHEEL_TRY_PROXY:
 		
-		if (!design && !QWIDGET(control)->isEnabled())
-			goto __NEXT;
-	
-		if (GB.CanRaise(control, EVENT_MouseWheel))
+		if (design || QWIDGET(control)->isEnabled())
 		{
-			// Automatic focus for wheel events
-			set_focus(control);
-			
-			p.setX(ev->x());
-			p.setY(ev->y());
-
-			p = ((QWidget *)widget)->mapTo(QWIDGET(control), p);
-
-			CMOUSE_clear(true);
-			MOUSE_info.x = p.x();
-			MOUSE_info.y = p.y();
-			MOUSE_info.screenX = ev->globalX();
-			MOUSE_info.screenY = ev->globalY();
-			MOUSE_info.state = ev->buttons();
-			MOUSE_info.modifier = ev->modifiers();
-			MOUSE_info.orientation = ev->orientation();
-			MOUSE_info.delta = ev->delta();
-
-			cancel = GB.Raise(control, EVENT_MouseWheel, 0);
-
-			CMOUSE_clear(false);
-			
-			if (cancel)
+			if (GB.CanRaise(control, EVENT_MouseWheel))
 			{
-				event->accept();
-				return true;
+				// Automatic focus for wheel events
+				set_focus(control);
+				
+				p.setX(ev->x());
+				p.setY(ev->y());
+
+				p = ((QWidget *)widget)->mapTo(QWIDGET(control), p);
+
+				CMOUSE_clear(true);
+				MOUSE_info.x = p.x();
+				MOUSE_info.y = p.y();
+				MOUSE_info.screenX = ev->globalX();
+				MOUSE_info.screenY = ev->globalY();
+				MOUSE_info.state = ev->buttons();
+				MOUSE_info.modifier = ev->modifiers();
+				MOUSE_info.orientation = ev->orientation();
+				MOUSE_info.delta = ev->delta();
+
+				cancel = GB.Raise(control, EVENT_MouseWheel, 0);
+
+				CMOUSE_clear(false);
+				
+				if (cancel)
+				{
+					event->accept();
+					return true;
+				}
 			}
-		}
-		
-		if (EXT(control) && EXT(control)->proxy_for)
-		{
-			control = (CWIDGET *)(EXT(control)->proxy_for);
-			goto __MOUSE_WHEEL_TRY_PROXY;
+			
+			if (EXT(control) && EXT(control)->proxy_for)
+			{
+				control = (CWIDGET *)(EXT(control)->proxy_for);
+				goto __MOUSE_WHEEL_TRY_PROXY;
+			}
 		}
 		
 		if (!control->flag.wheel)

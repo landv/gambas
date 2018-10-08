@@ -98,4 +98,15 @@ enum {
 	POINTER_CURSOR = 3
 };
 
+enum {
+	MOUSE_LEFT = 1,
+	MOUSE_MIDDLE = 2,
+	MOUSE_RIGHT = 4,
+	MOUSE_SHIFT = 256,
+	MOUSE_CTRL = 512,
+	MOUSE_ALT = 1024,
+	MOUSE_META = 2048
+};
+
+
 #endif
