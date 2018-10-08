@@ -130,7 +130,26 @@ END_PROPERTY
 BEGIN_PROPERTY(Mouse_State)
 	
 	CHECK_VALID();
-	GB.ReturnInteger(gMouse::state());
+	
+	int state = gMouse::state();
+	int result = 0;
+	
+	if (state & GDK_BUTTON1_MASK)
+		result |= MOUSE_LEFT;
+	if (state & GDK_BUTTON2_MASK)
+		result |= MOUSE_MIDDLE;
+	if (state & GDK_BUTTON3_MASK)
+		result |= MOUSE_RIGHT;
+	if (state & GDK_SHIFT_MASK)
+		result |= MOUSE_SHIFT;
+	if (state & GDK_CONTROL_MASK)
+		result |= MOUSE_CTRL;
+	if (state & GDK_MOD1_MASK)
+		result |= MOUSE_ALT;
+	if (state & GDK_MOD2_MASK)
+		result |= MOUSE_META;
+	
+	GB.ReturnInteger(result);
 
 END_PROPERTY
 
