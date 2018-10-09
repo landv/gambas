@@ -33,8 +33,6 @@ Private $iInsideArrow As Integer
 Private $hTimer As Timer
 Private $bTimerAdd As Boolean
 Private $bBorder As Boolean = True
-Private $iLastPos As Integer
-Private $sLastText As String
 Private $bWrap As Boolean
 Private $iStep As Integer = 1
 
@@ -252,6 +250,7 @@ End
 Public Sub TextBox_LostFocus()
   
   'Debug
+  CheckValue
   SetValue($iValue)
   $hView.Refresh
   
@@ -278,6 +277,14 @@ Public Sub View_MouseMove()
 End
 
 Public Sub View_MouseDown()
+
+  Dim bCancel As Boolean
+  
+  bCancel = Raise MouseDown
+  If bCancel Then 
+    Stop Event
+    Return
+  Endif
   
   If $iInsideArrow = ARROW_TOP Then
     $bTimerAdd = True
@@ -295,6 +302,14 @@ Public Sub View_MouseDown()
 End
 
 Public Sub View_MouseUp()
+  
+  Dim bCancel As Boolean
+  
+  bCancel = Raise MouseUp
+  If bCancel Then 
+    Stop Event
+    Return
+  Endif
   
   If Not $hTimer Then Return
   $hTimer.Stop
@@ -343,46 +358,60 @@ End
 
 Public Sub TextBox_KeyPress()
 
-  $iLastPos = $hTextBox.Pos
-  $sLastText = $hTextBox.Text
-  
   If Key.Code = Key.BackSpace Or If Key.Code = Key.Delete Then Return
   
   If Key.Code = Key.Up Then
-    ChangeValue(True, True)
+    If Not CheckValue() Then
+      ChangeValue(True, True)
+    Else
+      $hTextBox.SelectAll
+    Endif
     Stop Event
   Else If Key.Code = Key.Down Then
-    ChangeValue(False, True)
-    Stop Event
-  Else If Key.Code = Key.Home And If Key.Control Then
-    SetValue($iMin, True)
+    If Not CheckValue() Then
+      ChangeValue(False, True)
+    Else
+      $hTextBox.SelectAll
+    Endif
     Stop Event
   Else If Key.Code = Key.End And If Key.Control Then
+    SetValue($iMin, True)
+    Stop Event
+  Else If Key.Code = Key.Home And If Key.Control Then
     SetValue($iMax, True)
     Stop Event
   Else If Key.Text Then  
     If IsDigit(Key.Text) Then
     Else If Key.Text = "-" Then
       If $iMin >= 0 Then Stop Event
-    Else If Len(Key.Text) >= 2 Or Asc(Key.Text) >= 32 Then
+    Else If Len(Key.Text) >= 2 Or If Asc(Key.Text) >= 32 Then
       Stop Event
     Endif
   Endif
   
 End
 
-Public Sub TextBox_Change()
+Private Sub CheckValue() As Boolean
 
   Dim iValue As Integer
-  
+
   Try iValue = CInt($hTextBox.Text)
   If Error Then Return
-  If iValue < $iMin Or If iValue > $iMax Then
-    $hTextBox.Text = $sLastText
-    Try $hTextBox.Pos = $iLastPos
+  If iValue < $iMin Then
+    SetValue($iMin)
+    Return True
+  Else If iValue > $iMax Then
+    SetValue($iMax)
+    Return True
   Else
     SetValue(iValue)
   Endif
+
+End
+
+Public Sub TextBox_Change()
+
+  If Not $hTextBox.HasFocus Then CheckValue
   
 End
 
