@@ -14,7 +14,7 @@ Property CacheRefreshDelay As Integer
 ''Set the projection used by the WMS server.
 Property WMSProjection As String
 
-Public $aStack As New String[]
+Private $aStack As New String[]
 Public TileBoundValue As MapBounds
 
 Private $aClients As New HttpClient[]
