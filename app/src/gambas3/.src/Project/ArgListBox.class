@@ -85,7 +85,7 @@ Public Sub TextBox_LostFocus()
       $hTextBox.Foreground = Color.LightForeground
     Endif
   Else
-    $hTextBox.Text = ""
+    If $hTextBox.Text Then Raise Activate
   Endif
   
   Me.Border = Border.None

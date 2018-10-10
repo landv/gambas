@@ -4350,10 +4350,10 @@ Public Sub dwgInfo_Draw()
   Y = DS \ 2
   W = (Paint.W - DS * 2) / 2 - DS
   Paint.Font.Bold = True
-  Paint.DrawText($cInfo!Name, X, Y, W, Paint.Font.Height, Align.Right)
+  Paint.DrawText($cInfo!Name, X, Y, W, Paint.Font.Height, Align.Left)
   X += W
   Paint.Font.Bold = False
-  Paint.DrawText($cInfo!Kind, X + DS, Y, W, Paint.Font.Height, Align.Left)
+  Paint.DrawText($cInfo!Kind, X + DS, Y, W, Paint.Font.Height, Align.Right)
   'Y += Paint.Font.Height
   '  Paint.DrawText($cInfo!Kind, DS, Y, Paint.W - DS * 2, Paint.Font.Height, Align.Center)
   

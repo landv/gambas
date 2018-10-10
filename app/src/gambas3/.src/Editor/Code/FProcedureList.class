@@ -82,7 +82,7 @@ End
 
 Public Sub gvwProc_Scroll()
   
-  SetCurrent(gvwProc.RowAt(Mouse.Y), False)
+  SetCurrent(gvwProc.RowAt(Mouse.ScreenY - gvwProc.ScreenY), False)
   
 End
 

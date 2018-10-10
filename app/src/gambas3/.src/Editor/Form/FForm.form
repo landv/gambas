@@ -294,18 +294,38 @@
       MoveScaled(8,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
-      Picture = Picture["icon:/small/revert"]
+      Picture = Picture["icon:/small/refresh"]
     }
     { ToolButton39 ToolButton
-      MoveScaled(15,0,4,4)
+      MoveScaled(12,0,4,4)
       Visible = False
       ToolTip = ("Run this form")
       Action = ".run-me"
       Picture = Picture["icon:/small/play"]
     }
+    { Separator1 Separator
+      MoveScaled(16,0,1,4)
+    }
+    { ToolButton17 ToolButton mnuUndo
+      Name = "ToolButton17"
+      MoveScaled(17,0,4,4)
+      ToolTip = ("Undo")
+      Action = ".undo"
+      Picture = Picture["icon:/small/undo"]
+    }
+    { ToolButton18 ToolButton mnuRedo
+      Name = "ToolButton18"
+      MoveScaled(21,0,4,4)
+      ToolTip = ("Redo")
+      Action = ".redo"
+      Picture = Picture["icon:/small/redo"]
+    }
+    { Separator5 Separator
+      MoveScaled(26,0,1,4)
+    }
     { ToolButton14 ToolButton mnuCut
       Name = "ToolButton14"
-      MoveScaled(19,0,4,4)
+      MoveScaled(28,0,4,4)
       Visible = False
       ToolTip = ("Cut")
       Action = ".cut"
@@ -313,7 +333,7 @@
     }
     { ToolButton15 ToolButton mnuCopy
       Name = "ToolButton15"
-      MoveScaled(23,0,4,4)
+      MoveScaled(31,0,4,4)
       Visible = False
       ToolTip = ("Copy")
       Action = ".copy"
@@ -321,7 +341,7 @@
     }
     { ToolButton16 ToolButton mnuPaste
       Name = "ToolButton16"
-      MoveScaled(27,0,4,4)
+      MoveScaled(34,0,4,4)
       Visible = False
       ToolTip = ("Paste")
       Action = ".paste"
@@ -329,25 +349,11 @@
     }
     { ToolButton1 ToolButton mnuDelete
       Name = "ToolButton1"
-      MoveScaled(31,0,4,4)
+      MoveScaled(37,0,4,4)
       Visible = False
       ToolTip = ("Delete")
       Action = ".delete"
       Picture = Picture["icon:/small/delete"]
-    }
-    { ToolButton17 ToolButton mnuUndo
-      Name = "ToolButton17"
-      MoveScaled(35,0,4,4)
-      ToolTip = ("Undo")
-      Action = ".undo"
-      Picture = Picture["icon:/small/undo"]
-    }
-    { ToolButton18 ToolButton mnuRedo
-      Name = "ToolButton18"
-      MoveScaled(39,0,4,4)
-      ToolTip = ("Redo")
-      Action = ".redo"
-      Picture = Picture["icon:/small/redo"]
     }
     { ToolButton31 ToolButton
       MoveScaled(43,0,5,4)
@@ -852,7 +858,7 @@
   { Action reload
     Text = "Reload"
     Shortcut = ""
-    Picture = "icon:/small/revert"
+    Picture = "icon:/small/refresh"
   }
   { Action run-me
     Text = "Run this form"
@@ -937,7 +943,7 @@
 { Toolbars
   { Toolbar form
     Text = "Form"
-    List = "show-class,save,reload,run-me,cut,copy,paste,delete,undo,redo,menu,grid,tooltip,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-vertical,arrange-horizontal,arrange-column,arrange-row,arrange-hcenter,arrange-vcenter,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,text-font,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground,locked"
-    Default = "show-class,save,reload,undo,redo,menu,grid,tooltip,|,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-hcenter,arrange-vcenter,|,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,|,text-font,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground,~,locked"
+    List = "show-class,save,reload,run-me,undo,redo,cut,copy,paste,delete,menu,grid,tooltip,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-vertical,arrange-horizontal,arrange-column,arrange-row,arrange-hcenter,arrange-vcenter,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,text-font,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground,locked"
+    Default = "show-class,save,reload,|,undo,redo,|,menu,grid,tooltip,|,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-hcenter,arrange-vcenter,|,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,|,text-font,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground,~,locked"
   }
 }

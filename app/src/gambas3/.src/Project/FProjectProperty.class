@@ -1290,18 +1290,21 @@ Private Sub UpdateArgButtons()
 
 End
 
-Public Sub ArgListEditor_Click()
+Private Sub SelectArgListEditor(hArgListEditor As ArgListEditor)
 
-  Dim hArgListEditor As ArgListEditor
   Dim hChild As ArgListEditor
   
-  hArgListEditor = Last
-  If hArgListEditor.Selected Then Return
+  If hArgListEditor And If hArgListEditor.Selected Then Return
   
   For Each hChild In svwArgList.Children
     hChild.Selected = hChild = hArgListEditor
   Next
-  
+
+End
+
+Public Sub ArgListEditor_Click()
+
+  SelectArgListEditor(Last)
   UpdateArgButtons
   
 End
@@ -1341,23 +1344,9 @@ Public Sub btnRemoveArgument_Click()
 
 End
 
-Private Sub UnselectArgList()
-
-  Dim I As Integer
-  Dim hChild As ArgListEditor
-  
-  For I = 0 To svwArgList.Children.Count - 1
-    hChild = svwArgList.Children[I]
-    hChild.Selected = False
-  Next
-  
-  UpdateArgButtons
-
-End
-
 Public Sub svwArgList_GotFocus()
 
-  UnselectArgList
+  SelectArgListEditor(Null)
 
 End
 
