@@ -54,12 +54,22 @@ Private Sub AutoResizeContents()
   
   Do
     
+    W = 0
+    H = 0
+    
     For Each hChild In $hCont.Children
       If Not hChild.Visible Then Continue
       W = Max(W, hChild.X + hChild.W)
       H = Max(H, hChild.Y + hChild.H)
     Next
     
+    If Me.Margin Then
+      D = Me.Padding
+      If D = 0 Then D = Desktop.Scale
+      W += D
+      H += D
+    Endif
+  
     Select Case Me.Arrangement
       Case Arrange.Horizontal, Arrange.TopBottom
         H = Me.ClientH
@@ -72,13 +82,6 @@ Private Sub AutoResizeContents()
     Me.ResizeContents(W, H)
     
   Loop
-  
-  If Me.Margin Then
-    D = Me.Padding
-    If D = 0 Then D = Desktop.Scale
-    W += D
-    H += D
-  Endif
   
   W = Max(Me.ClientW, W)
   H = Max(Me.ClientH, H)
@@ -95,8 +98,16 @@ Private Sub AutoResizeContents()
   
 End
 
+Public Sub Panel_MouseDown()
+  
+  Me.SetFocus
+  'Me.DrawingArea_MouseWheel
+  
+End
+
 Public Sub Panel_MouseWheel()
   
+  Me.SetFocus
   Me.DrawingArea_MouseWheel
   
 End
