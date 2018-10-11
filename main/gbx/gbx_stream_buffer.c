@@ -87,20 +87,23 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 
 static int stream_close(STREAM *stream)
 {
-	if (FD == NULL)
-		return FALSE;
-
-	if (fclose(FD) < 0)
+	FILE *f = FD;
+	
+	if (!f)
 		return TRUE;
 
 	FD = NULL;
-	return FALSE;
+	
+	return fclose(f) < 0;
 }
 
 
 static int stream_read(STREAM *stream, char *buffer, int len)
 {
 	int eff;
+	
+	if (!FD)
+		return TRUE;
 
 	eff = (int)fread(buffer, 1, len, FD);
 	if (eff < len)
@@ -143,12 +146,18 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 
 static int stream_flush(STREAM *stream)
 {
+	if (!FD)
+		return TRUE;
+
 	return (fflush(FD) != 0);
 }
 
 
 static int stream_write(STREAM *stream, char *buffer, int len)
 {
+	if (!FD)
+		return TRUE;
+
 	return fwrite(buffer, 1, len, FD);
 
 	/*while (len > 0)
@@ -175,12 +184,18 @@ static int stream_write(STREAM *stream, char *buffer, int len)
 
 static int stream_seek(STREAM *stream, int64_t pos, int whence)
 {
+	if (!FD)
+		return TRUE;
+
 	return (fseek(FD, (off_t)pos, whence) != 0);
 }
 
 
 static int stream_tell(STREAM *stream, int64_t *pos)
 {
+	if (!FD)
+		return TRUE;
+
 	*pos = (int64_t)ftell(FD);
 	return (*pos < 0);
 }
@@ -189,6 +204,9 @@ static int stream_tell(STREAM *stream, int64_t *pos)
 static int stream_eof(STREAM *stream)
 {
 	int c;
+
+	if (!FD)
+		return TRUE;
 
 	c = fgetc(FD);
 	if (c == EOF)
@@ -206,7 +224,7 @@ static int stream_lof(STREAM *stream, int64_t *len)
 	if (!stream->common.available_now)
 		return TRUE;
 	
-	if (fstat(fileno(FD), &info) < 0)
+	if (!FD || fstat(fileno(FD), &info) < 0)
 		return TRUE;
 
 	*len = info.st_size;
@@ -216,7 +234,10 @@ static int stream_lof(STREAM *stream, int64_t *len)
 
 static int stream_handle(STREAM *stream)
 {
-	return fileno(FD);
+	if (FD)
+		return fileno(FD);
+	else
+		return -1;
 }
 
 

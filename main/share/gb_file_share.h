@@ -52,10 +52,10 @@ typedef
 #define GB_STAT_GROUP       1
 #define GB_STAT_OTHER       2
 
-#define FILE_TEMP_PREFIX "/tmp/gambas.%d"
-#define FILE_TEMP_DIR "/tmp/gambas.%d/%d"
-#define FILE_TEMP_FILE "/tmp/gambas.%d/%d/%d.tmp"
-#define FILE_TEMP_PATTERN "/tmp/gambas.%d/%d/%s.tmp"
+#define FILE_TEMP_PREFIX    "/tmp/gambas.%d"
+#define FILE_TEMP_DIR       FILE_TEMP_PREFIX "/%d"
+#define FILE_TEMP_FILE      FILE_TEMP_DIR "/%d.tmp"
+#define FILE_TEMP_PATTERN   FILE_TEMP_DIR "/%s.tmp"
 
 #endif
 
