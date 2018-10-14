@@ -3709,7 +3709,7 @@ void LargeCatchExpression::codegen(){
 	//Also in ReturnExpression if returning before this
 	builder->CreateCall(get_global_function(JR_end_try, 'v', "p"),
 		create_gep(temp_errcontext2, TARGET_BITS, 0, TARGET_BITS, 0));
-	//Differs from original interpreter, error thrown in a Finally block is not catched.
+	//Differs from original interpreter, error thrown in a Finally block is not caught.
 	builder->CreateStore(get_nullptr(), get_global((void*)&EC));
 }
 

@@ -979,7 +979,7 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 	fprintf(stderr, "Waiting for %d\n", process->pid);
 	#endif
 	
-	// If CPROCESS_check() catched the process end, process->running is not set yet, because 
+	// If CPROCESS_check() caught the process end, process->running is not set yet, because
 	// stop_process() will be raised at the next event loop. So no need to wait for it.
 	
 	if (process->wait)
