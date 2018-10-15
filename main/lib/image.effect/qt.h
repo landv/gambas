@@ -34,9 +34,6 @@
 #define QT_STATIC_CONST static const
 #define QT_STATIC_CONST_IMPL const
 
-#define FALSE false
-#define TRUE true
-
 #define QMAX(a, b)	((b) < (a) ? (a) : (b))
 #define QMIN(a, b)	((a) < (b) ? (a) : (b))
 #define QABS(a)	((a) >= 0  ? (a) : -(a))
