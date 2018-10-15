@@ -205,9 +205,15 @@ IMPLEMENT_TSP(TOSTOP, c_lflag)
 IMPLEMENT_TSP(IEXTEN, c_lflag)
 
 #ifdef OS_LINUX
+#ifndef CMSPAR
+// This is a MIPS fix
+#define CMSPAR 010000000000
+#endif
+
 IMPLEMENT_TSP(CMSPAR, c_cflag)
 IMPLEMENT_TSP(XCASE, c_lflag)
 #endif
+
 #ifndef OS_CYGWIN
 IMPLEMENT_TSP(ECHOPRT, c_lflag)
 IMPLEMENT_TSP(PENDIN, c_lflag)
