@@ -76,9 +76,6 @@
 #include <vector>
 
 extern "C" {
-#define FALSE false
-#define TRUE true
-
 #include <unistd.h>
 #include <sys/time.h>
 

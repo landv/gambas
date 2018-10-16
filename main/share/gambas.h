@@ -594,7 +594,7 @@ typedef
 
 #define CALL_HOOK_MAIN(_hook, _pargc, _pargv) do { if (_hook) { ((void (*)(int *, char ***))(_hook))((_pargc), (_pargv)); } } while (0);
 
-/* Constants that represent interpreter signals catched by GB_SIGNAL function */
+/* Constants that represent interpreter signals caught by GB_SIGNAL function */
 
 #define GB_SIGNAL_DEBUG_BREAK         1
 #define GB_SIGNAL_DEBUG_CONTINUE      2
