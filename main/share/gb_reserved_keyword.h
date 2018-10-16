@@ -356,6 +356,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ "IsSpace",           35,  7, T_BOOLEAN,      1     },
 	{ "IsBlank",           35,  8, T_BOOLEAN,      1     },
 	{ "IsPunct",           35,  9, T_BOOLEAN,      1     },
+	{ "IsAlnum",           35, 10, T_BOOLEAN,      1     },
 
 	{ "BClr",              36,  1, RST_BCLR,       2     },
 	{ "BSet",              36,  2, RST_BCLR,       2     },
