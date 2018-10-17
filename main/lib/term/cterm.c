@@ -160,7 +160,7 @@ IMPLEMENT_TSP(ICRNL, c_iflag)
 IMPLEMENT_TSP(IXON, c_iflag)  
 IMPLEMENT_TSP(IXANY, c_iflag) 
 IMPLEMENT_TSP(IXOFF, c_iflag) 
-#ifndef OS_BSD
+#ifdef OS_LINUX
 IMPLEMENT_TSP(IUCLC, c_iflag)
 IMPLEMENT_TSP(IUTF8, c_iflag)
 
@@ -339,7 +339,7 @@ GB_DESC TermDesc[] =
 	__TC(TCIFLUSH),	__TC(TCOFLUSH),	__TC(TCIOFLUSH),
 	
 	__TC(TCIOFF), __TC(TCION), __TC(TCOOFF), __TC(TCOON),
-#ifndef OS_BSD
+#ifdef OS_LINUX
 	__TC(NL0), __TC(NL1), __TC(CR0), __TC(CR1), __TC(CR2), __TC(CR3), __TC(TAB0), __TC(TAB1), __TC(TAB2), __TC(TAB3), __TC(XTABS), __TC(BS0), __TC(BS1), __TC(VT0), __TC(VT1), __TC(FF0), __TC(FF1),
 #endif
 	__TC(CS5), __TC(CS6), __TC(CS7), __TC(CS8),
@@ -378,7 +378,7 @@ GB_DESC TerminalSettingsDesc[] =
 	__TSP(IXON),  
 	__TSP(IXANY), 
 	__TSP(IXOFF), 
-#ifndef OS_BSD
+#ifdef OS_LINUX
 	__TSP(IUCLC),
 	__TSP(IUTF8),
 
