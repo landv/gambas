@@ -41,8 +41,8 @@ install-exec-local:
 	fi
 
 	@echo "Installing the Gambas appdata file"
-	@$(INSTALL) -d $(DESTDIR)$(datarootdir)/appdata
-	@$(INSTALL) $(srcdir)/desktop/gambas3.appdata.xml $(DESTDIR)$(datarootdir)/appdata
+	@$(INSTALL) -d $(DESTDIR)$(datarootdir)/metainfo
+	@$(INSTALL) $(srcdir)/desktop/gambas3.appdata.xml $(DESTDIR)$(datarootdir)/metainfo
 	
 	@echo "Installing the Gambas template projects"
 	$(INSTALL) -d $(DESTDIR)$(gbdatadir)/template;
@@ -53,7 +53,7 @@ uninstall-local:
 	@rm -f $(DESTDIR)$(bindir)/gbs$(GAMBAS_VERSION)
 	@rm -f $(DESTDIR)$(bindir)/gbw$(GAMBAS_VERSION)
 	@(cd $(srcdir)/src; for p in `cat INSTALL`; do rm -f $(DESTDIR)$(bindir)/$$p.gambas; done)
-	@rm -rf $(DESTDIR)$(datarootdir)/appdata/gambas3.appdata.xml
+	@rm -rf $(DESTDIR)$(datarootdir)/metainfo/gambas3.appdata.xml
 	@rm -rf $(DESTDIR)$(gbdatadir)/template
 
 dist-hook:

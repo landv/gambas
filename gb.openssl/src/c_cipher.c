@@ -321,7 +321,7 @@ BEGIN_METHOD(CipherMethod_EncryptSalted, GB_STRING plain; GB_STRING passwd;
 
 	bzero(salt, sizeof(salt));
 	if (MISSING(salt)) {
-		assert(RAND_pseudo_bytes(salt, sizeof(salt)));
+		assert(RAND_bytes(salt, sizeof(salt)));
 	} else {
 		bzero(salt, sizeof(salt));
 		memcpy(salt, STRING(salt), MIN(sizeof(salt), LENGTH(salt)));
@@ -397,7 +397,7 @@ BEGIN_METHOD(CipherMethod_EncryptSalted, GB_STRING plain; GB_STRING passwd)
 	char key[EVP_CIPHER_key_length(_method)];
 
 	bzero(key, sizeof(key));
-	RAND_pseudo_bytes(salt, sizeof(salt));
+	RAND_bytes(salt, sizeof(salt));
 	PKCS5_PBKDF_HMAC_SHA1(STRING(passwd), LENGTH(passwd), salt,
 			      sizeof(salt), ITER, sizeof(key), key);
 	
