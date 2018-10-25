@@ -76,12 +76,31 @@ Public Sub GetPosition() As Integer
   
 End
 
+Fast Private Sub CalcPos(iPos As Integer) As Integer[]
+  
+  Dim iLine As Integer
+  Dim iLen As Integer
+  
+  While iLine < Me.Count
+  
+    iLen = Len(Me[iLine].Text)
+    If iPos <= iLen Then Break
+    iPos -= iLen + 1
+    Inc iLine
+    
+  Wend
+  
+  Return [iLine, iPos]
+
+End
+
+
 Public Sub SetPosition(hFindResult As CFindResult, bJustCheck As Boolean) As Boolean
   
   Dim iLine, iColumn As Integer
-  Dim iLen As Integer
   Dim sLine As String
   Dim iPos As Integer
+  Dim aPos As Integer[]
   
   ' If hFindResult.Line Or If hFindResult.Column Then
   ' 
@@ -91,21 +110,13 @@ Public Sub SetPosition(hFindResult As CFindResult, bJustCheck As Boolean) As Boo
   ' 
   ' Else
   
-    iPos = hFindResult.Pos
-    While iLine < Me.Count
-    
-      iLen = Len(Me[iLine].Text)
-      If iPos <= iLen Then Break
-      iPos -= iLen + 1
-      Inc iLine
-      
-    Wend
+  aPos = CalcPos(hFindResult.Pos)
+  iLine = aPos[0]
+  iPos = aPos[1]
   
-    sLine = Me[iLine].Text
-    iColumn = String.Len(Left$(sLine, iPos))
+  sLine = Me[iLine].Text
+  iColumn = String.Len(Left$(sLine, iPos))
     
-  'Endif
-  
   If Me.Highlight Then
     If InStr(String.Mid$(Me[iLine].Purge(Not FSearch.IgnoreComments, Not FSearch.IgnoreStrings, Chr$(1)), iColumn + 1, hFindResult.Length), Chr$(1)) Then Return True
   Endif
@@ -114,13 +125,14 @@ Public Sub SetPosition(hFindResult As CFindResult, bJustCheck As Boolean) As Boo
   hFindResult.Column = iColumn
   
   If bJustCheck Then 
-    If iColumn >= 40 And If Me[iLine].Length > 80 Then
-      sLine = "…" & Html(String.Mid$(sLine, iColumn - 31, 32)) & "<u>" & Html(String.Mid$(sLine, iColumn + 1, hFindResult.Length)) & "</u>" & Html(String.Mid$(sLine, iColumn + hFindResult.Length + 1, 160))
-    Else
-      sLine = Html(String.Left(sLine, iColumn)) & "<u>" & Html(String.Mid$(sLine, iColumn + 1, hFindResult.Length)) & "</u>" & Html(String.Mid$(sLine, iColumn + hFindResult.Length + 1, 160))
-    Endif
-    sLine = Replace(sLine, " ", "&nbsp;")
-    hFindResult.Text = "<nobr>" & sLine
+    'If iColumn >= 40 And If Me[iLine].Length > 80 Then
+    '  sLine = "…" & Html(String.Mid$(sLine, iColumn - 31, 32)) & "<u>" & Html(String.Mid$(sLine, iColumn + 1, hFindResult.Length)) & "</u>" & Html(String.Mid$(sLine, iColumn + hFindResult.Length + 1, 160))
+    'Else
+    '  sLine = Html(String.Left(sLine, iColumn)) & "<u>" & Html(String.Mid$(sLine, iColumn + 1, hFindResult.Length)) & "</u>" & Html(String.Mid$(sLine, iColumn + hFindResult.Length + 1, 160))
+    'Endif
+    'sLine = Replace(sLine, " ", "&nbsp;")
+    hFindResult.Text = sLine
+
   Else
     ' TODO Me[iLine].Expanded = True
     Me.GotoCenter(iColumn, iLine)
@@ -339,5 +351,36 @@ End
 Public Sub Editor_Arrange()
   
   MoveMessageLabel
+  
+End
+
+Static Public Sub GetModeFromPath(sPath As String) As String
+
+  Dim sMode As String
+  Dim sExt As String
+  
+  sExt = File.Ext(sPath)
+  
+  Select Case sExt
+    Case "css"
+      sMode = "css"
+    Case "webpage"
+      sMode = "webpage"
+    Case "js"
+      sMode = "javascript"
+    Case "c"
+      sMode = "c"
+    Case "cpp", "h"
+      sMode = "c++"
+    Case "gbs"
+      sMode = "gambas"
+    Case "html", "htm", "xml", "kml"
+      sMode = "html"
+    Case "module", "class"
+      If Project.IsSourcePath(sPath) Then sMode = "gambas"
+      If Project.IsHiddenPath(sPath) Then sMode = "gambas"
+  End Select
+  
+  Return sMode
   
 End

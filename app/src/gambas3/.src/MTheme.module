@@ -212,3 +212,50 @@ Public Sub InitControl(hControl As Control)
   Endif
   
 End
+
+Public Sub GetStyles() As TextHighlighterStyle[]
+  
+  Dim iInd As Integer  
+  Dim hStyle As New CStyle
+  Dim iStyle As Integer
+  Dim iCol As Integer
+  Dim iBg As Integer
+  Dim bInvert As Boolean
+  Dim sKey As String
+  Dim aStyles As TextHighlighterStyle[]
+  Dim hTextStyle As TextHighlighterStyle
+  
+  aStyles = TextHighlighter.DefaultStyle
+  
+  bInvert = Settings["/Editor/InvertTheme", 0]
+  For iInd = 0 To ColorKeys.Max
+    
+    sKey = ColorKeys[iInd]
+    
+    hStyle.FromString(Settings["Highlight" &/ sKey, $cDefault[sKey]])
+    iStyle = Object.GetProperty(Classes["Highlight"], sKey)
+    
+    hTextStyle = aStyles[iStyle]
+    
+    With hTextStyle
+      
+      iCol = hStyle.Foreground
+      
+      If iInd = 0 Then 
+        iBg = iCol
+        If Color[iBg].Value < 128 Then bInvert = False
+      Endif
+      
+      If bInvert Then iCol = InvertColor(iCol, sKey)
+      
+      .Color = iCol
+      .Bold = hStyle.Bold
+      .Underline = hStyle.Underline
+      
+    End With
+    
+  Next
+  
+  Return aStyles
+  
+End

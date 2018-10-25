@@ -107,26 +107,20 @@ Public Sub LoadFile() As Boolean
   
       Select Case sExt
         Case "css"
-          edtEditor.Mode = "css"
           $bShowPretty = True
         Case "webpage"
-          edtEditor.Mode = "webpage"
           $bWebPage = True
         Case "js"
-          edtEditor.Mode = "javascript"
           $bShowPretty = True
         Case "c"
-          edtEditor.Mode = "c"
           $bShowPretty = True
         Case "cpp", "h"
-          edtEditor.Mode = "c++"
           $bShowPretty = True
         Case "gbs"
-          edtEditor.Mode = "gambas"
           $bShowPretty = True
-        Case Else 
-          edtEditor.Mode = "html"
       End Select
+      
+      edtEditor.Mode = TextEditor.GetModeFromPath(Path)
       
       $bShowCompress = MCompressFile.CanCompress(Path) And Not Project.IsHiddenPath(Path)
       $bShowComment = True

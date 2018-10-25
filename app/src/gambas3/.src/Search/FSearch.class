@@ -25,6 +25,8 @@ Private $bCancel As Boolean
 Private $cGrepCache As New Collection
 Private $cRefreshBrowse As New Collection
 Private $hFont As Font
+Private $CW As Integer
+Private $hStyle As TextHighlighterStyle[]
 
 Private gvwFind As GridView
 
@@ -76,13 +78,21 @@ End
 
 Public Sub ReadConfig()
   
+  Dim I As Integer
+  
   Project.SetSmallFont(gvwFind)
   $hFont = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
   While $hFont.Height > Application.Font.Height
     Dec $hFont.Size
     If $hFont.Size < 6 Then Break
   Wend
+  $CW = $hFont.TextWidth("W")
   gvwFind.Refresh
+  
+  $hStyle = MTheme.GetStyles()
+  For I = 0 To $aBrowse.Max
+    $aBrowse[I].RichText = ""
+  Next
 
 End
 
@@ -346,6 +356,8 @@ Private Sub GrepFile(hFile As Object, Optional sPath As String, Optional bUseRep
       hResult.Path = sPath
       hResult.File = If(Project.IsSourcePath(sPath), File.BaseName(sPath), File.Name(sPath))
     Endif
+    
+    hResult.Highlight = TextEditor.GetModeFromPath(sPath)
 
     iPos = InStr(sFind, ":")
     If iPos = 0 Then Continue
@@ -982,46 +994,113 @@ Public Sub btnBrowse_Click()
 
 End
 
+Public Sub gvwFind_Font()
+  
+  $CW = gvwFind.Font
+  
+End
+
+
+Public Sub gvwFind_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, Column As Integer)
+
+  Dim hResult As CFindResult
+  Dim sText As String
+  Dim iLen As Integer
+  Dim iCol As Integer
+  Dim iPos As Integer
+  Dim bRichText As Boolean
+
+  If Column <> 4 Then Return
+
+  hResult = $aBrowse[Row]
+
+  sText = hResult.Text
+  iLen = String.Len(sText)
+  iCol = hResult.Column
+  
+  If hResult.Highlight And If iLen < 1024 Then
+
+    sText = hResult.RichText
+    
+    If Not sText Then
+      sText = TextHighlighter[TextEditor.GetModeFromPath(hResult.Path)].ToRichText(hResult.Text, $hStyle)
+      hResult.RichText = sText
+    Endif
+    
+    bRichText = True
+    
+  Endif
+  
+  Paint.Font = $hFont
+  
+  If System.RightToLeft Then
+    X -= -1000000
+    Width += 1000000
+    Width -= Desktop.Scale \ 2
+  Else
+    X += Desktop.Scale \ 2
+    Width = 1000000
+  Endif
+  
+  If iCol > 40 And If iLen > 80 Then
+    iPos = 20
+  Else
+    iPos = iCol
+  Endif
+  
+  Paint.FillRect(X + iPos * $CW, Y, hResult.Length * $CW, Height, $hStyle[Highlight.Highlight].Color)
+  
+  Paint.Background = $hStyle[Highlight.Normal].Color
+
+  If iCol > 40 And If iLen > 80 Then
+    If bRichText Then
+      Paint.DrawRichText(sText, X - (iCol - 20) * $CW, Y, Width, Height, Align.Normal)
+    Else
+      Paint.DrawText(String.Mid$(sText, iCol - 21, 1024), X - $CW * 2, Y, Width, Height, Align.Normal)
+    Endif
+  Else
+    If bRichText Then
+      Paint.DrawRichText(sText, X, Y, Width, Height, Align.Normal)
+    Else
+      Paint.DrawText(sText, X, Y, Width, Height, Align.Normal)
+    Endif
+  Endif
+  
+End
+
+
 Public Sub gvwFind_Data(Row As Integer, Column As Integer)
 
+  Dim hResult As CFindResult
+  Dim iCol As Integer
+  
   If Row > $aBrowse.Max Then Return
 
    With gvwFind.Data
     
-    If Column = 4 Then .Font = $hFont 
+    hResult = $aBrowse[Row]
     
     Select Case Column
       Case 0
-        .Text = $aBrowse[Row].File
+        .Text = hResult.File
         .Alignment = Align.Normal
       Case 1
-        .Text = $aBrowse[Row].GetLocation()
+        .Text = hResult.GetLocation()
         .Alignment = Align.Normal
       Case 2
-        .Text = CStr($aBrowse[Row].Line + 1) & " "
+        .Text = CStr(hResult.Line + 1) & " "
         .Alignment = Align.Right
       Case 3
-        .Text = CStr($aBrowse[Row].Column + 1) & " "
+        .Text = CStr(hResult.Column + 1) & " "
         .Alignment = Align.Right
-      Case 4
-        .RichText = $aBrowse[Row].Text
-        .Alignment = Align.Normal
     End Select
 
-    ' If Row Then
-    '   If Column = 0 Then 
-    '     If $aBrowse[Row - 1][0] = .Text Then 
-    '       .Text = ""
-    '     Endif
-    '   Else If Column = 1 Then
-    '     If $aBrowse[Row - 1][0] = $aBrowse[Row][0] And $aBrowse[Row - 1][1] = $aBrowse[Row][1] Then 
-    '       .Text = "-"
-    '     Endif
-    '   Endif
-    ' Endif 
-    
-    If $aBrowse[Row].Dark Then
-      .Background = Color.Merge(Color.TextBackground, Color.LightForeground, 0.2)
+    If Column = 4 Then
+      iCol = $hStyle[Highlight.Background].Color
+      'If hResult.Dark Then iCol = Color.Merge(iCol, $hStyle[Highlight.Normal].Color, 0.05)
+      .Background = iCol
+    Else
+      If hResult.Dark Then .Background = Color.Merge(Color.TextBackground, Color.TextForeground, 0.05)
     Endif
     
   End With 
@@ -1214,4 +1293,10 @@ Public Sub chkRegularExpression_Click()
 
   ShowString
 
+End
+
+Public Sub GetHighlightStyle() As TextHighlighterStyle[]
+  
+  Return $hStyle
+  
 End
