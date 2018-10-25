@@ -4,8 +4,6 @@ Inherits TextEditorMode
 
 Static Public Const Name As String = "html"
 
-Static Public Const BRACES_OPEN As String = "([{\"'"
-Static Public Const BRACES_CLOSE As String = ")]}\"'"
 Static Public Const STRING_DELIM As String = "\"'"
 
 Static Private $aDoNotClose As String[] = ["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"]

@@ -2,19 +2,14 @@
 
 Static Public Const Name As String = ""
 
-Static Public Const BRACES_OPEN As String = "([{\""
-Static Public Const BRACES_CLOSE As String = ")]}\""
+Static Public Const BRACES_OPEN As String = "([{"
+Static Public Const BRACES_CLOSE As String = ")]}"
 Static Public Const STRING_DELIM As String = "\""
-Static Public Const BETWEEN_BRACES_LEFT As String = "([{"
-Static Public Const BETWEEN_BRACES_RIGHT As String = ")]}"
 Static Public Const ESCAPE_CHAR As String = "\\"
 
 Public CloseBraces As Boolean
 Public InsideStringEscape As Boolean
 Public InsideStringDelim As String
-
-'Private $bCanCloseBraces As Boolean
-'Private $bCanCloseBracesComputed As Boolean
 
 Static Public Sub _init()
   
@@ -45,30 +40,49 @@ Public Sub InsideString(hEditor As TextEditor) As Boolean
   Dim sLine As String
   Dim sCar As String
   Dim sDelim As String
+  Dim iCol As Integer
+  
+  InsideStringEscape = False
+  InsideStringDelim = ""
+
+  iCol = hEditor.Column
+  If iCol = 0 Then Return
   
   sLine = hEditor.Current.Text
   iLen = hEditor.Current.Length
   sDelim = Me.STRING_DELIM
   
-  InsideStringEscape = False
-  InsideStringDelim = False
-  
-  For I = 1 To hEditor.Column
+  For I = 1 To iCol
+    
     sCar = String.Mid$(sLine, I, 1)
+    
     If sCar = sInside Then
       sInside = ""
     Else If InStr(sDelim, sCar) Then
       If Not sInside Then sInside = sCar
     Else If sCar = ESCAPE_CHAR Then
       If sInside Then 
+        If I = iCol Then InsideStringEscape = True
         Inc I
-        InsideStringEscape = I > hEditor.Column
       Endif
     Endif
+    
   Next
   
   InsideStringDelim = sInside
   Return sInside
+  
+  ' If Not sInside Then Return
+  ' 
+  ' For I = I To iLen
+  '   
+  '   sCar = String.Mid$(sLine, I, 1)
+  '   If sCar = sInside Then Return True
+  '   If sCar = ESCAPE_CHAR Then Inc I
+  '   
+  ' Next
+  ' 
+  ' Return False
   
 End
 
@@ -87,10 +101,10 @@ Public Sub BetweenBraces(hEditor As TextEditor) As Boolean
   
   If X = 0 Or If X = iLen Then Return
   
-  iPos = InStr(Me.BETWEEN_BRACES_LEFT, String.Mid$(sLine, X, 1))
+  iPos = InStr(Me.BRACES_OPEN, String.Mid$(sLine, X, 1))
   If iPos = 0 Then Return
   
-  Return String.Mid$(sLine, X + 1, 1) = Mid$(Me.BETWEEN_BRACES_RIGHT, iPos, 1)
+  Return String.Mid$(sLine, X + 1, 1) = Mid$(Me.BRACES_CLOSE, iPos, 1)
   
 End
 
@@ -105,12 +119,12 @@ Public Sub CanCloseBraces(hEditor As TextEditor) As Boolean
 
   If Not CloseBraces Then Return
   
-  If InStr(Me.STRING_DELIM, Key.Text) Then
-    If InsideString(hEditor) Then 
-      If InsideStringEscape Then Return False
-      Return Not InsideStringDelim
-    Endif
-  Endif
+  ' If InStr(Me.STRING_DELIM, Key.Text) Then
+  '   If InsideString(hEditor) Then 
+  '     If InsideStringEscape Then Return False
+  '     Return Not InsideStringDelim
+  '   Endif
+  ' Endif
   
   sLine = hEditor.Current.Text
   iLen = hEditor.Current.Length
@@ -149,18 +163,17 @@ Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
 
     sLine = hEditor.Current.Text
     sCar = String.Mid$(sLine, X, 1)
-    iPos = InStr(Me.BRACES_OPEN, sCar)
+    iPos = InStr(Me.BRACES_OPEN & Me.STRING_DELIM, sCar)
     If iPos = 0 Then Return
     
     sCar = String.Mid$(sLine, X + 1, 1)
-    If sCar <> Mid$(Me.BRACES_CLOSE, iPos, 1) Then Return
+    If sCar <> Mid$(Me.BRACES_CLOSE & Me.STRING_DELIM, iPos, 1) Then Return
         
     hEditor.SaveCursor()
     hEditor.Select(X - 1, hEditor.Line, X + 1, hEditor.Line)
     hEditor.Insert("")
     hEditor.RestoreCursor()
-    hEditor.Goto(X - 1, hEditor.Line)
-    
+    hEditor.Goto(X - 1, hEditor.Line)    
     Return True
     
   Endif
@@ -168,7 +181,6 @@ Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
   InsideStringEscape = False
   
   iPos = InStr(Me.BRACES_OPEN, sText)
-  
   If iPos Then
     
     If hEditor.Selected Then
@@ -192,28 +204,50 @@ Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
       
     Endif
     
+    Return
+    
   Endif
   
   iPos = InStr(Me.BRACES_CLOSE, sText)
-  
   If iPos Then
     
-    If Not InsideStringEscape And If String.Mid$(hEditor.Current.Text, hEditor.Column + 1, 1) = sText Then
+    If String.Mid$(hEditor.Current.Text, hEditor.Column + 1, 1) = sText Then
       hEditor.Goto(hEditor.Column + 1, hEditor.Line)
       Return True
     Endif
     
-    If InStr(Me.STRING_DELIM, sText) And If hEditor.Column < hEditor.Current.Length Then
-      If InsideStringEscape Then Return
-      If InsideStringDelim = sText Then
+    Return
+    
+  Endif
+  
+  iPos = InStr(Me.STRING_DELIM, sText)
+  If iPos Then
+    
+    If Not InsideString(hEditor) Then
+      
+      hEditor.SaveCursor()
+      hEditor.Insert(sText & sText)
+      hEditor.RestoreCursor()
+      hEditor.Goto(hEditor.Column + 1, hEditor.Line)
+      Return True
+      
+    Else If hEditor.Column < hEditor.Current.Length Then
+      
+      If Not InsideStringEscape Then
+        
+        If String.Mid$(hEditor.Current.Text, hEditor.Column + 1, 1) = sText Then
+          hEditor.Goto(hEditor.Column + 1, hEditor.Line)
+          Return True
+        Endif
+      
         hEditor.SaveCursor()
-        hEditor.Insert(sText)
-        hEditor.Insert(Mid$(Me.BRACES_OPEN, iPos, 1))
+        hEditor.Insert(sText & sText)
         hEditor.RestoreCursor()
         hEditor.Goto(hEditor.Column + 1, hEditor.Line)
-        '$bCanCloseBracesComputed = False
         Return True
+        
       Endif
+      
     Endif
     
   Endif

@@ -136,7 +136,7 @@ Public Sub ToHTML(Text As String, Optional Styles As TextHighlighterStyle[]) As 
       bAlt = aHighlight[I] >= 128
       iLen = aHighlight[I + 1]
       
-      sHtml = Html(String.Mid$(sLine, P, iLen))
+      sHtml = Replace(Html(String.Mid$(sLine, P, iLen)), " ", "&nbsp;")
       P += iLen
       
       If hStyle.Bold Then sHtml = "<b>" & sHtml & "</b>"
@@ -206,6 +206,103 @@ Static Private Function DefaultStyle_Read() As TextHighlighterStyle[]
     
   Endif
   
-  Return $aStyle
+  Return $aStyle.Copy()
 
 End
+
+Public Sub ToRichText(Text As String, Optional Styles As TextHighlighterStyle[]) As String
+
+  Dim aResult As New String[]
+  Dim sLine As String
+  Dim aHighlight As Byte[]
+  Dim Y As Integer
+  Dim I As Integer
+  Dim sHTML As String
+  Dim aText As String[]
+  Dim iState As Integer
+  Dim hStyle As TextHighlighterStyle
+  Dim bAlt As Boolean
+  Dim iLen As Integer
+  Dim P As Integer
+  Dim sLineHtml As String
+  Dim iColor As Integer
+  Dim sOldStyle As String
+  Dim sStyle As String
+  
+  If Not Styles Then Styles = TextHighlighter.DefaultStyle
+  
+  TextHighlighter.State = Highlight.Normal
+  TextHighlighter.Tag = 0
+  TextHighlighter.Alternate = False
+  TextHighlighter.Limit = False
+  
+  aText = Split(Text, "\n")
+  
+  iColor = 0
+  aResult.Add("<font color=\"#000000\">")
+  sOldStyle = "color=\"#000000\""
+  
+  For Y = 0 To aText.Max
+    
+    aHighlight = New Byte[]
+    
+    TextHighlighter._Highlight = aHighlight
+    TextHighlighter.TextAfter = ""
+    TextHighlighter.Line = Y
+    
+    sLine = aText[Y]
+    Me.Run(sLine)
+    If Y = 0 Then TextHighlighter.Limit = False
+    
+    If TextHighlighter.TextAfter Then sLine = TextHighlighter.TextAfter
+
+    sLineHtml = ""
+    P = 1
+    
+    For I = 0 To aHighlight.Max Step 2
+      
+      iState = aHighlight[I] And 31
+      Try hStyle = Styles[iState]
+      If Error Then hStyle = Styles[0]
+      bAlt = aHighlight[I] >= 128
+      iLen = aHighlight[I + 1]
+      
+      sHtml = Replace(Html(String.Mid$(sLine, P, iLen)), " ", "&nbsp;")
+      P += iLen
+      
+      If hStyle.Bold Then sHtml = "<b>" & sHtml & "</b>"
+      If hStyle.Underline Then sHtml = "<u>" & sHtml & "</u>"
+      
+      sStyle = ""
+      'If bAlt Then sStyle &= "background:#E0E0E0;"
+      If hStyle.Color Then sStyle &= " color=\"#" & Hex$(hStyle.Color, 6) & "\""
+      
+      If sStyle <> sOldStyle Then
+        sOldStyle = sStyle
+        sHtml = "</font><font" & sStyle & ">" & sHtml
+      Endif
+      
+      sLineHtml &= sHtml
+      
+    Next
+    
+    If P < String.Len(sLine) Then sLineHtml &= Html(String.Mid$(sLine, P))
+    
+    ' If TextHighlighter.Limit Then 
+    '   If Y And If Not Trim(aResult[aResult.Max]) Then
+    '     aResult.Add("<div style=\"height:1px;background:#808080;position:relative;top:-0.5em;\"></div>")
+    '   Else
+    '     aResult.Add("<div style=\"height:1px;background:#808080;\"></div>")
+    '   Endif
+    ' Endif
+    
+    aResult.Add(sLineHtml & "\n")
+    
+  Next
+  
+  aResult.Add("</font>")
+  
+  Return aResult.Join("")
+  
+ End
+
