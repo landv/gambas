@@ -30,19 +30,22 @@ install-exec-local:
 	@$(LN_S) -f gbs$(GAMBAS_VERSION).gambas $(DESTDIR)$(bindir)/gbs$(GAMBAS_VERSION) || true
 	@$(LN_S) -f gbs$(GAMBAS_VERSION).gambas $(DESTDIR)$(bindir)/gbw$(GAMBAS_VERSION) || true
 	@if test x"$(XDG_UTILS)" != x; then \
-		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/icons; \
-		cp -f $(srcdir)/mime/application-x-gambas*.png $(DESTDIR)$(gbdatadir)/icons; \
-		echo "Registering Gambas script mimetype"; \
-		xdg-icon-resource install --context mimetypes --size 256 $(DESTDIR)$(gbdatadir)/icons/application-x-gambasscript.png application-x-gambasscript; \
-		xdg-mime install $(srcdir)/mime/application-x-gambasscript.xml; \
-		echo "Registering Gambas server page mimetype"; \
-		xdg-icon-resource install --context mimetypes --size 256 $(DESTDIR)$(gbdatadir)/icons/application-x-gambasserverpage.png application-x-gambasserverpage; \
-		xdg-mime install $(srcdir)/mime/application-x-gambasserverpage.xml; \
+	  $(INSTALL) -d $(DESTDIR)$(gbdatadir)/icons; \
+	  cp -f $(srcdir)/mime/application-x-gambas*.png $(DESTDIR)$(gbdatadir)/icons; \
+	  echo "Registering Gambas script mimetype"; \
+	  xdg-icon-resource install --context mimetypes --size 256 $(DESTDIR)$(gbdatadir)/icons/application-x-gambasscript.png application-x-gambasscript; \
+	  xdg-mime install $(srcdir)/mime/application-x-gambasscript.xml; \
+	  echo "Registering Gambas server page mimetype"; \
+	  xdg-icon-resource install --context mimetypes --size 256 $(DESTDIR)$(gbdatadir)/icons/application-x-gambasserverpage.png application-x-gambasserverpage; \
+	  xdg-mime install $(srcdir)/mime/application-x-gambasserverpage.xml; \
 	fi
 
 	@echo "Installing the Gambas appdata file"
-	@$(INSTALL) -d $(DESTDIR)$(datarootdir)/metainfo
-	@$(INSTALL) $(srcdir)/desktop/gambas3.appdata.xml $(DESTDIR)$(datarootdir)/metainfo
+	@if [ -d "$(DESTDIR)$(datarootdir)/metainfo" ]; then \
+	  $(INSTALL) $(srcdir)/desktop/gambas3.appdata.xml $(DESTDIR)$(datarootdir)/metainfo; \
+	elif [ -d "$(DESTDIR)$(datarootdir)/appdata" ]; then \
+	  $(INSTALL) $(srcdir)/desktop/gambas3.appdata.xml $(DESTDIR)$(datarootdir)/appdata; \
+	fi
 	
 	@echo "Installing the Gambas template projects"
 	$(INSTALL) -d $(DESTDIR)$(gbdatadir)/template;
@@ -54,6 +57,7 @@ uninstall-local:
 	@rm -f $(DESTDIR)$(bindir)/gbw$(GAMBAS_VERSION)
 	@(cd $(srcdir)/src; for p in `cat INSTALL`; do rm -f $(DESTDIR)$(bindir)/$$p.gambas; done)
 	@rm -rf $(DESTDIR)$(datarootdir)/metainfo/gambas3.appdata.xml
+	@rm -rf $(DESTDIR)$(datarootdir)/appdata/gambas3.appdata.xml
 	@rm -rf $(DESTDIR)$(gbdatadir)/template
 
 dist-hook:
