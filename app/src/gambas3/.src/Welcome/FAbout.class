@@ -33,7 +33,7 @@ Public Sub _new()
   ' Dim hImage As Image
   ' Dim hBackground As Image
   
-  Me.Background = Color.SetAlpha(Color.TextBackground, 90)
+  Me.Background = Color.SetAlpha(Color.TextBackground, 30)
 
   'hImage = Image.Load("img/background/tawhid.png")
   'hBackground = New Image(hImage.W, hImage.H, Color.SetAlpha(Color.TextBackground, 160))
@@ -107,67 +107,83 @@ Private Sub FillAbout()
   Dim iPos As Integer
   Dim I As Integer
   Dim N As Integer
+  Dim sDesc As String
 
-  hFic = Open "authors.txt"
+  hFic = Open "AUTHORS"
 
   While Not Eof(hFic)
 
     Line Input #hFic, sLig
+    sLig = RTrim(sLig)
     If Not sLig Then Continue
-    If Left(sLig) = "-" Then Continue
+    If Left(sLig) = "#" Then Continue
 
-    sName = sLig
-    Line Input #hFic, sMail
-    Line Input #hFic, sCountry
-    
-    sText = ""
-    While Not Eof(hFic)
-
-      Line Input #hFic, sLig
-      If Not sLig Then Continue
-      If Left(sLig) = "-" Then Break
+    If Not IsSpace(Left(sLig)) Then
       
-      sLig = RemoveLink(sLig)
-      If Right(sLig) <> "." Then sLig &= "."
-      sText &= sLig & "<br>"
-
-    Wend
-    
-    If Right(sText, 4) = "<br>" Then sText = Left(sText, -4)
-
-    aAuthor.Add(sName & "\n\n" & sMail & "\n" & sCountry & "\n" & sText)
-    
-  Wend
-
-  Close #hFic
-  
-  hFic = Open "support.txt"
-  
-  While Not Eof(hFic)
-    
-    Line Input #hFic, sLig
-    iPos = InStr(sLig, " ")
-    If iPos = 0 Then Break
-    sName = Mid$(sLig, iPos + 1)
-    sText = sName & "\n" & Left(sLig, iPos - 1)
-    
-    iPos = aAuthor.Find(sName & "\n*", gb.Like)
-    If iPos < 0 Then
-      aAuthor.Add(sText)
+      If sName Then aAuthor.Add(sName & "\n\n" & Html(sMail) & "\n" & sCountry & "\n" & sDesc)
+      
+      sName = Trim(sLig)
+      sMail = ""
+      sCountry = ""
+      sDesc = ""
+      
+      iPos = RInStr(sName, "<")
+      If iPos Then
+        sMail = Mid$(sName, iPos + 1)
+        If Right(sMail) = ">" Then sMail = Left(sMail, -1)
+        sName = Trim(Left(sName, iPos - 1))
+      Endif
+      
+      iPos = RInStr(sName, "(")
+      If iPos Then
+        sCountry = Mid$(sName, iPos + 1)
+        If Right(sCountry) = ")" Then sCountry = Left(sCountry, -1)
+        sName = Trim(Left(sName, iPos - 1))
+      Endif
+      
     Else
-      aAuthor[iPos] = sText & Mid$(aAuthor[iPos], Len(sName) + 2)
+      
+      sLig = RemoveLink(Markdown.ToHTML(LTrim(sLig)))
+      If sLig Begins "<p>" Then sLig = Mid$(sLig, 4)
+      If sLig Ends "</p>" Then sLig = Left$(sLig, -4)
+      If sDesc Then sDesc &= "<br>"
+      sDesc &= sLig
+      
     Endif
-    
+
   Wend
+
+  If sName Then aAuthor.Add(sName & "\n\n" & sMail & "\n" & sCountry & "\n" & sDesc)
   
   Close #hFic
+  
+  ' hFic = Open "support.txt"
+  ' 
+  ' While Not Eof(hFic)
+  '   
+  '   Line Input #hFic, sLig
+  '   iPos = InStr(sLig, " ")
+  '   If iPos = 0 Then Break
+  '   sName = Mid$(sLig, iPos + 1)
+  '   sText = sName & "\n" & Left(sLig, iPos - 1)
+  '   
+  '   iPos = aAuthor.Find(sName & "\n*", gb.Like)
+  '   If iPos < 0 Then
+  '     aAuthor.Add(sText)
+  '   Else
+  '     aAuthor[iPos] = sText & Mid$(aAuthor[iPos], Len(sName) + 2)
+  '   Endif
+  '   
+  ' Wend
+  ' 
+  ' Close #hFic
 
   aAuthor.Sort(gb.Language + gb.IgnoreCase)
   
   gvwAbout.Columns.Count = 1
   N = 6
   
-  gvwAbout.Rows.Count = aAuthor.Count + N
+  gvwAbout.Rows.Count = aAuthor.Count + N + 1
   gvwAbout.Columns[0].Width = Me.ClientWidth - Desktop.Scale * 6
   gvwAbout.Padding = Desktop.Scale
   
@@ -234,6 +250,9 @@ Private Sub FillAbout()
     'gvwAbout.Rows[I + N].Height += Desktop.Scale 
     
   Next
+  
+  ' Final space
+  gvwAbout.Rows[I + N].H = dwgAbout.H
 
 End
 
@@ -255,7 +274,7 @@ Private Sub ScrollText(D As Integer)
       $aCache[2] = hImage
       
       Inc $YP
-      If ($YP * dwgAbout.H) >= gvwAbout.ScrollH Then $YP = 0
+      If ($YP * dwgAbout.H) >= (gvwAbout.ScrollH - dwgAbout.H) Then $YP = 0
   
       PaintAbout($aCache[2], $YP)
       
@@ -264,7 +283,7 @@ Private Sub ScrollText(D As Integer)
   Else If D < 0 Then
     
     While $Y < 0 
-      
+
       If $YP = 2 Then
         $Y = 0
         Break
@@ -278,6 +297,7 @@ Private Sub ScrollText(D As Integer)
       $aCache[0] = hImage
       
       Dec $YP
+      If $YP < 0 Then $YP = gvwAbout.ScrollH \ dwgAbout.H - 1
       PaintAbout($aCache[0], $YP - 2)
       
     Wend
@@ -319,6 +339,7 @@ End
 Private Sub PaintAbout(hImage As Image, iPos As Integer)
 
   gvwAbout.Move(Me.ClientW, 0, dwgAbout.W, dwgAbout.H)
+  If iPos < 0 Then iPos += gvwAbout.ScrollH \ dwgAbout.H
   gvwAbout.Scroll(0, iPos * dwgAbout.H)
   hImage.Fill(Color.Transparent)
   Paint.Begin(hImage)
