@@ -181,7 +181,7 @@ static void get_arguments(int argc, char **argv)
 
 			case 'L':
 				printf(
-					"\nGAMBAS Compiler version " VERSION " " __DATE__ " " __TIME__ "\n"
+					"\nGAMBAS Compiler version " VERSION "\n"
 					COPYRIGHT
 					);
 				exit(0);

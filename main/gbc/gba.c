@@ -121,7 +121,7 @@ static void get_arguments(int argc, char **argv)
 				
 			case 'L':
 				printf(
-					"\nGAMBAS Archiver version " VERSION " " __DATE__ " " __TIME__ "\n"
+					"\nGAMBAS Archiver version " VERSION "\n"
 					COPYRIGHT
 					);
 				exit(0);

@@ -812,7 +812,7 @@ int main(int argc, char **argv)
 				
 			case 'L':
 				printf(
-					"\nGAMBAS Component Informer version " VERSION " " __DATE__ " " __TIME__ "\n"
+					"\nGAMBAS Component Informer version " VERSION "\n"
 					COPYRIGHT
 					);
 				exit(0);

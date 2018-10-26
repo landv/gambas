@@ -274,7 +274,7 @@ int main(int argc, char *argv[])
 		else if (is_long_option(argv[1], 'L', "license"))
 		{
 			printf(
-				"\nGambas interpreter version " VERSION " " __DATE__ " " __TIME__ "\n"
+				"\nGambas interpreter version " VERSION "\n"
 				COPYRIGHT
 				);
 			my_exit(0);
