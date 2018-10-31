@@ -207,6 +207,11 @@ void JIT_exec(bool ret_on_stack)
 	VALUE ret;
 	FUNCTION *func = EXEC.func;
 	
+	if (UNLIKELY(nparam < func->npmin))
+		THROW(E_NEPARAM);
+	else if (UNLIKELY(nparam > func->n_param && !func->vararg))
+		THROW(E_TMPARAM);
+
 	if (!func->fast_linked)
 	{
 		if (create_function(class, EXEC.index))

@@ -118,7 +118,7 @@ void DEBUG_init(void)
 	DEBUG_info = DEBUG.Init((GB_DEBUG_INTERFACE *)(void *)GAMBAS_DebugApi, EXEC_fifo, EXEC_fifo_name);
 
 	if (!DEBUG_info)
-		ERROR_panic("Cannot initializing debug mode");
+		ERROR_panic("Cannot initialize debug mode");
 
 	if (EXEC_profile)
 	{
