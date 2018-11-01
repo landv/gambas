@@ -59,6 +59,8 @@ Public Sub Form_Open()
   chkWordOnly.Value = Settings["/FSearch/WordOnly", False]
   'radSourceFileOnly.Value = Settings["/FSearch/SourceOnly", False]
   
+  gvwFind_Font
+  
 End
 
 Public Sub Form_Close()
@@ -86,8 +88,6 @@ Public Sub ReadConfig()
     Dec $hFont.Size
     If $hFont.Size < 6 Then Break
   Wend
-  $CW = $hFont.TextWidth("W")
-  gvwFind.Refresh
   
   $hStyle = MTheme.GetStyles()
   For I = 0 To $aBrowse.Max
@@ -996,10 +996,13 @@ End
 
 Public Sub gvwFind_Font()
   
-  $CW = gvwFind.Font
-  
-End
+  $CW = $hFont.TextWidth("W")
+  gvwFind.Rows.Height = Max(gvwFind.Font.Height, $hFont.Height) + 4
+  gvwFind.Columns[0].Width = -1
+  gvwFind.Columns[1].Width = -1
+  gvwFind.Refresh
 
+End
 
 Public Sub gvwFind_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, Column As Integer)
 
