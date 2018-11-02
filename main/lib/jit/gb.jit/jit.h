@@ -105,6 +105,7 @@ typedef
 #define FP (JIT.exec->fp)
 #define PP (JIT.exec->pp)
 #define BP (JIT.exec->bp)
+#define EP (JIT.exec->ep)
 
 #define CHECK_FINITE(_val) ({ if (!isfinite(_val)) JIT.throw(E_OVERFLOW); (_val); })
 

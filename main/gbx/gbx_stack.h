@@ -105,7 +105,6 @@ STACK_CONTEXT *STACK_get_frame(int frame);
 #define STACK_push_frame(_context, _need) \
 ({ \
 	int stack; \
-	\
 	if ((uintptr_t)&stack < STACK_process_stack_limit) \
 		THROW_STACK(); \
 	\
