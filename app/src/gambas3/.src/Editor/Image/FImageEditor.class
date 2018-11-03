@@ -1553,6 +1553,7 @@ Public Sub imvImage_MouseUp()
       If $hPaste Then
         $hPasteCurrent = $hPasteSelect.Copy()
         $hChangeRect = $hPasteCurrent.GetExtents()
+        imvImage.Refresh
       Endif
       
   End Select
