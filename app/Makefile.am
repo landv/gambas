@@ -41,8 +41,10 @@ install-exec-local:
 	fi
 
 	@echo "Installing the Gambas appdata file..."
-	@$(INSTALL) $(srcdir)/desktop/gambas3.appdata.xml $(DESTDIR)$(datarootdir)/metainfo;
+	@$(INSTALL) -d $(DESTDIR)$(datarootdir)/appdata;
 	@$(INSTALL) $(srcdir)/desktop/gambas3.appdata.xml $(DESTDIR)$(datarootdir)/appdata;
+	@$(INSTALL) -d $(DESTDIR)$(datarootdir)/metainfo;
+	@$(INSTALL) $(srcdir)/desktop/gambas3.appdata.xml $(DESTDIR)$(datarootdir)/metainfo;
 	
 	@echo "Installing the Gambas template projects..."
 	@$(INSTALL) -d $(DESTDIR)$(gbdatadir)/template;
