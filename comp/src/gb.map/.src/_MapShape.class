@@ -18,7 +18,8 @@ Private $icolor As Integer
 Private $iFillColor As Integer
 Property LineWidth As Integer
 Private $iLineWidth As Integer = 2
-Private $colKeyShape As New Collection
+'Private $colKeyShape As New Collection
+Private $aShapeNames As New String[]
 Property Read Count As Integer
 Property Image As Image
 Property Read Max As Integer
@@ -67,7 +68,7 @@ Public Sub AddPoint(Key As String, Points As MapPoint, Optional {Color} As Integ
   
   Dim hItem As _ShapeItem
   
-  If $colKeyShape.Exist(Key) Then Error.Raise("This key already exist")
+  If $aShapeNames.Exist(Key) Then Error.Raise("This key already exist")
   hItem = New _ShapeItem(Key) As "Item"
   If Not IsMissing({Color}) Then hItem.Color = Color
   hItem.Type = Me.Point
@@ -75,7 +76,7 @@ Public Sub AddPoint(Key As String, Points As MapPoint, Optional {Color} As Integ
   hItem.Points = Points
   hItem.Bounds = MapBounds(Points, Points)
   $aShapes.Add(hItem)
-  $colKeyShape[Key] = $aShapes.Max
+  $aShapeNames.Add(Key)
   
   Return hItem
 
@@ -85,7 +86,7 @@ Public Sub AddMultipoint(Key As String, Points As MapPoint[], Optional {Color} A
   
   Dim hItem As _ShapeItem
   
-  If $colKeyShape.Exist(Key) Then Error.Raise("This key already exist")
+  If $aShapeNames.Exist(Key) Then Error.Raise("This key already exist")
   hItem = New _ShapeItem(Key) As "Item"
   If Not IsMissing({Color}) Then hItem.Color = Color
   hItem.MultiPoint = MultiPoint
@@ -93,7 +94,7 @@ Public Sub AddMultipoint(Key As String, Points As MapPoint[], Optional {Color} A
   hItem.Points = Points
   hItem.Bounds = GetPointBounds(Points)
   $aShapes.Add(hItem)
-  $colKeyShape[Key] = $aShapes.Max
+  $aShapeNames.Add(Key)
   
 End
 
@@ -101,7 +102,7 @@ Public Sub AddPolyLine(Key As String, Points As MapPoint[], Optional {Color} As 
   
   Dim hItem As _ShapeItem
   
-  If $colKeyShape.Exist(Key) Then Error.Raise("This key already exist")
+  If $aShapeNames.Exist(Key) Then Error.Raise("This key already exist")
   hItem = New _ShapeItem(Key) As "Item"
   If Not IsMissing({Color}) Then hItem.Color = Color
   If Not IsMissing(LineWidth) Then hItem.LineWidth = LineWidth
@@ -110,7 +111,7 @@ Public Sub AddPolyLine(Key As String, Points As MapPoint[], Optional {Color} As 
   hItem.Bounds = GetPointBounds(Points)
   hItem.Points = Points
   $aShapes.Add(hItem)
-  $colKeyShape[Key] = $aShapes.Max
+  $aShapeNames.Add(Key)
   
   Return hItem
 
@@ -120,7 +121,7 @@ Public Sub AddPolygon(Key As String, Points As MapPoint[][], Optional {Color} As
   
   Dim hItem As _ShapeItem
   
-  If $colKeyShape.Exist(Key) Then Error.Raise("This key already exist")
+  If $aShapeNames.Exist(Key) Then Error.Raise("This key already exist")
   hItem = New _ShapeItem(Key) As "Item"
   If Not IsMissing({Color}) Then hItem.Color = Color
   If Not IsMissing(LineWidth) Then hItem.LineWidth = LineWidth
@@ -129,7 +130,7 @@ Public Sub AddPolygon(Key As String, Points As MapPoint[][], Optional {Color} As
   hItem.Bounds = GetPointBounds(Points[0])
   hItem.Points = Points
   $aShapes.Add(hItem)
-  $colKeyShape[Key] = $aShapes.Max
+  $aShapeNames.Add(Key)
   
   Return hItem
   
@@ -138,7 +139,7 @@ End
 Public Sub AddCircle(Key As String, Center As MapPoint, Radius As Float, Optional {Color} As Integer, Optional LineWidth As Integer) As _ShapeItem
 
   Dim hItem As _ShapeItem
-  If $colKeyShape.Exist(Key) Then Error.Raise("This key already exist")
+  If $aShapeNames.Exist(Key) Then Error.Raise("This key already exist")
   hItem = New _ShapeItem(Key) As "Item"
   If Not IsMissing({Color}) Then hItem.Color = Color
   If Not IsMissing(LineWidth) Then hItem.LineWidth = LineWidth
@@ -148,7 +149,7 @@ Public Sub AddCircle(Key As String, Center As MapPoint, Radius As Float, Optiona
   hItem.Bounds.BottomRight = MapPoint.From(Center, 135, Radius)
   
   $aShapes.Add(hItem)
-  $colKeyShape[Key] = $aShapes.Max
+  $aShapeNames.Add(Key)
   
   Return hItem
 
@@ -258,14 +259,12 @@ End
 Public Function _get(Key As String) As _ShapeItem
 
   Dim iRet As Integer
-  
-  If $colKeyShape[Key] = Null Then
-    iRet = 0
+  iRet = $aShapeNames.Find(key)
+  If iRet = -1 Then
+    Return Null
   Else
-    iRet = $colKeyShape[Key] 
+    Return $aShapes[iRet]
   Endif
-  
-  Return $aShapes[iRet]
   
 End
 
@@ -338,18 +337,18 @@ Private Function Count_Read() As Integer
 End
 
 Public Sub Remove(Key As String)
-
-  If Not $colKeyShape.Exist(Key) Then Return
-
-  $aShapes.Remove($colKeyShape[Key])
-  $colKeyShape.Remove(Key)
+  Dim iRet As Integer
+  iRet = $aShapeNames.Find(key)
+  If iRet = -1 Then Return
+  $aShapeNames.Remove(iRet)
+  $aShapes.Remove(iRet)
   Load
   
 End
 
 Public Sub Exist(Key As String) As Boolean
   
-  Return $colKeyShape.Exist(Key)
+  Return $aShapeNames.Exist(Key)
   
 End
 
@@ -429,7 +428,7 @@ End
 Public Sub Item_Select()
   
   If $sLastKey <> Last.key Then 
-    Try $aShapes[$colKeyShape[$sLastKey]].Selected = False
+    Try Me._get($sLastKey).Selected = False
     
     $sLastKey = Last.Key
   Endif
@@ -474,7 +473,7 @@ End
 Public Sub Clear()
   
   $aShapes.Clear
-  $colKeyShape.Clear
+  $aShapeNames.Clear
   
 End
 
