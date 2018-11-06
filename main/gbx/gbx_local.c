@@ -105,7 +105,7 @@ LOCAL_INFO LOCAL_local = { 0 };
 // First day of weekday
 char LOCAL_first_day_of_week = -1;
 
-static char *_rtl_lang[] = { "ar", "fa", NULL };
+static char *_rtl_lang[] = { "ar", "fa", "he", NULL };
 
 static bool _translation_loaded = FALSE;
 
@@ -644,11 +644,14 @@ void LOCAL_set_lang(const char *lang)
 	{
 		my_setenv("LANG", lang, &env_LANG);
 		my_setenv("LC_ALL", lang, &env_LC_ALL);
-
-		if (getenv("LANGUAGE"))
-			my_setenv("LANGUAGE", lang, &env_LANGUAGE);
 	}
+	
+	STRING_free(&_lang);
+	lang = LOCAL_get_lang();
 
+	if (getenv("LANGUAGE"))
+		my_setenv("LANGUAGE", lang, &env_LANGUAGE);
+		
 	if (setlocale(LC_ALL, ""))
 	{
 		_translation_loaded = FALSE;
@@ -661,15 +664,11 @@ void LOCAL_set_lang(const char *lang)
 		setlocale(LC_ALL, "C");
 	}
 
-	STRING_free(&_lang);
-	_lang = STRING_new_zero(lang);
-
 	DATE_init_local();
 	fill_local_info();
 
 	/* If language is right to left written */
 
-	lang = LOCAL_get_lang();
 	rtl = FALSE;
 	for (l = _rtl_lang; *l; l++)
 	{
