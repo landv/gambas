@@ -1021,7 +1021,7 @@ void EXEC_function_loop()
 						EXEC_leave_drop();
 					ERROR_unlock();
 
-					if (FP->fast)
+					if (FP && FP->fast)
 						PROPAGATE();
 					
 					// If we got the void stack frame, then we remove it and raise the error again
