@@ -511,7 +511,7 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer,
       If hItem.Picture Then
         W -= hItem.Picture.W
         Paint.DrawPicture(hItem.Picture, X + W, Y + (H - hItem.Picture.H) / 2)
-        W -= 2
+        W -= Desktop.Scale \ 2
       Endif
 
     Else
@@ -534,7 +534,7 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer,
       
       If hItem.Picture Then
         Paint.DrawPicture(hItem.Picture, X, Y + (H - hItem.Picture.H) / 2)
-        X += hItem.Picture.W + 2
+        X += hItem.Picture.W + Desktop.Scale \ 2
       Endif
     
     Endif
@@ -1186,9 +1186,11 @@ Private Sub UpdateRenameBox() As Boolean
   
   hItem = $cItem[$sKeyRenaming]
   
+  '' TODO: System.RightToLeft
+  
   If $iColRenaming = 0 Then
     X = hItem.X - $hView.ScrollX
-    If hItem.Picture Then X += hItem.Picture.W + 2
+    If hItem.Picture Then X += hItem.Picture.W + Desktop.Scale \ 2
     W = Min($hView.ClientW, $hView.Columns[0].Width) - X
   Else
     X = $hView.Columns[$iColRenaming].X - $hView.ScrollX
