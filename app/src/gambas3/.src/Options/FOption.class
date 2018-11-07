@@ -1311,7 +1311,7 @@ Public Sub btnDownloadHelp_Click()
 
   hClient = New HttpClient As "hClient"
   hClient.Async = False
-  hClient.Timeout = 20
+  hClient.Timeout = 900 ' 15 mn ~ 34kB/s for a 30 MB archive
   hClient.URL = "http://gambaswiki.org/gambas-wiki.tar.bz2"
   hClient.Get([], sFile)
 
