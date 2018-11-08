@@ -6,7 +6,7 @@ Inherits UserControl
 Public Const _IsControl As Boolean = True
 Public Const _IsContainer As Boolean = False
 
-Public Enum Custom, Page, DualPage, FullWidth, RealSize 
+Public Enum Custom, Page, DualPage, FullWidth, RealSize
 
 Private $aRangePage As New Integer[]
 
@@ -27,52 +27,50 @@ Private $sRange As String
 Private $iScaleMode As Integer
 Private $bShowPageNumbers As Boolean
 Private $bLockLayout As Boolean
+Private $bStopLayout As Boolean
+Private tmrView As New Timer As "tmrView"
 Property Read RangePages As Integer[]
 
 Event Zoom
+
 Public Sub _new()
 
   hOBS = New Observer($hView.Children[0], True) As "Area"
-  tmrLayout.Delay = 5
+  'tmrLayout.Delay = 5
   Me.Proxy = $hView
-  'Me.Report = report2
-  'Report.Debug = True
-  
+
 End
 
 
 Private Function _GrayScale_Read() As Boolean
-  
+
   Return $bGrayScale
-  
+
 End
 
 Private Sub _GrayScale_Write(Value As Boolean)
-  
+
   $bGrayScale = Value
-  
+
 End
 
 Public Sub View_Draw((Page) As Integer, Width As Integer, Height As Integer)
-  '$hReport.Layout()
-  'Print page
-
   Dim hImg As Image
   Dim iPage As Integer
-  
-  If $aRangePage.Count > 0 Then 
+
+  If $aRangePage.Count > 0 Then
     Try iPage = $aRangePage[Page]
-      If Error Then iPage = Page
+    If Error Then iPage = Page
   Else
     iPage = Page
   Endif
-  
+
   Paint.AntiAlias = True
   If $bGrayScale Then
     hImg = New Image(Width, Height, Color.White)
     Paint.Begin(hImg)
   Endif
-  
+
   $hReport.Scale = $hView.Zoom
   $hReport.Paint(ipage + 1)
   If $bShowPageNumbers Then
@@ -81,48 +79,52 @@ Public Sub View_Draw((Page) As Integer, Width As Integer, Height As Integer)
     Paint.Text(iPage + 1, 0, 0, Width, Height, Align.Center)
     Paint.Fill
   Endif
-  
+
   If $bGrayScale Then
     Paint.End
     Paint.DrawImage(hImg.Desaturate(), 0, 0)
   Endif
   $hReport.Scale = 1.0
+
 End
 
 Public Sub View_Zoom()
-  
-  tmrLayout.Stop
+
+  'tmrLayout.Stop
   Raise Zoom
+
 End
 
 Public Sub View_Finished()
-  'If $hView.Count <> $hReport.PageCount Then $hView.Count = $hReport.PageCount
-  If $hReport._LayoutNotFinished Then tmrLayout.start
-  
+
+  If $hReport._LayoutNotFinished Then
+    $bStopLayout = False
+    tmrLayout.Trigger
+  Endif
+
 End
 
 Public Sub Area_Scroll()
-  
+
   tmrLayout.Stop
-  
+
 End
 
 
 Public Sub Area_MouseWheel()
 
   If Not $hView.Arrangement = Arrange.Row Then
-  $hView.Arrangement = Arrange.Row
-  $hView.Column = 0
+    $hView.Arrangement = Arrange.Row
+    $hView.Column = 0
   Endif
-  
+
 End
 
 Public Sub Area_Draw()
-  
+
   Dim sText As String
   Dim iTextWidth As Integer
-  'Paint.Reset
-  
+
   sText = Str($hView.FirstVisibleDocument + 1) & "/" & Str($hView.Count)
   iTextWidth = Paint.TextSize(sText).Width + 10
   Paint.Rectangle(Paint.Width - iTextWidth - 10, 10, iTextWidth, 25, 5)
@@ -130,95 +132,94 @@ Public Sub Area_Draw()
   Paint.Fill(True)
   Paint.Brush = Paint.Color(Color.black)
   Paint.Stroke
-  
+
   Paint.Brush = Paint.Color(Color.White)
   Paint.Font.Bold = True
   Paint.Text(sText, Paint.Width - iTextWidth - 10, 10, iTextWidth, 25, Align.Center)
   Paint.fill
-  
-  
+
+
 End
 
 Public Sub tmrLayout_Timer()
-  
-  If Not $hReport._LayoutNotFinished Or If $bLOckLayout Then 
-    tmrLayout.Stop
-    $hView.Refresh
-    Return
-  Endif
-  
+
+  If $bLockLayout Or If $bStopLayout Then Goto ESCAPE
+  If Not $hReport._LayoutNotFinished Then Goto ESCAPE
+  'Need to add wait to allow refreshing
+  Wait 0.01
+  tmrLayout.Trigger
   $hReport.Layout($hReport.PageCount)
-  $hView.Count = $hReport.PageCount
-  '  $hView.Refresh
+  'Add a try because closing the object cause an invalid object error
+  'Certainly because the loop come after deleting
+  Try $hView.Count = $hReport.PageCount
+  Return
+  
+ESCAPE:
+  tmrView.Trigger
+
 
 End
 
 Private Function Report_Read() As Report
-  
+
   Return $hReport
-  
+
 End
 
 Private Sub Report_Write(Value As Report)
-  
-  'If $hReport = Value Then Return
+
+
   If Not Value Then Return
-  
+
   $hReport = Value
   $hReport.Layout(1)
-  'Print "View Pages: " & $hReport.PageCount
-  $hView.Count = $hReport.PageCount 
+  $hView.Count = $hReport.PageCount
   $hView.Padding = Report.UnitTo(5, "mm", "px")
   $hView.Spacing = $hView.Padding
   $hView.DocWidth = Report.UnitTo(TSizeParse[Value.Width].ToInch(), "in", "px")
-  'Print "ReportWidth: " & Value._Width
-  
   $hView.DocHeight = Report.UnitTo(TSizeParse[Value.Height].ToInch(), "in", "px")
-  'Print "ReportHeight: " & Value._Height
-  '$hView.Zoom = 1
   $hView.Reset
-  '$hView.Arrangement = Arrange.f297ill
-  '$hView.Column = 2
-  '$hView.AutoCenter = True
   
+  tmrLayout.Trigger
+
+
 End
 
 Public Sub MoveNext()
-  
+
   $hView.MoveNext
   $hView.Item.EnsureVisible
-  
+
 End
 
 Public Sub MovePrevious()
-  
+
   $hView.MovePrevious
   $hView.Item.EnsureVisible
-  
+
 End
 
 Public Sub MoveFirst()
-  
+
   $hView.MoveFirst
   $hView.Item.EnsureVisible
-  
+
 End
 
 Public Sub MoveLast()
-  
+
   $hView.MoveLast
   $hView.Item.EnsureVisible
-  
+
 End
 
 Public Sub MoveTo((Page) As Integer)
-  
+
   $hView.MoveTo(Page)
   $hView.Item.EnsureVisible
-  
+
 End
 
-'Public Sub 
 
 Private Function LayoutInProgress_Read() As Boolean
 
@@ -235,9 +236,9 @@ End
 Private Sub ScaleMode_Write(Value As Integer)
 
   $iScaleMode = Value
-  
+
   $hView.AutoCenter = False
-  
+
   Select Case Value
     Case Me.Custom
       $hView.Column = 0
@@ -258,8 +259,8 @@ Private Sub ScaleMode_Write(Value As Integer)
       $hView.Arrangement = Arrange.Row
       $hView.Zoom = 1
   End Select
-  
-  $hView.Refresh
+
+  tmrView.Trigger
 
 End
 
@@ -270,8 +271,9 @@ Private Function ShowPageNumbers_Read() As Boolean
 End
 
 Private Sub ShowPageNumbers_Write(Value As Boolean)
+
   $bShowPageNumbers = Value
-  $hView.Refresh
+  tmrView.Trigger
 
 End
 
@@ -284,18 +286,18 @@ End
 Private Sub Range_Write(Value As String)
 
 
-  
+
   Dim ars As String[]
   Dim ars2 As String[]
   Dim s As String
   Dim iStart, iEnd, i As Integer
-  
+
   $sRange = Value
   $aRangePage.Clear
-  
+
   If Not $sRange Then Goto Fin
   ars = Split($sRange, ";")
-  
+
   For Each s In ars
     If InStr(s, "-") Then
       ars2 = Scan(s, "*-*")
@@ -304,9 +306,9 @@ Private Sub Range_Write(Value As String)
       If iStart < 0 Or If iEnd < 0 Or If iEnd < iStart Then Goto Fin
       If $aRangePage.Count > 0 And If iStart < $aRangePage[$aRangePage.Max] Then Goto Fin
       For i = iStart To iEnd
-        
+
         $aRangePage.Add(i)
-        
+
       Next
     Else
       iStart = CInt(Val(s)) - 1
@@ -314,21 +316,19 @@ Private Sub Range_Write(Value As String)
       $aRangePage.Add(iStart)
     Endif
   Next
-  'Return
-  
+
 Finally
 Fin:
-If $aRangePage.Count > 0 Then
-  $hView.Count = $aRangePage.Count
-  Me.MoveFirst
-Else
-  Me.MoveFirst
-  $hView.Count = $hReport.PageCount
-Endif
-$hView.Refresh
-'_$aRangePage.Clear
+  If $aRangePage.Count > 0 Then
+    $hView.Count = $aRangePage.Count
+    Me.MoveFirst
+  Else
+    Me.MoveFirst
+    $hView.Count = $hReport.PageCount
+  Endif
+  tmrView.Trigger
 Catch
-  
+
 End
 
 Private Function Zoom_Read() As Float
@@ -351,41 +351,44 @@ End
 
 Private Sub Settings_Write(Value As Variant[])
 
-   $hView.Zoom = Value[0]
-   $iScaleMode = Value[1]
+  $hView.Zoom = Value[0]
+  $iScaleMode = Value[1]
 
 Catch
-  
+
 End
 
 Public Sub _ForceLayout()
+
   Dim htmpImage As New Image(1, 1)
-  tmrLayout.Stop
+  $bStopLayout = True
   Paint.Begin(htmpImage)
   $hReport.Layout()
   Paint.End
   $hView.Count = $hReport.PageCount
-  
+
 End
 
 Public Sub LockLayout()
-  
+
   $bLockLayout = True
-  
+
 End
 
 Public Sub UnlockLayout()
-  
-  
+
+
   $bLockLayout = False
-  tmrLayout.Start
-  
+  $bStopLayout = False
+  tmrLayout.Trigger
+
 End
 
 Public Sub Refresh()
-  
+
   Me.Report = Me.Report
-  $hView.Refresh
+  tmrView.Trigger
+
 End
 
 
@@ -394,7 +397,7 @@ Private Function Count_Read() As Integer
 
   If $aRangePage.Count > 0 Then Return $aRangePage.Count
   Return $hReport.PageCount
-  
+
 End
 
 
@@ -402,4 +405,10 @@ Private Function RangePages_Read() As Integer[]
 
   Return $aRangePage
 
+End
+
+Public Sub tmrView_Timer()
+  
+  $hView.Refresh
+  
 End
