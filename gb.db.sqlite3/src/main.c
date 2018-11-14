@@ -2256,6 +2256,7 @@ static int database_delete(DB_DATABASE * db, const char *name)
 {
 	SQLITE_DATABASE *conn = (SQLITE_DATABASE *)db->handle;
 	char *fullpath = NULL;
+	char *other;
 	bool err;
 
 	fullpath = find_database(name, conn->host);
@@ -2265,13 +2266,19 @@ static int database_delete(DB_DATABASE * db, const char *name)
 		GB.Error("Cannot find database: &1", name);
 		err = TRUE;
 	}
-	else if (remove(fullpath) != 0)
+	else if (unlink(fullpath) != 0)
 	{
 		GB.Error("Unable to delete database  &1", fullpath);
 		err = TRUE;
 	}
 	else
+	{
+		other = GB.AddString(GB.TempString(fullpath, -1), "-shm", -1);
+		unlink(other);
+		other = GB.AddString(GB.TempString(fullpath, -1), "-wal", -1);
+		unlink(other);
 		err = FALSE;
+	}
 
 	GB.FreeString(&fullpath);
 	return err;
