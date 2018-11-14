@@ -13,8 +13,10 @@ Private Sub Reload()
 
   'TextEditor1.Highlight = "gambas"
   'TextEditor1.Load("~/gambas/3.0/test/test-git/CHANGELOG", True)
-  TextEditor1.Load("~/gambas/git/master/comp/src/gb.form.editor/.src/TextEditor.class", True)
+  'TextEditor1.Load("~/gambas/git/master/comp/src/gb.form.editor/.src/TextEditor.class", True)
   'TextEditor1.Load("~/Fichier texte")
+  TextEditor1.Mode = "C"
+  TextEditor1.Load("~/gambas/git/master/main/lib/jit/gb.jit/gambas.h")
   'TextEditor1.Styles[Highlight.Custom].Background = Color.SetAlpha(Color.Red, 224)
   'TextEditor1.Styles[Highlight.Custom + 1].Background = Color.SetAlpha(Color.Green, 224)
   

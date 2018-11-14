@@ -653,14 +653,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
     
     'If hStyle.Bold Then Paint.Font = $hFontBold
     If InStr(sStr, "\t") Then
-      iCol = hStyle.Color
-      Paint.Background = iCol
-      If hStyle.Bold Then
-        'Paint.Background = Color.Gradient(iCol, $iBackground)
-        DrawText(sStr, X, XX + 1, YY)
-      Endif
-      'Paint.Background = iCol
-      DrawText(sStr, X, XX, YY)
+      GoSub DRAW_TEXT_WITH_TAB
     Else If Trim(sStr) Then
       If Not $bRemoteDisplay And If iLen <= 16 Then
         sKey = Chr$(iState) & sStr
@@ -761,6 +754,37 @@ DRAW_TEXT:
     Paint.DrawText(sStr, XX, YY + $iAscent) 'DrawText(sStr, SX, X, Y)
   Endif
   
+  Return
+  
+DRAW_TEXT_WITH_TAB:
+
+  iCol = hStyle.Color
+  Paint.Background = iCol
+  If hStyle.Bold Then
+    LB = $BW
+    XB = 0
+    While LB >= 2
+      'Paint.DrawText(sStr, XB, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
+      DrawText(sStr, X + XB, XX + XB, YY)
+      Inc XB
+      LB -= 2
+    Wend
+    If LB Then
+      Paint.Background = Color.SetAlpha(iCol, 128)
+      'Paint.DrawText(sStr, XB, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
+      DrawText(sStr, X + XB, XX + XB, YY)
+    Endif
+  Else
+    'Paint.DrawText(sStr, XX, YY + $iAscent) 'DrawText(sStr, SX, X, Y)
+    DrawText(sStr, X, XX, YY)
+  Endif
+
+  ' If hStyle.Bold Then
+  '   'Paint.Background = Color.Gradient(iCol, $iBackground)
+  '   DrawText(sStr, X, XX + 1, YY)
+  ' Endif
+  ' 'Paint.Background = iCol
+  ' DrawText(sStr, X, XX, YY)
   Return
   
 End
