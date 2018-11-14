@@ -147,9 +147,9 @@ Private Sub Pulse_Write(Value As Boolean)
   
   If Me.Design Then Return
   
-  If $bPulse And If Me.W > (Me.H * 3) Then
+  If $bPulse And If Me.W > (Me.H * 2) Then
     $hTimerPulse = New Timer As "Pulse"
-    $hTimerPulse.Delay = 50
+    $hTimerPulse.Delay = 20
     $hTimerPulse.Start
     $fValue = 0
     $iPulse = 1
@@ -161,7 +161,7 @@ End
 
 Public Sub Pulse_Timer()
 
-  $fValue += 0.05 * $iPulse
+  $fValue += 0.02 * $iPulse
   If $fValue < 0 Then
     $fValue = 0
     $iPulse = 1
