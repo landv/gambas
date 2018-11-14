@@ -289,7 +289,7 @@ static int curl_progress(void *_object, double dltotal, double dlnow, double ult
 	CHECK_PROGRESS_VAL(ulnow);
 	
 	if (raise)
-		GB.Raise(THIS, EVENT_Progress, 0);
+		GB.RaiseLater(THIS, EVENT_Progress);
 	
 	return 0;
 }
@@ -605,6 +605,7 @@ BEGIN_METHOD_VOID(Curl_free)
 	CURL_stop(THIS);
 	
 	GB.FreeString(&THIS_URL);
+	GB.FreeString(&THIS->target);
 	
 	CURL_user_clear(&THIS->user);
 	CURL_proxy_clear(&THIS->proxy.proxy);
@@ -683,6 +684,16 @@ BEGIN_PROPERTY(Curl_TotalUploaded)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Curl_TargetFile)
+
+	if (READ_PROPERTY)
+		GB.ReturnString(THIS->target);
+	else
+		GB.StoreString(PROP(GB_STRING), &THIS->target);
+
+END_PROPERTY
+
+
 //---------------------------------------------------------------------------
 
 BEGIN_PROPERTY(Curl_SSL_VerifyPeer)
@@ -732,6 +743,7 @@ GB_DESC CurlDesc[] =
 
 	GB_METHOD("_new", NULL, Curl_new, NULL),
 	GB_METHOD("_free", NULL, Curl_free, NULL),
+	
 	GB_METHOD("Peek","s", Curl_Peek, NULL),
 	
 	GB_PROPERTY("URL", "s", Curl_URL),
@@ -745,6 +757,7 @@ GB_DESC CurlDesc[] =
 	GB_PROPERTY_READ("ErrorText", "s", Curl_ErrorText),
 	GB_PROPERTY("Debug", "b", Curl_Debug),
 	GB_PROPERTY("BufferSize", "i", Curl_BufferSize),
+	GB_PROPERTY("TargetFile", "s", Curl_TargetFile),
 
 	GB_PROPERTY_READ("Downloaded", "l", Curl_Downloaded),
 	GB_PROPERTY_READ("Uploaded", "l", Curl_Uploaded),

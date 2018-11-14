@@ -77,6 +77,7 @@ typedef
 		int buffer_size;
 		int method; // 0->Get, 1->Put
 		char *data;
+		char *target;
 		int64_t dltotal;
 		int64_t dlnow;
 		int64_t ultotal;
