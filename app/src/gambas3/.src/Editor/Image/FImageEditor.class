@@ -1096,14 +1096,16 @@ Public Sub imvImage_MouseMove()
   
   If $bFrame Then
     If $bAlt Then
+      If $hLastPoint Then
       
-      A = Ang($hCurrentPoint.X - $hLastPoint.X, $hCurrentPoint.Y - $hLastPoint.Y)
-      D = Mag($hCurrentPoint.X - $hLastPoint.X, $hCurrentPoint.Y - $hLastPoint.Y)
-      If A < 0 Then A += Pi(2)
-      A = Rad(Int(Deg(A) / 15 + 0.5) * 15)
+        A = Ang($hCurrentPoint.X - $hLastPoint.X, $hCurrentPoint.Y - $hLastPoint.Y)
+        D = Mag($hCurrentPoint.X - $hLastPoint.X, $hCurrentPoint.Y - $hLastPoint.Y)
+        If A < 0 Then A += Pi(2)
+        A = Rad(Int(Deg(A) / 15 + 0.5) * 15)
+        
+        $hCurrentPoint = PointF(CInt(($hLastPoint.X + Cos(A) * D) * 2 + 0.5) / 2, CInt(($hLastPoint.Y + Sin(A) * D) * 2 + 0.5) / 2)
       
-      $hCurrentPoint = PointF(CInt(($hLastPoint.X + Cos(A) * D) * 2 + 0.5) / 2, CInt(($hLastPoint.Y + Sin(A) * D) * 2 + 0.5) / 2)
-      
+      Endif
     Endif
   Endif
     

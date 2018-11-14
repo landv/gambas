@@ -1105,24 +1105,40 @@
       }
     }
     { panDownloadHelp HBox
-      MoveScaled(1,29,66,4)
-      Visible = False
-      Spacing = True
+      MoveScaled(1,29,62,7)
       Indent = True
-      { btnDownloadHelp Button
-        MoveScaled(0,0,31,4)
-        AutoResize = True
-        Text = ("Download documentation")
-        Picture = Picture["icon:/small/down"]
-      }
-      { lblDocumentation Label
-        MoveScaled(33,1,25,3)
-        Font = Font["Italic,-1"]
+      { VBox1 VBox
+        MoveScaled(0,0,60,7)
         Expand = True
+        { lblDocumentation Label
+          MoveScaled(0,0,35,3)
+          Font = Font["Italic,-1"]
+          Alignment = Align.TopNormal
+        }
+        { panDownload HBox
+          MoveScaled(1,3,57,4)
+          Spacing = True
+          { btnDownload Button
+            MoveScaled(0,0,27,4)
+            AutoResize = True
+            Text = ("Download documentation")
+            Picture = Picture["icon:/small/download"]
+          }
+          { btnCancelDownload Button
+            MoveScaled(27,0,4,4)
+            Visible = False
+            Picture = Picture["icon:/small/cancel"]
+          }
+          { pgbDownload ProgressBar
+            MoveScaled(33,0,18,4)
+            Visible = False
+            Expand = True
+          }
+        }
       }
     }
     { panProxyConfig HBox
-      MoveScaled(1,34,66,4)
+      MoveScaled(1,39,66,4)
       Indent = True
       { btnProxy Button
         MoveScaled(0,0,31,4)
@@ -1132,7 +1148,8 @@
       }
     }
     { Panel4 HBox
-      MoveScaled(1,39,66,4)
+      MoveScaled(1,44,66,4)
+      Visible = False
       Indent = True
       { btnClearCache Button
         MoveScaled(0,0,31,4)

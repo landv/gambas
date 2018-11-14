@@ -907,6 +907,8 @@ Public Sub Compress() As Boolean
     CompressMessage = "<b>" & Subst(("The file has been compressed from &1 to &2 bytes (&3)."), Str(iLen), Str(Len(sText)), Format(fGain, "#.##%")) & "</b> " & ("Original file has been saved in the <b>Project</b> folder.")
   Endif
   
+  FSearch.OnFileChange(Me.Path)
+  
 Catch 
   
   Dec Application.Busy
@@ -936,6 +938,7 @@ Public Sub Uncompress()
   sPath = GetUncompressPath()
   If Not Exist(sPath) Then Return
   SetText(File.Load(sPath))
+  FSearch.OnFileChange(Me.Path)
   
 End
 

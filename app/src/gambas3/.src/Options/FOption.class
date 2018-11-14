@@ -12,6 +12,7 @@ Private $bNoChange As Boolean
 Private $aConfig As Variant[][]
 Private $sStyle As String
 Private $hDraw As DrawingArea
+Private $hDownloadHelp As DownloadManager
 
 Private Sub ReadConfig()
   
@@ -1286,98 +1287,36 @@ End
 ' 
 ' End
 
-Public Sub btnDownloadHelp_Click()
-
-  Dim hClient As HttpClient
-  Dim sMsg As String
-  Dim sFile As String
-  Dim sDir As String
-  Dim sTimestamp As String
-  Dim sParentDir As String
-
-  Inc Application.Busy
-  
-  sMsg = Project.RequireProgram(["tar"])
-  If sMsg Then Goto FAIL
-  
-  sDir = MHelp.GetOfflineDir()
-  sParentDir = File.Dir(sDir)
-  
-  Project.MakeDir(sParentDir)
-  sFile = sParentDir &/ "wiki.tar.bz2"
-  Try Kill sFile
-  
-  sTimestamp = HttpClient.Download("http://gambaswiki.org/timestamp")
-
-  hClient = New HttpClient As "hClient"
-  hClient.Async = False
-  hClient.Timeout = 900 ' 15 mn ~ 34kB/s for a 30 MB archive
-  hClient.URL = "http://gambaswiki.org/gambas-wiki.tar.bz2"
-  hClient.Get([], sFile)
-
-  If Not Exist(sFile) Then
-    sMsg = ("Unable to download documentation.")
-    Goto FAIL
-  Endif
-  
-  Shell "rm -rf " & Shell(sParentDir &/ "gambas") Wait
-  
-  Shell "cd " & Shell$(sParentDir) & " && tar xfj " & Shell$(File.Name(sFile)) Wait
-  
-  If Not IsDir(sParentDir &/ "gambas") Then
-    Shell "rm -rf " & Shell(sDir) & " " & Shell$(sFile) Wait
-    sMsg = ("Unable to uncompress documentation.")
-    Goto FAIL
-  Endif
-
-  If IsDir(sDir & "~") Then Shell "rm -rf " & Shell(sDir & "~") Wait
-  If IsDir(sDir) Then Try Move sDir To sDir & "~"
-  Try Move sParentDir &/ "gambas" To sDir
-  
-  If Not IsDir(sDir) Then
-    sMsg = ("Unable to install documentation.")
-    Goto FAIL
-  Endif
-  
-  File.Save(sDir &/ "timestamp", sTimestamp)
-  
-  UpdateDocumentationState
-  Dec Application.Busy
-  Return
-  
-FAIL:
-
-  Dec Application.Busy
-  Message.Warning(sMsg)
-  Return
-
-End
-
 Private Sub UpdateDocumentationState()
 
   If Not panDownloadHelp.Visible Then Return
+  If $hDownloadHelp Then Return
+
+  pgbDownload.Hide
+  btnCancelDownload.Hide
+  btnDownload.Enabled = True
 
   Select Case MHelp.GetOfflineState()
     
     Case MHelp.OFFLINE_NO_NETWORK
       lblDocumentation.Text = ("Network is not available.")
       lblDocumentation.Foreground = Color.Foreground
-      btnDownloadHelp.Enabled = False
+      panDownload.Enabled = False
     
     Case MHelp.OFFLINE_UP_TO_DATE
       lblDocumentation.Text = ("Documentation is up to date.")
       lblDocumentation.Foreground = Color.Foreground
-      btnDownloadHelp.Enabled = False
+      panDownload.Enabled = False
     
     Case MHelp.OFFLINE_NEW_AVAILABLE
       lblDocumentation.Text = ("A new documentation is available!")
       lblDocumentation.Foreground = Color.Red
-      btnDownloadHelp.Enabled = True
+      panDownload.Enabled = True
       
     Case Else
       lblDocumentation.Text = ("Documentation is not available.")
       lblDocumentation.Foreground = Color.Foreground
-      btnDownloadHelp.Enabled = False
+      panDownload.Enabled = False
       
   End Select
 
@@ -1467,4 +1406,176 @@ Public Sub btnCompressPng_Click()
 
   Settings["/CompressPng"] = btnCompressPng.Value
 
+End
+
+' Public Sub dwnHelp_Finish()
+' 
+'   Dim sMsg As String
+'   Dim sDir As String
+'   Dim sTimestamp As String
+'   Dim sFile As String
+'   Dim sParentDir As String
+' 
+'   sFile = dwnHelp.Target
+'   sDir = MHelp.GetOfflineDir()
+'   sParentDir = File.Dir(sFile)
+' 
+'   Inc Application.Busy
+'   
+'   sTimestamp = HttpClient.Download("http://gambaswiki.org/timestamp")
+' 
+'   Shell "rm -rf " & Shell(sParentDir &/ "gambas") Wait
+'   
+'   Shell "cd " & Shell$(sParentDir) & " && tar xfj " & Shell$(File.Name(sFile)) Wait
+'   
+'   If Not IsDir(sParentDir &/ "gambas") Then
+'     Shell "rm -rf " & Shell(sDir) & " " & Shell$(sFile) Wait
+'     sMsg = ("Unable to uncompress documentation.")
+'     Goto FAIL
+'   Endif
+' 
+'   If IsDir(sDir & "~") Then Shell "rm -rf " & Shell(sDir & "~") Wait
+'   If IsDir(sDir) Then Try Move sDir To sDir & "~"
+'   Try Move sParentDir &/ "gambas" To sDir
+'   
+'   If Not IsDir(sDir) Then
+'     sMsg = ("Unable to install documentation.")
+'     Goto FAIL
+'   Endif
+'   
+'   File.Save(sDir &/ "timestamp", sTimestamp)
+'   
+'   UpdateDocumentationState
+'   Dec Application.Busy
+'   Return
+'   
+' FAIL:
+' 
+'   Dec Application.Busy
+'   Message.Warning(sMsg)
+'   Return
+' 
+' End
+
+
+' Public Sub dwnHelp_Start()
+' 
+'   Dim sDir As String
+'   Dim sParentDir As String
+'   Dim sFile As String
+'   Dim sMsg As String
+' 
+'   sMsg = Project.RequireProgram(["tar"])
+'   If sMsg Then Error.Raise(sMsg)
+' 
+'   sDir = MHelp.GetOfflineDir()
+'   sParentDir = File.Dir(sDir)
+'   Project.MakeDir(sParentDir)
+'   sFile = sParentDir &/ "wiki.tar.bz2"
+'   Try Kill sFile
+'   
+'   dwnHelp.Target = sFile
+' 
+' End
+' 
+
+Public Sub btnDownload_Click()
+
+  Dim sMsg As String
+
+  sMsg = Project.RequireProgram(["tar"])
+  If sMsg Then Error.Raise(sMsg)
+
+  $hDownloadHelp = New DownloadManager As "DownloadHelp"
+  $hDownloadHelp.Add("http://gambaswiki.org/gambas-wiki.tar.bz2", "help")
+  $hDownloadHelp.Add("http://gambaswiki.org/timestamp", "timestamp")
+  btnDownload.enabled = False
+  $hDownloadHelp.Start
+  
+  pgbDownload.Show
+  btnCancelDownload.Show
+
+End
+
+Public Sub DownloadHelp_Progress()
+  
+  If $hDownloadHelp.Progress > 0 Then
+    pgbDownload.Pulse = False
+    pgbDownload.Value = $hDownloadHelp.Progress
+  Else
+    pgbDownload.Pulse = True
+  Endif
+  
+End
+
+Public Sub DownloadHelp_Error((Key) As String)
+  
+  Message.Error(("Cannot download '&1'.") & "\n\n&2", $hDownloadHelp[Key].Url, $hDownloadHelp[Key].ErrorText)
+  $hDownloadHelp = Null  
+  UpdateDocumentationState
+  
+End
+
+Public Sub DownloadHelp_End()
+  
+  Dim sDir As String
+  Dim sParentDir As String
+  Dim sFile As String
+  Dim sMsg As String
+  
+  Inc Application.Busy
+  
+  pgbDownload.Hide
+  btnCancelDownload.Hide
+  
+  sDir = MHelp.GetOfflineDir()
+  sParentDir = File.Dir(sDir)
+  
+  Shell.MkDir(sParentDir)
+  
+  sFile = sParentDir &/ "wiki.tar.bz2"
+  Shell.Move($hDownloadHelp["help"].Path, sFile, True)
+  
+  Try Shell.RmDir(sParentDir &/ "gambas") 'Shell "rm -rf " & Shell(sParentDir &/ "gambas") Wait
+  
+  Shell "cd " & Shell$(sParentDir) & " && tar xfj " & Shell$(File.Name(sFile)) Wait
+  
+  If Not IsDir(sParentDir &/ "gambas") Then
+    sMsg = ("Unable to uncompress documentation.")
+    Try Shell.RmDir(sParentDir &/ "gambas")
+    Try Kill sFile
+    Goto FAIL
+  Endif
+
+  If IsDir(sDir & "~") Then Shell.RmDir(sDir & "~") 'Shell "rm -rf " & Shell(sDir & "~") Wait
+  If IsDir(sDir) Then Try Move sDir To sDir & "~"
+  Try Move sParentDir &/ "gambas" To sDir
+  
+  If Not IsDir(sDir) Then
+    sMsg = ("Unable to install documentation.")
+    Goto FAIL
+  Endif
+  
+  Shell.Move($hDownloadHelp["timestamp"].Path, sDir &/ "timestamp", True)
+  'File.Save(sDir &/ "timestamp", sTimestamp)
+
+  $hDownloadHelp = Null  
+  UpdateDocumentationState
+  Dec Application.Busy
+  Return
+  
+FAIL:
+
+  Dec Application.Busy
+  Message.Warning(sMsg)
+  Return
+  
+End
+
+Public Sub btnCancelDownload_Click()
+
+  $hDownloadHelp.Stop()
+  $hDownloadHelp = Null  
+  UpdateDocumentationState
+  
 End
