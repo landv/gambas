@@ -536,7 +536,7 @@ END_METHOD
 BEGIN_PROPERTY(Window_Attributes)
 
 	if (READ_PROPERTY) {
-		attr_t attr;
+		attr_t attr = 0;
 		short pair;
 
 		wattr_get(THIS->content, &attr, &pair, NULL);
@@ -566,7 +566,7 @@ BEGIN_PROPERTY(Window_Pair)
 END_PROPERTY
 
 #define COLOR_METHOD(r, f, b)				\
-short pair, fg, bg;					\
+short pair = 0, fg, bg;					\
 attr_t attr;						\
 							\
 wattr_get(THIS->content, &attr, &pair, NULL);		\
