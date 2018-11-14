@@ -28,7 +28,7 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hOutput As
   Dim sCmd As String
   Dim sStr As String
   Dim iNum As Integer
-  Dim iPosEraseScreen As Integer
+  'Dim iPosEraseScreen As Integer
   
   If hView._DisableFilter Then
     $sLeft &= sData
@@ -74,7 +74,8 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hOutput As
       Break
     Endif
     
-    If iPos2 > iPos And If iPos > iPosEraseScreen Then hScreen.Print(Mid$(sData, iPos, iPos2 - iPos))
+    'If iPos2 > iPos And If iPos > iPosEraseScreen Then hScreen.Print(Mid$(sData, iPos, iPos2 - iPos))
+    If iPos2 > iPos Then hScreen.Print(Mid$(sData, iPos, iPos2 - iPos))
     
     iPos = iPos2
     Inc iPos

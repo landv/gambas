@@ -213,7 +213,7 @@ Private Sub Insert(sText As String, Optional X As Integer = $X)
   If (X + iLen) > $W Then
     iLen = Max(0, $W - X)
     If iLen Then
-      Insert(String.Left(sText, iLen))
+      Insert(String.Left(sText, iLen), X)
       sText = String.Mid$(sText, iLen + 1) 
     Endif
     If WrapMode Then
