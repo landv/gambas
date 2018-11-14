@@ -580,7 +580,7 @@ if (pair == -1) {					\
 	GB.Error(GB_ERR_BOUND);				\
 	return;						\
 }							\
-wbkgd(THIS->content, COLOR_PAIR(pair) | attr | ' ');	\
+wbkgd(THIS->content, COLOR_PAIR(pair) | ' ');	\
 REFRESH();
 
 /*
