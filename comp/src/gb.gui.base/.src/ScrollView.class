@@ -31,6 +31,12 @@ Public Sub Panel_BeforeArrange()
   
 End
 
+Public Sub Panel_Arrange()
+  
+  AutoResizeContents
+  
+End
+
 Public Sub TimerArrange_Timer()
   
   AutoResizeContents
@@ -46,9 +52,9 @@ Private Sub AutoResizeContents()
   Dim iSaveArr As Integer
   Dim D As Integer
 
-  'If Me.Name = "svwTheme" Then Debug Object.IsLocked($hCont);; Me.ClientW;; Me.ClientH ';; System.Backtrace.Join(" ")
-  
   If $bLock Then Return
+  
+  'If Me.Name = "lstRecent" Then Debug "scroll: "; Me.ScrollW;; Me.ScrollH;; "client: "; Me.ClientW;; Me.ClientH 'System.Backtrace.Join(" ")
   
   $bLock = True
   
@@ -77,8 +83,10 @@ Private Sub AutoResizeContents()
         W = Me.ClientW
     End Select
     
+    'If Me.Name = "lstRecent" Then Debug "W =";; W;; "H =";; H
     If W = Me.ScrollW And If H = Me.ScrollH Then Break
     
+    'If Me.Name = "lstRecent" Then Debug "ResizeContents:";; W;; H
     Me.ResizeContents(W, H)
     
   Loop

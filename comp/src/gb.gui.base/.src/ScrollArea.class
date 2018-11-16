@@ -475,17 +475,16 @@ End
 
 Public Sub ResizeContents(Width As Integer, Height As Integer)
   
-  $bIgnoreNextAnimation = True
-
   If $W = Width And If $H = Height Then Return 
   
+  $bIgnoreNextAnimation = True
+
   $W = Width
   $H = Height
   
   'Debug $W;; $H;; System.Backtrace.Join(" ")
   
   LayoutScrollbars
-
   
   $hDrawingArea.Refresh
   
