@@ -48,7 +48,7 @@ typedef
 		unsigned dirty : 1;
 		unsigned autoresize : 1;
 		unsigned invert : 1;
-		unsigned _reserved: 9;
+		unsigned _reserved: 8;
 		}
 	CARRANGEMENT;
 

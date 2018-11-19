@@ -107,7 +107,9 @@ public:
 	virtual void setVisible(bool vl);
 
 	gContainer *proxyContainer() { return _proxyContainer ? _proxyContainer : this; }
-	void setProxyContainer(gContainer *proxy) { if (_proxyContainer != this) _proxyContainer = proxy; else _proxyContainer = 0; }
+	void setProxyContainer(gContainer *proxy) { if (_proxyContainer != this) _proxyContainer = proxy; else _proxyContainer = NULL; }
+	gContainer *proxyContainerFor() { return _proxyContainerFor; }
+	void setProxyContainerFor(gContainer *proxy) { if (proxy != this) _proxyContainerFor = proxy; else _proxyContainerFor = NULL; }
 	
 	void disableArrangement();
 	void enableArrangement();
@@ -137,6 +139,7 @@ private:
   void initialize();
 	gContainerArrangement arrangement;
   gContainer *_proxyContainer;
+  gContainer *_proxyContainerFor;
 	unsigned _did_arrangement : 1;
 	unsigned _no_arrangement : 7;
 };

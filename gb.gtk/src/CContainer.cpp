@@ -401,6 +401,8 @@ BEGIN_PROPERTY(UserControl_Container)
 	
 	if (!ct)
 	{
+		if (THIS_CONT != THIS)
+			WIDGET_CONT->setProxyContainerFor(NULL);
 		THIS_UC->container = THIS;
 		WIDGET->setProxyContainer(NULL);
 		WIDGET->setProxy(NULL);
@@ -432,16 +434,20 @@ BEGIN_PROPERTY(UserControl_Container)
 		return;
 	}
 
-	gColor bg = THIS_UC->container->ob.widget->background();
-	gColor fg = THIS_UC->container->ob.widget->foreground();
+	gColor bg = WIDGET_CONT->background();
+	gColor fg = WIDGET_CONT->foreground();
+
+	if (THIS_CONT != THIS)
+		WIDGET_CONT->setProxyContainerFor(NULL);
 
 	THIS_UC->container = (CCONTAINER *)GetObject(((gContainer *)ct->ob.widget)->proxyContainer());
+	
 	WIDGET->setProxyContainer(WIDGET_CONT->proxyContainer());
-	WIDGET->setProxy(THIS_UC->container->ob.widget);
+	WIDGET->setProxy(WIDGET_CONT);
 
-	THIS_UC->container->ob.widget->setBackground(bg);
-	THIS_UC->container->ob.widget->setForeground(fg);
-
+	WIDGET_CONT->setProxyContainerFor(WIDGET);
+	WIDGET_CONT->setBackground(bg);
+	WIDGET_CONT->setForeground(fg);
 	WIDGET_CONT->performArrange();
 
 END_PROPERTY

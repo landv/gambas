@@ -240,6 +240,19 @@ void *CWIDGET_get_parent(void *_object)
 		return CWidget::get(parent);
 }
 
+void *CWIDGET_get_parent_container(void *_object)
+{
+	void *parent = CWIDGET_get_parent(THIS);
+	
+	if (!parent)
+		return NULL;
+	
+	if (EXT(parent) && EXT(parent)->container_for)
+		parent = EXT(parent)->container_for;
+	
+	return parent;
+}
+
 int CWIDGET_get_handle(void *_object)
 {
 	return (int)WIDGET->winId();
@@ -1660,6 +1673,13 @@ END_PROPERTY
 
 
 BEGIN_PROPERTY(Control_Parent)
+
+	GB.ReturnObject(CWIDGET_get_parent_container(THIS));
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Control__Parent)
 
 	GB.ReturnObject(CWIDGET_get_parent(THIS));
 
@@ -3383,6 +3403,7 @@ GB_DESC CControlDesc[] =
 	GB_PROPERTY("NoTabFocus", "b", Control_NoTabFocus),
 
 	GB_PROPERTY_READ("Parent", "Container", Control_Parent),
+	GB_PROPERTY_READ("_Parent", "Container", Control__Parent),
 	GB_PROPERTY_READ("Window", "Window", Control_Window),
 	GB_PROPERTY_READ("Id", "i", Control_Id),
 	GB_PROPERTY_READ("Handle", "i", Control_Id),

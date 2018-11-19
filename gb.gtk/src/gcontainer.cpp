@@ -231,6 +231,7 @@ void gContainer::initialize()
 	onArrange = NULL;
 	onBeforeArrange = NULL;
 	_proxyContainer = NULL;
+	_proxyContainerFor = NULL;
 	_client_x = -1;
 	_client_y = -1;
 	_client_w = 0;

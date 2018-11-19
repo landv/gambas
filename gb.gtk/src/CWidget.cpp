@@ -787,7 +787,19 @@ BEGIN_PROPERTY(CWIDGET_foreground)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWIDGET_parent)
+BEGIN_PROPERTY(Control_Parent)
+
+	gContainer *parent = CONTROL->parent();
+	
+	while (parent->proxyContainerFor())
+		parent = parent->proxyContainerFor();
+	
+	GB.ReturnObject(GetObject(parent));
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Control__Parent)
 
 	GB.ReturnObject(GetObject(CONTROL->parent()));
 
@@ -988,7 +1000,8 @@ GB_DESC CWidgetDesc[] =
 	GB_PROPERTY("Proxy", "Control", Control_Proxy),
 	GB_PROPERTY("NoTabFocus", "b", Control_NoTabFocus),
 
-	GB_PROPERTY_READ("Parent", "Container", CWIDGET_parent),
+	GB_PROPERTY_READ("Parent", "Container", Control_Parent),
+	GB_PROPERTY_READ("_Parent", "Container", Control__Parent),
 	GB_PROPERTY_READ("Window", "Window", CWIDGET_window),
 	GB_PROPERTY_READ("Id", "i", CWIDGET_id),
 	GB_PROPERTY_READ("Handle", "i", CWIDGET_id),
