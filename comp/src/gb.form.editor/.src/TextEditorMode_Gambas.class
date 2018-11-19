@@ -49,42 +49,6 @@ Private Sub ToggleAroundCurrentWord(hEditor As TextEditor, sBraces As String)
   
 End
 
-' Public Sub InsideString(hEditor As TextEditor) As Boolean
-'   
-'   Dim iLen As Integer
-'   Dim I As Integer
-'   Dim sInside As String
-'   Dim sLine As String
-'   Dim sCar As String
-'   
-'   sLine = hEditor.Current.Text
-'   iLen = hEditor.Current.Length
-'   
-'   Me.InsideStringEscape = False
-'   Me.InsideStringDelim = ""
-'   
-'   For I = 1 To hEditor.Column
-'     sCar = String.Mid$(sLine, I, 1)
-'     If sCar = sInside Then
-'       sInside = ""
-'     Else If InStr("'\"", sCar) Then
-'       If Not sInside Then 
-'         sInside = sCar
-'         If sCar = "'" Then Return True
-'       Endif
-'     Else If sCar = "\\" Then
-'       If sInside Then 
-'         Inc I
-'         Me.InsideStringEscape = I > hEditor.Column
-'       Endif
-'     Endif
-'   Next
-'   
-'   Me.InsideStringDelim = sInside
-'   Return sInside
-'   
-' End
-
 Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
   
   Dim sBraces As String

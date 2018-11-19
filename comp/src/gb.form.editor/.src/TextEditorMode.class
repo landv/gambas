@@ -9,7 +9,6 @@ Static Public Const ESCAPE_CHAR As String = "\\"
 
 Public CloseBraces As Boolean
 Public InsideStringEscape As Boolean
-Public InsideStringDelim As String
 
 Static Public Sub _init()
   
@@ -43,7 +42,6 @@ Public Sub InsideString(hEditor As TextEditor) As Boolean
   Dim iCol As Integer
   
   InsideStringEscape = False
-  InsideStringDelim = ""
 
   iCol = hEditor.Column
   If iCol = 0 Then Return
@@ -69,7 +67,13 @@ Public Sub InsideString(hEditor As TextEditor) As Boolean
     
   Next
   
-  InsideStringDelim = sInside
+  If sInside Then
+    I = InStr(sLine, sInside, iCol + 1)
+    If I = 0 Then
+      InsideStringEscape = True
+    Endif
+  Endif
+  
   Return sInside
   
   ' If Not sInside Then Return
@@ -118,13 +122,6 @@ Public Sub CanCloseBraces(hEditor As TextEditor) As Boolean
   Dim sCar As String
 
   If Not CloseBraces Then Return
-  
-  ' If InStr(Me.STRING_DELIM, Key.Text) Then
-  '   If InsideString(hEditor) Then 
-  '     If InsideStringEscape Then Return False
-  '     Return Not InsideStringDelim
-  '   Endif
-  ' Endif
   
   sLine = hEditor.Current.Text
   iLen = hEditor.Current.Length
