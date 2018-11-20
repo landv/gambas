@@ -899,8 +899,8 @@ Public Sub Form_DragMove()
     Return
   Endif
   
-  While hCtrl.Parent <> panToolBar
-    hCtrl = hCtrl.Parent
+  While hCtrl._Parent <> panToolBar
+    hCtrl = hCtrl._Parent
   Wend
 
   If hCtrl = panWhere Then Return
@@ -966,8 +966,8 @@ Private Sub OnMouseDrag(hCtrl As Control)
   
   Dim sAction As String
   
-  While hCtrl.Parent <> panToolBar
-    hCtrl = hCtrl.Parent
+  While hCtrl._Parent <> panToolBar
+    hCtrl = hCtrl._Parent
     'Debug "-> "; hCtrl
   Wend
   
