@@ -172,6 +172,7 @@ Private Sub Picture_Write(Value As Picture)
 
   $hPicture = Value
   UpdateSize
+  Me.Refresh
 
 End
 
@@ -185,6 +186,7 @@ Private Sub Image_Write(Value As Image)
 
   $hImage = Value
   UpdateSize
+  Me.Refresh
 
 End
 
