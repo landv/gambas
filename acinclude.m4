@@ -638,7 +638,7 @@ AC_DEFUN([GB_SYSTEM],
       AC_DEFINE(ARCH_ARM, 1, [Target architecture is ARM])
       AC_DEFINE(ARCHITECTURE, "arm", [Architecture])
       ;;
-    powerpc-*-* )
+    powerpc*-*-* )
       ARCH=PPC
       AC_DEFINE(ARCH_PPC, 1, [Target architecture is PowerPC])
       AC_DEFINE(ARCHITECTURE, "powerpc", [Architecture])
