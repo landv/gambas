@@ -307,13 +307,12 @@
       Action = ".copy"
       Picture = Picture["icon:/small/copy"]
     }
-    { btnPaste ToggleButton mnuPaste
+    { btnPaste ToolButton mnuPaste
       Name = "btnPaste"
       MoveScaled(28,0,4,4)
       ToolTip = ("Paste")
       Action = ".paste"
       Picture = Picture["icon:/small/paste"]
-      Border = False
     }
     { btnBookmark MenuButton
       MoveScaled(33,0,6,4)
