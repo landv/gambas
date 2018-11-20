@@ -120,7 +120,7 @@ Static Public Sub GetInfo() As String[]
 
   If System.Family = "FreeBSD" Then
     Exec ["sysctl", "-n", "hw.physmem"] To sTemp
-    sTemp = CStr(CInt(sTemp) \ 1024)
+    sTemp = CStr(CLong(sTemp) \ 1024)
   Else
     Exec ["cat", "/proc/meminfo"] To sTemp
     Try sTemp = Scan(sTemp, "*MemTotal:*\n*")[1]
