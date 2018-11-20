@@ -50,7 +50,7 @@ GB_COMPONENT(
   gettext, GETTEXT, libgettextlib, [],
   [],
   [GB_FIND(libgettextlib.$SHLIBEXT, /opt/local /usr/local /usr, lib)],
-  [-lgettextlib],
+  [$GETTEXT_LIB],
   [],
   [Cannot find 'libgettextlib' library. It may be merged inside the system C library, so you can ignore that warning...])
   
@@ -92,7 +92,7 @@ GB_COMPONENT(
   inotify, INOTIFY, gb.inotify, [inotify],
   [GB_FIND(sys/inotify.h, /usr/local/lib /usr/local /usr/lib /usr, include)],
   [GB_FIND(, /usr/local /usr, lib)],
-  [$C_LIB])
+  [$INOTIFY_LIB])
 
 dnl ---- We do not use libtool to load shared libraries anymore!
 

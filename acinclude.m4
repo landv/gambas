@@ -227,9 +227,13 @@ AC_DEFUN([GB_INIT],
 
   GB_MATH()
 
-  dnl ---- Check for gettext lib
+  dnl ---- Check for gettext library
 
   GB_GETTEXT()
+  
+  dnl ---- Check for inotify library
+
+  GB_INOTIFY()
   
   dnl ---- Check for monotonic clock
   
@@ -706,6 +710,31 @@ AC_DEFUN([GB_GETTEXT],
   AC_SUBST(GETTEXT_LDFLAGS)
 
   AC_MSG_RESULT($GETTEXT_LIB)
+])
+
+
+## ---------------------------------------------------------------------------
+## GB_INOTIFY
+## Detects if we must link to an external inotify library
+## ---------------------------------------------------------------------------
+
+AC_DEFUN([GB_INOTIFY],
+[
+  AC_MSG_CHECKING(for external inotify library)
+
+  case "${host}" in
+    *-*-linux* )
+      INOTIFY_LIB=
+      ;;
+    *)
+      INOTIFY_LIB=-linofity
+      ;;
+  esac
+
+  AC_SUBST(INOTIFY_LIB)
+  AC_SUBST(INOTIFY_LDFLAGS)
+
+  AC_MSG_RESULT($INOTIFY_LIB)
 ])
 
 
