@@ -92,7 +92,7 @@ GB_COMPONENT(
   inotify, INOTIFY, gb.inotify, [inotify],
   [GB_FIND(sys/inotify.h, /usr/local/lib /usr/local /usr/lib /usr, include)],
   [GB_FIND(, /usr/local /usr, lib)],
-  [$INOTIFY_LIB])
+  [$GB_INOTIFY_LIB])
 
 dnl ---- We do not use libtool to load shared libraries anymore!
 

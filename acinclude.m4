@@ -724,17 +724,15 @@ AC_DEFUN([GB_INOTIFY],
 
   case "${host}" in
     *-*-linux* )
-      INOTIFY_LIB=
+      GB_INOTIFY_LIB=
       ;;
     *)
-      INOTIFY_LIB=-linofity
+      GB_INOTIFY_LIB=-linofity
       ;;
   esac
 
-  AC_SUBST(INOTIFY_LIB)
-  AC_SUBST(INOTIFY_LDFLAGS)
-
-  AC_MSG_RESULT($INOTIFY_LIB)
+  AC_SUBST(GB_INOTIFY_LIB)
+  AC_MSG_RESULT($GB_INOTIFY_LIB)
 ])
 
 
