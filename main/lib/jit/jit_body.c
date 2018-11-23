@@ -3246,7 +3246,7 @@ _TRY:
 
 	declare(&_decl_tp, "VALUE *tp");
 	JIT_print("  tp = EP; EP = sp;\n");
-	JIT_print("  TRY {\n");
+	JIT_print("  { VALUE *volatile sp = EP; TRY {\n");
 	p++;
 	goto _MAIN;
 	
@@ -3256,12 +3256,12 @@ _END_TRY:
 	JIT_print("  } CATCH {\n");
 	JIT_print("  if (SP > sp) sp = SP; else SP = sp;\n");
 	JIT_print("  LEAVE_SUPER();\n");
-	JIT_print("  if (sp > EP) {\n");
+	JIT_print("  if (sp > EP) {");
 	JIT_print("    JIT.release_many(sp, sp - EP); SP = sp = EP;\n");
 	JIT_print("  }\n");
 	JIT_print("  *JIT.got_error = 1;\n");
 	JIT_print("  JIT.error_set_last(FALSE);\n");
-	JIT_print("  } END_TRY\n");
+	JIT_print("  } END_TRY }\n");
 	JIT_print("  EP = tp;\n");
 	goto _MAIN;
 
