@@ -189,12 +189,20 @@ void JIT_declare_func(FUNCTION *func, int index)
 
 const char *JIT_get_default_value(TYPE type)
 {
+	static bool _decl_null_variant = FALSE;
+	
 	switch(TYPEID(type))
 	{
 		case T_DATE: return "{GB_T_DATE}";
 		case T_STRING: return "{GB_T_STRING}";
 		case T_OBJECT: return "{GB_T_NULL}";
-		case T_VARIANT: return "{GB_T_VARIANT,{GB_T_NULL}}";
+		case T_VARIANT: 
+			if (!_decl_null_variant)
+			{
+				JIT_print_decl("  GB_VARIANT null_variant = {GB_T_VARIANT,{GB_T_NULL}};\n");
+				_decl_null_variant = TRUE;
+			}
+			return "null_variant";
 		default: return "0";
 	}
 }
@@ -205,6 +213,7 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 	int i;
 	TYPE type;
 	int nopt;
+	const char *def;
 	const char *vol = func->error ? "volatile " : "";
 		
 	if (func->debug)
@@ -277,15 +286,17 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 			if (TYPE_is_void(func->type))
 				continue;
 			type = func->type;
+			def = JIT_get_default_value(type);
 			JIT_print_decl("  %s r = ", JIT_get_ctype(type));
 		}
 		else
 		{
 			type = JIT_ctype_to_type(JIT_class, func->local[i].type);
+			def = JIT_get_default_value(type);
 			JIT_print_decl("  %s%s l%d = ", vol, JIT_get_ctype(type), i);
 		}
 		
-		JIT_print_decl(JIT_get_default_value(type));
+		JIT_print_decl(def);
 		JIT_print_decl(";\n");
 	}
 	
@@ -386,6 +397,9 @@ void JIT_section(const char *str)
 void JIT_declare(TYPE type, const char *fmt, ...)
 {
 	va_list args;
+	const char *def;
+	
+	def = JIT_get_default_value(type);
 	
 	JIT_print_decl("  %s ", JIT_get_ctype(type));
 	
@@ -398,7 +412,7 @@ void JIT_declare(TYPE type, const char *fmt, ...)
 		case T_STRING:
 		case T_OBJECT:
 		case T_VARIANT:
-			JIT_print_decl(" = %s", JIT_get_default_value(type));
+			JIT_print_decl(" = %s", def);
 			break;
 	}
 	

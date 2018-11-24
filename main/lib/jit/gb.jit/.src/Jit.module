@@ -68,7 +68,7 @@ Public Sub Compiler_Read()
   
 End
 
-Public Sub Compile_Error(({Error}) As String)
+Public Sub Compiler_Error(({Error}) As String)
   
   $sResult &= {Error}
   

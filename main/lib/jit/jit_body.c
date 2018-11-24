@@ -389,7 +389,8 @@ static const char *get_conv_format(TYPE src, TYPE dest)
 	
 	if (src == T_VOID)
 	{
-		return JIT_get_default_value(TYPEID(dest));
+		sprintf(buffer, "(JIT.throw(E_NRETURN),%s)", JIT_get_default_value(TYPEID(dest)));
+		return buffer;
 	}
 			
 	switch(dest)
@@ -623,7 +624,7 @@ static char *peek_pop(int n, TYPE conv, const char *fmt, va_list args)
 	}
 	
 	if (type != conv)
-		_stack[n].expr = expr = get_conv(type, conv, expr);;
+		_stack[n].expr = expr = get_conv(type, conv, expr);
 	
 	if (fmt)
 	{

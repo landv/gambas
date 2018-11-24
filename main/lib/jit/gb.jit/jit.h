@@ -16,6 +16,7 @@
 #define E_OVERFLOW   7
 #define E_NOBJECT   12
 #define E_NULL      13
+#define E_NRETURN   18
 #define E_MATH      19
 #define E_ARG       20
 #define E_BOUND     21

@@ -75,7 +75,7 @@ void STREAM_exit(void)
 static void wait_for_fd_ready_to_read(int fd)
 {
 	if (fd >= 0)
-		WATCH_process(fd, -1, 0);
+		WATCH_process(fd, -1, -1, 0);
 }
 
 bool STREAM_in_archive(const char *path)
