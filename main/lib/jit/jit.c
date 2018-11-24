@@ -172,7 +172,11 @@ static void declare_implementation(FUNCTION *func, int index)
 	}
 	
 	if (func->vararg)
-		JIT_print(",uchar nv,GB_VALUE *v");
+	{
+		if (func->n_param)
+			JIT_print(",");
+		JIT_print("uchar nv,GB_VALUE *v");
+	}
 	
 	JIT_print(")");
 }
@@ -221,7 +225,7 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 	
 	JIT_print("void jit_%s_%d(uchar n)\n{\n", JIT_prefix, index);
 	
-	if (func->n_param)
+	if (func->n_param || func->vararg)
 		JIT_print("  VALUE *sp = *((VALUE **)%p);\n", JIT.sp);
 	
 	JIT_print("  ");
@@ -265,7 +269,11 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 	}
 	
 	if (func->vararg)
-		JIT_print(",n - %d,&sp[-n+%d]", i, i);
+	{
+		if (func->n_param)
+			JIT_print(",");
+		JIT_print("n - %d,&sp[-n+%d]", i, i);
+	}
 	
 	if (!TYPE_is_void(func->type))
 		JIT_print(")");

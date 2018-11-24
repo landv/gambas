@@ -145,11 +145,14 @@ static void enter_function(FUNCTION *func, int index)
 	JIT_print_decl("  GB_VALUE_GOSUB *gp = 0;\n");
 	JIT_print_decl("  bool error = FALSE;\n");
 	
+	if (func->vararg)
+	{
+		JIT_print("  VALUE *fp = FP, *pp = PP, *bp = BP;\n");
+		JIT_print("  FP = %p; PP = v; BP = v + nv;\n", func);
+	}
+
 	JIT_print("  TRY {\n\n");
 	_try_finished = FALSE;
-
-	if (func->vararg)
-		JIT_print("  PP = v; BP = v + nv;\n");
 }
 
 
@@ -194,6 +197,8 @@ static bool leave_function(FUNCTION *func, int index)
 		print_catch();
 	
 	JIT_print("__RELEASE:;\n");
+	if (func->vararg)
+		JIT_print("  FP = fp; BP = bp; PP = pp;\n");
 	JIT_print("  SP = sp;\n");
 	JIT_print("  RELEASE_GOSUB();\n");
 	
@@ -1990,7 +1995,11 @@ static void push_call(ushort code)
 					}
 					
 					if (func->vararg)
-						STR_add(&call, ",%d,&sp[-%d]", nv, nv);
+					{
+						if (func->n_param)
+							STR_add(&call, ",");
+						STR_add(&call, "%d,&sp[-%d]", nv, nv);
+					}
 					
 					STR_add(&call, ");");
 					
