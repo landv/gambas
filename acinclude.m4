@@ -727,7 +727,7 @@ AC_DEFUN([GB_INOTIFY],
       GB_INOTIFY_LIB=
       ;;
     *)
-      GB_INOTIFY_LIB=-linofity
+      GB_INOTIFY_LIB=-linotify
       ;;
   esac
 
