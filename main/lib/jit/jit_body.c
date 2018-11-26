@@ -564,8 +564,12 @@ static char *get_conv(TYPE src, TYPE dest, char *expr)
 				return new_expr;
 		}
 	}
-
-	new_expr = STR_print(get_conv_format(src, dest), expr);
+	
+	if (src == T_VOID && !expr) // void method arguments
+		new_expr = STR_copy(JIT_get_default_value(TYPEID(dest)));
+	else
+		new_expr = STR_print(get_conv_format(src, dest), expr);
+	
 	STR_free(expr);
 	return new_expr;
 }
