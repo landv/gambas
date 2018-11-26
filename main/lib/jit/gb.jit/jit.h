@@ -382,7 +382,7 @@ enum
 #define POP_ARRAY_o(_array, _index, _val, _unsafe) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreObject((GB_OBJECT *)&temp, GET_ARRAY##_unsafe(void *, _array, _index)); })
 #define POP_ARRAY_v(_array, _index, _val, _unsafe) ({ GB_VALUE temp = (GB_VALUE)(_val); GB.StoreVariant((GB_VARIANT *)&temp, GET_ARRAY##_unsafe(GB_VARIANT_VALUE, _array, _index)); })
 
-#define CONV(_val, _src, _dest, _type) ({ PUSH_##_src(_val); JIT.conv(sp - 1, (GB_TYPE)(_type)); POP_##_dest(); })
+#define CONV(_val, _src, _dest, _type) ({ PUSH_##_src(_val); SP = sp; JIT.conv(sp - 1, (GB_TYPE)(_type)); POP_##_dest(); })
 
 #define CONV_d_b(_val) ({ GB_DATE _v = (_val); _v.value.date != 0 || _v.value.time != 0; })
 #define CONV_d_c(_val) ((uchar)((_val).value.date))

@@ -164,6 +164,7 @@ static void print_catch(void)
 	if (_has_catch || _has_finally)
 		JIT_print("  JIT.error_set_last(FALSE); \n");
 	JIT_print("  error = TRUE;\n");
+	//JIT_print("  fprintf(stderr, \"SP = %%p sp = %%p\\n\", SP, sp);");
 	JIT_print("  if (SP > sp) sp = SP; else SP = sp;\n");
 	JIT_print("  LEAVE_SUPER();\n");
 	JIT_print("  if (sp > ep) { JIT.release_many(sp, sp - ep); SP = sp = ep; }\n");

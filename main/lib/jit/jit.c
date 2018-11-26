@@ -47,6 +47,8 @@ static char *_buffer = NULL;
 static char *_buffer_decl = NULL;
 static char *_buffer_body = NULL;
 
+static bool _decl_null_variant = FALSE;
+	
 /*static const CLASS_TYPE _class_type[] = {
 	{ "Boolean[]", T_BOOLEAN },
 	{ "Byte[]", T_BYTE },
@@ -193,8 +195,6 @@ void JIT_declare_func(FUNCTION *func, int index)
 
 const char *JIT_get_default_value(TYPE type)
 {
-	static bool _decl_null_variant = FALSE;
-	
 	switch(TYPEID(type))
 	{
 		case T_DATE: return "{GB_T_DATE}";
@@ -286,6 +286,7 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 
 	_buffer_decl = NULL;
 	_buffer_body = NULL;
+	_decl_null_variant = FALSE;
 	
 	for (i = -1; i < func->n_local; i++)
 	{
