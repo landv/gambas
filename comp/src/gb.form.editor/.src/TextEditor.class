@@ -22,6 +22,8 @@ Property Read Line As Integer
 Property Read Column As Integer
 Property Read SelectionLine As Integer
 Property Read SelectionColumn As Integer
+Property Read LastLine As Integer
+Property Read LastColumn As Integer
 Property Read Selected As Boolean
 Property Read SelectedText As String
 Property ReadOnly As Boolean
@@ -1655,13 +1657,13 @@ Public Sub _RaiseCursor()
   If $X = $LX And If $Y = $LY Then Return
   If $hDoc.IsLocked() Then Return
   
-  $LX = $X
-  $LY = $Y
   EnsureVisible
   If $bShowPosition Then UpdatePosition
   
   TimerChange_Timer
   Raise Cursor
+  $LX = $X
+  $LY = $Y
   
 End
 
@@ -5675,3 +5677,15 @@ Private Sub IsWordLimit(sCar As String) As Boolean
   
 End
 
+
+Private Function LastLine_Read() As Integer
+
+  Return $LY
+
+End
+
+Private Function LastColumn_Read() As Integer
+
+  Return $LX
+
+End
