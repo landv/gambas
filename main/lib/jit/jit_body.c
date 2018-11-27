@@ -139,7 +139,7 @@ static void enter_function(FUNCTION *func, int index)
 	
 	JIT_print_decl("  VALUE **psp = (VALUE **)%p;\n", JIT.sp);
 	JIT_print_decl("  VALUE *sp = SP;\n");
-	JIT_print_decl("  VALUE *ep = sp;\n");
+	//JIT_print_decl("  VALUE *ep = sp;\n");
 	//JIT_print("  VALUE *sp = SP; fprintf(stderr, \"> %d: sp = %%p\\n\", sp);\n", index);
 	JIT_print_decl("  ushort *pc = (ushort *)%p;\n", JIT.get_code(func));
 	JIT_print_decl("  GB_VALUE_GOSUB *gp = 0;\n");
@@ -151,7 +151,7 @@ static void enter_function(FUNCTION *func, int index)
 		JIT_print("  FP = %p; PP = v; BP = v + nv;\n", func);
 	}
 
-	JIT_print("  TRY {\n\n");
+	JIT_print("  EP = sp; TRY {\n\n");
 	_try_finished = FALSE;
 }
 
@@ -163,12 +163,12 @@ static void print_catch(void)
 	JIT_print("  FP = (void *)%p;\n", _func);
 	if (_has_catch || _has_finally)
 		JIT_print("  JIT.error_set_last(FALSE); \n");
-	JIT_print("  error = TRUE;\n");
-	//JIT_print("  fprintf(stderr, \"SP = %%p sp = %%p\\n\", SP, sp);");
+	//JIT_print("  fprintf(stderr, \"EP = %%p SP = %%p sp = %%p\\n\", EP, SP, sp);\n");
 	JIT_print("  if (SP > sp) sp = SP; else SP = sp;\n");
 	JIT_print("  LEAVE_SUPER();\n");
-	JIT_print("  if (sp > ep) { JIT.release_many(sp, sp - ep); SP = sp = ep; }\n");
+	JIT_print("  if (sp > EP) { JIT.release_many(sp, sp - EP); SP = sp = EP; }\n");
 	//JIT_print("  PP = SP;\n");
+	JIT_print("  error = TRUE;\n");
 	JIT_print("\n  } END_TRY\n\n");
 	JIT_print("__FINALLY:;\n");
 	_try_finished = TRUE;
@@ -225,8 +225,8 @@ static bool leave_function(FUNCTION *func, int index)
 	if (!_has_catch && !_has_finally)
 	{
 		JIT_print("  if (error) { ");
-		if (func->n_param)
-			JIT_print("SP -= %d; ", func->n_param);
+		/*if (func->n_param)
+			JIT_print("SP -= %d; ", func->n_param);*/
 		JIT_print("GB.Propagate(); }\n");
 	}
 	
@@ -3271,9 +3271,7 @@ _END_TRY:
 	JIT_print("  } CATCH {\n");
 	JIT_print("  if (SP > sp) sp = SP; else SP = sp;\n");
 	JIT_print("  LEAVE_SUPER();\n");
-	JIT_print("  if (sp > EP) {");
-	JIT_print("    JIT.release_many(sp, sp - EP); SP = sp = EP;\n");
-	JIT_print("  }\n");
+	JIT_print("  if (sp > EP) { JIT.release_many(sp, sp - EP); SP = sp = EP; }\n");
 	JIT_print("  *JIT.got_error = 1;\n");
 	JIT_print("  JIT.error_set_last(FALSE);\n");
 	JIT_print("  } END_TRY }\n");

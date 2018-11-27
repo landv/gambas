@@ -235,6 +235,8 @@ void JIT_exec(bool ret_on_stack)
 	CATCH
 	{
 		PROFILE_LEAVE_FUNCTION();
+		if (SP != sp)
+			ERROR_panic("Stack mismatch in JIT function (sp %+ld)\n", SP - sp);
 		RELEASE_MANY(SP, nparam);
 		STACK_pop_frame(&EXEC_current);
 		PROPAGATE();
