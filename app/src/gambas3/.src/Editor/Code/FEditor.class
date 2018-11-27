@@ -2412,9 +2412,9 @@ Private Sub FindDefinition() As Boolean
   'PRINT hSymbol.Class
 
   If hSymbol.LineNumber Then 'And If Not bPopupHelp Then
-    CPosition.SaveCurrent(Me)
+    CPosition.SaveCurrent(Me, True)
     hForm = Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
-    CPosition.SaveCurrent(hForm)
+    CPosition.SaveCurrent(hForm, True)
   Else
     MHelp.ShowHelpBrowserWith(MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
   Endif

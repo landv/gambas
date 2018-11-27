@@ -2421,10 +2421,10 @@ GOTO_BOTTOM:
    
 End
 
-Public Sub UpdatePosition(bStart As Boolean, bEnd As Boolean)
+Public Sub UpdatePosition((bBack) As Boolean, bForward As Boolean)
   
-  btnGoBack.Enabled = Not bStart
-  btnGoForward.Enabled = Not bEnd
+  btnGoBack.Enabled = True
+  btnGoForward.Enabled = bForward
   
 End
 

@@ -10,12 +10,11 @@ Public Path As String
 Public Method As String
 Public (Line) As Integer
 Public Column As Integer
-Public Weak As Boolean
 
 Static Public Sub Clear()
   
   $aPositions.Clear
-  $iCurrent = 0
+  $iCurrent = -1
   $iDisable = 0
   UpdatePosition
   
@@ -23,12 +22,29 @@ End
 
 Static Private Sub UpdatePosition()
   
-  FMain.UpdatePosition($iCurrent <= 1, $iCurrent > $aPositions.Max)
+  FMain.UpdatePosition($iCurrent > 0, $iCurrent < $aPositions.Max)
+  
+End
+
+Static Private Sub AddPosition(hPos As CPosition)
+  
+  If $iCurrent >= 0 Then
+    If $aPositions[$iCurrent].IsEqual(hPos) Then Return
+  Endif
+  
+  If $iCurrent >= MAX_POS Then
+    $aPositions.Remove(0)
+    Dec $iCurrent
+  Endif
+
+  Inc $iCurrent
+  $aPositions.Resize($iCurrent)
+  $aPositions.Add(hPos)
   
 End
 
 
-Static Public Sub SaveCurrent(hForm As Object)
+Static Public Sub SaveCurrent(hForm As Object, Optional bForce As Boolean)
 
   Dim hEditor As TextEditor
   Dim hPos As CPosition
@@ -42,38 +58,32 @@ Static Public Sub SaveCurrent(hForm As Object)
     hPos.Path = .Path
     Try hEditor = hForm.GetEditor()
     If hEditor Then
+      
+      If Not bForce Then
+        If Abs(hEditor.Line - hEditor.LastLine) <= 1 Then Return
+      Endif
+      
+      hPos.Line = hEditor.LastLine
+      hPos.Column = hEditor.LastColumn
+      Try hPos.Method = hForm.GetProcAt(hPos.LastLine)
+      AddPosition(hPos)
+      
+      hPos = hPos.Copy()
+      
       hPos.Line = hEditor.Line
       hPos.Column = hEditor.Column
-      Try hPos.Method = hForm.GetProcAt(hEditor.Line)
+      Try hPos.Method = hForm.GetProcAt(hPos.Line)
+      AddPosition(hPos)
+      
     Else
+      
       hPos.Line = -1
       hPos.Column = -1
+      AddPosition(hPos)
+      
     Endif
+    
   End With
-
-  If $iCurrent > 0 Then
-    With $aPositions[$iCurrent - 1]
-      If .IsEqual(hPos) Then Return
-      If .IsNear(hPos) Then
-        If .Weak Then 
-          .Line = hPos.Line
-          .Column = hPos.Column
-          Return
-        Else
-          hPos.Weak = True
-        Endif
-      Endif
-    End With
-  Endif
-
-  If $iCurrent > MAX_POS Then
-    $aPositions.Remove(0)
-    Dec $iCurrent
-  Endif
-
-  $aPositions.Resize($iCurrent)
-  $aPositions.Add(hPos)
-  Inc $iCurrent
   
   UpdatePosition
   
@@ -81,20 +91,20 @@ End
 
 Static Public Sub MovePrevious()
   
-  If $iCurrent <= 1 Then Return
+  If $iCurrent <= 0 Then Return
   
   Dec $iCurrent
-  $aPositions[$iCurrent - 1].Move
+  $aPositions[$iCurrent].Move()
   UpdatePosition
   
 End
 
 Static Public Sub MoveNext()
   
-  If $iCurrent > $aPositions.Max Then Return
+  If $iCurrent >= $aPositions.Max Then Return
   
-  $aPositions[$iCurrent].Move
   Inc $iCurrent
+  $aPositions[$iCurrent].Move
   UpdatePosition
   
 End
@@ -139,7 +149,7 @@ Public Sub GetDesc() As String
   
   Dim sDesc As String
   
-  sDesc = File.Name(Path)
+  sDesc = File.BaseName(Path)
   If Method Then sDesc &= "." & Method
   If {Line} >= 0 Then sDesc &= "." & CStr({Line} + 1)
   
@@ -161,7 +171,7 @@ Static Public Sub FillMenu(mnuParent As Menu)
       hMenu.Text = .GetDesc()
       hMenu.Picture = Project.GetFileIcon(.Path)
       hMenu.Tag = I
-      If I = ($iCurrent - 1) Then hMenu.Checked = True
+      If I = $iCurrent Then hMenu.Checked = True
     End With
   Next
   
@@ -171,8 +181,24 @@ Static Public Sub mnuBackward_Click()
   
   Dim I As Integer = Last.Tag
   
-  $iCurrent = I + 1
   $aPositions[I].Move
+  $iCurrent = I
   UpdatePosition
+  
+End
+
+Public Sub Copy() As CPosition
+
+  Dim hPos As CPosition
+  
+  hPos = New CPosition
+  With hPos
+    .Path = Path
+    .Method = Method
+    .Line = {Line}
+    .Column = Column
+  End With
+  
+  Return hPos
   
 End
