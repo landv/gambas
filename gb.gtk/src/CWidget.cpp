@@ -791,8 +791,11 @@ BEGIN_PROPERTY(Control_Parent)
 
 	gContainer *parent = CONTROL->parent();
 	
-	while (parent->proxyContainerFor())
-		parent = parent->proxyContainerFor();
+	if (parent)
+	{
+		while (parent->proxyContainerFor())
+			parent = parent->proxyContainerFor();
+	}
 	
 	GB.ReturnObject(GetObject(parent));
 
