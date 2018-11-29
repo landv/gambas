@@ -223,6 +223,7 @@ void JIT_exec(bool ret_on_stack)
 	CP = class;
 	OP = (void *)EXEC.object;
 	FP = func;
+	EC = NULL;
 	
 	jit = (JIT_FUNCTION *)(func->code);
 	
