@@ -454,31 +454,36 @@ Public Sub btnDelete_Click()
 
 End
 
-Private Sub InsertMenu(bAfter As Boolean)
+Private Sub InsertMenu(bAfter As Boolean, Optional bSeparator As Boolean)
 
   Dim hCMenu As CMenu
   Dim iIndex As Integer
+  Dim iLevel As Integer
 
   If WriteMenu() Then Return
-
-  $bFreeze = True
 
   iIndex = $iCurrent
   If iIndex < 0 Then iIndex = $aMenu.Max
   
   If bAfter Then Inc iIndex
 
+  If bAfter Then
+    If iIndex > 0 Then iLevel = $aMenu[iIndex - 1].Level
+  Else
+    If iIndex >= 0 Then iLevel = $aMenu[iIndex].Level
+  Endif
+  
+  If bSeparator And If iLevel < 1 Then iLevel = 1
+  
+  $bFreeze = True
+
   hCMenu = New CMenu
   hCMenu.Name = GetName()
-  hCMenu.Caption = hCMenu.Name
+  If Not bSeparator Then hCMenu.Caption = hCMenu.Name
   hCMenu.Translate = True
   
-  If bAfter Then
-    If iIndex > 0 Then hCMenu.Level = $aMenu[iIndex - 1].Level
-  Else
-    If iIndex >= 0 Then hCMenu.Level = $aMenu[iIndex].Level
-  Endif
-
+  hCMenu.Level = iLevel
+  
   $cName[hCMenu.Name] = True
   'hCMenu.Caption = hCMenu.Name
 
@@ -499,7 +504,7 @@ End
 
 Public Sub btnInsert_Click()
 
-  InsertMenu(False)
+  InsertMenu(True)
 
 End
 
@@ -648,9 +653,9 @@ Public Sub txtCaption_Change()
 End
 
 
-Public Sub btnInsertNext_Click()
+Public Sub btnInsertBefore_Click()
 
-  InsertMenu(True)
+  InsertMenu(False)
 
 End
 
@@ -1104,3 +1109,9 @@ End
 '   Endif
 ' 
 ' End
+
+Public Sub btnInsertSeparator_Click()
+
+  InsertMenu(True, True)
+
+End
