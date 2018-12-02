@@ -2273,10 +2273,16 @@ static int database_delete(DB_DATABASE * db, const char *name)
 	}
 	else
 	{
-		other = GB.AddString(GB.TempString(fullpath, -1), "-shm", -1);
+		other = GB.NewString(fullpath, GB.StringLength(fullpath));
+		other = GB.AddString(other, "-shm", 4);
 		unlink(other);
-		other = GB.AddString(GB.TempString(fullpath, -1), "-wal", -1);
+		GB.FreeString(&other);
+		
+		other = GB.NewString(fullpath, GB.StringLength(fullpath));
+		other = GB.AddString(other, "-wal", 4);
 		unlink(other);
+		GB.FreeString(&other);
+		
 		err = FALSE;
 	}
 
