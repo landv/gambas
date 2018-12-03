@@ -395,7 +395,7 @@ static const char *get_conv_format(TYPE src, TYPE dest)
 	
 	if (src == T_VOID)
 	{
-		sprintf(buffer, "(JIT.throw(E_NRETURN),%s)", JIT_get_default_value(TYPEID(dest)));
+		sprintf(buffer, "(THROW(E_NRETURN),%s)", JIT_get_default_value(TYPEID(dest)));
 		return buffer;
 	}
 			
@@ -527,7 +527,7 @@ static const char *get_conv_format(TYPE src, TYPE dest)
 			{
 				if (TYPE_is_pure_object(dest))
 				{
-					sprintf(buffer, "CONV_o_O(%%s, CLASS(%p))", (CLASS *)dest);
+					sprintf(buffer, "CONV_o_O(%%s, %p)", (CLASS *)dest);
 					return buffer;
 				}
 				else
@@ -1467,7 +1467,7 @@ static void push_subr_div(ushort code)
 	if (_unsafe)
 		expr = STR_print("({%s _a = %s; %s _b = %s; _a /= _b; _a;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2);
 	else
-		expr = STR_print("({%s _a = %s; %s _b = %s; _a /= _b; if (!isfinite(_a)) JIT.throw(E_ZERO); _a;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2);
+		expr = STR_print("({%s _a = %s; %s _b = %s; _a /= _b; if (!isfinite(_a)) THROW(E_ZERO); _a;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2);
 
 	pop_stack(2);
 	
@@ -1584,7 +1584,7 @@ static void push_subr_quo(ushort code, const char *op)
 	if (_unsafe)
 		expr = STR_print("({%s _a = %s; %s _b = %s; _a %s _b;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2, op);
 	else
-		expr = STR_print("({%s _a = %s; %s _b = %s; if (_b == 0) JIT.throw(E_ZERO); _a %s _b;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2, op);
+		expr = STR_print("({%s _a = %s; %s _b = %s; if (_b == 0) THROW(E_ZERO); _a %s _b;})", JIT_get_ctype(type), expr1, JIT_get_ctype(type), expr2, op);
 	
 	pop_stack(2);
 	push(type, "(%s)", expr);
@@ -1795,7 +1795,7 @@ static void push_subr_bit(ushort code)
 	if (_unsafe)
 		expr = STR_print("({ %s _v = %s; int _b = %s; ", ctype, expr1, expr2, nbits);
 	else
-		expr = STR_print("({ %s _v = %s; int _b = %s; if ((_b < 0) || (_b >= %d)) JIT.throw(E_ARG); ", ctype, expr1, expr2, nbits);
+		expr = STR_print("({ %s _v = %s; int _b = %s; if ((_b < 0) || (_b >= %d)) THROW(E_ARG); ", ctype, expr1, expr2, nbits);
 	
 	
 	switch(code)
@@ -1935,12 +1935,12 @@ static void push_call(ushort code)
 				if (narg < func->npmin)
 				{
 					pop_stack(narg + 1);
-					push(T_UNKNOWN, "({ GB_VALUE temp; JIT.throw(E_NEPARAM); temp; })");
+					push(T_UNKNOWN, "({ GB_VALUE temp; THROW(E_NEPARAM); temp; })");
 				}
 				else if (narg > func->n_param && !func->vararg)
 				{
 					pop_stack(narg + 1);
-					push(T_UNKNOWN, "({ GB_VALUE temp; JIT.throw(E_TMPARAM); temp; })");
+					push(T_UNKNOWN, "({ GB_VALUE temp; THROW(E_TMPARAM); temp; })");
 				}
 				else
 				{
@@ -2073,12 +2073,12 @@ static void push_call(ushort code)
 			if (narg < ext->n_param)
 			{
 				pop_stack(narg + 1);
-				push(T_UNKNOWN, "({ GB_VALUE temp; JIT.throw(E_NEPARAM); temp })");
+				push(T_UNKNOWN, "({ GB_VALUE temp; THROW(E_NEPARAM); temp })");
 			}
 			else if (narg > ext->n_param && !ext->vararg)
 			{
 				pop_stack(narg + 1);
-				push(T_UNKNOWN, "({ GB_VALUE temp; JIT.throw(E_TMPARAM); temp })");
+				push(T_UNKNOWN, "({ GB_VALUE temp; THROW(E_TMPARAM); temp })");
 			}
 			else
 			{

@@ -108,7 +108,10 @@ typedef
 #define BP (JIT.exec->bp)
 #define EP (JIT.exec->ep)
 
-#define CHECK_FINITE(_val) ({ if (!isfinite(_val)) JIT.throw(E_OVERFLOW); (_val); })
+#define THROW(_err) ({ SP = sp; JIT.throw(_err); })
+#define THROW_TYPE(_t1, _t2) ({ SP = sp; JIT.throw_type(_t1, _t2); })
+
+#define CHECK_FINITE(_val) ({ if (!isfinite(_val)) THROW(E_OVERFLOW); (_val); })
 
 #define PARAM_b(_p) (JIT.conv(&sp[-n+(_p)], GB_T_BOOLEAN), sp[-n+(_p)]._boolean.value)
 #define PARAM_c(_p) (JIT.conv(&sp[-n+(_p)], GB_T_BYTE), (uchar)(sp[-n+(_p)]._integer.value))
@@ -290,14 +293,14 @@ enum
 // TODO: automatic class
 #define ADDR(_val) ({ \
   char *_object = (_val).value; \
-  if (!_object) JIT.throw(E_NULL); \
+  if (!_object) THROW(E_NULL); \
   _object; \
 })
 
 #define ADDR_CHECK(_check, _val) ({ \
   char *_object = (_val).value; \
-  if (!_object) JIT.throw(E_NULL); \
-  if (((int (*)())_check)(_object)) JIT.throw(E_IOBJECT); \
+  if (!_object) THROW(E_NULL); \
+  if (((int (*)())_check)(_object)) THROW(E_IOBJECT); \
   _object; \
 })
 
@@ -346,8 +349,8 @@ enum
 #define GET_ARRAY(_type, _array, _index) ({ \
   GB_ARRAY_IMPL *_a = (_array).value; \
   int _i = (_index); \
-  if (!_a) JIT.throw(E_NOBJECT); \
-  if (_i < 0 || _i >= _a->count) JIT.throw(E_BOUND); \
+  if (!_a) THROW(E_NOBJECT); \
+  if (_i < 0 || _i >= _a->count) THROW(E_BOUND); \
   &((_type *)_a->data)[_i]; \
 })
 
@@ -391,9 +394,9 @@ enum
 #define CONV_d_l(_val) ((int64_t)((_val).value.date))
 #define CONV_d_g(_val) ({ GB_DATE _v = (_val); (float)((float)_v.value.date + (float)_v.value.time / 86400000.0); })
 #define CONV_d_f(_val) ({ GB_DATE _v = (_val); (double)((double)_v.value.date + (double)_v.value.time / 86400000.0); })
-#define CONV_d_p(_val) (JIT.throw_type(T_DATE, T_POINTER))
+#define CONV_d_p(_val) (THROW_TYPE(T_DATE, T_POINTER))
 #define CONV_d_s(_val) CONV(_val, d, s, GB_T_STRING)
-#define CONV_d_o(_val) (JIT.throw_type(T_DATE, T_OBJECT))
+#define CONV_d_o(_val) (THROW_TYPE(T_DATE, T_OBJECT))
 
 #define CONV_o_O(_val, _class) CONV(_val, o, o, CLASS(_class))
 
@@ -506,7 +509,7 @@ enum
   if (_t) goto _label; \
 })
 
-#define CALL_MATH(_func) ({ double _v = _func; if (!isfinite(_v)) JIT.throw(E_MATH); _v; })
+#define CALL_MATH(_func) ({ double _v = _func; if (!isfinite(_v)) THROW(E_MATH); _v; })
 #define CALL_MATH_UNSAFE(_func) (_func)
 
 #define ERROR_current (*(ERROR_CONTEXT **)(JIT.error_current))
