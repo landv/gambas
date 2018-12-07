@@ -148,10 +148,12 @@ static void enter_function(FUNCTION *func, int index)
 	if (func->vararg)
 	{
 		JIT_print("  VALUE *fp = FP, *pp = PP, *bp = BP;\n");
-		JIT_print("  FP = %p; PP = v; BP = v + nv;\n", func);
+		JIT_print("  FP = %p; PP = v; BP = sp;\n", func);
 	}
 
-	JIT_print("  EP = sp; TRY {\n\n");
+	JIT_print("  VALUE *ssp = sp;\n"); // fprintf(stderr, \"bp = %%p\\n\", bp);\n");
+	JIT_print("  TRY {\n\n");
+	
 	_try_finished = FALSE;
 }
 
@@ -166,7 +168,8 @@ static void print_catch(void)
 	//JIT_print("  fprintf(stderr, \"EP = %%p SP = %%p sp = %%p\\n\", EP, SP, sp);\n");
 	JIT_print("  if (SP > sp) sp = SP; else SP = sp;\n");
 	JIT_print("  LEAVE_SUPER();\n");
-	JIT_print("  if (sp > EP) { JIT.release_many(sp, sp - EP); SP = sp = EP; }\n");
+	//JIT_print("  if (sp > bp) { fprintf(stderr, \"sp = %%p bp = %%p release %%d\\n\", sp, bp, sp - bp); JIT.release_many(sp, sp - bp); SP = sp = bp; }\n");
+	JIT_print("  if (sp > ssp) { JIT.release_many(sp, sp - ssp); SP = sp = ssp; }\n");
 	//JIT_print("  PP = SP;\n");
 	JIT_print("  error = TRUE;\n");
 	JIT_print("\n  } END_TRY\n\n");
@@ -2137,16 +2140,13 @@ static void push_subr_isnan(ushort code)
 	STR_free(expr);
 }
 
-#define deg(_x) ((_x) * 180 / M_PI)
-#define rad(_x) ((_x) * M_PI / 180)
-
 static void push_subr_math(ushort code)
 {
 	static const char *func[] = {
 		NULL, "frac(%s)", "__builtin_log(%s)", "__builtin_exp(%s)", "__builtin_sqrt(%s)", "__builtin_sin(%s)", "__builtin_cos(%s)", "__builtin_tan(%s)", 
 		"__builtin_atan(%s)", "__builtin_asin(%s)", "__builtin_acos(%s)",
-		"((%s) * 180 / M_PI)", 
-		"((%s) * M_PI / 180)", 
+		"((%s) * 180 / M_PI)", // deg()
+		"((%s) * M_PI / 180)", // rad()
 		"log10(%s)", 
 		"__builtin_sinh(%s)", "__builtin_cosh(%s)", "__builtin_tanh(%s)", "__builtin_asinh(%s)", "__builtin_acosh(%s)", "__builtin_atanh(%s)",
 #ifndef HAVE_EXP2
@@ -3271,6 +3271,7 @@ _END_TRY:
 	JIT_print("  } CATCH {\n");
 	JIT_print("  if (SP > sp) sp = SP; else SP = sp;\n");
 	JIT_print("  LEAVE_SUPER();\n");
+	//JIT_print("  if (sp > EP) { fprintf(stderr, \"release try %%d\\n\", sp - EP); JIT.release_many(sp, sp - EP); SP = sp = EP; }\n");
 	JIT_print("  if (sp > EP) { JIT.release_many(sp, sp - EP); SP = sp = EP; }\n");
 	JIT_print("  *JIT.got_error = 1;\n");
 	JIT_print("  JIT.error_set_last(FALSE);\n");

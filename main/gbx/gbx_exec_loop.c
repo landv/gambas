@@ -1409,8 +1409,18 @@ _CALL_SLOW:
 
 		__EXEC_ENTER_S:
 
-			EXEC_enter();
-			goto _MAIN;
+			EXEC.func = &EXEC.class->load->func[EXEC.index];
+
+			if (EXEC.func->fast)
+			{
+				JIT_exec(TRUE);
+				goto _NEXT;
+			}
+			else
+			{
+				EXEC_enter();
+				goto _MAIN;
+			}
 
 		__CALL_NATIVE_S:
 
