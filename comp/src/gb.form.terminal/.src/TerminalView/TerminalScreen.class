@@ -205,15 +205,28 @@ Private Sub Insert(sText As String, Optional X As Integer = $X)
   
   Dim hLine As CTerminalLine
   Dim iLen As Integer = String.Len(sText)
+  Dim sLeft As String
   
   If iLen = 0 Then Return
   
-  'Debug Quote(sText);; X;; $Y
+  'Debug Quote(sText);; $Y;; iLen;; X;; $W
   
   If (X + iLen) > $W Then
+    If X >= $W Then
+      If Not WrapMode Then Return
+      Index()
+      $X = 0
+      Insert(sText)
+      Return
+    Endif
     iLen = Max(0, $W - X)
     If iLen Then
-      Insert(String.Left(sText, iLen), X)
+      sLeft = String.Left(sText, iLen)
+      If String.Len(sLeft) <> iLen Then 
+        Error "gb.form.terminal: warning: String.Left() failed: "; String.Len(sLeft);; iLen
+        Return
+      Endif
+      Insert(sLeft, X)
       sText = String.Mid$(sText, iLen + 1) 
     Endif
     If WrapMode Then
