@@ -571,7 +571,14 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
   
   If bDoNotApply Then Goto _DO_NOT_APPLY
   
+  If Control Is DrawingArea Or If IsContainer() Then
+    If sProp = "Enabled" Then 
+      Goto _DO_NOT_APPLY
+    Endif
+  Endif
+
   If Unknown Then 
+    
     hClass = Object.Class(Control)
     If Not hClass.Exist(sProp) Then Goto _DO_NOT_APPLY
     With hClass[sProp]

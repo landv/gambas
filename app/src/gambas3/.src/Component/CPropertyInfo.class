@@ -124,6 +124,9 @@ Static Public Sub _init()
   $cAlwaysRead["Button.Cancel"] = True
   $cAlwaysRead["ProgressBar.Value"] = True
   $cAlwaysRead["ProgressBar.Max"] = True
+  $cAlwaysRead["SpinBox.Value"] = True
+  $cAlwaysRead["SpinBox.Min"] = True
+  $cAlwaysRead["SpinBox.Max"] = True
   
   $cShortcut["Button.Text"] = True
   $cShortcut["Menu.Text"] = True
@@ -258,9 +261,6 @@ Public Sub _new(hDoc As CDocumentation, sComponent As String, sClass As String, 
     DoNotApply = True
   Else
     DoNotApply = GetFlag($cRedirect, sClass, Name)
-    If Not DoNotApply And If Name = "Enabled" And If hClass.Container Then 
-      DoNotApply = True
-    Endif
   Endif
 
   'IF DoNotApply THEN PRINT "DoNotApply: "; sClass; "."; Name
