@@ -766,6 +766,8 @@ END_PROPERTY
 BEGIN_PROPERTY(Connection_LastInsertId)
 
 	CHECK_DB();
+	CHECK_OPEN();
+	
 	GB.ReturnLong((*THIS->driver->GetLastInsertId)(&THIS->db));
 
 END_PROPERTY
