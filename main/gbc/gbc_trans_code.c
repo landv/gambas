@@ -372,7 +372,11 @@ static void translate_body()
 			just_got_select = FALSE;
 		}
 
-		if (PATTERN_is_identifier(look[0]) && PATTERN_is(look[1], RS_COLON))
+		if (PATTERN_is(look[0], RS_DIM))
+		{
+			TRANS_local();
+		}
+		else if (PATTERN_is_identifier(look[0]) && PATTERN_is(look[1], RS_COLON))
 		{
 			TRANS_label();
 		}
