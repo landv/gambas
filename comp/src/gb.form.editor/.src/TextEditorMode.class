@@ -8,6 +8,7 @@ Static Public Const STRING_DELIM As String = "\""
 Static Public Const ESCAPE_CHAR As String = "\\"
 
 Public CloseBraces As Boolean
+Public CloseStrings As Boolean
 Public InsideStringEscape As Boolean
 
 Static Public Sub _init()
@@ -146,12 +147,13 @@ Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
   Dim sCar As String
   Dim iPos As Integer
   Dim sText As String
+  Dim sSearch As String
   
   sText = Key.Text
   
   If Key.Code = Key.BackSpace Then
     
-    If Not CloseBraces Then Return
+    If Not CloseBraces And If Not CloseStrings Then Return
 
     If hEditor.Selected Then Return
     
@@ -160,11 +162,20 @@ Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
 
     sLine = hEditor.Current.Text
     sCar = String.Mid$(sLine, X, 1)
-    iPos = InStr(Me.BRACES_OPEN & Me.STRING_DELIM, sCar)
+    
+    sSearch = ""
+    If CloseBraces Then sSearch = Me.BRACES_OPEN
+    If CloseStrings Then sSearch &= Me.STRING_DELIM
+    
+    iPos = InStr(sSearch, sCar)
     If iPos = 0 Then Return
     
+    sSearch = ""
+    If CloseBraces Then sSearch = Me.BRACES_CLOSE
+    If CloseStrings Then sSearch &= Me.STRING_DELIM
+    
     sCar = String.Mid$(sLine, X + 1, 1)
-    If sCar <> Mid$(Me.BRACES_CLOSE & Me.STRING_DELIM, iPos, 1) Then Return
+    If sCar <> Mid$(sSearch, iPos, 1) Then Return
         
     hEditor.SaveCursor()
     hEditor.Select(X - 1, hEditor.Line, X + 1, hEditor.Line)
@@ -177,71 +188,79 @@ Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
   
   InsideStringEscape = False
   
-  iPos = InStr(Me.BRACES_OPEN, sText)
-  If iPos Then
-    
-    If hEditor.Selected Then
-      If hEditor.SelectionLine = hEditor.Line Then
-        hEditor.Insert(sText & hEditor.SelectedText & Mid$(Me.BRACES_CLOSE, iPos, 1))
-        Return True
-      Endif
-    Endif
-    
-    If CanCloseBraces(hEditor) Then
-      
-      hEditor.Begin
-      hEditor.SaveCursor()
-      hEditor.Insert(sText)
-      hEditor.Insert(Mid$(Me.BRACES_CLOSE, iPos, 1))
-      hEditor.RestoreCursor()
-      hEditor.Goto(hEditor.Column + 1, hEditor.Line)
-      hEditor.End
-      '$bCanCloseBracesComputed = False
-      Return True
-      
-    Endif
-    
-    Return
-    
-  Endif
+  If CloseBraces Then
   
-  iPos = InStr(Me.BRACES_CLOSE, sText)
-  If iPos Then
-    
-    If String.Mid$(hEditor.Current.Text, hEditor.Column + 1, 1) = sText Then
-      hEditor.Goto(hEditor.Column + 1, hEditor.Line)
-      Return True
-    Endif
-    
-    Return
-    
-  Endif
-  
-  iPos = InStr(Me.STRING_DELIM, sText)
-  If iPos Then
-    
-    If Not InsideString(hEditor) Then
+    iPos = InStr(Me.BRACES_OPEN, sText)
+    If iPos Then
       
-      hEditor.SaveCursor()
-      hEditor.Insert(sText & sText)
-      hEditor.RestoreCursor()
-      hEditor.Goto(hEditor.Column + 1, hEditor.Line)
-      Return True
-      
-    Else If hEditor.Column < hEditor.Current.Length Then
-      
-      If Not InsideStringEscape Then
-        
-        If String.Mid$(hEditor.Current.Text, hEditor.Column + 1, 1) = sText Then
-          hEditor.Goto(hEditor.Column + 1, hEditor.Line)
+      If hEditor.Selected Then
+        If hEditor.SelectionLine = hEditor.Line Then
+          hEditor.Insert(sText & hEditor.SelectedText & Mid$(Me.BRACES_CLOSE, iPos, 1))
           Return True
         Endif
+      Endif
       
+      If CanCloseBraces(hEditor) Then
+        
+        hEditor.Begin
+        hEditor.SaveCursor()
+        hEditor.Insert(sText)
+        hEditor.Insert(Mid$(Me.BRACES_CLOSE, iPos, 1))
+        hEditor.RestoreCursor()
+        hEditor.Goto(hEditor.Column + 1, hEditor.Line)
+        hEditor.End
+        '$bCanCloseBracesComputed = False
+        Return True
+        
+      Endif
+      
+      Return
+      
+    Endif
+  
+    iPos = InStr(Me.BRACES_CLOSE, sText)
+    If iPos Then
+      
+      If String.Mid$(hEditor.Current.Text, hEditor.Column + 1, 1) = sText Then
+        hEditor.Goto(hEditor.Column + 1, hEditor.Line)
+        Return True
+      Endif
+      
+      Return
+      
+    Endif
+    
+  Endif
+  
+  If CloseStrings Then 
+  
+    iPos = InStr(Me.STRING_DELIM, sText)
+    If iPos Then
+      
+      If Not InsideString(hEditor) Then
+        
         hEditor.SaveCursor()
         hEditor.Insert(sText & sText)
         hEditor.RestoreCursor()
         hEditor.Goto(hEditor.Column + 1, hEditor.Line)
         Return True
+        
+      Else If hEditor.Column < hEditor.Current.Length Then
+        
+        If Not InsideStringEscape Then
+          
+          If String.Mid$(hEditor.Current.Text, hEditor.Column + 1, 1) = sText Then
+            hEditor.Goto(hEditor.Column + 1, hEditor.Line)
+            Return True
+          Endif
+        
+          hEditor.SaveCursor()
+          hEditor.Insert(sText & sText)
+          hEditor.RestoreCursor()
+          hEditor.Goto(hEditor.Column + 1, hEditor.Line)
+          Return True
+          
+        Endif
         
       Endif
       

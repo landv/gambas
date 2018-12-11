@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border=True,ShowPreview,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,Mode{None;Gambas;HTML;CSS;WebPage;JavaScript;SQL}=None,ReadOnly,TabSize{Range:2;64}=2,TabIndent,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces,ShowIndent,CloseBraces"
+Public Const _Properties As String = "*,Border=True,ShowPreview,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL}=None,Mode{None;Gambas;HTML;CSS;WebPage;JavaScript;SQL}=None,ReadOnly,TabSize{Range:2;64}=2,TabIndent,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces,ShowIndent,CloseBraces,CloseStrings"
 Public Const _DrawWith As String = "-"
 Public Const _DefaultEvent As String = "Change"
 Public Const _Similar As String = "TextArea"
@@ -67,6 +67,7 @@ Property ShowExpand As Boolean
 Property ShowSpaces As Boolean
 Property ShowIndent As Boolean
 Property CloseBraces As Boolean
+Property CloseStrings As Boolean
 
 Private Const MATCH_STRING As String = "()[]{}"
 
@@ -5687,5 +5688,17 @@ End
 Private Function LastColumn_Read() As Integer
 
   Return $LX
+
+End
+
+Private Function CloseStrings_Read() As Boolean
+
+  Return $hDoc.CloseStrings
+
+End
+
+Private Sub CloseStrings_Write(Value As Boolean)
+
+  $hDoc.CloseStrings = Value
 
 End

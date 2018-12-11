@@ -15,6 +15,7 @@ Property DisabledBreakpoints As Integer[]
 Property Bookmarks As Integer[]
 Property EndOfLine As Integer
 Property CloseBraces As Boolean
+Property CloseStrings As Boolean
 
 Public Lines As String[]
 Public LinesInfo As CLineInfo[]
@@ -39,6 +40,7 @@ Private $iBegin As Integer
 Public _Mode As TextEditorMode
 Private $sMode As String
 Private $bCloseBraces As Boolean
+Private $bCloseStrings As Boolean
 
 Private $iEndOfLine As Integer = gb.Unix
 Private $sEndOfLine As String = "\n"
@@ -1589,6 +1591,7 @@ Private Sub Mode_Write(Value As String)
   Highlight_Write(Value)
   
   _Mode.CloseBraces = $bCloseBraces
+  _Mode.CloseStrings = $bCloseStrings
   $sMode = Value
 
 End
@@ -1671,4 +1674,17 @@ Private Sub RaiseChange()
     hView._RaiseChange
   Next
 
+End
+
+Private Function CloseStrings_Read() As Boolean
+
+  Return $bCloseStrings
+
+End
+
+Private Sub CloseStrings_Write(Value As Boolean)
+
+  $bCloseStrings = Value
+  _Mode.CloseStrings = Value
+ 
 End
