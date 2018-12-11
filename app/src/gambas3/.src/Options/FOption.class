@@ -134,6 +134,7 @@ Public Sub _new()
     [btnLocalVarDecl, "/Editor/LocalVariableDeclaration", 0],
     [btnComment, "/Editor/AutoComment", 1],
     [btnCloseBraces, "/Editor/CloseBraces", 1],
+    [btnCloseStrings, "/Editor/CloseStrings", 1],
     [btnIndentDim, "/FormatCode/IndentLocal", 1],
     [btnRemoveSpace, "/FormatCode/RemoveSpaces", 0],
     [btnKeepVoidLine, "/FormatCode/KeepVoidLines", 0],
@@ -1578,4 +1579,11 @@ Public Sub btnCancelDownload_Click()
   $hDownloadHelp = Null  
   UpdateDocumentationState
   
+End
+
+Public Sub btnCloseStrings_Click()
+
+  Settings["/Editor/CloseStrings"] = btnCloseStrings.Value
+  RefreshEditor
+
 End

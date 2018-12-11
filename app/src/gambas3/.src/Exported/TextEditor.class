@@ -47,6 +47,7 @@ Public Sub ReadConfig(Optional bPreview As Boolean)
   'Me.Flags[Editor.NoFolding] = Not Settings["/Editor/ShowFolding", True]
   Me.ShowBraces = True
   Me.CloseBraces = Settings["/Editor/CloseBraces", 1]
+  Me.CloseStrings = Settings["/Editor/CloseStrings", 1]
   
   'Me.KeywordsUseUpperCase = Settings["/Editor/KeywordsUseUpperCase"]
   
