@@ -59,6 +59,8 @@ static TRANS_GOTO *goto_info;
 static TRANS_LABEL *label_info;
 static short *ctrl_parent;
 
+static short *_relocation = NULL;
+
 
 static void jump_length(ushort src, ushort dst)
 {
@@ -84,6 +86,14 @@ static int control_get_value(void)
 	return current_ctrl->value;
 }
 
+
+static void control_add_relocation()
+{
+	if (!_relocation)
+		ARRAY_create(&_relocation);
+	
+	*((ushort *)ARRAY_add(&_relocation)) = CODE_get_current_pos();
+}
 
 static void control_add_pos(ushort **tab_pos, ushort pos)
 {
@@ -200,7 +210,10 @@ static void add_goto(int index, int mode)
 	#endif
 
 	if (mode == RS_GOSUB)
+	{
+		control_add_relocation();
 		CODE_gosub(ctrl_local);
+	}
 	else if (mode == RS_GOTO)
 		CODE_jump();
 	else
@@ -247,7 +260,7 @@ static void control_enter(int type)
 			break;
 	}
 
-	JOB->func->nctrl = Max(JOB->func->nctrl, ctrl_local - JOB->func->nlocal);
+	JOB->func->nctrl = Max(JOB->func->nctrl, ctrl_local);
 
 	ctrl_level++;
 }
@@ -325,7 +338,7 @@ void TRANS_control_init(void)
 
 	label_info = NULL;
 
-	ctrl_local = JOB->func->nlocal;
+	ctrl_local = 0; //JOB->func->nlocal;
 	JOB->func->nctrl = 0;
 
 	ARRAY_create(&ctrl_parent);
@@ -340,7 +353,17 @@ void TRANS_control_exit(void)
 	TRANS_LABEL *label;
 	short id;
 
-	/* GOTO are resolved */
+	// Relocate locals
+	
+	if (_relocation)
+	{
+		for (i = 0; i < ARRAY_count(_relocation); i++)
+			JOB->func->code[_relocation[i]] += JOB->func->nlocal;
+		
+		ARRAY_delete(&_relocation);
+	}
+	
+	// Resolve GOTOs
 
 	if (goto_info)
 	{
@@ -663,7 +686,10 @@ void TRANS_on_goto_gosub(void)
 	CODE_set_current_pos(pos);
 	
 	if (gosub)
+	{
+		control_add_relocation();
 		CODE_gosub(ctrl_local);
+	}
 	else
 		CODE_jump();
 }
@@ -774,6 +800,8 @@ void TRANS_select(void)
 		JOB->current++;
 
 	TRANS_expression(FALSE);
+	
+	control_add_relocation();
 	CODE_pop_ctrl(current_ctrl->local);
 }
 
@@ -812,12 +840,14 @@ void TRANS_case(void)
 		
 		if (like)
 		{
+			control_add_relocation();
 			CODE_push_local(local);
 			TRANS_expression(FALSE);
 			CODE_op(C_LIKE, 0, 2, TRUE);
 		}
 		else if (TRANS_is(RS_TO))
 		{
+			control_add_relocation();
 			CODE_push_local(local);
 			TRANS_expression(FALSE);
 			CODE_op(C_LE, 0, 2, TRUE);
@@ -828,8 +858,10 @@ void TRANS_case(void)
 
 			if (TRANS_is(RS_TO))
 			{
+				control_add_relocation();
 				CODE_push_local(local);
 				CODE_op(C_LE, 0, 2, TRUE);
+				control_add_relocation();
 				CODE_push_local(local);
 				TRANS_expression(FALSE);
 				CODE_op(C_LE, 0, 2, TRUE);
@@ -837,6 +869,7 @@ void TRANS_case(void)
 			}
 			else
 			{
+				control_add_relocation();
 				CODE_push_local(local);
 				CODE_op(C_EQ, 0, 2, TRUE);
 			}
@@ -980,6 +1013,7 @@ void TRANS_for(void)
 	if (!PATTERN_is_newline(*JOB->current))
 		THROW(E_UNEXPECTED, READ_get_pattern(JOB->current));
 
+	control_add_relocation();
 	CODE_jump_first(current_ctrl->local);
 
 	control_set_value(CODE_get_current_pos());
@@ -1026,6 +1060,7 @@ void TRANS_for_each(void)
 
 	/*CODE_pop_ctrl(current_ctrl->local);*/
 
+	control_add_relocation();
 	CODE_first(current_ctrl->local);
 
 	control_set_value(CODE_get_current_pos());
@@ -1180,6 +1215,7 @@ void TRANS_with(void)
 
 	control_enter(RS_WITH);
 
+	control_add_relocation();
 	CODE_pop_ctrl(current_ctrl->local);
 }
 
