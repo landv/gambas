@@ -211,7 +211,7 @@ static void add_goto(int index, int mode)
 
 	if (mode == RS_GOSUB)
 	{
-		control_add_relocation();
+		//control_add_relocation();
 		CODE_gosub(ctrl_local);
 	}
 	else if (mode == RS_GOTO)
@@ -352,13 +352,25 @@ void TRANS_control_exit(void)
 	int line;
 	TRANS_LABEL *label;
 	short id;
+	ushort *pcode;
 
 	// Relocate locals
 	
 	if (_relocation)
 	{
 		for (i = 0; i < ARRAY_count(_relocation); i++)
-			JOB->func->code[_relocation[i]] += JOB->func->nlocal;
+		{
+			pcode = &JOB->func->code[_relocation[i]];
+			if (PCODE_is_breakpoint(*pcode))
+				pcode++;
+			
+			*pcode += JOB->func->nlocal;
+			
+			/*fprintf(stderr, "%04d : %04X --> ", _relocation[i], pcode);
+			pcode = (pcode & 0xFF00) | ((pcode & 0xFF) + JOB->func->nlocal);
+			fprintf(stderr, "%04X\n", pcode);
+			JOB->func->code[_relocation[i]] = pcode;*/
+		}
 		
 		ARRAY_delete(&_relocation);
 	}
@@ -687,7 +699,7 @@ void TRANS_on_goto_gosub(void)
 	
 	if (gosub)
 	{
-		control_add_relocation();
+		//control_add_relocation();
 		CODE_gosub(ctrl_local);
 	}
 	else
@@ -1226,6 +1238,7 @@ void TRANS_use_with(void)
 	if (ctrl_inner == NULL)
 		THROW("Syntax error. Point syntax used outside of WITH / END WITH");
 
+	control_add_relocation();
 	CODE_push_local(ctrl_inner->local);
 }
 
