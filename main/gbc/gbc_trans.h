@@ -151,6 +151,7 @@ bool TRANS_init_var(TRANS_DECL *decl);
 void TRANS_statement(void);
 void TRANS_init_optional(TRANS_PARAM *param);
 #define TRANS_add_label(_pos) (TRANS_labels ? *ARRAY_add(&TRANS_labels) = (_pos) : 0)
+int TRANS_loop_local(bool allow_arg);
 
 /* trans_expr.c */
 

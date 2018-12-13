@@ -976,7 +976,6 @@ CLASS_SYMBOL *CLASS_get_local_symbol(int local)
 }
 
 
-
 char *TYPE_get_desc(TYPE type)
 {
   static char buf[256];

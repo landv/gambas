@@ -656,6 +656,7 @@ void TRANS_gosub(void)
 	add_goto(index, RS_GOSUB);
 }
 
+
 void TRANS_on_goto_gosub(void)
 {
 	bool gosub;
@@ -705,6 +706,7 @@ void TRANS_on_goto_gosub(void)
 	else
 		CODE_jump();
 }
+
 
 void TRANS_do(int type)
 {
@@ -987,16 +989,18 @@ void TRANS_return(void)
 
 void TRANS_for(void)
 {
-	short local;
+	int local;
 	bool downto = FALSE;
 
 	control_enter(RS_FOR);
 
-	if (!TRANS_affectation(FALSE))
-		THROW(E_SYNTAX);
-
-	if (!CODE_check_pop_local_last(&local))
-		THROW("Loop variable must be local");
+	local = TRANS_loop_local(FALSE);
+	
+	TRANS_want(RS_EQUAL, "=");
+	
+	TRANS_expression(FALSE);
+	
+	CODE_pop_local(local);
 
 	control_check_loop_var(local);
 
@@ -1041,8 +1045,6 @@ void TRANS_for(void)
 	CODE_jump_next();
 	
 	CODE_pop_local(local);
-	CLASS_get_local_symbol(local)->local_assigned = TRUE;
-	
 }
 
 
@@ -1050,6 +1052,7 @@ void TRANS_for_each(void)
 {
 	PATTERN *iterator = JOB->current;
 	PATTERN *save;
+	int local;
 	bool var = TRUE;
 
 	while (!PATTERN_is(*JOB->current, RS_IN))
@@ -1085,7 +1088,10 @@ void TRANS_for_each(void)
 		save = JOB->current;
 		JOB->current = iterator;
 
-		TRANS_reference();
+		local = TRANS_loop_local(TRUE);
+		CODE_pop_local(local);
+		
+		//TRANS_reference();
 
 		TRANS_want(RS_IN, "IN");
 

@@ -209,6 +209,44 @@ static bool TRANS_local(void)
 	return TRUE;
 }
 
+
+int TRANS_loop_local(bool allow_arg)
+{
+	int sym_index;
+	TRANS_DECL decl;
+	CLASS_SYMBOL *sym;
+	
+	if (!PATTERN_is_identifier(*JOB->current))
+		THROW("Local variable expected");
+	
+	sym_index = PATTERN_index(*JOB->current);
+	JOB->current++;
+	
+	sym = CLASS_get_symbol(JOB->class, sym_index);
+	
+	if (TRANS_type(TT_DO_NOT_CHECK_AS | TT_CAN_ARRAY, &decl))
+	{
+		if (!TYPE_compare(&sym->local.type, &decl.type))
+		{
+			add_local(sym_index, decl.type, _func->nlocal, FALSE);
+			_func->nlocal++;
+		}
+	}
+	
+	if (TYPE_is_null(sym->local.type))
+		THROW("Unknown local variable: &1", TABLE_get_symbol_name(JOB->class->table, sym_index));
+	
+	if (!allow_arg && sym->local.value < 0)
+		THROW("Loop variable cannot be an argument");
+	
+	sym->local_assigned = TRUE;
+	sym->local_used = TRUE;
+	
+	return sym->local.value;
+}
+
+
+
 void TRANS_stop(void)
 {
 	if (TRANS_is(RS_EVENT))

@@ -1447,15 +1447,16 @@ _JUMP_FIRST:
 
 _JUMP_NEXT:
 	{
-		static const void *jn_jump[] =
+		static const void *const jn_jump[] =
 			{
-				&&_JN_START, NULL, &&_JN_BYTE, &&_JN_SHORT, &&_JN_INTEGER, &&_JN_LONG, &&_JN_SINGLE, &&_JN_FLOAT
+				&&_JN_START, NULL, &&_JN_BYTE, &&_JN_SHORT, &&_JN_INTEGER_INC, &&_JN_LONG, &&_JN_SINGLE, &&_JN_FLOAT,
+				NULL, NULL, NULL, NULL, &&_JN_INTEGER_DEC, NULL, NULL, NULL
 			};
 
-		static const void *jn_test[] =
+		static const void *const jn_test[] =
 			{
-				NULL, NULL, &&_JN_INTEGER_TEST, &&_JN_INTEGER_TEST, &&_JN_INTEGER_TEST,
-				&&_JN_LONG_TEST, &&_JN_SINGLE_TEST, &&_JN_FLOAT_TEST
+				NULL, NULL, &&_JN_INTEGER_TEST_INC, &&_JN_INTEGER_TEST_INC, &&_JN_INTEGER_TEST_INC, &&_JN_LONG_TEST, &&_JN_SINGLE_TEST, &&_JN_FLOAT_TEST,
+				NULL, NULL, &&_JN_INTEGER_TEST_DEC, &&_JN_INTEGER_TEST_DEC, &&_JN_INTEGER_TEST_DEC, NULL, NULL, NULL
 			};
 
 		TYPE type;
@@ -1478,14 +1479,10 @@ _JUMP_NEXT:
 
 		// The step value must stay negative, even if the loop variable is a byte
 
-		if (TYPE_is_integer(type))
-		{
-			VALUE_conv_integer(&SP[-1]);
-		}
-		else
-		{
+		if (type > T_INTEGER)
 			VALUE_conv(&SP[-1], type);
-		}
+		else
+			VALUE_conv_integer(&SP[-1]);
 
 		VALUE_conv(&SP[-2], type);
 
@@ -1496,23 +1493,43 @@ _JUMP_NEXT:
 
 		val = &BP[PC[2] & 0xFF];
 
+		if (type <= T_INTEGER && inc->_integer.value < 0)
+			type += 8;
+		
 		*PC |= type;
 		goto *jn_test[type];
 
 	_JN_BYTE:
 		val->_integer.value = (unsigned char)(val->_integer.value + inc->_integer.value);
-		goto _JN_INTEGER_TEST;
+		if (inc->_integer.value < 0)
+			goto _JN_INTEGER_TEST_DEC;
+		else
+			goto _JN_INTEGER_TEST_INC;
 
 	_JN_SHORT:
 		val->_integer.value = (short)(val->_integer.value + inc->_integer.value);
-		goto _JN_INTEGER_TEST;
+		if (inc->_integer.value < 0)
+			goto _JN_INTEGER_TEST_DEC;
+		else
+			goto _JN_INTEGER_TEST_INC;
 
-	_JN_INTEGER:
+	_JN_INTEGER_INC:
 		val->_integer.value += inc->_integer.value;
 
-	_JN_INTEGER_TEST:
-		if ((inc->_integer.value > 0 && val->_integer.value <= end->_integer.value)
-			  || (inc->_integer.value < 0 && val->_integer.value >= end->_integer.value))
+	_JN_INTEGER_TEST_INC:
+		if (val->_integer.value <= end->_integer.value)
+		{
+			PC += 3;
+			goto _MAIN;
+		}
+		else
+			goto _JN_END;
+
+	_JN_INTEGER_DEC:
+		val->_integer.value += inc->_integer.value;
+
+	_JN_INTEGER_TEST_DEC:
+		if (val->_integer.value >= end->_integer.value)
 		{
 			PC += 3;
 			goto _MAIN;
