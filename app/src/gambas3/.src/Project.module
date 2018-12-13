@@ -289,7 +289,6 @@ Public Sub Main()
   Dim sPath As String
   Dim iInd As Integer
   Dim sArg As String
-  Dim hComp As CComponent
   Dim aOpenFile As New String[]
 
   'DB.Debug = True
@@ -356,9 +355,12 @@ Public Sub Main()
     CRecentProject.Load
     FMain.Load
     Project.Open(sPath)
+    
+    Dim hComp As CComponent
     For Each hComp In Project.Documentation.Components
       hComp.Load
     Next
+    
     Quit
     'FSearch.FindProject("else")
     'Project.Close
