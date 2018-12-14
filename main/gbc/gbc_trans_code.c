@@ -217,7 +217,7 @@ int TRANS_loop_local(bool allow_arg)
 	CLASS_SYMBOL *sym;
 	
 	if (!PATTERN_is_identifier(*JOB->current))
-		THROW("Local variable expected");
+		THROW("Syntax error. Identifier expected");
 	
 	sym_index = PATTERN_index(*JOB->current);
 	JOB->current++;
@@ -234,7 +234,12 @@ int TRANS_loop_local(bool allow_arg)
 	}
 	
 	if (TYPE_is_null(sym->local.type))
-		THROW("Unknown local variable: &1", TABLE_get_symbol_name(JOB->class->table, sym_index));
+	{
+		if (TYPE_is_null(sym->global.type))
+			THROW("Unknown identifier: &1", TABLE_get_symbol_name(JOB->class->table, sym_index));
+		else
+			THROW("Loop variable cannot be global");
+	}
 	
 	if (!allow_arg && sym->local.value < 0)
 		THROW("Loop variable cannot be an argument");

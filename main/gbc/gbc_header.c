@@ -563,7 +563,7 @@ static bool header_enumeration(TRANS_DECL *decl)
 		TRANS_newline();
 
 		if (!PATTERN_is_identifier(*JOB->current))
-			THROW("Syntax error. Identifier expected.");
+			THROW("Syntax error. Identifier expected");
 		
 		CLEAR(decl);
 

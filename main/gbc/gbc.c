@@ -165,7 +165,7 @@ static void get_arguments(int argc, char **argv)
 			case 'r':
 				if (COMP_root)
 				{
-					fprintf(stderr, "gbc: option '-r' already specified.\n");
+					fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": option '-r' already specified.\n");
 					exit(1);
 				}
 				COMP_root = STR_copy(optarg);
@@ -238,7 +238,7 @@ static void get_arguments(int argc, char **argv)
 
 	if (optind < (argc - 1))
 	{
-		fprintf(stderr, "gbc: too many arguments.\n");
+		fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": too many arguments.\n");
 		exit(1);
 	}
 
@@ -249,7 +249,7 @@ static void get_arguments(int argc, char **argv)
 	dir = FILE_get_current_dir();
 	if (!dir)
 	{
-		fprintf(stderr, "gbc: no current directory.\n");
+		fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": no current directory.\n");
 		exit(1);
 	}
 
@@ -257,7 +257,7 @@ static void get_arguments(int argc, char **argv)
 
 	if (!FILE_exist(COMP_project))
 	{
-		fprintf(stderr, "gbc: project file not found: %s\n", COMP_project);
+		fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": project file not found: %s\n", COMP_project);
 		exit(1);
 	}
 }
@@ -388,7 +388,7 @@ static void fill_files(const char *root, bool recursive)
 	dir = opendir(path);
 	if (!dir)
 	{
-		fprintf(stderr, "gbc: cannot browse directory: %s\n", path);
+		fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": cannot browse directory: %s\n", path);
 		exit(1);
 	}
 
@@ -402,7 +402,7 @@ static void fill_files(const char *root, bool recursive)
 
 		if (stat(file, &info))
 		{
-			fprintf(stderr, "gbc: warning: cannot stat file: %s\n", file);
+			fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": warning: cannot stat file: %s\n", file);
 			continue;
 		}
 
