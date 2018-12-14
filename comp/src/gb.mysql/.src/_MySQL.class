@@ -67,8 +67,8 @@ End
 
 Private Sub Charset_Write(Value As String) 'Validate if the Char Set is valid
 
-  For Each $sTmp In $asCharsets
-    If $sTmp = Value Then
+  For Each sTmp As String In $asCharsets
+    If sTmp = Value Then
       $Charset = Value
       Return
     Endif
@@ -85,8 +85,8 @@ End
 
 Private Sub Collation_Write(Value As String)
 
-  For Each $sTmp In $asCollations
-    If $sTmp = Value Then
+  For Each sTmp As String In $asCollations
+    If sTmp = Value Then
       $Collation = Value
       Return
     Endif
