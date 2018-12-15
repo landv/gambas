@@ -171,16 +171,27 @@ void TRANS_print(void)
 void TRANS_debug(void)
 {
 	if (!JOB->debug)
-	{
-		while (!PATTERN_is_newline(*JOB->current))
-			JOB->current++;
-		return;
-	}
-
+		CODE_disable();
+	
 	trans_subr(TS_SUBR_DEBUG, 0);
-	CODE_drop();
-	CODE_push_number(2); // stderr
 	trans_print_debug();
+	
+	if (!JOB->debug)
+		CODE_enable();
+}
+
+
+void TRANS_assert(void)
+{
+	if (!JOB->debug || JOB->exec)
+		CODE_disable();
+
+	TRANS_expression(FALSE);
+	trans_subr(TS_SUBR_DEBUG, 1);
+	CODE_drop();
+
+	if (!JOB->debug || JOB->exec)
+		CODE_enable();
 }
 
 

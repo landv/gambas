@@ -204,7 +204,7 @@ static void get_arguments(int argc, char **argv)
 
 					"  -r  --root <directory>     gives the gambas installation directory\n"
 					"  -e  --translate-errors     display translatable error messages\n"
-					"  -x  --exec                 define the 'Exec' preprocessor constant\n"
+					"  -x  --exec                 executable mode (define the 'Exec' preprocessor constant and remove assertions)\n"
 					"  -V  --version              display version\n"
 					"  -L  --license              display license\n"
 					"  -h  --help                 display this help\n"
@@ -220,7 +220,7 @@ static void get_arguments(int argc, char **argv)
 					"  -s                         swap endianness\n"
 					"  -r <directory>             gives the gambas installation directory\n"
 					"  -e                         display translatable error messages\n"
-					"  -x                         define the 'Exec' preprocessor constant\n"
+					"  -x                         executable mode (define the 'Exec' preprocessor constant and remove assertions)\n"
 					"  -V                         display version\n"
 					"  -L                         display license\n"
 					"  -h                         display this help\n"

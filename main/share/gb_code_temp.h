@@ -47,6 +47,7 @@
 
 short CODE_stack_usage;
 short CODE_stack;
+unsigned char CODE_disabled = 0;
 
 static bool _ignore_next_stack_usage = FALSE;
 
@@ -66,15 +67,17 @@ static void alloc_code(void)
 		REALLOC(&cur_func->code, sizeof(short) * cur_func->ncode_max);
 }
 
-//static void INLINE write_short(short value)
 #define write_short(_value) \
 ({ \
-	if (cur_func->ncode >= cur_func->ncode_max) \
-		alloc_code(); \
-	\
-	cur_func->code[cur_func->ncode] = _value; \
-	/*fprintf(stderr, "[%d] %04hX\n", cur_func->ncode, (ushort)value);*/ \
-	cur_func->ncode++; \
+	if (CODE_disabled == 0) \
+	{ \
+		if (cur_func->ncode >= cur_func->ncode_max) \
+			alloc_code(); \
+		\
+		cur_func->code[cur_func->ncode] = _value; \
+		/*fprintf(stderr, "[%d] %04hX\n", cur_func->ncode, (ushort)value);*/ \
+		cur_func->ncode++; \
+	} \
 })
 
 #ifdef PROJECT_COMP

@@ -255,7 +255,7 @@ void SUBR_exec(ushort code);
 void SUBR_eval(ushort code);
 void SUBR_array(ushort code);
 void SUBR_collection(ushort code);
-void SUBR_debug(void);
+void SUBR_debug(ushort code);
 
 void EVAL_string(char *expr);
 

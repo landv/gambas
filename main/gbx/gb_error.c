@@ -48,7 +48,7 @@ int ERROR_depth = 0;
 static int _lock = 0;
 static char *_print_prefix = NULL;
 
-static const char *const _message[73] =
+static const char *const _message[74] =
 {
 	/*  0 E_UNKNOWN     */ "Unknown error",
 	/*  1 E_MEMORY      */ "Out of memory",
@@ -122,7 +122,8 @@ static const char *const _message[73] =
 	/* 69 E_USER        */ "Unknown user or group",
 	/* 70 E_NEMPTY      */ "Directory is not empty",
 	/* 71 E_UTYPE       */ "Unsupported datatype",
-	/* 72 E_FREEREF     */ "Free object referenced"
+	/* 72 E_FREEREF     */ "Free object referenced",
+	/* 73 E_ASSERT      */ "Assertion failed"
 };
 
 #if DEBUG_ERROR

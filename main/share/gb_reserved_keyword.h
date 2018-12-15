@@ -142,6 +142,7 @@ COMP_INFO COMP_res_info[] =
 	{ "Unlock"                                                    },
 	{ "Library"                                                   },
 	{ "Debug"                                                     },
+	{ "Assert"                                                    },
 	{ "Pipe"                                                      },
 	{ "Randomize"                                                 },
 	{ "ByRef"                                                     },
@@ -434,7 +435,7 @@ SUBR_INFO COMP_subr_info[] =
 
 #ifndef __EVAL_RESERVED_C
 	{ ".Error",            53,  0, T_BOOLEAN,      0     },
-	{ ".Debug",            54,  0, T_VOID,         0     },  // CODE_DEBUG
+	{ ".Debug",            54,  0, T_VOID,         0,  1 },  // CODE_DEBUG
 
 	{ ".Wait",             55,  0, T_VOID,         0,  1 },
 

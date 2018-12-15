@@ -246,6 +246,7 @@ void TRANS_link(void);
 void TRANS_input_from(void);
 void TRANS_output_to(void);
 void TRANS_debug(void);
+void TRANS_assert(void);
 void TRANS_error(void);
 void TRANS_scan(void);
 void TRANS_randomize(void);

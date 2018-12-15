@@ -323,7 +323,7 @@ void EXEC_loop(void)
 		/* 73 DateAdd...      */  &&_SUBR_CODE,
 		/* 74 Eval            */  &&_SUBR_CODE,
 		/* 75 Error           */  &&_SUBR,
-		/* 76 Debug           */  &&_SUBR,
+		/* 76 Debug           */  &&_SUBR_CODE,
 		/* 77 Wait            */  &&_SUBR_CODE,
 		/* 78 Open            */  &&_SUBR_CODE,
 		/* 79 Close           */  &&_SUBR,

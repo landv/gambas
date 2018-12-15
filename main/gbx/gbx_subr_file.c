@@ -1125,14 +1125,24 @@ void SUBR_dfree(void)
 	SUBR_LEAVE();
 }
 
-void SUBR_debug(void)
+void SUBR_debug(ushort code)
 {
-	const int NPARAM = 0;
-	STREAM *stream = get_default(2);
-	const char *s = DEBUG_get_current_position();
-	
-	STREAM_write(stream, (void *)s, strlen(s));
-	STREAM_write(stream, ": ", 2);
+	SUBR_ENTER();
+
+	if (NPARAM == 0)
+	{
+		STREAM *stream = get_default(2);
+		const char *s = DEBUG_get_current_position();
+		
+		STREAM_write(stream, (void *)s, strlen(s));
+		STREAM_write(stream, ": ", 2);
+	}
+	else if (NPARAM == 1)
+	{
+		VALUE_conv_boolean(PARAM);
+		if (PARAM->_boolean.value == 0)
+			THROW(E_ASSERT);
+	}
 	
 	SUBR_LEAVE();
 }
