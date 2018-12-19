@@ -63,6 +63,12 @@ Public Sub Clear()
   
 End
 
+Public Sub Copy()
+  
+  WebForm._AddJavascript("gw.textbox.copy(" & JS(Me.Name) & ")")
+  
+End
+
 
 Public Sub _Render()
   

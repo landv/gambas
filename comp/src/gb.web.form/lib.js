@@ -1403,15 +1403,29 @@ gw = {
     
     copy: function(id)
     {
-      var ret = false;
-      var elt = $(id);
-      var save = gw.saveFocus();
-      gw.setFocus(id);
-      gw.setSelection(elt, [0, elt.value.length]);
-      try { document.execCommand('copy'); } catch(e) { gw.log('Unable to copy: ' + e); ret = true; }
-      gw.restoreFocus(save);
-      return ret;
+      navigator.clipboard.writeText($(id + ':entry').value)
+        .then(() => {
+          // Success!
+        })
+        .catch(err => {
+          console.log('Unable to copy to the clipboard: ', err);
+        });
+    }
+  },
+
+  textarea:
+  {
+    copy: function(id)
+    {
+      navigator.clipboard.writeText($(id).value)
+        .then(() => {
+          // Success!
+        })
+        .catch(err => {
+          console.log('Unable to copy to the clipboard: ', err);
+        });
     }
   }
+  
 }
 

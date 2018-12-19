@@ -72,6 +72,7 @@ Static Public Sub Main()
   Dim sFile As String
   Dim sKey As String
   Dim sErr As String
+  Dim sVar As String
   
   'System.Log(Format(Timer, "#0.000") & ": start request: [" & Session.Id & "] " & URL.Decode(Application.Request))
   
@@ -110,11 +111,16 @@ Static Public Sub Main()
       
     Else If sPath = "~dump" Then
       
+      Response.ContentType = "text/plain;charset=utf-8"
+      Response.Begin
+      
+      For Each sVar In Env
+        Print sVar; " = "; Env[sVar]
+      Next
+  
       If Session.Id Then
         
-        Response.ContentType = "text/plain;charset=utf-8"
-        Response.Begin
-  
+        Print
         For Each sKey In Session.Keys
           Print sKey; " : "; JSON.Encode(Session[sKey])
         Next
@@ -122,11 +128,11 @@ Static Public Sub Main()
         Print
         Print "size = "; Session.Size
         
-        Response.End
-        Return
-        
       Endif
       
+      Response.End
+      Return
+        
     Else If sPath = "~logout" Then
       
       Session.Abandon

@@ -117,3 +117,18 @@ Private Sub PlaceHolder_Write(Value As String)
   Me._SetProperty("PlaceHolder", Value)
 
 End
+
+Public Sub Clear()
+  
+  Text_Write("")
+  
+End
+
+
+Public Sub Copy()
+  
+  WebForm._AddJavascript("gw.textarea.copy(" & JS(Me.Name) & ")")
+  
+End
+
+
