@@ -933,6 +933,9 @@ void EXEC_function_loop()
 				if (EXEC_break_on_error)
 					DEBUG.Main(TRUE);
 
+				if (ERROR->info.code == E_ASSERT)
+					goto __IGNORE_TRY_CATCH;
+				
 				// Are we in a TRY?
 				if (EP && EC)
 				{
@@ -982,6 +985,8 @@ void EXEC_function_loop()
 					goto __CONTINUE;
 				}
 
+			__IGNORE_TRY_CATCH:
+				
 				// There is no error handler in the function
 
 				#if DEBUG_ERROR
