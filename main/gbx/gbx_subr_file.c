@@ -1136,6 +1136,9 @@ void SUBR_debug(ushort code)
 		
 		STREAM_write(stream, (void *)s, strlen(s));
 		STREAM_write(stream, ": ", 2);
+		
+		RETURN->type = T_INTEGER;
+		RETURN->_integer.value = 2;
 	}
 	else if (NPARAM == 1)
 	{
