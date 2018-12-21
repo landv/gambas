@@ -934,7 +934,11 @@ void EXEC_function_loop()
 					DEBUG.Main(TRUE);
 
 				if (ERROR->info.code == E_ASSERT)
+				{
+					EP = NULL;
+					EC = NULL;
 					goto __IGNORE_TRY_CATCH;
+				}
 				
 				// Are we in a TRY?
 				if (EP && EC)
