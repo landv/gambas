@@ -47,6 +47,9 @@
 #include <GlobalParams.h>
 #include <UnicodeMap.h>
 
+#if POPPLER_VERSION_0_72
+#define getCString c_str
+#endif
 
 /***************************************************************************/
 
