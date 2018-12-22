@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Border=True,Text,Image{WebImage}"
+Public Const _Properties As String = "*,Border=True,Text,Image{WebImage},Immediate"
 'Public Const _DrawWith As String '= "Button"
 Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "16,4"
@@ -12,9 +12,11 @@ Event Click
 
 Property Text As String
 Property Image As String
+Property Immediate As Boolean
 
 Private $sText As String
 Private $sImage As String
+Private $bImmediate As Boolean
 
 Private Function Text_Read() As String
 
@@ -46,7 +48,19 @@ End
 
 Public Sub _BeforeRender()
   
-  Print "<button"; Me._GetClassId(); Me._GetEventJS("onclick", "click");
+  Dim sEvent As String
+  Dim vSave As Variant
+  
+  Print "<button"; Me._GetClassId(); 
+  If $bImmediate Then
+    Print " onclick=\"";
+    vSave = WebForm._BeginJavascript()
+    Raise Click
+    WebForm._EndJavascript(vSave)
+    Print "\"";
+  Else
+    Print Me._GetEventJS("onclick", "click");
+  Endif
   Me._RenderStyleSheet()
   If Not Me.Enabled Then Print " disabled";
   Print ">";
@@ -87,4 +101,18 @@ Public Sub Click()
   
   Object.Raise(Me, "Click")
   
+End
+
+Private Function Immediate_Read() As Boolean
+
+  Return $bImmediate
+
+End
+
+Private Sub Immediate_Write(Value As Boolean)
+
+  If $bImmediate = Value Then Return
+  $bImmediate = Value
+  Me._SetProperty("Immediate", Value)
+
 End

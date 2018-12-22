@@ -41,8 +41,8 @@ Private Function Text_Read() As String
 
 End
 
-Private Sub Text_Write(Value As String)
-
+Private Sub SetText(Value As String, Optional bNoRefresh As Boolean)
+  
   If $sText = Value Then Return
   
   $sText = Value
@@ -51,9 +51,16 @@ Private Sub Text_Write(Value As String)
   Me._SetProperty("Text", Value)
   Dec Me._NoRefresh
   
-  If Me._CanRefresh() Then WebForm._AddJavascript("$(" & JS(Me.Name & ":entry") & ").value = " & JS($sText))
+  If Not bNoRefresh And If Me._CanRefresh() Then WebForm._AddJavascript("$(" & JS(Me.Name & ":entry") & ").value = " & JS($sText))
   
   Raise Change
+
+End
+
+
+Private Sub Text_Write(Value As String)
+
+  SetText(Value)
 
 End
 
@@ -69,7 +76,6 @@ Public Sub Copy()
   
 End
 
-
 Public Sub _Render()
   
   If $bShowClear Then
@@ -82,10 +88,9 @@ Public Sub _Render()
   
   Print "<input id=\""; Me.Name; ":entry\"";
   If $bShowClear Then Print " style=\"padding-right:2.25em;\"";
-  Print " type=\""; If($bPassword, "password", "text"); "\""; Me._GetUpdateJS("onchange", "text", "this.value"); Me._GetUpdateJS("onblur", "text", "this.value");
-  If Object.CanRaise(Me, "Activate") Then
-    Print " onkeypress=\"gw.textbox.onactivate("; JS(Me.Name); ",event);\""; 'WebForm._AddJavascript("gw.textbox.onactivate(" & JS(Me.Name) & ")")
-  Endif
+  Print " type=\""; If($bPassword, "password", "text"); "\""; Me._GetUpdateJS("onblur", "text", "this.value"); 'Me._GetUpdateJS("oninput", "text", "this.value"); '
+  If Object.CanRaise(Me, "Change") Then Print " oninput=\"gw.textbox.onchange("; JS(Me.Name); ");\"";
+  If Object.CanRaise(Me, "Activate") Then Print " onkeypress=\"gw.textbox.onactivate("; JS(Me.Name); ",event);\""; 'WebForm._AddJavascript("gw.textbox.onactivate(" & JS(Me.Name) & ")")
   
   If Not Me.Enabled Then Print " disabled";
   If $bReadOnly Then Print " readonly";
@@ -114,7 +119,7 @@ End
 
 Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   
-  If sProp = "text" Then Try Me.Text = vValue
+  If sProp = "text" Then SetText(vValue, True)
   
 End
 

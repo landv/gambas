@@ -301,6 +301,37 @@ Static Private Sub PrintJavascript()
   
 End
 
+Public Sub _BeginJavascript() As Variant
+
+  Dim aJavascript As String[]
+  Dim aJavascriptBefore As String[]
+  
+  aJavascript = $aJavascript
+  aJavascriptBefore = $aJavascriptBefore
+  
+  $aJavascript = New String[]
+  $aJavascriptBefore = New String[]
+  
+  Return [aJavascript, aJavascriptBefore]
+  
+End
+
+Public Sub _EndJavascript(vSave As Variant)
+  
+  Dim aJavascript As String[]
+  Dim aJavascriptBefore As String[]
+  
+  aJavascript = $aJavascript
+  aJavascriptBefore = $aJavascriptBefore
+  
+  $aJavascript = vSave[0]
+  $aJavascriptBefore = vSave[1]
+  
+  If aJavascriptBefore.Count Then Print aJavascriptBefore.Join(";"); ";";
+  If aJavascript.Count Then Print aJavascript.Join(";"); ";";
+  
+End
+
 Public Sub Render()
 
   Dim sImage As String
