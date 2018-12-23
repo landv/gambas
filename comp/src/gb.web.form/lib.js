@@ -1386,13 +1386,13 @@ gw = {
     onactivate: function(id, e)
     {
       if (e.keyCode == 13)
-        setTimeout(function() { gw.raise(id, 'activate', [], false); }, 50);
+        setTimeout(function() { gw.update(id, 'text', $(id + ':entry').value); gw.raise(id, 'activate', [], false); }, 50);
     },
     
     onchange: function(id)
     {
       if ($(id).gw_timer) clearTimeout($(id).gw_timer);
-      $(id).gw_timer = setTimeout(function() { gw.update(id, 'text', $(id + ':entry').value, null); }, 50);
+      $(id).gw_timer = setTimeout(function() { gw.update(id, 'change', $(id + ':entry').value, null); }, 50);
     },
     
     getText: function(id)
@@ -1427,7 +1427,7 @@ gw = {
     onchange: function(id)
     {
       if ($(id).gw_timer) clearTimeout($(id).gw_timer);
-      $(id).gw_timer = setTimeout(function() { gw.update(id, 'text', $(id).value, null); }, 50);
+      $(id).gw_timer = setTimeout(function() { gw.update(id, 'change', $(id).value, null); }, 50);
     },
     
     copy: function(id)

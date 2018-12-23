@@ -97,7 +97,11 @@ End
 
 Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   
-  If sProp = "text" Then SetText(vValue, True)
+  If sProp = "text" Then 
+    SetText(vValue, False)
+  Else If sProp = "change" Then
+    SetText(vValue, True)
+  Endif
   
 End
 
