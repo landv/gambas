@@ -47,7 +47,7 @@ void COBSERVER_attach(COBSERVER *this, void *parent, const char *name)
 	#if DEBUG_ME
 	fprintf(stderr, "COBSERVER_attach: %p: %s %p\n", this, parent ? OBJECT_class(parent)->name : "", parent);
 	#endif
-	if (this->event)
+	if (this->object && this->event)
 		EVENT_search(OBJECT_class(this->object), this->event, name, parent);	
 }
 

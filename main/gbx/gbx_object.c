@@ -196,6 +196,7 @@ static void remove_observers(OBJECT *ob)
 		#if DEBUG_EVENT
 		fprintf(stderr, "Remove observer %p %d: %p: %p\n", obs, (int)obs->ob.ref, ob, obs->object);
 		#endif
+		obs->object = NULL;
 		OBJECT_UNREF(obs);
 		obs = next;
 	}

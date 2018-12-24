@@ -602,11 +602,25 @@ void LOCAL_init(void)
 
 void LOCAL_exit(void)
 {
-	STRING_free(&env_LANG);
-	STRING_free(&env_LC_ALL);
-	STRING_free(&env_LANGUAGE);
+	if (env_LANG)
+	{
+		unsetenv("LANG");
+		STRING_free(&env_LANG);
+	}
+	if (env_LC_ALL)
+	{
+		unsetenv("LC_ALL");
+		STRING_free(&env_LC_ALL);
+	}
+	if (env_LANGUAGE)
+	{
+		unsetenv("LANGUAGE");
+		STRING_free(&env_LANGUAGE);
+	}
+	
 	if (!LOCAL_is_UTF8)
 		STRING_free(&LOCAL_encoding);
+	
 	STRING_free(&_lang);
 	free_local_info();
 }
