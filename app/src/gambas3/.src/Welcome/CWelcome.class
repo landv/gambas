@@ -1,18 +1,35 @@
 ' Gambas class file
 
-Private $hLogo As Image
-Private $hText As Image
-
 Static Private BACKGROUND_COLOR As Integer = &H3398C3& '&HFFAF5F&
 Static Private TEXT_COLOR As Integer = &HDF6B00& ' &HDF6B00 '&HFFAF5F&
 
+Private $hLogo As Image
+Private $hText As Image
+
 Private $hObs As Observer
+Private $hTimer As Timer
+
+Private $aSnowFlakes As New CSnowFlake[]
+Private MAX_SNOW_FLAKES As Integer = 200
+
+Private $aImage As Image[]
 
 Public Sub _new(hDrawingArea As DrawingArea)
+  
+  Dim hSnowFlake As Image
+  Dim I As Integer
   
   hDrawingArea.Background = BACKGROUND_COLOR
   
   $hObs = New Observer(hDrawingArea) As "dwgWelcome"
+  $hTimer = New Timer As "SnowTimer"
+  $hTimer.Delay = 50
+  
+  hSnowFlake = Image.Load("img/snowflake.png")
+  $aImage = New Image[8]
+  For I = 0 To $aImage.Max
+    $aImage[I] = hSnowFlake.Stretch(I + 1, I + 1)
+  Next
   
 End
 
@@ -55,9 +72,9 @@ Public Sub dwgWelcome_Draw()
 
   Dim hSvgLogo As SvgImage
   Dim X, Y As Integer
-  Dim hDrawingArea As DrawingArea
-  
-  hDrawingArea = $hObs.Object
+  Dim hDrawingArea As DrawingArea = $hObs.Object
+  Dim I As Integer
+  Dim hSnowFlake As CSnowFlake
    
   If Not $hLogo Then 
     
@@ -91,6 +108,54 @@ Public Sub dwgWelcome_Draw()
 
   Paint.DrawImage($hLogo, hDrawingArea.W - $hLogo.Width, -10 - Desktop.Scale)
   Paint.DrawImage($hText, Desktop.Scale, Desktop.Scale * 2)
+  
+  For I = 0 To $aSnowFlakes.Max
+    hSnowFlake = $aSnowFlakes[I]
+    With hSnowFlake
+      Paint.DrawImage($aImage[.Size], CInt(.X), CInt(.Y))
+    End With
+  Next
+  
+  $hTimer.Start
 
 End
+
+Public Sub SnowTimer_Timer()
+  
+  Dim hDrawingArea As DrawingArea = $hObs.Object
+  Dim hSnowFlake As CSnowFlake
+  Dim I As Integer
+  Dim H As Integer
+  
+  $hTimer.Stop
+  If Not Object.IsValid(hDrawingArea) Then Return
+  
+  H = hDrawingArea.H + 8
+  
+  While I < $aSnowFlakes.Count
+    hSnowFlake = $aSnowFlakes[I]
+    hSnowFlake.X += hSnowFlake.DX
+    hSnowFlake.Y += hSnowFlake.DY
+    If hSnowFlake.Y >= H Then
+      $aSnowFlakes.Remove(I)
+    Else
+      Inc I
+    Endif
+  Wend
+  
+  If $aSnowFlakes.Count < MAX_SNOW_FLAKES Then
+    For I = 0 To Rand(3)
+      hSnowFlake = New CSnowFlake
+      hSnowFlake.X = Rand(0, hDrawingArea.W - 1)
+      hSnowFlake.Size = CInt(Sqr(Rand($aImage.Max * $aImage.Max)))
+      hSnowFlake.DY = 0.5 + hSnowFlake.Size / 3 + Rnd
+      hSnowFlake.DX = (Rnd * 2 - 1) * hSnowFlake.DY
+      $aSnowFlakes.Add(hSnowFlake)
+    Next
+  Endif
+  
+  hDrawingArea.Refresh
+  
+End
+
 
