@@ -11,8 +11,9 @@ Private $hObs As Observer
 Private $hTimer As Timer
 Private $hSnow As Image
 Private $aSnowFlakes As New CSnowFlake[]
-Private MAX_SNOW_FLAKES As Integer = 200
+Private MAX_SNOW_FLAKES As Integer = 300
 Private $aImage As Image[]
+Private $bIgnoreTree As Boolean
 
 Public Sub _new(hDrawingArea As DrawingArea)
   
@@ -129,6 +130,8 @@ Public Sub dwgWelcome_Draw()
       Paint.End
     Endif
   
+    Paint.DrawImage($hSnow, 0, 0)
+    
     For I = 0 To $aSnowFlakes.Max
       hSnowFlake = $aSnowFlakes[I]
       With hSnowFlake
@@ -136,8 +139,6 @@ Public Sub dwgWelcome_Draw()
         Paint.DrawImage($aImage[.Size], CInt(.X) - S, CInt(.Y) - S)
       End With
     Next
-    
-    Paint.DrawImage($hSnow, 0, 0)
     
     $hTimer.Start
     
@@ -172,16 +173,22 @@ Public Sub SnowTimer_Timer()
       .Y += .DY
       X = CInt(.X)
       Y = CInt(.Y)
-      If Y >= H Or If Color[$hSnow[X, Y]].Alpha < 16 Then
-        $aSnowFlakes.Remove(I)
-        'Paint.DrawImage($aImage[.Size], CInt(.X), CInt(.Y))
-        S = 1 + Min(3, .Size \ 2)
-        Paint.Ellipse(X - S \ 2, Y - S \ 2, S, S)
-        Paint.Fill
-      Else
-        Inc I
+      
+      If Y < H Then
+        If .IgnoreTree Or If Color[$hSnow[X, Y]].Alpha > 16 Then
+          Inc I
+          Continue
+        Endif
       Endif
+      
+      $aSnowFlakes.Remove(I)
+      'Paint.DrawImage($aImage[.Size], CInt(.X), CInt(.Y))
+      S = 1 + Min(3, .Size \ 2)
+      Paint.Ellipse(X - S \ 2, Y - S \ 2, S, S)
+      Paint.Fill
+
     End With
+
   Wend
   
   Paint.End
@@ -193,6 +200,8 @@ Public Sub SnowTimer_Timer()
       hSnowFlake.Size = Rand($aImage.Max)
       hSnowFlake.DY = 0.5 + hSnowFlake.Size / 3 + Rnd
       hSnowFlake.DX = (Rnd * 3 - 1.5) * hSnowFlake.DY
+      hSnowFlake.IgnoreTree = $bIgnoreTree
+      $bIgnoreTree = Not $bIgnoreTree
       $aSnowFlakes.Add(hSnowFlake)
     Next
   Endif
