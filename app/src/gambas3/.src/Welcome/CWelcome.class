@@ -7,29 +7,36 @@ Private $hLogo As Image
 Private $hText As Image
 
 Private $hObs As Observer
-Private $hTimer As Timer
 
+Private $hTimer As Timer
+Private $hSnow As Image
 Private $aSnowFlakes As New CSnowFlake[]
 Private MAX_SNOW_FLAKES As Integer = 200
-
 Private $aImage As Image[]
 
 Public Sub _new(hDrawingArea As DrawingArea)
   
   Dim hSnowFlake As Image
   Dim I As Integer
+  Dim dNow As Date
   
   hDrawingArea.Background = BACKGROUND_COLOR
   
   $hObs = New Observer(hDrawingArea) As "dwgWelcome"
-  $hTimer = New Timer As "SnowTimer"
-  $hTimer.Delay = 50
   
-  hSnowFlake = Image.Load("img/snowflake.png")
-  $aImage = New Image[8]
-  For I = 0 To $aImage.Max
-    $aImage[I] = hSnowFlake.Stretch(I + 1, I + 1)
-  Next
+  dNow = Now
+  If dNow >= Date(Year(dNow), 12, 25) Then
+  
+    $hTimer = New Timer As "SnowTimer"
+    $hTimer.Delay = 50
+    
+    hSnowFlake = Image.Load("img/snowflake.png")
+    $aImage = New Image[8]
+    For I = 0 To $aImage.Max
+      $aImage[I] = hSnowFlake.Stretch(I + 1, I + 1)
+    Next
+    
+  Endif
   
 End
 
@@ -73,8 +80,9 @@ Public Sub dwgWelcome_Draw()
   Dim hSvgLogo As SvgImage
   Dim X, Y As Integer
   Dim hDrawingArea As DrawingArea = $hObs.Object
-  Dim I As Integer
+  Dim I, S As Integer
   Dim hSnowFlake As CSnowFlake
+  Dim hFir As Image
    
   If Not $hLogo Then 
     
@@ -87,6 +95,9 @@ Public Sub dwgWelcome_Draw()
     
     $hText = New Image(hDrawingArea.Width, hDrawingArea.Height, Color.Transparent)
     Paint.Begin($hText)
+    
+    Paint.Translate(Desktop.Scale, Desktop.Scale * 2)
+    
     Paint.Font = Font["+10,Bold"]
     Y = Paint.Font.Ascent
     X = PaintText("Gambas " & Project.FullVersion, 8, Y, Color.White) 'TEXT_COLOR)
@@ -97,7 +108,7 @@ Public Sub dwgWelcome_Draw()
     Y += Paint.Font.Height
     PaintText("http://gambas.sourceforge.net", 12, Y, TEXT_COLOR) 'Color.LightForeground)
     
-    Paint.Font = Font["Italic,Bold"]
+    Paint.Font = Font["-1,Bold"]
     Y += Paint.Font.Height + 16
     PaintText(("This program is published under the GNU General Public License.") & "\n" & ("The Gambas font is published under the SIL Open Font License."), 12, Y, Color.SelectedForeground)
     Paint.End
@@ -107,17 +118,33 @@ Public Sub dwgWelcome_Draw()
   Endif
 
   Paint.DrawImage($hLogo, hDrawingArea.W - $hLogo.Width, -10 - Desktop.Scale)
-  Paint.DrawImage($hText, Desktop.Scale, Desktop.Scale * 2)
   
-  For I = 0 To $aSnowFlakes.Max
-    hSnowFlake = $aSnowFlakes[I]
-    With hSnowFlake
-      Paint.DrawImage($aImage[.Size], CInt(.X), CInt(.Y))
-    End With
-  Next
+  If $hTimer Then
   
-  $hTimer.Start
+    If Not $hSnow Then 
+      $hSnow = New Image(hDrawingArea.Width, hDrawingArea.Height, Color.Transparent)
+      Paint.Begin($hSnow)
+      hFir = Image.Load("img/fir.png")
+      Paint.DrawImage(hFir, 430, $hSnow.H - hFir.H)
+      Paint.End
+    Endif
+  
+    For I = 0 To $aSnowFlakes.Max
+      hSnowFlake = $aSnowFlakes[I]
+      With hSnowFlake
+        S = 1 + .Size \ 2
+        Paint.DrawImage($aImage[.Size], CInt(.X) - S, CInt(.Y) - S)
+      End With
+    Next
+    
+    Paint.DrawImage($hSnow, 0, 0)
+    
+    $hTimer.Start
+    
+  Endif
 
+  Paint.DrawImage($hText, 0, 0)
+  
 End
 
 Public Sub SnowTimer_Timer()
@@ -126,30 +153,46 @@ Public Sub SnowTimer_Timer()
   Dim hSnowFlake As CSnowFlake
   Dim I As Integer
   Dim H As Integer
+  Dim S As Integer
+  Dim X As Integer
+  Dim Y As Integer
   
   $hTimer.Stop
   If Not Object.IsValid(hDrawingArea) Then Return
   
-  H = hDrawingArea.H + 8
+  H = hDrawingArea.H
+  
+  Paint.Begin($hSnow)
+  Paint.Background = Color.SetAlpha(Color.White, 128)
   
   While I < $aSnowFlakes.Count
     hSnowFlake = $aSnowFlakes[I]
-    hSnowFlake.X += hSnowFlake.DX
-    hSnowFlake.Y += hSnowFlake.DY
-    If hSnowFlake.Y >= H Then
-      $aSnowFlakes.Remove(I)
-    Else
-      Inc I
-    Endif
+    With hSnowFlake
+      .X += .DX
+      .Y += .DY
+      X = CInt(.X)
+      Y = CInt(.Y)
+      If Y >= H Or If Color[$hSnow[X, Y]].Alpha < 16 Then
+        $aSnowFlakes.Remove(I)
+        'Paint.DrawImage($aImage[.Size], CInt(.X), CInt(.Y))
+        S = 1 + Min(3, .Size \ 2)
+        Paint.Ellipse(X - S \ 2, Y - S \ 2, S, S)
+        Paint.Fill
+      Else
+        Inc I
+      Endif
+    End With
   Wend
+  
+  Paint.End
   
   If $aSnowFlakes.Count < MAX_SNOW_FLAKES Then
     For I = 0 To Rand(3)
       hSnowFlake = New CSnowFlake
       hSnowFlake.X = Rand(0, hDrawingArea.W - 1)
-      hSnowFlake.Size = CInt(Sqr(Rand($aImage.Max * $aImage.Max)))
+      hSnowFlake.Size = Rand($aImage.Max)
       hSnowFlake.DY = 0.5 + hSnowFlake.Size / 3 + Rnd
-      hSnowFlake.DX = (Rnd * 2 - 1) * hSnowFlake.DY
+      hSnowFlake.DX = (Rnd * 3 - 1.5) * hSnowFlake.DY
       $aSnowFlakes.Add(hSnowFlake)
     Next
   Endif
