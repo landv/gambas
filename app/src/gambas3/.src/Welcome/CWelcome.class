@@ -148,7 +148,7 @@ Public Sub dwgWelcome_Draw()
   
 End
 
-Public Sub SnowTimer_Timer()
+Fast Public Sub SnowTimer_Timer()
   
   Dim hDrawingArea As DrawingArea = $hObs.Object
   Dim hSnowFlake As CSnowFlake
@@ -157,6 +157,7 @@ Public Sub SnowTimer_Timer()
   Dim S As Integer
   Dim X As Integer
   Dim Y As Integer
+  Dim C As Integer
   
   $hTimer.Stop
   If Not Object.IsValid(hDrawingArea) Then Return
@@ -172,13 +173,30 @@ Public Sub SnowTimer_Timer()
       .X += .DX
       .Y += .DY
       X = CInt(.X)
-      Y = CInt(.Y)
+      Y = Min(H, CInt(.Y))
+      C = $hSnow[X, Y]
       
-      If Y < H Then
-        If .IgnoreTree Or If Color[$hSnow[X, Y]].Alpha > 16 Then
+      If Y < H And If C <> Color.White Then
+        If .IgnoreTree Or If Color[C].Alpha > 16 Then
           Inc I
           Continue
         Endif
+      Endif
+      
+      .X -= .DX
+      .Y -= .DY
+      
+      If .DX Then
+        
+        If .DX < 1 Then
+          .DX = 0
+        Else
+          .DX /= 2
+          .DY /= 2
+        Endif
+        Inc I
+        Continue
+        
       Endif
       
       $aSnowFlakes.Remove(I)
