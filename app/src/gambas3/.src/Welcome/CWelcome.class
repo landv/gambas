@@ -11,7 +11,7 @@ Private $hObs As Observer
 Private $hTimer As Timer
 Private $hSnow As Image
 Private $aSnowFlakes As New CSnowFlake[]
-Private MAX_SNOW_FLAKES As Integer = 300
+Private MAX_SNOW_FLAKES As Integer = 250
 Private $aImage As Image[]
 Private $bIgnoreTree As Boolean
 
@@ -162,7 +162,7 @@ Fast Public Sub SnowTimer_Timer()
   $hTimer.Stop
   If Not Object.IsValid(hDrawingArea) Then Return
   
-  H = hDrawingArea.H
+  H = hDrawingArea.H - 1
   
   Paint.Begin($hSnow)
   Paint.Background = Color.SetAlpha(Color.White, 128)
@@ -191,8 +191,8 @@ Fast Public Sub SnowTimer_Timer()
         If .DX < 1 Then
           .DX = 0
         Else
-          .DX /= 2
-          .DY /= 2
+          .DX *= 0.5
+          .DY *= 0.75
         Endif
         Inc I
         Continue
@@ -200,9 +200,11 @@ Fast Public Sub SnowTimer_Timer()
       Endif
       
       $aSnowFlakes.Remove(I)
+      'S = .Size \ 2
+      'Paint.DrawImage($aImage[S], X - S \ 2, Y - S \ 2)
       'Paint.DrawImage($aImage[.Size], CInt(.X), CInt(.Y))
       S = 1 + Min(3, .Size \ 2)
-      Paint.Ellipse(X - S \ 2, Y - S \ 2, S, S)
+      Paint.Ellipse(X - S \ 2, Y - S \ 2 + 1, S, S)
       Paint.Fill
 
     End With
@@ -212,9 +214,9 @@ Fast Public Sub SnowTimer_Timer()
   Paint.End
   
   If $aSnowFlakes.Count < MAX_SNOW_FLAKES Then
-    For I = 0 To Rand(3)
+    For I = 0 To Rand(4)
       hSnowFlake = New CSnowFlake
-      hSnowFlake.X = Rand(0, hDrawingArea.W - 1)
+      hSnowFlake.X = Rand(-10, hDrawingArea.W + 10)
       hSnowFlake.Size = Rand($aImage.Max)
       hSnowFlake.DY = 0.5 + hSnowFlake.Size / 3 + Rnd
       hSnowFlake.DX = (Rnd * 3 - 1.5) * hSnowFlake.DY
