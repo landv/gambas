@@ -35,7 +35,7 @@
 #include <linux/cdrom.h>
 #endif
 
-#ifdef OS_FREEBSD /* Is this the good headers ? */
+#ifdef OS_BSD /* Is this the good headers ? */
 #include <sys/cdio.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
@@ -387,7 +387,7 @@ BEGIN_PROPERTY(CDROM_volume)
 
 #endif
 
-#ifdef OS_FREEBSD
+#ifdef OS_BSD
 
   struct ioc_vol vol;
 
@@ -414,7 +414,7 @@ BEGIN_PROPERTY(CDROM_volume)
 
 #endif
 
-#if !defined(OS_LINUX) && !defined(OS_FREEBSD)
+#if !defined(OS_LINUX) && !defined(OS_BSD)
 
   if (!READ_PROPERTY)
     GB.ReturnInteger(0);

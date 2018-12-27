@@ -9,11 +9,9 @@ AC_PROG_LIBTOOL
 
 dnl ---- zlib compression driver
 
-GB_COMPONENT(
+GB_COMPONENT_PKG_CONFIG(
   zlib, ZLIB, gb.compress.zlib, [src],
-  [GB_FIND(zlib.h, /usr/local/lib /usr/local /opt /usr/lib /usr, include)],
-  [GB_FIND(libz.$SHLIBEXT, /usr/local /opt /usr, lib)],
-  [$C_LIB -lz])
+  zlib)
 
 dnl ---- Create makefiles
 

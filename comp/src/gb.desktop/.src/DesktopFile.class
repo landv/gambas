@@ -475,8 +475,9 @@ Static Public Sub FromMime(MimeType As String) As DesktopFile[]
   Dim sList As String
   Dim aMime As String[]
   Dim sMime As String
-  Dim sDir As String
   Dim sFound As String
+  Dim aPath As String[]
+  Dim sPath As String
 
   hProgList = $cMimeCache[MimeType]
 
@@ -491,15 +492,20 @@ Static Public Sub FromMime(MimeType As String) As DesktopFile[]
       sList = ""
 
       'Print "["; sMime; "]"
-
-      For Each sDir In Main.GetDataDir()
-        sFound = FindInMimeInfoCache(sDir &/ "applications/mimeapps.list", sMime)
+      
+      aPath = Main.MakeSearchPath("mimeapps.list", ["$XDG_CONFIG_HOME/$desktop-mimeapps.list", "$XDG_CONFIG_HOME/mimeapps.list", "$XDG_CONFIG_DIRS/$desktop-mimeapps.list", "$XDG_CONFIG_DIRS/mimeapps.list", "$XDG_DATA_DIRS/applications/$desktop-mimeapps.list", "$XDG_DATA_DIRS/applications/mimeapps.list"])
+      
+      For Each sPath In aPath
+        sFound = FindInMimeInfoCache(sPath, sMime)
         If sFound Then sList &= ";" & sFound
       Next
 
       If Not sList Then
-        For Each sDir In Main.GetDataDir()
-          sFound = FindInMimeInfoCache(sDir &/ "applications/mimeinfo.cache", sMime)
+      
+        aPath = Main.MakeSearchPath("mimeinfo.cache", ["$XDG_CONFIG_HOME/mimeinfo.cache", "$XDG_CONFIG_DIRS/mimeinfo.cache", "$XDG_DATA_DIRS/applications/mimeinfo.cache"])
+        
+        For Each sPath In aPath
+          sFound = FindInMimeInfoCache(sPath, sMime)
           If sFound Then sList &= ";" & sFound
         Next
       Endif

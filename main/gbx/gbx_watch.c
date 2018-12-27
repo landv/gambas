@@ -657,13 +657,14 @@ void WATCH_wait(int wait)
 	}
 }
 
-int WATCH_process(int fd_end, int fd_output, int timeout)
+int WATCH_process(int fd_end, int fd_output, int fd_error, int timeout)
 {
 	fd_set rfd;
 	int ret, fd_max;
 	struct timeval tv;
 
 	fd_max = fd_end > fd_output ? fd_end : fd_output;
+	fd_max = fd_error > fd_max ? fd_error : fd_max;
 
 	for(;;)
 	{
@@ -671,6 +672,8 @@ int WATCH_process(int fd_end, int fd_output, int timeout)
 		FD_SET(fd_end, &rfd);
 		if (fd_output >= 0)
 			FD_SET(fd_output, &rfd);
+		if (fd_error >= 0)
+			FD_SET(fd_error, &rfd);
 
 		if (timeout > 0)
 		{
@@ -697,6 +700,7 @@ int WATCH_process(int fd_end, int fd_output, int timeout)
 	
 	if (FD_ISSET(fd_end, &rfd)) ret += WP_END;
 	if (fd_output >= 0 && FD_ISSET(fd_output, &rfd)) ret += WP_OUTPUT;
+	if (fd_error >= 0 && FD_ISSET(fd_error, &rfd)) ret += WP_ERROR;
 	return ret;
 }
 

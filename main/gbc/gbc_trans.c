@@ -383,7 +383,7 @@ static PATTERN *trans_embedded_array(PATTERN *look, int mode, TRANS_DECL *result
 
 	look++;
 
-	if (mode && TT_CAN_ARRAY)
+	if (mode & TT_CAN_ARRAY)
 	{
 		for (i = 0;; i++)
 		{
@@ -454,6 +454,8 @@ static int TRANS_get_class(PATTERN pattern, bool array)
 							index = CLASS_add_class_exported(JOB->class, index);
 						else
 							index = CLASS_add_class(JOB->class, index);
+						
+						JOB->class->class[index].type = TYPE_make(T_OBJECT, index_array, 0);
 						
 						/*cref = &JOB->class->class[index];
 						if (TYPE_is_null(cref->array))
@@ -808,13 +810,6 @@ void TRANS_want_newline()
 {
 	if (!TRANS_newline())
 		THROW_UNEXPECTED(JOB->current);
-}
-
-
-void TRANS_ignore(int reserved)
-{
-	if (PATTERN_is(*JOB->current, reserved))
-		JOB->current++;
 }
 
 

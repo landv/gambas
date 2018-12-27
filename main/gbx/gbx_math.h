@@ -26,7 +26,7 @@
 
 #include "config.h"
 
-#ifdef OS_FREEBSD
+#ifdef OS_BSD
 #undef HAVE_EXP10
 #endif
 

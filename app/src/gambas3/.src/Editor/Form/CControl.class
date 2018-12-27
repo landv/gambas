@@ -189,7 +189,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
     Case "picturebox"
       hCtrl = New PictureBox(hParent)
-      hCtrl.Picture = Picture["img/control/picturebox.png"]
+      'hCtrl.Picture = Picture["img/control/picturebox.png"]
 
     Case "treeview"
       hCtrl = New TreeView(hParent)
@@ -571,7 +571,14 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
   
   If bDoNotApply Then Goto _DO_NOT_APPLY
   
+  If Control Is DrawingArea Or If IsContainer() Then
+    If sProp = "Enabled" Then 
+      Goto _DO_NOT_APPLY
+    Endif
+  Endif
+
   If Unknown Then 
+    
     hClass = Object.Class(Control)
     If Not hClass.Exist(sProp) Then Goto _DO_NOT_APPLY
     With hClass[sProp]

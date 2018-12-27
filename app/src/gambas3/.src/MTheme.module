@@ -2,8 +2,8 @@
 
 Public Const DEFAULT_THEME As String = "gambas"
 
-Public ColorKeys As String[] = ["Background", "Normal", "Keyword", "Datatype", "Function", "Operator", "Symbol", "Number", "String", "Comment", "Help", "Preprocessor", "Breakpoint", "Current", "Selection", "Highlight", "CurrentLine", "Error"]
-Public ColorNames As String[] = [("Background"), ("Normal text"), ("Keywords"), ("Data types"), ("Subroutines"), ("Operators"), ("Symbols"), ("Numbers"), ("Strings"), ("Comments"), ("Help"), ("Preprocessor"), ("Breakpoints"), ("Current line"), ("Selection"), ("Highlighting"), ("Editing line"), ("Errors")]
+Public ColorKeys As String[] = ["Background", "Normal", "Keyword", "Constant", "Datatype", "Function", "Operator", "Symbol", "Label", "Number", "String", "Escape", "Comment", "Help", "Preprocessor", "Breakpoint", "Current", "Selection", "Highlight", "CurrentLine", "Error"]
+Public ColorNames As String[] = [("Background"), ("Normal text"), ("Keywords"), ("Constants"), ("Data types"), ("Subroutines"), ("Operators"), ("Symbols"), ("Labels"), ("Numbers"), ("Strings"), ("Characters"), ("Comments"), ("Help"), ("Preprocessor"), ("Breakpoints"), ("Current line"), ("Selection"), ("Highlighting"), ("Editing line"), ("Errors")]
 
 Private $cDefault As Collection
 
@@ -24,6 +24,7 @@ Public Function ReadSettings(hSettings As Settings, sParent As String, Optional 
   Dim cColor As New Collection
   Dim sKey As String
   Dim sColor As String
+  Dim aColor As String[]
   
   For Each sKey In ColorKeys
     If bDefault Then
@@ -32,6 +33,17 @@ Public Function ReadSettings(hSettings As Settings, sParent As String, Optional 
       sColor = hSettings[sParent &/ sKey]
     Endif
     cColor[sKey] = sColor
+  Next
+  
+  For Each sKey In ColorKeys
+    Do
+      sColor = cColor[sKey]
+      If Not sColor Then Break
+      If Left(sColor) = "#" Then Break
+      aColor = Split(sColor)
+      aColor[0] = cColor[aColor[0]]
+      cColor[sKey] = aColor.Join()
+    Loop
   Next
   
   Return cColor
@@ -167,6 +179,7 @@ Public Sub InitEditor(hEditor As TextEditor, Optional bDesaturate As Boolean)
       .Color = iCol
       .Bold = hStyle.Bold
       .Underline = hStyle.Underline
+      .Dotted = hStyle.Dotted
       
     End With
     
@@ -197,5 +210,52 @@ Public Sub InitControl(hControl As Control)
     hControl.Background = GetColor("Background")
     hControl.Foreground = GetColor("Normal")
   Endif
+  
+End
+
+Public Sub GetStyles() As TextHighlighterStyle[]
+  
+  Dim iInd As Integer  
+  Dim hStyle As New CStyle
+  Dim iStyle As Integer
+  Dim iCol As Integer
+  Dim iBg As Integer
+  Dim bInvert As Boolean
+  Dim sKey As String
+  Dim aStyles As TextHighlighterStyle[]
+  Dim hTextStyle As TextHighlighterStyle
+  
+  aStyles = TextHighlighter.DefaultStyle
+  
+  bInvert = Settings["/Editor/InvertTheme", 0]
+  For iInd = 0 To ColorKeys.Max
+    
+    sKey = ColorKeys[iInd]
+    
+    hStyle.FromString(Settings["Highlight" &/ sKey, $cDefault[sKey]])
+    iStyle = Object.GetProperty(Classes["Highlight"], sKey)
+    
+    hTextStyle = aStyles[iStyle]
+    
+    With hTextStyle
+      
+      iCol = hStyle.Foreground
+      
+      If iInd = 0 Then 
+        iBg = iCol
+        If Color[iBg].Value < 128 Then bInvert = False
+      Endif
+      
+      If bInvert Then iCol = InvertColor(iCol, sKey)
+      
+      .Color = iCol
+      .Bold = hStyle.Bold
+      .Underline = hStyle.Underline
+      
+    End With
+    
+  Next
+  
+  Return aStyles
   
 End

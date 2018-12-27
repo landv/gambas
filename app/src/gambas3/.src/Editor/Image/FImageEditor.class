@@ -72,6 +72,7 @@ Private $hTextSelect As CImageSelection
 
 Private $sLastColor As Integer
 Private $cInfo As New Collection
+Private $bInfoTop As Boolean
 
 Public Sub _new(sPath As String)
   
@@ -209,6 +210,8 @@ Public Sub SetReadOnly()
   
   UpdateMenu
   DrawTitle
+  
+  FImageProperty.OnProjectActivate
 
 End
 
@@ -375,6 +378,7 @@ Public Function Save(Optional bForce As Boolean) As Boolean
   Save.Begin(Path)
 
   $hImage.Save(Path)
+  MCompressFile.Compress(Path)
 
   'Project.RefreshKey(Path)
 
@@ -635,9 +639,12 @@ Private Sub GetImagePos() As PointF
   Dim X As Float
   Dim Y As Float
   Dim iSnap As Integer
+
+  X = (hPos.X - hOrg.X) / imvImage.Zoom
+  Y = (hPos.Y - hOrg.Y) / imvImage.Zoom
   
-  X = hPoint.X + Frac((hPos.X - hOrg.X) / imvImage.Zoom)
-  Y = hPoint.Y + Frac((hPos.Y - hOrg.Y) / imvImage.Zoom)
+  X = hPoint.X + X - Floor(X)
+  Y = hPoint.Y + Y - Floor(Y)
   
   If $hMagnet Then
     If Abs($hMagnet - PointF(X, Y)) <= 8 / imvImage.Zoom Then Return $hMagnet
@@ -647,30 +654,30 @@ Private Sub GetImagePos() As PointF
   
   If $bShowGrid And If iSnap Then
   
-    X = (CInt(X + iSnap \ 2) \ iSnap) * iSnap
-    Y = (CInt(Y + iSnap \ 2) \ iSnap) * iSnap
+    X = (CInt(Floor(X + iSnap \ 2)) \ iSnap) * iSnap
+    Y = (CInt(Floor(Y + iSnap \ 2)) \ iSnap) * iSnap
     
   Else If $sTool = "paste" Then
     
-    X = CInt(X)
-    Y = CInt(Y)
+    X = Floor(X)
+    Y = Floor(Y)
   
   Else If $sTool = "draw" Or If $sTool = "erase" Then
     
     If FImageProperty.GetSize() Then
-      X = CInt(X * 2) / 2
-      Y = CInt(Y * 2) / 2
+      X = Floor(X * 2) / 2
+      Y = Floor(Y * 2) / 2
     Else
-      X = CInt(X)
-      Y = CInt(Y)
+      X = Floor(X)
+      Y = Floor(Y)
     Endif
     
   Else
     
     If $sTool = "line" And If $bShift Then
     Else
-      X = CInt(X * 2) / 2
-      Y = CInt(Y * 2) / 2
+      X = Floor(X * 2) / 2
+      Y = Floor(Y * 2) / 2
     Endif
   
   Endif
@@ -886,13 +893,13 @@ Private Sub UpdateInfo()
         $cInfo!X = CStr(CInt($hCurrentPoint.X))
         $cInfo!Y = CStr(CInt($hCurrentPoint.Y))
       Else
-        $cInfo!X = Format($hCurrentPoint.X, "0.##")
-        $cInfo!Y = Format($hCurrentPoint.Y, "0.##")
+        $cInfo!X = Format($hCurrentPoint.X, "0.0")
+        $cInfo!Y = Format($hCurrentPoint.Y, "0.0")
       Endif
       If $bPress Then
         If $sTool = "rectangle" Or If $sTool = "ellipse" Then
-          $cInfo!Width = Format($fLastSelectW, "0.#")
-          $cInfo!Height = Format($fLastSelectH, "0.#")
+          $cInfo!Width = Format($fLastSelectW, "0.0")
+          $cInfo!Height = Format($fLastSelectH, "0.0")
         Endif
       Endif
       
@@ -1089,14 +1096,16 @@ Public Sub imvImage_MouseMove()
   
   If $bFrame Then
     If $bAlt Then
+      If $hLastPoint Then
       
-      A = Ang($hCurrentPoint.X - $hLastPoint.X, $hCurrentPoint.Y - $hLastPoint.Y)
-      D = Mag($hCurrentPoint.X - $hLastPoint.X, $hCurrentPoint.Y - $hLastPoint.Y)
-      If A < 0 Then A += Pi(2)
-      A = Rad(Int(Deg(A) / 15 + 0.5) * 15)
+        A = Ang($hCurrentPoint.X - $hLastPoint.X, $hCurrentPoint.Y - $hLastPoint.Y)
+        D = Mag($hCurrentPoint.X - $hLastPoint.X, $hCurrentPoint.Y - $hLastPoint.Y)
+        If A < 0 Then A += Pi(2)
+        A = Rad(Int(Deg(A) / 15 + 0.5) * 15)
+        
+        $hCurrentPoint = PointF(CInt(($hLastPoint.X + Cos(A) * D) * 2 + 0.5) / 2, CInt(($hLastPoint.Y + Sin(A) * D) * 2 + 0.5) / 2)
       
-      $hCurrentPoint = PointF(CInt(($hLastPoint.X + Cos(A) * D) * 2 + 0.5) / 2, CInt(($hLastPoint.Y + Sin(A) * D) * 2 + 0.5) / 2)
-      
+      Endif
     Endif
   Endif
     
@@ -1546,6 +1555,7 @@ Public Sub imvImage_MouseUp()
       If $hPaste Then
         $hPasteCurrent = $hPasteSelect.Copy()
         $hChangeRect = $hPasteCurrent.GetExtents()
+        imvImage.Refresh
       Endif
       
   End Select
@@ -3130,13 +3140,22 @@ End
 
 Private Sub MoveInfo()
 
+  Dim X, Y As Integer
   Dim DX As Integer
   Dim DY As Integer
 
   If imvImage.ScrollH > imvImage.ClientH Then DX = Style.ScrollbarSize
   If imvImage.ScrollW > imvImage.ClientW Then DY = Style.ScrollbarSize
   
-  dwgInfo.Move(panBackground.W - dwgInfo.W - Desktop.Scale - DX, panBackground.H - dwgInfo.H - Desktop.Scale - DY)
+  If System.RightToLeft Then
+    X = Desktop.Scale
+  Else
+    X = panBackground.W - dwgInfo.W - Desktop.Scale - DX
+  Endif
+  Y = Desktop.Scale
+  If Not $bInfoTop Then Y = Max(Y, panBackground.H - dwgInfo.H - Desktop.Scale - DY)
+
+  dwgInfo.Move(X, Y)
 
 End
 
@@ -3267,5 +3286,12 @@ Public Sub imvImage_DblClick()
   RemoveLastEndBeginUndo
   ClearSelection
   $bDblClick = True
+
+End
+
+Public Sub dwgInfo_Enter()
+
+  $bInfoTop = Not $bInfoTop
+  MoveInfo
 
 End

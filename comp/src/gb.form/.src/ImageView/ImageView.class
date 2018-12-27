@@ -148,8 +148,8 @@ Public Sub ViewToImage(ViewPoint As Point) As Point
   If hRect Then
   
     hResult = New Point
-    hResult.X = (ViewPoint.X - hRect.X) / $fZoom
-    hResult.Y = (ViewPoint.Y - hRect.Y) / $fZoom
+    hResult.X = Floor((ViewPoint.X - hRect.X) / $fZoom)
+    hResult.Y = Floor((ViewPoint.Y - hRect.Y) / $fZoom)
     Return hResult
     
   Endif

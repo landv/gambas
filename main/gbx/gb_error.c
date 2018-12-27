@@ -46,8 +46,9 @@ int ERROR_depth = 0;
 #endif
 
 static int _lock = 0;
+static char *_print_prefix = NULL;
 
-static const char *const _message[73] =
+static const char *const _message[74] =
 {
 	/*  0 E_UNKNOWN     */ "Unknown error",
 	/*  1 E_MEMORY      */ "Out of memory",
@@ -121,7 +122,8 @@ static const char *const _message[73] =
 	/* 69 E_USER        */ "Unknown user or group",
 	/* 70 E_NEMPTY      */ "Directory is not empty",
 	/* 71 E_UTYPE       */ "Unsupported datatype",
-	/* 72 E_FREEREF     */ "Free object referenced"
+	/* 72 E_FREEREF     */ "Free object referenced",
+	/* 73 E_ASSERT      */ "Assertion failed"
 };
 
 #if DEBUG_ERROR
@@ -477,7 +479,7 @@ void THROW(int code, ...)
 	ERROR_define((char *)(intptr_t)code, arg);
 
 	va_end(args);
-
+	
 	PROPAGATE();
 }
 
@@ -540,6 +542,7 @@ void THROW_SYSTEM(int err, const char *path)
 	}
 }
 
+
 void ERROR_fatal(const char *error, ...)
 {
 	va_list args;
@@ -561,26 +564,37 @@ void ERROR_panic(const char *error, ...)
 
 	fflush(NULL);
 
-	fprintf(stderr, "\n** Oops! Internal error! **\n** ");
+	fprintf(stderr, "\n** \n** OOPS! INTERNAL ERROR. Program aborting, sorry! :-(\n** ");
 	vfprintf(stderr, error, args);
 
 	va_end(args);
+	
+	fputc('\n', stderr);
 
-	putc('\n', stderr);
 	if (ERROR_current->info.code)
 	{
+		fprintf(stderr, "** \n");
+		_print_prefix = "** ";
 		ERROR_print();
+		_print_prefix = NULL;
 	}
-	fprintf(stderr, "** Program aborting. Sorry! :-(\n** Please send a bug report at g4mba5@gmail.com\n");
+	fprintf(stderr, "** \n** Please send a bug report to the gambas bugtracker [1] or to the gambas mailing-list [2].\n** [1] http://gambaswiki.org/bugtracker\n** [2] https://lists.gambas-basic.org/listinfo/user\n** \n\n");
 	_exit(1);
 }
 
+
+static void print_prefix(FILE *where)
+{
+	if (_print_prefix) fputs(_print_prefix, where);
+}
 
 void ERROR_print_at(FILE *where, bool msgonly, bool newline)
 {
 	if (!ERROR_current->info.code)
 		return;
 
+	print_prefix(where);
+	
 	if (!msgonly)
 	{
 		if (ERROR_current->info.cp && ERROR_current->info.fp && ERROR_current->info.pc)
@@ -628,7 +642,10 @@ void ERROR_print(void)
 	ERROR_print_at(stderr, FALSE, TRUE);
 
 	if (ERROR_backtrace)
+	{
+		print_prefix(stderr);
 		DEBUG_print_backtrace(ERROR_backtrace);
+	}
 }
 
 static void ERROR_copy(ERROR_INFO *save, ERROR_INFO *last)

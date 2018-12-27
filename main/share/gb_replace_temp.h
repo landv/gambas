@@ -110,7 +110,7 @@ int getdomainname(char *name, size_t len)
 
 int getpt(void)
 {
-#ifdef OS_FREEBSD
+#ifdef OS_BSD
 	return posix_openpt(O_RDWR | O_NOCTTY);
 #else
 	return -1;

@@ -1027,6 +1027,7 @@ Public Sub OnProjectActivate()
   If hCurrent Then
     ShowGridOption(hCurrent.HasGrid())
     ShowTextOption(hCurrent.GetTool() = "text")
+    Me.Enabled = Not hCurrent.ReadOnly
   Endif
   
 End
@@ -1501,5 +1502,11 @@ End
 Public Sub chkGridDiag_Click()
 
   Try GetCurrent().UpdateGrid
+
+End
+
+Public Sub cchColor_Change()
+
+  palColor.Current = cchColor.Value
 
 End

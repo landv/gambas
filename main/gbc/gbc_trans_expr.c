@@ -191,7 +191,7 @@ static void push_string(int index, bool trans)
 	SYMBOL *sym;
 	int len;
 
-	if (index == VOID_STRING)
+	if (index == VOID_STRING_INDEX)
 		len = 0;
 	else
 	{
@@ -431,6 +431,7 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 					case T_OBJECT:
 					case T_VARIANT:
 					case T_STRUCT:
+					case T_STRING:
 						break;
 						
 					default:

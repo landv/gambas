@@ -30,15 +30,12 @@
 /* EXEC_object() ne doit pas faire d'auto-create, car sinon
 	il renvoie un objet référencé */
 
-void EXEC_enum_first(PCODE code)
+void EXEC_enum_first(PCODE code, VALUE *local, VALUE *penum)
 {
 	OBJECT *object;
 	CLASS *class;
-	VALUE *local;
 	CENUM *old = EXEC_enum;
 	CENUM *cenum;
-
-	local = &BP[code & 0xFF];
 
 	EXEC_object(local, &class, &object);
 
@@ -47,10 +44,9 @@ void EXEC_enum_first(PCODE code)
 
 	cenum = CENUM_create(object ? (void *)object : (void *)class);
 
-	local++;
-	RELEASE(local);
-	local->_object.class = OBJECT_class(cenum);
-	local->_object.object = cenum;
+	RELEASE(penum);
+	penum->_object.class = OBJECT_class(cenum);
+	penum->_object.object = cenum;
 	OBJECT_REF(cenum);
 
 	EXEC_enum = cenum;
@@ -59,21 +55,18 @@ void EXEC_enum_first(PCODE code)
 }
 
 
-bool EXEC_enum_next(PCODE code)
+bool EXEC_enum_next(PCODE code, VALUE *local, VALUE *penum)
 {
 	OBJECT *object;
 	CLASS *class;
 	bool defined;
-	VALUE *local;
 	bool drop = (code & 1);
 	bool err;
 	CENUM *old = EXEC_enum;
 	CENUM *cenum;
 
-	local = &BP[PC[-1] & 0xFF];
-
 	defined = EXEC_object(local, &class, &object);
-	cenum = (CENUM *)local[1]._object.object;
+	cenum = (CENUM *)penum->_object.object;
 	if (!cenum)
 		return TRUE;
 
@@ -99,6 +92,6 @@ bool EXEC_enum_next(PCODE code)
 __STOP:
 
 	OBJECT_UNREF(cenum);
-	local[1]._object.object = NULL;
+	penum->_object.object = NULL;
 	return TRUE;
 }

@@ -21,7 +21,7 @@ Public Sub _new()
   $hPanel.Foreground = Color.TextForeground
   $hPanel.Arrangement = Arrange.LeftRight
   $hPanel.Margin = True
-  $hPanel.Spacing = True
+  '$hPanel.Spacing = True
   
   Set(Null)
   
@@ -169,10 +169,8 @@ Public Sub ArgListBox_Activate()
 
   Dim hArg As ArgListBox = Last
   
-  If Not hArg.Next Then
-    Add()
-  Endif
-  Try hArg.Next.SetFocus
+  If Not hArg.Next Then Add()
+  If hArg.HasFocus Then Try hArg.Next.SetFocus
   
 End
 
@@ -187,9 +185,11 @@ Public Sub ArgListBox_Insert()
   hArg.Text = String.Left(sText, iPos)
   
   Add(String.Mid(sText, iPos + 1), hArg)
-  hArg = hArg.Next
-  hArg.SetFocus
-  hArg.MoveBegin
+  If hArg.HasFocus Then
+    hArg = hArg.Next
+    hArg.SetFocus
+    hArg.MoveBegin
+  Endif
   
 End
 

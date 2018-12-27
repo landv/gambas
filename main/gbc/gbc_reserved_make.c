@@ -23,6 +23,8 @@
 
 #define __GBC_RESERVED_MAKE_C
 
+#define PROJECT_COMP
+
 #include <ctype.h>
 #include <errno.h>
 

@@ -21,7 +21,7 @@ Private Sub UnquoteShortcut(sStr As String) As String
   
 End
 
-Public Sub _new(sKey As String, bHasShortcut As Boolean, cSlot As Collection, hMerge As CAction)
+Public Sub _new(sKey As String, bHasShortcut As Boolean, cSlot As Collection, Optional hMerge As CAction)
 
   Dim sPicture As String
   Dim aControl As Object[]

@@ -21,16 +21,9 @@
 
 ***************************************************************************/
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-
-#ifndef TRUE
-#define TRUE -1
-#endif
-
-#ifndef FALSE
-#define FALSE 0
-#endif
 
 static char  *gb_font_pointers[8];
 static char  *gb_font_name;
@@ -106,11 +99,11 @@ void gb_font_trim()
 int gb_font_is_size(char *str)
 {
 	long bc,max;
-	int rel=FALSE;
+	int rel=false;
 	int vl=0;
 	int fact=1;
 
-	if (!str) return TRUE;
+	if (!str) return true;
 
 	max=strlen(str);
 	for(bc=0;bc<max;bc++)
@@ -122,16 +115,16 @@ int gb_font_is_size(char *str)
 				vl*=10; vl+=(str[bc]-48); break;
 
 			case '+':
-				if (!bc) rel=TRUE;
-				else return TRUE;
+				if (!bc) rel=true;
+				else return true;
 				break;
 
 			case '-':
-				if (!bc) { rel=TRUE; fact=-1; }
-				else return TRUE;
+				if (!bc) { rel=true; fact=-1; }
+				else return true;
 				break;
 
-			default: return TRUE;
+			default: return true;
 		}
 	}
 
@@ -139,7 +132,7 @@ int gb_font_is_size(char *str)
 	gb_font_relative=rel;
 	if (gb_font_relative) gb_font_size*=fact;
 
-	return FALSE;
+	return false;
 }
 
 void gb_fontparser_parse(char *str)
@@ -150,12 +143,12 @@ void gb_fontparser_parse(char *str)
 
 	for (bc=0;bc<8;bc++) gb_font_pointers[bc]=NULL;
 	gb_font_name=NULL;
-	gb_font_strikeout=FALSE;
-	gb_font_underline=FALSE;
-	gb_font_italic=FALSE;
-	gb_font_bold=FALSE;
-    gb_font_relative=FALSE;
-    gb_font_size=0;
+	gb_font_strikeout=false;
+	gb_font_underline=false;
+	gb_font_italic=false;
+	gb_font_bold=false;
+	gb_font_relative=false;
+	gb_font_size=0;
 
 	max=strlen(str);
 	for (bc=0;bc<max;bc++)
@@ -169,10 +162,10 @@ void gb_fontparser_parse(char *str)
 	{
 		if ( gb_font_pointers[bc]==NULL	 ) break;
 		
-		if (!strcasecmp(gb_font_pointers[bc],"bold")) gb_font_bold=TRUE;
-		else if (!strcasecmp(gb_font_pointers[bc],"italic")) gb_font_italic=TRUE;
-		else if (!strcasecmp(gb_font_pointers[bc],"underline")) gb_font_underline=TRUE;
-		else if (!strcasecmp(gb_font_pointers[bc],"strikeout")) gb_font_strikeout=TRUE;
+		if (!strcasecmp(gb_font_pointers[bc],"bold")) gb_font_bold=true;
+		else if (!strcasecmp(gb_font_pointers[bc],"italic")) gb_font_italic=true;
+		else if (!strcasecmp(gb_font_pointers[bc],"underline")) gb_font_underline=true;
+		else if (!strcasecmp(gb_font_pointers[bc],"strikeout")) gb_font_strikeout=true;
 		else
 		{
 			if (gb_font_is_size(gb_font_pointers[bc])) gb_font_name=gb_font_pointers[bc];		

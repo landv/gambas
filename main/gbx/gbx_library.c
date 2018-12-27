@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_library.c
+	gbx_library.c
 
-  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -51,10 +51,10 @@
 #include "gbx_archive.h"
 #include "gbx_project.h"
 #include "gbx_api.h"
-
 #include "gbx_string.h"
 #include "gbx_object.h"
 #include "gbx_component.h"
+#include "gb.jit.h"
 
 #include "gbx_library.h"
 
@@ -71,204 +71,214 @@ int _bytes_read = 0;
 #if 0
 static lt_ptr library_malloc(size_t size)
 {
-  lt_ptr ptr;
-  ALLOC(&ptr, size, "library_malloc");
-  printf("library_malloc: %d -> %p\n", size, ptr);
-  return ptr;
+	lt_ptr ptr;
+	ALLOC(&ptr, size, "library_malloc");
+	printf("library_malloc: %d -> %p\n", size, ptr);
+	return ptr;
 }
 
 
 static void library_free(lt_ptr ptr)
 {
-  printf("library_free -> %p\n", ptr);
-  FREE(&ptr, "library_free");
+	printf("library_free -> %p\n", ptr);
+	FREE(&ptr, "library_free");
 }
 #endif
 
 static void *get_symbol(LIBRARY *lib, const char *symbol, bool err)
 {
-  void *sym;
+	void *sym;
 
-  sym = lt_dlsym(lib->handle, symbol);
-  if (sym == NULL && err)
-  {
-    strcpy(COMMON_buffer, lt_dlerror());
-    lt_dlclose(lib->handle);
-    lib->handle = NULL;
-    THROW(E_LIBRARY, lib->name, COMMON_buffer);
-  }
+	sym = lt_dlsym(lib->handle, symbol);
+	if (sym == NULL && err)
+	{
+		strcpy(COMMON_buffer, lt_dlerror());
+		lt_dlclose(lib->handle);
+		lib->handle = NULL;
+		THROW(E_LIBRARY, lib->name, COMMON_buffer);
+	}
 
-  return sym;
+	return sym;
 }
 
 
 static void copy_interface(void **src, void **dst)
 {
-  for(;;)
-  {
-    if (!*src)
-      return;
+	for(;;)
+	{
+		if (!*src)
+			return;
 
-    *dst++ = *src++;
-  }
+		*dst++ = *src++;
+	}
 }
 
 
 void LIBRARY_init(void)
 {
-  /*if (putenv("LD_BIND_NOW=true"))
-    ERROR_panic("Cannot set LD_BIND_NOW: &1", strerror(errno));
+	/*if (putenv("LD_BIND_NOW=true"))
+		ERROR_panic("Cannot set LD_BIND_NOW: &1", strerror(errno));
 
-  if (putenv("KDE_MALLOC=0"))
-    ERROR_panic("Cannot set KDE_MALLOC: &1", strerror(errno));*/
+	if (putenv("KDE_MALLOC=0"))
+		ERROR_panic("Cannot set KDE_MALLOC: &1", strerror(errno));*/
 
-  /*lt_dlmalloc = library_malloc;
-  lt_dlfree = library_free;*/
+	/*lt_dlmalloc = library_malloc;
+	lt_dlfree = library_free;*/
 
-  #ifndef DONT_USE_LTDL
-  if (lt_dlinit())
-    ERROR_panic("Cannot initialize plug-in management: %s", lt_dlerror());
-  #endif
+	#ifndef DONT_USE_LTDL
+	if (lt_dlinit())
+		ERROR_panic("Cannot initialize plug-in management: %s", lt_dlerror());
+	#endif
 }
 
 
 void LIBRARY_exit(void)
 {
-  #ifndef DONT_USE_LTDL
-  lt_dlexit();
-  #endif
+	#ifndef DONT_USE_LTDL
+	lt_dlexit();
+	#endif
 }
 
 
 void LIBRARY_get_interface(LIBRARY *lib, int version, void *iface)
 {
-  char symbol[32];
-  int i, len;
-  char c;
+	char symbol[32];
+	int i, len;
+	char c;
 
-  len = strlen(lib->name);
-  for (i = 0; i < len; i++)
-  {
-    c = toupper(lib->name[i]);
-    if (!isalnum((unsigned char)c))
-      c = '_';
+	len = strlen(lib->name);
+	for (i = 0; i < len; i++)
+	{
+		c = toupper(lib->name[i]);
+		if (!isalnum((unsigned char)c))
+			c = '_';
 
-    symbol[i] = c;
-  }
+		symbol[i] = c;
+	}
 
-  sprintf(&symbol[len], "_%d", version);
-  
-  copy_interface((void **)get_symbol(lib, symbol, TRUE), iface);
+	sprintf(&symbol[len], "_%d", version);
+	
+	copy_interface((void **)get_symbol(lib, symbol, TRUE), iface);
 }
 
 
 bool LIBRARY_get_interface_by_name(const char *name, int version, void *iface)
 {
-  COMPONENT *comp;
+	COMPONENT *comp;
 
-  comp = COMPONENT_find(name);
-  if (!comp || !comp->library)
-    return TRUE;
+	comp = COMPONENT_find(name);
+	if (!comp || !comp->library)
+		return TRUE;
 
-  LIBRARY_get_interface(comp->library, version, iface);
-  return FALSE;
+	LIBRARY_get_interface(comp->library, version, iface);
+	return FALSE;
 }
 
 
 
 LIBRARY *LIBRARY_create(const char *name)
 {
-  LIBRARY *lib;
+	LIBRARY *lib;
 
-  ALLOC_ZERO(&lib, sizeof(LIBRARY));
+	ALLOC_ZERO(&lib, sizeof(LIBRARY));
 
-  lib->handle = NULL;
-  lib->name = name;
+	lib->handle = NULL;
+	lib->name = name;
 
-  /*if (name)
-  {
-    lib->persistent = FALSE;
-    lib->preload = FALSE;
-  }
-  else
-  {
-    lib->persistent = TRUE;
-    lib->preload = TRUE;
-  }*/
+	/*if (name)
+	{
+		lib->persistent = FALSE;
+		lib->preload = FALSE;
+	}
+	else
+	{
+		lib->persistent = TRUE;
+		lib->preload = TRUE;
+	}*/
 
-  return lib;
+	return lib;
 }
 
 
 void LIBRARY_delete(LIBRARY *lib)
 {
-  LIBRARY_unload(lib);
-  FREE(&lib);
+	LIBRARY_unload(lib);
+	FREE(&lib);
+}
+
+
+static void init_interface(LIBRARY *lib, const char *sym, const char *sym_ptr, void **api)
+{
+	void **iface;
+
+	iface = get_symbol(lib, sym_ptr, FALSE);
+	if (iface)
+	{
+		*((void **)iface) = api;
+		return;
+	}
+	
+	iface = get_symbol(lib, sym, FALSE);
+	if (iface)
+		copy_interface(api, iface);
 }
 
 
 int LIBRARY_load(LIBRARY *lib)
 {
-  int (*func)();
-  void **iface;
-  GB_DESC **desc;
-  char *path;
+	int (*func)();
+	GB_DESC **desc;
+	char *path;
 	int order = 0;
 
-  if (lib->handle)
-    return 0;
+	if (lib->handle)
+		return 0;
 
 #ifdef DEBUG
-  clock_t t = clock();
-  fprintf(stderr, "Loading library %s\n", lib->name);
+	clock_t t = clock();
+	fprintf(stderr, "Loading library %s\n", lib->name);
 #endif
 
-  path = FILE_buffer();
-  sprintf(path, LIB_PATTERN, COMPONENT_path, lib->name);
+	path = FILE_buffer();
+	sprintf(path, LIB_PATTERN, COMPONENT_path, lib->name);
 
-  //if (!FILE_exist(path))
+	//if (!FILE_exist(path))
 	//  sprintf(path, LIB_PATTERN, COMPONENT_user_path, lib->name);
 
-  #ifndef DONT_USE_LTDL
-    /* no more available in libltld ?
-    lt_dlopen_flag = RTLD_LAZY;
-    */
-    lib->handle = lt_dlopenext(path);
-  #else
-    lib->handle = dlopen(path, RTLD_LAZY);
-  #endif
+	#ifndef DONT_USE_LTDL
+		/* no more available in libltld ?
+		lt_dlopen_flag = RTLD_LAZY;
+		*/
+		lib->handle = lt_dlopenext(path);
+	#else
+		lib->handle = dlopen(path, RTLD_LAZY);
+	#endif
 
-  if (lib->handle == NULL)
-    THROW(E_LIBRARY, lib->name, lt_dlerror());
+	if (lib->handle == NULL)
+		THROW(E_LIBRARY, lib->name, lt_dlerror());
 
-  func = get_symbol(lib, LIB_INIT, TRUE);
+	func = get_symbol(lib, LIB_INIT, TRUE);
 
-  /* Interface de Gambas */
+	/* Interface de Gambas */
 
-  iface = get_symbol(lib, LIB_GAMBAS_PTR, FALSE);
-	if (iface)
-		*((void **)iface) = &GAMBAS_Api;
-	else
-	{
-		iface = get_symbol(lib, LIB_GAMBAS, TRUE);
-		copy_interface(GAMBAS_Api, iface);
-	}
-
+	init_interface(lib, LIB_GAMBAS, LIB_GAMBAS "_PTR", GAMBAS_Api);
+	init_interface(lib, LIB_JIT, LIB_JIT "_PTR", GAMBAS_JitApi);
+	
 	/* Signal function */
 	lib->signal = (void(*)())get_symbol(lib, LIB_SIGNAL, FALSE);
 	lib->info = (int(*)())get_symbol(lib, LIB_INFO, FALSE);
 
-  /* Initialisation */
-  order = (*func)();
+	/* Initialisation */
+	order = (*func)();
 	
-  /* Déclaration des classes */
-  desc = get_symbol(lib, LIB_CLASS, FALSE);
-  if (desc)
-    LIBRARY_declare(desc);
+	/* Déclaration des classes */
+	desc = get_symbol(lib, LIB_CLASS, FALSE);
+	if (desc)
+		LIBRARY_declare(desc);
 
 #ifdef DEBUG
-  fprintf(stderr, "Library %s loaded ", lib->name);
-  fprintf(stderr, "in %g s\n", ((double)(clock() - t) / CLOCKS_PER_SEC));
+	fprintf(stderr, "Library %s loaded ", lib->name);
+	fprintf(stderr, "in %g s\n", ((double)(clock() - t) / CLOCKS_PER_SEC));
 #endif
 
 	return order;
@@ -284,9 +294,9 @@ void LIBRARY_after_init(LIBRARY *lib)
 
 void LIBRARY_exec(LIBRARY *lib, int argc, char **argv)
 {
-  void (*func)();
+	void (*func)();
 	
-  func = get_symbol(lib, LIB_MAIN, FALSE);
+	func = get_symbol(lib, LIB_MAIN, FALSE);
 	if (func)
 		(*func)(argc, argv);
 }
@@ -300,56 +310,56 @@ void LIBRARY_declare_one(GB_DESC *desc)
 
 void LIBRARY_declare(GB_DESC **desc)
 {
-  GB_DESC **p;
+	GB_DESC **p;
 
-  p = desc;
-  while (*p != NULL)
-  {
-    CLASS_find_global((*p)->name);
-    p++;
-  }
+	p = desc;
+	while (*p != NULL)
+	{
+		CLASS_find_global((*p)->name);
+		p++;
+	}
 
-  p = desc;
-  while (*p != NULL)
-  {
-    if (CLASS_register(*p) == NULL)
-      THROW(E_REGISTER, (*p)->name);
+	p = desc;
+	while (*p != NULL)
+	{
+		if (CLASS_register(*p) == NULL)
+			THROW(E_REGISTER, (*p)->name);
 
-    p++;
-  }
+		p++;
+	}
 }
 
 
 void LIBRARY_unload(LIBRARY *lib)
 {
-  void (*gambas_exit)();
+	void (*gambas_exit)();
 
-  if (lib->handle == NULL)
-    return;
+	if (lib->handle == NULL)
+		return;
 
-  /* Pas de lib�ation des classes pr�harg� ! */
+	/* Pas de lib�ation des classes pr�harg� ! */
 
-  /* V�ification qu'aucune classe de la librairie n'est instanci� ! */
+	/* V�ification qu'aucune classe de la librairie n'est instanci� ! */
 
-  gambas_exit = lt_dlsym(lib->handle, LIB_EXIT);
-  if (gambas_exit != NULL)
-    (*gambas_exit)();
+	gambas_exit = lt_dlsym(lib->handle, LIB_EXIT);
+	if (gambas_exit != NULL)
+		(*gambas_exit)();
 
-  if (lib->persistent)
-  {
-    gambas_exit = lt_dlsym(lib->handle, "_fini");
-    if (gambas_exit != NULL)
-      (*gambas_exit)();
-  }
-  else
+	if (lib->persistent)
 	{
-    lt_dlclose(lib->handle);
+		gambas_exit = lt_dlsym(lib->handle, "_fini");
+		if (gambas_exit != NULL)
+			(*gambas_exit)();
+	}
+	else
+	{
+		lt_dlclose(lib->handle);
 	}
 
-  lib->handle = NULL;
+	lib->handle = NULL;
 
 #ifdef DEBUG
-  printf("Unloading library %s\n", lib->name);
+	printf("Unloading library %s\n", lib->name);
 #endif
 }
 

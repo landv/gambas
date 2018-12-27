@@ -205,15 +205,28 @@ Private Sub Insert(sText As String, Optional X As Integer = $X)
   
   Dim hLine As CTerminalLine
   Dim iLen As Integer = String.Len(sText)
+  Dim sLeft As String
   
   If iLen = 0 Then Return
   
-  'Debug Quote(sText);; X;; $Y
+  'Debug Quote(sText);; $Y;; iLen;; X;; $W
   
   If (X + iLen) > $W Then
+    If X >= $W Then
+      If Not WrapMode Then Return
+      Index()
+      $X = 0
+      Insert(sText)
+      Return
+    Endif
     iLen = Max(0, $W - X)
     If iLen Then
-      Insert(String.Left(sText, iLen))
+      sLeft = String.Left(sText, iLen)
+      If String.Len(sLeft) <> iLen Then 
+        Error "gb.form.terminal: warning: String.Left() failed: "; String.Len(sLeft);; iLen
+        Return
+      Endif
+      Insert(sLeft, X)
       sText = String.Mid$(sText, iLen + 1) 
     Endif
     If WrapMode Then
@@ -229,7 +242,7 @@ Private Sub Insert(sText As String, Optional X As Integer = $X)
   If hLine.Length <= X Then 
     hLine.Text &= Space$(X - hLine.Length) & sText '& String.Mid(hLine.Text, X + iLen)
     hLine.Length = X + iLen 'String.Len(hLine.Text)
-    hLine.SetAttr($hAttr, X, iLen)
+    hLine.SetAttr($hAttr, X, iLen, False)
   Else
     If InsertMode Then
       hLine.Text = String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + 1)
@@ -238,7 +251,7 @@ Private Sub Insert(sText As String, Optional X As Integer = $X)
     Else
       hLine.Text = String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + iLen + 1)
       hLine.Length = Max(hLine.Length, X + iLen)
-      hLine.SetAttr($hAttr, X, iLen)
+      hLine.SetAttr($hAttr, X, iLen, False)
     Endif
   Endif
   
@@ -501,7 +514,7 @@ Public Sub EraseChar(Optional N As Integer = 1)
     hLine.Text = String.Left(hLine.Text, $X) & Space$(N) & String.Mid$(hLine.Text, $X + N + 1)
     hLine.Length = String.Len(hLine.Text)
   Endif
-  hLine.SetAttr($hAttr, $X, N)
+  hLine.SetAttr($hAttr, $X, N, False)
   GetView()._RefreshLine($Y)
   
 End

@@ -12,11 +12,24 @@ Public Enum MD_VERSION = 0, MD_FIELD = 1, MD_INDEX = 2, MD_TABLE = 3
 
 Private $bError As Boolean
 
+Public Sub MakeAbsolutePath(sPath As String) As String
+  
+  If sPath Begins "~/" Then
+    sPath = User.Home &/ Mid$(sPath, 3)
+  Else If File.IsRelative(sPath) Then 
+    sPath = Project.Dir &/ sPath
+  Endif
+  
+  Return sPath
+  
+End
+
+
 Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Optional bWithDatabase As Boolean, Optional sPassword As String) 
   
   hConn.Type = LCase(hConfig["Connection/Type"])
   If hConn.Type = "sqlite" Then
-    hConn.Host = hConfig["Connection/Path"]
+    hConn.Host = MakeAbsolutePath(hConfig["Connection/Path"])
   Else
     hConn.Host = hConfig["Connection/Host"]
     hConn.Port = hConfig["Connection/Port"]

@@ -47,6 +47,9 @@
 #include <GlobalParams.h>
 #include <UnicodeMap.h>
 
+#if POPPLER_VERSION_0_72
+#define getCString c_str
+#endif
 
 /***************************************************************************/
 
@@ -478,7 +481,7 @@ int32_t open_document (void *_object, char *sfile, int32_t lfile)
 	THIS->len=len;
 
 	white[0] = 0xFF; white[1] = 0xFF; white[2] = 0xFF;
-	THIS->dev=new SplashOutputDev(splashModeRGB8, 3, gFalse, white);
+	THIS->dev=new SplashOutputDev(splashModeRGB8, 3, false, white);
 
 	#if POPPLER_VERSION_0_20
 	THIS->dev->startDoc(THIS->doc);
@@ -922,17 +925,17 @@ static uint32_t *get_page_data(CPDFDOCUMENT *_object, int32_t x, int32_t y, int3
 	#if POPPLER_VERSION_0_20
 	THIS->page->displaySlice(THIS->dev,72.0*scale,72.0*scale,
 			   rotation,
-			   gFalse,
-			   gTrue,
+			   false,
+			   true,
 			   x,y,w,h,
-			   gFalse);
+			   false);
 	#else
 	THIS->page->displaySlice(THIS->dev,72.0*scale,72.0*scale,
 			   rotation,
-			   gFalse,
-			   gTrue,
+			   false,
+			   true,
 			   x,y,w,h,
-			   gFalse,
+			   false,
 			   THIS->doc->getCatalog ());
 	#endif
 	
@@ -994,11 +997,11 @@ BEGIN_METHOD(PDFPAGE_select, GB_INTEGER X; GB_INTEGER Y; GB_INTEGER W; GB_INTEGE
 	h = VARGOPT(H, (int32_t)THIS->page->getMediaHeight());
 
 	#if POPPLER_VERSION_0_20
-	dev = new TextOutputDev (NULL, gTrue, 0, gFalse, gFalse);
-	gfx = THIS->page->createGfx(dev,72.0,72.0,0,gFalse,gTrue,-1, -1, -1, -1, gFalse, NULL, NULL);
+	dev = new TextOutputDev (NULL, true, 0, false, false);
+	gfx = THIS->page->createGfx(dev,72.0,72.0,0,false,true,-1, -1, -1, -1, false, NULL, NULL);
 	#else
-	dev = new TextOutputDev (NULL, gTrue, gFalse, gFalse);
-	gfx = THIS->page->createGfx(dev,72.0,72.0,0,gFalse,gTrue,-1, -1, -1, -1, gFalse,THIS->doc->getCatalog (),NULL, NULL, NULL, NULL);
+	dev = new TextOutputDev (NULL, true, false, false);
+	gfx = THIS->page->createGfx(dev,72.0,72.0,0,false,true,-1, -1, -1, -1, false,THIS->doc->getCatalog (),NULL, NULL, NULL, NULL);
 	#endif
 
 	THIS->page->display(gfx);
@@ -1226,9 +1229,9 @@ BEGIN_METHOD (PDFPAGE_find,GB_STRING Text; GB_BOOLEAN Sensitive;)
 
 	count = 0;
 	#if POPPLER_VERSION_0_20
-	while (textdev->findText (block,nlen,gFalse,gTrue,gTrue,gFalse,sensitive,gFalse,gFalse,&x0,&y0,&x1,&y1))
+	while (textdev->findText (block,nlen,false,true,true,false,sensitive,false,false,&x0,&y0,&x1,&y1))
 	#else
-	while (textdev->findText (block,nlen,gFalse,gTrue,gTrue,gFalse,sensitive,gFalse,&x0,&y0,&x1,&y1))
+	while (textdev->findText (block,nlen,false,true,true,false,sensitive,false,&x0,&y0,&x1,&y1))
 	#endif
 	{
 		if (!THIS->Found)

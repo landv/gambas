@@ -61,6 +61,7 @@ public:
 //"Private"
 	void updateMark();
 	void init();
+	void update();
 	void checkInverted();
 	
 	bool _mark;

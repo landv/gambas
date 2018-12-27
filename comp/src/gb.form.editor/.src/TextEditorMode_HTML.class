@@ -4,6 +4,8 @@ Inherits TextEditorMode
 
 Static Public Const Name As String = "html"
 
+Static Public Const STRING_DELIM As String = "\"'"
+
 Static Private $aDoNotClose As String[] = ["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"]
 
 Private Sub InsertClosingMarkup(hEditor As TextEditor)
@@ -71,10 +73,8 @@ Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
 
   If Key.Text = ">" Then 
     hEditor.Insert(">")
-    If Me.CanCloseBraces(hEditor) Then
-      InsertClosingMarkup(hEditor)
-      Return True
-    Endif
+    If Not Me.InsideString(hEditor) Then InsertClosingMarkup(hEditor)
+    Return True
   Endif
   
   Return Super.OnKeyPress(hEditor)

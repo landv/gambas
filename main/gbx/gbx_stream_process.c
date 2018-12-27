@@ -102,23 +102,9 @@ static int stream_flush(STREAM *stream)
 }
 
 
-/*static int stream_eof(STREAM *stream)
-{
-	int ilen;
-
-	if (STREAM_get_readable(FD, &ilen))
-		return TRUE;
-
-	return (ilen == 0);
-}*/
 #define stream_eof NULL
 
 
-/*static int stream_lof(STREAM *stream, int64_t *len)
-{
-	*len = 0; //stream->direct.size;
-	return FALSE;
-}*/
 #define stream_lof NULL
 
 

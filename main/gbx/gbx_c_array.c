@@ -171,7 +171,7 @@ CLASS *CARRAY_get_array_class(CLASS *class, CTYPE ctype)
 }
 
 
-void *CARRAY_out_of_bound()
+void *CARRAY_out_of_bounds()
 {
 	GB_Error((char *)E_BOUND);
 	return NULL;
@@ -895,22 +895,17 @@ BEGIN_METHOD(Array_get, GB_INTEGER index)
 
 END_METHOD
 
-#if 0
-BEGIN_PROPERTY(Array_Last)
 
+static void array_first_last(CARRAY *_object, void *_param, bool last)
+{
 	void *data;
-	int index = THIS->count - 1;
+	int index = last ? THIS->count - 1 : 0;
 
 	if (check_not_multi(THIS))
 		return;
 
-	if (index < 0)
-	{
-		GB_Error((char *)E_ARG);
-		return;
-	}
-
 	data = get_data(THIS, index);
+	if (!data) return;
 	
 	if (READ_PROPERTY)
 	{
@@ -920,16 +915,27 @@ BEGIN_PROPERTY(Array_Last)
 	{
 		GB_VALUE *value;
 		
-		value = (GB_VALUE *)(void *)ARG(value);
+		value = PROP(GB_VALUE);
 		GB_Conv(value, THIS->type);	
-		
-		if (!data) return;
 		
 		GB_Store(THIS->type, value, data);
 	}
+}
+
+
+BEGIN_PROPERTY(Array_First)
+
+	array_first_last(_object, _param, FALSE);
 
 END_PROPERTY
-#endif
+
+
+BEGIN_PROPERTY(Array_Last)
+
+	array_first_last(_object, _param, TRUE);
+
+END_PROPERTY
+
 
 BEGIN_METHOD_VOID(Array_next)
 
@@ -1427,23 +1433,13 @@ BEGIN_METHOD(ArrayOfStruct_get, GB_INTEGER index)
 
 END_METHOD
 
-
-BEGIN_METHOD(ArrayOfStruct_put, GB_OBJECT value; GB_INTEGER index)
-
+static void array_of_struct_put(CARRAY *_object, void *data, void *object)
+{
 	int i;
 	CLASS *class = (CLASS *)THIS->type;
-	char *addr;
-	void *object = VARG(value);
-	void *data;
-	VALUE temp;
 	CLASS_DESC *desc;
-	
-	if (GB_CheckObject(object))
-		return;
-	
-	data = get_data_multi(THIS, ARG(index), GB_NParam() + 1);
-	if (!data)
-		return;
+	char *addr;
+	VALUE temp;
 	
 	for (i = 0; i < class->n_desc; i++)
 	{
@@ -1459,31 +1455,59 @@ BEGIN_METHOD(ArrayOfStruct_put, GB_OBJECT value; GB_INTEGER index)
 		addr = (char *)data + desc->variable.offset;
 		VALUE_write(&temp, (void *)addr, desc->variable.type);
 	}
+}
 
+BEGIN_METHOD(ArrayOfStruct_put, GB_OBJECT value; GB_INTEGER index)
+
+	void *object = VARG(value);
+	void *data;
+	
+	if (GB_CheckObject(object))
+		return;
+	
+	data = get_data_multi(THIS, ARG(index), GB_NParam() + 1);
+	if (!data)
+		return;
+	
+	array_of_struct_put(THIS, data, object);
+	
 END_METHOD
 
 
-#if 0
-BEGIN_PROPERTY(ArrayOfStruct_Last)
-
-	int index = THIS->count - 1;
+static void array_of_struct_first_last(void *_object, void *_param, bool last)
+{
+	int index = last ? THIS->count - 1 : 0;
 
 	if (check_not_multi(THIS))
 		return;
 
-	if (index < 0)
-	{
-		GB_Error((char *)E_ARG);
-		return;
-	}
-
 	void *data = get_data(THIS, index);
+	if (!data) return;
 
-	if (data)
+	if (READ_PROPERTY)
+	{
 		GB_ReturnObject(CSTRUCT_create_static(THIS, (CLASS *)THIS->type, data));
+	}
+	else
+	{
+		array_of_struct_put(THIS, data, VPROP(GB_OBJECT));
+	}
 	
 END_PROPERTY
-#endif
+
+
+BEGIN_PROPERTY(ArrayOfStruct_First)
+
+	array_of_struct_first_last(_object, _param, FALSE);
+
+END_PROPERTY
+
+	
+BEGIN_PROPERTY(ArrayOfStruct_Last)
+
+	array_of_struct_first_last(_object, _param, TRUE);
+
+END_PROPERTY
 
 	
 BEGIN_METHOD_VOID(ArrayOfStruct_next)
@@ -1628,7 +1652,9 @@ GB_DESC NATIVE_BooleanArray[] =
 	GB_METHOD("Pop", "b", Array_Pop, NULL),
 	GB_METHOD("_get", "b", Array_get, "(Index)i."),
 	GB_METHOD("_next", "b", Array_next, NULL),
-	//GB_PROPERTY_READ("Last", "b", Array_Last),
+
+	GB_PROPERTY("First", "b", Array_First),
+	GB_PROPERTY("Last", "b", Array_Last),
 
 	GB_METHOD("Read", NULL, Array_Read, "(Stream)Stream;[(Start)i(Length)i]"),
 	GB_METHOD("Write", NULL, Array_Write, "(Stream)Stream;[(Start)i(Length)i]"),
@@ -1660,6 +1686,9 @@ GB_DESC NATIVE_ByteArray[] =
 	GB_METHOD("Pop", "c", Array_Pop, NULL),
 	GB_METHOD("_get", "c", Array_get, "(Index)i."),
 	GB_METHOD("_next", "c", Array_next, NULL),
+
+	GB_PROPERTY("First", "c", Array_First),
+	GB_PROPERTY("Last", "c", Array_Last),
 
 	GB_METHOD("Read", NULL, Array_Read, "(Stream)Stream;[(Start)i(Length)i]"),
 	GB_METHOD("Write", NULL, Array_Write, "(Stream)Stream;[(Start)i(Length)i]"),
@@ -1694,7 +1723,9 @@ GB_DESC NATIVE_ShortArray[] =
 	GB_METHOD("Pop", "h", Array_Pop, NULL),
 	GB_METHOD("_get", "h", Array_get, "(Index)i."),
 	GB_METHOD("_next", "h", Array_next, NULL),
-	//GB_PROPERTY_READ("Last", "h", Array_Last),
+
+	GB_PROPERTY("First", "h", Array_First),
+	GB_PROPERTY("Last", "h", Array_Last),
 
 	GB_METHOD("Read", NULL, Array_Read, "(Stream)Stream;[(Start)i(Length)i]"),
 	GB_METHOD("Write", NULL, Array_Write, "(Stream)Stream;[(Start)i(Length)i]"),
@@ -1726,7 +1757,9 @@ GB_DESC NATIVE_IntegerArray[] =
 	GB_METHOD("Pop", "i", Array_Pop, NULL),
 	GB_METHOD("_get", "i", Array_get, "(Index)i."),
 	GB_METHOD("_next", "i", Array_next, NULL),
-	//GB_PROPERTY_READ("Last", "i", Array_Last),
+
+	GB_PROPERTY("First", "i", Array_First),
+	GB_PROPERTY("Last", "i", Array_Last),
 
 	GB_METHOD("Read", NULL, Array_Read, "(Stream)Stream;[(Start)i(Length)i]"),
 	GB_METHOD("Write", NULL, Array_Write, "(Stream)Stream;[(Start)i(Length)i]"),
@@ -1758,7 +1791,9 @@ GB_DESC NATIVE_LongArray[] =
 	GB_METHOD("Pop", "l", Array_Pop, NULL),
 	GB_METHOD("_get", "l", Array_get, "(Index)i."),
 	GB_METHOD("_next", "l", Array_next, NULL),
-	//GB_PROPERTY_READ("Last", "l", Array_Last),
+
+	GB_PROPERTY("First", "l", Array_First),
+	GB_PROPERTY("Last", "l", Array_Last),
 
 	GB_METHOD("Read", NULL, Array_Read, "(Stream)Stream;[(Start)i(Length)i]"),
 	GB_METHOD("Write", NULL, Array_Write, "(Stream)Stream;[(Start)i(Length)i]"),
@@ -1804,7 +1839,9 @@ GB_DESC NATIVE_PointerArray[] =
 	GB_METHOD("Pop", "p", Array_Pop, NULL),
 	GB_METHOD("_get", "p", Array_get, "(Index)i."),
 	GB_METHOD("_next", "p", Array_next, NULL),
-	//GB_PROPERTY_READ("Last", "p", Array_Last),
+
+	GB_PROPERTY("First", "p", Array_First),
+	GB_PROPERTY("Last", "p", Array_Last),
 
 	GB_METHOD("Read", NULL, Array_Read, "(Stream)Stream;[(Start)i(Length)i]"),
 	GB_METHOD("Write", NULL, Array_Write, "(Stream)Stream;[(Start)i(Length)i]"),
@@ -1837,7 +1874,9 @@ GB_DESC NATIVE_StringArray[] =
 	GB_METHOD("Pop", "s", Array_Pop, NULL),
 	GB_METHOD("_get", "s", Array_get, "(Index)i."),
 	GB_METHOD("_next", "s", Array_next, NULL),
-	//GB_PROPERTY_READ("Last", "s", Array_Last),
+
+	GB_PROPERTY("First", "s", Array_First),
+	GB_PROPERTY("Last", "s", Array_Last),
 
 	GB_METHOD("Insert", "String[]", Array_Insert, "(Array)String[];[(Pos)i]"),
 
@@ -1869,7 +1908,9 @@ GB_DESC NATIVE_FloatArray[] =
 	GB_METHOD("Pop", "f", Array_Pop, NULL),
 	GB_METHOD("_get", "f", Array_get, "(Index)i."),
 	GB_METHOD("_next", "f", Array_next, NULL),
-	//GB_PROPERTY_READ("Last", "f", Array_Last),
+
+	GB_PROPERTY("First", "f", Array_First),
+	GB_PROPERTY("Last", "f", Array_Last),
 
 	GB_METHOD("Read", NULL, Array_Read, "(Stream)Stream;[(Start)i(Length)i]"),
 	GB_METHOD("Write", NULL, Array_Write, "(Stream)Stream;[(Start)i(Length)i]"),
@@ -1902,7 +1943,9 @@ GB_DESC NATIVE_SingleArray[] =
 	GB_METHOD("Pop", "g", Array_Pop, NULL),
 	GB_METHOD("_get", "g", Array_get, "(Index)i."),
 	GB_METHOD("_next", "g", Array_next, NULL),
-	//GB_PROPERTY_READ("Last", "g", Array_Last),
+
+	GB_PROPERTY("First", "g", Array_First),
+	GB_PROPERTY("Last", "g", Array_Last),
 
 	GB_METHOD("Read", NULL, Array_Read, "(Stream)Stream;[(Start)i(Length)i]"),
 	GB_METHOD("Write", NULL, Array_Write, "(Stream)Stream;[(Start)i(Length)i]"),
@@ -1935,7 +1978,9 @@ GB_DESC NATIVE_DateArray[] =
 	GB_METHOD("Pop", "d", Array_Pop, NULL),
 	GB_METHOD("_get", "d", Array_get, "(Index)i."),
 	GB_METHOD("_next", "d", Array_next, NULL),
-	//GB_PROPERTY_READ("Last", "d", Array_Last),
+
+	GB_PROPERTY("First", "d", Array_First),
+	GB_PROPERTY("Last", "d", Array_Last),
 
 	GB_METHOD("Read", NULL, Array_Read, "(Stream)Stream;[(Start)i(Length)i]"),
 	GB_METHOD("Write", NULL, Array_Write, "(Stream)Stream;[(Start)i(Length)i]"),
@@ -1970,7 +2015,9 @@ GB_DESC NATIVE_ObjectArray[] =
 	GB_METHOD("Pop", "o", Array_Pop, NULL),
 	GB_METHOD("_get", "o", Array_get, "(Index)i."),
 	GB_METHOD("_next", "o", Array_next, NULL),
-	//GB_PROPERTY_READ("Last", "o", Array_Last),
+
+	GB_PROPERTY("First", "o", Array_First),
+	GB_PROPERTY("Last", "o", Array_Last),
 
 	GB_METHOD("Insert", "Object[]", Array_Insert, "(Array)Object[];[(Pos)i]"),
 
@@ -1999,8 +2046,10 @@ GB_DESC NATIVE_VariantArray[] =
 	GB_METHOD("Pop", "v", Array_Pop, NULL),
 	GB_METHOD("_get", "v", Array_get, "(Index)i."),
 	GB_METHOD("_next", "v", Array_next, NULL),
-	//GB_PROPERTY_READ("Last", "v", Array_Last),
 
+	GB_PROPERTY("First", "v", Array_First),
+	GB_PROPERTY("Last", "v", Array_Last),
+	
 	GB_METHOD("Insert", "Variant[]", Array_Insert, "(Array)Variant[];[(Pos)i]"),
 
 	GB_METHOD("Copy", "Variant[]", Array_Copy, "[(Start)i(Length)i]"),
@@ -2031,7 +2080,9 @@ GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
 	GB_METHOD("Pop", "*", Array_Pop, NULL),
 	GB_METHOD("_get", "*", Array_get, "(Index)i."),
 	GB_METHOD("_next", "*", Array_next, NULL),
-	//GB_PROPERTY_READ("Last", "*", Array_Last),
+
+	GB_PROPERTY("First", "*", Array_First),
+	GB_PROPERTY("Last", "*", Array_Last),
 
 	GB_METHOD("Insert", "*", Array_Insert, "(Array)*[];[(Pos)i]"),
 
@@ -2064,7 +2115,9 @@ GB_DESC NATIVE_TemplateArrayOfStruct[ARRAY_OF_STRUCT_TEMPLATE_NDESC] =
 	GB_METHOD("_get", "*", ArrayOfStruct_get, "(Index)i."),
 	GB_METHOD("_put", NULL, ArrayOfStruct_put, "(Value)*;(Index)i."),
 	GB_METHOD("_next", "*", ArrayOfStruct_next, NULL),
-	//GB_PROPERTY_READ("Last", "b", ArrayOfStruct_Last),
+
+	GB_PROPERTY("First", "*", ArrayOfStruct_First),
+	GB_PROPERTY("Last", "*", ArrayOfStruct_Last),
 
 	GB_END_DECLARE
 };

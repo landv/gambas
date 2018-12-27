@@ -377,7 +377,8 @@ gMainWindow::gMainWindow(gContainer *par) : gContainer(par)
 	g_typ = Type_gMainWindow;
 	
 #ifdef GTK3
-	border = gtk_fixed_new(); //gtk_event_box_new();
+	//border = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	border = gtk_fixed_new();
 #else
 	border = gtk_alignment_new(0, 0, 1, 1);
 #endif

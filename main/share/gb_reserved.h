@@ -67,7 +67,10 @@ enum {
 	RST_BCLR,
 	RST_MIN,
 	RST_MOD,
-	RST_GET
+	RST_GET,
+	RST_COLLECTION,
+	RST_EXEC,
+	RST_READ
 };
 
 #define RES_is_operator(value) (COMP_res_info[value].flag & RSF_OP)
@@ -112,6 +115,7 @@ typedef
 		RS_PUBLIC,
 		RS_STATIC,
 		RS_FAST,
+		RS_UNSAFE,
 		RS_PROPERTY,
 		RS_EVENT,
 		RS_INHERITS,
@@ -205,6 +209,7 @@ typedef
 		RS_UNLOCK,
 		RS_LIBRARY,
 		RS_DEBUG,
+		RS_ASSERT,
 		RS_PIPE,
 		RS_RANDOMIZE,
 		RS_BYREF,
@@ -320,8 +325,8 @@ typedef
 		uchar read_switch;
 		uchar priority;
 		uchar type;
-		short code;
-		short subcode;
+		ushort code;
+		ushort subcode;
 		void (*func)();
 		}
 	COMP_INFO;
@@ -360,5 +365,7 @@ int RESERVED_find_subr(const char *word, int len);
 
 SUBR_INFO *SUBR_get(const char *subr_name);
 SUBR_INFO *SUBR_get_from_opcode(ushort opcode, ushort optype);
+
+int RESERVED_get_from_opcode(ushort code);
 
 #endif

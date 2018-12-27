@@ -25,7 +25,6 @@
 #define __GBX_CLASS_H
 
 #include "gb_error.h"
-#include "gb_alloc.h"
 #include "gbx_type.h"
 #include "gb_table.h"
 #include "gbx_class_desc.h"
@@ -111,9 +110,12 @@ typedef
 		char npmin;
 		char vararg;
 		unsigned fast : 1;
+		unsigned unsafe : 1;
+		unsigned fast_linked : 1;
 		unsigned optional : 1;
 		unsigned use_is_missing : 1;
-		unsigned _reserved : 5;
+		unsigned is_static : 1;
+		unsigned _reserved : 2;
 		short n_local;
 		short n_ctrl;
 		short stack_usage;
@@ -337,9 +339,7 @@ typedef
 
 		COMPONENT *component;             // 128 208  The component the class belongs to
 
-		void (**jit_functions)(void);     // 132 216  array of jit functions
-
-		struct _CLASS *next;              // 136 224  next class
+		struct _CLASS *next;              // 132 216  next class
 		}
 	CLASS;
 
@@ -373,7 +373,8 @@ typedef
 	enum {
 		CQA_NONE = 0,
 		CQA_ARRAY = 1,
-		CQA_COLLECTION = 2
+		CQA_COLLECTION = 2,
+		CQA_STRING = 3
 		}
 	CLASS_QUICK_ARRAY;
 
@@ -411,6 +412,7 @@ EXTERN CLASS *CLASS_Process;
 EXTERN CLASS *CLASS_Component;
 EXTERN CLASS *CLASS_Observer;
 EXTERN CLASS *CLASS_Timer;
+EXTERN CLASS *CLASS_BoxedString;
 
 EXTERN CLASS *CLASS_BooleanArray;
 EXTERN CLASS *CLASS_ByteArray;
@@ -491,7 +493,7 @@ int CLASS_return_zero();
 
 void CLASS_sort(CLASS *class);
 
-void CLASS_inheritance(CLASS *class, CLASS *parent, bool in_jit_compilation);
+void CLASS_inheritance(CLASS *class, CLASS *parent);
 void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, int *first);
 void CLASS_make_event(CLASS *class, int *first);
 void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, bool all, int size_static);
@@ -512,6 +514,8 @@ CLASS *CLASS_get_array_of_struct_class(CLASS *class);
 
 int CLASS_sizeof(CLASS *class);
 
+CLASS *CLASS_find_load_from(const char *name, const char *from);
+
 /* class_init.c */
 
 void CLASS_init_native(void);
@@ -521,7 +525,6 @@ void CLASS_init_native(void);
 TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype);
 int CLASS_sizeof_ctype(CLASS *class, CTYPE ctype);
 
-//void CLASS_load_without_init(CLASS *class);
 void CLASS_load_real(CLASS *class);
 #define CLASS_load(_class) \
 ({ \
@@ -529,7 +532,7 @@ void CLASS_load_real(CLASS *class);
 		CLASS_load_real(_class); \
 })
 void CLASS_run_inits(CLASS *class);
-void CLASS_load_from_jit(CLASS *class);
+void CLASS_load_without_init(CLASS *class);
 
 /* class_native.c */
 

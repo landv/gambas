@@ -23,6 +23,7 @@
 
 #define __GBX_SIGNAL_C
 
+#include "gb_alloc.h"
 #include "gb_error.h"
 #include "gb_array.h"
 #include "gbx_api.h"

@@ -678,7 +678,7 @@ void COMPILE_print(int type, int line, const char *msg, ...)
 			fprintf(stderr, "%s: ", name);
 	}
 	else
-		fprintf(stderr, "gbc: ");
+		fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": ");
 
 	fprintf(stderr, "%s: ", type ? "warning" : "error");
 

@@ -131,7 +131,7 @@ static void handle_signal(int num, char state)
 	{
 		if (num == SIGKILL || num == SIGSTOP)
 		{
-			GB.Error("SIGKILL and SIGSTOP cannot be catched");
+			GB.Error("SIGKILL and SIGSTOP cannot be caught");
 			return;
 		}
 

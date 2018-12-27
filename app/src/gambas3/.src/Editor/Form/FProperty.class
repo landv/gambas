@@ -41,13 +41,9 @@ Public Sub _new()
   grdProperty.ScrollBar = Scroll.Vertical
   grdProperty.Columns.Resizable = True
 
-  ScrollArea(grdProperty.Proxy).Shadow = True
-  
   $iBgDefault = Color.TextBackground
   $iBgSet = Color.Merge(Color.TextBackground, Color.LightForeground, 0.25)
   $iBgModified = Color.Merge(Color.TextBackground, Color.LightBackground, 0.25)
-  
-  webHelp.Zoom = 0.8
   
 End
 
@@ -1215,6 +1211,9 @@ Public Sub ReadConfig()
 
   $bSort = Settings["/SortProperties", True]
   Project.SetNormalFont(grdProperty)
+
+  webHelp.Zoom = Settings["/Help/Zoom", 80] / 100
+  
   txtProperty.Font = grdProperty.Font
   cmbProperty.Font = grdProperty.Font
   spnProperty.Font = grdProperty.Font

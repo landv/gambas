@@ -1,0 +1,96 @@
+' Gambas class file
+
+Export
+
+Public Enum Unknown, Http, Ftp
+Public Enum NotReady, Ready, Downloading, Finish, {Error}
+
+Property Read Key As String
+Property Read Url As String
+Property Read Type As Integer
+Property Read State As Integer
+Property Read ErrorText As String
+Property Read Current As Long
+Property Read Size As Long
+Property Read Path As String
+
+Public _Key As String
+Public _Url As String
+Public _Type As Integer
+Public _Current As Long
+Public _Size As Long
+Public _State As Integer
+Public _ErrorText As String
+Public _Path As String
+
+Public Sub _GetClient() As Curl
+  
+  Dim hClient As Curl
+  
+  Select Case _Type
+    Case Http
+      hClient = New HttpClient
+    Case Ftp
+      hClient = New FtpClient
+  End Select
+
+  hClient.URL = _Url
+  Return hClient
+  
+End
+
+Public Sub _GetHost() As String
+
+  Try Return Scan(_Url, "*://*/*")[1]
+  Return ("host")
+
+End
+
+
+Private Function Key_Read() As String
+
+  Return _Key
+
+End
+
+Private Function Url_Read() As String
+
+  Return _Url
+
+End
+
+Private Function Type_Read() As Integer
+
+  Return _Type
+
+End
+
+Private Function State_Read() As Integer
+
+  Return _State
+
+End
+
+Private Function ErrorText_Read() As String
+
+  Return _ErrorText
+
+End
+
+Private Function Size_Read() As Long
+
+  Return _Size
+
+End
+
+Private Function Current_Read() As Long
+
+  Return _Current
+
+End
+
+Private Function Path_Read() As String
+
+  Return _Path
+
+End

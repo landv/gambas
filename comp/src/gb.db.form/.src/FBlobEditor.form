@@ -9,13 +9,13 @@
     { btnSave ToolButton
       MoveScaled(0,0,9,4)
       AutoResize = True
-      Text = ("Save...")
+      Text = ("Save") & "..."
       Picture = Picture["icon:/small/save-as"]
     }
     { btnLoad ToolButton
       MoveScaled(11,0,10,4)
       AutoResize = True
-      Text = ("Load...")
+      Text = ("Load") & "..."
       Picture = Picture["icon:/small/open"]
     }
     { btnClear ToolButton
@@ -35,7 +35,7 @@
   }
   { gvwPreview GridView
     MoveScaled(5,11,47,40)
-    Font = Font["Monospace"]
+    Font = Font["Monospace,-1"]
     Mouse = Mouse.Pointing
     Expand = True
     Border = False

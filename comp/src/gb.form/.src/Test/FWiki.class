@@ -1,0 +1,10 @@
+' Gambas class file
+
+
+Public Sub Form_Activate()
+
+  Wait 5
+  Desktop.Screenshot(Me.ScreenX, Me.ScreenY, Me.W, Me.H).Save("~/gambas/img/wiki/control/" &/ LCase(Object.Type(Me.Children[0])) & ".png")
+  Me.Close
+
+End

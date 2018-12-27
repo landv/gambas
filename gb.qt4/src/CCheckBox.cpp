@@ -27,6 +27,7 @@
 
 #include <QResizeEvent>
 
+#include "CStyle.h"
 #include "CCheckBox.h"
 
 /** MyCheckBox *************************************************************/
@@ -82,6 +83,7 @@ BEGIN_METHOD(CCHECKBOX_new, GB_OBJECT parent)
 	wid->setMinimumHeight(wid->sizeHint().height());
 
   CWIDGET_new(wid, (void *)_object);
+	THIS->widget.flag.fillBackground = CSTYLE_fix_breeze;
 
 END_METHOD
 

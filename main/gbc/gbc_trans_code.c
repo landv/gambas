@@ -36,7 +36,9 @@
 
 /*#define DEBUG*/
 
-static FUNCTION *func;
+ushort *TRANS_labels = NULL;
+
+static FUNCTION *_func;
 
 static CLASS_SYMBOL *add_local(int sym_index, TYPE type, int value, bool used)
 {
@@ -44,10 +46,10 @@ static CLASS_SYMBOL *add_local(int sym_index, TYPE type, int value, bool used)
 	PARAM *loc;
 	bool warnings = JOB->warnings;
 
-	if (ARRAY_count(func->local) >= MAX_LOCAL_SYMBOL)
+	if (ARRAY_count(_func->local) >= MAX_LOCAL_SYMBOL)
 		THROW("Too many local variables");
 
-	loc = ARRAY_add(&func->local);
+	loc = ARRAY_add(&_func->local);
 	loc->index = sym_index;
 	loc->type = type;
 	loc->value = value;
@@ -72,10 +74,10 @@ static void create_local_from_param()
 
 	JOB->line--; // For line number of declaration
 
-	for (i = 0; i < func->nparam; i++)
+	for (i = 0; i < _func->nparam; i++)
 	{
-		if (TYPE_get_id(func->param[i].type) != T_VOID)
-			add_local(func->param[i].index, func->param[i].type, (i - func->nparam), func->param[i].ignore);
+		if (TYPE_get_id(_func->param[i].type) != T_VOID)
+			add_local(_func->param[i].index, _func->param[i].type, (i - _func->nparam), _func->param[i].ignore);
 	}
 
 	JOB->line++;
@@ -86,9 +88,9 @@ static void remove_local()
 	int i;
 	CLASS_SYMBOL *sym;
 
-	for (i = 0; i < ARRAY_count(func->local); i++)
+	for (i = 0; i < ARRAY_count(_func->local); i++)
 	{
-		sym = CLASS_get_symbol(JOB->class, func->local[i].index);
+		sym = CLASS_get_symbol(JOB->class, _func->local[i].index);
 
 		if (!sym->local_used)
 		{
@@ -169,7 +171,7 @@ static bool TRANS_local(void)
 				no_warning = FALSE;
 
 			sym_index = PATTERN_index(*pattern);
-			sym = add_local(sym_index, decl.type, func->nlocal, FALSE);
+			sym = add_local(sym_index, decl.type, _func->nlocal, FALSE);
 			pattern++;
 
 			if (no_warning)
@@ -178,11 +180,11 @@ static bool TRANS_local(void)
 				JOB->warnings = save_warnings;
 			}
 
-			func->nlocal++;
+			_func->nlocal++;
 
 			if (TRANS_init_var(&decl))
 			{
-				CODE_pop_local(func->nlocal - 1);
+				CODE_pop_local(_func->nlocal - 1);
 				sym->local_assigned = TRUE;
 			}
 
@@ -197,7 +199,7 @@ static bool TRANS_local(void)
 		/*if (!many)
 		{
 			if (TRANS_init_var(&decl))
-				CODE_pop_local(func->nlocal - 1);
+				CODE_pop_local(_func->nlocal - 1);
 		}*/
 
 		if (!TRANS_is(RS_COMMA))
@@ -206,6 +208,49 @@ static bool TRANS_local(void)
 
 	return TRUE;
 }
+
+
+int TRANS_loop_local(bool allow_arg)
+{
+	int sym_index;
+	TRANS_DECL decl;
+	CLASS_SYMBOL *sym;
+	
+	if (!PATTERN_is_identifier(*JOB->current))
+		THROW("Syntax error. Identifier expected");
+	
+	sym_index = PATTERN_index(*JOB->current);
+	JOB->current++;
+	
+	sym = CLASS_get_symbol(JOB->class, sym_index);
+	
+	if (TRANS_type(TT_DO_NOT_CHECK_AS | TT_CAN_ARRAY, &decl))
+	{
+		if (!TYPE_compare(&sym->local.type, &decl.type))
+		{
+			add_local(sym_index, decl.type, _func->nlocal, FALSE);
+			_func->nlocal++;
+		}
+	}
+	
+	if (TYPE_is_null(sym->local.type))
+	{
+		if (TYPE_is_null(sym->global.type))
+			THROW("Unknown identifier: &1", TABLE_get_symbol_name(JOB->class->table, sym_index));
+		else
+			THROW("Loop variable cannot be global");
+	}
+	
+	if (!allow_arg && sym->local.value < 0)
+		THROW("Loop variable cannot be an argument");
+	
+	sym->local_assigned = TRUE;
+	sym->local_used = TRUE;
+	
+	return sym->local.value;
+}
+
+
 
 void TRANS_stop(void)
 {
@@ -254,8 +299,8 @@ void TRANS_statement(void)
 		{ RS_LINE, TRANS_line_input },
 		{ RS_OUTPUT, TRANS_output_to },
 		{ RS_DEBUG, TRANS_debug },
+		{ RS_ASSERT, TRANS_assert },
 		{ RS_ERROR, TRANS_error },
-		//{ RS_PIPE, TRANS_pipe },
 		{ RS_RANDOMIZE, TRANS_randomize },
 		{ RS_CHMOD, TRANS_chmod },
 		{ RS_CHOWN, TRANS_chown },
@@ -310,7 +355,7 @@ void TRANS_statement(void)
 static void translate_body()
 {
 	PATTERN *look;
-	bool is_proc = (TYPE_get_id(func->type) == T_VOID);
+	bool is_proc = (TYPE_get_id(_func->type) == T_VOID);
 	bool test_newline;
 	//int line = JOB->line - 1;
 	bool just_got_select = FALSE;
@@ -370,7 +415,11 @@ static void translate_body()
 			just_got_select = FALSE;
 		}
 
-		if (PATTERN_is_identifier(look[0]) && PATTERN_is(look[1], RS_COLON))
+		if (PATTERN_is(look[0], RS_DIM))
+		{
+			TRANS_local();
+		}
+		else if (PATTERN_is_identifier(look[0]) && PATTERN_is(look[1], RS_COLON))
 		{
 			TRANS_label();
 		}
@@ -548,25 +597,29 @@ void TRANS_code(void)
 
 	for (i = 0; i < ARRAY_count(JOB->class->function); i++)
 	{
-		func = &JOB->class->function[i];
-
-		CODE_begin_function(func);
+		_func = &JOB->class->function[i];
+		
+		CODE_begin_function(_func);
 
 		if (JOB->verbose)
-			printf("Compiling %s()...\n", TABLE_get_symbol_name(JOB->class->table, func->name));
+		{
+			printf("Compiling %s()...\n", TABLE_get_symbol_name(JOB->class->table, _func->name));
+			if (_func->fast)
+				printf("Fast\n");
+		}
 
 		/* Do not debug implicit or generated functions */
-		if (!func->start || func->name == NO_SYMBOL || TABLE_get_symbol_name(JOB->class->table, func->name)[0] == '@')
+		if (!_func->start || _func->name == NO_SYMBOL || TABLE_get_symbol_name(JOB->class->table, _func->name)[0] == '@')
 			JOB->nobreak = TRUE;
 		else
 			JOB->nobreak = FALSE;
 
-		JOB->line = func->line;
-		JOB->current = func->start;
-		JOB->func = func;
+		JOB->line = _func->line;
+		JOB->current = _func->start;
+		JOB->func = _func;
 
 		/* fonction implicite ? */
-		if (!func->start)
+		if (!_func->start)
 		{
 			if ((i == FUNC_INIT_DYNAMIC) && (JOB->form != NULL))
 			{
@@ -578,26 +631,27 @@ void TRANS_code(void)
 			FUNCTION_add_last_pos_line();
 			CODE_op(C_RETURN, 0, 0, TRUE);
 			if (JOB->verbose)
-				CODE_dump(func->code, func->ncode);
+				CODE_dump(_func->code, _func->ncode);
+
 			continue;
 		}
-
+		
 		create_local_from_param();
 
 		translate_body();
 
 		CODE_return(2); // Return from function, ignore Gosub stack
 
-		CODE_end_function(func);
+		CODE_end_function(_func);
 		FUNCTION_add_last_pos_line();
 
-		func->stack = func->nlocal + func->nctrl + CODE_stack_usage;
+		_func->stack = _func->nlocal + _func->nctrl + CODE_stack_usage;
 
 		if (JOB->verbose)
 		{
-			CODE_dump(func->code, func->ncode);
-			printf("%d local(s) %d control(s) ", func->nlocal, func->nctrl);
-			printf("%d stack\n", func->stack);
+			CODE_dump(_func->code, _func->ncode);
+			printf("%d local(s) %d control(s) ", _func->nlocal, _func->nctrl);
+			printf("%d stack\n", _func->stack);
 			printf("\n");
 		}
 

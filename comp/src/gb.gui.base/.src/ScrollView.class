@@ -1,0 +1,127 @@
+' Gambas class file
+
+Export
+Inherits ScrollArea
+
+Public Const _Properties As String = "*,Arrangement{Arrange.None;Horizontal;Vertical;Row;Column;Fill},Spacing,Margin,Padding{Range:0;63},Indent"
+Public Const _DefaultEvent As String = "Draw"
+Public Const _DefaultSize As String = "24,24"
+Public Const _Similar As String = "DrawingArea,ScrollView"
+
+Private $hCont As Panel
+Private $hObs As Observer
+Private $hTimer As Timer
+Private $bLock As Boolean
+
+Public Sub _new()
+  
+  $hObs = New Observer(Me.Proxy) As "Observer"
+  $hCont = New Panel(Me) As "Panel"
+  $hCont.Move(0, 0)
+  '$hCont.Background = Color.Yellow
+  Me._Container = $hCont
+  $hTimer = New Timer As "TimerArrange"
+  $hTimer.Trigger
+  
+End
+
+Public Sub Panel_BeforeArrange()
+  
+  AutoResizeContents
+  
+End
+
+Public Sub Panel_Arrange()
+  
+  AutoResizeContents
+  
+End
+
+Public Sub TimerArrange_Timer()
+  
+  AutoResizeContents
+  $hTimer = Null
+  
+End
+
+
+Private Sub AutoResizeContents()
+
+  Dim W, H As Integer
+  Dim hChild As Control
+  Dim iSaveArr As Integer
+  Dim D As Integer
+
+  If $bLock Then Return
+  
+  'If Me.Name = "lstRecent" Then Debug "scroll: "; Me.ScrollW;; Me.ScrollH;; "client: "; Me.ClientW;; Me.ClientH 'System.Backtrace.Join(" ")
+  
+  $bLock = True
+  
+  Do
+    
+    W = 0
+    H = 0
+    
+    For Each hChild In $hCont.Children
+      If Not hChild.Visible Then Continue
+      W = Max(W, hChild.X + hChild.W)
+      H = Max(H, hChild.Y + hChild.H)
+    Next
+    
+    If Me.Margin Then
+      D = Me.Padding
+      If D = 0 Then D = Desktop.Scale
+      W += D
+      H += D
+    Endif
+  
+    Select Case Me.Arrangement
+      Case Arrange.Horizontal, Arrange.TopBottom
+        H = Me.ClientH
+      Case Arrange.Vertical, Arrange.LeftRight
+        W = Me.ClientW
+    End Select
+    
+    'If Me.Name = "lstRecent" Then Debug "W =";; W;; "H =";; H
+    If W = Me.ScrollW And If H = Me.ScrollH Then Break
+    
+    'If Me.Name = "lstRecent" Then Debug "ResizeContents:";; W;; H
+    Me.ResizeContents(W, H)
+    
+  Loop
+  
+  W = Max(Me.ClientW, W)
+  H = Max(Me.ClientH, H)
+
+  If $hCont.W <> W Or If $hCont.H <> H Then
+    'If Me.Name = "svwTheme" Then Debug "Resize cont "; W;; H
+    $hCont.Resize(W, H)
+    iSaveArr = $hCont.Arrangement
+    $hCont.Arrangement = Arrange.None
+    $hCont.Arrangement = iSaveArr
+  Endif
+  
+  $bLock = False
+  
+End
+
+Public Sub Panel_MouseDown()
+  
+  Me.SetFocus
+  'Me.DrawingArea_MouseWheel
+  
+End
+
+Public Sub Panel_MouseWheel()
+  
+  Me.SetFocus
+  Me.DrawingArea_MouseWheel
+  
+End
+
+Public Sub Observer_Arrange()
+  
+  AutoResizeContents
+  
+End

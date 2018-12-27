@@ -227,19 +227,28 @@ DEBUG_INFO *DEBUG_init(GB_DEBUG_INTERFACE *debug, bool fifo, const char *fifo_na
 		
 		_fdr = open(path, O_RDONLY | O_CLOEXEC);
 		if (_fdr < 0)
+		{
+			fprintf(stderr, "gb.debug: %s: %s\n", strerror(errno), path);
 			return NULL;
+		}
 		
 		snprintf(path, sizeof(path), "/tmp/gambas.%d/%s.in", getuid(), fifo_name);
 		
 		_fdw = open(path, O_WRONLY | O_CLOEXEC);
 		if (_fdw < 0)
+		{
+			fprintf(stderr, "gb.debug: %s: %s\n", strerror(errno), path);
 			return NULL;
+		}
 		
 		_in = fdopen(_fdr, "r");
 		_out = fdopen(_fdw, "w");
 
 		if (!_in || !_out)
+		{
+			fprintf(stderr, "gb.debug: %s: %s\n", strerror(errno), path);
 			return NULL;
+		}
 			//ERROR_panic("Cannot open fifos");
 
 		setlinebuf(_in);

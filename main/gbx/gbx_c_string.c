@@ -48,7 +48,7 @@
 
 //#define DEBUG_CACHE
 
-const char STRING_char_length[256] =
+const uchar STRING_char_length[256] =
 {
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -60,7 +60,7 @@ const char STRING_char_length[256] =
 	3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,6,6,1,1
 };
 
-/***************************************************************************/
+//-----------------------------------------------------------------------------
 
 static int utf8_get_length(const char *sstr, int len)
 {
@@ -187,8 +187,7 @@ int COMMON_get_unicode_char()
 	return (int)uc;
 }
 
-
-/***************************************************************************/
+//-----------------------------------------------------------------------------
 
 char *STRING_utf8_current = NULL;
 static const char *_utf8_current_start = NULL;
@@ -354,8 +353,7 @@ __CALC_POS:
 	return pos;
 }
 
-
-/***************************************************************************/
+//-----------------------------------------------------------------------------
 
 static int byte_to_index(const char *str, int len, int byte)
 {
@@ -791,7 +789,10 @@ static void string_search(const char *str, const char *ref, int len, const char 
 		if (convert_to_unicode(&wpattern, &lpattern, pattern, lenp, TRUE))
 			goto __ERROR;
 		
-		pos = STRING_search((char *)wstr, lstr * sizeof(wchar_t), (char *)wpattern, lpattern * sizeof(wchar_t), start * sizeof(wchar_t), right, FALSE);
+		if (!start)
+			start = right ? lstr : 1;
+		
+		pos = STRING_search((char *)wstr, lstr * sizeof(wchar_t), (char *)wpattern, lpattern * sizeof(wchar_t), 1 + (start - 1) * sizeof(wchar_t), right, FALSE);
 		if (pos)
 			pos = (pos - 1) / sizeof(wchar_t) + 1;
 	}
@@ -880,9 +881,81 @@ _INVALID:
 
 END_METHOD
 
-#endif
+//-----------------------------------------------------------------------------
 
-GB_DESC NATIVE_String[] =
+BEGIN_PROPERTY(BoxedString_Len)
+
+	VALUE *val = &SP[-1];
+	
+	VARIANT_undo(val);
+	int len = val->_string.len;
+	RELEASE_STRING(val);
+	GB_ReturnInteger(len);
+
+END_PROPERTY
+
+void BoxedString_get(ushort code)
+{
+	int start;
+	int len;
+	bool null;
+
+	code++;
+	
+	SUBR_ENTER();
+
+	null = SUBR_check_string(PARAM);
+
+	VALUE_conv_integer(&PARAM[1]);
+	start = PARAM[1]._integer.value;
+
+	if (start < 0)
+		THROW(E_ARG);
+
+	if (null)
+		goto _SUBR_MID_FIN;
+
+	if (start >= PARAM->_string.len)
+	{
+		VOID_STRING(PARAM);
+		goto _SUBR_MID_FIN;
+	}
+
+	if (NPARAM == 2)
+		len = 1;
+	else
+	{
+		VALUE_conv_integer(&PARAM[2]);
+		len = PARAM[2]._integer.value;
+	}
+
+	if (len < 0)
+		len = Max(0, PARAM->_string.len - start + len);
+
+	len = MinMax(len, 0, PARAM->_string.len - start);
+
+	if (len == 0)
+	{
+		RELEASE_STRING(PARAM);
+		PARAM->_string.addr = NULL;
+		PARAM->_string.start = 0;
+	}
+	else
+		PARAM->_string.start += start;
+
+	PARAM->_string.len = len;
+
+_SUBR_MID_FIN:
+
+	SP -= NPARAM;
+	SP++;
+}
+
+#endif // GBX_INFO
+
+//-----------------------------------------------------------------------------
+
+GB_DESC StringDesc[] =
 {
 	GB_DECLARE_STATIC("String"),
 
@@ -920,6 +993,54 @@ GB_DESC NATIVE_String[] =
 	GB_STATIC_METHOD("Code", "i", String_Code, "(String)s[(Index)i]"),
 
 	GB_STATIC_METHOD("IsValid", "b", String_IsValid, "(String)s"),
+
+	GB_END_DECLARE
+};
+
+//-----------------------------------------------------------------------------
+
+GB_DESC BoxedStringDesc[] =
+{
+	GB_DECLARE_STATIC("_BoxedString"),
+
+	GB_STATIC_PROPERTY_READ("Len", "i", BoxedString_Len),
+	
+	GB_STATIC_FAST_METHOD("_get", "s", BoxedString_get, "(Start)i[(Length)i]"),
+	
+	//GB_STATIC_FAST_METHOD("_get", "s", _String_get, "(Start)i[(Length)i]"),
+
+	/*GB_STATIC_FAST_METHOD("Mid", "s", _String_Mid, "(String)s(Start)i[(Length)i]"),
+	GB_STATIC_FAST_METHOD("Mid$", "s", _String_Mid, "(String)s(Start)i[(Length)i]"),
+	GB_STATIC_FAST_METHOD("Left", "s", _String_Left, "(String)s[(Length)i]"),
+	GB_STATIC_FAST_METHOD("Left$", "s", _String_Left, "(String)s[(Length)i]"),
+	GB_STATIC_FAST_METHOD("Right", "s", _String_Right, "(String)s[(Length)i]"),
+	GB_STATIC_FAST_METHOD("Right$", "s", _String_Right, "(String)s[(Length)i]"),
+
+	GB_STATIC_METHOD("Upper", "s", String_Upper, "(String)s"),
+	GB_STATIC_METHOD("Upper$", "s", String_Upper, "(String)s"),
+	GB_STATIC_METHOD("UCase", "s", String_Upper, "(String)s"),
+	GB_STATIC_METHOD("UCase$", "s", String_Upper, "(String)s"),
+	GB_STATIC_METHOD("UCaseFirst", "s", String_UCaseFirst, "(String)s"),
+	GB_STATIC_METHOD("UCaseFirst$", "s", String_UCaseFirst, "(String)s"),
+	GB_STATIC_METHOD("Lower", "s", String_Lower, "(String)s"),
+	GB_STATIC_METHOD("Lower$", "s", String_Lower, "(String)s"),
+	GB_STATIC_METHOD("LCase", "s", String_Lower, "(String)s"),
+	GB_STATIC_METHOD("LCase$", "s", String_Lower, "(String)s"),
+
+	GB_STATIC_METHOD("InStr", "i", String_Instr, "(String)s(Pattern)s[(From)i(Mode)i]"),
+	GB_STATIC_METHOD("RInStr", "i", String_RInstr, "(String)s(Pattern)s[(From)i(Mode)i]"),
+
+	GB_STATIC_METHOD("Comp", "i", String_Comp, "(String)s(String2)s[(Mode)i]"),
+
+	GB_STATIC_METHOD("Byte", "i", String_Pos, "(String)s(Index)i"),
+	GB_STATIC_METHOD("Pos", "i", String_Pos, "(String)s(Index)i"),
+	GB_STATIC_METHOD("Index", "i", String_Index, "(String)s(Byte)i"),
+
+	GB_STATIC_METHOD("Chr", "s", String_Chr, "(Unicode)i"),
+	GB_STATIC_METHOD("Chr$", "s", String_Chr, "(Unicode)i"),
+	GB_STATIC_METHOD("Code", "i", String_Code, "(String)s[(Index)i]"),
+
+	GB_STATIC_METHOD("IsValid", "b", String_IsValid, "(String)s"),*/
 
 	GB_END_DECLARE
 };

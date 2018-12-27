@@ -15,6 +15,7 @@ Public State As Integer
 Public Id As Integer
 Public Name As String
 Public Version As String
+Public LastVersion As Boolean
 Public Vendor As String
 Public UploadDate As Date
 Public Description As String
@@ -129,8 +130,8 @@ Public Sub Request_Finished()
   Name = UnQuote(cResult["Name"])
   $sVersion = cResult["Version"]
   Version = $sVersion & "." & cResult["Release"]
+  LastVersion = CInt(cResult["LastVersion"])
   Vendor = UnQuote$(cResult["Vendor"])
-  
   UploadDate = FarmRequest.GetDate(cResult["UploadDate"])
   Description = UnQuote(cResult["Description"])
   URL = Trim(UnQuote$(cResult["URL"]))
@@ -650,4 +651,42 @@ Static Private Function IconSize_Read() As Integer
 
   Return Desktop.Scale * 6
 
+End
+
+Public Sub GetUploadAge() As String
+
+  Dim iDiff As Integer
+  
+  iDiff = DateDiff(UploadDate, Now, gb.Day)
+  
+  If iDiff = 1 Then
+    Return ("yesterday")
+  Else If iDiff < 7 Then
+    Return Subst(("&1 days ago"), CStr(iDiff))
+  Endif
+  
+  iDiff = (iDiff + 6) \ 7
+  
+  If iDiff = 1 Then
+    Return ("last week")
+  Else If iDiff <= 4 Then
+    Return Subst(("&1 weeks ago"), CStr(iDiff))
+  Endif
+  
+  iDiff = DateDiff(UploadDate, Now, gb.Month)
+  
+  If iDiff = 1 Then
+    Return ("last month")
+  Else If iDiff < 12 Then
+    Return Subst(("&1 months ago"), iDiff)
+  Endif
+  
+  iDiff = DateDiff(UploadDate, Now, gb.Year)
+  
+  If iDiff = 1 Then
+    Return ("last year")
+  Else
+    Return Subst(("on &1"), CStr(Year(UploadDate)))
+  Endif
+  
 End

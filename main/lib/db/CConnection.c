@@ -263,6 +263,7 @@ BEGIN_PROPERTY(Connection_Timeout)
 END_PROPERTY
 
 
+#if 0
 BEGIN_PROPERTY(Connection_Timezone)
 
 	if (READ_PROPERTY)
@@ -271,6 +272,7 @@ BEGIN_PROPERTY(Connection_Timezone)
 		THIS->db.timezone = VPROP(GB_INTEGER);
 
 END_PROPERTY
+#endif
 
 
 BEGIN_PROPERTY(CCONNECTION_opened)
@@ -764,6 +766,8 @@ END_PROPERTY
 BEGIN_PROPERTY(Connection_LastInsertId)
 
 	CHECK_DB();
+	CHECK_OPEN();
+	
 	GB.ReturnLong((*THIS->driver->GetLastInsertId)(&THIS->db));
 
 END_PROPERTY
@@ -783,7 +787,7 @@ GB_DESC CConnectionDesc[] =
 	GB_PROPERTY("Name", "s", CCONNECTION_name),
 	GB_PROPERTY("Port", "s", CCONNECTION_port),
 	GB_PROPERTY("Timeout", "i", Connection_Timeout),
-	GB_PROPERTY("Timezone", "i", Connection_Timezone),
+	//GB_PROPERTY("Timezone", "i", Connection_Timezone),
 	GB_PROPERTY_READ("Charset", "s", CCONNECTION_charset),
 	GB_PROPERTY_READ("Version", "i", CCONNECTION_version),
 	GB_PROPERTY_READ("Opened", "b", CCONNECTION_opened),

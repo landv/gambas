@@ -899,8 +899,8 @@ Public Sub Form_DragMove()
     Return
   Endif
   
-  While hCtrl.Parent <> panToolBar
-    hCtrl = hCtrl.Parent
+  While hCtrl._Parent <> panToolBar
+    hCtrl = hCtrl._Parent
   Wend
 
   If hCtrl = panWhere Then Return
@@ -966,8 +966,8 @@ Private Sub OnMouseDrag(hCtrl As Control)
   
   Dim sAction As String
   
-  While hCtrl.Parent <> panToolBar
-    hCtrl = hCtrl.Parent
+  While hCtrl._Parent <> panToolBar
+    hCtrl = hCtrl._Parent
     'Debug "-> "; hCtrl
   Wend
   
@@ -1401,8 +1401,6 @@ End
 Private Sub StockToToolbarSize(sSize As String) As Integer
   
   Select Case LCase(sSize)
-    Case "huge"
-      Return ICON_HUGE
     Case "medium"
       Return ICON_MEDIUM
     Case "large"
@@ -1418,28 +1416,41 @@ Private Sub StockToToolbarSize(sSize As String) As Integer
 End
 
 
-Public Sub LoadConfig(Optional bInit As Boolean)
+Public Sub GetLayout(Optional bReset As Boolean) As Variant
   
-  Dim hToolbar As ToolBar = GetToolBar()
-  Dim hCtrl As Control
+  Dim sSize As String
   Dim aConfig As String[]
-  Dim sAction As String
-  Dim iInd As Integer
+  Dim aDefaultConfig As String[]
+  
+  If Not bReset Then
+    aConfig = GetCurrentConfig() 
+    aDefaultConfig = GetDefaultConfig()
+    If aConfig.Join(",") = aDefaultConfig.Join(",") Then aConfig = Null
+  Endif
+  
+  sSize = Choose($iIconSize + 1, "Tiny", "", "Medium", "Large", "Huge")
+  
+  Return [sSize, aConfig]
+  
+End
+
+Public Sub SetLayout(vLayout As Variant, Optional bInit As Boolean)
+
+  Dim sSize As String
+  Dim aConfig As String[]
   Dim bEnabled As Boolean
-  Dim iDim As Integer
-  
-  If Not ToolbarKey Then Return
-  If $bDesign Then Return
-  
-  'Debug Me; ": Loading config for";; ToolbarKey
+  Dim iInd As Integer
+  Dim hCtrl As Control
+  Dim sAction As String
   
   MAction.InitAction
 
-  $iIconSize = StockToToolbarSize(Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"])
-  iDim = 12 + Max(Me.Font.Height * 0.8, GetRealIconSize())
-  $iButtonWidth = iDim
+  sSize = vLayout[0]
+  aConfig = vLayout[1]
   
-  aConfig = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Layout"]
+  $iIconSize = StockToToolbarSize(sSize)
+  $iButtonWidth = 12 + Max(Me.Font.Height * 0.8, GetRealIconSize())
+  
   If Not aConfig Then 
     'If $iIconSize = ICON_SMALL Then
     '  If bInit Then Goto RAISE_CONFIGURE
@@ -1456,7 +1467,7 @@ Public Sub LoadConfig(Optional bInit As Boolean)
   iInd = 0
   While iInd < panToolBar.Children.Count
     hCtrl = panToolBar.Children[iInd]
-    ResizeControl(hCtrl, iDim)
+    ResizeControl(hCtrl, $iButtonWidth)
     If hCtrl.Action Then
       hCtrl.Reparent(panHide)
     Else If FToolBarConfig.IsSpecialAction(GetControlAction(hCtrl)) Then 
@@ -1467,7 +1478,7 @@ Public Sub LoadConfig(Optional bInit As Boolean)
   Wend
   
   For Each hCtrl In panHide.Children
-    ResizeControl(hCtrl, iDim)
+    ResizeControl(hCtrl, $iButtonWidth)
   Next
 
   For Each sAction In aConfig
@@ -1514,7 +1525,23 @@ Public Sub LoadConfig(Optional bInit As Boolean)
 
 RAISE_CONFIGURE:  
   
-  If Not $bConfigure Then hToolbar._RaiseConfigure
+  If Not $bConfigure Then GetToolBar()._RaiseConfigure
+  
+End
+
+
+Public Sub LoadConfig(Optional bInit As Boolean)
+  
+  Dim aConfig As String[]
+  Dim sSize As String
+  
+  If Not ToolbarKey Then Return
+  If $bDesign Then Return
+  
+  sSize = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"]
+  aConfig = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Layout"]
+  
+  SetLayout([sSize, aConfig], bInit)
   
 End
 
@@ -1525,18 +1552,14 @@ Public Sub SaveConfig(Optional bReset As Boolean)
   Dim hForm As FToolBar
   Dim bChange As Boolean
   Dim sVal As String
-  Dim aDefaultConfig As String[]
+  Dim aLayout As Variant
   
   If Not ToolbarKey Then Return
   If $bDesign Then Return
   If Not Object.IsValid(Me.Parent.Parent) Then Return
 
-  If Not bReset Then
-    aConfig = GetCurrentConfig()
-    aDefaultConfig = GetDefaultConfig()
-    If aConfig.Join(",") = aDefaultConfig.Join(",") Then aConfig = Null
-  Endif
-  
+  aLayout = GetLayout(bReset)
+
   ' Print Me; ": Saving config for "; ToolbarKey; ": ";
   ' If aConfig Then
   '   Print aConfig.Join(",")
@@ -1544,8 +1567,10 @@ Public Sub SaveConfig(Optional bReset As Boolean)
   '   Print "NULL"
   ' Endif
   'Print "Default config is ";; FindToolbar().DefaultConfig.Join(",")
-
-  sVal = Choose($iIconSize + 1, "Tiny", "", "Medium", "Large", "Huge")
+  
+  sVal = aLayout[0]
+  aConfig = aLayout[1]
+  
   If sVal <> Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"] Then
     Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"] = sVal
     bChange = True

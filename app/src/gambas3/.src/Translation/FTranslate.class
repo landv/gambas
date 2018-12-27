@@ -363,7 +363,7 @@ Public Sub cvwTranslate_Select()
 
   With cvwTranslate
 
-    txtOrig.Text = Html$(.Current[0])
+    txtOrig.Text = .Current[0]
     $bIgnore = True
     txtTranslate.Text = .Current[1]
     $bIgnore = False
@@ -394,13 +394,20 @@ End
 
 Private Sub WriteTranslation(sPath As String, Optional iMode As Integer = EXPORT_ALL) As Boolean
 
-  Dim hFic As File
+  Dim hFile As File
   Dim sStr As String
   Dim bTrans As Boolean
 
-  hFic = Open sPath For Create
-
-  Print #hFic, $sHeader
+  If Not sPath Then
+    
+    hFile = Open String For Write
+    
+  Else
+  
+    hFile = Open sPath For Create
+    Print #hFile, $sHeader
+    
+  Endif
 
   With cvwTranslateOrg
 
@@ -415,22 +422,30 @@ Private Sub WriteTranslation(sPath As String, Optional iMode As Integer = EXPORT
         If sStr Then Goto NEXT_TRANS
       Endif
 
-      If sStr Then
-        If Right$(.Item[3], 2) = "\\n" Then
-          If Right$(sStr, 2) <> "\\n" Then
-            sStr = sStr & "\\n"
-          Endif
-        Else
-          While Right(sStr, 2) = "\\n" 
-            sStr = Left(sStr, -2)
-          Wend
-        Endif
-      Endif
+      If Not sPath Then
+        
+        Print #hFile, Mid$(Quote(.Item[3]), 2, -1)
+        
+      Else
 
-      Print #hFic, "#: "; .Item[2]
-      Print #hFic, "msgid "; Chr$(34); .Item[3]; Chr$(34)
-      Print #hFic, "msgstr "; Quote(UnQuote(sStr))
-      Print #hFic
+        If sStr Then
+          If Right$(.Item[3], 2) = "\\n" Then
+            If Right$(sStr, 2) <> "\\n" Then
+              sStr = sStr & "\\n"
+            Endif
+          Else
+            While Right(sStr, 2) = "\\n" 
+              sStr = Left(sStr, -2)
+            Wend
+          Endif
+        Endif
+  
+        Print #hFile, "#: "; .Item[2]
+        Print #hFile, "msgid "; Chr$(34); .Item[3]; Chr$(34)
+        Print #hFile, "msgstr "; Quote(UnQuote(sStr))
+        Print #hFile
+        
+      Endif
 
       If sStr Then bTrans = True
 
@@ -440,7 +455,13 @@ Private Sub WriteTranslation(sPath As String, Optional iMode As Integer = EXPORT
 
   End With
 
-  Close #hFic
+  If Not sPath Then
+    sStr = Close #hFile
+    Clipboard.Copy(sStr)
+  Else
+    Close #hFile
+  Endif
+
 
   Return Not bTrans
 
@@ -752,6 +773,14 @@ Private Sub ExportTranslation(iMode As Integer)
 
 End
 
+Private Sub CopyTranslation(iMode As Integer)
+  
+  UpdateOrg
+  WriteTranslation("", iMode)
+  
+End
+
+
 Public Sub mnuExportAll_Click()
 
   ExportTranslation(EXPORT_ALL)
@@ -767,6 +796,24 @@ End
 Public Sub mnuExportUntranslated_Click()
 
   ExportTranslation(EXPORT_UNTRANSLATED)
+
+End
+
+Public Sub mnuCopytAll_Click()
+
+  CopyTranslation(EXPORT_ALL)
+
+End
+
+Public Sub mnuCopyTranslated_Click()
+
+  CopyTranslation(EXPORT_TRANSLATED)
+
+End
+
+Public Sub mnuCopyUntranslated_Click()
+
+  CopyTranslation(EXPORT_UNTRANSLATED)
 
 End
 

@@ -112,12 +112,16 @@ bool STACK_check(int need)
 bool STACK_has_error_handler(void)
 {
   int i;
+	STACK_CONTEXT *sc;
 
   for (i = 0; i < STACK_frame_count; i++)
-    if (STACK_frame[i].ec != NULL)
-      return TRUE;
-
-  return FALSE;
+	{
+		sc = &STACK_frame[i];
+		if (sc->ec || sc->ep)
+			return TRUE;
+	}
+	
+	return FALSE;
 }
 
 STACK_CONTEXT *STACK_get_frame(int frame)

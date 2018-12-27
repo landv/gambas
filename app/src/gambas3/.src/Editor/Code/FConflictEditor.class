@@ -534,14 +534,11 @@ Public Sub OnProjectDebug()
 
 End
 
-Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean)
+Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean, bWordOnly As Boolean)
   
-  ' TODO: OnShowString
-  Return
-  
-  edtEditor.ShowString(sStr, bIgnoreCase)
-  If $hEditor1 Then $hEditor1.ShowString(sStr, bIgnoreCase)
-  If $hEditor2 Then $hEditor2.ShowString(sStr, bIgnoreCase)
+  edtEditor.HighlightString(sStr, bIgnoreCase, bWordOnly)
+  If $hEditor1 Then $hEditor1.HighlightString(sStr, bIgnoreCase, bWordOnly)
+  If $hEditor2 Then $hEditor2.HighlightString(sStr, bIgnoreCase, bWordOnly)
   
 End
 
@@ -867,7 +864,7 @@ Public Sub ShowErrorMessage(sMsg As String, (sIcon) As String)
 
   $hEditor.SetFocus
   Wait
-  $hEditor.ShowMessageLabel(Html(sMsg), $hEditor.ToPosX(), $hEditor.ToPosY() + $hEditor.LineHeight, Highlight.Breakpoint)
+  $hEditor.ShowMessageLabel(Html(sMsg), Highlight.Breakpoint)
 
 End
 

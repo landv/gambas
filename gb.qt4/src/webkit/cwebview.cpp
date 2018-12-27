@@ -64,6 +64,7 @@ DECLARE_EVENT(EVENT_DOWNLOAD);
 static QNetworkAccessManager *_network_access_manager = 0;
 static CWEBVIEW *_network_access_manager_view = 0;
 static QT_COLOR_FUNC _old_after_set_color;
+static bool _ignore_png_warnings = false;
 
 /*
 static WEBVIEW_ACTION _actions[] = 
@@ -203,9 +204,27 @@ static void stop_view(void *_object)
 
 BEGIN_METHOD(WebView_new, GB_OBJECT parent)
 
+	int fd_save = -1;
+	
+	if (!_ignore_png_warnings)
+	{
+		int fd = ::open("/dev/null", O_RDWR);
+		fd_save = ::dup(2);
+		::dup2(fd, 2);
+		::close(fd);
+	}
+
   MyWebView *wid = new MyWebView(QT.GetContainer(VARG(parent)));
+	
+	if (!_ignore_png_warnings)
+	{
+		::dup2(fd_save, 2);
+		::close(fd_save);
+		_ignore_png_warnings = true;
+	}
 
   QT.InitWidget(wid, _object, false);
+	QT.SetWheelFlag(_object);
 	
 	WEBVIEW_get_network_manager();
 	

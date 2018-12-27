@@ -113,9 +113,9 @@ END_METHOD
 static void handle_font_size(QWebSettings::FontSize size, void *_object, void *_param)
 {
 	if (READ_PROPERTY)
-		GB.ReturnInteger(get_settings(_object)->fontSize(size));
+		GB.ReturnInteger(get_settings(_object)->fontSize(size) - 3);
 	else
-		get_settings(_object)->setFontSize(size, VPROP(GB_INTEGER));
+		get_settings(_object)->setFontSize(size, VPROP(GB_INTEGER) + 3);
 }
 
 BEGIN_PROPERTY(WebSettingsFonts_DefaultFixedFontSize)
@@ -192,19 +192,21 @@ BEGIN_PROPERTY(WebSettingsCache_Path)
 		GB.ReturnString(_cache_path);
 	else
 	{
-		QString path = QSTRING_PROP();
+		char *path = GB.FileName(PSTRING(), PLENGTH());
+		QString qpath = QString(path);
 		QString root = QString(GB.System.Home());
 
 		if (root.at(root.length() - 1) != '/')
 			root += '/';
 		root += ".cache/";
-		if (!path.startsWith(root))
+		if (!qpath.startsWith(root))
 		{
 			GB.Error("Cache directory must be located inside ~/.cache");
 			return;
 		}
 
-		GB.StoreString(PROP(GB_STRING), &_cache_path);
+		GB.FreeString(&_cache_path);
+		_cache_path = GB.NewZeroString(path);
 		set_cache(_cache_enabled);
 	}
 

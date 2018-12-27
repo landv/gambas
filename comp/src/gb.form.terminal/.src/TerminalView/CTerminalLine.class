@@ -91,7 +91,7 @@ End
 '   
 ' End
 ' 
-Public Sub SetAttr(hAttr As TerminalAttr, X As Integer, Optional L As Integer = 1, Optional bInsert As Boolean)
+Public Sub SetAttr(hAttr As TerminalAttr, X As Integer, L As Integer, bInsert As Boolean)
   
   Dim iAttr As Integer
   Dim aAttr As Integer[]

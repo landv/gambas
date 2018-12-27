@@ -29,6 +29,7 @@
 #include <QResizeEvent>
 #include "gb.qt.h"
 #include "gambas.h"
+#include "CWidget.h"
 
 #ifndef __CSCROLLBAR_CPP
 
@@ -44,7 +45,7 @@ extern GB_DESC CScrollBarDesc[];
 
 typedef
   struct {
-    QT_WIDGET widget;
+    CWIDGET widget;
     }
   CSCROLLBAR;
 

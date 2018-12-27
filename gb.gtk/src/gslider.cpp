@@ -26,9 +26,9 @@
 #include "gscrollbar.h"
 #include "gslider.h"
 
-static void cb_change(GtkRange *range,gSlider *data)
+static void cb_change(GtkAdjustment *adj, gSlider *data)
 {
-	int new_value = gtk_range_get_value(GTK_RANGE(data->widget));
+	int new_value = gtk_adjustment_get_value(adj);
 
 	if (data->_value == new_value)
 		return;
@@ -38,14 +38,15 @@ static void cb_change(GtkRange *range,gSlider *data)
 		data->onChange(data);
 }
 
-void gSlider::init()
+void gSlider::update()
 {
 	GtkAdjustment* adj = gtk_range_get_adjustment(GTK_RANGE(widget));
+	int value = _value;
 	
-	if (_value < _min)
-		_value = _min;
-	else if (_value > _max)
-		_value = _max;
+	if (value < _min)
+		value = _min;
+	else if (value > _max)
+		value = _max;
 	
 	if (g_typ == Type_gSlider)
 	{
@@ -62,12 +63,22 @@ void gSlider::init()
 		gtk_range_set_increments(GTK_RANGE(widget), (gdouble)_step, (gdouble)_page_step);
 		gtk_adjustment_set_page_size(adj, _page_step);
 	}
-	gtk_range_set_value(GTK_RANGE(widget), _value);
+	gtk_range_set_value(GTK_RANGE(widget), value);
 #ifndef GTK3
 	gtk_range_set_update_policy(GTK_RANGE(widget), _tracking ? GTK_UPDATE_CONTINUOUS : GTK_UPDATE_DISCONTINUOUS);
 #endif
 
 	checkInverted();
+}
+
+void gSlider::init()
+{
+	GtkAdjustment* adj = gtk_range_get_adjustment(GTK_RANGE(widget));
+
+	onChange = NULL;
+
+	g_signal_connect(adj, "value-changed", G_CALLBACK(cb_change), (gpointer)this);
+	//g_signal_connect(adj, "changed", G_CALLBACK(cb_change), (gpointer)this);
 }
 
 gSlider::gSlider(gContainer *par, bool scrollbar) : gControl(par)
@@ -81,26 +92,27 @@ gSlider::gSlider(gContainer *par, bool scrollbar) : gControl(par)
 	_min = 0;
 	_max = 100;
 	_tracking = true;
-	
+
+/*#ifdef GTK3
+	border = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+#else	
 	border = gtk_alignment_new(0, 0, 1, 1);
+#endif*/
 	
 	if (scrollbar)
 		return;
 	
 #ifdef GTK3
 	widget = gtk_scale_new(GTK_ORIENTATION_VERTICAL, NULL);
+	//gtk_widget_set_hexpand(widget, TRUE);
 #else
 	widget = gtk_vscale_new(NULL);
 #endif
 	gtk_scale_set_draw_value(GTK_SCALE(widget), false);
 		
 	init();
-	
+	update();
 	realize(false);
-	
-	onChange = NULL;
-	
-	g_signal_connect(G_OBJECT(widget), "value-changed", G_CALLBACK(cb_change), (gpointer)this);
 	//g_signal_connect_after(G_OBJECT(border),"expose-event",G_CALLBACK(slider_Expose),(gpointer)this);
 }
 
@@ -112,15 +124,14 @@ gScrollBar::gScrollBar(gContainer *par) : gSlider(par, true)
 #else
 	widget = gtk_hscrollbar_new(NULL);
 #endif
-	realize(false);
 	
 	init();
-	onChange = NULL;
+	update();
+	realize(false);
 	
 #ifndef GTK3
 	gtk_range_set_update_policy(GTK_RANGE(widget),GTK_UPDATE_CONTINUOUS);
 #endif
-	g_signal_connect(G_OBJECT(widget), "value-changed", G_CALLBACK(cb_change), (gpointer)this);
 }
 
 bool gSlider::mark()
@@ -172,7 +183,7 @@ void gSlider::setStep(int vl)
 	if (vl == _step) return;
 	
 	_step = vl;
-	init();
+	update();
 	if (_mark) gtk_widget_queue_draw(widget);
 }
 
@@ -182,7 +193,7 @@ void gSlider::setPageStep(int vl)
 	if (vl == _page_step) return;
 	
 	_page_step = vl;
-	init();
+	update();
 	updateMark();
 }
 
@@ -206,7 +217,7 @@ void gSlider::setMax(int vl)
 	_max = vl;
 	if (_min > _max)
 		_min = _max;
-	init();
+	update();
 	updateMark();
 }
 
@@ -215,7 +226,7 @@ void gSlider::setMin(int vl)
 	_min = vl;
 	if (_min > _max)
 		_max = _min;
-	init();
+	update();
 	updateMark();
 }
 
@@ -227,7 +238,7 @@ bool gSlider::tracking()
 void gSlider::setTracking(bool vl)
 {
 	_tracking = vl;
-	init();
+	update();
 }
 
 void gSlider::setValue(int vl)
@@ -241,7 +252,7 @@ void gSlider::setValue(int vl)
 		return;
 	
 	_value = vl;
-	init();
+	update();
 	
 	emit(SIGNAL(onChange));
 }
@@ -289,38 +300,8 @@ void gSlider::resize(int w, int h)
 
 void gScrollBar::resize(int w, int h)
 {
-	//GtkAdjustment* adj;
-	//GType type;
-	
 	gControl::resize(w, h);
 	gtk_orientable_set_orientation(GTK_ORIENTABLE(widget),  (w < h) ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL);
-
-	/*type = (w < h) ? GTK_TYPE_VSCROLLBAR : GTK_TYPE_HSCROLLBAR;
-	
-	if (type != G_OBJECT_TYPE(widget))
-	{
-		adj = gtk_range_get_adjustment(GTK_RANGE(widget));
-		g_object_ref(adj);
-
-		g_object_ref(widget);
-		gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(widget)), widget);
-		gtk_widget_destroy(widget);
-		g_object_unref(widget);
-		
-		if (type == GTK_TYPE_VSCROLLBAR)
-			widget = gtk_vscrollbar_new(adj);
-		else
-			widget = gtk_hscrollbar_new(adj);
-		
-		gtk_container_add(GTK_CONTAINER(border), widget);
-		gtk_widget_show(widget);
-		widgetSignals();
-		g_signal_connect(G_OBJECT(widget), "value-changed", G_CALLBACK(cb_change), (gpointer)this);
-		
-		g_object_unref(adj);	
-		
-		init();
-	}*/
 }
 
 int gSlider::getDefaultSize()

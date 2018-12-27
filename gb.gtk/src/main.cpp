@@ -42,6 +42,7 @@
 #include "CFont.h"
 #include "CKey.h"
 #include "CPicture.h"
+#include "CMovieBox.h"
 #include "CImage.h"
 #include "CClipboard.h"
 #include "CMouse.h"
@@ -56,14 +57,11 @@
 #include "CWindow.h"
 #include "CLabel.h"
 #include "CButton.h"
-#include "CPictureBox.h"
 #include "CTextBox.h"
 #include "CTextArea.h"
 #include "CSlider.h"
 #include "CTabStrip.h"
 #include "CTrayIcon.h"
-#include "CScrollView.h"
-#include "CSpinBox.h"
 #include "CStock.h"
 #include "CSeparator.h"
 #include "cprinter.h"
@@ -73,6 +71,7 @@
 #include <string.h>
 
 GB_CLASS CLASS_Control;
+GB_CLASS CLASS_ContainerChildren;
 GB_CLASS CLASS_Picture;
 GB_CLASS CLASS_Image;
 GB_CLASS CLASS_DrawingArea;
@@ -114,8 +113,8 @@ GEOM_INTERFACE GEOM EXPORT;
 
 static void declare_tray_icon()
 {
-GB.Component.Declare(TrayIconsDesc);
-GB.Component.Declare(TrayIconDesc);
+	GB.Component.Declare(TrayIconsDesc);
+	GB.Component.Declare(TrayIconDesc);
 }
 
 GB_DESC *GB_CLASSES[] EXPORT =
@@ -145,12 +144,12 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CDialogDesc,
 	CWatcherDesc,
 	CWidgetDesc,
-	CChildrenDesc,
-	CContainerDesc,
+	ContainerChildrenDesc,
+	ContainerDesc,
 	CDrawingAreaDesc,
 	CFrameDesc,
-	CUserControlDesc,
-	CUserContainerDesc,
+	UserControlDesc,
+	UserContainerDesc,
 	CPanelDesc,
 	CHBoxDesc,
 	CVBoxDesc,
@@ -172,7 +171,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CCheckBoxDesc,
 	CRadioButtonDesc,
 	CToolButtonDesc,
-	CPictureBoxDesc,
 	CMovieBoxDesc,
 	CTextBoxSelectionDesc,
 	CTextBoxDesc,
@@ -184,8 +182,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CTabStripContainerDesc,
 	CTabStripContainerChildrenDesc,
 	CPluginDesc,
-	CScrollViewDesc,
-	CSpinBoxDesc,
 	CSeparatorDesc,
 	CStockDesc,
 	PrinterDesc,
@@ -233,7 +229,7 @@ int EXPORT GB_INIT(void)
 	CWatcher::init();
 
 	CLASS_Control = GB.FindClass("Control");
-	//CLASS_Container = GB.FindClass("Container");
+	CLASS_ContainerChildren = GB.FindClass("ContainerChildren");
 	//CLASS_UserControl = GB.FindClass("UserControl");
 	//CLASS_UserContainer = GB.FindClass("UserContainer");
 	CLASS_Window = GB.FindClass("Window");

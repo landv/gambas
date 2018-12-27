@@ -2525,7 +2525,6 @@ void MyMainWindow::configure()
 			menuBar->move(0, -menuBar->height());
 			menuBar->lower();
 		}
-		//qDebug("configure: %s (%d %d)", GB.GetClassName(THIS), this->width(), this->height());
 
 		geom = QRect(0, 0, this->width(), this->height());
 

@@ -1,0 +1,27 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,133,64)
+  Expand = True
+  Arrangement = Arrange.Vertical
+  { HSplit1 HSplit
+    MoveScaled(2,6,98,47)
+    Expand = True
+    { FileChooser1 FileChooser
+      MoveScaled(6,7,36,36)
+      Expand = True
+    }
+    { FileView1 FileView
+      MoveScaled(59,13,16,16)
+      Expand = True
+    }
+  }
+  { Button1 Button
+    MoveScaled(27,54,16,4)
+    Text = ("Toggle Fileview Detailed View")
+  }
+  { Button2 Button
+    MoveScaled(28,58,16,4)
+    Text = ("Toggle Filechooser Detailed View")
+  }
+}

@@ -30,9 +30,9 @@
 #include "eval_analyze.h"
 #include "main.h"
 
-#include "CExpression.h"
-#include "CSystem.h"
-#include "CHighlight.h"
+#include "c_expression.h"
+#include "c_system.h"
+#include "c_highlight.h"
 
 GB_INTERFACE GB EXPORT;
 

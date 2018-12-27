@@ -311,6 +311,7 @@ void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
 	func->npmin = -1;
 	func->vararg = decl->vararg;
 	func->fast = decl->fast;
+	func->unsafe = decl->unsafe;
 
 	// Function startup
 
@@ -625,6 +626,8 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 			index = CLASS_add_class(JOB->class, index);
 	}
 
+	JOB->class->class[index].type = TYPE_make(type, value, 0);
+	
 	/*cref = &class->class[index];
 	if (TYPE_is_null(cref->array))
 	{
@@ -971,7 +974,6 @@ CLASS_SYMBOL *CLASS_get_local_symbol(int local)
 	param = &JOB->func->local[local];
 	return (CLASS_SYMBOL *)TABLE_get_symbol(JOB->class->table, param->index);
 }
-
 
 
 char *TYPE_get_desc(TYPE type)

@@ -24,8 +24,9 @@ Private Sub LoadConnection()
 
   txtHost.Text = hConfig["Connection/Host"] 
   txtPort.Text = hConfig["Connection/Port"] 
-  txtUser.Text = hConfig["Connection/User"] 
-  txtPath.Text = hConfig["Connection/Path"] 
+  txtUser.Text = hConfig["Connection/User"]
+  txtPath.Text = MConnection.MakeAbsolutePath(hConfig["Connection/Path"])
+  
   chkNoPassword.Value = If(hConfig["Connection/NoPassword"], 1, 0)
   chkRememberPassword.Value = If(hConfig["Connection/RememberPassword"], 1, 0)
   chkIgnoreCharset.Value = If(hConfig["Connection/IgnoreCharset"], 1, 0)
@@ -48,11 +49,22 @@ End
 
 Private Sub FillConfig(hConfig As Object)
   
+  Dim sPath As String
+  
   hConfig["Connection/Type"] = LCase(cmbType.Text)
   hConfig["Connection/Host"] = txtHost.Text
   hConfig["Connection/Port"] = txtPort.Text
   hConfig["Connection/User"] = txtUser.Text
-  hConfig["Connection/Path"] = txtPath.Text
+  
+  sPath = txtPath.Text
+  If Project.InsideDirectory(sPath, Project.Dir) Then
+    sPath = Mid$(sPath, Len(Project.Dir) + 1)
+    If sPath Begins "/" Then sPath = Mid$(sPath, 2)
+  Else If Project.InsideDirectory(sPath, User.Home) Then
+    sPath = "~" &/ Mid$(sPath, Len(User.Home) + 1)
+  Endif
+  
+  hConfig["Connection/Path"] = sPath
   hConfig["Connection/NoPassword"] = CBool(chkNoPassword.Value)
   hConfig["Connection/RememberPassword"] = CBool(chkRememberPassword.Value)
   hConfig["Connection/IgnoreCharset"] = CBool(chkIgnoreCharset.Value)

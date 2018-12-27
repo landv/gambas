@@ -13,8 +13,8 @@ GB_COMPONENT_PKG_CONFIG(
 
 GB_COMPONENT(
   v4l, V4L, gb.v4l, [src],
-  [GB_FIND(png.h jpeglib.h linux/videodev2.h, /usr/local/lib /usr/local /usr/lib /usr, include)],
-  [GB_FIND(libpng.$SHLIBEXT libjpeg.$SHLIBEXT, /usr/local /usr, lib)],
+  [GB_FIND(png.h jpeglib.h linux/videodev2.h, $prefix /usr/local/lib /usr/local /usr/lib /usr, include)],
+  [GB_FIND(libpng.$SHLIBEXT libjpeg.$SHLIBEXT, $prefix /usr/local /usr, lib)],
   [$C_LIB -ljpeg -lpng])
 
 AC_OUTPUT( \

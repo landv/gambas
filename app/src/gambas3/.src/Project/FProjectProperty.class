@@ -155,7 +155,6 @@ Private Sub InitEnvironment()
   
   tvwEnv.Columns.Count = 2
   tvwEnv.Columns[0].Text = ("Variable")
-  tvwEnv.Columns[0].Width = -1
   tvwEnv.Columns[0].Width = Max(tvwEnv.Columns[0].Width, Desktop.Scale * 20)
   tvwEnv.Columns[1].Text = ("Value")
   
@@ -163,6 +162,7 @@ Private Sub InitEnvironment()
     
   tvwEnv.Rows.Count = $aEnv.Count
   tvwEnv.Rows.Resizable = False
+  tvwEnv.Columns[0].Width = -1
   
 End
 
@@ -1290,18 +1290,21 @@ Private Sub UpdateArgButtons()
 
 End
 
-Public Sub ArgListEditor_Click()
+Private Sub SelectArgListEditor(hArgListEditor As ArgListEditor)
 
-  Dim hArgListEditor As ArgListEditor
   Dim hChild As ArgListEditor
   
-  hArgListEditor = Last
-  If hArgListEditor.Selected Then Return
+  If hArgListEditor And If hArgListEditor.Selected Then Return
   
   For Each hChild In svwArgList.Children
     hChild.Selected = hChild = hArgListEditor
   Next
-  
+
+End
+
+Public Sub ArgListEditor_Click()
+
+  SelectArgListEditor(Last)
   UpdateArgButtons
   
 End
@@ -1341,23 +1344,9 @@ Public Sub btnRemoveArgument_Click()
 
 End
 
-Private Sub UnselectArgList()
-
-  Dim I As Integer
-  Dim hChild As ArgListEditor
-  
-  For I = 0 To svwArgList.Children.Count - 1
-    hChild = svwArgList.Children[I]
-    hChild.Selected = False
-  Next
-  
-  UpdateArgButtons
-
-End
-
 Public Sub svwArgList_GotFocus()
 
-  UnselectArgList
+  SelectArgListEditor(Null)
 
 End
 
@@ -1414,6 +1403,7 @@ Private Sub UpdateVcInfo()
   Dim cInfo As Collection
   Dim sValue As String
   Dim iRow As Integer
+  Dim I As Integer
   
   If gvwVcInfo.Rows.Count Then Return
   
@@ -1433,6 +1423,11 @@ Private Sub UpdateVcInfo()
   
   gvwVcInfo.Columns[0].W = -1
   gvwVcInfo.Columns[0].W += Desktop.Scale * 2
+  
+  For I = 0 To gvwVcInfo.Rows.Count - 1
+    gvwVcInfo.Rows[I].H = -1
+  Next
+
 
 Finally
   

@@ -3,7 +3,7 @@
 Export
 Inherits UserContainer
 
-Public Const _Properties As String = "*,Count{Range:1;256}=1,Index,Text,TextFont,Picture,ShowTitle=True,ShowIndex=False,ShowButton=True,Border=True,ActionText,ActionPicture,Animated"
+Public Const _Properties As String = "*,Count{Range:1;256}=1,Index,Text,TextFont,Picture,ShowTitle=True,ShowIndex=False,ShowButton=True,Border=True,ActionText,ActionPicture"
 Public Const _DefaultEvent As String = "Change"
 Public Const _Similar As String = "TabStrip"
 Public Const _IsMultiContainer As Boolean = True
@@ -36,7 +36,8 @@ Private $bShowIndex As Boolean
 Private $sActionText As String
 Private $hActionPicture As Picture
 Private $iAllowAnimation As Integer
-Private $bAnimated As Boolean
+
+Static Private $bDeprecated As Boolean
 
 Public Sub _new()
 
@@ -192,7 +193,7 @@ Private Sub Index_Write(iIndex As Integer)
   
   Endif
 
-  If $bAnimated And If $iAllowAnimation Then DoAnimate($iCurrent, iIndex)
+  If Application.Animations And If $iAllowAnimation Then DoAnimate($iCurrent, iIndex)
 
   Me._Container = $aStep[iIndex]
 
@@ -426,13 +427,15 @@ End
 
 Private Function Animated_Read() As Boolean
 
-  Return $bAnimated
+  Return False
 
 End
 
-Private Sub Animated_Write(Value As Boolean)
+Private Sub Animated_Write((Value) As Boolean)
 
-  $bAnimated = Value
+  If $bDeprecated Then Return
+  Error "gb.form: Wizard.Animated is deprecated"
+  $bDeprecated = True
 
 End
 

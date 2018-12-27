@@ -93,7 +93,7 @@ static void *_my_realloc(void *ptr, int size)
 #define STRING_last_count 32
 static char *STRING_last[STRING_last_count] = { 0 };
 
-const char STRING_char_string[512] =
+const char STRING_char_table[512] =
 "\x00\x00\x01\x00\x02\x00\x03\x00\x04\x00\x05\x00\x06\x00\x07\x00\x08\x00\x09\x00\x0A\x00\x0B\x00\x0C\x00\x0D\x00\x0E\x00\x0F\x00"
 "\x10\x00\x11\x00\x12\x00\x13\x00\x14\x00\x15\x00\x16\x00\x17\x00\x18\x00\x19\x00\x1A\x00\x1B\x00\x1C\x00\x1D\x00\x1E\x00\x1F\x00"
 "\x20\x00\x21\x00\x22\x00\x23\x00\x24\x00\x25\x00\x26\x00\x27\x00\x28\x00\x29\x00\x2A\x00\x2B\x00\x2C\x00\x2D\x00\x2E\x00\x2F\x00"
@@ -127,7 +127,8 @@ static iconv_t _conv_utf8_unicode = (iconv_t)-1;
 ****************************************************************************/
 
 #define SIZE_INC 16
-#define REAL_SIZE(_len) (((_len) + (SIZE_INC - 1)) & ~(SIZE_INC - 1))
+#define SIZE_INC2 256
+#define REAL_SIZE(_len) ((_len) >= 256 ? (((_len) + (SIZE_INC2 - 1)) & ~(SIZE_INC2 - 1)) : (((_len) + (SIZE_INC - 1)) & ~(SIZE_INC - 1)))
 
 #define POOL_SIZE  16
 #define POOL_MAX   64
@@ -461,8 +462,7 @@ bool STRING_extend_will_realloc(char *str, int new_len)
 void STRING_new_temp_value(VALUE *value, const char *src, int len)
 {
 	value->_string.addr = STRING_new_temp(src, len);
-
-	value->_string.len = STRING_length(value->_string.addr);
+	value->_string.len = len; //STRING_length(value->_string.addr);
 	value->_string.start = 0;
 	value->type = T_STRING;
 }
@@ -799,180 +799,6 @@ char *STRING_add_char(char *str, char c)
 }
 
 
-int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase)
-{
-	int pos, ip;
-
-	if (lp > ls)
-		return 0;
-
-	if (is < 0)
-		is += ls;
-	else if (is == 0)
-		is = right ? ls : 1;
-
-	ls = ls - lp + 1; /* Longueur du début du texte où effectuer la recherche */
-
-	if (is > ls)
-	{
-		if (!right)
-			return 0;
-		else
-			is = ls;
-	}
-	else if (is < lp)
-	{
-		if (right)
-			return 0;
-		else if (is < 1)
-			is = 1;
-	}
-
-	is--;
-
-	if (lp == 1)
-	{
-		char cp = *pp;
-
-		if (nocase)
-		{
-			cp = tolower(cp);
-
-			if (right)
-			{
-				for (; is >= 0; is--)
-				{
-					if (tolower(ps[is]) == cp)
-						return is + 1;
-				}
-			}
-			else
-			{
-				for (; is < ls; is++)
-				{
-					if (tolower(ps[is]) == cp)
-						return is + 1;
-				}
-			}
-		}
-		else
-		{
-			if (right)
-			{
-				for (; is >= 0; is--)
-				{
-					if (ps[is] == cp)
-						return is + 1;
-				}
-			}
-			else
-			{
-				for (; is < ls; is++)
-				{
-					if (ps[is] == cp)
-						return is + 1;
-				}
-			}
-		}
-
-		return 0;
-	}
-
-	pos = 0;
-	ps += is;
-
-	if (right)
-	{
-		if (nocase)
-		{
-			for (; is >= 0; is--, ps--)
-			{
-				if (tolower(ps[0]) != tolower(pp[0]))
-					goto __NEXT_RN;
-
-				for (ip = 1; ip < lp; ip++)
-				{
-					if (tolower(ps[ip]) != tolower(pp[ip]))
-						goto __NEXT_RN;
-				}
-
-				pos = is + 1;
-				goto __FOUND;
-
-		__NEXT_RN:
-			;
-			}
-		}
-		else
-		{
-			for (; is >= 0; is--, ps--)
-			{
-				if (ps[0] != pp[0])
-					goto __NEXT_R;
-
-				for (ip = 1; ip < lp; ip++)
-				{
-					if (ps[ip] != pp[ip])
-						goto __NEXT_R;
-				}
-
-				pos = is + 1;
-				goto __FOUND;
-
-		__NEXT_R:
-			;
-			}
-		}
-	}
-	else
-	{
-		if (nocase)
-		{
-			for (; is < ls; is++, ps++)
-			{
-				if (tolower(ps[0]) != tolower(pp[0]))
-					goto __NEXT_LN;
-
-				for (ip = 1; ip < lp; ip++)
-				{
-					if (tolower(ps[ip]) != tolower(pp[ip]))
-						goto __NEXT_LN;
-				}
-
-				pos = is + 1;
-				goto __FOUND;
-
-		__NEXT_LN:
-			;
-			}
-		}
-		else
-		{
-			for (; is < ls; is++, ps++)
-			{
-				if (ps[0] != pp[0])
-					goto __NEXT_L;
-
-				for (ip = 1; ip < lp; ip++)
-				{
-					if (ps[ip] != pp[ip])
-						goto __NEXT_L;
-				}
-
-				pos = is + 1;
-				goto __FOUND;
-
-		__NEXT_L:
-			;
-			}
-		}
-	}
-
-__FOUND:
-
-	return pos;
-}
-
 void STRING_start_len(int len)
 {
 	_make.inc = 32;
@@ -987,12 +813,14 @@ void STRING_start_len(int len)
 	_make.ntemp = 0;
 }
 
+
 void STRING_make_dump()
 {
 	int n = _make.ntemp;
 	_make.ntemp = 0;
 	STRING_make(_make.temp, n);
 }
+
 
 // len == 0 est possible ! On peut vouloir ajouter une chaîne vide.
 
@@ -1063,6 +891,7 @@ char *STRING_end_temp()
 
 	return _make.buffer;
 }
+
 
 /****************************************************************************
 
@@ -1159,7 +988,7 @@ int STRING_conv(char **result, const char *str, int len, const char *src, const 
 			out = COMMON_buffer;
 			out_len = COMMON_BUF_MAX;
 
-			#if defined(OS_SOLARIS) || defined(OS_FREEBSD) || defined(OS_OPENBSD)
+			#if defined(OS_SOLARIS) || defined(OS_BSD)
 			ret = iconv(handle, &in, &in_len, &out, &out_len);
 			#else
 			ret = iconv(handle, (char **)&in, &in_len, &out, &out_len);
@@ -1288,3 +1117,208 @@ char *STRING_conv_file_name(const char *name, int len)
 }
 
 
+// Warning! Returns the index starting from 1, and 0 if no match is found.
+
+int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase)
+{
+	int pos, ip, apos;
+	char *p;
+
+	if (lp > ls)
+		return 0;
+
+	if (is < 0)
+		is += ls;
+	else if (is == 0)
+		is = right ? ls : 1;
+
+	ls = ls - lp + 1;
+
+	if (is > ls)
+	{
+		if (!right)
+			return 0;
+		else
+			is = ls;
+	}
+	else if (is < lp)
+	{
+		if (right)
+			return 0;
+		else if (is < 1)
+			is = 1;
+	}
+
+	is--;
+
+	if (lp == 1)
+	{
+		char cp = *pp;
+
+		if (nocase && cp != tolower(cp))
+		{
+			cp = tolower(cp);
+
+			if (right)
+			{
+				for (; is >= 0; is--)
+				{
+					if (tolower(ps[is]) == cp)
+						return is + 1;
+				}
+			}
+			else
+			{
+				for (; is < ls; is++)
+				{
+					if (tolower(ps[is]) == cp)
+						return is + 1;
+				}
+			}
+		}
+		else
+		{
+			if (right)
+			{
+				p = memrchr(ps, (uchar)cp, is + 1);
+				return p ? p - ps + 1 : 0;
+				
+				/*for (; is >= 0; is--)
+				{
+					if (ps[is] == cp)
+						return is + 1;
+				}*/
+			}
+			else
+			{
+				p = memchr(ps + is, (uchar)cp, ls - is);
+				return p ? p - ps + 1 : 0;
+				
+				/*for (; is < ls; is++)
+				{
+					if (ps[is] == cp)
+						return is + 1;
+				}*/
+			}
+		}
+
+		return 0;
+	}
+
+	pos = 0;
+	apos = 0;
+
+	if (!nocase || pp[0] == tolower(pp[0]))
+	{
+		p = memchr(right ? ps : ps + is, (uchar)pp[0], right ? ls : ls - is);
+		if (!p)
+			goto __FOUND;
+		ls -= (int)(p - ps);
+		is -= (int)(p - ps);
+		if (is < 0) is = 0;
+		apos = (int)(p - ps);
+		ps = p;
+		
+		p = memrchr(ps, (uchar)pp[0], right ? is + 1 : ls);
+		if (!p)
+			goto __FOUND;
+		ls = (int)(p - ps + 1);
+		if (is >= ls) is = ls - 1;
+	}
+	
+	ps += is;
+
+	if (right)
+	{
+		if (nocase)
+		{
+			for (; is >= 0; is--, ps--)
+			{
+				if (tolower(ps[0]) != tolower(pp[0]))
+					goto __NEXT_RN;
+
+				for (ip = 1; ip < lp; ip++)
+				{
+					if (tolower(ps[ip]) != tolower(pp[ip]))
+						goto __NEXT_RN;
+				}
+
+				pos = apos + is + 1;
+				goto __FOUND;
+
+		__NEXT_RN:
+			;
+			}
+		}
+		else
+		{
+			for (; is >= 0; is--, ps--)
+			{
+				if (ps[0] != pp[0])
+					goto __NEXT_R;
+
+				for (ip = 1; ip < lp; ip++)
+				{
+					if (ps[ip] != pp[ip])
+						goto __NEXT_R;
+				}
+
+				pos = apos + is + 1;
+				goto __FOUND;
+
+		__NEXT_R:
+			;
+			}
+		}
+	}
+	else
+	{
+		if (nocase)
+		{
+			for (; is < ls; is++, ps++)
+			{
+				if (tolower(ps[0]) != tolower(pp[0]))
+					goto __NEXT_LN;
+
+				for (ip = 1; ip < lp; ip++)
+				{
+					if (tolower(ps[ip]) != tolower(pp[ip]))
+						goto __NEXT_LN;
+				}
+
+				pos = apos + is + 1;
+				goto __FOUND;
+
+		__NEXT_LN:
+			;
+			}
+		}
+		else
+		{
+			for (; is < ls; is++, ps++)
+			{
+				if (ps[0] != pp[0])
+					goto __NEXT_L;
+
+				if (memcmp(ps + 1, pp + 1, lp - 1))
+					goto __NEXT_L;
+				
+				/*for (ip = 1; ip < lp; ip++)
+				{
+					if (ps[ip] != pp[ip])
+						goto __NEXT_L;
+				}*/
+
+				pos = apos + is + 1;
+				goto __FOUND;
+
+		__NEXT_L:
+			;
+			}
+		}
+	}
+
+__FOUND:
+
+	return pos;
+}

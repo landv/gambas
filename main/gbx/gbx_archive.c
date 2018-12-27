@@ -361,6 +361,8 @@ bool ARCHIVE_find_from_path(ARCHIVE **parch, const char **ppath)
 {
 	int i;
 	CLASS *class;
+	const char *path = *ppath;
+	const char *p;
 
 	if (*parch)
 		return FALSE;
@@ -374,17 +376,40 @@ bool ARCHIVE_find_from_path(ARCHIVE **parch, const char **ppath)
 
 	//fprintf(stderr, "ARCHIVE_find_from_path: %s (%s)\n", *ppath, *parch ? (*parch)->name : "NULL");
 
-	if (strncmp(*ppath, ".../", 4) == 0)
+	if (strncmp(path, "./", 2) == 0)
 	{
-		*ppath += 4;
+		path += 2;
+		p = index(path, '/');
+		if (p)
+		{
+			int len = p - path;
+			char name[len + 1];
+			COMPONENT *comp;
+			
+			strncpy(name, path, len);
+			name[len] = 0;
+			
+			comp = COMPONENT_find(name);
+			if (comp && comp->archive)
+			{
+				*parch = comp->archive;
+				*ppath = p + 1;
+				return FALSE;
+			}
+		}
+	}
+	
+	if (strncmp(path, ".../", 4) == 0)
+	{
+		path += 4;
 		*parch = NULL;
 	}
 	else
 	{
 		i = 0;
-		while (strncmp(*ppath, "../", 3) == 0)
+		while (strncmp(path, "../", 3) == 0)
 		{
-			*ppath += 3;
+			path += 3;
 			if (*parch == NULL || *parch == ARCHIVE_main)
 				continue;
 
@@ -419,6 +444,7 @@ bool ARCHIVE_find_from_path(ARCHIVE **parch, const char **ppath)
 
 	//fprintf(stderr, "--> '%s' / %s\n", *parch ? (*parch)->name : "(null)", *ppath);
 
+	*ppath = path;
 	return *parch == NULL;
 }
 

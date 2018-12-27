@@ -85,9 +85,6 @@ while (0);
 
 #endif
 
-void STACK_push_frame(STACK_CONTEXT *context, int check);
-void STACK_pop_frame(STACK_CONTEXT *context);
-
 bool STACK_has_error_handler(void);
 
 STACK_BACKTRACE *STACK_get_backtrace(void);
@@ -108,7 +105,6 @@ STACK_CONTEXT *STACK_get_frame(int frame);
 #define STACK_push_frame(_context, _need) \
 ({ \
 	int stack; \
-	\
 	if ((uintptr_t)&stack < STACK_process_stack_limit) \
 		THROW_STACK(); \
 	\

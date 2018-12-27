@@ -49,7 +49,7 @@ Public Sub Run(sText As String)
   Dim iPos As Integer
   Dim sCar As String
   Dim bSingleLineComment As Boolean
-  Dim bSingleQuoteString As Boolean
+  Dim sQuoteChar As String
   Dim sIdent As String
   Dim bTestShowLimit As Boolean
   Dim bLastExpr As Boolean
@@ -58,7 +58,11 @@ Public Sub Run(sText As String)
   iTag = TextHighlighter.Tag
   iLenText = String.Len(sText)
   bLastExpr = True
-  If iState = Highlight.Operator Then bLastExpr = False
+  If iState = Highlight.Operator Then 
+    bLastExpr = False
+  Else If iState = Highlight.String Then 
+    sQuoteChar = "`"
+  Endif
   
   For iPos = 1 To iLenText
 
@@ -122,12 +126,9 @@ Public Sub Run(sText As String)
           Continue
         Endif
         
-      Else If sCar = "\"" Then
+      Else If InStr("\"'`", sCar) Then
         iState = Highlight.String
-        bSingleQuoteString = False
-      Else If sCar = "'" Then
-        iState = Highlight.String
-        bSingleQuoteString = True
+        sQuoteChar = sCar
       Else If Asc(sCar) <= 32 Then 
       
       Else If IsDigit(sCar) Then
@@ -251,12 +252,7 @@ Public Sub Run(sText As String)
           Inc iPos
           Continue
         Endif
-      Else If sCar = "\"" And If Not bSingleQuoteString Then
-        TextHighlighter.Add(iState)
-        iState = Highlight.Normal
-        bLastExpr = True
-        Continue
-      Else If sCar = "'" And If bSingleQuoteString Then
+      Else If sCar = sQuoteChar Then
         TextHighlighter.Add(iState)
         iState = Highlight.Normal
         bLastExpr = True
@@ -274,7 +270,9 @@ Public Sub Run(sText As String)
   Endif
   
   If iState <> Highlight.Comment And If iState <> Highlight.Help Then
-    iState = Highlight.Normal
+    If iState <> Highlight.String Or If sQuoteChar <> "`" Then
+      iState = Highlight.Normal
+    Endif
   Endif
   
   TextHighlighter.Limit = False

@@ -55,6 +55,10 @@ AC_DEFUN([GB_PRINT_MESSAGES],
     echo "||"
     echo
   fi
+  
+  if test -e FAILED && test "x${GAMBAS_CONFIG_FAILURE}" != "x"; then
+     AC_MSG_ERROR([Failed to configure $3])
+  fi
 ])
 
 ## ---------------------------------------------------------------------------
@@ -169,13 +173,6 @@ AC_DEFUN([GB_INIT],
 
   AC_CHECK_HEADERS(unistd.h)
   
-  dnl ---- Checks for programs
-
-  AC_PROG_CPP
-  AC_PROG_CXX
-  AC_PROG_CC
-  AC_PROG_MAKE_SET
-
   dnl ---- Checks for header files.
 
   dnl AC_HEADER_DIRENT
@@ -230,9 +227,13 @@ AC_DEFUN([GB_INIT],
 
   GB_MATH()
 
-  dnl ---- Check for gettext lib
+  dnl ---- Check for gettext library
 
   GB_GETTEXT()
+  
+  dnl ---- Check for inotify library
+
+  GB_INOTIFY()
   
   dnl ---- Check for monotonic clock
   
@@ -346,6 +347,17 @@ AC_DEFUN([GB_INIT],
     AC_DEFINE(HAVE_GCC_LTO, 1, [Whether gcc supports -flto])
   fi
   
+  dnl ---- check for -std=c++11 compiler flag
+  
+  GB_CXXFLAGS_GCC_OPTION([-std=c++11],,
+    [
+      GB_CXXFLAGS_STD_CPP11=" -std=c++11"
+      have_gcc_std_cpp11x=yes
+    ])
+  
+  if test "$have_gcc_std_cpp11" = "yes"; then
+    AC_DEFINE(HAVE_GCC_STD_CPP11, 1, [Whether g++ supports -std=c++11])
+  fi
   
   dnl ---- Debug flags
 
@@ -371,13 +383,21 @@ AC_DEFUN([GB_INIT],
   CFLAGS=""
   CXXFLAGS=""
 
+  dnl ---- Checks for programs
+
+  AC_PROG_CPP
+  AC_PROG_CXX
+  AC_PROG_CC
+  AC_PROG_MAKE_SET
+
   AC_SUBST(AM_CFLAGS)
   AC_SUBST(AM_CFLAGS_OPT)
   AC_SUBST(AM_CXXFLAGS)
   AC_SUBST(AM_CXXFLAGS_OPT)
   AC_SUBST(GB_CFLAGS_LTO)
+  AC_SUBST(GB_CXXFLAGS_STD_CPP11)
 
-  rm -f DISABLED DISABLED.*
+  rm -f DISABLED DISABLED.* FAILED
 ])
 
 
@@ -389,7 +409,7 @@ AC_DEFUN([GB_INIT],
 AC_DEFUN([GB_THREAD],
 [
   case "${host}" in
-    *-*-freebsd* | *-*-darwin* )
+    *-*-freebsd* | *-*-netbsd* | *-*-darwin* )
       THREAD_LIB=""
       THREAD_INC="-pthread -D_REENTRANT"
       GBX_THREAD_LIB=""
@@ -401,13 +421,6 @@ AC_DEFUN([GB_THREAD],
       THREAD_INC=""
       GBX_THREAD_LIB=""
       GBX_THREAD_INC=""
-      GBX_THREAD_LDFLAGS=""
-      ;;
-    *-*-netbsd* )
-      THREAD_LIB=""
-      THREAD_INC="-pthread -D_REENTRANT"
-      GBX_THREAD_LIB=""
-      GBX_THREAD_INC="-pthread -D_REENTRANT"
       GBX_THREAD_LDFLAGS=""
       ;;
     *)
@@ -464,9 +477,6 @@ AC_DEFUN([GB_LIBC],
 AC_DEFUN([GB_MATH],
 [
   case "${host}" in
-    *-*-freebsd* )
-      MATH_LIB="-lm"
-      ;;
     *-*-haiku* )
       MATH_LIB=""
       ;;
@@ -543,6 +553,11 @@ AC_DEFUN([GB_SYSTEM],
     *-*-linux*-gnu* )
       SYSTEM=LINUX
       AC_DEFINE(OS_GNU, 1, [Target system is of GNU family])
+      AC_DEFINE(OS_LINUX, 1, [Target system is Linux])
+      AC_DEFINE(SYSTEM, "Linux", [Operating system])
+      ;;
+    *-*-linux* )
+      SYSTEM=LINUX
       AC_DEFINE(OS_LINUX, 1, [Target system is Linux])
       AC_DEFINE(SYSTEM, "Linux", [Operating system])
       ;;
@@ -627,7 +642,7 @@ AC_DEFUN([GB_SYSTEM],
       AC_DEFINE(ARCH_ARM, 1, [Target architecture is ARM])
       AC_DEFINE(ARCHITECTURE, "arm", [Architecture])
       ;;
-    powerpc-*-* )
+    powerpc*-*-* )
       ARCH=PPC
       AC_DEFINE(ARCH_PPC, 1, [Target architecture is PowerPC])
       AC_DEFINE(ARCHITECTURE, "powerpc", [Architecture])
@@ -695,6 +710,29 @@ AC_DEFUN([GB_GETTEXT],
   AC_SUBST(GETTEXT_LDFLAGS)
 
   AC_MSG_RESULT($GETTEXT_LIB)
+])
+
+
+## ---------------------------------------------------------------------------
+## GB_INOTIFY
+## Detects if we must link to an external inotify library
+## ---------------------------------------------------------------------------
+
+AC_DEFUN([GB_INOTIFY],
+[
+  AC_MSG_CHECKING(for external inotify library)
+
+  case "${host}" in
+    *-*-linux* )
+      GB_INOTIFY_LIB=
+      ;;
+    *)
+      GB_INOTIFY_LIB=-linotify
+      ;;
+  esac
+
+  AC_SUBST(GB_INOTIFY_LIB)
+  AC_MSG_RESULT($GB_INOTIFY_LIB)
 ])
 
 
@@ -887,8 +925,8 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
   dnl   [  gb_lib_$1="$withval" ])
 
   have_$1=no
-
-  if test "$gb_enable_$1"="yes" && test ! -e DISABLED && test ! -e DISABLED.$3; then
+  
+  if test "$gb_enable_$1" = "yes" && test ! -e DISABLED && test ! -e DISABLED.$3; then
 
     AC_MSG_CHECKING(for $3 component with pkg-config)
 
@@ -922,11 +960,15 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
   if test "$have_$1" = "no"; then
 
     if test "$gb_in_component_search" != "yes"; then
-      touch DISABLED
       touch DISABLED.$3
+      if test "$gb_enable_$1" = "yes"; then
+        touch FAILED
+      fi
     fi
 
-    AC_MSG_RESULT(no)
+    if test "$gb_enable_$1" = "yes"; then
+      AC_MSG_RESULT(no)
+    fi
 
     for pkgcmp in $5
     do
@@ -1108,8 +1150,10 @@ AC_DEFUN([GB_COMPONENT],
   else
 
     have_$1=no
-    touch DISABLED
     touch DISABLED.$3
+    if test "$gb_enable_$1" = "yes"; then
+      touch FAILED
+    fi
 
   fi
 

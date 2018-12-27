@@ -24,7 +24,6 @@ gb_qt5_la_SOURCES = \
  CContainer.h CContainer_moc.cpp CContainer.cpp \
  CLabel.h CLabel_moc.cpp CLabel.cpp \
  CTextBox.h CTextBox_moc.cpp CTextBox.cpp \
- CPictureBox.h CPictureBox_moc.cpp CPictureBox.cpp \
  CMenu.h CMenu_moc.cpp CMenu.cpp \
  CMouse.h CMouse_moc.cpp CMouse.cpp \
  CKey.h CKey_moc.cpp CKey.cpp \
@@ -43,13 +42,11 @@ gb_qt5_la_SOURCES = \
  CDraw.h CDraw.cpp \
  cpaint_impl.h cpaint_impl.cpp \
  CWatch.h CWatch_moc.cpp CWatch.cpp \
- CScrollView.h CScrollView_moc.cpp CScrollView.cpp \
  CDrawingArea.h CDrawingArea_moc.cpp CDrawingArea.cpp \
  CMessage.h CMessage_moc.cpp CMessage.cpp \
  CSlider.h CSlider_moc.cpp CSlider.cpp \
  CScrollBar.h CScrollBar_moc.cpp CScrollBar.cpp \
  CMovieBox.h CMovieBox_moc.cpp CMovieBox.cpp \
- CSpinBox.h CSpinBox_moc.cpp CSpinBox.cpp \
  ctrayicon.h ctrayicon_moc.cpp ctrayicon.cpp \
  CWatcher.h CWatcher_moc.cpp CWatcher.cpp \
  cprinter.h cprinter_moc.cpp cprinter.cpp \

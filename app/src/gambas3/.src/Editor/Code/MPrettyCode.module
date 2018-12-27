@@ -15,6 +15,7 @@ Private $bIndentDim As Boolean
 Private $bRemoveSpace As Boolean
 Private $bKeepVoidLine As Boolean
 Private $iIndentSize As Integer
+Private $bLocalDeclDone As Boolean
 
 Public Sub _init()
   
@@ -318,6 +319,7 @@ Private Sub IndentLineGambas(sLine As String) As String
       iNextLevel = 1
       $bNeedNewLine = True
       If Not $bLastNewLine Then sAdd = "\n"
+      $bLocalDeclDone = False
     Else If FEditor.IsCurrentEndProc() Then
       $iLevel = 0
       iNextLevel = 0
@@ -337,13 +339,15 @@ Private Sub IndentLineGambas(sLine As String) As String
       
       If sSym = "END" And If aSym.Count >= 2 Then sSym &= " " & aSym[1]
       
-      If sSym = "DIM" Then
+      If sSym = "DIM" And If Not $bLocalDeclDone Then
         
         $iLastDim = $iLine
         If Not $bIndentDim Then $iLevel = 0
         iNextLevel = 1
       
       Else
+      
+        $bLocalDeclDone = True
       
         If $iLastDim = ($iLine - 1) Then
           If Not bNextIndent Then 'Not bLastString And If Not bLastWrap Then

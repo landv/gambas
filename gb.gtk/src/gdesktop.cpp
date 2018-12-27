@@ -132,7 +132,7 @@ static gColor get_color(GType type, gColor default_color, GtkStateFlags state, b
 	GtkStyleContext *st = gt_get_style(type);
 	GdkRGBA rgba;
 
-	if (type == GTK_TYPE_WINDOW)
+	if (type == GTK_TYPE_WINDOW || type == GTK_TYPE_BUTTON)
 	{
 		if (!gt_style_lookup_color(st, fg ? fg_names : bg_names, NULL, &rgba))
 			goto __OK;

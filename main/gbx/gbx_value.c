@@ -66,19 +66,9 @@ static bool unknown_function(VALUE *value)
 }
 #endif
 
-void THROW_TYPE_INTEGER(TYPE type)
+void THROW_TYPE(TYPE wanted, TYPE got)
 {
-	THROW(E_TYPE, TYPE_get_name(T_INTEGER), TYPE_get_name(type));
-}
-
-void THROW_TYPE_FLOAT(TYPE type)
-{
-	THROW(E_TYPE, TYPE_get_name(T_FLOAT), TYPE_get_name(type));
-}
-
-void THROW_TYPE_STRING(TYPE type)
-{
-	THROW(E_TYPE, TYPE_get_name(T_STRING), TYPE_get_name(type));
+	THROW(E_TYPE, TYPE_get_name(wanted), TYPE_get_name(got));
 }
 
 static void undo_variant(VALUE *value)
@@ -374,11 +364,11 @@ void VALUE_convert(VALUE *value, TYPE type)
 	/* d      */ { &&__N,     &&__d2b,   &&__d2c,   &&__d2h,   &&__d2i,   &&__d2l,   &&__d2g,   &&__d2f,   &&__OK,    &&__d2s,   &&__d2s,   &&__N,     &&__2v,    &&__N,     &&__N,     &&__N,     },
 	/* cs     */ { &&__N,     &&__s2b,   &&__s2c,   &&__s2h,   &&__s2i,   &&__s2l,   &&__s2g,   &&__s2f,   &&__s2d,   &&__OK,    &&__OK,    &&__N,     &&__s2v,   &&__N,     &&__N,     &&__N,     },
 	/* s      */ { &&__N,     &&__s2b,   &&__s2c,   &&__s2h,   &&__s2i,   &&__s2l,   &&__s2g,   &&__s2f,   &&__s2d,   &&__OK,    &&__OK,    &&__N,     &&__s2v,   &&__N,     &&__N,     &&__N,     },
-	/* p      */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__p2i,   &&__p2l,   &&__N,     &&__N,     &&__N,     &&__p2s,   &&__p2s,   &&__OK,    &&__2v,    &&__N,     &&__N,     &&__N,     },
+	/* p      */ { &&__N,     &&__p2b,   &&__N,     &&__N,     &&__p2i,   &&__p2l,   &&__N,     &&__N,     &&__N,     &&__p2s,   &&__p2s,   &&__OK,    &&__2v,    &&__N,     &&__N,     &&__N,     },
 	/* v      */ { &&__N,     &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__v2,    &&__OK,    &&__N,     &&__v2,    &&__v2,    },
 	/* func   */ { &&__N,     &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__func,  &&__F2p,   &&__func,  &&__OK,    &&__N,     &&__func,  },
 	/* class  */ { &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__2v,    &&__N,     &&__OK,    &&__N,     },
-	/* null   */ { &&__N,     &&__n2b,   &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__n2d,   &&__n2s,   &&__n2s,   &&__n2p,     &&__2v,    &&__N,     &&__N,     &&__OK,    },
+	/* null   */ { &&__N,     &&__n2b,   &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__N,     &&__n2d,   &&__n2s,   &&__n2s,   &&__n2p,   &&__2v,    &&__N,     &&__N,     &&__OK,    },
 	};
 
 	int len;
@@ -421,6 +411,11 @@ __f2b:
 
 __d2b:
 	value->_integer.value = -(value->_date.date != 0 || value->_date.time != 0);
+	value->type = T_BOOLEAN;
+	return;
+	
+__p2b:
+	value->_integer.value = -(value->_pointer.value != NULL);
 	value->type = T_BOOLEAN;
 	return;
 
@@ -818,9 +813,6 @@ __2v:
 
 __func:
 
-	//if (unknown_function(value))
-	//	goto __CONV;
-	//else
 	goto __N;
 
 __i2p:
@@ -995,7 +987,7 @@ __RETRY:
 		}
 	}
 
-	THROW(E_TYPE, TYPE_get_name(type), TYPE_get_name((TYPE)class));
+	THROW_TYPE(type, (TYPE)class);
 
 __TYPE:
 
@@ -1007,7 +999,7 @@ __OK:
 
 __N:
 
-	THROW(E_TYPE, TYPE_get_name(type), TYPE_get_name(value->type));
+	THROW_TYPE(type, value->type);
 
 __NR:
 
@@ -1191,7 +1183,13 @@ __VARIANT:
 	goto __CONV;
 
 __VOID:
+
+	THROW(E_NRETURN);
+
 __FUNCTION:
+
+	THROW_TYPE(T_VARIANT, type);
+
 __NULL:
 
 	ERROR_panic("Bad type (%d) for VALUE_write", type);
@@ -1472,36 +1470,36 @@ __FUNCTION:
 
 void VALUE_from_string(VALUE *value, const char *addr, int len)
 {
-	value->type = T_NULL;
-
 	while (len > 0 && isspace(*addr))
 		addr++, len--;
 
 	while (len > 0 && isspace(addr[len - 1]))
 		len--;
 
-	if (len <= 0)
-		return;
-
-	if (!DATE_from_string(addr, len, value, TRUE))
-		return;
-
-	if (!NUMBER_from_string(NB_READ_ALL | NB_READ_HEX_BIN | NB_LOCAL, addr, len, value))
-		return;
-
-	if (len == LOCAL_local.len_true_str && strncasecmp(addr, LOCAL_local.true_str, len) == 0)
+	if (len > 0)
 	{
-		value->type = T_BOOLEAN;
-		value->_boolean.value = -1;
-		return;
+		if (!DATE_from_string(addr, len, value, TRUE))
+			return;
+
+		if (!NUMBER_from_string(NB_READ_ALL | NB_READ_HEX_BIN | NB_LOCAL, addr, len, value))
+			return;
+
+		if (len == LOCAL_local.len_true_str && strncasecmp(addr, LOCAL_local.true_str, len) == 0)
+		{
+			value->type = T_BOOLEAN;
+			value->_boolean.value = -1;
+			return;
+		}
+
+		if (len == LOCAL_local.len_false_str && strncasecmp(addr, LOCAL_local.false_str, len) == 0)
+		{
+			value->type = T_BOOLEAN;
+			value->_boolean.value = 0;
+			return;
+		}
 	}
 
-	if (len == LOCAL_local.len_false_str && strncasecmp(addr, LOCAL_local.false_str, len) == 0)
-	{
-		value->type = T_BOOLEAN;
-		value->_boolean.value = 0;
-		return;
-	}
+	VALUE_null(value);
 }
 
 
@@ -1724,7 +1722,7 @@ __func:
 
 __N:
 
-	THROW(E_TYPE, "Boolean", TYPE_get_name(type));
+	THROW_TYPE(T_BOOLEAN, type);
 
 __NR:
 
@@ -1804,7 +1802,7 @@ __OK:
 
 __N:
 
-	THROW_TYPE_INTEGER(value->type);
+	THROW_TYPE(T_INTEGER, value->type);
 
 __NR:
 
@@ -1883,7 +1881,7 @@ __func:
 
 __N:
 
-	THROW_TYPE_FLOAT(value->type);
+	THROW_TYPE(T_FLOAT, value->type);
 
 __NR:
 
@@ -1979,7 +1977,7 @@ __OK:
 
 __N:
 
-	THROW_TYPE_STRING(value->type);
+	THROW_TYPE(T_STRING, value->type);
 
 __NR:
 
@@ -2047,7 +2045,7 @@ __OK:
 
 __N:
 
-	THROW(E_TYPE, "Variant", TYPE_get_name(value->type));
+	THROW_TYPE(T_VARIANT, value->type);
 
 __NR:
 

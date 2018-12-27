@@ -21,6 +21,7 @@ Property Read Current As _IconView_Item
 Property Read Item As _IconView_Item
 Property Read Available As Boolean
 Property Key As String
+Property Read Keys As String[]
 Property Compare As Integer
 Property Editable As Boolean
 Property Sorted As Boolean
@@ -169,7 +170,6 @@ Private Sub SetIntern(iIntern As Integer)
   Endif
   
 End
-
 
 Public Function MoveTo((Key) As String) As Boolean
   
@@ -471,12 +471,13 @@ Public Sub ScrollArea_Draw()
       If hClip Then
         bHover = iPos = $iHover
         'If $iMode = Select.Multiple And If iPos = $iStart Then bHover = True
-        hItem._Draw(hRect, hClip, Me, $bHorizontal, bFocus, bHover) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
+        hItem._Draw(hRect, hClip, Me, $bHorizontal, bFocus, bHover, iPos = $iCurrent) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
         If bRaiseDraw Then
           Paint.Save
           Raise Draw(hRect.X, hRect.Y, hRect.W, hRect.H, hItem.Key)
           Paint.Restore
         Endif
+        
       Endif
       
     Endif
@@ -533,8 +534,11 @@ Public Sub ScrollArea_Arrange()
   
   Dim W, H As Integer
   Dim nRow As Integer
+  Dim DS As Integer
   
   If $iLock Then Return
+  
+  DS = Desktop.Scale
   
   W = $hView.ClientWidth
   H = $hView.ClientHeight
@@ -549,16 +553,16 @@ Public Sub ScrollArea_Arrange()
   
   If $bHorizontal Then
     
-    $iGridHeight = Max(8, $iIconSize) + 16
-    $iGridHeight = Max($iGridHeight, Me.Font.Height * $iIconLines + 8)
+    $iGridHeight = Max(DS, $iIconSize) + DS * 2
+    $iGridHeight = Max($iGridHeight, Me.Font.Height * $iIconLines + DS)
     
     If $iGridSize Then
-      $iGridWidth = $iGridSize * Desktop.Scale
+      $iGridWidth = $iGridSize * DS
     Else
-      $iGridWidth = $iIconSize + 16
+      $iGridWidth = $iIconSize + DS * 2
     Endif
 
-    $iGridWidth = Max($iGridWidth, $iIconSize + 8)
+    $iGridWidth = Max($iGridWidth, $iIconSize + DS)
     
     $nColumn = Max(1, (H - $iPad * 2) \ $iGridHeight)
     nRow = ($aItems.Count + $nColumn - 1) \ $nColumn
@@ -573,14 +577,14 @@ Public Sub ScrollArea_Arrange()
     
   Else
     
-    $iGridHeight = Max(8, $iIconSize) + $iIconLines * Me.Font.Height + 28
+    $iGridHeight = Max(DS * 4, $iIconSize) + $iIconLines * Me.Font.Height + DS * 3
     
     If $iGridSize Then
-      $iGridWidth = $iGridSize * Desktop.Scale
+      $iGridWidth = $iGridSize * DS
     Else
-      $iGridWidth = $iIconSize + 16
+      $iGridWidth = $iIconSize + DS * 2
     Endif
-    $iGridWidth = Max($iGridWidth, Me.Font.Height * 8)
+    $iGridWidth = Max($iGridWidth, Me.Font.Height * DS)
     
     $nColumn = Max(1, (W - $iPad * 2) \ $iGridWidth)
     $iGridWidth = Max(1, (W - $iPad * 2) \ $nColumn)
@@ -664,10 +668,13 @@ End
 
 Private Sub ToggleCurrentItem(iPos As Integer)
   
+  Dim iOld As Integer
+  
   $aItems[iPos].Selected = Not $aItems[iPos].Selected
-  RefreshIcon($iCurrent)
+  iOld = $iCurrent
   $iCurrent = iPos
   $iStart = iPos
+  RefreshIcon(iOld)
   RefreshIcon($iCurrent)
   
   If $iCurrent >= 0 Then _EnsureVisible($iCurrent)
@@ -676,8 +683,12 @@ End
 
 Private Sub SetCurrentItem(iCurrent As Integer, Optional bIgnoreOutside As Boolean, Optional bSelect As Boolean)
   
+  Dim iOld As Integer
+  
   If $bSelRect Then Return
   If iCurrent = $iCurrent Then Return
+  
+  iOld = $iCurrent
   
   If iCurrent < 0 Or If iCurrent > $aItems.Max Then
     iCurrent = -1
@@ -686,10 +697,13 @@ Private Sub SetCurrentItem(iCurrent As Integer, Optional bIgnoreOutside As Boole
   
   If Not bSelect Then 
   
-    UnselectAll
+    If $iMode = Select.Single Then 
+      UnselectAll
+    Else If $iMode = Select.Multiple Then
+      If iCurrent < 0 Or If Not $aItems[iCurrent].Selected Then UnselectAll
+    Endif
   
     If iCurrent >= 0 Then
-      RefreshIcon($iCurrent)
       $aItems[iCurrent].Selected = True
       $iCurrent = iCurrent
       $iStart = $iCurrent
@@ -706,6 +720,9 @@ Private Sub SetCurrentItem(iCurrent As Integer, Optional bIgnoreOutside As Boole
   Endif
   
   If $iCurrent >= 0 Then _EnsureVisible($iCurrent)
+  
+  RefreshIcon(iOld)
+  RefreshIcon($iCurrent)
   
 End
 
@@ -909,11 +926,7 @@ Public Sub ScrollArea_MouseDown()
     If bCtrl Then
       ToggleCurrentItem(iPos)
     Else
-      If $aItems[iPos].Selected Then
-        ' do nothing when clicking inside the selection
-      Else
-        SetCurrentItem(iPos)
-      Endif
+      SetCurrentItem(iPos)
     Endif
     
   Else
@@ -1026,8 +1039,8 @@ Private Sub SelectRect(Optional iSelect As Integer = 1)
     $X1 = hRect.X + hRect.W \ 2
     $Y1 = hRect.Y + hRect.H \ 2
     GetIconGeometry($iCurrent, hRect)
-    $X2 = hRect.X + hRect.W \ 2 + 1
-    $Y2 = hRect.Y + hRect.H \ 2 + 1
+    $X2 = hRect.X + hRect.W \ 2 
+    $Y2 = hRect.Y + hRect.H \ 2 
   Endif
   
   If $X1 = $X2 And If $Y1 = $Y2 Then Return
@@ -1046,29 +1059,31 @@ Private Sub SelectRect(Optional iSelect As Integer = 1)
     nCol = FindIcon(X + W - 1, Y, True) - iPos + 1
   Endif
   iLast = FindIcon(X + W - 1, Y + H - 1, True)
-    
+  
   iCol = 0
   
   While iPos <= iLast
     
     If iPos >= 0 And If iPos < $aItems.Count Then
+      If $bSelRect Or If iPos <> $iStart Then
       
-      GetIconGeometry(iPos, hRect)
-      hRect.Adjust(2)
-      
-      hSelRect = hRect.Intersection(hSel)
-      
-      If hSelRect Then
-        hItem = $aItems[iPos]
-        If hItem._Intersect(hRect, hSelRect, $bHorizontal) Then
-          If iSelect = 1 Then
-            hItem.Selected = Not hItem.Selected
-          Else
-            hItem.Selected = iSelect
+        GetIconGeometry(iPos, hRect)
+        hRect.Adjust(2)
+        
+        hSelRect = hRect.Intersection(hSel)
+        
+        If hSelRect Then
+          hItem = $aItems[iPos]
+          If Not $bSelRect Or If hItem._Intersect(hRect, hSelRect, $bHorizontal) Then
+            If iSelect = 1 Then
+              hItem.Selected = Not hItem.Selected
+            Else
+              hItem.Selected = iSelect
+            Endif
           Endif
         Endif
-      Endif
       
+      Endif
     Endif
     
     Inc iCol
@@ -1177,9 +1192,10 @@ Private Function Available_Read() As Boolean
 
 End
 
-Private Sub RaiseEvent(iEvent As Integer, iItem As Integer)
+Private Sub RaiseEvent(iEvent As Integer, iItem As Integer) As Boolean
   
   Dim iSave As Integer = $iIntern
+  Dim bCancel As Boolean
   
   $iIntern = iItem
   Select Case iEvent
@@ -1188,9 +1204,11 @@ Private Sub RaiseEvent(iEvent As Integer, iItem As Integer)
     Case EVENT_CLICK
       Raise Click
     Case EVENT_RENAME
-      Raise Rename
+      bCancel = Raise Rename
   End Select
   $iIntern = iSave
+  
+  Return bCancel
   
 End
 
@@ -1422,9 +1440,11 @@ End
 
 Public Sub RenameBox_Activate()
   
+  Dim bCancel As Boolean
+  
   $aItems[$iRename].Text = $hRenameBox.Text
-  RaiseEvent(EVENT_RENAME, $iRename)
-  ExitRename
+  bCancel = RaiseEvent(EVENT_RENAME, $iRename)
+  If Not bCancel Then ExitRename
   
 End
 
@@ -1435,6 +1455,7 @@ Public Sub RenameBox_KeyPress()
     Raise Cancel
   Else If Key.Code = Key.Enter Or If Key.Code = Key.Return Then
     RenameBox_Activate
+    Stop Event
   Endif
   
 End
@@ -1606,4 +1627,25 @@ Public Sub ScrollArea_LostFocus()
   
   $hView.Refresh
   
+End
+
+Public Sub ScrollArea_Font()
+
+  Dim hItem As _IconView_Item
+  
+  For Each hItem In $aItems
+    hItem._Invalidate
+  Next
+  
+End
+
+Private Function Keys_Read() As String[]
+
+  Dim aKeys As New String[]
+
+  For Each $cItems
+    aKeys.Add($cItems.Key)
+  Next
+  Return aKeys
+
 End

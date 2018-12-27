@@ -7,11 +7,15 @@ Public Sub MkDir(Path As String)
   Dim sElt As String
   Dim sMake As String = "/"
 
+  If Path Begins "~/" Then Path = User.Home &/ Mid$(Path, 3)
+
   For Each sElt In Split(Path, "/")
     sMake &/= sElt
     If IsDir(sMake) Then Continue
     Try Mkdir sMake
   Next
+  
+  If Not Exist(Path) Or If Not IsDir(Path) Then Error.Raise("Cannot create directory")
 
 End
 
@@ -37,12 +41,17 @@ Public Sub RmDir(Path As String, Optional Force As Boolean)
   
 End
 
-Public Sub Move(Source As String, Destination As String)
+Public Sub Move(Source As String, Destination As String, Optional Force As Boolean)
   
   If IsDir(Destination) Then Destination &/= File.Name(Source)
   
-  Try Move Source To Destination
+  If Force Then
+    Try Move Source Kill Destination
+  Else
+    Try Move Source To Destination
+  Endif
   If Error Then
+    If Force Then Try Kill Destination
     Copy Source To Destination
     Kill Source
   Endif

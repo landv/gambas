@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-11-01 04:27+0100\n"
+"POT-Creation-Date: 2018-06-16 14:02 UTC\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,15 +15,19 @@ msgstr ""
 msgid "Multiple document interface management"
 msgstr "MDI-Management"
 
-#: FMain.form:49 FMain1.form:58
-msgid "Button1"
-msgstr "-"
+#: FMain.form:65
+msgid "Hello"
+msgstr ""
 
-#: FMain.form:59
+#: FMain.form:106
+msgid "Border"
+msgstr ""
+
+#: FMain.form:111
 msgid "Window"
 msgstr "Fenster"
 
-#: FMain.form:64
+#: FMain.form:116
 msgid "Orientation"
 msgstr "Orientierung"
 
@@ -31,9 +35,41 @@ msgstr "Orientierung"
 msgid "Help"
 msgstr "Hilfe"
 
+#: FMain1.form:58
+msgid "Button1"
+msgstr "-"
+
 #: FMain1.form:79
 msgid "Reparent"
 msgstr "Neu zuordnen"
+
+#: FMain2.form:25
+msgid "Agnostic Scan Tool"
+msgstr ""
+
+#: FMain2.form:30
+msgid "Menu1"
+msgstr ""
+
+#: FMain2.form:35
+msgid "Save"
+msgstr ""
+
+#: FMain2.form:41
+msgid "Save as"
+msgstr ""
+
+#: FMain2.form:50
+msgid "Properties"
+msgstr ""
+
+#: FMain2.form:59
+msgid "Quit"
+msgstr ""
+
+#: FMain2.form:95
+msgid "Numériser Texte"
+msgstr ""
 
 #: FShortcut.class:65
 msgid "Action"
@@ -77,31 +113,31 @@ msgstr "Kurzbefehle einrichten"
 msgid "Import shortcuts"
 msgstr "Kurzbefehle einrichten"
 
-#: FShortcut.form:18
+#: FShortcut.form:17
 msgid "Configure shortcuts"
 msgstr "Kurzbefehle einrichten"
 
-#: FShortcut.form:47
+#: FShortcut.form:42
 msgid "Find shortcut"
 msgstr "Kurzbefehl suchen"
 
-#: FShortcut.form:54 FToolBarConfig.class:381
+#: FShortcut.form:49 FToolBarConfig.form:127
 msgid "Reset"
 msgstr "Zurücksetzen"
 
-#: FShortcut.form:60
+#: FShortcut.form:55
 msgid "Import"
 msgstr ""
 
-#: FShortcut.form:66
+#: FShortcut.form:61
 msgid "Export"
 msgstr ""
 
-#: FShortcut.form:77
+#: FShortcut.form:72
 msgid "OK"
 msgstr "-"
 
-#: FShortcut.form:83 FToolBarConfig.form:63
+#: FShortcut.form:78 FToolBarConfig.form:72
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -109,11 +145,11 @@ msgstr "Abbrechen"
 msgid "This shortcut is already used by the following action:"
 msgstr "Dieser Kurzbefehl ist bereits mit der folgenen Aktion belegt:"
 
-#: FToolBar.class:1195
+#: FToolBar.class:1215
 msgid "Configure &1 toolbar"
 msgstr "Werkzeugleiste &1 einrichten"
 
-#: FToolBar.class:1197
+#: FToolBar.class:1217
 msgid "Configure main toolbar"
 msgstr "Hauptwerkzeugleiste einrichten"
 
@@ -125,52 +161,63 @@ msgstr "Werkzeugleiste '&1' einrichten"
 msgid "Toolbar configuration"
 msgstr "Werkzeugleiste einrichten"
 
-#: FToolBarConfig.class:141
+#: FToolBarConfig.class:146
 msgid "Separator"
 msgstr "Trenner"
 
-#: FToolBarConfig.class:143
+#: FToolBarConfig.class:148
 msgid "Expander"
 msgstr "Erweiterer"
 
-#: FToolBarConfig.class:145
+#: FToolBarConfig.class:150
 msgid "Space"
 msgstr "Leerstelle"
 
-#: FToolBarConfig.class:381
+#: FToolBarConfig.class:387
 msgid "Do you really want to reset the toolbar?"
 msgstr "Wollen Sie die Werkzeugleiste wirklich zurücksetzen?"
 
-#: FToolBarConfig.form:36
-msgid "Configure..."
+#: FToolBarConfig.form:35
+#, fuzzy
+msgid "Configure"
 msgstr "Einrichten..."
 
-#: FToolBarConfig.form:41
+#: FToolBarConfig.form:40
 msgid "Icon size"
 msgstr "Icon-Größe"
 
-#: FToolBarConfig.form:44
+#: FToolBarConfig.form:43
+msgid "Tiny"
+msgstr ""
+
+#: FToolBarConfig.form:48
 msgid "Small"
 msgstr "Klein"
 
-#: FToolBarConfig.form:49
+#: FToolBarConfig.form:53
 msgid "Medium"
 msgstr "Mittel"
 
-#: FToolBarConfig.form:54
+#: FToolBarConfig.form:58
 msgid "Large"
 msgstr "Groß"
 
-#: FToolBarConfig.form:129
-msgid "&Reset"
-msgstr "Zu&rücksetzen"
+#: FToolBarConfig.form:63
+msgid "Huge"
+msgstr ""
 
-#: FToolBarConfig.form:136
-msgid "&Undo"
+#: FToolBarConfig.form:105
+msgid "Size"
+msgstr ""
+
+#: FToolBarConfig.form:121
+#, fuzzy
+msgid "Undo"
 msgstr "&Rückgängig"
 
-#: FToolBarConfig.form:142
-msgid "&Close"
+#: FToolBarConfig.form:133
+#, fuzzy
+msgid "Close"
 msgstr "&Schließen"
 
 #: FWorkspace.form:36
@@ -218,3 +265,6 @@ msgstr "Vorheriger Tab"
 #: FWorkspace.form:91
 msgid "Next tab"
 msgstr "Nächster Tab"
+
+#~ msgid "&Reset"
+#~ msgstr "Zu&rücksetzen"

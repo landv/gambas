@@ -201,14 +201,14 @@ Public Sub Main()
   Dim sFile As String
   Dim sDir As String
   Dim sPath As String
-  Dim hImage As Image
+  'Dim hImage As Image
   
-  Quit
-  sDir = "~/gambas/git/master/comp/src/gb.form.stock/gambas-mono/32"
-  For Each sFile In Dir(sDir, "*.png")
+  'sDir = "~/gambas/git/master/comp/src/gb.form.stock/"
+  sDir = "/home/benoit/gambas/git/master/"
+  For Each sFile In RDir(sDir, "*.png")
+    Print sFile
     sPath = sDir &/ sFile
-    hImage = Image.Load(sPath).Brightness(32 / 256)
-    hImage.Save(sPath)
+    Exec ["convert", sPath, "-strip", sPath] Wait
   Next
 
 End

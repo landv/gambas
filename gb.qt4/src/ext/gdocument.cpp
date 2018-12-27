@@ -1266,19 +1266,19 @@ int GDocument::convState(int state)
 {
 	switch(state)
 	{
-		case EVAL_TYPE_END: return GLine::Normal;
-		case EVAL_TYPE_RESERVED: return GLine::Keyword;
-		case EVAL_TYPE_IDENTIFIER: return GLine::Symbol;
-		case EVAL_TYPE_CLASS: return GLine::Datatype;
-		case EVAL_TYPE_NUMBER: return GLine::Number;
-		case EVAL_TYPE_STRING: return GLine::String;
-		case EVAL_TYPE_SUBR: return GLine::Subr;
-		case EVAL_TYPE_COMMENT: return GLine::Comment;
-		case EVAL_TYPE_OPERATOR: return GLine::Operator;
-		case EVAL_TYPE_DATATYPE: return GLine::Datatype;
-		case EVAL_TYPE_ERROR: return GLine::Error;
-		case EVAL_TYPE_HELP: return GLine::Help;
-		case EVAL_TYPE_PREPROCESSOR: return GLine::Preprocessor;
+		case RT_END: return GLine::Normal;
+		case RT_RESERVED: return GLine::Keyword;
+		case RT_IDENTIFIER: return GLine::Symbol;
+		case RT_CLASS: return GLine::Datatype;
+		case RT_NUMBER: return GLine::Number;
+		case RT_STRING: return GLine::String;
+		case RT_SUBR: return GLine::Subr;
+		case RT_COMMENT: return GLine::Comment;
+		case RT_OPERATOR: return GLine::Operator;
+		case RT_DATATYPE: return GLine::Datatype;
+		case RT_ERROR: return GLine::Error;
+		case RT_HELP: return GLine::Help;
+		case RT_PREPROCESSOR: return GLine::Preprocessor;
 		default: return GLine::Normal;
 	}
 }
@@ -1290,7 +1290,7 @@ void GDocument::highlightGambas(GEditor *editor, int line, uint &state, bool &al
 	int i;
 
 	src = TO_UTF8(s.getString());
-	EVAL.Analyze(src, LAST_UTF8_LENGTH(), state == GLine::Comment ? EVAL_TYPE_COMMENT : EVAL_TYPE_END, &result, TRUE);
+	EVAL.Analyze(src, LAST_UTF8_LENGTH(), state == GLine::Comment ? RT_COMMENT : RT_END, &result, TRUE);
 
 	GB.NewArray(data, sizeof(GHighlight), result.len);
 

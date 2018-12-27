@@ -9,7 +9,7 @@ Private Enum MODE_AppScreen, MODE_AppCuKeys, MODE_AppKeyPad, MODE_Mouse1000, MOD
 Private $aMode As New Boolean[13]
 'Private $aSavedMode As New Boolean[13]
 Private $sLeft As String
-Private $iCpt As Integer
+'Private $iCpt As Integer
 
 Public Sub Reset()
   
@@ -28,7 +28,7 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hOutput As
   Dim sCmd As String
   Dim sStr As String
   Dim iNum As Integer
-  Dim iPosEraseScreen As Integer
+  'Dim iPosEraseScreen As Integer
   
   If hView._DisableFilter Then
     $sLeft &= sData
@@ -74,7 +74,8 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hOutput As
       Break
     Endif
     
-    If iPos2 > iPos And If iPos > iPosEraseScreen Then hScreen.Print(Mid$(sData, iPos, iPos2 - iPos))
+    'If iPos2 > iPos And If iPos > iPosEraseScreen Then hScreen.Print(Mid$(sData, iPos, iPos2 - iPos))
+    If iPos2 > iPos Then hScreen.Print(Mid$(sData, iPos, iPos2 - iPos))
     
     iPos = iPos2
     Inc iPos
@@ -155,7 +156,7 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hOutput As
   
 NOT_IMPLEMENTED:
   
-  Debug "Not implemented: "; Quote(sStr)
+  Error "gb.form.terminal: warning: not implemented: "; Quote(sStr)
   Return
   
 End
@@ -176,21 +177,21 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hOutput As 
   
   sStr = Mid$(sData, iPos, iLen)
   
-  If hScreen.DEBUG_FILTER Then
-    Inc $iCpt
-    Error Format($iCpt, "######0"); " | ";
-    Error "ESC";
-    For I = 1 To Len(sStr)
-      Error " "; Mid$(sStr, I, 1);
-    Next
-    Error
-    If $iCpt > 5120 Then 
-      hScreen.DebugRefresh
-      hView.Suspended = True
-      Stop
-      hView.Suspended = False
-    Endif
-  Endif
+  ' If hScreen.DEBUG_FILTER Then
+  '   Inc $iCpt
+  '   Error Format($iCpt, "######0"); " | ";
+  '   Error "ESC";
+  '   For I = 1 To Len(sStr)
+  '     Error " "; Mid$(sStr, I, 1);
+  '   Next
+  '   Error
+  '   If $iCpt > 5120 Then 
+  '     hScreen.DebugRefresh
+  '     hView.Suspended = True
+  '     Stop
+  '     hView.Suspended = False
+  '   Endif
+  ' Endif
   
   Select Case Left(sStr)
       
@@ -657,7 +658,7 @@ GET_ARGS:
   
 NOT_IMPLEMENTED:
   
-  Debug "Not implemented: "; Quote(sStr)
+  Error "gb.form.terminal: warning: not implemented: "; Quote(sStr)
   
 End
 

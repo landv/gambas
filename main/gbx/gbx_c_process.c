@@ -38,13 +38,6 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 
-#ifdef OS_OPENBSD
-/* granpt(), unlockpt() and ptsname() unavailable under OpenBSD
-	and are replaced with openpty() implementation because of security
-	issues */
-#include <util.h>
-#endif
-
 #include "gb_replace.h"
 #include "gb_limit.h"
 #include "gb_array.h"
@@ -201,6 +194,24 @@ static void callback_error(int fd, int type, CPROCESS *process)
 	#ifdef DEBUG_ME
 	fprintf(stderr, "callback_error: %d %p\n", fd, process);
 	#endif
+
+	if (process->to_string && process->with_error)
+	{
+		int n;
+
+		for(;;)
+		{
+			n = read(fd, COMMON_buffer, 256);
+			if (n >= 0 || errno != EINTR)
+				break;
+		}
+
+		if (n > 0)
+		{
+			process->result = STRING_add(process->result, COMMON_buffer, n);
+			return;
+		}
+	}
 
 	if (GB_CanRaise(process, EVENT_Error))
 	{
@@ -581,24 +592,19 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	if (mode & PM_STRING)
 	{
 		process->to_string = TRUE;
+		process->with_error = (mode & PM_ERROR) != 0;
 		process->result = NULL;
 		mode |= PM_READ;
 	}
 
 	if (mode & PM_TERM)
 	{
-		#ifdef OS_OPENBSD
-		int fd_slave;
-		if (openpty(&fd_master, &fd_slave, NULL, NULL, NULL) < 0)
-			goto __ABORT_ERRNO;
-		#else
 		fd_master = posix_openpt(O_RDWR | O_NOCTTY);
 		if (fd_master < 0)
 			goto __ABORT_ERRNO;
 
 		grantpt(fd_master);
 		unlockpt(fd_master);
-		#endif
 		slave = ptsname(fd_master);
 		#ifdef DEBUG_ME
 		fprintf(stderr, "run_process: slave = %s\n", slave);
@@ -973,7 +979,7 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 	fprintf(stderr, "Waiting for %d\n", process->pid);
 	#endif
 	
-	// If CPROCESS_check() catched the process end, process->running is not set yet, because 
+	// If CPROCESS_check() caught the process end, process->running is not set yet, because
 	// stop_process() will be raised at the next event loop. So no need to wait for it.
 	
 	if (process->wait)
@@ -990,13 +996,16 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 			#ifdef DEBUG_ME
 			fprintf(stderr, "Watch process %d\n", process->pid);
 			#endif
-			ret = WATCH_process(sigfd, process->out, timeout);
+			ret = WATCH_process(sigfd, process->out, process->err, timeout);
 			#ifdef DEBUG_ME
-			fprintf(stderr, "Watch process %d ->%s%s%s\n", process->pid, ret & WP_END ? " END" : "", ret & WP_OUTPUT ? " OUTPUT" : "", ret & WP_TIMEOUT ? " TIMEOUT" : "");
+			fprintf(stderr, "Watch process %d ->%s%s%s%s\n", process->pid, ret & WP_END ? " END" : "", ret & WP_OUTPUT ? " OUTPUT" : "", ret & WP_ERROR ? " ERROR" : "", ret & WP_TIMEOUT ? " TIMEOUT" : "");
 			#endif
 
 			if (ret & WP_OUTPUT)
 				callback_write(process->out, GB_WATCH_READ, process);
+
+			if (ret & WP_ERROR)
+				callback_error(process->err, GB_WATCH_READ, process);
 
 			if (ret & WP_END)
 				SIGNAL_raise_callbacks(sigfd, GB_WATCH_READ, 0);

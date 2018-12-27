@@ -1,0 +1,360 @@
+' Gambas class file
+
+Export
+
+Property Read State As Integer
+Property Read Size As Long
+Property Read Progress As Float
+Property MaxClient As Integer
+Property Read Speed As Integer
+Property Read Count As Integer
+
+Event Message(Key As String, Text As String)
+Event Error(Key As String)
+Event Progress
+Event Finish(Key As String)
+Event End
+Event Size(Key As String)
+
+Private $cDownload As New Collection
+
+Private $iKey As Integer
+Private $nClientMax As Integer = 1
+Private $bStart As Boolean
+Private $aClient As New Curl[]
+
+Private $hRunTimer As New Timer As "Run"
+
+Private $fProgress As Float = 0
+Private $iSize As Long
+
+Private $fSpeedTimer As Float
+Private $iSpeed As Integer
+Private $iSpeedSize As Integer
+
+Public Sub Add(URL As String, Optional Key As String)
+
+  Dim hDownload As Download
+  Dim iType As Integer
+  Dim hClient As Curl
+  Dim hObject As Object
+  
+  If Not Key Then
+    Inc $iKey
+    Key = CStr($iKey)
+  Endif
+  
+  If Not URL Then Error.Raise("Void URL")
+  
+  If URL Begins "http://" Or If URL Begins "https://" Then
+    iType = Download.Http
+  Else If URL Begins "ftp://" Or If URL Begins "ftps://" Then
+    iType = Download.Ftp
+  Else
+    Error.Raise("Unsupported protocol")
+  Endif
+  
+  If $cDownload.Exist(Key) Then Error.Raise("Key already used")
+  
+  hDownload = New Download
+  hDownload._Key = Key
+  hDownload._Url = URL
+  hDownload._Type = iType
+  
+  $cDownload.Add(hDownload, Key)
+  
+  hClient = hDownload._GetClient()
+  hClient.Tag = Key
+  hClient.Timeout = 10
+  Object.Attach(hClient, Me, "GetSize")
+  
+  hObject = hClient
+  hObject.Get()
+  
+End
+
+Public Sub Clear()
+  
+  $cDownload.Clear
+  
+End
+
+Private Sub Run()
+  
+  Dim hDownload As Download
+  Dim hClient As Curl
+  Dim hObject As Object
+  Dim bKeepRunning As Boolean
+  
+  If Not $bStart Then Return
+  
+  While $aClient.Count < $nClientMax
+    
+    hDownload = Null
+    bKeepRunning = False
+    For Each hDownload In $cDownload
+      If hDownload._State = Download.Ready Then Break
+      If hDownload._State <> Download.Finish Then
+        bKeepRunning = True
+      Endif
+      hDownload = Null
+    Next
+    
+    If Not hDownload Then 
+      Wait
+      If bKeepRunning Then 
+        $hRunTimer.Trigger
+      Else
+        $bStart = False
+        Raise End
+      Endif
+      Return
+    Endif
+    
+    hDownload._State = Download.Downloading
+    
+    hClient = hDownload._GetClient()
+    hClient.Tag = hDownload._Key
+    hClient.TargetFile = Temp$()
+    Object.Attach(hClient, Me, "Client")
+    
+    hObject = hClient
+    hObject.Get()
+    
+    $aClient.Add(hClient)
+    
+  Wend
+  
+End
+
+Public Sub Start()
+
+  If Not $bStart Then Raise Progress
+  $bStart = True
+  $fSpeedTimer = Timer
+  Run()
+  
+End
+
+
+Public Sub Stop()
+
+  Dim hClient As Object
+
+  $bStart = False
+  For Each hClient In $aClient
+    hClient.Stop()
+  Next
+  $fProgress = 0
+  $iSize = 0
+  
+End
+
+Private Sub DownloadIsReady(hDownload As Download)
+
+  If hDownload._State = Download.Ready Then Return
+  hDownload._State = Download.Ready
+  Raise Size(hDownload._Key)
+  UpdateProgress
+  $hRunTimer.Trigger
+
+End
+
+
+Public Sub GetSize_Progress()
+
+  Dim hClient As Object = Last
+  Dim hDownload As Download
+  
+  If hClient.TotalDownloaded > 0 Then 
+    hDownload = $cDownload[hClient.Tag]
+    hDownload._Size = hClient.TotalDownloaded
+    hClient.Stop()
+    DownloadIsReady(hDownload)
+  Endif
+  
+End
+
+Public Sub GetSize_Error()
+  
+  Dim hClient As Object = Last
+  Dim hDownload As Download
+  
+  hDownload = $cDownload[hClient.Tag]
+  DownloadIsReady(hDownload)
+  
+End
+
+Public Sub GetSize_Finished()
+
+  GetSize_Error  
+  
+End
+
+
+Public Sub Run_Timer()
+  
+  Run()
+  
+End
+
+Public Sub Client_Connect()
+  
+  Dim hDownload As Download = $cDownload[Last.Tag]
+  Raise Message(hDownload._Key, Subst(("Connected to &1"), hDownload._GetHost()))
+  
+End
+
+Private Sub UpdateProgress()
+
+  Dim hDownload As Download
+  Dim iSize As Long
+  Dim fProgress As Float
+  Dim iTotalSize As Long
+  Dim bDownloadWithSize As Boolean
+  Dim iFullSize As Long
+  Dim bRaiseProgress As Boolean
+
+  For Each hDownload In $cDownload
+    iFullSize += hDownload._Current
+    If hDownload._Size Then
+      iSize += hDownload._Current
+      iTotalSize += hDownload._Size
+      If hDownload.State = Download.Downloading Then
+        bDownloadWithSize = True
+      Endif
+    Endif
+  Next
+  
+  $iSize = iFullSize
+  
+  If (Timer - $fSpeedTimer) >= 1 Then
+    Try $iSpeed = (iFullSize - $iSpeedSize) / (Timer - $fSpeedTimer)
+    $iSpeedSize = iFullSize
+    $fSpeedTimer = Timer
+    bRaiseProgress = True
+  Endif
+
+  If iTotalSize And If bDownloadWithSize Then
+    fProgress = Round(iSize / iTotalSize, -3)
+  Else
+    fProgress = 0
+  Endif
+  
+  If bRaiseProgress Or If fProgress <> $fProgress Then
+    $fProgress = fProgress
+    Raise Progress
+  Endif
+
+End
+
+Public Sub Client_Progress()
+  
+  Dim hClient As Curl = Last
+  Dim hDownload As Download = $cDownload[hClient.Tag]
+  
+  hDownload._Current = hClient.Downloaded
+  UpdateProgress
+  
+End
+
+Private Function Progress_Read() As Float
+
+  Return $fProgress
+
+End
+
+Private Sub Finish(hClient As Curl, iState As Integer)
+
+  Dim sKey As String
+  Dim hDownload As Download
+
+  sKey = hClient.Tag
+  
+  hDownload = $cDownload[sKey]
+  hDownload._State = iState
+  hDownload._ErrorText = hClient.ErrorText
+
+  $aClient.Remove($aClient.FindByRef(hClient))
+
+  $hRunTimer.Trigger
+
+End
+
+Public Sub Client_Cancel()
+  
+  Dim hClient As Curl = Last
+  Finish(hClient, Download.Error)
+  
+End
+
+Public Sub Client_Error()
+  
+  Dim hClient As Curl = Last
+  Raise Error(hClient.Tag)
+  Finish(Last, Download.Error)
+  Stop()
+  
+End
+
+
+Public Sub Client_Finished()
+  
+  Dim hClient As Curl = Last
+  $cDownload[hClient.Tag]._Path = hClient.TargetFile
+  Finish(hClient, Download.Finish)
+  Raise Finish(hClient.Tag)
+
+End
+
+Private Function MaxClient_Read() As Integer
+
+  Return $nClientMax
+
+End
+
+Private Sub MaxClient_Write(Value As Integer)
+
+  If Value < 1 Or If Value > 32 Then Error.Raise("Bad argument")
+  If $nClientMax = Value Then Return
+  $nClientMax = Value
+  $hRunTimer.Trigger
+
+End
+
+Public Sub _get(Key As String) As Download
+  
+  Return $cDownload[Key]
+  
+End
+
+Private Function Size_Read() As Long
+
+  Return $iSize
+
+End
+
+Private Function Speed_Read() As Integer
+
+  Return $iSpeed
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return $cDownload.Count
+
+End
+
+Private Function State_Read() As Integer
+
+  Dim hDownload As Download
+  Dim iState As Integer
+
+  For Each hDownload In $cDownload
+    iState = Max(iState, hDownload.State)
+  Next
+  
+  Return iState
+
+End

@@ -2,7 +2,6 @@
 
 { Form Form
   MoveScaled(0,0,32,40)
-  Foreground = &H000000&
   Icon = Picture["icon:/small/watch"]
   Utility = True
   Arrangement = Arrange.Vertical
@@ -36,9 +35,17 @@
       Border = False
     }
     { btnShowAll ToolButton
-      MoveScaled(22,0,4,4)
+      MoveScaled(18,0,4,4)
       ToolTip = ("Show all symbols")
-      Picture = Picture["icon:/small/jump"]
+      Picture = Picture["icon:/small/add"]
+      Toggle = True
+    }
+    { btnHexa ToolButton
+      MoveScaled(22,0,4,4)
+      #Translate = False
+      Font = Font["Bold"]
+      ToolTip = "Show all symbols"
+      Text = "&&H"
       Toggle = True
     }
   }

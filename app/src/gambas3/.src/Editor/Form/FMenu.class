@@ -43,11 +43,10 @@ End
 Public Sub Form_Open()
 
   Settings.Read(Me)
-  'PRINT "_new"
+
   Me.Title = $hForm.Name & " - " & ("Menu editor")
 
   $iIconSize = Stock.GetSize("small")
-
   
   $bFreeze = True
   gvwMenu.UnSelectAll
@@ -455,31 +454,36 @@ Public Sub btnDelete_Click()
 
 End
 
-Private Sub InsertMenu(bAfter As Boolean)
+Private Sub InsertMenu(bAfter As Boolean, Optional bSeparator As Boolean)
 
   Dim hCMenu As CMenu
   Dim iIndex As Integer
+  Dim iLevel As Integer
 
   If WriteMenu() Then Return
-
-  $bFreeze = True
 
   iIndex = $iCurrent
   If iIndex < 0 Then iIndex = $aMenu.Max
   
   If bAfter Then Inc iIndex
 
+  If bAfter Then
+    If iIndex > 0 Then iLevel = $aMenu[iIndex - 1].Level
+  Else
+    If iIndex >= 0 Then iLevel = $aMenu[iIndex].Level
+  Endif
+  
+  If bSeparator And If iLevel < 1 Then iLevel = 1
+  
+  $bFreeze = True
+
   hCMenu = New CMenu
   hCMenu.Name = GetName()
-  hCMenu.Caption = hCMenu.Name
+  If Not bSeparator Then hCMenu.Caption = hCMenu.Name
   hCMenu.Translate = True
   
-  If bAfter Then
-    If iIndex > 0 Then hCMenu.Level = $aMenu[iIndex - 1].Level
-  Else
-    If iIndex >= 0 Then hCMenu.Level = $aMenu[iIndex].Level
-  Endif
-
+  hCMenu.Level = iLevel
+  
   $cName[hCMenu.Name] = True
   'hCMenu.Caption = hCMenu.Name
 
@@ -500,7 +504,7 @@ End
 
 Public Sub btnInsert_Click()
 
-  InsertMenu(False)
+  InsertMenu(True)
 
 End
 
@@ -649,9 +653,9 @@ Public Sub txtCaption_Change()
 End
 
 
-Public Sub btnInsertNext_Click()
+Public Sub btnInsertBefore_Click()
 
-  InsertMenu(True)
+  InsertMenu(False)
 
 End
 
@@ -960,8 +964,6 @@ Public Sub gvwMenu_Draw(X As Integer, Y As Integer, Width As Integer, Height As 
   Dim sText As String
   Dim hPict As Picture
 
-  
-
   With $aMenu[Row]
     
     If .Level = 0 And If Row > 0 Then
@@ -978,10 +980,11 @@ Public Sub gvwMenu_Draw(X As Integer, Y As Integer, Width As Integer, Height As 
 
     iCol = GetMenuColor($aMenu[Row])
     
-    D = .Level * Desktop.Scale * 4
-    X += D + $iIconSize + Desktop.Scale
-    Width -= D + $iIconSize + Desktop.Scale
-    
+    D = .Level * Desktop.Scale * 4 + Desktop.Scale
+    If .Level Then D += Desktop.Scale
+    X += D
+    Width -= D
+  
     If .Picture Then
       Try hPict = Project.GetPicture(.Picture)
       If hPict Then hPict = hPict.Image.Stretch($iIconSize, $iIconSize).Picture
@@ -1106,3 +1109,9 @@ End
 '   Endif
 ' 
 ' End
+
+Public Sub btnInsertSeparator_Click()
+
+  InsertMenu(True, True)
+
+End

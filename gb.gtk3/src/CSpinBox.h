@@ -1,1 +1,0 @@
-../../gb.gtk/src/CSpinBox.h

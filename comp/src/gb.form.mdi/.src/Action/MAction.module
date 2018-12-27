@@ -125,7 +125,7 @@ End
 Public Sub InitAction()
   
   Dim sFile As String
-
+  
   If Actions Then Return
 
   'Debug "Loading actions..."
@@ -141,5 +141,30 @@ Public Sub InitAction()
   For Each sFile In Dir("../.action", "*.action")
     LoadAction("../.action" &/ sFile)
   Next
+  
+End
+
+Public Sub Add(sKey As String, sText As String, sPicture As String, bHasShortcut As Boolean, sDefaultShortcut As String)
+  
+  Dim hAction As CAction
+  
+  InitAction
+  
+  hAction = New CAction(sKey, bHasShortcut, ["Text": sText, "Picture": sPicture, "Shortcut": sDefaultShortcut], Actions[sKey])
+  Actions[hAction.Key] = hAction
+  
+End
+
+Public Sub GetList() As String[]
+  
+  Dim aList As New String[]
+  
+  InitAction
+  
+  For Each Actions
+    aList.Add(Actions.Key)
+  Next
+  
+  Return aList.Sort()
   
 End

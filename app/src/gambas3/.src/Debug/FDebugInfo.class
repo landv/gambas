@@ -20,8 +20,6 @@ Private $aTask As CTask[]
 'Private $bSortObject As Boolean
 
 Private $hForm As FEditor
-Private $iX As Integer
-Private $iY As Integer
 
 Private $sLastLocal As String
 Private $sLastObject As String
@@ -185,7 +183,7 @@ Public Sub AddResultWatch(sCmd As String, Optional sRes As String, Optional bIns
       
       'ShowAsBalloon(sVal)
       If $hForm Then 
-        $hForm.ShowWatchResult(sVal, $iX, $iY)
+        $hForm.ShowWatchResult(sVal) ', $iX, $iY)
         $hForm = Null
       Else
         FOutput.Insert(sVal)
@@ -240,13 +238,11 @@ Public Sub AddWatch(sExpr As String)
   
 End
 
-Public Sub InstantWatch(sExpr As String, hForm As FEditor, X As Integer, Y As Integer)
+Public Sub InstantWatch(sExpr As String, hForm As FEditor)
   
   If Not sExpr Then Return
   
   $hForm = hForm
-  $iX = X
-  $iY = Y
   Design.Command("?I" & sExpr & "\t" & sExpr)
   
 End
@@ -303,17 +299,28 @@ Public Sub ReadConfig()
   Dim hFont As Font
   Dim H As Integer
   Dim hChild As Control
+  Dim sKey As String
+  Dim fSize As Float
   
   Settings.Read(panDebug)
   wizDebug.TextFont = Project.GetSmallFont()
   
-  Project.SetSmallFont(lvwStack)
-  hFont = lvwStack.Font
-  gvwBreakpoint.Font = hFont
+  Project.SetSmallFont(gvwBreakpoint)
+  hFont = gvwBreakpoint.Font
   gvwTask.Font = hFont
   gvwCompilation.Font = hFont
   
+  fSize = Project.GetPercentFontSize("/DebuggerFontSize", 80)
+  
+  Project.SetNormalFont(lvwStack, fSize)
+
   Project.SetConsoleFont(cvwVariable)
+  
+  For Each sKey In cvwVariable.Keys
+    If cvwVariable[sKey].Font Then cvwVariable[sKey].Font.Size = cvwVariable.Font.Size * fSize
+  Next
+  cvwVariable.Font.Size *= fSize
+  
   cmbWatch.Font = cvwVariable.Font
   
   FDebugButton.ReadConfig
@@ -755,18 +762,23 @@ End
 
 Private Sub AfterRefreshTask()
   
-  Dim I As Integer
-  
   $aTask.Sort
   $cRefreshTask.Clear
   gvwTask.Rows.Count = $aTask.Count
+  gvwTask_Font
   gvwTask.Refresh
+  
+End
+
+Public Sub gvwTask_Font()
+
+  Dim I As Integer
   
   For I = 0 To gvwTask.Columns.Max - 1
     gvwTask.Columns[I].W = -1
   Next
-  
-End
+
+End  
 
 Public Sub UpdateTask()
   
@@ -925,8 +937,7 @@ Public Sub SetCompilation(Optional sOutput As String)
   Next
   
   gvwCompilation.Rows.Count = I
-  gvwCompilation.Columns[0].Width = -1
-  gvwCompilation.Columns[1].Width = -1
+  gvwCompilation_Font
   
   ShowTab(TAB_COMPILATION)
   'wizDebug[TAB_COMPILATION].Text = ("Warnings") & " (" & gvwCompilation.Rows.Count & ")"
@@ -935,6 +946,14 @@ Public Sub SetCompilation(Optional sOutput As String)
   SelectTab(TAB_COMPILATION)
   
 End
+
+Public Sub gvwCompilation_Font()
+  
+  gvwCompilation.Columns[0].Width = -1
+  gvwCompilation.Columns[1].Width = -1
+  
+End
+
 
 Public Sub gvwCompilation_Select()
   
@@ -1081,12 +1100,19 @@ Public Sub RefreshBreakpointView()
   If wizDebug.Index <> TAB_BREAK Then Return
   
   gvwBreakpoint.Rows.Count = Design.GetBreakpoints().Count
-  gvwBreakpoint.Columns[1].Width = -1
-  gvwBreakpoint.Columns[2].Width = -1
+  gvwBreakpoint_Font()
   gvwBreakpoint.Refresh
   gvwBreakpoint_Click
   
 End
+
+Public Sub gvwBreakpoint_Font()
+  
+  gvwBreakpoint.Columns[1].Width = -1
+  gvwBreakpoint.Columns[2].Width = -1
+  
+End
+
 
 Public Sub RemoveAllBreakpoints()
   
@@ -1207,6 +1233,8 @@ Public Sub DefineVariable(sLocal As String, sObject As String)
         End With
       Endif
     Next
+    
+    If cvwVariable["^"].Children = 0 Then cvwVariable.Remove("^")
     
   Endif
   
@@ -1341,7 +1369,7 @@ Public Sub OnProjectDebug()
   
   $sLastLocal = ""
   $sLastObject = ""
-  FDebugButton.SelectButton(TAB_CONSOLE)
+  If Settings["/ShowDebugPanelAutomatically", True] Then FDebugButton.SelectButton(TAB_CONSOLE)
   
 End
 
@@ -1355,7 +1383,7 @@ End
 
 Public Sub ShowDebugging()
   
-  FDebugButton.SelectButton(TAB_DEBUG)
+  If Settings["/ShowDebugPanelAutomatically", True] Then FDebugButton.SelectButton(TAB_DEBUG)
   
 End
 

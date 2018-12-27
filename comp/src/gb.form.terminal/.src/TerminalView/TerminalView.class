@@ -90,6 +90,11 @@ Private $fLastMouseDownY As Integer
 
 Private mnuPopup As Menu
 
+Private $iScrollY As Integer
+Private $iTargetY As Integer
+Private $hTimerScroll As Timer
+Private $bIgnoreNextAnimation As Boolean
+
 'Private $bDoubleFont As Boolean = True
 
 Public Sub _new()
@@ -369,7 +374,7 @@ End
 
 Private Sub GetScrollY() As Integer
   
-  Return $hScroll.Value
+  Return $iScrollY '$hScroll.Value
   
 End
 
@@ -384,7 +389,7 @@ Public Sub View_Draw()
   
   ApplyLimit
   
-  $hScreen.Paint(GetScrollY() * $LH, $LH, $CW, $iAscent, $bHideCursor, $hCacheFont)
+  $hScreen.Paint(GetScrollY(), $LH, $CW, $iAscent, $bHideCursor, $hCacheFont)
   
   If $bTermUseMouse Then
     Paint.FillRect($iMouseX * $CW, $iMouseY * $LH, $CW, $LH, Color.SetAlpha(Color.SelectedBackground, 64))
@@ -464,7 +469,7 @@ Private Sub GotoMouse(bStart As Boolean)
   Dim Y As Integer
   
   X = CInt((Mouse.ScreenX - $hView.ScreenX) / $CW + 0.4)
-  Y = GetScrollY() + (Mouse.ScreenY - $hView.ScreenY) \ $LH
+  Y = (GetScrollY() + Mouse.ScreenY - $hView.ScreenY) \ $LH
   'Print x, y
   $hScreen.GotoMouse(X, Y, bStart)
   
@@ -474,7 +479,7 @@ Private Sub SelectCurrentLine()
   
   Dim Y As Integer
   
-  Y = GetScrollY() + CInt((Mouse.ScreenY - $hView.ScreenY) / $LH)
+  Y = (GetScrollY() + Mouse.ScreenY - $hView.ScreenY) \ $LH
   'Print x, y
   $hScreen.GotoMouse(0, Y, True)
   $hScreen.GotoMouse(0, Y + 1, False)
@@ -487,7 +492,7 @@ Private Sub SelectCurrentWord()
   Dim Y As Integer
   
   X = CInt((Mouse.ScreenX - $hView.ScreenX) / $CW + 0.4)
-  Y = GetScrollY() + CInt((Mouse.ScreenY - $hView.ScreenY) / $LH)
+  Y = CInt((GetScrollY() + Mouse.ScreenY - $hView.ScreenY) / $LH)
   'Print x, y
   $hScreen.SelectCurrentWord(X, Y)
   
@@ -998,9 +1003,32 @@ End
 
 Public Sub ScrollBar_Change()
   
-  Refresh
+  $iTargetY = $hScroll.Value * $LH
+  If $iTargetY <> $iScrollY Then
+    If Application.Animations And If Not $bIgnoreNextAnimation Then
+      If Not $hTimerScroll Then 
+        $hTimerScroll = New Timer As "TimerScroll"
+        $hTimerScroll.Delay = 20
+      Endif
+      $hTimerScroll.Start
+    Else
+      $bIgnoreNextAnimation = False
+      $iScrollY = $iTargetY
+      $hView.Refresh
+    Endif
+  Endif
   
 End
+
+Public Sub TimerScroll_Timer()
+  
+  $iScrollY += ($iTargetY - $iScrollY + Sgn($iTargetY - $iScrollY)) \ 2
+  $hView.Refresh
+  
+  If $iScrollY = $iTargetY Then $hTimerScroll.Stop
+  
+End
+
 
 Public Sub Kill()
   
@@ -1078,6 +1106,7 @@ End
 
 Public Sub _ShowScreen()
   
+  $bIgnoreNextAnimation = True
   $hScroll.Value = $hScreen.ScreenTop()
   Refresh
   

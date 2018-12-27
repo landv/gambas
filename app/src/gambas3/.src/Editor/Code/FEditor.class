@@ -2357,6 +2357,9 @@ Private Sub FindDefinition() As Boolean
           If hClass Then
             'MHelp.GotoClass(hClass.Component, hClass.Name)
             MHelp.ShowHelpBrowserWith(MHelp.TYPE_CLASS, hClass.Name)
+          Else If Project.ExistClass(sKeyword) Then
+            CPosition.SaveCurrent(Me)
+            hForm = Project.OpenFile(sKeyword)
           Endif
         Endif
         Return
@@ -2367,7 +2370,7 @@ Private Sub FindDefinition() As Boolean
 
     If sKeyword Begins "{" And If sKeyword Ends "}" Then sKeyword = Mid$(sKeyword, 2, -1)
     
-    If iCpt >= 1 And If Highlight.Types[iCpt] = Highlight.Symbol Then
+    If iCpt >= 1 And If Highlight.Types[iCpt] = Highlight.Label Then
       
       If aSymbols[iCpt - 1] = "GOTO" Or If aSymbols[iCpt - 1] = "GOSUB" Then
         
@@ -2409,9 +2412,9 @@ Private Sub FindDefinition() As Boolean
   'PRINT hSymbol.Class
 
   If hSymbol.LineNumber Then 'And If Not bPopupHelp Then
-    CPosition.SaveCurrent(Me)
+    CPosition.SaveCurrent(Me, True)
     hForm = Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
-    CPosition.SaveCurrent(hForm)
+    CPosition.SaveCurrent(hForm, True)
   Else
     MHelp.ShowHelpBrowserWith(MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
   Endif
@@ -2425,11 +2428,11 @@ Public Sub OnProjectDebug()
 
 End
 
-Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean)
+Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean, bWordOnly As Boolean)
 
-  edtEditor.ShowString(sStr, bIgnoreCase)
-  If $hEditor1 Then $hEditor1.ShowString(sStr, bIgnoreCase)
-  If $hEditor2 Then $hEditor2.ShowString(sStr, bIgnoreCase)
+  edtEditor.HighlightString(sStr, bIgnoreCase, bWordOnly)
+  If $hEditor1 Then $hEditor1.HighlightString(sStr, bIgnoreCase, bWordOnly)
+  If $hEditor2 Then $hEditor2.HighlightString(sStr, bIgnoreCase, bWordOnly)
 
 End
 
@@ -2572,34 +2575,11 @@ Public Sub Editors_MouseUp()
     Return
   Endif
 
-  FDebugInfo.InstantWatch(Trim($hEditor.SelectedText), Me, $hEditor.ToPosX($hEditor.Column), $hEditor.ToPosY() + $hEditor.LineHeight)
+  FDebugInfo.InstantWatch(Trim($hEditor.SelectedText), Me) ', Me, $hEditor.ToPosX($hEditor.Column), $hEditor.ToPosY() + $hEditor.LineHeight)
 
 End
 
-' Private Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional bError As Boolean)
-' 
-'   X = Editor.ScreenX + X - lblWatch.Parent.ScreenX
-'   Y = Editor.ScreenY + Y - lblWatch.Parent.ScreenY
-'   
-'   lblWatch.Foreground = Editor.Styles[Highlight.Normal].Foreground
-'   If bError Then
-'     lblWatch.Background = Editor.Styles[Highlight.Breakpoint].Foreground
-'   Else
-'     lblWatch.Background = Editor.Styles[Highlight.CurrentLine].Foreground
-'   Endif
-'   lblWatch.Text = Replace(Replace(sStr, "<p>", " "), "<br>", " ")
-' 
-'   If (Y + lblWatch.H) > lblWatch.Parent.ClientH Then Y -= lblWatch.H + Editor.LineHeight
-'   lblWatch.Move(X, Y)
-'   
-'   lblWatch.Show
-'   lblWatch.Raise
-'   timWatch.Start
-'   Editor.SetFocus
-' 
-' End
-
-Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
+Public Sub ShowWatchResult(sStr As String)
 
   Dim bError As Boolean
 
@@ -2611,7 +2591,7 @@ Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
     bError = True
   Endif
 
-  $hEditor.ShowMessageLabel(Html(sStr), X, Y, If(bError, Highlight.Breakpoint, Highlight.CurrentLine))
+  $hEditor.ShowMessageLabel(Html(sStr), If(bError, Highlight.Breakpoint, Highlight.CurrentLine))
 
 End
 
@@ -2660,7 +2640,7 @@ Public Sub ShowErrorMessage(sMsg As String, (sIcon) As String)
 
   $hEditor.SetFocus
   Wait
-  $hEditor.ShowMessageLabel(sMsg, $hEditor.ToPosX(), $hEditor.ToPosY() + $hEditor.LineHeight, Highlight.Breakpoint)
+  $hEditor.ShowMessageLabel(sMsg, Highlight.Breakpoint)
 
 End
 

@@ -133,7 +133,7 @@ BEGIN_PROPERTY(Timer_Enabled)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CTIMER_delay)
+BEGIN_PROPERTY(Timer_Delay)
 
 	if (READ_PROPERTY)
 		GB_ReturnInteger(THIS->delay);
@@ -184,7 +184,7 @@ GB_DESC NATIVE_Timer[] =
 	GB_METHOD("_free", NULL, Timer_free, NULL),
 
 	GB_PROPERTY("Enabled", "b", Timer_Enabled),
-	GB_PROPERTY("Delay", "i", CTIMER_delay),
+	GB_PROPERTY("Delay", "i", Timer_Delay),
 	//GB_PROPERTY_READ("Timeout", "f", Timer_Timeout),
 
 	GB_METHOD("Start", NULL, Timer_Start, NULL),

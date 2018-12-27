@@ -56,9 +56,10 @@
 //#define DEBUG_LOAD 1
 //#define DEBUG_STRUCT 1
 
-static bool _load_class_from_jit = FALSE;
+static bool _load_without_init = FALSE;
 static const char *_class_name;
 static bool _swap;
+static bool _last_ctype_is_static;
 
 #define _b "\x1"
 #define _s "\x2"
@@ -149,6 +150,7 @@ static void conv_type(CLASS *class, void *ptype)
 		SWAP_type(&ctype);
 	}
 
+	_last_ctype_is_static = CTYPE_is_static(ctype);
 	*((TYPE *)ptype) = CLASS_ctype_to_type(class, ctype);
 }
 
@@ -476,7 +478,7 @@ __MISMATCH:
 }
 
 
-static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, int *pndesc, bool in_jit_compilation)
+static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, int *pndesc)
 {
 	char *section;
 	CLASS_INFO *info;
@@ -495,7 +497,6 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	int size;
 	char *name;
 	int len;
-	bool have_jit_functions = FALSE;
 	uchar flag;
 
 	ALLOC_ZERO(&class->load, sizeof(CLASS_LOAD));
@@ -583,13 +584,8 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 		func->fast = (flag & 1) != 0;
 		func->optional = (func->npmin < func->n_param);
 		func->use_is_missing = (flag & 2) != 0;
-
-		if (func->fast)
-		{
-			func->fast = JIT_load();
-			if (func->fast)
-				have_jit_functions = TRUE;
-		}
+		func->unsafe = (flag & 4) != 0;
+		func->fast_linked = FALSE;
 
 		if (func->use_is_missing)
 		{
@@ -676,13 +672,25 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 					offset = (- offset);
 			}
 		}
-
-		if (offset >= 0)
-			class->load->class_ref[i] = CLASS_find(&class->string[offset]);
-		else if (offset < -1)
-			class->load->class_ref[i] = CLASS_find_global(&class->string[-offset]);
-		else
-			class->load->class_ref[i] = 0; //0x31415926; //CLASS_find(&class->string[-offset]);
+		
+		{
+			CLASS *ref;
+		
+			if (offset >= 0)
+			{
+				ref = CLASS_find(&class->string[offset]);
+				//fprintf(stderr, "%s: %s -> %p (%s)\n", class->name, &class->string[offset], ref, ref->component ? ref->component->name : "NULL");
+			}
+			else if (offset < -1)
+			{
+				ref = CLASS_find_global(&class->string[-offset]);
+				//fprintf(stderr, "%s: %s -> %p (%s)\n", class->name, &class->string[-offset], ref, ref->component ? ref->component->name : "NULL");
+			}
+			else
+				ref = 0; //0x31415926; //CLASS_find(&class->string[-offset]);
+			
+			class->load->class_ref[i] = ref;
+		}
 	}
 
 	/* Datatype conversion */
@@ -690,7 +698,9 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	for (i = 0; i < class->load->n_func; i++)
 	{
 		func = &class->load->func[i];
+		
 		conv_type(class, &func->type);
+		func->is_static = _last_ctype_is_static;
 
 		if (func->n_param > 0)
 		{
@@ -898,7 +908,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	if (info->parent >= 0)
 	{
 		//printf("%s inherits %s\n", class->name, (class->load->class_ref[info->parent])->name);
-		CLASS_inheritance(class, class->load->class_ref[info->parent], in_jit_compilation);
+		CLASS_inheritance(class, class->load->class_ref[info->parent]);
 	}
 
 	/* If there is no dynamic variable, then the class is not instanciable */
@@ -911,21 +921,10 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 
 	*pstart = start;
 	*pndesc = n_desc;
-
-	/* JIT function pointers */
-
-	if (have_jit_functions)
-	{
-		ALLOC_ZERO(&class->jit_functions, sizeof(void(*)(void)) * class->load->n_func);
-		for(i = 0; i < class->load->n_func; i++)
-		{
-			class->jit_functions[i] = JIT_default_jit_function;
-		}
-	}
 }
 
 
-static void load_without_inits(CLASS *class, bool in_jit_compilation)
+static void load_without_inits(CLASS *class)
 {
 	int i;
 	FUNCTION *func;
@@ -975,18 +974,28 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 	if (!class->component)
 	{
 		if (CP)
+		{
 			class->component = CP->component;
+			#if DEBUG_COMP
+			fprintf(stderr, "Load class %s -> component %s from CP\n", class->name, class->component ? class->component->name : "NULL");
+			#endif
+		}
 		else
-			class->component = NULL;
+		{
+			class->component = COMPONENT_current;
+			#if DEBUG_COMP
+			fprintf(stderr, "Load class %s -> component %s from COMPONENT_current\n", class->name, class->component ? class->component->name : "NULL");
+			#endif
+		}
 	}
 
 	#if DEBUG_COMP
 	if (class->component)
-		fprintf(stderr, "class %s -> component %s\n", class->name, class->component->name);
+		fprintf(stderr, "Load class %s -> component %s\n", class->name, class->component->name);
 	else
-		fprintf(stderr, "class %s -> no component\n", class->name);
+		fprintf(stderr, "Load class %s -> no component\n", class->name);
 	#endif
-
+	
 	save = COMPONENT_current;
 	COMPONENT_current = class->component;
 	#if DEBUG_LOAD
@@ -1031,9 +1040,9 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 
 	class->init_dynamic = TRUE;
 
-	load_and_relocate(class, len_data, &start, &n_desc, in_jit_compilation);
+	load_and_relocate(class, len_data, &start, &n_desc);
 
-	/* Information on static and dynamic variables */
+	// Information on static and dynamic variables
 
 	if (class->parent)
 		offset = class->parent->off_event;
@@ -1046,7 +1055,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 		var->pos += offset;
 	}
 
-	/* Constant conversion & relocation */
+	// Constant conversion & relocation
 
 	for (i = 0; i < class->load->n_cst; i++)
 	{
@@ -1101,14 +1110,14 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 		}
 	}
 
-	/* Event description */
+	// Event description
 
 	CLASS_make_event(class, &first_event);
 
 	if (class->free_event && class->n_event > first_event)
 		memcpy(&class->event[first_event], class->load->event, (class->n_event - first_event) * sizeof(CLASS_EVENT));
 
-	/* Class public description */
+	// Class public description
 
 	for (i = 0; i < n_desc; i++)
 	{
@@ -1216,11 +1225,11 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 		}
 	}
 
-	/* Inheritance */
+	// Inheritance
 
 	CLASS_make_description(class, start, n_desc, &first);
 
-	/* Transfer symbol kind into symbol name (which is stored in the symbol table now), like native classes */
+	// Transfer symbol kind into symbol name (which is stored in the symbol table now), like native classes
 	// Define event index
 
 	for (i = 0; i < n_desc; i++)
@@ -1230,24 +1239,45 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 		desc->method.class = class;
 	}
 
-	/* Sort the class description */
+	// Sort the class description
 
 	CLASS_sort(class);
 
-	/* Special methods */
+	// Special methods
 
 	CLASS_search_special(class);
 
-	/* Class is loaded... */
+	// JIT compilation
+
+	for(i = 0; i < class->load->n_func; i++)
+	{
+		if (class->load->func[i].fast)
+		{
+			ARCHIVE *arch = class->component ? class->component->archive : NULL;
+			
+			if (JIT_can_compile(arch))
+			{
+				if (JIT_compile(arch))
+				{
+					for(i = 0; i < class->load->n_func; i++)
+						class->load->func[i].fast = FALSE;
+				}
+			}
+			
+			break;
+		}
+	}
+	
+	// Class is loaded...
 
 	class->in_load = FALSE;
 
-	/* ...and usable ! */
+	// ...and usable !
 
 	class->loaded = TRUE;
 	class->error = FALSE;
 
-	/* Init breakpoints */
+	// Init breakpoints
 
 	if (EXEC_debug)
 		DEBUG.InitBreakpoints(class);
@@ -1294,11 +1324,11 @@ void CLASS_run_inits(CLASS *class)
 
 void CLASS_load_real(CLASS *class)
 {
-	bool load_from_jit = _load_class_from_jit;
+	bool load_without_init = _load_without_init;
 	char *name = class->name;
 	int len = strlen(name);
 
-	_load_class_from_jit = FALSE;
+	_load_without_init = FALSE;
 
 	if (!CLASS_is_loaded(class))
 	{
@@ -1309,25 +1339,22 @@ void CLASS_load_real(CLASS *class)
 		}
 	}
 
-	load_without_inits(class, load_from_jit);
+	load_without_inits(class);
+	class->loaded = TRUE;
+	class->ready = FALSE;
 
-	if (load_from_jit)
-	{
-		class->loaded = TRUE;
-		class->ready = FALSE;
-	}
-	else
-	{
-		class->loaded = TRUE;
-		class->ready = TRUE;
+	if (load_without_init)
+		return;
 
-		CLASS_run_inits(class);
-	}
-	//EXEC_public(class, NULL, "_init", 0);
+	class->ready = TRUE;
+	CLASS_run_inits(class);
 }
 
-void CLASS_load_from_jit(CLASS *class)
+void CLASS_load_without_init(CLASS *class)
 {
-	_load_class_from_jit = TRUE;
+	if (CLASS_is_loaded(class))
+		return;
+	
+	_load_without_init = TRUE;
 	CLASS_load_real(class);
 }

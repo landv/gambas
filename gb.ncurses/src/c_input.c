@@ -102,22 +102,22 @@ void INPUT_drain()
 	flushinp();
 }
 
-static int INPUT_get_ncurses(int timeout)
+static int INPUT_get_ncurses(int time_out)
 {
 	int ret;
 
-	if (timeout >= 0)
-		timeout(timeout);
+	if (time_out >= 0)
+		timeout(time_out);
 	ret = getch();
 	if (ret == ERR) {
 		/* Had a timeout, the manual doesn't define any errors to
 		   happen for wgetch() besides NULL pointer arguments. The
 		   only source of ERR is timeout expired. */
-		if (timeout >= 0)
+		if (time_out >= 0)
 			ret = 0;
 	}
 
-	if (timeout >= 0)
+	if (time_out >= 0)
 		timeout(-1);
 	return ret;
 }

@@ -95,6 +95,7 @@ Private $hDropTarget As CControl
 Private $bLockArrangement As Boolean
 
 Private $cInfo As Collection
+Private $bInfoTop As Boolean
 
 Public Sub _new(sPath As String)
 
@@ -2784,12 +2785,6 @@ Public Sub SetReadOnly()
 
 End
 
-Public Sub OnProjectChange()
-
-  SetReadOnly
-
-End
-
 Public Sub OnProjectDebug()
 
   SetReadOnly
@@ -3866,13 +3861,21 @@ End
 
 Private Sub MoveInfo()
 
+  Dim X, Y As Integer
   Dim DX As Integer
   Dim DY As Integer
 
   If svwWorkspace.ScrollH > svwWorkspace.ClientH Then DX = Style.ScrollbarSize
   If svwWorkspace.ScrollW > svwWorkspace.ClientW Then DY = Style.ScrollbarSize
-  
-  dwgInfo.Move(svwWorkspace.X + svwWorkspace.W - dwgInfo.W - Desktop.Scale - DX, svwWorkspace.Y + svwWorkspace.H - dwgInfo.H - Desktop.Scale - DY)
+
+  If System.RightToLeft Then
+    X = svwWorkspace.X + Desktop.Scale
+  Else  
+    X = svwWorkspace.X + svwWorkspace.W - dwgInfo.W - Desktop.Scale - DX
+  Endif
+  Y = svwWorkspace.Y + Desktop.Scale
+  If Not $bInfoTop Then Y = Max(Y, svwWorkspace.Y + svwWorkspace.H - dwgInfo.H - Desktop.Scale - DY)
+  dwgInfo.Move(X, Y)
 
 End
 
@@ -4347,10 +4350,10 @@ Public Sub dwgInfo_Draw()
   Y = DS \ 2
   W = (Paint.W - DS * 2) / 2 - DS
   Paint.Font.Bold = True
-  Paint.DrawText($cInfo!Name, X, Y, W, Paint.Font.Height, Align.Right)
+  Paint.DrawText($cInfo!Name, X, Y, W, Paint.Font.Height, Align.Left)
   X += W
   Paint.Font.Bold = False
-  Paint.DrawText($cInfo!Kind, X + DS, Y, W, Paint.Font.Height, Align.Left)
+  Paint.DrawText($cInfo!Kind, X + DS, Y, W, Paint.Font.Height, Align.Right)
   'Y += Paint.Font.Height
   '  Paint.DrawText($cInfo!Kind, DS, Y, Paint.W - DS * 2, Paint.Font.Height, Align.Center)
   
@@ -4402,4 +4405,11 @@ Public Sub GetLocation(iLine As Integer) As String
     Dec iLine
   Wend
   
+End
+
+Public Sub dwgInfo_Enter()
+
+  $bInfoTop = Not $bInfoTop
+  MoveInfo
+
 End

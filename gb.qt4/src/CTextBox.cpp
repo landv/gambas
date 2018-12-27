@@ -83,7 +83,7 @@ BEGIN_METHOD(TextBox_new, GB_OBJECT parent)
 
 	QObject::connect(wid, SIGNAL(textChanged(const QString &)), &CTextBox::manager, SLOT(onChange()));
 	QObject::connect(wid, SIGNAL(returnPressed()), &CTextBox::manager, SLOT(onActivate()));
-	QObject::connect(wid, SIGNAL(selectionChanged()), &CTextBox::manager, SLOT(onSelectionChanged()));
+	//QObject::connect(wid, SIGNAL(selectionChanged()), &CTextBox::manager, SLOT(onSelectionChanged()));
 
 	wid->setAlignment(Qt::AlignLeft);
 
@@ -113,7 +113,10 @@ BEGIN_PROPERTY(TextBox_Text)
 	if (READ_PROPERTY)
 		RETURN_NEW_STRING(TEXTBOX->text());
 	else
+	{
+		TEXTBOX->deselect();
 		TEXTBOX->setText(QSTRING_PROP());
+	}
 
 END_PROPERTY
 
@@ -417,7 +420,10 @@ static void combo_set_text(CCOMBOBOX *_object, QString &text)
 	if (!COMBOBOX->isEditable() || pos >= 0)
 		combo_set_current_item(_object, pos);
 	if (COMBOBOX->isEditable())
+	{
+		COMBOBOX->lineEdit()->deselect();
 		COMBOBOX->lineEdit()->setText(text);
+	}
 }
 
 static void combo_set_editable(void *_object, bool ed)
@@ -439,7 +445,7 @@ static void combo_set_editable(void *_object, bool ed)
 		COMBOBOX->setCompleter(0);
 		//CWidget::installFilter(COMBOBOX);
 		QObject::connect(COMBOBOX->lineEdit(), SIGNAL(returnPressed()), &CTextBox::manager, SLOT(onActivate()));
-		QObject::connect(COMBOBOX->lineEdit(), SIGNAL(selectionChanged()), &CTextBox::manager, SLOT(onSelectionChanged()));
+		//QObject::connect(COMBOBOX->lineEdit(), SIGNAL(selectionChanged()), &CTextBox::manager, SLOT(onSelectionChanged()));
 
 		if (CWIDGET_test_flag(THIS, WF_DESIGN))
 		{
@@ -514,6 +520,8 @@ BEGIN_METHOD(ComboBox_new, GB_OBJECT parent)
 
 	MyComboBox *wid = new MyComboBox(QCONTAINER(VARG(parent)));
 
+	THIS->widget.flag.wheel = true;
+	
 	QObject::connect(wid, SIGNAL(editTextChanged(const QString &)), &CTextBox::manager, SLOT(onChange()));
 	QObject::connect(wid, SIGNAL(activated(int)), &CTextBox::manager, SLOT(onClick()));
 
@@ -811,7 +819,7 @@ void CTextBox::onClick()
 }
 
 
-void CTextBox::onSelectionChanged(void)
+/*void CTextBox::onSelectionChanged(void)
 {
 	GET_SENDER();
 	GET_TEXT_BOX();
@@ -829,7 +837,7 @@ void CTextBox::onSelectionChanged(void)
 	{
 		get_selection(textbox, &THIS->start, &THIS->length);
 	}
-}
+}*/
 
 
 

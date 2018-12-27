@@ -1,11 +1,219 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,56,53)
+  MoveScaled(0,0,78,60)
   Arrangement = Arrange.Fill
   Margin = True
   { ScrollArea1 ScrollArea
     MoveScaled(4,3,35,30)
+    Visible = False
     Mouse = Mouse.Pointing
+    AutoResize = True
+    { Button1 Button
+      MoveScaled(10,8,11,5)
+      Text = ("Button")
+    }
+    { Label1 Label
+      MoveScaled(7,28,19,6)
+      Border = Border.Plain
+    }
+    { TextArea1 TextArea
+      MoveScaled(32,20,39,29)
+    }
+  }
+  { MyScrollView1 ScrollView
+    MoveScaled(23,16,55,47)
+    { Button2 Button Button
+      Name = "Button2"
+      MoveScaled(2,3,16,4)
+    }
+    { Button8 Button Button
+      Name = "Button8"
+      MoveScaled(22,3,16,4)
+    }
+    { Button26 Button Button
+      Name = "Button26"
+      MoveScaled(41,3,16,4)
+    }
+    { Button32 Button Button
+      Name = "Button32"
+      MoveScaled(61,3,16,4)
+    }
+    { Button3 Button Button
+      Name = "Button3"
+      MoveScaled(2,8,16,4)
+    }
+    { Button9 Button Button
+      Name = "Button9"
+      MoveScaled(22,8,16,4)
+    }
+    { Button27 Button Button
+      Name = "Button27"
+      MoveScaled(41,8,16,4)
+    }
+    { Button33 Button Button
+      Name = "Button33"
+      MoveScaled(61,8,16,4)
+    }
+    { Button4 Button Button
+      Name = "Button4"
+      MoveScaled(2,13,16,4)
+    }
+    { Button10 Button Button
+      Name = "Button10"
+      MoveScaled(22,13,16,4)
+    }
+    { Button28 Button Button
+      Name = "Button28"
+      MoveScaled(41,13,16,4)
+    }
+    { Button34 Button Button
+      Name = "Button34"
+      MoveScaled(61,13,16,4)
+    }
+    { Button5 Button Button
+      Name = "Button5"
+      MoveScaled(6,18,16,4)
+    }
+    { Button11 Button Button
+      Name = "Button11"
+      MoveScaled(26,18,16,4)
+    }
+    { Button29 Button Button
+      Name = "Button29"
+      MoveScaled(45,18,16,4)
+    }
+    { Button35 Button Button
+      Name = "Button35"
+      MoveScaled(65,18,16,4)
+    }
+    { Button6 Button Button
+      Name = "Button6"
+      MoveScaled(9,24,16,4)
+    }
+    { Button12 Button Button
+      Name = "Button12"
+      MoveScaled(29,24,16,4)
+    }
+    { Button30 Button Button
+      Name = "Button30"
+      MoveScaled(48,24,16,4)
+    }
+    { Button36 Button Button
+      Name = "Button36"
+      MoveScaled(68,24,16,4)
+    }
+    { Button7 Button Button
+      Name = "Button7"
+      MoveScaled(13,30,16,4)
+    }
+    { Button13 Button Button
+      Name = "Button13"
+      MoveScaled(33,30,16,4)
+    }
+    { Button31 Button Button
+      Name = "Button31"
+      MoveScaled(52,30,16,4)
+    }
+    { Button37 Button Button
+      Name = "Button37"
+      MoveScaled(72,30,16,4)
+    }
+    { Button14 Button Button
+      Name = "Button14"
+      MoveScaled(3,36,16,4)
+    }
+    { Button38 Button Button
+      Name = "Button38"
+      MoveScaled(42,36,16,4)
+    }
+    { Button20 Button Button
+      Name = "Button20"
+      MoveScaled(23,37,16,4)
+    }
+    { Button44 Button Button
+      Name = "Button44"
+      MoveScaled(62,37,16,4)
+    }
+    { Button15 Button Button
+      Name = "Button15"
+      MoveScaled(3,41,16,4)
+    }
+    { Button39 Button Button
+      Name = "Button39"
+      MoveScaled(42,41,16,4)
+    }
+    { Button21 Button Button
+      Name = "Button21"
+      MoveScaled(23,42,16,4)
+    }
+    { Button45 Button Button
+      Name = "Button45"
+      MoveScaled(62,42,16,4)
+    }
+    { Button16 Button Button
+      Name = "Button16"
+      MoveScaled(3,46,16,4)
+    }
+    { Button40 Button Button
+      Name = "Button40"
+      MoveScaled(42,46,16,4)
+    }
+    { Button22 Button Button
+      Name = "Button22"
+      MoveScaled(23,47,16,4)
+    }
+    { Button46 Button Button
+      Name = "Button46"
+      MoveScaled(62,47,16,4)
+    }
+    { Button17 Button Button
+      Name = "Button17"
+      MoveScaled(7,51,16,4)
+    }
+    { Button41 Button Button
+      Name = "Button41"
+      MoveScaled(46,51,16,4)
+    }
+    { Button23 Button Button
+      Name = "Button23"
+      MoveScaled(27,52,16,4)
+    }
+    { Button47 Button Button
+      Name = "Button47"
+      MoveScaled(66,52,16,4)
+    }
+    { Button18 Button Button
+      Name = "Button18"
+      MoveScaled(10,57,16,4)
+    }
+    { Button42 Button Button
+      Name = "Button42"
+      MoveScaled(49,57,16,4)
+    }
+    { Button24 Button Button
+      Name = "Button24"
+      MoveScaled(30,58,16,4)
+    }
+    { Button48 Button Button
+      Name = "Button48"
+      MoveScaled(69,58,16,4)
+    }
+    { Button19 Button Button
+      Name = "Button19"
+      MoveScaled(14,63,16,4)
+    }
+    { Button43 Button Button
+      Name = "Button43"
+      MoveScaled(53,63,16,4)
+    }
+    { Button25 Button Button
+      Name = "Button25"
+      MoveScaled(34,64,16,4)
+    }
+    { Button49 Button Button
+      Name = "Button49"
+      MoveScaled(73,64,16,4)
+    }
   }
 }

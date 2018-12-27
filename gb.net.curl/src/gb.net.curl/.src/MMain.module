@@ -1,23 +1,42 @@
 ' Gambas module file
 
+Private $hManager As DownloadManager
+
 Public Sub Main()
 
-  'Print HttpClient.Download("https://www.w3schools.com/cssref/")
+  $hManager = New DownloadManager As "Manager"
+  $hManager.MaxClient = 3
+  
+  '$hManager.Add("https://gitlab.com/gambas/gambas/-/archive/master/gambas-master.tar.bz2")
+  '$hManager.Add("http://ipv4.download.thinkbroadband.com/512MB.zip")
+  '$hManager.Add("https://gitlab.com/gambas/gambas/-/archive/master/gambas-master.tar.gz")
+  '$hManager.Add("http://gambaswiki.org/zorglub.txt")
+  $hManager.Add("http://gambaswiki.org/gambas-wiki.tar.bz2")
+  $hManager.Start()
+  
+End
 
-  Dim ftptest As New FtpClient
-  Dim tmp As String
+Public Sub Manager_Progress()
+  
+  Print Format($hManager.Progress * 100, "##0"); "% "; Format($hManager.Speed / 1024, "#.#"); " KB/s"; Space$(10); "\r";
+  Flush
+  
+End
 
-  tmp = Temp()
-  ftptest.URL = "ftps://intersindical-clm.org"
-  ftptest.User = "benoit"
-  ftptest.Password = "vohW827!"
-  ftptest.SSL.VerifyHost = True
-  ftptest.SSL.VerifyPeer = False
-  ftptest.debug = True
-  ftptest.Async = False
-  ftptest.get(tmp)
-  If ftptest.ErrorText > "" Then
-    Print "Connection failed"
-  Endif
+Public Sub Manager_Message(Key As String, Text As String)
+  
+  Print "["; Key; "] "; Text
+  
+End
 
+Public Sub Manager_Finish(Key As String)
+  
+  Print "["; Key; "] ==> "; $hManager[Key].Path
+  
+End
+
+Public Sub Manager_Size(Key As String)
+  
+  Print "["; Key; "] size = "; $hManager[Key].Size
+  
 End

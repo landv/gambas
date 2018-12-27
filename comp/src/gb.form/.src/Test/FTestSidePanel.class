@@ -1,2 +1,21 @@
 ' Gambas class file
 
+
+Public Sub Form_Open()
+
+  Debug
+  Application.Animations = True
+
+End
+
+Public Sub Form_Arrange()
+
+  'Debug SidePanelBottom.W;; SidePanelBottom._Container.W
+
+End
+
+Public Sub Panel1_Arrange()
+
+  'Debug Panel1.W - Desktop.Scale * 2;; SidePanelBottom.W
+
+End

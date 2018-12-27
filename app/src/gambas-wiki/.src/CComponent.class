@@ -886,6 +886,7 @@ Public Sub GetDescription() As String[]
   
   Dim aResult As New String[]
   Dim sInfo As String
+  Dim bComma As Boolean
   
   Select Case State
     Case UNSTABLE
@@ -915,9 +916,17 @@ Public Sub GetDescription() As String[]
     aResult.Add("**" & ("Implements") & "**")
     aResult.Add("--")
     
+    bComma = False
     For Each sInfo In Implement
-      aResult.Add($cFeatures[LCase(sInfo)] & "\\")
+      If Not bComma Then
+        bComma = True
+      Else
+        aResult[aResult.Max] &= ", "
+      Endif
+      aResult.Add($cFeatures[LCase(sInfo)])
     Next
+    
+    aResult[aResult.Max] &= "."
     
   Endif
   
@@ -927,12 +936,25 @@ Public Sub GetDescription() As String[]
     aResult.Add("**" & ("Requires") & "**")
     aResult.Add("--")
     
+    bComma = False
     For Each sInfo In Need
-      aResult.Add($cFeatures[LCase(sInfo)] & "\\")
+      If Not bComma Then
+        bComma = True
+      Else
+        aResult[aResult.Max] &= ", "
+      Endif
+      aResult.Add($cFeatures[LCase(sInfo)])
     Next
     For Each sInfo In Require
-      aResult.Add("[/comp/" & LCase(sInfo) & "]\\")
+      If Not bComma Then
+        bComma = True
+      Else
+        aResult[aResult.Max] &= ", "
+      Endif
+      aResult.Add("[/comp/" & LCase(sInfo) & "]")
     Next
+
+    aResult[aResult.Max] &= "."
     
   Endif
   
@@ -942,9 +964,17 @@ Public Sub GetDescription() As String[]
     aResult.Add("**" & ("Excludes") & "**")
     aResult.Add("--")
     
+    bComma = False
     For Each sInfo In Exclude
-      aResult.Add("[/comp/" & LCase(sInfo) & "]\\")
+      If Not bComma Then
+        bComma = True
+      Else
+        aResult[aResult.Max] &= ", "
+      Endif
+      aResult.Add("[/comp/" & LCase(sInfo) & "]")
     Next
+    
+    aResult[aResult.Max] &= "."
     
   Endif
   

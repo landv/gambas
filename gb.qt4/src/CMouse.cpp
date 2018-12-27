@@ -245,7 +245,17 @@ END_PROPERTY
 BEGIN_PROPERTY(Mouse_State)
 
 	CHECK_VALID();
-	GB.ReturnInteger((int)MOUSE_info.state);
+	int state = (int)MOUSE_info.state;
+	if (MOUSE_info.modifier & Qt::ShiftModifier)
+		state |= MOUSE_SHIFT;
+	if (MOUSE_info.modifier & Qt::ControlModifier)
+		state |= MOUSE_CTRL;
+	if (MOUSE_info.modifier & Qt::AltModifier)
+		state |= MOUSE_ALT;
+	if (MOUSE_info.modifier & Qt::MetaModifier)
+		state |= MOUSE_META;
+	
+	GB.ReturnInteger(state);
 
 END_PROPERTY
 
@@ -353,6 +363,49 @@ BEGIN_METHOD(Mouse_Translate, GB_INTEGER dx; GB_INTEGER dy)
 	_dy = VARG(dy);
 
 END_METHOD
+
+#if 0
+BEGIN_METHOD(Mouse_Begin, GB_OBJECT control; GB_INTEGER x; GB_INTEGER y; GB_INTEGER state)
+
+	void *control = VARG(control);
+	int state = VARGOPT(state, 0);
+	int x = VARG(x);
+	int y = VARG(y);
+
+	if (GB.CheckObject(control))
+		return;
+	
+	CMOUSE_clear(true);
+	MOUSE_info.x = x;
+	MOUSE_info.y = y;
+	QPoint p = QWIDGET(control)->mapToGlobal(QPoint(x, y));
+	MOUSE_info.sx = p.x();
+	MOUSE_info.sy = p.y();
+	
+	MOUSE_info.state = (Qt::MouseButtons)(state & 0xFF);
+	if (state & MOUSE_LEFT)
+		MOUSE_info.button = Qt::LeftButton;
+	else if (state & MOUSE_MIDDLE)
+		MOUSE_info.button = Qt::MiddleButton;
+	else if (state & MOUSE_RIGHT)
+		MOUSE_info.button = Qt::RightButton;
+	
+	MOUSE_info.modifier = (Qt::KeyboardModifiers)0;
+	if (state & MOUSE_SHIFT)
+		MOUSE_info.modifier |= Qt::ShiftModifier;
+	if (state & MOUSE_CTRL)
+		MOUSE_info.modifier |= Qt::ShiftModifier;
+	if (state & MOUSE_ALT)
+		MOUSE_info.modifier |= Qt::ShiftModifier;
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Mouse_End)
+
+	CMOUSE_clear(false);
+
+END_METHOD
+#endif
 
 //-------------------------------------------------------------------------
 
@@ -470,12 +523,6 @@ GB_DESC CMouseDesc[] =
 	GB_CONSTANT("SplitV", "i", Qt::SplitVCursor),
 	GB_CONSTANT("Pointing", "i", Qt::PointingHandCursor),
 
-	//GB_CONSTANT("Left", "i", Qt::LeftButton),
-	//GB_CONSTANT("Right", "i", Qt::RightButton),
-	//GB_CONSTANT("Middle", "i", Qt::MidButton),
-	//GB_CONSTANT("Shift", "i", Qt::ShiftButton),
-	//GB_CONSTANT("Control", "i", Qt::ControlButton),
-	//GB_CONSTANT("Alt", "i", Qt::AltButton),
 	GB_CONSTANT("Horizontal", "i", Qt::Horizontal),
 	GB_CONSTANT("Vertical", "i", Qt::Vertical),
 
@@ -498,6 +545,8 @@ GB_DESC CMouseDesc[] =
 	GB_STATIC_PROPERTY_READ("Forward", "b", Mouse_Forward),
 
 	GB_STATIC_METHOD("Translate", NULL, Mouse_Translate, "(DX)i(DY)i"),
+	//GB_STATIC_METHOD("Begin", NULL, Mouse_Begin, "(Control)Control;(X)i(Y)i[(State)i]"),
+	//GB_STATIC_METHOD("End", NULL, Mouse_End, NULL),
 
 	GB_END_DECLARE
 };

@@ -145,7 +145,7 @@ void SUBR_strptr(ushort code)
     
 	if (err)
 	{
-		RETURN->type = T_NULL;
+		VALUE_null(RETURN);
 	}
 	else
 	{ 

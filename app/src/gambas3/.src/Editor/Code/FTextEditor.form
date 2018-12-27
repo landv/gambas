@@ -269,14 +269,31 @@
       MoveScaled(8,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
-      Picture = Picture["icon:/small/revert"]
+      Picture = Picture["icon:/small/refresh"]
     }
     { Separator4 Separator
-      MoveScaled(13,0,1,4)
+      MoveScaled(12,0,1,4)
+    }
+    { btnUndo ToolButton mnuUndo
+      Name = "btnUndo"
+      MoveScaled(13,0,4,4)
+      ToolTip = ("Undo")
+      Action = ".undo"
+      Picture = Picture["icon:/small/undo"]
+    }
+    { btnRedo ToolButton mnuRedo
+      Name = "btnRedo"
+      MoveScaled(16,0,4,4)
+      ToolTip = ("Redo")
+      Action = ".redo"
+      Picture = Picture["icon:/small/redo"]
+    }
+    { Separator5 Separator
+      MoveScaled(21,0,1,4)
     }
     { btnCut ToolButton mnuCut
       Name = "btnCut"
-      MoveScaled(16,0,4,4)
+      MoveScaled(22,0,4,4)
       Visible = False
       ToolTip = ("Cut")
       Action = ".cut"
@@ -284,33 +301,18 @@
     }
     { btnCopy ToolButton mnuCopy
       Name = "btnCopy"
-      MoveScaled(20,0,4,4)
+      MoveScaled(25,0,4,4)
       Visible = False
       ToolTip = ("Copy")
       Action = ".copy"
       Picture = Picture["icon:/small/copy"]
     }
-    { btnPaste ToggleButton mnuPaste
+    { btnPaste ToolButton mnuPaste
       Name = "btnPaste"
-      MoveScaled(24,0,4,4)
+      MoveScaled(28,0,4,4)
       ToolTip = ("Paste")
       Action = ".paste"
       Picture = Picture["icon:/small/paste"]
-      Border = False
-    }
-    { btnUndo ToolButton mnuUndo
-      Name = "btnUndo"
-      MoveScaled(28,0,4,4)
-      ToolTip = ("Undo")
-      Action = ".undo"
-      Picture = Picture["icon:/small/undo"]
-    }
-    { btnRedo ToolButton mnuRedo
-      Name = "btnRedo"
-      MoveScaled(31,0,4,4)
-      ToolTip = ("Redo")
-      Action = ".redo"
-      Picture = Picture["icon:/small/redo"]
     }
     { btnBookmark MenuButton
       MoveScaled(33,0,6,4)
@@ -615,7 +617,7 @@
   { Action reload
     Text = "Reload"
     Shortcut = ""
-    Picture = "icon:/small/revert"
+    Picture = "icon:/small/refresh"
   }
   { Action save
     Text = "Save"
@@ -700,7 +702,7 @@
 { Toolbars
   { Toolbar text
     Text = "Text editor"
-    List = "show-class,save,reload,cut,copy,paste,undo,redo,bookmark,color,date,char,indent,unindent,comment,uncomment,pretty,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,wrap,tab-indent,eol,locked"
-    Default = "show-class,save,reload,|,paste,undo,redo,color,date,char,comment,uncomment,|,compress,uncompress,|,|,proc,~,wrap,tab-indent,locked"
+    List = "show-class,save,reload,undo,redo,cut,copy,paste,bookmark,color,date,char,indent,unindent,comment,uncomment,pretty,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,wrap,tab-indent,eol,locked"
+    Default = "show-class,save,reload,|,undo,redo,|,paste,color,date,char,comment,uncomment,|,compress,uncompress,|,|,proc,~,wrap,tab-indent,locked"
   }
 }

@@ -109,7 +109,8 @@ enum {
 	E_USER,
 	E_NEMPTY,
 	E_UTYPE,
-	E_FREEREF
+	E_FREEREF,
+	E_ASSERT
 	};
 
 #ifndef __GB_ERROR_C

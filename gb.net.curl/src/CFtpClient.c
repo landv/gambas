@@ -201,20 +201,22 @@ static int ftp_exec(void *_object, int what, GB_ARRAY commands)
 
 BEGIN_METHOD(FtpClient_Get, GB_STRING target)
 
-	const char *path = NULL;
+	const char *target = NULL;
 
-	if (!MISSING(target))
-		path = GB.FileName(STRING(target), LENGTH(target));
-	
-	if (path && *path)
+	if (MISSING(target))
+		target = THIS->target;
+	else
+		target = GB.FileName(STRING(target), LENGTH(target));
+
+	if (target && *target)
 	{
-		if (THIS_STATUS > 0)
+		/*if (THIS_STATUS > 0)
 		{
 			GB.Error("Still active");
 			return;
-		}
+		}*/
 		
-		THIS_FILE = fopen(path, "w");
+		THIS_FILE = fopen(target, "w");
 		
 		if (!THIS_FILE)
 		{

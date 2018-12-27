@@ -1219,15 +1219,15 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline_are_b
 			continue;
 		}
 	
-		if (c == ' ')
-		{
-			if (!newline)
-				add_space(pango);
-			continue;
-		}
-			
 		if (!p_markup)
 		{
+			if (c == ' ')
+			{
+				if (!newline)
+					add_space(pango);
+				continue;
+			}
+			
 			g_string_append(pango, html_entity(*p));
 			newline = false;
 		}
@@ -1238,7 +1238,7 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline_are_b
 	g_string_prepend_unichar(pango, 0xFEFF);
 	
 	p = g_string_free(pango, false);
-	//fprintf(stderr, "pango: %s\n", p);
+	//fprintf(stderr, "pango: '%s'\n", p);
 	return (char *)p;
 }
 
@@ -2073,6 +2073,9 @@ GtkStyleContext *gt_get_style(GType type)
 			gtk_style_context_add_class(style, klass);
 
 		gtk_widget_path_append_type(path, type);
+#if GTK_CHECK_VERSION(3, 20, 0)
+		gtk_widget_path_iter_set_object_name(path, -1, klass);
+#endif
 		gtk_style_context_set_path(style, path);
 		//gtk_widget_path_unref(path);
 

@@ -30,7 +30,6 @@
 
 #ifndef __GBX_C_OBSERVER_C
 extern GB_DESC NATIVE_Observer[];
-//extern GB_DESC NATIVE_Proxy[];
 #else
 #define THIS ((COBSERVER *)_object)
 #endif

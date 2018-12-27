@@ -38,8 +38,6 @@ extern DB_INTERFACE DB;
 #define QUOTE_STRING "'"
 
 #define MAX_PATH 132 /* MAX LENGTH OF FILENAME PATH */
-#define TRUE 1
-#define FALSE 0
 
 #include "gb.db.proto.h"
 

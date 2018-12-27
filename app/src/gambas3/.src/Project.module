@@ -244,11 +244,11 @@ End
 Public Sub InitWebView()
 
   Dim sPath As String
-  Dim sFont As String
-  Dim sDefaultFont As String
+  Dim hDefaultFont As Font
+  Dim hFixedFont As Font
 
   If Not WebSettings.Cache.Path Then
-    sPath = System.User.Home &/ ".cache"
+    sPath = "~/.cache"
     Try Mkdir sPath
     sPath &/= "gambas3"
     Try Mkdir sPath
@@ -261,25 +261,26 @@ Public Sub InitWebView()
   'WebSettings.Fonts.StandardFont = Application.Font.Name
   'hFont = Font[Settings["/Editor/Font", Application.Font]]
   
-  sDefaultFont = Application.Font.Name
+  hDefaultFont = Font[Settings["/Browser/Font"]]
+  hFixedFont = Font[Settings["/Browser/FixedFont", DEFAULT_FONT]]
   
-  WebSettings.Fonts.SerifFont = sDefaultFont
-  WebSettings.Fonts.SansSerifFont = sDefaultFont
-  WebSettings.Fonts.DefaultFontSize = Application.Font.Ascent * 0.9
+  WebSettings.Fonts.SerifFont = hDefaultFont.Name
+  WebSettings.Fonts.SansSerifFont = hDefaultFont.Name
+  WebSettings.Fonts.DefaultFontSize = hDefaultFont.Size
 
-  sFont = Replace(sDefaultFont, "Sans", "Mono")
-  If sFont = sDefaultFont Or If Not Fonts.Exist(sFont) Then
-    sFont = Application.Font.Name & "Mono"
-    If Not Fonts.Exist(sFont) Then
-      sFont = Application.Font.Name & " Mono"
-      If Not Fonts.Exist(sFont) Then
-        sFont = ""
-      Endif
-    Endif
-  Endif
+  ' sFont = Replace(sDefaultFont, "Sans", "Mono")
+  ' If sFont = sDefaultFont Or If Not Fonts.Exist(sFont) Then
+  '   sFont = Application.Font.Name & "Mono"
+  '   If Not Fonts.Exist(sFont) Then
+  '     sFont = Application.Font.Name & " Mono"
+  '     If Not Fonts.Exist(sFont) Then
+  '       sFont = ""
+  '     Endif
+  '   Endif
+  ' Endif
   
-  If sFont Then WebSettings.Fonts.FixedFont = sFont
-  WebSettings.Fonts.DefaultFixedFontSize = Font[sFont].Ascent * 0.8
+  WebSettings.Fonts.FixedFont = hFixedFont.Name
+  WebSettings.Fonts.DefaultFixedFontSize = hFixedFont.Size
 
 End
 
@@ -288,7 +289,6 @@ Public Sub Main()
   Dim sPath As String
   Dim iInd As Integer
   Dim sArg As String
-  Dim hComp As CComponent
   Dim aOpenFile As New String[]
 
   'DB.Debug = True
@@ -342,6 +342,8 @@ Public Sub Main()
   EXAMPLES_DIR = System.Path &/ "share/gambas" & Split(System.Version, ".")[0] & "/examples"
 
   Application.ShowTooltips = Settings["/ShowTooltip", True]
+  Application.Animations = Settings["/Animations", True]
+  Application.Shadows = Settings["/Shadows", True]
 
   RefreshBreakpointPicture
 
@@ -353,9 +355,12 @@ Public Sub Main()
     CRecentProject.Load
     FMain.Load
     Project.Open(sPath)
+    
+    Dim hComp As CComponent
     For Each hComp In Project.Documentation.Components
       hComp.Load
     Next
+    
     Quit
     'FSearch.FindProject("else")
     'Project.Close
@@ -2252,7 +2257,7 @@ Private Sub CompileError(sMsg As String)
   iPos = RInStr(sMsg, "\n")
   If iPos Then sMsg = Mid$(sMsg, iPos + 1)
 
-  If LCase(sMsg) Begins "gbc: error: " Then
+  If LCase(sMsg) Like "gbc*: error: *" Then
 
     sMsg = TranslateMessage(Mid$(sMsg, Len("gbc: error: ") + 1))
     SetMessage(sMsg)
@@ -4160,10 +4165,10 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
       Move sPath To sNewPath
     Endif
   Else If Stat(sPath).Type = gb.Link Then
-    Move sPath To sNewPath
+    If VersionControl.NeedMove() Then Move sPath To sNewPath
     VersionControl.MoveFile(sPath, sNewPath)
   Else
-    Copy sPath To sNewPath
+    If VersionControl.NeedMove() Then Copy sPath To sNewPath
     VersionControl.MoveFile(sPath, sNewPath)
     Try Kill sPath
   Endif
@@ -4907,7 +4912,7 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
     Endif
     'If Exist(sSrc) Then LockedPaths[sSrc] = True
   Else
-    Copy sSrc To sDst
+    If VersionControl.NeedMove() Then Copy sSrc To sDst
     If Right(sSrc) <> "~" Then VersionControl.MoveFile(sSrc, sDst)
     Try Kill sSrc
   Endif
@@ -5654,7 +5659,7 @@ Public Sub GetSmallFont() As Font
 
   Dim hFont As Font = Font[Settings["/Font"]]
 
-  Try hFont.Size *= 1 - Settings["/TitleFontSize", 0] / 20
+  Try hFont.Size *= GetPercentFontSize("/TitleFontSize", 80)
   Return hFont
 
 End
@@ -5665,16 +5670,28 @@ Public Sub SetSmallFont(hCtrl As Control)
 
 End
 
-Public Sub SetNormalFont(hCtrl As Control)
+Public Sub GetPercentFontSize(sSettings As String, iDefault As Integer) As Float
+
+  Dim iVal As Integer
+
+  Try iVal = Settings[sSettings, iDefault]
+  If iVal < 10 Then iVal = iDefault
+  Return iVal / 100
+
+End
+
+Public Sub SetNormalFont(hCtrl As Control, Optional fSize As Float)
 
   Dim hFont As Font = Font[Settings["/Font"]]
 
-  Try hFont.Size *= 1 - Settings["/ProjectFontSize", 0] / 20
-  If hFont.ToString() = Application.Font.ToString() Then
-    hCtrl.Font = Null
-  Else
-    hCtrl.Font = hFont
-  Endif
+  If fSize = 0 Then fSize = GetPercentFontSize("/ProjectFontSize", 100) 
+  Try hFont.Size *= fSize
+  hCtrl.Font = hFont
+  ' If hFont.ToString() = Application.Font.ToString() Then
+  '   hCtrl.Font = Null
+  ' Else
+  '   hCtrl.Font = hFont
+  ' Endif
 
 End
 
@@ -6467,6 +6484,7 @@ Public Sub CompileTranslation(bForce As Boolean, Optional sLang As String)
   
   Dim iPos As Integer
   Dim sPath As String
+  Dim sTrans As String
   
   If Not sLang Then
     iPos = Project.Environment.Find("LANG=*", gb.Like)
@@ -6481,8 +6499,11 @@ Public Sub CompileTranslation(bForce As Boolean, Optional sLang As String)
   sPath = Language.GetPath(sLang, "mo")
   If Exist(sPath) And If Not bForce Then Return
   
+  sTrans = File.SetExt(sPath, "po")
+  If Not Exist(sTrans) Then Return
+  
   Try Kill sPath
-  Shell "msgfmt -o " & Shell$(sPath) & " " & Shell(File.SetExt(sPath, "po")) Wait
+  Shell "msgfmt -o " & Shell$(sPath) & " " & Shell(sTrans) Wait
   
 End
 
@@ -6495,6 +6516,5 @@ Public Sub InitTooltip(hTooltip As Control)
     .Font.Grade = -1
     
   End With
-  
   
 End
