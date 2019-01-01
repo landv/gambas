@@ -502,7 +502,9 @@ Private Sub GenerateFilesFromArgs(sLine As String)
     sCode &= s
 
   Next
+  
   $aVarsDecl.Clear
+  
   If $bPrecompiler Then
     For Each s In Split(sCode, "\n")
       sNew &= PrecompileLine(s) & "\n"
@@ -511,9 +513,10 @@ Private Sub GenerateFilesFromArgs(sLine As String)
     For i = 0 To $aVarsDecl.Max
       If InStr(sNew, $aVarsDecl[i], 0, gb.IgnoreCase) Then $aVarsDecl[i] = ""
     Next
+    sCode = sNew
   Endif
 
-  scode = "Public Sub Main()\n" & $aVarsDecl.Join("\n") & "\n" & sNew
+  scode = "Public Sub Main()\n" & $aVarsDecl.Join("\n") & "\n" & sCode
   sCode &= "\nEnd\n"
 
   Print #$hOutFile, sCode
