@@ -42,6 +42,14 @@
 	#undef PACKAGE_URL
 #endif
 
+#ifdef Max
+	#undef Max
+#endif
+
+#ifdef Min
+	#undef Min
+#endif
+
 #include "gb.db.proto.h"
 #include "main.h"
 

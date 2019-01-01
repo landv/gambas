@@ -41,7 +41,7 @@ void CKEY_clear(int valid)
   if (CKEY_info.valid == 0)
   {
     GB.FreeString(&CKEY_info.text);
-    CLEAR(&CKEY_info);
+    CKEY_info = { 0 };
   }
 }
 

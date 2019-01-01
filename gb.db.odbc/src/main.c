@@ -2350,12 +2350,10 @@ fflush(stderr);
 
 	while (nReturn == SQL_SUCCESS || nReturn == SQL_SUCCESS_WITH_INFO)
 	{
-
-
 		tablenum = tablenum + 1;
 		curtable->tablename = malloc(sizeof(szTableName));
 		curtable->next = malloc(sizeof(ODBC_TABLES));
-		strncpy(curtable->tablename, (char *)szTableName, sizeof(szTableName));
+		strcpy(curtable->tablename, (char *)szTableName);
 		curtable = (ODBC_TABLES *) curtable->next;
 		szTableName[0] = '\0';
 		szTableType[0] = '\0';

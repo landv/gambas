@@ -158,11 +158,11 @@ typedef
 #endif
 
 #ifndef PATH_MAX
-#define PATH_MAX 4096
+#define PATH_MAX 4095
 #endif
 
 #ifndef MAXPATHLEN
-#define MAXPATHLEN 4096
+#define MAXPATHLEN 4095
 #endif
 
 #define CLEAR(s) (memset(s, 0, sizeof(*s)))

@@ -825,10 +825,10 @@ bool TRANS_is_end_function(bool is_proc, PATTERN *look)
 }
 
 
-char *TRANS_get_num_desc(int num)
+char *TRANS_get_num_desc(ushort num)
 {
 	static const char *num_desc[3] = { "first", "second", "third" };
-	static char desc[6];
+	static char desc[8];
 
 	if (num < 1)
 		return NULL;

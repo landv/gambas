@@ -70,8 +70,8 @@
 static char _root[PATH_MAX + 1] = { 0 };
 static char _lib_path[PATH_MAX + 1];
 static char _info_path[PATH_MAX + 1];
-static char _buffer[PATH_MAX + 1];
-static char _env[PATH_MAX + 16];
+static char _buffer[PATH_MAX + 16];
+static char _env[PATH_MAX + 32];
 
 static FILE *out_info;
 static FILE *out_list;
