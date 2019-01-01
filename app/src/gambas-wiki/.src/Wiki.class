@@ -170,7 +170,7 @@ Private Sub _PrintPage()
   Endif
 
   If Main.Image Then
-    Print "<img src=\"" & Application.Root &/ Main.Path & "?v\" />";
+    Print Main.GetImageHTML(Main.Path);
     Return
   Endif
   

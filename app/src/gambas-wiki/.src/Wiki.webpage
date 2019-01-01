@@ -179,8 +179,8 @@ H1 { display: none; }
   <%If Main.Edit Then%>
     <%If Main.Image Then%>
       <div style="margin-top:8px;"></div>
-      <img src="<%=Application.Root &/ Main.Path%>?v"/>
-      <p><%= ("Select the image file to upload...")%></p>
+      <%Print Main.GetImageHTML(Main.Path);%>
+      <p> <%=("Select the image file to upload...")%></p>
       <p><input type="file" name="file" /></p>
     <%Else%>
       <div class="edit-frame">

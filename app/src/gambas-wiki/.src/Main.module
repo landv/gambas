@@ -758,11 +758,11 @@ Public Sub IsImage(sPath As String) As Boolean
   Dim sExt As String
   
   sExt = File.Ext(sPath)
-  Return ["png", "jpg", "jpeg", "gif"].Exist(sExt)
+  Return ["png", "jpg", "jpeg", "gif", "webm"].Exist(sExt)
   
 End
 
-Private Sub GetContentTypeFrom(sPath As String) As String
+Public Sub GetContentTypeFrom(sPath As String) As String
   
   Select Case Lower(File.Ext(sPath))
     Case "css"
@@ -775,6 +775,8 @@ Private Sub GetContentTypeFrom(sPath As String) As String
       Return "image/gif"
     Case "tiff", "tif"
       Return "image/tiff"
+    Case "webm"
+      Return "video/webm"
     Case "odt"
       Return "application/vnd.oasis.opendocument.text"
     Case "doc"
@@ -1497,5 +1499,15 @@ Private Sub SearchWiki(sText As String)
   
   Response.Redirect("/wiki/search")
   Return
+  
+End
+
+Public Sub GetImageHTML(sPath As String) As String
+
+  If Main.GetContentTypeFrom(sPath) Begins "video/" Then
+    Return "<video src=\"" & Html(Application.Root &/ sPath) & "?v\" autoplay></video>"
+  Else
+    Return "<img src=\"" & Html(Application.Root &/ sPath) & "?v\" />"
+  Endif
   
 End
