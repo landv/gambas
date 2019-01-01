@@ -237,6 +237,13 @@ Public Sub OnKeyPress(hEditor As TextEditor) As Boolean
     iPos = InStr(Me.STRING_DELIM, sText)
     If iPos Then
       
+      If hEditor.Selected Then
+        If hEditor.SelectionLine = hEditor.Line Then
+          hEditor.Insert(sText & hEditor.SelectedText & sText)
+          Return True
+        Endif
+      Endif
+      
       If Not InsideString(hEditor) Then
         
         hEditor.SaveCursor()
