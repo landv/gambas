@@ -87,12 +87,13 @@ Public Sub dwgWelcome_Draw()
    
   If Not $hLogo Then 
     
-    hSvgLogo = SvgImage.Load("img/logo/gambas.svg")
-    $hLogo = New Image(hSvgLogo.Width, 256, Color.Transparent)
-    Paint.Begin($hLogo)
-    Paint.Scale(1.1, 1.1)
-    hSvgLogo.Paint
-    Paint.End
+    'hSvgLogo = SvgImage.Load("img/logo/gambas.svg")
+    '$hLogo = New Image(hSvgLogo.Width, 256, Color.Transparent)
+    $hLogo = Image.Load("img/logo/head-256.png")
+    'Paint.Begin($hLogo)
+    'Paint.Scale(1.1, 1.1)
+    'hSvgLogo.Paint
+    'Paint.End
     
     $hText = New Image(hDrawingArea.Width, hDrawingArea.Height, Color.Transparent)
     Paint.Begin($hText)
@@ -112,13 +113,15 @@ Public Sub dwgWelcome_Draw()
     Paint.Font = Font["-1,Bold"]
     Y += Paint.Font.Height + 16
     PaintText(("This program is published under the GNU General Public License.") & "\n" & ("The Gambas font is published under the SIL Open Font License."), 12, Y, Color.SelectedForeground)
+    
     Paint.End
     
-    $hLogo.Brightness(-0.1)
+    '$hLogo.Brightness(-0.1)
     
   Endif
 
-  Paint.DrawImage($hLogo, hDrawingArea.W - $hLogo.Width, -10 - Desktop.Scale)
+  'Paint.DrawImage($hLogo, hDrawingArea.W - $hLogo.Width, -10 - Desktop.Scale)
+  Paint.DrawImage($hLogo, hDrawingArea.W - $hLogo.Width, 0)
   
   If $hTimer Then
   
@@ -165,7 +168,7 @@ Fast Public Sub SnowTimer_Timer()
   H = hDrawingArea.H - 1
   
   Paint.Begin($hSnow)
-  Paint.Background = Color.SetAlpha(Color.White, 128)
+  Paint.Background = Color.SetAlpha(&HF0F0F0&, 128)
   
   While I < $aSnowFlakes.Count
     hSnowFlake = $aSnowFlakes[I]
