@@ -200,15 +200,16 @@ Public Sub Main()
 
   Dim sFile As String
   Dim sDir As String
-  Dim sPath As String
-  'Dim hImage As Image
-  
-  'sDir = "~/gambas/git/master/comp/src/gb.form.stock/"
-  sDir = "/home/benoit/gambas/git/master/"
-  For Each sFile In RDir(sDir, "*.png")
+  Dim sPngQuant As String
+
+  sPngQuant = System.Find("pngquant")
+  sDir = "/home/benoit/gambas/git/master/comp/src/gb.form.stock"
+  For Each sFile In RDir(sDir)
+    If File.Ext(sFile) <> "png" Then Continue
     Print sFile
-    sPath = sDir &/ sFile
-    Exec ["convert", sPath, "-strip", sPath] Wait
+    Kill sDir &/ File.Dir(sFile) &/ File.BaseName(sFile) & "png"
+    Exec [sPngQuant, "-f", "--ext", ".png", sDir &/ sFile] Wait
   Next
 
 End
+
