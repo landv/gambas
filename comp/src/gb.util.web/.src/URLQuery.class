@@ -1,0 +1,113 @@
+' Gambas class file
+
+Export
+
+Property Read Count As Integer
+Property Read Keys As String[]
+
+Private $cNull As New Collection
+Private $cVal As New Collection
+
+Public Sub _new(Query As String) 
+
+  Dim sElt As String
+  Dim iPos As Integer
+  Dim sKey As String
+  Dim sValue As String
+  Dim cKey As New Collection
+  
+  For Each sElt In Split(Query, "&")
+    
+    iPos = InStr(sElt, "=")
+    If iPos Then
+      sKey = URL.Decode(Left(sElt, iPos - 1))
+      sValue = URL.Decode(Mid$(sElt, iPos + 1))
+    Else
+      sKey = sElt
+      sValue = ""
+    Endif
+    
+    If Not sKey Then Continue    
+    If cKey.Exist(sKey) Then Continue
+    
+    If sValue Then
+      $cVal[sKey] = sValue
+    Else
+      $cNull[sKey] = True
+    Endif
+    
+  Next
+  
+End
+
+Public Sub Exist(Key As String) As Boolean
+  
+  If $cNull.Exist(Key) Then Return True
+  If $cVal.Exist(Key) Then Return True
+  
+End
+
+
+Public Sub _get(Key As String) As String
+  
+  Return $cVal[Key]
+  
+End
+
+Public Sub _put(Value As String, Key As String)
+  
+  $cNull.Remove(Key)
+  $cVal.Remove(Key)
+  
+  If Value Then
+    $cVal[Key] = Value
+  Else
+    $cNull[Key] = True
+  Endif
+  
+End
+
+Public Sub ToString() As String
+
+  Dim aQuery As New String[]
+  Dim sVal As String
+  
+  For Each sVal In $cVal
+    aQuery.Add(URL.Encode($cVal.Key) & "=" & URL.Encode(sVal))
+  Next
+  
+  For Each $cNull
+    aQuery.Add(URL.Encode($cNull.Key))
+  Next
+  
+  Return aQuery.Join("&")
+  
+End
+
+Static Public Sub FromString(Query As String) As URLQuery
+  
+  Return New URLQuery(Query)
+  
+End
+
+
+Private Function Count_Read() As Integer
+
+  Return $cVal.Count + $cNull.Count
+
+End
+
+Private Function Keys_Read() As String[]
+
+  Dim aKeys As String[]
+
+  aKeys = New String[]
+  For Each $cVal
+    aKeys.Add($cVal.Key)
+  Next
+  For Each $cNull
+    aKeys.Add($cNull.Key)
+  Next
+  Return aKeys
+
+End
