@@ -1208,7 +1208,7 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 	pos = 0;
 	apos = 0;
 
-	if (!nocase || pp[0] == tolower(pp[0]))
+	if (!nocase) // || pp[0] == tolower(pp[0]))
 	{
 		p = memchr(right ? ps : ps + is, (uchar)pp[0], right ? ls : ls - is);
 		if (!p)
