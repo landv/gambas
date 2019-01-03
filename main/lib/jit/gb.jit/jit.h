@@ -144,8 +144,9 @@ typedef
 
 #define OPT(_p, _n) ({ \
   uchar _opt = 0; \
+  int _i; \
   GB_VALUE *_param = &sp[-n+(_p)]; \
-  for (int _i = 0; _i < (_n); _i++) \
+  for (_i = 0; _i < (_n); _i++) \
   { \
     if (((_i + (_p)) >= n) || _param->type == GB_T_VOID) \
       _opt |= (1 << _i); \
