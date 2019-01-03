@@ -240,14 +240,24 @@ Public Function FromName(sName As String) As String
 
 End
 
-Public Function GetAll() As String[]
+Public Function GetAll(Optional bCurrentOnly As Boolean) As String[]
 
   Dim aLang As New String[]
   Dim sStr As String
 
-  For Each sStr In Name
-    aLang.Add(Name.Key)
-  Next
+  If bCurrentOnly Then
+    
+    For Each sStr In Dir(Project.Dir &/ ".lang", "*.po")
+      aLang.Add(File.BaseName(sStr))
+    Next
+    
+  Else
+
+    For Each sStr In Name
+      aLang.Add(Name.Key)
+    Next
+    
+  Endif
 
   aLang.Sort(gb.Language)
 

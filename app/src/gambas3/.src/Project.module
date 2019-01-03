@@ -6482,28 +6482,45 @@ End
 
 Public Sub CompileTranslation(bForce As Boolean, Optional sLang As String)
   
-  Dim iPos As Integer
   Dim sPath As String
   Dim sTrans As String
+  Dim aLang As String[]
+  Dim dTrans As Date
+  Dim dPath As Date
   
-  If Not sLang Then
-    iPos = Project.Environment.Find("LANG=*", gb.Like)
-    If iPos >= 0 Then
-      sLang = Mid$(Project.Environment[iPos], 6)
-    Else
-      sLang = System.Language
-    Endif
-    sLang = Language.Find(sLang)
+  If sLang Then
+    aLang = [sLang]
+  Else
+    aLang = Language.GetAll(True)
   Endif
   
-  sPath = Language.GetPath(sLang, "mo")
-  If Exist(sPath) And If Not bForce Then Return
+  ' If Not sLang Then
+  '   iPos = Project.Environment.Find("LANG=*", gb.Like)
+  '   If iPos >= 0 Then
+  '     sLang = Mid$(Project.Environment[iPos], 6)
+  '   Else
+  '     sLang = System.Language
+  '   Endif
+  '   sLang = Language.Find(sLang)
+  ' Endif
+
+  For Each sLang In aLang
   
-  sTrans = File.SetExt(sPath, "po")
-  If Not Exist(sTrans) Then Return
-  
-  Try Kill sPath
-  Shell "msgfmt -o " & Shell$(sPath) & " " & Shell(sTrans) Wait
+    sTrans = Language.GetPath(sLang, "po")
+    Try dTrans = Stat(sTrans).LastModified
+    If Error Then Continue
+    
+    sPath = Language.GetPath(sLang, "mo")
+    
+    If Not bForce Then
+      Try dPath = Stat(sPath).LastModified
+      If dPath And If dPath >= dTrans Then Continue
+    Endif
+    
+    Try Kill sPath
+    Shell "msgfmt -o " & Shell$(sPath) & " " & Shell(sTrans) Wait
+    
+  Next
   
 End
 

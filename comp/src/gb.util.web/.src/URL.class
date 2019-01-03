@@ -2,7 +2,16 @@
 
 Export
 
-Static Public Sub Encode(Path As String) As String
+Public Protocol As String
+Public Host As String
+Public Port As String
+Public (User) As String
+Public Password As String
+Public Path As String
+Public Query As UrlQuery
+Public Hash As String
+
+Static Public Sub Encode((Path) As String) As String
   
   Dim iInd As Integer
   Dim sRes As String
@@ -23,7 +32,7 @@ Static Public Sub Encode(Path As String) As String
   
 End
 
-Static Public Sub Decode(Path As String) As String
+Static Public Sub Decode((Path) As String) As String
   
   Dim iInd As Integer
   Dim sRes As String
@@ -44,14 +53,135 @@ Static Public Sub Decode(Path As String) As String
   
 End
 
-Static Public Sub Quote(Path As String) As String
+Static Public Sub Quote((Path) As String) As String
   
   Return Encode(Path)
   
 End
 
-Static Public Sub UnQuote(Path As String) As String
+Static Public Sub UnQuote((Path) As String) As String
   
   Return Decode(Path)
+  
+End
+
+Private Sub CreateUrl(sUrl As String) As URL
+
+  Dim iPos As Integer
+  Dim sTemp As String
+  Dim sIdent As String
+  
+  iPos = InStr(sURL, ":")
+  If iPos Then
+    Protocol = Left(sURL, iPos - 1)
+    sURL = Mid$(sURL, iPos + 1)
+  Endif
+  
+  If sURL Begins "//" Then
+    
+    sURL = Mid$(sURL, 3)
+    iPos = InStr(sURL, "/")
+    If iPos = 0 Then
+      sTemp = sURL
+      sURL = ""
+    Else
+      sTemp = Left(sURL, iPos - 1)
+      sURL = Mid$(sURL, iPos)
+    Endif
+    
+    iPos = InStr(sTemp, "@")
+    If iPos Then
+      
+      sIdent = Left(sTemp, iPos - 1)
+      sTemp = Mid$(sTemp, iPos + 1)
+      
+      iPos = InStr(sIdent, ":")
+      If iPos Then
+        User = Left(sIdent, iPos - 1)
+        Password = Mid$(sIdent, iPos + 1)
+      Else
+        User = sIdent
+      Endif
+      
+    Endif
+    
+    iPos = InStr(sTemp, ":")
+    If iPos Then
+      Host = Left(sTemp, iPos - 1)
+      Port = Mid(sTemp, iPos + 1)
+    Else
+      Host = sTemp
+    Endif
+    
+  Endif
+
+  iPos = InStr(sURL, "#")
+  If iPos Then
+    Hash = Mid(sURL, iPos + 1)
+    sURL = Left(sURL, iPos - 1)
+  Endif
+  
+  iPos = InStr(sURL, "?")
+  If iPos Then
+    Path = Left(sURL, iPos - 1)
+    Query = New URLQuery(Mid$(sURL, iPos + 1))
+  Else
+    Path = sURL
+  Endif
+  
+  User = FromUrl(User)
+  Password = FromUrl(Password)
+  Host = FromUrl(Host)
+  Port = FromUrl(Port)
+  Path = FromUrl(Path)
+  Hash = FromUrl(Hash)
+  
+End
+
+Public Sub _new(URL As String)
+  
+  CreateUrl(URL)
+  
+End
+
+Public Sub ToString() As String
+
+  Dim sURL As String
+  Dim sQuery As String
+  
+  If Protocol Then sURL = Protocol & ":"
+  
+  If Host Then
+    
+    sUrl &= "//"
+    
+    If User Or If Password Then
+      
+      sUrl &= Url(User)
+      If Password Then sUrl &= ":" & Url(Password)
+      sUrl &= "@"
+      
+    Endif
+    
+    sUrl &= Url(Host)
+    
+    If Port Then sUrl &= ":" & Url(Port)
+    
+  Endif
+  
+  If Path Then sUrl &/= Url(Path)
+  
+  sQuery = Query.ToString()
+  If sQuery Then sUrl &= "?" & sQuery
+  
+  If Hash Then sUrl &= "#" & Url(Hash)
+    
+  Return sUrl
+    
+End
+
+Static Public Sub FromString(URL As String) As URL
+  
+  Return New URL(URL)
   
 End

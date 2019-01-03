@@ -78,7 +78,6 @@ End
 
 Public Sub dwgWelcome_Draw()
 
-  Dim hSvgLogo As SvgImage
   Dim X, Y As Integer
   Dim hDrawingArea As DrawingArea = $hObs.Object
   Dim I, S As Integer
@@ -110,7 +109,7 @@ Public Sub dwgWelcome_Draw()
     Y += Paint.Font.Height
     PaintText("http://gambas.sourceforge.net", 12, Y, TEXT_COLOR) 'Color.LightForeground)
     
-    Paint.Font = Font["-1,Bold"]
+    Paint.Font = Font["Bold"]
     Y += Paint.Font.Height + 16
     PaintText(("This program is published under the GNU General Public License.") & "\n" & ("The Gambas font is published under the SIL Open Font License."), 12, Y, Color.SelectedForeground)
     
@@ -121,7 +120,7 @@ Public Sub dwgWelcome_Draw()
   Endif
 
   'Paint.DrawImage($hLogo, hDrawingArea.W - $hLogo.Width, -10 - Desktop.Scale)
-  Paint.DrawImage($hLogo, hDrawingArea.W - $hLogo.Width, 0)
+  Paint.DrawImage($hLogo, hDrawingArea.W - $hLogo.Width - Desktop.Scale, 0)
   
   If $hTimer Then
   

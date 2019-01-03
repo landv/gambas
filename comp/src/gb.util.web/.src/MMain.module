@@ -13,7 +13,13 @@ Public Function GetNullObject() As Object
 End
 
 Public Sub Main()
+
+  Dim hURL As URL
+
+  hURL = URL.FromString("http://localhost/guygle/find?query=ordre+de+travail+avec+interventions+dont+la+date+planifiée+est+comprise+entre+le+01%2F03%2F2017+et+31%2F03%2F2017+et+type+est+Campagne+dont+agence+est+AG.CIG.GONESSE&format=json&test#f5")
   
-  Print URL.Decode("ordre+de+travail+avec+interventions+dont+la+date+planifi%C3%A9e+est+comprise+entre+le+01%2F03%2F2017+et+31%2F03%2F2017+et+type+est+Campagne+dont+agence+est+AG.CIG.GONESSE")
+  Print hURL.Query["query"]
+  
+  Print hURL.ToString()
 
 End
