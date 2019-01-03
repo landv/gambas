@@ -50,8 +50,10 @@ Public Sub Main()
 
   hHighlighter = TextHighlighter["gambas"]
   
-  TextHighlighter._Highlight = New Byte[]
-  hHighlighter.Run("Label:")
-  Print TextHighlighter._Highlight.Count
+  'Print hHighlighter.ToHTML(File.Load("src.txt"))
+  
+  ' TextHighlighter._Highlight = New Byte[]
+  ' hHighlighter.Run("Label:")
+  ' Print TextHighlighter._Highlight.Count
 
 End
