@@ -31,10 +31,10 @@ Public Copyright As String
 Public ManagingEditor As String
 '' EMail address of the web master.
 Public WebMaster As String
-'' Publication date of the feed. E.g. a newspaper with daily publication would change this once a day.
-Public PubDate As Date
-'' The date of the last change to the feed contents.
-Public LastBuildDate As Date
+'' Publication date/timezone of the feed. E.g. a newspaper with daily publication would change this once a day. If unset, defaults to the time the XML document is written in the local timezone.
+Public Pub As RssDate
+'' The date/timezone of the last change to the feed contents. If unset, defaults to the time the XML document is written in the local timezone.
+Public LastBuild As RssDate
 '' An array of categories for this feed.
 ''
 '' ## See also
@@ -140,8 +140,8 @@ Public Sub Clear()
   Copyright = Null
   ManagingEditor = Null
   WebMaster = Null
-  PubDate = Null
-  LastBuildDate = Null
+  Pub = Null
+  LastBuild = Null
   Categories = Null
   Generator = Null
   Docs = Null
@@ -178,8 +178,8 @@ Public Sub _Write(hWriter As XmlWriter)
         If Copyright Then .Element("copyright", Copyright)
         If ManagingEditor Then .Element("managingEditor", ManagingEditor)
         If WebMaster Then .Element("webMaster", WebMaster)
-        If PubDate Then .Element("pubDate", Date.ToRFC822(PubDate))
-        If LastBuildDate Then .Element("lastBuildDate", Date.ToRFC822(LastBuildDate))
+        If Pub Then Pub._Write(hWriter, "pubDate")
+        If LastBuild Then LastBuild._Write(hWriter, "lastBuildDate")
         If Categories Then
           For Each hCat In Categories
             hCat._Write(hWriter)
@@ -345,9 +345,11 @@ Private Sub _ReadChannel(hReader As XmlReader)
       Case "webMaster"
         WebMaster = _GetText(hReader)
       Case "pubDate"
-        PubDate = Date.FromRFC822(_GetText(hReader))
+        Pub = New RssDate
+        Pub._Read(hReader)
       Case "lastBuildDate"
-        LastBuildDate = Date.FromRFC822(_GetText(hReader))
+        LastBuild = New RssDate
+        LastBuild._Read(hReader)
       Case "category"
         hCat = New RssCategory
         hCat._Read(hReader)
