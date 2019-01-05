@@ -83,7 +83,7 @@ Private Sub GetRFC822Zone(sZone As String) As Float
     Case Like "[+-][0-1][0-9][0-5][0-9]"
       fZone = CInt(Left(sZone, 3)) + CInt(Mid$(sZone, 4)) / 60
     Case Else
-      Error.Raise("Unknown timezone")
+      Error.Raise(Subst$("Unknown timezone '&1'", sZone))
   End Select
   
   Return fZone / 24
