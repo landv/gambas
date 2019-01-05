@@ -14,78 +14,6 @@ Export
 Static Private DAY_NAME As String[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] ' conforms to how WeekDay() works in Gambas
 Static Private MONTH_NAME As String[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-'' Format a date according to [RFC 822](https://tools.ietf.org/html/rfc822#section-5), but with
-'' 4-digit years as this is preferred by the RSS specification.
-''
-'' ## See also
-'' [../parsedate]
-Static Public Function FormatDate(Dat As Date) As String
-  Dim sWeekDay, sDate, sTime As String
-  Dim sTimezone As String
-
-  sWeekDay = DAY_NAME[WeekDay(Dat)]
-  ' Avoid using format because it may replace ":" and such by other separators, depending on the locale.
-  ' Contrary to what is specified in RFC 822, RSS prefers 4-digit years!
-  sDate = Subst$("&1 &2 &3", Format(Dat, "d"), MONTH_NAME[Month(Dat) - 1], Format(Dat, "yyyy"))
-  ' TODO: I'm not sure what to pick here. Is the Gambas timezone abbreviation compatible with the RFC?
-  sTimezone = Format(Dat, "tt")
-  sTime = Subst$("&1:&2:&3 &4", Format$(Dat, "hh"), Format$(Dat, "nn"), Format$(Dat, "ss"), sTimezone)
-  Return Subst$("&1, &2 &3", sWeekDay, sDate, sTime)
-End
-
-'' Return a Date from an [RFC 822](https://tools.ietf.org/html/rfc822#section-5)-formatted string.
-''
-'' ## See also
-'' [../formatdate]
-Static Public Function ParseDate(Str As String) As Date
-  Dim sWeekDay, sDay, sMonth, sYear, sHour, sMinute, sSecond, sTimezone As String
-  Dim dRes As Date
-
-  ' In RFC 822, the 'day' and 'seconds' parts as optional. We have to deal with 2- and 4-digit years.
-  With Scan(Str, "*, *")
-    If .Count Then
-      sWeekDay = .[0]
-      Str = .[1]
-    Endif
-  End With
-  With Scan(Str, "* * * *:*:*")
-    If Not .Count Then Error.Raise(("Date does not conform to RFC 822"))
-    sDay = .[0]
-    sMonth = .[1]
-    If Len(sYear) = 2 Then
-      ' XXX: I think 2-digit years are most likely from the 20th century, so I will always use that.
-      sYear = "19" & sYear
-      Debug "2-digit year";; sYear;; "is ambiguous. Taking it as 20th century."
-    Endif
-    sYear = .[2]
-    sHour = .[3]
-    sMinute = .[4]
-    Str = .[5]
-  End With
-  With Scan(Str, "* *")
-    If .Count Then
-      sSecond = .[0]
-      sTimezone = .[1]
-    Else
-      sSecond = "0"
-      sTimezone = Str
-    Endif
-  End With
-
-  If sWeekDay And If Not DAY_NAME.Exist(sWeekDay) Then Error.Raise(Subst$(("Invalid weekday '&1'"), sWeekDay))
-  If Not IsInteger(sYear) Then Error.Raise(Subst$(("Invalid year '&1'"), sYear))
-  If MONTH_NAME.Find(sMonth) = -1 Then Error.Raise(Subst$(("Invalid month '&1'"), sMonth))
-  If Not IsInteger(sDay) Then Error.Raise(Subst$(("Invalid day '&1'"), sDay))
-  If Not IsInteger(sMinute) Then Error.Raise(Subst$(("Invalid minute '&1'"), sMinute))
-  If Not IsInteger(sSecond) Then Error.Raise(Subst$(("Invalid second '&1'"), sSecond))
-  ' TODO: Check validity of timezone
-  ' TODO: Don't ignore timezone
-  dRes = Date(CInt(sYear), 1 + MONTH_NAME.Find(sMonth), CInt(sDay), CInt(sHour), CInt(sMinute), CInt(sSecond))
-  ' 3. Consistency check: does the given 'day' match the date?
-  If sWeekDay And If DAY_NAME[WeekDay(dRes)] <> sWeekDay Then Error.Raise(Subst$(("Weekday does not match date: '&1' vs. '&2'"), sWeekDay, DAY_NAME[WeekDay(dRes)]))
-  Return dRes
-End
-
 ' Mandatory <channel> elements
 '' The name or title of the feed.
 Public Title As String
@@ -250,8 +178,8 @@ Public Sub _Write(hWriter As XmlWriter)
         If Copyright Then .Element("copyright", Copyright)
         If ManagingEditor Then .Element("managingEditor", ManagingEditor)
         If WebMaster Then .Element("webMaster", WebMaster)
-        If PubDate Then .Element("pubDate", Rss.FormatDate(PubDate))
-        If LastBuildDate Then .Element("lastBuildDate", Rss.FormatDate(LastBuildDate))
+        If PubDate Then .Element("pubDate", Date.ToRFC822(PubDate))
+        If LastBuildDate Then .Element("lastBuildDate", Date.ToRFC822(LastBuildDate))
         If Categories Then
           For Each hCat In Categories
             hCat._Write(hWriter)
@@ -417,9 +345,9 @@ Private Sub _ReadChannel(hReader As XmlReader)
       Case "webMaster"
         WebMaster = _GetText(hReader)
       Case "pubDate"
-        PubDate = ParseDate(_GetText(hReader))
+        PubDate = Date.FromRFC822(_GetText(hReader))
       Case "lastBuildDate"
-        LastBuildDate = ParseDate(_GetText(hReader))
+        LastBuildDate = Date.FromRFC822(_GetText(hReader))
       Case "category"
         hCat = New RssCategory
         hCat._Read(hReader)

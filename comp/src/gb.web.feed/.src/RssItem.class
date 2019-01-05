@@ -64,7 +64,7 @@ Public Sub _Write(hWriter As XmlWriter)
       If Comments Then .Element("comments", Comments)
       If Enclosure Then Enclosure._Write(hWriter)
       If Guid Then Guid._Write(hWriter)
-      If PubDate Then .Element("pubDate", Rss.FormatDate(PubDate))
+      If PubDate Then .Element("pubDate", Date.ToRFC822(PubDate))
       If Source Then Source._Write(hWriter)
     End With
   hWriter.EndElement()
@@ -98,7 +98,7 @@ Public Sub _Read(hReader As XmlReader)
         Guid = New RssGuid
         Guid._Read(hReader)
       Case "pubDate"
-        PubDate = Rss.ParseDate(Rss._GetText(hReader))
+        PubDate = Date.FromRFC822(Rss._GetText(hReader))
       Case "source"
         Source = New RssSource
         Source._Read(hReader)
