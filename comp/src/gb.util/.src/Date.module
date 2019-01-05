@@ -144,6 +144,7 @@ Public Sub FromRFC822(Value As String, Optional ByRef TimeZone As String) As Dat
 
 Catch
   
+  If Error.Class.Name = "Date" Then Error.Propagate
   Error.Raise("Not a RFC822 date format")
   
 End
