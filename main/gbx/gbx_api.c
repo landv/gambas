@@ -83,6 +83,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_Hook,
 
 	(void *)GB_LoadComponent,
+	(void *)COMPONENT_can_load_library,
 	(void *)COMPONENT_exist,
 	(void *)COMPONENT_is_loaded,
 	(void *)GB_CurrentComponent,

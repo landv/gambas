@@ -27,7 +27,7 @@
 
 enum { USE_NOTHING, USE_GB_QT4, USE_GB_QT5 };
 
-GB_INTERFACE GB EXPORT;
+const GB_INTERFACE *GB_PTR EXPORT;
 
 // Prevents gbi3 from complaining
 
@@ -38,12 +38,51 @@ GB_DESC *GB_CLASSES[] EXPORT =
 
 char *GB_INCLUDE EXPORT = "gb.qt4|gb.qt5";
 
+
+const char *get_name(int use)
+{
+	switch (use)
+	{
+		case USE_GB_QT4: return "gb.qt4";
+		default: return "gb.qt5";
+	}
+}
+
+
+static bool can_use(int use)
+{
+	static const char *ext[] = { "ext", "webkit", "opengl", NULL };
+	char test[32];
+	char *suffix;
+	const char **pext;
+	const char *name;
+	
+	name = get_name(use);
+	
+	if (!GB.Component.CanLoadLibrary(name))
+		return FALSE;
+
+	strcpy(test, name);
+	suffix = test + strlen(name);
+	*suffix++ = '.';
+	
+	for (pext = ext; *pext; pext++)
+	{
+		strcpy(suffix, *pext);
+		if (GB.Component.Exist(test) && !GB.Component.CanLoadLibrary(test))
+			return FALSE;
+	}
+	
+	return TRUE;
+}
+
+
 int EXPORT GB_INIT(void)
 {
 	int use = USE_NOTHING;
+	int use_other = USE_NOTHING;
 	char *env;
 	const char *comp;
-	const char *comp2;
 
 	env = getenv("GB_GUI");
 	if (env && *env)
@@ -53,12 +92,12 @@ int EXPORT GB_INIT(void)
 		else if (strcmp(env, "gb.qt5") == 0)
 			use = USE_GB_QT5;
 		else
-			fprintf(stderr, "gb.gui: warning: '%s' component not supported\n", env);
+			fprintf(stderr, "gb.gui.qt: warning: '%s' component not supported\n", env);
 	}
 	
 	if (use == USE_NOTHING)
 	{
-		use = USE_GB_QT4;
+		use = USE_GB_QT5;
 		
 		env = getenv("KDE_FULL_SESSION");
 		
@@ -75,25 +114,37 @@ int EXPORT GB_INIT(void)
 		}
 	}
 
-	switch (use)
+	if (!can_use(use))
 	{
-		case USE_GB_QT4: comp = "gb.qt4"; break;
-		case USE_GB_QT5: comp = "gb.qt5"; break;
-		default: comp = "gb.qt5"; break;
-	}
-
-	if (GB.Component.Load(comp))
-	{
-		comp2 = use == USE_GB_QT5 ? "gb.qt4" : "gb.qt5";
-
-		if (GB.Component.Load(comp2))
+		if (use == USE_GB_QT4)
+			use_other = USE_GB_QT5;
+		else
+			use_other = USE_GB_QT4;
+		
+		if (can_use(use_other))
+		{
+			fprintf(stderr, "gb.gui.qt: warning: '%s' component not found, using '%s' instead\n", get_name(use), get_name(use_other));
+			use = use_other;
+		}
+		else
 		{
 			fprintf(stderr, "gb.gui.qt: error: unable to find any QT component\n");
 			exit(1);
 		}
-
-		fprintf(stderr, "gb.gui: warning: '%s' component not found, using '%s' instead\n", comp, comp2);
-		comp = comp2;
+	}
+	
+	comp = get_name(use);
+	
+	if (GB.Component.Load(comp))
+	{
+		fprintf(stderr, "gb.gui.qt: error: cannot load component '%s'\n", comp);
+		exit(1);
+	}
+	else
+	{
+		env = getenv("GB_GUI_DEBUG");
+		if (env && !strcmp(env, "0")) 
+			fprintf(stderr, "gb.gui.qt: loading '%s'\n", comp);
 	}
   
   setenv("GB_GUI", comp, TRUE);
@@ -104,5 +155,4 @@ int EXPORT GB_INIT(void)
 void EXPORT GB_EXIT()
 {
 }
-
 

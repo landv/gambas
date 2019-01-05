@@ -181,18 +181,27 @@ bool COMPONENT_exist(const char *name)
 	return COMPONENT_find(name) != NULL;
 }
 
+bool COMPONENT_can_load_library(const char *name)
+{
+	char *path;
+	
+	path = FILE_buffer();
+	sprintf(path, LIB_PATTERN, COMPONENT_path, name);
+	return FILE_exist(path);
+}
+
 COMPONENT *COMPONENT_create(const char *name)
 {
 	COMPONENT *comp;
 	char *path = NULL;
 	bool can_archive;
-	bool library = FALSE;
+	bool user_library = FALSE;
 	bool same_name_as_project = FALSE;
 	char *p = NULL;
 
 	if (*name == '/' || *name == ':') // user library
 	{
-		library = TRUE;
+		user_library = TRUE;
 		path = (char *)name;
 		if (*path == ':')
 		{
@@ -219,7 +228,7 @@ COMPONENT *COMPONENT_create(const char *name)
 	if (p)
 		*p = ':';
 
-	if (library)
+	if (user_library)
 	{
 		comp->archive = ARCHIVE_create(comp->name, path);
 		comp->user = TRUE;
@@ -259,24 +268,6 @@ COMPONENT *COMPONENT_create(const char *name)
 	if (!comp->library && !comp->archive && !same_name_as_project)
 	{
 		COMPONENT_delete(comp);
-
-#if 0
-		// If gb.qt5 components are not present, automatically switch to gb.qt4 components
-
-		if (strncmp(name, "gb.qt5", 6) == 0 && (name[6] == 0 || name[6] == '.'))
-		{
-			char new_name[strlen(name) + 1];
-
-			if (name[6] == 0)
-				ERROR_warning("gb.qt5 not found, using gb.qt4 instead.");
-
-			strcpy(new_name, "gb.qt4");
-			strcat(new_name, &name[6]);
-
-			return COMPONENT_create(new_name);
-		}
-#endif
-
 		THROW(E_LIBRARY, name, "cannot find component");
 	}
 
