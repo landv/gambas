@@ -28,6 +28,10 @@ Public Sub _Write(hWriter As XmlWriter)
 End
 
 Public Sub _Read(hReader As XmlReader)
-  If hReader.Node.Attributes.Exist("isPermaLink") Then IsPermaLink = (hReader.Node.Attributes["isPermaLink"] = "true")
+  If hReader.Node.Attributes.Exist("isPermaLink") Then
+    IsPermaLink = (hReader.Node.Attributes["isPermaLink"] = "true")
+  Else
+    IsPermaLink = False
+  Endif
   Guid = Rss._GetText(hReader)
 End
