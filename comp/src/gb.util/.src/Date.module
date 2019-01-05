@@ -95,12 +95,12 @@ End
 Public Sub ToRFC822({Date} As Date, Optional TimeZone As String = "GMT") As String
   
   InitDaysMonths
-  {Date} += System.TimeZone / 86400 + GetRFC822Zone(TimeZone)
+  {Date} = ToUTC({Date}) + GetRFC822Zone(TimeZone)
   Return $aDay[WeekDay({Date})] & ", " & Format(Day({Date}), "00") & " " & $aMonth[Month({Date}) - 1] & " " & Year({Date}) & " " & Format(Hour({Date}), "00") & ":" & Format(Minute({Date}), "00") & ":" & Format(Second({Date}), "00") & " " & TimeZone
   
 End
 
-Public Sub FromRFC822(Value As String) As Date
+Public Sub FromRFC822(Value As String, Optional ByRef TimeZone As String) As Date
 
   Dim aDate As String[]
   Dim dDate As Date
@@ -139,6 +139,7 @@ Public Sub FromRFC822(Value As String) As Date
   dDate -= Frac(Date(Now))
   dDate += GetRFC822Zone(aDate[6])
   
+  TimeZone = aDate[6]
   Return dDate
 
 Catch
