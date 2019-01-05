@@ -234,7 +234,7 @@ static bool get_value(const char *sym, int len, GB_VARIANT *value)
 		if (!GB_CollectionGet(eval_env, sym, len, value))
 			return FALSE;
 
-	value->type = GB_T_NULL;
+	value->type = T_NULL;
 	return TRUE;
 }
 

@@ -167,8 +167,6 @@ static void unload_class(CLASS *class)
 		if (class->load)
 			FREE(&class->load->prof);
 
-		FREE(&class->jit_functions);
-
 		FREE(&class->load);
 		//if (!class->mmapped)
 		FREE(&class->data);
@@ -252,7 +250,7 @@ static void class_replace_global(CLASS *class)
 			cds->desc->method.class = old_class;
 	}
 
-	CLASS_inheritance(class, old_class, FALSE);
+	CLASS_inheritance(class, old_class);
 }
 
 static void release_class(CLASS *class)
@@ -422,12 +420,6 @@ CLASS *CLASS_look(const char *name, int len)
 	fprintf(stderr, "CLASS_look: %s in %s", name, _global ? "global" : "local");
 	#endif
 
-	/*if (strncasecmp(name, "listbox", 7) == 0)
-	{
-		name = "MyListBox";
-		len = 9;
-	}*/
-
 	//if (CP && CP->component && CP->component->archive)
 	if (!_global && !ARCHIVE_get_current(&arch))
 	{
@@ -520,6 +512,9 @@ CLASS *CLASS_find(const char *name)
 	class->class = _first;
 
 	class->global = global;
+	
+	if (arch)
+		class->component = arch->current_component;
 
 	return class;
 }
@@ -534,7 +529,7 @@ CLASS *CLASS_get(const char *name)
 {
 	CLASS *class = CLASS_find(name);
 
-	if (!CLASS_is_loaded(class))
+	if (!CLASS_is_loaded(class) && !class->in_load)
 		CLASS_load(class);
 
 	return class;
@@ -713,17 +708,23 @@ static void error_CLASS_free(void *object, EXEC_GLOBAL *save)
 void CLASS_free(void *object)
 {
 	CLASS *class = OBJECT_class(object);
-	EXEC_GLOBAL save = EXEC;
+	EXEC_GLOBAL save;
+	
+	if (!class->has_free)
+	{
+		OBJECT_release(class, object);
+		return;
+	}
+	
+	save = EXEC;
 
 	ON_ERROR_2(error_CLASS_free, object, &save)
 	{
 		((OBJECT *)object)->ref = 1; // Prevents anybody from freeing the object!
-
 		EXEC_special_inheritance(SPEC_FREE, class, object, 0, TRUE);
+		if (((OBJECT *)object)->ref != 1)
+			THROW(E_FREEREF);
 		error_CLASS_free(object, &save);
-		/*((OBJECT *)object)->ref = 0;
-		EXEC = save;
-		OBJECT_release(class, object);*/
 	}
 	END_ERROR
 }
@@ -921,7 +922,7 @@ void CLASS_sort(CLASS *class)
 	#endif
 }
 
-void CLASS_inheritance(CLASS *class, CLASS *parent, bool in_jit_compilation)
+void CLASS_inheritance(CLASS *class, CLASS *parent)
 {
 	if (class->parent != NULL)
 		THROW_CLASS(class, "Multiple inheritance", "");
@@ -931,10 +932,7 @@ void CLASS_inheritance(CLASS *class, CLASS *parent, bool in_jit_compilation)
 
 	TRY
 	{
-		if (!in_jit_compilation)
-			CLASS_load(class->parent);
-		else
-			JIT.LoadClass(class->parent);
+		CLASS_load(class->parent);
 	}
 	CATCH
 	{
@@ -947,6 +945,10 @@ void CLASS_inheritance(CLASS *class, CLASS *parent, bool in_jit_compilation)
 		class->check = class->parent->check;
 		class->must_check = class->parent->must_check;
 	}
+	
+	if (!class->has_free)
+		class->has_free = class->parent->has_free;
+	
 	// CREATE STATIC is inherited, but not CREATE PRIVATE
 
 	if (parent->auto_create)
@@ -1013,6 +1015,11 @@ static bool check_signature(char type, const CLASS_DESC *desc, const CLASS_DESC 
 			sp = pdesc->ext.signature;
 			nsp = pdesc->ext.npmax;
 			break;
+			
+		case CD_VARIABLE:
+		case CD_STATIC_VARIABLE:
+			
+			return TRUE;
 
 		default:
 
@@ -1356,6 +1363,8 @@ void CLASS_search_special(CLASS *class)
 		class->unknown_static = CLASS_DESC_get_type(CLASS_get_desc(class, class->special[SPEC_UNKNOWN])) == CD_STATIC_METHOD;
 	if (class->special[SPEC_PROPERTY] != NO_SYMBOL)
 		class->property_static = CLASS_DESC_get_type(CLASS_get_desc(class, class->special[SPEC_PROPERTY])) == CD_STATIC_METHOD;
+	if (class->special[SPEC_FREE] != NO_SYMBOL)
+		class->has_free = TRUE;
 }
 
 
@@ -1420,8 +1429,6 @@ void CLASS_create_array_class(CLASS *class)
 	char *name_joker;
 	GB_DESC *desc;
 	CLASS *array_type = (CLASS *)class->array_type;
-
-	//fprintf(stderr, "CLASS_create_array_class: create %s\n", class->name);
 
 	name_joker = STRING_new(class->name, strlen(class->name) - 2);
 
@@ -1529,3 +1536,27 @@ char *CLASS_get_name(CLASS *class)
 
 	return name;
 }
+
+
+CLASS *CLASS_find_load_from(const char *name, const char *from)
+{
+	COMPONENT *save;
+	CLASS *save_cp;
+	COMPONENT *comp = NULL;
+	CLASS *class;
+	
+	comp = COMPONENT_find(from);
+	
+	save = COMPONENT_current;
+	save_cp = CP;
+	
+	COMPONENT_current = comp;
+	CP = NULL;
+	class = CLASS_get(name);
+	
+	COMPONENT_current = save;
+	CP = save_cp;
+	
+	return class;
+}
+

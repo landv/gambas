@@ -45,11 +45,6 @@ static gControl* get_next_child_widget (gContainer *gtk_control, int *gtk_list, 
 		if (!ctrl->border || !ctrl->widget || !ctrl->isVisible())
 			continue;
 		
-		// Useless, as gTabStrip reimplements child() and childCount()
-		//if (gtk_widget_get_parent(ctrl->border) != cont)
-		//	continue;
-		
-		//fprintf(stderr, "get_next_child_widget: ==> %p\n", ctrl);
 		return ctrl;
 	}
 	
@@ -71,7 +66,7 @@ static void cb_before_arrange(gContainer *sender)
 
 static void resize_container(gControl *cont, int w, int h)
 {
-	if (w > 0 && h > 0)
+	if (w >= 0 && h >= 0)
 		cont->resize(w, h);
 }
 
@@ -95,8 +90,8 @@ static void resize_container(gControl *cont, int w, int h)
 
 #define GET_WIDGET_CONTENTS(_widget, _x, _y, _w, _h) _x=((gContainer*)_widget)->containerX(); \
                                                      _y=((gContainer*)_widget)->containerY(); \
-                                                     _w=((gContainer*)_widget)->clientWidth(); \
-                                                     _h=((gContainer*)_widget)->clientHeight()
+                                                     _w=((gContainer*)_widget)->containerWidth(); \
+                                                     _h=((gContainer*)_widget)->containerHeight()
 
 #define GET_WIDGET_X(_widget)  (((gControl*)_widget)->left())
 #define GET_WIDGET_Y(_widget)  (((gControl*)_widget)->top())
@@ -236,6 +231,7 @@ void gContainer::initialize()
 	onArrange = NULL;
 	onBeforeArrange = NULL;
 	_proxyContainer = NULL;
+	_proxyContainerFor = NULL;
 	_client_x = -1;
 	_client_y = -1;
 	_client_w = 0;
@@ -509,6 +505,11 @@ int gContainer::clientWidth()
 	return width() - getFrameWidth() * 2;
 }
 
+int gContainer::containerWidth()
+{
+	return clientWidth();
+}
+
 int gContainer::clientHeight()
 {
 	GtkWidget *cont = getContainer();
@@ -543,6 +544,11 @@ int gContainer::clientHeight()
 		return (int)gtk_adjustment_get_page_size(gtk_scrolled_window_get_vadjustment(_scroll));
 	
 	return height() - getFrameWidth() * 2;
+}
+
+int gContainer::containerHeight()
+{
+	return clientHeight();
 }
 
 void gContainer::insert(gControl *child, bool realize)
@@ -818,4 +824,19 @@ void gContainer::reparent(gContainer *newpr, int x, int y)
 {
 	gControl::reparent(newpr, x, y);
 	hideHiddenChildren();
+}
+
+
+void gContainer::clear()
+{
+	gContainer *cont = proxyContainer();
+	gControl *ch;
+	
+	for(;;)
+	{
+		ch = cont->child(0);
+		if (!ch)
+			break;
+		ch->destroy();
+	}
 }

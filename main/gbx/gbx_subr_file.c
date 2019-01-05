@@ -88,30 +88,28 @@ static CSTREAM *pop_stream(void **list)
 
 static STREAM *get_default(intptr_t val)
 {
-	STREAM *stream;
+	STREAM *stream = NULL;
 
 	switch(val)
 	{
 		case 0:
 			if (_default_in)
 				stream = CSTREAM_stream(((CSTREAM_NODE *)_default_in)->stream);
-			else
+			else if (CFILE_in)
 				stream = CSTREAM_stream(CFILE_in);
 			break;
 		case 1:
 			if (_default_out)
 				stream = CSTREAM_stream(((CSTREAM_NODE *)_default_out)->stream);
-			else
+			else if (CFILE_out)
 				stream = CSTREAM_stream(CFILE_out);
 			break;
 		case 2:
 			if (_default_err)
 				stream = CSTREAM_stream(((CSTREAM_NODE *)_default_err)->stream);
-			else
+			else if (CFILE_err)
 				stream = CSTREAM_stream(CFILE_err);
 			break;
-		default:
-			stream = NULL;
 	}
 
 	if (!stream)
@@ -120,7 +118,32 @@ static STREAM *get_default(intptr_t val)
 	return stream;
 }
 
-#define _get_stream(_value, _can_default) \
+static inline STREAM *_get_stream(VALUE *value, bool can_default)
+{
+	STREAM *stream;
+	
+	VARIANT_undo(value);
+	
+	if ((can_default) && TYPE_is_integer(value->type) && value->_integer.value >= 0 && value->_integer.value <= 2)
+		stream = get_default((intptr_t)(value->_integer.value));
+	else
+	{
+		if (TYPE_is_object(value->type) && value->_object.object && OBJECT_class(value->_object.object)->is_stream)
+			stream = CSTREAM_stream(value->_object.object);
+		else
+		{
+			if (VALUE_is_null(value))
+				THROW(E_NULL);
+			
+			VALUE_conv_object(value, (TYPE)CLASS_Stream);
+			stream = NULL;
+		}
+	}
+	
+	return stream;
+}
+
+/*#define _get_stream(_value, _can_default) \
 	STREAM *stream; \
 	\
 	VARIANT_undo(_value); \
@@ -139,26 +162,26 @@ static STREAM *get_default(intptr_t val)
 			VALUE_conv_object((_value), (TYPE)CLASS_Stream); \
 			stream = NULL; \
 		} \
-	}
+	}*/
 
 #define get_stream(_value, _can_default) \
 ({ \
-	_get_stream(_value, _can_default); \
+	STREAM *_stream = _get_stream(_value, _can_default); \
 	\
-	if (STREAM_is_closed(stream)) \
+	if (STREAM_is_closed(_stream)) \
 		THROW(E_CLOSED); \
 	\
-	stream; \
+	_stream; \
 })
 
 #define get_stream_for_writing(_value, _can_default) \
 ({ \
-	_get_stream(_value, _can_default); \
+	STREAM *_stream = _get_stream(_value, _can_default); \
 	\
-	if (STREAM_is_closed_for_writing(stream)) \
+	if (STREAM_is_closed_for_writing(_stream)) \
 		THROW(E_CLOSED); \
 	\
-	stream; \
+	_stream; \
 })
 
 static char *get_path(VALUE *param)
@@ -188,11 +211,11 @@ void SUBR_open(ushort code)
 		if (TYPE_is_pointer(PARAM->type))
 			addr = (void *)PARAM->_pointer.value;
 		else
-			THROW(E_TYPE, "Pointer", TYPE_get_name(PARAM->type));
+			THROW_TYPE(T_POINTER, PARAM->type);
 		
-		STREAM_open(&stream, (char *)addr, mode | ST_MEMORY);
+		STREAM_open(&stream, (char *)addr, mode | STO_MEMORY);
 	}
-	else if (mode & ST_STRING)
+	else if (mode & STO_STRING)
 	{
 		char *str;
 
@@ -202,7 +225,7 @@ void SUBR_open(ushort code)
 		{
 			str = SUBR_get_string(PARAM);
 			
-			if (mode & ST_WRITE)
+			if (mode & STO_WRITE)
 			{
 				stream.string.buffer = STRING_new(str, STRING_length(str));
 			}
@@ -358,7 +381,7 @@ void SUBR_input(ushort code)
 		SP->_string.len = STRING_length(addr);
 	}
 	else
-		SP->type = T_NULL;
+		VALUE_null(SP);
 		
 	SP++;
 }
@@ -455,6 +478,7 @@ void SUBR_seek(ushort code)
 void SUBR_read(ushort code)
 {
 	STREAM *stream;
+	char *data;
 	int len = 0;
 	int eff;
 
@@ -469,37 +493,46 @@ void SUBR_read(ushort code)
 		
 		if (len == 0)
 		{
-			RETURN->type = T_NULL;
+			VALUE_null(RETURN);
 		}
 		else if (len > 0)
 		{
-			STRING_new_temp_value(RETURN, NULL, len);
-			STREAM_read(stream, RETURN->_string.addr, len);
+			data = STRING_new_temp(NULL, len);
+			
+			STREAM_read(stream, data, len);
+			
+			RETURN->type = T_STRING;
+			RETURN->_string.addr = data;
+			RETURN->_string.start = 0;
+			RETURN->_string.len = len;
 		}
 		else
 		{
 			len = (-len);
 			
-			RETURN->type = T_STRING;
-			RETURN->_string.addr = STRING_new(NULL, len);
-			RETURN->_string.start = 0;
-			RETURN->_string.len = len;
+			data = STRING_new(NULL, len);
 			
-			eff = STREAM_read_max(stream, RETURN->_string.addr, len);
+			eff = STREAM_read_max(stream, data, len);
 			
 			if (eff == 0)
 			{
-				RETURN->type = T_NULL;
-				STRING_free(&RETURN->_string.addr);
+				VALUE_null(RETURN);
+				STRING_free(&data);
 			}
 			else
 			{
 				if (eff < len)
 				{
-					RETURN->_string.addr = STRING_extend(RETURN->_string.addr, eff);
-					RETURN->_string.len = eff;
+					data = STRING_extend(data, eff);
+					len = eff;
 				}
-				STRING_extend_end(RETURN->_string.addr);
+				
+				STRING_extend_end(data);
+				
+				RETURN->type = T_STRING;
+				RETURN->_string.addr = data;
+				RETURN->_string.start = 0;
+				RETURN->_string.len = len;
 			}
 		}
 	}
@@ -1002,7 +1035,7 @@ void SUBR_lock(ushort code)
 
 		for(;;)
 		{
-			STREAM_open(&stream, path, ST_LOCK);
+			STREAM_open(&stream, path, STO_LOCK);
 			
 			if (!STREAM_lock_all(&stream) && FILE_exist(path))
 				break;
@@ -1022,7 +1055,7 @@ void SUBR_lock(ushort code)
 			THROW(E_LOCK);
 		}
 
-		file = CFILE_create(&stream, ST_LOCK);
+		file = CFILE_create(&stream, STO_LOCK);
 		OBJECT_put(RETURN, file);
 		SUBR_LEAVE();
 	}
@@ -1092,14 +1125,27 @@ void SUBR_dfree(void)
 	SUBR_LEAVE();
 }
 
-void SUBR_debug(void)
+void SUBR_debug(ushort code)
 {
-	const int NPARAM = 0;
-	STREAM *stream = get_default(2);
-	const char *s = DEBUG_get_current_position();
-	
-	STREAM_write(stream, (void *)s, strlen(s));
-	STREAM_write(stream, ": ", 2);
+	SUBR_ENTER();
+
+	if (NPARAM == 0)
+	{
+		STREAM *stream = get_default(2);
+		const char *s = DEBUG_get_current_position();
+		
+		STREAM_write(stream, (void *)s, strlen(s));
+		STREAM_write(stream, ": ", 2);
+		
+		RETURN->type = T_INTEGER;
+		RETURN->_integer.value = 2;
+	}
+	else if (NPARAM == 1)
+	{
+		VALUE_conv_boolean(PARAM);
+		if (PARAM->_boolean.value == 0)
+			THROW(E_ASSERT);
+	}
 	
 	SUBR_LEAVE();
 }

@@ -2525,7 +2525,6 @@ void MyMainWindow::configure()
 			menuBar->move(0, -menuBar->height());
 			menuBar->lower();
 		}
-		//qDebug("configure: %s (%d %d)", GB.GetClassName(THIS), this->width(), this->height());
 
 		geom = QRect(0, 0, this->width(), this->height());
 
@@ -2764,7 +2763,7 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 		{
 			MyMainWindow *w = (MyMainWindow *)o;
 
-			if (THIS->toplevel && !THIS->popup && (!THIS->moved || w->isModal()))
+			if (THIS->toplevel && !THIS->popup && !THIS->moved)
 				w->center();
 
 			//handle_focus(THIS);

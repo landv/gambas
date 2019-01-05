@@ -125,7 +125,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 		switch ((intptr_t)desc->gambas.name)
 		{
 			case (intptr_t)GB_INHERITS_ID:
-				CLASS_inheritance(class, CLASS_find((const char *)desc->gambas.type), FALSE);
+				CLASS_inheritance(class, CLASS_find((const char *)desc->gambas.type));
 				break;
 
 			case (intptr_t)GB_AUTO_CREATABLE_ID:
@@ -174,7 +174,11 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 		{
 			case CD_CONSTANT:
 
-				if (desc->constant.type == T_STRING)
+				if (desc->constant.type == T_INTEGER)
+				{
+					desc->constant.value._integer = (int)desc->constant.value._long;
+				}
+				else if (desc->constant.type == T_STRING)
 					desc->constant.type = T_CSTRING;
 				else if (desc->constant.type == T_FLOAT || desc->constant.type == T_SINGLE)
 				{

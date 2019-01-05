@@ -20,9 +20,9 @@ gb_eval_la_SOURCES = \
  eval_trans_tree.c \
  eval.h eval.c \
  eval_analyze.h eval_analyze.c \
- CExpression.h CExpression.c \
- CSystem.h CSystem.c \
- CHighlight.h CHighlight.c \
+ c_expression.h c_expression.c \
+ c_system.h c_system.c \
+ c_highlight.h c_highlight.c \
  gb.eval.h \
  main.h main.c
 

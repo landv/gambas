@@ -20,6 +20,7 @@ Public Const DateTime As Integer = 1
 Public Const TimeOnly As Integer = 2
 
 Event Change
+Event Click
 Event Activate
 Event Cancel
 Event Data({Date} As Date)
@@ -56,6 +57,12 @@ End
 Public Sub _Change()
   
   Raise Change
+  
+End
+
+Public Sub _Click()
+  
+  Raise Click
   
 End
 

@@ -248,6 +248,34 @@ Static Public Sub StretchImage((Image) As Image, X As Float, Y As Float, Width A
   
 End
 
+Static Public Sub DrawRect(X As Float, Y As Float, Width As Float, Height As Float, (Color) As Integer, Optional Size As Float = 1)
+  
+  If Size = 0 Then Return
+  
+  If Size < 0 Then
+    Size = - Size
+    X -= Size
+    Y -= Size
+    Width += Size * 2
+    Height += Size * 2
+  Endif
+  
+  If Size >= Min(Width, Height) / 2 Then
+    Paint.FillRect(X, Y, Width, Height, Color)
+    Return
+  Endif
+  
+  Paint.Save
+  Paint.Rectangle(X, Y, Width, Size)
+  Paint.Rectangle(X + Width - Size, Y + Size, Size, Height - Size)
+  Paint.Rectangle(X, Y + Height - Size, Width - Size, Size)
+  Paint.Rectangle(X, Y + Size, Size, Height - Size * 2)
+  Paint.Background = Color
+  Paint.Fill
+  Paint.Restore
+  
+End
+
 
 ' Static Public Debug As Boolean
 ' 
@@ -313,6 +341,36 @@ End
 '     If R Then Print ","; CStr(R);
 '     Print ")"
 '   Endif
+'   
+' End
+' 
+
+' Static Public Sub Cross(X As Float, Y As Float, Width As Float, Height As Float, Size As Float)
+' 
+'   Dim XC As Float
+'   Dim YC As Float
+'   Dim DH As Float
+'   Dim DW As Float
+'   
+'   XC = X + Width / 2
+'   YC = Y + Width / 2
+'   
+'   DW = (Width - Size) / 2
+'   DH = (Height - Size) / 2
+'   
+'   Paint.MoveTo(XC - Size / 2, Y)
+'   Paint.RelLineTo(Size, 0)
+'   Paint.RelLineTo(0, DH)
+'   Paint.RelLineTo(DW, 0)
+'   Paint.RelLineTo(0, Size)
+'   Paint.RelLineTo(- DW, 0)
+'   Paint.RelLineTo(0, DH)
+'   Paint.RelLineTo(- Size, 0)
+'   Paint.RelLineTo(0, - DH)
+'   Paint.RelLineTo(- DW, 0)
+'   Paint.RelLineTo(0, - Size)
+'   Paint.RelLineTo(DW, 0)
+'   Paint.RelLineTo(0, - DH)
 '   
 ' End
 ' 

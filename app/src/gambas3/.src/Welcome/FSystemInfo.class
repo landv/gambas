@@ -120,7 +120,7 @@ Static Public Sub GetInfo() As String[]
 
   If System.Family = "FreeBSD" Then
     Exec ["sysctl", "-n", "hw.physmem"] To sTemp
-    sTemp = CStr(CInt(sTemp) \ 1024)
+    sTemp = CStr(CLong(Trim(sTemp)) \ 1024)
   Else
     Exec ["cat", "/proc/meminfo"] To sTemp
     Try sTemp = Scan(sTemp, "*MemTotal:*\n*")[1]
@@ -139,13 +139,24 @@ Static Public Sub GetInfo() As String[]
     If Not Error Then aText.Add("Memory=" & sTemp)
   Endif
   If System.Family = "Cygwin" Then
-     aSearchPath = ["/bin", "/usr/lib"]
-     cSearch = ["QT4": "cygQtCore*.dll", "QT5": "cygQt5Core*.dll", "GTK+2": "cyggtk-x11-2*.dll", "GTK+3": "cyggtk-3-*.dll", "SDL": "cygSDL-*.dll", "GStreamer": "cyggstreamer-*.dll", "Poppler": "cygpoppler-*.dll", "Curl": "cygcurl-*.dll", "OpenGL": "cygGL-*.dll", 
-      "Cairo": "cygcairo-[0-9]*.dll", "DBus": "cygdbus-[0-9]*.dll", "SQLite 3": "libsqlite3*.dll"]
+    
+    aSearchPath = ["/bin", "/usr/lib"]
+    
+    cSearch = ["QT4": "cygQtCore*.dll", "QT5": "cygQt5Core*.dll", "GTK+2": "cyggtk-x11-2*.dll", "GTK+3": "cyggtk-3-*.dll", "SDL": "cygSDL-*.dll", "GStreamer": "cyggstreamer-*.dll", "Poppler": "cygpoppler-*.dll", "Curl": "cygcurl-*.dll", "OpenGL": "cygGL-*.dll", 
+     "Cairo": "cygcairo-[0-9]*.dll", "DBus": "cygdbus-[0-9]*.dll", "SQLite 3": "libsqlite3*.dll"]
+     
   Else 
-     aSearchPath = ["/usr/lib"]
-     cSearch = ["QT4": "libQtCore.so.*.*.*", "QT5": "libQt5Core.so.*.*.*", "GTK+2": "libgtk-x11-2*.so.*.*.*", "GTK+3": "libgtk-3*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*", "Curl": "libcurl.so.*.*.*", 
-     "OpenGL": "libGL.so.*.*.*", "Cairo": "libcairo.so.*.*.*", "DBus": "libdbus-[0-9].so.*.*.*", "SQLite": "libsqlite3.so.*.*.*"]
+    
+    sVar = Env["LIBPATH"]
+    If sVar Then 
+      aSearchPath = Split(sVar, ":")
+    Else
+      aSearchPath = ["/usr/lib"]
+    Endif
+    
+    cSearch = ["QT4": "libQtCore.so.*.*.*", "QT5": "libQt5Core.so.*.*.*", "GTK+2": "libgtk-x11-2*.so.*.*.*", "GTK+3": "libgtk-3*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*", "Curl": "libcurl.so.*.*.*", 
+    "OpenGL": "libGL.so.*.*.*", "Cairo": "libcairo.so.*.*.*", "DBus": "libdbus-[0-9].so.*.*.*", "SQLite": "libsqlite3.so.*.*.*"]
+    
   Endif
 
   If Stat("/lib", False).Type = gb.Directory Then 'Some systems link /lib to /usr/lib

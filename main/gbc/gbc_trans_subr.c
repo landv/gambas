@@ -171,16 +171,27 @@ void TRANS_print(void)
 void TRANS_debug(void)
 {
 	if (!JOB->debug)
-	{
-		while (!PATTERN_is_newline(*JOB->current))
-			JOB->current++;
-		return;
-	}
-
+		CODE_disable();
+	
 	trans_subr(TS_SUBR_DEBUG, 0);
-	CODE_drop();
-	CODE_push_number(2); // stderr
 	trans_print_debug();
+	
+	if (!JOB->debug)
+		CODE_enable();
+}
+
+
+void TRANS_assert(void)
+{
+	if (!JOB->debug || JOB->exec)
+		CODE_disable();
+
+	TRANS_expression(FALSE);
+	trans_subr(TS_SUBR_DEBUG, 1);
+	CODE_drop();
+
+	if (!JOB->debug || JOB->exec)
+		CODE_enable();
 }
 
 
@@ -710,14 +721,36 @@ static void trans_exec_shell(bool shell)
 				mode |= TS_EXEC_WRITE;
 		}
 	}
-	else if (TRANS_is(RS_TO))
+	else
 	{
-		if (TRANS_in_assignment)
-			THROW("Syntax error. Cannot use this syntax in assignment");
-
-		mode = TS_EXEC_STRING;
-		wait = TRUE;
-		as = FALSE;
+		/*if (TRANS_is(RS_ERROR))
+		{
+			mode = TS_EXEC_STRING + TS_EXEC_ERROR;
+			TRANS_want(RS_TO, "TO expected");
+		}
+		else if (TRANS_is(RS_TO))
+		{
+			mode = TS_EXEC_STRING;
+		}
+		
+		if (mode & TS_EXEC_STRING)
+		{
+			if (TRANS_in_assignment)
+				THROW("Syntax error. Cannot use this syntax in assignment");
+			
+			wait = TRUE;
+			as = FALSE;
+		}*/
+		
+		if (TRANS_is(RS_TO))
+		{
+			if (TRANS_in_assignment)
+				THROW("Syntax error. Cannot use this syntax in assignment");
+			
+			mode = TS_EXEC_STRING;
+			wait = TRUE;
+			as = FALSE;
+		}
 	}
 	
 	if (wait) mode |= TS_EXEC_WAIT;

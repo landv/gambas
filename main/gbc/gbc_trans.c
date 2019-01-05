@@ -383,7 +383,7 @@ static PATTERN *trans_embedded_array(PATTERN *look, int mode, TRANS_DECL *result
 
 	look++;
 
-	if (mode && TT_CAN_ARRAY)
+	if (mode & TT_CAN_ARRAY)
 	{
 		for (i = 0;; i++)
 		{
@@ -454,6 +454,8 @@ static int TRANS_get_class(PATTERN pattern, bool array)
 							index = CLASS_add_class_exported(JOB->class, index);
 						else
 							index = CLASS_add_class(JOB->class, index);
+						
+						JOB->class->class[index].type = TYPE_make(T_OBJECT, index_array, 0);
 						
 						/*cref = &JOB->class->class[index];
 						if (TYPE_is_null(cref->array))
@@ -811,13 +813,6 @@ void TRANS_want_newline()
 }
 
 
-void TRANS_ignore(int reserved)
-{
-	if (PATTERN_is(*JOB->current, reserved))
-		JOB->current++;
-}
-
-
 bool TRANS_is_end_function(bool is_proc, PATTERN *look)
 {
 	if (PATTERN_is_newline(*look))
@@ -830,10 +825,10 @@ bool TRANS_is_end_function(bool is_proc, PATTERN *look)
 }
 
 
-char *TRANS_get_num_desc(int num)
+char *TRANS_get_num_desc(ushort num)
 {
 	static const char *num_desc[3] = { "first", "second", "third" };
-	static char desc[6];
+	static char desc[8];
 
 	if (num < 1)
 		return NULL;

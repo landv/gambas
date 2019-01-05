@@ -1,0 +1,27 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,30,6)
+  TakeFocus = False
+  SkipTaskbar = True
+  Margin = True
+  { Menu1 Menu
+    { Menu2 Menu
+      Text = ("Menu2")
+    }
+    { Menu3 Menu
+      Text = ("Menu3")
+    }
+    { Menu4 Menu
+      Text = ("Menu4")
+    }
+    { Menu5 Menu
+      Text = ("Menu5")
+    }
+  }
+  { SpinBar1 SpinBar
+    MoveScaled(1,1,28,4)
+    MaxValue = 100
+    Step = 1
+  }
+}

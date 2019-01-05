@@ -55,7 +55,7 @@ static void get_string(int index, const char **str, int *len)
 {
 	SYMBOL *sym;
 
-	if (index == VOID_STRING)
+	if (index == VOID_STRING_INDEX)
 	{
 		*str = "";
 		*len = 0;

@@ -38,6 +38,7 @@
 #include "gbx_project.h"
 #include "gbx_stack.h"
 #include "gbx_subr.h"
+#include "gbx_jit.h"
 
 #include "gbx_debug.h"
 
@@ -48,7 +49,7 @@ int DEBUG_inside_eval = 0;
 static bool calc_line_from_position(CLASS *class, FUNCTION *func, PCODE *addr, ushort *line)
 {
 	int i;
-	ushort pos = addr - func->code;
+	ushort pos = addr - JIT_get_code(func);
 	ushort *post;
 
 	if (func->debug)
@@ -117,7 +118,7 @@ void DEBUG_init(void)
 	DEBUG_info = DEBUG.Init((GB_DEBUG_INTERFACE *)(void *)GAMBAS_DebugApi, EXEC_fifo, EXEC_fifo_name);
 
 	if (!DEBUG_info)
-		ERROR_panic("Cannot initializing debug mode");
+		ERROR_panic("Cannot initialize debug mode");
 
 	if (EXEC_profile)
 	{

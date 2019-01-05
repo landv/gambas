@@ -157,26 +157,30 @@ IMPLEMENT_TSP(ISTRIP, c_iflag)
 IMPLEMENT_TSP(INLCR, c_iflag)
 IMPLEMENT_TSP(IGNCR, c_iflag) 
 IMPLEMENT_TSP(ICRNL, c_iflag) 
-IMPLEMENT_TSP(IUCLC, c_iflag) 
 IMPLEMENT_TSP(IXON, c_iflag)  
 IMPLEMENT_TSP(IXANY, c_iflag) 
 IMPLEMENT_TSP(IXOFF, c_iflag) 
+#ifdef OS_LINUX
+IMPLEMENT_TSP(IUCLC, c_iflag)
 IMPLEMENT_TSP(IUTF8, c_iflag)
 
-IMPLEMENT_TSP(OPOST, c_oflag)
 IMPLEMENT_TSP(OLCUC, c_oflag)
+IMPLEMENT_TSP(OFILL, c_oflag)
+#endif
+IMPLEMENT_TSP(OPOST, c_oflag)
 IMPLEMENT_TSP(ONLCR, c_oflag)
 IMPLEMENT_TSP(OCRNL, c_oflag)
 IMPLEMENT_TSP(ONOCR, c_oflag)
 IMPLEMENT_TSP(ONLRET, c_oflag)
-IMPLEMENT_TSP(OFILL, c_oflag)
 
+#ifndef OS_BSD
 IMPLEMENT_TSP_I(NLDLY, c_oflag)
 IMPLEMENT_TSP_I(CRDLY, c_oflag)
 IMPLEMENT_TSP_I(TABDLY, c_oflag)
 IMPLEMENT_TSP_I(BSDLY, c_oflag)
 IMPLEMENT_TSP_I(VTDLY, c_oflag)
 IMPLEMENT_TSP_I(FFDLY, c_oflag)
+#endif
 
 IMPLEMENT_TSP_I(CSIZE, c_cflag)
 IMPLEMENT_TSP(CSTOPB, c_cflag)
@@ -200,9 +204,17 @@ IMPLEMENT_TSP(NOFLSH, c_lflag)
 IMPLEMENT_TSP(TOSTOP, c_lflag)
 IMPLEMENT_TSP(IEXTEN, c_lflag)
 
-#ifndef OS_CYGWIN
+#ifdef OS_LINUX
+#ifndef CMSPAR
+// This is a MIPS fix
+#define CMSPAR 010000000000
+#endif
+
 IMPLEMENT_TSP(CMSPAR, c_cflag)
 IMPLEMENT_TSP(XCASE, c_lflag)
+#endif
+
+#ifndef OS_CYGWIN
 IMPLEMENT_TSP(ECHOPRT, c_lflag)
 IMPLEMENT_TSP(PENDIN, c_lflag)
 #endif
@@ -327,15 +339,19 @@ GB_DESC TermDesc[] =
 	__TC(TCIFLUSH),	__TC(TCOFLUSH),	__TC(TCIOFLUSH),
 	
 	__TC(TCIOFF), __TC(TCION), __TC(TCOOFF), __TC(TCOON),
-
+#ifdef OS_LINUX
 	__TC(NL0), __TC(NL1), __TC(CR0), __TC(CR1), __TC(CR2), __TC(CR3), __TC(TAB0), __TC(TAB1), __TC(TAB2), __TC(TAB3), __TC(XTABS), __TC(BS0), __TC(BS1), __TC(VT0), __TC(VT1), __TC(FF0), __TC(FF1),
-	
+#endif
 	__TC(CS5), __TC(CS6), __TC(CS7), __TC(CS8),
 	
 	GB_CONSTANT("VDISABLE", "i", _POSIX_VDISABLE),
 	
-	__TC(B0), __TC(B50), __TC(B75), __TC(B110), __TC(B134), __TC(B150), __TC(B200), __TC(B300), __TC(B600), __TC(B1200), __TC(B1800), __TC(B2400), __TC(B4800), __TC(B9600), __TC(B19200), __TC(B38400), __TC(B57600), __TC(B115200), __TC(B230400), __TC(B460800), __TC(B500000), __TC(B576000), __TC(B921600), __TC(B1000000), __TC(B1152000), __TC(B1500000), __TC(B2000000), __TC(B2500000), __TC(B3000000),
-#ifndef OS_CYGWIN 
+	__TC(B0), __TC(B50), __TC(B75), __TC(B110), __TC(B134), __TC(B150), __TC(B200), __TC(B300), __TC(B600), __TC(B1200), __TC(B1800), __TC(B2400), __TC(B4800), __TC(B9600), __TC(B19200), __TC(B38400), __TC(B57600), __TC(B115200), __TC(B230400),
+
+#ifndef OS_BSD
+ __TC(B460800), __TC(B500000), __TC(B576000), __TC(B921600), __TC(B1000000), __TC(B1152000), __TC(B1500000), __TC(B2000000), __TC(B2500000), __TC(B3000000),
+#endif
+#ifdef OS_LINUX
 __TC(B3500000), __TC(B4000000),
 #endif
 
@@ -359,26 +375,30 @@ GB_DESC TerminalSettingsDesc[] =
 	__TSP(INLCR),
 	__TSP(IGNCR), 
 	__TSP(ICRNL), 
-	__TSP(IUCLC), 
 	__TSP(IXON),  
 	__TSP(IXANY), 
 	__TSP(IXOFF), 
+#ifdef OS_LINUX
+	__TSP(IUCLC),
 	__TSP(IUTF8),
-	
-	__TSP(OPOST),
+
 	__TSP(OLCUC),
+	__TSP(OFILL),
+#endif
+	__TSP(OPOST),
 	__TSP(ONLCR),
 	__TSP(OCRNL),
 	__TSP(ONOCR),
 	__TSP(ONLRET),
-	__TSP(OFILL),
 
+#ifndef OS_BSD
 	__TSP_I(NLDLY),
 	__TSP_I(CRDLY),
 	__TSP_I(TABDLY),
 	__TSP_I(BSDLY),
 	__TSP_I(VTDLY),
 	__TSP_I(FFDLY),
+#endif
 
 	__TSP_I(CSIZE),
 	__TSP(CSTOPB),
@@ -402,9 +422,11 @@ GB_DESC TerminalSettingsDesc[] =
 	__TSP(TOSTOP),
 	__TSP(IEXTEN),
 
-#ifndef OS_CYGWIN
+#ifdef OS_LINUX
 	__TSP(CMSPAR),
 	__TSP(XCASE),
+#endif
+#ifndef OS_CYGWIN
 	__TSP(ECHOPRT),
 	__TSP(PENDIN),
 #endif

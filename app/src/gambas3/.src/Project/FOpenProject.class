@@ -103,10 +103,12 @@ Public Sub tabProject_Click()
     $hRecent.SetSort($iSort)
     
     $hRecent.ApplyFilter(txtFilter.Text)
+    txtFilter.Editor.SelectAll()
     txtFilter.SetFocus
   Else If tabProject.Text = ("Examples") Then 
     $hExample.Fill
     $hExample.ApplyFilter(txtFilterExample.Text)
+    txtFilterExample.Editor.SelectAll()
     txtFilterExample.SetFocus
   Endif  
 

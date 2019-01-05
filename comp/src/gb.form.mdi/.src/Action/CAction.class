@@ -21,7 +21,7 @@ Private Sub UnquoteShortcut(sStr As String) As String
   
 End
 
-Public Sub _new(sKey As String, bHasShortcut As Boolean, cSlot As Collection, hMerge As CAction)
+Public Sub _new(sKey As String, bHasShortcut As Boolean, cSlot As Collection, Optional hMerge As CAction)
 
   Dim sPicture As String
   Dim aControl As Object[]
@@ -105,9 +105,13 @@ Public Sub GetConfigIcon(Optional W As Integer) As Picture
   
   If Icon Then
     If W = 0 Then Return Icon
-    aIcon = Split(IconPath, "/")
-    aIcon[1] = W
-    Return Picture[aIcon.Join("/")]
+    If IconPath Begins "icon:/" Then
+      aIcon = Split(IconPath, "/")
+      aIcon[1] = W
+      Return Picture[aIcon.Join("/")]
+    Else
+      Return Icon.Image.Stretch(W, W).Picture
+    Endif
   Endif
   
   aControl = Action[Key].Controls

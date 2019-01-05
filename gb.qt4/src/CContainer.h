@@ -48,16 +48,16 @@ typedef
 		unsigned dirty : 1;
 		unsigned autoresize : 1;
 		unsigned invert : 1;
-		unsigned _reserved: 9;
+		unsigned _reserved: 8;
 		}
 	CARRANGEMENT;
 
 #ifndef __CCONTAINER_CPP
 
-extern GB_DESC CContainerDesc[];
-extern GB_DESC CChildrenDesc[];
-extern GB_DESC CUserControlDesc[];
-extern GB_DESC CUserContainerDesc[];
+extern GB_DESC ContainerDesc[];
+extern GB_DESC ContainerChildrenDesc[];
+extern GB_DESC UserControlDesc[];
+extern GB_DESC UserContainerDesc[];
 
 #else
 
@@ -85,9 +85,18 @@ typedef
 		int32_t save;
 		}
 	CUSERCONTAINER;
+	
+typedef 
+	struct {
+		GB_BASE ob;
+		CCONTAINER *container;
+		CWIDGET **children;
+	}
+	CCONTAINERCHILDREN;
 
 #define WIDGET QWIDGET(_object)
 #define THIS ((CCONTAINER *)_object)
+#define THIS_CHILDREN ((CCONTAINERCHILDREN *)_object)
 #define CONTAINER (THIS->container)
 #define THIS_ARRANGEMENT (((CCONTAINER_ARRANGEMENT *)_object))
 #define THIS_USERCONTAINER (((CUSERCONTAINER *)_object))

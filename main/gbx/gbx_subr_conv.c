@@ -163,7 +163,7 @@ void SUBR_val(void)
   SUBR_ENTER_PARAM(1);
 
   if (SUBR_check_string(PARAM))
-		RETURN->type = T_NULL;
+		VALUE_null(RETURN);
 	else
 	{
 		VALUE_get_string(PARAM, &addr, &len);
@@ -207,7 +207,7 @@ void SUBR_format(ushort code)
 				THROW(E_ARG);
     }
     else
-      THROW(E_TYPE, TYPE_get_name(T_INTEGER), TYPE_get_name(PARAM[1].type));
+      THROW_TYPE(T_INTEGER, PARAM[1].type);
   }
 
 	if (PARAM->type == T_VARIANT)

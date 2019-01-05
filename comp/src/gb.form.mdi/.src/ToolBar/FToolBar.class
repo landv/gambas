@@ -32,6 +32,7 @@ Private $iHandleSize As Integer
 Private $iLock As Integer
 
 Private $aHidden As Control[]
+Private $aDisabled As Control[]
 
 Public Sub _new()
   
@@ -727,28 +728,43 @@ Public Sub SetConfigureMode(bConfigure As Boolean)
 
   Lock()
   If $bConfigure Then
+    
     $aHidden = New Control[]
+    $aDisabled = New Control[]
+    
     For Each hChild In panToolBar.Children
       If hChild Is Separator Then Continue
       If Not hChild.Visible Then 
         $aHidden.Add(hChild)
         hChild.Show
       Endif
+      If Not hChild.Enabled Then
+        $aDisabled.Add(hChild)
+        hChild.Enabled = True
+      Endif
     Next
-    ' For Each hChild In panHide.Children
-    '   If hChild Is Separator Then Continue
-    '   If Not hChild.Visible Then 
-    '     $aHidden.Add(hChild)
-    '     'hChild.Show
-    '   Endif
-    ' Next
+    For Each hChild In panHide.Children
+      If hChild Is Separator Then Continue
+      If Not hChild.Enabled Then
+        $aDisabled.Add(hChild)
+        hChild.Enabled = True
+      Endif
+    Next
   Else
+    
     For Each hChild In $aHidden
       hChild.Hide
     Next
     $aHidden = Null
+
+    For Each hChild In $aDisabled
+      hChild.Enabled = False
+    Next
+    $aDisabled = Null
+
     SaveConfig
     'panToolBar.Refresh
+    
   Endif
   Unlock()
   
@@ -883,8 +899,8 @@ Public Sub Form_DragMove()
     Return
   Endif
   
-  While hCtrl.Parent <> panToolBar
-    hCtrl = hCtrl.Parent
+  While hCtrl._Parent <> panToolBar
+    hCtrl = hCtrl._Parent
   Wend
 
   If hCtrl = panWhere Then Return
@@ -950,8 +966,8 @@ Private Sub OnMouseDrag(hCtrl As Control)
   
   Dim sAction As String
   
-  While hCtrl.Parent <> panToolBar
-    hCtrl = hCtrl.Parent
+  While hCtrl._Parent <> panToolBar
+    hCtrl = hCtrl._Parent
     'Debug "-> "; hCtrl
   Wend
   
@@ -1070,6 +1086,7 @@ Public Sub DragEnd(bAnim As Boolean)
       If hCtrl Then 
         ShowControl(hCtrl)
         hCtrl.Show
+        hCtrl.Enabled = True
         hCtrl.Next = panWhere.Next
       Endif
     Endif
@@ -1263,22 +1280,26 @@ Public Sub Form_Close()
 
 End
 
+Private Sub ToolbarToStockSize(iSize As Integer) As String
+
+  Select Case iSize
+    Case ICON_HUGE
+      Return "huge"
+    Case ICON_MEDIUM
+      Return "medium"
+    Case ICON_LARGE
+      Return "large"
+    Case ICON_TINY
+      Return "tiny"
+    Default
+      Return "small"
+  End Select
+
+End
+
 Private Sub CalcIconSize(iIconSize As Integer) As Integer
   
-  Select Case iIconSize
-    Case ICON_HUGE
-      Return Stock.GetSize("huge")
-    Case ICON_MEDIUM
-      Return Stock.GetSize("medium")
-    Case ICON_LARGE
-      Return Stock.GetSize("large")
-    Case ICON_HUGE
-      Return Stock.GetSize("huge")
-    Case ICON_TINY
-      Return Stock.GetSize("tiny")
-    Default
-      Return Stock.GetSize("small")
-  End Select
+  Return Stock.GetSize(ToolbarToStockSize(iIconSize))
   
 End
 
@@ -1377,48 +1398,59 @@ Private Sub CheckSeparators()
   
 End
 
+Private Sub StockToToolbarSize(sSize As String) As Integer
+  
+  Select Case LCase(sSize)
+    Case "medium"
+      Return ICON_MEDIUM
+    Case "large"
+      Return ICON_LARGE
+    Case "huge"
+      Return ICON_HUGE
+    Case "tiny"
+      Return ICON_TINY
+    Case Else
+      Return ICON_SMALL
+  End Select
+  
+End
 
-Public Sub LoadConfig(Optional bInit As Boolean)
+
+Public Sub GetLayout(Optional bReset As Boolean) As Variant
   
-  Dim hToolbar As ToolBar = GetToolBar()
-  Dim hCtrl As Control
+  Dim sSize As String
   Dim aConfig As String[]
-  Dim sAction As String
-  Dim iInd As Integer
+  Dim aDefaultConfig As String[]
+  
+  If Not bReset Then
+    aConfig = GetCurrentConfig() 
+    aDefaultConfig = GetDefaultConfig()
+    If aConfig.Join(",") = aDefaultConfig.Join(",") Then aConfig = Null
+  Endif
+  
+  sSize = Choose($iIconSize + 1, "Tiny", "", "Medium", "Large", "Huge")
+  
+  Return [sSize, aConfig]
+  
+End
+
+Public Sub SetLayout(vLayout As Variant, Optional bInit As Boolean)
+
+  Dim sSize As String
+  Dim aConfig As String[]
   Dim bEnabled As Boolean
-  Dim iDim As Integer
-  
-  If Not ToolbarKey Then Return
-  If $bDesign Then Return
-  
-  'Debug Me; ": Loading config for";; ToolbarKey
+  Dim iInd As Integer
+  Dim hCtrl As Control
+  Dim sAction As String
   
   MAction.InitAction
 
-  Select Case LCase(Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"])
-    Case "huge"
-      $iIconSize = ICON_HUGE
-      iDim = 12
-    Case "medium"
-      $iIconSize = ICON_MEDIUM
-      iDim = 12
-    Case "large"
-      $iIconSize = ICON_LARGE
-      iDim = 12
-    Case "huge"
-      $iIconSize = ICON_HUGE
-      iDim = 12
-    Case "tiny"
-      $iIconSize = ICON_TINY
-      iDim = 12
-    Case Else
-      $iIconSize = ICON_SMALL
-      iDim = 12
-  End Select
-  iDim += Max(Me.Font.Height * 0.8, GetRealIconSize())
-  $iButtonWidth = iDim
+  sSize = vLayout[0]
+  aConfig = vLayout[1]
   
-  aConfig = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Layout"]
+  $iIconSize = StockToToolbarSize(sSize)
+  $iButtonWidth = 12 + Max(Me.Font.Height * 0.8, GetRealIconSize())
+  
   If Not aConfig Then 
     'If $iIconSize = ICON_SMALL Then
     '  If bInit Then Goto RAISE_CONFIGURE
@@ -1435,7 +1467,7 @@ Public Sub LoadConfig(Optional bInit As Boolean)
   iInd = 0
   While iInd < panToolBar.Children.Count
     hCtrl = panToolBar.Children[iInd]
-    ResizeControl(hCtrl, iDim)
+    ResizeControl(hCtrl, $iButtonWidth)
     If hCtrl.Action Then
       hCtrl.Reparent(panHide)
     Else If FToolBarConfig.IsSpecialAction(GetControlAction(hCtrl)) Then 
@@ -1446,7 +1478,7 @@ Public Sub LoadConfig(Optional bInit As Boolean)
   Wend
   
   For Each hCtrl In panHide.Children
-    ResizeControl(hCtrl, iDim)
+    ResizeControl(hCtrl, $iButtonWidth)
   Next
 
   For Each sAction In aConfig
@@ -1493,7 +1525,23 @@ Public Sub LoadConfig(Optional bInit As Boolean)
 
 RAISE_CONFIGURE:  
   
-  If Not $bConfigure Then hToolbar._RaiseConfigure
+  If Not $bConfigure Then GetToolBar()._RaiseConfigure
+  
+End
+
+
+Public Sub LoadConfig(Optional bInit As Boolean)
+  
+  Dim aConfig As String[]
+  Dim sSize As String
+  
+  If Not ToolbarKey Then Return
+  If $bDesign Then Return
+  
+  sSize = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"]
+  aConfig = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Layout"]
+  
+  SetLayout([sSize, aConfig], bInit)
   
 End
 
@@ -1504,18 +1552,14 @@ Public Sub SaveConfig(Optional bReset As Boolean)
   Dim hForm As FToolBar
   Dim bChange As Boolean
   Dim sVal As String
-  Dim aDefaultConfig As String[]
+  Dim aLayout As Variant
   
   If Not ToolbarKey Then Return
   If $bDesign Then Return
   If Not Object.IsValid(Me.Parent.Parent) Then Return
 
-  If Not bReset Then
-    aConfig = GetCurrentConfig()
-    aDefaultConfig = GetDefaultConfig()
-    If aConfig.Join(",") = aDefaultConfig.Join(",") Then aConfig = Null
-  Endif
-  
+  aLayout = GetLayout(bReset)
+
   ' Print Me; ": Saving config for "; ToolbarKey; ": ";
   ' If aConfig Then
   '   Print aConfig.Join(",")
@@ -1523,8 +1567,10 @@ Public Sub SaveConfig(Optional bReset As Boolean)
   '   Print "NULL"
   ' Endif
   'Print "Default config is ";; FindToolbar().DefaultConfig.Join(",")
-
-  sVal = Choose($iIconSize + 1, "Tiny", "", "Medium", "Large", "Huge")
+  
+  sVal = aLayout[0]
+  aConfig = aLayout[1]
+  
   If sVal <> Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"] Then
     Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"] = sVal
     bChange = True
@@ -1600,6 +1646,13 @@ Public Sub GetIconSize() As Integer
   
 End
 
+Public Sub GetStockIconSize() As String
+  
+  Return ToolbarToStockSize($iIconSize)
+  
+End
+
+
 Public Sub GetRealIconSize() As Integer
   
   Return CalcIconSize(GetIconSize())
@@ -1614,6 +1667,13 @@ Public Sub SetIconSize(iSize As Integer)
   UpdateSize
   
 End
+
+Public Sub SetStockIconSize(sSize As String)
+  
+  SetIconSize(StockToToolbarSize(sSize))
+  
+End
+
 
 Private Sub UpdateSize()
 

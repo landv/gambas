@@ -9,6 +9,11 @@ GB_MATH_FUNC
 LT_INIT 
 AM_PROG_CC_C_O
 
+if test "x${GAMBAS_CONFIG_FAILURE}" != "x"; then
+  SAVE_GAMBAS_CONFIG_FAILURE=${GAMBAS_CONFIG_FAILURE}
+  GAMBAS_CONFIG_FAILURE=''
+fi
+
 dnl ---- Check for internationalization library
 
 GB_COMPONENT(
@@ -17,11 +22,11 @@ GB_COMPONENT(
   [GB_FIND(libintl.$SHLIBEXT, /opt/local /usr/local /usr /, lib)],
   [-lintl],
   [],
-  [This library may be located inside the system C library, so you can ignore that warning...])
+  [Cannot find 'libintl' library. It may be located inside the system C library, so you can ignore that warning...])
 
 dnl ---- Remove DISABLED file that could have been generated before
 
-rm -f DISABLED DISABLED.*
+rm -f FAILED DISABLED DISABLED.*
 
 dnl ---- Check for charset conversion library
 
@@ -31,11 +36,11 @@ GB_COMPONENT(
   [GB_FIND(libiconv.$SHLIBEXT, /opt/local /usr/local /usr, lib)],
   [-liconv],
   [],
-  [This library may be located inside the system C library, so you can ignore that warning...])
+  [Cannot find 'libiconv' library. It may be merged inside the system C library, so you can ignore that warning...])
 
 dnl ---- Remove DISABLED file that could have been generated before
 
-rm -f DISABLED DISABLED.*
+rm -f FAILED DISABLED DISABLED.*
 
 dnl ---- Check for gettext library
 
@@ -45,15 +50,15 @@ GB_COMPONENT(
   gettext, GETTEXT, libgettextlib, [],
   [],
   [GB_FIND(libgettextlib.$SHLIBEXT, /opt/local /usr/local /usr, lib)],
-  [-lgettextlib],
+  [$GETTEXT_LIB],
   [],
-  [This library may be located inside the system C library, so you can ignore that warning...])
+  [Cannot find 'libgettextlib' library. It may be merged inside the system C library, so you can ignore that warning...])
   
 fi
 
 dnl ---- Remove DISABLED file that could have been generated before
 
-rm -f DISABLED DISABLED.*
+rm -f FAILED DISABLED DISABLED.*
 
 dnl ---- Check for ffi library
 
@@ -74,7 +79,12 @@ fi
 
 dnl ---- Remove DISABLED file that could have been generated before
 
-rm -f DISABLED DISABLED.*
+rm -f FAILED DISABLED DISABLED.*
+
+if test "x${SAVE_GAMBAS_CONFIG_FAILURE}" != "x"; then
+  GAMBAS_CONFIG_FAILURE=${SAVE_GAMBAS_CONFIG_FAILURE}
+  SAVE_GAMBAS_CONFIG_FAILURE=''
+fi
 
 dnl ---- Check for the Linux inotify headers
 
@@ -82,12 +92,12 @@ GB_COMPONENT(
   inotify, INOTIFY, gb.inotify, [inotify],
   [GB_FIND(sys/inotify.h, /usr/local/lib /usr/local /usr/lib /usr, include)],
   [GB_FIND(, /usr/local /usr, lib)],
-  [$C_LIB])
+  [$GB_INOTIFY_LIB])
 
 dnl ---- We do not use libtool to load shared libraries anymore!
 
 AC_DEFINE(DONT_USE_LTDL, 1, [Do not use libtool to load shared libraries])
-if test "$SYSTEM" != "OPENBSD" && test "$SYSTEM" != "FREEBSD"; then
+if test "$SYSTEM" != "OPENBSD" && test "$SYSTEM" != "FREEBSD" && test "$SYSTEM" != "NETBSD"; then
   DL_LIB="-ldl"
 else
   DL_LIB=""
@@ -129,6 +139,7 @@ lib/complex/Makefile \
 lib/data/Makefile \
 lib/clipper/Makefile \
 lib/inotify/Makefile \
+lib/jit/Makefile \
 ])
 AC_OUTPUT
 

@@ -462,7 +462,7 @@ Private Sub UpdateMenu()
 
   bVisible = Not edtEditor.ReadOnly
 
-  Action[".save,.undo,.redo,.cut,.paste,.paste-special,.comment,.uncomment,.color,.indent,.unindent,.lcase,.ucase,.pretty,.date", Me].Visible = bVisible
+  Action[".save,.undo,.redo,.cut,.paste,.paste-special,.comment,.uncomment,.color,.indent,.unindent,.lcase,.ucase,.pretty,.date,.char", Me].Visible = bVisible
   Action[".watch", Me].Visible = Project.Running
   
   mnuAdvanced.Visible = bVisible
@@ -850,7 +850,7 @@ Public Sub Editors_KeyPress()
   If $hEditor.ReadOnly Then Return
 
   If Asc(Key.Text) = 13 Then
-
+    
     sLine = $hEditor[iLine].Text
 
     If AutoComment And If IsComment(sLine) And If Key.Shift Then
@@ -920,14 +920,13 @@ Public Sub Editors_KeyPress()
     If DoStructControlCompletion(iLine, sLine, aSymbol) Then Return
     
     
-  Else If Key.Code = Key.Space Then
+  Else If Key.Code = Key.Space Or If InStr("(),[]", Key.Text) Then
 
-    $bCheckSignature = True
+    sLine = String.Left$(Highlight.Purge($hEditor.Current.Text, False, True), $hEditor.Column)
+    If Not GetRightString(sLine) Then
+      $bCheckSignature = True
+    Endif
     
-  Else If InStr("(),[]", Key.Text) Then
-
-    $bCheckSignature = True
-
   Else If Key.Code = Key.Tab Then
 
     If Not $hEditor.Selected Or If $hEditor.Line = $hEditor.SelectionLine Then
@@ -1042,6 +1041,7 @@ Public Function CanSetBreakpoint(iLine As Integer) As Boolean
   Dim sLine As String
   Dim iPos As Integer
 
+  If Project.IsFake() Then Return
   If iLine < 0 Or If iLine >= $hEditor.Count Then Return
 
   '$hEditor[iLine].Refresh
@@ -1083,6 +1083,7 @@ Public Sub CheckBreakpoints()
 
   Dim iLine As Integer
 
+  If Project.IsFake() Then Return
   For Each iLine In $hEditor.Breakpoints
     If Not CanSetBreakpoint(iLine) Then SetBreakpoint(iLine, False, False)
   Next
@@ -1872,6 +1873,7 @@ Public Sub CheckCompletion(sMode As String)
   Dim aTypes As Integer[]
   Dim sWord As String
   Dim iPos As Integer
+  Dim bHidden As Boolean
 
   'IF Key.Code = Key.Backspace THEN
   '  IF FCompletion.IsMine(edtEditor) THEN
@@ -1906,8 +1908,11 @@ Public Sub CheckCompletion(sMode As String)
     aTypes.Remove(aTypes.Count - 1)
     sType = GetExpressionType(aSymbols, aTypes, True)
     If sType Then
+      If aSymbols[aSymbols.Max] = "SUPER" Or If aSymbols[aSymbols.Max] = "ME" Then
+        bHidden = True
+      Endif
       'PRINT "Type: "; sType
-      FCompletion.Open(Me, sMode, sType, $bLastStatic, False) 'LCase(sType) = LCase(ME.Name))
+      FCompletion.Open(Me, sMode, sType, $bLastStatic, bHidden) 'LCase(sType) = LCase(ME.Name))
     Endif
     
   Else If sMode = "A" Then
@@ -2352,6 +2357,9 @@ Private Sub FindDefinition() As Boolean
           If hClass Then
             'MHelp.GotoClass(hClass.Component, hClass.Name)
             MHelp.ShowHelpBrowserWith(MHelp.TYPE_CLASS, hClass.Name)
+          Else If Project.ExistClass(sKeyword) Then
+            CPosition.SaveCurrent(Me)
+            hForm = Project.OpenFile(sKeyword)
           Endif
         Endif
         Return
@@ -2362,7 +2370,7 @@ Private Sub FindDefinition() As Boolean
 
     If sKeyword Begins "{" And If sKeyword Ends "}" Then sKeyword = Mid$(sKeyword, 2, -1)
     
-    If iCpt >= 1 And If Highlight.Types[iCpt] = Highlight.Symbol Then
+    If iCpt >= 1 And If Highlight.Types[iCpt] = Highlight.Label Then
       
       If aSymbols[iCpt - 1] = "GOTO" Or If aSymbols[iCpt - 1] = "GOSUB" Then
         
@@ -2404,9 +2412,9 @@ Private Sub FindDefinition() As Boolean
   'PRINT hSymbol.Class
 
   If hSymbol.LineNumber Then 'And If Not bPopupHelp Then
-    CPosition.SaveCurrent(Me)
+    CPosition.SaveCurrent(Me, True)
     hForm = Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
-    CPosition.SaveCurrent(hForm)
+    CPosition.SaveCurrent(hForm, True)
   Else
     MHelp.ShowHelpBrowserWith(MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
   Endif
@@ -2420,11 +2428,11 @@ Public Sub OnProjectDebug()
 
 End
 
-Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean)
+Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean, bWordOnly As Boolean)
 
-  edtEditor.ShowString(sStr, bIgnoreCase)
-  If $hEditor1 Then $hEditor1.ShowString(sStr, bIgnoreCase)
-  If $hEditor2 Then $hEditor2.ShowString(sStr, bIgnoreCase)
+  edtEditor.HighlightString(sStr, bIgnoreCase, bWordOnly)
+  If $hEditor1 Then $hEditor1.HighlightString(sStr, bIgnoreCase, bWordOnly)
+  If $hEditor2 Then $hEditor2.HighlightString(sStr, bIgnoreCase, bWordOnly)
 
 End
 
@@ -2567,34 +2575,11 @@ Public Sub Editors_MouseUp()
     Return
   Endif
 
-  FDebugInfo.InstantWatch(Trim($hEditor.SelectedText), Me, $hEditor.ToPosX($hEditor.Column), $hEditor.ToPosY() + $hEditor.LineHeight)
+  FDebugInfo.InstantWatch(Trim($hEditor.SelectedText), Me) ', Me, $hEditor.ToPosX($hEditor.Column), $hEditor.ToPosY() + $hEditor.LineHeight)
 
 End
 
-' Private Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional bError As Boolean)
-' 
-'   X = Editor.ScreenX + X - lblWatch.Parent.ScreenX
-'   Y = Editor.ScreenY + Y - lblWatch.Parent.ScreenY
-'   
-'   lblWatch.Foreground = Editor.Styles[Highlight.Normal].Foreground
-'   If bError Then
-'     lblWatch.Background = Editor.Styles[Highlight.Breakpoint].Foreground
-'   Else
-'     lblWatch.Background = Editor.Styles[Highlight.CurrentLine].Foreground
-'   Endif
-'   lblWatch.Text = Replace(Replace(sStr, "<p>", " "), "<br>", " ")
-' 
-'   If (Y + lblWatch.H) > lblWatch.Parent.ClientH Then Y -= lblWatch.H + Editor.LineHeight
-'   lblWatch.Move(X, Y)
-'   
-'   lblWatch.Show
-'   lblWatch.Raise
-'   timWatch.Start
-'   Editor.SetFocus
-' 
-' End
-
-Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
+Public Sub ShowWatchResult(sStr As String)
 
   Dim bError As Boolean
 
@@ -2606,13 +2591,15 @@ Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
     bError = True
   Endif
 
-  $hEditor.ShowMessageLabel(Html(sStr), X, Y, If(bError, Highlight.Breakpoint, Highlight.CurrentLine))
+  $hEditor.ShowMessageLabel(Html(sStr), If(bError, Highlight.Breakpoint, Highlight.CurrentLine))
 
 End
 
 Public Sub Editors_Margin()
 
   Dim Y As Integer
+
+  If Design.IsRunning() Then Return  
   Y = Last.Line
   If CanSetBreakpoint(Y) Then Design.SetBreakpoint(Me.Name & "." & CStr(Y), Not HasBreakpoint(Y))
 
@@ -2653,7 +2640,7 @@ Public Sub ShowErrorMessage(sMsg As String, (sIcon) As String)
 
   $hEditor.SetFocus
   Wait
-  $hEditor.ShowMessageLabel(sMsg, $hEditor.ToPosX(), $hEditor.ToPosY() + $hEditor.LineHeight, Highlight.Breakpoint)
+  $hEditor.ShowMessageLabel(sMsg, Highlight.Breakpoint)
 
 End
 
@@ -3145,7 +3132,7 @@ Private Sub ToggleProcList()
   iCurrent = FProcedureList.Popup(Me, Me.Name, $aProc, iCurrent, btnProc.ScreenX, btnProc.ScreenY + btnProc.H, btnProc.W, Me.ClientH - panToolbar.H - Desktop.Scale)
   If iCurrent >= 0 Then
     Try iLine = $cProc[$aProc[iCurrent]]
-    GotoFunction(iLine)
+    If Not Error Then GotoFunction(iLine)
   Endif
 
 End
@@ -3345,6 +3332,7 @@ End
 
 Public Sub mnuBreakpoint_Click()
 
+  If Not CanSetBreakpoint($hEditor.Line) Then Return
   Design.SetBreakpoint(Me.Name & "." & CStr($hEditor.Line), Not HasBreakpoint($hEditor.Line))
 
 End
@@ -3892,3 +3880,8 @@ CHECK_LINE:
   
 End
 
+Public Sub btnInsertChar_Click()
+
+  FInsertChar.Run($hEditor, btnInsertChar.ScreenX, btnInsertChar.ScreenY + btnInsertChar.H)
+
+End

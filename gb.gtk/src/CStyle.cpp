@@ -258,10 +258,12 @@ static STATE_T get_state(int state)
 {
 	if (state & GB_DRAW_STATE_DISABLED)
 		return STATE_INSENSITIVE;
-	if (state & GB_DRAW_STATE_ACTIVE)
+	if (state & GB_DRAW_STATE_FOCUS)
 		return STATE_ACTIVE;
 	if (state & GB_DRAW_STATE_HOVER)
 		return STATE_PRELIGHT;
+	if (state & GB_DRAW_STATE_ACTIVE)
+		return STATE_ACTIVE;
 
 	return STATE_NORMAL;
 }
@@ -293,9 +295,7 @@ static void paint_focus(STYLE_T *style, int x, int y, int w, int h)
 #else
 static void paint_focus(STYLE_T *style, int x, int y, int w, int h, STATE_T state, const char *kind)
 {
-	gtk_paint_focus(style, _dr,
-		state, get_area(), _widget, kind,
-		x, y, w, h);
+	gtk_paint_focus(style, _dr, state, get_area(), _widget, kind, x, y, w, h);
 }
 #endif
 
@@ -607,7 +607,7 @@ static void style_box(int x, int y, int w, int h, int state, GB_COLOR color)
 {
 	STYLE_T *style = get_style(GTK_TYPE_ENTRY);
 
-	if (strcmp(gApplication::getStyleName(), "oxygen-gtk") == 0)
+	if (gApplication::fix_oxygen)
 	{
 		x -= 3;
 		w += 6;
@@ -640,18 +640,26 @@ static void style_box(int x, int y, int w, int h, int state, GB_COLOR color)
 		gtk_style_context_invalidate(style);
 #endif
 	}
+	else
+		gtk_render_background(style, _cr, x, y, w, h);
 
 	gtk_render_frame(style, _cr, x, y, w, h);
-	gtk_style_context_remove_provider(style, _css);
+	
+	if (color != GB_COLOR_DEFAULT)
+		gtk_style_context_remove_provider(style, _css);
 	
 #else
+
+	if (gApplication::fix_breeze)
+		state &= ~GB_DRAW_STATE_HOVER;
+	
 	GtkStateType st = get_state(state);
 
 	if (color == GB_COLOR_DEFAULT)
 	{
-		gtk_paint_shadow(style, _dr, st,
-			GTK_SHADOW_IN, get_area(), NULL, "entry", x, y, w, h);
-
+		//fprintf(stderr, "paint_box: default color\n");
+		gtk_paint_box (style, _dr, st, GTK_SHADOW_NONE, get_area(), _widget, "entry", x, y, w, h);
+		gtk_paint_shadow(style, _dr, st, GTK_SHADOW_NONE, get_area(), NULL, "entry", x, y, w, h);
 		/*color = gDesktop::bgColor();
 		if (_widget)
 		{

@@ -24,7 +24,7 @@
 #ifndef __GB_COMMON_BUFFER_H
 #define __GB_COMMON_BUFFER_H
 
-#define COMMON_BUF_MAX 256
+#define COMMON_BUF_MAX 512
 
 #ifndef __COMMON_BUFFER_C
 EXTERN int COMMON_pos;
@@ -42,4 +42,5 @@ int COMMON_put_char(char c);
 void COMMON_jump_space(void);
 char *COMMON_get_current(void);
 int COMMON_get_size_left(void);
+bool COMMON_has_string(const char *str, int len);
 #endif

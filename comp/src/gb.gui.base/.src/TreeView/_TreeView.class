@@ -10,6 +10,7 @@ Property Border As Boolean
 Property Sorted As Boolean
 Property Read Current As _TreeView_Item
 Property Key As String
+Property Read Keys As String[]
 Property Read Item As _TreeView_Item
 Property Read Available As Boolean
 Property Read Renaming As Boolean
@@ -32,6 +33,7 @@ Event Collapse
 Event Rename
 Event Cancel
 Event Compare(Key As String, OtherKey As String)
+Event BeforeSort
 
 Static Private $iNoEvent As Integer
 
@@ -53,7 +55,7 @@ Private $cSort As Collection
 Private $bSortRoot As Boolean
 Private $hSortTimer As Timer
 Private $bNoRoot As Boolean
-Private $bNoUpdateHeight As Boolean
+Private $iLock As Integer
 
 Private $iSaveSelection As Integer
 Private $aSaveSelection As String[]
@@ -65,7 +67,8 @@ Public Sub _new()
   $hView.Mode = Select.Single
   $hView.Grid = False
   $hView.AutoResize = True
-  $hView.Name = Me.Name & ":gridView"
+  $hView.Name = Me.Name & ":gridview"
+  $hView.Rows.H = GetDefaultItemHeight()
   '$hView.Padding = 0
   
   Me.Proxy = $hView
@@ -143,15 +146,15 @@ Public Sub _Add((Key) As String, Text As String, Optional (Picture) As Picture, 
   Endif
   
   hParent._AddChild(Key)
-  
-  $bNoUpdateHeight = True
+
+  Inc $iLock
   
   hItem._Index = hParent.Count - 1
   hItem.Editable = $bEditable
   hItem.Text = Text
   hItem.Picture = Picture
   
-  $bNoUpdateHeight = False
+  Dec $iLock
 
   If After Then 
     If _MoveItem(hItem, After, False) Then _UpdateItemHeight(hItem)
@@ -269,7 +272,7 @@ Public Sub _ReparentItem(hItem As _TreeView_Item, Parent As String)
     hCheck = $cItem[sKey]
   Wend
   
-  $bNoUpdateHeight = True
+  Inc $iLock
 
   bExpanded = hItem.Expanded
   hItem.Expanded = False
@@ -287,7 +290,7 @@ Public Sub _ReparentItem(hItem As _TreeView_Item, Parent As String)
   hParent._ComputeGrandChildren()
   hItem.Expanded = bExpanded
 
-  $bNoUpdateHeight = False
+  Dec $iLock
   
   _UpdateItemHeight(hItem, True)
   
@@ -465,25 +468,9 @@ Public Sub _GetItemX(hItem As _TreeView_Item) As Integer
 
 End
 
-Public Sub _GetItemWidth(hItem As _TreeView_Item) As Integer
+Private Sub GetDefaultItemHeight() As Integer
   
-  Dim W As Integer
-  
-  'W = hItem._Depth * 16
-  'If Not $bNoRoot Then W += 16
-  If hItem.Picture Then W += hItem.Picture.W + 2
-  Return W + Me.Font.TextWidth(hItem.Text)
-  
-End
-
-Public Sub _GetItemHeight(hItem As _TreeView_Item) As Integer
-  
-  Dim PH As Integer
-
-  If Not hItem Then Return
-  PH = Me.Font.Height + (Desktop.Scale \ 4) * 2 + 2
-  If hItem.Picture Then PH = Max(PH, hItem.Picture.H + (Desktop.Scale \ 4) * 2 + 2)
-  Return PH
+  Return Me.Font.Height + (Desktop.Scale \ 4) * 2 + 2
   
 End
 
@@ -502,8 +489,6 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer,
   Dim sText As String
   
   If Not hItem Then Return
-  
-  'Debug Row;; Column;; System.Backtrace.Join(" ")
   
   If Column = 0 Then
   
@@ -526,7 +511,7 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer,
       If hItem.Picture Then
         W -= hItem.Picture.W
         Paint.DrawPicture(hItem.Picture, X + W, Y + (H - hItem.Picture.H) / 2)
-        W -= 2
+        W -= Desktop.Scale \ 2
       Endif
 
     Else
@@ -549,7 +534,7 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer,
       
       If hItem.Picture Then
         Paint.DrawPicture(hItem.Picture, X, Y + (H - hItem.Picture.H) / 2)
-        X += hItem.Picture.W + 2
+        X += hItem.Picture.W + Desktop.Scale \ 2
       Endif
     
     Endif
@@ -1201,9 +1186,11 @@ Private Sub UpdateRenameBox() As Boolean
   
   hItem = $cItem[$sKeyRenaming]
   
+  '' TODO: System.RightToLeft
+  
   If $iColRenaming = 0 Then
     X = hItem.X - $hView.ScrollX
-    If hItem.Picture Then X += hItem.Picture.W + 2
+    If hItem.Picture Then X += hItem.Picture.W + Desktop.Scale \ 2
     W = Min($hView.ClientW, $hView.Columns[0].Width) - X
   Else
     X = $hView.Columns[$iColRenaming].X - $hView.ScrollX
@@ -1252,6 +1239,8 @@ End
 Private Sub Cancel(Optional bOK As Boolean)
   
   Dim sCursor As String 
+  Dim bStop As Boolean
+  Dim hItem As _TreeView_Item
   
   If Not $hRenameBox Then Return
   
@@ -1262,13 +1251,15 @@ Private Sub Cancel(Optional bOK As Boolean)
   sCursor = $sCursor
   $sCursor = $sKeyRenaming
   If bOK Then
-    Raise Rename
+    bStop = Raise Rename
   Else
     Raise Cancel
   Endif
   $sCursor = sCursor
   
+  hItem = $cItem[$sKeyRenaming]
   $sKeyRenaming = ""
+  If bStop Then _Rename(hItem, $iColRenaming)
   
 End
 
@@ -1302,12 +1293,12 @@ End
 
 Public Sub Sort_Timer()
   
-  Dim hItem As _TreeView_Item
-  
   $hSortTimer = Null
   If Not $cSort Then Return
   
-  hItem = Current_Read()
+  Raise BeforeSort
+  
+  _SaveSelection
   
   For Each $cSort
     SortItem($cItem[$cSort.Key])
@@ -1318,7 +1309,8 @@ Public Sub Sort_Timer()
   $bSortRoot = False
   $cSort.Clear
   
-  If hItem Then _SetItemSelected(hItem, True)
+  'If hItem Then _SetItemSelected(hItem, True)
+  _RestoreSelection
   
 End
 
@@ -1345,6 +1337,8 @@ End
 
 
 Public Sub GridView_Sort()
+
+  Raise BeforeSort
 
   _SaveSelection
   
@@ -1477,7 +1471,7 @@ Public Sub GridView_ColumnSize(Column As Integer)
   If Column = 0 Then
     For Each hItem In $cItem
       If Not IsItemVisible(hItem) Then Continue
-      W = Max(W, _GetItemWidth(hItem) + _GetItemX(hItem))
+      W = Max(W, hItem._GetWidth() + _GetItemX(hItem))
     Next
   Else
     For Each hItem In $cItem
@@ -1500,12 +1494,12 @@ Private Sub UpdateRowHeight(hItem As _TreeView_Item, iStart As Integer, Optional
   Endif
   
   If hItem Then
-    $hView.Rows[iStart].H = _GetItemHeight(hItem)
+    $hView.Rows[iStart].H = hItem._GetHeight()
     Inc iStart
   Endif
   
   While iStart <= iEnd
-    $hView.Rows[iStart].H = _GetItemHeight(RowToItem(iStart))
+    $hView.Rows[iStart].H = RowToItem(iStart)._GetHeight()
     Inc iStart
   Wend
   
@@ -1516,7 +1510,7 @@ Public Sub _UpdateItemHeight(hItem As _TreeView_Item, Optional bNext As Boolean)
 
   Dim iRow As Integer
 
-  If $bNoUpdateHeight Then Return
+  If $iLock Then Return
   
   iRow = _ItemToRow(hItem)
   If iRow < 0 Then Return
@@ -1557,10 +1551,34 @@ End
 
 Public Sub GridView_Font()
 
-  Dim hItem As _TreeView_Item
-  
-  For Each hItem In $cItem
-    _UpdateItemHeight(hItem)
-  Next
+  $hView.Rows.Height = GetDefaultItemHeight()
+  UpdateRowHeight(Null, 0, -1)
   
 End
+
+Private Function Keys_Read() As String[]
+
+  Dim aKeys As New String[]
+
+  For Each $cItem
+    aKeys.Add($cItem.Key)
+  Next
+  Return aKeys
+
+End
+
+Public Sub _Begin()
+  
+  Inc $iLock
+  
+End
+
+Public Sub _End()
+  
+  Dec $iLock
+  If $iLock = 0 Then
+    UpdateRowHeight(Null, 0, -1)
+  Endif
+  
+End
+

@@ -17,7 +17,7 @@ while (i < imax+1000):
   i = i + 1
   gstr += str
   gstr = re.sub('efgh','____',gstr)
-  lngth = len(str) * i
-  if (lngth % (1024*256) == 0):
+  lngth = len(gstr)
+  if (lngth % (1024*64) == 0):
     print int(time.time()-starttime),"sec\t\t",(lngth/1024),"kb"
     sys.stdout.flush()

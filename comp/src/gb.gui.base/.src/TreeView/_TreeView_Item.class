@@ -41,6 +41,7 @@ Public _Index As Integer
 Public _GrandChildren As Integer
 
 Event _Refresh
+Private $iLock As Integer
 
 Private Sub GetTree() As _TreeView
   
@@ -185,6 +186,8 @@ Private Sub Text_Write(Value As String)
   Dim hTree As _TreeView = GetTree()
 
   $sText = Value
+  If $iLock Then Return
+
   If hTree.Sorted Then hTree._SortParent($sParent)
   hTree._UpdateItemHeight(Me)
   hTree._RefreshView
@@ -202,6 +205,8 @@ Private Sub RichText_Write(Value As String)
   Dim hTree As _TreeView = GetTree()
 
   $sRichText = Value
+  If $iLock Then Return
+  
   If hTree.Sorted Then hTree._SortParent($sParent)
   hTree._UpdateItemHeight(Me)
   hTree._RefreshView
@@ -217,7 +222,10 @@ End
 Private Sub Picture_Write(Value As Picture)
 
   Dim hTree As _TreeView = GetTree()
+  
   $hPicture = Value
+  If $iLock Then Return
+  
   hTree._UpdateItemHeight(Me)
   hTree._RefreshView
   
@@ -310,9 +318,39 @@ Private Function Y_Read() As Integer
 
 End
 
+Public Sub _GetWidth() As Integer
+  
+  Dim W As Integer
+  Dim hFont As Font
+  
+  If $hPicture Then W += $hPicture.W + 2
+  hFont = $hFont
+  If Not hFont Then hFont = GetTree().Font
+  
+  If $sRichText Then
+    Return W + hFont.RichTextWidth($sRichText)
+  Else
+    Return W + hFont.TextWidth($sText)
+  Endif
+  
+End
+
+Public Sub _GetHeight() As Integer
+  
+  Dim PH As Integer
+  Dim hFont As Font
+
+  hFont = $hFont
+  If Not hFont Then hFont = GetTree().Font
+  PH = hFont.Height + (Desktop.Scale \ 4) * 2 + 2
+  If $hPicture Then PH = Max(PH, $hPicture.H + (Desktop.Scale \ 4) * 2 + 2)
+  Return PH
+  
+End
+
 Private Function Width_Read() As Integer
 
-  Return GetTree()._GetItemWidth(Me)
+  Return _GetWidth()
   
 End
 
@@ -456,6 +494,7 @@ Public Sub _put(Text As String, Column As Integer)
     $aText[Column - 1] = Text
   Endif
   
+  If $iLock Then Return
   hTree._RefreshView()
   
 End
@@ -516,6 +555,26 @@ End
 
 Private Sub Font_Write(Value As Font)
 
-  $hFont = Value
+  $hFont = Value.Copy()
 
+End
+
+Public Sub _Lock()
+  
+  Inc $iLock
+  
+End
+
+Public Sub _Unlock()
+  
+  Dim hTree As _TreeView
+  
+  Dec $iLock
+  If $iLock = 0 Then
+    hTree = GetTree()
+    If hTree.Sorted Then hTree._SortParent($sParent)
+    hTree._UpdateItemHeight(Me)
+    hTree._RefreshView
+  Endif
+  
 End

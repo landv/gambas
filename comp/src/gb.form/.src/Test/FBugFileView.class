@@ -1,0 +1,22 @@
+' Gambas class file
+
+
+Public Sub Button1_Click()
+
+  FileView1.ShowDetailed = Not FileView1.ShowDetailed
+
+End
+
+Public Sub Form_Open()
+
+  FileView1.Dir = "/usr/bin/"
+  FileChooser1.Dir = "/usr/bin/"
+
+End
+
+Public Sub Button2_Click()
+
+  FileChooser1.ShowDetailed = Not FileChooser1.ShowDetailed
+
+
+End

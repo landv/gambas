@@ -113,7 +113,7 @@ static GtkClipboard *get_clipboard()
 		if (!_selection)
 		{
 			_selection = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
-			g_signal_connect(G_OBJECT(_selection), "owner-changed", G_CALLBACK(cb_change), (gpointer)gClipboard::Clipboard);
+			g_signal_connect(G_OBJECT(_selection), "owner-change", G_CALLBACK(cb_change), (gpointer)gClipboard::Clipboard);
 		}
 		return _selection;
 	}
@@ -122,7 +122,7 @@ static GtkClipboard *get_clipboard()
 		if (!_clipboard)
 		{
 			_clipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-			g_signal_connect(G_OBJECT(_selection), "owner-changed", G_CALLBACK(cb_change), (gpointer)gClipboard::Selection);
+			g_signal_connect(G_OBJECT(_clipboard), "owner-change", G_CALLBACK(cb_change), (gpointer)gClipboard::Selection);
 		}
 		return _clipboard;
 	}

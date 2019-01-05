@@ -165,7 +165,7 @@ static void get_arguments(int argc, char **argv)
 			case 'r':
 				if (COMP_root)
 				{
-					fprintf(stderr, "gbc: option '-r' already specified.\n");
+					fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": option '-r' already specified.\n");
 					exit(1);
 				}
 				COMP_root = STR_copy(optarg);
@@ -174,14 +174,14 @@ static void get_arguments(int argc, char **argv)
 			case 'e':
 				ERROR_translate = TRUE;
 				break;
-
+				
 			case 1:
 				main_no_old_read_syntax = TRUE;
 				break;
 
 			case 'L':
 				printf(
-					"\nGAMBAS Compiler version " VERSION " " __DATE__ " " __TIME__ "\n"
+					"\nGAMBAS Compiler version " VERSION "\n"
 					COPYRIGHT
 					);
 				exit(0);
@@ -201,9 +201,10 @@ static void get_arguments(int argc, char **argv)
 					"  -p  --public-control       form controls are public\n"
 					"  -m  --public-module        module symbols are public by default\n"
 					"  -s  --swap                 swap endianness\n"
+
 					"  -r  --root <directory>     gives the gambas installation directory\n"
 					"  -e  --translate-errors     display translatable error messages\n"
-					"  -x  --exec                 define the 'Exec' preprocessor constant\n"
+					"  -x  --exec                 executable mode (define the 'Exec' preprocessor constant and remove assertions)\n"
 					"  -V  --version              display version\n"
 					"  -L  --license              display license\n"
 					"  -h  --help                 display this help\n"
@@ -219,7 +220,7 @@ static void get_arguments(int argc, char **argv)
 					"  -s                         swap endianness\n"
 					"  -r <directory>             gives the gambas installation directory\n"
 					"  -e                         display translatable error messages\n"
-					"  -x                         define the 'Exec' preprocessor constant\n"
+					"  -x                         executable mode (define the 'Exec' preprocessor constant and remove assertions)\n"
 					"  -V                         display version\n"
 					"  -L                         display license\n"
 					"  -h                         display this help\n"
@@ -237,7 +238,7 @@ static void get_arguments(int argc, char **argv)
 
 	if (optind < (argc - 1))
 	{
-		fprintf(stderr, "gbc: too many arguments.\n");
+		fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": too many arguments.\n");
 		exit(1);
 	}
 
@@ -248,7 +249,7 @@ static void get_arguments(int argc, char **argv)
 	dir = FILE_get_current_dir();
 	if (!dir)
 	{
-		fprintf(stderr, "gbc: no current directory.\n");
+		fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": no current directory.\n");
 		exit(1);
 	}
 
@@ -256,7 +257,7 @@ static void get_arguments(int argc, char **argv)
 
 	if (!FILE_exist(COMP_project))
 	{
-		fprintf(stderr, "gbc: project file not found: %s\n", COMP_project);
+		fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": project file not found: %s\n", COMP_project);
 		exit(1);
 	}
 }
@@ -387,7 +388,7 @@ static void fill_files(const char *root, bool recursive)
 	dir = opendir(path);
 	if (!dir)
 	{
-		fprintf(stderr, "gbc: cannot browse directory: %s\n", path);
+		fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": cannot browse directory: %s\n", path);
 		exit(1);
 	}
 
@@ -401,7 +402,7 @@ static void fill_files(const char *root, bool recursive)
 
 		if (stat(file, &info))
 		{
-			fprintf(stderr, "gbc: warning: cannot stat file: %s\n", file);
+			fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": warning: cannot stat file: %s\n", file);
 			continue;
 		}
 

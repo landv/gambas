@@ -59,7 +59,7 @@
 #include <sys/param.h>
 #include <limits.h>
 
-#if defined(__GNU_LIBRARY__) || defined(OS_FREEBSD)
+#if defined(__GNU_LIBRARY__) || defined(OS_BSD)
 
 #include <getopt.h>
 #define HAVE_GETOPT_LONG 1
@@ -73,15 +73,17 @@
 
 #endif
 
-#if defined(OS_FREEBSD) || defined(OS_OPENBSD)
+#if defined(OS_BSD)
 
 	/* sighandler_t is replaced by sig_t */
 	#define sighandler_t sig_t
 
 	typedef unsigned long ulong;
 
-	#if (defined(__amd64__) || defined(__ia64__) || defined(__sparc64__))
-		#define __WORDSIZE 64
+	#if defined(UINTPTR_MAX) && defined(UINT64_MAX) && (UINTPTR_MAX == UINT64_MAX)
+		#define	__WORDSIZE 64
+	#else
+		#define	__WORDSIZE 32
 	#endif
 	
 #endif
@@ -156,11 +158,11 @@ typedef
 #endif
 
 #ifndef PATH_MAX
-#define PATH_MAX 4096
+#define PATH_MAX 4095
 #endif
 
 #ifndef MAXPATHLEN
-#define MAXPATHLEN 4096
+#define MAXPATHLEN 4095
 #endif
 
 #define CLEAR(s) (memset(s, 0, sizeof(*s)))
@@ -186,7 +188,7 @@ typedef
 	#define BREAKPOINT()	{ raise(SIGTRAP); }
 #endif	/* __i386__ */
 
-#define COPYRIGHT "(c) 2000-2017 Benoît Minisini\n\n" \
+#define COPYRIGHT "(c) Benoît Minisini\n\n" \
 	"This program is free software; you can redistribute it and/or \n" \
 	"modify it under the terms of the GNU General Public License as \n" \
 	"published by the Free Software Foundation; either version 2, or \n" \

@@ -46,18 +46,14 @@ End
 
 Public Sub Main()
 
-  Dim iPos As Integer
-  
-  Highlight.Analyze("?(a+b) >Len(c)", False)
-  For Each iPos In Highlight.Positions
-    Print iPos;;
-  Next
-  Print Highlight.TextAfter
+  Dim hHighlighter As TextHighlighter
 
-  Highlight.Analyze("?(a+b) > Len(c)", True)
-  For Each iPos In Highlight.Positions
-    Print iPos;;
-  Next
-  Print Highlight.TextAfter
+  hHighlighter = TextHighlighter["gambas"]
+  
+  'Print hHighlighter.ToHTML(File.Load("src.txt"))
+  
+  ' TextHighlighter._Highlight = New Byte[]
+  ' hHighlighter.Run("Label:")
+  ' Print TextHighlighter._Highlight.Count
 
 End

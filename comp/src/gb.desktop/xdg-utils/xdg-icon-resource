@@ -288,7 +288,6 @@ binary_to_desktop_file()
 
 #-------------------------------------------------------------
 # map a .desktop file to a binary
-## FIXME: handle vendor dir case
 desktop_file_to_binary()
 {
     search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
@@ -296,14 +295,33 @@ desktop_file_to_binary()
     IFS=:
     for dir in $search; do
         unset IFS
-        [ "$dir" ] && [ -d "$dir/applications" ] || continue
-        file="$dir/applications/$desktop"
-        [ -r "$file" ] || continue
-        # Remove any arguments (%F, %f, %U, %u, etc.).
-        command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
-        command="`which "$command"`"
-        readlink -f "$command"
-        return
+        [ "$dir" ] && [ -d "$dir/applications" ] || [ -d "$dir/applnk" ] || continue
+        # Check if desktop file contains -
+        if [ "${desktop#*-}" != "$desktop" ]; then
+            vendor=${desktop%-*}
+            app=${desktop#*-}
+            if [ -r $dir/applications/$vendor/$app ]; then
+                file_path=$dir/applications/$vendor/$app
+            elif [ -r $dir/applnk/$vendor/$app ]; then
+                file_path=$dir/applnk/$vendor/$app
+            fi
+        fi
+        if test -z "$file_path" ; then
+            for indir in "$dir"/applications/ "$dir"/applications/*/ "$dir"/applnk/ "$dir"/applnk/*/; do
+                file="$indir/$desktop"
+                if [ -r "$file" ]; then
+                    file_path=$file
+                    break
+                fi
+            done
+        fi
+        if [ -r "$file_path" ]; then
+            # Remove any arguments (%F, %f, %U, %u, etc.).
+            command="`grep -E "^Exec(\[[^]=]*])?=" "$file_path" | cut -d= -f 2- | first_word`"
+            command="`which "$command"`"
+            readlink -f "$command"
+            return
+        fi
     done
 }
 
@@ -465,7 +483,7 @@ check_common_commands()
             ;;
 
             --version)
-            echo "xdg-icon-resource 1.1.0 rc3"
+            echo "xdg-icon-resource 1.1.3"
             exit_success
             ;;
         esac
@@ -508,8 +526,15 @@ detectDE()
          KDE)
            DE=kde;
            ;;
+         # Deepin Desktop Environments
+         DEEPIN|Deepin|deepin)
+           DE=dde;
+           ;;
          LXDE)
            DE=lxde;
+           ;;
+         LXQt)
+           DE=lxqt;
            ;;
          MATE)
            DE=mate;
@@ -532,6 +557,7 @@ detectDE()
       elif xprop -root _DT_SAVE_MODE 2> /dev/null | grep ' = \"xfce4\"$' >/dev/null 2>&1; then DE=xfce;
       elif xprop -root 2> /dev/null | grep -i '^xfce_desktop_window' >/dev/null 2>&1; then DE=xfce
       elif echo $DESKTOP | grep -q '^Enlightenment'; then DE=enlightenment;
+      elif [ x"$LXQT_SESSION_CONFIG" != x"" ]; then DE=lxqt;
       fi
     fi
 
@@ -570,6 +596,10 @@ detectDE()
       # but not in GNOME 3.x
       which gnome-default-applications-properties > /dev/null 2>&1  || DE="gnome3"
     fi
+
+    if [ -f "$XDG_RUNTIME_DIR/flatpak-info" ]; then
+      DE="flatpak"
+    fi
 }
 
 #----------------------------------------------------------------------------
@@ -587,6 +617,18 @@ kfmclient_fix_exit_code()
     test "$minor" -gt 5 && return $1
     test "$release" -gt 4 && return $1
     return 0
+}
+
+#----------------------------------------------------------------------------
+# Returns true if there is a graphical display attached.
+
+has_display()
+{
+    if [ -n "$DISPLAY" ] || [ -n "$WAYLAND_DISPLAY" ]; then
+        return 0
+    else
+        return 1
+    fi
 }
 
 # Set GTK_UPDATE_ICON_CACHE to gtk-update-icon-cache executable path or

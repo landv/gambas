@@ -4,7 +4,7 @@
   MoveScaled(0,0,55,50)
   Drop = True
   { tlbrMain ToolBar
-    MoveScaled(0,0,45,6)
+    MoveScaled(1,1,45,6)
     Key = "tb_main"
     Separator = True
     { ToolButton1 ToolButton
@@ -32,11 +32,11 @@
     }
   }
   { Button1 Button
-    MoveScaled(1,9,16,4)
+    MoveScaled(2,10,16,4)
     Text = ("Button1")
   }
   { Panel1 Panel
-    MoveScaled(4,17,46,6)
+    MoveScaled(5,18,46,6)
     Arrangement = Arrange.Horizontal
     Border = Border.Plain
     { ToolButton5 ToolButton
@@ -49,28 +49,28 @@
     }
   }
   { Button2 Button
-    MoveScaled(3,30,16,4)
+    MoveScaled(9,28,16,4)
     Text = ("Reparent")
   }
   { Panel2 Panel
-    MoveScaled(44,26,4,4)
+    MoveScaled(45,27,4,4)
     Background = Color.LightBackground
     Border = Border.Plain
   }
   { Label1 Label
-    MoveScaled(7,35,11,6)
+    MoveScaled(8,36,11,6)
     Drop = True
     Border = Border.Plain
   }
   { Panel3 Panel Label1
     Name = "Panel3"
-    MoveScaled(28,39,8,6)
+    MoveScaled(29,40,8,6)
     Drop = True
     Border = Border.Plain
   }
   { Separator1 Separator Label1
     Name = "Separator1"
-    MoveScaled(39,39,3,7)
+    MoveScaled(40,40,0,7)
     Drop = True
   }
 }

@@ -27,6 +27,7 @@ Private $bNoFilter As Boolean
 Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Optional iArrange As Integer = Arrange.Row)
   
   $hList = hList
+  '$hList.Shadow = True
   $hFilter = hFilter
   $iType = iType
   $iArrange = iArrange

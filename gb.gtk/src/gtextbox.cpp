@@ -122,7 +122,7 @@ gTextBox::gTextBox(gContainer *parent, bool combo) : gControl(parent)
 		/*if (strcmp(gApplication::getStyleName(), "Clearlooks-Phenix") == 0)
 			css = ".entry { border-width: 0; padding: 0; border-radius: 0; margin: 0; border-style: none; box-shadow: none; background-image: none; }";
 		else*/
-		css = "* { border: none; border-radius: 0; margin: 0; box-shadow: none; }";
+		css = "* { border: none; border-radius: 0; margin: 0; padding: 0; box-shadow: none; }";
 
 		gtk_css_provider_load_from_data(_style_provider, css, -1, NULL);
 	}
@@ -267,6 +267,7 @@ void gTextBox::setBorder(bool vl)
 	
 	_border = vl;
 	
+	gtk_entry_set_has_frame(GTK_ENTRY(entry), vl);
 #ifdef GTK3
 	GtkStyleContext *style = gtk_widget_get_style_context(entry);
 	if (vl)
@@ -275,8 +276,7 @@ void gTextBox::setBorder(bool vl)
 		gtk_style_context_add_provider(style, GTK_STYLE_PROVIDER(_style_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 
 	//gtk_style_context_invalidate(style);
-#else
-	gtk_entry_set_has_frame(GTK_ENTRY(entry), vl);
+#endif
 	
 	/*if (vl)
 		gtk_entry_set_inner_border(GTK_ENTRY(entry), NULL);
@@ -288,7 +288,6 @@ void gTextBox::setBorder(bool vl)
 		gtk_entry_set_inner_border(GTK_ENTRY(entry), border);
 		gtk_border_free(border);
 	}*/
-#endif
 }
 
 void gTextBox::insert(char *txt, int len)

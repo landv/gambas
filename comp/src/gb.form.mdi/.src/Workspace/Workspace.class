@@ -23,6 +23,7 @@ Property Orientation As Integer
 Property Border As Boolean
 Property Image As Image
 Property Picture As Picture
+Property CloseWithMouse As Boolean
 
 Static Private $bPictureWarning As Boolean
 
@@ -245,5 +246,17 @@ End
 Public Sub CloseAll()
 
   $hWorkspace.CloseAll
+
+End
+
+Private Function CloseWithMouse_Read() As Boolean
+
+  Return $hWorkspace.IsCloseWithMouse()
+
+End
+
+Private Sub CloseWithMouse_Write(Value As Boolean)
+
+  $hWorkspace.SetCloseWithMouse(Value)
 
 End

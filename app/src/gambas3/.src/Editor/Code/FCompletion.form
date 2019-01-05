@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2.125,69,17)
+  MoveScaled(0,0,69,17)
   Visible = False
   Ignore = True
   Persistent = True
@@ -43,6 +43,10 @@
     }
     { timHelp #Timer
       #MoveScaled(24,4)
+      Delay = 100
+    }
+    { timEnable #Timer
+      #MoveScaled(48,6)
       Delay = 100
     }
   }

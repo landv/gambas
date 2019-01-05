@@ -1048,7 +1048,7 @@ static void add_string()
 		add_pattern(RT_STRING, index);
 	}
 	else
-		add_pattern(RT_STRING, VOID_STRING);
+		add_pattern(RT_STRING, VOID_STRING_INDEX);
 
 	source_ptr = end + 1;
 	//for (i = 0; i < newline; i++)

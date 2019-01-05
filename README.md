@@ -34,6 +34,8 @@ The following pieces of code were borrowed and adapted:
 - The function that computes the easter day of a specific year uses an
   algorithm made by Aloysius Lilius And Christophorus Clavius.
 
+- The blurring algoritm is based on the 'StackBlur' algorithm made by Mario Klingemann.
+
 If I forget some borrowed code in the list above, just tell me.
 
 Enjoy Gambas!

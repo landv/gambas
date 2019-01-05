@@ -25,13 +25,22 @@ Private Function Text_Read() As String
 
 End
 
-Private Sub Text_Write(Value As String)
+Private Sub SetText(Value As String, Optional bNoRefresh As Boolean)
 
   If $sText = Value Then Return
   
   $sText = Value
+  If bNoRefresh Then Inc Me._NoRefresh
   Me._SetProperty("Text", Value)
+  If bNoRefresh Then Dec Me._NoRefresh
+  
   Raise Change
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  SetText(Value)
 
 End
 
@@ -50,7 +59,8 @@ End
 
 Public Sub _BeforeRender()
   
-  Print "<textarea"; Me._GetClassId(); Me._GetUpdateJS("onchange", "text", "this.value"); " autocomplete=\"off\""; 
+  Print "<textarea"; Me._GetClassId(); " autocomplete=\"off\""; 
+  If Object.CanRaise(Me, "Change") Then Print " oninput=\"gw.textarea.onchange("; JS(Me.Name); ");\"";
   If Not Me.Enabled Then Print " disabled";
   If $bReadOnly Then Print " readonly";
   If $sPlaceHolder Then Print " placeholder=\""; Html($sPlaceHolder); "\"";
@@ -87,7 +97,11 @@ End
 
 Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   
-  If sProp = "text" Then Try Me.Text = vValue
+  If sProp = "text" Then 
+    SetText(vValue, False)
+  Else If sProp = "change" Then
+    SetText(vValue, True)
+  Endif
   
 End
 
@@ -117,3 +131,17 @@ Private Sub PlaceHolder_Write(Value As String)
   Me._SetProperty("PlaceHolder", Value)
 
 End
+
+Public Sub Clear()
+  
+  Text_Write("")
+  
+End
+
+Public Sub Copy()
+  
+  WebForm._AddJavascript("gw.textarea.copy(" & JS(Me.Name) & ")")
+  
+End
+
+

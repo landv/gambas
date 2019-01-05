@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(7,15,116,76)
+  MoveScaled(0,0,116,76)
   Text = ("Project translation")
   Icon = Picture["icon:/small/language"]
   Persistent = True
@@ -24,8 +24,22 @@
     }
     { Menu1 Menu
     }
+    { mnuCopy Menu
+      Text = ("Copy")
+      Picture = Picture["icon:/small/copy"]
+      { mnuCopyUntranslated Menu
+        Text = Shortcut(("Untranslated strings"), "U") & "..."
+      }
+      { mnuCopyTranslated Menu
+        Text = Shortcut(("Translated strings"), "T") & "..."
+      }
+      { mnuCopyAll Menu
+        Text = Shortcut(("All strings"), "A") & "..."
+      }
+    }
     { mnuExport Menu
       Text = ("Export")
+      Picture = Picture["icon:/small/save-as"]
       { mnuExportUntranslated Menu
         Text = Shortcut(("Untranslated strings"), "U") & "..."
       }
@@ -158,10 +172,18 @@
         { Separator4 Separator
           MoveScaled(0,4,15,0)
         }
-        { txtOrig TextLabel
-          MoveScaled(1,5,24,6)
+        { Panel7 Panel
+          MoveScaled(1,6,40,6)
           Expand = True
-          Padding = 4
+          Arrangement = Arrange.Fill
+          Padding = 2
+          { txtOrig TextArea
+            MoveScaled(0,0,39,5)
+            Background = Color.Transparent
+            ReadOnly = True
+            Wrap = True
+            Border = False
+          }
         }
         { Separator5 Separator
           MoveScaled(3,13,15,0)
@@ -202,6 +224,7 @@
       }
       { btnOK Button
         MoveScaled(83,0,18,4)
+        AutoResize = True
         Text = Shortcut(("Close"), "C")
         Picture = Picture["icon:/small/close"]
         Cancel = True

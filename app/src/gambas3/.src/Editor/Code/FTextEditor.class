@@ -107,26 +107,20 @@ Public Sub LoadFile() As Boolean
   
       Select Case sExt
         Case "css"
-          edtEditor.Mode = "css"
           $bShowPretty = True
         Case "webpage"
-          edtEditor.Mode = "webpage"
           $bWebPage = True
         Case "js"
-          edtEditor.Mode = "javascript"
           $bShowPretty = True
         Case "c"
-          edtEditor.Mode = "c"
           $bShowPretty = True
         Case "cpp", "h"
-          edtEditor.Mode = "c++"
           $bShowPretty = True
         Case "gbs"
-          edtEditor.Mode = "gambas"
           $bShowPretty = True
-        Case Else 
-          edtEditor.Mode = "html"
       End Select
+      
+      edtEditor.Mode = TextEditor.GetModeFromPath(Path)
       
       $bShowCompress = MCompressFile.CanCompress(Path) And Not Project.IsHiddenPath(Path)
       $bShowComment = True
@@ -598,14 +592,11 @@ Public Sub OnProjectDebug()
 
 End
 
-Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean)
+Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean, bWordOnly As Boolean)
   
-  ' TODO: OnShowString
-  Return
-  
-  edtEditor.ShowString(sStr, bIgnoreCase)
-  If $hEditor1 Then $hEditor1.ShowString(sStr, bIgnoreCase)
-  If $hEditor2 Then $hEditor2.ShowString(sStr, bIgnoreCase)
+  edtEditor.HighlightString(sStr, bIgnoreCase, bWordOnly)
+  If $hEditor1 Then $hEditor1.HighlightString(sStr, bIgnoreCase, bWordOnly)
+  If $hEditor2 Then $hEditor2.HighlightString(sStr, bIgnoreCase, bWordOnly)
   
 End
 
@@ -829,9 +820,9 @@ Public Sub SetPosition(hResult As CFindResult, Optional bJustCheck As Boolean) A
   
 End
 
-Public Sub Replace(sReplace As String)
+Public Sub Replace(sReplace As String) As Boolean
   
-  $hEditor.Replace(sReplace)
+  Return $hEditor.Replace(sReplace)
   
 End
 
@@ -916,6 +907,8 @@ Public Sub Compress() As Boolean
     CompressMessage = "<b>" & Subst(("The file has been compressed from &1 to &2 bytes (&3)."), Str(iLen), Str(Len(sText)), Format(fGain, "#.##%")) & "</b> " & ("Original file has been saved in the <b>Project</b> folder.")
   Endif
   
+  FSearch.OnFileChange(Me.Path)
+  
 Catch 
   
   Dec Application.Busy
@@ -930,7 +923,8 @@ Public Sub mnuCompress_Click()
   If Compress() Then
     FMain.ShowError(CompressMessage)
   Else
-    If CompressMessage Then $hEditor.ShowMessageLabel(CompressMessage)
+    'If CompressMessage Then $hEditor.ShowMessageLabel(CompressMessage, Highlight.Background, True)
+    If CompressMessage Then Balloon(CompressMessage, btnCompress)
   Endif
   
 End
@@ -944,6 +938,7 @@ Public Sub Uncompress()
   sPath = GetUncompressPath()
   If Not Exist(sPath) Then Return
   SetText(File.Load(sPath))
+  FSearch.OnFileChange(Me.Path)
   
 End
 
@@ -1030,7 +1025,7 @@ Public Sub ShowErrorMessage(sMsg As String, (sIcon) As String)
 
   $hEditor.SetFocus
   Wait
-  $hEditor.ShowMessageLabel(sMsg, $hEditor.ToPosX(), $hEditor.ToPosY() + $hEditor.LineHeight, Highlight.Breakpoint)
+  $hEditor.ShowMessageLabel(sMsg, Highlight.Breakpoint)
 
 End
 
@@ -1247,7 +1242,7 @@ Private Sub UpdateMenu()
 
   bVisible = Not edtEditor.ReadOnly
 
-  Action[".save,.undo,.redo,.cut,.paste,.color,.indent,.unindent,.lcase,.ucase,.sort-ascent,.sort-descent,.eol,.date", Me].Visible = bVisible
+  Action[".save,.undo,.redo,.cut,.paste,.color,.indent,.unindent,.lcase,.ucase,.sort-ascent,.sort-descent,.eol,.date,.char", Me].Visible = bVisible
   mnuAdvanced.Visible = bVisible
   mnuEndOfLine.Visible = bVisible
 
@@ -1782,5 +1777,12 @@ End
 Public Sub mnuPretty_Click()
 
   MPrettyCode.Run(Me)
+
+End
+
+
+Public Sub btnInsertChar_Click()
+
+  FInsertChar.Run($hEditor, btnInsertChar.ScreenX, btnInsertChar.ScreenY + btnInsertChar.H)
 
 End

@@ -53,9 +53,16 @@
       Shortcut = "Ctrl+PgDown"
     }
   }
-  { timCheck #Timer
-    #MoveScaled(59,18)
-    Delay = 0
+  { tabWorkspace TabPanel
+    MoveScaled(3,8,40,32)
+    Visible = False
+    Expand = True
+    Closable = True
+    Moveable = True
+    Highlight = True
+    Index = 0
+    Text = ("")
+    Index = 0
   }
   { svwWorkspace ScrollView
     MoveScaled(2,45,35,23)
@@ -97,16 +104,9 @@
       NoBackground = True
     }
   }
-  { tabWorkspace TabPanel
-    MoveScaled(3,8,40,32)
-    Visible = False
-    Expand = True
-    Closable = True
-    Moveable = True
-    Highlight = True
-    Index = 0
-    Text = ("")
-    Index = 0
+  { timCheck #Timer
+    #MoveScaled(59,18)
+    Delay = 0
   }
 }
 

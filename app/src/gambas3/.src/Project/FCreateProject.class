@@ -20,6 +20,8 @@ End
 
 Public Sub Form_Open()
 
+  dchProject.Bookmarks = Project.GetBookmarks()
+
   'dchProject.SelectedPath = Settings["/FCreateProject/Path", System.User.Home]
   Settings.Read(Me)
   wizProject.Index = 0
@@ -35,7 +37,7 @@ Public Sub Form_Open()
   txtFilter.SetFocus
 
   $sTemplate = ""
-
+  
   Dec Application.Busy
 
 End
@@ -116,6 +118,8 @@ Private Sub CreateProject() As Boolean
       Else If sLine Begins "Description=" Then
         Continue
       Else If sLine Begins "Icon=" Then
+        Continue
+      Else If sLine Begins "TabSize=" Then
         Continue
       Endif
       

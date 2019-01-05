@@ -136,19 +136,20 @@ TABLE.table, TABLE.error {
   margin-top: 0.75em;
   border-spacing: 0;
   empty-cells: show;
+  line-height: 1.75em;
 }
 
 TABLE.table > TBODY > TR > TD, TABLE.error > TBODY > TR > TD {
   border-top: solid #D0D0D0 1px;
   border-left:  solid #D0D0D0 1px;
-  padding: 3px 6px;
+  padding: 0.25em 0.5em;
   vertical-align: top;
 }
 
 TABLE.table > TBODY > TR > TH, TABLE.error > TBODY > TR > TH {
   border-top: solid #D0D0D0 1px;
   border-left:  solid #D0D0D0 1px;
-  padding: 3px 6px;
+  padding: 0.25em 0.5em;
   text-align: left;
 }
 
@@ -180,10 +181,10 @@ TABLE.desc > TBODY > TR > TH {
   bottom: 0;
   max-width: 80em;
   margin: auto;
-  border-left: solid 1px #C0C0C0;
-  border-right: solid 1px #C0C0C0;
+  /*border-left: solid 1px #C0C0C0;
+  border-right: solid 1px #C0C0C0;*/
   box-sizing: border-box;
-  background-color: #F8F8F8;
+  background-color: white;
 }
 
 .header {
@@ -275,12 +276,11 @@ TABLE.desc > TBODY > TR > TH {
   overflow: auto;
   padding: 2em;
   padding-top: 1em;
-  background-color: #F8F8F8;
   box-sizing: border-box;
 }
 
 .page P {
-  line-height: 1.5em;
+  line-height: 1.75em;
 }
 
 .page > DIV:last-child {
@@ -356,7 +356,6 @@ DIV.box {
   margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
-  border-radius: 0.25em;
   padding: 0.5em;
 }
 
@@ -364,7 +363,6 @@ DIV.info {
   margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
-  border-radius: 0.25em;
   padding: 0.5em;
   padding-left: 48px;
   background: url('<%/%>/info.png') 8px 8px no-repeat;
@@ -375,7 +373,6 @@ DIV.warning {
   margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
-  border-radius: 0.25em;
   padding: 8px;
   padding-left: 48px;
   background: url('<%/%>/warning.png') 8px 8px no-repeat;
@@ -386,7 +383,6 @@ DIV.tip {
   margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
-  border-radius: 0.25em;
   padding: 8px;
   padding-left: 48px;
   background: url('<%/%>/tip.png') 8px 8px no-repeat;
@@ -397,7 +393,6 @@ DIV.vb {
   margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
-  border-radius: 0.25em;
   padding: 8px;
   padding-left: 48px;
   background: url('<%/%>/vb.png') 8px 8px no-repeat;
@@ -408,7 +403,6 @@ DIV.critical {
   margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
-  border-radius: 0.25em;
   padding: 8px;
   padding-left: 48px;
   background: url('<%/%>/critical.png') 8px 8px no-repeat;
@@ -462,14 +456,18 @@ DIV.syntax {
   margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
-  background-color: #F0F0F0;
-  padding: 0.25em 0.5em;
+  background-color: #F8F8F8;
+  padding: 0.25em 0.75em;
   font-family: monospace;
   white-space: pre-wrap;
 }
 
 DIV.syntax > P:last-child {
   margin-bottom: -0.75em;
+}
+
+DIV.syntax > P {
+  line-height: 1.1em;
 }
 
 DIV.since {
@@ -486,6 +484,11 @@ DIV.since {
 .letter {
   font-weight: bold;
   vertical-align: baseline;
+  color: white;
+  background-color: #606060;
+  padding: 0 0.25em;
+  margin-right: 0.25em;
+  text-align: center;
 }
 
 TR {
@@ -556,15 +559,14 @@ DIV.syntax > P:first-child {
 .login {
   position: absolute;
   background: white;
-  border: solid 1px #C0C0C0;
-  box-shadow: 0 0 0.5em black;
+  border: solid 4px #E0E0E0;
+  background-color: #F8F8F8;
   padding: 2em;
   z-index: 10;
   text-align: center;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
-  border-radius: 1em;
 }
 
 .login-glue {
@@ -709,7 +711,9 @@ DIV.date P {
 }
 
 DIV.result {
-  background-color: #D8D8D8;
+  border: solid 1px #D8D8D8;
+  border-top: none;
+  background-color: #F8F8F8;
 }
 
 DIV.result PRE {

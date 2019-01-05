@@ -754,6 +754,23 @@ static int exec_query(DB_DATABASE *db, const char *query, DB_RESULT *result, con
 
 /*****************************************************************************
 
+	get_last_insert_id()
+
+	Return the value of the last serial field used in an INSERT statement
+
+	<db> is the database handle, as returned by open_database()
+
+*****************************************************************************/
+
+static int64_t get_last_insert_id(DB_DATABASE *db)
+{
+	GB.Error("Unsupported feature");
+	return -1;
+}
+
+
+/*****************************************************************************
+
 	query_init()
 
 	Initialize an info structure from a query result.

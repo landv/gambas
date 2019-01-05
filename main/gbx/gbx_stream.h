@@ -83,6 +83,8 @@ typedef
 		int64_t size;
 		int fd;
 		unsigned watch : 1;
+		unsigned has_size : 1;
+		unsigned use_size : 1;
 		}
 	STREAM_DIRECT;
 
@@ -143,19 +145,19 @@ typedef
 	STREAM;
 
 enum {
-	ST_READ        = (1 << 0),
-	ST_WRITE       = (1 << 1),
-	ST_READ_WRITE  = ST_READ + ST_WRITE,
-	ST_MODE        = 0x3,
-	ST_APPEND      = (1 << 2),
-	ST_CREATE      = (1 << 3),
-	ST_ACCESS      = 0xF,
-	ST_DIRECT      = (1 << 4),
-	ST_LOCK        = (1 << 5),
-	ST_WATCH       = (1 << 6),
-	ST_PIPE        = (1 << 7),
-	ST_MEMORY      = (1 << 8),
-	ST_STRING      = (1 << 9)
+	STO_READ        = (1 << 0),
+	STO_WRITE       = (1 << 1),
+	STO_READ_WRITE  = STO_READ + STO_WRITE,
+	STO_MODE        = 0x3,
+	STO_APPEND      = (1 << 2),
+	STO_CREATE      = (1 << 3),
+	STO_ACCESS      = 0xF,
+	STO_DIRECT      = (1 << 4),
+	STO_LOCK        = (1 << 5),
+	STO_WATCH       = (1 << 6),
+	STO_PIPE        = (1 << 7),
+	STO_MEMORY      = (1 << 8),
+	STO_STRING      = (1 << 9)
 	};
 
 enum {
@@ -224,6 +226,7 @@ void STREAM_flush(STREAM *stream);
 int STREAM_handle(STREAM *stream);
 void STREAM_lof(STREAM *stream, int64_t *len);
 bool STREAM_eof(STREAM *stream);
+bool STREAM_default_eof(STREAM *stream);
 
 void STREAM_load(const char *path, char **buffer, int *len);
 

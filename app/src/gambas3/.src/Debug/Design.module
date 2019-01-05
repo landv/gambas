@@ -46,22 +46,22 @@ Private $hPipeError As File
 Private $hBrowser As Process
 Private $iProcessId As Integer
 
-Private $hTimerDebugPanel As Timer
+Private $hTimerShowConsole As Timer
 
 Public Sub Init()
  
   $sFifo = Debug.Begin()
   SetState(STATE_STOP)
   
-  $hTimerDebugPanel = New Timer As "TimerDebugPanel"
-  $hTimerDebugPanel.Delay = 50
+  $hTimerShowConsole = New Timer As "TimerShowConsole"
+  $hTimerShowConsole.Delay = 50
 
 End
 
 
 Public Sub Exit()
 
-  $hTimerDebugPanel = Null
+  $hTimerShowConsole = Null
   Debug.End
 
 End
@@ -109,34 +109,23 @@ Private Sub SetState(iState As Integer)
   $iState = iState
 
   FOutput.OnProjectDebugState
+  FDebugInfo.OnProjectDebugState
   
-  $hTimerDebugPanel.Restart
-  
-End
-
-Public Sub TimerDebugPanel_Timer()
-  
-  If $iState = STATE_RUNNING Then 
-    FDebugInfo.ShowConsole
-  Else
-    FDebugInfo.ShowDebugging
-  Endif
-  
-  $hTimerDebugPanel.Stop
+  '$hTimerDebugPanel.Restart
   
 End
 
-
-
-' PRIVATE SUB HideForm(hForm AS Form)
-' 
-'    IF NOT hForm.Visible THEN RETURN
-' 
-'    $cShow.Add(hForm)
-'    hForm.Hide
-' 
-' END
-
+' Public Sub TimerDebugPanel_Timer()
+'   
+'   If $iState = STATE_RUNNING Then 
+'     FDebugInfo.ShowConsole
+'   Else
+'     FDebugInfo.ShowDebugging
+'   Endif
+'   
+'   $hTimerDebugPanel.Stop
+'   
+' End
 
 Public Sub Pause()
 
@@ -175,9 +164,24 @@ Public Sub File_Read()
   Dim sData As String
   
   sData = Read #$hPipeError, Lof($hPipeError)
-  Insert(sData)
+  FOutput.Insert(sData)
   
 End
+
+Public Sub Process_Read()
+  
+  $hTimerShowConsole.Restart
+  
+End
+
+Public Sub TimerShowConsole_Timer()
+  
+  If $hProcess Then FDebugInfo.ShowConsole
+  $hTimerShowConsole.Stop
+  
+End
+
+
 
 
 ' Public Sub Process_Read()
@@ -491,7 +495,7 @@ Private Sub AfterStop()
   'Settings["/FMain/Splitter"] = hForm.Layout
   'FDebugInfo.Hide
   
-  If Not $bConsole Then FMain.ShowDebug(False)
+  If Not $bConsole Then FMain.ShowDebug(False, True)
   FDebugInfo.UpdateView
 
   ' FOR EACH hForm IN $cShow
@@ -505,7 +509,7 @@ Private Sub AfterStop()
 
   FMain.ActivateCurrentWindow
 
-  $hTimerDebugPanel.Stop
+  '$hTimerShowConsole.Stop
   
   'IF Project.ActiveForm THEN
   '  TRY Project.ActiveForm.Show
@@ -880,7 +884,8 @@ Private Sub Start(sCmd As String)
   FMain.OnProjectDebug
   FSearch.OnProjectDebug
 
-  FMain.ShowDebug(True)
+  FMain.ShowDebug(True, True)
+  
   FDebugInfo.UpdateView
   FDebugInfo.OnProjectDebug
 
@@ -1056,6 +1061,8 @@ Private Sub Start(sCmd As String)
     'If $hBrowser Then Object.Attach($hBrowser, Me, "Browser")
   Endif
 
+  FDebugInfo.ShowDebugging
+
   'PRINT "Debug.Start"
   'PRINT "Debug.Start -> OK"
 
@@ -1177,39 +1184,6 @@ Public Sub ClearOutput()
   FOutput.Clear
 
 End
-
-
-Private Sub Insert(sText As String)
-
-  'TRY sText = DConv$(sText)
-  FOutput.Insert(sText)
-
-End
-
-
-
-' Private Sub ToggleChild(hChild As Object)
-' 
-'   'hChild.Visible = TRUE 'NOT hChild.Visible
-'   hChild.Show
-' 
-' End
-
-
-' PRIVATE SUB SaveChild(hChild AS Object)
-' 
-'   hChild.Shown = hChild.Visible
-'   hChild.Hide
-' 
-' END
-' 
-' 
-' PRIVATE SUB RestoreChild(hChild AS Object)
-' 
-'   hChild.Visible = hChild.Shown
-' 
-' END
-
 
 Public Function IsRunning() As Boolean
 
@@ -1398,6 +1372,8 @@ Public Sub InitEditorWithBreakpoints(hEditor As FEditor)
   Dim I As Integer
   Dim sPrefix As String
   
+  If Project.IsFake() Then Return
+  
   sPrefix = hEditor.Name & "."
   While I < $aBreakpoint.Count
     sBreakpoint = $aBreakpoint[I]
@@ -1452,5 +1428,44 @@ End
 Public Sub HasBreakpoint(sClass As String) As Boolean
   
   Return $cClassHasBreakpoint[sClass]
+  
+End
+
+Public Sub RenameClass(sOld As String, sNew As String)
+
+  Dim I As Integer
+  Dim sBreakpoint As String
+  Dim aBreakpoint As String[]
+  Dim bDisabled As Boolean
+  Dim bHasBreakpoint As Boolean
+  
+  For I = 0 To $aBreakpoint.Max
+    
+    sBreakpoint = $aBreakpoint[I]
+    aBreakpoint = Split(sBreakpoint, ".")
+    
+    If aBreakpoint[0] = sOld Then
+      
+      bDisabled = $cDisabledBreakpoint.Exist(sBreakpoint)
+      $cDisabledBreakpoint.Remove(sBreakpoint)
+      
+      aBreakpoint[0] = sNew
+      sBreakpoint = aBreakpoint.Join(".")
+      
+      $aBreakpoint[I] = sBreakpoint
+      If bDisabled Then $cDisabledBreakpoint[sBreakpoint] = True
+      
+      bHasBreakpoint = True
+      
+    Endif
+    
+  Next
+  
+  $cClassHasBreakpoint.Remove(sOld)
+  $cClassHasBreakpoint[sNew] = bHasBreakpoint
+  
+  $aBreakpoint.Sort(gb.Natural)
+  
+  FDebugInfo.RefreshBreakpointView()
   
 End

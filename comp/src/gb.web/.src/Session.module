@@ -22,6 +22,7 @@ Property Modified As Boolean
 Property CookiePath As String
 Property Read Keys As String[]
 Property Read Size As Long
+Property Read Path As String
 
 Private Sub CreateSession()
 
@@ -278,3 +279,9 @@ Public Sub _MakeId()
   
 End
 
+
+Private Function Path_Read() As String
+
+  Return $hManager.GetPath()
+
+End

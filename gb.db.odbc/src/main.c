@@ -163,33 +163,31 @@ void throwODBCError(const char *failedODBCFunctionName,
                     SQLSMALLINT handleType
                    )
 {
+	SQLINTEGER	i = 0;
+	SQLINTEGER	native;
+	SQLTCHAR	state[7];
+	SQLTCHAR	text[512];
+	char	*errorText = NULL; //GB.NewString("gb.db.odbc: ", 12);
+	SQLSMALLINT	len;
+	SQLRETURN	ret;
 
-    SQLINTEGER	i = 0;
-    SQLINTEGER	native;
-    SQLTCHAR	state[7];
-    SQLTCHAR	text[512];
-    char	*errorText = GB.NewString("gb.db.odbc: ", 12);
-    SQLSMALLINT	len;
-    SQLRETURN	ret;
+	errorText = GB.AddString(errorText, (char *)failedODBCFunctionName, 0),
+	errorText = GB.AddString(errorText, " failed:", 0);
 
-    errorText = GB.AddString(errorText, (char *)failedODBCFunctionName, 0),
-    errorText = GB.AddString(errorText, " failed:", 0);
+	do
+	{
+		ret = SQLGetDiagRec(handleType, handle, ++i, state, &native, text, sizeof(text), &len);
+		if (SQL_SUCCEEDED(ret))
+		{
+				errorText = GB.AddString(errorText, "\n", 1);
+				errorText = GB.AddString(errorText, (char *)state, 0);
+				errorText = GB.AddString(errorText, (char *)text, len);
+		}
+	}
+	while (ret == SQL_SUCCESS);
 
-    do
-    {
-	ret = SQLGetDiagRec(handleType, handle, ++i, state, &native, text, sizeof(text), &len);
-        if (SQL_SUCCEEDED(ret))
-        {
-            errorText = GB.AddString(errorText, "\n", 1);
-            errorText = GB.AddString(errorText, (char *)state, 0);
-            errorText = GB.AddString(errorText, (char *)text, len);
-        }
-    }
-    while (ret == SQL_SUCCESS);
-
-    GB.Error(errorText);
-    GB.FreeString(&errorText);
-
+	GB.Error(errorText);
+	GB.FreeString(&errorText);
 }
 
 
@@ -688,8 +686,10 @@ void GetConnectedDBName(DB_DESC *desc, ODBC_CONN *odbc)
 
 	if (SQL_SUCCEEDED(retcode))
 	{
-		dbName = malloc(sizeof(SQLTCHAR) * charsNeeded++);
-		dbName[sizeof(SQLTCHAR) * charsNeeded++] = 0;
+		charsNeeded++;
+		
+		dbName = malloc(sizeof(SQLTCHAR) * charsNeeded);
+		
 		/*zxMarce: We call the function again, this time specifying a
 		  hopefully big enough buffer for storing the catalog name.
 		*/
@@ -697,8 +697,11 @@ void GetConnectedDBName(DB_DESC *desc, ODBC_CONN *odbc)
 					    dbName, charsNeeded,
 					    &charsNeeded
 					   );
+		dbName[sizeof(SQLTCHAR) * charsNeeded] = 0;
+		
 		GB.FreeString(&desc->name);
 		desc->name = GB.NewZeroString((char *)dbName);
+		free(dbName);
 	}
 
 	if (DB.IsDebug())
@@ -823,11 +826,9 @@ fflush(stderr);
         //zxMarce: Must bail out NOW if failed to connect, or nonsense errors will appear.
 	if (!SQL_SUCCEEDED(retcode))
 	{
-                throwODBCError((hostIsAConnString ? "SQLDriverConnect" : "SQLConnect"),
-				odbc->odbcHandle,
-				SQL_HANDLE_DBC
-			       );
-	        //GB.Error("Error connecting to database");
+		throwODBCError((hostIsAConnString ? "SQLDriverConnect" : "SQLConnect"), odbc->odbcHandle, SQL_HANDLE_DBC);
+		free(odbc);
+		//GB.Error("Error connecting to database");
 		return TRUE;
 	}
 
@@ -851,10 +852,8 @@ fflush(stderr);
 	retcode = SQLGetFunctions(odbc->odbcHandle, SQL_API_SQLFETCHSCROLL, &odbc->FetchScroll_exist);
         if (!SQL_SUCCEEDED(retcode))
 	{
-                throwODBCError("SQLGetFunctions SQL_API_SQLFETCHSCROLL",
-				odbc->odbcHandle,
-				SQL_HANDLE_DBC
-			      );
+		throwODBCError("SQLGetFunctions SQL_API_SQLFETCHSCROLL", odbc->odbcHandle, SQL_HANDLE_DBC);
+		free(odbc);
 		//GB.Error("Error calling the ODBC SQLGetFunctions API");
 		return TRUE;
 	}
@@ -868,8 +867,8 @@ fflush(stderr);
 
 	db->handle = odbc;
 	return FALSE;
-
 }
+
 
 /*****************************************************************************
 
@@ -1211,6 +1210,7 @@ fflush(stderr);
 	<result> can be NULL, when we don't care getting the result.
 
 *****************************************************************************/
+
 static int exec_query(DB_DATABASE *db, const char *query, DB_RESULT * result, const char *err)
 {
 #ifdef ODBC_DEBUG_HEADER
@@ -1328,6 +1328,22 @@ fflush(stderr);
 
 }
 
+
+/*****************************************************************************
+
+	get_last_insert_id()
+
+	Return the value of the last serial field used in an INSERT statement
+
+	<db> is the database handle, as returned by open_database()
+
+*****************************************************************************/
+
+static int64_t get_last_insert_id(DB_DATABASE *db)
+{
+	GB.Error("Unsupported feature");
+	return -1;
+}
 
 /*****************************************************************************
 
@@ -2334,12 +2350,10 @@ fflush(stderr);
 
 	while (nReturn == SQL_SUCCESS || nReturn == SQL_SUCCESS_WITH_INFO)
 	{
-
-
 		tablenum = tablenum + 1;
 		curtable->tablename = malloc(sizeof(szTableName));
 		curtable->next = malloc(sizeof(ODBC_TABLES));
-		strncpy(curtable->tablename, (char *)szTableName, sizeof(szTableName));
+		strcpy(curtable->tablename, (char *)szTableName);
 		curtable = (ODBC_TABLES *) curtable->next;
 		szTableName[0] = '\0';
 		szTableType[0] = '\0';

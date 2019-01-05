@@ -1,0 +1,113 @@
+' Gambas class file
+
+Private Const CHAR_LIST As String = "«»‘’“”‚„¡¿¶°§µ‸×÷…‰†′″‴©®™¢£¤¥€‒–—·•‣▪⁕◆◼←↑→↓↔↕↖↗↘↙↤↥↦↧↰↱↲↳↴↵↶↷⇄⇅⬅⬆➡⬇⬈⬉⬊⬋⬌⬍■□▲△●○▴▵▶▷▸▹▼▽▾▿◀◁◂◃►▻◄◅±≃≈≠≤≥⊂⊃⊄⊅∧∨∩∪∀∂∃∄∅∆∇∈∉∋∌∏∐∑∞ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωℂℍℕℙℚℝℤ⅒⅑⅛⅐⅙⅕¼⅓⅜⅖½⅗⅝⅔¾⅘⅚⅞⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉♭♮♯"
+
+Static Public Char As String
+
+Private $WC As Integer
+Private $HC As Integer
+Private $iCurrent As Integer
+Private $iLen As Integer
+Private $bKeepOpen As Boolean
+Private $hEditor As TextEditor
+
+Public Sub Run(hEditor As TextEditor, X As Integer, Y As Integer)
+  
+  $hEditor = hEditor
+  Me.ShowPopup(X, Y)
+  hEditor.SetFocus
+  $hEditor = Null
+  
+End
+
+
+Public Sub _new()
+  
+  'Project.SetEditorFont(dwgCharSelect)
+  dwgCharSelect.Font.Size *= 1.5
+  $WC = dwgCharSelect.Font.TextWidth("0") * 2.5
+  $HC = dwgCharSelect.Font.H + Desktop.Scale
+  $iLen = String.Len(CHAR_LIST)
+  Me.Resize($WC * 16 + 2, $HC * (($iLen + 15) \ 16) + 2)
+  
+End
+
+
+Public Sub dwgCharSelect_Draw()
+
+  Dim X As Integer
+  Dim Y As Integer
+  Dim I As Integer
+  Dim J As Integer
+  Dim sCar As String
+  Dim N As Integer
+
+  Paint.Translate(1, 1)
+
+  N = 1
+  For J = 0 To 15
+    For I = 0 To 15
+      sCar = String.Mid$(CHAR_LIST, N, 1)
+      Paint.DrawText(sCar, X, Y, $WC, $HC, Align.Center)
+      If $iCurrent = N Then Paint.FillRect(X, Y, $WC, $HC, Color.SetAlpha(Color.SelectedBackground, 192))
+      Inc N
+      X += $WC
+    Next
+    Y += $HC
+    X = 0
+    If N > $iLen Then Break
+  Next
+
+  For X = $WC To dwgCharSelect.W - 1 Step $WC
+    Paint.FillRect(X, 0, 1, Paint.H, Color.LightForeground)
+  Next
+
+  For Y = $HC To dwgCharSelect.H - 1 Step $HC
+    Paint.FillRect(0, Y, Paint.W, 1, Color.LightForeground)
+  Next
+
+End
+
+
+Public Sub dwgCharSelect_MouseMove()
+
+  Dim N As Integer
+
+  If Not Mouse.Left Then $bKeepOpen = True
+
+  N = 1 + (Mouse.Y \ $HC) * 16 + Mouse.X \ $WC
+  If N <> $iCurrent Then
+    $iCurrent = N
+    dwgCharSelect.Refresh
+  Endif
+
+End
+
+Public Sub dwgCharSelect_Leave()
+
+  $iCurrent = 0
+  dwgCharSelect.Refresh
+
+End
+
+Public Sub dwgCharSelect_MouseUp()
+
+  Dim sCar As String
+
+  sCar = String.Mid$(CHAR_LIST, $iCurrent, 1)
+  If sCar Then $hEditor.Insert(sCar)
+  If Not $bKeepOpen Then Me.Close
+
+End
+
+Public Sub Form_Open()
+
+  Char = ""
+
+End
+
+Public Sub Form_KeyPress()
+
+  If Key.Code = Key.Escape Then Me.Close
+
+End

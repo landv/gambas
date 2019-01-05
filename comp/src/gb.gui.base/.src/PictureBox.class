@@ -1,0 +1,311 @@
+' Gambas class file
+
+Export
+Inherits DrawingArea
+
+Public Const _Properties As String = "*,-Arrangement,-Spacing,-Margin,-Indent,-Invert,-NoBackground,-Tablet,-Cached,-Focus,Padding{Range:0;64},Picture,Stretch,AutoResize,Alignment{Align.*}=TopLeft,Border{Border.None;Plain;Sunken;Raised;Etched},Mode{PictureBox.Normal;Fill;Cover;Contain;Repeat}"
+Public Const _DefaultEvent As String = "MouseDown"
+Public Const _DefaultSize As String = "16,16"
+Public Const _IsContainer As Boolean = False
+Public Const _Group As String = "Form"
+
+Property Picture As Picture
+Property Image As Image
+Property Alignment As Integer
+Property AutoResize As Boolean
+Property Padding As Integer
+Property Border As Integer
+Property Stretch As Boolean
+Property Mode As Integer
+
+Public Enum Normal, Fill, Cover, Contain, {Repeat}
+
+Static Private $hDefault As Image
+
+Private $hObs As Observer
+Private $iAlign As Integer = Align.TopLeft
+Private $iPadding As Integer
+Private $iBorder As Integer
+Private $iMode As Integer
+Private $hPicture As Picture
+Private $hImage As Image
+Private $bAutoResize As Boolean
+Private $bStretch As Boolean
+
+Public Sub _new()
+  
+  $hObs = New Observer(Me) As "DrawingArea"
+  
+End
+
+
+Private Function Alignment_Read() As Integer
+
+  Return $iAlign
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  If $iAlign = Value Then Return
+  $iAlign = Value
+  Me.Refresh
+
+End
+
+Private Function AutoResize_Read() As Boolean
+
+  Return $bAutoResize
+
+End
+
+Private Sub GetPadding() As Integer
+
+  Dim P As Integer
+
+  P = $iPadding
+  Select Case $iBorder
+    Case Border.Plain
+      Inc P
+    Case Border.Raised, Border.Sunken
+      P += Style.FrameWidth
+  End Select
+    
+  Return P  
+
+End
+
+Private Sub UpdateSize()
+
+  Dim W As Integer
+  Dim H As Integer
+  Dim P As Integer
+  
+  If Me.Design Then Return
+  If Not $bAutoResize Then Return
+  If $hImage Then
+    W = $hImage.W
+    H = $hImage.H
+  Else If $hPicture Then
+    W = $hPicture.W
+    H = $hPicture.H
+  Endif
+  If W And If H Then 
+    P = GetPadding() * 2
+    Me.Resize(W + P, H + P)
+  Endif
+
+End
+
+Private Sub AutoResize_Write(Value As Boolean)
+
+  If $bAutoResize = Value Then Return
+  $bAutoResize = Value
+  UpdateSize
+
+End
+
+Private Function Padding_Read() As Integer
+
+  Return $iPadding
+
+End
+
+Private Sub Padding_Write(Value As Integer)
+
+  If $iPadding = Value Then Return
+  $iPadding = Value
+  Me.Refresh
+
+End
+
+Private Function Border_Read() As Integer
+
+  Return $iBorder
+
+End
+
+Private Sub Border_Write(Value As Integer)
+
+  If $iBorder = Value Then Return
+  $iBorder = Value
+  UpdateSize
+  Me.Refresh
+
+End
+
+Private Function Stretch_Read() As Boolean
+
+  Return $bStretch
+
+End
+
+Private Sub Stretch_Write(Value As Boolean)
+
+  If $bStretch = Value Then Return
+  $bStretch = Value
+  Me.Refresh
+
+End
+
+Private Function Mode_Read() As Integer
+
+  Return $iMode
+
+End
+
+Private Sub Mode_Write(Value As Integer)
+
+  If $iMode = Value Then Return
+  $iMode = Value
+  Me.Refresh
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $hPicture
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  $hPicture = Value
+  UpdateSize
+  Me.Refresh
+
+End
+
+Private Function Image_Read() As Image
+
+  Return $hImage
+
+End
+
+Private Sub Image_Write(Value As Image)
+
+  $hImage = Value
+  UpdateSize
+  Me.Refresh
+
+End
+
+Public Sub DrawingArea_Draw()
+  
+  Dim W As Integer
+  Dim H As Integer
+  Dim WW As Integer
+  Dim P As Integer
+  Dim HH As Integer
+  Dim SX As Float
+  Dim SY As Float
+  Dim S As Float
+  Dim X As Integer
+  Dim Y As Integer
+  Dim XX As Integer
+  Dim YY As Integer
+  Dim iMode As Integer
+  
+  If $hImage Then
+    W = $hImage.W
+    H = $hImage.H
+  Else If $hPicture Then
+    W = $hPicture.W
+    H = $hPicture.H
+  Endif
+  
+  If $iBorder Then Style.PaintPanel(0, 0, Paint.W, Paint.H, $iBorder)
+  
+  If W = 0 Or If H = 0 Then 
+    If Me.Design Then
+      If Not $hDefault Then $hDefault = Image.Load("picturebox.png")
+      Paint.DrawImage($hDefault, Desktop.Scale, Desktop.Scale)
+    Endif
+    Stop Event
+    Return
+  Endif
+  
+  P = GetPadding()
+
+  If $bAutoResize Then 
+    GoSub PAINT_IMAGE
+    Stop Event
+    Return
+  Endif
+  
+  WW = Me.W - P * 2
+  HH = Me.H - P * 2
+  
+  If $bStretch Then
+    iMode = Fill
+  Else
+    iMode = $iMode
+  Endif
+  
+  Select Case iMode
+    
+    Case Normal, {Repeat}
+      
+    Case Fill
+      W = WW
+      H = HH
+      
+    Case Cover, Contain
+      SX = WW / W
+      SY = HH / H
+      If $iMode = Cover Then
+        S = Max(SX, SY)
+      Else
+        S = Min(SX, SY)
+      Endif
+      W *= S
+      H *= S
+      
+  End Select
+  
+  If Align.IsLeft($iAlign) Then
+    X = 0
+  Else If Align.IsRight($iAlign) Then
+    X = WW - W
+  Else
+    X = (WW - W) \ 2
+  Endif
+  
+  If Align.IsTop($iAlign) Then
+    Y = 0
+  Else If Align.IsBottom($iAlign) Then
+    Y = HH - H
+  Else
+    Y = (HH - H) \ 2
+  Endif
+  
+  If iMode = {Repeat} Then
+  
+    XX = X - CInt(Ceil(X / W)) * W
+    YY = Y - CInt(Ceil(Y / H)) * H
+    
+    For X = XX To WW Step W
+      For Y = YY To HH Step H
+        GoSub PAINT_IMAGE
+      Next
+    Next
+  
+  Else
+    
+    GoSub PAINT_IMAGE
+    
+  Endif
+  
+  Stop Event
+  Return
+  
+PAINT_IMAGE:
+
+  If $hImage Then
+    Paint.DrawImage($hImage, X + P, Y + P, W, H)
+  Else
+    Paint.DrawPicture($hPicture, X + P, Y + P, W, H)
+  Endif
+  Return
+  
+End

@@ -40,7 +40,6 @@
 #include "gdrawingarea.h"
 #include "gmainwindow.h"
 #include "gmoviebox.h"
-#include "gpicturebox.h"
 #include "gplugin.h"
 #include "gscrollbar.h"
 #include "gslider.h"
@@ -52,16 +51,24 @@
 static GList *controls = NULL;
 static GList *controls_destroyed = NULL;
 
+#ifdef GTK3
+
 typedef
 	struct {
 		void (*get_preferred_height)(GtkWidget *widget, gint *minimum_height, gint *natural_height);
 		void (*get_preferred_width_for_height)(GtkWidget *widget, gint height, gint *minimum_width, gint *natural_width);
 		void (*get_preferred_width)(GtkWidget *widget, gint *minimum_width, gint *natural_width);
 		void (*get_preferred_height_for_width)(GtkWidget *widget, gint width, gint *minimum_height, gint *natural_height);
-		//void (*get_preferred_height_and_baseline_for_width)(GtkWidget *widget, gint width, gint *minimum, gint *natural, gint *minimum_baseline, gint *natural_baseline);
+#if GTK_CHECK_VERSION(3, 10, 0)
+		void (*get_preferred_height_and_baseline_for_width)(GtkWidget *widget, gint width, gint *minimum, gint *natural, gint *minimum_baseline, gint *natural_baseline);
+		void (*size_allocate)(GtkWidget *widget, GtkAllocation *allocation);
+#endif
 	}
 	PATCH_FUNCS;
-
+	
+#endif
+	
+#if 0
 static const char *_cursor_fdiag[] =
 {
 "16 16 4 1",
@@ -111,7 +118,7 @@ static const char *_cursor_bdiag[] =
 "#aaaaaaaa#......",
 "##########......"
 };
-
+#endif
 
 // Geometry optimization hack - Sometimes fails, so it is disabled...
 #define GEOMETRY_OPTIMIZATION 0
@@ -258,7 +265,6 @@ void gControl::cleanRemovedControls()
 		if (!iter)
 			break;
 		control = (gControl *)iter->data;
-		//controls_destroyed = g_list_remove(controls_destroyed, (gpointer)control);
 		gtk_widget_destroy(control->border);
 	}
 
@@ -412,11 +418,10 @@ void gControl::destroy()
 	hide();
 
 	//fprintf(stderr, "added to destroy list: %p\n", this);
-	controls_destroyed = g_list_prepend(controls_destroyed,(gpointer)this);
-	_destroyed = true;
-
+	controls_destroyed = g_list_prepend(controls_destroyed, (gpointer)this);
 	if (pr)
 		pr->remove(this);
+	_destroyed = true;
 }
 
 
@@ -455,6 +460,8 @@ void gControl::setVisible(bool vl)
 			return;
 
 		gtk_widget_show(border);
+		_dirty_size = true;
+		updateGeometry();
 	}
 	else
 	{
@@ -590,7 +597,7 @@ void gControl::move(int x, int y)
 	updateGeometry();
 	#endif
 
-	send_configure(this);
+	send_configure(this); // needed for Watcher and Form Move events
 }
 
 void gControl::resize(int w, int h)
@@ -642,7 +649,7 @@ void gControl::resize(int w, int h)
 	if (pr)
 		pr->performArrange();
 
-	send_configure(this);
+	send_configure(this); // needed for Watcher and Form Resize events
 }
 
 void gControl::moveResize(int x, int y, int w, int h)
@@ -685,10 +692,8 @@ void gControl::updateGeometry()
 
 			_dirty_pos = false;
 		}
-		if (_dirty_size)
+		if (_dirty_size && visible)
 		{
-			//GtkAllocation a = { x(), y(), width(), height() };
-			//gtk_widget_size_allocate(border, &a);
 			gtk_widget_set_size_request(border, width(), height());
 			_dirty_size = false;
 		}
@@ -794,31 +799,34 @@ void gControl::setFont(gFont *ft)
 	//fprintf(stderr, "--> %s: _font = %s\n", name(), _font ? _font->toFullString() : NULL);
 }
 
+#ifdef GTK3
+
+void gControl::updateFont()
+{
+	resolveFont();
+	updateStyleSheet();
+	updateSize();
+}
+
+#else
+
 static void cb_update_font(GtkWidget *widget, gpointer data)
 {
 	PangoFontDescription *desc = (PangoFontDescription *)data;
-#ifdef GTK3
-	gtk_widget_override_font(widget, desc);
-#else
 	gtk_widget_modify_font(widget, desc);
-#endif
 }
 
 void gControl::updateFont()
 {
 	resolveFont();
-#ifdef GTK3
-	gtk_widget_override_font(widget, font()->desc());
-#else
 	gtk_widget_modify_font(widget, font()->desc());
-#endif
-
 	if (!isContainer() && GTK_IS_CONTAINER(widget))
 		gtk_container_forall(GTK_CONTAINER(widget), (GtkCallback)cb_update_font, (gpointer)font()->desc());
-
 	refresh();
 	updateSize();
 }
+
+#endif
 
 void gControl::updateSize()
 {
@@ -913,6 +921,8 @@ GdkCursor *gControl::getGdkCursor()
 		}
 		
 		cr = gdk_cursor_new_from_name(gdk_display_get_default(), name);
+		if (!cr)
+			cr = gdk_cursor_new_for_display(gdk_display_get_default(), (GdkCursorType)m);
 		
 		/*
 		if (m < GDK_LAST_CURSOR)
@@ -1540,6 +1550,9 @@ static bool must_patch(GtkWidget *widget)
 	GtkWidget *parent;
 	gControl *parent_control;
 
+	if (GTK_IS_ENTRY(widget))
+		return true;
+
 	if (gt_get_control(widget))
 		return true;
 
@@ -1566,22 +1579,22 @@ static bool must_patch(GtkWidget *widget)
 
 #define OLD_FUNC ((PATCH_FUNCS *)(klass->_gtk_reserved6))
 
-#define PATCH_DECLARE(type) \
-static void type##_get_preferred_width(GtkWidget *widget, gint *minimum_size, gint *natural_size) \
+#define PATCH_DECLARE_COMMON(_type, _name) \
+static void _name##get_preferred_width(GtkWidget *widget, gint *minimum_size, gint *natural_size) \
 { \
-	GtkWidgetClass *klass = (GtkWidgetClass*)g_type_class_peek(type); \
+	GtkWidgetClass *klass = (GtkWidgetClass*)g_type_class_peek(_type); \
 	(*OLD_FUNC->get_preferred_width)(widget, minimum_size, natural_size); \
 	if (minimum_size && must_patch(widget)) \
 		*minimum_size = 0; \
 } \
-static void type##_get_preferred_height(GtkWidget *widget, gint *minimum_size, gint *natural_size) \
+static void _name##get_preferred_height(GtkWidget *widget, gint *minimum_size, gint *natural_size) \
 { \
-	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
+	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(_type); \
 	(*OLD_FUNC->get_preferred_height)(widget, minimum_size, natural_size); \
 	if (minimum_size && must_patch(widget)) \
 		*minimum_size = 0; \
 } \
-static void type##_get_preferred_height_for_width(GtkWidget *widget, gint width, gint *minimum_size, gint *natural_size) \
+static void _name##get_preferred_height_for_width(GtkWidget *widget, gint width, gint *minimum_size, gint *natural_size) \
 { \
 	if (minimum_size && must_patch(widget)) \
 	{ \
@@ -1589,10 +1602,10 @@ static void type##_get_preferred_height_for_width(GtkWidget *widget, gint width,
 		*natural_size = 0; \
 		return; \
 	} \
-	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
+	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(_type); \
 	(*OLD_FUNC->get_preferred_height_for_width)(widget, width, minimum_size, natural_size); \
 } \
-static void type##_get_preferred_width_for_height(GtkWidget *widget, gint height, gint *minimum_size, gint *natural_size) \
+static void _name##get_preferred_width_for_height(GtkWidget *widget, gint height, gint *minimum_size, gint *natural_size) \
 { \
 	if (minimum_size && must_patch(widget)) \
 	{ \
@@ -1600,20 +1613,52 @@ static void type##_get_preferred_width_for_height(GtkWidget *widget, gint height
 		*natural_size = 0; \
 		return; \
 	} \
-	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
+	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(_type); \
 	(*OLD_FUNC->get_preferred_height_for_width)(widget, height, minimum_size, natural_size); \
 }
 
+#if GTK_CHECK_VERSION(3, 14, 0)
+
+#define PATCH_DECLARE_SIZE(_type, _name) \
+static void _name##size_allocate(GtkWidget *widget, GtkAllocation *allocation) \
+{ \
+	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(_type); \
+	(*OLD_FUNC->size_allocate)(widget, allocation); \
+	gtk_widget_set_clip(widget, allocation); \
+}
+
+#elif GTK_CHECK_VERSION(3, 10, 0)
+
+#define PATCH_DECLARE_SIZE(_type, _name) \
+static void _name##size_allocate(GtkWidget *widget, GtkAllocation *allocation) \
+{ \
+	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(_type); \
+	(*OLD_FUNC->size_allocate)(widget, allocation); \
+}
+
+#else
+
+#define PATCH_DECLARE_SIZE(_type, _name) 
+
+#endif
+
+#define PATCH_DECLARE(type) PATCH_DECLARE_COMMON(type, type##_) PATCH_DECLARE_SIZE(type, type##_)
+
 #define PATCH_DECLARE_BASELINE(type) \
-static void type##get_preferred_height_and_baseline_for_width(GtkWidget *widget, gint width, gint *minimum, gint *natural, gint *minimum_baseline, gint *natural_baseline) \
+static void type##_get_preferred_height_and_baseline_for_width(GtkWidget *widget, gint width, gint *minimum, gint *natural, gint *minimum_baseline, gint *natural_baseline) \
 { \
 	if (minimum && minimum_baseline && must_patch(widget)) \
 	{ \
+		GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
+		if (OLD_FUNC->get_preferred_height_and_baseline_for_width) \
+			(*OLD_FUNC->get_preferred_height_and_baseline_for_width)(widget, width, minimum, natural, minimum_baseline, natural_baseline); \
+		else \
+		{ \
+			*minimum_baseline = 0; \
+			*natural_baseline = 0; \
+		} \
 		*minimum = 0; \
 		*natural = 0; \
-		*minimum_baseline = 0; \
-		*natural_baseline = 0; \
-		fprintf(stderr, "%s\n", __func__); \
 		return; \
 	} \
 	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
@@ -1622,6 +1667,54 @@ static void type##get_preferred_height_and_baseline_for_width(GtkWidget *widget,
 
 //fprintf(stderr, "patching [%p %s] (%p %p)\n", klass, G_OBJECT_TYPE_NAME(widget), klass->get_preferred_width, klass->get_preferred_height);
 //		fprintf(stderr, "PATCH_CLASS: %s\n", G_OBJECT_TYPE_NAME(widget));
+
+#if GTK_CHECK_VERSION(3,10,0)
+
+#define PATCH_CLASS(widget, type) \
+if (G_OBJECT_TYPE(widget) == type) \
+{ \
+	GtkWidgetClass *klass = (GtkWidgetClass *)GTK_WIDGET_GET_CLASS(widget); \
+	if (klass->get_preferred_width != type##_get_preferred_width) \
+	{ \
+		PATCH_FUNCS *funcs = g_new0(PATCH_FUNCS, 1); \
+		funcs->get_preferred_width = klass->get_preferred_width; \
+		funcs->get_preferred_height = klass->get_preferred_height; \
+		funcs->get_preferred_height_for_width = klass->get_preferred_height_for_width; \
+		funcs->get_preferred_width_for_height = klass->get_preferred_width_for_height; \
+		funcs->size_allocate = klass->size_allocate; \
+		klass->_gtk_reserved6 = (void(*)())funcs; \
+		klass->get_preferred_width = type##_get_preferred_width; \
+		klass->get_preferred_height = type##_get_preferred_height; \
+		klass->get_preferred_height_for_width = type##_get_preferred_height_for_width; \
+		klass->get_preferred_width_for_height = type##_get_preferred_width_for_height; \
+		klass->size_allocate = type##_size_allocate; \
+	} \
+}
+
+#define PATCH_CLASS_BASELINE(widget, type) \
+if (G_OBJECT_TYPE(widget) == type) \
+{ \
+	GtkWidgetClass *klass = (GtkWidgetClass *)GTK_WIDGET_GET_CLASS(widget); \
+	if (klass->get_preferred_width != type##_get_preferred_width) \
+	{ \
+		PATCH_FUNCS *funcs = g_new0(PATCH_FUNCS, 1); \
+		funcs->get_preferred_width = klass->get_preferred_width; \
+		funcs->get_preferred_height = klass->get_preferred_height; \
+		funcs->get_preferred_height_for_width = klass->get_preferred_height_for_width; \
+		funcs->get_preferred_width_for_height = klass->get_preferred_width_for_height; \
+		funcs->size_allocate = klass->size_allocate; \
+		funcs->get_preferred_height_and_baseline_for_width = klass->get_preferred_height_and_baseline_for_width; \
+		klass->_gtk_reserved6 = (void(*)())funcs; \
+		klass->get_preferred_width = type##_get_preferred_width; \
+		klass->get_preferred_height = type##_get_preferred_height; \
+		klass->get_preferred_height_for_width = type##_get_preferred_height_for_width; \
+		klass->get_preferred_width_for_height = type##_get_preferred_width_for_height; \
+		klass->size_allocate = type##_size_allocate; \
+		klass->get_preferred_height_and_baseline_for_width = type##_get_preferred_height_and_baseline_for_width; \
+	} \
+}
+
+#else
 
 #define PATCH_CLASS(widget, type) \
 if (G_OBJECT_TYPE(widget) == type) \
@@ -1642,35 +1735,19 @@ if (G_OBJECT_TYPE(widget) == type) \
 	} \
 }
 
-#define PATCH_CLASS_BASELINE(widget, type) \
-if (G_OBJECT_TYPE(widget) == type) \
-{ \
-	GtkWidgetClass *klass = (GtkWidgetClass *)GTK_WIDGET_GET_CLASS(widget); \
-	if (klass->get_preferred_width != type##_get_preferred_width) \
-	{ \
-		PATCH_FUNCS *funcs = g_new0(PATCH_FUNCS, 1); \
-		funcs->get_preferred_width = klass->get_preferred_width; \
-		funcs->get_preferred_height = klass->get_preferred_height; \
-		funcs->get_preferred_height_for_width = klass->get_preferred_height_for_width; \
-		funcs->get_preferred_width_for_height = klass->get_preferred_width_for_height; \
-		funcs->get_preferred_height_and_baseline_for_width = klass->get_preferred_height_and_baseline_for_width; \
-		klass->_gtk_reserved6 = (void(*)())funcs; \
-		klass->get_preferred_width = type##_get_preferred_width; \
-		klass->get_preferred_height = type##_get_preferred_height; \
-		klass->get_preferred_height_for_width = type##_get_preferred_height_for_width; \
-		klass->get_preferred_height_and_baseline_for_width = type##get_preferred_height_and_baseline_for_width; \
-	} \
-}
+#define PATCH_CLASS_BASELINE PATCH_CLASS
+
+#endif
 
 PATCH_DECLARE(GTK_TYPE_WINDOW)
 PATCH_DECLARE(GTK_TYPE_ENTRY)
-//PATCH_DECLARE_BASELINE(GTK_TYPE_ENTRY)
 PATCH_DECLARE(GTK_TYPE_COMBO_BOX)
 PATCH_DECLARE(GTK_TYPE_SPIN_BUTTON)
 PATCH_DECLARE(GTK_TYPE_BUTTON)
 PATCH_DECLARE(GTK_TYPE_FIXED)
 PATCH_DECLARE(GTK_TYPE_EVENT_BOX)
-PATCH_DECLARE(GTK_TYPE_ALIGNMENT)
+//PATCH_DECLARE(GTK_TYPE_ALIGNMENT)
+PATCH_DECLARE(GTK_TYPE_BOX)
 PATCH_DECLARE(GTK_TYPE_TOGGLE_BUTTON)
 PATCH_DECLARE(GTK_TYPE_SCROLLED_WINDOW)
 PATCH_DECLARE(GTK_TYPE_CHECK_BUTTON)
@@ -1679,6 +1756,14 @@ PATCH_DECLARE(GTK_TYPE_NOTEBOOK)
 PATCH_DECLARE(GTK_TYPE_SOCKET)
 PATCH_DECLARE(GTK_TYPE_TEXT_VIEW)
 PATCH_DECLARE(GTK_TYPE_SCROLLBAR)
+PATCH_DECLARE(GTK_TYPE_SCALE)
+
+#if GTK_CHECK_VERSION(3,10,0)
+PATCH_DECLARE_BASELINE(GTK_TYPE_ENTRY)
+PATCH_DECLARE_BASELINE(GTK_TYPE_COMBO_BOX)
+PATCH_DECLARE_BASELINE(GTK_TYPE_SPIN_BUTTON)
+PATCH_DECLARE_BASELINE(GTK_TYPE_BUTTON)
+#endif
 
 /*int gt_get_preferred_width(GtkWidget *widget)
 {
@@ -1701,7 +1786,12 @@ void gControl::realize(bool make_frame)
 		}
 		else if (!frame)
 		{
-			frame = gtk_alignment_new(0, 0, 1, 1);
+#if GTK3
+			border = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+			gtk_widget_set_hexpand(widget, TRUE);
+#else
+			border = gtk_alignment_new(0, 0, 1, 1);
+#endif
 			gtk_widget_set_redraw_on_allocate(frame, TRUE);
 		}
 
@@ -1725,16 +1815,18 @@ void gControl::realize(bool make_frame)
 			frame = 0;
 	}
 
+	//fprintf(stderr, "realize: %p %p\n", border, widget);
+	
 #ifdef GTK3
 
 	PATCH_CLASS(border, GTK_TYPE_WINDOW)
-	else PATCH_CLASS(border, GTK_TYPE_ENTRY)
-	//else PATCH_CLASS_BASELINE(border, GTK_TYPE_ENTRY)
-	else PATCH_CLASS(border, GTK_TYPE_SPIN_BUTTON)
-	else PATCH_CLASS(border, GTK_TYPE_BUTTON)
+	else PATCH_CLASS_BASELINE(border, GTK_TYPE_ENTRY)
+	else PATCH_CLASS_BASELINE(border, GTK_TYPE_SPIN_BUTTON)
+	else PATCH_CLASS_BASELINE(border, GTK_TYPE_BUTTON)
 	else PATCH_CLASS(border, GTK_TYPE_FIXED)
 	else PATCH_CLASS(border, GTK_TYPE_EVENT_BOX)
-	else PATCH_CLASS(border, GTK_TYPE_ALIGNMENT)
+	//else PATCH_CLASS(border, GTK_TYPE_ALIGNMENT)
+	else PATCH_CLASS(border, GTK_TYPE_BOX)
 	else PATCH_CLASS(border, GTK_TYPE_TOGGLE_BUTTON)
 	else PATCH_CLASS(border, GTK_TYPE_SCROLLED_WINDOW)
 	else PATCH_CLASS(border, GTK_TYPE_CHECK_BUTTON)
@@ -1743,9 +1835,13 @@ void gControl::realize(bool make_frame)
 	else PATCH_CLASS(border, GTK_TYPE_SOCKET)
 	else PATCH_CLASS(border, GTK_TYPE_TEXT_VIEW)
 	else PATCH_CLASS(border, GTK_TYPE_SCROLLBAR)
-	else fprintf(stderr, "gb.gtk3: warning: class %s was not patched\n", G_OBJECT_TYPE_NAME(border));
+	else PATCH_CLASS(border, GTK_TYPE_SCALE)
+	else 
+	{
+		fprintf(stderr, "gb.gtk3: warning: class %s was not patched\n", G_OBJECT_TYPE_NAME(border));
+	}
 
-	PATCH_CLASS(widget, GTK_TYPE_COMBO_BOX)
+	PATCH_CLASS_BASELINE(widget, GTK_TYPE_COMBO_BOX)
 	else PATCH_CLASS(widget, GTK_TYPE_TEXT_VIEW)
 
 #endif
@@ -1795,12 +1891,17 @@ void gControl::realizeScrolledWindow(GtkWidget *wid, bool doNotRealize)
 {
 	_scroll = GTK_SCROLLED_WINDOW(gtk_scrolled_window_new(NULL, NULL));
 
-#ifdef GTK3	
+#ifdef GTK3
 	PATCH_CLASS(_scroll, GTK_TYPE_SCROLLED_WINDOW)
 	PATCH_CLASS(wid, GTK_TYPE_TEXT_VIEW)
 #endif
 
-	border = gtk_alignment_new(0, 0, 1, 1);
+#ifdef GTK3
+		border = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+		gtk_widget_set_hexpand(wid, TRUE);
+#else
+		border = gtk_alignment_new(0, 0, 1, 1);
+#endif
 	gtk_widget_set_redraw_on_allocate(border, TRUE);
 	widget = wid;
 	frame = border;
@@ -1827,7 +1928,11 @@ void gControl::updateBorder()
 	if (!frame)
 		return;
 
+#if GTK3
+	if (!GTK_IS_BOX(frame))
+#else
 	if (!GTK_IS_ALIGNMENT(frame))
+#endif
 	{
 		refresh();
 		return;
@@ -1843,8 +1948,12 @@ void gControl::updateBorder()
 	if ((int)frame_padding > pad)
 		pad = frame_padding;
 
+#if GTK3
+	g_object_set(widget, "margin", pad, NULL);
+#else
 	gtk_alignment_set_padding(GTK_ALIGNMENT(frame), pad, pad, pad, pad);
 	refresh();
+#endif
 	//gtk_widget_queue_draw(frame);
 }
 
@@ -1852,10 +1961,21 @@ int gControl::getFrameWidth()
 {
 	guint p;
 
-	if (frame && GTK_IS_ALIGNMENT(frame))
+	if (frame)
 	{
-		gtk_alignment_get_padding(GTK_ALIGNMENT(frame), &p, NULL, NULL, NULL);
-		return p;
+#if GTK3
+		if (GTK_IS_BOX(frame))
+		{
+			g_object_get(widget, "margin", &p, NULL);
+			return p;
+		}
+#else
+		if (GTK_IS_ALIGNMENT(frame))
+		{
+			gtk_alignment_get_padding(GTK_ALIGNMENT(frame), &p, NULL, NULL, NULL);
+			return p;
+		}
+#endif
 	}
 
 	/*if (_scroll)
@@ -1928,11 +2048,12 @@ void gControl::updateStyleSheet()
 	char *css = NULL;
 	const char *name;
 	char buffer[128];
+	int s;
 	
 	wid = getStyleSheetWidget();
 	context = gtk_widget_get_style_context(wid);
 	
-	if (_bg == COLOR_DEFAULT && _fg == COLOR_DEFAULT)
+	if (_bg == COLOR_DEFAULT && _fg == COLOR_DEFAULT && !_font)
 	{
 		if (_css)
 			gtk_style_context_remove_provider(context, _css);
@@ -1951,7 +2072,7 @@ void gControl::updateStyleSheet()
 			gtk_style_context_remove_provider(context, _css);
 		
 		name = gtk_widget_get_name(wid);
-		sprintf(buffer, "#%s:not(:selected) {\n", name);
+		sprintf(buffer, "#%s {\ntransition:none;\n", name);
 		g_stradd(&css, buffer);
 		
 		if (_bg != COLOR_DEFAULT)
@@ -1970,12 +2091,56 @@ void gControl::updateStyleSheet()
 			g_stradd(&css, ";\n");
 		}
 		
+		if (_font)
+		{
+			if (_font->_name_set)
+			{
+				g_stradd(&css, "font-family:\"");
+				g_stradd(&css, _font->name());
+				g_stradd(&css, "\";\n");
+			}
+			
+			if (_font->_size_set)
+			{
+				g_stradd(&css, "font-size:");
+				s = (int)(_font->size() * 10 + 0.5);
+				sprintf(buffer, "%dpt;\n", s / 10); //, s % 10);
+				g_stradd(&css, buffer);
+			}
+
+			if (_font->_bold_set)
+			{
+				g_stradd(&css, "font-weight:");
+				g_stradd(&css, _font->bold() ? "bold" : "normal");
+				g_stradd(&css, ";\n");
+			}
+			
+			if (_font->_italic_set)
+			{
+				g_stradd(&css, "font-style:");
+				g_stradd(&css, _font->italic() ? "italic" : "normal");
+				g_stradd(&css, ";\n");
+			}
+
+			if (_font->_underline_set || _font->_strikeout_set)
+			{
+				g_stradd(&css, "text-decoration-line:");
+				if (_font->strikeout())
+					g_stradd(&css, "line-through");
+				else if (_font->underline())
+					g_stradd(&css, "underline");
+				else
+					g_stradd(&css, "none");
+				g_stradd(&css, ";\n");
+			}
+		}
+		
 		g_stradd(&css, "}\n");
 		
 		//fprintf(stderr, "---- %s\n%s", _name, css);
 		
 		gtk_css_provider_load_from_data(GTK_CSS_PROVIDER(_css), css, -1, NULL);
-		gtk_style_context_add_provider(context, _css, GTK_STYLE_PROVIDER_PRIORITY_USER);
+		gtk_style_context_add_provider(context, _css, GTK_STYLE_PROVIDER_PRIORITY_USER + 10);
 	}
 }
 

@@ -31,7 +31,7 @@
 #include <pwd.h>
 #include <grp.h>
 #include <sys/stat.h>
-#include <pty.h>
+#include <sys/ioctl.h>
 #include <termios.h>
 
 #include "gb_common.h"
@@ -95,10 +95,10 @@ static void watch_stream(CSTREAM *_object, int mode, bool on)
 	STREAM *stream = &THIS_STREAM->stream;
 	int fd = STREAM_handle(stream);
 	
-	if (mode & ST_READ)
+	if (mode & STO_READ)
 		GB_Watch(fd, GB_WATCH_READ, (void *)(on ? callback_read : NULL), (intptr_t)THIS);
 
-	if (mode & ST_WRITE)
+	if (mode & STO_WRITE)
 		GB_Watch(fd, GB_WATCH_WRITE, (void *)(on ? callback_write : NULL), (intptr_t)THIS);
 }
 
@@ -112,7 +112,7 @@ CFILE *CFILE_create(STREAM *stream, int mode)
 		*CSTREAM_stream(file) = *stream;
 		//file->watch_fd = -1;
 
-		if (mode & ST_WATCH)
+		if (mode & STO_WATCH)
 		{
 			watch_stream(&file->ob, mode, TRUE);
 			OBJECT_attach((OBJECT *)file, OP ? (OBJECT *)OP : (OBJECT *)CP, "File");
@@ -142,9 +142,9 @@ static CFILE *create_default_stream(FILE *file, int mode)
 
 void CFILE_init(void)
 {
-	CFILE_in = create_default_stream(stdin, ST_READ);
-	CFILE_out = create_default_stream(stdout, ST_WRITE);
-	CFILE_err = create_default_stream(stderr, ST_WRITE);
+	CFILE_in = create_default_stream(stdin, STO_READ);
+	CFILE_out = create_default_stream(stdout, STO_WRITE);
+	CFILE_err = create_default_stream(stderr, STO_WRITE);
 }
 
 void CFILE_exit(void)
@@ -621,7 +621,7 @@ BEGIN_METHOD(File_Load, GB_STRING path)
 	int rlen;
 	char *str = NULL;
 
-	STREAM_open(&stream, STRING_conv_file_name(STRING(path), LENGTH(path)), ST_READ);
+	STREAM_open(&stream, STRING_conv_file_name(STRING(path), LENGTH(path)), STO_READ);
 	
 	ON_ERROR_1(error_CFILE_load_save, &stream)
 	{
@@ -665,7 +665,7 @@ BEGIN_METHOD(File_Save, GB_STRING path; GB_STRING data)
 
 	STREAM stream;
 
-	STREAM_open(&stream, STRING_conv_file_name(STRING(path), LENGTH(path)), ST_CREATE);
+	STREAM_open(&stream, STRING_conv_file_name(STRING(path), LENGTH(path)), STO_CREATE);
 	
 	ON_ERROR_1(error_CFILE_load_save, &stream)
 	{
@@ -858,9 +858,9 @@ BEGIN_METHOD(Stream_Watch, GB_INTEGER mode; GB_BOOLEAN on)
 	int mode = VARG(mode);
 	
 	if (mode == R_OK)
-		mode = ST_READ;
+		mode = STO_READ;
 	else if (mode == W_OK)
-		mode = ST_WRITE;
+		mode = STO_WRITE;
 	else
 	{
 		GB_Error("Unknown watch");

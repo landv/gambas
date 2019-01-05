@@ -7,6 +7,7 @@ Public Const Name As String = "Git"
 Public Const LongName As String = "Git"
 Public Const DoNotPush As Boolean = True
 Public Const CancelUpdate As Boolean = True
+Public Const NeedMove As Boolean = False
 
 Private $aConflict As String[] = ["DD", "AU", "UD", "UA", "DU", "AA", "UU"]
 
@@ -26,9 +27,9 @@ Private Sub Init()
 
 End
 
-Private Sub RunShell(sCmd As String) As String
+Private Sub RunShell(sCmd As String, Optional bSilent As Boolean) As String
   
-  Return VersionControl.Shell("cd " & Shell(Project.Dir) & " && " & sCmd)
+  Return VersionControl.Shell("cd " & Shell(Project.Dir) & " && " & sCmd, bSilent)
   
 End
 
@@ -71,7 +72,7 @@ Public Sub GetBranches(ByRef sCurrent As String) As String[]
   Dim sBranch As String
   Dim aBranches As New String[]
   
-  sResult = VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git branch")
+  sResult = RunShell("git branch") 'VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git branch")
   
   For Each sBranch In Split(Trim(sResult), "\n")
     sBranch = Trim(sBranch)
@@ -92,7 +93,8 @@ Public Sub Diff(sPath As String) As String
   Dim sCmd As String
   Dim sHead As String
 
-  If VersionControl.Shell("cd " & Shell(Project.Dir) & " && git log -1", True) Then
+  'If VersionControl.Shell("cd " & Shell(Project.Dir) & " && git log -1", True) Then
+  If RunShell("git log -1", True) Then
     sHead = "HEAD"
   Else
     sHead = "--staged"
@@ -178,7 +180,8 @@ Public Sub CheckPaths()
 
   Dim sStatus As String
 
-  sStatus = VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git status -uall --porcelain -z .", True)
+  'sStatus = VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git status -uall --porcelain -z .", True)
+  sStatus = RunShell("git status -uall --porcelain -z .", True)
   UpdatePathFromStatus(sStatus)
 
 End
@@ -198,7 +201,7 @@ Private Sub UpdatePathFromStatus(sStatus As String)
       Project.SetFlag(sPath, Project.FLAG_ADDED)
     Else If $aConflict.Exist(Left(sStatus, 2)) Then
       Project.SetFlag(sPath, Project.FLAG_CONFLICT)
-    Else If InStr("MD", Mid$(sStatus, 2, 1)) Or If Left(sStatus, 2) = "A " Then
+    Else If InStr("MDR", Mid$(sStatus, 2, 1)) Or If InStr("AMR", Left(sStatus)) Then
       Project.SetFlag(sPath, Project.FLAG_MODIFIED)
     Endif
 
@@ -208,7 +211,7 @@ End
 
 Public Sub AddFile(sPath As String, Optional (bForce) As Boolean)
 
-  VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git add " & Shell(sPath))
+  RunShell("git add " & Shell(sPath))
   
 End
 
@@ -222,16 +225,16 @@ End
 Public Sub Revert(Optional sPath As String) As Boolean
   
   If sPath Then 
-    VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git checkout " & Shell(sPath))
+    RunShell("git checkout " & Shell(sPath))
   Else
-    VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git checkout " & Shell(Project.Dir))
+    RunShell("git checkout " & Shell(Project.Dir))
   Endif
   
 End
 
 Public Sub RemoveFile(sPath As String, Optional (bForce) As Boolean)
 
-  VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git rm " & Shell(sPath))
+  RunShell("git rm " & Shell(sPath))
   
 End
 
@@ -271,6 +274,8 @@ Public Sub Info() As Collection
   Dim cInfo As New Collection
   Dim aResult As String[]
   Dim sResult As String
+  Dim nModif As Integer
+  Dim sText As String
   
   cInfo[("Local root path")] = $sRoot
   
@@ -279,7 +284,7 @@ Public Sub Info() As Collection
   cInfo[("Last commit author")] = Trim(Mid$(aResult[1], InStr(aResult[1], " ") + 1))
   cInfo[("Last commit date")] = Trim(Mid$(aResult[2], InStr(aResult[2], " ") + 1))
   
-  aResult = Split(VersionControl.Shell("cd " & Shell(Project.Dir) & " && git branch -vv"), "\n")
+  aResult = Split(RunShell("git branch -vv"), "\n")
   For Each sResult In aResult
     If sResult Begins "*" Then
       aResult = Scan(sResult, "* * * [[]*] *")
@@ -290,28 +295,52 @@ Public Sub Info() As Collection
     Endif
   Next
   
-  aResult = Split(VersionControl.Shell("cd " & Shell(Project.Dir) & " && git remote -vv"), "\n")
+  Try nModif = Split(Trim(RunShell("git status --porcelain")), "\n").Count
+  If nModif = 0 Then
+    sText = ("The current branch is up to date.")
+  Else If nModif = 1 Then
+    sText = ("One file to commit in the current branch.")
+  Else
+    sText = Subst(("&1 files to commit in the current branch."), nModif)
+  Endif
+  
+  If nModif Then  
+    Try nModif = Split(Trim(RunShell("git status --porcelain " & Shell(Project.Dir))), "\n").Count
+    sText &= "\n"
+    If nModif = 0 Then
+      sText &= ("None in the current project.")
+    Else If nModif = 1 Then
+      sText &= ("One in the current project.") 
+    Else
+      sText &= Subst(("&1 in the current project."), nModif)
+    Endif
+  Endif
+  
+  cInfo[("Status")] = sText
+  
+  aResult = Split(RunShell("git remote -vv"), "\n")
   Try cInfo[("Remote repository URL")] = Scan(aResult[0], "* * *")[1]
   
   Return cInfo
+  
 End
 
 Public Sub SetBranch(sBranch As String)
   
-  VersionControl.Shell("cd " & Shell(Project.Dir) & " && git checkout " & Shell(sBranch) & " 2>&1")
+  RunShell("git checkout " & Shell(sBranch) & " 2>&1")
   
 End
 
 Public Sub MoveFile(sOld As String, sNew As String)
 
-  VersionControl.Shell("cd " & Shell$(Project.Dir) & " && git mv " & Shell(sOld) & " " & Shell(sNew))
+  RunShell("git mv " & Shell(sOld) & " " & Shell(sNew) & " && git add " & Shell(sNew))
+  If Exist(sOld) And If Not Exist(sNew) Then Move sOld To sNew
 
 End
 
 Public Sub MoveDir(sOld As String, sNew As String) As Boolean
 
   MoveFile(sOld, sNew)
-  If Exist(sOld) And If Not Exist(sNew) Then Move sOld To sNew
 
 End
 
@@ -343,12 +372,12 @@ Public Sub ControlProject() As Boolean
     
     If Message.Warning(("A new Git repository will be created for this project."), ("OK"), ("Cancel")) = 2 Then Return
     
-    VersionControl.Shell("cd " & Shell(Project.Dir) & " && git init && git add .")
+    RunShell("git init && git add .")
     If Process.LastValue Then Return True
   
   Else
     
-    VersionControl.Shell("cd " & Shell(Project.Dir) & " && git add .")
+    RunShell("git add .")
   
   Endif
   

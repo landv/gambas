@@ -1,8 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,171,56)
-  Icon = Picture["img/16/form.png"]
+  MoveScaled(0,0,143,56)
   Persistent = True
   Arrangement = Arrange.Vertical
   { mnuForm Menu
@@ -272,7 +271,7 @@
     }
   }
   { tlbForm ToolBar
-    MoveScaled(0,0,169,9)
+    MoveScaled(0,0,140,8)
     Key = "form"
     Text = ("Form")
     Separator = True
@@ -295,25 +294,38 @@
       MoveScaled(8,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
-      Picture = Picture["icon:/small/revert"]
-    }
-    { ToolButton7 ToolButton
-      MoveScaled(12,0,4,4)
-      ToolTip = ("Lock / unlock form")
-      Action = ".locked"
-      Picture = Picture["icon:/small/lock"]
-      Toggle = True
+      Picture = Picture["icon:/small/refresh"]
     }
     { ToolButton39 ToolButton
-      MoveScaled(15,0,4,4)
+      MoveScaled(12,0,4,4)
       Visible = False
       ToolTip = ("Run this form")
       Action = ".run-me"
       Picture = Picture["icon:/small/play"]
     }
+    { Separator1 Separator
+      MoveScaled(16,0,1,4)
+    }
+    { ToolButton17 ToolButton mnuUndo
+      Name = "ToolButton17"
+      MoveScaled(17,0,4,4)
+      ToolTip = ("Undo")
+      Action = ".undo"
+      Picture = Picture["icon:/small/undo"]
+    }
+    { ToolButton18 ToolButton mnuRedo
+      Name = "ToolButton18"
+      MoveScaled(21,0,4,4)
+      ToolTip = ("Redo")
+      Action = ".redo"
+      Picture = Picture["icon:/small/redo"]
+    }
+    { Separator5 Separator
+      MoveScaled(26,0,1,4)
+    }
     { ToolButton14 ToolButton mnuCut
       Name = "ToolButton14"
-      MoveScaled(19,0,4,4)
+      MoveScaled(28,0,4,4)
       Visible = False
       ToolTip = ("Cut")
       Action = ".cut"
@@ -321,7 +333,7 @@
     }
     { ToolButton15 ToolButton mnuCopy
       Name = "ToolButton15"
-      MoveScaled(23,0,4,4)
+      MoveScaled(31,0,4,4)
       Visible = False
       ToolTip = ("Copy")
       Action = ".copy"
@@ -329,7 +341,7 @@
     }
     { ToolButton16 ToolButton mnuPaste
       Name = "ToolButton16"
-      MoveScaled(27,0,4,4)
+      MoveScaled(34,0,4,4)
       Visible = False
       ToolTip = ("Paste")
       Action = ".paste"
@@ -337,25 +349,11 @@
     }
     { ToolButton1 ToolButton mnuDelete
       Name = "ToolButton1"
-      MoveScaled(31,0,4,4)
+      MoveScaled(37,0,4,4)
       Visible = False
       ToolTip = ("Delete")
       Action = ".delete"
       Picture = Picture["icon:/small/delete"]
-    }
-    { ToolButton17 ToolButton mnuUndo
-      Name = "ToolButton17"
-      MoveScaled(35,0,4,4)
-      ToolTip = ("Undo")
-      Action = ".undo"
-      Picture = Picture["icon:/small/undo"]
-    }
-    { ToolButton18 ToolButton mnuRedo
-      Name = "ToolButton18"
-      MoveScaled(39,0,4,4)
-      ToolTip = ("Redo")
-      Action = ".redo"
-      Picture = Picture["icon:/small/redo"]
     }
     { ToolButton31 ToolButton
       MoveScaled(43,0,5,4)
@@ -373,17 +371,25 @@
       Toggle = True
       Value = True
     }
+    { ToolButton40 ToolButton
+      MoveScaled(52,0,4,4)
+      ToolTip = ("Toggle information tooltip")
+      Action = ".tooltip"
+      Picture = Picture["icon:/small/info"]
+      Toggle = True
+      Value = True
+    }
     { Separator2 Separator
-      MoveScaled(52,0,1,4)
+      MoveScaled(57,0,1,4)
     }
     { ToolButton19 ToolButton
-      MoveScaled(53,0,4,4)
+      MoveScaled(57,0,4,4)
       ToolTip = ("Bring to foreground")
       Action = ".raise"
       Picture = Picture["icon:/16/raise"]
     }
     { ToolButton20 ToolButton
-      MoveScaled(57,0,4,4)
+      MoveScaled(61,0,4,4)
       ToolTip = ("Send to background")
       Action = ".lower"
       Picture = Picture["icon:/16/lower"]
@@ -564,16 +570,22 @@
       Action = ".format-foreground"
       Picture = Picture["icon:/small/pen"]
     }
+    { Spring1 Spring
+      MoveScaled(42,4,7,4)
+    }
+    { ToolButton7 ToolButton
+      MoveScaled(51,4,4,4)
+      ToolTip = ("Lock / unlock form")
+      Action = ".locked"
+      Picture = Picture["icon:/small/lock"]
+      Toggle = True
+    }
   }
   { svwWorkspace ScrollView
     MoveScaled(3,14,58,39)
-    Background = Color.LightForeground
+    Background = Color.Transparent
     Expand = True
     Border = False
-    { dwgBackground DrawingArea
-      MoveScaled(4,25,12,9)
-      Ignore = True
-    }
     { panRight Panel Handle
       Name = "panRight"
       MoveScaled(8,16,1,1)
@@ -630,7 +642,7 @@
       }
     }
     { panBorder DrawingArea
-      MoveScaled(23,12,24,24)
+      MoveScaled(29,13,24,24)
       Background = Color.Background
       { panSelectN DrawingArea panSelect
         Name = "panSelectN"
@@ -670,10 +682,22 @@
       }
     }
     { panMenuBar DrawingArea
-      MoveScaled(21,7,25,3)
+      MoveScaled(27,8,25,3)
       Visible = False
       Background = Color.Background
     }
+  }
+  { dwgBackground DrawingArea
+    MoveScaled(76,26,12,9)
+    Background = Color.LightForeground
+    Ignore = True
+  }
+  { dwgInfo DrawingArea
+    MoveScaled(65,45,20,6)
+    Ignore = True
+  }
+  { timMoveInfo #Timer
+    #MoveScaled(108,16)
   }
 }
 
@@ -834,7 +858,7 @@
   { Action reload
     Text = "Reload"
     Shortcut = ""
-    Picture = "icon:/small/revert"
+    Picture = "icon:/small/refresh"
   }
   { Action run-me
     Text = "Run this form"
@@ -901,6 +925,10 @@
     Text = "Smaller font"
     Picture = "icon:/small/zoom-out"
   }
+  { Action tooltip
+    Text = "Toggle information tooltip"
+    Picture = "icon:/small/info"
+  }
   { Action undo
     Text = "Undo"
     Shortcut = "Ctrl+Z"
@@ -915,7 +943,7 @@
 { Toolbars
   { Toolbar form
     Text = "Form"
-    List = "show-class,save,reload,locked,run-me,cut,copy,paste,delete,undo,redo,menu,grid,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-vertical,arrange-horizontal,arrange-column,arrange-row,arrange-hcenter,arrange-vcenter,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,text-font,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
-    Default = "show-class,save,reload,locked,undo,redo,menu,grid,|,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-hcenter,arrange-vcenter,|,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,|,text-font,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
+    List = "show-class,save,reload,run-me,undo,redo,cut,copy,paste,delete,menu,grid,tooltip,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-vertical,arrange-horizontal,arrange-column,arrange-row,arrange-hcenter,arrange-vcenter,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,text-font,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground,locked"
+    Default = "show-class,save,reload,|,undo,redo,|,menu,grid,tooltip,|,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-hcenter,arrange-vcenter,|,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,|,text-font,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground,~,locked"
   }
 }

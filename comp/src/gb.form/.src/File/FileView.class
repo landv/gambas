@@ -42,9 +42,12 @@ Private $bShowHidden As Boolean
 Private $bShowDir As Boolean
 Private $bShowPreview As Boolean
 Private $hIconView As IconView
+
 Private $hColumnView As ColumnView
+Private $sSortDir As String
 Private $iSort As Integer
 Private $bAsc As Boolean = True
+
 Private $aFilter As String[]
 Private $hPict As Picture
 Private $hRefresh As Timer
@@ -60,6 +63,10 @@ Private $bRefreshIcon As Boolean
 Private $bRefreshAll As Boolean
 Private $hWatcher As Watcher
 Private $bVisible As Boolean
+Private $bInvalidate As Boolean
+
+Static Private $iIconExecSize As Integer
+Static Private $hIconExec As Picture
 
 Static Public Sub _init()
   
@@ -224,7 +231,13 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
     
   With DirCache[File.Dir(sPath)].GetInfo(File.Name(sPath))
     
-    If InStr(.Perm[System.User.Name], "x") Then Return Picture["icon:/" & CStr(iSize) &/ "exec"]
+    If InStr(.Perm[System.User.Name], "x") Then 
+      If Not $hIconExec Or If $iIconExecSize <> iSize Then
+        $iIconExecSize = iSize
+        $hIconExec = Picture["icon:/" & CStr(iSize) &/ "exec"]
+      Endif
+      Return $hIconExec
+    Endif
     
   End With
   
@@ -260,7 +273,7 @@ End
 Private Sub GetIconSize() As Integer
 
   If $hColumnView.Visible Then
-    Return 16
+    Return Stock.GetSize("small")
   Else
     Return $iIconSize
   Endif
@@ -283,7 +296,7 @@ Static Public Sub _GetHiddenColor() As Integer
   
 End
 
-Private Sub RefreshView(Optional bInvalidate As Boolean)
+Private Sub RefreshView()
   
   Dim sFile As String
   Dim sDir As String
@@ -316,7 +329,11 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
   If $hColumnView.Visible Then
     SX = $hColumnView.ScrollX
     SY = $hColumnView.ScrollY
-    If Not $bWatch Or If $bRefreshAll Then $hColumnView.Clear
+    If Not $bWatch Or If $bRefreshAll Then 
+      $hColumnView.Clear
+      $hColumnView._Begin()
+    Endif
+    $hColumnView.Sorted = False
     hPictFile = Picture["icon:/small/file"]
     hPictFolder = Picture["icon:/small/directory"]
   Else
@@ -339,7 +356,10 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
   Endif
   
   hCache = DirCache[sDir]
-  If bInvalidate Then hCache.Invalidate
+  If $bInvalidate Then 
+    hCache.Invalidate
+    $bInvalidate = False
+  Endif
   
   'Try aDir = Dir(sDir, "*").Sort()
   Try aDir = hCache.GetFiles()
@@ -428,7 +448,12 @@ Finally
   
   $bRefreshIcon = False
   $bRefreshAll = False
-  If Not $hColumnView.Visible Then $hIconView._End
+  If $hColumnView.Visible Then 
+    $hColumnView._End
+    $hColumnView.Sorted = True
+  Else
+    $hIconView._End
+  Endif
   Try GetView().Scroll(SX, SY)
   Dec Application.Busy
   
@@ -520,6 +545,7 @@ End
 
 Public Sub Reload()
   
+  $bInvalidate = True
   RefreshViewLater(True)
   
 End
@@ -610,6 +636,8 @@ Private Sub Current_Write(sFile As String)
   
   'Debug sFile
   
+  If sFile = Current_Read() Then Return
+  
   EnsureRefresh
   
   GetView().UnselectAll
@@ -693,14 +721,9 @@ Public Sub View_Menu()
   
 End
 
-Public Sub View_Compare((Key) As String, OtherKey As String)
+Public Sub View_BeforeSort()
   
-  Dim hStat As Stat
-  Dim hStat2 As Stat
-  Dim sDir As String
-  Dim iComp As Integer
-  
-  sDir = GetCurrentDir()
+  $sSortDir = GetCurrentDir()
   
   If $hColumnView.Visible Then
     $iSort = $hColumnView.Columns.Sort
@@ -709,13 +732,22 @@ Public Sub View_Compare((Key) As String, OtherKey As String)
     $hIconView.Ascending = $bAsc
   Endif
   
+End
+
+
+Public Sub View_Compare((Key) As String, OtherKey As String)
+  
+  Dim hStat As Stat
+  Dim hStat2 As Stat
+  Dim iComp As Integer
+  
   iComp = Comp(Asc(Key), Asc(OtherKey))
   
   If iComp = 0 Then
     
     If $iSort Then
-      hStat = DirCache[sDir].GetInfo(Mid$(Key, 2))
-      hStat2 = DirCache[sDir].GetInfo(Mid$(OtherKey, 2))
+      hStat = DirCache[$sSortDir].GetInfo(Mid$(Key, 2))
+      hStat2 = DirCache[$sSortDir].GetInfo(Mid$(OtherKey, 2))
     Endif
     
     Select $iSort
@@ -996,6 +1028,13 @@ Public Sub Rename()
   
 End
 
+Public Sub View_Cancel()
+  
+  Reload
+  
+End
+
+
 Public Sub View_Rename()
   
   Dim hView As Object = GetView()
@@ -1009,6 +1048,7 @@ Public Sub View_Rename()
   sMsg = Help.CheckFileName(sNewName)
   If sMsg Then
     Balloon.Warning(sMsg, hView, hView.Item.X + Min(32 + Desktop.Scale * 8, hView.Item.W) / 2, hView.Item.Y + hView.Item.H / 2)
+    Stop Event
     Return
   Endif
   

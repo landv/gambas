@@ -42,10 +42,12 @@ Public Sub Link(hLink As MarkdownLink)
       Else If sLink Begins "../" Then
         sLink = Main.MakeAbsolute(sLink, Main.Path)
       Endif
-      hLink.Html = "<img src=\"" & Html(Application.Root &/ sLink) & "?v" & "\" />"
     Else
-      hLink.Html = "<img src=\"" & Html(Application.Root &/ sPath) & "?v" & "\" />"
+      sLink = sPath
     Endif
+    
+    hLink.Html = Main.GetImageHTML(sLink)
+    
     If Session.Id Then
       hLink.Html = "<a href=\"" & Html(Application.Root &/ sPath) & "\">" & hLink.Html & "</a>"
     Else If hLink.Text Then
@@ -268,7 +270,7 @@ Public Sub Command(sCommand As String) As String[]
   
 MAKE_INDEX_LETTER:
   
-  aResult.Add("<tr><td><div class=\"letter\">" & sLast & "&nbsp;</div></td>")
+  aResult.Add("<tr><td><div class=\"letter\">" & sLast & "</div></td>")
   
   N = (I - iStart + NC - 1) \ NC 
   J = iStart

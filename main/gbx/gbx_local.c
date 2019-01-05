@@ -66,6 +66,8 @@
 #define buffer_pos COMMON_pos
 #define get_size_left COMMON_get_size_left
 
+static void add_string(const char *src, int len, int *before);
+
 /* System encoding*/
 char *LOCAL_encoding = NULL;
 
@@ -75,10 +77,9 @@ bool LOCAL_is_UTF8;
 /* Default 'C' localization */
 LOCAL_INFO LOCAL_default = {
 	'.', '.',
-	0, 0,
+	NULL, 0, NULL, 0,
 	3, 3,
 	0,
-	{ 0 },
 	'/', ':',
 	"",
 	"",
@@ -104,7 +105,7 @@ LOCAL_INFO LOCAL_local = { 0 };
 // First day of weekday
 char LOCAL_first_day_of_week = -1;
 
-static char *_rtl_lang[] = { "ar", "fa", NULL };
+static char *_rtl_lang[] = { "ar", "fa", "he", NULL };
 
 static bool _translation_loaded = FALSE;
 
@@ -123,19 +124,15 @@ static char *_lang = NULL;
 
 static void init_currency_flag(struct lconv *info)
 {
-#ifndef OS_OPENBSD
+#ifndef OS_BSD
 	add_currency_flag(info->int_n_cs_precedes); // 7
 	add_currency_flag(info->int_p_cs_precedes); // 6
-	//add_currency_flag(info->int_n_sep_by_space); // 5
-	//add_currency_flag(info->int_p_sep_by_space); // 4
-	add_currency_flag(1); // 5
-	add_currency_flag(1); // 4
 #else
 	add_currency_flag(info->n_cs_precedes); // 7
 	add_currency_flag(info->p_cs_precedes); // 6
+#endif
 	add_currency_flag(1); // 5
 	add_currency_flag(1); // 4
-#endif
 	add_currency_flag(info->n_cs_precedes); // 3
 	add_currency_flag(info->p_cs_precedes); // 2
 	add_currency_flag(info->n_sep_by_space); // 1
@@ -199,11 +196,16 @@ static void stradd_sep(char *dst, const char *src, const char *sep)
 static void add_thousand_sep(int *before)
 {
 	int group;
+	const char *thsep;
+	int lthsep;
 
 	if (before == NULL)
 		return;
 
-	if (local_current->thousand_sep != 0)
+	thsep = _currency ? local_current->thousand_sep : local_current->currency_thousand_sep;
+	lthsep = _currency ? local_current->len_thousand_sep : local_current->len_currency_thousand_sep;
+	
+	if (thsep && thsep)
 	{
 		group = _currency ? local_current->currency_group_size : local_current->group_size;
 
@@ -212,7 +214,7 @@ static void add_thousand_sep(int *before)
 			if (buffer_pos > 0 && (get_current()[-1] == ' '))
 				put_char(' ');
 			else
-				put_char(_currency ? local_current->currency_thousand_sep : local_current->thousand_sep);
+				add_string(thsep, lthsep, NULL);
 		}
 	}
 
@@ -222,7 +224,7 @@ static void add_thousand_sep(int *before)
 
 static void add_string(const char *src, int len, int *before)
 {
-	if (len == 0)
+	if (len <= 0)
 		len = strlen(src);
 
 	while (len > 0)
@@ -357,15 +359,18 @@ static void free_local_info(void)
 	CLEAR(&LOCAL_local);
 }
 
-static char fix_separator(const char *str)
+static const char *fix_separator(const char *str)
 {
-	if (!*str || !str[1])
-		return str[0];
-
+	if (!str || !*str)
+		return " ";
+	
 	if ((uchar)str[0] == 0xC2 && (uchar)str[1] == 0xA0 && str[2] == 0)
-		return ' ';
+		return " ";
 
-	return '?';
+	if ((uchar)str[0] == 0xE2 && (uchar)str[1] == 0x80 && (uchar)str[2] == 0xAF && str[3] == 0)
+		return " ";
+
+	return str[1] ? "_" : str;
 }
 
 static void fill_local_info(void)
@@ -410,8 +415,8 @@ static void fill_local_info(void)
 
 	LOCAL_local.decimal_point = *(info->decimal_point);
 	LOCAL_local.thousand_sep = fix_separator(info->thousands_sep);
-	if (LOCAL_local.thousand_sep == 0)
-		LOCAL_local.thousand_sep = ' ';
+	LOCAL_local.len_thousand_sep = strlen(LOCAL_local.thousand_sep);
+	
 	LOCAL_local.group_size = *(info->grouping);
 	if (LOCAL_local.group_size == 0)
 		LOCAL_local.group_size = 3;
@@ -563,8 +568,8 @@ static void fill_local_info(void)
 	// Currency format
 
 	LOCAL_local.currency_thousand_sep = fix_separator(info->mon_thousands_sep);
-	if (LOCAL_local.currency_thousand_sep == 0)
-		LOCAL_local.currency_thousand_sep = ' ';
+	LOCAL_local.len_currency_thousand_sep = strlen(LOCAL_local.currency_thousand_sep);
+	
 	LOCAL_local.currency_group_size = *(info->mon_grouping);
 	if (LOCAL_local.currency_group_size == 0)
 		LOCAL_local.currency_group_size = 3;
@@ -597,11 +602,25 @@ void LOCAL_init(void)
 
 void LOCAL_exit(void)
 {
-	STRING_free(&env_LANG);
-	STRING_free(&env_LC_ALL);
-	STRING_free(&env_LANGUAGE);
+	if (env_LANG)
+	{
+		unsetenv("LANG");
+		STRING_free(&env_LANG);
+	}
+	if (env_LC_ALL)
+	{
+		unsetenv("LC_ALL");
+		STRING_free(&env_LC_ALL);
+	}
+	if (env_LANGUAGE)
+	{
+		unsetenv("LANGUAGE");
+		STRING_free(&env_LANGUAGE);
+	}
+	
 	if (!LOCAL_is_UTF8)
 		STRING_free(&LOCAL_encoding);
+	
 	STRING_free(&_lang);
 	free_local_info();
 }
@@ -639,11 +658,14 @@ void LOCAL_set_lang(const char *lang)
 	{
 		my_setenv("LANG", lang, &env_LANG);
 		my_setenv("LC_ALL", lang, &env_LC_ALL);
-
-		if (getenv("LANGUAGE"))
-			my_setenv("LANGUAGE", lang, &env_LANGUAGE);
 	}
+	
+	STRING_free(&_lang);
+	lang = LOCAL_get_lang();
 
+	if (getenv("LANGUAGE"))
+		my_setenv("LANGUAGE", lang, &env_LANGUAGE);
+		
 	if (setlocale(LC_ALL, ""))
 	{
 		_translation_loaded = FALSE;
@@ -656,15 +678,11 @@ void LOCAL_set_lang(const char *lang)
 		setlocale(LC_ALL, "C");
 	}
 
-	STRING_free(&_lang);
-	_lang = STRING_new_zero(lang);
-
 	DATE_init_local();
 	fill_local_info();
 
 	/* If language is right to left written */
 
-	lang = LOCAL_get_lang();
 	rtl = FALSE;
 	for (l = _rtl_lang; *l; l++)
 	{
@@ -1006,7 +1024,12 @@ _FORMAT:
 	{
 		number_mant = frexp10(fabs(number), &number_exp);
 		ndigit = after;
-		if (!exposant) ndigit += number_exp;
+		
+		if (!exposant) 
+			ndigit += number_exp;
+		else
+			ndigit++;
+		
 		ndigit = MinMax(ndigit, 0, MAX_FLOAT_DIGIT);
 		//fprintf(stderr, "number_mant = %.24g  number_exp = %d  ndigit = %d\n", number_mant, number_exp, ndigit);
 
@@ -1330,7 +1353,7 @@ static bool add_date_token(DATE_SERIAL *date, char *token, int count)
 
 			if (count <= 2)
 			{
-				time_t t = (time_t)0L;
+				time_t t = time(NULL);
 				localtime_r(&t, &tm);
 				add_strftime(count == 2 ? "%z" : "%Z", &tm);
 			}

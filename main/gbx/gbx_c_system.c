@@ -310,9 +310,17 @@ BEGIN_METHOD(System_Exist, GB_STRING program)
 
 END_METHOD
 
-#endif
+//-------------------------------------------------------------------------
+
+BEGIN_PROPERTY(Jit_Time)
+
+	GB_ReturnFloat(0);
+
+END_PROPERTY
 
 //-------------------------------------------------------------------------
+
+#endif
 
 GB_DESC NATIVE_User[] =
 {
@@ -362,5 +370,14 @@ GB_DESC NATIVE_System[] =
 	GB_STATIC_METHOD("Exist", "b", System_Exist, "(Program)s"),
 	GB_STATIC_METHOD("Find", "s", System_Find, "(Program)s"),
 
+	GB_END_DECLARE
+};
+
+GB_DESC NATIVE_Jit[] =
+{
+	GB_DECLARE_STATIC("Jit"),
+	
+	GB_STATIC_PROPERTY_READ("Time", "f", Jit_Time),
+	
 	GB_END_DECLARE
 };

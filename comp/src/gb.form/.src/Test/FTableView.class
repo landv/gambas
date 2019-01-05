@@ -5,24 +5,29 @@ Public Sub Form_Open()
   Dim aDir As String[]
   Dim Y As Integer
   
-  aDir = Dir("~/Musique/Arabe", "*.mp3").Sort()
+  aDir = RDir("~/Musique", "*.mp3").Sort()
   
   With tvwMain
-    .Columns.Count = 3
+    .Columns.Count = 4
     .Rows.Count = aDir.Count
     .Rows.H = 24
   End With
   
   tvwMain.Columns[0].Title = "Name"
+  tvwMain.Columns[0].Width = 400
   tvwMain.Columns[1].Title = "Size"
   tvwMain.Columns[2].Title = "Done"
+  tvwMain.Columns[3].Title = "Error"
   
   For Y = 0 To aDir.Max
     tvwMain[Y, 0].Text = String.UCaseFirst(File.BaseName(aDir[Y]))
     tvwMain[Y, 0].Padding = 4
-    tvwMain[Y, 1].Text = Stat("~/Musique/Arabe" &/ aDir[Y]).Size
+    tvwMain[Y, 1].Text = Stat("~/Musique" &/ aDir[Y]).Size
     tvwMain[Y, 1].Padding = 4
+    tvwMain[Y, 1].Background = Color.Yellow
   Next
+  
+  tvwMain.Rows.H = -1
 
 End
 
@@ -33,7 +38,7 @@ Public Sub tvwMain_Click()
       tvwMain.Edit
     Case 1
       tvwMain.Edit
-    Case 2
+    Case 2, 3
       tvwMain.Edit(["True", "False", ""], True)
   End Select
 

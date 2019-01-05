@@ -36,6 +36,7 @@
 
 DECLARE_EVENT(EVENT_Draw);
 DECLARE_EVENT(EVENT_Font);
+DECLARE_EVENT(EVENT_Change);
 
 
 /***************************************************************************
@@ -43,6 +44,20 @@ DECLARE_EVENT(EVENT_Font);
 	DrawingArea
 
 ***************************************************************************/
+
+void CDRAWINGAREA_send_change_event(void)
+{
+	GList *iter = g_list_first(gControl::controlList());
+	gControl *control;
+
+	while (iter)
+	{
+		control = (gControl *)iter->data;
+		if (control->getClass() == Type_gDrawingArea)
+			GB.Raise(control->hFree, EVENT_Change, 0);
+		iter = g_list_next(iter);
+	}
+}
 
 static void cleanup_drawing(intptr_t _unused)
 {
@@ -117,7 +132,7 @@ BEGIN_METHOD(CDRAWINGAREA_new, GB_OBJECT parent)
 
 END_METHOD
 
-BEGIN_PROPERTY(CDRAWINGAREA_border)
+BEGIN_PROPERTY(DrawingArea_Border)
 
 	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->getBorder()); return; }
 	WIDGET->setBorder(VPROP(GB_INTEGER));
@@ -125,14 +140,14 @@ BEGIN_PROPERTY(CDRAWINGAREA_border)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDRAWINGAREA_cached)
+BEGIN_PROPERTY(DrawingArea_Cached)
 
 	if (READ_PROPERTY) { GB.ReturnBoolean(WIDGET->cached()); return; }
 	WIDGET->setCached(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CDRAWINGAREA_focus)
+BEGIN_PROPERTY(DrawingArea_Focus)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(WIDGET->canFocus());
@@ -141,7 +156,7 @@ BEGIN_PROPERTY(CDRAWINGAREA_focus)
 
 END_PROPERTY
 
-BEGIN_METHOD_VOID(CDRAWINGAREA_clear)
+BEGIN_METHOD_VOID(DrawingArea_Clear)
 
 	if (DRAW.Paint.IsPainted(THIS))
 	{
@@ -153,7 +168,7 @@ BEGIN_METHOD_VOID(CDRAWINGAREA_clear)
 
 END_METHOD
 
-BEGIN_PROPERTY(CDRAWINGAREA_painted)
+BEGIN_PROPERTY(DrawingArea_Painted)
 
 	static bool deprecated = false;
 	
@@ -218,19 +233,20 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_PROPERTY("Indent", "b", Container_Indent),
   GB_PROPERTY("Invert", "b", Container_Invert),
 
-	GB_PROPERTY("Cached", "b", CDRAWINGAREA_cached),
-	GB_PROPERTY("Border", "i", CDRAWINGAREA_border),
-	GB_PROPERTY("Focus","b",CDRAWINGAREA_focus),
-	GB_PROPERTY("Painted", "b", CDRAWINGAREA_painted),
+	GB_PROPERTY("Cached", "b", DrawingArea_Cached),
+	GB_PROPERTY("Border", "i", DrawingArea_Border),
+	GB_PROPERTY("Focus","b",DrawingArea_Focus),
+	GB_PROPERTY("Painted", "b", DrawingArea_Painted),
 	GB_PROPERTY("NoBackground", "b", DrawingArea_NoBackground),
 	
 	GB_PROPERTY("Tablet", "b", DrawingArea_Tablet),
 
-	GB_METHOD("Clear", 0, CDRAWINGAREA_clear, NULL),
+	GB_METHOD("Clear", NULL, DrawingArea_Clear, NULL),
 	GB_METHOD("Refresh", NULL, DrawingArea_Refresh, "[(X)i(Y)i(Width)i(Height)i]"),
 
-	GB_EVENT("Draw", 0, 0, &EVENT_Draw),
-	GB_EVENT("Font", 0, 0, &EVENT_Font),
+	GB_EVENT("Draw", NULL, NULL, &EVENT_Draw),
+	GB_EVENT("Font", NULL, NULL, &EVENT_Font),
+	GB_EVENT("Change", NULL, NULL, &EVENT_Change),
 
 	GB_INTERFACE("Paint", &PAINT_Interface),
 	

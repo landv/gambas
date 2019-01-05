@@ -184,6 +184,13 @@ Public Sub _RenderStyleSheet()
       Endif
     Endif
     
+    If $bSpacing Then
+      If $iArrangement = Arrange.Column Or If $iArrangement = Arrange.Row Then
+        Me._AddStyleSheet("padding-bottom: 0;")
+        Me._AddStyleSheet("padding-right: 0;")
+      Endif
+    Endif
+    
   Endif
   
   If $bBorder Then Me._AddStyleSheet("border:solid #C0C0C0 1px;")

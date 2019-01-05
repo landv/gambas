@@ -263,6 +263,7 @@ BEGIN_PROPERTY(Connection_Timeout)
 END_PROPERTY
 
 
+#if 0
 BEGIN_PROPERTY(Connection_Timezone)
 
 	if (READ_PROPERTY)
@@ -271,6 +272,7 @@ BEGIN_PROPERTY(Connection_Timezone)
 		THIS->db.timezone = VPROP(GB_INTEGER);
 
 END_PROPERTY
+#endif
 
 
 BEGIN_PROPERTY(CCONNECTION_opened)
@@ -531,9 +533,7 @@ static char *get_query(char *prefix, CCONNECTION *_object, char *table, int len_
 
 	q_add(prefix);
 	q_add(" ");
-	q_add(THIS->driver->GetQuote());
-	q_add_length(table, len_table);
-	q_add(THIS->driver->GetQuote());
+	q_add(DB_GetQuotedTable(THIS->driver, &THIS->db, table, len_table));
 
 	if (query && len_query > 0)
 	{
@@ -630,7 +630,7 @@ BEGIN_METHOD(CCONNECTION_quote, GB_STRING name; GB_BOOLEAN is_table)
 	CHECK_OPEN();
 
 	if (VARGOPT(is_table, FALSE)) // && THIS->db.flags.schema)
-		GB.ReturnNewZeroString(DB_GetQuotedTable(THIS->driver, &THIS->db, GB.ToZeroString(ARG(name))));
+		GB.ReturnNewZeroString(DB_GetQuotedTable(THIS->driver, &THIS->db, STRING(name), LENGTH(name)));
 	else
 	{
 		q_init();
@@ -763,6 +763,15 @@ BEGIN_PROPERTY(Connection_Handle)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Connection_LastInsertId)
+
+	CHECK_DB();
+	CHECK_OPEN();
+	
+	GB.ReturnLong((*THIS->driver->GetLastInsertId)(&THIS->db));
+
+END_PROPERTY
+
 GB_DESC CConnectionDesc[] =
 {
 	GB_DECLARE("_Connection", sizeof(CCONNECTION)),
@@ -778,7 +787,7 @@ GB_DESC CConnectionDesc[] =
 	GB_PROPERTY("Name", "s", CCONNECTION_name),
 	GB_PROPERTY("Port", "s", CCONNECTION_port),
 	GB_PROPERTY("Timeout", "i", Connection_Timeout),
-	GB_PROPERTY("Timezone", "i", Connection_Timezone),
+	//GB_PROPERTY("Timezone", "i", Connection_Timezone),
 	GB_PROPERTY_READ("Charset", "s", CCONNECTION_charset),
 	GB_PROPERTY_READ("Version", "i", CCONNECTION_version),
 	GB_PROPERTY_READ("Opened", "b", CCONNECTION_opened),
@@ -786,7 +795,9 @@ GB_DESC CConnectionDesc[] =
 	//GB_PROPERTY_READ("Transaction", "i", Connection_Transaction),
 	GB_PROPERTY("IgnoreCharset", "b", CCONNECTION_ignore_charset),
 	GB_PROPERTY_READ("Collations", "String[]", Connection_Collations),
-	GB_STATIC_PROPERTY_READ("Handle", "p", Connection_Handle),
+	GB_PROPERTY_READ("Handle", "p", Connection_Handle),
+	
+	GB_PROPERTY_READ("LastInsertId", "l", Connection_LastInsertId),
 
 	GB_METHOD("Open", NULL, CCONNECTION_open, NULL),
 	GB_METHOD("Close", NULL, CCONNECTION_close, NULL),
@@ -865,7 +876,7 @@ GB_DESC CDBDesc[] =
 	//GB_STATIC_PROPERTY("Views", ".ConnectionViews", CCONNECTION_views),
 	GB_STATIC_PROPERTY("Databases", ".Connection.Databases", CCONNECTION_databases),
 	GB_STATIC_PROPERTY("Users", ".Connection.Users", CCONNECTION_users),
-
+	
 	GB_END_DECLARE
 };
 

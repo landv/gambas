@@ -134,6 +134,7 @@ End
 Public Sub SetColor(iColor As Integer)
   
   cchColor.Value = Color.SetAlpha(iColor, 0)
+  slbOpacity.Value = 255 - Color[iColor].Alpha
   
 End
 
@@ -1026,6 +1027,7 @@ Public Sub OnProjectActivate()
   If hCurrent Then
     ShowGridOption(hCurrent.HasGrid())
     ShowTextOption(hCurrent.GetTool() = "text")
+    Me.Enabled = Not hCurrent.ReadOnly
   Endif
   
 End
@@ -1500,5 +1502,11 @@ End
 Public Sub chkGridDiag_Click()
 
   Try GetCurrent().UpdateGrid
+
+End
+
+Public Sub cchColor_Change()
+
+  palColor.Current = cchColor.Value
 
 End

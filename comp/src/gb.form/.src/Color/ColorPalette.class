@@ -189,8 +189,7 @@ Public Sub View_MouseDown()
   'Debug Mouse.Left;; $iIndex
   If Not Me.Enabled Or If Not Mouse.Left Or If $iIndex < 0 Then Return
   
-  $iCurrent = $iIndex
-  $hView.Refresh
+  SetCurrent($iIndex)
   
   Raise Click
 
@@ -200,7 +199,13 @@ Public Sub View_MouseMove()
 
   Dim I As Integer
   Dim sColor As String
-
+  Dim Y As Integer
+  
+  'Debug
+  
+  Y = Mouse.ScreenY - $hView.ScreenY
+  If Y < 0 Or If Y >= $hView.H Then Return
+  
   I = ((Mouse.ScreenX - $hView.ScreenX + $hView.ScrollX - (CUSTOM_D \ 2)) \ (CUSTOM_W + CUSTOM_D))
   If I < 0 Or If I > $aColors.Max Then I = -1
   
@@ -280,8 +285,17 @@ End
 
 Public Sub View_Arrange()
 
-  CUSTOM_W = $hView.ClientH - CUSTOM_D * 2
+  CUSTOM_W = Max(CUSTOM_D, $hView.ClientH - CUSTOM_D * 2)
   UpdateColors
+
+End
+
+Private Sub SetCurrent(iCurrent As Integer)
+
+  If $iCurrent = iCurrent Then Return
+  $iCurrent = iCurrent
+  If $iCurrent >= 0 Then $hView.EnsureVisible(CUSTOM_D + (CUSTOM_W + CUSTOM_D) * $iCurrent - CUSTOM_D, 0, CUSTOM_W + CUSTOM_D * 2, $hView.ClientH)
+  $hView.Refresh
 
 End
 
@@ -297,8 +311,7 @@ Private Sub Index_Write(Value As Integer)
     Value = -1
   Endif
   
-  $iCurrent = Value
-  $hView.Refresh
+  SetCurrent(Value)
 
 End
 
@@ -314,8 +327,7 @@ End
 
 Private Sub Current_Write(Value As Integer)
 
-  $iCurrent = $aColors.Find(Value)
-  $hView.Refresh
+  SetCurrent($aColors.Find(Value))
 
 End
 
@@ -369,5 +381,11 @@ Public Sub mnuSort_Click()
   Next
 
   UpdateColors
+  
+End
+
+Public Sub View_MouseWheel()
+  
+  Stop Event
   
 End

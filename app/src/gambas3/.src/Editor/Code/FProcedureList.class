@@ -58,7 +58,7 @@ Public Sub gvwProc_MouseUp()
   
 End
 
-Private Sub SetCurrent(iCurrent As Integer)
+Private Sub SetCurrent(iCurrent As Integer, Optional bEnsureVisible As Boolean = True)
 
   Dim iOld As Integer = $iCurrent
   
@@ -69,20 +69,20 @@ Private Sub SetCurrent(iCurrent As Integer)
   If iOld >= 0 Then gvwProc.Rows[iOld].Refresh
   If iCurrent >= 0 Then 
     gvwProc.Rows[iCurrent].Refresh
-    gvwProc[iCurrent, 0].EnsureVisible
+    If bEnsureVisible Then gvwProc[iCurrent, 0].EnsureVisible
   Endif
 
 End
 
 Public Sub gvwProc_MouseMove()
   
-  SetCurrent(gvwProc.RowAt(Mouse.Y))
+  SetCurrent(gvwProc.RowAt(Mouse.Y), True)
   
 End
 
-Public Sub gvwProc_MouseWheel()
+Public Sub gvwProc_Scroll()
   
-  gvwProc_MouseMove
+  SetCurrent(gvwProc.RowAt(Mouse.ScreenY - gvwProc.ScreenY), False)
   
 End
 

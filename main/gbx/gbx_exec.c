@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_exec.c
+	gbx_exec.c
 
-  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -41,6 +41,7 @@
 #include "gbx_c_collection.h"
 
 #include "gbx_api.h"
+#include "gbx_jit.h"
 #include "gbx_exec.h"
 
 //#define DEBUG_STACK 1
@@ -719,7 +720,7 @@ static int exec_leave_byref(ushort *pc, int nparam)
 	\
 	if (LIKELY(!PCODE_is(*pc_func, C_BYREF))) \
 		goto __LEAVE_NORMAL; \
-	 \
+	\
 	nbyref_func = 1 + (*pc_func & 0xF); \
 	if (nbyref_func < nbyref) \
 		goto __LEAVE_NORMAL; \
@@ -783,8 +784,8 @@ void EXEC_leave_drop()
 
 	//VALUE_copy(&ret, RP);
 
-  pc = STACK_get_previous_pc();
-  nparam = FP->n_param;
+	pc = STACK_get_previous_pc();
+	nparam = FP->n_param;
 
 	/* ByRef arguments management */
 
@@ -824,8 +825,8 @@ void EXEC_leave_keep()
 	// RP may be indirectly freed by OBJECT_UNREF()
 	VALUE_copy(&ret, RP);
 
-  pc = STACK_get_previous_pc();
-  nparam = FP->n_param;
+	pc = STACK_get_previous_pc();
+	nparam = FP->n_param;
 
 	// ByRef arguments management
 
@@ -877,6 +878,13 @@ static void error_EXEC_function_real(void)
 
 void EXEC_function_real()
 {
+	EXEC.func = &EXEC.class->load->func[EXEC.index];
+	if (EXEC.func->fast)
+	{
+		JIT_exec(FALSE);
+		return;
+	}
+	
 	// We need to push a void frame, because EXEC_leave looks at *PC to know if a return value is expected
 	STACK_push_frame(&EXEC_current, 0);
 
@@ -889,33 +897,7 @@ void EXEC_function_real()
 	}
 	END_ERROR
 
-	if (FP->fast)
-		EXEC_jit_function_loop();
-	else
-		EXEC_function_loop();
-}
-
-void EXEC_jit_function_loop()
-{
-	TRY
-	{
-		(*CP->jit_functions[EXEC.index])();
-	}
-	CATCH
-	{
-		ERROR_set_last(TRUE);
-
-		ERROR_lock();
-		while (PC != NULL && EC == NULL)
-			EXEC_leave_drop();
-		ERROR_unlock();
-
-		STACK_pop_frame(&EXEC_current);
-		PROPAGATE();
-	}
-	END_TRY
-
-	STACK_pop_frame(&EXEC_current);
+	EXEC_function_loop();
 }
 
 void EXEC_function_loop()
@@ -951,8 +933,15 @@ void EXEC_function_loop()
 				if (EXEC_break_on_error)
 					DEBUG.Main(TRUE);
 
+				if (ERROR->info.code == E_ASSERT)
+				{
+					EP = NULL;
+					EC = NULL;
+					goto __IGNORE_TRY_CATCH;
+				}
+				
 				// Are we in a TRY?
-				if (EP != NULL)
+				if (EP && EC)
 				{
 					#if DEBUG_ERROR
 					fprintf(stderr, "#1 EP = %d  SP = %d\n", EP - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
@@ -1000,6 +989,8 @@ void EXEC_function_loop()
 					goto __CONTINUE;
 				}
 
+			__IGNORE_TRY_CATCH:
+				
 				// There is no error handler in the function
 
 				#if DEBUG_ERROR
@@ -1011,36 +1002,12 @@ void EXEC_function_loop()
 
 				ERROR_set_last(TRUE);
 
-				if (EXEC_debug && !STACK_has_error_handler())
+				if (EXEC_debug && !FP->fast && !STACK_has_error_handler())
 				{
 					ERROR_hook();
+					
 					for(;;)
 						DEBUG.Main(TRUE);
-
-					/*if (TP && TC)
-					{
-						ERROR_lock();
-						while (BP > TP)
-						{
-							EXEC_leave_drop();
-							if (!PC)
-								break;
-						}
-						while (SP > TP)
-							
-						if (!PC)
-						{
-							ERROR_unlock();
-							STACK_pop_frame(&EXEC_current);
-							PROPAGATE();
-						}
-							
-						POP();
-						PC = TC;
-						ERROR_unlock();
-					}
-
-					retry = TRUE;*/
 				}
 				else
 				{
@@ -1051,32 +1018,28 @@ void EXEC_function_loop()
 					// First we leave stack frames for JIT functions
 					// on top of the stack. We have just propagated
 					// past these some lines below.
-					ERROR_lock();
+					
+					/*ERROR_lock();
 					while (PC != NULL && EC == NULL && FP->fast)
 						EXEC_leave_drop();
-					ERROR_unlock();
-
+					ERROR_unlock();*/
+					
 					// We can only leave stack frames for non-JIT functions.
 					ERROR_lock();
 					while (PC != NULL && EC == NULL && !FP->fast)
 						EXEC_leave_drop();
 					ERROR_unlock();
 
-					// If the JIT function has set up an exception handler, call that now.
-					// If not, we must still propagate past that JIT function.
-					if (PC != NULL && FP->fast)
+					if (FP && FP->fast)
 						PROPAGATE();
-
+					
 					// If we got the void stack frame, then we remove it and raise the error again
 					if (PC == NULL)
 					{
-						/*printf("try to propagate\n");*/
 						STACK_pop_frame(&EXEC_current);
-
-						//ERROR_restore(&save);
-						//ERROR_set_last();
 						PROPAGATE();
 					}
+					
 
 					// We have a TRY too, handle it.
 					if (EP != NULL)
@@ -1485,6 +1448,11 @@ CLASS *EXEC_object_variant(VALUE *val, OBJECT **pobject)
 		class = object->class;
 		goto __CHECK;
 	}
+	else if (val->_variant.vtype == T_STRING || val->_variant.vtype == T_CSTRING)
+	{
+		*pobject = NULL;
+		return CLASS_BoxedString;
+	}
 	else
 		goto __ERROR;
 
@@ -1512,7 +1480,7 @@ bool EXEC_object_other(VALUE *val, CLASS **pclass, OBJECT **pobject)
 {
 	static const void *jump[] = {
 		&&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR,
-		&&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__FUNCTION, &&__CLASS, &&__NULL,
+		&&__STRING, &&__CSTRING, &&__ERROR, &&__ERROR, &&__FUNCTION, &&__CLASS, &&__NULL,
 		&&__OBJECT,
 		};
 
@@ -1569,6 +1537,13 @@ __OBJECT:
 	defined = FALSE;
 
 	goto __CHECK;
+	
+__STRING:
+__CSTRING:
+
+	*pclass = CLASS_BoxedString;
+	*pobject = NULL;
+	return TRUE;
 
 __ERROR:
 
@@ -1596,27 +1571,27 @@ __RETURN:
 
 void EXEC_public_desc(CLASS *class, void *object, CLASS_DESC_METHOD *desc, int nparam)
 {
-  EXEC.object = object;
-  EXEC.nparam = nparam; /*desc->npmin;*/
+	EXEC.object = object;
+	EXEC.nparam = nparam; /*desc->npmin;*/
 
-  if (FUNCTION_is_native(desc))
-  {
+	if (FUNCTION_is_native(desc))
+	{
 		EXEC.class = class; // EXEC_native() does not need the real class, except the GB.GetClass(NULL) API used by Form.Main.
-    EXEC.native = TRUE;
-    EXEC.use_stack = FALSE;
-    EXEC.desc = desc;
-    EXEC_native();
-    SP--;
-    *RP = *SP;
-    SP->type = T_VOID;
-  }
-  else
-  {
+		EXEC.native = TRUE;
+		EXEC.use_stack = FALSE;
+		EXEC.desc = desc;
+		EXEC_native();
+		SP--;
+		*RP = *SP;
+		SP->type = T_VOID;
+	}
+	else
+	{
 		EXEC.class = desc->class; // EXEC_function_real() needs the effective class, because the method can be an inherited one!
-    EXEC.native = FALSE;
-    EXEC.index = (int)(intptr_t)desc->exec;
-    EXEC_function_keep();
-  }
+		EXEC.native = FALSE;
+		EXEC.index = (int)(intptr_t)desc->exec;
+		EXEC_function_keep();
+	}
 }
 
 void EXEC_public(CLASS *class, void *object, const char *name, int nparam)
@@ -1670,10 +1645,18 @@ bool EXEC_special(int special, CLASS *class, void *object, int nparam, bool drop
 
 	if (FUNCTION_is_native(&desc->method))
 	{
-		EXEC.desc = &desc->method;
-		EXEC.use_stack = FALSE;
-		EXEC.native = TRUE;
-		EXEC_native();
+		if (desc->method.subr)
+		{
+			((EXEC_FUNC_CODE)(EXEC.class->table[index].desc->method.exec))(nparam);
+		}
+		else
+		{
+			EXEC.desc = &desc->method;
+			EXEC.use_stack = FALSE;
+			EXEC.native = TRUE;
+			EXEC_native();
+		}
+		
 		if (drop)
 			POP();
 	}
@@ -1864,7 +1847,7 @@ void *EXEC_create_object(CLASS *class, int np, char *event)
 }
 
 
-void EXEC_new(void)
+void EXEC_new(ushort code)
 {
 	CLASS *class;
 	int np;
@@ -1874,7 +1857,7 @@ void EXEC_new(void)
 	char *cname = NULL;
 	char *save;
 
-	np = *PC & 0xFF;
+	np = code & 0xFF;
 	event = np & CODE_NEW_EVENT;
 	np &= 0x3F;
 
@@ -1896,7 +1879,7 @@ void EXEC_new(void)
 		SP->type = T_NULL;
 	}
 	else
-		THROW(E_TYPE, "String", TYPE_get_name(SP->type));
+		THROW_TYPE(T_STRING, SP->type);
 
 	SP += np;
 
@@ -1911,7 +1894,7 @@ void EXEC_new(void)
 		SP--;
 
 		if (!TYPE_is_string(SP->type))
-			THROW(E_TYPE, "String", TYPE_get_name(SP->type));
+			THROW_TYPE(T_STRING, SP->type);
 
 		name = STRING_copy_from_value_temp(SP);
 		//printf("**** name %s\n", class->name);
@@ -1963,7 +1946,7 @@ void EXEC_new(void)
 }
 
 
-void EXEC_quit(void)
+void EXEC_do_quit(void)
 {
 	GAMBAS_DoNotRaiseEvent = TRUE;
 

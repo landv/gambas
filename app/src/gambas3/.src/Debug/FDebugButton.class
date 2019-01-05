@@ -73,3 +73,9 @@ Public Sub ShowButton(iTab As Integer, bShow As Boolean)
   hButton.Visible = bShow
   
 End
+
+Public Sub Form_Arrange()
+
+  FOutput.UpdateWidth(Me.W)
+
+End

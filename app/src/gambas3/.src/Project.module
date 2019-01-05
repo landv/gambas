@@ -216,6 +216,8 @@ Private $bBackgroundValid As Boolean
 ' Another one is created for the offline wiki
 Public Documentation As CDocumentation
 
+Private $bFileIsUnknown As Boolean
+
 ' If GetFileIcon() has been called on an added file
 'Private $bLastAdded As Boolean
 
@@ -242,11 +244,11 @@ End
 Public Sub InitWebView()
 
   Dim sPath As String
-  Dim sFont As String
-  Dim sDefaultFont As String
+  Dim hDefaultFont As Font
+  Dim hFixedFont As Font
 
   If Not WebSettings.Cache.Path Then
-    sPath = System.User.Home &/ ".cache"
+    sPath = "~/.cache"
     Try Mkdir sPath
     sPath &/= "gambas3"
     Try Mkdir sPath
@@ -259,25 +261,26 @@ Public Sub InitWebView()
   'WebSettings.Fonts.StandardFont = Application.Font.Name
   'hFont = Font[Settings["/Editor/Font", Application.Font]]
   
-  sDefaultFont = Application.Font.Name
+  hDefaultFont = Font[Settings["/Browser/Font"]]
+  hFixedFont = Font[Settings["/Browser/FixedFont", DEFAULT_FONT]]
   
-  WebSettings.Fonts.SerifFont = sDefaultFont
-  WebSettings.Fonts.SansSerifFont = sDefaultFont
-  WebSettings.Fonts.DefaultFontSize = Application.Font.Ascent * 0.9
+  WebSettings.Fonts.SerifFont = hDefaultFont.Name
+  WebSettings.Fonts.SansSerifFont = hDefaultFont.Name
+  WebSettings.Fonts.DefaultFontSize = hDefaultFont.Size
 
-  sFont = Replace(sDefaultFont, "Sans", "Mono")
-  If sFont = sDefaultFont Or If Not Fonts.Exist(sFont) Then
-    sFont = Application.Font.Name & "Mono"
-    If Not Fonts.Exist(sFont) Then
-      sFont = Application.Font.Name & " Mono"
-      If Not Fonts.Exist(sFont) Then
-        sFont = ""
-      Endif
-    Endif
-  Endif
+  ' sFont = Replace(sDefaultFont, "Sans", "Mono")
+  ' If sFont = sDefaultFont Or If Not Fonts.Exist(sFont) Then
+  '   sFont = Application.Font.Name & "Mono"
+  '   If Not Fonts.Exist(sFont) Then
+  '     sFont = Application.Font.Name & " Mono"
+  '     If Not Fonts.Exist(sFont) Then
+  '       sFont = ""
+  '     Endif
+  '   Endif
+  ' Endif
   
-  If sFont Then WebSettings.Fonts.FixedFont = sFont
-  WebSettings.Fonts.DefaultFixedFontSize = Font[sFont].Ascent * 0.8
+  WebSettings.Fonts.FixedFont = hFixedFont.Name
+  WebSettings.Fonts.DefaultFixedFontSize = hFixedFont.Size
 
 End
 
@@ -286,7 +289,6 @@ Public Sub Main()
   Dim sPath As String
   Dim iInd As Integer
   Dim sArg As String
-  Dim hComp As CComponent
   Dim aOpenFile As New String[]
 
   'DB.Debug = True
@@ -340,6 +342,8 @@ Public Sub Main()
   EXAMPLES_DIR = System.Path &/ "share/gambas" & Split(System.Version, ".")[0] & "/examples"
 
   Application.ShowTooltips = Settings["/ShowTooltip", True]
+  Application.Animations = Settings["/Animations", True]
+  Application.Shadows = Settings["/Shadows", True]
 
   RefreshBreakpointPicture
 
@@ -351,9 +355,12 @@ Public Sub Main()
     CRecentProject.Load
     FMain.Load
     Project.Open(sPath)
+    
+    Dim hComp As CComponent
     For Each hComp In Project.Documentation.Components
       hComp.Load
     Next
+    
     Quit
     'FSearch.FindProject("else")
     'Project.Close
@@ -621,7 +628,10 @@ _INIT_AGAIN:
 
     ' Needed for MoveFile()
     RefreshSources
+    Design.ClearBreakpoints
 
+    ReadProject(True)
+    
     If Not Exist(SourceDir) Then
 
       InsertDirectory(SourceDir)
@@ -637,7 +647,6 @@ _INIT_AGAIN:
 
     Endif
 
-    ReadProject(True)
     WriteProject(True)
 
     MakeDirectoryIcon
@@ -793,7 +802,7 @@ Catch
   Application.Busy = 0
 
   If Error.Text Then
-    Message.Error(("Cannot open project file :\n") & sDir & "\n\n" & Error.Text & "\n" & Error.Where)
+    Message.Error(("Cannot open project file :") & "\n" & sDir & "\n\n<tt>" & Error.Text & "\n" & Error.Backtrace.Join(" ") & "</tt>")
   Endif
 
 _CANCEL:
@@ -896,7 +905,7 @@ Public Function CloseProject() As Boolean
 
     Inc Application.Busy
 
-    Design.WriteBreakpoints
+    If Not IsFake() Then Design.WriteBreakpoints
 
     If Settings["/RestoreFiles", 1] Then
 
@@ -1030,12 +1039,26 @@ Public Sub AddLinkEmblem(hSource As Image) As Image
   iSize = Min(hSource.H, hSource.W) \ 2
 
   Paint.Begin(hImage)
+  
+  Paint.MoveTo(hImage.W, hImage.H)
+  Paint.RelLineTo(0, - iSize)
+  Paint.RelLineTo(- iSize, iSize)
+  Paint.RelLineTo(iSize, 0)
+  Paint.Background = Color.Black
+  'Paint.Background = Color.SetAlpha(Color.TextForeground, 64)
+  Paint.Operator = Paint.OperatorDestOut
+  Paint.Fill
+  
+  iSize *= 0.85
+  
   Paint.MoveTo(hImage.W, hImage.H)
   Paint.RelLineTo(0, - iSize)
   Paint.RelLineTo(- iSize, iSize)
   Paint.RelLineTo(iSize, 0)
   Paint.Background = Color.SetAlpha(Color.TextForeground, 64)
+  Paint.Operator = Paint.OperatorOver
   Paint.Fill
+  
   Paint.End
   Return hImage
 
@@ -1943,7 +1966,7 @@ Public Sub IsPatchFile(sPath As String) As Boolean
 
 End
 
-Public Function LoadFile(sPath As String) As Object
+Public Function LoadFile(sPath As String, Optional bNoErrorIfUnknown As Boolean) As Object
 
   Dim hForm As Object
   Dim bError As Boolean
@@ -2012,7 +2035,11 @@ Public Function LoadFile(sPath As String) As Object
             
             Dec Application.Busy
             Files[sPath] = Null
-            FMain.ShowError(("Cannot open a binary file."), sPath)
+            If bNoErrorIfUnknown Then
+              $bFileIsUnknown = True
+            Else
+              FMain.ShowError(("Cannot open a binary file."), sPath)
+            Endif
             Return
             
           Endif
@@ -2079,7 +2106,14 @@ Public Sub ShowFile(hForm As Form)
 
 End
 
-Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn As Integer = -1) As Object
+Public Sub FileWasUnknown() As Boolean
+  
+  Return $bFileIsUnknown
+  
+End
+
+
+Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn As Integer = -1, Optional bNoErrorIfUnknown As Boolean) As Object
 
   Dim hForm As Object
   Dim bAlreadyLoaded As Boolean
@@ -2107,7 +2141,8 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   
   If Files[sPath] Then bAlreadyLoaded = True
 
-  LoadFile(sPath)
+  $bFileIsUnknown = False
+  If Not LoadFile(sPath, bNoErrorIfUnknown) Then Return
 
   If Not InsideDirectory(sPath, Project.Dir) Then Tree.AddExtern(sPath)
 
@@ -2222,7 +2257,7 @@ Private Sub CompileError(sMsg As String)
   iPos = RInStr(sMsg, "\n")
   If iPos Then sMsg = Mid$(sMsg, iPos + 1)
 
-  If LCase(sMsg) Begins "gbc: error: " Then
+  If LCase(sMsg) Like "gbc*: error: *" Then
 
     sMsg = TranslateMessage(Mid$(sMsg, Len("gbc: error: ") + 1))
     SetMessage(sMsg)
@@ -3034,9 +3069,8 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
   Endif
 
   Exec ["rm", "-rf", Project.Dir &/ ".gambas"] Wait
-  Try Move Project.Dir &/ ".gambas.save" To Project.Dir &/ ".gambas"
-  If Error Then Debug Error.Text
-
+  Move Project.Dir &/ ".gambas.save" To Project.Dir &/ ".gambas"
+  
 _ERROR:
 
   EnableRefresh
@@ -4131,10 +4165,10 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
       Move sPath To sNewPath
     Endif
   Else If Stat(sPath).Type = gb.Link Then
-    Move sPath To sNewPath
+    If VersionControl.NeedMove() Then Move sPath To sNewPath
     VersionControl.MoveFile(sPath, sNewPath)
   Else
-    Copy sPath To sNewPath
+    If VersionControl.NeedMove() Then Copy sPath To sNewPath
     VersionControl.MoveFile(sPath, sNewPath)
     Try Kill sPath
   Endif
@@ -4255,6 +4289,7 @@ Public Sub RenameFile(sPath As String, sNewName As String)
     If sName = Startup Then
       Startup = sNewName
       WriteProject(True)
+      Tree.DefineStartup(Startup)
     Endif
 
     sNewPath = RenameOneFile(sDir, sName, sNewName, sExt)
@@ -4281,17 +4316,21 @@ Public Sub RenameFile(sPath As String, sNewName As String)
 
   Endif
 
-  If bIsDir Then
-    Refresh
-  Else
-    RefreshKey(sNewPath, sPath)
-  Endif
+  If Not IsFake() Then
+    
+    If bIsDir Then
+      Refresh
+    Else
+      RefreshKey(sNewPath, sPath)
+    Endif
   
-  'AddFile(File.Dir(sNewPath), File.Name(sNewPath), TRUE)
-  'IF IsDir(sNewPath) THEN AddDir(sNewPath)
-
-  Try ProjectTree[sNewPath].Selected = True
-  Try ProjectTree[sNewPath].EnsureVisible
+    'AddFile(File.Dir(sNewPath), File.Name(sNewPath), TRUE)
+    'IF IsDir(sNewPath) THEN AddDir(sNewPath)
+  
+    Try ProjectTree[sNewPath].Selected = True
+    Try ProjectTree[sNewPath].EnsureVisible
+    
+  Endif
 
 Catch
 
@@ -4444,13 +4483,12 @@ Public Function CheckProjectName(sName As String, Optional sDir As String) As St
 
 End
 
-Public Sub MakeSourcePackageFromTo(sFrom As String, sPath As String, Optional bWait As Boolean)
+Public Sub MakeSourcePackageFromTo(sFrom As String, sPath As String)
 
   Dim sCmd As String
   Dim sOpt As String
   Dim sIgnore As String
   Dim sTemp As String
-  Dim hProcess As Process
 
   Inc Application.Busy
 
@@ -4466,29 +4504,14 @@ Public Sub MakeSourcePackageFromTo(sFrom As String, sPath As String, Optional bW
 
   sCmd = "cd " & Shell$(File.Dir(sFrom)) & ";"
   sCmd &= " tar cfvh" & sOpt & " " & Shell$(sTemp)
-  sCmd &= " --exclude=" & Shell$(".gambas/*")
-  sCmd &= " --exclude=" & Shell$("*~")
-  sCmd &= " --exclude=" & Shell$("core")
-  sCmd &= " --exclude=" & Shell$("core*.*")
-  sCmd &= " --exclude=" & Shell$("vgcore*.*")
-  sCmd &= " --exclude=" & Shell$(".lock")
-  sCmd &= " --exclude=" & Shell$(".lang/*.pot")
-  sCmd &= " --exclude=" & Shell$(".lang/.pot")
-  sCmd &= " --exclude=" & Shell$(".xvpics")
-  sCmd &= " --exclude=" & Shell$(File.Name(GetExecPath()))
-  For Each sIgnore In GetIgnoreFiles()
+  For Each sIgnore In [
+    File.Name(GetExecPath()), ".gambas/*", ".settings", ".info", ".list", "*~", "core", "core.*", "vgcore*.*", ".lock", ".lang/*.pot", ".lang/.ot", ".xvpics", ".bzr", ".bzrignore", ".hg", ".hgignore", ".hgtags", "hgrc", ".git", ".gitignore", ".svn", "CVS", "CVSROOT"
+    ]
     sCmd &= " --exclude=" & Shell$(sIgnore)
   Next
   sCmd &= " " & Shell$(File.Name(sFrom)) & " > /dev/null"
 
-  If bWait Then
-    hProcess = Shell sCmd
-    While hProcess.State = Process.Running
-      Wait 0.1
-    Wend
-  Else
-    Shell sCmd Wait
-  Endif
+  Shell sCmd Wait
   
   If Not Exist(sTemp) Then Error.Raise(Subst$(("The '&1' command has failed."), "tar"))
 
@@ -4505,11 +4528,11 @@ Catch
 
 End
 
-Public Sub MakeSourcePackageTo(sPath As String, Optional bWait As Boolean)
+Public Sub MakeSourcePackageTo(sPath As String)
 
   Save
   WriteProject(True)
-  MakeSourcePackageFromTo(Project.Dir, sPath, bWait)
+  MakeSourcePackageFromTo(Project.Dir, sPath)
 
 End
 
@@ -4889,7 +4912,7 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
     Endif
     'If Exist(sSrc) Then LockedPaths[sSrc] = True
   Else
-    Copy sSrc To sDst
+    If VersionControl.NeedMove() Then Copy sSrc To sDst
     If Right(sSrc) <> "~" Then VersionControl.MoveFile(sSrc, sDst)
     Try Kill sSrc
   Endif
@@ -4912,7 +4935,7 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
 
 Catch
 
-  FMain.ShowError(Subst(("Cannot move file &1."), File.Name(sSrc)) & "\n\n" & Error.Text, sSrc)
+  FMain.ShowError(Subst(("Cannot move file &1."), File.Name(sSrc)) & "\n\n" & Error.Text & "\n" & Error.Backtrace.Join(" "), sSrc)
 
 End
 
@@ -5632,17 +5655,11 @@ Catch
 
 End
 
-Public Sub GetIgnoreFiles() As String[]
-
-  Return Settings["/IgnoreFiles", [".bzr", ".bzrignore", ".hg", ".hgignore", ".hgtags", "hgrc", ".git", ".gitignore", ".svn", "CVS", "CVSROOT"]]
-
-End
-
 Public Sub GetSmallFont() As Font
 
   Dim hFont As Font = Font[Settings["/Font"]]
 
-  Try hFont.Size *= 1 - Settings["/TitleFontSize", 0] / 20
+  Try hFont.Size *= GetPercentFontSize("/TitleFontSize", 80)
   Return hFont
 
 End
@@ -5653,16 +5670,28 @@ Public Sub SetSmallFont(hCtrl As Control)
 
 End
 
-Public Sub SetNormalFont(hCtrl As Control)
+Public Sub GetPercentFontSize(sSettings As String, iDefault As Integer) As Float
+
+  Dim iVal As Integer
+
+  Try iVal = Settings[sSettings, iDefault]
+  If iVal < 10 Then iVal = iDefault
+  Return iVal / 100
+
+End
+
+Public Sub SetNormalFont(hCtrl As Control, Optional fSize As Float)
 
   Dim hFont As Font = Font[Settings["/Font"]]
 
-  Try hFont.Size *= 1 - Settings["/ProjectFontSize", 0] / 20
-  If hFont.ToString() = Application.Font.ToString() Then
-    hCtrl.Font = Null
-  Else
-    hCtrl.Font = hFont
-  Endif
+  If fSize = 0 Then fSize = GetPercentFontSize("/ProjectFontSize", 100) 
+  Try hFont.Size *= fSize
+  hCtrl.Font = hFont
+  ' If hFont.ToString() = Application.Font.ToString() Then
+  '   hCtrl.Font = Null
+  ' Else
+  '   hCtrl.Font = hFont
+  ' Endif
 
 End
 
@@ -5825,7 +5854,7 @@ Public Sub UpdateAllForms(Optional sOldClass As String, sNewClass As String)
 
   Dim sPath As String
   Dim hObject As Object
-  Dim hForm As FForm
+  Dim hForm As Object
 
   Inc Application.Busy 
 
@@ -6367,6 +6396,7 @@ Private Sub RenamePaths(sOld As String, sNew As String)
   Dim hForm As Object
   Dim sCheck As String
   Dim sNewFormPath As String
+  Dim sExt As String
   
   ' Rename DoNotTranslate
   
@@ -6412,6 +6442,15 @@ Private Sub RenamePaths(sOld As String, sNew As String)
   
     Next
   
+  ' Rename breakpoints
+  
+  If IsSourcePath(sOld) Then
+    sExt = File.Ext(sOld)
+    If sExt = "class" Or If sExt = "module" Then
+      Design.RenameClass(File.BaseName(sOld), File.BaseName(sNew))
+    Endif
+  Endif
+  
 End
 
 Public Sub FindProjectPath(sPath As String) As String
@@ -6443,23 +6482,56 @@ End
 
 Public Sub CompileTranslation(bForce As Boolean, Optional sLang As String)
   
-  Dim iPos As Integer
   Dim sPath As String
+  Dim sTrans As String
+  Dim aLang As String[]
+  Dim dTrans As Date
+  Dim dPath As Date
   
-  If Not sLang Then
-    iPos = Project.Environment.Find("LANG=*", gb.Like)
-    If iPos >= 0 Then
-      sLang = Mid$(Project.Environment[iPos], 6)
-    Else
-      sLang = System.Language
-    Endif
-    sLang = Language.Find(sLang)
+  If sLang Then
+    aLang = [sLang]
+  Else
+    aLang = Language.GetAll(True)
   Endif
   
-  sPath = Language.GetPath(sLang, "mo")
-  If Exist(sPath) And If Not bForce Then Return
+  ' If Not sLang Then
+  '   iPos = Project.Environment.Find("LANG=*", gb.Like)
+  '   If iPos >= 0 Then
+  '     sLang = Mid$(Project.Environment[iPos], 6)
+  '   Else
+  '     sLang = System.Language
+  '   Endif
+  '   sLang = Language.Find(sLang)
+  ' Endif
+
+  For Each sLang In aLang
   
-  Try Kill sPath
-  Shell "msgfmt -o " & Shell$(sPath) & " " & Shell(File.SetExt(sPath, "po")) Wait
+    sTrans = Language.GetPath(sLang, "po")
+    Try dTrans = Stat(sTrans).LastModified
+    If Error Then Continue
+    
+    sPath = Language.GetPath(sLang, "mo")
+    
+    If Not bForce Then
+      Try dPath = Stat(sPath).LastModified
+      If dPath And If dPath >= dTrans Then Continue
+    Endif
+    
+    Try Kill sPath
+    Shell "msgfmt -o " & Shell$(sPath) & " " & Shell(sTrans) Wait
+    
+  Next
+  
+End
+
+Public Sub InitTooltip(hTooltip As Control)
+  
+  With hTooltip
+    
+    .Foreground = Color.TextBackground
+    .Background = Color.SetAlpha(Color.TextForeground, 248)
+    .Font.Grade = -1
+    
+  End With
   
 End

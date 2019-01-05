@@ -12,6 +12,8 @@ Public Sub Form_Open()
 
   Application.MainWindow = Me
 
+  Workspace1.CloseWithMouse = True
+
   $hWatcher = New Watcher(ToolButton1) As "Watcher"
 
   Workspace1.Lock
@@ -20,6 +22,9 @@ Public Sub Form_Open()
   Button2_Click
   Button2_Click
   Workspace1.Unlock
+  
+  Button3.Action = "orientation"
+  Action.AddFrom(Button3)
 
 End
 

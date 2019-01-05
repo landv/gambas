@@ -33,12 +33,12 @@ Static Private $sCompressMessage As String
 
 Public Sub _new()
   
-  Me.ResizeScaled(86, 97)
+  'Me.ResizeScaled(86, 97)
   
   'Project.ProjectTree = tvwProject
   Project.Workspace = wrkProject
   
-  ScrollArea(tvwProject.Proxy.Proxy).Shadow = True
+  'ScrollArea(tvwProject.Proxy.Proxy).Shadow = True
   'tvwProject.Columns.Count = 2
   
   panProject.MinSize = Desktop.Scale * 24
@@ -143,6 +143,10 @@ End
 Public Sub tvwProject_Activate()
   
   Dim sKey As String
+  Dim sMime As String
+  Dim hProgList As DesktopFile[]
+  Dim hProcess As Process
+  Dim sKeyClass As String
   
   sKey = tvwProject.Key
   
@@ -150,11 +154,22 @@ Public Sub tvwProject_Activate()
     tvwProject[sKey].Expanded = True
     If CanEdit(sKey) Then
       If $bCtrl Then
-        If File.Ext(sKey) <> "module" Then
-          sKey = File.SetExt(sKey, "class")
+        If Project.IsSourcePath(sKey) And If File.Ext(sKey) <> "module" Then
+          sKeyClass = File.SetExt(sKey, "class")
+          If Project.IsSourcePath(sKeyClass) Then sKey = sKeyClass
         Endif
       Endif
-      Project.OpenFile(sKey)
+      Project.OpenFile(sKey,,, True)
+      If Project.FileWasUnknown() Then
+        sMime = MMime.GetMime(sKey)
+        If sMime Then
+          hProgList = DesktopFile.FromMime(sMime)
+          If hProgList.Count Then
+            hProcess = hProgList[0].Run(sKey)
+            hProcess.Ignore = True
+          Endif
+        Endif
+      Endif
     Endif
   Endif
   
@@ -368,7 +383,11 @@ Public Sub mnuPopup_Show()
   sCurrent = GetCurrent()
   bCurrent = sCurrent
   sRoot = GetRootKey($sKey)
-  If sCurrent Then bLink = Stat(sCurrent).Type = gb.Link
+  
+  If sCurrent Then 
+    Try bLink = Stat(sCurrent).Type = gb.Link
+    If Error Then Return
+  Endif
   
   UpdateMenu
   
@@ -1155,20 +1174,10 @@ End
 Public Sub ReadConfig()
   
   Project.SetNormalFont(tvwProject)
-  'lblMessage.Font = tvwProject.Font
   tabProperty.TextFont = Project.GetSmallFont()
   wrkProject.Font = tabProperty.TextFont
-  'wrkProject.Font = tvwProject.Font
-  'tabProperty.Font = tvwProject.Font
-  '$bCanShowBalloon = Settings["/ShowBalloon", TRUE]
-  'IF NOT $bCanShowBalloon THEN HideBalloon
-  
-  'panMessage.Height = lblMessage.Font.Height + lblMessage.Padding * 2 + 2
-  ' bShow = Settings["/ShowMessages", True]
-  ' panMessage.Visible = bShow
-  ' mnuStatusBar.Value = bShow
-  
   Me.Menus.Visible = Settings["/ShowMenus", True]
+  wrkProject.CloseWithMouse = Settings["/CloseWithMiddleClick", False]
   
 End
 
@@ -1344,22 +1353,13 @@ Public Sub ShowTool(sType As String)
   
 End
 
-Public Sub GetDebugPanel() As SidePanel
-  
-  Return panDebug
-  
-End
+Public Sub ShowDebug(bShow As Boolean, Optional bAutomatic As Boolean)
 
-
-Public Sub ShowDebug(bShow As Boolean)
+   If bAutomatic Then
+    If Not Settings["/ShowDebugPanelAutomatically", True] Then Return
+  Endif
   
   panDebug.Hidden = Not bShow
-  
-End
-
-Public Sub HideDebug(bHide As Boolean)
-  
-  panDebug.Visible = Not bHide
   
 End
 
@@ -1852,7 +1852,7 @@ End
 
 Public Sub mnuClearBreakpoints_Click()
   
-  Design.ClearBreakpoints
+  FDebugInfo.RemoveAllBreakpoints
   
 End
 
@@ -2421,10 +2421,10 @@ GOTO_BOTTOM:
    
 End
 
-Public Sub UpdatePosition(bStart As Boolean, bEnd As Boolean)
+Public Sub UpdatePosition((bBack) As Boolean, bForward As Boolean)
   
-  btnGoBack.Enabled = Not bStart
-  btnGoForward.Enabled = Not bEnd
+  btnGoBack.Enabled = True
+  btnGoForward.Enabled = bForward
   
 End
 
@@ -2511,22 +2511,41 @@ Private Sub CompressAll(sPath As String, bUncompress As Boolean)
   
   Dim sFile As String
   Dim hTextEditor As FTextEditor
+  Dim hForm As Object
   
   If sPath = Project.KEY_MISC Then sPath = Project.Dir
   
   If Not IsDir(sPath) Then
-    Try hTextEditor = Project.LoadFile(sPath)
-    If hTextEditor Then 
-      If bUncompress Then
-        hTextEditor.Uncompress()
-      Else
-        If hTextEditor.Compress() Then
-          If $sCompressMessage Then $sCompressMessage &= "<p>"
-          $sCompressMessage &= "<tt>" & Mid$(sPath, Len(Project.Dir) + 2) & "</tt><p>" & FTextEditor.CompressMessage
+    
+    If MCompressFile.CanCompress(sPath, True) Then
+    
+      Try hTextEditor = Project.LoadFile(sPath)
+      If hTextEditor Then 
+        If bUncompress Then
+          hTextEditor.Uncompress()
+        Else
+          If hTextEditor.Compress() Then
+            If $sCompressMessage Then $sCompressMessage &= "<p>"
+            $sCompressMessage &= "<tt>" & Mid$(sPath, Len(Project.Dir) + 2) & "</tt><p>" & FTextEditor.CompressMessage
+          Endif
         Endif
       Endif
+      
+    Else 
+    
+      hForm = Project.Files[sPath]
+      If hForm Then
+        hForm.Save
+      Else
+        Save.Begin(sPath, True)
+        MCompressFile.Compress(sPath)
+        Save.End()
+      Endif
+      
     Endif
+      
     Return
+    
   Endif
   
   For Each sFile In Dir(sPath)
@@ -2899,7 +2918,11 @@ End
 
 Public Sub panDebug_Arrange()
 
-  btnClosePanel.Move(panDebug.W - btnClosePanel.W, 0)
+  If System.RightToLeft Then
+    btnClosePanel.Move(0, 0)
+  Else
+    btnClosePanel.Move(panDebug.W - btnClosePanel.W, 0)
+  Endif
   btnClosePanel.Raise
 
 End

@@ -6,9 +6,11 @@ Public Result As String
 
 Private $cTool As New Collection
 
-Private _NET_CLIENT_LIST As Integer
+'Private _NET_CLIENT_LIST As Integer
 
 Private $aDataDir As String[]
+Private $sDesktop As String
+Private $cSearchPath As New Collection
 
 Public Sub RunXdgUtil(sProg As String, aArg As String[], Optional bWait As Boolean) 
   
@@ -120,6 +122,62 @@ Private Function SearchPathVariable(sFileConfig As String, sDirectory As String)
 
 End
 
+Public Sub GetDesktop() As String
+
+  If Not $sDesktop Then
+
+    If Application.Env["KDE_FULL_SESSION"] Then
+      
+      If Application.Env["KDE_SESSION_VERSION"] = "4" Then
+        $sDesktop = "KDE4"
+      Else If Application.Env["KDE_SESSION_VERSION"] = "5" Then
+        $sDesktop = "KDE5"
+      Else
+        $sDesktop = "KDE"
+      Endif
+
+    Else
+      
+      Select Case UCase(Application.Env["XDG_CURRENT_DESKTOP"])
+        Case "LXDE"
+          $sDesktop = "LXDE"
+        Case "UNITY"
+          $sDesktop = "UNITY"
+        Default
+          $sDesktop = UCase(Application.Env["XDG_CURRENT_DESKTOP"])
+          If $sDesktop Begins "X-" Then $sDesktop = Mid$($sDesktop, 3)
+      End Select
+      
+    Endif
+    
+    If Not $sDesktop Then
+    
+      If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then
+        $sDesktop = "GNOME"
+      Else If Application.Env["MATE_DESKTOP_SESSION_ID"] Or If Application.Env["MATECORBA_SOCKETDIR"] Then
+        $sDesktop = "MATE"
+      Else If Application.Env["E_BIN_DIR"] And If Application.Env["E_LIB_DIR"] Then
+        $sDesktop = "ENLIGHTENMENT"
+      Else If Application.Env["WMAKER_BIN_NAME"] Then
+        $sDesktop = "WINDOWMAKER"
+      Else If Application.Env["DESKTOP_SESSION"] = "LXDE" Then
+        $sDesktop = "LXDE"
+      Else If UCase(Env["DESKTOP_SESSION"]) = "XCFE" Then
+        $sDesktop = "XFCE"
+      Else If UCase(Env["XDG_MENU_PREFIX"]) Begins "XCFE" Then
+        $sDesktop = "XFCE"
+      Else If InStr(Env["XDG_DATA_DIR"], "/xfce") Then
+        $sDesktop = "XFCE"
+      Endif
+      
+    Endif
+
+  Endif
+
+  Return $sDesktop
+
+End
+
 Public Sub GetDesktopPath(Optional sType As String = "DESKTOP") As String
 
   Dim sDir, sXdgConfigHome, sXdgConfigDirs, sFileConfig As String
@@ -143,9 +201,13 @@ End
 
 Public Sub GetDataDir() As String[]
   
+  Dim sDir As String
+  
   If Not $aDataDir Then
-    $aDataDir = Split(Desktop.DataDir, ":", "", True)
-    $aDataDir.Insert(Split(Env["XDG_DATA_DIRS"], ":", "", True))
+    $aDataDir = [Desktop.DataDir] 'Split(Desktop.DataDir, ":", "", True)
+    sDir = Env["XDG_DATA_DIRS"]
+    If Not sDir Then sDir = "/usr/local/share:/usr/share"
+    $aDataDir.Insert(Split(sDir, ":", "", True))
   Endif
   
   Return $aDataDir
@@ -155,20 +217,20 @@ End
 
 Public Sub Main()
 
-  Print DesktopMime.FromFile("~/gambas/git/master/app/src/gambas3/img/broken.svg").GetIcon()
+  DesktopFile.FromMime("application/vnd.oasis.opendocument.text")
   
 End
 
 
 
-Public Sub X11_PropertyNotify((Window) As Integer, Atom As Integer)
-  
-  'Debug Window;; X11.GetAtomName(Atom)
-  
-  If Window = X11.RootWindow And If Atom = _NET_CLIENT_LIST Then
-  Endif
-  
-End
+' Public Sub X11_PropertyNotify((Window) As Integer, Atom As Integer)
+'   
+'   'Debug Window;; X11.GetAtomName(Atom)
+'   
+'   If Window = X11.RootWindow And If Atom = _NET_CLIENT_LIST Then
+'   Endif
+'   
+' End
 
 Public Sub X11_ConfigureNotify((Window) As Integer, X As Integer, Y As Integer, W As Integer, H As Integer)
   
@@ -176,3 +238,63 @@ Public Sub X11_ConfigureNotify((Window) As Integer, X As Integer, Y As Integer, 
   
 End
 
+Public Sub GetDesktopVar(sVar As String) As String[]
+
+  Dim sValue As String
+  
+  sValue = Env[sVar]
+  If sValue Then Return Split(sValue, ":")
+  
+  If Not sValue Then
+    Select Case sVar
+      Case "XDG_CONFIG_HOME"
+        Return [User.Home &/ ".config"]
+      Case "XDG_CONFIG_DIRS"
+        Return ["/etc/xdg"]
+      Case "XDG_DATA_HOME"
+        Return [User.Home &/ ".local/share"]
+      Case "XDG_DATA_DIRS"
+        Return ["/usr/local/share", "/usr/share"]
+    End Select
+  Endif
+  
+End
+
+
+Public Sub MakeSearchPath(sKey As String, aList As String[]) As String[]
+
+  Dim iPos As Integer
+  Dim sDir As String
+  Dim aDir As String[]
+  Dim sVar As String
+  Dim aResult As New String[]
+  
+  If $cSearchPath.Exist(sKey) Then Return $cSearchPath[sKey]
+  
+  aDir = aList.Copy()
+  
+  While aDir.Count
+    
+    sDir = aDir[0]
+    aDir.Remove(0)
+    
+    If sDir Begins "$" Then
+      
+      iPos = InStr(sDir, "/")
+      If iPos = 0 Then iPos = Len(sDir) + 1
+      For Each sVar In GetDesktopVar(Mid$(sDir, 2, iPos - 2))
+        aDir.Add(sVar &/ Mid$(sDir, iPos + 1))
+      Next
+      Continue
+    
+    Endif
+    
+    sDir = Replace(sDir, "$desktop", LCase(GetDesktop()))
+    If Exist(sDir) Then aResult.Add(sDir)
+    
+  Wend
+  
+  $cSearchPath[sKey] = aResult
+  Return aResult
+  
+End

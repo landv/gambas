@@ -1,0 +1,478 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Action,MinValue=0,MaxValue=100,Step=1,Wrap,Value,Border=True"
+Public Const _Group As String = "Form"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "9,4"
+Public Const _Similar As String = "TextBox,Slider"
+
+Event Change
+
+Property MinValue As Integer
+Property MaxValue As Integer
+Property Value As Integer
+Property Border As Boolean
+Property Wrap As Boolean
+Property Step As Integer
+Property Text As String
+Property Background As Integer
+
+Private Enum ARROW_NONE, ARROW_TOP, ARROW_BOTTOM
+
+Private $hView As DrawingArea
+Private $hTextBox As TextBox
+
+Private $iValue As Integer
+Private $iMin As Integer
+Private $iMax As Integer = 100
+Private $iInsideArrow As Integer
+Private $hTimer As Timer
+Private $bTimerAdd As Boolean
+Private $bBorder As Boolean = True
+Private $bWrap As Boolean
+Private $iStep As Integer = 1
+
+Public Sub _new()
+  
+  $hView = New DrawingArea(Me) As "View"
+  
+  $hTextBox = New TextBox($hView) As "TextBox"
+  $hTextBox.Border = False
+  $hTextBox.Text = "0"
+  $hTextBox.Background = Color.TextBackground
+  
+  Me.Proxy = $hTextBox
+  
+End
+
+Private Sub GetArrowRect(iArrow As Integer, Optional bForDrawing As Boolean) As Rect
+
+  Dim W As Integer
+  Dim H As Integer
+  Dim D As Integer
+  Dim hRect As Rect
+  Dim BW, BH As Integer
+  
+  If $bBorder Then 
+    BW = Style.BoxFrameWidth
+    BH = Style.BoxFrameHeight
+  Endif
+  
+  D = Desktop.Scale
+  W = D * 2 + BW
+  H = Me.H \ 2 - BH
+
+  If iArrow = ARROW_TOP Then
+    hRect = Rect(Me.W - W, BH, W, H)
+  Else
+    hRect = Rect(Me.W - W, Me.H - H - BH, W, H)
+  Endif
+  
+  If bForDrawing Then hRect = Rect(hRect.Center().X - D / 2, hRect.Center().Y - D \ 2, D, D)
+  Return hRect
+  
+End
+
+
+Public Sub View_Arrange()
+
+  Dim W, H As Integer
+  Dim BW, BH As Integer
+  
+  If $bBorder Then 
+    BW = Style.BoxFrameWidth
+    BH = Style.BoxFrameHeight
+  Endif
+  
+  'Debug Style.BoxFrameWidth;; Style.BoxFrameHeight
+  
+  W = Me.W - BW * 2 - Desktop.Scale * 2
+  H = Me.H - BH * 2
+  
+  If W < 1 Or If H < 1 Then
+    $hTextBox.Hide
+  Else
+    $hTextBox.Move(BW, BH, W, H)
+    $hTextBox.Show
+  Endif
+  
+End
+
+Public Sub View_Draw()
+
+  Dim iState As Integer
+  Dim hRect As Rect
+  Dim iCol As Integer
+
+  iCol = $hTextBox.Background
+   If iCol = Color.Default Then iCol = Color.TextBackground
+  
+  If $bBorder Then  
+    
+    iState = Style.StateOf($hView)
+    If $hTextBox.HasFocus Then iState = iState Or Style.HasFocus
+    If $hView.Hovered Then iState = iState Or Style.Hovered
+    'Debug "state = "; iState
+    'Debug "border = "; Style.BoxFrameWidth
+  
+    Style.PaintBox(0, 0, Paint.W, Paint.H, iState, iCol)
+    
+  Else
+    
+    Paint.FillRect(0, 0, Paint.W, Paint.H, iCol)
+
+  Endif
+  
+  hRect = GetArrowRect(ARROW_TOP, True)
+  If $iValue = $iMax Then
+    iState = Style.Disabled
+  Else If $iInsideArrow = ARROW_TOP
+    iState = Style.Hovered
+  Else
+    iState = Style.Normal
+  Endif
+  Style.PaintArrow(hRect.X, hRect.Y, hRect.W, hRect.H, Align.Top, iState)
+
+  hRect = GetArrowRect(ARROW_BOTTOM, True)
+  If $iValue = $iMin Then
+    iState = Style.Disabled
+  Else If $iInsideArrow = ARROW_BOTTOM
+    iState = Style.Hovered
+  Else
+    iState = Style.Normal
+  Endif
+  Style.PaintArrow(hRect.X, hRect.Y, hRect.W, hRect.H, Align.Bottom, iState)
+  
+End
+
+Private Sub ChangeValue(bAdd As Boolean, Optional bFocus As Boolean)
+  
+  SetValue($iValue + $iStep * If(bAdd, 1, -1), bFocus)
+  
+End
+
+
+Public Sub View_MouseWheel()
+  
+  If Object.CanRaise(Me, "MouseWheel") Then Return
+  
+  ChangeValue(Mouse.Delta > 0, True)
+  Stop Event
+  
+End
+
+Public Sub TextBox_MouseWheel()
+  
+  View_MouseWheel
+  
+End
+
+Private Sub SetValue(iValue As Integer, Optional bFocus As Boolean)
+
+  Dim sValue As String
+
+  If iValue < $iMin Then
+    iValue = If($bWrap, $iMax, $iMin)
+  Else If iValue > $iMax Then
+    iValue = If($bWrap, $iMin, $iMax)
+  Endif
+  sValue = CStr(iValue)
+  If $hTextBox.Text <> sValue Then $hTextBox.Text = sValue
+  If $iValue <> iValue Then
+    $iValue = iValue
+    Raise Change
+  Endif
+  $hView.Refresh
+
+  If bFocus Then
+    $hTextBox.SetFocus
+    $hTextBox.SelectAll
+  Endif
+  
+End
+
+Private Function MinValue_Read() As Integer
+
+  Return $iMin
+
+End
+
+Private Sub MinValue_Write(Value As Integer)
+
+  If $iMin = Value Then Return
+  $iMin = Value
+  $iMax = Max($iMax, Value)
+  SetValue($iValue)
+
+End
+
+Private Function MaxValue_Read() As Integer
+
+  Return $iMax
+
+End
+
+Private Sub MaxValue_Write(Value As Integer)
+
+  If $iMax = Value Then Return
+  $iMax = Value
+  $iMin = Min($iMin, Value)
+  SetValue($iValue)
+
+End
+
+Public Sub View_Enter()
+  
+  $hView.Tracking = True
+  $hView.Refresh
+  
+End
+
+Public Sub View_Leave()
+  
+  $iInsideArrow = ARROW_NONE
+  $hView.Tracking = False
+  $hView.Refresh
+  
+End
+
+Public Sub TextBox_GotFocus()
+  
+  'Debug
+  $hView.Refresh
+  
+End
+
+Public Sub TextBox_LostFocus()
+  
+  'Debug
+  CheckValue
+  SetValue($iValue)
+  $hView.Refresh
+  
+End
+
+Public Sub View_MouseMove()
+  
+  Dim iInsideArrow As Integer
+  
+  If GetArrowRect(ARROW_TOP).Contains(Mouse.X, Mouse.Y) Then
+    iInsideArrow = ARROW_TOP
+  Else If GetArrowRect(ARROW_BOTTOM).Contains(Mouse.X, Mouse.Y) Then
+    iInsideArrow = ARROW_BOTTOM
+  Else
+    iInsideArrow = ARROW_NONE
+  Endif
+  
+  If iInsideArrow <> $iInsideArrow Then
+    'Debug
+    $iInsideArrow = iInsideArrow
+    $hView.Refresh
+  Endif
+  
+End
+
+Public Sub View_MouseDown()
+
+  Dim bCancel As Boolean
+  
+  bCancel = Raise MouseDown
+  If bCancel Then 
+    Stop Event
+    Return
+  Endif
+  
+  If $iInsideArrow = ARROW_TOP Then
+    $bTimerAdd = True
+  Else If $iInsideArrow = ARROW_BOTTOM Then
+    $bTimerAdd = False
+  Else
+    Return
+  Endif
+  
+  ChangeValue($bTimerAdd, True)
+  
+  $hTimer = New Timer(500) As "TimerMouse"
+  $hTimer.Start
+  
+End
+
+Public Sub View_MouseUp()
+  
+  Dim bCancel As Boolean
+  
+  bCancel = Raise MouseUp
+  If bCancel Then 
+    Stop Event
+    Return
+  Endif
+  
+  If Not $hTimer Then Return
+  $hTimer.Stop
+  $hTimer = Null
+  
+End
+
+
+Public Sub TimerMouse_Timer()
+
+  ChangeValue($bTimerAdd, True)
+  
+  If $hTimer.Delay > 50 Then
+    $hTimer.Delay = 50
+    $hTimer.Restart
+  Endif
+  
+End
+
+
+Private Function Value_Read() As Integer
+
+  Return $iValue
+
+End
+
+Private Sub Value_Write(Value As Integer)
+
+  SetValue(Value)
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  If $bBorder = Value Then Return
+  $bBorder = Value
+  View_Arrange
+  $hView.Refresh
+
+End
+
+Public Sub TextBox_KeyPress()
+
+  If Key.Code = Key.BackSpace Or If Key.Code = Key.Delete Then Return
+  
+  If Key.Code = Key.Up Then
+    If Not CheckValue() Then
+      ChangeValue(True, True)
+    Else
+      $hTextBox.SelectAll
+    Endif
+    Stop Event
+  Else If Key.Code = Key.Down Then
+    If Not CheckValue() Then
+      ChangeValue(False, True)
+    Else
+      $hTextBox.SelectAll
+    Endif
+    Stop Event
+  Else If Key.Code = Key.End And If Key.Control Then
+    SetValue($iMin, True)
+    Stop Event
+  Else If Key.Code = Key.Home And If Key.Control Then
+    SetValue($iMax, True)
+    Stop Event
+  Else If Key.Text Then  
+    If IsDigit(Key.Text) Then
+    Else If Key.Text = "-" Then
+      If $iMin >= 0 Then Stop Event
+    Else If Len(Key.Text) >= 2 Or If Asc(Key.Text) >= 32 Then
+      Stop Event
+    Endif
+  Endif
+  
+End
+
+Private Sub CheckValue() As Boolean
+
+  Dim iValue As Integer
+
+  Try iValue = CInt($hTextBox.Text)
+  If Error Then Return
+  If iValue < $iMin Then
+    SetValue($iMin)
+    Return True
+  Else If iValue > $iMax Then
+    SetValue($iMax)
+    Return True
+  Else
+    SetValue(iValue)
+  Endif
+
+End
+
+Public Sub TextBox_Change()
+
+  If Not $hTextBox.HasFocus Then CheckValue
+  
+End
+
+Private Function Wrap_Read() As Boolean
+
+  Return $bWrap
+
+End
+
+Private Sub Wrap_Write(Value As Boolean)
+
+  $bWrap = Value
+
+End
+
+Private Function Step_Read() As Integer
+
+  Return $iStep
+
+End
+
+Private Sub Step_Write(Value As Integer)
+
+  If Value < 1 Then Error.Raise("Bad argument")
+  $iStep = Value
+
+End
+
+Private Function Text_Read() As String
+
+  Return CStr($iValue)
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $hTextBox.Text = Value
+
+End
+
+Public Sub SelectAll()
+  
+  $hTextBox.SelectAll
+  
+End
+
+
+Private Function Background_Read() As Integer
+
+  Return Super.Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  Super.Background = Value
+  If Value = Color.Default Then
+    $hTextBox.Background = Color.TextBackground
+  Else
+    $hTextBox.Background = Color.Default
+  Endif
+
+End

@@ -71,7 +71,11 @@ Static Public Sub Stat(Name As String) As ClassStat
   iParent = Read #hFile As Short
   iFlag = Read #hFile As Short
   
-  hStat.Exported = iFlag And 1
+  hStat.Exported = BTst(iFlag, 0)
+  hStat.AutoCreate = BTst(iFlag, 1)
+  hStat.Optional = BTst(iFlag, 2)
+  hStat.NoCreate = BTst(iFlag, 3)
+  hStat.HasFast = BTst(iFlag, 4)
   
   GotoNextSection(hFile) ' description
   GotoNextSection(hFile) ' constant

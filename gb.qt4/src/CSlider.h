@@ -25,9 +25,8 @@
 #define __CSLIDER_H
 
 #include "gambas.h"
-#include "gb.qt.h"
-#include <qslider.h>
-//Added by qt3to4:
+#include "CWidget.h"
+#include <QSlider>
 #include <QResizeEvent>
 
 #ifndef __CSLIDER_CPP
@@ -43,7 +42,7 @@ extern GB_DESC CSliderDesc[];
 
 typedef
   struct {
-    QT_WIDGET widget;
+    CWIDGET widget;
     }
   CSLIDER;
 

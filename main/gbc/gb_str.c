@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <stdarg.h>
+#include <ctype.h>
 
 #include "gb_common.h"
 #include "gb_error.h"
@@ -36,7 +37,65 @@
 
 #include "gb_str.h"
 
-char *STR_add(char *d, const char *s)
+static char *_free_later = NULL;
+static char *_last_str = NULL;
+static int _last_len = 0;
+
+
+void STR_vadd(char **str, const char *fmt, va_list args)
+{
+	va_list copy;
+	int len, add;
+	char *new;
+	
+	va_copy(copy, args);
+	add = vsnprintf(NULL, 0, fmt, args);
+	
+	if (*str)
+		len = (*str == _last_str ? _last_len : strlen(*str));
+	else
+		len = 0;
+	
+	ALLOC(&new, len + add + 1);
+	if (*str) strcpy(new, *str);
+
+	vsprintf(&new[len], fmt, copy);
+	va_end(copy);
+	
+	*str = new;
+	
+	_last_str = new;
+	_last_len = len + add;
+}
+
+
+void STR_add(char **str, const char *fmt, ...)
+{
+	va_list args;
+	
+	va_start(args, fmt);
+	STR_vadd(str, fmt, args);
+	va_end(args);
+}
+
+
+char *STR_copy_len(const char *str, int len)
+{
+  char *cpy;
+
+  ALLOC(&cpy, len  + 1);
+  memcpy(cpy, str, len + 1);
+  return cpy;
+}
+
+
+char *STR_copy(const char *str)
+{
+	return STR_copy_len(str, strlen(str));
+}
+
+
+static char *str_add(char *d, const char *s)
 {
   for(;;)
   {
@@ -50,19 +109,6 @@ char *STR_add(char *d, const char *s)
   return d;
 }
 
-char *STR_copy_len(const char *str, int len)
-{
-  char *cpy;
-
-  ALLOC(&cpy, len  + 1);
-  memcpy(cpy, str, len + 1);
-  return cpy;
-}
-
-char *STR_copy(const char *str)
-{
-	return STR_copy_len(str, strlen(str));
-}
 
 char *STR_cat(const char *str, ...)
 {
@@ -80,6 +126,8 @@ char *STR_cat(const char *str, ...)
     p = va_arg(args, char *);
   }
 
+  va_end(args);
+  
   ALLOC(&cpy, len + 1);
   p = cpy;
 
@@ -87,7 +135,7 @@ char *STR_cat(const char *str, ...)
 
   while (str)
   {
-    p = STR_add(p, str);
+    p = str_add(p, str);
     str = va_arg(args, char *);
   }
 
@@ -96,4 +144,56 @@ char *STR_cat(const char *str, ...)
   return cpy;
 }
 
+
+char *STR_upper(const char *str)
+{
+	char *s;
+	char *p;
+	
+	p = s = STR_copy(str);
+	while (*p)
+	{
+		*p = toupper(*p);
+		p++;
+	}
+	
+	return s;
+}
+
+
+char *STR_lower(const char *str)
+{
+	char *s;
+	char *p;
+	
+	p = s = STR_copy(str);
+	while (*p)
+	{
+		*p = tolower(*p);
+		p++;
+	}
+	
+	return s;
+}
+
+
+char *STR_free_later(char *str)
+{
+	if (_free_later)
+		STR_free(_free_later);
+	_free_later = str;
+	return str;
+}
+
+
+char *STR_print(const char *fmt, ...)
+{
+	va_list args;
+	char *str = NULL;
+	
+	va_start(args, fmt);
+	STR_vadd(&str, fmt, args);
+	va_end(args);
+	return str;
+}
 

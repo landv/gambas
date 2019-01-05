@@ -57,7 +57,6 @@ typedef
 		int return_code;
 		char *return_string;
 		char *data;
-		char *target;
 		size_t len_data;
 		size_t len_sent;
 		unsigned send_file : 1;

@@ -4,6 +4,8 @@ Export
 
 Inherits UserControl
 
+Class TableView
+
 Public Const _Properties As String = "*,Border=True,Mode{Select.None;Single;Multiple}=None,Grid=True,Padding{Range:0;63}=2,ShowCursor=False,Header{GridView.None;Horizontal;Vertical;Both}=None,ScrollBar{Scroll.*}=Both,AutoResize=True,Resizable=True,Sorted"
 Public Const _Group As String = "View"
 Public Const _DefaultEvent As String = "Click"
@@ -342,14 +344,27 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRo
   
 DRAW_GRID:
 
+  iColor = Color.Merge(Color.LightForeground, $hView.Background)
   If $bGrid Then
-    iColor = Color.Merge(Color.LightForeground, $hView.Background)
     If System.RightToLeft Then
       If iCol > 0 Then Paint.FillRect(hRect.X, hRect.Y, 1, hRect.H, iColor)
     Else
       If iCol < $hColumns.Max Or If hRect.X + hRect.W < $hView.ClientW Then Paint.FillRect(hRect.X + hRect.W - 1, hRect.Y, 1, hRect.H, iColor)
     Endif
     If iRow < $hRows.Max Or If hRect.Y + hRect.H < $hView.ClientH Then Paint.FillRect(hRect.X, hRect.Y + hRect.H - 1, hRect.W, 1, iColor)
+  Else If Me Is TableView Then
+    If iRow = $hRows.Max Then
+      If hRect.Y + hRect.H < $hView.ClientH Then Paint.FillRect(hRect.X, hRect.Y + hRect.H - 1, hRect.W, 1, iColor)
+    Endif
+    If System.RightToLeft Then
+      If iCol = 0 Then 
+        Paint.FillRect(hRect.X, hRect.Y, 1, hRect.H, iColor)
+      Endif
+    Else
+      If iCol = $hColumns.Max Then
+        If hRect.X + hRect.W < $hView.ClientW Then Paint.FillRect(hRect.X + hRect.W - 1, hRect.Y, 1, hRect.H, iColor)
+      Endif
+    Endif
   Endif
   
   Paint.Restore
@@ -406,9 +421,9 @@ Public Sub ScrollArea_Draw()
   Endif
   
   If $hView.HasFocus Then
-    iBgSel = Color.SetAlpha(Color.SelectedBackground, 192)
+    iBgSel = Color.SetAlpha(Color.SelectedBackground, &HC0)
   Else
-    iBgSel = Color.SetAlpha(Color.LightForeground, 192)
+    iBgSel = Color.SetAlpha(Color.SelectedBackground, &HE0)
   Endif
   
   If $hColumns.Count = 0 And If $hRows.Count = 0 Then Return

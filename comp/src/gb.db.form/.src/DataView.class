@@ -52,18 +52,18 @@ Private $iNoActivate As Integer
 Private $iHighlight As Integer
 Private $bHighlight As Boolean
 
-Private $hObserver As Observer
+'Private $hObserver As Observer
 Private $iLastSize As Integer
 'Private $hTimer As Timer
 Private $hCreateTimer As Timer
 
-Private $bAdjust As Boolean
+'Private $bAdjust As Boolean
 Private $iLastRow As Integer = -1
 
 Private $sCharset As String
 
 Private $hTextArea As TextArea
-Private $hComboBox As MenuButton
+'Private $hComboBox As MenuButton
 Private $hButtonBox As ButtonBox
 
 Private $bEditable As Boolean
@@ -189,13 +189,12 @@ Private Sub RefreshColumns()
   
 End
 
-Private Sub UpdateObserver()
-  
-  If Not $bAdjust Then Return
-  $hObserver = New Observer($hTable) As "Table"
-  
-End
-
+' Private Sub UpdateObserver()
+'   
+'   If Not $bAdjust Then Return
+'   $hObserver = New Observer($hTable) As "Table"
+'   
+' End
 
 Private Sub Load()
   
@@ -219,7 +218,7 @@ Private Sub Load()
     If hTable <> $hTable Then
       $hTable = hTable
       bReset = True
-      UpdateObserver
+      'UpdateObserver
       $hCtrl.Rows.Count = 0
       $hCtrl.Columns.Count = 0
       If $hTable Then RefreshColumns
@@ -410,7 +409,7 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
       .Text = "Blob"
       .Foreground = Color.LightForeground
       Return
-    Else If iType = db.Integer Or If iType = db.Float Then
+    Else If iType = db.Integer Or If iType = db.Float Or If iType = db.Long Then
       .Alignment = Align.Right
     Endif
 
@@ -632,7 +631,7 @@ Public Sub TableView_Change()
   
 End
 
-Private Sub _Warning(sTitle As String, Optional sMsg As String, Optional bError As Boolean)
+Private Sub _Warning(sTitle As String, Optional sMsg As String, Optional bError As Boolean, iRow As Integer, iCol As Integer)
   
   Dim X, Y As Integer
   
@@ -643,7 +642,10 @@ Private Sub _Warning(sTitle As String, Optional sMsg As String, Optional bError 
   X = $hCtrl.Rows.Width - $hCtrl.ScrollX + $hCtrl.ClientX
   Y = $hCtrl.Columns.Height - $hCtrl.ScrollY + $hCtrl.ClientY
   
-  With $hCtrl[$hCtrl.Row, $hCtrl.Column]
+  If IsMissing(iRow) Then iRow = $hCtrl.Row
+  If IsMissing(iCol) Then iCol = $hCtrl.Column
+  
+  With $hCtrl[iRow, iCol]
     If bError Then
       Balloon.Error(sMsg, $hCtrl, X + .X + .W \ 2, Y + .Y + .H \ 2) 
     Else
@@ -733,9 +735,9 @@ Public Sub TableView_Save(Row As Integer, Column As Integer, Value As String)
 Catch
 
   If bPrintError Then
-    _Warning(("Unable to save value."), Error.Text)
+    _Warning(("Unable to save value."), Error.Text,, Row, Column)
   Else
-    _Warning(("Incorrect value."))
+    _Warning(("Invalid value."), Error.Where & ": " & Error.Text,, Row, Column)
   Endif
   Stop Event
 
@@ -925,11 +927,23 @@ End
 
 Private Sub UpdateMode()
   
+  Dim iRow As Integer
+  Dim iCol As Integer
+  
+  iRow = $hCtrl.Row
+  iCol = $hCtrl.Column
+  
+  Object.Lock($hCtrl)
+  
   If $bCreate And If HasNewRecord() Then
     $hCtrl.Mode = Select.None
   Else
     $hCtrl.Mode = $iMode
   Endif
+  
+  $hCtrl.MoveTo(iRow, iCol)
+  
+  Object.Unlock($hCtrl)
   
 End
 
@@ -1173,7 +1187,7 @@ Private Sub Editable_Write(Value As Boolean)
   $hCtrl.ShowCursor = $bEditable
   'If Value Then 
     'CreateNewRecord
-   Create()
+  Create()
   'Endif
 
 End
@@ -1224,11 +1238,11 @@ Private Sub Background_Write(Value As Integer)
 
 End
 
-Public Sub mnuComboBox_Click()
-  
-  $hComboBox.Text = Last.Text
-  
-End
+' Public Sub mnuComboBox_Click()
+'   
+'   $hComboBox.Text = Last.Text
+'   
+' End
 
 Private Function Data_Read() As _GridView_Data
 

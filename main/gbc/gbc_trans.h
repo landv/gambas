@@ -48,16 +48,17 @@ enum {
 	TS_MODE_WATCH  = (1 << 6),
 	TS_MODE_PIPE   = (1 << 7),
 	TS_MODE_MEMORY = (1 << 8),
-	TS_MODE_STRING = (1 << 9)
+	TS_MODE_STRING = (1 << 9),
 	};
 
 enum {
-	TS_EXEC_NONE = 0,
-	TS_EXEC_READ = 1,
-	TS_EXEC_WRITE = 2,
-	TS_EXEC_TERM = 4,
-	TS_EXEC_STRING = 8,
-	TS_EXEC_WAIT = 16
+	TS_EXEC_NONE   = 0,
+	TS_EXEC_READ   = (1 << 0),
+	TS_EXEC_WRITE  = (1 << 1),
+	TS_EXEC_TERM   = (1 << 2),
+	TS_EXEC_STRING = (1 << 3),
+	TS_EXEC_WAIT   = (1 << 4),
+	TS_EXEC_ERROR  = (1 << 5)
 	};
 
 enum {
@@ -121,6 +122,7 @@ enum {
 EXTERN short TRANS_in_assignment;
 EXTERN short TRANS_in_left_value;
 EXTERN bool TRANS_in_try;
+EXTERN ushort *TRANS_labels;
 #endif
 
 #define TRANS_newline() (PATTERN_is_newline(*JOB->current) ? JOB->line = PATTERN_index(*JOB->current) + 1, JOB->current++, TRUE : FALSE)
@@ -134,12 +136,12 @@ PATTERN *TRANS_get_constant_value(TRANS_DECL *decl, PATTERN *current);
 
 void TRANS_want(int reserved, char *msg);
 void TRANS_want_newline(void);
-void TRANS_ignore(int reserved);
 //int TRANS_get_class(PATTERN pattern);
 bool TRANS_is_end_function(bool is_proc, PATTERN *look);
-char *TRANS_get_num_desc(int num);
+char *TRANS_get_num_desc(ushort num);
 
 #define TRANS_is(_reserved) (PATTERN_is(*JOB->current, (_reserved)) ? JOB->current++, TRUE : FALSE)
+#define TRANS_ignore(_reserved) (void)TRANS_is(_reserved)
 
 /* trans_code.c */
 
@@ -148,6 +150,8 @@ void TRANS_code(void);
 bool TRANS_init_var(TRANS_DECL *decl);
 void TRANS_statement(void);
 void TRANS_init_optional(TRANS_PARAM *param);
+#define TRANS_add_label(_pos) (TRANS_labels ? *ARRAY_add(&TRANS_labels) = (_pos) : 0)
+int TRANS_loop_local(bool allow_arg);
 
 /* trans_expr.c */
 
@@ -242,6 +246,7 @@ void TRANS_link(void);
 void TRANS_input_from(void);
 void TRANS_output_to(void);
 void TRANS_debug(void);
+void TRANS_assert(void);
 void TRANS_error(void);
 void TRANS_scan(void);
 void TRANS_randomize(void);

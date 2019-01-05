@@ -131,15 +131,15 @@ typedef
 
 enum
 {
-  FUNCTION_NULL = 0,
-  FUNCTION_NATIVE = 1,
-  FUNCTION_PRIVATE = 2,
-  FUNCTION_PUBLIC = 3,
-  FUNCTION_EVENT = 4,
-  FUNCTION_EXTERN = 5,
-  FUNCTION_UNKNOWN = 6,
-  FUNCTION_CALL = 7,
-	FUNCTION_SUBR = 8
+  FUNCTION_NULL,
+  FUNCTION_NATIVE,
+  FUNCTION_PRIVATE,
+  FUNCTION_PUBLIC,
+  FUNCTION_EVENT,
+  FUNCTION_EXTERN,
+  FUNCTION_UNKNOWN,
+  FUNCTION_CALL,
+	FUNCTION_SUBR
 };
 
 typedef
@@ -250,6 +250,7 @@ void VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype, void 
 void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype);
 void VALUE_class_constant(CLASS *class, VALUE *value, int ind);
 
+#define VALUE_null(_val) ({ (_val)->type = T_NULL; (_val)->_object.object = NULL; })
 bool VALUE_is_null(VALUE *val);
 
 //void VALUE_get_string(VALUE *val, char **text, int *length);
@@ -262,9 +263,7 @@ bool VALUE_is_null(VALUE *val);
 		*(_ptext) = NULL; \
 })
 
-void THROW_TYPE_INTEGER(TYPE type) NORETURN;
-void THROW_TYPE_FLOAT(TYPE type) NORETURN;
-void THROW_TYPE_STRING(TYPE type) NORETURN;
+void THROW_TYPE(TYPE wanted, TYPE got) NORETURN;
 
 #define VALUE_conv(_value, _type) \
 ({ \

@@ -398,7 +398,7 @@
     }
     { mnuHideMenu Menu
       Text = ("Hide menubar")
-      Picture = Picture["icon:/small/text-fill"]
+      Picture = Picture["icon:/small/menu"]
       Shortcut = "Ctrl+Alt+M"
     }
     { Menu3 Menu
@@ -801,7 +801,7 @@
     { Menu8 Menu
     }
     { mnuSystemInfo Menu
-      Text = Shortcut(("System informations"), "S") & "..."
+      Text = Shortcut(("System information"), "S") & "..."
       Picture = Picture["icon:/16/system"]
     }
     { mnuAbout Menu
@@ -920,7 +920,7 @@
       Visible = False
       ToolTip = ("Properties sheet")
       Action = "property"
-      Picture = Picture["icon:/small/edit"]
+      Picture = Picture["icon:/small/properties"]
       Toggle = True
     }
     { ToolButton10 ToolButton
@@ -1015,7 +1015,7 @@
       MoveScaled(94,0,4,4)
       Visible = False
       ToolTip = ("Show menubar")
-      Picture = Picture["icon:/small/text-fill"]
+      Picture = Picture["icon:/small/menu"]
     }
     { Panel3 Panel
       MoveScaled(98,0,1,4)
@@ -1175,7 +1175,7 @@
     Visible = False
   }
   { msgError MessageView
-    MoveScaled(28,10,57,6)
+    MoveScaled(57,10,57,6)
     Animated = True
   }
   { panGlobal Panel
@@ -1246,7 +1246,6 @@
           }
           { panDebug SidePanel
             MoveScaled(3,37,81,14)
-            Visible = False
             ToolTip = ("Debug")
             Arrangement = Arrange.Fill
             Orientation = Align.Bottom
@@ -1254,7 +1253,7 @@
             Transparent = True
             Hidden = True
             { btnClosePanel ToolButton
-              MoveScaled(59,4,4,4)
+              MoveScaled(73,3,4,4)
               Ignore = True
               Picture = Picture["icon:/small/close"]
             }
@@ -1587,7 +1586,7 @@
   { Action property
     Text = "Properties"
     Shortcut = "F4"
-    Picture = "icon:/small/edit"
+    Picture = "icon:/small/properties"
   }
   { Action publish
     Text = "Publish"

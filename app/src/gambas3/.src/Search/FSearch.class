@@ -11,6 +11,7 @@ Public SearchString As String
 Public ReplaceString As String
 Public BrowseTimeStamp As Integer
 Public OnlySource As Boolean
+Public OnlyData As Boolean
 
 Public InBrowse As Boolean
 
@@ -24,6 +25,8 @@ Private $bCancel As Boolean
 Private $cGrepCache As New Collection
 Private $cRefreshBrowse As New Collection
 Private $hFont As Font
+Private $CW As Integer
+Private $hStyle As TextHighlighterStyle[]
 
 Private gvwFind As GridView
 
@@ -48,13 +51,15 @@ Public Sub Form_Open()
   Settings.Read(Me)
   
   chkCaseSensitive.Value = Settings["/FSearch/CaseSensitive", False]
-  radCurrentProcedure.Value = Settings["/FSearch/CurrentProcedure", False]
+  'radCurrentProcedure.Value = Settings["/FSearch/CurrentProcedure", False]
   chkHighlight.Value = Settings["/FSearch/Highlight", False]
   chkIgnoreComments.Value = Settings["/FSearch/IgnoreComments", False]
   chkIgnoreStrings.Value = Settings["/FSearch/IgnoreStrings", False]
   chkRegularExpression.Value = Settings["/FSearch/RegularExpression", False]
   chkWordOnly.Value = Settings["/FSearch/WordOnly", False]
-  radSourceFileOnly.Value = Settings["/FSearch/SourceOnly", False]
+  'radSourceFileOnly.Value = Settings["/FSearch/SourceOnly", False]
+  
+  gvwFind_Font
   
 End
 
@@ -63,17 +68,19 @@ Public Sub Form_Close()
   Settings.Write(Me)
 
   Settings["/FSearch/CaseSensitive"] = CBool(chkCaseSensitive.Value)
-  Settings["/FSearch/CurrentProcedure"] = CBool(radCurrentProcedure.Value)
+  'Settings["/FSearch/CurrentProcedure"] = CBool(radCurrentProcedure.Value)
   Settings["/FSearch/Highlight"] = CBool(chkHighlight.Value)
   Settings["/FSearch/IgnoreComments"] = CBool(chkIgnoreComments.Value)
   Settings["/FSearch/IgnoreStrings"] = CBool(chkIgnoreStrings.Value)
   Settings["/FSearch/RegularExpression"] = CBool(chkRegularExpression.Value)
   Settings["/FSearch/WordOnly"] = CBool(chkWordOnly.Value)
-  Settings["/FSearch/SourceOnly"] = CBool(radSourceFileOnly.Value)
+  'Settings["/FSearch/SourceOnly"] = CBool(radSourceFileOnly.Value)
 
 End
 
 Public Sub ReadConfig()
+  
+  Dim I As Integer
   
   Project.SetSmallFont(gvwFind)
   $hFont = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
@@ -81,7 +88,11 @@ Public Sub ReadConfig()
     Dec $hFont.Size
     If $hFont.Size < 6 Then Break
   Wend
-  gvwFind.Refresh
+  
+  $hStyle = MTheme.GetStyles()
+  For I = 0 To $aBrowse.Max
+    $aBrowse[I].RichText = ""
+  Next
 
 End
 
@@ -105,16 +116,17 @@ End
 Public Sub Update(Optional bForce As Boolean)
   
   Dim bCode As Boolean
-  Dim hWindow As Window
+  'Dim hWindow As Window
   Dim bAllProject As Boolean
+  
+  $hCurrent = Project.ActiveForm
   
   If Not Me.Visible And If Not bForce Then Return
   
-  Try hWindow = Application.ActiveControl.Window
-  If hWindow = Me Then Return
-  $hCurrent = hWindow
+  ' Try hWindow = Application.ActiveControl.Window
+  ' If hWindow = Me Then Return
+  ' $hCurrent = hWindow
   
-  $hCurrent = Project.ActiveForm
   If $hCurrent Then
     If $hCurrent Is FEditor Or If $hCurrent Is FTextEditor Then
       bCode = $hCurrent.GetEditor().Highlight 
@@ -140,8 +152,9 @@ Public Sub Update(Optional bForce As Boolean)
   
   If Project.IsFake() Then
     radSourceFileOnly.Enabled = False
+    radDataFileOnly.Enabled = False
     radEverywhere.Enabled = False
-    If radSourceFileOnly.Value Or If radEverywhere.Value Then radCurrentFile.Value = True
+    If radSourceFileOnly.Value Or If radEverywhere.Value Or If radDataFileOnly.Value Then radCurrentFile.Value = True
   Endif
   
   UpdateTitle
@@ -204,14 +217,14 @@ End
 '   
 ' End
 
-Public Sub Grep_Read()
-  
-  Dim sData As String
-  
-  sData = Read #Last, Lof(Last)
-  $sGrep &= sData
-  
-End
+' Public Sub Grep_Read()
+'   
+'   Dim sData As String
+'   
+'   sData = Read #Last, Lof(Last)
+'   $sGrep &= sData
+'   
+' End
 
 ' Private Sub MakeResult(sResult As String) As CFindResult
 '   
@@ -236,6 +249,25 @@ End
 '   
 ' End
 
+Private Sub GrepQuote(sStr As String) As String
+
+  Dim I As Integer
+  Dim sCar As String
+  Dim sResult As String
+
+  For I = 1 To String.Len(sStr)
+    sCar = String.Mid$(sStr, I, 1)
+    If Len(sCar) > 1 Or If IsLetter(sCar) Or If IsDigit(sCar) Then
+      sResult &= sCar
+    Else
+      sResult &= "\\" & sCar
+    Endif
+  Next
+  
+  Return sResult
+
+End
+
 Private Sub GrepFile(hFile As Object, Optional sPath As String, Optional bUseReplaceString As Boolean) As CFindResult[]
   
   Dim sText As String
@@ -247,6 +279,7 @@ Private Sub GrepFile(hFile As Object, Optional sPath As String, Optional bUseRep
   Dim iAge As Integer
   Dim hGrepResult As CGrepResult
   Dim iPos As Integer
+  Dim sSearch As String
 
   If sPath Then
     If Not hFile Or If Not hFile.IsModified() Then
@@ -269,14 +302,18 @@ Private Sub GrepFile(hFile As Object, Optional sPath As String, Optional bUseRep
     aGrep.Add(ReplaceString)
   Else
     If Not CaseSensitive Then aGrep.Add("-i")
-    If WordOnly Then aGrep.Add("-w")
     If RegularExpression Then 
+      aGrep.Add("-E")
+    Else If WordOnly Then 
       aGrep.Add("-E")
     Else
       aGrep.Add("-F")
     Endif
     aGrep.Add("--")
-    aGrep.Add(SearchString)
+    
+    sSearch = SearchString
+    If WordOnly Then sSearch = "(^|[^_$[:alnum:]])" & GrepQuote(SearchString) & "($|[^_$[:alnum:]])"
+    aGrep.Add(sSearch)
   Endif
   
   aGrep.Add(sTemp)
@@ -319,6 +356,8 @@ Private Sub GrepFile(hFile As Object, Optional sPath As String, Optional bUseRep
       hResult.Path = sPath
       hResult.File = If(Project.IsSourcePath(sPath), File.BaseName(sPath), File.Name(sPath))
     Endif
+    
+    hResult.Highlight = TextEditor.GetModeFromPath(sPath)
 
     iPos = InStr(sFind, ":")
     If iPos = 0 Then Continue
@@ -332,8 +371,14 @@ Private Sub GrepFile(hFile As Object, Optional sPath As String, Optional bUseRep
     hResult.Pos = CInt(Left(sFind, iPos - 1))
     sFind = Mid$(sFind, iPos + 1)
 
+    If WordOnly Then
+      If String.Left(sFind) <> String.Left(SearchString) Then hResult.Pos += String.Len(String.Left(sFind))
+      sFind = SearchString
+    Endif
+    
     hResult.Bytes = Len(sFind)
     hResult.Length = String.Len(sFind)
+    
     aResult.Add(hResult)
     
   Next
@@ -369,6 +414,7 @@ Private Sub InitSearch() As Boolean
   WordOnly = chkWordOnly.Value
   CurrentProcedure = radCurrentProcedure.Value
   OnlySource = radSourceFileOnly.Value
+  OnlyData = radDataFileOnly.Value
   
   If Not SearchString Then Return True
   
@@ -599,6 +645,8 @@ Private Sub UpdateSearchList()
   Else
     FDebugInfo.SetSearchListInfo(Subst(("&1 matches"), iLen))
   Endif
+  
+  gvwFind.Columns[4].W = -1
     
 End
 
@@ -708,9 +756,13 @@ Private Sub Browse(Optional bReplace As Boolean, Optional bAgain As Boolean)
   
   For Each sFile In RDir(sDir).Sort()
   
-    If Left(sFile) = "." And If Not (sFile Begins ".src/") Then Continue
+    If Left(sFile) = "." Then
+      If OnlyData Then Continue
+      If Not (sFile Begins ".src/") Then Continue
+    Endif
+    
     If Right(sFile) = "~" Then Continue
-      
+    
     sPath = sDir &/ sFile
   
     If IsDir(sPath) Then Continue
@@ -837,12 +889,13 @@ Private Sub ShowString()
 
   Dim hForm As Object
   Dim bIgnoreCase As Boolean = chkCaseSensitive.Value = False
+  Dim bWordOnly As Boolean = chkWordOnly.Value
   Dim sStr As String
   
-  If chkHighlight.Value And If Me.Visible Then sStr = cmbSearch.Text
+  If chkHighlight.Value And If Me.Visible And If chkRegularExpression.Value = False Then sStr = cmbSearch.Text
   
   For Each hForm In Project.Files
-    Try hForm.OnShowString(sStr, bIgnoreCase)
+    Try hForm.OnShowString(sStr, bIgnoreCase, bWordOnly)
   Next
   
 End
@@ -860,9 +913,9 @@ Public Sub OnNewForm(hForm As Object)
   
   Dim sStr As String
   
-  If chkHighlight.Value And If Me.Visible Then sStr = cmbSearch.Text
+  If chkHighlight.Value And If Me.Visible And If chkRegularExpression.Value = False Then sStr = cmbSearch.Text
   
-  Try hForm.OnShowString(sStr, chkCaseSensitive.Value = False)
+  Try hForm.OnShowString(sStr, chkCaseSensitive.Value = False, chkWordOnly.Value)
   
 End
 
@@ -941,46 +994,116 @@ Public Sub btnBrowse_Click()
 
 End
 
+Public Sub gvwFind_Font()
+  
+  $CW = $hFont.TextWidth("W")
+  gvwFind.Rows.Height = Max(gvwFind.Font.Height, $hFont.Height) + 4
+  gvwFind.Columns[0].Width = -1
+  gvwFind.Columns[1].Width = -1
+  gvwFind.Refresh
+
+End
+
+Public Sub gvwFind_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, Column As Integer)
+
+  Dim hResult As CFindResult
+  Dim sText As String
+  Dim iLen As Integer
+  Dim iCol As Integer
+  Dim iPos As Integer
+  Dim bRichText As Boolean
+
+  If Column <> 4 Then Return
+
+  hResult = $aBrowse[Row]
+
+  sText = hResult.Text
+  iLen = String.Len(sText)
+  iCol = hResult.Column
+  
+  If hResult.Highlight And If iLen < 1024 Then
+
+    sText = hResult.RichText
+    
+    If Not sText Then
+      sText = TextHighlighter[TextEditor.GetModeFromPath(hResult.Path)].ToRichText(hResult.Text, $hStyle)
+      hResult.RichText = sText
+    Endif
+    
+    bRichText = True
+    
+  Endif
+  
+  Paint.Font = $hFont
+  
+  If System.RightToLeft Then
+    X -= -1000000
+    Width += 1000000
+    Width -= Desktop.Scale \ 2
+  Else
+    X += Desktop.Scale \ 2
+    Width = 1000000
+  Endif
+  
+  If iCol > 40 And If iLen > 80 Then
+    iPos = 20
+  Else
+    iPos = iCol
+  Endif
+  
+  Paint.FillRect(X + iPos * $CW, Y, hResult.Length * $CW, Height, $hStyle[Highlight.Highlight].Color)
+  
+  Paint.Background = $hStyle[Highlight.Normal].Color
+
+  If iCol > 40 And If iLen > 80 Then
+    If bRichText Then
+      Paint.DrawRichText(sText, X - (iCol - 20) * $CW, Y, Width, Height, Align.Normal)
+    Else
+      Paint.DrawText(String.Mid$(sText, iCol - 21, 1024), X - $CW * 2, Y, Width, Height, Align.Normal)
+    Endif
+  Else
+    If bRichText Then
+      Paint.DrawRichText(sText, X, Y, Width, Height, Align.Normal)
+    Else
+      Paint.DrawText(sText, X, Y, Width, Height, Align.Normal)
+    Endif
+  Endif
+  
+End
+
+
 Public Sub gvwFind_Data(Row As Integer, Column As Integer)
 
+  Dim hResult As CFindResult
+  Dim iCol As Integer
+  
   If Row > $aBrowse.Max Then Return
 
    With gvwFind.Data
     
-    If Column = 4 Then .Font = $hFont 
+    hResult = $aBrowse[Row]
     
     Select Case Column
       Case 0
-        .Text = $aBrowse[Row].File
+        .Text = hResult.File
         .Alignment = Align.Normal
       Case 1
-        .Text = $aBrowse[Row].GetProcedure()
+        .Text = hResult.GetLocation()
         .Alignment = Align.Normal
       Case 2
-        .Text = CStr($aBrowse[Row].Line + 1) & " "
+        .Text = CStr(hResult.Line + 1) & " "
         .Alignment = Align.Right
       Case 3
-        .Text = CStr($aBrowse[Row].Column + 1) & " "
+        .Text = CStr(hResult.Column + 1) & " "
         .Alignment = Align.Right
-      Case 4
-        .RichText = $aBrowse[Row].Text
-        .Alignment = Align.Normal
     End Select
 
-    ' If Row Then
-    '   If Column = 0 Then 
-    '     If $aBrowse[Row - 1][0] = .Text Then 
-    '       .Text = ""
-    '     Endif
-    '   Else If Column = 1 Then
-    '     If $aBrowse[Row - 1][0] = $aBrowse[Row][0] And $aBrowse[Row - 1][1] = $aBrowse[Row][1] Then 
-    '       .Text = "-"
-    '     Endif
-    '   Endif
-    ' Endif 
-    
-    If $aBrowse[Row].Dark Then
-      .Background = Color.Merge(Color.TextBackground, Color.LightForeground, 0.2)
+    If Column = 4 Then
+      iCol = $hStyle[Highlight.Background].Color
+      'If hResult.Dark Then iCol = Color.Merge(iCol, $hStyle[Highlight.Normal].Color, 0.05)
+      .Background = iCol
+    Else
+      If hResult.Dark Then .Background = Color.Merge(Color.TextBackground, Color.TextForeground, 0.05)
     Endif
     
   End With 
@@ -1008,8 +1131,8 @@ Public Sub gvwFind_Select()
   Try hForm = Project.OpenFile(hFind.Path)
   If Not hForm Then Return
   
-  hForm.SetPosition(hFind, False)
   Project.Activate(hForm)
+  hForm.SetPosition(hFind, False)
 
   gvwFind.ScrollX = 0
   
@@ -1110,7 +1233,7 @@ Public Sub UpdateReplaceState()
   
   Dim bEnable As Boolean
   
-  If radEverywhere.Value Or If radSourceFileOnly.Value Then
+  If radEverywhere.Value Or If radSourceFileOnly.Value Or If radDataFileOnly.Value Then
   
     bEnable = Not Project.Running
     
@@ -1139,7 +1262,7 @@ End
 
 Public Sub radSearch_Click()
 
-  btnBrowse.Visible = radEverywhere.Value Or radSourceFileOnly.Value
+  btnBrowse.Visible = radEverywhere.Value Or radSourceFileOnly.Value Or radDataFileOnly.Value
   btnReplace.Visible = Not btnBrowse.Visible
   btnNext.Visible = Not btnBrowse.Visible
   btnPrevious.Visible = Not btnBrowse.Visible
@@ -1162,3 +1285,21 @@ End
 '   Endif
 ' 
 ' End
+
+Public Sub chkWordOnly_Click()
+
+  ShowString
+
+End
+
+Public Sub chkRegularExpression_Click()
+
+  ShowString
+
+End
+
+Public Sub GetHighlightStyle() As TextHighlighterStyle[]
+  
+  Return $hStyle
+  
+End

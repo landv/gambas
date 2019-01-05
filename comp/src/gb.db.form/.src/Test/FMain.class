@@ -1,23 +1,9 @@
 ' Gambas class file
 
-'Public Connection1 As New Connection
+Public Connection1 As New Connection
 
 Public Sub Form_Open()
 
-'   Connection1.Close()
-'   Connection1.Type = "postgresql"
-'   'Connection1.Host = "88.216.8.23"
-'   'Connection1.User = ""
-'   'Connection1.Password = "Zopazopa"
-'   Connection1.Name = "test"
-'   Try Connection1.Open()
-'   If Error Then
-'     Message(Error.Text)
-'     Quit
-'   Endif
-'   
-' '  DataSource1.Table = "Loads"
-'   DataSource1.Table = "select * from article"
-
+  DataSource1.Table = "select * from client"
 
 End

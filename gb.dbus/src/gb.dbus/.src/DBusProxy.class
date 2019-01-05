@@ -230,7 +230,7 @@ Public Sub _Invoke(sName As String, aArg As Variant[]) As Variant
   Else
   
     'Print GetSignature(Param.Name)
-    Return hApp.Connection._CallMethod(hApp.Name, $sObjectPath, $sInterface, Param.Name, aSign[0], aSign[1], aArg)
+    Return hApp.Connection._CallMethod(hApp.Name, $sObjectPath, $sInterface, sName, aSign[0], aSign[1], aArg)
     
   Endif
   

@@ -48,4 +48,6 @@ typedef
 	} 
 	CDRAWINGAREA;
 
+void CDRAWINGAREA_send_change_event(void);
+	
 #endif

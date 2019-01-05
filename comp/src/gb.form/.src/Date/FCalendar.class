@@ -449,6 +449,8 @@ Public Sub dwgMonth_MouseDown()
   
   $dDate = $dCurrentDate
   SetDate
+  
+  GetParent()._Click
 
 End
 
@@ -646,6 +648,7 @@ Public Sub dwgTime_MouseDown()
   If $iCurrentTime >= 0 Then
     SetTime(Time($iCurrentTime \ 2, 30 * ($iCurrentTime Mod 2), 0))
   Endif
+  GetParent()._Click
 
 End
 
@@ -876,13 +879,15 @@ End
 
 Public Sub txtMinute_Activate()
 
-  dwgTime_DblClick
+  txtMinute_LostFocus
+  btnOK_Click
   
 End
 
 Public Sub btnOK_Click()
 
-  dwgTime_DblClick
+  GetParent()._Click()
+  'GetParent()._Activate()
 
 End
 

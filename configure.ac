@@ -46,7 +46,6 @@ GB_CONFIG_SUBDIRS(gsl, gb.gsl)
 GB_CONFIG_SUBDIRS(gmp, gb.gmp)
 GB_CONFIG_SUBDIRS(ncurses, gb.ncurses)
 GB_CONFIG_SUBDIRS(media, gb.media)
-GB_CONFIG_SUBDIRS(jit, gb.jit)
 GB_CONFIG_SUBDIRS(httpd, gb.httpd)
 GB_CONFIG_SUBDIRS(openssl, gb.openssl)
 GB_CONFIG_SUBDIRS(openal, gb.openal)
@@ -75,15 +74,16 @@ AC_OUTPUT(Makefile)
 GB_CLEAR_MESSAGES
 
 for gb_dir in gb.*; do
-  if test -e $gb_dir/DISABLED; then
-    for gb_comp in $gb_dir/DISABLED.*; do
+  for gb_comp in $gb_dir/DISABLED.*; do
+    gb_comp=`basename "$gb_comp"`
+    gb_comp=${gb_comp#DISABLED.}
+    if test "$gb_comp" != '*'; then
       if ! test -s $srcdir/warnings.log; then
         GB_MESSAGE([THESE COMPONENTS ARE DISABLED:])
       fi
-      gb_comp=`basename "$gb_comp"`
-      GB_MESSAGE([- ${gb_comp#DISABLED.}])
-    done
-  fi
+      GB_MESSAGE([- $gb_comp])
+    fi
+  done
 done
 
 if ! test -s $srcdir/warnings.log; then

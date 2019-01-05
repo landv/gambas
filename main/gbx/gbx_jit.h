@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  gbx_jit.c
+  gbx_jit.h
 
-  (c) 2012 Emil Lenngren <emil.lenngren [at] gmail.com>
+  (c) 2018 Benoît Minisini <g4mba5@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,15 +31,25 @@
 #include "gbx_object.h"
 #include "gbx_exec.h"
 
-#include "../../gb.jit/src/gb.jit.h"
+typedef
+	void (*JIT_FUNC)(uchar nparam);
 
 #ifndef __GBX_JIT_C
-
-EXTERN JIT_INTERFACE JIT;
-
+extern bool JIT_disabled;
 #endif
+	
+bool JIT_compile(ARCHIVE *arch);
+void JIT_debug(const char *fmt, ...);
+void JIT_exec(bool ret_on_stack);
+PCODE *JIT_get_code(FUNCTION *func);
+CLASS_CONST *JIT_get_constant(int index);
+void *JIT_get_class_ref(int index);
+void JIT_call_unknown(PCODE *pc, VALUE **psp);
 
-bool JIT_load(void);
-void JIT_default_jit_function(void);
+void JIT_exit(void);
+
+bool JIT_can_compile(ARCHIVE *arch);
+
+void JIT_load_class(CLASS *class);
 
 #endif

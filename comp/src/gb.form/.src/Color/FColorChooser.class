@@ -488,8 +488,8 @@ Public Sub dwgValue_MouseMove()
   If Not GetParent().Enabled Then Return
 
   V = Mouse.Y / dwgValue.H * 256
-  If Not (Mouse.Shift Xor $bSnap) Then V = Int((V + 16) / 32) * 32
-  V = 255 - Min(255, Max(0, V))
+  If Not (Mouse.Shift Xor $bSnap) Then V = ((V + 16) \ 32) * 32
+  V = Min(255, Max(0, 256 - V))
   If V = $iVal Then Return
   txtV.Value = V
 
@@ -595,5 +595,15 @@ End
 Public Sub panValue_Arrange()
 
   txtA.W = txtR.W
+
+End
+
+Public Sub dwgValue_MouseWheel()
+
+  If Mouse.Delta > 0 Then
+    txtV.Value = Min(255, (txtV.Value + 16) And Not 15)
+  Else
+    txtV.Value = Max(0, (txtV.Value - 1) And Not 15)
+  Endif
 
 End

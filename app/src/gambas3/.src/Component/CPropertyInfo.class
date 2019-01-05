@@ -38,8 +38,6 @@ Public (Shortcut) As Boolean
 Public Arrangement As Boolean
 'PUBLIC Control AS Boolean
 
-
-
 Static Public Sub _init()
 
   $cRedirect["Visible"] = True
@@ -63,6 +61,7 @@ Static Public Sub _init()
   $cRedirect["Height"] = True
 
   $cRedirect["Label.Padding"] = False
+  $cRedirect["PictureBox.Padding"] = False
   $cRedirect["LCDLabel.Padding"] = False
   $cRedirect["TextLabel.Padding"] = False
   $cRedirect["GridView.Padding"] = False
@@ -125,6 +124,9 @@ Static Public Sub _init()
   $cAlwaysRead["Button.Cancel"] = True
   $cAlwaysRead["ProgressBar.Value"] = True
   $cAlwaysRead["ProgressBar.Max"] = True
+  $cAlwaysRead["SpinBox.Value"] = True
+  $cAlwaysRead["SpinBox.Min"] = True
+  $cAlwaysRead["SpinBox.Max"] = True
   
   $cShortcut["Button.Text"] = True
   $cShortcut["Menu.Text"] = True
@@ -259,9 +261,6 @@ Public Sub _new(hDoc As CDocumentation, sComponent As String, sClass As String, 
     DoNotApply = True
   Else
     DoNotApply = GetFlag($cRedirect, sClass, Name)
-    If Not DoNotApply And If Name = "Enabled" And If hClass.Container Then 
-      DoNotApply = True
-    Endif
   Endif
 
   'IF DoNotApply THEN PRINT "DoNotApply: "; sClass; "."; Name

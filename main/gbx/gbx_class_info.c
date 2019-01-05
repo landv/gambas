@@ -368,6 +368,7 @@ extern GB_DESC NATIVE_AppEnv[];
 extern GB_DESC NATIVE_AppArgs[];
 extern GB_DESC NATIVE_App[];
 extern GB_DESC NATIVE_System[];
+extern GB_DESC NATIVE_Jit[];
 extern GB_DESC NATIVE_User[];
 extern GB_DESC NATIVE_ArrayBounds[];
 extern GB_DESC NATIVE_Array[];
@@ -386,7 +387,8 @@ extern GB_DESC NATIVE_TemplateArray[];
 extern GB_DESC NATIVE_TemplateArrayOfStruct[];
 extern GB_DESC NATIVE_LongArray[];
 extern GB_DESC NATIVE_PointerArray[];
-extern GB_DESC NATIVE_String[];
+extern GB_DESC StringDesc[];
+extern GB_DESC BoxedStringDesc[];
 extern GB_DESC TaskDesc[];
 extern GB_DESC NATIVE_Timer[];
 extern GB_DESC NATIVE_Observer[];
@@ -416,6 +418,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	NATIVE_AppArgs,
 	NATIVE_App,
 	NATIVE_System,
+	NATIVE_Jit,
 	NATIVE_User,
 	NATIVE_ArrayBounds,
 	NATIVE_Array,
@@ -434,7 +437,8 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	NATIVE_TemplateArrayOfStruct,
 	NATIVE_LongArray,
 	NATIVE_PointerArray,
-	NATIVE_String,
+	StringDesc,
+	BoxedStringDesc,
 	TaskDesc,
 	NATIVE_Timer,
 	NATIVE_Observer,

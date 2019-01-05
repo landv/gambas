@@ -28,6 +28,7 @@ Public Sub _new()
   Me._AutoResize = True
   $hCtrl = New CheckBox(Me) As "CheckBox"
   $hCtrl.Tristate = True
+  $hCtrl.Value = CheckBox.None
   Me.Proxy = $hCtrl
   
 End

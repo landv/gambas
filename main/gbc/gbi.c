@@ -45,7 +45,7 @@
 
 #include <dlfcn.h>
 
-#if defined(OS_LINUX) || defined(OS_GNU) || defined(OS_OPENBSD) || defined(OS_FREEBSD) || defined(OS_CYGWIN)
+#ifdef DONT_USE_LTDL
 	#define lt_dlinit() (0)
 	#define lt_dlhandle void *
 	#define lt_dlopenext(_path) dlopen(_path, RTLD_LAZY)
@@ -70,8 +70,8 @@
 static char _root[PATH_MAX + 1] = { 0 };
 static char _lib_path[PATH_MAX + 1];
 static char _info_path[PATH_MAX + 1];
-static char _buffer[PATH_MAX + 1];
-static char _env[PATH_MAX + 16];
+static char _buffer[PATH_MAX + 16];
+static char _env[PATH_MAX + 32];
 
 static FILE *out_info;
 static FILE *out_list;
@@ -765,12 +765,6 @@ int main(int argc, char **argv)
 	int opt;
 	int ind = 0;
 
-	/*#ifdef __FreeBSD__
-	optind = 1;
-	#else
-	optind = 0;
-	#endif*/
-
 	//dup(STDOUT_FILENO);
 
 	//_verbose = TRUE;
@@ -818,7 +812,7 @@ int main(int argc, char **argv)
 				
 			case 'L':
 				printf(
-					"\nGAMBAS Component Informer version " VERSION " " __DATE__ " " __TIME__ "\n"
+					"\nGAMBAS Component Informer version " VERSION "\n"
 					COPYRIGHT
 					);
 				exit(0);

@@ -3,7 +3,7 @@
 Static Private $aTheme As String[] = ["amethyst", "amber", "emerald", "gambas", "ruby", "sapphire", "visual", "obsidian", "quest", "quick", "blues", "zen", "pastel"]
 Static Private $aThemeName As String[] = [("Amethyst"), ("Amber"), ("Emerald"), ("Gambas"), ("Ruby"), ("Sapphire"), ("Visual"), ("Obsidian"), ("Quest"), ("Quick"), ("Blues"), ("Zen"), ("Pastel")]
 Static Private $aBrowser As String[] = ["konqueror", "rekonq", "firefox", "iceweasel", "epiphany", "seamonkey", "opera", "chromium"]
-Static Private $aTerminal As String[] = ["konsole", "gnome-terminal", "Terminal", "lxterminal", "xterm"]
+Static Private $aTerminal As String[] = ["konsole", "gnome-terminal", "mate-terminal", "Terminal", "lxterminal", "xterm"]
 'Static Private $aImageEditor As String[] = ["gimp", "kolourpaint", "krita"]
 
 Private $cLast As Collection
@@ -12,6 +12,7 @@ Private $bNoChange As Boolean
 Private $aConfig As Variant[][]
 Private $sStyle As String
 Private $hDraw As DrawingArea
+Private $hDownloadHelp As DownloadManager
 
 Private Sub ReadConfig()
   
@@ -57,19 +58,19 @@ Private Sub ReadConfig()
   
 End
 
-Private Sub LoadIgnoreFiles()
-
-  Dim aIgnore As String[]
-  Dim iInd As Integer
-
-  aIgnore = Project.GetIgnoreFiles()
-  tvwIgnore.Rows.Count = aIgnore.Count
-  For iInd = 0 To aIgnore.Max
-    tvwIgnore[iInd, 0].Text = aIgnore[iInd]
-  Next
-
-End
-
+' Private Sub LoadIgnoreFiles()
+' 
+'   Dim aIgnore As String[]
+'   Dim iInd As Integer
+' 
+'   aIgnore = Project.GetIgnoreFiles()
+'   tvwIgnore.Rows.Count = aIgnore.Count
+'   For iInd = 0 To aIgnore.Max
+'     tvwIgnore[iInd, 0].Text = aIgnore[iInd]
+'   Next
+' 
+' End
+' 
 Public Sub _new()
 
   Dim iInd As Integer
@@ -83,9 +84,10 @@ Public Sub _new()
   
   cmbIconTheme.List = [("Desktop"), "Gnome", "KDE", "Trinity", "KDE4", "KDE5", "LXDE", "Mate", "XFCE"].Insert(Stock.Themes)
   cmbBrowser.List = [("(Default)"), "Konqueror", "Rekonq", "Firefox", "Iceweasel", "Epiphany", "SeaMonkey", "Opera", "Chromium"]
-  cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "lxterminal", "XTerm"]
+  cmbTerminal.List = [("(Default)"), "Konsole", "Gnome terminal", "Mate terminal", "XFCE Terminal", "lxterminal", "XTerm"]
   txtEditorFont.Default = Project.DEFAULT_FONT
   txtConsoleFont.Default = Project.DEFAULT_FONT
+  txtHelpFixedFont.Default = Project.DEFAULT_FONT
   
   $cLast = MTheme.ReadSettings(Settings, "/Highlight", True)
   $cCurrent = MTheme.Copy($cLast)
@@ -94,10 +96,11 @@ Public Sub _new()
     [txtEditorFont, "/Editor/Font", ""],
     [txtConsoleFont, "/ConsoleFont", ""],
     [txtGlobalFont, "/Font", ""],
-    [cmbProjectFontSize, "/ProjectFontSize", 0],
-    [cmbTitleFontSize, "/TitleFontSize", 0],
+    [txtHelpDefaultFont, "/Browser/Font", ""],
+    [txtHelpFixedFont, "/Browser/FixedFont", ""],
     [cmbToolbox, "/ToolboxSize", 0],
     [btnSortProperty, "/SortProperties", 1],
+    [btnCloseWithMiddleClick, "/CloseWithMiddleClick", 0],
     [txtTabSize, "/DefaultTabSize", 2],
     [btnFoldProc, "/Editor/CollapseByDefault", 0],
     [btnWrapText, "/Editor/WrapTextByDefault", 0],
@@ -113,11 +116,14 @@ Public Sub _new()
     [btnFold, "/Editor/ShowExpand", 1],
     [btnInvertTheme, "/Editor/InvertTheme", 0],
     [btnOutput, "/QuietExternalCommands", 0],
+    [btnShowDebug, "/ShowDebugPanelAutomatically", 1],
     [btnUtility, "/UseUtilityWindows", 1],
     [btnStartupLoad, "/RestoreFiles", 1],
     [btnOptional, "/AlwaysDisplayOptionalMessages", 0],
     [btnOfflineHelp, "/UseOfflineHelp", 0],
-    [btnTooltip, "/ShowTooltip", 0],
+    [btnTooltip, "/ShowTooltip", 1],
+    [btnAnimation, "/Animations", 1],
+    [btnShadow, "/Shadows", 1],
     [btnShowFileInTitle, "/ShowFileInTitle", 1],
     [btnIntegratedHelp, "/PropertyHelp", 1],
     [btnHelpCompletion, "/ShowHelpInPopup", 1],
@@ -128,6 +134,7 @@ Public Sub _new()
     [btnLocalVarDecl, "/Editor/LocalVariableDeclaration", 0],
     [btnComment, "/Editor/AutoComment", 1],
     [btnCloseBraces, "/Editor/CloseBraces", 1],
+    [btnCloseStrings, "/Editor/CloseStrings", 1],
     [btnIndentDim, "/FormatCode/IndentLocal", 1],
     [btnRemoveSpace, "/FormatCode/RemoveSpaces", 0],
     [btnKeepVoidLine, "/FormatCode/KeepVoidLines", 0],
@@ -139,7 +146,8 @@ Public Sub _new()
     [txtVendorPrefix, "/Packager/VendorPrefix", ""],
     [txtLicense, "/Packager/License", "General Public License"],
     [txtURL, "/Packager/URL", "www.endoftheinternet.com"],
-    [cmbPrefix, "/Packager/UsePrefix", 0]]
+    [cmbPrefix, "/Packager/UsePrefix", 0],
+    [btnCompressPng, "/CompressPng", 1]]
   
   $bNoChange = True
   
@@ -148,6 +156,11 @@ Public Sub _new()
   cmbIconTheme.Index = Max(0, cmbIconTheme.List.Find(Settings["/Theme"]))
   cmbBrowser.Index = $aBrowser.Find(Settings["/Browser"]) + 1
   cmbTerminal.Index = $aTerminal.Find(Settings["/Terminal"]) + 1
+
+  SetPercentSize(cmbProjectFontSize, Settings["/ProjectFontSize", 100])    
+  SetPercentSize(cmbTitleFontSize, Settings["/TitleFontSize", 80])    
+  SetPercentSize(cmbDebuggerFontSize, Settings["/DebuggerFontSize", 80])    
+  SetPercentSize(cmbHelpZoom, Settings["/Help/Zoom", 80])
   
   iInd = $aTheme.Find(Settings["/Editor/Theme"])
   If iInd >= 0 Then
@@ -155,8 +168,6 @@ Public Sub _new()
   Else
     cmbTheme.Index = 0
   Endif
-  
-  panDownloadHelp.Visible = btnOfflineHelp.Value
   
   UpdateFont(txtGlobalFont.Value)
   
@@ -181,9 +192,6 @@ Public Sub _new()
   
   gvwSnippet.Columns.Count = 2
   gvwSnippet.Columns[0].Width = Desktop.Scale * 8
-  
-  tvwIgnore.Columns.Count = 1
-  LoadIgnoreFiles
   
   aColors = [Color.White, &HC0C0C0, &H808080]
   For iInd = 0 To 359 Step 30
@@ -235,10 +243,12 @@ End
 Private Sub RefreshStyle()
   
   Dim hHBox As HBox
+  Dim H As Integer
   
-  'panTheme.Background = CStyle[$cCurrent["Background"]].Foreground
+  H = Max(Project.GetEditorFont().Height + Desktop.Scale * 2, Desktop.Scale * 4)
   
   For Each hHBox In svwTheme.Children
+    hHBox.H = H
     hHBox.Children[0].Refresh
   Next  
   
@@ -252,10 +262,10 @@ Private Sub RefreshEditor()
 
   If $bNoChange Then Return
 
-  RefreshStyle
-  
-  MTheme.WriteSettings(Settings, "Highlight", $cCurrent)
   Settings["/Editor/Font"] = txtEditorFont.Value
+  
+  RefreshStyle
+  MTheme.WriteSettings(Settings, "Highlight", $cCurrent)
   
   Project.InitWebView
   Project.RefreshBreakpointPicture
@@ -272,6 +282,7 @@ Private Sub RefreshEditor()
   FProfile.ReadConfig
   FDebugInfo.ReadConfig
   FDebugExpr.ReadConfig
+  FCompletion.ReadConfig
 
 End
 
@@ -317,17 +328,36 @@ Private Sub RefreshWindow()
 
 End
 
+Private Sub SetPercentSize(hCombo As ComboBox, iSize As Integer)
+
+  Try hCombo.Text = CStr(iSize) & " %"
+
+End
+
+Private Sub GetPercentSize(hCombo As ComboBox) As Integer
+
+  Return CInt(Trim(Left(hCombo.Text, -1)))
+
+End
+
 Public Sub cmbProjectFontSize_Click()
 
-  Settings["/ProjectFontSize"] = cmbProjectFontSize.Index
+  Settings["/ProjectFontSize"] = GetPercentSize(cmbProjectFontSize)
   RefreshWindow
 
 End
 
 Public Sub cmbTitleFontSize_Click()
 
-  Settings["/TitleFontSize"] = cmbTitleFontSize.Index
+  Settings["/TitleFontSize"] = GetPercentSize(cmbTitleFontSize)
   RefreshWindow
+
+End
+
+Public Sub cmbDebuggerFontSize_Click()
+
+  Settings["/DebuggerFontSize"] = GetPercentSize(cmbDebuggerFontSize)
+  FDebugInfo.ReadConfig
 
 End
 
@@ -335,6 +365,20 @@ Public Sub btnTooltip_Click()
 
   Settings["/ShowTooltip"] = btnTooltip.Value
   Application.ShowTooltips = btnTooltip.Value
+  
+End
+
+Public Sub btnAnimation_Click()
+
+  Settings["/Animations"] = btnAnimation.Value
+  Application.Animations = btnAnimation.Value
+  
+End
+
+Public Sub btnShadow_Click()
+
+  Settings["/Shadows"] = btnShadow.Value
+  Application.Shadows = btnShadow.Value
   
 End
 
@@ -433,6 +477,13 @@ Public Sub btnSortProperty_Click()
 
 End
 
+Public Sub btnCloseWithMiddleClick_Click()
+
+  Settings["/CloseWithMiddleClick"] = btnCloseWithMiddleClick.Value
+  FMain.ReadConfig
+
+End
+
 Private Sub NeedRestart(hCtrl As Control)
   
   Balloon.Warning(("You need to restart the application to see your changes."), hCtrl)  
@@ -509,6 +560,12 @@ Public Sub btnOutput_Click()
 
 End
 
+Public Sub btnShowDebug_Click()
+
+  Settings["/ShowDebugPanelAutomatically"] = btnShowDebug.Value
+
+End
+
 Public Sub btnUtility_Click()
 
   Settings["/UseUtilityWindows"] = btnUtility.Value
@@ -528,12 +585,19 @@ Public Sub btnOptional_Click()
 
 End
 
+Private Sub UpdateOfflineHelp()
+
+  MHelp.ReadConfig
+  panDownloadHelp.Visible = btnOfflineHelp.Value
+  panProxyConfig.Visible = Not panDownloadHelp.Visible
+  UpdateDocumentationState
+
+End
+
 Public Sub btnOfflineHelp_Click()
 
   Settings["/UseOfflineHelp"] = btnOfflineHelp.Value
-  MHelp.ReadConfig
-  panDownloadHelp.Visible = btnOfflineHelp.Value
-  UpdateDocumentationState
+  UpdateOfflineHelp
   FHelpBrowser.GotoHome
 
 End
@@ -580,6 +644,11 @@ Public Sub dwgStyle_Draw()
   Dim iBackground As Integer
   Dim bInvert As Boolean
   Dim iBg As Integer
+  Dim D As Integer
+  Dim Y As Integer
+  Dim W As Integer
+  Dim LB As Integer
+  Dim XB As Integer
 
   sName = MTheme.ColorNames[MTheme.ColorKeys.Find(sKey)]
   bInvert = Settings["/Editor/InvertTheme", 0]
@@ -588,8 +657,7 @@ Public Sub dwgStyle_Draw()
     If Color[iBg].Value < 128 Then bInvert = False
   Endif
 
-  Paint.Font = Font[txtEditorFont.Value]
-  If hStyle.Underline Then Paint.Font.Underline = True
+  Paint.Font = Project.GetEditorFont()
   
   If MTheme.IsBackgroundStyle(sKey) Then
     iBackground = hStyle.Foreground
@@ -609,12 +677,41 @@ Public Sub dwgStyle_Draw()
   
   
   Paint.FillRect(0, 0, hDraw.W, hDraw.H, iBackground)
-  If hStyle.Bold Then
-    Paint.Background = Color.SetAlpha(iForeground, 128)
-    Paint.DrawText(sName, 5, 0, hDraw.Width - 8, hDraw.Height, Align.Normal)
-  Endif
+  D = Desktop.Scale
+  
+  W = hDraw.Width - D * 2
+  
   Paint.Background = iForeground
-  Paint.DrawText(sName, 4, 0, hDraw.Width - 8, hDraw.Height, Align.Normal)
+  If hStyle.Bold Then
+    LB = 1 + Paint.Font.H \ 6
+    XB = D
+    While LB >= 2
+      Paint.DrawText(sName, XB, 0, W, hDraw.H, Align.Normal) 'DrawText(sStr, SX, X + 1, Y)
+      Inc XB
+      LB -= 2
+    Wend
+    If LB Then
+      Paint.Background = Color.SetAlpha(iForeground, 128)
+      Paint.DrawText(sName, XB, 0, W, hDraw.H, Align.Normal)
+    Endif
+  Else
+    Paint.DrawText(sName, D, 0, W, hDraw.Height, Align.Normal)
+  Endif
+
+
+  Y = hDraw.H - (hDraw.H - Paint.Font.H) \ 2
+  W = Paint.Font.TextWidth(sName)
+
+  If hStyle.Underline Then 
+    Paint.FillRect(D, Y, W, 1, Color.SetAlpha(iForeground, 128))
+  Else If hStyle.Dotted Then
+    Paint.Background = Color.SetAlpha(iForeground, 128)
+    Paint.LineWidth = 1
+    Paint.Dash = [1]
+    Paint.MoveTo(D, Y - 0.5)
+    Paint.RelLineTo(W, 0)
+    Paint.Stroke
+  Endif
   
 End
 
@@ -632,6 +729,7 @@ Public Sub mnuPopup_Show()
   
     mnuBold.Checked = .Bold
     mnuUnderline.Checked = .Underline
+    mnuDotted.Checked = .Dotted
 
   End With 
   
@@ -644,6 +742,7 @@ Private Sub UpdateStyle()
   With hStyle
     .Bold = mnuBold.Checked
     .Underline = mnuUnderline.Checked
+    .Dotted = mnuDotted.Checked
   End With
   
   $cCurrent[$sStyle] = hStyle.ToString()
@@ -662,6 +761,13 @@ End
 Public Sub mnuUnderline_Click()
   
   mnuUnderline.Checked = Not mnuUnderline.Checked
+  UpdateStyle
+  
+End
+
+Public Sub mnuDotted_Click()
+  
+  mnuDotted.Checked = Not mnuDotted.Checked
   UpdateStyle
   
 End
@@ -986,24 +1092,30 @@ End
 
 Public Sub ipnOption_Click()
 
-  If ipnOption.Text = ("Code snippets") Then
+  Select Case ipnOption.Text
+
+    Case ("Project")
+      
+      panCompressPng.Enabled = System.Exist("pngquant")
+
+    Case ("Code snippets") 
     
-    If gvwSnippet.Rows.Count = 0 Then
-      RefreshSnippet
-      UpdateSnippet
-    Endif
+      If gvwSnippet.Rows.Count = 0 Then
+        RefreshSnippet
+        UpdateSnippet
+      Endif
+      
+    Case ("Background") 
+      
+      If svwBackground.Children.Count = 0 Then
+        RefreshBackground
+      Endif
+      
+    Case ("Help & applications")
+      
+      UpdateOfflineHelp
     
-  Else If ipnOption.Text = ("Background") Then
-    
-    If svwBackground.Children.Count = 0 Then
-      RefreshBackground
-    Endif
-    
-  Else If ipnOption.Text = ("Help & applications") Then
-    
-    UpdateDocumentationState
-    
-  Endif
+  End Select
   
 End
 
@@ -1028,86 +1140,6 @@ End
 Public Sub btnFormatOnLoad_Click()
 
   Settings["/FormatCode/FormatOnLoad"] = btnFormatOnLoad.Value
-
-End
-
-Public Sub tvwIgnore_Click()
-
-  tvwIgnore.Edit
-
-End
-
-Public Sub tvwIgnore_Save(Row As Integer, Column As Integer, Value As String)
-
-  Value = Trim(Value)
-  If Not Value Then
-    tvwIgnore.Rows.Remove(Row)
-  Else
-    tvwIgnore[Row, Column].Text = Value
-  Endif
-  SaveIgnoreFiles
-
-End
-
-Public Sub tvwIgnore_Insert()
-
-  btnInsertIgnore_Click
-
-End
-
-Public Sub btnInsertIgnore_Click()
-
-  If tvwIgnore.Rows.Count = 0 Or If Trim(tvwIgnore[tvwIgnore.Rows.Max, 0].Text) Then 
-    Inc tvwIgnore.Rows.Count
-  Endif
-  
-  tvwIgnore.MoveTo(tvwIgnore.Rows.Max, 0)
-  tvwIgnore.Edit
-
-End
-
-Public Sub btnRemoveIgnore_Click()
-
-  If tvwIgnore.Row < 0 Then Return
-  tvwIgnore.Save
-  tvwIgnore.Rows.Remove(tvwIgnore.Row)
-  SaveIgnoreFiles
-  tvwIgnore.Edit
-
-End
-
-Public Sub tvwIgnore_Change()
-
-  While tvwIgnore.Rows.Count 
-    If Trim(tvwIgnore[tvwIgnore.Rows.Max, 0].Text) Or If tvwIgnore.Row = tvwIgnore.Rows.Max Then Return
-    Dec tvwIgnore.Rows.Count
-  Wend
-
-End
-
-Private Sub SaveIgnoreFiles()
-  
-  Dim aIgnore As New String[]
-  Dim I As Integer
-  Dim sIgnore As String
-  
-  For I = 0 To tvwIgnore.Rows.Max
-    sIgnore = Trim(tvwIgnore[I, 0].Text)
-    If Not sIgnore Then Continue
-    aIgnore.Add(sIgnore)
-  Next
-  
-  Settings["/IgnoreFiles"] = aIgnore
-  
-End
-
-
-Public Sub btnResetIgnore_Click()
-
-  If Message.Warning(("Do you really want to reset the list to its default value?"), ("Cancel"), ("Reset")) = 1 Then Return
-
-  Settings["/IgnoreFiles"] = Null
-  LoadIgnoreFiles
 
 End
 
@@ -1256,110 +1288,36 @@ End
 ' 
 ' End
 
-Public Sub btnDownloadHelp_Click()
-
-  Dim sMsg As String
-  Dim sFile As String
-  Dim sDir As String
-  Dim sTimestamp As String
-  Dim sParentDir As String
-
-  Inc Application.Busy
-  
-  sMsg = Project.RequireProgram(["wget", "tar"])
-  If sMsg Then Goto FAIL
-  
-  ' Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp
-  ' sTimestamp = Trim(sTimestamp)
-  ' If Not sTimestamp Then 
-  '   sMsg = ("The documentation is not available at the moment. Try again later.")
-  '   Goto FAIL
-  ' Endif
-  ' 
-  ' Try dDate = Stat(MHelp.GetOfflineDir()).LastModified
-  ' If dDate And If Format(dDate, "yyyymmdd") >= sTimestamp Then
-  '   sMsg = ("The documentation is up to date.")
-  '   Goto FAIL
-  ' Endif
-  
-  sDir = MHelp.GetOfflineDir()
-  sParentDir = File.Dir(sDir)
-  
-  Project.MakeDir(sParentDir)
-  sFile = sParentDir &/ "wiki.tar.bz2"
-  Try Kill sFile
-  
-  Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp
-  
-  Exec ["wget", "-q", "-O", sFile, "http://gambaswiki.org/gambas-wiki.tar.bz2"] Wait
-  If Not Exist(sFile) Then
-    sMsg = ("Unable to download documentation.")
-    Goto FAIL
-  Endif
-  
-  Shell "rm -rf " & Shell(sParentDir &/ "gambas") Wait
-  
-  Shell "cd " & Shell$(sParentDir) & " && tar xfj " & Shell$(File.Name(sFile)) Wait
-  
-  If Not IsDir(sParentDir &/ "gambas") Then
-    Shell "rm -rf " & Shell(sDir) & " " & Shell$(sFile) Wait
-    sMsg = ("Unable to uncompress documentation.")
-    Goto FAIL
-  Endif
-
-  If IsDir(sDir & "~") Then Shell "rm -rf " & Shell(sDir & "~") Wait
-  If IsDir(sDir) Then Try Move sDir To sDir & "~"
-  Try Move sParentDir &/ "gambas" To sDir
-  
-  If Not IsDir(sDir) Then
-    sMsg = ("Unable to install documentation.")
-    Goto FAIL
-  Endif
-  
-  File.Save(sDir &/ "timestamp", sTimestamp)
-  
-  UpdateDocumentationState
-  Dec Application.Busy
-  Return
-  
-FAIL:
-
-  Dec Application.Busy
-  Message.Warning(sMsg)
-  Return
-
-End
-
 Private Sub UpdateDocumentationState()
 
   If Not panDownloadHelp.Visible Then Return
+  If $hDownloadHelp Then Return
+
+  pgbDownload.Hide
+  btnCancelDownload.Hide
+  btnDownload.Enabled = True
 
   Select Case MHelp.GetOfflineState()
     
     Case MHelp.OFFLINE_NO_NETWORK
       lblDocumentation.Text = ("Network is not available.")
       lblDocumentation.Foreground = Color.Foreground
-      btnDownloadHelp.Enabled = False
+      panDownload.Enabled = False
     
     Case MHelp.OFFLINE_UP_TO_DATE
       lblDocumentation.Text = ("Documentation is up to date.")
       lblDocumentation.Foreground = Color.Foreground
-      btnDownloadHelp.Enabled = False
-    
-    Case MHelp.OFFLINE_NO_WGET
-      lblDocumentation.Text = ("'wget' is not found.")
-      lblDocumentation.Foreground = Color.Foreground
-      btnDownloadHelp.Enabled = False
+      panDownload.Enabled = False
     
     Case MHelp.OFFLINE_NEW_AVAILABLE
       lblDocumentation.Text = ("A new documentation is available!")
       lblDocumentation.Foreground = Color.Red
-      btnDownloadHelp.Enabled = True
+      panDownload.Enabled = True
       
     Case Else
       lblDocumentation.Text = ("Documentation is not available.")
       lblDocumentation.Foreground = Color.Foreground
-      btnDownloadHelp.Enabled = False
+      panDownload.Enabled = False
       
   End Select
 
@@ -1410,5 +1368,222 @@ Public Sub btnSeparateStatic_Click()
     If Error Then Continue
     hEditor.ResetProcList
   Next  
+
+End
+
+Private Sub RefreshBrowser()
+
+  If $bNoChange Then Return
+
+  Settings["/Browser/Font"] = txtHelpDefaultFont.Value
+  Settings["/Browser/FixedFont"] = txtHelpFixedFont.Value
+  
+  Project.InitWebView
+
+End
+
+Public Sub txtHelpDefaultFont_Change()
+
+  RefreshBrowser
+
+End
+
+Public Sub txtHelpFixedFont_Change()
+
+  RefreshBrowser
+
+End
+
+Public Sub cmbHelpZoom_Click()
+
+  Settings["/Help/Zoom"] = GetPercentSize(cmbHelpZoom)
+  FProperty.ReadConfig
+  FCompletion.ReadConfig
+
+End
+
+
+Public Sub btnCompressPng_Click()
+
+  Settings["/CompressPng"] = btnCompressPng.Value
+
+End
+
+' Public Sub dwnHelp_Finish()
+' 
+'   Dim sMsg As String
+'   Dim sDir As String
+'   Dim sTimestamp As String
+'   Dim sFile As String
+'   Dim sParentDir As String
+' 
+'   sFile = dwnHelp.Target
+'   sDir = MHelp.GetOfflineDir()
+'   sParentDir = File.Dir(sFile)
+' 
+'   Inc Application.Busy
+'   
+'   sTimestamp = HttpClient.Download("http://gambaswiki.org/timestamp")
+' 
+'   Shell "rm -rf " & Shell(sParentDir &/ "gambas") Wait
+'   
+'   Shell "cd " & Shell$(sParentDir) & " && tar xfj " & Shell$(File.Name(sFile)) Wait
+'   
+'   If Not IsDir(sParentDir &/ "gambas") Then
+'     Shell "rm -rf " & Shell(sDir) & " " & Shell$(sFile) Wait
+'     sMsg = ("Unable to uncompress documentation.")
+'     Goto FAIL
+'   Endif
+' 
+'   If IsDir(sDir & "~") Then Shell "rm -rf " & Shell(sDir & "~") Wait
+'   If IsDir(sDir) Then Try Move sDir To sDir & "~"
+'   Try Move sParentDir &/ "gambas" To sDir
+'   
+'   If Not IsDir(sDir) Then
+'     sMsg = ("Unable to install documentation.")
+'     Goto FAIL
+'   Endif
+'   
+'   File.Save(sDir &/ "timestamp", sTimestamp)
+'   
+'   UpdateDocumentationState
+'   Dec Application.Busy
+'   Return
+'   
+' FAIL:
+' 
+'   Dec Application.Busy
+'   Message.Warning(sMsg)
+'   Return
+' 
+' End
+
+
+' Public Sub dwnHelp_Start()
+' 
+'   Dim sDir As String
+'   Dim sParentDir As String
+'   Dim sFile As String
+'   Dim sMsg As String
+' 
+'   sMsg = Project.RequireProgram(["tar"])
+'   If sMsg Then Error.Raise(sMsg)
+' 
+'   sDir = MHelp.GetOfflineDir()
+'   sParentDir = File.Dir(sDir)
+'   Project.MakeDir(sParentDir)
+'   sFile = sParentDir &/ "wiki.tar.bz2"
+'   Try Kill sFile
+'   
+'   dwnHelp.Target = sFile
+' 
+' End
+' 
+
+Public Sub btnDownload_Click()
+
+  Dim sMsg As String
+
+  sMsg = Project.RequireProgram(["tar"])
+  If sMsg Then Error.Raise(sMsg)
+
+  $hDownloadHelp = New DownloadManager As "DownloadHelp"
+  $hDownloadHelp.Add("http://gambaswiki.org/gambas-wiki.tar.bz2", "help")
+  $hDownloadHelp.Add("http://gambaswiki.org/timestamp", "timestamp")
+  btnDownload.enabled = False
+  $hDownloadHelp.Start
+  
+  pgbDownload.Show
+  btnCancelDownload.Show
+
+End
+
+Public Sub DownloadHelp_Progress()
+  
+  If $hDownloadHelp.Progress > 0 Then
+    pgbDownload.Pulse = False
+    pgbDownload.Value = $hDownloadHelp.Progress
+  Else
+    pgbDownload.Pulse = True
+  Endif
+  
+End
+
+Public Sub DownloadHelp_Error((Key) As String)
+  
+  Message.Error(("Cannot download '&1'.") & "\n\n&2", $hDownloadHelp[Key].Url, $hDownloadHelp[Key].ErrorText)
+  $hDownloadHelp = Null  
+  UpdateDocumentationState
+  
+End
+
+Public Sub DownloadHelp_End()
+  
+  Dim sDir As String
+  Dim sParentDir As String
+  Dim sFile As String
+  Dim sMsg As String
+  
+  Inc Application.Busy
+  
+  pgbDownload.Hide
+  btnCancelDownload.Hide
+  
+  sDir = MHelp.GetOfflineDir()
+  sParentDir = File.Dir(sDir)
+  
+  Shell.MkDir(sParentDir)
+  
+  sFile = sParentDir &/ "wiki.tar.bz2"
+  Shell.Move($hDownloadHelp["help"].Path, sFile, True)
+  
+  Try Shell.RmDir(sParentDir &/ "gambas") 'Shell "rm -rf " & Shell(sParentDir &/ "gambas") Wait
+  
+  Shell "cd " & Shell$(sParentDir) & " && tar xfj " & Shell$(File.Name(sFile)) Wait
+  
+  If Not IsDir(sParentDir &/ "gambas") Then
+    sMsg = ("Unable to uncompress documentation.")
+    Try Shell.RmDir(sParentDir &/ "gambas")
+    Try Kill sFile
+    Goto FAIL
+  Endif
+
+  If IsDir(sDir & "~") Then Shell.RmDir(sDir & "~") 'Shell "rm -rf " & Shell(sDir & "~") Wait
+  If IsDir(sDir) Then Try Move sDir To sDir & "~"
+  Try Move sParentDir &/ "gambas" To sDir
+  
+  If Not IsDir(sDir) Then
+    sMsg = ("Unable to install documentation.")
+    Goto FAIL
+  Endif
+  
+  Shell.Move($hDownloadHelp["timestamp"].Path, sDir &/ "timestamp", True)
+  'File.Save(sDir &/ "timestamp", sTimestamp)
+
+  $hDownloadHelp = Null  
+  UpdateDocumentationState
+  Dec Application.Busy
+  Return
+  
+FAIL:
+
+  Dec Application.Busy
+  Message.Warning(sMsg)
+  Return
+  
+End
+
+Public Sub btnCancelDownload_Click()
+
+  $hDownloadHelp.Stop()
+  $hDownloadHelp = Null  
+  UpdateDocumentationState
+  
+End
+
+Public Sub btnCloseStrings_Click()
+
+  Settings["/Editor/CloseStrings"] = btnCloseStrings.Value
+  RefreshEditor
 
 End

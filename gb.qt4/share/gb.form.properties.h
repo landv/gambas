@@ -51,14 +51,12 @@
 #define CMENU_PROPERTIES "Action,Text,Picture,Enabled=True,Radio,Toggle,Checked,Visible=True,Tag,Shortcut"
 #define CMOVIEBOX_PROPERTIES "*,Path,Playing,Alignment{Align.*}=TopLeft,Border{Border.None;Plain;Sunken;Raised;Etched}"
 #define CPANEL_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Border{Border.None;Plain;Sunken;Raised;Etched}"
-#define CPICTUREBOX_PROPERTIES "*,Padding{Range:0;64},Picture,Stretch,AutoResize,Alignment{Align.*}=TopLeft,Border{Border.None;Plain;Sunken;Raised;Etched}"
 #define CPRINTER_PROPERTIES "Orientation{Printer.Portrait;Landscape}=Portrait,Paper{Printer.A3;A4;A5;B5;Letter;Executive}=A4,CollateCopies,ReverseOrder,Duplex{Printer.Simplex;Horizontal;Vertical}=Simplex,GrayScale,FullPage"
 #define CRADIOBUTTON_PROPERTIES "*,AutoResize,Text,Value"
 #define CSCROLLBAR_PROPERTIES "*,MinValue=0,MaxValue=100,Step=1,PageStep=10,Tracking=True"
 #define CSCROLLVIEW_PROPERTIES "*," CARRANGEMENT_PROPERTY "," CPADDING_PROPERTIES ",Border=True,ScrollBar{Scroll.*}=Both"
 #define CSEPARATOR_PROPERTIES "*"
 #define CSLIDER_PROPERTIES "*,Action,MinValue=0,MaxValue=100,Step=1,PageStep=10,Tracking=True,Mark,Value"
-#define CSPINBOX_PROPERTIES "*,Action,MinValue=0,MaxValue=100,Step=1,Wrap,Value,Border=True"
 #define CTABSTRIP_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom;Left;Right}=Top,Closable"
 #define CTEXTAREA_PROPERTIES "*,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,ReadOnly,Wrap,Border=True,ScrollBar{Scroll.*}=Both"
 #define CTEXTBOX_PROPERTIES "*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,ReadOnly,Password,MaxLength,Border=True"
@@ -93,8 +91,17 @@
 	GB_CONSTANT("_DefaultEvent", "s", _event), \
 	GB_CONSTANT("_DefaultSize", "s", "24,24")
 
+#define DESCRIBE_CONTAINER_SMALL(_prop, _event) \
+	GB_CONSTANT("_Properties", "s", _prop), \
+	GB_CONSTANT("_DefaultEvent", "s", _event), \
+	GB_CONSTANT("_DefaultSize", "s", "8,8")
+
 #define DESCRIBE_CONTAINER_ARR(_prop, _event, _arr) \
 	DESCRIBE_CONTAINER(_prop, _event), \
+	GB_CONSTANT("_DefaultArrangement", "s", _arr)
+
+#define DESCRIBE_CONTAINER_SMALL_ARR(_prop, _event, _arr) \
+	DESCRIBE_CONTAINER_SMALL(_prop, _event), \
 	GB_CONSTANT("_DefaultArrangement", "s", _arr)
 
 #define DESCRIBE_MULTI_CONTAINER(_prop, _event) \
@@ -124,14 +131,13 @@
 #define EDITOR_DESCRIPTION DESCRIBE_CONTROL(CEDITOR_PROPERTIES, "KeyPress", "16,16"), SIMILAR("TextArea")
 #define EMBEDDER_DESCRIPTION DESCRIBE_CONTROL("*", "Embed", "24,24"), GB_CONSTANT("_Group", "s", "Deprecated")
 #define FRAME_DESCRIPTION DESCRIBE_CONTAINER(CFRAME_PROPERTIES, "MouseDown"), SIMILAR("Panel")
-#define HBOX_DESCRIPTION DESCRIBE_CONTAINER_ARR(CHBOX_PROPERTIES, "MouseDown", "H"), SIMILAR("Panel")
-#define HPANEL_DESCRIPTION DESCRIBE_CONTAINER_ARR(CHBOX_PROPERTIES, "MouseDown", "R"), SIMILAR("Panel")
+#define HBOX_DESCRIPTION DESCRIBE_CONTAINER_SMALL_ARR(CHBOX_PROPERTIES, "MouseDown", "H"), SIMILAR("Panel")
+#define HPANEL_DESCRIPTION DESCRIBE_CONTAINER_SMALL_ARR(CHBOX_PROPERTIES, "MouseDown", "R"), SIMILAR("Panel")
 #define LABEL_DESCRIPTION DESCRIBE_CONTROL(CLABEL_PROPERTIES, "MouseDown", "24,4")
 #define LCDNUMBER_DESCRIPTION DESCRIBE_CONTROL(CLCDNUMBER_PROPERTIES, "MouseDown", "24,6"), SIMILAR("Label"), GB_CONSTANT("_Group", "s", "Deprecated")
 #define LISTBOX_DESCRIPTION DESCRIBE_CONTROL(CLISTBOX_PROPERTIES, "Click", "16,16")
 #define MOVIEBOX_DESCRIPTION DESCRIBE_CONTROL(CMOVIEBOX_PROPERTIES, "MouseDown", "16,16")
-#define PANEL_DESCRIPTION DESCRIBE_CONTAINER_ARR(CPANEL_PROPERTIES, "MouseDown", "F")
-#define PICTUREBOX_DESCRIPTION DESCRIBE_CONTROL(CPICTUREBOX_PROPERTIES, "MouseDown", "16,16")
+#define PANEL_DESCRIPTION DESCRIBE_CONTAINER_SMALL_ARR(CPANEL_PROPERTIES, "MouseDown", "F")
 #define RADIOBUTTON_DESCRIPTION DESCRIBE_CONTROL(CRADIOBUTTON_PROPERTIES, "Click", "24,4"), SIMILAR("Button")
 #define SCROLLBAR_DESCRIPTION DESCRIBE_CONTROL(CSCROLLBAR_PROPERTIES, "Change", "36,4"), SIMILAR("Slider")
 #define SCROLLVIEW_DESCRIPTION DESCRIBE_CONTAINER_ARR(CSCROLLVIEW_PROPERTIES, "MouseDown", "F"), SIMILAR("Panel")
@@ -146,8 +152,8 @@
 #define TOGGLEBUTTON_DESCRIPTION DESCRIBE_CONTROL(CTOGGLEBUTTON_PROPERTIES, "Click", "16,4"), SIMILAR("Button")
 #define TOOLBUTTON_DESCRIPTION DESCRIBE_CONTROL(CTOOLBUTTON_PROPERTIES, "Click", "4,4"), SIMILAR("Button")
 #define USERCONTAINER_DESCRIPTION DESCRIBE_CONTAINER_ARR(CUSERCONTAINER_PROPERTIES, "MouseDown", "F")
-#define VBOX_DESCRIPTION DESCRIBE_CONTAINER_ARR(CVBOX_PROPERTIES, "MouseDown", "V"), SIMILAR("Panel")
-#define VPANEL_DESCRIPTION DESCRIBE_CONTAINER_ARR(CVBOX_PROPERTIES, "MouseDown", "C"), SIMILAR("Panel")
+#define VBOX_DESCRIPTION DESCRIBE_CONTAINER_SMALL_ARR(CVBOX_PROPERTIES, "MouseDown", "V"), SIMILAR("Panel")
+#define VPANEL_DESCRIPTION DESCRIBE_CONTAINER_SMALL_ARR(CVBOX_PROPERTIES, "MouseDown", "C"), SIMILAR("Panel")
 #define WINDOW_DESCRIPTION DESCRIBE_CONTAINER_ARR(CWINDOW_PROPERTIES, "Open", "F")
 
 #define MENU_DESCRIPTION \

@@ -104,9 +104,8 @@ static void call_attach_special_method(CLASS *class, void *ob, void *parent, con
 		SP->_string.len = strlen(name);
 	}
 	else
-	{
-		SP->type = T_NULL;
-	}
+		VALUE_null(SP);
+	
 	SP++;
 
 	EXEC_special(SPEC_ATTACH, class, ob, 2, TRUE);
@@ -197,6 +196,7 @@ static void remove_observers(OBJECT *ob)
 		#if DEBUG_EVENT
 		fprintf(stderr, "Remove observer %p %d: %p: %p\n", obs, (int)obs->ob.ref, ob, obs->object);
 		#endif
+		obs->object = NULL;
 		OBJECT_UNREF(obs);
 		obs = next;
 	}

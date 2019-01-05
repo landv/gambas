@@ -29,6 +29,7 @@
 #ifndef __GBX_C_SYSTEM_C
 extern GB_DESC NATIVE_User[];
 extern GB_DESC NATIVE_System[];
+extern GB_DESC NATIVE_Jit[];
 #endif
 
 #endif

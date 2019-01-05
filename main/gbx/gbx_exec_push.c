@@ -101,6 +101,10 @@ _PUSH_GENERIC:
 			object = EXEC_auto_create(class, TRUE);
 		}
 
+		index = CLASS_find_symbol(class, name);
+		if (index != NO_SYMBOL)
+			THROW(E_NSYMBOL, CLASS_get_name(val->_object.class), name);
+			
 		if (class->special[SPEC_PROPERTY] != NO_SYMBOL)
 		{
 			EXEC_unknown_name = name;
@@ -676,6 +680,7 @@ __PUSH_ARRAY_2:
 }
 #endif
 
+#if 0
 // JIT needs it
 void EXEC_push_array(ushort code)
 {
@@ -700,6 +705,7 @@ void EXEC_push_array(ushort code)
 	if (!defined)
 		VALUE_conv_variant(&SP[-1]);
 }
+#endif
 
 int EXEC_push_unknown_event(bool unknown)
 {

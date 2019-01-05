@@ -64,6 +64,7 @@ void COMPONENT_delete(COMPONENT *comp);
 
 COMPONENT *COMPONENT_find(const char *name);
 bool COMPONENT_exist(const char *name);
+bool COMPONENT_can_load_library(const char *name);
 
 void COMPONENT_load(COMPONENT *comp);
 void COMPONENT_unload(COMPONENT *comp);

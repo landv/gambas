@@ -758,11 +758,11 @@ Public Sub IsImage(sPath As String) As Boolean
   Dim sExt As String
   
   sExt = File.Ext(sPath)
-  Return ["png", "jpg", "jpeg", "gif"].Exist(sExt)
+  Return ["png", "jpg", "jpeg", "gif", "webm"].Exist(sExt)
   
 End
 
-Private Sub GetContentTypeFrom(sPath As String) As String
+Public Sub GetContentTypeFrom(sPath As String) As String
   
   Select Case Lower(File.Ext(sPath))
     Case "css"
@@ -775,6 +775,8 @@ Private Sub GetContentTypeFrom(sPath As String) As String
       Return "image/gif"
     Case "tiff", "tif"
       Return "image/tiff"
+    Case "webm"
+      Return "video/webm"
     Case "odt"
       Return "application/vnd.oasis.opendocument.text"
     Case "doc"
@@ -1046,7 +1048,8 @@ Public Sub GetToDo() As String[]
   Dim aAllow As String[] = ["_new", "_put", "_get", "_call", "_next"]
   Dim sPath As String
   Dim aResult As New String[]
-
+  Dim aIndex As New String[]
+  
   aIgnore = GetIgnore()
 
   CComponent.Init
@@ -1098,7 +1101,8 @@ Public Sub GetToDo() As String[]
         If Not ExistPage(sPath) Then
           
           If bPrintComponent Then
-            aResult.Add("## [" & sComp & "] (/comp" &/ sComp & ")")
+            aResult.Add("## [[" & sComp & "] (/comp" &/ sComp & ")]")
+            aIndex.Add("- [" & sComp & "](#t" & CStr(aIndex.Count + 1) & ")")
             bPrintComponent = False
           Endif
           If bPrintClass Then
@@ -1114,6 +1118,9 @@ Public Sub GetToDo() As String[]
   Next
 
   aResult.Insert([Subst("There are &1 symbols to document yet.", CStr(iCpt)), ""], 0)
+  aIndex.Add("<div class=\"index\">", 0)
+  aIndex.Add("</div>")
+  aResult.Insert(aIndex, 1)
   Return aResult
   
 End
@@ -1492,5 +1499,15 @@ Private Sub SearchWiki(sText As String)
   
   Response.Redirect("/wiki/search")
   Return
+  
+End
+
+Public Sub GetImageHTML(sPath As String) As String
+
+  If Main.GetContentTypeFrom(sPath) Begins "video/" Then
+    Return "<video src=\"" & Html(Application.Root &/ sPath) & "?v\" autoplay></video>"
+  Else
+    Return "<img src=\"" & Html(Application.Root &/ sPath) & "?v\" />"
+  Endif
   
 End

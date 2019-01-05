@@ -148,7 +148,7 @@ static void check_size()
 static void add_line(ushort line, uint64_t time)
 {
 	int n;
-	char buf[32], num[16];
+	char buf[32], num[32];
 	char *p;
 	
 	n = line - _last_line;

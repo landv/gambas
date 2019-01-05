@@ -332,17 +332,15 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Style_BoxFrameWidth)
 
-	if (::strcmp(get_style_name(), "Breeze") == 0)
-		GB.ReturnInteger(2);
-	else
-	{
-		int w = qApp->style()->pixelMetric(QStyle::QStyle::PM_ComboBoxFrameWidth);
-		
-		if (::strcmp(get_style_name(), "Oxygen") == 0)
-			w++;
-		
-		GB.ReturnInteger(w);
-	}
+	int w = qApp->style()->pixelMetric(QStyle::QStyle::PM_ComboBoxFrameWidth);
+	GB.ReturnInteger(w);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Style_BoxFrameHeight)
+
+	int w = qApp->style()->pixelMetric(QStyle::QStyle::PM_ComboBoxFrameWidth);
+	GB.ReturnInteger(w);
 
 END_PROPERTY
 
@@ -500,7 +498,7 @@ GB_DESC StyleDesc[] =
 	GB_STATIC_PROPERTY_READ("FrameWidth", "i", Style_FrameWidth),
 	GB_STATIC_PROPERTY_READ("TextBoxFrameWidth", "i", Style_FrameWidth),
 	GB_STATIC_PROPERTY_READ("BoxFrameWidth", "i", Style_BoxFrameWidth),
-	GB_STATIC_PROPERTY_READ("BoxFrameHeight", "i", Style_BoxFrameWidth),
+	GB_STATIC_PROPERTY_READ("BoxFrameHeight", "i", Style_BoxFrameHeight),
 	GB_STATIC_PROPERTY_READ("Name", "s", Style_Name),
 	
 	GB_STATIC_METHOD("PaintArrow", NULL, Style_PaintArrow, "(X)i(Y)i(Width)i(Height)i(Type)i[(Flag)i]"),

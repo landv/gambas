@@ -129,6 +129,7 @@ Public Sub gvwExpr_Data(Row As Integer, Column As Integer)
       
     If Column = 0 Then 
       gvwExpr.Data.Text = sSym
+      gvwExpr.Data.Alignment = Align.Right
     Else 
       sVal = $cVal[Row]
       If sVal Then 
@@ -187,6 +188,7 @@ Public Sub gvwExpr_Data(Row As Integer, Column As Integer)
   Endif
 
   If Column <> 0 Then 
+    
     If Left(gvwExpr.Data.Text) <> "!" Then
 
       If $cVal.Exist(Row) And If $cOldVal.Exist(Row) And If gvwExpr.Data.Text <> $cOldVal[Row] Then 
@@ -194,10 +196,18 @@ Public Sub gvwExpr_Data(Row As Integer, Column As Integer)
         gvwExpr.Data.Font.Bold = True
       Endif
       
-    Else   
+    Else
+      
       gvwExpr.Data.Text = Mid$(gvwExpr.Data.Text, 2)
       gvwExpr.Data.Background = Color.Lighter(Color.Red)
+      
     Endif 
+    
+    gvwExpr.Data.Font = txtExpr.Font
+
+  Else
+    
+    gvwExpr.Data.Text &= "  "
 
   Endif 
   
@@ -220,20 +230,24 @@ Public Sub SetValue(iRow As Integer, sVal As String, Optional bAssign As Boolean
   
   Else
 
-    vVal = Val(sVal)
-    
-    Select Case TypeOf(vVal)
-      Case gb.Integer
-        sHex = Hex$(vVal, 8)
-      Case gb.Long
-        sHex = Hex$(vVal, 16)
-    End Select 
-    
-    If sHex Then 
-      While Left(sHex) = "0"
-        sHex = Mid$(sHex, 2)
-      Wend
-      If sHex Then sVal &= " / &H" & sHex
+    If btnHexa.Value Then
+
+      vVal = Val(sVal)
+      
+      Select Case TypeOf(vVal)
+        Case gb.Integer
+          sHex = Hex$(vVal, 8)
+        Case gb.Long
+          sHex = Hex$(vVal, 16)
+      End Select 
+      
+      If sHex Then 
+        While Left(sHex) = "0"
+          sHex = Mid$(sHex, 2)
+        Wend
+        If sHex Then sVal = "&H" & sHex
+      Endif
+      
     Endif
     
     $cVal[iRow] = sVal
@@ -265,7 +279,7 @@ Private Sub GetCurrentExpr() As String
     If Left(sSym) = ":" Then Return
   Endif
 
-  sText = gvwExpr[gvwExpr.Row, 0].Text
+  sText = Trim(gvwExpr[gvwExpr.Row, 0].Text)
   If Not sText Then Return
   
   If $bArray Or $bCollection
@@ -507,6 +521,8 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
   If $iRowDynamic >= 0 And If $iRowStatic >= 0 Then gvwExpr.Rows[$iRowDynamic].Height = 2
   
   If Not bNew Then Try gvwExpr.Columns[0].Width = -1
+  
+  btnShowAll.Visible = $bArray Or $bCollection Or bHasHidden
 
 End
 
@@ -849,4 +865,11 @@ Public Sub mnuPrint_Click()
   
   FOutput.PrintExpr(sExpr)
   
+End
+
+Public Sub btnHexa_Click()
+
+  $cVal.Clear
+  Init($sInfo, False)
+
 End

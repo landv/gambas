@@ -164,9 +164,9 @@ static void CSocket_close(CSOCKET *_object)
 		THIS->DnsTool = NULL;
 	}
 
-	if (SOCKET->status > NET_INACTIVE) /* if it's not connected, does nothing */
+	fd = SOCKET->socket;
+	if (fd >= 0)
 	{
-		fd = SOCKET->socket;
 		//fprintf(stderr, "CSocket_close: %p: set fd %d to -1\n", THIS, fd);
 		SOCKET->socket = -1;
 		

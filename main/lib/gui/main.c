@@ -27,6 +27,13 @@
 
 enum { USE_NOTHING, USE_GB_QT4, USE_GB_QT5, USE_GB_GTK, USE_GB_GTK3 };
 
+static char use_list[4][3] = {
+	{ USE_GB_QT5, USE_GB_GTK, USE_GB_GTK3 },
+	{ USE_GB_QT4, USE_GB_GTK3, USE_GB_GTK },
+	{ USE_GB_GTK3, USE_GB_QT4, USE_GB_QT5 },
+	{ USE_GB_GTK, USE_GB_QT5, USE_GB_QT4 },
+};
+
 GB_INTERFACE GB EXPORT;
 
 // Prevents gbi3 from complaining
@@ -38,12 +45,54 @@ GB_DESC *GB_CLASSES[] EXPORT =
 
 char *GB_INCLUDE EXPORT = "gb.qt4|gb.qt5|gb.gtk|gb.gtk3";
 
+
+const char *get_name(int use)
+{
+	switch (use)
+	{
+		case USE_GB_QT4: return "gb.qt4";
+		case USE_GB_QT5: return "gb.qt5";
+		case USE_GB_GTK3: return "gb.gtk3";
+		default: return "gb.gtk";
+	}
+}
+
+
+static bool can_use(int use)
+{
+	static const char *ext[] = { "ext", "webkit", "opengl", NULL };
+	char test[32];
+	char *suffix;
+	const char **pext;
+	const char *name;
+	
+	name = get_name(use);
+	
+	if (!GB.Component.CanLoadLibrary(name))
+		return FALSE;
+
+	strcpy(test, name);
+	suffix = test + strlen(name);
+	*suffix++ = '.';
+	
+	for (pext = ext; *pext; pext++)
+	{
+		strcpy(suffix, *pext);
+		if (GB.Component.Exist(test) && !GB.Component.CanLoadLibrary(test))
+			return FALSE;
+	}
+	
+	return TRUE;
+}
+
+
 int EXPORT GB_INIT(void)
 {
 	int use = USE_NOTHING;
+	int use_other = USE_NOTHING;
 	char *env;
 	const char *comp;
-	const char *comp2;
+	int i;
 
 	env = getenv("GB_GUI");
 	if (env)
@@ -77,26 +126,42 @@ int EXPORT GB_INIT(void)
 		}
 	}
 
-	switch (use)
+	if (!can_use(use))
 	{
-		case USE_GB_QT4: comp = "gb.qt4"; break;
-		case USE_GB_QT5: comp = "gb.qt5"; break;
-		case USE_GB_GTK3: comp = "gb.gtk3"; break;
-		default: comp = "gb.gtk"; break;
-	}
-
-	if (GB.Component.Load(comp))
-	{
-		comp2 = (use == USE_GB_QT4 || use == USE_GB_QT5) ? "gb.gtk" : "gb.qt4";
-
-		if (GB.Component.Load(comp2))
+		use_other = USE_NOTHING;
+		for (i = 0; i <= 2; i++)
+		{
+			if (can_use(use_list[use - 1][i]))
+			{
+				use_other = use_list[use - 1][i];
+				break;
+			}
+		}
+		
+		if (use_other)
+		{
+			fprintf(stderr, "gb.gui: warning: '%s' component not found, using '%s' instead\n", get_name(use), get_name(use_other));
+			use = use_other;
+		}
+		else
 		{
 			fprintf(stderr, "gb.gui: error: unable to find any GUI component\n");
 			exit(1);
 		}
-
-		fprintf(stderr, "gb.gui: warning: '%s' component not found, using '%s' instead\n", comp, comp2);
-		comp = comp2;
+	}
+	
+	comp = get_name(use);
+	
+	if (GB.Component.Load(comp))
+	{
+		fprintf(stderr, "gb.gui: error: cannot load component '%s'\n", comp);
+		exit(1);
+	}
+	else
+	{
+		env = getenv("GB_GUI_DEBUG");
+		if (env && !strcmp(env, "0")) 
+			fprintf(stderr, "gb.gui: loading '%s'\n", comp);
 	}
   
   setenv("GB_GUI", comp, TRUE);

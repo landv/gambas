@@ -40,7 +40,6 @@
 #include "CColor.h"
 #include "CClipboard.h"
 #include "CMenu.h"
-#include "CScrollView.h"
 #include "CDrawingArea.h"
 #include "CTextArea.h"
 
@@ -64,6 +63,7 @@
 #include <QListWidget>
 #include <QComboBox>
 #include <QSpinBox>
+#include <QCheckBox>
 #include <QSet>
 #include <QScrollBar>
 #include <QLineEdit>
@@ -238,6 +238,19 @@ void *CWIDGET_get_parent(void *_object)
 		return NULL;
 	else
 		return CWidget::get(parent);
+}
+
+void *CWIDGET_get_parent_container(void *_object)
+{
+	void *parent = CWIDGET_get_parent(THIS);
+	
+	if (!parent)
+		return NULL;
+	
+	if (EXT(parent) && EXT(parent)->container_for)
+		parent = EXT(parent)->container_for;
+	
+	return parent;
 }
 
 int CWIDGET_get_handle(void *_object)
@@ -662,14 +675,15 @@ void CWIDGET_move_cached(void *_object, int x, int y)
 void CWIDGET_resize(void *_object, int w, int h)
 {
 	QWidget *wid = get_widget_resize(THIS);
-	bool window;
+	bool window, toplevel;
 	bool resizable = true;
 	bool decide_w, decide_h;
 
 	if (!wid)
 		return;
 	
-	window = wid->isTopLevel();
+	window = GB.Is(THIS, CLASS_Window);
+	toplevel = wid->isTopLevel();
 	
 	if (w < 0 && h < 0)
 		return;
@@ -689,41 +703,35 @@ void CWIDGET_resize(void *_object, int w, int h)
 
 	if (window)
 	{
-		resizable = ((MyMainWindow *)wid)->isResizable();
-		if (!resizable)
-			((MyMainWindow *)wid)->setResizable(true);
-	}
+		MyMainWindow *win = (MyMainWindow *)wid;
+		
+		if (toplevel)
+		{
+			resizable = win->isResizable();
+			if (!resizable)
+				win->setResizable(true);
+		}
 	
-	wid->resize(qMax(0, w), qMax(0, h));
+		wid->resize(qMax(0, w), qMax(0, h));
 
-	if (window)
-	{
-		((MyMainWindow *)wid)->setResizable(resizable);
 		((CWINDOW *)_object)->w = w;
 		((CWINDOW *)_object)->h = h;
-		// menu bar height is ignored
-		//((CWINDOW *)_object)->container->resize(w, h);
+		win->configure();
+		
+		if (toplevel)
+			((MyMainWindow *)wid)->setResizable(resizable);
 	}
+	else
+		wid->resize(qMax(0, w), qMax(0, h));
 
 	CWIDGET_after_geometry_change(THIS, true);
 }
 
-/*
-void CWIDGET_resize_cached(void *_object, int w, int h)
-{
-	if (GB.Is(THIS, CLASS_Window))
-	{
-		((CWINDOW *)_object)->w = w;
-		((CWINDOW *)_object)->h = h;
-	}
-
-	CWIDGET_after_geometry_change(THIS, true);
-}
-*/
 
 void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 {
 	QWidget *wid = get_widget(THIS);
+	bool window, toplevel;
 
 	if (wid)
 	{
@@ -734,7 +742,10 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 			h = wid->height();
 	}
 
-	if (GB.Is(THIS, CLASS_Window))
+	window = GB.Is(THIS, CLASS_Window);
+	toplevel = wid->isTopLevel();
+	
+	if (window)
 	{
 		CWINDOW *win = (CWINDOW *)_object;
 		win->x = x;
@@ -750,21 +761,40 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 
 	if (wid)
 	{
-		if (w < 0)
+		if (w < 0) // || decide_w)
 			w = wid->width();
 
-		if (h < 0)
+		if (h < 0) // || decide_h)
 			h = wid->height();
 
 		if (x == wid->x() && y == wid->y() && w == wid->width() && h == wid->height())
 			return;
 		
-		if (wid->isTopLevel())
+		if (window)
 		{
+			MyMainWindow *win = (MyMainWindow *)wid;
+			bool resize = w != wid->width() || h != wid->height();
+			bool resizable = true;
+			
 			if (x != wid->x() || y != wid->y())
 				wid->move(x, y);
-			if (w != wid->width() || y != wid->height())
+			
+			if (resize)
+			{
+				if (toplevel)
+				{
+					resizable = win->isResizable();
+					if (!resizable)
+						win->setResizable(true);
+				}
+				
 				wid->resize(qMax(0, w), qMax(0, h));
+
+				if (toplevel)
+					win->setResizable(resizable);
+				
+				win->configure();
+			}
 		}
 		else
 			wid->setGeometry(x, y, qMax(0, w), qMax(0, h));
@@ -1417,9 +1447,6 @@ END_PROPERTY
 
 static QWidget *get_color_widget(CWIDGET *_object)
 {
-	if (qobject_cast<MyScrollView *>(WIDGET))
-		return ((CSCROLLVIEW *)THIS)->container;
-	
 	QWidget *view = get_viewport(WIDGET);
 	if (view)
 		return view;
@@ -1467,7 +1494,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 				palette.setColor(QPalette::Base, TO_QCOLOR(bg));
 				palette.setColor(QPalette::Window, TO_QCOLOR(bg));
 				palette.setColor(QPalette::Button, TO_QCOLOR(bg));
-				w->setAutoFillBackground(true);
+				//w->setAutoFillBackground(true);
 			}
 			else
 				w->setAutoFillBackground(false);
@@ -1487,14 +1514,10 @@ void CWIDGET_reset_color(CWIDGET *_object)
 			palette = QPalette();
 
 			if (bg != COLOR_DEFAULT)
-			{
 				palette.setColor(QPalette::Base, TO_QCOLOR(bg));
-			}
 
 			if (fg != COLOR_DEFAULT)
-			{
 				palette.setColor(QPalette::Text, TO_QCOLOR(fg));
-			}
 
 			w->setPalette(palette);
 		}
@@ -1509,6 +1532,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 				palette.setColor(w->foregroundRole(), TO_QCOLOR(fg));
 		
 			w->setAutoFillBackground(!THIS->flag.noBackground && (THIS->flag.fillBackground || ((THIS_EXT && THIS_EXT->bg != COLOR_DEFAULT) && w->backgroundRole() == QPalette::Window)));
+			//qDebug("%s: %d bg role = %d", THIS->name, w->autoFillBackground(), w->backgroundRole());
 			w->setPalette(palette);
 		}
 
@@ -1649,6 +1673,13 @@ END_PROPERTY
 
 
 BEGIN_PROPERTY(Control_Parent)
+
+	GB.ReturnObject(CWIDGET_get_parent_container(THIS));
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(Control__Parent)
 
 	GB.ReturnObject(CWIDGET_get_parent(THIS));
 
@@ -2363,6 +2394,16 @@ void CWidget::destroy()
 	GB.Unref(POINTER(&_object));
 }
 
+void CWidget::each(void (*func)(CWIDGET *))
+{
+	QHashIterator<QObject *, CWIDGET *> i(dict);
+	while (i.hasNext())
+	{
+		i.next();
+		(*func)(i.value());
+	}
+}
+
 /*static void post_dblclick_event(void *control)
 {
 	GB.Raise(control, EVENT_DblClick, 0);
@@ -3075,44 +3116,51 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
 	__MOUSE_WHEEL_TRY_PROXY:
 		
-		if (!design && !QWIDGET(control)->isEnabled())
-			goto __NEXT;
-	
-		if (GB.CanRaise(control, EVENT_MouseWheel))
+		if (design || QWIDGET(control)->isEnabled())
 		{
-			// Automatic focus for wheel events
-			set_focus(control);
-			
-			p.setX(ev->x());
-			p.setY(ev->y());
-
-			p = ((QWidget *)widget)->mapTo(QWIDGET(control), p);
-
-			CMOUSE_clear(true);
-			MOUSE_info.x = p.x();
-			MOUSE_info.y = p.y();
-			MOUSE_info.screenX = ev->globalX();
-			MOUSE_info.screenY = ev->globalY();
-			MOUSE_info.state = ev->buttons();
-			MOUSE_info.modifier = ev->modifiers();
-			MOUSE_info.orientation = ev->orientation();
-			MOUSE_info.delta = ev->delta();
-
-			cancel = GB.Raise(control, EVENT_MouseWheel, 0);
-
-			CMOUSE_clear(false);
-			
-			if (cancel)
+			if (GB.CanRaise(control, EVENT_MouseWheel))
 			{
-				event->accept();
-				return true;
+				// Automatic focus for wheel events
+				set_focus(control);
+				
+				p.setX(ev->x());
+				p.setY(ev->y());
+
+				p = ((QWidget *)widget)->mapTo(QWIDGET(control), p);
+
+				CMOUSE_clear(true);
+				MOUSE_info.x = p.x();
+				MOUSE_info.y = p.y();
+				MOUSE_info.screenX = ev->globalX();
+				MOUSE_info.screenY = ev->globalY();
+				MOUSE_info.state = ev->buttons();
+				MOUSE_info.modifier = ev->modifiers();
+				MOUSE_info.orientation = ev->orientation();
+				MOUSE_info.delta = ev->delta();
+
+				cancel = GB.Raise(control, EVENT_MouseWheel, 0);
+
+				CMOUSE_clear(false);
+				
+				if (cancel)
+				{
+					event->accept();
+					return true;
+				}
+			}
+			
+			if (EXT(control) && EXT(control)->proxy_for)
+			{
+				control = (CWIDGET *)(EXT(control)->proxy_for);
+				goto __MOUSE_WHEEL_TRY_PROXY;
 			}
 		}
 		
-		if (EXT(control) && EXT(control)->proxy_for)
+		if (!control->flag.wheel)
 		{
-			control = (CWIDGET *)(EXT(control)->proxy_for);
-			goto __MOUSE_WHEEL_TRY_PROXY;
+			control = (CWIDGET *)CWIDGET_get_parent(control);
+			if (control)
+				goto __MOUSE_WHEEL_TRY_PROXY;
 		}
 		
 		goto __NEXT;
@@ -3355,6 +3403,7 @@ GB_DESC CControlDesc[] =
 	GB_PROPERTY("NoTabFocus", "b", Control_NoTabFocus),
 
 	GB_PROPERTY_READ("Parent", "Container", Control_Parent),
+	GB_PROPERTY_READ("_Parent", "Container", Control__Parent),
 	GB_PROPERTY_READ("Window", "Window", Control_Window),
 	GB_PROPERTY_READ("Id", "i", Control_Id),
 	GB_PROPERTY_READ("Handle", "i", Control_Id),

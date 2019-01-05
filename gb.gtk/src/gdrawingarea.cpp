@@ -430,6 +430,11 @@ void gDrawingArea::setNoBackground(bool vl)
 	else
 		setBackground(background());
 	*/
+	if (vl != _no_background)
+	{
+		_no_background = vl;
+		create();
+	}
 }
 
 void gDrawingArea::setRealBackground(gColor color)

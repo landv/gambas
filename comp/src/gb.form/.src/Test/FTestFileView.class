@@ -28,8 +28,11 @@ End
 
 Public Sub FileChooser1_Change()
 
-  
-  FileProperties1.Path = FileChooser1.SelectedPath
+  ' If FileChooser1.SelectedPath Then
+  '   FileProperties1.Path = FileChooser1.SelectedPath
+  ' Else
+  '   FileProperties1.Path = FileChooser1.Dir
+  ' Endif
 
 End
 
@@ -43,6 +46,7 @@ End
 
 Public Sub Form_Open()
 
-  FileChooser1.SelectedPath = "/home/benoit/gambas/git/master/app/src/gambas3/img/broken.svg"
+  FileChooser1.Dir = "/usr/bin"
+  'FileChooser1.SelectedPath = "/home/benoit/gambas/git/master/app/src/gambas3/img/broken.svg"
 
 End

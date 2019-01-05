@@ -142,4 +142,6 @@ private:
 	static int _in_any_draw_event;
 };
 
+void CDRAWINGAREA_send_change_event(void);
+
 #endif

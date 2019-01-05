@@ -112,14 +112,27 @@ End
 
 Private Function Name_Read() As String
 
-  If Not CheckSettingExists(GetKey("Name", "")) Then Return ""
-  Return $cSettings["[Desktop Entry]"][GetKey("Name", "")]
+  If Not CheckSettingExists(GetKey("Name")) Then Return ""
+  Return $cSettings["[Desktop Entry]"][GetKey("Name")]
 
+End
+
+Private Sub GetSlot(sSlot As String) As Collection
+
+  Dim cSlot As Collection
+  
+  cSlot = $cSettings[sSlot]
+  If Not cSlot Then
+    cSlot = New Collection
+    $cSettings[sSlot] = cSlot
+  Endif
+  Return cSlot
+  
 End
 
 Private Sub Name_Write(Value As String)
 
-  $cSettings["[Desktop Entry]"][GetKey("Name", "")] = Value
+  GetSlot("[Desktop Entry]")[GetKey("Name")] = Value
 
 End
 
@@ -132,7 +145,7 @@ End
 
 Private Sub Exec_Write(Value As String)
 
-  $cSettings["[Desktop Entry]"]["Exec"] = Value
+  GetSlot("[Desktop Entry]")["Exec"] = Value
 
 End
 
@@ -145,7 +158,7 @@ End
 
 Private Sub Terminal_Write(Value As Boolean)
 
-  $cSettings["[Desktop Entry]"]["Terminal"] = LCase(CStr(Value))
+  GetSlot("[Desktop Entry]")["Terminal"] = LCase(CStr(Value))
 
 End
 
@@ -158,7 +171,7 @@ End
 
 Private Sub Hidden_Write(Value As Boolean)
 
-  $cSettings["[Desktop Entry]"]["Hidden"] = LCase(CStr(Value))
+  GetSlot("[Desktop Entry]")["Hidden"] = LCase(CStr(Value))
 
 End
 
@@ -171,7 +184,7 @@ End
 
 Private Sub NoDisplay_Write(Value As Boolean)
 
-  $cSettings["[Desktop Entry]"]["NoDisplay"] = LCase(CStr(Value))
+  GetSlot("[Desktop Entry]")["NoDisplay"] = LCase(CStr(Value))
 
 End
 
@@ -185,7 +198,7 @@ End
 Private Sub MimeTypes_Write(Value As String[])
 
   If Not Value Then value = [" "]
-  $cSettings["[Desktop Entry]"]["MimeType"] = Value.Join(";")
+  GetSlot("[Desktop Entry]")["MimeType"] = Value.Join(";")
 
 End
 
@@ -199,33 +212,33 @@ End
 Private Sub Categories_Write(Value As String[])
 
   If Not Value Then value = [" "]
-  $cSettings["[Desktop Entry]"]["Categories"] = Value.Join(";")
+  GetSlot("[Desktop Entry]")["Categories"] = Value.Join(";")
 
 End
 
 Private Function GenericName_Read() As String
 
-  If Not CheckSettingExists(GetKey("GenericName", "")) Then Return ""
-  Return $cSettings["[Desktop Entry]"][GetKey("GenericName", "")]
+  If Not CheckSettingExists(GetKey("GenericName")) Then Return ""
+  Return $cSettings["[Desktop Entry]"][GetKey("GenericName")]
 
 End
 
 Private Sub GenericName_Write(Value As String)
 
-  $cSettings["[Desktop Entry]"][GetKey("GenericName", "")] = Value
+  GetSlot("[Desktop Entry]")[GetKey("GenericName")] = Value
 
 End
 
 Private Function Comment_Read() As String
 
-  If Not CheckSettingExists(GetKey("Comment", "")) Then Return ""
-  Return $cSettings["[Desktop Entry]"][GetKey("Comment", "")]
+  If Not CheckSettingExists(GetKey("Comment")) Then Return ""
+  Return $cSettings["[Desktop Entry]"][GetKey("Comment")]
 
 End
 
 Private Sub Comment_Write(Value As String)
 
-  $cSettings["[Desktop Entry]"][GetKey("Comment", "")] = Value
+  GetSlot("[Desktop Entry]")[GetKey("Comment")] = Value
 
 End
 
@@ -238,7 +251,7 @@ End
 
 Private Sub WorkingDir_Write(Value As String)
 
-  $cSettings["[Desktop Entry]"]["Path"] = Value
+  GetSlot("[Desktop Entry]")["Path"] = Value
 
 End
 
@@ -252,7 +265,7 @@ End
 Private Sub Actions_Write(Value As String[])
 
   If Not Value Then value = [" "]
-  $cSettings["[Desktop Entry]"]["Actions"] = Value.Join(";")
+  GetSlot("[Desktop Entry]")["Actions"] = Value.Join(";")
 
 End
 
@@ -271,7 +284,7 @@ End
 Public Function Get_Actions_Name(sAction As String) As String
 
   If Not $cSettings.exist("[Desktop Action " & sAction & "]") Then Return ""
-  If Not $cSettings["[Desktop Action " & sAction & "]"].exist(GetKey("Name", "")) Then Return ""
+  If Not $cSettings["[Desktop Action " & sAction & "]"].exist(GetKey("Name")) Then Return ""
   Return $cSettings["[Desktop Action " & sAction & "]"]["Name"]
 
 End
@@ -293,7 +306,7 @@ End
 
 Private Sub Icon_Write(Value As String)
 
-  $cSettings["[Desktop Entry]"]["Icon"] = Value
+  GetSlot("[Desktop Entry]")["Icon"] = Value
 
 End
 
@@ -330,11 +343,11 @@ Public Sub Save(Optional Path As String = "")
 
 End
 
-Private Function GetKey(KeyBase As String, sLang As String) As String
+Private Function GetKey(KeyBase As String, Optional sLang As String) As String
 
   Dim i As Integer
 
-  If sLang = ""
+  If Not sLang Then 
     For i = 0 To $aLang.Max
       If CheckSettingExists(KeyBase & "[" & $aLang[i] & "]") Then
         sLang = "[" & $aLang[i] & "]"
@@ -462,8 +475,9 @@ Static Public Sub FromMime(MimeType As String) As DesktopFile[]
   Dim sList As String
   Dim aMime As String[]
   Dim sMime As String
-  Dim sDir As String
   Dim sFound As String
+  Dim aPath As String[]
+  Dim sPath As String
 
   hProgList = $cMimeCache[MimeType]
 
@@ -478,15 +492,20 @@ Static Public Sub FromMime(MimeType As String) As DesktopFile[]
       sList = ""
 
       'Print "["; sMime; "]"
-
-      For Each sDir In Main.GetDataDir()
-        sFound = FindInMimeInfoCache(sDir &/ "applications/mimeapps.list", sMime)
+      
+      aPath = Main.MakeSearchPath("mimeapps.list", ["$XDG_CONFIG_HOME/$desktop-mimeapps.list", "$XDG_CONFIG_HOME/mimeapps.list", "$XDG_CONFIG_DIRS/$desktop-mimeapps.list", "$XDG_CONFIG_DIRS/mimeapps.list", "$XDG_DATA_DIRS/applications/$desktop-mimeapps.list", "$XDG_DATA_DIRS/applications/mimeapps.list"])
+      
+      For Each sPath In aPath
+        sFound = FindInMimeInfoCache(sPath, sMime)
         If sFound Then sList &= ";" & sFound
       Next
 
       If Not sList Then
-        For Each sDir In Main.GetDataDir()
-          sFound = FindInMimeInfoCache(sDir &/ "applications/mimeinfo.cache", sMime)
+      
+        aPath = Main.MakeSearchPath("mimeinfo.cache", ["$XDG_CONFIG_HOME/mimeinfo.cache", "$XDG_CONFIG_DIRS/mimeinfo.cache", "$XDG_DATA_DIRS/applications/mimeinfo.cache"])
+        
+        For Each sPath In aPath
+          sFound = FindInMimeInfoCache(sPath, sMime)
           If sFound Then sList &= ";" & sFound
         Next
       Endif

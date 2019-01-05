@@ -71,7 +71,7 @@ Private Sub DoOpen()
   
   $H = Max($hIcon.H + Desktop.Scale * 2, Me.Font.RichTextHeight($sText, GetTextWidth()) + Desktop.Scale * 4)
   
-  If $bAnimate Then
+  If $bAnimate And If Application.Animations Then
   
     fTime = Timer
     
@@ -118,7 +118,7 @@ Public Sub Close()
   Dim fTime As Float
   Dim H As Integer
   
-  If $bAnimate Then
+  If $bAnimate And If Application.Animations Then
     
     H = Me.H
     fTime = Timer

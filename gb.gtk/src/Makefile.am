@@ -17,9 +17,8 @@ gb_gtk_la_SOURCES = \
 	gdesktop.cpp gmessage.cpp \
 	gcontrol.cpp gcontainer.cpp gseparator.cpp \
 	gbutton.cpp gslider.cpp glabel.cpp gsignals.cpp \
-	gpicturebox.cpp gcombobox.cpp gtextbox.cpp gtextarea.cpp \
-	gspinbox.cpp \
-	gframe.cpp gtabstrip.cpp gscrollview.cpp \
+	gmoviebox.cpp gcombobox.cpp gtextbox.cpp gtextarea.cpp \
+	gframe.cpp gtabstrip.cpp \
 	gmenu.cpp gtrayicon.cpp gmainwindow.cpp \
 	gtree.h gtree.cpp \
 	watcher.h watcher.cpp \
@@ -43,13 +42,11 @@ gb_gtk_la_SOURCES = \
 	CLabel.h CLabel.cpp \
 	CSlider.h CSlider.cpp \
 	CButton.h CButton.cpp \
-	CPictureBox.h CPictureBox.cpp \
+	CMovieBox.h CMovieBox.cpp \
 	CTextBox.h CTextBox.cpp \
 	CTextArea.h CTextArea.cpp \
-	CSpinBox.h CSpinBox.cpp \
 	CFrame.h CFrame.cpp \
 	CTabStrip.h CTabStrip.cpp \
-	CScrollView.h CScrollView.cpp \
 	CMenu.h CMenu.cpp CTrayIcon.h CTrayIcon.cpp CWindow.h CWindow.cpp \
 	cprinter.h cprinter.cpp \
 	csvgimage.h csvgimage.cpp \
@@ -69,15 +66,12 @@ gb_gtk_la_SOURCES = \
 	glabel.h \
 	gbutton.h \
 	gmoviebox.h \
-	gpicturebox.h \
-	gspinbox.h \
 	gcombobox.h \
 	gtextbox.h \
 	gtextarea.h \
 	gslider.h \
 	gscrollbar.h \
 	gcontainer.h \
-	gscrollview.h \
 	gdrawingarea.h gdrawingarea.cpp \
 	gtabstrip.h \
 	gframe.h \

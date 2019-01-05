@@ -3,10 +3,10 @@
 { Form Form
   MoveScaled(0,0,87,68)
   Arrangement = Arrange.Vertical
-  Spacing = True
   Margin = True
   { HBox1 HBox
     MoveScaled(6,1,75,4)
+    Spacing = True
     { txtPadding SpinBox
       MoveScaled(3,0,8,4)
     }
@@ -23,6 +23,9 @@
       Text = ("Drag me")
       Border = Border.Plain
     }
+  }
+  { Separator1 Separator
+    MoveScaled(23,7,14,0)
   }
   { gvwInfo GridView
     MoveScaled(8,11,51,31)
@@ -42,7 +45,7 @@
     Border = False
   }
   { TextArea1 TextArea
-    MoveScaled(10,57,25,10)
+    MoveScaled(12,54,43,10)
     Visible = False
     Text = ("TextArea1")
     Border = False

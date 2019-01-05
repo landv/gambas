@@ -7,7 +7,7 @@ Static Private $cControls As New Collection(gb.IgnoreCase)
 Static Private $cLock As New Collection
 Static Private $iGlobalLock As Integer
 
-'Static Property Read List As String[]
+Static Property Read Keys As String[]
 
 Property Enabled As Boolean
 Property Visible As Boolean
@@ -16,6 +16,7 @@ Property Text As String
 Property Picture As Picture
 Property Value As Boolean
 Property Shortcut As String
+Property Read HasShortcut As Boolean
 Property Read Controls As Object[]
 'Property Icon As Picture
 
@@ -527,5 +528,27 @@ End
 Private Function Controls_Read() As Object[]
 
   Return GetControls()
+
+End
+
+Static Private Function Keys_Read() As String[]
+
+  Dim aKeys As New String[]
+
+  For Each $cControls
+    aKeys.Add($cControls.Key)
+  Next
+  
+  Return aKeys
+
+End
+
+Private Function HasShortcut_Read() As Boolean
+
+  Dim hCtrl As Object
+  
+  For Each hCtrl In GetControls()
+    If hCtrl Is Menu Then Return True
+  Next  
 
 End

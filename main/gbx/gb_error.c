@@ -46,81 +46,84 @@ int ERROR_depth = 0;
 #endif
 
 static int _lock = 0;
+static char *_print_prefix = NULL;
 
-static const char *const _message[72] =
+static const char *const _message[74] =
 {
-	/*  0 E_UNKNOWN */ "Unknown error",
-	/*  1 E_MEMORY */ "Out of memory",
-	/*  2 E_CLASS */ ".3Cannot load class '&1': &2&3",
-	/*  3 E_STACK */ "Stack overflow",
-	/*  4 E_NEPARAM */ "Not enough arguments",
-	/*  5 E_TMPARAM */ "Too many arguments",
-	/*  6 E_TYPE */ ".2Type mismatch: wanted &1, got &2 instead",
-	/*  7 E_OVERFLOW */ "Overflow",
-	/*  8 E_ILLEGAL */ "Illegal instruction",
-	/*  9 E_NFUNC */ "Not a function",
-	/* 10 E_CSTATIC */ ".1Class '&1' is not creatable",
-	/* 11 E_NSYMBOL */ ".2Unknown symbol '&2' in class '&1'",
-	/* 12 E_NOBJECT */ "Not an object",
-	/* 13 E_NULL */ "Null object",
-	/* 14 E_STATIC */ ".2'&1.&2' is static",
-	/* 15 E_NREAD */ ".2'&1.&2' is write only",
-	/* 16 E_NWRITE */ ".2'&1.&2' is read only",
-	/* 17 E_NPROPERTY */ ".2'&1.&2' is not a property",
-	/* 18 E_NRETURN */ "No return value",
-	/* 19 E_MATH*/ "Mathematic error",
-	/* 20 E_ARG */ "Bad argument",
-	/* 21 E_BOUND */ "Out of bounds",
-	/* 22 E_NDIM */ "Bad number of dimensions",
-	/* 23 E_NARRAY */ "Not an array",
-	/* 24 E_MAIN */ "No startup method",
-	/* 25 E_NNEW */ "No instantiation method",
-	/* 26 E_ZERO */ "Division by zero",
-	/* 27 E_LIBRARY */ ".2Cannot load component '&1': &2",
-	/* 28 E_EVENT */ ".3Bad event handler in &1.&2(): &3",
-	/* 29 E_IOBJECT */ "Invalid object",
-	/* 30 E_ENUM */ "Not an enumeration",
-	/* 31 E_UCONV */ "Unsupported string conversion",
-	/* 32 E_CONV */ "Bad string conversion",
-	/* 33 E_DATE */ "Invalid date",
-	/* 34 E_BADPATH */ "Invalid path",
-	/* 35 E_OPEN */ ".2Cannot open file '&1': &2",
-	/* 36 E_PROJECT */ ".2Bad project file: line &1: &2",
-	/* 37 E_FULL */ "Device is full",
-	/* 38 E_EXIST */ "File already exists",  /* &1 */
-	/* 39 E_EOF */ "End of file",
-	/* 40 E_FORMAT */ "Bad format string",
-	/* 41 E_DYNAMIC */ ".2'&1.&2' is not static",
-	/* 42 E_SYSTEM */ ".2System error #&1: &2",
-	/* 43 E_ACCESS */ "Access forbidden",
-	/* 44 E_TOOLONG */ "File name is too long",
-	/* 45 E_NEXIST */ "File or directory does not exist", /* &1 */
-	/* 46 E_DIR */ "File is a directory", /* &1 */
-	/* 47 E_READ */ "Read error",
-	/* 48 E_WRITE */ "Write error",
-	/* 49 E_NDIR */ ".1Not a directory: &1",
-	/* 50 E_REGEXP */ ".1Bad regular expression: &1",
-	/* 51 E_ARCH */ ".2Bad archive: &1: &2",
-	/* 52 E_REGISTER */ ".1Cannot register class '&1'",
-	/* 53 E_CLOSED */ "Stream is closed",
-	/* 54 E_VIRTUAL */ "Bad use of virtual class",
-	/* 55 E_STOP */ "STOP instruction encountered",
-	/* 56 E_STRING */ "Too many simultaneous new strings",
-	/* 57 E_EVAL */ ".1Bad expression: &1",
-	/* 58 E_LOCK */ "File is locked",
-	/* 59 E_PARENT */ "No parent class",
-	/* 60 E_EXTLIB */ ".2Cannot find dynamic library '&1': &2",
-	/* 61 E_EXTSYM */ ".2Cannot find symbol '&2' in dynamic library '&1'",
-	/* 62 E_BYREF */ "Argument cannot be passed by reference",
-	/* 63 E_OVERRIDE */ ".3'&1.&2' is incorrectly overridden in class '&3'",
-	/* 64 E_NKEY */ "Void key",
-	/* 65 E_SARRAY */ "Embedded array",
-	/* 66 E_EXTCB */ ".1Cannot create callback: &1",
-	/* 67 E_SERIAL */ "Serialization error",
-	/* 68 E_CHILD */ ".2Cannot run child process: &1&2",
-	/* 69 E_USER */ "Unknown user or group",
-	/* 70 E_NEMPTY */ "Directory is not empty",
-	/* 71 E_UTYPE */ "Unsupported datatype"
+	/*  0 E_UNKNOWN     */ "Unknown error",
+	/*  1 E_MEMORY      */ "Out of memory",
+	/*  2 E_CLASS       */ ".3Cannot load class '&1': &2&3",
+	/*  3 E_STACK       */ "Stack overflow",
+	/*  4 E_NEPARAM     */ "Not enough arguments",
+	/*  5 E_TMPARAM     */ "Too many arguments",
+	/*  6 E_TYPE        */ ".2Type mismatch: wanted &1, got &2 instead",
+	/*  7 E_OVERFLOW    */ "Overflow",
+	/*  8 E_ILLEGAL     */ "Illegal instruction",
+	/*  9 E_NFUNC       */ "Not a function",
+	/* 10 E_CSTATIC     */ ".1Class '&1' is not creatable",
+	/* 11 E_NSYMBOL     */ ".2Unknown symbol '&2' in class '&1'",
+	/* 12 E_NOBJECT     */ "Not an object",
+	/* 13 E_NULL        */ "Null object",
+	/* 14 E_STATIC      */ ".2'&1.&2' is static",
+	/* 15 E_NREAD       */ ".2'&1.&2' is write only",
+	/* 16 E_NWRITE      */ ".2'&1.&2' is read only",
+	/* 17 E_NPROPERTY   */ ".2'&1.&2' is not a property",
+	/* 18 E_NRETURN     */ "No return value",
+	/* 19 E_MATH        */ "Mathematic error",
+	/* 20 E_ARG         */ "Bad argument",
+	/* 21 E_BOUND       */ "Out of bounds",
+	/* 22 E_NDIM        */ "Bad number of dimensions",
+	/* 23 E_NARRAY      */ "Not an array",
+	/* 24 E_MAIN        */ "No startup method",
+	/* 25 E_NNEW        */ "No instantiation method",
+	/* 26 E_ZERO        */ "Division by zero",
+	/* 27 E_LIBRARY     */ ".2Cannot load component '&1': &2",
+	/* 28 E_EVENT       */ ".3Bad event handler in &1.&2(): &3",
+	/* 29 E_IOBJECT     */ "Invalid object",
+	/* 30 E_ENUM        */ "Not an enumeration",
+	/* 31 E_UCONV       */ "Unsupported string conversion",
+	/* 32 E_CONV        */ "Bad string conversion",
+	/* 33 E_DATE        */ "Invalid date",
+	/* 34 E_BADPATH     */ "Invalid path",
+	/* 35 E_OPEN        */ ".2Cannot open file '&1': &2",
+	/* 36 E_PROJECT     */ ".2Bad project file: line &1: &2",
+	/* 37 E_FULL        */ "Device is full",
+	/* 38 E_EXIST       */ "File already exists",  /* &1 */
+	/* 39 E_EOF         */ "End of file",
+	/* 40 E_FORMAT      */ "Bad format string",
+	/* 41 E_DYNAMIC     */ ".2'&1.&2' is not static",
+	/* 42 E_SYSTEM      */ ".2System error #&1: &2",
+	/* 43 E_ACCESS      */ "Access forbidden",
+	/* 44 E_TOOLONG     */ "File name is too long",
+	/* 45 E_NEXIST      */ "File or directory does not exist", /* &1 */
+	/* 46 E_DIR         */ "File is a directory", /* &1 */
+	/* 47 E_READ        */ "Read error",
+	/* 48 E_WRITE       */ "Write error",
+	/* 49 E_NDIR        */ ".1Not a directory: &1",
+	/* 50 E_REGEXP      */ ".1Bad regular expression: &1",
+	/* 51 E_ARCH        */ ".2Bad archive: &1: &2",
+	/* 52 E_REGISTER    */ ".1Cannot register class '&1'",
+	/* 53 E_CLOSED      */ "Stream is closed",
+	/* 54 E_VIRTUAL     */ "Bad use of virtual class",
+	/* 55 E_STOP        */ "STOP instruction encountered",
+	/* 56 E_STRING      */ "Too many simultaneous new strings",
+	/* 57 E_EVAL        */ ".1Bad expression: &1",
+	/* 58 E_LOCK        */ "File is locked",
+	/* 59 E_PARENT      */ "No parent class",
+	/* 60 E_EXTLIB      */ ".2Cannot find dynamic library '&1': &2",
+	/* 61 E_EXTSYM      */ ".2Cannot find symbol '&2' in dynamic library '&1'",
+	/* 62 E_BYREF       */ "Argument cannot be passed by reference",
+	/* 63 E_OVERRIDE    */ ".3'&1.&2' is incorrectly overridden in class '&3'",
+	/* 64 E_NKEY        */ "Void key",
+	/* 65 E_SARRAY      */ "Embedded array",
+	/* 66 E_EXTCB       */ ".1Cannot create callback: &1",
+	/* 67 E_SERIAL      */ "Serialization error",
+	/* 68 E_CHILD       */ ".2Cannot run child process: &1&2",
+	/* 69 E_USER        */ "Unknown user or group",
+	/* 70 E_NEMPTY      */ "Directory is not empty",
+	/* 71 E_UTYPE       */ "Unsupported datatype",
+	/* 72 E_FREEREF     */ "Free object referenced",
+	/* 73 E_ASSERT      */ "Assertion failed"
 };
 
 #if DEBUG_ERROR
@@ -476,7 +479,7 @@ void THROW(int code, ...)
 	ERROR_define((char *)(intptr_t)code, arg);
 
 	va_end(args);
-
+	
 	PROPAGATE();
 }
 
@@ -539,6 +542,7 @@ void THROW_SYSTEM(int err, const char *path)
 	}
 }
 
+
 void ERROR_fatal(const char *error, ...)
 {
 	va_list args;
@@ -560,26 +564,37 @@ void ERROR_panic(const char *error, ...)
 
 	fflush(NULL);
 
-	fprintf(stderr, "\n** Oops! Internal error! **\n** ");
+	fprintf(stderr, "\n** \n** OOPS! INTERNAL ERROR. Program aborting, sorry! :-(\n** ");
 	vfprintf(stderr, error, args);
 
 	va_end(args);
+	
+	fputc('\n', stderr);
 
-	putc('\n', stderr);
 	if (ERROR_current->info.code)
 	{
+		fprintf(stderr, "** \n");
+		_print_prefix = "** ";
 		ERROR_print();
+		_print_prefix = NULL;
 	}
-	fprintf(stderr, "** Program aborting. Sorry! :-(\n** Please send a bug report at g4mba5@gmail.com\n");
+	fprintf(stderr, "** \n** Please send a bug report to the gambas bugtracker [1] or to the gambas mailing-list [2].\n** [1] http://gambaswiki.org/bugtracker\n** [2] https://lists.gambas-basic.org/listinfo/user\n** \n\n");
 	_exit(1);
 }
 
+
+static void print_prefix(FILE *where)
+{
+	if (_print_prefix) fputs(_print_prefix, where);
+}
 
 void ERROR_print_at(FILE *where, bool msgonly, bool newline)
 {
 	if (!ERROR_current->info.code)
 		return;
 
+	print_prefix(where);
+	
 	if (!msgonly)
 	{
 		if (ERROR_current->info.cp && ERROR_current->info.fp && ERROR_current->info.pc)
@@ -627,7 +642,10 @@ void ERROR_print(void)
 	ERROR_print_at(stderr, FALSE, TRUE);
 
 	if (ERROR_backtrace)
+	{
+		print_prefix(stderr);
 		DEBUG_print_backtrace(ERROR_backtrace);
+	}
 }
 
 static void ERROR_copy(ERROR_INFO *save, ERROR_INFO *last)

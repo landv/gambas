@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_subr.c
+	gbx_subr.c
 
-  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -32,22 +32,22 @@
 
 void SUBR_leave_void(int nparam)
 {
-  RELEASE_MANY(SP, nparam);
-  
-  SP->type = T_VOID;
-  SP++;
+	RELEASE_MANY(SP, nparam);
+	
+	SP->type = T_VOID;
+	SP++;
 }
 
 void SUBR_leave(int nparam)
 {
-  BORROW(RP);
+	BORROW(RP);
 
-  RELEASE_MANY(SP, nparam);
+	RELEASE_MANY(SP, nparam);
 	
-  //*SP++ = *RP;
-  COPY_VALUE(SP, RP);
-  SP++;
-  RP->type = T_VOID;
+	//*SP++ = *RP;
+	COPY_VALUE(SP, RP);
+	SP++;
+	RP->type = T_VOID;
 }
 
 
@@ -55,95 +55,95 @@ bool SUBR_check_string_real(VALUE *param)
 {
 __RETRY:
 
-  if (TYPE_is_string(param->type))
-  	return (param->_string.len == 0);
+	if (TYPE_is_string(param->type))
+		return (param->_string.len == 0);
 
-  if (TYPE_is_null(param->type))
-    return TRUE;
+	if (TYPE_is_null(param->type))
+		return TRUE;
 
-  if (param->type == T_VARIANT)
-  {
-    VARIANT_undo(param);
-    goto __RETRY;
-  }
+	if (param->type == T_VARIANT)
+	{
+		VARIANT_undo(param);
+		goto __RETRY;
+	}
 
-  THROW(E_TYPE, TYPE_get_name(T_STRING), TYPE_get_name((param)->type));
+	THROW_TYPE(T_STRING, param->type);
 }
 
 
 void SUBR_check_integer(VALUE *param)
 {
-  if (param->type == T_VARIANT)
-    VARIANT_undo(param);
+	if (param->type == T_VARIANT)
+		VARIANT_undo(param);
 
-  if (TYPE_is_integer(param->type))
-    return;
+	if (TYPE_is_integer(param->type))
+		return;
 
-  THROW(E_TYPE, TYPE_get_name(T_INTEGER), TYPE_get_name((param)->type));
+	THROW_TYPE(T_INTEGER, param->type);
 }
 
 
 void SUBR_check_float(VALUE *param)
 {
-  if (param->type == T_VARIANT)
-    VARIANT_undo(param);
+	if (param->type == T_VARIANT)
+		VARIANT_undo(param);
 
-  if (TYPE_is_number(param->type))
-  {
-    VALUE_conv_float(param);
-    return;
-  }
+	if (TYPE_is_number(param->type))
+	{
+		VALUE_conv_float(param);
+		return;
+	}
 
-  THROW(E_TYPE, TYPE_get_name(T_INTEGER), TYPE_get_name((param)->type));
+	THROW_TYPE(T_INTEGER, param->type);
 }
 
 
 int SUBR_get_integer(VALUE *param)
 {
-  SUBR_check_integer(param);
-  return param->_integer.value;
+	SUBR_check_integer(param);
+	return param->_integer.value;
 }
 
 
 void *SUBR_get_pointer(VALUE *param)
 {
-  if (param->type == T_VARIANT)
-    VARIANT_undo(param);
+	if (param->type == T_VARIANT)
+		VARIANT_undo(param);
 
-  if (param->type != T_POINTER)
-	  THROW(E_TYPE, "Pointer", TYPE_get_name((param)->type));
+	if (param->type != T_POINTER)
+		THROW_TYPE(T_POINTER, param->type);
 	
 	return (void *)param->_pointer.value;
 }
 
 void *SUBR_get_pointer_or_string(VALUE *param)
 {
-  if (param->type == T_VARIANT)
-    VARIANT_undo(param);
+	if (param->type == T_VARIANT)
+		VARIANT_undo(param);
 
 	if (TYPE_is_string(param->type))
 		return (void *)(param->_string.addr + param->_string.start);
 	
-  if (param->type == T_POINTER)
+	if (param->type == T_POINTER)
 		return (void *)param->_pointer.value;
 	
-	THROW(E_TYPE, "Pointer", TYPE_get_name((param)->type));
+	THROW_TYPE(T_POINTER, param->type);
 }
 
 
 double SUBR_get_float(VALUE *param)
 {
-  SUBR_check_float(param);
-  return param->_float.value;
+	SUBR_check_float(param);
+	return param->_float.value;
 }
 
 
 char *SUBR_get_string(VALUE *param)
 {
-  if (SUBR_check_string(param))
-    return "";
+	if (SUBR_check_string(param))
+		return "";
 
-  return STRING_copy_from_value_temp(param);
+	return STRING_copy_from_value_temp(param);
 }
 
 
@@ -225,7 +225,7 @@ TYPE SUBR_check_good_type(VALUE *param, int count)
 	if (type == T_VOID)
 		THROW(E_NRETURN);
 	else if (!TYPE_is_value(type))
-		THROW(E_TYPE, "Variant", TYPE_get_name(type));
+		THROW_TYPE(T_VARIANT, type);
 	
 	return type;
 	

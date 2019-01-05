@@ -331,7 +331,7 @@ BEGIN_METHOD(Draw_Image, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_INTEGER
 		SDL_RenderCopy(RENDERER, texture, rect, &dest);
 	else
 	{
-		SDL_SetTextureAlphaMod(texture, 255 - VARGOPT(opacity, 1.0) * 255);
+		SDL_SetTextureAlphaMod(texture, VARGOPT(opacity, 1.0) * 255);
 		SDL_RenderCopyEx(RENDERER, texture, rect, &dest, VARGOPT(angle, 0.0), NULL, SDL_FLIP_NONE);
 		SDL_SetTextureAlphaMod(texture, 255);
 	}

@@ -1,12 +1,12 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,125,50)
+  MoveScaled(0,0,125,50)
   Text = ("Debug")
   Persistent = True
   Arrangement = Arrange.Fill
   { wizDebug Wizard
-    MoveScaled(4,5,118,41)
+    MoveScaled(2,5,118,41)
     Arrangement = Arrange.Vertical
     Count = 6
     ShowTitle = False
@@ -80,7 +80,6 @@
     }
     Index = 1
     Text = ("Console")
-    Picture = Picture["img/16/console.png"]
     { panConsole Panel
       MoveScaled(5,4,24,24)
       Expand = True
@@ -88,7 +87,6 @@
     }
     Index = 2
     Text = ("Breakpoints")
-    Picture = Picture["img/16/breakpoint.png"]
     { panBreakpoint HBox
       MoveScaled(0,0,76,4)
       { btnRemoveBreakpoint ToolButton
@@ -142,7 +140,6 @@
     }
     Index = 3
     Text = ("Warnings")
-    Picture = Picture["img/16/warning.png"]
     { Panel2 HBox
       MoveScaled(28,9,53,24)
       Expand = True
@@ -159,7 +156,6 @@
     }
     Index = 4
     Text = ("Tasks")
-    Picture = Picture["img/16/task.png"]
     { Panel3 HBox
       MoveScaled(10,10,61,24)
       Expand = True
@@ -179,7 +175,6 @@
     }
     Index = 5
     Text = ("Search result")
-    Picture = Picture["icon:/small/find"]
     { panSearch HBox
       MoveScaled(1,0,83,4)
       { btnCancelSearch ToolButton
@@ -235,7 +230,6 @@
         Border = False
         Mode = Select.Single
         Header = GridView.Horizontal
-        ScrollBar = Scroll.Vertical
       }
       { lblNotFound TextLabel
         MoveScaled(1,1,26,12)

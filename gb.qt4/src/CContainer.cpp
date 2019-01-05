@@ -39,7 +39,6 @@
 #include "CWidget.h"
 #include "CWindow.h"
 #include "CConst.h"
-#include "CScrollView.h"
 #include "CTabStrip.h"
 #include "CColor.h"
 
@@ -338,8 +337,6 @@ void CCONTAINER_arrange(void *_object)
 
 	if (GB.Is(THIS, CLASS_TabStrip))
 		CTABSTRIP_arrange(THIS);
-	else if (GB.Is(THIS, CLASS_ScrollView))
-		CSCROLLVIEW_arrange(THIS);
 
 	CCONTAINER_arrange_real(_object);
 	
@@ -809,123 +806,6 @@ static QRect getRect(void *_object)
 
 	return w->contentsRect();
 }
-
-BEGIN_METHOD_VOID(Container_Children_next)
-
-	#ifdef DEBUG
-	if (!CONTAINER)
-		qDebug("Null container");
-	#endif
-
-	QObjectList list = CONTAINER->children();
-	int index;
-	CWIDGET *widget;
-
-	for(;;)
-	{
-		index = ENUM(int);
-
-		if (index >= list.count())
-		{
-			GB.StopEnum();
-			return;
-		}
-
-		ENUM(int) = index + 1;
-
-		widget = CWidget::getRealExisting(list.at(index));
-		if (widget)
-		{
-			GB.ReturnObject(widget);
-			return;
-		}
-	}
-
-END_METHOD
-
-
-BEGIN_METHOD(Container_Children_get, GB_INTEGER index)
-
-	QObjectList list = CONTAINER->children();
-	int index = VARG(index);
-	int i;
-	CWIDGET *widget;
-
-	if (index >= 0)
-	{
-		i = 0;
-		for(i = 0; i < list.count(); i++)
-		{
-			widget = CWidget::getRealExisting(list.at(i));
-			if (!widget)
-				continue;
-			if (index == 0)
-			{
-				GB.ReturnObject(widget);
-				return;
-			}
-			index--;
-		}
-	}
-
-	GB.Error(GB_ERR_BOUND);
-
-END_METHOD
-
-
-BEGIN_PROPERTY(Container_Children_Count)
-
-	QWidget *wid = CONTAINER;
-	QObjectList list;
-	QObject *ob;
-	int n = 0;
-	int i;
-
-	if (wid)
-	{
-		list = wid->children();
-	
-		for(i = 0; i < list.count(); i++)
-		{
-			ob = list.at(i);
-			if (ob->isWidgetType() && CWidget::getRealExisting(ob))
-				n++;
-		}
-	}
-
-	GB.ReturnInteger(n);
-
-END_PROPERTY
-
-
-BEGIN_METHOD_VOID(Container_Children_Clear)
-
-	QWidget *wid = CONTAINER;
-	QObjectList list;
-	QObject *ob;
-	int i;
-	bool locked;
-
-	if (!wid)
-		return;
-
-	locked = THIS_ARRANGEMENT->locked;
-	THIS_ARRANGEMENT->locked = true;
-
-	list = wid->children();
-
-	for(i = 0; i < list.count(); i++)
-	{
-		ob = list.at(i);
-		if (ob->isWidgetType())
-			CWIDGET_destroy(CWidget::getRealExisting(ob));
-	}
-
-	THIS_ARRANGEMENT->locked = locked;
-	CCONTAINER_arrange(THIS);
-
-END_METHOD
-
 
 BEGIN_PROPERTY(Container_X)
 
@@ -1398,25 +1278,138 @@ END_METHOD
 
 //---------------------------------------------------------------------------
 
-GB_DESC CChildrenDesc[] =
-{
-	GB_DECLARE(".Container.Children", sizeof(CCONTAINER)), GB_VIRTUAL_CLASS(),
 
-	GB_METHOD("_next", "Control", Container_Children_next, NULL),
-	GB_METHOD("_get", "Control", Container_Children_get, "(Index)i"),
-	GB_PROPERTY_READ("Count", "i", Container_Children_Count),
-	GB_METHOD("Clear", NULL, Container_Children_Clear, NULL),
+BEGIN_PROPERTY(Container_Children)
+
+	CCONTAINERCHILDREN *children = (CCONTAINERCHILDREN *)GB.New(CLASS_ContainerChildren, NULL, NULL);
+	QObjectList list = CONTAINER->children();
+	CWIDGET *child;
+	int i;
+	
+	children->container = THIS;
+	GB.Ref(THIS);
+	
+	GB.NewArray(POINTER(&children->children), sizeof(void *), 0);
+	
+	for (i = 0; i < list.count(); i++)
+	{
+		child = CWidget::getRealExisting(list.at(i));
+		if (!child)
+			continue;
+		GB.Ref(child);
+		*(void **)GB.Add(&children->children) = child;
+	}
+	
+	GB.ReturnObject(children);
+
+END_PROPERTY
+
+
+BEGIN_METHOD_VOID(ContainerChildren_free)
+
+	int i;
+	CWIDGET **array = THIS_CHILDREN->children;
+
+	for (i = 0; i < GB.Count(array); i++)
+		GB.Unref(POINTER(&array[i]));
+	
+	GB.FreeArray(&THIS_CHILDREN->children);
+	GB.Unref(POINTER(&THIS_CHILDREN->container));
+
+END_METHOD
+
+
+BEGIN_PROPERTY(ContainerChildren_Count)
+
+	GB.ReturnInteger(GB.Count(THIS_CHILDREN->children));
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(ContainerChildren_Max)
+
+	GB.ReturnInteger(GB.Count(THIS_CHILDREN->children) - 1);
+
+END_PROPERTY
+
+
+BEGIN_METHOD(ContainerChildren_get, GB_INTEGER index)
+
+	CWIDGET **array = THIS_CHILDREN->children;
+	int index = VARG(index);
+
+	if (index < 0 || index >= GB.Count(array))
+	{
+		GB.Error(GB_ERR_BOUND);
+		return;
+	}
+	
+	GB.ReturnObject(array[index]);
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(ContainerChildren_next)
+
+	CWIDGET **array = THIS_CHILDREN->children;
+	int index;
+
+	index = ENUM(int);
+
+	if (index >= GB.Count(array))
+		GB.StopEnum();
+	else
+	{
+		ENUM(int) = index + 1;
+		GB.ReturnObject(array[index]);
+	}
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(ContainerChildren_Clear)
+
+	CCONTAINER_ARRANGEMENT *container = (CCONTAINER_ARRANGEMENT *)THIS_CHILDREN->container;
+	CWIDGET **children = THIS_CHILDREN->children;
+	bool locked;
+	int i;
+
+	locked = container->locked;
+	container->locked = true;
+
+	for (i = 0; i < GB.Count(children); i++)
+		CWIDGET_destroy(children[i]);
+	
+	container->locked = locked;
+	CCONTAINER_arrange(container);
+
+END_METHOD
+
+
+//---------------------------------------------------------------------------
+
+
+GB_DESC ContainerChildrenDesc[] =
+{
+	GB_DECLARE("ContainerChildren", sizeof(CCONTAINER)), GB_NOT_CREATABLE(),
+
+	GB_METHOD("_free", NULL, ContainerChildren_free, NULL),
+	GB_METHOD("_next", "Control", ContainerChildren_next, NULL),
+	GB_METHOD("_get", "Control", ContainerChildren_get, "(Index)i"),
+	GB_PROPERTY_READ("Count", "i", ContainerChildren_Count),
+	GB_PROPERTY_READ("Max", "i", ContainerChildren_Max),
+	GB_METHOD("Clear", NULL, ContainerChildren_Clear, NULL),
 
 	GB_END_DECLARE
 };
 
 
-GB_DESC CContainerDesc[] =
+GB_DESC ContainerDesc[] =
 {
 	GB_DECLARE("Container", sizeof(CCONTAINER)), GB_INHERITS("Control"),
 	GB_NOT_CREATABLE(),
 
-	GB_PROPERTY_SELF("Children", ".Container.Children"),
+	GB_PROPERTY_READ("Children", "ContainerChildren", Container_Children),
 
 	GB_PROPERTY_READ("ClientX", "i", Container_X),
 	GB_PROPERTY_READ("ClientY", "i", Container_Y),
@@ -1438,7 +1431,7 @@ GB_DESC CContainerDesc[] =
 };
 
 
-GB_DESC CUserControlDesc[] =
+GB_DESC UserControlDesc[] =
 {
 	GB_DECLARE("UserControl", sizeof(CCONTAINER)), GB_INHERITS("Container"),
 	GB_NOT_CREATABLE(),
@@ -1460,7 +1453,7 @@ GB_DESC CUserControlDesc[] =
 };
 
 
-GB_DESC CUserContainerDesc[] =
+GB_DESC UserContainerDesc[] =
 {
 	GB_DECLARE("UserContainer", sizeof(CUSERCONTAINER)), GB_INHERITS("Container"),
 	GB_NOT_CREATABLE(),

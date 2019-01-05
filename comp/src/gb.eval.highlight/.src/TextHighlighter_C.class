@@ -66,10 +66,15 @@ Public Sub RunWith(sText As String, cKeyword As Collection, cOperator As Collect
   bLastExpr = True
   If iState = Highlight.Operator Then bLastExpr = False
   
-  If Left(LTrim(sText)) = "#" Then
+  If Left(LTrim(sText)) = "#" Or If iState = Highlight.Preprocessor Then
     
     TextHighlighter.Add(Highlight.Preprocessor, iLenText)
-    iState = Highlight.Normal
+    
+    If Right(RTrim(sText)) = "\\" Then 
+      iState = Highlight.Preprocessor
+    Else
+      iState = Highlight.Normal
+    Endif
     
   Else
   

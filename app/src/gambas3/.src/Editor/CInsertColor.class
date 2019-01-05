@@ -235,7 +235,7 @@ End
 
 Public Sub Button_Click()
   
-  If FColorChooser.Run("", False, ("Insert color"), $aPattern) Then Return
+  If FColorChooser.Insert(False, ("Insert color"), $aPattern) Then Return
   
   With GetEditor()
     .Insert(FColorChooser.Pattern)

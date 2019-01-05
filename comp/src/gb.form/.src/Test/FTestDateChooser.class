@@ -3,7 +3,7 @@
 Public Sub DateBox1_Change()
 
   Debug DateBox1.Value
-
+  
 End
 
 Public Sub txtYear_Change()
@@ -15,5 +15,12 @@ End
 Public Sub DateBox2_Change()
 
   Debug DateBox2.Value
+
+End
+
+Public Sub Button1_Click()
+
+  DateBox1.Enabled = Not DateBox1.Enabled
+  DateBox2.Enabled = Not DateBox2.Enabled
 
 End

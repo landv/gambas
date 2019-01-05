@@ -506,12 +506,13 @@ BEGIN_METHOD(CTEXTEDIT_new, GB_OBJECT parent)
 
   QTextEdit *wid = new QTextEdit(QT.GetContainer(VARG(parent)));
 
-  QObject::connect(wid, SIGNAL(textChanged()), &CTextArea::manager, SLOT(changed()));
+	QObject::connect(wid, SIGNAL(textChanged()), &CTextArea::manager, SLOT(changed()));
   QObject::connect(wid, SIGNAL(cursorPositionChanged()), &CTextArea::manager, SLOT(cursor()));
 
   wid->setLineWrapMode(QTextEdit::NoWrap);
 	
   QT.InitWidget(wid, _object, true);
+	QT.SetWheelFlag(_object);
 	
 	THIS->length = -1;
 	

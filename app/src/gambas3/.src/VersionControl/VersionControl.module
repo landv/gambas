@@ -173,7 +173,7 @@ Public Sub Process_Read()
         If Not $bAuth Then GetAuthentication()
         If Not $sUser Then Goto CANCEL
         Print #Last, $sUser
-        Insert(User & "\n")
+        Insert($sUser & "\n")
         $sOutput = ""
       Else If InStr(sLine, "password", 1, gb.IgnoreCase) Then 
         'If $bOutput Then Insert(sLine)
@@ -630,5 +630,11 @@ End
 Public Sub GetSolveConflictMessage() As String
   
   Return $hVC.GetSolveConflictMessage()
+  
+End
+
+Public Sub NeedMove() As Boolean
+  
+  Return $hVC.NeedMove
   
 End

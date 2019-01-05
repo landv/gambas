@@ -23,16 +23,12 @@
 
 #define __C_CRYPT_C
 
+#include "gb_common.h"
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
 #include <time.h>
-
-#include "gb_common.h"
-
-#ifndef OS_BSD
-  #include <crypt.h>
-#endif
 
 #include "c_crypt.h"
 #include "main.h"

@@ -84,6 +84,7 @@ EXTERN char *TYPE_name[];
 #define TYPE_get_kind(type)      ((type).t.flag & 0x7)
 #define TYPE_get_id(type)        ((type).t.id)
 #define TYPE_is_null(type)       ((type).l == 0)
+#define TYPE_is_void(type)       ((type).t.id == 0)
 
 #define TYPE_set_value(type, _value)     ((type)->t.value = (_value))
 #define TYPE_set_id(type, _id)           ((type)->t.id = (_id))

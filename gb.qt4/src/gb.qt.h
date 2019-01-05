@@ -134,6 +134,7 @@ typedef
 		void (*InitEventLoop)(void);
 		void (*Init)(void);
 		void (*InitWidget)(QWidget *, void *, int);
+		void (*SetWheelFlag)(void *);
 		void *(*GetObject)(QWidget *);
 		QWidget *(*GetContainer)(void *);
 		void (*BorderProperty)(void *, void *);

@@ -39,11 +39,7 @@
 
 #ifdef PROJECT_EXEC
 
-#if defined(OS_FREEBSD) || defined(OS_OPENBSD)
-#include <sys/mount.h>
-#else
-#include <sys/statfs.h>
-#endif
+#include <sys/statvfs.h>
 
 #include <sys/types.h>
 #include <grp.h>
@@ -603,7 +599,7 @@ mode_t FILE_mode_from_string(mode_t mode, const char *str)
 		if (!c)
 			break;
 
-		for (i = 0; i < 3; i++)
+		for (i = 0; i <= 3; i++)
 		{
 			test = d->test[i];
 			if (!test)
@@ -1003,8 +999,8 @@ void FILE_copy(const char *src, const char *dst)
 
 	TRY
 	{
-		STREAM_open(&stream_src, src, ST_READ);
-		STREAM_open(&stream_dst, dst, ST_CREATE);
+		STREAM_open(&stream_src, src, STO_READ);
+		STREAM_open(&stream_dst, dst, STO_CREATE);
 
 		STREAM_lof(&stream_src, &len);
 
@@ -1082,12 +1078,12 @@ void FILE_link(const char *src, const char *dst)
 
 int64_t FILE_free(const char *path)
 {
-	struct statfs info;
+	struct statvfs info;
 
 	if (FILE_is_relative(path))
 		return 0;
 
-	statfs(path, &info);
+	statvfs(path, &info);
 	return (int64_t)(getuid() == 0 ? info.f_bfree : info.f_bavail) * info.f_bsize;
 }
 

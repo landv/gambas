@@ -1,5 +1,5 @@
-AM_CFLAGS += -I$(top_srcdir)/share @INTL_INC@ @CONV_INC@ @GBX_THREAD_INC@ @FFI_INC@
-AM_CFLAGS_OPT += -I$(top_srcdir)/share
+AM_CFLAGS += $(GB_CFLAGS_LTO) -I$(top_srcdir)/share @INTL_INC@ @CONV_INC@ @GBX_THREAD_INC@ @FFI_INC@
+AM_CFLAGS_OPT += $(GB_CFLAGS_LTO) -I$(top_srcdir)/share
 
 bin_PROGRAMS = gbx3
 noinst_LIBRARIES = libgbx.a
@@ -9,7 +9,7 @@ libgbx_a_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS_OPT)
 
 gbx3_LDADD = @C_LIB@ @GBX_THREAD_LIB@ libgbx.a @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @FFI_LIB@ @RT_LIB@ 
 gbx3_LDFLAGS = @LD_FLAGS@ @GBX_THREAD_LDFLAGS@ @INTL_LDFLAGS@ @CONV_LDFLAGS@ @GETTEXT_LDFLAGS@ @FFI_LDFLAGS@ @RT_LDFLAGS@
-gbx3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS) -flto
+gbx3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
 
 gb_la_LIBADD = @C_LIB@ @GBX_THREAD_LIB@ @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @FFI_LIB@ @RT_LIB@
 gb_la_LDFLAGS = -module @LD_FLAGS@ @INTL_LDFLAGS@ @CONV_LDFLAGS@ @GETTEXT_LDFLAGS@ @FFI_LDFLAGS@ @RT_LDFLAGS@
@@ -22,11 +22,12 @@ libgbx_a_SOURCES = \
  gb_hash.c \
  gb_common_check.h gb_common.c \
  gbx_exec.h gbx_exec.c gbx_exec_push.c gbx_exec_enum.c gbx_exec_pop.c gbx_exec_operator.c \
+ gbx_string.h gbx_string.c \
  gbx_value.h gbx_value.c
 
 gbx3_SOURCES = \
  gbx_debug.h gbx_debug.c \
- gbx_jit.h gbx_jit.c \
+ gbx_jit.h gbx_jit.c gb.jit.h \
  gb_alloc.c gb_array.c \
  gbx_stack.h gbx_stack.c \
  gb_buffer.c gbx_replace.c \
@@ -56,7 +57,6 @@ gbx3_SOURCES = \
  gbx.c \
  gbx_number.h gbx_number.c \
  gbx_object.h gbx_object.c \
- gbx_string.h gbx_string.c \
  gbx_variant.h \
  gbx_date.h gbx_date.c \
  gbx_c_class.h gbx_c_class.c \

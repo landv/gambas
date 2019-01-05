@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,112,75)
+  MoveScaled(0,0,112,75)
   Text = ("Project properties")
   Icon = Picture["icon:/small/edit"]
   Persistent = True
@@ -61,17 +61,17 @@
     }
     { Menu13 Menu
     }
+    { Menu5 Menu mnuInsertEnv
+      Name = "Menu5"
+      #Translate = False
+      Text = "LANGUAGE=C ; LANG=C ; LC_ALL=C"
+      Tag = "LANGUAGE=C,LANG=C,LC_ALL=C"
+    }
     { Menu8 Menu mnuInsertEnv
       Name = "Menu8"
       #Translate = False
       Text = "GB_REVERSE=1"
       Tag = "GB_REVERSE=1"
-    }
-    { Menu5 Menu mnuInsertEnv
-      Name = "Menu5"
-      #Translate = False
-      Text = "LANG=C ; LC_ALL=C"
-      Tag = "LANG=C,LC_ALL=C"
     }
     { Menu11 Menu
     }
@@ -113,6 +113,7 @@
     Border = True
     Index = 0
     Text = ("General")
+    Picture = Picture["icon:/medium/gambas"]
     { Panel1 Panel
       MoveScaled(1,0,85,9)
       { btnIcon ToolButton
@@ -213,6 +214,7 @@
     }
     Index = 1
     Text = ("Information")
+    Picture = Picture["icon:/medium/info"]
     { Panel5 VBox
       MoveScaled(1,1,82,65)
       Expand = True
@@ -375,12 +377,14 @@
     }
     Index = 2
     Text = ("Components")
+    Picture = Picture["icon:/medium/component"]
     { choComponent ComponentChooser
       MoveScaled(6,9,67,37)
       Expand = True
     }
     Index = 3
     Text = ("Libraries")
+    Picture = Picture["icon:/medium/plugin"]
     { Panel4 Panel
       MoveScaled(3,2,80,7)
       Visible = False
@@ -391,8 +395,8 @@
       Border = Border.Plain
       { PictureBox1 PictureBox
         MoveScaled(1,1,6,6)
-        Picture = Picture["icon:/32/warning"]
         AutoResize = True
+        Picture = Picture["icon:/32/warning"]
         Alignment = Align.Left
       }
       { TextLabel1 TextLabel
@@ -444,6 +448,7 @@
     }
     Index = 4
     Text = ("Environment")
+    Picture = Picture["icon:/medium/select"]
     { tvwEnv TableView
       MoveScaled(3,6,68,20)
       Expand = True
@@ -467,21 +472,16 @@
     }
     Index = 5
     Text = ("Arguments")
-    { Panel8 Panel
-      MoveScaled(2,1,83,43)
+    Picture = Picture["icon:/medium/play"]
+    { svwArgList ScrollView
+      MoveScaled(3,2,80,40)
+      Background = Color.TextBackground
       Expand = True
-      Arrangement = Arrange.Fill
-      Border = Border.Plain
-      { svwArgList ScrollView
-        MoveScaled(1,1,80,40)
-        Background = Color.TextBackground
-        Expand = True
-        Arrangement = Arrange.Vertical
-        Spacing = True
-        Margin = True
-        Border = False
-        ScrollBar = Scroll.Vertical
-      }
+      Arrangement = Arrange.Vertical
+      Spacing = True
+      Margin = True
+      ScrollBar = Scroll.Vertical
+      Focus = True
     }
     { HBox2 HBox
       MoveScaled(3,47,77,4)
@@ -510,6 +510,7 @@
     }
     Index = 6
     Text = ("Options")
+    Picture = Picture["icon:/medium/options"]
     { Panel6 VBox
       MoveScaled(0,0,86,47)
       Spacing = True
@@ -635,6 +636,7 @@
     }
     Index = 7
     Text = ("Statistics")
+    Picture = Picture["icon:/medium/monitor"]
     { gvwStat GridView
       MoveScaled(10,7,62,25)
       Expand = True
@@ -642,6 +644,7 @@
     }
     Index = 8
     Text = ("Version control")
+    Picture = Picture["icon:/medium/record"]
     { gvwVcInfo GridView
       MoveScaled(3,7,62,25)
       Expand = True

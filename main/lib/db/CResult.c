@@ -161,7 +161,9 @@ static bool load_buffer(CRESULT *_object, int vpos)
 			{
 				ind = THIS->info.index[i];
 				if (i > 0) q_add(" AND ");
+				q_add(THIS->driver->GetQuote());
 				q_add(THIS->info.field[ind].name);
+				q_add(THIS->driver->GetQuote());
 				if (THIS->buffer[ind].type == GB_T_NULL)
 					q_add(" IS NULL");
 				else
@@ -666,7 +668,7 @@ BEGIN_METHOD_VOID(Result_Update)
 				break;
 			
 			q_add("INSERT INTO ");
-			q_add(DB_GetQuotedTable(THIS->driver, DB_CurrentDatabase, info->table));
+			q_add(DB_GetQuotedTable(THIS->driver, DB_CurrentDatabase, info->table, -1));
 			q_add(" ( ");
 			
 			comma = FALSE;
@@ -722,7 +724,7 @@ BEGIN_METHOD_VOID(Result_Update)
 				break;
 			
 			q_add("UPDATE ");
-			q_add(DB_GetQuotedTable(THIS->driver, DB_CurrentDatabase, info->table));
+			q_add(DB_GetQuotedTable(THIS->driver, DB_CurrentDatabase, info->table, -1));
 			q_add(" SET ");
 
 			comma = FALSE;
@@ -778,7 +780,7 @@ BEGIN_METHOD(Result_Delete, GB_BOOLEAN keep)
 		case RESULT_EDIT:
 
 			q_add("DELETE FROM ");
-			q_add(DB_GetQuotedTable(THIS->driver, DB_CurrentDatabase, info->table));
+			q_add(DB_GetQuotedTable(THIS->driver, DB_CurrentDatabase, info->table, -1));
 			q_add(" WHERE ");
 			q_add(THIS->edit);
 
@@ -855,7 +857,7 @@ GB_DESC CResultDesc[] =
 	GB_METHOD("Update", NULL, Result_Update, NULL),
 	GB_METHOD("Delete", NULL, Result_Delete, "[(Keep)b]"),
 	
-	GB_METHOD("GetAll", "Array", Result_GetAll, "(Field)s"),
+	GB_METHOD("All", "Array", Result_GetAll, "(Field)s"),
 	
 	GB_PROPERTY_READ("Fields", ".Result.Fields", Result_Fields),
 	GB_PROPERTY_READ("Connection", "Connection", Result_Connection),

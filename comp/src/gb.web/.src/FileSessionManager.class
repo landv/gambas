@@ -9,7 +9,7 @@ Private $eStartup As Float
 
 Private $cVal As Collection
 
-Private Sub GetPath(Optional sId As String) As String
+Public Sub GetPath(Optional sId As String) As String
   
   Return "/tmp/gambas." & System.User.Id &/ "session" &/ sId 
   

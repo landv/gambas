@@ -18,8 +18,41 @@
 
 Public Sub Main()
 
-  'Print MPhonetic_French.Run("des")
+  Print CStr(CDate("1/1/1970"))
+  RFC822Test()
 
-  Print String.ToPhonetic("12 boulevard des batignolles")
+End
+
+Public Sub RFC822Test()
+
+  Dim sTimeZone As String
+
+  ' Must be correct in the local timezone
+  Print CStr(Now)
+  Print Format(Now)
+  Print CStr(Date.FromRFC822("Sun, 21 Apr 2019 05:00:00 +0000"))
+  Print Format$(Date.FromRFC822("Sun, 21 Apr 2019 05:00:00 +0000"))
+  Print Date.FromRFC822("Sun, 21 Apr 2019 05:00:00 +0100")
+  Print Date.FromRFC822("Tue, 1 Jan 2019 00:00:00 +0800")
+  Print Date.ToRFC822(Now)
+  Print Date.ToRFC822(Now, "+0100")
+  Print "---"
+  ' Timezone to-from conversion should be the identity mapping
+  Print Date.ToRFC822(Date.FromRFC822("Sun, 21 Apr 2019 05:00:00 +0000"), "+0000")
+  Print Date.ToRFC822(Date.FromRFC822("Sun, 21 Apr 2019 05:00:00 +0000"), "+0100")
+  Print Date.ToRFC822(Date.FromRFC822("Sun, 21 Apr 2019 05:00:00 +0000"), "+0800")
+  Print Date.ToRFC822(Date.FromRFC822("Sun, 21 Apr 2019 05:00:00 +0100"), "+0000")
+  Print Date.ToRFC822(Date.FromRFC822("Sun, 21 Apr 2019 05:00:00 +0100"), "+0100")
+  Print Date.ToRFC822(Date.FromRFC822("Sun, 21 Apr 2019 05:00:00 +0100"), "+0800")
+  Print Date.ToRFC822(Date.FromRFC822("Sun, 21 Apr 2019 05:00:00 +0800"), "+0000")
+  Print Date.ToRFC822(Date.FromRFC822("Sun, 21 Apr 2019 05:00:00 +0800"), "+0100")
+  Print Date.ToRFC822(Date.FromRFC822("Sun, 21 Apr 2019 05:00:00 +0800"), "+0800")
+  Print "---"
+  ' Ability to extract timezone
+  Date.FromRFC822("Sun, 21 Apr 2019 05:00:00 +0100", ByRef sTimeZone)
+  Print sTimeZone
+  ' 21 Apr 2019 is not a Wednesday
+  Try Date.FromRFC822("Wed, 21 Apr 2019 05:00:00 +0100")
+  If Error Then Print Error.Text
 
 End

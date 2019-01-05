@@ -24,17 +24,18 @@
 #define __COMMON_BUFFER_C
 
 #include "gb_common.h"
+#include "gb_common_buffer.h"
 
-char COMMON_buffer[256];
+char COMMON_buffer[COMMON_BUF_MAX];
 int COMMON_pos;
 int COMMON_len;
 
 static char *common_buffer;
 static int common_last;
 
-void COMMON_buffer_init(char *str, int len)
+void COMMON_buffer_init(const char *str, int len)
 {
-  common_buffer = str;
+  common_buffer = (char *)str;
   COMMON_len = len;
   COMMON_pos = 0;
   common_last = (-1);
@@ -103,3 +104,10 @@ int COMMON_get_size_left(void)
 }
 
 
+bool COMMON_has_string(const char *str, int len)
+{
+	if (COMMON_get_size_left() < len)
+		return FALSE;
+	
+	return memcmp(&common_buffer[COMMON_pos], str, len) == 0;
+}
