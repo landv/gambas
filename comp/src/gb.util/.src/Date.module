@@ -51,10 +51,15 @@ Private Sub InitDaysMonths()
 End
 
 Public Sub ToUTC({Date} As Date) As Date
-  
-  {Date} += System.TimeZone / 86400
-  Return {Date}
-  
+
+  Return {Date} + System.TimeZone / 86400
+
+End
+
+Public Sub FromUTC({Date} As Date) As Date
+
+  Return {Date} - System.TimeZone / 86400
+
 End
 
 Private Sub GetRFC822Zone(sZone As String) As Float
@@ -136,8 +141,7 @@ Public Sub FromRFC822(Value As String, Optional ByRef TimeZone As String) As Dat
   dDate = Date(iYear, $aMonth.Find(aDate[1]) + 1, CInt(aDate[0]), CInt(aDate[3]), CInt(aDate[4]), CInt(aDate[5]))
   If iWeekDay >= 0 And If WeekDay(dDate) <> iWeekDay Then Error.Raise("Incorrect week day")
   
-  dDate -= Frac(Date(Now))
-  dDate += GetRFC822Zone(aDate[6])
+  dDate = FromUTC(dDate) - GetRFC822Zone(aDate[6])
   
   TimeZone = aDate[6]
   Return dDate
