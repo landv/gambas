@@ -765,19 +765,21 @@ Public Sub gvwComponent_Draw(X As Integer, Y As Integer, Width As Integer, Heigh
     Case 0
       
       X += (Width - 16) \ 2
+      Y += (Height - 16) \ 2
       Width = 16
       Height = 16
       
+      Style.PaintBox(X - 2, Y - 2, Width + 4, Height + 4)
+      
       If sComp = "gb" Then
-        Style.PaintCheck(X, Y, Width, Height, CheckBox.True, Style.Disabled)
+        Paint.DrawPicture(Picture["img/16/checked-lock.png"], X, Y)
       Else
         Select Case GetState(sComp)
           Case ComponentChooser.Checked
-            Style.PaintCheck(X, Y, Width, Height, CheckBox.True)
+            Paint.DrawPicture(Picture["img/16/checked.png"], X, Y)
           Case ComponentChooser.GrayChecked
-            Style.PaintCheck(X, Y, Width, Height, CheckBox.None)
+            Paint.DrawPicture(Picture["img/16/checked-gray.png"], X, Y)
           Case ComponentChooser.Unchecked
-            Style.PaintCheck(X, Y, Width, Height, CheckBox.False)
         End Select
       Endif
   
