@@ -75,6 +75,7 @@ void gSlider::init()
 {
 	GtkAdjustment* adj = gtk_range_get_adjustment(GTK_RANGE(widget));
 
+	_use_wheel = true;
 	onChange = NULL;
 
 	g_signal_connect(adj, "value-changed", G_CALLBACK(cb_change), (gpointer)this);

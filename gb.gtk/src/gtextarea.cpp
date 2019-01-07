@@ -477,6 +477,7 @@ gTextArea::gTextArea(gContainer *parent) : gControl(parent)
 	_not_undoable_action = 0;
 	_undo_in_progress = false;
 	_has_input_method = true;
+	_use_wheel = true;
 	
 	onChange = 0;
 	onCursor = 0;
