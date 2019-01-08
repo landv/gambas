@@ -37,6 +37,32 @@ static inline double exp10(double x)
 }
 #endif
 
+#ifdef __TINYC__
+#define __builtin_log log
+#define __builtin_exp exp
+#define __builtin_sqrt sqrt
+#define __builtin_sin sin
+#define __builtin_cos cos
+#define __builtin_tan tan
+#define __builtin_atan atan
+#define __builtin_asin asin
+#define __builtin_acos acos
+#define __builtin_sinh sinh
+#define __builtin_cosh cosh
+#define __builtin_tanh tanh
+#define __builtin_asinh asinh
+#define __builtin_acosh acosh
+#define __builtin_atanh atanh
+#define __builtin_exp2(_expr) pow(2, (_expr))
+#define __builtin_exp10(_expr) pow(10, (_expr))
+#define __builtin_log2(_expr) (log(_expr) / M_LN2)
+#define __builtin_cbrt cbrt
+#define __builtin_expm1 expm1
+#define __builtin_log1p log1p
+#define __builtin_floor floor
+#define __builtin_ceil ceil
+#endif
+
 typedef
   unsigned char uchar;
 
