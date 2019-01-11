@@ -376,7 +376,7 @@ bool ARCHIVE_find_from_path(ARCHIVE **parch, const char **ppath)
 
 	//fprintf(stderr, "ARCHIVE_find_from_path: %s (%s)\n", *ppath, *parch ? (*parch)->name : "NULL");
 
-	if (strncmp(path, "./", 2) == 0)
+	if (strncmp(path, "./", 2) == 0 && path[2])
 	{
 		path += 2;
 		p = index(path, '/');
