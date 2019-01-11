@@ -1450,6 +1450,7 @@ _JUMP_FIRST:
 
 		ind = GET_XX();
 		
+		end = &BP[ind];
 		inc = &BP[ind + 1];
 		val = &BP[PC[3] & 0xFF];
 		
