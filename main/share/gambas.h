@@ -1104,6 +1104,7 @@ typedef
 		struct {
 			char *(*Charset)(void);
 			char *(*Language)(void);
+			void (*SetLanguage)(const char *);
 			char *(*DomainName)(void);
 			bool (*IsRightToLeft)(void);
 			char *(*Path)(void);

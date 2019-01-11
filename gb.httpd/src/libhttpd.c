@@ -3512,7 +3512,7 @@ static void cgi_child(httpd_conn * hc)
 
 #ifdef CGI_NICE
 	/* Set priority. */
-	(void) nice(CGI_NICE);
+	(void)nice(CGI_NICE);
 #endif /* CGI_NICE */
 
 #if 0
@@ -3559,6 +3559,7 @@ static void cgi_child(httpd_conn * hc)
 #endif
 
 	environ = envp;
+	//fprintf(stderr, "%s\n", hc->encodedurl);
 	run_cgi();
 
 }

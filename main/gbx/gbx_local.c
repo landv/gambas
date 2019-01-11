@@ -119,6 +119,9 @@ static bool _currency;
 
 static char *_lang = NULL;
 
+extern char **environ;
+static char **_environ;
+
 #define add_currency_flag(_flag) (LOCAL_local.currency_flag <<= 1, LOCAL_local.currency_flag |= (!!(_flag)))
 #define test_currency_flag(_negative, _space, _before, _intl) (!!(LOCAL_local.currency_flag & (1 << ((!!_negative) + ((!!_before) << 1) + ((!!_intl) << 2)))))
 
@@ -597,6 +600,7 @@ static void fill_local_info(void)
 
 void LOCAL_init(void)
 {
+	_environ = environ;
 	LOCAL_set_lang(NULL);
 }
 
@@ -604,17 +608,20 @@ void LOCAL_exit(void)
 {
 	if (env_LANG)
 	{
-		unsetenv("LANG");
+		if (environ == _environ)
+			unsetenv("LANG");
 		STRING_free(&env_LANG);
 	}
 	if (env_LC_ALL)
 	{
-		unsetenv("LC_ALL");
+		if (environ == _environ)
+			unsetenv("LC_ALL");
 		STRING_free(&env_LC_ALL);
 	}
 	if (env_LANGUAGE)
 	{
-		unsetenv("LANGUAGE");
+		if (environ == _environ)
+			unsetenv("LANGUAGE");
 		STRING_free(&env_LANGUAGE);
 	}
 	

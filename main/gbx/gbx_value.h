@@ -149,8 +149,6 @@ typedef
 		intptr_t value[2];
 		}
 	VALUE_VOID;
-	
-
 
 typedef
 	struct {

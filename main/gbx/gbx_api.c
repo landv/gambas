@@ -254,6 +254,7 @@ const void *const GAMBAS_Api[] =
 
 	(void *)GB_SystemCharset,
 	(void *)LOCAL_get_lang,
+	(void *)LOCAL_set_lang,
 	(void *)GB_SystemDomainName,
 	(void *)GB_IsRightToLeft,
 	(void *)GB_SystemPath,
@@ -2366,8 +2367,8 @@ bool GB_SystemDebug(void)
 void GB_SystemHasForked(void)
 {
 	MATH_init();
-	
 	FILE_init();
+	LOCAL_init();
 	
 	if (EXEC_profile)
 		DEBUG.Profile.Cancel();
