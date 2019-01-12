@@ -45,7 +45,6 @@ typedef
 	{
 		CSOCKET_COMMON common;
 		NET_ADDRESS addr;
-		int iPort;
 		char *thost;
 		int tport;
 		char *tpath;
@@ -54,6 +53,7 @@ typedef
 		int buffer_pos;
 		int buffer_len;
 		char *path;
+		char *host;
 		int port;
 	} 
 	CUDPSOCKET;
