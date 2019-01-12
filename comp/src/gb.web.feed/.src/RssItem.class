@@ -33,8 +33,8 @@ Public Enclosure As RssEnclosure
 '' ## See also
 '' [../../rssguid]
 Public Guid As RssGuid
-'' Publication date of this item.
-Public PubDate As Date
+'' Publication date/timezone of this item. If unset, defaults to the time the XML document is written in the local timezone.
+Public Pub As RssDate
 '' If this item comes from another RSS feed, use this property to link to the original feed.
 ''
 '' ## See also
@@ -43,7 +43,7 @@ Public Source As RssSource
 
 Public Sub _compare(Other As RssItem) As Integer
   ' Only up to seconds. The time formatting in RSS is not any finer anyway.
-  Return Sgn(DateDiff(Other.PubDate, PubDate, gb.Second))
+  Return Sgn(DateDiff(Other.Pub.Date, Pub.Date, gb.Second))
 End
 
 Public Sub _Write(hWriter As XmlWriter)
@@ -64,7 +64,7 @@ Public Sub _Write(hWriter As XmlWriter)
       If Comments Then .Element("comments", Comments)
       If Enclosure Then Enclosure._Write(hWriter)
       If Guid Then Guid._Write(hWriter)
-      If PubDate Then .Element("pubDate", Rss.FormatDate(PubDate))
+      If Pub Then Pub._Write(hWriter, "pubDate")
       If Source Then Source._Write(hWriter)
     End With
   hWriter.EndElement()
@@ -98,7 +98,8 @@ Public Sub _Read(hReader As XmlReader)
         Guid = New RssGuid
         Guid._Read(hReader)
       Case "pubDate"
-        PubDate = Rss.ParseDate(Rss._GetText(hReader))
+        Pub = New RssDate
+        Pub._Read(hReader)
       Case "source"
         Source = New RssSource
         Source._Read(hReader)

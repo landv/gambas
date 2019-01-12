@@ -1,0 +1,38 @@
+' Gambas class file
+
+''' This class represents a date in RSS. It is comprised of a Gambas Date and
+''' a Zone timezone string. Since dates are absolute in Gambas, the timezone is
+''' only used during reading and writing the XML document backing an RSS feed.
+''' It does not have to "applied" to the Date in any way by the user of this component.
+
+Export
+
+' We have a member named "Date", which overshadows the global class of the same name.
+' Get a reference to it here.
+Static Private DateClass As Object = Classes["Date"].New()
+
+'' The date represented by this object.
+Public {Date} As Date
+'' The timezone relative to which the Date was or should be printed.
+Public Zone As String
+
+Public Sub _new(Optional {Date} As Date, Optional Zone As String)
+  ' Now in the local timezone by default
+  If IsMissing({Date}) Then {Date} = Now
+  If IsMissing(Zone) Then Zone = Format$(Now, "tt")
+  Me.Date = {Date}
+  Me.Zone = Zone
+End
+
+Public Sub _Read(hReader As XmlReader)
+  {Date} = DateClass.FromRFC822(Rss._GetText(hReader), ByRef Zone)
+End
+
+' The sTag parameter avoids subclassing RssDate to RssPubDate and RssLastBuildDate.
+Public Sub _Write(hWriter As XmlWriter, sTag As String)
+  With hWriter
+    .StartElement(sTag)
+      .Text(DateClass.ToRFC822(Me.Date, Me.Zone))
+    .EndElement()
+  End With
+End

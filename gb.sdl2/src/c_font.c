@@ -320,7 +320,7 @@ BEGIN_METHOD(Font_get, GB_STRING font)
 	int val;
 	bool bold = FALSE;
 	bool italic = FALSE;
-	int size = 0;
+	int size = 10;
 	char *name = NULL;
 
 	for (elt = strtok(desc, ","); elt; elt = strtok(NULL, ","))

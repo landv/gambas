@@ -1437,67 +1437,71 @@ _CALL_SLOW:
 
 _JUMP_FIRST:
 
-	PC[1] &= 0xFF00;
-	goto _NEXT;
-
-/*-----------------------------------------------*/
-
-#define MUST_CONTINUE_32(_x, _y) (!(_x) || (((_x) ^ (_y)) >> 31) & 1)
-#define MUST_CONTINUE_64(_x, _y) (!(_x) || (((_x) ^ (_y)) >> 63) & 1)
-
-_JUMP_NEXT:
 	{
 		static const void *const jn_jump[] =
 			{
-				&&_JN_START, NULL, &&_JN_BYTE, &&_JN_SHORT, &&_JN_INTEGER_INC, &&_JN_LONG, &&_JN_SINGLE, &&_JN_FLOAT,
-				NULL, NULL, NULL, NULL, &&_JN_INTEGER_DEC, NULL, NULL, NULL
-			};
-
-		static const void *const jn_test[] =
-			{
-				NULL, NULL, &&_JN_INTEGER_TEST_INC, &&_JN_INTEGER_TEST_INC, &&_JN_INTEGER_TEST_INC, &&_JN_LONG_TEST, &&_JN_SINGLE_TEST, &&_JN_FLOAT_TEST,
-				NULL, NULL, &&_JN_INTEGER_TEST_DEC, &&_JN_INTEGER_TEST_DEC, &&_JN_INTEGER_TEST_DEC, NULL, NULL, NULL
+				NULL, &&_JN_INTEGER_INC, &&_JN_BYTE, &&_JN_SHORT, &&_JN_INTEGER_DEC, &&_JN_LONG, &&_JN_SINGLE, &&_JN_FLOAT
 			};
 
 		TYPE type;
-		VALUE * NO_WARNING(end);
 		VALUE * NO_WARNING(inc);
 		VALUE * NO_WARNING(val);
+		VALUE * NO_WARNING(end);
 
-		end = &BP[PC[-1] & 0xFF];
-		inc = end + 1;
-		val = &BP[PC[2] & 0xFF];
-
-		goto *jn_jump[GET_UX()];
-
-	_JN_START:
-
+		ind = GET_XX();
+		
+		end = &BP[ind];
+		inc = &BP[ind + 1];
+		val = &BP[PC[3] & 0xFF];
+		
 		type = val->type;
-
+	
 		if (type < T_BYTE || type > T_FLOAT)
 			THROW(E_TYPE, "Number", TYPE_get_name(type));
-
-		// The step value must stay negative, even if the loop variable is a byte
-
+		
 		if (type > T_INTEGER)
 			VALUE_conv(&SP[-1], type);
 		else
 			VALUE_conv_integer(&SP[-1]);
 
 		VALUE_conv(&SP[-2], type);
-
-		ind = PC[-1] & 0xFF;
-
+		
 		_pop_ctrl(ind + 1); /* modifie val ! */
 		_pop_ctrl(ind);
+		val = &BP[PC[3] & 0xFF];
+		
+		// loop mode is stored in the inc type. It must be strictly lower than T_STRING
+		
+		if (type == T_INTEGER && inc->_integer.value > 0)
+			type = 1;
 
+		inc->type = type;
+		
+		PC++;
+		
+		if (type <= T_INTEGER)
+		{
+			if (inc->_integer.value < 0)
+				goto _JN_INTEGER_TEST_DEC;
+			else
+				goto _JN_INTEGER_TEST_INC;
+		}
+		else if (type == T_LONG)
+			goto _JN_LONG_TEST;
+		else if (type == T_SINGLE)
+			goto _JN_SINGLE_TEST;
+		else //if (type == T_FLOAT)
+			goto _JN_FLOAT_TEST;
+		
+/*-----------------------------------------------*/
+
+_JUMP_NEXT:
+
+		end = &BP[PC[-1] & 0xFF];
+		inc = end + 1;
 		val = &BP[PC[2] & 0xFF];
 
-		if (type <= T_INTEGER && inc->_integer.value < 0)
-			type += 8;
-		
-		*PC |= type;
-		goto *jn_test[type];
+		goto *jn_jump[inc->type];
 
 	_JN_BYTE:
 		val->_integer.value = (unsigned char)(val->_integer.value + inc->_integer.value);

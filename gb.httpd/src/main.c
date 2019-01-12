@@ -66,7 +66,7 @@ void EXPORT GB_MAIN(int argc, char **argv)
 
 	if (setjmp(_setjmp_env) == 0)
 	{
-		setlocale(LC_ALL, "C");
+		GB.System.SetLanguage("C");
 
 		env = getenv("GB_HTTPD_DEBUG");
 		if (env && env[0] && strcmp(env, "0") != 0)
@@ -75,7 +75,9 @@ void EXPORT GB_MAIN(int argc, char **argv)
 		thttpd_main(argc, argv, GB.System.Debug());
 	}
 	else
+	{
 		GB.System.HasForked();
+	}
 }
 
 int EXPORT GB_INIT()

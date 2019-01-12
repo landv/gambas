@@ -1362,15 +1362,19 @@ static void push_subr(char mode, ushort code)
 	else if (op == CODE_DEBUG)
 	{
 		STR_add(&expr, "FP=(void *)%p;PC = &pc[%d];", _func, _pc);
+		type = narg == 0 ? T_INTEGER : T_BOOLEAN;
 	}
 	
-	for (i = _stack_current - narg; i < _stack_current; i++)
+	if (narg > 0)
 	{
-		STR_add(&expr, "%s;", push_expr(i, get_type(i)));
-		free_stack(i);
+		for (i = _stack_current - narg; i < _stack_current; i++)
+		{
+			STR_add(&expr, "%s;", push_expr(i, get_type(i)));
+			free_stack(i);
+		}
+
+		_stack_current -= narg;	
 	}
-	
-	_stack_current -= narg;
 	
 	STR_add(&expr, call, _pc, addr, code);
 	
@@ -2454,7 +2458,7 @@ bool JIT_translate_body(FUNCTION *func, int ind)
 		/* 73 DateAdd...      */  &&_SUBR_CODE,
 		/* 74 Eval            */  &&_SUBR_CODE,
 		/* 75 Error           */  &&_SUBR,
-		/* 76 Debug           */  &&_SUBR,
+		/* 76 Debug           */  &&_SUBR_CODE,
 		/* 77 Wait            */  &&_SUBR_CODE,
 		/* 78 Open            */  &&_SUBR_CODE,
 		/* 79 Close           */  &&_SUBR,

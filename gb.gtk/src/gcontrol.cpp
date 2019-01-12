@@ -315,6 +315,7 @@ void gControl::initAll(gContainer *parent)
 	_inside = false;
 	_no_auto_grab = false;
 	_no_background = false;
+	_use_wheel = false;
 	_scrollbar = SCROLL_NONE;
 	_input_method = NULL;
 

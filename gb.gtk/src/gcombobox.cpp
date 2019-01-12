@@ -265,6 +265,7 @@ gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
 	entry = NULL;
 	_button = NULL;
 	cell = NULL;
+	_use_wheel = true;
 	
 	g_typ = Type_gComboBox;
 	

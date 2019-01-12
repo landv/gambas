@@ -6,6 +6,7 @@ Public Sub Main()
   Dim sOutFile As String = Temp$()
   Dim sDiff As String
   Dim hRss As New Rss
+  Dim hItem As New RssItem
 
   Copy sRealInFile To sInFile
   hRss.FromString(File.Load(sInFile))
@@ -14,4 +15,14 @@ Public Sub Main()
   System.Shell = "/bin/bash"
   Shell Subst$("diff -u <(sort &1 | sed 's/ *$//' | sed 's/^ *//') <(sort &2 | sed 's/^ *//')", sOutFile, sInFile) To sDiff
   Print sDiff
+  Print "---"
+
+  hRss = New Rss
+  hRss.Title = "Date test"
+  hRss.Pub = New RssDate(DateAdd(Now, gb.Hour, -11))
+  hRss.LastBuild = New RssDate(DateAdd(Now, gb.Hour, -11), "+0800")
+  hRss.Add(hItem)
+  hItem.Title = "Blank RssDate"
+  hItem.Pub = New RssDate
+  Print hRss.ToString()
 End

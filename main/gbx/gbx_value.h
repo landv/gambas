@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_value.h
+	gbx_value.h
 
-  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -32,128 +32,128 @@
 #ifndef __DATE_DECLARED
 #define __DATE_DECLARED
 typedef
-  struct {
-    int date;
-    int time;
-    }
-  DATE;
+	struct {
+		int date;
+		int time;
+		}
+	DATE;
 #endif
 
 typedef
-  struct {
-    TYPE type;
-    int value;
-    }
-  VALUE_BOOLEAN;
+	struct {
+		TYPE type;
+		int value;
+		}
+	VALUE_BOOLEAN;
 
 typedef
-  struct {
-    TYPE type;
-    int value;
-    }
-  VALUE_BYTE;
+	struct {
+		TYPE type;
+		int value;
+		}
+	VALUE_BYTE;
 
 typedef
-  struct {
-    TYPE type;
-    int value;
-    }
-  VALUE_SHORT;
+	struct {
+		TYPE type;
+		int value;
+		}
+	VALUE_SHORT;
 
 typedef
-  struct {
-    TYPE type;
-    int value;
-    }
-  VALUE_INTEGER;
+	struct {
+		TYPE type;
+		int value;
+		}
+	VALUE_INTEGER;
 
 typedef
-  struct {
-    TYPE type;
+	struct {
+		TYPE type;
 		#ifndef OS_64BITS
 		int _padding;
 		#endif
-    int64_t value;
-    }
-  VALUE_LONG;
+		int64_t value;
+		}
+	VALUE_LONG;
 
 typedef
-  struct {
-    TYPE type;
-    char *value;
-    }
-  VALUE_POINTER;
+	struct {
+		TYPE type;
+		char *value;
+		}
+	VALUE_POINTER;
 
 typedef
-  struct {
-    TYPE type;
-    float value;
-    }
-  VALUE_SINGLE;
+	struct {
+		TYPE type;
+		float value;
+		}
+	VALUE_SINGLE;
 
 typedef
-  struct {
-    TYPE type;
+	struct {
+		TYPE type;
 		#ifndef OS_64BITS
 		int _padding;
 		#endif
-    double value;
-    }
-  VALUE_FLOAT;
+		double value;
+		}
+	VALUE_FLOAT;
 
 typedef
-  struct {
-    TYPE type;
-    int date;  /* number of days */
-    int time;  /* number of milliseconds */
-    }
-  VALUE_DATE;
+	struct {
+		TYPE type;
+		int date;  /* number of days */
+		int time;  /* number of milliseconds */
+		}
+	VALUE_DATE;
 
 typedef
-  struct {
-    TYPE type;
-    char *addr;
-    int start;
-    int len;
-    }
-  VALUE_STRING;
+	struct {
+		TYPE type;
+		char *addr;
+		int start;
+		int len;
+		}
+	VALUE_STRING;
 
 typedef
-  struct {
-    TYPE type;
-    CLASS *class;
-    void *object;
-    char kind;
-    char defined;
-    short index;
-    }
-  VALUE_FUNCTION;
+	struct {
+		TYPE type;
+		CLASS *class;
+		void *object;
+		char kind;
+		char defined;
+		short index;
+		}
+	VALUE_FUNCTION;
 
 enum
 {
-  FUNCTION_NULL,
-  FUNCTION_NATIVE,
-  FUNCTION_PRIVATE,
-  FUNCTION_PUBLIC,
-  FUNCTION_EVENT,
-  FUNCTION_EXTERN,
-  FUNCTION_UNKNOWN,
-  FUNCTION_CALL,
+	FUNCTION_NULL,
+	FUNCTION_NATIVE,
+	FUNCTION_PRIVATE,
+	FUNCTION_PUBLIC,
+	FUNCTION_EVENT,
+	FUNCTION_EXTERN,
+	FUNCTION_UNKNOWN,
+	FUNCTION_CALL,
 	FUNCTION_SUBR
 };
 
 typedef
-  struct {
-    TYPE type;
-    TYPE ptype;
-    intptr_t value[2];
-    }
-  VALUE_VOID;
+	struct {
+		TYPE type;
+		TYPE ptype;
+		intptr_t value[2];
+		}
+	VALUE_VOID;
 
 typedef
-  struct {
-    TYPE type;
-    TYPE vtype;
+	struct {
+		TYPE type;
+		TYPE vtype;
 		union {
 			char _boolean;
 			unsigned char _byte;
@@ -169,45 +169,45 @@ typedef
 			int64_t data;
 			}
 			value;
-    }
-  VALUE_VARIANT;
+		}
+	VALUE_VARIANT;
 
 typedef
-  struct {
-    CLASS *class;
-    void *object;
-    void *super;
-    }
-  VALUE_OBJECT;
+	struct {
+		CLASS *class;
+		void *object;
+		void *super;
+		}
+	VALUE_OBJECT;
 
 typedef
-  struct {
-    TYPE type;
-    CLASS *class;
-    void *super;
-    }
-  VALUE_CLASS;
+	struct {
+		TYPE type;
+		CLASS *class;
+		void *super;
+		}
+	VALUE_CLASS;
 
 typedef
-  union value {
-    TYPE type;
-    VALUE_BOOLEAN _boolean;
-    VALUE_BYTE _byte;
-    VALUE_SHORT _short;
-    VALUE_INTEGER _integer;
-    VALUE_LONG _long;
-    VALUE_SINGLE _single;
-    VALUE_FLOAT _float;
-    VALUE_DATE _date;
-    VALUE_STRING _string;
-    VALUE_POINTER _pointer;
-    VALUE_FUNCTION _function;
-    VALUE_VARIANT _variant;
-    VALUE_CLASS _class;
-    VALUE_OBJECT _object;
-    VALUE_VOID _void;
-    }
-  VALUE;
+	union value {
+		TYPE type;
+		VALUE_BOOLEAN _boolean;
+		VALUE_BYTE _byte;
+		VALUE_SHORT _short;
+		VALUE_INTEGER _integer;
+		VALUE_LONG _long;
+		VALUE_SINGLE _single;
+		VALUE_FLOAT _float;
+		VALUE_DATE _date;
+		VALUE_STRING _string;
+		VALUE_POINTER _pointer;
+		VALUE_FUNCTION _function;
+		VALUE_VARIANT _variant;
+		VALUE_CLASS _class;
+		VALUE_OBJECT _object;
+		VALUE_VOID _void;
+		}
+	VALUE;
 
 typedef
 	void (*VALUE_CONVERT_FUNC)(VALUE *);
