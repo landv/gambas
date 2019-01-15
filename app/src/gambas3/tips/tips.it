@@ -1,6 +1,6 @@
 [WELCOME]
 
-<p>Benvenuto a <b>Gambas</b> !</p>
+<p>Benvenuto in <b>Gambas</b> !</p>
 
 <p><b>Gambas</b> è un ambiente grafico di sviluppo basato su un interprete avanzato 
 <i>Basic</i>.</p>
@@ -11,7 +11,7 @@ in maniera facile e veloce. Ma la responsabilità di creare programmi puliti è 
 <p>Spero vi piaccia!</p>
 
 <p align=right>Beno&icirc;t Minisini<br>
-<u>gambas@users.sourceforge.net</u></p><br><br><br>
+<u>g4mba5@gmail.com</u></p><br><br><br>
 
 
 [STARTUP]
@@ -23,24 +23,14 @@ in maniera facile e veloce. Ma la responsabilità di creare programmi puliti è 
 <p>Puoi definire la classe di inizio cliccando su di essa con il tasto destro del mouse e selezionando <i>Classe di avvio</i>
 nel menù a cascata</p>
 
-<p>Non è neccessario definire un metodo <i>Main</i> in un Form di avvio perché ne esiste già uno predefinito.</p>
+<p>Non è necessario definire un metodo <i>Main</i> in un Form di avvio perché ne esiste già uno predefinito.</p>
 
 <p>Questo metodo predefinito inizializza il form e lo mostra, come in <i>Visual Basic&trade;</i>.</p>
 
 
-[EXEC]
-
-<p>Puoi realizzare un file eseguibile di tutto il tuo progetto.
- Seleziona <i>Crea eseguibile</i> nel menu  <i>Progetto</i>.</p>
-
-<p>Quando <b>Gambas</b> crea un file eseguibile, colloca il risultato direttamente
-nella directory del tuo progetto e il nome del file eseguibile sarà quello del 
-tuo progetto</p>
-
-
 [OPEN]
 
-<p>L'Intruzione <b>OPEN</b> di <b>Gambas</b> non si comporta nella stessa maniera
+<p>L'Istruzione <b>OPEN</b> di <b>Gambas</b> non si comporta nella stessa maniera
  che in <i>Visual Basic</i>.
  Non ritorna il file come un <i>Integer</i>, ma come un ogetto <i>File</i>.</p>
 
@@ -75,16 +65,26 @@ PRINT "/home/gambas/" &/ "/tmp" &/ "foo.bar"
 
 <p>Non è stupendo ?</p>
 
+[EXEC]
+
+<p>Puoi realizzare un file eseguibile di tutto il tuo progetto.
+ Seleziona <i>Crea eseguibile</i> nel menu  <i>Progetto</i>.</p>
+
+<p>Quando <b>Gambas</b> crea un file eseguibile, colloca il risultato direttamente
+nella directory del tuo progetto e il nome del file eseguibile sarà quello del 
+tuo progetto</p>
+
+
 [PATH]
 <p>
 I percorsi relativi hanno un significato speciale in <b>Gambas</b>.
-Sono sempre riferite a files dentro al tuo progetto.
+Sono sempre riferiti a file dentro il tuo progetto.
 <p>
 Non c'è il concetto di <i>directory corrente</i>, e nessuna parola chiave come
 <tt>CHDIR</tt> per cambiarla.
 <p>
 <b>Attenzione:</b> devi usare i percorsi relativi solo per accedere ai file di 
-progetto, perchè i percorsi assoluti non funzioneranno quando crei l'eseguibile.
+progetto, perché i percorsi assoluti non funzioneranno quando crei l'eseguibile.
 
 
 [GLOBAL]
@@ -116,15 +116,44 @@ IF Len(Lamiastringa) = 0 THEN ...</pre>
 IF NOT Lamiastringa THEN ...</pre>
 
 
+[TRANSLATE]
+
+<h3>Traduzione</h3>
+
+<p>Le applicazioni Gambas sono completamente traducibili, a condizione
+che tu dica quali stringhe devono essere tradotte e quali no.</p>
+<p>Per contrassegnare le stringhe come traducibili, racchiudile tra parentesi tonde:<p>
+
+<pre>Print ("Traducimi")
+Print "Non tradurmi!"</pre>
+
+
+[SUBST]
+
+<h3>Subst$</h3>
+
+<p>La funzione <b><tt>Subst$()</tt></b> è molto utile per internazionalizzare la tua applicazione.</p>
+
+<p>Ci vogliono almeno due argomenti. Il primo è la maschera di testo su cui si applica la sostituzione.
+Gli altri sono gli argomenti di sostituzione, numerati a partire da uno.</p>
+
+<p>Ogni modello <tt>&X</tt> nella stringa di sostituzione verrà sostituito dall'argomento di sostituzione X.
+Per esempio:</p>
+
+<pre>Print Subst(("Sostituzione di &1, &2 e &3"),
+  "primo", "secondo", "terzo")
+
+&rarr; Sostituzione di primo, secondo e terzo</pre>
+
 [EVENT]
 
-<p>Tutti i controlli e tutti gli ogetti che possono avere eventi,
+<p>Tutti i controlli e tutti gli oggetti che possono avere eventi,
  hanno un <i>Osservatore di eventi</i> e un <i>nome di gruppo</i> del evento.</p>
 
-<p>L'osservatore di eventi coglie tutti gli eventi prodotti dall'ogetto,
+<p>L'osservatore di eventi coglie tutti gli eventi prodotti dall'oggetto,
  e il nome del gruppo del evento è il prefisso del procedimento incaricato di gestire l'evento.</p>
 
-<p>Di default, questo osservatore di eventi è l'ogetto dove si è creato il controllo,
+<p>Di default, questo osservatore di eventi è l'oggetto dove si è creato il controllo,
  e il nome di gruppo è il nome del controllo.</p>
 
 <p>In questo modo, un form riceve tutti gli eventi prodotti dai controlli che tu ci hai creato dentro.</p>
@@ -143,6 +172,28 @@ PUBLIC SUB Ilmiopulsante_Click()
 &nbsp;&nbsp;...
 END
 </pre>
+
+
+[GROUP]
+
+<p>Tutti i controlli hanno una proprietà <i>(Group)</i>.
+ Quando questa proprietà è utilizzata, il prefisso del gestore di eventi è il nome del
+ gruppo e non il nome  del controllo.</p>
+<p>Supponiamo di avere un <i>Button</i> chiamato <b>btnAzione</b> con il gestore di eventi <i>Click</i>
+seguente :</p>
+
+<pre>PUBLIC SUB btnAzione_Click()</pre>
+
+<p>Se definisci la proprietà <i>(Group)</i> di <b>btnAzione</b> come <i>IlMioGruppo</i>,
+ Allora il gestore di eventi che riceverà gli eventi del pulsante sarà il seguente:</p>
+
+<pre>PUBLIC SUB IlMioGruppo_Click()</pre>
+
+<p>Questa proprietà permette di gestire vari eventi con una semplice funzione.
+ E i controlli dello stesso gruppo non devono per forza essere dello stesso tipo !!!</p>
+
+<p><b>Nota :</b> I veterani del vecchio <i>Visual Basic</i> riconosceranno il concetto di <i>control array</i>,
+ soltanto che qui viene implementato in un modo più potente. :-)</p>
 
 
 [FORM]
@@ -176,28 +227,6 @@ hSuperControl.Move(8, 8, 128, 64)</tt><br>
  e quindi osservatore di eventi di se stesso.</p>
 
 
-[GROUP]
-
-<p>Tutti i controlli hanno una proprietà <i>(Group)</i>.
- Quando questa proprietà è utilizzata, il prefisso del gestore di eventi è il nome del
- gruppo e non il nome  del controllo.</p>
-<p>Supponiamo di avere un <i>Button</i> chiamato <b>btnAzione</b> con il gestrore di eventi <i>Click</i>
-seguente :</p>
-
-<pre>PUBLIC SUB btnAzione_Click()</pre>
-
-<p>Se definisci la proprietà <i>(Group)</i> di <b>btnAzione</b> come <i>IlMioGruppo</i>,
- Allora il gestore di eventi che riceverà gli eventi del pulsante sarà il seguente:</p>
-
-<pre>PUBLIC SUB IlMioGruppo_Click()</pre>
-
-<p>Questa proprietà permette di gestire vari eventi con una semplice funzione.
- E i controlli dello stesso gruppo non devono per forza essere dello stesso tipo !!!</p>
-
-<p><b>Nota :</b> I veterani del vecchio <i>Visual Basic</i> riconosceranno il concetto di <i>control array</i>,
- soltanto che qui viene implementato in un modo più potente. :-)</p>
-
-
 [TAG]
 
 <p>Tutti i controlli hanno una proprietà chiamata <i>Tag</i>
@@ -226,7 +255,7 @@ END</tt></p>
 
 [LEFT]
 
-<p>Le famose routines <b>Left$</b>, <b>Right$</b>, <b>Mid$</b> di <i>BASIC</i>
+<p>Le famose routine <b>Left$</b>, <b>Right$</b>, <b>Mid$</b> di <i>BASIC</i>
  hanno un comportamento molto utile in <b><i>Gambas</i></b>.</p>
 
 <p>Il secondo parametro di <b>Left$</b> e <b>Right$</b> è facoltativo, e per default è pari a uno.</p>
@@ -240,9 +269,251 @@ END</tt></p>
 <tt>Right$("Gambas", -2)</tt> ritorna <tt>"mbas"</tt></p>
 
 <p>Allo stesso modo, il terzo parametro di <b>Mid$</b> può essere negativo,
- e quindi rapresentrare il numero di caratteri dalla fine della stringa da non ritornare.</p>
+ e quindi rappresentare il numero di caratteri dalla fine della stringa da non ritornare.</p>
 
 <p><tt>Mid$("Gambas", 2, -2)</tt> ritorna <tt>"amb"</tt>
+
+
+[OBSERVER]
+
+<h3>Observer</h3>
+
+<p>La classe <b>Observer</b> ti consente di intercettare tutti gli eventi generati da un
+oggetto prima che vengano effettivamente inviati.</p>
+
+<pre>MyTextBox = New TextBox(Me) As "MyTextBox"
+MyObserver = New Observer(MyTextBox) As "MyObserver"
+...
+Public Sub MyObserver_KeyPress()
+  Debug "Got it first"
+End
+
+Public Sub MyTextBox_KeyPress()
+  Debug "Got it next"
+End</pre>
+
+L'osservatore può annullare l'evento con <tt>Stop Event</tt> per prevenire l'oggetto dal 
+sollevarlo effettivamente.
+
+
+[STRING]
+
+<h3>UTF-8 Strings</h3>
+
+<p><b>Gambas</b> utilizza il set di caratteri <b>UTF-8</b> per rappresentare le stringhe in memoria.
+
+<p>Ma tutte le funzioni di stringa standard riguardano solo <b>ASCII</b>: 
+<tt>Left</tt>, <tt>Mid</tt>, <tt>Right</tt>, <tt>UCase</tt>...
+
+<p>Se si desidera gestire le stringhe UTF-8, è necessario utilizzare i metodi della classe statica
+<b>String</b>, che hanno lo stesso nome delle loro controparti standard.
+
+<pre>Print Len("bébé");; Left$("bébé", 3)
+&rarr; 6 bé
+
+Print String.Len("bébé");; String.Left("bébé", 3)
+&rarr; 4 béb</pre>
+
+
+[ASSIGNMENT]
+
+<h3>Assegnazioni</h3>
+
+<p><b>Gambas</b> implementa le scorciatoie di assegnazione a cui i programmatori C / C ++ sono abituati.
+
+<pre>MyVariable += 2
+MyVariable *= 4
+MyVariable &= "Great"</pre>
+è un equivalente di
+<pre>MyVariable = MyVariable + 2
+MyVariable = MyVariable * 4
+MyVariable = MyVariable & "Great"</pre>
+
+<p>E così via...
+
+
+[DEBUG]
+
+<h3>Debug</h3>
+
+<p>È possibile utilizzare l'istruzione <b><tt>Debug</tt></b> per stampare messaggi di debug sulla
+console (ovvero l'output di errore standard). Si comporta esattamente come l'istruzione <tt>Print</tt>.
+
+<p>Questi messaggi hanno come prefisso il nome della classe, il nome del metodo e il numero di
+riga dell'istruzione <tt>Debug</tt>. Se non si desidera il prefisso, è possibile utilizzare 
+l'istruzione <b><tt>Error</tt></b> anziché <tt>Debug</tt>.
+
+<p>I messaggi di debug vengono automaticamente rimossi durante la creazione di
+un eseguibile senza eseguire il debug delle informazioni.
+
+
+[TRY]
+
+<h3>Gestione degli errori (1)</h3>
+
+<p>La gestione degli errori in <b>Gambas</b> viene eseguita con le seguenti istruzioni: 
+<b><tt>Try</tt></b>, <b><tt>Error</tt></b>, <tt>Catch</tt>, and <tt>Finally</tt>.
+
+<p><tt>Try</tt> prova a eseguire una dichiarazione senza generare un errore. La parola chiave 
+<tt>Error</tt> viene utilizzata subito dopo per sapere se l'istruzione è stata eseguita correttamente.
+
+<pre>Try MyFile = Open "/etc/password" For Write
+If Error Then Print "Non posso fare quello che voglio!"</pre>
+
+
+[CATCH]
+
+<h3>Gestione degli errori (2)</h3>
+
+<p>La gestione degli errori in <b>Gambas</b> viene eseguita con le seguenti istruzioni: 
+<tt>Try</tt>, <tt>Error</tt>, <b><tt>Catch</tt></b>, and <tt>Finally</tt>.
+
+<p><tt>Catch</tt> indica l'inizio della parte di gestione degli errori di una funzione o procedura.
+È messo alla fine del codice della funzione.
+
+<p>La parte catch viene eseguita quando viene generato un errore tra l'inizio dell'esecuzione della funzione e la sua fine.
+
+<p>Se viene sollevato un errore durante l'esecuzione della parte catch, l'errore viene propagato normalmente. 
+
+<pre>Sub ProcessFile(FileName As String)
+  ...
+  Open FileName For Read As #hFile
+  ...
+  Close #hFile
+  
+Catch ' Eseguito solo se c'è un errore
+
+  Print "Impossibile elaborare il file "; FileName
+
+End</pre>
+
+
+[FINALLY]
+
+<h3>Gestione degli errori (3)</h3>
+
+<p>La gestione degli errori in <b>Gambas</b> viene eseguita con le seguenti istruzioni: 
+<tt>Try</tt>, <tt>Error</tt>, <tt>Catch</tt>, and <b><tt>Finally</tt></b>.
+
+<p><tt>Finally</tt> introduce il codice eseguito alla fine della funzione, anche se viene sollevato un errore durante l'esecuzione. 
+
+<p>La parte finally non è obbligatoria. Se c'è una parte catch nella funzione, la parte finally deve precederla. 
+ 
+<p>Se viene generato un errore durante l'esecuzione della parte finally, l'errore viene propagato normalmente.
+
+<pre>Sub ProcessFile(FileName As String)
+  ...
+  Open FileName For Read As #hFile
+  ...
+Finally ' Viene sempre eseguito, anche se viene sollevato un errore
+
+  Close #hFile
+  
+Catch ' Eseguito solo se c'è un errore
+  
+  Print "Impossibile stampare il file "; FileName
+  
+End</pre>
+
+
+[OPTIONAL]
+
+<h3>Optional</h3>
+
+<p>Le funzioni e le procedure in <b>Gambas</b> possono avere argomenti opzionali.</p>
+
+<p>Gli argomenti opzionali vengono semplicemente fatti mettendo la parola chiave <b><tt>Optional</tt></b> subito prima del nome dell'argomento.</p>
+
+<p>Gli argomenti opzionali possono avere anche un valore predefinito esplicito.</p>
+
+<pre>Private Sub MyFunction(Param AS String, Optional Optim AS String = "Default")
+  ...
+  Print "Necessario: "; param; ", Opzionale: "; optim
+  ...
+End</pre>
+
+
+[ARRAY]
+
+<h3>For Each</h3>
+
+<p>In <b>Gambas</b> puoi facilmente scorrere un array, una raccolta o molte altre classi enumerabili con l'istruzione <b><tt>For Each</tt></b>.</p>
+
+<p>Per esempio:</p>
+
+<pre>Dim Xml As New XmlDocument
+Dim Node As XmlNode
+Dim I As Integer
+
+' Apre un file XML
+Xml.Open("pokus.xml")
+' I children sono indicizzati tramite [i], poiché si tratta di un array
+For I = 0 To Xml.Root.Children.Count - 1
+  ' Gli attributi vengono ciclati tramite For Each, poiché si tratta di una collection
+  For Each Node In Xml.Root.Children[i].Attributes
+    Print Node.Name;; Node.Value
+  Next
+Next</pre>
+
+
+[ICON]
+
+<h3>Icone di default</h3>
+
+<p>Puoi utilizzare le icone incorporate per una migliore GUI della tua applicazione, le icone sono disponibili in diverse dimensioni predefinite 
+(<tt>"small"</tt>, <tt>"medium"</tt>, <tt>"large"</tt>,...) o in dimensioni assolute (da 16x16 a 256x256).</p>
+
+<p>Per esempio:
+
+<pre>Image1.Picture = Picture["icon:/32/warning"]
+Image2.Picture = Picture["icon:/small/error"]
+</pre>
+
+<p><b>Attenzione:</b> è richiesto il componente <tt>gb.form</tt>.
+
+
+[SETTINGS]
+
+<h3>Settings</h3>
+
+<p>Se hai bisogno di memorizzare la configurazione del tuo programma (come la geometria dei tuoi form), allora sei un ragazzo fortunato. In <b>Gambas</b> è molto semplice ed elegante. :-)
+
+<p>Per salvare la posizione di un form:
+<pre>Settings.Write(TheForm)</pre>
+
+<p>Per richiamarlo:
+<pre>Settings.Read(TheForm)</pre>
+
+Per salvare qualsiasi impostazione:
+<pre>Settings["Slot/Key"] = Value</pre>
+
+E per rileggerne le impostazioni:
+<pre>Value = Settings["Slot/Key", DefaultValue]</pre>
+
+Queste impostazioni sono memorizzate nel file <tt>~/.config/gambas3/&lt;MyApplication&gt;.conf</tt>,
+dove <tt>&lt;MyApplication&gt;</tt> è il nome del tuo progetto.
+
+<p><b>Attenzione:</b> è richiesto il componente <tt>gb.settings</tt>.
+
+
+[EDITOR]
+
+<p>Ecco alcuni suggerimenti per l'editor...</p>
+
+<h3>Due tipi di commenti</h3>
+
+<pre>' Commento normale</pre>
+<b><pre>'' Commento in grassetto</pre></b>
+
+<p>I commenti in grassetto sono usati per documentare il tuo codice.</p>
+
+<h3>Come utilizzare i frammenti di codice</h3>
+
+<p>Digita <tt>main</tt> quindi il tasto <b>TAB</b>. Una funzione statica e pubblica di avvio <tt>Main</tt> viene automaticamente inserita nel codice.
+
+<p>Digita <tt>ds</tt> quindi il tasto <b>TAB</b>. Una dichiarazione locale di variabile stringa viene inserita automaticamente ed è possibile digitare immediatamente il nome della variabile.
+
+<p>I frammenti di codice sono completamente configurabili dalla finestra di dialogo Preferenze del menu Strumenti dell'IDE.
 
 
 [END]
@@ -250,7 +521,7 @@ END</tt></p>
 <p>Hai letto tutti i suggerimenti del giorno. Spero che ora tu sia un esperto di <b>Gambas</b> ! :-)</p>
 
 <p>Se vuoi contribuire, invia i nuovi consigli al seguente indirizzo :</p>
-<p><u>gambas@users.sourceforge.net</u></p>
+<p><u>user@lists.gambas-basic.org</u></p>
 
-<p>Grazie in anticipo !</p>
+<p>Grazie in anticipo !</p> 
 
