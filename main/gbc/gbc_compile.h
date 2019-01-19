@@ -105,7 +105,7 @@ void COMPILE_begin(const char *file, bool trans, bool debug);
 void COMPILE_end(void);
 void COMPILE_export_class(char *name);
 void COMPILE_add_class(const char *name, int len);
-void COMPILE_end_class();
+void COMPILE_end_class(void);
 void COMPILE_enum_class(char **name, int *len);
 void COMPILE_print(int type, int line, const char *msg, ...);
 

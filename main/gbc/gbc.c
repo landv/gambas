@@ -197,7 +197,7 @@ static void get_arguments(int argc, char **argv)
 					"  -v  --verbose              verbose output\n"
 					"  -a  --all                  compile all\n"
 					"  -w  --warnings             display warnings\n"
-					"  -t  --translate            output translation files\n"
+					"  -t  --translate            output translation files and compile them if needed\n"
 					"  -p  --public-control       form controls are public\n"
 					"  -m  --public-module        module symbols are public by default\n"
 					"  -s  --swap                 swap endianness\n"
@@ -214,7 +214,7 @@ static void get_arguments(int argc, char **argv)
 					"  -v                         verbose output\n"
 					"  -a                         compile all\n"
 					"  -w                         display warnings\n"
-					"  -t                         output translation files\n"
+					"  -t                         output translation files and compile them if needed\n"
 					"  -p                         form controls are public\n"
 					"  -m                         module symbols are public by default\n"
 					"  -s                         swap endianness\n"
@@ -362,7 +362,7 @@ static void compile_file(const char *file)
 
 	OUTPUT_do(main_swap);
 	CLASS_export();
-
+	
 _FIN:
 	COMPILE_end();
 }
@@ -402,7 +402,7 @@ static void fill_files(const char *root, bool recursive)
 
 		if (stat(file, &info))
 		{
-			fprintf(stderr, "gbc" GAMBAS_VERSION_STRING ": warning: cannot stat file: %s\n", file);
+			ERROR_warning("cannot stat file: %s", file);
 			continue;
 		}
 
@@ -469,6 +469,79 @@ static void exit_files(void)
 }
 
 
+static void compile_lang(void)
+{
+	DIR *dir;
+	char *path;
+	struct dirent *dirent;
+	char *file_name;
+	char *file_po;
+	const char *file_mo;
+	time_t time_po, time_mo;
+	int i;
+	char c;
+	char *cmd;
+	int ret;
+
+	path = STR_copy(FILE_cat(FILE_get_dir(COMP_project), ".lang", NULL));
+	FILE_chdir(path);
+	
+	dir = opendir(".");
+	if (!dir)
+	{
+		ERROR_warning("cannot browse directory: %s", path);
+		return;
+	}
+
+	while ((dirent = readdir(dir)) != NULL)
+	{
+		file_name = dirent->d_name;
+		if (*file_name == '.')
+			continue;
+
+		if (strcmp(FILE_get_ext(file_name), "po"))
+			continue;
+		
+		for (i = 0; i < strlen(file_name); i++)
+		{
+			c = file_name[i];
+			if (c == '.')
+				break;
+			if (!isalnum(c))
+				continue;
+		}
+		
+		file_po = file_name;
+		time_po = FILE_get_time(file_po);
+		
+		if (time_po == ((time_t)-1))
+			continue;
+		
+		file_mo = FILE_set_ext(file_po, "mo");
+		
+		if (!main_compile_all)
+		{
+			time_mo = FILE_get_time(file_mo);
+			if (time_mo >= time_po)
+				continue;
+		}
+		
+		unlink(file_mo);
+		// Shell "msgfmt -o " & Shell$(sPath) & " " & Shell(sTrans) Wait
+		cmd = STR_print("msgfmt -o %s %s", file_mo, file_po);
+		if (main_verbose)
+			printf("running: %s\n", cmd);
+		ret = system(cmd);
+		if (!WIFEXITED(ret) || WEXITSTATUS(ret))
+			ERROR_warning("unable to compile translation file with 'msgfmt': %s", file_po);
+		STR_free(cmd);
+	}
+
+	closedir(dir);
+	STR_free(path);
+}
+
+
 int main(int argc, char **argv)
 {
 	int i;
@@ -499,7 +572,10 @@ int main(int argc, char **argv)
 			compile_file(_files[i]);
 
 		exit_files();
-
+		
+		if (main_trans)
+			compile_lang();
+		
 		COMPILE_exit();
 		FILE_exit();
 
