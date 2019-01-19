@@ -97,7 +97,7 @@
 #define MAX_STRUCT_FIELD    255
 
 /* Maximum number of digits in a Float */
-#define MAX_FLOAT_DIGIT     15
+#define MAX_FLOAT_DIGIT     16
 
 #endif
 
