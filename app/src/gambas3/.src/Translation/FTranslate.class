@@ -507,7 +507,8 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
 
     Move $sPath & ".new" To $sPath
 
-    Project.CompileTranslation(True, $sLang)
+    'Project.CompileTranslation(True, $sLang)
+    Project.Compile()
 
     'Shell "msgfmt -o " & Shell$(sPathMO) & " " & Shell$($sPath) Wait
 

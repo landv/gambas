@@ -2514,7 +2514,7 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, 
       iPos = InStr(sTrans, "#,")
       If iPos Then sTrans = Mid$(sTrans, iPos)
       File.Save(sDir &/ ".lang/.pot", sTrans)
-      CompileTranslation(bAll)
+      'CompileTranslation(bAll)
     Endif
 
     'SetMessage(("OK"))
