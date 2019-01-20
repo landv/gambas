@@ -457,10 +457,10 @@ int32_t open_document (void *_object, char *sfile, int32_t lfile)
 	if ( GB.LoadFile(sfile,lfile,&buf,&len) ) return -1;
 
 	#if POPPLER_VERSION_0_58
-	stream=new MemStream(buf,0,(Guint)len,std::move(obj));
+	stream=new MemStream(buf,0,(uint)len,std::move(obj));
 	#else
 	obj.initNull();
-	stream=new MemStream(buf,0,(Guint)len,&obj);
+	stream=new MemStream(buf,0,(uint)len,&obj);
 	#endif
 	test=new PDFDoc (stream,0,0);
 
