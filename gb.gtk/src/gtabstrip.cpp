@@ -266,7 +266,6 @@ gTabStripPage::gTabStripPage(gTabStrip *tab)
 	label = gtk_label_new_with_mnemonic("");
 	//gtk_container_add(GTK_CONTAINER(hbox), label);
 	gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
-	//gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
 	
 	updateColors();
 	updateFont();
@@ -284,6 +283,7 @@ gTabStripPage::gTabStripPage(gTabStrip *tab)
 	else
 		index = 0;
 	
+	gtk_widget_show(label);
 	gtk_widget_hide(image);
 	
 	_button = NULL;
@@ -361,7 +361,10 @@ void gTabStripPage::setPicture(gPicture *picture)
 	buf = _picture ? _picture->getPixbuf() : NULL;
 	
 	if (!buf)
+	{
+		gtk_image_clear(GTK_IMAGE(image));
 		gtk_widget_hide(image);
+	}
 	else
 	{
 		gtk_image_set_from_pixbuf(GTK_IMAGE(image), buf);
@@ -411,7 +414,7 @@ void gTabStripPage::setVisible(bool v)
 		gtk_widget_realize(widget);
 		gtk_widget_realize(fix);
 		gtk_widget_show_all(widget);
-		gtk_widget_show_all(fix);
+		gtk_widget_show(fix);
 		//gtk_container_resize_children(GTK_CONTAINER(gtk_widget_get_parent(widget)));
 		//gtk_container_resize_children(GTK_CONTAINER(gtk_widget_get_parent(gtk_widget_get_parent(widget))));
 	}
@@ -437,10 +440,11 @@ void gTabStripPage::updateButton()
 	if (v && !_button)
 	{
 		_button = gtk_button_new();
-		gtk_button_set_focus_on_click(GTK_BUTTON(_button), false);
 #ifdef GTK3
+		gtk_widget_set_focus_on_click(_button, false);
 		gtk_button_set_relief(GTK_BUTTON(_button), GTK_RELIEF_NONE);
 #else
+		gtk_button_set_focus_on_click(GTK_BUTTON(_button), false);
 		g_signal_connect(G_OBJECT(_button), "expose-event", G_CALLBACK(cb_button_fix), (gpointer)this);
 #endif
 		//g_signal_connect_after(G_OBJECT(_button), "expose-event", G_CALLBACK(cb_button_expose), (gpointer)parent);
