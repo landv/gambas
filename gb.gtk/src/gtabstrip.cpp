@@ -440,13 +440,14 @@ void gTabStripPage::updateButton()
 	if (v && !_button)
 	{
 		_button = gtk_button_new();
-#ifdef GTK3
-		gtk_widget_set_focus_on_click(_button, false);
+		gt_set_focus_on_click(_button, false);
+		
+#if GTK3
 		gtk_button_set_relief(GTK_BUTTON(_button), GTK_RELIEF_NONE);
 #else
-		gtk_button_set_focus_on_click(GTK_BUTTON(_button), false);
 		g_signal_connect(G_OBJECT(_button), "expose-event", G_CALLBACK(cb_button_fix), (gpointer)this);
 #endif
+		
 		//g_signal_connect_after(G_OBJECT(_button), "expose-event", G_CALLBACK(cb_button_expose), (gpointer)parent);
 		ON_DRAW(_button, parent, cb_button_expose, cb_button_draw);
 		g_signal_connect(G_OBJECT(_button), "clicked", G_CALLBACK(cb_button_clicked), (gpointer)parent);

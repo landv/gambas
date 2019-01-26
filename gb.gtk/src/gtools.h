@@ -217,4 +217,10 @@ void gt_widget_reparent(GtkWidget *widget, GtkWidget *new_parent);
 #define gt_widget_reparent gtk_widget_reparent
 #endif
 
+#if GTK_CHECK_VERSION(3, 20, 0)
+#define gt_set_focus_on_click(_widget, _flag) gtk_widget_set_focus_on_click(GTK_WIDGET(_widget), (_flag))
+#else
+#define gt_set_focus_on_click(_widget, _flag) gtk_button_set_focus_on_click(GTK_BUTTON(_widget), (_flag))
+#endif
+
 #endif

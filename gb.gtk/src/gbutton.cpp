@@ -347,7 +347,7 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 			_no_background = true;
 			rendtxt = gtk_cell_renderer_text_new();
 			border = gtk_toggle_button_new();
-			gtk_button_set_focus_on_click(GTK_BUTTON(border), false);
+			gt_set_focus_on_click(border, false);
 			break;
 		
 		default:
