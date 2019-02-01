@@ -3,15 +3,22 @@
 Private hMap As New Map
 Private hImage As Image
 Public Sub Form_Open()
+Dim hbound As MapBounds
   'hMap.AddTile("gg", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "145"]).SubDomains = ["0", "1", "2"]
     'hImg = Scanners["hpaio:/net/HP_LaserJet_MFP_M426fdn?ip=192.168.1.25"].Scan()
   
   'MapView1.Map.AddTile("gmap", "https://khms0.google.com/kh/v={version}?x={x}&y={y}&z={z}", ["version": "821"]).Copyright = "google"
   MapView1.Map.AddTile("OpenStreetMap", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null).Copyright = "© OpenStreetMap contributors"
   MapView1.Map.Center = MapPoint(48.866667, 2.333333)
-  MapView1.Map.Zoom = 5
+  
+  MapView1.Map.Zoom = 10
+  MapView1.Map.AddShape("Shape").AddCircle("cir", MapPoint(48.866667, 2.333333), 2000)
+   MapView1.Map["Shape"].AddPoint("p", MapPoint(48.866667, 2.333333))
+    MapView1.Map["Shape"].AddPoint("p2", MapPoint(48.866222, 2.360583))
   'himage = hMap.Grab(hMap.Bounds, 200, 200, 17)
-
+Print MapPoint(48.866667, 2.333333).Distance(MapPoint(48.866667, 2.333333), MapPoint(48.866222, 2.360583))
+ hbound = MapView1.Map["Shape"]["cir"].Bounds
+ Print MapPoint.Distance(hbound.TopLeft, MapPoint(hbound.Top, hbound.Right))
 End
 
 
