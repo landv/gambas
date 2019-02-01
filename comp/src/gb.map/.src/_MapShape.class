@@ -139,14 +139,21 @@ End
 Public Sub AddCircle(Key As String, Center As MapPoint, Radius As Float, Optional {Color} As Integer, Optional LineWidth As Integer) As _ShapeItem
 
   Dim hItem As _ShapeItem
+  Dim P1, P2, P3, P4 As MapPoint
   If $aShapeNames.Exist(Key) Then Error.Raise("This key already exist")
   hItem = New _ShapeItem(Key) As "Item"
   If Not IsMissing({Color}) Then hItem.Color = Color
   If Not IsMissing(LineWidth) Then hItem.LineWidth = LineWidth
   hItem.Type = Circle
   hItem.Center = Center
-  hItem.Bounds.TopLeft = MapPoint.From(Center, -45, Radius)
-  hItem.Bounds.BottomRight = MapPoint.From(Center, 135, Radius)
+  
+  P1 = MapPoint.From(Center, 0, Radius)
+  P2 = MapPoint.From(Center, 90, Radius)
+  P3 = MapPoint.From(Center, 180, Radius)
+  P4 = MapPoint.From(Center, 270, Radius)  
+  
+  hItem.Bounds.TopLeft = MapPoint(P1.Lat, P4.Lon)
+  hItem.Bounds.BottomRight = MapPoint(P3.Lat, P2.Lon)
   
   $aShapes.Add(hItem)
   $aShapeNames.Add(Key)
