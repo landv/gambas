@@ -1027,6 +1027,7 @@ Public Sub Button_MouseDown()
   
   If Mouse.Middle And If Not tabWorkspace.Closable Then
     tabWorkspace_Close(tabWorkspace._GetIndex(Last.Parent))
+    Stop Event ' BUG: Needed, as sometimes the MouseDown event is raised twice
   Endif
   
 End
