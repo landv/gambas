@@ -702,24 +702,36 @@ Public Sub txtTranslate_KeyPress()
   If Key.Alt Then
     With cvwTranslate
       If Key.Code = Key["Up"] Then
-        .MoveTo(.Key)
-        .MoveAbove()
-        If .Available Then
-          .Item.Selected = True
-          .Item.EnsureVisible()
+        If Key.Shift Then
+          If btnPreviousTranslated.Enabled Then btnPreviousTranslated_Click
+        Else If Key.Control Then
+          If btnPreviousUntranslated.Enabled Then btnPreviousUntranslated_Click
+        Else
+          .MoveTo(.Key)
+          .MoveAbove()
+          If .Available Then
+            .Item.Selected = True
+            .Item.EnsureVisible()
+          Endif
         Endif
       Else If Key.Code = Key["Down"] Then
-        .MoveTo(.Key)
-        .MoveBelow()
-        If .Available Then
-          .Item.Selected = True
-          .Item.EnsureVisible()
+        If Key.Shift Then
+          If btnNextTranslated.Enabled Then btnNextTranslated_Click
+        Else If Key.Control Then
+          If btnNextUntranslated.Enabled Then btnNextUntranslated_Click
+        Else
+          .MoveTo(.Key)
+          .MoveBelow()
+          If .Available Then
+            .Item.Selected = True
+            .Item.EnsureVisible()
+          Endif
         Endif
       Endif
     End With
   Else If Key.Shift Then
     If Key.Code = Key.F4 Then
-      btnPrevious_Click()
+      btnPreviousUntranslated_Click()
     Endif
   Else If Key.Control Then
     If Key.Code = Key["F"] Then
@@ -730,7 +742,7 @@ Public Sub txtTranslate_KeyPress()
       Case Key.F3
         txtFind_Click
       Case Key.F4
-        btnNext_Click
+        btnNextUntranslated_Click
       Case Key.F5
         btnCopy_Click
       Case Key.F6
@@ -1116,8 +1128,11 @@ Private Sub DisplayTrans()
   Else
     lblInfo.Text = Subst(("&1 strings. &2 are not translated. &3% done."), cvwTranslate.Count, nNotTrans, ($nTrans * 100) \ cvwTranslateOrg.Count)
   Endif
-  btnNext.Enabled = cvwTranslate.Count - $nTrans
-  btnPrevious.Enabled = btnNext.Enabled
+  
+  btnNextUntranslated.Enabled = cvwTranslate.Count - $nTrans
+  btnPreviousUntranslated.Enabled = btnNextUntranslated.Enabled
+  btnNextTranslated.Enabled = $nTrans > 0
+  btnPreviousTranslated.Enabled = btnNextTranslated.Enabled
 
 End
 
@@ -1167,7 +1182,7 @@ Private Sub ResizeTable()
 
 End
 
-Public Sub btnNext_Click()
+Public Sub btnNextUntranslated_Click()
 
   Dim sKey As String
 
@@ -1197,7 +1212,7 @@ Public Sub btnNext_Click()
 
 End
 
-Public Sub btnPrevious_Click()
+Public Sub btnPreviousUntranslated_Click()
 
   Dim sKey As String
 
@@ -1529,3 +1544,64 @@ Public Sub Form_Arrange()
   ResizeTable
 
 End
+
+Public Sub btnNextTranslated_Click()
+
+  Dim sKey As String
+
+  With cvwTranslate
+
+    sKey = .Key
+    .MoveCurrent()
+
+    Do
+
+      .MoveBelow()
+      If Not .Available Then
+        .MoveFirst()
+      Endif
+
+      If .Item[1] Then
+        .Item.EnsureVisible
+        .Item.Selected = True
+        Return
+      Endif
+
+      If .Item.Key = sKey Then Return
+
+    Loop
+
+  End With
+
+End
+
+Public Sub btnPreviousTranslated_Click()
+
+  Dim sKey As String
+
+  With cvwTranslate
+
+    sKey = .Key
+    .MoveCurrent()
+
+    Do
+
+      .MoveAbove()
+      If Not .Available Then
+        .MoveLast()
+      Endif
+
+      If .Item[1] Then
+        .Item.EnsureVisible
+        .Item.Selected = True
+        Return
+      Endif
+
+      If .Item.Key = sKey Then Return
+
+    Loop
+
+  End With
+
+End
+
