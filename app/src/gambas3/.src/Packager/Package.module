@@ -206,32 +206,34 @@ Private Sub InitMake(sSys As String)
   $sName = Project.Name
   $sComponentName = $sName
   $sVendor = Project.Vendor
-  $sVendorPrefix = Project.VendorPrefix  
+  $sVendorPrefix = Project.VendorPrefix
   If Not $sVendorPrefix Then $sVendorPrefix = $sVendor
-  
+
   If Project.Type = Project.TYPE_COMPONENT Then
-    If $sName Not Begins $sVendorPrefix & "." Then $sComponentName = $sVendorPrefix & "." & $sName
+    If $sVendorPrefix <> Null Then
+      If $sName Not Begins $sVendorPrefix & "." Then $sComponentName = $sVendorPrefix & "." & $sName
+    Endif
     $sComponentName = String.LCase($sComponentName)
   Else If Project.Type = Project.TYPE_LIBRARY Then
     $sLibraryName = $sName & ":" & Project.MajorVersion & "." & Project.MinorVersion
   Endif
-  
+
   '$sPrefix = GetPackagePrefix(Project.Vendor, Project.Prefix)
   $sUnsafePackageName = GetPackageFullName($sVendor, $sVendorPrefix, Project.Prefix, False)
 
   $sHome = System.User.Home
-  
+
   $sCategories = Project.Categories[sSys]
   If $sCategories Then $sCategories &= ";"
 
   $sVersion = GetVersion()
-  
+
   If Project.Description Then
     $sDescription = RemoveEmptyLines(Project.Description)
   Else
     $sDescription = "Missing description"
   Endif
-  
+
   With Project.Components
     If .Exist("gb.gui") Then
       $sSupportPackage = "gb.gui"
