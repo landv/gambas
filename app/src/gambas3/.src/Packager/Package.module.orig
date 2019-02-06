@@ -431,7 +431,7 @@ Private Sub FormatFileInList(sFile As String, Optional bDebian As Boolean) As St
       sFile = Replace(sFile, " ", "[!#-~.\"!]")
     Else
       sFile = Chr$(34) & Replace(sFile, Chr$(34), "\\\"") & Chr$(34)
-    Endif 
+    Endif
   Endif
   Return sFile
   
@@ -647,8 +647,6 @@ Private Sub MakeSupportPackage(sSys As String)
 
   Dim sSupport As String
   Dim aPackage As String[]
-  'slackware doesn't use support packages
-  If sSys = "slackware" Then Return
   
   If $sSupportPackage = "gb.gui" Then
   
@@ -689,8 +687,7 @@ MAKE_PACKAGE:
       MakeDebSupportPackage(sSys, sSupport, aPackage)
       
     Case "slackware"
-      'we shouldn't get here, but if we do, do nothing as not needed for slackware
-      'MakeTgzSupportPackage(sSys, sSupport, aPackage)
+      MakeTgzSupportPackage(sSys, sSupport, aPackage)
    
     Case "archlinux"
       MakeArchSupportPackage(sSys, sSupport, aPackage)
@@ -2025,15 +2022,7 @@ Private Sub MakeTgzPackage(sSys As String)
       PrintDesktopFile(hFile, "/usr/bin/" & $sName, "/usr/share/pixmaps/" & $sName & ".png")
     
       Close #hFile
-      ' if we are creating a project with desktop icon/menu we need to run a doinst.sh in the package
-      ' to make sure the menu item appears without needing a restart of xwindows.
-      hFile = Open sBuildDir &/ "install" &/ "doinst.sh" For Create
-      Print #hFile, "if [ -x /usr/bin/update-desktop-database ]; then"
-      Print #hfile, "  /usr/bin/update-desktop-database -q usr/share/applications >/dev/null 2>&1"
-      Print #hFile, "fi"
-      Close #hFile
-       
-            
+      
     Endif
   
   Endif
@@ -2053,13 +2042,12 @@ Private Sub MakeTgzPackage(sSys As String)
 
   Close #hFile
   
-  ' 6. Dependencies. only used by slapt-get. other tools, like installpkg don't use it.
-  ' gambas is packaged a a single package - gambas3 including everything.
+  ' 6. Dependencies
   
   hFile = Open sBuildDir &/ "/install/slack-required" For Create
   
-  Print #hFile, "gambas"; System.Version; " >= "; MIN_VERSION
-  Print #hFile, "gambas"; System.Version; " < "; MAX_VERSION
+  Print #hFile, "gambas"; System.Version; "-runtime >= "; MIN_VERSION
+  Print #hFile, "gambas"; System.Version; "-runtime < "; MAX_VERSION
 
   If Project.Type <> Project.TYPE_COMPONENT Then
 
@@ -2109,7 +2097,7 @@ Private Sub MakeTgzSupportPackage((sSys) As String, sSupport As String, aComp As
   Dim sTempPackage As String
   Dim sPackage As String
   Dim sPackageName As String
-  
+      
   Inc Application.Busy
 
   $sFormatSingle = "&1\n"
