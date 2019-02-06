@@ -210,7 +210,7 @@ Private Sub InitMake(sSys As String)
   If Not $sVendorPrefix Then $sVendorPrefix = $sVendor
 
   If Project.Type = Project.TYPE_COMPONENT Then
-    If $sVendorPrefix <> Null Then
+    If $sVendorPrefix Then
       If $sName Not Begins $sVendorPrefix & "." Then $sComponentName = $sVendorPrefix & "." & $sName
     Endif
     $sComponentName = String.LCase($sComponentName)
