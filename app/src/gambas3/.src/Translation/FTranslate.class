@@ -687,6 +687,7 @@ Public Sub mnuDelete_Click()
 
   SaveTranslate(True)
   cvwLang.Remove($sLang)
+  cmbLang.Remove(cmbLang.Index)
   SetLang()
 
 End
