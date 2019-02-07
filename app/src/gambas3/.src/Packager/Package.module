@@ -2097,92 +2097,92 @@ Private Sub MakeTgzPackage(sSys As String)
   
 End
 
-Private Sub MakeTgzSupportPackage((sSys) As String, sSupport As String, aComp As String[])
-
-  Dim sDistribution As String
-  Dim sVendor As String
-  Dim sBuildDir As String
-  Dim hFile As File
-  'Dim sPrefix As String
-  Dim sCmd As String
-  Dim sData As String
-  Dim sTempPackage As String
-  Dim sPackage As String
-  Dim sPackageName As String
-  
-  Inc Application.Busy
-
-  $sFormatSingle = "&1\n"
-  $sFormatMin = "&1 >= &2\n"
-  $sFormatMax = "&1 < &3\n"
-  $sFormatMinMax = $sFormatMin & $sFormatMax
-  $sFormatEqual = $sFormatMinMax
-
-  sPackageName = FormatTgzPackageName($sUnsafePackageName) & "-" & sSupport
-  sDistribution = "Slackware"
-  sVendor = "Slackware"
-  
-  ' 1. Create the temporary build directory
-
-  AddLog(("Making build directory."))
-
-  sBuildDir = File.SetExt(Temp$("slackware"), "")
-  Shell "rm -rf " & Shell(sBuildDir) Wait
-  Mkdir sBuildDir
-  Try Mkdir sBuildDir &/ "install"
-  
-  ' 5. Description file
-
-  hFile = Open sBuildDir &/ "/install/slack-desc" For Create
-  
-  Print #hFile, File.Load("install/slack-desc-header");    
-  PrintSlackDescRuler(hFile, sPackageName)
-  PrintSlackDesc(hFile, Subst("&1 &2: &3", sPackageName, $sVersion, sSupport & " support for " & IIf(Project.Title, Project.Title, Project.Name)), sPackageName)
-  PrintSlackDesc(hFile, "", sPackageName)
-  sData = sSupport & " support for " & IIf(Project.Title, Project.Title, Project.Name)
-  PrintSlackDescContents(hFile, sData, 7, sPackageName)
-  PrintSlackDesc(hFile, "Package created by: " & Project.Maintainer, sPackageName)
-  PrintSlackDesc(hFile, "EMail address: " & Project.Address, sPackageName)
-
-  Close #hFile
-  
-  ' 6. Dependencies
-  
-  hFile = Open sBuildDir &/ "/install/slack-required" For Create
-  
-  Print #hFile, FormatTgzPackageName($sUnsafePackageName); " >= "; $sVersion
-  Print #hFile, FormatTgzPackageName($sUnsafePackageName); " <= "; $sVersion
-  Print #hFile, GetDependencies(aComp);
-  
-  Close #hFile
-  
-  ' 7. Create package
-  
-  AddLog(("Creating package...") & "\n")
-
-  sTempPackage = File.SetExt(Temp$("slackware"), "tgz")
-  sCmd = TAR_1_13_PROG & " --exclude=slackware.tgz --owner=root --group=root -c -z -f " & Shell$(sTempPackage) & " ."
-  RunCommand(sCmd, sBuildDir)
-  ' AddLog(sCmd)
-  ' $sOutput = ""
-  ' $bEnd = FALSE
-  ' SHELL "(cd " & SConv(Shell$(sBuildDir)) & ";" & sCmd & ") 2>&1" FOR READ 'TO sOutput
-  ' REPEAT
-  '   SLEEP 0.01 
-  '   WAIT
-  ' UNTIL $bEnd
-  
-  Dec Application.Busy
-
-  If Process.LastValue Then Error.Raise(("'tar' has returned the following error code:") & " " & Process.LastValue)
-
-  AddLog("")
-  sPackage = Subst("&1-&2-noarch-&3.tgz", sPackageName, $sVersion, CStr(Project.PackageVersion))
-  MoveFile(sTempPackage, Path &/ sPackage)
-  AddLog(sPackage)
-  
-End
-
+' Private Sub MakeTgzSupportPackage((sSys) As String, sSupport As String, aComp As String[])
+' 
+'   Dim sDistribution As String
+'   Dim sVendor As String
+'   Dim sBuildDir As String
+'   Dim hFile As File
+'   'Dim sPrefix As String
+'   Dim sCmd As String
+'   Dim sData As String
+'   Dim sTempPackage As String
+'   Dim sPackage As String
+'   Dim sPackageName As String
+'   
+'   Inc Application.Busy
+' 
+'   $sFormatSingle = "&1\n"
+'   $sFormatMin = "&1 >= &2\n"
+'   $sFormatMax = "&1 < &3\n"
+'   $sFormatMinMax = $sFormatMin & $sFormatMax
+'   $sFormatEqual = $sFormatMinMax
+' 
+'   sPackageName = FormatTgzPackageName($sUnsafePackageName) & "-" & sSupport
+'   sDistribution = "Slackware"
+'   sVendor = "Slackware"
+'   
+'   ' 1. Create the temporary build directory
+' 
+'   AddLog(("Making build directory."))
+' 
+'   sBuildDir = File.SetExt(Temp$("slackware"), "")
+'   Shell "rm -rf " & Shell(sBuildDir) Wait
+'   Mkdir sBuildDir
+'   Try Mkdir sBuildDir &/ "install"
+'   
+'   ' 5. Description file
+' 
+'   hFile = Open sBuildDir &/ "/install/slack-desc" For Create
+'   
+'   Print #hFile, File.Load("install/slack-desc-header");    
+'   PrintSlackDescRuler(hFile, sPackageName)
+'   PrintSlackDesc(hFile, Subst("&1 &2: &3", sPackageName, $sVersion, sSupport & " support for " & IIf(Project.Title, Project.Title, Project.Name)), sPackageName)
+'   PrintSlackDesc(hFile, "", sPackageName)
+'   sData = sSupport & " support for " & IIf(Project.Title, Project.Title, Project.Name)
+'   PrintSlackDescContents(hFile, sData, 7, sPackageName)
+'   PrintSlackDesc(hFile, "Package created by: " & Project.Maintainer, sPackageName)
+'   PrintSlackDesc(hFile, "EMail address: " & Project.Address, sPackageName)
+' 
+'   Close #hFile
+'   
+'   ' 6. Dependencies
+'   
+'   hFile = Open sBuildDir &/ "/install/slack-required" For Create
+'   
+'   Print #hFile, FormatTgzPackageName($sUnsafePackageName); " >= "; $sVersion
+'   Print #hFile, FormatTgzPackageName($sUnsafePackageName); " <= "; $sVersion
+'   Print #hFile, GetDependencies(aComp);
+'   
+'   Close #hFile
+'   
+'   ' 7. Create package
+'   
+'   AddLog(("Creating package...") & "\n")
+' 
+'   sTempPackage = File.SetExt(Temp$("slackware"), "tgz")
+'   sCmd = TAR_1_13_PROG & " --exclude=slackware.tgz --owner=root --group=root -c -z -f " & Shell$(sTempPackage) & " ."
+'   RunCommand(sCmd, sBuildDir)
+'   ' AddLog(sCmd)
+'   ' $sOutput = ""
+'   ' $bEnd = FALSE
+'   ' SHELL "(cd " & SConv(Shell$(sBuildDir)) & ";" & sCmd & ") 2>&1" FOR READ 'TO sOutput
+'   ' REPEAT
+'   '   SLEEP 0.01 
+'   '   WAIT
+'   ' UNTIL $bEnd
+'   
+'   Dec Application.Busy
+' 
+'   If Process.LastValue Then Error.Raise(("'tar' has returned the following error code:") & " " & Process.LastValue)
+' 
+'   AddLog("")
+'   sPackage = Subst("&1-&2-noarch-&3.tgz", sPackageName, $sVersion, CStr(Project.PackageVersion))
+'   MoveFile(sTempPackage, Path &/ sPackage)
+'   AddLog(sPackage)
+'   
+' End
+' 
 Private Sub MakeAutotoolsPackage((sSys) As String)
 
   Dim sBuildDir As String

@@ -24,6 +24,12 @@
     }
     { Menu1 Menu
     }
+    { mnuAutoTrans Menu
+      Text = ("Automatic translation") & "..."
+      Picture = Picture["icon:/small/fill"]
+    }
+    { Menu2 Menu
+    }
     { mnuCopy Menu
       Text = ("Copy")
       Picture = Picture["icon:/small/copy"]
@@ -111,27 +117,21 @@
     { Separator6 Separator
       MoveScaled(30,8,10,0)
     }
-    { HBox5 HBox
+    { panToolbar HBox
       MoveScaled(3,10,91,4)
       { btnSave ToolButton
-        MoveScaled(0,0,4,4)
+        MoveScaled(0,0,9,4)
         ToolTip = ("Save translation")
+        AutoResize = True
+        Text = ("Save")
         Picture = Picture["icon:/small/save"]
       }
       { btnVerify ToolButton
-        MoveScaled(5,0,4,4)
+        MoveScaled(12,0,11,4)
         ToolTip = ("Verify the translation")
-        Picture = Picture["icon:/small/wizard"]
-      }
-      { btnNextTranslated ToolButton
-        MoveScaled(10,0,4,4)
-        ToolTip = ("Find next translated string")
-        Picture = Picture["icon:/small/down"]
-      }
-      { btnPreviousTranslated ToolButton
-        MoveScaled(14,0,4,4)
-        ToolTip = ("Find previous translated string")
-        Picture = Picture["icon:/small/up"]
+        AutoResize = True
+        Text = ("Verify")
+        Picture = Picture["icon:/small/apply"]
       }
       { Separator7 Separator
         MoveScaled(25,0,0,4)
@@ -183,32 +183,51 @@
         { Separator5 Separator
           MoveScaled(3,13,15,0)
         }
-        { HBox1 HBox
-          MoveScaled(2,15,43,4)
+        { panTransToolbar HBox
+          MoveScaled(1,15,82,4)
+          { btnNextTranslated ToolButton
+            MoveScaled(1,0,4,4)
+            ToolTip = ("Find next translated string")
+            Picture = Picture["icon:/small/down"]
+          }
+          { btnPreviousTranslated ToolButton
+            MoveScaled(5,0,4,4)
+            ToolTip = ("Find previous translated string")
+            Picture = Picture["icon:/small/up"]
+          }
+          { btnPreviousUntranslated ToolButton
+            MoveScaled(9,0,4,4)
+            ToolTip = ("Find previous untranslated string")
+            Picture = Picture["icon:/small/rewind"]
+          }
+          { btnNextUntranslated ToolButton
+            MoveScaled(13,0,4,4)
+            ToolTip = ("Find next untranslated string")
+            Picture = Picture["icon:/small/forward"]
+          }
+          { Separator9 Separator
+            MoveScaled(19,0,0,4)
+          }
           { btnClear ToolButton
-            MoveScaled(0,0,4,4)
+            MoveScaled(21,0,4,4)
             ToolTip = ("Clear this translation")
-            Picture = Picture["icon:/small/clear"]
+            Picture = Picture["icon:/small/delete"]
           }
           { btnDoNotTranslate ToolButton
-            MoveScaled(6,0,4,4)
+            MoveScaled(25,0,4,4)
             ToolTip = ("This string must not be translated")
             Picture = Picture["icon:/small/warning"]
           }
           { btnCopy ToolButton
-            MoveScaled(10,0,4,4)
+            MoveScaled(29,0,4,4)
             ToolTip = ("Copy untranslated string")
-            Picture = Picture["icon:/small/paste"]
+            Picture = Picture["icon:/small/copy"]
           }
-          { btnNextUntranslated ToolButton
-            MoveScaled(18,0,4,4)
-            ToolTip = ("Find next untranslated string")
-            Picture = Picture["icon:/small/rewind"]
-          }
-          { btnPreviousUntranslated ToolButton
-            MoveScaled(22,0,4,4)
-            ToolTip = ("Find previous untranslated string")
-            Picture = Picture["icon:/small/forward"]
+          { btnAutoTrans ToolButton
+            MoveScaled(34,0,23,4)
+            AutoResize = True
+            Text = ("Automatic translation")
+            Picture = Picture["icon:/small/fill"]
           }
         }
         { Separator8 Separator

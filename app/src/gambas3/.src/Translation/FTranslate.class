@@ -33,6 +33,9 @@ Private $bDeleteIfVoid As Boolean
 Private $cCacheImport As Collection
 Private $bStatValid As Boolean
 
+Static Private $sTranslateShell As String
+Static Private $sTranslateEngine As String
+
 Static Public Sub Run()
 
   If Project.GetClasses().Count = 0 Then
@@ -40,6 +43,14 @@ Static Public Sub Run()
     Return
   Endif
 
+  If Settings["/AutomaticTranslation/Enabled"] Then
+    $sTranslateShell = System.Find("trans")
+    $sTranslateEngine = Settings["/AutomaticTranslation/Engine", "google"]
+  Else
+    $sTranslateShell = ""
+    $sTranslateEngine = ""
+  Endif
+  
   FTranslate.ShowModal
 
 End
@@ -67,7 +78,13 @@ Public Sub _new()
     .AddColumn(("File"))
     .AddColumn(("Size"),, Align.Right)
   End With
-
+  
+  mnuAutoTrans.Enabled = $sTranslateShell
+  btnAutoTrans.Enabled = mnuAutoTrans.Enabled
+  
+  Project.SetSmallFont(panTransToolbar)
+  Project.SetSmallFont(panToolbar)
+  
 End
 
 ' Private Sub GetTransCount(sLang As String) As Integer
@@ -297,7 +314,7 @@ Private Sub SetLang(Optional sLang As String) As Boolean
   Try cmbLang.Index = cmbLang.Find(sName)
 
   DisplayTrans
-
+  
 Finally
 
   ResizeTable
@@ -368,7 +385,7 @@ Public Sub cvwTranslate_Select()
     txtTranslate.Text = .Current[1]
     $bIgnore = False
     FormatComment(.Current[2])
-
+    
   End With
 
   txtTranslate.SetFocus
@@ -1605,3 +1622,117 @@ Public Sub btnPreviousTranslated_Click()
 
 End
 
+
+Private Sub StripLang(sLang As String) As String
+
+  Return Replace(sLang, "_", "-")
+  
+End
+
+
+Private Sub GetAutomaticTranslation(sText As String) As String
+
+  Dim sLangSrc As String
+  Dim sLangDest As String
+  Dim sResult As String
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim sDigit As String
+  
+  Inc Application.Busy
+  
+  If cmbLangSource.Index > 0 Then
+    sLangSrc = Language.FromName(cmbLangSource.Text)
+  Else
+    sLangSrc = Project.DefaultLanguage
+  Endif
+  sLangSrc = StripLang(sLangSrc)
+  
+  sLangDest = StripLang(Language.FromName(cmbLang.Text))
+
+  Do
+    iPos = InStr(sText, "&", iPos + 1)
+    If iPos = 0 Then Break
+    If IsDigit(Mid$(sText, iPos + 1, 1)) Then
+      sText = Left(sText, iPos - 1) & "[-" & Mid$(sText, iPos + 1, 1) & "-]" & Mid$(sText, iPos + 2)
+    Else If Mid$(sText, iPos + 1, 1) = "{" Then
+      iPos2 = InStr(sText, "}", iPos + 1)
+      If iPos2 Then
+        If IsDigit(Mid$(sText, iPos + 2, iPos2 - iPos - 1)) Then
+          sText = Left$(sText, iPos - 1) & "[-" & Mid$(sText, iPos + 2, iPos2 - iPos - 1) & "-]" & Mid$(sText, iPos2 + 1)
+        Endif
+      Endif
+    Endif
+  Loop
+
+  Exec [$sTranslateShell, "-e", $sTranslateEngine, "-b", sText, sLangSrc & ":" & sLangDest] To sResult
+  
+  iPos = 0
+  Do
+    iPos = InStr(sResult, "[-", iPos + 1)
+    If iPos = 0 Then Break
+    iPos2 = InStr(sResult, "-]", iPos + 1)
+    If iPos2 Then
+      sDigit = Trim(Mid$(sResult, iPos + 2, iPos2 - iPos - 2))
+      If Len(sDigit) = 1 Then
+        sResult = Left(sResult, iPos - 1) & "&" & sDigit & Mid$(sResult, iPos2 + 2)
+      Else If Len(sDigit) > 1 Then
+        sResult = Left(sResult, iPos - 1) & "&{" & sDigit & "}" & Mid$(sResult, iPos2 + 2)
+      Endif
+    Endif
+  Loop
+  
+  Dec Application.Busy
+  
+  sResult = Trim(sResult)
+  
+  If sResult Then
+    If String.Left(sText) = String.UCase(String.Left(sText)) Then
+      sResult = String.UCaseFirst(sResult)
+    Else If String.Left(sText) = String.LCase(String.Left(sText)) Then
+      sResult = String.LCase(String.Left(sResult)) & String.Mid$(sResult, 2)
+    Endif
+  Endif
+  
+  Return sResult
+
+End
+
+Public Sub btnAutoTrans_Click()
+
+  Dim sText As String
+
+  sText = GetAutomaticTranslation(txtOrig.Text)
+  If Not sText Then
+    Message.Warning(("Automatic translation has failed."))  
+    Return
+  Endif
+  
+  txtTranslate.Text = sText
+
+End
+
+Public Sub mnuAutoTrans_Click()
+  
+  If Message.Question(("Do you want to fill the translation automatically?"), ("Fill"), ("Cancel")) = 2 Then Return
+  
+  Inc Application.Busy
+  
+  cvwTranslate.MoveFirst
+  While cvwTranslate.Available
+    If Not cvwTranslate.Item[1] Then 
+      cvwTranslate.Item.Selected = True
+      cvwTranslate.Item.EnsureVisible
+      txtTranslate.Text = GetAutomaticTranslation(txtOrig.Text)
+      Wait
+    Endif
+    cvwTranslate.MoveNext
+  Wend
+  
+  DisplayTrans
+  $bModify = True
+  SaveTranslate
+  
+  Dec Application.Busy
+  
+End

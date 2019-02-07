@@ -21,7 +21,8 @@
     }
     { cmbFamily ComboBox
       MoveScaled(1,4,24,4)
-      List = [(""), ("sans-serif"), ("serif"), ("monospace"), ("cursive"), ("fantasy")]
+      #Translate = False
+      List = ["", "sans-serif", "serif", "monospace", "cursive", "fantasy"]
       Border = False
     }
     { Separator2 Separator
@@ -31,37 +32,42 @@
       MoveScaled(0,10,41,4)
       { btnNormal ToolButton
         MoveScaled(0,0,4,4)
+        #Translate = False
         Font = Font["+2"]
-        ToolTip = ("Normal")
-        Text = ("N")
+        ToolTip = "Normal"
+        Text = "N"
         Toggle = True
       }
       { btnBold ToolButton
         MoveScaled(4,0,4,4)
+        #Translate = False
         Font = Font["Bold,+2"]
-        ToolTip = ("Bold")
-        Text = ("B")
+        ToolTip = "Bold"
+        Text = "B"
         Toggle = True
       }
       { btnItalic ToolButton
         MoveScaled(8,0,4,4)
+        #Translate = False
         Font = Font["Italic,+2"]
-        ToolTip = ("Italic")
-        Text = ("I")
+        ToolTip = "Italic"
+        Text = "I"
         Toggle = True
       }
       { btnUnderline ToolButton
         MoveScaled(12,0,4,4)
+        #Translate = False
         Font = Font["Underline,+2"]
-        ToolTip = ("Underline")
-        Text = ("U")
+        ToolTip = "Underline"
+        Text = "U"
         Toggle = True
       }
       { btnStrikeout ToolButton
         MoveScaled(16,0,4,4)
+        #Translate = False
         Font = Font["Strikeout,+2"]
-        ToolTip = ("Strikeout")
-        Text = ("S")
+        ToolTip = "Strikeout"
+        Text = "S"
         Toggle = True
       }
       { Separator3 Separator

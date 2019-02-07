@@ -247,12 +247,17 @@
         Text = ("Restore files when loading a project")
       }
       { btnStartupLoad SwitchButton
-        MoveScaled(43,0,8,4)
+        MoveScaled(50,0,8,4)
         Animated = True
       }
     }
+    { Label83 Label
+      MoveScaled(0,35,63,3)
+      Font = Font["Bold"]
+      Text = ("Images")
+    }
     { panCompressPng HBox
-      MoveScaled(1,35,66,4)
+      MoveScaled(1,40,66,4)
       Spacing = True
       Indent = True
       { Label77 TextLabel
@@ -265,6 +270,55 @@
         MoveScaled(50,0,8,4)
         Animated = True
       }
+    }
+    { URLLabel1 URLLabel
+      MoveScaled(1,45,34,2)
+      #Translate = False
+      Font = Font["-3"]
+      Text = "https://pngquant.org/"
+      Alignment = Align.Right
+    }
+    { Label82 Label
+      MoveScaled(0,48,63,3)
+      Font = Font["Bold"]
+      Text = ("Translation")
+    }
+    { panAutoTrans HBox
+      MoveScaled(1,52,66,4)
+      Spacing = True
+      Indent = True
+      { Label80 TextLabel
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Automatic translation with '<tt>translate-shell</tt>'")
+        Alignment = Align.Normal
+      }
+      { btnAutoTrans SwitchButton
+        MoveScaled(50,0,8,4)
+        Animated = True
+      }
+    }
+    { panAutoTransEngine HBox
+      MoveScaled(1,57,66,4)
+      Visible = False
+      Spacing = True
+      Indent = True
+      { Label81 Label
+        MoveScaled(0,0,43,4)
+        Expand = True
+        Text = ("Translation engine")
+      }
+      { cmbAutoTrans ComboBox
+        MoveScaled(50,0,16,4)
+        ReadOnly = True
+      }
+    }
+    { URLLabel2 URLLabel
+      MoveScaled(1,62,34,2)
+      #Translate = False
+      Font = Font["-3"]
+      Text = "https://github.com/soimort/translate-shell"
+      Alignment = Align.Right
     }
     Index = 2
     Text = ("Interface")
