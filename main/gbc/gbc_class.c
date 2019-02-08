@@ -239,7 +239,7 @@ void CLASS_check_unused_global(CLASS *class)
 			if (TYPE_get_kind(type) == TK_VARIABLE)
 				COMPILE_print(MSG_WARNING, sym->global.line, "unused global variable: &1", SYMBOL_get_name(&sym->symbol));
 			else if (TYPE_get_kind(type) == TK_FUNCTION)
-				COMPILE_print(MSG_WARNING, sym->global.line, "unused function: &1", SYMBOL_get_name(&sym->symbol));
+				COMPILE_print(MSG_WARNING, class->function[sym->global.value].line - 1, "unused function: &1", SYMBOL_get_name(&sym->symbol));
 			else if (TYPE_get_kind(type) == TK_EXTERN)
 				COMPILE_print(MSG_WARNING, sym->global.line, "unused extern function: &1", SYMBOL_get_name(&sym->symbol));
 		}
