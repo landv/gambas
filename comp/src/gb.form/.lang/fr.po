@@ -26,8 +26,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gb.form 3.11.90\n"
-"PO-Revision-Date: 2018-07-17 21:10 UTC\n"
+"Project-Id-Version: gb.form 3.12.90\n"
+"POT-Creation-Date: 2019-02-07 23:40 UTC\n"
+"PO-Revision-Date: 2019-02-07 23:38 UTC\n"
 "Last-Translator: benoit <benoit@benoit-kubuntu>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -54,15 +55,15 @@ msgstr "Système"
 msgid "Last colors"
 msgstr "Dernières couleurs"
 
-#: ColorPalette.class:241
+#: ColorPalette.class:246
 msgid "Remove color"
 msgstr "Retirer la couleur"
 
-#: ColorPalette.class:245
+#: ColorPalette.class:250
 msgid "Remove all colors"
 msgstr "Retirer toutes les couleurs"
 
-#: ColorPalette.class:249
+#: ColorPalette.class:254
 msgid "Sort colors"
 msgstr "Trier les couleurs"
 
@@ -77,6 +78,14 @@ msgstr "Nouveau répertoire"
 #: DirView.class:581
 msgid "Cannot create directory."
 msgstr "Impossible de créer le répertoire."
+
+#: FBugFileView.form:32
+msgid "Toggle Fileview Detailed View"
+msgstr ""
+
+#: FBugFileView.form:37
+msgid "Toggle Filechooser Detailed View"
+msgstr ""
 
 #: FCalendar.form:47
 msgid "Today"
@@ -210,27 +219,27 @@ msgstr "Impossible de décompresser le fichier."
 msgid "Unknown archive."
 msgstr "Archive inconnue."
 
-#: FDirChooser.class:1377
+#: FDirChooser.class:1379
 msgid "Delete file"
 msgstr "Supprimer le fichier"
 
-#: FDirChooser.class:1378
+#: FDirChooser.class:1380
 msgid "Do you really want to delete that file?"
 msgstr "Désirez-vous réellement supprimer ce fichier ?"
 
-#: FDirChooser.class:1385
+#: FDirChooser.class:1387
 msgid "Unable to delete file."
 msgstr "Impossible de supprimer le fichier."
 
-#: FDirChooser.class:1395
+#: FDirChooser.class:1397
 msgid "Delete directory"
 msgstr "Supprimer le répertoire"
 
-#: FDirChooser.class:1396
+#: FDirChooser.class:1398
 msgid "Do you really want to delete that directory?"
 msgstr "Désirez-vous vraiment supprimer ce répertoire ?"
 
-#: FDirChooser.class:1403
+#: FDirChooser.class:1405
 msgid "Unable to delete directory."
 msgstr "Impossible de supprimer le répertoire."
 
@@ -266,15 +275,77 @@ msgstr "Signets"
 msgid "OK"
 msgstr "OK"
 
-#: FDirChooser.form:242 FEditBookmark.class:119 FInputBox.form:51 FSidePanel.class:978 FWizard.form:53
+#: FDirChooser.form:242 FEditBookmark.class:119 FInputBox.form:51
+#: FSidePanel.class:1149 FWizard.form:53
 msgid "Cancel"
 msgstr "Annuler"
 
-#: FFontChooser.form:36
+#: FDocumentView.form:51
+msgid "Zoom :"
+msgstr ""
+
+#: FDocumentView.form:56
+msgid "Show Shadow"
+msgstr ""
+
+#: FDocumentView.form:66
+msgid "Padding"
+msgstr ""
+
+#: FDocumentView.form:71
+msgid "Spacing"
+msgstr ""
+
+#: FDocumentView.form:80
+msgid "Scale Mode"
+msgstr ""
+
+#: FDocumentView.form:89
+msgid "Goto :"
+msgstr ""
+
+#: FDocumentView.form:95
+msgid "Column"
+msgstr ""
+
+#: FDocumentView.form:95
+msgid "Fill"
+msgstr ""
+
+#: FDocumentView.form:95
+msgid "Horizontal"
+msgstr ""
+
+#: FDocumentView.form:95
+msgid "None"
+msgstr ""
+
+#: FDocumentView.form:95
+msgid "Row"
+msgstr ""
+
+#: FDocumentView.form:95
+msgid "Vertical"
+msgstr ""
+
+#: FDocumentView.form:96 FFontChooser.form:36 FMain.form:68
 msgid "ComboBox1"
 msgstr "-"
 
-#: FEditBookmark.class:23 FileView.class:129
+#: FDocumentView.form:101 FMain.form:84 FTestBalloon.form:18
+#: FTestCompletion.form:23 FTestMessageView.form:32 FTestWizard.form:23
+msgid "Button1"
+msgstr ""
+
+#: FDocumentView.form:110
+msgid "Columns"
+msgstr ""
+
+#: FDocumentView.form:120
+msgid "Autocenter"
+msgstr ""
+
+#: FEditBookmark.class:23 FileView.class:136
 msgid "Name"
 msgstr "Nom"
 
@@ -366,11 +437,11 @@ msgstr "Lien"
 msgid "Directory"
 msgstr "Répertoire"
 
-#: FFileProperties.form:120 FileView.class:131
+#: FFileProperties.form:120 FileView.class:138
 msgid "Size"
 msgstr "Taille"
 
-#: FFileProperties.form:132 FileView.class:133
+#: FFileProperties.form:132 FileView.class:140
 msgid "Last modified"
 msgstr "Modifié le"
 
@@ -418,6 +489,30 @@ msgstr "Barré"
 msgid "Relative"
 msgstr "Relatif"
 
+#: FIconPanel.form:17
+msgid "Item 0"
+msgstr ""
+
+#: FIconPanel.form:21
+msgid "Toto"
+msgstr ""
+
+#: FIconPanel.form:24
+msgid "Item 1"
+msgstr ""
+
+#: FIconPanel.form:26
+msgid "Item 2"
+msgstr ""
+
+#: FIconPanel.form:32
+msgid "Item 3"
+msgstr ""
+
+#: FLCDLabel.form:15
+msgid "12:34"
+msgstr ""
+
 #: FListEditor.form:45
 msgid "Add item"
 msgstr "Ajouter un élément"
@@ -434,21 +529,187 @@ msgstr "Déplacer l'élément vers le haut"
 msgid "Move item down"
 msgstr "Déplacer l'élément vers le bas"
 
+#: FMain.form:28 FTestFileView.form:31 FTestMenuButton.form:35 FWiki.form:20
+msgid "Menu2"
+msgstr ""
+
+#: FMain.form:32 FTestFileView.form:36 FTestMenuButton.form:39 FWiki.form:24
+msgid "Menu3"
+msgstr ""
+
+#: FMain.form:67
+msgid "Élément 1"
+msgstr ""
+
+#: FMain.form:67
+msgid "Élément 2"
+msgstr ""
+
+#: FMain.form:67
+msgid "Élément 3"
+msgstr ""
+
+#: FMain.form:67
+msgid "Élément 4"
+msgstr ""
+
+#: FMain.form:73
+#, fuzzy
+msgid "ComboBox2"
+msgstr "-"
+
+#: FMain.form:79 FSwitchButton.form:35 FTestBalloon.form:12
+#: FTestFileView.form:86
+msgid "TextBox1"
+msgstr ""
+
+#: FMain.form:89 Form2.form:122
+msgid "MenuButton1"
+msgstr ""
+
 #: FMessage.form:39
 msgid "Do not display this message again"
 msgstr "Ne plus afficher ce message"
 
-#: FSidePanel.class:968
+#: FSidePanel.class:1139
 msgid "Hidden"
 msgstr "Masqué"
 
-#: FSidePanel.class:972
+#: FSidePanel.class:1143
 msgid "Transparent"
 msgstr "Transparent"
 
+#: FSpinBar.form:24
+msgid "Test"
+msgstr ""
+
+#: FSwitchButton.form:52 FTestFileView.form:81
+msgid "Label1"
+msgstr ""
+
+#: FSwitchButton.form:59
+msgid "Label2"
+msgstr ""
+
+#: FTabPanel.form:34
+msgid "Text"
+msgstr ""
+
+#: FTabPanel.form:47
+msgid "Border"
+msgstr ""
+
+#: FTabPanel.form:52
+msgid "Orientation"
+msgstr ""
+
+#: FTestBalloon.form:17
+msgid "Ceci est une bulle d'aide"
+msgstr ""
+
+#: FTestColorChooser.form:20
+msgid "Resizable"
+msgstr ""
+
+#: FTestCompletion.form:28
+msgid "Button2"
+msgstr ""
+
+#: FTestDateChooser.form:47
+msgid "Enable"
+msgstr ""
+
+#: FTestFileView.form:28 FTestMenuButton.form:31
+msgid "Menu1"
+msgstr ""
+
+#: FTestFileView.form:41 FTestMenuButton.form:65
+msgid "Menu7"
+msgstr ""
+
+#: FTestFileView.form:49 FTestMenuButton.form:48 FWiki.form:28
+msgid "Menu4"
+msgstr ""
+
+#: FTestFileView.form:54 FTestMenuButton.form:52 FWiki.form:32
+msgid "Menu5"
+msgstr ""
+
+#: FTestFileView.form:76
+msgid "Balloon"
+msgstr ""
+
+#: FTestMenuButton.form:27
+msgid "Project"
+msgstr ""
+
+#: FTestMenuButton.form:44
+msgid "View"
+msgstr ""
+
+#: FTestMenuButton.form:56
+msgid "Menu6"
+msgstr ""
+
+#: FTestMenuButton.form:61
+msgid "Tools"
+msgstr ""
+
+#: FTestMenuButton.form:69
+msgid "Menu8"
+msgstr ""
+
+#: FTestMenuButton.form:73
+msgid "Menu9"
+msgstr ""
+
+#: FTestMenuButton.form:76
+msgid "Menu10"
+msgstr ""
+
+#: FTestMenuButton.form:80
+msgid "Menu11"
+msgstr ""
+
+#: FTestToolPanel.form:13
+msgid "Toolbar &0"
+msgstr ""
+
+#: FTestToolPanel.form:15
+msgid "Toolbar &1"
+msgstr ""
+
+#: FTestToolPanel.form:17
+msgid "Toolbar &2"
+msgstr ""
+
+#: FTestValueBox.form:15
+msgid "Hello world!"
+msgstr ""
+
+#: FTestWizard.form:19
+msgid "Étape n°1"
+msgstr ""
+
+#: FTestWizard.form:26
+msgid "Étape n°2"
+msgstr ""
+
+#: FTestWizard.form:30
+msgid "LCDLabel1"
+msgstr ""
+
+#: FTestWizard.form:33
+msgid "Étape n°3"
+msgstr ""
+
+#: FTestWizard.form:35
+msgid "Étape n°4"
+msgstr ""
+
 #: FWizard.class:88
 msgid "&Next"
-msgstr "Suivant"
+msgstr "&Suivant"
 
 #: FWizard.form:59 MessageView.class:48
 msgid "Next"
@@ -458,9 +719,13 @@ msgstr "Suivant"
 msgid "Previous"
 msgstr "Précédent"
 
-#: FileView.class:1043
+#: FileView.class:1073
 msgid "Cannot rename file."
 msgstr "Impossible de renommer le fichier."
+
+#: Form2.form:127
+msgid "ButtonBox2"
+msgstr ""
 
 #: Help.module:71
 msgid "A file or directory name cannot be void."
@@ -482,7 +747,6 @@ msgstr "&1 Mio"
 msgid "&1 GiB"
 msgstr "&1 Gio"
 
-#: Wizard.class:85
+#: Wizard.class:86
 msgid "Step #&1"
 msgstr "Étape n°&1"
-
