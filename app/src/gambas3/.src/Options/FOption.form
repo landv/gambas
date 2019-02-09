@@ -256,45 +256,55 @@
       Font = Font["Bold"]
       Text = ("Images")
     }
-    { panCompressPng HBox
-      MoveScaled(1,40,66,4)
-      Spacing = True
+    { panCompressPng Panel
+      MoveScaled(1,39,66,4)
+      Arrangement = Arrange.Horizontal
       Indent = True
-      { Label77 TextLabel
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Compress PNG images with '<tt>pngquant</tt>'")
-        Alignment = Align.Normal
+      { Label77 Label
+        MoveScaled(0,0,25,4)
+        AutoResize = True
+        Text = ("Compress PNG images with ")
+      }
+      { URLLabel1 URLLabel
+        MoveScaled(25,0,11,4)
+        #Translate = False
+        AutoResize = True
+        Text = "pngquant"
+        Link = "https://pngquant.org/"
+      }
+      { Spring3 Spring
+        MoveScaled(38,1,5,2)
       }
       { btnCompressPng SwitchButton
         MoveScaled(50,0,8,4)
         Animated = True
       }
     }
-    { URLLabel1 URLLabel
-      MoveScaled(1,45,34,2)
-      #Translate = False
-      Font = Font["-3"]
-      Text = "https://pngquant.org/"
-      Alignment = Align.Right
-    }
     { Label82 Label
-      MoveScaled(0,48,63,3)
+      MoveScaled(0,46,63,3)
       Font = Font["Bold"]
       Text = ("Translation")
     }
     { panAutoTrans HBox
-      MoveScaled(1,52,66,4)
-      Spacing = True
+      MoveScaled(1,50,66,4)
       Indent = True
-      { Label80 TextLabel
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Automatic translation with '<tt>translate-shell</tt>'")
-        Alignment = Align.Normal
+      { Label80 Label
+        MoveScaled(0,0,24,4)
+        AutoResize = True
+        Text = ("Automatic translation with ")
+      }
+      { URLLabel2 URLLabel
+        MoveScaled(23,0,14,4)
+        #Translate = False
+        AutoResize = True
+        Text = "translate-shell"
+        Link = "https://github.com/soimort/translate-shell"
+      }
+      { Spring4 Spring
+        MoveScaled(40,1,6,2)
       }
       { btnAutoTrans SwitchButton
-        MoveScaled(50,0,8,4)
+        MoveScaled(51,0,8,4)
         Animated = True
       }
     }
@@ -312,13 +322,6 @@
         MoveScaled(50,0,16,4)
         ReadOnly = True
       }
-    }
-    { URLLabel2 URLLabel
-      MoveScaled(1,62,34,2)
-      #Translate = False
-      Font = Font["-3"]
-      Text = "https://github.com/soimort/translate-shell"
-      Alignment = Align.Right
     }
     Index = 2
     Text = ("Interface")

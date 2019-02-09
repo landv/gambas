@@ -683,8 +683,10 @@ Public Sub Reload()
   UpdateEndOfLine
   
   $hEditor.SetFocus
-  Editors_Cursor
+  'Editors_Cursor
   Modify(True)
+  
+  If Settings["/FormatCode/FormatOnLoad"] Then MPrettyCode.Run(Me)
 
 End
 
