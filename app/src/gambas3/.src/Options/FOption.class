@@ -959,7 +959,11 @@ Public Sub gvwSnippet_Data(Row As Integer, Column As Integer)
     .Data.Font = Font[txtEditorFont.Value]
     If Column = 0 Then
       .Data.Text = hSampleCode.Trigger
-      If hSampleCode.Default Then .Data.Font.Italic = True
+      If hSampleCode.Default Then 
+        '.Data.Font.Italic = True
+      Else
+        .Data.Font.Bold = True
+      Endif
     Else
       .Data.Text = Mid$(Quote(hSampleCode.Pattern), 2, -1)
     Endif
