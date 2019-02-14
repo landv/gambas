@@ -13,8 +13,9 @@
   <%Endif%>
   <link rel="icon" href="<%/%>/logo.png" type="image/png">
   <title><%=("Gambas Documentation")%> - <%_PrintTitle%></title>
+  <script type="text/javascript" src="<%/%>/playground.js?l=<%=Request["l"]%>"></script>
   <%If Request["ht"]%>
-  <script src="<%/%>/hilitor.js"></script>
+  <script type="text/javascript" src="<%/%>/hilitor.js"></script>
   <%Endif%>
 </head>
 
