@@ -24,6 +24,7 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
+#include "config.h"
 #include "gambas.h"
 #include "gb.image.h"
 
