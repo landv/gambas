@@ -269,7 +269,7 @@ void CURL_init_options(void *_object)
 	curl_easy_setopt(THIS_CURL, CURLOPT_SSL_VERIFYPEER, THIS->ssl_verify_peer ? 1 : 0);
 	curl_easy_setopt(THIS_CURL, CURLOPT_SSL_VERIFYHOST , THIS->ssl_verify_host ? 2 : 0);
 
-	CURL_proxy_set(&THIS->proxy.proxy, THIS_CURL);
+	CURL_proxy_set(&THIS->proxy, THIS_CURL);
 	CURL_user_set(&THIS->user, THIS_CURL);
 	curl_easy_setopt(THIS_CURL, CURLOPT_URL, THIS_URL);
 }
@@ -444,12 +444,12 @@ bool CURL_copy_from(CCURL *dest, CCURL *src)
 	COPY_STRING(user.userpwd);
 	COPY_STRING(user.pwd);
 
-	dest->proxy.proxy.type = src->proxy.proxy.type;
-	dest->proxy.proxy.auth = src->proxy.proxy.auth;
-	COPY_STRING(proxy.proxy.host);
-	COPY_STRING(proxy.proxy.user);
-	COPY_STRING(proxy.proxy.pwd);
-	COPY_STRING(proxy.proxy.userpwd);
+	dest->proxy.type = src->proxy.type;
+	dest->proxy.auth = src->proxy.auth;
+	COPY_STRING(proxy.host);
+	COPY_STRING(proxy.user);
+	COPY_STRING(proxy.pwd);
+	COPY_STRING(proxy.userpwd);
 
 	return FALSE;
 }
@@ -587,13 +587,11 @@ BEGIN_METHOD_VOID(Curl_new)
 	#endif
 
 	CURL_user_init(&THIS->user);
-	CURL_proxy_init(&THIS->proxy.proxy);
+	CURL_proxy_init(&THIS->proxy);
 
 	THIS->ssl_verify_peer = TRUE;
 	THIS->ssl_verify_host = TRUE;
 
-	THIS->proxy.parent_status = (int*)&THIS_STATUS;
-	
 END_METHOD
 
 BEGIN_METHOD_VOID(Curl_free)
@@ -608,7 +606,7 @@ BEGIN_METHOD_VOID(Curl_free)
 	GB.FreeString(&THIS->target);
 	
 	CURL_user_clear(&THIS->user);
-	CURL_proxy_clear(&THIS->proxy.proxy);
+	CURL_proxy_clear(&THIS->proxy);
 	
 END_METHOD
 
@@ -642,6 +640,8 @@ BEGIN_METHOD_VOID(Curl_exit)
 	#endif
 	
 	curl_multi_cleanup(CCURL_multicurl);
+	
+	CURL_default_proxy_clear();
 
 END_METHOD
 
@@ -751,6 +751,7 @@ GB_DESC CurlDesc[] =
 	GB_PROPERTY("Password", "s", Curl_Password),  
 	GB_PROPERTY("Async", "b", Curl_Async),
 	GB_PROPERTY("Timeout", "i", Curl_Timeout),
+	GB_STATIC_PROPERTY_SELF("DefaultProxy", ".Curl.Proxy"),
 	GB_PROPERTY_SELF("Proxy", ".Curl.Proxy"),
 	GB_PROPERTY_SELF("SSL", ".Curl.SSL"),
 	GB_PROPERTY_READ("Status", "i", Curl_Status),
