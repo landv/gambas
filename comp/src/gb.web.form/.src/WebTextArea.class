@@ -61,6 +61,7 @@ Public Sub _BeforeRender()
   
   Print "<textarea"; Me._GetClassId(); " autocomplete=\"off\""; 
   If Object.CanRaise(Me, "Change") Then Print " oninput=\"gw.textarea.onchange("; JS(Me.Name); ");\"";
+  Print Me._GetUpdateJS("onblur", "text", "this.value");
   If Not Me.Enabled Then Print " disabled";
   If $bReadOnly Then Print " readonly";
   If $sPlaceHolder Then Print " placeholder=\""; Html($sPlaceHolder); "\"";

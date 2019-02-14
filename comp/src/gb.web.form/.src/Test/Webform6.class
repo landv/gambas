@@ -12,3 +12,9 @@ Public Sub WebComboBox1_Click()
   Message(WebComboBox1.Text)
 
 End
+
+Public Sub WebButton2_Click()
+
+  Message(Html("TextBox: " & WebTextBox1.Text) & "<p>" & Html("TextArea: " & WebTextArea1.Text))
+
+End
