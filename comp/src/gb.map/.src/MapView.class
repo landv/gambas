@@ -6,17 +6,15 @@ Inherits UserControl
 Public Const _Properties As String = "*,Border{Border.*},AllowEffect=true,ShowControls=true"
 Public Const _Group As String = "View"
 
-
 Property Lock As Boolean
 Property Border As Integer
 Property Read {Map} As Map
 Property AllowEffect As Boolean
 Property ShowControls As Boolean
 Property Mode As Integer
+
 Private $iMode As Integer
 Private $bShowControls As Boolean = True
-
-
 Private $hCenter As MapPoint
 Private $hMap As New Map As "Map"
 Private $hView As DrawingArea

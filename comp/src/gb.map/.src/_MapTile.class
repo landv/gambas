@@ -9,9 +9,9 @@ Property Read Loading As Boolean
 Property UseWebMapService As Boolean
 Property WMSArgs As Collection
 Property MaxBounds As MapBounds 
-''Delay before refreshing an image in the cache. (By default 30 day)
+'' Delay before refreshing an image in the cache. (By default 30 day)
 Property CacheRefreshDelay As Integer  
-''Set the projection used by the WMS server.
+'' Set the projection used by the WMS server.
 Property WMSProjection As String
 
 Private $aStack As New String[]
@@ -51,7 +51,7 @@ Private $bCacheRefresh As Boolean = True
 ' Private $bHaveCache As Boolean
 Event Refresh
 
-Public Sub _new(Optional CacheName As String)
+Public Sub _new(Optional CacheName As String, Parent As Object)
   
   Dim sTempPath As String
   Dim hClient As HttpClient
@@ -59,6 +59,7 @@ Public Sub _new(Optional CacheName As String)
   'Dim hTable As Table
   
   'db.Debug = True
+  Object.Attach(Me, Parent, "Layer")
   $prjLatLon = New Proj("epsg:4326")
   If CacheName Then
     sTempPath = $sCachePath &/ CacheName 
@@ -77,6 +78,15 @@ Public Sub _new(Optional CacheName As String)
   For i = 0 To $aClients.Max
     hClient = New HttpClient As "Client"
     hClient.Async = True
+    With GetMap()
+      If ._Proxy Then
+        hClient.Proxy.Auth = ._Proxy.Auth
+        hClient.Proxy.Type = ._Proxy.Type
+        hClient.Proxy.Host = ._Proxy.Host
+        hClient.Proxy.User = ._Proxy.User
+        hClient.Proxy.Password = ._Proxy.Password
+      Endif
+    End With
     $aClients[i] = hClient
     hClient.Timeout = 10
   Next
