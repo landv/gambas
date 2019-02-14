@@ -439,7 +439,7 @@ Private Sub UpdateMargin()
   
   If MW <> $MW Then
     $MW = MW
-    $hView._SetShadowOffset(0, 0, $MW - $iWidthModified, 0)
+    '$hView._SetShadowOffset(0, 0, $MW - $iWidthModified, 0)
     If $cLineLayout Then
       _UpdateAllHeight
       UpdateWidth
