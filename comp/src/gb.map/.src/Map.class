@@ -12,6 +12,8 @@ Property Read PixelBox As Rect
 Property Read Bounds As MapBounds
 Property Read Count As Integer
 Property MaxZoom As Integer
+Public _Proxy As _MapProxy
+Property Read Proxy As _MapProxy ''Returns a object used for defining proxy parameters.
 Private $iMaxZoom As Integer = 18
 Private $iZoom As Integer = 1
 Private $mpCenter As New MapPoint
@@ -184,14 +186,14 @@ End
 
 Public Sub AddTile(Name As String, Pattern As String, Optional Args As Collection, Optional CacheName As String) As _MapTile
   
-  Dim hLayer As New _MapTile(CacheName)
+  Dim hLayer As New _MapTile(CacheName, Me)
   
   hLayer.Name = Name
   'hLayer.Pattern = Pattern
   hLayer.SetPattern(Pattern, Args)
   $aLayers.Add(hLayer)
   $aLayerNames.Add(Name)
-  Object.Attach(hLayer, Me, "Layer")
+  'Object.Attach(hLayer, Me, "Layer")
   Return hLayer
   
 End
@@ -371,5 +373,12 @@ End
 Private Sub MaxZoom_Write(Value As Integer)
 
   $iMaxZoom = Value
+
+End
+
+Private Function Proxy_Read() As _MapProxy
+
+  If Not _Proxy Then _Proxy = New _MapProxy
+  Return _Proxy
 
 End

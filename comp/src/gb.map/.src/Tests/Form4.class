@@ -8,6 +8,14 @@ Dim hbound As MapBounds
     'hImg = Scanners["hpaio:/net/HP_LaserJet_MFP_M426fdn?ip=192.168.1.25"].Scan()
   
   'MapView1.Map.AddTile("gmap", "https://khms0.google.com/kh/v={version}?x={x}&y={y}&z={z}", ["version": "821"]).Copyright = "google"
+  
+  'Authenticated proxy settings bellow
+  MapView1.Map.Proxy.Auth = Net.AuthBasic
+  MapView1.Map.Proxy.Type = Net.ProxyHTTP
+  MapView1.Map.Proxy.Host = "your-proxy-server"
+  MapView1.Map.Proxy.User = "your-proxy-user"
+  MapView1.Map.Proxy.Password = "your-proxy-password"
+  
   MapView1.Map.AddTile("OpenStreetMap", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null).Copyright = "© OpenStreetMap contributors"
   MapView1.Map.Center = MapPoint(48.866667, 2.333333)
   
