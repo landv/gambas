@@ -380,9 +380,6 @@ AC_DEFUN([GB_INIT],
     AM_CXXFLAGS="$AM_CXXFLAGS -O0"
   fi
 
-  CFLAGS=""
-  CXXFLAGS=""
-
   dnl ---- Checks for programs
 
   AC_PROG_CPP
