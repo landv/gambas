@@ -219,6 +219,7 @@ static void gambas_handle_event(GdkEvent *event)
 	bool cancel;
 	int type;
 	bool handle_event = false;
+	bool send_to_window = false;
 
 	if (gApplication::_fix_printer_dialog)
 	{
@@ -806,12 +807,14 @@ __FOUND_WIDGET:
 
 			if (event->key.keyval)
 				gKey::_last_key_press = event->key.keyval;
+			send_to_window = control->isWindow();
 			goto __HANDLE_EVENT;
 
 		case GDK_KEY_RELEASE:
 
 			if (event->key.keyval)
 				gKey::_last_key_release = event->key.keyval;
+			send_to_window = control->isWindow();
 			goto __HANDLE_EVENT;
 	}
 
@@ -833,6 +836,9 @@ __RETURN:
 	
 	if (handle_event)
 		gtk_main_do_event(event);
+	
+	if (send_to_window)
+		gcb_key_event(widget, event, control);
 
 	if (!gdk_events_pending()) // && event->type != GDK_ENTER_NOTIFY && event->type != GDK_LEAVE_NOTIFY)
 	{
