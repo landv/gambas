@@ -94,6 +94,15 @@ GB_COMPONENT(
   [GB_FIND(, /usr/local /usr, lib)],
   [$GB_INOTIFY_LIB])
 
+dnl ---- Check for the Linux joystick headers
+dnl TODO: Should also check if JS_VERSION >= 0x010000
+
+GB_COMPONENT(
+  joystick, JOYSTICK, gb.joystick, [joystick],
+  [GB_FIND(linux/joystick.h, /usr/local/lib /usr/local /usr/lib /usr, include)],
+  [GB_FIND(, /usr/local /usr, lib)],
+  [$C_LIB])
+
 dnl ---- We do not use libtool to load shared libraries anymore!
 
 AC_DEFINE(DONT_USE_LTDL, 1, [Do not use libtool to load shared libraries])
@@ -140,6 +149,7 @@ lib/data/Makefile \
 lib/clipper/Makefile \
 lib/inotify/Makefile \
 lib/jit/Makefile \
+lib/joystick/Makefile \
 ])
 AC_OUTPUT
 
