@@ -1,0 +1,447 @@
+' Gambas module file
+
+Private $sRoot As String
+Private $sComponent As String
+Private $bVerbose As Boolean
+
+Private Sub PrintError(sErr As String)
+
+  Error File.Name(Args[0]); ": error: "; sErr
+  Quit 1
+
+End
+
+Private Sub PrintMessage(sMsg As String)
+
+  If Not $bVerbose Then Return
+  Error sMsg
+
+End
+
+Public Sub Main()
+  
+  Dim iInd As Integer, aSources As New String[]
+  Dim sArg, sRec As String, aRec As String[]
+  Dim sPath As String
+  Dim hOut As File
+  Dim bOnlySources As Boolean
+  Dim sMsg As String
+
+  $sRoot = System.Path
+  
+  For iInd = 1 To Args.Max
+    Select Case Args[iInd]
+      Case "-h", "--help"
+        Print File.Load("usage")
+        Quit
+      Case "-V", "--version"
+        Print Application.Version
+        Quit
+      Case "-L", "--license"
+        Print File.Load("license")
+        Quit
+      Case "-v", "--verbose"
+        $bVerbose = True
+      Case "-r", "--root"
+        $sRoot = Args[iInd + 1]
+        If Not $sRoot Then PrintError(Args[iInd] & " requires an argument")
+        Inc iInd
+      Case "-c", "--component"
+        $sComponent = Args[iInd + 1]
+        If Not $sComponent Then PrintError(Args[iInd] & " requires an argument")
+        Inc iInd
+      Case "--"
+        bOnlySources = True
+      Default
+        If Not bOnlySources Then
+          If Args[iInd] Begins "-" Then
+            PrintError("unknown option: " & Args[iInd])
+          Endif
+        Endif
+        aSources.Add(Args[iInd])
+    End Select
+  Next
+  
+  If aSources.Count = 0 Then aSources.Add(".")
+
+  If $sComponent Then
+    sPath = $sRoot &/ "share/gambas" & System.Version &/ "info" &/ $sComponent & ".help"
+    PrintMessage("Output to " & sPath)
+    hOut = Open sPath For Create
+  Else
+    hOut = File.Out
+  Endif
+
+  For Each sArg In aSources
+    If Left(sArg) <> "/" Then
+      If sArg = "." Then 
+        sArg = Application.Dir
+      Else
+        sArg = Application.Dir &/ sArg
+      Endif
+    Endif
+    If IsDir(sArg) Then
+      aRec = RDir(sArg, "*.{c,cc,cpp}")
+      For Each sRec In aRec
+        OneFile(sArg &/ sRec, hOut)
+      Next
+    Else
+      OneFile(sArg, hOut)
+    Endif
+  Next
+  
+  If $sComponent Then
+    Close #hOut
+    If Stat(sPath).Size = 0 Then 
+      PrintMessage("Removing void data file")
+      Try Kill sPath
+    Endif
+  Endif
+  
+Catch
+  
+  sMsg = Error.Text & ": " & Error.Backtrace.Join(" ")
+  Output To Default
+  PrintError(sMsg)
+  
+End
+
+Private Sub AddHelp(cHelp As Collection, sClass As String, sSymbol As String, sHelp As String)
+
+  Dim cCol As Collection
+  
+  PrintMessage("AddHelp: " & sClass & "." & sSymbol)
+  
+  cCol = cHelp[sClass]
+  If Not cCol Then
+    cCol = New Collection
+    cHelp[sClass] = cCol
+  Endif
+  
+  cCol[sSymbol] = sHelp
+  
+End
+
+
+Private Sub OneFile(sPath As String, hOut As File)
+  
+  Dim hFile As File
+  Dim sLine As String
+  Dim aHelp As New String[]
+  Dim bInsideComments As Boolean
+  Dim sHelp As String
+  Dim iPos As Integer
+  Dim bInsideDesc As Boolean
+  Dim sMacro As String
+  Dim iPos2 As Integer
+  Dim aArg As String[]
+  Dim sClass As String
+  Dim sSymbol As String
+  Dim cHelp As Collection
+  Dim sDeclareClass As String
+  Dim cCol As Variant
+  Dim aClass As String[]
+  Dim sImpl As String
+
+  PrintMessage("Processing " & sPath & "...")
+  hFile = Open sPath For Input
+  
+  cHelp = New Collection
+  
+  For Each sLine In hFile.Lines
+    
+    sLine = Trim(sLine)
+    If Not sLine Then Continue
+    
+    'PrintMessage(sLine)
+    
+    If sLine Begins "/// " Then
+      
+      aHelp.Add(Mid$(sLine, 5))
+      Continue
+      
+    Else If sLine = "/**G" Or If sLine = "/**" Then
+      
+      bInsideComments = True
+      Continue
+    
+    Else If sLine Begins "/** " Then
+      
+      aHelp.Add(Mid$(sLine, 5))
+      bInsideComments = True
+      Continue
+    
+    Else If bInsideComments Then
+    
+      If RTrim(sLine) Ends "*/" Then
+        
+        bInsideComments = False
+        Continue
+        
+      Else
+        
+        While Left(sLine) = "*"
+          sLine = Mid$(sLine, 2)
+        Wend
+        If Left(sLine) = " " Then sLine = Mid$(sLine, 2)
+        aHelp.Add(sLine)
+        Continue
+        
+      Endif
+      
+    Endif
+    
+    If aHelp.Count Then
+      
+      sHelp = Trim(aHelp[0])
+      If Len(sHelp) >= 3 And If sHelp Begins "[" And If sHelp Ends "]" Then
+        sHelp = Mid$(sHelp, 2, -1)
+        iPos = InStr(sHelp, ".")
+        If iPos = 0 Then
+          sClass = sHelp
+          sSymbol = ""
+        Else
+          sClass = Left$(sHelp, iPos - 1)
+          sSymbol = Mid$(sHelp, iPos + 1)
+        Endif
+        
+        aHelp.Remove(0)
+        AddHelp(cHelp, sClass, sSymbol, aHelp.Join("\n"))
+        sHelp = ""
+      Else
+        sHelp = Trim(aHelp.Join("\n"))
+      Endif
+      aHelp.Clear
+      
+    Endif
+    
+    If sHelp Then
+      If sLine Begins "BEGIN_METHOD" Or If sLine Begins "BEGIN_PROPERTY" Then
+        
+        iPos = InStr(sLine, "(")
+        If iPos = 0 Then Continue
+        sLine = Mid$(sLine, iPos + 1)
+        iPos = InStr(sLine, ",")
+        If iPos = 0 Then iPos = InStr(sLine, ")")
+        If iPos = 0 Then Continue
+        sLine = Left(sLine, iPos - 1)
+        
+        AddHelp(cHelp, "@", sLine, sHelp)
+        sHelp = ""
+        Continue
+        
+      Endif
+    Endif
+    
+    If sLine Begins "GB_DECLARE" Then
+      bInsideDesc = True
+      Try sDeclareClass = Scan(sLine, "GB_DECLARE*(\"*\"*")[1]
+      If Error Then PrintError("Missing class name in GB_DECLARE macro: " & sLine)
+      Continue
+    Endif
+    
+    If bInsideDesc Then
+      
+      If sLine Begins "GB_END_DECLARE" Then
+        bInsideDesc = False
+        Continue
+      Endif
+      
+      
+      iPos = InStr(sLine, "(")
+      If iPos = 0 Then Continue
+      sMacro = Left(sLine, iPos - 1)
+      
+      If sMacro Not Begins "GB_" Then Continue
+      If InStr(sMacro, "_CONSTANT") = 0 And If InStr(sMacro, "_PROPERTY") = 0 And If InStr(sMacro, "_METHOD") = 0 Then Continue
+      
+      iPos2 = InStr(sLine, ")", iPos + 1)
+      If iPos2 = 0 Then Continue
+      
+      aArg = Split(Mid$(sLine, iPos + 1, iPos2 - iPos - 1), ",", Chr$(34))
+      sSymbol = Trim(aArg[0])
+      Try sImpl = Trim(aArg[2])
+        
+      If sHelp Then
+        
+        AddHelp(cHelp, sDeclareClass, sSymbol, sHelp)
+        sHelp = ""
+        
+      Else
+        
+        If InStr(sMacro, "_CONSTANT") Then Continue
+        If InStr(sMacro, "_SELF") Then Continue
+        Try sHelp = cHelp["@"][sImpl]
+        If sHelp Then
+          AddHelp(cHelp, sDeclareClass, sSymbol, sHelp)
+          sHelp = ""
+        Endif
+        
+      Endif 
+        
+    Endif
+    
+  Next
+  
+  Close #hFile
+  
+  ' Make class list
+  
+  aClass = New String[]
+  For Each cCol In cHelp
+    If cHelp.Key = "@" Then Continue
+    aClass.Add(cHelp.Key)
+  Next
+  aClass.Sort(gb.IgnoreCase)
+  
+  ' Generate help
+  
+  For Each sClass In aClass
+    
+    cCol = cHelp[sClass]
+    If cCol.Count = 0 Then Continue
+    
+    Print #hOut, "#"; sClass
+    
+    For Each sHelp In cCol
+      Print #hOut, cCol.Key
+      Print #hOut, "'"; Split(sHelp, "\n").Join("\n'")
+    Next
+    
+  Next
+  
+End
+
+' Private Function Extract(hFile As File) As String[]
+' 
+'   Dim hNameFn As New RegExp, hNameInline As New RegExp
+'   Dim sLine As String, sInline As String
+'   Dim aRes As New String[]
+'   Dim bRecord As Boolean
+' 
+'   hNameFn.Compile("^BEGIN_.*\\(([^,)]+).*")
+'   hNameInline.Compile("/\\*\\*G (.+)$")
+' 
+'   For Each sLine In hFile.Lines
+'     If sLine Match "^[\\t ]*\\*?\\*/$" Then
+'       If sInline Then
+'         aRes.Add("G " & sInline)
+'         sInline = ""
+'         bRecord = False
+'       Endif
+'       Continue
+'     Endif
+'     hNameFn.Exec(sLine)
+'     If hNameFn.Offset <> -1 And If bRecord And If Not sInline Then
+'       aRes.Add(hNameFn[1].Text)
+'       bRecord = False
+'     Endif
+' 
+'     If bRecord Then aRes.Add(RegExp.Replace(sLine, "^[\\t ]*\\*", "'"))
+' 
+'     If sLine Match "^/\\*\\*G$" Then
+'       If bRecord Then aRes.Add("ERROR")
+'       sInline = ""
+'       bRecord = True
+'     Endif
+'     hNameInline.Exec(sLine)
+'     If hNameInline.Offset <> -1 Then
+'       If bRecord Then aRes.Add("ERROR")
+'       sInline = LTrim$(hNameInline[1].Text)
+'       bRecord = True
+'     Endif
+'   Next
+'   If bRecord Then aRes.Add("ERROR")
+'   Return aRes
+' End
+' 
+' Private Function Translate(aSource As String[], sPath As String) As String[]
+'   
+'   Dim sLine As String, aRes As New String[]
+' 
+'   For Each sLine In aSource
+'     If Not sLine Then Continue
+'     If sLine = "ERROR" Or If sLine Begins "'" Then
+'       aRes.Add(sLine)
+'       Continue
+'     Endif
+'     If sLine Begins "G " Then ' Syntax-2?
+'       aRes.Add(Right$(sLine, -2))
+'       Continue
+'     Endif
+'     ' Syntax-1
+'     aRes.Add(GetSyntax1(sLine, sPath))
+'   Next
+'   Return aRes
+' End
+' 
+' Private Function GetSyntax1(sFunc As String, sPath As String) As String
+'   
+'   Dim hClassName As New RegExp, hFunction As New RegExp
+'   Dim hFile As File, sLine, sClass As String
+'   Dim aRes As New String[]
+' 
+'   hClassName.Compile("GB_DECLARE\\(\\\"([^\\\"]+).*")
+'   hFunction.Compile("GB_[^(]+\\(\\\"([^\"]+)\\\".*" & sFunc & "\\W")
+' 
+'   hFile = Open sPath For Input
+'   sClass = "ERROR"
+'   For Each sLine In hFile.Lines
+'     If Not sLine Then Continue
+'     hClassName.Exec(sLine)
+'     If hClassName.Offset <> -1 Then sClass = hClassName[1].Text
+'     hFunction.Exec(sLine)
+'     If hFunction.Offset <> -1 Then
+'       If Not aRes.Count Then aRes.Add(sClass)
+'       aRes.Add(hFunction[1].Text)
+'     Endif
+'   Next
+'   Close #hFile
+'   Return aRes.Join(" ")
+' End
+' 
+' Public Sub MakeHelp(aSource As String[], hOut As File)
+'   
+'   Dim sLine, sCls, sSym As String
+'   Dim cHelp As New Collection, aCurrent As New String[]
+'   Dim cClass As Collection, aHelp, aSyn As String[]
+'   Dim iInd As Integer
+' 
+'   Output To hOut
+'   For Each sLine In aSource
+'     If Not sLine Then Continue
+'     If sLine Begins "'" Then
+'       aCurrent.Add(sLine)
+'     Else
+'       With Scan(sLine, "* *")
+'         If .Count = 0 Then ' <Class>
+'           sCls = sLine
+'           sSym = "#"
+'         Else If .Count = 2 Then ' <Class> <Symbol-and-Synonym-List>
+'           sCls = Trim$(.[0])
+'           sSym = Trim$(.[1])
+'         Endif
+'         If Not cHelp[sCls] Then cHelp[sCls] = New Collection
+'         cHelp[sCls][sSym] = aCurrent
+'         aCurrent = New String[]
+'       End With
+'     Endif
+'   Next
+' 
+'   For Each cClass In cHelp
+'     Print "#"; cHelp.Key
+'     aHelp = cClass["#"]
+'     If aHelp Then Print aHelp.Join("\n")
+'     For Each aHelp In cClass
+'       If cClass.Key = "#" Then Continue
+'       aSyn = Split(cClass.Key, " ")
+'       Print aSyn[0]
+'       If aHelp.Count Then Print aHelp.Join("\n")
+'       For iInd = 1 To aSyn.Max
+'         Print aSyn[iInd]
+'         Print "' A synonym for";; aSyn[0]; "."
+'       Next
+'     Next
+'   Next
+'   Output To Default
+' End

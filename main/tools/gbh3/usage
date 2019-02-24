@@ -1,0 +1,18 @@
+
+Extract Gambas help comments from source files.
+
+Usage: gbh3 [options] [<sources>]
+
+Options:
+  -r --root <root>                 gives the Gambas installation directory
+  -c --component <component>       generate help directly in a component '*.help' file
+  -V --version                     display version
+  -L --license                     display license
+  -h --help                        display this help
+
+If <sources> contains directories, they are searched recursively for '*.c'
+and '*.cpp' files. If <sources> is not specified, the current directory
+is searched.
+
+The extracted help is printed on the standard output, unless the '-c' 
+option is specified.

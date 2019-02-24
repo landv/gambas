@@ -1,0 +1,256 @@
+' Gambas module file
+
+' ' Gambas module file
+' 
+' Private $sRoot As String
+' Private $sComponent As String
+' Private $bVerbose As Boolean
+' 
+' Private Sub PrintError(sErr As String)
+' 
+'   Error File.Name(Args[0]); ": error: "; sErr
+'   Quit 1
+' 
+' End
+' 
+' Private Sub PrintMessage(sMsg As String)
+' 
+'   If Not $bVerbose Then Return
+'   Error sMsg
+' 
+' End
+' 
+' Public Sub Main()
+'   
+'   Dim iInd As Integer, aSources As New String[]
+'   Dim sArg, sRec As String, aRec As String[]
+'   Dim sPath As String
+'   Dim hOut As File
+'   Dim bOnlySources As Boolean
+'   Dim sMsg As String
+' 
+'   $sRoot = System.Path
+'   
+'   For iInd = 1 To Args.Max
+'     Select Case Args[iInd]
+'       Case "-h", "--help"
+'         Print File.Load("usage")
+'         Quit
+'       Case "-V", "--version"
+'         Print Application.Version
+'         Quit
+'       Case "-L", "--license"
+'         Print File.Load("license")
+'         Quit
+'       Case "-v", "--verbose"
+'         $bVerbose = True
+'       Case "-r", "--root"
+'         $sRoot = Args[iInd + 1]
+'         If Not $sRoot Then PrintError(Args[iInd] & " requires an argument")
+'         Inc iInd
+'       Case "-c", "--component"
+'         $sComponent = Args[iInd + 1]
+'         If Not $sComponent Then PrintError(Args[iInd] & " requires an argument")
+'         Inc iInd
+'       Case "--"
+'         bOnlySources = True
+'       Default
+'         If Not bOnlySources Then
+'           If Args[iInd] Begins "-" Then
+'             PrintError("unknown option: " & Args[iInd])
+'           Endif
+'         Endif
+'         aSources.Add(Args[iInd])
+'     End Select
+'   Next
+'   
+'   If aSources.Count = 0 Then aSources.Add(".")
+' 
+'   If $sComponent Then
+'     sPath = $sRoot &/ "share/gambas" & System.Version &/ "info" &/ $sComponent & ".help"
+'     PrintMessage("Output to " & sPath)
+'     hOut = Open sPath For Create
+'   Else
+'     hOut = File.Out
+'   Endif
+' 
+'   For Each sArg In aSources
+'     If Left(sArg) <> "/" Then
+'       If sArg = "." Then 
+'         sArg = Application.Dir
+'       Else
+'         sArg = Application.Dir &/ sArg
+'       Endif
+'     Endif
+'     If IsDir(sArg) Then
+'       aRec = RDir(sArg, "*.{c,cc,cpp}")
+'       For Each sRec In aRec
+'         OneFile(sArg &/ sRec, hOut)
+'       Next
+'     Else
+'       OneFile(sArg, hOut)
+'     Endif
+'   Next
+'   
+'   If $sComponent Then
+'     Close #hOut
+'     If Stat(sPath).Size = 0 Then 
+'       PrintMessage("Removing void data file")
+'       Try Kill sPath
+'     Endif
+'   Endif
+'   
+' Catch
+'   
+'   sMsg = Error.Text & ": " & Error.Backtrace.Join(" ")
+'   Output To Default
+'   PrintError(sMsg)
+'   
+' End
+' 
+' Private Sub OneFile(sPath As String, hOut As File)
+'   
+'   Dim hFile As File
+' 
+'   PrintMessage("Processing " & sPath & "...")
+'   hFile = Open sPath For Input
+'   
+'   MakeHelp(Translate(Extract(hFile), sPath), hOut)
+'   
+'   Close #hFile
+'   
+' End
+' 
+' Private Function Extract(hFile As File) As String[]
+' 
+'   Dim hNameFn As New RegExp, hNameInline As New RegExp
+'   Dim sLine As String, sInline As String
+'   Dim aRes As New String[]
+'   Dim bRecord As Boolean
+' 
+'   hNameFn.Compile("^BEGIN_.*\\(([^,)]+).*")
+'   hNameInline.Compile("/\\*\\*G (.+)$")
+' 
+'   For Each sLine In hFile.Lines
+'     If sLine Match "^[\\t ]*\\*?\\*/$" Then
+'       If sInline Then
+'         aRes.Add("G " & sInline)
+'         sInline = ""
+'         bRecord = False
+'       Endif
+'       Continue
+'     Endif
+'     hNameFn.Exec(sLine)
+'     If hNameFn.Offset <> -1 And If bRecord And If Not sInline Then
+'       aRes.Add(hNameFn[1].Text)
+'       bRecord = False
+'     Endif
+' 
+'     If bRecord Then aRes.Add(RegExp.Replace(sLine, "^[\\t ]*\\*", "'"))
+' 
+'     If sLine Match "^/\\*\\*G$" Then
+'       If bRecord Then aRes.Add("ERROR")
+'       sInline = ""
+'       bRecord = True
+'     Endif
+'     hNameInline.Exec(sLine)
+'     If hNameInline.Offset <> -1 Then
+'       If bRecord Then aRes.Add("ERROR")
+'       sInline = LTrim$(hNameInline[1].Text)
+'       bRecord = True
+'     Endif
+'   Next
+'   If bRecord Then aRes.Add("ERROR")
+'   Return aRes
+' End
+' 
+' Private Function Translate(aSource As String[], sPath As String) As String[]
+'   
+'   Dim sLine As String, aRes As New String[]
+' 
+'   For Each sLine In aSource
+'     If Not sLine Then Continue
+'     If sLine = "ERROR" Or If sLine Begins "'" Then
+'       aRes.Add(sLine)
+'       Continue
+'     Endif
+'     If sLine Begins "G " Then ' Syntax-2?
+'       aRes.Add(Right$(sLine, -2))
+'       Continue
+'     Endif
+'     ' Syntax-1
+'     aRes.Add(GetSyntax1(sLine, sPath))
+'   Next
+'   Return aRes
+' End
+' 
+' Private Function GetSyntax1(sFunc As String, sPath As String) As String
+'   
+'   Dim hClassName As New RegExp, hFunction As New RegExp
+'   Dim hFile As File, sLine, sClass As String
+'   Dim aRes As New String[]
+' 
+'   hClassName.Compile("GB_DECLARE\\(\\\"([^\\\"]+).*")
+'   hFunction.Compile("GB_[^(]+\\(\\\"([^\"]+)\\\".*" & sFunc & "\\W")
+' 
+'   hFile = Open sPath For Input
+'   sClass = "ERROR"
+'   For Each sLine In hFile.Lines
+'     If Not sLine Then Continue
+'     hClassName.Exec(sLine)
+'     If hClassName.Offset <> -1 Then sClass = hClassName[1].Text
+'     hFunction.Exec(sLine)
+'     If hFunction.Offset <> -1 Then
+'       If Not aRes.Count Then aRes.Add(sClass)
+'       aRes.Add(hFunction[1].Text)
+'     Endif
+'   Next
+'   Close #hFile
+'   Return aRes.Join(" ")
+' End
+' 
+' Public Sub MakeHelp(aSource As String[], hOut As File)
+'   
+'   Dim sLine, sCls, sSym As String
+'   Dim cHelp As New Collection, aCurrent As New String[]
+'   Dim cClass As Collection, aHelp, aSyn As String[]
+'   Dim iInd As Integer
+' 
+'   Output To hOut
+'   For Each sLine In aSource
+'     If Not sLine Then Continue
+'     If sLine Begins "'" Then
+'       aCurrent.Add(sLine)
+'     Else
+'       With Scan(sLine, "* *")
+'         If .Count = 0 Then ' <Class>
+'           sCls = sLine
+'           sSym = "#"
+'         Else If .Count = 2 Then ' <Class> <Symbol-and-Synonym-List>
+'           sCls = Trim$(.[0])
+'           sSym = Trim$(.[1])
+'         Endif
+'         If Not cHelp[sCls] Then cHelp[sCls] = New Collection
+'         cHelp[sCls][sSym] = aCurrent
+'         aCurrent = New String[]
+'       End With
+'     Endif
+'   Next
+' 
+'   For Each cClass In cHelp
+'     Print "#"; cHelp.Key
+'     aHelp = cClass["#"]
+'     If aHelp Then Print aHelp.Join("\n")
+'     For Each aHelp In cClass
+'       If cClass.Key = "#" Then Continue
+'       aSyn = Split(cClass.Key, " ")
+'       Print aSyn[0]
+'       If aHelp.Count Then Print aHelp.Join("\n")
+'       For iInd = 1 To aSyn.Max
+'         Print aSyn[iInd]
+'         Print "' A synonym for";; aSyn[0]; "."
+'       Next
+'     Next
+'   Next
+'   Output To Default
+' End
