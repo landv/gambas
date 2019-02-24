@@ -37,10 +37,6 @@
 
 #define GB_ErrorErrno()	GB.Error(strerror(errno))
 
-enum joystick_direction {
-	DIRECTION_X, DIRECTION_Y
-};
-
 typedef struct {
 	GB_BASE ob;
 	int fd;
@@ -48,7 +44,7 @@ typedef struct {
 	int e_init; /* last event had JS_EVENT_INIT bit set? */
 } CJOYSTICK;
 
-DECLARE_EVENT(EVENT_Stick);
+DECLARE_EVENT(EVENT_Axis);
 DECLARE_EVENT(EVENT_Button);
 
 static void read_cb(int fd, int flags, CJOYSTICK *joy)
@@ -65,7 +61,7 @@ again:
 
 	switch (joy->e.type & ~JS_EVENT_INIT) {
 	case JS_EVENT_AXIS:
-		GB.Raise(joy, EVENT_Stick, 0);
+		GB.Raise(joy, EVENT_Axis, 0);
 		break;
 	case JS_EVENT_BUTTON:
 		GB.Raise(joy, EVENT_Button, 0);
@@ -108,9 +104,9 @@ BEGIN_METHOD_VOID(Joystick_free)
 END_METHOD
 
 /**G
- * Return the number of sticks of the joystick.
+ * Return the number of axes of the joystick.
  **/
-BEGIN_PROPERTY(Joystick_Sticks)
+BEGIN_PROPERTY(Joystick_Axes)
 
 	unsigned char axes;
 
@@ -118,7 +114,7 @@ BEGIN_PROPERTY(Joystick_Sticks)
 		GB_ErrorErrno();
 		return;
 	}
-	GB.ReturnInteger(axes / 2);
+	GB.ReturnInteger(axes);
 
 END_PROPERTY
 
@@ -167,7 +163,7 @@ BEGIN_PROPERTY(Joystick_Init)
 END_PROPERTY
 
 /**G
- * Returns the number of the button that caused the most recent
+ * Returns the index of the button that caused the most recent
  * [Button](../.button) event.
  **/
 BEGIN_PROPERTY(Joystick_Button)
@@ -177,26 +173,12 @@ BEGIN_PROPERTY(Joystick_Button)
 END_PROPERTY
 
 /**G
- * Returns the number of the stick that caused the most recent
- * [Stick](../.stick) event.
+ * Returns the index of the axis that caused the most recent
+ * [Axis](../.axis) event.
  **/
-BEGIN_PROPERTY(Joystick_Stick)
+BEGIN_PROPERTY(Joystick_Axis)
 
-	GB.ReturnInteger(THIS->e.number / 2);
-
-END_PROPERTY
-
-/**G
- * Returns the direction, [Joystick.X](../x) or [Joystick.Y](../y),
- * of the most recent [Stick](../.stick) event.
- **/
-BEGIN_PROPERTY(Joystick_Direction)
-
-	GB.ReturnInteger(
-		THIS->e.number % 2 == 0 ?
-			DIRECTION_X :
-			DIRECTION_Y
-	);
+	GB.ReturnInteger(THIS->e.number);
 
 END_PROPERTY
 
@@ -204,9 +186,8 @@ END_PROPERTY
  * In a Button event, this value is 0 or 1, according to whether the
  * [button](../button) was pressed or released.
  *
- * In a Stick event, the value gives the position of the [stick](../stick)
- * along the indicated [direction](../direction) on a scale of -32767 to
- * +32767, the range of a [Short](/lang/type/short).
+ * In an Axis event, the value gives the position of the [axis](../axis)
+ * on a scale of -32767 to +32767, the range of a [Short](/lang/type/short).
  *
  * [[ warning
  * The actual range of values seen in this property might be smaller
@@ -242,29 +223,25 @@ END_PROPERTY
 /**G
  * This class represents a joystick/gamepad handled by the legacy
  * [Linux Joystick API]. Once created it raises its [Button](.button)
- * and [Stick](.stick) events to indicate input from the device.
+ * and [Axis](.axis) events to indicate input from the device.
  *
- * Some properties describe the device itself, while others describe
- * the latest event that occurred. You should use them during event
- * handlers only.
+ * An analog control stick on a gamepad usually has two axes: one
+ * is vertical the other horizontal. However, there exist sticks with
+ * only a single axis and the numbering of axes is not always
+ * consistent with respect to being horizontal or vertical.
+ * Usually, you will want to let the user configure which buttons
+ * and axes should cause which actions in your program.
+ *
+ * Some properties of this class describe the device itself, while
+ * others describe the latest event that occurred. You should use
+ * them during event handlers only.
  *
  * [Linux Joystick API]: https://www.kernel.org/doc/html/latest/input/joydev/joystick-api.html
  **/
 GB_DESC CJoystick[] = {
 	GB_DECLARE("Joystick", sizeof(CJOYSTICK)),
 
-	/**G
-	 * The value of Joystick.Direction when the Stick event was caused
-	 * by movement of the X axis of the stick.
-	 **/
-	GB_CONSTANT("X", "i", DIRECTION_X),
-	/**G
-	 * The value of Joystick.Direction when the Stick event was caused
-	 * by movement of the Y axis of the stick.
-	 **/
-	GB_CONSTANT("Y", "i", DIRECTION_Y),
-
-	GB_PROPERTY_READ("Sticks", "i", Joystick_Sticks),
+	GB_PROPERTY_READ("Axes", "i", Joystick_Axes),
 	GB_PROPERTY_READ("Buttons", "i", Joystick_Buttons),
 	GB_PROPERTY_READ("Name", "s", Joystick_Name),
 	//GB_PROPERTY_READ("DriverVersion", "i", Joystick_DriverVersion),
@@ -274,12 +251,11 @@ GB_DESC CJoystick[] = {
 
 	/**G
 	 * Raised when a joystick stick changes position.
-	 * The index of the stick is stored in the [Stick](../stick)
-	 * property, the direction along which the position changed
-	 * in the [Direction](../direction) property and the new
-	 * position of the stick is the [Value](../value) property.
+	 * The axis on which the stick changed in is stored in the
+	 * [Axis](../axis) property and the new position is the
+	 * [Value](../value) property.
 	 **/
-	GB_EVENT("Stick", NULL, NULL, &EVENT_Stick),
+	GB_EVENT("Axis", NULL, NULL, &EVENT_Axis),
 	/**G
 	 * Raised when a joystick button was pressed or released.
 	 * The index of the button is stored in the [Button](../button)
@@ -293,8 +269,7 @@ GB_DESC CJoystick[] = {
 
 	/* Event data */
 	GB_PROPERTY_READ("Init", "b", Joystick_Init),
-	GB_PROPERTY_READ("Stick", "i", Joystick_Stick),
-	GB_PROPERTY_READ("Direction", "i", Joystick_Direction),
+	GB_PROPERTY_READ("Axis", "i", Joystick_Axis),
 	GB_PROPERTY_READ("Button", "i", Joystick_Button),
 	GB_PROPERTY_READ("Value", "i", Joystick_Value),
 	GB_PROPERTY_READ("Time", "i", Joystick_Time),
