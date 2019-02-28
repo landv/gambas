@@ -65,30 +65,12 @@ End
 
 Public Sub DrawingArea_Draw()
   
-  'Dim F As Integer = Style.FrameWidth
   Dim iCol As Integer
   Dim iFlag As Integer = Style.StateOf($hDrawingArea)
   Dim X As Float
   Dim Y As Integer
   Dim DS As Integer
 
-  ' If $fValue > 0 Then
-  '   If $iBg = Color.Default Then
-  '     iCol = Color.SelectedBackground
-  '   Else
-  '     iCol = $iBg
-  '   Endif
-  '   If Not Me.Enabled Then 
-  '     hColor = Color[iCol] 'Color.Merge(iCol, Color.ButtonBackground)]
-  '     hColor.Saturation /= 2
-  '     iCol = hColor.Color 'Color.Desaturate(Color.Merge(iCol, Color.ButtonBackground))
-  '   Endif
-  '   iCol = Color.SetAlpha(iCol, 255 * (1 - $fValue))    
-  ' Else
-  '   iCol = Style.BackgroundOf(Me)
-  '   'If Not Me.Enabled Then iCol = Color.Desaturate(iCol)
-  ' Endif
-  
   iCol = Color.Merge(Color.Merge(Color.TextForeground, Color.SelectedBackground, $fValue), Color.Background)
   If iFlag And Style.Disabled Then iCol = Color.Merge(iCol, Color.Background, 0.75)
   
@@ -96,19 +78,6 @@ Public Sub DrawingArea_Draw()
   Paint.Rectangle(DS, (Paint.H - DS * 1.5) / 2, Paint.W - DS * 2, DS * 1.5, DS)
   Paint.Background = iCol
   Paint.Fill
-  
-  'Style.PaintBox(0, 0, Paint.W, Paint.H, iFlag And Not Style.Disabled, iCol)
-  
-  ' iCol = Color.SelectedForeground
-  ' 'If Not Me.Enabled Then iCol = Color.Merge(iCol, Style.BackgroundOf(Me))
-  ' Paint.Background = iCol
-  ' Paint.DrawText(("ON"), 0, 0, Paint.W / 2, Paint.H, Align.Center)  
-  ' 
-  ' iCol = Color.Foreground
-  ' If Not Me.Enabled Then iCol = Color.Merge(iCol, Style.BackgroundOf(Me))
-  ' Paint.Background = iCol
-  ' Paint.DrawText(("OFF"), Paint.W / 2, 0, Paint.W / 2, Paint.H, Align.Center)  
-  
   
   X = (Paint.W - DS * 4) * $fValue + DS / 2
   Y = (Paint.H - DS * 3) / 2
@@ -134,62 +103,6 @@ Public Sub DrawingArea_Draw()
   
 End
 
-' Public Sub DrawingArea_Draw()
-'   
-'   Dim F As Integer = Style.FrameWidth
-'   Dim iCol As Integer
-'   Dim W As Float
-'   Dim iFlag As Integer = Style.StateOf(Me)
-'   Dim X As Float
-'   Dim Y As Integer
-'   Dim H As Float
-'   Dim hColor As ColorInfo
-' 
-'   If $fValue > 0 Then
-'     If $iBg = Color.Default Then
-'       iCol = Color.SelectedBackground
-'     Else
-'       iCol = $iBg
-'     Endif
-'     If Not Me.Enabled Then 
-'       hColor = Color[iCol] 'Color.Merge(iCol, Color.ButtonBackground)]
-'       hColor.Saturation /= 2
-'       iCol = hColor.Color 'Color.Desaturate(Color.Merge(iCol, Color.ButtonBackground))
-'     Endif
-'     iCol = Color.SetAlpha(iCol, 255 * (1 - $fValue))    
-'   Else
-'     iCol = Style.BackgroundOf(Me)
-'     'If Not Me.Enabled Then iCol = Color.Desaturate(iCol)
-'   Endif
-'   
-'   Style.PaintBox(0, 0, Paint.W, Paint.H, iFlag And Not Style.Disabled, iCol)
-'   
-'   iCol = Color.SelectedForeground
-'   'If Not Me.Enabled Then iCol = Color.Merge(iCol, Style.BackgroundOf(Me))
-'   Paint.Background = iCol
-'   Paint.DrawText(("ON"), 0, 0, Paint.W / 2, Paint.H, Align.Center)  
-'   
-'   iCol = Color.Foreground
-'   If Not Me.Enabled Then iCol = Color.Merge(iCol, Style.BackgroundOf(Me))
-'   Paint.Background = iCol
-'   Paint.DrawText(("OFF"), Paint.W / 2, 0, Paint.W / 2, Paint.H, Align.Center)  
-'   
-'   
-'   W = Paint.W / 2 - F
-'   X = W * $fValue + F
-'   Y = F
-'   H = Paint.H - F * 2
-'   Style.PaintButton(X, Y, W, H, $bPressed, Style.StateOf($hDrawingArea))
-'   
-'   Paint.Background = Color.SetAlpha(Color.Black, 240)
-'   Paint.LineWidth = Desktop.Scale / 4
-'   
-'   Paint.MoveTo(X + W / 2, Y + H / 4)
-'   Paint.RelLineTo(0, H / 2)
-'   Paint.Stroke
-'   
-' End
-' 
 Public Sub DrawingArea_Enter()
   
   $hDrawingArea.Refresh
