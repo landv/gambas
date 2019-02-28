@@ -1121,10 +1121,12 @@ Public Sub imvImage_MouseMove()
       
       Case "draw", "erase"
         
-        If $bShift And If $sTool = "draw" Then
-          With GetImagePos()
-            FImageProperty.SetColor($hImage[.X, .Y])
-          End With
+        If $bShift Then
+          If $sTool = "draw" Then
+            With GetImagePos()
+              FImageProperty.SetColor($hImage[.X, .Y])
+            End With
+          Endif
         Else
           If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
             AddStroke($hCurrentPoint)

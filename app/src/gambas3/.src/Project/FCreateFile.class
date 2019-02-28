@@ -59,7 +59,7 @@ Public Sub Form_Open()
 
   $bDoNotSetName = False
   
-  Settings.Read(Me)
+  'Settings.Read(Me)
   
   If Project.IsSourceDir($sDir) Then
 
@@ -294,11 +294,11 @@ Catch
   
 End
 
-Public Sub Form_Close()
-
-  Settings.Write(Me)  
-  
-End
+' Public Sub Form_Close()
+' 
+'   Settings.Write(Me)  
+'   
+' End
 
 
 Public Sub panType_Arrange()
