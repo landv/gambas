@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Add Input Box
         var inputCode = document.createElement("textarea");
-        inputCode.style = "display:none;";
+        inputCode.style.display = 'none';
         inputCode.name = "Code";
         inputCode.value = gcs[i].innerText;    
         formPlay.appendChild(inputCode);
