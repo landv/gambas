@@ -136,15 +136,13 @@ static CCOMPLEX *_div(CCOMPLEX *a, CCOMPLEX *b, bool invert)
 	if (br == 0.0 && bi == 0.0)
 		return NULL;
 	
-  double s = 1.0 / ABS(b);
+  double s = 1.0 / ( br * br + bi * bi );
 
-  double sbr = s * br;
-  double sbi = s * bi;
-
-  double zr = (ar * sbr + ai * sbi) * s;
-  double zi = (ai * sbr - ar * sbi) * s;
+  double zr = (ar * br + ai * bi) * s;
+  double zi = (ai * br - ar * bi) * s;
 
 	return COMPLEX_make(a, zr, zi);
+
 }
 
 static int _equal(CCOMPLEX *a, CCOMPLEX *b, bool invert)
