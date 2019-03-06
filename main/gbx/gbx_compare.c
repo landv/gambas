@@ -50,7 +50,7 @@ int compare_nothing(void *a, void *b)
 
 int compare_integer(int *a, int *b)
 {
-	bool comp;
+	int comp;
 
 	if (*a < *b)
 		comp = -1;
@@ -67,7 +67,7 @@ int compare_integer(int *a, int *b)
 
 int compare_short(short *a, short *b)
 {
-	bool comp;
+	int comp;
 
 	if (*a < *b)
 		comp = -1;
@@ -82,7 +82,7 @@ int compare_short(short *a, short *b)
 
 int compare_byte(unsigned char *a, unsigned char *b)
 {
-	bool comp;
+	int comp;
 
 	if (*a < *b)
 		comp = -1;
@@ -97,7 +97,7 @@ int compare_byte(unsigned char *a, unsigned char *b)
 
 int compare_long(int64_t *a, int64_t *b)
 {
-	bool comp;
+	int comp;
 
 	if (*a < *b)
 		comp = -1;
@@ -112,7 +112,7 @@ int compare_long(int64_t *a, int64_t *b)
 
 int compare_float(double *a, double *b)
 {
-	bool comp;
+	int comp;
 
 	if (*a < *b)
 		comp = -1;
@@ -127,7 +127,7 @@ int compare_float(double *a, double *b)
 
 int compare_single(float *a, float *b)
 {
-	bool comp;
+	int comp;
 
 	if (*a < *b)
 		comp = -1;
@@ -142,7 +142,7 @@ int compare_single(float *a, float *b)
 
 int compare_date(DATE *a, DATE *b)
 {
-	bool comp;
+	int comp;
 
 	comp = DATE_comp(a, b);
 
@@ -490,7 +490,7 @@ static int compare_string_natural_case(char **pa, char **pb)
 
 int COMPARE_object(void **a, void **b)
 {
-	bool comp;
+	int comp;
 	bool desc = _descent;
 	CLASS *ca, *cb;
 
@@ -624,7 +624,7 @@ COMPARE_FUNC COMPARE_get_func(TYPE type, int mode)
 {
 	_descent = (mode & GB_COMP_DESCENT) != 0;
 	mode &= GB_COMP_TYPE_MASK;
-
+	
 	if (type >= T_OBJECT)
 		return (COMPARE_FUNC)COMPARE_object;
 

@@ -24,7 +24,7 @@ libgbx_a_SOURCES = \
  gbx_exec.h gbx_exec.c gbx_exec_push.c gbx_exec_enum.c gbx_exec_pop.c gbx_exec_operator.c \
  gbx_string.h gbx_string.c \
  gbx_value.h gbx_value.c
-
+ 
 gbx3_SOURCES = \
  gbx_debug.h gbx_debug.c \
  gbx_jit.h gbx_jit.c gb.jit.h \

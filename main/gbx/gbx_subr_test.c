@@ -831,27 +831,6 @@ void SUBR_strcomp(ushort code)
   if (NPARAM == 3)
     mode = SUBR_get_integer(&PARAM[2]);
 
-	/*mode &= GB_COMP_TYPE_MASK;
-	
-	if (mode == GB_COMP_BINARY)
-		ret = STRING_compare(PARAM[0]._string.addr + PARAM[0]._string.start, PARAM[0]._string.len, PARAM[1]._string.addr + PARAM[1]._string.start, PARAM[1]._string.len);
-	else if (mode == GB_COMP_NOCASE)
-		ret = STRING_compare_ignore_case(PARAM[0]._string.addr + PARAM[0]._string.start, PARAM[0]._string.len, PARAM[1]._string.addr + PARAM[1]._string.start, PARAM[1]._string.len);
-	else
-	{
-		SUBR_get_string_len(&PARAM[0], &s1, &l1);
-		SUBR_get_string_len(&PARAM[1], &s2, &l2);
-		
-		if (mode & GB_COMP_NATURAL)
-			ret = COMPARE_string_natural(s1, l1, s2, l2, mode & GB_COMP_NOCASE);
-		else if (mode & GB_COMP_LIKE)
-			ret = COMPARE_string_like(s1, l1, s2, l2, mode & GB_COMP_NOCASE);
-		else if (mode & GB_COMP_LANG)
-			ret = COMPARE_string_lang(s1, l1, s2, l2, mode & GB_COMP_NOCASE, FALSE);
-		else
-			THROW(E_ARG);
-	}*/
-  
 	RETURN->_integer.type = T_INTEGER;
 	RETURN->_integer.value = (*COMPARE_get_string_func(mode))(PARAM[0]._string.addr + PARAM[0]._string.start, PARAM[0]._string.len, PARAM[1]._string.addr + PARAM[1]._string.start, PARAM[1]._string.len, mode & GB_COMP_NOCASE, FALSE);
 
