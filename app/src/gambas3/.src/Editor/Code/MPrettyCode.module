@@ -110,6 +110,7 @@ Public Sub Run(hModule As Object)
   $aSwitch = New Integer[]
   
   aText = Split(hEditor.Text, "\n")
+  iEnd = Min(aText.Max, iEnd)
   
   X = hEditor.Column
   Y = hEditor.Line
