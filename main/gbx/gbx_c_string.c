@@ -535,6 +535,8 @@ static void String_Right(ushort code)
 			val = utf8_get_length(str, len) - val;
 		
 		ulen = utf8_get_pos(ref, str, len, val);
+		if (ulen > len)
+			ulen = len;
 		
 		PARAM->_string.start += ulen;
 		PARAM->_string.len -= ulen;
@@ -834,7 +836,7 @@ END_METHOD
 
 #define IS_VALID(_char)                        \
 		((_char) < 0x110000 &&                     \
-		(((_char) & 0xFFFFF800) != 0xD800) &&     \
+		(((_char) & 0xFFFFF800) != 0xD800) &&      \
 		((_char) < 0xFDD0 || (_char) > 0xFDEF) &&  \
 		((_char) & 0xFFFE) != 0xFFFE)
 
