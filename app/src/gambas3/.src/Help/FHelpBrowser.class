@@ -215,20 +215,44 @@ End
 Private Sub FillTree()
 
   Dim hClass As CClassInfo
+  Dim aComp As New String[]
+  Dim aClass As New CClassInfo[]
   Dim sComponent As String
   Dim sClass As String
   
   tvwClasses.Clear
   
-  tvwClasses.Add("$", Project.Name, Project.GetIcon(Project.Dir, 16))
-  For Each sClass In Project.GetClasses()
+  If Project.Path Then
+  
+    tvwClasses.Add("$", Project.Name, Project.GetIcon(Project.Dir, 16))
+    For Each sClass In Project.GetClasses()
+      
+      tvwClasses.Add("$" &/ sClass, sClass,, "$")
+      
+    Next
+    tvwClasses["$"].Expanded = True
     
-    tvwClasses.Add("$" &/ sClass, sClass,, "$")
-    
-  Next
-  tvwClasses["$"].Expanded = True
+  Endif
   
   For Each hClass In Project.Documentation.Classes
+    If hClass.Component = Null Then 
+      sComponent = "gb"
+    Else 
+      sComponent = hClass.Component
+    Endif
+    If sComponent = "$" Then Continue
+    If Not aComp.Exist(sComponent) Then aComp.Add(sComponent)
+    aClass.Add(hClass)
+  Next
+  
+  aComp.Sort()
+  aClass.Sort()
+  
+  For Each sComponent In aComp
+    tvwClasses.Add(sComponent, sComponent, Picture["icon:/tiny/component"])
+  Next
+  
+  For Each hClass In aClass
     
     If hClass.Name = "." Then Continue
     If InStr(hClass.Name, "*") Then Continue
@@ -239,10 +263,6 @@ Private Sub FillTree()
       sComponent = hClass.Component
     Endif
     sClass = hClass.Name
-    
-    If Not tvwClasses.Exist(sComponent) Then 
-      tvwClasses.Add(sComponent, sComponent, Picture["img/16/component.png"])
-    Endif
     
     Try tvwClasses.Add(sComponent &/ sClass, sClass,, sComponent)
     

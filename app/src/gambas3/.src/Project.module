@@ -3096,6 +3096,8 @@ Public Function GetClasses(Optional bFullPath As Boolean) As String[]
   Dim aClass As New String[]
   Dim sExt As String
 
+  If Not Path Then Return aClass
+
   For Each sPath In Tree.Sources
 
     sExt = File.Ext(sPath)

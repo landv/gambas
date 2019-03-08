@@ -1030,3 +1030,10 @@ Public Sub ConstructorNeedParent() As Boolean
   Return hClass.ConstructorNeedParent()
   
 End
+
+
+Public Sub _compare(Other As CClassInfo) As Integer
+  
+  Return Comp(Name, Other.Name)
+  
+End
