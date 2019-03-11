@@ -1,5 +1,6 @@
 ' Gambas module file
 
+Fast
 Export
 'Private halfPixelGlobeSize As Integer
   
@@ -8,23 +9,21 @@ Export
   Private $OriginShift As Float = 2 * Pi * 6378137 / 2.0
 
 
-
-
 Public Function MapPointToTile(hMapPoint As MapPoint, Zoom As Integer) As Point
-  
+
   Dim n As Float = 2 ^ Zoom
   Dim hPoint As New Point
-  
+
   hPoint.X = Int((hMapPoint.Lon + 180.0) / 360.0 * n)
   hPoint.y = Int((1.0 - Log(Tan(Rad(hMapPoint.Lat)) + (1 / Cos(Rad(hMapPoint.Lat)))) / Pi) / 2.0 * n)
   Return hPoint
 End
 
 Public Function MapPointToPixel(hMapPoint As MapPoint, Zoom As Integer) As Point
-  
+
   Dim Res As Float = $initialResolution / (2 ^ zoom)
   Dim X, Y As Float
-  
+
   'Convert in Meters
     X = hMapPoint.lon * $OriginShift / 180.0
   Y = - (Log(Tan((90 + hMapPoint.lat) * Pi / 360.0)) / (Pi / 180.0)) * $OriginShift / 180.0
@@ -40,7 +39,7 @@ End
   Dim X, Y As Float
   Dim Res As Float = $initialResolution / (2 ^ zoom)
   Dim mpPoint As New MapPoint
-  
+
   'Convert in Meters
   X = hPoint.x * res - $originShift
   Y = hPoint.y * res - $originShift
@@ -55,13 +54,13 @@ End
  End
  
  Public Function PixelToTile(hPoint As Point) As Point
-  
+
     Return Point(Int(Ceil(hPoint.X / $tileSize) - 1), Int(Ceil(hPoint.Y / $tileSize) - 1))
-  
+
 End
 
 
-''Convert a value in sexagesimal degree to decimal
+'' Convert a value in sexagesimal degree to decimal
 '' ex: 45°53'36" -> 45,893333
 Public Function SexToDec(Value As String) As Float
 
@@ -82,9 +81,9 @@ Public Function SexToDec(Value As String) As Float
 
 End
 
-''Convert from Decimal to Sexagesimal degrees
+'' Convert from Decimal to Sexagesimal degrees
 '' ex:45,893333 -> 45°53'36"
-''Type 0=None 1=Lat 2=Lon
+'' Type 0=None 1=Lat 2=Lon
 Public Function DecToSex(Value As Float, Type As Integer) As String
 
   Dim iDeg As Integer
@@ -114,16 +113,13 @@ End
 Public Function TileBounds(X As Integer, Y As Integer, Zoom As Integer) As MapBounds
   Dim hPointTL, hPointBR As Point
   Dim mp, mp2 As MapPoint
-  
-  
+
   hPointTL = Point(X * $tileSize, Y * $tileSize)
   hPointBR = Point(hPointTL.X + $tileSize, hPointTL.Y + $tileSize)
   mp = PixelToMapPoint(hPointTL, zoom)
   mp2 = PixelToMapPoint(hPointBR, zoom)
-  
-  
-  Return MapBounds(PixelToMapPoint(hPointTL, zoom), PixelToMapPoint(hPointBR, zoom))
 
+  Return MapBounds(PixelToMapPoint(hPointTL, zoom), PixelToMapPoint(hPointBR, zoom))
 End
 
 Public Function TileToMapPoint(X As Integer, Y As Integer, Zoom As Integer) As MapPoint
