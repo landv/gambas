@@ -61,6 +61,9 @@ void JIT_abort(void)
 {
 	static GB_FUNCTION _func;
 	
+	if (!_component_loaded)
+		return;
+	
 	if (GB_GetFunction(&_func, CLASS_find_global("Jit"), "_Abort", NULL, NULL))
 		ERROR_panic("Unable to find JIT._Abort() method");
 	
