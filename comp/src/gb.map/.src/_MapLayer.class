@@ -1,25 +1,21 @@
 ' Gambas class file
 
 Export
-Public Name As String
+
+Property Read Loading As Boolean        '' Returns Layer status
+Property Visible As Boolean             '' Returns or sets Layer visibility
+Property Opacity As Float               '' Returns or sets Layer opacity
 Private $bVisible As Boolean = True
-Property Visible As Boolean
-Public Copyright As String 
-'Public $aStack As New String[]
-Property Opacity As Float
 Private $fOpaciy As Float = 1
-Property Read Loading As Boolean
-
-
+Public Name As String                   '' Returns or sets Layer name
+Public Copyright As String              '' Returns or sets Layer Copyright notice
+'Public $aStack As New String[]
 
 Event Refresh
 
-Public Sub _Draw() '(Optional bRefresh As Boolean = True)
-  
-  
-  
-End
+Public Sub Draw() '(Optional bRefresh As Boolean = True)
 
+End
 
 Private Function Visible_Read() As Boolean
 
@@ -30,35 +26,25 @@ End
 Private Sub Visible_Write(Value As Boolean)
 
   $bVisible = Value
-  Me.Load
+  _Load()
   Raise Refresh
 End
 
+Public Sub _Load()
 
-
-Public Sub Load()
-  
-  
-  
 End
-
 
 Public Sub Refresh()
-  
-  
-  
+
 End
 
-Public Function CountActiveClients() As Integer
-  
-  
-  
-End
-
+' Public Function CountActiveClients() As Integer
+' 
+' End
 
 Private Function Opacity_Read() As Float
 
-  Return $fOpaciy 
+  Return $fOpaciy
 
 End
 
@@ -70,9 +56,11 @@ End
 
 Private Function Loading_Read() As Boolean
 
-  
-
 End
 
+'' Returns associated Map
+Public Function _GetMap() As Map
 
+  Return Object.Parent(Me)
 
+End

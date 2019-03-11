@@ -1,57 +1,64 @@
 ' Gambas class file
 
-Export
-Public Bounds As New MapBounds
-Public {Color} As Integer = -1
-Public LineWidth As Integer = -1
-Property Read Key As String
-Public Type As Integer
-Public Points As Object
-Public Center As MapPoint
-Public FillColor As Integer = -1
-Private $bSelected As Boolean
-Property Selected As Boolean
-Private $sKey As String
+''' This class define the Shape Item.
 
-Public Image As Image
+'Export
+
+Property Read Key As String               '' Returns his Item's Key name
+Property Selected As Boolean              '' Returns or sets if this Item is selected
+'Property Color As Integer
+Property Bounds As MapBounds
+Private $sKey As String
+Private $bSelected As Boolean
+Private $hBounds As MapBounds
+'Private $fLineStyle As Integer
+Public Type As Integer                    '' Returns or sets this Item's type (Point, MultiPoint, Polyline, Polygon, Circle)
+Public Points As Object                   '' Returns or sets the MapPoints that make up this Item
+Public Center As MapPoint                 '' Returns or sets the Item's center in MapPoint
+Public Radius As Float                    '' Returns or sets this Item radius, if circle
+'Public Bounds As New MapBounds
+Public {Color} As Integer = -1            '' Returns or sets this Item Color, or outline color, if applicable
+Public FillColor As Integer = -1          '' Returns or sets this Item Fill Color, if applicable
+Public LineWidth As Integer = -1          '' Returns or sets this Item Line Width, if applicable
+Public LineStyle As Integer = -1          '' Returns or sets this Item's Line Style, if applicable
+Public Image As Image                     '' Returns or sets this Item's Icon. If Color is defined, Icon will be colorized.
+
 Event Select
 Public Sub _New(Key As String)
-  
+
   $sKey = Key
-  
+  $hBounds = New MapBounds
+
 End
 
-
-
 Public Function Contains(hMapPoint As MapPoint) As Boolean
-  
-  If Bounds.Lon < hMapPoint.Lon And Bounds.lon2 > hMapPoint.Lon Then
-    If Bounds.Lat > hMapPoint.Lat And Bounds.Lat2 < hMapPoint.Lat Then
+
+  If $hBounds.Lon < hMapPoint.Lon And $hBounds.lon2 > hMapPoint.Lon Then
+    If $hBounds.Lat > hMapPoint.Lat And $hBounds.Lat2 < hMapPoint.Lat Then
       Return True
     Endif
   Endif
+
   Return False
-  
+
 End
 
 Public Function Near(hMapPoint As MapPoint, iZoom As Integer, Padding As Integer) As Boolean
-  
+
   Dim hTLPoint, hBRPoint As Point
   Dim hPoint As Point = Geo.MapPointToPixel(hMapPoint, iZoom)
-  
-  hTLPoint = Geo.MapPointToPixel(Bounds.TopLeft, iZoom)
+
+  hTLPoint = Geo.MapPointToPixel($hBounds.TopLeft, iZoom)
   hTLPoint.X -= Padding
   hTLPoint.Y -= Padding
-  
-  hBRPoint = Geo.MapPointToPixel(Bounds.BottomRight, iZoom)
+
+  hBRPoint = Geo.MapPointToPixel($hBounds.BottomRight, iZoom)
   hBRPoint.X += Padding
   hBRPoint.Y += Padding
-  
+
   Return Rect(hTLPoint.X, hTLPoint.Y, hBRPoint.x, hBRPoint.Y).Contains(hPoint.X, hPoint.Y)
-  
+
 End
-
-
 
 ' Public Sub Delete()
 '   
@@ -76,6 +83,30 @@ End
 
 Private Function Key_Read() As String
 
-  Return $sKey  
+  Return $sKey
+
+End
+
+Private Function Bounds_Read() As MapBounds
+  'just a workaround to relocate circles
+  If Type = 33 Then
+    Dim P1, P2, P3, P4 As MapPoint
+    P1 = MapPoint.From(Center, 0, Radius)
+    P2 = MapPoint.From(Center, 90, Radius)
+    P3 = MapPoint.From(Center, 180, Radius)
+    P4 = MapPoint.From(Center, 270, Radius)
+  
+    $hBounds.TopLeft = MapPoint(P1.Lat, P4.Lon)
+    $hBounds.BottomRight = MapPoint(P3.Lat, P2.Lon)
+  Endif
+
+  Return $hBounds
+
+End
+
+Private Sub Bounds_Write(Value As MapBounds)
+
+  'If Not $hBounds Then $hBounds = New MapBounds
+  $hBounds = Value
 
 End
