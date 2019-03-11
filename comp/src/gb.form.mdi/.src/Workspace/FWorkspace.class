@@ -1,5 +1,6 @@
 ' Gambas class file
-Property CloseButton As Boolean
+
+public CloseButton As Boolean 
 
 Private $aWindow As New CWindow[]
 Private $hCurrent As CWindow
@@ -15,7 +16,7 @@ Private $bNoClose As Boolean
 Private $iLock As Integer
 Private $bBorder As Boolean = True
 Private $nDetach As Integer
-Private $CloseButton As Boolean = True
+
 Private Enum CLOSE_ALL, CLOSE_OTHER, CLOSE_RIGHT
 Private $hImage As Image
 
@@ -534,7 +535,7 @@ Public Sub UpdateSize()
 
   Endif
 
-  If $CloseButton Then 
+  If CloseButton Then 
     tabWorkspace.CloseButton = $aWindow.Count >= 1
   Else 
     tabWorkspace.CloseButton = False
@@ -1049,14 +1050,4 @@ Public Sub IsCloseWithMouse() As Boolean
   
 End
 
-Private Function CloseButton_Read() As Boolean
 
-  Return $CloseButton
-
-End
-
-Private Sub CloseButton_Write(Value As Boolean)
-
-  $CloseButton = Value
-
-End
