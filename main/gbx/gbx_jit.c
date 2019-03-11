@@ -43,6 +43,7 @@ bool JIT_disabled = FALSE;
 
 static bool _component_loaded = FALSE;
 static GB_FUNCTION _jit_compile_func;
+static GB_FUNCTION _jit_wait_func;
 
 static bool _jit_compiling = FALSE;
 static void *_jit_library = NULL;
@@ -56,32 +57,30 @@ void JIT_exit(void)
 	ARRAY_delete(&_jit_func);
 }
 
+void JIT_abort(void)
+{
+	static GB_FUNCTION _func;
+	
+	if (GB_GetFunction(&_func, CLASS_find_global("Jit"), "_Abort", NULL, NULL))
+		ERROR_panic("Unable to find JIT._Abort() method");
+	
+	GB_Call(&_func, 0, FALSE);
+}
+
 bool JIT_can_compile(ARCHIVE *arch)
 {
 	return arch ? !arch->jit_compiling : !_jit_compiling;
 }
 
-bool JIT_compile(ARCHIVE *arch)
+void JIT_compile(ARCHIVE *arch)
 {
-	GB_VALUE *ret;
-	char *path;
-	void *lib;
-	void **iface;
 	COMPONENT *current;
 	
 	if (JIT_disabled)
-		return TRUE;
+		return;
 	
-	if (arch)
-	{
-		if (arch->jit_library)
-			return FALSE;
-	}
-	else
-	{
-		if (_jit_library)
-			return FALSE;
-	}
+	if (arch ? arch->jit_library : _jit_library)
+		return;
 	
 	if (!_component_loaded)
 	{
@@ -93,7 +92,7 @@ bool JIT_compile(ARCHIVE *arch)
 		if (var && var[0] && !(var[0] == '0' && var[1] == 0))
 		{
 			JIT_disabled = TRUE;
-			return TRUE;
+			return;
 		}
 		
 		var = getenv("GB_JIT_DEBUG");
@@ -104,8 +103,10 @@ bool JIT_compile(ARCHIVE *arch)
 			fprintf(stderr, "gbx3: loading gb.jit component\n");
 		
 		COMPONENT_load(COMPONENT_create("gb.jit"));
-		if (GB_GetFunction(&_jit_compile_func, CLASS_find_global("Jit"), "_Compile", "s", "s"))
-			ERROR_panic("Unable to find JIT compilation method");
+		if (GB_GetFunction(&_jit_compile_func, CLASS_find_global("Jit"), "_Compile", "s", "b"))
+			ERROR_panic("Unable to find JIT._Compile() method");
+		if (GB_GetFunction(&_jit_wait_func, CLASS_find_global("Jit"), "_Wait", "s", "s"))
+			ERROR_panic("Unable to find JIT._Wait() method");
 	}
 	
 	arch ? (arch->jit_compiling = TRUE) : (_jit_compiling = TRUE);
@@ -114,16 +115,39 @@ bool JIT_compile(ARCHIVE *arch)
 	COMPONENT_current = NULL;
 	
 	GB_Push(1, T_STRING, arch ? arch->name : "", -1);
-	ret = GB_Call(&_jit_compile_func, 1, FALSE);
-	path = GB_ToZeroString((GB_STRING *)ret);
+	GB_Call(&_jit_compile_func, 1, FALSE);
+	
+	COMPONENT_current = current;
+}
+
+bool wait_for_compilation(ARCHIVE *arch)
+{
+	COMPONENT *current;
+	void *lib;
+	void **iface;
+	GB_VALUE *ret;
+	char *path;
+
+	if (JIT_disabled)
+		return TRUE;
+	
+	if (arch ? arch->jit_library : _jit_library)
+		return FALSE;
+	
+	current = COMPONENT_current;
+	COMPONENT_current = NULL;
+	
+	GB_Push(1, T_STRING, arch ? arch->name : "", -1);
+	ret = GB_Call(&_jit_wait_func, 1, FALSE);
 	
 	COMPONENT_current = current;
 	
-	if (!*path)
-		ERROR_panic("Unable to compile JIT source file");
-	
 	arch ? (arch->jit_compiling = FALSE) : (_jit_compiling = FALSE);
 	
+	path = GB_ToZeroString((GB_STRING *)ret);
+	if (!*path)
+		ERROR_panic("Unable to compile JIT source file");
+
 	//fprintf(stderr, "gbx3: shared jit library is: %s\n", path);
 
 	lib = dlopen(path, RTLD_NOW);
@@ -156,6 +180,13 @@ static bool create_function(CLASS *class, int index)
 	char *name;
 	
 	arch = class->component ? class->component->archive : NULL;
+	
+	if (wait_for_compilation(arch))
+	{
+		for (i = 0; i < class->load->n_func; i++)
+			class->load->func[i].fast = FALSE;
+		return TRUE;
+	}
 	
 	func = &class->load->func[index];
 	func->fast_linked = TRUE;
@@ -203,6 +234,7 @@ void JIT_exec(bool ret_on_stack)
 	VALUE *sp = SP;
 	JIT_FUNCTION *jit;
 	CLASS *class = EXEC.class;
+	void *object = EXEC.object;
 	char nparam = EXEC.nparam;
 	VALUE ret;
 	FUNCTION *func = EXEC.func;
@@ -221,7 +253,7 @@ void JIT_exec(bool ret_on_stack)
 	STACK_push_frame(&EXEC_current, func->stack_usage);
 	
 	CP = class;
-	OP = (void *)EXEC.object;
+	OP = object;
 	FP = func;
 	EC = NULL;
 	

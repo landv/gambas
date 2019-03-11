@@ -1195,6 +1195,7 @@ END_PROPERTY
 
 BEGIN_METHOD(Process_Wait, GB_FLOAT timeout)
 
+	// FIXME: Does not work if Ignore is set
 	CPROCESS_wait_for(THIS, (int)(VARGOPT(timeout, 0.0) * 1000));
 
 END_METHOD

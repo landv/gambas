@@ -1,0 +1,121 @@
+' Gambas class file
+
+Static Public All As New Collection
+
+Static Private $sCompiler As String
+Static Private $aFlags As String[]
+
+Public Name As String
+Public PathSO As String
+
+Private $sResult As String
+Private $fTime As Float
+Private $hProcess As Process
+
+Static Private Sub Init()
+
+  Dim sFlag As String
+  Dim sCompiler As String
+  
+  sCompiler = Env["GB_JIT_CC"]
+  If Not sCompiler Then sCompiler = "gcc"
+  
+  $sCompiler = System.Find(sCompiler)
+  If Not $sCompiler Then Error.Raise("Compiler not found")
+
+  sFlag = Env["GB_JIT_CFLAGS"] 
+  If Not sFlag Then sFlag = "-O3"
+  
+  $aFlags = Split(sFlag, " ")
+   
+End
+
+Public Sub _new(sName As String, sPathSO As String, fTime As Float)
+  
+  Name = sName
+  PathSO = sPathSO
+  $fTime = fTime
+  All[sName] = Me
+  
+End
+
+Public Sub Run(sInput As String, Optional sOutput As String, sOption As String)
+
+  Dim aExec As String[]
+  'Dim I As Integer
+  
+  If Not $sCompiler Then Init
+  
+  aExec = [$sCompiler]
+  If sOption Then aExec.Insert(Split(sOption, " "))
+  aExec.Insert($aFlags)
+  aExec.Add(sInput)
+  If sOutput Then 
+    aExec.Add("-o")
+    aExec.Add(sOutput)
+  Endif
+  
+  ' For I = 0 To aExec.Max
+  '   aExec[I] = Shell$(aExec[I])
+  ' Next
+  
+  If Jit.Debug Then Error "gb.jit: run: "; aExec.Join(" ")
+  
+  $hProcess = Exec aExec For Read As "Compiler"
+  '$hProcess.Ignore = True
+  'System._Breakpoint
+  
+End
+
+Public Sub Compiler_Read()
+
+  Dim sData As String
+
+  sData = Read #$hProcess, -1024
+  $sResult &= sData
+  
+End
+
+Public Sub Compiler_Error(({Error}) As String)
+  
+  $sResult &= {Error}
+  
+End
+
+
+Public Sub Compiler_Kill()
+
+  If $hProcess.Value = 0 Then
+    $fTime = Timer - $fTime
+    Jit._Time += $fTime
+    If Jit.Debug Then Error "gb.jit: compilation of '"; Name; "' done in "; Format($fTime, "0.000"); " s"
+  Else
+    If Jit.Debug Then Error "gb.jit: compilation of '"; Name; "' returns "; $hProcess.Value
+  Endif
+  
+  ' Shell "objdump -S " & Shell(sPathSO) To sResult
+  ' Error sResult
+  
+End
+
+Public Sub Wait() As String
+  
+  If Jit.Debug Then Error "gb.jit: waiting for compilation of '"; Name; "'..."
+  $hProcess.Wait
+  
+  If Not Exist(PathSO) Then 
+    Error "gb.jit: error: unable to compile JIT code of '"; Name; "':"
+    Error $sResult
+    Return
+  Endif
+  
+  Return PathSO
+  
+End
+
+Public Sub Kill()
+  
+  Try $hProcess.Kill
+  $hProcess = Null
+  
+End
