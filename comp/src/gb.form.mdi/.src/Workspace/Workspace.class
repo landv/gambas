@@ -35,6 +35,7 @@ Public Sub _new()
   
   'SUPER.Background = Color.Yellow
   $hWorkspace = New FWorkspace(Me)
+  $hWorkspace.CloseButton = True
   'ME.Container = $hWorkspace.Container
   
 End
