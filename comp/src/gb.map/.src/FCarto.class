@@ -36,7 +36,7 @@ Public Sub LoadFromFile(hShape As Object)
   Dim hpoints As New MapPoint[]
   Dim s, t As String
   Dim i As Integer
-  Dim c As Integer
+  ' Dim c As Integer
   s = File.Load("./pointsparcelle")
   hshape.Color = Color.Green
   For Each t In Split(s, "\n")
