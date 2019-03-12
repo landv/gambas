@@ -859,12 +859,13 @@ void CPROCESS_check(void *_object)
 static bool wait_child(CPROCESS *process)
 {
 	int status;
-
+	int ret;
+	
 	#ifdef DEBUG_ME
 	fprintf(stderr, "wait_child: check process %d\n", process->pid);
 	#endif
 
-	if (wait4(process->pid, &status, WNOHANG, NULL) == process->pid)
+	if ((ret = waitpid(process->pid, &status, WNOHANG)) == process->pid)
 	{
 		process->status = status;
 		process->wait = TRUE;
@@ -877,23 +878,18 @@ static bool wait_child(CPROCESS *process)
 		return TRUE;
 	}
 	else
+	{
+		#ifdef DEBUG_ME
+		fprintf(stderr, "wait_child: waitpid() has returned %d\n", ret);
+		#endif
+
 		return FALSE;
+	}
 }
 
 static void callback_child(int signum, intptr_t data)
 {
 	CPROCESS *process, *next;
-	//int buffer;
-
-#if 0
-	for(;;)
-	{
-		if (read(fd, (char *)&buffer, 1) == 1)
-			break;
-		if (errno != EINTR)
-			ERROR_panic("Cannot read from SIGCHLD pipe: %s", strerror(errno));
-	}
-#endif
 
 	#ifdef DEBUG_ME
 	fprintf(stderr, ">> callback_child\n");
@@ -906,7 +902,7 @@ static void callback_child(int signum, intptr_t data)
 			stop_process(process);
 		process = next;
 	}
-
+	
 	throw_last_child_error();
 
 	#ifdef DEBUG_ME

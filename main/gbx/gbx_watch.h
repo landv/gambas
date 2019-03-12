@@ -59,6 +59,8 @@ typedef
 
 void WATCH_init(void);
 void WATCH_exit(void);
+void WATCH_transfer_watch(void);
+void WATCH_transfer_timer(void);
 
 void WATCH_watch(int fd, int flag, void *callback, intptr_t param);
 bool WATCH_one_loop(int);

@@ -336,20 +336,6 @@ static int find_max_fd(void)
 	return max;
 }
 
-/*static void ensure_watch_index(int fd)
-{
-	int i;
-	int count = ARRAY_count(watch_index);
-	
-	//fprintf(stderr, "ensure_watch_index: %d (%d)\n", fd, count);
-	
-	if (fd < count)
-		return;
-	
-	ARRAY_add_many(&watch_index, fd - count + 1);
-	for (i = count; i <= fd; i++)
-		watch_index[i] = -1;
-}*/
 
 static WATCH_CALLBACK *watch_create_callback(int fd)
 {
@@ -384,22 +370,19 @@ static WATCH_CALLBACK *watch_create_callback(int fd)
 }
 
 
-static void watch_delete_callback(int fd)
+static void watch_delete_callback(int pos)
 {
 	WATCH_CALLBACK *wcb;
-	int pos;
+	int fd;
 	
 	#if DEBUG_WATCH
 	fprintf(stderr, "watch_delete_callback: %d (%d)\n", fd, _do_not_really_delete_callback);
 	#endif
 
-	pos = watch_find_callback(fd);
-	if (pos < 0)
-		return;
-
 	//watch_index[fd] = -1;
 
 	wcb = &watch_callback[pos];
+	fd = wcb->fd,
 	wcb->fd = -1;
 	watch_fd(fd, GB_WATCH_READ, FALSE);
 	watch_fd(fd, GB_WATCH_WRITE, FALSE);
@@ -422,6 +405,14 @@ static void watch_delete_callback(int fd)
 }
 
 
+static void watch_delete_callback_from_fd(int fd)
+{
+	int pos = watch_find_callback(fd);
+	if (pos >= 0)
+		watch_delete_callback(pos);
+}
+
+
 void WATCH_watch(int fd, int type, void *callback, intptr_t param)
 {
 	WATCH_CALLBACK *wcb;
@@ -434,7 +425,7 @@ void WATCH_watch(int fd, int type, void *callback, intptr_t param)
 	}
 
 	if (type == GB_WATCH_NONE)
-		watch_delete_callback(fd);
+		watch_delete_callback_from_fd(fd);
 	else
 	{
 		wcb = watch_create_callback(fd);
@@ -454,13 +445,43 @@ void WATCH_watch(int fd, int type, void *callback, intptr_t param)
 		#endif
 
 		if (!wcb->callback_read && !wcb->callback_write)
-			watch_delete_callback(fd);
+			watch_delete_callback_from_fd(fd);
 		else
 		{
 			watch_fd(fd, GB_WATCH_READ, wcb->callback_read != NULL);
 			watch_fd(fd, GB_WATCH_WRITE, wcb->callback_write != NULL);
 		}
 	}
+}
+
+void WATCH_transfer_watch(void)
+{
+	WATCH_CALLBACK *wcb;
+	int i;
+
+	for (i = 0; i < ARRAY_count(watch_callback); i++)
+	{
+		wcb = &watch_callback[i];
+		if (wcb->callback_read) HOOK(watch)(wcb->fd, GB_WATCH_READ, wcb->callback_read, wcb->param_read);
+		if (wcb->callback_write) HOOK(watch)(wcb->fd, GB_WATCH_WRITE, wcb->callback_write, wcb->param_write);
+	}
+	
+	ARRAY_delete(&watch_callback);
+}
+
+
+void WATCH_transfer_timer(void)
+{
+	WATCH_TIMER *wt;
+	int i;
+
+	for (i = 0; i < ARRAY_count(_timers); i++)
+	{
+		wt = &_timers[i];
+		HOOK(timer)((GB_TIMER *)wt->timer, TRUE);
+	}
+	
+	ARRAY_delete(&_timers);
 }
 
 

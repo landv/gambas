@@ -102,6 +102,7 @@ Public Sub Wait() As String
   
   If Jit.Debug Then Error "gb.jit: waiting for compilation of '"; Name; "'..."
   $hProcess.Wait
+  If Jit.Debug Then Error "gb.jit: compilation of '"; Name; "' is available"
   
   If Not Exist(PathSO) Then 
     Error "gb.jit: error: unable to compile JIT code of '"; Name; "':"
