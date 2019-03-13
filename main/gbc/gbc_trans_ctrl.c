@@ -261,6 +261,8 @@ static void control_enter(int type)
 	}
 
 	JOB->func->nctrl = Max(JOB->func->nctrl, ctrl_local);
+	if ((JOB->func->nctrl + JOB->func->nlocal) > MAX_LOCAL_SYMBOL)
+		THROW("Too many local variables");
 
 	ctrl_level++;
 }
