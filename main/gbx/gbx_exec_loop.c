@@ -1145,9 +1145,8 @@ _CALL:
 
 		__EXEC_ENTER:
 
-			if (EXEC.func->fast)
+			if (EXEC.func->fast && !JIT_exec(TRUE))
 			{
-				JIT_exec(TRUE);
 				goto _NEXT;
 			}
 			else
@@ -1231,9 +1230,8 @@ _CALL:
 				EXEC.class = EXEC.desc->class;
 				EXEC.func = &EXEC.class->load->func[EXEC.index];
 				
-				if (EXEC.func->fast)
+				if (EXEC.func->fast && !JIT_exec(TRUE))
 				{
-					JIT_exec(TRUE);
 					goto _NEXT;
 				}
 				else
@@ -1411,9 +1409,8 @@ _CALL_SLOW:
 
 			EXEC.func = &EXEC.class->load->func[EXEC.index];
 
-			if (EXEC.func->fast)
+			if (EXEC.func->fast && !JIT_exec(TRUE))
 			{
-				JIT_exec(TRUE);
 				goto _NEXT;
 			}
 			else

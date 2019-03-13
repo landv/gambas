@@ -61,7 +61,7 @@ void JIT_abort(void)
 {
 	static GB_FUNCTION _func;
 	
-	if (!_component_loaded)
+	if (!_component_loaded || JIT_disabled)
 		return;
 	
 	if (GB_GetFunction(&_func, CLASS_find_global("Jit"), "_Abort", NULL, NULL))
@@ -232,7 +232,7 @@ static bool create_function(CLASS *class, int index)
 }
 
 
-void JIT_exec(bool ret_on_stack)
+bool JIT_exec(bool ret_on_stack)
 {
 	VALUE *sp = SP;
 	JIT_FUNCTION *jit;
@@ -250,7 +250,7 @@ void JIT_exec(bool ret_on_stack)
 	if (!func->fast_linked)
 	{
 		if (create_function(class, EXEC.index))
-			return;
+			return TRUE;
 	}
 	
 	STACK_push_frame(&EXEC_current, func->stack_usage);
@@ -309,6 +309,8 @@ void JIT_exec(bool ret_on_stack)
 		*SP++ = ret;
 		ret.type = T_VOID;
 	}
+	
+	return FALSE;
 }
 
 PCODE *JIT_get_code(FUNCTION *func)

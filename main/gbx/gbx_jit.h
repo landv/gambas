@@ -40,7 +40,7 @@ extern bool JIT_disabled;
 	
 void JIT_compile(ARCHIVE *arch);
 void JIT_debug(const char *fmt, ...);
-void JIT_exec(bool ret_on_stack);
+bool JIT_exec(bool ret_on_stack);
 PCODE *JIT_get_code(FUNCTION *func);
 CLASS_CONST *JIT_get_constant(int index);
 void *JIT_get_class_ref(int index);

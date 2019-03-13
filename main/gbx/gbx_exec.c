@@ -879,11 +879,8 @@ static void error_EXEC_function_real(void)
 void EXEC_function_real()
 {
 	EXEC.func = &EXEC.class->load->func[EXEC.index];
-	if (EXEC.func->fast)
-	{
-		JIT_exec(FALSE);
+	if (EXEC.func->fast && !JIT_exec(FALSE))
 		return;
-	}
 	
 	// We need to push a void frame, because EXEC_leave looks at *PC to know if a return value is expected
 	STACK_push_frame(&EXEC_current, 0);
