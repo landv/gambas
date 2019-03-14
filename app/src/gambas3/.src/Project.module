@@ -1042,7 +1042,7 @@ Public Sub AddLinkEmblem(hSource As Image) As Image
   
   Paint.MoveTo(hImage.W, hImage.H)
   Paint.RelLineTo(0, - iSize)
-  Paint.RelLineTo(- iSize, iSize)
+  Paint.RelLineTo(-iSize, iSize)
   Paint.RelLineTo(iSize, 0)
   Paint.Background = Color.Black
   'Paint.Background = Color.SetAlpha(Color.TextForeground, 64)
@@ -1053,7 +1053,7 @@ Public Sub AddLinkEmblem(hSource As Image) As Image
   
   Paint.MoveTo(hImage.W, hImage.H)
   Paint.RelLineTo(0, - iSize)
-  Paint.RelLineTo(- iSize, iSize)
+  Paint.RelLineTo(-iSize, iSize)
   Paint.RelLineTo(iSize, 0)
   Paint.Background = Color.SetAlpha(Color.TextForeground, 64)
   Paint.Operator = Paint.OperatorOver

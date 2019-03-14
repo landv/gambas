@@ -160,9 +160,9 @@ Private Sub InitEnvironment()
   
   $aEnv = Project.Environment.Copy()
     
-  tvwEnv.Rows.Count = $aEnv.Count
   tvwEnv.Rows.Resizable = False
-  tvwEnv.Columns[0].Width = -1
+  
+  UpdateEnv
   
 End
 
@@ -671,7 +671,7 @@ Public Sub btnInsertEnv_Click()
 
   If $aEnv.Count >= 255 Then Return
   $aEnv.Add("=")
-  Inc tvwEnv.Rows.Count
+  UpdateEnv
   tvwEnv.MoveTo($aEnv.Max, 0)
   tvwEnv.Edit      
 
@@ -702,7 +702,7 @@ Public Sub mnuInsertEnv_Click()
   
     If sNewEnv Then
       $aEnv.Add(sNewEnv)
-      Inc tvwEnv.Rows.Count
+      UpdateEnv
     Endif
     
   Next
@@ -716,8 +716,7 @@ Public Sub btnRemoveEnv_Click()
   If tvwEnv.Row < 0 Then Return
   tvwEnv.Save
   $aEnv.Remove(tvwEnv.Row)
-  Dec tvwEnv.Rows.Count
-  tvwEnv.Refresh
+  UpdateEnv
   
 End
 
@@ -1433,4 +1432,12 @@ Finally
   
   Dec Application.Busy
   
+End
+
+Private Sub UpdateEnv()
+
+  tvwEnv.Rows.Count = $aEnv.Count
+  tvwEnv.Columns[0].Width = -1
+  tvwEnv.Refresh
+
 End
