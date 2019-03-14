@@ -98,7 +98,7 @@ static int is_optional_kind(PATTERN pattern)
 
 static void get_symbol(PATTERN pattern, const char **symbol, int *len)
 {
-	static char keyword[16];
+	static char keyword[32];
 	int i;
 	SYMBOL *sym;
 	int type = PATTERN_type(pattern);
@@ -516,18 +516,26 @@ static void analyze(EVAL_ANALYZE *result)
 					//space_before = FALSE;
 					space_after = FALSE;
 				}
-				else if (*symbol == '-')
+				else if (*symbol == '-' && len == 1)
 				{
 					if (old_type == RT_OPERATOR && (PATTERN_is(pattern[-1], RS_LBRA) || PATTERN_is(pattern[-1],RS_LSQR)))
-					{
 						space_before = FALSE;
+					else
+						space_before = TRUE;
+					
+					if (old_type == RT_RESERVED || old_type == RT_DATATYPE)
 						space_after = FALSE;
+					else if (old_type == RT_OPERATOR)
+					{
+						get_symbol(pattern[-1], &symbol, &len);
+						if (index(")]}", *symbol))
+							space_after = TRUE;
+						else
+							space_after = FALSE;
+						get_symbol(*pattern, &symbol, &len);
 					}
 					else
-					{
-						space_before = TRUE;
 						space_after = TRUE;
-					}
 				}
 				else if (PATTERN_is(*pattern, RS_NOT))
 				{
