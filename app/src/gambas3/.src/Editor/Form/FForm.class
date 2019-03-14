@@ -1498,12 +1498,12 @@ Private Sub SelectIn(hParent As CControl, X As Integer, Y As Integer, W As Integ
 
   If W < 0 Then
     X = X + W
-    W = - W
+    W = -W
   Endif
 
   If H < 0 Then
     Y = Y + H
-    H = - H
+    H = -H
   Endif
 
   'PRINT hParent.Name; X; Y; W; H
@@ -1691,12 +1691,12 @@ Private Sub DrawRectSelect()
     
     If W < 0 Then
       X += W
-      W = - W
+      W = -W
     Endif
 
     If H < 0 Then
       Y += H
-      H = - H
+      H = -H
     Endif
 
     If W <= 6 Or H <= 6 Then
@@ -2872,9 +2872,9 @@ Public Sub Form_KeyPress()
   Select Key.Code
     Case Key.Up
       If Key.Control Then
-        ResizeSelection(0, - D, bFree)
+        ResizeSelection(0, -D, bFree)
       Else
-        MoveSelection(0, - D, bFree)
+        MoveSelection(0, -D, bFree)
       Endif
       Stop Event
     Case Key.Down
@@ -2886,9 +2886,9 @@ Public Sub Form_KeyPress()
       Stop Event
     Case Key.Left
       If Key.Control Then
-        ResizeSelection(- D, 0, bFree)
+        ResizeSelection(-D, 0, bFree)
       Else
-        MoveSelection(- D, 0, bFree)
+        MoveSelection(-D, 0, bFree)
       Endif
       Stop Event
     Case Key.Right

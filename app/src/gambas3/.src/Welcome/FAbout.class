@@ -316,7 +316,7 @@ End
 
 Public Sub dwgAbout_Draw()
   
-  Paint.DrawImage($aCache[0], 0, - $Y)
+  Paint.DrawImage($aCache[0], 0, -$Y)
   If $Y > 0 Then Paint.DrawImage($aCache[1], 0, dwgAbout.H - $Y)
   
 End
