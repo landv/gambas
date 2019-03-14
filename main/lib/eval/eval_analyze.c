@@ -516,7 +516,20 @@ static void analyze(EVAL_ANALYZE *result)
 					//space_before = FALSE;
 					space_after = FALSE;
 				}
-				else if (PATTERN_is(*pattern, RS_NOT) || *symbol == '-')
+				else if (*symbol == '-')
+				{
+					if (old_type == RT_OPERATOR && (PATTERN_is(pattern[-1], RS_LBRA) || PATTERN_is(pattern[-1],RS_LSQR)))
+					{
+						space_before = FALSE;
+						space_after = FALSE;
+					}
+					else
+					{
+						space_before = TRUE;
+						space_after = TRUE;
+					}
+				}
+				else if (PATTERN_is(*pattern, RS_NOT))
 				{
 					if (old_type == RT_OPERATOR && (PATTERN_is(pattern[-1], RS_LBRA) || PATTERN_is(pattern[-1],RS_LSQR)))
 						space_before = FALSE;
