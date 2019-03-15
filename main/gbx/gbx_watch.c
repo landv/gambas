@@ -467,6 +467,7 @@ void WATCH_transfer_watch(void)
 	}
 	
 	ARRAY_delete(&watch_callback);
+	ARRAY_create(&watch_callback);
 }
 
 
@@ -482,6 +483,7 @@ void WATCH_transfer_timer(void)
 	}
 	
 	ARRAY_delete(&_timers);
+	ARRAY_create(&_timers);
 }
 
 
