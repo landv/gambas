@@ -1,5 +1,7 @@
 ' Gambas class file
 
+public CloseButton As Boolean 
+
 Private $aWindow As New CWindow[]
 Private $hCurrent As CWindow
 Private $hLast As CWindow
@@ -533,7 +535,11 @@ Public Sub UpdateSize()
 
   Endif
 
-  tabWorkspace.CloseButton = $aWindow.Count >= 1
+  If CloseButton Then 
+    tabWorkspace.CloseButton = $aWindow.Count >= 1
+  Else 
+    tabWorkspace.CloseButton = False
+  Endif
   
   'DEBUG tabWorkspace.Visible;; "Index =";; tabWorkspace.Index;; "ClientY =";; tabWorkspace.ClientY
 
@@ -1043,3 +1049,5 @@ Public Sub IsCloseWithMouse() As Boolean
   Return Not tabWorkspace.Closable
   
 End
+
+
