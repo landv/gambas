@@ -823,9 +823,9 @@ BEGIN_METHOD_VOID(Array_Shuffle)
 				
 	__SWAP_LONG:
 		{
-			int64_t t = *(char *)p1;
-			*(char *)p1 = *(char *)p2;
-			*(char *)p2 = t;
+			int64_t t = *(int64_t *)p1;
+			*(int64_t *)p1 = *(int64_t *)p2;
+			*(int64_t *)p2 = t;
 			continue;
 		}
 			
