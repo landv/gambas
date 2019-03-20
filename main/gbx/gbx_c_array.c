@@ -44,6 +44,7 @@
 #include "gbx_api.h"
 #include "gbx_c_file.h"
 #include "gbx_struct.h"
+#include "gbx_math.h"
 #include "gbx_c_array.h"
 
 static bool _create_static_array;
@@ -767,6 +768,82 @@ BEGIN_METHOD(Array_Swap, GB_INTEGER index; GB_INTEGER index2)
 	
 END_METHOD
 */
+
+BEGIN_METHOD_VOID(Array_Shuffle)
+
+	int count = THIS->count;
+	int size = THIS->size;
+	void *p1, *p2;
+	int i, j;
+	void *swap;
+
+	if (check_not_multi(THIS) || count <= 1)
+		return;
+	
+	switch (size)
+	{
+		case 1: swap = &&__SWAP_BYTE; break;
+		case 2: swap = &&__SWAP_SHORT; break;
+		case 4: swap = &&__SWAP_INT; break;
+		case 8: swap = &&__SWAP_LONG; break;
+		default: swap = &&__SWAP_ANY;
+	}
+	
+	for (i = count - 1; i >= 1; i--)
+	{
+		j = (int)(rnd() * (i + 1));
+		p1 = CARRAY_get_data_unsafe(THIS, i);
+		p2 = CARRAY_get_data_unsafe(THIS, j);
+		
+		goto *swap;
+	
+	__SWAP_BYTE:
+		{
+			char t = *(char *)p1;
+			*(char *)p1 = *(char *)p2;
+			*(char *)p2 = t;
+			continue;
+		}
+				
+	__SWAP_SHORT:
+		{
+			short t = *(short *)p1;
+			*(short *)p1 = *(short *)p2;
+			*(short *)p2 = t;
+			continue;
+		}
+				
+	__SWAP_INT:
+		{
+			int t = *(int *)p1;
+			*(int *)p1 = *(int *)p2;
+			*(int *)p2 = t;
+			continue;
+		}
+				
+	__SWAP_LONG:
+		{
+			int64_t t = *(char *)p1;
+			*(char *)p1 = *(char *)p2;
+			*(char *)p2 = t;
+			continue;
+		}
+			
+	__SWAP_ANY:
+		{
+			unsigned char *p;
+			unsigned char *q;
+			unsigned char *const end = (unsigned char *)p1 + size;
+
+			for (p = p1, q = p2; p < end; ++p, ++q ) {
+				const unsigned char t = *p;
+				*p = *q;
+				*q = t;
+			}			
+		}
+	}
+	
+END_METHOD
 
 static void add(CARRAY *_object, GB_VALUE *value, int index)
 {
@@ -1754,6 +1831,7 @@ GB_DESC NATIVE_Array[] =
 	GB_METHOD("Clear", NULL, Array_Clear, NULL),
 	GB_METHOD("Resize", NULL, Array_Resize, "(Size)i"),
 	//GB_METHOD("Swap", NULL, Array_Swap, "(Index)i(Index2)i"),
+	GB_METHOD("Shuffle", NULL, Array_Shuffle, NULL),
 
 	GB_INTERFACE("_convert", _convert),
 
