@@ -206,14 +206,14 @@ Private Sub UpdateScreen()
   
   H = Me.H
   If Me.Border Then H -= 2
-  H = Max(1, H \ $LH)
+  H = Max(2, H \ $LH)
   
   If $bAutoResize Then
   
     W = Me.W
     If Me.Border Then W -= 2
     If $bShowScrollBar Then W -= $hScroll.W
-    W = Max(1, W \ $CW)
+    W = Max(2, W \ $CW)
     
   Else
     
