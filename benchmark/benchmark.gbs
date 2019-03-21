@@ -4,7 +4,7 @@ Private $fCompileTime as Float
 
 Private Sub RunScript(sScript As String, sRun As String, bGambasOnly As Boolean) As Float
 
-	Dim aResult as String[]
+  Dim aResult as String[]
   Dim sResult As String
   Dim fTime As Float
   
@@ -80,11 +80,11 @@ For Each sBenchmark In Dir(Application.Dir, "*.gbs")
   aResult.Add(cResult)
   
   cResult!name = sBenchmark
+  If Not bGambasOnly Then cResult!python = RunScript(sBenchmark & ".py", "python", bGambasOnly)
+  If Not bGambasOnly Then cResult!perl = RunScript(sBenchmark & ".pl", "perl", bGambasOnly)
   cResult!gambasjit = RunScript(sBenchmark & ".gbs", "gbs3 -f -U -c", bGambasOnly)
   cResult!gambasjitwct = cResult!gambasjit - $fCompileTime
   cResult!gambas = RunScript(sBenchmark & ".gbs", "gbs3 -c", bGambasOnly)
-  If Not bGambasOnly Then cResult!python = RunScript(sBenchmark & ".py", "python", bGambasOnly)
-  If Not bGambasOnly Then cResult!perl = RunScript(sBenchmark & ".pl", "perl", bGambasOnly)
 
 Next
 
