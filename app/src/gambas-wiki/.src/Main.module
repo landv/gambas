@@ -478,6 +478,10 @@ Public Sub Main()
     Print Replace(File.Load(".public/style.css"), "<%/%>", Application.Root);
     Response.End
     Return
+  Else If File.Name(Path) = "playground.js" Then
+    SetLanguage(Request["l"])
+    SendPlayground
+    Return
   Else If Path And If Exist(".public" &/ Path) Then
     AddCacheHeaders
     Response.SendFile(".public" &/ Path)
@@ -1510,4 +1514,21 @@ Public Sub GetImageHTML(sPath As String) As String
     Return "<img src=\"" & Html(Application.Root &/ sPath) & "?v\" />"
   Endif
   
+End
+
+Private Sub SendPlayground()
+
+  Dim sData As String
+
+  sData = File.Load(".public/playground.js")
+  sData = Replace(sData, "((\"Run\"))", Quote(("Run")))
+  sData = Replace(sData, "((\"Play\"))", Quote(("Play")))
+  sData = Replace(sData, "((\"Loading...\"))", Quote(("Loading") & "..."))
+
+  Response.ContentType = "text/javascript"
+  AddCacheHeaders
+  Response.Begin
+  Print sData;
+  Response.End  
+
 End

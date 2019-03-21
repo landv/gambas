@@ -440,6 +440,15 @@ void *GB_Hook(int type, void *hook)
 	if (hook)
 		phook[type] = hook;
 
+	type++;
+	if (type == GB_HOOK_LOOP && !old_hook)
+	{
+		if (phook[GB_HOOK_WATCH])
+			WATCH_transfer_watch();
+		if (phook[GB_HOOK_TIMER])
+			WATCH_transfer_timer();
+	}
+	
 	return old_hook;
 }
 

@@ -1285,3 +1285,4 @@ char *FILE_get_home(void)
 
 	return _home;
 }
+

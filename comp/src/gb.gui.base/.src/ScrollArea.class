@@ -93,7 +93,7 @@ Private Sub LoadFades()
   
   hImage = New Image(32, 4, Color.Transparent)
   For Y = 0 To 3
-    hImage.FillRect(0, Y, hImage.W, 1, Color.SetAlpha(iColor, 160 + Y * 24))
+    hImage.FillRect(0, Y, hImage.W, 1, Color.SetAlpha(iColor, 180 + Y * 24))
   Next
   
   $hFadeN = hImage.Picture

@@ -49,6 +49,12 @@ typedef
 	} 
 	CURL_USER;
 
+#ifndef __GB_CURL_C
+
+extern CURL_PROXY CURL_default_proxy;
+
+#endif
+
 //char *CURL_get_protocol(char *url, char *default_protocol);
 bool CURL_set_url(void *_object, const char *src, int len);
 
@@ -59,6 +65,8 @@ void CURL_proxy_clear(CURL_PROXY *proxy);
 void CURL_proxy_set(CURL_PROXY *proxy, CURL *curl);
 bool CURL_proxy_set_auth(CURL_PROXY *user, int auth);
 bool CURL_proxy_set_type(CURL_PROXY *proxy, int type);
+
+void CURL_default_proxy_clear();
 
 void CURL_user_init(CURL_USER *user);
 void CURL_user_clear(CURL_USER *user);

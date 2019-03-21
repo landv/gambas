@@ -1041,8 +1041,8 @@ Public Sub AddLinkEmblem(hSource As Image) As Image
   Paint.Begin(hImage)
   
   Paint.MoveTo(hImage.W, hImage.H)
-  Paint.RelLineTo(0, - iSize)
-  Paint.RelLineTo(- iSize, iSize)
+  Paint.RelLineTo(0, -iSize)
+  Paint.RelLineTo(-iSize, iSize)
   Paint.RelLineTo(iSize, 0)
   Paint.Background = Color.Black
   'Paint.Background = Color.SetAlpha(Color.TextForeground, 64)
@@ -1052,8 +1052,8 @@ Public Sub AddLinkEmblem(hSource As Image) As Image
   iSize *= 0.85
   
   Paint.MoveTo(hImage.W, hImage.H)
-  Paint.RelLineTo(0, - iSize)
-  Paint.RelLineTo(- iSize, iSize)
+  Paint.RelLineTo(0, -iSize)
+  Paint.RelLineTo(-iSize, iSize)
   Paint.RelLineTo(iSize, 0)
   Paint.Background = Color.SetAlpha(Color.TextForeground, 64)
   Paint.Operator = Paint.OperatorOver
@@ -2514,7 +2514,7 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, 
       iPos = InStr(sTrans, "#,")
       If iPos Then sTrans = Mid$(sTrans, iPos)
       File.Save(sDir &/ ".lang/.pot", sTrans)
-      CompileTranslation(bAll)
+      'CompileTranslation(bAll)
     Endif
 
     'SetMessage(("OK"))
@@ -3095,6 +3095,8 @@ Public Function GetClasses(Optional bFullPath As Boolean) As String[]
   Dim sPath As String
   Dim aClass As New String[]
   Dim sExt As String
+
+  If Not Path Then Return aClass
 
   For Each sPath In Tree.Sources
 

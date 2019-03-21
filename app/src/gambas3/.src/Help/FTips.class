@@ -167,11 +167,11 @@ Private Sub PaintRoundedRect(X As Integer, Y As Integer, W As Integer, H As Inte
   Paint.RelLineTo(w - 2 * fRadiusX, 0.0)
   Paint.RelCurveTo(c1, 0.0, fRadiusX, c2, fRadiusX, fRadiusY)
   Paint.RelLineTo(0, h - 2 * fRadiusY)
-  Paint.RelCurveTo(0.0, c2, c1 - fRadiusX, fRadiusY, - fRadiusX, fRadiusY)
-  Paint.RelLineTo(- w + 2 * fRadiusX, 0)
-  Paint.RelCurveTo(- c1, 0, - fRadiusX, - c2, - fRadiusX, - fRadiusY)
-  Paint.RelLineTo(0, - h + 2 * fRadiusY)
-  Paint.RelCurveTo(0.0, - c2, fRadiusX - c1, - fRadiusY, fRadiusX, - fRadiusY)
+  Paint.RelCurveTo(0.0, c2, c1 - fRadiusX, fRadiusY, -fRadiusX, fRadiusY)
+  Paint.RelLineTo(-w + 2 * fRadiusX, 0)
+  Paint.RelCurveTo(-c1, 0, -fRadiusX, -c2, -fRadiusX, -fRadiusY)
+  Paint.RelLineTo(0, -h + 2 * fRadiusY)
+  Paint.RelCurveTo(0.0, -c2, fRadiusX - c1, -fRadiusY, fRadiusX, -fRadiusY)
   Paint.ClosePath()
 
 End

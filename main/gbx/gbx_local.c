@@ -111,9 +111,9 @@ static bool _translation_loaded = FALSE;
 
 static LOCAL_INFO *local_current;
 
-static char *env_LC_ALL = NULL;
-static char *env_LANGUAGE = NULL;
-static char *env_LANG = NULL;
+static char env_LC_ALL[MAX_LANG + sizeof "LC_ALL" + 1];
+static char env_LANGUAGE[MAX_LANG + sizeof "LANGUAGE" + 1];
+static char env_LANG[MAX_LANG + sizeof "LANG" + 1];
 
 static bool _currency;
 
@@ -153,25 +153,10 @@ static bool is_currency_space(bool negative, bool intl)
 	return test_currency_flag(negative, TRUE, FALSE, intl);
 }
 
-static int my_setenv(const char *name, const char *value, char **ptr)
+static void my_setenv(const char *name, const char *value, char *ptr)
 {
-	char *str = NULL;
-
-	str = STRING_add(str, name, 0);
-	str = STRING_add_char(str, '=');
-	str = STRING_add(str, value, 0);
-
-	if (putenv(str))
-	{
-		STRING_free(&str);
-		return 1;
-	}
-	else
-	{
-		STRING_free(ptr);
-		*ptr = str;
-		return 0;
-	}
+	snprintf(ptr, MAX_LANG + strlen(name) + 1, "%s=%s", name, value);
+	putenv(ptr);
 }
 
 static void begin(void)
@@ -606,23 +591,11 @@ void LOCAL_init(void)
 
 void LOCAL_exit(void)
 {
-	if (env_LANG)
+	if (environ == _environ)
 	{
-		if (environ == _environ)
-			unsetenv("LANG");
-		STRING_free(&env_LANG);
-	}
-	if (env_LC_ALL)
-	{
-		if (environ == _environ)
-			unsetenv("LC_ALL");
-		STRING_free(&env_LC_ALL);
-	}
-	if (env_LANGUAGE)
-	{
-		if (environ == _environ)
-			unsetenv("LANGUAGE");
-		STRING_free(&env_LANGUAGE);
+		unsetenv("LANG");
+		unsetenv("LC_ALL");
+		unsetenv("LANGUAGE");
 	}
 	
 	if (!LOCAL_is_UTF8)
@@ -657,21 +630,24 @@ void LOCAL_set_lang(const char *lang)
 	char *var;
 	char *err;
 
+	if (lang && (strlen(lang) > MAX_LANG))
+		THROW(E_ARG);
+	
 	#ifdef DEBUG_LANG
 	fprintf(stderr, "******** LOCAL_set_lang: %s ********\n", lang);
 	#endif
 
 	if (lang && *lang)
 	{
-		my_setenv("LANG", lang, &env_LANG);
-		my_setenv("LC_ALL", lang, &env_LC_ALL);
+		my_setenv("LANG", lang, env_LANG);
+		my_setenv("LC_ALL", lang, env_LC_ALL);
 	}
 	
 	STRING_free(&_lang);
 	lang = LOCAL_get_lang();
 
 	if (getenv("LANGUAGE"))
-		my_setenv("LANGUAGE", lang, &env_LANGUAGE);
+		my_setenv("LANGUAGE", lang, env_LANGUAGE);
 		
 	if (setlocale(LC_ALL, ""))
 	{
@@ -754,9 +730,9 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 		case LF_STANDARD:
 		case LF_GENERAL_NUMBER:
 			if ((number != 0.0) && ((fabs(number) < 1E-4) || (fabs(number) >= 1E10)))
-				fmt = "0.##############E+#";
+				fmt = "0.###############E+#";
 			else
-				fmt = "0.##############";
+				fmt = "0.###############";
 			break;
 
 		case LF_SHORT_NUMBER:

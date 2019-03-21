@@ -14,9 +14,19 @@ Private $cDelete As Collection
 Public Sub GetPath(Optional sId As String) As String
 
   Dim sPath As String
+  Dim I As Integer
+  Dim sCar As String
+  Dim sName As String
   
   sPath = "/tmp/gambas." & System.User.Id &/ "session" 
-  If sId Then sPath &/= Replace(sId, ":", "_") & ".db"
+  If sId Then 
+    For I = 1 To Len(sId)
+      sCar = Mid(sId, I, 1)
+      If Not IsDigit(sCar) And If Not IsLetter(sCar) Then sCar = "_"
+      sName &= sCar
+    Next
+    sPath &/= sName & ".db"
+  Endif
   Return sPath
   
 End

@@ -535,6 +535,8 @@ static void String_Right(ushort code)
 			val = utf8_get_length(str, len) - val;
 		
 		ulen = utf8_get_pos(ref, str, len, val);
+		if (ulen > len)
+			ulen = len;
 		
 		PARAM->_string.start += ulen;
 		PARAM->_string.len -= ulen;
@@ -756,8 +758,10 @@ BEGIN_METHOD(String_Code, GB_STRING str; GB_INTEGER index)
 	
 	pos = utf8_get_pos(VARG(str).addr, str, len, index - 1);
 	lc = STRING_utf8_get_char_length(str[pos]);
-	
-	GB_ReturnInteger(STRING_utf8_to_unicode(&str[pos], lc));
+	if ((lc + pos) > len)
+		GB_ReturnInteger(-1);
+	else
+		GB_ReturnInteger(STRING_utf8_to_unicode(&str[pos], lc));
 	
 END_METHOD
 
@@ -832,7 +836,7 @@ END_METHOD
 
 #define IS_VALID(_char)                        \
 		((_char) < 0x110000 &&                     \
-		(((_char) & 0xFFFFF800) != 0xD800) &&     \
+		(((_char) & 0xFFFFF800) != 0xD800) &&      \
 		((_char) < 0xFDD0 || (_char) > 0xFDEF) &&  \
 		((_char) & 0xFFFE) != 0xFFFE)
 

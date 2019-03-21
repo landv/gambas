@@ -179,7 +179,10 @@ BEGIN_PROPERTY(CTABLE_primary_key)
 				field = *((char **)GB.Array.Get(primary, i));
 				if (!CFIELD_exist(THIS, field))
 				{
-					GB.Error("Unknown field: &1", field);
+					if (!field)
+						GB.Error("Void field name");
+					else
+						GB.Error("Unknown field: &1", field);
 					return;
 				}
 			}

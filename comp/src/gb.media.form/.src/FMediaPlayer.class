@@ -5,8 +5,8 @@
 Private $hPlayer As MediaPlayer
 Private $hImage As MediaControl
 
-Private $hPause1 As Panel
-Private $hPause2 As Panel
+' Private $hPause1 As Panel
+' Private $hPause2 As Panel
 Private $iMute As Integer
 'Private $bNoVideo As Boolean
 Private $sName As String
@@ -51,30 +51,30 @@ Private Sub MakeMediaPlayer()
   
 End
 
-Private Sub ShowPause()
-  
-  If $hPause1 Then Return
-  Object.Lock(dwgVideo)
-  $hPause1 = New Panel(dwgVideo)
-  $hPause1.Background = Color.White
-  $hPause2 = New Panel(dwgVideo)
-  $hPause2.Background = Color.White
-  Object.Unlock(dwgVideo)
-  dwgVideo_Arrange
-  
-End
+' Private Sub ShowPause()
+'   
+'   If $hPause1 Then Return
+'   Object.Lock(dwgVideo)
+'   $hPause1 = New Panel(dwgVideo)
+'   $hPause1.Background = Color.SetAlpha(Color.White, 128)
+'   $hPause2 = New Panel(dwgVideo)
+'   $hPause2.Background = $hPause1.Background
+'   Object.Unlock(dwgVideo)
+'   dwgVideo_Arrange
+'   
+' End
 
-Private Sub HidePause()
-
-  If Not $hPause1 Then Return
-  Object.Lock(dwgVideo)
-  $hPause1.Delete
-  $hPause2.Delete
-  $hPause1 = Null
-  $hPause2 = Null
-  Object.Unlock(dwgVideo)
-
-End
+' Private Sub HidePause()
+' 
+'   If Not $hPause1 Then Return
+'   Object.Lock(dwgVideo)
+'   $hPause1.Delete
+'   $hPause2.Delete
+'   $hPause1 = Null
+'   $hPause2 = Null
+'   Object.Unlock(dwgVideo)
+' 
+' End
 
 
 Public Sub SetUrl(sUrl As String)
@@ -103,23 +103,21 @@ Public Sub btnPlay_Click()
 
   If Not $hPlayer Then Return
   
-  timTime.Start
-  dwgTime.Refresh
-  sldVolume_Change
-  $hImage.SetWindow(dwgVideo)
-  $hPlayer.Play
-  HidePause
+  If $hPlayer.State <> Media.Playing Then 
+    timTime.Start
+    dwgTime.Refresh
+    sldVolume_Change
+    $hImage.SetWindow(dwgVideo)
+    $hPlayer.Play
+    btnPlay.Picture = Picture["icon:/small/pause"]
+    'HidePause
+  Else
+    $hPlayer.Pause
+    'ShowPause
+    timTime.Stop
+    btnPlay.Picture = Picture["icon:/small/play"]
+  Endif
   
-End
-
-Public Sub btnPause_Click()
-
-  If Not $hPlayer Then Return
-  If $hPlayer.State <> Media.Playing Then Return
-  $hPlayer.Pause
-  ShowPause
-  timTime.Stop
-
 End
 
 Public Sub btnStop_Click()
@@ -128,25 +126,30 @@ Public Sub btnStop_Click()
   If $hPlayer.State <> Media.Playing And If $hPlayer.State <> Media.Paused Then Return
   $hPlayer.Stop
   timTime.Stop
-  HidePause
+  'HidePause
   dwgVideo.Refresh
   dwgTime.Refresh
+  btnPlay.Picture = Picture["icon:/small/play"]
 
 End
 
-Public Sub dwgVideo_Arrange()
-
-  Dim W, H As Integer
-
-  H = Desktop.Scale * 8
-  W = H * 2
-
-  'lblTime.Move(dwgVideo.W - W, dwgVideo.H - H, W, H)
-
-  If $hPause1 Then $hPause1.Move(dwgVideo.W \ 2 - 32, dwgVideo.H \ 2 - 32, 24, 64)
-  If $hPause2 Then $hPause2.Move(dwgVideo.W \ 2 + 8, dwgVideo.H \ 2 - 32, 24, 64)
-
-End
+' Public Sub dwgVideo_Arrange()
+' 
+'   Dim W, H As Integer
+' 
+'   H = Desktop.Scale * 8
+'   W = H * 2
+' 
+'   'lblTime.Move(dwgVideo.W - W, dwgVideo.H - H, W, H)
+' 
+'   If $hPause1 Then 
+'     $hPause1.Move(dwgVideo.W \ 2 - 32, dwgVideo.H \ 2 - 32, 24, 64)
+'     $hPause2.Move(dwgVideo.W \ 2 + 8, dwgVideo.H \ 2 - 32, 24, 64)
+'     $hPause1.Raise
+'     $hPause2.Raise
+'   Endif
+' 
+' End
 
 Public Sub GetShowControl() As Boolean
   
@@ -297,13 +300,16 @@ End
 
 Public Sub dwgVideo_Draw()
 
+  Dim sText As String
+  
   If Not $hPlayer Then Return
   If $hPlayer.State <> Media.Playing And If $hPlayer.State <> Media.Paused Then
     'Paint.DrawPicture(Picture["icon:/64/audio"], dwgVideo.W \ 2 - 32, dwgVideo.H \ 2 - 32)
     Paint.Background = Color.White
     Paint.Font.Grade = 2
-    Paint.DrawTextShadow($sName, 0, dwgVideo.H \ 2 - Desktop.Scale * 2, dwgVideo.W, Desktop.Scale * 4, Align.Center, 3, 1)
-    Paint.DrawText($sName, 0, dwgVideo.H \ 2 - Desktop.Scale * 2, dwgVideo.W, Desktop.Scale * 4, Align.Center)
+    sText = Html($sName)
+    Paint.DrawRichTextShadow(sText, 0, dwgVideo.H \ 2 - Desktop.Scale * 2, dwgVideo.W, Desktop.Scale * 4, Align.Center, 3, 1)
+    Paint.DrawRichText(sText, 0, dwgVideo.H \ 2 - Desktop.Scale * 2, dwgVideo.W, Desktop.Scale * 4, Align.Center)
   Endif
 
 End
@@ -316,13 +322,13 @@ End
 
 Public Sub Play()
   
-  btnPlay_Click
+  If $hPlayer.State <> Media.Playing Then btnPlay_Click
   
 End
 
 Public Sub Pause()
   
-  btnPause_Click
+  If $hPlayer.State = Media.Playing Then btnPlay_Click
   
 End
 

@@ -35,7 +35,7 @@ void CWatch::watch(int fd, int type, GB_WATCH_CALLBACK callback, intptr_t param)
 {
 	CWatch *watch;
 
-	//qDebug("CWatch::watch: %d %d", fd, type);
+	//qDebug("CWatch::watch: %d %d %p", fd, type, callback);
 
 	switch (type)
 	{

@@ -755,3 +755,31 @@ IMG.screenshot {
 #login-buttons > INPUT {
   margin: 0 0.5em;
 }
+
+DIV.playground {
+  border: solid 1px #D8D8D8;
+  border-top: none;
+  background-color: #F8F8F8;
+}
+
+DIV.playground PRE {
+  display: none;
+  padding: 0.5em 1em 0 1em;
+  margin: 0;
+}
+
+DIV.playground BUTTON {
+  background-color: #A0A0A0;
+  color: white;
+  font-size: 80%;
+  height: 1.6em;
+  border: none;
+  cursor: pointer;
+  margin: 0.5em 0 0.5em 0.5em;
+}
+
+DIV.waiting {
+  background: url('<%/%>/waiting.gif');
+  width: 16px;
+  height: 11px;
+}

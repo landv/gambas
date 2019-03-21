@@ -327,6 +327,8 @@ BEGIN_METHOD(Draw_Image, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_INTEGER
 	else
 		rect = NULL;
 	
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+	
 	if (MISSING(opacity) && MISSING(angle))
 		SDL_RenderCopy(RENDERER, texture, rect, &dest);
 	else

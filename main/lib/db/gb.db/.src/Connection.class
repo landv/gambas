@@ -24,6 +24,7 @@ Public Sub ApplyTemplate(Template As String)
   Dim iLength As Integer
   Dim sErr As String
   Dim sColl As String
+  Dim aKey As String[]
   
   hFile = Open String Template
   
@@ -120,7 +121,9 @@ CREATE_TABLE:
   Next
   
   'Print "primary key: "; cTable["PrimaryKey"].Join(",")
-  hTable.PrimaryKey = cTable["PrimaryKey"]
+  aKey = cTable["PrimaryKey"]
+  If aKey.Count = 1 And If aKey[0] = "" Then aKey.Clear
+  If aKey.Count Then hTable.PrimaryKey = cTable["PrimaryKey"]
   hTable.Update
   
   For Each cIndex In cTable["Indexes"]
@@ -141,6 +144,7 @@ Public Sub GetTemplate() As String
   Dim hField As Field
   Dim hIndex As Index
   Dim sTemplate As String
+  Dim aKey As String[]
 
   hFile = Open String For Write
   
@@ -160,7 +164,8 @@ Public Sub GetTemplate() As String
     Print #hFile, "{ Table"
     Print #hFile, "  Name="; Quote(hTable.Name)
     If hTable.Type Then Print #hFile, "  Type="; Quote(hTable.Type)
-    Print #hFile, "  PrimaryKey=[\""; hTable.PrimaryKey.Join("\",\""); "\"]"
+    aKey = hTable.PrimaryKey
+    If aKey.Count Then Print #hFile, "  PrimaryKey=[\""; aKey.Join("\",\""); "\"]"
     
     For Each hField In hTable.Fields
       

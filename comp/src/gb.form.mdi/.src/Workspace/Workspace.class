@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Orientation{Align.Top;Bottom}=Top,Image,Border=True"
+Public Const _Properties As String = "*,Orientation{Align.Top;Bottom}=Top,Image,Border=True,CloseButton=True"
 Public Const _DefaultEvent As String = "Activate"
 Public Const _Group As String = "Special"
 
@@ -24,6 +24,7 @@ Property Border As Boolean
 Property Image As Image
 Property Picture As Picture
 Property CloseWithMouse As Boolean
+Property CloseButton As Boolean ''if false the close all tabs button is not shown
 
 Static Private $bPictureWarning As Boolean
 
@@ -34,6 +35,7 @@ Public Sub _new()
   
   'SUPER.Background = Color.Yellow
   $hWorkspace = New FWorkspace(Me)
+  $hWorkspace.CloseButton = True
   'ME.Container = $hWorkspace.Container
   
 End
@@ -258,5 +260,17 @@ End
 Private Sub CloseWithMouse_Write(Value As Boolean)
 
   $hWorkspace.SetCloseWithMouse(Value)
+
+End
+
+Private Function CloseButton_Read() As Boolean
+
+  Return $hWorkspace.CloseButton
+
+End
+
+Private Sub CloseButton_Write(Value As Boolean)
+
+  $hWorkspace.CloseButton = Value
 
 End

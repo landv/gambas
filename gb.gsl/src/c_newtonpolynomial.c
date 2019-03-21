@@ -36,7 +36,7 @@
 
 static CNEWTONPOLYNOMIAL *create_newtonplynomial()
 {
-	return (CNEWTONPOLYNOMIAL *)GB.New(GB.FindClass("NetonPolynomial"), NULL,  NULL);
+	return (CNEWTONPOLYNOMIAL *)GB.New(GB.FindClass("NewtonPolynomial"), NULL,  NULL);
 }
 
 

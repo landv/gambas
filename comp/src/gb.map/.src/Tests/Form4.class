@@ -2,16 +2,64 @@
 
 Private hMap As New Map
 Private hImage As Image
+'Private zz As New _ShapeItem
 Public Sub Form_Open()
+Dim hbound As MapBounds
   'hMap.AddTile("gg", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "145"]).SubDomains = ["0", "1", "2"]
     'hImg = Scanners["hpaio:/net/HP_LaserJet_MFP_M426fdn?ip=192.168.1.25"].Scan()
   
   'MapView1.Map.AddTile("gmap", "https://khms0.google.com/kh/v={version}?x={x}&y={y}&z={z}", ["version": "821"]).Copyright = "google"
-  MapView1.Map.AddTile("OpenStreetMap", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null).Copyright = "© OpenStreetMap contributors"
-  MapView1.Map.Center = MapPoint(48.866667, 2.333333)
-  MapView1.Map.Zoom = 5
-  'himage = hMap.Grab(hMap.Bounds, 200, 200, 17)
+  
+  'Authenticated proxy settings bellow
+  ' MapView1.Map.Proxy.Auth = Net.AuthNone 'Net.AuthBasic
+  ' MapView1.Map.Proxy.Type = Net.ProxyHTTP
+  ' MapView1.Map.Proxy.Host = ""
+  ' MapView1.Map.Proxy.User = ""
+  ' MapView1.Map.Proxy.Password = ""
 
+  'Storing tiles elsewhere
+  'MapView1.Map.DefaultCache = "/home/tmp"
+
+  MapView1.Map.AddTile("OpenStreetMap", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null, "OpenStreetMap1").Copyright = "© OpenStreetMap contributors"
+  MapView1.Map.GetTile("OpenStreetMap").Opacity = 0.3
+  MapView1.Map.Center = MapPoint(48.866667, 2.333333)
+
+  'MapView1.Map.GetTile("OpenStreetMap").ClearCache(10)
+
+  MapView1.Map.Zoom = 10
+  MapView1.Map.AddShape("Shape")
+  MapView1.Map.GetShape("Shape").Opacity = 0.5
+  MapView1.Map.GetShape("Shape").LineStyle = Line.Dash
+
+  MapView1.Map.GetShape("Shape").AddPoint("point 1", MapPoint(48.866667, 2.333333))
+  MapView1.Map.GetShape("Shape").AddPoint("point 2", MapPoint(48.866667, 2.533333)).Selected = False
+
+  Dim tmp1 As New MapPoint[]
+  Dim tmp2 As New MapPoint
+  tmp1 = [MapPoint(48.866667, 2.333333), MapPoint(48.866667, 2.433333), MapPoint(48.966667, 2.433333), MapPoint(48.966667, 2.233333)]
+  tmp2 = MapPoint.GetCenter(tmp1)
+
+  MapView1.Map.GetShape("Shape").AddMultipoint("multipoint1", tmp1, Color.green, Image.Load("plus.png"))
+
+  MapView1.Map.GetShape("Shape").AddPolyLine("poly1", tmp1, Color.Yellow, 4, Line.DashDotDot)
+  MapView1.Map.GetShape("Shape").AddCircle("cir1", tmp2, 5000, Color.green, 4, Line.dot, Color.Transparent)
+  MapView1.Map.GetShape("Shape").AddCircle("cir2", tmp2, 2500, Color.red, 4, Line.dash, Color.Transparent)
+  MapView1.Map.GetShape("Shape").AddPoint("central point", tmp2)
+  MapView1.Map.GetShape("Shape").GetItem("poly1").Selected = True
+
+  ' MapView1.Map.GetShape("Shape").AddCircle("cir", MapPoint(48.866667, 2.333333), 2000) ', Color.Red, 2, Color.Transparent)
+  ' MapView1.Map.GetShape("Shape").GetItem("cir").center = MapPoint(48.866667, 2.433333)
+  
+  'MapView1.Map
+  ' MapView1.Map["Shape"].AddPoint("p", MapPoint(48.866667, 2.333333))
+  ' MapView1.Map["Shape"].AddPoint("p2", MapPoint(48.866222, 2.360583), Color.Green, Image.Load("cursor.png"))
+  'himage = hMap.Grab(hMap.Bounds, 200, 200, 17)
+  
+  Print MapPoint(48.866667, 2.333333).Distance(MapPoint(48.866667, 2.333333), MapPoint(48.866222, 2.360583))
+  'hbound = MapView1.Map["Shape"]["cir"].Bounds
+  'Print MapPoint.Distance(hbound.TopLeft, MapPoint(hbound.Top, hbound.Right))
+  
+  Debug "Shape count: " & MapView1.Map["Shape"].Count
 End
 
 

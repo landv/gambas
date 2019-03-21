@@ -54,21 +54,21 @@ GB_STREAM_DESC UdpSocketStream = {
 };
 
 
-DECLARE_EVENT (CUDPSOCKET_Read);
-DECLARE_EVENT (CUDPSOCKET_SocketError);
+DECLARE_EVENT (EVENT_Read);
+DECLARE_EVENT (EVENT_SocketError);
 
 void CUdpSocket_post_data(intptr_t Param)
 {
 	CUDPSOCKET *t_obj;
 	t_obj=(CUDPSOCKET*)Param;
-	GB.Raise(t_obj,CUDPSOCKET_Read,0);
+	GB.Raise(t_obj,EVENT_Read,0);
 	GB.Unref(POINTER(&t_obj));
 }
 void CUdpSocket_post_error(intptr_t Param)
 {
 	CUDPSOCKET *t_obj;
 	t_obj=(CUDPSOCKET*)Param;
-	GB.Raise(t_obj,CUDPSOCKET_SocketError,0);
+	GB.Raise(t_obj,EVENT_SocketError,0);
 	GB.Unref(POINTER(&t_obj));
 }
 
@@ -180,6 +180,7 @@ int CUdpSocket_stream_close(GB_STREAM *stream)
 		close(SOCKET->socket);
 		SOCKET->status = NET_INACTIVE;
 	}
+
 	GB.FreeString(&THIS->thost);
 	GB.FreeString(&THIS->tpath);
 	
@@ -364,7 +365,11 @@ static void dgram_start(CUDPSOCKET *_object)
 	else
 	{
 		THIS->addr.in.sin_family = domain;
-		THIS->addr.in.sin_addr.s_addr = htonl(INADDR_ANY);
+		if (!THIS->host)
+			THIS->addr.in.sin_addr.s_addr = htonl(INADDR_ANY);
+		else
+			THIS->addr.in.sin_addr.s_addr = inet_addr(THIS->host);
+
 		THIS->addr.in.sin_port = htons(THIS->port);
 		size = sizeof(struct sockaddr_in);
 		addr = (struct sockaddr *)&THIS->addr.in;
@@ -388,14 +393,14 @@ static void dgram_start(CUDPSOCKET *_object)
 }
 
 
-BEGIN_PROPERTY(CUDPSOCKET_Status)
+BEGIN_PROPERTY(UdpSocket_Status)
 
 	GB.ReturnInteger(SOCKET->status);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CUDPSOCKET_SourceHost)
+BEGIN_PROPERTY(UdpSocket_SourceHost)
 
 	if (THIS->addr.a.sa_family == PF_INET)
 		GB.ReturnNewZeroString(inet_ntoa(THIS->addr.in.sin_addr));
@@ -404,7 +409,7 @@ BEGIN_PROPERTY(CUDPSOCKET_SourceHost)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CUDPSOCKET_SourcePort)
+BEGIN_PROPERTY(UdpSocket_SourcePort)
 
 	if (THIS->addr.a.sa_family == PF_INET)
 		GB.ReturnInteger(ntohs(THIS->addr.in.sin_port));
@@ -413,7 +418,7 @@ BEGIN_PROPERTY(CUDPSOCKET_SourcePort)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CUDPSOCKET_SourcePath)
+BEGIN_PROPERTY(UdpSocket_SourcePath)
 
 	if (THIS->addr.a.sa_family == PF_UNIX)
 		GB.ReturnNewZeroString(THIS->addr.un.sun_path);
@@ -422,7 +427,7 @@ BEGIN_PROPERTY(CUDPSOCKET_SourcePath)
 
 END_PROPERTY
 
-BEGIN_PROPERTY ( CUDPSOCKET_TargetHost )
+BEGIN_PROPERTY(UdpSocket_TargetHost)
 
 		char *strtmp;
 		struct in_addr rem_ip;
@@ -442,7 +447,7 @@ BEGIN_PROPERTY ( CUDPSOCKET_TargetHost )
 
 END_PROPERTY
 
-BEGIN_PROPERTY ( CUDPSOCKET_TargetPort )
+BEGIN_PROPERTY(UdpSocket_TargetPort)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(THIS->tport);
@@ -461,7 +466,7 @@ BEGIN_PROPERTY ( CUDPSOCKET_TargetPort )
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CUDPSOCKET_TargetPath)
+BEGIN_PROPERTY(UdpSocket_TargetPath)
 
 	if (READ_PROPERTY)
 		GB.ReturnString(THIS->tpath);
@@ -480,7 +485,7 @@ END_PROPERTY
 /*************************************************
 Gambas object "Constructor"
 *************************************************/
-BEGIN_METHOD_VOID(CUDPSOCKET_new)
+BEGIN_METHOD_VOID(UdpSocket_new)
 
 	SOCKET->stream.tag = _object;
 	SOCKET->socket = -1;
@@ -490,14 +495,16 @@ END_METHOD
 /*************************************************
 Gambas object "Destructor"
 *************************************************/
-BEGIN_METHOD_VOID(CUDPSOCKET_free)
+
+BEGIN_METHOD_VOID(UdpSocket_free)
 
 	CUdpSocket_stream_close(&SOCKET->stream);
+	GB.FreeString(&THIS->host);
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
+BEGIN_METHOD_VOID (UdpSocket_Peek)
 
 	char *sData=NULL;
 	socklen_t host_len;
@@ -525,7 +532,7 @@ BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
 			GB.Free(POINTER(&sData));
 			CUdpSocket_stream_close(&SOCKET->stream);
 			SOCKET->status = NET_CANNOT_READ;
-			GB.Raise(THIS,CUDPSOCKET_SocketError,0);
+			GB.Raise(THIS,EVENT_SocketError,0);
 			GB.ReturnVoidString();
 			return;
 		}
@@ -544,14 +551,14 @@ BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CUDPSOCKET_Bind)
+BEGIN_METHOD_VOID(UdpSocket_Bind)
 
 	dgram_start(THIS);
 
 END_METHOD
 
 
-BEGIN_PROPERTY(CUDPSOCKET_broadcast)
+BEGIN_PROPERTY(UdpSocket_Broadcast)
 
 	if (READ_PROPERTY)
 	{
@@ -565,7 +572,7 @@ BEGIN_PROPERTY(CUDPSOCKET_broadcast)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CUDPSOCKET_Port)
+BEGIN_PROPERTY(UdpSocket_Port)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(THIS->port);
@@ -587,7 +594,7 @@ BEGIN_PROPERTY(CUDPSOCKET_Port)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CUDPSOCKET_Path)
+BEGIN_PROPERTY(UdpSocket_Path)
 
 	if (READ_PROPERTY)
 		GB.ReturnString(THIS->path);
@@ -603,6 +610,27 @@ BEGIN_PROPERTY(CUDPSOCKET_Path)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(UdpSocket_Host)
+
+	struct in_addr rem_ip;
+	
+	if (READ_PROPERTY)
+	{
+		GB.ReturnString(THIS->host);
+		return;
+	}
+
+	if (!inet_aton(GB.ToZeroString(PROP(GB_STRING)), &rem_ip))
+	{
+		GB.Error("Invalid IP address");
+		return;
+	}
+	
+	GB.StoreString(PROP(GB_STRING), &THIS->host);
+
+END_PROPERTY
+
+
 
 /***************************************************************
 Here we declare the public interface of UdpSocket class
@@ -613,26 +641,27 @@ GB_DESC CUdpSocketDesc[] =
 
 	GB_INHERITS("Stream"),
 
-	GB_EVENT("Error", NULL, NULL, &CUDPSOCKET_SocketError),
-	GB_EVENT("Read", NULL, NULL, &CUDPSOCKET_Read),
+	GB_EVENT("Error", NULL, NULL, &EVENT_SocketError),
+	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 
-	GB_METHOD("_new", NULL, CUDPSOCKET_new, NULL),
-	GB_METHOD("_free", NULL, CUDPSOCKET_free, NULL),
-	GB_METHOD("Bind", NULL, CUDPSOCKET_Bind, NULL),
-	GB_METHOD("Peek","s",CUDPSOCKET_Peek,NULL),
+	GB_METHOD("_new", NULL, UdpSocket_new, NULL),
+	GB_METHOD("_free", NULL, UdpSocket_free, NULL),
+	GB_METHOD("Bind", NULL, UdpSocket_Bind, NULL),
+	GB_METHOD("Peek","s",UdpSocket_Peek,NULL),
 
-	GB_PROPERTY_READ("Status", "i", CUDPSOCKET_Status),
-	GB_PROPERTY_READ("SourceHost", "s", CUDPSOCKET_SourceHost),
-	GB_PROPERTY_READ("SourcePort", "i", CUDPSOCKET_SourcePort),
-	GB_PROPERTY_READ("SourcePath", "i", CUDPSOCKET_SourcePath),
-	GB_PROPERTY("TargetHost", "s", CUDPSOCKET_TargetHost),
-	GB_PROPERTY("TargetPort", "i", CUDPSOCKET_TargetPort),
-	GB_PROPERTY("TargetPath", "s", CUDPSOCKET_TargetPath),
+	GB_PROPERTY_READ("Status", "i", UdpSocket_Status),
+	GB_PROPERTY_READ("SourceHost", "s", UdpSocket_SourceHost),
+	GB_PROPERTY_READ("SourcePort", "i", UdpSocket_SourcePort),
+	GB_PROPERTY_READ("SourcePath", "i", UdpSocket_SourcePath),
+	GB_PROPERTY("TargetHost", "s", UdpSocket_TargetHost),
+	GB_PROPERTY("TargetPort", "i", UdpSocket_TargetPort),
+	GB_PROPERTY("TargetPath", "s", UdpSocket_TargetPath),
 
-	GB_PROPERTY("Port", "i", CUDPSOCKET_Port),
-	GB_PROPERTY("Path", "s", CUDPSOCKET_Path),
+	GB_PROPERTY("Host", "s", UdpSocket_Host),
+	GB_PROPERTY("Port", "i", UdpSocket_Port),
+	GB_PROPERTY("Path", "s", UdpSocket_Path),
 	
-	GB_PROPERTY("Broadcast", "b", CUDPSOCKET_broadcast),
+	GB_PROPERTY("Broadcast", "b", UdpSocket_Broadcast),
 	GB_PROPERTY("Timeout", "i", Socket_Timeout),
 
   GB_CONSTANT("_IsControl", "b", TRUE),

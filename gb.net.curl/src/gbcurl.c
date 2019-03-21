@@ -21,6 +21,8 @@
 
 ***************************************************************************/
 
+#define __GB_CURL_C
+
 /*****************************
  NOTE THAT :
  libcurl <= 7.10.7 lacks CURLE_LDAP_INVALID_URL and CURLE_FILESIZE_EXCEEDED constants
@@ -32,6 +34,8 @@
 #include <curl/curl.h>
 #include "gbcurl.h"
 #include "CCurl.h"
+
+CURL_PROXY CURL_default_proxy = { CURLPROXY_HTTP, CURLAUTH_NONE, NULL, NULL, NULL, NULL };
 
 static char *_protocols[] = { "ftp://", "ftps://", "http://", "https://", NULL };
 
@@ -219,14 +223,12 @@ bool CURL_check_userpwd(CURL_USER *user)
 
 void CURL_proxy_init(CURL_PROXY *proxy)
 {
-	proxy->type = CURLPROXY_HTTP;
-	proxy->auth = CURLAUTH_NONE;
-	proxy->user = NULL;
-	proxy->pwd = NULL;
-	proxy->host = NULL;
-	proxy->userpwd = NULL;
+	*proxy = CURL_default_proxy;
+	GB.RefString(proxy->host);
+	GB.RefString(proxy->user);
+	GB.RefString(proxy->pwd);
+	GB.RefString(proxy->userpwd);
 }
-
 
 void CURL_proxy_clear(CURL_PROXY *proxy)
 {
@@ -234,6 +236,11 @@ void CURL_proxy_clear(CURL_PROXY *proxy)
 	GB.FreeString(&proxy->user);
 	GB.FreeString(&proxy->pwd);
 	GB.FreeString(&proxy->userpwd);
+}
+
+void CURL_default_proxy_clear()
+{
+	CURL_proxy_clear(&CURL_default_proxy);
 }
 
 

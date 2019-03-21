@@ -99,5 +99,8 @@
 /* Maximum number of digits in a Float */
 #define MAX_FLOAT_DIGIT     15
 
+/* Maximum length of the System.Language property */
+#define MAX_LANG            16
+
 #endif
 

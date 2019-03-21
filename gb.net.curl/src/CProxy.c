@@ -29,9 +29,9 @@
 
 #include "CProxy.h"
 
-static bool check_active(CPROXY *proxy)
+static bool check_active(CCURL *_object)
 {
-	if (*(proxy->parent_status) > 0)
+	if (THIS && THIS->status > 0)
 	{
 		GB.Error("Proxy cannot be modified while client is active");
 		return TRUE;
@@ -40,16 +40,20 @@ static bool check_active(CPROXY *proxy)
 		return FALSE;
 }
 
+#define GET_PROXY() CURL_PROXY *proxy = _object ? &THIS->proxy : &CURL_default_proxy
+
 BEGIN_PROPERTY(CurlProxy_Auth)
 
+	GET_PROXY();
+
 	if (READ_PROPERTY)
-		GB.ReturnInteger(THIS->proxy.auth);
+		GB.ReturnInteger(proxy->auth);
 	else
 	{
 		if (check_active(THIS))
 			return;
 
-		if (CURL_proxy_set_auth(&THIS->proxy, VPROP(GB_INTEGER)))
+		if (CURL_proxy_set_auth(proxy, VPROP(GB_INTEGER)))
 			GB.Error("Unknown authentication method");
 	}
 
@@ -58,14 +62,16 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CurlProxy_Type)
 
+	GET_PROXY();
+
 	if (READ_PROPERTY)
-		GB.ReturnInteger(THIS->proxy.type);
+		GB.ReturnInteger(proxy->type);
 	else
 	{
 		if (check_active(THIS))
 			return;
 
-		if (CURL_proxy_set_type(&THIS->proxy, VPROP(GB_INTEGER)))
+		if (CURL_proxy_set_type(proxy, VPROP(GB_INTEGER)))
 			GB.Error("Unknown proxy type");
 	}
 
@@ -74,14 +80,16 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CurlProxy_User)
 
+	GET_PROXY();
+
 	if (READ_PROPERTY)
-		GB.ReturnString(THIS->proxy.user);
+		GB.ReturnString(proxy->user);
 	else
 	{
 		if (check_active(THIS))
 			return;
 
-		GB.StoreString(PROP(GB_STRING), &THIS->proxy.user);
+		GB.StoreString(PROP(GB_STRING), &proxy->user);
 	}
 
 END_PROPERTY
@@ -89,14 +97,16 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CurlProxy_Password)
 
+	GET_PROXY();
+
 	if (READ_PROPERTY)
-		GB.ReturnString(THIS->proxy.pwd);
+		GB.ReturnString(proxy->pwd);
 	else
 	{
 		if (check_active(THIS))
 			return;
 
-		GB.StoreString(PROP(GB_STRING), &THIS->proxy.pwd);
+		GB.StoreString(PROP(GB_STRING), &proxy->pwd);
 	}
 
 END_PROPERTY
@@ -104,14 +114,16 @@ END_PROPERTY
 
 BEGIN_PROPERTY (CurlProxy_Host)
 
+	GET_PROXY();
+
 	if (READ_PROPERTY)
-		GB.ReturnString(THIS->proxy.host);
+		GB.ReturnString(proxy->host);
 	else
 	{
 		if (check_active(THIS))
 			return;
 
-		GB.StoreString(PROP(GB_STRING), &THIS->proxy.host);
+		GB.StoreString(PROP(GB_STRING), &proxy->host);
 	}
 
 END_PROPERTY
@@ -119,8 +131,8 @@ END_PROPERTY
 
 GB_DESC CProxyDesc[] =
 {
-	GB_DECLARE(".Curl.Proxy", sizeof(CPROXY)), GB_VIRTUAL_CLASS(),
-
+	GB_DECLARE_VIRTUAL(".Curl.Proxy"),
+	
 	GB_PROPERTY("Host", "s", CurlProxy_Host),
 	GB_PROPERTY("User", "s", CurlProxy_User),
 	GB_PROPERTY("Password", "s", CurlProxy_Password),

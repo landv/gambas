@@ -4,13 +4,14 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Action,MinValue=0,MaxValue=100,Step=1,Wrap,Value,Border=True"
+Public Const _Properties As String = "*,Action,MinValue=0,MaxValue=100,Step=1,Wrap,Value,Alignment{Align.Normal;Left;Center;Right}=Normal,Border=True"
 Public Const _Group As String = "Form"
 Public Const _DefaultEvent As String = "Change"
 Public Const _DefaultSize As String = "9,4"
 Public Const _Similar As String = "TextBox,Slider"
 
 Event Change
+Event Limit
 
 Property MinValue As Integer
 Property MaxValue As Integer
@@ -20,6 +21,8 @@ Property Wrap As Boolean
 Property Step As Integer
 Property Text As String
 Property Background As Integer
+Property Alignment As Integer
+Property ShowZero As Boolean
 
 Private Enum ARROW_NONE, ARROW_TOP, ARROW_BOTTOM
 
@@ -35,6 +38,7 @@ Private $bTimerAdd As Boolean
 Private $bBorder As Boolean = True
 Private $bWrap As Boolean
 Private $iStep As Integer = 1
+Private $bShowZero As Boolean
 
 Public Sub _new()
   
@@ -150,8 +154,12 @@ Public Sub View_Draw()
 End
 
 Private Sub ChangeValue(bAdd As Boolean, Optional bFocus As Boolean)
+
+  Dim iValue As Integer
   
+  iValue = $iValue
   SetValue($iValue + $iStep * If(bAdd, 1, -1), bFocus)
+  If $iValue = iValue Then Raise Limit
   
 End
 
@@ -160,6 +168,7 @@ Public Sub View_MouseWheel()
   
   If Object.CanRaise(Me, "MouseWheel") Then Return
   
+  CheckValue
   ChangeValue(Mouse.Delta > 0, True)
   Stop Event
   
@@ -174,13 +183,20 @@ End
 Private Sub SetValue(iValue As Integer, Optional bFocus As Boolean)
 
   Dim sValue As String
+  Dim nZero As Integer
 
   If iValue < $iMin Then
     iValue = If($bWrap, $iMax, $iMin)
   Else If iValue > $iMax Then
     iValue = If($bWrap, $iMin, $iMax)
   Endif
+  
   sValue = CStr(iValue)
+  If $bShowZero Then
+    nZero = Max(Len(CStr($iMin)), Len(CStr($iMax)))
+    If nZero > Len(sValue) Then sValue = String$(nZero - Len(sValue), "0") & sValue
+  Endif
+  
   If $hTextBox.Text <> sValue Then $hTextBox.Text = sValue
   If $iValue <> iValue Then
     $iValue = iValue
@@ -294,6 +310,7 @@ Public Sub View_MouseDown()
     Return
   Endif
   
+  CheckValue
   ChangeValue($bTimerAdd, True)
   
   $hTimer = New Timer(500) As "TimerMouse"
@@ -474,5 +491,30 @@ Private Sub Background_Write(Value As Integer)
   Else
     $hTextBox.Background = Color.Default
   Endif
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return $hTextBox.Alignment
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  $hTextBox.Alignment = Value
+
+End
+
+Private Function ShowZero_Read() As Boolean
+
+  Return $bShowZero
+
+End
+
+Private Sub ShowZero_Write(Value As Boolean)
+
+  $bShowZero = Value
+  SetValue($iValue)
 
 End

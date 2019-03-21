@@ -2,49 +2,31 @@
 
 Export
 
-Inherits UserControl
+Inherits Label
 
-Public Const _Properties As String = "*,Padding{Range:0;63},AutoResize,Link,Text,Border,Alignment{Align.*}"
-Public Const _DefaultSize As String = "24,4"
+Public Const _Properties As String = "*,Link"
+'Public Const _DefaultSize As String = "24,4"
 Public Const _DefaultEvent As String = "Click"
 
 Event Click
 
-Property Text As String
 Property Link As String
 Property Visited As Boolean
-Property AutoResize As Boolean
-Property Padding As Integer
-Property Border As Boolean
-Property Alignment As Integer
+Property Foreground As Integer
+Property Text As String
 
-Private $hDraw As DrawingArea
-Private $sText As String
 Private $bVisited As Boolean
-Private $bAutoResize As Boolean
-Private $iPadding As Integer
+Private $sText As String
 Private $sLink As String
-Private $bBorder As Boolean
-Private $iAlign As Integer = Align.Normal
+Private $iMouse As Integer
+
+Private $hObs As Observer
 
 Public Sub _new()
   
-  $hDraw = New DrawingArea(Me) As "DrawingArea"
+  $hObs = New Observer(Me) As "Label"
+  UpdateLabel
   
-End
-
-Private Function Text_Read() As String
-
-  Return $sText
-
-End
-
-Private Sub Text_Write(Value As String)
-
-  $sText = Value
-  UpdateSize
-  $hDraw.Refresh
-
 End
 
 Private Function Visited_Read() As Boolean
@@ -53,82 +35,51 @@ Private Function Visited_Read() As Boolean
 
 End
 
+Private Sub UpdateLabel()
+
+  Super.Foreground = If($bVisited, Color.VisitedForeground, Color.LinkForeground)
+  If $sText Then
+    Super.Text = $sText
+  Else 
+    Super.Text = $sLink
+  Endif
+
+End
+
 Private Sub Visited_Write(Value As Boolean)
 
   $bVisited = Value
-  $hDraw.Refresh
+  UpdateLabel
 
 End
 
-Public Sub DrawingArea_Draw()
+Public Sub Label_Enter()
   
-  Dim sText As String
+  $iMouse = Me.Mouse
   
-  If $bBorder Then Style.PaintPanel(0, 0, Me.W, Me.H, Border.Plain)
-  
-  Paint.Background = If($bVisited, Color.VisitedForeground, Color.LinkForeground)
-  Paint.Font.Underline = True
-  sText = GetText()
-  Paint.DrawText(sText, $iPadding, $iPadding, Paint.W - $iPadding * 2, Paint.H - $iPadding * 2, $iAlign)
+  If Not Me.Design And If Me.Enabled Then Me.Mouse = Mouse.Pointing
   
 End
 
-Private Function AutoResize_Read() As Boolean
-
-  Return $bAutoResize 
-
-End
-
-Private Sub AutoResize_Write(Value As Boolean)
-
-  $bAutoResize = Value
-  If $bAutoResize Then UpdateSize
-
-End
-
-Private Sub GetText() As String
+Public Sub Label_Leave()
   
-  If $sText Then Return $sText
-  Return $sLink
+  Me.Mouse = $iMouse
   
 End
 
-
-Private Sub UpdateSize()
-  
-  Dim sText As String
-  
-  $hDraw.Mouse = If($sLink, Mouse.Pointing, Mouse.Default)
-  If Not $bAutoResize Then Return
-  sText = GetText()
-  Me.Resize($hDraw.Font.TextWidth(sText) + $iPadding * 2, $hDraw.Font.TextHeight(sText) + $iPadding * 2)
-  
-End
-
-Private Function Padding_Read() As Integer
-
-  Return $iPadding
-
-End
-
-Private Sub Padding_Write(Value As Integer)
-
-  $iPadding = Value
-  UpdateSize
-  $hDraw.Refresh
-
-End
-
-Public Sub DrawingArea_MouseDown()
+Public Sub Label_MouseDown()
 
   Dim bStop As Boolean
   Dim sLink As String
+  
+  If Me.Design Then Return
+  If Not Me.Enabled Then Return
   
   bStop = Raise Click
   If bStop Then Return
   
   $bVisited = True
-  $hDraw.Refresh
+  UpdateLabel
   
   sLink = $sLink
   If Not sLink Then sLink = $sText
@@ -147,34 +98,34 @@ End
 
 Private Sub Link_Write(Value As String)
 
+  If Me.Tooltip = $sLink Then Me.Tooltip = Value
   $sLink = Value
-  Updatesize
-  $hDraw.Refresh
+  UpdateLabel
 
 End
 
-Private Function Alignment_Read() As Integer
 
-  Return $iAlign
+Private Function Foreground_Read() As Integer
 
-End
-
-Private Sub Alignment_Write(Value As Integer)
-
-  $iAlign = Value
-  $hDraw.Refresh
+  Return Super.Foreground
 
 End
 
-Private Function Border_Read() As Boolean
+Private Sub Foreground_Write((Value) As Integer)
 
-  Return $bBorder
+  ' Ignore explicit foreground 
 
 End
 
-Private Sub Border_Write(Value As Boolean)
+Private Function Text_Read() As String
 
-  $bBorder = Value
-  $hDraw.Refresh
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  UpdateLabel
 
 End

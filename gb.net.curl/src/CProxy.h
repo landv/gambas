@@ -33,11 +33,6 @@
 
 extern GB_DESC CProxyDesc[];
 
-#else
-
-#undef THIS
-#define THIS (&((CCURL *)_object)->proxy)
-
 #endif
 
 #endif

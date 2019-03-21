@@ -1180,11 +1180,11 @@ static void QT_Init(void)
 	if (env && atoi(env) != 0)
 		MAIN_key_debug = TRUE;
 	
-	GB.Hook(GB_HOOK_LOOP, (void *)hook_loop);
 	GB.Hook(GB_HOOK_WAIT, (void *)hook_wait);
 	GB.Hook(GB_HOOK_TIMER, (void *)hook_timer);
 	GB.Hook(GB_HOOK_WATCH, (void *)hook_watch);
 	GB.Hook(GB_HOOK_POST, (void *)hook_post);
+	GB.Hook(GB_HOOK_LOOP, (void *)hook_loop);
 
 	init = true;
 }

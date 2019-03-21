@@ -2,6 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.10.90\n"
+"POT-Creation-Date: 2019-02-07 01:13 UTC\n"
 "PO-Revision-Date: 2018-02-14 21:03 UTC\n"
 "Last-Translator: benoit <benoit@benoit-kubuntu>\n"
 "Language: es\n"
@@ -37,7 +38,7 @@ msgstr "Marcador siguiente"
 msgid "Static properties"
 msgstr "Propiedades estáticas"
 
-#: CClassInfo.class:604 FDebugInfo.class:994
+#: CClassInfo.class:604
 msgid "Static variables"
 msgstr "Variables estáticas"
 
@@ -45,7 +46,7 @@ msgstr "Variables estáticas"
 msgid "Static methods"
 msgstr "Métodos estáticos"
 
-#: CClassInfo.class:606
+#: CClassInfo.class:606 MTheme.module:6
 msgid "Constants"
 msgstr "Constantes"
 
@@ -125,7 +126,7 @@ msgstr "Esta clase actúa como una matriz &1."
 msgid "write-only"
 msgstr "solo escritura"
 
-#: CClassInfo.class:692 Project.module:1786
+#: CClassInfo.class:692 Project.module:1636
 msgid "read-only"
 msgstr "Sólo lectura"
 
@@ -177,43 +178,44 @@ msgstr "estáticamente enumerable"
 msgid "Loading information on component &1..."
 msgstr "Cargando información en componente &1..."
 
-#: CComponent.class:1595 FFileProperty.class:162 FProjectProperty.class:927
+#: CComponent.class:1594 FFileProperty.class:164 FProjectProperty.class:927
 msgid "Classes"
 msgstr "Clases"
 
-#: CComponent.class:1639 FDebugInfo.class:55 FMain.form:875
+#: CComponent.class:1638 FDebugInfo.class:45 FMain.form:875
 msgid "Class"
 msgstr "Clase"
 
-#: CComponent.class:1641 FConnectionEditor.class:307 FMakeInstall.form:292 FProjectProperty.form:360 FPublish.form:126 FSoftwareFarm.form:316
+#: CComponent.class:1640 FConnectionEditor.class:320 FMakeInstall.form:291
+#: FProjectProperty.form:360 FPublish.form:126 FSoftwareFarm.form:324
 msgid "Description"
 msgstr "Descripción"
 
-#: CComponent.class:1668
+#: CComponent.class:1667
 msgid "This component is not stable yet."
 msgstr "Este componente no es estable todavía."
 
-#: CComponent.class:1670
+#: CComponent.class:1669
 msgid "This component is deprecated."
 msgstr "Este componente es obsoleto."
 
-#: CComponent.class:1679 FProjectVersion.class:287
+#: CComponent.class:1678 FProjectVersion.class:287
 msgid "Author"
 msgstr "Autor"
 
-#: CComponent.class:1681 FAbout.class:194 FProjectProperty.form:372
+#: CComponent.class:1680 FAbout.class:210 FProjectProperty.form:372
 msgid "Authors"
 msgstr "Autores"
 
-#: CComponent.class:1691
+#: CComponent.class:1690
 msgid "Implements"
 msgstr "Implementa"
 
-#: CComponent.class:1703 CLibraryInfo.class:211 LibraryItem.class:60
+#: CComponent.class:1702 CLibraryInfo.class:211 LibraryItem.class:60
 msgid "Requires"
 msgstr "Requiere"
 
-#: CComponent.class:1718
+#: CComponent.class:1717
 msgid "Excludes"
 msgstr "Excluir"
 
@@ -637,11 +639,11 @@ msgstr "Números complejos"
 msgid "XML management"
 msgstr "Gestión de documentos XML"
 
-#: CInsertColor.class:121 FEditor.form:202 FTextEditor.form:202
+#: CInsertColor.class:238 FEditor.form:205 FTextEditor.form:205
 msgid "Insert color"
 msgstr "Insertar color"
 
-#: CInsertDate.class:58 FEditor.form:511 FTextEditor.form:496
+#: CInsertDate.class:58 FEditor.form:514 FTextEditor.form:498
 msgid "Insert today's date"
 msgstr ""
 
@@ -649,7 +651,7 @@ msgstr ""
 msgid "<b>&1:</b> &2"
 msgstr "-"
 
-#: CLibraryInfo.class:206 LibraryItem.class:54
+#: CLibraryInfo.class:206 FDebugInfo.class:55 LibraryItem.class:54
 msgid "Location"
 msgstr "Ubicación"
 
@@ -661,7 +663,7 @@ msgstr "¡ADVERTENCIA! Libreria no encontrada."
 msgid "Provides"
 msgstr "Provee"
 
-#: CModule.class:28 FEditor.form:399 FForm.form:456 FMain.form:882
+#: CModule.class:28 FEditor.form:402 FForm.form:462 FMain.form:882
 msgid "Form"
 msgstr "Formulario"
 
@@ -729,63 +731,84 @@ msgstr "Evaluador"
 msgid "Event loop"
 msgstr "Bucle de eventos"
 
-#: CProjectList.class:110
+#: CProjectList.class:111
 msgid "Examples are stored on the Gambas farm server. Click &1 to access the farm server and download them..."
 msgstr "Los ejemplos están ubicados en el servidor de la Granja de Gambas. Clic &1 para acceder a la Granja y poder descargarlos..."
 
-#: CProjectList.class:110
+#: CProjectList.class:111
 msgid "here"
 msgstr "aquí"
 
-#: CProjectList.class:234
+#: CProjectList.class:235
 msgid "IDE extensions"
 msgstr ""
 
-#: CProjectList.class:543 CVersionControlGit.class:343 CWaitingAnimation.class:63 FColorChooser.form:76 FComponentChooser.form:98 FConflict.class:197 FConnectionEditor.class:457 FCrash.form:97 FCreateFile.form:204 FDebugExpr.form:46 FDebugInfo.form:295 FExportData.class:126 FFarmConfig.form:38 FFarmLogin.form:126 FFarmRegister.form:141 FFarmRequest.form:43 FFieldChooser.form:144 FFileProperty.class:144 FFontChooser.form:40 FGotoLine.form:23 FHelpBrowser.form:60 FImageOffsetSelection.form:33 FImageQuality.form:30 FImageResize.form:49 FImageRotate.form:32 FList.form:128 FMain.class:230 FMakeInstall.class:345 FMenu.form:405 FNewConnection.form:319 FNewTable.form:86 FNewTranslation.form:21 FOption.class:750 FPasteSpecial.form:86 FPasteTable.form:105 FProjectChooser.form:73 FProjectProperty.form:935 FProjectVersion.class:211 FProxy.form:57 FPublish.class:273 FReportBorderChooser.form:48 FReportBoxShadowChooser.form:27 FReportBrushChooser.form:36 FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28 FSaveProjectAs.form:81 FSearch.class:896 FSelectComponent.form:39 FSelectExtraFile.form:43 FSelectIcon.form:87 FSelectLibrary.form:66 FSnippet.form:57 FSoftwareFarm.class:538 FTableChooser.form:68 FText.form:41 FTranslate.class:607 FVersionControl.form:77 FWebFontChooser.form:129 Project.module:529 VersionControl.module:376
+#: CProjectList.class:544 CVersionControlGit.class:373
+#: CWaitingAnimation.class:63 FColorChooser.form:68 FComponentChooser.form:97
+#: FConflict.class:197 FConnectionEditor.class:470 FCrash.form:97
+#: FCreateFile.form:204 FDebugExpr.form:46 FDebugInfo.form:267
+#: FExportData.class:126 FFarmConfig.form:38 FFarmLogin.form:126
+#: FFarmRegister.form:141 FFarmRequest.form:43 FFieldChooser.form:144
+#: FFileProperty.class:144 FFontChooser.form:40 FGotoLine.form:23
+#: FHelpBrowser.form:60 FImageOffsetSelection.form:33 FImageQuality.form:30
+#: FImageResize.form:49 FImageRotate.form:32 FList.form:128 FMain.class:245
+#: FMakeInstall.class:345 FMenu.form:414 FNewConnection.form:318
+#: FNewTable.form:86 FNewTranslation.form:21 FOption.class:863
+#: FPasteSpecial.form:86 FPasteTable.form:105 FProjectChooser.form:73
+#: FProjectProperty.form:930 FProjectVersion.class:211 FProxy.form:57
+#: FPublish.class:273 FReportBorderChooser.form:48
+#: FReportBoxShadowChooser.form:27 FReportBrushChooser.form:36
+#: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
+#: FSaveProjectAs.form:81 FSearch.class:946 FSelectComponent.form:39
+#: FSelectExtraFile.form:43 FSelectIcon.form:87 FSelectLibrary.form:66
+#: FSnippet.form:57 FSoftwareFarm.class:545 FTableChooser.form:68 FText.form:41
+#: FTranslate.class:670 FVersionControl.form:77 FWebFontChooser.form:129
+#: Project.module:553 VersionControl.module:376
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: CProjectList.class:543
+#: CProjectList.class:544
 msgid "Do you really want to uninstall this software?"
 msgstr ""
 
-#: CProjectList.class:543 FSelectLibrary.form:48 FSoftwareFarm.class:366
+#: CProjectList.class:544 FSelectLibrary.form:48 FSoftwareFarm.class:370
 msgid "Uninstall"
 msgstr "Desinstalar"
 
-#: CProjectList.class:546
+#: CProjectList.class:547
 msgid "Unable to uninstall software:"
 msgstr ""
 
-#: CProjectList.class:550
+#: CProjectList.class:551
 msgid "The software has been successfully uninstalled."
 msgstr ""
 
-#: CProjectTree.class:95
+#: CProjectTree.class:96
 msgid "Files"
 msgstr "Archivos"
 
-#: CProjectTree.class:338 FHelpShortcut.form:22 FMain.form:413 FSearch.class:97 FSelectIcon.form:31
+#: CProjectTree.class:343 FHelpShortcut.form:22 FMain.form:413
+#: FSearch.class:111 FSelectIcon.form:31
 msgid "Project"
 msgstr "Proyecto"
 
-#: CProjectTree.class:341
+#: CProjectTree.class:346
 msgid "Sources"
 msgstr "Fuentes"
 
-#: CProjectTree.class:343
+#: CProjectTree.class:348
 msgid "Connections"
 msgstr "Conexiones"
 
-#: CProjectTree.class:344
+#: CProjectTree.class:349
 msgid "Public"
 msgstr "Público"
 
-#: CProjectTree.class:345
+#: CProjectTree.class:350
 msgid "Data"
 msgstr "Datos"
 
-#: CRecentProject.class:68 FMain.class:695
+#: CRecentProject.class:68 FMain.class:714
 msgid "Today"
 msgstr "Hoy"
 
@@ -805,83 +828,166 @@ msgstr "Esta semana"
 msgid "This month"
 msgstr "Este mes"
 
-#: CSoftware.class:316
+#: CSoftware.class:317
 msgid "Download cancelled"
 msgstr "Descarga cancelada"
 
-#: CSoftware.class:325
+#: CSoftware.class:326
 msgid "The checksum of the downloaded package is invalid."
 msgstr "La suma de comprobación del paquete descargado es inválida."
 
-#: CSoftware.class:341
+#: CSoftware.class:342
 msgid "Unable to uncompress source archive."
 msgstr "Imposible descomprimir el archivo fuente."
 
-#: CSoftware.class:360
+#: CSoftware.class:361
 msgid "Abort"
 msgstr ""
 
-#: CSoftware.class:360 FMain.class:2690 FMenu.class:75
+#: CSoftware.class:361 FMain.class:2710 FMenu.class:74
 msgid "Ignore"
 msgstr "Ignorar"
 
-#: CSoftware.class:360
+#: CSoftware.class:361
 msgid "The following components are required:"
 msgstr "Se requieren los siguientes componentes:"
 
-#: CSoftware.class:387
+#: CSoftware.class:388
 msgid "Unable to compile the project."
 msgstr "Imposible compilar el proyecto."
 
-#: CSoftware.class:394
+#: CSoftware.class:395
 msgid "Unable to make executable."
 msgstr "Imposible crear el ejecutable."
 
-#: CSoftware.class:462
+#: CSoftware.class:464
 msgid "Unable to install source directory"
 msgstr "Imposible instalar el directorio de fuentes"
 
-#: CVersionControlGit.class:263
+#: CSoftware.class:663
+#, fuzzy
+msgid "yesterday"
+msgstr "Ayer"
+
+#: CSoftware.class:665
+#, fuzzy
+msgid "&1 days ago"
+msgstr "Hace dos días"
+
+#: CSoftware.class:671
+#, fuzzy
+msgid "last week"
+msgstr "Esta semana"
+
+#: CSoftware.class:673
+msgid "&1 weeks ago"
+msgstr ""
+
+#: CSoftware.class:679
+#, fuzzy
+msgid "last month"
+msgstr "Este mes"
+
+#: CSoftware.class:681
+#, fuzzy
+msgid "&1 months ago"
+msgstr "&1 coincidencias"
+
+#: CSoftware.class:687
+msgid "last year"
+msgstr ""
+
+#: CSoftware.class:689
+#, fuzzy
+msgid "on &1"
+msgstr "en &1"
+
+#: CVersionControlGit.class:266
 msgid "Unable to push the project."
 msgstr ""
 
-#: CVersionControlGit.class:275 CVersionControlSubversion.class:296
+#: CVersionControlGit.class:280 CVersionControlSubversion.class:296
 msgid "Local root path"
 msgstr ""
 
-#: CVersionControlGit.class:278
+#: CVersionControlGit.class:283
 msgid "Last commit"
 msgstr ""
 
-#: CVersionControlGit.class:279 CVersionControlSubversion.class:298
+#: CVersionControlGit.class:284 CVersionControlSubversion.class:298
 msgid "Last commit author"
 msgstr ""
 
-#: CVersionControlGit.class:280 CVersionControlSubversion.class:299
+#: CVersionControlGit.class:285 CVersionControlSubversion.class:299
 msgid "Last commit date"
 msgstr ""
 
-#: CVersionControlGit.class:287
+#: CVersionControlGit.class:292
 msgid "Current branch"
 msgstr ""
 
-#: CVersionControlGit.class:288
+#: CVersionControlGit.class:293
 msgid "Origin"
 msgstr ""
 
-#: CVersionControlGit.class:294 CVersionControlSubversion.class:314
+#: CVersionControlGit.class:300
+#, fuzzy
+msgid "The current branch is up to date."
+msgstr "Documentación actualizada"
+
+#: CVersionControlGit.class:302
+msgid "One file to commit in the current branch."
+msgstr ""
+
+#: CVersionControlGit.class:304
+msgid "&1 files to commit in the current branch."
+msgstr ""
+
+#: CVersionControlGit.class:311
+#, fuzzy
+msgid "None in the current project."
+msgstr "Parchear el proyecto actual"
+
+#: CVersionControlGit.class:313
+#, fuzzy
+msgid "One in the current project."
+msgstr "Parchear el proyecto actual"
+
+#: CVersionControlGit.class:315
+#, fuzzy
+msgid "&1 in the current project."
+msgstr "Parchear el proyecto actual"
+
+#: CVersionControlGit.class:319
+#, fuzzy
+msgid "Status"
+msgstr "Barra de estado"
+
+#: CVersionControlGit.class:322 CVersionControlSubversion.class:314
 msgid "Remote repository URL"
 msgstr ""
 
-#: CVersionControlGit.class:343
+#: CVersionControlGit.class:373
 msgid "A new Git repository will be created for this project."
 msgstr ""
 
-#: CVersionControlGit.class:343 Design.module:473 FColorChooser.form:70 FConnectionEditor.class:674 FCrash.form:91 FCreateFile.form:210 FFarmConfig.form:33 FFarmLogin.form:121 FFieldChooser.form:138 FFontChooser.form:34 FGotoLine.form:17 FImageOffsetSelection.form:27 FImageQuality.form:24 FImageResize.form:103 FImageRotate.form:26 FList.form:122 FMenu.form:400 FNewConnection.form:313 FNewTable.form:80 FNewTranslation.form:15 FPasteSpecial.form:80 FProjectProperty.form:929 FProxy.form:63 FReportBorderChooser.form:54 FReportBoxShadowChooser.form:33 FReportBrushChooser.form:42 FReportCoordChooser.form:32 FReportPaddingChooser.form:69 FSelectComponent.form:34 FSelectExtraFile.form:37 FSelectIcon.form:82 FSelectLibrary.form:60 FSnippet.form:51 FTableChooser.form:62 FText.form:35 FVersionError.form:51 FWebFontChooser.form:123
+#: CVersionControlGit.class:373 Design.module:508 FColorChooser.form:62
+#: FConnectionEditor.class:697 FCrash.form:91 FCreateFile.form:210
+#: FFarmConfig.form:33 FFarmLogin.form:121 FFieldChooser.form:138
+#: FFontChooser.form:34 FGotoLine.form:17 FImageOffsetSelection.form:27
+#: FImageQuality.form:24 FImageResize.form:103 FImageRotate.form:26
+#: FList.form:122 FMenu.form:409 FNewConnection.form:312 FNewTable.form:80
+#: FNewTranslation.form:15 FPasteSpecial.form:80 FProjectProperty.form:924
+#: FProxy.form:63 FReportBorderChooser.form:54 FReportBoxShadowChooser.form:33
+#: FReportBrushChooser.form:42 FReportCoordChooser.form:32
+#: FReportPaddingChooser.form:69 FSelectComponent.form:34
+#: FSelectExtraFile.form:37 FSelectIcon.form:82 FSelectLibrary.form:60
+#: FSnippet.form:51 FTableChooser.form:62 FText.form:35 FVersionError.form:51
+#: FWebFontChooser.form:123
 msgid "OK"
 msgstr "-"
 
-#: CVersionControlGit.class:381
+#: CVersionControlGit.class:411
 msgid "Solve conflict."
 msgstr ""
 
@@ -901,51 +1007,55 @@ msgstr ""
 msgid "Remote last commit date"
 msgstr ""
 
-#: CWelcome.class:85
+#: CWelcome.class:114
 msgid "The Gambas font is published under the SIL Open Font License."
 msgstr "La fuente de Gambas es publicada bajo la licencia SIL Open Font License."
 
-#: CWelcome.class:85
+#: CWelcome.class:114
 msgid "This program is published under the GNU General Public License."
 msgstr "Este programa es publicado bajo la GNU General Public License."
 
-#: Design.module:192 Project.module:2369
+#: Design.module:221 Project.module:2231
 msgid "first"
 msgstr "primero"
 
-#: Design.module:194 Project.module:2371
+#: Design.module:223 Project.module:2233
 msgid "second"
 msgstr "segundo"
 
-#: Design.module:196 Project.module:2373
+#: Design.module:225 Project.module:2235
 msgid "third"
 msgstr "tercero"
 
-#: Design.module:291 Project.module:2432
+#: Design.module:319 Project.module:2294
 msgid "in &1:&2."
 msgstr "en &1:&2."
 
-#: Design.module:397
+#: Design.module:432
 msgid "The program has been interrupted by CTRL+C."
 msgstr ""
 
-#: Design.module:401
+#: Design.module:436
 msgid "The program has been terminated."
 msgstr ""
 
-#: Design.module:407
-msgid "The program has returned\nthe value: &1"
-msgstr "El programa retornó\nel valor: &1"
+#: Design.module:442
+msgid ""
+"The program has returned\n"
+"the value: &1"
+msgstr ""
+"El programa retornó\n"
+"el valor: &1"
 
-#: Design.module:921
+#: Design.module:968
 msgid "Output terminal"
 msgstr "Terminal de salida"
 
-#: Design.module:949
+#: Design.module:996
 msgid "No terminal emulator found."
 msgstr "No se encontró emulador de terminal."
 
-#: FAbout.class:214
+#: FAbout.class:230
 msgid "Financial support"
 msgstr "Apoyo económico"
 
@@ -954,66 +1064,76 @@ msgid "About Gambas"
 msgstr "Acerca de Gambas"
 
 #: FAbout.form:25
-msgid "<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
-msgstr "<h2 align=center>Licencia</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
+msgid ""
+"<h2 align=center>Licence</h2>\n"
+"\n"
+"<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n"
+"\n"
+"<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
+msgstr ""
+"<h2 align=center>Licencia</h2>\n"
+"\n"
+"<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n"
+"\n"
+"<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
 
-#: FColorChooser.form:16
+#: FColorChooser.form:15
 msgid "Select a color"
 msgstr "Selecciona un color"
 
-#: FColorChooser.form:28 FSoftwareFarm.class:52
+#: FColorChooser.form:27 FSoftwareFarm.class:52
 msgid "System"
 msgstr "Sistema"
 
-#: FColorChooser.form:36
+#: FColorChooser.form:35
 msgid "Free"
 msgstr "Libre"
 
-#: FComponentChooser.class:333 FProjectProperty.form:408
+#: FComponentChooser.class:331 FProjectProperty.form:409
 msgid "Not finished but stable"
 msgstr "No terminado pero estable"
 
-#: FComponentChooser.class:335 FProjectProperty.form:408
+#: FComponentChooser.class:333 FProjectProperty.form:409
 msgid "Experimental"
 msgstr "Experimental"
 
-#: FComponentChooser.class:337
+#: FComponentChooser.class:335
 msgid "Stable"
 msgstr "Estable"
 
-#: FComponentChooser.class:339 FProjectProperty.form:408
+#: FComponentChooser.class:337 FProjectProperty.form:409
 msgid "Deprecated"
 msgstr "En desuso"
 
-#: FComponentChooser.class:552
+#: FComponentChooser.class:551
 msgid "This component is required by the following library:<p>&1"
 msgstr "Este componente es requerido por las siguientes librería:<p>&1"
 
-#: FComponentChooser.class:554
+#: FComponentChooser.class:553
 msgid "This component is required by the following libraries:<p>&1"
 msgstr "Este componente es requerido por las siguientes librerías:<p>&1"
 
-#: FComponentChooser.class:563
+#: FComponentChooser.class:562
 msgid "This component is required by:<p>&1"
 msgstr "Este componente es requerido por:<p>&1"
 
-#: FComponentChooser.class:564
+#: FComponentChooser.class:563
 msgid "Keep"
 msgstr "Mantener"
 
-#: FComponentChooser.class:564 FDebugInfo.form:171
+#: FComponentChooser.class:563 FDebugInfo.form:187
 msgid "Remove all"
 msgstr "Eliminar todo"
 
-#: FComponentChooser.class:669
+#: FComponentChooser.class:668
 msgid "These components are incompatible:<br>&1."
 msgstr "Estos componentes son incompatibles:<br>&1."
 
-#: FComponentChooser.class:682
+#: FComponentChooser.class:681
 msgid "The &1 component needs one of the following components:<br>&2."
 msgstr "El componente &1 necesita uno de los siguientes componentes:<br>&2."
 
-#: FComponentChooser.class:689
+#: FComponentChooser.class:688
 msgid "The &1 component needs the &2 component."
 msgstr "El componente &1 necesita el componente &2."
 
@@ -1021,23 +1141,26 @@ msgstr "El componente &1 necesita el componente &2."
 msgid "Select a component"
 msgstr "Selecciona un componente"
 
-#: FComponentChooser.form:56
+#: FComponentChooser.form:55
 msgid "Show deprecated components"
 msgstr "Mostrar componentes obsoletos"
 
-#: FComponentChooser.form:104 FConflictEditor.form:293 FConnectionEditor.form:118 FEditor.form:351 FForm.form:433 FHelpBrowser.form:66 FImageEditor.form:374 FMain.form:363 FTextEditor.form:348 FTranslate.form:77 Project.module:811
+#: FComponentChooser.form:103 FConflictEditor.form:293
+#: FConnectionEditor.form:119 FEditor.form:354 FForm.form:439
+#: FHelpBrowser.form:66 FImageEditor.form:377 FMain.form:363
+#: FTextEditor.form:351 FTranslate.form:92 Project.module:844
 msgid "Reload"
 msgstr "Recargar"
 
-#: FComponentChooser.form:115 FHelpBrowser.form:84 FImageEditor.form:332
+#: FComponentChooser.form:114 FHelpBrowser.form:84 FImageEditor.form:335
 msgid "Zoom in"
 msgstr "Acercarse"
 
-#: FComponentChooser.form:121 FHelpBrowser.form:90 FImageEditor.form:340
+#: FComponentChooser.form:120 FHelpBrowser.form:90 FImageEditor.form:343
 msgid "Zoom out"
 msgstr "Alejarse"
 
-#: FComponentChooser.form:127 FHelpBrowser.form:96
+#: FComponentChooser.form:126 FHelpBrowser.form:96
 msgid "No zoom"
 msgstr "Sin zoom"
 
@@ -1053,17 +1176,22 @@ msgstr ""
 msgid "Unable to load file:"
 msgstr "Incapaz de cargar el archivo:"
 
-#: FConflict.class:139 FDebugInfo.class:74 FImageEditor.form:630
+#: FConflict.class:139 FDebugInfo.class:61 FImageEditor.form:618
 msgid "Text"
 msgstr "Texto"
 
-#: FConflict.class:141 FMain.form:920 FReportBrushChooser.form:49 Project.module:229
+#: FConflict.class:141 FMain.form:920 FReportBrushChooser.form:49
+#: Project.module:231
 msgid "Image"
 msgstr "Imagen"
 
 #: FConflict.class:197
-msgid "The file has been modified.\nDo you really want to close the dialog?"
-msgstr "Los archivos han sido modificados.\n¿Realmente quiere cerrar el dialogo?"
+msgid ""
+"The file has been modified.\n"
+"Do you really want to close the dialog?"
+msgstr ""
+"Los archivos han sido modificados.\n"
+"¿Realmente quiere cerrar el dialogo?"
 
 #: FConflict.class:225
 msgid "Some conflicts are not yet resolved."
@@ -1074,8 +1202,12 @@ msgid "Unable to resolve the conflict."
 msgstr "Incapaz de resolver conflicto."
 
 #: FConflict.class:259
-msgid "The file has been modified.\nDo you really want to open another file?"
-msgstr "Los archivos han sido modificados.\n¿Realmente quiere abrir otro archivo?"
+msgid ""
+"The file has been modified.\n"
+"Do you really want to open another file?"
+msgstr ""
+"Los archivos han sido modificados.\n"
+"¿Realmente quiere abrir otro archivo?"
 
 #: FConflict.class:267
 msgid "Conflict files"
@@ -1085,39 +1217,59 @@ msgstr "Archivos en conflicto"
 msgid "Version conflict"
 msgstr "Conflicto de versión"
 
-#: FConflict.form:70 FConflictEditor.form:114 FConnectionEditor.form:375 FEditor.form:121 FForm.form:153 FImageEditor.form:135 FMain.form:1013 FMenu.form:111 FProjectVersion.form:234 FTextEditor.form:122
+#: FConflict.form:70 FConflictEditor.form:114 FConnectionEditor.form:381
+#: FEditor.form:124 FForm.form:158 FImageEditor.form:138 FMain.form:1013
+#: FMenu.form:120 FProjectVersion.form:234 FTextEditor.form:125
 msgid "Cut"
 msgstr "Cortar"
 
-#: FConflict.form:76 FConflictEditor.form:121 FConnectionEditor.form:147 FEditor.form:128 FForm.form:160 FImageEditor.form:143 FList.form:99 FMain.form:1020 FMakeInstall.form:903 FMenu.form:117 FOutput.form:39 FProjectVersion.form:240 FSystemInfo.form:62 FTextEditor.form:129
+#: FConflict.form:76 FConflictEditor.form:121 FConnectionEditor.form:151
+#: FEditor.form:131 FForm.form:165 FImageEditor.form:146 FList.form:99
+#: FMain.form:1020 FMakeInstall.form:902 FMenu.form:126 FOutput.form:40
+#: FProjectVersion.form:240 FSystemInfo.form:62 FTextEditor.form:132
+#: FTranslate.form:113
 msgid "Copy"
 msgstr "Copiar"
 
-#: FConflict.form:82 FConflictEditor.form:128 FConnectionEditor.form:155 FEditor.form:135 FForm.form:173 FImageEditor.form:150 FList.form:105 FMain.form:1027 FMenu.form:123 FOutput.form:46 FPasteTable.form:99 FProjectVersion.form:246 FTextEditor.form:136
+#: FConflict.form:82 FConflictEditor.form:128 FConnectionEditor.form:160
+#: FEditor.form:138 FForm.form:178 FImageEditor.form:153 FList.form:105
+#: FMain.form:1027 FMenu.form:132 FOutput.form:47 FPasteTable.form:99
+#: FProjectVersion.form:246 FTextEditor.form:139
 msgid "Paste"
 msgstr "Pegar"
 
-#: FConflict.form:88 FConflictEditor.form:97 FConnectionEditor.form:396 FEditor.form:104 FFieldChooser.form:127 FForm.form:136 FImageEditor.form:116 FList.form:111 FOption.form:857 FProjectVersion.form:252 FTextEditor.form:105
+#: FConflict.form:88 FConflictEditor.form:97 FConnectionEditor.form:402
+#: FEditor.form:107 FFieldChooser.form:127 FForm.form:141 FImageEditor.form:119
+#: FList.form:111 FOption.form:1090 FProjectVersion.form:252
+#: FTextEditor.form:108
 msgid "Undo"
 msgstr "Deshacer"
 
-#: FConflict.form:94 FConflictEditor.form:104 FConnectionEditor.form:403 FEditor.form:111 FForm.form:143 FImageEditor.form:124 FProjectVersion.form:258 FTextEditor.form:112
+#: FConflict.form:94 FConflictEditor.form:104 FConnectionEditor.form:409
+#: FEditor.form:114 FForm.form:148 FImageEditor.form:127
+#: FProjectVersion.form:258 FTextEditor.form:115
 msgid "Redo"
 msgstr "Rehacer"
 
-#: FConflict.form:100 FConflictEditor.form:441 FEditor.form:521 FMenu.form:133 FProjectVersion.form:264 FTextEditor.form:506
+#: FConflict.form:100 FConflictEditor.form:441 FEditor.form:533 FMenu.form:142
+#: FProjectVersion.form:264 FTextEditor.form:517
 msgid "Indent"
 msgstr "Indentar"
 
-#: FConflict.form:106 FConflictEditor.form:449 FEditor.form:529 FMenu.form:139 FProjectVersion.form:270 FTextEditor.form:514
+#: FConflict.form:106 FConflictEditor.form:449 FEditor.form:541 FMenu.form:148
+#: FProjectVersion.form:270 FTextEditor.form:525
 msgid "Unindent"
 msgstr "Desindentar"
 
-#: FConflict.form:141 FMain.form:356 FOpenProject.form:35 FProjectChooser.form:85
+#: FConflict.form:141 FMain.form:356 FOpenProject.form:35
+#: FProjectChooser.form:85
 msgid "Open"
 msgstr "Abrir"
 
-#: FConflict.form:149 FConflictEditor.form:299 FConnectionEditor.form:110 FEditor.form:357 FForm.form:439 FImageEditor.form:381 FMain.form:372 FMenu.class:75 FSaveProjectAs.form:87 FTextEditor.form:354
+#: FConflict.form:149 FConflictEditor.form:299 FConnectionEditor.form:111
+#: FEditor.form:360 FForm.form:445 FImageEditor.form:384 FMain.form:372
+#: FMenu.class:74 FSaveProjectAs.form:87 FTextEditor.form:357
+#: FTranslate.form:226
 msgid "Save"
 msgstr "Guardar"
 
@@ -1125,123 +1277,133 @@ msgstr "Guardar"
 msgid "Solve"
 msgstr "Resolver"
 
-#: FConflict.form:166 FConflictEditor.form:306 FDebugInfo.form:302 FEditor.form:344 FFileProperty.form:76 FForm.form:426 FImageEditor.form:388 FMain.form:388 FPatch.form:88 FProjectVersion.form:322 FSystemInfo.form:68 FTextEditor.form:361 FTips.form:83 FTranslate.form:306
+#: FConflict.form:166 FConflictEditor.form:306 FDebugInfo.form:274
+#: FEditor.form:347 FFileProperty.form:76 FForm.form:432 FImageEditor.form:391
+#: FMain.form:388 FPatch.form:88 FProjectVersion.form:322 FSystemInfo.form:68
+#: FTextEditor.form:364 FTips.form:83 FTranslate.form:403
 msgid "Close"
 msgstr "Cerrar"
 
-#: FConflictEditor.class:961 FEditor.class:2684 FTextEditor.class:1122
+#: FConflictEditor.class:956 FEditor.class:2675 FTextEditor.class:1117
 msgid "(Declarations)"
 msgstr "(Declaraciones)"
 
-#: FConflictEditor.class:1150
+#: FConflictEditor.class:1145
 msgid "There are still conflicts in this file."
 msgstr ""
 
-#: FConflictEditor.form:134 FEditor.form:141 FTextEditor.form:142
+#: FConflictEditor.form:134 FEditor.form:144 FTextEditor.form:145
 msgid "Advanced"
 msgstr "Avanzado"
 
-#: FConflictEditor.form:138 FEditor.form:152 FTextEditor.form:146
+#: FConflictEditor.form:138 FEditor.form:155 FTextEditor.form:149
 msgid "Upper case"
 msgstr "Mayúscula"
 
-#: FConflictEditor.form:145 FEditor.form:145 FTextEditor.form:153
+#: FConflictEditor.form:145 FEditor.form:148 FTextEditor.form:156
 msgid "Lower case"
 msgstr "Minúscula"
 
-#: FConflictEditor.form:155 FEditor.form:162 FTextEditor.form:178
+#: FConflictEditor.form:155 FEditor.form:165 FTextEditor.form:181
 msgid "Comment"
 msgstr "Comentar"
 
-#: FConflictEditor.form:162 FEditor.form:169 FTextEditor.form:185
+#: FConflictEditor.form:162 FEditor.form:172 FTextEditor.form:188
 msgid "Uncomment"
 msgstr "Descomentar"
 
-#: FConflictEditor.form:172 FEditor.form:179 FPasteSpecial.form:19 FTextEditor.form:195
+#: FConflictEditor.form:172 FEditor.form:182 FPasteSpecial.form:19
+#: FTextEditor.form:198
 msgid "Paste special"
 msgstr "Pegado especial"
 
-#: FConflictEditor.form:183 FEditor.form:212 FImageEditor.form:219 FTextEditor.form:231
+#: FConflictEditor.form:183 FEditor.form:215 FImageEditor.form:222
+#: FTextEditor.form:234
 msgid "Select All"
 msgstr "Seleccionar Todo"
 
-#: FConflictEditor.form:193 FEditor.form:227 FGotoLine.form:12 FTextEditor.form:241
+#: FConflictEditor.form:193 FEditor.form:230 FGotoLine.form:12
+#: FTextEditor.form:244
 msgid "Go to line"
 msgstr "Ir a línea"
 
-#: FConflictEditor.form:198 FEditor.form:232 FTextEditor.form:246
+#: FConflictEditor.form:198 FEditor.form:235 FTextEditor.form:249
 msgid "Bookmarks"
 msgstr "Marcadores"
 
-#: FConflictEditor.form:206 FEditor.form:247 FTextEditor.form:254
+#: FConflictEditor.form:206 FEditor.form:250 FTextEditor.form:257
 msgid "Find next"
 msgstr "Encontrar siguiente"
 
-#: FConflictEditor.form:213 FEditor.form:254 FTextEditor.form:261
+#: FConflictEditor.form:213 FEditor.form:257 FTextEditor.form:264
 msgid "Find previous"
 msgstr "Encontrar anterior"
 
-#: FConflictEditor.form:222 FEditor.form:263 FImageEditor.form:327 FMain.form:705 FTextEditor.form:270
+#: FConflictEditor.form:222 FEditor.form:266 FImageEditor.form:330
+#: FMain.form:705 FTextEditor.form:273
 msgid "View"
 msgstr "Vista"
 
-#: FConflictEditor.form:226 FEditor.form:267 FTextEditor.form:274
+#: FConflictEditor.form:226 FEditor.form:270 FTextEditor.form:277
 msgid "Automatic word wrap"
 msgstr "Ajuste de línea automático"
 
-#: FConflictEditor.form:233 FTextEditor.form:281
+#: FConflictEditor.form:233 FTextEditor.form:284
 msgid "Indent with tab"
 msgstr ""
 
-#: FConflictEditor.form:240 FEditor.form:274 FTextEditor.form:288
+#: FConflictEditor.form:240 FEditor.form:277 FTextEditor.form:291
 msgid "No split"
 msgstr "No dividir"
 
-#: FConflictEditor.form:246 FEditor.form:280 FTextEditor.form:294
+#: FConflictEditor.form:246 FEditor.form:283 FTextEditor.form:297
 msgid "Horizontal split"
 msgstr "División horizontal"
 
-#: FConflictEditor.form:253 FEditor.form:287 FTextEditor.form:301
+#: FConflictEditor.form:253 FEditor.form:290 FTextEditor.form:304
 msgid "Vertical split"
 msgstr "División vertical"
 
-#: FConflictEditor.form:260 FImportTable.form:90 FTextEditor.form:308
+#: FConflictEditor.form:260 FImportTable.form:90 FTextEditor.form:311
 msgid "End of line"
 msgstr "Fin de línea"
 
-#: FConflictEditor.form:263 FTextEditor.form:311
+#: FConflictEditor.form:263 FTextEditor.form:314
 msgid "Unix"
 msgstr "-"
 
-#: FConflictEditor.form:268 FTextEditor.form:316
+#: FConflictEditor.form:268 FTextEditor.form:319
 msgid "Windows"
 msgstr "Ventanas"
 
-#: FConflictEditor.form:273 FTextEditor.form:321
+#: FConflictEditor.form:273 FTextEditor.form:324
 msgid "MAC"
 msgstr "-"
 
-#: FConflictEditor.form:283 FForm.form:402 FMain.form:976 FTextEditor.form:331
+#: FConflictEditor.form:283 FForm.form:408 FMain.form:976 FTextEditor.form:334
 msgid "Open code"
 msgstr "Abrir código"
 
-#: FConflictEditor.form:316 FEditor.form:367 FPasteSpecial.form:60 FTextEditor.form:371
+#: FConflictEditor.form:316 FEditor.form:370 FPasteSpecial.form:60
+#: FTextEditor.form:374
 msgid "Paste as string"
 msgstr "Pegar como cadena"
 
-#: FConflictEditor.form:321 FEditor.form:372 FPasteSpecial.form:65 FTextEditor.form:376
+#: FConflictEditor.form:321 FEditor.form:375 FPasteSpecial.form:65
+#: FTextEditor.form:379
 msgid "Paste as multi-line string"
 msgstr "Pegar como cadena multilíneas"
 
-#: FConflictEditor.form:326 FEditor.form:377 FPasteSpecial.form:50 FTextEditor.form:381
+#: FConflictEditor.form:326 FEditor.form:380 FPasteSpecial.form:50
+#: FTextEditor.form:384
 msgid "Paste as comments"
 msgstr "Pegar como comentarios"
 
-#: FConflictEditor.form:342 FTextEditor.form:397
+#: FConflictEditor.form:342 FTextEditor.form:400
 msgid "Text editor"
 msgstr "Editor de texto"
 
-#: FConflictEditor.form:348 FForm.form:462 FTextEditor.form:403
+#: FConflictEditor.form:348 FForm.form:468 FTextEditor.form:406
 msgid "Code"
 msgstr "Código"
 
@@ -1273,151 +1435,168 @@ msgstr ""
 msgid "Take all their changes"
 msgstr ""
 
-#: FConnectionEditor.class:49 FCreateFile.form:62 FDebugInfo.class:42 FMakeInstall.form:242 FNewConnection.form:70 FNewTable.form:33 FOption.form:280
+#: FConnectionEditor.class:51 FCreateFile.form:62 FMakeInstall.form:241
+#: FNewConnection.form:70 FNewTable.form:33 FOption.form:319
 msgid "Name"
 msgstr "Nombre"
 
-#: FConnectionEditor.class:54 FCreateFile.form:113 FDebugInfo.class:78 FNewConnection.form:84 FNewTable.form:48 FProxy.form:27
+#: FConnectionEditor.class:56 FCreateFile.form:113 FDebugInfo.class:65
+#: FNewConnection.form:84 FNewTable.form:48 FProxy.form:27
 msgid "Type"
 msgstr "Tipo"
 
-#: FConnectionEditor.class:59
+#: FConnectionEditor.class:61
 msgid "Length"
 msgstr "Largo"
 
-#: FConnectionEditor.class:64
+#: FConnectionEditor.class:66
 msgid "Default value"
 msgstr "Valor predeterminado"
 
-#: FConnectionEditor.class:69
+#: FConnectionEditor.class:71
 msgid "Collation"
 msgstr "Cotejamiento"
 
-#: FConnectionEditor.class:80 FDebugExpr.class:487 FHelpBrowser.form:52
+#: FConnectionEditor.class:82 FDebugExpr.class:500 FHelpBrowser.form:52
 msgid "Index"
 msgstr "Índice"
 
-#: FConnectionEditor.class:85
+#: FConnectionEditor.class:87
 msgid "Unique"
 msgstr "Único"
 
-#: FConnectionEditor.class:90 FImportTable.class:363
+#: FConnectionEditor.class:92 FImportTable.class:363
 msgid "Field"
 msgstr "Campo"
 
-#: FConnectionEditor.class:107
+#: FConnectionEditor.class:120
 msgid "SQL requests"
 msgstr ""
 
-#: FConnectionEditor.class:338
+#: FConnectionEditor.class:351
 msgid "Unable to connect to database."
 msgstr "Incapaz de conectar con la base de datos."
 
-#: FConnectionEditor.class:457 FSave.form:35
+#: FConnectionEditor.class:470 FSave.form:35
 msgid "Do not save"
 msgstr "No guardar"
 
-#: FConnectionEditor.class:457
+#: FConnectionEditor.class:470
 msgid "The table '&1' has been modified. Do you want to save it?"
 msgstr "La tabla '&1' ha sido modificada. ¿Desea salvarla?"
 
-#: FConnectionEditor.class:614
+#: FConnectionEditor.class:596
+#, fuzzy
+msgid "No record"
+msgstr "Registros no importados."
+
+#: FConnectionEditor.class:598
+#, fuzzy
+msgid "One record"
+msgstr "Un registro importado."
+
+#: FConnectionEditor.class:600
+#, fuzzy
+msgid "&1 records"
+msgstr "&1 registros importados."
+
+#: FConnectionEditor.class:637
 msgid "Unable to load table '&1'."
 msgstr "Incapaz de cargar la tabla '&1'."
 
-#: FConnectionEditor.class:681
+#: FConnectionEditor.class:704
 msgid "Unable to run query."
 msgstr "Incapaz de ejecutar la consulta."
 
-#: FConnectionEditor.class:713
+#: FConnectionEditor.class:736
 msgid "unlimited"
 msgstr "ilimitado"
 
-#: FConnectionEditor.class:800 MConnection.module:134
+#: FConnectionEditor.class:823 MConnection.module:147
 msgid "Blob"
 msgstr "Blob"
 
-#: FConnectionEditor.class:800 MConnection.module:128 MErrorMessage.module:46
+#: FConnectionEditor.class:823 MConnection.module:141
 msgid "Boolean"
 msgstr "Boolean"
 
-#: FConnectionEditor.class:800 FProjectVersion.class:290 MConnection.module:126
+#: FConnectionEditor.class:823 FProjectVersion.class:290 MConnection.module:139
 msgid "Date"
 msgstr "Fecha"
 
-#: FConnectionEditor.class:800 MConnection.module:124
+#: FConnectionEditor.class:823 MConnection.module:137
 msgid "Float"
 msgstr "Flotante"
 
-#: FConnectionEditor.class:800 MConnection.module:120
+#: FConnectionEditor.class:823 MConnection.module:133
 msgid "Integer"
 msgstr "Entero"
 
-#: FConnectionEditor.class:800 MConnection.module:122
+#: FConnectionEditor.class:823 MConnection.module:135
 msgid "Long"
 msgstr "Largo"
 
-#: FConnectionEditor.class:800 MConnection.module:132
+#: FConnectionEditor.class:823 MConnection.module:145
 msgid "Serial"
 msgstr "Serial"
 
-#: FConnectionEditor.class:800 MConnection.module:130 MErrorMessage.module:161
+#: FConnectionEditor.class:823 MConnection.module:143
 msgid "String"
 msgstr "Cadena"
 
-#: FConnectionEditor.class:889
+#: FConnectionEditor.class:912
 msgid "This name is already in used."
 msgstr "Este nombre ya está en uso."
 
-#: FConnectionEditor.class:914
+#: FConnectionEditor.class:937
 msgid "Please enter a number."
 msgstr "Ingrese un número."
 
-#: FConnectionEditor.class:919
+#: FConnectionEditor.class:942
 msgid "The length must be greater than 1 and lower than 255."
 msgstr "La longitud debe ser mayor que 1 y menor que 255."
 
-#: FConnectionEditor.class:943
+#: FConnectionEditor.class:966
 msgid "Type mismatch."
 msgstr "No coinciden los tipos."
 
-#: FConnectionEditor.class:995
+#: FConnectionEditor.class:1018
 msgid "This name already exists."
 msgstr "El nombre ya existe."
 
-#: FConnectionEditor.class:1083
+#: FConnectionEditor.class:1106
 msgid "This field is used in an index."
 msgstr "El campo es usado en un índice."
 
-#: FConnectionEditor.class:1437
+#: FConnectionEditor.class:1460
 msgid "The table '&1' has no primary key."
 msgstr "La tabla '&1' no tiene llave primaria."
 
-#: FConnectionEditor.class:1573
+#: FConnectionEditor.class:1596
 msgid "Cannot write table '&1'."
 msgstr "No es posible escribir la tabla &1."
 
-#: FConnectionEditor.class:1670
+#: FConnectionEditor.class:1693
 msgid "Do you really want to delete table '&1'?"
 msgstr "¿Realmente quiere borrar la tabla '&1'?"
 
-#: FConnectionEditor.class:1682
+#: FConnectionEditor.class:1705
 msgid "Cannot delete table '&1'."
 msgstr "No es posible borrar la tabla &1."
 
-#: FConnectionEditor.class:1735
+#: FConnectionEditor.class:1758
 msgid "Do you really want to remove the selected rows?"
 msgstr "¿Realmente quiere eliminar las filas seleccionadas?"
 
-#: FConnectionEditor.class:1897
+#: FConnectionEditor.class:1920
 msgid "Do you really want to remove this query?"
 msgstr "¿Realmente quiere remover esta consulta?"
 
-#: FConnectionEditor.form:78
+#: FConnectionEditor.form:79
 msgid "Connection editor"
 msgstr "Editor de conexiones"
 
-#: FConnectionEditor.form:89
+#: FConnectionEditor.form:90
 msgid "Show system tables"
 msgstr "Mostrar tablas del sistema"
 
@@ -1425,107 +1604,119 @@ msgstr "Mostrar tablas del sistema"
 msgid "New table"
 msgstr "Nueva tabla"
 
-#: FConnectionEditor.form:129
+#: FConnectionEditor.form:130
 msgid "Delete table"
 msgstr "Borrar tabla"
 
-#: FConnectionEditor.form:131 FMain.form:1157 FMakeInstall.form:744 FOption.form:1284 FProjectProperty.form:566 FPublish.form:269 FSoftwareFarm.form:415
+#: FConnectionEditor.form:133 FDebugInfo.form:163 FMain.form:1157
+#: FMakeInstall.form:743 FOption.form:1524 FProjectProperty.form:566
+#: FPublish.form:269 FSoftwareFarm.form:423
 msgid "Remove"
 msgstr "Eliminar"
 
-#: FConnectionEditor.form:137 FNewTable.class:30
+#: FConnectionEditor.form:139 FNewTable.class:30
 msgid "Rename table"
 msgstr "Renombrar tabla"
 
-#: FConnectionEditor.form:139 FMain.form:1034
+#: FConnectionEditor.form:142 FMain.form:1034
 msgid "Rename"
 msgstr "Renombrar"
 
-#: FConnectionEditor.form:145
+#: FConnectionEditor.form:148
 msgid "Copy table"
 msgstr "Copiar tabla"
 
-#: FConnectionEditor.form:153 FPasteTable.form:22
+#: FConnectionEditor.form:157 FPasteTable.form:22
 msgid "Paste table"
 msgstr "Pegar tabla"
 
-#: FConnectionEditor.form:161
+#: FConnectionEditor.form:166
 msgid "Import text file"
 msgstr "Importar archivo de texto"
 
-#: FConnectionEditor.form:163 FImportTable.form:48 FMain.form:956 FOption.form:1270 FTranslate.form:326
+#: FConnectionEditor.form:169 FImportTable.form:48 FMain.form:956
+#: FOption.form:1510 FTranslate.form:423
 msgid "Import"
 msgstr "Importar"
 
-#: FConnectionEditor.form:206
+#: FConnectionEditor.form:212
 msgid "Fields"
 msgstr "Campos"
 
-#: FConnectionEditor.form:222 FMain.class:2163 FMakeInstall.form:738 FOption.form:1508 FProjectProperty.form:636 FPublish.form:159
+#: FConnectionEditor.form:228 FMain.class:2164 FMakeInstall.form:737
+#: FProjectProperty.form:638 FPublish.form:159
 msgid "Add"
 msgstr "Añadir"
 
-#: FConnectionEditor.form:236 FList.form:77 FMakeInstall.form:756 FPublish.form:281
+#: FConnectionEditor.form:242 FList.form:77 FMakeInstall.form:755
+#: FPublish.form:281
 msgid "Down"
 msgstr "Abajo"
 
-#: FConnectionEditor.form:243 FList.form:71 FMakeInstall.form:750 FPublish.form:275
+#: FConnectionEditor.form:249 FList.form:71 FMakeInstall.form:749
+#: FPublish.form:275
 msgid "Up"
 msgstr "Arriba"
 
-#: FConnectionEditor.form:251
+#: FConnectionEditor.form:257
 msgid "Copy field list"
 msgstr "Copiar lista de campos"
 
-#: FConnectionEditor.form:269
+#: FConnectionEditor.form:275
 msgid "Indexes"
 msgstr "Índices"
 
-#: FConnectionEditor.form:286
+#: FConnectionEditor.form:292
 msgid "New index"
 msgstr "Nuevo índice"
 
-#: FConnectionEditor.form:346
+#: FConnectionEditor.form:352
 msgid "Run query"
 msgstr "Correr consulta"
 
-#: FConnectionEditor.form:352
+#: FConnectionEditor.form:358
 msgid "New query"
 msgstr "Nueva consulta"
 
-#: FConnectionEditor.form:354 FMain.form:851 FOption.form:1262 FTranslate.form:72
+#: FConnectionEditor.form:360 FMain.form:851 FOption.form:1502
+#: FTranslate.form:87
 msgid "New"
 msgstr "Nuevo"
 
-#: FConnectionEditor.form:360
+#: FConnectionEditor.form:366
 msgid "Remove query"
 msgstr "Eliminar consulta"
 
-#: FConnectionEditor.form:368 FDebugInfo.class:561 FImageProperty.form:375 FList.form:93 FMakeInstall.form:762 FOption.class:750 FOutput.form:53 FPublish.form:171
+#: FConnectionEditor.form:374 FDebugInfo.class:275 FImageProperty.form:378
+#: FList.form:93 FMakeInstall.form:761 FOption.class:863 FOutput.form:54
+#: FPublish.form:171
 msgid "Clear"
 msgstr "Limpiar"
 
-#: FConnectionEditor.form:440 FDebugExpr.form:28 FMain.form:404 FOption.form:1277
+#: FConnectionEditor.form:448 FDebugExpr.form:28 FMain.form:404
+#: FOption.form:1517
 msgid "Edit"
 msgstr "Editar"
 
-#: FConnectionEditor.form:447 FExportData.form:15
+#: FConnectionEditor.form:455 FExportData.form:15
 msgid "Export to CSV file"
 msgstr "Exportar a un archivo CSV"
 
-#: FConnectionEditor.form:449 FTranslate.form:90
+#: FConnectionEditor.form:458 FTranslate.form:130
 msgid "Export"
 msgstr "Exportar"
 
-#: FConnectionEditor.form:473 FForm.form:180 FList.form:65 FMain.form:1041 FMenu.form:101 FNewConnection.class:390 FOption.class:915 FSoftwareFarm.class:640 FTranslate.form:82
+#: FConnectionEditor.form:485 FForm.form:185 FList.form:65 FMain.form:1041
+#: FMenu.form:110 FNewConnection.class:402 FOption.class:1028
+#: FSoftwareFarm.class:647 FTranslate.form:97
 msgid "Delete"
 msgstr "Borrar"
 
-#: FConnectionEditor.form:480 FForm.form:214
+#: FConnectionEditor.form:493 FForm.form:219
 msgid "Select all"
 msgstr "Seleccionar todo"
 
-#: FConnectionEditor.form:487 FForm.form:225
+#: FConnectionEditor.form:501 FForm.form:231
 msgid "Unselect all"
 msgstr "Deseleccionar todo"
 
@@ -1533,7 +1724,7 @@ msgstr "Deseleccionar todo"
 msgid "Gambas 3 project conversion"
 msgstr "Conversión de proyectos Gambas 3"
 
-#: FCrash.class:73 FTranslate.class:1174 Project.module:4705
+#: FCrash.class:73 FTranslate.class:242 Project.module:4516
 msgid "The '&1' command has failed."
 msgstr "El comando '&1' ha fallado."
 
@@ -1573,7 +1764,8 @@ msgstr "No es posible añadir el archivo."
 msgid "New file"
 msgstr "Nuevo archivo"
 
-#: FCreateFile.form:72 FImportTable.form:59 FMakePatch.form:66 FProjectProperty.form:737 FSearch.form:100
+#: FCreateFile.form:72 FImportTable.form:59 FMakePatch.form:66
+#: FProjectProperty.form:734 FSearch.form:99
 msgid "Options"
 msgstr "Opciones"
 
@@ -1609,19 +1801,19 @@ msgstr ""
 msgid "Automatic extension"
 msgstr "Extensión automática"
 
-#: FCreateProject.class:85
+#: FCreateProject.class:87
 msgid "Project checkout has failed."
 msgstr "Revisión del proyecto ha fallado."
 
-#: FCreateProject.class:141
+#: FCreateProject.class:145
 msgid "Cannot create project!"
 msgstr "¡No es posible crear el proyecto!"
 
-#: FCreateProject.class:168
+#: FCreateProject.class:172
 msgid "Please choose a template"
 msgstr "Por favor, elige una plantilla"
 
-#: FCreateProject.class:196
+#: FCreateProject.class:200
 msgid "Please enter the location of the repository."
 msgstr "Ingrese la localización del repositorio."
 
@@ -1629,83 +1821,76 @@ msgstr "Ingrese la localización del repositorio."
 msgid "New project"
 msgstr "Nuevo proyecto"
 
-#: FCreateProject.form:47 FProjectProperty.form:287
+#: FCreateProject.form:46 FProjectProperty.form:287
 msgid "Project type"
 msgstr "Tipo de proyecto"
 
-#: FCreateProject.form:83
+#: FCreateProject.form:82
 msgid "Parent directory"
 msgstr "Directorio padre"
 
-#: FCreateProject.form:91
+#: FCreateProject.form:90
 msgid "Project details"
 msgstr "Detalles del proyecto"
 
-#: FCreateProject.form:100
+#: FCreateProject.form:99
 msgid "Project name"
 msgstr "Nombre del proyecto"
 
-#: FCreateProject.form:111 FSaveProjectAs.form:49
+#: FCreateProject.form:110 FSaveProjectAs.form:49
 msgid "The project name is the name of the project directory."
 msgstr "El nombre del proyecto es el nombre del directorio del proyecto."
 
-#: FCreateProject.form:122 FSaveProjectAs.form:60
+#: FCreateProject.form:121 FSaveProjectAs.form:60
 msgid "The project final directory is :"
 msgstr "El directorio final del proyecto es :"
 
-#: FCreateProject.form:135
+#: FCreateProject.form:134
 msgid "Project title"
 msgstr "Titulo del proyecto"
 
-#: FCreateProject.form:146
+#: FCreateProject.form:145
 msgid "The project title is the true name of the application."
 msgstr "El titulo del proyecto es el verdadero nombre de la aplicación."
 
-#: FCreateProject.form:155 FProjectProperty.form:864
+#: FCreateProject.form:154 FProjectProperty.form:858
 msgid "Project is translatable"
 msgstr "El proyecto es traducible"
 
-#: FCreateProject.form:160 FProjectChooser.form:80 ProjectBox.class:303
+#: FCreateProject.form:159 FProjectChooser.form:80 ProjectBox.class:303
 msgid "Open in another window"
 msgstr "Abrir en otra ventana"
 
-#: FCreateProject.form:172 FProjectVersion.form:171
+#: FCreateProject.form:171 FProjectVersion.form:171
 msgid "Repository"
 msgstr "Repositorio"
 
-#: FCreateProject.form:183
+#: FCreateProject.form:182
 msgid "The project repository is directly sent to the 'svn checkout' command."
 msgstr "El repositorio del proyecto es enviado directamente al comando 'svn checkout'."
 
-#: FDebugButton.form:21 FDebugInfo.form:74 FMain.form:728 FOption.form:778
+#: FDebugButton.form:19 FDebugInfo.form:65
+#, fuzzy
+msgid "Debugging"
+msgstr "Depuración"
+
+#: FDebugButton.form:28 FDebugInfo.form:146 FMain.form:728 FOption.form:943
 msgid "Console"
 msgstr "Consola"
 
-#: FDebugButton.form:30 FDebugInfo.form:83
-msgid "Local variables"
-msgstr "Variables locales"
-
-#: FDebugButton.form:39 FDebugInfo.form:119
-msgid "Current object"
-msgstr "Objeto actual"
-
-#: FDebugButton.form:48 FDebugExpr.form:33 FDebugInfo.form:131
-msgid "Watch"
-msgstr "Observar"
-
-#: FDebugButton.form:57 FDebugInfo.form:203 MTheme.module:6
+#: FDebugButton.form:37 FDebugInfo.form:154 MTheme.module:6
 msgid "Breakpoints"
 msgstr "Puntos de interrupción"
 
-#: FDebugButton.form:66 FDebugInfo.form:241
+#: FDebugButton.form:46 FDebugInfo.form:216
 msgid "Warnings"
 msgstr "Advertencias"
 
-#: FDebugButton.form:75 FDebugInfo.form:261
+#: FDebugButton.form:55 FDebugInfo.form:235
 msgid "Tasks"
 msgstr "Tareas"
 
-#: FDebugButton.form:84 FDebugInfo.form:284
+#: FDebugButton.form:64 FDebugInfo.form:257
 msgid "Search result"
 msgstr ""
 
@@ -1713,193 +1898,205 @@ msgstr ""
 msgid "not available"
 msgstr "no disponible"
 
-#: FDebugExpr.class:489 FDebugInfo.class:43 FProjectProperty.class:160
+#: FDebugExpr.class:502 FProjectProperty.class:159
 msgid "Value"
 msgstr "Valor"
 
-#: FDebugExpr.class:493
+#: FDebugExpr.class:506
 msgid "Key"
 msgstr "Clave"
 
-#: FDebugExpr.class:499
+#: FDebugExpr.class:512
 msgid "Symbol"
 msgstr "Símbolo"
+
+#: FDebugExpr.form:33
+msgid "Watch"
+msgstr "Observar"
 
 #: FDebugExpr.form:38
 msgid "Print to console"
 msgstr "Imprimir en consola"
 
-#: FDebugExpr.form:64
+#: FDebugExpr.form:63
 msgid "Show all symbols"
 msgstr "Mostrar todos los símbolos"
 
-#: FDebugExpr.form:81
+#: FDebugExpr.form:88
 msgid "No element"
 msgstr "No hay elemento"
 
-#: FDebugInfo.class:49
-msgid "Expression"
-msgstr "Expresión"
-
-#: FDebugInfo.class:57 FProfile.class:645
-msgid "Function"
-msgstr "Función"
-
-#: FDebugInfo.class:59 FImageEditor.form:600 FImportTable.class:66
+#: FDebugInfo.class:46 FImageEditor.form:588 FImportTable.class:66
 msgid "Line"
 msgstr "Línea"
 
-#: FDebugInfo.class:66 FMain.form:272 FTranslate.class:67
+#: FDebugInfo.class:47 FProfile.class:645
+msgid "Function"
+msgstr "Función"
+
+#: FDebugInfo.class:53 FMain.form:272 FTranslate.class:78
 msgid "File"
 msgstr "Archivo"
 
-#: FDebugInfo.class:68
-msgid "Procedure"
-msgstr "Procedimiento"
-
-#: FDebugInfo.class:72
+#: FDebugInfo.class:59
 msgid "Col."
 msgstr "-"
 
-#: FDebugInfo.class:90 FImportTable.class:68
+#: FDebugInfo.class:77 FImportTable.class:68
 msgid "Message"
 msgstr "Mensage"
 
-#: FDebugInfo.class:175
+#: FDebugInfo.class:131
 msgid "native code"
 msgstr "código nativo"
 
-#: FDebugInfo.class:561
+#: FDebugInfo.class:198
+#, fuzzy
+msgid "Watch expressions"
+msgstr "Analizar expresion"
+
+#: FDebugInfo.class:275
 msgid "Do you want to clear the expression list ?"
 msgstr "¿Quiere limpiar la lista de expresiones?"
 
-#: FDebugInfo.class:994
-msgid "Dynamic variables"
-msgstr "Variables dinámicas"
+#: FDebugInfo.class:1065
+#, fuzzy
+msgid "File not loaded"
+msgstr "Archivo no encontrado!"
 
-#: FDebugInfo.form:58 FMain.form:563
+#: FDebugInfo.class:1204
+msgid "Current object"
+msgstr "Objeto actual"
+
+#: FDebugInfo.class:1250
+msgid "Local variables"
+msgstr "Variables locales"
+
+#: FDebugInfo.form:53 FMain.form:563
 msgid "Debug"
 msgstr "Depuración"
 
-#: FDebugInfo.form:92
-msgid "Column view"
-msgstr "Vista de columnas"
-
-#: FDebugInfo.form:99
-msgid "Copy to clipboard"
-msgstr "Copiar al portapapeles"
-
-#: FDebugInfo.form:101
-msgid "Copy local variables"
-msgstr "Copiar variables locales"
-
-#: FDebugInfo.form:149
-msgid "Add expression"
-msgstr "Añadir expresión"
-
-#: FDebugInfo.form:162
+#: FDebugInfo.form:96
 msgid "Remove current expression"
 msgstr "Eliminar la expresión actual"
 
-#: FDebugInfo.form:169
-msgid "Remove all expressions"
-msgstr "Eliminar todas las expresiones"
+#: FDebugInfo.form:102
+msgid "Add expression"
+msgstr "Añadir expresión"
 
-#: FDebugInfo.form:177
-msgid "Display expression"
-msgstr "Mostrar expresión"
-
-#: FDebugInfo.form:179
-msgid "Display"
-msgstr "Mostrar"
-
-#: FDebugInfo.form:185
+#: FDebugInfo.form:120
 msgid "Display ME"
 msgstr "Mostrar ME"
 
-#: FDebugInfo.form:211
-msgid "Remove current breakpoint"
-msgstr "Eliminar el punto de interrupción actual"
+#: FDebugInfo.form:121
+msgid "ME"
+msgstr ""
 
-#: FDebugInfo.form:219
+#: FDebugInfo.form:161
+#, fuzzy
+msgid "Remove breakpoint"
+msgstr "Eliminar todos los puntos de interrupción"
+
+#: FDebugInfo.form:169
+#, fuzzy
+msgid "Disable breakpoint"
+msgstr "Intercambiar punto de Interrupción"
+
+#: FDebugInfo.form:171
+#, fuzzy
+msgid "Disable"
+msgstr "Tabla"
+
+#: FDebugInfo.form:177
+#, fuzzy
+msgid "Enable breakpoint"
+msgstr "Intercambiar punto de Interrupción"
+
+#: FDebugInfo.form:179
+#, fuzzy
+msgid "Enable"
+msgstr "Tabla"
+
+#: FDebugInfo.form:185
 msgid "Remove all breakpoints"
 msgstr "Eliminar todos los puntos de interrupción"
 
-#: FDebugInfo.form:293
+#: FDebugInfo.form:265
 msgid "Cancel current search"
 msgstr "Cancelar la búsqueda actual"
 
-#: FDebugInfo.form:309
+#: FDebugInfo.form:281
 msgid "Search again"
 msgstr "Buscar otra vez"
 
-#: FDebugInfo.form:316
+#: FDebugInfo.form:288
 msgid "Show search window"
 msgstr "Mostrar ventana de búsqueda"
 
-#: FDebugInfo.form:360 FSearch.class:505 FTranslate.class:569
+#: FDebugInfo.form:331 FSearch.class:546 FTranslate.class:632
 msgid "Search string cannot be found."
 msgstr "La cadena buscada no se encontró."
 
-#: FDebugInfo.form:381
-msgid "Stack backtrace"
-msgstr "Trazado de la pila"
-
-#: FEditor.form:186 FTextEditor.form:208
+#: FEditor.form:189 FTextEditor.form:211
 msgid "Format code"
 msgstr "Formatear código"
 
-#: FEditor.form:192
+#: FEditor.form:195
 msgid "Sort procedures"
 msgstr "Ordenar procedimientos"
 
-#: FEditor.form:221
+#: FEditor.form:224
 msgid "Go to"
 msgstr "Ir a"
 
-#: FEditor.form:240
+#: FEditor.form:243
 msgid "Find definition"
 msgstr "Encontrar definición"
 
-#: FEditor.form:297 FMain.form:1484
+#: FEditor.form:300 FMain.form:1484
 msgid "Run until current line"
 msgstr "Ejecutar hasta la línea actual"
 
-#: FEditor.form:304
+#: FEditor.form:307
 msgid "Toggle breakpoint"
 msgstr "Intercambiar punto de Interrupción"
 
-#: FEditor.form:311
+#: FEditor.form:314
 msgid "Watch expression"
 msgstr "Analizar expresion"
 
-#: FEditor.form:320
+#: FEditor.form:323
 msgid "Open form"
 msgstr "Abrir formulario"
 
-#: FEditor.form:327 FMain.form:1067
+#: FEditor.form:330 FMain.form:1067
 msgid "Run this class"
 msgstr "Correr esta clase"
 
-#: FEditor.form:337 FForm.form:419 FImageEditor.form:366 FTextEditor.form:341
+#: FEditor.form:340 FForm.form:425 FImageEditor.form:369 FTextEditor.form:344
 msgid "Locked"
 msgstr "Bloqueado"
 
-#: FEditor.form:393 FHelpShortcut.form:24 FOption.form:762
+#: FEditor.form:396 FHelpShortcut.form:24 FOption.form:927
 msgid "Editor"
 msgstr "Editor"
 
-#: FEditor.form:422 FImageEditor.form:444 FTextEditor.form:426
-msgid "Lock / unlock file"
-msgstr "Bloquear / desbloquear fichero"
+#: FEditor.form:523 FTextEditor.form:507
+#, fuzzy
+msgid "Insert special character"
+msgstr "Caracteres incorrectos"
 
-#: FEditor.form:554 FTextEditor.form:539
+#: FEditor.form:566 FTextEditor.form:550
 msgid "Make code pretty"
 msgstr "Hacer el código bonito"
 
-#: FEditor.form:619 FTextEditor.form:603
+#: FEditor.form:631 FTextEditor.form:614
 msgid "Procedure list"
 msgstr "Lista de procedimientos"
+
+#: FEditor.form:653 FImageEditor.form:769 FTextEditor.form:655
+msgid "Lock / unlock file"
+msgstr "Bloquear / desbloquear fichero"
 
 #: FExportData.class:21 FImportTable.class:58
 msgid "CSV files"
@@ -1914,8 +2111,14 @@ msgid "&Overwrite"
 msgstr "&Sobrescribir"
 
 #: FExportData.class:126
-msgid "This file already exists.\n\nDo you want to overwrite it?"
-msgstr "Este archivo ya existe.\n\n¿Realmente quiere sobrescribirlo?"
+msgid ""
+"This file already exists.\n"
+"\n"
+"Do you want to overwrite it?"
+msgstr ""
+"Este archivo ya existe.\n"
+"\n"
+"¿Realmente quiere sobrescribirlo?"
 
 #: FExportData.form:31 FImportTable.form:102
 msgid "Delimiter character"
@@ -1941,7 +2144,7 @@ msgstr "Granjas"
 msgid "Authentication failed."
 msgstr "Fallo de autenticación."
 
-#: FFarmLogin.form:26 FPublish.form:313 FSoftwareFarm.form:107
+#: FFarmLogin.form:26 FPublish.form:313 FSoftwareFarm.form:108
 msgid "Login"
 msgstr "Iniciar sesión"
 
@@ -1949,15 +2152,17 @@ msgstr "Iniciar sesión"
 msgid "Server"
 msgstr "Servidor"
 
-#: FFarmLogin.form:59 FFarmRegister.form:61 FNewConnection.form:144 FProjectVersion.form:127 FProxy.form:42
+#: FFarmLogin.form:59 FFarmRegister.form:61 FNewConnection.form:144
+#: FProjectVersion.form:127 FProxy.form:42
 msgid "User"
 msgstr "Usuario"
 
-#: FFarmLogin.form:74 FFarmRegister.form:76 FNewConnection.form:165 FProjectVersion.form:142 FProxy.form:47
+#: FFarmLogin.form:74 FFarmRegister.form:76 FNewConnection.form:164
+#: FProjectVersion.form:142 FProxy.form:47
 msgid "Password"
 msgstr "Contraseña"
 
-#: FFarmLogin.form:95 FNewConnection.form:176 FProjectVersion.form:155
+#: FFarmLogin.form:95 FNewConnection.form:175 FProjectVersion.form:155
 msgid "Remember password"
 msgstr "Recordar contraseña"
 
@@ -1978,10 +2183,16 @@ msgid "Unable to register user."
 msgstr "Imposible registrar el usuario."
 
 #: FFarmRegister.class:40
-msgid "You have been successfully registered.\n\nYou will receive a confirmation e-mail soon."
-msgstr "Has sido registrado correctamente.\n\nRecibirás un e-mail de confirmación en breve."
+msgid ""
+"You have been successfully registered.\n"
+"\n"
+"You will receive a confirmation e-mail soon."
+msgstr ""
+"Has sido registrado correctamente.\n"
+"\n"
+"Recibirás un e-mail de confirmación en breve."
 
-#: FFarmRegister.form:28 FPublish.form:320 FSoftwareFarm.form:114
+#: FFarmRegister.form:28 FPublish.form:320 FSoftwareFarm.form:115
 msgid "Register"
 msgstr "Registrar"
 
@@ -1989,13 +2200,19 @@ msgstr "Registrar"
 msgid "Confirm password"
 msgstr "Confirmar contraseña"
 
-#: FFarmRegister.form:108 FMakeInstall.form:257 FOption.form:296
+#: FFarmRegister.form:108 FMakeInstall.form:256 FOption.form:335
 msgid "E-mail"
 msgstr "Correo Electrónico"
 
 #: FFarmRegister.form:121
-msgid "A confirmation mail will be sent to the specified e-mail address. Click on the link included in that mail to activate your account.\n<p>\n<b>Your e-mail will not be stored on the publishing server.</b>"
-msgstr "Se ha enviado un correo de confirmación al e-mail especificado. Haz clic en el enlace incluido en el correo para activar tu cuenta.\n<p>\n<b>Los e-mail no se almacenan en el servidor.</b>"
+msgid ""
+"A confirmation mail will be sent to the specified e-mail address. Click on the link included in that mail to activate your account.\n"
+"<p>\n"
+"<b>Your e-mail will not be stored on the publishing server.</b>"
+msgstr ""
+"Se ha enviado un correo de confirmación al e-mail especificado. Haz clic en el enlace incluido en el correo para activar tu cuenta.\n"
+"<p>\n"
+"<b>Los e-mail no se almacenan en el servidor.</b>"
 
 #: FFieldChooser.class:54 FTableChooser.class:66
 msgid "Unable to open connection."
@@ -2041,7 +2258,7 @@ msgstr "&1 propiedades"
 msgid "Changes"
 msgstr "Cambios"
 
-#: FFileProperty.class:92 FProjectProperty.form:893 FTranslate.form:312
+#: FFileProperty.class:92 FProjectProperty.form:886 FTranslate.form:409
 msgid "Statistics"
 msgstr "Estadísticas"
 
@@ -2057,7 +2274,8 @@ msgstr "Este archivo no está versionado, y debe ser añadido al repositorio."
 msgid "This file has not been modified since the last commit."
 msgstr "Este archivo no ha sido modificado desde el último commit."
 
-#: FFileProperty.class:144 FMakeInstall.class:345 FProjectVersion.class:211 FSave.form:21 Project.module:3659 VersionControl.module:376
+#: FFileProperty.class:144 FMakeInstall.class:345 FProjectVersion.class:211
+#: FSave.form:21 Project.module:3520 VersionControl.module:376
 msgid "Continue"
 msgstr "Continuar"
 
@@ -2065,11 +2283,11 @@ msgstr "Continuar"
 msgid "You are going to cancel your changes!"
 msgstr "¡Va a cancelar sus cambios!"
 
-#: FFileProperty.class:161 FProjectProperty.class:926
+#: FFileProperty.class:163 FProjectProperty.class:926
 msgid "Modules"
 msgstr "Módulos"
 
-#: FFileProperty.class:166 FProjectProperty.class:934
+#: FFileProperty.class:168 FProjectProperty.class:934
 msgid "Lines of code"
 msgstr "Líneas de código"
 
@@ -2081,203 +2299,208 @@ msgstr ""
 msgid "Select a font"
 msgstr "Seleccione una fuente"
 
-#: FForm.class:144
+#: FForm.class:134
 msgid "Bad form file"
 msgstr "Archivo de formulario incorrecto"
 
-#: FForm.class:274
+#: FForm.class:264
 msgid "Unknown control: &1"
 msgstr "Control desconocido: &1"
 
-#: FForm.class:1333
+#: FForm.class:1327
 msgid "Component missing for control &1"
 msgstr "Componente desaparecido para el control &1"
 
-#: FForm.class:1853
+#: FForm.class:1866
 msgid "Cannot paste data."
 msgstr "No se pueden pegar datos."
 
-#: FForm.form:167
+#: FForm.form:172
 msgid "Copy at the same place"
 msgstr "Copiar en el mismo lugar"
 
-#: FForm.form:187
+#: FForm.form:192
 msgid "Delete container only"
 msgstr "Borrar sólo el contenedor"
 
-#: FForm.form:194
+#: FForm.form:199
 msgid "Embed into a container"
 msgstr "Incrustrar en un contenedor"
 
-#: FForm.form:200
+#: FForm.form:205
 msgid "Change into"
 msgstr "Cambiar en"
 
-#: FForm.form:208
+#: FForm.form:213
 msgid "Select"
 msgstr "Seleccionar"
 
-#: FForm.form:220
+#: FForm.form:226
 msgid "Select parent"
 msgstr "Seleccionar padre"
 
-#: FForm.form:233
+#: FForm.form:239
 msgid "Arrangement"
 msgstr "Alineamiento"
 
-#: FForm.form:237
+#: FForm.form:243
 msgid "Bring to foreground"
 msgstr "Mandar al frente"
 
-#: FForm.form:244
+#: FForm.form:250
 msgid "Send to background"
 msgstr "Enviar al fondo"
 
-#: FForm.form:254
+#: FForm.form:260
 msgid "Horizontal"
 msgstr "Horizontal"
 
-#: FForm.form:261
+#: FForm.form:267
 msgid "Rows"
 msgstr "Filas"
 
-#: FForm.form:267
+#: FForm.form:273
 msgid "Vertical"
 msgstr "Vertical"
 
-#: FForm.form:274
+#: FForm.form:280
 msgid "Columns"
 msgstr "Columnas"
 
-#: FForm.form:283
+#: FForm.form:289
 msgid "Center horizontally"
 msgstr "Centrar horizontalmente"
 
-#: FForm.form:289
+#: FForm.form:295
 msgid "Center vertically"
 msgstr "Centrar verticalmente"
 
-#: FForm.form:295
+#: FForm.form:301
 msgid "Alignment"
 msgstr "Alineación"
 
-#: FForm.form:299
+#: FForm.form:305
 msgid "Align to left"
 msgstr "Alinear hacia la izquierda"
 
-#: FForm.form:305
+#: FForm.form:311
 msgid "Align to right"
 msgstr "Alinear hacia la derecha"
 
-#: FForm.form:311
+#: FForm.form:317
 msgid "Align to top"
 msgstr "Alinear hacia arriba"
 
-#: FForm.form:317
+#: FForm.form:323
 msgid "Align to bottom"
 msgstr "Alinear hacia abajo"
 
-#: FForm.form:326
+#: FForm.form:332
 msgid "Same width"
 msgstr "El mismo ancho"
 
-#: FForm.form:332
+#: FForm.form:338
 msgid "Same height"
 msgstr "La misma altura"
 
-#: FForm.form:341
+#: FForm.form:347
 msgid "Show tab"
 msgstr "Mostrar pestaña"
 
-#: FForm.form:349
+#: FForm.form:355
 msgid "Move tab"
 msgstr "Mover pestaña"
 
-#: FForm.form:354
+#: FForm.form:360
 msgid "First"
 msgstr "Primero"
 
-#: FForm.form:361 FSearch.form:195 FTips.form:71
+#: FForm.form:367 FSearch.form:194 FTips.form:71
 msgid "Previous"
 msgstr "Previo"
 
-#: FForm.form:368 FSearch.form:189 FTips.form:77
+#: FForm.form:374 FSearch.form:188 FTips.form:77
 msgid "Next"
 msgstr "Siguiente"
 
-#: FForm.form:375
+#: FForm.form:381
 msgid "Last"
 msgstr "Último"
 
-#: FForm.form:386 FMenu.form:68
+#: FForm.form:392 FMenu.form:69
 msgid "Menu editor"
 msgstr "Editor de menú"
 
-#: FForm.form:395
+#: FForm.form:401
 msgid "Event"
 msgstr "Evento"
 
-#: FForm.form:409
+#: FForm.form:415
 msgid "Run this form"
 msgstr "Correr este formulario"
 
-#: FForm.form:485
-msgid "Lock / unlock form"
-msgstr "Bloquear / desbloquear formulario"
-
-#: FForm.form:562
+#: FForm.form:568
 msgid "Toggle grid"
 msgstr "Intercambiar parrilla"
 
-#: FForm.form:681
+#: FForm.form:577 FImageEditor.form:514
+#, fuzzy
+msgid "Toggle information tooltip"
+msgstr "Incluye información de"
+
+#: FForm.form:696
 msgid "Move tab first"
 msgstr "Mover pestaña al principio"
 
-#: FForm.form:688
+#: FForm.form:703
 msgid "Move tab left"
 msgstr "Mover pestaña a la izquierda"
 
-#: FForm.form:695
+#: FForm.form:710
 msgid "Move tab right"
 msgstr "Mover pestaña a la derecha"
 
-#: FForm.form:702
+#: FForm.form:717
 msgid "Move tab last"
 msgstr "Mover pestaña al final"
 
-#: FForm.form:730 FOption.form:246 FWebFontChooser.form:69
+#: FForm.form:745 FOption.form:281 FWebFontChooser.form:69
 msgid "Bold"
 msgstr "Negrita"
 
-#: FForm.form:738 FWebFontChooser.form:77
+#: FForm.form:753 FWebFontChooser.form:77
 msgid "Italic"
 msgstr "Cursiva"
 
-#: FForm.form:746 FOption.form:251 FWebFontChooser.form:85
+#: FForm.form:761 FOption.form:286 FWebFontChooser.form:85
 msgid "Underline"
 msgstr "Subrayado"
 
-#: FForm.form:754
+#: FForm.form:769
 msgid "Bigger font"
 msgstr "Fuente mas grande"
 
-#: FForm.form:762
+#: FForm.form:777
 msgid "Smaller font"
 msgstr "Fuente mas pequeña"
 
-#: FForm.form:770 FOption.form:702
+#: FForm.form:785 FOption.form:845
 msgid "Default font"
 msgstr "Fuente por defecto"
 
-#: FForm.form:778 FOption.form:1291 MTheme.module:6
+#: FForm.form:793 FOption.form:1531 MTheme.module:6
 msgid "Background"
 msgstr "Fondo"
 
-#: FForm.form:786
+#: FForm.form:801
 msgid "Foreground"
 msgstr "Primer plano"
 
-#: FFormStack.form:14 FMain.form:1813
+#: FForm.form:812
+msgid "Lock / unlock form"
+msgstr "Bloquear / desbloquear formulario"
+
+#: FFormStack.form:14 FMain.form:1812
 msgid "Hierarchy"
 msgstr "Jerarquía"
 
@@ -2285,11 +2508,11 @@ msgstr "Jerarquía"
 msgid "Move top"
 msgstr "Mover a la parte superior"
 
-#: FFormStack.form:30 FMenu.form:145
+#: FFormStack.form:30 FMenu.form:154
 msgid "Move up"
 msgstr "Mover arriba"
 
-#: FFormStack.form:36 FMenu.form:151
+#: FFormStack.form:36 FMenu.form:160
 msgid "Move down"
 msgstr "Mover abajo"
 
@@ -2297,7 +2520,7 @@ msgstr "Mover abajo"
 msgid "Move bottom"
 msgstr "Mover al fondo"
 
-#: FHelpBrowser.class:24 FProjectProperty.form:881
+#: FHelpBrowser.class:24 FProjectProperty.form:874
 msgid "Default language"
 msgstr "Lenguaje por defecto"
 
@@ -2329,149 +2552,149 @@ msgstr "Atajos de teclado del IDE"
 msgid "Debugger"
 msgstr "Depurador"
 
-#: FHelpShortcut.form:28 FProjectProperty.form:853 FTranslate.form:112
+#: FHelpShortcut.form:28 FProjectProperty.form:847 FTranslate.form:153
 msgid "Translation"
 msgstr "Traducción"
 
-#: FImageEditor.form:156
+#: FImageEditor.form:159
 msgid "Action"
 msgstr "Acción"
 
-#: FImageEditor.form:161
+#: FImageEditor.form:164
 msgid "Crop"
 msgstr "Recortar"
 
-#: FImageEditor.form:169 FImageProperty.form:300
+#: FImageEditor.form:172 FImageProperty.form:303
 msgid "Horizontal flip"
 msgstr "Reflejo horizontal"
 
-#: FImageEditor.form:176 FImageProperty.form:294
+#: FImageEditor.form:179 FImageProperty.form:297
 msgid "Vertical flip"
 msgstr "Espejo vertical"
 
-#: FImageEditor.form:183 FImageProperty.form:288
+#: FImageEditor.form:186 FImageProperty.form:291
 msgid "Rotate counter-clockwise"
 msgstr "Rotar en sentido antihorario"
 
-#: FImageEditor.form:191 FImageProperty.form:282
+#: FImageEditor.form:194 FImageProperty.form:285
 msgid "Rotate clockwise"
 msgstr "Rotar en sentido horario"
 
-#: FImageEditor.form:202
+#: FImageEditor.form:205
 msgid "Resize"
 msgstr "Cambiar el tamaño"
 
-#: FImageEditor.form:209
+#: FImageEditor.form:212
 msgid "Rotate"
 msgstr "Rotar"
 
-#: FImageEditor.form:225
+#: FImageEditor.form:228
 msgid "Hide selection"
 msgstr "Ocultar selección"
 
-#: FImageEditor.form:231 MTheme.module:6
+#: FImageEditor.form:234 MTheme.module:6
 msgid "Selection"
 msgstr "Selección"
 
-#: FImageEditor.form:236
+#: FImageEditor.form:239
 msgid "Invert selection"
 msgstr "Invertir selección"
 
-#: FImageEditor.form:244
+#: FImageEditor.form:247
 msgid "Duplicate selection"
 msgstr "Duplicar selección"
 
-#: FImageEditor.form:252 FImageOffsetSelection.form:12
+#: FImageEditor.form:255 FImageOffsetSelection.form:12
 msgid "Offset selection"
 msgstr "Selección de desplazamiento"
 
-#: FImageEditor.form:262
+#: FImageEditor.form:265
 msgid "Union"
 msgstr ""
 
-#: FImageEditor.form:268
+#: FImageEditor.form:271
 msgid "Difference"
 msgstr ""
 
-#: FImageEditor.form:274
+#: FImageEditor.form:277
 msgid "Intersection"
 msgstr ""
 
-#: FImageEditor.form:280
+#: FImageEditor.form:283
 msgid "Exclusive or"
 msgstr ""
 
-#: FImageEditor.form:289
+#: FImageEditor.form:292
 msgid "Shape grid"
 msgstr "Formar cuadrícula"
 
-#: FImageEditor.form:348
+#: FImageEditor.form:351
 msgid "Zoom normal"
 msgstr "Acercamiento normal"
 
-#: FImageEditor.form:356
+#: FImageEditor.form:359
 msgid "Zoom fit"
 msgstr "Ajustar acercamiento"
 
-#: FImageEditor.form:398
+#: FImageEditor.form:401
 msgid "Save as JPEG"
 msgstr "Guardar como JPG"
 
-#: FImageEditor.form:404
+#: FImageEditor.form:407
 msgid "Save as PNG"
 msgstr "Guardar como PNG"
 
-#: FImageEditor.form:410
+#: FImageEditor.form:413
 msgid "Save as BMP"
 msgstr "Guardar como BMP"
 
-#: FImageEditor.form:417
+#: FImageEditor.form:420
 msgid "Save as TIFF"
 msgstr "Guardar como TIFF"
 
-#: FImageEditor.form:424
+#: FImageEditor.form:427
 msgid "Image editor"
 msgstr "Editor de imágenes"
 
-#: FImageEditor.form:506
+#: FImageEditor.form:505
 msgid "Drawing grid"
 msgstr "Dibujar cuadrícula"
 
-#: FImageEditor.form:516
-msgid "Resize or stretch image"
-msgstr "Cambiar el tamaño o estirar la imagen"
-
-#: FImageEditor.form:526 FImageRotate.form:11
-msgid "Rotate image"
-msgstr "Rotar imagen"
-
-#: FImageEditor.form:569
+#: FImageEditor.form:557
 msgid "Move"
 msgstr "Mover"
 
-#: FImageEditor.form:580
+#: FImageEditor.form:568
 msgid "Draw"
 msgstr "Dibujar"
 
-#: FImageEditor.form:590
+#: FImageEditor.form:578
 msgid "Erase"
 msgstr "Borrar"
 
-#: FImageEditor.form:610
+#: FImageEditor.form:598
 msgid "Rectangle"
 msgstr "Rectángulo"
 
-#: FImageEditor.form:620
+#: FImageEditor.form:608
 msgid "Ellipse"
 msgstr "Elipse"
 
-#: FImageEditor.form:640
+#: FImageEditor.form:628
 msgid "Magic wand"
 msgstr "Vara mágica"
 
-#: FImageEditor.form:657
+#: FImageEditor.form:645
 msgid "Edit selection"
 msgstr "Editar selección"
+
+#: FImageEditor.form:748
+msgid "Resize or stretch image"
+msgstr "Cambiar el tamaño o estirar la imagen"
+
+#: FImageEditor.form:757 FImageRotate.form:11
+msgid "Rotate image"
+msgstr "Rotar imagen"
 
 #: FImageOffsetSelection.form:22 FImageResize.form:127
 msgid "px"
@@ -2481,209 +2704,213 @@ msgstr "-"
 msgid "Duplicate"
 msgstr "Duplicar"
 
-#: FImageProperty.class:784
+#: FImageProperty.class:788
 msgid "System clipboard"
 msgstr "Portapapeles del sistema"
 
-#: FImageProperty.class:1236
+#: FImageProperty.class:1251
 msgid "Arrow"
 msgstr "Flecha"
 
-#: FImageProperty.class:1238
+#: FImageProperty.class:1253
 msgid "Arrow #2"
 msgstr "Flecha #2"
 
-#: FImageProperty.class:1239
+#: FImageProperty.class:1254
 msgid "Triangle"
 msgstr "Triángulo"
 
-#: FImageProperty.class:1240
+#: FImageProperty.class:1255
 msgid "Square triangle"
 msgstr "Triángulo cuadrado"
 
-#: FImageProperty.class:1241
+#: FImageProperty.class:1256
 msgid "Pentagon"
 msgstr "Pentágono"
 
-#: FImageProperty.class:1242
+#: FImageProperty.class:1257
 msgid "Hexagon"
 msgstr "Hexágono"
 
-#: FImageProperty.form:138 FOption.form:238 FReportBrushChooser.form:49
+#: FImageProperty.form:141 FOption.form:273 FReportBrushChooser.form:49
 msgid "Color"
 msgstr "-"
 
-#: FImageProperty.form:168
+#: FImageProperty.form:171
 msgid "Gradient"
 msgstr "Degradado"
 
-#: FImageProperty.form:184 FReportBrushChooser.form:49
+#: FImageProperty.form:187 FReportBrushChooser.form:49
 msgid "Linear gradient"
 msgstr "Degradación lineal"
 
-#: FImageProperty.form:191 FReportBrushChooser.form:49
+#: FImageProperty.form:194 FReportBrushChooser.form:49
 msgid "Radial gradient"
 msgstr "Degradación radial"
 
-#: FImageProperty.form:215 FReportBrushChooser.form:111
+#: FImageProperty.form:218 FReportBrushChooser.form:111
 msgid "Add gradient stop"
 msgstr "Agregar punto de degradado"
 
-#: FImageProperty.form:221 FReportBrushChooser.form:117
+#: FImageProperty.form:224 FReportBrushChooser.form:117
 msgid "Remove gradient stop"
 msgstr "Eliminar punto de degradado"
 
-#: FImageProperty.form:227 FReportBrushChooser.form:123
+#: FImageProperty.form:230 FReportBrushChooser.form:123
 msgid "Select gradient stop color"
 msgstr ""
 
-#: FImageProperty.form:233 FReportBrushChooser.form:129
+#: FImageProperty.form:236 FReportBrushChooser.form:129
 msgid "Invert gradient"
 msgstr "Invertir gradiente"
 
-#: FImageProperty.form:255 FReportBrushChooser.form:145
+#: FImageProperty.form:258 FReportBrushChooser.form:145
 msgid "Radius"
 msgstr "Radio"
 
-#: FImageProperty.form:322
+#: FImageProperty.form:325
 msgid "Clipboard"
 msgstr "Portapepeles"
 
-#: FImageProperty.form:334
+#: FImageProperty.form:337
 msgid "Shapes"
 msgstr "Formas"
 
-#: FImageProperty.form:359
+#: FImageProperty.form:362
 msgid "Stroke"
 msgstr "Trazo"
 
-#: FImageProperty.form:367
+#: FImageProperty.form:370 FTranslate.class:1707
 msgid "Fill"
 msgstr "Llenar"
 
-#: FImageProperty.form:383
+#: FImageProperty.form:386
 msgid "Colorize"
 msgstr "Colorear"
 
-#: FImageProperty.form:391
+#: FImageProperty.form:394
 msgid "Desaturate"
 msgstr "Desaturar"
 
-#: FImageProperty.form:399
+#: FImageProperty.form:402
 msgid "Make transparent"
 msgstr "Hacer transparente"
 
-#: FImageProperty.form:409
+#: FImageProperty.form:412
 msgid "Line cap"
 msgstr ""
 
-#: FImageProperty.form:414
+#: FImageProperty.form:417
 msgid "Line join"
 msgstr ""
 
-#: FImageProperty.form:419
+#: FImageProperty.form:422
 msgid "Fill rule"
 msgstr ""
 
-#: FImageProperty.form:437
+#: FImageProperty.form:440
 msgid "Opacity"
 msgstr "Opacidad"
 
-#: FImageProperty.form:456 FSelectIcon.form:54 FTranslate.class:68
+#: FImageProperty.form:459 FSelectIcon.form:54 FTranslate.class:79
 msgid "Size"
 msgstr "Tamaño"
 
-#: FImageProperty.form:473
+#: FImageProperty.form:476
 msgid "Tolerance"
 msgstr "Tolerancia"
 
-#: FImageProperty.form:492
+#: FImageProperty.form:495
 msgid "Roundness"
 msgstr "Redondez"
 
-#: FImageProperty.form:518
+#: FImageProperty.form:521
 msgid "Effects"
 msgstr "Efectos"
 
-#: FImageProperty.form:528
+#: FImageProperty.form:531
 msgid "Brightness"
 msgstr "Brillo"
 
-#: FImageProperty.form:546
+#: FImageProperty.form:550
 msgid "Contrast"
 msgstr "Contraste"
 
-#: FImageProperty.form:564
+#: FImageProperty.form:569
 msgid "Gamma"
 msgstr "Gamma"
 
-#: FImageProperty.form:582
+#: FImageProperty.form:588
 msgid "Lightness"
 msgstr "Suavisado"
 
-#: FImageProperty.form:600
+#: FImageProperty.form:607
 msgid "Hue"
 msgstr "Matriz"
 
-#: FImageProperty.form:618
+#: FImageProperty.form:626
 msgid "Saturation"
 msgstr "Saturación"
 
-#: FImageProperty.form:636
+#: FImageProperty.form:645
 msgid "Blur"
 msgstr "Difuminar"
 
-#: FImageProperty.form:653
+#: FImageProperty.form:662
 msgid "Transparency"
 msgstr ""
 
-#: FImageProperty.form:675 FImportTable.form:189
+#: FImageProperty.form:685 FImportTable.form:189
 msgid "Preview"
 msgstr "Preliminar"
 
-#: FImageProperty.form:687 FOption.form:1522 FProjectProperty.form:923
+#: FImageProperty.form:697 FProjectProperty.form:918
 msgid "Reset"
 msgstr "Restablecer"
 
-#: FImageProperty.form:694 FMain.form:477 FPatch.form:69
+#: FImageProperty.form:704 FMain.form:477 FPatch.form:69
 msgid "Apply"
 msgstr "Aplicar"
 
-#: FImageProperty.form:720
+#: FImageProperty.form:730
 msgid "Centered"
 msgstr "Centrado"
 
-#: FImageProperty.form:729
+#: FImageProperty.form:740
 msgid "Right align"
 msgstr "Alinear a la derecha"
 
-#: FImageProperty.form:738
+#: FImageProperty.form:749
 msgid "Left align"
 msgstr "Alinear a la izquierda"
 
-#: FImageProperty.form:752
+#: FImageProperty.form:762
 msgid "Top align"
 msgstr "Alineacón superior"
 
-#: FImageProperty.form:762
+#: FImageProperty.form:771
 msgid "Middle align"
 msgstr "Alinear al medio"
 
-#: FImageProperty.form:771
+#: FImageProperty.form:781
 msgid "Baseline align"
 msgstr "Alineamiento con la línea base"
 
-#: FImageProperty.form:780
+#: FImageProperty.form:790
 msgid "Bottom align"
 msgstr "Alineamiento inferior"
 
-#: FImageProperty.form:813
+#: FImageProperty.form:826
 msgid "Grid resolution"
 msgstr "Resolución de la cuadrícula"
 
-#: FImageProperty.form:827
-msgid "Subdivision"
-msgstr "Subdivisión"
+#: FImageProperty.form:845
+msgid "Grid snap"
+msgstr ""
+
+#: FImageProperty.form:858
+msgid "Draw diagonals"
+msgstr ""
 
 #: FImageQuality.form:10
 msgid "Image quality"
@@ -2757,7 +2984,7 @@ msgstr ""
 msgid "Create symbolic links"
 msgstr "Crear enlaces simbólicos"
 
-#: FImportTable.class:58 FSearch.form:173 FTranslate.class:1259
+#: FImportTable.class:58 FSearch.form:172 FTranslate.class:1363
 msgid "All files"
 msgstr "Todos los Archivos"
 
@@ -2845,7 +3072,7 @@ msgstr "¿Realmente quiere limpiar la lista?"
 msgid "Edit list property"
 msgstr "Editar lista de propiedades"
 
-#: FList.form:59 FMenu.form:85 FProjectProperty.form:713
+#: FList.form:59 FMenu.form:86 FProjectProperty.form:710
 msgid "Insert"
 msgstr "Insertar"
 
@@ -2853,53 +3080,59 @@ msgstr "Insertar"
 msgid "Invert"
 msgstr ""
 
-#: FMain.class:230
+#: FMain.class:245
 msgid "Do you really want to delete this link ?"
 msgstr "¿Realmente quiere borrar este vínculo?"
 
-#: FMain.class:233
+#: FMain.class:248
 msgid "Do you really want to delete this directory ?"
 msgstr "¿Realmente quiere borrar este directorio?"
 
-#: FMain.class:245
+#: FMain.class:260
 msgid "Do you really want to delete this file ?"
 msgstr "¿Realmente quiere borrar este archivo?"
 
-#: FMain.class:252
+#: FMain.class:267
 msgid "Cannot delete file or directory"
 msgstr "No es posible borrar el archivo o el directorio"
 
-#: FMain.class:270
+#: FMain.class:285
 msgid "File or directory does not exist anymore."
 msgstr "El archivo o directorio ya no existe."
 
-#: FMain.class:716
+#: FMain.class:735
 msgid "Sort history"
 msgstr "Ordenar historial"
 
-#: FMain.class:720 FOpenProject.form:77 FWelcome.form:33
+#: FMain.class:739 FOpenProject.form:77 FWelcome.form:33
 msgid "Sort by date"
 msgstr "Ordenar por fecha"
 
-#: FMain.class:720 FOpenProject.form:86 FWelcome.form:41
+#: FMain.class:739 FOpenProject.form:86 FWelcome.form:41
 msgid "Sort by name"
 msgstr "Ordenar por nombre"
 
-#: FMain.class:720 FOpenProject.form:94 FWelcome.form:48
+#: FMain.class:739 FOpenProject.form:94 FWelcome.form:48
 msgid "Sort by path"
 msgstr "Ordenar por ruta"
 
-#: FMain.class:732
+#: FMain.class:751
 msgid "&Clear history"
 msgstr "&Limpiar historial"
 
-#: FMain.class:916
+#: FMain.class:935
 msgid "New folder"
 msgstr "Nueva carpeta"
 
-#: FMain.class:987
-msgid "The GNU translation tools are not installed on your system.\n\nPlease install them to be able to do the translation."
-msgstr "Las  herramientas de traducción de GNU no están instaladas en su sistema.\n\nInstalelas para poder hacer la traducción."
+#: FMain.class:1006
+msgid ""
+"The GNU translation tools are not installed on your system.\n"
+"\n"
+"Please install them to be able to do the translation."
+msgstr ""
+"Las  herramientas de traducción de GNU no están instaladas en su sistema.\n"
+"\n"
+"Instalelas para poder hacer la traducción."
 
 #: FMain.class:1722
 msgid "Unable to drop file into the project."
@@ -2913,31 +3146,37 @@ msgstr "Todas las copias de seguridad o archivos generados se borrarán en el di
 msgid "Clean"
 msgstr "Limpiar"
 
-#: FMain.class:2163
+#: FMain.class:2164
 msgid "Do you really want to add every file to the repository?"
 msgstr "¿Realmente desea agregar cada archivo al repositorio?"
 
-#: FMain.class:2303
+#: FMain.class:2304
 msgid "Choose a profile"
 msgstr "Elija un perfil"
 
-#: FMain.class:2304
+#: FMain.class:2305
 msgid "Profile for &1 project"
 msgstr "Perfil para el proyecto &1"
 
-#: FMain.class:2541 FProperty.class:1037
+#: FMain.class:2561 FProperty.class:1046
 msgid "Select a file"
 msgstr "Seleccione un archivo"
 
-#: FMain.class:2556
+#: FMain.class:2576
 msgid "This file is located inside the project."
 msgstr "El archivo está ubicado dentro del proyecto."
 
-#: FMain.class:2690 Project.module:811
-msgid "The file has been modified.\n\nAll your changes will be lost."
-msgstr "El archivo ha sido modificado.\n\nTodos sus cambios se perderán."
+#: FMain.class:2710 Project.module:844
+msgid ""
+"The file has been modified.\n"
+"\n"
+"All your changes will be lost."
+msgstr ""
+"El archivo ha sido modificado.\n"
+"\n"
+"Todos sus cambios se perderán."
 
-#: FMain.class:2801
+#: FMain.class:2821
 msgid "Edit arguments"
 msgstr ""
 
@@ -3013,7 +3252,7 @@ msgstr "Parchear"
 msgid "Create"
 msgstr "Crear"
 
-#: FMain.form:484 FProjectProperty.form:901
+#: FMain.form:484 FProjectProperty.form:895
 msgid "Version control"
 msgstr "Control de versiones"
 
@@ -3149,7 +3388,7 @@ msgstr "Herramientas"
 msgid "Find"
 msgstr "Encontrar"
 
-#: FMain.form:786 FSearch.form:76
+#: FMain.form:786 FSearch.form:75
 msgid "Replace"
 msgstr "Reemplazar"
 
@@ -3173,11 +3412,11 @@ msgstr "Actualizar todos los formularios"
 msgid "Software farm"
 msgstr "Granja de software"
 
-#: FMain.form:834 FOption.form:670
+#: FMain.form:834
 msgid "Shortcuts"
 msgstr "Atajos"
 
-#: FMain.form:840 FOption.form:226
+#: FMain.form:840 FOption.form:261
 msgid "Preferences"
 msgstr "Preferencias"
 
@@ -3245,7 +3484,7 @@ msgstr "Clase de inicio"
 msgid "Add to repository"
 msgstr "Agregar al repositorio"
 
-#: FMain.form:1080 FSoftwareFarm.form:201
+#: FMain.form:1080 FSoftwareFarm.form:204
 msgid "Filter"
 msgstr "Filtrar"
 
@@ -3273,11 +3512,11 @@ msgstr "Mostrar todo"
 msgid "Do not translate"
 msgstr ""
 
-#: FMain.form:1135 FNewConnection.class:147
+#: FMain.form:1135 FNewConnection.class:159
 msgid "New connection"
 msgstr "Nueva conexión"
 
-#: FMain.form:1211 FOutput.form:151
+#: FMain.form:1211 FOutput.form:161
 msgid "?"
 msgstr "-"
 
@@ -3289,11 +3528,11 @@ msgstr "Consejos del día"
 msgid "Keyboard shortcuts"
 msgstr "Atajos de teclado"
 
-#: FMain.form:1244
-msgid "System informations"
-msgstr "Informaciones del sistema"
+#: FMain.form:1244 FSystemInfo.form:15
+msgid "System information"
+msgstr "Información del Sistema"
 
-#: FMain.form:1303 FProjectProperty.form:140
+#: FMain.form:1303 FProjectProperty.form:139
 msgid "Project properties"
 msgstr "Propiedades del proyecto"
 
@@ -3321,7 +3560,7 @@ msgstr "Hoja de propiedades"
 msgid "Toolbox"
 msgstr "Caja de herramientas"
 
-#: FMain.form:1409 FSearch.form:62
+#: FMain.form:1409 FSearch.form:61
 msgid "Search"
 msgstr "Buscar"
 
@@ -3405,7 +3644,7 @@ msgstr "Archivo o directorio"
 msgid "Creating packages..."
 msgstr ""
 
-#: FMakeInstall.class:268 Package.module:294
+#: FMakeInstall.class:268 Package.module:296
 msgid "The packages have been successfully created."
 msgstr "Los paquetes han sido creados con éxito."
 
@@ -3501,127 +3740,135 @@ msgstr "Seleccione un directorio destino"
 msgid "Create package"
 msgstr "Crear paquetes"
 
-#: FMakeInstall.form:151
+#: FMakeInstall.form:150
 msgid "Package information"
 msgstr "Información del paquete"
 
-#: FMakeInstall.form:157
+#: FMakeInstall.form:156
 msgid "Package name"
 msgstr "Nombre del paquete"
 
-#: FMakeInstall.form:178 FOption.form:386
+#: FMakeInstall.form:177 FOption.form:425
 msgid "Add vendor prefix or name to package names"
 msgstr "Añadir prefijo 'vendor' al nombre del paquete"
 
-#: FMakeInstall.form:185
+#: FMakeInstall.form:184
 msgid "Package version"
 msgstr "Versión de paquete"
 
-#: FMakeInstall.form:202 FOption.form:318 FPublish.form:84
+#: FMakeInstall.form:201 FOption.form:357 FPublish.form:84
 msgid "Vendor name"
 msgstr "Nombre del vendedor"
 
-#: FMakeInstall.form:218 FOption.form:335
+#: FMakeInstall.form:217 FOption.form:374
 msgid "Vendor prefix"
 msgstr "Prefijo de vendedor"
 
-#: FMakeInstall.form:232
+#: FMakeInstall.form:231
 msgid "Maintainer information"
 msgstr "Información del mantenedor"
 
-#: FMakeInstall.form:272 FOption.form:370
+#: FMakeInstall.form:271 FOption.form:409
 msgid "URL"
 msgstr "-"
 
-#: FMakeInstall.form:310
+#: FMakeInstall.form:309
 msgid "License"
 msgstr "Licencia"
 
-#: FMakeInstall.form:321
+#: FMakeInstall.form:320
 msgid "Changelog"
 msgstr "Registro de cambios"
 
-#: FMakeInstall.form:341
+#: FMakeInstall.form:340
 msgid "Target distribution"
 msgstr "Distribución objetivo"
 
-#: FMakeInstall.form:610
+#: FMakeInstall.form:609
 msgid "Self-extractible"
 msgstr "Autoextraíble"
 
-#: FMakeInstall.form:615
+#: FMakeInstall.form:614
 msgid "Package group"
 msgstr "Grupo de paquetes"
 
-#: FMakeInstall.form:635
+#: FMakeInstall.form:634
 msgid "Menu entry"
 msgstr "Entrada al menú"
 
-#: FMakeInstall.form:657
+#: FMakeInstall.form:656
 msgid "Categories"
 msgstr "Categorías"
 
-#: FMakeInstall.form:666
+#: FMakeInstall.form:665
 msgid "Desktop configuration file"
 msgstr "Archivo de configuración de escritorio"
 
-#: FMakeInstall.form:672
+#: FMakeInstall.form:671
 msgid "Mimetypes"
 msgstr "-"
 
-#: FMakeInstall.form:680
-msgid "Enter the mimetypes handled by your application there.\nPlease enter one mimetype by line.\n"
-msgstr "Ingrese el tipo MIME manejado por su aplicación.\nIngrese un tipo MIME por línea.\n"
+#: FMakeInstall.form:679
+msgid ""
+"Enter the mimetypes handled by your application there.\n"
+"Please enter one mimetype by line.\n"
+msgstr ""
+"Ingrese el tipo MIME manejado por su aplicación.\n"
+"Ingrese un tipo MIME por línea.\n"
 
-#: FMakeInstall.form:692
+#: FMakeInstall.form:691
 msgid "Additional configuration"
 msgstr "Configuración adicional"
 
-#: FMakeInstall.form:700
+#: FMakeInstall.form:699
 msgid "The following will be added to the end of the desktop configuration file."
 msgstr "Lo siguiente será agregado al final del archivo de configuración de escritorio."
 
-#: FMakeInstall.form:708
+#: FMakeInstall.form:707
 msgid "Extra dependencies"
 msgstr "Dependencias extra"
 
-#: FMakeInstall.form:712
+#: FMakeInstall.form:711
 msgid "Same dependencies for all targets"
 msgstr "Mismas dependencias para todos los paquetes"
 
-#: FMakeInstall.form:768
+#: FMakeInstall.form:767
 msgid "Extra files"
 msgstr "Archivos extra"
 
-#: FMakeInstall.form:772
+#: FMakeInstall.form:771
 msgid "Same files for all targets"
 msgstr "Mismos archivos para todas los paquetes"
 
-#: FMakeInstall.form:785
+#: FMakeInstall.form:784
 msgid "Extra files must be located in the <b>Project</b> folder of the current project, i.e. the <tt>.hidden</tt> directory of the project on the disk."
 msgstr "Los archivos extra deben ser situados en la carpeta <b>Proyecto</b> del proyecto actual, por ejemplo, el directorio <tt>.hidden</tt> del proyecto en el disco."
 
-#: FMakeInstall.form:843
+#: FMakeInstall.form:842
 msgid "Extra autoconf tests"
 msgstr "Pruebas adicionales de autoconf"
 
-#: FMakeInstall.form:849
-msgid "Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
-msgstr "Agregar pruebas extra para el proceso de configuración.\n<p><b>Deje esto en blanco si no lo necesita, o si no conoce nada sobre scripts <i>autoconf</i>.</b>"
+#: FMakeInstall.form:848
+msgid ""
+"Add extra tests for the configuration process.\n"
+"<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
+msgstr ""
+"Agregar pruebas extra para el proceso de configuración.\n"
+"<p><b>Deje esto en blanco si no lo necesita, o si no conoce nada sobre scripts <i>autoconf</i>.</b>"
 
-#: FMakeInstall.form:857
+#: FMakeInstall.form:856
 msgid "Destination directory"
 msgstr "Directorio destino"
 
-#: FMakeInstall.form:866
+#: FMakeInstall.form:865
 msgid "Create directories for each distribution"
 msgstr "Crear directorios para cada distribución"
 
-#: FMakeInstall.form:897
+#: FMakeInstall.form:896
 msgid "Commands output"
 msgstr "Salida de comandos"
 
-#: FMakeInstall.form:943
+#: FMakeInstall.form:942
 msgid "Create package now"
 msgstr ""
 
@@ -3681,7 +3928,7 @@ msgstr "Seleccione un archivo fuente"
 msgid "*.gz;*.bz2;*.xz"
 msgstr "-"
 
-#: FMakePatch.form:98 Project.module:4744
+#: FMakePatch.form:98 Project.module:4555
 msgid "Source packages"
 msgstr "Paquetes fuente"
 
@@ -3701,83 +3948,90 @@ msgstr "-"
 msgid "Patch/Diff files"
 msgstr "Parches/Ficheros de diferencias"
 
-#: FMenu.class:75
+#: FMenu.class:74
 msgid "Menus have been modified!"
 msgstr "¡Los menús han sido modificados!"
 
-#: FMenu.class:309
+#: FMenu.class:312
 msgid "Please enter a menu name."
 msgstr "Ingrese un nombre de menú."
 
-#: FMenu.class:315
+#: FMenu.class:318
 msgid "Bad menu name !"
 msgstr "¡Nombre de menú incorrecto!"
 
-#: FMenu.class:321
+#: FMenu.class:324
 msgid "Bad group name !"
 msgstr "¡Nombre de grupo incorrecto!"
 
-#: FMenu.class:616
+#: FMenu.class:624
 msgid "This menu is too deep !"
 msgstr "¡El menú tiene demasiados niveles!"
 
-#: FMenu.class:1056 Project.module:5591
+#: FMenu.class:1063 Project.module:5406
 msgid "modified"
 msgstr "modificado"
 
-#: FMenu.form:83
+#: FMenu.form:84
 msgid "Insert menu"
 msgstr "Insertar menú"
 
-#: FMenu.form:91
-msgid "Insert menu after"
-msgstr "Insertar menú después"
-
-#: FMenu.form:93
-msgid "Insert after"
+#: FMenu.form:92
+#, fuzzy
+msgid "Insert separator"
 msgstr "Insertar después"
 
-#: FMenu.form:99
+#: FMenu.form:100
+#, fuzzy
+msgid "Insert menu before"
+msgstr "Insertar menú después"
+
+#: FMenu.form:102
+#, fuzzy
+msgid "Insert before"
+msgstr "Insertar color"
+
+#: FMenu.form:108
 msgid "Delete menu"
 msgstr "Borrar menú"
 
-#: FMenu.form:192
+#: FMenu.form:201
 msgid "Click on Insert to add a new menu."
 msgstr "Haga click en Insertar para añadir un menú nuevo."
 
-#: FNewConnection.class:92
+#: FNewConnection.class:104
 msgid "Please enter the name of the database."
 msgstr "Ingrese el nombre de la base de datos."
 
-#: FNewConnection.class:133
+#: FNewConnection.class:145
 msgid "Please enter password"
 msgstr "Ingrese una contraseña"
 
-#: FNewConnection.class:135
+#: FNewConnection.class:147
 msgid "Connection properties"
 msgstr "Propiedades de conexión"
 
-#: FNewConnection.class:166
+#: FNewConnection.class:178
 msgid "Select a directory"
 msgstr "Seleccione un directorio"
 
-#: FNewConnection.class:217
+#: FNewConnection.class:229
 msgid "Create database"
 msgstr ""
 
-#: FNewConnection.class:229
+#: FNewConnection.class:241
 msgid "Delete database"
 msgstr ""
 
-#: FNewConnection.class:381
+#: FNewConnection.class:393
 msgid "Unable to create database."
 msgstr "Incapaz de crear la base de datos."
 
-#: FNewConnection.class:390
+#: FNewConnection.class:402
 msgid "Do you really want to delete the database '&1'?"
 msgstr "¿Realmente quiere borrar la base de datos '&1'?"
 
-#: FNewConnection.class:401
+#: FNewConnection.class:413
 msgid "Unable to delete database."
 msgstr "Incapaz de borrar la base de datos."
 
@@ -3789,27 +4043,27 @@ msgstr "Servidor"
 msgid "Path"
 msgstr "Ruta"
 
-#: FNewConnection.form:155
+#: FNewConnection.form:154
 msgid "No password"
 msgstr ""
 
-#: FNewConnection.form:190 Project.module:226
+#: FNewConnection.form:189 Project.module:228
 msgid "Database"
 msgstr "Base de datos"
 
-#: FNewConnection.form:242
+#: FNewConnection.form:241
 msgid "From"
 msgstr ""
 
-#: FNewConnection.form:266
+#: FNewConnection.form:265
 msgid "Ignore database charset"
 msgstr "Ignorar codificación de caracteres de la base de datos"
 
-#: FNewConnection.form:280
+#: FNewConnection.form:279
 msgid "Display metadata"
 msgstr "Mostrar metadatos"
 
-#: FNewConnection.form:294
+#: FNewConnection.form:293
 msgid "Remember database structure"
 msgstr "Recordar estructura de la base de datos"
 
@@ -3821,7 +4075,7 @@ msgstr "Crear tabla"
 msgid "Please enter the name of the new table."
 msgstr "Ingrese el nombre de la nueva tabla."
 
-#: FNewTable.class:59 MConnection.module:304
+#: FNewTable.class:59 MConnection.module:317
 msgid "Table '&1' already exists."
 msgstr "La tabla '&1' ya existe."
 
@@ -3889,411 +4143,459 @@ msgstr "Visual"
 msgid "Zen"
 msgstr ""
 
-#: FOption.class:82
+#: FOption.class:83
 msgid "Custom"
 msgstr "Personalizado"
 
-#: FOption.class:84
+#: FOption.class:85
 msgid "Desktop"
 msgstr "Escritorio"
 
-#: FOption.class:85 FTranslate.class:132
+#: FOption.class:86 FTranslate.class:149
 msgid "(Default)"
 msgstr "(Por defecto)"
 
-#: FOption.class:175
+#: FOption.class:187
 msgid "Define..."
 msgstr "Definir..."
 
-#: FOption.class:225
+#: FOption.class:236
 msgid "Gambas highlight theme files"
 msgstr "Archivos de temas de resaltado de Gambas"
 
-#: FOption.class:226
+#: FOption.class:237
 msgid "Export a theme file"
 msgstr "Exportar un archivo de tema"
 
-#: FOption.class:411
+#: FOption.class:462
 msgid "Select a theme file"
 msgstr "Seleccione un archivo de tema"
 
-#: FOption.class:434
+#: FOption.class:492
 msgid "You need to restart the application to see your changes."
 msgstr "Necesita reiniciar la aplicación para ver los cambios."
 
-#: FOption.class:750
+#: FOption.class:863
 msgid "Do you really want to clear the documentation cache?"
 msgstr "¿Realmante quiere borrar la caché de documentación?"
 
-#: FOption.class:759
+#: FOption.class:872
 msgid "Unable to clear documentation cache."
 msgstr "Imposible eliminar la caché de documentación"
 
-#: FOption.class:915
+#: FOption.class:1028
 msgid "Do you really want to delete this snippet?"
 msgstr "¿Realmente quiere borrar este fragmento de código?"
 
-#: FOption.class:1103
-msgid "Do you really want to reset the list to its default value?"
-msgstr "¿Realmente desea reiniciar la lista a su valor por defecto?"
-
-#: FOption.class:1182
+#: FOption.class:1227
 msgid "Do you really want to install the Gambas font to your personal font directory?"
 msgstr "¿Realmente quiere instalar la fuente de Gambas en su directorio de fuentes personales?"
 
-#: FOption.class:1182 FSoftwareFarm.form:386
+#: FOption.class:1227 FSoftwareFarm.class:586
 msgid "Install"
 msgstr "Instalar"
 
-#: FOption.class:1292
-msgid "Unable to download documentation."
-msgstr "Incapaz de descargar la documentación."
-
-#: FOption.class:1302
-msgid "Unable to uncompress documentation."
-msgstr "Incapaz de descomprimir documentación."
-
-#: FOption.class:1311
-msgid "Unable to install documentation."
-msgstr "Imposible instalar la documentación."
-
-#: FOption.class:1336
+#: FOption.class:1312
 msgid "Network is not available."
 msgstr "Red no disponible"
 
-#: FOption.class:1341
+#: FOption.class:1317
 msgid "Documentation is up to date."
 msgstr "Documentación actualizada"
 
-#: FOption.class:1346
-msgid "'wget' is not found."
-msgstr "No se encuentra 'wget'."
-
-#: FOption.class:1351
+#: FOption.class:1322
 msgid "A new documentation is available!"
 msgstr "Nueva documentación disponible"
 
-#: FOption.class:1356 MHelp.module:896
+#: FOption.class:1327 MHelp.module:904
 msgid "Documentation is not available."
 msgstr "Documentación no disponible"
 
-#: FOption.form:263
+#: FOption.class:1523
+#, fuzzy
+msgid "Cannot download '&1'."
+msgstr "No es posible borrar la tabla &1."
+
+#: FOption.class:1554
+msgid "Unable to uncompress documentation."
+msgstr "Incapaz de descomprimir documentación."
+
+#: FOption.class:1565
+msgid "Unable to install documentation."
+msgstr "Imposible instalar la documentación."
+
+#: FOption.form:291
+msgid "Dotted"
+msgstr ""
+
+#: FOption.form:302
 msgid "Identity"
 msgstr "Identidad"
 
-#: FOption.form:307
+#: FOption.form:346
 msgid "Package maintainer"
 msgstr "Mantenedor del paquete"
 
-#: FOption.form:352
+#: FOption.form:391
 msgid "Default license"
 msgstr "Licencia por defecto"
 
-#: FOption.form:392 FProjectProperty.form:425 VersionControl.module:485
+#: FOption.form:431 VersionControl.module:485
 msgid "No"
 msgstr "No"
 
-#: FOption.form:392 FProjectProperty.form:425 VersionControl.module:485
+#: FOption.form:431 VersionControl.module:485
 msgid "Yes"
 msgstr "Sí"
 
-#: FOption.form:396
+#: FOption.form:435
 msgid "Projects"
 msgstr ""
 
-#: FOption.form:413
+#: FOption.form:452
 msgid "Default tab size"
 msgstr "Anchura de tabulador por defecto"
 
-#: FOption.form:430 FProjectProperty.form:769
+#: FOption.form:469 FProjectProperty.form:767
 msgid "space(s)"
 msgstr "espacio(s)"
 
-#: FOption.form:443
+#: FOption.form:482
 msgid "Indent with tab by default"
 msgstr ""
 
-#: FOption.form:460
+#: FOption.form:499
 msgid "Automatic word wrap by default"
 msgstr "Ajuste de línea automático por defecto"
 
-#: FOption.form:478
+#: FOption.form:517
 msgid "Fold procedures by default"
 msgstr "Plegar procedimientos por defecto"
 
-#: FOption.form:495
+#: FOption.form:534
 msgid "Activate version control"
 msgstr ""
 
-#: FOption.form:504
-msgid "Interface"
-msgstr "Interfaz"
-
-#: FOption.form:521
-msgid "Sort properties"
-msgstr "Ordenar propiedades"
-
-#: FOption.form:538
-msgid "Minimize at runtime"
-msgstr "Minimizar en tiempo de ejecución"
-
-#: FOption.form:555
-msgid "Use utility windows"
-msgstr "Usar ventanas de utilidad"
-
-#: FOption.form:572
-msgid "Toolbox size"
-msgstr "Tamaño de la caja de herramientas"
-
-#: FOption.form:578
-msgid "Large"
-msgstr ""
-
-#: FOption.form:578 FProjectProperty.form:297 FWebFontChooser.form:61
-msgid "Normal"
-msgstr "Normal"
-
-#: FOption.form:578
-msgid "Small"
-msgstr "Pequeño"
-
-#: FOption.form:590
+#: FOption.form:551
 msgid "Restore files when loading a project"
 msgstr "Restaurar archivos al cargar un proyecto"
 
-#: FOption.form:607
+#: FOption.form:568
+msgid "Compress PNG images with '<tt>pngquant</tt>'"
+msgstr ""
+
+#: FOption.form:586
+msgid "Automatic translation with '<tt>translate-shell</tt>'"
+msgstr ""
+
+#: FOption.form:605
+#, fuzzy
+msgid "Translation engine"
+msgstr "Archivos de traducción"
+
+#: FOption.form:614
+msgid "Interface"
+msgstr "Interfaz"
+
+#: FOption.form:631
+#, fuzzy
+msgid "Activate animations"
+msgstr "Activar advertencias"
+
+#: FOption.form:648
+#, fuzzy
+msgid "Show shadows"
+msgstr "Mostrar ventana de búsqueda"
+
+#: FOption.form:665
 msgid "Show tooltips"
 msgstr "Mostrar consejos"
 
-#: FOption.form:624
+#: FOption.form:682
+msgid "Use utility windows"
+msgstr "Usar ventanas de utilidad"
+
+#: FOption.form:699
+msgid "Close tabs with middle mouse click"
+msgstr ""
+
+#: FOption.form:716
 msgid "Show file name in window title"
 msgstr "Mostrar nombre de archivo en título de ventana"
 
-#: FOption.form:641
-msgid "Quiet external commands"
-msgstr "Comandos externos ocultos"
+#: FOption.form:733
+msgid "Toolbox size"
+msgstr "Tamaño de la caja de herramientas"
 
-#: FOption.form:658
+#: FOption.form:739
+msgid "Large"
+msgstr ""
+
+#: FOption.form:739 FProjectProperty.form:297 FWebFontChooser.form:61
+msgid "Normal"
+msgstr "Normal"
+
+#: FOption.form:739
+msgid "Small"
+msgstr "Pequeño"
+
+#: FOption.form:751
+msgid "Sort properties"
+msgstr "Ordenar propiedades"
+
+#: FOption.form:768
 msgid "Separate static symbols in method selector"
 msgstr ""
 
-#: FOption.form:680
-msgid "Configure shortcuts"
-msgstr "Configurar atajos"
+#: FOption.form:785
+msgid "Minimize at runtime"
+msgstr "Minimizar en tiempo de ejecución"
 
-#: FOption.form:685
+#: FOption.form:802
+msgid "Show debugging panel if needed"
+msgstr ""
+
+#: FOption.form:819
+msgid "Quiet external commands"
+msgstr "Comandos externos ocultos"
+
+#: FOption.form:828
 msgid "Fonts"
 msgstr "Fuentes"
 
-#: FOption.form:718
+#: FOption.form:861
 msgid "Global size"
 msgstr "Tamaño global"
 
-#: FOption.form:740
+#: FOption.form:883
 msgid "Title size"
 msgstr "Tamaño del titulo"
 
-#: FOption.form:794
-msgid "Install Gambas font for code edition"
-msgstr "Instalar la fuente de Gambas para la edición de código"
+#: FOption.form:905
+#, fuzzy
+msgid "Debugger size"
+msgstr "Depurador"
 
-#: FOption.form:798
-msgid "Theme"
-msgstr "Tema"
-
-#: FOption.form:815
-msgid "Icon theme"
-msgstr "Tema de iconos"
-
-#: FOption.form:831
-msgid "Color theme"
-msgstr "Color del tema"
-
-#: FOption.form:845
-msgid "Import theme"
-msgstr "Importar tema"
-
-#: FOption.form:851
-msgid "Export theme"
-msgstr "Exportar tema"
-
-#: FOption.form:870
-msgid "Adapt colors to dark themes"
-msgstr "Adaptar colores a temas oscuros"
-
-#: FOption.form:916
-msgid "Show indentation with vertical lines"
-msgstr ""
-
-#: FOption.form:933
-msgid "Highlight current line"
-msgstr "Resaltar línea actual"
-
-#: FOption.form:950
-msgid "Highlight modified lines"
-msgstr "Resaltar líneas modificadas"
-
-#: FOption.form:967
-msgid "Show line numbers"
-msgstr "Mostrar números de línea"
-
-#: FOption.form:984
-msgid "Procedure folding"
-msgstr "Plegado de procedimientos"
-
-#: FOption.form:1001
-msgid "Procedure separation"
-msgstr "Separación de procedimientos"
-
-#: FOption.form:1018
-msgid "Show spaces at end of line with dots"
-msgstr "Mostrar espacios y finales de línea con puntos"
-
-#: FOption.form:1035
-msgid "Show Preview"
-msgstr ""
-
-#: FOption.form:1053
-msgid "Keywords in upper case"
-msgstr "Palabras clave en mayúscula"
-
-#: FOption.form:1063
-msgid "Code formatting"
-msgstr "Formateo de código"
-
-#: FOption.form:1069
-msgid "Automatic formatting"
-msgstr "Formato automático"
-
-#: FOption.form:1080
-msgid "Control structure completion"
-msgstr ""
-
-#: FOption.form:1097
-msgid "Local variable declaration"
-msgstr ""
-
-#: FOption.form:1114
-msgid "Comments insertion"
-msgstr ""
-
-#: FOption.form:1131
-msgid "Close braces, brackets"
-msgstr ""
-
-#: FOption.form:1143
-msgid "Explicit formating"
-msgstr "Formato explicito"
-
-#: FOption.form:1154
-msgid "Format on load & save"
-msgstr "Formatear al cargar y guardar"
-
-#: FOption.form:1171
-msgid "Indent local variable declaration"
-msgstr "Indentar declaración local de variables"
-
-#: FOption.form:1188
-msgid "Remove useless spaces at end of line"
-msgstr "Eliminar espacios vacíos al final de la línea"
-
-#: FOption.form:1205
-msgid "Keep successive void lines"
-msgstr "Mantener las líneas sucesivas vacías"
-
-#: FOption.form:1214
-msgid "Code snippets"
-msgstr "Fragmentos de código"
-
-#: FOption.form:1230
-msgid "Activate code snippets"
-msgstr "Activar fragmentos de código"
-
-#: FOption.form:1314
-msgid "Help & applications"
-msgstr "Ayuda & aplicaciones"
-
-#: FOption.form:1320 MTheme.module:6
+#: FOption.form:954 MTheme.module:6
 msgid "Help"
 msgstr "Ayuda"
 
-#: FOption.form:1331
+#: FOption.form:981
+#, fuzzy
+msgid "Fixed font"
+msgstr "Usar una fuente de tamaño fijo"
+
+#: FOption.form:997
+msgid "Zoom (browser excepted)"
+msgstr ""
+
+#: FOption.form:1027
+msgid "Install Gambas font for code edition"
+msgstr "Instalar la fuente de Gambas para la edición de código"
+
+#: FOption.form:1031
+#, fuzzy
+msgid "Themes"
+msgstr "Tema"
+
+#: FOption.form:1048
+msgid "Icon theme"
+msgstr "Tema de iconos"
+
+#: FOption.form:1064
+#, fuzzy
+msgid "Highlighting theme"
+msgstr "Resaltado"
+
+#: FOption.form:1078
+msgid "Import theme"
+msgstr "Importar tema"
+
+#: FOption.form:1084
+msgid "Export theme"
+msgstr "Exportar tema"
+
+#: FOption.form:1103
+msgid "Adapt colors to dark themes"
+msgstr "Adaptar colores a temas oscuros"
+
+#: FOption.form:1140
+msgid "Show indentation with vertical lines"
+msgstr ""
+
+#: FOption.form:1157
+msgid "Highlight current line"
+msgstr "Resaltar línea actual"
+
+#: FOption.form:1174
+msgid "Highlight modified lines"
+msgstr "Resaltar líneas modificadas"
+
+#: FOption.form:1191
+msgid "Show line numbers"
+msgstr "Mostrar números de línea"
+
+#: FOption.form:1208
+msgid "Procedure folding"
+msgstr "Plegado de procedimientos"
+
+#: FOption.form:1225
+msgid "Procedure separation"
+msgstr "Separación de procedimientos"
+
+#: FOption.form:1242
+msgid "Show spaces at end of line with dots"
+msgstr "Mostrar espacios y finales de línea con puntos"
+
+#: FOption.form:1259
+msgid "Show Preview"
+msgstr ""
+
+#: FOption.form:1277
+msgid "Keywords in upper case"
+msgstr "Palabras clave en mayúscula"
+
+#: FOption.form:1286
+msgid "Code formatting"
+msgstr "Formateo de código"
+
+#: FOption.form:1292
+msgid "Automatic formatting"
+msgstr "Formato automático"
+
+#: FOption.form:1303
+msgid "Control structure completion"
+msgstr ""
+
+#: FOption.form:1320
+msgid "Local variable declaration"
+msgstr ""
+
+#: FOption.form:1337
+msgid "Comments insertion"
+msgstr ""
+
+#: FOption.form:1354
+msgid "Close braces, brackets"
+msgstr ""
+
+#: FOption.form:1371
+#, fuzzy
+msgid "Close strings"
+msgstr "Todas las cadenas"
+
+#: FOption.form:1383
+msgid "Explicit formating"
+msgstr "Formato explicito"
+
+#: FOption.form:1394
+msgid "Format on load & save"
+msgstr "Formatear al cargar y guardar"
+
+#: FOption.form:1411
+msgid "Indent local variable declaration"
+msgstr "Indentar declaración local de variables"
+
+#: FOption.form:1428
+msgid "Remove useless spaces at end of line"
+msgstr "Eliminar espacios vacíos al final de la línea"
+
+#: FOption.form:1445
+msgid "Keep successive void lines"
+msgstr "Mantener las líneas sucesivas vacías"
+
+#: FOption.form:1454
+msgid "Code snippets"
+msgstr "Fragmentos de código"
+
+#: FOption.form:1470
+msgid "Activate code snippets"
+msgstr "Activar fragmentos de código"
+
+#: FOption.form:1554
+msgid "Help & applications"
+msgstr "Ayuda & aplicaciones"
+
+#: FOption.form:1571
 msgid "Display property help"
 msgstr "Mostrar ayuda de propiedades"
 
-#: FOption.form:1348
+#: FOption.form:1588
 msgid "Show documentation in popups"
 msgstr "Mostrar la documentación en ventanas emergentes"
 
-#: FOption.form:1365
+#: FOption.form:1605
 msgid "Always display optional messages"
 msgstr "Mostrar siempre mensajes opcionales"
 
-#: FOption.form:1382
-msgid "Use offline help"
-msgstr "Usar ayuda offline"
+#: FOption.form:1617
+#, fuzzy
+msgid "Documentation"
+msgstr "Descargar documentación"
 
-#: FOption.form:1400
+#: FOption.form:1628
+#, fuzzy
+msgid "Use offline documentation"
+msgstr "Imposible instalar la documentación."
+
+#: FOption.form:1658
 msgid "Download documentation"
 msgstr "Descargar documentación"
 
-#: FOption.form:1418
-msgid "Clear documentation cache"
-msgstr "Borrar la caché de documentación"
-
-#: FOption.form:1430 FProxy.form:20
+#: FOption.form:1684 FProxy.form:20
 msgid "Proxy configuration"
 msgstr "Configuración de Proxy"
 
-#: FOption.form:1438
+#: FOption.form:1697
+msgid "Clear documentation cache"
+msgstr "Borrar la caché de documentación"
+
+#: FOption.form:1705
 msgid "Applications"
 msgstr "Aplicaciones"
 
-#: FOption.form:1449
+#: FOption.form:1716
 msgid "Browser"
 msgstr "Navegador"
 
-#: FOption.form:1466 FVersionControl.form:44
+#: FOption.form:1733 FVersionControl.form:44
 msgid "Terminal"
 msgstr "Terminal"
 
-#: FOption.form:1475
-msgid "Source archives"
-msgstr "Archivos fuente"
-
-#: FOption.form:1488
-msgid "These files will be ignored when making source archives."
-msgstr "Estos archivos serán ignorados al crear un archivador fuente."
-
-#: FOutput.form:28
+#: FOutput.form:29
 msgid "Console - Gambas"
 msgstr "Consola - Gambas"
 
-#: FOutput.form:64
+#: FOutput.form:65
 msgid "Undock console"
 msgstr "Desbloquear consola"
 
-#: FOutput.form:71
+#: FOutput.form:72
 msgid "Keep above"
 msgstr "Mantener por encima"
 
-#: FOutput.form:77
+#: FOutput.form:78
 msgid "Clear console"
 msgstr "Limpiar consola"
 
-#: FOutput.form:95
+#: FOutput.form:85
+#, fuzzy
+msgid "Suspend terminal"
+msgstr "Abrir una Terminal"
+
+#: FOutput.form:104
 msgid "Entered text echo"
 msgstr "Entró eco texto"
 
-#: FOutput.form:97
+#: FOutput.form:106
 msgid "Echo"
 msgstr "Echo"
 
-#: FOutput.form:108
+#: FOutput.form:117
 msgid "Open contents"
 msgstr ""
 
-#: FOutput.form:121
+#: FOutput.form:130
 msgid "Use system charset"
 msgstr "Usar codificación de caracteres del sistema"
 
@@ -4433,19 +4735,19 @@ msgstr "Información sobre el componente"
 msgid "Information about library"
 msgstr "Información sobre la librería"
 
-#: FProjectProperty.form:179
+#: FProjectProperty.form:178
 msgid "GB_GUI_BUSY=1"
 msgstr "-"
 
-#: FProjectProperty.form:185
+#: FProjectProperty.form:184
 msgid "GB_X11_INIT_THREADS=1"
 msgstr "-"
 
-#: FProjectProperty.form:200
+#: FProjectProperty.form:199
 msgid "GB_DB_DEBUG=1"
 msgstr "-"
 
-#: FProjectProperty.form:261
+#: FProjectProperty.form:260
 msgid "General"
 msgstr "General"
 
@@ -4477,15 +4779,15 @@ msgstr "Título"
 msgid "Information"
 msgstr "Información"
 
-#: FProjectProperty.form:402 FTranslate.class:65
+#: FProjectProperty.form:403 FTranslate.class:76
 msgid "Progress"
 msgstr "Progreso"
 
-#: FProjectProperty.form:408
+#: FProjectProperty.form:409
 msgid "Finished and stable"
 msgstr "Terminado y estable"
 
-#: FProjectProperty.form:419
+#: FProjectProperty.form:420
 msgid "This component is hidden"
 msgstr "Este componente está oculto"
 
@@ -4521,55 +4823,55 @@ msgstr "Eliminar todo"
 msgid "Components"
 msgstr "Componentes"
 
-#: FProjectProperty.form:586 FSoftwareFarm.class:58
+#: FProjectProperty.form:587 FSoftwareFarm.class:58
 msgid "Libraries"
 msgstr "Librerías"
 
-#: FProjectProperty.form:608
+#: FProjectProperty.form:610
 msgid "<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found."
 msgstr "<b>ADVERTENCIA!</b> El ejecutable del proyecto y las librerías de las cual depende deben ser almacenadas en el mismo directorio. En caso contrario, las librerías no serán encontradas."
 
-#: FProjectProperty.form:616
+#: FProjectProperty.form:618
 msgid "Runtime library search path"
 msgstr ""
 
-#: FProjectProperty.form:660
+#: FProjectProperty.form:662
 msgid "Environment"
 msgstr "Entorno"
 
-#: FProjectProperty.form:675
+#: FProjectProperty.form:678
 msgid "&Insert"
 msgstr "&Insertar"
 
-#: FProjectProperty.form:687
+#: FProjectProperty.form:690
 msgid "Arguments"
 msgstr "Argumentos"
 
-#: FProjectProperty.form:746
+#: FProjectProperty.form:744
 msgid "Edition"
 msgstr "Edición"
 
-#: FProjectProperty.form:757
+#: FProjectProperty.form:755
 msgid "Tab size"
 msgstr "Tamaño del tabulador"
 
-#: FProjectProperty.form:780
+#: FProjectProperty.form:778
 msgid "Show deprecated components and controls"
 msgstr ""
 
-#: FProjectProperty.form:794
+#: FProjectProperty.form:791
 msgid "Compilation"
 msgstr "Compilación"
 
-#: FProjectProperty.form:805
+#: FProjectProperty.form:802
 msgid "Module symbols are public by default"
 msgstr "Símbolos en módulos son públicos por defecto"
 
-#: FProjectProperty.form:822
+#: FProjectProperty.form:818
 msgid "Form controls are public"
 msgstr "Los controles de formulario son públicos"
 
-#: FProjectProperty.form:839
+#: FProjectProperty.form:834
 msgid "Activate warnings"
 msgstr "Activar advertencias"
 
@@ -4633,47 +4935,47 @@ msgstr "Algunos archivos no están versionados y deben ser añadidos manualmente
 msgid "Previous description"
 msgstr "Descripción previa"
 
-#: FProperty.class:386
+#: FProperty.class:384
 msgid "Forbidden characters in control name."
 msgstr "Caracteres no permitidos en el nombre del control."
 
-#: FProperty.class:391
+#: FProperty.class:389
 msgid "This name is already in use."
 msgstr "Este nombre ya está en uso."
 
-#: FProperty.class:401
+#: FProperty.class:399
 msgid "Forbidden characters in control group."
 msgstr "Caracteres no permitidos en el grupo del control."
 
-#: FProperty.class:477
+#: FProperty.class:475
 msgid "Incorrect property value."
 msgstr "Valor incorrecto de la propiedad."
 
-#: FProperty.class:635
+#: FProperty.class:637
 msgid "The name of the control."
 msgstr "El nombre del control."
 
-#: FProperty.class:646
+#: FProperty.class:649
 msgid "The event group that the control belongs to."
 msgstr "El grupo de eventos al que el control pertenece."
 
-#: FProperty.class:660
+#: FProperty.class:663
 msgid "If the form and controls dimensions must follow the size of the default font."
 msgstr "Si las dimensiones del formulario y los controles deben seguir el tamaño de la fuente por defecto."
 
-#: FProperty.class:664
+#: FProperty.class:667
 msgid "If the control is public."
 msgstr "Si el control es público."
 
-#: FProperty.class:668
+#: FProperty.class:671
 msgid "If the Text property must be translated."
 msgstr "Si la propiedad Text debe ser traducida."
 
-#: FProperty.class:689
+#: FProperty.class:693
 msgid "This property is virtual: it is only implemented in the IDE, and has no existence at runtime."
 msgstr "Esta propiedad es virtual:  está sólo implementa en el IDE, y no tiene existencia en tiempo de ejecución."
 
-#: FProperty.class:819
+#: FProperty.class:827
 msgid "None"
 msgstr "Ninguno"
 
@@ -4741,7 +5043,7 @@ msgstr "Ficheros de captura de pantalla"
 msgid "Software description"
 msgstr "Descripción del software"
 
-#: FPublish.form:99 FSoftwareFarm.form:334
+#: FPublish.form:99 FSoftwareFarm.form:342
 msgid "Web site"
 msgstr "Sitio web"
 
@@ -4749,7 +5051,7 @@ msgstr "Sitio web"
 msgid "Create menu entry"
 msgstr "Crear entrada de menú"
 
-#: FPublish.form:135 FSoftwareFarm.form:186
+#: FPublish.form:135 FSoftwareFarm.form:189
 msgid "Tags"
 msgstr "Etiquetas"
 
@@ -4861,77 +5163,83 @@ msgstr "Nuevo nombre del proyecto"
 msgid "Take screenshot"
 msgstr "Capturar pantalla"
 
-#: FSearch.class:507
+#: FSearch.class:548
 msgid "Search string replaced once."
 msgstr "La cadena se reemplazó una vez."
 
-#: FSearch.class:509
+#: FSearch.class:550
 msgid "Search string replaced &1 times."
 msgstr "La cadena buscada se reemplazó &1 veces."
 
-#: FSearch.class:606
+#: FSearch.class:647
 msgid "One match"
 msgstr "Una coincidencia"
 
-#: FSearch.class:608
+#: FSearch.class:649
 msgid "&1 matches"
 msgstr "&1 coincidencias"
 
-#: FSearch.class:896
+#: FSearch.class:946
 msgid "Do you really want to replace every string?"
 msgstr "¿Realmente quiere reemplazar cada cadena?"
 
-#: FSearch.form:43
+#: FSearch.form:42
 msgid "Search & Replace"
 msgstr "Buscar & reemplazar"
 
-#: FSearch.form:106
+#: FSearch.form:105
 msgid "Case sensitive"
 msgstr "Sensible a mayúsculas y minúsculas"
 
-#: FSearch.form:111
+#: FSearch.form:110
 msgid "Words only"
 msgstr "Sólo palabras"
 
-#: FSearch.form:116
+#: FSearch.form:115
 msgid "Regular expression"
 msgstr "Expresión regular"
 
-#: FSearch.form:122
-msgid "Highlight result"
-msgstr "Resaltar resultado"
-
-#: FSearch.form:127
+#: FSearch.form:120
 msgid "Ignore strings"
 msgstr "Ignorar cadenas"
 
-#: FSearch.form:132
+#: FSearch.form:125
 msgid "Ignore comments"
 msgstr "Ignorar comentarios"
 
-#: FSearch.form:147
+#: FSearch.form:140
 msgid "Search in"
 msgstr "Buscar en"
 
-#: FSearch.form:154
+#: FSearch.form:147
 msgid "Current procedure"
 msgstr "Procedimiento Actual"
 
-#: FSearch.form:160
+#: FSearch.form:153
 msgid "Current file"
 msgstr "Archivo actual"
 
-#: FSearch.form:167
+#: FSearch.form:160
 msgid "Source files"
 msgstr "Archivos fuente"
 
-#: FSearch.form:202
+#: FSearch.form:166
+#, fuzzy
+msgid "Data files"
+msgstr "Archivos extra"
+
+#: FSearch.form:201
 msgid "Browse"
 msgstr "Navegar"
 
-#: FSearch.form:214
+#: FSearch.form:213
 msgid "Replace all"
 msgstr "Reemplazar todo"
+
+#: FSearch.form:224
+#, fuzzy
+msgid "Highlight search"
+msgstr "Resaltar resultado"
 
 #: FSelectExtraFile.form:12
 msgid "Select an extra file"
@@ -4985,7 +5293,7 @@ msgstr "Nuevo fragmento de código"
 msgid "Trigger string"
 msgstr "Cadena de disparo"
 
-#: FSoftwareFarm.class:42 Project.module:228
+#: FSoftwareFarm.class:42 Project.module:230
 msgid "Games"
 msgstr "Juegos"
 
@@ -5005,7 +5313,7 @@ msgstr "Gráficos"
 msgid "Audio"
 msgstr "-"
 
-#: FSoftwareFarm.class:48 Project.module:235
+#: FSoftwareFarm.class:48 Project.module:237
 msgid "Video"
 msgstr "Vídeo"
 
@@ -5045,109 +5353,114 @@ msgstr "No se encuentra el software."
 msgid "Request cancelled."
 msgstr "Petición cancelada."
 
-#: FSoftwareFarm.class:354
+#: FSoftwareFarm.class:358
 msgid "Cancel my vote"
 msgstr "Cancelar mi voto"
 
-#: FSoftwareFarm.class:361
+#: FSoftwareFarm.class:365
 msgid "Upgrade"
 msgstr "Actualizar"
 
-#: FSoftwareFarm.class:538
+#: FSoftwareFarm.class:402
+msgid "Published &1 (on &2)"
+msgstr ""
+
+#: FSoftwareFarm.class:545
 msgid "Do you really want to download <b>&1</b>?"
 msgstr "¿Realmente quieres descargar <b>&1</b>?"
 
-#: FSoftwareFarm.class:541
+#: FSoftwareFarm.class:548
 msgid "Unable to download <b>&1</b>:"
 msgstr "Imposible descargar <b>&1</b>:"
 
-#: FSoftwareFarm.class:543
+#: FSoftwareFarm.class:550
 msgid "<b>&1</b> has been successfully downloaded."
 msgstr "<b>&1</b> se ha descargado correctamente."
 
-#: FSoftwareFarm.class:558
+#: FSoftwareFarm.class:565
 msgid "Do you really want to upgrade to <b>&1</b>?"
 msgstr "¿Realmente quieres actualizar a <b>&1</b>?"
 
-#: FSoftwareFarm.class:561
+#: FSoftwareFarm.class:568
 msgid "Unable to upgrade to <b>&1</b>:"
 msgstr "Imposible actualizar a <b>&1</b>:"
 
-#: FSoftwareFarm.class:568
+#: FSoftwareFarm.class:575
 msgid "Do you really want to uninstall <b>&1</b>?"
 msgstr "¿Realmente quieres desinstalar <b>&1</b>?"
 
-#: FSoftwareFarm.class:571
+#: FSoftwareFarm.class:578
 msgid "Unable to uninstall <b>&1</b>:"
 msgstr ""
 
-#: FSoftwareFarm.class:573
+#: FSoftwareFarm.class:580
 msgid "<b>&1</b> has been successfully uninstalled."
 msgstr ""
 
-#: FSoftwareFarm.class:579
+#: FSoftwareFarm.class:586
 msgid "Do you really want to install <b>&1</b>?"
 msgstr "¿Realmente quieres instalar <b>&1</b>?"
 
-#: FSoftwareFarm.class:582
+#: FSoftwareFarm.class:589
 msgid "Unable to install <b>&1</b>:"
 msgstr "Imposible instalar <b>&1</b>:"
 
-#: FSoftwareFarm.class:584
+#: FSoftwareFarm.class:591
 msgid "<b>&1</b> has been successfully installed."
 msgstr "<b>&1</b> se ha instalado correctamente."
 
-#: FSoftwareFarm.class:604
+#: FSoftwareFarm.class:611
 msgid "Unable to modify your vote."
 msgstr "Imposible modificar tu voto."
 
-#: FSoftwareFarm.class:640
+#: FSoftwareFarm.class:647
 msgid "Do you really want to delete <b>&1</b> from the farm server?"
 msgstr "¿Realmente quieres eliminar <b>&1</b> de la granja?"
 
-#: FSoftwareFarm.class:644
+#: FSoftwareFarm.class:651
 msgid "Unable to remove <b>&1</b>:"
 msgstr "Imposible eliminar <b>&1</b>:"
 
-#: FSoftwareFarm.form:64
+#: FSoftwareFarm.form:65
 msgid "Gambas Software Farm"
 msgstr "Granja de software Gambas"
 
-#: FSoftwareFarm.form:153
+#: FSoftwareFarm.form:156 FTranslate.form:200
 msgid "Show"
 msgstr "Mostrar"
 
-#: FSoftwareFarm.form:159
+#: FSoftwareFarm.form:162
 msgid "Installed"
 msgstr "Instalado"
 
-#: FSoftwareFarm.form:159
+#: FSoftwareFarm.form:162
 msgid "Most downloaded"
 msgstr "Más descargados"
 
-#: FSoftwareFarm.form:159
+#: FSoftwareFarm.form:162
 msgid "Most recent"
 msgstr "Más recientes"
 
-#: FSoftwareFarm.form:165
+#: FSoftwareFarm.form:168
 msgid "Show filters"
 msgstr "Mostrar filtros"
 
-#: FSoftwareFarm.form:171
+#: FSoftwareFarm.form:174
 msgid "Show old versions"
 msgstr ""
 
-#: FSoftwareFarm.form:393
+#: FSoftwareFarm.form:394
 msgid "Download"
 msgstr "Descargar"
 
 #: FSoftwareFarm.form:402
+#, fuzzy
+msgid "Download and install"
+msgstr "Descarga cancelada"
+
+#: FSoftwareFarm.form:410
 msgid "Vote"
 msgstr "Votar"
-
-#: FSystemInfo.form:15
-msgid "System information"
-msgstr "Información del Sistema"
 
 #: FSystemInfo.form:35
 msgid "Please copy these informations in all your bug reports."
@@ -5165,35 +5478,35 @@ msgstr "Editar propiedad de texto"
 msgid "Use a fixed font"
 msgstr "Usar una fuente de tamaño fijo"
 
-#: FTextEditor.class:220
+#: FTextEditor.class:214
 msgid "Console output #&1"
 msgstr ""
 
-#: FTextEditor.class:916
+#: FTextEditor.class:907
 msgid "Original file has been saved in the <b>Project</b> folder."
 msgstr "El archivo original ha sido guardado en el directorio <b>Proyecto</b>."
 
-#: FTextEditor.class:916
+#: FTextEditor.class:907
 msgid "The file has been compressed from &1 to &2 bytes (&3)."
 msgstr "El archivo ha sido compreso de &1 a &2 bytes (&3)."
 
-#: FTextEditor.class:922
+#: FTextEditor.class:915
 msgid "Unable to compress file."
 msgstr "Incapaz de comprimir archivo."
 
-#: FTextEditor.form:163
+#: FTextEditor.form:166
 msgid "Sort ascent"
 msgstr "Ordenar ascendente"
 
-#: FTextEditor.form:169
+#: FTextEditor.form:172
 msgid "Sort descent"
 msgstr "Ordenar descendente"
 
-#: FTextEditor.form:215
+#: FTextEditor.form:218
 msgid "Compress file"
 msgstr "Comprimir archivo"
 
-#: FTextEditor.form:221
+#: FTextEditor.form:224
 msgid "Uncompress file"
 msgstr "Descomprimir archivo"
 
@@ -5209,135 +5522,164 @@ msgstr "¡Incapaz de leer el consejo del día!"
 msgid "Show tips on startup"
 msgstr "Mostrar consejos al inicio"
 
-#: FTranslate.class:39
+#: FTranslate.class:42
 msgid "The project is void. There is nothing to translate."
 msgstr "El proyecto está vacío. No hay nada que traducir."
 
-#: FTranslate.class:63
+#: FTranslate.class:74
 msgid "Language"
 msgstr "Languaje"
 
-#: FTranslate.class:66
+#: FTranslate.class:77
 msgid "Not translated"
 msgstr ""
 
-#: FTranslate.class:150
+#: FTranslate.class:167
 msgid "Translation files"
 msgstr "Archivos de traducción"
 
-#: FTranslate.class:285
+#: FTranslate.class:326
 msgid "Cannot read translation file for language '&1'"
 msgstr "No es posible cargar el archivo de traducción del idioma '&1'"
 
-#: FTranslate.class:494
+#: FTranslate.class:557
 msgid "Cannot save translation."
 msgstr "No es posible guardar la traducción."
 
-#: FTranslate.class:607
+#: FTranslate.class:670
 msgid "Do you really want to delete this translation ?"
 msgstr "¿Realmente quiere borrar esta traducción?"
 
-#: FTranslate.class:703
+#: FTranslate.class:778
 msgid "Do you really want to reload this translation ?"
 msgstr "¿Realmente quiere recargar esta traducción?"
 
-#: FTranslate.class:717
+#: FTranslate.class:792
 msgid "Export a translation"
 msgstr "Exportar una traducción"
 
-#: FTranslate.class:906
+#: FTranslate.class:1007
 msgid "Please select the translation file to import."
 msgstr "Seleccione el archivo de traducción a importar."
 
-#: FTranslate.class:944
+#: FTranslate.class:1045
 msgid "No translation were picked up."
 msgstr "No fue seleccionada ninguna traducción."
 
-#: FTranslate.class:946
+#: FTranslate.class:1047
 msgid "One translation was picked up."
 msgstr "Una traducción fue seleccionada."
 
-#: FTranslate.class:948
+#: FTranslate.class:1049
 msgid "&1 translations were picked up."
 msgstr "Se han importado &1 traducciones."
 
-#: FTranslate.class:956
+#: FTranslate.class:1057
 msgid "Cannot import translation file."
 msgstr "No es posible importar el archivo de traducción."
 
-#: FTranslate.class:1005
+#: FTranslate.class:1106
 msgid "Everything seems to be correct."
 msgstr "Todo parece estar correcto."
 
-#: FTranslate.class:1015
+#: FTranslate.class:1116
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr "Los símbolos de las cadenas traducidas no concuerdan con los de las cadenas sin traducir."
 
-#: FTranslate.class:1041
+#: FTranslate.class:1142
 msgid "&1 strings. Everything is translated!"
 msgstr "&1 cadenas. ¡Todo está traducido!"
 
-#: FTranslate.class:1043
+#: FTranslate.class:1144
 msgid "&1 strings. One is not translated. &3% done."
 msgstr "&1 cadenas. Una no está traducida. &3% listo."
 
-#: FTranslate.class:1045
+#: FTranslate.class:1146
 msgid "&1 strings. &2 are not translated. &3% done."
 msgstr "&1 cadenas. &2 no están traducidas. &3% listo."
 
-#: FTranslate.form:61
+#: FTranslate.class:1697
+#, fuzzy
+msgid "Automatic translation has failed."
+msgstr "Fallo de autenticación."
+
+#: FTranslate.class:1707
+#, fuzzy
+msgid "Do you want to fill the translation automatically?"
+msgstr "¿Realmente quiere borrar esta traducción?"
+
+#: FTranslate.form:76
 msgid "Project translation"
 msgstr "Traducción del proyecto"
 
-#: FTranslate.form:93
+#: FTranslate.form:105
+#, fuzzy
+msgid "Automatic translation"
+msgstr "Extensión automática"
+
+#: FTranslate.form:117
 msgid "Untranslated strings"
 msgstr "Cadenas no traducidas"
 
-#: FTranslate.form:97
+#: FTranslate.form:121
 msgid "Translated strings"
 msgstr "Cadenas traducidas"
 
-#: FTranslate.form:101
+#: FTranslate.form:125
 msgid "All strings"
 msgstr "Todas las cadenas"
 
-#: FTranslate.form:163
+#: FTranslate.form:224
 msgid "Save translation"
 msgstr "Guardar traducción"
 
-#: FTranslate.form:169
-msgid "Clear this translation"
-msgstr "Limpiar esta traducción"
-
-#: FTranslate.form:175
-msgid "This string must not be translated"
-msgstr "La cadena no debe ser traducida"
-
-#: FTranslate.form:181
-msgid "Copy untranslated string"
-msgstr "Copiar cadena no traducida"
-
-#: FTranslate.form:187
+#: FTranslate.form:232
 msgid "Verify the translation"
 msgstr "Verificar la traducción"
 
-#: FTranslate.form:193
-msgid "Find next untranslated string"
+#: FTranslate.form:234
+msgid "Verify"
+msgstr ""
+
+#: FTranslate.form:304
+#, fuzzy
+msgid "Find next translated string"
 msgstr "Encontrar la siguiente cadena sin traducir"
 
-#: FTranslate.form:199
+#: FTranslate.form:310
+#, fuzzy
+msgid "Find previous translated string"
+msgstr "Encontrar la cadena sin traducción previa"
+
+#: FTranslate.form:316
 msgid "Find previous untranslated string"
 msgstr "Encontrar la cadena sin traducción previa"
 
-#: FTranslate.form:353
+#: FTranslate.form:322
+msgid "Find next untranslated string"
+msgstr "Encontrar la siguiente cadena sin traducir"
+
+#: FTranslate.form:332
+msgid "Clear this translation"
+msgstr "Limpiar esta traducción"
+
+#: FTranslate.form:338
+msgid "This string must not be translated"
+msgstr "La cadena no debe ser traducida"
+
+#: FTranslate.form:344
+msgid "Copy untranslated string"
+msgstr "Copiar cadena no traducida"
+
+#: FTranslate.form:450
 msgid "Import all translations  recursively"
 msgstr "Importar todas las traducciones recursivamente"
 
-#: FTranslate.form:359
+#: FTranslate.form:456
 msgid "Replace existing translations"
 msgstr "Reemplazar traducciones existentes"
 
-#: FTranslate.form:375
+#: FTranslate.form:472
 msgid "Import a translation file"
 msgstr "Importar un archivo de traducción"
 
@@ -5359,26 +5701,6 @@ msgstr ""
 
 #: FWebFontChooser.form:24
 msgid "Select font"
-msgstr ""
-
-#: FWebFontChooser.form:47
-msgid "cursive"
-msgstr ""
-
-#: FWebFontChooser.form:47
-msgid "fantasy"
-msgstr ""
-
-#: FWebFontChooser.form:47
-msgid "monospace"
-msgstr ""
-
-#: FWebFontChooser.form:47
-msgid "sans-serif"
-msgstr ""
-
-#: FWebFontChooser.form:47
-msgid "serif"
 msgstr ""
 
 #: FWebFontChooser.form:62
@@ -5413,7 +5735,7 @@ msgstr "Nuevo proyecto..."
 msgid "Recent projects"
 msgstr "Proyectos recientes"
 
-#: FWelcome.class:72 Project.module:6382
+#: FWelcome.class:72 Project.module:6210
 msgid "Installed software"
 msgstr "Software instalado"
 
@@ -5429,19 +5751,19 @@ msgstr "Anónimo"
 msgid "No answer."
 msgstr "Sin respuesta."
 
-#: FarmRequest.class:165
+#: FarmRequest.class:167
 msgid "Register user"
 msgstr "Registrar usuario"
 
-#: FarmRequest.class:238
+#: FarmRequest.class:242
 msgid "Publish project"
 msgstr "Publicar proyecto"
 
-#: FarmRequest.class:359
+#: FarmRequest.class:363
 msgid "Download software"
 msgstr "Descargar software"
 
-#: FarmRequest.class:385
+#: FarmRequest.class:389
 msgid "Delete software"
 msgstr "Eliminar software"
 
@@ -5709,19 +6031,19 @@ msgstr "Chino tradicional (Taiwan)"
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: MConnection.module:61
+#: MConnection.module:74
 msgid "Unable to retrieve password."
 msgstr "Incapaz de obtener la clave."
 
-#: MConnection.module:76
+#: MConnection.module:89
 msgid "Unable to save password."
 msgstr "Incapaz de guardar la clave."
 
-#: MConnection.module:317
+#: MConnection.module:330
 msgid "Cannot create table '&1'."
 msgstr "No es posible crear la table &1."
 
-#: MConnection.module:498
+#: MConnection.module:515
 msgid "Cannot create metadata table."
 msgstr "No es posible crear la tabla de metadatos."
 
@@ -5893,280 +6215,287 @@ msgstr "Uso incorrecto de la clase virtual"
 msgid "Bad version string"
 msgstr "Cadena de versión incorrecta"
 
-#: MErrorMessage.module:47
+#: MErrorMessage.module:46
 msgid "Cannot change current directory to '&1': &2"
 msgstr "No es posible cambiar el directorio actual de '&1': &2"
 
-#: MErrorMessage.module:48
+#: MErrorMessage.module:47
 msgid "Cannot create .startup file"
 msgstr "No es posible crear el archivo .startup"
 
-#: MErrorMessage.module:49
+#: MErrorMessage.module:48
 msgid "Cannot create action file: &1"
 msgstr "No es posible crear el archivo action: &1"
 
-#: MErrorMessage.module:50
+#: MErrorMessage.module:49
 msgid "Cannot create callback: &1"
 msgstr "No es posible crear la llamada: &1"
 
-#: MErrorMessage.module:51
+#: MErrorMessage.module:50
 msgid "Cannot create class information: &1: &2"
 msgstr "No es posible crear la información de la clase: &1: &2"
 
-#: MErrorMessage.module:52
+#: MErrorMessage.module:51
 msgid "Cannot create file: &1"
 msgstr "No es posible crear el archivo: &1"
 
-#: MErrorMessage.module:53
+#: MErrorMessage.module:52
 msgid "Cannot create temporary archive file: &1"
 msgstr "No es posible crear el archivo temporal: &1"
 
-#: MErrorMessage.module:54
+#: MErrorMessage.module:53
 msgid "Cannot find dynamic library '&1': &2"
 msgstr "No es posible encontrar la librería dinámica '&1': &2"
 
-#: MErrorMessage.module:55
+#: MErrorMessage.module:54
 msgid "Cannot find symbol '&2' in dynamic library '&1'"
 msgstr "No es posible encontrar el símbolo '&2' en la librería dinámica '&1'"
 
-#: MErrorMessage.module:56
+#: MErrorMessage.module:55
 msgid "Cannot inherit itself"
 msgstr "No puede heredarse a si misma"
 
-#: MErrorMessage.module:57
+#: MErrorMessage.module:56
 msgid "Cannot inherit twice"
 msgstr "No es posible heredar doble"
 
-#: MErrorMessage.module:58
+#: MErrorMessage.module:57
 msgid "Cannot instantiate native types"
 msgstr "No es posible instanciar tipos nativos"
 
-#: MErrorMessage.module:59
+#: MErrorMessage.module:58
 msgid "Cannot load class '&1': &2&3"
 msgstr "No es posible cargar clase '&1': &2&3"
 
-#: MErrorMessage.module:60
+#: MErrorMessage.module:59
 msgid "Cannot load component '&1': &2"
 msgstr "No es posible cargar el componente '&1': &2"
 
-#: MErrorMessage.module:61
+#: MErrorMessage.module:60
 msgid "Cannot load source file: &1"
 msgstr "No es posible cargar el archivo fuente: &1"
 
-#: MErrorMessage.module:62
+#: MErrorMessage.module:61
 msgid "Cannot make executable: &1: &2"
 msgstr "No es posible crear el ejecutable: &1: &2"
 
-#: MErrorMessage.module:63
+#: MErrorMessage.module:62
 msgid "Cannot mix NEW and embedded array"
 msgstr "No es posible mezclar NEW y una matriz incrustada"
 
-#: MErrorMessage.module:64
+#: MErrorMessage.module:63
 msgid "Cannot mix NEW and embedded structure"
 msgstr "No es posible mezclar NEW y una estructura incrustada"
 
-#: MErrorMessage.module:65
+#: MErrorMessage.module:64
 msgid "Cannot open file '&1': &2"
 msgstr "No es posible abrir el archivo'&1': &2"
 
-#: MErrorMessage.module:66
+#: MErrorMessage.module:65
 msgid "Cannot open file: &1"
 msgstr "No es posible abrir el archivo: &1"
 
-#: MErrorMessage.module:67
+#: MErrorMessage.module:66
 msgid "Cannot raise events in static function"
 msgstr "No es posible levantar eventos en funciones estáticas"
 
-#: MErrorMessage.module:68
+#: MErrorMessage.module:67
 msgid "Cannot read file: &1: &2"
 msgstr "No es posible leer el archivo: &1: &2"
 
-#: MErrorMessage.module:69
+#: MErrorMessage.module:68
 msgid "Cannot register class '&1'"
 msgstr "No es posible registrar la clase '&1'"
 
-#: MErrorMessage.module:70
+#: MErrorMessage.module:69
 msgid "Cannot remove file '&1': &2"
 msgstr "No es posible eliminar el archivo '&1': &2"
 
-#: MErrorMessage.module:71
+#: MErrorMessage.module:70
 msgid "Cannot rename file '&1' to '&2': &3"
 msgstr "No es posible renombrar el archivo '&1' a '&2': &3"
 
-#: MErrorMessage.module:72
+#: MErrorMessage.module:71
 msgid "Cannot run child process: &1&2"
 msgstr "No es posible ejecutar el proceso hijo: &1&2"
 
-#: MErrorMessage.module:73
+#: MErrorMessage.module:72
 msgid "Cannot set file owner: &1: &2"
 msgstr "No es posible establecer el dueño del archivo: &1: &2"
 
-#: MErrorMessage.module:74
+#: MErrorMessage.module:73
 msgid "Cannot use NEW operator there"
 msgstr "No es posible usar el operador NEW aquí"
 
-#: MErrorMessage.module:75
+#: MErrorMessage.module:74
 msgid "Cannot use TRY twice"
 msgstr "No es posible usar TRY dos veces"
 
-#: MErrorMessage.module:76
+#: MErrorMessage.module:75
 msgid "Cannot use TRY with &1"
 msgstr "No es posible usar TRY con &1"
 
-#: MErrorMessage.module:77
+#: MErrorMessage.module:76
 msgid "Class '&1' is not creatable"
 msgstr "La clase '&1' no es creable"
 
-#: MErrorMessage.module:78
+#: MErrorMessage.module:77
 msgid "Comparison operator expected"
 msgstr "Se esperaba operador de comparación"
 
-#: MErrorMessage.module:79
+#: MErrorMessage.module:78
 msgid "Component name must be a string"
 msgstr "El nombre del componente debe ser una cadena"
 
-#: MErrorMessage.module:80
+#: MErrorMessage.module:79
 msgid "Component not found: &1"
 msgstr "Componente no encontrado: &1"
 
-#: MErrorMessage.module:81
+#: MErrorMessage.module:80
 msgid "Constant string expected"
 msgstr "Se esperaba una constante de tipo cadena "
 
-#: MErrorMessage.module:82
+#: MErrorMessage.module:81
 msgid "Contents already declared"
 msgstr "Contenido ya declarado"
 
-#: MErrorMessage.module:83
+#: MErrorMessage.module:82
 msgid "Default case already defined"
 msgstr "Caso por defecto ya definido"
 
-#: MErrorMessage.module:84
+#: MErrorMessage.module:83
 msgid "Default case must be the last one"
 msgstr "El caso por defecto debe ser el último"
 
-#: MErrorMessage.module:85
+#: MErrorMessage.module:84
 msgid "Device is full"
 msgstr "El dispositivo está lleno"
 
-#: MErrorMessage.module:86
+#: MErrorMessage.module:85
 msgid "Directory is not empty"
 msgstr "El directorio no esta vació"
 
-#: MErrorMessage.module:87
+#: MErrorMessage.module:86
 msgid "Division by zero"
 msgstr "División por cero"
 
-#: MErrorMessage.module:88
+#: MErrorMessage.module:87
 msgid "Dynamic symbols cannot be used in static function"
 msgstr "Símbolos dinámicos no se pueden utilizar en una función estática"
 
-#: MErrorMessage.module:89
+#: MErrorMessage.module:88
 msgid "Embedded array"
 msgstr "Matriz incrustada"
 
-#: MErrorMessage.module:90
+#: MErrorMessage.module:89
 msgid "Embedded arrays are forbidden here"
 msgstr "Matrices inscrustados están prohibidas aquí"
 
-#: MErrorMessage.module:91
+#: MErrorMessage.module:90
 msgid "End of file"
 msgstr "Final de archivo"
 
-#: MErrorMessage.module:92
+#: MErrorMessage.module:91
 msgid "Equality or inequality operator expected"
 msgstr "Operador de igualdad o desigualdad esperado"
 
-#: MErrorMessage.module:93
+#: MErrorMessage.module:92
 msgid "Expression too complex"
 msgstr "Expresión muy compleja"
 
-#: MErrorMessage.module:94
+#: MErrorMessage.module:93
 msgid "Expression too complex. Too many operands"
 msgstr "Expresión muy compleja. Demasiados operandos"
 
-#: MErrorMessage.module:95
+#: MErrorMessage.module:94
 msgid "Extern library name must be a string"
 msgstr "El nombre de la librería externa debe ser una cadena"
 
-#: MErrorMessage.module:96
+#: MErrorMessage.module:95
 msgid "File already exists"
 msgstr "El archivo ya existe"
 
-#: MErrorMessage.module:97
+#: MErrorMessage.module:96
 msgid "File is a directory"
 msgstr "El archivo es un directorio"
 
-#: MErrorMessage.module:98
+#: MErrorMessage.module:97
 msgid "File is locked"
 msgstr "El archivo está bloqueado"
 
-#: MErrorMessage.module:99
+#: MErrorMessage.module:98
 msgid "File name is too long"
 msgstr "El nombre de archivo es muy largo"
 
-#: MErrorMessage.module:100
+#: MErrorMessage.module:99
 msgid "File or directory does not exist"
 msgstr "El archivo o directorio no existe"
 
-#: MErrorMessage.module:101
+#: MErrorMessage.module:100
 msgid "Forbidden GOSUB"
 msgstr "GOSUB no permitido"
 
-#: MErrorMessage.module:102
+#: MErrorMessage.module:101
 msgid "Forbidden GOTO"
 msgstr "GOTO no permitido"
+
+#: MErrorMessage.module:102
+msgid "Free object referenced"
+msgstr ""
 
 #: MErrorMessage.module:103
 msgid "Illegal instruction"
 msgstr "Instrucción ilegal"
 
 #: MErrorMessage.module:104
-msgid "Integer expected"
-msgstr ""
-
-#: MErrorMessage.module:105
-msgid "Internal compiler error: bad stack usage computed!"
+#, fuzzy
+msgid "Internal compiler error"
 msgstr "Error interno del compilador: computado mal uso de la pila!"
 
-#: MErrorMessage.module:106
+#: MErrorMessage.module:105
 msgid "Invalid assignment"
 msgstr "Asignación inválida"
 
-#: MErrorMessage.module:107
+#: MErrorMessage.module:106
 msgid "Invalid date"
 msgstr "Fecha inválida"
 
-#: MErrorMessage.module:108
+#: MErrorMessage.module:107
 msgid "Invalid object"
 msgstr "Objeto inválido"
 
-#: MErrorMessage.module:109
+#: MErrorMessage.module:108
 msgid "Invalid path"
 msgstr "Ruta inválida"
 
-#: MErrorMessage.module:110
+#: MErrorMessage.module:109
 msgid "IsMissing() requires a function argument"
 msgstr "IsMissing() requiere un argumento de función"
 
-#: MErrorMessage.module:111
+#: MErrorMessage.module:110
 msgid "Jump is too far"
 msgstr "El salto es muy lejor"
 
-#: MErrorMessage.module:112
+#: MErrorMessage.module:111
 msgid "Label '&1' not declared"
 msgstr "Etiqueta '&1' no declarada"
 
-#: MErrorMessage.module:113
+#: MErrorMessage.module:112
 msgid "Library name must be a string"
 msgstr "El nombre de la librería debe ser una cadena"
 
-#: MErrorMessage.module:114
+#: MErrorMessage.module:113
 msgid "Loop variable already in use"
 msgstr "Variable Loop ya está en uso"
 
+#: MErrorMessage.module:114
+#, fuzzy
+msgid "Loop variable cannot be an argument"
+msgstr "Variable Loop ya está en uso"
+
 #: MErrorMessage.module:115
-msgid "Loop variable must be local"
+#, fuzzy
+msgid "Loop variable cannot be global"
 msgstr "Variable Loop debe ser local"
 
 #: MErrorMessage.module:116
@@ -6314,482 +6643,484 @@ msgid "Overriding an already inherited class is forbidden"
 msgstr "Invalidar una clase ya heredada no esta permitido"
 
 #: MErrorMessage.module:152
-msgid "Pointer"
-msgstr "Puntero"
-
-#: MErrorMessage.module:153
 msgid "Read error"
 msgstr "Error de lectura"
 
-#: MErrorMessage.module:154
+#: MErrorMessage.module:153
 msgid "Return value datatype not specified in function declaration"
 msgstr "Tipo de valor retorno no especificado en la declaración de la función"
 
-#: MErrorMessage.module:155
+#: MErrorMessage.module:154
 msgid "STOP instruction encountered"
 msgstr "Instruccion STOP encontrada"
 
-#: MErrorMessage.module:156
+#: MErrorMessage.module:155
 msgid "SUPER cannot be used alone"
 msgstr "SUPER no puede ser usado solo"
 
-#: MErrorMessage.module:157
+#: MErrorMessage.module:156
 msgid "Serialization error"
 msgstr "Error de serialización"
 
-#: MErrorMessage.module:158
+#: MErrorMessage.module:157
 msgid "Stack overflow"
 msgstr "Desbordamiento de la pila"
 
-#: MErrorMessage.module:159
+#: MErrorMessage.module:158
 msgid "Standard type"
 msgstr "Tipo estándar"
 
-#: MErrorMessage.module:160
+#: MErrorMessage.module:159
 msgid "Stream is closed"
 msgstr "El flujo está cerrado"
 
-#: MErrorMessage.module:162
+#: MErrorMessage.module:160
 msgid "String expected"
 msgstr "Se esperaba una cadena"
 
-#: MErrorMessage.module:163
+#: MErrorMessage.module:161
 msgid "Structures must be public"
 msgstr "Las estructuras deben ser públicas"
 
-#: MErrorMessage.module:164
+#: MErrorMessage.module:162
 msgid "Subroutine arguments cannot be passed by reference"
 msgstr "Argumentos de subrutina no pueden ser pasados por referencia"
 
-#: MErrorMessage.module:165
+#: MErrorMessage.module:163
 msgid "Syntax error"
 msgstr "Error de sintaxis"
 
-#: MErrorMessage.module:166
+#: MErrorMessage.module:164
 msgid "Syntax error at function declaration"
 msgstr "Error de sintaxis en la declaración de la función"
 
-#: MErrorMessage.module:167
+#: MErrorMessage.module:165
 msgid "Syntax error in event name"
 msgstr "Error de sintaxis en el nombre del evento"
 
-#: MErrorMessage.module:168
+#: MErrorMessage.module:166
 msgid "Syntax error in file open mode"
 msgstr "Error de sintaxis en el modo de abrir archivos"
 
-#: MErrorMessage.module:169
+#: MErrorMessage.module:167
 msgid "Syntax error in return type"
 msgstr "Error de sintaxis en el tipo de retorno"
 
-#: MErrorMessage.module:170
+#: MErrorMessage.module:168
 msgid "Syntax error. &1 expected"
 msgstr "Error de sintaxis. &1 esperado"
 
-#: MErrorMessage.module:171
+#: MErrorMessage.module:169
 msgid "Syntax error. '...' must be the last argument"
 msgstr "Error de sintaxis. '...' debe ser el último argumento"
 
-#: MErrorMessage.module:172
+#: MErrorMessage.module:170
 msgid "Syntax error. Bad property type"
 msgstr "Error de sintaxis. Tipo de propiedad incorrecto"
 
-#: MErrorMessage.module:173
+#: MErrorMessage.module:171
 msgid "Syntax error. CASE or DEFAULT expected after SELECT"
 msgstr "Error de sintaxis. CASE o DEFAULT esperado después de SELECT"
 
-#: MErrorMessage.module:174
+#: MErrorMessage.module:172
 msgid "Syntax error. CLASS needs an identifier"
 msgstr "Error de sintaxis. CLASS necesita un identificador"
 
-#: MErrorMessage.module:175
+#: MErrorMessage.module:173
 msgid "Syntax error. Cannot use this syntax in assignment"
 msgstr "Error de sintaxis. No se puede usar ésta sintaxis en asignaciones"
 
-#: MErrorMessage.module:176
+#: MErrorMessage.module:174
 msgid "Syntax error. INHERITS needs a class name"
 msgstr "Error de sintaxis. INHERITS necesita un nombre de clase"
 
-#: MErrorMessage.module:177
-msgid "Syntax error. Identifier expected."
+#: MErrorMessage.module:175
+#, fuzzy
+msgid "Syntax error. Identifier expected"
 msgstr "Syntax error. Se esperaba un identificador."
 
-#: MErrorMessage.module:178
+#: MErrorMessage.module:176
 msgid "Syntax error. Invalid identifier in function name"
 msgstr "Error de sintaxis. Identificador inválido en el nombre de la función"
 
-#: MErrorMessage.module:179
+#: MErrorMessage.module:177
 msgid "Syntax error. Invalid identifier in property name"
 msgstr "Error de sintaxis. Identificador inválido en el nombre de la propiedad"
 
-#: MErrorMessage.module:180
+#: MErrorMessage.module:178
 msgid "Syntax error. Invalid optional parameter"
 msgstr "Error de sintaxis. Parámetro opcional inválido"
 
-#: MErrorMessage.module:181
+#: MErrorMessage.module:179
 msgid "Syntax error. Invalid return type"
 msgstr "Error de sintaxis. Tipo de retorno inválido"
 
-#: MErrorMessage.module:182
+#: MErrorMessage.module:180
 msgid "Syntax error. Invalid type description of &1 argument"
 msgstr "Error de sintaxis. Descripción de tipo de &1 inválido"
 
-#: MErrorMessage.module:183
+#: MErrorMessage.module:181
 msgid "Syntax error. Invalid type description of &1 field"
 msgstr "Error de sintaxis. Descripción de tipo inválida para el campo &1"
 
-#: MErrorMessage.module:184
+#: MErrorMessage.module:182
 msgid "Syntax error. Needless arguments"
 msgstr "Error de sintaxis. Argumentos innecesarios"
 
-#: MErrorMessage.module:185
+#: MErrorMessage.module:183
 msgid "Syntax error. Point syntax used outside of WITH / END WITH"
 msgstr "Error de sintaxis. Sintaxis de Punto usada fuera de WITH / END WITH"
 
-#: MErrorMessage.module:186
+#: MErrorMessage.module:184
 msgid "Syntax error. STRUCT needs an identifier"
 msgstr "Error de sintaxis. STRUCT necesita un identificador"
 
-#: MErrorMessage.module:187
+#: MErrorMessage.module:185
 msgid "Syntax error. The &1 argument is not a valid identifier"
 msgstr "Error de sintaxis. El argumento &1 no es un identificador válido"
 
-#: MErrorMessage.module:188
+#: MErrorMessage.module:186
 msgid "Syntax error. The &1 field is not a valid identifier"
 msgstr "Error de sintaxis. El campo &1 no es un identificador válido"
 
-#: MErrorMessage.module:189
+#: MErrorMessage.module:187
 msgid "Syntax error. VarPtr() takes only one identifier"
 msgstr "Error de sintaxis. VarPtr() toma sólo un identificador"
 
-#: MErrorMessage.module:190
+#: MErrorMessage.module:188
 msgid "System error #&1: &2"
 msgstr "Error de sistema #&1: &2"
 
-#: MErrorMessage.module:191
+#: MErrorMessage.module:189
 msgid "The '!' operator must be followed by an identifier"
 msgstr "El '!' operador debe estar seguido de un identificador"
 
-#: MErrorMessage.module:192
+#: MErrorMessage.module:190
 msgid "The '.' operator must be followed by an identifier"
 msgstr "El '.' operador debe estar seguido de un identificador"
 
-#: MErrorMessage.module:193
+#: MErrorMessage.module:191
 msgid "The function must take a fixed number of arguments"
 msgstr "Esta función debe tomar un número fijo de argumentos"
 
-#: MErrorMessage.module:194
+#: MErrorMessage.module:192
 msgid "The special method &1 cannot be a function"
 msgstr "El método especial &1 no puede ser una función"
 
-#: MErrorMessage.module:195
+#: MErrorMessage.module:193
 msgid "The special method &1 cannot be implemented"
 msgstr "El método especial &1 no puede ser implementado"
 
-#: MErrorMessage.module:196
+#: MErrorMessage.module:194
 msgid "The special method &1 cannot be static"
 msgstr "El método especial &1 no puede ser estático"
 
-#: MErrorMessage.module:197
+#: MErrorMessage.module:195
 msgid "The special method &1 must be a function"
 msgstr "El método especial &1 debe ser una función"
 
-#: MErrorMessage.module:198
+#: MErrorMessage.module:196
 msgid "The special method &1 must be public"
 msgstr "El método especial &1 debe ser público"
 
-#: MErrorMessage.module:199
+#: MErrorMessage.module:197
 msgid "The special method &1 must be static"
 msgstr "El método especial &1 debe ser estático"
 
-#: MErrorMessage.module:200
+#: MErrorMessage.module:198
 msgid "The special method &1 must return a boolean"
 msgstr "El método especial &1 debe retornar un boolean"
 
-#: MErrorMessage.module:201
+#: MErrorMessage.module:199
 msgid "The special method &1 must take a variable number of arguments only"
 msgstr "El método especial &1 debe tomar sólo un número variable de argumentos"
 
-#: MErrorMessage.module:202
+#: MErrorMessage.module:200
 msgid "The special method &1 must take at least one argument"
 msgstr "El método especial &1 debe tomar por lo menos un argumento"
 
-#: MErrorMessage.module:203
+#: MErrorMessage.module:201
 msgid "The special method &1 takes no arguments"
 msgstr "El método especial &1 no toma argumentos"
 
-#: MErrorMessage.module:204
+#: MErrorMessage.module:202
 msgid "The special method must return an integer"
 msgstr "El método especial debe retornar un entero"
 
-#: MErrorMessage.module:205
+#: MErrorMessage.module:203
 msgid "The special method must take exactly one argument"
 msgstr "El método especial debe tomar exactamente un argumento"
 
-#: MErrorMessage.module:206
+#: MErrorMessage.module:204
 msgid "The special method must take exactly two arguments"
 msgstr "El método especial debe tomar exactamente dos argumentos"
 
-#: MErrorMessage.module:207
+#: MErrorMessage.module:205
 msgid "The special method signature is incorrect"
 msgstr "La firma del método especual es incorrecta"
 
-#: MErrorMessage.module:208
+#: MErrorMessage.module:206
 msgid "This expression cannot be a statement"
 msgstr "Esta expresión no puede ser una sentencia"
 
-#: MErrorMessage.module:209
+#: MErrorMessage.module:207
 msgid "This expression cannot be passed by reference"
 msgstr "Esta expresión no puede ser pasada por referencia"
 
-#: MErrorMessage.module:210
+#: MErrorMessage.module:208
 msgid "Too many arguments"
 msgstr "Demasiados argumentos"
 
-#: MErrorMessage.module:211
+#: MErrorMessage.module:209
 msgid "Too many arguments to &1()"
 msgstr "Demasiados argumentos para &1()"
 
-#: MErrorMessage.module:212
+#: MErrorMessage.module:210
 msgid "Too many array declarations"
 msgstr "Demasiadas declaraciones de matrices"
 
-#: MErrorMessage.module:213
+#: MErrorMessage.module:211
 msgid "Too many constants"
 msgstr "Demasiadas constantes"
 
-#: MErrorMessage.module:214
+#: MErrorMessage.module:212
 msgid "Too many different classes used"
 msgstr "Demasiadas clases diferentes usadas"
 
-#: MErrorMessage.module:215
+#: MErrorMessage.module:213
 msgid "Too many dimensions"
 msgstr "Demasiadas dimensiones"
 
-#: MErrorMessage.module:216
+#: MErrorMessage.module:214
 msgid "Too many dynamic variables"
 msgstr "Demasiadas variables dinamicas"
 
-#: MErrorMessage.module:217
+#: MErrorMessage.module:215
 msgid "Too many events"
 msgstr "Demasiados eventos"
 
-#: MErrorMessage.module:218
+#: MErrorMessage.module:216
 msgid "Too many expressions in CASE"
 msgstr "Demasiadas expresiones en CASE"
 
-#: MErrorMessage.module:219
+#: MErrorMessage.module:217
 msgid "Too many external functions"
 msgstr "Demasiadas funciones externas"
 
-#: MErrorMessage.module:220
+#: MErrorMessage.module:218
 msgid "Too many functions"
 msgstr "Demasiadas funciones"
 
-#: MErrorMessage.module:221
+#: MErrorMessage.module:219
 msgid "Too many imbricated #If...#Endif"
 msgstr "Demasiados imbricados # If ... # endif"
 
-#: MErrorMessage.module:222
+#: MErrorMessage.module:220
 msgid "Too many labels"
 msgstr "Demasiadas etiquetas"
 
-#: MErrorMessage.module:223
+#: MErrorMessage.module:221
 msgid "Too many local variables"
 msgstr "Demasiadas variables locales"
 
-#: MErrorMessage.module:224
+#: MErrorMessage.module:222
 msgid "Too many nested control structures."
 msgstr "Demasiadas estructuras de control anidadas."
 
-#: MErrorMessage.module:225
+#: MErrorMessage.module:223
 msgid "Too many property synonymous"
 msgstr "Demasiados sinónimos para la Propiedad"
 
-#: MErrorMessage.module:226
+#: MErrorMessage.module:224
 msgid "Too many simultaneous new strings"
 msgstr "Demasiadas cadenas nuevas simultáneas"
 
-#: MErrorMessage.module:227
+#: MErrorMessage.module:225
 msgid "Too many static variables"
 msgstr "Demasiadas variables estáticas"
 
-#: MErrorMessage.module:228
+#: MErrorMessage.module:226
 msgid "Too many unknown symbols"
 msgstr "Demasiados símbolos desconocidos"
 
-#: MErrorMessage.module:229
+#: MErrorMessage.module:227
 msgid "Trailing backslash"
 msgstr "Barra diagonal invertida"
 
-#: MErrorMessage.module:230
+#: MErrorMessage.module:228
 msgid "Type mismatch"
 msgstr "No coinciden los tipos"
 
-#: MErrorMessage.module:231
+#: MErrorMessage.module:229
 msgid "Type mismatch: wanted &1, got &2 instead"
 msgstr "No coinciden los tipos: requerido &1, obtenido &2 en cambio"
 
-#: MErrorMessage.module:232
+#: MErrorMessage.module:230
 msgid "Unable to create closure"
 msgstr "Incapaz de crear closure"
 
-#: MErrorMessage.module:233
+#: MErrorMessage.module:231
 msgid "Unable to get file position"
 msgstr "Incapaz de obtener la posición del archivo"
 
-#: MErrorMessage.module:234
+#: MErrorMessage.module:232
 msgid "Unable to load class file"
 msgstr "Incapaz de cargar el archivo de la clase"
 
-#: MErrorMessage.module:235
+#: MErrorMessage.module:233
 msgid "Unable to prepare function description"
 msgstr "Incapaz de preparar la descripción de la función"
 
-#: MErrorMessage.module:236
+#: MErrorMessage.module:234
 msgid "Unexpected &1"
 msgstr "&1 Inesperado"
 
-#: MErrorMessage.module:237
+#: MErrorMessage.module:235
 msgid "Unexpected end of line"
 msgstr "Fin de archivo inesperado"
 
-#: MErrorMessage.module:238
+#: MErrorMessage.module:236
 msgid "Unexpected string"
 msgstr "Cadena inesperada"
 
-#: MErrorMessage.module:239
+#: MErrorMessage.module:237
 msgid "Unknown error"
 msgstr "Error desconocido"
 
-#: MErrorMessage.module:240
+#: MErrorMessage.module:238
 msgid "Unknown file extension"
 msgstr "Extensión de archivo desconocido"
 
-#: MErrorMessage.module:241
+#: MErrorMessage.module:239
 msgid "Unknown identifier: &1"
 msgstr "Identificador desconocido: &1"
 
-#: MErrorMessage.module:242
+#: MErrorMessage.module:240
 msgid "Unknown operator"
 msgstr "Operado desconocido"
 
-#: MErrorMessage.module:243
+#: MErrorMessage.module:241
 msgid "Unknown symbol '&2' in class '&1'"
 msgstr "Simbolo '&2' desconocido en la clase '&1'"
 
-#: MErrorMessage.module:244
+#: MErrorMessage.module:242
 msgid "Unknown user or group"
 msgstr "Usuario o grupo desconocido"
 
-#: MErrorMessage.module:245
+#: MErrorMessage.module:243
 msgid "Unsupported datatype"
 msgstr "Tipo de datos no soportado"
 
-#: MErrorMessage.module:246
+#: MErrorMessage.module:244
 msgid "Unsupported string conversion"
 msgstr "Conversión de cadenas no compatibles"
 
-#: MErrorMessage.module:247
+#: MErrorMessage.module:245
 msgid "Useless LOCK"
 msgstr "LOCK inútil"
 
-#: MErrorMessage.module:248
+#: MErrorMessage.module:246
 msgid "VarPtr() argument must be a dynamic, a static or a local variable"
 msgstr "El argumento para VarPtr() debe ser dinamico, estático o una variable local"
 
-#: MErrorMessage.module:249
-msgid "Variant"
-msgstr "-"
+#: MErrorMessage.module:247
+#, fuzzy
+msgid "Void identifier"
+msgstr "Identificador desconocido: &1"
 
-#: MErrorMessage.module:250
+#: MErrorMessage.module:248
 msgid "Void key"
 msgstr "Llave vacía"
 
-#: MErrorMessage.module:251
+#: MErrorMessage.module:249
 msgid "Write error"
 msgstr "Error de escritura"
 
-#: MErrorMessage.module:252
+#: MErrorMessage.module:250
 msgid "cannot find component"
 msgstr "No es posible encontrar el componente"
 
-#: MErrorMessage.module:253
+#: MErrorMessage.module:251
 msgid "cannot find library"
 msgstr "no es posible encontrar la librería "
 
-#: MErrorMessage.module:254
+#: MErrorMessage.module:252
 msgid "class name hidden by global declaration: &1"
 msgstr "nombre de clase oculto por declaración global: &1"
 
-#: MErrorMessage.module:255
+#: MErrorMessage.module:253
 msgid "class name hidden by local declaration: &1"
 msgstr "nombre de clase oculto por declaración local: &1"
 
-#: MErrorMessage.module:256
+#: MErrorMessage.module:254
 msgid "constant hidden by local declaration: &1"
 msgstr "constante ocultada por declaración local: &1"
 
-#: MErrorMessage.module:257
+#: MErrorMessage.module:255
 msgid "extern function hidden by local declaration: &1"
 msgstr "función externa ocultada por declaración local: &1"
 
-#: MErrorMessage.module:258
+#: MErrorMessage.module:256
 msgid "function hidden by local declaration: &1"
 msgstr "función ocultada por declaración local: &1"
 
-#: MErrorMessage.module:259
+#: MErrorMessage.module:257
 msgid "global variable hidden by local declaration: &1"
 msgstr "variable global ocultada por declaración local: &1"
 
-#: MErrorMessage.module:260
+#: MErrorMessage.module:258
+msgid "integer and boolean mixed with `&1' operator"
+msgstr ""
+
+#: MErrorMessage.module:259
 msgid "uninitialized global variable: &1"
 msgstr ""
 
-#: MErrorMessage.module:261
+#: MErrorMessage.module:260
 msgid "uninitialized variable: &1"
 msgstr ""
 
-#: MErrorMessage.module:262
+#: MErrorMessage.module:261
 msgid "unknown error"
 msgstr "error desconocido"
 
-#: MErrorMessage.module:263
+#: MErrorMessage.module:262
 msgid "unused argument: &1"
 msgstr "argumento no utilizado: &1"
 
-#: MErrorMessage.module:264
+#: MErrorMessage.module:263
 msgid "unused extern function: &1"
 msgstr "función externa no utilizada: &1"
 
-#: MErrorMessage.module:265
+#: MErrorMessage.module:264
 msgid "unused function: &1"
 msgstr "función no utilizada: &1"
 
-#: MErrorMessage.module:266
+#: MErrorMessage.module:265
 msgid "unused global variable: &1"
 msgstr "variable global no utilizada: &1"
 
-#: MErrorMessage.module:267
+#: MErrorMessage.module:266
 msgid "unused variable: &1"
 msgstr "variable no utilizada: &1"
 
-#: MErrorMessage.module:271
+#: MErrorMessage.module:270
 msgid "cannot open slave pseudo-terminal: "
 msgstr "no es posible abrir la pseudo-terminal esclava:"
 
-#: MErrorMessage.module:272
+#: MErrorMessage.module:271
 msgid "cannot initialize pseudo-terminal: "
 msgstr "no es posible inicializar la pseudo-terminal:"
 
-#: MErrorMessage.module:273
+#: MErrorMessage.module:272
 msgid "cannot plug standard input: "
 msgstr "no es posible conectar la entrada estándar:"
 
-#: MErrorMessage.module:274
+#: MErrorMessage.module:273
 msgid "cannot plug standard output and standard error: "
 msgstr "no es posible conectar la salida estándar ni la salida estándar de error:"
 
-#: MErrorMessage.module:275
+#: MErrorMessage.module:274
 msgid "cannot run executable: "
 msgstr "No es posible correr el ejecutable:"
 
@@ -6797,7 +7128,7 @@ msgstr "No es posible correr el ejecutable:"
 msgid "No help found."
 msgstr "No se encontró ayuda."
 
-#: MHelp.module:975 Wiki.module:799
+#: MHelp.module:983 Wiki.module:799
 msgid "This page does not exist."
 msgstr "Esta página no existe."
 
@@ -6830,6 +7161,11 @@ msgid "Unknown format"
 msgstr "Formato desconocido"
 
 #: MTheme.module:6
+#, fuzzy
+msgid "Characters"
+msgstr "Caracteres incorrectos"
+
+#: MTheme.module:6
 msgid "Comments"
 msgstr "Comentarios"
 
@@ -6856,6 +7192,10 @@ msgstr "Resaltado"
 #: MTheme.module:6
 msgid "Keywords"
 msgstr "Palabras clave"
+
+#: MTheme.module:6
+msgid "Labels"
+msgstr ""
 
 #: MTheme.module:6
 msgid "Normal text"
@@ -6893,59 +7233,59 @@ msgstr "'&1' es requerido."
 msgid "'&1' and '&2' are missing."
 msgstr "'&1' y '&2' son requeridos."
 
-#: Package.module:266
+#: Package.module:268
 msgid "Saving CHANGELOG file."
 msgstr "Guardando archivo CHANGELOG."
 
-#: Package.module:653
+#: Package.module:657
 msgid "Making &1 support package..."
 msgstr "Creando el paquete de soporte &1..."
 
-#: Package.module:707
+#: Package.module:712
 msgid "Creating package for &1."
 msgstr "Creando paquete para &1."
 
-#: Package.module:739
+#: Package.module:744
 msgid "The package build has failed."
 msgstr "La creación del paquete ha fallado."
 
-#: Package.module:807
+#: Package.module:812
 msgid "Making build directory."
 msgstr "Creando el directorio de construcción."
 
-#: Package.module:862
+#: Package.module:867
 msgid "Creating desktop file..."
 msgstr "Creando archivo de escritorio..."
 
-#: Package.module:870
+#: Package.module:875
 msgid "Sources are being debianizated."
 msgstr "Se están debianizando los fuentes."
 
-#: Package.module:1075
+#: Package.module:1080
 msgid "Creating package..."
 msgstr "Creando paquete..."
 
-#: Package.module:1083
+#: Package.module:1088
 msgid "'dpkg-buildpackage' has failed."
 msgstr "'dpkg-buildpackage' ha fallado."
 
-#: Package.module:1363
+#: Package.module:1368
 msgid "Initializing ~/RPM directory."
 msgstr "Inicializando directorio ~/RPM."
 
-#: Package.module:1383
+#: Package.module:1388
 msgid "Creating source package."
 msgstr "Creando paquete fuente."
 
-#: Package.module:1407
+#: Package.module:1412
 msgid "Creating .spec file."
 msgstr "Creando archivo .spec."
 
-#: Package.module:1666
+#: Package.module:1671
 msgid "'rpmbuild' has returned the following error code:"
 msgstr "'rpmbuild' ha devuelto el siguiente código de error:"
 
-#: Package.module:2077
+#: Package.module:2091
 msgid "'tar' has returned the following error code:"
 msgstr "'tar' ha devuelto el siguiente código de error:"
 
@@ -6961,345 +7301,373 @@ msgstr "Formato de archivo fuente no soportado"
 msgid "Patch didn't apply:\n"
 msgstr "El parche no se aplicó.\n"
 
-#: Project.module:224
+#: Project.module:226
 msgid "Automation"
 msgstr "Automatización"
 
-#: Project.module:225
+#: Project.module:227
 msgid "Basic"
 msgstr "Básico"
 
-#: Project.module:227
+#: Project.module:229
 msgid "Drawing"
 msgstr "Dibujo"
 
-#: Project.module:230
+#: Project.module:232
 msgid "Miscellaneous"
 msgstr "Varios"
 
-#: Project.module:231
+#: Project.module:233
 msgid "Networking"
 msgstr "Redes"
 
-#: Project.module:232
+#: Project.module:234
 msgid "OpenGL"
 msgstr "-"
 
-#: Project.module:233
+#: Project.module:235
 msgid "Printing"
 msgstr "Impresión"
 
-#: Project.module:234
+#: Project.module:236
 msgid "Sound"
 msgstr "Sonido"
 
-#: Project.module:236
+#: Project.module:238
 msgid "Controls"
 msgstr "Controles"
 
-#: Project.module:237
+#: Project.module:239
 msgid "Multimedia"
 msgstr "-"
 
-#: Project.module:238
+#: Project.module:240
 msgid "Web"
 msgstr "-"
 
-#: Project.module:382
+#: Project.module:404
 msgid "File not found!"
 msgstr "Archivo no encontrado!"
 
-#: Project.module:494
+#: Project.module:516
 msgid "This project does not exist."
 msgstr "Este proyecto no existe."
 
-#: Project.module:506
-msgid "Unable to find Gambas IDE executable in directory:\n\n&1"
-msgstr "Incapaz de encontrar el ejecutable de la IDE de Gambas en el directorio:\n\n&1"
+#: Project.module:528
+msgid ""
+"Unable to find Gambas IDE executable in directory:\n"
+"\n"
+"&1"
+msgstr ""
+"Incapaz de encontrar el ejecutable de la IDE de Gambas en el directorio:\n"
+"\n"
+"&1"
 
-#: Project.module:523
+#: Project.module:547
 msgid "This is not a Gambas project."
 msgstr "Este no es un proyecto Gambas."
 
-#: Project.module:526
+#: Project.module:550
 msgid "This is a Gambas 1.0 project. Use Gambas 2 to convert it."
 msgstr "Este es un proyecto Gambas 1.0. Use Gambas 2 para convertirlo."
 
-#: Project.module:529
+#: Project.module:553
 msgid "Convert"
 msgstr "Convertir"
 
-#: Project.module:529
-msgid "This is a Gambas 2.0 project.\n\nDo you want to convert it?"
-msgstr "Este es un proyecto Gambas 2.0\n\n¿Desea convertirlo?"
+#: Project.module:553
+msgid ""
+"This is a Gambas 2.0 project.\n"
+"\n"
+"Do you want to convert it?"
+msgstr ""
+"Este es un proyecto Gambas 2.0\n"
+"\n"
+"¿Desea convertirlo?"
 
-#: Project.module:547
+#: Project.module:571
 msgid "Do not open"
 msgstr "No abrir"
 
-#: Project.module:547
+#: Project.module:571
 msgid "Open after all"
 msgstr "Abrir de todos modos"
 
-#: Project.module:547
-msgid "This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."
-msgstr "Este proyecto parece estar ya abierto.\n\nAbrir el proyecto dos veces puede hacer que se pierdan datos."
+#: Project.module:571
+msgid ""
+"This project seems to be already opened.\n"
+"\n"
+"Opening the same project twice can lead to data loss."
+msgstr ""
+"Este proyecto parece estar ya abierto.\n"
+"\n"
+"Abrir el proyecto dos veces puede hacer que se pierdan datos."
 
-#: Project.module:553
+#: Project.module:577
 msgid "It cannot be converted."
 msgstr "No puede ser convertido."
 
-#: Project.module:553
+#: Project.module:577
 msgid "This project is read-only."
 msgstr "Este proyecto es de sólo lectura."
 
-#: Project.module:570
+#: Project.module:594
 msgid "Copying project inside a temporary directory..."
 msgstr "Copiando proyecto dentro de un directorio temporal..."
 
-#: Project.module:573
+#: Project.module:597
 msgid "Unable to create temporary directory"
 msgstr "Incapaz de crear el directorio temporal"
 
-#: Project.module:603
+#: Project.module:627
 msgid "Converting project structure..."
 msgstr "Convirtiendo estructura del proyecto..."
 
-#: Project.module:634
+#: Project.module:660
 msgid "Applying conversion..."
 msgstr "Aplicando conversión..."
 
-#: Project.module:640
+#: Project.module:666
 msgid "Unable to apply conversion"
 msgstr "Incapaz de aplicar conversión"
 
-#: Project.module:753
+#: Project.module:786
 msgid "Some libraries used by the project are missing."
 msgstr "Faltan algunas las librerías utilizadas por el proyecto."
 
-#: Project.module:772
-msgid "Cannot open project file :\n"
+#: Project.module:805
+#, fuzzy
+msgid "Cannot open project file :"
 msgstr "No es posible abrir el archivo de proyecto :\n"
 
-#: Project.module:824
+#: Project.module:857
 msgid "Cannot reload file."
 msgstr ""
 
-#: Project.module:1795
+#: Project.module:1645
 msgid "ALPHA VERSION, USE AT YOUR OWN RISK!"
 msgstr "-"
 
-#: Project.module:1797
+#: Project.module:1647
 msgid "DEVELOPMENT VERSION, USE AT YOUR OWN RISK!"
 msgstr "-"
 
-#: Project.module:2188
+#: Project.module:2041
 msgid "Cannot open a binary file."
 msgstr "No es posible abrir un archivo binario."
 
-#: Project.module:2225
+#: Project.module:2079
 msgid "Cannot open file."
 msgstr "No es posible abrir el archivo."
 
-#: Project.module:2375
+#: Project.module:2237
 msgid "&1th"
 msgstr "-"
 
-#: Project.module:2428
+#: Project.module:2290
 msgid "in form definition"
 msgstr "en la definición del formulario"
 
-#: Project.module:2435
+#: Project.module:2297
 msgid "in &1."
 msgstr "en &1."
 
-#: Project.module:2596
-msgid "Some project source files are in conflict.\nPlease solve them if you want to compile the project."
-msgstr "Algunos archivos fuente del proyecto están en conflicto.\nSolucionelos si quiere compilar el proyecto."
+#: Project.module:2458
+msgid ""
+"Some project source files are in conflict.\n"
+"Please solve them if you want to compile the project."
+msgstr ""
+"Algunos archivos fuente del proyecto están en conflicto.\n"
+"Solucionelos si quiere compilar el proyecto."
 
-#: Project.module:2600
+#: Project.module:2462
 msgid "Compiling project"
 msgstr "Compilando proyecto"
 
-#: Project.module:2851
+#: Project.module:2713
 msgid "File already exists."
 msgstr "El archivo ya existe."
 
-#: Project.module:2883
+#: Project.module:2745
 msgid "Directory already exists."
 msgstr "El directirio ya existe."
 
-#: Project.module:2895
+#: Project.module:2757
 msgid "Cannot link template file."
 msgstr "No es posible vincular el archivo de plantilla."
 
-#: Project.module:2901
+#: Project.module:2763
 msgid "Cannot copy template file."
 msgstr "No es posible copiar el archivo de plantilla."
 
-#: Project.module:3107
+#: Project.module:2969
 msgid "The contents of VERSION file is incorrect."
 msgstr ""
 
-#: Project.module:3129
+#: Project.module:2991
 msgid "Cannot install library in &1."
 msgstr ""
 
-#: Project.module:3167
+#: Project.module:3029
 msgid "Making executable..."
 msgstr "Creando ejecutable..."
 
-#: Project.module:3220
+#: Project.module:3081
 msgid "Cannot make executable."
 msgstr "No es posible crear ejecutable."
 
-#: Project.module:3658
+#: Project.module:3519
 msgid "Some components are missing: &1"
 msgstr "Faltan algunos componentes: &1"
 
-#: Project.module:3844
+#: Project.module:3705
 msgid "Cannot write project file."
 msgstr "No es posible escribir el archivo de proyecto."
 
-#: Project.module:3893
+#: Project.module:3754
 msgid "Unable to create desktop shortcut."
 msgstr "Incapaz de crear un icono en el escritorio."
 
-#: Project.module:4157
+#: Project.module:4018
 msgid "The directory will be removed at the next commit."
 msgstr "El directorio se borrará en el próximo commit."
 
-#: Project.module:4174
+#: Project.module:4035
 msgid "You must define a startup class or form!"
 msgstr "¡Debe definir una clase o formulario de inicio!"
 
-#: Project.module:4205
+#: Project.module:4066
 msgid "Please type a name."
 msgstr "Ingrese un nombre."
 
-#: Project.module:4209
+#: Project.module:4070
 msgid "This name contains a forbidden character:"
 msgstr "Este nombre contiene un carácter prohibido:"
 
-#: Project.module:4213
+#: Project.module:4074
 msgid "The name cannot begins with a dot."
 msgstr "Los nombres no pueden iniciar con un punto."
 
-#: Project.module:4217
+#: Project.module:4078
 msgid "This name is already used. Choose another one."
 msgstr "Este nombre ya está en uso. Elija otro."
 
-#: Project.module:4253
+#: Project.module:4114
 msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
 msgstr "El nombre de una clase debe empezar con una letra o un signo de subrayado, seguido de cualquier letra o dígito."
 
-#: Project.module:4296
+#: Project.module:4157
 msgid "Destination already exists."
 msgstr "El destino ya existe."
 
-#: Project.module:4512
+#: Project.module:4339
 msgid "Unable to rename '&1'"
 msgstr "Incapaz de renombrar '&1'"
 
-#: Project.module:4628
+#: Project.module:4455
 msgid "Please type a project name."
 msgstr "Ingrese un nombre para el proyecto."
 
-#: Project.module:4636
+#: Project.module:4463
 msgid "The project name cannot begin with a dot."
 msgstr "El nombre de proyecto no puede comenzar con un punto."
 
-#: Project.module:4639
+#: Project.module:4466
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Caracteres no ASCII no están permitidos en el nombre del proyecto."
 
-#: Project.module:4640
+#: Project.module:4467
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "Los siguientes caracteres no están permitidos en el nombre de un proyecto: ? * / \\ ESPACIO"
 
-#: Project.module:4647
+#: Project.module:4474
 msgid "This project already exists."
 msgstr "Este proyecto ya existe."
 
-#: Project.module:4650
+#: Project.module:4477
 msgid "The project directory already exists."
 msgstr "El directorio del proyecto ya existe."
 
-#: Project.module:4652
+#: Project.module:4479
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "La carpeta de proyecto no puede ser creada porque un archivo con el mismo nombre ya existe."
 
-#: Project.module:4716
+#: Project.module:4527
 msgid "Unable to create source archive."
 msgstr "Incapaz de crear archivo fuente."
 
-#: Project.module:4743
+#: Project.module:4554
 msgid "Create source package"
 msgstr "Crear paquete fuente"
 
-#: Project.module:5000
+#: Project.module:4811
 msgid "Cannot copy file &1."
 msgstr "No es posible copiar el archivo &1."
 
-#: Project.module:5048
+#: Project.module:4859
 msgid "Cannot create link &1."
 msgstr "No es posible crear el enlace &1."
 
-#: Project.module:5063
+#: Project.module:4874
 msgid "Cannot move a directory inside itself."
 msgstr "No es posible mover un directorio dentro de sí mismo."
 
-#: Project.module:5123
+#: Project.module:4938
 msgid "Cannot move file &1."
 msgstr "No es posible mover el archivo &1."
 
-#: Project.module:5336
+#: Project.module:5151
 msgid "The following files couldn't be removed:"
 msgstr "Los siguientes archivos no pueden ser removidos:"
 
-#: Project.module:5802
+#: Project.module:5617
 msgid "Project cleanup..."
 msgstr "Limpieza del proyecto..."
 
-#: Project.module:5808
+#: Project.module:5623
 msgid "Project files conversion..."
 msgstr "Conversión de archivos del proyecto..."
 
-#: Project.module:5838
+#: Project.module:5653
 msgid "Unable to convert &1"
 msgstr "Incapaz de convertir &1"
 
-#: Project.module:6076
+#: Project.module:5904
 msgid "Unable to update forms."
 msgstr ""
 
-#: Project.module:6166
+#: Project.module:5994
 msgid "The &1 program is not installed on your system."
 msgstr "El programa &1 no está instalado en el sistema"
 
-#: Project.module:6168
+#: Project.module:5996
 msgid "The following programs are not installed on your system: &1."
 msgstr "Los siguientes programas no están instalados en el sistema: &1."
 
-#: Project.module:6260
+#: Project.module:6088
 msgid "Unable to read component description file."
 msgstr "Incapaz de leer el fichero de descripción de componente."
 
-#: Project.module:6321
+#: Project.module:6149
 msgid "Cannot write component description file."
 msgstr "No es posible escribir el archivo de descripción del componente."
 
-#: Project.module:6382
+#: Project.module:6210
 msgid "Project templates"
 msgstr "Plantillas de proyecto"
 
-#: Project.module:6428
+#: Project.module:6256
 msgid "Unable to run terminal."
 msgstr ""
 
-#: Save.module:40
+#: Save.module:51
 msgid "Cannot save file !"
 msgstr "¡No es posible guardar el archivo!"
+
+#: SoftwareBox.class:236
+#, fuzzy
+msgid "Published &1"
+msgstr "Publicar"
 
 #: Util.module:39
 msgid "&1 B"
@@ -7361,3 +7729,71 @@ msgstr "Esta clase no existe"
 msgid "This symbol does not exist."
 msgstr "Este símbolo no existe."
 
+#~ msgid "Variant"
+#~ msgstr "-"
+
+#~ msgid "Pointer"
+#~ msgstr "Puntero"
+
+#~ msgid "These files will be ignored when making source archives."
+#~ msgstr "Estos archivos serán ignorados al crear un archivador fuente."
+
+#~ msgid "Source archives"
+#~ msgstr "Archivos fuente"
+
+#~ msgid "Use offline help"
+#~ msgstr "Usar ayuda offline"
+
+#~ msgid "Color theme"
+#~ msgstr "Color del tema"
+
+#~ msgid "Configure shortcuts"
+#~ msgstr "Configurar atajos"
+
+#~ msgid "'wget' is not found."
+#~ msgstr "No se encuentra 'wget'."
+
+#~ msgid "Unable to download documentation."
+#~ msgstr "Incapaz de descargar la documentación."
+
+#~ msgid "Do you really want to reset the list to its default value?"
+#~ msgstr "¿Realmente desea reiniciar la lista a su valor por defecto?"
+
+#~ msgid "System informations"
+#~ msgstr "Informaciones del sistema"
+
+#~ msgid "Subdivision"
+#~ msgstr "Subdivisión"
+
+#~ msgid "Stack backtrace"
+#~ msgstr "Trazado de la pila"
+
+#~ msgid "Remove current breakpoint"
+#~ msgstr "Eliminar el punto de interrupción actual"
+
+#~ msgid "Display"
+#~ msgstr "Mostrar"
+
+#~ msgid "Display expression"
+#~ msgstr "Mostrar expresión"
+
+#~ msgid "Remove all expressions"
+#~ msgstr "Eliminar todas las expresiones"
+
+#~ msgid "Copy local variables"
+#~ msgstr "Copiar variables locales"
+
+#~ msgid "Copy to clipboard"
+#~ msgstr "Copiar al portapapeles"
+
+#~ msgid "Column view"
+#~ msgstr "Vista de columnas"
+
+#~ msgid "Dynamic variables"
+#~ msgstr "Variables dinámicas"
+
+#~ msgid "Procedure"
+#~ msgstr "Procedimiento"
+
+#~ msgid "Expression"
+#~ msgstr "Expresión"

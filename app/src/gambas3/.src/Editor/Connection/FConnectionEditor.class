@@ -675,6 +675,7 @@ Public Sub btnRunQuery_Click()
   Dim sReq As String = Trim(edtRequest.Text)
   Dim iPos As Integer
   Dim sStart As String
+  Dim fTimer As Float
   
   While Left(sReq, 2) = "/*"
     iPos = InStr(sReq, "*/")
@@ -683,6 +684,8 @@ Public Sub btnRunQuery_Click()
   Wend
   
   If Not sReq Then Return
+  
+  fTimer = Timer
   
   Inc Application.Busy
   
@@ -701,7 +704,11 @@ Public Sub btnRunQuery_Click()
   
   Dec Application.Busy
   
-  If Error Then Balloon.Error(("Unable to run query.") & "\n\n" & Error.Text, btnRunQuery)
+  If Error Then 
+    Balloon.Error(("Unable to run query.") & "\n\n" & Error.Text, btnRunQuery)
+  Else
+    edtRequest.ShowMessageLabel(Subst(("&1 s"), Format(Timer - fTimer, "0.###")), Highlight.Highlight, True)
+  Endif
   
 End
 

@@ -44,6 +44,7 @@
 #include "gbx_api.h"
 #include "gbx_c_file.h"
 #include "gbx_struct.h"
+#include "gbx_math.h"
 #include "gbx_c_array.h"
 
 static bool _create_static_array;
@@ -76,7 +77,7 @@ static bool check_start_length(int count, int *start, int *length)
 {
 	if (*start < 0)
 	{
-		GB_Error((char *)E_BOUND);
+		CARRAY_out_of_bounds();
 		return TRUE;
 	}
 
@@ -88,7 +89,7 @@ static bool check_start_length(int count, int *start, int *length)
 
 	if (*length < 0 || (*start + *length) > count)
 	{
-		GB_Error((char *)E_BOUND);
+		CARRAY_out_of_bounds();
 		return TRUE;
 	}
 	
@@ -213,10 +214,7 @@ void *CARRAY_get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam)
 			d = arg[i].value;
 
 			if (d < 0 || d >= max)
-			{
-				GB_Error((char *)E_BOUND);
-				return NULL;
-			}
+				return CARRAY_out_of_bounds();
 
 			index *= max;
 			index += d;
@@ -242,10 +240,7 @@ void *CARRAY_get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam)
 		index = arg->value;
 
 		if ((index < 0) || (index >= THIS->count))
-		{
-			GB_Error((char *)E_BOUND);
-			return NULL;
-		}
+			return CARRAY_out_of_bounds();
 	}
 
 	return (void *)((char *)(THIS->data) + index * THIS->size);
@@ -703,6 +698,152 @@ BEGIN_METHOD(Array_Resize, GB_INTEGER size)
 	
 END_METHOD
 
+/*
+BEGIN_METHOD(Array_Swap, GB_INTEGER index; GB_INTEGER index2)
+
+	int size = THIS->size;
+	int i1, i2;
+	void *p1, *p2;
+
+	if (check_not_multi(THIS))
+		return;
+	
+	i1 = VARG(index);
+	i2 = VARG(index2);
+	
+	p1 = get_data(THIS, i1);
+	if (!p1)
+		return;
+	p2 = get_data(THIS, i2);
+	if (!p2)
+		return;
+	
+	switch(size)
+	{
+		case 1:
+		{
+			char t = *(char *)p1;
+			*(char *)p1 = *(char *)p2;
+			*(char *)p2 = t;
+			break;
+		}
+			
+		case 2:
+		{
+			short t = *(short *)p1;
+			*(short *)p1 = *(short *)p2;
+			*(short *)p2 = t;
+			break;
+		}
+			
+		case 4:
+		{
+			int t = *(int *)p1;
+			*(int *)p1 = *(int *)p2;
+			*(int *)p2 = t;
+			break;
+		}
+			
+		case 8:
+		{
+			int64_t t = *(char *)p1;
+			*(char *)p1 = *(char *)p2;
+			*(char *)p2 = t;
+			break;
+		}
+			
+		default:
+		{
+			unsigned char *p;
+			unsigned char *q;
+			unsigned char *const end = (unsigned char *)p1 + size;
+
+			for (p = p1, q = p2; p < end; ++p, ++q ) {
+				const unsigned char t = *p;
+				*p = *q;
+				*q = t;
+			}			
+		}
+	}
+	
+END_METHOD
+*/
+
+BEGIN_METHOD_VOID(Array_Shuffle)
+
+	int count = THIS->count;
+	int size = THIS->size;
+	void *p1, *p2;
+	int i, j;
+	void *swap;
+
+	if (check_not_multi(THIS) || count <= 1)
+		return;
+	
+	switch (size)
+	{
+		case 1: swap = &&__SWAP_BYTE; break;
+		case 2: swap = &&__SWAP_SHORT; break;
+		case 4: swap = &&__SWAP_INT; break;
+		case 8: swap = &&__SWAP_LONG; break;
+		default: swap = &&__SWAP_ANY;
+	}
+	
+	for (i = count - 1; i >= 1; i--)
+	{
+		j = (int)(rnd() * (i + 1));
+		p1 = CARRAY_get_data_unsafe(THIS, i);
+		p2 = CARRAY_get_data_unsafe(THIS, j);
+		
+		goto *swap;
+	
+	__SWAP_BYTE:
+		{
+			char t = *(char *)p1;
+			*(char *)p1 = *(char *)p2;
+			*(char *)p2 = t;
+			continue;
+		}
+				
+	__SWAP_SHORT:
+		{
+			short t = *(short *)p1;
+			*(short *)p1 = *(short *)p2;
+			*(short *)p2 = t;
+			continue;
+		}
+				
+	__SWAP_INT:
+		{
+			int t = *(int *)p1;
+			*(int *)p1 = *(int *)p2;
+			*(int *)p2 = t;
+			continue;
+		}
+				
+	__SWAP_LONG:
+		{
+			int64_t t = *(int64_t *)p1;
+			*(int64_t *)p1 = *(int64_t *)p2;
+			*(int64_t *)p2 = t;
+			continue;
+		}
+			
+	__SWAP_ANY:
+		{
+			unsigned char *p;
+			unsigned char *q;
+			unsigned char *const end = (unsigned char *)p1 + size;
+
+			for (p = p1, q = p2; p < end; ++p, ++q ) {
+				const unsigned char t = *p;
+				*p = *q;
+				*q = t;
+			}			
+		}
+	}
+	
+END_METHOD
 
 static void add(CARRAY *_object, GB_VALUE *value, int index)
 {
@@ -953,14 +1094,84 @@ END_METHOD
 
 BEGIN_METHOD(Array_Sort, GB_INTEGER mode)
 
-	COMPARE_FUNC compare;
-	int mode = VARGOPT(mode, 0);
-	void *data = THIS->data;
-
 	if (THIS->count > 1)
+		qsort(THIS->data, THIS->count, THIS->size, COMPARE_get_func(THIS->type, VARGOPT(mode, 0)));
+
+	GB_ReturnObject(THIS);
+
+END_METHOD
+
+static void *_using_data;
+static int _using_size;
+static COMPARE_FUNC _using_func;
+
+static int compare_using(const int *a, const int *b)
+{
+	return _using_func(_using_data + *a * _using_size, _using_data + *b * _using_size);
+}
+
+BEGIN_METHOD(Array_SortUsing, GB_OBJECT order; GB_INTEGER mode)
+
+	CARRAY *order = VARG(order);
+	int *sort;
+	int i, j, k;
+	void *data;
+	int count;
+	int size;
+	char old[sizeof(VARIANT)];
+	
+	if (!order)
 	{
-		compare = COMPARE_get_func(THIS->type, mode);
-		qsort(data, THIS->count, THIS->size, compare);
+		GB_Error((char *)E_NULL);
+		return;
+	}
+	
+	if (check_not_multi(order))
+		return;
+		
+	if (order->count < THIS->count)
+	{
+		CARRAY_out_of_bounds();
+		return;
+	}
+
+	data = THIS->data;
+	count = THIS->count;
+	size = THIS->size;
+	
+	if (count > 1)
+	{
+		ALLOC(&sort, sizeof(int) * count);
+		for (i = 0; i < count; i++)
+			sort[i] = i;
+
+		_using_data = order->data;
+		_using_size = order->size;
+		_using_func = COMPARE_get_func(order->type, VARGOPT(mode, 0));
+		
+		qsort(sort, count, sizeof(int), (COMPARE_FUNC)compare_using);
+		
+		for (i = 0; i < count; i++) 
+		{
+			j = i;
+			k = sort[j];
+			if (k < 0)
+				continue;
+			
+			while (k != i)
+			{
+				memcpy(old, data + j * size, size);
+				memcpy(data + j * size, data + k * size, size);
+				memcpy(data + k * size, old, size);
+				sort[j] = -1;
+				j = k;
+				k = sort[k];
+			}
+			
+			sort[j] = -1;
+		}
+
+		IFREE(sort);
 	}
 
 	GB_ReturnObject(THIS);
@@ -1363,7 +1574,7 @@ BEGIN_METHOD(Array_Bounds_get, GB_INTEGER index)
 
 	if (index < 0 || index >= dim)
 	{
-		GB_Error((char *)E_BOUND);
+		CARRAY_out_of_bounds();
 		return;
 	}
 
@@ -1381,7 +1592,7 @@ BEGIN_METHOD(Array_Byte_ToString, GB_INTEGER start; GB_INTEGER length)
 	
 	if (start < 0)
 	{
-		GB_Error((char *)E_BOUND);
+		CARRAY_out_of_bounds();
 		return;
 	}
 
@@ -1588,6 +1799,9 @@ static bool _convert(CARRAY *src, CLASS *class, VALUE *conv)
 #endif /* #ifndef GBX_INFO */
 
 
+//---------------------------------------------------------------------------
+
+
 GB_DESC NATIVE_ArrayBounds[] =
 {
 	GB_DECLARE(".Array.Bounds", sizeof(CARRAY)), GB_NOT_CREATABLE(),
@@ -1616,21 +1830,9 @@ GB_DESC NATIVE_Array[] =
 	GB_METHOD("Remove", NULL, Array_Remove, "(Index)i[(Length)i]"),
 	GB_METHOD("Clear", NULL, Array_Clear, NULL),
 	GB_METHOD("Resize", NULL, Array_Resize, "(Size)i"),
+	//GB_METHOD("Swap", NULL, Array_Swap, "(Index)i(Index2)i"),
+	GB_METHOD("Shuffle", NULL, Array_Shuffle, NULL),
 
-	//GB_METHOD("Add", NULL, Array_Add, "(Value)v[(Index)i]"),
-	//GB_METHOD("Push", NULL, Array_Push, "(Value)v"),
-	//GB_METHOD("_put", NULL, Array_put, "(Value)v(Index)i."),
-
-	//GB_METHOD("Pop", "v", Array_Pop_variant, NULL), // Does not work
-	//GB_METHOD("_get", "v", Array_get_variant, "(Index)i."),
-	//GB_METHOD("_next", "v", Array_next_variant, NULL),
-	//GB_PROPERTY_READ("Last", "v", Array_Last),
-
-	/*GB_METHOD("Copy", "Array", Array_Copy, "[(Start)i(Length)i]"),
-	GB_METHOD("Extract", "Array", Array_Extract, "(Start)i[(Length)i]"),
-	GB_METHOD("Delete", "Array", Array_Extract, "(Start)i[(Length)i]"),
-	GB_METHOD("Fill", NULL, Array_Fill, "(Value)v[(Start)i(Length)i]"),*/
-	
 	GB_INTERFACE("_convert", _convert),
 
 	GB_END_DECLARE
@@ -1664,6 +1866,7 @@ GB_DESC NATIVE_BooleanArray[] =
 	GB_METHOD("Extract", "Boolean[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Boolean[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Boolean[]", Array_Sort, "[(Mode)i]"),
+	GB_METHOD("SortUsing", "Boolean[]", Array_SortUsing, "(Order)Array;[(Mode)i]"),
 	GB_METHOD("Reverse", "Boolean[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, Array_Fill, "(Value)b[(Start)i(Length)i]"),
 
@@ -1698,6 +1901,7 @@ GB_DESC NATIVE_ByteArray[] =
 	GB_METHOD("Extract", "Byte[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Byte[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Byte[]", Array_Sort, "[(Mode)i]"),
+	GB_METHOD("SortUsing", "Byte[]", Array_SortUsing, "(Order)Array;[(Mode)i]"),
 	GB_METHOD("Reverse", "Byte[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, Array_Fill, "(Value)c[(Start)i(Length)i]"),
 
@@ -1735,6 +1939,7 @@ GB_DESC NATIVE_ShortArray[] =
 	GB_METHOD("Extract", "Short[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Short[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Short[]", Array_Sort, "[(Mode)i]"),
+	GB_METHOD("SortUsing", "Short[]", Array_SortUsing, "(Order)Array;[(Mode)i]"),
 	GB_METHOD("Reverse", "Short[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, Array_Fill, "(Value)h[(Start)i(Length)i]"),
 
@@ -1769,6 +1974,7 @@ GB_DESC NATIVE_IntegerArray[] =
 	GB_METHOD("Extract", "Integer[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Integer[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Integer[]", Array_Sort, "[(Mode)i]"),
+	GB_METHOD("SortUsing", "Integer[]", Array_SortUsing, "(Order)Array;[(Mode)i]"),
 	GB_METHOD("Reverse", "Integer[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, Array_Fill, "(Value)i[(Start)i(Length)i]"),
 
@@ -1804,6 +2010,7 @@ GB_DESC NATIVE_LongArray[] =
 	GB_METHOD("Extract", "Long[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Long[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Long[]", Array_Sort, "[(Mode)i]"),
+	GB_METHOD("SortUsing", "Long[]", Array_SortUsing, "(Order)Array;[(Mode)i]"),
 	GB_METHOD("Reverse", "Long[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, Array_Fill, "(Value)l[(Start)i(Length)i]"),
 
@@ -1852,6 +2059,7 @@ GB_DESC NATIVE_PointerArray[] =
 	GB_METHOD("Extract", "Pointer[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Pointer[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Pointer[]", Array_Sort, "[(Mode)i]"),
+	GB_METHOD("SortUsing", "Pointer[]", Array_SortUsing, "(Order)Array;[(Mode)i]"),
 	GB_METHOD("Reverse", "Pointer[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, Array_Fill, "(Value)p[(Start)i(Length)i]"),
 
@@ -1886,6 +2094,7 @@ GB_DESC NATIVE_StringArray[] =
 	GB_METHOD("Extract", "String[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "String[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "String[]", Array_Sort, "[(Mode)i]"),
+	GB_METHOD("SortUsing", "String[]", Array_SortUsing, "(Order)Array;[(Mode)i]"),
 	GB_METHOD("Reverse", "String[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, Array_Fill, "(Value)s[(Start)i(Length)i]"),
 
@@ -1921,6 +2130,7 @@ GB_DESC NATIVE_FloatArray[] =
 	GB_METHOD("Extract", "Float[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Float[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Float[]", Array_Sort, "[(Mode)i]"),
+	GB_METHOD("SortUsing", "Float[]", Array_SortUsing, "(Order)Array;[(Mode)i]"),
 	GB_METHOD("Reverse", "Float[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, Array_Fill, "(Value)f[(Start)i(Length)i]"),
 
@@ -1956,6 +2166,7 @@ GB_DESC NATIVE_SingleArray[] =
 	GB_METHOD("Extract", "Single[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Single[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Single[]", Array_Sort, "[(Mode)i]"),
+	GB_METHOD("SortUsing", "Single[]", Array_SortUsing, "(Order)Array;[(Mode)i]"),
 	GB_METHOD("Reverse", "Single[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, Array_Fill, "(Value)g[(Start)i(Length)i]"),
 
@@ -1991,6 +2202,7 @@ GB_DESC NATIVE_DateArray[] =
 	GB_METHOD("Extract", "Date[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Delete", "Date[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Sort", "Date[]", Array_Sort, "[(Mode)i]"),
+	GB_METHOD("SortUsing", "Date[]", Array_SortUsing, "(Order)Array;[(Mode)i]"),
 	GB_METHOD("Reverse", "Date[]", CARRAY_reverse, NULL),
 	GB_METHOD("Fill", NULL, Array_Fill, "(Value)d[(Start)i(Length)i]"),
 
@@ -2027,6 +2239,7 @@ GB_DESC NATIVE_ObjectArray[] =
 	GB_METHOD("Fill", NULL, Array_Fill, "(Value)o[(Start)i(Length)i]"),
 	GB_METHOD("Reverse", "Object[]", CARRAY_reverse, NULL),
 	GB_METHOD("Sort", "Object[]", Array_Sort, "[(Mode)i]"),
+	GB_METHOD("SortUsing", "Object[]", Array_SortUsing, "(Order)Array;[(Mode)i]"),
 
 	GB_END_DECLARE
 };
@@ -2057,6 +2270,8 @@ GB_DESC NATIVE_VariantArray[] =
 	GB_METHOD("Delete", "Variant[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Fill", NULL, Array_Fill, "(Value)v[(Start)i(Length)i]"),
 	GB_METHOD("Reverse", "Variant[]", CARRAY_reverse, NULL),
+	GB_METHOD("Sort", "Variant[]", Array_Sort, "[(Mode)i]"),
+	GB_METHOD("SortUsing", "Variant[]", Array_SortUsing, "(Order)Array;[(Mode)i]"),
 
 	GB_END_DECLARE
 };
@@ -2091,6 +2306,7 @@ GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
 	GB_METHOD("Delete", "*[]", Array_Extract, "(Start)i[(Length)i]"),
 	GB_METHOD("Fill", NULL, Array_Fill, "(Value)*;[(Start)i(Length)i]"),
 	GB_METHOD("Sort", "*[]", Array_Sort, "[(Mode)i]"),
+	GB_METHOD("SortUsing", "*[]", Array_SortUsing, "(Order)Array;[(Mode)i]"),
 	GB_METHOD("Reverse", "*[]", CARRAY_reverse, NULL),
 
 	GB_END_DECLARE
@@ -2170,7 +2386,5 @@ void GB_ArrayRemove(GB_ARRAY array, int index)
 {
 	copy_remove((CARRAY *)array, index, 1, FALSE, TRUE);
 }
-
-
 
 #endif

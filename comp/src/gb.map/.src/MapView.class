@@ -6,17 +6,15 @@ Inherits UserControl
 Public Const _Properties As String = "*,Border{Border.*},AllowEffect=true,ShowControls=true"
 Public Const _Group As String = "View"
 
-
+Property Read {Map} As Map                  '' Returns the inner Map object
+'Property Read DefaultProxy As _MapProxy    '' Returns or sets Default Proxy parameters.
 Property Lock As Boolean
-Property Border As Integer
-Property Read {Map} As Map
-Property AllowEffect As Boolean
-Property ShowControls As Boolean
-Property Mode As Integer
-Private $iMode As Integer
+Property Border As Integer                  '' Returns or sets the border type of the control.
+Property AllowEffect As Boolean             '' Returns or sets this Control visual effects.
+Property ShowControls As Boolean            '' Returns or sets Zoom control.
+' Property Mode As Integer
+' Private $iMode As Integer
 Private $bShowControls As Boolean = True
-
-
 Private $hCenter As MapPoint
 Private $hMap As New Map As "Map"
 Private $hView As DrawingArea
@@ -41,6 +39,7 @@ Private $bAllowEffect As Boolean = True
 Private $hViewLayer As New _ViewLayer As "ViewLayer"
 Private $tX As Integer
 Private $tY As Integer
+' Public _Proxy As _MapProxy
 Event Click
 Event Draw
 
@@ -66,7 +65,6 @@ Public Sub _GetMaxZoom() As Integer
   Return $hmap.MaxZoom
 
 End
-
 
 
 Public Sub SetCenter(hMapPoint As MapPoint)
@@ -167,6 +165,31 @@ Public Sub View_MouseWheel()
 
 End
 
+'' Saves actual MapView picture as file
+'' - For file format and quality check
+''   [http://gambaswiki.org/wiki/comp/gb.qt4/image/save]
+' Public Sub Save(Path As String, Optional Quality As Integer)
+'   'http://sourceforge.net/p/gambas/mailman/message/32083180/
+' 
+'   Dim hPicture As New Picture($hView.W, $hView.H)
+'   Dim bControlState As Boolean = Me.ShowControls
+' 
+'   If bControlState = True Then Me.ShowControls = False
+' 
+'   Paint.Begin(hPicture)
+'   '  DrawMap()
+'   Paint.End()
+' 
+'   Me.ShowControls = bControlState
+' 
+'   If Exist(Path) Then
+'     Error.Raise("File already exists: " & Path)
+'   Else
+'     hPicture.Save(Path, Quality)
+'   Endif
+' 
+' End
+
 Public Sub _ZoomUp(X As Integer, Y As Integer)
 
   $ZX = X
@@ -263,7 +286,7 @@ Public Sub View_MouseMove()
 End
 
 Public Sub View_Arrange()
-
+  
   $hMap.Resize($hView.ClientW, $hView.ClientH)
   $hZoomBuffer.Resize($hView.ClientW, $hView.ClientH)
   $iZoomWay = 0
@@ -354,14 +377,14 @@ Private Sub ShowControls_Write(Value As Boolean)
 
 End
 
-Private Function Mode_Read() As Integer
-
-
-
-End
-
-Private Sub Mode_Write(Value As Integer)
-
-
-
-End
+' Private Function Mode_Read() As Integer
+' 
+' 
+' 
+' End
+' 
+' Private Sub Mode_Write(Value As Integer)
+' 
+' 
+' 
+' End

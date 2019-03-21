@@ -730,6 +730,22 @@ BEGIN_METHOD(File_IsHidden, GB_STRING path)
 
 END_METHOD
 
+BEGIN_METHOD(File_RealPath, GB_STRING path)
+
+	char *path = STRING_conv_file_name(STRING(path), LENGTH(path));
+	char *rpath = NULL;
+	
+	if (!FILE_is_relative(path))
+	{
+		rpath = realpath(path, NULL);
+		path = rpath;
+	}
+	
+	GB_ReturnNewZeroString(path);
+	if (rpath) free(rpath);
+
+END_METHOD
+
 //---------------------------------------------------------------------------
 
 BEGIN_PROPERTY(Stream_Handle)
@@ -1114,6 +1130,8 @@ GB_DESC FileDesc[] =
 	GB_STATIC_METHOD("Load", "s", File_Load, "(FileName)s"),
 	GB_STATIC_METHOD("Save", NULL, File_Save, "(FileName)s(Data)s"),
 
+	GB_STATIC_METHOD("RealPath", "s", File_RealPath, "(Path)s"),
+	
 	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 	GB_EVENT("Write", NULL, NULL, &EVENT_Write),
 	GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),

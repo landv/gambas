@@ -125,6 +125,7 @@ static void main_exit(bool silent)
 
 	TRY
 	{
+		JIT_abort();
 		SIGNAL_exit();
 		EXTERN_release();
 		STREAM_exit();

@@ -261,6 +261,8 @@ static void control_enter(int type)
 	}
 
 	JOB->func->nctrl = Max(JOB->func->nctrl, ctrl_local);
+	if ((JOB->func->nctrl + JOB->func->nlocal) > MAX_LOCAL_SYMBOL)
+		THROW("Too many local variables");
 
 	ctrl_level++;
 }
@@ -320,11 +322,12 @@ static void check_try(const char *name)
 {
 	if (TRANS_in_try)
 	{
-		TRANS_in_try = FALSE;
-		if (name)
-			THROW("Cannot use TRY with &1", name);
+		const char *keyword = TRANS_in_try == RS_TRY ? "TRY" : "ASSERT";
+		TRANS_in_try = RS_NONE;
+		if (strcmp(name, keyword))
+			THROW("Cannot use &1 with &2", keyword, name);
 		else
-			THROW("Cannot use TRY twice");
+			THROW("Cannot use &1 twice", keyword);
 	}
 }
 
@@ -1136,18 +1139,52 @@ void TRANS_next(void)
 }
 
 
+void TRANS_assert(void)
+{
+	ushort pos;
+	
+	check_try("ASSERT");
+
+	if (!JOB->debug || JOB->exec)
+		CODE_disable();
+
+	TRANS_in_try = RS_ASSERT;
+	
+	TRANS_expression(FALSE);
+	
+	if (PATTERN_is(*JOB->current, RS_PRINT) || PATTERN_is(*JOB->current, RS_ERROR))
+	{
+		CODE_dup();
+		pos = CODE_get_current_pos();
+		CODE_jump_if_true();
+	
+		TRANS_statement();
+	
+		jump_length(pos, CODE_get_current_pos());
+	}
+
+	TRANS_subr(TS_SUBR_DEBUG, 1);
+	CODE_drop();
+
+	TRANS_in_try = RS_NONE;
+	
+	if (!JOB->debug || JOB->exec)
+		CODE_enable();
+}
+
+
 void TRANS_try(void)
 {
 	ushort pos;
 
-	check_try(NULL);
+	check_try("TRY");
 
 	pos = CODE_get_current_pos();
 	CODE_try();
 
-	TRANS_in_try = TRUE;
+	TRANS_in_try = RS_TRY;
 	TRANS_statement();
-	TRANS_in_try = FALSE;
+	TRANS_in_try = RS_NONE;
 
 	jump_length(pos, CODE_get_current_pos());
 	CODE_end_try();

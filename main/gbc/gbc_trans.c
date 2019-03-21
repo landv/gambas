@@ -45,7 +45,7 @@
 
 short TRANS_in_assignment = 0;
 short TRANS_in_left_value = 0;
-bool TRANS_in_try = FALSE;
+short TRANS_in_try = RS_NONE;
 
 void TRANS_reset(void)
 {

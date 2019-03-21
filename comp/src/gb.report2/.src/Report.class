@@ -94,6 +94,14 @@ Static Public Sub Main()
   
 End
 
+Static Public Sub _init()
+  
+  If Not Component.IsLoaded("gb.eval") Then Component.Load("gb.eval")
+  
+End
+
+
+
 Public Sub _New()
   
   Dim hSection As New ReportSection

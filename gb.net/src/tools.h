@@ -21,7 +21,10 @@
 
 ***************************************************************************/
 
-#include <termios.h>
+#ifndef __TOOLS_H
+#define __TOOLS_H
+
+#include "CSerialPort.h"
 
 #ifdef __sun__
 
@@ -62,5 +65,6 @@ int ConvertStopBits(int nStop);
 int ConvertDataBits(int nBits);
 int ConvertParity(int parity);
 void CloseSerialPort(int fd,struct termios *oldtio);
-int OpenSerialPort(int *fd,int iflow,struct termios *oldtio, \
-                   char *sName,int nBauds,int parity,int nBits,int nStop);
+bool OpenSerialPort(CSERIALPORT *_object);
+
+#endif

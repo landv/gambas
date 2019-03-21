@@ -245,9 +245,9 @@ SDL_Image *FONT_render_text(CFONT *_object, CWINDOW *window, char *text, int len
 	{
 		SDL_Color color = { 0xFF, 0xFF, 0xFF, 0xFF };
 		char c = text[len];
-		text[len] = 0;
+		if (c) text[len] = 0;
 		surface = TTF_RenderUTF8_Blended(THIS->font, text, color);
-		text[len] = c;
+		if (c) text[len] = c;
 		*w = surface->w;
 		*h = surface->h;
 	}

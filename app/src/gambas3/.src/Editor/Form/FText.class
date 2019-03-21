@@ -3,12 +3,13 @@
 Static Public Value As String
 
 
-Static Public Function Run(sText As String) As Boolean
+Static Public Function Run(sText As String, sProperty As String) As Boolean
 
   Dim hForm As Form
 
   Value = sText
   hForm = New FText
+  hForm.Title = Subst(("Edit '&1' property"), sProperty)
 
   Return Not hForm.ShowModal()
 

@@ -209,12 +209,12 @@ int EXPORT GB_INIT(void)
 	GB.Hook(GB_HOOK_QUIT, (void *)my_quit);
 	_old_hook_main = GB.Hook(GB_HOOK_MAIN, (void *)my_main);
 	GB.Hook(GB_HOOK_WAIT, (void *)my_wait);
-	GB.Hook(GB_HOOK_LOOP, (void *)my_loop);
 	GB.Hook(GB_HOOK_TIMER,(void *)my_timer);
 	GB.Hook(GB_HOOK_WATCH,(void *)my_watch);
 	GB.Hook(GB_HOOK_POST,(void*)my_post);
 	GB.Hook(GB_HOOK_ERROR,(void*)my_error);
 	GB.Hook(GB_HOOK_LANG,(void*)my_lang);
+	GB.Hook(GB_HOOK_LOOP, (void *)my_loop);
 
 	GB.Component.Load("gb.draw");
 	GB.Component.Load("gb.image");

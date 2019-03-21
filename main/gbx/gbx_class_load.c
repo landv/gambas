@@ -1256,14 +1256,8 @@ static void load_without_inits(CLASS *class)
 			ARCHIVE *arch = class->component ? class->component->archive : NULL;
 			
 			if (JIT_can_compile(arch))
-			{
-				if (JIT_compile(arch))
-				{
-					for(i = 0; i < class->load->n_func; i++)
-						class->load->func[i].fast = FALSE;
-				}
-			}
-			
+				JIT_compile(arch);
+
 			break;
 		}
 	}

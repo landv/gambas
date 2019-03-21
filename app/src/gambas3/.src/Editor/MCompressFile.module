@@ -2,7 +2,8 @@
 
 Private Const IDENT_CAR As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$"
 Private Const IDENT_CAR_CSS As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.#"
-Private Const SUBST_CAR As String = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+Private Const SUBST_CAR_FIRST As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+Private Const SUBST_CAR As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 Private $aExt As String[] = ["js", "css", "html"]
 
@@ -74,18 +75,22 @@ Private Sub SubstIdent(sIdent As String)
   If $iDoNotCompress Then Return
   If $cSubst.Exist(sIdent) Then Return
   
-  Repeat 
+  Do
     
     Inc $iSubst
     iIndex = $iSubst
     sSubst = ""
     
-    Repeat
-      sSubst = Mid$(SUBST_CAR, 1 + iIndex Mod Len(SUBST_CAR), 1) & sSubst
+    sSubst = Mid$(SUBST_CAR_FIRST, 1 + iIndex Mod Len(SUBST_CAR_FIRST), 1)
+    iIndex \= Len(SUBST_CAR_FIRST)
+    While iIndex
+      sSubst &= Mid$(SUBST_CAR, 1 + iIndex Mod Len(SUBST_CAR), 1) '& sSubst
       iIndex \= Len(SUBST_CAR)
-    Until iIndex = 0
+    Wend
   
-  Until Not $cIdent.Exist(sSubst)
+    If Not $cIdent.Exist(sSubst) And If Not $cKeyword.Exist(sSubst) Then Break
+  
+  Loop
   
   $cSubst[sIdent] = sSubst
 
@@ -349,7 +354,9 @@ Public Sub Javascript(sText As String) As String
           Continue
         Endif
       Endif
+      
       sCar = " "
+      
       If InStr("=", Right(sCar2)) = 0 And If sLastKeyword <> "return" Then
         If (Len(sRes) - iLastNewLine) > 76 Or If Mid$(sText, iPos + 1) Begins "function " Then 
           sRes &= "\n"
@@ -359,6 +366,8 @@ Public Sub Javascript(sText As String) As String
       If Right(sRes) = "}" And If IsLetter(Right(sCar2)) Then 
         sCar = "\n"
         iLastNewLine = Len(sRes) + 1
+      Else If InStr("+-*/=", Right(sRes)) And If Right(sRes) = Right(sCar2) Then
+        ' keep the space
       Else
         If InStr(IDENT_CAR, Right(sRes)) = 0 And If Right(sRes) <> "}" Then Continue
         If InStr(IDENT_CAR, Right$(sCar2)) = 0 Then Continue

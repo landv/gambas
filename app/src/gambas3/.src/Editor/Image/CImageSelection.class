@@ -759,7 +759,7 @@ Public Sub HFlip()
   
   hMatrix.Translate(hExt.X + hExt.W / 2, hExt.Y + hExt.H / 2)
   hMatrix.Scale(-1, 1)
-  hMatrix.Translate(- (hExt.X + hExt.W / 2), - (hExt.Y + hExt.H / 2))
+  hMatrix.Translate(-(hExt.X + hExt.W / 2), -(hExt.Y + hExt.H / 2))
   Apply(hMatrix)
 
 End
@@ -773,7 +773,7 @@ Public Sub VFlip()
   
   hMatrix.Translate(hExt.X + hExt.W / 2, hExt.Y + hExt.H / 2)
   hMatrix.Scale(1, -1)
-  hMatrix.Translate(- (hExt.X + hExt.W / 2), - (hExt.Y + hExt.H / 2))
+  hMatrix.Translate(-(hExt.X + hExt.W / 2), -(hExt.Y + hExt.H / 2))
   Apply(hMatrix)
 
 End
@@ -787,7 +787,7 @@ Public Sub Rotate(fAngle As Float)
   
   hMatrix.Translate(hExt.X + hExt.W / 2, hExt.Y + hExt.H / 2)
   hMatrix.Rotate(fAngle)
-  hMatrix.Translate(- (hExt.X + hExt.W / 2), - (hExt.Y + hExt.H / 2))
+  hMatrix.Translate(-(hExt.X + hExt.W / 2), -(hExt.Y + hExt.H / 2))
   Apply(hMatrix)
   
 End
@@ -806,9 +806,9 @@ Public Sub Scale(SX As Float, SY As Float, Optional bTopLeft As Boolean)
   Endif
   hMatrix.Scale(SX, SY)
   If bTopLeft Then 
-    hMatrix.Translate(- hExt.X, - hExt.Y)
+    hMatrix.Translate(-hExt.X, -hExt.Y)
   Else
-    hMatrix.Translate(- (hExt.X + hExt.W / 2), - (hExt.Y + hExt.H / 2))
+    hMatrix.Translate(-(hExt.X + hExt.W / 2), -(hExt.Y + hExt.H / 2))
   Endif
   Apply(hMatrix)
   

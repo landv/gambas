@@ -109,29 +109,28 @@ void XMLDocument_Open(Document *doc, const char *fileName, const size_t lenFileN
 
 void XMLDocument_SetContent(Document *doc, const char *content, const size_t len)
 {
-    char *posStart = 0, *posEnd = 0;
+    const char *posStart = 0, *posEnd = 0;
     
     if(doc->docType == XMLDocumentType)
     {
         //On cherche le début du prologue XML
-        posStart = (char*)memchrs(content, len, "<?xml ", 6);
+        posStart = (const char*)memchrs(content, len, "<?xml ", 6);
 
         if(posStart)//On cherche la fin du prologue XML
         {
-            posEnd = (char*)memchrs(posStart, len - (posStart - content), "?>", 2);
+            posEnd = (const char*)memchrs(posStart, len - (posStart - content), "?>", 2);
             posEnd += 2;
         }
     }
     else
     {
         //On cherche le début du prologue XML
-        posStart = (char*)memchrs(content, len, "<!DOCTYPE ", 10);
-        if(!posStart) posStart = (char*)memchrs(content, len, "<!doctype ", 10);
+	posStart = strcasestr(content, "<!DOCTYPE ");
 
         //On cherche la fin du prologue XML
         if(posStart)
         {
-            posEnd = (char*)memchr(posStart, '>', len - (posStart - content));
+            posEnd = (const char*)memchr(posStart, '>', len - (posStart - content));
 
             if(posEnd)
             {

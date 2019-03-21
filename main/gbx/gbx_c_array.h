@@ -85,6 +85,13 @@ int CARRAY_get_static_count(CLASS_ARRAY *desc);
 size_t CARRAY_get_static_size(CLASS *class, CLASS_ARRAY *desc);
 void CARRAY_release_static(CLASS *class, CLASS_ARRAY *desc, void *data);
 
+#define CARRAY_get_data_unsafe(_array, _index) \
+({ \
+	int __index = (_index); \
+	CARRAY *__array = (CARRAY *)(_array); \
+	(void *)((char *)(__array->data) + __index * __array->size); \
+})
+
 #define CARRAY_get_data(_array, _index) \
 ({ \
 	int __index = (_index); \
@@ -109,7 +116,7 @@ void CARRAY_release_static(CLASS *class, CLASS_ARRAY *desc, void *data);
 
 #endif  // #ifndef __GBX_CLASS_INFO_C 
 
-#define ARRAY_TEMPLATE_NDESC 23
+#define ARRAY_TEMPLATE_NDESC 24
 #define ARRAY_OF_STRUCT_TEMPLATE_NDESC 15
 
 #endif

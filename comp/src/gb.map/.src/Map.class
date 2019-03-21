@@ -1,17 +1,22 @@
 ' Gambas class file
 
+'TODO: Add methods to remove Tiles and Shapes
+
 Export
-Static Public Debug As Boolean
+'Static Public Debug As Boolean
+Static Public Debug As Boolean               '' Returns or sets the Debug messages
+Property Read PixelBox As Rect
+Property Read Bounds As MapBounds             '' Returns the lat/lon coordinates at the limits of the drawed map.
+Property Read Count As Integer                '' Returns the number of Map Layers
+Property Read Proxy As _MapProxy              '' Returns a object used for defining proxy parameters.
+Property DefaultCache As String               '' Returns or sets the default cache path for storing Tiles
 Property Top, Y As Integer
 Property Left, X As Integer
 Property Width As Integer
 Property Height As Integer
-Property Zoom As Integer 
-Property Center As MapPoint
-Property Read PixelBox As Rect
-Property Read Bounds As MapBounds
-Property Read Count As Integer
-Property MaxZoom As Integer
+Property Zoom As Integer                      '' Returns or sets the actual Map zoom level
+Property Center As MapPoint                   '' Returns or sets the center point of the map
+Property MaxZoom As Integer                   '' Returns or sets the maximum Map zoom level
 Private $iMaxZoom As Integer = 18
 Private $iZoom As Integer = 1
 Private $mpCenter As New MapPoint
@@ -27,84 +32,91 @@ Private $PrevBox As Rect
 Private $iPrevent As Integer = 256
 Private $aLayers As New _MapLayer[]
 Private $aLayerNames As New String[]
+Private $sCachePath As String = User.Home &/ ".cache/gb.map"
 Public _ShowWithEffect As Boolean
-Static Public _Debug As Boolean
+Public _Proxy As _MapProxy
+
 Event Refresh
 Event Draw
 
 Private Function Top_Read() As Integer
-  
+
   Return $iTop
-  
+
 End
 
 Private Sub Top_Write(Value As Integer)
-  
+
   $iTop = Value
-  
+
 End
 
 Private Function Left_Read() As Integer
-  
+
   Return $iLeft
-  
+
 End
 
 Private Sub Left_Write(Value As Integer)
-  
+
   $iLeft = Value
-  
+
 End
 
 Private Function Width_Read() As Integer
-  
+
   Return $iWidth
-  
+
 End
 
 Private Sub Width_Write(Value As Integer)
-  
+
   $iWidth = Value
   SetBoxes
-  
+
 End
 
 Private Function Height_Read() As Integer
-  
+
   Return $iHeight
-  
+
 End
 
 Private Sub Height_Write(Value As Integer)
-  
+
   $iHeight = Value
   SetBoxes
-  
+
 End
 
 Private Sub SetBoxes()
-  
+
   Dim ptCenter As Point
-  Dim iMaxSize As Integer
+  ' Dim iMaxSize As Integer
   If Not $PrevBox Then 
     $PrevBox = $PixelBox.Copy()
     tmrLoad.Trigger
   Endif
-  
+
   'Create the pixBox
   ptCenter = Geo.MapPointToPixel($mpCenter, $iZoom)
-  'Set a square surface on max size
-  iMaxSize = Max($iWidth, $iHeight)
   
-    $PixelBox.X = ptCenter.X - (iMaxSize / 2)
-    $PixelBox.Y = ptCenter.Y - (iMaxSize / 2)
-    $PixelBox.Right = ptCenter.x + (iMaxSize / 2)
-    $PixelBox.Bottom = ptCenter.Y + (iMaxSize / 2)
-
+  'trying to understand why "square surface"...
+  ' 'Set a square surface on max size
+  ' iMaxSize = Max($iWidth, $iHeight)
+  ' 
+  '   $PixelBox.X = ptCenter.X - (iMaxSize / 2)
+  '   $PixelBox.Y = ptCenter.Y - (iMaxSize / 2)
+  '   $PixelBox.Right = ptCenter.x + (iMaxSize / 2)
+  '   $PixelBox.Bottom = ptCenter.Y + (iMaxSize / 2)
+    $PixelBox.X = ptCenter.X - ($iWidth / 2)
+    $PixelBox.Y = ptCenter.Y - ($iHeight / 2)
+    $PixelBox.Right = ptCenter.x + ($iWidth / 2)
+    $PixelBox.Bottom = ptCenter.Y + ($iHeight / 2)
   
   $Bounds.TopLeft = Geo.PixelToMapPoint(Point($PixelBox.x, $PixelBox.y), $iZoom)
   $Bounds.BottomRight = Geo.PixelToMapPoint(Point($PixelBox.Right, $PixelBox.Bottom), $iZoom)
-  
+
   '$PixelBox.Width = $iWidth
   '$PixelBox.Height = $iHeight
   ' Print "Largeur/hauteur", $iWidth, $iHeight
@@ -122,126 +134,176 @@ Private Sub SetBoxes()
     tmrLoad.Trigger
   Endif
   'tmrLoad.Trigger
-  
+
 End
 
 Private Function PixelBox_Read() As Rect
-  
+
   Return $PixelBox
-  
+
 End
 
 Private Function Zoom_Read() As Integer
-  
+
   Return $iZoom
-  
+
 End
 
 Private Sub Zoom_Write(Value As Integer)
-  
+
   Dim i As Integer
-  
+
   $iZoom = Min(Max(Value, 1), $iMaxZoom)
   For i = 0 To $aLayers.Max
     $aLayers[i].Refresh
   Next
   SetBoxes
   tmrLoad.Trigger
-  
+
 End
 
 Private Function Center_Read() As MapPoint
-  
+
   Return $mpCenter
-  
+
 End
 
 Private Sub Center_Write(Value As MapPoint)
-  
+
   'Print Value.Lat, Value.Lon
   $mpCenter = Value
   SetBoxes
-  
+
 End
 
 Public Sub tmrLoad_Timer()
-  
+
   Dim hLayer As _MapLayer
-  
+
   For Each hLayer In $aLayers
-    If hLayer.Visible Then hLayer.Load
+    If hLayer.Visible Then hLayer._Load
   Next
-  
+
 End
 
 Public Sub Resize(iWidth As Integer, iHeight As Integer)
-  
+
   $iWidth = iWidth
   $iHeight = iHeight
   SetBoxes
-  
+
 End
 
+'' Adds a new Tileset Layer from remote server or local cache to the current Map
+'' - Name
+'' - Pattern
+'' - Args
+'' - Cachename defines local folder name to store Tiles.
+''   If CacheName is provided, stores and load Tiles in/from local cache path defined by *DefaultCache* property.
 Public Sub AddTile(Name As String, Pattern As String, Optional Args As Collection, Optional CacheName As String) As _MapTile
-  
-  Dim hLayer As New _MapTile(CacheName)
-  
-  hLayer.Name = Name
+
+  Dim hLayer As New _MapTile(CacheName, Me)
+
   'hLayer.Pattern = Pattern
   hLayer.SetPattern(Pattern, Args)
   $aLayers.Add(hLayer)
   $aLayerNames.Add(Name)
-  Object.Attach(hLayer, Me, "Layer")
+  'Object.Attach(hLayer, Me, "Layer")
   Return hLayer
-  
+
 End
 
+'' Adds a new Shape Layer to the current Map
+'' - Name
 Public Function AddShape(Name As String) As _MapShape
-  
-  Dim hLayer As New _MapShape
-  
+
+  Dim hLayer As New _MapShape(Me)
+
   hLayer.Name = Name
-  
+
   $aLayers.Add(hLayer)
   $aLayerNames.Add(Name)
-  Object.Attach(hLayer, Me, "Layer")
+  'Object.Attach(hLayer, Me, "Layer")
   'If Shape Then hLayer.Data = Shape
   Return hLayer
-  
+
 End
 
-Public Sub _get(Name As String) As Object
-  
+'' Removes a Layer
+'' - Name is any Tile or Shape Layer
+Public Sub Remove(Name As String)
+
+  'If Not $aLayerNames.Exist(Name) Then Error.Raise("Layer not found: " & Name)
+
+  Dim iRet As Integer = $aLayerNames.Find(Name)
+  $aLayers.Remove(iRet)
+  $aLayerNames.Remove(iRet)
+
+End
+
+'' Returns if a given Layer actually exists
+'' - Name
+'' - The Mode argument is one of the comparison methods available.
+''   See Predefined Constants For a list Of comparison methods.
+Public Function Exists(Name As String, Optional Mode As Integer) As Boolean
+
+  Return $aLayerNames.Exist(Name, Mode)
+
+End
+
+'' Returns a _MapTile Layer object
+'' This is an alternative method to fetch Map array elements
+'' - Name is a Tile name
+Public Sub GetTile(Name As String) As _MapTile
+
   Try Return $aLayers[$aLayerNames.Find(Name)]
-  
+
 End
 
+'' Returns a _MapShape object layer
+'' This is an alternative method to fetch Map array elements
+Public Sub GetShape(Name As String) As _MapShape
+
+  Try Return $aLayers[$aLayerNames.Find(Name)]
+
+End
+
+'' Hidden method so can be an readable Array
+'' - Returns any Layer Object, whatever its a MapTile or MapShape
+'' - See GetTile or GetShape
+Public Sub _get(Name As String) As Object
+
+  Try Return $aLayers[$aLayerNames.Find(Name)]
+
+End
+
+'' Hidden method so can be enumerable
 Public Sub _next() As Object
-  
+
   If IsNull(Enum.Index) Then Enum.Index = 0 Else Inc Enum.Index
-  
+
   If Enum.Index > $aLayers.Max Then
     Enum.Stop
     Return
   Endif
-  
+
   Return $aLayers[Enum.Index]
-  
+
 End
 
 Public Sub Draw()
-  
+
   Dim hLayer As _MapLayer
   Dim sCopyright As String
   Dim iTextHeight, iTextWidth As Integer
   'Draw.Rect(0, 0, Me.Width, Me.Height)
   For Each hLayer In $aLayers
     If hLayer.Visible Then 
-      hLayer._Draw
+      hLayer.Draw
       sCopyright &/= hLayer.Copyright
     Endif
   Next
-  
+
   If sCopyright Then
     Draw.FillStyle = Fill.Solid
     Draw.FillColor = Color.SetAlpha(Color.Pink, 150)
@@ -249,28 +311,28 @@ Public Sub Draw()
     iTextWidth = Draw.TextWidth(sCopyright)
     Draw.Rect(Draw.Width - iTextWidth - 5, Draw.Height - iTextHeight - 2, iTextWidth + 6, iTextHeight + 4)
     Draw.Text(sCopyright, Draw.Width - iTextWidth, Draw.Height - iTextHeight)
-  Endif 
+  Endif
   Raise Draw
 
 End
 
 Public Sub Layer_Refresh()
-  
+
   tmrDraw.Trigger
-  
+
 End
 
 Public Sub tmrDraw_Timer()
-  
+
   Raise Refresh
-  
+
 End
 
 Public Sub Refresh()
-  
+
   SetBoxes
   tmrLoad.Trigger
-  
+
 End
 
 ' Private Function Preload_Read() As Boolean
@@ -282,13 +344,16 @@ End
 ' End
 
 Private Function Bounds_Read() As MapBounds
-  
+
   Return $Bounds
-  
+
 End
 
+'' Return an image of the given bounds, with
+'' the given With And height, With the given margin arround.If
+'' the zoom Is Not defined Then the better rendering zoom Is Used.
 Public Function Grab(Bounds As MapBounds, iWidth As Integer, iHeight As Integer, Optional Padding As Integer, Optional Zoom As Integer) As Image
-  
+
   Dim i As Integer
   Dim hBndCenter As MapPoint = MapPoint((Bounds.Lat + Bounds.Lat2) / 2, (Bounds.Lon + Bounds.Lon2) / 2)
   Dim hPix, hPix2 As Point
@@ -299,13 +364,13 @@ Public Function Grab(Bounds As MapBounds, iWidth As Integer, iHeight As Integer,
   'On centre la carte sur le bound
   Me.Center = hBndCenter
   Me.Resize(iwidth, iHeight)
-  
+
   If Zoom Then 
-    
+
     Me.Zoom = Zoom
-    
+
   Else
-    
+
     For i = $iMaxZoom To 1 Step -1
       hpix = Geo.MapPointToPixel(hBndCenter, i)
       hPix2 = Geo.MapPointToPixel(Bounds.BottomRight, i)
@@ -313,12 +378,12 @@ Public Function Grab(Bounds As MapBounds, iWidth As Integer, iHeight As Integer,
         Break
       Endif
     Next
-    
+
     Me.Zoom = i 
   Endif
-  
+
   tmrLoad_Timer
-  
+
   Repeat
     bLoad = False
     For Each hLayer In $aLayers
@@ -326,16 +391,16 @@ Public Function Grab(Bounds As MapBounds, iWidth As Integer, iHeight As Integer,
       Wait
     Next
   Until bLoad = False
-  
+
   Draw.Begin(hImg)
   Draw()
   Draw.End
-  
-  Return hImg
-  
-End
-''Return a Point relative to the view from a MapPoint
 
+  Return hImg
+
+End
+
+'' Return a Point relative to the view from a MapPoint
 Public Function MapPointToPixelRel(hMapPoint As MapPoint) As Point
 
   Dim hPoint As Point
@@ -346,7 +411,7 @@ Public Function MapPointToPixelRel(hMapPoint As MapPoint) As Point
 
 End
 
-''Return a MapPoint from a point relative to the view
+'' Return a MapPoint from a point relative to the view
 Public Function PixelToMapPointRel(hPoint As Point) As MapPoint
 
   Dim pt As Point = hPoint.Copy()
@@ -357,19 +422,39 @@ Public Function PixelToMapPointRel(hPoint As Point) As MapPoint
 End
 
 Private Function Count_Read() As Integer
-  
+
   Return $aLayers.Count
-  
+
 End
 
 Private Function MaxZoom_Read() As Integer
-  
+
   Return $iMaxZoom
-  
+
 End
 
 Private Sub MaxZoom_Write(Value As Integer)
 
   $iMaxZoom = Value
+
+End
+
+Private Function Proxy_Read() As _MapProxy
+
+  If Not _Proxy Then _Proxy = New _MapProxy
+  Return _Proxy
+
+End
+
+Private Function DefaultCache_Read() As String
+
+  Return $sCachePath
+
+End
+
+Private Sub DefaultCache_Write(Value As String)
+  'TODO: check if Ok
+
+  $sCachePath = Value
 
 End

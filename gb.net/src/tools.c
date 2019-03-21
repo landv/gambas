@@ -21,9 +21,8 @@
 
 ***************************************************************************/
 
-#include "tools.h"
-#include "main.h"
-#include "gambas.h"
+#define __TOOLS_C
+
 #include <sys/poll.h>
 #include <termios.h>
 #include <fcntl.h>
@@ -34,10 +33,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+
+#include "main.h"
+#include "gambas.h"
+#include "speed.h"
+#include "tools.h"
 
 #ifdef __CYGWIN__
 #define FIONREAD TIOCINQ
 #endif
+
+#define THIS ((CSERIALPORT *)_object)
 
 void correct_url(char **buf,char *protocol)
 {
@@ -353,75 +360,105 @@ void CloseSerialPort(int fd,struct termios *oldtio)
 	close(fd);
 }
 
-int OpenSerialPort(int *fd,int iflow,struct termios *oldtio,char *sName,int nBauds,int parity,int nBits,int nStop)
+bool OpenSerialPort(CSERIALPORT *_object)
 {
-	int Of_Baud;
-	int Of_Par;
-	int Of_Bits;
-	int Of_Stop;
-	int HardFlow=0;
-	int SoftFlow=0;
+	int fd;
+	int speed;
+	int parity;
+	int data_bits;
+	int stop_bits;
+	int hard_flow = 0;
+	int soft_flow = 0;
 	struct termios newtio;
 
-  switch(iflow)
+  switch(THIS->flow)
 	{
-		case 1: HardFlow=CRTSCTS; break;
-		case 2: SoftFlow=IXON | IXOFF | IXANY; break;
-		case 3: HardFlow=CRTSCTS; SoftFlow=IXON | IXOFF | IXANY; break;
+		case 1: hard_flow = CRTSCTS; break;
+		case 2: soft_flow = IXON | IXOFF | IXANY; break;
+		case 3: hard_flow = CRTSCTS; soft_flow = IXON | IXOFF | IXANY; break;
 	}
 
-	if ( (Of_Baud = ConvertBaudRate(nBauds)) == -1 ) return 1;
-	if ( (Of_Par = ConvertParity(parity)) == -1 ) return 2;
-	if ( (Of_Bits = ConvertDataBits(nBits)) == -1 ) return 3;
-	if ( (Of_Stop = ConvertStopBits(nStop)) == -1 ) return 4;
-
-  *fd=open(sName,O_RDWR | O_NOCTTY | O_NDELAY );
-	if ( (*fd) < 0 ) return 5;
-	if (oldtio)
+	speed = ConvertBaudRate(THIS->speed);
+	parity = ConvertParity(THIS->parity);
+	data_bits = ConvertDataBits(THIS->dataBits);
+	stop_bits = ConvertStopBits(THIS->stopBits);
+	
+	if (parity < 0 || data_bits < 0 || stop_bits < 0)
 	{
-		if ( tcgetattr (*fd,oldtio) == -1)
-		{
-			close(*fd);
-			return 6;
-		}
+		GB.Error(GB_ERR_ARG);
+		return TRUE;
+	}
+	
+  fd = open(THIS->portName, O_RDWR | O_NOCTTY | O_NDELAY );
+	if (fd < 0)
+	{
+		GB.Error("Unable to open port: &1", strerror(errno));
+		return TRUE;
+	}
+	
+	if (tcgetattr(fd, &newtio))
+	{
+		close(fd);
+		GB.Error("Unable to get configuration: &1", strerror(errno));
+		return TRUE;
 	}
 
-	if (tcgetattr (*fd,&newtio) == -1 )
-	{
-		close(*fd);
-		return 6;
-	}
+	THIS->oldtio = newtio;
+	
 	// cleaning default options
 	newtio.c_cflag &= ~(CSIZE | CSTOPB | PARENB | PARODD | CRTSCTS);
-	newtio.c_iflag &= ~( INPCK | ISTRIP | IGNPAR | IXON | IXOFF | IXANY | ICRNL | INLCR );
-	newtio.c_lflag &= ~( ICANON | ECHO | ECHOE | ISIG );
+	newtio.c_iflag &= ~(INPCK | ISTRIP | IGNPAR | IXON | IXOFF | IXANY | ICRNL | INLCR);
+	newtio.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
 	// setting options
-	newtio.c_cflag=  Of_Bits | Of_Stop | Of_Par | CLOCAL | CREAD | HUPCL | HardFlow;
+	newtio.c_cflag=  data_bits | stop_bits | parity | CLOCAL | CREAD | HUPCL | hard_flow;
 
-	if ( Of_Par & PARENB )
+	if (parity & PARENB)
 		newtio.c_iflag |= INPCK; // Why stripping the eight bit when parity is enabled?? | ISTRIP;
 	else
 		newtio.c_iflag |= IGNPAR;
 
-	newtio.c_iflag |= SoftFlow;
+	newtio.c_iflag |= soft_flow;
 	
-	newtio.c_oflag=0;
+	newtio.c_oflag = 0;
 	
-	newtio.c_cc[VMIN]=1;
-	newtio.c_cc[VTIME]=1;
-	newtio.c_cc[VSTART]=17; //DC1;
-	newtio.c_cc[VSTOP]=19;  //DC3;
+	newtio.c_cc[VMIN] = 1;
+	newtio.c_cc[VTIME] = 1;
+	newtio.c_cc[VSTART] = 17; //DC1;
+	newtio.c_cc[VSTOP] = 19;  //DC3;
 	
-	cfsetispeed(&newtio,Of_Baud);
-	cfsetospeed(&newtio,Of_Baud);
-	tcflush(*fd,TCIFLUSH);
-	if ( tcsetattr(*fd,TCSANOW,&newtio) == -1)
+	if (speed >= 0)
 	{
-		close(*fd);
-		return 7;
+		cfsetispeed(&newtio, speed);
+		cfsetospeed(&newtio, speed);
+	}
+	
+	tcflush(fd, TCIFLUSH);
+	if (tcsetattr(fd, TCSANOW, &newtio))
+	{
+		close(fd);
+		GB.Error("Unable to set configuration: &1", strerror(errno));
+		return TRUE;
+	}
+	
+	if (speed < 0)
+	{
+		if (SetCustomSpeed(fd, THIS->speed))
+		{
+			close(fd);
+			GB.Error("Unable to set custom speed: &1", strerror(errno));
+			return TRUE;
+		}
 	}
 
-	return 0;
+	/*if (tcgetattr(fd, &io))
+	{
+		close(fd);
+		GB.Error("Unable to check configuration: &1", strerror(errno));
+	}*/
+	
+	THIS->port = fd;
+	
+	return FALSE;
 }
 
 

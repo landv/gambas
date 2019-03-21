@@ -1,0 +1,218 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Action,Value,ReadOnly,Border=True,ShowHour=true"
+'Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "24,4"
+Public Const _Similar As String = "TextBox"
+
+Property Value As Date
+Property ReadOnly As Boolean
+Property Border As Boolean
+Property ShowHour As Boolean
+
+Private $hBorder As DrawingArea
+Private $hHour As SpinBox
+Private $hMinute As SpinBox
+Private $hSecond As SpinBox
+Private $bBorder As Boolean = True
+Private $hLabelHour As Label
+
+Private Sub CreateSpinBox(sName As String) As SpinBox
+
+  Dim hSpinBox As SpinBox
+
+  hSpinBox = New SpinBox($hBorder)
+  Object.Attach(hSpinBox, Me, sName)
+  
+  hSpinBox.Expand = True
+  hSpinBox.Border = False
+  hSpinBox.Alignment = Align.Right
+  hSpinBox.ShowZero = True
+  
+  Return hSpinBox
+
+End
+
+Public Sub _new()
+  
+  Dim hLabel As Label
+  
+  $hBorder = New DrawingArea(Me) As "Border"
+  $hBorder.Arrangement = Arrange.Horizontal
+  $hBorder.Padding = Style.FrameWidth
+  $hBorder.Margin = True
+  
+  $hHour = CreateSpinBox("HourBox")
+  $hHour.MinValue = 0
+  $hHour.MaxValue = 24
+  GoSub CREATE_LABEL
+  $hLabelHour = hLabel
+  $hMinute = CreateSpinBox("MinuteBox")
+  $hMinute.MinValue = 0
+  $hMinute.MaxValue = 59
+  GoSub CREATE_LABEL
+  $hSecond = CreateSpinBox("SecondBox")
+  $hSecond.MinValue = 0
+  $hSecond.MaxValue = 59
+  Return
+  
+CREATE_LABEL:
+  
+  hLabel = New Label($hBorder)
+  hLabel.Text = " :"
+  hLabel.AutoResize = True
+  Return
+  
+End
+
+Private Function Value_Read() As Date
+
+  Try Return Time($hHour.Value, $hMinute.Value, $hSecond.Value)
+
+End
+
+Private Sub Value_Write(Value As Date)
+
+  $hHour.Value = Hour(Value)
+  $hMinute.Value = Minute(Value)
+  $hSecond.Value = Second(Value)
+
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $hMinute.ReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $hHour.ReadOnly = Value
+  $hMinute.ReadOnly = Value
+  $hSecond.ReadOnly = Value
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $bBorder = Value
+  $hBorder.Padding = If($bBorder, Max(Style.BoxFrameWidth, Style.BoxFrameHeight), 0)
+  $hBorder.Margin = $bBorder
+
+End
+
+Public Sub HourBox_GotFocus()
+  
+  $hBorder.Refresh
+  '$hHour.SelectAll
+  
+End
+
+Public Sub MinuteBox_GotFocus()
+  
+  $hBorder.Refresh
+  '$hMinute.SelectAll
+  
+End
+
+Public Sub SecondBox_GotFocus()
+  
+  $hBorder.Refresh
+  '$hSecond.SelectAll
+  
+End
+
+Public Sub HourBox_LostFocus()
+  
+  $hBorder.Refresh
+  
+End
+
+Public Sub MinuteBox_LostFocus()
+  
+  $hBorder.Refresh
+  
+End
+
+Public Sub SecondBox_LostFocus()
+  
+  $hBorder.Refresh
+  
+End
+
+Public Sub SecondBox_Limit()
+  
+  If $hSecond.Value = $hSecond.MaxValue Then
+    Try Me.Value = DateAdd(Me.Value, gb.Second, 1)
+  Else If $hSecond.Value = $hSecond.MinValue Then
+    Try Me.Value = DateAdd(Me.Value, gb.Second, -1)
+  Endif
+  $hSecond.SetFocus
+  $hSecond.SelectAll
+  
+End
+
+Public Sub MinuteBox_Limit()
+  
+  If $hMinute.Value = $hMinute.MaxValue Then
+    Try Me.Value = DateAdd(Me.Value, gb.Minute, 1)
+  Else If $hMinute.Value = $hMinute.MinValue Then
+    Try Me.Value = DateAdd(Me.Value, gb.Minute, -1)
+  Endif
+  $hMinute.SetFocus
+  
+End
+
+' Public Sub MinuteBox_MouseWheel()
+' 
+'   $hMinute.Text = Format(Max(0, Min(59, CInt($hMinute.Text) + If(Mouse.Forward, 1, -1))), "00")
+'   
+' End
+' 
+' Public Sub SecondBox_MouseWheel()
+' 
+'   Dim dVal As Date
+' 
+'   dVal = Value_Read()
+'   Try dVal = DateAdd(dVal, gb.Second, If(Mouse.Forward, 10, -10))
+'   If Not Error Then Value_Write(dVal)
+'   
+' End
+
+Public Sub Border_Draw()
+  
+  Dim iBg As Integer = Color.TextBackground
+  
+  If Me.Background <> Color.Default Then iBg = Me.Background
+  
+  If $bBorder Then 
+    Style.PaintBox(0, 0, Me.W, Me.H, Style.StateOf($hMinute) Or Style.StateOf($hSecond) Or Style.StateOf($hHour), iBg)
+  Else
+    Paint.FillRect(0, 0, Me.W, Me.H, iBg)
+  Endif
+  
+End
+
+Private Function ShowHour_Read() As Boolean
+
+  Return $hHour.Visible
+
+End
+
+Private Sub ShowHour_Write(Value As Boolean)
+
+  $hHour.Visible = Value
+  $hLabelHour.Visible = Value
+  If Not Value Then $hHour.Value = 0
+
+End

@@ -2,6 +2,9 @@
 
 Export
 
+Static Private $fLastWidth As Float
+Static Private $sLastFont As String
+
 Static Private Sub AddThreeDots(sStr As String) As String
   
   While InStr(". \n", Right(sStr))
@@ -273,6 +276,35 @@ Static Public Sub DrawRect(X As Float, Y As Float, Width As Float, Height As Flo
   Paint.Background = Color
   Paint.Fill
   Paint.Restore
+  
+End
+
+Static Public Sub _EstimateFixedFontCharWidth(hFont As Font) As Float
+
+  Dim iSpaceWidth As Integer
+  Dim I As Integer
+  Dim sText As String
+  Dim sFont As String
+
+  sFont = hFont.ToString()
+  If sFont = $sLastFont Then Return $fLastWidth
+  
+  $sLastFont = sFont
+  
+  iSpaceWidth = hFont.TextWidth(" ")
+  
+  For I = 33 To 255
+    If I > 126 And If I < 160 Then Continue
+    If I = 173 Then Continue
+    If hFont.TextWidth(String.Chr$(I)) <> iSpaceWidth Then 
+      $fLastWidth = 0
+      Return 0
+    Endif
+  Next
+  
+  sText = String$(4, "AbCdEfGh01#@WwmM")
+  $fLastWidth = hFont.TextWidth(sText) / Len(sText)
+  Return $fLastWidth
   
 End
 

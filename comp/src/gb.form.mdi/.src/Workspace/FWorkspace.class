@@ -1,5 +1,7 @@
 ' Gambas class file
 
+Public CloseButton As Boolean 
+
 Private $aWindow As New CWindow[]
 Private $hCurrent As CWindow
 Private $hLast As CWindow
@@ -533,7 +535,11 @@ Public Sub UpdateSize()
 
   Endif
 
-  tabWorkspace.CloseButton = $aWindow.Count >= 1
+  If CloseButton Then 
+    tabWorkspace.CloseButton = $aWindow.Count >= 1
+  Else 
+    tabWorkspace.CloseButton = False
+  Endif
   
   'DEBUG tabWorkspace.Visible;; "Index =";; tabWorkspace.Index;; "ClientY =";; tabWorkspace.ClientY
 
@@ -1027,6 +1033,7 @@ Public Sub Button_MouseDown()
   
   If Mouse.Middle And If Not tabWorkspace.Closable Then
     tabWorkspace_Close(tabWorkspace._GetIndex(Last.Parent))
+    Stop Event ' BUG: Needed, as sometimes the MouseDown event is raised twice
   Endif
   
 End
@@ -1042,3 +1049,5 @@ Public Sub IsCloseWithMouse() As Boolean
   Return Not tabWorkspace.Closable
   
 End
+
+

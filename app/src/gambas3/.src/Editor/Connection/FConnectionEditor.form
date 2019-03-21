@@ -109,7 +109,7 @@
         MoveScaled(1,1,106,72)
         Expand = True
         { panTable Panel
-          MoveScaled(2,2,71,35)
+          MoveScaled(2,2,89,35)
           Arrangement = Arrange.Fill
           Spacing = True
           { tabTable TabPanel
@@ -230,11 +230,11 @@
             Index = 0
           }
           { panRequest VBox
-            MoveScaled(6,8,61,24)
+            MoveScaled(6,9,80,24)
             Visible = False
             Background = Color.Background
             { tlbData2 ToolBar
-              MoveScaled(0,0,57,4)
+              MoveScaled(0,0,75,4)
               Separator = True
               { btnRunQuery ToolButton
                 MoveScaled(0,0,12,4)
@@ -291,6 +291,9 @@
                 ToolTip = ("Redo")
                 Picture = Picture["icon:/small/redo"]
               }
+              { Spring1 Spring
+                MoveScaled(58,1,5,2)
+              }
             }
             { tabRequest TabPanel
               MoveScaled(3,5,33,7)
@@ -304,6 +307,8 @@
               Expand = True
               Border = False
               Highlight = "SQL"
+              Mode = "SQL"
+              Wrap = True
             }
           }
         }

@@ -147,7 +147,8 @@ Public Sub _new()
     [txtLicense, "/Packager/License", "General Public License"],
     [txtURL, "/Packager/URL", "www.endoftheinternet.com"],
     [cmbPrefix, "/Packager/UsePrefix", 0],
-    [btnCompressPng, "/CompressPng", 1]]
+    [btnCompressPng, "/CompressPng", 1],
+    [btnAutoTrans, "/AutomaticTranslation/Enabled", 0]]
   
   $bNoChange = True
   
@@ -199,6 +200,8 @@ Public Sub _new()
   Next
   choBackgroundColor.Colors = aColors
   choBackgroundColor.Current = Project.GetBackgroundColor()
+  
+  btnAutoTrans_Click
   
   Me.Utility = Settings["/UseUtilityWindows", 1]
   
@@ -956,7 +959,11 @@ Public Sub gvwSnippet_Data(Row As Integer, Column As Integer)
     .Data.Font = Font[txtEditorFont.Value]
     If Column = 0 Then
       .Data.Text = hSampleCode.Trigger
-      If hSampleCode.Default Then .Data.Font.Italic = True
+      If hSampleCode.Default Then 
+        '.Data.Font.Italic = True
+      Else
+        .Data.Font.Bold = True
+      Endif
     Else
       .Data.Text = Mid$(Quote(hSampleCode.Pattern), 2, -1)
     Endif
@@ -1094,9 +1101,15 @@ Public Sub ipnOption_Click()
 
   Select Case ipnOption.Text
 
-    Case ("Project")
+    Case ("Projects")
       
       panCompressPng.Enabled = System.Exist("pngquant")
+      panAutoTrans.Enabled = System.Exist("trans")
+      If panAutoTrans.Enabled Then 
+        FillAutoTransEngines
+      Else
+        btnAutoTrans.Value = False
+      Endif
 
     Case ("Code snippets") 
     
@@ -1586,4 +1599,43 @@ Public Sub btnCloseStrings_Click()
   Settings["/Editor/CloseStrings"] = btnCloseStrings.Value
   RefreshEditor
 
+End
+
+Public Sub btnAutoTrans_Click()
+
+  Settings["/AutomaticTranslation/Enabled"] = btnAutoTrans.Value
+  panAutoTransEngine.Visible = btnAutoTrans.Value
+
+End
+
+Public Sub cmbAutoTrans_Click()
+
+  Settings["/AutomaticTranslation/Engine"] = cmbAutoTrans.Text
+
+End
+
+Private Sub FillAutoTransEngines()
+
+  Dim sResult As String
+  Dim sEngine As String
+  Dim aEngine As New String[]
+  
+  If cmbAutoTrans.Count Then Return
+  
+  Exec ["trans", "-S"] To sResult
+  
+  For Each sEngine In Split(Trim(sResult), "\n")
+    If sEngine Begins "* " Then sEngine = Mid$(sEngine, 2)
+    sEngine = Trim(sEngine)
+    If sEngine Then aEngine.Add(sEngine)
+  Next
+  
+  If Not aEngine.Exist("google") Then aEngine.Add("google")
+  aEngine.Sort()
+  
+  cmbAutoTrans.List = aEngine
+
+  cmbAutoTrans.Text = Settings["/AutomaticTranslation/Engine", "google"]
+  If cmbAutoTrans.Index < 0 Then cmbAutoTrans.Text = "google"
+  
 End

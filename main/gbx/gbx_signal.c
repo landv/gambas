@@ -196,6 +196,10 @@ void SIGNAL_raise_callbacks(int fd, int type, void *data)
 			return;
 		}
 		
+		#if DEBUG_ME
+		fprintf(stderr, "SIGNAL_raise_callbacks: signum = %d\n", signum);
+		#endif
+
 		handler = find_handler(signum);
 		if (!handler)
 		{

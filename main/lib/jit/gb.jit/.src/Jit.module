@@ -4,96 +4,29 @@ Export
 Class __Jit
 
 Property Read Time As Float
+Property Debug As Boolean
 
-Private $fTime As Float
-Private $sCompiler As String
-Private $aFlags As String[]
-Private $hProcess As Process
-Private $sResult As String
+Public _Time As Float
+
 Private $bDebug As Integer
 
-Private Sub Init()
-
-  Dim sFlag As String
-  Dim sCompiler As String
-  
-  sCompiler = Env["GB_JIT_CC"]
-  If Not sCompiler Then sCompiler = "gcc"
-  
-  $sCompiler = System.Find(sCompiler)
-  If Not $sCompiler Then Error.Raise("Compiler not found")
-
-  sFlag = Env["GB_JIT_CFLAGS"] 
-  If Not sFlag Then sFlag = "-O3"
-  
-  $aFlags = Split(sFlag, " ")
-   
-End
-
-Private Sub RunCompiler(sInput As String, Optional sOutput As String, sOption As String) As String
-
-  Dim aExec As String[]
-  'Dim I As Integer
-  
-  aExec = [$sCompiler]
-  If sOption Then aExec.Insert(Split(sOption, " "))
-  aExec.Insert($aFlags)
-  aExec.Add(sInput)
-  If sOutput Then 
-    aExec.Add("-o")
-    aExec.Add(sOutput)
-  Endif
-  
-  ' For I = 0 To aExec.Max
-  '   aExec[I] = Shell$(aExec[I])
-  ' Next
-  
-  If $bDebug Then Error "gb.jit: run: "; aExec.Join(" ")
-  
-  $sResult = ""
-  $hProcess = Exec aExec For Read As "Compiler"
-  $hProcess.Wait
-  'Shell aExec.Join(" ") & " 2>&1" To sResult
-  
-  Return $sResult
-  
-End
-
-Public Sub Compiler_Read()
-
-  Dim sData As String
-  
-  sData = Read #$hProcess, -1024
-  $sResult &= sData
-  
-End
-
-Public Sub Compiler_Error(({Error}) As String)
-  
-  $sResult &= {Error}
-  
-End
-
-Public Sub _Compile(sArch As String) As String
+Public Sub _Compile(sArch As String) As Boolean
 
   Dim sFile As String
   Dim sDir As String
   Dim sName As String
   Dim sPath As String
   Dim hFile As File
-  Dim sResult As String
   Dim sPathO As String
   Dim sPathSO As String
   Dim fTime As Float
+  Dim hComp As CCompilation
   
   fTime = Timer
   
   Try $bDebug = CInt(Env["GB_JIT_DEBUG"])
   
   If $bDebug Then Error "gb.jit: translating "; If(sArch, sArch, "project")
-  
-  If Not $sCompiler Then Init
-  
   
   sName = sArch
   If Not sName Then sName = "gb"
@@ -184,12 +117,10 @@ Public Sub _Compile(sArch As String) As String
   'gcc -c -fPIC -o foo.o foo.c
   'Exec [$sCompiler, "-c", "-fPIC", "-o", File.SetExt(sPath, "o"), sPath] To sResult
   'Shell $sCompiler & " -c -fPIC " & sFlag & " -o " & Shell(sPathO) & " " & Shell(sPath) & " 2>&1" To sResult
-  sResult = RunCompiler(sPath, sPathSO, "-w -fPIC -shared -lm")
-  If Not Exist(sPathSO) Then 
-    Error "gb.jit: error: unable to compile JIT code:"
-    Error sResult
-    Return
-  Endif
+  
+  hComp = New CCompilation(sName, sPathSO, fTime)
+  
+  hComp.Run(sPath, sPathSO, "-w -fPIC -shared -lm")
 
   ' If $bDebug Then Error "gb.jit: linking to "; sPathSO
   ' 
@@ -203,20 +134,52 @@ Public Sub _Compile(sArch As String) As String
   '   Return
   ' Endif
   
-  fTime = Timer - fTime
-  $fTime += fTime
+End
+
+Public Sub _Wait(sArch As String) As String
+
+  Dim hComp As CCompilation
+  Dim sResult As String
   
-  If $bDebug Then Error "gb.jit: done in "; Format(fTime, "0.000"); "s"
+  If Not sArch Then sArch = "gb"
+  hComp = CCompilation.All[sArch]
+  If Not hComp Then Return
   
-  ' Shell "objdump -S " & Shell(sPathSO) To sResult
-  ' Error sResult
+  sResult = hComp.Wait()
+  Return sResult
+
+End
+
+Public Sub _Abort()
+
+  Dim hComp As CCompilation
   
-  Return sPathSO
+  If $bDebug Then Error "gb.jit: abort compilation"
+  
+  For Each hComp In CCompilation.All
+    hComp.Kill
+  Next
+  
+  CCompilation.All.Clear
   
 End
 
+
+
 Private Function Time_Read() As Float
 
-  Return $fTime
+  Return _Time
+
+End
+
+Private Function Debug_Read() As Boolean
+
+  Return $bDebug
+
+End
+
+Private Sub Debug_Write(Value As Boolean)
+
+  $bDebug = Value
 
 End

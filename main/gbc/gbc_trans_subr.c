@@ -45,7 +45,7 @@ typedef
 	TRANS_SUBR_INFO;
 
 
-static void trans_subr(int subr, int nparam)
+void TRANS_subr(int subr, int nparam)
 {
 	static TRANS_SUBR_INFO subr_info[] =
 	{
@@ -156,7 +156,7 @@ static void trans_print_debug()
 		nparam++;
 	}
 
-	trans_subr(TS_SUBR_PRINT, nparam);
+	TRANS_subr(TS_SUBR_PRINT, nparam);
 	CODE_drop();
 }
 
@@ -173,24 +173,10 @@ void TRANS_debug(void)
 	if (!JOB->debug)
 		CODE_disable();
 	
-	trans_subr(TS_SUBR_DEBUG, 0);
+	TRANS_subr(TS_SUBR_DEBUG, 0);
 	trans_print_debug();
 	
 	if (!JOB->debug)
-		CODE_enable();
-}
-
-
-void TRANS_assert(void)
-{
-	if (!JOB->debug || JOB->exec)
-		CODE_disable();
-
-	TRANS_expression(FALSE);
-	trans_subr(TS_SUBR_DEBUG, 1);
-	CODE_drop();
-
-	if (!JOB->debug || JOB->exec)
 		CODE_enable();
 }
 
@@ -204,7 +190,7 @@ void TRANS_error(void)
 		else
 			trans_stream(TS_NONE);
 	
-		trans_subr(TS_SUBR_ERROR_TO, 1);
+		TRANS_subr(TS_SUBR_ERROR_TO, 1);
 	
 		if (!TRANS_in_assignment)
 			CODE_drop();
@@ -277,7 +263,7 @@ void TRANS_write(void)
 	if (TRANS_is(RS_AS))
 	{
 		trans_binary_type();
-		trans_subr(TS_SUBR_WRITE, 3);
+		TRANS_subr(TS_SUBR_WRITE, 3);
 	}
 	else 
 	{
@@ -290,7 +276,7 @@ void TRANS_write(void)
 			CODE_push_number(-1);
 		}
 		
-		trans_subr(TS_SUBR_WRITE_BYTES, 3);
+		TRANS_subr(TS_SUBR_WRITE_BYTES, 3);
 	}
 	
 	CODE_drop();
@@ -306,7 +292,7 @@ void TRANS_output_to()
 	else
 		trans_stream(TS_NONE);
 
-	trans_subr(TS_SUBR_OUTPUT_TO, 1);
+	TRANS_subr(TS_SUBR_OUTPUT_TO, 1);
 
 	if (!TRANS_in_assignment)
 		CODE_drop();
@@ -319,7 +305,7 @@ void TRANS_input_from()
 	else
 		trans_stream(TS_NONE);
 
-	trans_subr(TS_SUBR_INPUT_FROM, 1);
+	TRANS_subr(TS_SUBR_INPUT_FROM, 1);
 
 	if (!TRANS_in_assignment)
 		CODE_drop();
@@ -340,7 +326,7 @@ void TRANS_input(void)
 
 	for(;;)
 	{
-		trans_subr(TS_SUBR_INPUT, (stream ? 1 : 0));
+		TRANS_subr(TS_SUBR_INPUT, (stream ? 1 : 0));
 		stream = FALSE;
 
 		TRANS_reference();
@@ -373,14 +359,14 @@ void TRANS_read_old(void)
 	if (TRANS_is(RS_COMMA))
 	{
 		TRANS_expression(FALSE);
-		trans_subr(TS_SUBR_READ_BYTES, 2);
+		TRANS_subr(TS_SUBR_READ_BYTES, 2);
 	}
 	else
 	{
 		int id = TYPE_get_id(type);
 		
 		CODE_push_number(id);
-		trans_subr(TS_SUBR_READ, 2);
+		TRANS_subr(TS_SUBR_READ, 2);
 	}
 	
 	save_current = JOB->current;
@@ -396,7 +382,7 @@ void TRANS_read(void)
 	if (TRANS_is(RS_AS))
 	{
 		trans_binary_type();
-		trans_subr(TS_SUBR_READ, 2);
+		TRANS_subr(TS_SUBR_READ, 2);
 	}
 	else
 	{
@@ -404,7 +390,7 @@ void TRANS_read(void)
 			TRANS_want(RS_COMMA, NULL);
 		
 		TRANS_expression(FALSE);
-		trans_subr(TS_SUBR_READ_BYTES, 2);
+		TRANS_subr(TS_SUBR_READ_BYTES, 2);
 	}
 }
 
@@ -471,7 +457,7 @@ void TRANS_open(void)
 
 	CODE_push_number(mode);
 
-	trans_subr(TS_SUBR_OPEN, 2);
+	TRANS_subr(TS_SUBR_OPEN, 2);
 
 	/*if (!TRANS_in_assignment)
 	{
@@ -513,7 +499,7 @@ void TRANS_pipe(void)
 
 	CODE_push_number(mode | TS_MODE_PIPE);
 
-	trans_subr(TS_SUBR_OPEN, 2);
+	TRANS_subr(TS_SUBR_OPEN, 2);
 }
 
 
@@ -538,7 +524,7 @@ void TRANS_memory(void)
 
 	CODE_push_number(mode);
 
-	trans_subr(TS_SUBR_OPEN_MEMORY, 2);
+	TRANS_subr(TS_SUBR_OPEN_MEMORY, 2);
 }
 
 
@@ -566,7 +552,7 @@ void TRANS_open_string(void)
 
 	CODE_push_number(mode | TS_MODE_STRING);
 
-	trans_subr(TS_SUBR_OPEN, 2);
+	TRANS_subr(TS_SUBR_OPEN, 2);
 }
 
 
@@ -578,7 +564,7 @@ void TRANS_close(void)
 	TRANS_ignore(RS_SHARP);
 	TRANS_expression(FALSE);
 
-	trans_subr(TS_SUBR_CLOSE, 1);
+	TRANS_subr(TS_SUBR_CLOSE, 1);
 
 	if (!TRANS_in_assignment)
 		CODE_drop();
@@ -598,10 +584,10 @@ void TRANS_lock(void)
 	if (TRANS_is(RS_WAIT))
 	{
 		TRANS_expression(FALSE);
-		trans_subr(TS_SUBR_LOCK_WAIT, 2);
+		TRANS_subr(TS_SUBR_LOCK_WAIT, 2);
 	}
 	else
-		trans_subr(TS_SUBR_LOCK, 1);
+		TRANS_subr(TS_SUBR_LOCK, 1);
 }
 
 
@@ -613,7 +599,7 @@ void TRANS_unlock(void)
 	TRANS_ignore(RS_SHARP);
 	TRANS_expression(FALSE);
 
-	trans_subr(TS_SUBR_UNLOCK, 1);
+	TRANS_subr(TS_SUBR_UNLOCK, 1);
 	CODE_drop();
 }
 
@@ -635,7 +621,7 @@ void TRANS_seek(void)
 	}
 	*/
 
-	trans_subr(TS_SUBR_SEEK, nparam);
+	TRANS_subr(TS_SUBR_SEEK, nparam);
 	CODE_drop();
 }
 
@@ -645,7 +631,7 @@ void TRANS_line_input(void)
 	if (TRANS_is(RS_INPUT))
 	{
 		trans_stream(TS_STDIN);
-		trans_subr(TS_SUBR_LINE_INPUT, 1);
+		TRANS_subr(TS_SUBR_LINE_INPUT, 1);
 		TRANS_reference();
 	}
 	else
@@ -656,7 +642,7 @@ void TRANS_line_input(void)
 void TRANS_flush(void)
 {
 	trans_stream(TS_STDOUT);
-	trans_subr(TS_SUBR_FLUSH, 1);
+	TRANS_subr(TS_SUBR_FLUSH, 1);
 	CODE_drop();
 }
 
@@ -679,12 +665,12 @@ void TRANS_randomize(void)
 {
 	if (PATTERN_is_newline(*JOB->current))
 	{
-		trans_subr(TS_SUBR_RANDOMIZE, 0);
+		TRANS_subr(TS_SUBR_RANDOMIZE, 0);
 	}
 	else
 	{
 		TRANS_expression(FALSE);
-		trans_subr(TS_SUBR_RANDOMIZE, 1);		
+		TRANS_subr(TS_SUBR_RANDOMIZE, 1);		
 	}
 	
 	CODE_drop();
@@ -761,7 +747,7 @@ static void trans_exec_shell(bool shell)
 	else
 		CODE_push_null();
 
-	trans_subr(shell ? TS_SUBR_SHELL : TS_SUBR_EXEC, 4);
+	TRANS_subr(shell ? TS_SUBR_SHELL : TS_SUBR_EXEC, 4);
 
 	if (mode & TS_EXEC_STRING)
 		TRANS_reference();
@@ -791,7 +777,7 @@ void TRANS_wait(void)
 		nparam = 1;
 	}
 
-	trans_subr(TS_SUBR_WAIT, nparam);
+	TRANS_subr(TS_SUBR_WAIT, nparam);
 	CODE_drop();
 }
 
@@ -799,7 +785,7 @@ void TRANS_wait(void)
 void TRANS_sleep(void)
 {
 	TRANS_expression(FALSE);
-	trans_subr(TS_SUBR_SLEEP, 1);
+	TRANS_subr(TS_SUBR_SLEEP, 1);
 	CODE_drop();
 }
 
@@ -807,7 +793,7 @@ void TRANS_sleep(void)
 void TRANS_kill(void)
 {
 	TRANS_expression(FALSE);
-	trans_subr(TS_SUBR_KILL, 1);
+	TRANS_subr(TS_SUBR_KILL, 1);
 	CODE_drop();
 }
 
@@ -824,7 +810,7 @@ void TRANS_move(void)
 		THROW_UNEXPECTED(JOB->current);
 		
 	TRANS_expression(FALSE);
-	trans_subr(subr, 2);
+	TRANS_subr(subr, 2);
 	CODE_drop();
 }
 
@@ -833,7 +819,7 @@ void TRANS_copy(void)
 	TRANS_expression(FALSE);
 	TRANS_want(RS_TO, NULL);
 	TRANS_expression(FALSE);
-	trans_subr(TS_SUBR_COPY, 2);
+	TRANS_subr(TS_SUBR_COPY, 2);
 	CODE_drop();
 }
 
@@ -842,7 +828,7 @@ void TRANS_link(void)
 	TRANS_expression(FALSE);
 	TRANS_want(RS_TO, NULL);
 	TRANS_expression(FALSE);
-	trans_subr(TS_SUBR_LINK, 2);
+	TRANS_subr(TS_SUBR_LINK, 2);
 	CODE_drop();
 }
 
@@ -851,7 +837,7 @@ void TRANS_chmod(void)
 	TRANS_expression(FALSE);
 	TRANS_want(RS_TO, NULL);
 	TRANS_expression(FALSE);
-	trans_subr(TS_SUBR_CHMOD, 2);
+	TRANS_subr(TS_SUBR_CHMOD, 2);
 	CODE_drop();
 }
 
@@ -860,7 +846,7 @@ void TRANS_chown(void)
 	TRANS_expression(FALSE);
 	TRANS_want(RS_TO, NULL);
 	TRANS_expression(FALSE);
-	trans_subr(TS_SUBR_CHOWN, 2);
+	TRANS_subr(TS_SUBR_CHOWN, 2);
 	CODE_drop();
 }
 
@@ -869,7 +855,7 @@ void TRANS_chgrp(void)
 	TRANS_expression(FALSE);
 	TRANS_want(RS_TO, NULL);
 	TRANS_expression(FALSE);
-	trans_subr(TS_SUBR_CHGRP, 2);
+	TRANS_subr(TS_SUBR_CHGRP, 2);
 	CODE_drop();
 }
 
@@ -926,14 +912,14 @@ void TRANS_swap(void)
 void TRANS_mkdir(void)
 {
 	TRANS_expression(FALSE);
-	trans_subr(TS_SUBR_MKDIR, 1);
+	TRANS_subr(TS_SUBR_MKDIR, 1);
 	CODE_drop();
 }
 
 void TRANS_rmdir(void)
 {
 	TRANS_expression(FALSE);
-	trans_subr(TS_SUBR_RMDIR, 1);
+	TRANS_subr(TS_SUBR_RMDIR, 1);
 	CODE_drop();
 }
 
@@ -1028,9 +1014,3 @@ void TRANS_scan(void)
 	}
 }
 #endif
-
-void TRANS_subr(int subr, int nparam)
-{
-	trans_subr(subr, nparam);
-}
-

@@ -1121,10 +1121,12 @@ Public Sub imvImage_MouseMove()
       
       Case "draw", "erase"
         
-        If $bShift And If $sTool = "draw" Then
-          With GetImagePos()
-            FImageProperty.SetColor($hImage[.X, .Y])
-          End With
+        If $bShift Then
+          If $sTool = "draw" Then
+            With GetImagePos()
+              FImageProperty.SetColor($hImage[.X, .Y])
+            End With
+          Endif
         Else
           If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
             AddStroke($hCurrentPoint)
@@ -1286,11 +1288,11 @@ Public Sub imvImage_MouseMove()
                 
                 A = Max(-1, Min(1, A))
                 A = ACos(A)
-                If ($hCurrentPoint.X - XC) / ($hLastPoint.X - XC) > ($hCurrentPoint.Y - YC) / ($hLastPoint.Y - YC) Then A = - A
+                If ($hCurrentPoint.X - XC) / ($hLastPoint.X - XC) > ($hCurrentPoint.Y - YC) / ($hLastPoint.Y - YC) Then A = -A
               
                 If $bAlt Then A = Rad(Int(Deg(A) / 15) * 15)
               
-                hSelect.Rotate(- A)
+                hSelect.Rotate(-A)
                 
               Endif
               
@@ -1740,7 +1742,7 @@ Public Sub imvImage_Draw(hZoom As Image)
     Endif
     
     Paint.LineWidth = 1 / imvImage.Zoom
-    Paint.DashOffset = - $fDashOffset
+    Paint.DashOffset = -$fDashOffset
     
     $hSelect.Paint($hImage, CImageSelection.ACTION_SELECT, True)
 
@@ -1780,9 +1782,9 @@ Public Sub imvImage_Draw(hZoom As Image)
 
     Paint.Rectangle(-5, -4, 9, 9)
 
-    Paint.MoveTo(0, - imvImage.H)
+    Paint.MoveTo(0, -imvImage.H)
     Paint.LineTo(0, imvImage.H)
-    Paint.MoveTo(- imvImage.W, 0)
+    Paint.MoveTo(-imvImage.W, 0)
     Paint.LineTo(imvImage.W, 0)
 
     Paint.Stroke
@@ -1791,9 +1793,9 @@ Public Sub imvImage_Draw(hZoom As Image)
 
     Paint.Rectangle(-4, -3, 7, 7)
 
-    Paint.MoveTo(0, - imvImage.H)
+    Paint.MoveTo(0, -imvImage.H)
     Paint.LineTo(0, imvImage.H)
-    Paint.MoveTo(- imvImage.W, 0)
+    Paint.MoveTo(-imvImage.W, 0)
     Paint.LineTo(imvImage.W, 0)
 
     Paint.Dash = [2.0, 2.0]
@@ -1910,7 +1912,7 @@ Public Sub imvImage_Draw(hZoom As Image)
         
         Paint.Begin(hImage)
         Paint.Brush = Paint.Image($hPaste)
-        $hPasteSelect.Translate(- Floor(.X), - Floor(.Y))
+        $hPasteSelect.Translate(-Floor(.X), -Floor(.Y))
         Paint.Brush.Matrix = $hPasteSelect._BrushMatrix.Copy()
         $hPasteSelect.Paint(hImage, CImageSelection.ACTION_FILL)
         $hPasteSelect.Translate(Floor(.X), Floor(.Y))
@@ -1973,7 +1975,7 @@ Public Sub imvImage_Draw(hZoom As Image)
           Paint.MoveTo(X, Y)
           Paint.RelLineTo(iGrid, iGrid)
           Paint.MoveTo(X + iGrid, Y)
-          Paint.RelLineTo(- iGrid, iGrid)
+          Paint.RelLineTo(-iGrid, iGrid)
         Next
       Next
     Endif

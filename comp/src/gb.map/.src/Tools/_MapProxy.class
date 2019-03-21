@@ -1,0 +1,20 @@
+' Gambas class file
+
+''' This virtual class allows to define proxy parameters.
+
+Export
+
+'' Return or set the HTTP authentication mode to use.
+'' It can be one of the following constants
+'' - Net.AuthNone (the Default)
+'' - Net.AuthBasic
+'' - Net.AuthNtlm
+Public Auth As Integer
+'' Return or set the proxy type.
+'' It can be one Of the following constant:
+'' - Net.ProxyHTTP (the Default)
+'' - Net.ProxySocks5
+Public Type As Integer
+Public Host As String     '' Return or set the proxy host name.
+Public User As String     '' Return or set the proxy user name.
+Public Password As String '' Return or set the proxy password.

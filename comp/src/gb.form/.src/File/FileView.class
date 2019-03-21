@@ -515,7 +515,11 @@ End
 
 Private Sub RefreshViewLater(Optional bClear As Boolean)
   
-  If $bRefreshTriggered Then Return
+  If $bRefreshTriggered Then 
+    If bClear Then $bRefreshAll = True
+    Return
+  Endif
+  
   If $hRefresh.Enabled Then $hRefresh.Stop
 
   $bRefreshAll = bClear

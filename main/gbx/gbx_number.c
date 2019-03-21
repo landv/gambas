@@ -51,6 +51,28 @@
 
 #define IS_PURE_INTEGER(_int64_val) ((_int64_val) == ((int)(_int64_val)))
 
+static uint64_t _pow_10[18] = { 
+	10, 
+	100, 
+	1000, 
+	10000, 
+	100000, 
+	1000000, 
+	10000000, 
+	100000000, 
+	1000000000, 
+	10000000000, 
+	100000000000, 
+	1000000000000, 
+	10000000000000, 
+	100000000000000, 
+	1000000000000000, 
+	10000000000000000,
+	100000000000000000, 
+	1000000000000000000
+};
+
+
 static bool read_integer(int base, bool minus, int64_t *result, bool local)
 {
 	uint64_t nbr2, nbr;
@@ -199,7 +221,7 @@ static bool read_float(double *result, bool local)
 	int c, n;
 
 	uint64_t mantisse, mantisse_int;
-	int ndigit_frac;
+	int ndigit_frac, ndigit_frac_zero;
 	bool frac;
 	bool frac_null;
 	bool nozero;
@@ -216,30 +238,30 @@ static bool read_float(double *result, bool local)
 
 	c = last_char();
 	
-	/* Integer and decimal part */
-
 	n = 0;
 	mantisse = 0;
 	mantisse_int = 0;
 	frac = FALSE;
 	frac_null = TRUE;
 	ndigit_frac = 0;
+	ndigit_frac_zero = 0;
 	nexp = 0;
 	nexp_minus = FALSE;
 	nozero = FALSE;
+	
+	// Integer part
 	
 	for(;;)
 	{
 		if (c == point)
 		{
-			if (frac)
-				break;
 			c = get_char();
 			frac = TRUE;
 			mantisse_int = mantisse;
+			break;
 		}
 
-		if (local && !frac)
+		if (local)
 		{
 			COMMON_pos--;
 			
@@ -267,8 +289,7 @@ static bool read_float(double *result, bool local)
 		{
 			if (n == (MAX_FLOAT_DIGIT + 1) && (c >= '5'))
 				mantisse++;
-			if (!frac)
-				ndigit_frac--;
+			ndigit_frac--; // ???
 			c = get_char();
 			continue;
 		}
@@ -276,15 +297,9 @@ static bool read_float(double *result, bool local)
 		if (c == '0')
 			mantisse *= 10;
 		else
-		{
-			if (frac)
-				frac_null = FALSE;
 			mantisse = mantisse * 10 + (c - '0');
-		}
 		
-		if (frac)
-			ndigit_frac++;
-		else if (local)
+		if (local)
 			ndigit_thsep++;
 
 		c = get_char();
@@ -296,7 +311,52 @@ static bool read_float(double *result, bool local)
 			goto __END;
 	}
 
-	/* Exponent */
+	// Decimal part
+	
+	for(;;)
+	{
+		if (c == point)
+			break;
+
+		if (!isdigit(c) || (c < 0))
+			break;
+		
+		if (c != '0')
+			nozero = TRUE;
+		
+		if (nozero)
+			n++;
+		
+		if (n > MAX_FLOAT_DIGIT)
+		{
+			if (n == (MAX_FLOAT_DIGIT + 1) && (c >= '5'))
+				mantisse++;
+			if (!frac)
+				ndigit_frac--;
+			c = get_char();
+			continue;
+		}
+
+		if (c == '0')
+			ndigit_frac_zero++;
+		else
+		{
+			frac_null = FALSE;
+			ndigit_frac += ndigit_frac_zero + 1;
+			mantisse = mantisse * _pow_10[ndigit_frac_zero] + (c - '0');
+			ndigit_frac_zero = 0;
+		}
+		
+		c = get_char();
+
+		if (c == 'e' || c == 'E')
+			break;
+
+		if (c < 0)
+			goto __END;
+	}
+
+	// Exponant
 
 	if (c == 'e' || c == 'E')
 	{

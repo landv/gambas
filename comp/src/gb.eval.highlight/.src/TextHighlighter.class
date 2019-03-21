@@ -5,6 +5,9 @@ Export
 Create Static
 Create Private
 
+Class Paint
+Class Color
+
 Static Public Const Name As String = ""
 
 Static Property Read DefaultStyle As TextHighlighterStyle[]
@@ -304,5 +307,482 @@ Public Sub ToRichText(Text As String, Optional Styles As TextHighlighterStyle[])
   
   Return aResult.Join("")
   
- End
+End
+
+' Public Sub Paint(Text As String, X As Integer, Y As Integer, Optional Styles As TextHighlighterStyle[]) As String
+'   
+'   Dim sLine As String
+'   Dim aHighlight As Byte[]
+'   Dim Y As Integer
+'   Dim I As Integer
+'   Dim sHTML As String
+'   Dim aText As String[]
+'   Dim iState As Integer
+'   Dim hStyle As TextHighlighterStyle
+'   Dim bAlt As Boolean
+'   Dim iLen As Integer
+'   Dim P As Integer
+'   Dim sLineHtml As String
+'   Dim iColor As Integer
+'   Dim sOldStyle As String
+'   Dim sStyle As String
+'   Dim iLine As Integer
+'   
+'   If Not Styles Then Styles = TextHighlighter.DefaultStyle
+'   
+'   TextHighlighter.State = Highlight.Normal
+'   TextHighlighter.Tag = 0
+'   TextHighlighter.Alternate = False
+'   TextHighlighter.Limit = False
+'   
+'   aText = Split(Text, "\n")
+'   
+'   iColor = 0
+'   
+'   For iLine = 0 To aText.Max
+'     
+'     aHighlight = New Byte[]
+'     
+'     TextHighlighter._Highlight = aHighlight
+'     TextHighlighter.TextAfter = ""
+'     TextHighlighter.Line = iLine
+'     
+'     sLine = aText[iLine]
+'     Me.Run(sLine)
+'     If Y = 0 Then TextHighlighter.Limit = False
+'     
+'     If TextHighlighter.TextAfter Then sLine = TextHighlighter.TextAfter
+' 
+'     P = 1
+'     
+'     For I = 0 To aHighlight.Max Step 2
+'       
+'       iState = aHighlight[I] And 31
+'       Try hStyle = Styles[iState]
+'       If Error Then hStyle = Styles[0]
+'       bAlt = aHighlight[I] >= 128
+'       iLen = aHighlight[I + 1]
+'       
+'       sHtml = Replace(Html(String.Mid$(sLine, P, iLen)), " ", "&nbsp;")
+'       P += iLen
+'       
+'       If hStyle.Bold Then sHtml = "<b>" & sHtml & "</b>"
+'       If hStyle.Underline Then sHtml = "<u>" & sHtml & "</u>"
+'       
+'       sStyle = ""
+'       'If bAlt Then sStyle &= "background:#E0E0E0;"
+'       If hStyle.Color Then sStyle &= " color=\"#" & Hex$(hStyle.Color, 6) & "\""
+'       
+'       If sStyle <> sOldStyle Then
+'         sOldStyle = sStyle
+'         sHtml = "</font><font" & sStyle & ">" & sHtml
+'       Endif
+'       
+'       sLineHtml &= sHtml
+'       
+'     Next
+'     
+'     If P < String.Len(sLine) Then sLineHtml &= Html(String.Mid$(sLine, P))
+'     
+'     ' If TextHighlighter.Limit Then 
+'     '   If Y And If Not Trim(aResult[aResult.Max]) Then
+'     '     aResult.Add("<div style=\"height:1px;background:#808080;position:relative;top:-0.5em;\"></div>")
+'     '   Else
+'     '     aResult.Add("<div style=\"height:1px;background:#808080;\"></div>")
+'     '   Endif
+'     ' Endif
+'     
+'     aResult.Add(sLineHtml & "\n")
+'     
+'   Next
+'   
+'   aResult.Add("</font>")
+'   
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+' 
+'   Dim I As Integer
+'   Dim hStyle As TextEditorStyle
+'   Dim bAlt As Boolean
+'   Dim iLen As Integer
+'   Dim P As Integer
+'   Dim sStr As String
+'   Dim X2 As Integer
+'   Dim iState As Integer
+'   Dim XMin As Integer
+'   Dim XMax As Integer
+'   Dim aStyle As TextEditorStyle[]
+'   Dim hImage As Image
+'   
+'   Dim XX, YY, XB, LB As Integer
+'   Dim hPos As Point
+'   Dim iNextBreak As Integer
+'   Dim iLayout As Integer
+'   Dim iRest As Integer
+'   Dim bBreak As Boolean
+'   Dim sKey As String
+'   Dim W As Integer
+'   Dim iLayoutCount As Integer
+'   Dim iCol As Integer
+'   Dim iBg As Integer
+'   
+'   Dim aText As String[]
+'   Dim iColor As Integer
+'   Dim iLine As Integer
+'   
+' 
+' 
+'   XMin = X + $hView.ScrollX
+'   XMax = XMin + $hView.ClientW
+'   aStyle = $hStyles._GetStyles()
+'   iBg = aStyle[iNextState].Background
+'   
+'   XX = X
+'   YY = Y
+'   
+'   If aLayout Then
+'     iLayoutCount = aLayout.Count
+'     iNextBreak = aLayout[0]
+'   Else
+'     iLayoutCount = 0
+'      ' Always greater than String.Len(), and faster
+'      ' Add a big number in the case of an incorrect highlighting
+'     iNextBreak = Len(sText) + 1000000
+'   Endif
+'   
+'   For I = 0 To aColor.Max Step 2
+'     
+'     If Not aLayout Then
+'       If XX > XMax Then Break
+'     Endif
+'     
+'     iState = aColor[I] And 31
+'     hStyle = aStyle[iState]
+'     bAlt = aColor[I] >= 128
+'     If iRest Then
+'       iLen = iRest
+'       iRest = 0
+'     Else
+'       iLen = aColor[I + 1]
+'     Endif
+'     
+'     If bBreak Then
+'       If iBg <> Color.Default Then Paint.FillRect(XX, YY, Paint.W, H, iBg)
+'       XX = X + LinePos(Row, P).X
+'       YY += H
+'       bBreak = False
+'     Endif
+'     
+'     If P + iLen >= iNextBreak Then
+'       
+'       bBreak = True
+'       
+'       iRest = P + iLen - iNextBreak
+'       iLen = iNextBreak - P
+'       
+'       Inc iLayout
+'       
+'       If iLayout < iLayoutCount Then
+'         iNextBreak += aLayout[iLayout]
+'       Else
+'         iNextBreak = Len(sText) + 1
+'       Endif
+'       
+'       If iRest Then I -= 2
+'       
+'       If iLen = 0 Then Goto NEXT_PATTERN
+'       
+'     Endif
+'     
+'     hPos = LinePos(Row, P + iLen)
+'     X2 = X + hPos.X 'LineWidth(Row, P + iLen)
+'     
+'     If Not aLayout Then
+'       If X2 < XMin Then Goto NEXT_PATTERN
+'     Endif
+'     
+'     iBg = hStyle.Background
+'     If iBg <> Color.Default Then Paint.FillRect(XX, YY, X2 - XX, H, iBg)
+'     If bAlt Then Paint.FillRect(XX, YY, X2 - XX, H, Color.SetAlpha(&HD0D0D0&, 192))
+'     
+'     sStr = String.Mid$(sText, P + 1, iLen)
+'     ' If hStyle.Bold Then
+'     '   hTemp = New Image(X2 - X, H, Color.Transparent)
+'     '   Paint.Begin(hTemp)
+'     '   Paint.Font = $hFont
+'     '   Paint.Translate(- X, - Y)
+'     ' Endif
+'     
+'     'If hStyle.Bold Then Paint.Font = $hFontBold
+'     If InStr(sStr, "\t") Then
+'       GoSub DRAW_TEXT_WITH_TAB
+'     Else If Trim(sStr) Then
+'       If Not $bRemoteDisplay And If iLen <= 16 Then
+'         sKey = Chr$(iState) & sStr
+'         hImage = $cCacheText[sKey]
+'         If Not hImage Then
+'           
+'           W = X2 - XX
+'           If W <= 0 Then W = TextWidth(sStr, 1, iLen)
+'           If hStyle.Bold Then W += ($BW + 1) \ 2
+'           hImage = New Image(W, H, Color.Transparent)
+'           
+'           Paint.Begin(hImage)
+'           Paint.Font = $hFont
+'           Paint.Translate(- XX, - YY)
+'           GoSub DRAW_TEXT
+'           Paint.End
+'           
+'           If $cCacheText.Count > 256 Then
+'             For Each $cCacheText
+'               $cCacheText.Remove($cCacheText.Key)
+'               Break
+'             Next
+'           Endif
+'           
+'         Else
+'           
+'           $cCacheText.Remove(sKey)
+'           
+'         Endif
+'         
+'         $cCacheText[sKey] = hImage
+'         Paint.DrawImage(hImage, XX, YY)
+'       Else
+'         GoSub DRAW_TEXT
+'       Endif
+'     Endif
+'     'If hStyle.Bold Then Paint.Font = $hFont
+'     
+'     ' If hStyle.Bold Then
+'     '   Paint.End
+'     '   'hTemp.Save("~/temp.png")
+'     '   Paint.DrawImage(hTemp, X, Y)
+'     '   Paint.DrawImage(hTemp, X + 1, Y)
+'     ' Endif
+'     
+'     If hStyle.Underline Then 
+'       Paint.FillRect(XX, YY + H - 1, X2 - XX, 1, Color.SetAlpha(hStyle.Color, 128))
+'     Else If hStyle.Dotted Then
+'       Paint.Background = Color.SetAlpha(hStyle.Color, 128)
+'       Paint.LineWidth = 1
+'       Paint.Dash = [1]
+'       Paint.MoveTo(XX, YY + H - 0.5)
+'       Paint.RelLineTo(X2 - XX, 0)
+'       Paint.Stroke
+'     Endif
+'     
+'     ' If $YM >= 0 Then
+'     '   If Row = $YMO And If $XMO >= P And If $XMO < (P + iLen) Then DrawMatch(SX, Y, H, $XMO, $YMO)
+'     '   If Row = $YM And If $XM >= P And If $XM < (P + iLen) Then DrawMatch(SX, Y, H, $XM, $YM)
+'     ' Endif
+'     
+'   NEXT_PATTERN:
+'     
+'     P += iLen
+'     XX = X2
+'     
+'   Next
+'   
+'   sStr = String.Mid$(sText, P + 1)
+'   If sStr And If XX <= XMax Then
+'     
+'     Paint.Background = $iForeground
+'     DrawText(sStr, X, XX, YY)
+'     
+'   Endif
+'   
+'   If iBg <> Color.Default Then Paint.FillRect(XX, YY, Paint.W, H, iBg)
+'   
+'   Return
+'   
+' DRAW_TEXT:
+'   
+'   iCol = hStyle.Color
+'   Paint.Background = iCol
+'   If hStyle.Bold Then
+'     LB = $BW
+'     XB = XX
+'     While LB >= 2
+'       Paint.DrawText(sStr, XB, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
+'       Inc XB
+'       LB -= 2
+'     Wend
+'     If LB Then
+'       Paint.Background = Color.SetAlpha(iCol, 128)
+'       Paint.DrawText(sStr, XB, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
+'     Endif
+'   Else
+'     Paint.DrawText(sStr, XX, YY + $iAscent) 'DrawText(sStr, SX, X, Y)
+'   Endif
+'   
+'   Return
+'   
+' DRAW_TEXT_WITH_TAB:
+' 
+'   iCol = hStyle.Color
+'   Paint.Background = iCol
+'   If hStyle.Bold Then
+'     LB = $BW
+'     XB = 0
+'     While LB >= 2
+'       'Paint.DrawText(sStr, XB, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
+'       DrawText(sStr, X + XB, XX + XB, YY)
+'       Inc XB
+'       LB -= 2
+'     Wend
+'     If LB Then
+'       Paint.Background = Color.SetAlpha(iCol, 128)
+'       'Paint.DrawText(sStr, XB, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
+'       DrawText(sStr, X + XB, XX + XB, YY)
+'     Endif
+'   Else
+'     'Paint.DrawText(sStr, XX, YY + $iAscent) 'DrawText(sStr, SX, X, Y)
+'     DrawText(sStr, X, XX, YY)
+'   Endif
+' 
+'   ' If hStyle.Bold Then
+'   '   'Paint.Background = Color.Gradient(iCol, $iBackground)
+'   '   DrawText(sStr, X, XX + 1, YY)
+'   ' Endif
+'   ' 'Paint.Background = iCol
+'   ' DrawText(sStr, X, XX, YY)
+'   Return
+'   
+'   
+' End
+' 
+' 
+' 
+
+Public Sub Paint(Text As String, X As Float, Y As Float, Optional Styles As TextHighlighterStyle[]) As String
+  
+  Dim sLine As String
+  Dim aHighlight As Byte[]
+  Dim I As Integer
+  Dim aText As String[]
+  Dim iState As Integer
+  Dim hStyle As TextHighlighterStyle
+  Dim bAlt As Boolean
+  Dim iLen As Integer
+  Dim P As Integer
+  Dim iColor As Integer
+  Dim iLine As Integer
+  Dim sText As String
+  Dim XB As Integer
+  Dim fCharWidth As Float
+  Dim LH, BW As Integer
+  Dim LB As Integer
+  Dim X0 As Float
+  
+  fCharWidth = Paint._EstimateFixedFontCharWidth(Paint.Font)
+  LH = Paint.Font.Height + 1
+  BW = 1 + LH \ 6
+  
+  Y += Paint.Font.Ascent
+  X0 = X
+  
+  If Not Styles Then Styles = TextHighlighter.DefaultStyle
+  
+  TextHighlighter.State = Highlight.Normal
+  TextHighlighter.Tag = 0
+  TextHighlighter.Alternate = False
+  TextHighlighter.Limit = False
+  
+  aText = Split(Text, "\n")
+  
+  For iLine = 0 To aText.Max
+    
+    aHighlight = New Byte[]
+    
+    TextHighlighter._Highlight = aHighlight
+    TextHighlighter.TextAfter = ""
+    TextHighlighter.Line = iLine
+    
+    sLine = aText[iLine]
+    Me.Run(sLine)
+    If Y = 0 Then TextHighlighter.Limit = False
+    
+    If TextHighlighter.TextAfter Then sLine = TextHighlighter.TextAfter
+
+    P = 1
+    
+    For I = 0 To aHighlight.Max Step 2
+      
+      iState = aHighlight[I] And 31
+      Try hStyle = Styles[iState]
+      If Error Then hStyle = Styles[0]
+      bAlt = aHighlight[I] >= 128
+      iLen = aHighlight[I + 1]
+      
+      If fCharWidth Then
+        X = X0 + fCharWidth * (P - 1)
+      Else
+        X = X0 + Paint.Font.TextWidth(String.Left(sLine, P - 1))
+      Endif
+      
+      sText = String.Mid$(sLine, P, iLen)
+      P += iLen
+      
+      iColor = hStyle.Color
+      Paint.Background = iColor
+      If hStyle.Bold Then
+        LB = BW
+        XB = X
+        While LB >= 2
+          Paint.DrawText(sText, XB, Y)
+          Inc XB
+          LB -= 2
+        Wend
+        If LB Then
+          Paint.Background = Color.SetAlpha(iColor, 128)
+          Paint.DrawText(sText, XB, Y) 
+        Endif
+      Else
+        Paint.DrawText(sText, X, Y)
+      Endif
+      
+    Next
+    
+    If P < String.Len(sLine) Then Paint.DrawText(String.Mid$(sLine, P), X, Y)
+    
+    Y += LH
+    
+  Next
+  
+End
 
