@@ -25,9 +25,6 @@ The following pieces of code were borrowed and adapted:
 
 - The gb.image.effect sources are adapted from KDE 3 image effect routines.
 
-- The blur image algorithm was adapted from the StackBlur javascript 
-  routine from http://www.quasimondo.com/StackBlurForCanvas.
-
 - The gb.clipper library embeds the Clipper library. See
   http://www.angusj.com/delphi/clipper.php for mode details.
 
@@ -35,6 +32,7 @@ The following pieces of code were borrowed and adapted:
   algorithm made by Aloysius Lilius And Christophorus Clavius.
 
 - The blurring algoritm is based on the 'StackBlur' algorithm made by Mario Klingemann.
+  See http://incubator.quasimondo.com/processing/fast_blur_deluxe.php for more details.
 
 If I forget some borrowed code in the list above, just tell me.
 
