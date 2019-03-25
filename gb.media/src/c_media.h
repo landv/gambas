@@ -87,6 +87,8 @@ typedef
 		int polling;
 		gint64 pos;
 		gint64 duration;
+		double rate;
+		double next_rate;
 		unsigned in_message : 1;
 		unsigned about_to_finish : 1;
 	}
