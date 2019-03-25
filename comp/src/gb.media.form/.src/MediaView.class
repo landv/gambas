@@ -17,6 +17,7 @@ Property ShowControl As Boolean '' Return or set if the controls are visible.
 
 Property Read Duration As Float '' Return the duration of the media in seconds
 Property Position As Float '' Return or set the current position inside the media in seconds.
+Property Speed As Float '' Return or set the playing speed of the media.
 
 Private $hView As FMediaPlayer
 Private $sUrl As String
@@ -137,5 +138,17 @@ Private Sub NextURL_Write(Value As String)
 
   $sNextUrl = Value
   $hView.SetNextUrl(Value)
+
+End
+
+Private Function Speed_Read() As Float
+
+  Return $hView.GetSpeed()
+
+End
+
+Private Sub Speed_Write(Value As Float)
+
+  $hView.SetSpeed(Value)
 
 End
