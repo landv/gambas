@@ -31,6 +31,13 @@
 #include <gst/video/video.h>
 #include <gst/video/videooverlay.h>
 
+#if GST_CHECK_VERSION(1, 16, 0)
+#else
+#define GST_SEEK_FLAG_TRICKMODE GST_SEEK_FLAG_SKIP
+#define GST_SEEK_FLAG_TRICKMODE_KEY_UNITS (1 << 7)
+#define GST_SEEK_FLAG_TRICKMODE_NO_AUDIO (1 << 8)
+#endif
+
 static void *_from_element = NULL;
 
 void MEDIA_raise_event(void *_object, int event)
