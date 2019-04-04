@@ -93,6 +93,8 @@ Public Sub Compiler_Kill()
     If Jit.Debug Then Error "gb.jit: compilation of '"; Name; "' returns "; $hProcess.Value
   Endif
   
+  $hProcess = Null
+  
   ' Shell "objdump -S " & Shell(sPathSO) To sResult
   ' Error sResult
   
@@ -100,12 +102,14 @@ End
 
 Public Sub Wait() As String
   
-  If Jit.Debug Then Error "gb.jit: waiting for compilation of '"; Name; "'..."
-  $hProcess.Wait
-  If Jit.Debug Then Error "gb.jit: compilation of '"; Name; "' is available"
+  If $hProcess Then
+    If Jit.Debug Then Error "gb.jit: waiting for compilation of '"; Name; "'..."
+    $hProcess.Wait
+    If Jit.Debug Then Error "gb.jit: compilation of '"; Name; "' is available"
+  Endif
   
   If Not Exist(PathSO) Then 
-    Error "gb.jit: error: unable to compile JIT code of '"; Name; "':"
+    Error "gb.jit: error: unable to compile JIT code of '"; Name; "':\n"
     Error $sResult
     Return
   Endif
@@ -115,8 +119,11 @@ Public Sub Wait() As String
 End
 
 Public Sub Kill()
-  
-  Try $hProcess.Kill
-  $hProcess = Null
+
+  If $hProcess Then
+    If Jit.Debug Then Error "gb.jit: abort compilation of '"; Name; "'"
+    $hProcess.Kill
+  Endif
   
 End
+

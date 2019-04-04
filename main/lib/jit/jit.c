@@ -47,6 +47,9 @@ static char *_buffer = NULL;
 static char *_buffer_decl = NULL;
 static char *_buffer_body = NULL;
 
+static bool _decl_null_string = FALSE;
+static bool _decl_null_date = FALSE;
+static bool _decl_null_object = FALSE;
 static bool _decl_null_variant = FALSE;
 	
 /*static const CLASS_TYPE _class_type[] = {
@@ -197,17 +200,43 @@ const char *JIT_get_default_value(TYPE type)
 {
 	switch(TYPEID(type))
 	{
-		case T_DATE: return "{GB_T_DATE}";
-		case T_STRING: return "{GB_T_STRING}";
-		case T_OBJECT: return "{GB_T_NULL}";
+		case T_DATE:
+
+			if (!_decl_null_date)
+			{
+				JIT_print_decl("  const GB_DATE null_date = {GB_T_DATE};\n");
+				_decl_null_date = TRUE;
+			}
+			return "null_date";
+			
+		case T_STRING:
+		
+			if (!_decl_null_string)
+			{
+				JIT_print_decl("  const GB_STRING null_string = {GB_T_STRING};\n");
+				_decl_null_string = TRUE;
+			}
+			return "null_string";
+			
+		case T_OBJECT:
+			
+			if (!_decl_null_object)
+			{
+				JIT_print_decl("  const GB_OBJECT null_object = {GB_T_NULL};\n");
+				_decl_null_object = TRUE;
+			}
+			return "null_object";
+			
 		case T_VARIANT: 
 			if (!_decl_null_variant)
 			{
-				JIT_print_decl("  GB_VARIANT null_variant = {GB_T_VARIANT,{GB_T_NULL}};\n");
+				JIT_print_decl("  const GB_VARIANT null_variant = {GB_T_VARIANT,{GB_T_NULL}};\n");
 				_decl_null_variant = TRUE;
 			}
 			return "null_variant";
-		default: return "0";
+			
+		default:
+			return "0";
 	}
 }
 
@@ -286,6 +315,9 @@ static bool JIT_translate_func(FUNCTION *func, int index)
 
 	_buffer_decl = NULL;
 	_buffer_body = NULL;
+	_decl_null_date = FALSE;
+	_decl_null_string = FALSE;
+	_decl_null_object = FALSE;
 	_decl_null_variant = FALSE;
 	
 	for (i = -1; i < func->n_local; i++)
@@ -472,6 +504,8 @@ void JIT_panic(const char *fmt, ...)
 	va_end(args);
 	fputc('\n', stderr);
 	fputs(_buffer, stderr);
+	if (_buffer_decl) fputs(_buffer_decl, stderr);
+	if (_buffer_body) fputs(_buffer_body, stderr);
 	fputc('\n', stderr);
 	abort();
 }

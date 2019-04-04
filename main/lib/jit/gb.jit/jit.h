@@ -427,6 +427,8 @@ enum
 
 #define CONV_o_O(_val, _class) CONV(_val, o, o, CLASS(_class))
 
+#define CONV_o(_val) ({ GB_OBJECT temp = (_val); temp.type = GB_T_OBJECT; temp; })
+
 #define GET_NULL_o() ({ GB_OBJECT temp; temp.type = GB_T_OBJECT; temp.value = NULL; temp; })
 #define GET_NULL_v() ({ GB_VARIANT temp; temp.type = GB_T_VARIANT; temp.value.type = GB_T_NULL; temp; })
 #define GET_NULL_s() GET_CSTRING("", 0, 0)

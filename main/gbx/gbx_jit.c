@@ -45,7 +45,7 @@ static bool _component_loaded = FALSE;
 static GB_FUNCTION _jit_compile_func;
 static GB_FUNCTION _jit_wait_func;
 
-static bool _jit_compiling = FALSE;
+static char _jit_state = JIT_NOT_COMPILED;
 static void *_jit_library = NULL;
 
 static JIT_FUNCTION *_jit_func = NULL;
@@ -70,9 +70,14 @@ void JIT_abort(void)
 	GB_Call(&_func, 0, FALSE);
 }
 
+static int get_state(ARCHIVE *arch)
+{
+	return arch ? arch->jit_state : _jit_state;
+}
+
 bool JIT_can_compile(ARCHIVE *arch)
 {
-	return arch ? !arch->jit_compiling : !_jit_compiling;
+	return get_state(arch) == JIT_NOT_COMPILED;
 }
 
 void JIT_compile(ARCHIVE *arch)
@@ -112,7 +117,7 @@ void JIT_compile(ARCHIVE *arch)
 			ERROR_panic("Unable to find JIT._Wait() method");
 	}
 	
-	arch ? (arch->jit_compiling = TRUE) : (_jit_compiling = TRUE);
+	arch ? (arch->jit_state = JIT_COMPILING) : (_jit_state = JIT_COMPILING);
 	
 	current = COMPONENT_current;
 	COMPONENT_current = NULL;
@@ -145,7 +150,7 @@ bool wait_for_compilation(ARCHIVE *arch)
 	
 	COMPONENT_current = current;
 	
-	arch ? (arch->jit_compiling = FALSE) : (_jit_compiling = FALSE);
+	arch ? (arch->jit_state = JIT_COMPILED) : (_jit_state = JIT_COMPILED);
 	
 	path = GB_ToZeroString((GB_STRING *)ret);
 	if (!*path)
@@ -183,6 +188,12 @@ static bool create_function(CLASS *class, int index)
 	char *name;
 	
 	arch = class->component ? class->component->archive : NULL;
+	
+	if (!class->loaded)
+		return TRUE;
+	
+	/*if (get_state(arch) == JIT_NOT_COMPILED) // don't use JIT if we are compiling the corresponding archive
+		return TRUE;*/
 	
 	if (wait_for_compilation(arch))
 	{

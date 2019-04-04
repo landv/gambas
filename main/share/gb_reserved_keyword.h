@@ -451,7 +451,7 @@ SUBR_INFO COMP_subr_info[] =
 	{ ".WriteBytes",       62,  1, T_VOID,         3,    },
 	{ ".Flush",            63,  0, T_VOID,         1     },
 
-	{ ".Lock",             64,  0, T_VOID,         1     },
+	{ ".Lock",             64,  0, T_OBJECT,       1     },
 	{ ".Unlock",           64,  1, T_VOID,         1     },
 	{ ".LockWait",         64,  2, T_VOID,         2     },
 

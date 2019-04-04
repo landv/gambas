@@ -1249,7 +1249,7 @@ static void load_without_inits(CLASS *class)
 
 	// JIT compilation
 
-	for(i = 0; i < class->load->n_func; i++)
+	for (i = 0; i < class->load->n_func; i++)
 	{
 		if (class->load->func[i].fast)
 		{
@@ -1333,6 +1333,9 @@ void CLASS_load_real(CLASS *class)
 		}
 	}
 
+	/*if (strcmp(class->name, "Project") == 0)
+		BREAKPOINT();*/
+	
 	load_without_inits(class);
 	class->loaded = TRUE;
 	class->ready = FALSE;
