@@ -936,10 +936,10 @@ void SUBR_tr(void)
 
 static void make_hex_char(uchar c)
 {
-	static const char hex_digit[] = "0213456789ABCDEF";
+	static const char hex_digit[] = "0123456789ABCDEF";
 
 	STRING_make_char(hex_digit[c >> 4]);
-	STRING_make_char(hex_digit[c & 7]);
+	STRING_make_char(hex_digit[c & 15]);
 }
 
 void SUBR_quote(ushort code)
