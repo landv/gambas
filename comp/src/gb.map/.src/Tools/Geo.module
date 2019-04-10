@@ -21,34 +21,34 @@ End
 
 Public Function MapPointToPixel(hMapPoint As MapPoint, Zoom As Integer) As Point
 
-  Dim Res As Float = $initialResolution / (2 ^ zoom)
-  Dim X, Y As Float
+  Dim fRes As Float = $initialResolution / (2 ^ Zoom)
+  Dim fX, fY As Float
 
   'Convert in Meters
-    X = hMapPoint.lon * $OriginShift / 180.0
-  Y = - (Log(Tan((90 + hMapPoint.lat) * Pi / 360.0)) / (Pi / 180.0)) * $OriginShift / 180.0
+  fX = hMapPoint.lon * $OriginShift / 180.0
+  fY = -(Log(Tan((90 + hMapPoint.lat) * Pi / 360.0)) / (Pi / 180.0)) * $OriginShift / 180.0
   'Convert in Pixels
-  X = (X + $originShift) / res
-  Y = (Y + $originShift) / res
-  Return Point(X, Y)
+  fX = (fX + $originShift) / fRes
+  fY = (fY + $originShift) / fRes
+  Return Point(fX, fY)
 
 End
 
 
  Public Function PixelToMapPoint(hPoint As Point, Zoom As Integer) As MapPoint
-  Dim X, Y As Float
-  Dim Res As Float = $initialResolution / (2 ^ zoom)
+  Dim fX, fY As Float
+  Dim fRes As Float = $initialResolution / (2 ^ Zoom)
   Dim mpPoint As New MapPoint
 
   'Convert in Meters
-  X = hPoint.x * res - $originShift
-  Y = hPoint.y * res - $originShift
+  fX = hPoint.x * fRes - $originShift
+  fY = hPoint.y * fRes - $originShift
 
   'Convert in Latlon mappoint
-  mpPoint.Lon = (X / $originShift) * 180.0
-  mpPoint.Lat = (Y / $originShift) * 180.0
+  mpPoint.Lon = (fX / $originShift) * 180.0
+  mpPoint.Lat = (fY / $originShift) * 180.0
 
-  mpPoint.Lat = - (180 / Pi * (2 * ATan(Exp(mpPoint.Lat * Pi / 180.0)) - Pi / 2.0))
+  mpPoint.Lat = -(180 / Pi * (2 * ATan(Exp(mpPoint.Lat * Pi / 180.0)) - Pi / 2.0))
   Return mpPoint
 
  End
@@ -74,7 +74,7 @@ Public Function SexToDec(Value As String) As Float
       Case "N", "E"
         Return fRet
       Case "S", "W", "O"
-        Return - fRet
+        Return -fRet
     End Select
   Endif
   Return fRet
@@ -106,7 +106,7 @@ Public Function DecToSex(Value As Float, Type As Integer) As String
   fSec = Frac(fSec) * 60
 
   sret = Subst("&1°&2'&3''", iDeg, iMin, Format(fSec, "0.##")) & sRet
-  Return sret
+  Return sRet
 
 End
 

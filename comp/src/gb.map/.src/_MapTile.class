@@ -589,14 +589,12 @@ End
 
 Public Sub SetPattern(sPattern As String, Optional cArgs As Collection)
 
-  Dim s As Variant
-
   $sPattern = sPattern
 
   If InStr($sPattern, "{q}") Then $bIsQuadKey = True Else $bIsQuadKey = False
 
   If cArgs Then
-    For Each s In cArgs
+    For Each s As Variant In cArgs
       $sPattern = Replace($sPattern, "{" & cArgs.Key & "}", s)
     Next
   Endif
@@ -629,18 +627,18 @@ End
 
 Private Function TileToQuadKey(X As Integer, Y As Integer, Z As Integer) As String
 
-  Dim quadKey As String
-  Dim i, digit, mask As Integer
+  Dim sQuadKey As String
+  Dim iDigit, iMask As Integer
 
-  For i = z To 1 Step -1
-    digit = 0
-    mask = Lsl(1, (i - 1))
-    If (x And mask) <> 0 Then digit += 1
-    If (y And mask) <> 0 Then digit += 2
-    quadKey &= digit
+  For i As Integer = z To 1 Step -1
+    iDigit = 0
+    iMask = Lsl(1, (i - 1))
+    If (x And iMask) <> 0 Then iDigit += 1
+    If (y And iMask) <> 0 Then iDigit += 2
+    sQuadKey &= iDigit
   Next
 
-  Return quadKey
+  Return sQuadKey
 
 End
 
@@ -680,17 +678,17 @@ End
 '' Usefull for using with some server that query a session.
 Public Function SetCoockieFile(sFile As String) As Object
 
-  Dim hc As HttpClient
+  Dim hClient As HttpClient
 
   If Not sFile Then
-    For Each hc In $aClients
-      hc.UpdateCookies = False
-      hc.CookiesFile = ""
+    For Each hClient In $aClients
+      hClient.UpdateCookies = False
+      hClient.CookiesFile = ""
     Next
   Else
-    For Each hc In $aClients
-      hc.UpdateCookies = True
-      hc.CookiesFile = sFile
+    For Each hClient In $aClients
+      hClient.UpdateCookies = True
+      hClient.CookiesFile = sFile
     Next
   Endif
 
