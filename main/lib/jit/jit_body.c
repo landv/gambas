@@ -529,12 +529,11 @@ static const char *get_conv_format(TYPE src, TYPE dest)
 			if (TYPE_is_object(dest) && TYPE_is_object(src))
 			{
 				if (TYPE_is_pure_object(dest))
-				{
 					sprintf(buffer, "CONV_o_O(%%s, %p)", (CLASS *)dest);
-					return buffer;
-				}
 				else
-					return "%s";
+					sprintf(buffer, "CONV_o(%%s)");
+				
+				return buffer;
 			}
 			break;
 	}
@@ -1181,6 +1180,8 @@ static void pop_array(ushort code)
 	const char *unsafe = _unsafe ? "_UNSAFE" : "";
 	
 	narg = code & 0x3F;
+	//fprintf(stderr, "pop_array: %04X %d\n", code, narg);
+	
 	check_stack(narg + 1);
 	
 	type = get_type(-narg);
@@ -2876,7 +2877,10 @@ _POP_OPTIONAL:
 
 	check_stack(1);
 	if (get_type(-1) == T_VOID)
+	{
 		pop_stack(1);
+		JIT_last_print_is_label = FALSE;
+	}
 	else
 	{
 		index = func->n_param + GET_XX() - func->npmin;
@@ -3073,9 +3077,20 @@ _JUMP_NEXT:
 _ENUM_FIRST:
 
 	index = GET_XX() - func->n_local;
-	pop_ctrl(index, T_OBJECT);
-	add_ctrl(index + 1, T_OBJECT, NULL);
-	JIT_print("  ENUM_FIRST(0x%04X, c%d, c%d);\n", code, _ctrl_index[index], _ctrl_index[index + 1]);
+	type = get_type(-1);
+	if (!TYPE_is_object(type))
+	{
+		JIT_print("  THROW(E_NOBJECT);\n");
+		pop_stack(1);
+		add_ctrl(index, T_OBJECT, NULL);
+		add_ctrl(index + 1, T_OBJECT, NULL);
+	}
+	else
+	{
+		pop_ctrl(index, type);
+		add_ctrl(index + 1, T_OBJECT, NULL);
+		JIT_print("  ENUM_FIRST(0x%04X, c%d, c%d);\n", code, _ctrl_index[index], _ctrl_index[index + 1]);
+	}
 	goto _MAIN;
 
 _ENUM_NEXT:

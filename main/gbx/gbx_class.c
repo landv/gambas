@@ -1552,8 +1552,12 @@ CLASS *CLASS_find_load_from(const char *name, const char *from)
 	
 	COMPONENT_current = comp;
 	CP = NULL;
-	class = CLASS_get(name);
-	
+
+	class = CLASS_find(name);
+
+	if (!CLASS_is_loaded(class) && !class->in_load)
+		CLASS_load_without_init(class);
+
 	COMPONENT_current = save;
 	CP = save_cp;
 	

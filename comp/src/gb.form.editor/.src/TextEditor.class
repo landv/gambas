@@ -669,7 +669,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
           
           Paint.Begin(hImage)
           Paint.Font = $hFont
-          Paint.Translate(- XX, - YY)
+          Paint.Translate(-XX, -YY)
           GoSub DRAW_TEXT
           Paint.End
           
@@ -1036,7 +1036,7 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
       
     Loop
     
-    Paint.Translate(- $iSpaceWidth \ 2, 0)
+    Paint.Translate(-$iSpaceWidth \ 2, 0)
     
     ' If IP Then
     '   If Row = $IY1 Then
@@ -2867,9 +2867,9 @@ Public Sub View_Draw()
   iRow2 = $hRows._FindRowFromPos($hView.ScrollY + hClip.Y + hClip.H - 1)
   If iRow2 < 0 Then iRow2 = $hRows.Count - 1
   
-  XO = - $hView.ScrollX
+  XO = -$hView.ScrollX
   XX = XO
-  YO = - $hView.ScrollY
+  YO = -$hView.ScrollY
   YY = YO + $hRows._GetRowY(iRow)
   
   hClip = Paint.ClipRect
@@ -3802,7 +3802,7 @@ Private Sub PrintAnsi(Text As String, I As Integer) As Integer
         
       Case "A"
         If aParam.Count Then
-          RelGoto(0, - aParam[0])
+          RelGoto(0, -aParam[0])
         Else
           RelGoto(0, -1)
         Endif
@@ -3823,7 +3823,7 @@ Private Sub PrintAnsi(Text As String, I As Integer) As Integer
         
       Case "D"
         If aParam.Count Then
-          RelGoto(- aParam[0], 0)
+          RelGoto(-aParam[0], 0)
         Else
           RelGoto(-1, 0)
         Endif
@@ -4084,7 +4084,7 @@ Public Sub _RealToView(Y As Integer) As Integer
   
   If $aFold Then
     
-    Try Y = $cCacheView[- Y]
+    Try Y = $cCacheView[-Y]
     If Error Then
       
       YY = Y
@@ -4100,7 +4100,7 @@ Public Sub _RealToView(Y As Integer) As Integer
       Next
       
       Y = YY
-      $cCacheView[- YO] = Y
+      $cCacheView[-YO] = Y
       
     Endif
     
@@ -5321,7 +5321,7 @@ Public Sub TimerSideBarMouse_Timer()
 
   Dim DY As Integer
   
-  DY = If($iSideBarClick = SIDEBAR_DOWN, $LH, - $LH)
+  DY = If($iSideBarClick = SIDEBAR_DOWN, $LH, -$LH)
   
   If $hView.ScrollY + DY < 0 Or If $hView.ScrollY + DY >= $hView.ScrollH Then
     Try $hTimerSideBarMouse.Stop

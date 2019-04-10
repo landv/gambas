@@ -1187,9 +1187,9 @@ Private Sub FillProc()
 
 End
 
-Public Sub btnProc_MouseDown()
+Public Sub btnProc_Click()
 
-  If Not Mouse.Left Then Return
+  'If Not Mouse.Left Then Return
   ToggleProcList
   Stop Event
 

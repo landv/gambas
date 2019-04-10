@@ -34,6 +34,8 @@
 typedef
 	void (*JIT_FUNC)(uchar nparam);
 
+enum { JIT_NOT_COMPILED = 0, JIT_COMPILING = 1, JIT_COMPILED = 2};
+	
 #ifndef __GBX_JIT_C
 extern bool JIT_disabled;
 #endif

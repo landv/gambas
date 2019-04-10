@@ -154,8 +154,6 @@ Public Sub _Abort()
 
   Dim hComp As CCompilation
   
-  If $bDebug Then Error "gb.jit: abort compilation"
-  
   For Each hComp In CCompilation.All
     hComp.Kill
   Next

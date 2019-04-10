@@ -21,6 +21,9 @@ End
 
 Public Sub Init(hModule As FEditor, sClass As String, aProc As String[], iCurrent As Integer, W As Integer, H As Integer)
   
+  Dim fSize As Float
+  Dim N As Integer
+  
   $hModule = hModule
   $sClass = sClass
   ' Copy it, as it can disappear during the Editor_Change() method
@@ -31,11 +34,18 @@ Public Sub Init(hModule As FEditor, sClass As String, aProc As String[], iCurren
   gvwProc.Rows.Count = aProc.Count
   gvwProc.Rows.UnselectAll
   gvwProc.Columns.Count = 1
-  Project.SetNormalFont(gvwProc)
-  'gvwProc.Rows.H = gvwProc.Font.Height + 4
-  ' For I = 0 To aProc.Max
-  '   If aProc[I] Begins "-" Then gvwProc.Rows[I].H = Desktop.Scale * 1.5
-  ' Next
+  
+  N = H / Desktop.Scale / 4
+  
+  If aProc.Count > N * 2 Then
+    fSize = 0.8
+  Else If aProc.Count > N Then
+    fSize = 0.9
+  Else
+    fSize = 1
+  Endif
+
+  Project.SetNormalFont(gvwProc, fSize)
 
   Me.Resize(W, Min(H, gvwProc.ScrollHeight + 2))
   Try gvwProc[iCurrent, 0].EnsureVisible
