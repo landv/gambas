@@ -9,7 +9,7 @@ Property Selected As Boolean              '' Returns or sets if this Item is sel
 'Property Color As Integer
 Property Bounds As MapBounds
 Private $sKey As String
-Private $bSelected As Boolean
+Private $bSelected As Boolean = False
 Private $hBounds As MapBounds
 'Private $fLineStyle As Integer
 Public Type As Integer                    '' Returns or sets this Item's type (Point, MultiPoint, Polyline, Polygon, Circle)

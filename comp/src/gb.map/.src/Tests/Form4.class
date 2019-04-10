@@ -21,6 +21,9 @@ Dim hbound As MapBounds
   'MapView1.Map.DefaultCache = "/home/tmp"
 
   MapView1.Map.AddTile("OpenStreetMap", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null, "OpenStreetMap1").Copyright = "© OpenStreetMap contributors"
+  MapView1.Map.AddTile("NOAA", "https://tileservice.charts.noaa.gov/tiles/50000_1/{z}/{x}/{y}.png",, "NOAA") ', ["projection": "EPSG:3857"])
+  'MapView1.Map.AddTile("NOAA", "https://tileservice.charts.noaa.gov/tiles/13003_1/{z}/{x}/{y}.png", ["projection": "EPSG:3857", "displayProjection": " EPSG: 4326 "])
+  '" http: / / tileservice.charts.noaa.gov / tiles / 50000 _1 / {z} / {x} / {y}.png ").SubDomains = [" 0 ", " 1 ", " 2 "]"
   MapView1.Map.GetTile("OpenStreetMap").Opacity = 0.3
   MapView1.Map.Center = MapPoint(48.866667, 2.333333)
 
@@ -33,6 +36,7 @@ Dim hbound As MapBounds
 
   MapView1.Map.GetShape("Shape").AddPoint("point 1", MapPoint(48.866667, 2.333333))
   MapView1.Map.GetShape("Shape").AddPoint("point 2", MapPoint(48.866667, 2.533333)).Selected = False
+  MapView1.Map.GetShape("Shape").AddPoint("point 3", MapPoint(48.866667, 2.533333), Color.Yellow, Image.Load("plus.png"))
 
   Dim tmp1 As New MapPoint[]
   Dim tmp2 As New MapPoint
@@ -40,7 +44,7 @@ Dim hbound As MapBounds
   tmp2 = MapPoint.GetCenter(tmp1)
 
   MapView1.Map.GetShape("Shape").AddMultipoint("multipoint1", tmp1, Color.green, Image.Load("plus.png"))
-
+  ' 
   MapView1.Map.GetShape("Shape").AddPolyLine("poly1", tmp1, Color.Yellow, 4, Line.DashDotDot)
   MapView1.Map.GetShape("Shape").AddCircle("cir1", tmp2, 5000, Color.green, 4, Line.dot, Color.Transparent)
   MapView1.Map.GetShape("Shape").AddCircle("cir2", tmp2, 2500, Color.red, 4, Line.dash, Color.Transparent)
