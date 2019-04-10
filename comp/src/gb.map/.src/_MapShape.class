@@ -166,7 +166,7 @@ End
 'fillcolor should come after color, but i dont want to break anything...
 Public Sub AddCircle(Key As String, Center As MapPoint, Radius As Float, Optional {Color} As Integer, Optional {LineWidth} As Integer, Optional {LineStyle} As Integer, Optional {FillColor} As Integer) As _ShapeItem
 
-  If $aShapeNames.Exist(Key) Then Error.Raise("Key already exist: " & Key)
+  'If $aShapeNames.Exist(Key) Then Error.Raise("Key already exist: " & Key)
 
   Dim P1, P2, P3, P4 As MapPoint
   Dim hItem As New _ShapeItem(Key) As "Item"
@@ -254,7 +254,8 @@ Public Sub Draw()
         pt = Geo.MapPointToPixel(hShape.Points, hMap.zoom)
         If hShape.Image Then
           'Draws centralized
-          Paint.DrawImage(IIf(hShape.Color, hShape.Image.Colorize(hShape.Color), hShape.Image), pt.X - hMap.PixelBox.X - hShape.Image.Height / 2, pt.Y - hMap.PixelBox.Y - hShape.Image.width / 2)
+          If hShape.Color <> -1 Then hShape.Image.Colorize(hShape.Color)
+          Paint.DrawImage(hShape.Image, pt.X - hMap.PixelBox.X - hShape.Image.Height / 2, pt.Y - hMap.PixelBox.Y - hShape.Image.width / 2)
         Else
           'Draws with default "red point" icon offset
           Paint.DrawImage(Me.Image, pt.X - hMap.PixelBox.X - 16, pt.Y - hMap.PixelBox.Y - 32)
@@ -270,7 +271,9 @@ Public Sub Draw()
           ' Endif
           If hShape.Image Then
             'Draws centralized
-            Paint.DrawImage(IIf(hShape.Color, hShape.Image.Colorize(hShape.Color), hShape.Image), pt.X - hMap.PixelBox.X - hShape.Image.Height / 2, pt.Y - hMap.PixelBox.Y - hShape.Image.width / 2)
+            If hShape.Color <> -1 Then hShape.Image.Colorize(hShape.Color)
+            Paint.DrawImage(hShape.Image, pt.X - hMap.PixelBox.X - hShape.Image.Height / 2, pt.Y - hMap.PixelBox.Y - hShape.Image.width / 2)
+            'Paint.DrawImage(IIf(hShape.Color, hShape.Image.Colorize(hShape.Color), hShape.Image), pt.X - hMap.PixelBox.X - hShape.Image.Height / 2, pt.Y - hMap.PixelBox.Y - hShape.Image.width / 2)
           Else
             'Draws with default "red point" icon offset
             Paint.DrawImage(Me.Image, pt.X - hMap.PixelBox.X - 16, pt.Y - hMap.PixelBox.Y - 32)
@@ -388,20 +391,20 @@ End
 
 Private Function GetPointBounds(hMapPoints As MapPoint[]) As MapBounds
 
-  Dim X, Y, X2, Y2 As Float
+  Dim fX, fY, fX2, fY2 As Float
 
-  X = hMapPoints[0].Lon
-  Y = hMapPoints[0].Lat
-  X2 = X
-  Y2 = Y
+  fX = hMapPoints[0].Lon
+  fY = hMapPoints[0].Lat
+  fX2 = fX
+  fY2 = fY
   For Each hPoint As MapPoint In hMapPoints
-    X = Min(hPoint.lon, X)
-    Y2 = Min(hPoint.lat, Y2)
-    X2 = Max(hPoint.lon, X2)
-    Y = Max(hPoint.lat, Y)
+    fX = Min(hPoint.lon, fX)
+    fY2 = Min(hPoint.lat, fY2)
+    fX2 = Max(hPoint.lon, fX2)
+    fY = Max(hPoint.lat, fY)
   Next
 
-  Return MapBounds(MapPoint(Y, X), MapPoint(Y2, X2))
+  Return MapBounds(MapPoint(fY, fX), MapPoint(fY2, fX2))
 
 End
 
