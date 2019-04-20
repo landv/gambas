@@ -926,10 +926,15 @@ Public Sub SetCompilation(Optional sOutput As String)
   For Each sLine In aOutput
     
     aLine = Scan(sLine, "*:*: warning: *")
-    If aLine.Count <> 3 Then Continue
+    If aLine.Count <> 3 Then 
+      aLine = Scan(sLine, "gbc3: warning: *")
+      If aLine.Count <> 1 Then Continue
+      aLine.Add("", 0)
+      aLine.Add("", 0)
+    Endif
     
     gvwCompilation[I, 0].Text = Trim(File.BaseName(aLine[0]))
-    gvwCompilation[I, 1].Text = CStr(CInt(aLine[1]))
+    gvwCompilation[I, 1].Text = aLine[1]
     gvwCompilation[I, 2].Text = String.UCaseFirst(Project.TranslateMessage(Trim(aLine[2])))
     gvwCompilation[I, 2].Font = Project.GetEditorFont()
     Inc I
