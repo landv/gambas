@@ -39,6 +39,7 @@ Public Title As String
 Public Startup As String
 Public (Components) As String[]
 Public Libraries As String[]
+Public ExtraReferences As String[]
 Public Arguments As String[][]
 Public CurrentArgument As Integer
 Public Environment As String[]
@@ -3160,6 +3161,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
   Components = New String[]
   Libraries = New String[]
+  ExtraReferences = New String[]
   LibraryPath = ""
   Title = ""
   TabSize = Settings["/DefaultTabSize", 2]
@@ -3507,6 +3509,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         
       Case "donottranslate"
         DoNotTranslate = Split(sVal, ",", Chr$(34), True)
+        
+      Case "extrareferences"
+        ExtraReferences = Split(sVal, ",", Chr$(34), True)
 
     End Select
 
@@ -3686,6 +3691,8 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If PublishCreateMenu Then Print #hFic, "CreateMenu=1"
   
   If DoNotTranslate.Count Then Print #hFic, "DoNotTranslate="; DoNotTranslate.Join(",", Chr$(34))
+  
+  If ExtraReferences And If ExtraReferences.Count Then Print #hFic, "ExtraReferences="; ExtraReferences.Join(",", Chr$(34))
 
   Close #hFic
 
@@ -4612,6 +4619,10 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
   Next
   Components = aLib.Copy()
 
+  For Each sLib In ExtraReferences
+    aLib.Add(sLib)
+  Next
+
   For Each sLib In Libraries
     aLib.Add(File.Name(sLib))
   Next
@@ -4626,10 +4637,14 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
       Documentation[sLib].Load
     Next
 
-    For Each sLib In Libraries
+    For Each sLib In ExtraReferences
       Documentation.AddLibrary(sLib)
     Next
 
+    For Each sLib In Libraries
+      Documentation.AddLibrary(sLib)
+    Next
+    
     If Not $bTesting Then
       Documentation.LoadProjectComponent
       FToolBox.RefreshToolbar(bForce)

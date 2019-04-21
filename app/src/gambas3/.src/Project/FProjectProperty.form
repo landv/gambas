@@ -390,44 +390,29 @@
     Index = 3
     Text = ("Libraries")
     Picture = Picture["icon:/medium/plugin"]
-    { Panel4 Panel
-      MoveScaled(3,2,80,7)
-      Visible = False
-      Background = Color.TextBackground
-      Arrangement = Arrange.Horizontal
-      Spacing = True
-      Margin = True
-      Border = Border.Plain
-      { PictureBox1 PictureBox
-        MoveScaled(1,1,6,6)
-        AutoResize = True
-        Picture = Picture["icon:/32/warning"]
-        Alignment = Align.Left
-      }
-      { TextLabel1 TextLabel
-        MoveScaled(7,1,66,5)
-        Font = Font["-1"]
-        Expand = True
-        Text = ("<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found.")
-        Alignment = Align.Left
-      }
+    { Label9 Label
+      MoveScaled(1,1,26,3)
+      Font = Font["Bold"]
+      Text = ("Libraries")
     }
     { Label17 Label
-      MoveScaled(2,10,60,4)
+      MoveScaled(2,5,60,4)
+      Visible = False
       AutoResize = True
       Text = ("Runtime library search path")
     }
     { txtLibraryPath TextBox
-      MoveScaled(2,14,24,4)
+      MoveScaled(2,9,24,4)
+      Visible = False
     }
     { gvwLibrary GridView
-      MoveScaled(6,20,59,29)
+      MoveScaled(2,15,59,14)
       Expand = True
       Mode = Select.Single
       Grid = False
     }
     { HBox18 HBox
-      MoveScaled(1,53,84,4)
+      MoveScaled(1,31,84,4)
       Spacing = True
       { btnInsertLib Button
         MoveScaled(0,0,17,4)
@@ -450,6 +435,16 @@
         Enabled = False
         Picture = Picture["icon:/small/down"]
       }
+    }
+    { Label6 Label
+      MoveScaled(1,37,29,3)
+      Font = Font["Bold"]
+      Text = ("Additional references")
+    }
+    { lstReferences ListEditor
+      MoveScaled(2,41,79,20)
+      Expand = True
+      ReadOnly = True
     }
     Index = 4
     Text = ("Environment")
