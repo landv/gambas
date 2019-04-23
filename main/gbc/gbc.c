@@ -528,7 +528,7 @@ static void compile_lang(void)
 		
 		unlink(file_mo);
 		// Shell "msgfmt -o " & Shell$(sPath) & " " & Shell(sTrans) Wait
-		cmd = STR_print("msgfmt -o %s %s", file_mo, file_po);
+		cmd = STR_print("msgfmt -o %s %s >/dev/null 2>&1", file_mo, file_po);
 		if (main_verbose)
 			printf("running: %s\n", cmd);
 		ret = system(cmd);

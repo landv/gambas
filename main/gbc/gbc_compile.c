@@ -146,7 +146,7 @@ static void add_file_list(FILE *fi)
 	}
 }
 
-static void add_library_list_file(const char *path)
+static void add_library_list_file(const char *path, bool ref)
 {
 	ARCH *arch;
 	ARCH_FIND find;
@@ -186,7 +186,7 @@ static void add_library_list_file(const char *path)
 		ARCH_close(arch);
 	}
 	else
-		ERROR_warning("cannot find library: %s", name);
+		ERROR_warning((ref ? "cannot find reference: %s" : "cannot find library: %s"), name);
 
 	if (rpath)
 		STR_free(rpath);
@@ -483,7 +483,9 @@ void COMPILE_init(void)
 		if (strncmp(line, "Component=", 10) == 0)
 			add_component_list_file(&line[10]);
 		else if (strncmp(line, "Library=", 8) == 0)
-			add_library_list_file(&line[8]);
+			add_library_list_file(&line[8], FALSE);
+		else if (strncmp(line, "Reference=", 10) == 0)
+			add_library_list_file(&line[10], TRUE);
 	}
 
 	fclose(fp);

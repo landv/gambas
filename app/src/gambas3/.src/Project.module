@@ -3253,7 +3253,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         'Else
           hComp = Project.Documentation[sVal]
           If hComp And If Not hComp.Hidden Then
-            Components.Add(sVal)
+            If Not Components.Exist(sVal) Then Components.Add(sVal)
           Else
             aMissing.Add(sVal)
           Endif
@@ -3510,8 +3510,8 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "donottranslate"
         DoNotTranslate = Split(sVal, ",", Chr$(34), True)
         
-      Case "extrareferences"
-        ExtraReferences = Split(sVal, ",", Chr$(34), True)
+      Case "reference"
+        If Not ExtraReferences.Exist(sVal) Then ExtraReferences.Add(sVal)
 
     End Select
 
@@ -3692,7 +3692,11 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   
   If DoNotTranslate.Count Then Print #hFic, "DoNotTranslate="; DoNotTranslate.Join(",", Chr$(34))
   
-  If ExtraReferences And If ExtraReferences.Count Then Print #hFic, "ExtraReferences="; ExtraReferences.Join(",", Chr$(34))
+  If ExtraReferences Then
+    For Each sVal In ExtraReferences
+      Print #hFic, "Reference="; sVal
+    Next
+  Endif
 
   Close #hFic
 
