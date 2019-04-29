@@ -811,8 +811,8 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   PH = Me.ClientH '$hDrawingArea.H '- F * 2
 
   GetActualScroll(ByRef CX, ByRef CY)
-  CX = - CX
-  CY = - CY
+  CX = -CX
+  CY = -CY
   CW = Me.ScrollWidth
   CH = Me.ScrollHeight
 
@@ -829,16 +829,16 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
     CY = 0
   Endif
 
-  If XX < (- CX + WW) Then
-    CX = Ceil(- XX + WW)
-  Else If XX >= (- CX + PW - WW) Then
-    CX = Floor(- XX + PW - WW)
+  If XX < (-CX + WW) Then
+    CX = Ceil(-XX + WW)
+  Else If XX >= (-CX + PW - WW) Then
+    CX = Floor(-XX + PW - WW)
   Endif
   
-  If YY < (- CY + HH) Then
-    CY = Ceil(- YY + HH)
-  Else If YY >= (- CY + PH - HH) Then
-    CY = Floor(- YY + PH - HH)
+  If YY < (-CY + HH) Then
+    CY = Ceil(-YY + HH)
+  Else If YY >= (-CY + PH - HH) Then
+    CY = Floor(-YY + PH - HH)
   Endif
 
   If CX > 0
@@ -853,8 +853,8 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
     CY = PH - CH
   Endif
 
-  CX = - CX
-  CY = - CY
+  CX = -CX
+  CY = -CY
 
   If Application.Animations Then
     If $iTargetX = CX And If $iTargetY = CY Then Return True
@@ -982,13 +982,13 @@ Public Sub ScrollArea_MouseDown()
     Return
   Endif
   
-  Mouse.Translate(- $hDrawingArea.X, 0)
+  Mouse.Translate(-$hDrawingArea.X, 0)
 
 End
 
 Public Sub ScrollArea_MouseMove()
   
-  Mouse.Translate(- $hDrawingArea.X, 0)
+  Mouse.Translate(-$hDrawingArea.X, 0)
   
 End
 

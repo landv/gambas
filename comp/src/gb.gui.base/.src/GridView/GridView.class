@@ -439,7 +439,7 @@ Public Sub ScrollArea_Draw()
   iStepCol = If(System.RightToLeft, -1, 1)
   
   If System.RightToLeft Then
-    XO = - $hView.ScrollX + F
+    XO = -$hView.ScrollX + F
   Else
     XO = $hRows.Width - $hView.ScrollX + F
   Endif
@@ -1861,7 +1861,7 @@ Public Sub _SetSpan(iRow As Integer, iCol As Integer, iRowSpan As Integer, iColS
     For I = 0 To iRowSpan
       For J = 0 To iColSpan
         If I = 0 And If J = 0 Then Continue
-        _SetSpan(iRow + I, iCol + J, - I, - J)
+        _SetSpan(iRow + I, iCol + J, -I, -J)
       Next
     Next
     
