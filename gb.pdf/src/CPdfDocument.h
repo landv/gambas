@@ -31,12 +31,19 @@
 #include <Page.h>
 #if POPPLER_VERSION_0_76
 #include <vector>
+#include <Outline.h>
 #else
 #include <goo/GooList.h>
 #endif
 #include <stdint.h>
 
-#if POPPLER_VERSION_0_64
+#if POPPLER_VERSION_0_76
+#define const_LinkAction const LinkAction
+#define const_LinkDest const LinkDest
+#define const_GooList std::vector<OutlineItem*>
+#define GooList std::vector<OutlineItem*>
+#define const_GooString const GooString
+#elif POPPLER_VERSION_0_64
 #define const_LinkAction const LinkAction
 #define const_LinkDest const LinkDest
 #define const_GooList const GooList
@@ -67,6 +74,19 @@ extern GB_DESC PdfModeDesc[];
 #define THIS_RECT ((CPDFRECT *)_object)
 
 #endif
+
+#if POPPLER_VERSION_0_76
+
+#define CPDF_index_get(_i) (THIS->index->at(_i))
+#define CPDF_index_count() (THIS->index->size())
+
+#else
+
+#define CPDF_index_get(_i) ((OutlineItem *)(THIS->index->get(_i)))
+#define CPDF_index_count() (THIS->index->getLength())
+
+#endif
+
 
 typedef
 	struct {
