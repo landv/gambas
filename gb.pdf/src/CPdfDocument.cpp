@@ -273,7 +273,11 @@ static uint32_t aux_get_page_from_action(void *_object, const_LinkAction *act)
 	if (dest->isPageRef() )
 	{
 		pref= dest->getPageRef();
+#if POPPLER_VERSION_0_76
+		return THIS->doc->findPage(pref);
+#else
 		return THIS->doc->findPage(pref.num, pref.gen);
+#endif
 	}
 	else
 		return dest->getPageNum();
@@ -740,7 +744,7 @@ BEGIN_PROPERTY(PDFINDEX_has_children)
 
 	OutlineItem *item = CPDF_index_get(THIS->currindex);
 
-	GB.ReturnBoolean(item->getKids() && item->getKids()->getLength());
+	GB.ReturnBoolean(item->getKids() && CPDF_list_count(item->getKids()));
 
 END_PROPERTY
 
@@ -807,7 +811,7 @@ BEGIN_METHOD_VOID(PDFINDEX_child)
 
 	OutlineItem *item = CPDF_index_get(THIS->currindex);
 
-	if (!item->hasKids() || item->getKids()->getLength() == 0) { GB.ReturnBoolean(true); return; }
+	if (!item->hasKids() || CPDF_list_count(item->getKids()) == 0) { GB.ReturnBoolean(true); return; }
 
 	if (THIS->pindex)
 	{

@@ -40,7 +40,7 @@
 #if POPPLER_VERSION_0_76
 #define const_LinkAction const LinkAction
 #define const_LinkDest const LinkDest
-#define const_GooList std::vector<OutlineItem*>
+#define const_GooList const std::vector<OutlineItem*>
 #define GooList std::vector<OutlineItem*>
 #define const_GooString const GooString
 #elif POPPLER_VERSION_0_64
@@ -77,15 +77,18 @@ extern GB_DESC PdfModeDesc[];
 
 #if POPPLER_VERSION_0_76
 
-#define CPDF_index_get(_i) (THIS->index->at(_i))
-#define CPDF_index_count() (THIS->index->size())
+#define CPDF_list_get(_list, _i) ((_list)->at(_i))
+#define CPDF_list_count(_list) ((_list)->size())
 
 #else
 
-#define CPDF_index_get(_i) ((OutlineItem *)(THIS->index->get(_i)))
-#define CPDF_index_count() (THIS->index->getLength())
+#define CPDF_list_get(_list, _i) ((OutlineItem *)(_list)->get(_i))
+#define CPDF_list_count(_list) ((_list)->getLength())
 
 #endif
+
+#define CPDF_index_get(_i) CPDF_list_get(THIS->index, _i)
+#define CPDF_index_count() CPDF_list_count(THIS->index)
 
 
 typedef
