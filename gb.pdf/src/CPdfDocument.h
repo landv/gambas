@@ -29,7 +29,11 @@
 #include <PDFDoc.h>
 #include <SplashOutputDev.h>
 #include <Page.h>
+#if POPPLER_VERSION_0_76
+#include <vector>
+#else
 #include <goo/GooList.h>
+#endif
 #include <stdint.h>
 
 #if POPPLER_VERSION_0_64

@@ -40,7 +40,7 @@
 #include <TextOutputDev.h>
 #include <SplashOutputDev.h>
 #include <splash/SplashBitmap.h>
-#include <goo/GooList.h>
+
 #include <Outline.h>
 #include <Link.h>
 #include <Gfx.h>
