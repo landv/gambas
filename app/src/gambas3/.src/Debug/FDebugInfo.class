@@ -2,12 +2,7 @@
 
 Public Shown As Boolean
 
-Private Const TAB_DEBUG As Integer = 0
-Private Const TAB_CONSOLE As Integer = 1
-Private Const TAB_BREAK As Integer = 2
-Private Const TAB_COMPILATION As Integer = 3
-Private Const TAB_TASK As Integer = 4
-Private Const TAB_SEARCH As Integer = 5
+Private Enum TAB_DEBUG, TAB_CONSOLE, TAB_BREAK, TAB_COMPILATION, TAB_TASK, TAB_SEARCH, TAB_VERSION_CONTROL
 
 Private $cRefreshBreakpoint As New Collection
 
@@ -325,7 +320,10 @@ Public Sub ReadConfig()
   
   FDebugButton.ReadConfig
   
-  For Each hCtrl In [panBreakpoint, panSearch]
+  Project.SetConsoleFont(trmVersionControl)
+  MTheme.InitControl(trmVersionControl)
+
+  For Each hCtrl In [panBreakpoint, panSearch, panVersionControl]
     Project.SetSmallFont(hCtrl)
   Next
   
@@ -476,6 +474,7 @@ Public Sub UpdateView()
   ShowTab(TAB_CONSOLE, Not bUndock)
   ShowTab(TAB_DEBUG, Project.Running)
   ShowTab(TAB_BREAK)
+  ShowTab(TAB_VERSION_CONTROL, VersionControl.Enabled)
   
   ' If panStack.Visible <> Project.Running Then
   '   If Project.Running Then
@@ -892,6 +891,7 @@ Public Sub OnProjectChange()
   UpdateTask
   SetCompilation
   CloseSearch
+  trmVersionControl.Clear
   
 End
 
@@ -1407,3 +1407,79 @@ Public Sub cvwVariable_Rename()
   End With
   
 End
+
+Public Sub btnVcCommit_Click()
+
+  FVersionControl.Run
+
+End
+
+Public Sub InsertVersionControl(sText As String)
+  
+  trmVersionControl.Print(Replace(sText, "\n", "\r\n"))
+  
+End
+
+Public Sub btnVcUpdate_Click()
+
+  VersionControl.Update
+
+End
+
+Public Sub btnVcRevert_Click()
+
+  VersionControl.Revert
+
+End
+
+Public Sub btnVcAddAll_Click()
+
+  FMain.mnuAddVersionAll_Click()
+
+End
+
+Public Sub OnVersionControlChange()
+
+  UpdateView
+
+  If VersionControl.Enabled Then
+    lblVcName.Text = VersionControl.Name
+    UpdateBranchMenu
+  Endif
+  
+End
+
+Private Sub UpdateBranchMenu()
+
+  Dim sCurrent As String
+  Dim aBranches As String[]
+  Dim sBranch As String
+  Dim hMenu As Menu
+  
+  aBranches = VersionControl.GetBranches(ByRef sCurrent)
+  
+  If Not sCurrent Then
+    btnVcBranch.Hide
+  Else
+    btnVcBranch.Show
+    btnVcBranch.Text = sCurrent
+    mnuVcBranch.Children.Clear
+    
+    For Each sBranch In aBranches
+      hMenu = New Menu(mnuVcBranch) As "mnuVcBranchSet"
+      hMenu.Text = sBranch
+      hMenu.Tag = sBranch
+      hMenu.Radio = True
+      hMenu.Value = sBranch = sCurrent
+    Next
+  Endif
+
+End
+
+Public Sub mnuVcBranchSet_Click()
+  
+  VersionControl.SetBranch(Last.Tag)
+  UpdateBranchMenu
+  
+End
+

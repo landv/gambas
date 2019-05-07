@@ -180,11 +180,11 @@
     { mnuVersionControl Menu
       Action = "version-control"
       Text = ("Version control")
-      Picture = Picture["icon:/small/record"]
+      Picture = Picture["icon:/small/clock"]
       { mnuVcCommit Menu
         Action = "vc-commit"
         Text = ("Commit") & "..."
-        Picture = Picture["icon:/small/save"]
+        Picture = Picture["icon:/small/upload"]
       }
       { mnuVcUpdate Menu
         Action = "vc-update"
@@ -199,7 +199,7 @@
       }
       { mnuVcRevert Menu
         Action = "vc-revert"
-        Text = ("Undo all changes")
+        Text = ("Revert all changes")
         Picture = Picture["icon:/small/undo"]
       }
       { mnuVcAddAll Menu mnuAddVersionAll
@@ -1707,10 +1707,10 @@
   { Action vc-commit
     Text = "Commit"
     Shortcut = ""
-    Picture = "icon:/small/save"
+    Picture = "icon:/small/upload"
   }
   { Action vc-revert
-    Text = "Undo all changes"
+    Text = "Revert all changes"
     Shortcut = ""
     Picture = "icon:/small/undo"
   }

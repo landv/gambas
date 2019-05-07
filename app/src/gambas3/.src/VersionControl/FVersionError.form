@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,59,64)
+  MoveScaled(0,0,67,59)
   Resizable = False
   Arrangement = Arrange.Vertical
   Spacing = True
@@ -19,12 +19,26 @@
       Expand = True
     }
   }
-  { lblDetail Label
-    MoveScaled(1,11,54,17)
-    Expand = True
+  { panDetail Panel
+    MoveScaled(1,11,61,34)
+    Background = Color.TextBackground
+    Arrangement = Arrange.Fill
+    Margin = True
+    Padding = 4
+    Border = Border.Plain
+    { txtDetail TextEditor
+      MoveScaled(0,0,54,31)
+      Border = False
+      ReadOnly = True
+      Wrap = True
+      ShowCursor = False
+    }
+  }
+  { Spring1 Spring
+    MoveScaled(30,47,2,6)
   }
   { HBox1 HBox
-    MoveScaled(1,59,57,4)
+    MoveScaled(0,54,57,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(4,0,4,4)
