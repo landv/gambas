@@ -7,14 +7,14 @@ Private $dEpoch As Date
 
 Public Sub ToUnixTime({Date} As Date) As Long
 
-  If Not $dEpoch Then $dEpoch = DateAdd(Date(1970, 1, 1), gb.Second, - System.TimeZone)
+  If Not $dEpoch Then $dEpoch = DateAdd(Date(1970, 1, 1), gb.Second, -System.TimeZone)
   Return DateDiff($dEpoch, {Date}, gb.Second)
 
 End
 
 Public Sub FromUnixTime(UnixTime As Long) As Date
 
-  If Not $dEpoch Then $dEpoch = DateAdd(Date(1970, 1, 1), gb.Second, - System.TimeZone)
+  If Not $dEpoch Then $dEpoch = DateAdd(Date(1970, 1, 1), gb.Second, -System.TimeZone)
   Return $dEpoch + UnixTime / 86400
 
 End
@@ -80,9 +80,9 @@ Private Sub GetRFC822Zone(sZone As String) As Float
     Case "PST"
       fZone = -8
     Case Like "[A-I]"
-      fZone = - (Asc(sZone) - 64)
+      fZone = -(Asc(sZone) - 64)
     Case Like "[J-M]"
-      fZone = - (Asc(sZone) - 65)
+      fZone = -(Asc(sZone) - 65)
     Case Like "[N-Y]"
       fZone = Asc(sZone) - 77
     Case Like "[+-][0-1][0-9][0-5][0-9]"
@@ -150,5 +150,12 @@ Catch
   
   If Error.Class.Name = "Date" Then Error.Propagate
   Error.Raise("Not a RFC822 date format")
+  
+End
+
+Public Sub IsWeekEnd({Date} As Date) As Boolean
+  
+  Dim iDay As Integer = WeekDay({Date})
+  If iDay = gb.Sunday Or If iDay = gb.Saturday Then Return True
   
 End
