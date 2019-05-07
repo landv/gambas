@@ -28,7 +28,12 @@
 
 #if OS_LINUX
 
-#include <asm/termios.h>
+#if ARCH_PPC
+	#include <asm-generic/ioctls.h>
+	#include <asm-generic/termbits.h>
+#else
+	#include <asm/termios.h>
+#endif
 
 int ioctl(int fd, unsigned long request, ...);
 
