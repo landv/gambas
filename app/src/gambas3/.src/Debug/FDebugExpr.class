@@ -6,6 +6,8 @@ Const YW_NOT_AVAILABLE As String = ("not available")
 Static Private $cAll As New Collection
 Static Private $sYWindow As String
 Static Private $sLastExpr As String
+Static Private $iChangeColor As Integer
+Static Private $iErrorColor As Integer
 
 Private $sExpr As String
 Private $sKey As String
@@ -192,14 +194,14 @@ Public Sub gvwExpr_Data(Row As Integer, Column As Integer)
     If Left(gvwExpr.Data.Text) <> "!" Then
 
       If $cVal.Exist(Row) And If $cOldVal.Exist(Row) And If gvwExpr.Data.Text <> $cOldVal[Row] Then 
-        gvwExpr.Data.Background = Color.Lighter(Color.Yellow)
+        gvwExpr.Data.Background = $iChangeColor 'Color.Lighter(Color.Yellow)
         gvwExpr.Data.Font.Bold = True
       Endif
       
     Else
       
       gvwExpr.Data.Text = Mid$(gvwExpr.Data.Text, 2)
-      gvwExpr.Data.Background = Color.Lighter(Color.Red)
+      gvwExpr.Data.Background = $iErrorColor 'Color.Lighter(Color.Red)
       
     Endif 
     
@@ -759,6 +761,9 @@ End
 Static Public Sub ReadConfig()
   
   Dim hWin As FDebugExpr
+
+  $iChangeColor = MTheme.GetColor("CurrentLine")
+  $iErrorColor = MTheme.GetColor("Error")
 
   For Each hWin In $cAll
     hWin.UpdateConfig

@@ -380,6 +380,7 @@ Public Sub Main()
   InitWebView
   ShowFileInTitle = Settings["/ShowFileInTitle", True]
   MHelp.ReadConfig
+  FDebugExpr.ReadConfig
   FMain.Load
   Application.MainWindow = FMain
 
