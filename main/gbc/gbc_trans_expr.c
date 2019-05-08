@@ -906,6 +906,7 @@ int TRANS_get_column(int *pline)
 {
 	int i;
 	int line;
+	int col;
 	
 	if (!_tree_pos)
 	{
@@ -914,14 +915,16 @@ int TRANS_get_column(int *pline)
 	}
 	
 	line = _tree_line;
+	col = _tree_pos[0];
 	for (i = 1; i <= _tree_index; i++)
 	{
-		if (_tree_pos[i] <= _tree_pos[i - 1])
+		col = _tree_pos[i];
+		if (col < 0)
 			line++;
 	}
 	
 	*pline = line;
-	return _tree_pos[_tree_index];
+	return abs(col);
 }
 
 
