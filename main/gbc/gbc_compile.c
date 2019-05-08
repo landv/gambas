@@ -566,7 +566,10 @@ void COMPILE_begin(const char *file, bool trans, bool debug)
 	}
 
 	ALLOC(&JOB->pattern, sizeof(PATTERN) * (16 + size));
+	ALLOC(&JOB->pattern_pos, sizeof(int) * (16 + size));
 	JOB->pattern_count = 0;
+	
+	JOB->current = NULL;
 }
 
 
@@ -584,6 +587,7 @@ void COMPILE_end(void)
 	CLASS_delete(&JOB->class);
 	BUFFER_delete(&JOB->source);
 	FREE(&JOB->pattern);
+	FREE(&JOB->pattern_pos);
 
 	if (JOB->help)
 		ARRAY_delete(&JOB->help);
@@ -643,7 +647,7 @@ void COMPILE_print(int type, int line, const char *msg, ...)
 	int i;
   va_list args;
 	const char *arg[4];
-	bool col;
+	int col = -1;
 
 	if (!JOB->warnings && type == MSG_WARNING)
 		return;
@@ -652,11 +656,21 @@ void COMPILE_print(int type, int line, const char *msg, ...)
 
 	if (line < 0)
 	{
-		line = JOB->line;
-		col = JOB->column;
+		if (JOB->step == JOB_STEP_READ)
+		{
+			line = JOB->line;
+			col = READ_get_column();
+		}
+		else if (JOB->step == JOB_STEP_TREE)
+		{
+			col = TRANS_get_column(&line);
+		}
+		else if (JOB->step == JOB_STEP_CODE)
+		{
+			line = JOB->line;
+			col = COMPILE_get_column(JOB->current);
+		}
 	}
-	else
-		col = FALSE;
 
 	if (JOB->name)
 	{
@@ -670,8 +684,8 @@ void COMPILE_print(int type, int line, const char *msg, ...)
 			}
 			else
 			{
-				if (col)
-					fprintf(stderr, "%s:%d:%d: ", name, line, READ_get_column());
+				if (col >= 0)
+					fprintf(stderr, "%s:%d:%d: ", name, line, col + 1);
 				else
 					fprintf(stderr, "%s:%d: ", name, line);
 			}

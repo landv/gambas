@@ -95,7 +95,7 @@ static int get_string(const char *string, int len)
 	if (len < 0)
 		len = strlen(string);
 
-	new = !TABLE_add_symbol(StringTable, string, len, &index);
+	new = !TABLE_add_symbol_exist(StringTable, string, len, &index);
 	sym = (OUTPUT_SYMBOL *)TABLE_get_symbol(StringTable, index);
 	
 	if (new)
@@ -1086,7 +1086,7 @@ static void output_debug_method()
 				param = &func->local[j];
 				csym = (CLASS_SYMBOL *)TABLE_get_symbol(Class->table, param->index);
 
-				TABLE_add_symbol(table, csym->symbol.name, csym->symbol.len, &index);
+				index = TABLE_add_symbol(table, csym->symbol.name, csym->symbol.len);
 				osym = (OUTPUT_SYMBOL *)TABLE_get_symbol(table, index);
 				osym->value = param->value;/*TYPE_long(param->type);*/
 			}

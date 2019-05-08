@@ -348,12 +348,14 @@ static void compile_file(const char *file)
 	fprintf(stderr, "-----------------\n");
 	#endif
 
+	JOB->step = JOB_STEP_READ;
 	READ_do();
 
 	#ifdef DEBUG
 	TABLE_print(JOB->class->table, TRUE);
 	#endif
 
+	JOB->step = JOB_STEP_CODE;
 	HEADER_do();
 	TRANS_code();
 
@@ -361,6 +363,7 @@ static void compile_file(const char *file)
 	TABLE_print(JOB->class->string, FALSE);
 	#endif
 
+	JOB->step = JOB_STEP_OUTPUT;
 	OUTPUT_do(main_swap);
 	CLASS_export();
 	

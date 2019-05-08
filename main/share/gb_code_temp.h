@@ -132,7 +132,7 @@ static void write_int(int value)
 }*/
 
 
-static void use_stack(int use)
+static inline void use_stack(int use)
 {
 	if (_ignore_next_stack_usage)
 	{

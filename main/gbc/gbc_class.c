@@ -617,7 +617,7 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 		if (!TABLE_find_symbol(class->table, name, len + 2, &index))
 		{
 			char *name_alloc = CLASS_add_name(class, name, len + 2);
-			TABLE_add_symbol(class->table, name_alloc, len + 2, &index);
+			index = TABLE_add_symbol(class->table, name_alloc, len + 2);
 		}
 		
 		if (class->class[value].exported)
@@ -830,7 +830,7 @@ int CLASS_add_symbol(CLASS *class, const char *name)
 {
 	int index;
 
-	TABLE_add_symbol(class->table, name, strlen(name), &index);
+	index = TABLE_add_symbol(class->table, name, strlen(name));
 	return index;
 }
 

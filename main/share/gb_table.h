@@ -56,6 +56,10 @@ typedef
 		}
 	TABLE;
 
+#ifndef __GB_TABLE_C
+extern bool TABLE_new_symbol;
+#endif
+	
 void TABLE_create_static(TABLE *table, size_t size, TABLE_FLAG flag);
 void TABLE_delete_static(TABLE *table);
 
@@ -73,13 +77,22 @@ const char *TABLE_get_symbol_name_suffix(TABLE *table, int index, const char* su
 const char *SYMBOL_get_name(SYMBOL *sym);
 
 bool TABLE_find_symbol(TABLE *table, const char *name, int len, int *index);
-bool TABLE_add_symbol(TABLE *table, const char *name, int len, int *index);
+int TABLE_add_symbol(TABLE *table, const char *name, int len);
+
+#define TABLE_add_symbol_exist(_table, _name, _len, _pindex) \
+({ \
+	TABLE_new_symbol = FALSE; \
+	*_pindex = TABLE_add_symbol((_table), (_name), (_len)); \
+	!TABLE_new_symbol; \
+})
+	
+
 void TABLE_print(TABLE *table, bool sort);
 
 #define TABLE_get_symbol(table, ind) ((SYMBOL *)ARRAY_get((table)->symbol, ind))
 
 SYMBOL *TABLE_get_symbol_sort(TABLE *table, int index);
-void TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix, int *index);
+int TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix);
 
 int SYMBOL_find(void *symbol, ushort *sort, int n_symbol, size_t s_symbol, int flag, const char *name, int len, const char *prefix);
 #if TABLE_USE_KEY

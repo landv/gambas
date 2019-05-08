@@ -36,10 +36,11 @@
 #define BYREF_TEST(_byref, _n) (_byref & ((uintptr_t)1 << _n))
 #define BYREF_SET(_byref, _n) _byref |= ((uintptr_t)1 << _n)
 
-static short level;
-static PATTERN *current;
-static TRANS_TREE tree[MAX_EXPR_PATTERN];
-static int tree_length = 0;
+static short _level;
+static PATTERN *_current;
+static TRANS_TREE _tree[MAX_EXPR_PATTERN];
+static int _tree_pos[MAX_EXPR_PATTERN];
+static int _tree_length = 0;
 
 static void analyze_expr(short priority, short op_main);
 static void analyze_array();
@@ -52,48 +53,59 @@ static void THROW_EXPR_TOO_COMPLEX()
 
 static void inc_level()
 {
-	level++;
-	if (level > MAX_EXPR_LEVEL)
+	_level++;
+	if (_level > MAX_EXPR_LEVEL)
 		THROW_EXPR_TOO_COMPLEX();
 }
 
 
 static void dec_level()
 {
-	level--;
+	_level--;
 }
 
-#define add_pattern(_pattern) \
+/*#define add_pattern(_pattern) \
 do { \
-	if (tree_length >= MAX_EXPR_PATTERN) \
+	if (_tree_length >= MAX_EXPR_PATTERN) \
 		THROW_EXPR_TOO_COMPLEX(); \
-	tree[tree_length++] = (_pattern); \
-} while (0)
+	_tree_pos[_tree_length] = COMPILE_get_column(_current); \
+	_tree[_tree_length] = (_pattern); \
+	_tree_length++; \
+} while (0)*/
+
+static inline void add_pattern(PATTERN pattern)
+{
+	if (_tree_length >= MAX_EXPR_PATTERN)
+		THROW_EXPR_TOO_COMPLEX();
+	_tree_pos[_tree_length] = COMPILE_get_column(_current);
+	_tree[_tree_length] = pattern;
+	_tree_length++;
+}
 
 
 static void remove_last_pattern()
 {
-	if (tree_length == 0)
+	if (_tree_length == 0)
 		return;
 		
-	tree_length--;
+	_tree_length--;
 }
 
 
 static PATTERN get_last_pattern(int dep)
 {
-	if (tree_length < dep)
+	if (_tree_length < dep)
 		return NULL_PATTERN;
 	else
-		return tree[tree_length - dep];
+		return _tree[_tree_length - dep];
 }
 
 
 static void change_last_pattern(int dep, PATTERN pattern)
 {
-	if (tree_length < dep)
+	if (_tree_length < dep)
 		return;
-	tree[tree_length - dep] = pattern;
+	_tree[_tree_length - dep] = pattern;
 }
 
 
@@ -172,18 +184,18 @@ static bool is_statement(void)
 	PATTERN last;
 	int count;
 
-	count = tree_length;
+	count = _tree_length;
 
 	if (count == 0)
 		return FALSE;
 
 	count--;
-	last = tree[count];
+	last = _tree[count];
 
 	while (PATTERN_is_param(last) && (count > 0))
 	{
 		count--;
-		last = tree[count];
+		last = _tree[count];
 	}
 
 	if (PATTERN_is(last, RS_PT))
@@ -196,9 +208,9 @@ static bool is_statement(void)
 
 		if (count >= 2)
 		{
-			last = tree[count - 1];
+			last = _tree[count - 1];
 			if (PATTERN_is_param(last) && (PATTERN_index(last) == 0)
-					&& PATTERN_is(tree[count - 2], RS_PT))
+					&& PATTERN_is(_tree[count - 2], RS_PT))
 				goto _ADD_BRACE;
 		}
 	}
@@ -232,14 +244,14 @@ static void analyze_make_array()
 	bool checked = FALSE;
 	bool collection = FALSE;
 
-	/*if (PATTERN_is(*current, RS_RSQR))
+	/*if (PATTERN_is(*_current, RS_RSQR))
 	{
-		current++;
+		_current++;
 		add_pattern(PATTERN_make(RT_RESERVED, RS_NULL));
 		return;
 	}*/
 
-	if (!PATTERN_is(*current, RS_RSQR))
+	if (!PATTERN_is(*_current, RS_RSQR))
 	{
 		for(;;)
 		{
@@ -250,25 +262,25 @@ static void analyze_make_array()
 			
 			if (!checked)
 			{
-				collection = PATTERN_is(*current, RS_COLON);
+				collection = PATTERN_is(*_current, RS_COLON);
 				checked = TRUE;
 			}
 			
 			if (collection)
 			{
-				if (!PATTERN_is(*current, RS_COLON))
+				if (!PATTERN_is(*_current, RS_COLON))
 					THROW(E_MISSING, "':'");
-				current++;
+				_current++;
 				n++;
 				/*if (n > MAX_PARAM_OP)
 					THROW("Too many arguments");*/
 				analyze_expr(0, RS_NONE);
 			}
 			
-			if (!PATTERN_is(*current, RS_COMMA))
+			if (!PATTERN_is(*_current, RS_COMMA))
 				break;
 
-			current++;
+			_current++;
 
 			if (collection)
 			{
@@ -289,16 +301,16 @@ static void analyze_make_array()
 		}
 	}
 
-	while (PATTERN_is_newline(*current))
+	while (PATTERN_is_newline(*_current))
 	{
 		add_pattern(PATTERN_make(RT_NEWLINE, 0));
 		JOB->line++;
-		current++;
+		_current++;
 	}
 		
-	if (!PATTERN_is(*current, RS_RSQR))
+	if (!PATTERN_is(*_current, RS_RSQR))
 		THROW(E_MISSING, "']'");
-	current++;
+	_current++;
 
 	add_operator(collection ? RS_COLON : RS_RSQR, n);
 }
@@ -309,34 +321,34 @@ static void analyze_single(int op)
 	PATTERN *pattern;
 	bool jump_newline;
 
-	jump_newline = PATTERN_is_newline(*current);
+	jump_newline = PATTERN_is_newline(*_current);
 	if (jump_newline)
 	{
 		add_pattern(PATTERN_make(RT_NEWLINE, 0));
 		JOB->line++;
-		current++;
+		_current++;
 	}
 
-	if (op == RS_PT && !PATTERN_is_identifier(*current))
+	if (op == RS_PT && !PATTERN_is_identifier(*_current))
 		THROW("The '.' operator must be followed by an identifier");
-	else if (op == RS_EXCL && !PATTERN_is_string(*current))
+	else if (op == RS_EXCL && !PATTERN_is_string(*_current))
 		THROW("The '!' operator must be followed by an identifier");
 
 	/* ( expr ) */
 
-	if (PATTERN_is(*current, RS_LBRA))
+	if (PATTERN_is(*_current, RS_LBRA))
 	{
-		int old_length = tree_length;
+		int old_length = _tree_length;
 		PATTERN last;
 
-		current++;
+		_current++;
 		analyze_expr(0, RS_NONE);
 
-		if (!PATTERN_is(*current, RS_RBRA))
+		if (!PATTERN_is(*_current, RS_RBRA))
 			THROW(E_MISSING, "')'");
-		current++;
+		_current++;
 
-		if (tree_length == (old_length + 1))
+		if (_tree_length == (old_length + 1))
 		{
 			last = get_last_pattern(1);
 			if (PATTERN_is_string(last))
@@ -346,18 +358,18 @@ static void analyze_single(int op)
 
 	/* [ expr, expr, ... ] */
 
-	else if (PATTERN_is(*current, RS_LSQR))
+	else if (PATTERN_is(*_current, RS_LSQR))
 	{
-		current++;
+		_current++;
 		analyze_make_array();
 	}
 
 	/* - expr | NOT expr */
 
-	else if (PATTERN_is(*current, RS_MINUS) || PATTERN_is(*current, RS_NOT))
+	else if (PATTERN_is(*_current, RS_MINUS) || PATTERN_is(*_current, RS_NOT))
 	{
-		pattern = current;
-		current++;
+		pattern = _current;
+		_current++;
 
 		analyze_expr(RES_priority(RS_NOT), RS_UNARY);
 		add_operator(PATTERN_index(*pattern), 1);
@@ -365,52 +377,52 @@ static void analyze_single(int op)
 
 	// . symbol
 
-	else if (PATTERN_is(*current, RS_PT) && PATTERN_is_identifier(current[1]))
+	else if (PATTERN_is(*_current, RS_PT) && PATTERN_is_identifier(_current[1]))
 	{
-		add_operator(PATTERN_index(current[0]), 0);
-		add_pattern(PATTERN_set_flag(current[1], RT_POINT));
-		add_operator(PATTERN_index(current[0]), 2);
-		current += 2;
+		add_operator(PATTERN_index(_current[0]), 0);
+		add_pattern(PATTERN_set_flag(_current[1], RT_POINT));
+		add_operator(PATTERN_index(_current[0]), 2);
+		_current += 2;
 	}
 
 	// . [ ... ]
 
-	else if (PATTERN_is(*current, RS_PT) && PATTERN_is(current[1], RS_LSQR))
+	else if (PATTERN_is(*_current, RS_PT) && PATTERN_is(_current[1], RS_LSQR))
 	{
-		add_operator(PATTERN_index(current[0]), 0);
+		add_operator(PATTERN_index(_current[0]), 0);
 		//add_pattern(PATTERN_set_flag(RS_RSQR, RT_POINT));
-		current += 2;
+		_current += 2;
 		analyze_array();
 	}
 
 	// ! symbol
 
-	else if (PATTERN_is(*current, RS_EXCL) && PATTERN_is_string(current[1]))
+	else if (PATTERN_is(*_current, RS_EXCL) && PATTERN_is_string(_current[1]))
 	{
 		add_operator(RS_PT, 0);
-		add_pattern(PATTERN_set_flag(current[1], RT_POINT));
+		add_pattern(PATTERN_set_flag(_current[1], RT_POINT));
 		add_operator(RS_EXCL, 0);
-		current += 2;
+		_current += 2;
 	}
 
 	/* NULL, TRUE, FALSE, ME, PARENT, LAST, ERROR */
 	/* number, string or symbol */
 
-	else if (PATTERN_is(*current, RS_NULL)
-					|| PATTERN_is(*current, RS_ME)
-					|| PATTERN_is(*current, RS_LAST)
-					|| PATTERN_is(*current, RS_TRUE)
-					|| PATTERN_is(*current, RS_FALSE)
-					|| PATTERN_is(*current, RS_PINF)
-					|| PATTERN_is(*current, RS_MINF)
-					|| PATTERN_is(*current, RS_ERROR)
-					|| (!PATTERN_is_reserved(*current) && !PATTERN_is_newline(*current) && !PATTERN_is_end(*current)))
+	else if (PATTERN_is(*_current, RS_NULL)
+					|| PATTERN_is(*_current, RS_ME)
+					|| PATTERN_is(*_current, RS_LAST)
+					|| PATTERN_is(*_current, RS_TRUE)
+					|| PATTERN_is(*_current, RS_FALSE)
+					|| PATTERN_is(*_current, RS_PINF)
+					|| PATTERN_is(*_current, RS_MINF)
+					|| PATTERN_is(*_current, RS_ERROR)
+					|| (!PATTERN_is_reserved(*_current) && !PATTERN_is_newline(*_current) && !PATTERN_is_end(*_current)))
 	{
-		add_pattern(*current);
+		add_pattern(*_current);
 
-		if (PATTERN_is_identifier(*current))
+		if (PATTERN_is_identifier(*_current))
 		{
-			/*if ((op == RS_NONE || op == RS_UNARY) && (PATTERN_is_identifier(*current)))
+			/*if ((op == RS_NONE || op == RS_UNARY) && (PATTERN_is_identifier(*_current)))
 				change_last_pattern(1, PATTERN_set_flag(get_last_pattern(1), RT_FIRST));*/
 			if (op == RS_PT)
 			{
@@ -419,17 +431,17 @@ static void analyze_single(int op)
 			}
 		}
 
-		current++;
+		_current++;
 	}
 
-	else if (PATTERN_is(*current, RS_SUPER))
+	else if (PATTERN_is(*_current, RS_SUPER))
 	{
-		add_pattern(*current);
-		current++;
-		if (!PATTERN_is(*current, RS_PT)
-				&& !PATTERN_is(*current, RS_EXCL)
-				&& !PATTERN_is(*current, RS_LBRA)
-				&& !PATTERN_is(*current, RS_LSQR))
+		add_pattern(*_current);
+		_current++;
+		if (!PATTERN_is(*_current, RS_PT)
+				&& !PATTERN_is(*_current, RS_EXCL)
+				&& !PATTERN_is(*_current, RS_LBRA)
+				&& !PATTERN_is(*_current, RS_LSQR))
 			THROW("SUPER cannot be used alone");
 	}
 
@@ -437,11 +449,11 @@ static void analyze_single(int op)
 	{
 		if (jump_newline)
 		{
-			current--;
+			_current--;
 			JOB->line--;
 		}
 
-		THROW_UNEXPECTED(current);
+		THROW_UNEXPECTED(_current);
 	}
 }
 
@@ -478,35 +490,35 @@ static void analyze_call()
 
 	if (PATTERN_type(subr_pattern) == RT_SUBR && PATTERN_index(subr_pattern) == SUBR_VarPtr)
 	{
-		if (!PATTERN_is_identifier(current[0]) || !PATTERN_is(current[1], RS_RBRA))
+		if (!PATTERN_is_identifier(_current[0]) || !PATTERN_is(_current[1], RS_RBRA))
 			THROW("Syntax error. VarPtr() takes only one identifier");
 		
-		add_pattern(*current);
-		current += 2;
+		add_pattern(*_current);
+		_current += 2;
 		add_subr(subr_pattern, 1);
 	}
 	else
 	{
 		for (;;)
 		{
-			if (PATTERN_is(*current, RS_RBRA))
+			if (PATTERN_is(*_current, RS_RBRA))
 			{
-				current++;
+				_current++;
 				break;
 			}
 	
 			if (nparam_post > 0)
 			{
-				if (!PATTERN_is(*current, RS_COMMA))
+				if (!PATTERN_is(*_current, RS_COMMA))
 					THROW(E_MISSING, "',' or ')'");
-				current++;
+				_current++;
 			}
 	
 			#if 0
-			if (FALSE) /*(PATTERN_is(*current, RS_AMP))*/
+			if (FALSE) /*(PATTERN_is(*_current, RS_AMP))*/
 			{
-				current++;
-				output[nparam_post] = current;
+				_current++;
+				output[nparam_post] = _current;
 				has_output = TRUE;
 			}
 			else
@@ -515,23 +527,23 @@ static void analyze_call()
 			}
 			#endif
 			
-			if (optional && (PATTERN_is(*current, RS_COMMA) || PATTERN_is(*current, RS_RBRA)))
+			if (optional && (PATTERN_is(*_current, RS_COMMA) || PATTERN_is(*_current, RS_RBRA)))
 			{
 				add_reserved_pattern(RS_OPTIONAL);
 			}
-			else if (optional && PATTERN_is(*current, RS_3PTS) && PATTERN_is(current[1], RS_RBRA))
+			else if (optional && PATTERN_is(*_current, RS_3PTS) && PATTERN_is(_current[1], RS_RBRA))
 			{
-				current++;
+				_current++;
 				add_reserved_pattern(RS_3PTS);
 				nparam_post--;
 			}
 			else
 			{
-				if (PATTERN_is(*current, RS_AT) || PATTERN_is(*current, RS_BYREF))
+				if (PATTERN_is(*_current, RS_AT) || PATTERN_is(*_current, RS_BYREF))
 				{
-					current++;
+					_current++;
 					BYREF_SET(byref, nparam_post);
-					byref_pattern[nparam_post] = current;
+					byref_pattern[nparam_post] = _current;
 				}
 	
 				analyze_expr(0, RS_NONE);
@@ -562,13 +574,13 @@ static void analyze_call()
 		{
 			add_operator_output(RS_LBRA, nparam_post, byref);
 			
-			save = current;
+			save = _current;
 			
 			for (i = nparam_post - 1; i >= 0; i--)
 			{
 				if (BYREF_TEST(byref, i))
 				{
-					current = byref_pattern[i];
+					_current = byref_pattern[i];
 					analyze_expr(0, RS_NONE);
 					//if (!is_statement())
 					//	THROW("The &1 argument cannot be passed by reference", TRANS_get_num_desc(i + 1));
@@ -576,7 +588,7 @@ static void analyze_call()
 				}
 			}
 			
-			current = save;
+			_current = save;
 		}
 		else
 		{
@@ -606,15 +618,15 @@ static void analyze_array()
 	{
 		analyze_expr(0, RS_NONE);
 		
-		if (!PATTERN_is(*current, RS_COMMA))
+		if (!PATTERN_is(*_current, RS_COMMA))
 			break;
 			
-		current++;
+		_current++;
 	}
 
-	if (!PATTERN_is(*current, RS_RSQR))
+	if (!PATTERN_is(*_current, RS_RSQR))
 		THROW(E_MISSING, "',' or ')'");
-	current++;
+	_current++;
 
 	add_operator(RS_LSQR, i + 2);
 }
@@ -632,7 +644,7 @@ static void analyze_expr(short priority, short op_main)
 	op_not = RS_NONE;
 	nparam = (op_main == RS_NONE || op_main == RS_UNARY) ? 0 : 1;
 
-	if (PATTERN_is(*current, RS_NEW))
+	if (PATTERN_is(*_current, RS_NEW))
 		THROW("Cannot use NEW operator there");
 
 READ_OPERAND:
@@ -647,27 +659,27 @@ READ_OPERAND:
 
 READ_OPERATOR:
 
-	if (!PATTERN_is_reserved(*current))
+	if (!PATTERN_is_reserved(*_current))
 		goto OPERATOR_END;
 
-	op = PATTERN_index(*current);
+	op = PATTERN_index(*_current);
 
 	if (!RES_is_operator(op))
 		goto OPERATOR_END;
 
 	if (op == RS_AND || op == RS_OR)
-		if (PATTERN_is(current[1], RS_IF))
+		if (PATTERN_is(_current[1], RS_IF))
 			goto OPERATOR_END;
 
-	current++;
+	_current++;
 	
-	if (op == RS_NOT && PATTERN_is_reserved(*current))
+	if (op == RS_NOT && PATTERN_is_reserved(*_current))
 	{
-		op_not = PATTERN_index(*current);
+		op_not = PATTERN_index(*_current);
 		if (RES_is_operator(op_not) && RES_can_have_not_before(op_not))
 		{
 			op = op_not + 1;
-			current++;
+			_current++;
 		}
 	}
 	
@@ -735,9 +747,9 @@ READ_OPERATOR:
 		if ((op_main != RS_NONE) || (priority > 0))
 		{
 			add_operator(op_curr, nparam);
-			current--;
+			_current--;
 			if (op_not != RS_NONE)
-				current--;
+				_current--;
 			goto END;
 		}
 
@@ -780,34 +792,34 @@ END:
 }
 
 
-void TRANS_tree(bool check_statement, TRANS_TREE **result, int *count)
+void TRANS_tree(bool check_statement, TRANS_TREE **result, int *count, int **result_pos)
 {
 	#ifdef DEBUG
 	int i;
 	#endif
 
-	tree_length = 0;
-	current = JOB->current;
-	level = 0;
+	_tree_length = 0;
+	_current = JOB->current;
+	_level = 0;
 
 	TRY
 	{
 		analyze_expr(0, RS_NONE);
-		JOB->current = current;
+		JOB->current = _current;
 	}
 	CATCH
 	{
-		JOB->current = current;
+		JOB->current = _current;
 		PROPAGATE();
 	}
 	END_TRY
 
 	#ifdef DEBUG
 		printf("\n");
-		for (i = 0; i < tree_length; i++)
+		for (i = 0; i < _tree_length; i++)
 		{
 			printf("[% 4d] ", i);
-			READ_dump_pattern(&tree[i]);
+			READ_dump_pattern(&_tree[i]);
 		}
 	#endif
 
@@ -817,9 +829,14 @@ void TRANS_tree(bool check_statement, TRANS_TREE **result, int *count)
 	if (result)
 	{
 		add_pattern(NULL_PATTERN);
-		ALLOC(result, sizeof(PATTERN) * tree_length);
-		memcpy(*result, tree, sizeof(PATTERN) * tree_length);
-		*count = tree_length - 1;
+		ALLOC(result, sizeof(PATTERN) * _tree_length);
+		memcpy(*result, _tree, sizeof(PATTERN) * _tree_length);
+		if (result_pos)
+		{
+			ALLOC(result_pos, sizeof(int) * _tree_length);
+			memcpy(*result_pos, _tree_pos, sizeof(int) * _tree_length);
+		}
+		*count = _tree_length - 1;
 	}
 }
 

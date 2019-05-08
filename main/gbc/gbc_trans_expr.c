@@ -39,6 +39,11 @@
 
 //static bool _accept_statement = FALSE;
 
+static int *_tree_pos = NULL;
+static int _tree_length = 0;
+static int _tree_index = 0;
+static int _tree_line;
+
 static bool _must_drop_vargs = FALSE;
 
 static TYPE _type[MAX_EXPR_LEVEL];
@@ -601,8 +606,9 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 
 	i = 0;
 	
-	for(i = 0; i < count; i++)
+	for (i = 0; i < count; i++)
 	{
+		_tree_index = i;
 		prev_pattern = pattern;
 		pattern = tree[i];
 		next_pattern = tree[i + 1];
@@ -859,7 +865,6 @@ void TRANS_new(void)
 static void trans_expression(bool check_statement)
 {
 	TRANS_TREE *tree;
-	int tree_length;
 
 	if (!check_statement)
 	{
@@ -875,12 +880,17 @@ static void trans_expression(bool check_statement)
 		}
 	}
 
-	TRANS_tree(check_statement, &tree, &tree_length);
+	_tree_line = JOB->line;
+	TRANS_tree(check_statement, &tree, &_tree_length, &_tree_pos);
 
-	trans_expr_from_tree(tree, tree_length);
+	JOB->step = JOB_STEP_TREE;
+	trans_expr_from_tree(tree, _tree_length);
+	JOB->step = JOB_STEP_CODE;
 
 	FREE(&tree);
-
+	FREE(&_tree_pos);
+	_tree_length = 0;
+	
 	if (check_statement)
 	{
 		/*
@@ -892,10 +902,32 @@ static void trans_expression(bool check_statement)
 	}
 }
 
+int TRANS_get_column(int *pline)
+{
+	int i;
+	int line;
+	
+	if (!_tree_pos)
+	{
+		*pline = -1;
+		return -1;
+	}
+	
+	line = _tree_line;
+	for (i = 1; i <= _tree_index; i++)
+	{
+		if (_tree_pos[i] <= _tree_pos[i - 1])
+			line++;
+	}
+	
+	*pline = line;
+	return _tree_pos[_tree_index];
+}
+
 
 void TRANS_ignore_expression()
 {
-	TRANS_tree(FALSE, NULL, NULL);
+	TRANS_tree(FALSE, NULL, NULL, NULL);
 }
 
 
@@ -907,7 +939,7 @@ TYPE TRANS_variable_get_type()
 	int index;
 	CLASS_SYMBOL *sym;
 
-	TRANS_tree(FALSE, &tree, &count);
+	TRANS_tree(FALSE, &tree, &count, NULL);
 
 	if (count == 1 && PATTERN_is_identifier(*tree))
 	{

@@ -425,12 +425,12 @@ END:
 	if (sign && !PATTERN_is_null(last_pattern) && (!PATTERN_is_reserved(last_pattern) || PATTERN_is(last_pattern, RS_RBRA) || PATTERN_is(last_pattern, RS_RSQR)))
 	{
 		add_pattern(RT_RESERVED, RESERVED_find_word(&sign, 1));
-		TABLE_add_symbol(EVAL->table, start + 1, source_ptr - start - 1, &index);
+		index = TABLE_add_symbol(EVAL->table, start + 1, source_ptr - start - 1);
 		add_pattern(RT_NUMBER, index);
 	}
 	else
 	{
-		TABLE_add_symbol(EVAL->table, start, source_ptr - start, &index);
+		index = TABLE_add_symbol(EVAL->table, start, source_ptr - start);
 		add_pattern(RT_NUMBER, index);
 	}
 
@@ -689,7 +689,7 @@ static void add_identifier()
 				{
 					source_ptr++;
 					len++;
-					TABLE_add_symbol(EVAL->table, start, len - 2, &index);
+					index = TABLE_add_symbol(EVAL->table, start, len - 2);
 					continue;
 				}
 			}
@@ -806,7 +806,7 @@ static void add_identifier()
 						ret = GB.Call(&func, 1, FALSE);
 						if (!ret->_boolean.value)
 						{
-							exist = TABLE_add_symbol(EVAL->table, start, len, &index);
+							exist = TABLE_add_symbol_exist(EVAL->table, start, len, &index);
 							type = RT_IDENTIFIER;
 						}
 					}
@@ -829,11 +829,13 @@ static void add_identifier()
 
 	if (!EVAL->analyze && PATTERN_is(last_pattern, RS_EXCL))
 	{
-		TABLE_add_symbol(EVAL->string, start, len, &index);
+		index = TABLE_add_symbol(EVAL->string, start, len);
 		type = RT_STRING;
 	}
 	else
-		exist = TABLE_add_symbol(EVAL->table, start, len, &index);
+	{
+		exist = TABLE_add_symbol_exist(EVAL->table, start, len, &index);
+	}
 
 __ADD_PATTERN:
 
@@ -898,7 +900,7 @@ static void add_quoted_identifier(void)
 	
 	if (!EVAL->analyze && PATTERN_is(last_pattern, RS_EXCL))
 	{
-		TABLE_add_symbol(EVAL->string, start + 1, len - 2, &index);
+		index = TABLE_add_symbol(EVAL->string, start + 1, len - 2);
 		type = RT_STRING;
 	}
 	else
@@ -908,7 +910,7 @@ static void add_quoted_identifier(void)
 			start++;
 			len -= 2;
 		}
-		TABLE_add_symbol(EVAL->table, start, len, &index);
+		index = TABLE_add_symbol(EVAL->table, start, len);
 	}
 
 	add_pattern(type, index);
@@ -1076,7 +1078,7 @@ static void add_string()
 	//fprintf(stderr, "EVAL_read: add_string (end): [%d] %s\n", source_ptr - EVAL->source, source_ptr);
 	if (len > 0)
 	{
-		TABLE_add_symbol(EVAL->string, start + 1, len, &index);
+		index = TABLE_add_symbol(EVAL->string, start + 1, len);
 		add_pattern(RT_STRING, index);
 	}
 	else
@@ -1155,7 +1157,7 @@ static void add_big_comment()
 		source_ptr++;
 	}
 
-	TABLE_add_symbol(EVAL->string, start, len, &index);
+	index = TABLE_add_symbol(EVAL->string, start, len);
 	type = RT_COMMENT;
 	add_pattern(type, index);
 }
@@ -1207,7 +1209,7 @@ static void add_comment()
 		len++;
 	}
 
-	TABLE_add_symbol(EVAL->string, start, len, &index);
+	index = TABLE_add_symbol(EVAL->string, start, len);
 	type = RT_COMMENT;
 
 	add_pattern(type, index);
@@ -1245,7 +1247,7 @@ static void add_string_for_analyze()
 	if (car == '"')
 		source_ptr++;
 
-	TABLE_add_symbol(EVAL->string, start + 1, len, &index);
+	index = TABLE_add_symbol(EVAL->string, start + 1, len);
 	type = RT_STRING;
 
 	add_pattern(type, index);
