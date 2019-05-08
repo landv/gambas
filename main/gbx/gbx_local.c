@@ -751,7 +751,7 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 			break;
 
 		case LF_SCIENTIFIC:
-			fmt = "0.################E+#";
+			fmt = "0.################E+0";
 			break;
 
 		case LF_CURRENCY:
