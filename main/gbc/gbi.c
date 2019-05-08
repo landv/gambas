@@ -293,7 +293,7 @@ static void add_class(const char *name, bool has_static)
 	
 	if (out_list)
 	{
-		if (TABLE_add_symbol_exist(_classes, name, strlen(name), &index))
+		if (!TABLE_add_symbol_exist(_classes, name, strlen(name), &index))
 		{
 			fputs(name, out_list);
 			if (has_static)
