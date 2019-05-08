@@ -128,6 +128,7 @@ int MAIN_x11_last_key_code = 0;
 bool MAIN_debug_busy = false;
 bool MAIN_init = false;
 bool MAIN_key_debug = false;
+bool MAIN_right_to_left = false;
 
 GB_CLASS CLASS_Control;
 GB_CLASS CLASS_Container;
@@ -903,6 +904,8 @@ static void init_lang(char *lang, bool rtl)
 	int pos;
 	QString locale(lang);
 
+	MAIN_right_to_left = rtl;
+	
 	pos = locale.lastIndexOf(".");
 	if (pos >= 0) locale = locale.left(pos);
 
