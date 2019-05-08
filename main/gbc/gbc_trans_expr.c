@@ -888,7 +888,7 @@ static void trans_expression(bool check_statement)
 	JOB->step = JOB_STEP_CODE;
 
 	FREE(&tree);
-	FREE(&_tree_pos);
+	_tree_pos = NULL;
 	_tree_length = 0;
 	
 	if (check_statement)
