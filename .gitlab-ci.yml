@@ -13,7 +13,7 @@ build:archlinux:
        zlib
   script:
     - ./reconf-all
-    - GAMBAS_CONFIG_FAILURE=1 ./configure -C --disable-sqlite2 --disable-qtwebkit
+    - GAMBAS_CONFIG_FAILURE=1 ./configure -C --disable-sqlite2 --disable-qt4
     - make -j$(nproc)
     - make install
 
@@ -33,7 +33,7 @@ build:archlinux-clang:
        zlib
   script:
     - ./reconf-all
-    - GAMBAS_CONFIG_FAILURE=1 ./configure CC=clang CXX=clang++ -C --disable-sqlite2 --disable-qtwebkit
+    - GAMBAS_CONFIG_FAILURE=1 ./configure CC=clang CXX=clang++ -C --disable-sqlite2 --disable-qt4
     - make -j$(nproc)
     - make install
 
