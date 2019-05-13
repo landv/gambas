@@ -7,13 +7,13 @@ build:archlinux:
        glew glib2 gmime gsl gst-plugins-base gstreamer gtk2 gtk3 gtkglext imlib2
        intltool libffi libgl libgnome-keyring libmariadbclient librsvg libsm
        libxcursor libxml2 libxslt libxtst mariadb make mesa ncurses pcre
-       pkg-config poppler-glib postgresql postgresql-libs qt4 qt5-svg
+       pkg-config poppler-glib postgresql postgresql-libs qt5-svg
        qt5-webkit qt5-x11extras sdl2 sdl2_gfx sdl2_image sdl2_mixer sdl2_net
        sdl2_ttf sdl_mixer sdl_ttf smpeg sqlite unixodbc v4l-utils xdg-utils
        zlib
   script:
     - ./reconf-all
-    - GAMBAS_CONFIG_FAILURE=1 ./configure -C --disable-sqlite2 --disable-qtwebkit
+    - GAMBAS_CONFIG_FAILURE=1 ./configure -C --disable-sqlite2 --disable-qt4
     - make -j$(nproc)
     - make install
 
@@ -27,13 +27,13 @@ build:archlinux-clang:
        glew glib2 gmime gsl gst-plugins-base gstreamer gtk2 gtk3 gtkglext imlib2
        intltool libffi libgl libgnome-keyring libmariadbclient librsvg libsm
        libxcursor libxml2 libxslt libxtst mariadb make mesa ncurses pcre
-       pkg-config poppler-glib postgresql postgresql-libs qt4 qt5-svg
+       pkg-config poppler-glib postgresql postgresql-libs qt5-svg
        qt5-webkit qt5-x11extras sdl2 sdl2_gfx sdl2_image sdl2_mixer sdl2_net
        sdl2_ttf sdl_mixer sdl_ttf smpeg sqlite unixodbc v4l-utils xdg-utils
        zlib
   script:
     - ./reconf-all
-    - GAMBAS_CONFIG_FAILURE=1 ./configure CC=clang CXX=clang++ -C --disable-sqlite2 --disable-qtwebkit
+    - GAMBAS_CONFIG_FAILURE=1 ./configure CC=clang CXX=clang++ -C --disable-sqlite2 --disable-qt4
     - make -j$(nproc)
     - make install
 
