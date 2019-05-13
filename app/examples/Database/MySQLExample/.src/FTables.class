@@ -327,8 +327,8 @@ Public Procedure ViewInfo(Optional Column As Integer) 'View's Info
         tvwViews[iCounter, 5].Text = modMain.$hResult!CHARACTER_SET_CLIENT
         tvwViews[iCounter, 6].Text = modMain.$hResult!COLLATION_CONNECTION
       Else
-        tvwViews[iCounter, 5].Text = ("Not aviable")
-        tvwViews[iCounter, 6].Text = ("Not aviable")
+        tvwViews[iCounter, 5].Text = ("Not available")
+        tvwViews[iCounter, 6].Text = ("Not available")
       Endif
     If (iCounter Mod 2) = 0 Then
       tvwViews[iCounter, 0].Background = Color.RGB(239, 243, 247)
