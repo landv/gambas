@@ -183,6 +183,13 @@ Public Sub TextBox_MouseWheel()
   
 End
 
+Public Sub TextBox_Activate()
+  
+  CheckValue
+  
+End
+
+
 Private Sub SetValue(iValue As Integer, Optional bFocus As Boolean)
 
   Dim sValue As String
