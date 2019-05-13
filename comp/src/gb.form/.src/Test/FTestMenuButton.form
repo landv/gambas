@@ -49,6 +49,7 @@
   }
   { HBox1 HBox
     MoveScaled(3,14,56,5)
+    Visible = False
     { MenuButton1 MenuButton
       MoveScaled(0,0,17,4)
       AutoResize = True
@@ -74,5 +75,25 @@
       Border = False
       Menu = "mnuTools"
     }
+  }
+  { MenuButton4 MenuButton
+    MoveScaled(9,31,20,4)
+    Text = ("Menu button")
+    Picture = Picture["img/32/filter-menu.png"]
+  }
+  { MenuButton5 MenuButton
+    MoveScaled(9,37,20,4)
+    Text = ("Menu button")
+  }
+  { MenuButton6 MenuButton
+    MoveScaled(9,43,20,4)
+    Text = ("Menu button")
+    Picture = Picture["img/32/filter-menu.png"]
+    Arrow = False
+  }
+  { MenuButton7 MenuButton
+    MoveScaled(9,49,20,4)
+    Text = ("Menu button")
+    Arrow = False
   }
 }

@@ -194,7 +194,7 @@ Public Sub DrawingArea_Draw()
     Paint.MoveTo(S, S)
     Paint.RelLineTo(S * 2, S * 2)
     Paint.MoveTo(S * 3, S)
-    Paint.RelLineTo(- S * 2, S * 2)
+    Paint.RelLineTo(-S * 2, S * 2)
     
     Paint.LineWidth = Desktop.Scale / 4
     Paint.LineCap = Paint.LineCapRound

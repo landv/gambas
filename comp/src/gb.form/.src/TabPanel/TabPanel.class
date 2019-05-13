@@ -152,7 +152,7 @@ Public Sub EnsureCurrentVisible_Timer()
     
     If Me.W <= ($aButton[$iCurrent].W + ARROW_WIDTH) Then 
   
-      $X = - $aButton[$iCurrent].X
+      $X = -$aButton[$iCurrent].X
       
     Else
   
@@ -205,7 +205,7 @@ Public Sub EnsureCurrentVisible_Timer()
       iLeftIndex = _GetFirstIndex()
       iRightIndex = GetLastIndex()
     Endif
-    $hLeftArrow.Visible = $X < (- $aButton[iLeftIndex].X) '+ $aButton[iIndex].X + $aButton[iIndex].W) > $hTabBar.W
+    $hLeftArrow.Visible = $X < (-$aButton[iLeftIndex].X) '+ $aButton[iIndex].X + $aButton[iIndex].W) > $hTabBar.W
     $hRightArrow.Visible = ($X + $aButton[iRightIndex].X + $aButton[iRightIndex].W) > $hTabBar.W
   Else
     $hLeftArrow.Hide
