@@ -244,6 +244,33 @@ GB_TYPE sqlite_get_type(const char *type, int *length)
 
 //--------------------------------------------------------------------------
 
+static void clear_query(SQLITE_RESULT *result)
+{
+	int i;
+
+	if (!result->buffer)
+		return;
+	
+	for (i = 0; i < result->ncol; i++)
+		GB.FreeString(&result->names[i]);
+
+	GB.Free(POINTER(&result->names));
+
+	GB.Free(POINTER(&result->types));
+
+	GB.Free(POINTER(&result->lengths));
+
+	GB.FreeArray(&result->values);
+
+	BUFFER_delete(&result->buffer);
+}
+
+void sqlite_query_free(SQLITE_RESULT *result)
+{
+	clear_query(result);
+	GB.Free(POINTER(&result));
+}
+
 static int my_sqlite3_exec(
 	sqlite3 *db,                /* The database on which the SQL executes */
 	const char *zSql,           /* The SQL to be executed */
@@ -282,7 +309,11 @@ static int my_sqlite3_exec(
 		}
 
 		nCallback = 0;
+		
+		clear_query(result);
 
+		BUFFER_create(&result->buffer);
+		
 		result->ncol = ncol = sqlite3_column_count(pStmt);
 
 		if (ncol > 0)
@@ -409,7 +440,6 @@ SQLITE_RESULT *sqlite_query_exec(SQLITE_DATABASE *db, const char *query, bool ne
 	int res;
 
 	GB.AllocZero(POINTER(&result), sizeof(SQLITE_RESULT));
-	BUFFER_create(&result->buffer);
 
 	for (retry = 1; retry <= 2; retry++)
 	{
@@ -426,26 +456,6 @@ SQLITE_RESULT *sqlite_query_exec(SQLITE_DATABASE *db, const char *query, bool ne
 	}
 	else
 		return result;
-}
-
-void sqlite_query_free(SQLITE_RESULT *result)
-{
-	int i;
-
-	for (i = 0; i < result->ncol; i++)
-		GB.FreeString(&result->names[i]);
-
-	GB.Free(POINTER(&result->names));
-
-	GB.Free(POINTER(&result->types));
-
-	GB.Free(POINTER(&result->lengths));
-
-	GB.FreeArray(&result->values);
-
-	BUFFER_delete(&result->buffer);
-
-	GB.Free(POINTER(&result));
 }
 
 void sqlite_query_get(SQLITE_RESULT *result, int pos, int col, char **value, int *length)
