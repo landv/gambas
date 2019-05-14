@@ -12,7 +12,7 @@ remain on your <i>own</i> responsibility...</p>
 <p>Enjoy it !</p>
 
 <p align=right>Beno&icirc;t Minisini<br>
-<u>g4mba5@gmail.com</u></p><br><br><br>
+<u>g4mba5@gmail.com</u><br><br><br></p>
 
 
 [STARTUP]
@@ -94,14 +94,14 @@ The executable name has the same name as your project.</p>
 <h3>Relative paths</h3>
 
 <p>Relative paths have a special meaning in <b>Gambas</b>.
-They always refer to files inside your projects.
+They always refer to files inside your projects.</p>
 <p>
 There is no concept of <i>current directory</i>, and no keyword like
-<tt>CHDIR</tt> to change it.
+<tt>CHDIR</tt> to change it.</p>
 <p>
 <b>Be careful:</b> you must use relative paths only for accessing
 project files, because absolute paths won't work anymore when
-you make an executable.
+you make an executable.</p>
 
 
 [GLOBAL]
@@ -111,14 +111,14 @@ you make an executable.
 There is <b>no global variables</b> in <b>Gambas</b>!
 <p>
 As a workaround, put them in your main module and declare them
-as <tt>Public</tt>.
+as <tt>Public</tt>.</p>
 <p>
 If you do not have a main module in your project, but a main
-form, then declare them as <tt>Static Public</tt>.
+form, then declare them as <tt>Static Public</tt>.</p>
 <p>
 To access these variables, you must use the name of the main module
 or form: <tt>MyMainModule.MyGlobalVariable</tt> or
-<tt>MyMainForm.MyGlobalVariable</tt>.
+<tt>MyMainForm.MyGlobalVariable</tt>.</p>
 
 
 [EMPTY]
@@ -146,7 +146,7 @@ If Not MyString THEN ...</pre>
 
 <p>Gambas applications are fully translatable, provided that you tell it
 which strings must be translated, and which one must not.</p>
-<p>To mark strings as translatable, just enclose them between braces:<p>
+<p>To mark strings as translatable, just enclose them between braces:</p>
 
 <pre>Print ("Translate me")
 Print "But do not translate me!"</pre>
@@ -247,7 +247,7 @@ disorientated :-).</p>
 <p>You can embed any form into other forms with <b>Gambas</b>!</p>
 
 <p>To do such a powerful thing, just instanciate the form by passing
-a parent container as last argument of the contructor.</p>
+a parent container as last argument of the constructor.</p>
 
 <p>For example:</p>
 <pre>Dim hForm As MyDialog
@@ -323,7 +323,7 @@ of characters not to extract.</p>
 then gives the number of characters from the end of the string
 not to extract.</p>
 
-<p><tt>Mid$("Gambas", 2, -2)</tt> returns <tt>"amb"</tt>
+<p><tt>Mid$("Gambas", 2, -2)</tt> returns <tt>"amb"</tt></p>
 
 
 [OBSERVER]
@@ -344,21 +344,21 @@ Public Sub MyTextBox_KeyPress()
   Debug "Got it next"
 End</pre>
 
-The observer can cancel the event with <tt>Stop Event</tt> to prevent the object from effectively
-raising it.
+<p>The observer can cancel the event with <tt>Stop Event</tt> to prevent the object from effectively
+raising it.</p>
 
 
 [STRING]
 
 <h3>UTF-8 Strings</h3>
 
-<p><b>Gambas</b> uses the <b>UTF-8</b> charset to represent strings in memory.
+<p><b>Gambas</b> uses the <b>UTF-8</b> charset to represent strings in memory.</p>
 
 <p>But all standard string functions deal with <b>ASCII</b> only: 
-<tt>Left</tt>, <tt>Mid</tt>, <tt>Right</tt>, <tt>UCase</tt>...
+<tt>Left</tt>, <tt>Mid</tt>, <tt>Right</tt>, <tt>UCase</tt>...</p>
 
 <p>If you want to deal with UTF-8 strings, you have to use the methods of the
-<b>String</b> static class, which have the same name as their standard counterparts.
+<b>String</b> static class, which have the same name as their standard counterparts.</p>
 
 <pre>Print Len("bébé");; Left$("bébé", 3)
 &rarr; 6 bé
@@ -371,7 +371,7 @@ Print String.Len("bébé");; String.Left("bébé", 3)
 
 <h3>Assignments</h3>
 
-<p><b>Gambas</b> implements the assignment shortcuts that the C/C++ programmers are used to.
+<p><b>Gambas</b> implements the assignment shortcuts that the C/C++ programmers are used to.</p>
 
 <pre>MyVariable += 2
 MyVariable *= 4
@@ -381,7 +381,7 @@ is an equivalent of
 MyVariable = MyVariable * 4
 MyVariable = MyVariable & "Great"</pre>
 
-<p>And so on...
+<p>And so on...</p>
 
 
 [DEBUG]
@@ -390,14 +390,14 @@ MyVariable = MyVariable & "Great"</pre>
 
 <p>You can use the <b><tt>Debug</tt></b> instruction to print debugging messages to the
 console (namely the standard error output). It behaves exactly like the <tt>Print</tt>
-instruction.
+instruction.</p>
 
 <p>These messages are prefixed with the class name, method name and line number of
 the <tt>Debug</tt> instruction. If you don't want that prefix, you can use the <b><tt>Error</tt></b>
-instruction instead of <tt>Debug</tt>.
+instruction instead of <tt>Debug</tt>.</p>
 
 <p>The debugging messages are automatically removed when creating an executable
-without debugging information.
+without debugging information.</p>
 
 
 [TRY]
@@ -405,10 +405,10 @@ without debugging information.
 <h3>Error management (1)</h3>
 
 <p>Error management in <b>Gambas</b>is done with the following instructions: 
-<b><tt>Try</tt></b>, <b><tt>Error</tt></b>, <tt>Catch</tt>, and <tt>Finally</tt>.
+<b><tt>Try</tt></b>, <b><tt>Error</tt></b>, <tt>Catch</tt>, and <tt>Finally</tt>.</p>
 
 <p><tt>Try</tt> tries to execute a statement without raising an error. The <tt>Error</tt>
-keyword is used just after to know if the statement was executed correctly.
+keyword is used just after to know if the statement was executed correctly.</p>
 
 <pre>Try MyFile = Open "/etc/password" For Write
 If Error Then Print "I cannot do what I want!"</pre>
@@ -419,15 +419,15 @@ If Error Then Print "I cannot do what I want!"</pre>
 <h3>Error management (2)</h3>
 
 <p>Error management in <b>Gambas</b>is done with the following instructions: 
-<tt>Try</tt>, <tt>Error</tt>, <b><tt>Catch</tt></b>, and <tt>Finally</tt>.
+<tt>Try</tt>, <tt>Error</tt>, <b><tt>Catch</tt></b>, and <tt>Finally</tt>.</p>
 
 <p><tt>Catch</tt> indicates the beginning of the error management part of a function or procedure. 
-It is put at the end of the function code.
+It is put at the end of the function code.</p>
 
 <p>The catch part is executed when an error is raised between the beginning of the function execution 
-and its end.
+and its end.</p>
 
-<p>If an error is raised during the execution of the catch part, it is normally propagated. 
+<p>If an error is raised during the execution of the catch part, it is normally propagated.</p>
 
 <pre>Sub ProcessFile(FileName As String)
   ...
@@ -447,14 +447,14 @@ End</pre>
 <h3>Error management (3)</h3>
 
 <p>Error management in <b>Gambas</b>is done with the following instructions: 
-<tt>Try</tt>, <tt>Error</tt>, <tt>Catch</tt>, and <b><tt>Finally</tt></b>.
+<tt>Try</tt>, <tt>Error</tt>, <tt>Catch</tt>, and <b><tt>Finally</tt></b>.</p>
 
 <p><tt>Finally</tt> introduces the code executed at the end of the function, even if an error was 
-raised during its execution. 
+raised during its execution.</p>
 
-<p>The finally part is not mandatory. If there is a catch part in the function, the finally part must precede it. 
+<p>The finally part is not mandatory. If there is a catch part in the function, the finally part must precede it.</p>
  
-<p>If an error is raised during the execution of the finally part, it is normally propagated.
+<p>If an error is raised during the execution of the finally part, it is normally propagated.</p>
 
 <pre>Sub ProcessFile(FileName As String)
   ...
@@ -521,13 +521,13 @@ Next</pre>
 in several predefined sizes (<tt>"small"</tt>, <tt>"medium"</tt>, <tt>"large"</tt>,...)
 or absolute sizes (from 16x16 to 256x256).</p>
 
-<p>For example:
+<p>For example:</p>
 
 <pre>Image1.Picture = Picture["icon:/32/warning"]
 Image2.Picture = Picture["icon:/small/error"]
 </pre>
 
-<p><b>Warning:</b> the <tt>gb.form</tt> component is required.
+<p><b>Warning:</b> the <tt>gb.form</tt> component is required.</p>
 
 
 [SETTINGS]
@@ -535,12 +535,12 @@ Image2.Picture = Picture["icon:/small/error"]
 <h3>Settings</h3>
 
 <p>If you need to store the configuration of your program (like the geometry of your forms),
-then you are a lucky guy. It's very easy and elegant in <b>Gambas</b>. :-)
+then you are a lucky guy. It's very easy and elegant in <b>Gambas</b>. :-)</p>
 
-<p>To save the position of a form:
+<p>To save the position of a form:</p>
 <pre>Settings.Write(TheForm)</pre>
 
-<p>To recall it:
+<p>To recall it:</p>
 <pre>Settings.Read(TheForm)</pre>
 
 To save any settings:
@@ -552,7 +552,7 @@ And to read the settings back:
 These settings are stored in the <tt>~/.config/gambas3/&lt;MyApplication&gt;.conf</tt> file,
 where <tt>&lt;MyApplication&gt;</tt> is the name of your project.
 
-<p><b>Warning:</b> The <tt>gb.settings</tt> component is required.
+<p><b>Warning:</b> The <tt>gb.settings</tt> component is required.</p>
 
 
 [EDITOR]
@@ -569,12 +569,12 @@ where <tt>&lt;MyApplication&gt;</tt> is the name of your project.
 <h3>How To Use Code Snippets</h3>
 
 <p>Let's type <tt>main</tt> then the <b>TAB</b> key. A static public <tt>Main</tt>
-startup function is automatically inserted in your code.
+startup function is automatically inserted in your code.</p>
 
 <p>Let's type <tt>ds</tt> then the <b>TAB</b> key. A local string variable declaration is
-automatically inserted, and you can type the variable name immediately.
+automatically inserted, and you can type the variable name immediately.</p>
 
-<p>Code snippets are entirely configurable from the Preferences dialog of IDE's Tools menu.
+<p>Code snippets are entirely configurable from the Preferences dialog of IDE's Tools menu.</p>
 
 
 [END]
