@@ -98,21 +98,25 @@ End
 
 Private Sub FindProcedure()
   
-  Dim iRow, iStart As Integer
+  Dim iRow As Integer
+  Dim N As Integer
   
-  iStart = $iCurrent
-  iRow = iStart
+  iRow = $iCurrent
+  If iRow < 0 Then Inc iRow
   
   Do
-    If LCase(gvwProc[iRow, 0].Text) Begins $sFind Then
+    
+    If LCase($aProc[iRow]) Begins $sFind Then
       SetCurrent(iRow) 'Try gvwProc.Rows[iRow].Selected = True
       Break
     Endif
+    
     Inc iRow
-    If iRow >= gvwProc.Rows.Count Then
-      iRow = 0
-    Endif
-    If iRow = iStart Then Break
+    If iRow >= $aProc.Count Then iRow = 0
+    
+    Inc N
+    If N >= $aProc.Count Then Break
+    
   Loop
   
 End
