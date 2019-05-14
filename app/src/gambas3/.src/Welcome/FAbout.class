@@ -207,8 +207,8 @@ Private Sub FillAbout()
   gvwAbout[4, 0].Alignment = Align.Top
   gvwAbout[4, 0].Padding = Desktop.Scale * 3
   ' Authors title
-  gvwAbout[5, 0].Text = ("Authors")
-  gvwAbout[5, 0].Font = Font["Bold,+2"]
+  gvwAbout[5, 0].RichText = "<h2>" & String.UCase(("Authors")) & "</h2>"
+  gvwAbout[5, 0].WordWrap = True
   gvwAbout[5, 0].Alignment = Align.Top
   
   For I = 1 To 5
@@ -218,26 +218,24 @@ Private Sub FillAbout()
   
   For I = 0 To aAuthor.Max
     
-    sText = ""
     aSplit = Split(aAuthor[I], "\n")
     
-    sName = aSplit[0]
+    sName = String.UCase(aSplit[0])
+    sText = "<b><font size=+1>" & sName & "</font>"
 
     If aSplit.Count = 2 Then
       
-      sText &= "<font size=+1>" & aSplit[0] & "</font>"
-      sText &= "<blockquote>"
+      sText &= "</b><blockquote>"
       sText &= ("Financial support") & "<br>" & GetStars(CInt(aSplit[1]))
       
     Else
       
-      sText &= "<b><font size=+1>" & aSplit[0] & "</font>"
-      If aSplit[2] Then sText &= " (" & aSplit[2] & ")"
-      If aSplit[3] Then sText &= "<br><i>" & aSplit[3] & "</i>"
+      sText &= "</b>"
+      If aSplit[3] Then sText &= " <i>(" & aSplit[3] & ")</i>"
+      If aSplit[2] Then sText &= "<br><tt>" & aSplit[2] & "</tt>"
       sText &= "<blockquote>"
       sText &= aSplit[4]
       If aSplit[1] Then sText &= "<br>" & ("Financial support") & "<br>" & GetStars(CInt(aSplit[1]))
-      sText &= "</b>"
 
     Endif
     
@@ -246,6 +244,7 @@ Private Sub FillAbout()
     gvwAbout[I + N, 0].WordWrap = True
     gvwAbout[I + N, 0].RichText = sText
     gvwAbout[I + N, 0].Padding = Desktop.Scale * 3
+    gvwAbout[I + N, 0].Alignment = Align.Center
     gvwAbout.Rows[I + N].Height = -1
     'gvwAbout.Rows[I + N].Height += Desktop.Scale 
     
