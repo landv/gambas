@@ -10,16 +10,12 @@
     MoveScaled(2,1,41,4)
     Spacing = True
     { timTime TimeBox
-      MoveScaled(0,0,9,4)
+      MoveScaled(0,0,11,4)
     }
     { btnStart Button
-      MoveScaled(24,0,16,4)
+      MoveScaled(17,0,24,4)
       Text = ("Start / Stop")
     }
-  }
-  { timClock #Timer
-    #MoveScaled(25,9)
-    Delay = 50
   }
   { lblAlarm LCDLabel
     MoveScaled(6,9,34,14)
@@ -29,5 +25,9 @@
     Text = ("00:00:00")
     Alignment = Align.Center
     HighlightColor = &HFFFF00&
+  }
+  { timClock #Timer
+    #MoveScaled(25,9)
+    Delay = 50
   }
 }
