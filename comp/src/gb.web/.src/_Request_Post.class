@@ -171,12 +171,16 @@ Private Sub Decode()
 
     Else
     
-      sValue = ""
+      bFirst = True    
       Do
         sLine = ReadLine()
         If sLine Begins sType Then Break
-        If sValue Then sValue &= "\r\n"
-        sValue &= sLine
+        If Not bFirst Then 
+          sValue &= "\r\n" & sLine
+        Else
+          bFirst = False
+          sValue = sLine
+        Endif
       Loop
       
       'SHELL "echo value = " & Quote.Shell(sValue) & " >> /var/log/thttpd/debug.log" WAIT
