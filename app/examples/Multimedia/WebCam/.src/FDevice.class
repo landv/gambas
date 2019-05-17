@@ -11,7 +11,7 @@ Private $fps_now As Date
 
 Public Sub Save()
   
-  Dim key As String = Subst("Camera_&1", $index)
+  Dim key As String = Subst(("Camera_&1"), $index)
 
   Settings[key & "/top"] = Me.Top
   Settings[key & "/left"] = Me.Left
@@ -103,7 +103,7 @@ End
 
 Public Sub Form_Show()
 
-  Dim key As String = Subst("Camera_&1", $index)
+  Dim key As String = Subst(("Camera_&1"), $index)
 
   Me.Left = Settings[key & "/left", $index * 100]
   Me.Top = settings[key & "/top", 0]
@@ -115,7 +115,7 @@ End
 
 Public Sub Form_Open()
 
-  Dim key As String = Subst("Camera_&1", $index)
+  Dim key As String = Subst(("Camera_&1"), $index)
 
   Me.Left = Settings[key & "/left", $index * 100]
   Me.Top = settings[key & "/top", 0]
@@ -151,7 +151,7 @@ Public Sub Refresh_Timer()
   $fps += 1
   when = at - $fps_now
   If Second(when) >= 3 Then
-    frame_rate.Text = Format($fps / 3, "#.00 fps")
+    frame_rate.Text = Format($fps / 3, "#.00 " & ("fps"))
     $fps = 0
     $fps_now = at
   Endif
@@ -159,7 +159,7 @@ Public Sub Refresh_Timer()
   currentTime.Text = Format(at, $date_format)
   Try pic.Picture = $device.Image.Picture
   If Error Then
-    Message("Can't recover picture from Camera!")
+    Message(("Can't recover picture from Camera!"))
   Else
     Wait
     Try Refresh.Delay = refrate.Value
@@ -245,7 +245,7 @@ Public Sub button_pause_Click()
   Refresh.Stop
   Wait
   Refresh.Stop
-  frame_rate.Text = "** Paused **"
+  frame_rate.Text = ("** Paused **")
 
 End
 
@@ -259,11 +259,11 @@ End
 
 Public Sub button_snap_Click()
 
-  Dialog.Filter = ["*", "All files", "*.desktop", "Desktop files"]
+  Dialog.Filter = ["*", ("All files"), "*.desktop", ("Desktop files")]
 
   If Dialog.SaveFile() Then Return
   $device.Save(Dialog.Path)
-  Message("Saved as (" & Dialog.Path & ")")
+  Message(("Saved as") & " (" & Dialog.Path & ")")
 
 End
 

@@ -32,7 +32,7 @@ End
 Public Sub SButton_Click()
   
   mycd.Stop()
-  PButton.Text = "&Play"
+  PButton.Text = ("&Play")
   TrackPos.Value = 0
   
 End
@@ -55,21 +55,21 @@ Public Sub Timer1_Timer()
   
   If Not mycd.Ready Then
     TrackInfo.Clear()
-    TextBox1.Text = "No CD in Drive"
+    TextBox1.Text = ("No CD in Drive")
     HaveCD = False
     Return
   Endif
   
   If mycd.Stopped Then
-    string1 = mycd.Tracks.Count & " Tracks"
-    string2 = "Total Length : " & ToTime(mycd.Length)
+    string1 = mycd.Tracks.Count & " " & ("Tracks")
+    string2 = ("Total Length :") & " " & ToTime(mycd.Length)
     TextBox1.Text = string1 & Space$(41 - (Len(string1) + Len(string2))) & string2
     TrackPos.Value = 0
   Endif
   
   If mycd.Playing Or mycd.Paused Then
     TrackPos.Value = (mycd.Tracks[mycd.Tracks.Current].Position) / mycd.Tracks[mycd.Tracks.Current].length
-    TextBox1.Text = "Playing Track " & mycd.Tracks.Current
+    TextBox1.Text = ("Playing Track") & " " & mycd.Tracks.Current
   Endif
   
   If HaveCD Then
@@ -78,7 +78,7 @@ Public Sub Timer1_Timer()
   
   TrackInfo.Clear()
   For trckloop = 1 To mycd.Tracks.Count
-    string1 = "Track " & trckloop
+    string1 = ("Track") & " " & trckloop
     string2 = "<" & ToTime(mycd.Tracks[trckloop].Length) & ">"
     TrackInfo.Add(string1 & Space$(49 - (Len(string1) + Len(string2))) & string2)
   Next
@@ -106,25 +106,25 @@ End
 Public Sub PButton_Click()
   
   If Not HaveCD Then
-    PButton.Text = "&Play"
+    PButton.Text = ("&Play")
     Return
   Endif
   
   If mycd.Stopped Then
     mycd.Play()
-    PButton.Text = "&Pause"
+    PButton.Text = ("&Pause")
     Return
   Endif
   
   If mycd.Playing Then
     mycd.Pause()
-    PButton.Text = "&Resume"
+    PButton.Text = ("&Resume")
     Return
   Endif
   
   If mycd.Paused Then
     mycd.Resume()
-    PButton.Text = "&Pause"
+    PButton.Text = ("&Pause")
   Endif
   
 End
@@ -133,7 +133,7 @@ Public Sub EButton_Click()
   
   Try mycd.Eject
   HaveCD = False
-  PButton.Text = "&Play"
+  PButton.Text = ("&Play")
   TrackPos.Value = 0
   
 End
