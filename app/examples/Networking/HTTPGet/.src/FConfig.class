@@ -1,30 +1,30 @@
 ' Gambas class file
 
-PUBLIC SUB ChkProxy_Click()
+Public Sub ChkProxy_Click()
 
 
-  IF ChkProxy.Value = TRUE THEN
-    TxtProxy.Enabled = TRUE
-    LblAuth.Enabled = TRUE
-    LblProxyUser.Enabled = TRUE
-    TxtProxyUser.Enabled = TRUE
-    LblProxyPassword.Enabled = TRUE
-    TxtProxyPassword.Enabled = TRUE
-    CmbProxyAuth.Enabled = TRUE
-  ELSE
-    TxtProxy.Enabled = FALSE
-    LblAuth.Enabled = FALSE
-    LblProxyUser.Enabled = FALSE
-    TxtProxyUser.Enabled = FALSE
-    LblProxyPassword.Enabled = FALSE
-    TxtProxyPassword.Enabled = FALSE
-    CmbProxyAuth.Enabled = FALSE
-  END IF
+  If ChkProxy.Value = True Then
+    TxtProxy.Enabled = True
+    LblAuth.Enabled = True
+    LblProxyUser.Enabled = True
+    TxtProxyUser.Enabled = True
+    LblProxyPassword.Enabled = True
+    TxtProxyPassword.Enabled = True
+    CmbProxyAuth.Enabled = True
+  Else
+    TxtProxy.Enabled = False
+    LblAuth.Enabled = False
+    LblProxyUser.Enabled = False
+    TxtProxyUser.Enabled = False
+    LblProxyPassword.Enabled = False
+    TxtProxyPassword.Enabled = False
+    CmbProxyAuth.Enabled = False
+  End If
 
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   
   TxtCookies.Text = ClsParams.CookiesFile
@@ -36,17 +36,17 @@ PUBLIC SUB Form_Open()
   TxtProxyPassword.Text = ClsParams.ProxyPwd
  
  
-  SELECT CASE ClsParams.ProxyAuth
-    CASE Net.AuthBasic
+  Select Case ClsParams.ProxyAuth
+    Case Net.AuthBasic
       CmbProxyAuth.Index = 0
-    CASE Net.AuthNTLM
+    Case Net.AuthNTLM
       CmbProxyAuth.Index = 1
-  END SELECT
+  End Select
   
 
-END
+End
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
 
   ClsParams.CookiesFile = TxtCookies.Text
   ClsParams.UpdateCookies = ChkUpdate.Value
@@ -56,20 +56,20 @@ PUBLIC SUB Form_Close()
   ClsParams.ProxyUser = TxtProxyUser.Text 
   ClsParams.ProxyPwd = TxtProxyPassword.Text
    
-  IF ClsParams.ProxyUser = "" AND ClsParams.ProxyPwd = "" THEN
+  If ClsParams.ProxyUser = "" And ClsParams.ProxyPwd = "" Then
     ClsParams.ProxyAuth = Net.AuthNone
-  ELSE
-    SELECT CASE CmbProxyAuth.Index
-        CASE 0
+  Else
+    Select Case CmbProxyAuth.Index
+        Case 0
           ClsParams.ProxyAuth = Net.AuthBasic
-        CASE 1
+        Case 1
           ClsParams.ProxyAuth = Net.AuthNTLM
-    END SELECT
-  END IF
-END
+    End Select
+  End If
+End
 
-PUBLIC SUB Button1_Click()
+Public Sub Button1_Click()
 
-  ME.Close  
+  Me.Close  
 
-END
+End

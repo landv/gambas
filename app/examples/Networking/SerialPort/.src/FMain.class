@@ -44,8 +44,8 @@ Public Sub Form_Open()
   'Open the serial port
   Try SerialPort1.Open()
   If Error Then
-    FMain.Message("Unable to open " & SerialPort1.PortName & ": " & Error.Text)
-    FMain.ButtonChange.text = "Apply"
+    FMain.Message(("Unable to open") & " " & SerialPort1.PortName & ": " & Error.Text)
+    FMain.ButtonChange.text = ("Apply")
     FMain.ComboPortDeviceName.text = ""
   Else
     FMain.ComboPortDeviceName.enabled = False
@@ -108,7 +108,7 @@ End
 Public Sub btnSend_Click()
   
   If SerialPort1.status = Net.Inactive Then
-    FMain.Message("Please open serial port first.")
+    FMain.Message(("Please open serial port first."))
   Else
     'FMain.CheckRTS.Value = True
     'Wait 0.01
@@ -123,8 +123,8 @@ Public Sub ButtonChange_Click()
   
   With Fmain
     
-    If FMain.ButtonChange.text = "Change" Then
-      .ButtonChange.text = "Apply"
+    If FMain.ButtonChange.text = ("Change") Then
+      .ButtonChange.text = ("Apply")
       .SerialPort1.close
       .ComboPortDeviceName.enabled = True
       .ComboSpeed.enabled = True
@@ -143,11 +143,11 @@ Public Sub ButtonChange_Click()
       'Open serial port with new settings
       Try FMain.SerialPort1.Open()
       If Error Then
-        FMain.Message("Error while opening " & FMain.SerialPort1.PortName & ": " & Error.Text)
+        FMain.Message(("Error while opening") & " " & FMain.SerialPort1.PortName & ": " & Error.Text)
       Else
         'Store new Settings
         Module_Config.StoreSerialSettings(FMain.SerialPort1, 0)
-        FMain.ButtonChange.text = "Change"
+        FMain.ButtonChange.text = ("Change")
         'Disabling all RS232 Combos
         .ComboPortDeviceName.enabled = False
         .ComboSpeed.enabled = False
