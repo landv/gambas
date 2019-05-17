@@ -128,10 +128,10 @@ Public Sub RenderPage(Optional FoundText As String, Optional Casesensetivity As 
    If CurrentZoom > 0.0 Then 
       hPdf.Zoom = CurrentZoom
    Else
-      Message.Error("Can't set zoom to " & CurrentZoom, "OK")
+      Message.Error(("Can't set zoom to ") & CurrentZoom, ("OK"))
    Endif
    
-   lblInfo.Text = " of" & " " & hPdf.Count  
+   lblInfo.Text = " " & ("of") & " " & hPdf.Count  
    If txtGotoPage.text <> CurrentPage Then txtGotoPage.text = CurrentPage  'if the parameter currentPage is different from the current page the current page gets changed
    If currentSearchResult = 0 Then     'if a search result is highlighted the focus will not be changed to the top
       ViewPort.Scroll(0, 0)
@@ -156,7 +156,7 @@ Public Sub RenderPage(Optional FoundText As String, Optional Casesensetivity As 
    Form_Resize()
    
 Catch
-   Message.Info("An error occurred whilst trying to view the document.\n\nIf this persists please report this problem.")
+   Message.Info(("An error occurred while trying to view the document.\n\nIf this persists please report this problem."))
    
 End
 
@@ -381,7 +381,7 @@ Private Sub FindNext()
    Endif
    
 Catch
-   Message.Info("An error occurred whilst trying to view the document.\n\nIf this persists please report this problem.\n\n" & Error.Where & ": " & Error.Text)
+   Message.Info(("An error occurred while trying to view the document.\n\nIf this persists please report this problem.") & "\n\n" & Error.Where & ": " & Error.Text)
    
 End
 
@@ -430,7 +430,7 @@ Private Sub FindPrevious()
    Endif
    
 Catch
-   Message.Info("An error occurred whilst trying to view the document.\n\nIf this persists please report this problem.")
+   Message.Info(("An error occurred while trying to view the document.\n\nIf this persists please report this problem."))
    
 End
 
