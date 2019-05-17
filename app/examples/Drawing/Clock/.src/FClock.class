@@ -41,11 +41,11 @@ Public Sub DrawTime()
   
   'Draw.Begin(hPict)
     'tmpImg = picHour.Rotate(- Hour(Now) * Pi(2 / 12))
-    tmpImg = picHour.Rotate(- ((Hour(Now) * 60) + Minute(Now)) * Pi(1 / 360))    
+    tmpImg = picHour.Rotate(-((Hour(Now) * 60) + Minute(Now)) * Pi(1 / 360))    
     hPict.PaintImage(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
-    tmpImg = picMinute.Rotate(- Minute(Now) * Pi(2 / 60))
+    tmpImg = picMinute.Rotate(-Minute(Now) * Pi(2 / 60))
     hPict.PaintImage(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
-    tmpImg = picSecond.Rotate(- Second(Now) * Pi(2 / 60))
+    tmpImg = picSecond.Rotate(-Second(Now) * Pi(2 / 60))
     hPict.PaintImage(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
   'Draw.End
   
@@ -134,7 +134,7 @@ End
 
 Public Sub mnuAbout_Click()
 
-  Message("This exemple was made by Fabien BODARD\nand was optimized by Benoît MINISINI\n\nNote that the 3rd clock is Microsoft copyrighted.\nYou will find it on the future version of windows.")
+  Message(("This exemple was made by Fabien BODARD\nand was optimized by Benoît MINISINI\n\nNote that the 3rd clock is Microsoft copyrighted.\nYou will find it on the future version of windows."))
 
 End
 

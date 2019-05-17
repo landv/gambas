@@ -52,7 +52,7 @@ Public Sub DrawClock()
   Paint.Font.Bold = True
   Paint.Font.Size = 60
   Paint.Brush = Paint.Color(Color.Black)
-  Paint.Text(sTime, - W / 2, - H * 0.4, W, H * 0.1, Align.Top)
+  Paint.Text(sTime, -W / 2, -H * 0.4, W, H * 0.1, Align.Top)
   Paint.Fill
 
   ' Draw seconds
@@ -69,8 +69,8 @@ Public Sub DrawClock()
   
   Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 128))
   Paint.MoveTo(Cos(angle) * W * 0.45, Sin(angle) * H * 0.45)
-  Paint.LineTo(Sin(angle) * W * 0.05, - Cos(angle) * H * 0.05)
-  Paint.LineTo(- Sin(angle) * W * 0.05, Cos(angle) * H * 0.05)
+  Paint.LineTo(Sin(angle) * W * 0.05, -Cos(angle) * H * 0.05)
+  Paint.LineTo(-Sin(angle) * W * 0.05, Cos(angle) * H * 0.05)
   Paint.Fill
   
   ' Draw hours
@@ -78,8 +78,8 @@ Public Sub DrawClock()
   
   Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 128))
   Paint.MoveTo(Cos(angle) * W * 0.35, Sin(angle) * H * 0.35)
-  Paint.LineTo(Sin(angle) * W * 0.05, - Cos(angle) * H * 0.05)
-  Paint.LineTo(- Sin(angle) * W * 0.05, Cos(angle) * H * 0.05)
+  Paint.LineTo(Sin(angle) * W * 0.05, -Cos(angle) * H * 0.05)
+  Paint.LineTo(-Sin(angle) * W * 0.05, Cos(angle) * H * 0.05)
   Paint.Fill
   
   ' Draw circle on the center of the clock to hide the arms intersection
@@ -119,7 +119,7 @@ End
 Public Sub MenuAbout_Click()
 
   Dim AboutMessage As String
-  AboutMessage = "Analog Clock Example Program for Gambas\nWritten by: Ahmad Kamal <eng_ak@Link.Net> and Benoît Minisini"
+  AboutMessage = ("Analog Clock Example Program for Gambas\nWritten by: Ahmad Kamal <eng_ak@Link.Net> and Benoît Minisini")
   
   Message.info(AboutMessage)
 
