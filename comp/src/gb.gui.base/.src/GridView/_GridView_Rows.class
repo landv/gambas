@@ -35,8 +35,6 @@ Private $iWidth As Integer
 Private $hBorder As Border
 Private $cBorder As Collection
 
-Private $cTextAlign As Collection
-
 Private $hSel As New GridViewSelection
 
 Public Sub _GetSel() As GridViewSelection
@@ -313,7 +311,6 @@ Public Sub _SetRowText(iRow As Integer, sText As String)
     W = GetView().Font.TextWidth(sText) + 8
     If W > Width_Read() Then $iWidth = W
   Endif
-  GetView().Refresh
   
 End
 
@@ -525,40 +522,6 @@ Public Sub _GetRowBorder(iRow As Integer) As Border
   If Not hBorder Then hBorder = $hBorder
   
   If hBorder And If Not hBorder.IsVoid() Then Return hBorder
-  
-End
-
-Public Sub _SetRowTextAlign(iRow As Integer, iAlign As Integer)
-  
-  Select Case iAlign
-    Case Align.Left, Align.Right, Align.Center, Align.Normal
-    Default
-      Return
-  End Select
-  
-  If Not $cTextAlign Then 
-    If iAlign = Align.Center Then Return
-    $cTextAlign = New Collection
-    $cTextAlign.Default = Align.Center
-  Endif
-  
-  If iAlign = Align.Center Then
-    $cTextAlign.Remove(iRow)
-  Else
-    $cTextAlign[iRow] = iAlign
-  Endif
-  
-  GetView().Refresh
-  
-End
-
-Public Sub _GetRowTextAlign(iRow As Integer) As Integer
-  
-  If $cTextAlign Then 
-    Return $cTextAlign[iRow]
-  Else
-    Return Align.Normal
-  Endif
   
 End
 

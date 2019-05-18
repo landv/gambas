@@ -9,7 +9,6 @@ Property Height, H As Integer
 Property Selected As Boolean
 Property Text, Title As String
 Property Border As Border
-Property TextAlignment As Integer
 
 Public _Row As Integer
 
@@ -93,17 +92,5 @@ End
 Private Sub Border_Write(Value As Border)
 
   GetRows()._SetRowBorder(_Row, Value)
-
-End
-
-Private Function TextAlignment_Read() As Integer
-
-  Return GetRows()._GetRowTextAlign(_Row)
-
-End
-
-Private Sub TextAlignment_Write(Value As Integer)
-
-  GetRows()._SetRowTextAlign(_Row, Value)
 
 End

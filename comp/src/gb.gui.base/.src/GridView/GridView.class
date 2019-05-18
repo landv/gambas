@@ -550,20 +550,18 @@ Public Sub ScrollArea_Draw()
       If Y >= $hView.ClientH Then Break
       $aRowY.Add(Y - F)
       iRow2 = I
-      With $hRows[I]
-        'Draw.Style.Separator(F, Y, W - F, 2)
-        H = .Height '$hRows._GetRowHeight(I)
-        If H > 0 And If $iHeader And Vertical Then
-          Paint.FillRect(X, Y - 1, W - F, 1, iGrid)
-          Paint.Save
-          Paint.Rectangle(X, Y + 1, W - F, H - 3)
-          Paint.Clip
-          If I = $iRow Then Paint.Font.Bold = True
-          DrawText(.Text, X, Y + 2, W - F - 1, H - 3, .TextAlignment, $iPadding)
-          If I = $iRow Then Paint.Font.Bold = False
-          Paint.Restore
-        Endif
-      End With
+      'Draw.Style.Separator(F, Y, W - F, 2)
+      H = $hRows._GetRowHeight(I)
+      If H > 0 And If $iHeader And Vertical Then
+        Paint.FillRect(X, Y - 1, W - F, 1, iGrid)
+        Paint.Save
+        Paint.Rectangle(X, Y + 1, W - F, H - 3)
+        Paint.Clip
+        If I = $iRow Then Paint.Font.Bold = True
+        DrawText($hRows._GetRowText(I), X, Y + 2, W - F, H - 3, Align.Center, $iPadding)
+        If I = $iRow Then Paint.Font.Bold = False
+        Paint.Restore
+      Endif
       
       'Draw.Style.Handle(W - 2, Y, 2, H, True)
       Y += H
