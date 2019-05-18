@@ -191,3 +191,105 @@ Private Sub LoadTranslation(sLang As String)
   Close #hFile
   
 End
+
+Static Public Sub FindTranslation(sPath As String, sFind As String) As String
+  
+  Dim hFile As File
+  Dim sLine As String
+  Dim sMsgId As String
+  Dim sMsgStr As String
+  Dim sMsgComment As String
+  Dim iMode As Integer
+  Dim bFuzzy As Boolean
+  Dim iPos As Integer
+  Dim cCache As New Collection
+  Dim cKey As New Collection
+  
+  If Not Exist(sPath) Then Return 
+  
+  hFile = Open sPath 
+
+  While Not Eof(hFile)
+    Line Input #hFile, sLine
+    If Not sLine Then Break
+    'Header &= sLine & "\n"
+  Wend
+
+  ' iPos = InStr(Header, "#, fuzzy")
+  ' If iPos = 0 Then iPos = InStr(Header, "#,fuzzy")
+  ' If iPos Then Header = Left(Header, iPos - 1)
+  ' 
+  ' Header &= SubstHeader(File.Load("po-header.txt"), sLang)
+
+  Do
+
+    If Not Eof(hFile) Then
+
+      Line Input #hFile, sLine
+
+      If Left$(sLine) = "#" Then
+
+        If Left$(sLine, 2) = "#:" Then
+          'sMsgComment = Trim(sMsgComment & " " & Mid$(sLine, 3))
+          Continue
+        Endif
+
+        If Left$(sLine, 2) = "#," Then
+          If InStr(sLine, "fuzzy") Then
+            bFuzzy = True
+            Continue
+          Endif
+        Endif
+
+      Endif
+
+      If Left$(sLine, 6) = "msgid " Then
+        sMsgId = Mid$(sLine, 8, -1)
+        iMode = MODE_MSGID
+        Continue
+      Endif
+
+      If Left$(sLine, 7) = "msgstr " Then
+        sMsgStr = Mid$(sLine, 9, -1)
+        iMode = MODE_MSGSTR
+        Continue
+      Endif
+
+      If Left$(sLine) = Chr$(34) Then
+        If iMode = MODE_MSGID Then
+          sMsgId = sMsgId & Mid$(sLine, 2, -1)
+        Else If iMode = MODE_MSGSTR Then
+          sMsgStr = sMsgStr & Mid$(sLine, 2, -1)
+        Endif
+        Continue
+      Endif
+
+    Endif
+
+    If Trim(sMsgId) Then
+
+      If sMsgStr = "-\\n" Then sMsgStr = "-"
+      
+      'sMsgId = UnQuoteTranslation(sMsgId)
+      'sMsgStr = UnQuoteTranslation(sMsgStr)
+
+      'cvwTranslate.Add(iIndex, sMsgId)
+      If bFuzzy Then
+        bFuzzy = False
+      Else
+        If sMsgId = sFind Then Return sMsgStr
+      Endif
+
+      sMsgId = ""
+      sMsgComment = ""
+      sMsgStr = ""
+
+    Endif
+
+    If Eof(hFile) Then Break
+
+  Loop
+  
+  Close #hFile
+  
+End
