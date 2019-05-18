@@ -2,17 +2,6 @@
 
 Export
 
-' 	GB_PROPERTY("Height", "i", CGRIDROWS_height),
-' 	GB_PROPERTY("H", "i", CGRIDROWS_height),
-' 	GB_PROPERTY("Resizable", "b", CGRIDROWS_resizable),
-' 	//GB_PROPERTY("Moveable", "b", CGRIDROWS_moveable),
-' 	GB_METHOD("Select", NULL, CGRIDROWS_select, "[(Start)i(Length)i]"),
-' 	GB_METHOD("SelectAll", NULL, GridViewRows_SelectAll, NULL),
-' 	GB_METHOD("UnselectAll", NULL, GridViewRows_UnselectAll, NULL),
-' 	GB_METHOD("Remove", NULL, CGRIDROWS_remove, "(Start)i[(Length)i]"),
-' 	GB_METHOD("Insert", NULL, CGRIDROWS_insert, "(Start)i[(Length)i]"),
-' 
-
 Property Count As Integer
 Property Read Max As Integer
 Property Width, W As Integer
@@ -34,6 +23,8 @@ Private $iWidth As Integer
 
 Private $hBorder As Border
 Private $cBorder As Collection
+
+Private $cTextAlign As Collection
 
 Private $hSel As New GridViewSelection
 
@@ -311,6 +302,7 @@ Public Sub _SetRowText(iRow As Integer, sText As String)
     W = GetView().Font.TextWidth(sText) + 8
     If W > Width_Read() Then $iWidth = W
   Endif
+  GetView().Refresh
   
 End
 
@@ -522,6 +514,40 @@ Public Sub _GetRowBorder(iRow As Integer) As Border
   If Not hBorder Then hBorder = $hBorder
   
   If hBorder And If Not hBorder.IsVoid() Then Return hBorder
+  
+End
+
+Public Sub _SetRowTextAlign(iRow As Integer, iAlign As Integer)
+  
+  Select Case iAlign
+    Case Align.Left, Align.Right, Align.Center, Align.Normal
+    Default
+      Return
+  End Select
+  
+  If Not $cTextAlign Then 
+    If iAlign = Align.Center Then Return
+    $cTextAlign = New Collection
+    $cTextAlign.Default = Align.Center
+  Endif
+  
+  If iAlign = Align.Center Then
+    $cTextAlign.Remove(iRow)
+  Else
+    $cTextAlign[iRow] = iAlign
+  Endif
+  
+  GetView().Refresh
+  
+End
+
+Public Sub _GetRowTextAlign(iRow As Integer) As Integer
+  
+  If $cTextAlign Then 
+    Return $cTextAlign[iRow]
+  Else
+    Return Align.Normal
+  Endif
   
 End
 
