@@ -83,6 +83,7 @@ Public Sub dwgWelcome_Draw()
   Dim I, S As Integer
   Dim hSnowFlake As CSnowFlake
   Dim hFir As Image
+  Dim sText As String
    
   If Not $hLogo Then 
     
@@ -110,8 +111,13 @@ Public Sub dwgWelcome_Draw()
     PaintText("http://gambas.sourceforge.net", 12, Y, TEXT_COLOR) 'Color.LightForeground)
     
     Paint.Font = Font["Bold"]
-    Y += Paint.Font.Height + 16
-    PaintText(("This program is published under the GNU General Public License.") & "\n" & ("The Gambas font is published under the SIL Open Font License."), 12, Y, Color.SelectedForeground)
+    Y += 16
+    'PaintText(("This program is published under the GNU General Public License.") & "\n" & ("The Gambas font is published under the SIL Open Font License."), 12, Y, Color.SelectedForeground)
+    sText = ("This program is published under the GNU General Public License.") & "<br>" & ("The Gambas font is published under the SIL Open Font License.")
+    Paint.Background = Color.Black
+    Paint.DrawRichTextShadow(sText, 12, Y, Paint.W - 24, Paint.H - Y - 6, Align.TopNormal, Paint.Font.Height \ 4, 1)
+    Paint.Background = Color.SelectedForeground
+    Paint.DrawRichText(sText, 12, Y, Paint.W - 24, Paint.H - Y - 6, Align.TopNormal)
     
     Paint.End
     

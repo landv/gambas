@@ -174,12 +174,12 @@ Static Public Sub DrawRichTextShadow(Text As String, X As Float, Y As Float, W A
   Dim DX, DY As Integer
   Dim iBackground As Integer
   
-  If Radius < 0 Then Radius = Desktop.Scale \ 3
-  Radius = Min(256, Radius)
-  
   hFont = Paint.Font
   iBackground = Paint.Background
   hBrush = Paint.Brush
+  
+  If Radius < 0 Then Radius = Max(1, hFont.Height \ 8)
+  Radius = Min(256, Radius)
   
   With Paint.RichTextSize(Text, W)
 
