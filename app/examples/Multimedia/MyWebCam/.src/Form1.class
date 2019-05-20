@@ -183,7 +183,7 @@ Public Sub Button2_Click()
   sCad = ("Device Bus:") & " " & hWebCam.Bus & "\n"
   sCad = sCad & ("Device Driver:") & " " & hWebCam.Driver & " " & ("Version:") & " " & hWebCam.Version & "\n"
   sCad = sCad & ("Device Name:") & " " & hWebCam.Name & "\n"
-  sCad = sCad & ("Max.Resolution:") & " " & hWebCam.MaxWidth & "x" & hWebCam.MaxHeight & "\n"
+  sCad = sCad & ("Max. Resolution:") & " " & hWebCam.MaxWidth & "x" & hWebCam.MaxHeight & "\n"
   sCad = sCad & ("Min. Resolution:") & " " & hWebCam.MinWidth & "x" & hWebCam.MinHeight & "\n"
 
   Message.Info(sCad)
