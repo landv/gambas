@@ -168,7 +168,7 @@ Public Sub Editor1_Change()
   Endif
   If Not $bModified Then
     $bModified = True
-    Me.Title &= " [modified]"
+    Me.Title &= " [" & ("modified") & "]"
   Endif
 
 End

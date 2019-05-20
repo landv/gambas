@@ -19,7 +19,6 @@ Private morphing As Boolean = False  'DEFAULT morph TO FALSE(NOT Morphing)
 Private morph As New Float[6, 486, 3]
 Public read_line As String
 Public verts As String[]
-Public coords As String
 Public actual As Integer = 0
 Public post As Integer = 0
 Private screen As New Window(True) As "Screen"
@@ -40,6 +39,7 @@ Public Sub load_objects()
 
   Dim shape_file As File
   Dim i, p As Integer
+  Dim coords As String
 
   shape_file = Open "Sphere.txt" For Input
   For p = 0 To num_points - 1
