@@ -825,6 +825,12 @@ BEGIN_METHOD_VOID(Stream_free)
 
 END_METHOD
 
+BEGIN_PROPERTY(Stream_Eof)
+
+	GB_ReturnBoolean(STREAM_eof(CSTREAM_stream(THIS_STREAM)));
+
+END_PROPERTY
+
 BEGIN_METHOD(Stream_ReadLine, GB_STRING escape)
 
 	char *escape;
@@ -1053,6 +1059,8 @@ GB_DESC StreamDesc[] =
 	GB_METHOD("Drop", NULL, Stream_Cancel, NULL),
 	
 	GB_METHOD("Watch", NULL, Stream_Watch, "(Mode)i(Watch)b"),
+	
+	GB_PROPERTY_READ("Eof", "b", Stream_Eof),
 
 	GB_END_DECLARE
 };
