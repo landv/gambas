@@ -98,12 +98,12 @@
       }
       { button_hide Button
         MoveScaled(0,27,10,4)
-        Text = Shortcut(("Hide"), "H")
+        Text = ("&Hide")
         Picture = Picture["icon:/16/apply"]
       }
       { button_close Button
         MoveScaled(0,32,10,4)
-        Text = Shortcut(("Close"), "C")
+        Text = ("&Close")
         Picture = Picture["icon:/16/close"]
       }
       { Label7 Label
@@ -118,18 +118,18 @@
       }
       { button_pause Button
         MoveScaled(11,27,10,4)
-        Text = Shortcut(("Pause"), "P")
+        Text = ("&Pause")
         Picture = Picture["icon:/16/pause"]
       }
       { button_play Button
         MoveScaled(11,27,10,4)
         Visible = False
-        Text = Shortcut(("Play"), "P")
+        Text = ("&Play")
         Picture = Picture["icon:/16/play"]
       }
       { button_snap Button
         MoveScaled(11,32,10,4)
-        Text = Shortcut(("Snap"), "S")
+        Text = ("&Snap")
         Picture = Picture["icon:/16/camera"]
       }
       { frame_rate Label
@@ -140,7 +140,7 @@
       }
       { button_reset Button
         MoveScaled(22,27,10,4)
-        Text = Shortcut(("Reset"), "R")
+        Text = ("&Reset")
         Picture = Picture["icon:/16/apply"]
         Default = True
       }
