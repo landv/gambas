@@ -16,13 +16,13 @@ Public Sub _new()
 
   hPicture = New Picture(200, 200)
   
-  MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "167"]).SubDomains = ["0", "1", "2"]
+  MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", [("version"): "167"]).SubDomains = ["0", "1", "2"]
   MapView1.Map["GoogleMap"].Visible = False
-  MapView1.Map.AddTile("OpenStreetMap", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null).Copyright = "© OpenStreetMap contributors"
+  MapView1.Map.AddTile("OpenStreetMap", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null).Copyright = "© OpenStreetMap " & ("contributors")
   
   
   'Map for lens
-  hmap.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "167"]).SubDomains = ["0", "1", "2"]
+  hmap.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", [("version"): "167"]).SubDomains = ["0", "1", "2"]
   'hmap.Padding = 256
   hmap.Resize(200, 200)
   
@@ -102,7 +102,7 @@ Public Sub GridView1_Data(Row As Integer, Column As Integer)
   
   Select Case Column
     Case 0
-      Last.Data.Picture = IIf(MapView1.Map[$aNames[row]].Visible, Picture["icon:/22/ok"], Picture["icon:/22/cancel"])
+      'Last.Data.Picture = IIf(MapView1.Map[$aNames[row]].Visible, Picture["icon:/22/ok"], Picture["icon:/22/cancel"])
       
     Case 1
       Last.Data.Text = $aNames[row]
