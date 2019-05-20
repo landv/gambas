@@ -288,13 +288,13 @@ Private Sub Paint()
     ' Draw A Quad
     gl.Begin(gl.QUADS)
       Gl.TexCoordf(tX, tY)
-      gl.Vertexf(- qWidth, qHeight, 0.0)
+      gl.Vertexf(-qWidth, qHeight, 0.0)
       Gl.TexCoordf(twidth, tY)
       gl.Vertexf(qWidth, qHeight, 0.0)
       Gl.TexCoordf(twidth, theight)
-      gl.Vertexf(qWidth, - qHeight, 0.0)
+      gl.Vertexf(qWidth, -qHeight, 0.0)
       Gl.TexCoordf(tX, theight)
-      gl.Vertexf(- qWidth, - qHeight, 0.0)
+      gl.Vertexf(-qWidth, -qHeight, 0.0)
     gl.End()
 
   Endif
@@ -321,7 +321,7 @@ Private Sub loadTexture(texture As Integer, page As Integer)
 
   ' imgPage = $cImageCache[page]
   ' IF NOT imgPage THEN
-  Debug "loading pdf page "; page
+  Debug ("loading pdf page") & " "; page
   imgPage = hPdf[page].Image
   imgPage.Resize(textureSize, textureSize)
   '$cImageCache[page] = imgPage

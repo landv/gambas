@@ -3,21 +3,21 @@
 Private $sExec As String
 
 Private $aTutorial As String[][] = [
-  ["Example1", "1 - Setting Up An OpenGL Window"],
-  ["Example2", "2 - Your First Polygon"],
-  ["Example3", "3 - Adding Color"],
-  ["Example4", "4 - Rotation"],
-  ["Example5", "5 - 3D Shapes"],
-  ["Example6", "6 - Texture Mapping"],
-  ["Example7", "7 - Texture Filters, Lighting & Keyboard Control"],
-  ["Example8", "8 - Blending"],
-  ["Example9", "9 - Moving Bitmaps In 3D Space"],
-  ["Example10", "10 - Loading And Moving Through A 3D World"],
-  ["Example11", "11 - Flag Effect (Waving Texture)"],
-  ["Example16", "16 - Cool Looking Fog"],
-  ["Example19", "19 - Particle Engine"],
-  ["Example25", "25 - Morphing & Loading Objects From A File"],
-  ["Example42", "42 - Multiple Viewports"]]
+  [("Example1"), ("1 - Setting Up An OpenGL Window")],
+  [("Example2"), ("2 - Your First Polygon")],
+  [("Example3"), ("3 - Adding Color")],
+  [("Example4"), ("4 - Rotation")],
+  [("Example5"), ("5 - 3D Shapes")],
+  [("Example6"), ("6 - Texture Mapping")],
+  [("Example7"), ("7 - Texture Filters, Lighting & Keyboard Control")],
+  [("Example8"), ("8 - Blending")],
+  [("Example9"), ("9 - Moving Bitmaps In 3D Space")],
+  [("Example10"), ("10 - Loading And Moving Through A 3D World")],
+  [("Example11"), ("11 - Flag Effect (Waving Texture)")],
+  [("Example16"), ("16 - Cool Looking Fog")],
+  [("Example19"), ("19 - Particle Engine")],
+  [("Example25"), ("25 - Morphing & Loading Objects From A File")],
+  [("Example42"), ("42 - Multiple Viewports")]]
 
 Public Sub Form_Open()
 
@@ -40,7 +40,7 @@ Public Sub btnRun_Click()
     Shell "cd /tmp/NeHeTutorial && gbc3 -agt && gba3" To sOutput
     $sExec = "/tmp/NeHeTutorial/NeHeTutorial.gambas"
     If Not Exist($sExec) Then
-      Message.Error("Unable to compile the NeHeTurotial example inside the <tt>/tmp</tt> directory.")
+      Message.Error(("Unable to compile the NeHeTurotial example inside the <tt>/tmp</tt> directory."))
       $sExec = ""
       Return
     Endif
