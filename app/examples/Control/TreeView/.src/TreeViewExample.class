@@ -46,7 +46,7 @@ Private Sub RefreshInfo()
       sText = Subst(("&1 has 1 child."), .Text)
     End If
 
-    sText &= ("<br>Item rect is (") & .X & "," & .Y & "," & .W & "," & .H & ")"
+    sText &= "<br>" & ("Item rect is") & " (" & .X & "," & .Y & "," & .W & "," & .H & ")"
 
   End With
 
@@ -105,14 +105,14 @@ End
 Public Sub TreeView1_Collapse()
   'This just updates our event stack
 
-  AddLog("Collapse")
+  AddLog(("Collapse"))
 
 End
 
 Public Sub TreeView1_DblClick()
   'This just updates our event stack
 
-  AddLog("DblClick")
+  AddLog(("DblClick"))
 
 End
 
@@ -120,21 +120,21 @@ Public Sub TreeView1_Select()
   'This just updates our event stack
 
   RefreshInfo
-  AddLog("Select")
+  AddLog(("Select"))
 
 End
 
 Public Sub TreeView1_Delete()
   'This just updates our event stack
 
-  AddLog("Delete")
+  AddLog(("Delete"))
 
 End
 
 Public Sub TreeView1_Expand()
   'This just updates our event stack
 
-  AddLog("Expand")
+  AddLog(("Expand"))
 
 End
 
@@ -154,14 +154,14 @@ End
 Public Sub TreeView1_Activate()
   'This just updates our event stack
 
-  AddLog("Activate")
+  AddLog(("Activate"))
 
 End
 
 Public Sub TreeView1_Rename()
   'This just updates our event stack
 
-  AddLog("Rename")
+  AddLog(("Rename"))
 
 End
 
@@ -171,7 +171,7 @@ Private Sub AddLog(anevent As String)
   Dim sKey As String
 
   Try sKey = TreeView1.Item.Key
-  TextArea1.Text = "Event(" & intEventNumber & "): " & anevent & " Item: '" & sKey & "'\n" & TextArea1.Text
+  TextArea1.Text = ("Event") & "(" & intEventNumber & "): " & anevent & " " & ("Item:") & " '" & sKey & "'\n" & TextArea1.Text
   TextArea1.Pos = 0
   Inc intEventNumber
 
@@ -179,6 +179,6 @@ End
 
 Public Sub TreeView1_Cancel()
 
-  AddLog("Cancel")
+  AddLog(("Cancel"))
 
 End
