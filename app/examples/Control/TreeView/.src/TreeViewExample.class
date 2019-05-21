@@ -12,15 +12,15 @@ Public Sub Form_Open()
 
   'This will populate our treeview with our starting entries
   'Note: I'll just keep the entries text and its key the same to keep it simple
-  TreeView1.Add("Bill", "Bill", picMale)
-  TreeView1.Add("Ted", "Ted", picMale, "Bill")
-  TreeView1.Add("Sally", "Sally", picFemale, "Bill")
-  TreeView1.Add("Frank", "Frank", picMale, "Sally")
+  TreeView1.Add(("Bill"), ("Bill"), picMale)
+  TreeView1.Add(("Ted"), ("Ted"), picMale, ("Bill"))
+  TreeView1.Add(("Sally"), ("Sally"), picFemale, ("Bill"))
+  TreeView1.Add(("Frank"), ("Frank"), picMale, ("Sally"))
   'TreeView1.MoveCurrent
   'TreeView1.Item.Selected = TRUE
   'TreeView1.Item.Expanded = TRUE
 
-  TreeView1["Bill"].Expanded = True
+  TreeView1[("Bill")].Expanded = True
 
 End
 

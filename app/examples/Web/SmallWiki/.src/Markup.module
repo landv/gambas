@@ -640,7 +640,7 @@ MAIN_LOOP:
 NEXT_CAR:
 
   Inc I
-  If I > Len(sLine) Then Error.Raise("Unexpected end of line")
+  If I > Len(sLine) Then Error.Raise(("Unexpected end of line"))
   sCar = String.Mid$(sLine, I, 1)
   Return
   

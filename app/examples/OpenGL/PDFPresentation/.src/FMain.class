@@ -104,8 +104,8 @@ End
 
 Public Sub btnHelp_Click()
 
-  Message(("<h2>PDFPresentation example</h2><i>Made by Laurent Carlier & Benoît Minisini.</i><p>") &
-    ("Select a PDF file, then press SPACE. Use the left and right arrows to flick through the document."))
+  Message(("<h2>PDFPresentation example</h2><i>Made by Laurent Carlier & Benoît Minisini.</i><p>") & "<br>" &
+    ("Select a PDF file, then press SPACE.<br>Use the left and right arrows to flick through the document."))
   glaPresentation.SetFocus
 
 End

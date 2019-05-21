@@ -97,7 +97,7 @@ Private Sub DrawWorld()
       End If
     Next
     Draw.End
-    If cB.Text = "ALL" Then 
+    If cB.Text = ("ALL") Then 
       lblX.Caption = "%null%"
       lblY.Caption = "%null%"
       lblaX.Caption = "%null%"
@@ -149,7 +149,7 @@ End
 
 Public Sub Slider1_Change()
 
-   lblGrav.Caption = "Gravity: " & Str(Slider1.Value / 100)
+   lblGrav.Caption = ("Gravity:") & " " & Str(Slider1.Value / 100)
    world_Gravity = Slider1.Value / 100
 
 End
@@ -158,16 +158,16 @@ End
 Public Sub togGrav_Click()
 
   If Not togGrav.Value Then 
-    lblGrav.Caption = "Gravity: off"
-    lblSlide.Caption = "Floor Slide: off"
+    lblGrav.Caption = ("Gravity: off")
+    lblSlide.Caption = ("Floor Slide: off")
     Slider1.Enabled = False
     Slider2.Enabled = False
     world_SlideFloor = 1
   Else 
     Slider1.Enabled = True
     Slider2.Enabled = True
-    lblGrav.Caption = "Gravity: " & Str(Slider1.Value / 100)
-    lblSlide.Caption = "Floor Slide: " & Str(Slider2.Value / 100)
+    lblGrav.Caption = ("Gravity:") & " " & Str(Slider1.Value / 100)
+    lblSlide.Caption = ("Floor Slide:") & " " & Str(Slider2.Value / 100)
     world_SlideFloor = Slider2.Value / 100
   End If
 
@@ -202,7 +202,7 @@ End
 
 Public Sub Slider2_Change()
 
-   lblSlide.Caption = "Floor Slide: " & Str(Slider2.Value / 100)
+   lblSlide.Caption = ("Floor Slide:") & " " & Str(Slider2.Value / 100)
    world_SlideFloor = Slider2.Value / 100
 
 End

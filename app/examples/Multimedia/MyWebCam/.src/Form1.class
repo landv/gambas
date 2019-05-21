@@ -139,7 +139,7 @@ Public Sub Tmr_Timer()
     nFps = nFps + 1
     T1 = Now() - Fps
     If Second(T1) >= 1 Then
-      Me.Caption = hWebCam.Name & " (" & nFps & " fps)"
+      Me.Caption = hWebCam.Name & " (" & nFps & " " & ("fps") & ")"
       Fps = Now()
       nFps = 0
     End If

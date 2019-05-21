@@ -46,7 +46,7 @@ Private Sub Connect()
     btnDisconnect.Enabled = True
   Else
     btnSettings.Enabled = True
-    Message.Warning("Login failed!")
+    Message.Warning(("Login failed!"))
   Endif
 
   Dec Application.Busy

@@ -187,7 +187,7 @@ PRINT_TEXT:
   
   Y = 10
   Draw.Font.Size = Font.DefaultHeight * 2
-  Y = DrawText($hWindow.Framerate & " " & "FPS", 10, Y)
+  Y = DrawText($hWindow.Framerate & " " & ("FPS"), 10, Y)
   Draw.Font.Size = Font.DefaultHeight
   Y = DrawText("[F1]   " & ("Toggle fullscreen"), 10, Y)
   Y = DrawText("[F5]   " & ("Take screenshot to ~/BeastScroll.png"), 10, Y)
