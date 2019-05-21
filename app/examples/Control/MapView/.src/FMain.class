@@ -27,9 +27,8 @@ Public Sub _new()
   hmap.Resize(200, 200)
   
   'Manage the list of layers
-  For Each o In MapView1.Map
-    $aNames.Add(o.Name)
-  Next
+  $aNames.Add("OpenStreetMap")
+  $aNames.Add("GoogleMap")
   GridView1.Rows.count = $aNames.Count
   GridView1.Columns.Count = 2
   GridView1.Columns[0].Width = 32
@@ -102,7 +101,7 @@ Public Sub GridView1_Data(Row As Integer, Column As Integer)
   
   Select Case Column
     Case 0
-      'Last.Data.Picture = IIf(MapView1.Map[$aNames[row]].Visible, Picture["icon:/22/ok"], Picture["icon:/22/cancel"])
+      Last.Data.Picture = IIf(MapView1.Map[$aNames[row]].Visible, Picture["icon:/22/ok"], Picture["icon:/22/cancel"])
       
     Case 1
       Last.Data.Text = $aNames[row]
