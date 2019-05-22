@@ -43,7 +43,7 @@ Public Sub Form_Open()
    UpdateScoreBoard
    Play("start.wav")
    
-   Me.Text = ("Snake") & " v1.0"
+   Me.Text = ("Snake") & " " & ("v1.0")
    hPictHead = Picture.Load("head.png")
    ' ME.Icon = hPictHead 'The same as head icon but in a standard size
 

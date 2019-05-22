@@ -1,4 +1,5 @@
 ' Gambas class file
+
 Public NKIs As Object[]
 Public Robot As Object
 Public OrigHeight As Integer
@@ -22,7 +23,7 @@ Public Sub Timer1_Timer()
   End If
 End
 
-Public Sub TextLabel1_KeyPress()
+Public Sub Form_KeyPress()
 
   Dim i As Integer
   
