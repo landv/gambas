@@ -28,7 +28,7 @@ Public Sub Main()
   Window.Caption = Subst$(("Pong v&1 - gb.ncurses Example"), Application.Version)
   Window.Clear()
 
-  $hConfig = New Window(True, 0, 0, 30, 5)
+  $hConfig = New Window(True, 0, 0, 60, 5)
   $hConfig.Border = Border.Ascii
   $hConfig.Center()
 

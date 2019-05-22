@@ -53,7 +53,7 @@ Private Function EvaluateCollisions(hP1 As Paddle, hP2 As Paddle) As Integer
   ' Flip at top/bottom border?
   If $iY < 0 Or $iY >= $hWindow.Height Then
     GoSub _UndoMovement
-    $iVD = - $iVD
+    $iVD = -$iVD
     Move(hP1, hP2)
   Endif
   ' Made a point (left/right border)?
@@ -70,7 +70,7 @@ _UndoMovement:
 
 _OnPaddle:
   GoSub _UndoMovement
-  $iHD = - $iHD
+  $iHD = -$iHD
   Move(hP1, hP2)
   $bHitPaddle = True
 
