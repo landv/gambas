@@ -76,7 +76,7 @@ Public Sub Enemy_Destroyed()
     $aEnemies.Add(hEnemy, iInd + iJ)
     iShift += hEnemy.Width
   Next
-  For iInd += iAdd + 1 To $aEnemies.Max
+  For iInd = iInd + iAdd + 1 To $aEnemies.Max
     $aEnemies[iInd].Move(iShift - Last.Width)
   Next
 _Out:
