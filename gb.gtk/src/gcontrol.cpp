@@ -314,6 +314,7 @@ void gControl::initAll(gContainer *parent)
 	_use_wheel = false;
 	_scrollbar = SCROLL_NONE;
 	_input_method = NULL;
+	_tooltip = NULL;
 
 	onFinish = NULL;
 	onFocusEvent = NULL;
@@ -389,7 +390,10 @@ gControl::~gControl()
 	
 	//fprintf(stderr, "~gControl: %s\n", name());
 
-	setName(NULL);
+	if (_name)
+		g_free(_name);
+	if (_tooltip)
+		g_free(_tooltip);
 
 	controls = g_list_remove(controls, this);
 	controls_destroyed = g_list_remove(controls_destroyed, this);
@@ -724,16 +728,22 @@ void gControl::setIgnore (bool vl)
 	if (pr) pr->performArrange();
 }
 
-char* gControl::toolTip()
+void gControl::setTooltip(char *vl)
 {
-	char *text = gtk_widget_get_tooltip_text(border);
-	gt_free_later(text);
-	return text;
-}
-
-void gControl::setToolTip(char* vl)
-{
-	gtk_widget_set_tooltip_text(border, vl ? vl : "");
+	char *pango;
+	
+	if (_tooltip) g_free(_tooltip);
+	_tooltip = NULL;
+	if (vl) _tooltip = g_strdup(vl);
+	
+	if (_tooltip)
+	{
+		pango = gt_html_to_pango_string(_tooltip, -1, false);
+		gtk_widget_set_tooltip_markup(border, pango);
+		g_free(pango);
+	}
+	else
+		gtk_widget_set_tooltip_markup(border, NULL);
 }
 
 gFont* gControl::font()

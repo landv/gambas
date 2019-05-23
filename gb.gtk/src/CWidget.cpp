@@ -831,7 +831,7 @@ BEGIN_PROPERTY(CWIDGET_tooltip)
 		return;
 	}
 
-	CONTROL->setToolTip(GB.ToZeroString(PROP(GB_STRING)));
+	CONTROL->setTooltip(GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY
 
