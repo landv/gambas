@@ -48,6 +48,7 @@ extern GB_CLASS CLASS_SvgImage;
 
 extern bool MAIN_debug_busy;
 extern bool MAIN_rtl;
+extern bool MAIN_display_x11;
 #endif
 
 #define GB (*GB_PTR)

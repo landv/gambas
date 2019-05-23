@@ -41,7 +41,6 @@ static void show_message_box(int type, MSG_PARAM *_p)
 	char *msg = GB.ToZeroString(ARG(msg));
 	char *btn1, *btn2, *btn3;
 	int ret;
-	char *title;
 	
 	btn1 = MISSING(btn1) ? NULL : GB.ToZeroString(ARG(btn1));
 	btn2 = (type == 0 || MISSING(btn2)) ? NULL : GB.ToZeroString(ARG(btn2));
@@ -54,10 +53,6 @@ static void show_message_box(int type, MSG_PARAM *_p)
   }
 	
   _global_lock++;
-	
-	title = gMessage::title();
-	if (!title)
-		title = GB.Application.Title();
 	
 	switch (type)
 	{

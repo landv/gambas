@@ -112,6 +112,8 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
   if (bt.bt3) { gMnemonic_correctText(bt.bt3, &buf); bt.bt3 = buf; }
 	
 	title = gMessage::title();
+	if (!title)
+		title = GB.Application.Title();
 	
 #ifdef GTK3
 	msg = gtk_dialog_new_with_buttons(title, NULL,

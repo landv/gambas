@@ -100,6 +100,7 @@ static GB_FUNCTION _application_keypress_func;
 
 static void *_old_hook_main;
 
+bool MAIN_display_x11 = FALSE;
 int MAIN_scale = 0;
 bool MAIN_debug_busy = false;
 bool MAIN_rtl = false;
@@ -257,17 +258,21 @@ void EXPORT GB_EXIT()
 
 int EXPORT GB_INFO(const char *key, void **value)
 {
-	if (!strcasecmp(key, "DISPLAY"))
+	if (MAIN_display_x11)
 	{
-		*value = (void *)gdk_x11_display_get_xdisplay(gdk_display_get_default());
-		return TRUE;
+		if (!strcasecmp(key, "DISPLAY"))
+		{
+			*value = (void *)gdk_x11_display_get_xdisplay(gdk_display_get_default());
+			return TRUE;
+		}
+		else if (!strcasecmp(key, "ROOT_WINDOW"))
+		{
+			*value = (void *)gdk_x11_get_default_root_xwindow();
+			return TRUE;
+		}
 	}
-	else if (!strcasecmp(key, "ROOT_WINDOW"))
-	{
-		*value = (void *)gdk_x11_get_default_root_xwindow();
-		return TRUE;
-	}
-	else if (!strcasecmp(key, "GET_HANDLE"))
+	
+	if (!strcasecmp(key, "GET_HANDLE"))
 	{
 		*value = (void *)CWIDGET_get_handle;
 		return TRUE;
@@ -355,7 +360,8 @@ void my_quit (void)
 	gApplication::exit();
 
 	#ifdef GDK_WINDOWING_X11
-  	X11_exit();
+		if (MAIN_display_x11)
+			X11_exit();
   #endif
 }
 
@@ -386,7 +392,13 @@ static void my_main(int *argc, char ***argv)
 
 	MAIN_scale = gDesktop::scale();
 	#ifdef GDK_WINDOWING_X11
-  	X11_init(gdk_x11_display_get_xdisplay(gdk_display_get_default()), gdk_x11_get_default_root_xwindow());
+		#ifdef GTK3
+		if (GDK_IS_X11_DISPLAY(gdk_display_get_default()))
+		#endif
+		{
+			X11_init(gdk_x11_display_get_xdisplay(gdk_display_get_default()), gdk_x11_get_default_root_xwindow());
+			MAIN_display_x11 = TRUE;
+		}
   #endif
 
 	if (GB.GetFunction(&_application_keypress_func, (void *)GB.Application.StartupClass(), "Application_KeyPress", "", "") == 0)

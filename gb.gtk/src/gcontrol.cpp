@@ -226,23 +226,19 @@ void gPlugin::plug(int id)
 
 void gPlugin::discard()
 {
-	#ifdef GAMBAS_DIRECTFB
-	stub("DIRECTFB/gPlugin:discard()");
-	#else
 	#ifdef GDK_WINDOWING_X11
+	if (MAIN_display_x11)
+	{
+		Display *d = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 
-	Display *d = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+		if (!client()) return;
 
-	if (!client()) return;
-
-	XRemoveFromSaveSet(d, client());
-	XReparentWindow(d, client(), GDK_ROOT_WINDOW(), 0, 0);
-
+		XRemoveFromSaveSet(d, client());
+		XReparentWindow(d, client(), GDK_ROOT_WINDOW(), 0, 0);
+	}
 	#else
 	stub("no-X11/gPlugin:discard()");
 	#endif
-	#endif
-
 }
 
 
@@ -1005,21 +1001,18 @@ gMainWindow* gControl::topLevel()
 
 int gControl::handle()
 {
-	#ifndef GAMBAS_DIRECTFB
 	#ifdef GDK_WINDOWING_X11
-	if (!gtk_widget_get_window(border))
-		return 0;
+	if (MAIN_display_x11)
+	{
+		GdkWindow *window = gtk_widget_get_window(border);
+		return window ? GDK_WINDOW_XID(window) : 0;
+	}
 	else
-		return GDK_WINDOW_XID(gtk_widget_get_window(border));
+		return 0;
 	#else
 	stub("no-X11/gControl::handle()");
 	return 0;
 	#endif
-	#else
-	stub("DIRECTFB/gControl::handle()");
-	return 0;
-	#endif
-
 }
 
 /*****************************************************************
