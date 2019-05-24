@@ -137,6 +137,8 @@ void FONT_render_default(uint *dest, int size, const char *text, int len)
 			src = _default_font_33_126 + DEFAULT_FONT_HEIGHT * (code - 33);
 		else if (code >= 160 && code <= 687)
 			src = _default_font_160_687 + DEFAULT_FONT_HEIGHT * (code - 160);
+		else if (code >= 880 && code <= 1319)
+			src = _default_font_880_1319 + DEFAULT_FONT_HEIGHT * (code - 880);
 		else
 			src = NULL;
 
