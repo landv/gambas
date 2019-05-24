@@ -1,27 +1,27 @@
 ' Gambas class file
 
-PUBLIC SUB cmdCancel_Click()
+Public Sub cmdCancel_Click()
 
   FBoardSelect.Close
 
-END
+End
 
-PUBLIC SUB Form_Show()
+Public Sub Form_Show()
 
-  DIM i AS Byte
+  Dim i As Byte
   
   ' Fill in the combo box text section
   cboLayout.Text = Global.boarddesign[Global.selectedlayout].Name
 
   ' Fill in the combo box dropdown section
-  FOR i = 0 TO Global.boarddesign.Count - 1
+  For i = 0 To Global.boarddesign.Count - 1
     cboLayout.Add(Global.boarddesign[i].Name)
-  NEXT
+  Next
 
-END
+End
 
 
-PUBLIC SUB cmdOK_Click()
+Public Sub cmdOK_Click()
 
   ' Set board layout index
   Global.selectedlayout = cboLayout.Index
@@ -32,4 +32,4 @@ PUBLIC SUB cmdOK_Click()
   ' Close this window
   FBoardSelect.Close
 
-END
+End

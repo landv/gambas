@@ -27,7 +27,7 @@ Public Sub Main()
 
   $hPlayer.Play
 
-  Print "I will take a screenshot in 5 seconds..."
+  Print ("I will take a screenshot in 5 seconds...")
   Repeat
     Wait 1
     Inc I
@@ -37,7 +37,7 @@ Public Sub Main()
       If I = 5 Then
         Print
         hSink.GetLastImage().Save("~/screenshot.png")
-        Print "Screenshot saved to '~/screenshot.png'!"
+        Print ("Screenshot saved to '~/screenshot.png'!")
       Endif
     Endif
   Until $bStop

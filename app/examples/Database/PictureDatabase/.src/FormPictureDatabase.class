@@ -205,21 +205,21 @@ Private Function FileFilter(Optional All As Boolean = False) As String[]
   Dim filter As New String[]
   If All Then 
     filter.Add("*.png;*.jpeg;*.jpg;*.bmp;*.gif;*.xpm")
-    filter.Add("All Graphics")
+    filter.Add(("All Graphics"))
   End If
   filter.Add("*.png")
-  filter.Add("Portable Network Graphics")
+  filter.Add(("Portable Network Graphics"))
   filter.Add("*.jpeg *.jpg")
-  filter.Add("Joint Photographic Experts Group")
+  filter.Add(("Joint Photographic Experts Group"))
   filter.Add("*.bmp")
-  filter.Add("Windows Bitmap")
+  filter.Add(("Windows Bitmap"))
   filter.Add("*.gif")
-  filter.Add("Graphics Interchange Format")
+  filter.Add(("Graphics Interchange Format"))
   filter.Add("*.xpm")
-  filter.Add("X PixMap")
+  filter.Add(("X PixMap"))
   If All Then
     filter.Add("*") 
-    filter.Add("All Files")
+    filter.Add(("All Files"))
   End If
   Return filter
 End

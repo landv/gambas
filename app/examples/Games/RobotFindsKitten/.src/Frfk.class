@@ -1,4 +1,5 @@
 ' Gambas class file
+
 Public NKIs As Object[]
 Public Robot As Object
 Public OrigHeight As Integer
@@ -22,7 +23,7 @@ Public Sub Timer1_Timer()
   End If
 End
 
-Public Sub TextLabel1_KeyPress()
+Public Sub Form_KeyPress()
 
   Dim i As Integer
   
@@ -93,12 +94,18 @@ Public Sub Form_Open()
   Dim nkitext As String[]
   NKIs = New Object[]
   nkitext = New String[]
+  Dim sLanguage As String
   
   Randomize
   origheight = Me.height
   origwidth = Me.width
   origfontsize = 12
-  Try nkistring = File.load("nkis.txt")
+  sLanguage = Left$(System.Language, 2)
+  Try nkistring = File.load("nkis_" & sLanguage & ".txt")
+  If Error Then
+    Try nkistring = File.load("nkis.txt")
+  Endif
+  
   nkitext = Split(nkistring, "\n")
   KittenisFound = False
   numnkis = 20

@@ -17,7 +17,7 @@ Public Sub _new()
     Try Copy sPath To sDest
   Endif
 
-  WebViewHelp.Url = sDest
+  WebViewHelp.Url = "file://" & sDest
 
 End
 

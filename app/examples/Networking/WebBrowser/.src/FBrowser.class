@@ -69,7 +69,7 @@ End
 
 Public Sub WebView_Progress()
 
-  GetView().Status = "Loading..."
+  GetView().Status = ("Loading...")
   If Not IsLastCurrentView() Then Return
 
   lblStatus.Text = GetView().Status
@@ -92,8 +92,8 @@ Public Sub WebView_Error()
   '   Return
   ' Endif
 
-  hView.Status = "Unable to load: " & sUrl
-  hView.HTML = "<h3>Unable to find the following URL:</h3>" & sUrl
+  hView.Status = ("Unable to load:") & " " & sUrl
+  hView.HTML = ("<h3>Unable to find the following URL:</h3>") & sUrl
   If Not IsLastCurrentView() Then Return
 
   lblStatus.Text = GetView().Status
@@ -553,7 +553,7 @@ Public Sub btnBackground_Click()
 
   Dim hWebView As WebView = GetView()
 
-  Dialog.Title = "Select a color"
+  Dialog.Title = ("Select a color")
   If Dialog.SelectColor() Then Return
   hWebView.Eval(Subst("document.execCommand('backcolor', false, '&1')", "#" & Hex$(Dialog.Color, 6)))
 
@@ -574,7 +574,7 @@ Public Sub btnInsertImage_Click()
 
   Dim hWebView As WebView = GetView()
   
-  Dialog.Title = "Select an image"
+  Dialog.Title = ("Select an image")
   Dialog.Filter = ["*.jpg;*.jpeg;*.png;*.gif;*.xpm;*.bmp", "Image files"]
   If Dialog.OpenFile() Then Return
 

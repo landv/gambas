@@ -34,7 +34,7 @@ Public Sub Init()
 $iLastDir = $hBall.HDir
   ' We need to insert an opponent paddle that would block everything to not
   ' go into an infinite loop when trying to calculate the ball's positions
-  $hMyPaddle = New Paddle($hWindow, - $hPaddle.Dir)
+  $hMyPaddle = New Paddle($hWindow, -$hPaddle.Dir)
   $hMyPaddle.Reset()
   $hMyPaddle.Y = 0
   $hMyPaddle.Height = $hWindow.Height
@@ -67,7 +67,7 @@ Private Sub Move_Master()
   If Not $bReady Then MasterCalc()
   Move_Generic()
   ' If the ball hits this paddle, we can begin calculating again
-  If $hBall.HDir <> $iLastDir And $iLastDir = - $hPaddle.Dir Then
+  If $hBall.HDir <> $iLastDir And $iLastDir = -$hPaddle.Dir Then
     $bReady = False
   Endif
   $iLastDir = $hBall.HDir

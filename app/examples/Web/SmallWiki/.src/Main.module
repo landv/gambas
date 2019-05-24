@@ -52,7 +52,7 @@ Private Sub LockPage()
     Sleep 0.1
   Next
   
-  Error.Raise("Unable to lock the current page")
+  Error.Raise(("Unable to lock the current page"))
 
 End
 
@@ -101,7 +101,7 @@ Public Sub Main()
   If InStr(Path, "~") Then
     Response.Status = "404 Not Found"
     Response.Begin
-    Print "<h1>404 Not Found</h1>"
+    Print ("<h1>404 Not Found</h1>")
     Response.End
     Return
   Endif

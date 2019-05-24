@@ -16,8 +16,9 @@
     { Button1 Button Test
       Name = "Button1"
       MoveScaled(0,2,10,4)
+      #Translate = False
       Drop = True
-      Text = ("Button1")
+      Text = "Button1"
     }
     { Panel2 Panel Test
       Name = "Panel2"
@@ -49,49 +50,49 @@
       Name = "PictureBox1"
       MoveScaled(0,0,6,6)
       Tag = "Bicycle"
+      Border = Border.Raised
       Picture = Picture["icon:/32/flag"]
       Alignment = Align.Center
-      Border = Border.Raised
     }
     { PictureBox2 PictureBox imgIcon
       Name = "PictureBox2"
       MoveScaled(0,6,6,6)
       Tag = "Eye"
+      Border = Border.Raised
       Picture = Picture["icon:/32/lamp"]
       Alignment = Align.Center
-      Border = Border.Raised
     }
     { PictureBox3 PictureBox imgIcon
       Name = "PictureBox3"
       MoveScaled(0,12,6,6)
       Tag = "Map"
+      Border = Border.Raised
       Picture = Picture["icon:/32/internet"]
       Alignment = Align.Center
-      Border = Border.Raised
     }
     { PictureBox4 PictureBox imgIcon
       Name = "PictureBox4"
       MoveScaled(0,18,6,6)
       Tag = "Happy"
+      Border = Border.Raised
       Picture = Picture["icon:/32/bookmark"]
       Alignment = Align.Center
-      Border = Border.Raised
     }
     { PictureBox5 PictureBox imgIcon
       Name = "PictureBox5"
       MoveScaled(0,24,6,6)
       Tag = "Magnify"
+      Border = Border.Raised
       Picture = Picture["icon:/32/phone"]
       Alignment = Align.Center
-      Border = Border.Raised
     }
     { PictureBox6 PictureBox imgIcon
       Name = "PictureBox6"
       MoveScaled(0,30,6,6)
       Tag = "Highlight"
+      Border = Border.Raised
       Picture = Picture["icon:/32/book"]
       Alignment = Align.Center
-      Border = Border.Raised
     }
     { Panel1 Panel
       MoveScaled(1,36,4,3)

@@ -228,7 +228,7 @@ Public Sub Screen_Draw()
   Inc (Frames)
   If (Timer() > CTime + 5) Then
     calc = Timer() - CTime
-    Print CStr(Frames) & " frames in " & Format$(calc, "#.0") & " seconds = " & Format$((Frames / calc), "######.000") & " FPS"
+    Print CStr(Frames) & " " & ("frames in") & " " & Format$(calc, "#.0") & " " & ("seconds =") & " " & Format$((Frames / calc), "######.000") & " " & ("FPS")
     Frames = 0
     CTime = Timer()
   Endif

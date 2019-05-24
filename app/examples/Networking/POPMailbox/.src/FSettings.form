@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,48,52)
+  MoveScaled(0,0,48,53)
   Text = ("Settings")
   Resizable = False
   Arrangement = Arrange.Vertical
@@ -9,58 +9,58 @@
   Spacing = True
   Margin = True
   { Frame1 Frame
-    MoveScaled(3,2,44,18)
+    MoveScaled(1,2,46,18)
     Text = ("Login Details")
     { Label1 Label
-      MoveScaled(1,5,12,4)
+      MoveScaled(1,5,16,4)
       AutoResize = True
       Text = ("Username")
     }
     { txtUsername TextBox
-      MoveScaled(17,5,24,4)
+      MoveScaled(21,5,24,4)
       Expand = True
     }
     { Label2 Label
-      MoveScaled(1,11,12,4)
+      MoveScaled(1,11,16,4)
       AutoResize = True
       Text = ("Password")
     }
     { txtPassword TextBox
-      MoveScaled(17,10,24,4)
+      MoveScaled(21,11,24,4)
       Expand = True
       Password = True
     }
   }
   { Frame2 Frame
-    MoveScaled(3,26,44,21)
+    MoveScaled(1,26,46,21)
     Text = ("Server Details")
     { Label3 Label
-      MoveScaled(1,5,12,4)
+      MoveScaled(1,5,17,4)
       AutoResize = True
       Text = ("Server")
     }
     { txtServer TextBox
-      MoveScaled(19,5,24,4)
+      MoveScaled(21,5,24,4)
       Expand = True
     }
     { Label4 Label
-      MoveScaled(1,11,12,4)
+      MoveScaled(1,11,32,4)
       AutoResize = True
       Text = ("Port")
     }
     { vbPort SpinBox
-      MoveScaled(34,11,9,4)
+      MoveScaled(36,11,9,4)
       MaxValue = 999999
       Value = 110
     }
     { chbSSL CheckBox
-      MoveScaled(28,16,15,4)
+      MoveScaled(1,16,42,4)
       AutoResize = True
       Text = ("Use SSL")
     }
   }
   { btnSave Button
-    MoveScaled(29,47,16,4)
+    MoveScaled(31,48,16,4)
     Text = ("Save")
   }
 }

@@ -21,13 +21,13 @@ Public Sub Redraw()
     
     sTitle = .Url
     If .Status = .Cancelled Then
-      sStatus = "Cancelled"
+      sStatus = ("Cancelled")
     Else If .Status = .Finished Then
-      sStatus = "Finished"
+      sStatus = ("Finished")
     Else If .Status = .Error Then
-      sStatus = "Error: " & .ErrorText
+      sStatus = ("Error:") & " " & .ErrorText
     Else
-      sStatus = "Downloading..."
+      sStatus = ("Downloading...")
     Endif
     lblTitle.Text = sTitle
     lblStatus.Text = sStatus

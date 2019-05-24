@@ -325,9 +325,9 @@ Public Sub MainLoop()
     Draw.Foreground = Color.Red
 
     Draw.Font.Bold = True
-    Draw.Text("Object Count: " & Obj.Count, 1, 0)
-    Draw.Text("Bullet Count: " & Bullet.Count, 1, Draw.Font.Height * 1)
-    Draw.Text("FPS         : " & FPS_COUNT, 1, Draw.Font.Height * 2)
+    Draw.Text(("Object Count:") & " " & Obj.Count, 1, 0)
+    Draw.Text(("Bullet Count:") & " " & Bullet.Count, 1, Draw.Font.Height * 1)
+    Draw.Text(("FPS") & "         : " & FPS_COUNT, 1, Draw.Font.Height * 2)
 
     Draw.End()
 End

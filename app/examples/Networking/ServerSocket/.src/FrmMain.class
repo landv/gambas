@@ -31,7 +31,7 @@ End
 
 Public Sub MyServerSocket_Error()
   
-  Message.Error("Unable to bind socket")
+  Message.Error(("Unable to bind socket"))
   
 End
 
@@ -44,9 +44,9 @@ Public Sub MyServerSocket_Connection(sHost As String)
 
   If MyServerSocket.Status <= Net.Inactive Then Return
   If cmbType.Index = 0 Then
-    txtLog.Text = txtLog.Text & "Connection request from : " & sHost & Chr(13) & Chr(10)
+    txtLog.Text = txtLog.Text & ("Connection request from :") & " " & sHost & Chr(13) & Chr(10)
   Else
-    txtLog.Text = txtLog.Text & "Connection request accepted" & Chr(13) & Chr(10)
+    txtLog.Text = txtLog.Text & ("Connection request accepted") & Chr(13) & Chr(10)
   End If
   
   Obj = MyServerSocket.Accept()
@@ -55,7 +55,7 @@ Public Sub MyServerSocket_Connection(sHost As String)
   Obj.Tag = [$iId, 0, ""]
   
   If Obj.Status = Net.Connected And cmbType.Index = 0 Then
-    txtLog.Text = txtLog.Text & "Connection from " & Obj.RemoteHost & ":" & Obj.RemotePort & " accepted (local port " & Obj.LocalPort & ")" & Chr(13) & Chr(10) 
+    txtLog.Text = txtLog.Text & ("Connection from") & " " & Obj.RemoteHost & ":" & Obj.RemotePort & " " & ("accepted") & " (" & ("local port") & " " & Obj.LocalPort & ")" & Chr(13) & Chr(10) 
   End If
   
 End
@@ -103,7 +103,7 @@ Public Sub Socket_Read()
   
   If Last.Status <> Net.Connected Then Return
   Read #Last, sBuf, Lof(Last)
-  txtLog.Text &= "Socket #" & Last.Tag[0] & " --> " & sBuf & "\n"
+  txtLog.Text &= ("Socket #") & Last.Tag[0] & " --> " & sBuf & "\n"
   
   Last.Tag[1] = 0
   Last.Tag[2] = sBuf
@@ -114,13 +114,13 @@ End
 
 Public Sub Socket_Ready()
   
-  txtLog.Text &= "-- Client working --\n"
+  txtLog.Text &= ("-- Client working --\n")
   
 End
 
 Public Sub Socket_Closed()
   
-  txtLog.Text &= "Client #" & Last.Tag[0] & " Closed\n"
+  txtLog.Text &= ("Client #") & Last.Tag[0] & " " & ("Closed") & "\n"
 
 End
 
@@ -128,7 +128,7 @@ Public Sub Form_Open()
   
   txtPath.Text = Application.Path & "/" & "gambas"
   txtPath.Enabled = False
-  TextLabel3.Text = "Path"
+  TextLabel3.Text = ("Path")
   
 End
 
@@ -154,10 +154,10 @@ Public Sub btnPause_Click()
   
   If Waiting Then
     MyServerSocket.Resume()
-    btnPause.Text = "Pause"
+    btnPause.Text = ("Pause")
   Else
     MyServerSocket.Pause()
-    btnPause.Text = "Resume"
+    btnPause.Text = ("Resume")
   End If
   Waiting = Not Waiting
   

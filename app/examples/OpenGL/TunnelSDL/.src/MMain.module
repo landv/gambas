@@ -27,7 +27,7 @@ Public Sub Screen_Draw()
   
   CTunnel.tunnelAfficher(GetTickCount())
   
-  Print Screen.FrameRate; " FPS\r";
+  Print Screen.FrameRate; " " & ("FPS") & "\r";
   
 End
 
@@ -59,7 +59,7 @@ Public Sub Screen_Resize()
   Gl.Viewport(0, 0, Screen.Width, Screen.Height)
   Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()
-  Gl.Frustum(-1.0, 1.0, - (Screen.Height / Screen.Width), (Screen.Height / Screen.Width), 5.0, 60.0)
+  Gl.Frustum(-1.0, 1.0, -(Screen.Height / Screen.Width), (Screen.Height / Screen.Width), 5.0, 60.0)
   Gl.MatrixMode(Gl.MODELVIEW)
   Gl.LoadIdentity()
   Gl.Translatef(0.0, 0.0, -40.0)

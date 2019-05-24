@@ -13,7 +13,7 @@ Public Sub _new(Optional sType As String = "mysql")
   If hConn.Type = "sqlite" Then hConn.Host = User.Home
   Try hConn.Open
   If Not hConn.Opened Then
-    Message.Error(" You have to create the test database with the <b>Database</b> example.")
+    Message.Error(("You have to create the test database with the <b>Database</b> example."))
     Return
   Endif
 

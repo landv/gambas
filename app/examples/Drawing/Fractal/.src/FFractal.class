@@ -178,7 +178,7 @@ Public Sub dwgFractal_MouseMove()
 End
 
 
-Public Sub dwgFractal_KeyPress()
+Public Sub Form_KeyPress()
 
   If UCase(Key.Text) = "F" Then
     $bFast = Not $bFast

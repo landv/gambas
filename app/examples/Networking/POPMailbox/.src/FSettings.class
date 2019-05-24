@@ -25,17 +25,17 @@ Public Sub btnSave_Click()
   Balloon.Delay = 3000
 
   If Not txtUsername.Text Then
-    Balloon.Error("Missing username", txtUsername)
+    Balloon.Error(("Missing username"), txtUsername)
     Return
   Endif
 
   If Not txtPassword.Text Then
-    Balloon.Error("Missing password", txtPassword)
+    Balloon.Error(("Missing password"), txtPassword)
     Return
   Endif
 
   If Not txtServer.Text Then
-    Balloon.Error("Missing server", txtServer)
+    Balloon.Error(("Missing server"), txtServer)
     Return
   Endif
 

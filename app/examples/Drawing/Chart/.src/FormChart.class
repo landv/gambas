@@ -101,12 +101,12 @@ End
 Public Sub btnAbout_Click()
 
   Dim i As String
-  i = "<h2>Example to make bar chart</h2>\n"
-  i = i & "This example has made by : " & Chr(10)
+  i = ("<h2>Example to make bar chart</h2>\n")
+  i = i & ("This example has made by : ") & Chr(10)
   i = i & "   Yudi Astira" & Chr(10)
   i = i & "   yudi@kecoak.or.id" & Chr(10)
   i = i & "   necrose #hdteam on Dal.Net" & Chr(10)
-  i = i & "Thank You"
-  message.Info(i, "&Close")
+  i = i & ("Thank You")
+  message.Info(i, ("&Close"))
   
 End

@@ -23,7 +23,7 @@ Public Sub ScanDevices()
   count = 0
   Me.Show
 
-  status = "Searching: "
+  status = ("Searching:") & " "
   For i = 0 To 20
     sDevice = "/dev/video" & Str(i)
     Print sDevice
@@ -43,7 +43,7 @@ Public Sub ScanDevices()
     Wait 0.1
     text_status.Text = status
   Next
-  text_status.Text = "Found (" & Str($windows.Count) & ") devices"
+  text_status.Text = ("Found") & " (" & Str($windows.Count) & ") " & ("devices")
   Wait 2
   Me.Hide
   
@@ -97,7 +97,7 @@ Public Sub menu_quit_Click()
     $windows.Pop().Close
   Wend
   Me.Close
-  tooltray.Hide
+  'tooltray.Hide
   
 End
 
@@ -109,7 +109,7 @@ Public Sub menu_save_Click()
     myWin.Save()
   Next 
   Settings.Save
-  Message("Settings Saved!")
+  Message(("Settings Saved!"))
   
 End
 
