@@ -75,7 +75,7 @@ Public Sub CheckSystem(sSys As String) As String
   
   Select Case sSys
   
-    Case "mageia", "mandriva", "fedora", "suse"
+    Case "mageia", "fedora", "suse"
       If Not RPMBUILD_PROG Then Return Subst(("'&1' is missing."), "rpmbuild")
       
     Case "debian", "ubuntu"
@@ -682,7 +682,7 @@ MAKE_PACKAGE:
   
   Select Case sSys
   
-    Case "mageia", "mandriva", "fedora", "suse"
+    Case "mageia", "fedora", "suse"
       MakeRpmSupportPackage(sSys, sSupport, aPackage)
   
     Case "debian", "ubuntu"
@@ -716,7 +716,7 @@ Private Function MakePackage(sSys As String) As Boolean
   
   Select Case sSys
   
-    Case "mageia", "mandriva", "fedora", "suse"
+    Case "mageia", "fedora", "suse"
       MakeRpmPackage(sSys)
   
     Case "debian", "ubuntu"
@@ -1347,11 +1347,6 @@ Private Function MakeRpmPackage(sSys As String)
       sVendor = "Mageia"
       sRelease &= "mga"
 
-    Case "mandriva"
-      sDistribution = "Mandriva"
-      sVendor = "MandrivaSoft"
-      sRelease &= "mdv"
-
     Case "fedora"
       sDistribution = "Fedora"
       sVendor = "Fedora"
@@ -1425,7 +1420,9 @@ Private Function MakeRpmPackage(sSys As String)
   Print #hFile, "Source0: %{name}-%{version}.tar.bz2"
   Print #hFile, "License: "; If(Project.License, Project.License, "GPL")
   Print #hFile, "Group: " & Project.Groups[sSys]
-  Print #hFile, "BuildRoot: %{_tmppath}/%{name}-%{version}-${release}-buildroot"
+  If sSys <> "mageia" Then
+    Print #hFile, "BuildRoot: %{_tmppath}/%{name}-%{version}-${release}-buildroot"
+  Endif
   Print #hFile, "Prefix: %{_prefix}"
     'PRINT #hFile, "BuildRequires: gambas2-ide"
   Print #hFile, "BuildArch: noarch"
@@ -1445,8 +1442,10 @@ Private Function MakeRpmPackage(sSys As String)
 
   Print #hFile, "\n%description\n" & $sDescription & "\nThis program is written in Gambas, so you will need Gambas to be installed."
 
-  Print #hFile, "\n%prep"
-  Print #hFile, "rm -rf %{buildroot}"
+  If sSys <> "mageia" Then
+    Print #hFile, "\n%prep"
+    Print #hFile, "rm -rf %{buildroot}"
+  Endif
 
   Print #hFile, "\n%setup -q -n " & Shell$($sName)
 
@@ -1501,27 +1500,6 @@ Private Function MakeRpmPackage(sSys As String)
     
       Select Case sSys
     
-        Case "mandriva"
-    
-          Print #hFile, "install -d %{buildroot}/%{_miconsdir}"
-          Print #hFile, "install -d %{buildroot}/%{_iconsdir}"
-          Print #hFile, "install -d %{buildroot}/%{_liconsdir}"
-          Print #hFile, "install -p .icon/16.png %{buildroot}/%{_miconsdir}" &/ Shell$(sIcon)
-          Print #hFile, "install -p .icon/32.png %{buildroot}/%{_iconsdir}" &/ Shell$(sIcon)
-          Print #hFile, "install -p .icon/48.png %{buildroot}/%{_liconsdir}" &/ Shell$(sIcon)
-  
-          Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
-          Print #hFile, "cat << EOF > %{buildroot}/%{_datadir}/applications/%{name}.desktop"
-        
-          PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon, "X-MandrivaLinux-" & Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-") & ";")
-        
-          Print #hFile, "EOF"
-          Print #hFile, "\n%post"
-          Print #hFile, "%{update_menus}"
-    
-          Print #hFile, "\n%postun"
-          Print #hFile, "%{clean_menus}"
-    
         Case "mageia"
     
           Print #hFile, "install -d %{buildroot}/%{_datadir}/icons"
@@ -1534,7 +1512,7 @@ Private Function MakeRpmPackage(sSys As String)
           Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
           Print #hFile, "cat << EOF > %{buildroot}/%{_datadir}/applications/%{name}.desktop"
         
-          PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon, "X-MandrivaLinux-" & Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-") & ";")
+          PrintDesktopFile(hFile, Shell$("%{_bindir}/" & $sName), sIcon) ', "X-MandrivaLinux-" & Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-") & ";")
         
           Print #hFile, "EOF"
     
@@ -1568,11 +1546,15 @@ Private Function MakeRpmPackage(sSys As String)
     
   Endif
 
-  Print #hFile, "\n%clean"
-  Print #hFile, "rm -rf %{buildroot}"
+  If sSys <> "mageia" Then
 
-  Print #hFile, "\n%files"
-  Print #hFile, "%defattr(-,root,root)"
+    Print #hFile, "\n%clean"
+    Print #hFile, "rm -rf %{buildroot}"
+  
+    Print #hFile, "\n%files"
+    Print #hFile, "%defattr(-,root,root)"
+    
+  Endif
   
   If Project.Type = Project.TYPE_COMPONENT Then
   
@@ -1601,15 +1583,7 @@ Private Function MakeRpmPackage(sSys As String)
       
       Select Case sSys
     
-        Case "mandriva"
-    
-          Print #hFile, FormatFileInList("/%{_miconsdir}" &/ sIcon)
-          Print #hFile, FormatFileInList("/%{_iconsdir}" &/ sIcon)
-          Print #hFile, FormatFileInList("/%{_liconsdir}" &/ sIcon)
-                'PRINT #hFile, "/%{_menudir}" &/ sName
-          Print #hFile, "/%{_datadir}/applications/%{name}.desktop"
-        
-        Case "mandriva", "mageia"
+        Case "mageia"
     
           Print #hFile, FormatFileInList("/%{_datadir}/icons/mini" &/ sIcon)
           Print #hFile, FormatFileInList("/%{_datadir}/icons" &/ sIcon)
@@ -1726,11 +1700,6 @@ Private Function MakeRpmSupportPackage(sSys As String, sSupport As String, aComp
       sDistribution = "Mageia"
       sVendor = "Mageia"
       sRelease = "1mga"
-
-    Case "mandriva"
-      sDistribution = "Mandriva"
-      sVendor = "MandrivaSoft"
-      sRelease = "1mdv"
 
     Case "fedora"
       sDistribution = "Fedora"

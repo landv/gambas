@@ -10,7 +10,7 @@ Public Sub Main()
   Dim V As Integer
   Dim hFile As File
   
-  hFile = Open "~/gambas/3.0/trunk/gb.sdl/src/default_font.h" For Create
+  hFile = Open "~/gambas/git/master/gb.sdl2/src/default_font_data.h" For Create
   Output To #hFile
   
   Print "#define DEFAULT_FONT_WIDTH "; hImage.W
@@ -27,6 +27,14 @@ Public Sub Main()
   Print
   Print "const char _default_font_160_687[] = {"
   For C = 160 To 687
+    GoSub WRITE_CHAR
+  Next
+  Print "};"
+  
+  
+  Print
+  Print "const char _default_font_880_1319[] = {"
+  For C = 880 To 1319
     GoSub WRITE_CHAR
   Next
   Print "};"

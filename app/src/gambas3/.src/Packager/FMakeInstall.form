@@ -54,6 +54,7 @@
         MoveScaled(72,0,8,4)
         MinValue = 1
         MaxValue = 999
+        Value = 1
       }
     }
     { HBox8 HBox
@@ -303,29 +304,6 @@
           #Translate = False
           Expand = True
           Text = "Mageia"
-        }
-      }
-      { HBox17 HBox panDistro
-        Name = "HBox17"
-        MoveScaled(43,20,42,9)
-        Visible = False
-        Tag = "mandriva"
-        Padding = 4
-        { PictureBox8 PictureBox
-          MoveScaled(1,1,6,6)
-          Picture = Picture["img/logo/mandriva.png"]
-          Stretch = True
-          Alignment = Align.Center
-        }
-        { Panel14 Panel
-          MoveScaled(9,1,3,6)
-        }
-        { chkMandriva CheckBox chkDistro
-          Name = "chkMandriva"
-          MoveScaled(15,1,24,4)
-          #Translate = False
-          Expand = True
-          Text = "Mandriva"
         }
       }
       { HBox7 HBox panDistro

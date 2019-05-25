@@ -201,9 +201,6 @@ Static Public Sub FindTranslation(sPath As String, sFind As String) As String
   Dim sMsgComment As String
   Dim iMode As Integer
   Dim bFuzzy As Boolean
-  Dim iPos As Integer
-  Dim cCache As New Collection
-  Dim cKey As New Collection
   
   If Not Exist(sPath) Then Return 
   

@@ -220,9 +220,6 @@ Private Sub GetTranslation(sStr As String) As String
 
   Dim sLang As String
   Dim sPath As String
-  Dim aTrans As String[]
-  Dim iPos As Integer
-  Dim sTrans As String
   
   sLang = Language.Find(System.Language)  
   sPath = $sPath &/ ".lang" &/ sLang & ".po"
