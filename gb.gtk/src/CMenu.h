@@ -52,5 +52,6 @@ typedef
 	CMENU;
 
 void CMENU_check_popup_click(void);
+void CMENU_update_menubar(void *window);
 
 #endif

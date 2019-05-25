@@ -547,12 +547,7 @@ static gboolean cb_menubar_changed(GtkWidget *widget, gMainWindow *data)
 gMenu::gMenu(gMainWindow *par, bool hidden)
 {
 	pr = (gpointer)par;
-  initialize();
-	top_level=true;
-	
-	accel = par->accel;
-	g_object_ref(accel);
-	
+
 	if (!par->menuBar)
 	{
 		par->menuBar = (GtkMenuBar*)gtk_menu_bar_new();
@@ -560,6 +555,12 @@ gMenu::gMenu(gMainWindow *par, bool hidden)
 		g_signal_connect(G_OBJECT(par->menuBar),"unmap", G_CALLBACK(cb_menubar_changed), (gpointer)par);
 		par->embedMenuBar(par->border);
 	}
+	
+  initialize();
+	top_level=true;
+	
+	accel = par->accel;
+	g_object_ref(accel);
 	
 	setText(NULL);
 	setVisible(!hidden);

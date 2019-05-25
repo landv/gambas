@@ -2,7 +2,7 @@
 
 Export
 
-Static Public Sub _call(Text As String, Shortcut As String) As String
+Static Public Sub _call(Text As String, Shortcut As String, Optional AddIfMissing As Boolean) As String
 
   Dim iPos As Integer
   
@@ -15,8 +15,12 @@ Static Public Sub _call(Text As String, Shortcut As String) As String
   If Not Shortcut Then Return Text
   
   iPos = InStr(Text, Shortcut, 1, gb.IgnoreCase)
-  If iPos = 0 Then Return Text '& " (&" & String.UCase(Shortcut) & ")"
-  Return Left(Text, iPos - 1) & "&" & Mid$(Text, iPos)
+  If iPos = 0 Then 
+    If AddIfMissing Then Text &= " (&" & String.UCase(Shortcut) & ")"
+    Return Text
+  Else
+    Return Left(Text, iPos - 1) & "&" & Mid$(Text, iPos)
+  Endif
   
 End
 

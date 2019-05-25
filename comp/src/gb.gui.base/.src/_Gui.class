@@ -4,6 +4,22 @@ Export
 
 'Static Private $cMenu As New Collection
 
+Static Public Sub FindShortcut(sText As String) As Integer
+
+  Dim iPos As Integer
+  
+  Do
+    iPos = String.InStr(sText, "&", iPos + 1)
+    If iPos = 0 Then Break
+    If String.Mid$(sText, iPos + 1, 1) = "&" Then
+      Inc iPos
+      Continue
+    Endif
+    Return iPos
+  Loop
+  
+End
+
 Static Public Sub _DefineShortcut(hParent As Menu)
 
   Dim hMenu As Menu
@@ -62,21 +78,40 @@ Static Public Sub _Quit()
   
 End
 
-
-' Static Public Sub Menu_Hide()
+' Static Private Sub RemoveShortcut(sText As String) As String
+' 
+'   Dim iPos As Integer
 '   
-'   Dim hParent As Menu = Last
-'   Dim cText As Collection = $cMenu[Object.Address(Last)]
-'   Dim hMenu As Menu
-'   Dim sText As Variant
-'   
-'   If Not cText Then Return
-'   
-'   For Each hMenu In hParent.Children
-'     
-'     sText = cText[Object.Address(hMenu)]
-'     If sText Then hMenu.Text = sText
-'     
-'   Next
+'   iPos = FindShortcut(sText)
+'   If iPos Then sText = String.Left(sText, iPos - 1) & String.Mid(sText, iPos + 1)
+'   Return sText
 '   
 ' End
+
+Static Public Sub _InitMenuBarShortcut(hWindow As Window)
+
+  Dim hMenu As Menu
+  Dim bVisible As Boolean
+  Dim sText As String
+  
+  bVisible = hWindow.Menus.Visible
+
+  For Each hMenu In hWindow.Menus
+    
+    If Not hMenu.Text Then Continue
+    
+    If bVisible Then
+      If hMenu._Text Then
+        hMenu.Text = hMenu._Text
+      Endif
+    Else 
+      If Not hMenu._Text Then
+        sText = hMenu.Text
+        hMenu.Text = " "
+        hMenu._Text = sText
+      Endif
+    Endif
+    
+  Next
+  
+End

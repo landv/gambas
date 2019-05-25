@@ -52,7 +52,7 @@ int MENU_popup_count = 0;
 static void clear_menu(CMENU *_object);
 
 static GB_FUNCTION _init_shortcut_func;
-
+static GB_FUNCTION _init_menubar_shortcut_func;
 
 #define EXT(_ob) ((CMENU_EXT *)((CWIDGET *)_ob)->ext)
 #define ENSURE_EXT(_ob) (EXT(_ob) ? EXT(_ob) : alloc_ext((CMENU *)(_ob)))
@@ -557,7 +557,6 @@ BEGIN_PROPERTY(Menu_Enabled)
 		bool b = VPROP(GB_BOOLEAN);
 		THIS->disabled = !b;
 		ACTION->setEnabled(b);
-		//CMenu::enableAccel(THIS, b && !THIS->noshortcut);
 		update_accel_recursive(THIS);
 	}
 
@@ -1218,3 +1217,19 @@ void MyMenu::setVisible(bool visible)
 }
 
 #endif
+
+
+void CMENU_update_menubar(CWINDOW *window)
+{
+	static bool init = FALSE;
+
+	if (!init)
+	{
+		GB.GetFunction(&_init_menubar_shortcut_func, (void *)GB.FindClass("_Gui"), "_InitMenuBarShortcut", NULL, NULL);
+		init = TRUE;
+	}
+
+	GB.Push(1, GB_T_OBJECT, window);
+	GB.Call(&_init_menubar_shortcut_func, 1, FALSE);
+}
+

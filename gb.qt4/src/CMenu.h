@@ -132,5 +132,6 @@ public:
 #endif
 
 void CMENU_popup(CMENU *_object, const QPoint &pos);
+void CMENU_update_menubar(CWINDOW *window);
 
 #endif

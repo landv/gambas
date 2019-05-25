@@ -51,6 +51,7 @@
 #include <QEventLoop>
 #include <QDesktopWidget>
 #include <QPaintDevice>
+#include <QLibraryInfo>
 
 #include "gb.image.h"
 #include "gb.qt.h"
@@ -888,7 +889,9 @@ static void QT_InitEventLoop(void)
 
 static bool try_to_load_translation(QString &locale)
 {
-#ifdef QT5
+	// QLocale::system().name()
+	return _translator->load("qt_" + locale, QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+/*#ifdef QT5
 	return (!_translator->load(QString("qt_") + locale, QString(getenv("QTDIR")) + "/translations")
 		  && !_translator->load(QString("qt_") + locale, QString("/usr/lib/qt5/translations"))
 		  && !_translator->load(QString("qt_") + locale, QString("/usr/share/qt5/translations")));
@@ -896,7 +899,7 @@ static bool try_to_load_translation(QString &locale)
 	return (!_translator->load(QString("qt_") + locale, QString(getenv("QTDIR")) + "/translations")
 		  && !_translator->load(QString("qt_") + locale, QString("/usr/lib/qt4/translations"))
 		  && !_translator->load(QString("qt_") + locale, QString("/usr/share/qt4/translations")));
-#endif
+#endif*/
 }
 
 static void init_lang(char *lang, bool rtl)

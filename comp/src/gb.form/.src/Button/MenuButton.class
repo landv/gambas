@@ -118,6 +118,7 @@ End
 Public Sub Button_GotFocus()
   
   $hDrawingArea.SetFocus
+  'Button_Click
   
 End
 
@@ -208,7 +209,6 @@ Private Sub Arrow_Click()
     $hCurrent = Null
     Return
   Endif
-  
   
   HandleMenu(Me)
   
@@ -406,7 +406,11 @@ Public Sub DrawingArea_Draw()
   '' TODO: System.RightToLeft
 
   bFlat = Not $bBorder 'And Not $bInside
-  If Me = $hCurrent Then bMenu = True
+  If Me = $hCurrent Then 
+    bMenu = True
+  Else
+    If $bMenuOnly And If $hDrawingArea.HasFocus Then bMenu = True
+  Endif
 
   If bMenu Then
     Paint.FillRect(1, 1, Me.W - 2, Me.H - 2, Color.SelectedBackground)

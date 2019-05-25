@@ -2538,7 +2538,10 @@ void MyMainWindow::configure()
 	}
 
 	if (arrange)
+	{
 		CCONTAINER_arrange(THIS);
+		CMENU_update_menubar(THIS);
+	}
 
 	//qDebug(">>> THIS->menuBar = %p  menuBar() = %p", THIS->menuBar, menuBar());
 
