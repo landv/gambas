@@ -40,6 +40,7 @@ Private $bPressed As Boolean
 Private $bArrow As Boolean
 Private $bAutoResize As Boolean
 Private $bMenuOnly As Boolean
+Private $hLastFocus As Control
 
 Static Private $hCurrent As MenuButton
 Static Private $hCurrentMenu As Menu
@@ -117,6 +118,7 @@ End
 
 Public Sub Button_GotFocus()
   
+  _SetLastFocus
   $hDrawingArea.SetFocus
   'Button_Click
   
@@ -179,6 +181,7 @@ Static Private Sub HandleMenu(hCurrent As MenuButton)
     $hCurrent = hCurrent
     $hCurrentMenu = hMenu
     
+    hCurrent._SetLastFocus()
     hCurrent.SetFocus ' Should refresh old and new menus
     
     hMenu.Popup(hCurrent.ScreenX, hCurrent.ScreenY + hCurrent.H)
@@ -191,8 +194,12 @@ Static Private Sub HandleMenu(hCurrent As MenuButton)
   Try $hCurrent.Refresh
   hWatch.Stop
   hWatch = Null
+  
+  $hCurrent._RestoreLastFocus()
+  
   $hCurrent = Null
   $hCurrentMenu = Null
+  
   
 End
 
@@ -297,7 +304,8 @@ Private Sub Border_Write(Value As Boolean)
 End
 
 Public Sub DrawingArea_GotFocus()
-  
+
+  _SetLastFocus  
   $hDrawingArea.Refresh
   
 End
@@ -336,6 +344,7 @@ Public Sub DrawingArea_MouseDown()
   Else
     $bInsideArrow = $sMenu ' if the arrow is hidden, the all button will popup the menu
   Endif
+  
   $hDrawingArea.SetFocus
   $hDrawingArea.Refresh
   
@@ -406,11 +415,7 @@ Public Sub DrawingArea_Draw()
   '' TODO: System.RightToLeft
 
   bFlat = Not $bBorder 'And Not $bInside
-  If Me = $hCurrent Then 
-    bMenu = True
-  Else
-    If $bMenuOnly And If $hDrawingArea.HasFocus Then bMenu = True
-  Endif
+  If Me = $hCurrent Then bMenu = True
 
   If bMenu Then
     Paint.FillRect(1, 1, Me.W - 2, Me.H - 2, Color.SelectedBackground)
@@ -530,5 +535,33 @@ End
 Public Sub DrawingArea_Font()
   
   UpdateSize
+  
+End
+
+Public Sub _SetLastFocus()
+  
+  If $hLastFocus Then
+    'Debug " already set"
+    Return
+  Endif
+  $hLastFocus = Application.PreviousControl
+  ' If $hLastFocus Then
+  '   Debug $hLastFocus.Name
+  ' Else
+  '   Debug "NULL"
+  ' Endif
+  
+End
+
+
+Public Sub _RestoreLastFocus()
+  
+  If $hLastFocus Then
+    'Debug $hLastFocus.Name
+    If $hDrawingArea.HasFocus Then $hLastFocus.SetFocus
+    $hLastFocus = Null
+  ' Else
+  '   Debug "NULL"
+  Endif
   
 End
