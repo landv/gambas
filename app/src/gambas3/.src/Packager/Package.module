@@ -1301,12 +1301,19 @@ Private Sub FormatRpmPackageName(sName As String) As String
   Dim I As Integer
   Dim sCar As String
   Dim sRes As String
+  Dim iLen As Integer
 
   For I = 1 To Len(sName)
     sCar = Mid$(sName, I, 1)
     If Not IsLetter(sCar) And If Not IsDigit(sCar) Then sCar = "-"
     sRes &= sCar
   Next
+  
+  Do
+    iLen = Len(sRes)
+    sRes = Replace(sRes, "--", "-")
+    If Len(sRes) = iLen Then Break
+  Loop
   
   Return sRes
 
@@ -1420,9 +1427,9 @@ Private Function MakeRpmPackage(sSys As String)
   Print #hFile, "Source0: %{name}-%{version}.tar.bz2"
   Print #hFile, "License: "; If(Project.License, Project.License, "GPL")
   Print #hFile, "Group: " & Project.Groups[sSys]
-  If sSys <> "mageia" Then
+  'If sSys <> "mageia" Then
     Print #hFile, "BuildRoot: %{_tmppath}/%{name}-%{version}-${release}-buildroot"
-  Endif
+  'Endif
   Print #hFile, "Prefix: %{_prefix}"
     'PRINT #hFile, "BuildRequires: gambas2-ide"
   Print #hFile, "BuildArch: noarch"
@@ -1442,10 +1449,10 @@ Private Function MakeRpmPackage(sSys As String)
 
   Print #hFile, "\n%description\n" & $sDescription & "\nThis program is written in Gambas, so you will need Gambas to be installed."
 
-  If sSys <> "mageia" Then
+  'If sSys <> "mageia" Then
     Print #hFile, "\n%prep"
     Print #hFile, "rm -rf %{buildroot}"
-  Endif
+  'Endif
 
   Print #hFile, "\n%setup -q -n " & Shell$($sName)
 
@@ -1546,7 +1553,7 @@ Private Function MakeRpmPackage(sSys As String)
     
   Endif
 
-  If sSys <> "mageia" Then
+  'If sSys <> "mageia" Then
 
     Print #hFile, "\n%clean"
     Print #hFile, "rm -rf %{buildroot}"
@@ -1554,7 +1561,7 @@ Private Function MakeRpmPackage(sSys As String)
     Print #hFile, "\n%files"
     Print #hFile, "%defattr(-,root,root)"
     
-  Endif
+  'Endif
   
   If Project.Type = Project.TYPE_COMPONENT Then
   

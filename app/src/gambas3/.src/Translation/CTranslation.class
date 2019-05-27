@@ -204,6 +204,8 @@ Static Public Sub FindTranslation(sPath As String, sFind As String) As String
   
   If Not Exist(sPath) Then Return 
   
+  sFind = Replace(sFind, "\n", "\\n")
+  
   hFile = Open sPath 
 
   While Not Eof(hFile)
@@ -274,7 +276,7 @@ Static Public Sub FindTranslation(sPath As String, sFind As String) As String
       If bFuzzy Then
         bFuzzy = False
       Else
-        If sMsgId = sFind Then Return sMsgStr
+        If sMsgId = sFind Then Return Replace(sMsgStr, "\\n", "\n")
       Endif
 
       sMsgId = ""

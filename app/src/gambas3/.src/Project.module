@@ -712,7 +712,6 @@ _INIT_AGAIN:
     Endif
   Endif
   
-  
   ReadProject
 
   If Not ReadOnly Then
@@ -4478,7 +4477,7 @@ Public Function CheckProjectName(sName As String, Optional sDir As String) As St
     Endif
 
     If Asc(sCar) > 127 Then Return ("Non-ASCII characters are forbidden in a project name.")
-    If InStr(" ?*/\\", sCar) Then Return ("The following characters are forbidden in a project name: ? * / \\ SPACE")
+    If InStr(" ?*/<>(){}\\", sCar) Then Return ("The following characters are forbidden in a project name:") & "\n\n<tt>? * / \\ " & ("SPACE") & " ( ) &lt; > { }</tt>"
 
   Next
 

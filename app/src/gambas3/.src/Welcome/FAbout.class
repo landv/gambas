@@ -202,7 +202,7 @@ Private Sub FillAbout()
   'gvwAbout[3, 0].Font = Font["Bold,+2"]
   'gvwAbout[3, 0].Alignment = Align.Top
   ' Licence
-  gvwAbout[4, 0].RichText = lblLicense.Text
+  gvwAbout[4, 0].RichText = "<h2>" & String.UCase(("License")) & "</h2><br>" & lblLicense.Text
   gvwAbout[4, 0].WordWrap = True
   gvwAbout[4, 0].Alignment = Align.Top
   gvwAbout[4, 0].Padding = Desktop.Scale * 3

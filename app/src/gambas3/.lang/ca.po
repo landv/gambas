@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Gambas3\n"
-"POT-Creation-Date: 2017-10-01 00:16 UTC\n"
+"POT-Creation-Date: 2019-05-25 21:38 UTC\n"
 "PO-Revision-Date: 2011-04-07 05:28+0100\n"
 "Last-Translator: Jordi Sayol <g.sayol@yahoo.es>\n"
 "Language-Team: \n"
@@ -46,7 +46,7 @@ msgstr ""
 msgid "Static properties"
 msgstr ""
 
-#: CClassInfo.class:604 FDebugInfo.class:990
+#: CClassInfo.class:604
 msgid "Static variables"
 msgstr "Variables estàtiques"
 
@@ -54,11 +54,11 @@ msgstr "Variables estàtiques"
 msgid "Static methods"
 msgstr ""
 
-#: CClassInfo.class:606
+#: CClassInfo.class:606 MTheme.module:6
 msgid "Constants"
 msgstr "-"
 
-#: CClassInfo.class:623 FMain.form:506 FProperty.form:23
+#: CClassInfo.class:623 FMain.form:555 FProperty.form:23
 msgid "Properties"
 msgstr "Propietats"
 
@@ -134,7 +134,7 @@ msgstr "Aquesta classe actua com una matriu &1."
 msgid "write-only"
 msgstr ""
 
-#: CClassInfo.class:692 Project.module:1781
+#: CClassInfo.class:692 Project.module:1638
 msgid "read-only"
 msgstr "només lectura"
 
@@ -186,46 +186,46 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr "Carregant informació del component &1..."
 
-#: CComponent.class:1598 FFileProperty.class:160 FProjectProperty.class:908
+#: CComponent.class:1594 FFileProperty.class:164 FProjectProperty.class:931
 msgid "Classes"
 msgstr "Classes"
 
-#: CComponent.class:1642 FDebugInfo.class:51 FMain.form:833
+#: CComponent.class:1638 FDebugInfo.class:40 FMain.form:875
 msgid "Class"
 msgstr "Classe"
 
-#: CComponent.class:1644 FConnectionEditor.class:307 FMakeInstall.form:292
-#: FProjectProperty.form:359 FPublish.form:126 FSoftwareFarm.form:316
+#: CComponent.class:1640 FConnectionEditor.class:320 FMakeInstall.form:288
+#: FProjectProperty.form:367 FPublish.form:126 FSoftwareFarm.form:323
 msgid "Description"
 msgstr "Descripció"
 
-#: CComponent.class:1671
+#: CComponent.class:1667
 #, fuzzy
 msgid "This component is not stable yet."
 msgstr "Aquest component està ocult"
 
-#: CComponent.class:1673
+#: CComponent.class:1669
 #, fuzzy
 msgid "This component is deprecated."
 msgstr "Aquest component està ocult"
 
-#: CComponent.class:1682 FProjectVersion.class:287
+#: CComponent.class:1678 FProjectVersion.class:287
 msgid "Author"
 msgstr "Autor"
 
-#: CComponent.class:1684 FAbout.class:194 FProjectProperty.form:371
+#: CComponent.class:1680 FAbout.class:210 FProjectProperty.form:379
 msgid "Authors"
 msgstr "Autors"
 
-#: CComponent.class:1694
+#: CComponent.class:1690
 msgid "Implements"
 msgstr "Implementa"
 
-#: CComponent.class:1706 CLibraryInfo.class:211 LibraryItem.class:60
+#: CComponent.class:1702 CLibraryInfo.class:211 LibraryItem.class:60
 msgid "Requires"
 msgstr "Requereix"
 
-#: CComponent.class:1721
+#: CComponent.class:1717
 msgid "Excludes"
 msgstr "Exclou"
 
@@ -273,7 +273,7 @@ msgstr ""
 msgid "More data containers"
 msgstr ""
 
-#: CDocumentation.class:59 FCreateProjectOld.form:294
+#: CDocumentation.class:59
 msgid "Database access"
 msgstr "Accés a bases de dades"
 
@@ -417,7 +417,7 @@ msgstr "Component de filtrat d'imatge"
 msgid "Image routines from the Imlib2 library"
 msgstr "Rutines d'imatge de la biblioteca Imlib2"
 
-#: CDocumentation.class:95 FProjectProperty.form:503
+#: CDocumentation.class:95 FProjectProperty.form:511
 msgid "Image loading and saving"
 msgstr "Càrrega i desat d'imatges"
 
@@ -465,7 +465,7 @@ msgstr "Rutines específiques de MySQL"
 msgid "NCurses library"
 msgstr ""
 
-#: CDocumentation.class:107 FCreateProjectOld.form:300
+#: CDocumentation.class:107
 msgid "Network programming"
 msgstr "Programació de xarxa"
 
@@ -644,15 +644,15 @@ msgstr ""
 msgid "Web application development"
 msgstr "Eines d'aplicacions web"
 
-#: CDocumentation.class:155 FProjectProperty.form:491
+#: CDocumentation.class:155 FProjectProperty.form:499
 msgid "Graphical form management"
 msgstr "Gestió gràfica de formularis"
 
-#: CDocumentation.class:156 FProjectProperty.form:497
+#: CDocumentation.class:156 FProjectProperty.form:505
 msgid "Event loop management"
 msgstr "Gestió del bucle d'esdeveniments"
 
-#: CDocumentation.class:158 FProjectProperty.form:514
+#: CDocumentation.class:158 FProjectProperty.form:522
 msgid "OpenGL display"
 msgstr "Pantalla OpenGL"
 
@@ -660,19 +660,23 @@ msgstr "Pantalla OpenGL"
 msgid "Complex numbers"
 msgstr ""
 
-#: CDocumentation.class:160 FProjectProperty.form:520
+#: CDocumentation.class:160 FProjectProperty.form:528
 msgid "XML management"
 msgstr ""
 
-#: CInsertColor.class:121 FEditor.form:184 FTextEditor.form:201
+#: CInsertColor.class:238 FEditor.form:205 FTextEditor.form:205
 msgid "Insert color"
 msgstr "Insereix color"
+
+#: CInsertDate.class:58 FEditor.form:514 FTextEditor.form:498
+msgid "Insert today's date"
+msgstr ""
 
 #: CLibraryInfo.class:194
 msgid "<b>&1:</b> &2"
 msgstr ""
 
-#: CLibraryInfo.class:206 LibraryItem.class:54
+#: CLibraryInfo.class:206 FDebugInfo.class:50 LibraryItem.class:54
 msgid "Location"
 msgstr "Emplaçament"
 
@@ -684,7 +688,7 @@ msgstr "Avís! No s'ha trobat la biblioteca."
 msgid "Provides"
 msgstr "Proveeix"
 
-#: CModule.class:28 FEditor.form:394 FForm.form:456 FMain.form:840
+#: CModule.class:28 FEditor.form:402 FForm.form:462 FMain.form:882
 msgid "Form"
 msgstr "Formulari"
 
@@ -700,7 +704,7 @@ msgstr "Formularis Gambas"
 msgid "Gambas web pages"
 msgstr "Pàgines web del Gambas"
 
-#: CModule.class:29 FMain.form:847
+#: CModule.class:29 FMain.form:889
 msgid "WebPage"
 msgstr "Pàgina Web"
 
@@ -712,7 +716,7 @@ msgstr "Pàgines Web"
 msgid "Gambas reports"
 msgstr "Informes del Gambas"
 
-#: CModule.class:30 FMain.form:854
+#: CModule.class:30 FMain.form:896
 msgid "Report"
 msgstr "Informe"
 
@@ -725,7 +729,7 @@ msgstr "Informes"
 msgid "Gambas web forms"
 msgstr "Formularis Gambas"
 
-#: CModule.class:31 FMain.form:861
+#: CModule.class:31 FMain.form:903
 #, fuzzy
 msgid "WebForm"
 msgstr "Formulari"
@@ -740,7 +744,7 @@ msgstr "Formularis"
 msgid "Gambas terminal forms"
 msgstr "Formularis Gambas"
 
-#: CModule.class:32 FMain.form:868
+#: CModule.class:32 FMain.form:910
 #, fuzzy
 msgid "TermForm"
 msgstr "Formulari"
@@ -758,82 +762,88 @@ msgstr ""
 msgid "Event loop"
 msgstr ""
 
-#: CProjectList.class:107
+#: CProjectList.class:111
 msgid "Examples are stored on the Gambas farm server. Click &1 to access the farm server and download them..."
 msgstr ""
 
-#: CProjectList.class:107
+#: CProjectList.class:111
 msgid "here"
 msgstr ""
 
-#: CProjectList.class:231
+#: CProjectList.class:235
 #, fuzzy
 msgid "IDE extensions"
 msgstr "Extensió automàtica"
 
-#: CProjectList.class:541 CWaitingAnimation.class:63 FColorChooser.form:76
-#: FComponentChooser.form:98 FConflict.class:209 FConnectionEditor.class:457
-#: FCrash.form:97 FCreateFile.form:203 FDebugExpr.form:46 FDebugInfo.form:274
+#: CProjectList.class:544 CVersionControlGit.class:373
+#: CWaitingAnimation.class:63 FColorChooser.form:68 FComponentChooser.form:97
+#: FConflict.class:197 FConnectionEditor.class:470 FCrash.form:97
+#: FCreateFile.form:204 FDebugExpr.form:46 FDebugInfo.form:289
 #: FExportData.class:126 FFarmConfig.form:38 FFarmLogin.form:126
 #: FFarmRegister.form:141 FFarmRequest.form:43 FFieldChooser.form:144
-#: FFileProperty.class:142 FFontChooser.form:40 FGotoLine.form:23
-#: FHelpBrowser.form:60 FImageOffsetSelection.form:33 FImageQuality.form:30
-#: FImageResize.form:49 FImageRotate.form:32 FList.form:128 FMain.class:228
-#: FMakeInstall.class:345 FMenu.form:404 FNewConnection.form:314
-#: FNewTable.form:86 FNewTranslation.form:21 FOption.class:748
-#: FPasteSpecial.form:86 FPasteTable.form:107 FProjectChooser.form:73
-#: FProjectProperty.form:926 FProjectVersion.class:211 FProxy.form:57
+#: FFileProperty.class:144 FFontChooser.form:40 FGotoLine.form:23
+#: FHelpBrowser.form:73 FImageOffsetSelection.form:33 FImageQuality.form:30
+#: FImageResize.form:49 FImageRotate.form:32 FList.form:128 FMain.class:245
+#: FMakeInstall.class:345 FMenu.form:414 FNewConnection.form:318
+#: FNewTable.form:86 FNewTranslation.form:21 FOption.class:863
+#: FPasteSpecial.form:86 FPasteTable.form:105 FProjectChooser.form:73
+#: FProjectProperty.form:932 FProjectVersion.class:211 FProxy.form:57
 #: FPublish.class:273 FReportBorderChooser.form:48
 #: FReportBoxShadowChooser.form:27 FReportBrushChooser.form:36
 #: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
-#: FSaveProjectAs.form:81 FSearch.class:896 FSelectComponent.form:39
+#: FSaveProjectAs.form:81 FSearch.class:946 FSelectComponent.form:39
 #: FSelectExtraFile.form:43 FSelectIcon.form:87 FSelectLibrary.form:66
-#: FSnippet.form:57 FSoftwareFarm.class:538 FTableChooser.form:68 FText.form:41
-#: FTranslate.class:610 FWebFontChooser.form:129 Project.module:512
+#: FSnippet.form:57 FSoftwareFarm.class:552 FTableChooser.form:68 FText.form:40
+#: FTranslate.class:670 FVersionControl.form:78 FWebFontChooser.form:129
+#: Project.module:555 VersionControl.module:383
 msgid "Cancel"
 msgstr "Canceŀla"
 
-#: CProjectList.class:541
+#: CProjectList.class:544
 #, fuzzy
 msgid "Do you really want to uninstall this software?"
 msgstr "Esteu segur que voleu esborrar aquest fitxer?"
 
-#: CProjectList.class:541 FSelectLibrary.form:48 FSoftwareFarm.class:366
+#: CProjectList.class:544 FSelectLibrary.form:48 FSoftwareFarm.class:377
 msgid "Uninstall"
 msgstr ""
 
-#: CProjectList.class:544
+#: CProjectList.class:547
 #, fuzzy
 msgid "Unable to uninstall software:"
 msgstr "No es pot connectar a la base de dades."
 
-#: CProjectList.class:548
+#: CProjectList.class:551
 #, fuzzy
 msgid "The software has been successfully uninstalled."
 msgstr "El projecte s'ha creat correctament."
 
-#: CProjectTree.class:285 FHelpShortcut.form:22 FMain.form:404 FSearch.class:97
-#: FSelectIcon.form:31 Project.module:1901
+#: CProjectTree.class:96
+msgid "Files"
+msgstr ""
+
+#: CProjectTree.class:343 FHelpShortcut.form:22 FMain.form:413
+#: FSearch.class:111 FSelectIcon.form:31
 msgid "Project"
 msgstr "Projecte"
 
-#: CProjectTree.class:288 Project.module:1902
+#: CProjectTree.class:346
 msgid "Sources"
 msgstr "Fonts"
 
-#: CProjectTree.class:290 Project.module:1903
+#: CProjectTree.class:348
 msgid "Connections"
 msgstr "Connexions"
 
-#: CProjectTree.class:298 Project.module:1904
+#: CProjectTree.class:349
 msgid "Public"
 msgstr ""
 
-#: CProjectTree.class:299 Project.module:1905
+#: CProjectTree.class:350
 msgid "Data"
 msgstr "Dades"
 
-#: CRecentProject.class:68 FMain.class:676
+#: CRecentProject.class:68 FMain.class:714
 msgid "Today"
 msgstr "Avui"
 
@@ -853,81 +863,229 @@ msgstr "Aquesta setmana"
 msgid "This month"
 msgstr "Aquest mes"
 
-#: CSoftware.class:316
+#: CSoftware.class:317
 msgid "Download cancelled"
 msgstr ""
 
-#: CSoftware.class:325
+#: CSoftware.class:326
 msgid "The checksum of the downloaded package is invalid."
 msgstr ""
 
-#: CSoftware.class:341
+#: CSoftware.class:342
 #, fuzzy
 msgid "Unable to uncompress source archive."
 msgstr "No s'ha pogut comprimir el fitxer."
 
-#: CSoftware.class:360
+#: CSoftware.class:361
 msgid "Abort"
 msgstr ""
 
-#: CSoftware.class:360 FMain.class:2638 FMenu.class:72
+#: CSoftware.class:361 FMain.class:2710 FMenu.class:74
 msgid "Ignore"
 msgstr "Ignora"
 
-#: CSoftware.class:360
+#: CSoftware.class:361
 #, fuzzy
 msgid "The following components are required:"
 msgstr "Les següents classes tenen herència circular:"
 
-#: CSoftware.class:387
+#: CSoftware.class:388
 #, fuzzy
 msgid "Unable to compile the project."
 msgstr "No s'ha pogut desar el projecte."
 
-#: CSoftware.class:394
+#: CSoftware.class:395
 #, fuzzy
 msgid "Unable to make executable."
 msgstr "No es pot crear l'executable."
 
-#: CSoftware.class:462
+#: CSoftware.class:464
 #, fuzzy
 msgid "Unable to install source directory"
 msgstr "No es pot crear el directori temporal"
 
-#: CWelcome.class:85
+#: CSoftware.class:663
+#, fuzzy
+msgid "yesterday"
+msgstr "Ahir"
+
+#: CSoftware.class:665
+#, fuzzy
+msgid "&1 days ago"
+msgstr "Fa dos dies"
+
+#: CSoftware.class:671
+#, fuzzy
+msgid "last week"
+msgstr "Aquesta setmana"
+
+#: CSoftware.class:673
+msgid "&1 weeks ago"
+msgstr ""
+
+#: CSoftware.class:679
+#, fuzzy
+msgid "last month"
+msgstr "Aquest mes"
+
+#: CSoftware.class:681
+msgid "&1 months ago"
+msgstr ""
+
+#: CSoftware.class:687
+msgid "last year"
+msgstr ""
+
+#: CSoftware.class:689
+#, fuzzy
+msgid "on &1"
+msgstr "a &1."
+
+#: CVersionControlGit.class:266
+#, fuzzy
+msgid "Unable to push the project."
+msgstr "No s'ha pogut desar el projecte."
+
+#: CVersionControlGit.class:280 CVersionControlSubversion.class:296
+msgid "Local root path"
+msgstr ""
+
+#: CVersionControlGit.class:283
+#, fuzzy
+msgid "Last commit"
+msgstr "Enganxa com a comentari"
+
+#: CVersionControlGit.class:284 CVersionControlSubversion.class:298
+msgid "Last commit author"
+msgstr ""
+
+#: CVersionControlGit.class:285 CVersionControlSubversion.class:299
+msgid "Last commit date"
+msgstr ""
+
+#: CVersionControlGit.class:292
+#, fuzzy
+msgid "Current branch"
+msgstr "Objecte actual"
+
+#: CVersionControlGit.class:293
+msgid "Origin"
+msgstr ""
+
+#: CVersionControlGit.class:300
+msgid "The current branch is up to date."
+msgstr ""
+
+#: CVersionControlGit.class:302
+msgid "One file to commit in the current branch."
+msgstr ""
+
+#: CVersionControlGit.class:304
+msgid "&1 files to commit in the current branch."
+msgstr ""
+
+#: CVersionControlGit.class:311
+#, fuzzy
+msgid "None in the current project."
+msgstr "No s'ha pogut crear el projecte!"
+
+#: CVersionControlGit.class:313
+#, fuzzy
+msgid "One in the current project."
+msgstr "No s'ha pogut crear el projecte!"
+
+#: CVersionControlGit.class:315
+#, fuzzy
+msgid "&1 in the current project."
+msgstr "Projectes recents"
+
+#: CVersionControlGit.class:319
+#, fuzzy
+msgid "Status"
+msgstr "Barra d'estat"
+
+#: CVersionControlGit.class:322 CVersionControlSubversion.class:314
+#, fuzzy
+msgid "Remote repository URL"
+msgstr "Repositori"
+
+#: CVersionControlGit.class:373
+#, fuzzy
+msgid "A new Git repository will be created for this project."
+msgstr "El directori serà suprimit en la propera publicació de canvis."
+
+#: CVersionControlGit.class:373 Design.module:508 FColorChooser.form:62
+#: FConnectionEditor.class:700 FCrash.form:91 FCreateFile.form:210
+#: FFarmConfig.form:33 FFarmLogin.form:121 FFieldChooser.form:138
+#: FFontChooser.form:34 FGotoLine.form:17 FImageOffsetSelection.form:27
+#: FImageQuality.form:24 FImageResize.form:103 FImageRotate.form:26
+#: FList.form:122 FMenu.form:409 FNewConnection.form:312 FNewTable.form:80
+#: FNewTranslation.form:15 FPasteSpecial.form:80 FProjectProperty.form:926
+#: FProxy.form:63 FReportBorderChooser.form:54 FReportBoxShadowChooser.form:33
+#: FReportBrushChooser.form:42 FReportCoordChooser.form:32
+#: FReportPaddingChooser.form:69 FSelectComponent.form:34
+#: FSelectExtraFile.form:37 FSelectIcon.form:82 FSelectLibrary.form:60
+#: FSnippet.form:51 FTableChooser.form:62 FText.form:34 FVersionError.form:69
+#: FWebFontChooser.form:123
+msgid "OK"
+msgstr "D'acord"
+
+#: CVersionControlGit.class:411
+#, fuzzy
+msgid "Solve conflict."
+msgstr "Conflicte de versió"
+
+#: CVersionControlSubversion.class:297 FProjectVersion.class:284
+msgid "Revision"
+msgstr ""
+
+#: CVersionControlSubversion.class:315
+#, fuzzy
+msgid "Remote revision"
+msgstr "Suprimeix totes les expressions"
+
+#: CVersionControlSubversion.class:316
+msgid "Remote last commit author"
+msgstr ""
+
+#: CVersionControlSubversion.class:317
+msgid "Remote last commit date"
+msgstr ""
+
+#: CWelcome.class:116
 msgid "The Gambas font is published under the SIL Open Font License."
 msgstr ""
 
-#: CWelcome.class:85
+#: CWelcome.class:116
 msgid "This program is published under the GNU General Public License."
 msgstr ""
 
-#: Design.module:195 Project.module:2379
+#: Design.module:221 Project.module:2233
 msgid "first"
 msgstr "primer"
 
-#: Design.module:197 Project.module:2381
+#: Design.module:223 Project.module:2235
 msgid "second"
 msgstr "segon"
 
-#: Design.module:199 Project.module:2383
+#: Design.module:225 Project.module:2237
 msgid "third"
 msgstr "tercer"
 
-#: Design.module:294 Project.module:2442
+#: Design.module:319 Project.module:2296
 msgid "in &1:&2."
 msgstr "a &1:&2."
 
-#: Design.module:400
+#: Design.module:432
 msgid "The program has been interrupted by CTRL+C."
 msgstr ""
 
-#: Design.module:404
+#: Design.module:436
 #, fuzzy
 msgid "The program has been terminated."
 msgstr "El projecte s'ha creat correctament."
 
-#: Design.module:410
+#: Design.module:442
 msgid ""
 "The program has returned\n"
 "the value: &1"
@@ -935,44 +1093,29 @@ msgstr ""
 "El programa ha retornat\n"
 "el valor: &1"
 
-#: Design.module:476 FColorChooser.form:70 FConnectionEditor.class:674
-#: FCrash.form:91 FCreateFile.form:209 FFarmConfig.form:33 FFarmLogin.form:121
-#: FFieldChooser.form:138 FFontChooser.form:34 FGotoLine.form:17
-#: FImageOffsetSelection.form:27 FImageQuality.form:24 FImageResize.form:103
-#: FImageRotate.form:26 FList.form:122 FMenu.form:399 FNewConnection.form:308
-#: FNewTable.form:80 FNewTranslation.form:15 FPasteSpecial.form:80
-#: FProjectProperty.form:920 FProxy.form:63 FReportBorderChooser.form:54
-#: FReportBoxShadowChooser.form:33 FReportBrushChooser.form:42
-#: FReportCoordChooser.form:32 FReportPaddingChooser.form:69
-#: FSelectComponent.form:34 FSelectExtraFile.form:37 FSelectIcon.form:82
-#: FSelectLibrary.form:60 FSnippet.form:51 FTableChooser.form:62 FText.form:35
-#: FWebFontChooser.form:123
-msgid "OK"
-msgstr "D'acord"
-
-#: Design.module:924
+#: Design.module:968
 msgid "Output terminal"
 msgstr "Terminal de sortida"
 
-#: Design.module:952
+#: Design.module:996
 msgid "No terminal emulator found."
 msgstr "No s'ha trobat un emulador de terminal."
 
-#: FAbout.class:214
+#: FAbout.class:205 FMakeInstall.form:306
+msgid "License"
+msgstr "Llicència"
+
+#: FAbout.class:229
 msgid "Financial support"
 msgstr "Suport financer"
 
-#: FAbout.form:12 FMain.form:1199 FWelcome.class:73
+#: FAbout.form:12 FMain.form:1250 FWelcome.class:75
 msgid "About Gambas"
 msgstr "Quant al Gambas"
 
 #: FAbout.form:25
-msgid ""
-"<h2 align=center>Licence</h2>\n"
-"\n"
-"<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n"
-"\n"
-"<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
+#, fuzzy
+msgid "This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.<br><br>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n"
 msgstr ""
 "<h2 align=center>Llicència</h1>\n"
 "\n"
@@ -980,63 +1123,63 @@ msgstr ""
 "\n"
 "<p align=center>Aquest programa es distribueix amb la voluntat que pugui ser útil però SENSE CAP GARANTIA; ni tant sols les garanties implícites MERCANTILS o ESPECÍFIQUES PER UN PROPÒSIT DETERMINAT. Si voleu més informació, vegeu la llicència GNU General Public Licence.</p>\n"
 
-#: FColorChooser.form:16
+#: FColorChooser.form:15
 msgid "Select a color"
 msgstr "Seleccioneu un color"
 
-#: FColorChooser.form:28 FSoftwareFarm.class:52
+#: FColorChooser.form:27 FSoftwareFarm.class:52
 msgid "System"
 msgstr "Sistema"
 
-#: FColorChooser.form:36
+#: FColorChooser.form:35
 msgid "Free"
 msgstr "Lliure"
 
-#: FComponentChooser.class:333 FProjectProperty.form:407
+#: FComponentChooser.class:331 FProjectProperty.form:416
 msgid "Not finished but stable"
 msgstr "Inacabat però estable"
 
-#: FComponentChooser.class:335 FProjectProperty.form:407
+#: FComponentChooser.class:333 FProjectProperty.form:416
 msgid "Experimental"
 msgstr "Experimental"
 
-#: FComponentChooser.class:337
+#: FComponentChooser.class:335
 msgid "Stable"
 msgstr ""
 
-#: FComponentChooser.class:339 FProjectProperty.form:407
+#: FComponentChooser.class:337 FProjectProperty.form:416
 msgid "Deprecated"
 msgstr ""
 
-#: FComponentChooser.class:552
+#: FComponentChooser.class:551
 msgid "This component is required by the following library:<p>&1"
 msgstr ""
 
-#: FComponentChooser.class:554
+#: FComponentChooser.class:553
 msgid "This component is required by the following libraries:<p>&1"
 msgstr ""
 
-#: FComponentChooser.class:563
+#: FComponentChooser.class:562
 msgid "This component is required by:<p>&1"
 msgstr ""
 
-#: FComponentChooser.class:564
+#: FComponentChooser.class:563
 msgid "Keep"
 msgstr ""
 
-#: FComponentChooser.class:564 FDebugInfo.form:168
+#: FComponentChooser.class:563 FDebugInfo.form:209
 msgid "Remove all"
 msgstr "Elimina-ho tot"
 
-#: FComponentChooser.class:669
+#: FComponentChooser.class:668
 msgid "These components are incompatible:<br>&1."
 msgstr "Aquests components son incompatibles:<br>&1."
 
-#: FComponentChooser.class:682
+#: FComponentChooser.class:681
 msgid "The &1 component needs one of the following components:<br>&2."
 msgstr "El component &1 necessita un dels components següents:<br>&2."
 
-#: FComponentChooser.class:689
+#: FComponentChooser.class:688
 msgid "The &1 component needs the &2 component."
 msgstr "El component &1 necessita el component &2."
 
@@ -1045,55 +1188,55 @@ msgstr "El component &1 necessita el component &2."
 msgid "Select a component"
 msgstr "Seleccioneu una font"
 
-#: FComponentChooser.form:56
+#: FComponentChooser.form:55
 #, fuzzy
 msgid "Show deprecated components"
 msgstr "Mostra les classes exportades"
 
-#: FComponentChooser.form:104 FConnectionEditor.form:118 FEditor.form:346
-#: FForm.form:433 FHelpBrowser.form:66 FImageEditor.form:374 FMain.form:354
-#: FTextEditor.form:347 FTranslate.form:77 Project.module:789
+#: FComponentChooser.form:103 FConflictEditor.form:293
+#: FConnectionEditor.form:120 FEditor.form:354 FForm.form:439
+#: FHelpBrowser.form:79 FImageEditor.form:377 FMain.form:363
+#: FTextEditor.form:351 FTranslate.form:92 Project.module:846
 msgid "Reload"
 msgstr "Recarregar"
 
-#: FComponentChooser.form:115 FHelpBrowser.form:84 FImageEditor.form:332
+#: FComponentChooser.form:114 FHelpBrowser.form:89 FImageEditor.form:335
 msgid "Zoom in"
 msgstr "Apropa"
 
-#: FComponentChooser.form:121 FHelpBrowser.form:90 FImageEditor.form:340
+#: FComponentChooser.form:120 FHelpBrowser.form:95 FImageEditor.form:343
 msgid "Zoom out"
 msgstr "Allunya"
 
-#: FComponentChooser.form:127 FHelpBrowser.form:96
+#: FComponentChooser.form:126 FHelpBrowser.form:101
 msgid "No zoom"
 msgstr "Sense ampliació"
 
-#: FConflict.class:23 FMain.form:1550
+#: FConflict.class:14 FMain.form:1594
 msgid "&Edit"
 msgstr "E&dita"
 
-#: FConflict.class:23
-msgid ""
-"This file is in conflict with the revision #&1.\n"
-"You must resolve the conflict in order to use the file."
+#: FConflict.class:14
+#, fuzzy
+msgid "This file is in conflict. You must resolve the conflict in order to use the file again."
 msgstr ""
 "Aquest fitxer està en conflicte amb la revisió #&1.\n"
 "Heu de resoldre el conflicte si voleu fer servir el fitxer."
 
-#: FConflict.class:109
+#: FConflict.class:97
 msgid "Unable to load file:"
 msgstr ""
 
-#: FConflict.class:151 FDebugInfo.class:70 FImageEditor.form:630
+#: FConflict.class:139 FDebugInfo.class:56 FImageEditor.form:618
 msgid "Text"
 msgstr "Text"
 
-#: FConflict.class:153 FMain.form:878 FReportBrushChooser.form:49
-#: Project.module:227
+#: FConflict.class:141 FMain.form:920 FReportBrushChooser.form:49
+#: Project.module:232
 msgid "Image"
 msgstr "Imatge"
 
-#: FConflict.class:209
+#: FConflict.class:197
 msgid ""
 "The file has been modified.\n"
 "Do you really want to close the dialog?"
@@ -1101,15 +1244,15 @@ msgstr ""
 "S'ha modificat el fitxer.\n"
 "Realment voleu tancar el diàleg?"
 
-#: FConflict.class:237
+#: FConflict.class:225
 msgid "Some conflicts are not yet resolved."
 msgstr "Alguns conflictes encare no s'han resolt."
 
-#: FConflict.class:243
+#: FConflict.class:231
 msgid "Unable to resolve the conflict."
 msgstr "No es pot resoldre el conflicte."
 
-#: FConflict.class:271
+#: FConflict.class:259
 msgid ""
 "The file has been modified.\n"
 "Do you really want to open another file?"
@@ -1117,7 +1260,7 @@ msgstr ""
 "S'ha modificat el fitxer.\n"
 "Realment voleu obrir un altre fitxer?"
 
-#: FConflict.class:279
+#: FConflict.class:267
 msgid "Conflict files"
 msgstr "Fitxers conflictius"
 
@@ -1125,55 +1268,59 @@ msgstr "Fitxers conflictius"
 msgid "Version conflict"
 msgstr "Conflicte de versió"
 
-#: FConflict.form:70 FConnectionEditor.form:375 FEditor.form:119 FForm.form:153
-#: FImageEditor.form:135 FMain.form:967 FMenu.form:111 FProjectVersion.form:234
-#: FTextEditor.form:121
+#: FConflict.form:70 FConflictEditor.form:114 FConnectionEditor.form:382
+#: FEditor.form:124 FForm.form:158 FImageEditor.form:138 FMain.form:1013
+#: FMenu.form:120 FProjectVersion.form:234 FTextEditor.form:125
 msgid "Cut"
 msgstr "Retalla"
 
-#: FConflict.form:76 FConnectionEditor.form:147 FEditor.form:126 FForm.form:160
-#: FImageEditor.form:143 FList.form:99 FMain.form:974 FMakeInstall.form:903
-#: FMenu.form:117 FOutput.form:39 FProjectVersion.form:240 FSystemInfo.form:62
-#: FTextEditor.form:128
+#: FConflict.form:76 FConflictEditor.form:121 FConnectionEditor.form:152
+#: FEditor.form:131 FForm.form:165 FImageEditor.form:146 FList.form:99
+#: FMain.form:1020 FMakeInstall.form:873 FMenu.form:126 FOutput.form:40
+#: FProjectVersion.form:240 FSystemInfo.form:62 FTextEditor.form:132
+#: FTranslate.form:113
 msgid "Copy"
 msgstr "Copia"
 
-#: FConflict.form:82 FConnectionEditor.form:155 FEditor.form:133 FForm.form:173
-#: FImageEditor.form:150 FList.form:105 FMain.form:981 FMenu.form:123
-#: FOutput.form:46 FPasteTable.form:101 FProjectVersion.form:246
-#: FTextEditor.form:135
+#: FConflict.form:82 FConflictEditor.form:128 FConnectionEditor.form:161
+#: FEditor.form:138 FForm.form:178 FImageEditor.form:153 FList.form:105
+#: FMain.form:1027 FMenu.form:132 FOutput.form:47 FPasteTable.form:99
+#: FProjectVersion.form:246 FTextEditor.form:139
 msgid "Paste"
 msgstr "Enganxa"
 
-#: FConflict.form:88 FConnectionEditor.form:396 FEditor.form:102
-#: FFieldChooser.form:127 FForm.form:136 FImageEditor.form:116 FList.form:111
-#: FOption.form:977 FProjectVersion.form:252 FTextEditor.form:104
+#: FConflict.form:88 FConflictEditor.form:97 FConnectionEditor.form:403
+#: FEditor.form:107 FFieldChooser.form:127 FForm.form:141 FImageEditor.form:119
+#: FList.form:111 FOption.form:1129 FProjectVersion.form:252
+#: FTextEditor.form:108
 msgid "Undo"
 msgstr "Desfés"
 
-#: FConflict.form:94 FConnectionEditor.form:403 FEditor.form:109 FForm.form:143
-#: FImageEditor.form:124 FProjectVersion.form:258 FTextEditor.form:111
+#: FConflict.form:94 FConflictEditor.form:104 FConnectionEditor.form:410
+#: FEditor.form:114 FForm.form:148 FImageEditor.form:127
+#: FProjectVersion.form:258 FTextEditor.form:115
 msgid "Redo"
 msgstr "Refés"
 
-#: FConflict.form:100 FEditor.form:507 FMenu.form:133 FProjectVersion.form:264
-#: FTextEditor.form:496
+#: FConflict.form:100 FConflictEditor.form:441 FEditor.form:533 FMenu.form:142
+#: FProjectVersion.form:264 FTextEditor.form:517
 msgid "Indent"
 msgstr "Sagnar"
 
-#: FConflict.form:106 FEditor.form:515 FMenu.form:139 FProjectVersion.form:270
-#: FTextEditor.form:504
+#: FConflict.form:106 FConflictEditor.form:449 FEditor.form:541 FMenu.form:148
+#: FProjectVersion.form:270 FTextEditor.form:525
 msgid "Unindent"
 msgstr "Desagnar"
 
-#: FConflict.form:141 FMain.form:347 FOpenProject.form:35
+#: FConflict.form:141 FMain.form:356 FOpenProject.form:35
 #: FProjectChooser.form:85
 msgid "Open"
 msgstr "Obriu"
 
-#: FConflict.form:149 FConnectionEditor.form:110 FEditor.form:352
-#: FForm.form:439 FImageEditor.form:381 FMain.form:363 FMenu.class:72
-#: FSaveProjectAs.form:87 FTextEditor.form:353
+#: FConflict.form:149 FConflictEditor.form:299 FConnectionEditor.form:112
+#: FEditor.form:360 FForm.form:445 FImageEditor.form:384 FMain.form:372
+#: FMenu.class:74 FSaveProjectAs.form:87 FTextEditor.form:357
+#: FTranslate.form:226
 msgid "Save"
 msgstr "Desa"
 
@@ -1181,282 +1328,455 @@ msgstr "Desa"
 msgid "Solve"
 msgstr "Resol"
 
-#: FConflict.form:166 FDebugInfo.form:281 FEditor.form:339
-#: FFileProperty.form:75 FForm.form:426 FImageEditor.form:388 FMain.form:379
-#: FPatch.form:88 FProjectVersion.form:322 FSystemInfo.form:68
-#: FTextEditor.form:360 FTips.form:83 FTranslate.form:306
+#: FConflict.form:166 FConflictEditor.form:306 FDebugInfo.form:296
+#: FEditor.form:347 FFileProperty.form:76 FForm.form:432 FImageEditor.form:391
+#: FMain.form:388 FPatch.form:88 FProjectVersion.form:322 FSystemInfo.form:68
+#: FTextEditor.form:364 FTips.form:83 FTranslate.form:403
 msgid "Close"
 msgstr "Tanca"
 
-#: FConnectionEditor.class:49 FCreateFile.form:62 FDebugInfo.class:38
-#: FMakeInstall.form:242 FNewConnection.form:69 FNewTable.form:33
-#: FOption.form:271
+#: FConflictEditor.class:956 FEditor.class:2675 FTextEditor.class:1119
+msgid "(Declarations)"
+msgstr "(Declaracions)"
+
+#: FConflictEditor.class:1145
+msgid "There are still conflicts in this file."
+msgstr ""
+
+#: FConflictEditor.form:134 FEditor.form:144 FTextEditor.form:145
+msgid "Advanced"
+msgstr "Avançat"
+
+#: FConflictEditor.form:138 FEditor.form:155 FTextEditor.form:149
+msgid "Upper case"
+msgstr "Majúscules"
+
+#: FConflictEditor.form:145 FEditor.form:148 FTextEditor.form:156
+msgid "Lower case"
+msgstr "Minúscules"
+
+#: FConflictEditor.form:155 FEditor.form:165 FTextEditor.form:181
+msgid "Comment"
+msgstr "Comenta"
+
+#: FConflictEditor.form:162 FEditor.form:172 FTextEditor.form:188
+msgid "Uncomment"
+msgstr "Descomenta"
+
+#: FConflictEditor.form:172 FEditor.form:182 FPasteSpecial.form:19
+#: FTextEditor.form:198
+msgid "Paste special"
+msgstr "Enganxa especial"
+
+#: FConflictEditor.form:183 FEditor.form:215 FImageEditor.form:222
+#: FTextEditor.form:234
+msgid "Select All"
+msgstr "Selecciona-ho tot"
+
+#: FConflictEditor.form:193 FEditor.form:230 FGotoLine.form:12
+#: FTextEditor.form:244
+msgid "Go to line"
+msgstr "Ves a la línia"
+
+#: FConflictEditor.form:198 FEditor.form:235 FTextEditor.form:249
+msgid "Bookmarks"
+msgstr ""
+
+#: FConflictEditor.form:206 FEditor.form:250 FTextEditor.form:257
+msgid "Find next"
+msgstr "Cerca el següent"
+
+#: FConflictEditor.form:213 FEditor.form:257 FTextEditor.form:264
+msgid "Find previous"
+msgstr "Cerca l'anterior"
+
+#: FConflictEditor.form:222 FEditor.form:266 FImageEditor.form:330
+#: FMain.form:705 FTextEditor.form:273
+msgid "View"
+msgstr "Visualitzar"
+
+#: FConflictEditor.form:226 FEditor.form:270 FTextEditor.form:277
+#, fuzzy
+msgid "Automatic word wrap"
+msgstr "Automatització"
+
+#: FConflictEditor.form:233 FTextEditor.form:284
+msgid "Indent with tab"
+msgstr ""
+
+#: FConflictEditor.form:240 FEditor.form:277 FTextEditor.form:291
+msgid "No split"
+msgstr "Sense divisió"
+
+#: FConflictEditor.form:246 FEditor.form:283 FTextEditor.form:297
+msgid "Horizontal split"
+msgstr "Divisió horitzontal"
+
+#: FConflictEditor.form:253 FEditor.form:290 FTextEditor.form:304
+msgid "Vertical split"
+msgstr "Divisió vertical"
+
+#: FConflictEditor.form:260 FImportTable.form:90 FTextEditor.form:311
+msgid "End of line"
+msgstr "Final de línia"
+
+#: FConflictEditor.form:263 FTextEditor.form:314
+msgid "Unix"
+msgstr ""
+
+#: FConflictEditor.form:268 FTextEditor.form:319
+msgid "Windows"
+msgstr ""
+
+#: FConflictEditor.form:273 FTextEditor.form:324
+msgid "MAC"
+msgstr ""
+
+#: FConflictEditor.form:283 FForm.form:408 FMain.form:976 FTextEditor.form:334
+msgid "Open code"
+msgstr "Obre el codi"
+
+#: FConflictEditor.form:316 FEditor.form:370 FPasteSpecial.form:60
+#: FTextEditor.form:374
+msgid "Paste as string"
+msgstr "Enganxa com a cadena"
+
+#: FConflictEditor.form:321 FEditor.form:375 FPasteSpecial.form:65
+#: FTextEditor.form:379
+msgid "Paste as multi-line string"
+msgstr "Enganxa com a cadena multi-línia"
+
+#: FConflictEditor.form:326 FEditor.form:380 FPasteSpecial.form:50
+#: FTextEditor.form:384
+msgid "Paste as comments"
+msgstr "Enganxa com a comentari"
+
+#: FConflictEditor.form:342 FTextEditor.form:400
+msgid "Text editor"
+msgstr "Editor de text"
+
+#: FConflictEditor.form:348 FForm.form:468 FTextEditor.form:406
+msgid "Code"
+msgstr "Codi"
+
+#: FConflictEditor.form:377
+#, fuzzy
+msgid "Conflict solved"
+msgstr "Fitxers conflictius"
+
+#: FConflictEditor.form:510
+#, fuzzy
+msgid "Previous conflict"
+msgstr "Conflicte de versió"
+
+#: FConflictEditor.form:518
+#, fuzzy
+msgid "Next conflict"
+msgstr "Conflicte de versió"
+
+#: FConflictEditor.form:527
+msgid "Keep my changes"
+msgstr ""
+
+#: FConflictEditor.form:535
+msgid "Take their changes"
+msgstr ""
+
+#: FConflictEditor.form:543
+msgid "Keep all my changes"
+msgstr ""
+
+#: FConflictEditor.form:552
+msgid "Take all their changes"
+msgstr ""
+
+#: FConnectionEditor.class:51 FCreateFile.form:62 FMakeInstall.form:238
+#: FNewConnection.form:70 FNewTable.form:33 FOption.form:325
 msgid "Name"
 msgstr "Nom"
 
-#: FConnectionEditor.class:54 FCreateFile.form:113 FCreateProjectOld.form:98
-#: FDebugInfo.class:76 FNewConnection.form:83 FNewTable.form:48 FProxy.form:27
+#: FConnectionEditor.class:56 FCreateFile.form:113 FDebugInfo.class:60
+#: FNewConnection.form:84 FNewTable.form:48 FProxy.form:27
 msgid "Type"
 msgstr "Tipus"
 
-#: FConnectionEditor.class:59
+#: FConnectionEditor.class:61
 msgid "Length"
 msgstr "Durada"
 
-#: FConnectionEditor.class:64
+#: FConnectionEditor.class:66
 msgid "Default value"
 msgstr "Valor per omissió"
 
-#: FConnectionEditor.class:69
+#: FConnectionEditor.class:71
 #, fuzzy
 msgid "Collation"
 msgstr "Compilació"
 
-#: FConnectionEditor.class:80 FDebugExpr.class:487 FHelpBrowser.form:52
+#: FConnectionEditor.class:82 FDebugExpr.class:502 FHelpBrowser.form:49
 msgid "Index"
 msgstr "Índex"
 
-#: FConnectionEditor.class:85
+#: FConnectionEditor.class:87
 msgid "Unique"
 msgstr "Únic"
 
-#: FConnectionEditor.class:90 FImportTable.class:363
+#: FConnectionEditor.class:92 FImportTable.class:363
 msgid "Field"
 msgstr "Camp"
 
-#: FConnectionEditor.class:107
+#: FConnectionEditor.class:120
 msgid "SQL requests"
 msgstr ""
 
-#: FConnectionEditor.class:338
+#: FConnectionEditor.class:351
 msgid "Unable to connect to database."
 msgstr "No es pot connectar a la base de dades."
 
-#: FConnectionEditor.class:457 FSave.form:35
+#: FConnectionEditor.class:470 FSave.form:35
 msgid "Do not save"
 msgstr "No el deseu"
 
-#: FConnectionEditor.class:457
+#: FConnectionEditor.class:470
 msgid "The table '&1' has been modified. Do you want to save it?"
 msgstr "S'ha modificat la taula '&1'. Voleu desar-la?"
 
-#: FConnectionEditor.class:614
+#: FConnectionEditor.class:596
+#, fuzzy
+msgid "No record"
+msgstr "No s'han importat registres."
+
+#: FConnectionEditor.class:598
+#, fuzzy
+msgid "One record"
+msgstr "S'ha importat un registre."
+
+#: FConnectionEditor.class:600
+#, fuzzy
+msgid "&1 records"
+msgstr "S'han importat &1 registres."
+
+#: FConnectionEditor.class:637
 msgid "Unable to load table '&1'."
 msgstr "No s'ha pogut carregar la taula '&1'."
 
-#: FConnectionEditor.class:681
+#: FConnectionEditor.class:708
 msgid "Unable to run query."
 msgstr "No s'ha pogut executar la consulta."
 
-#: FConnectionEditor.class:713
+#: FConnectionEditor.class:710
+msgid "&1 s"
+msgstr ""
+
+#: FConnectionEditor.class:743
 msgid "unlimited"
 msgstr "sense límit"
 
-#: FConnectionEditor.class:800 MConnection.module:132
+#: FConnectionEditor.class:830 MConnection.module:149
 msgid "Blob"
 msgstr "-"
 
-#: FConnectionEditor.class:800 MConnection.module:126 MErrorMessage.module:46
+#: FConnectionEditor.class:830 MConnection.module:143
 msgid "Boolean"
 msgstr "Booleà"
 
-#: FConnectionEditor.class:800 FProjectVersion.class:290 MConnection.module:124
+#: FConnectionEditor.class:830 FProjectVersion.class:290 MConnection.module:141
 msgid "Date"
 msgstr "Data"
 
-#: FConnectionEditor.class:800 MConnection.module:122
+#: FConnectionEditor.class:830 MConnection.module:139
 msgid "Float"
 msgstr "Flotant"
 
-#: FConnectionEditor.class:800 MConnection.module:118
+#: FConnectionEditor.class:830 MConnection.module:135
 msgid "Integer"
 msgstr "Enter"
 
-#: FConnectionEditor.class:800 MConnection.module:120
+#: FConnectionEditor.class:830 MConnection.module:137
 msgid "Long"
 msgstr "Llarg"
 
-#: FConnectionEditor.class:800 MConnection.module:130
+#: FConnectionEditor.class:830 MConnection.module:147
 msgid "Serial"
 msgstr "Sèrie"
 
-#: FConnectionEditor.class:800 MConnection.module:128 MErrorMessage.module:159
+#: FConnectionEditor.class:830 MConnection.module:145
 msgid "String"
 msgstr "Cadena"
 
-#: FConnectionEditor.class:889
+#: FConnectionEditor.class:919
 msgid "This name is already in used."
 msgstr "Aquest nom ja s'està fent servir."
 
-#: FConnectionEditor.class:914
+#: FConnectionEditor.class:944
 msgid "Please enter a number."
 msgstr "Introduïu un número."
 
-#: FConnectionEditor.class:919
+#: FConnectionEditor.class:949
 msgid "The length must be greater than 1 and lower than 255."
 msgstr "La longitud ha de ser superior a 1 i inferior a 255."
 
-#: FConnectionEditor.class:943
+#: FConnectionEditor.class:973
 msgid "Type mismatch."
 msgstr "Discordança dels tipus."
 
-#: FConnectionEditor.class:995
+#: FConnectionEditor.class:1025
 msgid "This name already exists."
 msgstr "Aquest nom ja existeix."
 
-#: FConnectionEditor.class:1083
+#: FConnectionEditor.class:1113
 msgid "This field is used in an index."
 msgstr "Aquest camp s'està utilitzant en un índex."
 
-#: FConnectionEditor.class:1437
+#: FConnectionEditor.class:1467
 msgid "The table '&1' has no primary key."
 msgstr "La taula '&1' no té clau primària."
 
-#: FConnectionEditor.class:1573
+#: FConnectionEditor.class:1603
 msgid "Cannot write table '&1'."
 msgstr "No es pot escriure la taula '&1'."
 
-#: FConnectionEditor.class:1670
+#: FConnectionEditor.class:1700
 msgid "Do you really want to delete table '&1'?"
 msgstr "Segur que voleu suprimir la taula '&1'?"
 
-#: FConnectionEditor.class:1682
+#: FConnectionEditor.class:1712
 msgid "Cannot delete table '&1'."
 msgstr "No es pot suprimir la taula '&1'."
 
-#: FConnectionEditor.class:1735
+#: FConnectionEditor.class:1765
 msgid "Do you really want to remove the selected rows?"
 msgstr "Segur que voleu suprimir les files seleccionades?"
 
-#: FConnectionEditor.class:1897
+#: FConnectionEditor.class:1927
 msgid "Do you really want to remove this query?"
 msgstr ""
 
-#: FConnectionEditor.form:78
+#: FConnectionEditor.form:80
 msgid "Connection editor"
 msgstr "Editor de connexió"
 
-#: FConnectionEditor.form:89
+#: FConnectionEditor.form:91
 msgid "Show system tables"
 msgstr "Mostra les taules del sistema"
 
-#: FConnectionEditor.form:101 FNewTable.form:19
+#: FConnectionEditor.form:102 FNewTable.form:19
 msgid "New table"
 msgstr "Taula nova"
 
-#: FConnectionEditor.form:129
+#: FConnectionEditor.form:131
 msgid "Delete table"
 msgstr "Esborra la taula"
 
-#: FConnectionEditor.form:131 FMain.form:1106 FMakeInstall.form:744
-#: FOption.form:1220 FProjectProperty.form:565 FPublish.form:269
-#: FSoftwareFarm.form:415
+#: FConnectionEditor.form:134 FDebugInfo.form:185 FMain.form:1157
+#: FMakeInstall.form:714 FOption.form:1563 FProjectProperty.form:573
+#: FPublish.form:269 FSoftwareFarm.form:422
 msgid "Remove"
 msgstr "&Suprimeix"
 
-#: FConnectionEditor.form:137 FNewTable.class:30
+#: FConnectionEditor.form:140 FNewTable.class:30
 msgid "Rename table"
 msgstr "Canvia el nom de la taula"
 
-#: FConnectionEditor.form:139 FMain.form:988
+#: FConnectionEditor.form:143 FMain.form:1034
 msgid "Rename"
 msgstr "Reanomena"
 
-#: FConnectionEditor.form:145
+#: FConnectionEditor.form:149
 msgid "Copy table"
 msgstr "Copia la taula"
 
-#: FConnectionEditor.form:153 FPasteTable.form:22
+#: FConnectionEditor.form:158 FPasteTable.form:22
 msgid "Paste table"
 msgstr "Enganxa la taula"
 
-#: FConnectionEditor.form:161
+#: FConnectionEditor.form:167
 msgid "Import text file"
 msgstr "Importa fitxer de text"
 
-#: FConnectionEditor.form:163 FImportTable.form:48 FMain.form:914
-#: FOption.form:1206 FTranslate.form:326
+#: FConnectionEditor.form:170 FImportTable.form:48 FMain.form:956
+#: FOption.form:1549 FTranslate.form:423
 msgid "Import"
 msgstr "Importa"
 
-#: FConnectionEditor.form:206
+#: FConnectionEditor.form:213
 msgid "Fields"
 msgstr "Camps"
 
-#: FConnectionEditor.form:222 FMain.class:2129 FMakeInstall.form:738
-#: FOption.form:1444 FProjectProperty.form:635 FPublish.form:159
+#: FConnectionEditor.form:229 FMain.class:2164 FMakeInstall.form:708
+#: FProjectProperty.form:628 FPublish.form:159
 msgid "Add"
 msgstr "Afegeix"
 
-#: FConnectionEditor.form:236 FList.form:77 FMakeInstall.form:756
+#: FConnectionEditor.form:243 FList.form:77 FMakeInstall.form:726
 #: FPublish.form:281
 msgid "Down"
 msgstr "Avall"
 
-#: FConnectionEditor.form:243 FList.form:71 FMakeInstall.form:750
+#: FConnectionEditor.form:250 FList.form:71 FMakeInstall.form:720
 #: FPublish.form:275
 msgid "Up"
 msgstr "Puja"
 
-#: FConnectionEditor.form:251
+#: FConnectionEditor.form:258
 msgid "Copy field list"
 msgstr "Copia la llista de camps"
 
-#: FConnectionEditor.form:269
+#: FConnectionEditor.form:276
 msgid "Indexes"
 msgstr "Índexs"
 
-#: FConnectionEditor.form:286
+#: FConnectionEditor.form:293
 msgid "New index"
 msgstr "Índex nou"
 
-#: FConnectionEditor.form:346
+#: FConnectionEditor.form:353
 msgid "Run query"
 msgstr "Executa la consulta"
 
-#: FConnectionEditor.form:352
+#: FConnectionEditor.form:359
 msgid "New query"
 msgstr ""
 
-#: FConnectionEditor.form:354 FMain.form:809 FOption.form:1198
-#: FTranslate.form:72
+#: FConnectionEditor.form:361 FMain.form:851 FOption.form:1541
+#: FTranslate.form:87
 msgid "New"
 msgstr "Nou"
 
-#: FConnectionEditor.form:360
+#: FConnectionEditor.form:367
 msgid "Remove query"
 msgstr ""
 
-#: FConnectionEditor.form:368 FDebugInfo.class:561 FImageProperty.form:375
-#: FList.form:93 FMakeInstall.form:762 FOption.class:748 FOutput.form:53
+#: FConnectionEditor.form:375 FDebugInfo.class:270 FImageProperty.form:379
+#: FList.form:93 FMakeInstall.form:732 FOption.class:863 FOutput.form:54
 #: FPublish.form:171
 msgid "Clear"
 msgstr "Suprimir"
 
-#: FConnectionEditor.form:440 FDebugExpr.form:28 FMain.form:395
-#: FOption.form:1213
+#: FConnectionEditor.form:455 FDebugExpr.form:28 FMain.form:404
+#: FOption.form:1556
 msgid "Edit"
 msgstr "Edita"
 
-#: FConnectionEditor.form:447 FExportData.form:15
+#: FConnectionEditor.form:462 FExportData.form:15
 msgid "Export to CSV file"
 msgstr "Exporta a un fitxer CSV"
 
-#: FConnectionEditor.form:449 FTranslate.form:90
+#: FConnectionEditor.form:465 FTranslate.form:130
 msgid "Export"
 msgstr "Exporta"
 
-#: FConnectionEditor.form:473 FForm.form:180 FList.form:65 FMain.form:995
-#: FMenu.form:101 FNewConnection.class:378 FOption.class:913
-#: FSoftwareFarm.class:640 FTranslate.form:82
+#: FConnectionEditor.form:492 FForm.form:185 FList.form:65 FMain.form:1041
+#: FMenu.form:110 FNewConnection.class:402 FOption.class:1032
+#: FSoftwareFarm.class:654 FTranslate.form:97
 msgid "Delete"
 msgstr "Suprimeix"
 
-#: FConnectionEditor.form:480 FForm.form:214
+#: FConnectionEditor.form:500 FForm.form:219
 msgid "Select all"
 msgstr "Selecciona-ho tot"
 
-#: FConnectionEditor.form:487 FForm.form:225
+#: FConnectionEditor.form:508 FForm.form:231
 msgid "Unselect all"
 msgstr "Deselecciona-ho tot"
 
@@ -1464,7 +1784,7 @@ msgstr "Deselecciona-ho tot"
 msgid "Gambas 3 project conversion"
 msgstr "Conversió del projecte a Gambas 3"
 
-#: FCrash.class:73 FTranslate.class:1177 Project.module:4726
+#: FCrash.class:73 FTranslate.class:242 Project.module:4530
 msgid "The '&1' command has failed."
 msgstr ""
 
@@ -1504,8 +1824,8 @@ msgstr "No es pot afegit el fitxer"
 msgid "New file"
 msgstr "Fitxer nou"
 
-#: FCreateFile.form:72 FCreateProjectOld.form:274 FImportTable.form:59
-#: FMakePatch.form:66 FProjectProperty.form:736 FSearch.form:100
+#: FCreateFile.form:72 FImportTable.form:59 FMakePatch.form:66
+#: FProjectProperty.form:736 FSearch.form:98
 msgid "Options"
 msgstr "Opcions"
 
@@ -1521,50 +1841,50 @@ msgstr "Alçada"
 msgid "Dialog box management"
 msgstr "Gestió de caixes de diàleg"
 
-#: FCreateFile.form:154
+#: FCreateFile.form:155
 msgid "Parent class"
 msgstr "Classe pare"
 
-#: FCreateFile.form:167
+#: FCreateFile.form:168
 msgid "Exported"
 msgstr "Exportat"
 
-#: FCreateFile.form:173
+#: FCreateFile.form:174
 #, fuzzy
 msgid "Automatic instance"
 msgstr "Extensió automàtica"
 
-#: FCreateFile.form:179
+#: FCreateFile.form:180
 #, fuzzy
 msgid "Not creatable"
 msgstr "creable"
 
-#: FCreateFile.form:189
+#: FCreateFile.form:190
 msgid "Automatic extension"
 msgstr "Extensió automàtica"
 
-#: FCreateProject.class:85 FCreateProjectOld.class:127
+#: FCreateProject.class:87
 msgid "Project checkout has failed."
 msgstr "La verificació del projecte ha fallat."
 
-#: FCreateProject.class:141 FCreateProjectOld.class:187
+#: FCreateProject.class:145
 msgid "Cannot create project!"
 msgstr "No s'ha pogut crear el projecte!"
 
-#: FCreateProject.class:168
+#: FCreateProject.class:172
 #, fuzzy
 msgid "Please choose a template"
 msgstr "Trieu una localització al menú."
 
-#: FCreateProject.class:196 FCreateProjectOld.class:235
+#: FCreateProject.class:200
 msgid "Please enter the location of the repository."
 msgstr "Introduïu la ubicació del repositori."
 
-#: FCreateProject.form:31 FCreateProjectOld.form:66 FMain.form:267
+#: FCreateProject.form:31 FMain.form:276
 msgid "New project"
 msgstr "Projecte nou"
 
-#: FCreateProject.form:47 FCreateProjectOld.form:82 FProjectProperty.form:286
+#: FCreateProject.form:46 FProjectProperty.form:294
 msgid "Project type"
 msgstr "Tipus de projecte"
 
@@ -1578,431 +1898,288 @@ msgstr "Directori del projecte"
 msgid "Project details"
 msgstr "Propietats del projecte"
 
-#: FCreateProject.form:99 FCreateProjectOld.form:375
+#: FCreateProject.form:99
 msgid "Project name"
 msgstr "Nom del projecte"
 
-#: FCreateProject.form:110 FCreateProjectOld.form:386 FSaveProjectAs.form:49
+#: FCreateProject.form:110 FSaveProjectAs.form:49
 msgid "The project name is the name of the project directory."
 msgstr ""
 
-#: FCreateProject.form:121 FCreateProjectOld.form:397 FSaveProjectAs.form:60
+#: FCreateProject.form:121 FSaveProjectAs.form:60
 msgid "The project final directory is :"
 msgstr ""
 
-#: FCreateProject.form:134 FCreateProjectOld.form:410
+#: FCreateProject.form:134
 msgid "Project title"
 msgstr ""
 
-#: FCreateProject.form:145 FCreateProjectOld.form:421
+#: FCreateProject.form:145
 msgid "The project title is the true name of the application."
 msgstr ""
 
-#: FCreateProject.form:154 FProjectProperty.form:863
+#: FCreateProject.form:154 FProjectProperty.form:860
 msgid "Project is translatable"
 msgstr "Projecte traduïble"
 
-#: FCreateProject.form:159 FCreateProjectOld.form:426 FProjectChooser.form:80
-#: ProjectBox.class:303
+#: FCreateProject.form:159 FProjectChooser.form:80 ProjectBox.class:303
 msgid "Open in another window"
 msgstr "Obre en una altra finestra"
 
-#: FCreateProject.form:171 FCreateProjectOld.form:438 FProjectVersion.form:171
+#: FCreateProject.form:171 FProjectVersion.form:171
 msgid "Repository"
 msgstr "Repositori"
 
-#: FCreateProject.form:182 FCreateProjectOld.form:449
+#: FCreateProject.form:182
 msgid "The project repository is directly sent to the 'svn checkout' command."
 msgstr ""
 
-#: FCreateProjectOld.class:260
-msgid "The project has been successfully created."
-msgstr "El projecte s'ha creat correctament."
+#: FDebugButton.form:20 FDebugInfo.form:87
+msgid "Debugging"
+msgstr "Depuració"
 
-#: FCreateProjectOld.form:123
-msgid "Graphical application"
-msgstr "Aplicació gràfica"
-
-#: FCreateProjectOld.form:145
-msgid "QT graphical application"
-msgstr "Aplicació gràfica QT"
-
-#: FCreateProjectOld.form:167
-msgid "GTK+ graphical application"
-msgstr "Aplicació gràfica GTK+"
-
-#: FCreateProjectOld.form:189
-msgid "Command-line application"
-msgstr "Aplicació de línia d'ordres"
-
-#: FCreateProjectOld.form:211
-msgid "SDL application"
-msgstr "Aplicació SDL"
-
-#: FCreateProjectOld.form:233
-msgid "CGI Web application"
-msgstr "Aplicació Web CGI"
-
-#: FCreateProjectOld.form:259
-msgid ""
-"Application stored in a\n"
-"Subversion repository"
-msgstr ""
-"Aplicació emmagatzemada al\n"
-"Repositori subversion"
-
-#: FCreateProjectOld.form:288
-msgid "Internationalization"
-msgstr "Internacionalització"
-
-#: FCreateProjectOld.form:306
-msgid "Settings files management"
-msgstr "Gestió de fitxers de configuració"
-
-#: FCreateProjectOld.form:312
-msgid "Regular expressions"
-msgstr "Expressions regulars"
-
-#: FCreateProjectOld.form:318
-msgid "XML / XSLT programming"
-msgstr "Programació XML / XSLT"
-
-#: FCreateProjectOld.form:324
-msgid "OpenGL programming"
-msgstr "Programació OpenGL"
-
-#: FCreateProjectOld.form:330
-msgid "Image processing"
-msgstr "Processament d'imatges"
-
-#: FCreateProjectOld.form:336
-msgid "Scientific computing"
-msgstr ""
-
-#: FCreateProjectOld.form:342
-msgid "Visual Basic™ conversion help"
-msgstr "Ajuda per a la conversió de Visual Basic™"
-
-#: FCreateProjectOld.form:352
-msgid "Component programming"
-msgstr "Programació d'un component"
-
-#: FCreateProjectOld.form:358
-msgid "Project parent directory"
-msgstr ""
-
-#: FCreateProjectOld.form:366
-msgid "Project information"
-msgstr "Informació del projecte"
-
-#: FDebugButton.form:21 FDebugInfo.form:66 FMain.form:686 FOption.form:661
+#: FDebugButton.form:29 FDebugInfo.form:168 FMain.form:728 FOption.form:982
 msgid "Console"
 msgstr "Consola"
 
-#: FDebugButton.form:30 FDebugInfo.form:75
-msgid "Local variables"
-msgstr "Variables locals"
-
-#: FDebugButton.form:39 FDebugInfo.form:111
-msgid "Current object"
-msgstr "Objecte actual"
-
-#: FDebugButton.form:48 FDebugExpr.form:33 FDebugInfo.form:128
-msgid "Watch"
-msgstr "Observar"
-
-#: FDebugButton.form:57 FDebugInfo.form:200 MTheme.module:6
+#: FDebugButton.form:38 FDebugInfo.form:176 MTheme.module:6
 msgid "Breakpoints"
 msgstr "Punts d'interrupció"
 
-#: FDebugButton.form:66 FDebugInfo.form:238
+#: FDebugButton.form:47 FDebugInfo.form:238
 msgid "Warnings"
 msgstr ""
 
-#: FDebugButton.form:75 FDebugInfo.form:249
+#: FDebugButton.form:56 FDebugInfo.form:257
 msgid "Tasks"
 msgstr ""
 
-#: FDebugButton.form:84 FDebugInfo.form:263
+#: FDebugButton.form:65 FDebugInfo.form:279
 #, fuzzy
 msgid "Search result"
 msgstr "Cerca la llista"
+
+#: FDebugButton.form:74 FDebugInfo.form:357 FMain.form:484
+#: FProjectProperty.form:897
+msgid "Version control"
+msgstr ""
 
 #: FDebugExpr.class:4
 msgid "not available"
 msgstr "no disponible"
 
-#: FDebugExpr.class:489 FDebugInfo.class:39 FProjectProperty.class:143
+#: FDebugExpr.class:504 FProjectProperty.class:161
 msgid "Value"
 msgstr "Valor"
 
-#: FDebugExpr.class:493
+#: FDebugExpr.class:508
 msgid "Key"
 msgstr "Clau"
 
-#: FDebugExpr.class:499
+#: FDebugExpr.class:514
 msgid "Symbol"
 msgstr "Símbol"
+
+#: FDebugExpr.form:33
+msgid "Watch"
+msgstr "Observar"
 
 #: FDebugExpr.form:38
 #, fuzzy
 msgid "Print to console"
 msgstr "Desacobla consola"
 
-#: FDebugExpr.form:64
+#: FDebugExpr.form:63
 msgid "Show all symbols"
 msgstr ""
 
-#: FDebugExpr.form:81
+#: FDebugExpr.form:88
 msgid "No element"
 msgstr "Cap element"
 
-#: FDebugInfo.class:45
-msgid "Expression"
-msgstr "Expressió"
-
-#: FDebugInfo.class:53 FProfile.class:639
-msgid "Function"
-msgstr "Funció"
-
-#: FDebugInfo.class:55 FImageEditor.form:600 FImportTable.class:66
+#: FDebugInfo.class:41 FImageEditor.form:588 FImportTable.class:66
 msgid "Line"
 msgstr "Línia"
 
-#: FDebugInfo.class:62 FMain.form:263 FTranslate.class:68
+#: FDebugInfo.class:42 FProfile.class:645
+msgid "Function"
+msgstr "Funció"
+
+#: FDebugInfo.class:48 FMain.form:272 FTranslate.class:78
 msgid "File"
 msgstr "Fitxer"
 
-#: FDebugInfo.class:64
-msgid "Procedure"
-msgstr ""
-
-#: FDebugInfo.class:68
+#: FDebugInfo.class:54
 msgid "Col."
 msgstr "-"
 
-#: FDebugInfo.class:92 FImportTable.class:68
+#: FDebugInfo.class:72 FImportTable.class:68
 msgid "Message"
 msgstr "Missatge"
 
-#: FDebugInfo.class:175
+#: FDebugInfo.class:126
 msgid "native code"
 msgstr "codi nadiu"
 
-#: FDebugInfo.class:561
+#: FDebugInfo.class:193
+#, fuzzy
+msgid "Watch expressions"
+msgstr "Observa expressió"
+
+#: FDebugInfo.class:270
 msgid "Do you want to clear the expression list ?"
 msgstr "Voleu suprimir la llista d'expressions?"
 
-#: FDebugInfo.class:990
-msgid "Dynamic variables"
-msgstr "Variables dinàmiques"
+#: FDebugInfo.class:1070
+#, fuzzy
+msgid "File not loaded"
+msgstr "No s'ha trobat el fitxer!"
 
-#: FDebugInfo.form:53 FMain.form:520
+#: FDebugInfo.class:1209
+msgid "Current object"
+msgstr "Objecte actual"
+
+#: FDebugInfo.class:1255
+msgid "Local variables"
+msgstr "Variables locals"
+
+#: FDebugInfo.form:67 FMain.form:563
 msgid "Debug"
 msgstr "Depuració"
 
-#: FDebugInfo.form:84
-msgid "Column view"
-msgstr ""
-
-#: FDebugInfo.form:91
-msgid "Copy to clipboard"
-msgstr ""
-
-#: FDebugInfo.form:93
-msgid "Copy local variables"
-msgstr ""
-
-#: FDebugInfo.form:146
-msgid "Add expression"
-msgstr "Afegir expressió"
-
-#: FDebugInfo.form:159
+#: FDebugInfo.form:118
 msgid "Remove current expression"
 msgstr "Suprimeix l'expressió actual"
 
-#: FDebugInfo.form:166
-msgid "Remove all expressions"
-msgstr "Suprimeix totes les expressions"
+#: FDebugInfo.form:124
+msgid "Add expression"
+msgstr "Afegir expressió"
 
-#: FDebugInfo.form:174
+#: FDebugInfo.form:183
 #, fuzzy
-msgid "Display expression"
-msgstr "Expressió regular"
+msgid "Remove breakpoint"
+msgstr "Elimina tots els punts d'interrupció"
 
-#: FDebugInfo.form:176
-msgid "Display"
-msgstr "Mostra"
+#: FDebugInfo.form:191
+#, fuzzy
+msgid "Disable breakpoint"
+msgstr "Commuta punt de ruptura"
 
-#: FDebugInfo.form:182
-msgid "Display ME"
-msgstr "Mostra ME"
+#: FDebugInfo.form:193
+#, fuzzy
+msgid "Disable"
+msgstr "Taula"
 
-#: FDebugInfo.form:208
-msgid "Remove current breakpoint"
-msgstr "Elimina el punt d'interrupció actual"
+#: FDebugInfo.form:199
+#, fuzzy
+msgid "Enable breakpoint"
+msgstr "Commuta punt de ruptura"
 
-#: FDebugInfo.form:216
+#: FDebugInfo.form:201
+#, fuzzy
+msgid "Enable"
+msgstr "Taula"
+
+#: FDebugInfo.form:207
 msgid "Remove all breakpoints"
 msgstr "Elimina tots els punts d'interrupció"
 
-#: FDebugInfo.form:272
+#: FDebugInfo.form:287
 msgid "Cancel current search"
 msgstr "Canceŀla la cerca actual"
 
-#: FDebugInfo.form:288
+#: FDebugInfo.form:303
 msgid "Search again"
 msgstr "Cerca un altre cop"
 
-#: FDebugInfo.form:295
+#: FDebugInfo.form:310
 msgid "Show search window"
 msgstr "Mostra la finestra de cerca"
 
-#: FDebugInfo.form:335 FSearch.class:505 FTranslate.class:572
+#: FDebugInfo.form:353 FSearch.class:546 FTranslate.class:632
 msgid "Search string cannot be found."
 msgstr "La cadena buscada no s'ha trobat."
 
-#: FDebugInfo.form:360
-msgid "Stack backtrace"
-msgstr "Pila del traçat de crides"
+#: FDebugInfo.form:365 FMain.form:489 FProjectVersion.form:89
+#: FVersionControl.form:16
+msgid "Commit"
+msgstr "Publicació de canvis"
 
-#: FEditor.class:2754 FTextEditor.class:1120
-msgid "(Declarations)"
-msgstr "(Declaracions)"
+#: FDebugInfo.form:372 FMain.form:495 FReportBorderChooser.form:60
+#: FReportPaddingChooser.form:64
+msgid "Synchronize"
+msgstr "Sincronitza"
 
-#: FEditor.form:139 FTextEditor.form:141
-msgid "Advanced"
-msgstr "Avançat"
+#: FDebugInfo.form:379 FMain.form:508
+#, fuzzy
+msgid "Revert all changes"
+msgstr "Elimina tots els punts d'interrupció"
 
-#: FEditor.form:143 FTextEditor.form:152
-msgid "Lower case"
-msgstr "Minúscules"
+#: FDebugInfo.form:386 FMain.form:514
+msgid "Add everything to repository"
+msgstr ""
 
-#: FEditor.form:150 FTextEditor.form:145
-msgid "Upper case"
-msgstr "Majúscules"
-
-#: FEditor.form:160 FTextEditor.form:177
-msgid "Comment"
-msgstr "Comenta"
-
-#: FEditor.form:167 FTextEditor.form:184
-msgid "Uncomment"
-msgstr "Descomenta"
-
-#: FEditor.form:177 FPasteSpecial.form:19 FTextEditor.form:194
-msgid "Paste special"
-msgstr "Enganxa especial"
-
-#: FEditor.form:190 FTextEditor.form:207
+#: FEditor.form:189 FTextEditor.form:211
 msgid "Format code"
 msgstr "Formateja el codi"
 
-#: FEditor.form:196
+#: FEditor.form:195
 msgid "Sort procedures"
 msgstr "Ordena els procediments"
 
-#: FEditor.form:207 FImageEditor.form:219 FTextEditor.form:230
-msgid "Select All"
-msgstr "Selecciona-ho tot"
-
-#: FEditor.form:216
+#: FEditor.form:224
 msgid "Go to"
 msgstr "Anar a"
 
-#: FEditor.form:222 FGotoLine.form:12 FTextEditor.form:240
-msgid "Go to line"
-msgstr "Ves a la línia"
-
-#: FEditor.form:227 FTextEditor.form:245
-msgid "Bookmarks"
-msgstr ""
-
-#: FEditor.form:235
+#: FEditor.form:243
 msgid "Find definition"
 msgstr "Cerca definició"
 
-#: FEditor.form:242 FTextEditor.form:253
-msgid "Find next"
-msgstr "Cerca el següent"
-
-#: FEditor.form:249 FTextEditor.form:260
-msgid "Find previous"
-msgstr "Cerca l'anterior"
-
-#: FEditor.form:258 FImageEditor.form:327 FMain.form:663 FTextEditor.form:269
-msgid "View"
-msgstr "Visualitzar"
-
-#: FEditor.form:262 FTextEditor.form:273
-#, fuzzy
-msgid "Automatic word wrap"
-msgstr "Automatització"
-
-#: FEditor.form:269 FTextEditor.form:287
-msgid "No split"
-msgstr "Sense divisió"
-
-#: FEditor.form:275 FTextEditor.form:293
-msgid "Horizontal split"
-msgstr "Divisió horitzontal"
-
-#: FEditor.form:282 FTextEditor.form:300
-msgid "Vertical split"
-msgstr "Divisió vertical"
-
-#: FEditor.form:292 FMain.form:1440
+#: FEditor.form:300 FMain.form:1484
 msgid "Run until current line"
 msgstr "Executa fins la línia actual"
 
-#: FEditor.form:299
+#: FEditor.form:307
 msgid "Toggle breakpoint"
 msgstr "Commuta punt de ruptura"
 
-#: FEditor.form:306
+#: FEditor.form:314
 msgid "Watch expression"
 msgstr "Observa expressió"
 
-#: FEditor.form:315
+#: FEditor.form:323
 msgid "Open form"
 msgstr "Obrir formulari"
 
-#: FEditor.form:322 FMain.form:1021
+#: FEditor.form:330 FMain.form:1067
 #, fuzzy
 msgid "Run this class"
 msgstr "Classe pare"
 
-#: FEditor.form:332 FForm.form:419 FImageEditor.form:366 FTextEditor.form:340
+#: FEditor.form:340 FForm.form:425 FImageEditor.form:369 FTextEditor.form:344
 msgid "Locked"
 msgstr ""
 
-#: FEditor.form:362 FPasteSpecial.form:60 FTextEditor.form:370
-msgid "Paste as string"
-msgstr "Enganxa com a cadena"
-
-#: FEditor.form:367 FPasteSpecial.form:65 FTextEditor.form:375
-msgid "Paste as multi-line string"
-msgstr "Enganxa com a cadena multi-línia"
-
-#: FEditor.form:372 FPasteSpecial.form:50 FTextEditor.form:380
-msgid "Paste as comments"
-msgstr "Enganxa com a comentari"
-
-#: FEditor.form:388 FHelpShortcut.form:24 FOption.form:645
+#: FEditor.form:396 FHelpShortcut.form:24 FOption.form:966
 msgid "Editor"
 msgstr "Editor"
 
-#: FEditor.form:417 FImageEditor.form:444 FTextEditor.form:425
-msgid "Lock / unlock file"
-msgstr ""
+#: FEditor.form:523 FTextEditor.form:507
+#, fuzzy
+msgid "Insert special character"
+msgstr "Caractères incorrects"
 
-#: FEditor.form:540 FTextEditor.form:529
+#: FEditor.form:566 FTextEditor.form:550
 msgid "Make code pretty"
 msgstr "Feu el codi agradable"
 
-#: FEditor.form:605 FTextEditor.form:593
+#: FEditor.form:631 FTextEditor.form:614
 msgid "Procedure list"
 msgstr "Llista de procediments"
+
+#: FEditor.form:653 FImageEditor.form:769 FTextEditor.form:655
+msgid "Lock / unlock file"
+msgstr ""
 
 #: FExportData.class:21 FImportTable.class:58
 msgid "CSV files"
@@ -2050,7 +2227,7 @@ msgstr ""
 msgid "Authentication failed."
 msgstr ""
 
-#: FFarmLogin.form:26 FPublish.form:313 FSoftwareFarm.form:107
+#: FFarmLogin.form:26 FPublish.form:313 FSoftwareFarm.form:108
 msgid "Login"
 msgstr ""
 
@@ -2058,17 +2235,17 @@ msgstr ""
 msgid "Server"
 msgstr ""
 
-#: FFarmLogin.form:59 FFarmRegister.form:61 FNewConnection.form:141
+#: FFarmLogin.form:59 FFarmRegister.form:61 FNewConnection.form:144
 #: FProjectVersion.form:127 FProxy.form:42
 msgid "User"
 msgstr "Usuari"
 
-#: FFarmLogin.form:74 FFarmRegister.form:76 FNewConnection.form:156
+#: FFarmLogin.form:74 FFarmRegister.form:76 FNewConnection.form:164
 #: FProjectVersion.form:142 FProxy.form:47
 msgid "Password"
 msgstr "Contrasenya"
 
-#: FFarmLogin.form:95 FNewConnection.form:169 FProjectVersion.form:155
+#: FFarmLogin.form:95 FNewConnection.form:175 FProjectVersion.form:155
 msgid "Remember password"
 msgstr "Recorda la contrasenya"
 
@@ -2097,7 +2274,7 @@ msgid ""
 "You will receive a confirmation e-mail soon."
 msgstr ""
 
-#: FFarmRegister.form:28 FPublish.form:320 FSoftwareFarm.form:114
+#: FFarmRegister.form:28 FPublish.form:320 FSoftwareFarm.form:115
 msgid "Register"
 msgstr ""
 
@@ -2106,7 +2283,7 @@ msgstr ""
 msgid "Confirm password"
 msgstr "Configura la vora"
 
-#: FFarmRegister.form:108 FMakeInstall.form:257 FOption.form:287
+#: FFarmRegister.form:108 FMakeInstall.form:253 FOption.form:341
 msgid "E-mail"
 msgstr ""
 
@@ -2157,303 +2334,297 @@ msgstr ""
 msgid "&1 properties"
 msgstr ""
 
-#: FFileProperty.class:84
-msgid "Versioning"
-msgstr "Versionat"
+#: FFileProperty.class:84 FProjectVersion.form:299 FVersionControl.form:35
+msgid "Changes"
+msgstr "Canvis"
 
-#: FFileProperty.class:92 FProjectProperty.form:892 FTranslate.form:312
+#: FFileProperty.class:92 FProjectProperty.form:888 FTranslate.form:409
 msgid "Statistics"
 msgstr "Estadístiques"
 
-#: FFileProperty.class:125
+#: FFileProperty.class:127
 msgid "This file is locked, and will be deleted on the next commit."
 msgstr "Aquest fitxer està bloquejat i serà eliminat en la propera publicació de canvis."
 
-#: FFileProperty.class:127
+#: FFileProperty.class:129
 msgid "This file is not versioned, and must be added to the repository."
 msgstr "Aquest fitxer no està versionat, i s'ha d'afegir al dipòsit."
 
-#: FFileProperty.class:130
+#: FFileProperty.class:132
 msgid "This file has not been modified since the last commit."
 msgstr "Aquest fitxer no s'ha modificat des de l'última publicació de canvis."
 
-#: FFileProperty.class:142 FMakeInstall.class:345 FProjectVersion.class:211
-#: FSave.form:21 Project.module:3669
+#: FFileProperty.class:144 FMakeInstall.class:345 FProjectVersion.class:211
+#: FSave.form:21 Project.module:3528 VersionControl.module:383
 msgid "Continue"
 msgstr "Continua"
 
-#: FFileProperty.class:142 FProjectVersion.class:211
+#: FFileProperty.class:144 FProjectVersion.class:211 VersionControl.module:383
 msgid "You are going to cancel your changes!"
 msgstr "Esteu a punt de canceŀlar els vostres canvis!"
 
-#: FFileProperty.class:159 FProjectProperty.class:907
+#: FFileProperty.class:163 FProjectProperty.class:930
 msgid "Modules"
 msgstr "Mòduls"
 
-#: FFileProperty.class:164 FProjectProperty.class:915
+#: FFileProperty.class:168 FProjectProperty.class:938
 msgid "Lines of code"
 msgstr ""
 
-#: FFileProperty.form:64 FPatch.form:76 FProjectVersion.form:83
-msgid "Revert"
-msgstr "Desfer"
+#: FFileProperty.form:65
+#, fuzzy
+msgid "Undo changes"
+msgstr "Canvis"
 
 #: FFontChooser.form:12
 msgid "Select a font"
 msgstr "Seleccioneu una font"
 
-#: FForm.class:144
+#: FForm.class:134
 msgid "Bad form file"
 msgstr "Fitxer de formulari incorrecte"
 
-#: FForm.class:274
+#: FForm.class:264
 #, fuzzy
 msgid "Unknown control: &1"
 msgstr "Identificador desconegut: &1"
 
-#: FForm.class:1333
+#: FForm.class:1327
 msgid "Component missing for control &1"
 msgstr "Manca el component del control &1"
 
-#: FForm.class:1851
+#: FForm.class:1866
 #, fuzzy
 msgid "Cannot paste data."
 msgstr "No s'ha pogut crear la taula '&1'."
 
-#: FForm.form:167
+#: FForm.form:172
 msgid "Copy at the same place"
 msgstr "Copia al mateix lloc"
 
-#: FForm.form:187
+#: FForm.form:192
 msgid "Delete container only"
 msgstr "Esborrar només el contenidor"
 
-#: FForm.form:194
+#: FForm.form:199
 msgid "Embed into a container"
 msgstr "Incrusta en un contenidor"
 
-#: FForm.form:200
+#: FForm.form:205
 msgid "Change into"
 msgstr "Canvia a"
 
-#: FForm.form:208
+#: FForm.form:213
 msgid "Select"
 msgstr "Selecciona"
 
-#: FForm.form:220
+#: FForm.form:226
 msgid "Select parent"
 msgstr ""
 
-#: FForm.form:233
+#: FForm.form:239
 msgid "Arrangement"
 msgstr "Alineament"
 
-#: FForm.form:237
+#: FForm.form:243
 msgid "Bring to foreground"
 msgstr "Posa en primer pla"
 
-#: FForm.form:244
+#: FForm.form:250
 msgid "Send to background"
 msgstr "Posa al fons"
 
-#: FForm.form:254
+#: FForm.form:260
 msgid "Horizontal"
 msgstr "Horitzontal"
 
-#: FForm.form:261
+#: FForm.form:267
 msgid "Rows"
 msgstr "Files"
 
-#: FForm.form:267
+#: FForm.form:273
 msgid "Vertical"
 msgstr "Vertical"
 
-#: FForm.form:274
+#: FForm.form:280
 msgid "Columns"
 msgstr "Columnes"
 
-#: FForm.form:283
+#: FForm.form:289
 msgid "Center horizontally"
 msgstr "Centra horitzontalment"
 
-#: FForm.form:289
+#: FForm.form:295
 msgid "Center vertically"
 msgstr "Centra verticalment"
 
-#: FForm.form:295
+#: FForm.form:301
 msgid "Alignment"
 msgstr "Alineació"
 
-#: FForm.form:299
+#: FForm.form:305
 msgid "Align to left"
 msgstr "Alinea a l'esquerra"
 
-#: FForm.form:305
+#: FForm.form:311
 msgid "Align to right"
 msgstr "Alinea a la dreta"
 
-#: FForm.form:311
+#: FForm.form:317
 msgid "Align to top"
 msgstr "Alinea a dalt"
 
-#: FForm.form:317
+#: FForm.form:323
 msgid "Align to bottom"
 msgstr "Alinea a baix"
 
-#: FForm.form:326
+#: FForm.form:332
 msgid "Same width"
 msgstr "La mateixa amplada"
 
-#: FForm.form:332
+#: FForm.form:338
 msgid "Same height"
 msgstr "La mateixa alçada"
 
-#: FForm.form:341
+#: FForm.form:347
 msgid "Show tab"
 msgstr "Mostra les pestanyes"
 
-#: FForm.form:349
+#: FForm.form:355
 msgid "Move tab"
 msgstr "Mou la pestanya"
 
-#: FForm.form:354
+#: FForm.form:360
 msgid "First"
 msgstr "Primer"
 
-#: FForm.form:361 FSearch.form:199 FTips.form:71
+#: FForm.form:367 FSearch.form:189 FTips.form:71
 msgid "Previous"
 msgstr "Previ"
 
-#: FForm.form:368 FSearch.form:193 FTips.form:77
+#: FForm.form:374 FSearch.form:183 FTips.form:77
 msgid "Next"
 msgstr "Següent"
 
-#: FForm.form:375
+#: FForm.form:381
 msgid "Last"
 msgstr "Últim"
 
-#: FForm.form:386 FMenu.form:68
+#: FForm.form:392 FMenu.form:69
 msgid "Menu editor"
 msgstr "Editor del menú"
 
-#: FForm.form:395
+#: FForm.form:401
 msgid "Event"
 msgstr "Esdeveniment"
 
-#: FForm.form:402 FMain.form:934 FTextEditor.form:330
-msgid "Open code"
-msgstr "Obre el codi"
-
-#: FForm.form:409
+#: FForm.form:415
 #, fuzzy
 msgid "Run this form"
 msgstr "Executa aquesta ordre després"
 
-#: FForm.form:462 FTextEditor.form:402
-msgid "Code"
-msgstr "Codi"
-
-#: FForm.form:485
-msgid "Lock / unlock form"
-msgstr ""
-
-#: FForm.form:562
+#: FForm.form:568
 msgid "Toggle grid"
 msgstr "Commuta la graella"
 
-#: FForm.form:681
+#: FForm.form:577 FImageEditor.form:514
+#, fuzzy
+msgid "Toggle information tooltip"
+msgstr "Informació del paquet"
+
+#: FForm.form:696
 msgid "Move tab first"
 msgstr "Mou la pestanya al principi"
 
-#: FForm.form:688
+#: FForm.form:703
 msgid "Move tab left"
 msgstr "Mou la pestanya a l'esquerra"
 
-#: FForm.form:695
+#: FForm.form:710
 msgid "Move tab right"
 msgstr "Mou la pestanya a la dreta"
 
-#: FForm.form:702
+#: FForm.form:717
 msgid "Move tab last"
 msgstr "Mou la pestanya al final"
 
-#: FForm.form:730 FOption.form:237 FWebFontChooser.form:69
+#: FForm.form:745 FOption.form:287
 msgid "Bold"
 msgstr "Negreta"
 
-#: FForm.form:738 FWebFontChooser.form:77
+#: FForm.form:753
 msgid "Italic"
 msgstr "Cursiva"
 
-#: FForm.form:746 FOption.form:242 FWebFontChooser.form:85
+#: FForm.form:761 FOption.form:292
 msgid "Underline"
 msgstr "Subratllat"
 
-#: FForm.form:754
+#: FForm.form:769
 msgid "Bigger font"
 msgstr ""
 
-#: FForm.form:762
+#: FForm.form:777
 msgid "Smaller font"
 msgstr ""
 
-#: FForm.form:770 FOption.form:585
+#: FForm.form:785 FOption.form:884
 msgid "Default font"
 msgstr ""
 
-#: FForm.form:778 FOption.form:1227 MTheme.module:6
+#: FForm.form:793 FOption.form:1570 MTheme.module:6
 msgid "Background"
 msgstr "Ba"
 
-#: FForm.form:786
+#: FForm.form:801
 msgid "Foreground"
 msgstr ""
 
-#: FFormStack.form:15 FMain.form:1752
+#: FForm.form:812
+msgid "Lock / unlock form"
+msgstr ""
+
+#: FFormStack.form:14 FMain.form:1818
 msgid "Hierarchy"
 msgstr "Jerarquia"
 
-#: FFormStack.form:22
-msgid "Click on a form to display the hierarchy of its controls..."
-msgstr "Feu clic al formulari per mostrar la jerarquia dels seus controls..."
-
-#: FFormStack.form:31
+#: FFormStack.form:24
 msgid "Move top"
 msgstr "Mou a dalt de tot"
 
-#: FFormStack.form:37 FMenu.form:145
+#: FFormStack.form:30 FMenu.form:154
 msgid "Move up"
 msgstr "Mou a dalt"
 
-#: FFormStack.form:43 FMenu.form:151
+#: FFormStack.form:36 FMenu.form:160
 msgid "Move down"
 msgstr "Mou a baix"
 
-#: FFormStack.form:49
+#: FFormStack.form:42
 msgid "Move bottom"
 msgstr "Mou a baix de tot"
 
-#: FHelpBrowser.class:24 FProjectProperty.form:880
+#: FHelpBrowser.class:24 FProjectProperty.form:876
 msgid "Default language"
 msgstr "Idioma predeterminat"
 
-#: FHelpBrowser.form:29 FMain.form:1170
+#: FHelpBrowser.form:30 FMain.form:1221
 msgid "Help browser"
 msgstr "Navegador d'ajuda"
 
-#: FHelpBrowser.form:40 FMain.form:713 FProfile.form:48
-msgid "Go back"
-msgstr "Vés enrere"
-
-#: FHelpBrowser.form:46 FMain.form:720 FProfile.form:54
-msgid "Go forward"
-msgstr "Avança"
-
-#: FHelpBrowser.form:73
+#: FHelpBrowser.form:42
 msgid "Show help tree"
 msgstr "Mostra l'arbre d'ajuda"
 
-#: FHelpBrowser.form:115
+#: FHelpBrowser.form:61 FMain.form:755 FProfile.form:48
+msgid "Go back"
+msgstr "Vés enrere"
+
+#: FHelpBrowser.form:67 FMain.form:762 FProfile.form:54
+msgid "Go forward"
+msgstr "Avança"
+
+#: FHelpBrowser.form:120
 msgid "Print"
 msgstr "Imprimeix"
 
@@ -2465,151 +2636,152 @@ msgstr ""
 msgid "Debugger"
 msgstr ""
 
-#: FHelpShortcut.form:28 FProjectProperty.form:852 FTranslate.form:112
+#: FHelpShortcut.form:28 FOption.form:604 FProjectProperty.form:849
+#: FTranslate.form:153
 msgid "Translation"
 msgstr "Traducció"
 
-#: FImageEditor.form:156
+#: FImageEditor.form:159
 msgid "Action"
 msgstr ""
 
-#: FImageEditor.form:161
+#: FImageEditor.form:164
 msgid "Crop"
 msgstr ""
 
-#: FImageEditor.form:169 FImageProperty.form:300
+#: FImageEditor.form:172 FImageProperty.form:304
 msgid "Horizontal flip"
 msgstr "Inverteix horitzontalment"
 
-#: FImageEditor.form:176 FImageProperty.form:294
+#: FImageEditor.form:179 FImageProperty.form:298
 msgid "Vertical flip"
 msgstr "Inverteix verticalment"
 
-#: FImageEditor.form:183 FImageProperty.form:288
+#: FImageEditor.form:186 FImageProperty.form:292
 msgid "Rotate counter-clockwise"
 msgstr "Gira cap a l'esquerra"
 
-#: FImageEditor.form:191 FImageProperty.form:282
+#: FImageEditor.form:194 FImageProperty.form:286
 msgid "Rotate clockwise"
 msgstr "Gira cap a la dreta"
 
-#: FImageEditor.form:202
+#: FImageEditor.form:205
 msgid "Resize"
 msgstr ""
 
-#: FImageEditor.form:209
+#: FImageEditor.form:212
 msgid "Rotate"
 msgstr ""
 
-#: FImageEditor.form:225
+#: FImageEditor.form:228
 msgid "Hide selection"
 msgstr ""
 
-#: FImageEditor.form:231 MTheme.module:6
+#: FImageEditor.form:234 MTheme.module:6
 msgid "Selection"
 msgstr "Selecció"
 
-#: FImageEditor.form:236
+#: FImageEditor.form:239
 msgid "Invert selection"
 msgstr ""
 
-#: FImageEditor.form:244
+#: FImageEditor.form:247
 msgid "Duplicate selection"
 msgstr ""
 
-#: FImageEditor.form:252 FImageOffsetSelection.form:12
+#: FImageEditor.form:255 FImageOffsetSelection.form:12
 msgid "Offset selection"
 msgstr ""
 
-#: FImageEditor.form:262
+#: FImageEditor.form:265
 msgid "Union"
 msgstr ""
 
-#: FImageEditor.form:268
+#: FImageEditor.form:271
 #, fuzzy
 msgid "Difference"
 msgstr "Preferències"
 
-#: FImageEditor.form:274
+#: FImageEditor.form:277
 #, fuzzy
 msgid "Intersection"
 msgstr "Selecció"
 
-#: FImageEditor.form:280
+#: FImageEditor.form:283
 #, fuzzy
 msgid "Exclusive or"
 msgstr "Exclou"
 
-#: FImageEditor.form:289
+#: FImageEditor.form:292
 msgid "Shape grid"
 msgstr ""
 
-#: FImageEditor.form:348
+#: FImageEditor.form:351
 msgid "Zoom normal"
 msgstr ""
 
-#: FImageEditor.form:356
+#: FImageEditor.form:359
 msgid "Zoom fit"
 msgstr ""
 
-#: FImageEditor.form:398
+#: FImageEditor.form:401
 msgid "Save as JPEG"
 msgstr ""
 
-#: FImageEditor.form:404
+#: FImageEditor.form:407
 msgid "Save as PNG"
 msgstr ""
 
-#: FImageEditor.form:410
+#: FImageEditor.form:413
 msgid "Save as BMP"
 msgstr ""
 
-#: FImageEditor.form:417
+#: FImageEditor.form:420
 msgid "Save as TIFF"
 msgstr ""
 
-#: FImageEditor.form:424
+#: FImageEditor.form:427
 msgid "Image editor"
 msgstr "Editor d'imatges"
 
-#: FImageEditor.form:506
+#: FImageEditor.form:505
 msgid "Drawing grid"
 msgstr ""
 
-#: FImageEditor.form:516
-msgid "Resize or stretch image"
-msgstr ""
-
-#: FImageEditor.form:526 FImageRotate.form:11
-msgid "Rotate image"
-msgstr ""
-
-#: FImageEditor.form:569
+#: FImageEditor.form:557
 msgid "Move"
 msgstr ""
 
-#: FImageEditor.form:580
+#: FImageEditor.form:568
 msgid "Draw"
 msgstr "Dibuix"
 
-#: FImageEditor.form:590
+#: FImageEditor.form:578
 msgid "Erase"
 msgstr ""
 
-#: FImageEditor.form:610
+#: FImageEditor.form:598
 msgid "Rectangle"
 msgstr "Rectangle"
 
-#: FImageEditor.form:620
+#: FImageEditor.form:608
 msgid "Ellipse"
 msgstr "Eŀlipse"
 
-#: FImageEditor.form:640
+#: FImageEditor.form:628
 msgid "Magic wand"
 msgstr ""
 
-#: FImageEditor.form:657
+#: FImageEditor.form:645
 msgid "Edit selection"
+msgstr ""
+
+#: FImageEditor.form:748
+msgid "Resize or stretch image"
+msgstr ""
+
+#: FImageEditor.form:757 FImageRotate.form:11
+msgid "Rotate image"
 msgstr ""
 
 #: FImageOffsetSelection.form:22 FImageResize.form:127
@@ -2620,215 +2792,219 @@ msgstr "-"
 msgid "Duplicate"
 msgstr ""
 
-#: FImageProperty.class:784
+#: FImageProperty.class:788
 msgid "System clipboard"
 msgstr ""
 
-#: FImageProperty.class:1236
+#: FImageProperty.class:1251
 msgid "Arrow"
 msgstr ""
 
-#: FImageProperty.class:1238
+#: FImageProperty.class:1253
 msgid "Arrow #2"
 msgstr ""
 
-#: FImageProperty.class:1239
+#: FImageProperty.class:1254
 msgid "Triangle"
 msgstr ""
 
-#: FImageProperty.class:1240
+#: FImageProperty.class:1255
 msgid "Square triangle"
 msgstr ""
 
-#: FImageProperty.class:1241
+#: FImageProperty.class:1256
 msgid "Pentagon"
 msgstr ""
 
-#: FImageProperty.class:1242
+#: FImageProperty.class:1257
 msgid "Hexagon"
 msgstr ""
 
-#: FImageProperty.form:138 FOption.form:229 FReportBrushChooser.form:49
+#: FImageProperty.form:142 FOption.form:279 FReportBrushChooser.form:49
 msgid "Color"
 msgstr "-"
 
-#: FImageProperty.form:168
+#: FImageProperty.form:172
 msgid "Gradient"
 msgstr ""
 
-#: FImageProperty.form:184 FReportBrushChooser.form:49
+#: FImageProperty.form:188 FReportBrushChooser.form:49
 msgid "Linear gradient"
 msgstr "Degradat lineal"
 
-#: FImageProperty.form:191 FReportBrushChooser.form:49
+#: FImageProperty.form:195 FReportBrushChooser.form:49
 msgid "Radial gradient"
 msgstr "Degradat radial"
 
-#: FImageProperty.form:215 FReportBrushChooser.form:111
+#: FImageProperty.form:219 FReportBrushChooser.form:111
 msgid "Add gradient stop"
 msgstr "Afegir punt de degradat"
 
-#: FImageProperty.form:221 FReportBrushChooser.form:117
+#: FImageProperty.form:225 FReportBrushChooser.form:117
 msgid "Remove gradient stop"
 msgstr "Treure punt de degradat"
 
-#: FImageProperty.form:227
+#: FImageProperty.form:231 FReportBrushChooser.form:123
 #, fuzzy
 msgid "Select gradient stop color"
 msgstr "Seleccioneu el color del punt de degradat..."
 
-#: FImageProperty.form:233 FReportBrushChooser.form:129
+#: FImageProperty.form:237 FReportBrushChooser.form:129
 msgid "Invert gradient"
 msgstr "Inverteix el gradiant"
 
-#: FImageProperty.form:255 FReportBrushChooser.form:145
+#: FImageProperty.form:259 FReportBrushChooser.form:145
 msgid "Radius"
 msgstr "Radi"
 
-#: FImageProperty.form:322
+#: FImageProperty.form:326
 msgid "Clipboard"
 msgstr ""
 
-#: FImageProperty.form:334
+#: FImageProperty.form:338
 msgid "Shapes"
 msgstr ""
 
-#: FImageProperty.form:359
+#: FImageProperty.form:363
 msgid "Stroke"
 msgstr ""
 
-#: FImageProperty.form:367
+#: FImageProperty.form:371 FTranslate.class:1744
 msgid "Fill"
 msgstr ""
 
-#: FImageProperty.form:383
+#: FImageProperty.form:391
 #, fuzzy
 msgid "Colorize"
 msgstr "-"
 
-#: FImageProperty.form:391
+#: FImageProperty.form:399
 #, fuzzy
 msgid "Desaturate"
 msgstr "Característiques"
 
-#: FImageProperty.form:399
+#: FImageProperty.form:407
 #, fuzzy
 msgid "Make transparent"
 msgstr "Desa la traducció"
 
-#: FImageProperty.form:409
+#: FImageProperty.form:417
 #, fuzzy
 msgid "Line cap"
 msgstr "Línia"
 
-#: FImageProperty.form:414
+#: FImageProperty.form:422
 #, fuzzy
 msgid "Line join"
 msgstr "Línia"
 
-#: FImageProperty.form:419
+#: FImageProperty.form:427
 msgid "Fill rule"
 msgstr ""
 
-#: FImageProperty.form:437
+#: FImageProperty.form:445
 msgid "Opacity"
 msgstr ""
 
-#: FImageProperty.form:456 FSelectIcon.form:54 FTranslate.class:69
+#: FImageProperty.form:464 FSelectIcon.form:54 FTranslate.class:79
 msgid "Size"
 msgstr "Mida"
 
-#: FImageProperty.form:473
+#: FImageProperty.form:481
 msgid "Tolerance"
 msgstr ""
 
-#: FImageProperty.form:492
+#: FImageProperty.form:500
 msgid "Roundness"
 msgstr ""
 
-#: FImageProperty.form:518
+#: FImageProperty.form:526
 msgid "Effects"
 msgstr ""
 
-#: FImageProperty.form:528
+#: FImageProperty.form:536
 msgid "Brightness"
 msgstr ""
 
-#: FImageProperty.form:546
+#: FImageProperty.form:555
 msgid "Contrast"
 msgstr ""
 
-#: FImageProperty.form:564
+#: FImageProperty.form:574
 msgid "Gamma"
 msgstr ""
 
-#: FImageProperty.form:582
+#: FImageProperty.form:593
 msgid "Lightness"
 msgstr ""
 
-#: FImageProperty.form:600
+#: FImageProperty.form:612
 msgid "Hue"
 msgstr ""
 
-#: FImageProperty.form:618
+#: FImageProperty.form:631
 msgid "Saturation"
 msgstr ""
 
-#: FImageProperty.form:636
+#: FImageProperty.form:650
 msgid "Blur"
 msgstr ""
 
-#: FImageProperty.form:653
+#: FImageProperty.form:667
 #, fuzzy
 msgid "Transparency"
 msgstr "Traducció"
 
-#: FImageProperty.form:675 FImportTable.form:189
+#: FImageProperty.form:690 FImportTable.form:189
 msgid "Preview"
 msgstr "Vista prèvia"
 
-#: FImageProperty.form:687 FOption.form:1458 FProjectProperty.form:914
+#: FImageProperty.form:702 FProjectProperty.form:920
 msgid "Reset"
 msgstr "Reinicialitza"
 
-#: FImageProperty.form:694 FMain.form:468 FPatch.form:69
+#: FImageProperty.form:709 FMain.form:477 FPatch.form:69
 msgid "Apply"
 msgstr ""
 
-#: FImageProperty.form:720
+#: FImageProperty.form:735
 msgid "Centered"
 msgstr ""
 
-#: FImageProperty.form:729
+#: FImageProperty.form:745
 msgid "Right align"
 msgstr ""
 
-#: FImageProperty.form:738
+#: FImageProperty.form:754
 msgid "Left align"
 msgstr ""
 
-#: FImageProperty.form:752
+#: FImageProperty.form:767
 msgid "Top align"
 msgstr ""
 
-#: FImageProperty.form:762
+#: FImageProperty.form:776
 msgid "Middle align"
 msgstr ""
 
-#: FImageProperty.form:771
+#: FImageProperty.form:786
 msgid "Baseline align"
 msgstr ""
 
-#: FImageProperty.form:780
+#: FImageProperty.form:795
 msgid "Bottom align"
 msgstr ""
 
-#: FImageProperty.form:813
+#: FImageProperty.form:831
 msgid "Grid resolution"
 msgstr ""
 
-#: FImageProperty.form:827
-msgid "Subdivision"
+#: FImageProperty.form:850
+msgid "Grid snap"
+msgstr ""
+
+#: FImageProperty.form:863
+msgid "Draw diagonals"
 msgstr ""
 
 #: FImageQuality.form:10
@@ -2905,7 +3081,7 @@ msgstr "Importa el fitxer"
 msgid "Create symbolic links"
 msgstr ""
 
-#: FImportTable.class:58 FSearch.form:173 FTranslate.class:1262
+#: FImportTable.class:58 FSearch.form:171 FTranslate.class:1364
 msgid "All files"
 msgstr "Tots els fitxers"
 
@@ -2957,10 +3133,6 @@ msgstr "Origen"
 msgid "Charset"
 msgstr "Joc de caràcters"
 
-#: FImportTable.form:90 FTextEditor.form:307
-msgid "End of line"
-msgstr "Final de línia"
-
 #: FImportTable.form:125
 msgid "Strip useless white spaces"
 msgstr "Elimina els espais blancs innecessaris"
@@ -2997,7 +3169,7 @@ msgstr "Segur que vols esborrar la llista?"
 msgid "Edit list property"
 msgstr "Edita la llista de propietats"
 
-#: FList.form:59 FMenu.form:85 FProjectProperty.form:712
+#: FList.form:59 FMenu.form:86 FProjectProperty.form:712
 msgid "Insert"
 msgstr ""
 
@@ -3006,51 +3178,51 @@ msgstr ""
 msgid "Invert"
 msgstr "Converteix"
 
-#: FMain.class:228
+#: FMain.class:245
 msgid "Do you really want to delete this link ?"
 msgstr "Segur que voleu esborrar aquest enllaç?"
 
-#: FMain.class:231
+#: FMain.class:248
 msgid "Do you really want to delete this directory ?"
 msgstr "Esteu segur que voleu esborrar aquest directori?"
 
-#: FMain.class:243
+#: FMain.class:260
 msgid "Do you really want to delete this file ?"
 msgstr "Esteu segur que voleu esborrar aquest fitxer?"
 
-#: FMain.class:250
+#: FMain.class:267
 msgid "Cannot delete file or directory"
 msgstr "No s'ha pogut suprimir el fitxer o directori"
 
-#: FMain.class:268
+#: FMain.class:285
 msgid "File or directory does not exist anymore."
 msgstr "El fitxer o directori ja no existeix."
 
-#: FMain.class:697
+#: FMain.class:735
 msgid "Sort history"
 msgstr "Ordena l'historial"
 
-#: FMain.class:701 FOpenProject.form:77 FWelcome.form:33
+#: FMain.class:739 FOpenProject.form:77 FWelcome.form:33
 msgid "Sort by date"
 msgstr "Ordena per data"
 
-#: FMain.class:701 FOpenProject.form:86 FWelcome.form:41
+#: FMain.class:739 FOpenProject.form:86 FWelcome.form:41
 msgid "Sort by name"
 msgstr "Ordena per nom"
 
-#: FMain.class:701 FOpenProject.form:94 FWelcome.form:48
+#: FMain.class:739 FOpenProject.form:94 FWelcome.form:48
 msgid "Sort by path"
 msgstr "Ordena per camí"
 
-#: FMain.class:713
+#: FMain.class:751
 msgid "&Clear history"
 msgstr "&Neteja l'historial"
 
-#: FMain.class:897
+#: FMain.class:935
 msgid "New folder"
 msgstr "Carpeta nova"
 
-#: FMain.class:968
+#: FMain.class:1006
 msgid ""
 "The GNU translation tools are not installed on your system.\n"
 "\n"
@@ -3060,39 +3232,39 @@ msgstr ""
 "\n"
 "Instaŀleu-les per a poder fer les traduccions."
 
-#: FMain.class:1689
+#: FMain.class:1722
 msgid "Unable to drop file into the project."
 msgstr "No s'ha pogut deixar anar el fitxer al projecte."
 
-#: FMain.class:1813
+#: FMain.class:1847
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "Totes les còpies de seguretat i els fitxers generats se suprimiran del directori del projecte."
 
-#: FMain.class:1813
+#: FMain.class:1847
 msgid "Clean"
 msgstr "Neteja"
 
-#: FMain.class:2129
+#: FMain.class:2164
 msgid "Do you really want to add every file to the repository?"
 msgstr ""
 
-#: FMain.class:2251
+#: FMain.class:2304
 msgid "Choose a profile"
 msgstr ""
 
-#: FMain.class:2252
+#: FMain.class:2305
 msgid "Profile for &1 project"
 msgstr ""
 
-#: FMain.class:2489 FProperty.class:1037
+#: FMain.class:2561 FProperty.class:1046
 msgid "Select a file"
 msgstr "Seleccioneu un fitxer"
 
-#: FMain.class:2504
+#: FMain.class:2576
 msgid "This file is located inside the project."
 msgstr ""
 
-#: FMain.class:2638 Project.module:789
+#: FMain.class:2710 Project.module:846
 msgid ""
 "The file has been modified.\n"
 "\n"
@@ -3102,408 +3274,420 @@ msgstr ""
 "\n"
 "Tots els vostres canvis es perdran."
 
-#: FMain.form:274 FWelcome.class:67
+#: FMain.class:2821
+#, fuzzy
+msgid "Edit arguments"
+msgstr "Argument incorrecte"
+
+#: FMain.form:283 FWelcome.class:69
 msgid "Open project"
 msgstr "Obre projecte"
 
-#: FMain.form:280
+#: FMain.form:289
 msgid "Open recent"
 msgstr "Obre recent"
 
-#: FMain.form:288
+#: FMain.form:297
 msgid "Open example"
 msgstr "Obre exemple"
 
-#: FMain.form:297 FWelcome.class:72
+#: FMain.form:306 FWelcome.class:74
 msgid "Open file"
 msgstr ""
 
-#: FMain.form:306
+#: FMain.form:315
 msgid "Save project"
 msgstr "Desa projecte"
 
-#: FMain.form:314 FSaveProjectAs.form:19
+#: FMain.form:323 FSaveProjectAs.form:19
 msgid "Save project as"
 msgstr "Anomena i desa projecte"
 
-#: FMain.form:325
+#: FMain.form:334
 #, fuzzy
 msgid "Reload project"
 msgstr "Seleccioneu un projecte"
 
-#: FMain.form:334 FSave.class:28 FWelcome.class:74
+#: FMain.form:343 FSave.class:28 FWelcome.class:76
 msgid "Quit"
 msgstr "Surt"
 
-#: FMain.form:369
+#: FMain.form:378
 msgid "Save as"
 msgstr ""
 
-#: FMain.form:409
+#: FMain.form:418
 msgid "Compile"
 msgstr "Compila"
 
-#: FMain.form:416
+#: FMain.form:425
 msgid "Compile All"
 msgstr "Compila-ho tot"
 
-#: FMain.form:426
+#: FMain.form:435
 msgid "Translate"
 msgstr "Traducció"
 
-#: FMain.form:435
+#: FMain.form:444
 msgid "Make"
 msgstr "Crea"
 
-#: FMain.form:439
+#: FMain.form:448
 msgid "Executable"
 msgstr "Executable"
 
-#: FMain.form:446 FMakePatch.form:53
+#: FMain.form:455 FMakePatch.form:53
 msgid "Source archive"
 msgstr "Fitxer font"
 
-#: FMain.form:453
+#: FMain.form:462
 msgid "Installation package"
 msgstr "Paquet d'instaŀlació"
 
-#: FMain.form:460
+#: FMain.form:469
 msgid "Patch"
 msgstr ""
 
-#: FMain.form:463
+#: FMain.form:472
 msgid "Create"
 msgstr "Crea"
 
-#: FMain.form:475 FPublish.form:64
-msgid "Publish"
+#: FMain.form:501
+msgid "Undo synchronization"
 msgstr ""
 
-#: FMain.form:484 FProjectVersion.form:95
-msgid "Clean up"
-msgstr "Neteja"
-
-#: FMain.form:490
-msgid "Refresh"
-msgstr "Refresca"
-
-#: FMain.form:496
-msgid "Put on version control"
-msgstr "Poseu en el control de versions"
-
-#: FMain.form:513
-msgid "Version control"
+#: FMain.form:520
+msgid "Branch"
 msgstr ""
 
 #: FMain.form:525
+#, fuzzy
+msgid "Put under version control"
+msgstr "Poseu en el control de versions"
+
+#: FMain.form:531 FPublish.form:64
+msgid "Publish"
+msgstr ""
+
+#: FMain.form:540 FProjectVersion.form:95
+msgid "Clean up"
+msgstr "Neteja"
+
+#: FMain.form:546
+msgid "Refresh"
+msgstr "Refresca"
+
+#: FMain.form:568
 msgid "Run"
 msgstr "Executa"
 
-#: FMain.form:531
+#: FMain.form:574
 msgid "Run with"
 msgstr ""
 
-#: FMain.form:534
+#: FMain.form:577
 #, fuzzy
 msgid "No argument"
 msgstr "Argument incorrecte"
 
-#: FMain.form:545
+#: FMain.form:587
 msgid "Use terminal emulator"
 msgstr ""
 
-#: FMain.form:551
+#: FMain.form:593
 msgid "Redirect standard error output"
 msgstr ""
 
-#: FMain.form:557
+#: FMain.form:599
 msgid "Use embedded HTTP server"
 msgstr ""
 
-#: FMain.form:563
+#: FMain.form:605
 msgid "Activate profiling"
 msgstr ""
 
-#: FMain.form:569
+#: FMain.form:611
 msgid "GUI component"
 msgstr ""
 
-#: FMain.form:573
+#: FMain.form:615
 msgid "Current desktop"
 msgstr ""
 
-#: FMain.form:587
+#: FMain.form:629
 msgid "QT5"
 msgstr ""
 
-#: FMain.form:609
+#: FMain.form:651
 msgid "Pause"
 msgstr "Pausa"
 
-#: FMain.form:616
+#: FMain.form:658
 msgid "Stop"
 msgstr "Atura"
 
-#: FMain.form:623
+#: FMain.form:665
 msgid "Step"
 msgstr "Pas"
 
-#: FMain.form:630
+#: FMain.form:672
 msgid "Forward"
 msgstr "Endavant"
 
-#: FMain.form:637
+#: FMain.form:679
 msgid "Finish"
 msgstr "Acaba "
 
-#: FMain.form:646
+#: FMain.form:688
 msgid "Open profile"
 msgstr ""
 
-#: FMain.form:652
+#: FMain.form:694
 msgid "Clear all breakpoints"
 msgstr "Neteja tots els punt de ruptura"
 
-#: FMain.form:657
+#: FMain.form:699
 msgid "Close all debug windows"
 msgstr "Tanca totes les finestres de depuració"
 
-#: FMain.form:696
+#: FMain.form:738
 msgid "Status bar"
 msgstr "Barra d'estat"
 
-#: FMain.form:703
+#: FMain.form:745
 msgid "Hide menubar"
 msgstr "Amaga la barra de menús"
 
-#: FMain.form:727
+#: FMain.form:769
 msgid "Close all windows"
 msgstr "Tanca totes les finestres"
 
-#: FMain.form:734
+#: FMain.form:776
 msgid "Tools"
 msgstr ""
 
-#: FMain.form:738
+#: FMain.form:780
 msgid "Find"
 msgstr "Cerca"
 
-#: FMain.form:744 FSearch.form:76
+#: FMain.form:786 FSearch.form:74
 msgid "Replace"
 msgstr "Reemplaçar"
 
-#: FMain.form:754
+#: FMain.form:796
 msgid "Browse project"
 msgstr "Navega el projecte"
 
-#: FMain.form:761
+#: FMain.form:803
 msgid "Open a terminal"
 msgstr "Obre un terminal"
 
-#: FMain.form:768
+#: FMain.form:810
 msgid "Send project by mail"
 msgstr ""
 
-#: FMain.form:774
+#: FMain.form:816
 msgid "Update all forms"
 msgstr ""
 
-#: FMain.form:783 FWelcome.class:71
+#: FMain.form:825 FWelcome.class:73
 msgid "Software farm"
 msgstr ""
 
-#: FMain.form:792 FOption.form:553
+#: FMain.form:834
 msgid "Shortcuts"
 msgstr "Dreceres"
 
-#: FMain.form:798 FOption.form:217
+#: FMain.form:840 FOption.form:267
 msgid "Preferences"
 msgstr "Preferències"
 
-#: FMain.form:812
+#: FMain.form:854
 msgid "Directory"
 msgstr "Directori"
 
-#: FMain.form:817
+#: FMain.form:859
 msgid "Project link"
 msgstr "Enllaç del projecte"
 
-#: FMain.form:826
+#: FMain.form:868
 msgid "Module"
 msgstr "Mòdul"
 
-#: FMain.form:885
+#: FMain.form:927
 msgid "HTML file"
 msgstr "Fitxer HTML"
 
-#: FMain.form:892
+#: FMain.form:934
 msgid "Style sheet"
 msgstr "Fulla d'estil"
 
-#: FMain.form:899
+#: FMain.form:941
 msgid "Javascript file"
 msgstr ""
 
-#: FMain.form:907
+#: FMain.form:949
 msgid "Other"
 msgstr "Altres"
 
-#: FMain.form:918 FOpenProject.form:44
+#: FMain.form:960 FOpenProject.form:44
 msgid "Recent"
 msgstr "Recent"
 
-#: FMain.form:939
+#: FMain.form:981
 #, fuzzy
 msgid "Open in file manager"
 msgstr "Gestió de fitxers de configuració"
 
-#: FMain.form:944
+#: FMain.form:986
+#, fuzzy
+msgid "Open in project"
+msgstr "Obre projecte"
+
+#: FMain.form:990
 msgid "Open with"
 msgstr ""
 
-#: FMain.form:952
+#: FMain.form:998
 msgid "Compress all"
 msgstr ""
 
-#: FMain.form:958
+#: FMain.form:1004
 msgid "Uncompress all"
 msgstr ""
 
-#: FMain.form:1005
+#: FMain.form:1051
 msgid "Copy file path"
 msgstr "Copia el camí del fitxer"
 
-#: FMain.form:1014
+#: FMain.form:1060
 msgid "Startup class"
 msgstr "Classe d'inici"
 
-#: FMain.form:1029
+#: FMain.form:1075
 msgid "Add to repository"
 msgstr "Afegeix al dipòsit "
 
-#: FMain.form:1034 FSoftwareFarm.form:201
+#: FMain.form:1080 FSoftwareFarm.form:203
 msgid "Filter"
 msgstr ""
 
-#: FMain.form:1037
+#: FMain.form:1083
 msgid "Show exported classes"
 msgstr "Mostra les classes exportades"
 
-#: FMain.form:1042
+#: FMain.form:1088
 msgid "Show added files"
 msgstr "Desa els fitxers afegits"
 
-#: FMain.form:1047
+#: FMain.form:1093
+#, fuzzy
+msgid "Show modified files"
+msgstr "Desa els fitxers modificats"
+
+#: FMain.form:1098
 msgid "Show files in conflict"
 msgstr ""
 
-#: FMain.form:1055
+#: FMain.form:1106
 msgid "Show all"
 msgstr ""
 
-#: FMain.form:1061
-msgid "Add everything to repository"
-msgstr ""
-
-#: FMain.form:1067
+#: FMain.form:1118
 #, fuzzy
 msgid "Do not translate"
 msgstr "No traduïble"
 
-#: FMain.form:1084 FNewConnection.class:145
+#: FMain.form:1135 FNewConnection.class:159
 msgid "New connection"
 msgstr "Nova connexió"
 
-#: FMain.form:1160 FOutput.form:151
+#: FMain.form:1211 FOutput.form:161
 msgid "?"
 msgstr ""
 
-#: FMain.form:1178 FTips.form:18
+#: FMain.form:1229 FTips.form:18
 msgid "Tips of the day"
 msgstr "Consells del dia"
 
-#: FMain.form:1184
+#: FMain.form:1235
 msgid "Keyboard shortcuts"
 msgstr ""
 
-#: FMain.form:1193
-msgid "System informations"
-msgstr "Informacions del sistema"
+#: FMain.form:1244 FSystemInfo.form:15
+msgid "System information"
+msgstr "Informació del sistema"
 
-#: FMain.form:1252 FProjectProperty.form:139
+#: FMain.form:1303 FProjectProperty.form:140
 msgid "Project properties"
 msgstr "Propietats del projecte"
 
-#: FMain.form:1259
-msgid "Project version control"
-msgstr ""
-
-#: FMain.form:1267
+#: FMain.form:1311
 msgid "Refresh project"
 msgstr "Refresca projecte"
 
-#: FMain.form:1294 FMakeExecutable.form:15
+#: FMain.form:1338 FMakeExecutable.form:15
 msgid "Make executable"
 msgstr "Crea executable"
 
-#: FMain.form:1309
+#: FMain.form:1353
 msgid "Make source archive"
 msgstr "Crea fitxer font"
 
-#: FMain.form:1317 FMakeInstall.form:133
+#: FMain.form:1361 FMakeInstall.form:129
 msgid "Make installation package"
 msgstr "Crea paquet d'instaŀlació"
 
-#: FMain.form:1338
+#: FMain.form:1382
 msgid "Properties sheet"
 msgstr "Fulla de propietats"
 
-#: FMain.form:1347
+#: FMain.form:1391
 msgid "Toolbox"
 msgstr "Caixa d'eines"
 
-#: FMain.form:1365 FSearch.form:62
+#: FMain.form:1409 FSearch.form:60
 msgid "Search"
 msgstr "Cerca"
 
-#: FMain.form:1389
+#: FMain.form:1433
 msgid "Compile all"
 msgstr "Compila-ho tot"
 
-#: FMain.form:1432
+#: FMain.form:1476
 msgid "Finish current function"
 msgstr "Acaba la funció actual"
 
-#: FMain.form:1448
+#: FMain.form:1492
 #, fuzzy
 msgid "Show menubar"
 msgstr "Mostra nombres de línia"
 
-#: FMain.form:1508 FPublish.form:51
+#: FMain.form:1552 FPublish.form:51
 msgid "Publish software"
 msgstr ""
 
-#: FMain.form:1538
+#: FMain.form:1582
 msgid "&File"
 msgstr "&Fitxer"
 
-#: FMain.form:1561
+#: FMain.form:1606
 msgid "&Project"
 msgstr "&Projecte"
 
-#: FMain.form:1572
+#: FMain.form:1618
 msgid "&Debug"
 msgstr "&Depuració"
 
-#: FMain.form:1583
+#: FMain.form:1630
 msgid "&View"
 msgstr "&Visualitza"
 
-#: FMain.form:1594
+#: FMain.form:1642
 msgid "&Tools"
 msgstr "&Eines"
 
-#: FMain.form:1605
+#: FMain.form:1654
 msgid "&?"
 msgstr "-"
 
@@ -3548,7 +3732,7 @@ msgstr ""
 msgid "Creating packages..."
 msgstr "Creant paquet..."
 
-#: FMakeInstall.class:268 Package.module:294
+#: FMakeInstall.class:268 Package.module:296
 msgid "The packages have been successfully created."
 msgstr "Els paquets s'han creat satisfactòriament."
 
@@ -3641,118 +3825,114 @@ msgstr "Esteu segur que voleu suprimir tots els fitxers extres?"
 msgid "Select the destination directory"
 msgstr "Trieu el directori de destinació"
 
-#: FMakeInstall.form:147
+#: FMakeInstall.form:143
 msgid "Create package"
 msgstr "Crea el paquet"
 
-#: FMakeInstall.form:151
+#: FMakeInstall.form:146
 msgid "Package information"
 msgstr "Informació del paquet"
 
-#: FMakeInstall.form:157
+#: FMakeInstall.form:152
 msgid "Package name"
 msgstr "Nom del paquet"
 
-#: FMakeInstall.form:178 FOption.form:377
+#: FMakeInstall.form:173 FOption.form:431
 msgid "Add vendor prefix or name to package names"
 msgstr ""
 
-#: FMakeInstall.form:185
+#: FMakeInstall.form:180
 msgid "Package version"
 msgstr ""
 
-#: FMakeInstall.form:202 FOption.form:309 FPublish.form:84
+#: FMakeInstall.form:198 FOption.form:363 FPublish.form:84
 msgid "Vendor name"
 msgstr "Nom del proveïdor"
 
-#: FMakeInstall.form:218 FOption.form:326
+#: FMakeInstall.form:214 FOption.form:380
 #, fuzzy
 msgid "Vendor prefix"
 msgstr "Nom del proveïdor"
 
-#: FMakeInstall.form:232
+#: FMakeInstall.form:228
 msgid "Maintainer information"
 msgstr "Informació del mantenidor"
 
-#: FMakeInstall.form:272 FOption.form:361
+#: FMakeInstall.form:268 FOption.form:415
 msgid "URL"
 msgstr ""
 
-#: FMakeInstall.form:310
-msgid "License"
-msgstr "Llicència"
-
-#: FMakeInstall.form:321
+#: FMakeInstall.form:317
 msgid "Changelog"
 msgstr "Registre de canvis"
 
-#: FMakeInstall.form:341
+#: FMakeInstall.form:337
 msgid "Target distribution"
 msgstr "Distribució destí"
 
-#: FMakeInstall.form:610
+#: FMakeInstall.form:580
 msgid "Self-extractible"
 msgstr ""
 
-#: FMakeInstall.form:615
+#: FMakeInstall.form:585
 msgid "Package group"
 msgstr "Grup del paquet"
 
-#: FMakeInstall.form:635
+#: FMakeInstall.form:605
 msgid "Menu entry"
 msgstr "Entrada de menú"
 
-#: FMakeInstall.form:657
+#: FMakeInstall.form:627
 msgid "Categories"
 msgstr "Categories"
 
-#: FMakeInstall.form:666
+#: FMakeInstall.form:636
 msgid "Desktop configuration file"
 msgstr "Fitxer de configuració d'escriptori"
 
-#: FMakeInstall.form:672
+#: FMakeInstall.form:642
 msgid "Mimetypes"
 msgstr "Tipus mime"
 
-#: FMakeInstall.form:680
+#: FMakeInstall.form:650
 msgid ""
 "Enter the mimetypes handled by your application there.\n"
 "Please enter one mimetype by line.\n"
 msgstr ""
 
-#: FMakeInstall.form:692
+#: FMakeInstall.form:662
 msgid "Additional configuration"
 msgstr "Configuració addicional"
 
-#: FMakeInstall.form:700
+#: FMakeInstall.form:670
 msgid "The following will be added to the end of the desktop configuration file."
 msgstr "El que segueix s'afegirà al final del fitxer de configuració d'escriptori."
 
-#: FMakeInstall.form:708
+#: FMakeInstall.form:678
 msgid "Extra dependencies"
 msgstr "Dépendances supplémentaires"
 
-#: FMakeInstall.form:712
+#: FMakeInstall.form:682
 msgid "Same dependencies for all targets"
 msgstr "Les mateixes dependències per a tots els objectius"
 
-#: FMakeInstall.form:768
+#: FMakeInstall.form:738
 msgid "Extra files"
 msgstr "Fitxers extres"
 
-#: FMakeInstall.form:772
+#: FMakeInstall.form:742
 msgid "Same files for all targets"
 msgstr "Els mateixos fitxers per atots els objectius"
 
-#: FMakeInstall.form:785
+#: FMakeInstall.form:755
 msgid "Extra files must be located in the <b>Project</b> folder of the current project, i.e. the <tt>.hidden</tt> directory of the project on the disk."
 msgstr ""
 
-#: FMakeInstall.form:843
+#: FMakeInstall.form:813
 msgid "Extra autoconf tests"
 msgstr "Proves extres de l'autoconf"
 
-#: FMakeInstall.form:849
+#: FMakeInstall.form:819
 msgid ""
 "Add extra tests for the configuration process.\n"
 "<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
@@ -3760,19 +3940,19 @@ msgstr ""
 "Afegiu proves extres durant el procés de configuració.\n"
 "<p><b>Deixeu-ho en blanc si no ho necessiteu, o si no sabeu res d'scripts de l'<i>autoconf</i>.</b>"
 
-#: FMakeInstall.form:857
+#: FMakeInstall.form:827
 msgid "Destination directory"
 msgstr "Directori de destinació"
 
-#: FMakeInstall.form:866
+#: FMakeInstall.form:836
 msgid "Create directories for each distribution"
 msgstr "Crea directoris per a cada distribució"
 
-#: FMakeInstall.form:897
+#: FMakeInstall.form:867
 msgid "Commands output"
 msgstr ""
 
-#: FMakeInstall.form:943
+#: FMakeInstall.form:913
 #, fuzzy
 msgid "Create package now"
 msgstr "Crea el paquet"
@@ -3833,7 +4013,7 @@ msgstr ""
 msgid "*.gz;*.bz2;*.xz"
 msgstr ""
 
-#: FMakePatch.form:98 Project.module:4765
+#: FMakePatch.form:98 Project.module:4569
 msgid "Source packages"
 msgstr "Paquets font"
 
@@ -3853,113 +4033,125 @@ msgstr ""
 msgid "Patch/Diff files"
 msgstr ""
 
-#: FMenu.class:72
+#: FMenu.class:74
 msgid "Menus have been modified!"
 msgstr "S'han modificat els menús!"
 
-#: FMenu.class:306
+#: FMenu.class:312
 msgid "Please enter a menu name."
 msgstr "Introduïu un nom de menú."
 
-#: FMenu.class:312
+#: FMenu.class:318
 msgid "Bad menu name !"
 msgstr "Nom de menú incorrecte !"
 
-#: FMenu.class:318
+#: FMenu.class:324
 msgid "Bad group name !"
 msgstr "Nom de grup incorrecte !"
 
-#: FMenu.class:613
+#: FMenu.class:624
 msgid "This menu is too deep !"
 msgstr "Aquest menú té masses nivells !"
 
-#: FMenu.class:996 Project.module:5622
+#: FMenu.class:1063 Project.module:5428
 msgid "modified"
 msgstr "modificat"
 
-#: FMenu.form:83
+#: FMenu.form:84
 msgid "Insert menu"
 msgstr "Insereix el menú"
 
-#: FMenu.form:91
-msgid "Insert menu after"
-msgstr ""
+#: FMenu.form:92
+#, fuzzy
+msgid "Insert separator"
+msgstr "Insereix color"
 
-#: FMenu.form:93
-msgid "Insert after"
-msgstr ""
+#: FMenu.form:100
+#, fuzzy
+msgid "Insert menu before"
+msgstr "Insereix el menú"
 
-#: FMenu.form:99
+#: FMenu.form:102
+#, fuzzy
+msgid "Insert before"
+msgstr "Insereix color"
+
+#: FMenu.form:108
 msgid "Delete menu"
 msgstr ""
 
-#: FMenu.form:376
+#: FMenu.form:201
 msgid "Click on Insert to add a new menu."
 msgstr "Feu clic a insereix per afegir un menú."
 
-#: FNewConnection.class:90
+#: FNewConnection.class:104
 msgid "Please enter the name of the database."
 msgstr "Introduïu el nom de la base de dades."
 
-#: FNewConnection.class:131
+#: FNewConnection.class:145
 msgid "Please enter password"
 msgstr "Introduïu la contrasenya"
 
-#: FNewConnection.class:133
+#: FNewConnection.class:147
 msgid "Connection properties"
 msgstr "Propietats de la connexió"
 
-#: FNewConnection.class:164
+#: FNewConnection.class:178
 msgid "Select a directory"
 msgstr "Trieu un directori"
 
-#: FNewConnection.class:215
+#: FNewConnection.class:229
 #, fuzzy
 msgid "Create database"
 msgstr "Creeu la base de dades '&1'"
 
-#: FNewConnection.class:227
+#: FNewConnection.class:241
 #, fuzzy
 msgid "Delete database"
 msgstr "Esborreu la base de dades '&1'"
 
-#: FNewConnection.class:369
+#: FNewConnection.class:393
 msgid "Unable to create database."
 msgstr "No s'ha pogut crear la base de dades."
 
-#: FNewConnection.class:378
+#: FNewConnection.class:402
 msgid "Do you really want to delete the database '&1'?"
 msgstr "Segur que voleu esborrar la base de dades '&1'?"
 
-#: FNewConnection.class:389
+#: FNewConnection.class:413
 msgid "Unable to delete database."
 msgstr "No s'ha pogut esborrar la base de dades."
 
-#: FNewConnection.form:98 FProxy.form:32
+#: FNewConnection.form:99 FProxy.form:32
 msgid "Host"
 msgstr "Màquina"
 
-#: FNewConnection.form:123
+#: FNewConnection.form:124
 msgid "Path"
 msgstr "Ruta"
 
-#: FNewConnection.form:184 Project.module:224
+#: FNewConnection.form:154
+#, fuzzy
+msgid "No password"
+msgstr "Configura la vora"
+
+#: FNewConnection.form:189 Project.module:229
 msgid "Database"
 msgstr "Base de dades"
 
-#: FNewConnection.form:236
+#: FNewConnection.form:241
 msgid "From"
 msgstr ""
 
-#: FNewConnection.form:260
+#: FNewConnection.form:265
 msgid "Ignore database charset"
 msgstr "Ignora el joc de caràcters de la base de dades"
 
-#: FNewConnection.form:274
+#: FNewConnection.form:279
 msgid "Display metadata"
 msgstr ""
 
-#: FNewConnection.form:288
+#: FNewConnection.form:293
 msgid "Remember database structure"
 msgstr ""
 
@@ -3971,7 +4163,7 @@ msgstr "Crea una taula"
 msgid "Please enter the name of the new table."
 msgstr "Introduïu el nom de la taula nova."
 
-#: FNewTable.class:59 MConnection.module:302
+#: FNewTable.class:59 MConnection.module:319
 msgid "Table '&1' already exists."
 msgstr "La taula '&1' ja existeix."
 
@@ -3983,7 +4175,7 @@ msgstr "Nova traducció"
 msgid "Select a project"
 msgstr "Seleccioneu un projecte"
 
-#: FOpenProject.form:109 FSoftwareFarm.class:44 FWelcome.class:69
+#: FOpenProject.form:109 FSoftwareFarm.class:44 FWelcome.class:71
 msgid "Examples"
 msgstr "Exemples"
 
@@ -4040,410 +4232,477 @@ msgstr "Visual"
 msgid "Zen"
 msgstr ""
 
-#: FOption.class:82
+#: FOption.class:83
 msgid "Custom"
 msgstr ""
 
-#: FOption.class:84
+#: FOption.class:85
 msgid "Desktop"
 msgstr "Escriptori"
 
-#: FOption.class:85 FTranslate.class:137
+#: FOption.class:86 FTranslate.class:149
 msgid "(Default)"
 msgstr "(Per defecte)"
 
-#: FOption.class:173
+#: FOption.class:187
 msgid "Define..."
 msgstr "Defineix..."
 
-#: FOption.class:223
+#: FOption.class:236
 msgid "Gambas highlight theme files"
 msgstr "Fitxers de temes ressaltats del Gambas"
 
-#: FOption.class:224
+#: FOption.class:237
 msgid "Export a theme file"
 msgstr "Exporteu un fitxer de tema"
 
-#: FOption.class:409
+#: FOption.class:462
 msgid "Select a theme file"
 msgstr "Trieu un fitxer de tema"
 
-#: FOption.class:432
+#: FOption.class:492
 msgid "You need to restart the application to see your changes."
 msgstr "Heu de reiniciar l'aplicació per veure els vostres canvis."
 
-#: FOption.class:748
+#: FOption.class:863
 msgid "Do you really want to clear the documentation cache?"
 msgstr "Segur que voleu netejar la memòria cau de la documentació?"
 
-#: FOption.class:757
+#: FOption.class:872
 #, fuzzy
 msgid "Unable to clear documentation cache."
 msgstr "Neteja la memòria cau de la documentació"
 
-#: FOption.class:913
+#: FOption.class:1032
 msgid "Do you really want to delete this snippet?"
 msgstr "Segur que voleu esborrar aquest fragment de codi?"
 
-#: FOption.class:1101
-msgid "Do you really want to reset the list to its default value?"
-msgstr ""
-
-#: FOption.class:1180
+#: FOption.class:1231
 msgid "Do you really want to install the Gambas font to your personal font directory?"
 msgstr ""
 
-#: FOption.class:1180 FSoftwareFarm.form:386
+#: FOption.class:1231 FSoftwareFarm.class:593
 msgid "Install"
 msgstr ""
 
-#: FOption.class:1290
-msgid "Unable to download documentation."
+#: FOption.class:1316
+msgid "Network is not available."
 msgstr ""
 
-#: FOption.class:1300
+#: FOption.class:1321
+msgid "Documentation is up to date."
+msgstr ""
+
+#: FOption.class:1326
+msgid "A new documentation is available!"
+msgstr ""
+
+#: FOption.class:1331 MHelp.module:904
+msgid "Documentation is not available."
+msgstr ""
+
+#: FOption.class:1527
+#, fuzzy
+msgid "Cannot download '&1'."
+msgstr "No es pot suprimir la taula '&1'."
+
+#: FOption.class:1558
 msgid "Unable to uncompress documentation."
 msgstr ""
 
-#: FOption.class:1309
+#: FOption.class:1569
 #, fuzzy
 msgid "Unable to install documentation."
 msgstr "No s'ha pogut obrir la connexió."
 
-#: FOption.class:1334
-msgid "Network is not available."
+#: FOption.form:297
+msgid "Dotted"
 msgstr ""
 
-#: FOption.class:1339
-msgid "Documentation is up to date."
-msgstr ""
-
-#: FOption.class:1344
-#, fuzzy
-msgid "'wget' is not found."
-msgstr "No s'ha trobat el fitxer!"
-
-#: FOption.class:1349
-msgid "A new documentation is available!"
-msgstr ""
-
-#: FOption.class:1354 MHelp.module:896
-msgid "Documentation is not available."
-msgstr ""
-
-#: FOption.form:254
+#: FOption.form:308
 #, fuzzy
 msgid "Identity"
 msgstr "Sagnar"
 
-#: FOption.form:298
+#: FOption.form:352
 #, fuzzy
 msgid "Package maintainer"
 msgstr "Nom del paquet"
 
-#: FOption.form:343
+#: FOption.form:397
 #, fuzzy
 msgid "Default license"
 msgstr "Valor per omissió"
 
-#: FOption.form:383 FProjectProperty.form:424
+#: FOption.form:437 VersionControl.module:492
 msgid "No"
 msgstr "No"
 
-#: FOption.form:383 FProjectProperty.form:424
+#: FOption.form:437 VersionControl.module:492
 msgid "Yes"
 msgstr "Sí"
 
-#: FOption.form:387
-msgid "Interface"
-msgstr "Interfície"
+#: FOption.form:441
+#, fuzzy
+msgid "Projects"
+msgstr "Projecte"
 
-#: FOption.form:404
-msgid "Icon theme"
-msgstr "Tema d'icones"
-
-#: FOption.form:421
-msgid "Sort properties"
-msgstr "Ordena propietats"
-
-#: FOption.form:438
-msgid "Minimize at runtime"
-msgstr "Minimitza en executar"
-
-#: FOption.form:455
-msgid "Use utility windows"
-msgstr "Fer servir finestres d'utilitat"
-
-#: FOption.form:472
-msgid "Toolbox size"
-msgstr "Mida de la caixa d'eines"
-
-#: FOption.form:478
-msgid "Large"
-msgstr ""
-
-#: FOption.form:478 FProjectProperty.form:296 FWebFontChooser.form:61
-msgid "Normal"
-msgstr "Normal"
-
-#: FOption.form:478
-msgid "Small"
-msgstr "Petit"
-
-#: FOption.form:490
-msgid "Restore files when loading a project"
-msgstr ""
-
-#: FOption.form:507
-msgid "Show tooltips"
-msgstr "Mostra consells"
-
-#: FOption.form:524
-msgid "Show file name in window title"
-msgstr ""
-
-#: FOption.form:541
-msgid "Quiet external commands"
-msgstr "Ordres externes ocultes"
-
-#: FOption.form:563
-msgid "Configure shortcuts"
-msgstr ""
-
-#: FOption.form:568
-msgid "Fonts"
-msgstr "-"
-
-#: FOption.form:601
-msgid "Global size"
-msgstr ""
-
-#: FOption.form:623
-msgid "Title size"
-msgstr ""
-
-#: FOption.form:677
-msgid "Install Gambas font for code edition"
-msgstr ""
-
-#: FOption.form:706
+#: FOption.form:458
 msgid "Default tab size"
 msgstr "Mida de tabulació predeterminada"
 
-#: FOption.form:723 FProjectProperty.form:768
+#: FOption.form:475 FProjectProperty.form:769
 msgid "space(s)"
 msgstr "espai(s)"
 
-#: FOption.form:736
+#: FOption.form:488
 msgid "Indent with tab by default"
 msgstr ""
 
-#: FOption.form:753
+#: FOption.form:505
 msgid "Automatic word wrap by default"
 msgstr ""
 
-#: FOption.form:770
-msgid "Show indentation with vertical lines"
-msgstr ""
-
-#: FOption.form:787
-msgid "Highlight current line"
-msgstr "Ressalta la línia actual"
-
-#: FOption.form:804
-msgid "Highlight modified lines"
-msgstr "Ressalta les línies modificades"
-
-#: FOption.form:821
-msgid "Show line numbers"
-msgstr "Mostra nombres de línia"
-
-#: FOption.form:838
-msgid "Procedure folding"
-msgstr ""
-
-#: FOption.form:856
+#: FOption.form:523
 msgid "Fold procedures by default"
 msgstr "Plegar procediments per defecte"
 
-#: FOption.form:873
+#: FOption.form:540
+#, fuzzy
+msgid "Activate version control"
+msgstr "Poseu en el control de versions"
+
+#: FOption.form:557
+msgid "Restore files when loading a project"
+msgstr ""
+
+#: FOption.form:569
+#, fuzzy
+msgid "Images"
+msgstr "Imatge"
+
+#: FOption.form:581
+msgid "Compress PNG images with "
+msgstr ""
+
+#: FOption.form:615
+#, fuzzy
+msgid "Automatic translation with "
+msgstr "Extensió automàtica"
+
+#: FOption.form:644
+#, fuzzy
+msgid "Translation engine"
+msgstr "Fitxers de traducció"
+
+#: FOption.form:653
+msgid "Interface"
+msgstr "Interfície"
+
+#: FOption.form:670
+#, fuzzy
+msgid "Activate animations"
+msgstr "Activa el fragmentat de codi"
+
+#: FOption.form:687
+#, fuzzy
+msgid "Show shadows"
+msgstr "Mostra la finestra de cerca"
+
+#: FOption.form:704
+msgid "Show tooltips"
+msgstr "Mostra consells"
+
+#: FOption.form:721
+msgid "Use utility windows"
+msgstr "Fer servir finestres d'utilitat"
+
+#: FOption.form:738
+msgid "Close tabs with middle mouse click"
+msgstr ""
+
+#: FOption.form:755
+msgid "Show file name in window title"
+msgstr ""
+
+#: FOption.form:772
+msgid "Toolbox size"
+msgstr "Mida de la caixa d'eines"
+
+#: FOption.form:778
+msgid "Large"
+msgstr ""
+
+#: FOption.form:778 FProjectProperty.form:304
+msgid "Normal"
+msgstr "Normal"
+
+#: FOption.form:778
+msgid "Small"
+msgstr "Petit"
+
+#: FOption.form:790
+msgid "Sort properties"
+msgstr "Ordena propietats"
+
+#: FOption.form:807
+msgid "Separate static symbols in method selector"
+msgstr ""
+
+#: FOption.form:824
+msgid "Minimize at runtime"
+msgstr "Minimitza en executar"
+
+#: FOption.form:841
+msgid "Show debugging panel if needed"
+msgstr ""
+
+#: FOption.form:858
+msgid "Quiet external commands"
+msgstr "Ordres externes ocultes"
+
+#: FOption.form:867
+msgid "Fonts"
+msgstr "-"
+
+#: FOption.form:900
+msgid "Global size"
+msgstr ""
+
+#: FOption.form:922
+msgid "Title size"
+msgstr ""
+
+#: FOption.form:944
+#, fuzzy
+msgid "Debugger size"
+msgstr "Depuració"
+
+#: FOption.form:993 MTheme.module:6
+msgid "Help"
+msgstr "Ajuda"
+
+#: FOption.form:1020
+#, fuzzy
+msgid "Fixed font"
+msgstr "Usar una font fixa"
+
+#: FOption.form:1036
+msgid "Zoom (browser excepted)"
+msgstr ""
+
+#: FOption.form:1066
+msgid "Install Gambas font for code edition"
+msgstr ""
+
+#: FOption.form:1070
+#, fuzzy
+msgid "Themes"
+msgstr "Tema"
+
+#: FOption.form:1087
+msgid "Icon theme"
+msgstr "Tema d'icones"
+
+#: FOption.form:1103
+#, fuzzy
+msgid "Highlighting theme"
+msgstr "Ressaltat"
+
+#: FOption.form:1117
+msgid "Import theme"
+msgstr "Importa tema"
+
+#: FOption.form:1123
+msgid "Export theme"
+msgstr "Exporta tema"
+
+#: FOption.form:1142
+msgid "Adapt colors to dark themes"
+msgstr ""
+
+#: FOption.form:1179
+msgid "Show indentation with vertical lines"
+msgstr ""
+
+#: FOption.form:1196
+msgid "Highlight current line"
+msgstr "Ressalta la línia actual"
+
+#: FOption.form:1213
+msgid "Highlight modified lines"
+msgstr "Ressalta les línies modificades"
+
+#: FOption.form:1230
+msgid "Show line numbers"
+msgstr "Mostra nombres de línia"
+
+#: FOption.form:1247
+msgid "Procedure folding"
+msgstr ""
+
+#: FOption.form:1264
 msgid "Procedure separation"
 msgstr "Separació de procediments"
 
-#: FOption.form:890
+#: FOption.form:1281
 msgid "Show spaces at end of line with dots"
 msgstr "Mostra els espais al final de la línia amb punts"
 
-#: FOption.form:907
+#: FOption.form:1298
 #, fuzzy
 msgid "Show Preview"
 msgstr "Vista prèvia"
 
-#: FOption.form:925
+#: FOption.form:1316
 msgid "Keywords in upper case"
 msgstr "Paraules clau en majúscules"
 
-#: FOption.form:935
-msgid "Theme"
-msgstr "Tema"
-
-#: FOption.form:951
-msgid "Color theme"
-msgstr ""
-
-#: FOption.form:965
-msgid "Import theme"
-msgstr "Importa tema"
-
-#: FOption.form:971
-msgid "Export theme"
-msgstr "Exporta tema"
-
-#: FOption.form:984
-msgid "Adapt colors to dark themes"
-msgstr ""
-
-#: FOption.form:999
+#: FOption.form:1325
 msgid "Code formatting"
 msgstr "formatat del codi"
 
-#: FOption.form:1005
+#: FOption.form:1331
 msgid "Automatic formatting"
 msgstr ""
 
-#: FOption.form:1016
+#: FOption.form:1342
 #, fuzzy
 msgid "Control structure completion"
 msgstr "Auto-completat d'estructura de control"
 
-#: FOption.form:1033
+#: FOption.form:1359
 #, fuzzy
 msgid "Local variable declaration"
 msgstr "Sagna la declaració local de variables"
 
-#: FOption.form:1050
+#: FOption.form:1376
 #, fuzzy
 msgid "Comments insertion"
 msgstr "Connexió"
 
-#: FOption.form:1067
+#: FOption.form:1393
 msgid "Close braces, brackets"
 msgstr ""
 
-#: FOption.form:1079
+#: FOption.form:1410
+#, fuzzy
+msgid "Close strings"
+msgstr "Ignora les cadenes"
+
+#: FOption.form:1422
 msgid "Explicit formating"
 msgstr ""
 
-#: FOption.form:1090
+#: FOption.form:1433
 msgid "Format on load & save"
 msgstr "Formateja en obrir i en desar"
 
-#: FOption.form:1107
+#: FOption.form:1450
 msgid "Indent local variable declaration"
 msgstr "Sagna la declaració local de variables"
 
-#: FOption.form:1124
+#: FOption.form:1467
 msgid "Remove useless spaces at end of line"
 msgstr "Treure els espais inútils a la final de la línia"
 
-#: FOption.form:1141
+#: FOption.form:1484
 msgid "Keep successive void lines"
 msgstr "Mantingues les successives línies buides"
 
-#: FOption.form:1150
+#: FOption.form:1493
 msgid "Code snippets"
 msgstr "Fragments de codi"
 
-#: FOption.form:1166
+#: FOption.form:1509
 msgid "Activate code snippets"
 msgstr "Activa el fragmentat de codi"
 
-#: FOption.form:1250
+#: FOption.form:1593
 msgid "Help & applications"
 msgstr ""
 
-#: FOption.form:1256 MTheme.module:6
-msgid "Help"
-msgstr "Ajuda"
-
-#: FOption.form:1267
+#: FOption.form:1610
 msgid "Display property help"
 msgstr "Mostra l'ajuda de la propietat"
 
-#: FOption.form:1284
+#: FOption.form:1627
 msgid "Show documentation in popups"
 msgstr "Mostra la documentació en finestres emergents"
 
-#: FOption.form:1301
+#: FOption.form:1644
 msgid "Always display optional messages"
 msgstr "Mostra sempre els missatges opcionals"
 
-#: FOption.form:1318
-msgid "Use offline help"
-msgstr ""
+#: FOption.form:1656
+#, fuzzy
+msgid "Documentation"
+msgstr "Emplaçament"
 
-#: FOption.form:1336
+#: FOption.form:1667
+#, fuzzy
+msgid "Use offline documentation"
+msgstr "No s'ha pogut obrir la connexió."
+
+#: FOption.form:1697
 msgid "Download documentation"
 msgstr ""
 
-#: FOption.form:1354
-msgid "Clear documentation cache"
-msgstr "Neteja la memòria cau de la documentació"
-
-#: FOption.form:1366 FProxy.form:20
+#: FOption.form:1723 FProxy.form:20
 msgid "Proxy configuration"
 msgstr ""
 
-#: FOption.form:1374
+#: FOption.form:1736
+msgid "Clear documentation cache"
+msgstr "Neteja la memòria cau de la documentació"
+
+#: FOption.form:1744
 msgid "Applications"
 msgstr "Aplicacions"
 
-#: FOption.form:1385
+#: FOption.form:1755
 msgid "Browser"
 msgstr "Navegador"
 
-#: FOption.form:1402
+#: FOption.form:1772 FVersionControl.form:45
 msgid "Terminal"
 msgstr "Terminal"
 
-#: FOption.form:1411
-msgid "Source archives"
-msgstr ""
-
-#: FOption.form:1424
-msgid "These files will be ignored when making source archives."
-msgstr ""
-
-#: FOutput.form:28
+#: FOutput.form:29
 msgid "Console - Gambas"
 msgstr "Consola - Gambas"
 
-#: FOutput.form:64
+#: FOutput.form:65
 msgid "Undock console"
 msgstr "Desacobla consola"
 
-#: FOutput.form:71
+#: FOutput.form:72
 msgid "Keep above"
 msgstr "Sempre per sobre"
 
-#: FOutput.form:77
+#: FOutput.form:78
 msgid "Clear console"
 msgstr "Neteja la consola"
 
-#: FOutput.form:95
+#: FOutput.form:85
+#, fuzzy
+msgid "Suspend terminal"
+msgstr "Obre un terminal"
+
+#: FOutput.form:104
 msgid "Entered text echo"
 msgstr ""
 
-#: FOutput.form:97
+#: FOutput.form:106
 msgid "Echo"
 msgstr ""
 
-#: FOutput.form:108
+#: FOutput.form:117
 #, fuzzy
 msgid "Open contents"
 msgstr "Obre recent"
 
-#: FOutput.form:121
+#: FOutput.form:130
 msgid "Use system charset"
 msgstr "Usa el joc de caràcters del sistema"
 
@@ -4487,43 +4746,47 @@ msgstr ""
 msgid "Select patch"
 msgstr ""
 
-#: FProfile.class:173
+#: FPatch.form:76 FProjectVersion.form:83
+msgid "Revert"
+msgstr "Desfer"
+
+#: FProfile.class:175
 msgid "Bad profile file format"
 msgstr ""
 
-#: FProfile.class:405
+#: FProfile.class:407
 msgid "&1 Mb"
 msgstr ""
 
-#: FProfile.class:405
+#: FProfile.class:407
 msgid "Total time &1 μs"
 msgstr ""
 
-#: FProfile.class:424
+#: FProfile.class:430
 msgid "Unable to load profile file: &1"
 msgstr ""
 
-#: FProfile.class:641
+#: FProfile.class:647
 msgid "Calls"
 msgstr ""
 
-#: FProfile.class:644
+#: FProfile.class:650
 msgid "Duration"
 msgstr ""
 
-#: FProfile.class:647
+#: FProfile.class:653
 msgid "Average"
 msgstr ""
 
-#: FProfile.class:650
+#: FProfile.class:656
 msgid "Self"
 msgstr ""
 
-#: FProfile.class:1049
+#: FProfile.class:1055
 msgid "Profile files"
 msgstr ""
 
-#: FProfile.class:1056
+#: FProfile.class:1062
 msgid "Unable to save profile."
 msgstr ""
 
@@ -4547,167 +4810,182 @@ msgstr ""
 msgid "Callers"
 msgstr ""
 
-#: FProjectProperty.class:140
+#: FProjectProperty.class:159
 msgid "Variable"
 msgstr "Variable"
 
-#: FProjectProperty.class:271
+#: FProjectProperty.class:292
 msgid "Snapping value is incorrect."
 msgstr "Els valors d'ajustament son incorrectes."
 
-#: FProjectProperty.class:740
+#: FProjectProperty.class:761
 msgid "<b>&1</b> does not export any class."
 msgstr "<b>&1</b> no exporta cap classe."
 
-#: FProjectProperty.class:748
+#: FProjectProperty.class:769
 msgid "<b>&1</b> is already used as a library."
 msgstr "<b>&1</b> ja s'utilitza com a biblioteca."
 
-#: FProjectProperty.class:918
+#: FProjectProperty.class:941
 #, fuzzy
 msgid "Executable size"
 msgstr "Executable"
 
-#: FProjectProperty.class:918
+#: FProjectProperty.class:941
 msgid "bytes"
 msgstr ""
 
-#: FProjectProperty.class:935
+#: FProjectProperty.class:958
 #, fuzzy
 msgid "Information about component"
 msgstr "Carregant informació del component &1..."
 
-#: FProjectProperty.class:941
+#: FProjectProperty.class:964
 msgid "Information about library"
 msgstr ""
 
-#: FProjectProperty.form:178
+#: FProjectProperty.class:1454
+#, fuzzy
+msgid "Select a Gambas executable"
+msgstr "Trieu una aplicació Gambas"
+
+#: FProjectProperty.class:1455
+#, fuzzy
+msgid "Gambas executable"
+msgstr "Crea executable"
+
+#: FProjectProperty.form:179
 msgid "GB_GUI_BUSY=1"
 msgstr ""
 
-#: FProjectProperty.form:184
+#: FProjectProperty.form:185
 msgid "GB_X11_INIT_THREADS=1"
 msgstr ""
 
-#: FProjectProperty.form:199
+#: FProjectProperty.form:200
 msgid "GB_DB_DEBUG=1"
 msgstr ""
 
-#: FProjectProperty.form:260
+#: FProjectProperty.form:233
+msgid "GB_NO_JIT=1"
+msgstr ""
+
+#: FProjectProperty.form:267
 msgid "General"
 msgstr "General"
 
-#: FProjectProperty.form:296
+#: FProjectProperty.form:304
 msgid "Component"
 msgstr "Component"
 
-#: FProjectProperty.form:296 FSelectLibrary.class:101
+#: FProjectProperty.form:304 FSelectLibrary.class:101
 msgid "Library"
 msgstr ""
 
-#: FProjectProperty.form:303
+#: FProjectProperty.form:311
 #, fuzzy
 msgid "Vendor"
 msgstr "Nom del proveïdor"
 
-#: FProjectProperty.form:315 FPublish.class:91 FSelectLibrary.class:103
+#: FProjectProperty.form:323 FPublish.class:91 FSelectLibrary.class:103
 msgid "Version"
 msgstr "Versió"
 
-#: FProjectProperty.form:341
+#: FProjectProperty.form:349
 msgid "Get from 'VERSION' file"
 msgstr "Obtingut de l'arxiu «VERSION»"
 
-#: FProjectProperty.form:348
+#: FProjectProperty.form:356
 msgid "Title"
 msgstr "Títol"
 
-#: FProjectProperty.form:381
+#: FProjectProperty.form:389
 #, fuzzy
 msgid "Information"
 msgstr "Informació del sistema"
 
-#: FProjectProperty.form:401
+#: FProjectProperty.form:410 FTranslate.class:76
 msgid "Progress"
 msgstr ""
 
-#: FProjectProperty.form:407
+#: FProjectProperty.form:416
 msgid "Finished and stable"
 msgstr "Acabat i estable"
 
-#: FProjectProperty.form:418
+#: FProjectProperty.form:427
 msgid "This component is hidden"
 msgstr "Aquest component està ocult"
 
-#: FProjectProperty.form:435
+#: FProjectProperty.form:443
 msgid "Compatible until version"
 msgstr ""
 
-#: FProjectProperty.form:464
+#: FProjectProperty.form:472
 #, fuzzy
 msgid "Include information from"
 msgstr "Informació del paquet"
 
-#: FProjectProperty.form:476
+#: FProjectProperty.form:484
 #, fuzzy
 msgid "Required features"
 msgstr "Requereix"
 
-#: FProjectProperty.form:532
+#: FProjectProperty.form:540
 msgid "Required and excluded components"
 msgstr ""
 
-#: FProjectProperty.form:553
+#: FProjectProperty.form:561
 #, fuzzy
 msgid "Require"
 msgstr "Requereix"
 
-#: FProjectProperty.form:559
+#: FProjectProperty.form:567
 #, fuzzy
 msgid "Exclude"
 msgstr "Exclou"
 
-#: FProjectProperty.form:571
+#: FProjectProperty.form:579
 msgid "Remove All"
 msgstr "Esborra-ho tot"
 
-#: FProjectProperty.form:578
+#: FProjectProperty.form:586
 msgid "Components"
 msgstr "Components"
 
-#: FProjectProperty.form:585 FSoftwareFarm.class:58
+#: FProjectProperty.form:594 FSoftwareFarm.class:58
 msgid "Libraries"
 msgstr "Biblioteques"
 
 #: FProjectProperty.form:607
-msgid "<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found."
-msgstr "<b>Avís</b> L'executable del projecte i les biblioteques que en depèn han d'estar dins els mateix directori. En cas contrari no trobarà les biblioteques."
-
-#: FProjectProperty.form:615
 msgid "Runtime library search path"
 msgstr ""
 
-#: FProjectProperty.form:659
+#: FProjectProperty.form:655
+#, fuzzy
+msgid "Additional references"
+msgstr "Preferències"
+
+#: FProjectProperty.form:664
 msgid "Environment"
 msgstr "Entorn"
 
-#: FProjectProperty.form:674
+#: FProjectProperty.form:680
 msgid "&Insert"
 msgstr "&Insereix"
 
-#: FProjectProperty.form:686
+#: FProjectProperty.form:692
 msgid "Arguments"
 msgstr "Arguments"
 
-#: FProjectProperty.form:745
+#: FProjectProperty.form:746
 msgid "Edition"
 msgstr "Edició"
 
-#: FProjectProperty.form:756
+#: FProjectProperty.form:757
 msgid "Tab size"
 msgstr "Mida de tabulació"
 
-#: FProjectProperty.form:779
+#: FProjectProperty.form:780
 msgid "Show deprecated components and controls"
 msgstr ""
 
@@ -4719,15 +4997,15 @@ msgstr "Compilació"
 msgid "Module symbols are public by default"
 msgstr "Els símbols de mòdul son públics per defecte"
 
-#: FProjectProperty.form:821
+#: FProjectProperty.form:820
 msgid "Form controls are public"
 msgstr "Els controls de formulari son públics"
 
-#: FProjectProperty.form:838
+#: FProjectProperty.form:836
 msgid "Activate warnings"
 msgstr ""
 
-#: FProjectVersion.class:7
+#: FProjectVersion.class:7 VersionControl.module:29
 msgid "This line and the following will be ignored"
 msgstr "Aquesta línia i les següents seran ignorades"
 
@@ -4743,25 +5021,21 @@ msgstr ""
 msgid "Please enter a user name."
 msgstr ""
 
-#: FProjectVersion.class:105
+#: FProjectVersion.class:105 FVersionControl.class:29
 msgid "Please enter the journal."
 msgstr ""
 
-#: FProjectVersion.class:116
+#: FProjectVersion.class:116 VersionControl.module:325
 msgid "The project could not be committed."
 msgstr "No s'ha pogut fer la publicació de canvis del projecte"
 
-#: FProjectVersion.class:196
+#: FProjectVersion.class:196 VersionControl.module:347
 msgid "Unable to update project from repository."
 msgstr "No s'ha pogut actualitzar el projecte des del dipòsit."
 
-#: FProjectVersion.class:198
+#: FProjectVersion.class:198 VersionControl.module:349
 msgid "Project has been updated from repository successfully."
 msgstr "El projecte s'ha actualitzat correctament des del dipòsit."
-
-#: FProjectVersion.class:284
-msgid "Revision"
-msgstr ""
 
 #: FProjectVersion.form:53
 msgid "Project Version Control"
@@ -4771,10 +5045,6 @@ msgstr ""
 msgid "Update"
 msgstr "Actualitza"
 
-#: FProjectVersion.form:89
-msgid "Commit"
-msgstr "Publicació de canvis"
-
 #: FProjectVersion.form:118
 msgid "Authentication"
 msgstr ""
@@ -4783,7 +5053,7 @@ msgstr ""
 msgid "Refresh information"
 msgstr ""
 
-#: FProjectVersion.form:202
+#: FProjectVersion.form:202 FVersionControl.form:28
 msgid "Journal"
 msgstr ""
 
@@ -4795,51 +5065,47 @@ msgstr "Alguns fitxers no estan versionats i s'han d'afegir manualment al dipòs
 msgid "Previous description"
 msgstr "Descripció prèvia"
 
-#: FProjectVersion.form:299
-msgid "Changes"
-msgstr "Canvis"
-
-#: FProperty.class:386
+#: FProperty.class:384
 msgid "Forbidden characters in control name."
 msgstr "Caràcters no permesos en el nom del control."
 
-#: FProperty.class:391
+#: FProperty.class:389
 msgid "This name is already in use."
 msgstr "Aquest nom ja està sent utilitzat."
 
-#: FProperty.class:401
+#: FProperty.class:399
 msgid "Forbidden characters in control group."
 msgstr "Caràcters no permesos en el grup del control."
 
-#: FProperty.class:477
+#: FProperty.class:475
 msgid "Incorrect property value."
 msgstr "Valor incorrecte de la propietat"
 
-#: FProperty.class:635
+#: FProperty.class:637
 msgid "The name of the control."
 msgstr "El nom del control."
 
-#: FProperty.class:646
+#: FProperty.class:649
 msgid "The event group that the control belongs to."
 msgstr "El grup d'esdeveniments al que pertany el control."
 
-#: FProperty.class:660
+#: FProperty.class:663
 msgid "If the form and controls dimensions must follow the size of the default font."
 msgstr "Si les dimensions del formulari i els controls han de seguir la mida de les fonts per defecte."
 
-#: FProperty.class:664
+#: FProperty.class:667
 msgid "If the control is public."
 msgstr "Si el control és públic."
 
-#: FProperty.class:668
+#: FProperty.class:671
 msgid "If the Text property must be translated."
 msgstr ""
 
-#: FProperty.class:689
+#: FProperty.class:693
 msgid "This property is virtual: it is only implemented in the IDE, and has no existence at runtime."
 msgstr "Aquesta propietat és virtual: Només està implementada dins de l'IDE, i no existeix en temps d'execució."
 
-#: FProperty.class:819
+#: FProperty.class:827
 msgid "None"
 msgstr "Cap"
 
@@ -4914,7 +5180,7 @@ msgstr "Fitxer actual"
 msgid "Software description"
 msgstr "Descripció prèvia"
 
-#: FPublish.form:99 FSoftwareFarm.form:334
+#: FPublish.form:99 FSoftwareFarm.form:341
 #, fuzzy
 msgid "Web site"
 msgstr "Mida de tabulació"
@@ -4924,7 +5190,7 @@ msgstr "Mida de tabulació"
 msgid "Create menu entry"
 msgstr "Entrada de menú"
 
-#: FPublish.form:135 FSoftwareFarm.form:186
+#: FPublish.form:135 FSoftwareFarm.form:188
 msgid "Tags"
 msgstr ""
 
@@ -4969,10 +5235,6 @@ msgstr ""
 msgid "Configure border"
 msgstr "Configura la vora"
 
-#: FReportBorderChooser.form:60 FReportPaddingChooser.form:64
-msgid "Synchronize"
-msgstr "Sincronitza"
-
 #: FReportBorderChooser.form:67
 msgid "Border"
 msgstr "Vora"
@@ -4997,10 +5259,6 @@ msgstr "Configuració del pinzell"
 #: FReportBrushChooser.form:69
 msgid "Select an image inside the project"
 msgstr "Trieu una imatge dins del projecte"
-
-#: FReportBrushChooser.form:123
-msgid "Select gradient stop color..."
-msgstr "Seleccioneu el color del punt de degradat..."
 
 #: FReportCoordChooser.class:22
 msgid "Incorrect value."
@@ -5046,77 +5304,83 @@ msgstr ""
 msgid "Take screenshot"
 msgstr ""
 
-#: FSearch.class:507
+#: FSearch.class:548
 msgid "Search string replaced once."
 msgstr "La cadena buscada s'ha reemplaçat un cop."
 
-#: FSearch.class:509
+#: FSearch.class:550
 msgid "Search string replaced &1 times."
 msgstr "La cadena buscada s'ha reemplaçat &1 cops."
 
-#: FSearch.class:606
+#: FSearch.class:647
 msgid "One match"
 msgstr ""
 
-#: FSearch.class:608
+#: FSearch.class:649
 msgid "&1 matches"
 msgstr ""
 
-#: FSearch.class:896
+#: FSearch.class:946
 msgid "Do you really want to replace every string?"
 msgstr "Segur que voleu canviar totes les cadenes?"
 
-#: FSearch.form:43
+#: FSearch.form:41
 msgid "Search & Replace"
 msgstr "Cerca i reemplaça"
 
-#: FSearch.form:106
+#: FSearch.form:104
 msgid "Case sensitive"
 msgstr "Sensible a caixa"
 
-#: FSearch.form:111
+#: FSearch.form:109
 msgid "Words only"
 msgstr "Només paraules"
 
-#: FSearch.form:116
+#: FSearch.form:114
 msgid "Regular expression"
 msgstr "Expressió regular"
 
-#: FSearch.form:122
-msgid "Highlight result"
-msgstr "Ressalta el resultat"
-
-#: FSearch.form:127
+#: FSearch.form:119
 msgid "Ignore strings"
 msgstr "Ignora les cadenes"
 
-#: FSearch.form:132
+#: FSearch.form:124
 msgid "Ignore comments"
 msgstr "Ignora els comentaris"
 
-#: FSearch.form:147
+#: FSearch.form:139
 msgid "Search in"
 msgstr "Cerca a"
 
-#: FSearch.form:154
+#: FSearch.form:146
 msgid "Current procedure"
 msgstr "Procediment actual"
 
-#: FSearch.form:160
+#: FSearch.form:152
 msgid "Current file"
 msgstr "Fitxer actual"
 
-#: FSearch.form:167
+#: FSearch.form:159
 msgid "Source files"
 msgstr "Fitxers font"
 
-#: FSearch.form:206
+#: FSearch.form:165
+#, fuzzy
+msgid "Data files"
+msgstr "Fitxers extres"
+
+#: FSearch.form:196
 msgid "Browse"
 msgstr "Navega"
 
-#: FSearch.form:218
+#: FSearch.form:208
 msgid "Replace all"
 msgstr "Reemplaça-ho tot"
+
+#: FSearch.form:219
+#, fuzzy
+msgid "Highlight search"
+msgstr "Ressalta el resultat"
 
 #: FSelectExtraFile.form:12
 msgid "Select an extra file"
@@ -5172,7 +5436,7 @@ msgstr "Nou fragment de codi"
 msgid "Trigger string"
 msgstr "Cadena d'activació"
 
-#: FSoftwareFarm.class:42 Project.module:226
+#: FSoftwareFarm.class:42 Project.module:231
 msgid "Games"
 msgstr "Jocs"
 
@@ -5193,7 +5457,7 @@ msgstr ""
 msgid "Audio"
 msgstr ""
 
-#: FSoftwareFarm.class:48 Project.module:233
+#: FSoftwareFarm.class:48 Project.module:238
 msgid "Video"
 msgstr "Vídeo"
 
@@ -5228,123 +5492,127 @@ msgstr ""
 msgid "All software"
 msgstr ""
 
-#: FSoftwareFarm.class:195
+#: FSoftwareFarm.class:202
 #, fuzzy
 msgid "No software found."
 msgstr "No s'ha trobat l'ajuda."
 
-#: FSoftwareFarm.class:214
+#: FSoftwareFarm.class:221
 msgid "Request cancelled."
 msgstr ""
 
-#: FSoftwareFarm.class:354
+#: FSoftwareFarm.class:365
 #, fuzzy
 msgid "Cancel my vote"
 msgstr "Canceŀlat per l'usuari"
 
-#: FSoftwareFarm.class:361
+#: FSoftwareFarm.class:372
 msgid "Upgrade"
 msgstr ""
 
-#: FSoftwareFarm.class:538
+#: FSoftwareFarm.class:409
+msgid "Published &1 (on &2)"
+msgstr ""
+
+#: FSoftwareFarm.class:552
 #, fuzzy
 msgid "Do you really want to download <b>&1</b>?"
 msgstr "Segur que voleu suprimir la taula '&1'?"
 
-#: FSoftwareFarm.class:541
+#: FSoftwareFarm.class:555
 #, fuzzy
 msgid "Unable to download <b>&1</b>:"
 msgstr "No s'ha pogut carregar la taula '&1'."
 
-#: FSoftwareFarm.class:543
+#: FSoftwareFarm.class:557
 #, fuzzy
 msgid "<b>&1</b> has been successfully downloaded."
 msgstr "El projecte s'ha creat correctament."
 
-#: FSoftwareFarm.class:558
+#: FSoftwareFarm.class:572
 #, fuzzy
 msgid "Do you really want to upgrade to <b>&1</b>?"
 msgstr "Segur que voleu suprimir la taula '&1'?"
 
-#: FSoftwareFarm.class:561
+#: FSoftwareFarm.class:575
 #, fuzzy
 msgid "Unable to upgrade to <b>&1</b>:"
 msgstr "No s'ha pogut canviar el nom de «&1»"
 
-#: FSoftwareFarm.class:568
+#: FSoftwareFarm.class:582
 #, fuzzy
 msgid "Do you really want to uninstall <b>&1</b>?"
 msgstr "Segur que voleu suprimir la taula '&1'?"
 
-#: FSoftwareFarm.class:571
+#: FSoftwareFarm.class:585
 #, fuzzy
 msgid "Unable to uninstall <b>&1</b>:"
 msgstr "No s'ha pogut convertir &1"
 
-#: FSoftwareFarm.class:573
+#: FSoftwareFarm.class:587
 #, fuzzy
 msgid "<b>&1</b> has been successfully uninstalled."
 msgstr "El projecte s'ha creat correctament."
 
-#: FSoftwareFarm.class:579
+#: FSoftwareFarm.class:593
 #, fuzzy
 msgid "Do you really want to install <b>&1</b>?"
 msgstr "Segur que voleu suprimir la taula '&1'?"
 
-#: FSoftwareFarm.class:582
+#: FSoftwareFarm.class:596
 #, fuzzy
 msgid "Unable to install <b>&1</b>:"
 msgstr "No s'ha pogut convertir &1"
 
-#: FSoftwareFarm.class:584
+#: FSoftwareFarm.class:598
 #, fuzzy
 msgid "<b>&1</b> has been successfully installed."
 msgstr "El projecte s'ha creat correctament."
 
-#: FSoftwareFarm.class:604
+#: FSoftwareFarm.class:618
 #, fuzzy
 msgid "Unable to modify your vote."
 msgstr "No s'ha pogut exportar les dades."
 
-#: FSoftwareFarm.class:640
+#: FSoftwareFarm.class:654
 #, fuzzy
 msgid "Do you really want to delete <b>&1</b> from the farm server?"
 msgstr "Esteu segur que voleu esborrar aquest fitxer?"
 
-#: FSoftwareFarm.class:644
+#: FSoftwareFarm.class:658
 #, fuzzy
 msgid "Unable to remove <b>&1</b>:"
 msgstr "No s'ha pogut canviar el nom de «&1»"
 
-#: FSoftwareFarm.form:64
+#: FSoftwareFarm.form:65
 #, fuzzy
 msgid "Gambas Software Farm"
 msgstr "Formularis Gambas"
 
-#: FSoftwareFarm.form:153
+#: FSoftwareFarm.form:155 FTranslate.form:200
 #, fuzzy
 msgid "Show"
 msgstr "Mostra les pestanyes"
 
-#: FSoftwareFarm.form:159
+#: FSoftwareFarm.form:161
 msgid "Installed"
 msgstr ""
 
-#: FSoftwareFarm.form:159
+#: FSoftwareFarm.form:161
 msgid "Most downloaded"
 msgstr ""
 
-#: FSoftwareFarm.form:159
+#: FSoftwareFarm.form:161
 #, fuzzy
 msgid "Most recent"
 msgstr "Obre recent"
 
-#: FSoftwareFarm.form:165
+#: FSoftwareFarm.form:167
 #, fuzzy
 msgid "Show filters"
 msgstr "Desa els fitxers afegits"
 
-#: FSoftwareFarm.form:171
+#: FSoftwareFarm.form:173
 #, fuzzy
 msgid "Show old versions"
 msgstr "Mostra consells"
@@ -5354,13 +5622,13 @@ msgstr "Mostra consells"
 msgid "Download"
 msgstr "Avall"
 
-#: FSoftwareFarm.form:402
-msgid "Vote"
+#: FSoftwareFarm.form:401
+msgid "Download and install"
 msgstr ""
 
-#: FSystemInfo.form:15
-msgid "System information"
-msgstr "Informació del sistema"
+#: FSoftwareFarm.form:409
+msgid "Vote"
+msgstr ""
 
 #: FSystemInfo.form:35
 msgid "Please copy these informations in all your bug reports."
@@ -5370,65 +5638,46 @@ msgstr "Copia aquestes informacions a tots els teus informes d'error."
 msgid "Choose a table"
 msgstr "Tria una taula"
 
-#: FText.form:12
-msgid "Edit text property"
-msgstr "Editar propietat del text"
+#: FText.class:12
+#, fuzzy
+msgid "Edit '&1' property"
+msgstr "Edita la llista de propietats"
 
-#: FText.form:30
+#: FText.form:29
 msgid "Use a fixed font"
 msgstr "Usar una font fixa"
 
-#: FTextEditor.class:218
+#: FTextEditor.class:214
 msgid "Console output #&1"
 msgstr ""
 
-#: FTextEditor.class:914
+#: FTextEditor.class:909
 msgid "Original file has been saved in the <b>Project</b> folder."
 msgstr "El fitxer original s'ha desat dins la carpeta del <b>Projecte</b>."
 
-#: FTextEditor.class:914
+#: FTextEditor.class:909
 msgid "The file has been compressed from &1 to &2 bytes (&3)."
 msgstr "S'ha comprimit el fitxer de &1 a &2 octets (&3)."
 
-#: FTextEditor.class:920
+#: FTextEditor.class:917
 msgid "Unable to compress file."
 msgstr "No s'ha pogut comprimir el fitxer."
 
-#: FTextEditor.form:162
+#: FTextEditor.form:166
 msgid "Sort ascent"
 msgstr ""
 
-#: FTextEditor.form:168
+#: FTextEditor.form:172
 msgid "Sort descent"
 msgstr ""
 
-#: FTextEditor.form:214
+#: FTextEditor.form:218
 msgid "Compress file"
 msgstr "Comprimeix el fitxer"
 
-#: FTextEditor.form:220
+#: FTextEditor.form:224
 msgid "Uncompress file"
 msgstr "Descomprimeix el fitxer"
-
-#: FTextEditor.form:280
-msgid "Indent with tab"
-msgstr ""
-
-#: FTextEditor.form:310
-msgid "Unix"
-msgstr ""
-
-#: FTextEditor.form:315
-msgid "Windows"
-msgstr ""
-
-#: FTextEditor.form:320
-msgid "MAC"
-msgstr ""
-
-#: FTextEditor.form:396
-msgid "Text editor"
-msgstr "Editor de text"
 
 #: FTips.class:46
 msgid "Tip of the day #&1"
@@ -5442,195 +5691,202 @@ msgstr "No s'ha pogut llegir el consell del dia !"
 msgid "Show tips on startup"
 msgstr "Mostra consells a l'inici"
 
-#: FTranslate.class:39
+#: FTranslate.class:42
 msgid "The project is void. There is nothing to translate."
 msgstr "El projecte és buit. No hi ha res a traduir."
 
-#: FTranslate.class:65
+#: FTranslate.class:74
 msgid "Language"
 msgstr "Idioma"
 
-#: FTranslate.class:155
+#: FTranslate.class:77
+#, fuzzy
+msgid "Not translated"
+msgstr "No traduïble"
+
+#: FTranslate.class:167
 msgid "Translation files"
 msgstr "Fitxers de traducció"
 
-#: FTranslate.class:290
+#: FTranslate.class:326
 msgid "Cannot read translation file for language '&1'"
 msgstr "No es pot llegir el fitxer de traducció per a l'idioma «&1»"
 
-#: FTranslate.class:497
+#: FTranslate.class:557
 msgid "Cannot save translation."
 msgstr "No es pot desar la traducció."
 
-#: FTranslate.class:610
+#: FTranslate.class:670
 msgid "Do you really want to delete this translation ?"
 msgstr "Realment voleu suprimir aquesta traducció ?"
 
-#: FTranslate.class:706
+#: FTranslate.class:779
 msgid "Do you really want to reload this translation ?"
 msgstr "Realment voleu recarregar aquesta traducció ?"
 
-#: FTranslate.class:720
+#: FTranslate.class:793
 msgid "Export a translation"
 msgstr "Exporta una traducció"
 
-#: FTranslate.class:909
+#: FTranslate.class:1008
 msgid "Please select the translation file to import."
 msgstr "Trieu el fitxer de traducció a importar."
 
-#: FTranslate.class:947
+#: FTranslate.class:1046
 msgid "No translation were picked up."
 msgstr "No s'ha triat cap traducció."
 
-#: FTranslate.class:949
+#: FTranslate.class:1048
 msgid "One translation was picked up."
 msgstr "S'ha triat una traducció."
 
-#: FTranslate.class:951
+#: FTranslate.class:1050
 msgid "&1 translations were picked up."
 msgstr "S'ha triat &1 traducció."
 
-#: FTranslate.class:959
+#: FTranslate.class:1058
 msgid "Cannot import translation file."
 msgstr "No es pot importar el fitxer de traducció."
 
-#: FTranslate.class:1008
+#: FTranslate.class:1107
 msgid "Everything seems to be correct."
 msgstr "Tot sembla ser correcte."
 
-#: FTranslate.class:1018
+#: FTranslate.class:1117
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr "Els símbols de les cadenes traduïdes no concorden amb els de les cadenes sense traduir."
 
-#: FTranslate.class:1044
+#: FTranslate.class:1143
 msgid "&1 strings. Everything is translated!"
 msgstr "&1 cadenes de text. Tot està traduït!"
 
-#: FTranslate.class:1046
+#: FTranslate.class:1145
 msgid "&1 strings. One is not translated. &3% done."
 msgstr "&1 cadenes de text.  Una no traduïda. &3% acabat."
 
-#: FTranslate.class:1048
+#: FTranslate.class:1147
 msgid "&1 strings. &2 are not translated. &3% done."
 msgstr "&1 cadenes de text.  &2 no traduïdes. &3% acabat."
 
-#: FTranslate.form:61
+#: FTranslate.class:1734
+#, fuzzy
+msgid "Automatic translation has failed."
+msgstr "No es pot importar el fitxer de traducció."
+
+#: FTranslate.class:1744
+#, fuzzy
+msgid "Do you want to fill the translation automatically?"
+msgstr "Realment voleu suprimir aquesta traducció ?"
+
+#: FTranslate.form:76
 msgid "Project translation"
 msgstr "Traducció del projecte"
 
-#: FTranslate.form:93
+#: FTranslate.form:105
+#, fuzzy
+msgid "Automatic translation"
+msgstr "Extensió automàtica"
+
+#: FTranslate.form:117
 msgid "Untranslated strings"
 msgstr ""
 
-#: FTranslate.form:97
+#: FTranslate.form:121
 msgid "Translated strings"
 msgstr ""
 
-#: FTranslate.form:101
+#: FTranslate.form:125
 msgid "All strings"
 msgstr ""
 
-#: FTranslate.form:163
+#: FTranslate.form:224
 msgid "Save translation"
 msgstr "Desa la traducció"
 
-#: FTranslate.form:169
-msgid "Clear this translation"
-msgstr "Neteja aquesta traducció"
-
-#: FTranslate.form:175
-msgid "This string must not be translated"
-msgstr "Aquesta cadena no s'ha de traduir"
-
-#: FTranslate.form:181
-msgid "Copy untranslated string"
-msgstr "Copia cadena no traduïda"
-
-#: FTranslate.form:187
+#: FTranslate.form:232
 msgid "Verify the translation"
 msgstr "Verifica la traducció"
 
-#: FTranslate.form:193
-msgid "Find next untranslated string"
+#: FTranslate.form:234
+msgid "Verify"
+msgstr ""
+
+#: FTranslate.form:304
+#, fuzzy
+msgid "Find next translated string"
 msgstr "Cerca la propera cadena sense traduir"
 
-#: FTranslate.form:199
+#: FTranslate.form:310
+#, fuzzy
+msgid "Find previous translated string"
+msgstr "Cerca la cadena prèvia sense traduir"
+
+#: FTranslate.form:316
 msgid "Find previous untranslated string"
 msgstr "Cerca la cadena prèvia sense traduir"
 
-#: FTranslate.form:353
+#: FTranslate.form:322
+msgid "Find next untranslated string"
+msgstr "Cerca la propera cadena sense traduir"
+
+#: FTranslate.form:332
+msgid "Clear this translation"
+msgstr "Neteja aquesta traducció"
+
+#: FTranslate.form:338
+msgid "This string must not be translated"
+msgstr "Aquesta cadena no s'ha de traduir"
+
+#: FTranslate.form:344
+msgid "Copy untranslated string"
+msgstr "Copia cadena no traduïda"
+
+#: FTranslate.form:450
 msgid "Import all translations  recursively"
 msgstr "Importar totes les traduccions de manera recursiva"
 
-#: FTranslate.form:359
+#: FTranslate.form:456
 #, fuzzy
 msgid "Replace existing translations"
 msgstr "Neteja aquesta traducció"
 
-#: FTranslate.form:375
+#: FTranslate.form:472
 msgid "Import a translation file"
 msgstr "Importa un fitxer de traducció"
+
+#: FVersionControl.class:71
+#, fuzzy
+msgid "Do you want to push the repository?"
+msgstr "Voleu suprimir la llista d'expressions?"
+
+#: FVersionControl.class:71
+msgid "Push"
+msgstr ""
+
+#: FVersionControl.class:71
+#, fuzzy
+msgid "There is nothing to commit."
+msgstr "No s'ha pogut fer la publicació de canvis del projecte"
+
+#: FVersionControl.form:61
+#, fuzzy
+msgid "Do not push to remote repository"
+msgstr "Introduïu la ubicació del repositori."
 
 #: FWebFontChooser.form:24
 #, fuzzy
 msgid "Select font"
 msgstr "Seleccioneu una font"
 
-#: FWebFontChooser.form:47
-msgid "cursive"
-msgstr ""
-
-#: FWebFontChooser.form:47
-msgid "fantasy"
-msgstr ""
-
-#: FWebFontChooser.form:47
-msgid "monospace"
-msgstr ""
-
-#: FWebFontChooser.form:47
-msgid "sans-serif"
-msgstr ""
-
-#: FWebFontChooser.form:47
-msgid "serif"
-msgstr ""
-
-#: FWebFontChooser.form:62
-#, fuzzy
-msgid "N"
-msgstr "No"
-
-#: FWebFontChooser.form:70
-msgid "B"
-msgstr ""
-
-#: FWebFontChooser.form:78
-msgid "I"
-msgstr ""
-
-#: FWebFontChooser.form:86
-#, fuzzy
-msgid "U"
-msgstr "Puja"
-
-#: FWebFontChooser.form:93
-msgid "Strikeout"
-msgstr ""
-
-#: FWebFontChooser.form:94
-msgid "S"
-msgstr ""
-
-#: FWelcome.class:66
+#: FWelcome.class:68
 msgid "New project..."
 msgstr "Projecte nou..."
 
-#: FWelcome.class:68
+#: FWelcome.class:70
 msgid "Recent projects"
 msgstr "Projectes recents"
 
-#: FWelcome.class:70 Project.module:6418
+#: FWelcome.class:72 Project.module:6232
 msgid "Installed software"
 msgstr ""
 
@@ -5646,20 +5902,20 @@ msgstr ""
 msgid "No answer."
 msgstr ""
 
-#: FarmRequest.class:165
+#: FarmRequest.class:167
 msgid "Register user"
 msgstr ""
 
-#: FarmRequest.class:238
+#: FarmRequest.class:242
 #, fuzzy
 msgid "Publish project"
 msgstr "Refresca projecte"
 
-#: FarmRequest.class:359
+#: FarmRequest.class:363
 msgid "Download software"
 msgstr ""
 
-#: FarmRequest.class:385
+#: FarmRequest.class:389
 #, fuzzy
 msgid "Delete software"
 msgstr "Esborra la taula"
@@ -5929,19 +6185,19 @@ msgstr "Xinès tradicional (Taiwan)"
 msgid "Unknown"
 msgstr "Desconegut"
 
-#: MConnection.module:59
+#: MConnection.module:76
 msgid "Unable to retrieve password."
 msgstr ""
 
-#: MConnection.module:74
+#: MConnection.module:91
 msgid "Unable to save password."
 msgstr ""
 
-#: MConnection.module:315
+#: MConnection.module:332
 msgid "Cannot create table '&1'."
 msgstr "No s'ha pogut crear la taula '&1'."
 
-#: MConnection.module:496
+#: MConnection.module:517
 msgid "Cannot create metadata table."
 msgstr ""
 
@@ -6113,239 +6369,243 @@ msgstr "Us incorrecte de la classe virtual"
 msgid "Bad version string"
 msgstr "Cadena de versió incorrecte"
 
-#: MErrorMessage.module:47
+#: MErrorMessage.module:46
 msgid "Cannot change current directory to '&1': &2"
 msgstr "No s'ha pogut canviar el directori actual per '&1': &2"
 
-#: MErrorMessage.module:48
+#: MErrorMessage.module:47
 msgid "Cannot create .startup file"
 msgstr "No s'ha pogut crear el fitxer .startup"
 
-#: MErrorMessage.module:49
+#: MErrorMessage.module:48
 msgid "Cannot create action file: &1"
 msgstr "No s'ha pogut crear el fitxer d'acció: &1"
 
-#: MErrorMessage.module:50
+#: MErrorMessage.module:49
 msgid "Cannot create callback: &1"
 msgstr "No s'ha pogut crear la crida de retorn: &1"
 
-#: MErrorMessage.module:51
+#: MErrorMessage.module:50
 msgid "Cannot create class information: &1: &2"
 msgstr "No s'ha pogut crear la informació de la classe: &1: &2"
 
-#: MErrorMessage.module:52
+#: MErrorMessage.module:51
 msgid "Cannot create file: &1"
 msgstr "No s'ha pogut crear el fitxer: &1"
 
-#: MErrorMessage.module:53
+#: MErrorMessage.module:52
 msgid "Cannot create temporary archive file: &1"
 msgstr "No s'ha pogut crear l'arxiu temporal: &1"
 
-#: MErrorMessage.module:54
+#: MErrorMessage.module:53
 msgid "Cannot find dynamic library '&1': &2"
 msgstr "No s'ha trobat la biblioteca dinàmica '&1': &2"
 
-#: MErrorMessage.module:55
+#: MErrorMessage.module:54
 msgid "Cannot find symbol '&2' in dynamic library '&1'"
 msgstr "No s'ha trobat el símbol '&2' a la biblioteca dinàmica '&1'"
 
-#: MErrorMessage.module:56
+#: MErrorMessage.module:55
 msgid "Cannot inherit itself"
 msgstr ""
 
-#: MErrorMessage.module:57
+#: MErrorMessage.module:56
 msgid "Cannot inherit twice"
 msgstr "No es pot heretar dues vegades"
 
-#: MErrorMessage.module:58
+#: MErrorMessage.module:57
 msgid "Cannot instantiate native types"
 msgstr "No es pot crear instàncies de tipus nadius"
 
-#: MErrorMessage.module:59
+#: MErrorMessage.module:58
 msgid "Cannot load class '&1': &2&3"
 msgstr "No s'ha pogut carregar la classe '&1': &2&3"
 
-#: MErrorMessage.module:60
+#: MErrorMessage.module:59
 msgid "Cannot load component '&1': &2"
 msgstr "No s'ha pogut carregar el component: '&1': &2&3"
 
-#: MErrorMessage.module:61
+#: MErrorMessage.module:60
 msgid "Cannot load source file: &1"
 msgstr "No s'ha pogut carregar el fitxer font: &1"
 
-#: MErrorMessage.module:62
+#: MErrorMessage.module:61
 msgid "Cannot make executable: &1: &2"
 msgstr "No s'ha pogut crear l'executable: &1: &2"
 
-#: MErrorMessage.module:63
+#: MErrorMessage.module:62
 msgid "Cannot mix NEW and embedded array"
 msgstr "No es pot barrejar NEW i la matriu incrustada"
 
-#: MErrorMessage.module:64
+#: MErrorMessage.module:63
 msgid "Cannot mix NEW and embedded structure"
 msgstr "No es pot barrejar NEW i l'estructura incrustada"
 
-#: MErrorMessage.module:65
+#: MErrorMessage.module:64
 msgid "Cannot open file '&1': &2"
 msgstr "No s'ha pogut obrir el fitxer '&1': &2"
 
-#: MErrorMessage.module:66
+#: MErrorMessage.module:65
 msgid "Cannot open file: &1"
 msgstr "No s'ha pogut obrir el fitxer: &1"
 
-#: MErrorMessage.module:67
+#: MErrorMessage.module:66
 msgid "Cannot raise events in static function"
 msgstr "No es pot provocar esdeveniments en una funció estàtica"
 
-#: MErrorMessage.module:68
+#: MErrorMessage.module:67
 msgid "Cannot read file: &1: &2"
 msgstr "No s'ha pogut llegir el fitxer: &1: &2"
 
-#: MErrorMessage.module:69
+#: MErrorMessage.module:68
 msgid "Cannot register class '&1'"
 msgstr "No s'ha pogut registrar la classe '&1'"
 
-#: MErrorMessage.module:70
+#: MErrorMessage.module:69
 msgid "Cannot remove file '&1': &2"
 msgstr "No s'ha pogut suprimir el fitxer '&1': &2"
 
-#: MErrorMessage.module:71
+#: MErrorMessage.module:70
 msgid "Cannot rename file '&1' to '&2': &3"
 msgstr "No s'ha pogut canviar el nom del fitxer '&1': &2"
 
-#: MErrorMessage.module:72
+#: MErrorMessage.module:71
 msgid "Cannot run child process: &1&2"
 msgstr "No s'ha pogut executar el procés fill: &1&2"
 
-#: MErrorMessage.module:73
+#: MErrorMessage.module:72
 msgid "Cannot set file owner: &1: &2"
 msgstr "No s'ha pogut establir el propietari del fitxer: &1: &2"
 
-#: MErrorMessage.module:74
+#: MErrorMessage.module:73
 msgid "Cannot use NEW operator there"
 msgstr "Aquí no s'ha pogut fer servir l'operador NEW"
 
-#: MErrorMessage.module:75
+#: MErrorMessage.module:74
 msgid "Cannot use TRY twice"
 msgstr "No es pot fer servir TRY dos cops"
 
-#: MErrorMessage.module:76
+#: MErrorMessage.module:75
 msgid "Cannot use TRY with &1"
 msgstr ""
 
-#: MErrorMessage.module:77
+#: MErrorMessage.module:76
 msgid "Class '&1' is not creatable"
 msgstr "La classe '&1' no s'ha pogut crear"
 
-#: MErrorMessage.module:78
+#: MErrorMessage.module:77
 msgid "Comparison operator expected"
 msgstr "S'esperava un operador de comparació"
 
-#: MErrorMessage.module:79
+#: MErrorMessage.module:78
 #, fuzzy
 msgid "Component name must be a string"
 msgstr "l'Àlies ha de ser una cadena"
 
-#: MErrorMessage.module:80
+#: MErrorMessage.module:79
 msgid "Component not found: &1"
 msgstr "No s'ha trobat el component: &1"
 
-#: MErrorMessage.module:81
+#: MErrorMessage.module:80
 #, fuzzy
 msgid "Constant string expected"
 msgstr "S'esperava una cadena de text"
 
-#: MErrorMessage.module:82
+#: MErrorMessage.module:81
 msgid "Contents already declared"
 msgstr ""
 
-#: MErrorMessage.module:83
+#: MErrorMessage.module:82
 msgid "Default case already defined"
 msgstr "El cas per defecte ja s'ha definit"
 
-#: MErrorMessage.module:84
+#: MErrorMessage.module:83
 msgid "Default case must be the last one"
 msgstr "El cas per defecte ha de ser l'últim"
 
-#: MErrorMessage.module:85
+#: MErrorMessage.module:84
 msgid "Device is full"
 msgstr "El dispositiu està ple"
 
-#: MErrorMessage.module:86
+#: MErrorMessage.module:85
 msgid "Directory is not empty"
 msgstr "El directori no està buit"
 
-#: MErrorMessage.module:87
+#: MErrorMessage.module:86
 msgid "Division by zero"
 msgstr "Divisió per zero"
 
-#: MErrorMessage.module:88
+#: MErrorMessage.module:87
 msgid "Dynamic symbols cannot be used in static function"
 msgstr "Els símbols dinàmics no es poden fer servir en una funció estàtica"
 
-#: MErrorMessage.module:89
+#: MErrorMessage.module:88
 msgid "Embedded array"
 msgstr "Matriu incrustada"
 
-#: MErrorMessage.module:90
+#: MErrorMessage.module:89
 msgid "Embedded arrays are forbidden here"
 msgstr "Matrius incrustades estan prohibides aquí"
 
-#: MErrorMessage.module:91
+#: MErrorMessage.module:90
 msgid "End of file"
 msgstr "Final de fitxer"
 
-#: MErrorMessage.module:92
+#: MErrorMessage.module:91
 msgid "Equality or inequality operator expected"
 msgstr "S'esperava un operador d'igualtat o desigualtat"
 
-#: MErrorMessage.module:93
+#: MErrorMessage.module:92
 msgid "Expression too complex"
 msgstr "Expressió massa complexa"
 
-#: MErrorMessage.module:94
+#: MErrorMessage.module:93
 msgid "Expression too complex. Too many operands"
 msgstr "Expressió massa complexa. Masses operands"
 
-#: MErrorMessage.module:95
+#: MErrorMessage.module:94
 #, fuzzy
 msgid "Extern library name must be a string"
 msgstr "El nom de la biblioteca ha de ser una cadena"
 
-#: MErrorMessage.module:96
+#: MErrorMessage.module:95
 msgid "File already exists"
 msgstr "El fitxer ja existeix"
 
-#: MErrorMessage.module:97
+#: MErrorMessage.module:96
 msgid "File is a directory"
 msgstr "El fitxer és un directori"
 
-#: MErrorMessage.module:98
+#: MErrorMessage.module:97
 msgid "File is locked"
 msgstr "El fitxer està bloquejat"
 
-#: MErrorMessage.module:99
+#: MErrorMessage.module:98
 msgid "File name is too long"
 msgstr "El nom del fitxer és massa llarg"
 
-#: MErrorMessage.module:100
+#: MErrorMessage.module:99
 msgid "File or directory does not exist"
 msgstr "El fitxer o directori no existeix"
 
-#: MErrorMessage.module:101
+#: MErrorMessage.module:100
 msgid "Forbidden GOSUB"
 msgstr ""
 
-#: MErrorMessage.module:102
+#: MErrorMessage.module:101
 msgid "Forbidden GOTO"
 msgstr "GOTO prohibit"
+
+#: MErrorMessage.module:102
+msgid "Free object referenced"
+msgstr ""
 
 #: MErrorMessage.module:103
 msgid "Illegal instruction"
 msgstr "Instrucció iŀlegal"
 
 #: MErrorMessage.module:104
-msgid "Internal compiler error: bad stack usage computed!"
+msgid "Internal compiler error"
 msgstr ""
 
 #: MErrorMessage.module:105
@@ -6385,182 +6645,189 @@ msgid "Loop variable already in use"
 msgstr "La variable recursiva ja està en us"
 
 #: MErrorMessage.module:114
-msgid "Loop variable must be local"
-msgstr "La variable recursiva ha de ser local"
+#, fuzzy
+msgid "Loop variable cannot be an argument"
+msgstr "La variable recursiva ja està en us"
 
 #: MErrorMessage.module:115
+#, fuzzy
+msgid "Loop variable cannot be global"
+msgstr "La variable recursiva ha de ser local"
+
+#: MErrorMessage.module:116
 msgid "ME cannot be used in a static function"
 msgstr "No es pot fer servir ME en una funció estàtica"
 
-#: MErrorMessage.module:116
+#: MErrorMessage.module:117
 msgid "Mathematic error"
 msgstr "Error matemàtic"
 
-#: MErrorMessage.module:117
+#: MErrorMessage.module:118
 msgid "Missing #Endif"
 msgstr "Manca #Endif"
 
-#: MErrorMessage.module:118
+#: MErrorMessage.module:119
 msgid "Missing ']'"
 msgstr ""
 
-#: MErrorMessage.module:119
+#: MErrorMessage.module:120
 msgid "Missing '}'"
 msgstr ""
 
-#: MErrorMessage.module:120
+#: MErrorMessage.module:121
 msgid "Missing operator"
 msgstr "Manca l'operador"
 
-#: MErrorMessage.module:121
+#: MErrorMessage.module:122
 msgid "Missing right brace"
 msgstr "Manca la clau dreta"
 
-#: MErrorMessage.module:122
+#: MErrorMessage.module:123
 msgid "NEW cannot have arguments passed by reference"
 msgstr "NEW no pot tenir arguments passats per referència"
 
-#: MErrorMessage.module:123
+#: MErrorMessage.module:124
 msgid "No instantiation method"
 msgstr "Cap mètode d'instància"
 
-#: MErrorMessage.module:124
+#: MErrorMessage.module:125
 msgid "No parent class"
 msgstr "Sense classe pare"
 
-#: MErrorMessage.module:125
+#: MErrorMessage.module:126
 msgid "No return value"
 msgstr "Sense valor de retorn"
 
-#: MErrorMessage.module:126
+#: MErrorMessage.module:127
 msgid "No startup method"
 msgstr "Sense mètode d'inici"
 
-#: MErrorMessage.module:127
+#: MErrorMessage.module:128
 msgid "Non terminated string"
 msgstr "Cadena no acabada"
 
-#: MErrorMessage.module:128
+#: MErrorMessage.module:129
 msgid "Not a directory: &1"
 msgstr "No és un directori: &1"
 
-#: MErrorMessage.module:129
+#: MErrorMessage.module:130
 msgid "Not a function"
 msgstr "No és una funció"
 
-#: MErrorMessage.module:130
+#: MErrorMessage.module:131
 msgid "Not a procedure"
 msgstr ""
 
-#: MErrorMessage.module:131
+#: MErrorMessage.module:132
 msgid "Not an array"
 msgstr "No és una matriu"
 
-#: MErrorMessage.module:132
+#: MErrorMessage.module:133
 msgid "Not an enumeration"
 msgstr "No és una numeració"
 
-#: MErrorMessage.module:133
+#: MErrorMessage.module:134
 msgid "Not an object"
 msgstr "No és un objecte"
 
-#: MErrorMessage.module:134
+#: MErrorMessage.module:135
 msgid "Not enough argument to New()"
 msgstr "Li manquen arguments al New()"
 
-#: MErrorMessage.module:135
+#: MErrorMessage.module:136
 msgid "Not enough arguments"
 msgstr "Manquen arguments"
 
-#: MErrorMessage.module:136
+#: MErrorMessage.module:137
 msgid "Not enough arguments to &1()"
 msgstr "Li manquen arguments a &()"
 
-#: MErrorMessage.module:137
+#: MErrorMessage.module:138
 msgid "Not implemented yet"
 msgstr ""
 
-#: MErrorMessage.module:138
+#: MErrorMessage.module:139
 msgid "Not supported"
 msgstr ""
 
-#: MErrorMessage.module:139
+#: MErrorMessage.module:140
 msgid "Null object"
 msgstr "Objecte nul"
 
-#: MErrorMessage.module:140
+#: MErrorMessage.module:141
 msgid "Number"
 msgstr ""
 
-#: MErrorMessage.module:141
+#: MErrorMessage.module:142
+#, fuzzy
+msgid "Number or Date expected"
+msgstr "S'esperava un operador de comparació"
+
+#: MErrorMessage.module:143
 msgid "Number or date"
 msgstr ""
 
-#: MErrorMessage.module:142
+#: MErrorMessage.module:144
 msgid "Number, Date or String"
 msgstr ""
 
-#: MErrorMessage.module:143
+#: MErrorMessage.module:145
 msgid "Number, String or Object"
 msgstr ""
 
-#: MErrorMessage.module:144
+#: MErrorMessage.module:146
 msgid "Object"
 msgstr ""
 
-#: MErrorMessage.module:145
+#: MErrorMessage.module:147
 msgid "Out of bounds"
 msgstr "Fora de límits"
 
-#: MErrorMessage.module:146
+#: MErrorMessage.module:148
 msgid "Out of memory"
 msgstr "Sense memòria"
 
-#: MErrorMessage.module:147
+#: MErrorMessage.module:149
 msgid "Out of range"
 msgstr "Fora de rang"
 
-#: MErrorMessage.module:148
+#: MErrorMessage.module:150
 msgid "Overflow"
 msgstr "Desbordament"
 
-#: MErrorMessage.module:149
+#: MErrorMessage.module:151
 msgid "Overriding an already inherited class is forbidden"
 msgstr ""
 
-#: MErrorMessage.module:150
-msgid "Pointer"
-msgstr ""
-
-#: MErrorMessage.module:151
+#: MErrorMessage.module:152
 msgid "Read error"
 msgstr "Error de lectura"
 
-#: MErrorMessage.module:152
+#: MErrorMessage.module:153
 msgid "Return value datatype not specified in function declaration"
 msgstr "El tipus de valor de retorn no s'ha especificat a la declaració de la funció"
 
-#: MErrorMessage.module:153
+#: MErrorMessage.module:154
 msgid "STOP instruction encountered"
 msgstr "S'ha trobat la instrucció STOP"
 
-#: MErrorMessage.module:154
+#: MErrorMessage.module:155
 msgid "SUPER cannot be used alone"
 msgstr "SUPER no es pot utilitzar sol"
 
-#: MErrorMessage.module:155
+#: MErrorMessage.module:156
 msgid "Serialization error"
 msgstr "Error de serialització"
 
-#: MErrorMessage.module:156
+#: MErrorMessage.module:157
 msgid "Stack overflow"
 msgstr "Sobreeiximent de pila"
 
-#: MErrorMessage.module:157
+#: MErrorMessage.module:158
 msgid "Standard type"
 msgstr ""
 
-#: MErrorMessage.module:158
+#: MErrorMessage.module:159
 msgid "Stream is closed"
 msgstr "El flux està tancat"
 
@@ -6625,7 +6892,8 @@ msgid "Syntax error. INHERITS needs a class name"
 msgstr "Error de sintaxi. A l'INHERITS li cal un nom de classe"
 
 #: MErrorMessage.module:175
-msgid "Syntax error. Identifier expected."
+#, fuzzy
+msgid "Syntax error. Identifier expected"
 msgstr "Error de sintaxi. S'esperava un identificador."
 
 #: MErrorMessage.module:176
@@ -6913,8 +7181,9 @@ msgid "VarPtr() argument must be a dynamic, a static or a local variable"
 msgstr "L'argument per a VarPtr() ha de ser una variable dinàmica, estàtica o local"
 
 #: MErrorMessage.module:247
-msgid "Variant"
-msgstr ""
+#, fuzzy
+msgid "Void identifier"
+msgstr "Identificador desconegut: &1"
 
 #: MErrorMessage.module:248
 msgid "Void key"
@@ -6957,46 +7226,58 @@ msgid "global variable hidden by local declaration: &1"
 msgstr ""
 
 #: MErrorMessage.module:258
-msgid "unknown error"
+msgid "integer and boolean mixed with `&1' operator"
 msgstr ""
 
 #: MErrorMessage.module:259
-msgid "unused argument: &1"
+msgid "uninitialized global variable: &1"
 msgstr ""
 
 #: MErrorMessage.module:260
-msgid "unused extern function: &1"
+msgid "uninitialized variable: &1"
 msgstr ""
 
 #: MErrorMessage.module:261
-msgid "unused function: &1"
+msgid "unknown error"
 msgstr ""
 
 #: MErrorMessage.module:262
-msgid "unused global variable: &1"
+msgid "unused argument: &1"
 msgstr ""
 
 #: MErrorMessage.module:263
+msgid "unused extern function: &1"
+msgstr ""
+
+#: MErrorMessage.module:264
+msgid "unused function: &1"
+msgstr ""
+
+#: MErrorMessage.module:265
+msgid "unused global variable: &1"
+msgstr ""
+
+#: MErrorMessage.module:266
 msgid "unused variable: &1"
 msgstr ""
 
-#: MErrorMessage.module:267
+#: MErrorMessage.module:270
 msgid "cannot open slave pseudo-terminal: "
 msgstr ""
 
-#: MErrorMessage.module:268
+#: MErrorMessage.module:271
 msgid "cannot initialize pseudo-terminal: "
 msgstr ""
 
-#: MErrorMessage.module:269
+#: MErrorMessage.module:272
 msgid "cannot plug standard input: "
 msgstr ""
 
-#: MErrorMessage.module:270
+#: MErrorMessage.module:273
 msgid "cannot plug standard output and standard error: "
 msgstr ""
 
-#: MErrorMessage.module:271
+#: MErrorMessage.module:274
 msgid "cannot run executable: "
 msgstr ""
 
@@ -7004,7 +7285,7 @@ msgstr ""
 msgid "No help found."
 msgstr "No s'ha trobat l'ajuda."
 
-#: MHelp.module:975 Wiki.module:799
+#: MHelp.module:983 Wiki.module:799
 msgid "This page does not exist."
 msgstr ""
 
@@ -7037,6 +7318,11 @@ msgid "Unknown format"
 msgstr "Format desconegut"
 
 #: MTheme.module:6
+#, fuzzy
+msgid "Characters"
+msgstr "Caractères incorrects"
+
+#: MTheme.module:6
 msgid "Comments"
 msgstr "Comentaris"
 
@@ -7063,6 +7349,10 @@ msgstr "Ressaltat"
 #: MTheme.module:6
 msgid "Keywords"
 msgstr "Paraules clau"
+
+#: MTheme.module:6
+msgid "Labels"
+msgstr ""
 
 #: MTheme.module:6
 msgid "Normal text"
@@ -7100,59 +7390,59 @@ msgstr "Manca '&1'."
 msgid "'&1' and '&2' are missing."
 msgstr "Manquen '&1' i '&2'."
 
-#: Package.module:266
+#: Package.module:268
 msgid "Saving CHANGELOG file."
 msgstr "Desant el fitxer CHANGELOG"
 
-#: Package.module:653
+#: Package.module:657
 msgid "Making &1 support package..."
 msgstr ""
 
-#: Package.module:707
+#: Package.module:712
 msgid "Creating package for &1."
 msgstr "Creant paquet per a &1."
 
-#: Package.module:739
+#: Package.module:744
 msgid "The package build has failed."
 msgstr "La creació del paquet ha fallat."
 
-#: Package.module:807
+#: Package.module:812
 msgid "Making build directory."
 msgstr "Creant el directori de construcció."
 
-#: Package.module:862
+#: Package.module:867
 msgid "Creating desktop file..."
 msgstr "Creant el fitxer d'escriptori..."
 
-#: Package.module:870
+#: Package.module:875
 msgid "Sources are being debianizated."
 msgstr "S'estan debianitzant les fonts."
 
-#: Package.module:1075
+#: Package.module:1080
 msgid "Creating package..."
 msgstr "Creant paquet..."
 
-#: Package.module:1083
+#: Package.module:1088
 msgid "'dpkg-buildpackage' has failed."
 msgstr "'dpkg-buildpackage' ha fallat."
 
-#: Package.module:1363
+#: Package.module:1370
 msgid "Initializing ~/RPM directory."
 msgstr "Inicialitzant el directori ~/RPM."
 
-#: Package.module:1383
+#: Package.module:1390
 msgid "Creating source package."
 msgstr "Creant paquet font."
 
-#: Package.module:1407
+#: Package.module:1414
 msgid "Creating .spec file."
 msgstr "Creant fitxer .spec."
 
-#: Package.module:1666
+#: Package.module:1652
 msgid "'rpmbuild' has returned the following error code:"
 msgstr "«rpmbuild» ha retornat el següent codi d'error:"
 
-#: Package.module:2077
+#: Package.module:2067
 msgid "'tar' has returned the following error code:"
 msgstr "«tar» ha retornat el següent codi d'error:"
 
@@ -7168,78 +7458,78 @@ msgstr ""
 msgid "Patch didn't apply:\n"
 msgstr ""
 
-#: Project.module:222
+#: Project.module:227
 msgid "Automation"
 msgstr "Automatització"
 
-#: Project.module:223
+#: Project.module:228
 msgid "Basic"
 msgstr "Bàsic"
 
-#: Project.module:225
+#: Project.module:230
 msgid "Drawing"
 msgstr "Dibuix"
 
-#: Project.module:228
+#: Project.module:233
 msgid "Miscellaneous"
 msgstr "Varis"
 
-#: Project.module:229
+#: Project.module:234
 msgid "Networking"
 msgstr "Xarxes"
 
-#: Project.module:230
+#: Project.module:235
 msgid "OpenGL"
 msgstr "-"
 
-#: Project.module:231
+#: Project.module:236
 msgid "Printing"
 msgstr "Impressió"
 
-#: Project.module:232
+#: Project.module:237
 msgid "Sound"
 msgstr "So"
 
-#: Project.module:234
+#: Project.module:239
 msgid "Controls"
 msgstr "Controls"
 
-#: Project.module:235
+#: Project.module:240
 msgid "Multimedia"
 msgstr ""
 
-#: Project.module:236
+#: Project.module:241
 msgid "Web"
 msgstr ""
 
-#: Project.module:371
+#: Project.module:406
 msgid "File not found!"
 msgstr "No s'ha trobat el fitxer!"
 
-#: Project.module:481
+#: Project.module:518
 msgid "This project does not exist."
 msgstr "Aquest projecte no existeix."
 
-#: Project.module:493
+#: Project.module:530
 msgid ""
 "Unable to find Gambas IDE executable in directory:\n"
 "\n"
 "&1"
 msgstr ""
 
-#: Project.module:506
+#: Project.module:549
 msgid "This is not a Gambas project."
 msgstr "No és un projecte Gambas."
 
-#: Project.module:509
+#: Project.module:552
 msgid "This is a Gambas 1.0 project. Use Gambas 2 to convert it."
 msgstr "Aquest és un projecte de Gambas 1.0. Feu servir Gambas 2 per a convertir-lo."
 
-#: Project.module:512
+#: Project.module:555
 msgid "Convert"
 msgstr "Converteix"
 
-#: Project.module:512
+#: Project.module:555
 msgid ""
 "This is a Gambas 2.0 project.\n"
 "\n"
@@ -7249,15 +7539,15 @@ msgstr ""
 "\n"
 "El voleu convertir?"
 
-#: Project.module:530
+#: Project.module:573
 msgid "Do not open"
 msgstr "No l'obris"
 
-#: Project.module:530
+#: Project.module:573
 msgid "Open after all"
 msgstr "Obre de totes maneres"
 
-#: Project.module:530
+#: Project.module:573
 msgid ""
 "This project seems to be already opened.\n"
 "\n"
@@ -7267,88 +7557,77 @@ msgstr ""
 "\n"
 "Obrint el mateix projecte dues vegades pot fer que es perdin dades."
 
-#: Project.module:536
+#: Project.module:579
 msgid "It cannot be converted."
 msgstr "No pot ser convertit."
 
-#: Project.module:536
+#: Project.module:579
 msgid "This project is read-only."
 msgstr "Aquest projecte és de només lectura."
 
-#: Project.module:553
+#: Project.module:596
 msgid "Copying project inside a temporary directory..."
 msgstr "Copiant el projecte dins un directori temporal..."
 
-#: Project.module:556
+#: Project.module:599
 msgid "Unable to create temporary directory"
 msgstr "No es pot crear el directori temporal"
 
-#: Project.module:581
+#: Project.module:629
 msgid "Converting project structure..."
 msgstr "Convertint l'estructura del projecte..."
 
-#: Project.module:612
+#: Project.module:662
 msgid "Applying conversion..."
 msgstr "Aplicant la conversió..."
 
-#: Project.module:618
+#: Project.module:668
 msgid "Unable to apply conversion"
 msgstr "No es pot aplicar la conversió"
 
-#: Project.module:731
+#: Project.module:788
 msgid "Some libraries used by the project are missing."
 msgstr ""
 
-#: Project.module:750
-msgid "Cannot open project file :\n"
+#: Project.module:807
+#, fuzzy
+msgid "Cannot open project file :"
 msgstr "No es pot obrir el fitxer de projecte :\n"
 
-#: Project.module:802
+#: Project.module:859
 #, fuzzy
 msgid "Cannot reload file."
 msgstr "No es pot afegit el fitxer"
 
-#: Project.module:1376
-msgid "Files"
-msgstr ""
-
-#: Project.module:1586
-msgid "The following classes have circular inheritance:"
-msgstr "Les següents classes tenen herència circular:"
-
-#: Project.module:1790
+#: Project.module:1647
 msgid "ALPHA VERSION, USE AT YOUR OWN RISK!"
 msgstr ""
 
-#: Project.module:1792
+#: Project.module:1649
 msgid "DEVELOPMENT VERSION, USE AT YOUR OWN RISK!"
 msgstr ""
 
-#: Project.module:2114
-msgid "Loading &1..."
-msgstr "Carregant &1..."
-
-#: Project.module:2171
+#: Project.module:2043
 msgid "Cannot open a binary file."
 msgstr "No s'ha pogut obrir un fitxer binari."
 
-#: Project.module:2208
+#: Project.module:2081
 msgid "Cannot open file."
 msgstr "No es pot obrir el fitxer."
 
-#: Project.module:2385
+#: Project.module:2239
 msgid "&1th"
 msgstr "&1è"
 
-#: Project.module:2438
+#: Project.module:2292
 msgid "in form definition"
 msgstr "a la definició del formulari"
 
-#: Project.module:2445
+#: Project.module:2299
 msgid "in &1."
 msgstr "a &1."
 
-#: Project.module:2606
+#: Project.module:2460
 msgid ""
 "Some project source files are in conflict.\n"
 "Please solve them if you want to compile the project."
@@ -7356,194 +7635,203 @@ msgstr ""
 "Alguns fitxers font del projecte estan en conflicte.\n"
 "Solucioneu-los si voleu compilar el projecte."
 
-#: Project.module:2610
+#: Project.module:2464
 msgid "Compiling project"
 msgstr "Compilant projecte"
 
-#: Project.module:2860
+#: Project.module:2715
 msgid "File already exists."
 msgstr "El fitxer ja existeix."
 
-#: Project.module:2892
+#: Project.module:2747
 msgid "Directory already exists."
 msgstr "El directori ja existeix."
 
-#: Project.module:2904
+#: Project.module:2759
 msgid "Cannot link template file."
 msgstr "No s'ha pogut enllaçar el fitxer de plantilla."
 
-#: Project.module:2910
+#: Project.module:2765
 msgid "Cannot copy template file."
 msgstr "No es pot copiar el fitxer de plantilla."
 
-#: Project.module:3116
+#: Project.module:2971
 msgid "The contents of VERSION file is incorrect."
 msgstr ""
 
-#: Project.module:3138
+#: Project.module:2993
 #, fuzzy
 msgid "Cannot install library in &1."
 msgstr "No s'ha trobat la biblioteca dinàmica '&1': &2"
 
-#: Project.module:3176
+#: Project.module:3031
 msgid "Making executable..."
 msgstr "Creant executable..."
 
-#: Project.module:3229
+#: Project.module:3083
 msgid "Cannot make executable."
 msgstr "No es pot crear l'executable."
 
-#: Project.module:3668
+#: Project.module:3527
 msgid "Some components are missing: &1"
 msgstr "Manquen alguns components: &1"
 
-#: Project.module:3854
+#: Project.module:3719
 msgid "Cannot write project file."
 msgstr "No es pot desar el fitxer de projecte."
 
-#: Project.module:3903
+#: Project.module:3768
 msgid "Unable to create desktop shortcut."
 msgstr "No s'ha pogut crear una drecera a l'escriptori."
 
-#: Project.module:4172
+#: Project.module:4032
 msgid "The directory will be removed at the next commit."
 msgstr "El directori serà suprimit en la propera publicació de canvis."
 
-#: Project.module:4189
+#: Project.module:4049
 msgid "You must define a startup class or form!"
 msgstr "Heu de definir una classe o un formulari d'inici!"
 
-#: Project.module:4220
+#: Project.module:4080
 msgid "Please type a name."
 msgstr "Indiqueu un nom."
 
-#: Project.module:4224
+#: Project.module:4084
 msgid "This name contains a forbidden character:"
 msgstr "Aquest nom conté un caràcter no permès:"
 
-#: Project.module:4228
+#: Project.module:4088
 msgid "The name cannot begins with a dot."
 msgstr "El nom no pot començar amb un punt."
 
-#: Project.module:4232
+#: Project.module:4092
 msgid "This name is already used. Choose another one."
 msgstr "Aquest nom ja està en us. Trieu-ne un altre."
 
-#: Project.module:4268
+#: Project.module:4128
 msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
 msgstr "Un nom de classe ha de començar amb una lletra o un guió baix, seguit de qualsevol lletra o dígit."
 
-#: Project.module:4316
+#: Project.module:4171
 msgid "Destination already exists."
 msgstr ""
 
-#: Project.module:4533
+#: Project.module:4353
 msgid "Unable to rename '&1'"
 msgstr "No s'ha pogut canviar el nom de «&1»"
 
-#: Project.module:4649
+#: Project.module:4469
 msgid "Please type a project name."
 msgstr "Indiqueu un nom de projecte."
 
-#: Project.module:4657
+#: Project.module:4477
 msgid "The project name cannot begin with a dot."
 msgstr "El nom de projecte no pot començar amb un punt."
 
-#: Project.module:4660
+#: Project.module:4480
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Els caràcters no ASCII no estan permesos en un nom de projecte."
 
-#: Project.module:4661
-msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
+#: Project.module:4481
+msgid "SPACE"
+msgstr ""
+
+#: Project.module:4481
+#, fuzzy
+msgid "The following characters are forbidden in a project name:"
 msgstr "Els següents caràcters no estan permesos en un nom de projecte: ? * / \\ ESPAI"
 
-#: Project.module:4668
+#: Project.module:4488
 msgid "This project already exists."
 msgstr "Aquest projecte ja existeix."
 
-#: Project.module:4671
+#: Project.module:4491
 msgid "The project directory already exists."
 msgstr "El directori de projecte ja existeix."
 
-#: Project.module:4673
+#: Project.module:4493
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "No es pot crear el directori per què ja existeix un fitxer amb el mateix nom."
 
-#: Project.module:4737
+#: Project.module:4541
 msgid "Unable to create source archive."
 msgstr ""
 
-#: Project.module:4764
+#: Project.module:4568
 msgid "Create source package"
 msgstr "Crea paquet font"
 
-#: Project.module:5023
+#: Project.module:4833
 msgid "Cannot copy file &1."
 msgstr "No es pot copiar el fitxer &1."
 
-#: Project.module:5071
+#: Project.module:4881
 msgid "Cannot create link &1."
 msgstr "No es pot crear l'enllaç &1."
 
-#: Project.module:5086
+#: Project.module:4896
 msgid "Cannot move a directory inside itself."
 msgstr "No es pot moure un directori dins d'ell."
 
-#: Project.module:5154
+#: Project.module:4960
 msgid "Cannot move file &1."
 msgstr "No es pot moure el fitxer &1."
 
-#: Project.module:5367
+#: Project.module:5173
 msgid "The following files couldn't be removed:"
 msgstr ""
 
-#: Project.module:5842
+#: Project.module:5639
 msgid "Project cleanup..."
 msgstr "Neteja del projecte..."
 
-#: Project.module:5848
+#: Project.module:5645
 msgid "Project files conversion..."
 msgstr "Conversió dels fitxers del projecte..."
 
-#: Project.module:5878
+#: Project.module:5675
 msgid "Unable to convert &1"
 msgstr "No s'ha pogut convertir &1"
 
-#: Project.module:6112
+#: Project.module:5926
 #, fuzzy
 msgid "Unable to update forms."
 msgstr "No s'ha pogut enganxar el text."
 
-#: Project.module:6202
+#: Project.module:6016
 msgid "The &1 program is not installed on your system."
 msgstr ""
 
-#: Project.module:6204
+#: Project.module:6018
 msgid "The following programs are not installed on your system: &1."
 msgstr ""
 
-#: Project.module:6296
+#: Project.module:6110
 #, fuzzy
 msgid "Unable to read component description file."
 msgstr "No es pot escriure el fitxer de descripció del component."
 
-#: Project.module:6357
+#: Project.module:6171
 msgid "Cannot write component description file."
 msgstr "No es pot escriure el fitxer de descripció del component."
 
-#: Project.module:6418
+#: Project.module:6232
 #, fuzzy
 msgid "Project templates"
 msgstr "Tipus de projecte"
 
-#: Project.module:6464
+#: Project.module:6278
 #, fuzzy
 msgid "Unable to run terminal."
 msgstr "No s'ha pogut executar la consulta."
 
-#: Save.module:39
+#: Save.module:51
 msgid "Cannot save file !"
 msgstr "No es pot desar el fitxer !"
+
+#: SoftwareBox.class:236
+msgid "Published &1"
+msgstr ""
 
 #: Util.module:39
 msgid "&1 B"
@@ -7561,8 +7849,32 @@ msgstr ""
 msgid "&1 GiB"
 msgstr ""
 
-#: VersionControl.module:116
-msgid "command timeout"
+#: VersionControl.module:137
+msgid "Command timeout."
+msgstr ""
+
+#: VersionControl.module:137
+#, fuzzy
+msgid "Please check your network connection."
+msgstr "Trieu una localització al menú."
+
+#: VersionControl.module:492
+#, fuzzy
+msgid "Do you really want to put this project under version control with &1?"
+msgstr "Esteu segur que voleu esborrar aquest directori?"
+
+#: VersionControl.module:506
+#, fuzzy
+msgid "The project could not be put under version control."
+msgstr "No s'ha pogut fer la publicació de canvis del projecte"
+
+#: VersionControl.module:591
+#, fuzzy
+msgid "Unable to switch to branch `&1`."
+msgstr "No s'ha pogut convertir &1"
+
+#: VersionControl.module:611
+msgid "With &1"
 msgstr ""
 
 #: Wiki.module:522
@@ -7589,50 +7901,35 @@ msgstr ""
 msgid "This symbol does not exist."
 msgstr ""
 
-#~ msgid "Thanks to"
-#~ msgstr "Gràcies a"
+#~ msgid "Exported classes"
+#~ msgstr "Classes exportades"
 
-#~ msgid "About Gambas..."
-#~ msgstr "Quant al Gambas..."
+#~ msgid "Component advancement"
+#~ msgstr "Progrés del component"
 
-#~ msgid "Gambas Almost Means Basic!"
-#~ msgstr "-"
+#~ msgid "Environment variables"
+#~ msgstr "Variables d'entorn"
 
-#~ msgid "<h2 align=center>Authors</h2>\n"
-#~ msgstr "<h2 align=center>Autors</h2>\n"
+#~ msgid "About component"
+#~ msgstr "Quant al component"
 
-#~ msgid "Existing"
-#~ msgstr "Existent"
+#~ msgid "Show only components used in project"
+#~ msgstr "Mostra només els components usats en el projecte"
 
-#~ msgid ""
-#~ "The form has been modified.\n"
-#~ "\n"
-#~ "All your changes will be lost."
-#~ msgstr ""
-#~ "El formulari s'ha modificat.\n"
-#~ "\n"
-#~ "Tots els canvis es perdran."
+#~ msgid "Author(s)"
+#~ msgstr "Autor(s)"
 
-#~ msgid "Messages"
-#~ msgstr "Missatges"
+#~ msgid "Blend"
+#~ msgstr "Combina"
 
-#~ msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
-#~ msgstr "Per tornar a mostrar la barra de menú, prem les tecles següents:<p><b>&1</b>"
+#~ msgid "Background color"
+#~ msgstr "Color de fons"
 
-#~ msgid "Component properties"
-#~ msgstr "Propietats del component"
+#~ msgid "Foreground color"
+#~ msgstr "Color de primer pla"
 
-#~ msgid "Browse project..."
-#~ msgstr "Navega el projecte..."
-
-#~ msgid "Reset filter"
-#~ msgstr "Reinicia el filtre"
-
-#~ msgid "Prefix package name with the vendor name"
-#~ msgstr "Prefixe per al nom del paquet amb el nom del proveïdor"
-
-#~ msgid "Please enter the changes of your project."
-#~ msgstr "Introduïu els canvis del vostre projecte."
+#~ msgid "Select a theme"
+#~ msgstr "Seleccioneu un tema"
 
 #~ msgid ""
 #~ "All needed information have been collected. You can now create the installation packages for your application...\n"
@@ -7647,38 +7944,160 @@ msgstr ""
 #~ "<p>Feu clic al botó <b>Canceŀla</b> per canceŀlar l'operació.\n"
 #~ "\n"
 
-#~ msgid "Select a theme"
-#~ msgstr "Seleccioneu un tema"
+#~ msgid "Please enter the changes of your project."
+#~ msgstr "Introduïu els canvis del vostre projecte."
 
-#~ msgid "Foreground color"
-#~ msgstr "Color de primer pla"
+#~ msgid "Prefix package name with the vendor name"
+#~ msgstr "Prefixe per al nom del paquet amb el nom del proveïdor"
 
-#~ msgid "Background color"
-#~ msgstr "Color de fons"
+#~ msgid "Reset filter"
+#~ msgstr "Reinicia el filtre"
 
-#~ msgid "Blend"
-#~ msgstr "Combina"
+#~ msgid "Browse project..."
+#~ msgstr "Navega el projecte..."
 
-#~ msgid "Select a Gambas application"
-#~ msgstr "Trieu una aplicació Gambas"
+#~ msgid "Component properties"
+#~ msgstr "Propietats del component"
 
-#~ msgid "Author(s)"
-#~ msgstr "Autor(s)"
+#~ msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
+#~ msgstr "Per tornar a mostrar la barra de menú, prem les tecles següents:<p><b>&1</b>"
 
-#~ msgid "Show only components used in project"
-#~ msgstr "Mostra només els components usats en el projecte"
+#~ msgid "Messages"
+#~ msgstr "Missatges"
 
-#~ msgid "About component"
-#~ msgstr "Quant al component"
+#~ msgid ""
+#~ "The form has been modified.\n"
+#~ "\n"
+#~ "All your changes will be lost."
+#~ msgstr ""
+#~ "El formulari s'ha modificat.\n"
+#~ "\n"
+#~ "Tots els canvis es perdran."
 
-#~ msgid "Environment variables"
-#~ msgstr "Variables d'entorn"
+#~ msgid "Existing"
+#~ msgstr "Existent"
 
-#~ msgid "Debugging"
-#~ msgstr "Depuració"
+#~ msgid "<h2 align=center>Authors</h2>\n"
+#~ msgstr "<h2 align=center>Autors</h2>\n"
 
-#~ msgid "Component advancement"
-#~ msgstr "Progrés del component"
+#~ msgid "Gambas Almost Means Basic!"
+#~ msgstr "-"
 
-#~ msgid "Exported classes"
-#~ msgstr "Classes exportades"
+#~ msgid "About Gambas..."
+#~ msgstr "Quant al Gambas..."
+
+#~ msgid "Thanks to"
+#~ msgstr "Gràcies a"
+
+#~ msgid "Loading &1..."
+#~ msgstr "Carregant &1..."
+
+#~ msgid "The following classes have circular inheritance:"
+#~ msgstr "Les següents classes tenen herència circular:"
+
+#, fuzzy
+#~ msgid "U"
+#~ msgstr "Puja"
+
+#, fuzzy
+#~ msgid "N"
+#~ msgstr "No"
+
+#~ msgid "Edit text property"
+#~ msgstr "Editar propietat del text"
+
+#~ msgid "Select gradient stop color..."
+#~ msgstr "Seleccioneu el color del punt de degradat..."
+
+#~ msgid "<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found."
+#~ msgstr "<b>Avís</b> L'executable del projecte i les biblioteques que en depèn han d'estar dins els mateix directori. En cas contrari no trobarà les biblioteques."
+
+#, fuzzy
+#~ msgid "'wget' is not found."
+#~ msgstr "No s'ha trobat el fitxer!"
+
+#~ msgid "System informations"
+#~ msgstr "Informacions del sistema"
+
+#~ msgid "Click on a form to display the hierarchy of its controls..."
+#~ msgstr "Feu clic al formulari per mostrar la jerarquia dels seus controls..."
+
+#~ msgid "Versioning"
+#~ msgstr "Versionat"
+
+#~ msgid "Stack backtrace"
+#~ msgstr "Pila del traçat de crides"
+
+#~ msgid "Remove current breakpoint"
+#~ msgstr "Elimina el punt d'interrupció actual"
+
+#~ msgid "Display ME"
+#~ msgstr "Mostra ME"
+
+#~ msgid "Display"
+#~ msgstr "Mostra"
+
+#, fuzzy
+#~ msgid "Display expression"
+#~ msgstr "Expressió regular"
+
+#~ msgid "Dynamic variables"
+#~ msgstr "Variables dinàmiques"
+
+#~ msgid "Expression"
+#~ msgstr "Expressió"
+
+#~ msgid "Project information"
+#~ msgstr "Informació del projecte"
+
+#~ msgid "Component programming"
+#~ msgstr "Programació d'un component"
+
+#~ msgid "Visual Basic™ conversion help"
+#~ msgstr "Ajuda per a la conversió de Visual Basic™"
+
+#~ msgid "Image processing"
+#~ msgstr "Processament d'imatges"
+
+#~ msgid "OpenGL programming"
+#~ msgstr "Programació OpenGL"
+
+#~ msgid "XML / XSLT programming"
+#~ msgstr "Programació XML / XSLT"
+
+#~ msgid "Regular expressions"
+#~ msgstr "Expressions regulars"
+
+#~ msgid "Settings files management"
+#~ msgstr "Gestió de fitxers de configuració"
+
+#~ msgid "Internationalization"
+#~ msgstr "Internacionalització"
+
+#~ msgid ""
+#~ "Application stored in a\n"
+#~ "Subversion repository"
+#~ msgstr ""
+#~ "Aplicació emmagatzemada al\n"
+#~ "Repositori subversion"
+
+#~ msgid "CGI Web application"
+#~ msgstr "Aplicació Web CGI"
+
+#~ msgid "SDL application"
+#~ msgstr "Aplicació SDL"
+
+#~ msgid "Command-line application"
+#~ msgstr "Aplicació de línia d'ordres"
+
+#~ msgid "GTK+ graphical application"
+#~ msgstr "Aplicació gràfica GTK+"
+
+#~ msgid "QT graphical application"
+#~ msgstr "Aplicació gràfica QT"
+
+#~ msgid "Graphical application"
+#~ msgstr "Aplicació gràfica"
+
+#~ msgid "The project has been successfully created."
+#~ msgstr "El projecte s'ha creat correctament."
