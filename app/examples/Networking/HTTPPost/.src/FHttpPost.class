@@ -91,7 +91,7 @@ Public Sub Button1_Click()
   Else
     P.Proxy.Host = ""
   End If
-  P.URL = "xmlrpc-c.sourceforge.net/api/sample.php"
+  P.URL = "dansoft.krasnokamensk.ru/xmlrpc-c-api/sample.php"
 
   P.Post("text/xml", sCad)
 
