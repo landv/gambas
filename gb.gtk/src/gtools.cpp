@@ -1868,7 +1868,7 @@ cairo_surface_t *gt_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf)
 		format = CAIRO_FORMAT_ARGB32;
 
 	cairo_stride = cairo_format_stride_for_width (format, width);
-	cairo_pixels = (uchar *)g_malloc (height * cairo_stride);
+	cairo_pixels = (uchar *)g_malloc_n (height, cairo_stride);
 	surface = cairo_image_surface_create_for_data ((unsigned char *)cairo_pixels,
 																								format,
 																								width, height, cairo_stride);
