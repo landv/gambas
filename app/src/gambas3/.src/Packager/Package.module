@@ -231,7 +231,7 @@ Private Sub InitMake(sSys As String)
   If Project.Description Then
     $sDescription = RemoveEmptyLines(Project.Description)
   Else
-    $sDescription = "Missing description"
+    $sDescription = "Missing description."
   Endif
 
   With Project.Components
@@ -605,11 +605,9 @@ Private Sub PrintDesktopFile(hFile As File, sExec As String, sIcon As String, Op
   Else
     Print #hFile, Project.Name
   Endif
-  Print #hFile, "Comment=";    
-  If $sDescription Then
+  If $sDescription <> "Missing description." Then
+    Print #hFile, "Comment=";
     Print #hFile, Replace($sDescription, "\n", " ")
-  Else
-    Print #hFile, Project.Name
   Endif
   Print #hFile, "Exec="; sExec '/usr/bin/"; $sName & ".gambas"
   Print #hFile, "Icon="; sIcon '/usr/share/pixmaps/" & sIcon
