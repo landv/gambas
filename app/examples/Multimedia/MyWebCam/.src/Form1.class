@@ -13,7 +13,6 @@ Public Sub Button1_Click()
   Dim sSize As String
 
   If hWebCam Then
-    Button1.Caption = ("Capture")
     Bright.Enabled = False
     Contrast.Enabled = False
     Hue.Enabled = False
@@ -27,6 +26,7 @@ Public Sub Button1_Click()
     Button2.Enabled = False
     hWebCam = Null
     Tmr.Enabled = False
+    Button1.Caption = ("Capture")
     Return
   End If
 
