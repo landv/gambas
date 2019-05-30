@@ -11,7 +11,7 @@ Public Sub mnuOpen_Click()
   
   'Dialog.Path = Application.Path
 
-  Dialog.Filter = ["*.jpg;*.jpeg;*.png;*.bmp", "Picture files"]
+  Dialog.Filter = ["*.jpg;*.jpeg;*.png;*.bmp", ("Picture files")]
 
   If Dialog.OpenFile() Then Return
 
