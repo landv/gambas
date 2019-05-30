@@ -1425,8 +1425,8 @@ Private Function MakeRpmPackage(sSys As String)
   Print #hFile, "Source0: %{name}-%{version}.tar.bz2"
   Print #hFile, "License: "; If(Project.License, Project.License, "GPL")
   Print #hFile, "Group: " & Project.Groups[sSys]
+  Print #hFile, "BuildRoot: %{_tmppath}/%{name}-%{version}-${release}-buildroot"
   If sSys <> "mageia" Then
-    Print #hFile, "BuildRoot: %{_tmppath}/%{name}-%{version}-${release}-buildroot"
     Print #hFile, "Prefix: %{_prefix}"
   Endif
     'PRINT #hFile, "BuildRequires: gambas2-ide"
