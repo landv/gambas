@@ -599,16 +599,19 @@ Private Sub PrintDesktopFile(hFile As File, sExec As String, sIcon As String, Op
   
   Print #hFile, "[Desktop Entry]"
   Print #hFile, "Version=1.0"
+
   Print #hFile, "Name=";    
   If Project.Title Then
-   Print #hFile, Project.Title
+    Print #hFile, Project.Title
   Else
     Print #hFile, Project.Name
   Endif
+
   If $sDescription <> "Missing description." Then
     Print #hFile, "Comment=";
     Print #hFile, Replace($sDescription, "\n", " ")
   Endif
+  
   Print #hFile, "Exec="; sExec '/usr/bin/"; $sName & ".gambas"
   Print #hFile, "Icon="; sIcon '/usr/share/pixmaps/" & sIcon
   Print #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
@@ -864,7 +867,7 @@ Private Function MakeDebPackage(sSys As String)
   If Project.Type = Project.TYPE_NORMAL Then
     AddLog(("Creating desktop file..."))
     hFile = Open sPackagePath &/ "debian/" & sPackageName & ".desktop" For Create
-    PrintDesktopFile(hFile, "/usr/bin/" & $sName, sIcon)
+    PrintDesktopFile(hFile, $sName, sIcon)
     Close #hFile
   Endif 
   
@@ -1530,7 +1533,7 @@ Private Function MakeRpmPackage(sSys As String)
     
           Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
           
-          PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon, "X-RedHat-Extra;")
+          PrintDesktopFile(hFile, $sName, sIcon, "X-RedHat-Extra;")
           
           Print #hFile, "EOF"
     
@@ -1544,7 +1547,7 @@ Private Function MakeRpmPackage(sSys As String)
     
           Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
           
-          PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon)
+          PrintDesktopFile(hFile, $sName, sIcon)
           
           Print #hFile, "EOF"
           
@@ -2009,7 +2012,7 @@ Private Sub MakeTgzPackage(sSys As String)
     
       hFile = Open sBuildDir &/ "/usr/share/applications/" & sPackageName & ".desktop" For Create
     
-      PrintDesktopFile(hFile, "/usr/bin/" & $sName, "/usr/share/pixmaps/" & $sName & ".png")
+      PrintDesktopFile(hFile, $sName, "/usr/share/pixmaps/" & $sName & ".png")
     
       Close #hFile
       ' if we are creating a project with desktop icon/menu we need to run a doinst.sh in the package
@@ -2310,7 +2313,7 @@ Private Function MakeArchPackage(sSys As String)
     Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(sBuildDir &/ Project.Name & ".png")
 
     hFile = Open sBuildDir &/ sPackageName & ".desktop" For Create
-    PrintDesktopFile(hFile, "/usr/bin/" & $sName, "/usr/share/pixmaps/" & $sName & ".png")
+    PrintDesktopFile(hFile, $sName, "/usr/share/pixmaps/" & $sName & ".png")
     Close #hFile
     
   Endif 
