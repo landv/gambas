@@ -5,12 +5,13 @@ Public ChangeLog As String
 Public Signature As String
 
 Private RPMBUILD_PROG As String
+Private FAKEROOT_PROG As String
 Private DKPG_PROG As String
 Private TAR_1_13_PROG As String
 Private AUTOCONF_PROG As String
 Private AUTOMAKE_PROG As String
 Private MAKEPKG_PROG As String
-Private MAKESELF_PROG As String
+'Private MAKESELF_PROG As String
 
 Private $sOutput As String
 Private $bEnd As Boolean
@@ -59,6 +60,7 @@ Public Sub CheckProgram()
   
   If Not Project.CheckProgram("dh_install") Then DKPG_PROG = "dh_install"
   If Not Project.CheckProgram("rpmbuild") Then RPMBUILD_PROG = "rpmbuild"
+  If Not Project.CheckProgram("fakeroot") Then FAKEROOT_PROG = "fakeroot"
   If Not Project.CheckProgram("tar-1.13") Then 
     TAR_1_13_PROG = "tar-1.13"
   Else If Not Project.CheckProgram("tar") Then 
@@ -67,7 +69,7 @@ Public Sub CheckProgram()
   If Not Project.CheckProgram("autoconf") Then AUTOCONF_PROG = "autoconf"
   If Not Project.CheckProgram("automake") Then AUTOMAKE_PROG = "automake"
   If Not Project.CheckProgram("makepkg") Then MAKEPKG_PROG = "makepkg"
-  If Not Project.CheckProgram("makeself") Then MAKESELF_PROG = "makeself"
+  'If Not Project.CheckProgram("makeself") Then MAKESELF_PROG = "makeself"
   
 End
 
@@ -80,6 +82,7 @@ Public Sub CheckSystem(sSys As String) As String
       
     Case "debian", "ubuntu"
       If Not DKPG_PROG Then Return Subst(("'&1' is missing."), "debhelper")
+      If Not FAKEROOT_PROG Then Return Subst(("'&1' is missing."), "fakeroot")
 
     Case "slackware"
       If Not TAR_1_13_PROG Then Return Subst(("'&1' is missing."), "tar-1.13")
@@ -92,8 +95,8 @@ Public Sub CheckSystem(sSys As String) As String
     Case "archlinux"
       If Not MAKEPKG_PROG Then Return Subst(("'&1' is missing."), "makepkg")
       
-    Case "self"
-      If Not MAKESELF_PROG Then Return Subst(("'&1' is missing."), "makeself")
+    'Case "self"
+    '  If Not MAKESELF_PROG Then Return Subst(("'&1' is missing."), "makeself")
 
     Case Else
       Return
