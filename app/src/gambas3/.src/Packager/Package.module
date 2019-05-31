@@ -817,6 +817,7 @@ Private Function MakeDebPackage(sSys As String)
   sPackagePath = Path &/ Subst("&1-&2", sPackageName, $sVersion)
 
   Try Shell "rm -Rf " & Shell$(sPackagePath) Wait
+  Try Shell "rm -Rf " & Shell$(sPackagePath & ".orig") Wait
   Mkdir sPackagePath
   Mkdir sPackagePath &/ "src"
   Mkdir sPackagePath &/ "debian"
