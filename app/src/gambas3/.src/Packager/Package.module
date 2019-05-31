@@ -1365,7 +1365,6 @@ Private Function MakeRpmPackage(sSys As String)
     Case "suse"
       sDistribution = "OpenSUSE"
       sVendor = "Novell"
-      sRelease &= "suse"
 
   End Select
   
@@ -1724,12 +1723,10 @@ Private Function MakeRpmSupportPackage(sSys As String, sSupport As String, aComp
     Case "fedora"
       sDistribution = "Fedora"
       sVendor = "Fedora"
-      sRelease = "1"
 
     Case "suse"
       sDistribution = "OpenSUSE"
       sVendor = "Novell"
-      sRelease = "1suse"
 
   End Select
   
