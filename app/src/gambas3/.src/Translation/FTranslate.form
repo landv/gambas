@@ -90,11 +90,17 @@
           Alignment = Align.Center
         }
         { cmbLang ComboBox
-          MoveScaled(33,0,18,4)
+          MoveScaled(32,0,18,4)
           Font = Font["Bold"]
           Expand = True
           ReadOnly = True
           Sorted = True
+        }
+        { btnNew ToolButton mnuNew
+          Name = "btnNew"
+          MoveScaled(50,0,4,4)
+          ToolTip = ("Add a new translation")
+          Picture = Picture["icon:/small/add"]
         }
         { Panel8 Panel
           MoveScaled(55,0,3,4)
