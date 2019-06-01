@@ -259,11 +259,9 @@ End
 
 Public Sub button_snap_Click()
 
-  Dialog.Filter = ["*", ("All files"), "*.desktop", ("Desktop files")]
-
   If Dialog.SaveFile() Then Return
-  $device.Save(Dialog.Path)
-  Message(("Saved as") & " (" & Dialog.Path & ")")
+  Try $device.Save(Dialog.Path)
+  If Not Error Then Message(("Saved as") & " (" & Dialog.Path & ")") Else Message(("Snapshot was not saved"))
 
 End
 
