@@ -69,7 +69,7 @@ Public Sub _new()
   $hView.AutoResize = True
   $hView.Name = Me.Name & ":gridview"
   $hView.Rows.H = GetDefaultItemHeight()
-  '$hView.Padding = 0
+  $hView.Padding = Desktop.Scale \ 2
   
   Me.Proxy = $hView
   

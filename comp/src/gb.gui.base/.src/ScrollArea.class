@@ -527,7 +527,7 @@ Private Sub ScrollY_Write(Value As Integer)
 
 End
 
-Public Sub Scroll(X As Integer, Y As Integer)
+Public Sub Scroll(X As Integer, Y As Integer) As Boolean
   
   If System.RightToLeft Then X = $hHBar.MaxValue - X
 
@@ -535,6 +535,8 @@ Public Sub Scroll(X As Integer, Y As Integer)
   Y = Max($hVBar.MinValue, Min($hVBar.MaxValue, Y))
 
   'If $iTargetX = X And If $iTargetY = Y Then Return
+  
+  If X = $hHBar.Value And If Y = $hVBar.Value Then Return True
   
   $hHBar.Value = X
   $hVBar.Value = Y
@@ -861,7 +863,8 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   Else
     If $iScrollX = CX And If $iScrollY = CY Then Return True
   Endif
-  Scroll(CX, CY)
+  
+  Return Scroll(CX, CY)
   
 End
 

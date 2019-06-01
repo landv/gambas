@@ -499,7 +499,10 @@ END_PROPERTY
 BEGIN_PROPERTY(Drag_X)
 
 	CHECK_VALID();
-	GB.ReturnInteger(gDrag::getDropX());
+	if (READ_PROPERTY)
+		GB.ReturnInteger(gDrag::getDropX());
+	else
+		gDrag::setDropX(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
@@ -507,7 +510,10 @@ END_PROPERTY
 BEGIN_PROPERTY(Drag_Y)
 
 	CHECK_VALID();
-	GB.ReturnInteger(gDrag::getDropY());
+	if (READ_PROPERTY)
+		GB.ReturnInteger(gDrag::getDropY());
+	else
+		gDrag::setDropY(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
@@ -574,8 +580,8 @@ GB_DESC CDragDesc[] =
   GB_STATIC_PROPERTY_READ("Type", "i", Drag_Type),
   GB_STATIC_PROPERTY_READ("Action", "i", Drag_Action),
   GB_STATIC_PROPERTY_READ("Source", "Control", Drag_Source),
-  GB_STATIC_PROPERTY_READ("X", "i", Drag_X),
-  GB_STATIC_PROPERTY_READ("Y", "i", Drag_Y),
+  GB_STATIC_PROPERTY("X", "i", Drag_X),
+  GB_STATIC_PROPERTY("Y", "i", Drag_Y),
   GB_STATIC_PROPERTY_READ("Pending", "b", Drag_Pending),
 
   GB_STATIC_METHOD("_call", "Control", Drag_call, "(Source)Control;(Data)v[(Format)s]"),

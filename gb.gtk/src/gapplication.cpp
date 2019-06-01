@@ -517,8 +517,8 @@ __FOUND_WIDGET:
 		case GDK_BUTTON_RELEASE:
 		{
 			/*if (event->type == GDK_BUTTON_PRESS)
-				fprintf(stderr, "GDK_BUTTON_PRESS: %p / %p\n", control, button_grab);
-			else if (event->type == GDK_BUTTON_RELEASE)
+				fprintf(stderr, "GDK_BUTTON_PRESS: %p / %p / %p\n", control, button_grab, gApplication::_control_grab);*/
+			/*else if (event->type == GDK_BUTTON_RELEASE)
 				fprintf(stderr, "GDK_BUTTON_RELEASE: %p / %p\n", control, button_grab);*/
 			
 			switch ((int)event->type)
@@ -529,6 +529,7 @@ __FOUND_WIDGET:
 			}
 
 			save_control = find_child(control, (int)event->button.x_root, (int)event->button.y_root, button_grab);
+			//fprintf(stderr, "save_control = %p %s\n", save_control, save_control ? save_control->name() : "");
 			
 			if (!save_control)
 			{

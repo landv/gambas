@@ -133,6 +133,9 @@ static gboolean sg_drag_motion(GtkWidget *widget, GdkDragContext *context, gint 
 	#if DEBUG_DND
 	fprintf(stderr, "sg_drag_motion: %s\n", data->name());
 	#endif	
+	
+	gApplication::checkHoveredControl(data);
+	
 	/*if (_drag_time != context->start_time) 
 	{ 
 		g_debug("sg_drag_motion: cancel!\n");
@@ -206,7 +209,9 @@ static gboolean sg_drag_motion(GtkWidget *widget, GdkDragContext *context, gint 
 	
 	if (retval) 
 	{
-		//fprintf(stderr, "sg_drag_motion: accept\n");
+		#if DEBUG_DND
+		fprintf(stderr, "sg_drag_motion: accept\n");
+		#endif
 #if GTK_CHECK_VERSION(2, 22, 0)
 		gdk_drag_status(context, gdk_drag_context_get_suggested_action(context), time);
 #else
@@ -215,7 +220,9 @@ static gboolean sg_drag_motion(GtkWidget *widget, GdkDragContext *context, gint 
 		return true;
 	}
 	
-	//fprintf(stderr, "sg_drag_motion: cancel\n");
+	#if DEBUG_DND
+	fprintf(stderr, "sg_drag_motion: cancel\n");
+	#endif
 	gDrag::hide(data);
 	return false;
 }

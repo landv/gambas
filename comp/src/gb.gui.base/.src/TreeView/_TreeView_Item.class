@@ -305,7 +305,7 @@ Private Function X_Read() As Integer
 
   Dim hView As GridView = GetView()
   'Dim FW As Integer = hView._GetFrameWidth()
-  Return GetTree()._GetItemX(Me) - hView.ScrollX + hView.ClientX '+ FW
+  Return GetTree()._GetItemX(Me) - hView.ScrollX + hView.ClientX + hView.Padding '+ FW
 
 End
 
@@ -323,7 +323,7 @@ Public Sub _GetWidth() As Integer
   Dim W As Integer
   Dim hFont As Font
   
-  If $hPicture Then W += $hPicture.W + 2
+  If $hPicture Then W += $hPicture.W + Desktop.Scale \ 2
   hFont = $hFont
   If Not hFont Then hFont = GetTree().Font
   

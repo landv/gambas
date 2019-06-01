@@ -323,6 +323,7 @@ bool gDrag::_local = false;
 volatile bool gDrag::_got_data = false;
 volatile bool gDrag::_end = false;
 
+
 void gDrag::setIcon(gPicture *vl)
 {  
 	gPicture::assign(&_icon, vl);
@@ -349,6 +350,8 @@ void gDrag::cancel()
 	_got_data = false;
 	_local = false;
 	_active = false;
+	
+	gApplication::setButtonGrab(NULL);
 
 #if DEBUG_ME
 	fprintf(stderr, "_active -> false\n");
@@ -567,151 +570,34 @@ GdkDragContext *gDrag::disable(GdkDragContext *context)
 	return old;
 }
 
-//static GtkWidget *_frame_container = 0;
-static GdkWindow *_frame[4] = { 0 };
-static bool _frame_visible = false;
-static gControl *_frame_control = 0;
-
-static void hide_frame(gControl *control)
-{
-	int i;
-	
-	if (!_frame_visible)
-		return;
-		
-	if (control && control != _frame_control)
-		return;
-		
-	for (i = 0; i < 4; i++)
-		gdk_window_destroy(_frame[i]);
-		
-	_frame_visible = false;
-}
-
-static void move_frame_border(GdkWindow *window, int x, int y, int w, int h)
-{
-	gdk_window_move_resize(window, x, y, w, h);
-}
-
-static void show_frame(gControl *control, int x, int y, int w, int h)
-{
-	int i;
-	GdkWindowAttr attr = { 0 };
-	GdkWindow *window;
-	GdkWindow *parent;
-	GtkAllocation a;
-	
-	if (w < 0) w = control->width() - control->getFrameWidth() * 2;
-	if (h < 0) h = control->height() - control->getFrameWidth() * 2;
-	
-	if (w < 2 || h < 2)
-		return;
-	
-	//g_debug("show %p %d %d %d %d", control->border->window, x, y, w, h);
-	
-	if (control != _frame_control)
-		hide_frame(NULL);
-		
-	// Don't know why I should do that...
-	if (control->_scroll)
-	{
-		parent = gtk_widget_get_window(control->widget);
-	}
-	else
-	{
-		parent = gtk_widget_get_window(control->border);
-		gtk_widget_get_allocation(control->border, &a);
-		x += a.x;
-		y += a.y;
-	}
-	
-	
-	if (!_frame_visible)
-	{
-#ifdef GTK3
-		GdkRGBA rgba;
-		gt_from_color(0, &rgba);
-#else
-		GdkColor color;
-		fill_gdk_color(&color, 0);
-#endif
-		
-		attr.wclass = GDK_INPUT_OUTPUT;
-		attr.window_type = GDK_WINDOW_CHILD;
-		
-		for (i = 0; i < 4; i++)
-		{
-			window = gdk_window_new(parent, &attr, 0);
-#ifdef GTK3
-			gdk_window_set_background_rgba(window, &rgba);
-#else
-			gdk_window_set_background(window, &color);
-#endif
-			_frame[i] = window;
-		}
-	}
-	
-	//x -= 2;
-	//y -= 2;
-	//w += 4;
-	//h += 4;
-	move_frame_border(_frame[0], x, y, w, 2);
-	move_frame_border(_frame[1], x, y, 2, h);
-	move_frame_border(_frame[2], x + w - 2, y, 2, h);
-	move_frame_border(_frame[3], x, y + h - 2, w, 2);
-	
-	for (i = 0; i < 4; i++)
-		gdk_window_show(_frame[i]);
-	
-	_frame_control = control;
-	_frame_visible = true;
-}
-
-// static gboolean
-// cb_drag_highlight_expose (GtkWidget *widget,
-// 			   GdkEventExpose *event,
-// 			   gpointer        data)
-// {
-//   gint x, y, width, height;
-//   
-//   if (GTK_WIDGET_DRAWABLE (widget))
-//   {
-// 		cairo_t *cr;
-// 		
-// 		gDrag::getHighlight(&x, &y, &width, &height);
-// 		
-// 		if (GTK_WIDGET_NO_WINDOW (widget))
-// 		{
-// 			x += widget->allocation.x;
-// 			y += widget->allocation.y;
-// 		}
-// 
-// 		gtk_paint_shadow (widget->style, widget->window,
-// 					GTK_STATE_NORMAL, GTK_SHADOW_OUT,
-// 					NULL, widget, "dnd",
-// 		x, y, width, height);
-// 		
-// 		cr = gdk_cairo_create (widget->window);
-// 		cairo_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
-// 		cairo_set_line_width (cr, 1.0);
-// 		cairo_rectangle (cr,
-// 					x + 0.5, y + 0.5,
-// 					width - 1, height - 1);
-// 		cairo_stroke (cr);
-// 		cairo_destroy (cr);
-// 	}
-// 
-//   return FALSE;
-// }
-
 void gDrag::show(gControl *control, int x, int y, int w, int h)
 {
-	show_frame(control, x, y, w, h);
+	static GB_FUNCTION func;
+	static bool init = FALSE;
+
+	if (!init)
+	{
+		GB.GetFunction(&func, (void *)GB.FindClass("_Gui"), "_ShowDNDFrame", NULL, NULL);
+		init = TRUE;
+	}
+	
+	GB.Push(5, GB_T_OBJECT, control->hFree, GB_T_INTEGER, x, GB_T_INTEGER, y, GB_T_INTEGER, w, GB_T_INTEGER, h);
+	GB.Call(&func, 5, FALSE);
 }
 
 void gDrag::hide(gControl *control)
 {
-	hide_frame(control);
+	static GB_FUNCTION func;
+	static bool init = FALSE;
+
+	if (!init)
+	{
+		GB.GetFunction(&func, (void *)GB.FindClass("_Gui"), "_HideDNDFrame", NULL, NULL);
+		init = TRUE;
+	}
+	
+	GB.Push(1, GB_T_OBJECT, control ? control->hFree : NULL);
+	GB.Call(&func, 1, FALSE);
 }
 
 

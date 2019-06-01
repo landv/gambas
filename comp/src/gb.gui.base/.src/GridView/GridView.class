@@ -408,6 +408,7 @@ Public Sub ScrollArea_Draw()
   Dim hRowBorderRect As Rect
   Dim hRectF As RectF
   Dim iBgSel As Integer
+  Dim iPadding As Integer
   
   'Debug Me.Font.ToString();; Draw.Font.ToString()
   
@@ -463,6 +464,8 @@ Public Sub ScrollArea_Draw()
     iBg = Color.Background
   Endif
   
+  iPadding = Max(Desktop.Scale \ 2, $iPadding)
+  
   ' Column headers
   
   iSort = $hColumns.Sort
@@ -492,16 +495,16 @@ Public Sub ScrollArea_Draw()
 
           If iSort = I Then
             WA = Min(12, H - F)
-            If WA < .Width Then Style.PaintArrow(X + .Width - WA - $iPadding, F, WA, H - F, If(bAscent, Align.Bottom, Align.Top))
+            If WA < .Width Then Style.PaintArrow(X + .Width - WA - iPadding, F, WA, H - F, If(bAscent, Align.Bottom, Align.Top))
             'Draw.ClipRect = hClip.Intersection(Rect(X, F, Max(0, .Width - WA - 2), H - F))
             'If Draw.ClipRect Then Draw.Text(.Text, X + 4, F, .Width - WA - 8, H - F, .Alignment)
             Paint.Rectangle(X, F, Max(0, .Width - WA - 2), H - F)
             Paint.Clip
-            DrawText(.Text, X + 1, F, .Width - WA - $iPadding - 2, H - F - 2, .Alignment, Max(1, $iPadding))
+            DrawText(.Text, X + 1, F, .Width - WA - iPadding - 2, H - F - 2, .Alignment, iPadding)
           Else
             Paint.Rectangle(X + 1, F, .Width - 2, H - F)
             Paint.Clip
-            DrawText(.Text, X + 1, F, .Width - 2, H - F - 2, .Alignment, Max(1, $iPadding))
+            DrawText(.Text, X + 1, F, .Width - 2, H - F - 2, .Alignment, iPadding)
           Endif
 
           Paint.Restore
@@ -559,7 +562,7 @@ Public Sub ScrollArea_Draw()
           Paint.Rectangle(X, Y + 1, W - F, H - 3)
           Paint.Clip
           If I = $iRow Then Paint.Font.Bold = True
-          DrawText(.Text, X, Y + 2, W - F - 1, H - 3, .TextAlignment, $iPadding)
+          DrawText(.Text, X, Y + 2, W - F - 1, H - 3, .TextAlignment, iPadding)
           If I = $iRow Then Paint.Font.Bold = False
           Paint.Restore
         Endif

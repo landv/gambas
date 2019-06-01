@@ -580,8 +580,8 @@ void MAIN_do_iteration(bool do_not_block, bool do_not_sleep)
 
 	if (do_not_block)
 	{
-		if (gtk_events_pending ())
-			gtk_main_iteration_do (false);
+		if (gtk_events_pending())
+			gtk_main_iteration_do(false);
 	}
 	else
 		gtk_main_iteration_do(true);
