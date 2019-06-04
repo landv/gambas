@@ -456,6 +456,11 @@ Private Sub WriteTranslation(sPath As String, Optional iMode As Integer = EXPORT
             Wend
           Endif
         Endif
+        
+        If sStr = "-" Then
+          sStr = ""
+          Print #hFile, "# gb-ignore"
+        Endif
   
         Print #hFile, "#: "; .Item[2]
         Print #hFile, "msgid "; Chr$(34); .Item[3]; Chr$(34)

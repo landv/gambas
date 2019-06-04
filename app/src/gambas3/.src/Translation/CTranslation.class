@@ -82,6 +82,7 @@ Private Sub LoadTranslation(sLang As String)
   Dim iPos As Integer
   Dim cCache As New Collection
   Dim cKey As New Collection
+  Dim bIgnore As Boolean
   
   sPath = Language.GetPath(sLang, "po")
   If Not Exist(sPath) Then Return 
@@ -106,41 +107,43 @@ Private Sub LoadTranslation(sLang As String)
 
       Line Input #hFile, sLine
 
-      If Left$(sLine) = "#" Then
+      If sLine Begins "#" Then
 
-        If Left$(sLine, 2) = "#:" Then
+        If sLine Begins "#:" Then
           sMsgComment = Trim(sMsgComment & " " & Mid$(sLine, 3))
           Continue
-        Endif
-
-        If Left$(sLine, 2) = "#," Then
+        Else If sLine Begins "#," Then
           If InStr(sLine, "fuzzy") Then
             bFuzzy = True
             Continue
           Endif
+        Else If sLine = "# gb-ignore" Then
+          bIgnore = True
         Endif
+        
+      Else
 
-      Endif
-
-      If Left$(sLine, 6) = "msgid " Then
-        sMsgId = Mid$(sLine, 8, -1)
-        iMode = MODE_MSGID
-        Continue
-      Endif
-
-      If Left$(sLine, 7) = "msgstr " Then
-        sMsgStr = Mid$(sLine, 9, -1)
-        iMode = MODE_MSGSTR
-        Continue
-      Endif
-
-      If Left$(sLine) = Chr$(34) Then
-        If iMode = MODE_MSGID Then
-          sMsgId = sMsgId & Mid$(sLine, 2, -1)
-        Else If iMode = MODE_MSGSTR Then
-          sMsgStr = sMsgStr & Mid$(sLine, 2, -1)
+        If Left$(sLine, 6) = "msgid " Then
+          sMsgId = Mid$(sLine, 8, -1)
+          iMode = MODE_MSGID
+          Continue
         Endif
-        Continue
+  
+        If Left$(sLine, 7) = "msgstr " Then
+          sMsgStr = Mid$(sLine, 9, -1)
+          iMode = MODE_MSGSTR
+          Continue
+        Endif
+  
+        If Left$(sLine) = Chr$(34) Then
+          If iMode = MODE_MSGID Then
+            sMsgId = sMsgId & Mid$(sLine, 2, -1)
+          Else If iMode = MODE_MSGSTR Then
+            sMsgStr = sMsgStr & Mid$(sLine, 2, -1)
+          Endif
+          Continue
+        Endif
+        
       Endif
 
     Endif
@@ -154,6 +157,7 @@ Private Sub LoadTranslation(sLang As String)
           sMsgComment = ""
           sMsgStr = ""
           bFuzzy = False
+          bIgnore = False
           Continue
         Endif
       Endif
@@ -168,10 +172,11 @@ Private Sub LoadTranslation(sLang As String)
 
       If sMsgStr = "-\\n" Then sMsgStr = "-"
       
-      'sMsgId = UnQuoteTranslation(sMsgId)
-      'sMsgStr = UnQuoteTranslation(sMsgStr)
+      If bIgnore Then
+        sMsgStr = "-"
+        bIgnore = False
+      Endif
 
-      'cvwTranslate.Add(iIndex, sMsgId)
       If bFuzzy Then
         bFuzzy = False
       Else
@@ -201,6 +206,7 @@ Static Public Sub FindTranslation(sPath As String, sFind As String) As String
   Dim sMsgComment As String
   Dim iMode As Integer
   Dim bFuzzy As Boolean
+  Dim bIgnore As Boolean
   
   If Not Exist(sPath) Then Return 
   
@@ -226,32 +232,29 @@ Static Public Sub FindTranslation(sPath As String, sFind As String) As String
 
       Line Input #hFile, sLine
 
-      If Left$(sLine) = "#" Then
-
-        If Left$(sLine, 2) = "#:" Then
-          'sMsgComment = Trim(sMsgComment & " " & Mid$(sLine, 3))
+      If sLine Begins "#" Then
+        If sLine Begins "#:" Then
           Continue
-        Endif
-
-        If Left$(sLine, 2) = "#," Then
+        Else If sLine Begins "#," Then
           If InStr(sLine, "fuzzy") Then
             bFuzzy = True
             Continue
           Endif
+        Else If sLine = "# gb-ignore" Then
+          bIgnore = True
         Endif
-
-      Endif
-
-      If Left$(sLine, 6) = "msgid " Then
-        sMsgId = Mid$(sLine, 8, -1)
-        iMode = MODE_MSGID
-        Continue
-      Endif
-
-      If Left$(sLine, 7) = "msgstr " Then
-        sMsgStr = Mid$(sLine, 9, -1)
-        iMode = MODE_MSGSTR
-        Continue
+      Else
+        If Left$(sLine, 6) = "msgid " Then
+          sMsgId = Mid$(sLine, 8, -1)
+          iMode = MODE_MSGID
+          Continue
+        Endif
+  
+        If Left$(sLine, 7) = "msgstr " Then
+          sMsgStr = Mid$(sLine, 9, -1)
+          iMode = MODE_MSGSTR
+          Continue
+        Endif
       Endif
 
       If Left$(sLine) = Chr$(34) Then
@@ -269,14 +272,18 @@ Static Public Sub FindTranslation(sPath As String, sFind As String) As String
 
       If sMsgStr = "-\\n" Then sMsgStr = "-"
       
-      'sMsgId = UnQuoteTranslation(sMsgId)
-      'sMsgStr = UnQuoteTranslation(sMsgStr)
+      If bIgnore Then
+        sMsgStr = "-"
+        bIgnore = False
+      Endif
 
-      'cvwTranslate.Add(iIndex, sMsgId)
       If bFuzzy Then
         bFuzzy = False
       Else
-        If sMsgId = sFind Then Return Replace(sMsgStr, "\\n", "\n")
+        If sMsgId = sFind Then 
+          If sMsgStr = "-" Then sMsgStr = sMsgId
+          Return Replace(sMsgStr, "\\n", "\n")
+        Endif
       Endif
 
       sMsgId = ""
