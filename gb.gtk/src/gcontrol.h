@@ -73,7 +73,7 @@ public:
 	int screenX();
 	int screenY();
 	virtual bool getScreenPos(int *x, int *y);
-	char *toolTip();
+	char *tooltip() const { return _tooltip; }
 	bool isVisible() const { return visible; }
 	bool isReallyVisible();
 	bool acceptDrops() { return _accept_drops; }

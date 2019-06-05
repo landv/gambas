@@ -36,8 +36,8 @@ public:
 	char *key();
 	gPicture* picture() { return _icon; }
 	void setPicture(gPicture *pic);
-	char* toolTip();
-	void setToolTip(char *txt);
+	char* tooltip() const { return _tooltip; }
+	void setTooltip(char *txt);
 	bool isVisible();
 	void setVisible(bool vl);
 	
@@ -66,7 +66,7 @@ public:
 	GtkStatusIcon *plug;
 	gPicture *_icon;
 	int _iconw, _iconh;
-	char *buftext;
+	char *_tooltip;
 	bool onHide;
 	int _loopLevel;
 	gPicture *getIcon() { return _icon ? _icon : defaultIcon(); }

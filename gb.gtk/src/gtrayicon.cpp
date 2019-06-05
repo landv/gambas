@@ -127,7 +127,7 @@ gPicture *gTrayIcon::_default_icon = NULL;
 gTrayIcon::gTrayIcon()
 {
 	plug = NULL;
-	buftext = NULL;
+	_tooltip = NULL;
 	_icon = NULL;
 	_loopLevel = 0;
 	
@@ -144,10 +144,10 @@ gTrayIcon::~gTrayIcon()
 
 	gPicture::assign(&_icon);
 	
-	if (buftext) 
+	if (_tooltip) 
 	{
-		g_free(buftext);
-		buftext = NULL;
+		g_free(_tooltip);
+		_tooltip = NULL;
 	}
 	
 	trayicons = g_list_remove(trayicons, (gpointer)this);
@@ -198,25 +198,20 @@ void gTrayIcon::setPicture(gPicture *picture)
 	updatePicture();
 }
 
-char* gTrayIcon::toolTip()
-{
-	return buftext;
-}
-
 void gTrayIcon::updateTooltip()
 {
 	if (!plug)
 		return;
 
-	gtk_status_icon_set_tooltip_text(plug, buftext);
+	gtk_status_icon_set_tooltip_text(plug, _tooltip);
 }
 
-void gTrayIcon::setToolTip(char* vl)
+void gTrayIcon::setTooltip(char* vl)
 {
-	if (buftext) 
-		g_free(buftext);
+	if (_tooltip) 
+		g_free(_tooltip);
 		
-	buftext = vl && *vl ? g_strdup(vl) : NULL;
+	_tooltip = vl && *vl ? g_strdup(vl) : NULL;
 	updateTooltip();
 }
 
