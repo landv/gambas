@@ -161,6 +161,13 @@ Static Private Sub InitComponentNames()
   
 End
 
+Static Public Sub GetName(sKey As String) As String
+  
+  Return $cName[sKey]
+  
+End
+
+
 Public Sub AddSimilar(sCtrl As String, sSimilar As String)
   
   Dim aSimilar As String[]

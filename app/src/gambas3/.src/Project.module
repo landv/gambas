@@ -3251,12 +3251,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         'If JustUpdateVersion Then
         '  Components.Add(sVal)
         'Else
+          If Not Components.Exist(sVal) Then Components.Add(sVal)
           hComp = Project.Documentation[sVal]
-          If hComp And If Not hComp.Hidden Then
-            If Not Components.Exist(sVal) Then Components.Add(sVal)
-          Else
-            aMissing.Add(sVal)
-          Endif
+          If Not hComp Or If hComp.Hidden Then aMissing.Add(sVal)
         'Endif
 
       Case "library"
@@ -4616,12 +4613,13 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
 
   ' Sort components
 
-  For Each hComp In Documentation.Components
-    If Components.Find(hComp.Key) >= 0 Then
-      aLib.Add(hComp.Key)
-    Endif
-  Next
-  Components = aLib.Copy()
+  ' For Each hComp In Documentation.Components
+  '   If Components.Find(hComp.Key) >= 0 Then
+  '     aLib.Add(hComp.Key)
+  '   Endif
+  ' Next
+  ' Components = aLib.Copy()
+  aLib = Components.Copy()
 
   For Each sLib In ExtraReferences
     aLib.Add(sLib)
@@ -4638,7 +4636,8 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
     Documentation.Reset
 
     For Each sLib In Components
-      Documentation[sLib].Load
+      hComp = Documentation[sLib]
+      If hComp Then hComp.Load
     Next
 
     For Each sLib In ExtraReferences

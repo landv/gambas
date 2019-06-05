@@ -409,35 +409,46 @@
       MoveScaled(2,9,24,4)
       Visible = False
     }
-    { gvwLibrary GridView
-      MoveScaled(2,15,59,14)
+    { Panel2 Panel
+      MoveScaled(1,15,84.875,20.875)
       Expand = True
-      Mode = Select.Single
-      Grid = False
-    }
-    { HBox18 HBox
-      MoveScaled(1,31,84,4)
-      Spacing = True
-      { btnInsertLib Button
-        MoveScaled(0,0,17,4)
-        Text = Shortcut(("Add"), "A") & "..."
-        Picture = Picture["icon:/small/add"]
+      Arrangement = Arrange.Vertical
+      Border = Border.Plain
+      { gvwLibrary GridView
+        MoveScaled(1,0,59,14)
+        Expand = True
+        Border = False
+        Mode = Select.Single
+        Grid = False
       }
-      { btnRemoveLib Button
-        MoveScaled(18,0,17,4)
-        Enabled = False
-        Text = Shortcut(("Remove"), "R")
-        Picture = Picture["icon:/small/remove"]
+      { Separator1 Separator
+        MoveScaled(56,14,12,0)
       }
-      { btnMoveUpLib Button
-        MoveScaled(36,0,6,4)
-        Enabled = False
-        Picture = Picture["icon:/small/up"]
-      }
-      { btnMoveDownLib Button
-        MoveScaled(43,0,6,4)
-        Enabled = False
-        Picture = Picture["icon:/small/down"]
+      { HBox18 HBox
+        MoveScaled(0,16,84,4)
+        { btnInsertLib ToolButton
+          MoveScaled(0,0,17,4)
+          AutoResize = True
+          Text = Shortcut(("Add"), "A") & "..."
+          Picture = Picture["icon:/small/add"]
+        }
+        { btnRemoveLib ToolButton
+          MoveScaled(18,0,17,4)
+          Enabled = False
+          AutoResize = True
+          Text = Shortcut(("Remove"), "R")
+          Picture = Picture["icon:/small/remove"]
+        }
+        { btnMoveUpLib ToolButton
+          MoveScaled(36,0,4,4)
+          Enabled = False
+          Picture = Picture["icon:/small/up"]
+        }
+        { btnMoveDownLib ToolButton
+          MoveScaled(43,0,4,4)
+          Enabled = False
+          Picture = Picture["icon:/small/down"]
+        }
       }
     }
     { Label6 Label

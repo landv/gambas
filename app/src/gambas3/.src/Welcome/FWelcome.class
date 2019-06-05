@@ -213,8 +213,8 @@ Private Sub Toggle(iState As Integer)
   End Select
   
   For Each hCtrl In [btnRecent, btnExample, btnSoft]
-    hCtrl.Background = If($iRecent = hCtrl.Tag, Color.TextBackground, Color.Default)
-    hCtrl.Foreground = If($iRecent = hCtrl.Tag, Color.TextForeground, Color.White)
+    hCtrl.Background = If($iRecent = hCtrl.Tag, Color.SetAlpha(Color.TextBackground, 192), Color.Default)
+    'hCtrl.Foreground = If($iRecent = hCtrl.Tag, Color.TextForeground, Color.White)
   Next
   
 End

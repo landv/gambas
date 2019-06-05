@@ -106,8 +106,8 @@ Public Sub Form_Open()
 
   End With
   
-  hBorder = Border("radius:5;width:2.5;margin:8;padding:6")
-  hBorder.Color = Color.Gradient(Color.LightForeground, Color.TextBackground)
+  hBorder = Border("style:none;bottom-style:solid;padding:" & CStr(Desktop.Scale \ 2) & ";")
+  hBorder.Color = Color.LightForeground
   gvwLibrary.Rows.Border = hBorder
   
   choComponent.Checkable = True
