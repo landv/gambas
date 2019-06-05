@@ -1,0 +1,75 @@
+' Gambas class file
+
+Export
+
+Static Property Title As String
+
+Static Private $sTitle As String
+
+'Export
+' GB_DESC CMessageDesc[] =
+' {
+'   GB_DECLARE("Message", 0), GB_VIRTUAL_CLASS(),
+' 
+'   GB_STATIC_METHOD("_exit", NULL, CMESSAGE_exit, NULL),
+' 
+'   GB_STATIC_METHOD("_call", "i", CMESSAGE_info, "(Message)s[(Button)s]"),
+'   GB_STATIC_METHOD("Info", "i", CMESSAGE_info, "(Message)s[(Button)s]"),
+'   GB_STATIC_METHOD("Warning", "i", CMESSAGE_warning, "(Message)s[(Button1)s(Button2)s(Button3)s]"),
+'   GB_STATIC_METHOD("Question", "i", CMESSAGE_question, "(Message)s[(Button1)s(Button2)s(Button3)s]"),
+'   GB_STATIC_METHOD("Error", "i", CMESSAGE_error, "(Message)s[(Button1)s(Button2)s(Button3)s]"),
+'   GB_STATIC_METHOD("Delete", "i", CMESSAGE_delete, "(Message)s[(Button1)s(Button2)s(Button3)s]"),
+'   
+'   GB_STATIC_PROPERTY("Title", "s", CMESSAGE_title),
+'   
+'   GB_END_DECLARE
+' };
+' 
+
+Static Public Sub _call((Message) As String, Optional Button As String = ("OK")) As Integer
+  
+  Return Info(Message, Button)
+  
+End
+
+Static Public Sub Info((Message) As String, Optional Button As String = ("OK")) As Integer
+  
+  Return FMessage.Run("info", Message, [Button])
+  
+End
+
+Static Public Sub Warning((Message) As String, Optional Button1 As String, Button2 As String, Button3 As String) As Integer
+  
+  Return FMessage.Run("warning", Message, [Button1, Button2, Button3])
+  
+End
+
+Static Public Sub Question((Message) As String, Optional Button1 As String, Button2 As String, Button3 As String) As Integer
+  
+  Return FMessage.Run("question", Message, [Button1, Button2, Button3])
+  
+End
+
+Static Public Sub Error((Message) As String, Optional Button1 As String, Button2 As String, Button3 As String) As Integer
+  
+  Return FMessage.Run("error", Message, [Button1, Button2, Button3])
+  
+End
+
+Static Public Sub Delete((Message) As String, Optional Button1 As String, Button2 As String, Button3 As String) As Integer
+  
+  Return FMessage.Run("delete", Message, [Button1, Button2, Button3])
+  
+End
+
+Static Private Function Title_Read() As String
+
+  Return $sTitle
+
+End
+
+Static Private Sub Title_Write(Value As String)
+
+  $sTitle = Value
+
+End

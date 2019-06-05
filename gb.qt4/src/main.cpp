@@ -84,7 +84,6 @@
 #include "CDraw.h"
 #include "CWatch.h"
 #include "CDrawingArea.h"
-#include "CMessage.h"
 #include "CSlider.h"
 #include "CScrollBar.h"
 #include "CMovieBox.h"
@@ -1319,7 +1318,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 {
 	CBorderDesc, CColorDesc,
 	CAlignDesc, CArrangeDesc, CScrollDesc, CKeyDesc, CSelectDesc,
-	CMessageDesc,
 	CImageDesc, CPictureDesc,
 	CFontDesc, CFontsDesc,
 	CMouseDesc, CCursorDesc, CPointerDesc,

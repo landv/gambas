@@ -31,6 +31,7 @@
 #include "watcher.h"
 #include "gglarea.h"
 #include "gkey.h"
+#include "gmessage.h"
 
 #include "x11.h"
 #include "desktop.h"
@@ -46,7 +47,6 @@
 #include "CImage.h"
 #include "CClipboard.h"
 #include "CMouse.h"
-#include "CMessage.h"
 #include "CDialog.h"
 #include "CWatcher.h"
 #include "CWidget.h"
@@ -141,7 +141,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CCursorDesc,
 	CMouseDesc,
 	CPointerDesc,
-	CMessageDesc,
 	CDialogDesc,
 	CWatcherDesc,
 	CWidgetDesc,

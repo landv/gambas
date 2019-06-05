@@ -202,6 +202,7 @@ Public Sub Main()
   Dim sDir As String
   Dim sPngQuant As String
 
+  Quit
   sPngQuant = System.Find("pngquant")
   sDir = "/home/benoit/gambas/git/master/comp/src/gb.form.stock"
   For Each sFile In RDir(sDir)
