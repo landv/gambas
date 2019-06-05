@@ -10,6 +10,7 @@ Public Sub Run(sIcon As String, sText As String, aButton As String[]) As Integer
   Dim W As Integer
   Dim I As Integer
   Dim hButton As Button
+  Dim iBusy As Integer
 
   sTitle = Message.Title
   If Not sTitle Then sTitle = Application.Title
@@ -56,7 +57,12 @@ Public Sub Run(sIcon As String, sText As String, aButton As String[]) As Integer
   If Application.ActiveWindow Then Me.SkipTaskbar = True
   
   $iButton = aButton.Max
+  
+  iBusy = Application.Busy
+  Application.Busy = 0
   Me.ShowModal()
+  Application.Busy = iBusy
+
   Return $iButton + 1
 
 End
