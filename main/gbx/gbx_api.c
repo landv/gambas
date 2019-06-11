@@ -362,7 +362,7 @@ const void *const GAMBAS_JitApi[] =
 	(void *)EXEC_enum_next,
 	(void *)SYMBOL_find,
 	(void *)JIT_load_class,
-	(void *)CLASS_load_without_init,
+	(void *)JIT_load_class_without_init,
 	(void *)&ERROR_current,
 	(void *)&ERROR_handler,
 	(void *)ERROR_reset,

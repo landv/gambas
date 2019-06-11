@@ -391,3 +391,16 @@ void JIT_load_class(CLASS *class)
 {
 	CLASS_load(class);
 }
+
+void JIT_load_class_without_init(CLASS *class)
+{
+	TRY
+	{
+		CLASS_load_without_init(class);
+	}
+	CATCH
+	{
+		class->error = FALSE;
+	}
+	END_TRY
+}

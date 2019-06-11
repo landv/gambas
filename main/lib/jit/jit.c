@@ -545,7 +545,10 @@ void JIT_load_class_without_init(CLASS *class)
 int JIT_find_symbol(CLASS *class, const char *name)
 {
 	JIT_load_class_without_init(class);
-	return JIT.find_symbol(class->table, class->sort, class->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, name, strlen(name), NULL);
+	if (class->loaded)
+		return JIT.find_symbol(class->table, class->sort, class->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, name, strlen(name), NULL);
+	else
+		return NO_SYMBOL;
 }
 
 
