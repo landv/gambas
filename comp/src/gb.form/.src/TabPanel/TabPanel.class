@@ -57,6 +57,7 @@ Private $bMoveable As Boolean
 Private $hCloseAll As ToolButton
 Private $hClosePanel As DrawingArea
 Private $hObserver As Observer
+Private $iTabBarContainerH As Integer
 
 Public Sub _new()
 
@@ -267,6 +268,8 @@ Private Sub UpdateLayout()
       '$hPanel.Next = $hTabBar
   End Select
   
+  $hTabBarContainer.Arrangement = Arrange.None
+
   For Each hCtrl In $aButton
     If hCtrl.Visible Then
       hCtrl.Orientation = $iOrientation
@@ -275,8 +278,6 @@ Private Sub UpdateLayout()
       hCtrl.Raise
     Endif
   Next
-  
-  'Debug Me.Name;; $hTabBar.Font.Height;; "'"; $hTabBar.Font.ToString(); "'"
   
   $hTabBarContainer.Arrangement = Arrange.Horizontal
   _EnsureCurrentVisible
@@ -289,6 +290,11 @@ Public Sub TabBar_Arrange()
   
   $hRightArrow.Move($hTabBar.W - ARROW_WIDTH, 0, ARROW_WIDTH, $hTabBar.H)
   $hLeftArrow.Move(0, 0, ARROW_WIDTH, $hTabBar.H)
+  
+  If $hTabBarContainer.H <> $iTabBarContainerH Then
+    $iTabBarContainerH = $hTabBarContainer.H
+    UpdateLayout
+  Endif
   
 End
 
@@ -952,7 +958,7 @@ Private Sub CloseButton_Write(Value As Boolean)
 End
 
 Public Sub TabPanel_Arrange()
-  
+
   UpdateLayout
   
 End
@@ -973,3 +979,4 @@ Public Sub CloseAll_Click()
   Raise CloseAll
   
 End
+
