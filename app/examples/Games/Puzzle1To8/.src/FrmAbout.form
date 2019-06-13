@@ -2,7 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,75,36)
-  Text = ("About...")
+  Text = ("About") & "..."
   Resizable = False
   { TabStrip1 TabStrip
     MoveScaled(1,1,52,34)
@@ -29,7 +29,7 @@
   }
   { Button1 Button
     MoveScaled(54,31,20,4)
-    Text = ("&Close")
+    Text = Shortcut(("Close"), "C")
   }
   { PictureBox1 PictureBox
     MoveScaled(54,1,20,20)

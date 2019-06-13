@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(7.4286,17.7143,72.4286,66.7143)
+  MoveScaled(7.375,17.75,72.375,66.75)
   Text = ("HTML Highlighting Editor")
   Icon = Picture["editor.png"]
   Arrangement = Arrange.Fill
@@ -23,14 +23,14 @@
   }
   { VSplit1 VSplit
     MoveScaled(7,8,48,48)
-    { Editor1 Editor
+    { Editor1 TextEditor
       MoveScaled(3,2,43,16)
       Border = False
-      Highlight = Highlight.Custom
+      Highlight = "Custom"
     }
-    { Editor2 Editor
+    { Editor2 TextEditor
       MoveScaled(2,22,43,15)
-      Highlight = Highlight.Custom
+      Highlight = "Custom"
     }
   }
 }
