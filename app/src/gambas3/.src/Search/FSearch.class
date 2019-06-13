@@ -759,9 +759,9 @@ Private Sub Browse(Optional bReplace As Boolean, Optional bAgain As Boolean)
   
   For Each sFile In RDir(sDir).Sort()
   
-    If Left(sFile) = "." Then
+    If Left(sFile) = "." And If sFile Not Begins ".public/" Then
       If OnlyData Then Continue
-      If Not (sFile Begins ".src/") Then Continue
+      If sFile Not Begins ".src/" Then Continue
     Endif
     
     If Right(sFile) = "~" Then Continue
