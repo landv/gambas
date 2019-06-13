@@ -2077,7 +2077,7 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
   Dim bBusy As Boolean
   Dim J As Integer
   
-  PW = Me.Font.TextWidth($hColumns[iCol].Text) + $iPadding * 2 + If($bSorted, 16, 0)
+  PW = Me.Font.TextWidth($hColumns[iCol].Text) + Max(Desktop.Scale \ 2, $iPadding) * 2 + If($bSorted, 16, 0) + 2
   
   fTime = Timer
   

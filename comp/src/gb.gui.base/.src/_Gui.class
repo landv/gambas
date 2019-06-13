@@ -107,6 +107,7 @@ Static Public Sub _InitMenuBarShortcut(hWindow As Window)
 
   For Each hMenu In hWindow.Menus
     
+    If Not Object.IsValid(hMenu) Then Continue
     If Not hMenu.Text Then Continue
     
     If bVisible Then
