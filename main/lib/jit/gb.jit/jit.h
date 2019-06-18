@@ -529,7 +529,7 @@ enum
 
 #define CALL_UNKNOWN(_pc) ({ JIT.call_unknown(&pc[_pc], &sp); })
 
-#define ENUM_FIRST(_code, _plocal, _penum) ({ GB.Unref(&(_penum).value); (_penum).type = 0; JIT.enum_first(_code, (GB_VALUE *)&_plocal, (GB_VALUE*)&_penum); })
+#define ENUM_FIRST(_code, _plocal, _penum) ({ GB.Unref(&(_penum).value); (_penum).type = 0; JIT.enum_first(_code, (GB_VALUE *)&_plocal, (GB_VALUE *)&_penum); })
 
 #define ENUM_NEXT(_code, _plocal, _penum, _label) ({ \
   SP = sp; \
