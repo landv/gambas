@@ -148,13 +148,14 @@ Static Public Sub _ShowDNDFrame(hCtrl As Control, X As Integer, Y As Integer, W 
   
     HideDNDFrame()
   
-    For I = 0 To 3
+    For I = 0 To 0
       $aFrame[I] = New DrawingArea(hCtrl.Window) As "DNDFrame"
       With $aFrame[I]
         .Background = Color.SetAlpha(Color.SelectedBackground, 192)
         .Ignore = True
         .Drop = True
         .Name = "#DndFrame" & CStr(I)
+        .Design = True
         '.Enabled = False
       End With
     Next
@@ -162,7 +163,7 @@ Static Public Sub _ShowDNDFrame(hCtrl As Control, X As Integer, Y As Integer, W 
   Endif
   
   If W <= 0 Or If H <= 0 Then 
-    For I = 0 To 3
+    For I = 0 To 0
       $aFrame[I].Hide
     Next
     Return
@@ -250,23 +251,65 @@ End
 Static Public Sub DndFrame_Drag()
   
   'Debug
+  Dim X As Integer
+  Dim Y As Integer
+  
+  X = Drag.X
+  Y = Drag.Y
+  
   Drag.X += $iFrameX
   Drag.Y += $iFrameY
+  
   Object.Raise($hFrameCtrl, "Drag")
-  Drag.X -= $iFrameX
-  Drag.Y -= $iFrameY
+  
+  Drag.X = X
+  Drag.Y = Y
   
 End
 
 Static Public Sub DndFrame_DragMove()
   
-  'Debug Drag.X;; Drag.Y;; "/";; $iFrameX;; $iFrameY
+  Dim hCont As Container
+  Dim hCtrl As Control
+  Dim X As Integer
+  Dim Y As Integer
+
   $bInFrame = True
   Drag.X += $iFrameX
   Drag.Y += $iFrameY
-  Object.Raise($hFrameCtrl, "DragMove")
-  Drag.X -= $iFrameX
-  Drag.Y -= $iFrameY
+
+  hCtrl = $hFrameCtrl
+
+  While hCtrl Is Container 
+    hCont = hCtrl
+    $aFrame[0].Hide
+    hCtrl = hCont.FindChild(Drag.X - hCont.ClientX, Drag.Y - hCont.ClientY)
+    $aFrame[0].Show
+    
+    If Not hCtrl Then
+      hCtrl = hCont
+      Break
+    Endif
+    
+    Drag.X -= hCtrl.X + hCont.ClientX
+    Drag.Y -= hCtrl.Y + hCont.ClientY
+    If hCtrl.Drop Then
+      Object.Raise(hCtrl, "Drag")
+    Else
+      If hCtrl Is Container Then Continue
+      Drag.X += hCtrl.X + hCont.ClientX
+      Drag.Y += hCtrl.Y + hCont.ClientY
+      hCtrl = hCont
+    Endif
+    
+    Break
+    
+  Wend
+  
+  Object.Raise(hCtrl, "DragMove")
+  
+  Drag.X = X
+  Drag.Y = Y
   
 End
 
