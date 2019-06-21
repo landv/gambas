@@ -318,8 +318,11 @@ static char *get_languages(void)
 	char *lang;
 	char *lang_list = NULL;
 	char *src;
+	char *p;
 
 	lang = STRING_new_temp_zero(LOCAL_get_lang());
+	p = index(lang, '.');
+	if (p) *p = 0;
 
 	lang_list = STRING_add(lang_list, lang, 0);
 	lang_list = STRING_add_char(lang_list, ':');
@@ -331,6 +334,9 @@ static char *get_languages(void)
 		lang_list = STRING_add(lang_list, lang, 0);
 		lang_list = STRING_add_char(lang_list, ':');
 	}
+
+	lang_list = STRING_add(lang_list, lang, 0);
+	lang_list = STRING_add(lang_list, "_*", 2);
 
 	#ifdef DEBUG_LANG
 	fprintf(stderr, "Languages = %s\n", lang_list);
@@ -628,7 +634,6 @@ void LOCAL_set_lang(const char *lang)
 	char **l;
 	int rtl;
 	char *var;
-	char *err;
 
 	if (lang && (strlen(lang) > MAX_LANG))
 		THROW(E_ARG);
@@ -648,7 +653,7 @@ void LOCAL_set_lang(const char *lang)
 
 	if (getenv("LANGUAGE"))
 		my_setenv("LANGUAGE", lang, env_LANGUAGE);
-		
+	
 	if (setlocale(LC_ALL, ""))
 	{
 		_translation_loaded = FALSE;
@@ -656,7 +661,7 @@ void LOCAL_set_lang(const char *lang)
 	}
 	else
 	{
-		err = strerror(errno);
+		char *err = strerror(errno);
 		ERROR_warning("cannot switch to language '%s': %s. Did you install the corresponding locale packages?", lang ? lang : LOCAL_get_lang(), err);
 		setlocale(LC_ALL, "C");
 	}
@@ -1520,11 +1525,13 @@ static void LOCAL_load_translation(ARCHIVE *arch)
 	char *src;
 	char *test;
 	char c;
-	const char *dst = NULL;
 	FILE *file;
 	char *addr;
 	int len;
 	COMPONENT *save = COMPONENT_current;
+	char *path;
+	const char *dir;
+	char *dst;
 
 	/* We must force GB_LoadFile() to look in our archive, because all translation
 		files of one language have the same path!
@@ -1554,7 +1561,7 @@ static void LOCAL_load_translation(ARCHIVE *arch)
 
 		if (*lang)
 		{
-			test = STRING_new_temp_zero(lang);
+			test = STRING_new_zero(lang);
 			src = test;
 
 			for(;;)
@@ -1565,8 +1572,23 @@ static void LOCAL_load_translation(ARCHIVE *arch)
 				*src = tolower(c);
 				src++;
 			}
+
+			test = STRING_add(test, ".mo", 3);
+
+			dir = arch ? ".lang" : ".../.lang";
 			
-			if (!arch)
+			FILE_dir_first(dir, test, 0);
+			STRING_free_real(test);
+			
+			if (!FILE_dir_next(&path, &len))
+			{
+				dst = STRING_new_zero(dir);
+				dst = STRING_add_char(dst, '/');
+				dst = STRING_add(dst, path, len);
+				break;
+			}
+			
+			/*if (!arch)
 				dst = FILE_cat("...", ".lang", test, NULL);
 			else
 				dst = FILE_cat(".lang", test, NULL);
@@ -1578,7 +1600,7 @@ static void LOCAL_load_translation(ARCHIVE *arch)
 			#endif
 
 			if (FILE_exist(dst))
-				break;
+				break;*/
 		}
 
 		lang = strtok(NULL, ":");
@@ -1596,6 +1618,7 @@ static void LOCAL_load_translation(ARCHIVE *arch)
 	fprintf(stderr, "Loading %s\n", dst);
 	#endif
 
+	STRING_free_later(dst);
 	if (GB_LoadFile(dst, 0, &addr, &len))
 	{
 		#ifdef DEBUG_LANG
@@ -1607,27 +1630,27 @@ static void LOCAL_load_translation(ARCHIVE *arch)
 	// These temporary files have predictable names because they
 	// are *.mo files read by the gettext system.
 
-	dst = FILE_cat(FILE_make_temp(NULL, NULL), "tr", NULL);
-	mkdir(dst, S_IRWXU);
+	dir = FILE_cat(FILE_make_temp(NULL, NULL), "tr", NULL);
+	mkdir(dir, S_IRWXU);
 
-	dst = FILE_cat(FILE_make_temp(NULL, NULL), "tr", lang, NULL);
-	mkdir(dst, S_IRWXU);
+	dir = FILE_cat(FILE_make_temp(NULL, NULL), "tr", setlocale(LC_ALL, NULL), NULL);
+	mkdir(dir, S_IRWXU);
 
-	dst = FILE_cat(dst, "LC_MESSAGES", NULL);
-	mkdir(dst, S_IRWXU);
+	dir = FILE_cat(dir, "LC_MESSAGES", NULL);
+	mkdir(dir, S_IRWXU);
 
-	dst = FILE_cat(dst, domain, NULL);
-	strcat((char *)dst, ".mo");
+	dir = FILE_cat(dir, domain, NULL);
+	strcat((char *)dir, ".mo");
 
-	unlink(dst);
+	unlink(dir);
 
 	#ifdef DEBUG_LANG
-	fprintf(stderr, "Writing to %s (%d bytes)\n", dst, len);
+	fprintf(stderr, "Writing to %s (%d bytes)\n", dir, len);
 	#endif
 
 	// No need to test previous system calls as the failure will be detected now
 
-	file = fopen(dst, "w");
+	file = fopen(dir, "w");
 	if (file)
 	{
 		fwrite(addr, len, 1, file);

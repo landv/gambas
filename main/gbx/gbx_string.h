@@ -168,7 +168,7 @@ void STRING_unref_real(char **ptr);
 ({ \
   char **pptr = _p; \
   char *ptr = *pptr; \
-  if (LIKELY(ptr != NULL)) \
+  if (ptr) \
   { \
   	STRING_free_real(ptr); \
   	*pptr = NULL; \
@@ -178,7 +178,7 @@ void STRING_unref_real(char **ptr);
 #define STRING_ref(_p) \
 ({ \
   char *ptr = _p; \
-  if (LIKELY(ptr != NULL)) \
+  if (ptr) \
 	{ \
     STRING_from_ptr(ptr)->ref++; \
   } \
@@ -189,7 +189,7 @@ void STRING_unref_real(char **ptr);
   char **pptr = _p; \
   char *ptr = *pptr; \
   STRING *str; \
-  if (LIKELY(ptr != NULL)) \
+  if (ptr) \
   { \
 	  str = STRING_from_ptr(ptr); \
   	if ((--str->ref) <= 0) \
