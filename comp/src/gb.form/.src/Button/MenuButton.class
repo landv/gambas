@@ -191,11 +191,13 @@ Static Private Sub HandleMenu(hCurrent As MenuButton)
     
   Wend
   
-  Try $hCurrent.Refresh
   hWatch.Stop
   hWatch = Null
   
-  $hCurrent._RestoreLastFocus()
+  If Object.IsValid($hCurrent) Then
+    $hCurrent.Refresh
+    $hCurrent._RestoreLastFocus()
+  Endif
   
   $hCurrent = Null
   $hCurrentMenu = Null
@@ -558,7 +560,7 @@ Public Sub _RestoreLastFocus()
   
   If $hLastFocus Then
     'Debug $hLastFocus.Name
-    If $hDrawingArea.HasFocus Then $hLastFocus.SetFocus
+    If $hDrawingArea.HasFocus Then Try $hLastFocus.SetFocus
     $hLastFocus = Null
   ' Else
   '   Debug "NULL"
