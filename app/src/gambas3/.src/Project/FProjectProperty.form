@@ -117,7 +117,6 @@
     MoveScaled(1,1,108,66)
     Expand = True
     Arrangement = Arrange.Vertical
-    Spacing = True
     Count = 9
     Border = True
     Index = 0
@@ -452,76 +451,104 @@
         }
       }
     }
+    { Panel8 Panel
+      MoveScaled(22,37,6,1)
+    }
     { Label6 Label
-      MoveScaled(1,37,29,3)
+      MoveScaled(1,40,29,3)
       Font = Font["Bold"]
       Text = ("Additional references")
     }
     { lstReferences ListEditor
-      MoveScaled(2,41,79,20)
+      MoveScaled(1,44,79,20)
       Expand = True
       ReadOnly = True
     }
     Index = 4
     Text = ("Environment")
     Picture = Picture["icon:/medium/select"]
-    { tvwEnv TableView
-      MoveScaled(3,6,68,20)
+    { Panel3 Panel
+      MoveScaled(9,9,69,42)
       Expand = True
-      Padding = 4
-      Header = GridView.Horizontal
-    }
-    { HBox3 HBox
-      MoveScaled(1,36,40,4)
-      Spacing = True
-      { btnInsertEnv MenuButton
-        MoveScaled(0,0,19,4)
-        Text = ("&Insert")
-        Picture = Picture["icon:/small/add"]
-        Menu = "mnuInsertEnv"
+      Arrangement = Arrange.Vertical
+      Border = Border.Plain
+      { tvwEnv TableView
+        MoveScaled(0,0,68,20)
+        Expand = True
+        Border = False
+        Padding = 4
+        Header = GridView.Horizontal
       }
-      { btnRemoveEnv Button
-        MoveScaled(20,0,17,4)
-        Text = Shortcut(("Remove"), "R")
-        Picture = Picture["icon:/small/remove"]
+      { Separator2 Separator
+        MoveScaled(28,24,15,0)
+      }
+      { HBox3 HBox
+        MoveScaled(1,34,64,4)
+        Background = Color.TextBackground
+        { btnInsertEnv MenuButton
+          MoveScaled(0,0,19,4)
+          AutoResize = True
+          Text = ("&Insert")
+          Picture = Picture["icon:/small/add"]
+          Border = False
+          Menu = "mnuInsertEnv"
+        }
+        { btnRemoveEnv ToolButton
+          MoveScaled(20,0,17,4)
+          AutoResize = True
+          Text = Shortcut(("Remove"), "R")
+          Picture = Picture["icon:/small/remove"]
+        }
       }
     }
     Index = 5
     Text = ("Arguments")
     Picture = Picture["icon:/medium/play"]
-    { svwArgList ScrollView
-      MoveScaled(3,2,80,40)
-      Background = Color.TextBackground
+    { Panel4 Panel
+      MoveScaled(1,2,81,60)
       Expand = True
       Arrangement = Arrange.Vertical
-      Spacing = True
-      Margin = True
-      ScrollBar = Scroll.Vertical
-      Focus = True
-    }
-    { HBox2 HBox
-      MoveScaled(3,47,77,4)
-      Spacing = True
-      { btnNewArgument Button
-        MoveScaled(0,0,16,4)
-        Text = ("Insert")
-        Picture = Picture["icon:/small/add"]
+      Border = Border.Plain
+      { svwArgList ScrollView
+        MoveScaled(1,1,79,39)
+        Background = Color.TextBackground
+        Expand = True
+        Arrangement = Arrange.Vertical
+        Spacing = True
+        Margin = True
+        Border = False
+        ScrollBar = Scroll.Vertical
+        Focus = True
       }
-      { btnRemoveArgument Button
-        MoveScaled(17,0,16,4)
-        Enabled = False
-        Text = ("Remove")
-        Picture = Picture["icon:/small/remove"]
+      { Separator3 Separator
+        MoveScaled(24,42,14,0)
       }
-      { btnMoveUpArg Button
-        MoveScaled(34,0,6,4)
-        Enabled = False
-        Picture = Picture["icon:/small/up"]
-      }
-      { btnMoveDownArg Button
-        MoveScaled(41,0,6,4)
-        Enabled = False
-        Picture = Picture["icon:/small/down"]
+      { HBox2 HBox
+        MoveScaled(0,45,77,4)
+        Background = Color.TextBackground
+        { btnNewArgument ToolButton
+          MoveScaled(0,0,16,4)
+          AutoResize = True
+          Text = ("Insert")
+          Picture = Picture["icon:/small/add"]
+        }
+        { btnRemoveArgument ToolButton
+          MoveScaled(17,0,16,4)
+          Enabled = False
+          AutoResize = True
+          Text = ("Remove")
+          Picture = Picture["icon:/small/remove"]
+        }
+        { btnMoveUpArg ToolButton
+          MoveScaled(34,0,4,4)
+          Enabled = False
+          Picture = Picture["icon:/small/up"]
+        }
+        { btnMoveDownArg ToolButton
+          MoveScaled(41,0,4,4)
+          Enabled = False
+          Picture = Picture["icon:/small/down"]
+        }
       }
     }
     Index = 6

@@ -108,6 +108,7 @@ Private Sub FillAbout()
   Dim I As Integer
   Dim N As Integer
   Dim sDesc As String
+  Dim sColor As String
 
   hFic = Open "AUTHORS"
 
@@ -216,6 +217,8 @@ Private Sub FillAbout()
   Next
   gvwAbout.Rows[4].H += Desktop.Scale * 2
   
+  sColor = "#" & Hex$(Color.Merge(Color.TextBackground, Color.TextForeground, 0.8), 6)
+  
   For I = 0 To aAuthor.Max
     
     aSplit = Split(aAuthor[I], "\n")
@@ -223,19 +226,24 @@ Private Sub FillAbout()
     sName = String.UCase(aSplit[0])
     sText = "<b><font size=+1>" & sName & "</font>"
 
+    
+
     If aSplit.Count = 2 Then
       
       sText &= "</b><blockquote>"
+      sText &= "<font color=\"" & sColor & "\">"
       sText &= ("Financial support") & "<br>" & GetStars(CInt(aSplit[1]))
       
     Else
       
       sText &= "</b>"
       If aSplit[3] Then sText &= " <i>(" & aSplit[3] & ")</i>"
-      If aSplit[2] Then sText &= "<br><tt>" & aSplit[2] & "</tt>"
+      If aSplit[2] Then sText &= "<br><tt>" & aSplit[2] & "</tt><br>────────────────────"
       sText &= "<blockquote>"
+      sText &= "<font color=\"" & sCOlor & "\">"
       sText &= aSplit[4]
       If aSplit[1] Then sText &= "<br>" & ("Financial support") & "<br>" & GetStars(CInt(aSplit[1]))
+      sText &= "</font>"
 
     Endif
     
