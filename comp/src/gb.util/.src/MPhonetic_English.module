@@ -1,0 +1,623 @@
+' Gambas module file
+
+Public Sub Before(sStr As String) As String
+  
+  Return sStr
+  
+End
+
+Public Sub Run(sStr As String) As String
+' 
+' 
+'     Option Explicit
+'      
+'     MsgBox(DoubleMetaphone(InputBox("Enter String"), 6))
+'      
+'     Function DoubleMetaphone(strOriginal, intThreshhold)
+'         Dim isSlavoGermanic, strPrimary, strSecondary, i, intJump, iB
+'         Dim intLength, cP, cS, arr, x, intPad
+'      
+'         isSlavoGermanic = False
+'         iB = 4
+'         intPad = 6
+'         x = iB
+'         intLength = Len(strOriginal) + iB - 1
+'         strOriginal = UCase(strOriginal)
+'      
+'         If (InStr(strOriginal, "W") + InStr(strOriginal, "K") + InStr(strOriginal, "CZ") + InStr(strOriginal, "WITZ")) <> 0 Then
+'             isSlavoGermanic = True
+'         End If
+'      
+'         ReDim arr(intLength + intPad + 1)
+'      
+'         For i = 0 To iB-1
+'             arr(i) = vbTab
+'         Next
+'      
+'         For i = iB To intLength
+'             arr(i) = Mid(strOriginal, i-iB+1, 1)
+'         Next
+'      
+'         For i = intLength+1 To UBound(arr)
+'             arr(i) = vbTab
+'         Next
+'      
+'         Select Case (arr(x) & arr(x+1))
+'             Case "AC"
+'                 strPrimary = "AKS"
+'                 strSecondary = "AKS"
+'                 x = x + 4
+'             Case "GN", "KN", "PN", "PS"
+'                 x = x + 1
+'             Case "HA", "HE", "HI", "HO", "HU", "HY"
+'                 strPrimary = "H"
+'                 strSecondary = "H"
+'                 x = x + 2
+'             Case "WA", "WE", "WI", "WO", "WU", "WY"
+'                 strPrimary = "A"
+'                 strSecondary = "F"
+'                 x = x + 2
+'             Case "WH"
+'                 strPrimary = "A"
+'                 strSecondary = "A"
+'                 x = x + 1
+'             Case "SM", "SN", "SL", "SW"
+'                 strPrimary = "S"
+'                 strSecondary = "X"
+'                 x = x + 1
+'             Case "GY"
+'                 strPrimary = "K"
+'                 strSecondary = "J"
+'                 x = x + 2
+'         End Select
+'      
+'         If x = iB Then
+'             If arr(x) & arr(x+1) & arr(x+2) & arr(x+3) = "JOSE" Then
+'                 If (x = iB And arr(x+4) = " ") Then
+'                     strPrimary = "HS"
+'                     strSecondary = "HS"
+'                     x = x + 4
+'                 End If
+'             ElseIf arr(x) & arr(x+1) & arr(x+2) & arr(x+3) & arr(x+4) = "SUGAR" Then
+'                 strPrimary = "XK"
+'                 strSecondary = "SK"
+'                 x = x + 5
+'             ElseIf arr(x) & arr(x+1) & arr(x+2) & arr(x+3) & arr(x+4) & arr(x+5) = "CAESAR" Then
+'                 strPrimary = "SSR"
+'                 strSecondary = "SSR"
+'                 x = x + 6
+'             ElseIf (arr(x) & arr(x+1) & arr(x+2) & arr(x+3) & arr(x+4) & arr(x+5) = "CHARAC" Or _
+'             arr(x) & arr(x+1) & arr(x+2) & arr(x+3) & arr(x+4) & arr(x+5) = "CHARIS" Or _
+'             arr(x) & arr(x+1) & arr(x+2) & arr(x+3) = "CHOR" Or _
+'             arr(x) & arr(x+1) & arr(x+2) & arr(x+3) = "CHYM" Or _
+'             arr(x) & arr(x+1) & arr(x+2) & arr(x+3) = "CHEM") And _
+'             arr(x) & arr(x+1) & arr(x+2) & arr(x+3) & arr(x+4) <> "CHORE" Then
+'                 strPrimary = "K"
+'                 strSecondary = "K"
+'                 x = x + 2
+'             End If
+'         End If
+'      
+'         If x = iB Then
+'             Select Case arr(x) & arr(x+1) & arr(x+2)
+'                 Case "GES", "GEP", "GEB", "GEL", "GEY", "GIB", "GIL", "GIN", "GIE", "GEI", "GER"
+'                     strPrimary = "K"
+'                     strSecondary = "J"
+'                     x = x + 2
+'                 Case "GHI"
+'                     strPrimary = "J"
+'                     strSecondary = "J"
+'                     x = x + 3
+'                 Case "AGN", "EGN", "IGN", "OGN", "UGN", "UGY"
+'                     If Not isSlavoGermanic Then
+'                         strPrimary = "AKN"
+'                         strSecondary = "AN"
+'                         x = x + 3
+'                     End If
+'             End Select
+'         End If
+'      
+'         If x = iB Then
+'             Select Case arr(x)
+'                 Case "X"
+'                     strPrimary = "S"
+'                     strSecondary = "S"
+'                     x = x + 1
+'                 Case "A", "E", "I", "O", "U", "Y"
+'                     strPrimary = "A"
+'                     strSecondary = "A"
+'                     x = x + 1
+'                 Case "J"
+'                     strPrimary = "J"
+'                     strSecondary = "A"
+'                     x = x + 1
+'             End Select
+'         End If
+'      
+'         Do While x <= intLength
+'             If Len(strPrimary) >= intThreshhold Then
+'                 Exit Do
+'             End If
+'      
+'             intJump = 1
+'             cP = arr(x)
+'             cS = arr(x)
+'      
+'             Select Case arr(x)
+'                 Case "A", "E", "I", "O", "U", "Y"
+'                     cP = ""
+'                     cS = ""
+'      
+'                 Case "B"
+'                     cP = "P"
+'                     cS = "P"
+'      
+'                 Case "Ç"
+'                     cP = "S"
+'                     cS = "S"
+'      
+'                 Case "C"
+'                     If x > iB+1 And arr(x-2) <> "A" And arr(x-2) <> "E" And arr(x-2) <> "I" And arr(x-2) <> "O" And arr(x-2) <> "U" And _
+'                     arr(x-2) <> "Y" And arr(x-1) & arr(x+1) = "AH" And ((arr(x+2) <> "I" And arr(x+2) <> "E") Or _
+'                     arr(x-2) & arr(x+2) & arr(x+3) = "BER" Or arr(x-2) & arr(x+2) & arr(x+3) = "MER") Then
+'                         cP = "K"
+'                         cS = "K"
+'                         intJump = 2
+'                     ElseIf arr(x+1) & arr(x+2) & arr(x+3) = "HIA" Then
+'                         cP = "K"
+'                         cS = "K"
+'                         intJump = 4
+'                     ElseIf arr(x+1) = "H" Then
+'                         If x > iB And arr(x+2) & arr(x+3) = "AE" Then
+'                             cP = "K"
+'                             cS = "X"
+'                             intJump = 2
+'                         ElseIf arr(iB) & arr(iB+1) & arr(iB+2) & arr(iB+3) = "VAN " Or _
+'                         arr(iB) & arr(iB+1) & arr(iB+2) & arr(iB+3) = "VON " Or _
+'                         arr(iB) & arr(iB+1) & arr(iB+2) = "SCH" Or arr(x+2) = "T" Or arr(x+2) = "S" Or _
+'                         arr(x-2) & arr(x-1) & arr(x+1) & arr(x+2) & arr(x+3) = "ORHES" Or _
+'                         arr(x-2) & arr(x-1) & arr(x+1) & arr(x+2) & arr(x+3) = "ARHIT" Or _
+'                         arr(x-2) & arr(x-1) & arr(x+1) & arr(x+2) & arr(x+3) = "ORHID" Or _ 
+'                         ((arr(x-2) = "A" Or arr(x-2) = "E" Or arr(x-2) = "O" Or arr(x-2) = "U" Or x = iB) And _
+'                         (arr(x+2) = "L" Or arr(x+2) = "R" Or arr(x+2) = "N" Or arr(x+2) = "M" Or arr(x+2) = "B" Or _
+'                         arr(x+2) = "H" Or arr(x+2) = "F" Or arr(x+2) = "V" Or arr(x+2) = "W" Or arr(x+2) = " "))Then
+'                             cP = "K"
+'                             cS = "K"
+'                             intJump = 2
+'                         Else
+'                             intJump = 2
+'      
+'                             If x > iB Then
+'                                 If arr(iB) & arr(iB+1) = "MC" Then
+'                                     cP = "K"
+'                                     cS = "K"
+'                                 Else
+'                                     cP = "X"
+'                                     cS = "K"
+'                                 End If
+'                             Else
+'                                 cP = "X"
+'                                 cS = "X"
+'                             End If
+'                         End If
+'                     ElseIf arr(x+1) = "Z" And arr(x-2) & arr(x-1) <> "WI" Then
+'                         cP = "S"
+'                         cS = "X"
+'                         intJump = 2
+'                     ElseIf arr(x+1) & arr(x+2) & arr(x+2) = "CIA" Then
+'                         cP = "X"
+'                         cS = "X"
+'                         intJump = 3
+'                     ElseIf arr(x+1) = "C" And Not (x = iB+1 And arr(iB) = "M") Then
+'                         If (arr(x+2) = "I" Or arr(x+2) = "E" Or arr(x+2) = "H") And arr(x+2) & arr(x+3) <> "HU" Then
+'                             If arr(x-1) & arr(x+1) & arr(x+2) & arr(x+3) = "UCEE" Or _
+'                             arr(x-1) & arr(x+1) & arr(x+2) & arr(x+3) = "UCES" Then
+'                                 cP = "KS"
+'                                 cS = "KS"
+'                                 intJump = 3
+'                             Else
+'                                 cP = "X"
+'                                 cS = "X"
+'                                 intJump = 3
+'                             End If
+'                         Else
+'                             cP = "K"
+'                             cS = "K"
+'                             intJump = 2
+'                         End If
+'                     ElseIf arr(x+1) = "K" Or arr(x+1) = "G" Or arr(x+1) = "Q" Then
+'                         cP = "K"
+'                         cS = "K"
+'                         intJump = 2
+'                     ElseIf arr(x+1) = "I" Or arr(x+1) = "E" Or arr(x+1) = "Y" Then
+'                         If arr(x+1) & arr(x+2) = "IO" Or arr(x+1) & arr(x+2) = "IE" Or arr(x+1) & arr(x+2) = "IA" Then
+'                             cP = "S"
+'                             cS = "X"
+'                             intJump = 2
+'                         Else
+'                             cP = "S"
+'                             cS = "S"
+'                             intJump = 2
+'                         End If
+'                     Else
+'                         cP = "K"
+'                         cS = "K"
+'      
+'                         If arr(x+1) & arr(x+2) = " C" Or arr(x+1) & arr(x+2) = " Q" Or arr(x+1) & arr(x+2) = " G" Then
+'                             intJump = 3
+'                         Else
+'                             If (arr(x+1) = "C" Or arr(x+1) = "K" Or arr(x+1) = "Q") And _
+'                             arr(x+1) & arr(x+2) <> "CE" And arr(x+1) & arr(x+2) <> "CI" Then 
+'                                 intJump = 2
+'                             End If
+'                         End If
+'                     End If
+'      
+'                 Case "D"
+'                     If arr(x+1) = "G" Then
+'                         If arr(x+2) = "I" Or _
+'                         arr(x+2) = "E" Or _
+'                         arr(x+2) = "Y" Then
+'                             cP = "J"
+'                             cS = "J"
+'                             intJump = 3
+'                         Else
+'                             cP = "TK"
+'                             cS = "TK"
+'                             intJump = 2
+'                         End If
+'                     ElseIf arr(x+1) = "T" Then
+'                         cP = "T"
+'                         cS = "T"
+'                         intJump = 2
+'                     Else
+'                         cP = "T"
+'                         cS = "T"
+'                     End If
+'      
+'                 Case "G"
+'                     If arr(x+1) = "H" Then
+'                         If x <> iB And arr(x-1) <> "A" And arr(x-1) <> "E" And arr(x-1) <> "I" _
+'                         And arr(x-1) <> "O" And arr(x-1) <> "U" And arr(x-1) <> "Y" Then
+'                             cP = "K"
+'                             cS = "K"
+'                             intJump = 2
+'                         ElseIf (x > iB+1 And (arr(x-2) = "B" Or arr(x-2) = "H" Or arr(x-2) = "D")) Or _
+'                         (x > iB+2 And (arr(x-3) = "B" Or arr(x-3) = "H" Or arr(x-3) = "D")) Or _
+'                         (x > iB+3 And (arr(x-4) = "B" Or arr(x-4) = "H")) Then
+'                             cP = ""
+'                             cS = ""
+'                             intJump = 2
+'                         Else
+'                             If x > iB+2 And arr(x-1) = "U" And _
+'                             (arr(x-3) = "C" Or arr(x-3) = "G" Or arr(x-3) = "L" Or arr(x-3) = "R" Or arr(x-3) = "T") Then
+'                                 cP = "F"
+'                                 cS = "F"
+'                                 intJump = 2
+'                             ElseIf x > iB And arr(x-1) <> "I" Then
+'                                 cP = "K"
+'                                 cS = "K"
+'                                 intJump = 2
+'                             Else
+'                                 cP = ""
+'                                 cS = ""
+'                             End If
+'                         End If
+'                     ElseIf arr(x+1) = "N" Then
+'                         cS = "KN"
+'                         intJump = 2
+'      
+'                         If arr(x+2) & arr(x+3) <> "EY" And Not isSlavoGermanic Then
+'                             cP = "N"
+'                         Else
+'                             cP = "KN"
+'                         End If
+'                     ElseIf arr(x+1) & arr(x+2) = "LI" And Not isSlavoGermanic Then
+'                         cP = "KL"
+'                         cS = "L"
+'                         intJump = 2
+'                     ElseIf (arr(x+1) & arr(x+2) = "ER" Or arr(x+1) = "Y") And _
+'                     arr(x-1) <> "E" And arr(x-1) <> "I" And _
+'                     arr(x-1) & arr(x+1) <> "RY" And _
+'                     arr(x-1) & arr(x+1) <> "OY" And _
+'                     arr(iB) & arr(iB+1) & arr(iB+2) & arr(iB+3) & arr(iB+4) & arr(iB+5) <> "DANGER" And _
+'                     arr(iB) & arr(iB+1) & arr(iB+2) & arr(iB+3) & arr(iB+4) & arr(iB+5) <> "RANGER" And _
+'                     arr(iB) & arr(iB+1) & arr(iB+2) & arr(iB+3) & arr(iB+4) & arr(iB+5) <> "MANGER" Then
+'                         cP = "K"
+'                         cS = "J"
+'                         intJump = 2
+'                     ElseIf arr(x+1) = "E" Or arr(x+1) = "I" Or arr(x+1) = "Y" Or _
+'                     arr(x-1) & arr(x) & arr(x+1) & arr(x+2) = "AGGI" Or _
+'                     arr(x-1) & arr(x) & arr(x+1) & arr(x+2) = "OGGI" Then
+'                         If arr(iB) & arr(iB+1) & arr(iB+2) & arr(iB+3) = "VON " Or _
+'                         arr(iB) & arr(iB+1) & arr(iB+2) & arr(iB+3) = "VAN " Or _
+'                         arr(iB) & arr(iB+1) & arr(iB+2) = "SCH" Or _
+'                         arr(x+1) & arr(x+2) = "ET" Then
+'                             cP = "K"
+'                             cS = "K"
+'                             intJump = 2
+'                         Else
+'                             cP = "J"
+'                             If arr(x+1) & arr(x+2) & arr(x+3) & arr(x+4) = "IER " Then
+'                                 cS = "J"
+'                                 intJump = 3
+'                             Else
+'                                 cS = "K"
+'                                 intJump = 2
+'                             End If
+'                         End If
+'                     Else
+'                         cP = "K"
+'                         cS = "K"
+'                     End If
+'      
+'                 Case "H"
+'                     If (arr(x-1) = "A" Or _
+'                     arr(x-1) = "E" Or _
+'                     arr(x-1) = "I" Or _
+'                     arr(x-1) = "O" Or _
+'                     arr(x-1) = "U" Or _
+'                     arr(x-1) = "Y") And _
+'                     (arr(x+1) = "A" Or _
+'                     arr(x+1) = "E" Or _
+'                     arr(x+1) = "I" Or _
+'                     arr(x+1) = "O" Or _
+'                     arr(x+1) = "U" Or _
+'                     arr(x+1) = "Y") Then
+'                         intJump = 2
+'                     Else
+'                         cP = ""
+'                         cS = ""
+'                     End If
+'      
+'                 Case "J"
+'                     If arr(iB) & arr(iB+1) & arr(iB+2) & arr(iB+3) = "SAN " Then
+'                         cP = "H"
+'                         cS = "H"
+'                     Else
+'                         If Not isSlavoGermanic And ( _
+'                         arr(x-1) = "A" Or _
+'                         arr(x-1) = "E" Or _
+'                         arr(x-1) = "I" Or _
+'                         arr(x-1) = "O" Or _
+'                         arr(x-1) = "U" Or _
+'                         arr(x-1) = "Y") And ( _
+'                         arr(x+1) = "A" Or _
+'                         arr(x+1) = "O") Then
+'                             cS = "H"
+'                         Else
+'                             If x = intLength Then
+'                                 cS = ""
+'                             Else
+'                                 If arr(x+1) = "L" Or arr(x+1) = "T" Or arr(x+1) = "K" Or _
+'                                 arr(x+1) = "S" Or arr(x+1) = "N" Or arr(x+1) = "M" Or _
+'                                 arr(x+1) = "B" Or arr(x+1) = "Z" Or _
+'                                 arr(x-1) = "S" Or arr(x-1) = "K" Or arr(x-1) = "L" Then
+'                                     cP = ""
+'                                     cS = ""
+'                                 End If
+'                             End If
+'                         End If
+'                     End If
+'      
+'                 Case "L"
+'                     If arr(x+1) = "L" Then
+'                         intJump = 2
+'      
+'                         If ((x = intLength-2 And ( _
+'                         arr(x-1) & arr(x) & arr(x+1) & arr(x+2) = "ILLO" Or _
+'                         arr(x-1) & arr(x) & arr(x+1) & arr(x+2) = "ILLA" Or _
+'                         arr(x-1) & arr(x) & arr(x+1) & arr(x+2) = "ALLE" _
+'                         )) Or (( _
+'                         arr(intLength-1) & arr(intLength) = "AS" Or _
+'                         arr(intLength-1) & arr(intLength) = "OS" Or _
+'                         arr(intLength) = "A" Or arr(intLength) = "O") And _
+'                         arr(x-1) & arr(x) & arr(x+1) & arr(x+2) = "ALLE")) Then
+'                             cS = ""
+'                         End If
+'                     End If
+'      
+'                 Case "M"
+'                     If arr(x-1) & arr(x) & arr(x+1) = "UMB" And _
+'                     (x = intLength-1 Or arr(x+2) & arr(x+3) = "ER") Then
+'                         intJump = 2
+'                     End If
+'      
+'                 Case "P"
+'                     Select Case arr(x+1)
+'                         Case "H"
+'                             cP = "F"
+'                             cS = "F"
+'                             intJump = 2
+'                         Case "B"
+'                             intJump = 2
+'                     End Select
+'      
+'                 Case "Q"
+'                     cP = "K"
+'                     cS = "K"
+'      
+'                 Case "R"
+'                     If x = intLength And Not isSlavoGermanic And _
+'                     arr(x-2) & arr(x-1) = "IE" And _
+'                     arr(x-4) & arr(x-3) <> "ME" And _
+'                     arr(x-4) & arr(x-3) <> "MA" Then
+'                         cP = ""
+'                     End If
+'      
+'                 Case "S"
+'                     If arr(x+1) = "L" And (arr(x-1) = "I" Or arr(x-1) = "Y") Then
+'                         cP = ""
+'                         cS = ""
+'                     ElseIf arr(x+1) = "H" And _
+'                     arr(x+2) & arr(x+3) & arr(x+4) <> "EIM" And _
+'                     arr(x+2) & arr(x+3) & arr(x+4) <> "OEK" And _
+'                     arr(x+2) & arr(x+3) & arr(x+4) <> "OLM" And _
+'                     arr(x+2) & arr(x+3) & arr(x+4) <> "OLZ" Then
+'                         intJump = 2
+'                         cP = "X"
+'                         cS = "X"
+'                     ElseIf Not isSlavoGermanic And ( _
+'                     arr(x+1) & arr(x+2) = "IA" Or _
+'                     arr(x+1) & arr(x+2) = "IO") Then
+'                         intJump = 3
+'                         cS = "X"
+'                     ElseIf arr(x+1) = "Z" Then
+'                         cS = "X"
+'                         intJump = 2
+'                     ElseIf arr(x+1) = "C" Then
+'                         intJump = 3
+'      
+'                         If arr(x+2) = "H" Then
+'                             If arr(x+3) & arr(x+4) = "OO" Or _
+'                             arr(x+3) & arr(x+4) = "ER" Or _
+'                             arr(x+3) & arr(x+4) = "EN" Or _
+'                             arr(x+3) & arr(x+4) = "UY" Or _
+'                             arr(x+3) & arr(x+4) = "ED" Or _
+'                             arr(x+3) & arr(x+4) = "EM" Then
+'                                 cS = "SK"
+'      
+'                                 If arr(x+3) & arr(x+4) = "ER" Or _
+'                                 arr(x+3) & arr(x+4) = "EN" Then
+'                                     cP = "X"
+'                                 Else
+'                                     cP = "SK"
+'                                 End If
+'                             Else
+'                                 cP = "X"
+'      
+'                                 If x <> iB Or arr(iB+3) = "W" Or arr(iB+3) = "A" Or _
+'                                 arr(iB+3) = "E" Or arr(iB+3) = "I" Or arr(iB+3) = "O" Or _
+'                                 arr(iB+3) = "U" Or arr(iB+3) = "Y" Then
+'                                     cS = "X"
+'                                 End If
+'                             End If
+'                         ElseIf arr(x+2) = "I" Or arr(x+2) = "E" Or arr(x+2) = "Y" Then
+'                         Else
+'                             cP = "SK"
+'                             cS = "SK"
+'                         End If
+'                     ElseIf x = intLength And arr(x-1) = "I" And ( _
+'                     arr(x-2) = "A" Or arr(x-2) = "O") Then
+'                         cP = ""
+'                     End If
+'      
+'                 Case "T"
+'                     If arr(x+1) & arr(x+2) & arr(x+3) = "ION" _
+'                     Or arr(x+1) & arr(x+2) = "IA" _
+'                     Or arr(x+1) & arr(x+2) = "CH" Then
+'                         cP = "X"
+'                         cS = "X"
+'                         intJump = 3
+'                     ElseIf (arr(x+1) = "H" Or arr(x+1) & arr(x+2) = "TH") And _
+'                     (arr(x+2) & arr(x+3) <> "OM" And _
+'                     arr(x+2) & arr(x+3) <> "AM" And _
+'                     arr(iB) & arr(iB+1) & arr(iB+2) <> "SCH" And _
+'                     arr(iB) & arr(iB+1) & arr(iB+2) & arr(iB+3) <> "VAN " And _
+'                     arr(iB) & arr(iB+1) & arr(iB+2) & arr(iB+3) <> "VON ") Then
+'                         cP = "0"
+'                         intJump = 2
+'                     ElseIf arr(x+1) = "D" Then
+'                         intJump = 2
+'                     End If
+'      
+'                 Case "V"
+'                     cP = "F"
+'                     cS = "F"
+'      
+'                 Case "W"
+'                     If arr(x+1) = "R" Then
+'                         cP = "R"
+'                         cS = "R"
+'                         intJump = 2
+'                     ElseIf arr(iB) & arr(iB+1) & arr(iB+2) = "SCH" _
+'                     Or (x = intLength And ( _
+'                     arr(x-1) = "A" Or _
+'                     arr(x-1) = "E" Or _
+'                     arr(x-1) = "I" Or _
+'                     arr(x-1) = "O" Or _
+'                     arr(x-1) = "U" Or _
+'                     arr(x-1) = "Y")) _
+'                     Or ((arr(x-1) = "E" Or arr(x-1) = "O") And _
+'                     (arr(x+1) & arr(x+2) & arr(x+3) = "SKI" Or _
+'                     arr(x+1) & arr(x+2) & arr(x+3) = "SKY")) Then
+'                         cP = ""
+'                         cS = "F"
+'                     ElseIf arr(x+1) & arr(x+2) & arr(x+3) = "ICZ" _
+'                     Or arr(x+1) & arr(x+2) & arr(x+3) = "ITZ" Then
+'                         cP = "TS"
+'                         cS = "FX"
+'                         intJump = 4
+'                     Else
+'                         cP = ""
+'                         cS = ""
+'                     End If
+'      
+'                 Case "X"
+'                     If x = intLength And _
+'                     (arr(x-3) & arr(x-2) & arr(x-1) = "IAU" Or _ 
+'                     arr(x-3) & arr(x-2) & arr(x-1) = "EAU" Or _
+'                     arr(x-2) & arr(x-1) = "AU" Or _
+'                     arr(x-2) & arr(x-1) = "OU") Then
+'                         cP = ""
+'                         cS = ""
+'                     Else
+'                         cP = "KS"
+'                         cS = "KS"
+'                     End If
+'      
+'                     If arr(x+1) = "C" Then
+'                         intJump = 2
+'                     End If
+'      
+'                 Case "Z"
+'                     If arr(x+1) = "H" Then
+'                         cP = "J"
+'                         cS = "J"
+'                     ElseIf (arr(x+1) & arr(x+2) = "ZO" Or _
+'                     arr(x+1) & arr(x+2) = "ZI" Or _
+'                     arr(x+1) & arr(x+2) = "ZA") _
+'                     Or (isSlavoGermanic And x <> iB And arr(x-1) = "T") Then
+'                         cP = "S"
+'                         cS = "TS"
+'                     Else
+'                         cP = "S"
+'                         cS = "S"
+'                     End If
+'             End Select
+'      
+'             strPrimary = strPrimary & cP
+'             strSecondary = strSecondary & cS
+'      
+'             If arr(x) = arr(x+1) And arr(x) <> "C" Then
+'                 intJump = intJump + 1
+'             End If
+'             x = x + intJump
+'         Loop
+'      
+'         For i = 1 To intThreshhold
+'             strPrimary = strPrimary & " "
+'             strSecondary = strSecondary & " "
+'         Next
+'      
+'         DoubleMetaphone = Left(strPrimary, intThreshhold) & Left(strSecondary, intThreshhold)
+'     End Function
+' 
+' 
+
+  Dim I As Integer
+  
+REMOVE_DOUBLE:
+
+  I = 1
+  While I < Len(sStr)
+    If Mid$(sStr, I, 1) = Mid$(sStr, I + 1, 1) Then
+      sStr = Left(sStr, I) & Mid$(sStr, I + 2)
+    Else
+      Inc I
+    Endif
+  Wend
+  Return
+  
+End
+

@@ -2039,7 +2039,7 @@ _2585:
 _2586:
 _2587:
 _2588:
-  Paint.FillRect(0, H, W, - Max(1, (C - &H2580) * H / 8), iBg)
+  Paint.FillRect(0, H, W, -Max(1, (C - &H2580) * H / 8), iBg)
   Return
   
 _2589:
@@ -2053,25 +2053,25 @@ _258F:
   Return
   
 _2590:
-  Paint.FillRect(W, 0, - W / 2, H, iBg)
+  Paint.FillRect(W, 0, -W / 2, H, iBg)
   Return
   
 _2591:
   
   If Not $hBrushLight Then $hBrushLight = Image.Load("brush_light.png")
-  Paint.Brush = Paint.Image($hBrushLight, - XB, - YB)
+  Paint.Brush = Paint.Image($hBrushLight, -XB, -YB)
   Goto _DRAW_BRUSH
   
 _2592:
   
   If Not $hBrushMedium Then $hBrushMedium = Image.Load("brush_medium.png")
-  Paint.Brush = Paint.Image($hBrushMedium, - XB, - YB)
+  Paint.Brush = Paint.Image($hBrushMedium, -XB, -YB)
   Goto _DRAW_BRUSH
   
 _2593:
   
   If Not $hBrushDark Then $hBrushDark = Image.Load("brush_dark.png")
-  Paint.Brush = Paint.Image($hBrushDark, - XB, - YB)
+  Paint.Brush = Paint.Image($hBrushDark, -XB, -YB)
   Goto _DRAW_BRUSH
   
 _2594:
@@ -2096,7 +2096,7 @@ _2598:
   
 _2599:
   Paint.FillRect(0, 0, W / 2, H, iBg)
-  Paint.FillRect(0, H, W, - H / 2, iBg)
+  Paint.FillRect(0, H, W, -H / 2, iBg)
   Return
   
 _259A:
@@ -2121,8 +2121,8 @@ _259E:
   Goto _2596
   
 _259F:
-  Paint.FillRect(W, 0, - W / 2, H, iBg)
-  Paint.FillRect(0, H, W, - H / 2, iBg)
+  Paint.FillRect(W, 0, -W / 2, H, iBg)
+  Paint.FillRect(0, H, W, -H / 2, iBg)
   Return
   
 _DRAW_BRUSH:  
