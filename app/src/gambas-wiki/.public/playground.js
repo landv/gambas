@@ -8,7 +8,7 @@
 document.addEventListener("DOMContentLoaded", function() {
 
     var i;
-    var REMOTE_URI = 'http://46.101.40.55/run.php';
+    var REMOTE_URI = 'https://pg1.gambas.one/run-daily.php';
 
     // Hide all results
 
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Add From
         var formPlay = document.createElement("form");
-        formPlay.action = "http://gambas.one/playground/ultra.php";
+        formPlay.action = "https://gambas.one/playground/ultra.php";
         formPlay.method = "POST";
         formPlay.target = '_blank';
         divOuter.appendChild(formPlay);
