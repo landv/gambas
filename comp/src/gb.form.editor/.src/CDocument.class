@@ -427,7 +427,6 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
     Next
   Endif
   
-  
   For I = 0 To aText.Max - 1
     
     SetLine(Y, String.Left(Lines[Y], X) & aText[I], True)
@@ -625,7 +624,7 @@ End
 ' }
 ' 
 
-Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
+Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer, Optional bRight As Boolean)
 
   Dim sText As String
   Dim hView As TextEditor
@@ -668,7 +667,7 @@ Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
   YAfter = Y1
   
   If $iNoUndo = 0 Then
-    AddUndo(CCommand(Me, CCommand.DELETE, sText, X1, Y1, X2, Y2, EndBefore()))
+    AddUndo(CCommand(Me, CCommand.DELETE, sText, X1, Y1, X2, Y2, EndBefore(), bRight))
   Endif
   
   For Each hView In GetAllViews()
@@ -831,18 +830,58 @@ End
 
 Private Sub AddUndo(hCmd As CCommand)
 
+  Dim hLast As CCommand
+  Dim hPrevious As CCommand
+  
   If $iNoUndo Then Return
   
   'hCmd.Print("AddUndo: ")
   
   If hCmd.Type = CCommand.END And If $aUndo.Count And If $aUndo[$aUndo.Max].Type = CCommand.BEGIN Then
     $aUndo.Pop
+  ' Else If hCmd.Type = CCommand.END And If $aUndo.Count >= 2 And If $aUndo[$aUndo.Max - 1].Type = CCommand.BEGIN Then
+  '   $aUndo.Remove($aUndo.Max - 1)
   Else
     $aUndo.Add(hCmd)
   Endif
   
   $aRedo.Clear
 
+  If $aUndo.Count >= 2 Then
+    
+    hLast = $aUndo.Last
+    hPrevious = $aUndo[$aUndo.Max - 1]
+    
+    If hLast.Type = hPrevious.Type Then
+      If hLast.Length = 1 And If hLast.Text <> "\n" And If hPrevious.Text <> "\n" And If hLast.Y = hPrevious.Y Then
+        If hLast.Type = CCommand.INSERT Then
+          If hLast.XA = hPrevious.X Then
+            hPrevious.Text = hLast.Text & hPrevious.Text
+            hPrevious.X = hLast.X
+            $aUndo.Pop
+          Else If hLast.X = hPrevious.XA Then
+            hPrevious.Text &= hLast.Text
+            hPrevious.XA = hLast.XA
+            $aUndo.Pop
+          Endif
+        Else If hLast.Type = CCommand.DELETE Then
+          
+          If hPrevious.X = hLast.XA Then
+            hPrevious.Text = hLast.Text & hPrevious.Text
+            hPrevious.X = hLast.X
+            $aUndo.Pop
+          Else If hPrevious.X = hLast.X Then
+            Inc hPrevious.XA
+            hPrevious.Text &= hLast.Text
+            $aUndo.Pop
+          Endif
+          
+        Endif
+      Endif
+    Endif
+    
+  Endif
+  
 End
 
 Public Sub Undo()
@@ -859,7 +898,7 @@ Public Sub Undo()
   
   bOverwrite = Me.Current.Overwrite
   Me.Current.Overwrite = False
-  
+
   Repeat
   
     hCmd = $aUndo.Pop()
@@ -880,17 +919,15 @@ Public Sub Undo()
         
         Case CCommand.INSERT
           Me.Current.Remove(.X, .Y, .XA, .YA)
-          'If .SX <> .X Or If .SY <> .Y Then 
-          '  Me.Current.Goto(.SX, .SY)
-          '  Me.Current.Goto(.X, .Y, True)
-          'Endif
           
         Case CCommand.DELETE
           Me.Current.Goto(.X, .Y)
           Me.Current.Insert(.Text)
-          If .SX <> .XA Or If .SY <> .YA Then 
+          If .SX <> .X Or If .SY <> .Y Then 
             Me.Current.Goto(.SX, .SY)
             Me.Current.Goto(.XA, .YA, True)
+          Else If .Right Then
+            Me.Current.Goto(.X, .Y)
           Endif
         
       End Select
@@ -912,7 +949,7 @@ Public Sub Undo()
     $aRedo.Add(hCmd)
     
   Until L = 0
-  
+    
   Me.Current.Overwrite = bOverwrite
   
   EnableUndo

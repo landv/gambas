@@ -2038,6 +2038,12 @@ Public Sub Insert(Text As String)
   Dim aText As String[]
   Dim I As Integer
   
+  If Len(Text) = 1 And If Text <> "\n" And If Not HasSelection() And If Not $bOverwrite Then
+    $hDoc.Insert(Text, $X, $Y)
+    Goto($hDoc.XAfter, $hDoc.YAfter)
+    Return
+  Endif
+  
   $hDoc.Begin
   
   DeleteSelection
@@ -2142,12 +2148,18 @@ Public Sub SelectAll()
   
 End
 
-Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
+Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer, Optional bRight As Boolean)
   
   'Goto(X1, Y1)
   
+  If Y1 = Y2 And If Abs(X1 - X2) = 1 Then
+    $hDoc.Remove(X1, Y1, X2, Y2, bRight)
+    Goto($hDoc.XAfter, $hDoc.YAfter)
+    Return
+  Endif
+  
   $hDoc.Begin
-  $hDoc.Remove(X1, Y1, X2, Y2)
+  $hDoc.Remove(X1, Y1, X2, Y2, bRight)
   
   Goto($hDoc.XAfter, $hDoc.YAfter)
   $hDoc.End
@@ -2275,10 +2287,10 @@ Private Sub DeleteRight()
   
   If $X >= $hDoc.LineLength[$Y] Then
     If $Y < $hDoc.Max Then
-      Remove($X, $Y, 0, $Y + 1)
+      Remove($X, $Y, 0, $Y + 1, True)
     Endif
   Else
-    Remove($X, $Y, $X + 1, $Y)
+    Remove($X, $Y, $X + 1, $Y, True)
   Endif
   
 End
