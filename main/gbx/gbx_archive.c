@@ -67,7 +67,7 @@ ARCHIVE *ARCHIVE_create(const char *name, const char *path)
 	ALLOC_ZERO(&arch, sizeof(ARCHIVE));
 
 	arch->name = name;
-	arch->path = path;
+	arch->path = STRING_new_zero(path);
 
 	arch->domain = STRING_new_zero(name ? name : "gb");
 
@@ -340,6 +340,7 @@ void ARCHIVE_delete(ARCHIVE *arch)
 	TABLE_delete(&arch->classes);
 	STRING_free(&arch->domain);
 	STRING_free(&arch->version);
+	STRING_free(&arch->path);
 
 	FREE(&arch);
 }
@@ -493,6 +494,9 @@ bool ARCHIVE_get(ARCHIVE *arch, const char **ppath, ARCHIVE_FIND *find)
 		find->arch = NULL;
 		return FALSE;
 	}
+	
+	if (!arch->arch) // archive has been created but loading has failed
+		return TRUE;
 
 	if (ARCH_find(arch->arch, *ppath, 0, &f))
 		return TRUE;
