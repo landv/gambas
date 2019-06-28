@@ -476,26 +476,43 @@
     }
     Index = 6
     Text = ("Extra dependencies")
+    { HBox17 HBox
+      MoveScaled(2,1,83,4)
+      Spacing = True
+      { chkVersionMin CheckBox
+        MoveScaled(1,0,27,4)
+        AutoResize = True
+        Text = ("Minimum Gambas version")
+      }
+      { dwgVersionMin DrawingArea
+        MoveScaled(36,0,9,4)
+        Enabled = False
+        { spnVersionMin SpinBox
+          MoveScaled(4,0,5,4)
+          Border = False
+        }
+      }
+    }
     { chkDep CheckBox
-      MoveScaled(0,1,55,3)
+      MoveScaled(1,8,55,3)
       Text = ("Same dependencies for all targets")
     }
     { cmbDep ComboBox
-      MoveScaled(0,6,68,4)
+      MoveScaled(1,13,68,4)
       ReadOnly = True
       Text = (" ")
     }
     { HBox12 HBox
-      MoveScaled(1,15,79,41)
+      MoveScaled(1,18,79,38)
       Expand = True
       Spacing = True
       { tvwDep TableView
-        MoveScaled(7,5,41,29)
+        MoveScaled(5,2,41,29)
         Expand = True
         Header = GridView.Horizontal
       }
       { HBox11 VBox
-        MoveScaled(53,4,18,34)
+        MoveScaled(48,2,18,27)
         Spacing = True
         { btnAddDep Button
           MoveScaled(0,0,18,4)

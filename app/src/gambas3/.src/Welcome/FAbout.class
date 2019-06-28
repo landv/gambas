@@ -226,8 +226,6 @@ Private Sub FillAbout()
     sName = String.UCase(aSplit[0])
     sText = "<b><font size=+1>" & sName & "</font>"
 
-    
-
     If aSplit.Count = 2 Then
       
       sText &= "</b><blockquote>"

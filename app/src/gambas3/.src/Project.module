@@ -82,6 +82,7 @@ Public VendorPrefix As String
 Public Url As String
 Public License As String
 Public CreateEachDirectory As Boolean
+Public RuntimeVersion As String
 
 Public PublishTags As String[]
 Public PublishDependencies As String[]
@@ -3196,6 +3197,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Prefix = False
   PackageName = ""
   PackageVersion = 1
+  RuntimeVersion = ""
   PackageSignature = False
   SourcePath = ""
   Type = TYPE_NORMAL
@@ -3446,6 +3448,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
       Case "vendorprefix"
         VendorPrefix = sVal
+        
+      Case "runtimeversion"
+        RuntimeVersion = UnQuote(sVal)
 
       Case "address"
         Address = sVal
@@ -3666,6 +3671,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If CreateEachDirectory Then Print #hFic, "CreateEachDirectory=1"
   If MimeTypes.Count Then Print #hFic, "MimeTypes="; MimeTypes.Join(",", Chr$(34))
   If ExtraDesktop Then Print #hFic, "ExtraDesktop=" & Quote(ExtraDesktop)
+  If RuntimeVersion Then Print #hFic, "RuntimeVersion=" & Quote(RuntimeVersion)
 
   Print #hFic, "Packager=1"
   If Systems.Count Then Print #hFic, "Systems="; Systems.Join(",")
@@ -5348,6 +5354,26 @@ Public Sub HasTranslation(sLang As String) As Boolean
   Return Exist(Project.Dir &/ ".lang" &/ sLang & ".po")
 
 End
+
+Public Sub GetTranslations() As String[]
+
+  Dim sFile As String
+  Dim aLang As String[]
+  Dim sDir As String
+  
+  aLang = New String[]
+  sDir = Project.Dir &/ ".lang"
+  If IsDir(sDir) Then
+    For Each sFile In Dir(sDir, "*.po")
+      aLang.Add(File.BaseName(sFile))
+    Next
+    aLang.Sort
+  Endif
+  
+  Return aLang
+  
+End
+
 
 Public Sub MakeDirectoryIcon(Optional sDir As String)
 

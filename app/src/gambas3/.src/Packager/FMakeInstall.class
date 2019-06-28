@@ -102,6 +102,18 @@ Public Sub Form_Open()
   txtPackageVersion.Value = Max(1, Project.PackageVersion)
 
   chkSignature.Value = Project.PackageSignature
+  
+  spnVersionMin.MinValue = 0
+  spnVersionMin.MaxValue = CInt(Split(System.FullVersion, ".")[1]) 
+  If Project.RuntimeVersion Then
+    chkVersionMin.Value = True
+    spnVersionMin.Value = CInt(Split(Project.RuntimeVersion, ".")[1])
+  Else
+    chkVersionMin.Value = False
+    spnVersionMin.Value = spnVersionMin.MaxValue
+  Endif
+  
+  Project.SetEditorFont(txtDesktop)
 
   'InitSystemControls
   InitSystems
@@ -291,6 +303,7 @@ Public Sub wizInstall_BeforeChange()
   Dim aFile As String[]
   Dim bEnabled As Boolean
   Dim sSys As String
+  Dim aVer As String[]
 
   Select Case wizInstall.Index
 
@@ -424,6 +437,14 @@ Public Sub wizInstall_BeforeChange()
       Project.ExtraDesktop = Trim(txtDesktop.Text)
       
     Case TAB_DEP
+      
+      If chkVersionMin.Value Then
+        aVer = Split(System.FullVersion, ".")
+        aVer[1] = CStr(spnVersionMin.Value)
+        Project.RuntimeVersion = aVer[0] & "." & aVer[1]
+      Else
+        Project.RuntimeVersion = ""
+      Endif
     
     Case TAB_FILE
       
@@ -1271,5 +1292,33 @@ Public Sub btnCreateNow_Click()
     If wizInstall.Index = iIndex Then Break
   Loop
   wizInstall.Animated = True
+
+End
+
+Public Sub dwgVersionMin_Draw()
+
+  Style.PaintBox(0, 0, Paint.W, Paint.H)
+  Paint.DrawText(System.Version & ".", 0, 0, spnVersionMin.X, Paint.H, Align.Right)
+
+End
+
+Public Sub dwgVersionMin_Arrange()
+
+  Dim FW As Integer = Style.BoxFrameWidth
+  Dim FH As Integer = Style.BoxFrameHeight
+
+  spnVersionMin.Move(dwgVersionMin.W - spnVersionMin.W - FW, FH, spnVersionMin.W, dwgVersionMin.H - FH * 2)
+  
+End
+
+Public Sub chkVersionMin_Click()
+
+  dwgVersionMin.Enabled = chkVersionMin.Value
+  If chkVersionMin.Value Then
+    spnVersionMin.SetFocus
+  Else
+    spnVersionMin.Value = spnVersionMin.MaxValue
+  Endif
+  dwgVersionMin.Refresh
 
 End

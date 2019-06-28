@@ -147,12 +147,14 @@ Public Sub Form_Open()
   cmbLang.Clear
   cmbLangSource.Clear
   cmbLangSource.Add(("(Default)"))
-  For Each sLang In Language.GetAll()
-    If Project.HasTranslation(sLang) Then
+  
+  'For Each sLang In Language.GetAll()
+  For Each sLang In Project.GetTranslations()
+    'If Project.HasTranslation(sLang) Then
       cvwLang.Add(sLang, Language.ToName(sLang))
       cmbLang.Add(Language.ToName(sLang))
       cmbLangSource.Add(Language.ToName(sLang))
-    Endif
+    'Endif
   Next
 
   sPath = Settings["/FTranslate/ImportPath"]

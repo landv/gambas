@@ -255,8 +255,12 @@ Public Function Make() As Boolean
   Dim sPath As String
   Dim aVer As String[]
   
-  aVer = Split(System.FullVersion, ".")
-  MIN_VERSION = aVer[0] & "." & aVer[1]
+  If Project.RuntimeVersion Then
+    MIN_VERSION = Project.RuntimeVersion
+  Else
+    aVer = Split(System.FullVersion, ".")
+    MIN_VERSION = aVer[0] & "." & aVer[1]
+  Endif
 
   If Project.Systems.Exist("slackware") Then 
     If Project.MakeExecutable(True, True) Then Return True
@@ -578,7 +582,7 @@ Private Function GetDependency(sLib As String) As String
 
 End
 
-Private Sub PrintOnlyShowIn(hFile As File, sCategories As String)
+Private Sub PrintOnlyShowIn(cLine As Collection, sCategories As String)
   
   Dim aCat As String[] = Split(sCategories, ";", "", True)
   Dim sCat As String
@@ -592,38 +596,74 @@ Private Sub PrintOnlyShowIn(hFile As File, sCategories As String)
       Endif
     Next
     
-    If aOnly.Count Then Print #hFile, "ShowOnlyIn="; aOnly.Join(";"); ";"
+    If aOnly.Count Then cLine["ShowOnlyIn"] = aOnly.Join(";") & ";"
     
   Endif
   
 End
 
-Private Sub PrintDesktopFile(hFile As File, sExec As String, sIcon As String, Optional sExtraCat As String)
+Private Sub PrintTranslatedDesktopEntry(cLine As Collection, sEntry As String, sText As String)
+
+  Dim sLang As String
+  Dim sTrans As String
   
+  cLine[sEntry] = sText
+  
+  For Each sLang In Project.GetTranslations()
+    sTrans = CTranslation.FindTranslation(Language.GetPath(sLang, "po"), sText)
+    If sTrans Then cLine[sEntry & "[" & sLang & "]"] = sTrans
+  Next
+
+End
+
+Private Sub PrintDesktopFile(hFile As File, sExec As String, sIcon As String, Optional sExtraCat As String)
+
+  Dim cLine As New Collection
+  Dim sExtra As String
+  Dim iPos As Integer
+    
   Print #hFile, "[Desktop Entry]"
   Print #hFile, "Version=1.0"
 
-  Print #hFile, "Name=";    
   If Project.Title Then
-    Print #hFile, Project.Title
+    PrintTranslatedDesktopEntry(cLine, "Name", Project.Title)
   Else
-    Print #hFile, Project.Name
+    PrintTranslatedDesktopEntry(cLine, "Name", Project.Name)
   Endif
 
   If $sDescription <> "Missing description." Then
-    Print #hFile, "Comment=";
-    Print #hFile, Replace($sDescription, "\n", " ")
+    cLine["Comment"] = Replace($sDescription, "\n", " ")
   Endif
   
-  Print #hFile, "Exec="; sExec '/usr/bin/"; $sName & ".gambas"
-  Print #hFile, "Icon="; sIcon '/usr/share/pixmaps/" & sIcon
-  Print #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
-  Print #hFile, "Type=Application"
-  Print #hFile, "StartupNotify=true"
-  Print #hFile, "Categories="; sExtraCat; $sCategories
-  If Project.MimeTypes.Count Then Print #hFile, "MimeType="; Project.MimeTypes.Join(";")
-  PrintOnlyShowIn(hFile, $sCategories)
-  If Trim(Project.ExtraDesktop) Then Print #hFile, Trim(Project.ExtraDesktop)
+  cLine["Exec"] = sExec
+  cLine["Icon"] = sIcon
+  cLine["Terminal"] = IIf(IsConsoleProject(), "true", "false")
+  cLine["Type"] = "Application"
+  cLine["StartupNotify"] = "true"
+  cLine["Categories"] = sExtraCat & $sCategories
+  If Project.MimeTypes.Count Then cLine["MimeType"] = Project.MimeTypes.Join(";")
+  PrintOnlyShowIn(cLine, $sCategories)
+  
+  If Trim(Project.ExtraDesktop) Then
+    For Each sExtra In Split(Project.ExtraDesktop, "\n")
+      sExtra = Trim(sExtra)
+      If Not sExtra Then Continue
+      If InStr("#;=", Left(sExtra)) Then Continue
+      iPos = InStr(sExtra, "=")
+      cLine[RTrim(Left(sExtra, iPos - 1))] = LTrim(Mid$(sExtra, iPos + 1))
+    Next
+  Endif
+  
+  For Each sExtra In ["Name", "Comment", "Exec", "Icon", "Terminal", "Type", "StartupNotify", "Categories", "MimeType", "ShowOnlyIn"]
+    If cLine[sExtra] Then
+      Print #hFile, sExtra; "="; cLine[sExtra]
+      cLine.Remove(sExtra)
+    Endif
+  Next
+  
+  For Each sExtra In cLine
+    Print #hFile, cLine.Key; "="; sExtra
+  Next
   
 End
 
