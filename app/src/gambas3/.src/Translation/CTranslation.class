@@ -282,6 +282,7 @@ Static Public Sub FindTranslation(sPath As String, sFind As String) As String
       Else
         If sMsgId = sFind Then 
           If sMsgStr = "-" Then sMsgStr = sMsgId
+          Close #hFile
           Return Replace(sMsgStr, "\\n", "\n")
         Endif
       Endif

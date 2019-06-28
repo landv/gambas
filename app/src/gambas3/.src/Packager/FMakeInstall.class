@@ -486,13 +486,13 @@ Public Sub wizInstall_BeforeChange()
     
     Case TAB_DIR
       
-      Package.Path = dchInstall.SelectedPath
-      If Package.Path = Project.Dir Or If Package.Path Begins Project.Dir &/ "/" Then 
+      Package.Dir = dchInstall.SelectedPath
+      If Package.Dir = Project.Dir Or If Package.Dir Begins Project.Dir &/ "/" Then 
         Message.Warning(("The package cannot be stored inside the project directory."))
         Stop Event 
         Return 
       Endif
-      Settings["/FMakeInstall/PackagePath"] = Package.Path
+      Settings["/FMakeInstall/PackagePath"] = Package.Dir
       
     Case TAB_CREATE
       
@@ -1283,15 +1283,19 @@ End
 Public Sub btnCreateNow_Click()
 
   Dim iIndex As Integer
+  Dim bSave As Boolean
   
-  wizInstall.Animated = False
+  'wizInstall.Animated = False
+  bSave = Application.Animations
+  Application.Animations = False
   Do
     iIndex = wizInstall.Index
     wizInstall.MoveNext
     If iIndex = TAB_CREATE Then Break
     If wizInstall.Index = iIndex Then Break
   Loop
-  wizInstall.Animated = True
+  Application.Animations = bSave
+  'wizInstall.Animated = True
 
 End
 

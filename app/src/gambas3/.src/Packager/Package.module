@@ -1,6 +1,7 @@
 ' Gambas module file
 
-Public Path As String
+Public Dir As String
+Private Path As String
 Public ChangeLog As String
 Public Signature As String
 
@@ -26,7 +27,7 @@ Private $sCategories As String          ' Categories list
 Private $sHome As String                ' Home user directory
 Private $sVersion As String
 Private $sDescription As String
-Private $sSavePath As String
+Private $bDescription As Boolean
 
 Private $sSupportPackage As String
 
@@ -198,11 +199,11 @@ End
 Private Sub InitMake(sSys As String)
   
   If Project.CreateEachDirectory Then
-    Path = $sSavePath &/ sSys
-    Try Mkdir $sSavePath
+    Path = Dir &/ sSys
+    Try Mkdir Dir
     Try Mkdir Path
   Else 
-    Path = $sSavePath
+    Path = Dir
     Try Mkdir Path
   Endif
 
@@ -231,10 +232,12 @@ Private Sub InitMake(sSys As String)
 
   $sVersion = GetVersion()
 
-  If Project.Description Then
-    $sDescription = RemoveEmptyLines(Project.Description)
+  $sDescription = RemoveEmptyLines(Project.Description)
+  If $sDescription Then
+    $bDescription = True
   Else
     $sDescription = "Missing description."
+    $bDescription = False
   Endif
 
   With Project.Components
@@ -280,7 +283,6 @@ Public Function Make() As Boolean
   Project.RefreshKey(sPath)
   If bAdd Then VersionControl.AddFile(sPath)
   
-  $sSavePath = Path
   For Each sSys In Project.Systems
     If MakePackage(sSys) Then Return True
   Next
@@ -602,16 +604,33 @@ Private Sub PrintOnlyShowIn(cLine As Collection, sCategories As String)
   
 End
 
+Private Sub MakeOneLine(sStr As String) As String
+
+  Dim iLen As Integer
+  
+  sStr = Replace(sStr, "\r", "")
+  sStr = Replace(sStr, "\n", " ")
+  sStr = Replace(sStr, "\t", " ")
+  
+  Repeat
+    iLen = Len(sStr)
+    sStr = Replace(sStr, "  ", " ")
+  Until Len(sStr) = iLen
+  
+  Return Trim(sStr)
+
+End
+
 Private Sub PrintTranslatedDesktopEntry(cLine As Collection, sEntry As String, sText As String)
 
   Dim sLang As String
   Dim sTrans As String
   
-  cLine[sEntry] = sText
+  cLine[sEntry] = MakeOneLine(sText)
   
   For Each sLang In Project.GetTranslations()
     sTrans = CTranslation.FindTranslation(Language.GetPath(sLang, "po"), sText)
-    If sTrans Then cLine[sEntry & "[" & sLang & "]"] = sTrans
+    If sTrans Then cLine[sEntry & "[" & sLang & "]"] = MakeOneLine(sTrans)
   Next
 
 End
@@ -631,9 +650,7 @@ Private Sub PrintDesktopFile(hFile As File, sExec As String, sIcon As String, Op
     PrintTranslatedDesktopEntry(cLine, "Name", Project.Name)
   Endif
 
-  If $sDescription <> "Missing description." Then
-    cLine["Comment"] = Replace($sDescription, "\n", " ")
-  Endif
+  If $bDescription Then PrintTranslatedDesktopEntry(cLine, "Comment", Project.Description)
   
   cLine["Exec"] = sExec
   cLine["Icon"] = sIcon
@@ -675,13 +692,13 @@ Private Sub RunCommand(sCmd As String, Optional sDir As String)
   If sDir Then
     AddLog("cd " & Shell$(sDir))
     AddLog(sCmd)
-    Shell "(cd " & SConv(Shell$(sDir)) & ";" & sCmd & ") 2>&1" For Input As "Process"
+    Shell "cd " & SConv(Shell$(sDir)) & " && " & sCmd & " 2>&1" For Input As "Process"
   Else
     AddLog(sCmd)
     Shell sCmd & " 2>&1" For Input As "Process"
   Endif
   Repeat
-    Sleep 0.01 
+    Sleep 0.02 
     Wait
   Until $bEnd
   
@@ -854,10 +871,13 @@ Private Function MakeDebPackage(sSys As String)
   ' Step 1. Create the build directory
 
   AddLog(("Making build directory.")) 
-  sPackagePath = Path &/ Subst("&1-&2", sPackageName, $sVersion)
 
-  Try Shell "rm -Rf " & Shell$(sPackagePath) Wait
-  Try Shell "rm -Rf " & Shell$(sPackagePath & ".orig") Wait
+  RunCommand("rm -f " & Shell(Path &/ Subst("&1_&2", sPackageName, $sVersion)) & "*")
+
+  sPackagePath = Path &/ Subst("&1-&2", sPackageName, $sVersion)
+  RunCommand("rm -Rf " & Shell$(sPackagePath))
+  RunCommand("rm -Rf " & Shell$(sPackagePath & ".orig"))
+
   Mkdir sPackagePath
   Mkdir sPackagePath &/ "src"
   Mkdir sPackagePath &/ "debian"
