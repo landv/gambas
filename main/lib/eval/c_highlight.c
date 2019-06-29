@@ -268,13 +268,6 @@ BEGIN_PROPERTY(Highlight_TextAfter)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(Highlight_Alternate)
-
-	GB.Deprecated("gb.eval", "Highlight.Alternate", NULL);
-	GB.ReturnInteger(-1);
-
-END_PROPERTY
-
 GB_DESC CHighlightDesc[] =
 {
 	GB_DECLARE("Highlight", 0), GB_VIRTUAL_CLASS(),
@@ -300,9 +293,8 @@ GB_DESC CHighlightDesc[] =
 	GB_CONSTANT("Escape", "i", HIGHLIGHT_ESCAPE),
 	GB_CONSTANT("Label", "i", HIGHLIGHT_LABEL),
 	GB_CONSTANT("Constant", "i", HIGHLIGHT_CONSTANT),
+	GB_CONSTANT("Alternate", "i", HIGHLIGHT_ALTERNATE),
 	GB_CONSTANT("Custom", "i", HIGHLIGHT_NUM_COLOR),
-	
-	GB_STATIC_PROPERTY_READ("Alternate", "i", Highlight_Alternate),
 	
 	GB_STATIC_METHOD("_exit", NULL, Highlight_exit, NULL),
 	GB_STATIC_METHOD("Analyze", "String[]", Highlight_Analyze, "(Code)s[(Rewrite)b(State)i]"),
