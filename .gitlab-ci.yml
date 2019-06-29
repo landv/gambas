@@ -124,7 +124,7 @@ build:alpine:
   before_script:
     - >
        apk add --no-progress -q
-       autoconf automake curl-dev dbus-dev g++ gdk-pixbuf-dev git gmp-dev
+       autoconf automake libtool curl-dev dbus-dev g++ gdk-pixbuf-dev git gmp-dev
        glew-dev glib-dev gmime-dev gsl-dev gst-plugins-base-dev gstreamer-dev gtk+2.0-dev gtk+3.0-dev
        gtkglext-dev imlib2-dev gettext-dev libffi-dev mesa-dev libgnome-keyring-dev mariadb-dev librsvg-dev
        libsm-dev libxcursor-dev libxml2-dev libxslt-dev libxtst-dev make ncurses-dev pcre-dev pkgconf
