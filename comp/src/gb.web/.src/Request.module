@@ -233,6 +233,9 @@ Private Function Language_Read() As String
   Dim sLang As String
   Dim iPos As Integer
   Dim I As Integer
+  Dim sFirst As String
+
+  'fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3
 
   aLang = Split(CGI["HTTP_ACCEPT_LANGUAGE"], ",")
   
@@ -240,7 +243,10 @@ Private Function Language_Read() As String
     iPos = InStr(sLang, ";")
     If iPos Then sLang = Left(sLang, iPos - 1)
     If InStr(sLang, "-") Then Return Replace(sLang, "-", "_") & ".UTF-8"
+    If Not sFirst Then sFirst = sLang
   Next
+  
+  If sFirst Then Return sFirst & ".UTF-8"
   
   Return System.Language
 
