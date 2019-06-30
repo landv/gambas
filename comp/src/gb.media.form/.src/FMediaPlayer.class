@@ -232,6 +232,8 @@ Private Sub SetPos(fPos As Float)
   
   Dim fLength As Float
   
+  If Not $hPlayer Then Return
+  
   If $hPlayer.State = Media.Paused Or If $hPlayer.State = Media.Playing Then
     fLength = $hPlayer.Duration
     If fLength > 0 Then
@@ -371,7 +373,7 @@ Public Sub SetPosition(fPos As Float)
 
   Dim fLength As Float
   
-  fLength = $hPlayer.Duration
+  Try fLength = $hPlayer.Duration
   
   If fLength Then
     SetPos(fPos / fLength)
@@ -383,6 +385,7 @@ End
 
 Public Sub dwgTime_MouseWheel()
 
+  If Not $hPlayer Then Return
   If Mouse.Forward Then
     SetPosition(GetPosition() + 10)
   Else
@@ -439,4 +442,10 @@ Public Sub timResize_Timer()
   If $hPlayer And If $hPlayer.State <> Media.Playing Then $hPlayer.Pos = $hPlayer.Pos
   timResize.Stop
   
+End
+
+Public Sub _new()
+
+  Me.Proxy = dwgVideo
+
 End

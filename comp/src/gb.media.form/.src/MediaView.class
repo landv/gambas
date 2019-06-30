@@ -26,6 +26,7 @@ Private $sNextUrl As String
 Public Sub _new()
   
   $hView = New FMediaPlayer(Me)
+  Me.Proxy = $hView
   
 End
 
