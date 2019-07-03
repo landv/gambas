@@ -28,7 +28,7 @@ Public Sub Form_Open()
 
   'Exec ["stty", "onlcr"] Wait
   Application.Animations = True
-  TerminalView1.Exec(["bash"])
+  TerminalView1.Exec(["bash"], ["PWD=/home/benoit/gambas/git/master/comp/src/gb.media.form"]) 
 
 End
 
@@ -118,7 +118,9 @@ Public Sub Button6_Click()
   '   TerminalView1.Print(String.Chr$(I))
   ' Next
 
-  TerminalView1.Print(Chr$(254) & Chr$(254) & Chr$(88) & Chr$(224) & Chr$(03) & Chr$(253))
+  'TerminalView1.Print(Chr$(254) & Chr$(254) & Chr$(88) & Chr$(224) & Chr$(03) & Chr$(253))
+  TerminalView1.Background = Color.White
+  TerminalView1.Foreground = Color.Black
 
 End
 

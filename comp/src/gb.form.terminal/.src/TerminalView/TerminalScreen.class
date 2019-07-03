@@ -25,7 +25,7 @@ Public HideCursor As Boolean
 
 Static Private $aColor As Integer[] = [
   &H000000, &H800000, &H008000, &H808000, &H000080, &H800080, &H008080, &Hc0c0c0,
-  &H808080, &Hff0000, &H00ff00, &Hffff00, &H0000ff, &Hff00ff, &H00ffff, &Hffffff,
+  &H808080, &Hff0000, &H00ff00, &HFFFF00, &H0000ff, &Hff00ff, &H00ffff, &Hffffff,
   &H000000, &H00005f, &H000087, &H0000af, &H0000d7, &H0000ff,
   &H005f00, &H005f5f, &H005f87, &H005faf, &H005fd7, &H005fff,
   &H008700, &H00875f, &H008787, &H0087af, &H0087d7, &H0087ff,
@@ -73,8 +73,8 @@ Static Private $aGraphicCharset As Integer[] = [&H0020&, &H25C6&, &H2592&, &H240
   &H252c&, &H2502&, &H2264&, &H2265&, &H03C0&, &H2260&, &H00A3&, &H00b7&]
 
 Static Private $aInvertColor As Integer[] = [
-  &H000000, &H804040, &H408040, &H808040, &H404080, &H804080, &H408080, &Hc0c0c0,
-  &H808080, &Hff8080, &H80ff80, &Hffff80, &H8080ff, &Hff80ff, &H80ffff, &Hffffff]
+  &H000000, &HFF0000, &H00FF00, &HFFFF00, &H0000FF, &HFF00FF, &H00FFFF, &HC0C0C0,
+  &H808080, &HC00000, &H00C000, &HC0C000, &H0000C0, &HC000C0, &H00C0C0, &HFFFFFF]
 
 Static Private $sControlChar As String
 
@@ -1044,7 +1044,7 @@ Private Sub GetSelection(ByRef X1 As Integer, ByRef Y1 As Integer, ByRef X2 As I
   
 End
 
-Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHideCursor As Boolean, hFont As Image)
+Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHideCursor As Boolean, hFont As Image, bInvertColor As Boolean)
   
   Dim hView As TerminalView = GetView()
   Dim L, L1, L2 As Integer
@@ -1053,12 +1053,9 @@ Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHide
   Dim X2 As Integer
   Dim Y1 As Integer
   Dim Y2 As Integer
-  Dim bInvertColor As Boolean
   
   If Not $hLineCache Then $hLineCache = New Image($W * CW, LH)
   $cCharCache.Clear
-  
-  If Color[hView.Background].Value < Color[hView.Foreground].Value Then bInvertColor = True
   
   L1 = (SY + Paint.ClipRect.Y) \ LH
   L2 = (SY + Paint.ClipRect.Y + Paint.ClipRect.H - 1) \ LH

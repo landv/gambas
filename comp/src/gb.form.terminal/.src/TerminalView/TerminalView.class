@@ -387,9 +387,12 @@ End
 
 Public Sub View_Draw()
   
+  Dim bInvertColor As Boolean
+  
   ApplyLimit
   
-  $hScreen.Paint(GetScrollY(), $LH, $CW, $iAscent, $bHideCursor, $hCacheFont)
+  bInvertColor = Color[Style.BackgroundOf($hView)].Value > Color[Style.ForegroundOf($hView)].Value 
+  $hScreen.Paint(GetScrollY(), $LH, $CW, $iAscent, $bHideCursor, $hCacheFont, bInvertColor)
   
   If $bTermUseMouse Then
     Paint.FillRect($iMouseX * $CW, $iMouseY * $LH, $CW, $LH, Color.SetAlpha(Color.SelectedBackground, 64))
