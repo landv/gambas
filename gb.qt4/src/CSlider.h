@@ -24,10 +24,12 @@
 #ifndef __CSLIDER_H
 #define __CSLIDER_H
 
-#include "gambas.h"
-#include "CWidget.h"
 #include <QSlider>
 #include <QResizeEvent>
+
+#include "gambas.h"
+
+#include "CWidget.h"
 
 #ifndef __CSLIDER_CPP
 

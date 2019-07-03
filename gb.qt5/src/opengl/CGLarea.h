@@ -24,9 +24,9 @@
 #ifndef __CGLAREA_H
 #define __CGLAREA_H
 
-#include "main.h"
-
 #include <QOpenGLWidget>
+
+#include "main.h"
 
 typedef
 	struct {

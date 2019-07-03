@@ -24,10 +24,10 @@
 #ifndef __CTEXTBOX_H
 #define __CTEXTBOX_H
 
-#include "gambas.h"
-
 #include <QComboBox>
 #include <QEvent>
+
+#include "gambas.h"
 
 #include "CWidget.h"
 

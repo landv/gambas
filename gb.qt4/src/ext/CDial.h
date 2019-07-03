@@ -24,6 +24,9 @@
 #ifndef __CDIAL_H
 #define __CDIAL_H
 
+#include <qapplication.h>
+#include <qdial.h>
+
 #include "gambas.h"
 #include "../gb.qt.h"
 

@@ -24,9 +24,9 @@
 #ifndef __CCHECKBOX_H
 #define __CCHECKBOX_H
 
-#include "gambas.h"
-
 #include <QCheckBox>
+
+#include "gambas.h"
 
 #include "CWidget.h"
 

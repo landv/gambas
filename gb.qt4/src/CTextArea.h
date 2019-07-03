@@ -24,11 +24,11 @@
 #ifndef __CTEXTAREA_H
 #define __CTEXTAREA_H
 
+#include <QPlainTextEdit>
+
 #include "gambas.h"
 
 #include "CWidget.h"
-
-#include <QPlainTextEdit>
 
 #ifndef __CTEXTAREA_CPP
 extern GB_DESC CTextAreaDesc[];
