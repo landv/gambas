@@ -59,6 +59,8 @@ Private $iLock As Integer
 
 Private $iSaveSelection As Integer
 Private $aSaveSelection As String[]
+Private $iDepthW As Integer
+Private $bShowLines As Boolean
 
 Public Sub _new()
   
@@ -74,6 +76,7 @@ Public Sub _new()
   Me.Proxy = $hView
   
   $bNoRoot = Me Is ListView
+  GridView_Font
   
   $hRoot = New _TreeView_Item("", "") As "Item"
   
@@ -462,8 +465,8 @@ Public Sub _GetItemX(hItem As _TreeView_Item) As Integer
   
   Dim X As Integer
   
-  X = hItem._Depth * 16
-  If Not $bNoRoot Then X += 16
+  X = hItem._Depth * $iDepthW
+  If Not $bNoRoot Then X += $iDepthW
   Return X
 
 End
@@ -487,6 +490,12 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer,
   
   Dim hItem As _TreeView_Item = RowToItem(Row)
   Dim sText As String
+  Dim XA As Float
+  Dim YA As Float
+  Dim WA As Float
+  Dim HA As Float
+  Dim bHasNext As Boolean
+  Dim hParent As _TreeView_Item
   
   If Not hItem Then Return
   
@@ -494,17 +503,66 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer,
   
     If System.RightToLeft Then
 
-      W -= hItem._Depth * 16 + 16
+      W -= hItem._Depth * $iDepthW + $iDepthW
       
       If Not $bNoRoot Then
       
-        If hItem.Count Then
-          If hItem.Expanded Then
-            Style.PaintArrow(X + W + 2, Y + H \ 2 - 6, 12, 12, Align.Bottom)
+        Paint.Save
+        
+        If $bShowLines And If hItem._Depth Then
+          
+          Paint.Background = Color.SetAlpha(Color.LightForeground, 128)
+          
+          bHasNext = GetSibling(hItem.Key, 1)
+          
+          If hItem.Count Then
+            Paint.MoveTo(X + W + $iDepthW, Y + H / 2)
           Else
-            Style.PaintArrow(X + W + 2, Y + H \ 2 - 6, 12, 12, Align.Left)
+            Paint.MoveTo(X + W + $iDepthW / 4, Y + H / 2)
           Endif
+          Paint.LineTo(X + W + $iDepthW + $iDepthW / 2, Y + H / 2)
+          Paint.RelMoveTo(0, -H)
+          Paint.RelLineTo(0, H)
+          If bHasNext Then Paint.RelLineTo(0, H)
+          
+          XA = X + W + $iDepthW + $iDepthW / 2
+          hParent = hItem
+          While hParent.ParentKey
+            hParent = $cItem[hParent.ParentKey]
+            XA += $iDepthW 
+            If GetSibling(hParent.Key, 1) Then
+              Paint.MoveTo(XA, Y - H / 2)
+              Paint.RelLineTo(0, H * 2)
+            Endif
+          Wend
+          
+          Paint.AntiAlias = False
+          Paint.LineWidth = 1
+          Paint.Stroke
+          Paint.AntiAlias = True
+          
         Endif
+      
+        If hItem.Count Then
+          ' If hItem.Expanded Then
+          '   Style.PaintArrow(X + W + 2, Y + H \ 2 - 6, 12, 12, Align.Bottom)
+          ' Else
+          '   Style.PaintArrow(X + W + 2, Y + H \ 2 - 6, 12, 12, Align.Left)
+          ' Endif
+          
+          XA = X + W + $iDepthW / 4
+          YA = Y + $iDepthW / 4
+          WA = $iDepthW / 2
+          HA = H - $iDepthW / 2
+          Paint.Arrow(XA, YA, WA, HA, If(hItem.Expanded, Align.Bottom, Align.Left))
+          Paint.Background = Color.SetAlpha(Style.ForegroundOf($hView), 128)
+          Paint.LineWidth = $iDepthW / 8
+          Paint.LineCap = Paint.LineCapRound
+          Paint.Stroke
+          
+        Endif
+        
+        Paint.Restore
         
       Endif
       
@@ -516,19 +574,62 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer,
 
     Else
   
-      X += hItem._Depth * 16
+      X += hItem._Depth * $iDepthW
       
       If Not $bNoRoot Then
       
-        If hItem.Count Then
-          If hItem.Expanded Then
-            Style.PaintArrow(X + 2, Y + H \ 2 - 6, 12, 12, Align.Bottom)
+        Paint.Save
+        
+        If $bShowLines And If hItem._Depth Then
+          
+          Paint.Background = Color.SetAlpha(Color.LightForeground, 128)
+          
+          bHasNext = GetSibling(hItem.Key, 1)
+          
+          If hItem.Count Then
+            Paint.MoveTo(X, Y + H / 2)
           Else
-            Style.PaintArrow(X + 2, Y + H \ 2 - 6, 12, 12, Align.Right)
+            Paint.MoveTo(X + $iDepthW - $iDepthW / 4, Y + H / 2)
           Endif
+          Paint.LineTo(X - $iDepthW / 2, Y + H / 2)
+          Paint.RelMoveTo(0, -H)
+          Paint.RelLineTo(0, H)
+          If bHasNext Then Paint.RelLineTo(0, H)
+          
+          XA = X - $iDepthW / 2
+          hParent = hItem
+          While hParent.ParentKey
+            hParent = $cItem[hParent.ParentKey]
+            XA -= $iDepthW 
+            If GetSibling(hParent.Key, 1) Then
+              Paint.MoveTo(XA, Y - H / 2)
+              Paint.RelLineTo(0, H * 2)
+            Endif
+          Wend
+          
+          Paint.AntiAlias = False
+          Paint.LineWidth = 1
+          Paint.Stroke
+          Paint.AntiAlias = True
+          
+        Endif
+      
+        If hItem.Count Then
+          Paint.Background = Color.LightForeground
+          XA = X + $iDepthW / 4
+          YA = Y + $iDepthW / 4
+          WA = $iDepthW / 2
+          HA = H - $iDepthW / 2
+          Paint.Arrow(XA, YA, WA, HA, If(hItem.Expanded, Align.Bottom, Align.Right))
+          Paint.Background = Color.LightForeground
+          Paint.LineWidth = $iDepthW / 8
+          Paint.LineCap = Paint.LineCapRound
+          Paint.Stroke
         Endif
         
-        X += 16
+        Paint.Restore
+        
+        X += $iDepthW
         
       Endif
       
@@ -605,15 +706,15 @@ Public Sub GridView_MouseDown()
   
   If System.RightToLeft Then
     With $hView.Columns[0]
-      X = .X + .W - hItem._Depth * 16 - 16
+      X = .X + .W - hItem._Depth * $iDepthW - $iDepthW
     End With
   Else
-    X = hItem._Depth * 16
+    X = hItem._Depth * $iDepthW
   Endif
   
   X -= $hView.ScrollX
   
-  If Mouse.X >= X And If Mouse.X < X + 16 Then
+  If Mouse.X >= X And If Mouse.X < X + $iDepthW Then
     hItem.Expanded = Not hItem.Expanded
   Endif
   
@@ -1466,7 +1567,7 @@ Public Sub GridView_ColumnSize(Column As Integer)
   Dim hItem As _TreeView_Item
   Dim W As Integer
   
-  W = Me.Font.TextWidth($hView.Columns[Column].Text) + 8 + If($bSorted, 16, 0)
+  W = Me.Font.TextWidth($hView.Columns[Column].Text) + 8 + If($bSorted, $iDepthW, 0)
   
   If Column = 0 Then
     For Each hItem In $cItem
@@ -1551,6 +1652,7 @@ End
 
 Public Sub GridView_Font()
 
+  $iDepthW = Me.Font.Height
   $hView.Rows.Height = GetDefaultItemHeight()
   UpdateRowHeight(Null, 0, -1)
   
@@ -1582,3 +1684,16 @@ Public Sub _End()
   
 End
 
+Public Sub _SetShowLines(bShowLines As Boolean)
+  
+  If $bShowLines = bShowLines Then Return
+  $bShowLines = bShowLines
+  $hView.Refresh
+  
+End
+
+Public Sub _GetShowLines() As Boolean
+  
+  Return $bShowLines
+  
+End

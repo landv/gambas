@@ -406,3 +406,63 @@ End
 '   
 ' End
 ' 
+
+Static Public Sub Arrow(X As Float, Y As Float, Width As Float, Height As Float, Orientation As Integer, Optional Alignment As Integer = Align.Center)
+
+  Dim SX, SY As Float
+
+  SX = Min(Width / 2, Height / 2) / 2
+  If SX <= 0 Then Return
+  SY = SX * 2
+  
+  If Orientation = Align.Top Or If Orientation = Align.Bottom Then Swap SX, SY
+  
+  If Align.IsLeft(Alignment) Then
+    X = SX
+  Else If Align.IsRight(Alignment) Then
+    X = Width - SX
+  Else
+    X += Width / 2
+  Endif
+  
+  If Align.IsTop(Alignment) Then
+    Y = SY
+  Else If Align.IsBottom(Alignment) Then
+    Y = Height - SY
+  Else
+    Y += Height / 2
+  Endif
+  
+  Width = SX * 2
+  Height = SY * 2
+  
+  Select Case Orientation
+    
+    Case Align.Top
+    
+      Paint.MoveTo(X - SX, Y + SY)
+      Paint.RelLineTo(SX, -SY * 2)
+      Paint.RelLineTo(SX, SY * 2)
+    
+    Case Align.Bottom
+    
+      Paint.MoveTo(X - SX, Y - SY)
+      Paint.RelLineTo(SX, SY * 2)
+      Paint.RelLineTo(SX, -SY * 2)
+    
+    Case Align.Left
+    
+      Paint.MoveTo(X + SX, Y - SY)
+      Paint.RelLineTo(-SX * 2, SY)
+      Paint.RelLineTo(SX * 2, SY)
+    
+    Case Align.Right
+    
+      Paint.MoveTo(X - SX, Y - SY)
+      Paint.RelLineTo(SX * 2, SY)
+      Paint.RelLineTo(-SX * 2, SY)
+    
+  End Select
+  
+End
+

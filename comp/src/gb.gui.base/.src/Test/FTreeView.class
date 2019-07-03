@@ -31,7 +31,7 @@ Public Sub Form_Open()
     With tvwTest.Add(sPath, File.Name(sPath), If(IsDir(sPath), hDirPict, hFilePict), sParent)
       .[1] = Stat(sPath).Size
       bDark = Not bDark
-      If bDark Then .Background = Color.RGB(245, 245, 245)
+      If bDark Then .Background = Color.RGB(0, 0, 0, 240)
       If InStr(sPath, "zip") Then .Foreground = Color.Red
     End With
     'ListView1.Add(sPath, File.Name(sPath), If(IsDir(sPath), hDirPict, hFilePict))
