@@ -24,11 +24,11 @@
 #ifndef __CCOOKIEJAR_H
 #define __CCOOKIEJAR_H
 
-#include "main.h"
-
 #include <QUrl>
 #include <QNetworkCookie>
 #include <QNetworkCookieJar>
+
+#include "main.h"
 
 #ifndef __CCOOKIEJAR_CPP
 

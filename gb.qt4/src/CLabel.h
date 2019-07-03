@@ -24,12 +24,12 @@
 #ifndef __CLABEL_H
 #define __CLABEL_H
 
-#include "gambas.h"
-
 #include <QLabel>
 #include <QEvent>
 #include <QPaintEvent>
 #include <QResizeEvent>
+
+#include "gambas.h"
 
 #include "CWidget.h"
 #include "CPicture.h"

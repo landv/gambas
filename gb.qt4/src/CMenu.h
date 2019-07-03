@@ -24,14 +24,14 @@
 #ifndef __CMENU_H
 #define __CMENU_H
 
-#include "gambas.h"
-
 #include <QAction>
 #include <QMenu>
 #include <QMenuBar>
 #include <QKeySequence>
 #include <QList>
 #include <QPoint>
+
+#include "gambas.h"
 
 #include "CWidget.h"
 #include "CPicture.h"

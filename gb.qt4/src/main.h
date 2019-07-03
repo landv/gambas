@@ -24,9 +24,6 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
-#include "gb_common.h"
-#include "gambas.h"
-
 #include <QEvent>
 #include <QApplication>
 #include <QTimerEvent>
@@ -34,6 +31,9 @@
 #include <QSessionManager>
 #include <QClipboard>
 #include <QFont>
+
+#include "gb_common.h"
+#include "gambas.h"
 
 #define DO_NOT_USE_QT_INTERFACE
 #include "gb.qt.h"

@@ -24,11 +24,12 @@
 #ifndef __CCLIPBOARD_H
 #define __CCLIPBOARD_H
 
+#include <QMimeData>
+#include <QDropEvent>
+
 #include "gambas.h"
 #include "CWidget.h"
 #include "CPicture.h"
-#include <QMimeData>
-#include <QDropEvent>
 
 typedef
   struct {

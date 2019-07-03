@@ -24,12 +24,12 @@
 #ifndef __CFRAME_H
 #define __CFRAME_H
 
+#include <QGroupBox>
+
 #include "gambas.h"
 
 #include "CWidget.h"
 #include "CContainer.h"
-
-#include <QGroupBox>
 
 #ifndef __CFRAME_CPP
 extern GB_DESC CFrameDesc[];

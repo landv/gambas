@@ -24,16 +24,16 @@
 #ifndef __CTABSTRIP_H
 #define __CTABSTRIP_H
 
+#include <QTabWidget>
+#include <QTabBar>
+#include <QEvent>
+
 #include "gambas.h"
 
 #include "CWidget.h"
 #include "CContainer.h"
 #include "CPicture.h"
 #include "CFont.h"
-
-#include <QTabWidget>
-#include <QTabBar>
-#include <QEvent>
 
 #ifndef __CTABSTRIP_CPP
 extern GB_DESC CTabStripDesc[];
