@@ -247,7 +247,7 @@ Private Sub InitMake(sSys As String)
       $sSupportPackage = "gb.gui.qt"
     Endif
   End With
-
+  
 End
 
 Public Function Make() As Boolean
@@ -1110,10 +1110,12 @@ Private Function MakeDebPackage(sSys As String)
   Print "\tdh_testroot"
   Print "\tdh_prep"
   Print "\tdh_installdirs" 
-  If Project.Type = Project.TYPE_COMPONENT Then 
-      Print "\tcp src" &/ $sName & "/.component  $(CURDIR)/debian/" & sPackageName & "/usr/lib/gambas" & System.Version & "/" & Shell$($sComponentName) & ".component"
-      Print "\tcp src" &/ $sName & "/.info  $(CURDIR)/debian/" & sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sComponentName) & ".info " ""
-      Print "\tcp src" &/ $sName & "/.list  $(CURDIR)/debian/" & sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sComponentName) & ".list"
+  If Project.Type = Project.TYPE_NORMAL Then
+    If $sName <> sPackageName Then Print "\tln -s " & Shell$($sName) & " $(CURDIR)/debian" &/ sPackageName &/ "/usr/bin" &/ Shell$(sPackageName)
+  Else If Project.Type = Project.TYPE_COMPONENT Then 
+    Print "\tcp src" &/ $sName & "/.component  $(CURDIR)/debian/" & sPackageName & "/usr/lib/gambas" & System.Version & "/" & Shell$($sComponentName) & ".component"
+    Print "\tcp src" &/ $sName & "/.info  $(CURDIR)/debian/" & sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sComponentName) & ".info " ""
+    Print "\tcp src" &/ $sName & "/.list  $(CURDIR)/debian/" & sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sComponentName) & ".list"
   Endif 
   Print "\ttouch install-stamp"
   Print 
@@ -1579,7 +1581,7 @@ Private Function MakeRpmPackage(sSys As String)
           Print #hFile, "install -Dp .icon/48.png %{buildroot}/%{_datadir}/icons/hicolor/48x48/apps" &/ Shell$(sIcon)
           Print #hFile, "install -Dp .icon/64.png %{buildroot}/%{_datadir}/icons/hicolor/64x64/apps" &/ Shell$(sIcon)
           
-          Print #hFile, "ln -s " & Shell$($sName) & " %{buildroot}/%{_bindir}/" & Shell$(sPackageName)
+          If $sName <> sPackageName Then Print #hFile, "ln -s " & Shell$($sName) & " %{buildroot}/%{_bindir}/" & Shell$(sPackageName)
   
           Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
           Print #hFile, "cat << EOF > %{buildroot}/%{_datadir}/applications/%{name}.desktop"
@@ -1594,7 +1596,7 @@ Private Function MakeRpmPackage(sSys As String)
           Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
           Print #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ Shell$(sIcon)
           
-          Print #hFile, "ln -s " & Shell$($sName) & " %{buildroot}/%{_bindir}/" & Shell$(sPackageName)
+          If $sName <> sPackageName Then Print #hFile, "ln -s " & Shell$($sName) & " %{buildroot}/%{_bindir}/" & Shell$(sPackageName)
     
           Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
           
@@ -1608,7 +1610,7 @@ Private Function MakeRpmPackage(sSys As String)
           Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
           Print #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ Shell$(sIcon)
           
-          Print #hFile, "ln -s " & Shell$($sName) & " %{buildroot}/%{_bindir}/" & Shell$(sPackageName)
+          If $sName <> sPackageName Then Print #hFile, "ln -s " & Shell$($sName) & " %{buildroot}/%{_bindir}/" & Shell$(sPackageName)
     
           Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
           
@@ -2054,6 +2056,7 @@ Private Sub MakeTgzPackage(sSys As String)
     If Project.Type = Project.TYPE_NORMAL Then
       Copy Project.GetExecPath() To sBuildDir &/ "/usr/bin" &/ $sName
       Chmod sBuildDir &/ "/usr/bin" &/ $sName To "..x..x..x"
+      If $sName <> sPackageName Then Link $sName To sBuildDir &/ "/usr/bin" &/ sPackageName
     Else If Project.Type = Project.TYPE_LIBRARY Then
       Copy Project.GetExecPath() To sBuildDir &/ "/usr/lib/gambas" & System.Version &/ LCase($sVendor) &/ $sLibraryName & ".gambas"
       Chmod sBuildDir &/ "/usr/lib/gambas" & System.Version &/ LCase($sVendor) &/ $sLibraryName & ".gambas" To "..x..x..x"
@@ -2246,6 +2249,8 @@ Private Sub MakeAutotoolsPackage((sSys) As String)
   Dim sCmd As String
   Dim sPackage As String
   
+  sPackage = GetPackageName($sName)
+  
   ' 1. Create the temporary build directory
 
   AddLog(("Making build directory."))
@@ -2260,7 +2265,7 @@ Private Sub MakeAutotoolsPackage((sSys) As String)
   Try sCmd = Scan(Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False), "*/bin/gbc" & System.Version & " *")[1]
 
   'Mkdir sBuildDir &/ Project.Name
-  Shell "cp -rL " & Shell$(Project.Dir) & " " & Shell$(sBuildDir &/ Project.Name) Wait 
+  Shell "cp -rL " & Shell$(Project.Dir) & " " & Shell$(sBuildDir &/ $sName) Wait 
   sFile = Replace(File.Load("install/acinclude.m4"), "$(VERSION)", CStr(System.Version))
   sFile = Replace(sFile, "$(PACKAGE_VERSION)", $sVersion)
   sFile = Replace(sFile, "$(EXTRA_TEST)", Project.ExtraAutoconfTest)
@@ -2271,8 +2276,8 @@ Private Sub MakeAutotoolsPackage((sSys) As String)
   
   ' 3. Create needed files (AUTHORS, README, COPYING, NEWS, ChangeLog, configure.ac)
   
-  If Exist(sBuildDir &/ Project.Name &/ "CHANGELOG") Then 
-    Move sBuildDir &/ Project.Name &/ "CHANGELOG" To sBuildDir &/ "ChangeLog"
+  If Exist(sBuildDir &/ $sName &/ "CHANGELOG") Then 
+    Move sBuildDir &/ $sName &/ "CHANGELOG" To sBuildDir &/ "ChangeLog"
   Endif  
 
   File.Save(sBuildDir &/ "ChangeLog", ChangeLog)
@@ -2284,11 +2289,12 @@ Private Sub MakeAutotoolsPackage((sSys) As String)
   hFile = Open sBuildDir &/ "configure.ac" For Create
     Print #hFile, "dnl -- package generated with gambas3 ide --"
     Print #hFile, ""
-    Print #hFile, "AC_INIT(configure.ac)"
+    Print #hFile, "AC_INIT([" & $sName & "],[" & $sVersion & "],[],[" & $sName & "])"
+    Print #hFile, "AC_CONFIG_SRCDIR([configure.ac])"
     If Project.Type = Project.TYPE_COMPONENT Then
-      Print #hFile, "GB_INIT_PROJECT([" & Project.Name & "],[" & $sComponentName & "])"
+      Print #hFile, "GB_INIT_PROJECT([" & $sName & "],[" & sPackage & "],[" & $sComponentName & "])"
     Else
-      Print #hFile, "GB_INIT_PROJECT([" & Project.Name & "])"
+      Print #hFile, "GB_INIT_PROJECT([" & $sName & "],[" & sPackage & "])"
     Endif
     Print #hFile, ""
     Print #hFile, "dnl -- create makefile --"
@@ -2307,7 +2313,7 @@ Private Sub MakeAutotoolsPackage((sSys) As String)
   Dec Application.Busy
   AddLog("")
 
-  sPackage = Dir(sBuildDir, Project.Name & "*" & $sVersion & "*")[0]
+  sPackage = Dir(sBuildDir, $sName & "*" & $sVersion & "*")[0]
   MoveFile(sBuildDir &/ sPackage, Path &/ GetPackagePrefix(Project.Type, $sVendor, $sVendorPrefix, Project.Prefix) & sPackage)
   AddLog(sPackage)
   
@@ -2454,6 +2460,7 @@ Private Function MakeArchPackage(sSys As String)
   
         Print #hFile, "  install -d ${pkgdir}/usr/bin"
         Print #hFile, "  install -m755 " & $sName & ".gambas ${pkgdir}/usr/bin" &/ $sName
+        If $sName <> sPackageName Then Print #hFile, "  ln -s " & Shell$($sName) & " $(pkgdir)/usr/bin" &/ Shell$(sPackageName)
         Print #hFile, "  install -D .." &/ Project.Name & ".png \\"
         Print #hFile, "    ${pkgdir}/usr/share/pixmaps" &/ Project.Name & ".png"
         Print #hFile, "  install -D .." &/ sPackageName & ".desktop \\"

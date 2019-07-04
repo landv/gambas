@@ -34,9 +34,14 @@ install-exec-local:
 	  chmod a-x $(DESTDIR)/$(GBCONTROL_path)/$(COMPONENT_name)/*.png; \
 	 fi \
 	else \
-	 echo "Installing $(PACKAGE).gambas file in $(bindir)..."; \
+	 echo "Installing '$(PACKAGE)' executable in $(bindir)..."; \
 	 $(INSTALL) -d $(DESTDIR)$(bindir); \
 	 $(INSTALL) $(PACKAGE).gambas $(DESTDIR)$(bindir); \
+	 ln -sf $(PACKAGE).gambas $(DESTDIR)$(bindir)/$(PACKAGE); \
+	 if test "$(PACKAGE)" != $(PACKAGE_LCASE); then \
+	   echo "Creating lower case symbolic link..."; \
+	   ln -sf $(PACKAGE).gambas $(DESTDIR)$(bindir)/$(PACKAGE_LCASE); \
+	 fi \
 	fi)
 
 uninstall-local:
@@ -48,8 +53,10 @@ uninstall-local:
 	 rm -f $(DESTDIR)/$(GBINFO_path)/$(COMPONENT_name).list; \
 	 rm -rf $(DESTDIR)/$(GBCONTROL_path)/$(COMPONENT_name); \
 	else \
-	 echo "Removing $(PACKAGE).gambas file..."; \
+	 echo "Removing executable..."; \
 	 rm -f $(DESTDIR)$(bindir)/$(PACKAGE).gambas; \
+	 rm -f $(DESTDIR)$(bindir)/$(PACKAGE); \
+	 rm -f $(DESTDIR)$(bindir)/$(PACKAGE_LCASE); \
 	fi)
 
 dist-hook:
