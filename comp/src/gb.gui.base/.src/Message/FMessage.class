@@ -11,6 +11,7 @@ Public Sub Run(sIcon As String, sText As String, aButton As String[]) As Integer
   Dim I As Integer
   Dim hButton As Button
   Dim iBusy As Integer
+  Dim WB As Integer
 
   sTitle = Message.Title
   If Not sTitle Then sTitle = Application.Title
@@ -38,9 +39,6 @@ Public Sub Run(sIcon As String, sText As String, aButton As String[]) As Integer
   txtMessage.Text = sText
   txtMessage.Adjust
   
-  W = Max(txtMessage.W, (aButton.Count * 15) * Desktop.Scale) + picMessage.W + Desktop.Scale * 4
-  H = Max(Desktop.Scale * 8, txtMessage.H) + panButton.H + Desktop.Scale * 5
-  
   txtMessage.Ignore = False
   
   For I = 0 To aButton.Max
@@ -48,9 +46,13 @@ Public Sub Run(sIcon As String, sText As String, aButton As String[]) As Integer
     hButton.Tag = I
     hButton.Text = aButton[I]
     hButton.W = Max(Desktop.Scale * 14, hButton.Font.TextWidth(hButton.Text) + Desktop.Scale * 2)
+    WB += hButton.W + Desktop.Scale
     If I = 0 Then hButton.Default = True
     If I = aButton.Max Then hButton.Cancel = True
   Next
+  
+  W = Max(txtMessage.W + 1, WB) + picMessage.W + Desktop.Scale * 4
+  H = Max(Desktop.Scale * 8, txtMessage.H) + panButton.H + Desktop.Scale * 5
   
   Me.Resize(W, H)
   
