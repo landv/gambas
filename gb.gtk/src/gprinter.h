@@ -40,6 +40,7 @@ public:
 	void setPageCount(int v);
 	int pageCount() const { return _page_count; }
 	bool isPageCountSet() const { return _page_count_set; }
+	void clearPageCountSet() { _page_count_set = false; }
 	
 	int orientation() const;
 	void setOrientation(int v);

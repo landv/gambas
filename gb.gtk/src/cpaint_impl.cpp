@@ -144,7 +144,7 @@ static bool init_painting(GB_PAINT *d, cairo_surface_t *target, double w, double
 	dx->font_stack = NULL;
 	
 	cairo_get_matrix(CONTEXT(d), &EXTRA(d)->init);
-
+	
 	return FALSE;
 }
 
@@ -471,7 +471,6 @@ static void apply_font(gFont *font, void *object = 0)
 	update_layout(d);
 }
 
-
 // Font is used by X11!
 static void _Font(GB_PAINT *d, int set, GB_FONT *font)
 {
@@ -480,7 +479,16 @@ static void _Font(GB_PAINT *d, int set, GB_FONT *font)
 		GB.Unref(POINTER(&EXTRA(d)->font));
 		if (*font)
 		{
-			EXTRA(d)->font = CFONT_create(((CFONT *)(*font))->font->copy(), apply_font);
+			gFont *f = ((CFONT *)(*font))->font->copy();
+			double scale = d->fontScale;
+			
+			if (EXTRA(d)->print_context)
+				scale *= ((CPRINTER *)d->device)->printer->resolution() / 96.0;
+			
+			if (scale != 1)
+				f->setSize(f->size() * scale);
+			
+			EXTRA(d)->font = CFONT_create(f, apply_font);
 			GB.Ref(EXTRA(d)->font);
 		}
 		else

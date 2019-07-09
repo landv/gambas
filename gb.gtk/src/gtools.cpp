@@ -1600,14 +1600,17 @@ static void set_layout_from_font(PangoLayout *layout, gFont *font, bool add, int
 	
 	desc = pango_context_get_font_description(font->ct);
 
-	if (dpi && dpi != gDesktop::resolution())
+	/*if ((dpi && dpi != gDesktop::resolution()))
 	{
-		int size = pango_font_description_get_size(desc);
+		double size = pango_font_description_get_size(desc);
 		desc = pango_font_description_copy(desc);
 		copy = true;
-		pango_font_description_set_size(desc, size * dpi / gDesktop::resolution());
-	}
-
+		
+		size *= dpi / gDesktop::resolution();
+		
+		pango_font_description_set_size(desc, (int)size);
+	}*/
+	
 	pango_layout_set_font_description(layout, desc);
 	
 	if (add)

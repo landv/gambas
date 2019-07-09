@@ -1666,7 +1666,8 @@ static void type##_get_preferred_height_and_baseline_for_width(GtkWidget *widget
 		return; \
 	} \
 	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
-	(*OLD_FUNC->get_preferred_height_and_baseline_for_width)(widget, width, minimum, natural, minimum_baseline, natural_baseline); \
+	if (OLD_FUNC->get_preferred_height_and_baseline_for_width) \
+		(*OLD_FUNC->get_preferred_height_and_baseline_for_width)(widget, width, minimum, natural, minimum_baseline, natural_baseline); \
 }
 
 //fprintf(stderr, "patching [%p %s] (%p %p)\n", klass, G_OBJECT_TYPE_NAME(widget), klass->get_preferred_width, klass->get_preferred_height);

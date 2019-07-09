@@ -366,8 +366,18 @@ static void Antialias(GB_PAINT *d, int set, int *antialias)
 static void apply_font(QFont &font, void *object = 0)
 {
 	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
+	QFont f = font;
+	
+	if (d->fontScale != 1)
+		f.setPointSizeF(f.pointSizeF() * d->fontScale);
 
-	PAINTER(d)->setFont(font);
+	PAINTER(d)->setFont(f);
+	// Strange bug of QT. Sometimes the font does not apply (cf. DrawTextShadow)
+	if (f != PAINTER(d)->font())
+	{
+		f.fromString(f.toString());
+		PAINTER(d)->setFont(f);
+	}
 }
 
 static void Font(GB_PAINT *d, int set, GB_FONT *font)
@@ -380,14 +390,16 @@ static void Font(GB_PAINT *d, int set, GB_FONT *font)
 			f = QFont(*((CFONT *)(*font))->font);
 		else if ((GB.Is(d->device, CLASS_DrawingArea)))
 			f = (((CWIDGET *)d->device)->widget)->font();
-		PAINTER(d)->setFont(f);
+		
+		apply_font(f);
+		/*PAINTER(d)->setFont(f);
 
 		// Strange bug of QT. Sometimes the font does not apply (cf. DrawTextShadow)
 		if (f != PAINTER(d)->font())
 		{
 			f.fromString(f.toString());
 			PAINTER(d)->setFont(f);
-		}
+		}*/
 	}
 	else
 		*font = CFONT_create(PAINTER(d)->font(), apply_font);
