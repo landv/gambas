@@ -1,7 +1,7 @@
 /*
- * main.c - gb.openssl main object
+ * c_openssl.c - Static OpenSSL class
  *
- * Copyright (C) 2013-2019 Tobias Boege <tobias@gambas-buch.de>
+ * Copyright (C) 2019 Tobias Boege <tobias@gambas-buch.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,77 +32,49 @@
  * all source files in the program, then also delete it here.
  */
 
-#define __MAIN_C
+#define __C_OPENSSL_C
 
-#include <openssl/evp.h>
-
-#include <gb_common.h>
-#include <gbx_compare.h>
-#include <gbx_c_array.h>
+#include <openssl/crypto.h>
+#include <openssl/rand.h>
+#include <openssl/err.h>
 
 #include "main.h"
 #include "c_openssl.h"
-#include "c_digest.h"
-#include "c_cipher.h"
-#include "c_hmac.h"
 
-GB_INTERFACE GB EXPORT;
+/*
+ * OpenSSL
+ */
 
-GB_DESC *GB_CLASSES[] EXPORT = {
-	COpenSSL,
+/**G
+ * Return a cryptographically strongly pseudo-random string of the
+ * given *Length*.
+ **/
+BEGIN_METHOD(OpenSSL_RandomBytes, GB_INTEGER length)
 
-	CDigest,
-	CDigestMethod,
+	char *ret = GB.TempString(NULL, VARG(length));
+	int res;
 
-	CCipher,
-	CCipherMethod,
-	CCipherText,
+	#if OPENSSL_VERSION_NUMBER < 0x10100000L
+	res = RAND_pseudo_bytes((unsigned char *) ret, VARG(length));
+	#else
+	res = RAND_bytes((unsigned char *) ret, VARG(length));
+	#endif
+	if (res == -1) {
+		GB.Error("Random number generator not supported");
+		return;
+	} else if (res == 0) {
+		GB.Error(ERR_error_string(ERR_get_error(), NULL));
+		return;
+	}
 
-	CHMac,
+	GB.ReturnString(ret);
 
-//	CSignature,
-//	CSignatureMethod,
+END_METHOD
 
-	NULL
+GB_DESC COpenSSL[] = {
+	GB_DECLARE_STATIC("OpenSSL"),
+
+	GB_STATIC_METHOD("RandomBytes", "s", OpenSSL_RandomBytes, "(Length)i"),
+
+	GB_END_DECLARE
 };
-
-void sort_and_dedupe(GB_ARRAY list)
-{
-	GB_FUNCTION sortfn, removefn;
-	CARRAY *arr;
-	int i;
-
-	if (GB.GetFunction(&sortfn, list, "Sort", NULL, NULL)) {
-		GB.Error("Can't sort array");
-		return;
-	}
-	GB.Push(1, GB_T_INTEGER, GB_COMP_ASCENT | GB_COMP_NOCASE);
-	GB.Call(&sortfn, 1, 0);
-
-	if (GB.GetFunction(&removefn, list, "Remove", NULL, NULL)) {
-		GB.Error("Can't remove duplicates");
-		return;
-	}
-	arr = (CARRAY *) list;
-	for (i = 0; i < arr->count - 1;) {
-		char *a = ((char **) arr->data)[i],
-		     *b = ((char **) arr->data)[i + 1];
-
-		if (!strcasecmp(a, b)) {
-			GB.Push(1, GB_T_INTEGER, i);
-			GB.Call(&removefn, 1, 0);
-		} else {
-			i++;
-		}
-	}
-}
-
-int EXPORT GB_INIT()
-{
-	return 0;
-}
-
-void EXPORT GB_EXIT()
-{
-	EVP_cleanup();
-}

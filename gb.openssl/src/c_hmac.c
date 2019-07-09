@@ -43,22 +43,45 @@
  * HMac
  */
 
+static EVP_MD *get_method(GB_VARIANT_VALUE *varg)
+{
+	const EVP_MD *method;
+
+	switch (varg->type) {
+	case GB_T_INTEGER:
+		GB.Deprecated("gb.openssl", "HMac() with integer method", "a string method like 'sha1'");
+		method = EVP_get_digestbynid(varg->value._integer);
+		break;
+	case GB_T_STRING:
+		method = EVP_get_digestbyname(varg->value._string);
+		break;
+	default:
+		GB.Error("Method argument to HMac() can only be Integer or String");
+		return NULL;
+	}
+
+	if (!method)
+		GB.Error("Unknown method");
+	return NULL;
+}
+
 /**G
  * Make an HMAC authentication code out of a key and some data.
  *
- * *Method* may be HMac.Sha1 or HMac.RipeMD160. By default it is HMac.Sha1.
+ * *Method* is any digest name such as "sha1" or "ripemd160" that is
+ * supported by the Digest class. The default is "sha1".
  **/
-BEGIN_METHOD(HMac_call, GB_STRING key; GB_STRING data; GB_INTEGER method)
+BEGIN_METHOD(HMac_call, GB_STRING key; GB_STRING data; GB_VARIANT method)
 
 	char hash[EVP_MAX_MD_SIZE];
 	unsigned int len;
 	const EVP_MD *method;
 
-	method = EVP_get_digestbynid(VARGOPT(method, NID_sha1));
-	if (!method) {
-		GB.Error("Unknown method");
+	method = MISSING(method) ?
+		EVP_get_digestbynid(NID_sha1) :
+		get_method(&VARG(method));
+	if (!method)
 		return;
-	}
 
 	memset(hash, 0, sizeof(hash));
 	HMAC(method, STRING(key), LENGTH(key), (unsigned char *) STRING(data),
@@ -73,14 +96,20 @@ GB_DESC CHMac[] = {
 
 	/**G HMac Sha1
 	 * Use the SHA1 algorithm.
+	 *
+	 * Since Gambas 3.14: This constant it deprecated. Use the string
+	 * "sha1" as an argument to HMac() instead.
 	 **/
 	GB_CONSTANT("Sha1", "i", NID_sha1),
 	/**G HMac RipeMD160
 	 * Use the RIPEMD160 algorithm.
+	 *
+	 * Since Gambas 3.14: This constant is deprecated. Use the string
+	 * "ripemd160" as an argument to HMac() instead.
 	 **/
 	GB_CONSTANT("RipeMD160", "i", NID_ripemd160),
 
-	GB_STATIC_METHOD("_call", "s", HMac_call, "(Key)s(Data)s[(Method)i]"),
+	GB_STATIC_METHOD("_call", "s", HMac_call, "(Key)s(Data)s[(Method)v]"),
 
 	GB_END_DECLARE
 };
