@@ -200,11 +200,22 @@
     }
     { Menu1 Menu
     }
+    { mnuClose Menu
+      Action = ".close"
+      Text = ("Close")
+      Picture = Picture["icon:/small/close"]
+      Shortcut = "Ctrl+W"
+    }
     { mnuLocked Menu
       Action = ".locked"
       Text = ("Locked")
       Picture = Picture["icon:/small/lock"]
       Toggle = True
+    }
+    { mnuPrint Menu
+      Text = ("Print") & "..."
+      Picture = Picture["icon:/small/print"]
+      Shortcut = "Ctrl+P"
     }
     { mnuReload Menu
       Action = ".reload"
@@ -216,12 +227,6 @@
       Text = ("Save")
       Picture = Picture["icon:/small/save"]
       Shortcut = "Ctrl+S"
-    }
-    { mnuClose Menu
-      Action = ".close"
-      Text = ("Close")
-      Picture = Picture["icon:/small/close"]
-      Shortcut = "Ctrl+W"
     }
   }
   { mnuPasteAs Menu
@@ -266,24 +271,31 @@
     }
     { btnReload ToolButton mnuReload
       Name = "btnReload"
-      MoveScaled(8,0,4,4)
+      MoveScaled(6,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
       Picture = Picture["icon:/small/refresh"]
     }
+    { btnPrint ToolButton mnuPrint
+      Name = "btnPrint"
+      MoveScaled(9,0,4,4)
+      ToolTip = ("Print")
+      Action = ".print"
+      Picture = Picture["icon:/small/print"]
+    }
     { Separator4 Separator
-      MoveScaled(12,0,1,4)
+      MoveScaled(14,0,1,4)
     }
     { btnUndo ToolButton mnuUndo
       Name = "btnUndo"
-      MoveScaled(13,0,4,4)
+      MoveScaled(14,0,4,4)
       ToolTip = ("Undo")
       Action = ".undo"
       Picture = Picture["icon:/small/undo"]
     }
     { btnRedo ToolButton mnuRedo
       Name = "btnRedo"
-      MoveScaled(16,0,4,4)
+      MoveScaled(17,0,4,4)
       ToolTip = ("Redo")
       Action = ".redo"
       Picture = Picture["icon:/small/redo"]
@@ -605,6 +617,10 @@
     Shortcut = "Ctrl+Shift+F"
     Picture = "icon:/small/wizard"
   }
+  { Action print
+    Text = "Print"
+    Picture = "icon:/small/print"
+  }
   { Action proc
     Text = "Procedure list"
     Picture = "icon:/small/bottom"
@@ -702,7 +718,7 @@
 { Toolbars
   { Toolbar text
     Text = "Text editor"
-    List = "show-class,save,reload,undo,redo,cut,copy,paste,bookmark,color,date,char,indent,unindent,comment,uncomment,pretty,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,wrap,tab-indent,eol,locked"
-    Default = "show-class,save,reload,|,undo,redo,|,paste,color,date,char,comment,uncomment,|,compress,uncompress,|,|,proc,~,wrap,tab-indent,locked"
+    List = "show-class,save,reload,print,undo,redo,cut,copy,paste,bookmark,color,date,char,indent,unindent,comment,uncomment,pretty,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,wrap,tab-indent,eol,locked"
+    Default = "show-class,save,reload,print,|,undo,redo,|,paste,color,date,char,comment,uncomment,|,compress,uncompress,|,|,proc,~,wrap,tab-indent,locked"
   }
 }

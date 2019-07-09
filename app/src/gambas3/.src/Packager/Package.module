@@ -814,7 +814,11 @@ Private Sub GetDebianBuildPackageCommand() As String
   Dim sCmd As String
 
   sCmd = "dpkg-buildpackage -d -rfakeroot"
-  If Not Project.PackageSignature Then sCmd &= " -uc -us"
+  If Project.PackageSignature Then
+    sCmd &= " -k" & Shell(Project.Address)
+  Else
+    sCmd &= " -uc -us"
+  Endif
   Return sCmd
 
 End

@@ -87,6 +87,7 @@ Public Sub _new()
   cmbTerminal.List = [("(Default)"), "Konsole", "Gnome terminal", "Mate terminal", "XFCE Terminal", "lxterminal", "XTerm"]
   txtEditorFont.Default = Project.DEFAULT_FONT
   txtConsoleFont.Default = Project.DEFAULT_FONT
+  txtPrintFont.Default = Project.DEFAULT_FONT
   txtHelpFixedFont.Default = Project.DEFAULT_FONT
   
   $cLast = MTheme.ReadSettings(Settings, "/Highlight", True)
@@ -95,6 +96,7 @@ Public Sub _new()
   $aConfig = [
     [txtEditorFont, "/Editor/Font", ""],
     [txtConsoleFont, "/ConsoleFont", ""],
+    [txtPrintFont, "/Printing/Font", ""],
     [txtGlobalFont, "/Font", ""],
     [txtHelpDefaultFont, "/Browser/Font", ""],
     [txtHelpFixedFont, "/Browser/FixedFont", ""],
@@ -1640,4 +1642,10 @@ Private Sub FillAutoTransEngines()
   cmbAutoTrans.Text = Settings["/AutomaticTranslation/Engine", "google"]
   If cmbAutoTrans.Index < 0 Then cmbAutoTrans.Text = "google"
   
+End
+
+Public Sub txtPrintFont_Click()
+
+  Settings["/Printing/Font"] = txtPrintFont.Value
+
 End

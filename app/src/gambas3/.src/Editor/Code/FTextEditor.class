@@ -1788,3 +1788,9 @@ Public Sub btnInsertChar_Click()
   FInsertChar.Run($hEditor, btnInsertChar.ScreenX, btnInsertChar.ScreenY + btnInsertChar.H)
 
 End
+
+Public Sub mnuPrint_Click()
+
+  MPrint.Run($hEditor, Me.Title)
+
+End
