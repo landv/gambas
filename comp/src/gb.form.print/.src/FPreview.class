@@ -1,0 +1,692 @@
+' Gambas class file
+
+Private Const SCALE As Float = 0.1 ' 0.1 mm
+
+Private $bPrintToFile As Boolean
+Private $aModeButtons As New ToolButton[]
+Private $hPrinter As Printer 'As "Printer"
+Private $bVerif As Boolean
+Private $bPrinting As Boolean
+Private $iFileRes As Integer = 150
+Private $hObs As Observer
+
+Private $iScaleMode As Integer
+
+Private Enum MODE_CUSTOM, MODE_PAGE, MODE_DUAL_PAGE, MODE_FULL_WIDTH, MODE_REAL_SIZE
+
+Private $hTimerPaginate As Timer
+
+Private $bPaginate As Boolean
+Private $hTimerPaginateLater As Timer
+
+Public Sub Run(hPrinter As Printer) As Boolean
+  
+  $hPrinter = hPrinter
+  $hObs = New Observer($hPrinter) As "Printer"
+
+  Return Not Me.ShowModal()
+  
+End
+
+Public Sub _new()
+  
+  $hTimerPaginate = New Timer As "TimerPaginate"
+  $hTimerPaginateLater = New Timer As "TimerPaginateLater"
+  $hTimerPaginateLater.Delay = 100
+  
+End
+
+Public Sub Form_Open()
+  
+  'Dim hButton As ToolButton
+  
+  Dim s As String
+  Dim hMenu As Menu
+
+  SetPicture(btnOnePage, "img/print-one-page.png")
+  SetPicture(btnTwoPages, "img/print-two-pages.png")
+  SetPicture(btnFullWidth, "img/print-full-width.png")
+  'SetPicture(btnRealSize, "img/print-real-size.png")
+  
+  For Each s In Printer.List
+    hMenu = New Menu(mnuPrint) As "mnuPrintPrinter"
+    hMenu.Tag = s
+    hMenu.Text = s
+  Next
+  
+  $aModeButtons = [btnOnePage, btnTwoPages, btnFullWidth, btnRealSize]
+  
+  If Component.IsLoaded("gb.settings") Then 
+    
+    Settings.Read(Me, "/Printing/Window")
+    Settings.Read(dvwPrint, "Printing/Preview")
+    txtFile.Text = Settings["/Printing/OutputFile"]
+  '   'Settings.Read(Me, "FPreview")
+  '   Settings.Read(dvwPrint, "View")
+  '   
+  '   If dvwPrint.ScaleMode = dvwPrint.Custom Then
+  '     sldZoom.Value = dvwPrint.Zoom
+  '   Else
+  '     For Each hButton In $aModeButtons
+  '       hButton.Value = False
+  '     Next
+  '     $aModeButtons[dvwPrint.ScaleMode - 1].Value = True
+  '     
+  '   Endif
+  '   
+  '   txtFile.Text = Settings["FPreview/OutputFile", User.Home &/ "report.pdf"]
+  '   $hPrinter.OutputFile = txtFile.Text
+  '   $hPrinter.Name = Settings["FPreview/Printer"] 
+  '   If Settings["FPreview/PrintToFile"] = True Then 
+  '     tabPrint.Index = 1
+  '   Endif
+  '   
+  '   Try $hPrinter.Duplex = Settings["FPreview/Duplex"]
+  '   Try $hPrinter.GrayScale = Settings["FPreview/GrayScale"] 
+  '   Try $hPrinter.ReverseOrder = Settings["FPreview/ReverseOrder"] 
+  '   Try $hPrinter.CollateCopies = Settings["FPreview/CollateCopies"] 
+  '   Try $iFileRes = Settings["FPreview/FileResolution", 150] 
+  '   Try $hPrinter.Duplex = Settings["FPreview/Duplex", Printer.Simplex] = cmbDuplex.Index
+  Endif
+  
+  SelectPrinter($hPrinter.Name)
+  $bPrinting = False
+  
+  cmbPaper.Text = "A4"
+  SetScaleMode(MODE_PAGE)
+  
+  Paginate
+  
+End
+
+Private Sub SelectPrinter(Optional sName As String)
+  
+  Dim hMenu As Menu
+  
+  If sName Then
+    $hPrinter.Name = sName
+    $hPrinter.OutputFile = ""
+    $hPrinter.Resolution = 1200 
+    $bPrintToFile = False
+  Else
+    If Not txtFile.Text Then txtFile.Text = User.Home &/ "print.pdf"
+    $hPrinter.OutputFile = txtFile.Text
+    $hPrinter.Resolution = $iFileRes
+    $bPrintToFile = True
+  Endif
+  
+  mnuPrintToFile.Checked = $bPrintToFile
+  For Each hMenu In mnuPrint.Children
+    If Not hMenu.Tag Then Continue
+    If $bPrintToFile Then
+      hMenu.Checked = False
+    Else
+      hMenu.Checked = hMenu.Text = sName
+    Endif
+  Next
+  
+  $hPrinter.FullPage = True
+  $hPrinter.Duplex = cmbDuplex.Index
+  
+  chkGrayScale.Value = $hPrinter.GrayScale
+  'chkFullPage.Value = $hPrinter.FullPage
+  chkReverseCopies.Value = $hPrinter.ReverseOrder
+  chkCollateCopies.Value = $hPrinter.CollateCopies
+  
+  'txtFile.Text = User.Home &/ "print.pdf"
+  
+  txtMarginLeft.Value = 10
+  txtMarginRight.Value = 10
+  txtMarginTop.Value = 10
+  txtMarginBottom.Value = 10
+  
+  If $bPrintToFile Then
+    Object.Lock(cmbResolution)
+    Try cmbResolution.Index = Max(cmbResolution.Find(Str($iFileRes)), 0)
+    Object.Unlock(cmbResolution)
+    txtFile.Show
+    panResolution.Show
+    panRectoVerso.Hide
+    btnPrinter.Picture = Picture["icon:/small/pdf"]
+    btnPrinter.Text = mnuPrintToFile.Text
+  Else
+    txtFile.Hide
+    panResolution.Hide
+    panRectoVerso.Show
+    btnPrinter.Picture = Picture["icon:/small/printer"]
+    btnPrinter.Text = sName
+  Endif
+  
+  RefreshPrintButton
+  
+End
+
+' Public Sub SetReport(hReport As Report)
+'   
+'   View.Report = hReport
+'   GetValuesFromReport()
+'   
+' End
+
+' Private Sub GetValuesFromReport()
+'   
+'   cmbPaper.Index = View.Report.Paper
+'   $hPrinter.Orientation = View.Report.Orientation
+'   
+'   If View.Report.Paper = Printer.Custom Then
+'     pnlCustom.Enabled = True
+'     $hPrinter.PaperWidth = TSizeParse[View.Report.Width].ToInch() * 10
+'     $hPrinter.PaperHeight = TSizeParse[View.Report.Height].ToInch() * 10
+'   Else
+'     $hPrinter.Paper = View.Report.Paper
+'   Endif 
+'   
+'   cmbOrientation.Index = $hPrinter.Orientation
+'   cmbDuplex.Index = $hPrinter.Duplex
+'   cmbPaper.Index = $hPrinter.Paper
+'   View.Refresh
+'   
+'   Object.Lock(spWidth)
+'   spWidth.Value = $hPrinter.PaperWidth
+'   Object.Unlock(spWidth)
+'   Object.Lock(spHeight)
+'   spHeight.Value = $hPrinter.PaperHeight
+'   Object.Unlock(spHeight)
+'   
+' End
+
+
+Public Sub sldZoom_Change()
+  
+  SetScaleMode(MODE_CUSTOM)
+  
+End
+
+' Public Sub dvwPrint_Zoom()
+' 
+'   Object.Lock(sldZoom)
+'   sldZoom.Value = dvwPrint.Zoom * 100
+'   SetScaleMode(MODE_CUSTOM)
+'   Object.Unlock(sldZoom)
+'   
+' End
+
+Public Sub btnMode_Click()
+  
+  SetScaleMode(Last.Tag)
+
+End
+
+Public Sub chkGrayScale_Click()
+  
+  'Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+  $hPrinter.GrayScale = Last.Value
+  dvwPrint.Desaturate = $hPrinter.GrayScale
+  'dvwPrint._GrayScale = Last.Value
+  
+End
+
+' Public Sub chkFullPage_Click()
+'   
+'   'Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+'   $hPrinter.FullPage = Last.Value
+'   
+' End
+
+Public Sub chkReverseCopies_Click()
+  
+  'Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+  $hPrinter.ReverseOrder = Last.value
+  
+End
+
+Public Sub chkCollateCopies_Click()
+  
+  'Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+  $hPrinter.CollateCopies = Last.Value
+  
+End
+
+Public Sub cmbOrientation_Click()
+
+  Select Last.Index
+    Case 0
+      $hPrinter.Orientation = Printer.Portrait
+    Case 1
+      $hPrinter.Orientation = Printer.Landscape
+  End Select
+
+  Paginate  
+  
+End
+
+Public Sub cmbPaper_Click()
+  
+  Dim iPage As Integer
+  
+  Select Case Last.Text
+    Case "Custom"
+      iPage = Printer.Custom
+    Case "A3"
+      iPage = Printer.A3
+    Case "A4"
+      iPage = Printer.A4
+    Case "A5"
+      iPage = Printer.A5
+    Case "B5"
+      iPage = Printer.B5
+    Case "Letter"
+      iPage = Printer.Letter
+    Case "Legal"
+      iPage = Printer.Legal
+    Case "Executive"
+      iPage = Printer.Executive
+  End Select
+  
+  $hPrinter.Paper = iPage
+  txtWidth.Value = $hPrinter.PaperWidth
+  txtHeight.Value = $hPrinter.PaperHeight
+  pnlCustom.Enabled = iPage = Printer.Custom
+  
+  Paginate
+  
+End
+
+Public Sub cmbDuplex_Click()
+  
+  $hPrinter.Duplex = Last.index
+  
+End
+
+Public Sub txtFile_Click()
+  
+  Dialog.Path = txtFile.Text
+  Dialog.Filter = ["*.pdf", ("PDF files"), "*.ps", ("Postscript files")]
+  
+  If Dialog.SaveFile() Then Return
+  
+  txtFile.Text = Dialog.Path
+  $bVerif = True
+  $hPrinter.OutputFile = Dialog.Path
+  
+End
+
+Private Sub RefreshPrintButton()
+  
+  btnPrint2.Picture = Picture[If($bPrintToFile, "icon:/small/pdf", "icon:/small/printer")]
+  btnPrint2.Text = ("Print")
+  
+  ' btnPrint2.Picture = btnPrint.Picture
+  ' btnPrint2.Text = btnPrint.Text
+  
+End
+
+' Public Sub txtRange_Change()
+'   
+'   SetRange(txtRange.Text)
+'   
+' End
+' 
+' Public Sub txtRange_Click()
+'   
+'   Last.Text = ""
+'   'TextBox1_Change
+'   
+' End
+
+Public Sub txtWidth_Change()
+  
+  $hPrinter.PaperWidth = Last.Value
+  Paginate
+  
+End
+
+Public Sub txtHeight_Change()
+  
+  $hPrinter.PaperHeight = Last.Value
+  Paginate
+  
+End
+
+Public Sub cmbPrinter_Click()
+  
+  SelectPrinter(Last.Text)
+  
+End
+
+Public Sub btnPrint_Click()
+  
+  Dim iReturn As Integer
+  
+  If $bPrintToFile Then
+    
+    If Not $hPrinter.OutputFile Then txtFile_Click
+    If Not $hPrinter.OutputFile Then Return
+    
+    If Exist($hPrinter.OutputFile) And Not $bVerif Then
+      iReturn = Message.Warning("<tt>" & $hPrinter.OutputFile & "</tt>\n\n" & ("This file already exists.\nDo you want to replace it?"), ("Replace"), ("Cancel"))
+      If iReturn = 2 Then Return
+      Try Kill $hPrinter.OutputFile
+      $bVerif = False
+    Endif
+    
+  Endif
+  
+  $bPrinting = True
+  RefreshPrintButton
+  
+  $hPrinter.Print
+    
+End
+
+Private Sub BeginPaint(fZoom As Float, Optional hDevice As Object)
+
+  'Debug "fZoom = "; fZoom
+  If Not hDevice Then hDevice = Paint.Device
+  Paint.Begin(hDevice, RectF(0, 0, ($hPrinter.PaperWidth - txtMarginLeft.Value - txtMarginRight.Value) / SCALE, ($hPrinter.PaperHeight - txtMarginTop.Value - txtMarginBottom.Value) / SCALE))
+  Paint.Scale(fZoom)
+  Paint.Translate(txtMarginLeft.Value * 10, txtMarginTop.Value * 10)
+
+End
+
+
+Public Sub Printer_Begin()
+
+  If $bPrinting Then
+    Me.Enabled = False
+    FPrinting.Show()
+    BeginPaint(Paint.W / $hPrinter.PaperWidth * SCALE)
+    Paint.FontScale = 25.4 / 72 / SCALE * 72 / 96 * 96 / $hPrinter.Resolution
+  Endif
+
+End
+
+
+' Public Sub Printer_Paginate()
+'   
+'   If dvwPrint.Report._LayoutNotFinished Then
+'     dvwPrint.LockLayout
+'     dvwPrint.Report.Layout(dvwPrint.Report.PageCount)
+'   Else
+'     $hPrinter.Count = dvwPrint.PageCount
+'     ProgressBar1.Pulse = False
+'     lblPrint.Text = ("Printing...")
+'     dvwPrint.UnlockLayout
+'   Endif
+'   
+' End
+
+Public Sub Printer_Draw()
+  
+  If Not $bPrinting Then Return
+
+  Paint.FontScale = 25.4 / 72 / SCALE * 72 / 96 * 96 / $hPrinter.Resolution
+  FPrinting.SetProgress($hPrinter.Page / dvwPrint.Count)
+  
+End
+
+Public Sub Printer_End()
+
+  If Not $bPrinting Then Return
+  
+  Paint.End
+  FPrinting.Close
+  $bPrinting = False
+  RefreshPrintButton
+  Me.Enabled = True
+  
+End
+
+Public Sub txtCopies_Change()
+  
+  $hPrinter.NumCopies = Last.Value
+  
+End
+
+Public Sub Form_Close()
+  
+  If Component.IsLoaded("gb.settings") Then 
+    Settings.Write(Me, "/Printing/Window")
+    Settings.Write(dvwPrint, "Printing/Preview")
+    Settings["/Printing/OutputFile"] = txtFile.Text
+
+  ' '   'Settings.Write(Me, "FPreview")
+  ' '   Settings.Write(dvwPrint, "View")
+  ' '   Settings["FPreview/OutputFile"] = txtFile.Text
+  ' '   Settings["FPreview/Printer"] = $hPrinter.Name
+  ' '   Settings["FPreview/PrintToFile"] = tabPrint.Index = 1
+  ' '   Settings["FPreview/Duplex"] = cmbDuplex.Index
+  ' '   Settings["FPreview/GrayScale"] = tgbGrayScale.Value
+  ' '   Settings["FPreview/ReverseOrder"] = tgbReverseCopies.Value
+  ' '   Settings["FPreview/CollateCopies"] = tgbCollateCopies.Value
+  ' '   Settings["FPreview/FileResolution"] = $iFileRes
+  ' '   Settings.Save()
+  Endif
+  
+End
+
+Private Sub SetPicture(hCtrl As ToolButton, sImage As String)
+
+  Dim S As Integer
+
+  S = Stock.GetSize("small")
+  hCtrl.Picture = Image.Load(sImage).Stretch(S, S).Picture
+
+End
+
+Public Sub btnZoomIn_Click()
+  
+  sldZoom.Value = 100 * 2 ^ (Int((Log2(sldZoom.Value / 100) + 0.5) * 2 + 0.5) / 2) + 0.5
+  
+End
+
+Public Sub btnZoomOut_Click()
+  
+  sldZoom.Value = 100 * 2 ^ (Int((Log2(sldZoom.Value / 100)) * 2 - 0.5) / 2) + 0.5
+  
+End
+
+Public Sub btnCloseSide_Click()
+  
+  panSide.Hide
+  btnShowSide.Show
+  'btnPrint.Hide
+  btnPrint2.Show
+  
+End
+
+Public Sub btnShowSide_Click()
+  
+  panSide.Show
+  btnShowSide.Hide
+  'btnPrint.Show
+  btnPrint2.Hide
+  
+End
+
+Public Sub mnuPrint_Show()
+  
+End
+
+Public Sub mnuPrintToFile_Click()
+
+  SelectPrinter()
+  If Not panSide.Visible Then txtFile_Click
+  
+End
+
+Public Sub mnuPrintPrinter_Click()
+  
+  SelectPrinter(Last.Text)
+  
+End
+
+Public Sub cmbResolution_Click()
+
+  If $bPrintToFile Then
+    $iFileRes = cmbResolution.Text
+    $hPrinter.Resolution = $iFileRes
+  Else
+    $hPrinter.Resolution = 1200
+  Endif
+
+End
+
+Private Sub SetScaleMode(iMode As Integer)
+
+  Dim hButton As ToolButton
+  
+  $iScaleMode = iMode
+
+  dvwPrint.AutoCenter = False
+
+  For Each hButton In $aModeButtons
+    Object.Lock(hButton)
+    hButton.Value = hButton.Tag = $iScaleMode
+    Object.Unlock(hButton)
+  Next
+
+  Select Case $iScaleMode
+    Case MODE_CUSTOM
+      dvwPrint.Column = 0
+      dvwPrint.Arrangement = Arrange.Row
+      dvwPrint.Zoom = sldZoom.Value / 100
+    Case MODE_PAGE
+      dvwPrint.AutoCenter = True
+      dvwPrint.Column = 0
+      dvwPrint.Arrangement = Arrange.Fill
+    Case MODE_DUAL_PAGE
+      dvwPrint.AutoCenter = True
+      dvwPrint.Column = 2
+      dvwPrint.Arrangement = Arrange.Row
+    Case MODE_FULL_WIDTH
+      dvwPrint.Column = 0
+      dvwPrint.Arrangement = Arrange.Vertical
+    Case MODE_REAL_SIZE
+      dvwPrint.Column = 0
+      dvwPrint.Arrangement = Arrange.Row
+      dvwPrint.Zoom = 1
+  End Select
+  
+  Object.Lock(sldZoom)
+  sldZoom.Value = dvwPrint.Zoom * 100
+  lblZoom.Text = Subst("&1 %", sldZoom.Value)
+  Object.Unlock(sldZoom)
+  
+End
+
+Public Sub dvwPrint_Draw(Page As Integer, (Width) As Integer, (Height) As Integer)
+
+  If $bPaginate Then Return
+  
+  'Paint.FontScale = dvwPrint.Zoom '* $hPrinter.Resolution / Paint.ResolutionY
+  'Paint.Font.Size *= dvwPrint.Zoom
+  BeginPaint(Paint.W / $hPrinter.PaperWidth * SCALE)
+  Paint.FontScale = 25.4 / 72 / SCALE * 72 / 96
+  $hPrinter._SetPage(Page + 1)
+  Object.Raise($hPrinter, "Draw")
+  Paint.End
+  
+End
+
+Private Sub EndPaginate()
+  
+  Object.Raise($hPrinter, "End")
+  Paint.End
+
+  dvwPrint.Count = $hPrinter.Count
+  dvwPrint.Reset
+
+  $bPaginate = False
+  
+End
+
+
+Private Sub Paginate()
+
+  Dim hImage As Image
+
+  $hTimerPaginateLater.Stop
+  
+  If $bPaginate Then EndPaginate
+
+  $bPaginate = True
+
+  dvwPrint.DocWidth = $hPrinter.PaperWidth / 25.4 * Desktop.Resolution
+  dvwPrint.DocHeight = $hPrinter.PaperHeight / 25.4 * Desktop.Resolution
+
+  ' Debug dvwPrint.DocWidth;; dvwPrint.DocHeight
+
+  hImage = New Image(16, 16)
+  'BeginPaint(dvwPrint.DocWidth / $hPrinter.PaperWidth * SCALE, hImage)
+  BeginPaint(dvwPrint.DocWidth / $hPrinter.PaperWidth * SCALE, hImage)
+  Paint.FontScale = 25.4 / 72 / SCALE * 72 / 96
+  Object.Raise($hPrinter, "Begin")
+  
+  If $hPrinter._IsCountSet() Then 
+    EndPaginate
+  Else
+    $hTimerPaginate.Trigger
+  Endif
+  
+End
+
+Public Sub TimerPaginate_Timer()
+  
+  Object.Raise($hPrinter, "Paginate")
+  If $hPrinter._IsCountSet() Then 
+    EndPaginate
+  Else
+    $hTimerPaginate.Trigger
+  Endif
+  
+End
+
+Public Sub dvwPrint_Arrange()
+
+  SetScaleMode($iScaleMode)
+
+End
+
+Public Sub TimerPaginateLater_Timer()
+  
+  Paginate
+  
+End
+
+
+Public Sub txtMargin_Change()
+
+  $hTimerPaginateLater.Restart
+
+End
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End
+
+Public Sub dvwPrint_Zoom()
+
+  lblZoom.Text = Format(dvwPrint.Zoom, "0 %")
+
+End
+
+Public Sub Cancel()
+  
+  $hPrinter.Cancel
+  
+End
+
+' Public Sub panSide_Arrange()
+' 
+'   btnCloseSide.Move(panSide.W - Desktop.Scale * 4, 0, Desktop.Scale * 4, Desktop.Scale * 4)
+' 
+' End
+
+Public Sub btnPrinter_Click()
+
+  btnPrint_Click
+
+End

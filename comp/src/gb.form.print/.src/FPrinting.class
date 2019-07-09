@@ -1,0 +1,13 @@
+' Gambas class file
+
+Public Sub SetProgress(fVal As Float)
+  
+  pgbPrinting.Value = fVal
+  
+End
+
+Public Sub btnCancel_Click()
+
+  FPrinting.Cancel()
+
+End

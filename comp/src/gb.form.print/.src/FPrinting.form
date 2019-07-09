@@ -1,0 +1,24 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,56,13)
+  Text = ("Printing") & "..."
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Margin = True
+  { pgbPrinting ProgressBar
+    MoveScaled(1,1,53,3)
+  }
+  { Spring1 Spring
+    MoveScaled(27,5,2,2)
+  }
+  { Panel1 HBox
+    MoveScaled(11,8,42,4)
+    Invert = True
+    { btnCancel Button
+      MoveScaled(24,0,16,4)
+      Text = ("Cancel")
+      Picture = Picture["icon:/small/cancel"]
+    }
+  }
+}
