@@ -255,6 +255,15 @@ static int Begin(GB_PAINT *d)
 		}
 
 		target = printer->printer;
+		
+		if (init_painting(d, target))
+			return TRUE;
+		// Paint.W / $hPrinter.PaperWidth * 25.4  / $hPrinter.Resolution
+		QSizeF size = printer->printer->paperSize(QPrinter::Millimeter);
+		//qDebug("d->area.width = %g / paper width = %g / resolution = %d", d->area.width, (floor((double)size.width() * 1E6) / 1E6), printer->printer->resolution());
+		d->fontScale = 25.4 * d->area.width / (floor((double)size.width() * 1E6) / 1E6) / printer->printer->resolution();
+		
+		return FALSE;
 	}
 	else if (GB.Is(device, CLASS_SvgImage))
 	{
@@ -1039,9 +1048,9 @@ static void RichTextSize(GB_PAINT *d, const char *text, int len, float sw, float
 {
 	QTextDocument rt;
 
-	rt.setDocumentMargin(0);
+	DRAW_init_rich_text(&rt, PAINTER(d)->font());
+	
 	rt.setHtml(QString::fromUtf8((const char *)text, len));
-	rt.setDefaultFont(PAINTER(d)->font());
 
 	if (sw > 0)
 		rt.setTextWidth(sw);

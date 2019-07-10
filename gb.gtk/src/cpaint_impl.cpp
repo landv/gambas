@@ -313,7 +313,9 @@ static int Begin(GB_PAINT *d)
 	}
 	else if (GB.Is(device, CLASS_Printer))
 	{
-		GtkPrintContext *context = ((CPRINTER *)device)->context;
+		CPRINTER *printer = (CPRINTER *)device;
+		GtkPrintContext *context = printer->context;
+		double pw, ph;
 		
 		if (!context)
 		{
@@ -324,28 +326,18 @@ static int Begin(GB_PAINT *d)
 		EXTRA(d)->print_context = context;
 		EXTRA(d)->context = gtk_print_context_get_cairo_context(context);
 		
-		//_gtk_print_context_rotate_according_to_orientation(context, CONTEXT(d));
-		
-		/*fprintf(stderr, "Paint.Begin: orientation = %d w = %g h = %g\n", gtk_page_setup_get_orientation(gtk_print_context_get_page_setup(context)),
-			gtk_page_setup_get_paper_width(gtk_print_context_get_page_setup(context), GTK_UNIT_MM),
-			gtk_page_setup_get_paper_height(gtk_print_context_get_page_setup(context), GTK_UNIT_MM)
-		);*/
-		
 		cairo_reference(CONTEXT(d));
 		
 		cairo_surface_set_fallback_resolution(cairo_get_target(CONTEXT(d)), 1200, 1200);
 		
 		w = gtk_print_context_get_width(context);
 		h = gtk_print_context_get_height(context);
-		//fprintf(stderr, "Paint.Begin: w = %g h = %g\n", w, h);
 		
 		rx = (int)gtk_print_context_get_dpi_x(context);
 		ry = (int)gtk_print_context_get_dpi_y(context);
 		
-		//cairo_get_matrix(CONTEXT(d), &EXTRA(d)->init);
-		/*cairo_identity_matrix(CONTEXT(d));
-		cairo_get_matrix(CONTEXT(d), &t);
-		fprintf(stderr, "matrix: [%g %g %g]\n        [%g %g %g]\n", t.xx, t.xy, t.x0, t.yx, t.yy, t.y0);*/
+		printer->printer->getPaperSize(&pw, &ph);
+		d->fontScale = 25.4 * d->area.width / pw / printer->printer->resolution();
 	}
 	else if (GB.Is(device, CLASS_SvgImage))
 	{
