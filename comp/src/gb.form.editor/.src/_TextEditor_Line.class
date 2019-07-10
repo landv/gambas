@@ -183,3 +183,10 @@ Private Sub Disabled_Write(Value As Boolean)
   Refresh
 
 End
+
+Public Sub Paint(X As Integer, Y As Integer)
+  
+  GetView()._PaintRow(_Line, X, Y)
+  
+End
+
