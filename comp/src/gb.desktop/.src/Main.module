@@ -217,7 +217,11 @@ End
 
 Public Sub Main()
 
-  DesktopFile.FromMime("application/vnd.oasis.opendocument.text")
+  Dim hMime As DesktopMime
+  
+  'DesktopFile.FromMime("application/vnd.oasis.opendocument.text")
+  hMime = DesktopMime.FromFile("/bin/ls")
+  Print hMime.Type
   
 End
 

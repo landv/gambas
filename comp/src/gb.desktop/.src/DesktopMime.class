@@ -86,6 +86,8 @@ Static Private Sub LoadMimeDatabase()
   
   Dim sPath As String
   Dim bIsOk As Boolean = True
+  Dim hMInfo As Variant
+  Dim sType As String
   
   'Empty all entry before filling
   If $aMimesPrefix.Count > 0 Then Refresh
@@ -95,6 +97,15 @@ Static Private Sub LoadMimeDatabase()
     bIsOk = bIsOk And ReadMimeFile(sPath &/ "mime/globs2")
     
   Next
+  
+  sType = "application/x-executable"
+  If Not TypeToMInfo.Exist(sType) Then
+    hMInfo = New DesktopMime
+    hMInfo._$sType = sType
+    hMInfo._$sGenericIcon = "application-x-generic"
+    TypeToMInfo[sType] = hMInfo
+  Endif
+  
   If bIsOk Then 
     If $aMimesSuffix.Count = 0 Then
       Error "gb.desktop: unable to find mime database"
@@ -103,10 +114,11 @@ Static Private Sub LoadMimeDatabase()
       Refresh
     Endif
   Endif
+  
 End
 
-
 Static Private Function ReadMimeFile(sPath As String) As Boolean
+
   Dim s, ss As String  ''Temp String Vars
   Dim hFile As File    ''File handle
   Dim hMInfo As DesktopMime   
@@ -217,7 +229,7 @@ Static Private Function FindByExt(sFile As String) As DesktopMime[]
   Dim sExtLCase As String
   Dim iPos As Integer
   
-  sExt = Right(sFile, - InStr(sFile, "."))
+  sExt = Right(sFile, -InStr(sFile, "."))
   sExtLCase = String.LCase(sExt)
   
   Do
@@ -250,7 +262,7 @@ Static Private Function FindByExt(sFile As String) As DesktopMime[]
     
     iPos = InStr(sExt, ".")
     If iPos = 0 Then Break
-    sExt = Right(sExt, - iPos)
+    sExt = Right(sExt, -iPos)
     
   Loop
   
@@ -310,6 +322,8 @@ Static Public Function FromFile(Path As String) As DesktopMime
   
   Dim aMInfo As DesktopMime[]
   Dim sFileName As String = File.Name(Path)
+  Dim bExec As Boolean
+  
   'Dim hMInfo As DesktopMime
   
   If Exist(Path) Then
@@ -325,8 +339,13 @@ Static Public Function FromFile(Path As String) As DesktopMime
     If aMInfo.Count = 1 Then Return aMInfo[0]
     
     If aMInfo.Count = 0 Then
-      aMInfo.Add(TypeToMInfo["text/plain"])
-      aMInfo.Add(TypeToMInfo["application/octet-stream"])
+      Try bExec = InStr(Stat(Path).Auth, "x") > 0
+      If bExec Then
+        aMInfo.Add(TypeToMInfo["application/x-executable"])
+      Else
+        aMInfo.Add(TypeToMInfo["text/plain"])
+      Endif
+      'aMInfo.Add(TypeToMInfo["application/octet-stream"])
     Endif
     
     ' For Each hMInfo In aMInfo
@@ -357,6 +376,7 @@ Static Public Sub Refresh()
   TypeToMInfo.Clear
   $cIconCache.Clear
   $cCommentCache.Clear
+  
 End
 
 Static Public Function _next() As DesktopMime
