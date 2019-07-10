@@ -85,7 +85,7 @@ build:debian-stable:
        libssl-dev
   script:
     - ./reconf-all
-    - GAMBAS_CONFIG_FAILURE=1 ./configure -C
+    - GAMBAS_CONFIG_FAILURE=1 ./configure -C --disable-keyring
     - make -j$(nproc)
     - make install
 
