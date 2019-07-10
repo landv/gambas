@@ -93,7 +93,7 @@ Public Sub Form_Open()
   $bPrinting = False
   
   cmbPaper.Text = "A4"
-  SetScaleMode(MODE_PAGE)
+  SetZoom(MODE_PAGE)
   
   Paginate
   
@@ -196,12 +196,6 @@ End
 ' End
 
 
-Public Sub sldZoom_Change()
-  
-  SetScaleMode(MODE_CUSTOM)
-  
-End
-
 ' Public Sub dvwPrint_Zoom()
 ' 
 '   Object.Lock(sldZoom)
@@ -213,7 +207,7 @@ End
 
 Public Sub btnMode_Click()
   
-  SetScaleMode(Last.Tag)
+  SetZoom(Last.Tag)
 
 End
 
@@ -313,11 +307,8 @@ End
 
 Private Sub RefreshPrintButton()
   
-  btnPrint2.Picture = Picture[If($bPrintToFile, "icon:/small/pdf", "icon:/small/printer")]
-  btnPrint2.Text = ("Print")
-  
-  ' btnPrint2.Picture = btnPrint.Picture
-  ' btnPrint2.Text = btnPrint.Text
+  btnPrint.Picture = Picture[If($bPrintToFile, "icon:/small/pdf", "icon:/small/printer")]
+  btnPrint2.Picture = btnPrint.Picture
   
 End
 
@@ -476,35 +467,29 @@ End
 
 Public Sub btnZoomIn_Click()
   
-  sldZoom.Value = 100 * 2 ^ (Int((Log2(sldZoom.Value / 100) + 0.5) * 2 + 0.5) / 2) + 0.5
+  SetZoom(MODE_CUSTOM, 2 ^ (Int(Log2(dvwPrint.Zoom) * 2 + 1) / 2))
   
 End
 
 Public Sub btnZoomOut_Click()
   
-  sldZoom.Value = 100 * 2 ^ (Int((Log2(sldZoom.Value / 100)) * 2 - 0.5) / 2) + 0.5
-  
-End
-
-Public Sub btnCloseSide_Click()
-  
-  panSide.Hide
-  btnShowSide.Show
-  'btnPrint.Hide
-  btnPrint2.Show
+  SetZoom(MODE_CUSTOM, 2 ^ (Int(Log2(dvwPrint.Zoom) * 2 - 1) / 2))
   
 End
 
 Public Sub btnShowSide_Click()
-  
-  panSide.Show
-  btnShowSide.Hide
-  'btnPrint.Show
-  btnPrint2.Hide
-  
-End
 
-Public Sub mnuPrint_Show()
+  If panSide.Visible Then
+    panSide.Hide
+    btnShowSide.Picture = Picture["icon:/small/right"]
+    btnPrint.Show
+  Else  
+    panSide.Show
+    btnShowSide.Picture = Picture["icon:/small/down"]
+    btnPrint.Hide
+  Endif
+  
+  dvwPrint_Arrange
   
 End
 
@@ -532,7 +517,7 @@ Public Sub cmbResolution_Click()
 
 End
 
-Private Sub SetScaleMode(iMode As Integer)
+Private Sub SetZoom(iMode As Integer, Optional fZoom As Float)
 
   Dim hButton As ToolButton
   
@@ -550,7 +535,7 @@ Private Sub SetScaleMode(iMode As Integer)
     Case MODE_CUSTOM
       dvwPrint.Column = 0
       dvwPrint.Arrangement = Arrange.Row
-      dvwPrint.Zoom = sldZoom.Value / 100
+      If fZoom Then dvwPrint.Zoom = fZoom
     Case MODE_PAGE
       dvwPrint.AutoCenter = True
       dvwPrint.Column = 0
@@ -568,11 +553,6 @@ Private Sub SetScaleMode(iMode As Integer)
       dvwPrint.Zoom = 1
   End Select
   
-  Object.Lock(sldZoom)
-  sldZoom.Value = dvwPrint.Zoom * 100
-  lblZoom.Text = Subst("&1 %", sldZoom.Value)
-  Object.Unlock(sldZoom)
-  
 End
 
 Public Sub dvwPrint_Draw(Page As Integer, (Width) As Integer, (Height) As Integer)
@@ -582,7 +562,12 @@ Public Sub dvwPrint_Draw(Page As Integer, (Width) As Integer, (Height) As Intege
   'Paint.FontScale = dvwPrint.Zoom '* $hPrinter.Resolution / Paint.ResolutionY
   'Paint.Font.Size *= dvwPrint.Zoom
   BeginPaint(Paint.W / $hPrinter.PaperWidth * SCALE)
+  ' printer : Paint.FontScale = 25.4 / 72 / SCALE * 72 / 96 * 96 / $hPrinter.Resolution
   Paint.FontScale = 25.4 / 72 / SCALE * 72 / 96
+  
+  ' => Paint.FontScale = 25.4 * Paint.W / $hPrinter.PaperWidth / $hPrinter.Resolution (or 96 for screen)
+  ' => Paint.FontScale = Paint.W  / ($hPrinter.Resolution * $hPrinter.PaperWidth / 25.4) (or 96 for screen)
+  
   $hPrinter._SetPage(Page + 1)
   Object.Raise($hPrinter, "Draw")
   Paint.End
@@ -644,7 +629,8 @@ End
 
 Public Sub dvwPrint_Arrange()
 
-  SetScaleMode($iScaleMode)
+  panZoom.Move(dvwPrint.X + (dvwPrint.W - panZoom.W) \ 2, 0)
+  SetZoom($iScaleMode)
 
 End
 
@@ -667,11 +653,12 @@ Public Sub btnClose_Click()
 
 End
 
-Public Sub dvwPrint_Zoom()
-
-  lblZoom.Text = Format(dvwPrint.Zoom, "0 %")
-
-End
+' Public Sub dvwPrint_Zoom()
+' 
+'   lblZoom.Text = Format(dvwPrint.Zoom, "0 %")
+'   SetZoom(MODE_CUSTOM)
+' 
+' End
 
 Public Sub Cancel()
   
@@ -689,4 +676,12 @@ Public Sub btnPrinter_Click()
 
   btnPrint_Click
 
+End
+
+
+Public Sub dvwPrint_Zoom()
+
+  lblZoom.Text = " " & Format(dvwPrint.Zoom, "0 %") & " "
+  btnRealSize.Value = dvwPrint.Zoom = 1
+  
 End

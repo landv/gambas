@@ -4,7 +4,7 @@
   MoveScaled(0,0,123,101)
   Text = ("Print preview")
   Icon = Picture["icon:/small/preview"]
-  Arrangement = Arrange.Horizontal
+  Arrangement = Arrange.Vertical
   { mnuPrint Menu
     Visible = False
     { mnuPrintToFile Menu
@@ -13,24 +13,90 @@
     { Menu1 Menu
     }
   }
-  { panSide Panel
-    MoveScaled(1,1,41,95)
-    Arrangement = Arrange.Vertical
-    { Panel1 HBox
-      MoveScaled(1,1,39,4)
-      { btnPrinter MenuButton
-        MoveScaled(0,0,34,4)
-        Expand = True
-        Border = False
-        Menu = "mnuPrint"
+  { panPreview HBox
+    MoveScaled(1,1,115,4)
+    { btnShowSide ToolButton
+      MoveScaled(0,0,4,4)
+      ToolTip = ("Toggle option panel")
+      Picture = Picture["icon:/small/down"]
+    }
+    { btnPrinter MenuButton
+      MoveScaled(4,0,34,4)
+      Border = False
+      Menu = "mnuPrint"
+      MenuOnly = True
+    }
+    { btnOnePage ToolButton btnMode
+      Name = "btnOnePage"
+      MoveScaled(40,0,4,4)
+      Tag = "1"
+      ToolTip = ("One page")
+      Toggle = True
+    }
+    { btnTwoPages ToolButton btnMode
+      Name = "btnTwoPages"
+      MoveScaled(44,0,4,4)
+      Tag = "2"
+      ToolTip = ("Two pages")
+      Toggle = True
+    }
+    { btnFullWidth ToolButton btnMode
+      Name = "btnFullWidth"
+      MoveScaled(48,0,4,4)
+      Tag = "3"
+      ToolTip = ("Full width")
+      Toggle = True
+    }
+    { btnRealSize ToolButton btnMode
+      Name = "btnRealSize"
+      MoveScaled(52,0,4,4)
+      Tag = "4"
+      ToolTip = ("Real size")
+      Picture = Picture["icon:/small/zoom-normal"]
+      Toggle = True
+    }
+    { Spring1 Spring
+      MoveScaled(57,0,3,4)
+    }
+    { btnPrint ToolButton
+      MoveScaled(98,0,12,4)
+      Visible = False
+      AutoResize = True
+      Text = ("Print")
+      Picture = Picture["icon:/small/print"]
+    }
+    { panZoom HBox
+      MoveScaled(64,0,19,4)
+      Ignore = True
+      { Spring2 Spring
+        MoveScaled(0,0,2,4)
       }
-      { btnCloseSide ToolButton
-        MoveScaled(35,0,3,3)
-        Picture = Picture["icon:/small/close"]
+      { btnZoomOut ToolButton
+        MoveScaled(2,0,4,4)
+        ToolTip = ("Zoom out")
+        Picture = Picture["icon:/small/zoom-out"]
+      }
+      { lblZoom Label
+        MoveScaled(6,0,7,4)
+        AutoResize = True
+        Text = ("100 %")
+        Alignment = Align.Left
+      }
+      { btnZoomIn ToolButton
+        MoveScaled(13,0,4,4)
+        ToolTip = ("Zoom in")
+        Picture = Picture["icon:/small/zoom-in"]
+      }
+      { Spring3 Spring
+        MoveScaled(17,1,2,2)
       }
     }
-    { VBox1 VBox
-      MoveScaled(2,9,38,76)
+  }
+  { Panel1 HBox
+    MoveScaled(1,7,84,88)
+    Expand = True
+    { panSide VBox
+      MoveScaled(0,0,38,86)
       Spacing = True
       Margin = True
       { txtFile ButtonBox
@@ -237,96 +303,30 @@
           }
         }
       }
-    }
-  }
-  { panPreview VBox
-    MoveScaled(43,2,78,58)
-    Expand = True
-    Invert = True
-    { dvwPrint DocumentView
-      MoveScaled(2,2,40,43)
-      Expand = True
-      ShowPage = True
-    }
-    { panZoom HBox
-      MoveScaled(2,53,75,4)
-      { Spring1 Spring
-        MoveScaled(37,0,3,4)
+      { Spring6 Spring
+        MoveScaled(17,75,1,3)
       }
-      { btnZoomOut ToolButton
-        MoveScaled(40,0,4,4)
-        ToolTip = ("Zoom out")
-        Picture = Picture["icon:/small/zoom-out"]
-      }
-      { sldZoom Slider
-        MoveScaled(46,0,9,4)
-        Visible = False
-        MinValue = 13
-        MaxValue = 800
-        Value = 100
-      }
-      { lblZoom Label
-        MoveScaled(58,0,5,4)
-        AutoResize = True
-        Text = ("100 %")
-        Alignment = Align.Left
-      }
-      { btnZoomIn ToolButton
-        MoveScaled(62,0,4,4)
-        ToolTip = ("Zoom in")
-        Picture = Picture["icon:/small/zoom-in"]
-      }
-      { Spring4 Spring
-        MoveScaled(67,1,3,2)
-      }
-      { Panel7 HBox
-        MoveScaled(0,0,29,4)
-        Ignore = True
-        { btnShowSide ToolButton
-          MoveScaled(0,0,4,4)
-          Visible = False
-          ToolTip = ("Show options")
-          Picture = Picture["icon:/small/view-split-h"]
+      { HBox2 HBox
+        MoveScaled(3,80,30,4)
+        { Spring4 Spring
+          MoveScaled(2,1,3,2)
         }
-        { btnPrint2 MenuButton btnPrint
+        { btnPrint2 Button btnPrint
           Name = "btnPrint2"
-          MoveScaled(4,0,8,4)
-          Visible = False
+          MoveScaled(7,0,12,4)
           AutoResize = True
           Text = ("Print")
-          Border = False
-          Menu = "mnuPrint"
+          Picture = Picture["icon:/small/print"]
         }
-        { btnOnePage ToolButton btnMode
-          Name = "btnOnePage"
-          MoveScaled(12,0,4,4)
-          Tag = "1"
-          ToolTip = ("One page")
-          Toggle = True
-        }
-        { btnTwoPages ToolButton btnMode
-          Name = "btnTwoPages"
-          MoveScaled(16,0,4,4)
-          Tag = "2"
-          ToolTip = ("Two pages")
-          Toggle = True
-        }
-        { btnFullWidth ToolButton btnMode
-          Name = "btnFullWidth"
-          MoveScaled(20,0,4,4)
-          Tag = "3"
-          ToolTip = ("Full width")
-          Toggle = True
-        }
-        { btnRealSize ToolButton btnMode
-          Name = "btnRealSize"
-          MoveScaled(24,0,4,4)
-          Tag = "4"
-          ToolTip = ("Real size")
-          Picture = Picture["icon:/small/zoom-normal"]
-          Toggle = True
+        { Spring5 Spring
+          MoveScaled(20,2,5,1)
         }
       }
+    }
+    { dvwPrint DocumentView
+      MoveScaled(43,10,40,43)
+      Expand = True
+      ShowPage = True
     }
   }
 }
