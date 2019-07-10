@@ -190,6 +190,7 @@ bool PAINT_begin(void *device)
 		paint->brush = other->brush;
 		if (paint->brush)
 			GB.Ref(paint->brush);
+		paint->fontScale = other->fontScale;
 		PAINT->Save(THIS);
 	}
 	else
