@@ -121,6 +121,7 @@ Public Sub tmrLoad_Timer()
   'Paint.Scale($fZoom, $fZoom)
   Raise Draw(iPage, iDocWidth * $fZoom, iDocHeight * $fZoom)
   Paint.End
+  If $bDesaturate Then hImg.Desaturate()
   $colImage[iPage] = hImg
   $aImageLoaded.Add(iPage)
   $tmrLoad.Trigger
@@ -250,18 +251,21 @@ Private Sub DrawDoc(Page As Integer, iRow As Integer, iCol As Integer)
   Endif
   
   If $colImage.Exist(Page) Then
+    
     hImage = $colImage[Page]
-    If $bDesaturate Then hImage = hImage.Copy().Desaturate()
     Paint.DrawImage(hImage, iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight)
     Paint.Rectangle(iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight)
     Paint.Brush = Paint.Color(Color.Black)
     Paint.Stroke
+    
   Else
+    
     Paint.Rectangle(iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight)
     Paint.Brush = Paint.Color(Color.White)
     Paint.Fill(True)
     Paint.Brush = Paint.Color(Color.Black)
     Paint.Stroke
+    
   Endif
   
   If $aSelected.Find(page) > -1 Then
@@ -415,6 +419,9 @@ Private Sub DoLayout()
         $fCenter = Max(($hView.ClientW - (($fMaxPageWidth + $fScaledSpace) * $iNbreDocByLine - $fScaledSpace + $fScaledPadding * 2)) / 2, 0)
         'Print $fCenter
       Endif
+      
+      $hView.Scroll(0, 0)
+      
   End Select
   
   'Calculate the Max doc per line (mini 1 doc)
@@ -1041,6 +1048,6 @@ Private Sub Desaturate_Write(Value As Boolean)
 
   If $bDesaturate = Value Then Return
   $bDesaturate = Value
-  $hView.refresh
+  Reset
 
 End
