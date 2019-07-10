@@ -311,6 +311,8 @@ Public Sub DrawingArea_Draw()
     Paint.DrawImage(If($bInsideRemove, $hRemove, $hRemoveGray), Paint.W - $hRemove.W - P, P)
   Endif
   
+  If Not Me.Enabled Then Paint.FillRect(0, 0, Paint.W, Paint.H, Color.SetAlpha(Style.BackgroundOf($hDrawingArea), 64))
+  
   ' If Template And If $sPath = GetParent().Current Then
   '   Paint.FillRect(0, 0, Paint.W, Paint.H, Color.SetAlpha(Color.SelectedBackground, 128))
   ' Endif
@@ -319,7 +321,7 @@ End
 
 Public Sub DrawingArea_Enter()
   
-  If $bCanHighlight Then
+  If $bCanHighlight And If Me.Enabled Then
     'If not $bHighlight Then 
       '$hDrawingArea.Background = Color.LightBackground
       $bHighlight = True
@@ -331,7 +333,7 @@ End
 
 Public Sub DrawingArea_Leave()
   
-  If $bHighlight Then 
+  If $bHighlight And If Me.Enabled Then 
     '$hDrawingArea.Background = Color.Default
     $bHighlight = False
     $hDrawingArea.Refresh

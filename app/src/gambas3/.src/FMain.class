@@ -2607,6 +2607,7 @@ Public Sub OnRefreshComponents()
   
   For Each hMenu In mnuGUI.Children
     If hMenu.Text Then hMenu.Checked = False
+    If hMenu.Tag Then hMenu.Visible = Project.Documentation.Components.Exist(hMenu.Tag)
   Next
   
   hMenu = Null
@@ -2614,7 +2615,7 @@ Public Sub OnRefreshComponents()
   If iPos >= 0 Then
     sComp = Scan(Project.Environment[iPos], "*=*")[1]
     For Each hMenu In mnuGUI.Children
-      If hMenu.Tag = sComp Then
+      If hMenu.Visible And If hMenu.Tag = sComp Then
         btnGUI.Text = hMenu.Text
         hMenu.Checked = True
         Break
