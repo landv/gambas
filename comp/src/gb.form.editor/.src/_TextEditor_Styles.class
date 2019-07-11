@@ -7,6 +7,8 @@ Event Change
 Private $aStyle As TextEditorStyle[]
 
 Public Sub _new()
+
+  Dim I As Integer
   
   $aStyle = New TextEditorStyle[32]
   
@@ -32,6 +34,10 @@ Public Sub _new()
   $aStyle[Highlight.Label] = New TextEditorStyle(Color.Black, False, False, True) As "Style"
   $aStyle[Highlight.Constant] = New TextEditorStyle(&HA00000&, True) As "Style"
   $aStyle[Highlight.Alternate] = New TextEditorStyle(&HE0E0E0&) As "Style"
+  
+  For I = Highlight.Custom To $aStyle.Max
+    $aStyle[I] = New TextEditorStyle As "Style"
+  Next
   
 End
 

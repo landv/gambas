@@ -610,6 +610,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
     
     If bBreak Then
       If iBg <> Color.Default Then Paint.FillRect(XX, YY, Paint.W, H, iBg)
+      PaintMultiLine(X, YY, Paint.W - $MW, H, iLayout = 1, False)
       XX = X + LinePos(Row, P).X
       YY += H
       bBreak = False
@@ -712,6 +713,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
       Paint.MoveTo(XX, YY + H - 0.5)
       Paint.RelLineTo(X2 - XX, 0)
       Paint.Stroke
+      Paint.Dash = Null
     Endif
     
     ' If $YM >= 0 Then
@@ -733,6 +735,8 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
     DrawText(sStr, X, XX, YY)
     
   Endif
+
+  If aLayout Then PaintMultiLine(X, YY, Paint.W - $MW, H, False, True)
   
   If iBg <> Color.Default Then Paint.FillRect(XX, YY, Paint.W, H, iBg)
   
@@ -824,6 +828,40 @@ Private Sub GetTabSizeAround(Row As Integer) As Integer
   
 End
 
+Private Sub PaintMultiLine(X As Integer, Y As Integer, Width As Integer, Height As Integer, bStart As Boolean, bEnd As Boolean)
+
+  Dim D As Float
+  Dim LW As Integer
+
+  Paint.Save
+  Paint.AntiAlias = False
+
+  D = Height / 2
+  LW = CInt((Height + 23) / 24)
+  X += Width - Height
+
+  If bStart Then
+    Paint.MoveTo(X, Y + LW * 2)
+    Paint.RelLineTo(D, 0)
+    Paint.RelLineTo(0, Height - LW * 2)
+  Else If bEnd Then
+    Paint.MoveTo(X, Y + Height - LW * 2)
+    Paint.RelLineTo(D, 0)
+    Paint.RelLineTo(0, -Height + LW * 2)
+  Else
+    Paint.MoveTo(X + D, Y)
+    Paint.RelLineTo(0, Height)
+  Endif
+
+  Paint.LineWidth = LW
+  Paint.Background = Color.SetAlpha(Color.TextForeground, 192)
+  Paint.LineJoin = Paint.LineJoinMiter
+  Paint.Stroke
+  
+  Paint.Restore
+
+End
+
 Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer)
   
   Dim X1 As Integer
@@ -858,9 +896,9 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   ' Current line or stop line
   
   Try aLayout = $cLineLayout[Row]
-  If Row = $Y And If aLayout Then
-    Paint.FillRect(X, Y, Width, Height, $iMarginColor)
-  Endif
+  ' If Row = $Y And If aLayout Then
+  '   Paint.FillRect(X, Y, Width, Height, $iMarginColor)
+  ' Endif
   
   If Row = $iStopLine Then
     Paint.FillRect(X, Y, Width, Height, $hStyles[Highlight.Current].Color)
@@ -987,11 +1025,13 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
       XS = X + LineStartPos(Row)
       For I = 0 To aLayout.Max
         DrawText(String.Mid$(sText, P, aLayout[I]), X, XX, YY)
+        PaintMultiLine(X, YY, Width - $MW, H, I = 0, False)
         YY += H
         XX = XS
         P += aLayout[I]
       Next
       DrawText(String.Mid$(sText, P), X, XX, YY)
+      PaintMultiLine(X, YY, Width - $MW, H, False, True)
       
     Else
       
@@ -1102,6 +1142,7 @@ Public Sub _PaintRow(Row As Integer, X As Integer, Y As Integer)
   Dim XS As Integer
   Dim I As Integer
   Dim bRemoteDisplay As Boolean
+  Dim iSaveMW As Integer
   
   H = $LH
 
@@ -1113,13 +1154,17 @@ Public Sub _PaintRow(Row As Integer, X As Integer, Y As Integer)
     
     bRemoteDisplay = $bRemoteDisplay
     $bRemoteDisplay = True
+    iSaveMW = $MW
+    $MW = 0
     DrawHighlightedText(Row, sText, hInfo.Colors, X, Y, H, aLayout, hInfo.State)
+    $MW = iSaveMW
     $bRemoteDisplay = bRemoteDisplay
     
   Else
     
     Paint.Background = $iForeground
     
+
     If aLayout Then
       
       P = 1
@@ -1128,11 +1173,13 @@ Public Sub _PaintRow(Row As Integer, X As Integer, Y As Integer)
       XS = X + LineStartPos(Row)
       For I = 0 To aLayout.Max
         DrawText(String.Mid$(sText, P, aLayout[I]), X, XX, YY)
+        PaintMultiLine(X, YY, Paint.W - X, H, I = 0, False)
         YY += H
         XX = XS
         P += aLayout[I]
       Next
       DrawText(String.Mid$(sText, P), X, XX, YY)
+      PaintMultiLine(X, YY, Paint.W - X, H, False, True)
       
     Else
       
@@ -4788,7 +4835,7 @@ Public Sub _UpdateLineHeight(Y As Integer)
   If Not $cLineLayout Then Return
   
   sText = $hDoc.Lines[Y]
-  WMax = $hView.ClientW - $MW - 8
+  WMax = $hView.ClientW - $MW - $LH
   
   'Print Y;
   

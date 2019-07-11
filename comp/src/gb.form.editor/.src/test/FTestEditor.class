@@ -11,7 +11,7 @@ Private Sub Reload()
   ' Next
   ' System.Profile = True
 
-  TextEditor1.Mode = "gambas"
+  'TextEditor1.Mode = "gambas"
   'TextEditor1.Load("~/gambas/3.0/test/test-git/CHANGELOG", True)
   TextEditor1.Load("~/gambas/git/master/comp/src/gb.form.editor/.src/TextEditor.class", True)
   'TextEditor1.Load("~/Fichier texte")
@@ -160,31 +160,31 @@ End
 '   
 ' End
 
-Public Sub TextEditor1_Highlight(Text As String)
-
-  If Text Begins "<<<<<<" Then 
-    TextHighlighter.Add(Highlight.Keyword, String.Len(Text))
-    TextHighlighter.State = Highlight.Custom
-  Else If Text Begins "======" Then
-    TextHighlighter.Add(Highlight.Help, String.Len(Text))
-    TextHighlighter.State = Highlight.Normal
-    TextHighlighter.Tag = 1
-  Else If Text Begins ">>>>>>" Then
-    TextHighlighter.Add(Highlight.Keyword, String.Len(Text))
-    TextHighlighter.State = Highlight.Custom + 1
-    TextHighlighter.Tag = 2
-  Else
-    If TextHighlighter.Tag = 1 Then 
-      TextHighlighter.State = Highlight.Custom + 1
-      TextHighlighter.Tag = 0
-    Else If TextHighlighter.Tag = 2 Then 
-      TextHighlighter.State = Highlight.Normal
-      TextHighlighter.Tag = 0
-    Endif
-    TextHighlighter.Add(TextHighlighter.State, String.Len(Text))
-  Endif
-  
-End
+' Public Sub TextEditor1_Highlight(Text As String)
+' 
+'   If Text Begins "<<<<<<" Then 
+'     TextHighlighter.Add(Highlight.Keyword, String.Len(Text))
+'     TextHighlighter.State = Highlight.Custom
+'   Else If Text Begins "======" Then
+'     TextHighlighter.Add(Highlight.Help, String.Len(Text))
+'     TextHighlighter.State = Highlight.Normal
+'     TextHighlighter.Tag = 1
+'   Else If Text Begins ">>>>>>" Then
+'     TextHighlighter.Add(Highlight.Keyword, String.Len(Text))
+'     TextHighlighter.State = Highlight.Custom + 1
+'     TextHighlighter.Tag = 2
+'   Else
+'     If TextHighlighter.Tag = 1 Then 
+'       TextHighlighter.State = Highlight.Custom + 1
+'       TextHighlighter.Tag = 0
+'     Else If TextHighlighter.Tag = 2 Then 
+'       TextHighlighter.State = Highlight.Normal
+'       TextHighlighter.Tag = 0
+'     Endif
+'     TextHighlighter.Add(TextHighlighter.State, String.Len(Text))
+'   Endif
+'   
+' End
 
 Public Sub Button6_Click()
 
