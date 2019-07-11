@@ -50,7 +50,7 @@ Public Sub Printer_Begin()
   $hFontHeader = $hFont.Copy()
 
   $hFont.Size = $hFont.Size * 25.4 / 96 * 10 * ZOOM_EDITOR
-  $hFontHeader.Size *= 0.7
+  $hFontHeader.Size = 8
   
   $hEditor.Font = $hFont
   
@@ -87,6 +87,7 @@ Public Sub Printer_Draw()
   Dim DY As Integer
   Dim H As Float
   Dim M As Float
+  
   Paint.Save
   
   'Debug "--------------- Page #"; $hPrinter.Page
@@ -103,7 +104,7 @@ Public Sub Printer_Draw()
   Paint.DrawText($hPrinter.Page & " / " & $hPrinter.Count, 0, Paint.H - M, Paint.W, M, Align.Bottom)
   Paint.FillRect(0, Paint.H - M + 30, Paint.W, 1, Color.Black)
   
-  Paint.ClipRect = Rect(0, M, Paint.W, Paint.H - M * 2)
+  Paint.ClipRect = Rect(0, M, Paint.W, $nLineByPage * $hEditor.LineHeight / ZOOM_EDITOR)
   
   If Paint.Device Is Printer Then 
     Paint.FontScale = 96 / $hPrinter.Resolution
@@ -111,7 +112,8 @@ Public Sub Printer_Draw()
     Paint.FontScale = 1
   Endif
   
-  Paint.Scale(0.2, 0.2)
+  Paint.Begin(Paint.Device, RectF(Paint.X * ZOOM_EDITOR, Paint.Y * ZOOM_EDITOR, Paint.W * ZOOM_EDITOR, Paint.H * ZOOM_EDITOR))
+  Paint.Scale(1 / ZOOM_EDITOR)
   
   DY = ($hPrinter.Page - 1) * $nLineByPage * $hEditor.LineHeight
   'Debug DY
@@ -128,6 +130,8 @@ Public Sub Printer_Draw()
     $hEditor[iRow].Paint(0, Y + M * ZOOM_EDITOR)
     Inc iRow
   Wend
+  
+  Paint.End
   
   Paint.Restore
   

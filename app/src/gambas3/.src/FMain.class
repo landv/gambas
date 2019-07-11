@@ -16,6 +16,7 @@ Private $bInTreeView As Boolean
 Private $bInRename As Boolean
 ' Private $bHasJustCollapsed As Boolean
 ' Private $bExpandOnMouseUp As Boolean
+' Private $iTreeToolbarRow As Integer
 
 Private frmWelcome As FWelcome
 Private $hCornerNW As Image
@@ -1129,41 +1130,9 @@ End
 Public Sub tvwProject_Select()
   
   RefreshMenu
-  
-  ' If tvwProject.Current And If tvwProject.Current.Children Then 
-  '   ' Print Mouse.X ;; Mouse.Y ' generates crashes on random places, strange...
-  '   'If Not tvwProject.Find(Mouse.X, Mouse.Y) Then
-  '   $bExpandOnMouseUp = True
-  '   'Endif
-  ' Endif
+  'ShowTreeToolbar
   
 End
-
-' Public Sub tvwProject_MouseUp()
-'   
-'   If $bExpandOnMouseUp And If Not $bHasJustCollapsed Then
-'     Try tvwProject.Current.Expanded = True
-'   Endif
-'   $bExpandOnMouseUp = False
-'   $bHasJustCollapsed = False
-'   
-' End
-
-' PUBLIC SUB tvwProject_Expand()
-' 
-'   IF tvwProject.Item.Picture = Picture["img/16/close.png"] THEN
-'     tvwProject.Item.Picture = Picture["img/16/open.png"]
-'   ENDIF
-' 
-' END
-
-' PUBLIC SUB tvwProject_Collapse()
-' 
-'   IF tvwProject.Item.Picture = Picture["img/16/open.png"] THEN
-'     tvwProject.Item.Picture = Picture["img/16/close.png"]
-'   ENDIF
-' 
-' END
 
 Public Sub mnuCloseAll_Click()
   
@@ -1328,6 +1297,7 @@ Public Sub tvwProject_MouseDown()
   
   Balloon.Hide(tvwProject)
   $bCtrl = Mouse.Control
+  'ShowTreeToolbar
   
 End 
 
@@ -1478,6 +1448,7 @@ Public Sub Action_Activate((Key) As String) As Boolean
     Case "until"
       Try hEditor = Project.ActiveForm
       If Not Error Then hEditor.RunUntil
+
     Case "info"
       If tvwProject.Key = Project.Dir Then
         If Not FProjectProperty.Run() Then Project.Refresh
@@ -1604,6 +1575,7 @@ End
 Public Sub tvwProject_GotFocus()
   
   RefreshMenu
+  'ShowTreeToolbar
   'txtSearchProject.SetFocus
   
 End
@@ -2951,3 +2923,88 @@ Public Sub mnuViewExplorer_Click()
   MHelp.LoadHelpBrowser
 
 End
+
+' Public Sub tvwProject_LostFocus()
+' 
+'   HideTreeToolbar
+' 
+' End
+
+' Private Sub ShowTreeToolbar()
+' 
+'   Dim sKey As String
+'   Dim hGridView As GridView
+'   Dim hBorder As Border
+' 
+'   HideTreeToolbar
+' 
+'   If Not tvwProject.HasFocus Then Return
+' 
+'   sKey = GetCurrent()
+'   If Not sKey Then Return
+'   If Not CanEdit(sKey) Then Return
+'   
+'   btnOpenCode.Visible = mnuEditClass.Visible
+'   btnRunThat.Visible = mnuRunThat.Visible
+'   btnDoNotTranslate.Visible = mnuDoNotTranslate.Visible
+'   btnStartup.Visible = mnuStartup.Visible
+'   btnInfo.Visible = mnuInformation.Visible
+'   
+'   hGridView = tvwProject.Children[0]
+'   
+'   If $iTreeToolbarRow <> hGridView.Row Then
+'     
+'     $iTreeToolbarRow = hGridView.Row
+'     
+'     hGridView.Rows[$iTreeToolbarRow].H += panTreeToolbar.H
+'     hBorder = New Border
+'     hBorder.BottomPadding = panTreeToolbar.H
+'     hBorder.Style = Border.None
+'     hGridView[$iTreeToolbarRow, 0].Border = hBorder
+'     
+'   Endif
+'   
+'   With tvwProject[sKey]
+'     
+'     'panTreeToolbar.Move(tvwProject.X + tvwProject.ClientW - panTreeToolbar.W, tvwProject.Y + .Y, panTreeToolbar.W, .H)
+'     panTreeToolbar.Move(tvwProject.X + .X, tvwProject.Y + .Y + .H - panTreeToolbar.H)
+'     panTreeToolbar.Show
+'     'timHideTreeToolbar.Restart
+'   End With
+' 
+' End
+' 
+' Public Sub HideTreeToolbar()
+' 
+'   Dim hGridView As GridView
+'   
+'   If Not panTreeToolbar.Visible Then Return
+'   
+'   panTreeToolbar.Hide  
+' 
+'   hGridView = tvwProject.Children[0]
+'   Try hGridView[$iTreeToolbarRow, 0].Border = Null
+'   Try hGridView.Rows[$iTreeToolbarRow].H = -1
+'   $iTreeToolbarRow = -1
+'     
+' End
+' 
+' Public Sub timHideTreeToolbar_Timer()
+'   
+'   HideTreeToolbar
+'   'timHideTreeToolbar.Stop
+'   
+' End
+' 
+' 
+' Public Sub panProject_Arrange()
+' 
+'   HideTreeToolbar
+' 
+' End
+' 
+' Public Sub tvwProject_Scroll()
+'   
+'   HideTreeToolbar
+'   
+' End

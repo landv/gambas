@@ -14,7 +14,7 @@
     ShowButton = True
   }
   { panExtension VBox
-    MoveScaled(2,60,87,9)
+    MoveScaled(2,60,102,9)
     Spacing = True
     { HBox2 HBox
       MoveScaled(0,0,68,4)
@@ -31,15 +31,20 @@
       }
     }
     { HBox1 HBox
-      MoveScaled(0,5,85,4)
+      MoveScaled(0,5,101,4)
       Spacing = True
+      { chkIncVersion CheckBox
+        MoveScaled(0,0,19,4)
+        AutoResize = True
+        Text = ("Increment version")
+      }
       { chkDebug CheckBox
-        MoveScaled(0,0,42,4)
+        MoveScaled(20,0,39,4)
         AutoResize = True
         Text = ("Keep debugging information in executable")
       }
       { chkShortcut CheckBox
-        MoveScaled(41,0,35,4)
+        MoveScaled(60,0,34,4)
         AutoResize = True
         Text = ("Create a shortcut on the desktop")
       }

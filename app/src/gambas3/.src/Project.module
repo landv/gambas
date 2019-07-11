@@ -1098,6 +1098,8 @@ Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup
   Dim sKey As String
   'Dim hStartup As Image
 
+  bStartup = False
+  
   'If Not $cImageCache["base"] Then $cImageCache["base"] = Picture["icon:/32/file"].Image
 
   If iSize = 0 Then iSize = 16
@@ -3035,6 +3037,8 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
     Return True
   Endif
 
+  bDoNotIncVersion = bDoNotIncVersion Or Project.Config["/Executable/DoNotIncrementVersion", False]
+
   Exec ["rm", "-rf", Project.Dir &/ ".gambas.save"] Wait
   Exec ["cp", "-rf", Project.Dir &/ ".gambas", Project.Dir &/ ".gambas.save"] Wait
   'MOVE Project.Dir &/ ".gambas" TO Project.Dir &/ ".gambas.save"
@@ -3310,7 +3314,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
       Case "createshortcut"
         CreateShortcut = CInt(sVal) <> 0
-
+        
       Case "runafter"
         RunAfterMakingExec = sVal
 
