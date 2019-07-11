@@ -207,6 +207,7 @@ End
 Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRow As Integer, iCol As Integer, hData As _GridView_Data, hRowBorder As Border)
 
   Dim hRect As Rect = Rect(X, Y, W, H)
+  Dim hRectDraw As Rect
   Dim hPict As Picture
   Dim A As Integer
   Dim iColor As Integer
@@ -232,12 +233,16 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRo
     
     Paint.FillRect(X, Y, W, H, iColor)
     
-    If .Border
-      hRect = .Border.GetRect(RectF(X, Y, W, H), True)
-      X = hRect.X
-      Y = hRect.Y
-      W = hRect.W
-      H = hRect.H
+    If .Border Then
+      hRectDraw = .Border.GetRect(RectF(X, Y, W, H), True)
+      If hRectDraw Then
+        With hRectDraw
+          X = .X
+          Y = .Y
+          W = .W
+          H = .H
+        End With
+      Endif
     Endif
     
     If hRowBorder Then

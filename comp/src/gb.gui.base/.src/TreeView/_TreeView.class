@@ -34,6 +34,7 @@ Event Rename
 Event Cancel
 Event Compare(Key As String, OtherKey As String)
 Event BeforeSort
+Event Scroll
 
 Static Private $iNoEvent As Integer
 
@@ -1453,6 +1454,7 @@ End
 Public Sub GridView_Scroll()
   
   Cancel
+  Raise Scroll
   
 End
 

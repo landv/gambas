@@ -555,7 +555,11 @@ End
 
 Private Sub Font_Write(Value As Font)
 
-  $hFont = Value.Copy()
+  If Value Then
+    $hFont = Value.Copy()
+  Else
+    $hFont = Null
+  Endif
 
 End
 
