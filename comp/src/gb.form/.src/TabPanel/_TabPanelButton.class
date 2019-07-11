@@ -119,7 +119,10 @@ Public Sub DrawingArea_Draw()
   Endif
   
   iFg = Me.Foreground
-  If iFg = Color.Default Then iFg = Color.Foreground
+  If iFg = Color.Default Then 
+    iFg = hTabPanel.Foreground
+    If iFg = Color.Default Then iFg = Style.ForegroundOf(hTabPanel)
+  Endif
   
   X = 0
   W = Me.W

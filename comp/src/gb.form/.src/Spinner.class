@@ -67,11 +67,14 @@ Public Sub DrawingArea_Draw()
   Dim W As Float
   Dim H As Float
   Dim HL As Integer
+  Dim iFg As Integer
   
   If Not Me.Design Then
     If $fStartTime = 0 Then Goto DRAW_BORDER
     D = Frac(Timer - $fStartTime) * Pi(2)
   Endif
+  
+  iFg = Style.ForegroundOf(Me)
   
   W = Paint.W
   H = Paint.H
@@ -96,7 +99,7 @@ Public Sub DrawingArea_Draw()
       C = Frac(1 + (D - A) / Pi(2))
       
       'Paint.Background = Color.Merge(Color.Background, Color.Foreground, C / 4)
-      Paint.Background = Color.SetAlpha(Color.Foreground, 255 * (1 - C / 4))
+      Paint.Background = Color.SetAlpha(iFg, 255 * (1 - C / 2))
       Paint.MoveTo(X + Cos(A) * R / 2, Y + Sin(A) * R / 2)
       Paint.LineTo(X + Cos(A) * R, Y + Sin(A) * R)
       Paint.Stroke
@@ -106,8 +109,8 @@ Public Sub DrawingArea_Draw()
   Endif
   
   If $bLabel Then
-    Paint.Background = Color.Foreground
-    Paint.DrawText(Format($fValue, "0%"), 0, Paint.H - HL, Paint.W, HL - Desktop.Scale, Align.Center)
+    Paint.Background = iFg
+    Paint.DrawText(Format($fValue, "0 %"), 0, Paint.H - HL, Paint.W, HL - Desktop.Scale, Align.Center)
   Endif
   
 DRAW_BORDER:
