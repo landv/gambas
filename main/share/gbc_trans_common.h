@@ -31,6 +31,7 @@ typedef
 		PATTERN *optional;
 		short value;
 		unsigned ignore : 1;
+		unsigned byref : 1;
 		}
 	TRANS_PARAM;
 

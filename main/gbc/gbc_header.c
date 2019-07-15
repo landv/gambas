@@ -166,6 +166,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
 
 		if (PATTERN_is(*look, RS_AT) || PATTERN_is(*look, RS_BYREF))
 		{
+			param->byref = TRUE;
 			func->byref |= byref_mask;
 			look++;
 		}
