@@ -154,7 +154,13 @@ Private Sub _PrintPage()
   If Main.Edit Then
     sPath = Main.GetPagePath()  
     If Exist(sPath) Then sData = File.Load(sPath)
-    If Not sData Then sData = OldWiki.GetPage(Main.Path)
+    If Not sData Then
+      sPath = Main.Path
+      If InStr(sPath, "/comp/gb.sdl2.audio") Then
+        sPath = Replace(sPath, "/comp/gb.sdl2.audio", "/comp/gb.sdl.sound")
+      Endif
+      sData = OldWiki.GetPage(sPath)
+    Endif
     If Not sData Then
       If Main.Symbol Then
         sData = "@{syntax}\n" & Main.GetDefaultPage()
