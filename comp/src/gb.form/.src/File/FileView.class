@@ -41,7 +41,9 @@ Private $sDir As String
 Private $bShowHidden As Boolean
 Private $bShowDir As Boolean
 Private $bShowPreview As Boolean
+
 Private $hIconView As IconView
+Private $hInfoFont As Font
 
 Private $hColumnView As ColumnView
 Private $sSortDir As String
@@ -343,6 +345,8 @@ Private Sub RefreshView()
     $hIconView._Begin
     hPictFile = Picture["icon:/" & $iIconSize & "/file"]
     hPictFolder = Picture["icon:/" & $iIconSize & "/directory"]
+    $hInfoFont = $hIconView.Font.Copy()
+    $hInfoFont.Size *= 0.7
   Endif
   
   iSize = GetIconSize()
@@ -528,7 +532,7 @@ Private Sub RefreshViewLater(Optional bClear As Boolean)
   
 End
 
-Public Sub RefreshViewAfter()
+Public Sub _RefreshViewAfter()
   
   If $bRefreshTriggered Then Return
   If $hRefresh.Enabled Then Return
@@ -1137,5 +1141,57 @@ Public Sub Watcher_Show()
   'Debug  
   $bVisible = True
   RefreshViewLater
+  
+End
+
+Public Sub View_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Key As String)
+
+  Dim iSize As Long
+  Dim hFont As Font
+  Dim H As Integer
+  Dim hStat As Stat
+  Dim dDate As Date
+  Dim sDate As String
+  Dim sAuth As String
+
+  H = $hInfoFont.H
+  
+  If $iIconSize < (H * 4) Then Return
+  
+  Try hStat = Stat($sDir &/ Mid$(Key, 2))
+  If Error Then Return
+  
+  Paint.Background = Color.Merge(Style.ForegroundOf(Last), Style.BackgroundOf(Last), 0.3)
+  
+  If System.RightToLeft Then
+    Width = (Width - $iIconSize - H) \ 2
+  Else
+    X += (Width + $iIconSize + H) \ 2
+  Endif
+  'Paint.Save
+  Paint.Font = $hInfoFont
+  
+  Y += Desktop.Scale
+  Paint.DrawText(Main.GetFileSize(hStat.Size, 0), X, Y, Width, Height, Align.TopNormal)
+  
+  If $iIconSize < (H * 5) Then Return
+  
+  dDate = hStat.LastModified
+  If Date(dDate) = Date(Now) Then
+    sDate = Format(dDate, gb.LongTime)
+  Else
+    sDate = Format(dDate, gb.MediumDate)
+  Endif
+  
+  Y += H * 1.25
+  Paint.DrawText(sDate, X, Y, Width, Height, Align.TopNormal)
+  
+  If $iIconSize < (H * 6) Then Return
+
+  sAuth = hStat.Auth
+  sAuth = Left(sAuth, 3) & " " & Mid$(sAuth, 4, 3) & " " & Mid$(sAuth, 7)
+  
+  Y += H * 1.25
+  Paint.DrawText(sAuth, X, Y, Width, Height, Align.TopNormal)
   
 End
