@@ -1,207 +1,190 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# Translators:
+# Дмитрий Ошкало <dmitry.oshkalo@gmail.com>, 2019
+# Kашицин Роман <calorus@gmail.com>, 2019
+# Олег o1hk <o1h2k3@yandex.ru>, 2019
+# AlexL <loginov.alex.valer@gmail.com>, 2019
+#
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gb.form.print 3.13.90\n"
-"PO-Revision-Date: 2019-07-05 03:30 UTC\n"
-"Last-Translator: benoit <benoit@benoit-kubuntu>\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-16 08:59+0300\n"
+"PO-Revision-Date: 2019-05-09 00:48+0000\n"
+"Last-Translator: AlexL <loginov.alex.valer@gmail.com>, 2019\n"
+"Language-Team: Russian (https://www.transifex.com/rus-open-source/teams/44267/ru/)\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: .project:1
+#: comp/src/gb.form.print/.project:17
 msgid "Generic preview and print form"
-msgstr ""
+msgstr "Общий предпросмотр и форма печати"
 
-#: FPreview.form:79
-msgid "Print preview"
-msgstr ""
-
-#: FPreview.form:87
-msgid "Print to file"
-msgstr "Печать в файл"
-
-#: FPreview.form:113
-msgid "Printing"
-msgstr "Печать"
-
-#: FPreview.form:138
-msgid "One page"
-msgstr "Одна страница"
-
-#: FPreview.form:146
-msgid "Two pages"
-msgstr "Две страницы"
-
-#: FPreview.form:154
-msgid "Full width"
-msgstr "Полная ширина"
-
-#: FPreview.form:162
-msgid "Real size"
-msgstr "Реальный размер"
-
-#: FPreview.form:172
-msgid "Zoom out"
-msgstr "Уменьшить"
-
-#: FPreview.form:185
-msgid "100 %"
-msgstr "100%"
-
-#: FPreview.form:191
-msgid "Zoom in"
-msgstr "Увеличить"
-
-#: FPreview.form:200
-msgid "Print"
-msgstr "Печать"
-
-#: FPreview.form:208
-msgid "Show options"
-msgstr "Показать параметры"
-
-#: FPreview.form:231
-msgid "Printer"
-msgstr "Принтер"
-
-#: FPreview.form:256
-msgid "Two-sided"
-msgstr "Двусторонний"
-
-#: FPreview.form:263
-msgid "None"
-msgstr "Нет"
-
-#: FPreview.form:263
-msgid "Short side"
-msgstr "Короткая сторона"
-
-#: FPreview.form:263
-msgid "Long side"
-msgstr "Длинная сторона"
-
-#: FPreview.form:267
-msgid "File"
-msgstr "Файл"
-
-#: FPreview.form:293
-msgid "Resolution"
-msgstr "Разрешение"
-
-#: FPreview.form:305
-msgid "dpi"
-msgstr "dpi"
-
-#: FPreview.form:328
-msgid "Range"
-msgstr "Диапазон"
-
-#: FPreview.form:344
-msgid "Copies"
-msgstr "Копии"
-
-#: FPreview.form:366
-msgid "Orientation"
-msgstr "Ориентация"
-
-#: FPreview.form:373
-msgid "Portrait"
-msgstr "Книжная"
-
-#: FPreview.form:373
-msgid "Landscape"
-msgstr "Альбомная"
-
-#: FPreview.form:383
-msgid "Paper"
-msgstr "Бумага"
-
-#: FPreview.form:390
-msgid "Custom"
-msgstr "Пользовательский"
-
-#: FPreview.form:390
-msgid "A3"
-msgstr "А3"
-
-#: FPreview.form:390
-msgid "A4"
-msgstr "A4"
-
-#: FPreview.form:390
-msgid "A5"
-msgstr "А5"
-
-#: FPreview.form:390
-msgid "B5"
-msgstr "B5"
-
-#: FPreview.form:390
-msgid "Letter"
-msgstr "Лист"
-
-#: FPreview.form:390
-msgid "Executive"
-msgstr "Экзекьютив"
-
-#: FPreview.form:390
-msgid "Legal"
-msgstr "Легал"
-
-#: FPreview.form:405
-msgid "Width"
-msgstr "Ширина"
-
-#: FPreview.form:416
-msgid "mm"
-msgstr "мм"
-
-#: FPreview.form:426
-msgid "Height"
-msgstr "Высота"
-
-#: FPreview.form:449
-msgid "Grayscale"
-msgstr "Оттенки серого"
-
-#: FPreview.form:455
-msgid "Full page"
-msgstr "Полная страница"
-
-#: FPreview.form:460
-msgid "Collate copies"
-msgstr "Собрать по копиям"
-
-#: FPreview.form:465
-msgid "Reverse order"
-msgstr "Обратный порядок"
-
-#: FPreview.class:265
+#: comp/src/gb.form.print/.src/FPreview.class:298
 msgid "PDF files"
 msgstr "Файлы PDF"
 
-#: FPreview.class:265
+#: comp/src/gb.form.print/.src/FPreview.class:298
 msgid "Postscript files"
 msgstr "Файлы Postscript"
 
-#: FPreview.class:280
-msgid "Cancel"
-msgstr "Отмена"
+#: comp/src/gb.form.print/.src/FPreview.class:358
+msgid ""
+"This file already exists.\n"
+"Do you want to replace it?"
+msgstr ""
+"Этот файл уже существует.\n"
+"Вы хотите заменить его?"
 
-#: FPreview.class:364
-msgid "This file already exists.\nDo you want to replace it?"
-msgstr "Этот файл уже существует.\nВы хотите заменить его?"
-
-#: FPreview.class:364
+#: comp/src/gb.form.print/.src/FPreview.class:358
 msgid "Replace"
 msgstr "Заменить"
 
-#: FPreview.class:389
-msgid "Layout..."
-msgstr "Макет..."
+#: comp/src/gb.form.print/.src/FPreview.class:358 comp/src/gb.form.print/.src/FPrinting.form:20
+msgid "Cancel"
+msgstr "Отмена"
 
-#: FPreview.class:401
-msgid "Printing..."
-msgstr "Печать..."
+#: comp/src/gb.form.print/.src/FPreview.form:5
+msgid "Print preview"
+msgstr "Предпросмотр печати"
+
+#: comp/src/gb.form.print/.src/FPreview.form:11
+msgid "Print to file"
+msgstr "Печать в файл"
+
+#: comp/src/gb.form.print/.src/FPreview.form:20
+msgid "Toggle option panel"
+msgstr "Переключить панель опций"
+
+#: comp/src/gb.form.print/.src/FPreview.form:33
+msgid "One page"
+msgstr "Одна страница"
+
+#: comp/src/gb.form.print/.src/FPreview.form:40
+msgid "Two pages"
+msgstr "Две страницы"
+
+#: comp/src/gb.form.print/.src/FPreview.form:47
+msgid "Full width"
+msgstr "Полная ширина"
+
+#: comp/src/gb.form.print/.src/FPreview.form:54
+msgid "Real size"
+msgstr "Реальный размер"
+
+#: comp/src/gb.form.print/.src/FPreview.form:65 comp/src/gb.form.print/.src/FPreview.form:318
+msgid "Print"
+msgstr "Печать"
+
+#: comp/src/gb.form.print/.src/FPreview.form:76
+msgid "Zoom out"
+msgstr "Уменьшить"
+
+#: comp/src/gb.form.print/.src/FPreview.form:82
+msgid "100 %"
+msgstr "100%"
+
+#: comp/src/gb.form.print/.src/FPreview.form:87
+msgid "Zoom in"
+msgstr "Увеличить"
+
+#: comp/src/gb.form.print/.src/FPreview.form:112
+msgid "Resolution"
+msgstr "Разрешение"
+
+#: comp/src/gb.form.print/.src/FPreview.form:123
+msgid "DPI"
+msgstr "DPI"
+
+#: comp/src/gb.form.print/.src/FPreview.form:131
+msgid "Two-sided"
+msgstr "Двусторонний"
+
+#: comp/src/gb.form.print/.src/FPreview.form:137
+msgid "None"
+msgstr "Нет"
+
+#: comp/src/gb.form.print/.src/FPreview.form:137
+msgid "Short side"
+msgstr "Короткая сторона"
+
+#: comp/src/gb.form.print/.src/FPreview.form:137
+msgid "Long side"
+msgstr "Длинная сторона"
+
+#: comp/src/gb.form.print/.src/FPreview.form:145
+msgid "Copies"
+msgstr "Копии"
+
+#: comp/src/gb.form.print/.src/FPreview.form:158
+msgid "Orientation"
+msgstr "Ориентация"
+
+#: comp/src/gb.form.print/.src/FPreview.form:164
+msgid "Portrait"
+msgstr "Книжная"
+
+#: comp/src/gb.form.print/.src/FPreview.form:164
+msgid "Landscape"
+msgstr "Альбомная"
+
+#: comp/src/gb.form.print/.src/FPreview.form:172
+msgid "Paper"
+msgstr "Бумага"
+
+#: comp/src/gb.form.print/.src/FPreview.form:190
+msgid "Width"
+msgstr "Ширина"
+
+#: comp/src/gb.form.print/.src/FPreview.form:198 comp/src/gb.form.print/.src/FPreview.form:214 comp/src/gb.form.print/.src/FPreview.form:251 comp/src/gb.form.print/.src/FPreview.form:268 comp/src/gb.form.print/.src/FPreview.form:285 comp/src/gb.form.print/.src/FPreview.form:302
+msgid "mm"
+msgstr "мм"
+
+#: comp/src/gb.form.print/.src/FPreview.form:206
+msgid "Height"
+msgstr "Высота"
+
+#: comp/src/gb.form.print/.src/FPreview.form:220
+msgid "Grayscale"
+msgstr "Оттенки серого"
+
+#: comp/src/gb.form.print/.src/FPreview.form:224
+msgid "Collate copies"
+msgstr "Собрать по копиям"
+
+#: comp/src/gb.form.print/.src/FPreview.form:228
+msgid "Reverse order"
+msgstr "Обратный порядок"
+
+#: comp/src/gb.form.print/.src/FPreview.form:235
+msgid "Margins"
+msgstr "Поля"
+
+#: comp/src/gb.form.print/.src/FPreview.form:242
+msgid "Left"
+msgstr "Слева"
+
+#: comp/src/gb.form.print/.src/FPreview.form:259
+msgid "Right"
+msgstr "Справа"
+
+#: comp/src/gb.form.print/.src/FPreview.form:276
+msgid "Top"
+msgstr "Сверху"
+
+#: comp/src/gb.form.print/.src/FPreview.form:293
+msgid "Bottom"
+msgstr "Низ"
+
+#: comp/src/gb.form.print/.src/FPrinting.form:5
+msgid "Printing"
+msgstr "Печать"
 
