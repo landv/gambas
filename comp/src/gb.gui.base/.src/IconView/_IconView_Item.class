@@ -278,12 +278,12 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
   Dim iColor As Integer
   Dim bFrame As Boolean
   Dim sText As String
-  Dim hRect1, hRect2, hRectBg As Rect
+  Dim hRect1, hRectBg As Rect
   Dim DS As Integer
   
   DS = Desktop.Scale
   
-  hRect.Adjust(2)
+  hRect.Adjust(DS \ 4)
   
   If Not hIconView.Picture Then
     bFrame = True
@@ -328,7 +328,7 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
   hRectBg = hRect.Copy()
   hRectBg.Adjust(1)
   
-  hRect.Adjust(DS, DS \ 2)
+  hRect.Adjust(DS, DS)
 
   If bHorizontal Then
   
@@ -409,8 +409,9 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
       
     Endif
     
-    hRect1 = Rect(hRect.X + (hRect.W - PW) / 2 - DS \ 2, hRect.Y - DS \ 2, PW + DS, PH + DS)
-    If $sText Or If $sRichText Then hRect2 = Rect(hRect.X - DS \ 2, Y - DS \ 2, hRect.W + DS, hIconView.Font.RichTextHeight(sText, hRect.W) + DS)
+    hRect1 = Rect(hRect.X - DS \ 2, hRect.Y - DS \ 2, hRect.W + DS, hRect.H + DS)
+    'hRect1 = Rect(hRect.X + (hRect.W - PW) / 2 - DS \ 2, hRect.Y - DS \ 2, PW + DS, PH + DS)
+    'If $sText Or If $sRichText Then hRect2 = Rect(hRect.X - DS \ 2, Y - DS \ 2, hRect.W + DS, hIconView.Font.RichTextHeight(sText, hRect.W) + DS)
     GoSub PAINT_BACKGROUND
 
     'Paint.Save
@@ -442,7 +443,7 @@ Public Sub _Draw(hRect As Rect, hClip As Rect, hIconView As IconView, bHorizonta
 PAINT_RECTS:
 
   If hRect1 Then Paint.Rectangle(hRect1.X, hRect1.Y, hRect1.W, hRect1.H, Desktop.Scale / 2)
-  If hRect2 Then Paint.Rectangle(hRect2.X, hRect2.Y, hRect2.W, hRect2.H, Desktop.Scale / 2)
+  'If hRect2 Then Paint.Rectangle(hRect2.X, hRect2.Y, hRect2.W, hRect2.H, Desktop.Scale / 2)
   Return
 
 PAINT_BACKGROUND:
@@ -474,7 +475,7 @@ PAINT_BACKGROUND:
     If bCurrent Or If bHover Then
     
       If hRect1 Then hRect1.Adjust(1)
-      If hRect2 Then hRect2.Adjust(1)
+      'If hRect2 Then hRect2.Adjust(1)
       
     Endif
 
@@ -541,8 +542,10 @@ Public Sub _Intersect(hRect As Rect, hOther As Rect, bHorizontal As Boolean) As 
   
   Dim YT, PW, PH As Integer
   Dim hInside As Rect
+  Dim DS As Integer
   
-  hRect.Adjust(4)
+  DS = Desktop.Scale
+  hRect.Adjust(DS \ 2)
   
   If bHorizontal Then
   
@@ -575,9 +578,12 @@ Public Sub _Inside(hRect As Rect, hIconView As IconView, bHorizontal As Boolean,
   Dim H, YT, HT, PW, PH As Integer
   Dim hInside As Rect
   Dim sText As String
+  Dim DS As Integer
   
-  hRect.Adjust(4)
-  If Not hRect.Contains(X, Y) Then Return False
+  DS = Desktop.Scale
+  hRect.Adjust(DS \ 2)
+  Return hRect.Contains(X, Y)
+  'If Not hRect.Contains(X, Y) Then Return False
   
   If bHorizontal Then
   
