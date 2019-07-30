@@ -191,7 +191,7 @@ End
 Private Function MimeTypes_Read() As String[]
 
   If Not CheckSettingExists("MimeType") Then Return [""]
-  Return Split($cSettings["[Desktop Entry]"]["MimeType"], ";", "\\;", True).Copy()
+  Return Split($cSettings["[Desktop Entry]"]["MimeType"], ";", "\\;", True)
 
 End
 
@@ -205,7 +205,7 @@ End
 Private Function Categories_Read() As String[]
 
   If Not CheckSettingExists("Categories") Then Return [""]
-  Return Split($cSettings["[Desktop Entry]"]["Categories"], ";", "\\;", True).Copy()
+  Return Split($cSettings["[Desktop Entry]"]["Categories"], ";", "\\;", True)
 
 End
 
@@ -258,7 +258,7 @@ End
 Private Function Actions_Read() As String[]
 
   If Not CheckSettingExists("Actions") Then Return [""]
-  Return Split($cSettings["[Desktop Entry]"]["Actions"], ";", "\\;", True).Copy()
+  Return Split($cSettings["[Desktop Entry]"]["Actions"], ";", "\\;", True)
 
 End
 
