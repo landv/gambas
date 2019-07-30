@@ -57,21 +57,58 @@ static void THROW_static_array()
 }
 
 
+static void THROW_multidimensional_array()
+{
+	GB_Error((char *)E_MARRAY);
+	return;
+}
+
+
+static bool check_not_read_only(CARRAY *_object)
+{
+	if (THIS->ref)
+	{
+		THROW_static_array();
+		return TRUE;
+	}
+	
+	return FALSE;
+}
+
+
 static bool check_not_multi(CARRAY *_object)
 {
-	if (UNLIKELY(THIS->ref != NULL))
+	if (THIS->ref && THIS->ref != THIS)
 	{
 		THROW_static_array();
 		return TRUE;
 	}
 	else if (UNLIKELY(THIS->dim != NULL))
 	{
-		GB_Error("Array is multi-dimensional");
+		THROW_multidimensional_array();
 		return TRUE;
 	}
 	else
 		return FALSE;
 }
+
+
+static bool check_not_multi_read_only(CARRAY *_object)
+{
+	if (THIS->ref)
+	{
+		THROW_static_array();
+		return TRUE;
+	}
+	else if (UNLIKELY(THIS->dim != NULL))
+	{
+		THROW_multidimensional_array();
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
+
 
 static bool check_start_length(int count, int *start, int *length)
 {
@@ -277,6 +314,7 @@ static void release_one(CARRAY *_object, int i)
 		OBJECT_UNREF(((void **)(THIS->data))[i]);
 }
 
+
 static void release_static(TYPE type, void *data, int start, int end)
 {
 	int i;
@@ -307,6 +345,7 @@ static void release(CARRAY *_object, int start, int end)
 	release_static(THIS->type, THIS->data, start, end);
 }
 
+
 static void borrow(CARRAY *_object, int start, int end)
 {
 	int i;
@@ -334,14 +373,15 @@ static void borrow(CARRAY *_object, int start, int end)
 
 static void clear(CARRAY *_object)
 {
-	if (UNLIKELY(THIS->ref != NULL))
+	if (THIS->ref)
 	{
 		THROW_static_array();
 		return;
 	}
 	
 	release(THIS, 0, -1);
-	if (UNLIKELY(THIS->dim != NULL))
+	
+	if (THIS->dim)
 	{
 		memset(THIS->data, 0, THIS->size * THIS->count);
 	}
@@ -365,6 +405,7 @@ size_t CARRAY_get_static_size(CLASS *class, CLASS_ARRAY *desc)
 {
   return (size_t)get_count(desc->dim) * CLASS_sizeof_ctype(class, desc->ctype);
 }
+
 
 int CARRAY_get_static_count(CLASS_ARRAY *desc)
 {
@@ -395,6 +436,7 @@ CARRAY *CARRAY_create_static(CLASS *class, void *ref, CLASS_ARRAY *desc, void *d
 	return array;
 }
 
+
 void CARRAY_release_static(CLASS *class, CLASS_ARRAY *desc, void *data)
 {
 	int count = get_count(desc->dim);
@@ -416,15 +458,18 @@ void CARRAY_release_static(CLASS *class, CLASS_ARRAY *desc, void *data)
 		release_static(CLASS_ctype_to_type(class, desc->ctype), data, 0, count);
 }
 
+
 void CARRAY_get_value(CARRAY *_object, int index, VALUE *value)
 {
 	VALUE_read(value, get_data(THIS, index), THIS->type);
 }
 
+
 int *CARRAY_get_array_bounds(CARRAY *_object)
 {
 	return THIS->dim;
 }
+
 
 static void check_size(CARRAY *_object, int size, int inc)
 {
@@ -434,6 +479,7 @@ static void check_size(CARRAY *_object, int size, int inc)
 	if (size > (INT_MAX / THIS->size))
 		THROW(E_MEMORY);
 }
+
 
 BEGIN_METHOD(Array_new, GB_INTEGER size)
 
@@ -492,7 +538,7 @@ BEGIN_METHOD(Array_new, GB_INTEGER size)
 	{
 		if (nsize > MAX_ARRAY_DIM)
 		{
-			GB_Error("Too many dimensions");
+			GB_Error((char *)E_NDIM); //"Too many dimensions");
 			return;
 		}
 
@@ -502,7 +548,7 @@ BEGIN_METHOD(Array_new, GB_INTEGER size)
 			VALUE_conv_integer((VALUE *)&sizes[i]);
 			if (sizes[i].value < 1)
 			{
-				GB_Error("Bad dimension");
+				GB_Error((char *)E_ARG);
 				return;
 			}
 			size *= sizes[i].value;
@@ -531,9 +577,10 @@ BEGIN_PROPERTY(Array_Type)
 
 END_PROPERTY
 
+
 BEGIN_METHOD_VOID(Array_free)
 
-	if (UNLIKELY(THIS->ref != NULL))
+	if (THIS->ref && THIS->ref != THIS)
 	{
 		OBJECT_UNREF(THIS->ref);
 		return;
@@ -546,6 +593,16 @@ BEGIN_METHOD_VOID(Array_free)
 	FREE(&THIS->dim);
 
 END_METHOD
+
+
+BEGIN_PROPERTY(Array_ReadOnly)
+
+	if (READ_PROPERTY)
+		GB_ReturnBoolean(THIS->ref != NULL);
+	else if (!check_not_read_only(THIS))
+		THIS->ref = THIS;
+
+END_PROPERTY
 
 
 BEGIN_METHOD_VOID(Array_Clear)
@@ -624,6 +681,7 @@ static bool copy_remove(CARRAY *_object, int start, int length, bool copy, bool 
 	return FALSE;
 }
 
+
 BEGIN_METHOD(Array_Remove, GB_INTEGER index; GB_INTEGER length)
 
 	copy_remove(THIS, VARG(index), VARGOPT(length, 1), FALSE, TRUE);
@@ -691,7 +749,7 @@ BEGIN_METHOD(Array_Resize, GB_INTEGER size)
 
 	int size = VARG(size);
 
-	if (check_not_multi(THIS))
+	if (check_not_multi_read_only(THIS))
 		return;
 
 	CARRAY_resize(THIS, size);
@@ -777,7 +835,7 @@ BEGIN_METHOD_VOID(Array_Shuffle)
 	int i, j;
 	void *swap;
 
-	if (check_not_multi(THIS) || count <= 1)
+	if (check_not_multi_read_only(THIS) || count <= 1)
 		return;
 	
 	switch (size)
@@ -849,7 +907,7 @@ static void add(CARRAY *_object, GB_VALUE *value, int index)
 {
 	void *data;
 
-	if (check_not_multi(THIS))
+	if (check_not_multi_read_only(THIS))
 		return;
 
 	data = insert(THIS, index);
@@ -979,7 +1037,7 @@ BEGIN_METHOD(Array_Insert, GB_OBJECT array; GB_INTEGER pos)
 	if (GB_CheckObject(array))
 		return;
 
-	if (check_not_multi(THIS))
+	if (check_not_multi_read_only(THIS))
 	{
 		GB_ReturnNull();
 		return;
@@ -1007,7 +1065,7 @@ BEGIN_METHOD_VOID(Array_Pop)
 
 	int index = THIS->count - 1;
 
-	if (check_not_multi(THIS))
+	if (check_not_multi_read_only(THIS))
 		return;
 
 	if (index < 0)
@@ -1052,7 +1110,7 @@ static void array_first_last(CARRAY *_object, void *_param, bool last)
 	{
 		GB_ReturnPtr(THIS->type, data);
 	}
-	else
+	else if (!check_not_read_only(THIS))
 	{
 		GB_VALUE *value;
 		
@@ -1126,7 +1184,7 @@ BEGIN_METHOD(Array_SortUsing, GB_OBJECT order; GB_INTEGER mode)
 		return;
 	}
 	
-	if (check_not_multi(order))
+	if (check_not_multi_read_only(order))
 		return;
 		
 	if (order->count < THIS->count)
@@ -1832,6 +1890,8 @@ GB_DESC NATIVE_Array[] =
 	GB_METHOD("Resize", NULL, Array_Resize, "(Size)i"),
 	//GB_METHOD("Swap", NULL, Array_Swap, "(Index)i(Index2)i"),
 	GB_METHOD("Shuffle", NULL, Array_Shuffle, NULL),
+	
+	GB_PROPERTY("ReadOnly", "b", Array_ReadOnly),
 
 	GB_INTERFACE("_convert", _convert),
 

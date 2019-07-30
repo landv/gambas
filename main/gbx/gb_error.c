@@ -48,7 +48,7 @@ int ERROR_depth = 0;
 static int _lock = 0;
 static char *_print_prefix = NULL;
 
-static const char *const _message[74] =
+static const char *const _message[76] =
 {
 	/*  0 E_UNKNOWN     */ "Unknown error",
 	/*  1 E_MEMORY      */ "Out of memory",
@@ -115,7 +115,7 @@ static const char *const _message[74] =
 	/* 62 E_BYREF       */ "Argument cannot be passed by reference",
 	/* 63 E_OVERRIDE    */ ".3'&1.&2' is incorrectly overridden in class '&3'",
 	/* 64 E_NKEY        */ "Void key",
-	/* 65 E_SARRAY      */ "Embedded array",
+	/* 65 E_SARRAY      */ "Read-only array",
 	/* 66 E_EXTCB       */ ".1Cannot create callback: &1",
 	/* 67 E_SERIAL      */ "Serialization error",
 	/* 68 E_CHILD       */ ".2Cannot run child process: &1&2",
@@ -124,6 +124,8 @@ static const char *const _message[74] =
 	/* 71 E_UTYPE       */ "Unsupported datatype",
 	/* 72 E_FREEREF     */ "Free object referenced",
 	/* 73 E_ASSERT      */ "Assertion failed"
+	/* 74 E_MARRAY      */ "Multidimensional array",
+	/* 75 E_UCLASS      */ ".1Unknown class '&1'"
 };
 
 #if DEBUG_ERROR
