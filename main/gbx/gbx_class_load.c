@@ -1300,6 +1300,8 @@ void CLASS_load_without_init(CLASS *class)
 
 void CLASS_run_inits(CLASS *class)
 {
+	COMPONENT *current = COMPONENT_current;
+	COMPONENT_current = NULL;
 	/* Call the static initializer */
 
 	EXEC.native = FALSE;
@@ -1313,6 +1315,8 @@ void CLASS_run_inits(CLASS *class)
 
 	/* _init */
 	EXEC_public(class, NULL, "_init", 0);
+	
+	COMPONENT_current = current;
 }
 
 
@@ -1333,9 +1337,6 @@ void CLASS_load_real(CLASS *class)
 		}
 	}
 
-	/*if (strcmp(class->name, "Project") == 0)
-		BREAKPOINT();*/
-	
 	load_without_inits(class);
 	class->loaded = TRUE;
 	class->ready = FALSE;
