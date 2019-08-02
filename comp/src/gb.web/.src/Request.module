@@ -15,6 +15,8 @@ Property Read UserAgent As String
 Property Read Language As String
 Property TempDir As String
 Property MaxFileSize As Long
+Property Read ContentType As String
+Property Read ContentLength As Integer
 
 Property Read Get As _Request_Get
 Property Read Post As _Request_Post
@@ -31,6 +33,7 @@ Private $bPost As Boolean
 Private $bDebug As Boolean
 Private $sTempDir As String
 Private $iMaxFileSize As Long = 128 * 1048576
+Private $sLanguage As String
 
 Private Sub Decode()
 
@@ -233,22 +236,35 @@ Private Function Language_Read() As String
   Dim sLang As String
   Dim iPos As Integer
   Dim I As Integer
-  Dim sFirst As String
+  Dim aQuality As Integer[]
+  Dim fQuality As Float
+  Dim sQuality As String
 
   'fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3
+  
+  If $sLanguage Then Return $sLanguage
 
   aLang = Split(CGI["HTTP_ACCEPT_LANGUAGE"], ",")
+  aQuality = New Integer[aLang.Count]
   
   For I = 0 To aLang.Max
+    
+    fQuality = 1
+    
     iPos = InStr(sLang, ";")
-    If iPos Then sLang = Left(sLang, iPos - 1)
-    If InStr(sLang, "-") Then Return Replace(sLang, "-", "_") & ".UTF-8"
-    If Not sFirst Then sFirst = sLang
+    If iPos Then 
+      sQuality = Trim(Mid$(sLang, iPos + 1))
+      If sQuality Begins "q=" Then Try fQuality = CFloat(Mid$(sQuality, 3))
+      sLang = Left(sLang, iPos - 1)
+    Endif
+    
+    aQuality[I] = CInt(fQuality * 1000) + aLang.Max - I
+      
   Next
   
-  If sFirst Then Return sFirst & ".UTF-8"
-  
-  Return System.Language
+  aLang.SortUsing(aQuality)
+  $sLanguage = Main.ToLanguage(aLang.Last)
+  Return $sLanguage
 
 End
 
@@ -273,5 +289,18 @@ End
 Private Sub MaxFileSize_Write(Value As Long)
 
   $iMaxFileSize = Value
+
+End
+
+Private Function ContentType_Read() As String
+
+  Return CGI["CONTENT_TYPE"]
+
+End
+
+Private Function ContentLength_Read() As Integer
+
+  Try Return CInt(CGI["CONTENT_LENGTH"])
+  Return -1
 
 End

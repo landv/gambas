@@ -2,6 +2,8 @@
 
 Public AllowLog As Boolean
 
+Private $cLang As Collection
+
 Public Sub Log(sMsg As String, Optional bForce As Boolean)
   
   Dim hFile As File
@@ -75,8 +77,245 @@ End
 
 Public Sub Main()
 
-  Session.Type = "sqlite"
-  Session["test"] = "value"
-  Session.Save
+  CGI["HTTP_ACCEPT_LANGUAGE"] = "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3"
+  Print Request.Language
 
+End
+
+
+
+Private Sub MakeLanguage()
+
+  Dim cLang As New Collection
+  Dim hFile As File
+  
+  cLang["aa"] = "ER"
+  cLang["af"] = "ZA"
+  cLang["afr"] = "PE"
+  cLang["ak"] = "GH"
+  cLang["am"] = "ET"
+  cLang["an"] = "ES"
+  cLang["anp"] = "IN"
+  cLang["ar"] = "EG"
+  cLang["as"] = "IN"
+  cLang["ast"] = "ES"
+  cLang["ayc"] = "PE"
+  cLang["az"] = "AZ"
+  cLang["be"] = "BY"
+  cLang["bem"] = "ZM"
+  cLang["ber"] = "MA"
+  cLang["bg"] = "BG"
+  cLang["bhb"] = "IN"
+  cLang["bho"] = "IN"
+  cLang["bi"] = "VU"
+  cLang["bd"] = "BD"
+  cLang["bo"] = "CN"
+  cLang["br"] = "FR"
+  cLang["brx"] = "IN"
+  cLang["bs"] = "BA"
+  cLang["byn"] = "ER"
+  cLang["ca"] = "ES"
+  cLang["chr"] = "US"
+  cLang["ckb"] = "IQ"
+  cLang["cmn"] = "TW"
+  cLang["crh"] = "UA"
+  cLang["csb"] = "PL"
+  cLang["cs"] = "CZ"
+  cLang["cv"] = "RU"
+  cLang["cy"] = "GB"
+  cLang["da"] = "DK"
+  cLang["de"] = "DE"
+  cLang["doi"] = "IN"
+  cLang["dsb"] = "DE"
+  cLang["dv"] = "MV"
+  cLang["dz"] = "BT"
+  cLang["el"] = "GR"
+  cLang["en"] = "GB"
+  cLang["eo"] = "US"
+  cLang["es"] = "ES"
+  cLang["et"] = "EE"
+  cLang["eu"] = "ES"
+  cLang["fa"] = "IR"
+  cLang["ff"] = "SN"
+  cLang["fi"] = "FI"
+  cLang["fil"] = "PH"
+  cLang["fo"] = "FO"
+  cLang["fr"] = "FR"
+  cLang["fur"] = "IT"
+  cLang["fy"] = "NL"
+  cLang["ga"] = "IE"
+  cLang["gd"] = "GB"
+  cLang["gez"] = "ET"
+  cLang["gl"] = "ES"
+  cLang["gu"] = "IN"
+  cLang["gv"] = "GB"
+  cLang["hak"] = "TW"
+  cLang["ha"] = "NG"
+  cLang["he"] = "IL"
+  cLang["hif"] = "FJ"
+  cLang["hi"] = "IN"
+  cLang["hne"] = "IN"
+  cLang["hr"] = "HR"
+  cLang["hsb"] = "DE"
+  cLang["ht"] = "HT"
+  cLang["hu"] = "HU"
+  cLang["hy"] = "AM"
+  cLang["ia"] = "FR"
+  cLang["id"] = "ID"
+  cLang["ig"] = "NG"
+  cLang["ik"] = "CA"
+  cLang["is"] = "IS"
+  cLang["it"] = "IT"
+  cLang["iu"] = "CA"
+  cLang["ja"] = "JP"
+  cLang["kab"] = "DZ"
+  cLang["ka"] = "GE"
+  cLang["kk"] = "KZ"
+  cLang["kl"] = "GL"
+  cLang["km"] = "KH"
+  cLang["kn"] = "IN"
+  cLang["kok"] = "IN"
+  cLang["ko"] = "KR"
+  cLang["ks"] = "IN"
+  cLang["ku"] = "TR"
+  cLang["kw"] = "GB"
+  cLang["ky"] = "KG"
+  cLang["lb"] = "LU"
+  cLang["lg"] = "UG"
+  cLang["li"] = "BE"
+  cLang["lij"] = "IT"
+  cLang["li"] = "NL"
+  cLang["ln"] = "CD"
+  cLang["lo"] = "LA"
+  cLang["lt"] = "LT"
+  cLang["lv"] = "LV"
+  cLang["lzh"] = "TW"
+  cLang["mag"] = "IN"
+  cLang["mai"] = "IN"
+  cLang["mfe"] = "MU"
+  cLang["mg"] = "MG"
+  cLang["mhr"] = "RU"
+  cLang["mi"] = "NZ"
+  cLang["miq"] = "NI"
+  cLang["mjw"] = "IN"
+  cLang["mk"] = "MK"
+  cLang["ml"] = "IN"
+  cLang["mni"] = "IN"
+  cLang["mn"] = "MN"
+  cLang["mr"] = "IN"
+  cLang["ms"] = "MY"
+  cLang["mt"] = "MT"
+  cLang["my"] = "MM"
+  cLang["nan"] = "TW"
+  cLang["nb"] = "NO"
+  cLang["nds"] = "DE"
+  cLang["ne"] = "NP"
+  cLang["nhn"] = "MX"
+  cLang["niu"] = "NZ"
+  cLang["nl"] = "NL"
+  cLang["nn"] = "NO"
+  cLang["nr"] = "ZA"
+  cLang["nso"] = "ZA"
+  cLang["oc"] = "FR"
+  cLang["om"] = "ET"
+  cLang["or"] = "IN"
+  cLang["os"] = "RU"
+  cLang["pa"] = "IN"
+  cLang["pap"] = "CW"
+  cLang["pa"] = "PK"
+  cLang["pl"] = "PL"
+  cLang["ps"] = "AF"
+  cLang["pt"] = "PT"
+  cLang["quz"] = "PE"
+  cLang["raj"] = "IN"
+  cLang["ro"] = "RO"
+  cLang["ru"] = "RU"
+  cLang["rw"] = "RW"
+  cLang["sah"] = "RU"
+  cLang["sa"] = "IN"
+  cLang["sat"] = "IN"
+  cLang["sc"] = "IT"
+  cLang["sd"] = "PK"
+  cLang["se"] = "NO"
+  cLang["sgs"] = "LT"
+  cLang["shn"] = "MM"
+  cLang["shs"] = "CA"
+  cLang["sid"] = "ET"
+  cLang["si"] = "LK"
+  cLang["sk"] = "SK"
+  cLang["sl"] = "SI"
+  cLang["sm"] = "WS"
+  cLang["so"] = "SO"
+  cLang["sq"] = "AL"
+  cLang["sr"] = "RS"
+  cLang["ss"] = "ZA"
+  cLang["st"] = "ZA"
+  cLang["sv"] = "SE"
+  cLang["sw"] = "KE"
+  cLang["szl"] = "PL"
+  cLang["ta"] = "LK"
+  cLang["tcy"] = "IN"
+  cLang["te"] = "IN"
+  cLang["tg"] = "TJ"
+  cLang["the"] = "NP"
+  cLang["th"] = "TH"
+  cLang["ti"] = "ER"
+  cLang["tig"] = "ER"
+  cLang["tk"] = "TM"
+  cLang["tl"] = "PH"
+  cLang["tn"] = "ZA"
+  cLang["to"] = "TO"
+  cLang["tpi"] = "PG"
+  cLang["tr"] = "TR"
+  cLang["ts"] = "ZA"
+  cLang["tt"] = "RU"
+  cLang["ug"] = "CN"
+  cLang["uk"] = "UA"
+  cLang["unm"] = "US"
+  cLang["ur"] = "PK"
+  cLang["uz"] = "UZ"
+  cLang["ve"] = "ZA"
+  cLang["vi"] = "VN"
+  cLang["wa"] = "BE"
+  cLang["wae"] = "CH"
+  cLang["wal"] = "ET"
+  cLang["wo"] = "SN"
+  cLang["xh"] = "ZA"
+  cLang["yi"] = "US"
+  cLang["yo"] = "NG"
+  cLang["yue"] = "HK"
+  cLang["yuw"] = "PG"
+  cLang["zh"] = "CN"
+  cLang["zu"] = "ZA"
+
+  hFile = Open "~/gambas/git/master/comp/src/gb.web/lang.cache" For Create
+  Write #hFile, cLang As Collection
+  Close #hFile
+  
+End
+
+Public Sub ToLanguage(sLang As String) As String
+  
+  Dim hFile As File
+  Dim sCountry As String
+  
+  If InStr(sLang, "-") = 0 Then
+    
+    If Not $cLang Then
+      hFile = Open "lang.cache" For Read
+      $cLang = Read #hFile As Collection
+      Close #hFile
+    Endif
+    
+    sCountry = $cLang[LCase(sLang)]
+    If Not sCountry Then Return System.Language
+    
+    Return sLang & "_" & sCountry & ".UTF-8"
+  
+  Else
+    
+    Return Replace(sLang, "-", "_") & ".UTF-8"
+    
+  Endif
+  
 End

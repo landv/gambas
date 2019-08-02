@@ -156,7 +156,7 @@ Private Sub Decode()
           If Not bFirst Then Print #hFile, "\r\n";
           Print #hFile, sLine;
           bFirst = False
-          If Lof(hFile) > iMaxFileLength Then Error.Raise("Response too big")
+          If Lof(hFile) > iMaxFileLength Then Error.Raise("Request too big")
         Loop
         
         Close #hFile
