@@ -132,7 +132,7 @@ static int BZ2_default_compression(void)
 /*********************************************************************************
 The Driver must provide this function:
 
-void c_String(char **target,unsigned long *lent,char *source,unsigned long len,int level)
+void c_String(char **target,unsigned int *lent,char *source,unsigned int len,int level)
 
 It is called to compress a String and return it compressed. The object will
 pass the following values:
@@ -149,7 +149,7 @@ The function must store the compressed string in 'target', and its length in 'le
 or NULL and zero if it fails by any reason
 
 *********************************************************************************/
-static void BZ2_c_String(char **target,unsigned long *lent,char *source,unsigned long len,int level)
+static void BZ2_c_String(char **target,unsigned int *lent,char *source,unsigned int len,int level)
 {
 	*target=NULL;
 	*lent=len + (len*0.1) + 600;
@@ -168,7 +168,7 @@ static void BZ2_c_String(char **target,unsigned long *lent,char *source,unsigned
 /*********************************************************************************
 The Driver must provide this function:
 
-void u_String(char **target,unsigned long *lent,char *source,unsigned long len,int level)
+void u_String(char **target,unsigned int *lent,char *source,unsigned int len,int level)
 
 It is called to decompress a String and return it decompressed. The object will
 pass the following values:
@@ -184,7 +184,7 @@ level  = compression level
 The function must store the decompressed string in 'target', and its length in 'lent',
 or NULL and zero if it fails by any reason
 *********************************************************************************/
-static void BZ2_u_String(char **target,unsigned long *lent,char *source,unsigned long len)
+static void BZ2_u_String(char **target,unsigned int *lent,char *source,unsigned int len)
 {
 	int myok=BZ_OUTBUFF_FULL;
 
@@ -219,7 +219,7 @@ static void BZ2_u_String(char **target,unsigned long *lent,char *source,unsigned
 				if (*target)GB.Free((void**)target);
 				*target=NULL;
 				*lent=0;
-				GB.Error ("Not enough memory: String too long");
+				GB.Error ("Not enough memory: string too long");
 				return;
 			default:
 
