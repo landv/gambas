@@ -256,18 +256,23 @@ Static Public Sub _AddJavascriptBefore(sStr As String)
 End
 
 Public Sub _new()
-  
-  $hWindowContainer = New WebContainer(Me)
-  $hWindowContainer.Ignore = True
-  $hWindowContainer._Naked = True
-  $hWindowContainer.Class = "gw-window-container"
+
+  If Not Me.Parent Then  
+    $hWindowContainer = New WebContainer(Me)
+    $hWindowContainer.Ignore = True
+    $hWindowContainer._Naked = True
+    $hWindowContainer.Class = "gw-window-container"
+  Endif
   
 End
 
 Public Sub _ready()
+
+  If Not Me.Parent Then 
+    Me._InitProperties
+    $hWindowContainer.Raise
+  Endif
   
-  Me._InitProperties
-  $hWindowContainer.Raise
   _Loaded = True
 
 End
@@ -350,7 +355,7 @@ Public Sub Render()
   
   Print "<div id=\"gw-preload\" style=\"display:none;\">";
   For Each sImage In ["error.png", "info.png", "question.png", "warning.png"]
-    Print "<img src=\""; Application.Root &/ sImage; "\">";
+    Print "<img src=\""; Application.Root &/ "message" &/ sImage; "\">";
   Next
   Print "</div>"
   Print "<div id=\"gw-modal\" onmousedown=\"gw.window.onDownModal();\"></div>"
@@ -611,6 +616,7 @@ End
 
 Public Sub Show()
 
+  If Me.Parent Then Error.Raise("Form is embedded")
   DoShow  
   Raise Open
   
@@ -620,6 +626,7 @@ Public Sub ShowModal(Optional Parent As WebControl)
   
   Dim hWindow As WebWindow
   
+  If Me.Parent Then Error.Raise("Form is embedded")
   If _Window = 0 Then DoShow()
   
   hWindow = WebControl.FromId(_Window)
@@ -637,6 +644,7 @@ Public Sub ShowPopup(Control As WebControl, Optional Alignment As Integer = Alig
   
   Dim hWindow As WebWindow
   
+  If Me.Parent Then Error.Raise("Form is embedded")
   If _Window Then Return
   
   hWindow = New WebWindow(WebForm._Current._GetWindowContainer())
