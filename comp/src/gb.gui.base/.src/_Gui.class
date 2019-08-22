@@ -172,8 +172,8 @@ Static Public Sub _ShowDNDFrame(hCtrl As Control, X As Integer, Y As Integer, W 
   $iFrameX = X
   $iFrameY = Y
 
-  X += hCtrl.ScreenX - hCtrl.Window.ScreenX
-  Y += hCtrl.ScreenY - hCtrl.Window.ScreenY
+  X += hCtrl.ScreenX - hCtrl.Window.ScreenX - hCtrl.Window.ClientX
+  Y += hCtrl.ScreenY - hCtrl.Window.ScreenY - hCtrl.Window.ClientY
 
   'X -= 2
   'Y -= 2
