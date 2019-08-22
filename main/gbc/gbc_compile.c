@@ -668,7 +668,8 @@ void COMPILE_print(int type, int line, const char *msg, ...)
 		else if (JOB->step == JOB_STEP_CODE)
 		{
 			line = JOB->line;
-			col = COMPILE_get_column(JOB->current);
+			if (JOB->current)
+				col = COMPILE_get_column(JOB->current);
 		}
 	}
 
