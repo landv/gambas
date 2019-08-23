@@ -123,7 +123,7 @@ static const char *const _message[76] =
 	/* 70 E_NEMPTY      */ "Directory is not empty",
 	/* 71 E_UTYPE       */ "Unsupported datatype",
 	/* 72 E_FREEREF     */ "Free object referenced",
-	/* 73 E_ASSERT      */ "Assertion failed"
+	/* 73 E_ASSERT      */ "Assertion failed",
 	/* 74 E_MARRAY      */ "Multidimensional array",
 	/* 75 E_UCLASS      */ ".1Unknown class '&1'"
 };
