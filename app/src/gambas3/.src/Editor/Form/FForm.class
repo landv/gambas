@@ -3152,10 +3152,16 @@ End
 
 Public Sub Action_Activate((Key) As String) As Boolean
 
+  Dim hCurrent As CControl
+  
   Select Case Key
 
     Case ".menu"
       FMenu.Run(Me)
+      If FMenu.OpenEventHandlerFor Then
+        hCurrent = Control[FMenu.OpenEventHandlerFor]
+        If hCurrent Then GotoEventMethod(hCurrent, "Click")
+      Endif
 
     Case ".delete"
       DeleteSelection

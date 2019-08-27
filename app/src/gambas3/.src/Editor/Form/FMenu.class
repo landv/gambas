@@ -1,5 +1,6 @@
 ' Gambas class file
 
+Static Public OpenEventHandlerFor As String
 Static Private $hForm As FForm
 Static Private $aMenu As New CMenu[]
 
@@ -13,6 +14,7 @@ Private $iIconSize As Integer
 Static Public Sub Run(hForm As FForm)
 
   $hForm = hForm
+  OpenEventHandlerFor = ""
   FMenu.ShowModal()
 
 End
@@ -1114,4 +1116,14 @@ Public Sub btnInsertSeparator_Click()
 
   InsertMenu(True, True)
 
+End
+
+Public Sub gvwMenu_Activate()
+
+  Try OpenEventHandlerFor = $aMenu[$iCurrent].Name
+  If Not Error Then
+    Me.Close()
+    If Not Me.Closed Then OpenEventHandlerFor = ""
+  Endif
+  
 End

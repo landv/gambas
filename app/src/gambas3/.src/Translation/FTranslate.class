@@ -1748,6 +1748,8 @@ End
 
 Public Sub mnuAutoTrans_Click()
   
+  Dim sText As String
+  
   If Message.Question(("Do you want to fill the translation automatically?"), ("Fill"), ("Cancel")) = 2 Then Return
   
   Inc Application.Busy
@@ -1757,7 +1759,13 @@ Public Sub mnuAutoTrans_Click()
     If Not cvwTranslate.Item[1] Then 
       cvwTranslate.Item.Selected = True
       cvwTranslate.Item.EnsureVisible
-      txtTranslate.Text = GetAutomaticTranslation(txtOrig.Text)
+      Wait
+      sText = GetAutomaticTranslation(txtOrig.Text)
+      If Not sText Then
+        Message.Warning(("Automatic translation has failed."))  
+        Break
+      Endif
+      txtTranslate.Text = sText
       Wait
     Endif
     cvwTranslate.MoveNext
