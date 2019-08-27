@@ -162,7 +162,7 @@ BEGIN_METHOD(Classes_get, GB_STRING name)
 
 	if (class == NULL)
 	{
-		GB_Error("Unknown class '&1'", name);
+		GB_Error((char *)E_UCLASS, name);
 		return;
 	}
 
@@ -317,7 +317,7 @@ BEGIN_METHOD(Class_get, GB_STRING name)
 
 	if (cd == NULL)
 	{
-		GB_Error("Unknown symbol '&1'", name);
+		error(E_NSYMBOL, class, name);
 		return;
 	}
 
@@ -806,14 +806,15 @@ END_METHOD
 
 BEGIN_METHOD(Object_New, GB_STRING class; GB_OBJECT params)
 
-	CLASS *class = CLASS_find(GB_ToZeroString(ARG(class)));
+	const char *name = GB_ToZeroString(ARG(class));
+	CLASS *class = CLASS_find(name);
 	GB_ARRAY params = VARGOPT(params, NULL);
 	int i, np = 0;
 	void *object;
 
 	if (!class)
 	{
-		GB_Error("Unknown class");
+		GB_Error((char *)E_UCLASS, name);
 		return;
 	}
 

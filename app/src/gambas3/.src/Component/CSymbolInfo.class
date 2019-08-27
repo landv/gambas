@@ -436,6 +436,7 @@ Public Function GetSignature(bBalise As Boolean, Optional iShowArg As Integer = 
       hClass = Documentation.GetClassDescription(hClass.ParentComponent &/ hClass.Parent)
       'hClass = CComponent.Classes[hClass.ParentComponent &/ hClass.Parent]
       hSym = hClass.Symbols["_new"]
+      If hSym.Class <> hClass.Name Then Continue
       If hSym Then sSign = MergeSignature(sSign, hClass.Symbols["_new"].GetNativeSignature())
     Loop
   Endif
@@ -683,6 +684,7 @@ Static Public Function TransformSignature(sSign As String, bBalise As Boolean) A
 
   Dim sBold As String
   Dim sNoBold As String
+  Dim sName As String
 
   If bBalise Then
     sBold = "<B>"
@@ -715,7 +717,12 @@ Static Public Function TransformSignature(sSign As String, bBalise As Boolean) A
         sRes = sRes & sBold & "," & sNoBold & " "
       Endif
 
-      sRes = sRes & Mid$(sSign, iInd + 1, iPos - iInd - 1) & " " & sBold & "AS" & sNoBold & " "
+      sName = Mid$(sSign, iInd + 1, iPos - iInd - 1)
+      If sName Begins "&" Then
+        sRes &= sBold & "BYREF" & sNoBold & " "
+        sName = Mid$(sName, 2)
+      Endif
+      sRes &= sName & " " & sBold & "AS" & sNoBold & " "
 
       iInd = iPos
       bName = True

@@ -871,7 +871,7 @@ Public Function GetClassLinkFromName(sClass As String) As String
     sComp = CComponent.Classes[sClass].Component
   Endif
 
-  Return "<a href=\"" & Application.Root &/ LCase("comp" &/ sComp &/ sClass) & "\">" & Html(sClass) & "</a>"
+  Return "<a href=\"" & Html(Application.Root &/ LCase("comp" &/ sComp &/ sClass) & LinkSuffix) & "\">" & Html(sClass) & "</a>"
 
 Catch
 

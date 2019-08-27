@@ -888,7 +888,7 @@ Public Sub ipnProject_Click()
 
   Select Case ipnProject.Text
     Case ("Components") 
-      choComponent.SetFocus
+      'choComponent.SetFocus
       choComponent.HideBrowser
       btnReset.Show
     Case ("Libraries") 

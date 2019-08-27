@@ -367,11 +367,10 @@ Public Sub Update()
   Next
   Project.Workspace.Unlock
   
-  If aRemove.Count Then
-    
-    Project.Reload
+  Project.Reload
+  
+  If aRemove.Count Then    
     FMain.DoFilter(Project.FILTER_CONFLICT)
-    
   Endif
 
 End

@@ -217,11 +217,13 @@ End
 
 Public Sub Main()
 
-  Dim hMime As DesktopMime
+  'Dim hMime As DesktopMime
   
   'DesktopFile.FromMime("application/vnd.oasis.opendocument.text")
-  hMime = DesktopMime.FromFile("/bin/ls")
-  Print hMime.Type
+  ' hMime = DesktopMime.FromFile("/bin/ls")
+  ' Print hMime.Type
+  
+  Print Desktop.Types.Count
   
 End
 

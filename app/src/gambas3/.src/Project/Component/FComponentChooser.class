@@ -37,7 +37,7 @@ Public Sub _new()
   'gvwComponent.Padding = 4
   
   gvwComponent.Columns.Count = 5
-  gvwComponent.Columns[0].Width = 24
+  gvwComponent.Columns[0].Width = 16
   'gvwComponent.Columns[0].Expand = False
   'gvwComponent.Columns[1].Expand = False
   gvwComponent.Columns[2].Expand = True
@@ -222,7 +222,7 @@ Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
         ' Endif
       
       Case 1
-        .Text = hComp.Key
+        .Text = hComp.Key & "  "
         .Font.Bold = True
         
       Case 2
@@ -782,6 +782,8 @@ End
 Public Sub gvwComponent_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, Column As Integer)
 
   Dim sComp As String = $aComp[Row]
+  Dim DX As Integer
+  
   'Dim hComp As CComponent = CComponent.All[sComp]
 
   If Not IsCheckable() Then Return
@@ -790,8 +792,10 @@ Public Sub gvwComponent_Draw(X As Integer, Y As Integer, Width As Integer, Heigh
     
     Case 0
       
-      X += (Width - 16) \ 2
-      Y += (Height - 16) \ 2
+      DX = (Width - 16) \ 2
+      X += DX
+      Y += DX
+      'Y += (gvwComponent.Rows.Height - gvwComponent.Padding * 2 - 16) \ 2
       Width = 16
       Height = 16
       

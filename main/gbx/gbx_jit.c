@@ -186,6 +186,7 @@ static bool create_function(CLASS *class, int index)
 	int i;
 	int len;
 	char *name;
+	int jit_index;
 	
 	arch = class->component ? class->component->archive : NULL;
 	
@@ -231,14 +232,15 @@ static bool create_function(CLASS *class, int index)
 
 	if (!_jit_func)
 		ARRAY_create(&_jit_func);
-	
+
+	jit_index = ARRAY_count(_jit_func);
 	jit = (JIT_FUNCTION *)ARRAY_add(&_jit_func);
 	
 	jit->addr = addr;
 	jit->code = func->code;
 	
-	func->code = (PCODE *)jit;
-	
+	func->code = (PCODE *)(intptr_t)jit_index;
+
 	return FALSE;
 }
 
@@ -271,7 +273,7 @@ bool JIT_exec(bool ret_on_stack)
 	FP = func;
 	EC = NULL;
 	
-	jit = (JIT_FUNCTION *)(func->code);
+	jit = &_jit_func[(intptr_t)func->code];
 	
 	PROFILE_ENTER_FUNCTION();
 	
@@ -327,7 +329,7 @@ bool JIT_exec(bool ret_on_stack)
 PCODE *JIT_get_code(FUNCTION *func)
 {
 	if (func->fast_linked)
-		return ((JIT_FUNCTION *)(func->code))->code;
+		return _jit_func[(intptr_t)func->code].code;
 	else
 		return func->code;
 }

@@ -808,19 +808,14 @@ static void output_param_local(void)
 
 		if (func->name != NO_SYMBOL)
 		{
-			/* Les param�res sont remis dans les variables locales !
 			for (j = 0; j < func->nparam; j++)
 			{
 				param = &func->param[j];
-				write_int(param->type);
+				write_type(param->type);
 			}
-			*/
-
-			for (j = 0; j < func->nlocal + func->nparam; j++)
+			for (j = 0; j < func->nlocal; j++)
 			{
-				param = &func->local[j];
-
-				/* type */
+				param = &func->local[j + func->nparam];
 				write_type(param->type);
 			}
 		}

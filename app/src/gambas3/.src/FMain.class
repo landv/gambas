@@ -549,10 +549,9 @@ Public Sub mnuPopup_Show()
   Endif
   
   mnuOpenInProject.Hide
+  mnuOpenWithFileManager.Show
   If IsDir(sCurrent) Or If Left($sKey) = "$" Then
-    mnuOpenWithFileManager.Show
   Else
-    mnuOpenWithFileManager.Hide
     If bLink Then
       sPath = Project.GetAbsoluteLink(sCurrent, Stat(sCurrent).Link)
       If Project.FindProjectPath(sPath) Then 

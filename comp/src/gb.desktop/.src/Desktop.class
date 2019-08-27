@@ -13,6 +13,7 @@ Static Property Read RootWindow As Integer
 Static Property Showing As Boolean
 Static Property Read Passwords As _Desktop_Passwords
 Static Property Read Path As String
+Static Property Read Types As String[]
 
 Static Property Read DataDir As String
 Static Property Read ConfigDir As String
@@ -28,6 +29,7 @@ Static Private $aImgExt As String[]
 Static Private $sSessionType As String
 Static Private $bRemoteDisplay As Boolean
 Static Private $bRemoteDisplayChecked As Boolean
+Static Private $aDesktopType As String[]
 
 Static Public Sub _init()
   
@@ -38,7 +40,6 @@ Static Public Sub _init()
   Endif
   
 End
-
 
 Static Public Sub SendMail({To} As String[], Optional Cc As String[], Optional Bcc As String[], Optional Subject As String, Optional Body As String, Optional Attachment As String)
 
@@ -613,3 +614,21 @@ Static Private Function RemoteDisplay_Read() As Boolean
   Return $bRemoteDisplay
   
 End
+
+Static Private Function Types_Read() As String[]
+
+  If Not $aDesktopType Then 
+    $aDesktopType = Split(Desktop.Type, ":")
+    $aDesktopType.ReadOnly = True
+  Endif
+  
+  Return $aDesktopType
+
+End
+
+Static Public Sub Is(Type As String) As Boolean
+  
+  Return Types_Read().Exist(Type, gb.IgnoreCase)
+  
+End
+

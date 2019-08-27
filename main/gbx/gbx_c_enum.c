@@ -88,7 +88,7 @@ static bool check_enum()
 {
 	if (!EXEC_enum)
 	{
-		GB_Error("No current enumeration");
+		GB_Error((char *)E_ENUM); //"No current enumeration");
 		return TRUE;
 	}
 	else

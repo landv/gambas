@@ -413,6 +413,7 @@ void CLASS_add_property(CLASS *class, TRANS_PROPERTY *decl)
 	prop->name = decl->index;
 	prop->line = decl->line;
 	prop->comment = decl->comment;
+	prop->use = decl->use;
 	
 	for (i = 0; i < decl->nsynonymous; i++)
 	{
@@ -884,13 +885,58 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 	int index;
 
 	JOB->line = prop->line;
+	JOB->current = NULL;
 
 	is_static = TYPE_is_static(prop->type);
 
 	name = STR_copy(TABLE_get_symbol_name_suffix(class->table, prop->name, write ? "_Write" : "_Read"));
 
 	if (!TABLE_find_symbol(class->table, name, strlen(name), &index))
-		THROW("&1 is not declared", name);
+	{
+		TRANS_FUNC decl;
+		
+		if (prop->use == 0)
+			THROW("&1 is not declared", name);
+		
+		CLEAR(&decl);
+		decl.index = index = CLASS_add_symbol(class, name);
+		
+		if (write)
+		{
+			decl.nparam = 1;
+			decl.param[0].type = prop->type;
+			decl.param[0].index = NO_SYMBOL;
+		}
+		else
+		{
+			decl.type = prop->type;
+			TYPE_clear_flag(&decl.type, TF_PUBLIC);
+		}
+		decl.line = prop->line;
+	
+		TYPE_set_kind(&decl.type, TK_FUNCTION);
+		
+		CLASS_add_function(JOB->class, &decl);
+		JOB->nobreak = TRUE;
+		
+		sym = CLASS_get_symbol(JOB->class, prop->use);
+		
+		if (write)
+		{
+			sym->global_assigned = TRUE;
+			CODE_push_local(-1);
+			CODE_pop_global(sym->global.value, is_static);
+			CODE_return(2);
+		}
+		else
+		{
+			sym->global_used = TRUE;
+			CODE_push_global(sym->global.value, is_static, FALSE);
+			CODE_return(1);
+		}
+		FUNCTION_add_last_pos_line();
+		JOB->func->stack = CODE_stack_usage;
+	}
 
 	sym = (CLASS_SYMBOL *)TABLE_get_symbol(class->table, index);
 	

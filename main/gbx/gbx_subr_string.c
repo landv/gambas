@@ -174,10 +174,11 @@ void SUBR_file(ushort code)
 
 	for (i = 0; i < NPARAM; i++)
 	{
-		/*VALUE_conv(&PARAM[i], T_STRING);*/
-		SUBR_get_string_len(&PARAM[i], &addr, &len);
+		VALUE_conv_string(&PARAM[i]);
+		VALUE_get_string(&PARAM[i], &addr, &len);
+		//SUBR_get_string_len(&PARAM[i], &addr, &len);
 
-		if (len > 0)
+		if (addr && len > 0)
 		{
 			if (length > 0)
 			{

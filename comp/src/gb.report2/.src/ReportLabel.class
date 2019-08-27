@@ -142,7 +142,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   Else
     Paint.Translate(iX + iW / 2, iY + iH / 2)
     Paint.Rotate(Rad($fAngle))
-    Paint.Translate(- (iX + iW / 2), - (iY + iH / 2))
+    Paint.Translate(-(iX + iW / 2), -(iY + iH / 2))
     Paint.Text(sTempText, iX, iY, iW, iH, Align.Center)
     
   Endif

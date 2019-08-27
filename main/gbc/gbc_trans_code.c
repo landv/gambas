@@ -46,7 +46,7 @@ static CLASS_SYMBOL *add_local(int sym_index, TYPE type, int value, bool used)
 	PARAM *loc;
 	bool warnings = JOB->warnings;
 
-	if (ARRAY_count(_func->local) >= MAX_LOCAL_SYMBOL)
+	if (value > MAX_LOCAL_SYMBOL)
 		THROW("Too many local variables");
 
 	loc = ARRAY_add(&_func->local);

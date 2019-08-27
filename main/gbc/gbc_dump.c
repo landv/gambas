@@ -324,14 +324,17 @@ static void export_type(TYPE type, bool scomma)
 static void export_signature(int nparam, int npmin, PARAM *param, bool vararg)
 {
 	int i;
+	PARAM *p;
 
 	for (i = 0; i < nparam; i++)
 	{
+		p = &param[i];
+		
 		if (i == npmin)
 			fprintf(_finfo, "[");
 
-		fprintf(_finfo, "(%s)", get_name(param[i].index));
-		export_type(param[i].type, TRUE);
+		fprintf(_finfo, "(%s%s)", (p->byref ? "&" : ""), get_name(p->index));
+		export_type(p->type, TRUE);
 	}
 
 	if (npmin < nparam)

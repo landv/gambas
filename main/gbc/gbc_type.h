@@ -88,8 +88,9 @@ EXTERN char *TYPE_name[];
 
 #define TYPE_set_value(type, _value)     ((type)->t.value = (_value))
 #define TYPE_set_id(type, _id)           ((type)->t.id = (_id))
-#define TYPE_set_kind(type, _kind)       ((type)->t.flag |= (_kind))
+#define TYPE_set_kind(type, _kind)       ((type)->t.flag &= ~0x7, (type)->t.flag |= (_kind))
 #define TYPE_set_flag(type, _flag)       ((type)->t.flag |= (_flag))
+#define TYPE_clear_flag(type, _flag)     ((type)->t.flag &= ~(_flag))
 #define TYPE_clear(type)                 ((type)->l = 0)
 
 #define TYPE_can_be_long(type)  (TYPE_get_id(type) <= T_LONG)
