@@ -327,7 +327,7 @@ Static Private Sub RoundRect(x As Float, y As Float, w As Float, h As Float, Rad
   '-->E
   c1 = ARC_TO_BEZIER * radius_x[2]
   c2 = ARC_TO_BEZIER * radius_y[2]
-  Paint.RelCurveTo(0.0, c2, c1 - radius_x[2], radius_y[2], - radius_x[2], radius_y[2])
+  Paint.RelCurveTo(0.0, c2, c1 - radius_x[2], radius_y[2], -radius_x[2], radius_y[2])
 
   '-->F
   Paint.LineTo(x + radius_x[3], y + h)
@@ -335,7 +335,7 @@ Static Private Sub RoundRect(x As Float, y As Float, w As Float, h As Float, Rad
   '-->G
   c1 = ARC_TO_BEZIER * radius_x[3]
   c2 = ARC_TO_BEZIER * radius_y[3]
-  Paint.RelCurveTo(- c1, 0, - radius_x[3], - c2, - radius_x[3], - radius_y[3])
+  Paint.RelCurveTo(-c1, 0, -radius_x[3], -c2, -radius_x[3], -radius_y[3])
 
   '-->H
   Paint.LineTo(x, y + radius_y[0])
@@ -343,7 +343,7 @@ Static Private Sub RoundRect(x As Float, y As Float, w As Float, h As Float, Rad
   '-->A
   c1 = ARC_TO_BEZIER * radius_x[0]
   c2 = ARC_TO_BEZIER * radius_y[0]
-  Paint.relcurveto(0.0, - c2, radius_x[0] - c1, - radius_y[0], radius_x[0], - radius_y[0])
+  Paint.relcurveto(0.0, -c2, radius_x[0] - c1, -radius_y[0], radius_x[0], -radius_y[0])
 
   'Paint.closepath()
 
