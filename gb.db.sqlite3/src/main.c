@@ -265,8 +265,7 @@ static int do_query(DB_DATABASE *db, const char *error, SQLITE_RESULT **pres, co
 		_print_query = FALSE;
 	}
 
-	if (DB.IsDebug())
-		fprintf(stderr, "gb.db.sqlite3: %p: %s\n", conn, query);
+	DB.Debug("gb.db.sqlite3","%p: %s", conn, query);
 
 	if (db->timeout > 0)
 		max_retry = db->timeout * 5;
@@ -2343,8 +2342,7 @@ static int database_create(DB_DATABASE *db, const char *name)
 
 _CREATE_DATABASE:
 
-	if (DB.IsDebug())
-		fprintf(stderr, "sqlite3: create database: %s\n", fullpath);
+	DB.Debug("gb.db.sqlite3", "create database: %s", fullpath);
 
 	conn = sqlite_open_database(fullpath, host);
 	GB.FreeString(&fullpath);

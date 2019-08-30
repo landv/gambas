@@ -28,6 +28,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/time.h>
 
 #include "gb_common.h"
 
@@ -466,6 +467,34 @@ int DB_IsDebug(void)
 	return _debug;
 }
 
+void DB_Debug(const char *prefix, const char *msg, ...)
+{
+	va_list args;
+	struct timeval tv;
+	GB_DATE_SERIAL *date;
+	GB_DATE val;
+
+	if (!_debug)
+		return;
+
+	if (gettimeofday(&tv, NULL) == 0)
+	{
+		GB.MakeDateFromTime((time_t)tv.tv_sec, tv.tv_usec, &val);
+		date = GB.SplitDate(&val);
+		fprintf(stderr, "%04d-%02d-%02d %02d:%02d:%02d.%03d ", date->year, date->month, date->day, date->hour, date->min, date->sec, date->msec);
+	}
+	
+	fprintf(stderr, "%s: ", prefix);
+	
+	va_start(args, msg);
+	vfprintf(stderr, msg, args);
+	va_end(args);
+	
+	fputc('\n', stderr);
+	fflush(stderr);
+}
+
+
 static char *_quote;
 DB_SUBST_CALLBACK _quote_cb;
 
@@ -660,6 +689,7 @@ void *GB_DB_1[] EXPORT = {
 	(void *)DB_Format,
 	(void *)DB_FormatVariant,
 	(void *)DB_IsDebug,
+	(void *)DB_Debug,
 	(void *)DB_TryAnother,
 	(void *)DB_SubstString,
 	(void *)DB_QuoteString,

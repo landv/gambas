@@ -1762,4 +1762,3 @@ void LOCAL_set_first_day_of_week(char day)
 	if (day >= -1 && day <= 6)
 		LOCAL_first_day_of_week = day;
 }
-

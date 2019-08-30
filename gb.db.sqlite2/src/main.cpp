@@ -284,8 +284,7 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres,
 		_print_query = FALSE;
 	}
 
-	if (DB.IsDebug())
-		fprintf(stderr, "sqlite2: %p: %s\n", conn, query);
+	DB.Debug("sqlite2","%p: %s", conn, query);
 
 	if (strncasecmp("select",query,6) == 0){
 
