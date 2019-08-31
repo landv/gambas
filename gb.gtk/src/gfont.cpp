@@ -107,7 +107,7 @@ void gFont::init()
 	char *buf1,*buf2; 
 	int bucle;
 
-	ct=gdk_pango_context_get();
+	ct = gdk_pango_context_get();
 	pango_context_list_families(ct, &_families, &FONT_n_families);
 	
 	for (bucle=0;bucle<FONT_n_families;bucle++)
@@ -167,7 +167,7 @@ void gFont::updateWidget()
 {
 	if (!wid) return;
 
-	PangoFontDescription *desc=pango_context_get_font_description(ct);
+	PangoFontDescription *desc = pango_context_get_font_description(ct);
 	gtk_widget_modify_font(wid,desc);
 	
 	if (G_OBJECT_TYPE(wid)==GTK_TYPE_LABEL)
@@ -257,17 +257,30 @@ void gFont::initFlags()
 void gFont::create()
 {
 #ifdef GTK3
+
 	char *font;
+	PangoFontDescription *fd;
+
 	g_object_get(gtk_settings_get_default(), "gtk-font-name", &font, (char *)NULL);
+
 	realize();
-	ct = gdk_pango_context_get();
-	pango_context_set_font_description(ct, pango_font_description_from_string(font));
+
+	fd = pango_font_description_from_string(font);
 	g_free(font);
+
+	ct = gdk_pango_context_get();
+
+	pango_context_set_font_description(ct, fd);
+	pango_font_description_free(fd);
+	
 #else
+	
 	GtkStyle *sty = gtk_widget_get_default_style();
+	
 	realize();
 	ct = gdk_pango_context_get();
 	pango_context_set_font_description(ct, sty->font_desc);
+	
 #endif
 }
 
@@ -351,8 +364,8 @@ gFont::~gFont()
 
 int gFont::ascent()
 {
-	PangoFontDescription *desc=pango_context_get_font_description(ct);
-	PangoFontMetrics *metric=pango_context_get_metrics(ct,desc,NULL);
+	PangoFontDescription *desc = pango_context_get_font_description(ct);
+	PangoFontMetrics *metric = pango_context_get_metrics(ct,desc,NULL);
 	
 	//fprintf(stderr, "ascent: %d\n", pango_font_metrics_get_ascent(metric));
 	return gt_pango_to_pixel(pango_font_metrics_get_ascent(metric));
@@ -360,16 +373,16 @@ int gFont::ascent()
 
 float gFont::ascentF()
 {
-	PangoFontDescription *desc=pango_context_get_font_description(ct);
-	PangoFontMetrics *metric=pango_context_get_metrics(ct,desc,NULL);
+	PangoFontDescription *desc = pango_context_get_font_description(ct);
+	PangoFontMetrics *metric = pango_context_get_metrics(ct,desc,NULL);
 	
 	return (float)pango_font_metrics_get_ascent(metric) / PANGO_SCALE;
 }
 
 int gFont::descent()
 {
-	PangoFontDescription *desc=pango_context_get_font_description(ct);
-	PangoFontMetrics *metric=pango_context_get_metrics(ct,desc,NULL);
+	PangoFontDescription *desc = pango_context_get_font_description(ct);
+	PangoFontMetrics *metric = pango_context_get_metrics(ct,desc,NULL);
 	
 	//fprintf(stderr, "descent: %d\n", pango_font_metrics_get_descent(metric));
 	return gt_pango_to_pixel(pango_font_metrics_get_descent(metric));
@@ -377,17 +390,16 @@ int gFont::descent()
 
 bool gFont::bold()
 {
-	PangoFontDescription *desc=pango_context_get_font_description(ct);
+	PangoFontDescription *desc = pango_context_get_font_description(ct);
 	PangoWeight w;
 		
-	w=pango_font_description_get_weight(desc);
-	if (w>PANGO_WEIGHT_NORMAL) return true;
-	return false;
+	w = pango_font_description_get_weight(desc);
+	return (w > PANGO_WEIGHT_NORMAL);
 }
 
 void gFont::setBold(bool vl)
 {
-	PangoFontDescription *desc=pango_context_get_font_description(ct);
+	PangoFontDescription *desc = pango_context_get_font_description(ct);
 
 	if (vl)
 		pango_font_description_set_weight(desc,PANGO_WEIGHT_BOLD);
@@ -399,14 +411,14 @@ void gFont::setBold(bool vl)
 
 bool gFont::italic()
 {
-	PangoFontDescription *desc=pango_context_get_font_description(ct);
+	PangoFontDescription *desc = pango_context_get_font_description(ct);
 
 	return pango_font_description_get_style(desc) !=PANGO_STYLE_NORMAL; 
 }
 
 void gFont::setItalic(bool vl)
 {
-	PangoFontDescription *desc=pango_context_get_font_description(ct);
+	PangoFontDescription *desc = pango_context_get_font_description(ct);
 
 	if (vl)
 		pango_font_description_set_style(desc,PANGO_STYLE_ITALIC);
@@ -418,14 +430,14 @@ void gFont::setItalic(bool vl)
 
 char* gFont::name()
 {
-	PangoFontDescription *desc=pango_context_get_font_description(ct);
+	PangoFontDescription *desc = pango_context_get_font_description(ct);
 
 	return (char *)pango_font_description_get_family (desc);	
 }
 
 void gFont::setName(char *nm)
 {
-	PangoFontDescription *desc=pango_context_get_font_description(ct);
+	PangoFontDescription *desc = pango_context_get_font_description(ct);
 	
 	pango_font_description_set_family (desc,nm);
 	
@@ -437,7 +449,7 @@ double gFont::size()
 {
 	double size;	
 
-	PangoFontDescription *desc=pango_context_get_font_description(ct);
+	PangoFontDescription *desc = pango_context_get_font_description(ct);
 
 	size=pango_font_description_get_size(desc);
 	return size / (double)PANGO_SCALE;
@@ -451,7 +463,7 @@ int gFont::grade()
 
 void gFont::setSize(double sz)
 {
-	PangoFontDescription *desc=pango_context_get_font_description(ct);
+	PangoFontDescription *desc = pango_context_get_font_description(ct);
 	
 	pango_font_description_set_size(desc, (int)(sz * PANGO_SCALE + 0.5));
 	
@@ -536,6 +548,7 @@ void gFont::textSize(const char *text, int len, float *w, float *h)
 		ly = pango_layout_new(ct);
 		pango_layout_set_text(ly, text, len);	
 		pango_layout_get_size(ly, &tw, &th);
+		g_object_unref(ly);
 	}
 	
 	if (w) *w = (float)tw / PANGO_SCALE;
@@ -567,7 +580,7 @@ bool gFont::scalable()
 {
 	bool ret=false;
 	
-	PangoFontDescription *desc=pango_context_get_font_description(ct);
+	PangoFontDescription *desc = pango_context_get_font_description(ct);
 	//PangoFontDescription *tmp;
 	const char* name=pango_font_description_get_family(desc);
 	PangoFontFamily **families;
@@ -619,7 +632,7 @@ bool gFont::fixed()
 {
 	bool ret=false;
 	
-	PangoFontDescription *desc=pango_context_get_font_description(ct);
+	PangoFontDescription *desc = pango_context_get_font_description(ct);
 	const char* name=pango_font_description_get_family(desc);
 	PangoFontFamily **families;
 	int n_families;
@@ -717,6 +730,7 @@ void gFont::richTextSize(const char *txt, int len, float sw, float *w, float *h)
 			pango_layout_set_width(ly, sw * PANGO_SCALE);
 		pango_layout_get_size(ly, &tw, &th);
 		g_free(html);
+		g_object_unref(ly);
 	}
 	
 	if (w) *w = (float)tw / PANGO_SCALE;
