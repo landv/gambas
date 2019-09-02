@@ -1236,7 +1236,7 @@ Public Sub btnInstallFont_Click()
   
   If Not Exist(sDir) Then Mkdir sDir
   
-  For Each sFont In ["GambasMedium-12.bdf", "GambasBold-12.bdf", "GambasMedium-13.bdf", "GambasBold-13.bdf", "GambasMedium-16.bdf"]
+  For Each sFont In ["GambasMedium-12.bdf", "GambasBold-12.bdf", "GambasMedium-13.bdf", "GambasBold-13.bdf", "GambasMedium-16.bdf", "GambasBold-16.bdf"]
     Try Kill sDir &/ sFont
     Try Copy "font" &/ sFont To sDir &/ sFont
   Next
