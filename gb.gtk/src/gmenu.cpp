@@ -61,7 +61,10 @@ static gint my_menu_shell_enter_notify(GtkWidget *widget, GdkEventCrossing *even
 	
 __PREVIOUS:
 
-	return ((gint (*)(GtkWidget *, GdkEventCrossing *))klass->_gtk_reserved6)(widget, event);
+	if (klass->_gtk_reserved6)
+		return ((gint (*)(GtkWidget *, GdkEventCrossing *))klass->_gtk_reserved6)(widget, event);
+	else
+		return 0;
 }
 
 static void patch_classes(void)
