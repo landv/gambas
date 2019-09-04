@@ -10,7 +10,7 @@ dnl LT_INIT
 
 GB_COMPONENT(
   mysql, MYSQL, gb.db.mysql, [src],
-  [GB_FIND(mysql.h my_config.h, $prefix /opt/local /opt /usr/local/lib /usr/local /usr/lib /usr, include mysql*/include)],
+  [GB_FIND(mysql.h, $prefix /opt/local /opt /usr/local/lib /usr/local /usr/lib /usr, include mysql*/include)],
   [GB_FIND(libmysqlclient.$SHLIBEXT, $prefix /opt/local /opt /usr/local /usr, lib mysql*/lib)],
   [$C_LIB -lmysqlclient -lz])
  
