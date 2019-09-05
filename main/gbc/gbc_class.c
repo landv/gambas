@@ -912,9 +912,12 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 			decl.type = prop->type;
 			TYPE_clear_flag(&decl.type, TF_PUBLIC);
 		}
+		
 		decl.line = prop->line;
-	
+		
 		TYPE_set_kind(&decl.type, TK_FUNCTION);
+		if (is_static)
+			TYPE_set_flag(&decl.type, TF_STATIC);
 		
 		CLASS_add_function(JOB->class, &decl);
 		JOB->nobreak = TRUE;
