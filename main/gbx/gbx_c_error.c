@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_c_error.c
+	gbx_c_error.c
 
-  (c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
+	(c) 2000-2017 Benoît Minisini <g4mba5@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -46,7 +46,7 @@
 
 BEGIN_PROPERTY(Error_Code)
 
-  GB_ReturnInt(ERROR_last.code);
+	GB_ReturnInt(ERROR_last.code);
 
 END_PROPERTY
 
@@ -84,7 +84,7 @@ BEGIN_PROPERTY(Error_Text)
 			else
 				GB_ReturnConstZeroString(ERROR_last.msg);
 		}
-  }
+	}
 	else
 		GB_ReturnVoidString();
 
@@ -94,7 +94,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Error_Class)
 
 	if (ERROR_last.code)
-  	GB_ReturnObject(ERROR_last.cp);
+		GB_ReturnObject(ERROR_last.cp);
 	else
 		GB_ReturnNull();
 
@@ -104,7 +104,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Error_Where)
 
 	if (ERROR_last.code)
-  	GB_ReturnNewZeroString(DEBUG_get_position(ERROR_last.cp, ERROR_last.fp, ERROR_last.pc));
+		GB_ReturnNewZeroString(DEBUG_get_position(ERROR_last.cp, ERROR_last.fp, ERROR_last.pc));
 	else
 		GB_ReturnVoidString();
 
@@ -113,15 +113,16 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(Error_Clear)
 
-  ERROR_reset(&ERROR_last);
+	ERROR_reset(&ERROR_last);
+	EXEC_got_error = FALSE;
 
 END_METHOD
 
 
 BEGIN_METHOD(Error_Raise, GB_STRING msg)
 
-  ERROR_define(GB_ToZeroString(ARG(msg)), NULL);
-  EXEC_set_native_error(TRUE);
+	ERROR_define(GB_ToZeroString(ARG(msg)), NULL);
+	EXEC_set_native_error(TRUE);
 
 END_METHOD
 
@@ -150,19 +151,19 @@ END_PROPERTY
 
 GB_DESC NATIVE_Error[] =
 {
-  GB_DECLARE_STATIC("Error"),
+	GB_DECLARE_STATIC("Error"),
 
-  GB_STATIC_PROPERTY_READ("Code", "i", Error_Code),
-  GB_STATIC_PROPERTY_READ("Text", "s", Error_Text),
-  GB_STATIC_PROPERTY_READ("Class", "Class", Error_Class),
-  GB_STATIC_PROPERTY_READ("Where", "s", Error_Where),
-  GB_STATIC_PROPERTY_READ("Backtrace", "String[]", Error_Backtrace),
+	GB_STATIC_PROPERTY_READ("Code", "i", Error_Code),
+	GB_STATIC_PROPERTY_READ("Text", "s", Error_Text),
+	GB_STATIC_PROPERTY_READ("Class", "Class", Error_Class),
+	GB_STATIC_PROPERTY_READ("Where", "s", Error_Where),
+	GB_STATIC_PROPERTY_READ("Backtrace", "String[]", Error_Backtrace),
 
-  GB_STATIC_METHOD("Clear", NULL, Error_Clear, NULL),
-  GB_STATIC_METHOD("Raise", NULL, Error_Raise, "(Message)s"),
-  GB_STATIC_METHOD("Propagate", NULL, Error_Propagate, NULL),
+	GB_STATIC_METHOD("Clear", NULL, Error_Clear, NULL),
+	GB_STATIC_METHOD("Raise", NULL, Error_Raise, "(Message)s"),
+	GB_STATIC_METHOD("Propagate", NULL, Error_Propagate, NULL),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 

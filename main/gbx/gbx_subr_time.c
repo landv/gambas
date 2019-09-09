@@ -265,7 +265,7 @@ void SUBR_week(ushort code)
 
 	/* number of beginning days to ignore */
 
-	n=  0;
+	n = 0;
 	while (day != start)
 	{
 		day++;
