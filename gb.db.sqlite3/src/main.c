@@ -1837,7 +1837,6 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		int len;
 		char quote;
 
-		fprintf(stderr, "field = %s / schema = %s\n", _fieldName, schema);
 		len = strlen(_fieldName);
 		
 		p = strchr(schema, '(');
