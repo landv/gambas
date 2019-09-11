@@ -292,7 +292,7 @@ static bool header_event(TRANS_EVENT *event)
 
 static bool header_property(TRANS_PROPERTY *prop)
 {
-	TRANS_DECL ptype;
+	TRANS_DECL ptype = { 0 };
 	PATTERN *look = JOB->current;
 	bool is_static = FALSE;
 	bool is_public = TRUE;

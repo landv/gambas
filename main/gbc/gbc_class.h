@@ -239,7 +239,7 @@ CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, int type, bool global);
 void CLASS_check_unused_global(CLASS *class);
 void CLASS_begin_init_function(CLASS *class, int type);
 
-void CLASS_add_function(CLASS *class, TRANS_FUNC *decl);
+int CLASS_add_function(CLASS *class, TRANS_FUNC *decl);
 void CLASS_add_event(CLASS *class, TRANS_EVENT *decl);
 void CLASS_add_property(CLASS *class, TRANS_PROPERTY *prop);
 void CLASS_add_extern(CLASS *class, TRANS_EXTERN *decl);

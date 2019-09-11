@@ -252,7 +252,7 @@ void CLASS_check_unused_global(CLASS *class)
 }
 
 
-void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
+int CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
 {
 	FUNCTION *func;
 	int i;
@@ -278,13 +278,14 @@ void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
 	if (JOB->debug)
 		ARRAY_create(&func->pos_line);
 
-	if (!decl) return;
+	if (!decl) return count;
 
-	sym = CLASS_declare(class, decl->index, TK_FUNCTION, TRUE);
-	/*CLASS_add_symbol(class, JOB->table, decl->index, &sym, NULL);*/
-
-	sym->global.type = decl->type;
-	sym->global.value = ARRAY_count(class->function) - 1;
+	if (decl->index != NO_SYMBOL)
+	{
+		sym = CLASS_declare(class, decl->index, TK_FUNCTION, TRUE);
+		sym->global.type = decl->type;
+		sym->global.value = count;
+	}
 
 	if (TYPE_is_static(decl->type))
 		class->has_static = TRUE;
@@ -340,6 +341,8 @@ void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
 
 	if (func->npmin < 0)
 		func->npmin = func->nparam;
+	
+	return count;
 }
 
 
@@ -883,6 +886,7 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 	bool is_static;
 	FUNCTION *func;
 	int index;
+	int value;
 
 	JOB->line = prop->line;
 	JOB->current = NULL;
@@ -899,7 +903,7 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 			THROW("&1 is not declared", name);
 		
 		CLEAR(&decl);
-		decl.index = index = CLASS_add_symbol(class, name);
+		decl.index = index = NO_SYMBOL; //index = CLASS_add_symbol(class, name);
 		
 		if (write)
 		{
@@ -919,7 +923,7 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 		if (is_static)
 			TYPE_set_flag(&decl.type, TF_STATIC);
 		
-		CLASS_add_function(JOB->class, &decl);
+		value = CLASS_add_function(JOB->class, &decl);
 		JOB->nobreak = TRUE;
 		
 		sym = CLASS_get_symbol(JOB->class, prop->use);
@@ -937,52 +941,57 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 			CODE_push_global(sym->global.value, is_static, FALSE);
 			CODE_return(1);
 		}
+		
 		FUNCTION_add_last_pos_line();
 		JOB->func->stack = CODE_stack_usage;
 	}
 
-	sym = (CLASS_SYMBOL *)TABLE_get_symbol(class->table, index);
-	
-	if (TYPE_get_kind(sym->global.type) != TK_FUNCTION)
-		THROW("&1 is declared but is not a function", name);
-
-	func = &class->function[sym->global.value];
-	JOB->line = func->line;
-
-	if (TYPE_is_public(sym->global.type))
-		THROW("A property implementation cannot be public");
-
-	if (is_static != TYPE_is_static(sym->global.type))
+	if (index != NO_SYMBOL)
 	{
-		if (is_static)
-			THROW("&1 must be static", name);
+		sym = (CLASS_SYMBOL *)TABLE_get_symbol(class->table, index);
+		
+		if (TYPE_get_kind(sym->global.type) != TK_FUNCTION)
+			THROW("&1 is declared but is not a function", name);
+
+		func = &class->function[sym->global.value];
+		JOB->line = func->line;
+
+		if (TYPE_is_public(sym->global.type))
+			THROW("A property implementation cannot be public");
+
+		if (is_static != TYPE_is_static(sym->global.type))
+		{
+			if (is_static)
+				THROW("&1 must be static", name);
+			else
+				THROW("&1 cannot be static", name);
+		}
+
+		if (write)
+		{
+			if (TYPE_get_id(func->type) != T_VOID)
+				goto _BAD_SIGNATURE;
+
+			if (func->nparam != 1 || func->npmin != 1)
+				goto _BAD_SIGNATURE;
+
+			if (!TYPE_compare(&func->param[0].type, &prop->type))
+				goto _BAD_SIGNATURE;
+		}
 		else
-			THROW("&1 cannot be static", name);
-	}
+		{
+			if (!TYPE_compare(&func->type, &prop->type))
+				goto _BAD_SIGNATURE;
 
-	if (write)
-	{
-		if (TYPE_get_id(func->type) != T_VOID)
-			goto _BAD_SIGNATURE;
-
-		if (func->nparam != 1 || func->npmin != 1)
-			goto _BAD_SIGNATURE;
-
-		if (!TYPE_compare(&func->param[0].type, &prop->type))
-			goto _BAD_SIGNATURE;
-	}
-	else
-	{
-		if (!TYPE_compare(&func->type, &prop->type))
-			goto _BAD_SIGNATURE;
-
-		if (func->nparam != 0 || func->npmin != 0)
-			goto _BAD_SIGNATURE;
+			if (func->nparam != 0 || func->npmin != 0)
+				goto _BAD_SIGNATURE;
+		}
+	
+		sym->global_used = TRUE;
 	}
 
 	STR_free(name);
-	sym->global_used = TRUE;
-	return sym->global.value;
+	return value;
 
 _BAD_SIGNATURE:
 

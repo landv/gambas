@@ -68,6 +68,21 @@ static char *_pbuffer;
 
 static OUTPUT_CHANGE *_change = NULL;
 
+static const char *get_symbol_name(TABLE *table, int index, int *len)
+{
+	if (UNLIKELY((index < 0) || (index >= ARRAY_count(table->symbol))))
+	{
+		*len = 1;
+		return "?";
+	}
+	else
+	{
+		SYMBOL *sym = TABLE_get_symbol(table, index);
+		*len = sym->len;
+		return sym->name;
+	}
+}
+
 static void output_init(void)
 {
 	TABLE_create(&StringTable, sizeof(OUTPUT_SYMBOL), TF_NORMAL);
@@ -999,13 +1014,13 @@ static void output_debug_global()
 static void output_debug_method()
 {
 	int i, j, n;
-	SYMBOL *sym;
 	OUTPUT_SYMBOL *osym;
-	CLASS_SYMBOL *csym;
 	PARAM *param;
 	FUNCTION *func;
 	TABLE *table;
 	int index;
+	const char *name;
+	int len;
 
 	begin_section("Debug method info", 5 * sizeof(int));
 
@@ -1021,8 +1036,8 @@ static void output_debug_method()
 			/* pos_line */
 			write_int(0);
 			/* nom */
-			sym = TABLE_get_symbol(Class->table, func->name);
-			write_int(get_string(sym->name, sym->len));
+			name = get_symbol_name(Class->table, func->name, &len);
+			write_int(get_string(name, len));
 			/* local symbols */
 			write_int(0);
 			/* n_local */
@@ -1071,7 +1086,7 @@ static void output_debug_method()
 
 		if (func->name != NO_SYMBOL)
 		{
-			sym = (SYMBOL *)TABLE_get_symbol(Class->table, func->name);
+			/*sym = (SYMBOL *)TABLE_get_symbol(Class->table, func->name);*/
 			/*printf("%.*s()\n", sym->len, sym->name);*/
 
 			TABLE_create(&table, sizeof(OUTPUT_SYMBOL), TF_IGNORE_CASE);
@@ -1079,9 +1094,9 @@ static void output_debug_method()
 			for (j = 0; j < func->nlocal + func->nparam; j++)
 			{
 				param = &func->local[j];
-				csym = (CLASS_SYMBOL *)TABLE_get_symbol(Class->table, param->index);
-
-				index = TABLE_add_symbol(table, csym->symbol.name, csym->symbol.len);
+				
+				name = get_symbol_name(Class->table, param->index, &len);
+				index = TABLE_add_symbol(table, name, len);
 				osym = (OUTPUT_SYMBOL *)TABLE_get_symbol(table, index);
 				osym->value = param->value;/*TYPE_long(param->type);*/
 			}
