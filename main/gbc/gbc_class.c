@@ -886,7 +886,7 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 	bool is_static;
 	FUNCTION *func;
 	int index;
-	int value;
+	int value = 0;
 
 	JOB->line = prop->line;
 	JOB->current = NULL;
@@ -903,7 +903,7 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 			THROW("&1 is not declared", name);
 		
 		CLEAR(&decl);
-		decl.index = index = NO_SYMBOL; //index = CLASS_add_symbol(class, name);
+		decl.index = index = NO_SYMBOL; //CLASS_add_symbol(class, name);
 		
 		if (write)
 		{
@@ -988,6 +988,7 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 		}
 	
 		sym->global_used = TRUE;
+		value = sym->global.value;
 	}
 
 	STR_free(name);
@@ -996,7 +997,6 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 _BAD_SIGNATURE:
 
 	THROW("&1 declaration does not match", name);
-
 }
 
 
