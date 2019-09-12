@@ -576,7 +576,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean, sOpen
     Endif
   Endif
 
-  If bConvert And ReadOnly Then
+  If bConvert And If ReadOnly Then
     Message.Error(("This project is read-only.") & " " & ("It cannot be converted."))
     Return True
   Endif
@@ -588,6 +588,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean, sOpen
   If Right(sDir) = "/" Then sDir = Left(sDir, -1)
   
   Project.Dir = sDir
+  Bookmarks.Add(sDir, ("Current project"), "icon:/small/gambas")
 
   If bConvert Then
 
@@ -968,6 +969,8 @@ Public Function CloseProject() As Boolean
     Endif
     
     'If IsFake() Then Shell "rm -rf " & Shell$(Project.Dir) Wait
+
+    Bookmarks.Remove(Dir)
 
     Path = ""
     {Dir} = ""
