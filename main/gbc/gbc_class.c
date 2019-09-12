@@ -278,8 +278,6 @@ int CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
 	if (JOB->debug)
 		ARRAY_create(&func->pos_line);
 
-	if (!decl) return count;
-
 	if (decl->index != NO_SYMBOL)
 	{
 		sym = CLASS_declare(class, decl->index, TK_FUNCTION, TRUE);
@@ -883,6 +881,7 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 {
 	CLASS_SYMBOL *sym;
 	char *name;
+	//char *name_alloc;
 	bool is_static;
 	FUNCTION *func;
 	int index;
@@ -903,7 +902,8 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 			THROW("&1 is not declared", name);
 		
 		CLEAR(&decl);
-		decl.index = index = NO_SYMBOL; //CLASS_add_symbol(class, name);
+		//name_alloc = CLASS_add_name(class, name, strlen(name));
+		decl.index = index = NO_SYMBOL; //CLASS_add_symbol(class, name_alloc);
 		
 		if (write)
 		{
@@ -944,6 +944,7 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 		
 		FUNCTION_add_last_pos_line();
 		JOB->func->stack = CODE_stack_usage;
+		JOB->nobreak = FALSE;
 	}
 
 	if (index != NO_SYMBOL)
