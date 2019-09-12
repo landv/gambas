@@ -131,6 +131,24 @@ Public Sub PaintColor(X As Integer, Y As Integer, W As Integer, H As Integer, iC
   
 End
 
+Public Sub NormalizePath(sPath As String) As String
+  
+  Dim iLen As Integer
+  
+  Do
+    iLen = Len(sPath)
+    sPath = Replace(sPath, "//", "/")
+    If Len(sPath) = iLen Then Break
+  Loop
+  
+  If Len(sPath) > 1 And If Right(sPath) = "/" Then sPath = Left(sPath, -1)
+  
+  If Not sPath Then Error.Raise("Void path")
+  
+  Return sPath
+  
+End
+
 #If False
 Private Sub AddUnique(aStr As String[], sVal As String)
   

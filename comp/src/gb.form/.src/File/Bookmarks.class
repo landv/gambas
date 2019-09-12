@@ -1,0 +1,57 @@
+' Gambas class file
+
+Export
+
+Static Property Read Count As Integer
+
+Static Private $aBookmark As New Bookmark[]
+
+Static Public Sub Add(Path As String, Optional Name As String, Icon As String)
+
+  Dim hBookmark As Bookmark
+
+  hBookmark = New Bookmark
+  With hBookmark
+    .Name = Name
+    .Path = Main.NormalizePath(Path)
+    .Icon = Icon
+  End With
+  
+  $aBookmark.Add(hBookmark)
+  
+End
+
+Static Public Sub Remove(Path As String)
+
+  Dim I As Integer
+  
+  Path = Main.NormalizePath(Path)
+  
+  While I < $aBookmark.Count
+    If $aBookmark[I].Path = Path Then
+      $aBookmark.Remove(I)
+    Else
+      Inc I
+    Endif
+  Wend
+
+End
+
+Static Private Function Count_Read() As Integer
+
+  Return $aBookmark.Count
+
+End
+
+Static Public Sub Clear()
+  
+  $aBookmark.Clear
+  
+End
+
+Static Public Sub _GetAll() As Bookmark[]
+  
+  Return $aBookmark
+  
+End
+

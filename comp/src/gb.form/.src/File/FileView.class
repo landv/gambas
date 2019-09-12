@@ -1144,10 +1144,10 @@ Public Sub Watcher_Show()
   
 End
 
-Public Sub View_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Key As String)
+Public Sub View_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, (Key) As String)
 
-  Dim iSize As Long
-  Dim hFont As Font
+  'Dim iSize As Long
+  'Dim hFont As Font
   Dim H As Integer
   Dim hStat As Stat
   Dim dDate As Date

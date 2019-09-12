@@ -151,11 +151,11 @@ Private Sub DoAnimate(iSrc As Integer, iDest As Integer)
     
   Else
     
-    hDest.Move(- hCont.W, Y)
+    hDest.Move(-hCont.W, Y)
     
     fTime = Timer
     While hDest.X < 0
-      hDest.X = Min(0, - hCont.W * (1 - (Timer - fTime) * 8))
+      hDest.X = Min(0, -hCont.W * (1 - (Timer - fTime) * 8))
       hSrc.X = hDest.X + hCont.W
       Wait
     Wend
