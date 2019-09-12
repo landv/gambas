@@ -127,7 +127,7 @@ Public Sub _Register(hConnection As DBusConnection, sFullPath As String, Optiona
   
   If Not $sName Then 
     $sName = DBus._RegisterApplication(hConnection)
-    If Not DBus.Unique Then $sName = Left($sName, - Len(CStr(Application.Id)) - 1)
+    If Not DBus.Unique Then $sName = Left($sName, -Len(CStr(Application.Id)) - 1)
   Endif
   
   iPos = InStr(sFullPath, "/")
@@ -387,7 +387,7 @@ Public Sub _Introspect() As String
         sArg = ""
 
         For iInd = 0 To aSign.Max
-          sArg &= "      <arg name=\"arg" & CStr(iInd + 1) & "\" type=\"" & aSign[iInd] & "\"/>\n"
+          sArg &= "      <arg name=\"arg" & CStr(iInd + 1) & "\" type=\"" & aSign[iInd] & "\" direction=\"in\"/>\n"
         Next
 
         If sKind = Class.Event Then
