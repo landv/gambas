@@ -42,18 +42,26 @@ Public Sub _new()
     .AddColumn(("Function"))
   End With
   
+  ' With gvwFind
+  '   .Columns.Count = 5
+  '   .Columns[0].Width = DS * 16
+  '   .Columns[0].Text = ("File")
+  '   .Columns[1].Width = DS * 16
+  '   .Columns[1].Text = ("Location")
+  '   .Columns[2].Width = DS * 6
+  '   .Columns[2].Text = ("Line")
+  '   .Columns[3].Width = DS * 6
+  '   .Columns[3].Text = ("Col.")
+  '   .Columns[4].Width = 32
+  '   .Columns[4].Text = ("Text")
+  ' End With
+  
   With gvwFind
-    .Columns.Count = 5
-    .Columns[0].Width = DS * 16
-    .Columns[0].Text = ("File")
-    .Columns[1].Width = DS * 16
-    .Columns[1].Text = ("Location")
-    .Columns[2].Width = DS * 6
-    .Columns[2].Text = ("Line")
-    .Columns[3].Width = DS * 6
-    .Columns[3].Text = ("Col.")
-    .Columns[4].Width = 32
-    .Columns[4].Text = ("Text")
+    .AddColumn(("File"))
+    .AddColumn(("Location"))
+    .AddColumn(("Line"))
+    .AddColumn(("Col."))
+    .AddColumn(("Text"))
   End With
   
   With gvwTask
@@ -64,12 +72,10 @@ Public Sub _new()
   End With
   
   With gvwCompilation
-    .Columns.Count = 3
-    .Columns[0].Width = DS * 16
-    .Columns[0].Text = ("Class")
-    .Columns[1].Width = DS * 6
-    .Columns[1].Text = ("Line")
-    .Columns[2].Text = ("Message")
+    .AddColumn(("Class"))
+    .AddColumn(("Line"))
+    '.AddColumn(("Col."))
+    .AddColumn(("Message"))
   End With
   
   HideTab(TAB_COMPILATION)
@@ -912,6 +918,7 @@ Public Sub SetCompilation(Optional sOutput As String)
   Dim sLine As String
   Dim aLine As String[]
   Dim I As Integer
+  Dim aPos As String[]
   
   gvwCompilation.Clear
   If Not sOutput Then 
@@ -934,7 +941,13 @@ Public Sub SetCompilation(Optional sOutput As String)
     Endif
     
     gvwCompilation[I, 0].Text = Trim(File.BaseName(aLine[0]))
-    gvwCompilation[I, 1].Text = aLine[1]
+    If InStr(aLine[1], ":") Then
+      aPos = Split(aLine[1], ":")
+      gvwCompilation[I, 1].Text = aPos[0]
+      'gvwCompilation[I, 2].Text = aPos[1]
+    Else
+      gvwCompilation[I, 1].Text = aLine[1]
+    Endif
     gvwCompilation[I, 2].Text = String.UCaseFirst(Project.TranslateMessage(Trim(aLine[2])))
     gvwCompilation[I, 2].Font = Project.GetEditorFont()
     Inc I
@@ -963,7 +976,10 @@ End
 Public Sub gvwCompilation_Select()
   
   Dim I As Integer = gvwCompilation.Row
+  'Dim iCol As Integer
   
+  'Try iCol = CInt(gvwCompilation[I, 2].Text)
+  'If Error Then iCol = -1
   Project.OpenFile(gvwCompilation[I, 0].Text, CInt(gvwCompilation[I, 1].Text))
   
 Catch  
