@@ -29,13 +29,27 @@
 
 DECLARE_EVENT(EVENT_Click);
 
+static void _cleanup_gb_raise_button_Click(intptr_t object)
+{
+	GB.Unref(POINTER(&object));
+}
+
 void gb_raise_button_Click(gControl *sender)
 {
+	GB_RAISE_HANDLER handler;
 	CWIDGET *ob = GetObject(sender);
-	
+
 	if (!ob) return;
+
 	GB.Ref(ob);
-	GB.Raise((void*)ob,EVENT_Click,0);
+
+	handler.callback = _cleanup_gb_raise_button_Click;
+	handler.data = (intptr_t)ob;
+
+	GB.RaiseBegin(&handler);
+	GB.Raise((void*)ob, EVENT_Click, 0);
+	GB.RaiseEnd(&handler);
+
 	CACTION_raise(ob);
 	GB.Unref(POINTER(&ob));
 }
