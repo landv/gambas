@@ -47,28 +47,21 @@
 //#define DEBUG_STACK 1
 //#define SHOW_FUNCTION 1
 
-/* Current virtual machine state */
-STACK_CONTEXT EXEC_current = { 0 };
-/* Stack pointer */
-VALUE *SP = NULL;
-/* Temporary storage or return value of a native function */
-VALUE TEMP;
-/* Return value of a gambas function */
-VALUE RET;
-/* SUPER was used for this stack pointer */
-VALUE *EXEC_super = NULL;
-/* CPU endianness */
-bool EXEC_big_endian;
-/* Current iterator */
-CENUM *EXEC_enum;
+STACK_CONTEXT EXEC_current = { 0 }; // Current virtual machine state
+VALUE *SP = NULL; // Stack pointer
+VALUE TEMP; // Temporary storage or return value of a native function
+VALUE RET; // Return value of a gambas function
+VALUE *EXEC_super = NULL; // SUPER was used for this stack pointer
+bool EXEC_big_endian; // CPU endianness
+CENUM *EXEC_enum; // Current iterator
 
 const char *EXEC_profile_path = NULL; // profile file path
 const char *EXEC_fifo_name = NULL; // fifo name
 EXEC_HOOK EXEC_Hook = { NULL };
 EXEC_GLOBAL EXEC;
 uint64_t EXEC_byref = 0;
-uchar EXEC_quit_value = 0;
 
+unsigned char EXEC_quit_value = 0; // interpreter return value
 bool EXEC_debug = FALSE; // debugging mode
 bool EXEC_task = FALSE; // I am a background task
 bool EXEC_profile = FALSE; // profiling mode
@@ -80,6 +73,7 @@ bool EXEC_string_add = FALSE; // next '&' operator is done for a '&='
 bool EXEC_main_hook_done = FALSE;
 bool EXEC_got_error = FALSE;
 bool EXEC_break_on_error = FALSE; // if we must break into the debugger as soon as there is an error.
+bool EXEC_in_event_loop = FALSE; // if we are in the event loop
 
 const char EXEC_should_borrow[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 2, 0, 0, 1 };
 

@@ -33,6 +33,7 @@
 #include "gbx_api.h"
 #include "gbx_stack.h"
 #include "gbx_project.h"
+#include "gbx.h"
 #include "gb_error.h"
 
 //#define DEBUG_ERROR 1
@@ -580,7 +581,7 @@ void ERROR_panic(const char *error, ...)
 	{
 		fprintf(stderr, "** \n");
 		_print_prefix = "** ";
-		ERROR_print();
+		ERROR_print(FALSE);
 		_print_prefix = NULL;
 	}
 	fprintf(stderr, "** \n** Please send a bug report to the gambas bugtracker [1] or to the gambas mailing-list [2].\n** [1] http://gambaswiki.org/bugtracker\n** [2] https://lists.gambas-basic.org/listinfo/user\n** \n\n");
@@ -632,17 +633,10 @@ void ERROR_print_at(FILE *where, bool msgonly, bool newline)
 		fputc('\n', where);
 }
 
-void ERROR_print(void)
+bool ERROR_print(bool can_ignore)
 {
 	static bool lock = FALSE;
-
-	if (EXEC_main_hook_done && !EXEC_debug && EXEC_Hook.error && !lock)
-	{
-		lock = TRUE;
-		GAMBAS_DoNotRaiseEvent = TRUE;
-		HOOK(error)(ERROR_current->info.code, ERROR_current->info.msg, DEBUG_get_position(ERROR_current->info.cp, ERROR_current->info.fp, ERROR_current->info.pc));
-		lock = FALSE;
-	}
+	bool ignore = FALSE;
 
 	ERROR_print_at(stderr, FALSE, TRUE);
 
@@ -651,6 +645,17 @@ void ERROR_print(void)
 		print_prefix(stderr);
 		DEBUG_print_backtrace(ERROR_backtrace);
 	}
+
+	if (EXEC_main_hook_done && !EXEC_debug && EXEC_Hook.error && !lock)
+	{
+		lock = TRUE;
+		GAMBAS_DoNotRaiseEvent = TRUE;
+		ignore = HOOK(error)(ERROR_current->info.code, ERROR_current->info.msg, DEBUG_get_position(ERROR_current->info.cp, ERROR_current->info.fp, ERROR_current->info.pc), can_ignore);
+		GAMBAS_DoNotRaiseEvent = !ignore;
+		lock = FALSE;
+	}
+
+	return ignore;
 }
 
 static void ERROR_copy(ERROR_INFO *save, ERROR_INFO *last)

@@ -163,10 +163,7 @@ DECLARE_PROPERTY(Control_Mouse);
 	if (_object == NULL) \
 		return; \
 \
-	GB.Ref(_object); \
-	GB.Raise(_object, _event, 0); \
-	CACTION_raise(_object); \
-	GB.Unref(POINTER(&_object)); \
+	CWIDGET_raise_event_action(_object, _event); \
 }
 
 
@@ -232,6 +229,7 @@ void CWIDGET_set_allow_focus(void *_object, bool f);
 bool CWIDGET_is_design(CWIDGET *_object);
 void CWIDGET_check_visibility(CWIDGET *_object);
 void CWIDGET_check_hovered();
+void CWIDGET_raise_event_action(void *control, int event);
 
 #ifndef DO_NOT_DECLARE_EVENTS
 #ifndef __CWIDGET_CPP

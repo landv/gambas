@@ -54,7 +54,7 @@ gbx3_SOURCES = \
  gbx_watch.h gbx_watch.c \
  gbx_expression.h gbx_eval.h gbx_eval.c \
  gbx_compare.h gbx_compare.c \
- gbx.c \
+ gbx.c gbx.h \
  gbx_number.h gbx_number.c \
  gbx_object.h gbx_object.c \
  gbx_variant.h \

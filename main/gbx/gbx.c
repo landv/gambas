@@ -62,6 +62,7 @@
 
 #include "gbx_c_file.h"
 #include "gbx_c_application.h"
+#include "gbx.h"
 
 extern void _exit(int) NORETURN;
 FILE *log_file;
@@ -115,7 +116,7 @@ static void init(const char *file, int argc, char **argv)
 }
 
 
-static void main_exit(bool silent)
+void main_exit(bool silent)
 {
 	silent |= EXEC_task;
 	
@@ -161,6 +162,14 @@ static void main_exit(bool silent)
 
 	STRING_exit();
 }
+
+
+void MAIN_exit(bool silent, int ret)
+{
+	main_exit(silent);
+	_exit(ret);
+}
+
 
 static bool is_option(const char *arg, char option)
 {
@@ -298,13 +307,11 @@ int main(int argc, char *argv[])
 		{
 			if (ERROR_current->info.code && ERROR_current->info.code != E_ABORT)
 				ERROR_print_at(stderr, TRUE, TRUE);
-			main_exit(TRUE);
-			_exit(1);
+			MAIN_exit(TRUE, 1);
 		}
 		END_TRY
 
-		main_exit(FALSE);
-		_exit(0);
+		MAIN_exit(FALSE, 0);
 	}
 
 	for (i = 1; i < argc; i++)
@@ -412,15 +419,13 @@ int main(int argc, char *argv[])
 			if (!_welcome)
 				DEBUG.Main(TRUE);
 			DEBUG.Main(TRUE);
-			main_exit(FALSE);
-			_exit(0);
+			MAIN_exit(FALSE, 0);
 		}
 		else
 		{
 			if (ERROR->info.code && ERROR->info.code != E_ABORT)
-				ERROR_print();
-			main_exit(TRUE);
-			_exit(1);
+				ERROR_print(FALSE);
+			MAIN_exit(TRUE, 1);
 		}
 	}
 	END_TRY
@@ -438,8 +443,7 @@ int main(int argc, char *argv[])
 
 		if (_quit_after_main)
 		{
-			main_exit(TRUE);
-			_exit(0);
+			MAIN_exit(TRUE, 0);
 		}
 
 		if (!ret)
@@ -459,14 +463,12 @@ int main(int argc, char *argv[])
 			if (EXEC_debug)
 			{
 				DEBUG.Main(TRUE);
-				main_exit(TRUE);
-				_exit(0);
+				MAIN_exit(TRUE, 0);
 			}
 			else
 			{
-				ERROR_print();
-				main_exit(TRUE);
-				_exit(1);
+				ERROR_print(FALSE);
+				MAIN_exit(TRUE, 1);
 			}
 		}
 

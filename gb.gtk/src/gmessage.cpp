@@ -100,11 +100,11 @@ dlg_btn;
 
 static dlg_btn bt;
 
-guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
+guint custom_dialog(const gchar *icon,GtkButtonsType btnbtn,char *sg)
 {
-	GtkWidget *msg, *hrz, *label, *img;
+	GtkWidget *msg, *hrz, *label, *img, *vbox;
 	gint resp;
-	char *buf=NULL;
+	char *buf = NULL;
 	char *title;
 	
   if (bt.bt1) { gMnemonic_correctText(bt.bt1, &buf); bt.bt1 = buf; }
@@ -119,12 +119,12 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 	msg = gtk_dialog_new_with_buttons(title, NULL,
 					GTK_DIALOG_MODAL,
 					bt.bt1, 1, bt.bt2, 2, bt.bt3, 3, (char *)NULL);
-	img = gtk_image_new_from_icon_name(icon,GTK_ICON_SIZE_DIALOG);
+	img = gtk_image_new_from_icon_name(icon, GTK_ICON_SIZE_DIALOG);
 #else
 	msg = gtk_dialog_new_with_buttons(title, NULL,
 					(GtkDialogFlags)(GTK_DIALOG_MODAL+GTK_DIALOG_NO_SEPARATOR),
 					bt.bt1, 1, bt.bt2, 2, bt.bt3, 3, (char *)NULL);
-	img = gtk_image_new_from_stock(icon,GTK_ICON_SIZE_DIALOG);
+	img = gtk_image_new_from_stock(icon, GTK_ICON_SIZE_DIALOG);
 #endif
 
 	label = gtk_label_new("");
@@ -138,16 +138,21 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 		g_free(buf);
 	}
 	
+  gtk_container_set_border_width(GTK_CONTAINER(msg), gDesktop::scale());
+
 	hrz = gtk_hbox_new(FALSE, gDesktop::scale());
   gtk_container_set_border_width(GTK_CONTAINER(hrz), gDesktop::scale() * 2);
 
-	gtk_container_add (GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(msg))),hrz);
+	gtk_container_add (GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(msg))), hrz);
 	
-	gtk_container_add (GTK_CONTAINER(hrz),img);
-	gtk_box_set_child_packing(GTK_BOX(hrz), img, false, false, 0, GTK_PACK_START);
+	vbox = gtk_vbox_new(FALSE, gDesktop::scale());
+	gtk_container_add (GTK_CONTAINER(hrz), vbox);
+	gtk_box_set_child_packing(GTK_BOX(hrz), vbox, false, false, 0, GTK_PACK_START);
+	
+	gtk_container_add (GTK_CONTAINER(vbox), img);
+	gtk_box_set_child_packing(GTK_BOX(vbox), img, false, false, 0, GTK_PACK_START);
   
   gtk_container_add (GTK_CONTAINER(hrz),label);
-	//gtk_box_set_child_packing(GTK_BOX(hrz), label, true, false, 0, GTK_PACK_END);
 	
 	gtk_widget_show_all(hrz);
 	
@@ -177,85 +182,75 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 
 int gMessage::showDelete(char *msg,char *btn1,char *btn2,char *btn3)
 {
-	bt.bt1=MESSAGE_ok;
-	bt.bt2=NULL;
-	bt.bt3=NULL;
-	if (btn1) bt.bt1=btn1;
-	if (btn2) bt.bt2=btn2;
-	if (btn3) bt.bt3=btn3;
+	bt.bt1 = btn1 ? btn1 : GB.Translate(MESSAGE_ok);
+	bt.bt2 = btn2;
+	bt.bt3 = btn3;
+	
 	return custom_dialog(
 #ifdef GTK3
 		"user-trash",
 #else
 		GTK_STOCK_DELETE,
 #endif
-		GTK_BUTTONS_OK,msg);
+		GTK_BUTTONS_OK, msg);
 }
 
 int gMessage::showError(char *msg,char *btn1,char *btn2,char *btn3)
 {
-	bt.bt1=MESSAGE_ok;
-	bt.bt2=NULL;
-	bt.bt3=NULL;
-	if (btn1) bt.bt1=btn1;
-	if (btn2) bt.bt2=btn2;
-	if (btn3) bt.bt3=btn3;
+	bt.bt1 = btn1 ? btn1 : GB.Translate(MESSAGE_ok);
+	bt.bt2 = btn2;
+	bt.bt3 = btn3;
+	
 	return custom_dialog(
 #ifdef GTK3
 		"dialog-error",
 #else
 		GTK_STOCK_DIALOG_ERROR,
 #endif
-		GTK_BUTTONS_OK,msg);
+		GTK_BUTTONS_OK, msg);
 }
 
-int gMessage::showInfo(char *msg,char *btn1)
+int gMessage::showInfo(char *msg, char *btn1)
 {
-	bt.bt1=MESSAGE_ok;
-	bt.bt2=NULL;
-	bt.bt3=NULL;
-	if (btn1) bt.bt1=btn1;
+	bt.bt1 = btn1 ? btn1 : GB.Translate(MESSAGE_ok);
+
 	return custom_dialog(
 #ifdef GTK3
 		"dialog-information",
 #else
 		GTK_STOCK_DIALOG_INFO,
 #endif
-		GTK_BUTTONS_OK,msg);
+		GTK_BUTTONS_OK, msg);
 }
 
-int gMessage::showQuestion(char *msg,char *btn1,char *btn2,char *btn3)
+int gMessage::showQuestion(char *msg, char *btn1, char *btn2, char *btn3)
 {
-	bt.bt1=MESSAGE_ok;
-	bt.bt2=NULL;
-	bt.bt3=NULL;
-	if (btn1) bt.bt1=btn1;
-	if (btn2) bt.bt2=btn2;
-	if (btn3) bt.bt3=btn3;
+	bt.bt1 = btn1 ? btn1 : GB.Translate(MESSAGE_ok);
+	bt.bt2 = btn2;
+	bt.bt3 = btn3;
+	
 	return custom_dialog(
 #ifdef GTK3
 		"dialog-question",
 #else
 		GTK_STOCK_DIALOG_QUESTION,
 #endif
-		GTK_BUTTONS_OK,msg);
+		GTK_BUTTONS_OK, msg);
 }
 
 int gMessage::showWarning(char *msg,char *btn1,char *btn2,char *btn3)
 {
-	bt.bt1=MESSAGE_ok;
-	bt.bt2=NULL;
-	bt.bt3=NULL;
-	if (btn1) bt.bt1=btn1;
-	if (btn2) bt.bt2=btn2;
-	if (btn3) bt.bt3=btn3;
+	bt.bt1 = btn1 ? btn1 : GB.Translate(MESSAGE_ok);
+	bt.bt2 = btn2;
+	bt.bt3 = btn3;
+	
 	return custom_dialog(
 #ifdef GTK3
 		"dialog-warning",
 #else
 		GTK_STOCK_DIALOG_WARNING,
 #endif
-		GTK_BUTTONS_OK,msg);
+		GTK_BUTTONS_OK, msg);
 }
 
 char *gMessage::title()
@@ -268,7 +263,7 @@ void gMessage::setTitle(char *title)
 	if (MESSAGE_title)
 	{
 		g_free(MESSAGE_title);
-		MESSAGE_title=NULL;
+		MESSAGE_title = NULL;
 	}
 	
 	if (title && *title)

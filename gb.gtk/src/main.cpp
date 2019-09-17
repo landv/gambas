@@ -80,15 +80,15 @@ GB_CLASS CLASS_Window;
 GB_CLASS CLASS_Printer;
 GB_CLASS CLASS_SvgImage;
 
-static void my_lang(char *lang,int rtl1);
-static void my_error(int code,char *error,char *where);
-static void my_quit (void);
-static void my_main(int *argc, char ***argv);
-static void my_timer(GB_TIMER *timer,bool on);
-static void my_wait(int duration);
-static void my_post(void);
-static int my_loop();
-static void my_watch(int fd, int type, void *callback, intptr_t param);
+static void hook_lang(char *lang, int rtl1);
+static bool hook_error(int code, char *error, char *where, bool can_ignore);
+static void hook_quit(void);
+static void hook_main(int *argc, char ***argv);
+static void hook_timer(GB_TIMER *timer,bool on);
+static void hook_wait(int duration);
+static void hook_post(void);
+static int hook_loop();
+static void hook_watch(int fd, int type, void *callback, intptr_t param);
 
 static GtkWidget *GTK_CreateGLArea(void *_object, void *parent, void (*init)(GtkWidget *));
 
@@ -206,15 +206,15 @@ int EXPORT GB_INIT(void)
 	if (env && atoi(env))
 		MAIN_debug_busy = true;
 
-	GB.Hook(GB_HOOK_QUIT, (void *)my_quit);
-	_old_hook_main = GB.Hook(GB_HOOK_MAIN, (void *)my_main);
-	GB.Hook(GB_HOOK_WAIT, (void *)my_wait);
-	GB.Hook(GB_HOOK_TIMER,(void *)my_timer);
-	GB.Hook(GB_HOOK_WATCH,(void *)my_watch);
-	GB.Hook(GB_HOOK_POST,(void*)my_post);
-	GB.Hook(GB_HOOK_ERROR,(void*)my_error);
-	GB.Hook(GB_HOOK_LANG,(void*)my_lang);
-	GB.Hook(GB_HOOK_LOOP, (void *)my_loop);
+	GB.Hook(GB_HOOK_QUIT, (void *)hook_quit);
+	_old_hook_main = GB.Hook(GB_HOOK_MAIN, (void *)hook_main);
+	GB.Hook(GB_HOOK_WAIT, (void *)hook_wait);
+	GB.Hook(GB_HOOK_TIMER,(void *)hook_timer);
+	GB.Hook(GB_HOOK_WATCH,(void *)hook_watch);
+	GB.Hook(GB_HOOK_POST,(void*)hook_post);
+	GB.Hook(GB_HOOK_ERROR,(void*)hook_error);
+	GB.Hook(GB_HOOK_LANG,(void*)hook_lang);
+	GB.Hook(GB_HOOK_LOOP, (void *)hook_loop);
 
 	GB.Component.Load("gb.draw");
 	GB.Component.Load("gb.image");
@@ -245,7 +245,7 @@ int EXPORT GB_INIT(void)
 	g_type_init();
 #endif /* !defined(GLIB_VERSION_2_36) */
 
-	my_lang(GB.System.Language(), GB.System.IsRightToLeft());
+	hook_lang(GB.System.Language(), GB.System.IsRightToLeft());
 
 	return -1;
 }
@@ -336,7 +336,7 @@ void EXPORT GB_SIGNAL(int signal, void *param)
 
 } // extern "C"
 
-void my_quit (void)
+void hook_quit (void)
 {
 	GB_FUNCTION func;
 
@@ -370,7 +370,7 @@ static bool global_key_event_handler(int type)
 	return GB.Stopped();
 }
 
-static void my_main(int *argc, char ***argv)
+static void hook_main(int *argc, char ***argv)
 {
 	static bool init = false;
 	char *env;
@@ -425,7 +425,7 @@ typedef
 		}
 	MyTimerId;
 
-gboolean my_timer_function(GB_TIMER *timer)
+gboolean hook_timer_function(GB_TIMER *timer)
 {
 	if (timer->id)
 	{
@@ -441,8 +441,8 @@ gboolean my_timer_function(GB_TIMER *timer)
 				next = 10;
 			id->timeout = next;
 			g_timer_start(t);
-			id->source = g_timeout_add(next, (GSourceFunc)my_timer_function,(gpointer)timer);
-			//timer->id = (intptr_t)g_timeout_add(next, (GSourceFunc)my_timer_function,(gpointer)timer);
+			id->source = g_timeout_add(next, (GSourceFunc)hook_timer_function,(gpointer)timer);
+			//timer->id = (intptr_t)g_timeout_add(next, (GSourceFunc)hook_timer_function,(gpointer)timer);
 			//fprintf(stderr, "elapsed = %d  delay = %d  next = %d\n", elapsed, timer->delay, next);
 		}
 	}
@@ -450,7 +450,7 @@ gboolean my_timer_function(GB_TIMER *timer)
 	return false;
 }
 
-static void my_timer(GB_TIMER *timer,bool on)
+static void hook_timer(GB_TIMER *timer,bool on)
 {
 	if (timer->id)
 	{
@@ -466,13 +466,13 @@ static void my_timer(GB_TIMER *timer,bool on)
 		MyTimerId *id = g_new(MyTimerId, 1);
 		id->timer = g_timer_new();
 		id->timeout = timer->delay;
-		id->source = (intptr_t)g_timeout_add(timer->delay,(GSourceFunc)my_timer_function,(gpointer)timer);
+		id->source = (intptr_t)g_timeout_add(timer->delay,(GSourceFunc)hook_timer_function,(gpointer)timer);
 		timer->id = (intptr_t)id;
 		return;
 	}
 }
 
-static void my_post(void)
+static void hook_post(void)
 {
 	_post_check = true;
 }
@@ -482,7 +482,7 @@ void MAIN_check_quit()
 	_must_check_quit = true;
 }
 
-static int my_loop()
+static int hook_loop()
 {
 	gControl::cleanRemovedControls();
 	_must_check_quit = true;
@@ -500,12 +500,12 @@ static int my_loop()
 		MAIN_do_iteration(false);
 	}
 
-	my_quit();
+	hook_quit();
 
   return 0;
 }
 
-static void my_wait(int duration)
+static void hook_wait(int duration)
 {
 	if (gDrawingArea::inAnyDrawEvent())
 	{
@@ -526,27 +526,32 @@ static void my_wait(int duration)
 	MAIN_do_iteration(true, true);
 }
 
-static void my_watch(int fd, int type, void *callback, intptr_t param)
+static void hook_watch(int fd, int type, void *callback, intptr_t param)
 {
 	CWatcher::Add(fd,type,callback,param);
 }
 
-static void my_error(int code,char *error,char *where)
+static bool hook_error(int code, char *error, char *where, bool can_ignore)
 {
 	char *showstr;
 	char scode[10];
+	bool ignore = FALSE;
 
-	sprintf(scode,"%d",code);
+	sprintf(scode, "%d", code);
 
-	showstr=g_strconcat("<b>This application has raised an unexpected<br>error and must abort.</b><p>[", scode, "] ", error, ".\n", where, (void *)NULL);
+	showstr = g_strconcat("<b>This application has raised an unexpected<br>error and must abort.</b>\n\n[", scode, "] ", error, ".\n\n<tt>", where, "</tt>", (void *)NULL);
 
 	gMessage::setTitle(GB.Application.Title());
-	gMessage::showError(showstr,NULL,NULL,NULL);
+	if (can_ignore)
+		ignore = gMessage::showError(showstr, GB.Translate("Ignore"), GB.Translate("Close"), NULL) == 1;
+	else
+		gMessage::showError(showstr, NULL, NULL, NULL);
 
 	g_free(showstr);
+	return ignore;
 }
 
-static void my_lang(char *lang, int rtl)
+static void hook_lang(char *lang, int rtl)
 {
 	int i, n;
 	gControl *iter;

@@ -63,7 +63,7 @@
 #include "gbx_struct.h"
 #include "gbx_signal.h"
 #include "gbx_jit.h"
-
+#include "gbx.h"
 #include "gambas.h"
 #include "gbx_api.h"
 
@@ -800,7 +800,31 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 	stop_event = GAMBAS_StopEvent;
 	GAMBAS_StopEvent = FALSE;
 
-	EXEC_public_desc(class, observer, desc, nparam);
+	TRY
+	{
+		EXEC_public_desc(class, observer, desc, nparam);
+	}
+	CATCH 
+	{
+		if (ERROR->info.code && ERROR->info.code != E_ABORT)
+		{
+			ERROR_hook();
+
+			if (EXEC_debug)
+			{
+				DEBUG.Main(TRUE);
+				MAIN_exit(TRUE, 0);
+			}
+			else
+			{
+				if (!ERROR_print(TRUE))
+					MAIN_exit(TRUE, 1);
+			}
+		}
+		else
+			PROPAGATE();
+	}
+	END_TRY
 
 	if (RP->type == T_VOID)
 		result = FALSE;
