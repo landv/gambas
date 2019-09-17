@@ -81,9 +81,10 @@ static void MAIN_exit()
 	}
 }
 
-static void MAIN_hook_error(int code, char *error, char *where)
+static bool MAIN_hook_error(int code, char *error, char *where, bool can_ignore)
 {
 	MAIN_exit();
+	return FALSE;
 }
 
 static void MAIN_hook_main(int *argc, char **argv)
