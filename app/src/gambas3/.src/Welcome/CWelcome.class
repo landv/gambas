@@ -84,6 +84,7 @@ Public Sub dwgWelcome_Draw()
   Dim hSnowFlake As CSnowFlake
   Dim hFir As Image
   Dim sText As String
+  Dim sVersion As String
    
   If Not $hLogo Then 
     
@@ -102,7 +103,18 @@ Public Sub dwgWelcome_Draw()
     
     Paint.Font = Font["+10,Bold"]
     Y = Paint.Font.Ascent
-    X = PaintText("Gambas " & Project.FullVersion, 8, Y, Color.White) 'TEXT_COLOR)
+    sVersion = Project.FullVersion
+    If sVersion = "3.14.0" Or If sVersion = "3.13.90" Then
+      X = PaintText("Gambas 3.14", 8, Y, Color.White) 'TEXT_COLOR)
+      X += Desktop.Scale * 17
+      For I = -6 To 14
+        Paint.Font = Font[Format(I, "+0") & ",Italic,Bold"]
+        PaintText("π", X, Y, Color.White)
+        X -= Paint.Font.H / 6
+      Next
+    Else
+      X = PaintText("Gambas " & sVersion, 8, Y, Color.White) 'TEXT_COLOR)
+    Endif
     'Paint.Font = Font["+12,Bold"]
     'PaintText(Project.FullVersionWithRevision, X + 8, Paint.Font.Ascent, Color.White) 'Color.SelectedForeground)
     
