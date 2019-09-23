@@ -43,7 +43,7 @@ Public Sub Form_Open()
    UpdateScoreBoard
    Play("start.wav")
    
-   Me.Text = "Snake v1.0"
+   Me.Text = ("Snake") & " " & ("v1.0")
    hPictHead = Picture.Load("head.png")
    ' ME.Icon = hPictHead 'The same as head icon but in a standard size
 
@@ -58,7 +58,7 @@ Public Sub Form_Open()
    Draw.text(("Snake"), (dwg.clientW - Draw.TextWidth("Snake")) / 2 - i, (dwg.Height + Draw.TextHeight("Snake")) / 2 - i - 50)
    Next 
    Draw.Font.Size = 18
-   Draw.Text("ver 1.0 by: Ahmad Kamal", (dwg.clientW - Draw.TextWidth("ver 1.0 by: Ahmad Kamal")) / 2, 100)
+   Draw.Text(("ver 1.0 by: Ahmad Kamal"), (dwg.clientW - Draw.TextWidth(("ver 1.0 by: Ahmad Kamal"))) / 2, 100)
    Draw.End
    
    hPictHead = Picture.Load("head.png") 'Load images
@@ -118,7 +118,7 @@ Public Sub TmrEngine_Timer()
       hPictHeadRotated = hPictHead.Image.Rotate(Pi / 2).Picture
     Case "down"
       Ypos[0] = Ypos[0] + 20
-      hPictHeadRotated = hPictHead.Image.Rotate(- Pi / 2).Picture
+      hPictHeadRotated = hPictHead.Image.Rotate(-Pi / 2).Picture
   End Select
   
   
@@ -265,14 +265,14 @@ End
 
 Public Sub MenuPause_Click()
 
-  If (MenuPause.Caption = "&Pause" And (TmrEngine.Enabled = True)) Then
+  If (MenuPause.Caption = ("&Pause") And (TmrEngine.Enabled = True)) Then
     TmrEngine.Enabled = False
     TimerApple.Enabled = False
-    MenuPause.Caption = "Un&Pause"
-  Else If (MenuPause.Caption = "Un&Pause" And (TmrEngine.Enabled = False)) Then
+    MenuPause.Caption = ("Un&Pause")
+  Else If (MenuPause.Caption = ("Un&Pause") And (TmrEngine.Enabled = False)) Then
     TmrEngine.Enabled = True
     TimerApple.Enabled = True
-    MenuPause.Caption = "&Pause"
+    MenuPause.Caption = ("&Pause")
   End If
 
 End
@@ -287,7 +287,7 @@ Public Sub MenuGrandMa_Click()
 
   TmrEngine.delay = 200
   TimerApple.delay = 8000
-  Speed = "GrandMa"
+  Speed = ("GrandMa")
 
 End
 
@@ -296,7 +296,7 @@ Public Sub MenuCool_Click()
 
     TmrEngine.delay = 150
     TimerApple.delay = 5000
-    Speed = "Cool"
+    Speed = ("Cool")
 
 End
 
@@ -305,7 +305,7 @@ Public Sub MenuSpeedFreak_Click()
 
   TmrEngine.delay = 100
   TimerApple.delay = 2500
-  Speed = "Speed Freak"
+  Speed = ("Speed Freak")
 
 End
 
@@ -363,8 +363,8 @@ End
 Public Sub UpdateSpeed()
   
   If MenuAutoAdvanceSpeed.checked Then
-    If (Score > 19 And Speed = "GrandMa") Then MenuCool_Click
-    If (Score > 79 And Speed = "Cool") Then MenuSpeedFreak_Click 'Let's kill ur snake :)
+    If (Score > 19 And Speed = ("GrandMa")) Then MenuCool_Click
+    If (Score > 79 And Speed = ("Cool")) Then MenuSpeedFreak_Click 'Let's kill ur snake :)
   End If
    
 End
@@ -402,7 +402,7 @@ Public Sub MenuAbout_Click()
 
   Dim About As String
   
-  About = "Snake v1.0\nBy: Ahmad Kamal <eng_ak@Link.Net>\nWritten for Gambas http://gambas.sf.net"
+  About = ("Snake v1.0\nBy: Ahmad Kamal <eng_ak@Link.Net>\nWritten for Gambas http://gambas.sf.net")
   Message(About)
 
 End

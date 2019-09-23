@@ -41,17 +41,23 @@ Public Sub SetList(aList As String[])
   
 End
 
+Public Sub Add(sText As String)
+  
+  If Not sText Then Return
+  lstData.Add(sText)
+  GetParent()._RaiseChange
+  lstData.Index = -1
+  
+End
 
 
 Public Sub btnAdd_Click()
 
-  Dim sAdd As String
+  GetParent()._RaiseAdd
+  If txtData.ReadOnly Then Return
   
   If lstData.Index < 0 Then
-    sAdd = txtData.Text
-    If Not sAdd Then Return
-    lstData.Add(sAdd)
-    GetParent()._RaiseChange
+    Add(txtData.Text)
   Endif
   
   UnSelect
@@ -231,4 +237,31 @@ Public Sub txtData_KeyPress()
   
   Endif
 
+End
+
+Public Sub IsReadOnly() As Boolean
+  
+  Return txtData.ReadOnly
+  
+End
+
+Public Sub SetReadOnly(bReadOnly As Boolean)
+  
+  txtData.ReadOnly = bReadOnly
+  txtData.Visible = Not bReadOnly
+  
+  If bReadOnly Then
+    btnAdd.Text = ("Insert") & "..."
+    btnRemove.Text = ("Remove")
+  Else
+    btnAdd.Text = ""
+    btnRemove.Text = ""
+  Endif
+  
+End
+
+Public Sub Exist(Text As String) As Boolean
+  
+  Return lstData.Find(Text) >= 0
+  
 End

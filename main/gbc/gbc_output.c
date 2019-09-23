@@ -68,6 +68,21 @@ static char *_pbuffer;
 
 static OUTPUT_CHANGE *_change = NULL;
 
+static const char *get_symbol_name(TABLE *table, int index, int *len)
+{
+	if (UNLIKELY((index < 0) || (index >= ARRAY_count(table->symbol))))
+	{
+		*len = 1;
+		return "?";
+	}
+	else
+	{
+		SYMBOL *sym = TABLE_get_symbol(table, index);
+		*len = sym->len;
+		return sym->name;
+	}
+}
+
 static void output_init(void)
 {
 	TABLE_create(&StringTable, sizeof(OUTPUT_SYMBOL), TF_NORMAL);
@@ -95,7 +110,7 @@ static int get_string(const char *string, int len)
 	if (len < 0)
 		len = strlen(string);
 
-	new = !TABLE_add_symbol(StringTable, string, len, &index);
+	new = !TABLE_add_symbol_exist(StringTable, string, len, &index);
 	sym = (OUTPUT_SYMBOL *)TABLE_get_symbol(StringTable, index);
 	
 	if (new)
@@ -806,23 +821,15 @@ static void output_param_local(void)
 	{
 		func = &Class->function[i];
 
-		if (func->name != NO_SYMBOL)
+		for (j = 0; j < func->nparam; j++)
 		{
-			/* Les param�res sont remis dans les variables locales !
-			for (j = 0; j < func->nparam; j++)
-			{
-				param = &func->param[j];
-				write_int(param->type);
-			}
-			*/
-
-			for (j = 0; j < func->nlocal + func->nparam; j++)
-			{
-				param = &func->local[j];
-
-				/* type */
-				write_type(param->type);
-			}
+			param = &func->param[j];
+			write_type(param->type);
+		}
+		for (j = 0; j < func->nlocal; j++)
+		{
+			param = &func->local[j + func->nparam];
+			write_type(param->type);
 		}
 	}
 
@@ -1004,13 +1011,13 @@ static void output_debug_global()
 static void output_debug_method()
 {
 	int i, j, n;
-	SYMBOL *sym;
 	OUTPUT_SYMBOL *osym;
-	CLASS_SYMBOL *csym;
 	PARAM *param;
 	FUNCTION *func;
 	TABLE *table;
 	int index;
+	const char *name;
+	int len;
 
 	begin_section("Debug method info", 5 * sizeof(int));
 
@@ -1018,7 +1025,7 @@ static void output_debug_method()
 	{
 		func = &Class->function[i];
 
-		if (func->pos_line != NULL && func->line < FORM_FIRST_LINE)
+		if (func->pos_line != NULL && func->line < FORM_FIRST_LINE && func->name != NO_SYMBOL)
 		{
 			/* line */
 			write_short(func->line);
@@ -1026,8 +1033,8 @@ static void output_debug_method()
 			/* pos_line */
 			write_int(0);
 			/* nom */
-			sym = TABLE_get_symbol(Class->table, func->name);
-			write_int(get_string(sym->name, sym->len));
+			name = get_symbol_name(Class->table, func->name, &len);
+			write_int(get_string(name, len));
 			/* local symbols */
 			write_int(0);
 			/* n_local */
@@ -1037,6 +1044,7 @@ static void output_debug_method()
 		}
 		else
 		{
+			func->no_debug = TRUE;
 			write_short(0);
 			write_short(0);
 			write_int(0);
@@ -1053,17 +1061,20 @@ static void output_debug_method()
 	{
 		func = &Class->function[i];
 
-		n = func->pos_line ? ARRAY_count(func->pos_line) : 0;
-
 		begin_section("Debug method lines", sizeof(short));
-
-		if (_swap)
+		
+		if (!func->no_debug)
 		{
-			for (j = 0; j < n; j++)
-				write_short(func->pos_line[j]);
+			n = func->pos_line ? ARRAY_count(func->pos_line) : 0;
+
+			if (_swap)
+			{
+				for (j = 0; j < n; j++)
+					write_short(func->pos_line[j]);
+			}
+			else
+				write_buffer(func->pos_line, n * sizeof(short));
 		}
-		else
-			write_buffer(func->pos_line, n * sizeof(short));
 
 		end_section();
 	}
@@ -1074,19 +1085,16 @@ static void output_debug_method()
 
 		begin_section("Debug method local symbols", sizeof(int) * 3);
 
-		if (func->name != NO_SYMBOL)
+		if (!func->no_debug)
 		{
-			sym = (SYMBOL *)TABLE_get_symbol(Class->table, func->name);
-			/*printf("%.*s()\n", sym->len, sym->name);*/
-
 			TABLE_create(&table, sizeof(OUTPUT_SYMBOL), TF_IGNORE_CASE);
 
 			for (j = 0; j < func->nlocal + func->nparam; j++)
 			{
 				param = &func->local[j];
-				csym = (CLASS_SYMBOL *)TABLE_get_symbol(Class->table, param->index);
-
-				TABLE_add_symbol(table, csym->symbol.name, csym->symbol.len, &index);
+				
+				name = get_symbol_name(Class->table, param->index, &len);
+				index = TABLE_add_symbol(table, name, len);
 				osym = (OUTPUT_SYMBOL *)TABLE_get_symbol(table, index);
 				osym->value = param->value;/*TYPE_long(param->type);*/
 			}
@@ -1118,16 +1126,16 @@ static void output_debug_method()
 
 static void output_debug_filename(void)
 {
-	char *path;
-	int n;
-
 	begin_section("Debug file name", 1);
 
+	// file name is ignored, don't put it in the file anymore
+
+	/*
 	path = (char *)FILE_get_name(JOB->name);
 
 	n = strlen(path);
 	write_buffer(path, n);
-	/*write_pad();*/
+	*/
 
 	end_section();
 }

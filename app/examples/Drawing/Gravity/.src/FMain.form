@@ -1,42 +1,42 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,112,73)
+  MoveScaled(0,0,121,73)
   Text = ("gbGravity - Iman Karim")
   Icon = Picture["gravity.png"]
   Resizable = False
   { lblGrav TextLabel
-    MoveScaled(53,1,14,3)
+    MoveScaled(61,1,21,3)
     Text = ("Gravity 0.9")
     Alignment = Align.Left
   }
   { Button1 Button
-    MoveScaled(1,1,20,6)
+    MoveScaled(1,1,25,6)
     Text = ("Add a Ball")
   }
   { Slider1 Slider
-    MoveScaled(34,1,18,3)
+    MoveScaled(42,1,18,3)
     MinValue = 1
     Step = 10
     Value = 90
   }
   { lblSlide TextLabel
-    MoveScaled(53,4,14,3)
+    MoveScaled(61,4,21,3)
     Text = ("Floor Slide 0.9")
-    Alignment = Align.Center
+    Alignment = Align.Left
   }
   { Slider2 Slider
-    MoveScaled(34,4,18,3)
+    MoveScaled(42,4,18,3)
     MinValue = 50
     Step = 10
     Value = 90
   }
   { togAddMore ToggleButton
-    MoveScaled(1,8,20,6)
+    MoveScaled(1,8,25,6)
     Text = ("Add more Balls")
   }
   { dW DrawingArea
-    MoveScaled(22,8,89,64)
+    MoveScaled(27,8,93,64)
     Border = Border.Plain
     Cached = True
     { lblAddMore TextLabel
@@ -49,32 +49,31 @@
     }
   }
   { Frame1 Frame
-    MoveScaled(1,15,20,53)
+    MoveScaled(1,15,25,53)
     Text = ("Point Setup")
     { TextLabel1 TextLabel
-      MoveScaled(1,3,13,4)
+      MoveScaled(1,3,23,4)
       Text = ("Choose Point:")
     }
     { cB ComboBox
-      MoveScaled(1,7,18,4)
+      MoveScaled(1,7,23,4)
       ReadOnly = True
-      List = Null
       Text = ("ComboBox1")
     }
     { togFocus ToggleButton
-      MoveScaled(1,12,18,4)
+      MoveScaled(1,12,23,4)
       Text = ("Focus Point")
       Value = True
     }
     { cmdRandomize Button
-      MoveScaled(1,17,18,5)
+      MoveScaled(1,17,23,5)
       Text = ("Randomize Kick")
     }
     { Separator1 Separator
-      MoveScaled(1,22,15,2)
+      MoveScaled(1,22,23,2)
     }
     { Label1 Label
-      MoveScaled(2,24,15,3)
+      MoveScaled(2,24,21,3)
       Text = ("Current Ball X:")
     }
     { lblX Label
@@ -83,7 +82,7 @@
       Alignment = Align.Center
     }
     { Label2 Label
-      MoveScaled(2,30,15,3)
+      MoveScaled(2,30,21,3)
       Text = ("Current Ball Y:")
     }
     { lblY Label
@@ -92,7 +91,7 @@
       Alignment = Align.Center
     }
     { Label6 Label
-      MoveScaled(2,36,16,3)
+      MoveScaled(2,36,21,3)
       Text = ("Current Ball aX:")
     }
     { lblAX Label
@@ -101,7 +100,7 @@
       Alignment = Align.Center
     }
     { Label4 Label
-      MoveScaled(2,42,16,3)
+      MoveScaled(2,42,21,3)
       Text = ("Current Ball aY:")
     }
     { lblAY Label
@@ -110,7 +109,7 @@
       Alignment = Align.Center
     }
     { lblOutOfRange Label
-      MoveScaled(1,48,18,4)
+      MoveScaled(1,48,23,4)
       Visible = False
       Foreground = &HFF0000&
       Text = ("Ball out of Range")
@@ -122,23 +121,23 @@
     Delay = 50
   }
   { lblAbout Label
-    MoveScaled(1,68,17,4)
+    MoveScaled(1,68,25,4)
     Font = Font["Underline"]
     Mouse = Mouse.Pointing
     Text = ("About gbGravity...")
   }
   { togGrav ToggleButton
-    MoveScaled(22,1,11,6)
+    MoveScaled(27,1,14,6)
     Text = ("Gravity")
     Value = True
   }
   { togClear ToggleButton
-    MoveScaled(68,1,20,6)
+    MoveScaled(82,1,22,6)
     Text = ("Clear each Frame")
     Value = True
   }
   { togSky ToggleButton
-    MoveScaled(89,1,11,6)
+    MoveScaled(105,1,15,6)
     Text = ("Sky")
   }
 }

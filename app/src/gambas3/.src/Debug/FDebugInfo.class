@@ -2,12 +2,7 @@
 
 Public Shown As Boolean
 
-Private Const TAB_DEBUG As Integer = 0
-Private Const TAB_CONSOLE As Integer = 1
-Private Const TAB_BREAK As Integer = 2
-Private Const TAB_COMPILATION As Integer = 3
-Private Const TAB_TASK As Integer = 4
-Private Const TAB_SEARCH As Integer = 5
+Private Enum TAB_DEBUG, TAB_CONSOLE, TAB_BREAK, TAB_COMPILATION, TAB_TASK, TAB_SEARCH, TAB_VERSION_CONTROL
 
 Private $cRefreshBreakpoint As New Collection
 
@@ -47,18 +42,26 @@ Public Sub _new()
     .AddColumn(("Function"))
   End With
   
+  ' With gvwFind
+  '   .Columns.Count = 5
+  '   .Columns[0].Width = DS * 16
+  '   .Columns[0].Text = ("File")
+  '   .Columns[1].Width = DS * 16
+  '   .Columns[1].Text = ("Location")
+  '   .Columns[2].Width = DS * 6
+  '   .Columns[2].Text = ("Line")
+  '   .Columns[3].Width = DS * 6
+  '   .Columns[3].Text = ("Col.")
+  '   .Columns[4].Width = 32
+  '   .Columns[4].Text = ("Text")
+  ' End With
+  
   With gvwFind
-    .Columns.Count = 5
-    .Columns[0].Width = DS * 16
-    .Columns[0].Text = ("File")
-    .Columns[1].Width = DS * 16
-    .Columns[1].Text = ("Location")
-    .Columns[2].Width = DS * 6
-    .Columns[2].Text = ("Line")
-    .Columns[3].Width = DS * 6
-    .Columns[3].Text = ("Col.")
-    .Columns[4].Width = 32
-    .Columns[4].Text = ("Text")
+    .AddColumn(("File"))
+    .AddColumn(("Location"))
+    .AddColumn(("Line"))
+    .AddColumn(("Col."))
+    .AddColumn(("Text"))
   End With
   
   With gvwTask
@@ -69,12 +72,10 @@ Public Sub _new()
   End With
   
   With gvwCompilation
-    .Columns.Count = 3
-    .Columns[0].Width = DS * 16
-    .Columns[0].Text = ("Class")
-    .Columns[1].Width = DS * 6
-    .Columns[1].Text = ("Line")
-    .Columns[2].Text = ("Message")
+    .AddColumn(("Class"))
+    .AddColumn(("Line"))
+    '.AddColumn(("Col."))
+    .AddColumn(("Message"))
   End With
   
   HideTab(TAB_COMPILATION)
@@ -325,7 +326,10 @@ Public Sub ReadConfig()
   
   FDebugButton.ReadConfig
   
-  For Each hCtrl In [panBreakpoint, panSearch]
+  Project.SetConsoleFont(trmVersionControl)
+  MTheme.InitControl(trmVersionControl)
+
+  For Each hCtrl In [panBreakpoint, panSearch, panVersionControl]
     Project.SetSmallFont(hCtrl)
   Next
   
@@ -476,6 +480,7 @@ Public Sub UpdateView()
   ShowTab(TAB_CONSOLE, Not bUndock)
   ShowTab(TAB_DEBUG, Project.Running)
   ShowTab(TAB_BREAK)
+  ShowTab(TAB_VERSION_CONTROL, VersionControl.Enabled)
   
   ' If panStack.Visible <> Project.Running Then
   '   If Project.Running Then
@@ -892,6 +897,7 @@ Public Sub OnProjectChange()
   UpdateTask
   SetCompilation
   CloseSearch
+  trmVersionControl.Clear
   
 End
 
@@ -912,6 +918,7 @@ Public Sub SetCompilation(Optional sOutput As String)
   Dim sLine As String
   Dim aLine As String[]
   Dim I As Integer
+  Dim aPos As String[]
   
   gvwCompilation.Clear
   If Not sOutput Then 
@@ -926,10 +933,21 @@ Public Sub SetCompilation(Optional sOutput As String)
   For Each sLine In aOutput
     
     aLine = Scan(sLine, "*:*: warning: *")
-    If aLine.Count <> 3 Then Continue
+    If aLine.Count <> 3 Then 
+      aLine = Scan(sLine, "gbc3: warning: *")
+      If aLine.Count <> 1 Then Continue
+      aLine.Add("", 0)
+      aLine.Add("", 0)
+    Endif
     
     gvwCompilation[I, 0].Text = Trim(File.BaseName(aLine[0]))
-    gvwCompilation[I, 1].Text = CStr(CInt(aLine[1]))
+    If InStr(aLine[1], ":") Then
+      aPos = Split(aLine[1], ":")
+      gvwCompilation[I, 1].Text = aPos[0]
+      'gvwCompilation[I, 2].Text = aPos[1]
+    Else
+      gvwCompilation[I, 1].Text = aLine[1]
+    Endif
     gvwCompilation[I, 2].Text = String.UCaseFirst(Project.TranslateMessage(Trim(aLine[2])))
     gvwCompilation[I, 2].Font = Project.GetEditorFont()
     Inc I
@@ -958,7 +976,10 @@ End
 Public Sub gvwCompilation_Select()
   
   Dim I As Integer = gvwCompilation.Row
+  'Dim iCol As Integer
   
+  'Try iCol = CInt(gvwCompilation[I, 2].Text)
+  'If Error Then iCol = -1
   Project.OpenFile(gvwCompilation[I, 0].Text, CInt(gvwCompilation[I, 1].Text))
   
 Catch  
@@ -1102,7 +1123,7 @@ Public Sub RefreshBreakpointView()
   gvwBreakpoint.Rows.Count = Design.GetBreakpoints().Count
   gvwBreakpoint_Font()
   gvwBreakpoint.Refresh
-  gvwBreakpoint_Click
+  'gvwBreakpoint_Click
   
 End
 
@@ -1402,3 +1423,79 @@ Public Sub cvwVariable_Rename()
   End With
   
 End
+
+Public Sub btnVcCommit_Click()
+
+  FVersionControl.Run
+
+End
+
+Public Sub InsertVersionControl(sText As String)
+  
+  trmVersionControl.Print(Replace(sText, "\n", "\r\n"))
+  
+End
+
+Public Sub btnVcUpdate_Click()
+
+  VersionControl.Update
+
+End
+
+Public Sub btnVcRevert_Click()
+
+  VersionControl.Revert
+
+End
+
+Public Sub btnVcAddAll_Click()
+
+  FMain.mnuAddVersionAll_Click()
+
+End
+
+Public Sub OnVersionControlChange()
+
+  UpdateView
+
+  If VersionControl.Enabled Then
+    lblVcName.Text = VersionControl.Name
+    UpdateBranchMenu
+  Endif
+  
+End
+
+Private Sub UpdateBranchMenu()
+
+  Dim sCurrent As String
+  Dim aBranches As String[]
+  Dim sBranch As String
+  Dim hMenu As Menu
+  
+  aBranches = VersionControl.GetBranches(ByRef sCurrent)
+  
+  If Not sCurrent Then
+    btnVcBranch.Hide
+  Else
+    btnVcBranch.Show
+    btnVcBranch.Text = sCurrent
+    mnuVcBranch.Children.Clear
+    
+    For Each sBranch In aBranches
+      hMenu = New Menu(mnuVcBranch) As "mnuVcBranchSet"
+      hMenu.Text = sBranch
+      hMenu.Tag = sBranch
+      hMenu.Radio = True
+      hMenu.Value = sBranch = sCurrent
+    Next
+  Endif
+
+End
+
+Public Sub mnuVcBranchSet_Click()
+  
+  VersionControl.SetBranch(Last.Tag)
+  UpdateBranchMenu
+  
+End
+

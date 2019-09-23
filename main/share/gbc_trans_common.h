@@ -31,6 +31,7 @@ typedef
 		PATTERN *optional;
 		short value;
 		unsigned ignore : 1;
+		unsigned byref : 1;
 		}
 	TRANS_PARAM;
 
@@ -120,9 +121,9 @@ typedef
 		int line;
 		int comment;
 		int synonymous[3];
-		bool read;
-		unsigned char nsynonymous;
-		bool _reserved[2];
+		int use;
+		unsigned nsynonymous:3;
+		unsigned read:1;
 		}
 	PACKED
 	TRANS_PROPERTY;

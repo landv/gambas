@@ -827,11 +827,11 @@ BEGIN_PROPERTY(CWIDGET_tooltip)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewZeroString(CONTROL->toolTip());
+		GB.ReturnNewZeroString(CONTROL->tooltip());
 		return;
 	}
 
-	CONTROL->setToolTip(GB.ToZeroString(PROP(GB_STRING)));
+	CONTROL->setTooltip(GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY
 
@@ -996,7 +996,7 @@ GB_DESC CWidgetDesc[] =
 	GB_PROPERTY("Tracking", "b", CCONTROL_tracking),
 	GB_PROPERTY("Mouse", "i", CWIDGET_mouse),
 	GB_PROPERTY("Cursor", "Cursor", Control_Cursor),
-	GB_PROPERTY("ToolTip", "s", CWIDGET_tooltip),
+	GB_PROPERTY("Tooltip", "s", CWIDGET_tooltip),
 	GB_PROPERTY("Drop", "b", CWIDGET_drop),
 	GB_PROPERTY("Action", "s", CCONTROL_action),
 	GB_PROPERTY("PopupMenu", "s", Control_PopupMenu),

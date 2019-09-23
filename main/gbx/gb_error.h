@@ -110,7 +110,9 @@ enum {
 	E_NEMPTY,
 	E_UTYPE,
 	E_FREEREF,
-	E_ASSERT
+	E_ASSERT,
+	E_MARRAY,
+	E_UCLASS
 	};
 
 #ifndef __GB_ERROR_C
@@ -167,7 +169,7 @@ void ERROR_fatal(const char *error, ...) NORETURN;
 void ERROR_panic(const char *error, ...) NORETURN;
 void ERROR_warning(const char *warning, ...);
 
-void ERROR_print(void);
+bool ERROR_print(bool);
 void ERROR_print_at(FILE *where, bool msgonly, bool newline);
 void ERROR_hook(void);
 

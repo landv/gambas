@@ -11,7 +11,10 @@ Public SY As Integer
 Public XA As Integer
 Public YA As Integer
 Public Text As String
+Public Right As Boolean
 Public State As CCommandBefore
+
+Property Read Length As Integer
 
 ' /**---- GCommand -----------------------------------------------------------*/
 ' 
@@ -34,7 +37,7 @@ Public State As CCommandBefore
 ' };
 ' 
 
-Public Sub _new(hDoc As CDocument, iType As Integer, Optional sText As String, X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer, hState As CCommandBefore)
+Public Sub _new(hDoc As CDocument, iType As Integer, Optional sText As String, X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer, hState As CCommandBefore, Optional bRight As Boolean)
   
   With hDoc.Current
     Type = iType
@@ -46,6 +49,7 @@ Public Sub _new(hDoc As CDocument, iType As Integer, Optional sText As String, X
     SY = .SelectionLine
     Text = sText
     State = hState
+    Right = bRight
   End With
   
 End
@@ -58,9 +62,9 @@ Public Sub Print(sPrefix As String)
   
 End
 
-Static Public Sub _call(hDoc As CDocument, iType As Integer, Optional sText As String, X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer, hState As CCommandBefore) As CCommand
+Static Public Sub _call(hDoc As CDocument, iType As Integer, Optional sText As String, X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer, hState As CCommandBefore, Optional bRight As Boolean) As CCommand
   
-  Return New CCommand(hDoc, iType, sText, X1, Y1, X2, Y2, hState)
+  Return New CCommand(hDoc, iType, sText, X1, Y1, X2, Y2, hState, bRight)
 
 End
 
@@ -249,3 +253,9 @@ End
 '   }
 ' };
 ' 
+
+Private Function Length_Read() As Integer
+
+  Return Abs(X - XA)
+
+End

@@ -879,6 +879,29 @@ bool CWIDGET_is_design(CWIDGET *_object)
 	return CWIDGET_test_flag(THIS, WF_DESIGN) || CWIDGET_test_flag(THIS, WF_DESIGN_LEADER);
 }
 
+static void _cleanup_CWIDGET_raise_event_action(intptr_t object)
+{
+	GB.Unref(POINTER(&object));
+}
+
+void CWIDGET_raise_event_action(void *object, int event)
+{
+	GB_RAISE_HANDLER handler;
+
+	GB.Ref(object);
+	
+	handler.callback = _cleanup_CWIDGET_raise_event_action;
+	handler.data = (intptr_t)object;
+	
+	GB.RaiseBegin(&handler);
+	GB.Raise(object, event, 0);
+	GB.RaiseEnd(&handler);
+	
+	CACTION_raise(object);
+	
+	GB.Unref(POINTER(&object));
+}
+
 //---------------------------------------------------------------------------
 
 BEGIN_METHOD_VOID(Control_new)

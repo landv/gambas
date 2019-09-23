@@ -452,9 +452,9 @@ static void rich_text_size(CFONT *_object, char *text, int len, int sw, int *w, 
 {
 	QTextDocument rt;
 	
-	rt.setDocumentMargin(0);
+	DRAW_init_rich_text(&rt, *(THIS->font));
+	
 	rt.setHtml(QString::fromUtf8((const char *)text, len));
-	rt.setDefaultFont(*(THIS->font));
 
 	if (sw > 0)
 		rt.setTextWidth(sw);

@@ -19,28 +19,32 @@
       MoveScaled(1,28,52,4)
       Background = Color.TextBackground
       { txtData TextBox
-        MoveScaled(0,0,23,4)
+        MoveScaled(0,0,32,4)
         Expand = True
         Border = False
       }
       { btnAdd ToolButton
         MoveScaled(33,0,4,4)
         ToolTip = ("Add item")
+        AutoResize = True
         Picture = Picture["icon:/small/add"]
       }
       { btnRemove ToolButton
         MoveScaled(37,0,4,4)
         ToolTip = ("Remove item")
-        Picture = Picture["icon:/small/delete"]
+        AutoResize = True
+        Picture = Picture["icon:/small/remove"]
       }
       { btnUp ToolButton
         MoveScaled(41,0,4,4)
         ToolTip = ("Move item up")
+        AutoResize = True
         Picture = Picture["icon:/small/up"]
       }
       { btnDown ToolButton
         MoveScaled(45,0,4,4)
         ToolTip = ("Move item down")
+        AutoResize = True
         Picture = Picture["icon:/small/down"]
       }
     }

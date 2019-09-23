@@ -18,19 +18,21 @@ Property Read Count As Integer
 Property ReadOnly As Boolean
 Property Sort As String
 Property Ascending As Boolean
+Property IgnoreParent As Boolean
 
 'Property CacheSize As Integer
 
 ' Pb si on fait de Connection une propriété de l'IDE: le controle
 ' Connection doit être créé AVANT l'affectation à la propriété,
-' et l'IDE ne sait pas géré ça!
+' et l'IDE ne sait pas gérer ça!
 
-Public Const _Properties As String = "*,Connection{Connection},Table{Table},Filter,ReadOnly" ',CacheSize{Range:0;1024;64}"
+Public Const _Properties As String = "*,Connection{Connection},Table{Table},Filter,ReadOnly,IgnoreParent" ',CacheSize{Range:0;1024;64}"
 Public Const _Group As String = "Data"
 'PUBLIC CONST _DrawWith AS String = "DrawingArea"
 
 Private $sTable As String
 Private $sFilter As String
+Private $bIgnoreParent As Boolean
 Private $bReadOnly As Boolean
 Private $bRequest As Boolean
 
@@ -122,6 +124,12 @@ Private Sub SetFocus(sKey As String)
   
 End
 
+Private Sub GetParent() As DataSource
+  
+  If Not $bIgnoreParent Then Return Common.GetSource(Me)
+  
+End
+
 
 Private Function GetFilter() As String
 
@@ -130,7 +138,7 @@ Private Function GetFilter() As String
   Dim vVal As Variant
   Dim sField As String
   
-  hSrc = Common.GetSource(Me)
+  hSrc = GetParent()
   If hSrc Then 
     For Each sField In hSrc.GetKeys()
       'iPos = $hTable.Keys.Find(sField) 
@@ -349,7 +357,7 @@ Public Sub _EditCurrent() As Result
   If Not aVal Then Return
   aKey = $hTable.Keys
   
-  hSrc = Common.GetSource(Me)
+  hSrc = GetParent()
   If hSrc Then
     For Each sKey In hSrc.GetKeys()
       iPos = aKey.Find(sKey)
@@ -383,7 +391,7 @@ Public Sub _CreateCurrent() As Result
   
   rData = _GetDB().Create($sTable)
 
-  hSrc = Common.GetSource(Me)
+  hSrc = GetParent()
   If hSrc Then
     For Each sKey In hSrc.GetKeys()
       Try rData[sKey] = hSrc[sKey]
@@ -513,7 +521,7 @@ Public Sub _DeleteCurrent() As Boolean
   
   aKey = $hTable.Keys
   
-  hSrc = Common.GetSource(Me)
+  hSrc = GetParent()
   If hSrc Then
     For Each sKey In hSrc.GetKeys()
       iPos = aKey.Find(sKey)
@@ -760,5 +768,19 @@ Private Sub Ascending_Write(Value As Boolean)
   Endif
   $hTable.Ascending = Value
   Redraw
+
+End
+
+Private Function IgnoreParent_Read() As Boolean
+
+  Return $bIgnoreParent
+
+End
+
+Private Sub IgnoreParent_Write(Value As Boolean)
+
+  If Value = $bIgnoreParent Then Return
+  $bIgnoreParent = Value
+  Load
 
 End

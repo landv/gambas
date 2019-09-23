@@ -120,7 +120,7 @@ Private Sub GenerateRandomMines(n As Integer, nx As Integer, ny As Integer)
    
    ' check if the range is correct
    ' note that the field should contain at most (w*h-1) mines, not w*h
-   If n >= count Then Error.Raise("Index out of bounds")
+   If n >= count Then Error.Raise(("Index out of bounds"))
    
    ' put n mines into the first blocks, and fill in zero in the rest
    For i = 0 To count - 1

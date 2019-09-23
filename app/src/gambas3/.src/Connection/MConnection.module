@@ -14,9 +14,11 @@ Private $bError As Boolean
 
 Public Sub MakeAbsolutePath(sPath As String) As String
   
-  If sPath Begins "~/" Then
+  If sPath = "~" Then
+    sPath = User.Home
+  Else If sPath Begins "~/" Then
     sPath = User.Home &/ Mid$(sPath, 3)
-  Else If File.IsRelative(sPath) Then 
+  Else If File.IsRelative(sPath) Or If Not sPath Then 
     sPath = Project.Dir &/ sPath
   Endif
   

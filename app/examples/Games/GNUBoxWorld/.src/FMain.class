@@ -39,7 +39,7 @@ Public Sub Form_Open()
   
   For iInd = 1 To GameBoard.NUM_LEVELS
     hMenu = New Menu(mnuLevel) As "mnuLevel"
-    hMenu.Text = Subst("Level &1", iInd)
+    hMenu.Text = Subst(("Level &1"), iInd)
     hMenu.Tag = iInd
   Next
 

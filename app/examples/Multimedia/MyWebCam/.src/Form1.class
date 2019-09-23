@@ -13,7 +13,6 @@ Public Sub Button1_Click()
   Dim sSize As String
 
   If hWebCam Then
-    Button1.Caption = ("Capture")
     Bright.Enabled = False
     Contrast.Enabled = False
     Hue.Enabled = False
@@ -27,6 +26,7 @@ Public Sub Button1_Click()
     Button2.Enabled = False
     hWebCam = Null
     Tmr.Enabled = False
+    Button1.Caption = ("Capture")
     Return
   End If
 
@@ -59,7 +59,7 @@ Public Sub Button1_Click()
   Hue.Value = hWebCam.Hue
   Whiteness.Value = hWebCam.Whiteness
   Colour.Value = hWebCam.Color
-  LblFreq.Text = "Tuner frequency: " & hWebCam.Tuner.Frequency
+  LblFreq.Text = ("Tuner frequency:") & " " & hWebCam.Tuner.Frequency
 
   Wait 0.001
   OnSet = False
@@ -139,7 +139,7 @@ Public Sub Tmr_Timer()
     nFps = nFps + 1
     T1 = Now() - Fps
     If Second(T1) >= 1 Then
-      Me.Caption = hWebCam.Name & " (" & nFps & " fps)"
+      Me.Caption = hWebCam.Name & " (" & nFps & " " & ("fps") & ")"
       Fps = Now()
       nFps = 0
     End If
@@ -163,7 +163,7 @@ End
 Public Sub FreqUP_Click()
 
   hWebCam.Tuner.Frequency = hWebCam.Tuner.Frequency + 5
-  LblFreq.Text = "Tuner frequency: " & hWebCam.Tuner.Frequency
+  LblFreq.Text = ("Tuner frequency:") & " " & hWebCam.Tuner.Frequency
 
 End
 
@@ -172,7 +172,7 @@ End
 Public Sub FreqDown_Click()
 
   hWebCam.Tuner.Frequency = hWebCam.Tuner.Frequency - 5
-  LblFreq.Text = "Tuner frequency: " & hWebCam.Tuner.Frequency
+  LblFreq.Text = ("Tuner frequency:") & " " & hWebCam.Tuner.Frequency
 
 End
 
@@ -180,11 +180,11 @@ Public Sub Button2_Click()
 
   Dim sCad As String
 
-  sCad = "Device Bus: " & hWebCam.Bus & "\n"
-  sCad = sCad & "Device Driver: " & hWebCam.Driver & " Version: " & hWebCam.Version & "\n"
-  sCad = sCad & "Device Name: " & hWebCam.Name & "\n"
-  sCad = sCad & "Max.Resolution: " & hWebCam.MaxWidth & "x" & hWebCam.MaxHeight & "\n"
-  sCad = sCad & "Min. Resolution: " & hWebCam.MinWidth & "x" & hWebCam.MinHeight & "\n"
+  sCad = ("Device Bus:") & " " & hWebCam.Bus & "\n"
+  sCad = sCad & ("Device Driver:") & " " & hWebCam.Driver & " " & ("Version:") & " " & hWebCam.Version & "\n"
+  sCad = sCad & ("Device Name:") & " " & hWebCam.Name & "\n"
+  sCad = sCad & ("Max. Resolution:") & " " & hWebCam.MaxWidth & "x" & hWebCam.MaxHeight & "\n"
+  sCad = sCad & ("Min. Resolution:") & " " & hWebCam.MinWidth & "x" & hWebCam.MinHeight & "\n"
 
   Message.Info(sCad)
 
@@ -193,7 +193,7 @@ End
 Public Sub BtnTakeShot_Click()
 
   Try hWebCam.Save(User.Home & "/webcam_shot.png")
-  If Not Error Then Message.Info("Image saved as " & User.Home & "/webcam_shot.png")
+  If Not Error Then Message.Info(("Image saved as ") & User.Home & "/webcam_shot.png")
 End
 
 Public Sub Panel2_MouseDown()

@@ -21,6 +21,8 @@ Public Sub Form_Open()
   
   chkDebug.Value = Project.KeepDebugInfo
   chkShortcut.Value = Project.CreateShortcut
+  chkIncVersion.Value = Not Project.Config["/Executable/DoNotIncrementVersion", False]
+  chkIncVersion.Visible = Not Project.VersionFile
   ' If Project.CreateComponent Then 
   '   chkShortcut.Text = ("Install in the user component directory")
   ' Else
@@ -46,6 +48,7 @@ Public Sub fchExec_Activate()
   Project.KeepDebugInfo = chkDebug.Value
   Project.CreateShortcut = chkShortcut.Value
   Project.RunAfterMakingExec = Trim(txtCommand.Text)
+  Project.Config["/Executable/DoNotIncrementVersion"] = chkIncVersion.Value = CheckBox.False
   Project.WriteProject(True)
   Me.Close(True)
 

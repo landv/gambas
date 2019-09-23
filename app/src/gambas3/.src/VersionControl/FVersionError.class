@@ -25,7 +25,7 @@ End
 
 Public Sub Form_Open()
 
-  Dim DS, W, H As Integer
+  Dim DS As Integer
   
   DS = Desktop.Scale
   
@@ -33,21 +33,16 @@ Public Sub Form_Open()
   
   If $sDetail Then 
   
-    Project.SetEditorFont(lblDetail)
-    lblDetail.Text = $sDetail
-    lblDetail.Border = Border.Plain
-    lblDetail.Padding = DS
-    With lblDetail.Font
-      W = .TextWidth($sDetail)
-      H = .TextHeight($sDetail)
-    End With
+    Project.SetEditorFont(txtDetail)
+    txtDetail.Text = $sDetail
+    panDetail.Show
+    Me.H = panDetail.Y + panDetail.H + DS * 6
     
   Else
     
-    lblDetail.H = DS
+    Me.H = panDetail.Y + DS * 6
+    panDetail.Hide
     
   Endif
   
-  Me.Resize(Max(lblDetail.X + W + DS * 4, 48 * DS), lblDetail.Y + H + DS * 8)
-
 End

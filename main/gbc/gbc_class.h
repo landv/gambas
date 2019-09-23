@@ -96,7 +96,8 @@ typedef
 		unsigned fast : 1;             // If this function is jit compiled
 		unsigned unsafe : 1;           // If this function is unsafe
 		unsigned use_is_missing : 1;   // If this function uses IsMissing()
-		unsigned _reserved : 12;
+		unsigned no_debug : 1;         // Do not output deubgging information
+		unsigned _reserved : 11;
 		short nlocal;                  // Local variable count
 		short nctrl;                   // Control structure variable count
 		
@@ -157,6 +158,7 @@ typedef
 		int line;                      // The line where the property is declared
 		int comment;                   // Property string description, added to datatype
 		int synonymous;                // Synonymous property index (-1 if not a synonymous)
+		int use;                       // Associated global private variable
 		short read;                    // Read function
 		short write;                   // Write function
 		}
@@ -238,7 +240,7 @@ CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, int type, bool global);
 void CLASS_check_unused_global(CLASS *class);
 void CLASS_begin_init_function(CLASS *class, int type);
 
-void CLASS_add_function(CLASS *class, TRANS_FUNC *decl);
+int CLASS_add_function(CLASS *class, TRANS_FUNC *decl);
 void CLASS_add_event(CLASS *class, TRANS_EVENT *decl);
 void CLASS_add_property(CLASS *class, TRANS_PROPERTY *prop);
 void CLASS_add_extern(CLASS *class, TRANS_EXTERN *decl);

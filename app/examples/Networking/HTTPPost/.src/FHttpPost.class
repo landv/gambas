@@ -30,7 +30,7 @@ Public Sub P_Finished()
   Dim sBuf As String   
   Dim MyLoop As Integer
 
-  LblInfo.Text = "OK"
+  LblInfo.Text = ("OK")
   
   TextArea2.Insert(P.Headers.Join("\n") & "\n")
   
@@ -56,10 +56,10 @@ Public Sub P_Finished()
         MyLoop = MyLoop + 1
       Loop
     Else
-      Message.Error("Error")
+      Message.Error(("Error"))
     End If
   Else
-    Message.Error("Error")
+    Message.Error(("Error"))
   End If  
   
   
@@ -91,7 +91,7 @@ Public Sub Button1_Click()
   Else
     P.Proxy.Host = ""
   End If
-  P.URL = "xmlrpc-c.sourceforge.net/api/sample.php"
+  P.URL = "dansoft.krasnokamensk.ru/xmlrpc-c-api/sample.php"
 
   P.Post("text/xml", sCad)
 

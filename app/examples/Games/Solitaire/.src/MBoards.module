@@ -1,30 +1,30 @@
 ' Gambas module file
 
-PUBLIC SUB make_boards()
+Public Sub make_boards()
   
-  DIM i AS Byte
-  DIM j AS Byte
+  Dim i As Byte
+  Dim j As Byte
   
   ' Create the board design objects
 
   Global.boarddesign.Resize(2)
 
-  FOR i = 0 TO Global.boarddesign.Count - 1
-    Global.boarddesign[i] = NEW CBoardDesign
-    FOR j = 1 TO 7
+  For i = 0 To Global.boarddesign.Count - 1
+    Global.boarddesign[i] = New CBoardDesign
+    For j = 1 To 7
       Global.boarddesign[i].Row.Add(0)
       Global.boarddesign[i].Placed.Add(0)
-    NEXT
-  NEXT
+    Next
+  Next
 
-END
+End
 
-PUBLIC SUB fill_boards()
+Public Sub fill_boards()
   
   ' Fill the board design Array
 
-  WITH Global.boarddesign[0]
-    .Name = "Original"
+  With Global.boarddesign[0]
+    .Name = ("Original")
 
     .Row[0] = 28
     .Row[1] = 28
@@ -43,10 +43,10 @@ PUBLIC SUB fill_boards()
     .Placed[6] = 28
     
     .Finish = 28
-  END WITH
+  End With
   
-  WITH Global.boarddesign[1]
-    .Name = "Plus"
+  With Global.boarddesign[1]
+    .Name = ("Plus")
     
     .Row[0] = 28
     .Row[1] = 28
@@ -65,5 +65,5 @@ PUBLIC SUB fill_boards()
     .Placed[6] = 0
     
     .Finish = 28
-  END WITH
-END
+  End With
+End

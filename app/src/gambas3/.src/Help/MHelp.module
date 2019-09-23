@@ -434,11 +434,13 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Else If iType = TYPE_COMPONENT
     
     Try hComp = Project.Documentation[sSymbol]
-    If hComp.Library Or If hComp.ThirdParty Then
-      sUrl = sSymbol
-      sHtml = hComp.GetHelpHTML()
-    Else
-      sUrl = hComp.GetHelpURL()
+    If hComp Then 
+      If hComp.Library Or If hComp.ThirdParty Then
+        sUrl = sSymbol
+        sHtml = hComp.GetHelpHTML()
+      Else
+        sUrl = hComp.GetHelpURL()
+      Endif
     Endif
     
   Endif

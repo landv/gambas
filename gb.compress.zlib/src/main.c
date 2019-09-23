@@ -227,7 +227,7 @@ static void u_String(char **target,unsigned int *lent,char *source,unsigned int 
 			try_gzip = 1;
 			continue;
 		case Z_MEM_ERROR:
-			GB.Error("Not enough memory: String too long");
+			GB.Error("Not enough memory: string too long");
 			goto error;
 		default:
 			GB.Error("Unable to inflate string");

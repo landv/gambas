@@ -40,7 +40,7 @@
 #include <TextOutputDev.h>
 #include <SplashOutputDev.h>
 #include <splash/SplashBitmap.h>
-#include <goo/GooList.h>
+
 #include <Outline.h>
 #include <Link.h>
 #include <Gfx.h>
@@ -273,7 +273,11 @@ static uint32_t aux_get_page_from_action(void *_object, const_LinkAction *act)
 	if (dest->isPageRef() )
 	{
 		pref= dest->getPageRef();
+#if POPPLER_VERSION_0_76
+		return THIS->doc->findPage(pref);
+#else
 		return THIS->doc->findPage(pref.num, pref.gen);
+#endif
 	}
 	else
 		return dest->getPageNum();
@@ -717,7 +721,7 @@ PDF document index
 
 BEGIN_PROPERTY(PDFDOCUMENT_has_index)
 
-	GB.ReturnBoolean(THIS->index && THIS->index->getLength());
+	GB.ReturnBoolean(THIS->index && CPDF_index_count());
 
 END_PROPERTY
 
@@ -725,45 +729,45 @@ BEGIN_PROPERTY(PDFDOCUMENT_index)
 
 	if (!THIS->index) { GB.ReturnNull(); return; }
 	
-	THIS->action=((OutlineItem*)THIS->index->get(THIS->currindex))->getAction();
+	THIS->action=(CPDF_index_get(THIS->currindex))->getAction();
 	RETURN_SELF();
 
 END_PROPERTY
 
 BEGIN_PROPERTY(PDFINDEX_count)
 
-	GB.ReturnInteger(THIS->index->getLength());
+	GB.ReturnInteger(CPDF_index_count());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(PDFINDEX_has_children)
 
-	OutlineItem *item;
+	OutlineItem *item = CPDF_index_get(THIS->currindex);
 
-	item = (OutlineItem *)THIS->index->get (THIS->currindex);
-	GB.ReturnBoolean(item->getKids() && item->getKids()->getLength());
+	GB.ReturnBoolean(item->getKids() && CPDF_list_count(item->getKids()));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(PDFINDEX_is_open)
 
-	OutlineItem *item;
-
-	item = (OutlineItem *)THIS->index->get (THIS->currindex);
+	OutlineItem *item = CPDF_index_get(THIS->currindex);
 
 	if (READ_PROPERTY)
-	{	GB.ReturnBoolean(item->isOpen()); return; }
+	{
+		GB.ReturnBoolean(item->isOpen()); 
+		return;
+	}
 
-	if (VPROP(GB_INTEGER)) item->open();
-	else item->close();
+	if (VPROP(GB_INTEGER))
+		item->open();
+	else
+		item->close();
 
 END_PROPERTY
 
 BEGIN_PROPERTY(PDFINDEX_title)
 
-	OutlineItem *item;
-
-	item = (OutlineItem *)THIS->index->get (THIS->currindex);
+	OutlineItem *item = CPDF_index_get(THIS->currindex);
 	return_unicode_string(item->getTitle(), item->getTitleLength());
 
 END_PROPERTY
@@ -792,8 +796,11 @@ END_METHOD
 
 BEGIN_METHOD_VOID(PDFINDEX_next)
 
-	if ( (THIS->currindex+1) >= (uint32_t)THIS->index->getLength() )
-		 { GB.ReturnBoolean(true); return; }
+	if ((THIS->currindex + 1) >= (uint)CPDF_index_count())
+	{
+		GB.ReturnBoolean(true); 
+		return;
+	}
 
 	THIS->currindex++;
 	GB.ReturnBoolean(false);
@@ -802,11 +809,9 @@ END_METHOD
 
 BEGIN_METHOD_VOID(PDFINDEX_child)
 
-	OutlineItem *item;
+	OutlineItem *item = CPDF_index_get(THIS->currindex);
 
-	item = (OutlineItem *)THIS->index->get (THIS->currindex);
-
-	if (!item->hasKids() || item->getKids()->getLength() == 0) { GB.ReturnBoolean(true); return; }
+	if (!item->hasKids() || CPDF_list_count(item->getKids()) == 0) { GB.ReturnBoolean(true); return; }
 
 	if (THIS->pindex)
 	{

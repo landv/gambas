@@ -265,8 +265,7 @@ static int do_query(DB_DATABASE *db, const char *error, SQLITE_RESULT **pres, co
 		_print_query = FALSE;
 	}
 
-	if (DB.IsDebug())
-		fprintf(stderr, "gb.db.sqlite3: %p: %s\n", conn, query);
+	DB.Debug("gb.db.sqlite3","%p: %s", conn, query);
 
 	if (db->timeout > 0)
 		max_retry = db->timeout * 5;
@@ -1836,7 +1835,10 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		char *p, *p2;
 		char *field_desc;
 		int len;
+		char quote;
 
+		len = strlen(_fieldName);
+		
 		p = strchr(schema, '(');
 		if (p)
 		{
@@ -1847,13 +1849,14 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 				if (!p2)
 					p2 = p + strlen(p) - 1;
 
-				while (p < p2 && *p == ' ')
+				while (p < p2 && (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r'))
 					p++;
 
-				if (*p == '\'' || *p == '"')
-					p++;
+				if (*p == '\'' || *p == '"' || *p == '`')
+					quote = *p++;
+				else
+					quote = 0;
 
-				len = strlen(_fieldName);
 				if ((p2 - p) < len || strncasecmp(p, _fieldName, len))
 				{
 					p = p2;
@@ -1861,7 +1864,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 				}
 
 				p += len;
-				if (*p == '\'')
+				if (*p == quote)
 					p++;
 
 				len = p2 - p;
@@ -2343,8 +2346,7 @@ static int database_create(DB_DATABASE *db, const char *name)
 
 _CREATE_DATABASE:
 
-	if (DB.IsDebug())
-		fprintf(stderr, "sqlite3: create database: %s\n", fullpath);
+	DB.Debug("gb.db.sqlite3", "create database: %s", fullpath);
 
 	conn = sqlite_open_database(fullpath, host);
 	GB.FreeString(&fullpath);

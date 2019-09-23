@@ -476,7 +476,7 @@ CLASS *CLASS_find(const char *name)
 	if (!_global && !ARCHIVE_get_current(&arch))
 	{
 		global = FALSE;
-		TABLE_add_symbol(arch->classes, name, len, &index);
+		index = TABLE_add_symbol(arch->classes, name, len);
 		#if DEBUG_LOAD || DEBUG_COMP
 			fprintf(stderr, "Not found -> creating new one in %s\n", arch->name ? arch->name : "main");
 		#endif
@@ -485,7 +485,7 @@ CLASS *CLASS_find(const char *name)
 	else
 	{
 		global = TRUE;
-		TABLE_add_symbol(&_global_table, name, len, &index);
+		index = TABLE_add_symbol(&_global_table, name, len);
 		#if DEBUG_LOAD || DEBUG_COMP
 			fprintf(stderr, "Not found -> creating new one in global\n");
 		#endif

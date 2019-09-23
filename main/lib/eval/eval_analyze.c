@@ -683,7 +683,7 @@ static void add_end_pattern(void)
 	len = EVAL->len - (READ_source_ptr - EVAL->source);
 	if (len > 0)
 	{
-		TABLE_add_symbol(EVAL->string, READ_source_ptr, len, &index);
+		index = TABLE_add_symbol(EVAL->string, READ_source_ptr, len);
 		add_pattern(RT_ERROR, index);
 	}
 	

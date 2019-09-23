@@ -136,15 +136,15 @@ void reportODBCError(const char *fn,
 	SQLSMALLINT     len;
 	SQLRETURN       ret;
 
-	if(DB.IsDebug())
+	if (DB.IsDebug())
 	{
-		fprintf(stderr, "gb.db.odbc: %s\n", fn);
+		DB.Debug("gb.db.odbc", fn);
 		do
 		{
 			ret = SQLGetDiagRec(type, handle, ++i, state, &native, text, sizeof(text), &len);
 
 			if (SQL_SUCCEEDED(ret))
-				fprintf(stderr, "gb.db.odbc: %d:%s:%d:%s\n", (int)i, (char *)state, (int)native, (char *)text);
+				DB.Debug("gb.db.odbc", "%d:%s:%d:%s", (int)i, (char *)state, (int)native, (char *)text);
 		}
 		while (ret == SQL_SUCCESS);
 	}
@@ -221,10 +221,7 @@ int GetRecordCount(SQLHANDLE stmtHandle, SQLINTEGER cursorScrollable)
 	//Make sure the statement has a cursor
 	if (!(stmtHandle && (cursorScrollable == SQL_TRUE)))
 	{
-		if (DB.IsDebug())
-		{
-			fprintf(stderr, "gb.db.odbc: Cannot do GetRecordCount()!\n");
-		}
+		DB.Debug("gb.db.odbc", "cannot do GetRecordCount()!");
 		return ((int) myRecCnt);
 	}
 
@@ -250,10 +247,7 @@ int GetRecordCount(SQLHANDLE stmtHandle, SQLINTEGER cursorScrollable)
 	//Make sure the statement has a cursor
 	if (formerRecIdx < 0)
 	{
-		if (DB.IsDebug())
-		{
-			fprintf(stderr, "gb.db.odbc.GetRecordCount: Current record returned %d, returning -1 as count.\n", formerRecIdx);
-		}
+		DB.Debug("gb.db.odbc", "GetRecordCount: Current record returned %d, returning -1 as count", formerRecIdx);
 		return ((int) myRecCnt);
 	}
 
@@ -270,10 +264,7 @@ int GetRecordCount(SQLHANDLE stmtHandle, SQLINTEGER cursorScrollable)
 		if (SQL_SUCCEEDED(retcode))
 		{
 		    //Inform first recno if in Debug mode and carry on
-			if (DB.IsDebug())
-			{
-				fprintf(stderr, "gb.db.odbc.GetRecordCount: First recno=%d\n", (int) firstRecNo);
-			}
+			DB.Debug("gb.db.odbc", "GetRecordCount: First recno=%d", (int) firstRecNo);
 		} else {
 			//Could not fetch the first recno: Abort!
 			reportODBCError("SQLFetchScroll SQL_ATTR_ROW_NUMBER (first recno)", stmtHandle, SQL_HANDLE_STMT);
@@ -292,11 +283,7 @@ int GetRecordCount(SQLHANDLE stmtHandle, SQLINTEGER cursorScrollable)
 		if (SQL_SUCCEEDED(retcode))
 		{
 	        //Set ret value
-			if (DB.IsDebug())
-			{
-				fprintf(stderr, "gb.db.odbc.GetRecordCount: Last recno=%d\n", (int) lastRecNo);
-			}
-
+			DB.Debug("gb.db.odbc", "GetRecordCount: Last recno=%d", (int) lastRecNo);
 		} else {
 			reportODBCError("SQLGetStmtAttr SQL_ATTR_ROW_NUMBER (last recno)", stmtHandle, SQL_HANDLE_STMT);
 		}
@@ -325,10 +312,7 @@ int GetRecordCount(SQLHANDLE stmtHandle, SQLINTEGER cursorScrollable)
 	}
 
 	myRecCnt = (lastRecNo - firstRecNo + 1);
-	if (DB.IsDebug())
-	{
-		fprintf(stderr, "gb.db.odbc.GetRecordCount: Record count=%d\n", (int) myRecCnt);
-	}
+	DB.Debug("gb.db.odbc", "GetRecordCount: Record count=%d", (int) myRecCnt);
 
 	return ((int) myRecCnt);
 
@@ -704,15 +688,10 @@ void GetConnectedDBName(DB_DESC *desc, ODBC_CONN *odbc)
 		free(dbName);
 	}
 
-	if (DB.IsDebug())
-	{
-		if (desc->name)
-		{
-			fprintf(stderr, "gb.db.odbc.GetConnectedDBName: desc->name (%d chars):'%s'.\n", (int)charsNeeded, desc->name);
-		} else {
-			fprintf(stderr, "gb.db.odbc.GetConnectedDBName: desc->name: NULL.\n");
-		}
-	}
+	if (desc->name)
+		DB.Debug("gb.db.odbc", "GetConnectedDBName: desc->name (%d chars): '%s'", (int)charsNeeded, desc->name);
+	else
+		DB.Debug("gb.db.odbc", "GetConnectedDBName: desc->name: NULL");
 
 }
 
@@ -1091,8 +1070,8 @@ fflush(stderr);
 	else
 		query = qtemp;
 
-	if (DB.IsDebug())
-		fprintf(stderr, "gb.db.odbc.do_query: res %p, dbc handle %p, query '%s'\n", res, handle, query);
+	//DB.Debug("gb.db.odbc", "do_query: res %p, dbc handle %p, query '%s'", res, handle, query);
+	DB.Debug("gb.db.odbc", "%p: %s", handle, query);
 
 	GB.AllocZero(POINTER(&odbcres), sizeof(ODBC_RESULT));
 
@@ -1118,8 +1097,7 @@ fflush(stderr);
 	retcode = SQLExecDirect(odbcres->odbcStatHandle, (SQLCHAR *) query, SQL_NTS);
 	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO) && (retcode != SQL_NO_DATA))
 	{
-		if (DB.IsDebug())
-			fprintf(stderr, "gb.db.odbc.do_query: SQLExecDirect() returned code %d\n", (int)retcode);
+		DB.Debug("gb.db.odbc", "do_query: SQLExecDirect() returned code %d", (int)retcode);
 		throwODBCError("SQLExecDirect", odbcres->odbcStatHandle, SQL_HANDLE_STMT);
 		SQLFreeHandle(SQL_HANDLE_STMT, odbcres->odbcStatHandle);
 		//GB.Error("Error while executing the statement");

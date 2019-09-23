@@ -131,7 +131,7 @@ void EVAL_start(EXPRESSION *expr)
 	if (EVAL->custom)
 	{
 		// _ is the first symbol, it returns the Expression object
-		TABLE_add_symbol(expr->table, "_", 1, &index);
+		index = TABLE_add_symbol(expr->table, "_", 1);
 		EVAL_add_variable(index);
 	}
 }

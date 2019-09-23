@@ -21,7 +21,7 @@
 
 ***************************************************************************/
 
-#define __TABLE_C
+#define __GB_TABLE_C
 
 #include <stdlib.h>
 #include <string.h>
@@ -38,6 +38,7 @@
 #define SYM(table, ind) (TABLE_get_symbol(table, ind))
 #define SSYM(_symbol, _pos, _size) ((SYMBOL *)((char *)(_symbol) + (_pos) * (_size)))
 
+bool TABLE_new_symbol = FALSE;
 static char _buffer[MAX_SYMBOL_LEN + 1];
 
 #if TABLE_USE_KEY
@@ -140,7 +141,7 @@ char TABLE_compare_ignore_case_len(const char *s1, int len1, const char *s2, int
 	return 0;
 }
 
-static inline bool search(void *symbol, ushort *sort, int n_symbol, size_t size, const char *name, int len, int *index)
+static inline int search(void *symbol, ushort *sort, int n_symbol, size_t size, const char *name, int len)
 {
 	int pos, deb, fin;
 	SYMBOL *sym;
@@ -159,10 +160,7 @@ static inline bool search(void *symbol, ushort *sort, int n_symbol, size_t size,
 	for(;;)
 	{
 		if (UNLIKELY(deb >= fin))
-		{
-			*index = deb;
-			return FALSE;
-		}
+			return (-deb) - 1;
 
 		pos = (deb + fin) >> 1;
 
@@ -207,8 +205,7 @@ static inline bool search(void *symbol, ushort *sort, int n_symbol, size_t size,
 			}
 		}
 
-		*index = pos;
-		return TRUE;
+		return pos;
 		
 		__B_LOWER: fin = pos; continue;
 		__B_GREATER: deb = pos + 1; continue;
@@ -216,7 +213,7 @@ static inline bool search(void *symbol, ushort *sort, int n_symbol, size_t size,
 }
 
 
-static inline bool search_ignore_case(void *symbol, ushort *sort, int n_symbol, size_t size, const char *name, int len, int *index)
+static inline int search_ignore_case(void *symbol, ushort *sort, int n_symbol, size_t size, const char *name, int len)
 {
 	int pos, deb, fin;
 	SYMBOL *sym;
@@ -236,8 +233,9 @@ static inline bool search_ignore_case(void *symbol, ushort *sort, int n_symbol, 
 	{
 		if (UNLIKELY(deb >= fin))
 		{
-			*index = deb;
-			return FALSE;
+			return -deb - 1;
+			/**index = deb;
+			return FALSE;*/
 		}
 
 		pos = (deb + fin) >> 1;
@@ -283,8 +281,9 @@ static inline bool search_ignore_case(void *symbol, ushort *sort, int n_symbol, 
 			}
 		}
 
-		*index = pos;
-		return TRUE;
+		return pos;
+		/**index = pos;
+		return TRUE;*/
 		
 		__T_LOWER: fin = pos; continue;
 		__T_GREATER: deb = pos + 1; continue;
@@ -342,13 +341,12 @@ void TABLE_create(TABLE **result, size_t size, TABLE_FLAG flag)
 void TABLE_create_from(TABLE **result, size_t size, const char *sym_list[], TABLE_FLAG flag)
 {
 	TABLE *table;
-	int index;
 
 	TABLE_create(&table, size, flag);
 
 	while (*sym_list)
 	{
-		TABLE_add_symbol(table, *sym_list, strlen(*sym_list), &index);
+		TABLE_add_symbol(table, *sym_list, strlen(*sym_list));
 		sym_list++;
 	}
 
@@ -376,7 +374,6 @@ void TABLE_delete(TABLE **p_table)
 bool TABLE_find_symbol(TABLE *table, const char *name, int len, int *index)
 {
 	int ind;
-	bool result;
 	SYMBOL *tsym;
 	int count;
 	size_t size;
@@ -386,14 +383,17 @@ bool TABLE_find_symbol(TABLE *table, const char *name, int len, int *index)
 	size = ARRAY_size(tsym);
 
 	if (table->flag)
-		result = search_ignore_case(tsym, table->sort, count, size, name, len, &ind);
+		ind = search_ignore_case(tsym, table->sort, count, size, name, len);
 	else
-		result = search(tsym, table->sort, count, size, name, len, &ind);
+		ind = search(tsym, table->sort, count, size, name, len);
 	
-	if (result)
+	if (ind >= 0)
+	{
 		*index = table->sort[ind];
-
-	return result;
+		return TRUE;
+	}
+	else
+		return FALSE;
 }
 
 #if 0
@@ -418,10 +418,9 @@ void TABLE_add_new_symbol_without_sort(TABLE *table, const char *name, int len, 
 }
 #endif
 
-bool TABLE_add_symbol(TABLE *table, const char *name, int len, int *index)
+int TABLE_add_symbol(TABLE *table, const char *name, int len)
 {
 	int ind;
-	bool result;
 	SYMBOL *sym;
 	int count;
 	size_t size;
@@ -433,12 +432,13 @@ bool TABLE_add_symbol(TABLE *table, const char *name, int len, int *index)
 	size = ARRAY_size(table->symbol);
 	
 	if (table->flag)
-		result = search_ignore_case(table->symbol, table->sort, count, size, name, len, &ind);
+		ind = search_ignore_case(table->symbol, table->sort, count, size, name, len);
 	else
-		result = search(table->symbol, table->sort, count, size, name, len, &ind);
+		ind = search(table->symbol, table->sort, count, size, name, len);
 
-	if (!result)
+	if (ind < 0)
 	{
+		ind = -ind - 1;
 		sym = (SYMBOL *)ARRAY_add_void_size(&table->symbol);
 
 		sym->name = (char *)name;
@@ -459,16 +459,13 @@ bool TABLE_add_symbol(TABLE *table, const char *name, int len, int *index)
 
 		table->sort[ind] = (ushort)count;
 		ind = count;
+		TABLE_new_symbol = TRUE;
 	}
 	else
 		ind = table->sort[ind]; //SYM(table, ind)->sort; /*table->symbol[ind].sort;*/
 
-	*index = ind;
-
-	return result;
+	return ind;
 }
-
-
 
 void TABLE_print(TABLE *table, bool sort)
 {
@@ -508,7 +505,7 @@ void TABLE_print(TABLE *table, bool sort)
 }
 
 
-void TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix, int *index)
+int TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix)
 {
 	SYMBOL *sym;
 	char *ptr;
@@ -522,7 +519,7 @@ void TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix, int *
 
 	*ptr = prefix;
 
-	TABLE_add_symbol(table, ptr, sym->len + 1, index);
+	return TABLE_add_symbol(table, ptr, sym->len + 1);
 }
 
 
@@ -552,17 +549,14 @@ int SYMBOL_find(void *symbol, ushort *sort, int n_symbol, size_t s_symbol, int f
 	}
 
 	if (flag)
-	{
-		if (search_ignore_case(symbol, sort, n_symbol, s_symbol, name, len, &index))
-			return sort[index];
-	}
+		index = search_ignore_case(symbol, sort, n_symbol, s_symbol, name, len);
 	else
-	{
-		if (search(symbol, sort, n_symbol, s_symbol, name, len, &index))
-			return sort[index];
-	}
+		index = search(symbol, sort, n_symbol, s_symbol, name, len);
 
-	return NO_SYMBOL;
+	if (index >= 0)
+		return sort[index];
+	else
+		return NO_SYMBOL;
 }
 
 

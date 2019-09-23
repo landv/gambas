@@ -3078,7 +3078,7 @@ _ENUM_FIRST:
 
 	index = GET_XX() - func->n_local;
 	type = get_type(-1);
-	if (!TYPE_is_object(type))
+	if (!TYPE_is_object(type) && type != T_UNKNOWN)
 	{
 		JIT_print("  THROW(E_NOBJECT);\n");
 		pop_stack(1);

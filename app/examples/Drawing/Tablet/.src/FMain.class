@@ -38,7 +38,7 @@ Private Sub PaintStroke(hDest As Picture)
   Paint.Begin(hTemp)
   Paint.LineCap = Paint.LineCapRound
   Paint.Brush = Paint.Color($iColor)
-  Paint.Translate(- $hBound.X, - $hBound.Y)
+  Paint.Translate(-$hBound.X, -$hBound.Y)
   
   For I = 0 To $aCoord.Max - 3 Step 3
     
@@ -66,7 +66,7 @@ Public Sub dwgDraw_Draw()
   hDraw = $hBuffer.Copy()
   PaintStroke(hDraw)
 
-  Draw.Picture(hDraw, - dwgDraw.ScrollX, - dwgDraw.ScrollY)
+  Draw.Picture(hDraw, -dwgDraw.ScrollX, -dwgDraw.ScrollY)
 
 End
 
@@ -76,13 +76,13 @@ Private Sub UpdateInfo(Optional bUp As Boolean)
   
   Select Case Pointer.Type
     Case Pointer.Cursor
-      lblType.Text = "Cursor"
+      lblType.Text = ("Cursor")
     Case Pointer.Eraser
-      lblType.Text = "Eraser"
+      lblType.Text = ("Eraser")
     Case Pointer.Mouse
-      lblType.Text = "Mouse"
+      lblType.Text = ("Mouse")
     Case Pointer.Pen
-      lblType.Text = "Pen"
+      lblType.Text = ("Pen")
   End Select
 
   lblX.Text = Format($X, "0.000")

@@ -24,10 +24,10 @@
 #ifndef __CTEXTEDIT_H
 #define __CTEXTEDIT_H
 
+#include <QTextEdit>
+
 #include "gambas.h"
 #include "../gb.qt.h"
-
-#include <QTextEdit>
 
 #ifndef __CTEXTEDIT_CPP
 extern GB_DESC CTextEditSelectionDesc[];

@@ -24,11 +24,12 @@
 #ifndef __CCLIPBOARD_H
 #define __CCLIPBOARD_H
 
+#include <QMimeData>
+#include <QDropEvent>
+
 #include "gambas.h"
 #include "CWidget.h"
 #include "CPicture.h"
-#include <QMimeData>
-#include <QDropEvent>
 
 typedef
   struct {
@@ -45,19 +46,6 @@ extern GB_DESC CDragDesc[];
 extern CDRAG_INFO CDRAG_info;
 extern bool CDRAG_dragging;
 #endif
-
-class MyDragFrame: public QWidget
-{
-  Q_OBJECT
-
-public:
-
-  MyDragFrame(QWidget *);
-
-protected:
-
-	//virtual paintEvent(QPaintEvent *e);
-};
 
 void CDRAG_clear(bool valid);
 void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt);

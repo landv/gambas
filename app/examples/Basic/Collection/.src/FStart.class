@@ -7,11 +7,11 @@ Static Public Sub Main()
 End
 
 Public myThings As Collection
-Public myThing As CThing
 
 Public Sub btnCreate_Click()
 'creating objects and add to collection
   Dim i As Integer
+  Dim myThing As CThing
   myThings = New Collection
   For i = 1 To 7
     myThing = New CThing

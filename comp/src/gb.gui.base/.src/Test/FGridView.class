@@ -40,6 +40,8 @@ Public Sub Form_Open()
   gvwinfo[2, 0].Text = "Type"
   gvwinfo[2, 1].Text = "Normal"
   gvwinfo[3, 0].Text = "Compiler"
+  gvwInfo[3, 0].Picture = Picture.Load("picturebox.png")
+  gvwInfo[3, 0].Border = New Border("style:none;bottom-padding:16")
   gvwinfo[3, 1].Text = "Gambas 3.3.90"
   gvwinfo[4, 0].Text = "(IsOld)"
   gvwinfo[4, 1].Text = False
@@ -73,6 +75,9 @@ Public Sub Form_Open()
     .Style = Border.None
   End With
   
+  For I = 2 To 6
+    gvwInfo.Rows[I].TextAlignment = Align.Right
+  Next
   
   ' gvwInfo[6, 1].Background = Color.Yellow
   ' gvwInfo[6, 1].Border = New Border '.Copy() 'New Border 'hBorderLeft.Copy()

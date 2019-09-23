@@ -140,7 +140,7 @@ static lt_dlhandle get_library(const char *name)
 	if (!_table)
 		TABLE_create(&_table, sizeof(EXTERN_SYMBOL), TF_NORMAL);
 		
-	TABLE_add_symbol(_table, name, strlen(name), &index);
+	index = TABLE_add_symbol(_table, name, strlen(name));
 	esym = (EXTERN_SYMBOL *)TABLE_get_symbol(_table, index);
 	if (!esym->handle)
 	{

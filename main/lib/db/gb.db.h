@@ -42,7 +42,7 @@ typedef
 
 /* LIMIT position */
 
-#define DB_LIMIT_NONE					0
+#define DB_LIMIT_NONE         0
 #define DB_LIMIT_AT_BEGIN     1
 #define DB_LIMIT_AT_END       2
 
@@ -225,7 +225,8 @@ typedef
 		void (*Register)(DB_DRIVER *);
 		void (*Format)(DB_DRIVER *, GB_VALUE *, DB_FORMAT_CALLBACK);
 		void (*FormatVariant)(DB_DRIVER *, GB_VARIANT_VALUE *, DB_FORMAT_CALLBACK);
-		int (*IsDebug)(void);
+		bool (*IsDebug)();
+		void (*Debug)(const char *, const char *, ...);
 		void (*TryAnother)(const char *);
 		char *(*SubstString)(const char *, int, DB_SUBST_CALLBACK);
 		char *(*QuoteString)(const char *, int, char);

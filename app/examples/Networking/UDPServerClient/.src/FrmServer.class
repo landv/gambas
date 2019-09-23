@@ -46,7 +46,7 @@ End
 
 Public Sub UDPServer_Error()
   
-  Button2.Text = "Start !"
+  Button2.Text = ("Start !")
   TextBox1.Enabled = True
   Select Case UDPServer.Status
     Case Net.CannotBindSocket

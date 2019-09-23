@@ -259,8 +259,8 @@ Public Sub DrawingArea_Draw()
 
       HT = Paint.Font.Height
 
-      sText = .Description
-      If Not sText Then sText = .Title
+      sText = .GetTranslatedDescription()
+      If Not sText Then sText = .GetTranslatedTitle()
       Paint.Font = Font["-1"]
       
       W = Paint.W - X - P * 2
@@ -277,8 +277,8 @@ Public Sub DrawingArea_Draw()
       
       X -= ICON_SIZE + P
       
-      sText = .Description
-      If Not sText Then sText = .Title
+      sText = .GetTranslatedDescription()
+      If Not sText Then sText = .GetTranslatedTitle()
       Paint.Font = Font["-1"]
       
       W = W - X - P * 2
@@ -311,6 +311,8 @@ Public Sub DrawingArea_Draw()
     Paint.DrawImage(If($bInsideRemove, $hRemove, $hRemoveGray), Paint.W - $hRemove.W - P, P)
   Endif
   
+  If Not Me.Enabled Then Paint.FillRect(0, 0, Paint.W, Paint.H, Color.SetAlpha(Style.BackgroundOf($hDrawingArea), 64))
+  
   ' If Template And If $sPath = GetParent().Current Then
   '   Paint.FillRect(0, 0, Paint.W, Paint.H, Color.SetAlpha(Color.SelectedBackground, 128))
   ' Endif
@@ -319,7 +321,7 @@ End
 
 Public Sub DrawingArea_Enter()
   
-  If $bCanHighlight Then
+  If $bCanHighlight And If Me.Enabled Then
     'If not $bHighlight Then 
       '$hDrawingArea.Background = Color.LightBackground
       $bHighlight = True
@@ -331,7 +333,7 @@ End
 
 Public Sub DrawingArea_Leave()
   
-  If $bHighlight Then 
+  If $bHighlight And If Me.Enabled Then 
     '$hDrawingArea.Background = Color.Default
     $bHighlight = False
     $hDrawingArea.Refresh
@@ -443,11 +445,11 @@ Public Sub Match(sFilter As String) As Boolean
   If Not sFilter Then Return True
   With $hProjectInfo
     If .Name Like sFilter Then Return True
-    If String.LCase(.Title) Like sFilter Then Return True
+    If String.LCase(.GetTranslatedTitle()) Like sFilter Then Return True
     If .Version Like sFilter Then Return True
     If $bShowAuthors And If String.LCase(.Authors.Join(" ")) Like sFilter Then Return True
     If String.LCase(Group) Like sFilter Then Return True
-    If String.LCase(.Description) Like sFilter Then Return True
+    If String.LCase(.GetTranslatedDescription()) Like sFilter Then Return True
     If .Components.Exist(sFilter) Then Return True
   End With
   

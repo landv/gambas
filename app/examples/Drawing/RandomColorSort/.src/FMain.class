@@ -6,7 +6,7 @@
 Const cFormWidth As Integer = 927                                   'Form size.
 Const cFormHeight As Integer = 800
 
-Const cChartWidthHeight As Integer = 783                            'Color chart size, width and height.
+Const cChartWidthHeight As Integer = 315                            'Color chart size, width and height.
 Const cInset As Integer = 50                                        'Width of border around chart.
 Const cCircleRadius As Integer = 15                                 'Radius, in pixels, of color circles.
 
@@ -38,8 +38,8 @@ Public Sub _new()
     .Height = cChartWidthHeight
   End With
   
-  pnlControls.X = cChartWidthHeight + 20                            'Position panel 20 pixels to the right of the display area control.
-  pnlControls.Y = (cChartWidthHeight - pnlControls.Height) \ 2      'Vertically center the panel on the form.
+  'pnlControls.X = cChartWidthHeight + 20                            'Position panel 20 pixels to the right of the display area control.
+  'pnlControls.Y = (cChartWidthHeight - pnlControls.Height) \ 2      'Vertically center the panel on the form.
   
   scrColorCount.Value = 9                                           'The initial number of colors to display is 2^9 = 512 colors.
   
@@ -110,7 +110,7 @@ End
 
 Private Function YY(bt As Single) As Integer                        'Convert b color coordinate into vertical screen coordinate.
   
-  Return (- (cChartWidthHeight - 2 * cInset) * bt + cChartWidthHeight) * 0.5
+  Return (-(cChartWidthHeight - 2 * cInset) * bt + cChartWidthHeight) * 0.5
   
 End
 
@@ -180,7 +180,7 @@ Private Function DrawChartAxes()
       '.Text("L", XX(T * Cos(Rad(120.0))), YY(T * Sin(Rad(120.0))), 1, 1, 3)     'Lime. Yellowish green. Not a standard hue.
       .Text("G", XX(T * Cos(Rad(150.0))), YY(T * Sin(Rad(150.0))), 1, 1, 3)   'Green
       .Text("C", XX(T * Cos(Rad(210.0))), YY(T * Sin(Rad(210.0))), 1, 1, 3)     'Cyan
-      .Text("B", XX(0), YY(- T), 1, 1, 3)                                       'Blue. This is computer display blue, which is slightly violet.
+      .Text("B", XX(0), YY(-T), 1, 1, 3)                                       'Blue. This is computer display blue, which is slightly violet.
       '.Text("BB", XX(T * Cos(Rad(240.0))), YY(T * Sin(Rad(240.0))), 1, 1, 3)    'Baby Blue, sky blue. This is what many people think of as blue.
       .Text("V", XX(T * Cos(Rad(300.0))), YY(T * Sin(Rad(300.0))), 1, 1, 3)     'Violet
       .Text("M", XX(T * Cos(Rad(330.0))), YY(T * Sin(Rad(330.0))), 1, 1, 3)     'Magenta
@@ -216,7 +216,7 @@ Public Sub btnSave_Click()
   picChart.Save(Dialog.Path)                                        'Save picture to file.
   
 Catch
-  Message.Warning("Could not save image\n\n\t" & Dialog.Path & "\n \n" & Error.Text & ".  Be sure to end the filename with the .png extension!")
+  Message.Warning(("Could not save image") & "\n\n\t" & Dialog.Path & "\n \n" & Error.Text & ".  " & ("Be sure to end the filename with the .png extension!"))
   
 End
 

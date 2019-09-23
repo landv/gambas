@@ -9,7 +9,7 @@ Property MaxClient As Integer
 Property Read Speed As Integer
 Property Read Count As Integer
 
-Event Message(Key As String, Text As String)
+Event Connect
 Event Error(Key As String)
 Event Progress
 Event Finish(Key As String)
@@ -200,8 +200,9 @@ End
 
 Public Sub Client_Connect()
   
-  Dim hDownload As Download = $cDownload[Last.Tag]
-  Raise Message(hDownload._Key, Subst(("Connected to &1"), hDownload._GetHost()))
+  ' Dim hDownload As Download = $cDownload[Last.Tag]
+  ' Raise Message(hDownload._Key, Subst(("Connected to &1"), hDownload._GetHost()))
+  Raise Connect
   
 End
 

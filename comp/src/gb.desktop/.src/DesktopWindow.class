@@ -51,7 +51,7 @@ Private Sub GetDimensions()
     aExt = X11.GetWindowProperty($iId, Atom["_NET_FRAME_EXTENTS"])
     $hGeom = Rect(aDim[0], aDim[1], aDim[2], aDim[3])
     $hFrame = $hGeom.Copy()
-    If aExt Then $hFrame.Adjust(- aExt[0], - aExt[2], - aExt[1], - aExt[3])
+    If aExt Then $hFrame.Adjust(-aExt[0], -aExt[2], -aExt[1], -aExt[3])
   Endif
   
 End

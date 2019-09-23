@@ -9,12 +9,12 @@
     MoveScaled(1,1,29,23)
     Border = Border.Plain
     { Label3 Label
-      MoveScaled(1,1,16,4)
+      MoveScaled(1,1,19,4)
       Font = Font["Bold,+2"]
       Text = ("GameOfLife")
     }
     { Label7 Label
-      MoveScaled(1,4,18,4)
+      MoveScaled(1,4,19,4)
       Text = ("The Game of Life")
       Alignment = Align.Left
     }
@@ -55,7 +55,7 @@
     Text = ("Start Evolution")
   }
   { lblDelay TextLabel
-    MoveScaled(1,40,25,4)
+    MoveScaled(1,39,29,6)
     Text = ("Evolution Delay: 20ms")
   }
   { TabStrip1 TabStrip
@@ -64,54 +64,54 @@
     Index = 0
     Text = ("Survival")
     { chkEight CheckBox
-      MoveScaled(2,36,20,3)
+      MoveScaled(2,36,25,3)
       Text = ("8 Neighbours")
       Tristate = True
       Value = CheckBox.True
     }
     { chkSeven CheckBox
-      MoveScaled(2,33,20,3)
+      MoveScaled(2,33,25,3)
       Text = ("7 Neighbours")
       Tristate = True
       Value = CheckBox.True
     }
     { chkSix CheckBox
-      MoveScaled(2,30,20,3)
+      MoveScaled(2,30,25,3)
       Text = ("6 Neighbours")
       Tristate = True
       Value = CheckBox.True
     }
     { chkFive CheckBox
-      MoveScaled(2,27,20,3)
+      MoveScaled(2,27,25,3)
       Text = ("5 Neighbours")
       Tristate = True
       Value = CheckBox.True
     }
     { chkFour CheckBox
-      MoveScaled(2,24,20,3)
+      MoveScaled(2,24,25,3)
       Text = ("4 Neighbours")
       Tristate = True
       Value = CheckBox.True
     }
     { chkThree CheckBox
-      MoveScaled(2,21,20,3)
+      MoveScaled(2,21,25,3)
       Text = ("3 Neighbours")
       Tristate = True
     }
     { chkTwo CheckBox
-      MoveScaled(2,18,20,3)
+      MoveScaled(2,18,25,3)
       Text = ("2 Neighbours")
       Tristate = True
       Value = CheckBox.None
     }
     { chkOne CheckBox
-      MoveScaled(2,15,20,3)
+      MoveScaled(2,15,25,3)
       Text = ("1 Neighbour")
       Tristate = True
       Value = CheckBox.True
     }
     { chkZero CheckBox
-      MoveScaled(2,12,20,3)
+      MoveScaled(2,12,25,3)
       Text = ("0 Neighbour")
       Tristate = True
       Value = CheckBox.True
@@ -142,19 +142,19 @@
       Alignment = Align.Right
     }
     { chkBorder CheckBox
-      MoveScaled(1,36,24,4)
+      MoveScaled(1,36,26,4)
       Text = ("Draw cell borders")
     }
     { chkSmall CheckBox
-      MoveScaled(1,24,24,4)
+      MoveScaled(1,24,26,4)
       Text = ("Small generation")
     }
     { chkSymetryV CheckBox
-      MoveScaled(1,32,24,4)
-      Text = ("Vertical symetry")
+      MoveScaled(1,32,26,4)
+      Text = ("Vertical symmetry")
     }
     { chkSymetryH CheckBox
-      MoveScaled(1,28,24,4)
+      MoveScaled(1,28,26,4)
       Text = ("Horizontal symmetry")
     }
     Index = 0

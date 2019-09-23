@@ -4,20 +4,11 @@
   MoveScaled(0,0,65,59)
   Resizable = False
   Arrangement = Arrange.Vertical
-  { panTitle Panel
-    MoveScaled(1,2,46,4)
-    Arrangement = Arrange.Horizontal
-    { btnExpand DrawingArea
-      MoveScaled(0,0,3,3)
-    }
-    { lblTitle Label btnExpand
-      Name = "lblTitle"
-      MoveScaled(4,0,33,3)
-      AutoResize = True
-    }
+  { dwgTitle DrawingArea
+    MoveScaled(1,2,58,4)
   }
   { HBox1 HBox
-    MoveScaled(2,7,49,41)
+    MoveScaled(2,9,49,41)
     Expand = True
     { Panel1 Panel
       MoveScaled(2,8,2,3)

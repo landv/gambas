@@ -26,9 +26,6 @@
 #include "main.h"
 #include "gambas.h"
 
-#include <qapplication.h>
-#include <qdial.h>
-
 #include "CDial.h"
 
 DECLARE_EVENT(EVENT_Change);

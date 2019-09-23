@@ -165,13 +165,14 @@ void TRANS_new(void);
 TYPE TRANS_variable_get_type(void);
 void TRANS_class(int index);
 bool TRANS_string(PATTERN pattern);
+int TRANS_get_column(int *line);
 
 /* trans_tree.c */
 
 #define RS_UNARY (-1)
 
 //TRANS_TREE *TRANS_tree(bool check_statement);
-void TRANS_tree(bool check_statement, TRANS_TREE **result, int *count);
+void TRANS_tree(bool check_statement, TRANS_TREE **result, int *count, int **result_pos);
 
 /* trans_ctrl.c */
 

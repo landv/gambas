@@ -1,9 +1,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gb.form 3.12.2\n"
-"PO-Revision-Date: 2019-03-31 15:38 UTC\n"
-"Last-Translator: gbWilly <gbWilly@openmailbox.org>\n"
+"Project-Id-Version: gb.form 3.12.90\n"
+"PO-Revision-Date: 2019-04-22 01:22 UTC\n"
+"Last-Translator: benoit <benoit@benoit-kubuntu>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -101,42 +101,6 @@ msgstr "-"
 msgid "A"
 msgstr "-"
 
-#: FDirChooser.form:66
-msgid "Parent directory"
-msgstr "Bovenliggende folder"
-
-#: FDirChooser.form:72
-msgid "Root directory"
-msgstr "Root folder"
-
-#: FDirChooser.form:133
-msgid "Image preview"
-msgstr "Afbeeldingsvoorbeeld"
-
-#: FDirChooser.form:141
-msgid "Detailed view"
-msgstr "Gedetaileerde weergave"
-
-#: FDirChooser.form:149
-msgid "File properties"
-msgstr "Betstandseigenschappen"
-
-#: FDirChooser.form:155
-msgid "Show files"
-msgstr "Bestanden weergeven"
-
-#: FDirChooser.form:174
-msgid "Bookmarks"
-msgstr "Bladwijzers"
-
-#: FDirChooser.form:236 FInputBox.form:45 FWizard.class:76
-msgid "OK"
-msgstr "-"
-
-#: FDirChooser.form:242 FEditBookmark.class:119 FInputBox.form:51 FSidePanel.class:1149 FWizard.form:53
-msgid "Cancel"
-msgstr "Annuleren"
-
 #: FDirChooser.class:428
 msgid "Directory not found."
 msgstr "Folder niet gevonden"
@@ -198,16 +162,16 @@ msgid "&Properties"
 msgstr "&Eigenschappen"
 
 #: FDirChooser.class:1265
-msgid "This file or directory already exists."
-msgstr "Dit bestand of deze folder bestaat reeds."
+msgid "Overwrite"
+msgstr "Overschrijven"
 
 #: FDirChooser.class:1265
 msgid "Overwrite all"
 msgstr "Alles overschrijven"
 
 #: FDirChooser.class:1265
-msgid "Overwrite"
-msgstr "Overschrijven"
+msgid "This file or directory already exists."
+msgstr "Dit bestand of deze folder bestaat reeds."
 
 #: FDirChooser.class:1284
 msgid "Cannot list archive contents"
@@ -245,29 +209,45 @@ msgstr "Weet je zeker dat je deze folder wil verwijderen?"
 msgid "Unable to delete directory."
 msgstr "Kan folder niet verwijderen."
 
+#: FDirChooser.form:66
+msgid "Parent directory"
+msgstr "Bovenliggende folder"
+
+#: FDirChooser.form:72
+msgid "Root directory"
+msgstr "Root folder"
+
+#: FDirChooser.form:133
+msgid "Image preview"
+msgstr "Afbeeldingsvoorbeeld"
+
+#: FDirChooser.form:141
+msgid "Detailed view"
+msgstr "Gedetaileerde weergave"
+
+#: FDirChooser.form:149
+msgid "File properties"
+msgstr "Betstandseigenschappen"
+
+#: FDirChooser.form:155
+msgid "Show files"
+msgstr "Bestanden weergeven"
+
+#: FDirChooser.form:174
+msgid "Bookmarks"
+msgstr "Bladwijzers"
+
+#: FDirChooser.form:236 FInputBox.form:45 FWizard.class:76
+msgid "OK"
+msgstr "-"
+
+#: FDirChooser.form:242 FEditBookmark.class:119 FInputBox.form:51 FSidePanel.class:1149 FWizard.form:53
+msgid "Cancel"
+msgstr "Annuleren"
+
 #: FFontChooser.form:36
 msgid "ComboBox1"
 msgstr "-"
-
-#: FEditBookmark.form:15
-msgid "Edit bookmarks"
-msgstr "Bladwijzers bewerken"
-
-#: FEditBookmark.form:34
-msgid "Up"
-msgstr "Omhoog"
-
-#: FEditBookmark.form:40
-msgid "Down"
-msgstr "Naar beneden"
-
-#: FEditBookmark.form:46
-msgid "Remove"
-msgstr "Verwijderen"
-
-#: FEditBookmark.form:57 FFileProperties.form:270 MessageView.class:51
-msgid "Close"
-msgstr "Sluiten"
 
 #: FEditBookmark.class:23 FileView.class:136
 msgid "Name"
@@ -281,49 +261,25 @@ msgstr "Pad"
 msgid "Do you really want to remove this bookmark?"
 msgstr "Weet je zeker dat je deze bladwijzer wil verwijderen?"
 
-#: FFileProperties.form:52
-msgid "General"
-msgstr "Algemeen"
+#: FEditBookmark.form:15
+msgid "Edit bookmarks"
+msgstr "Bladwijzers bewerken"
 
-#: FFileProperties.form:81
-msgid "Type"
-msgstr "-"
+#: FEditBookmark.form:34
+msgid "Up"
+msgstr "Omhoog"
 
-#: FFileProperties.form:94
-msgid "Link"
-msgstr "-"
+#: FEditBookmark.form:40
+msgid "Down"
+msgstr "Naar beneden"
 
-#: FFileProperties.form:108
-msgid "Directory"
-msgstr "Folder"
+#: FEditBookmark.form:46 FListEditor.class:255
+msgid "Remove"
+msgstr "Verwijderen"
 
-#: FFileProperties.form:120 FileView.class:138
-msgid "Size"
-msgstr "Formaat"
-
-#: FFileProperties.form:132 FileView.class:140
-msgid "Last modified"
-msgstr "Laatste wijziging"
-
-#: FFileProperties.form:144
-msgid "Permissions"
-msgstr "Toestemmingen"
-
-#: FFileProperties.form:157
-msgid "Owner"
-msgstr "Eigenaar"
-
-#: FFileProperties.form:169
-msgid "Group"
-msgstr "Groep"
-
-#: FFileProperties.form:180
-msgid "Preview"
-msgstr "Voorbeeld"
-
-#: FFileProperties.form:245
-msgid "Errors"
-msgstr "Fouten"
+#: FEditBookmark.form:57 FFileProperties.form:270 MessageView.class:51
+msgid "Close"
+msgstr "Sluiten"
 
 #: FFileProperties.class:117
 msgid "Image"
@@ -369,6 +325,54 @@ msgstr "een folder"
 msgid "directories"
 msgstr "folders"
 
+#: FFileProperties.form:52
+msgid "General"
+msgstr "Algemeen"
+
+#: FFileProperties.form:81
+msgid "Type"
+msgstr "-"
+
+#: FFileProperties.form:94
+msgid "Link"
+msgstr "-"
+
+#: FFileProperties.form:108
+msgid "Directory"
+msgstr "Folder"
+
+#: FFileProperties.form:120 FileView.class:138
+msgid "Size"
+msgstr "Formaat"
+
+#: FFileProperties.form:132 FileView.class:140
+msgid "Last modified"
+msgstr "Laatste wijziging"
+
+#: FFileProperties.form:144
+msgid "Permissions"
+msgstr "Toestemmingen"
+
+#: FFileProperties.form:157
+msgid "Owner"
+msgstr "Eigenaar"
+
+#: FFileProperties.form:169
+msgid "Group"
+msgstr "Groep"
+
+#: FFileProperties.form:180
+msgid "Preview"
+msgstr "Voorbeeld"
+
+#: FFileProperties.form:245
+msgid "Errors"
+msgstr "Fouten"
+
+#: FFontChooser.class:266
+msgid "How quickly daft jumping zebras vex"
+msgstr "-"
+
 #: FFontChooser.form:56
 msgid "Bold"
 msgstr "Vet"
@@ -389,23 +393,23 @@ msgstr "Doorstrepen"
 msgid "Relative"
 msgstr "Relatief"
 
-#: FFontChooser.class:266
-msgid "How quickly daft jumping zebras vex"
-msgstr "-"
+#: FListEditor.class:254
+msgid "Insert"
+msgstr "Invoegen"
 
 #: FListEditor.form:45
 msgid "Add item"
 msgstr "Item toevoegen"
 
-#: FListEditor.form:51
+#: FListEditor.form:52
 msgid "Remove item"
 msgstr "Verwijder item"
 
-#: FListEditor.form:57
+#: FListEditor.form:59
 msgid "Move item up"
 msgstr "Verplaats item naar boven"
 
-#: FListEditor.form:63
+#: FListEditor.form:66
 msgid "Move item down"
 msgstr "Verplaats item naar beneden"
 
@@ -421,6 +425,10 @@ msgstr "Verborgen"
 msgid "Transparent"
 msgstr "Transparant"
 
+#: FWizard.class:88
+msgid "&Next"
+msgstr "V&olgende"
+
 #: FWizard.form:59 MessageView.class:48
 msgid "Next"
 msgstr "Volgende"
@@ -428,10 +436,6 @@ msgstr "Volgende"
 #: FWizard.form:65
 msgid "Previous"
 msgstr "Vorige"
-
-#: FWizard.class:88
-msgid "&Next"
-msgstr "V&olgende"
 
 #: FileView.class:1077
 msgid "Cannot rename file."

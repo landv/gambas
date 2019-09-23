@@ -1,0 +1,34 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,18)
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Margin = True
+  { panMessage HBox
+    MoveScaled(1,1,58,8)
+    Expand = True
+    { Panel3 Panel
+      MoveScaled(0,0,8,9)
+      { picMessage PictureBox
+        MoveScaled(0,0,8,8)
+        Mode = PictureBox.Fill
+      }
+    }
+    { Panel2 Panel
+      MoveScaled(10,2,2,4)
+    }
+    { txtMessage TextLabel
+      MoveScaled(16,0,41,4)
+      Expand = True
+    }
+  }
+  { panButton HBox
+    MoveScaled(1,13,62,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(2,0,4,4)
+      Expand = True
+    }
+  }
+}

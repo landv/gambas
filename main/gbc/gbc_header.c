@@ -106,7 +106,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
 	look++;
 
 	if (flag & HF_EVENT)
-		TABLE_copy_symbol_with_prefix(JOB->class->table, func->index, ':', &func->index);
+		func->index = TABLE_copy_symbol_with_prefix(JOB->class->table, func->index, ':');
 
 	func->nparam = 0;
 	func->byref = 0;
@@ -166,6 +166,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
 
 		if (PATTERN_is(*look, RS_AT) || PATTERN_is(*look, RS_BYREF))
 		{
+			param->byref = TRUE;
 			func->byref |= byref_mask;
 			look++;
 		}
@@ -291,7 +292,7 @@ static bool header_event(TRANS_EVENT *event)
 
 static bool header_property(TRANS_PROPERTY *prop)
 {
-	TRANS_DECL ptype;
+	TRANS_DECL ptype = { 0 };
 	PATTERN *look = JOB->current;
 	bool is_static = FALSE;
 	bool is_public = TRUE;
@@ -339,7 +340,7 @@ static bool header_property(TRANS_PROPERTY *prop)
 	/* property name */
 
 	if (!PATTERN_is_identifier(*JOB->current))
-		THROW("Syntax error. Invalid identifier in property name");
+		THROW("Syntax error. Identifier expected for property name");
 
 	prop->index = PATTERN_index(*JOB->current);
 	JOB->current++;
@@ -351,13 +352,13 @@ static bool header_property(TRANS_PROPERTY *prop)
 		if (prop->nsynonymous == 3)
 			THROW("Too many property synonymous");
 		if (!PATTERN_is_identifier(*JOB->current))
-			THROW("Syntax error. Invalid identifier in property name");
+			THROW("Syntax error. Identifier expected for property synonymous");
 		prop->synonymous[prop->nsynonymous++] = PATTERN_index(*JOB->current);
 		JOB->current++;
 	}
 
 	if (!TRANS_type(TT_NOTHING, &ptype))
-		THROW("Syntax error. Bad property type");
+		THROW("Syntax error. Invalid property type");
 
 	prop->type = ptype.type;
 	prop->line = JOB->line;
@@ -367,6 +368,24 @@ static bool header_property(TRANS_PROPERTY *prop)
 		TYPE_set_flag(&prop->type, TF_STATIC);
 	TYPE_set_flag(&prop->type, TF_PUBLIC);
 
+	if (TRANS_is(RS_USE))
+	{
+		TRANS_DECL decl = ptype;
+		
+		TYPE_set_kind(&decl.type, TK_VARIABLE);
+		if (is_static)
+			TYPE_set_flag(&decl.type, TF_STATIC);
+
+		if (!PATTERN_is_identifier(*JOB->current))
+			THROW("Syntax error. Identifier expected for property variable");
+		
+		prop->use = PATTERN_index(*JOB->current);
+		JOB->current++;
+		
+		decl.index = prop->use;
+		CLASS_add_declaration(JOB->class, &decl);
+	}
+	
 	if (PATTERN_is_string(*JOB->current))
 	{
 		prop->comment = PATTERN_index(*JOB->current);

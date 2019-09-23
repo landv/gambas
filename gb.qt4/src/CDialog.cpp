@@ -221,6 +221,7 @@ static QString my_getExistingDirectory()
 	
 	dialog.setFileMode(QFileDialog::Directory);
 	dialog.setOption(QFileDialog::DontUseNativeDialog);
+	dialog.setFilter(dialog_show_hidden ? (dialog.filter() | QDir::Hidden | QDir::System) : (dialog.filter() & ~(QDir::Hidden | QDir::System)));
 
 	if (dialog.exec() == QDialog::Accepted) 
 		return dialog.selectedFiles().value(0);

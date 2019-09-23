@@ -173,10 +173,11 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
   Else If iAction = ACTION_CLIP Then
     
     For I = 0 To Shapes.Max
-      If Current < 0 Or If Current = I Or If bAll Then 
+      If bAll Or If Current < 0 Or If Current = I Then 
         Shapes[I].Paint(Me, False, iAction = ACTION_SELECT)
       Endif
     Next
+
     Paint.Clip
   
   Else
@@ -706,6 +707,7 @@ Public Sub GetExtentsInt(Optional bAll As Boolean) As Rect
   
   If Not hExt Then Return
   Return Rect(Floor(hExt.X), Floor(hExt.Y), Ceil(hExt.Right) - Floor(hExt.X), Ceil(hExt.Bottom) - Floor(hExt.Y))
+  
 End
 
 Public Sub AddMagnet(hPoint As PointF)

@@ -42,7 +42,6 @@ static void cb_begin(gPrinter *printer, GtkPrintContext *context)
 	THIS->context = context;
 	PAINT_begin(THIS);
 	GB.Raise(THIS, EVENT_Begin, 0);
-	PAINT_end();
 }
 
 static void cb_end(gPrinter *printer)
@@ -50,6 +49,7 @@ static void cb_end(gPrinter *printer)
 	void *_object = printer->tag;
 	THIS->current = 0;
 	GB.Raise(THIS, EVENT_End, 0);
+	PAINT_end();
 }
 
 static void cb_paginate(gPrinter *printer)
@@ -67,9 +67,9 @@ static void cb_draw(gPrinter *printer, GtkPrintContext *context, int page)
 	void *_object = printer->tag;
 	THIS->current = page + 1;
 	THIS->context = context;
-	PAINT_begin(THIS);
+	//PAINT_begin(THIS);
 	GB.Raise(THIS, EVENT_Draw, 0);
-	PAINT_end();
+	//PAINT_end();
 }
 
 BEGIN_METHOD_VOID(Printer_new)
@@ -116,11 +116,24 @@ BEGIN_PROPERTY(Printer_Count)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(Printer_Current)
+BEGIN_PROPERTY(Printer_Page)
 
 	GB.ReturnInteger(THIS->current);
 
 END_PROPERTY
+
+BEGIN_METHOD(Printer_SetPage, GB_INTEGER page)
+
+	THIS->current = VARG(page);
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Printer_IsCountSet)
+
+	GB.ReturnBoolean(PRINTER->isPageCountSet());
+	PRINTER->clearPageCountSet();
+
+END_METHOD
 
 BEGIN_PROPERTY(Printer_Name)
 
@@ -343,10 +356,13 @@ GB_DESC PrinterDesc[] =
 	
 	GB_METHOD("Configure", "b", Printer_Configure, NULL),
 	GB_METHOD("Print", "b", Printer_Print, NULL),
+	GB_METHOD("_SetPage", NULL, Printer_SetPage, "(Page)i"),
+	GB_METHOD("_IsCountSet", "b", Printer_IsCountSet, NULL),
+
 	GB_METHOD("Cancel", NULL, Printer_Cancel, NULL),
 	
 	GB_PROPERTY("Count", "i", Printer_Count),
-	GB_PROPERTY_READ("Page", "i", Printer_Current),
+	GB_PROPERTY_READ("Page", "i", Printer_Page),
 	
 	GB_PROPERTY("Name", "s", Printer_Name),
 	GB_PROPERTY("Orientation", "i", Printer_Orientation),

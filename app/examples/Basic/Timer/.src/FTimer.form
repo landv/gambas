@@ -1,12 +1,14 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(33.5714,24,52,33)
+  MoveScaled(33.5714,24,57,40)
+  Expand = True
   Text = ("Timer example")
   Icon = Picture["timer.png"]
   Resizable = False
+  Spacing = True
   { Button1 Button
-    MoveScaled(35,14,15,4)
+    MoveScaled(35,14,20,4)
     ToolTip = ("Start")
     Text = ("Trigger")
   }
@@ -25,38 +27,39 @@
     Alignment = Align.Right
   }
   { Label2 Label
-    MoveScaled(2,10,34,3)
+    MoveScaled(2,10,53,3)
     Text = ("Start Timer in...")
     Alignment = Align.Left
   }
   { Label3 Label
-    MoveScaled(2,24,11,3)
+    MoveScaled(2,24,11,8)
     Foreground = &H00AA00&
-    Text = ("Start delay")
+    Expand = True
+    Text = ("Start\ndelay")
     Alignment = Align.Left
   }
   { Label4 Label
-    MoveScaled(15,24,13,3)
+    MoveScaled(15,24,13,8)
     Foreground = &HFF0000&
-    Text = ("Stop delay")
+    Text = ("Stop\ndelay")
     Alignment = Align.Left
   }
   { TextBox2 TextBox
-    MoveScaled(2,27,8,4)
+    MoveScaled(2,33,8,4)
     Text = ("200")
     Alignment = Align.Right
   }
   { TextBox3 TextBox
-    MoveScaled(15,27,8,4)
+    MoveScaled(14,33,8,4)
     Text = ("800")
     Alignment = Align.Right
   }
   { Label5 Label
-    MoveScaled(30,27,3.5714,4)
+    MoveScaled(29,33,3.5714,4)
     Border = Border.Etched
   }
   { ToggleButton1 ToggleButton
-    MoveScaled(35,27,15,4)
+    MoveScaled(34,33,21,4)
     Text = ("Start/Stop")
   }
   { Timer2 #Timer
@@ -71,21 +74,21 @@
     Text = ("ms")
   }
   { Separator1 Separator
-    MoveScaled(2,9,48,1)
+    MoveScaled(2,9,53,1)
   }
   { Separator2 Separator
-    MoveScaled(2,18,48,3)
+    MoveScaled(2,18,53,3)
   }
   { Label7 Label
-    MoveScaled(2,21,33,3)
+    MoveScaled(2,21,53,3)
     Text = ("Or start and stop Timer")
   }
   { Label8 Label
-    MoveScaled(10,27,4,4)
+    MoveScaled(10,33,4,4)
     Text = ("ms")
   }
   { Label9 Label
-    MoveScaled(23,27,4,4)
+    MoveScaled(22,33,4,4)
     Text = ("ms")
   }
   { Timer1 #Timer

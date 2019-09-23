@@ -2255,6 +2255,14 @@ Public Sub GetProcAt(iLine As Integer) As String
 
 End
 
+Private Sub IsCurrentProcStatic() As Boolean
+  
+  GetCurrentProcLine($hEditor.Line)
+  Return $bStatic
+  
+End
+
+
 Public Sub btnIndent_Click()
 
   $hEditor.Indent
@@ -3593,7 +3601,7 @@ Private Sub AddLocalVariable(sName As String, sType As String)
   
 End
 
-Private Sub AddGlobalVariable(sName As String, sType As String)
+Private Sub AddGlobalVariable(sName As String, sType As String, bStatic As Boolean)
   
   Dim I, iLast As Integer
   Dim sLine As String
@@ -3611,7 +3619,9 @@ Private Sub AddGlobalVariable(sName As String, sType As String)
     
   Next
   
-  sLine = "Private " & sName & " As " & sType & "\n"
+  sLine = ""
+  If bStatic Then sLine = "Static "
+  sLine &= "Private " & sName & " As " & sType & "\n"
   Inc Y
   If iLast = 0 Then 
     sLine = "\n" & sLine
@@ -3746,7 +3756,7 @@ Private Sub CreateLocalVariable() As Boolean
   If sType Then
     $hEditor.Begin
     If Left(sName) = "$" Then
-      AddGlobalVariable(sName, CSymbolInfo.GetType(sType))
+      AddGlobalVariable(sName, CSymbolInfo.GetType(sType), IsCurrentProcStatic())
     Else
       AddLocalVariable(sName, CSymbolInfo.GetType(sType))
     Endif
@@ -3883,5 +3893,12 @@ End
 Public Sub btnInsertChar_Click()
 
   FInsertChar.Run($hEditor, btnInsertChar.ScreenX, btnInsertChar.ScreenY + btnInsertChar.H)
+
+End
+
+
+Public Sub mnuPrint_Click()
+
+  MPrint.Run(edtEditor, Me.Title)
 
 End

@@ -146,8 +146,8 @@ Public Sub ToHTML(Text As String, Optional Styles As TextHighlighterStyle[]) As 
       If hStyle.Underline Then sHtml = "<u>" & sHtml & "</u>"
       
       sStyle = ""
-      If bAlt Then sStyle &= "background:#E0E0E0;"
-      If hStyle.Color Then sStyle &= "color:#" & Hex$(hStyle.Color, 6)
+      If bAlt Then sStyle &= "background:#" & Hex$(Styles[Highlight.Alternate], 6) & ";"
+      If hStyle.Color Then sStyle &= "color:#" & Hex$(hStyle.Color, 6) & ";"
       
       If sStyle <> sOldStyle Then
         sOldStyle = sStyle
@@ -206,6 +206,7 @@ Static Private Function DefaultStyle_Read() As TextHighlighterStyle[]
     $aStyle[Highlight.Escape] = TextHighlighterStyle(&H7F0000&, False, True)
     $aStyle[Highlight.Label] = TextHighlighterStyle(&H000000&, False, True)
     $aStyle[Highlight.Constant] = TextHighlighterStyle(&HA00000&, True)
+    $aStyle[Highlight.Alternate] = TextHighlighterStyle(&HA00000&, True)
     
   Endif
   

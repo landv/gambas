@@ -311,9 +311,33 @@ End
 
 Public Sub View_MouseWheel()
   
-  GotoIndex(- Sgn(Mouse.Delta))
+  GotoIndex(-Sgn(Mouse.Delta))
   
 End
+
+Public Sub View_KeyPress()
+
+  If $aCont.Count = 0 Then Return
+  
+  Select Case Key.Code
+    Case Key.Up
+      GotoIndex(-1)
+      Stop Event
+    Case Key.Down
+      GotoIndex(1)
+      Stop Event
+    Case Key.Home
+      $iCurrent = -1
+      GotoIndex(1)
+      Stop Event
+    Case Key.End
+      $iCurrent = $aCont.Count
+      GotoIndex(-1)
+      Stop Event
+  End Select
+  
+End
+
 
 Public Sub _SetVisible(hCont As _IconPanelContainer, bVisible As Boolean)
   

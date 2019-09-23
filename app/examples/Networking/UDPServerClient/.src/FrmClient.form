@@ -1,11 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(10.1667,48.5,59.6667,43)
+  MoveScaled(10.1429,48.5714,93,43)
   Text = ("Client")
   Resizable = False
   { Panel2 Panel
-    MoveScaled(0,0,60,43)
+    MoveScaled(0,0,93,43)
     Background = &H4F87E7&
     { Label3 Label
       MoveScaled(0,1,29,4)
@@ -44,23 +44,21 @@
       Text = ("Start !")
     }
     { TxtData TextBox
-      MoveScaled(2,19,42,4)
+      MoveScaled(2,19,60,4)
       Enabled = False
-      Text = ("")
     }
     { Button3 Button
-      MoveScaled(45,19,13,4)
+      MoveScaled(63,19,29,4)
       Enabled = False
       Text = ("Send Data")
       Default = True
     }
     { TxtRecClient TextArea
-      MoveScaled(2,24,56,17)
-      Text = ("")
+      MoveScaled(2,24,90,17)
       ReadOnly = True
     }
     { Label1 Label
-      MoveScaled(2,15,53,3)
+      MoveScaled(2,15,90,3)
       Font = Font["Bold"]
       Background = &H4F87E7&
       Foreground = &HFFFF00&

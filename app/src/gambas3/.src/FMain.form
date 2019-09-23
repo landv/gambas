@@ -180,11 +180,11 @@
     { mnuVersionControl Menu
       Action = "version-control"
       Text = ("Version control")
-      Picture = Picture["icon:/small/record"]
+      Picture = Picture["icon:/small/clock"]
       { mnuVcCommit Menu
         Action = "vc-commit"
         Text = ("Commit") & "..."
-        Picture = Picture["icon:/small/save"]
+        Picture = Picture["icon:/small/upload"]
       }
       { mnuVcUpdate Menu
         Action = "vc-update"
@@ -199,7 +199,7 @@
       }
       { mnuVcRevert Menu
         Action = "vc-revert"
-        Text = ("Undo all changes")
+        Text = ("Revert all changes")
         Picture = Picture["icon:/small/undo"]
       }
       { mnuVcAddAll Menu mnuAddVersionAll
@@ -239,7 +239,7 @@
       Action = "project-property"
       Text = Shortcut(("Properties"), "P") & "..."
       Picture = Picture["icon:/small/edit"]
-      Shortcut = "Ctrl+P"
+      Shortcut = "Ctrl+I"
     }
   }
   { mnuDebug Menu
@@ -583,10 +583,12 @@
     { Menu2 Menu
     }
     { mnuEditFile Menu
+      Action = "edit-file"
       Text = Shortcut(("Open"), "O")
       Picture = Picture["icon:/small/edit"]
     }
     { mnuEditClass Menu
+      Action = "edit-class"
       Text = Shortcut(("Open code"), "c")
     }
     { mnuOpenWithFileManager Menu
@@ -1108,9 +1110,10 @@
       Arrow = False
       Border = False
       Menu = "mnuEdit"
+      MenuOnly = True
     }
     { btnMnuProject MenuButton
-      MoveScaled(43,4,7,4)
+      MoveScaled(41,4,9,4)
       Visible = False
       Action = "menu-project"
       AutoResize = True
@@ -1118,9 +1121,10 @@
       Arrow = False
       Border = False
       Menu = "mnuProject"
+      MenuOnly = True
     }
     { btnMnuDebug MenuButton
-      MoveScaled(50,4,7,4)
+      MoveScaled(50,4,8,4)
       Visible = False
       Action = "menu-debug"
       AutoResize = True
@@ -1128,6 +1132,7 @@
       Arrow = False
       Border = False
       Menu = "mnuDebug"
+      MenuOnly = True
     }
     { btnMnuView MenuButton
       MoveScaled(58,4,7,4)
@@ -1138,6 +1143,7 @@
       Arrow = False
       Border = False
       Menu = "mnuView"
+      MenuOnly = True
     }
     { btnMnuTool MenuButton
       MoveScaled(65,4,7,4)
@@ -1148,6 +1154,7 @@
       Arrow = False
       Border = False
       Menu = "mnuTool"
+      MenuOnly = True
     }
     { btnMnuHelp MenuButton
       MoveScaled(73,4,4,4)
@@ -1158,6 +1165,7 @@
       Arrow = False
       Border = False
       Menu = "mnuHelp"
+      MenuOnly = True
     }
     { btnVersionControl MenuButton
       MoveScaled(84,4,8,4)
@@ -1211,8 +1219,45 @@
         Expand = True
         Border = False
       }
+      { panTreeToolbar Panel
+        MoveScaled(2,8,22,3)
+        Visible = False
+        Ignore = True
+        Arrangement = Arrange.Horizontal
+        AutoResize = True
+        { btnEdit ToolButton
+          MoveScaled(0,0,3,3)
+          Action = "edit-file"
+          Picture = Picture["icon:/tiny/edit"]
+        }
+        { btnOpenCode ToolButton
+          MoveScaled(3,0,3,3)
+          Action = "edit-class"
+          Picture = Picture["icon:/tiny/text"]
+        }
+        { btnRunThat ToolButton
+          MoveScaled(6,0,3,3)
+          Action = "run-that"
+          Picture = Picture["icon:/tiny/play"]
+        }
+        { btnDoNotTranslate ToolButton
+          MoveScaled(9,0,3,3)
+          Action = "do-not-translate"
+          Picture = Picture["img/16/do-not-translate.png"]
+        }
+        { btnStartup ToolButton
+          MoveScaled(12,0,3,3)
+          Action = "startup"
+          Picture = Picture["icon:/tiny/program"]
+        }
+        { btnInfo ToolButton
+          MoveScaled(15,0,3,3)
+          Action = "info"
+          Picture = Picture["icon:/tiny/info"]
+        }
+      }
       { timSearchProject #Timer
-        #MoveScaled(21,9)
+        #MoveScaled(20,15)
         Delay = 500
       }
     }
@@ -1420,7 +1465,17 @@
   { Action do-not-translate
     Text = "Do not translate"
     Shortcut = ""
-    Picture = "img/32/do-not-translate.png"
+    Picture = "img/16/do-not-translate.png"
+  }
+  { Action edit-class
+    Text = "Open code"
+    Shortcut = ""
+    Picture = "icon:/tiny/text"
+  }
+  { Action edit-file
+    Text = "Open"
+    Shortcut = ""
+    Picture = "icon:/tiny/edit"
   }
   { Action exec
     Text = "Executable"
@@ -1477,7 +1532,7 @@
   { Action info
     Text = "Properties"
     Shortcut = "Ctrl+I"
-    Picture = "icon:/small/info"
+    Picture = "icon:/tiny/info"
   }
   { Action install
     Text = "Installation package"
@@ -1580,7 +1635,7 @@
   }
   { Action project-property
     Text = "Properties"
-    Shortcut = "Ctrl+P"
+    Shortcut = "Ctrl+I"
     Picture = "icon:/small/edit"
   }
   { Action property
@@ -1625,7 +1680,7 @@
   { Action run-that
     Text = "Run this class"
     Shortcut = ""
-    Picture = "icon:/small/play"
+    Picture = "icon:/tiny/play"
   }
   { Action save-as
     Text = "Save as"
@@ -1656,6 +1711,10 @@
     Text = "Run"
     Shortcut = "F5"
     Picture = "icon:/small/play"
+  }
+  { Action startup
+    Text = ""
+    Picture = "icon:/tiny/program"
   }
   { Action startup-class
     Text = "Startup class"
@@ -1707,10 +1766,10 @@
   { Action vc-commit
     Text = "Commit"
     Shortcut = ""
-    Picture = "icon:/small/save"
+    Picture = "icon:/small/upload"
   }
   { Action vc-revert
-    Text = "Undo all changes"
+    Text = "Revert all changes"
     Shortcut = ""
     Picture = "icon:/small/undo"
   }

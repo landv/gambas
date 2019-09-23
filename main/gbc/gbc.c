@@ -34,6 +34,7 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/time.h>
 #include <dirent.h>
 
@@ -347,12 +348,14 @@ static void compile_file(const char *file)
 	fprintf(stderr, "-----------------\n");
 	#endif
 
+	JOB->step = JOB_STEP_READ;
 	READ_do();
 
 	#ifdef DEBUG
 	TABLE_print(JOB->class->table, TRUE);
 	#endif
 
+	JOB->step = JOB_STEP_CODE;
 	HEADER_do();
 	TRANS_code();
 
@@ -360,6 +363,7 @@ static void compile_file(const char *file)
 	TABLE_print(JOB->class->string, FALSE);
 	#endif
 
+	JOB->step = JOB_STEP_OUTPUT;
 	OUTPUT_do(main_swap);
 	CLASS_export();
 	
@@ -528,7 +532,7 @@ static void compile_lang(void)
 		
 		unlink(file_mo);
 		// Shell "msgfmt -o " & Shell$(sPath) & " " & Shell(sTrans) Wait
-		cmd = STR_print("msgfmt -o %s %s", file_mo, file_po);
+		cmd = STR_print("msgfmt -o %s %s >/dev/null 2>&1", file_mo, file_po);
 		if (main_verbose)
 			printf("running: %s\n", cmd);
 		ret = system(cmd);

@@ -11,6 +11,8 @@
 ## Initialization and checking for gambas things
 ##
 ##   $1 = gambas$(VERSION) project to build 
+##   $2 = name of the project in lowercase
+##   $3 = component name
 ## ---------------------------------------------------------------------------
 
 AC_DEFUN([GB_INIT_PROJECT],
@@ -19,9 +21,10 @@ AC_DEFUN([GB_INIT_PROJECT],
     AC_MSG_ERROR(Cannot find .project file for $1 !)
   fi
 
-  ##AM_INIT_AUTOMAKE($1, `cat $1/.project | grep "^Version=" | sed s/"Version="//g`)
-  AM_INIT_AUTOMAKE($1, $(PACKAGE_VERSION))
-
+  AM_INIT_AUTOMAKE
+  PACKAGE_LCASE=$2
+  AC_SUBST(PACKAGE_LCASE)
+  
   ## List of needed components
   COMPONENTS=`cat $1/.project | grep "^Component=" | sed s/"Component="//g`
 
@@ -30,7 +33,7 @@ AC_DEFUN([GB_INIT_PROJECT],
   AC_SUBST(COMPONENT_build)
   
   if test "$COMPONENT_build" = "1"; then
-    COMPONENT_name=$2
+    COMPONENT_name=$3
     AC_SUBST(COMPONENT_name)
   fi
 

@@ -24,9 +24,9 @@
 #ifndef __CRADIOBUTTON_H
 #define __CRADIOBUTTON_H
 
-#include "gambas.h"
-
 #include <QRadioButton>
+
+#include "gambas.h"
 
 #include "CWidget.h"
 

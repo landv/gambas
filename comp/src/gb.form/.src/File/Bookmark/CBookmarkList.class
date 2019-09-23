@@ -40,6 +40,7 @@ Public Sub Load()
   Dim hSettings As Settings 
   Dim aBookmark As String[]
   Dim cPrivate As Collection
+  Dim hBookmark As Bookmark
   
   Me.Clear()
   
@@ -48,6 +49,10 @@ Public Sub Load()
     AddBookmark("$" & Desktop.Path, ("Desktop"), "icon:/small/desktop")
   Endif
   AddBookmark("$/", ("System"), "icon:/small/system")
+
+  For Each hBookmark In Bookmarks._GetAll()
+    Try AddBookmark("#" & hBookmark.Path, hBookmark.Name, hBookmark.Icon)
+  Next
 
   If $aPrivate Then
     For Each cPrivate In $aPrivate

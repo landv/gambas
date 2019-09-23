@@ -1,0 +1,46 @@
+' Gambas module file
+
+Private $hPrinter As Printer
+
+Public Sub Main()
+
+  $hPrinter = New Printer As "Printer"
+  
+  $hPrinter.Preview()
+
+End
+
+Public Sub Printer_Begin()
+  
+  Debug
+  $hPrinter.Count = 3
+  
+End
+
+Public Sub Printer_Draw()
+  
+  Dim H As Float
+  
+  Debug $hPrinter.Page;; "/";; Paint.W;; Paint.H
+
+  Paint.Font = Font["Liberation Sans,10"]
+
+  Debug "Paint.Width = "; Paint.Width
+  Debug "Printer.Resolution = "; $hPrinter.Resolution
+  Debug "Paint.ResolutionX = "; Paint.ResolutionX
+  Debug "Paint.FontScale = "; Paint.FontScale
+  Debug "Paint.Font.Size = "; Paint.Font.Size
+
+  H = Paint.Font.H
+  Paint.Font = Font["Liberation Sans,10"]
+  Paint.DrawText(CStr($hPrinter.Page) & " WÊyg_", 0, 0, Paint.W, H, Align.Center)
+  Paint.LineWidth = 1
+  Paint.Rectangle(0, 0, Paint.W, H)
+  Paint.Stroke
+  
+  Paint.DrawRichText(File.Load("molly-malone.txt"), 0, 100, Paint.W, Paint.H)
+  
+  'Paint.DrawText("ABCD",10,)
+  
+End
+

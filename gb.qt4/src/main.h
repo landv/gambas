@@ -24,9 +24,6 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
-#include "gb_common.h"
-#include "gambas.h"
-
 #include <QEvent>
 #include <QApplication>
 #include <QTimerEvent>
@@ -34,6 +31,9 @@
 #include <QSessionManager>
 #include <QClipboard>
 #include <QFont>
+
+#include "gb_common.h"
+#include "gambas.h"
 
 #define DO_NOT_USE_QT_INTERFACE
 #include "gb.qt.h"
@@ -52,6 +52,7 @@ extern int MAIN_scale;
 extern bool MAIN_debug_busy;
 extern bool MAIN_init;
 extern bool MAIN_key_debug;
+extern bool MAIN_right_to_left;
 #ifndef NO_X_WINDOW
 extern int MAIN_x11_last_key_code;
 #endif

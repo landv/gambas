@@ -63,6 +63,7 @@
 #include "CImage.h"
 #include "CDrawingArea.h"
 #include "CColor.h"
+#include "cprinter.h"
 #include "CDraw.h"
 
 typedef
@@ -137,7 +138,7 @@ static int get_text_height(QPainter *dp, QString &s)
 	return text_line * (1 + s.count('\n'));
 }
 
-void DRAW_text(QPainter *p, const QString &text, float x, float y, float w, float h, int align, QPainter *p2)
+void DRAW_text(QPainter *p, const QString &text, float x, float y, float w, float h, int align)
 {
 	QPen pen, penm;
 	QString t = text;
@@ -176,14 +177,30 @@ void DRAW_text(QPainter *p, const QString &text, float x, float y, float w, floa
 
 		//(*callback)(xx, y, t);
 		p->drawText(xx, y, t);
-		if (p2) 
-			p2->drawText(xx, y, t);
+		/*if (p2) 
+			p2->drawText(xx, y, t);*/
 
 		y += text_line;
 	}
 }
 
-void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w, float h, int align, QPainter *p2)
+	//margin = 256; // * 96 / p->device()->physicalDpiY() * d->fontScale;
+	
+	/*if (GB.Is(d->device, CLASS_Printer))
+		margin = 256.0; // * ((CPRINTER *)d->device)->printer->resolution() / 96 * d->fontScale;
+	else
+		margin = 256.0 * p->device()->physicalDpiY() / 96;*/
+//	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
+	
+
+void DRAW_init_rich_text(QTextDocument *doc, const QFont &font)
+{
+	doc->setDocumentMargin(0);
+	doc->setDefaultFont(font);
+	doc->setDefaultStyleSheet(QString("p { margin-bottom: %1px; } h1,h2,h3,h4,h5,h6 { margin-bottom: %1px; }").arg(QFontMetrics(font).height()));
+}
+
+void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w, float h, int align)
 {
 	static QTextDocument *doc = NULL;
 
@@ -193,7 +210,6 @@ void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w,
 	QString t = "<font color=\"" + fg.name() + "\">" + text + "</font>";
 	qreal opacity = 1.0;
 	bool hasAlpha = fg.alpha() < 255;
-	int margin;
 
 	switch(get_horizontal_alignment((Qt::Alignment)align))
 	{
@@ -211,9 +227,7 @@ void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w,
 		doc->setDocumentMargin(0);
 	}
 
-	doc->setDefaultFont(p->font());
-	margin = p->font().pointSize() * p->device()->physicalDpiY() / 96;
-	doc->setDefaultStyleSheet(QString("p { margin-bottom: %1px; } h1,h2,h3,h4,h5,h6 { margin-bottom: %1px; }").arg(margin));
+	DRAW_init_rich_text(doc, p->font());
 	doc->setHtml(t);
 
 	if (w > 0)
@@ -245,12 +259,12 @@ void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w,
 	if (hasAlpha)
 		p->setOpacity(opacity);
 	
-	if (p2) 
+	/*if (p2) 
 	{
 		p2->translate(x, y);
 		doc->drawContents(p2);
 		p2->translate(-x, -y);
-	}
+	}*/
 }
 
 void DRAW_aligned_pixmap(QPainter *p, const QPixmap &pix, int x, int y, int w, int h, int align)

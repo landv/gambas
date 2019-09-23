@@ -194,7 +194,7 @@ typedef
 #define RETURN_v(_val) ({ GB_VARIANT _v = (_val); GB.ReturnVariant(&_v.value); })
 #define RETURN_s(_val) (*(GB_STRING *)GB.GetReturnValue() = (_val))
 
-#define PUSH_b(_val) ({ char _v = -(_val); sp->_boolean.value = _v; sp->type = GB_T_BOOLEAN; sp++; })
+#define PUSH_b(_val) ({ sp->_boolean.value = ((_val) ? -1 : 0); sp->type = GB_T_BOOLEAN; sp++; })
 #define PUSH_c(_val) ({ uchar _v = (_val); sp->_integer.value = _v; sp->type = GB_T_BYTE; sp++; })
 #define PUSH_h(_val) ({ short _v = (_val); sp->_integer.value = _v; sp->type = GB_T_SHORT; sp++; })
 #define PUSH_i(_val) ({ sp->_integer.value = (_val); sp->type = GB_T_INTEGER; sp++; })
@@ -354,7 +354,7 @@ enum
   GET_OBJECT(ra, _type); \
 })
 
-#define SET_b(_addr, _val) (GET_b(_addr) = (_val))
+#define SET_b(_addr, _val) (GET_b(_addr) = ((_val) ? -1 : 0))
 #define SET_c(_addr, _val) (GET_c(_addr) = (_val))
 #define SET_h(_addr, _val) (GET_h(_addr) = (_val))
 #define SET_i(_addr, _val) (GET_i(_addr) = (_val))
@@ -399,7 +399,7 @@ enum
 
 #define POP_ARRAY(_type, _array, _index, _val, _unsafe) (*GET_ARRAY##_unsafe(_type, _array, _index) = (_val))
 
-#define POP_ARRAY_b(_array, _index, _val, _unsafe) POP_ARRAY(bool, _array, _index, _val, _unsafe)
+#define POP_ARRAY_b(_array, _index, _val, _unsafe) POP_ARRAY(bool, _array, _index, ((_val) ? -1 : 0), _unsafe)
 #define POP_ARRAY_c(_array, _index, _val, _unsafe) POP_ARRAY(uchar, _array, _index, _val, _unsafe)
 #define POP_ARRAY_h(_array, _index, _val, _unsafe) POP_ARRAY(short, _array, _index, _val, _unsafe)
 #define POP_ARRAY_i(_array, _index, _val, _unsafe) POP_ARRAY(int, _array, _index, _val, _unsafe)
@@ -529,7 +529,7 @@ enum
 
 #define CALL_UNKNOWN(_pc) ({ JIT.call_unknown(&pc[_pc], &sp); })
 
-#define ENUM_FIRST(_code, _plocal, _penum) ({ GB.Unref(&(_penum).value); (_penum).type = 0; JIT.enum_first(_code, (GB_VALUE *)&_plocal, (GB_VALUE*)&_penum); })
+#define ENUM_FIRST(_code, _plocal, _penum) ({ GB.Unref(&(_penum).value); (_penum).type = 0; JIT.enum_first(_code, (GB_VALUE *)&_plocal, (GB_VALUE *)&_penum); })
 
 #define ENUM_NEXT(_code, _plocal, _penum, _label) ({ \
   SP = sp; \

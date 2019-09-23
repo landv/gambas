@@ -946,6 +946,8 @@ Private Sub FillMenu()
   
   Dim hBookmark As CBookmark
   Dim hMenu As Menu
+  Dim sType As String
+  Dim sOldType As String
   
   mnuPopup.Children.Clear
   
@@ -955,7 +957,11 @@ Private Sub FillMenu()
     mnuBookmark.Name = "mnuBookmark"
     mnuBookmark.Text = ("Bookmarks")
     mnuBookmark.Picture = Picture["icon:/small/bookmark"]
+    
     For Each hBookmark In $hBookmarkList
+      sType = Left(hBookmark.Link)
+      If sOldType And If sType <> sOldType Then hMenu = New Menu(mnuBookmark)
+      sOldType = sType
       AddBookmarkMenu(hBookmark)
     Next
     btnBookmark.Menu = "mnuBookmark"
@@ -1119,7 +1125,6 @@ Public Sub dvwChoose_Menu()
   mnuDelete.Hide
   mnuDeleteDir.Hide
   Try mnuDeleteDir.Visible = Dir(dvwChoose.Current).Count = 0
-  
 
   dvwChoose.SetFocus
   mnuPopup.Popup

@@ -96,24 +96,27 @@ End
 
 Private Sub FillAbout()
 
-  Dim hFic As File
+  Dim hFile As File
   Dim sText As String
   Dim sLig As String
   Dim sMail As String
   Dim sCountry As String
   Dim sName As String
   Dim aAuthor As New String[]
+  Dim aFinancial As New String[]
   Dim aSplit As String[]
   Dim iPos As Integer
   Dim I As Integer
   Dim N As Integer
   Dim sDesc As String
+  Dim sColor As String
+  Dim hFont As Font
 
-  hFic = Open "AUTHORS"
+  hFile = Open "AUTHORS" For Input
 
-  While Not Eof(hFic)
+  While Not Eof(hFile)
 
-    Line Input #hFic, sLig
+    Line Input #hFile, sLig
     sLig = RTrim(sLig)
     If Not sLig Then Continue
     If Left(sLig) = "#" Then Continue
@@ -155,37 +158,42 @@ Private Sub FillAbout()
 
   If sName Then aAuthor.Add(sName & "\n\n" & sMail & "\n" & sCountry & "\n" & sDesc)
   
-  Close #hFic
+  Close #hFile
   
-  ' hFic = Open "support.txt"
+  hFile = Open "support.txt" For Input
   ' 
-  ' While Not Eof(hFic)
-  '   
-  '   Line Input #hFic, sLig
-  '   iPos = InStr(sLig, " ")
-  '   If iPos = 0 Then Break
-  '   sName = Mid$(sLig, iPos + 1)
-  '   sText = sName & "\n" & Left(sLig, iPos - 1)
-  '   
-  '   iPos = aAuthor.Find(sName & "\n*", gb.Like)
-  '   If iPos < 0 Then
-  '     aAuthor.Add(sText)
-  '   Else
-  '     aAuthor[iPos] = sText & Mid$(aAuthor[iPos], Len(sName) + 2)
-  '   Endif
-  '   
-  ' Wend
-  ' 
-  ' Close #hFic
+  While Not Eof(hFile)
+    
+    Line Input #hFile, sLig
+    
+    iPos = InStr(sLig, " ")
+    If iPos = 0 Then Break
+    
+    sName = Mid$(sLig, iPos + 1)
+    sText = sName & "\n" & Left(sLig, iPos - 1)
+
+    aFinancial.Add(sText)
+    
+    ' iPos = aAuthor.Find(sName & "\n*", gb.Like)
+    ' If iPos < 0 Then
+    '   aAuthor.Add(sText)
+    ' Else
+    '   aAuthor[iPos] = sText & Mid$(aAuthor[iPos], Len(sName) + 2)
+    ' Endif
+    
+  Wend
+  
+  Close #hFile
 
   aAuthor.Sort(gb.Language + gb.IgnoreCase)
+  aFinancial.Reverse()
   
   gvwAbout.Columns.Count = 1
   N = 6
   
-  gvwAbout.Rows.Count = aAuthor.Count + N + 1
+  gvwAbout.Rows.Count = aAuthor.Count + aFinancial.Count + N + 2
   gvwAbout.Columns[0].Width = Me.ClientWidth - Desktop.Scale * 6
-  gvwAbout.Padding = Desktop.Scale
+  gvwAbout.Padding = 0
   
   ' Space
   gvwAbout.Rows[0].H = dwgAbout.H
@@ -193,7 +201,7 @@ Private Sub FillAbout()
   gvwAbout[1, 0].RichText = "<b>G</b>ambas <b>A</b>lmost<br><b>M</b>eans <b>BAS</b>ic !"
   gvwAbout[1, 0].Font = Font["+10"]
   gvwAbout[1, 0].Alignment = Align.Top
-  gvwAbout[1, 0].WordWrap = True
+  'gvwAbout[1, 0].WordWrap = True
   ' Logo
   gvwAbout[2, 0].Picture = Picture["img/logo/logo.png"]
   gvwAbout[2, 0].Alignment = Align.Top
@@ -202,13 +210,13 @@ Private Sub FillAbout()
   'gvwAbout[3, 0].Font = Font["Bold,+2"]
   'gvwAbout[3, 0].Alignment = Align.Top
   ' Licence
-  gvwAbout[4, 0].RichText = lblLicense.Text
+  gvwAbout[4, 0].RichText = "<h1>" & String.UCase(("License")) & "</h1><br>" & lblLicense.Text
   gvwAbout[4, 0].WordWrap = True
   gvwAbout[4, 0].Alignment = Align.Top
   gvwAbout[4, 0].Padding = Desktop.Scale * 3
   ' Authors title
-  gvwAbout[5, 0].Text = ("Authors")
-  gvwAbout[5, 0].Font = Font["Bold,+2"]
+  gvwAbout[5, 0].RichText = "<h1>" & String.UCase(("Authors")) & "</h1>"
+  'gvwAbout[5, 0].WordWrap = True
   gvwAbout[5, 0].Alignment = Align.Top
   
   For I = 1 To 5
@@ -216,43 +224,76 @@ Private Sub FillAbout()
   Next
   gvwAbout.Rows[4].H += Desktop.Scale * 2
   
+  sColor = "#" & Hex$(Color.Merge(Color.TextBackground, Color.TextForeground, 0.8), 6)
+  
   For I = 0 To aAuthor.Max
     
-    sText = ""
     aSplit = Split(aAuthor[I], "\n")
     
-    sName = aSplit[0]
+    sName = String.UCase(aSplit[0])
+    '"<font size=\"-2\" color=\"#808080\">" & String$(64, "─") & "</font>
+    sText = "<br><br><b><font size=+1>" & sName & "</font>"
 
     If aSplit.Count = 2 Then
       
-      sText &= "<font size=+1>" & aSplit[0] & "</font>"
-      sText &= "<blockquote>"
+      sText &= "</b><blockquote>"
+      sText &= "<font color=\"" & sColor & "\">"
       sText &= ("Financial support") & "<br>" & GetStars(CInt(aSplit[1]))
       
     Else
       
-      sText &= "<b><font size=+1>" & aSplit[0] & "</font>"
-      If aSplit[2] Then sText &= " (" & aSplit[2] & ")"
-      If aSplit[3] Then sText &= "<br><i>" & aSplit[3] & "</i>"
+      sText &= "</b>"
+      If aSplit[3] Then sText &= " <i>(" & aSplit[3] & ")</i>"
+      If aSplit[2] Then sText &= "<br><tt>" & aSplit[2] & "</tt>"
       sText &= "<blockquote>"
+      sText &= "<font color=\"" & sCOlor & "\">"
       sText &= aSplit[4]
       If aSplit[1] Then sText &= "<br>" & ("Financial support") & "<br>" & GetStars(CInt(aSplit[1]))
-      sText &= "</b>"
+      sText &= "</font>"
 
     Endif
     
     sText &= "</blockquote>"
     
-    gvwAbout[I + N, 0].WordWrap = True
-    gvwAbout[I + N, 0].RichText = sText
-    gvwAbout[I + N, 0].Padding = Desktop.Scale * 3
-    gvwAbout.Rows[I + N].Height = -1
-    'gvwAbout.Rows[I + N].Height += Desktop.Scale 
+    gvwAbout[N, 0].WordWrap = True
+    gvwAbout[N, 0].RichText = sText
+    gvwAbout[N, 0].Padding = Desktop.Scale 
+    gvwAbout[N, 0].Alignment = Align.Center
+    gvwAbout.Rows[N].Height = -1
+    Inc N
     
   Next
   
+  gvwAbout[N, 0].RichText = "<br><br><h1>" & String.UCase(("Financial support")) & "</h1>"
+  'gvwAbout[N, 0].WordWrap = True
+  gvwAbout[N, 0].Alignment = Align.Top
+  gvwAbout.Rows[N].H = -1
+  gvwAbout.Rows[N].H += Desktop.Scale * 3
+  Inc N
+  
+  hFont = gvwAbout.Font.Copy()
+  
+  For I = 0 To aFinancial.Max
+    
+    aSplit = Split(aFinancial[I], "\n")
+    
+    sText = String.UCase(aSplit[0])
+    
+    hFont.Size = Min(24, CInt(aSplit[1]) / 2 + 7)
+    gvwAbout[N, 0].Font = hFont
+    gvwAbout[N, 0].WordWrap = True
+    gvwAbout[N, 0].RichText = sText
+    'gvwAbout[N, 0].Padding = Desktop.Scale 
+    gvwAbout[N, 0].Alignment = Align.Center
+    gvwAbout[N, 0].Padding = 0
+    gvwAbout.Rows[N].Height = hFont.H + Desktop.Scale \ 4
+    Inc N
+
+  Next
+  
   ' Final space
-  gvwAbout.Rows[I + N].H = dwgAbout.H
+  'gvwAbout[N, 0].Background = Color.Yellow
+  gvwAbout.Rows[N].H = dwgAbout.H
 
 End
 
@@ -310,7 +351,7 @@ End
 
 Public Sub timAbout_Timer()
 
-  ScrollText(If($bPressed, 8, 1))
+  ScrollText(If($bPressed, 16, 1))
 
 End
 

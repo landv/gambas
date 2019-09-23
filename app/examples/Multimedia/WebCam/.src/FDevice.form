@@ -1,37 +1,35 @@
 # Gambas Form File 3.0
 
 { Form Form
-  Move(0,0,408,726)
-  #Scaled = False
+  MoveScaled(0,0,71,104)
   Font = Font["Bitstream Vera Sans"]
   Icon = Picture["camera.png"]
-  Resizable = False
   Border = False
   { outer Panel
-    Move(24,12,348,666)
+    MoveScaled(3.4286,1.7143,64,95.1429)
     Background = &HBFFFFF&
     Foreground = &H000000&
     Border = Border.Sunken
     { container Panel
-      Move(36,18,276,240)
+      MoveScaled(5.1429,2.5714,53.7143,34.2857)
       Background = Color.Background
       Border = Border.Sunken
       { pic PictureBox
-        Move(42,72,186,144)
+        MoveScaled(6,10.2857,26.5714,20.5714)
         Alignment = Align.Center
       }
       { title Panel
-        Move(12,6,240,32)
+        MoveScaled(1.7143,0.8571,34.2857,4.5714)
         Background = Color.ButtonForeground
         { devName Label
-          Move(40,-1,186,18)
+          MoveScaled(6,0,26.5714,2.5714)
           Font = Font["Bitstream Vera Sans Mono,-1"]
           Foreground = Color.TextBackground
           Text = ("devName")
           Alignment = Align.Left
         }
         { currentTime Label
-          Move(40,17,174,14)
+          MoveScaled(6,2,24.8571,2)
           Font = Font["Bitstream Vera Sans Mono,-2"]
           Background = Color.Foreground
           Foreground = Color.TextBackground
@@ -39,109 +37,109 @@
           Alignment = Align.Left
         }
         { buttonSettings Button
-          Move(4,4,30,24)
+          MoveScaled(0.5714,0.5714,4.2857,3.4286)
           Picture = Picture["settings.png"]
         }
       }
     }
     { Refresh #Timer
-      #Move(224,175)
+      #MoveScaled(32,25)
     }
     { tools Panel
-      Move(21,280,276,270)
+      MoveScaled(3,40,53.7143,38.5714)
       Visible = False
       Font = Font["-1"]
       Background = Color.Background
       Border = Border.Sunken
       { Label1 Label
-        Move(14,14,70,21)
+        MoveScaled(2,2,13,3)
         Text = ("Picture Size")
       }
       { picture_size ComboBox
-        Move(98,14,119,21)
+        MoveScaled(16,1,17,4)
         ReadOnly = True
         List = [("160 x 120"), ("320 x 240"), ("640 x 480")]
         Text = ("320 x 240")
       }
       { slider_bright Slider
-        Move(98,35,112,21)
+        MoveScaled(16,5,16,3.5714)
       }
       { Label2 Label
-        Move(14,35,70,21)
+        MoveScaled(2,5,13,3)
         Text = ("Brightness")
       }
       { slider_contrast Slider
-        Move(98,56,112,21)
+        MoveScaled(16,8,16,3.5714)
       }
       { Label3 Label
-        Move(14,56,70,21)
+        MoveScaled(2,8,13,3)
         Text = ("Contrast")
       }
       { slider_colour Slider
-        Move(98,77,112,21)
+        MoveScaled(16,11,16,3.5714)
       }
       { Label4 Label
-        Move(14,77,70,21)
+        MoveScaled(2,11,13,3)
         Text = ("Colour")
       }
       { slider_hue Slider
-        Move(98,98,112,21)
+        MoveScaled(16,14,16,3.5714)
       }
       { Label5 Label
-        Move(14,98,70,21)
+        MoveScaled(2,14,13,3)
         Text = ("Hue")
       }
       { slider_whiteness Slider
-        Move(98,119,112,21)
+        MoveScaled(16,17,16,3.5714)
       }
       { Label6 Label
-        Move(14,119,70,21)
+        MoveScaled(2,17,13,3)
         Text = ("Whiteness")
       }
       { button_hide Button
-        Move(14,189,70,28)
+        MoveScaled(0,27,10,4)
         Text = ("&Hide")
         Picture = Picture["icon:/16/apply"]
       }
       { button_close Button
-        Move(14,224,70,28)
+        MoveScaled(0,32,10,4)
         Text = ("&Close")
         Picture = Picture["icon:/16/close"]
       }
       { Label7 Label
-        Move(14,140,84,21)
+        MoveScaled(2,20,13,3)
         Text = ("Refresh Rate")
       }
       { refrate Slider
-        Move(98,140,112,21)
+        MoveScaled(16,20,16,3.5714)
         MinValue = 20
         MaxValue = 1999
         Value = 200
       }
       { button_pause Button
-        Move(91,189,70,28)
+        MoveScaled(11,27,10,4)
         Text = ("&Pause")
         Picture = Picture["icon:/16/pause"]
       }
       { button_play Button
-        Move(91,189,70,28)
+        MoveScaled(11,27,10,4)
         Visible = False
         Text = ("&Play")
         Picture = Picture["icon:/16/play"]
       }
       { button_snap Button
-        Move(91,224,70,28)
+        MoveScaled(11,32,10,4)
         Text = ("&Snap")
         Picture = Picture["icon:/16/camera"]
       }
       { frame_rate Label
-        Move(105,161,96,18)
+        MoveScaled(2,23,30,3)
         Font = Font["-1"]
         Foreground = Color.SelectedBackground
         Text = ("0.00 fps")
       }
       { button_reset Button
-        Move(168,189,70,28)
+        MoveScaled(22,27,10,4)
         Text = ("&Reset")
         Picture = Picture["icon:/16/apply"]
         Default = True

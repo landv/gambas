@@ -520,9 +520,11 @@ Private Sub DrawMatch(X As Integer, Y As Integer, H As Integer, XM As Integer, Y
   Dim XY As Point
   Dim WW As Integer
   
+  If Not $bShowCursor Then Return
   XY = LinePos(YM, XM)
   WW = TextWidth($hDoc.Lines[YM], XM + 1, 1)
-  Paint.FillRect(X + XY.X, Y + XY.Y + H - 1, WW, 1, $iForeground)
+  'Paint.FillRect(X + XY.X, Y + XY.Y + H - 1, WW, 1, $iForeground)
+  Paint.FillRect(X + XY.X, Y + XY.Y, WW, H, $iMatchColor)
   
 End
 
@@ -558,7 +560,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
   Dim aStyle As TextEditorStyle[]
   Dim hImage As Image
   
-  Dim XX, YY, XB, LB As Integer
+  Dim XX, YY, XB, LB, DB As Integer
   Dim hPos As Point
   Dim iNextBreak As Integer
   Dim iLayout As Integer
@@ -608,6 +610,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
     
     If bBreak Then
       If iBg <> Color.Default Then Paint.FillRect(XX, YY, Paint.W, H, iBg)
+      PaintMultiLine(X, YY, Paint.W - $MW, H, iLayout = 1, False)
       XX = X + LinePos(Row, P).X
       YY += H
       bBreak = False
@@ -643,7 +646,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
     
     iBg = hStyle.Background
     If iBg <> Color.Default Then Paint.FillRect(XX, YY, X2 - XX, H, iBg)
-    If bAlt Then Paint.FillRect(XX, YY, X2 - XX, H, Color.SetAlpha(&HD0D0D0&, 192))
+    If bAlt Then Paint.FillRect(XX, YY, X2 - XX, H, Color.SetAlpha(aStyle[Highlight.Alternate].Color, 192))
     
     sStr = String.Mid$(sText, P + 1, iLen)
     ' If hStyle.Bold Then
@@ -710,6 +713,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
       Paint.MoveTo(XX, YY + H - 0.5)
       Paint.RelLineTo(X2 - XX, 0)
       Paint.Stroke
+      Paint.Dash = Null
     Endif
     
     ' If $YM >= 0 Then
@@ -731,6 +735,8 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
     DrawText(sStr, X, XX, YY)
     
   Endif
+
+  If aLayout Then PaintMultiLine(X, YY, Paint.W - $MW, H, False, True)
   
   If iBg <> Color.Default Then Paint.FillRect(XX, YY, Paint.W, H, iBg)
   
@@ -743,13 +749,18 @@ DRAW_TEXT:
   If hStyle.Bold Then
     LB = $BW
     XB = XX
-    While LB >= 2
+    DB = 2 * Max(1, LB \ 4)
+    While LB >= DB
       Paint.DrawText(sStr, XB, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
-      Inc XB
-      LB -= 2
+      XB += DB \ 2
+      LB -= DB
     Wend
     If LB Then
-      Paint.Background = Color.SetAlpha(iCol, 128)
+      If DB < 4 Then
+        Paint.Background = Color.SetAlpha(iCol, 128)
+      Else
+        XB -= DB \ 4
+      Endif
       Paint.DrawText(sStr, XB, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
     Endif
   Else
@@ -817,6 +828,40 @@ Private Sub GetTabSizeAround(Row As Integer) As Integer
   
 End
 
+Private Sub PaintMultiLine(X As Integer, Y As Integer, Width As Integer, Height As Integer, bStart As Boolean, bEnd As Boolean)
+
+  Dim D As Float
+  Dim LW As Integer
+
+  Paint.Save
+  Paint.AntiAlias = False
+
+  D = Height / 2
+  LW = CInt((Height + 23) / 24)
+  X += Width - Height
+
+  If bStart Then
+    Paint.MoveTo(X, Y + LW * 2)
+    Paint.RelLineTo(D, 0)
+    Paint.RelLineTo(0, Height - LW * 2)
+  Else If bEnd Then
+    Paint.MoveTo(X, Y + Height - LW * 2)
+    Paint.RelLineTo(D, 0)
+    Paint.RelLineTo(0, -Height + LW * 2)
+  Else
+    Paint.MoveTo(X + D, Y)
+    Paint.RelLineTo(0, Height)
+  Endif
+
+  Paint.LineWidth = LW
+  Paint.Background = Color.SetAlpha(Color.TextForeground, 128)
+  Paint.LineJoin = Paint.LineJoinMiter
+  Paint.Stroke
+  
+  Paint.Restore
+
+End
+
 Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer)
   
   Dim X1 As Integer
@@ -851,9 +896,9 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   ' Current line or stop line
   
   Try aLayout = $cLineLayout[Row]
-  If Row = $Y And If aLayout Then
-    Paint.FillRect(X, Y, Width, Height, $iMarginColor)
-  Endif
+  ' If Row = $Y And If aLayout Then
+  '   Paint.FillRect(X, Y, Width, Height, $iMarginColor)
+  ' Endif
   
   If Row = $iStopLine Then
     Paint.FillRect(X, Y, Width, Height, $hStyles[Highlight.Current].Color)
@@ -980,11 +1025,13 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
       XS = X + LineStartPos(Row)
       For I = 0 To aLayout.Max
         DrawText(String.Mid$(sText, P, aLayout[I]), X, XX, YY)
+        PaintMultiLine(X, YY, Width - $MW, H, I = 0, False)
         YY += H
         XX = XS
         P += aLayout[I]
       Next
       DrawText(String.Mid$(sText, P), X, XX, YY)
+      PaintMultiLine(X, YY, Width - $MW, H, False, True)
       
     Else
       
@@ -1082,6 +1129,68 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   Endif
   
 End
+
+Public Sub _PaintRow(Row As Integer, X As Integer, Y As Integer)
+
+  Dim H As Integer
+  Dim hInfo As CLineInfo
+  Dim sText As String
+  Dim aLayout As Integer[]
+  Dim P As Integer
+  Dim YY As Integer
+  Dim XX As Integer
+  Dim XS As Integer
+  Dim I As Integer
+  Dim bRemoteDisplay As Boolean
+  Dim iSaveMW As Integer
+  
+  H = $LH
+
+  Try aLayout = $cLineLayout[Row]
+  sText = $hDoc.Lines[Row]
+  hInfo = $hDoc.Info(Row)
+
+  If hInfo.Colors Then
+    
+    bRemoteDisplay = $bRemoteDisplay
+    $bRemoteDisplay = True
+    iSaveMW = $MW
+    $MW = 0
+    DrawHighlightedText(Row, sText, hInfo.Colors, X, Y, H, aLayout, hInfo.State)
+    $MW = iSaveMW
+    $bRemoteDisplay = bRemoteDisplay
+    
+  Else
+    
+    Paint.Background = $iForeground
+    
+
+    If aLayout Then
+      
+      P = 1
+      YY = Y
+      XX = X
+      XS = X + LineStartPos(Row)
+      For I = 0 To aLayout.Max
+        DrawText(String.Mid$(sText, P, aLayout[I]), X, XX, YY)
+        PaintMultiLine(X, YY, Paint.W - X, H, I = 0, False)
+        YY += H
+        XX = XS
+        P += aLayout[I]
+      Next
+      DrawText(String.Mid$(sText, P), X, XX, YY)
+      PaintMultiLine(X, YY, Paint.W - X, H, False, True)
+      
+    Else
+      
+      DrawText(sText, X, X, Y)
+      
+    Endif
+    
+  Endif
+
+End
+
 
 Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer)
   
@@ -1390,6 +1499,10 @@ Public Sub TimerCursor_Timer()
   If $bMouseDown Then Return
   $bShowCursor = Not $bShowCursor
   _RefreshLine($Y)
+  If $YM >= 0 Then
+    If $YM <> $Y Then _RefreshLine($YM)
+    If $YMO <> $Y Then _RefreshLine($YMO)
+  Endif
   
 End
 
@@ -1732,6 +1845,7 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
   Endif
   
   $bShowCursor = True
+  $hTimerCursor.Restart
   If Not $bReadOnly Then $hTimerCursor.Start
   
   CheckMatch
@@ -2038,6 +2152,12 @@ Public Sub Insert(Text As String)
   Dim aText As String[]
   Dim I As Integer
   
+  If Len(Text) = 1 And If Text <> "\n" And If Not HasSelection() And If Not $bOverwrite Then
+    $hDoc.Insert(Text, $X, $Y)
+    Goto($hDoc.XAfter, $hDoc.YAfter)
+    Return
+  Endif
+  
   $hDoc.Begin
   
   DeleteSelection
@@ -2142,12 +2262,18 @@ Public Sub SelectAll()
   
 End
 
-Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
+Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer, Optional bRight As Boolean)
   
   'Goto(X1, Y1)
   
+  If Y1 = Y2 And If Abs(X1 - X2) = 1 Then
+    $hDoc.Remove(X1, Y1, X2, Y2, bRight)
+    Goto($hDoc.XAfter, $hDoc.YAfter)
+    Return
+  Endif
+  
   $hDoc.Begin
-  $hDoc.Remove(X1, Y1, X2, Y2)
+  $hDoc.Remove(X1, Y1, X2, Y2, bRight)
   
   Goto($hDoc.XAfter, $hDoc.YAfter)
   $hDoc.End
@@ -2275,10 +2401,10 @@ Private Sub DeleteRight()
   
   If $X >= $hDoc.LineLength[$Y] Then
     If $Y < $hDoc.Max Then
-      Remove($X, $Y, 0, $Y + 1)
+      Remove($X, $Y, 0, $Y + 1, True)
     Endif
   Else
-    Remove($X, $Y, $X + 1, $Y)
+    Remove($X, $Y, $X + 1, $Y, True)
   Endif
   
 End
@@ -4709,7 +4835,7 @@ Public Sub _UpdateLineHeight(Y As Integer)
   If Not $cLineLayout Then Return
   
   sText = $hDoc.Lines[Y]
-  WMax = $hView.ClientW - $MW - 8
+  WMax = $hView.ClientW - $MW - $LH
   
   'Print Y;
   
@@ -5158,7 +5284,7 @@ Public Sub SideBar_Draw()
   Dim NL, Row As Integer
   Dim X, Y, W, H As Integer
   Dim iBorder As Integer = IIf(System.RightToLeft, 0, 1)
-  Dim iCount As Integer = _RealToView($hDoc.Max)
+  Dim iCount As Integer = $hRows.Max '_RealToView($hDoc.Max)
 
   NL = $hView.ClientH \ $hRows.H + 1
   Row = _RealToView($hRows._FindRowFromPos($hView.ScrollY))
@@ -5217,7 +5343,7 @@ End
 Private Sub SideBarClick(Y As Integer)
   
   $iMY = Y
-  Y = Min(Max(0, Floor(((Y - $iMD)) / $fBarLineHeight)), _RealToView($hDoc.Max))
+  Y = Min(Max(0, Floor(((Y - $iMD)) / $fBarLineHeight)), $hRows.Max) '_RealToView($hDoc.Max))
   Me.GotoCenter(0, _ViewToReal(Y))
   
 End
@@ -5227,7 +5353,7 @@ Public Sub SideBar_MouseMove()
   Dim iCurLine As Integer
   Dim X As Integer
   Dim D As Integer = Desktop.Scale * 2
-  Dim iCount As Integer = _RealToView($hDoc.Max)
+  Dim iCount As Integer = $hRows.Max '_RealToView($hDoc.Max)
   Dim iWhere As Integer
   
   If Mouse.Y < D Then

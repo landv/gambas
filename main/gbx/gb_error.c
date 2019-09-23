@@ -33,6 +33,7 @@
 #include "gbx_api.h"
 #include "gbx_stack.h"
 #include "gbx_project.h"
+#include "gbx.h"
 #include "gb_error.h"
 
 //#define DEBUG_ERROR 1
@@ -48,7 +49,7 @@ int ERROR_depth = 0;
 static int _lock = 0;
 static char *_print_prefix = NULL;
 
-static const char *const _message[74] =
+static const char *const _message[76] =
 {
 	/*  0 E_UNKNOWN     */ "Unknown error",
 	/*  1 E_MEMORY      */ "Out of memory",
@@ -115,7 +116,7 @@ static const char *const _message[74] =
 	/* 62 E_BYREF       */ "Argument cannot be passed by reference",
 	/* 63 E_OVERRIDE    */ ".3'&1.&2' is incorrectly overridden in class '&3'",
 	/* 64 E_NKEY        */ "Void key",
-	/* 65 E_SARRAY      */ "Embedded array",
+	/* 65 E_SARRAY      */ "Read-only array",
 	/* 66 E_EXTCB       */ ".1Cannot create callback: &1",
 	/* 67 E_SERIAL      */ "Serialization error",
 	/* 68 E_CHILD       */ ".2Cannot run child process: &1&2",
@@ -123,7 +124,9 @@ static const char *const _message[74] =
 	/* 70 E_NEMPTY      */ "Directory is not empty",
 	/* 71 E_UTYPE       */ "Unsupported datatype",
 	/* 72 E_FREEREF     */ "Free object referenced",
-	/* 73 E_ASSERT      */ "Assertion failed"
+	/* 73 E_ASSERT      */ "Assertion failed",
+	/* 74 E_MARRAY      */ "Multidimensional array",
+	/* 75 E_UCLASS      */ ".1Unknown class '&1'"
 };
 
 #if DEBUG_ERROR
@@ -578,7 +581,7 @@ void ERROR_panic(const char *error, ...)
 	{
 		fprintf(stderr, "** \n");
 		_print_prefix = "** ";
-		ERROR_print();
+		ERROR_print(FALSE);
 		_print_prefix = NULL;
 	}
 	fprintf(stderr, "** \n** Please send a bug report to the gambas bugtracker [1] or to the gambas mailing-list [2].\n** [1] http://gambaswiki.org/bugtracker\n** [2] https://lists.gambas-basic.org/listinfo/user\n** \n\n");
@@ -630,17 +633,10 @@ void ERROR_print_at(FILE *where, bool msgonly, bool newline)
 		fputc('\n', where);
 }
 
-void ERROR_print(void)
+bool ERROR_print(bool can_ignore)
 {
 	static bool lock = FALSE;
-
-	if (EXEC_main_hook_done && !EXEC_debug && EXEC_Hook.error && !lock)
-	{
-		lock = TRUE;
-		GAMBAS_DoNotRaiseEvent = TRUE;
-		HOOK(error)(ERROR_current->info.code, ERROR_current->info.msg, DEBUG_get_position(ERROR_current->info.cp, ERROR_current->info.fp, ERROR_current->info.pc));
-		lock = FALSE;
-	}
+	bool ignore = FALSE;
 
 	ERROR_print_at(stderr, FALSE, TRUE);
 
@@ -649,6 +645,17 @@ void ERROR_print(void)
 		print_prefix(stderr);
 		DEBUG_print_backtrace(ERROR_backtrace);
 	}
+
+	if (EXEC_main_hook_done && !EXEC_debug && EXEC_Hook.error && !lock)
+	{
+		lock = TRUE;
+		GAMBAS_DoNotRaiseEvent = TRUE;
+		ignore = HOOK(error)(ERROR_current->info.code, ERROR_current->info.msg, DEBUG_get_position(ERROR_current->info.cp, ERROR_current->info.fp, ERROR_current->info.pc), can_ignore);
+		GAMBAS_DoNotRaiseEvent = !ignore;
+		lock = FALSE;
+	}
+
+	return ignore;
 }
 
 static void ERROR_copy(ERROR_INFO *save, ERROR_INFO *last)

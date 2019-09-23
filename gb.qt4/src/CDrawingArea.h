@@ -24,12 +24,12 @@
 #ifndef __CDRAWINGAREA_H
 #define __CDRAWINGAREA_H
 
-#include "gambas.h"
-
 #include <QPaintEvent>
 #include <QPixmap>
 #include <QEvent>
 //#include <QFrame>
+
+#include "gambas.h"
 
 #include "CWidget.h"
 #include "CContainer.h"

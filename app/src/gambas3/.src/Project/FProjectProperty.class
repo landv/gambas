@@ -101,11 +101,13 @@ Public Sub Form_Open()
     txtLibraryPath.Text = .LibraryPath
     $aLibraries = .Libraries.Copy()
     $aComponents = .Components.Copy()
+    
+    lstReferences.List = .ExtraReferences
 
   End With
   
-  hBorder = Border("radius:5;width:2.5;margin:8;padding:6")
-  hBorder.Color = Color.Gradient(Color.LightForeground, Color.TextBackground)
+  hBorder = Border("style:none;bottom-style:solid;padding:" & CStr(Desktop.Scale \ 2) & ";")
+  hBorder.Color = Color.LightForeground
   gvwLibrary.Rows.Border = hBorder
   
   choComponent.Checkable = True
@@ -263,6 +265,8 @@ Private Function DoApply() As Boolean
     
     .LibraryPath = Trim(txtLibraryPath.Text)
     .Libraries = $aLibraries
+    
+    .ExtraReferences = lstReferences.List
 
   End With
 
@@ -622,6 +626,7 @@ Public Sub btnReset_Click()
     Case ("Libraries")
       $aLibraries = Project.Libraries.Copy()
       RefreshLibraries
+      lstReferences.List = Project.ExtraReferences
   
   End Select
 
@@ -883,7 +888,7 @@ Public Sub ipnProject_Click()
 
   Select Case ipnProject.Text
     Case ("Components") 
-      choComponent.SetFocus
+      'choComponent.SetFocus
       choComponent.HideBrowser
       btnReset.Show
     Case ("Libraries") 
@@ -1439,5 +1444,25 @@ Private Sub UpdateEnv()
   tvwEnv.Rows.Count = $aEnv.Count
   tvwEnv.Columns[0].Width = -1
   tvwEnv.Refresh
+
+End
+
+Public Sub lstReferences_Add()
+
+  Dim sPath As String
+  
+  Dialog.Title = ("Select a Gambas executable")
+  Dialog.Filter = ["*.gambas", ("Gambas executable")]
+  Dialog.Path = Project.Config["FProjectProperty/LastExtraReference"]
+
+  If Dialog.OpenFile() Then Return
+  
+  sPath = Dialog.Path
+  Project.Config["FProjectProperty/LastExtraReference"] = sPath
+  
+  sPath = Project.MakeRelativeLink(sPath, Project.Dir &/ File.Name(sPath))
+  If lstReferences.List.Exist(sPath) Then Return
+
+  lstReferences.Add(sPath)
 
 End

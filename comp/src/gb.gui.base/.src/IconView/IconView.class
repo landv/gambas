@@ -436,8 +436,8 @@ Public Sub ScrollArea_Draw()
   hSaveClip = Paint.ClipRect
   
   If $hPicture Then 
-    Draw.FillX = - $hView.ScrollX
-    Draw.FillY = - $hView.ScrollY
+    Draw.FillX = -$hView.ScrollX
+    Draw.FillY = -$hView.ScrollY
     Draw.Tile($hPicture, 0, 0, Draw.Width, Draw.Height)
   Endif
   
@@ -465,7 +465,7 @@ Public Sub ScrollArea_Draw()
       
       hItem = $aItems[iPos]
       GetIconGeometry(iPos, hRect)
-      hRect.Translate(- $hView.ScrollX, - $hView.ScrollY)
+      hRect.Translate(-$hView.ScrollX, -$hView.ScrollY)
       'Debug iPos
       hClip = hRect.Intersection(hSaveClip)
       If hClip Then
@@ -501,7 +501,7 @@ Public Sub ScrollArea_Draw()
     'Paint.Rectangle(X, Y, W, H)
     Paint.ClipRect = hSaveClip
     
-    Paint.Translate(- $hView.ScrollX, - $hView.ScrollY)
+    Paint.Translate(-$hView.ScrollX, -$hView.ScrollY)
     
     X1 = $X1
     Y1 = $Y1
@@ -625,7 +625,7 @@ Private Sub RefreshIcon(iPos As Integer)
   If $iLock Then Return
   If iPos < 0 Then Return
   GetIconGeometry(iPos, hRect)
-  hRect.Translate(- $hView.ScrollX, - $hView.ScrollY)
+  hRect.Translate(-$hView.ScrollX, -$hView.ScrollY)
   'Debug "Refresh:";; hRect.X;; hRect.Y;; hRect.W;; hRect.H
   $hView.View.Refresh(hRect.X, hRect.Y, hRect.W, hRect.H)
   

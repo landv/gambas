@@ -37,7 +37,7 @@ Public Sub _new()
   'gvwComponent.Padding = 4
   
   gvwComponent.Columns.Count = 5
-  gvwComponent.Columns[0].Width = 24
+  gvwComponent.Columns[0].Width = 16
   'gvwComponent.Columns[0].Expand = False
   'gvwComponent.Columns[1].Expand = False
   gvwComponent.Columns[2].Expand = True
@@ -85,6 +85,25 @@ Private Sub RefreshList()
     Endif
     
   Next
+  
+  If $cComp Then
+    For Each $cComp
+      
+      sComp = $cComp.Key
+      hComp = Project.Documentation.Components[sComp]
+      If hComp Then Continue
+      
+      If $cComp Then
+        If Not IsChecked(sComp) Then
+          If $bShowCheckedOnly Then Continue
+        Endif
+        aComp.Add(If(IsChecked(sComp), "0", "1") & sComp)
+      Else
+        aComp.Add(sComp)
+      Endif
+  
+    Next
+  Endif
   
   aComp.Sort(gb.Natural)
   
@@ -177,8 +196,20 @@ Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
   Dim sComp As String = $aComp[Row]
   Dim hComp As CComponent = Project.Documentation[sComp]
   
+  If Not hComp Then hComp = CComponent.GetUnknown(sComp)
+  
   With gvwComponent.Data
   
+    If hComp.State = CComponent.UNSTABLE Then 
+      .Foreground = Color.LightForeground
+    Else If hComp.State = CComponent.DEPRECATED Then
+      .Foreground = Color.LightForeground
+      .Font.Strikeout = True
+    Else If hComp.State = CComponent.Unknown Then
+      .Foreground = Color.LightForeground
+      .Font.Italic = True
+    Endif
+    
     Select Case Column
       
       Case 0
@@ -191,41 +222,29 @@ Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
         ' Endif
       
       Case 1
-        .Text = hComp.Key
+        .Text = hComp.Key & "  "
         .Font.Bold = True
-        If hComp.State = CComponent.UNSTABLE Then 
-          .Font.Italic = True
-        Else If hComp.State = CComponent.DEPRECATED Then
-          .Foreground = Color.LightForeground
-          '.Font.Strikeout = True
-        Endif
         
       Case 2
         .WordWrap = True
         .RichText = hComp.Name
-        If hComp.State = CComponent.UNSTABLE Then 
-          .Font.Italic = True
-        Else If hComp.State = CComponent.DEPRECATED Then
-          .Foreground = Color.LightForeground
-          '.Font.Strikeout = True
-        Endif
         
       Case 3
         Select Case hComp.State
           Case CComponent.STABLE_NOT_FINISHED
-            .Picture = Picture["img/16/unfinished.png"]
+            .Picture = Picture["img/component/unfinished.png"]
           Case CComponent.UNSTABLE
-            .Picture = Picture["img/16/experimental.png"]
+            .Picture = Picture["img/component/experimental.png"]
           Case CComponent.STABLE
-            .Picture = Picture["img/16/finished.png"]
+            .Picture = Picture["img/component/finished.png"]
           Case CComponent.DEPRECATED
-            .Picture = Picture["img/16/deprecated.png"]
+            .Picture = Picture["img/component/deprecated.png"]
+          'Case CComponent.UNKNOWN
+          '  .Picture = Picture["img/component/unknown.png"]
         End Select
         
       Case 4
-        'If Row = $iRow Then
-          .Picture = Picture["icon:/16/next"]
-        'Endif
+        If hComp.State <> CComponent.UNKNOWN Then .Picture = Picture["icon:/16/next"]
       
     End Select
     
@@ -322,9 +341,10 @@ Public Sub gvwComponent_MouseMove()
   iCol = gvwComponent.ColumnAt(Mouse.ScreenX - gvwComponent.ScreenX - gvwComponent.ClientX)
   If iCol < 0 Then iRow = -1
   
+  If iCol >= 3 Then Try hComp = Project.Documentation[$aComp[iRow]]
+  
   If iCol = 3 Then
     
-    Try hComp = Project.Documentation[$aComp[iRow]]
     If hComp Then
       Select Case hComp.State
         Case CComponent.STABLE_NOT_FINISHED
@@ -336,6 +356,8 @@ Public Sub gvwComponent_MouseMove()
         Case CComponent.DEPRECATED
           sText = ("Deprecated")
       End Select
+    Else
+      sText = ""
     Endif
     
     If $iTooltipLastRow <> iRow Then
@@ -350,7 +372,7 @@ Public Sub gvwComponent_MouseMove()
     
   Endif
   
-  If iCol = 4 Then
+  If iCol = 4 And If hComp Then
     gvwComponent.Mouse = Mouse.Pointing
   Else
     gvwComponent.Mouse = Mouse.Default
@@ -435,13 +457,13 @@ End
 
 Public Sub gvwComponent_Click()
   
-  Dim sComp As String
-  'Dim sDep As String
+  Dim sComp As String = GetCurrent()
   
   If gvwComponent.Column = 0 And IsCheckable() Then 
   
     sComp = $aComp[gvwComponent.Row]
     If sComp = "gb" Then Return
+    If Not Project.Documentation.Exist(sComp) Then Return
     
     Select Case GetState(sComp)
       Case ComponentChooser.Checked
@@ -450,7 +472,7 @@ Public Sub gvwComponent_Click()
         CheckComponent(sComp)
     End Select
     
-  Else If gvwComponent.Column = 4 Then
+  Else If gvwComponent.Column = 4 And If Project.Documentation.Exist(sComp) Then
     
     MHelp.InitWebViewWith(webAboutComponent, MHelp.TYPE_COMPONENT, GetCurrent(),, "v&nh")
     webAboutComponent.Zoom = Settings["/Help/Zoom", 80] / 100
@@ -472,7 +494,11 @@ Private Sub GetRequire(sComp As String) As String[]
   
   Dim hComp As CComponent = Project.Documentation[sComp]
   
-  Return hComp.Require
+  If hComp Then
+    Return hComp.Require
+  Else
+    Return New String[]
+  Endif
   
 End
 
@@ -756,6 +782,8 @@ End
 Public Sub gvwComponent_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, Column As Integer)
 
   Dim sComp As String = $aComp[Row]
+  Dim DX As Integer
+  
   'Dim hComp As CComponent = CComponent.All[sComp]
 
   If Not IsCheckable() Then Return
@@ -764,14 +792,16 @@ Public Sub gvwComponent_Draw(X As Integer, Y As Integer, Width As Integer, Heigh
     
     Case 0
       
-      X += (Width - 16) \ 2
-      Y += (Height - 16) \ 2
+      DX = (Width - 16) \ 2
+      X += DX
+      Y += DX
+      'Y += (gvwComponent.Rows.Height - gvwComponent.Padding * 2 - 16) \ 2
       Width = 16
       Height = 16
       
       Style.PaintBox(X - 2, Y - 2, Width + 4, Height + 4)
       
-      If sComp = "gb" Then
+      If sComp = "gb" Or If Not Project.Documentation.Exist(sComp) Then
         Paint.DrawPicture(Picture["img/16/checked-lock.png"], X, Y)
       Else
         Select Case GetState(sComp)

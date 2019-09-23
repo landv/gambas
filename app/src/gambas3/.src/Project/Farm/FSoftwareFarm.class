@@ -98,6 +98,13 @@ Public Sub Form_Open()
   
 End
 
+Public Sub Form_KeyPress()
+  
+  If Key.Code = Key.Esc Then Me.Close
+  
+End
+
+
 ' Public Sub SoftwareSeparator_Draw()
 '   
 '   Paint.Brush = Paint.LinearGradient(0, 0, 0, Paint.H, [Color.Merge(Color.TextBackground, Color.TextForeground, 0.1), Color.Transparent], [0, 1])

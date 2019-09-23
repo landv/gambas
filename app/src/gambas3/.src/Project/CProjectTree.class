@@ -73,6 +73,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
   Dim sTitle As String
   Dim hStat As Stat
   Dim bParentLink As Boolean
+  Dim bStartup As Boolean
 
   sPath = sDir &/ sFile
   
@@ -178,6 +179,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
           Endif
             
           sFile = File.BaseName(sFile)
+          bStartup = sFile = $sStartup
           
         Endif
 
@@ -246,8 +248,17 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
           bDir = False
         Endif
       Endif
-
+      
       With $hTree[sKey]
+        
+        If bStartup Then 
+          .Font = $hTree.Font
+          .Font.Underline = True
+          .Font.Bold = True
+        Else
+          .Font = Null
+        Endif
+        
         If $bCurrentProject Then .Editable = Not Project.IsLocked(sKey)
         If bAfter Then .MoveAfter(sAfter)
         If bShow Then
@@ -255,6 +266,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
           $hTree.MoveParent
           $hTree.Item.Expanded = True
         Endif
+        
       End With
       
       If $bCurrentProject Then Project.RefreshIcon(sKey)
@@ -560,7 +572,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
           If IsSourcePath(sPath) Then
             sModule = sExt
             sIcon = sExt
-            bStartup = File.BaseName(sPath) = $sStartup 'And Not bNoStartup
+            'bStartup = File.BaseName(sPath) = $sStartup 'And Not bNoStartup
             bExported = Project.IsExported(sPath)
           Endif
 
@@ -668,7 +680,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
     If bLink Then sKey &= "l"
     
     If Not bNoEmblem Then
-      If bStartup Then sKey &= "s"
+      'If bStartup Then sKey &= "s"
       If bConflict Then sKey &= "c"
       If bLocked Then sKey &= "k"
       If bAdded Then sKey &= "a"

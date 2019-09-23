@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,90,71)
+  MoveScaled(0,0,105,83)
   Icon = Picture["Icon.png"]
   Arrangement = Arrange.Horizontal
   { dwgDraw ScrollArea
@@ -11,26 +11,24 @@
     NoBackground = True
     Tablet = True
   }
-  { timScroll #Timer
-    #MoveScaled(30,54)
-    Delay = 50
-  }
   { Separator1 Separator
     MoveScaled(54,27,0,12)
     Visible = False
   }
   { Panel2 Panel
-    MoveScaled(56,8,30,59)
+    MoveScaled(55,3,49,79)
     Arrangement = Arrange.Vertical
     Margin = True
     { panInfo Panel
-      MoveScaled(0,0,28,58)
+      MoveScaled(0,0,49,79)
       Margin = True
       Border = Border.Plain
       { ToggleButton4 ToggleButton btnColor
         Name = "ToggleButton4"
-        MoveScaled(4,43,6,6)
+        MoveScaled(1,43,14,14.2857)
         Background = &HFF0000&
+        Foreground = Color.DarkGray
+        Text = ("red")
         Radio = True
       }
       { Label1 Label
@@ -104,7 +102,7 @@
         Expand = True
       }
       { Panel1 Panel
-        MoveScaled(9,25,10,5)
+        MoveScaled(18,25,10,5)
         { panButton3 Panel
           MoveScaled(8,0,2,5)
           Border = Border.Plain
@@ -119,44 +117,58 @@
         }
       }
       { btnClear Button
-        MoveScaled(5,34,18,7)
+        MoveScaled(14,34,18,7)
         Text = ("Clear")
         Picture = Picture["icon:/large/delete"]
       }
       { Separator2 Separator
-        MoveScaled(0,32,28,1)
+        MoveScaled(0,32,47,1)
       }
       { ToggleButton1 ToggleButton btnColor
         Name = "ToggleButton1"
-        MoveScaled(18,50,6,6)
+        MoveScaled(31,59,14.2857,14.2857)
         Background = &H000000&
+        Foreground = Color.DarkGray
+        Text = ("black")
         Radio = True
         Value = True
       }
       { ToggleButton2 ToggleButton btnColor
         Name = "ToggleButton2"
-        MoveScaled(4,50,6,6)
+        MoveScaled(1,59,14.2857,14.2857)
         Background = &HFF7F00&
+        Foreground = Color.DarkGray
+        Text = ("brown")
         Radio = True
       }
       { ToggleButton3 ToggleButton btnColor
         Name = "ToggleButton3"
-        MoveScaled(11,50,6,6)
+        MoveScaled(16,59,14.2857,14.2857)
         Background = &HFFFF00&
+        Foreground = Color.DarkGray
+        Text = ("yellow")
         Radio = True
       }
       { ToggleButton5 ToggleButton btnColor
         Name = "ToggleButton5"
-        MoveScaled(18,43,6,6)
-        Background = &H007FFF&
+        MoveScaled(31,43,14.2857,14.2857)
+        Background = Color.Cyan
+        Foreground = Color.DarkGray
+        Text = ("blue")
         Radio = True
       }
       { ToggleButton6 ToggleButton btnColor
         Name = "ToggleButton6"
-        MoveScaled(11,43,6,6)
+        MoveScaled(16,43,14.2857,14.2857)
         Background = &H7FFF00&
+        Foreground = Color.DarkGray
+        Text = ("green")
         Radio = True
       }
     }
+  }
+  { timScroll #Timer
+    #MoveScaled(30,54)
+    Delay = 50
   }
 }

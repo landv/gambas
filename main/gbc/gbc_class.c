@@ -252,7 +252,7 @@ void CLASS_check_unused_global(CLASS *class)
 }
 
 
-void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
+int CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
 {
 	FUNCTION *func;
 	int i;
@@ -278,13 +278,12 @@ void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
 	if (JOB->debug)
 		ARRAY_create(&func->pos_line);
 
-	if (!decl) return;
-
-	sym = CLASS_declare(class, decl->index, TK_FUNCTION, TRUE);
-	/*CLASS_add_symbol(class, JOB->table, decl->index, &sym, NULL);*/
-
-	sym->global.type = decl->type;
-	sym->global.value = ARRAY_count(class->function) - 1;
+	if (decl->index != NO_SYMBOL)
+	{
+		sym = CLASS_declare(class, decl->index, TK_FUNCTION, TRUE);
+		sym->global.type = decl->type;
+		sym->global.value = count;
+	}
 
 	if (TYPE_is_static(decl->type))
 		class->has_static = TRUE;
@@ -340,6 +339,8 @@ void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
 
 	if (func->npmin < 0)
 		func->npmin = func->nparam;
+	
+	return count;
 }
 
 
@@ -413,6 +414,7 @@ void CLASS_add_property(CLASS *class, TRANS_PROPERTY *decl)
 	prop->name = decl->index;
 	prop->line = decl->line;
 	prop->comment = decl->comment;
+	prop->use = decl->use;
 	
 	for (i = 0; i < decl->nsynonymous; i++)
 	{
@@ -617,7 +619,7 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 		if (!TABLE_find_symbol(class->table, name, len + 2, &index))
 		{
 			char *name_alloc = CLASS_add_name(class, name, len + 2);
-			TABLE_add_symbol(class->table, name_alloc, len + 2, &index);
+			index = TABLE_add_symbol(class->table, name_alloc, len + 2);
 		}
 		
 		if (class->class[value].exported)
@@ -830,7 +832,7 @@ int CLASS_add_symbol(CLASS *class, const char *name)
 {
 	int index;
 
-	TABLE_add_symbol(class->table, name, strlen(name), &index);
+	index = TABLE_add_symbol(class->table, name, strlen(name));
 	return index;
 }
 
@@ -879,66 +881,123 @@ static int check_one_property_func(CLASS *class, PROPERTY *prop, bool write)
 {
 	CLASS_SYMBOL *sym;
 	char *name;
+	//char *name_alloc;
 	bool is_static;
 	FUNCTION *func;
 	int index;
+	int value = 0;
 
 	JOB->line = prop->line;
+	JOB->current = NULL;
 
 	is_static = TYPE_is_static(prop->type);
 
 	name = STR_copy(TABLE_get_symbol_name_suffix(class->table, prop->name, write ? "_Write" : "_Read"));
 
 	if (!TABLE_find_symbol(class->table, name, strlen(name), &index))
-		THROW("&1 is not declared", name);
-
-	sym = (CLASS_SYMBOL *)TABLE_get_symbol(class->table, index);
-	
-	if (TYPE_get_kind(sym->global.type) != TK_FUNCTION)
-		THROW("&1 is declared but is not a function", name);
-
-	func = &class->function[sym->global.value];
-	JOB->line = func->line;
-
-	if (TYPE_is_public(sym->global.type))
-		THROW("A property implementation cannot be public");
-
-	if (is_static != TYPE_is_static(sym->global.type))
 	{
-		if (is_static)
-			THROW("&1 must be static", name);
+		TRANS_FUNC decl;
+		
+		if (prop->use == 0)
+			THROW("&1 is not declared", name);
+		
+		CLEAR(&decl);
+		//name_alloc = CLASS_add_name(class, name, strlen(name));
+		decl.index = index = NO_SYMBOL; //CLASS_add_symbol(class, name_alloc);
+		
+		if (write)
+		{
+			decl.nparam = 1;
+			decl.param[0].type = prop->type;
+			decl.param[0].index = NO_SYMBOL;
+		}
 		else
-			THROW("&1 cannot be static", name);
+		{
+			decl.type = prop->type;
+			TYPE_clear_flag(&decl.type, TF_PUBLIC);
+		}
+		
+		decl.line = prop->line;
+		
+		TYPE_set_kind(&decl.type, TK_FUNCTION);
+		if (is_static)
+			TYPE_set_flag(&decl.type, TF_STATIC);
+		
+		value = CLASS_add_function(JOB->class, &decl);
+		JOB->nobreak = TRUE;
+		
+		sym = CLASS_get_symbol(JOB->class, prop->use);
+		
+		if (write)
+		{
+			sym->global_assigned = TRUE;
+			CODE_push_local(-1);
+			CODE_pop_global(sym->global.value, is_static);
+			CODE_return(2);
+		}
+		else
+		{
+			sym->global_used = TRUE;
+			CODE_push_global(sym->global.value, is_static, FALSE);
+			CODE_return(1);
+		}
+		
+		FUNCTION_add_last_pos_line();
+		JOB->func->stack = CODE_stack_usage;
+		JOB->nobreak = FALSE;
 	}
 
-	if (write)
+	if (index != NO_SYMBOL)
 	{
-		if (TYPE_get_id(func->type) != T_VOID)
-			goto _BAD_SIGNATURE;
+		sym = (CLASS_SYMBOL *)TABLE_get_symbol(class->table, index);
+		
+		if (TYPE_get_kind(sym->global.type) != TK_FUNCTION)
+			THROW("&1 is declared but is not a function", name);
 
-		if (func->nparam != 1 || func->npmin != 1)
-			goto _BAD_SIGNATURE;
+		func = &class->function[sym->global.value];
+		JOB->line = func->line;
 
-		if (!TYPE_compare(&func->param[0].type, &prop->type))
-			goto _BAD_SIGNATURE;
-	}
-	else
-	{
-		if (!TYPE_compare(&func->type, &prop->type))
-			goto _BAD_SIGNATURE;
+		if (TYPE_is_public(sym->global.type))
+			THROW("A property implementation cannot be public");
 
-		if (func->nparam != 0 || func->npmin != 0)
-			goto _BAD_SIGNATURE;
+		if (is_static != TYPE_is_static(sym->global.type))
+		{
+			if (is_static)
+				THROW("&1 must be static", name);
+			else
+				THROW("&1 cannot be static", name);
+		}
+
+		if (write)
+		{
+			if (TYPE_get_id(func->type) != T_VOID)
+				goto _BAD_SIGNATURE;
+
+			if (func->nparam != 1 || func->npmin != 1)
+				goto _BAD_SIGNATURE;
+
+			if (!TYPE_compare(&func->param[0].type, &prop->type))
+				goto _BAD_SIGNATURE;
+		}
+		else
+		{
+			if (!TYPE_compare(&func->type, &prop->type))
+				goto _BAD_SIGNATURE;
+
+			if (func->nparam != 0 || func->npmin != 0)
+				goto _BAD_SIGNATURE;
+		}
+	
+		sym->global_used = TRUE;
+		value = sym->global.value;
 	}
 
 	STR_free(name);
-	sym->global_used = TRUE;
-	return sym->global.value;
+	return value;
 
 _BAD_SIGNATURE:
 
 	THROW("&1 declaration does not match", name);
-
 }
 
 

@@ -121,7 +121,7 @@ Private Sub GetViewRect() As Rect
       X = ($hView.W - W) \ 2
     Endif
   Else
-    X = - $hView.ScrollX
+    X = -$hView.ScrollX
   Endif
   
   If H <= $hView.H Then
@@ -133,7 +133,7 @@ Private Sub GetViewRect() As Rect
       Y = ($hView.H - H) \ 2
     Endif
   Else
-    Y = - $hView.ScrollY
+    Y = -$hView.ScrollY
   Endif
   
   Return Rect(X, Y, W, H)

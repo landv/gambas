@@ -147,12 +147,14 @@ Public Sub Form_Open()
   cmbLang.Clear
   cmbLangSource.Clear
   cmbLangSource.Add(("(Default)"))
-  For Each sLang In Language.GetAll()
-    If Project.HasTranslation(sLang) Then
+  
+  'For Each sLang In Language.GetAll()
+  For Each sLang In Project.GetTranslations()
+    'If Project.HasTranslation(sLang) Then
       cvwLang.Add(sLang, Language.ToName(sLang))
       cmbLang.Add(Language.ToName(sLang))
       cmbLangSource.Add(Language.ToName(sLang))
-    Endif
+    'Endif
   Next
 
   sPath = Settings["/FTranslate/ImportPath"]
@@ -455,6 +457,11 @@ Private Sub WriteTranslation(sPath As String, Optional iMode As Integer = EXPORT
               sStr = Left(sStr, -2)
             Wend
           Endif
+        Endif
+        
+        If sStr = "-" Then
+          sStr = ""
+          Print #hFile, "# gb-ignore"
         Endif
   
         Print #hFile, "#: "; .Item[2]
@@ -1639,6 +1646,8 @@ Private Sub GetAutomaticTranslation(sText As String) As String
   Dim iPos As Integer
   Dim iPos2 As Integer
   Dim sDigit As String
+  Dim aText As String[]
+  Dim I As Integer
   
   Inc Application.Busy
   
@@ -1651,41 +1660,65 @@ Private Sub GetAutomaticTranslation(sText As String) As String
   
   sLangDest = StripLang(Language.FromName(cmbLang.Text))
 
+  aText = New String[]
+
   Do
-    iPos = InStr(sText, "&", iPos + 1)
-    If iPos = 0 Then Break
-    If IsDigit(Mid$(sText, iPos + 1, 1)) Then
-      sText = Left(sText, iPos - 1) & "[-" & Mid$(sText, iPos + 1, 1) & "-]" & Mid$(sText, iPos + 2)
-    Else If Mid$(sText, iPos + 1, 1) = "{" Then
-      iPos2 = InStr(sText, "}", iPos + 1)
-      If iPos2 Then
-        If IsDigit(Mid$(sText, iPos + 2, iPos2 - iPos - 1)) Then
-          sText = Left$(sText, iPos - 1) & "[-" & Mid$(sText, iPos + 2, iPos2 - iPos - 1) & "-]" & Mid$(sText, iPos2 + 1)
-        Endif
-      Endif
+    
+    iPos = InStr(sText, "\\n")
+    If iPos = 0 Then
+      aText.Add(sText)
+      Break
+    Else
+      aText.Add(Left(sText, iPos - 1))
+      sText = Mid$(sText, iPos + 2)
     Endif
+    
   Loop
 
-  Exec [$sTranslateShell, "-e", $sTranslateEngine, "-b", sText, sLangSrc & ":" & sLangDest] To sResult
-  
-  iPos = 0
-  Do
-    iPos = InStr(sResult, "[-", iPos + 1)
-    If iPos = 0 Then Break
-    iPos2 = InStr(sResult, "-]", iPos + 1)
-    If iPos2 Then
-      sDigit = Trim(Mid$(sResult, iPos + 2, iPos2 - iPos - 2))
-      If Len(sDigit) = 1 Then
-        sResult = Left(sResult, iPos - 1) & "&" & sDigit & Mid$(sResult, iPos2 + 2)
-      Else If Len(sDigit) > 1 Then
-        sResult = Left(sResult, iPos - 1) & "&{" & sDigit & "}" & Mid$(sResult, iPos2 + 2)
+  For I = 0 To aText.Max
+
+    sText = aText[I]
+    If Not Trim(sText) Then Continue
+
+    Do
+      iPos = InStr(sText, "&", iPos + 1)
+      If iPos = 0 Then Break
+      If IsDigit(Mid$(sText, iPos + 1, 1)) Then
+        sText = Left(sText, iPos - 1) & "[-" & Mid$(sText, iPos + 1, 1) & "-]" & Mid$(sText, iPos + 2)
+      Else If Mid$(sText, iPos + 1, 1) = "{" Then
+        iPos2 = InStr(sText, "}", iPos + 1)
+        If iPos2 Then
+          If IsDigit(Mid$(sText, iPos + 2, iPos2 - iPos - 1)) Then
+            sText = Left$(sText, iPos - 1) & "[-" & Mid$(sText, iPos + 2, iPos2 - iPos - 1) & "-]" & Mid$(sText, iPos2 + 1)
+          Endif
+        Endif
       Endif
-    Endif
-  Loop
+    Loop
+  
+    Exec [$sTranslateShell, "-e", $sTranslateEngine, "-b", sText, sLangSrc & ":" & sLangDest] To sResult
+    
+    iPos = 0
+    Do
+      iPos = InStr(sResult, "[-", iPos + 1)
+      If iPos = 0 Then Break
+      iPos2 = InStr(sResult, "-]", iPos + 1)
+      If iPos2 Then
+        sDigit = Trim(Mid$(sResult, iPos + 2, iPos2 - iPos - 2))
+        If Len(sDigit) = 1 Then
+          sResult = Left(sResult, iPos - 1) & "&" & sDigit & Mid$(sResult, iPos2 + 2)
+        Else If Len(sDigit) > 1 Then
+          sResult = Left(sResult, iPos - 1) & "&{" & sDigit & "}" & Mid$(sResult, iPos2 + 2)
+        Endif
+      Endif
+    Loop
+    
+    aText[I] = Trim(sResult)
+    
+  Next
+  
+  sResult = aText.Join("\\n")
   
   Dec Application.Busy
-  
-  sResult = Trim(sResult)
   
   If sResult Then
     If String.Left(sText) = String.UCase(String.Left(sText)) Then
@@ -1715,6 +1748,8 @@ End
 
 Public Sub mnuAutoTrans_Click()
   
+  Dim sText As String
+  
   If Message.Question(("Do you want to fill the translation automatically?"), ("Fill"), ("Cancel")) = 2 Then Return
   
   Inc Application.Busy
@@ -1724,7 +1759,13 @@ Public Sub mnuAutoTrans_Click()
     If Not cvwTranslate.Item[1] Then 
       cvwTranslate.Item.Selected = True
       cvwTranslate.Item.EnsureVisible
-      txtTranslate.Text = GetAutomaticTranslation(txtOrig.Text)
+      Wait
+      sText = GetAutomaticTranslation(txtOrig.Text)
+      If Not sText Then
+        Message.Warning(("Automatic translation has failed."))  
+        Break
+      Endif
+      txtTranslate.Text = sText
       Wait
     Endif
     cvwTranslate.MoveNext

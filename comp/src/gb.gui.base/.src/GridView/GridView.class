@@ -207,6 +207,7 @@ End
 Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRow As Integer, iCol As Integer, hData As _GridView_Data, hRowBorder As Border)
 
   Dim hRect As Rect = Rect(X, Y, W, H)
+  Dim hRectDraw As Rect
   Dim hPict As Picture
   Dim A As Integer
   Dim iColor As Integer
@@ -232,12 +233,16 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRo
     
     Paint.FillRect(X, Y, W, H, iColor)
     
-    If .Border
-      hRect = .Border.GetRect(RectF(X, Y, W, H), True)
-      X = hRect.X
-      Y = hRect.Y
-      W = hRect.W
-      H = hRect.H
+    If .Border Then
+      hRectDraw = .Border.GetRect(RectF(X, Y, W, H), True)
+      If hRectDraw Then
+        With hRectDraw
+          X = .X
+          Y = .Y
+          W = .W
+          H = .H
+        End With
+      Endif
     Endif
     
     If hRowBorder Then
@@ -277,9 +282,7 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRo
     
     Paint.Background = iColor
     
-    If .Font And If .Font.Modified Then 
-      Paint.Font = .Font
-    Endif
+    If .Font And If .Font.Modified Then Paint.Font = .Font
 
     If $bHasDrawEvent Then
       bCancel = Raise Draw(X, Y, W, H, iRow, iCol)
@@ -335,7 +338,7 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRo
         Else If Align.IsRight(A) Then
           Paint.DrawRichText(.RichText, X + W - 4096, Y, 4096, H, .Alignment)
         Else
-          Paint.DrawRichText(.RichText, X + W \ 2 - 4096, Y, 4096, H, .Alignment)
+          Paint.DrawRichText(.RichText, X + W \ 2 - 4096, Y, 8192, H, .Alignment)
         Endif
       Endif
     Endif
@@ -408,6 +411,7 @@ Public Sub ScrollArea_Draw()
   Dim hRowBorderRect As Rect
   Dim hRectF As RectF
   Dim iBgSel As Integer
+  Dim iPadding As Integer
   
   'Debug Me.Font.ToString();; Draw.Font.ToString()
   
@@ -439,7 +443,7 @@ Public Sub ScrollArea_Draw()
   iStepCol = If(System.RightToLeft, -1, 1)
   
   If System.RightToLeft Then
-    XO = - $hView.ScrollX + F
+    XO = -$hView.ScrollX + F
   Else
     XO = $hRows.Width - $hView.ScrollX + F
   Endif
@@ -462,6 +466,8 @@ Public Sub ScrollArea_Draw()
   If Color.Distance(iBg, Color.TextBackground) < 0.1 Then
     iBg = Color.Background
   Endif
+  
+  iPadding = Max(Desktop.Scale \ 2, $iPadding)
   
   ' Column headers
   
@@ -492,16 +498,16 @@ Public Sub ScrollArea_Draw()
 
           If iSort = I Then
             WA = Min(12, H - F)
-            If WA < .Width Then Style.PaintArrow(X + .Width - WA - $iPadding, F, WA, H - F, If(bAscent, Align.Bottom, Align.Top))
+            If WA < .Width Then Style.PaintArrow(X + .Width - WA - iPadding, F, WA, H - F, If(bAscent, Align.Bottom, Align.Top))
             'Draw.ClipRect = hClip.Intersection(Rect(X, F, Max(0, .Width - WA - 2), H - F))
             'If Draw.ClipRect Then Draw.Text(.Text, X + 4, F, .Width - WA - 8, H - F, .Alignment)
             Paint.Rectangle(X, F, Max(0, .Width - WA - 2), H - F)
             Paint.Clip
-            DrawText(.Text, X + 1, F, .Width - WA - $iPadding - 2, H - F - 2, .Alignment, Max(1, $iPadding))
+            DrawText(.Text, X + 1, F, .Width - WA - iPadding - 2, H - F - 2, .Alignment, iPadding)
           Else
             Paint.Rectangle(X + 1, F, .Width - 2, H - F)
             Paint.Clip
-            DrawText(.Text, X + 1, F, .Width - 2, H - F - 2, .Alignment, Max(1, $iPadding))
+            DrawText(.Text, X + 1, F, .Width - 2, H - F - 2, .Alignment, iPadding)
           Endif
 
           Paint.Restore
@@ -550,18 +556,20 @@ Public Sub ScrollArea_Draw()
       If Y >= $hView.ClientH Then Break
       $aRowY.Add(Y - F)
       iRow2 = I
-      'Draw.Style.Separator(F, Y, W - F, 2)
-      H = $hRows._GetRowHeight(I)
-      If H > 0 And If $iHeader And Vertical Then
-        Paint.FillRect(X, Y - 1, W - F, 1, iGrid)
-        Paint.Save
-        Paint.Rectangle(X, Y + 1, W - F, H - 3)
-        Paint.Clip
-        If I = $iRow Then Paint.Font.Bold = True
-        DrawText($hRows._GetRowText(I), X, Y + 2, W - F, H - 3, Align.Center, $iPadding)
-        If I = $iRow Then Paint.Font.Bold = False
-        Paint.Restore
-      Endif
+      With $hRows[I]
+        'Draw.Style.Separator(F, Y, W - F, 2)
+        H = .Height '$hRows._GetRowHeight(I)
+        If H > 0 And If $iHeader And Vertical Then
+          Paint.FillRect(X, Y - 1, W - F, 1, iGrid)
+          Paint.Save
+          Paint.Rectangle(X, Y + 1, W - F, H - 3)
+          Paint.Clip
+          If I = $iRow Then Paint.Font.Bold = True
+          DrawText(.Text, X, Y + 2, W - F - 1, H - 3, .TextAlignment, iPadding)
+          If I = $iRow Then Paint.Font.Bold = False
+          Paint.Restore
+        Endif
+      End With
       
       'Draw.Style.Handle(W - 2, Y, 2, H, True)
       Y += H
@@ -1861,7 +1869,7 @@ Public Sub _SetSpan(iRow As Integer, iCol As Integer, iRowSpan As Integer, iColS
     For I = 0 To iRowSpan
       For J = 0 To iColSpan
         If I = 0 And If J = 0 Then Continue
-        _SetSpan(iRow + I, iCol + J, - I, - J)
+        _SetSpan(iRow + I, iCol + J, -I, -J)
       Next
     Next
     
@@ -2072,7 +2080,7 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
   Dim bBusy As Boolean
   Dim J As Integer
   
-  PW = Me.Font.TextWidth($hColumns[iCol].Text) + $iPadding * 2 + If($bSorted, 16, 0)
+  PW = Me.Font.TextWidth($hColumns[iCol].Text) + Max(Desktop.Scale \ 2, $iPadding) * 2 + If($bSorted, 16, 0) + 2
   
   fTime = Timer
   

@@ -103,10 +103,10 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
     Case "."
       $bGambas = True
       $sText = ""
-      If String.Len(sClass) = 1 Then 
-        Dec Application.Busy
-        Return
-      Endif 
+      ' If String.Len(sClass) = 1 Then 
+      '   Dec Application.Busy
+      '   Return
+      ' Endif 
       $sClass = sClass
       $bStatic = bStatic
       '$bPrivate = bPrivate

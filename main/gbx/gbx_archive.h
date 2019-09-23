@@ -44,7 +44,7 @@ typedef
 		char *version;
 		char *domain;
 		TABLE *classes;
-		const char *path;
+		char *path;
 		void *current_component;
 		struct _CLASS **exported;
 		void *jit_library;

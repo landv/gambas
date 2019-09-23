@@ -394,44 +394,22 @@ GB_DESC CClipboardDesc[] =
 	GB_END_DECLARE
 };
 
-/** Drag frame ***********************************************************/
 
-//MyDragFrame::MyDragFrame() : QWidget(0, 0, Qt::WType_TopLevel | Qt::WStyle_Customize | Qt::WStyle_NoBorder | Qt::WStyle_StaysOnTop | Qt::WX11BypassWM)
-MyDragFrame::MyDragFrame(QWidget *parent) : 
-	QWidget(parent, Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint)
-{
-	setAutoFillBackground(true);
-	QPalette pal(palette());
-	pal.setColor(QPalette::Window, QColor(0, 0, 0, 128));
-	setPalette(pal);
-	//setWindowOpacity(0.5);
-}
-
-/*MyDragFrame::paintEvent(QPaintEvent *e)
-{
-	
-}*/
-
-static QWidget *_frame[4] = { 0 };
-static bool _frame_visible = false;
-static CWIDGET *_frame_control =0;
+//---------------------------------------------------------------------------
 
 static void hide_frame(CWIDGET *control)
 {
-	int i;
+	static GB_FUNCTION func;
+	static bool init = FALSE;
 	
-	if (!_frame_visible)
-		return;
-		
-	if (control && control != _frame_control)
-		return;
-		
-	for (i = 0; i < 4; i++)
-		delete _frame[i];
-		
-	_frame_visible = false;
-	GB.Unref(POINTER(&_frame_control));
-	_frame_control = NULL;
+	if (!init)
+	{
+		GB.GetFunction(&func, (void *)GB.FindClass("_Gui"), "_HideDNDFrame", NULL, NULL);
+		init = TRUE;
+	}
+	
+	GB.Push(1, GB_T_OBJECT, control);
+	GB.Call(&func, 1, FALSE);
 }
 
 void CDRAG_hide_frame(CWIDGET *control)
@@ -441,54 +419,17 @@ void CDRAG_hide_frame(CWIDGET *control)
 
 static void show_frame(CWIDGET *control, int x, int y, int w, int h)
 {
-	QWidget *wid;
-	//QPoint p = wid->mapToGlobal(QPoint(0, 0));
-	int i;
+	static GB_FUNCTION func;
+	static bool init = FALSE;
 	
-	if (GB.Is(control, CLASS_Container))
-		wid = QCONTAINER(control);
-	else
-		wid = QWIDGET(control);
-	
-	if (w <= 0 || h <= 0)
+	if (!init)
 	{
-		x = y = 0;
-		w = wid->width();
-		h = wid->height();
+		GB.GetFunction(&func, (void *)GB.FindClass("_Gui"), "_ShowDNDFrame", NULL, NULL);
+		init = TRUE;
 	}
 	
-	//x += p.x();
-	//y += p.y();
-	
-	if (control != _frame_control)
-	{
-		hide_frame(NULL);
-		_frame_control = control;
-		GB.Ref(control);
-	}
-	
-	if (!_frame_visible)
-	{
-		for (i = 0; i < 4; i++)
-			_frame[i] = new MyDragFrame(wid);
-	}
-	
-	//x -= 2;
-	//y -= 2;
-	//w += 4;
-	//h += 4;
-	if (w < 4 || h < 4)
-		return;
-	
-	_frame[0]->setGeometry(x, y, w, 2);
-	_frame[3]->setGeometry(x, y + h - 2, w, 2);
-	_frame[1]->setGeometry(x, y + 2, 2, h - 4);
-	_frame[2]->setGeometry(x + w - 2, y + 2, 2, h - 4);
-	
-	for (i = 0; i < 4; i++)
-		_frame[i]->show();
-	
-	_frame_visible = true;
+	GB.Push(5, GB_T_OBJECT, control, GB_T_INTEGER, x, GB_T_INTEGER, y, GB_T_INTEGER, w, GB_T_INTEGER, h);
+	GB.Call(&func, 5, FALSE);
 }
 
 
@@ -880,7 +821,10 @@ BEGIN_PROPERTY(Drag_X)
 
 	CHECK_VALID();
 
-	GB.ReturnInteger(CDRAG_info.x);
+	if (READ_PROPERTY)
+		GB.ReturnInteger(CDRAG_info.x);
+	else
+		CDRAG_info.x = VPROP(GB_INTEGER);
 
 END_PROPERTY
 
@@ -889,9 +833,13 @@ BEGIN_PROPERTY(Drag_Y)
 
 	CHECK_VALID();
 
-	GB.ReturnInteger(CDRAG_info.y);
+	if (READ_PROPERTY)
+		GB.ReturnInteger(CDRAG_info.y);
+	else
+		CDRAG_info.y = VPROP(GB_INTEGER);
 
 END_PROPERTY
+
 
 BEGIN_PROPERTY(Drag_Pending)
 
@@ -946,8 +894,8 @@ GB_DESC CDragDesc[] =
 	GB_STATIC_PROPERTY_READ("Type", "i", Drag_Type),
 	GB_STATIC_PROPERTY_READ("Action", "i", Drag_Action),
 	GB_STATIC_PROPERTY_READ("Source", "Control", Drag_Source),
-	GB_STATIC_PROPERTY_READ("X", "i", Drag_X),
-	GB_STATIC_PROPERTY_READ("Y", "i", Drag_Y),
+	GB_STATIC_PROPERTY("X", "i", Drag_X),
+	GB_STATIC_PROPERTY("Y", "i", Drag_Y),
 	GB_STATIC_PROPERTY_READ("Pending", "b", Drag_Pending),
 
 	GB_STATIC_METHOD("_call", "Control", Drag_call, "(Source)Control;(Data)v[(Format)s]"),

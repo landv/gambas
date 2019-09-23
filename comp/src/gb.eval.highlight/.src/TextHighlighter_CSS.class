@@ -80,6 +80,8 @@ Public Sub Run(sText As String)
   Dim sWait As String
   Dim iSaveState As Integer
   Dim iPos, iPos2 As Integer
+  Dim bEscape As Boolean
+  Dim N As Integer
 
   iState = TextHighlighter.State
   If iState = Highlight.Normal Then iState = Highlight.Keyword
@@ -91,6 +93,24 @@ Public Sub Run(sText As String)
 
     iNextState = iState
     sCar = String.Mid$(sText, iInd, 1)
+    
+    If bEscape Then
+      
+      If IsHexa(sCar) And If N < 6 Then
+        Inc N
+        Goto NEXT_STATE
+      Else 
+        bEscape = False
+        Goto NEXT_STATE
+      Endif
+      
+    Endif
+    
+    If sCar = "\\" Then
+      bEscape = True
+      N = 0
+      Goto NEXT_STATE
+    Endif
     
     Select Case iState
     
@@ -140,12 +160,12 @@ Public Sub Run(sText As String)
           iState = Highlight.Function
           iNextState = iState
           
-        Else If sCar = ":" Then
+        Else If InStr("():", sCar) Then
           
           iState = Highlight.Operator
           iNextState = iState
           
-        Else If sCar = " " Then 
+        Else If IsSpace(sCar) Then 
           
           iState = Highlight.Keyword
           iNextState = iState
@@ -172,7 +192,7 @@ Public Sub Run(sText As String)
           iState = Highlight.Datatype
           iNextState = iState
           
-        Else If sCar = ":" Then
+        Else If InStr(":()", sCar) Then
           
           iState = Highlight.Keyword
           iNextState = Highlight.Number

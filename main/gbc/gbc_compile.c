@@ -146,7 +146,7 @@ static void add_file_list(FILE *fi)
 	}
 }
 
-static void add_library_list_file(const char *path)
+static void add_library_list_file(const char *path, bool ref)
 {
 	ARCH *arch;
 	ARCH_FIND find;
@@ -186,7 +186,7 @@ static void add_library_list_file(const char *path)
 		ARCH_close(arch);
 	}
 	else
-		ERROR_warning("cannot find library: %s", name);
+		ERROR_warning((ref ? "cannot find reference: %s" : "cannot find library: %s"), name);
 
 	if (rpath)
 		STR_free(rpath);
@@ -483,7 +483,9 @@ void COMPILE_init(void)
 		if (strncmp(line, "Component=", 10) == 0)
 			add_component_list_file(&line[10]);
 		else if (strncmp(line, "Library=", 8) == 0)
-			add_library_list_file(&line[8]);
+			add_library_list_file(&line[8], FALSE);
+		else if (strncmp(line, "Reference=", 10) == 0)
+			add_library_list_file(&line[10], TRUE);
 	}
 
 	fclose(fp);
@@ -564,7 +566,10 @@ void COMPILE_begin(const char *file, bool trans, bool debug)
 	}
 
 	ALLOC(&JOB->pattern, sizeof(PATTERN) * (16 + size));
+	ALLOC(&JOB->pattern_pos, sizeof(int) * (16 + size));
 	JOB->pattern_count = 0;
+	
+	JOB->current = NULL;
 }
 
 
@@ -582,6 +587,7 @@ void COMPILE_end(void)
 	CLASS_delete(&JOB->class);
 	BUFFER_delete(&JOB->source);
 	FREE(&JOB->pattern);
+	FREE(&JOB->pattern_pos);
 
 	if (JOB->help)
 		ARRAY_delete(&JOB->help);
@@ -641,7 +647,7 @@ void COMPILE_print(int type, int line, const char *msg, ...)
 	int i;
   va_list args;
 	const char *arg[4];
-	bool col;
+	int col = -1;
 
 	if (!JOB->warnings && type == MSG_WARNING)
 		return;
@@ -650,11 +656,22 @@ void COMPILE_print(int type, int line, const char *msg, ...)
 
 	if (line < 0)
 	{
-		line = JOB->line;
-		col = JOB->column;
+		if (JOB->step == JOB_STEP_READ)
+		{
+			line = JOB->line;
+			col = READ_get_column();
+		}
+		else if (JOB->step == JOB_STEP_TREE)
+		{
+			col = TRANS_get_column(&line);
+		}
+		else if (JOB->step == JOB_STEP_CODE)
+		{
+			line = JOB->line;
+			if (JOB->current)
+				col = COMPILE_get_column(JOB->current);
+		}
 	}
-	else
-		col = FALSE;
 
 	if (JOB->name)
 	{
@@ -668,8 +685,8 @@ void COMPILE_print(int type, int line, const char *msg, ...)
 			}
 			else
 			{
-				if (col)
-					fprintf(stderr, "%s:%d:%d: ", name, line, READ_get_column());
+				if (col >= 0)
+					fprintf(stderr, "%s:%d:%d: ", name, line, col + 1);
 				else
 					fprintf(stderr, "%s:%d: ", name, line);
 			}

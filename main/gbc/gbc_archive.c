@@ -352,7 +352,7 @@ int ARCH_add_file(const char *path)
 	len = strlen(rel_path);
 	#endif
 	
-	TABLE_add_symbol(arch_table, rel_path, len, &ind);
+	ind = TABLE_add_symbol(arch_table, rel_path, len);
 	sym = (ARCH_SYMBOL *)TABLE_get_symbol(arch_table, ind);
 	sym->pos = get_pos();
 

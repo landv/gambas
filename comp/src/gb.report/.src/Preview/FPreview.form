@@ -146,7 +146,7 @@
           Enabled = False
           Border = Border.Etched
           { Label5 Label
-            MoveScaled(3,2,7,4)
+            MoveScaled(3,2,8,4)
             Text = ("Width")
           }
           { spWidth SpinBox
@@ -181,11 +181,11 @@
         { Panel7 HBox
           MoveScaled(0,1,36,4)
           { Label2 Label
-            MoveScaled(0,0,12,4)
+            MoveScaled(0,0,15,4)
             Text = ("Recto Verso")
           }
           { cmbDuplex ComboBox
-            MoveScaled(15,0,21,4)
+            MoveScaled(16,0,20,4)
             ReadOnly = True
             List = [("None"), ("Short side"), ("Long side")]
           }
@@ -215,7 +215,7 @@
           }
           { tgbCollateCopies ToggleButton
             MoveScaled(24,0,6,6)
-            ToolTip = ("Collate copie")
+            ToolTip = ("Collate copies")
             Picture = Picture["img/32/Collatecopie.png"]
           }
           { Panel15 Panel
@@ -231,7 +231,7 @@
       { Panel6 HBox
         MoveScaled(2,61,36,4)
         { Label1 Label
-          MoveScaled(0,0,15,4)
+          MoveScaled(0,0,17,4)
           Text = ("Range")
         }
         { TextBox1 ButtonBox
@@ -248,6 +248,7 @@
         { TextBox2 SpinBox
           MoveScaled(15,0,12,4)
           MinValue = 1
+          Value = 1
         }
       }
       { Panel5 Panel

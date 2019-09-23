@@ -112,6 +112,7 @@ Public Function GetSignature(Optional bBalise As Boolean) As String
 
   Dim sBold As String
   Dim sNoBold As String
+  Dim sName As String
 
   sSign = Signature
   If Left$(sSign) = "#" Then
@@ -149,7 +150,14 @@ Public Function GetSignature(Optional bBalise As Boolean) As String
         sRes = sRes & sBold & "," & sNoBold & " "
       Endif
 
-      sRes = sRes & Mid$(sSign, iInd + 1, iPos - iInd - 1) & " " & sBold & "AS" & sNoBold & " "
+      sName = Mid$(sSign, iInd + 1, iPos - iInd - 1)
+      If sName Begins "&" Then
+        sRes &= "BYREF " & Mid$(sName, 2)
+      Else
+        sRes &= sName
+      Endif
+
+      sRes &= " " & sBold & "AS" & sNoBold & " "
 
       iInd = iPos
       bName = True
@@ -314,6 +322,7 @@ Private Function GetSyntaxSignature() As String
   Dim iLen As Integer
   Dim hClass As CClassInfo
   Dim hSym As CSymbolInfo
+  Dim sName As String
 
   If Name = "_new" Then
     hClass = CComponent.Get(Component)[Class]
@@ -357,7 +366,12 @@ Private Function GetSyntaxSignature() As String
         sRes = sRes & Keyword(",") & " "
       Endif
 
-      sRes = sRes & "<u>" & Mid$(sSign, iInd + 1, iPos - iInd - 1) & "</u> " & Keyword("As") & " "
+      sName = Mid$(sSign, iInd + 1, iPos - iInd - 1)
+      If sName Begins "&" Then
+        sRes &= Keyword("ByRef") & " "
+        sName = Mid$(sName, 2)
+      Endif
+      sRes = sRes & "<u>" & sName & "</u> " & Keyword("As") & " "
 
       iInd = iPos
       bName = True

@@ -23,6 +23,7 @@ Property Text As String
 Property Background As Integer
 Property Alignment As Integer
 Property ShowZero As Boolean
+Property ReadOnly As Boolean
 
 Private Enum ARROW_NONE, ARROW_TOP, ARROW_BOTTOM
 
@@ -132,7 +133,7 @@ Public Sub View_Draw()
   Endif
   
   hRect = GetArrowRect(ARROW_TOP, True)
-  If $iValue = $iMax Then
+  If $iValue = $iMax Or If $hTextBox.ReadOnly Then
     iState = Style.Disabled
   Else If $iInsideArrow = ARROW_TOP
     iState = Style.Hovered
@@ -142,7 +143,7 @@ Public Sub View_Draw()
   Style.PaintArrow(hRect.X, hRect.Y, hRect.W, hRect.H, Align.Top, iState)
 
   hRect = GetArrowRect(ARROW_BOTTOM, True)
-  If $iValue = $iMin Then
+  If $iValue = $iMin Or If $hTextBox.ReadOnly Then
     iState = Style.Disabled
   Else If $iInsideArrow = ARROW_BOTTOM
     iState = Style.Hovered
@@ -157,6 +158,7 @@ Private Sub ChangeValue(bAdd As Boolean, Optional bFocus As Boolean)
 
   Dim iValue As Integer
   
+  If $hTextBox.ReadOnly Then Return
   iValue = $iValue
   SetValue($iValue + $iStep * If(bAdd, 1, -1), bFocus)
   If $iValue = iValue Then Raise Limit
@@ -167,6 +169,7 @@ End
 Public Sub View_MouseWheel()
   
   If Object.CanRaise(Me, "MouseWheel") Then Return
+  If $hTextBox.ReadOnly Then Return
   
   CheckValue
   ChangeValue(Mouse.Delta > 0, True)
@@ -179,6 +182,13 @@ Public Sub TextBox_MouseWheel()
   View_MouseWheel
   
 End
+
+Public Sub TextBox_Activate()
+  
+  CheckValue
+  
+End
+
 
 Private Sub SetValue(iValue As Integer, Optional bFocus As Boolean)
 
@@ -266,8 +276,11 @@ End
 Public Sub TextBox_LostFocus()
   
   'Debug
-  CheckValue
-  SetValue($iValue)
+  If Not $hTextBox.ReadOnly Then 
+    CheckValue
+    SetValue($iValue)
+  Endif
+  
   $hView.Refresh
   
 End
@@ -301,6 +314,8 @@ Public Sub View_MouseDown()
     Stop Event
     Return
   Endif
+  
+  If $hTextBox.ReadOnly Then Return
   
   If $iInsideArrow = ARROW_TOP Then
     $bTimerAdd = True
@@ -377,6 +392,8 @@ End
 Public Sub TextBox_KeyPress()
 
   If Key.Code = Key.BackSpace Or If Key.Code = Key.Delete Then Return
+  
+  If $hTextBox.ReadOnly Then Return
   
   If Key.Code = Key.Up Then
     If Not CheckValue() Then
@@ -516,5 +533,18 @@ Private Sub ShowZero_Write(Value As Boolean)
 
   $bShowZero = Value
   SetValue($iValue)
+
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $hTextBox.ReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $hTextBox.ReadOnly = Value
+  $hView.Refresh
 
 End

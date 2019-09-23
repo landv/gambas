@@ -1,0 +1,202 @@
+' Gambas class file
+
+Private Sub Reload()
+
+  'Dim I As Integer
+  
+  ' System.Profile = False
+  ' 'TextEditor1.Load("~/test.txt")
+  ' For I = 1 To 100
+  '   TextEditor1.Insert(String$(80, CStr(I) & " ") & "\n")
+  ' Next
+  ' System.Profile = True
+
+  'TextEditor1.Mode = "gambas"
+  'TextEditor1.Load("~/gambas/3.0/test/test-git/CHANGELOG", True)
+  TextEditor1.Load("~/gambas/git/master/comp/src/gb.form.editor/.src/TextEditor.class", True)
+  'TextEditor1.Load("~/Fichier texte")
+  'TextEditor1.Mode = "C"
+  'TextEditor1.Load("~/gambas/git/master/main/lib/jit/gb.jit/gambas.h")
+  'TextEditor1.Styles[Highlight.Custom].Background = Color.SetAlpha(Color.Red, 224)
+  'TextEditor1.Styles[Highlight.Custom + 1].Background = Color.SetAlpha(Color.Green, 224)
+  
+End
+
+Public Sub Form_Open()
+
+  Application.Animations = True
+  Application.Shadows = True
+
+  'TextEditor1.LineNumberOffset = 10000
+  
+  'Image.Debug = True
+  
+  Reload
+  'TextEditor1.Mode = "gambas"
+  'TextEditor1.Load("~/asap/omogen/git/master/gambas/guygle.cgi/.src/GuygleObject.class")
+  
+  'TextEditor1.Load("~/asap/guygle/trunk/gambas/guygle.cgi/.src/Site/Dialog.class")
+  'TextEditor1.Load("~/gambas/3.0/issues/754/test/.src/Main.module")
+  'TextEditor1.Load("~/gambas/3.0/trunk/comp/src/gb.form.editor/.src/TextEditor.class", True)
+  'TextEditor1.Load("/var/log/thttpd/debug.log.old")
+  'TextEditor1.Load("~/cosme/style.css")
+  'TextEditor1.Load("~/gambas/3.0/trunk/app/src/gambas3/.src/Project.module")
+  'TextEditor1.Load("~/gambas/3.0/trunk/gb.qt4/src/CWidget.cpp")
+  'TextEditor1.Load("~/gambas/3.0/trunk/main/share/gb_reserved_temp.h")
+  'TextEditor1.Goto(0, TextEditor1.Count - 1)
+
+  'TextEditor1.Highlight = "webpage"
+  'TextEditor1.Load("test.html")
+
+  ' For Each sLine In Split(File.Load("/proc/self/maps"), "\n")
+  '   If InStr(sLine, "[heap]") Then
+  '     aScan = Scan(sLine, "*-* *")
+  '     Print "------------ Heap size is " & Format(Val("&H" & aScan[1] & "&") - Val("&H" & aScan[0] & "&"), "#,##0") & " bytes."
+  '     Break
+  '   Endif
+  ' Next
+  
+  'TextEditor2.View = TextEditor1
+  
+  'TextEditor1.Text = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+
+  'TextEditor1.Text = "If sType = \"class\" And If Dir(File.Dir(sPath), File.BaseName(sPath) &/ \".*\").Count >= 2 Then Dec iCount\n'titi\n'tata"
+  
+  TextEditor1.SetFocus
+  
+End
+
+Public Sub TextEditor1_Margin()
+
+  TextEditor1[TextEditor1.Line].Breakpoint = Not TextEditor1[TextEditor1.Line].Breakpoint
+
+End
+
+Public Sub txtPrint_Activate()
+
+  'TextEditor1.Print(UnQuote(txtPrint.Text))
+  TextEditor1.HighlightString(txtPrint.Text, True)
+
+End
+
+Public Sub Button1_Click()
+
+  TextEditor1.Wrap = Not TextEditor1.Wrap
+  TextEditor1.SetFocus
+
+End
+
+Public Sub Button2_Click()
+
+  TextEditor1.PrintCache
+
+End
+
+Public Sub txtPrint_KeyPress()
+
+  Debug Key.Code;; Quote(Key.Text)
+
+End
+
+Public Sub Button3_Click()
+
+  TextEditor1.Clear
+
+End
+
+Public Sub Button4_Click()
+
+  Reload
+
+End
+
+' Public Sub Button5_Click()
+' 
+'   Dim sText As String
+'   Dim N As Integer
+'   Dim I As Integer
+'   Dim J As Integer
+'   
+'   TextEditor1.Mode = "javascript"
+'   
+'   sText = File.Load("~/asap/omogen/git/master/gambas/guygle.exec/.hidden/Uncompressed/planning.js")
+'   
+'   Do
+'     Inc N
+'     lblCount.Text = CStr(N)
+'     
+'     TextEditor1.Text = sText
+'     Wait
+'     
+'     For I = 1 To 100
+'       TextEditor1.Goto(Rand(0, 255), Rand(0, TextEditor1.Count - 1))
+'       Wait
+' 
+'       TextEditor1.Begin
+'       For J = 1 To 100
+'         If Rnd < 0.1 Then
+'           TextEditor1.Insert("\n")
+'         Else
+'           TextEditor1.Insert("Gambas")
+'         Endif
+'       Next
+'       TextEditor1.End
+'       Wait 0.1
+'       
+'       TextEditor1.Undo
+'       Wait
+'       
+'     Next
+'     
+'     TextEditor1.Text = MCompressFile.Javascript(sText)
+'     Wait
+'     
+'     For I = 1 To 100
+'       TextEditor1.Goto(Rand(0, 255), Rand(0, TextEditor1.Count - 1))
+'       Wait
+'     Next
+'     
+'   Loop
+'   
+' End
+
+' Public Sub TextEditor1_Highlight(Text As String)
+' 
+'   If Text Begins "<<<<<<" Then 
+'     TextHighlighter.Add(Highlight.Keyword, String.Len(Text))
+'     TextHighlighter.State = Highlight.Custom
+'   Else If Text Begins "======" Then
+'     TextHighlighter.Add(Highlight.Help, String.Len(Text))
+'     TextHighlighter.State = Highlight.Normal
+'     TextHighlighter.Tag = 1
+'   Else If Text Begins ">>>>>>" Then
+'     TextHighlighter.Add(Highlight.Keyword, String.Len(Text))
+'     TextHighlighter.State = Highlight.Custom + 1
+'     TextHighlighter.Tag = 2
+'   Else
+'     If TextHighlighter.Tag = 1 Then 
+'       TextHighlighter.State = Highlight.Custom + 1
+'       TextHighlighter.Tag = 0
+'     Else If TextHighlighter.Tag = 2 Then 
+'       TextHighlighter.State = Highlight.Normal
+'       TextHighlighter.Tag = 0
+'     Endif
+'     TextHighlighter.Add(TextHighlighter.State, String.Len(Text))
+'   Endif
+'   
+' End
+
+Public Sub Button6_Click()
+
+  TextEditor1[TextEditor1.Line].Bookmark = Not TextEditor1[TextEditor1.Line].Bookmark
+
+End
+
+Public Sub Button5_Click()
+
+  TextEditor1.Goto(0, TextEditor1.Count)
+  TextEditor1.Insert("\nPublic Sub Toto()\n  \n  \n  \nEnd")
+  TextEditor1.GotoCenter(-1, TextEditor1.Count - 3)
+  TextEditor1.SetFocus
+
+End

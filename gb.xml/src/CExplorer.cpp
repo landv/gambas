@@ -139,7 +139,7 @@ GB_DESC CExplorerDesc[] =
 {
     GB_DECLARE("XmlExplorer", sizeof(CExplorer)),
 
-    GB_METHOD("_new", NULL, CExplorer_new, "[(Document)XmlDocument]"),
+    GB_METHOD("_new", NULL, CExplorer_new, "[(Document)XmlDocument;]"),
     GB_METHOD("_free", NULL, CExplorer_free, ""),
     GB_METHOD("Load", NULL, CExplorer_load, "(Document)XmlDocument"),
     GB_PROPERTY("Document", "XMLDocument", CExplorer_document),

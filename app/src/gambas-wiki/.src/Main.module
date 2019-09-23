@@ -871,7 +871,7 @@ Public Function GetClassLinkFromName(sClass As String) As String
     sComp = CComponent.Classes[sClass].Component
   Endif
 
-  Return "<a href=\"" & Application.Root &/ LCase("comp" &/ sComp &/ sClass) & "\">" & Html(sClass) & "</a>"
+  Return "<a href=\"" & Html(Application.Root &/ LCase("comp" &/ sComp &/ sClass) & LinkSuffix) & "\">" & Html(sClass) & "</a>"
 
 Catch
 
@@ -885,7 +885,7 @@ Public Sub GetStat() As String[]
   Dim nSym As Integer
   Dim sFile As String
   Dim aFile As String[]
-  Dim iCpt As Integer
+  Dim iCpt, iComment As Integer
   Dim sLine As String
   Dim aIgnore As String[]
   Dim sDir As String
@@ -902,11 +902,13 @@ Public Sub GetStat() As String[]
     If aIgnore.Find(File.BaseName(sFile)) >= 0 Then Continue
     aFile = Split(File.Load(sDir &/ sFile), "\n", "", True)
     iCpt = 0
+    iComment = 0
     For Each sLine In aFile
       If Left(sLine) = "#" Then Inc iCpt
+      If Left(sLine) = "'" Then Inc iComment
     Next
     nClass += iCpt
-    nSym += (aFile.Count - iCpt * 3) / 4
+    nSym += ((aFile.Count - iComment) - iCpt * 3) / 4
   Next
 
   Return [Subst(("There are &1 classes and &2 symbols in all Gambas components."), nClass, nSym)]

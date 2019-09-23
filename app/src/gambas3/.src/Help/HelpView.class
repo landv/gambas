@@ -10,7 +10,7 @@ Inherits WebView
 Property NoHeader As Boolean
 
 Private $hObs As Observer
-Private $hObsForm As Observer
+Private $hWatcher As Watcher
 Private $hSpinner As Spinner
 Private $sLastUrl As String
 Private $bNoHeader As Boolean
@@ -18,12 +18,12 @@ Private $bNoHeader As Boolean
 Public Sub _new()
 
   $hObs = New Observer(Me) As "WebView"
-  $hObsForm = New Observer(Me.Parent) As "Container"
+  $hWatcher = New Watcher(Me) As "WebView"
   
   $hSpinner = New Spinner(Me.Window)
   $hSpinner.Hide
   $hSpinner.Ignore = True
-  $hSpinner.ResizeScaled(4, 4)
+  $hSpinner.ResizeScaled(8, 8)
   
 End
 
@@ -72,7 +72,7 @@ Public Sub WebView_Error()
   
 End
 
-Public Sub Container_Arrange()
+Public Sub WebView_Move()
   
   Dim hWin As Window
   
@@ -82,6 +82,12 @@ Public Sub Container_Arrange()
     hWin = $hSpinner.Window
     $hSpinner.Move(.ScreenX - hWin.ScreenX - hWin.ClientX + (.W - $hSpinner.W) \ 2, .ScreenY - hWin.ScreenY - hWin.ClientY + (.H - $hSpinner.H) \ 2)
   End With
+  
+End
+
+Public Sub WebView_Resize()
+
+  WebView_Move
   
 End
 

@@ -51,6 +51,7 @@ GB_ARRAY DB_StringArrayToGambasArray(char **array);
 int DB_FindStringArray(char **array, const char *elt);
 void DB_SetDebug(int debug);
 int DB_IsDebug(void);
+void DB_Debug(const char *prefix, const char *msg, ...);
 void DB_TryAnother(const char *);
 
 void q_init(void);

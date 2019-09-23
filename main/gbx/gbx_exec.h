@@ -68,7 +68,7 @@ typedef
 		void (*watch)();
 		void (*post)();
 		void (*quit)();
-		void (*error)();
+		bool (*error)();
 		double (*timeout)();
 		}
 	EXEC_HOOK;
@@ -103,6 +103,7 @@ extern const char *EXEC_fifo_name;
 extern bool EXEC_keep_library;
 extern bool EXEC_string_add;
 extern bool EXEC_break_on_error;
+extern bool EXEC_in_event_loop;
 
 extern EXEC_HOOK EXEC_Hook;
 

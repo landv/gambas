@@ -27,8 +27,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gb.form 3.12.90\n"
-"POT-Creation-Date: 2019-02-07 23:40 UTC\n"
-"PO-Revision-Date: 2019-02-07 23:38 UTC\n"
+"POT-Creation-Date: 2019-09-12 00:34 UTC\n"
+"PO-Revision-Date: 2019-04-22 01:19 UTC\n"
 "Last-Translator: benoit <benoit@benoit-kubuntu>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -39,15 +39,15 @@ msgstr ""
 msgid "More controls for graphical components"
 msgstr "Contrôles graphiques supplémentaires"
 
-#: CBookmarkList.class:46
+#: CBookmarkList.class:47
 msgid "Home"
 msgstr "Dossier personnel"
 
-#: CBookmarkList.class:48
+#: CBookmarkList.class:49
 msgid "Desktop"
 msgstr "Bureau"
 
-#: CBookmarkList.class:50
+#: CBookmarkList.class:51
 msgid "System"
 msgstr "Système"
 
@@ -99,7 +99,7 @@ msgstr "Mois précédent"
 msgid "Next month"
 msgstr "Mois suivant"
 
-#: FCalendar.form:142
+#: FCalendar.form:143
 msgid "Apply"
 msgstr "Appliquer"
 
@@ -328,12 +328,12 @@ msgstr ""
 msgid "Vertical"
 msgstr ""
 
-#: FDocumentView.form:96 FFontChooser.form:36 FMain.form:68
+#: FDocumentView.form:96 FFontChooser.form:36 FMain.form:69
 msgid "ComboBox1"
 msgstr "-"
 
-#: FDocumentView.form:101 FMain.form:84 FTestBalloon.form:18
-#: FTestCompletion.form:23 FTestMessageView.form:32 FTestWizard.form:23
+#: FDocumentView.form:101 FMain.form:85 FTestBalloon.form:18
+#: FTestCompletion.form:23 FTestMessageView.form:26 FTestWizard.form:22
 msgid "Button1"
 msgstr ""
 
@@ -345,7 +345,7 @@ msgstr ""
 msgid "Autocenter"
 msgstr ""
 
-#: FEditBookmark.class:23 FileView.class:136
+#: FEditBookmark.class:23 FileView.class:138
 msgid "Name"
 msgstr "Nom"
 
@@ -369,7 +369,7 @@ msgstr "Haut"
 msgid "Down"
 msgstr "Bas"
 
-#: FEditBookmark.form:46
+#: FEditBookmark.form:46 FListEditor.class:255
 msgid "Remove"
 msgstr "Supprimer"
 
@@ -437,11 +437,11 @@ msgstr "Lien"
 msgid "Directory"
 msgstr "Répertoire"
 
-#: FFileProperties.form:120 FileView.class:138
+#: FFileProperties.form:120 FileView.class:140
 msgid "Size"
 msgstr "Taille"
 
-#: FFileProperties.form:132 FileView.class:140
+#: FFileProperties.form:132 FileView.class:142
 msgid "Last modified"
 msgstr "Modifié le"
 
@@ -513,57 +513,61 @@ msgstr ""
 msgid "12:34"
 msgstr ""
 
+#: FListEditor.class:254
+msgid "Insert"
+msgstr "Insérer"
+
 #: FListEditor.form:45
 msgid "Add item"
 msgstr "Ajouter un élément"
 
-#: FListEditor.form:51
+#: FListEditor.form:52
 msgid "Remove item"
 msgstr "Supprimer l'élément"
 
-#: FListEditor.form:57
+#: FListEditor.form:59
 msgid "Move item up"
 msgstr "Déplacer l'élément vers le haut"
 
-#: FListEditor.form:63
+#: FListEditor.form:66
 msgid "Move item down"
 msgstr "Déplacer l'élément vers le bas"
 
-#: FMain.form:28 FTestFileView.form:31 FTestMenuButton.form:35 FWiki.form:20
+#: FMain.form:29 FTestFileView.form:31 FTestMenuButton.form:39 FWiki.form:20
 msgid "Menu2"
 msgstr ""
 
-#: FMain.form:32 FTestFileView.form:36 FTestMenuButton.form:39 FWiki.form:24
+#: FMain.form:33 FTestFileView.form:36 FTestMenuButton.form:43 FWiki.form:24
 msgid "Menu3"
 msgstr ""
 
-#: FMain.form:67
+#: FMain.form:68
 msgid "Élément 1"
 msgstr ""
 
-#: FMain.form:67
+#: FMain.form:68
 msgid "Élément 2"
 msgstr ""
 
-#: FMain.form:67
+#: FMain.form:68
 msgid "Élément 3"
 msgstr ""
 
-#: FMain.form:67
+#: FMain.form:68
 msgid "Élément 4"
 msgstr ""
 
-#: FMain.form:73
+#: FMain.form:74
 #, fuzzy
 msgid "ComboBox2"
 msgstr "-"
 
-#: FMain.form:79 FSwitchButton.form:35 FTestBalloon.form:12
+#: FMain.form:80 FSwitchButton.form:35 FTestBalloon.form:12
 #: FTestFileView.form:86
 msgid "TextBox1"
 msgstr ""
 
-#: FMain.form:89 Form2.form:122
+#: FMain.form:90 Form2.form:121
 msgid "MenuButton1"
 msgstr ""
 
@@ -583,24 +587,12 @@ msgstr "Transparent"
 msgid "Test"
 msgstr ""
 
-#: FSwitchButton.form:52 FTestFileView.form:81
+#: FSwitchButton.form:51 FTestFileView.form:81
 msgid "Label1"
 msgstr ""
 
-#: FSwitchButton.form:59
+#: FSwitchButton.form:58
 msgid "Label2"
-msgstr ""
-
-#: FTabPanel.form:34
-msgid "Text"
-msgstr ""
-
-#: FTabPanel.form:47
-msgid "Border"
-msgstr ""
-
-#: FTabPanel.form:52
-msgid "Orientation"
 msgstr ""
 
 #: FTestBalloon.form:17
@@ -619,19 +611,23 @@ msgstr ""
 msgid "Enable"
 msgstr ""
 
-#: FTestFileView.form:28 FTestMenuButton.form:31
+#: FTestExpander.form:16
+msgid "Expander"
+msgstr ""
+
+#: FTestFileView.form:28 FTestMenuButton.form:35
 msgid "Menu1"
 msgstr ""
 
-#: FTestFileView.form:41 FTestMenuButton.form:65
+#: FTestFileView.form:41 FTestMenuButton.form:69
 msgid "Menu7"
 msgstr ""
 
-#: FTestFileView.form:49 FTestMenuButton.form:48 FWiki.form:28
+#: FTestFileView.form:49 FTestMenuButton.form:52 FWiki.form:28
 msgid "Menu4"
 msgstr ""
 
-#: FTestFileView.form:54 FTestMenuButton.form:52 FWiki.form:32
+#: FTestFileView.form:54 FTestMenuButton.form:56 FWiki.form:32
 msgid "Menu5"
 msgstr ""
 
@@ -639,36 +635,52 @@ msgstr ""
 msgid "Balloon"
 msgstr ""
 
-#: FTestMenuButton.form:27
+#: FTestMenuButton.form:31
 msgid "Project"
 msgstr ""
 
-#: FTestMenuButton.form:44
+#: FTestMenuButton.form:48
 msgid "View"
 msgstr ""
 
-#: FTestMenuButton.form:56
+#: FTestMenuButton.form:60
 msgid "Menu6"
 msgstr ""
 
-#: FTestMenuButton.form:61
+#: FTestMenuButton.form:65
 msgid "Tools"
 msgstr ""
 
-#: FTestMenuButton.form:69
+#: FTestMenuButton.form:73
 msgid "Menu8"
 msgstr ""
 
-#: FTestMenuButton.form:73
+#: FTestMenuButton.form:77
 msgid "Menu9"
 msgstr ""
 
-#: FTestMenuButton.form:76
+#: FTestMenuButton.form:80
 msgid "Menu10"
 msgstr ""
 
-#: FTestMenuButton.form:80
+#: FTestMenuButton.form:84
 msgid "Menu11"
+msgstr ""
+
+#: FTestMenuButton.form:124
+msgid "Menu button"
+msgstr ""
+
+#: FTestTabPanel.form:38
+msgid "Text"
+msgstr ""
+
+#: FTestTabPanel.form:51
+msgid "Border"
+msgstr ""
+
+#: FTestTabPanel.form:56
+msgid "Orientation"
 msgstr ""
 
 #: FTestToolPanel.form:13
@@ -687,23 +699,23 @@ msgstr ""
 msgid "Hello world!"
 msgstr ""
 
-#: FTestWizard.form:19
+#: FTestWizard.form:18
 msgid "Étape n°1"
 msgstr ""
 
-#: FTestWizard.form:26
+#: FTestWizard.form:25
 msgid "Étape n°2"
 msgstr ""
 
-#: FTestWizard.form:30
+#: FTestWizard.form:29
 msgid "LCDLabel1"
 msgstr ""
 
-#: FTestWizard.form:33
+#: FTestWizard.form:32
 msgid "Étape n°3"
 msgstr ""
 
-#: FTestWizard.form:35
+#: FTestWizard.form:34
 msgid "Étape n°4"
 msgstr ""
 
@@ -719,11 +731,11 @@ msgstr "Suivant"
 msgid "Previous"
 msgstr "Précédent"
 
-#: FileView.class:1073
+#: FileView.class:1081
 msgid "Cannot rename file."
 msgstr "Impossible de renommer le fichier."
 
-#: Form2.form:127
+#: Form2.form:126
 msgid "ButtonBox2"
 msgstr ""
 

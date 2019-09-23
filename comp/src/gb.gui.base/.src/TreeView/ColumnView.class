@@ -3,7 +3,7 @@
 Export
 Inherits _TreeView
 
-Public Const _Properties As String = "*,Mode{Select.*}=Single,Sorted,Editable,Header=True,Resizable=False,AutoResize=True,Border=True,ScrollBar{Scroll.*}=Both"
+Public Const _Properties As String = "*,Mode{Select.*}=Single,Sorted,Editable,Header=True,Resizable=False,AutoResize=True,Border=True,ScrollBar{Scroll.*}=Both,ShowLines"
 Public Const _Group As String = "View"
 Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "16,16"
@@ -15,6 +15,7 @@ Property Resizable As Boolean
 Property AutoResize As Boolean
 Property Read Columns As _ColumnView_Columns
 Property Settings As String
+Property ShowLines As Boolean
 
 Private $hView As GridView
 Private $hColumns As _ColumnView_Columns
@@ -215,5 +216,17 @@ End
 Private Sub Layout_Write(Value As Variant)
 
   Super._SetLayout(Value)
+
+End
+
+Private Function ShowLines_Read() As Boolean
+
+  Return Super._GetShowLines()
+
+End
+
+Private Sub ShowLines_Write(Value As Boolean)
+
+  Super._SetShowLines(Value)
 
 End

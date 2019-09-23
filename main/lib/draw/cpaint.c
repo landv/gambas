@@ -170,6 +170,7 @@ bool PAINT_begin(void *device)
 	paint->has_path = FALSE;
 	paint->tag = NULL;
 	paint->area.x = paint->area.y = 0;
+	paint->fontScale = 1;
 	
 	paint->previous = _current;
 	_current = paint;
@@ -189,6 +190,7 @@ bool PAINT_begin(void *device)
 		paint->brush = other->brush;
 		if (paint->brush)
 			GB.Ref(paint->brush);
+		paint->fontScale = other->fontScale;
 		PAINT->Save(THIS);
 	}
 	else
@@ -1072,6 +1074,19 @@ END_METHOD
 
 IMPLEMENT_PROPERTY(Paint_Font, Font, GB_FONT, GB_OBJECT, GB.ReturnObject)
 
+BEGIN_PROPERTY(Paint_FontScale)
+
+	if (READ_PROPERTY)
+		GB.ReturnFloat(THIS->fontScale);
+	else
+	{
+		THIS->fontScale = VPROP(GB_FLOAT);
+		if (THIS->fontScale == 0)
+			THIS->fontScale = 1;
+	}
+
+END_PROPERTY
+
 
 BEGIN_METHOD(Paint_Text, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_INTEGER align)
 
@@ -1335,11 +1350,13 @@ END_METHOD
 BEGIN_METHOD(Paint_Scale, GB_FLOAT sx; GB_FLOAT sy)
 
 	GB_TRANSFORM transform;
+	double sx = VARG(sx);
+	double sy = VARGOPT(sy, sx);
 
 	CHECK_DEVICE();
 	MPAINT->Create(&transform);
 	PAINT->Matrix(THIS, FALSE, transform);
-	MPAINT->Scale(transform, (float)VARG(sx), (float)VARG(sy));
+	MPAINT->Scale(transform, (float)sx, (float)sy);
 	PAINT->Matrix(THIS, TRUE, transform);
 	MPAINT->Delete(&transform);
 
@@ -1767,6 +1784,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("MoveTo", NULL, Paint_MoveTo, "(X)f(Y)f"),
 	GB_STATIC_METHOD("RelMoveTo", NULL, Paint_RelMoveTo, "(X)f(Y)f"),
 	GB_STATIC_PROPERTY("Font", "Font", Paint_Font),
+	GB_STATIC_PROPERTY("FontScale", "f", Paint_FontScale),
 	GB_STATIC_METHOD("Text", NULL, Paint_Text, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i]"),
 	GB_STATIC_METHOD("TextSize", "RectF", Paint_TextSize, "(Text)s"),
 	GB_STATIC_METHOD("RichText", NULL, Paint_RichText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i]"),
@@ -1785,7 +1803,7 @@ GB_DESC PaintDesc[] =
 
 	GB_STATIC_METHOD("Reset", NULL, Paint_Reset, NULL),
 	GB_STATIC_METHOD("Translate", NULL, Paint_Translate, "(TX)f(TY)f"),
-	GB_STATIC_METHOD("Scale", NULL, Paint_Scale, "(SX)f(SY)f"),
+	GB_STATIC_METHOD("Scale", NULL, Paint_Scale, "(SX)f[(SY)f]"),
 	GB_STATIC_METHOD("Rotate", NULL, Paint_Rotate, "(Angle)f"),
 	
 	//GB_STATIC_METHOD("Clear", NULL, Paint_Clear, NULL),
@@ -1793,7 +1811,6 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("DrawImage", NULL, Paint_DrawImage, "(Image)Image;(X)f(Y)f[(Width)f(Height)f(Opacity)f(Source)Rect;]"),
 	GB_STATIC_METHOD("DrawPicture", NULL, Paint_DrawPicture, "(Picture)Picture;(X)f(Y)f[(Width)f(Height)f(Source)Rect;]"),
 	GB_STATIC_METHOD("ZoomImage", NULL, Paint_ZoomImage, "(Image)Image;(Zoom)i(X)i(Y)i[(Grid)i(Source)Rect;]"),
-
 
 	GB_END_DECLARE
 };

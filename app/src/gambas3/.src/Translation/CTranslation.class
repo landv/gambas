@@ -82,6 +82,7 @@ Private Sub LoadTranslation(sLang As String)
   Dim iPos As Integer
   Dim cCache As New Collection
   Dim cKey As New Collection
+  Dim bIgnore As Boolean
   
   sPath = Language.GetPath(sLang, "po")
   If Not Exist(sPath) Then Return 
@@ -106,32 +107,154 @@ Private Sub LoadTranslation(sLang As String)
 
       Line Input #hFile, sLine
 
-      If Left$(sLine) = "#" Then
+      If sLine Begins "#" Then
 
-        If Left$(sLine, 2) = "#:" Then
+        If sLine Begins "#:" Then
           sMsgComment = Trim(sMsgComment & " " & Mid$(sLine, 3))
           Continue
-        Endif
-
-        If Left$(sLine, 2) = "#," Then
+        Else If sLine Begins "#," Then
           If InStr(sLine, "fuzzy") Then
             bFuzzy = True
             Continue
           Endif
+        Else If sLine = "# gb-ignore" Then
+          bIgnore = True
         Endif
+        
+      Else
 
+        If Left$(sLine, 6) = "msgid " Then
+          sMsgId = Mid$(sLine, 8, -1)
+          iMode = MODE_MSGID
+          Continue
+        Endif
+  
+        If Left$(sLine, 7) = "msgstr " Then
+          sMsgStr = Mid$(sLine, 9, -1)
+          iMode = MODE_MSGSTR
+          Continue
+        Endif
+  
+        If Left$(sLine) = Chr$(34) Then
+          If iMode = MODE_MSGID Then
+            sMsgId = sMsgId & Mid$(sLine, 2, -1)
+          Else If iMode = MODE_MSGSTR Then
+            sMsgStr = sMsgStr & Mid$(sLine, 2, -1)
+          Endif
+          Continue
+        Endif
+        
       Endif
 
-      If Left$(sLine, 6) = "msgid " Then
-        sMsgId = Mid$(sLine, 8, -1)
-        iMode = MODE_MSGID
-        Continue
+    Endif
+
+    If Trim(sMsgId) Then
+
+      If sMsgComment Then
+        sMsgComment = CheckTranslate(sMsgComment, cCache)
+        If Not sMsgComment Then 
+          sMsgId = ""
+          sMsgComment = ""
+          sMsgStr = ""
+          bFuzzy = False
+          bIgnore = False
+          Continue
+        Endif
       Endif
 
-      If Left$(sLine, 7) = "msgstr " Then
-        sMsgStr = Mid$(sLine, 9, -1)
-        iMode = MODE_MSGSTR
-        Continue
+      'Inc iIndex
+      If Not cKey.Exist(sMsgId) Then
+        Keys.Add(sMsgId)
+        cKey[sMsgId] = True
+      Else
+        Error "gambas3: warning: duplicate translation: "; sMsgId
+      Endif
+
+      If sMsgStr = "-\\n" Then sMsgStr = "-"
+      
+      If bIgnore Then
+        sMsgStr = "-"
+        bIgnore = False
+      Endif
+
+      If bFuzzy Then
+        bFuzzy = False
+      Else
+        Translations[sMsgId] = sMsgStr
+      Endif
+      Comments[sMsgId] = sMsgComment
+      sMsgId = ""
+      sMsgComment = ""
+      sMsgStr = ""
+
+    Endif
+
+    If Eof(hFile) Then Break
+
+  Loop
+  
+  Close #hFile
+  
+End
+
+Static Public Sub FindTranslation(sPath As String, sFind As String) As String
+  
+  Dim hFile As File
+  Dim sLine As String
+  Dim sMsgId As String
+  Dim sMsgStr As String
+  Dim sMsgComment As String
+  Dim iMode As Integer
+  Dim bFuzzy As Boolean
+  Dim bIgnore As Boolean
+  
+  If Not Exist(sPath) Then Return 
+  
+  sFind = Replace(sFind, "\n", "\\n")
+  
+  hFile = Open sPath 
+
+  While Not Eof(hFile)
+    Line Input #hFile, sLine
+    If Not sLine Then Break
+    'Header &= sLine & "\n"
+  Wend
+
+  ' iPos = InStr(Header, "#, fuzzy")
+  ' If iPos = 0 Then iPos = InStr(Header, "#,fuzzy")
+  ' If iPos Then Header = Left(Header, iPos - 1)
+  ' 
+  ' Header &= SubstHeader(File.Load("po-header.txt"), sLang)
+
+  Do
+
+    If Not Eof(hFile) Then
+
+      Line Input #hFile, sLine
+
+      If sLine Begins "#" Then
+        If sLine Begins "#:" Then
+          Continue
+        Else If sLine Begins "#," Then
+          If InStr(sLine, "fuzzy") Then
+            bFuzzy = True
+            Continue
+          Endif
+        Else If sLine = "# gb-ignore" Then
+          bIgnore = True
+        Endif
+      Else
+        If Left$(sLine, 6) = "msgid " Then
+          sMsgId = Mid$(sLine, 8, -1)
+          iMode = MODE_MSGID
+          Continue
+        Endif
+  
+        If Left$(sLine, 7) = "msgstr " Then
+          sMsgStr = Mid$(sLine, 9, -1)
+          iMode = MODE_MSGSTR
+          Continue
+        Endif
       Endif
 
       If Left$(sLine) = Chr$(34) Then
@@ -147,37 +270,23 @@ Private Sub LoadTranslation(sLang As String)
 
     If Trim(sMsgId) Then
 
-      If sMsgComment Then
-        sMsgComment = CheckTranslate(sMsgComment, cCache)
-        If Not sMsgComment Then 
-          sMsgId = ""
-          sMsgComment = ""
-          sMsgStr = ""
-          bFuzzy = False
-          Continue
-        Endif
-      Endif
-
-      'Inc iIndex
-      If Not cKey.Exist(sMsgId) Then
-        Keys.Add(sMsgId)
-        cKey[sMsgId] = True
-      Else
-        Error "gambas3: warning: duplicate translation: "; sMsgId
-      Endif
-
       If sMsgStr = "-\\n" Then sMsgStr = "-"
       
-      'sMsgId = UnQuoteTranslation(sMsgId)
-      'sMsgStr = UnQuoteTranslation(sMsgStr)
+      If bIgnore Then
+        sMsgStr = "-"
+        bIgnore = False
+      Endif
 
-      'cvwTranslate.Add(iIndex, sMsgId)
       If bFuzzy Then
         bFuzzy = False
       Else
-        Translations[sMsgId] = sMsgStr
+        If sMsgId = sFind Then 
+          If sMsgStr = "-" Then sMsgStr = sMsgId
+          Close #hFile
+          Return Replace(sMsgStr, "\\n", "\n")
+        Endif
       Endif
-      Comments[sMsgId] = sMsgComment
+
       sMsgId = ""
       sMsgComment = ""
       sMsgStr = ""

@@ -481,8 +481,7 @@ static void check_connection(MYSQL *conn)
 
 	if (mysql_thread_id(conn) != thread_id)
 	{
-		if (DB.IsDebug())
-			fprintf(stderr, "gb.db.mysql: connection lost\n");
+		DB.Debug("gb.db.mysql", "connection lost\n");
 		// Connection has been reestablished, set utf8 again
 		mysql_query(conn, "set names 'utf8'");
 	}
@@ -512,8 +511,7 @@ static int do_query(DB_DATABASE *db, const char *error, MYSQL_RES **pres, const 
 	else
 		query = qtemp;
 
-	if (DB.IsDebug())
-		fprintf(stderr, "gb.db.mysql: %p: %s\n", conn, query);
+	DB.Debug("gb.db.mysql", "%p: %s", conn, query);
 
 	check_connection(conn);
 

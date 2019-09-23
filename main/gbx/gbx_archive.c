@@ -67,7 +67,7 @@ ARCHIVE *ARCHIVE_create(const char *name, const char *path)
 	ALLOC_ZERO(&arch, sizeof(ARCHIVE));
 
 	arch->name = name;
-	arch->path = path;
+	arch->path = STRING_new_zero(path);
 
 	arch->domain = STRING_new_zero(name ? name : "gb");
 
@@ -255,42 +255,49 @@ void ARCHIVE_load(ARCHIVE *arch, bool load_exp)
 
 	if (arch->path)
 	{
-		if (*arch->path == ':')
+		if (*arch->path == '/' && FILE_exist(arch->path))
 		{
-			if (!_local_path)
-			{
-				env = getenv("XDG_DATA_HOME");
-				if (env && *env)
-					_local_path = STRING_new_zero(FILE_cat(env, "gambas3/lib", NULL));
-				else
-					_local_path = STRING_new_zero(FILE_cat(FILE_get_home(), ".local/share/gambas3/lib", NULL));
-			}
-
-			name = &arch->path[1];
+			path = (char *)arch->path;
 		}
 		else
-			name = FILE_get_name(arch->path);
-
-		// For backward-compatibility, library name is searched in the current folder too, without the vendor.
-
-		if (!(path = exist_library(PROJECT_path, FILE_get_name(name))))
 		{
-			if (!_local_path || !(path = exist_library(_local_path, name)))
+			if (*arch->path == ':')
 			{
-				if (!ARCHIVE_path || !(path = exist_library(ARCHIVE_path, name)))
+				if (!_local_path)
 				{
-					if (!(path = exist_library(COMPONENT_path, name)))
+					env = getenv("XDG_DATA_HOME");
+					if (env && *env)
+						_local_path = STRING_new_zero(FILE_cat(env, "gambas3/lib", NULL));
+					else
+						_local_path = STRING_new_zero(FILE_cat(FILE_get_home(), ".local/share/gambas3/lib", NULL));
+				}
+
+				name = &arch->path[1];
+			}
+			else
+				name = FILE_get_name(arch->path);
+
+			// For backward-compatibility, library name is searched in the current folder too, without the vendor.
+
+			if (!(path = exist_library(PROJECT_path, FILE_get_name(name))))
+			{
+				if (!_local_path || !(path = exist_library(_local_path, name)))
+				{
+					if (!ARCHIVE_path || !(path = exist_library(ARCHIVE_path, name)))
 					{
-						dir = STRING_new_zero(FILE_cat(PROJECT_exec_path, "bin", NULL));
-						path = exist_library(dir, name);
-						STRING_free(&dir);
+						if (!(path = exist_library(COMPONENT_path, name)))
+						{
+							dir = STRING_new_zero(FILE_cat(PROJECT_exec_path, "bin", NULL));
+							path = exist_library(dir, name);
+							STRING_free(&dir);
+						}
 					}
 				}
 			}
-		}
 
-		if (!path || !FILE_exist(path))
-			THROW(E_LIBRARY, arch->name, "cannot find library");
+			if (!path || !FILE_exist(path))
+				THROW(E_LIBRARY, arch->name, "cannot find library");
+		}
 	}
 	else
 	{
@@ -333,6 +340,7 @@ void ARCHIVE_delete(ARCHIVE *arch)
 	TABLE_delete(&arch->classes);
 	STRING_free(&arch->domain);
 	STRING_free(&arch->version);
+	STRING_free(&arch->path);
 
 	FREE(&arch);
 }
@@ -486,6 +494,9 @@ bool ARCHIVE_get(ARCHIVE *arch, const char **ppath, ARCHIVE_FIND *find)
 		find->arch = NULL;
 		return FALSE;
 	}
+	
+	if (!arch->arch) // archive has been created but loading has failed
+		return TRUE;
 
 	if (ARCH_find(arch->arch, *ppath, 0, &f))
 		return TRUE;

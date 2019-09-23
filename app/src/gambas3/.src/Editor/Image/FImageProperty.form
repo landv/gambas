@@ -217,9 +217,12 @@
         ToolTip = ("Clear")
         Picture = Picture["icon:/small/erase"]
       }
+      { Separator9 Separator
+        MoveScaled(12,0,1,4)
+      }
       { btnColorize ToolButton btnAction
         Name = "btnColorize"
-        MoveScaled(12,0,4,4)
+        MoveScaled(13,0,4,4)
         Tag = "colorize"
         ToolTip = ("Colorize")
         Picture = Picture["icon:/small/color"]

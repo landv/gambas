@@ -3,12 +3,11 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border,Arrangement{Arrange.Row;Column;Vertical;Horizontal;Fill}=Row,Padding=10,Spacing=10,Column,AutoCenter,ShowShadow"
+Public Const _Properties As String = "*,Border,Arrangement{Arrange.Row;Column;Vertical;Horizontal;Fill}=Row,Padding=10,Spacing=10,Column,AutoCenter,ShowShadow,ShowPage"
 Public Const _Group As String = "View"
 Public Const _Similar As String = "GridView"
 
-Public _ShowPageNumber As Boolean
-Public Enum Portrait, Paysage
+'Public Enum Portrait, Paysage
 'Public Enum None, PagesWidth, PageHeight
 Property DocWidth, PageWidth As Integer
 Property DocHeight, PageHeight As Integer
@@ -21,11 +20,13 @@ Property Arrangement As Integer
 Property Padding As Integer 
 Property Spacing As Integer
 Property ShowShadow As Boolean
+Property ShowPage As Boolean
 Property Read Item As _DocumentItem
 Property Read FirstVisibleDocument As Integer
 Property Read LastVisibleDocument As Integer
 Property AutoCenter As Boolean
 Property Border As Boolean
+Property Desaturate As Boolean
 
 Private $bAutoCenter As Boolean
 Private $iColumn As Integer 
@@ -72,17 +73,19 @@ Private $iSX As Integer
 Private $iSY As Integer
 Private $MX As Integer
 Private $MY As Integer
+Private $bShowPage As Boolean
 Private $hObs As Observer
 
 Event Layout(Page As Integer)
 Event Draw(Page As Integer, Width As Integer, Height As Integer)
 Event Finished
 Event Zoom
+Private $bDesaturate As Boolean
 
 Public Sub _new()
   
   $hView = New ScrollArea(Me) As "View"
-  $hView.Background = Color.DarkGray
+  $hView.Background = Color.Merge(Color.TextBackground, Color.TextForeground)
   '$tmrLoad.Delay = 100
   Me.Proxy = $hView
   $hDocItem = New _DocumentItem As "Doc"
@@ -114,12 +117,14 @@ Public Sub tmrLoad_Timer()
   'Raise Layout(iPage)
   
   hImg = New Image(iDocWidth * $fZoom, iDocHeight * $fZoom, Color.White)
-  Draw.Begin(hImg)
+  Paint.Begin(hImg)
   'Paint.Scale($fZoom, $fZoom)
   Raise Draw(iPage, iDocWidth * $fZoom, iDocHeight * $fZoom)
-  Draw.End
+  Paint.End
+  If $bDesaturate Then hImg.Desaturate()
   $colImage[iPage] = hImg
   $aImageLoaded.Add(iPage)
+  $tmrLoad.Trigger
   $tmrRefresh.Trigger
   
 End
@@ -127,8 +132,12 @@ End
 Public Sub View_Draw()
   
   Dim i, j, k As Integer
+  Dim sText As String
+  Dim W As Integer
+  Dim D As Integer
   
   If $iCount = 0 Then Return 
+  
   Select Case $iArrangement
     Case Arrange.Horizontal
       k = $iFirstVisibleDocument
@@ -145,8 +154,8 @@ Public Sub View_Draw()
           DrawDoc(k, i, j)
           
           Inc k
-          If k > $iLastVisibleDocument Then Return
-          If k >= $iCount Then Return
+          If k > $iLastVisibleDocument Then Goto SHOW_PAGE
+          If k >= $iCount Then Goto SHOW_PAGE
         Next
       Next
       
@@ -157,8 +166,8 @@ Public Sub View_Draw()
         For i = 0 To $iNbreLines - 1
           DrawDoc(k, i, j)
           Inc k
-          If K > $iLastVisibleDocument Then Return
-          If K >= $iCount Then Return
+          If K > $iLastVisibleDocument Then Goto SHOW_PAGE
+          If K >= $iCount Then Goto SHOW_PAGE
         Next
       Next
       
@@ -177,12 +186,29 @@ Public Sub View_Draw()
       Next
   End Select
   
+SHOW_PAGE:
+
+  If $bShowPage Then
+    
+    D = Desktop.Scale
+    sText = CStr($iFirstVisibleDocument + 1) & " / " & CStr($iCount)
+    W = Paint.Font.TextWidth(sText) + D * 2
+    Paint.FillRect(Paint.W - W - D, D, W, Paint.Font.H + D, Color.SetAlpha(Color.TextForeground, 128))
+    Paint.Background = Color.SetAlpha(Color.TextBackground, 128)
+    Paint.DrawText(sText, Paint.W - W - D + 1, D, W, Paint.Font.H + D, Align.Center)
+    Paint.Background = Color.TextBackground
+    Paint.DrawText(sText, Paint.W - W - D, D, W, Paint.Font.H + D, Align.Center)
+    
+  Endif
+  
 End
 
 Private Sub DrawDoc(Page As Integer, iRow As Integer, iCol As Integer)
   
   Dim iDocX, iDocY As Integer
   Dim fShad As Float = $fZoom * ($iSpacing / 4)
+  Dim hImage As Image
+  
   'Dim fFullContentWidth As Float
 
   If $colLayout.Exist(Page) Then
@@ -225,27 +251,27 @@ Private Sub DrawDoc(Page As Integer, iRow As Integer, iCol As Integer)
   Endif
   
   If $colImage.Exist(Page) Then
-    Paint.DrawImage($colImage[Page], iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight)
+    
+    hImage = $colImage[Page]
+    Paint.DrawImage(hImage, iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight)
     Paint.Rectangle(iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight)
     Paint.Brush = Paint.Color(Color.Black)
     Paint.Stroke
+    
   Else
+    
     Paint.Rectangle(iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight)
     Paint.Brush = Paint.Color(Color.White)
     Paint.Fill(True)
     Paint.Brush = Paint.Color(Color.Black)
     Paint.Stroke
+    
   Endif
   
   If $aSelected.Find(page) > -1 Then
     Paint.Rectangle(iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight)
     Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
     Paint.Fill()
-  Endif
-  
-  If _ShowPageNumber Then
-    Paint.Font.Grade = 20 * $fZoom
-    Paint.DrawText(Page, iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight, Align.Center)
   Endif
   
 End
@@ -393,6 +419,9 @@ Private Sub DoLayout()
         $fCenter = Max(($hView.ClientW - (($fMaxPageWidth + $fScaledSpace) * $iNbreDocByLine - $fScaledSpace + $fScaledPadding * 2)) / 2, 0)
         'Print $fCenter
       Endif
+      
+      $hView.Scroll(0, 0)
+      
   End Select
   
   'Calculate the Max doc per line (mini 1 doc)
@@ -540,7 +569,7 @@ Private Sub Zoom_Write(Value As Float)
   Select Case $iArrangement
     Case Arrange.None, Arrange.Row, Arrange.Column, Arrange.LeftRight, Arrange.TopBottom
       
-      SetZoom(Min(Max(Value, 0.1), 4))
+      SetZoom(Min(Max(Value, 0.1), 8))
       '$iArrangement = None
       '$fZoom = $fZoom
       'just refresh image in the cache don't clear them
@@ -992,5 +1021,33 @@ End
 Private Sub Border_Write(Value As Boolean)
 
   $hView.Border = Value
+
+End
+
+Private Function ShowPage_Read() As Boolean
+
+  Return $bShowPage
+
+End
+
+Private Sub ShowPage_Write(Value As Boolean)
+
+  If $bShowPage = Value Then Return
+  $bShowPage = Value
+  $hView.Refresh
+
+End
+
+Private Function Desaturate_Read() As Boolean
+
+  Return $bDesaturate
+
+End
+
+Private Sub Desaturate_Write(Value As Boolean)
+
+  If $bDesaturate = Value Then Return
+  $bDesaturate = Value
+  Reset
 
 End

@@ -35,7 +35,7 @@ Public Procedure Main()
   If Not $Connection.Opened Then Return
   If CInt($Connection.MySQL.Version.MinorVersion()) < 1 Then
     $bSchemaOk = False
-    Message.Warning("Seems that your MySQL version is lower than 5.1.\ntherefore you will get some error and warning messages.")
+    Message.Warning(("Seems that your MySQL version is lower than 5.1.\ntherefore you will get some error and warning messages."))
   Endif
   Try $Connection.MySQL.Use(Settings["/General/LastDatabase", "mysql"])
   $hFTables = New FTables

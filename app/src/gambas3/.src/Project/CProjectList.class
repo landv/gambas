@@ -303,6 +303,7 @@ Private Sub FillWithTemplate()
   Dim sGroup As String
   Dim aSoft As String[]
   Dim sSoft As String
+  Dim sComp As String
   
   Inc Application.Busy
   $hList.Arrangement = Arrange.None
@@ -321,6 +322,13 @@ Private Sub FillWithTemplate()
       hProjectItem.Path = sSoft
       hProjectItem.Group = sGroup
       hProjectItem.Template = True
+      
+      For Each sComp In hProjectItem.Info.Components
+        If Not Project.Documentation.Exist(sComp) Then
+          hProjectItem.Enabled = False
+          Break
+        Endif
+      Next
     
     Next
   

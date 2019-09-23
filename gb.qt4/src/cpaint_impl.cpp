@@ -128,6 +128,8 @@ static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 	PAINTER(d)->setRenderHints(QPainter::Antialiasing, true);
 	PAINTER(d)->setRenderHints(QPainter::TextAntialiasing, true);
 	PAINTER(d)->setRenderHints(QPainter::SmoothPixmapTransform, true);
+	if (MAIN_right_to_left)
+		PAINTER(d)->setLayoutDirection(Qt::RightToLeft);
 
 	pen = PAINTER(d)->pen();
 	pen.setCapStyle(Qt::FlatCap);
@@ -253,6 +255,15 @@ static int Begin(GB_PAINT *d)
 		}
 
 		target = printer->printer;
+		
+		if (init_painting(d, target))
+			return TRUE;
+		// Paint.W / $hPrinter.PaperWidth * 25.4  / $hPrinter.Resolution
+		QSizeF size = printer->printer->paperSize(QPrinter::Millimeter);
+		//qDebug("d->area.width = %g / paper width = %g / resolution = %d", d->area.width, (floor((double)size.width() * 1E6) / 1E6), printer->printer->resolution());
+		d->fontScale = 25.4 * d->area.width / (floor((double)size.width() * 1E6) / 1E6) / printer->printer->resolution();
+		
+		return FALSE;
 	}
 	else if (GB.Is(device, CLASS_SvgImage))
 	{
@@ -364,8 +375,18 @@ static void Antialias(GB_PAINT *d, int set, int *antialias)
 static void apply_font(QFont &font, void *object = 0)
 {
 	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
+	QFont f = font;
+	
+	if (d->fontScale != 1)
+		f.setPointSizeF(f.pointSizeF() * d->fontScale);
 
-	PAINTER(d)->setFont(font);
+	PAINTER(d)->setFont(f);
+	// Strange bug of QT. Sometimes the font does not apply (cf. DrawTextShadow)
+	if (f != PAINTER(d)->font())
+	{
+		f.fromString(f.toString());
+		PAINTER(d)->setFont(f);
+	}
 }
 
 static void Font(GB_PAINT *d, int set, GB_FONT *font)
@@ -378,14 +399,16 @@ static void Font(GB_PAINT *d, int set, GB_FONT *font)
 			f = QFont(*((CFONT *)(*font))->font);
 		else if ((GB.Is(d->device, CLASS_DrawingArea)))
 			f = (((CWIDGET *)d->device)->widget)->font();
-		PAINTER(d)->setFont(f);
+		
+		apply_font(f);
+		/*PAINTER(d)->setFont(f);
 
 		// Strange bug of QT. Sometimes the font does not apply (cf. DrawTextShadow)
 		if (f != PAINTER(d)->font())
 		{
 			f.fromString(f.toString());
 			PAINTER(d)->setFont(f);
-		}
+		}*/
 	}
 	else
 		*font = CFONT_create(PAINTER(d)->font(), apply_font);
@@ -1025,9 +1048,9 @@ static void RichTextSize(GB_PAINT *d, const char *text, int len, float sw, float
 {
 	QTextDocument rt;
 
-	rt.setDocumentMargin(0);
+	DRAW_init_rich_text(&rt, PAINTER(d)->font());
+	
 	rt.setHtml(QString::fromUtf8((const char *)text, len));
-	rt.setDefaultFont(PAINTER(d)->font());
 
 	if (sw > 0)
 		rt.setTextWidth(sw);

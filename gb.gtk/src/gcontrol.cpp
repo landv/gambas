@@ -226,23 +226,19 @@ void gPlugin::plug(int id)
 
 void gPlugin::discard()
 {
-	#ifdef GAMBAS_DIRECTFB
-	stub("DIRECTFB/gPlugin:discard()");
-	#else
 	#ifdef GDK_WINDOWING_X11
+	if (MAIN_display_x11)
+	{
+		Display *d = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 
-	Display *d = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+		if (!client()) return;
 
-	if (!client()) return;
-
-	XRemoveFromSaveSet(d, client());
-	XReparentWindow(d, client(), GDK_ROOT_WINDOW(), 0, 0);
-
+		XRemoveFromSaveSet(d, client());
+		XReparentWindow(d, client(), GDK_ROOT_WINDOW(), 0, 0);
+	}
 	#else
 	stub("no-X11/gPlugin:discard()");
 	#endif
-	#endif
-
 }
 
 
@@ -318,6 +314,7 @@ void gControl::initAll(gContainer *parent)
 	_use_wheel = false;
 	_scrollbar = SCROLL_NONE;
 	_input_method = NULL;
+	_tooltip = NULL;
 
 	onFinish = NULL;
 	onFocusEvent = NULL;
@@ -393,7 +390,10 @@ gControl::~gControl()
 	
 	//fprintf(stderr, "~gControl: %s\n", name());
 
-	setName(NULL);
+	if (_name)
+		g_free(_name);
+	if (_tooltip)
+		g_free(_tooltip);
 
 	controls = g_list_remove(controls, this);
 	controls_destroyed = g_list_remove(controls_destroyed, this);
@@ -728,16 +728,22 @@ void gControl::setIgnore (bool vl)
 	if (pr) pr->performArrange();
 }
 
-char* gControl::toolTip()
+void gControl::setTooltip(char *vl)
 {
-	char *text = gtk_widget_get_tooltip_text(border);
-	gt_free_later(text);
-	return text;
-}
-
-void gControl::setToolTip(char* vl)
-{
-	gtk_widget_set_tooltip_text(border, vl ? vl : "");
+	char *pango;
+	
+	if (_tooltip) g_free(_tooltip);
+	_tooltip = NULL;
+	if (vl) _tooltip = g_strdup(vl);
+	
+	if (_tooltip)
+	{
+		pango = gt_html_to_pango_string(_tooltip, -1, false);
+		gtk_widget_set_tooltip_markup(border, pango);
+		g_free(pango);
+	}
+	else
+		gtk_widget_set_tooltip_markup(border, NULL);
 }
 
 gFont* gControl::font()
@@ -1005,21 +1011,18 @@ gMainWindow* gControl::topLevel()
 
 int gControl::handle()
 {
-	#ifndef GAMBAS_DIRECTFB
 	#ifdef GDK_WINDOWING_X11
-	if (!gtk_widget_get_window(border))
-		return 0;
+	if (MAIN_display_x11)
+	{
+		GdkWindow *window = gtk_widget_get_window(border);
+		return window ? GDK_WINDOW_XID(window) : 0;
+	}
 	else
-		return GDK_WINDOW_XID(gtk_widget_get_window(border));
+		return 0;
 	#else
 	stub("no-X11/gControl::handle()");
 	return 0;
 	#endif
-	#else
-	stub("DIRECTFB/gControl::handle()");
-	return 0;
-	#endif
-
 }
 
 /*****************************************************************
@@ -1663,7 +1666,8 @@ static void type##_get_preferred_height_and_baseline_for_width(GtkWidget *widget
 		return; \
 	} \
 	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
-	(*OLD_FUNC->get_preferred_height_and_baseline_for_width)(widget, width, minimum, natural, minimum_baseline, natural_baseline); \
+	if (OLD_FUNC->get_preferred_height_and_baseline_for_width) \
+		(*OLD_FUNC->get_preferred_height_and_baseline_for_width)(widget, width, minimum, natural, minimum_baseline, natural_baseline); \
 }
 
 //fprintf(stderr, "patching [%p %s] (%p %p)\n", klass, G_OBJECT_TYPE_NAME(widget), klass->get_preferred_width, klass->get_preferred_height);

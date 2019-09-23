@@ -1600,14 +1600,17 @@ static void set_layout_from_font(PangoLayout *layout, gFont *font, bool add, int
 	
 	desc = pango_context_get_font_description(font->ct);
 
-	if (dpi && dpi != gDesktop::resolution())
+	/*if ((dpi && dpi != gDesktop::resolution()))
 	{
-		int size = pango_font_description_get_size(desc);
+		double size = pango_font_description_get_size(desc);
 		desc = pango_font_description_copy(desc);
 		copy = true;
-		pango_font_description_set_size(desc, size * dpi / gDesktop::resolution());
-	}
-
+		
+		size *= dpi / gDesktop::resolution();
+		
+		pango_font_description_set_size(desc, (int)size);
+	}*/
+	
 	pango_layout_set_font_description(layout, desc);
 	
 	if (add)
@@ -1868,7 +1871,7 @@ cairo_surface_t *gt_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf)
 		format = CAIRO_FORMAT_ARGB32;
 
 	cairo_stride = cairo_format_stride_for_width (format, width);
-	cairo_pixels = (uchar *)g_malloc (height * cairo_stride);
+	cairo_pixels = (uchar *)g_malloc_n (height, cairo_stride);
 	surface = cairo_image_surface_create_for_data ((unsigned char *)cairo_pixels,
 																								format,
 																								width, height, cairo_stride);

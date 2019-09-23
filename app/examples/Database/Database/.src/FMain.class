@@ -99,7 +99,7 @@ Public Sub btnFill_Click()
 
   rColor = $hConn.Create("color")
 
-  For Each sColor In ["Black", "White", "Red", "Green", "Blue", "Yellow", "Transparent"]
+  For Each sColor In [("Black"), ("White"), ("Red"), ("Green"), ("Blue"), ("Yellow"), ("Transparent")]
 
     rColor!name = sColor
     rColor!french = aFrench[iInd]
@@ -115,7 +115,7 @@ Public Sub btnFill_Click()
     rTest!id = iInd
     rTest!color = Int(Rnd(6)) + 1
     rTest!firstname = aName[Int(Rnd(aName.Count))]
-    rTest!name = "Name #" & iInd
+    rTest!name = ("Name #") & iInd
     rTest!birth = CDate("01/01/1970") + Int(Rnd(10000))
     rTest!active = Int(Rnd(2))
     rTest!salary = Round(Rnd(1000, 10000), -2)

@@ -62,7 +62,7 @@ Public Sub Init()
   
   D = 100
   
-  X = - D
+  X = -D
   Z = -100
   
   Do
@@ -74,7 +74,7 @@ Public Sub Init()
     X += 50
     If X > D Then
       D += 100
-      X = - D
+      X = -D
       Z -= 100
       Inc I
       If I = 10 Then Break
@@ -82,7 +82,7 @@ Public Sub Init()
     
   Loop
 
-  Print $aObject.Count; " objects"
+  Print $aObject.Count; " " & ("objects")
 
   $iEndWidth = D
   $iEndZ = Z
@@ -117,7 +117,7 @@ Public Sub glaScreen_Draw()
   Gl.Vertex3f(-100, -34.2, -100)
   Gl.Vertex3f(100, -34.2, -100)
   Gl.Vertex3f($iEndWidth, -34.2, $iEndZ)
-  Gl.Vertex3f(- $iEndWidth, -34.2, $iEndZ)
+  Gl.Vertex3f(-$iEndWidth, -34.2, $iEndZ)
   Gl.End
   
   Glu.Color(Color.Lighter(&HD96800&))
@@ -145,12 +145,12 @@ Public Sub glaScreen_Draw()
     Inc $fTime
   Endif
 
-  lblInfo.Text = Format($aObject[0].Frame, "0.00") & " / " & $aObject[0].Model.Count & " ( " & CInt($fFramerate) & " FPS )"
+  lblInfo.Text = Format($aObject[0].Frame, "0.00") & " / " & $aObject[0].Model.Count & " ( " & CInt($fFramerate) & " " & ("FPS") & " )"
 
   Gl.PopMatrix
   
   Inc $nDraw
-  Print "\r"; Format($nDraw, "#####0"); ": "; N; " vertices in "; Format(Timer - fTime, "0.000000"); " seconds";
+  Print "\r"; Format($nDraw, "#####0"); ": "; N; " " & ("vertices in") & " "; Format(Timer - fTime, "0.000000"); " " & ("seconds");
   
 End
 

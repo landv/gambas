@@ -11,39 +11,42 @@
   Arrangement = Arrange.Vertical
   { panToolbar HBox
     MoveScaled(0,0,107,4)
-    { btnBack ToolButton
-      MoveScaled(0,0,4,4)
-      ToolTip = ("Go back")
-      Picture = Picture["icon:/small/left"]
-    }
-    { btnForward ToolButton
-      MoveScaled(4,0,4,4)
-      ToolTip = ("Go forward")
-      Picture = Picture["icon:/small/right"]
+    { btnShowPanel ToolButton
+      MoveScaled(1,0,4,4)
+      Tracking = True
+      ToolTip = ("Show help tree")
+      Picture = Picture["icon:/small/view-split-h"]
+      Toggle = True
     }
     { btnHome MenuButton
-      MoveScaled(6,0,16,4)
+      MoveScaled(5,0,11,4)
       ToolTip = ("Index")
       AutoResize = True
       Picture = Picture["icon:/small/home"]
       Border = False
     }
+    { Separator3 Separator
+      MoveScaled(17,0,1,4)
+    }
+    { btnBack ToolButton
+      MoveScaled(21,0,4,4)
+      ToolTip = ("Go back")
+      Picture = Picture["icon:/small/left"]
+    }
+    { btnForward ToolButton
+      MoveScaled(25,0,4,4)
+      ToolTip = ("Go forward")
+      Picture = Picture["icon:/small/right"]
+    }
     { btnStop ToolButton
-      MoveScaled(23,0,4,4)
+      MoveScaled(29,0,4,4)
       ToolTip = ("Cancel")
       Picture = Picture["icon:/small/delete"]
     }
     { btnReload ToolButton
-      MoveScaled(27,0,4,4)
+      MoveScaled(33,0,4,4)
       ToolTip = ("Reload")
       Picture = Picture["icon:/small/refresh"]
-    }
-    { btnShowPanel ToolButton
-      MoveScaled(32,0,4,4)
-      Tracking = True
-      ToolTip = ("Show help tree")
-      Picture = Picture["icon:/small/view-split-h"]
-      Toggle = True
     }
     { Separator1 Separator
       MoveScaled(37,0,1,4)
@@ -109,7 +112,7 @@
     Alignment = Align.Center
   }
   { Printer1 #Printer
-    #MoveScaled(4,2)
+    #MoveScaled(90,13)
   }
 }
 

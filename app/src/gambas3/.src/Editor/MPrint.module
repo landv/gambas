@@ -1,0 +1,139 @@
+' Gambas module file
+
+Private $hPrinter As Printer
+Private $hEditor As TextEditor
+Private $nLine As Integer
+Private $nLineByPage As Integer
+Private $hFont As Font
+Private $hFontHeader As Font
+Private $sTitle As String
+Private $dNow As Date
+
+Private Const ZOOM_EDITOR As Float = 4
+
+Public Sub Run(hEditor As TextEditor, sTitle As String)
+
+  $sTitle = sTitle
+  $dNow = Now
+
+  $hPrinter = New Printer As "Printer"
+
+  $hEditor = New TextEditor(hEditor.Window)
+  $hEditor.Hide
+  $hEditor.Ignore = True
+  $hEditor.Highlight = hEditor.Highlight
+  $hEditor.ReadOnly = True
+  $hEditor.Border = False
+  $hEditor.Wrap = True
+  '$hFont = hEditor.Font.Copy()
+  $hEditor.Text = hEditor.Text
+  $hEditor.ScrollBar = Scroll.None
+  MTheme.InitEditor($hEditor)
+  
+  
+  $hPrinter.GrayScale = False
+  $hPrinter.Preview()
+  
+  $hEditor.Delete
+  $hPrinter = Null
+  
+End
+
+Public Sub Printer_Begin()
+  
+  Dim H As Float
+  Dim M As Float
+  
+  'Debug "--------------- Begin "; Paint.W;; Paint.H
+  
+  $hFont = Font[Settings["/Printing/Font", Project.DEFAULT_FONT]]
+  $hFontHeader = $hFont.Copy()
+
+  $hFont.Size = $hFont.Size * 25.4 / 96 * 10 * ZOOM_EDITOR
+  $hFontHeader.Size = 8
+  
+  $hEditor.Font = $hFont
+  
+  'Debug "Paint.ResolutionY = "; Paint.ResolutionY
+  Paint.FontScale = 1
+  
+  $hEditor.Move(0, 0, ZOOM_EDITOR * Paint.W, $hEditor.LineHeight * 10)
+  $hEditor._ResizeContents
+  $hEditor.Move(-$hEditor.W - 16, -$hEditor.H - 16)
+  $hEditor.Show
+  Wait
+  $hEditor._ResizeContents
+  $hEditor.TimerHeight_Timer
+
+  'Debug "Count = "; $hEditor.Count
+  'Debug "$nLine = "; $hEditor.ScrollH / $hEditor.LineHeight;; $hEditor.ScrollH;; $hEditor.LineHeight
+  $nLine = $hEditor.ScrollH \ $hEditor.LineHeight
+
+  M = $hEditor.LineHeight / ZOOM_EDITOR + 30
+  H = Paint.H - M * 2
+  
+  $nLineByPage = ZOOM_EDITOR * H / $hEditor.LineHeight
+  'Debug "$nLineByPage = "; $nLineByPage
+
+  $hPrinter.Count = ($nLine + $nLineByPage - 1) \ $nLineByPage
+  'Debug "$hPrinter.Count = "; $hPrinter.Count
+
+End
+
+Public Sub Printer_Draw()
+  
+  Dim iRow As Integer
+  Dim Y As Integer
+  Dim DY As Integer
+  Dim H As Float
+  Dim M As Float
+  
+  Paint.Save
+  
+  'Debug "--------------- Page #"; $hPrinter.Page
+  M = $hEditor.LineHeight / ZOOM_EDITOR + 30
+  H = Paint.H - M * 2
+  
+  Paint.Font = $hFontHeader
+  
+  Paint.DrawText(Project.Name, 0, 0, Paint.W, M, Align.TopLeft)
+  Paint.DrawText(Format($dNow, "ddd d mmm yyyy"), 0, 0, Paint.W, M, Align.TopRight)
+  Paint.DrawText($sTitle, 0, 0, Paint.W, M, Align.Top)
+  Paint.FillRect(0, M - 30, Paint.W, 1, Color.Black)
+  
+  Paint.DrawText($hPrinter.Page & " / " & $hPrinter.Count, 0, Paint.H - M, Paint.W, M, Align.Bottom)
+  Paint.FillRect(0, Paint.H - M + 30, Paint.W, 1, Color.Black)
+  
+  Paint.ClipRect = Rect(0, M, Paint.W, $nLineByPage * $hEditor.LineHeight / ZOOM_EDITOR)
+  
+  If Paint.Device Is Printer Then 
+    Paint.FontScale = 96 / $hPrinter.Resolution
+  Else
+    Paint.FontScale = 1
+  Endif
+  
+  Paint.Begin(Paint.Device, RectF(Paint.X * ZOOM_EDITOR, Paint.Y * ZOOM_EDITOR, Paint.W * ZOOM_EDITOR, Paint.H * ZOOM_EDITOR))
+  Paint.Scale(1 / ZOOM_EDITOR)
+  
+  DY = ($hPrinter.Page - 1) * $nLineByPage * $hEditor.LineHeight
+  'Debug DY
+  'Debug "LineHeight = "; $hEditor.LineHeight
+  
+  Paint.Font = $hFont
+  
+  Y = DY
+  iRow = $hEditor.ToLine(Y)
+  While iRow < $hEditor.Count
+    'Debug "["; iRow; "]";; Y
+    Y = $hEditor.ToPosY(iRow) - DY
+    If Y >= (ZOOM_EDITOR * H - $hEditor.LineHeight) Then Break
+    $hEditor[iRow].Paint(0, Y + M * ZOOM_EDITOR)
+    Inc iRow
+  Wend
+  
+  Paint.End
+  
+  Paint.Restore
+  
+End
+

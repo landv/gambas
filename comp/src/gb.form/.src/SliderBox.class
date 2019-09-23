@@ -101,7 +101,6 @@ Public Sub SpinBox_Change()
   
 End
 
-
 Private Function Step_Read() As Integer
 
   Return $iStep
@@ -118,7 +117,7 @@ End
 Public Sub SpinBox_MouseWheel()
   
   If Not Me.Enabled Then Return
-  $hSpinBox.Value += If(Mouse.Forward, $iStep, - $iStep)
+  $hSpinBox.Value += If(Mouse.Forward, $iStep, -$iStep)
   Stop Event
   
 End
@@ -154,4 +153,13 @@ Private Sub Font_Write(Value As Font)
   Super.Font = Value
   UpdateSpinBoxWidth
 
+End
+
+Public Sub SpinBox_KeyPress()
+
+  If Key.Code = Key.Esc Then
+    $hSlider.Value = $iDefault
+    Stop Event
+  Endif
+  
 End

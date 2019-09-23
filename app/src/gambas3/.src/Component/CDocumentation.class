@@ -75,6 +75,7 @@ Static Private Sub InitComponentNames()
   $cName["gb.form.dialog"] = ("Enhanced standard dialogs")
   $cName["gb.form.editor"] = ("Text editor with syntax highlighting")
   $cName["gb.form.mdi"] = ("Multi Document Interface")
+  $cName["gb.form.print"] = ("Generic preview and print form")
   $cName["gb.form.stock"] = ("Default icon theme")
   $cName["gb.form.terminal"] = ("Terminal emulator")
   $cName["gb.gmp"] = ("GNU Multiple Precision Arithmetic Library")
@@ -160,6 +161,13 @@ Static Private Sub InitComponentNames()
   Features["xml"] = ("XML management")
   
 End
+
+Static Public Sub GetName(sKey As String) As String
+  
+  Return $cName[sKey]
+  
+End
+
 
 Public Sub AddSimilar(sCtrl As String, sSimilar As String)
   
@@ -974,7 +982,11 @@ Public Function GetClassSymbols(sClass As String, Optional sComponent As String)
   Dim sFamily As String
   
   If Len(sClass) <= 1 Then
-    If sClass <> "." And If Not IsUpper(sClass) Then Return
+    If sClass = "s" Then
+      sClass = "_BoxedString"
+    Else
+      If sClass <> "." And If Not IsUpper(sClass) Then Return
+    Endif
   Endif
   
   'Debug sClass

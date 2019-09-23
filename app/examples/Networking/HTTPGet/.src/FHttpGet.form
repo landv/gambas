@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(30,14,96,73)
+  MoveScaled(30,14,104,73)
   Resizable = False
   { Button1 Button
     MoveScaled(1,6,14,4)
@@ -11,7 +11,7 @@
     MoveScaled(1,11,63,14)
   }
   { Navigator TextEdit
-    MoveScaled(1,26,94,46)
+    MoveScaled(1,26,102,46)
     ReadOnly = True
   }
   { Label1 Label
@@ -20,29 +20,29 @@
   }
   { TxtHost TextBox
     MoveScaled(8,1,56,4)
-    Text = ("http://gambasdoc.org/help")
+    Text = ("http://gambaswiki.org/wiki")
   }
   { BtnStop Button
     MoveScaled(16,6,14,4)
     Text = ("Stop")
   }
   { ChkPassword CheckBox
-    MoveScaled(66,6,29,4)
+    MoveScaled(66,6,37,4)
     Text = ("Page needs authorization")
   }
   { TxtUser TextBox
-    MoveScaled(66,16,29,4)
+    MoveScaled(66,16,37,4)
     Enabled = False
     Text = ("User")
   }
   { TxtPassword TextBox
-    MoveScaled(66,21,29,4)
+    MoveScaled(66,21,37,4)
     Enabled = False
     Text = ("Password")
     Password = True
   }
   { CmbAuth ComboBox
-    MoveScaled(66,11,29,4)
+    MoveScaled(66,11,37,4)
     Enabled = False
     ReadOnly = True
     List = [("Basic"), ("NTLM"), ("DIGEST"), ("GSS")]
@@ -52,7 +52,7 @@
     #MoveScaled(27,36)
   }
   { mnuOptions Button
-    MoveScaled(66,1,29,4)
+    MoveScaled(66,1,37,4)
     Text = ("&Configuration...")
   }
   { txtInfo Label

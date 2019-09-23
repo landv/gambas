@@ -150,11 +150,11 @@ BEGIN_PROPERTY(TrayIcon_Text)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewZeroString(TRAYICON->toolTip());
+		GB.ReturnNewZeroString(TRAYICON->tooltip());
 		return;
 	}
 	
-	TRAYICON->setToolTip(GB.ToZeroString(PROP(GB_STRING)));
+	TRAYICON->setTooltip(GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY
 

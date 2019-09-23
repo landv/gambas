@@ -53,6 +53,7 @@
 static bool is_init = FALSE;
 static COMPILE *comp;
 static const char *source_ptr;
+static const char *_line_start;
 static int source_length;
 static bool _begin_line = FALSE;
 static bool _no_quote = FALSE;
@@ -86,7 +87,6 @@ static void READ_init(void)
 	
 	JOB->line = 1;
 	JOB->max_line = FORM_FIRST_LINE - 1;
-	JOB->column = TRUE;
 	
 	if (!is_init)
 	{
@@ -177,8 +177,6 @@ static void READ_exit(void)
 
 	if (JOB->verbose)
 		printf("\n");
-	
-	JOB->column = FALSE;
 }
 
 static int get_utf8_length(const char *str, int len)
@@ -376,18 +374,32 @@ static unsigned char next_char(void)
 
 #ifdef DEBUG
 
+static void add_pattern_no_dump(int type, int index)
+{
+	comp->pattern[comp->pattern_count] = PATTERN_make(type, index);
+	comp->pattern_pos[comp->pattern_count] = source_ptr - _line_start;
+	comp->pattern_count++;
+}
+
 static void add_pattern(int type, int index)
 {
-	comp->pattern[comp->pattern_count++] = PATTERN_make(type, index);
+	add_pattern_no_dump(type, index);
+	printf("% 4d ", comp->pattern_pos[comp->pattern_count - 1]);
 	READ_dump_pattern(&comp->pattern[comp->pattern_count - 1]);
 }
 
-#define add_pattern_no_dump(_type, _index) comp->pattern[comp->pattern_count++] = PATTERN_make((_type), (_index));
-
 #else
 
-#define add_pattern(_type, _index) comp->pattern[comp->pattern_count++] = PATTERN_make((_type), (_index));
 #define add_pattern_no_dump add_pattern
+
+//#define add_pattern(_type, _index) comp->pattern[comp->pattern_count++] = PATTERN_make((_type), (_index));
+
+static inline void add_pattern(int type, int index)
+{
+	comp->pattern[comp->pattern_count] = PATTERN_make(type, index);
+	comp->pattern_pos[comp->pattern_count] = source_ptr - _line_start;
+	comp->pattern_count++;
+}
 
 #endif
 
@@ -624,12 +636,12 @@ END:
 	if (sign && !PATTERN_is_null(last_pattern) && (!PATTERN_is_reserved(last_pattern) || PATTERN_is(last_pattern, RS_RBRA) || PATTERN_is(last_pattern, RS_RSQR)))
 	{
 		add_pattern(RT_RESERVED, RESERVED_find_word(&sign, 1));
-		TABLE_add_symbol(comp->class->table, start + 1, source_ptr - start - 1, &index);
+		index = TABLE_add_symbol(comp->class->table, start + 1, source_ptr - start - 1);
 		add_pattern(RT_NUMBER, index);
 	}
 	else
 	{
-		TABLE_add_symbol(comp->class->table, start, source_ptr - start, &index);
+		index = TABLE_add_symbol(comp->class->table, start, source_ptr - start);
 		add_pattern(RT_NUMBER, index);
 	}
 	
@@ -704,7 +716,7 @@ static void add_identifier()
 				{
 					source_ptr++;
 					len++;
-					TABLE_add_symbol(comp->class->table, start, len - 2, &index);
+					index = TABLE_add_symbol(comp->class->table, start, len - 2);
 					continue;
 				}
 			}
@@ -826,11 +838,11 @@ static void add_identifier()
 
 	if (PATTERN_is(last_pattern, RS_EXCL))
 	{
-		TABLE_add_symbol(comp->class->string, start, len, &index);
+		index = TABLE_add_symbol(comp->class->string, start, len);
 		type = RT_STRING;
 	}
 	else
-		TABLE_add_symbol(comp->class->table, start, len, &index);
+		index = TABLE_add_symbol(comp->class->table, start, len);
 	
 __ADD_PATTERN:
 
@@ -880,11 +892,11 @@ static void add_quoted_identifier(void)
 
 	if (PATTERN_is(last_pattern, RS_EXCL))
 	{
-		TABLE_add_symbol(comp->class->string, start, len, &index);
+		index = TABLE_add_symbol(comp->class->string, start, len);
 		type = RT_STRING;
 	}
 	else
-		TABLE_add_symbol(comp->class->table, start, len, &index);
+		index = TABLE_add_symbol(comp->class->table, start, len);
 	
 	add_pattern(type, index);
 }
@@ -1044,7 +1056,7 @@ static void add_string()
 
 	if (len > 0)
 	{
-		TABLE_add_symbol(comp->class->string, start + 1, len, &index);
+		index = TABLE_add_symbol(comp->class->string, start + 1, len);
 		add_pattern(RT_STRING, index);
 	}
 	else
@@ -1113,6 +1125,7 @@ void READ_do(void)
 
 	source_ptr = comp->source;
 	source_length = BUFFER_length(comp->source);
+	_line_start = source_ptr;
 	_begin_line = TRUE;
 	_prep = FALSE;
 
@@ -1133,6 +1146,7 @@ void READ_do(void)
 		{
 			add_newline();
 			_begin_line = TRUE;
+			_line_start = source_ptr;
 		}
 		continue;
 

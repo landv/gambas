@@ -1599,6 +1599,8 @@ Private Sub DrawDropFrame()
   Dim hParent As Container
   Dim sClass As String
 
+  If Not $hDropTarget Then Return
+
   hParent = $hDropTarget.Control
   X = Drag.X + Last.ScreenX - hParent.ScreenX
   Y = Drag.Y + Last.ScreenY - hParent.ScreenY
@@ -3150,10 +3152,16 @@ End
 
 Public Sub Action_Activate((Key) As String) As Boolean
 
+  Dim hCurrent As CControl
+  
   Select Case Key
 
     Case ".menu"
       FMenu.Run(Me)
+      If FMenu.OpenEventHandlerFor Then
+        hCurrent = Control[FMenu.OpenEventHandlerFor]
+        If hCurrent Then GotoEventMethod(hCurrent, "Click")
+      Endif
 
     Case ".delete"
       DeleteSelection

@@ -70,7 +70,7 @@ Public Sub Screen_Resize()
   Gl.Viewport(0, 0, Screen.Width, Screen.Height)
   Gl.MatrixMode(Gl.PROJECTION)
   Gl.LoadIdentity()
-  Gl.Frustum(-1.0, 1.0, - (Screen.Height / Screen.Width), (Screen.Height / Screen.Width), 5.0, 60.0)
+  Gl.Frustum(-1.0, 1.0, -(Screen.Height / Screen.Width), (Screen.Height / Screen.Width), 5.0, 60.0)
   Gl.MatrixMode(Gl.MODELVIEW)
   Gl.LoadIdentity()
   Gl.Translatef(0.0, 0.0, -40.0)
@@ -113,7 +113,7 @@ Public Sub Screen_Draw()
 
   If (Timer > (fTime + 1)) Then
     Inc fTime
-    Print Screen.Framerate; " FPS"
+    Print Screen.Framerate; " " & ("FPS")
   Endif
 
 End
@@ -192,11 +192,11 @@ Public Sub Gear(inner_radius As Float, outer_radius As Float, width As Float, te
   Gl.Begin(Gl.QUAD_STRIP)
   For i = 0 To teeth
     angle = i * 2.0 * Pi / teeth
-    Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), - width * 0.5)
-    Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), - width * 0.5)
+    Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), -width * 0.5)
+    Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), -width * 0.5)
     If i < teeth Then
-      Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), - width * 0.5)
-      Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), - width * 0.5)
+      Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), -width * 0.5)
+      Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), -width * 0.5)
     Endif
   Next
   Gl.End()
@@ -206,10 +206,10 @@ Public Sub Gear(inner_radius As Float, outer_radius As Float, width As Float, te
   da = 2.0 * Pi / teeth / 4.0
   For i = 0 To teeth - 1
     angle = i * 2.0 * Pi / teeth
-    Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), - width * 0.5)
-    Gl.Vertexf(r2 * Cos(angle + 2 * da), r2 * Sin(angle + 2 * da), - width * 0.5)
-    Gl.Vertexf(r2 * Cos(angle + da), r2 * Sin(angle + da), - width * 0.5)
-    Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), - width * 0.5)
+    Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), -width * 0.5)
+    Gl.Vertexf(r2 * Cos(angle + 2 * da), r2 * Sin(angle + 2 * da), -width * 0.5)
+    Gl.Vertexf(r2 * Cos(angle + da), r2 * Sin(angle + da), -width * 0.5)
+    Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), -width * 0.5)
   Next
   Gl.End()
 
@@ -218,27 +218,27 @@ Public Sub Gear(inner_radius As Float, outer_radius As Float, width As Float, te
   For i = 0 To teeth - 1
     angle = i * 2.0 * Pi / teeth
     Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), width * 0.5)
-    Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), - width * 0.5)
+    Gl.Vertexf(r1 * Cos(angle), r1 * Sin(angle), -width * 0.5)
     u = r2 * Cos(angle + da) - r1 * Cos(angle)
     v = r2 * Sin(angle + da) - r1 * Sin(angle)
     fLen = Sqr(u * u + v * v)
     u /= fLen
     v /= fLen
-    Gl.Normal3f(v, - u, 0.0)
+    Gl.Normal3f(v, -u, 0.0)
     Gl.Vertexf(r2 * Cos(angle + da), r2 * Sin(angle + da), width * 0.5)
-    Gl.Vertexf(r2 * Cos(angle + da), r2 * Sin(angle + da), - width * 0.5)
+    Gl.Vertexf(r2 * Cos(angle + da), r2 * Sin(angle + da), -width * 0.5)
     Gl.Normal3f(Cos(angle), Sin(angle), 0.0)
     Gl.Vertexf(r2 * Cos(angle + 2 * da), r2 * Sin(angle + 2 * da), width * 0.5)
-    Gl.Vertexf(r2 * Cos(angle + 2 * da), r2 * Sin(angle + 2 * da), - width * 0.5)
+    Gl.Vertexf(r2 * Cos(angle + 2 * da), r2 * Sin(angle + 2 * da), -width * 0.5)
     u = r1 * Cos(angle + 3 * da) - r2 * Cos(angle + 2 * da)
     v = r1 * Sin(angle + 3 * da) - r2 * Sin(angle + 2 * da)
-    Gl.Normal3f(v, - u, 0.0)
+    Gl.Normal3f(v, -u, 0.0)
     Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), width * 0.5)
-    Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), - width * 0.5)
+    Gl.Vertexf(r1 * Cos(angle + 3 * da), r1 * Sin(angle + 3 * da), -width * 0.5)
     Gl.Normal3f(Cos(angle), Sin(angle), 0.0)
   Next
   Gl.Vertexf(r1 * Cos(0), r1 * Sin(0), width * 0.5)
-  Gl.Vertexf(r1 * Cos(0), r1 * Sin(0), - width * 0.5)
+  Gl.Vertexf(r1 * Cos(0), r1 * Sin(0), -width * 0.5)
   Gl.End()
 
   Gl.ShadeModel(Gl.SMOOTH)
@@ -247,8 +247,8 @@ Public Sub Gear(inner_radius As Float, outer_radius As Float, width As Float, te
   Gl.Begin(Gl.QUAD_STRIP)
   For i = 0 To teeth
     angle = i * 2.0 * Pi / teeth
-    Gl.Normal3f(- Cos(angle), - Sin(angle), 0.0)
-    Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), - width * 0.5)
+    Gl.Normal3f(-Cos(angle), -Sin(angle), 0.0)
+    Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), -width * 0.5)
     Gl.Vertexf(r0 * Cos(angle), r0 * Sin(angle), width * 0.5)
   Next
   Gl.End()

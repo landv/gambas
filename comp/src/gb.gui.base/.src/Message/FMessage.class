@@ -1,0 +1,78 @@
+' Gambas class file
+
+Static Private $iButton As Integer
+
+Public Sub Run(sIcon As String, sText As String, aButton As String[]) As Integer
+
+  Dim sTitle As String
+  Dim hPict As Picture
+  Dim H As Integer
+  Dim W As Integer
+  Dim I As Integer
+  Dim hButton As Button
+  Dim iBusy As Integer
+  Dim WB As Integer
+
+  sTitle = Message.Title
+  If Not sTitle Then sTitle = Application.Title
+  Message.Title = ""
+  Me.Title = sTitle
+  
+  Do
+    If aButton.Count = 0 Then
+      aButton = [("OK")]
+      Break
+    Endif
+    If aButton.Last Then Break
+    aButton.Pop()
+  Loop
+  
+  hPict = Picture["icon:/64/" & sIcon]
+  If Not hPict Then hPict = Picture["message" &/ sIcon & ".png"]
+  If Not hPict Then hPict = Picture["message/info.png"]
+  picMessage.Picture = hPict
+  
+  sText = Replace(sText, "\n", "<br>")
+  
+  txtMessage.Ignore = True
+  txtMessage.W = Screen.AvailableWidth \ 3
+  txtMessage.Text = sText
+  txtMessage.Adjust
+  
+  txtMessage.Ignore = False
+  
+  For I = 0 To aButton.Max
+    hButton = New Button(panButton) As "Button"
+    hButton.Tag = I
+    hButton.Text = aButton[I]
+    hButton.W = Max(Desktop.Scale * 14, hButton.Font.TextWidth(hButton.Text) + Desktop.Scale * 2)
+    WB += hButton.W + Desktop.Scale
+    If I = 0 Then hButton.Default = True
+    If I = aButton.Max Then hButton.Cancel = True
+  Next
+  
+  W = Max(txtMessage.W + 1, WB) + picMessage.W + Desktop.Scale * 4
+  H = Max(Desktop.Scale * 8, txtMessage.H) + panButton.H + Desktop.Scale * 5
+  
+  Me.Resize(W, H)
+  
+  If Application.ActiveWindow Then Me.SkipTaskbar = True
+  
+  $iButton = aButton.Max
+  
+  iBusy = Application.Busy
+  Application.Busy = 0
+  Me.ShowModal()
+  Application.Busy = iBusy
+
+  Return $iButton + 1
+
+End
+
+Public Sub Button_Click()
+  
+  $iButton = Last.Tag
+  Me.Close
+  
+End
+

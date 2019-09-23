@@ -51,6 +51,7 @@
 #include <QEventLoop>
 #include <QDesktopWidget>
 #include <QPaintDevice>
+#include <QLibraryInfo>
 
 #include "gb.image.h"
 #include "gb.qt.h"
@@ -83,7 +84,6 @@
 #include "CDraw.h"
 #include "CWatch.h"
 #include "CDrawingArea.h"
-#include "CMessage.h"
 #include "CSlider.h"
 #include "CScrollBar.h"
 #include "CMovieBox.h"
@@ -128,6 +128,7 @@ int MAIN_x11_last_key_code = 0;
 bool MAIN_debug_busy = false;
 bool MAIN_init = false;
 bool MAIN_key_debug = false;
+bool MAIN_right_to_left = false;
 
 GB_CLASS CLASS_Control;
 GB_CLASS CLASS_Container;
@@ -887,7 +888,9 @@ static void QT_InitEventLoop(void)
 
 static bool try_to_load_translation(QString &locale)
 {
-#ifdef QT5
+	// QLocale::system().name()
+	return _translator->load("qt_" + locale, QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+/*#ifdef QT5
 	return (!_translator->load(QString("qt_") + locale, QString(getenv("QTDIR")) + "/translations")
 		  && !_translator->load(QString("qt_") + locale, QString("/usr/lib/qt5/translations"))
 		  && !_translator->load(QString("qt_") + locale, QString("/usr/share/qt5/translations")));
@@ -895,7 +898,7 @@ static bool try_to_load_translation(QString &locale)
 	return (!_translator->load(QString("qt_") + locale, QString(getenv("QTDIR")) + "/translations")
 		  && !_translator->load(QString("qt_") + locale, QString("/usr/lib/qt4/translations"))
 		  && !_translator->load(QString("qt_") + locale, QString("/usr/share/qt4/translations")));
-#endif
+#endif*/
 }
 
 static void init_lang(char *lang, bool rtl)
@@ -903,6 +906,8 @@ static void init_lang(char *lang, bool rtl)
 	int pos;
 	QString locale(lang);
 
+	MAIN_right_to_left = rtl;
+	
 	pos = locale.lastIndexOf(".");
 	if (pos >= 0) locale = locale.left(pos);
 
@@ -1082,9 +1087,10 @@ static void hook_post(void)
 }
 
 
-static void hook_error(int code, char *error, char *where)
+static bool hook_error(int code, char *error, char *where, bool in_event_loop)
 {
 	QString msg;
+	int ret;
 
 	qApp->restoreOverrideCursor();
 	while (qApp->activePopupWidget())
@@ -1095,23 +1101,23 @@ static void hook_error(int code, char *error, char *where)
 
 	if (code > 0)
 	{
-		msg = msg + "[%1] %2.<br>%3";
+		msg = msg + "[%1] %2.<br><br><tt>%3</tt>";
 		msg = msg.arg(code).arg(TO_QSTRING(error)).arg(where);
 	}
 	else
 	{
-		msg = msg + "%1.<br>%2";
+		msg = msg + "%1.<br><br><tt>%2</tt>";
 		msg = msg.arg(TO_QSTRING(error)).arg(where);
 	}
 
 	release_grab();
 	MAIN_in_message_box++;
-	QMessageBox::critical(0, TO_QSTRING(GB.Application.Name()), msg);
+	ret = QMessageBox::critical(0, TO_QSTRING(GB.Application.Name()), msg, in_event_loop ? QMessageBox::Close | QMessageBox::Ignore : QMessageBox::Ok);
 	MAIN_in_message_box--;
 	unrelease_grab();
 	MAIN_check_quit();
 
-	//qApp->exit();
+	return ret == QMessageBox::Ignore;
 }
 
 static void QT_Init(void)
@@ -1313,7 +1319,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 {
 	CBorderDesc, CColorDesc,
 	CAlignDesc, CArrangeDesc, CScrollDesc, CKeyDesc, CSelectDesc,
-	CMessageDesc,
 	CImageDesc, CPictureDesc,
 	CFontDesc, CFontsDesc,
 	CMouseDesc, CCursorDesc, CPointerDesc,

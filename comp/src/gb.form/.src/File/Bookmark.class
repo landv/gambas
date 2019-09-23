@@ -1,0 +1,11 @@
+' Gambas class file
+
+Property Name As String Use $sName
+Property Path As String Use $sPath
+Property Icon As String Use $sIcon
+
+Private Sub Path_Write(Value As String)
+
+  $sPath = Main.NormalizePath(Value)
+
+End

@@ -28,7 +28,7 @@ gb_gtk3_la_SOURCES = \
 	CKey.h CKey.cpp \
 	CScreen.h CScreen.cpp \
 	CStyle.h CStyle.cpp \
-	CMessage.h CMessage.cpp CDialog.h CDialog.cpp \
+	CDialog.h CDialog.cpp \
 	CDraw.h CDraw.cpp \
 	cpaint_impl.h cpaint_impl.cpp \
 	CImage.h CImage.cpp \

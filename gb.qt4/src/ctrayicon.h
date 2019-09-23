@@ -24,11 +24,12 @@
 #ifndef __CTRAYICON_H
 #define __CTRAYICON_H
 
+#include <QSystemTrayIcon>
+
 #include "gambas.h"
 #include "main.h"
 
 #include "CPicture.h"
-#include <QSystemTrayIcon>
 
 #ifndef __CTRAYICON_CPP
 extern GB_DESC TrayIconsDesc[];

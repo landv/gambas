@@ -11,7 +11,7 @@ Public Sub Main()
     hClass = Class.Load(Application.Args[1])
     Object.Call(hClass, "Main")
   Else
-    Print "Usage: NeHeTutorial Example<N> <Title>"
+    Print ("Usage: NeHeTutorial Example<N> <Title>")
   Endif
 
 End

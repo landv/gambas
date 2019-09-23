@@ -69,6 +69,9 @@ public:
 	static int getDropX() { return _x; }
 	static int getDropY() { return _y; }
 	
+	static void setDropX(int v) { _x = v; }
+	static void setDropY(int v) { _y = v; }
+	
 	static void show(gControl *control, int x = 0, int y = 0, int w = -1, int h = -1);
 	static void hide(gControl *control = NULL);
 	

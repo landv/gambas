@@ -73,7 +73,7 @@ public:
 	int screenX();
 	int screenY();
 	virtual bool getScreenPos(int *x, int *y);
-	char *toolTip();
+	char *tooltip() const { return _tooltip; }
 	bool isVisible() const { return visible; }
 	bool isReallyVisible();
 	bool acceptDrops() { return _accept_drops; }
@@ -92,7 +92,8 @@ public:
 	void setLeft(int l);
 	void setMouse(int m);
 	virtual void updateCursor(GdkCursor *cursor);
-	void setToolTip(char *vl);
+	char *tooltip() { return _tooltip; }
+	void setTooltip(char *vl);
 	void setTop(int t);
 	virtual void setVisible(bool v);
 	virtual void setWidth(int w);
@@ -215,6 +216,7 @@ public:
 	short _mouse;
 	gControl *_proxy, *_proxy_for;
 	gColor _bg, _fg;
+	char *_tooltip;
 #ifdef GTK3
 	GtkStyleProvider *_css;
 	const char *_bg_name;

@@ -97,7 +97,7 @@ public:
 	
 	bool spontaneous() { return !_not_spontaneous; }
 	
-	void setMenuBarVisible(bool v);
+	bool setMenuBarVisible(bool v);
 	bool isMenuBarVisible();
 	
 	double opacity();
@@ -201,6 +201,7 @@ public:
 	unsigned _moved : 1;
 	unsigned _resizable : 1;
 	unsigned _unmap : 1;
+	unsigned _initMenuBar : 1;
 };
 
 #endif

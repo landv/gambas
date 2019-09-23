@@ -1,16 +1,18 @@
 ' Gambas module file
 
-Public Path As String
+Public Dir As String
+Private Path As String
 Public ChangeLog As String
 Public Signature As String
 
 Private RPMBUILD_PROG As String
+Private FAKEROOT_PROG As String
 Private DKPG_PROG As String
 Private TAR_1_13_PROG As String
 Private AUTOCONF_PROG As String
 Private AUTOMAKE_PROG As String
 Private MAKEPKG_PROG As String
-Private MAKESELF_PROG As String
+'Private MAKESELF_PROG As String
 
 Private $sOutput As String
 Private $bEnd As Boolean
@@ -25,7 +27,7 @@ Private $sCategories As String          ' Categories list
 Private $sHome As String                ' Home user directory
 Private $sVersion As String
 Private $sDescription As String
-Private $sSavePath As String
+Private $bDescription As Boolean
 
 Private $sSupportPackage As String
 
@@ -59,6 +61,7 @@ Public Sub CheckProgram()
   
   If Not Project.CheckProgram("dh_install") Then DKPG_PROG = "dh_install"
   If Not Project.CheckProgram("rpmbuild") Then RPMBUILD_PROG = "rpmbuild"
+  If Not Project.CheckProgram("fakeroot") Then FAKEROOT_PROG = "fakeroot"
   If Not Project.CheckProgram("tar-1.13") Then 
     TAR_1_13_PROG = "tar-1.13"
   Else If Not Project.CheckProgram("tar") Then 
@@ -67,7 +70,7 @@ Public Sub CheckProgram()
   If Not Project.CheckProgram("autoconf") Then AUTOCONF_PROG = "autoconf"
   If Not Project.CheckProgram("automake") Then AUTOMAKE_PROG = "automake"
   If Not Project.CheckProgram("makepkg") Then MAKEPKG_PROG = "makepkg"
-  If Not Project.CheckProgram("makeself") Then MAKESELF_PROG = "makeself"
+  'If Not Project.CheckProgram("makeself") Then MAKESELF_PROG = "makeself"
   
 End
 
@@ -75,11 +78,12 @@ Public Sub CheckSystem(sSys As String) As String
   
   Select Case sSys
   
-    Case "mageia", "mandriva", "fedora", "suse"
+    Case "mageia", "fedora", "suse"
       If Not RPMBUILD_PROG Then Return Subst(("'&1' is missing."), "rpmbuild")
       
     Case "debian", "ubuntu"
       If Not DKPG_PROG Then Return Subst(("'&1' is missing."), "debhelper")
+      If Not FAKEROOT_PROG Then Return Subst(("'&1' is missing."), "fakeroot")
 
     Case "slackware"
       If Not TAR_1_13_PROG Then Return Subst(("'&1' is missing."), "tar-1.13")
@@ -92,8 +96,8 @@ Public Sub CheckSystem(sSys As String) As String
     Case "archlinux"
       If Not MAKEPKG_PROG Then Return Subst(("'&1' is missing."), "makepkg")
       
-    Case "self"
-      If Not MAKESELF_PROG Then Return Subst(("'&1' is missing."), "makeself")
+    'Case "self"
+    '  If Not MAKESELF_PROG Then Return Subst(("'&1' is missing."), "makeself")
 
     Case Else
       Return
@@ -195,11 +199,11 @@ End
 Private Sub InitMake(sSys As String)
   
   If Project.CreateEachDirectory Then
-    Path = $sSavePath &/ sSys
-    Try Mkdir $sSavePath
+    Path = Dir &/ sSys
+    Try Mkdir Dir
     Try Mkdir Path
   Else 
-    Path = $sSavePath
+    Path = Dir
     Try Mkdir Path
   Endif
 
@@ -228,10 +232,12 @@ Private Sub InitMake(sSys As String)
 
   $sVersion = GetVersion()
 
-  If Project.Description Then
-    $sDescription = RemoveEmptyLines(Project.Description)
+  $sDescription = RemoveEmptyLines(Project.Description)
+  If $sDescription Then
+    $bDescription = True
   Else
-    $sDescription = "Missing description"
+    $sDescription = "Missing description."
+    $bDescription = False
   Endif
 
   With Project.Components
@@ -241,7 +247,7 @@ Private Sub InitMake(sSys As String)
       $sSupportPackage = "gb.gui.qt"
     Endif
   End With
-
+  
 End
 
 Public Function Make() As Boolean
@@ -252,8 +258,12 @@ Public Function Make() As Boolean
   Dim sPath As String
   Dim aVer As String[]
   
-  aVer = Split(System.FullVersion, ".")
-  MIN_VERSION = aVer[0] & "." & aVer[1]
+  If Project.RuntimeVersion Then
+    MIN_VERSION = Project.RuntimeVersion
+  Else
+    aVer = Split(System.FullVersion, ".")
+    MIN_VERSION = aVer[0] & "." & aVer[1]
+  Endif
 
   If Project.Systems.Exist("slackware") Then 
     If Project.MakeExecutable(True, True) Then Return True
@@ -273,7 +283,6 @@ Public Function Make() As Boolean
   Project.RefreshKey(sPath)
   If bAdd Then VersionControl.AddFile(sPath)
   
-  $sSavePath = Path
   For Each sSys In Project.Systems
     If MakePackage(sSys) Then Return True
   Next
@@ -575,7 +584,7 @@ Private Function GetDependency(sLib As String) As String
 
 End
 
-Private Sub PrintOnlyShowIn(hFile As File, sCategories As String)
+Private Sub PrintOnlyShowIn(cLine As Collection, sCategories As String)
   
   Dim aCat As String[] = Split(sCategories, ";", "", True)
   Dim sCat As String
@@ -589,37 +598,89 @@ Private Sub PrintOnlyShowIn(hFile As File, sCategories As String)
       Endif
     Next
     
-    If aOnly.Count Then Print #hFile, "ShowOnlyIn="; aOnly.Join(";"); ";"
+    If aOnly.Count Then cLine["ShowOnlyIn"] = aOnly.Join(";") & ";"
     
   Endif
   
 End
 
-Private Sub PrintDesktopFile(hFile As File, sExec As String, sIcon As String, Optional sExtraCat As String)
+Private Sub MakeOneLine(sStr As String) As String
+
+  Dim iLen As Integer
   
+  sStr = Replace(sStr, "\r", "")
+  sStr = Replace(sStr, "\n", " ")
+  sStr = Replace(sStr, "\t", " ")
+  
+  Repeat
+    iLen = Len(sStr)
+    sStr = Replace(sStr, "  ", " ")
+  Until Len(sStr) = iLen
+  
+  Return Trim(sStr)
+
+End
+
+Private Sub PrintTranslatedDesktopEntry(cLine As Collection, sEntry As String, sText As String)
+
+  Dim sLang As String
+  Dim sTrans As String
+  
+  cLine[sEntry] = MakeOneLine(sText)
+  
+  For Each sLang In Project.GetTranslations()
+    sTrans = CTranslation.FindTranslation(Language.GetPath(sLang, "po"), sText)
+    If sTrans Then cLine[sEntry & "[" & sLang & "]"] = MakeOneLine(sTrans)
+  Next
+
+End
+
+Private Sub PrintDesktopFile(hFile As File, sExec As String, sIcon As String, Optional sExtraCat As String)
+
+  Dim cLine As New Collection
+  Dim sExtra As String
+  Dim iPos As Integer
+    
   Print #hFile, "[Desktop Entry]"
   Print #hFile, "Version=1.0"
-  Print #hFile, "Name=";    
+
   If Project.Title Then
-   Print #hFile, Project.Title
+    PrintTranslatedDesktopEntry(cLine, "Name", Project.Title)
   Else
-    Print #hFile, Project.Name
+    PrintTranslatedDesktopEntry(cLine, "Name", Project.Name)
   Endif
-  Print #hFile, "Comment=";    
-  If $sDescription Then
-    Print #hFile, Replace($sDescription, "\n", " ")
-  Else
-    Print #hFile, Project.Name
+
+  If $bDescription Then PrintTranslatedDesktopEntry(cLine, "Comment", Project.Description)
+  
+  cLine["Exec"] = sExec
+  cLine["Icon"] = sIcon
+  cLine["Terminal"] = IIf(IsConsoleProject(), "true", "false")
+  cLine["Type"] = "Application"
+  cLine["StartupNotify"] = "true"
+  cLine["Categories"] = sExtraCat & $sCategories
+  If Project.MimeTypes.Count Then cLine["MimeType"] = Project.MimeTypes.Join(";")
+  PrintOnlyShowIn(cLine, $sCategories)
+  
+  If Trim(Project.ExtraDesktop) Then
+    For Each sExtra In Split(Project.ExtraDesktop, "\n")
+      sExtra = Trim(sExtra)
+      If Not sExtra Then Continue
+      If InStr("#;=", Left(sExtra)) Then Continue
+      iPos = InStr(sExtra, "=")
+      cLine[RTrim(Left(sExtra, iPos - 1))] = LTrim(Mid$(sExtra, iPos + 1))
+    Next
   Endif
-  Print #hFile, "Exec="; sExec '/usr/bin/"; $sName & ".gambas"
-  Print #hFile, "Icon="; sIcon '/usr/share/pixmaps/" & sIcon
-  Print #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
-  Print #hFile, "Type=Application"
-  Print #hFile, "StartupNotify=true"
-  Print #hFile, "Categories="; sExtraCat; $sCategories
-  If Project.MimeTypes.Count Then Print #hFile, "MimeType="; Project.MimeTypes.Join(";")
-  PrintOnlyShowIn(hFile, $sCategories)
-  If Trim(Project.ExtraDesktop) Then Print #hFile, Trim(Project.ExtraDesktop)
+  
+  For Each sExtra In ["Name", "Comment", "Exec", "Icon", "Terminal", "Type", "StartupNotify", "Categories", "MimeType", "ShowOnlyIn"]
+    If cLine[sExtra] Then
+      Print #hFile, sExtra; "="; cLine[sExtra]
+      cLine.Remove(sExtra)
+    Endif
+  Next
+  
+  For Each sExtra In cLine
+    Print #hFile, cLine.Key; "="; sExtra
+  Next
   
 End
 
@@ -631,13 +692,13 @@ Private Sub RunCommand(sCmd As String, Optional sDir As String)
   If sDir Then
     AddLog("cd " & Shell$(sDir))
     AddLog(sCmd)
-    Shell "(cd " & SConv(Shell$(sDir)) & ";" & sCmd & ") 2>&1" For Input As "Process"
+    Shell "cd " & SConv(Shell$(sDir)) & " && " & sCmd & " 2>&1" For Input As "Process"
   Else
     AddLog(sCmd)
     Shell sCmd & " 2>&1" For Input As "Process"
   Endif
   Repeat
-    Sleep 0.01 
+    Sleep 0.02 
     Wait
   Until $bEnd
   
@@ -682,7 +743,7 @@ MAKE_PACKAGE:
   
   Select Case sSys
   
-    Case "mageia", "mandriva", "fedora", "suse"
+    Case "mageia", "fedora", "suse"
       MakeRpmSupportPackage(sSys, sSupport, aPackage)
   
     Case "debian", "ubuntu"
@@ -716,7 +777,7 @@ Private Function MakePackage(sSys As String) As Boolean
   
   Select Case sSys
   
-    Case "mageia", "mandriva", "fedora", "suse"
+    Case "mageia", "fedora", "suse"
       MakeRpmPackage(sSys)
   
     Case "debian", "ubuntu"
@@ -753,7 +814,11 @@ Private Sub GetDebianBuildPackageCommand() As String
   Dim sCmd As String
 
   sCmd = "dpkg-buildpackage -d -rfakeroot"
-  If Not Project.PackageSignature Then sCmd &= " -uc -us"
+  If Project.PackageSignature Then
+    sCmd &= " -k" & Shell(Project.Address)
+  Else
+    sCmd &= " -uc -us"
+  Endif
   Return sCmd
 
 End
@@ -810,9 +875,13 @@ Private Function MakeDebPackage(sSys As String)
   ' Step 1. Create the build directory
 
   AddLog(("Making build directory.")) 
-  sPackagePath = Path &/ Subst("&1-&2", sPackageName, $sVersion)
 
-  Try Shell "rm -Rf " & Shell$(sPackagePath) Wait
+  RunCommand("rm -f " & Shell(Path &/ Subst("&1_&2", sPackageName, $sVersion)) & "*")
+
+  sPackagePath = Path &/ Subst("&1-&2", sPackageName, $sVersion)
+  RunCommand("rm -Rf " & Shell$(sPackagePath))
+  RunCommand("rm -Rf " & Shell$(sPackagePath & ".orig"))
+
   Mkdir sPackagePath
   Mkdir sPackagePath &/ "src"
   Mkdir sPackagePath &/ "debian"
@@ -866,7 +935,7 @@ Private Function MakeDebPackage(sSys As String)
   If Project.Type = Project.TYPE_NORMAL Then
     AddLog(("Creating desktop file..."))
     hFile = Open sPackagePath &/ "debian/" & sPackageName & ".desktop" For Create
-    PrintDesktopFile(hFile, "/usr/bin/" & $sName, sIcon)
+    PrintDesktopFile(hFile, $sName, sIcon)
     Close #hFile
   Endif 
   
@@ -1045,10 +1114,12 @@ Private Function MakeDebPackage(sSys As String)
   Print "\tdh_testroot"
   Print "\tdh_prep"
   Print "\tdh_installdirs" 
-  If Project.Type = Project.TYPE_COMPONENT Then 
-      Print "\tcp src" &/ $sName & "/.component  $(CURDIR)/debian/" & sPackageName & "/usr/lib/gambas" & System.Version & "/" & Shell$($sComponentName) & ".component"
-      Print "\tcp src" &/ $sName & "/.info  $(CURDIR)/debian/" & sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sComponentName) & ".info " ""
-      Print "\tcp src" &/ $sName & "/.list  $(CURDIR)/debian/" & sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sComponentName) & ".list"
+  If Project.Type = Project.TYPE_NORMAL Then
+    If $sName <> sPackageName Then Print "\tln -s " & Shell$($sName) & " $(CURDIR)/debian" &/ sPackageName &/ "/usr/bin" &/ Shell$(sPackageName)
+  Else If Project.Type = Project.TYPE_COMPONENT Then 
+    Print "\tcp src" &/ $sName & "/.component  $(CURDIR)/debian/" & sPackageName & "/usr/lib/gambas" & System.Version & "/" & Shell$($sComponentName) & ".component"
+    Print "\tcp src" &/ $sName & "/.info  $(CURDIR)/debian/" & sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sComponentName) & ".info " ""
+    Print "\tcp src" &/ $sName & "/.list  $(CURDIR)/debian/" & sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sComponentName) & ".list"
   Endif 
   Print "\ttouch install-stamp"
   Print 
@@ -1301,12 +1372,19 @@ Private Sub FormatRpmPackageName(sName As String) As String
   Dim I As Integer
   Dim sCar As String
   Dim sRes As String
+  Dim iLen As Integer
 
   For I = 1 To Len(sName)
     sCar = Mid$(sName, I, 1)
     If Not IsLetter(sCar) And If Not IsDigit(sCar) Then sCar = "-"
     sRes &= sCar
   Next
+  
+  Do
+    iLen = Len(sRes)
+    sRes = Replace(sRes, "--", "-")
+    If Len(sRes) = iLen Then Break
+  Loop
   
   Return sRes
 
@@ -1345,21 +1423,17 @@ Private Function MakeRpmPackage(sSys As String)
     Case "mageia"
       sDistribution = "Mageia"
       sVendor = "Mageia"
-      sRelease &= "mga"
-
-    Case "mandriva"
-      sDistribution = "Mandriva"
-      sVendor = "MandrivaSoft"
-      sRelease &= "mdv"
+      sRelease &= ".mga"
 
     Case "fedora"
       sDistribution = "Fedora"
       sVendor = "Fedora"
+      sRelease &= ".fdr"
 
     Case "suse"
       sDistribution = "OpenSUSE"
       sVendor = "Novell"
-      sRelease &= "suse"
+      sRelease &= ".suse"
 
   End Select
   
@@ -1426,7 +1500,9 @@ Private Function MakeRpmPackage(sSys As String)
   Print #hFile, "License: "; If(Project.License, Project.License, "GPL")
   Print #hFile, "Group: " & Project.Groups[sSys]
   Print #hFile, "BuildRoot: %{_tmppath}/%{name}-%{version}-${release}-buildroot"
-  Print #hFile, "Prefix: %{_prefix}"
+  If sSys <> "mageia" Then
+    Print #hFile, "Prefix: %{_prefix}"
+  Endif
     'PRINT #hFile, "BuildRequires: gambas2-ide"
   Print #hFile, "BuildArch: noarch"
 
@@ -1445,10 +1521,12 @@ Private Function MakeRpmPackage(sSys As String)
 
   Print #hFile, "\n%description\n" & $sDescription & "\nThis program is written in Gambas, so you will need Gambas to be installed."
 
-  Print #hFile, "\n%prep"
-  Print #hFile, "rm -rf %{buildroot}"
+    Print #hFile, "\n%prep"
+  If sSys <> "mageia" Then
+    Print #hFile, "rm -rf %{buildroot}"
+  Endif
 
-  Print #hFile, "\n%setup -q -n " & Shell$($sName)
+  Print #hFile, "%setup -q -n " & Shell$($sName)
 
   If Project.Type = Project.TYPE_COMPONENT Then
 
@@ -1482,8 +1560,7 @@ Private Function MakeRpmPackage(sSys As String)
     Print #hFile, "\n%install"
   
     If Project.Type = Project.TYPE_NORMAL Then
-      Print #hFile, "install -d %{buildroot}/%{_bindir}"
-      Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_bindir}" &/ Shell$($sName)
+      Print #hFile, "install -Dp "; Shell$($sName); ".gambas %{buildroot}/%{_bindir}" &/ Shell$($sName)
     Else If Project.Type = Project.TYPE_LIBRARY Then
       Print #hFile, "install -d %{buildroot}/%{_libdir}/gambas"; System.Version; "/"; LCase($sVendor)
       Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_libdir}/gambas"; System.Version; "/"; LCase($sVendor); "/"; Shell$($sLibraryName & ".gambas")
@@ -1501,40 +1578,19 @@ Private Function MakeRpmPackage(sSys As String)
     
       Select Case sSys
     
-        Case "mandriva"
-    
-          Print #hFile, "install -d %{buildroot}/%{_miconsdir}"
-          Print #hFile, "install -d %{buildroot}/%{_iconsdir}"
-          Print #hFile, "install -d %{buildroot}/%{_liconsdir}"
-          Print #hFile, "install -p .icon/16.png %{buildroot}/%{_miconsdir}" &/ Shell$(sIcon)
-          Print #hFile, "install -p .icon/32.png %{buildroot}/%{_iconsdir}" &/ Shell$(sIcon)
-          Print #hFile, "install -p .icon/48.png %{buildroot}/%{_liconsdir}" &/ Shell$(sIcon)
-  
-          Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
-          Print #hFile, "cat << EOF > %{buildroot}/%{_datadir}/applications/%{name}.desktop"
-        
-          PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon, "X-MandrivaLinux-" & Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-") & ";")
-        
-          Print #hFile, "EOF"
-          Print #hFile, "\n%post"
-          Print #hFile, "%{update_menus}"
-    
-          Print #hFile, "\n%postun"
-          Print #hFile, "%{clean_menus}"
-    
         Case "mageia"
     
-          Print #hFile, "install -d %{buildroot}/%{_datadir}/icons"
-          Print #hFile, "install -d %{buildroot}/%{_datadir}/icons/mini"
-          Print #hFile, "install -d %{buildroot}/%{_datadir}/icons/large"
-          Print #hFile, "install -p .icon/16.png %{buildroot}/%{_datadir}/icons/mini" &/ Shell$(sIcon)
-          Print #hFile, "install -p .icon/32.png %{buildroot}/%{_datadir}/icons" &/ Shell$(sIcon)
-          Print #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/icons/large" &/ Shell$(sIcon)
+          Print #hFile, "install -Dp .icon/16.png %{buildroot}/%{_datadir}/icons/hicolor/16x16/apps" &/ Shell$(sIcon)
+          Print #hFile, "install -Dp .icon/32.png %{buildroot}/%{_datadir}/icons/hicolor/32x32/apps" &/ Shell$(sIcon)
+          Print #hFile, "install -Dp .icon/48.png %{buildroot}/%{_datadir}/icons/hicolor/48x48/apps" &/ Shell$(sIcon)
+          Print #hFile, "install -Dp .icon/64.png %{buildroot}/%{_datadir}/icons/hicolor/64x64/apps" &/ Shell$(sIcon)
+          
+          If $sName <> sPackageName Then Print #hFile, "ln -s " & Shell$($sName) & " %{buildroot}/%{_bindir}/" & Shell$(sPackageName)
   
           Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
           Print #hFile, "cat << EOF > %{buildroot}/%{_datadir}/applications/%{name}.desktop"
         
-          PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon, "X-MandrivaLinux-" & Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-") & ";")
+          PrintDesktopFile(hFile, $sName, $sName) ', "X-MandrivaLinux-" & Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-") & ";")
         
           Print #hFile, "EOF"
     
@@ -1543,10 +1599,12 @@ Private Function MakeRpmPackage(sSys As String)
           Print #hFile, "install -d %{buildroot}/%{_datadir}/pixmaps"
           Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
           Print #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ Shell$(sIcon)
+          
+          If $sName <> sPackageName Then Print #hFile, "ln -s " & Shell$($sName) & " %{buildroot}/%{_bindir}/" & Shell$(sPackageName)
     
           Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
           
-          PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon, "X-RedHat-Extra;")
+          PrintDesktopFile(hFile, $sName, sIcon, "X-RedHat-Extra;")
           
           Print #hFile, "EOF"
     
@@ -1555,10 +1613,12 @@ Private Function MakeRpmPackage(sSys As String)
           Print #hFile, "install -d %{buildroot}/%{_datadir}/pixmaps"
           Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
           Print #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ Shell$(sIcon)
+          
+          If $sName <> sPackageName Then Print #hFile, "ln -s " & Shell$($sName) & " %{buildroot}/%{_bindir}/" & Shell$(sPackageName)
     
           Print #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
           
-          PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon)
+          PrintDesktopFile(hFile, $sName, sIcon)
           
           Print #hFile, "EOF"
           
@@ -1568,11 +1628,20 @@ Private Function MakeRpmPackage(sSys As String)
     
   Endif
 
-  Print #hFile, "\n%clean"
-  Print #hFile, "rm -rf %{buildroot}"
+  If sSys <> "mageia" Then
 
-  Print #hFile, "\n%files"
-  Print #hFile, "%defattr(-,root,root)"
+    Print #hFile, "\n%clean"
+    Print #hFile, "rm -rf %{buildroot}"
+    
+  Endif
+  
+    Print #hFile, "\n%files"
+    
+  If sSys <> "mageia" Then
+    
+    Print #hFile, "%defattr(-,root,root)"
+
+  Endif
   
   If Project.Type = Project.TYPE_COMPONENT Then
   
@@ -1591,6 +1660,7 @@ Private Function MakeRpmPackage(sSys As String)
   
     If Project.Type = Project.TYPE_NORMAL Then
       Print #hFile, FormatFileInList("%{_bindir}" &/ $sName)
+      Print #hFile, FormatFileInList("%{_bindir}" &/ sPackageName)
     Else If Project.Type = Project.TYPE_LIBRARY Then
       Print #hFile, FormatFileInList("%{_libdir}/gambas" & System.Version &/ LCase($sVendor) &/ $sLibraryName & ".gambas")
     Endif
@@ -1601,21 +1671,11 @@ Private Function MakeRpmPackage(sSys As String)
       
       Select Case sSys
     
-        Case "mandriva"
+        Case "mageia"
     
-          Print #hFile, FormatFileInList("/%{_miconsdir}" &/ sIcon)
-          Print #hFile, FormatFileInList("/%{_iconsdir}" &/ sIcon)
-          Print #hFile, FormatFileInList("/%{_liconsdir}" &/ sIcon)
+          Print #hFile, FormatFileInList("%{_datadir}/icons/hicolor/*/apps" &/ sIcon)
                 'PRINT #hFile, "/%{_menudir}" &/ sName
-          Print #hFile, "/%{_datadir}/applications/%{name}.desktop"
-        
-        Case "mandriva", "mageia"
-    
-          Print #hFile, FormatFileInList("/%{_datadir}/icons/mini" &/ sIcon)
-          Print #hFile, FormatFileInList("/%{_datadir}/icons" &/ sIcon)
-          Print #hFile, FormatFileInList("/%{_datadir}/icons/large" &/ sIcon)
-                'PRINT #hFile, "/%{_menudir}" &/ sName
-          Print #hFile, "/%{_datadir}/applications/%{name}.desktop"
+          Print #hFile, "%{_datadir}/applications/%{name}.desktop"
         
         Case "fedora"
     
@@ -1719,28 +1779,25 @@ Private Function MakeRpmSupportPackage(sSys As String, sSupport As String, aComp
   $sFormatEqual = $sFormatMinMax
   
   sPackageName = FormatRpmPackageName($sUnsafePackageName) & "-" & sSupport
+  
+  sRelease = CStr(Project.PackageVersion)
 
   Select Case sSys
 
     Case "mageia"
       sDistribution = "Mageia"
       sVendor = "Mageia"
-      sRelease = "1mga"
-
-    Case "mandriva"
-      sDistribution = "Mandriva"
-      sVendor = "MandrivaSoft"
-      sRelease = "1mdv"
+      sRelease &= ".mga"
 
     Case "fedora"
       sDistribution = "Fedora"
       sVendor = "Fedora"
-      sRelease = "1"
+      sRelease &= ".fdr"
 
     Case "suse"
       sDistribution = "OpenSUSE"
       sVendor = "Novell"
-      sRelease = "1suse"
+      sRelease &= ".suse"
 
   End Select
   
@@ -1783,7 +1840,9 @@ Private Function MakeRpmSupportPackage(sSys As String, sSupport As String, aComp
   Print #hFile, "License: "; If(Project.License, Project.License, "GPL")
   Print #hFile, "Group: " & Project.Groups[sSys]
   'Print #hFile, "BuildRoot: %{_tmppath}/%{name}-%{version}-${release}-buildroot"
-  Print #hFile, "Prefix: %{_prefix}"
+  If sSys <> "mageia" Then
+    Print #hFile, "Prefix: %{_prefix}"
+  Endif
     'PRINT #hFile, "BuildRequires: gambas2-ide"
   Print #hFile, "BuildArch: noarch"
 
@@ -1796,7 +1855,9 @@ Private Function MakeRpmSupportPackage(sSys As String, sSupport As String, aComp
   Print #hFile, "\n%description\n"; "This is the "; sSupport; " support for "; Project.Name
 
   Print #hFile, "\n%files"
-  Print #hFile, "%defattr(-,root,root)"
+  If sSys <> "mageia" Then
+    Print #hFile, "%defattr(-,root,root)"
+  Endif
 
   Print #hFile, "\n%changelog\n"
   Print #hFile, ChangeLog
@@ -1999,6 +2060,7 @@ Private Sub MakeTgzPackage(sSys As String)
     If Project.Type = Project.TYPE_NORMAL Then
       Copy Project.GetExecPath() To sBuildDir &/ "/usr/bin" &/ $sName
       Chmod sBuildDir &/ "/usr/bin" &/ $sName To "..x..x..x"
+      If $sName <> sPackageName Then Link $sName To sBuildDir &/ "/usr/bin" &/ sPackageName
     Else If Project.Type = Project.TYPE_LIBRARY Then
       Copy Project.GetExecPath() To sBuildDir &/ "/usr/lib/gambas" & System.Version &/ LCase($sVendor) &/ $sLibraryName & ".gambas"
       Chmod sBuildDir &/ "/usr/lib/gambas" & System.Version &/ LCase($sVendor) &/ $sLibraryName & ".gambas" To "..x..x..x"
@@ -2022,7 +2084,7 @@ Private Sub MakeTgzPackage(sSys As String)
     
       hFile = Open sBuildDir &/ "/usr/share/applications/" & sPackageName & ".desktop" For Create
     
-      PrintDesktopFile(hFile, "/usr/bin/" & $sName, "/usr/share/pixmaps/" & $sName & ".png")
+      PrintDesktopFile(hFile, $sName, "/usr/share/pixmaps/" & $sName & ".png")
     
       Close #hFile
       ' if we are creating a project with desktop icon/menu we need to run a doinst.sh in the package
@@ -2191,6 +2253,8 @@ Private Sub MakeAutotoolsPackage((sSys) As String)
   Dim sCmd As String
   Dim sPackage As String
   
+  sPackage = GetPackageName($sName)
+  
   ' 1. Create the temporary build directory
 
   AddLog(("Making build directory."))
@@ -2205,7 +2269,7 @@ Private Sub MakeAutotoolsPackage((sSys) As String)
   Try sCmd = Scan(Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False), "*/bin/gbc" & System.Version & " *")[1]
 
   'Mkdir sBuildDir &/ Project.Name
-  Shell "cp -rL " & Shell$(Project.Dir) & " " & Shell$(sBuildDir &/ Project.Name) Wait 
+  Shell "cp -rL " & Shell$(Project.Dir) & " " & Shell$(sBuildDir &/ $sName) Wait 
   sFile = Replace(File.Load("install/acinclude.m4"), "$(VERSION)", CStr(System.Version))
   sFile = Replace(sFile, "$(PACKAGE_VERSION)", $sVersion)
   sFile = Replace(sFile, "$(EXTRA_TEST)", Project.ExtraAutoconfTest)
@@ -2216,8 +2280,8 @@ Private Sub MakeAutotoolsPackage((sSys) As String)
   
   ' 3. Create needed files (AUTHORS, README, COPYING, NEWS, ChangeLog, configure.ac)
   
-  If Exist(sBuildDir &/ Project.Name &/ "CHANGELOG") Then 
-    Move sBuildDir &/ Project.Name &/ "CHANGELOG" To sBuildDir &/ "ChangeLog"
+  If Exist(sBuildDir &/ $sName &/ "CHANGELOG") Then 
+    Move sBuildDir &/ $sName &/ "CHANGELOG" To sBuildDir &/ "ChangeLog"
   Endif  
 
   File.Save(sBuildDir &/ "ChangeLog", ChangeLog)
@@ -2229,11 +2293,12 @@ Private Sub MakeAutotoolsPackage((sSys) As String)
   hFile = Open sBuildDir &/ "configure.ac" For Create
     Print #hFile, "dnl -- package generated with gambas3 ide --"
     Print #hFile, ""
-    Print #hFile, "AC_INIT(configure.ac)"
+    Print #hFile, "AC_INIT([" & $sName & "],[" & $sVersion & "],[],[" & $sName & "])"
+    Print #hFile, "AC_CONFIG_SRCDIR([configure.ac])"
     If Project.Type = Project.TYPE_COMPONENT Then
-      Print #hFile, "GB_INIT_PROJECT([" & Project.Name & "],[" & $sComponentName & "])"
+      Print #hFile, "GB_INIT_PROJECT([" & $sName & "],[" & sPackage & "],[" & $sComponentName & "])"
     Else
-      Print #hFile, "GB_INIT_PROJECT([" & Project.Name & "])"
+      Print #hFile, "GB_INIT_PROJECT([" & $sName & "],[" & sPackage & "])"
     Endif
     Print #hFile, ""
     Print #hFile, "dnl -- create makefile --"
@@ -2252,7 +2317,7 @@ Private Sub MakeAutotoolsPackage((sSys) As String)
   Dec Application.Busy
   AddLog("")
 
-  sPackage = Dir(sBuildDir, Project.Name & "*" & $sVersion & "*")[0]
+  sPackage = Dir(sBuildDir, $sName & "*" & $sVersion & "*")[0]
   MoveFile(sBuildDir &/ sPackage, Path &/ GetPackagePrefix(Project.Type, $sVendor, $sVendorPrefix, Project.Prefix) & sPackage)
   AddLog(sPackage)
   
@@ -2323,7 +2388,7 @@ Private Function MakeArchPackage(sSys As String)
     Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(sBuildDir &/ Project.Name & ".png")
 
     hFile = Open sBuildDir &/ sPackageName & ".desktop" For Create
-    PrintDesktopFile(hFile, "/usr/bin/" & $sName, "/usr/share/pixmaps/" & $sName & ".png")
+    PrintDesktopFile(hFile, $sName, "/usr/share/pixmaps/" & $sName & ".png")
     Close #hFile
     
   Endif 
@@ -2399,6 +2464,7 @@ Private Function MakeArchPackage(sSys As String)
   
         Print #hFile, "  install -d ${pkgdir}/usr/bin"
         Print #hFile, "  install -m755 " & $sName & ".gambas ${pkgdir}/usr/bin" &/ $sName
+        If $sName <> sPackageName Then Print #hFile, "  ln -s " & Shell$($sName) & " $(pkgdir)/usr/bin" &/ Shell$(sPackageName)
         Print #hFile, "  install -D .." &/ Project.Name & ".png \\"
         Print #hFile, "    ${pkgdir}/usr/share/pixmaps" &/ Project.Name & ".png"
         Print #hFile, "  install -D .." &/ sPackageName & ".desktop \\"

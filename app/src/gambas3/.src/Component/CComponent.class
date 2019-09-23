@@ -5,6 +5,7 @@
 ' Static Public (Classes) As Collection
 
 Static Private $iKey As Integer
+Static Private $hUnknown As CComponent
 
 Public Const PROJECT_NAME As String = "$"
 
@@ -12,6 +13,7 @@ Public Const STABLE As Integer = 0
 Public Const STABLE_NOT_FINISHED As Integer = 1
 Public Const UNSTABLE As Integer = 2
 Public Const DEPRECATED As Integer = 3
+Public Const UNKNOWN As Integer = 4
 
 Public Documentation As CDocumentation
 Public (Key) As String
@@ -1731,3 +1733,19 @@ Catch
   Return ["`" & Error.Where & ": " & Error.Text & "`"]
 
 End
+
+Static Public Sub GetUnknown(sKey As String) As CComponent
+  
+  If Not $hUnknown Then
+    $hUnknown = New CComponent(Null)
+    $hUnknown.Loaded = True
+    $hUnknown.State = UNKNOWN
+  Endif
+  
+  $hUnknown.Key = sKey
+  $hUnknown.Name = CDocumentation.GetName(sKey)
+  
+  Return $hUnknown
+  
+End
+

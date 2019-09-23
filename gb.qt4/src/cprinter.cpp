@@ -215,6 +215,19 @@ BEGIN_PROPERTY(Printer_Page)
 
 END_PROPERTY
 
+BEGIN_METHOD(Printer_SetPage, GB_INTEGER page)
+
+	THIS->page = VARG(page);
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Printer_IsCountSet)
+
+	GB.ReturnBoolean(THIS->page_count_set);
+	THIS->page_count_set = FALSE;
+
+END_METHOD
+
 BEGIN_PROPERTY(Printer_Name)
 
 	if (READ_PROPERTY)
@@ -484,6 +497,9 @@ GB_DESC PrinterDesc[] =
 	GB_METHOD("_free", NULL, Printer_free, NULL),
 	
 	GB_METHOD("Print", "b", Printer_Print, NULL),
+	GB_METHOD("_SetPage", NULL, Printer_SetPage, "(Page)i"),
+	GB_METHOD("_IsCountSet", "b", Printer_IsCountSet, NULL),
+
 	GB_METHOD("Configure", "b", Printer_Configure, NULL),
 	GB_METHOD("Cancel", NULL, Printer_Cancel, NULL),
 	

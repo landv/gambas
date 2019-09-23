@@ -551,11 +551,7 @@ static int do_query(DB_DATABASE *db, const char *error, PGresult **pres, const c
 	else
 		query = qtemp;
 
-	if (DB.IsDebug())
-	{
-		fprintf(stderr, "gb.db.postgresql: %p: %s\n", conn, query);
-		fflush(stderr);
-	}
+	DB.Debug("gb.db.postgresql", "%p: %s", conn, query);
 
 	res = PQexec(conn, query);
 	ret = check_result(res, error);

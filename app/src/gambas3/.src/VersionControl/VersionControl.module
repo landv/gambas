@@ -29,6 +29,13 @@ Public LANG_ENV As String[] = ["LC_ALL=C.UTF-8", "LANG=C.UTF-8", "LANGUAGE=C.UTF
 Public Const DELIM_CHANGE As String = ("This line and the following will be ignored")
 Public Enum ACCEPT_OURS = 1, ACCEPT_THEIRS = 2
 
+Private Sub OnVersionControlChange()
+
+  FMain.OnVersionControlChange
+  FDebugInfo.OnVersionControlChange  
+
+End
+
 Public Sub Refresh()
 
   $hVC = CVersionControl
@@ -46,7 +53,7 @@ Public Sub Refresh()
   
   $bAuth = False
   CheckPaths
-  FMain.OnVersionControlChange
+  OnVersionControlChange
   
 End
 
@@ -56,7 +63,7 @@ Public Sub Disable()
   
   $hVC = CVersionControl
   $bEnabled = False
-  FMain.OnVersionControlChange
+  OnVersionControlChange
   
 End
 
@@ -66,7 +73,7 @@ Public Sub Insert(sText As String)
   If $hEditor Then
     $hEditor.Print(DConv(sText))
   Else
-    If Not Settings["/QuietExternalCommands", False] Then FOutput.Insert(sText)
+    If Not Settings["/QuietExternalCommands", False] Then FDebugInfo.InsertVersionControl(sText)
   Endif
 
 End
@@ -124,10 +131,10 @@ Public Sub Run(aCmd As String[], Optional bIdent As Boolean, Optional bOutput As
     
     If $bEnd Then Break
     
-    If DateDiff($dOutput, Now, gb.Second) >= 30 Then
+    If DateDiff($dOutput, Now, gb.Second) >= 15 Then
       Close #hProcess
       hProcess.Kill
-      Insert("** " & ("command timeout") & " **\n")
+      Process_Error(("Command timeout.") & "\n" & ("Please check your network connection.") & "\n")
     Endif
     
     Sleep 0.1
@@ -141,7 +148,7 @@ End
 
 Public Sub Process_Error(({Error}) As String)
   
-  $sLastResult &= {Error}
+  $sOutput &= {Error}
   Insert({Error})
   
 End
@@ -153,7 +160,7 @@ Public Sub Process_Read()
   Dim iPos As Integer
   Dim sLine As String
 
-  sData = Read #Last, -1024
+  sData = Read #Last, -4096
   $sOutput &= Replace(sData, "\r", "")
   If $bOutput Then Insert(sData)
   'Insert(sData)
@@ -360,11 +367,10 @@ Public Sub Update()
   Next
   Project.Workspace.Unlock
   
-  If aRemove.Count Then
-    
-    Project.Reload
+  Project.Reload
+  
+  If aRemove.Count Then    
     FMain.DoFilter(Project.FILTER_CONFLICT)
-    
   Endif
 
 End
@@ -638,3 +644,4 @@ Public Sub NeedMove() As Boolean
   Return $hVC.NeedMove
   
 End
+

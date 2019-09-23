@@ -39,6 +39,7 @@ Public Title As String
 Public Startup As String
 Public (Components) As String[]
 Public Libraries As String[]
+Public ExtraReferences As String[]
 Public Arguments As String[][]
 Public CurrentArgument As Integer
 Public Environment As String[]
@@ -81,6 +82,7 @@ Public VendorPrefix As String
 Public Url As String
 Public License As String
 Public CreateEachDirectory As Boolean
+Public RuntimeVersion As String
 
 Public PublishTags As String[]
 Public PublishDependencies As String[]
@@ -205,7 +207,7 @@ Public HasAdded As Integer
 Private $bTesting As Boolean
 
 ' All possible packager target systems
-Private $aSystems As String[] = ["archlinux", "autotools", "debian", "fedora", "mageia", "mandriva", "slackware", "suse", "ubuntu"]
+Private $aSystems As String[] = ["archlinux", "autotools", "debian", "fedora", "mageia", "slackware", "suse", "ubuntu"]
 
 ' Pretty background
 Public DEFAULT_BACKGROUND As String = "gambas"
@@ -292,7 +294,7 @@ Public Sub Main()
   Dim aOpenFile As New String[]
 
   'DB.Debug = True
-  
+    
   For iInd = 1 To Args.Count - 1
     sArg = Args[iInd]
     If sArg = "-t" Then
@@ -379,6 +381,7 @@ Public Sub Main()
   InitWebView
   ShowFileInTitle = Settings["/ShowFileInTitle", True]
   MHelp.ReadConfig
+  FDebugExpr.ReadConfig
   FMain.Load
   Application.MainWindow = FMain
 
@@ -573,7 +576,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean, sOpen
     Endif
   Endif
 
-  If bConvert And ReadOnly Then
+  If bConvert And If ReadOnly Then
     Message.Error(("This project is read-only.") & " " & ("It cannot be converted."))
     Return True
   Endif
@@ -585,6 +588,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean, sOpen
   If Right(sDir) = "/" Then sDir = Left(sDir, -1)
   
   Project.Dir = sDir
+  Bookmarks.Add(sDir, ("Current project"), "icon:/small/gambas")
 
   If bConvert Then
 
@@ -709,7 +713,6 @@ _INIT_AGAIN:
       Design.ReadBreakpoints
     Endif
   Endif
-  
   
   ReadProject
 
@@ -967,6 +970,8 @@ Public Function CloseProject() As Boolean
     
     'If IsFake() Then Shell "rm -rf " & Shell$(Project.Dir) Wait
 
+    Bookmarks.Remove(Dir)
+
     Path = ""
     {Dir} = ""
     UpdateTitle
@@ -1096,6 +1101,8 @@ Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup
   Dim sKey As String
   'Dim hStartup As Image
 
+  bStartup = False
+  
   'If Not $cImageCache["base"] Then $cImageCache["base"] = Picture["icon:/32/file"].Image
 
   If iSize = 0 Then iSize = 16
@@ -3033,6 +3040,8 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
     Return True
   Endif
 
+  bDoNotIncVersion = bDoNotIncVersion Or Project.Config["/Executable/DoNotIncrementVersion", False]
+
   Exec ["rm", "-rf", Project.Dir &/ ".gambas.save"] Wait
   Exec ["cp", "-rf", Project.Dir &/ ".gambas", Project.Dir &/ ".gambas.save"] Wait
   'MOVE Project.Dir &/ ".gambas" TO Project.Dir &/ ".gambas.save"
@@ -3160,6 +3169,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
   Components = New String[]
   Libraries = New String[]
+  ExtraReferences = New String[]
   LibraryPath = ""
   Title = ""
   TabSize = Settings["/DefaultTabSize", 2]
@@ -3194,6 +3204,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Prefix = False
   PackageName = ""
   PackageVersion = 1
+  RuntimeVersion = ""
   PackageSignature = False
   SourcePath = ""
   Type = TYPE_NORMAL
@@ -3249,12 +3260,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         'If JustUpdateVersion Then
         '  Components.Add(sVal)
         'Else
+          If Not Components.Exist(sVal) Then Components.Add(sVal)
           hComp = Project.Documentation[sVal]
-          If hComp And If Not hComp.Hidden Then
-            Components.Add(sVal)
-          Else
-            aMissing.Add(sVal)
-          Endif
+          If Not hComp Or If hComp.Hidden Then aMissing.Add(sVal)
         'Endif
 
       Case "library"
@@ -3309,7 +3317,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
       Case "createshortcut"
         CreateShortcut = CInt(sVal) <> 0
-
+        
       Case "runafter"
         RunAfterMakingExec = sVal
 
@@ -3447,6 +3455,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
       Case "vendorprefix"
         VendorPrefix = sVal
+        
+      Case "runtimeversion"
+        RuntimeVersion = UnQuote(sVal)
 
       Case "address"
         Address = sVal
@@ -3507,6 +3518,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         
       Case "donottranslate"
         DoNotTranslate = Split(sVal, ",", Chr$(34), True)
+        
+      Case "reference"
+        If Not ExtraReferences.Exist(sVal) Then ExtraReferences.Add(sVal)
 
     End Select
 
@@ -3664,6 +3678,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If CreateEachDirectory Then Print #hFic, "CreateEachDirectory=1"
   If MimeTypes.Count Then Print #hFic, "MimeTypes="; MimeTypes.Join(",", Chr$(34))
   If ExtraDesktop Then Print #hFic, "ExtraDesktop=" & Quote(ExtraDesktop)
+  If RuntimeVersion Then Print #hFic, "RuntimeVersion=" & Quote(RuntimeVersion)
 
   Print #hFic, "Packager=1"
   If Systems.Count Then Print #hFic, "Systems="; Systems.Join(",")
@@ -3686,6 +3701,12 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If PublishCreateMenu Then Print #hFic, "CreateMenu=1"
   
   If DoNotTranslate.Count Then Print #hFic, "DoNotTranslate="; DoNotTranslate.Join(",", Chr$(34))
+  
+  If ExtraReferences Then
+    For Each sVal In ExtraReferences
+      Print #hFic, "Reference="; sVal
+    Next
+  Endif
 
   Close #hFic
 
@@ -4466,7 +4487,7 @@ Public Function CheckProjectName(sName As String, Optional sDir As String) As St
     Endif
 
     If Asc(sCar) > 127 Then Return ("Non-ASCII characters are forbidden in a project name.")
-    If InStr(" ?*/\\", sCar) Then Return ("The following characters are forbidden in a project name: ? * / \\ SPACE")
+    If InStr(" ?*/<>(){}\\", sCar) Then Return ("The following characters are forbidden in a project name:") & "\n\n<tt>? * / \\ " & ("SPACE") & " ( ) &lt; > { }</tt>"
 
   Next
 
@@ -4605,12 +4626,17 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
 
   ' Sort components
 
-  For Each hComp In Documentation.Components
-    If Components.Find(hComp.Key) >= 0 Then
-      aLib.Add(hComp.Key)
-    Endif
+  ' For Each hComp In Documentation.Components
+  '   If Components.Find(hComp.Key) >= 0 Then
+  '     aLib.Add(hComp.Key)
+  '   Endif
+  ' Next
+  ' Components = aLib.Copy()
+  aLib = Components.Copy()
+
+  For Each sLib In ExtraReferences
+    aLib.Add(sLib)
   Next
-  Components = aLib.Copy()
 
   For Each sLib In Libraries
     aLib.Add(File.Name(sLib))
@@ -4623,13 +4649,18 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
     Documentation.Reset
 
     For Each sLib In Components
-      Documentation[sLib].Load
+      hComp = Documentation[sLib]
+      If hComp Then hComp.Load
+    Next
+
+    For Each sLib In ExtraReferences
+      Documentation.AddLibrary(sLib)
     Next
 
     For Each sLib In Libraries
       Documentation.AddLibrary(sLib)
     Next
-
+    
     If Not $bTesting Then
       Documentation.LoadProjectComponent
       FToolBox.RefreshToolbar(bForce)
@@ -5330,6 +5361,26 @@ Public Sub HasTranslation(sLang As String) As Boolean
   Return Exist(Project.Dir &/ ".lang" &/ sLang & ".po")
 
 End
+
+Public Sub GetTranslations() As String[]
+
+  Dim sFile As String
+  Dim aLang As String[]
+  Dim sDir As String
+  
+  aLang = New String[]
+  sDir = Project.Dir &/ ".lang"
+  If IsDir(sDir) Then
+    For Each sFile In Dir(sDir, "*.po")
+      aLang.Add(File.BaseName(sFile))
+    Next
+    aLang.Sort
+  Endif
+  
+  Return aLang
+  
+End
+
 
 Public Sub MakeDirectoryIcon(Optional sDir As String)
 

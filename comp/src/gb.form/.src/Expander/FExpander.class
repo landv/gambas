@@ -6,11 +6,11 @@ Private $bInside As Boolean
 Private $bAnim As Boolean
 
 Private Const HIDE_TIME As Float = 0.1
+Private $sText As String
 
 Public Sub _new()
   
-  'UpdatePicture
-  UpdateTitle
+  'dwgTitle_Font
   
 End
 
@@ -62,7 +62,7 @@ Public Sub SetHidden(bHidden As Boolean)
   If bHidden = $bHidden Then Return 
   
   $bHidden = bHidden
-  btnExpand.Refresh
+  dwgTitle.Refresh
   
   If $bHidden Then 
 
@@ -70,14 +70,14 @@ Public Sub SetHidden(bHidden As Boolean)
 
     If $bAnim Then     
       eTime = Timer
-      DY = $H - panTitle.H
+      DY = $H - dwgTitle.H
       While Timer < (eTime + HIDE_TIME)
         Me.Parent.H = $H - ((Timer - eTime) / HIDE_TIME) * DY
         Wait
       Wend
     Endif
 
-    Me.Parent.H = panTitle.H
+    Me.Parent.H = dwgTitle.H
 
     panContainer.Hide
     GetParent()._Hide()
@@ -89,9 +89,9 @@ Public Sub SetHidden(bHidden As Boolean)
     
     If $bAnim Then 
       eTime = Timer
-      DY = $H - panTitle.H
+      DY = $H - dwgTitle.H
       While Timer < (eTime + HIDE_TIME)
-        Me.Parent.H = panTitle.H + ((Timer - eTime) / HIDE_TIME) * DY
+        Me.Parent.H = dwgTitle.H + ((Timer - eTime) / HIDE_TIME) * DY
         Wait
       Wend
     Endif
@@ -104,45 +104,31 @@ End
 
 Public Sub GetText() As String
   
-  Return lblTitle.Text
+  Return $sText
   
 End
 
 Public Sub SetText(sText As String)
   
-  lblTitle.Text = sText
-  UpdateTitle
+  $sText = sText
+  dwgTitle.Refresh
   
 End
 
 Public Sub GetFont() As Font
   
-  Return lblTitle.Font
+  Return dwgTitle.Font
   
 End
 
 Public Sub SetFont(hFont As Font)
   
-  lblTitle.Font = hFont
-  UpdateTitle
+  dwgTitle.Font = hFont
+  dwgTitle.Refresh
   
 End
 
 
-
-Public Sub btnExpand_Enter()
-
-  $bInside = True
-  btnExpand.Refresh
-
-End
-
-Public Sub btnExpand_Leave()
-
-  $bInside = False
-  btnExpand.Refresh
-
-End
 
 Public Sub btnExpand_MouseDown()
 
@@ -163,45 +149,13 @@ Public Sub SetAnimated(bAnim As Boolean)
   
 End
 
-Private Sub UpdateTitle()
+Public Sub dwgTitle_Font()
   
-  panTitle.H = Desktop.Scale + Max(Desktop.Scale * 2, ((lblTitle.Font.Height + Desktop.Scale - 1) \ Desktop.Scale) * Desktop.Scale)
-  btnExpand.W = Desktop.Scale * 2
+  dwgTitle.H = Desktop.Scale + Max(Desktop.Scale * 2, ((dwgTitle.Font.Height + Desktop.Scale - 1) \ Desktop.Scale) * Desktop.Scale)
   
 End
 
-Public Sub btnExpand_Draw()
-
-  Dim iFlag As Integer
-  Dim Y, W As Integer
-  
-  W = Desktop.Scale * 3 / 2
-  Y = (btnExpand.H - W) / 2
-  
-  If Not Me.Enabled Then iFlag += Draw.Disabled
-  If $bInside And If Me.Enabled Then 
-    iFlag += Draw.Hover
-    'Draw.Style.Button(0, Y, W, W, False, iFlag, True)
-  Endif
-
-  Draw.Style.Arrow(0, Y, W, W, If($bHidden, Align.Right, Align.Bottom), iFlag)
-  'Draw.Rect(0, Y, W, W)
-
-End
-
-Public Sub panTitle_Enter()
-
-  panTitle.Background = Color.Merge(Color.Background, Color.TextBackground)
-
-End
-
-Public Sub panTitle_Leave()
-
-  panTitle.Background = Color.Default
-
-End
-
-Public Sub panTitle_MouseDown()
+Public Sub dwgTitle_MouseDown()
 
   SetHidden(Not $bHidden)
 
@@ -219,3 +173,46 @@ Public Sub SetBorder(bBorder As Boolean)
   
 End
 
+
+Public Sub dwgTitle_Draw()
+
+  Dim iFlag As Integer
+  Dim Y, W As Integer
+  Dim D As Integer
+  
+  D = Desktop.Scale
+  W = D * 3 / 2
+  Y = (Paint.H - W) / 2
+  
+  If Not Me.Enabled Then iFlag += Draw.Disabled
+  If $bInside And If Me.Enabled Then iFlag += Draw.Hover
+  
+  If System.RightToLeft Then
+    Style.PaintArrow(Paint.W - W, Y, W, W, If($bHidden, Align.Left, Align.Bottom), iFlag)
+    If $bInside Then Paint.DrawTextShadow($sText, 0, 0, Paint.W - W - D, Paint.H, Align.Normal)
+    Paint.DrawText($sText, 0, 0, Paint.W - W - D, Paint.H, Align.Normal)
+  Else
+    Style.PaintArrow(0, Y, W, W, If($bHidden, Align.Right, Align.Bottom), iFlag)
+    If $bInside Then Paint.DrawTextShadow($sText, W + D, 0, Paint.W, Paint.H, Align.Normal)
+    Paint.DrawText($sText, W + D, 0, Paint.W, Paint.H, Align.Normal)
+  Endif
+
+End
+
+Public Sub dwgTitle_Enter()
+
+  If Me.Enabled Then
+    $bInside = True
+    dwgTitle.Mouse = Mouse.Pointing
+    dwgTitle.Refresh
+  Endif
+
+End
+
+Public Sub dwgTitle_Leave()
+
+  $bInside = False
+    dwgTitle.Mouse = Mouse.Default
+  dwgTitle.Refresh
+
+End

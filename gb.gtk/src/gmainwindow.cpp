@@ -248,6 +248,7 @@ void gMainWindow::initialize()
 	_hidden = false;
 	_hideMenuBar = false;
 	_showMenuBar = true;
+	_initMenuBar = true;
 	_popup = false;
 	_maximized = _minimized = _fullscreen = false;
 	_transparent = false;
@@ -1459,11 +1460,28 @@ void gMainWindow::setUtility(bool v)
 
 void gMainWindow::configure()
 {
+	static bool init = FALSE;
+	static GB_FUNCTION _init_menubar_shortcut_func;
+
 	int h;
 	
 	if (bufW < 1 || bufH < 1)
 		return;
 	
+	if (_initMenuBar != isMenuBarVisible())
+	{
+		_initMenuBar = !_initMenuBar;
+		
+		if (!init)
+		{
+			GB.GetFunction(&_init_menubar_shortcut_func, (void *)GB.FindClass("_Gui"), "_InitMenuBarShortcut", NULL, NULL);
+			init = TRUE;
+		}
+
+		GB.Push(1, GB_T_OBJECT, hFree);
+		GB.Call(&_init_menubar_shortcut_func, 1, FALSE);
+	}
+
 	h = menuBarHeight();
 	
 	//fprintf(stderr, "configure: %s: %d %d - %d %d\n", name(), isMenuBarVisible(), h, width(), height());
@@ -1488,15 +1506,20 @@ void gMainWindow::configure()
 	}
 }
 
-void gMainWindow::setMenuBarVisible(bool v)
+bool gMainWindow::setMenuBarVisible(bool v)
 {
+	if (_showMenuBar == v)
+		return TRUE;
+	
 	_showMenuBar = v;
 	
 	if (!menuBar)
-		return;
+		return TRUE;
 	
 	configure();
 	performArrange();
+	
+	return FALSE;
 }
 
 bool gMainWindow::isMenuBarVisible()

@@ -25,12 +25,12 @@ Private Sub InputStream_Write(Value As Stream)
 
 End
 
-Public Sub FromString(data As String)
+Public Sub FromString(Data As String)
   
-  If Not data Then Error.Raise(("Data buffer is empty."))
-  $DataBuffer = data
+  If Not Data Then Error.Raise("Data buffer is empty")
+  $DataBuffer = Data
   $posBuffer = 0
-  $lenBuffer = Len(data)
+  $lenBuffer = Len(Data)
   
 End
 
