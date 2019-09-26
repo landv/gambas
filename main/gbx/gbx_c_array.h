@@ -75,6 +75,7 @@ void CARRAY_reverse(void *_object, void *_param);
 void CARRAY_get_value(CARRAY *_object, int index, VALUE *value);
 #define CARRAY_invert(_array) CARRAY_reverse(_array, NULL)
 void *CARRAY_get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam);
+void CARRAY_static_array();
 void *CARRAY_out_of_bounds();
 CLASS *CARRAY_get_array_class(CLASS *class, CTYPE ctype);
 int *CARRAY_get_array_bounds(CARRAY *_object);
@@ -113,6 +114,11 @@ void CARRAY_release_static(CLASS *class, CLASS_ARRAY *desc, void *data);
 	(void *)((char *)(__array->data) + __index * __array->size); \
 })
 
+#define CARRAY_check_not_read_only(_object) \
+{ \
+	if (((CARRAY *)_object)->ref) \
+		THROW(E_SARRAY); \
+}
 
 #endif  // #ifndef __GBX_CLASS_INFO_C 
 

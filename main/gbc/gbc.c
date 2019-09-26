@@ -532,9 +532,14 @@ static void compile_lang(void)
 		
 		unlink(file_mo);
 		// Shell "msgfmt -o " & Shell$(sPath) & " " & Shell(sTrans) Wait
-		cmd = STR_print("msgfmt -o %s %s >/dev/null 2>&1", file_mo, file_po);
 		if (main_verbose)
+		{
+			cmd = STR_print("msgfmt -o %s %s 2>&1", file_mo, file_po);
 			printf("running: %s\n", cmd);
+		}
+		else
+			cmd = STR_print("msgfmt -o %s %s >/dev/null 2>&1", file_mo, file_po);
+		
 		ret = system(cmd);
 		if (!WIFEXITED(ret) || WEXITSTATUS(ret))
 			ERROR_warning("unable to compile translation file with 'msgfmt': %s", file_po);

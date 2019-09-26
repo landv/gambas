@@ -3849,11 +3849,8 @@ __POP_NATIVE_ARRAY:
 	EXEC_object_array(val, class, object);
 	array = (CARRAY *)object;
 
-	/*VALUE_copy(&swap, &val[0]);
-	VALUE_copy(&val[0], &val[-1]);
-	VALUE_copy(&val[-1], &swap);*/
-
-	//VALUE_conv(&val[0], type);
+	CARRAY_check_not_read_only(array);
+	
 	for (i = 1; i < np; i++)
 		VALUE_conv_integer(&val[i]);
 
@@ -3884,11 +3881,8 @@ __POP_NATIVE_ARRAY_SIMPLE:
 	EXEC_object_array(val, class, object);
 	array = (CARRAY *)object;
 
-	/*VALUE_copy(&swap, &val[0]);
-	VALUE_copy(&val[0], &val[-1]);
-	VALUE_copy(&val[-1], &swap);*/
-
-	//VALUE_conv(&val[0], type);
+	CARRAY_check_not_read_only(array);
+	
 	VALUE_conv_integer(&val[1]);
 
 	data = CARRAY_get_data(array, val[1]._integer.value);
@@ -3904,10 +3898,8 @@ __POP_NATIVE_ARRAY_INTEGER:
 	EXEC_object_array(val, class, object);
 	array = (CARRAY *)object;
 
-	/*VALUE_copy(&swap, &val[0]);
-	VALUE_copy(&val[0], &val[-1]);
-	VALUE_copy(&val[-1], &swap);*/
-
+	CARRAY_check_not_read_only(array);
+	
 	VALUE_conv_integer(&val[-1]);
 	VALUE_conv_integer(&val[1]);
 
@@ -3924,10 +3916,8 @@ __POP_NATIVE_ARRAY_FLOAT:
 	EXEC_object_array(val, class, object);
 	array = (CARRAY *)object;
 
-	/*VALUE_copy(&swap, &val[0]);
-	VALUE_copy(&val[0], &val[-1]);
-	VALUE_copy(&val[-1], &swap);*/
-
+	CARRAY_check_not_read_only(array);
+	
 	VALUE_conv_float(&val[-1]);
 	VALUE_conv_integer(&val[1]);
 
