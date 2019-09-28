@@ -265,32 +265,6 @@ static void add_zero(int count, int *before)
 }
 
 
-static int search(const char *src, int len, const char *list, int start, bool not)
-{
-	int i;
-	char c;
-
-	for (i = start; i < len; i++)
-	{
-		c = src[i];
-		
-		if (c == '\\')
-		{
-			i++;
-			if (i >= len)
-				break;
-			c = src[i];
-			continue;
-		}
-
-		if ((index(list, c) != NULL) ^ not)
-			return i;
-	}
-
-	return len;
-}
-
-
 static void add_sign(char mode, int sign, bool after)
 {
 	if (after && mode != '(')
@@ -689,26 +663,69 @@ void LOCAL_set_lang(const char *lang)
 	LOCAL_local.rtl = rtl;
 }
 
+
+static int int_to_string(uint64_t nbr, char **addr)
+{
+	static char buf[32];
+	char *ptr;
+	int digit, len;
+	bool neg;
+
+	len = 0;
+	ptr = &buf[sizeof(buf)];
+
+	if (nbr == 0)
+	{
+		ptr -= 2;
+		*addr = ptr;
+		ptr[0] = '0';
+		ptr[1] = 0;
+		return 1;
+	}
+	
+	neg = (nbr & (1LL << 63)) != 0;
+	
+	if (neg)
+		nbr = 1 + ~nbr;
+	
+	while (nbr > 0)
+	{
+		digit = nbr % 10;
+		nbr /= 10;
+
+		ptr--;
+		len++;
+
+		*ptr = '0' + digit;
+	}
+
+	if (neg)
+	{
+		len++;
+		ptr--;
+		*ptr = '-';
+	}
+	
+	*addr = ptr;
+	return len;
+}
+
+
 bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str, bool local)
 {
-	char c;
+	int i;
+	unsigned char c;
 	int n;
-
-	char buf[32];
-	char *buf_start;
-
+	char *buf_addr;
 	int pos;
-	//int pos2;
 	int thousand;
 	int *thousand_ptr;
-
 	char sign;
 	bool comma;
 	bool point;
 	int before, before_zero;
 	int after, after_zero;
 	char exposant;
-	//char exp_sign;
 	int exp_zero;
 
 	int number_sign;
@@ -777,49 +794,6 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	if (len_fmt >= COMMON_BUF_MAX)
 		return TRUE;
 
-	// Remove, not documented!
-	
-#if 0
-	/* looking for negative and null numbers formats */
-
-	pos = search(fmt, len_fmt, ";", 0, FALSE);
-
-	if (number <= 0.0)
-	{
-		if (pos < len_fmt)
-		{
-			if (number < 0.0)
-			{
-				if ((pos < (len_fmt - 1)) && fmt[pos + 1] != ';')
-				{
-					fmt = &fmt[pos + 1];
-					len_fmt -= pos + 1;
-				}
-				else
-					len_fmt = pos;
-			}
-			else
-			{
-				pos2 = search(fmt, len_fmt, ";", pos + 1, FALSE);
-				if (pos2 < len_fmt)
-				{
-					if ((pos2 < (len_fmt - 1)) && fmt[pos2 + 1] != ';')
-					{
-						fmt = &fmt[pos2 + 1];
-						len_fmt -= pos2 + 1;
-					}
-					else
-						len_fmt = pos;
-				}
-			}
-		}
-	}
-	else if (pos < len_fmt)
-		len_fmt = pos;
-#endif
-
-	/* translate Gambas format to sprintf format */
-
 	sign = 0;
 	comma = FALSE;
 	before = 0;
@@ -835,22 +809,46 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 
 	begin();
 
-	/* Looking for '%' */
-
-	pos = search(fmt, len_fmt, "%", 0, FALSE);
-	if (pos < len_fmt)
-		number *= 100;
-
-	/* format prefix */
-
-	pos = search(fmt, len_fmt, "-+#0.,($", 0, FALSE);
-
-	if (pos >= len_fmt)
+	// Search for the first formatting character
+	
+	for (i = 0; i < len_fmt; i++)
+	{
+		c = fmt[i];
+		if (c == '\\')
+		{
+			i++;
+			continue;
+		}
+		
+		if (c == '-' || c == '+' || c == '#' || c == '0' || c == '.' || c == ',' || c == '(' || c == '$')
+			break;
+	}
+	
+	if (i >= len_fmt)
 		return TRUE;
 
+	pos = i;
 	if (pos > 0)
 		add_string(fmt, pos, NULL);
 
+	// Search if there is a percent format character
+	
+	for (i = pos; i < len_fmt; i++)
+	{
+		c = fmt[i];
+		if (c == '\\')
+		{
+			i++;
+			continue;
+		}
+		
+		if (c == '%')
+		{
+			number *= 100;
+			break;
+		}
+	}
+	
 	/* specify the sign */
 
 	if (fmt[pos] == '-')
@@ -1031,17 +1029,23 @@ _FORMAT:
 
 		if (mantisse >= power)
 		{
-			ndigit = sprintf(buf, ".%" PRId64, mantisse);
-			buf[0] = buf[1];
-			buf[1] = '.';
+			ndigit = int_to_string(mantisse, &buf_addr);
+			buf_addr--;
+			buf_addr[0] = buf_addr[1];
+			buf_addr[1] = '.';
+			ndigit++;
 		}
 		else
 		{
-			ndigit = sprintf(buf, "0.%" PRId64, mantisse);
+			ndigit = int_to_string(mantisse, &buf_addr);
+			buf_addr -= 2;
+			buf_addr[0] = '0';
+			buf_addr[1] = '.';
+			ndigit += 2;
 		}
 
 		ndigit--;
-		buf[ndigit] = 0;
+		buf_addr[ndigit] = 0;
 
 		/* 0.0 <= number_mant < 1.0 */
 
@@ -1053,9 +1057,7 @@ _FORMAT:
 
 		// should return "0[.]...", or "1[.]..." if the number is rounded up.
 
-		buf_start = buf;
-
-		if (buf_start[0] == '1') // the number has been rounded up.
+		if (buf_addr[0] == '1') // the number has been rounded up.
 		{
 			if (exposant)
 				number_real_exp++;
@@ -1065,19 +1067,19 @@ _FORMAT:
 
 		if (ndigit > 1) // so there is a point
 		{
-			if (buf_start[0] == '0')
+			if (buf_addr[0] == '0')
 			{
-				buf_start += 2;
+				buf_addr += 2;
 				ndigit -= 2;
 			}
 			else
 			{
-				buf_start[1] = buf_start[0];
+				buf_addr[1] = buf_addr[0];
 				ndigit--;
-				buf_start++;
+				buf_addr++;
 			}
 
-			while (ndigit > 0 && buf_start[ndigit - 1] == '0')
+			while (ndigit > 0 && buf_addr[ndigit - 1] == '0')
 				ndigit--;
 		}
 
@@ -1091,7 +1093,7 @@ _FORMAT:
 			add_char(' ', before - Max(before_zero, number_exp), thousand_ptr);
 			add_zero(before_zero - number_exp, thousand_ptr);
 
-			add_string(buf_start, Min(number_exp, ndigit), thousand_ptr);
+			add_string(buf_addr, Min(number_exp, ndigit), thousand_ptr);
 
 			if (number_exp > ndigit)
 				add_zero(number_exp - ndigit, thousand_ptr);
@@ -1129,14 +1131,14 @@ _FORMAT:
 
 			if (number_exp > 0)
 			{
-				buf_start += number_exp;
+				buf_addr += number_exp;
 				ndigit -= number_exp;
 			}
 
 			n = Min(ndigit, after);
 			if (n > 0)
 			{
-				add_string(buf_start, n, NULL);
+				add_string(buf_addr, n, NULL);
 				after -= n;
 				after_zero -= n;
 			}
@@ -1160,8 +1162,14 @@ _FORMAT:
 		if (exposant != 0) // && number != 0.0)
 		{
 			put_char(exposant);
-			n = snprintf(buf, sizeof(buf), "%+.*d", exp_zero, number_real_exp - 1);
-			add_string(buf, n, NULL);
+			put_char(number_real_exp >= 1 ? '+' : '-');
+			n = int_to_string(number_real_exp - 1, &buf_addr);
+			while (exp_zero > n)
+			{
+				put_char('0');
+				exp_zero--;
+			}
+			add_string(buf_addr, n, NULL);
 		}
 	}
 	else // isfinite
