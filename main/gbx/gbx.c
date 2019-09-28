@@ -325,6 +325,10 @@ int main(int argc, char *argv[])
 			EXEC_debug = TRUE;
 			EXEC_profile = TRUE;
 		}
+		else if (is_option(argv[i], 't'))
+		{
+			EXEC_trace = TRUE;
+		}
 		else if (is_option_arg(argv, argc, &i, 'f', &EXEC_fifo_name))
 		{
 			EXEC_fifo = TRUE;

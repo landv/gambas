@@ -3991,6 +3991,24 @@ void EXEC_quit(ushort code)
 
 static void _break(ushort code)
 {
+	if (!EXEC_trace && !EXEC_debug)
+	{
+		*PC = C_NOP;
+		return;
+	}
+	
+	if (EXEC_trace)
+	{
+		double timer;
+		char *addr;
+		int len;
+		
+		DATE_timer(&timer, TRUE);
+		LOCAL_format_number(timer, LF_GENERAL_NUMBER, NULL, 0, &addr, &len, FALSE);
+		fprintf(stderr, "[%d.%06d] %s\n", (int)timer, (int)(timer * 1000000) % 1000000, DEBUG_get_current_position());
+		fflush(stderr);
+	}
+	
 	if (EXEC_debug)
 	{
 		/*TC = PC + 1;
@@ -4032,8 +4050,6 @@ static void _break(ushort code)
 			DEBUG.Breakpoint(code);
 		}
 	}
-	else
-		*PC = C_NOP;
 }
 
 void SUBR_left(ushort code)

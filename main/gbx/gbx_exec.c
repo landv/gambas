@@ -66,6 +66,7 @@ bool EXEC_debug = FALSE; // debugging mode
 bool EXEC_task = FALSE; // I am a background task
 bool EXEC_profile = FALSE; // profiling mode
 bool EXEC_profile_instr = FALSE; // profiling mode at instruction level
+bool EXEC_trace = FALSE; // tracing mode
 bool EXEC_arch = FALSE; // executing an archive
 bool EXEC_fifo = FALSE; // debugging through a fifo
 bool EXEC_keep_library = FALSE; // do not unload libraries
