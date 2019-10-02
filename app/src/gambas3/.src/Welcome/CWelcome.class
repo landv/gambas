@@ -104,8 +104,9 @@ Public Sub dwgWelcome_Draw()
     Paint.Font = Font["+10,Bold"]
     Y = Paint.Font.Ascent
     sVersion = Project.FullVersion
-    If sVersion = "3.14.0" Or If sVersion = "3.13.90" Then
-      X = PaintText("Gambas 3.14", 8, Y, Color.White) 'TEXT_COLOR)
+    If sVersion Begins "3.14." And If sVersion Not Ends ".90" Then
+      If sVersion Ends ".0" Then sVersion = Left(sVersion, -2)
+      X = PaintText("Gambas " & sVersion, 8, Y, Color.White) 'TEXT_COLOR)
       X += Desktop.Scale * 17
       For I = -6 To 14
         Paint.Font = Font[Format(I, "+0") & ",Italic,Bold"]

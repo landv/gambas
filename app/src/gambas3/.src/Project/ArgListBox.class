@@ -155,8 +155,8 @@ Public Sub TextBox_KeyPress()
           iPos = String.Len(sText)
           If Me.Next Then
             hArg.Text = sText & Me.Text
-            Me.Delete
           Endif
+          Me.Delete
           hArg.SetFocus
           hArg.Pos = iPos
         Endif
