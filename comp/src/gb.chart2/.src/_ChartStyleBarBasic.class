@@ -1,0 +1,93 @@
+' Gambas class file
+
+Inherits _ChartStyleBar
+Property Read Symbols As String[] Use $aSymbols
+Private $bYShowInterLines As Boolean
+Private $bShowValues As Boolean
+Private $fBarWidth As Float = 1.0
+Private $oBarFont As Font
+Public Sub _new()
+  
+  $aSymbols = Super.Symbols.Insert(["Y_ShowInterLines", "ShowValues", "BarWidth", "BarFont"])
+  $aSymbols.ReadOnly = True
+  $oBarFont = New Font
+End
+
+
+Public Sub _get(Symbol As String) As Variant
+
+  Select Case Symbol
+    Case "Y_ShowInterlines"
+      Return $bYShowInterLines
+      Case "ShowValues"
+        Return $bShowValues
+      Case "BarWidth"
+        Return $fBarWidth
+      Case "BarFont"
+        Return $oBarFont
+    Case Else
+      Return Super[Symbol]
+
+  End Select
+
+End
+
+
+Public Sub _put(Value As Variant, Symbol As String)
+
+
+  Select Case Symbol
+  Case "Y_ShowInterlines"
+    $bYShowInterLines = Value
+  Case "ShowValues"
+    $bShowValues = Value
+  Case "BarWidth"
+    $fBarWidth = Min(Max(Value, 0.1), 1.0)
+  Case "BarFont"
+    $oBarFont = Value
+    Case Else
+      Super[Symbol] = Value
+  End Select
+
+End
+
+Public Sub _PaintContent(hParam As Collection)
+
+  Dim hChart As Chart = Me._GetParent()
+  Dim Colors As Integer[] = [Color.red, Color.Green, Color.Yellow]
+  Dim i As Integer
+  Dim fBarH As Float
+  Dim j As Integer
+  Dim fX As Float
+  Dim fBarW As Float = hParam!BarWidth * $fBarWidth
+  For j = 0 To hChart.Datas.Max
+    fX = hParam!SeriesWidth * J
+
+  For i = 0 To hChart.Datas[j].Values.Max
+    fBarH = hParam!UnitHeight * hChart.Datas[j].Values[i]
+    Paint.FillRect(fX + hParam!Rect.Left + hParam!BarWidth * i + (hParam!BarWidth - fBarW) / 2, hParam!Rect.Bottom - fBarH, fBarW, fBarH, hParam!Colors[i Mod hParam!Colors.count])
+    
+    
+    If $bShowValues Then
+      Paint.Font = $oBarFont
+      'Paint.Font.Grade = 1
+      Paint.font.Size = Paint.Font.Size * hParam!Ratio
+      Paint.DrawText(hChart.Datas[j].Values[i], fX + hParam!Rect.Left + hParam!BarWidth * i, hParam!Rect.Bottom - fBarH - Paint.Font.H, hParam!BarWidth, Paint.Font.H, Align.center)
+      
+    Endif
+    
+  Next
+Next
+
+
+End
+
+
+
+
+
+Private Function Symbols_Read() As String[]
+
+  
+
+End

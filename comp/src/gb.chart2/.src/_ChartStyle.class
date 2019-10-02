@@ -1,0 +1,104 @@
+' Gambas class file
+
+Property Read Symbols As String[] Use $aSymbols
+Property Read Padding As Float Use $fPadding
+Private $iBackGround As Integer = Color.Transparent
+Private $bBorder As Integer
+Public _XPadding As Float = 20
+Public _YPadding As Float = 20
+Private $aColors As Integer[] = [&hff6f00,
+&h800080, &h666666, &h6B4794, &h290099, &h7da647,
+&he6e64c, &hff9966, &h000080, &hfff0ff, &h00ffff, &h9999ff]
+
+Public Sub _new()
+
+  $aSymbols = ["Border", "Background", "Padding"]
+  $fPadding = 0
+End
+
+
+
+Public Sub _get(Symbol As String) As Variant
+
+
+  Select Case Symbol
+    Case "Border"
+      Return $bBorder
+    Case "BackGround"
+      Return $iBackGround
+    Case "Padding"
+      Return $fPadding
+    Case Else
+      
+  End Select
+
+
+End
+
+Public Sub _put(Value As Variant, Symbol As String)
+
+  Select Case Symbol
+    Case "Border"
+      $bBorder = Value
+    Case "BackGround"
+      $iBackGround = Value
+    Case "Padding"
+      $fPadding = Value
+    Case Else
+      
+  End Select
+
+End
+
+Public Sub _GetParam(X As Integer, Y As Integer, Width As Integer, Height As Integer) As Collection
+  
+  Dim hCol As New Collection
+  
+  hCol!Colors = $aColors
+  
+  Return hCol
+End
+
+
+
+Public Sub Paint(X As Integer, Y As Integer, Width As Integer, Height As Integer)
+  Dim hParam As Collection
+  hParam = Me._GetParam(X, Y, Width, Height)
+  Me._PaintBefore(hParam)
+  Me._PaintContent(hParam)
+  Me._PaintAfter(hParam)
+
+End
+
+
+Public Sub _PaintBefore(hParam As Collection)
+
+   Dim fPadding As Float = Me!Padding
+   
+'Draw BackGround
+  Paint.FillRect(hParam!Rect.Left, hParam!Rect.Top, hParam!Rect.W, hParam!Rect.H, $iBackGround)
+
+End
+
+Public Sub _PaintContent(hParam As Collection)
+
+
+
+End
+
+
+
+Public Sub _PaintAfter(hParam As Collection)
+
+
+
+End
+
+
+Public Sub _GetParent() As Chart
+
+  Return Object.Parent(Me)
+
+End
+
+

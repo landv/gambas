@@ -1,0 +1,19 @@
+' Gambas class file
+
+Property Text As String Use $sText
+Property Values As Float[] Use $aValues
+
+
+Public Sub _new(Text As String, Values As Float[])
+  
+  $sText = Text
+  $aValues = Values
+  
+End
+
+
+Static Public Function _call(Text As String, Values As Float[]) As ChartDatas
+  
+  Return New ChartDatas(Text, Values)
+  
+End

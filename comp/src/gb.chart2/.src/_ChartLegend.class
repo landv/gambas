@@ -1,0 +1,108 @@
+' Gambas class file
+
+Property Title As String Use $sTitle
+Property Position As Integer Use $iPosition
+Property Visible As Boolean Use $bVisible
+Property {Font} As Font Use $oFont
+
+Event foo
+
+Public Sub _new()
+
+  '$bVisible = True
+  $oFont = New Font
+  $iPosition = Align.Left
+
+End
+
+
+Public Sub _Paint(X As Integer, Y As Integer, Width As Integer, Height As Integer) As Rectf
+
+  Dim hChart As Chart = _GetParent()
+  Dim hRect As New Rectf
+  Dim W As Float
+  Dim aLabels As String[] = hChart.Labels
+  Dim s As String
+  Dim H As Float
+  Dim f As Float
+  Dim i As Integer
+
+  Paint.font = $oFont
+  Paint.Font.Size *= hChart._fProportionnal
+  For Each s In aLabels
+
+    f = Max(Paint.TextSize(s).W, f)
+
+  Next
+  H = Paint.Font.H
+
+  f = Max(Paint.TextSize($sTitle).W, f)
+
+  Paint.LineWidth = 1 * hChart._fProportionnal
+  Select Case $iPosition
+    Case Align.Top, Align.Bottom
+      hRect.Height = H * 3
+      hRect.W = H * 2 + aLabels.Count * f
+    Case Else
+
+      hRect.H = aLabels.Count * H * 1.2 + H
+      If $sTitle Then hRect.H = hRect.H + H 
+      hRect.W = H * 3 + f
+      hRect.Y = (Height - hRect.H) / 2
+      hRect.X = X + H
+
+      Paint.Rectangle(hRect.X, hRect.Y, hRect.W, hRect.H)
+      Paint.Stroke
+      f = hRect.Y + H * 1.5
+      
+      If $sTitle Then
+        Paint.Font.Bold = True
+        Paint.dRAWText($sTitle, hRect.X, hRect.Y, hRect.W, H, Align.Center)
+        Paint.Font.bold = False
+        f = f + H
+      Endif
+      
+      For Each s In aLabels
+        Paint.Rectangle(hRect.X + H / 2, f - H * 0.8, H, H)
+        Paint.Background = hChart.Colors[i Mod hChart.Colors.Count]
+        Paint.Fill(True)
+        Paint.Background = Color.Black
+        Paint.Stroke()
+        Paint.DrawText(s, hRect.X + 2 * H, f)
+        f += H * 1.2
+        Inc i
+      Next
+
+      hRect.W += H
+
+
+      Return hRect
+
+  End Select
+
+
+
+End
+
+Public Sub GetRect(X As Integer, Y As Integer, Width As Integer, Height As Integer) As Rectf
+
+End
+
+Private Function Font_Read() As Font
+
+
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+
+
+End
+
+
+Public Sub _GetParent() As Chart
+
+  Return Object.Parent(Me)
+
+End

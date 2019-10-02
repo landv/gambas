@@ -1,0 +1,97 @@
+' Gambas class file
+
+Export
+
+Property Read Title As _ChartTitle Use $hTitle
+Property Read Legend As _ChartLegend Use $hLegend
+Property Height As Integer Use $iHeight
+Property Width As Integer Use $iWidth
+Property Read Style As _ChartStyle Use $hStyle
+Property Datas As ChartDatas[] Use $aDatas
+Property Labels As String[] Use $aLabel
+Property Border As Boolean Use $bBorder
+Property Read Colors As Integer[] Use $aColors
+Property AutoScale As Boolean Use $bAutoScale
+Public _fProportionnal As Float
+Private $aStyleList As String[] = ["Bar"]
+
+Public Sub _new()
+
+  $hLegend = New _ChartLegend As "Legend"
+  $hTitle = New _ChartTitle
+  $bBorder = True
+  $aStyleList.ReadOnly = True
+  $aColors = [&hff6f00,
+    &h800080, &h666666, &h6B4794, &h290099, &h7da647,
+    &he6e64c, &hff9966, &h000080, &hfff0ff, &h00ffff, &h9999ff]
+
+End
+
+
+Public Sub Resize(Width As Integer, Height As Integer)
+
+  $iWidth = Width
+  $iHeight = Height
+
+End
+
+Public Sub Paint(X As Integer, Y As Integer, Width As Integer, Height As Integer)
+
+  Dim f As Float
+  Dim hRect As Rectf
+
+  If Not $hStyle Then Return
+  _fProportionnal = 1.0
+
+  If $bAutoScale Then _fProportionnal = IIf(Paint.Width <= Paint.Height, Paint.Width / (Desktop.Height * 2 / 3), Paint.Height / (Desktop.Height * 2 / 3))
+
+  'Paint.Scale(f, f)
+  If $hTitle.Visible And If $hTitle.Text Then
+      Paint.Font = $hTitle.Font
+      Paint.Font.Size = Paint.Font.Size * _fProportionnal
+      f = $hTitle.Font.Height * 1.5 * _fProportionnal
+      Paint.DrawText($hTitle.Text, X, Y, Width, f, Align.Center)
+  Endif
+  Y = Y + f
+  hRect = RectF(X, Y, Width, Height)
+
+  If $hLegend.Visible Then
+    Select Case $hLegend.Position
+      Case Align.Top
+        hRect = $hLegend._Paint(0, Y, Width, Height)
+        hRect = RectF(X, Y + hRect.H, Width, Height)
+
+      Case Align.Left
+        hRect = $hLegend._Paint(0, Y, Width, Height)
+        hRect = RectF(X + hRect.W, Y, Width, Height)
+
+      Case Align.Bottom
+      Case Align.Right
+    End Select
+  Endif
+
+  $hStyle.Paint(hRect.X, hRect.Y, hRect.Width, hRect.Height)
+
+
+  If $bBorder Then
+    Paint.LineWidth = 2
+    Paint.DrawRect(0, 0, Width, Height, Color.Black)
+
+
+  Endif
+
+End
+
+
+Public Sub SetStyle(sStyle As String)
+
+  $hStyle = New _ChartStyleBarBasic As "ChartStyleBarBasic"
+
+End
+
+Public Sub GetStyleList() As String[]
+
+  Return $aStyleList
+
+End
+

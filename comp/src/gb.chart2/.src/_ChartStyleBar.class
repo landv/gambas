@@ -1,0 +1,301 @@
+' Gambas class file
+
+Inherits _ChartStyle
+Property Read Symbols As String[] Use $aSymbols
+Private $oXFont As New Font
+Private $oYFont As New Font
+Private $fXMaxValue As Float = 100.0
+Private $fYMaxValue As Float = 100.0
+Private $fXMinValue As Float
+Private $fYMinValue As Float
+Private $fXStep As Float = 1.0
+Private $fYStep As Float = 1.0
+Private $bShowArrows As Boolean
+Private $fYAutoScale As Boolean
+Private $bShowInterlines As Boolean
+
+
+
+
+
+Event Foo
+
+Public Sub _new()
+
+  $aSymbols = Super.Symbols.Insert(["X_Font", "X_MaxValue", "X_MinValue", "X_Step"
+  "Y_Font", "Y_MaxValue", "Y_MinValue", "Y_Step", "Y_AutoScale", "ShowArrows", "ShowInterlines"])
+
+  '$aSymbols.ReadOnly = True
+
+End
+
+
+
+Public Sub _get(Symbol As String) As Variant
+
+  Select Case Symbol
+
+    Case "X_Font"
+      Return $oXFont
+    Case "Y_Font"
+      Return $oYFont
+    Case "X_MinValue"
+      Return $fXMinValue
+    Case "X_MaxValue"
+      Return $fXMaxValue
+    Case "Y_MinValue"
+      Return $fYMinValue
+    Case "Y_MaxValue"
+      Return $fYMaxValue
+    Case "X_Step"
+      Return $fXStep
+    Case "Y_Step"
+      Return $fYStep
+    Case "Y_AutoScale"
+      Return $fYAutoScale
+    Case "ShowArrows"
+      Return $bShowArrows
+    Case "ShowInterlines"
+      Return $bShowInterlines
+    Case Else
+      Return Super[Symbol]
+
+  End Select
+
+End
+
+
+Public Sub _put(Value As Variant, Symbol As String)
+
+
+  Select Case Symbol
+    Case "X_Font"
+      $oXFont = Value
+    Case "Y_Font"
+      $oYFont = Value
+    Case "X_MinValue"
+      $fXMinValue = Value
+    Case "X_MaxValue"
+      $fXMaxValue = Value
+    Case "Y_MinValue"
+      $fYMinValue = Value
+    Case "Y_MaxValue"
+      $fYMaxValue = Value
+    Case "X_Step"
+      $fXStep = Value
+    Case "Y_Step"
+      $fYStep = Value
+    Case "Y_AutoScale"
+      $fYAutoScale = Value
+    Case "ShowArrows"
+      $bShowArrows = Value
+    Case "ShowInterlines"
+      $bShowInterlines = Value
+    Case Else
+      Super[Symbol] = Value
+  End Select
+
+End
+
+Public Function _GetParam(X As Integer, Y As Integer, Width As Integer, Height As Integer) As Collection
+
+  Dim hChart As Chart = Me._GetParent()
+  Dim hPr As Collection
+  Dim fMax As Float
+  Dim i, j As Integer
+  Dim fArrowSize As Float
+  Dim hData As ChartDatas
+  Dim aLabels As String[]
+  hpr = Super._GetParam(X, Y, Width, Height)
+  hpr!Padding = Me!Padding * hChart._fProportionnal
+  hpr!Ratio = hChart._fProportionnal
+  Paint.Font = Me!Y_Font
+  Paint.Font.Size = Paint.Font.Size * hpr!Ratio
+  hpr!MaxYTextWidth = Paint.TextSize(Str(Me!Y_MaxValue)).W
+  Paint.Font = Me!X_Font
+  Paint.Font.Size = Paint.Font.Size * hpr!Ratio
+  hpr!XTextHeight = Paint.Font.Height
+  hpr!TicLenght = 5 * hpr!Ratio
+  fArrowSize = IIf($bShowArrows, 20, 0) * hpr!Ratio
+  hpr!ArrowSize = fArrowSize
+  hpr!Rect = New RectF
+
+  With hpr!Rect
+    .X = X + hpr!Padding + hpr!MaxYTextWidth + hpr!TicLenght + 10
+    .Y = Y + Max(hpr!Padding, Paint.TextSize(Str(fMax)).H / 2)
+    If $bShowArrows Then .Y += fArrowSize
+    .Bottom = Height - hpr!Padding - hpr!XTextHeight - hpr!TicLenght - 10
+    .Right = Width - hpr!Padding - fArrowSize
+
+  End With
+
+
+  For i = 0 To hChart.Datas.Max
+    j = Max(hChart.Datas[i].Values.Count, j)
+  Next
+
+  hpr!SeriesWidth = hpr!Rect.Width / hChart.Datas.Count
+  hpr!BarWidth = hpr!Rect.Width / j / hChart.Datas.Count
+
+  If $fYAutoScale Then
+    For j = 0 To hChart.Datas.Max
+      For i = 0 To hChart.Datas[j].Values.Max
+        fMax = Max(fMax, hChart.Datas[j].Values[i])
+      Next
+    Next
+  Else
+    fMax = $fYMaxValue
+  Endif
+
+  hPr!UnitHeight = hpr!Rect.H / fMax
+
+  hPr!MaxDatas = j
+
+
+  aLabels = New String[]
+  
+   If hChart.Datas.Count = 1 Then
+    For i = 0 To j
+      If i > hChart.Labels.Max Then
+        aLabels.Add("")
+      Else
+        aLabels.Add(hChart.Labels[i])
+      Endif
+    Next
+
+  Else
+    For i = 0 To hChart.Datas.Max
+      aLabels.Add(hChart.Datas[i].Text)
+    Next
+  Endif
+  
+  hpr!Labels = aLabels
+
+
+
+
+  Return hpr
+
+End
+
+
+
+Public Sub _PaintBefore(hParam As Collection)
+
+
+  'Paint.DrawRect(hParam!Rect.Left, hParam!Rect.Top, hParam!Rect.Width, hParam!Rect.Height, Color.Black)
+
+  Dim f As Float
+  Dim fBarH, h As Float
+
+  Super._PaintBefore(hParam)
+
+
+  If $bShowInterlines Then
+    Paint.LineWidth = 1 * hParam!Ratio
+    For f = 0 To $fYMaxValue Step $fYStep
+
+      fBarH = f * hParam!UnitHeight
+      h = hParam!Rect.Bottom - fBarH - Paint.Font.Height / 2
+      If h < hParam!Rect.top Then Break
+      Paint.MoveTo(hParam!Rect.Left, hParam!Rect.Bottom - fBarH)
+      Paint.RelLineTo(hParam!Rect.W, 0)
+      Paint.Stroke
+
+
+    Next
+  Endif
+
+  'Draw InterLines Behind
+
+
+
+
+End
+
+
+Public Sub _PaintAfter(hParam As Collection)
+
+  Dim hChart As Chart = Me._GetParent()
+  Dim iCount As Integer = hChart.Datas[0].Values.Count
+  Dim i As Integer
+  Dim fBarH As Float
+  Dim f As Integer
+  Dim sLabel As String
+  Dim h As Float
+  Dim aLabels As New String[]
+
+
+
+
+
+  'Draw bars
+  Paint.Font = $oXFont
+  Paint.Font.Size = Paint.Font.Size * hChart._fProportionnal
+  Paint.Background = Color.Black
+  Paint.LineWidth = 2 * hParam!Ratio
+  Paint.MoveTo(hParam!Rect.Left, hParam!Rect.Bottom)
+  Paint.RelLineTo(hParam!Rect.W, 0)
+
+ 
+  f = hParam!Rect.Width / hParam!Labels.Count
+  aLabels = hParam!Labels
+  For i = 0 To aLabels.mAx
+    'Paint.DrawRect(hParam!Rect.Left + hParam!BarWidth * i, hParam!Rect.Bottom + hParam!TicLenght, hParam!BarWidth, hParam!XTextHeight, color.black)
+    Paint.MoveTo(hParam!Rect.Left + f * (i + 1), hParam!Rect.Bottom)
+    Paint.RelLineTo(0, hParam!TicLenght)
+    Paint.Stroke
+
+    Paint.DrawText(aLabels[i], hParam!Rect.Left + f * i, hParam!Rect.Bottom + hParam!TicLenght, f, hParam!XTextHeight, align.Center)
+  Next
+
+
+  'Draw Y bar
+  Paint.Font = $oYFont
+  Paint.Font.Size = Paint.Font.Size * hChart._fProportionnal
+  Paint.MoveTo(hParam!Rect.Left, hParam!Rect.Bottom)
+  Paint.RelLineTo(0, -hParam!Rect.Height)
+
+
+  For f = 0 To $fYMaxValue Step $fYStep
+    fBarH = f * hParam!UnitHeight
+    h = hParam!Rect.Bottom - fBarH - Paint.Font.Height / 2
+    If h < hParam!Rect.top Then Break
+    Paint.MoveTo(hParam!Rect.Left, hParam!Rect.Bottom - fBarH)
+    Paint.RelLineTo(-hParam!TicLenght, 0)
+    Paint.Stroke
+    Paint.DrawText(f, hParam!Rect.Left - hParam!TicLenght - hParam!MaxYTextWidth - 10, hParam!Rect.Bottom - fBarH - Paint.Font.Height / 2, hParam!MaxYTextWidth,, Align.Right)
+
+  Next
+
+
+  If $bShowArrows Then
+
+    f = hParam!ArrowSize / 2
+    Paint.MoveTo(hParam!Rect.Left, hParam!Rect.Top)
+    Paint.RelLineTo(0, -f / 2)
+    Paint.Stroke
+    'Upper Arrow
+    Paint.MoveTo(hParam!Rect.Left, hParam!Rect.Top - f / 2)
+    Paint.RelLineTo(-f / 2, 0)
+    Paint.RelLineTo(f / 2, -f)
+    Paint.RelLineTo(f / 2, f)
+    paint.ClosePath()
+    Paint.Fill
+
+    Paint.MoveTo(hParam!Rect.Right, hParam!Rect.Bottom)
+    Paint.RelLineTo(f / 2, 0)
+    Paint.Stroke
+    Paint.MoveTo(hParam!Rect.Right + f / 2, hParam!Rect.Bottom)
+    Paint.RelLineTo(0, -f / 2)
+    Paint.RelLineTo(f, f / 2)
+    Paint.RelLineTo(-f, f / 2)
+    paint.ClosePath()
+    Paint.Fill
+  Endif
+
+
+End
+
+
+

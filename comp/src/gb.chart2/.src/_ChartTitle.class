@@ -1,0 +1,18 @@
+' Gambas class file
+
+Property Text As String Use $sText
+Property {Font} As Font Use $oFont
+Property Visible As Boolean Use $bVisible
+
+Public Sub _new()
+  
+  '$bVisible = True
+  $oFont = Font["Bold,+5"]
+  
+End
+
+
+Public Sub Paint()
+
+  
+End

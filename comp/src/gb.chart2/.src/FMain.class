@@ -1,0 +1,39 @@
+' Gambas class file
+
+Private hChart As New Chart
+Public Sub Form_Open()
+  hChart.Labels = ["Tic", "Tac", "Toe", "Titi", "Toto", "Tata"]
+  hChart.Datas = [ChartDatas("Serie 1", [1.0, 2, 3, 4, 5, 6.5]), ChartDatas("Serie 2", [1.0, 2, 3, 4, 5, 3.5]), ChartDatas("Serie 3", [1.0, 2, 3, 4, 5, 3.5])]
+  
+  hChart.Border = True
+  hChart.SetStyle("Bar")
+  hChart.Legend.Visible = True
+  hChart.Legend.Title = "Legend"
+  hChart.Title.Text = "This is the Chart Title "
+  hChart.Title.Font.Name = "Times"
+  hChart.Title.Visible = True
+  'AutoScale the fonts via an internal ratio like in a spreadsheet
+  'so the chart always look good even if the device size change
+  hChart.AutoScale = True
+  With hChart
+    .Style!Y_MaxValue = 10
+    'But :-)
+    .Style!Y_AutoScale = True
+    .Style!X_Font = Font["Arial,+4"]
+    .Style!Y_Font = Font["Times,+4"]
+    .Style!Padding = 10
+    .Style!ShowValues = True
+    .Style!Border = False
+    .Style!ShowArrows = True
+    .Style!ShowInterlines = True
+    .Style!BarFont = Font["Times, 12"]
+    .Style!BarWidth = 0.8
+    .Style!BackGround = Color.LightGray
+  End With
+  DrawingArea1.Refresh
+End
+
+Public Sub DrawingArea1_Draw()
+
+  hChart.Paint(0, 0, Paint.Width, Paint.Height)
+End
