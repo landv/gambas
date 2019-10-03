@@ -10,7 +10,8 @@ Property Read Style As _ChartStyle Use $hStyle
 Property Datas As ChartDatas[] Use $aDatas
 Property Labels As String[] Use $aLabel
 Property Border As Boolean Use $bBorder
-Property Read Colors As Integer[] Use $aColors
+Property Background As Integer Use $iBackground
+Property Colors As Integer[] Use $aColors
 Property AutoScale As Boolean Use $bAutoScale
 Public _fProportionnal As Float
 Private $aStyleList As String[] = ["Bar"]
@@ -24,7 +25,7 @@ Public Sub _new()
   $aColors = [&hff6f00,
     &h800080, &h666666, &h6B4794, &h290099, &h7da647,
     &he6e64c, &hff9966, &h000080, &hfff0ff, &h00ffff, &h9999ff]
-
+   $iBackground = -1
 End
 
 
@@ -42,7 +43,11 @@ Public Sub Paint(X As Integer, Y As Integer, Width As Integer, Height As Integer
 
   If Not $hStyle Then Return
   _fProportionnal = 1.0
-
+  
+  If $iBackground > -1 Then 
+    Paint.FillRect(X, Y, Width, Height, $iBackground)
+  Endif
+  
   If $bAutoScale Then _fProportionnal = IIf(Paint.Width <= Paint.Height, Paint.Width / (Desktop.Height * 2 / 3), Paint.Height / (Desktop.Height * 2 / 3))
 
   'Paint.Scale(f, f)
@@ -96,4 +101,5 @@ Public Sub GetStyleList() As String[]
   Return $aStyleList
 
 End
+
 

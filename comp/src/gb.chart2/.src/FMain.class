@@ -2,13 +2,14 @@
 
 Private hChart As New Chart
 Public Sub Form_Open()
-  hChart.Labels = ["Tic", "Tac", "Toe", "Titi", "Toto", "Tata"]
-  'hChart.Datas = [ChartDatas("Serie 1", [1.0, 2, 3, 4, 5, 6.5]), ChartDatas("Serie 2", [1.0, 2, 3, 4, 5, 3.5]), ChartDatas("Serie 3", [1.0, 2, 3, 4, 5, 3.5])]
-  hChart.Datas = [ChartDatas("Serie 1", [1.0, 2, 3, 4, 5, 6.5]), ChartDatas("Serie 2", [1.2, 2.3, 3.4, 4.5, 5.6, 3.5]), ChartDatas("Serie 3", [1.3, 2.4, 3.5, 4.6, 5.7, 3.5])]
+  hChart.Labels = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jui", "Jui", "Aou", "Sep", "Oct", "Nov", "Déc"]
+  hChart.Datas = [ChartDatas("Serie 1", [-16, -12, -6, -1, 5, 14, 29, 22, 13, 3, -6])] ', ChartDatas("Serie 2", [1.0, 2, 3, 4, 5, 3.5]), ChartDatas("Serie 3", [1.0, 2, 3, 4, 5, 3.5])]
+  'hChart.Datas = [ChartDatas("Serie 1", [1.0, 2, 3, 4, 5, 6.5]), ChartDatas("Serie 2", [1.2, 2.3, 3.4, 4.5, 5.6, 3.5]), ChartDatas("Serie 3", [1.3, 2.4, 3.5, 4.6, 5.7, 3.5])]
   hChart.Border = True
+  hChart.Colors = [Color.Orange]
   hChart.SetStyle("Bar")
   hChart.Legend.Position = Align.Right
-  hChart.Legend.Visible = True
+  hChart.Legend.Visible = False
   hChart.Legend.Title = "Legend"
   hChart.Title.Text = "This is the Chart Title "
   hChart.Title.Font.Name = "Times"
@@ -16,22 +17,27 @@ Public Sub Form_Open()
   'AutoScale the fonts via an internal ratio like in a spreadsheet
   'so the chart always look good even if the device size change
   hChart.AutoScale = True
+  hChart.Background = Color.Lighter(Color.Yellow)
   With hChart
-    .Style!Y_MaxValue = 7
+    .Style!Y_MaxValue = 40
+    .Style!Y_MinValue = -20
     'But :-)
     '.Style!Y_AutoScale = True
-    .Style!Y_Step = 0.5
-    .Style!X_Font = Font["Arial,+4"]
-    .Style!Y_Font = Font["Times,+4"]
+    .Style!Y_Step = 10
+    .Style!X_Font = Font["Arial,+2"]
+    .Style!Y_Font = Font["Times,+2"]
     .Style!Padding = 10
     .Style!ShowValues = True
     .Style!Border = False
     .Style!ShowArrows = True
     .Style!ShowInterlines = True
     .Style!BarFont = Font["Times, 12"]
-    .Style!BarWidth = 0.8
-    .Style!BackGround = Color.LightGray
-    .Style!Y_Pattern = "0.0"
+    .Style!BarWidth = 0.9
+    .Style!BackGround = Color.Lighter(Color.Lighter(Color.Yellow))
+    '.Style!Y_Pattern = "0.0"
+    .Style!InterlinesColor = Color.Lighter(Color.blue)
+    .Style!X_Label = "Activities since jan 2014"
+    .Style!Y_Label = "Temperature in ° Celcius"
   End With
   DrawingArea1.Refresh
 End

@@ -54,25 +54,36 @@ End
 Public Sub _PaintContent(hParam As Collection)
 
   Dim hChart As Chart = Me._GetParent()
-  Dim Colors As Integer[] = [Color.red, Color.Green, Color.Yellow]
+
   Dim i As Integer
   Dim fBarH As Float
   Dim j As Integer
   Dim fX As Float
   Dim fBarW As Float = hParam!BarWidth * $fBarWidth
+  Dim fCenter As Float = hParam!Rect.Top + hParam!Center
+  Dim H As Integer
+  
+  Paint.Background = Color.Black
   For j = 0 To hChart.Datas.Max
     fX = hParam!SeriesWidth * J
 
   For i = 0 To hChart.Datas[j].Values.Max
     fBarH = hParam!UnitHeight * hChart.Datas[j].Values[i]
-    Paint.FillRect(fX + hParam!Rect.Left + hParam!BarWidth * i + (hParam!BarWidth - fBarW) / 2, hParam!Rect.Bottom - fBarH, fBarW, fBarH, hParam!Colors[i Mod hParam!Colors.count])
+    Paint.FillRect(fX + hParam!Rect.Left + hParam!BarWidth * i + (hParam!BarWidth - fBarW) / 2, fCenter - fBarH, fBarW, fBarH, hChart.Colors[i Mod hChart.Colors.count])
     
     
     If $bShowValues Then
       Paint.Font = $oBarFont
       'Paint.Font.Grade = 1
       Paint.font.Size = Paint.Font.Size * hParam!Ratio
-      Paint.DrawText(hChart.Datas[j].Values[i], fX + hParam!Rect.Left + hParam!BarWidth * i, hParam!Rect.Bottom - fBarH - Paint.Font.H, hParam!BarWidth, Paint.Font.H, Align.center)
+      
+      If fBarH < 0 Then 
+        H = Paint.Font.H
+      Else 
+        H = 0
+      Endif
+      
+      Paint.DrawText(hChart.Datas[j].Values[i], fX + hParam!Rect.Left + hParam!BarWidth * i, fCenter - fBarH - Paint.Font.H + H, hParam!BarWidth, Paint.Font.H, Align.center)
       
     Endif
     
