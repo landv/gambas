@@ -24,51 +24,77 @@ Public Sub _Paint(X As Integer, Y As Integer, Width As Integer, Height As Intege
   Dim aLabels As String[] = hChart.Labels
   Dim s As String
   Dim H As Float
-  Dim f As Float
+  Dim f, j As Float
   Dim i As Integer
 
   Paint.font = $oFont
   Paint.Font.Size *= hChart._fProportionnal
-  For Each s In aLabels
 
-    f = Max(Paint.TextSize(s).W, f)
-
-  Next
   H = Paint.Font.H
 
-  f = Max(Paint.TextSize($sTitle).W, f)
 
   Paint.LineWidth = 1 * hChart._fProportionnal
   Select Case $iPosition
     Case Align.Top, Align.Bottom
-      hRect.Height = H * 3
-      hRect.W = H * 2 + aLabels.Count * f
+      For Each s In aLabels
+        f += Paint.TextSize(s).W
+      Next
+
+
+
+      hRect.Height = H * 3.5
+      hRect.W = H * 2 + f + aLabels.Max * (H * 1.2 + H / 2) ', Width - H * 2)
       hRect.X = (Width + -hRect.W) / 2
       If $iPosition = Align.top Then
-      hRect.Y = Y + H
-      
-        Else
-      hRect.Y = Height - hRect.H - H
+        hRect.Y = Y + H
+
+      Else
+        hRect.Y = Height - hRect.H - H
       Endif
-            Paint.Rectangle(hRect.X, hRect.Y, hRect.W, hRect.H)
+      Paint.Rectangle(hRect.X, hRect.Y, hRect.W, hRect.H)
       Paint.Stroke
       hRect.H += H
-            
+      If $sTitle Then
+        Paint.Font.Bold = True
+        Paint.DrawText($sTitle, hRect.X, hRect.Y, hRect.W, H, Align.Center)
+        Paint.Font.bold = False
+
+      Endif
+      f = hRect.X + H / 2
+      j = h * 1.5
+      For Each s In aLabels
+        Paint.Rectangle(f, hRect.Y + j, H, H)
+        Paint.Background = hChart.Colors[i Mod hChart.Colors.Count]
+        Paint.Fill(True)
+        Paint.Background = Color.Black
+        Paint.Stroke
+        f += H * 1.2
+        Paint.DrawText(s, f, hRect.Y + j + H / 1.3)
+        f += Paint.TextSize(s).W + H / 2
+        Inc i
+      Next
+
     Case Else
+      For Each s In aLabels
+
+        f = Max(Paint.TextSize(s).W, f)
+
+      Next
+      f = Max(Paint.TextSize($sTitle).W, f)
       hRect.H = aLabels.Count * H * 1.2 + H
       hRect.W = H * 3 + f
       hRect.Y = (Height - hRect.H) / 2
-      If $sTitle Then hRect.H = hRect.H + H 
+      If $sTitle Then hRect.H = hRect.H + H
 
-      If $iPosition = Align.Left Then 
-      hRect.X = X + H
+      If $iPosition = Align.Left Then
+        hRect.X = X + H
       Else
-      hRect.X = Width - hRect.W - H  
+        hRect.X = Width - hRect.W - H
       Endif
-      
+
       Paint.Rectangle(hRect.X, hRect.Y, hRect.W, hRect.H)
       Paint.Stroke
-      
+
       f = hRect.Y + H * 1.5
       If $sTitle Then
         Paint.Font.Bold = True
@@ -76,7 +102,7 @@ Public Sub _Paint(X As Integer, Y As Integer, Width As Integer, Height As Intege
         Paint.Font.bold = False
         f = f + H
       Endif
-      
+
       For Each s In aLabels
         Paint.Rectangle(hRect.X + H / 2, f - H * 0.8, H, H)
         Paint.Background = hChart.Colors[i Mod hChart.Colors.Count]
@@ -94,7 +120,7 @@ Public Sub _Paint(X As Integer, Y As Integer, Width As Integer, Height As Intege
 
   End Select
 
-      Return hRect
+  Return hRect
 
 
 End

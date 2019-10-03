@@ -1,0 +1,79 @@
+' Gambas class file
+
+Inherits _ChartStyle
+Property Read Symbols As String[] Use $aSymbols
+
+Private $oLabelsFont As Font
+
+
+Event Foo
+
+Public Sub _new()
+
+  $aSymbols = Super.Symbols.Insert(["LabelsFont"])
+
+  '$aSymbols.ReadOnly = True
+$oLabelsFont = Font["+4"]
+End
+
+
+
+Public Sub _get(Symbol As String) As Variant
+
+  Select Case Symbol
+    Case "LabelsFont"
+      Return $oLabelsFont
+    Case Else
+      Return Super[Symbol]
+
+  End Select
+
+End
+
+
+Public Sub _put(Value As Variant, Symbol As String)
+
+
+  Select Case Symbol
+    Case "LabelsFont"
+      $oLabelsFont = Value
+    Case Else
+      Super[Symbol] = Value
+  End Select
+
+End
+
+Public Function _GetParam(X As Integer, Y As Integer, Width As Integer, Height As Integer) As Collection
+
+  Dim hChart As Chart = Me._GetParent()
+  Dim hPr As Collection
+  
+  
+  
+  hpr = Super._GetParam(X, Y, Width, Height)
+  
+
+  Return hpr
+
+End
+
+
+
+Public Sub _PaintBefore(hParam As Collection)
+
+  Super._PaintBefore(hParam)
+  
+
+End
+
+
+Public Sub _PaintAfter(hParam As Collection)
+
+  Dim hChart As Chart = Me._GetParent()
+ 
+
+
+End
+
+
+

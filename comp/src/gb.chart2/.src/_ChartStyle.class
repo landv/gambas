@@ -24,7 +24,7 @@ Public Sub _get(Symbol As String) As Variant
   Select Case Symbol
     Case "Border"
       Return $bBorder
-    Case "BackGround"
+    Case "Background"
       Return $iBackGround
     Case "Padding"
       Return $fPadding
@@ -40,7 +40,7 @@ Public Sub _put(Value As Variant, Symbol As String)
   Select Case Symbol
     Case "Border"
       $bBorder = Value
-    Case "BackGround"
+    Case "Background"
       $iBackGround = Value
     Case "Padding"
       $fPadding = Value
@@ -53,9 +53,9 @@ End
 Public Sub _GetParam(X As Integer, Y As Integer, Width As Integer, Height As Integer) As Collection
   
   Dim hCol As New Collection
-  
+  Dim hRect As RectF = RectF(X, Y, Width, Height)
   hCol!Colors = $aColors
-  
+  hCol!Rect = hRect
   Return hCol
 End
 
@@ -90,7 +90,11 @@ End
 
 Public Sub _PaintAfter(hParam As Collection)
 
-
+If $bBorder Then
+  Paint.LineWidth = 1
+    Paint.Rectangle(hParam!Rect.Left, hParam!Rect.Top, hParam!Rect.W, hParam!Rect.H)
+  Paint.Stroke
+Endif
 
 End
 

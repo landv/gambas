@@ -6,6 +6,7 @@ Private $bYShowInterLines As Boolean
 Private $bShowValues As Boolean
 Private $fBarWidth As Float = 1.0
 Private $oBarFont As Font
+Private $fSeriesPadding As Float
 Public Sub _new()
   
   $aSymbols = Super.Symbols.Insert(["Y_ShowInterLines", "ShowValues", "BarWidth", "BarFont"])
@@ -25,6 +26,7 @@ Public Sub _get(Symbol As String) As Variant
         Return $fBarWidth
       Case "BarFont"
         Return $oBarFont
+
     Case Else
       Return Super[Symbol]
 
@@ -45,6 +47,7 @@ Public Sub _put(Value As Variant, Symbol As String)
     $fBarWidth = Min(Max(Value, 0.1), 1.0)
   Case "BarFont"
     $oBarFont = Value
+
     Case Else
       Super[Symbol] = Value
   End Select
@@ -62,19 +65,27 @@ Public Sub _PaintContent(hParam As Collection)
   Dim fBarW As Float = hParam!BarWidth * $fBarWidth
   Dim fCenter As Float = hParam!Rect.Top + hParam!Center
   Dim H As Integer
+  Dim fStart As Float
+  Dim f As Float
   
   Paint.Background = Color.Black
+  fStart = IIf(hParam!YMinValue > 0, hParam!YMinValue, 0)
   For j = 0 To hChart.Datas.Max
-    fX = hParam!SeriesWidth * J
+    fX = hParam!SeriesWidth * J + hParam!SeriesPadding
 
   For i = 0 To hChart.Datas[j].Values.Max
-    fBarH = hParam!UnitHeight * hChart.Datas[j].Values[i]
+    f = hChart.Datas[j].Values[i]
+    If f > 0 Then
+    fBarH = Max(hParam!UnitHeight * f - fStart * hParam!UnitHeight, 0)
+    Else
+    fBarH = Min(hParam!UnitHeight * f - fStart * hParam!UnitHeight, 0)
+    Endif
+    
     Paint.FillRect(fX + hParam!Rect.Left + hParam!BarWidth * i + (hParam!BarWidth - fBarW) / 2, fCenter - fBarH, fBarW, fBarH, hChart.Colors[i Mod hChart.Colors.count])
     
     
     If $bShowValues Then
       Paint.Font = $oBarFont
-      'Paint.Font.Grade = 1
       Paint.font.Size = Paint.Font.Size * hParam!Ratio
       
       If fBarH < 0 Then 
@@ -83,10 +94,9 @@ Public Sub _PaintContent(hParam As Collection)
         H = 0
       Endif
       
-      Paint.DrawText(hChart.Datas[j].Values[i], fX + hParam!Rect.Left + hParam!BarWidth * i, fCenter - fBarH - Paint.Font.H + H, hParam!BarWidth, Paint.Font.H, Align.center)
+      Paint.DrawText(f, fX + hParam!Rect.Left + hParam!BarWidth * i, fCenter - fBarH - Paint.Font.H + H, hParam!BarWidth, Paint.Font.H, Align.center)
       
     Endif
-    
   Next
 Next
 

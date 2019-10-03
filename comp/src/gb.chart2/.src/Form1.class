@@ -1,0 +1,68 @@
+' Gambas class file
+
+Private hChart As New Chart
+Public Sub Form_Open()
+ hChart.Labels = [("January"), ("February"), ("March"), ("April"), ("May"), ("June"), ("July"), ("August"), ("September"), ("October"), ("November"), ("December")]
+  'hChart.Datas = [ChartDatas("Serie 1", [1.0, 2, 3, 4, 5, 6.5]), ChartDatas("Serie 2", [1.0, 2, 3, 4, 5, 3.5]), ChartDatas("Serie 3", [1.0, 2, 3, 4, 5, 3.5])]
+  'hChart.Datas = [ChartDatas("Serie 1", [1.0, 2, 3, 4, 5, 6.5]), ChartDatas("Serie 2", [1.2, 2.3, 3.4, 4.5, 5.6, 3.5]), ChartDatas("Serie 3", [1.3, 2.4, 3.5, 4.6, 5.7, 3.5])]
+  hChart.Datas = [ChartDatas("2009", ReturnTurnover(54000.00, 55999.00)), ChartDatas("2010", ReturnTurnover(55620.00, 57120.00)), ChartDatas("2011", ReturnTurnover(56732.00, 58800.00)), ChartDatas("2012", ReturnTurnover(58434.00, 60000.00)), ChartDatas("2013", ReturnTurnover(59603.00, 61200.00)), ChartDatas("2014", ReturnTurnover(60795.00, 62500.00)), ChartDatas("2015", ReturnTurnover(62618.00, 63600.00)), ChartDatas("2016", ReturnTurnover(63871.00, 64989.00)), ChartDatas("2017", ReturnTurnover(65150.00, 66300.00)), ChartDatas("2018", ReturnTurnover(66450.00, 67700.00))]
+ 
+  hChart.Border = True
+  hChart.SetStyle("Bar")
+  hChart.Legend.Position = Align.Bottom
+  hChart.Legend.Visible = True
+  hChart.Legend.Title = "Legend"
+  hChart.Title.Text = "Turnover 2009 - 2018"
+  hChart.Title.Font.Name = "Times"
+  hChart.Title.Visible = True
+  'AutoScale the fonts via an internal ratio like in a spreadsheet
+  'so the chart always look good even if the device size change
+  hChart.AutoScale = True
+  With hChart
+    .Style!Y_MaxValue = 69000.00
+    .Style!Y_MinValue = 22000.00
+    '.Style!Y_MaxValue = 7
+    'But :-)
+    '.Style!Y_AutoScale = True
+    .Style!Y_Step = 2000
+    .Style!X_Font = Font["Arial,12"]
+    .Style!Y_Font = Font["arial,8"]
+    .Style!Padding = 10
+    '.Style!ShowValues = True
+    .Style!Border = True
+    '.Style!ShowArrows = True
+    .Style!ShowInterlines = True
+    .Style!BarFont = Font["Times, 12"]
+    .Style!BarWidth = 1
+    .Style!Background = Color.Lighter(Color.Lighter(Color.green))
+    .Style!InterlinesColor = Color.LightGray
+    .Style!SeriesPadding = 1
+    .Style!BarWidth = 0.9
+        '.Style!Y_Pattern = "0.0"
+  End With
+  DrawingArea1.Refresh
+End
+
+Private Function ReturnTurnover(fMin As Float, fMax As Float) As Float[]
+
+  Dim aTurnover As New Float[]
+  Dim fRes As Float
+
+  Randomize
+  For i As Integer = 1 To 12
+    fRes = Rnd(fMin, fMax)
+    If i = 2 Then
+      fRes = fRes - ((fRes / 100) * 6)
+    Else If i = 8 Then
+      fRes = fRes - ((fRes / 100) * 50)
+    Endif
+    aTurnover.Add(Round(fRes, -2))
+  Next
+  Return aTurnover
+
+End
+
+Public Sub DrawingArea1_Draw()
+
+  hChart.Paint(0, 0, Paint.Width, Paint.Height)
+End

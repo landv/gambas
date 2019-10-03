@@ -92,7 +92,13 @@ End
 
 Public Sub SetStyle(sStyle As String)
 
+
+  Select Case (sStyle)
+    Case "Bar"
   $hStyle = New _ChartStyleBarBasic As "ChartStyleBarBasic"
+    Case "Pie"
+  $hStyle = New _CharStylePie As "ChartStylePie"    
+  End Select
 
 End
 

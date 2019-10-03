@@ -1,0 +1,24 @@
+' Gambas class file
+
+Private hChart As New Chart
+
+Public Sub Form_Open()
+
+  hChart.Labels = ["Tic", "Tac", "Toe", "Titi", "Toto", "Tata"]
+
+  hChart.Datas = [ChartDatas("Serie 1", [1.0, 2, 3, 4, 5, 6.5])]
+  
+  hChart.SetStyle("Pie")
+
+  hChart.Legend.Visible = True
+  With hChart
+  .Style!Border = True
+  .Style!Background = Color.Yellow
+  End With
+End
+
+Public Sub DrawingArea1_Draw()
+
+  hChart.Paint(0, 0, Paint.W, Paint.H)
+
+End

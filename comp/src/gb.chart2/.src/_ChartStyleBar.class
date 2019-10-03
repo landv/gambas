@@ -18,17 +18,18 @@ Private $iInterLinesColor As Integer
 Private $sYLabel As String
 Private $sXLabel As String
 Private $oLabelsFont As Font
-
-
+Private $fSeriesPadding As Float
+Private $fAxesWidth As Float = 1.0
 Event Foo
 
 Public Sub _new()
 
   $aSymbols = Super.Symbols.Insert(["X_Font", "X_MaxValue", "X_MinValue", "X_Step"
-  "Y_Font", "Y_MaxValue", "Y_MinValue", "Y_Step", "Y_AutoScale", "ShowArrows", "ShowInterlines", "Y_Label", "X_Label", "LabelsFont"])
+  "Y_Font", "Y_MaxValue", "Y_MinValue", "Y_Step", "Y_AutoScale", "ShowArrows", "ShowInterlines", "Y_Label", "X_Label", "LabelsFont", "SeriesPadding" "AxesWidth"])
 
   '$aSymbols.ReadOnly = True
-$oLabelsFont = Font["+4"]
+  $oLabelsFont = Font["+4"]
+
 End
 
 
@@ -69,6 +70,10 @@ Public Sub _get(Symbol As String) As Variant
       Return $sXLabel
     Case "LabelsFont"
       Return $oLabelsFont
+    Case "SeriesPadding"
+      Return $fSeriesPadding
+    Case "AxesWidth"
+      Return $fAxesWidth
     Case Else
       Return Super[Symbol]
 
@@ -105,7 +110,7 @@ Public Sub _put(Value As Variant, Symbol As String)
       $bShowInterlines = Value
     Case "Y_Pattern"
       $sYPattern = Value
-      Case "InterlinesColor"
+    Case "InterlinesColor"
       $iInterLinesColor = value
     Case "Y_Label"
       $sYLabel = Value
@@ -113,6 +118,10 @@ Public Sub _put(Value As Variant, Symbol As String)
       $sXLabel = Value
     Case "LabelsFont"
       $oLabelsFont = Value
+    Case "SeriesPadding"
+      $fSeriesPadding = Value
+    Case "AxesWidth"
+      $fAxesWidth = Value
     Case Else
       Super[Symbol] = Value
   End Select
@@ -128,8 +137,8 @@ Public Function _GetParam(X As Integer, Y As Integer, Width As Integer, Height A
   Dim fArrowSize As Float
   Dim hData As ChartDatas
   Dim aLabels As String[]
-  
-  
+
+
   hpr = Super._GetParam(X, Y, Width, Height)
   hpr!Padding = Me!Padding * hChart._fProportionnal
   hpr!Ratio = hChart._fProportionnal
@@ -138,30 +147,30 @@ Public Function _GetParam(X As Integer, Y As Integer, Width As Integer, Height A
 
   Paint.Font = Me!X_Font
   Paint.Font.Size = Paint.Font.Size * hpr!Ratio
-  
-  
+
+
   hpr!XTextHeight = Paint.Font.Height
   hpr!TicLenght = 5 * hpr!Ratio
   fArrowSize = IIf($bShowArrows, 20, 0) * hpr!Ratio
   hpr!ArrowSize = fArrowSize
 
 
-  If $sYLabel Then 
+  If $sYLabel Then
     Paint.Font = $oLabelsFont
     Paint.Font.Size = Paint.Font.Size * hChart._fProportionnal
     hpr!YLabelWidth = Paint.Font.H + 10
   Else
     hpr!YLabelWidth = 0
   Endif
-  
+
   If $sXLabel Then
     Paint.Font = $oLabelsFont
     Paint.Font.Size = Paint.Font.Size * hChart._fProportionnal
-    hpr!XLabelHeight = Paint.Font.H 
+    hpr!XLabelHeight = Paint.Font.H
   Else
-      hpr!XLabelHeight = 0
+    hpr!XLabelHeight = 0
   Endif
-  
+
   If $fYAutoScale Then
     For j = 0 To hChart.Datas.Max
       For i = 0 To hChart.Datas[j].Values.Max
@@ -171,12 +180,12 @@ Public Function _GetParam(X As Integer, Y As Integer, Width As Integer, Height A
     Next
     fmin = Min(fmin, 0)
   Else
-    fMax = $fYMaxValue 
+    fMax = $fYMaxValue
     fMin = $fYMinValue
   Endif
-    Paint.Font = $oYFont
-    Paint.Font.Size = Paint.Font.Size * hPr!Ratio
-    hpr!MaxYTextWidth = Paint.TextSize(Format(fMax, $sYPattern)).W
+  Paint.Font = $oYFont
+  Paint.Font.Size = Paint.Font.Size * hPr!Ratio
+  hpr!MaxYTextWidth = Paint.TextSize(Format(fMax, $sYPattern)).W
 
   hpr!Rect = New RectF
   With hpr!Rect
@@ -194,19 +203,20 @@ Public Function _GetParam(X As Integer, Y As Integer, Width As Integer, Height A
   Next
 
   hpr!SeriesWidth = hpr!Rect.Width / hChart.Datas.Count
-  hpr!BarWidth = hpr!Rect.Width / j / hChart.Datas.Count
+  hPr!SeriesPadding = (hpr!Rect.Width / j / hChart.Datas.Count) * $fSeriesPadding / 2
+  hpr!BarWidth = ((hpr!SeriesWidth - (hpr!SeriesPadding * 2)) / j)
 
-    
+
   hPr!YMaxValue = fMax
   hpr!YMinValue = fMin
   hPr!UnitHeight = hpr!Rect.H / (fMax - fMin)
-  hPr!Center = hpr!Rect.H - Abs(fMin * hpr!UnitHeight)
+  hPr!Center = IIf(fmin < 0, hpr!Rect.H - Abs(fMin * hpr!UnitHeight), hpr!Rect.H)
   hPr!MaxDatas = j
 
 
   aLabels = New String[]
-  
-   If hChart.Datas.Count = 1 Then
+
+  If hChart.Datas.Count = 1 Then
     For i = 0 To j
       If i > hChart.Labels.Max Then
         aLabels.Add("")
@@ -220,7 +230,7 @@ Public Function _GetParam(X As Integer, Y As Integer, Width As Integer, Height A
       aLabels.Add(hChart.Datas[i].Text)
     Next
   Endif
-  
+
   hpr!Labels = aLabels
 
 
@@ -238,28 +248,40 @@ Public Sub _PaintBefore(hParam As Collection)
 
   Dim f As Float
   Dim fBarH, h As Float
+  Dim fCenter As Float = hParam!Rect.Y + hParam!Center
 
   Super._PaintBefore(hParam)
 
-
+  Paint.AntiAlias = False
   If $bShowInterlines Then
-    Paint.LineWidth = 1 * hParam!Ratio
+    Paint.LineWidth = 1 '* hParam!Ratio
     Paint.Background = $iInterLinesColor
     For f = 0 To $fYMaxValue Step $fYStep
 
       fBarH = f * hParam!UnitHeight
-      h = hParam!Rect.Bottom - fBarH - Paint.Font.Height / 2
+      h = fCenter - fBarH - Paint.Font.Height / 2
       If h < hParam!Rect.top Then Break
-      Paint.MoveTo(hParam!Rect.Left, hParam!Rect.Bottom - fBarH)
+      Paint.MoveTo(hParam!Rect.Left, fCenter - fBarH)
       Paint.RelLineTo(hParam!Rect.W, 0)
       Paint.Stroke
 
 
     Next
+    For f = $fYStep DownTo $fYMinValue Step $fYStep
+
+      fBarH = f * hParam!UnitHeight
+      h = fCenter - fBarH - Paint.Font.Height / 2
+      If h < hParam!Rect.top Then Break
+      Paint.MoveTo(hParam!Rect.Left, fCenter - fBarH)
+      Paint.RelLineTo(hParam!Rect.W, 0)
+      Paint.Stroke
+
+    Next
+
   Endif
 
   'Draw InterLines Behind
-
+  Paint.AntiAlias = True
 
 
 
@@ -280,22 +302,22 @@ Public Sub _PaintAfter(hParam As Collection)
   Dim fTextPadding As Float
   Dim hRect As RectF
   Dim fCenter As Float = hParam!Rect.Y + hParam!Center
-
+  Dim fStart As Float
 
   'Draw bars
   Paint.Font = $oXFont
   Paint.Font.Size = Paint.Font.Size * hChart._fProportionnal
   Paint.Background = Color.Black
-  Paint.LineWidth = 2 * hParam!Ratio
+  Paint.LineWidth = $fAxesWidth * hParam!Ratio
   Paint.MoveTo(hParam!Rect.Left, hParam!Rect.Bottom)
   Paint.RelLineTo(hParam!Rect.W, 0)
 
- 
+
   f = hParam!Rect.Width / hParam!Labels.Count
   aLabels = hParam!Labels
-  
-  
-  
+
+
+
   For i = 0 To aLabels.mAx
     'Paint.DrawRect(hParam!Rect.Left + hParam!BarWidth * i, hParam!Rect.Bottom + hParam!TicLenght, hParam!BarWidth, hParam!XTextHeight, color.black)
     Paint.MoveTo(hParam!Rect.Left + f * (i + 1), hParam!Rect.Bottom)
@@ -314,21 +336,23 @@ Public Sub _PaintAfter(hParam As Collection)
 
   sPattern = $sYPattern
   fTextPadding = hParam!Ratio * 10
-  For f = 0 To hParam!YMaxValue Step $fYStep
-    fBarH = f * hParam!UnitHeight
+  fStart = IIf(hParam!YMinValue > 0, hParam!YMinValue, 0)
+  For f = fStart To hParam!YMaxValue Step $fYStep
+
+    fBarH = f * hParam!UnitHeight - fStart * hParam!UnitHeight
     h = fCenter - fBarH - Paint.Font.Height / 2
-    If h < hParam!Rect.top Then Break
+    'If h < hParam!Rect.top Then Break
     Paint.MoveTo(hParam!Rect.Left, fCenter - fBarH)
     Paint.RelLineTo(-hParam!TicLenght, 0)
     Paint.Stroke
     Paint.DrawText(Format(f, sPattern), hParam!Rect.Left - hParam!TicLenght - hParam!MaxYTextWidth - fTextPadding, fCenter - fBarH - Paint.Font.Height / 2, hParam!MaxYTextWidth,, Align.Right)
 
   Next
-  
+
   For f = $fYStep DownTo hParam!YMinValue Step $fYStep
     fBarH = f * hParam!UnitHeight
     h = fCenter - fBarH - Paint.Font.Height / 2
-    If h < hParam!Rect.top Then Break
+    'If h < hParam!Rect.top Then Break
     Paint.MoveTo(hParam!Rect.Left, fCenter - fBarH)
     Paint.RelLineTo(-hParam!TicLenght, 0)
     Paint.Stroke
@@ -341,9 +365,9 @@ Public Sub _PaintAfter(hParam As Collection)
   If $sYLabel Then
     Paint.Save
     Paint.Font = $oLabelsFont
-    Paint.Font.Size = Paint.Font.Size * hParam!Ratio  
+    Paint.Font.Size = Paint.Font.Size * hParam!Ratio
     hRect = Paint.TextSize($sYLabel)
-    hRect.X = (hParam!Rect.X - hParam!TicLenght - hParam!MaxYTextWidth - fTextPadding) - hRect.W / 2 - hRect.H 
+    hRect.X = (hParam!Rect.X - hParam!TicLenght - hParam!MaxYTextWidth - fTextPadding) - hRect.W / 2 - hRect.H
     hRect.Y = hParam!Rect.Top + (hParam!Rect.H - hRect.H) / 2
     Paint.Translate(hRect.X + hRect.W / 2, hRect.Y + hRect.H / 2)
     Paint.Rotate(Rad(90))
@@ -353,9 +377,9 @@ Public Sub _PaintAfter(hParam As Collection)
     Paint.Restore
   Endif
 
-If $sXLabel Then
+  If $sXLabel Then
     Paint.Font = $oLabelsFont
-    Paint.Font.Size = Paint.Font.Size * hParam!Ratio  
+    Paint.Font.Size = Paint.Font.Size * hParam!Ratio
     H = Paint.TextSize($sXLabel).H
 
     Paint.DrawText($sXLabel, hParam!Rect.X, hParam!Rect.Bottom + hParam!TicLenght + hParam!XTextHeight + H / 2, hParam!Rect.W, H, Align.Center)
@@ -388,6 +412,7 @@ If $sXLabel Then
     Paint.Fill
   Endif
 
+  Super._PaintAfter(hParam)
 
 End
 
