@@ -13,7 +13,7 @@ Private $fYStep As Float = 1.0
 Private $bShowArrows As Boolean
 Private $fYAutoScale As Boolean
 Private $bShowInterlines As Boolean
-
+Private $sYPattern As String
 
 
 
@@ -53,10 +53,13 @@ Public Sub _get(Symbol As String) As Variant
       Return $fYStep
     Case "Y_AutoScale"
       Return $fYAutoScale
+    Case "Y_Pattern"
+      Return $sYPattern
     Case "ShowArrows"
       Return $bShowArrows
     Case "ShowInterlines"
       Return $bShowInterlines
+    
     Case Else
       Return Super[Symbol]
 
@@ -91,6 +94,8 @@ Public Sub _put(Value As Variant, Symbol As String)
       $bShowArrows = Value
     Case "ShowInterlines"
       $bShowInterlines = Value
+    Case "Y_Pattern"
+      $sYPattern = Value
     Case Else
       Super[Symbol] = Value
   End Select
@@ -109,17 +114,31 @@ Public Function _GetParam(X As Integer, Y As Integer, Width As Integer, Height A
   hpr = Super._GetParam(X, Y, Width, Height)
   hpr!Padding = Me!Padding * hChart._fProportionnal
   hpr!Ratio = hChart._fProportionnal
-  Paint.Font = Me!Y_Font
-  Paint.Font.Size = Paint.Font.Size * hpr!Ratio
-  hpr!MaxYTextWidth = Paint.TextSize(Str(Me!Y_MaxValue)).W
+  ' Paint.Font = Me!Y_Font
+  ' Paint.Font.Size = Paint.Font.Size * hpr!Ratio
+
   Paint.Font = Me!X_Font
   Paint.Font.Size = Paint.Font.Size * hpr!Ratio
   hpr!XTextHeight = Paint.Font.Height
   hpr!TicLenght = 5 * hpr!Ratio
   fArrowSize = IIf($bShowArrows, 20, 0) * hpr!Ratio
   hpr!ArrowSize = fArrowSize
-  hpr!Rect = New RectF
+  
+  If $fYAutoScale Then
+    For j = 0 To hChart.Datas.Max
+      For i = 0 To hChart.Datas[j].Values.Max
+        fMax = Max(fMax, hChart.Datas[j].Values[i])
+      Next
+    Next
+  Else
+    fMax = $fYMaxValue
+  Endif
+    Paint.Font = $oYFont
+    Paint.Font.Size = Paint.Font.Size * hPr!Ratio
+    ' hPr!YPattern = "0." & String(Len(Str(Frac($fYStep))) - 2, "0")
+    hpr!MaxYTextWidth = Paint.TextSize(Format(fMax, $sYPattern)).W
 
+  hpr!Rect = New RectF
   With hpr!Rect
     .X = X + hpr!Padding + hpr!MaxYTextWidth + hpr!TicLenght + 10
     .Y = Y + Max(hpr!Padding, Paint.TextSize(Str(fMax)).H / 2)
@@ -137,15 +156,7 @@ Public Function _GetParam(X As Integer, Y As Integer, Width As Integer, Height A
   hpr!SeriesWidth = hpr!Rect.Width / hChart.Datas.Count
   hpr!BarWidth = hpr!Rect.Width / j / hChart.Datas.Count
 
-  If $fYAutoScale Then
-    For j = 0 To hChart.Datas.Max
-      For i = 0 To hChart.Datas[j].Values.Max
-        fMax = Max(fMax, hChart.Datas[j].Values[i])
-      Next
-    Next
-  Else
-    fMax = $fYMaxValue
-  Endif
+    
 
   hPr!UnitHeight = hpr!Rect.H / fMax
 
@@ -170,7 +181,6 @@ Public Function _GetParam(X As Integer, Y As Integer, Width As Integer, Height A
   Endif
   
   hpr!Labels = aLabels
-
 
 
 
@@ -220,12 +230,13 @@ Public Sub _PaintAfter(hParam As Collection)
   Dim iCount As Integer = hChart.Datas[0].Values.Count
   Dim i As Integer
   Dim fBarH As Float
-  Dim f As Integer
+  Dim f As Float
   Dim sLabel As String
   Dim h As Float
   Dim aLabels As New String[]
-
-
+  Dim sPattern As String
+  Dim fTextPadding As Float
+  
 
 
 
@@ -240,6 +251,9 @@ Public Sub _PaintAfter(hParam As Collection)
  
   f = hParam!Rect.Width / hParam!Labels.Count
   aLabels = hParam!Labels
+  
+  
+  
   For i = 0 To aLabels.mAx
     'Paint.DrawRect(hParam!Rect.Left + hParam!BarWidth * i, hParam!Rect.Bottom + hParam!TicLenght, hParam!BarWidth, hParam!XTextHeight, color.black)
     Paint.MoveTo(hParam!Rect.Left + f * (i + 1), hParam!Rect.Bottom)
@@ -256,7 +270,8 @@ Public Sub _PaintAfter(hParam As Collection)
   Paint.MoveTo(hParam!Rect.Left, hParam!Rect.Bottom)
   Paint.RelLineTo(0, -hParam!Rect.Height)
 
-
+  sPattern = $sYPattern
+  fTextPadding = hParam!Ratio * 10
   For f = 0 To $fYMaxValue Step $fYStep
     fBarH = f * hParam!UnitHeight
     h = hParam!Rect.Bottom - fBarH - Paint.Font.Height / 2
@@ -264,7 +279,7 @@ Public Sub _PaintAfter(hParam As Collection)
     Paint.MoveTo(hParam!Rect.Left, hParam!Rect.Bottom - fBarH)
     Paint.RelLineTo(-hParam!TicLenght, 0)
     Paint.Stroke
-    Paint.DrawText(f, hParam!Rect.Left - hParam!TicLenght - hParam!MaxYTextWidth - 10, hParam!Rect.Bottom - fBarH - Paint.Font.Height / 2, hParam!MaxYTextWidth,, Align.Right)
+    Paint.DrawText(Format(f, sPattern), hParam!Rect.Left - hParam!TicLenght - hParam!MaxYTextWidth - fTextPadding, hParam!Rect.Bottom - fBarH - Paint.Font.Height / 2, hParam!MaxYTextWidth,, Align.Right)
 
   Next
 

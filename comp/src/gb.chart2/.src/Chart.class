@@ -56,17 +56,19 @@ Public Sub Paint(X As Integer, Y As Integer, Width As Integer, Height As Integer
   hRect = RectF(X, Y, Width, Height)
 
   If $hLegend.Visible Then
+    hRect = $hLegend._Paint(0, Y, Width, Height)
     Select Case $hLegend.Position
       Case Align.Top
-        hRect = $hLegend._Paint(0, Y, Width, Height)
         hRect = RectF(X, Y + hRect.H, Width, Height)
+                
+      Case Align.Bottom
+        hRect = RectF(X, Y, Width, Height - hRect.H)
 
       Case Align.Left
-        hRect = $hLegend._Paint(0, Y, Width, Height)
         hRect = RectF(X + hRect.W, Y, Width, Height)
-
-      Case Align.Bottom
+      
       Case Align.Right
+        hRect = RectF(X, Y, Width - hRect.W, Height)
     End Select
   Endif
 

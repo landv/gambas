@@ -43,18 +43,33 @@ Public Sub _Paint(X As Integer, Y As Integer, Width As Integer, Height As Intege
     Case Align.Top, Align.Bottom
       hRect.Height = H * 3
       hRect.W = H * 2 + aLabels.Count * f
+      hRect.X = (Width + -hRect.W) / 2
+      If $iPosition = Align.top Then
+      hRect.Y = Y + H
+      
+        Else
+      hRect.Y = Height - hRect.H - H
+      Endif
+            Paint.Rectangle(hRect.X, hRect.Y, hRect.W, hRect.H)
+      Paint.Stroke
+      hRect.H += H
+            
     Case Else
-
       hRect.H = aLabels.Count * H * 1.2 + H
-      If $sTitle Then hRect.H = hRect.H + H 
       hRect.W = H * 3 + f
       hRect.Y = (Height - hRect.H) / 2
-      hRect.X = X + H
+      If $sTitle Then hRect.H = hRect.H + H 
 
+      If $iPosition = Align.Left Then 
+      hRect.X = X + H
+      Else
+      hRect.X = Width - hRect.W - H  
+      Endif
+      
       Paint.Rectangle(hRect.X, hRect.Y, hRect.W, hRect.H)
       Paint.Stroke
-      f = hRect.Y + H * 1.5
       
+      f = hRect.Y + H * 1.5
       If $sTitle Then
         Paint.Font.Bold = True
         Paint.dRAWText($sTitle, hRect.X, hRect.Y, hRect.W, H, Align.Center)
@@ -76,10 +91,10 @@ Public Sub _Paint(X As Integer, Y As Integer, Width As Integer, Height As Intege
       hRect.W += H
 
 
-      Return hRect
 
   End Select
 
+      Return hRect
 
 
 End
