@@ -57,11 +57,8 @@
 //#define DEBUG_LANG
 
 #define buffer_init COMMON_buffer_init
-#define get_char COMMON_get_char
-#define last_char COMMON_last_char
 #define look_char COMMON_look_char
 #define put_char COMMON_put_char
-#define jump_space COMMON_jump_space
 #define get_current COMMON_get_current
 #define buffer_pos COMMON_pos
 #define get_size_left COMMON_get_size_left
