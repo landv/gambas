@@ -30,51 +30,15 @@ char COMMON_buffer[COMMON_BUF_MAX];
 int COMMON_pos;
 int COMMON_len;
 
-static char *common_buffer;
-static int common_last;
+char *COMMON_start;
+int COMMON_last;
 
 void COMMON_buffer_init(const char *str, int len)
 {
-  common_buffer = (char *)str;
+  COMMON_start = (char *)str;
   COMMON_len = len;
   COMMON_pos = 0;
-  common_last = (-1);
-}
-
-
-int COMMON_look_char(void)
-{
-  if (COMMON_pos >= COMMON_len)
-    return (-1);
-
-  return (unsigned char)(common_buffer[COMMON_pos]);
-}
-
-
-int COMMON_get_char(void)
-{
-  if (COMMON_pos >= COMMON_len)
-    common_last = (-1);
-  else
-    common_last = (unsigned char)(common_buffer[COMMON_pos++]);
-
-  return common_last;
-}
-
-
-int COMMON_last_char(void)
-{
-  return common_last;
-}
-
-
-int COMMON_put_char(char c)
-{
-  if (COMMON_pos >= COMMON_len)
-    return (-1);
-
-  common_buffer[COMMON_pos++] = c;
-  return 0;
+  COMMON_last = (-1);
 }
 
 
@@ -92,22 +56,11 @@ void COMMON_jump_space(void)
 }
 
 
-char *COMMON_get_current(void)
-{
-  return &common_buffer[COMMON_pos];
-}
-
-
-int COMMON_get_size_left(void)
-{
-  return COMMON_len - COMMON_pos;
-}
-
 
 bool COMMON_has_string(const char *str, int len)
 {
 	if (COMMON_get_size_left() < len)
 		return FALSE;
 	
-	return memcmp(&common_buffer[COMMON_pos], str, len) == 0;
+	return memcmp(&COMMON_start[COMMON_pos], str, len) == 0;
 }
