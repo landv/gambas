@@ -372,7 +372,7 @@ void CLASS_add_event(CLASS *class, TRANS_EVENT *decl)
 
 	if (event->nparam)
 	{
-		ALLOC(&event->param, decl->nparam * sizeof(PARAM));
+		ALLOC_ZERO(&event->param, decl->nparam * sizeof(PARAM));
 
 		for (i = 0; i < decl->nparam; i++)
 		{
