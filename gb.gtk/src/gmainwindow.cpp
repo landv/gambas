@@ -1441,7 +1441,7 @@ void gMainWindow::setUtility(bool v)
 		gtk_widget_unmap(border);
 	}
 
-	gtk_window_set_type_hint(GTK_WINDOW(border), v ? GDK_WINDOW_TYPE_HINT_UTILITY : GDK_WINDOW_TYPE_HINT_NORMAL);
+	gtk_window_set_type_hint(GTK_WINDOW(border), v ? GDK_WINDOW_TYPE_HINT_DIALOG : GDK_WINDOW_TYPE_HINT_NORMAL);
 
 	if (remap)
 		gtk_widget_map(border);
