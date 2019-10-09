@@ -1864,6 +1864,7 @@ void MyMainWindow::showModal(void)
 	GB.OnErrorEnd(&handler);
 
 	GB.Debug.LeaveEventLoop();
+	
 	//eventLoop.processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
 
 	MyApplication::eventLoop = info.old;
@@ -2400,7 +2401,7 @@ void MyMainWindow::doReparent(QWidget *parent, const QPoint &pos)
 	if (THIS->toplevel)
 	{
 		if (_utility)
-			f |= Qt::Tool;
+			f |= Qt::Dialog;
 		else
 			f |= Qt::Window;
 

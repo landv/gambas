@@ -1254,7 +1254,7 @@ BEGIN_PROPERTY(Control_Next)
 		QWidget *next = get_next(WIDGET);
 
 		if (next)
-			GB.ReturnObject(CWidget::get(next));
+			GB.ReturnObject(CWidget::getRealExisting(next));
 		else
 			GB.ReturnNull();
 	}
@@ -1296,7 +1296,7 @@ BEGIN_PROPERTY(Control_Previous)
 		}
 
 		if (current)
-			GB.ReturnObject(CWidget::get(current));
+			GB.ReturnObject(CWidget::getRealExisting(current));
 		else
 			GB.ReturnNull();
 	}
