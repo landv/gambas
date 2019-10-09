@@ -19,7 +19,7 @@ Private $aStyleList As String[] = ["Bar"]
 Public Sub _new()
 
   $hLegend = New _ChartLegend As "Legend"
-  $hTitle = New _ChartTitle
+  $hTitle = New _ChartTitle As "Title"
   $bBorder = True
   $aStyleList.ReadOnly = True
   $aColors = [&hff6f00,
@@ -51,14 +51,13 @@ Public Sub Paint(X As Integer, Y As Integer, Width As Integer, Height As Integer
   If $bAutoScale Then _fProportionnal = IIf(Paint.Width <= Paint.Height, Paint.Width / (Desktop.Height * 2 / 3), Paint.Height / (Desktop.Height * 2 / 3))
 
   'Paint.Scale(f, f)
+  hRect = RectF(X, Y, Width, Height)
   If $hTitle.Visible And If $hTitle.Text Then
-      Paint.Font = $hTitle.Font
-      Paint.Font.Size = Paint.Font.Size * _fProportionnal
-      f = $hTitle.Font.Height * 1.5 * _fProportionnal
-      Paint.DrawText($hTitle.Text, X, Y, Width, f, Align.Center)
+
+      f = $hTitle._Paint(Width)
   Endif
   Y = Y + f
-  hRect = RectF(X, Y, Width, Height)
+  Height = Height - f
 
   If $hLegend.Visible Then
     hRect = $hLegend._Paint(0, Y, Width, Height)
@@ -70,7 +69,7 @@ Public Sub Paint(X As Integer, Y As Integer, Width As Integer, Height As Integer
         hRect = RectF(X, Y, Width, Height - hRect.H)
 
       Case Align.Left
-        hRect = RectF(X + hRect.W, Y, Width, Height)
+        hRect = RectF(X + hRect.W, Y, Width - hRect.W, Height)
       
       Case Align.Right
         hRect = RectF(X, Y, Width - hRect.W, Height)
@@ -82,7 +81,7 @@ Public Sub Paint(X As Integer, Y As Integer, Width As Integer, Height As Integer
 
   If $bBorder Then
     Paint.LineWidth = 2
-    Paint.DrawRect(0, 0, Width, Height, Color.Black)
+    Paint.DrawRect(0, 0, Width, Height + f, Color.Black)
 
 
   Endif
@@ -93,10 +92,10 @@ End
 Public Sub SetStyle(sStyle As String)
 
 
-  Select Case (sStyle)
-    Case "Bar"
+  Select Case LCase(sStyle)
+    Case "bar"
   $hStyle = New _ChartStyleBarBasic As "ChartStyleBarBasic"
-    Case "Pie"
+    Case "pie"
   $hStyle = New _CharStylePie As "ChartStylePie"    
   End Select
 

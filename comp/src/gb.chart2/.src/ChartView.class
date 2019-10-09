@@ -1,0 +1,25 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+Private $hChart As New Chart
+Private $hView As DrawingArea 
+
+Public Sub _new()
+  
+  $hView = New DrawingArea(Me) As "View"
+  $hChart.SetStyle("bar")
+  $hChart.Labels = ["1", "2", "3", "4"]
+  $hChart.Datas = [ChartDatas("Serie 1", [1, 2, 3, 4])]
+  $hChart.AutoScale = True
+End
+
+
+
+
+
+Public Sub View_Draw()
+  
+  $hChart.Paint(0, 0, Paint.Width, Paint.Height)
+  
+End

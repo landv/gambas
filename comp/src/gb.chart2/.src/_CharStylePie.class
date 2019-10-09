@@ -4,16 +4,22 @@ Inherits _ChartStyle
 Property Read Symbols As String[] Use $aSymbols
 
 Private $oLabelsFont As Font
-
-
+Private $fPadding As Float
+Private $bShowValues As Boolean
+Private $bPercentage As Boolean
+Private $iOulineColor As Integer
+Private $fOutlineWidth As Float = 1
+Private $bShowLabels As Boolean
+Private $fRotate As Float
 Event Foo
 
 Public Sub _new()
 
-  $aSymbols = Super.Symbols.Insert(["LabelsFont"])
+  $aSymbols = Super.Symbols.Insert(["LabelsFont", "Padding", "ShowLabels", "Showvalues", "Percentage", "OutlineColor", "OutlineWidth", "Rotate"])
 
   '$aSymbols.ReadOnly = True
-$oLabelsFont = Font["+4"]
+  $oLabelsFont = Font["+2"]
+
 End
 
 
@@ -23,6 +29,20 @@ Public Sub _get(Symbol As String) As Variant
   Select Case Symbol
     Case "LabelsFont"
       Return $oLabelsFont
+    Case "Padding"
+      Return $fPadding
+    Case "Showvalues"
+      Return $bShowValues
+    Case "Percentage"
+      Return $bPercentage
+    Case "OutlineColor"
+      Return $iOulineColor
+    Case "OutlineWidth"
+      Return $fOutlineWidth
+    Case "ShowLabels"
+      Return $bShowLabels
+      Case "Rotate"
+        Return $fRotate
     Case Else
       Return Super[Symbol]
 
@@ -37,6 +57,20 @@ Public Sub _put(Value As Variant, Symbol As String)
   Select Case Symbol
     Case "LabelsFont"
       $oLabelsFont = Value
+    Case "Padding"
+      $fPadding = Value
+    Case "Showvalues"
+      $bShowValues = Value
+    Case "Percentage"
+      $bPercentage = Value
+    Case "OutlineColor"
+      $iOulineColor = Value
+    Case "OutlineWidth"
+      $fOutlineWidth = Value
+    Case "ShowLabels"
+      $bShowLabels = value
+    Case "Rotate"
+      $fRotate = Value
     Case Else
       Super[Symbol] = Value
   End Select
@@ -47,11 +81,18 @@ Public Function _GetParam(X As Integer, Y As Integer, Width As Integer, Height A
 
   Dim hChart As Chart = Me._GetParent()
   Dim hPr As Collection
-  
-  
-  
+  Dim f As Float
+
+
   hpr = Super._GetParam(X, Y, Width, Height)
-  
+  If hChart.Datas.Count = 0 Then Return
+
+  For i As Integer = 0 To hChart.Datas[0].Values.Max
+    f += hChart.Datas[0].Values[i]
+  Next
+
+  hpr!Total = f
+
 
   Return hpr
 
@@ -59,10 +100,12 @@ End
 
 
 
+
+
 Public Sub _PaintBefore(hParam As Collection)
 
   Super._PaintBefore(hParam)
-  
+
 
 End
 
@@ -70,8 +113,159 @@ End
 Public Sub _PaintAfter(hParam As Collection)
 
   Dim hChart As Chart = Me._GetParent()
- 
 
+
+
+End
+
+
+Public Sub _PaintContent(hParam As Collection)
+
+  Dim w As Float
+  Dim hChart As Chart = Me._GetParent()
+  Dim angle, anglePrev As Float
+  Dim f As Float
+  Dim Tot As Float = hParam!Total
+  Dim hCenter, hPos As Pointf
+  Dim hRect, hTextRect As RectF
+  Dim i As Integer
+  Dim s As String
+  Dim fRadius As Float
+  Dim fAngleLabel, ftmp As Float
+  Dim aLabelRect As New RectF[]
+  Dim fTr As Float
+  'Dim hPos As PointF
+  Dim aLabPos As PointF[]
+  Dim fMaxLabelWidth As Float
+  Dim H, AlfH As Integer
+  Dim fLabelRadius As Float
+  Dim fPadding As Float = $fPadding * hChart._fProportionnal
+  Dim oLabelFont, oValueFont As Font
+  Dim fRotate As Float = $fRotate - 90
+  
+  oLabelFont = $oLabelsFont.Copy()
+  oLabelFont.Size = Max(oLabelFont.Size * hChart._fProportionnal, 1)
+  oValueFont = oLabelFont.Copy()
+  oValueFont.Size = oLabelFont.Size * 0.6
+
+  Paint.Font = oLabelFont
+
+  H = Paint.Font.H
+  AlfH = H / 4
+  w = Min(hParam!Rect.W, hParam!Rect.H) - fPadding
+
+  hRect = RectF(hParam!Rect.X + (hParam!Rect.W - w) / 2, hParam!Rect.Top + (hParam!Rect.H - w) / 2, w, w)
+  'Paint.Rectangle(hRect.X, hRect.Y, hRect.W, hRect.H)
+  'Paint.stroke
+  hCenter = hRect.Center()
+
+  'Get the largest label
+  For i As Integer = 0 To hChart.Labels.Max
+    s = hChart.Labels[i]
+    fMaxLabelWidth = Max(Paint.TextSize(s).W, fMaxLabelWidth)
+  Next
+  fMaxLabelWidth = fMaxLabelWidth + AlfH * 2
+
+  fLabelRadius = hRect.W / 2 - fMaxLabelWidth
+
+  'If fLabelRadius * 2 + fMaxLabelWidth * 2 < hRect.W Then fLabelRadius = hRect.H / 2 - H
+
+
+  If $bShowLabels Then
+    fRadius = fLabelRadius - H
+  Else
+    fRadius = hRect.W / 2
+  Endif
+
+  For i As Integer = 0 To hChart.Datas[0].Values.Max
+    Paint.Font = oLabelFont
+    Paint.LineWidth = Me!OutlineWidth * hChart._fProportionnal
+    f = hChart.Datas[0].Values[i]
+
+    angle = f / Tot * 360
+
+    ftr = W / 2 - fRadius
+    Paint.Ellipse(hRect.X + fTr, hRect.Y + fTr, hRect.W - fTr * 2, hRect.H - fTr * 2, Rad(anglePrev + fRotate), Rad(angle), True)
+    Paint.Background = hChart.Colors[i Mod hChart.Colors.count]
+    Paint.fill(True)
+  
+    Paint.Background = Me!OutlineColor
+    Paint.Stroke
+    'Endif
+
+    'compute point on the pie.~
+    'f = Sqr((hCenter.X - hRect.X) ^ 2 + (hCenter.Y - hRect.Y) ^ 2)
+    fAngleLabel = anglePrev + angle / 2
+    'Draw the Label Pos
+    If $bShowLabels Then
+      'compute the label Pos
+      hPos = PointF(hCenter.X + Cos(Rad(fAngleLabel + fRotate)) * fLabelRadius, hCenter.Y + Sin(Rad(fAngleLabel + fRotate)) * fLabelRadius)
+      s = hChart.Labels[i]
+      hTextRect = Paint.TextSize(s)
+      hTextRect.W += AlfH * 2
+      Paint.Background = Color.Black
+      
+      
+      
+      If fAngleLabel > 0 And fAngleLabel <= 90 Then
+        hTextRect.Move(hPos.X, hPos.Y - hTextRect.H / 2)
+        Paint.DrawText(s, hTextRect.X, hTextRect.Y, hTextRect.W, hTextRect.H, Align.Right)
+        Paint.MoveTo(hPos.X + AlfH, hPos.Y)
+        Paint.RelLineTo(-AlfH, 0)
+      Else If fAngleLabel > 90 And fAngleLabel <= 180 Then
+        hTextRect.Move(hPos.X, hPos.Y - hTextRect.H / 2)
+        Paint.DrawText(s, hTextRect.X, hTextRect.Y, hTextRect.W, hTextRect.H, Align.Right)
+        Paint.MoveTo(hPos.X + AlfH, hPos.Y)
+        Paint.RelLineTo(-AlfH, 0)
+      Else If fAngleLabel > 180 And fAngleLabel <= 270 Then
+        hTextRect.Move(hPos.X - hTextRect.W, hPos.Y - hTextRect.H / 2)
+        Paint.DrawText(s, hTextRect.X, hTextRect.Y, hTextRect.W, hTextRect.H, Align.Left)
+        Paint.MoveTo(hPos.X - AlfH, hPos.Y)
+        Paint.RelLineTo(AlfH, 0)
+      Else
+        hTextRect.Move(hPos.X - hTextRect.W, hPos.Y - hTextRect.H / 2)
+        Paint.DrawText(s, hTextRect.X, hTextRect.Y, hTextRect.W, hTextRect.H, Align.Left)
+        Paint.MoveTo(hPos.X - AlfH, hPos.Y)
+        Paint.RelLineTo(AlfH, 0)
+      Endif
+      hPos = pointf(hCenter.X + Cos(Rad(fAngleLabel + fRotate)) * (fRadius - AlfH), hCenter.Y + Sin(Rad(fAngleLabel + fRotate)) * (fRadius - AlfH))
+      Paint.LineTo(hPos.X, hPos.Y)
+
+      'Paint.Rectangle(hTextRect.X, hTextRect.Y, hTextRect.W, hTextRect.H)
+      Paint.Stroke
+      Paint.Ellipse(hPos.X - 2, hPos.Y - 2, 4, 4)
+      Paint.Fill
+    Endif
+    anglePrev += angle
+
+    If $bShowValues Then
+      Paint.LineWidth = 1 * hChart._fProportionnal
+      Paint.Background = Color.Black
+      'Paint the values
+      Paint.Font = oValueFont
+      hPos = PointF(hCenter.X + Cos(Rad(fAngleLabel + fRotate)) * fRadius * 0.6, hCenter.Y + Sin(Rad(fAngleLabel + fRotate)) * fRadius * 0.6)
+      'Paint.Rectangle(hPos.X, hPos.Y, 2, 2)
+      Paint.Stroke
+      If $bPercentage Then
+        s = Str(Int(hChart.Datas[0].Values[i] / Tot * 100)) & " %"
+      Else
+        s = Str(hChart.Datas[0].Values)
+      Endif
+      hTextRect = Paint.TextSize(s)
+      hTextRect.W += AlfH
+      hTextRect.Move(hPos.X - hTextRect.W / 2, hPos.Y - hTextRect.H / 2)
+      Paint.Rectangle(hTextRect.X, hTextRect.Y, hTextRect.W, hTextRect.H, 3)
+      Paint.Background = Color.SetAlpha(Color.Black, 180)
+      Paint.Fill
+      Paint.Background = Color.White
+      Paint.DrawText(s, hTextRect.X, hTextRect.Y, hTextRect.W, hTextRect.H, Align.Center)
+    Endif
+  Next
+  For j As Integer = 0 To 360
+
+    '   Paint.Background = Color.Green
+    '   Paint.Fill
+  Next
 
 End
 

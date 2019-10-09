@@ -1,24 +1,77 @@
 ' Gambas class file
 
 Private hChart As New Chart
+Private aSerie As Float[] = [1.0, 2, 3, 4, 5, 6.5]
+Private hTimer As New Timer As "Timer"
+Private $fRotate As Float
 
 Public Sub Form_Open()
-
+  
+  hTimer.Delay = 10
+  
   hChart.Labels = ["Tic", "Tac", "Toe", "Titi", "Toto", "Tata"]
 
-  hChart.Datas = [ChartDatas("Serie 1", [1.0, 2, 3, 4, 5, 6.5])]
+  hChart.Datas = [ChartDatas("Serie 1", aSerie)]
   
   hChart.SetStyle("Pie")
-
+  hChart.AutoScale = True
+  hChart.Legend.Border = Border("Padding:5")
   hChart.Legend.Visible = True
+  hChart.Title.Visible = True
+  hChart.Title.Text = "A beautifull pie Chart"
+  hChart.Title.Color = Color.Orange
+  hChart.Title.Font = Font["+10"]
+  hChart.Legend.Title = "Chart values"
+  'hChart.Background = Color.Lighter(Color.Lighter(Color.Yellow))
+  hChart.Legend.Position = Align.Right
+  
+  
+  
   With hChart
+  .Legend.SymbolOutlineColor = Color.Transparent
+ 
+  '.Legend!InterlineColor = Color.LightGray
+  .Legend.InterlineWidth = 2
+  '.Legend.Background = Color.Lighter(Color.Yellow)
+  .Legend.Border = Border("width:2;radius:5;Padding:10;Style:2;color:gray")
+  .Legend.SymbolStyle = "circle"
+  .Legend.TitleColor = Color.Darker(Color.Orange)
+  .Legend.Color = Color.Darker(Color.Orange)
+  .Legend.TitleSpacing = 20
+  .Legend.TitleFont = Font["+5"]
+  .Legend.Font = Font["+5"]
+  .Legend.Spacing = 20
+  .Legend.Width = 200
   .Style!Border = True
-  .Style!Background = Color.Yellow
+  .Style!Padding = 30
+  .Style!OutlineColor = Color.White
+  .Style!OutlineWidth = 2
+  .Style!Padding = 40
+  .Legend.InterlineColor = Color.LightGray
+  '.Style!ShowLabels = True
   End With
 End
 
 Public Sub DrawingArea1_Draw()
 
   hChart.Paint(0, 0, Paint.W, Paint.H)
+
+End
+
+
+Public Sub Timer_Timer()
+  
+  $fRotate = $fRotate + 0.5
+  If $fRotate = 361 Then $fRotate = 0
+  hChart.Style!Rotate = $fRotate
+  
+  DrawingArea1.Refresh
+  
+End
+
+
+Public Sub Button1_Click()
+
+  hTimer.Enabled = Not hTimer.Enabled
 
 End

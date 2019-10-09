@@ -1,0 +1,77 @@
+' Gambas class file
+
+Property Border As Border Use $hBorder
+Property Name As String Use $sName
+Property Background As Integer Use $iBackground
+Property Rect As Rectf Use $hRect
+Property Shadow As Float Use $fShadow 
+Property ShadowColor As Integer Use $iShadowColor
+Private $hInnerShadow As Rectf
+'Private $iBackground As Integer
+
+
+Public Sub _new(Optional sStyle As String)
+  
+  $hBorder = New Border
+  $hRect = RectF(0, 0, 10, 10)
+  $fShadow = 5
+  $iShadowColor = -1
+  $iBackground = -1
+  $hBorder.padding = 20
+  
+End
+
+
+
+Public Sub _GetRect() As Rect
+  
+  Return $hBorder.GetRect($hRect, True)
+  
+End
+
+
+Public Sub _PaintBefore()
+  If $fShadow Then 
+  Paint.save
+    
+    $hInnerShadow = RectF($hRect.X + $fShadow, $hRect.Y + $fShadow, $hRect.W - $fShadow, $hRect.H - $fShadow)
+    $hBorder.Clip($hInnerShadow)
+    
+    Paint.Rectangle($hInnerShadow.X, $hInnerShadow.Y, $hInnerShadow.Width, $hInnerShadow.Height)
+    Paint.Background = $iShadowColor
+    Paint.Fill
+    Paint.Restore
+    $hInnerShadow.Translate(-$fShadow, -$fShadow)
+  Else
+    $hInnerShadow = $hRect.Copy()
+  Endif
+  Paint.Save
+  $hBorder.Clip($hInnerShadow)
+  'Paint.Clip()
+  Paint.Rectangle($hInnerShadow.X, $hInnerShadow.Y, $hInnerShadow.Width, $hInnerShadow.Height)
+  Paint.Background = IIf($iBackground = -1, Color.Transparent, $iBackground)
+  Paint.Fill
+End
+
+Public Sub _PaintContent()
+  
+  
+  
+End
+
+
+Public Sub _PaintAfter()
+  
+  $hBorder.Paint($hInnerShadow)
+  Paint.Restore
+End
+
+
+Public Sub Paint()
+  
+  _PaintBefore
+  _PaintAfter
+  
+End
+
+

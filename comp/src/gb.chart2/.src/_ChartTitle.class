@@ -3,6 +3,8 @@
 Property Text As String Use $sText
 Property {Font} As Font Use $oFont
 Property Visible As Boolean Use $bVisible
+Property {Color} As Integer Use $iColor
+Event foo
 
 Public Sub _new()
   
@@ -12,7 +14,20 @@ Public Sub _new()
 End
 
 
-Public Sub Paint()
-
+Public Sub _Paint(W As Integer) As Float
+  Dim hChart As Chart = GetParent()
+  Dim H As Float
+  Paint.Font = $oFont
+  Paint.Font.Size = Paint.Font.Size * hChart._fProportionnal
+  H = Paint.Font.H * 1.5
+  Paint.Background = $iColor
+  Paint.DrawText($sText, 0, 0, W, H, Align.Center)
+  Return H
   
+End
+
+
+Private Sub GetParent() As Chart
+  Return Object.Parent(Me)
+
 End

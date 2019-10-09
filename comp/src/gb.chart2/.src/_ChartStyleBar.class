@@ -4,8 +4,8 @@ Inherits _ChartStyle
 Property Read Symbols As String[] Use $aSymbols
 Private $oXFont As New Font
 Private $oYFont As New Font
-Private $fXMaxValue As Float = 100.0
-Private $fYMaxValue As Float = 100.0
+Private $fXMaxValue As Float = 10.0
+Private $fYMaxValue As Float = 10.0
 Private $fXMinValue As Float
 Private $fYMinValue As Float
 Private $fXStep As Float = 1.0
@@ -217,7 +217,7 @@ Public Function _GetParam(X As Integer, Y As Integer, Width As Integer, Height A
   aLabels = New String[]
 
   If hChart.Datas.Count = 1 Then
-    For i = 0 To j
+    For i = 0 To j - 1
       If i > hChart.Labels.Max Then
         aLabels.Add("")
       Else
