@@ -55,6 +55,7 @@ bool gApplication::fix_oxygen = false;
 **************************************************************************/
 
 static bool _focus_change = false;
+static bool _doing_focus_change = false;
 
 static GtkWindowGroup *get_window_group(GtkWidget *widget)
 {
@@ -1301,10 +1302,12 @@ static void post_focus_change(void *)
 {
 	gControl *current, *control, *next;
 
-	if (!_focus_change)
+	if (!_focus_change || _doing_focus_change)
 		return;
 
 	//fprintf(stderr, "post_focus_change\n");
+	
+	_doing_focus_change = true;
 
 	for(;;)
 	{
@@ -1340,7 +1343,8 @@ static void post_focus_change(void *)
 		}
 	}
 
-	_focus_change = FALSE;
+	_doing_focus_change = false;
+	_focus_change = false;
 }
 
 void gApplication::handleFocusNow()
@@ -1353,7 +1357,7 @@ static void handle_focus_change()
 	if (_focus_change)
 		return;
 
-	_focus_change = TRUE;
+	_focus_change = true;
 	GB.Post((void (*)())post_focus_change, (intptr_t)NULL);
 }
 
