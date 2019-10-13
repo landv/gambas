@@ -754,7 +754,10 @@ MyComboBox::MyComboBox(QWidget *parent) :
 	QComboBox(parent)
 {
 	_sorted = _dirty = false;
+#if QT5
+#else
 	setCompleter(0);
+#endif
 	setInsertPolicy(NoInsert);
 	calcMinimumHeight();
 }
