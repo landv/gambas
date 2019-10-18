@@ -377,9 +377,6 @@ static void apply_font(QFont &font, void *object = 0)
 	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
 	QFont f = font;
 	
-	if (d->fontScale != 1)
-		f.setPointSizeF(f.pointSizeF() * d->fontScale);
-
 	PAINTER(d)->setFont(f);
 	// Strange bug of QT. Sometimes the font does not apply (cf. DrawTextShadow)
 	if (f != PAINTER(d)->font())
@@ -400,6 +397,9 @@ static void Font(GB_PAINT *d, int set, GB_FONT *font)
 		else if ((GB.Is(d->device, CLASS_DrawingArea)))
 			f = (((CWIDGET *)d->device)->widget)->font();
 		
+		if (d->fontScale != 1)
+			f.setPointSizeF(f.pointSizeF() * d->fontScale);
+
 		apply_font(f);
 		/*PAINTER(d)->setFont(f);
 
