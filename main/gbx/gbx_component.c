@@ -59,7 +59,7 @@
 //#define DEBUG_PRELOAD
 
 COMPONENT *COMPONENT_current = NULL;
-COMPONENT *COMPONENT_main;
+//COMPONENT *COMPONENT_main;
 int COMPONENT_count = 0;
 char *COMPONENT_path;
 
