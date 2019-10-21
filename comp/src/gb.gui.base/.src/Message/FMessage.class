@@ -41,15 +41,18 @@ Public Sub Run(sIcon As String, sText As String, aButton As String[]) As Integer
   
   txtMessage.Ignore = False
   
+  H = 0
   For I = 0 To aButton.Max
     hButton = New Button(panButton) As "Button"
     hButton.Tag = I
     hButton.Text = aButton[I]
     hButton.W = Max(Desktop.Scale * 14, hButton.Font.TextWidth(hButton.Text) + Desktop.Scale * 2)
+    H = Max(H, hButton.Font.TextHeight(hButton.Text))
     WB += hButton.W + Desktop.Scale
     If I = 0 Then hButton.Default = True
     If I = aButton.Max Then hButton.Cancel = True
   Next
+  panButton.H = Max(H, Desktop.Scale * 4)
   
   W = Max(txtMessage.W + 1, WB) + picMessage.W + Desktop.Scale * 4
   H = Max(Desktop.Scale * 8, txtMessage.H) + panButton.H + Desktop.Scale * 5
