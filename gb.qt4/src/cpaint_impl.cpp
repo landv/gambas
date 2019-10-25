@@ -377,6 +377,9 @@ static void apply_font(QFont &font, void *object = 0)
 	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
 	QFont f = font;
 	
+	if (d->fontScale != 1)
+		f.setPointSizeF(f.pointSizeF() * d->fontScale);
+
 	PAINTER(d)->setFont(f);
 	// Strange bug of QT. Sometimes the font does not apply (cf. DrawTextShadow)
 	if (f != PAINTER(d)->font())
@@ -388,30 +391,24 @@ static void apply_font(QFont &font, void *object = 0)
 
 static void Font(GB_PAINT *d, int set, GB_FONT *font)
 {
+	QFont f;
+	
 	if (set)
 	{
-		QFont f;
-
 		if (*font)
 			f = QFont(*((CFONT *)(*font))->font);
 		else if ((GB.Is(d->device, CLASS_DrawingArea)))
 			f = (((CWIDGET *)d->device)->widget)->font();
 		
-		if (d->fontScale != 1)
-			f.setPointSizeF(f.pointSizeF() * d->fontScale);
-
 		apply_font(f);
-		/*PAINTER(d)->setFont(f);
-
-		// Strange bug of QT. Sometimes the font does not apply (cf. DrawTextShadow)
-		if (f != PAINTER(d)->font())
-		{
-			f.fromString(f.toString());
-			PAINTER(d)->setFont(f);
-		}*/
 	}
 	else
-		*font = CFONT_create(PAINTER(d)->font(), apply_font);
+	{
+		f = PAINTER(d)->font();
+		if (d->fontScale != 1)
+			f.setPointSizeF(f.pointSizeF() / d->fontScale);
+		*font = CFONT_create(f, apply_font);
+	}
 }
 
 static void init_path(GB_PAINT *d)
@@ -1039,9 +1036,16 @@ static void RichTextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *
 
 static void TextSize(GB_PAINT *d, const char *text, int len, float *w, float *h)
 {
+	if (len == 0)
+	{
+		if (w) *w = 0;
+		if (h) *h = 0;
+		return;
+	}
+	
 	QString s = QString::fromUtf8((const char *)text, len);
-	*w = get_text_width(PAINTER(d), s);
-	*h = get_text_height(PAINTER(d), s);
+	if (w) *w = get_text_width(PAINTER(d), s);
+	if (h) *h = get_text_height(PAINTER(d), s);
 }
 
 static void RichTextSize(GB_PAINT *d, const char *text, int len, float sw, float *w, float *h)

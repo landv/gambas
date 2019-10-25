@@ -55,6 +55,10 @@
 #endif
 #endif
 
+#ifdef QT5
+#include <QWindow>
+#endif
+
 #include "gambas.h"
 
 #include "CWidget.h"
@@ -1739,7 +1743,13 @@ void MyMainWindow::present(QWidget *parent)
 		activateWindow();
 
 	if (parent)
+	{
 		X11_set_transient_for(effectiveWinId(), parent->effectiveWinId());
+		#ifdef QT5
+			if (windowHandle())
+				windowHandle()->setTransientParent(parent->windowHandle());
+		#endif
+	}
 
 	raise();
 }
