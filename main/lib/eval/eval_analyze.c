@@ -147,8 +147,8 @@ static void get_symbol(PATTERN pattern, const char **symbol, int *len)
 
 	*symbol = sym->name;
 	*len = sym->len;
-	if (*len > EVAL_COLOR_MAX_LEN)
-		*len = EVAL_COLOR_MAX_LEN;
+	/*if (*len > EVAL_COLOR_MAX_LEN)
+		*len = EVAL_COLOR_MAX_LEN;*/
 }
 
 
@@ -156,6 +156,12 @@ static void add_data(int state, int len)
 {
 	EVAL_COLOR *color;
 
+	while (len > EVAL_COLOR_MAX_LEN)
+	{
+		add_data(state, EVAL_COLOR_MAX_LEN);
+		len -= EVAL_COLOR_MAX_LEN;
+	}
+	
 	if (len == 0)
 		return;
 	
@@ -168,19 +174,17 @@ static void add_data(int state, int len)
 		memcpy(color, _colors, sizeof(EVAL_COLOR) * COLOR_BUFFER_SIZE);
 		_colors_len = 0;
 	}
-	else
-  {
-		color = &_colors[_colors_len];
-		color->state = state;
-		color->len = len;
-		color->alternate = FALSE;
-		_colors_len++;
-	}
+	
+	color = &_colors[_colors_len];
+	color->state = state;
+	color->len = len;
+	color->alternate = FALSE;
+	_colors_len++;
 }
 
 static void add_data_merge(int state, int len)
 {
-	if (_colors_len > 0 && _colors[_colors_len - 1].state == state && (_colors[_colors_len - 1].len + len) < EVAL_COLOR_MAX_LEN)
+	if (_colors_len > 0 && _colors[_colors_len - 1].state == state && (_colors[_colors_len - 1].len + len) <= EVAL_COLOR_MAX_LEN)
 	  _colors[_colors_len - 1].len += len;
 	else
 		add_data(state, len);
@@ -300,15 +304,17 @@ static void flush_result(EVAL_ANALYZE *result)
 static void add_result(EVAL_ANALYZE *result, const char *str, int len)
 {
 	if ((_analyze_buffer_pos + len) > sizeof(_analyze_buffer))
-		flush_result(result);
-	
-	if (len > sizeof(_analyze_buffer))
-		result->str = GB.AddString(result->str, str, len);
-	else
 	{
-		memcpy(&_analyze_buffer[_analyze_buffer_pos], str, len);
-		_analyze_buffer_pos += len;
+		flush_result(result);
+		if (len >= sizeof(_analyze_buffer))
+		{
+			result->str = GB.AddString(result->str, str, len);
+			return;
+		}
 	}
+	
+	memcpy(&_analyze_buffer[_analyze_buffer_pos], str, len);
+	_analyze_buffer_pos += len;
 }
 
 static void add_result_char(EVAL_ANALYZE *result, char c)
