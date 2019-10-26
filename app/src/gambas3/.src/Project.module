@@ -3006,6 +3006,7 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
   Dim sExecPath As String
   Dim bOK As Boolean
   Dim sErr As String
+  Dim bSaveDone As Boolean
 
   If CheckStartupClass() Then Return True
 
@@ -3043,8 +3044,9 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
   bDoNotIncVersion = bDoNotIncVersion Or Project.Config["/Executable/DoNotIncrementVersion", False]
 
   Exec ["rm", "-rf", Project.Dir &/ ".gambas.save"] Wait
-  Exec ["cp", "-rf", Project.Dir &/ ".gambas", Project.Dir &/ ".gambas.save"] Wait
-  'MOVE Project.Dir &/ ".gambas" TO Project.Dir &/ ".gambas.save"
+  'Exec ["cp", "-rf", Project.Dir &/ ".gambas", Project.Dir &/ ".gambas.save"] Wait
+  Move Project.Dir &/ ".gambas" To Project.Dir &/ ".gambas.save"
+  bSaveDone = True
 
   If Not Compile(True, Not KeepDebugInfo, False, True) Then
 
@@ -3064,7 +3066,6 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
     If Type = TYPE_LIBRARY Then 
       sErr = InstallLibrary(sExecPath, Vendor, CStr(MajorVersion) & "." & CStr(MinorVersion))
       If sErr Then FMain.ShowWarning(sErr)
-
     Endif
 
     If RunAfterMakingExec Then
@@ -3080,14 +3081,16 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
   Exec ["rm", "-rf", Project.Dir &/ ".gambas"] Wait
   Move Project.Dir &/ ".gambas.save" To Project.Dir &/ ".gambas"
   
-_ERROR:
-
   EnableRefresh
   Return Not bOK
 
 Catch
 
   FMain.ShowError(("Cannot make executable.") & "\n\n" & Error.Text & "\n" & Error.Where)
+  If bSaveDone Then 
+    Exec ["rm", "-rf", Project.Dir &/ ".gambas"] Wait
+    Try Move Project.Dir &/ ".gambas.save" To Project.Dir &/ ".gambas"
+  Endif
   EnableRefresh
   Return True
 
