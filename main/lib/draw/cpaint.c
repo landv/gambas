@@ -1190,7 +1190,7 @@ BEGIN_METHOD(Paint_TextSize, GB_STRING text)
 
 END_METHOD
 
-
+#if 0
 BEGIN_PROPERTY(Paint_TextHeight)
 
 	float h;
@@ -1200,7 +1200,7 @@ BEGIN_PROPERTY(Paint_TextHeight)
 	GB.ReturnFloat(h);
 
 END_PROPERTY
-
+#endif
 
 BEGIN_METHOD(Paint_RichTextSize, GB_STRING text; GB_FLOAT width)
 
@@ -1798,7 +1798,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_PROPERTY("FontScale", "f", Paint_FontScale),
 	GB_STATIC_METHOD("Text", NULL, Paint_Text, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i]"),
 	GB_STATIC_METHOD("TextSize", "RectF", Paint_TextSize, "(Text)s"),
-	GB_STATIC_PROPERTY_READ("TextHeight", "f", Paint_TextHeight),
+	//GB_STATIC_PROPERTY_READ("TextHeight", "f", Paint_TextHeight),
 	GB_STATIC_METHOD("RichText", NULL, Paint_RichText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i]"),
 	GB_STATIC_METHOD("RichTextSize", "RectF", Paint_RichTextSize, "(Text)s[(Width)f]"),
 	GB_STATIC_METHOD("DrawText", NULL, Paint_DrawText, "(Text)s[(X)f(Y)f(Width)f(Height)f(Alignment)i]"),
