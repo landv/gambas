@@ -203,6 +203,7 @@ Public Sub btnControl_MouseDrag()
 
   Drag.Icon = hTool.Picture
   Drag(hTool, File.Name(sTool), MMime.CONTROL)
+  Try Project.ActiveForm.HideFrame
   
 End
 

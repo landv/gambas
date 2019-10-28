@@ -204,10 +204,6 @@ Static Private Sub HideDNDFrame()
 
   Dim I As Integer
   
-  'Debug System.Backtrace.Join(" ")
-  
-  'Debug
-  
   For I = 0 To 3
     Try $aFrame[I].Delete
     $aFrame[I] = Null
@@ -262,7 +258,6 @@ Static Public Sub DndFrame_Drag()
   Dim X As Integer
   Dim Y As Integer
   
-  'Debug
   $bInFrame = True
   StopHideFrameTimer
   
@@ -355,12 +350,18 @@ End
 
 Static Public Sub DndFrame_DragLeave()
   
-  'Debug
+  Dim hCtrl As Control
+  
   $bInFrame = False
   _HideDNDFrame
   
-  If Not $hFrameCtrl.Hovered Then 
-    Object.Raise($hFrameCtrl, "DragLeave")
-  Endif
+  hCtrl = $hFrameCtrl
+  While hCtrl
+    If Not Mouse.Inside(hCtrl) Then 
+      Object.Raise($hFrameCtrl, "DragLeave")
+      Break
+    Endif
+    hCtrl = hCtrl.Parent
+  Wend
   
 End

@@ -1565,7 +1565,7 @@ End
 Private Sub DrawFrame(hCtrl As Control, Optional X As Integer, Y As Integer, W As Integer, H As Integer, Optional bInside As Boolean)
   
   Dim hRoot As Container = panBorder 'RootControl.Control
-  Dim S As Integer = 2
+  Dim S As Integer = Max(1, Desktop.Scale \ 4)
   
   If W = 0 Or If H = 0 Then
     X = 0
@@ -1579,6 +1579,8 @@ Private Sub DrawFrame(hCtrl As Control, Optional X As Integer, Y As Integer, W A
     Y -= S
     W += 2 * S
     H += 2 * S
+  Else
+    S *= 2
   Endif
   
   panSelectN.Move(hCtrl.ScreenX - hRoot.ScreenX + X, hCtrl.ScreenY - hRoot.ScreenY + Y, W, S)
@@ -3325,9 +3327,7 @@ End
 
 Public Sub Control_DragLeave()
   
-  If Last = RootControl.Control And Not Mouse.Inside(RootControl.Control) Then
-    HideFrame
-  Endif
+  HideFrame
   
 End
 
