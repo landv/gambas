@@ -126,16 +126,23 @@ Static Public Sub _InitMenuBarShortcut(hWindow As Window)
   
 End
 
+Static Private Sub StopHideFrameTimer()
+  
+  If $hHideFrameTimer Then
+    $hHideFrameTimer.Stop
+    $hHideFrameTimer = Null
+  Endif
+  
+End
+
+
 Static Public Sub _ShowDNDFrame(hCtrl As Control, X As Integer, Y As Integer, W As Integer, H As Integer)
   
   Dim I As Integer
 
   'Debug hCtrl.Name;; X;; Y;; W;; H;; "|";; System.Backtrace.Join(" ")
 
-  If $hHideFrameTimer Then
-    $hHideFrameTimer.Stop
-    $hHideFrameTimer = Null
-  Endif
+  StopHideFrameTimer
   
   For I = 0 To 3
     If $aFrame[I] = hCtrl Then Return
@@ -182,7 +189,8 @@ Static Public Sub _ShowDNDFrame(hCtrl As Control, X As Integer, Y As Integer, W 
   
   With $aFrame[0]
     If Not .Visible Or If .X <> X Or If .Y <> Y Or If .W <> W Or If .H <> H Then 
-      $aFrame[0].Move(X, Y, W, H) 
+      'Debug hCtrl.Name;; X;; Y;; W;; H
+      .Move(X, Y, W, H) 
       .Raise
       .Show
     Endif
@@ -197,6 +205,8 @@ Static Private Sub HideDNDFrame()
   Dim I As Integer
   
   'Debug System.Backtrace.Join(" ")
+  
+  'Debug
   
   For I = 0 To 3
     Try $aFrame[I].Delete
@@ -247,12 +257,14 @@ Static Public Sub HideFrameTimer_Timer()
   
 End
 
-
 Static Public Sub DndFrame_Drag()
   
-  'Debug
   Dim X As Integer
   Dim Y As Integer
+  
+  'Debug
+  $bInFrame = True
+  StopHideFrameTimer
   
   X = Drag.X
   Y = Drag.Y
@@ -274,7 +286,11 @@ Static Public Sub DndFrame_DragMove()
   Dim X As Integer
   Dim Y As Integer
 
+  'Debug
+
   $bInFrame = True
+  StopHideFrameTimer
+  
   Drag.X += $iFrameX
   Drag.Y += $iFrameY
 
@@ -326,9 +342,11 @@ End
 
 Static Public Sub DndFrame_DragLeave()
   
+  'Debug
   $bInFrame = False
+  _HideDNDFrame
+  
   If Not $hFrameCtrl.Hovered Then 
-    _HideDNDFrame
     Object.Raise($hFrameCtrl, "DragLeave")
   Endif
   

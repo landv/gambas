@@ -3849,11 +3849,8 @@ __POP_NATIVE_ARRAY:
 	EXEC_object_array(val, class, object);
 	array = (CARRAY *)object;
 
-	/*VALUE_copy(&swap, &val[0]);
-	VALUE_copy(&val[0], &val[-1]);
-	VALUE_copy(&val[-1], &swap);*/
-
-	//VALUE_conv(&val[0], type);
+	CARRAY_check_not_read_only(array);
+	
 	for (i = 1; i < np; i++)
 		VALUE_conv_integer(&val[i]);
 
@@ -3884,11 +3881,8 @@ __POP_NATIVE_ARRAY_SIMPLE:
 	EXEC_object_array(val, class, object);
 	array = (CARRAY *)object;
 
-	/*VALUE_copy(&swap, &val[0]);
-	VALUE_copy(&val[0], &val[-1]);
-	VALUE_copy(&val[-1], &swap);*/
-
-	//VALUE_conv(&val[0], type);
+	CARRAY_check_not_read_only(array);
+	
 	VALUE_conv_integer(&val[1]);
 
 	data = CARRAY_get_data(array, val[1]._integer.value);
@@ -3904,10 +3898,8 @@ __POP_NATIVE_ARRAY_INTEGER:
 	EXEC_object_array(val, class, object);
 	array = (CARRAY *)object;
 
-	/*VALUE_copy(&swap, &val[0]);
-	VALUE_copy(&val[0], &val[-1]);
-	VALUE_copy(&val[-1], &swap);*/
-
+	CARRAY_check_not_read_only(array);
+	
 	VALUE_conv_integer(&val[-1]);
 	VALUE_conv_integer(&val[1]);
 
@@ -3924,10 +3916,8 @@ __POP_NATIVE_ARRAY_FLOAT:
 	EXEC_object_array(val, class, object);
 	array = (CARRAY *)object;
 
-	/*VALUE_copy(&swap, &val[0]);
-	VALUE_copy(&val[0], &val[-1]);
-	VALUE_copy(&val[-1], &swap);*/
-
+	CARRAY_check_not_read_only(array);
+	
 	VALUE_conv_float(&val[-1]);
 	VALUE_conv_integer(&val[1]);
 
@@ -4001,6 +3991,24 @@ void EXEC_quit(ushort code)
 
 static void _break(ushort code)
 {
+	if (!EXEC_trace && !EXEC_debug)
+	{
+		*PC = C_NOP;
+		return;
+	}
+	
+	if (EXEC_trace)
+	{
+		double timer;
+		char *addr;
+		int len;
+		
+		DATE_timer(&timer, TRUE);
+		LOCAL_format_number(timer, LF_GENERAL_NUMBER, NULL, 0, &addr, &len, FALSE);
+		fprintf(stderr, "[%d.%06d] %s\n", (int)timer, (int)(timer * 1000000) % 1000000, DEBUG_get_current_position());
+		fflush(stderr);
+	}
+	
 	if (EXEC_debug)
 	{
 		/*TC = PC + 1;
@@ -4008,7 +4016,7 @@ static void _break(ushort code)
 
 		//fprintf(stderr, "%s\n", DEBUG_get_current_position());
 
-		if (CP && CP->component == COMPONENT_main)
+		if (CP && CP->component == NULL)
 		{
 			if (EXEC_profile_instr)
 				DEBUG.Profile.Add(CP, FP, PC);
@@ -4042,8 +4050,6 @@ static void _break(ushort code)
 			DEBUG.Breakpoint(code);
 		}
 	}
-	else
-		*PC = C_NOP;
 }
 
 void SUBR_left(ushort code)

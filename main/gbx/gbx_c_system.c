@@ -220,6 +220,7 @@ BEGIN_PROPERTY(System_Shell)
 
 END_PROPERTY
 
+
 BEGIN_PROPERTY(System_Profile)
 
 	if (READ_PROPERTY)
@@ -229,17 +230,30 @@ BEGIN_PROPERTY(System_Profile)
 
 END_PROPERTY
 
+
+BEGIN_PROPERTY(System_Trace)
+
+	if (READ_PROPERTY)
+		GB_ReturnBoolean(EXEC_trace);
+	else
+		EXEC_trace = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
+
+
 BEGIN_METHOD_VOID(System_Breakpoint)
 
 	BREAKPOINT();
 
 END_METHOD
 
+
 BEGIN_PROPERTY(System_TimeZone)
 
 	GB_ReturnInteger(DATE_get_timezone());
 
 END_PROPERTY
+
 
 BEGIN_PROPERTY(System_BreakOnError)
 
@@ -249,6 +263,7 @@ BEGIN_PROPERTY(System_BreakOnError)
 		EXEC_break_on_error = VPROP(GB_BOOLEAN);
 
 END_METHOD
+
 
 BEGIN_METHOD(System_Log, GB_STRING message)
 
@@ -292,6 +307,7 @@ BEGIN_METHOD(System_Log, GB_STRING message)
 
 END_METHOD
 
+
 BEGIN_METHOD(System_Find, GB_STRING program)
 
 	const char *path;
@@ -303,6 +319,7 @@ BEGIN_METHOD(System_Find, GB_STRING program)
 		GB_ReturnNewZeroString(path);
 
 END_METHOD
+
 
 BEGIN_METHOD(System_Exist, GB_STRING program)
 
@@ -348,6 +365,7 @@ GB_DESC NATIVE_System[] =
 	GB_STATIC_PROPERTY("FirstDayOfWeek", "i", System_FirstDayOfWeek),
 	GB_STATIC_PROPERTY("Shell", "s", System_Shell),
 	GB_STATIC_PROPERTY("Profile", "b", System_Profile),
+	GB_STATIC_PROPERTY("Trace", "b", System_Trace),
 
 	GB_STATIC_PROPERTY_READ("RightToLeft", "b", System_RightToLeft),
 	GB_STATIC_PROPERTY_READ("Charset", "s", System_Charset),

@@ -31,7 +31,8 @@ Public Sub Printer_Draw()
   Debug "Paint.FontScale = "; Paint.FontScale
   Debug "Paint.Font.Size = "; Paint.Font.Size
 
-  H = Paint.Font.H
+  H = Paint.TextSize(" ").H
+  Debug H;; Paint.TextHeight;; Paint.Font.H
   Paint.Font = Font["Liberation Sans,10"]
   Paint.DrawText(CStr($hPrinter.Page) & " WÊyg_", 0, 0, Paint.W, H, Align.Center)
   Paint.LineWidth = 1

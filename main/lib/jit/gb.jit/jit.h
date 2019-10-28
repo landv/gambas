@@ -22,6 +22,7 @@
 #define E_BOUND     21
 #define E_ZERO      26
 #define E_IOBJECT   29
+#define E_SARRAY    65
 
 static inline double frac(double x)
 {
@@ -377,6 +378,7 @@ enum
   GB_ARRAY_IMPL *_a = (_array).value; \
   int _i = (_index); \
   if (!_a) THROW(E_NOBJECT); \
+  if (_a->ref) THROW(E_SARRAY); \
   if (_i < 0 || _i >= _a->count) THROW(E_BOUND); \
   &((_type *)_a->data)[_i]; \
 })

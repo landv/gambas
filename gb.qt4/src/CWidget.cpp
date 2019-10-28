@@ -79,6 +79,7 @@ CWIDGET *CWIDGET_hovered = 0;
 int CCONTROL_last_event_type = 0;
 
 static bool _focus_change = false;
+static bool _doing_focus_change = false;
 static CWIDGET *_old_active_control = 0;
 static CWIDGET *_hovered = 0;
 static CWIDGET *_official_hovered = 0;
@@ -1254,7 +1255,7 @@ BEGIN_PROPERTY(Control_Next)
 		QWidget *next = get_next(WIDGET);
 
 		if (next)
-			GB.ReturnObject(CWidget::get(next));
+			GB.ReturnObject(CWidget::getRealExisting(next));
 		else
 			GB.ReturnNull();
 	}
@@ -1296,7 +1297,7 @@ BEGIN_PROPERTY(Control_Previous)
 		}
 
 		if (current)
-			GB.ReturnObject(CWidget::get(current));
+			GB.ReturnObject(CWidget::getRealExisting(current));
 		else
 			GB.ReturnNull();
 	}
@@ -2437,11 +2438,11 @@ static void post_focus_change(void *)
 {
 	CWIDGET *current, *control;
 	
-	if (!_focus_change)
+	if (!_focus_change || _doing_focus_change)
 		return;
 	
-	//qDebug("post_focus_change");
-
+	_doing_focus_change = true;
+	
 	for(;;)
 	{
 		current = CWIDGET_active_control;
@@ -2466,7 +2467,8 @@ static void post_focus_change(void *)
 		}
 	}
 	
-	_focus_change = FALSE;
+	_doing_focus_change = false;
+	_focus_change = false;
 }
 
 static void handle_focus_change()

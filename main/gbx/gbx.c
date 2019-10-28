@@ -254,6 +254,7 @@ int main(int argc, char *argv[])
 				"  -k               do not unload shared libraries\n"
 				"  -H --httpd       run through an embedded http server\n"
 				"  -j               disable just-in-time compiler\n"
+				"  -t --trace       dump the position of each executed line of code\n"
 				);
 
 			if (!EXEC_arch)
@@ -324,6 +325,10 @@ int main(int argc, char *argv[])
 		{
 			EXEC_debug = TRUE;
 			EXEC_profile = TRUE;
+		}
+		else if (is_long_option(argv[i], 't', "trace"))
+		{
+			EXEC_trace = TRUE;
 		}
 		else if (is_option_arg(argv, argc, &i, 'f', &EXEC_fifo_name))
 		{

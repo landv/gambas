@@ -85,7 +85,8 @@ Private $bDesaturate As Boolean
 Public Sub _new()
   
   $hView = New ScrollArea(Me) As "View"
-  $hView.Background = Color.Merge(Color.TextBackground, Color.TextForeground)
+  $hView.Background = Color.LightForeground
+  $hView.Border = False
   '$tmrLoad.Delay = 100
   Me.Proxy = $hView
   $hDocItem = New _DocumentItem As "Doc"
@@ -564,17 +565,10 @@ Private Sub SetZoom(fValue As Float)
 End
 
 Private Sub Zoom_Write(Value As Float)
-  'entre 0.1 et 2
   
   Select Case $iArrangement
     Case Arrange.None, Arrange.Row, Arrange.Column, Arrange.LeftRight, Arrange.TopBottom
-      
-      SetZoom(Min(Max(Value, 0.1), 8))
-      '$iArrangement = None
-      '$fZoom = $fZoom
-      'just refresh image in the cache don't clear them
-      
-      'RefreshAll
+      SetZoom(Min(Max(Value, 1 / 8), 8))
       DoLayout
       $tmrRefresh.Trigger
   End Select
@@ -725,7 +719,7 @@ Public Sub View_MouseWheel()
     Stop Event
   Else
     If Mouse.Control Then
-      Me.Zoom = $fZoom + 0.1 * Mouse.Delta
+      Me.Zoom = $fZoom * 2 ^ (Mouse.Delta / 4)
       $hView.Scroll($iSX, $iSY)
     Endif
     Stop Event

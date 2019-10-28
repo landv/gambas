@@ -943,6 +943,7 @@ static void load_without_inits(CLASS *class)
 	COMPONENT *save;
 	CLASS_DESC *start;
 	char kind;
+	ARCHIVE *arch;
 
 	//size_t alloc = MEMORY_size;
 
@@ -1247,21 +1248,6 @@ static void load_without_inits(CLASS *class)
 
 	CLASS_search_special(class);
 
-	// JIT compilation
-
-	for (i = 0; i < class->load->n_func; i++)
-	{
-		if (class->load->func[i].fast)
-		{
-			ARCHIVE *arch = class->component ? class->component->archive : NULL;
-			
-			if (JIT_can_compile(arch))
-				JIT_compile(arch);
-
-			break;
-		}
-	}
-	
 	// Class is loaded...
 
 	class->in_load = FALSE;
@@ -1271,6 +1257,22 @@ static void load_without_inits(CLASS *class)
 	class->loaded = TRUE;
 	class->error = FALSE;
 
+	// JIT compilation
+
+	arch = class->component ? class->component->archive : NULL;
+	
+	if (JIT_can_compile(arch))
+	{
+		for (i = 0; i < class->load->n_func; i++)
+		{
+			if (class->load->func[i].fast)
+			{
+				JIT_compile(arch);
+				break;
+			}
+		}
+	}
+	
 	// Init breakpoints
 
 	if (EXEC_debug)

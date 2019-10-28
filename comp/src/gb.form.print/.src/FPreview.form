@@ -14,59 +14,30 @@
     }
   }
   { panPreview HBox
-    MoveScaled(1,1,115,4)
-    { btnShowSide ToolButton
-      MoveScaled(0,0,4,4)
-      ToolTip = ("Toggle option panel")
-      Picture = Picture["icon:/small/down"]
-    }
+    MoveScaled(1,1,120,4)
     { btnPrinter MenuButton
-      MoveScaled(4,0,34,4)
+      MoveScaled(0,0,34,4)
       Border = False
       Menu = "mnuPrint"
       MenuOnly = True
     }
-    { btnOnePage ToolButton btnMode
-      Name = "btnOnePage"
-      MoveScaled(40,0,4,4)
-      Tag = "1"
-      ToolTip = ("One page")
-      Toggle = True
-    }
-    { btnTwoPages ToolButton btnMode
-      Name = "btnTwoPages"
-      MoveScaled(44,0,4,4)
-      Tag = "2"
-      ToolTip = ("Two pages")
-      Toggle = True
-    }
-    { btnFullWidth ToolButton btnMode
-      Name = "btnFullWidth"
-      MoveScaled(48,0,4,4)
-      Tag = "3"
-      ToolTip = ("Full width")
-      Toggle = True
-    }
-    { btnRealSize ToolButton btnMode
-      Name = "btnRealSize"
-      MoveScaled(52,0,4,4)
-      Tag = "4"
-      ToolTip = ("Real size")
-      Picture = Picture["icon:/small/zoom-normal"]
-      Toggle = True
+    { btnShowSide ToolButton
+      MoveScaled(34,0,4,4)
+      ToolTip = ("Toggle option panel")
+      Picture = Picture["icon:/small/close"]
     }
     { Spring1 Spring
       MoveScaled(57,0,3,4)
     }
     { btnPrint ToolButton
-      MoveScaled(98,0,12,4)
+      MoveScaled(104,0,12,4)
       Visible = False
       AutoResize = True
       Text = ("Print")
       Picture = Picture["icon:/small/print"]
     }
     { panZoom HBox
-      MoveScaled(64,0,19,4)
+      MoveScaled(62,0,38,4)
       Ignore = True
       { Spring2 Spring
         MoveScaled(0,0,2,4)
@@ -78,17 +49,45 @@
       }
       { lblZoom Label
         MoveScaled(6,0,7,4)
-        AutoResize = True
         Text = ("100 %")
-        Alignment = Align.Left
+        Alignment = Align.Center
       }
       { btnZoomIn ToolButton
         MoveScaled(13,0,4,4)
         ToolTip = ("Zoom in")
         Picture = Picture["icon:/small/zoom-in"]
       }
+      { btnOnePage ToolButton btnMode
+        Name = "btnOnePage"
+        MoveScaled(17,0,4,4)
+        Tag = "1"
+        ToolTip = ("One page")
+        Toggle = True
+      }
+      { btnTwoPages ToolButton btnMode
+        Name = "btnTwoPages"
+        MoveScaled(21,0,4,4)
+        Tag = "2"
+        ToolTip = ("Two pages")
+        Toggle = True
+      }
+      { btnFullWidth ToolButton btnMode
+        Name = "btnFullWidth"
+        MoveScaled(25,0,4,4)
+        Tag = "3"
+        ToolTip = ("Full width")
+        Toggle = True
+      }
+      { btnRealSize ToolButton btnMode
+        Name = "btnRealSize"
+        MoveScaled(29,0,4,4)
+        Tag = "4"
+        ToolTip = ("Real size")
+        Picture = Picture["icon:/small/zoom-normal"]
+        Toggle = True
+      }
       { Spring3 Spring
-        MoveScaled(17,1,2,2)
+        MoveScaled(35,1,2,2)
       }
     }
   }

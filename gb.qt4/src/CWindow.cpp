@@ -55,6 +55,10 @@
 #endif
 #endif
 
+#ifdef QT5
+#include <QWindow>
+#endif
+
 #include "gambas.h"
 
 #include "CWidget.h"
@@ -1739,7 +1743,13 @@ void MyMainWindow::present(QWidget *parent)
 		activateWindow();
 
 	if (parent)
+	{
 		X11_set_transient_for(effectiveWinId(), parent->effectiveWinId());
+		#ifdef QT5
+			if (windowHandle())
+				windowHandle()->setTransientParent(parent->windowHandle());
+		#endif
+	}
 
 	raise();
 }
@@ -1864,6 +1874,7 @@ void MyMainWindow::showModal(void)
 	GB.OnErrorEnd(&handler);
 
 	GB.Debug.LeaveEventLoop();
+	
 	//eventLoop.processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
 
 	MyApplication::eventLoop = info.old;
@@ -2400,7 +2411,7 @@ void MyMainWindow::doReparent(QWidget *parent, const QPoint &pos)
 	if (THIS->toplevel)
 	{
 		if (_utility)
-			f |= Qt::Tool;
+			f |= Qt::Dialog;
 		else
 			f |= Qt::Window;
 

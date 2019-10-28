@@ -3298,11 +3298,10 @@ Public Sub Control_Drag()
     Return
   Else If Drag.Format = MMime.CONTROL Then
     hCtrl = Control[Last.Tag]
-    If Not hCtrl.IsContainer() Then
-      hCtrl = hCtrl.Parent
-    Endif
+    If Not hCtrl.IsContainer() Then hCtrl = hCtrl.Parent
     Drag.Show(hCtrl.Control)
     $hDropTarget = hCtrl
+    DrawDropFrame()
     Return
   Else
     Stop Event
@@ -3388,12 +3387,6 @@ Public Sub Control_Drop()
 
   Else If Drag.Format = MMime.CONTROL Then
 
-    ' IF NOT hParent.IsContainer() THEN
-    '   X += hParent.Control.X
-    '   Y += hParent.Control.Y
-    '   hParent = hParent.Parent
-    ' ENDIF
-    
     hParent = $hContainer
     X = hParent.Grid($iContX)
     Y = hParent.Grid($iContY)
@@ -3482,7 +3475,7 @@ Private Sub FindContainer(hCtrl As CControl, X As Integer, Y As Integer, Optiona
   $hContainer = hCtrl
   $iContX = X
   $iContY = Y
-
+  
 End
 
 Private Function ReadOnly_Read() As Boolean

@@ -35,7 +35,7 @@ typedef
 typedef
 	void *EVAL_EXPRESSION;
 
-#define EVAL_COLOR_MAX_LEN (1 << 10)	
+#define EVAL_COLOR_MAX_LEN 1023
 
 typedef
 	struct {

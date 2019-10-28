@@ -94,8 +94,8 @@ typedef
 	struct {
 		cairo_t *context;
 		GtkPrintContext *print_context;
-		CFONT *font;
-		CFONT **font_stack;
+		gFont *font;
+		gFont **font_stack;
 		PangoLayout *layout;
 		float ascent;
 		cairo_matrix_t init;
@@ -114,6 +114,19 @@ typedef
 #define DX(d) 0
 #define DY(d) 0
 
+static gFont *get_default_font(GB_PAINT *d)
+{
+	if (GB.Is(d->device, CLASS_DrawingArea))
+	{
+		gDrawingArea *wid = (gDrawingArea *)((CWIDGET *)d->device)->widget;
+		return wid->font()->copy();
+	}
+	else
+	{
+		return new gFont();
+	}
+}
+	
 static bool init_painting(GB_PAINT *d, cairo_surface_t *target, double w, double h, int rx, int ry)
 {
 	GB_PAINT_EXTRA *dx = EXTRA(d);
@@ -139,8 +152,8 @@ static bool init_painting(GB_PAINT *d, cairo_surface_t *target, double w, double
 	/*cairo_set_line_join(CONTEXT(d), CAIRO_LINE_JOIN_MITER);
 	cairo_set_miter_limit(CONTEXT(d), 10.0);
 	cairo_set_line_cap(CONTEXT(d), CAIRO_LINE_CAP_BUTT);*/
-	
-	dx->font = NULL;
+
+	dx->font = get_default_font(d);
 	dx->font_stack = NULL;
 	
 	cairo_get_matrix(CONTEXT(d), &EXTRA(d)->init);
@@ -359,6 +372,7 @@ static int Begin(GB_PAINT *d)
 
 static void End(GB_PAINT *d)
 {
+	int i;
 	void *device = d->device;
 	GB_PAINT_EXTRA *dx = EXTRA(d);
 
@@ -366,9 +380,14 @@ static void End(GB_PAINT *d)
 		g_object_unref(dx->layout);	
 
 	if (dx->font_stack)
+	{
+		for (i = 0; i < GB.Count(dx->font_stack); i++)
+			delete dx->font_stack[i];
+
 		GB.FreeArray(POINTER(&dx->font_stack));
+	}
 	
-	GB.Unref(POINTER(&dx->font));
+	delete dx->font;
 	
 	if (GB.Is(device, CLASS_Picture))
 	{
@@ -393,17 +412,15 @@ static void End(GB_PAINT *d)
 static void Save(GB_PAINT *d)
 {
 	GB_PAINT_EXTRA *dx = EXTRA(d);
-	CFONT **pfont;
+	gFont **pfont;
 	
 	cairo_save(dx->context);
 	
 	if (!dx->font_stack)
 		GB.NewArray(POINTER(&dx->font_stack), sizeof(void *), 0);
 	
-	pfont = (CFONT **)GB.Add(POINTER(&dx->font_stack));
-	*pfont = dx->font;
-	if (*pfont)
-		GB.Ref(*pfont);
+	pfont = (gFont **)GB.Add(POINTER(&dx->font_stack));
+	*pfont = dx->font->copy();
 }
 
 static void Restore(GB_PAINT *d)
@@ -414,9 +431,8 @@ static void Restore(GB_PAINT *d)
 	
 	if (dx->font_stack && GB.Count(dx->font_stack) > 0)
 	{
-		CFONT *font = dx->font_stack[GB.Count(dx->font_stack) - 1];
-		GB.Unref(POINTER(&dx->font));
-		dx->font = font;
+		delete dx->font;
+		dx->font = dx->font_stack[GB.Count(dx->font_stack) - 1];
 		GB.Remove(POINTER(&dx->font_stack), GB.Count(dx->font_stack) - 1, 1);
 	}
 }
@@ -433,14 +449,12 @@ static void _Font(GB_PAINT *d, int set, GB_FONT *font);
 
 static void update_layout(GB_PAINT *d)
 {
-	CFONT *font;
 	GB_PAINT_EXTRA *dx = EXTRA(d);
 	
 	if (dx->layout)
 	{
-		_Font(d, FALSE, (GB_FONT *)&font);
-		gt_add_layout_from_font(dx->layout, font->font, d->resolutionY);
-		dx->ascent = font->font->ascentF();
+		gt_add_layout_from_font(dx->layout, dx->font, d->resolutionY);
+		dx->ascent = dx->font->ascentF();
 		
 		pango_cairo_context_set_font_options(pango_layout_get_context(dx->layout), gdk_screen_get_font_options (gdk_screen_get_default()));
 		
@@ -453,59 +467,64 @@ static void update_layout(GB_PAINT *d)
 		cairo_font_options_destroy(options);*/
 		
 		pango_layout_context_changed(dx->layout);
-	
 	}
 }
 
 static void apply_font(gFont *font, void *object = 0)
 {
+	double scale;
 	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
+	GB_PAINT_EXTRA *dx = EXTRA(d);
+
+	font = font->copy();
+	
+	scale = d->fontScale;
+	if (dx->print_context)
+		scale *= ((CPRINTER *)d->device)->printer->resolution() / 96.0;
+
+	if (scale != 1)
+		font->setSize(font->size() * scale);
+
+	delete dx->font;
+	dx->font = font;
+	
 	update_layout(d);
 }
 
 // Font is used by X11!
 static void _Font(GB_PAINT *d, int set, GB_FONT *font)
 {
+	GB_PAINT_EXTRA *dx = EXTRA(d);
+	gFont *f;
+	double scale;
+	
+	scale = d->fontScale;
+	if (dx->print_context)
+		scale *= ((CPRINTER *)d->device)->printer->resolution() / 96.0;
+	
 	if (set)
 	{
-		GB.Unref(POINTER(&EXTRA(d)->font));
+		delete dx->font;
 		if (*font)
-		{
-			gFont *f = ((CFONT *)(*font))->font->copy();
-			double scale = d->fontScale;
-			
-			if (EXTRA(d)->print_context)
-				scale *= ((CPRINTER *)d->device)->printer->resolution() / 96.0;
-			
-			if (scale != 1)
-				f->setSize(f->size() * scale);
-			
-			EXTRA(d)->font = CFONT_create(f, apply_font);
-			GB.Ref(EXTRA(d)->font);
-		}
+			f = ((CFONT *)(*font))->font->copy();
 		else
-			EXTRA(d)->font = NULL;
+			f = get_default_font(d);
+			
+		if (scale != 1)
+			f->setSize(f->size() * scale);
+			
+		dx->font = f;
 		
 		update_layout(d);
 	}
 	else
 	{
-		if (!EXTRA(d)->font)
-		{
-			if (GB.Is(d->device, CLASS_DrawingArea))
-			{
-				gDrawingArea *wid = (gDrawingArea *)((CWIDGET *)d->device)->widget;
-				EXTRA(d)->font = CFONT_create(wid->font()->copy(), apply_font);
-			}
-			else
-			{
-				EXTRA(d)->font = CFONT_create(new gFont(), apply_font);
-			}
-			
-			GB.Ref(EXTRA(d)->font);
-		}
-			
-		*font = (GB_FONT)EXTRA(d)->font;
+		f = dx->font->copy();
+		
+		if (scale != 1)
+			f->setSize(f->size() / scale);
+		
+		*font = CFONT_create(f, apply_font);
 	}
 }
 
@@ -1041,9 +1060,9 @@ static void RichText(GB_PAINT *d, const char *text, int len, float w, float h, i
 
 static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, GB_EXTENTS *ext, float width)
 {
+	GB_PAINT_EXTRA *dx = EXTRA(d);
 	char *html = NULL;
 	PangoLayout *layout;
-	CFONT *font;
 	PangoRectangle rect;
 	float x, y;
 	
@@ -1058,8 +1077,7 @@ static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, 
 	else
 		pango_layout_set_text(layout, text, len);
 
-	_Font(d, FALSE, (GB_FONT *)&font);
-	gt_add_layout_from_font(layout, font->font, d->resolutionY);
+	gt_add_layout_from_font(layout, dx->font, d->resolutionY);
 
 	if (width > 0)
 		pango_layout_set_width(layout, width * PANGO_SCALE);
@@ -1069,7 +1087,7 @@ static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, 
 	GetCurrentPoint(d, &x, &y);
 	
 	ext->x1 = (float)rect.x / PANGO_SCALE + x;
-	ext->y1 = (float)rect.y / PANGO_SCALE + y - EXTRA(d)->ascent;
+	ext->y1 = (float)rect.y / PANGO_SCALE + y - dx->ascent;
 	ext->x2 = ext->x1 + (float)rect.width / PANGO_SCALE;
 	ext->y2 = ext->y1 + (float)rect.height / PANGO_SCALE;
 	
@@ -1088,30 +1106,28 @@ static void RichTextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *
 
 static void TextSize(GB_PAINT *d, const char *text, int len, float *w, float *h)
 {
+	GB_PAINT_EXTRA *dx = EXTRA(d);
 	float scale;
-	CFONT *font;
-	_Font(d, FALSE, (GB_FONT *)&font);
 	
 	scale = (float)d->resolutionY / gDesktop::resolution();
 	
-	font->font->textSize(text, len, w, h);
+	dx->font->textSize(text, len, w, h);
 
-	*w *= scale;
-	*h *= scale;
+	if (w) *w *= scale;
+	if (h) *h *= scale;
 }
 
 static void RichTextSize(GB_PAINT *d, const char *text, int len, float sw, float *w, float *h)
 {
+	GB_PAINT_EXTRA *dx = EXTRA(d);
 	float scale;
-	CFONT *font;
-	_Font(d, FALSE, (GB_FONT *)&font);
 
 	scale = (float)d->resolutionY / gDesktop::resolution();
 
 	if (sw > 0)
 		sw /= scale;
 
-	font->font->richTextSize(text, len, sw, w, h);
+	dx->font->richTextSize(text, len, sw, w, h);
 	*w *= scale;
 	*h *= scale;
 }

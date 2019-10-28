@@ -97,6 +97,8 @@ Public Sub Form_Open()
   
   Paginate
   
+  dvwPrint.SetFocus
+  
 End
 
 Private Sub SelectPrinter(Optional sName As String)
@@ -207,7 +209,7 @@ End
 
 Public Sub btnMode_Click()
   
-  SetZoom(Last.Tag)
+  If Last.Value Then SetZoom(Last.Tag)
 
 End
 
@@ -249,6 +251,9 @@ Public Sub cmbOrientation_Click()
     Case 1
       $hPrinter.Orientation = Printer.Landscape
   End Select
+
+  txtWidth.Value = $hPrinter.PaperWidth
+  txtHeight.Value = $hPrinter.PaperHeight
 
   Paginate  
   
@@ -481,11 +486,11 @@ Public Sub btnShowSide_Click()
 
   If panSide.Visible Then
     panSide.Hide
-    btnShowSide.Picture = Picture["icon:/small/right"]
+    btnShowSide.Picture = Picture["icon:/small/options"]
     btnPrint.Show
   Else  
     panSide.Show
-    btnShowSide.Picture = Picture["icon:/small/down"]
+    btnShowSide.Picture = Picture["icon:/small/close"]
     btnPrint.Hide
   Endif
   
@@ -682,6 +687,6 @@ End
 Public Sub dvwPrint_Zoom()
 
   lblZoom.Text = " " & Format(dvwPrint.Zoom, "0 %") & " "
-  btnRealSize.Value = dvwPrint.Zoom = 1
+  btnRealSize.Value = Round(dvwPrint.Zoom, -4) = 1
   
 End

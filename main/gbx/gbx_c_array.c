@@ -50,7 +50,14 @@
 static bool _create_static_array;
 
 
-static void THROW_static_array()
+void *CARRAY_out_of_bounds()
+{
+	GB_Error((char *)E_BOUND);
+	return NULL;
+}
+
+
+void CARRAY_static_array()
 {
 	GB_Error((char *)E_SARRAY);
 	return;
@@ -63,24 +70,11 @@ static void THROW_multidimensional_array()
 	return;
 }
 
-
-static bool check_not_read_only(CARRAY *_object)
-{
-	if (THIS->ref)
-	{
-		THROW_static_array();
-		return TRUE;
-	}
-	
-	return FALSE;
-}
-
-
 static bool check_not_multi(CARRAY *_object)
 {
 	if (THIS->ref && THIS->ref != THIS)
 	{
-		THROW_static_array();
+		CARRAY_static_array();
 		return TRUE;
 	}
 	else if (UNLIKELY(THIS->dim != NULL))
@@ -92,12 +86,13 @@ static bool check_not_multi(CARRAY *_object)
 		return FALSE;
 }
 
+#define check_not_read_only(_object) ((((CARRAY *)_object)->ref) ? CARRAY_static_array(), TRUE : FALSE)
 
 static bool check_not_multi_read_only(CARRAY *_object)
 {
 	if (THIS->ref)
 	{
-		THROW_static_array();
+		CARRAY_static_array();
 		return TRUE;
 	}
 	else if (UNLIKELY(THIS->dim != NULL))
@@ -206,13 +201,6 @@ CLASS *CARRAY_get_array_class(CLASS *class, CTYPE ctype)
 	}
 
 	return class;
-}
-
-
-void *CARRAY_out_of_bounds()
-{
-	GB_Error((char *)E_BOUND);
-	return NULL;
 }
 
 
@@ -373,11 +361,8 @@ static void borrow(CARRAY *_object, int start, int end)
 
 static void clear(CARRAY *_object)
 {
-	if (THIS->ref)
-	{
-		THROW_static_array();
+	if (check_not_read_only(THIS))
 		return;
-	}
 	
 	release(THIS, 0, -1);
 	
@@ -641,6 +626,9 @@ static bool copy_remove(CARRAY *_object, int start, int length, bool copy, bool 
 	int i, nsize;
 
 	if (check_not_multi(THIS) && (start != 0 || length != -1))
+		return TRUE;
+	
+	if (remove && check_not_read_only(THIS))
 		return TRUE;
 
 	if (check_start_length(count, &start, &length))
@@ -958,6 +946,8 @@ END_METHOD
 #define IMPLEMENT_put(_type, _gtype) \
 BEGIN_METHOD(Array_##_type##_put, GB_##_gtype value; GB_INTEGER index) \
 	\
+	if (check_not_read_only(THIS)) \
+		return; \
 	void *data = get_data_multi(THIS, ARG(index), GB_NParam() + 1); \
 	if (!data) return; \
 	GB_Store(GB_T_##_gtype, (GB_VALUE *)(void *)ARG(value), data); \
@@ -967,6 +957,8 @@ END_METHOD
 #define IMPLEMENT_put2(_type, _gtype, _gstore) \
 BEGIN_METHOD(Array_##_type##_put, GB_##_gtype value; GB_INTEGER index) \
 \
+	if (check_not_read_only(THIS)) \
+		return; \
 	void *data = get_data_multi(THIS, ARG(index), GB_NParam() + 1); \
 	if (!data) return; \
 	GB_Store(GB_T_##_gstore, (GB_VALUE *)(void *)ARG(value), data); \
@@ -978,11 +970,14 @@ BEGIN_METHOD(Array_put, GB_VARIANT value; GB_INTEGER index)
 	GB_VALUE *value;
 	void *data;
 	
-	value = (GB_VALUE *)(void *)ARG(value);
-	GB_Conv(value, THIS->type);	
+	if (check_not_read_only(THIS))
+		return;
 	
 	data = get_data_multi(THIS, ARG(index), GB_NParam() + 1);
 	if (!data) return;
+	
+	value = (GB_VALUE *)(void *)ARG(value);
+	GB_Conv(value, THIS->type);	
 	
 	GB_Store(THIS->type, value, data);
 	
