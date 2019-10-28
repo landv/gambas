@@ -279,6 +279,18 @@ Static Public Sub DndFrame_Drag()
   
 End
 
+Static Private Sub FindChild(hCont As Container, X As Integer, Y As Integer) As Control
+
+  Dim hChild As Control
+  
+  For Each hChild In hCont.Children
+    If hChild = $aFrame[0] Then Continue
+    If hChild.X > X Or If hChild.Y > Y Or If (hChild.X + hChild.W) <= X Or If (hChild.Y + hChild.H) <= Y Then Continue
+    Return hChild
+  Next
+  
+End
+
 Static Public Sub DndFrame_DragMove()
   
   Dim hCont As Container
@@ -298,9 +310,10 @@ Static Public Sub DndFrame_DragMove()
 
   While hCtrl Is Container 
     hCont = hCtrl
-    $aFrame[0].Hide
-    hCtrl = hCont.FindChild(Drag.X - hCont.ClientX, Drag.Y - hCont.ClientY)
-    $aFrame[0].Show
+    '$aFrame[0].Hide
+    'hCtrl = hCont.FindChild(Drag.X - hCont.ClientX, Drag.Y - hCont.ClientY)
+    '$aFrame[0].Show
+    hCtrl = FindChild(hCont, Drag.X - hCont.ClientX, Drag.Y - hCont.ClientY)
     
     If Not hCtrl Then
       hCtrl = hCont
