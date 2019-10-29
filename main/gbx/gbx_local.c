@@ -543,11 +543,11 @@ static void fill_local_info(void)
 	LOCAL_local.currency_symbol = info->currency_symbol;
 	LOCAL_local.intl_currency_symbol = info->int_curr_symbol;
 
-	strcpy(LOCAL_local.general_currency, "($#,##0.");
+	strcpy(LOCAL_local.general_currency, "($,0.");
 	strncat(LOCAL_local.general_currency, "########", Min(8, info->frac_digits));
 	strcat(LOCAL_local.general_currency, ")");
 
-	strcpy(LOCAL_local.intl_currency, "($$#,##0.");
+	strcpy(LOCAL_local.intl_currency, "($$,0.");
 	strncat(LOCAL_local.intl_currency, "########", Min(8, info->int_frac_digits));
 	strcat(LOCAL_local.intl_currency, ")");
 
@@ -722,8 +722,9 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	bool point;
 	int before, before_zero;
 	int after, after_zero;
-	char exposant;
+	char exponent;
 	int exp_zero;
+	bool exp_sign;
 
 	int number_sign;
 	uint64_t mantisse;
@@ -798,8 +799,8 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	point = FALSE;
 	after = 0;
 	after_zero = 0;
-	exposant = 0;
-	//exp_sign = 0;
+	exponent = 0;
+	exp_sign = FALSE;
 	exp_zero = 0;
 	_currency = FALSE;
 	intl_currency = FALSE;
@@ -942,20 +943,15 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 
 	if (fmt[pos] == 'e' || fmt[pos] == 'E')
 	{
-		exposant = fmt[pos];
-		//exp_sign = ' ';
+		exponent = fmt[pos];
 
 		pos++;
 		if (pos >= len_fmt)
 			return TRUE;
 
-		if (fmt[pos] == '-')
+		if (fmt[pos] == '-' || fmt[pos] == '+')
 		{
-			pos++;
-		}
-		else if (fmt[pos] == '+')
-		{
-			//exp_sign = '+';
+			exp_sign = TRUE;
 			pos++;
 		}
 
@@ -1008,7 +1004,7 @@ _FORMAT:
 		number_mant = frexp10(fabs(number), &number_exp);
 		ndigit = after;
 		
-		if (!exposant) 
+		if (!exponent) 
 			ndigit += number_exp;
 		else
 			ndigit++;
@@ -1049,14 +1045,14 @@ _FORMAT:
 		//number_exp++; /* simplifie les choses */
 
 		number_real_exp = number_exp;
-		if (exposant)
+		if (exponent)
 			number_exp = number != 0.0;
 
 		// should return "0[.]...", or "1[.]..." if the number is rounded up.
 
 		if (buf_addr[0] == '1') // the number has been rounded up.
 		{
-			if (exposant)
+			if (exponent)
 				number_real_exp++;
 			else
 				number_exp++;
@@ -1154,12 +1150,13 @@ _FORMAT:
 		if (look_char() != local_current->decimal_point)
 			buffer_pos++;
 
-		/* exponant */
+		/* exponent */
 
-		if (exposant != 0) // && number != 0.0)
+		if (exponent != 0) // && number != 0.0)
 		{
-			put_char(exposant);
-			put_char(number_real_exp >= 1 ? '+' : '-');
+			put_char(exponent);
+			if (exp_sign && number_real_exp >= 1)
+				put_char('+');
 			n = int_to_string(number_real_exp - 1, &buf_addr);
 			while (exp_zero > n)
 			{
