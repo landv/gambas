@@ -416,7 +416,7 @@ static int NODELAY_trans_keycode(unsigned char kc)
 
 	struct kbentry kbe;
 	struct kbsentry kbs;
-	register int mod;
+	int mod;
 
 
 

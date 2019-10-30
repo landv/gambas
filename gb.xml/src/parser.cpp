@@ -86,9 +86,9 @@ Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount)
     Element *curElement = 0;//Current element
 
 
-    register char s = 0;//Current byte (value)
-    register char const *pos = data;//Current byte (position)
-    register wchar_t ws = 0;//Current character (value)
+    char s = 0;//Current byte (value)
+    char const *pos = data;//Current byte (position)
+    wchar_t ws = 0;//Current character (value)
 
     char *tag = 0;//First '<' character found
 

@@ -604,7 +604,7 @@ static CMATRIX *_powf(CMATRIX *a, double f, bool invert)
 	if (invert || f != (double)(int)f)
 		return NULL;
 	
-	CMATRIX *m;
+	CMATRIX *m = NULL;
 	int n = (int)f;
 	
 	if (n == 0)

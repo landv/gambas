@@ -84,7 +84,7 @@ void addStringLen(Node *node, size_t &len, int indent)
     case Node::DocumentNode:
         len += 38 + (indent >= 0 ? 1 : 0);// root->addStringLen(len, indent);
         //Content
-        for(register Node *child = node->firstChild; child != 0; child = child->nextNode)
+        for(Node *child = node->firstChild; child != 0; child = child->nextNode)
         {
             addStringLen(child, len, indent >= 0 ? indent : -1);
         }
@@ -157,13 +157,13 @@ void addString(Node *node, char *&data, int indent)
             ++data;
         }
         //Content
-        for(register Node *child = node->firstChild; child != 0; child = child->nextNode)
+        for(Node *child = node->firstChild; child != 0; child = child->nextNode)
         {
             addString(child, data, indent >= 0 ? indent : -1);
         }
         break;
     case Node::ElementNode:
-        //register char *content = data;
+        //char *content = data;
         //single = ((Element*)node)->isSingle();
 
         //Opening tag
@@ -176,7 +176,7 @@ void addString(Node *node, char *&data, int indent)
         memcpy(data, ((Element*)node)->tagName, ((Element*)node)->lenTagName); data += ((Element*)node)->lenTagName;
 
         //Attributes
-        for(register Attribute *attr = (Attribute*)((Element*)node)->firstAttribute; attr != 0; attr = (Attribute*)(attr->nextNode))
+        for(Attribute *attr = (Attribute*)((Element*)node)->firstAttribute; attr != 0; attr = (Attribute*)(attr->nextNode))
         {
             ADD(' ');
             memcpy(data, attr->attrName, attr->lenAttrName); data += attr->lenAttrName;
@@ -199,7 +199,7 @@ void addString(Node *node, char *&data, int indent)
         {
 
             //Content
-            for(register Node *child = ((Element*)node)->firstChild; child != 0; child = child->nextNode)
+            for(Node *child = ((Element*)node)->firstChild; child != 0; child = child->nextNode)
             {
                 addString(child, data, indent >= 0 ? indent + 1 : -1);
             }

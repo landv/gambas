@@ -46,15 +46,15 @@ COMPRESS_INTERFACE EXPORT COMPRESSION;
 static COMPRESS_DRIVER _driver;
 
 GB_STREAM_DESC ZStream = {
-	open: CZ_stream_open,
-	close: CZ_stream_close,
-	read: CZ_stream_read,
-	write: CZ_stream_write,
-	seek: CZ_stream_seek,
-	tell: CZ_stream_tell,
-	flush: CZ_stream_flush,
-	eof: CZ_stream_eof,
-	lof: CZ_stream_lof
+	.open = CZ_stream_open,
+	.close = CZ_stream_close,
+	.read = CZ_stream_read,
+	.write = CZ_stream_write,
+	.seek = CZ_stream_seek,
+	.tell = CZ_stream_tell,
+	.flush = CZ_stream_flush,
+	.eof = CZ_stream_eof,
+	.lof = CZ_stream_lof
 };
 
 typedef

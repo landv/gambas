@@ -41,16 +41,16 @@
 #include "CUdpSocket.h"
 
 GB_STREAM_DESC UdpSocketStream = {
-	open: CUdpSocket_stream_open,
-	close: CUdpSocket_stream_close,
-	read: CUdpSocket_stream_read,
-	write: CUdpSocket_stream_write,
-	seek: CUdpSocket_stream_seek,
-	tell: CUdpSocket_stream_tell,
-	flush: CUdpSocket_stream_flush,
-	eof: CUdpSocket_stream_eof,
-	lof: CUdpSocket_stream_lof,
-	handle: CUdpSocket_stream_handle
+	.open = CUdpSocket_stream_open,
+	.close = CUdpSocket_stream_close,
+	.read = CUdpSocket_stream_read,
+	.write = CUdpSocket_stream_write,
+	.seek = CUdpSocket_stream_seek,
+	.tell = CUdpSocket_stream_tell,
+	.flush = CUdpSocket_stream_flush,
+	.eof = CUdpSocket_stream_eof,
+	.lof = CUdpSocket_stream_lof,
+	.handle = CUdpSocket_stream_handle
 };
 
 

@@ -535,8 +535,8 @@ void XMLNode_appendText(Node *node, const char *data, const size_t lenData)
 void XMLNode_clearChildren(Node *node)
 {
     if(node->childCount == 0) return;
-    register Node* prevChild = 0;
-    register Node* child = 0;
+    Node* prevChild = 0;
+    Node* child = 0;
     for(child = node->firstChild->nextNode; child != 0; child = child->nextNode)
     {
         prevChild = child->previousNode;

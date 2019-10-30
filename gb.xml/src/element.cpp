@@ -113,7 +113,7 @@ void XMLElement_RefreshPrefix(Element *elmt)
         elmt->lenPrefix = 0;
         return;
     }
-    register char* pos = (char*)memrchr(elmt->tagName, ':', elmt->lenTagName);//Prefix
+    char* pos = (char*)memrchr(elmt->tagName, ':', elmt->lenTagName);//Prefix
     if(pos)
     {
         elmt->lenLocalName = (elmt->tagName + elmt->lenTagName) - (pos + 1);

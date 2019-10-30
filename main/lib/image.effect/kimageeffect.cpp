@@ -159,7 +159,7 @@ QImage KImageEffect::gradient(const QSize &size, const QColor &ca,
       return image;
     }
 
-    register int x, y;
+    int x, y;
 
 		rDiff = (rcb = cb.red())   - (rca = ca.red());
 		gDiff = (gcb = cb.green()) - (gca = ca.green());
@@ -170,9 +170,9 @@ QImage KImageEffect::gradient(const QSize &size, const QColor &ca,
         uint *p;
         uint rgb;
 
-        register int rl = rca << 16;
-        register int gl = gca << 16;
-        register int bl = bca << 16;
+        int rl = rca << 16;
+        int gl = gca << 16;
+        int bl = bca << 16;
 
         if( eff == VerticalGradient ) {
 
@@ -459,7 +459,7 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
       return image;
     }
 
-    register int x, y;
+    int x, y;
     unsigned int *scanline;
 
     rDiff = (rcb = cb.red())   - (rca = ca.red());
@@ -1002,7 +1002,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
     QColor clr;
     int mod=0;
     unsigned int x1, x2, y1, y2;
-    register int x, y;
+    int x, y;
 
     // for image, we handle only depth 32
     if (image.depth()<32) image = image.convertDepth(32);
@@ -1328,12 +1328,12 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
         clr.rgb(&rcol, &gcol, &bcol);
 
 #ifdef WORDS_BIGENDIAN   // ARGB (skip alpha)
-        register unsigned char *data = (unsigned char *)dst.bits() + 1;
+        unsigned char *data = (unsigned char *)dst.bits() + 1;
 #else                    // BGRA
-        register unsigned char *data = (unsigned char *)dst.bits();
+        unsigned char *data = (unsigned char *)dst.bits();
 #endif
 
-        for (register int i=0; i<pixels; i++)
+        for (int i=0; i<pixels; i++)
         {
 #ifdef WORDS_BIGENDIAN
             *(data++) += (unsigned char)((rcol - *data) * opacity);
@@ -1548,14 +1548,14 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
 
     {
 #ifdef WORDS_BIGENDIAN   // ARGB (skip alpha)
-        register unsigned char *data1 = (unsigned char *)dst.bits() + 1;
-        register unsigned char *data2 = (unsigned char *)src.bits() + 1;
+        unsigned char *data1 = (unsigned char *)dst.bits() + 1;
+        unsigned char *data2 = (unsigned char *)src.bits() + 1;
 #else                    // BGRA
-        register unsigned char *data1 = (unsigned char *)dst.bits();
-        register unsigned char *data2 = (unsigned char *)src.bits();
+        unsigned char *data1 = (unsigned char *)dst.bits();
+        unsigned char *data2 = (unsigned char *)src.bits();
 #endif
 
-        for (register int i=0; i<pixels; i++)
+        for (int i=0; i<pixels; i++)
         {
 #ifdef WORDS_BIGENDIAN
             *(data1++) += (unsigned char)((*(data2++) - *data1) * opacity);
@@ -1611,7 +1611,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
         var = -var;
     }
 
-    register int x, y;
+    int x, y;
 
     unsigned int *data =  (unsigned int *)image.bits();
 
@@ -1819,7 +1819,7 @@ QImage& KImageEffect::blend(QImage &image1, QImage &image2,
     unsigned int x1, x2, x3, y1, y2, y3;
     unsigned int a;
 
-    register int x, y;
+    int x, y;
 
     // for image1 and image2, we only handle depth 32
     if (image1.depth()<32) image1 = image1.convertDepth(32);
@@ -1913,7 +1913,7 @@ QImage& KImageEffect::hash(QImage &image, Lighting lite, unsigned int spacing)
       return image;
     }
 
-    register int x, y;
+    int x, y;
     unsigned int *data =  (unsigned int *)image.bits();
     unsigned int ind;
 
@@ -2197,9 +2197,9 @@ QImage& KImageEffect::toGray(QImage &img, bool fast)
 /*
     if(fast){
         if (img.depth() == 32) {
-            register uchar * r(img.bits());
-            register uchar * g(img.bits() + 1);
-            register uchar * b(img.bits() + 2);
+            uchar * r(img.bits());
+            uchar * g(img.bits() + 1);
+            uchar * b(img.bits() + 2);
 
             uchar * end(img.bits() + img.numBytes());
 
@@ -2216,11 +2216,11 @@ QImage& KImageEffect::toGray(QImage &img, bool fast)
         {
             for (int i = 0; i < img.numColors(); i++)
             {
-                register uint r = qRed(img.color(i));
-                register uint g = qGreen(img.color(i));
-                register uint b = qBlue(img.color(i));
+                uint r = qRed(img.color(i));
+                uint g = qGreen(img.color(i));
+                uint b = qBlue(img.color(i));
 
-                register uint gray = (((r + g) >> 1) + b) >> 1;
+                uint gray = (((r + g) >> 1) + b) >> 1;
                 img.setColor(i, qRgba(gray, gray, gray, qAlpha(img.color(i))));
             }
         }
@@ -2457,10 +2457,10 @@ bool KImageEffect::blend(
 
   output = lower.copy();
 
-  register uchar *i, *o;
-  register int a;
-  register int col;
-  register int w = upper.width();
+  uchar *i, *o;
+  int a;
+  int col;
+  int w = upper.width();
   int row(upper.height() - 1);
 
   do {
@@ -2539,10 +2539,10 @@ bool KImageEffect::blend(
 //  output.setAlphaBuffer(true); // I should do some benchmarks to see if
 	// this is worth the effort
 
-  register QRgb *i, *o, *b;
+  QRgb *i, *o, *b;
 
-  register int a;
-  register int j,k;
+  int a;
+  int j,k;
   for (j=0; j<ch; j++)
   {
     b=reinterpret_cast<QRgb *>(&lower.scanLine(y+j) [ (x+cw) << 2 ]);
@@ -2598,9 +2598,9 @@ bool KImageEffect::blendOnLower(
     if ( cw <= 0 || ch <= 0 ) return true;
   }
 
-  register uchar *i, *b;
-  register int a;
-  register int k;
+  uchar *i, *b;
+  int a;
+  int k;
 
   for (int j=0; j<ch; j++)
   {
@@ -2814,7 +2814,7 @@ QImage KImageEffect::sample(QImage &src, int w, int h)
 
     double *x_offset, *y_offset;
     int j, k, y;
-    register int x;
+    int x;
     QImage dest(w, h, src.depth());
 
     x_offset = (double *)malloc(w*sizeof(double));
@@ -3195,7 +3195,7 @@ unsigned int KImageEffect::generateNoise(unsigned int pixel,
         }
     case PoissonNoise:
         {
-            register int
+            int
                 i;
 
             for (i=0; alpha > exp(-SigmaPoisson*pixel); i++)
@@ -3258,7 +3258,7 @@ unsigned int KImageEffect::interpolateColor(QImage *image, double x_offset,
                                             unsigned int background)
 {
     double alpha, beta;
-    unsigned int p, q, r, s;
+    unsigned int p = 0, q = 0, r = 0, s = 0;
     int x, y;
 
     x = (int)x_offset;
@@ -3807,7 +3807,7 @@ void KImageEffect::normalize(QImage &image)
     long long number_pixels;
     int x, y;
     unsigned int *p, *q;
-    register long i;
+    long i;
     unsigned long threshold_intensity;
     unsigned char r, g, b, a;
 
@@ -4114,7 +4114,7 @@ QImage KImageEffect::edge(QImage &image, double radius)
 {
     double *kernel;
     int width;
-    register long i;
+    long i;
     QImage dest;
 
     width = getOptimalKernelWidth(radius, 0.5);
@@ -4147,7 +4147,7 @@ QImage KImageEffect::emboss(QImage &image, double radius, double sigma)
 {
     double alpha, *kernel;
     int j, width;
-    register long i, u, v;
+    long i, u, v;
     QImage dest;
 
     if(sigma == 0.0){
@@ -4193,10 +4193,10 @@ void KImageEffect::blurScanLine(double *kernel, int width,
                                 unsigned int *src, unsigned int *dest,
                                 int columns)
 {
-    register double *p;
+    double *p;
     unsigned int *q;
-    register int x;
-    register long i;
+    int x;
+    long i;
     double red, green, blue, alpha;
     double scale = 0.0;
 
@@ -4333,7 +4333,7 @@ int KImageEffect::getBlurKernel(int width, double sigma, double **kernel)
 {
 #define KernelRank 3
     double alpha, normalize;
-    register long i;
+    long i;
     int bias;
 
     assert(sigma != 0.0);
@@ -4444,8 +4444,8 @@ bool KImageEffect::convolveImage(QImage *image, QImage *dest,
     long width;
     double red, green, blue, alpha;
     double normalize, *normal_kernel;
-    register const double *k;
-    register unsigned int *q;
+    const double *k;
+    unsigned int *q;
     int x, y, mx, my, sx, sy;
     long i;
     int mcx, mcy;
@@ -4517,7 +4517,7 @@ int KImageEffect::getOptimalKernelWidth(double radius, double sigma)
 {
     double normalize, value;
     long width;
-    register long u;
+    long u;
 
     assert(sigma != 0.0);
     if(radius > 0.0)
@@ -4547,7 +4547,7 @@ QImage KImageEffect::sharpen(QImage &image, double radius, double sigma)
 {
     double alpha, normalize, *kernel;
     int width;
-    register long i, u, v;
+    long i, u, v;
     QImage dest;
 
     if(sigma == 0.0){

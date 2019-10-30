@@ -59,8 +59,8 @@ static unsigned int hash(Timer * t)
 static void l_add(Timer * t)
 {
 	int h = t->hash;
-	register Timer *t2;
-	register Timer *t2prev;
+	Timer *t2;
+	Timer *t2prev;
 
 	t2 = timers[h];
 	if (t2 == (Timer *) 0)
@@ -205,7 +205,7 @@ long tmr_mstimeout(struct timeval *nowP)
 	int h;
 	int gotone;
 	long msecs, m;
-	register Timer *t;
+	Timer *t;
 
 	gotone = 0;
 	msecs = 0;										/* make lint happy */

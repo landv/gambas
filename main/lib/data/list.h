@@ -70,7 +70,7 @@ static inline int LIST_is_empty(LIST *list)
 
 static inline void LIST_prepend(LIST *list, LIST *new)
 {
-	register LIST *new_end = new->prev;
+	LIST *new_end = new->prev;
 
 	list->prev->next = new;
 	new->prev = list->prev;
@@ -80,7 +80,7 @@ static inline void LIST_prepend(LIST *list, LIST *new)
 
 static inline void LIST_append(LIST *list, LIST *new)
 {
-	register LIST *new_end = new->prev;
+	LIST *new_end = new->prev;
 
 	new_end->next = list->next;
 	list->next->prev = new_end;
