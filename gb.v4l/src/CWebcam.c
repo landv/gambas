@@ -77,16 +77,16 @@
 
 GB_STREAM_DESC VideoStream = 
 {
-	open: Video_stream_open,
-	close: Video_stream_close,
-	read: Video_stream_read,
-	write: Video_stream_write,
-	seek: Video_stream_seek,
-	tell: Video_stream_tell,
-	flush: Video_stream_flush,
-	eof: Video_stream_eof,
-	lof: Video_stream_lof,
-	handle: Video_stream_handle
+	.open = Video_stream_open,
+	.close = Video_stream_close,
+	.read = Video_stream_read,
+	.write = Video_stream_write,
+	.seek = Video_stream_seek,
+	.tell = Video_stream_tell,
+	.flush = Video_stream_flush,
+	.eof = Video_stream_eof,
+	.lof = Video_stream_lof,
+	.handle = Video_stream_handle
 };
 
 extern bool gv4l2_debug_mode; // ++

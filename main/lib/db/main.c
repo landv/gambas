@@ -91,7 +91,7 @@ int DB_CheckNameWith(const char *name, const char *msg, const char *more)
 
 // void DB_LowerString(char *s)
 // {
-//   register char c;
+//   char c;
 // 
 //   for(;;)
 //   {

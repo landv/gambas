@@ -52,14 +52,14 @@
 
 GB_STREAM_DESC SerialStream =
 {
-	open: CSerialPort_stream_open,
-	close: CSerialPort_stream_close,
-	read: CSerialPort_stream_read,
-	write: CSerialPort_stream_write,
-	seek: CSerialPort_stream_seek,
-	tell: CSerialPort_stream_tell,
-	flush: CSerialPort_stream_flush,
-	handle: CSerialPort_stream_handle
+	.open = CSerialPort_stream_open,
+	.close = CSerialPort_stream_close,
+	.read = CSerialPort_stream_read,
+	.write = CSerialPort_stream_write,
+	.seek = CSerialPort_stream_seek,
+	.tell = CSerialPort_stream_tell,
+	.flush = CSerialPort_stream_flush,
+	.handle = CSerialPort_stream_handle
 };
 
 DECLARE_EVENT(EVENT_Read);

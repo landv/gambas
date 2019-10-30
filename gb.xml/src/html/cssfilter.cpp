@@ -81,7 +81,7 @@ bool HTMLElement_MatchSubFilter(const Element *elmt, const char *filter, size_t 
     }
     if(s == ':')//Pseudo-class
     {
-        register size_t lenSubStr = pos - filter;
+        size_t lenSubStr = pos - filter;
 
         if(lenSubStr == 11 && !memcmp(filter, "first-child", 11))
         {

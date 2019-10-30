@@ -89,16 +89,16 @@ Events from this class
 ******************************************************/
 GB_STREAM_DESC CurlStream =
 {
-	open: CCURL_stream_open,
-	close: CCURL_stream_close,
-	read: CCURL_stream_read,
-	write: CCURL_stream_write,
-	seek: CCURL_stream_seek,
-	tell: CCURL_stream_tell,
-	flush: CCURL_stream_flush,
-	eof: CCURL_stream_eof,
-	lof: CCURL_stream_lof,
-	handle: CCURL_stream_handle,
+	.open = CCURL_stream_open,
+	.close = CCURL_stream_close,
+	.read = CCURL_stream_read,
+	.write = CCURL_stream_write,
+	.seek = CCURL_stream_seek,
+	.tell = CCURL_stream_tell,
+	.flush = CCURL_stream_flush,
+	.eof = CCURL_stream_eof,
+	.lof = CCURL_stream_lof,
+	.handle = CCURL_stream_handle,
 };
 
 ////////////////////////////////////////////////////////////////////

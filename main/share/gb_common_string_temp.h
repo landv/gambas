@@ -162,7 +162,7 @@ int STRING_compare(const char *str1, int len1, const char *str2, int len2)
 	uint i;
 	int len = len1 < len2 ? len1 : len2;
 	int diff;
-	register unsigned char c1, c2;
+	unsigned char c1, c2;
 
 	for (i = 0; i < len; i++)
 	{
@@ -182,7 +182,7 @@ int STRING_compare_ignore_case(const char *str1, int len1, const char *str2, int
 	uint i;
 	int len = len1 < len2 ? len1 : len2;
 	int diff;
-	register unsigned char c1, c2;
+	unsigned char c1, c2;
 
 	for (i = 0; i < len; i++)
 	{
