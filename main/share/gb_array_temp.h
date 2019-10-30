@@ -61,7 +61,7 @@ void ARRAY_delete(void *p_data)
 void *ARRAY_add_data(void *p_data, int num, bool zero)
 {
   void **data = (void **)p_data;
-  ARRAY *array = DATA_TO_ARRAY(*data);
+  register ARRAY *array = DATA_TO_ARRAY(*data);
   ARRAY *new_array;
   char *ptr;
 
@@ -107,7 +107,7 @@ void ARRAY_realloc(void *p_data) //, bool zero)
 void *ARRAY_add_data_one(void *p_data, bool zero)
 {
   void **data = (void **)p_data;
-  ARRAY *array = DATA_TO_ARRAY(*data);
+  register ARRAY *array = DATA_TO_ARRAY(*data);
   ARRAY *new_array;
 	int size = array->size;
   char *ptr;

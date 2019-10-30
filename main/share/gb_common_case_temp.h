@@ -65,9 +65,9 @@ const unsigned char COMMON_toupper[256] =
 
 int COMMON_strcasecmp(const char *s1, const char *s2)
 {
-  offset_t i;
-  int d;
-  char c;
+  register offset_t i;
+  register int d;
+  register char c;
 
   for (i = 0;; i++)
   {
@@ -84,9 +84,9 @@ int COMMON_strcasecmp(const char *s1, const char *s2)
 
 int COMMON_strncasecmp(const char *s1, const char *s2, size_t n)
 {
-  offset_t i;
-  int d;
-  char c;
+  register offset_t i;
+  register int d;
+  register char c;
 
   for (i = 0; i < n; i++)
   {

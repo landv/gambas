@@ -79,8 +79,8 @@ char TABLE_compare(const char *s1, int len1, const char *s2, int len2)
 {
 	int i;
 	int len = (len1 < len2) ? len1 : len2;
-	unsigned char c1;
-	unsigned char c2;
+	register unsigned char c1;
+	register unsigned char c2;
 
 	for (i = 0; i < len; i++)
 	{
