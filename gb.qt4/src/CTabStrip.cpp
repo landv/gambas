@@ -363,7 +363,7 @@ static bool set_tab_count(void *_object, int new_count)
 		{
 			tab = new CTab(THIS, new MyContainer(WIDGET));
 
-			label.sprintf("Tab %d", i);
+			label = QString("Tab %1").arg(i);
 			WIDGET->addTab(tab->widget, label);
 			
 			WIDGET->stack.append(tab);
