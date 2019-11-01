@@ -23,6 +23,8 @@
 
 #define __CWINDOW_CPP
 
+#include <QScreen>
+
 #include <qnamespace.h>
 #include <qapplication.h>
 #include <qmenubar.h>
@@ -2498,7 +2500,11 @@ void MyMainWindow::center()
 	QPoint p;
 	QRect r;
 
+#ifdef QT5
+	r = QGuiApplication::screens().at(currentScreen())->availableGeometry();
+#else
 	r = QApplication::desktop()->availableGeometry(currentScreen());
+#endif
 
 	CWIDGET_move(THIS, r.x() + (r.width() - width()) / 2, r.y() + (r.height() - height()) / 2);
 }

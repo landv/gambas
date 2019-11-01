@@ -23,6 +23,7 @@
 
 #define __CSCREEN_CPP
 
+#include <QScreen>
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QToolTip>
@@ -44,10 +45,20 @@
 #include "x11.h"
 #include "desktop.h"
 
+#ifdef QT5
+#define DESKTOP_INFO() (QGuiApplication::screens().front()->availableGeometry())
+#define SCREEN_INFO(_id) (QGuiApplication::screens().at(_id)->geometry())
+#define SCREEN_AVAILABLE_SIZE(_id) (QGuiApplication::screens().at(_id)->availableGeometry())
+#define NUM_SCREENS() (QGuiApplication::screens().count())
+#else
+#define DESKTOP_INFO() (QApplication::desktop()->availableGeometry())
+#define SCREEN_INFO(_id) (QApplication::desktop()->screenGeometry(_id))
+#define SCREEN_AVAILABLE_SIZE(_id) (QApplication::desktop()->availableGeometry(_id))
 #if QT_VERSION >= 0x040600
 #define NUM_SCREENS() (QApplication::desktop()->screenCount())
 #else
 #define NUM_SCREENS() (QApplication::desktop()->numScreens())
+#endif
 #endif
 
 #define MAX_SCREEN 16
@@ -94,28 +105,27 @@ static void free_screens(void)
 
 BEGIN_PROPERTY(Desktop_X)
 
-	GB.ReturnInteger(QApplication::desktop()->availableGeometry().x());
-
+	GB.ReturnInteger(DESKTOP_INFO().x());
+    
 END_PROPERTY
 
 BEGIN_PROPERTY(Desktop_Y)
 
-	GB.ReturnInteger(QApplication::desktop()->availableGeometry().y());
+	GB.ReturnInteger(DESKTOP_INFO().y());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Desktop_Width)
 
-	GB.ReturnInteger(QApplication::desktop()->availableGeometry().width());
+	GB.ReturnInteger(DESKTOP_INFO().width());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Desktop_Height)
 
-	GB.ReturnInteger(QApplication::desktop()->availableGeometry().height());
+	GB.ReturnInteger(DESKTOP_INFO().height());
 
 END_PROPERTY
-
 
 BEGIN_PROPERTY(Desktop_Resolution)
 
@@ -182,7 +192,6 @@ BEGIN_PROPERTY(Application_Font)
 
 END_PROPERTY
 
-
 BEGIN_PROPERTY(Application_ActiveWindow)
 
 	//GB.ReturnObject(CWidget::get(qApp->activeWindow()));
@@ -190,20 +199,17 @@ BEGIN_PROPERTY(Application_ActiveWindow)
 
 END_PROPERTY
 
-
 BEGIN_PROPERTY(Application_ActiveControl)
 
 	GB.ReturnObject(CWIDGET_active_control);
 
 END_PROPERTY
 
-
 BEGIN_PROPERTY(Application_PreviousControl)
 
 	GB.ReturnObject(CWIDGET_previous_control);
 
 END_PROPERTY
-
 
 BEGIN_PROPERTY(Application_Busy)
 
@@ -227,7 +233,6 @@ BEGIN_PROPERTY(Application_Busy)
 
 END_PROPERTY
 
-
 BEGIN_PROPERTY(Application_ShowTooltips)
 
 	if (READ_PROPERTY)
@@ -236,7 +241,6 @@ BEGIN_PROPERTY(Application_ShowTooltips)
 		MyApplication::setTooltipEnabled(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
-
 
 BEGIN_PROPERTY(Application_Animations)
 
@@ -250,7 +254,6 @@ BEGIN_PROPERTY(Application_Animations)
 
 END_PROPERTY
 
-
 BEGIN_PROPERTY(Application_Shadows)
 
 	if (READ_PROPERTY)
@@ -262,7 +265,6 @@ BEGIN_PROPERTY(Application_Shadows)
 	}
 
 END_PROPERTY
-
 
 BEGIN_PROPERTY(Application_MainWindow)
 
@@ -280,7 +282,6 @@ BEGIN_PROPERTY(Application_MainWindow)
 	}
 
 END_PROPERTY
-
 
 BEGIN_PROPERTY(Application_Embedder)
 
@@ -316,7 +317,6 @@ BEGIN_PROPERTY(Application_Theme)
 
 END_PROPERTY
 
-
 BEGIN_PROPERTY(Application_Restart)
 
 	if (READ_PROPERTY)
@@ -340,20 +340,17 @@ BEGIN_PROPERTY(Screens_Count)
 
 END_PROPERTY
 
-
 /*BEGIN_PROPERTY(Screens_Primary)
 
 	GB.ReturnInteger(QApplication::desktop()->primaryScreen());
 
 END_PROPERTY*/
 
-
 BEGIN_METHOD(Screens_get, GB_INTEGER screen)
 
 	GB.ReturnObject(get_screen(VARG(screen)));
 
 END_METHOD
-
 
 BEGIN_METHOD_VOID(Screens_next)
 
@@ -369,53 +366,52 @@ BEGIN_METHOD_VOID(Screens_next)
 	
 END_METHOD
 
-
 BEGIN_PROPERTY(Screen_X)
 
-	GB.ReturnInteger(QApplication::desktop()->screenGeometry(SCREEN->index).x());
+	GB.ReturnInteger(SCREEN_INFO(SCREEN->index).x());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Screen_Y)
 
-	GB.ReturnInteger(QApplication::desktop()->screenGeometry(SCREEN->index).y());
+	GB.ReturnInteger(SCREEN_INFO(SCREEN->index).y());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Screen_Width)
 
-	GB.ReturnInteger(QApplication::desktop()->screenGeometry(SCREEN->index).width());
+	GB.ReturnInteger(SCREEN_INFO(SCREEN->index).width());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Screen_Height)
 
-	GB.ReturnInteger(QApplication::desktop()->screenGeometry(SCREEN->index).height());
+	GB.ReturnInteger(SCREEN_INFO(SCREEN->index).height());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(Screen_AvailableX)
 
-	GB.ReturnInteger(QApplication::desktop()->availableGeometry(SCREEN->index).x());
+	GB.ReturnInteger(SCREEN_AVAILABLE_SIZE(SCREEN->index).x());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Screen_AvailableY)
 
-	GB.ReturnInteger(QApplication::desktop()->availableGeometry(SCREEN->index).y());
+	GB.ReturnInteger(SCREEN_AVAILABLE_SIZE(SCREEN->index).y());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Screen_AvailableWidth)
 
-	GB.ReturnInteger(QApplication::desktop()->availableGeometry(SCREEN->index).width());
+	GB.ReturnInteger(SCREEN_AVAILABLE_SIZE(SCREEN->index).width());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Screen_AvailableHeight)
 
-	GB.ReturnInteger(QApplication::desktop()->availableGeometry(SCREEN->index).height());
+	GB.ReturnInteger(SCREEN_AVAILABLE_SIZE(SCREEN->index).height());
 
 END_PROPERTY
 
