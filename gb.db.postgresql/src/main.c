@@ -335,8 +335,10 @@ static GB_TYPE conv_type(Oid type)
 		case FLOAT8OID:
 			return GB_T_FLOAT;
 
+#ifdef ABSTIMEOID
 		case ABSTIMEOID:
 		case RELTIMEOID:
+#endif
 		case DATEOID:
 		case TIMEOID:
 		case TIMESTAMPOID:
@@ -418,8 +420,10 @@ static void conv_data(const char *data, int len, GB_VARIANT_VALUE *val, Oid type
 
 			break;
 
+		#ifdef ABSTIMEOID
 		case ABSTIMEOID:
 		case RELTIMEOID:
+		#endif
 		case DATEOID:
 		case TIMEOID:
 		case TIMESTAMPOID:
@@ -439,8 +443,10 @@ static void conv_data(const char *data, int len, GB_VARIANT_VALUE *val, Oid type
 
 			switch(type)
 			{
+				#ifdef ABSTIMEOID
 				case ABSTIMEOID:
 				case RELTIMEOID:
+				#endif
 				case DATEOID:
 
 					sscanf(data, "%4d-%2d-%2d", &date.year, &date.month, &date.day);
