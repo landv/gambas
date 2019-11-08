@@ -590,6 +590,8 @@ Public Sub SetBranch(sBranch As String)
     ShowError(Subst(("Unable to switch to branch `&1`."), sBranch))
   Endif
   
+  Project.UpdateTitle
+  
 End
 
 Public Sub InitControlProjectMenu(hParent As Menu)

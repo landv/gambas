@@ -332,6 +332,7 @@ Public Sub Main()
   Try Component.Load("gb.inotify")
   
   If Not Settings["/ShowMenus", True] Then Env["APPMENU_DISPLAY_BOTH"] = "1"
+  Env["QT_LOGGING_RULES"] = "*.debug=false"
 
   Application.Theme = Settings["/Theme"]
   DESKTOP_FONT = Application.Font.ToString()
@@ -1621,6 +1622,7 @@ End
 Public Sub UpdateTitle()
 
   Dim sTitle As String
+  Dim sCurrent As String
 
   If Path Then
     
@@ -1643,9 +1645,12 @@ Public Sub UpdateTitle()
       If ReadOnly Then sTitle &= " [" & ("read-only") & "]"
     Endif
     
+    VersionControl.GetBranches(ByRef sCurrent)
+    If sCurrent Then sTitle &= " (" & sCurrent & ")"
+    
   Endif
   
-  If sTitle Then sTitle &= " - "
+  If sTitle Then sTitle &= " — "
   sTitle &= Application.Title
   
   If Application.Version Like "*.9[0-9].*" Then 
