@@ -47,27 +47,27 @@ void *memrchr(const char *s, int c, size_t n)
 
 wchar_t nextUTF8Char(const char *&data, size_t len)
 {
-        register unsigned char c = *data;
+        unsigned char c = *data;
         if (c <= 0x7f){//first byte
             data++;
             return (wchar_t)c;
         }
         else if (c <= 0xdf && c >= 0xbf && 1 < len){//2byte sequence start
-            register wchar_t c2 = (unsigned char)data[1];
+            wchar_t c2 = (unsigned char)data[1];
             data += 2;
             return (((c & 0x1f) << 6) | (c2 & 0x3f));
         }
         else if (c <= 0xef  && c >= 0xbf && 2 < len){//3byte sequence start
-            register wchar_t c2 = (unsigned char)data[1];
-            register wchar_t c3 = (unsigned char)data[2];
+            wchar_t c2 = (unsigned char)data[1];
+            wchar_t c3 = (unsigned char)data[2];
             data += 3;
             return (((((c & 0x1f) << 6) | (c2 & 0x3f)) << 6)| (c3 & 0x3f));
             //w = c & 0x0f;
         }
         else if (c <= 0xf7  && c >= 0xbf && 3 < len){//4byte sequence start
-            register wchar_t c2 = (unsigned char)data[1];
-            register wchar_t c3 = (unsigned char)data[2];
-            register wchar_t c4 = (unsigned char)data[3];
+            wchar_t c2 = (unsigned char)data[1];
+            wchar_t c3 = (unsigned char)data[2];
+            wchar_t c4 = (unsigned char)data[3];
             data += 4;
             return (((((((c & 0x1f) << 6) | (c2 & 0x3f)) << 6)| (c3 & 0x3f)) << 6) | (c4 & 0x3f));
             //w = c & 0x07;
@@ -122,14 +122,14 @@ bool isNameChar(const wchar_t car)
   */
 bool isWhiteSpace(const wchar_t s)
 {
-    register const wchar_t car = s;
+    const wchar_t car = s;
 
     return (car == 0x20) || (car == 0x9) || (car == 0xD) || (car == 0xA);
 }
 
 bool isWhiteSpace(const char s)
 {
-    register const char car = s;
+    const char car = s;
 
     return (car == 0x20) || (car == 0x9) || (car == 0xD) || (car == 0xA);
 }

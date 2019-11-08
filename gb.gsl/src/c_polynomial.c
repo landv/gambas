@@ -372,21 +372,21 @@ static int _equal(CPOLYNOMIAL *a, CPOLYNOMIAL *b, bool invert)
 
 static GB_OPERATOR_DESC _operator =
 {
-	add: (void *)_add,
-	addf: (void *)_addf,
-	addo: (void *)_addo,
-	sub: (void *)_sub,
-	subf: (void *)_subf,
-	subo: (void *)_subo,
-	/*mul: (void *)_mul,
-	mulf: (void *)_mulf,
-	div: (void *)_div,
-	divf: (void *)_divf,
-	idivf: (void *)_idivf,*/
-	equal: (void *)_equal,
-	/*equalf: (void *)_equalf,
-	abs: (void *)_abs,*/
-	neg: (void *)_neg
+	.add = (void *)_add,
+	.addf = (void *)_addf,
+	.addo = (void *)_addo,
+	.sub = (void *)_sub,
+	.subf = (void *)_subf,
+	.subo = (void *)_subo,
+	/*.*mul = (void *)_mul,
+	.mulf = (void *)_mulf,
+	.div = (void *)_div,
+	.divf = (void *)_divf,
+	.idivf = (void *)_idivf,*/
+	.equal = (void *)_equal,
+	/*.*equalf = (void *)_equalf,
+	.abs = (void *)_abs,*/
+	.neg = (void *)_neg
 };
 
 //---- Conversions ----------------------------------------------------------

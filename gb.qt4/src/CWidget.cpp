@@ -3314,9 +3314,9 @@ _STANDARD:
 #if 0
 static void gray_image(QImage &img)
 {
-	register uchar *b(img.bits());
-	register uchar *g(img.bits() + 1);
-	register uchar *r(img.bits() + 2);
+	uchar *b(img.bits());
+	uchar *g(img.bits() + 1);
+	uchar *r(img.bits() + 2);
 
 	uchar * end(img.bits() + img.numBytes());
 

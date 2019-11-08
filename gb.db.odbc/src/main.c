@@ -1654,8 +1654,8 @@ fflush(stderr);
 		return;
 	}
 
-	char *data;
-	int len;
+	char *data = NULL;
+	int len = 0;
 
 	if (!unquote_blob(blob->data, blob->length, DB.Query.AddLength))
 	{

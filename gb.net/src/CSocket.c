@@ -60,16 +60,16 @@ DECLARE_EVENT (EVENT_Write);
 
 GB_STREAM_DESC SocketStream = 
 {
-	open: CSocket_stream_open,
-	close: CSocket_stream_close,
-	read: CSocket_stream_read,
-	write: CSocket_stream_write,
-	seek: CSocket_stream_seek,
-	tell: CSocket_stream_tell,
-	flush: CSocket_stream_flush,
-	/*eof: CSocket_stream_eof,
-	lof: CSocket_stream_lof,*/
-	handle: CSocket_stream_handle
+	.open = CSocket_stream_open,
+	.close = CSocket_stream_close,
+	.read = CSocket_stream_read,
+	.write = CSocket_stream_write,
+	.seek = CSocket_stream_seek,
+	.tell = CSocket_stream_tell,
+	.flush = CSocket_stream_flush,
+	/*.eof = CSocket_stream_eof,
+	.lof = CSocket_stream_lof,*/
+	.handle = CSocket_stream_handle
 };
 
 #if DEBUG_ME

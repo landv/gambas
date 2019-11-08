@@ -69,15 +69,15 @@ static COMPRESS_DRIVER _driver;
 
 GB_STREAM_DESC BZStream = 
 {
-	open: BZ_stream_open,
-	close: BZ_stream_close,
-	read: BZ_stream_read,
-	write: BZ_stream_write,
-	seek: BZ_stream_seek,
-	tell: BZ_stream_tell,
-	flush: BZ_stream_flush,
-	eof: BZ_stream_eof,
-	lof: BZ_stream_lof
+	.open = BZ_stream_open,
+	.close = BZ_stream_close,
+	.read = BZ_stream_read,
+	.write = BZ_stream_write,
+	.seek = BZ_stream_seek,
+	.tell = BZ_stream_tell,
+	.flush = BZ_stream_flush,
+	.eof = BZ_stream_eof,
+	.lof = BZ_stream_lof
 };
 
 /*****************************************************************************

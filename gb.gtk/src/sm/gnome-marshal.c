@@ -65,9 +65,9 @@ _gnome_marshal_BOOLEAN__INT_ENUM_BOOLEAN_ENUM_BOOLEAN (GClosure     *closure,
                                                                            gint         arg_4,
                                                                            gboolean     arg_5,
                                                                            gpointer     data2);
-  register GMarshalFunc_BOOLEAN__INT_ENUM_BOOLEAN_ENUM_BOOLEAN callback;
-  register GCClosure *cc = (GCClosure*) closure;
-  register gpointer data1, data2;
+  GMarshalFunc_BOOLEAN__INT_ENUM_BOOLEAN_ENUM_BOOLEAN callback;
+  GCClosure *cc = (GCClosure*) closure;
+  gpointer data1, data2;
   gboolean v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -109,9 +109,9 @@ _gnome_marshal_BOOLEAN__INT_STRING (GClosure     *closure,
                                                         gint         arg_1,
                                                         gpointer     arg_2,
                                                         gpointer     data2);
-  register GMarshalFunc_BOOLEAN__INT_STRING callback;
-  register GCClosure *cc = (GCClosure*) closure;
-  register gpointer data1, data2;
+  GMarshalFunc_BOOLEAN__INT_STRING callback;
+  GCClosure *cc = (GCClosure*) closure;
+  gpointer data1, data2;
   gboolean v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -149,9 +149,9 @@ _gnome_marshal_BOOLEAN__OBJECT (GClosure     *closure,
   typedef gboolean (*GMarshalFunc_BOOLEAN__OBJECT) (gpointer     data1,
                                                     gpointer     arg_1,
                                                     gpointer     data2);
-  register GMarshalFunc_BOOLEAN__OBJECT callback;
-  register GCClosure *cc = (GCClosure*) closure;
-  register gpointer data1, data2;
+  GMarshalFunc_BOOLEAN__OBJECT callback;
+  GCClosure *cc = (GCClosure*) closure;
+  gpointer data1, data2;
   gboolean v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -187,9 +187,9 @@ _gnome_marshal_BOOLEAN__VOID (GClosure     *closure,
 {
   typedef gboolean (*GMarshalFunc_BOOLEAN__VOID) (gpointer     data1,
                                                   gpointer     data2);
-  register GMarshalFunc_BOOLEAN__VOID callback;
-  register GCClosure *cc = (GCClosure*) closure;
-  register gpointer data1, data2;
+  GMarshalFunc_BOOLEAN__VOID callback;
+  GCClosure *cc = (GCClosure*) closure;
+  gpointer data1, data2;
   gboolean v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -224,9 +224,9 @@ _gnome_marshal_INT__VOID (GClosure     *closure,
 {
   typedef gint (*GMarshalFunc_INT__VOID) (gpointer     data1,
                                           gpointer     data2);
-  register GMarshalFunc_INT__VOID callback;
-  register GCClosure *cc = (GCClosure*) closure;
-  register gpointer data1, data2;
+  GMarshalFunc_INT__VOID callback;
+  GCClosure *cc = (GCClosure*) closure;
+  gpointer data1, data2;
   gint v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -263,9 +263,9 @@ _gnome_marshal_VOID__ENUM_BOOLEAN (GClosure     *closure,
                                                    gint         arg_1,
                                                    gboolean     arg_2,
                                                    gpointer     data2);
-  register GMarshalFunc_VOID__ENUM_BOOLEAN callback;
-  register GCClosure *cc = (GCClosure*) closure;
-  register gpointer data1, data2;
+  GMarshalFunc_VOID__ENUM_BOOLEAN callback;
+  GCClosure *cc = (GCClosure*) closure;
+  gpointer data1, data2;
 
   g_return_if_fail (n_param_values == 3);
 
@@ -300,9 +300,9 @@ _gnome_marshal_VOID__INT_BOXED (GClosure     *closure,
                                                 gint         arg_1,
                                                 gpointer     arg_2,
                                                 gpointer     data2);
-  register GMarshalFunc_VOID__INT_BOXED callback;
-  register GCClosure *cc = (GCClosure*) closure;
-  register gpointer data1, data2;
+  GMarshalFunc_VOID__INT_BOXED callback;
+  GCClosure *cc = (GCClosure*) closure;
+  gpointer data1, data2;
 
   g_return_if_fail (n_param_values == 3);
 
@@ -341,9 +341,9 @@ _gnome_marshal_VOID__UINT_UINT_UINT_UINT (GClosure     *closure,
                                                           guint        arg_3,
                                                           guint        arg_4,
                                                           gpointer     data2);
-  register GMarshalFunc_VOID__UINT_UINT_UINT_UINT callback;
-  register GCClosure *cc = (GCClosure*) closure;
-  register gpointer data1, data2;
+  GMarshalFunc_VOID__UINT_UINT_UINT_UINT callback;
+  GCClosure *cc = (GCClosure*) closure;
+  gpointer data1, data2;
 
   g_return_if_fail (n_param_values == 5);
 

@@ -880,8 +880,8 @@ gPicture* gPicture::flip(bool mirror)
 	gPicture *ret;
 	guint32 *src, *dst;
 	int w, h;
-	register guint32 *s, *d;
-	register int x, y;
+	guint32 *s, *d;
+	int x, y;
 	int rowstride;
 
 	getPixbuf();
