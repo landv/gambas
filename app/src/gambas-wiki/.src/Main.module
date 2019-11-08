@@ -1372,7 +1372,7 @@ Private Sub InitAuthor()
   
   If $bInitAuthor Then Return
   
-  hFile = Open "authors.txt" For Read 
+  hFile = Open "AUTHORS" For Read 
   
   While Not Eof(hFile)
     hAuthor = New CAuthor(hFile)

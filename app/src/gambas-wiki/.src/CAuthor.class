@@ -18,26 +18,56 @@ Public Sub _new(hFile As File)
   Dim sLine As String
   Dim iPos As Integer
   
-  Line Input #hFile, sLine
-  If Left(sLine) = "-" Then Line Input #hFile, sLine
-  Name = Trim(sLine)
-  Line Input #hFile, Mail
-  Line Input #hFile, Country
-
+  ' Line Input #hFile, sLine
+  ' If Left(sLine) = "-" Then Line Input #hFile, sLine
+  ' Name = Trim(sLine)
+  ' Line Input #hFile, Mail
+  ' Line Input #hFile, Country
+  ' 
+  
   While Not Eof(hFile)
+    
     Line Input #hFile, sLine
     sLine = Trim(sLine)
-    If Not sLine Then Continue
-    If Left(sLine) = "-" Then Break 
-    If Right(sLine) = "." Then sLine = Left(sLine, -1)
+    If Not sLine Or If sLine Begins "#" Then Continue
+    
+    If sLine Ends ">" Then
+      iPos = RInStr(sLine, "<")
+      If iPos Then
+        Mail = Mid$(sLine, iPos + 1, -1)
+        sLine = RTrim(Left(sLine, iPos - 1))
+      Endif
+    Endif
+    
+    If sLine Ends ")" Then
+      iPos = RInStr(sLine, "(")
+      If iPos Then
+        Country = Mid$(sLine, iPos + 1, -1)
+        sLine = RTrim(Left(sLine, iPos - 1))
+      Endif
+    Endif
+    
+    Name = sLine
+    Break
+    
+  Wend
+  
+  While Not Eof(hFile)
+    
+    Line Input #hFile, sLine
+    sLine = Trim(sLine)
+    If Not sLine Then Break
+
     If InStr(sLine, "translation") Then 
+      If Right(sLine) = "." Then sLine = Left(sLine, -1)
       Translator = True
       Translation.Add(Trim(Replace(sLine, "translation", "")))
     Else 
       Works.Add(sLine)
       Developer = True
     Endif
-  Wend 
+
+  Wend
   
   iPos = InStr(Name, " ")
   If iPos Then 
