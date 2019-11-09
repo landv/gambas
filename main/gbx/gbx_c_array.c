@@ -1252,7 +1252,7 @@ static int find(CARRAY *_object, int mode, void *value, int start)
 }
 
 #define IMPLEMENT_find_fast(_type, _gtype, _ctype) \
-static int find_##_ctype(CARRAY *_object, int value, int start) \
+static int find_##_ctype(CARRAY *_object, _ctype value, int start) \
 { \
 	int count = THIS->count; \
 	_ctype *data; \
