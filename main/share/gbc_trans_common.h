@@ -69,7 +69,6 @@ typedef
 		unsigned is_embedded : 1;   // if it is an embedded array
 		unsigned no_warning : 1;    // The symbol name is between braces
 		}
-	PACKED
 	TRANS_DECL;
 
 typedef
@@ -86,7 +85,6 @@ typedef
 		unsigned fast : 1;
 		unsigned unsafe : 1;
 		}
-	PACKED
 	TRANS_FUNC;
 
 typedef
@@ -97,7 +95,6 @@ typedef
 		short _reserved;
 		TRANS_PARAM param[MAX_PARAM_FUNC];
 		}
-	PACKED
 	TRANS_EVENT;
 
 typedef
@@ -111,7 +108,6 @@ typedef
 		int library;
 		int alias;
 		}
-	PACKED
 	TRANS_EXTERN;
 
 typedef
@@ -125,7 +121,6 @@ typedef
 		unsigned nsynonymous:3;
 		unsigned read:1;
 		}
-	PACKED
 	TRANS_PROPERTY;
 
 typedef
@@ -141,7 +136,6 @@ typedef
 		ushort *pos_break;
 		ushort *pos_continue;
 		}
-	PACKED
 	TRANS_CTRL;
 
 typedef
@@ -154,7 +148,6 @@ typedef
 		unsigned on_goto : 1;
 		unsigned _reserved : 30;
 		}
-	PACKED
 	TRANS_GOTO;
 
 typedef
@@ -163,7 +156,6 @@ typedef
 		ushort pos;
 		short ctrl_id;
 		}
-	PACKED
 	TRANS_LABEL;
 
 typedef

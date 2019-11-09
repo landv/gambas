@@ -570,11 +570,15 @@ static void trans_call(short nparam, uint64_t byref)
 	if (!byref)
 	{
 		CODE_call(nparam);
+		if (_must_drop_vargs)
+		{
+			CODE_end_vargs();
+			_must_drop_vargs = FALSE;
+		}
 	}
 	else
 	{
 		CODE_call_byref(nparam, byref);
-
 		if (_must_drop_vargs)
 		{
 			CODE_drop_vargs();

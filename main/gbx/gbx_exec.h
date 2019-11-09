@@ -253,6 +253,7 @@ void RELEASE_many(VALUE *val, int n);
 void EXEC_push_complex(void);
 
 void EXEC_push_vargs(void);
+void EXEC_end_vargs(void);
 void EXEC_drop_vargs(void);
 
 #define BORROW(_value) \

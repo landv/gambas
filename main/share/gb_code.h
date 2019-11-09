@@ -132,6 +132,7 @@ void CODE_push_complex();
 
 void CODE_push_vargs();
 void CODE_drop_vargs();
+void CODE_end_vargs();
 
 void CODE_dup(void);
 

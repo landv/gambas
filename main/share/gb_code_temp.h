@@ -1412,6 +1412,17 @@ void CODE_drop_vargs(void)
 	write_ZZxx(C_PUSH_MISC, CPM_DROP_VARGS);
 }
 
+void CODE_end_vargs(void)
+{
+	LAST_CODE;
+
+	#ifdef DEBUG
+	printf("END VARGS\n");
+	#endif
+
+	write_ZZxx(C_PUSH_MISC, CPM_END_VARGS);
+}
+
 #ifdef CODE_DUMP
 
 void CODE_dump(PCODE *code, int count)

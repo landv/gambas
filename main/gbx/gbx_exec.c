@@ -2021,14 +2021,19 @@ void EXEC_push_vargs(void)
 		*SP = PP[i];
 		PUSH();
 	}
+	
+	PC[1] += nargs;
+}
+
+void EXEC_end_vargs(void)
+{
+	int nargs = (FP && FP->vararg) ? BP - PP : 0;
+	PC[-1] -= nargs;
 }
 
 void EXEC_drop_vargs(void)
 {
 	int nargs = (FP && FP->vararg) ? BP - PP : 0;
-
-	if (nargs == 0)
-		return;
-
 	RELEASE_MANY(SP, nargs);
+	PC[-1] -= nargs;
 }

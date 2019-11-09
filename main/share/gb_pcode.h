@@ -80,6 +80,7 @@
 #define CPM_VARGS        9
 #define CPM_DROP_VARGS   10
 #define CPM_RETURN       11
+#define CPM_END_VARGS    12
 
 #define C_TRY                   0x1600
 #define C_END_TRY               0x1700

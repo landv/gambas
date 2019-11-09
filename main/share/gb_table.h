@@ -37,7 +37,6 @@ typedef
 		uint key;
 #endif
 		}
-	PACKED
 	SYMBOL;
 
 typedef
