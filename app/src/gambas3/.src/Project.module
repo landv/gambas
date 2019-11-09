@@ -1670,7 +1670,6 @@ Private Sub AddPathToFilter(sPath As String)
     Try $cProjectFilter[Tree.FindForm(File.BaseName(sPath))] = True
   Endif
   
-  
   While Len(sPath) > Len(Project.Dir)
     sPath = File.Dir(sPath)
     $cProjectFilter[sPath] = True
@@ -5473,9 +5472,10 @@ Public Sub DrawTitle(hForm As Object, Optional bNoReadOnly As Boolean)
     Try hForm.RichText = "<i>" & Html(sTitle) & "</i>"
   Endif
   
-  If hForm.Title <> sTitle Then hForm.Title = sTitle
-  
-  UpdateTitle
+  If hForm.Title <> sTitle Then
+    hForm.Title = sTitle
+    If ShowFileInTitle And If hForm = ActiveForm Then UpdateTitle
+  Endif
 
 End
 

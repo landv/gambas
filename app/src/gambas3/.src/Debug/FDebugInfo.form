@@ -251,26 +251,31 @@
     Text = ("Version control")
     { panVersionControl HBox
       MoveScaled(0,0,119,4)
+      { btnVcClear ToolButton
+        MoveScaled(0,0,4,4)
+        ToolTip = ("Clear console")
+        Picture = Picture["icon:/small/clear"]
+      }
       { btnVcCommit ToolButton
-        MoveScaled(0,0,12,4)
+        MoveScaled(9,0,12,4)
         AutoResize = True
         Text = ("Commit") & "..."
         Picture = Picture["icon:/small/upload"]
       }
       { btnVcUpdate ToolButton
-        MoveScaled(13,0,15,4)
+        MoveScaled(20,0,15,4)
         AutoResize = True
         Text = ("Synchronize")
         Picture = Picture["icon:/small/refresh"]
       }
       { btnVcRevert ToolButton
-        MoveScaled(29,0,20,4)
+        MoveScaled(34,0,20,4)
         AutoResize = True
         Text = ("Revert all changes")
         Picture = Picture["icon:/small/undo"]
       }
       { btnVcAddAll ToolButton
-        MoveScaled(50,0,27,4)
+        MoveScaled(54,0,27,4)
         AutoResize = True
         Text = ("Add everything to repository")
         Picture = Picture["icon:/small/add"]

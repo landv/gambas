@@ -186,6 +186,10 @@ Public Sub Command(sCommand As String) As String[]
     
     Return MakeError(("This symbol does not exist."))
 
+  Else If sCommand = "help" And If Wiki.Symbol Then
+    
+    Return Split(Wiki.GetDefaultPage(), "\n")
+
   Else If sCommand = "stat" Then
     
     Return Wiki.GetStat()

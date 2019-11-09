@@ -883,3 +883,37 @@ Public Sub AnalyzePath()
   Endif
   
 End
+
+Public Sub GetDefaultPage() As String
+  
+  Dim hSymbol As CSymbolInfo
+  Dim sSign As String
+  Dim iPos As Integer
+  Dim sResult As String
+  Dim iPos2 As Integer
+  
+  Try hSymbol = Documentation.Get(Wiki.Component)[Wiki.Class].Symbols[Wiki.Symbol]
+  If Not hSymbol Then Return
+  
+  If hSymbol.Help Then Return hSymbol.Help
+  
+  sResult = "\n"
+  sSign = hSymbol.Signature
+  Do
+    
+    iPos = InStr(sSign, "(", iPos + 1)
+    If iPos = 0 Then Break
+    iPos2 = InStr(sSign, ")", iPos + 1)
+    If iPos2 = 0 Then Break
+    
+    sResult &= "- ~" & Mid$(sSign, iPos + 1, iPos2 - iPos - 1) & "~\n"
+    iPos = iPos2
+    
+  Loop
+  
+  'If hSymbol.Help Then sResult = Trim(sResult) & "\n" & hSymbol.Help
+  
+  Return sResult
+  
+End
+

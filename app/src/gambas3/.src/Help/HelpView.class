@@ -14,6 +14,7 @@ Private $hWatcher As Watcher
 Private $hSpinner As Spinner
 Private $sLastUrl As String
 Private $bNoHeader As Boolean
+Private $sNextUrl As String
 
 Public Sub _new()
 
@@ -43,34 +44,35 @@ Private Sub ShowWaiting(bShow As Boolean)
 
 End
 
-Public Sub WebView_Error()
-  
-  Dim sLastUrl As String
-  
-  ShowWaiting(False)
-  
-  If Not $sLastUrl Then 
-    sLastUrl = Me.Url
-  Else
-    sLastUrl = $sLastUrl
-    $sLastUrl = ""
-  Endif
-  
-  If sLastUrl Begins "/" Then sLastUrl = Project.WIKI_ROOT &/ sLastUrl
-  
-  If sLastUrl Begins "gambas://" Then 
-    
-    Me.Stop
-    MHelp.ManageSpecialLink(Me, sLastUrl)
-    Return
-  Else If sLastUrl Begins "wiki://" Then
-    
-    MHelp.MakeOffline(Me, sLastUrl, $bNoHeader)
-    Return
-    
-  Endif
-  
-End
+' Public Sub WebView_Error()
+'   
+'   Dim sLastUrl As String
+'   
+'   ShowWaiting(False)
+'   
+'   If Not $sLastUrl Then 
+'     sLastUrl = Me.Url
+'   Else
+'     sLastUrl = $sLastUrl
+'     $sLastUrl = ""
+'   Endif
+'   
+'   If sLastUrl Begins "/" Then sLastUrl = Project.WIKI_ROOT &/ sLastUrl
+'   
+'   If sLastUrl Begins "gambas://" Then 
+'     
+'     Me.Stop
+'     MHelp.ManageSpecialLink(Me, sLastUrl)
+'     Return
+'     
+'   Else If sLastUrl Begins "wiki://" Then
+'     
+'     MHelp.MakeOffline(Me, sLastUrl, $bNoHeader)
+'     Return
+'     
+'   Endif
+'   
+' End
 
 Public Sub WebView_Move()
   
@@ -109,9 +111,55 @@ Public Sub WebView_NewWindow((Modal) As Boolean)
 
 End
 
+Public Sub TimerUrl_Timer()
+  
+  'Debug $sNextUrl
+  
+  If $sNextUrl Begins "gambas://" Then 
+    
+    MHelp.ManageSpecialLink(Me, $sNextUrl)
+    
+  Else If $sNextUrl Begins "wiki://" Then
+    
+    MHelp.MakeOffline(Me, $sNextUrl, $bNoHeader)
+    
+  Endif
+  
+  $sNextUrl = ""
+  
+End
+
 Public Sub WebView_Progress()
 
+  Dim sLastUrl As String
+  Dim hTimer As Timer
+  
+  'Debug Me.Progress;; Me.Url
+  
   ShowWaiting(Me.Progress < 1)
+
+  If Me.Progress = 0 Then
+
+    sLastUrl = $sLastUrl
+    If $sLastUrl Then
+      sLastUrl = $sLastUrl
+      $sLastUrl = ""
+    Else
+      sLastUrl = Me.Url
+    Endif
+    
+    If sLastUrl Begins "/" Then sLastUrl = Project.WIKI_ROOT &/ sLastUrl
+    
+    If sLastUrl Begins "gambas://" Or If sLastUrl Begins "wiki://" Then 
+      
+      $sNextUrl = sLastUrl
+      'Me.Stop
+      hTimer = New Timer As "TimerUrl"
+      hTimer.Trigger
+     
+    Endif
+  
+  Endif
 
 End
 
