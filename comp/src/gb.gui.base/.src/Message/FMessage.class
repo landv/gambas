@@ -49,7 +49,7 @@ Public Sub Run(sIcon As String, sText As String, aButton As String[]) As Integer
     hButton.W = Max(Desktop.Scale * 14, hButton.Font.TextWidth(hButton.Text) + Desktop.Scale * 2)
     H = Max(H, hButton.Font.TextHeight(hButton.Text))
     WB += hButton.W + Desktop.Scale
-    If I = 0 Then hButton.Default = True
+    If I = 0 Then hButton.SetFocus()
     If I = aButton.Max Then hButton.Cancel = True
   Next
   panButton.H = Max(H, Desktop.Scale * 4)
@@ -79,3 +79,17 @@ Public Sub Button_Click()
   
 End
 
+
+Public Sub Form_KeyPress()
+
+  Dim hButton As Button
+  
+  If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
+    Try hButton = Application.ActiveControl
+    If hButton Then 
+      hButton.Value = True
+      Stop Event
+    Endif
+  Endif
+
+End
