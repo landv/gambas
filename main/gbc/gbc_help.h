@@ -33,7 +33,7 @@ void HELP_add_at_current_line(const char *help);
 void HELP_search_and_print(FILE *file, int line);
 void HELP_search_and_print_for_class(FILE *file);
 
-#define HELP_is_help_comment(_ptr) ((_ptr)[0] == '\'' && ((_ptr)[1] == ' ' || ((_ptr)[1] == '\'' && (_ptr)[2] == ' ')))
+#define HELP_is_help_comment(_ptr) ((_ptr)[0] == '\'' && (isspace((_ptr)[1]) || ((_ptr)[1] == '\'' && isspace((_ptr)[2]))))
 #define HELP_is_for_class(_help) ((_help)[0] == '\'' && (_help)[1] == '\'')
 #define HELP_is_void_line(_help) ((_help)[0] == '\n' && (_help)[1] == 0)
 

@@ -368,6 +368,8 @@ static bool header_property(TRANS_PROPERTY *prop)
 		TYPE_set_flag(&prop->type, TF_STATIC);
 	TYPE_set_flag(&prop->type, TF_PUBLIC);
 
+	// property with variable
+	
 	if (TRANS_is(RS_USE))
 	{
 		TRANS_DECL decl = ptype;
@@ -383,6 +385,10 @@ static bool header_property(TRANS_PROPERTY *prop)
 		JOB->current++;
 		
 		decl.index = prop->use;
+		
+		if (TRANS_is(RS_EQUAL))
+			decl.init = JOB->current;
+		
 		CLASS_add_declaration(JOB->class, &decl);
 	}
 	

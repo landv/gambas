@@ -31,7 +31,7 @@
 #undef isdigit
 #define isdigit(_c) (READ_digit_car[(uchar)(_c)])
 #undef isspace
-#define isspace(_c) (((uchar)_c) <= ' ')
+#define isspace(_c) (((uchar)(_c)) <= ' ')
 
 #ifndef __GBC_READ_C
 extern char READ_digit_car[];
