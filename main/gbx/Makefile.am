@@ -5,15 +5,15 @@ bin_PROGRAMS = gbx3
 noinst_LIBRARIES = libgbx.a
 gblib_LTLIBRARIES = gb.la
 
-libgbx_a_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS_OPT)
+libgbx_a_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" -Wno-address-of-packed-member -Wno-stringop-truncation $(AM_CFLAGS_OPT)
 
 gbx3_LDADD = @C_LIB@ @GBX_THREAD_LIB@ libgbx.a @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @FFI_LIB@ @RT_LIB@ 
 gbx3_LDFLAGS = @LD_FLAGS@ @GBX_THREAD_LDFLAGS@ @INTL_LDFLAGS@ @CONV_LDFLAGS@ @GETTEXT_LDFLAGS@ @FFI_LDFLAGS@ @RT_LDFLAGS@
-gbx3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
+gbx3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" -Wno-address-of-packed-member -Wno-stringop-truncation $(AM_CFLAGS)
 
 gb_la_LIBADD = @C_LIB@ @GBX_THREAD_LIB@ @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @FFI_LIB@ @RT_LIB@
 gb_la_LDFLAGS = -module @LD_FLAGS@ @INTL_LDFLAGS@ @CONV_LDFLAGS@ @GETTEXT_LDFLAGS@ @FFI_LDFLAGS@ @RT_LDFLAGS@
-gb_la_CFLAGS = -DGBX_INFO $(AM_CFLAGS) -O0
+gb_la_CFLAGS = -DGBX_INFO $(AM_CFLAGS) -Wno-address-of-packed-member -Wno-stringop-truncation -O0
 
 libgbx_a_SOURCES = \
  gb_error.h gb_error.c \

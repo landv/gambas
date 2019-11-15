@@ -74,7 +74,6 @@ typedef
 		int w;
 		int h;
 		}
-	PACKED
 	GEOM_RECT;
 
 typedef
@@ -85,7 +84,6 @@ typedef
 		double w;
 		double h;
 		}
-	PACKED
 	GEOM_RECTF;
 
 #define GEOM_INTERFACE_VERSION 1

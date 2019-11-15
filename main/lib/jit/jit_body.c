@@ -2861,7 +2861,12 @@ _PUSH_MISC:
 
 		case 10:
 			EXEC_drop_vargs();
-			break;*/
+			break;
+
+		case 11:
+			EXEC_end_vargs();
+			break;
+			*/
 			
 		default:
 			goto _ILLEGAL;
