@@ -274,7 +274,7 @@ static void style_box(QPainter *p, int x, int y, int w, int h, int state, GB_COL
 	QStyleOptionFrame opt;
 	
 	//if (GB.Is(d->device, CLASS_DrawingArea))
-	//	opt.initFrom(QWIDGET(d->device));
+	//	opt.begin(QWIDGET(d->device));
 	
 	init_option(opt, x, y, w, h, state, color, QPalette::Base);
 

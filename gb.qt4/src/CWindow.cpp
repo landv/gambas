@@ -23,6 +23,8 @@
 
 #define __CWINDOW_CPP
 
+#include <QScreen>
+
 #include <qnamespace.h>
 #include <qapplication.h>
 #include <qmenubar.h>
@@ -2481,6 +2483,11 @@ void MyMainWindow::doReparent(QWidget *parent, const QPoint &pos)
 
 int MyMainWindow::currentScreen() const
 {
+#ifdef QT5
+	QList<QScreen*> screenList;
+	QScreen* primaryScreen;
+#endif
+
 	if (_screen >= 0)
 		return _screen;
 
@@ -2489,7 +2496,15 @@ int MyMainWindow::currentScreen() const
 	else if (CWINDOW_Main)
 		return QApplication::desktop()->screenNumber(CWINDOW_Main->widget.widget);
 	else
+#ifndef QT5
 		return QApplication::desktop()->primaryScreen();
+#else
+	{
+		primaryScreen = QGuiApplication::primaryScreen();
+		screenList = QGuiApplication::screens();
+		return screenList.indexOf(primaryScreen);
+	}
+#endif
 }
 
 void MyMainWindow::center()
@@ -2498,7 +2513,11 @@ void MyMainWindow::center()
 	QPoint p;
 	QRect r;
 
+#ifdef QT5
+	r = QGuiApplication::screens().at(currentScreen())->availableGeometry();
+#else
 	r = QApplication::desktop()->availableGeometry(currentScreen());
+#endif
 
 	CWIDGET_move(THIS, r.x() + (r.width() - width()) / 2, r.y() + (r.height() - height()) / 2);
 }

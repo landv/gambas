@@ -218,7 +218,7 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 	{
 		QPainter pf(this);
 		pf.setClipping(false);
-		pf.initFrom(this);
+		//pf.begin(this); // Qt 5.x: avoid message "QPainter::begin: Painter already active"
 		pf.setRenderHint(QPainter::Antialiasing, false);
 		drawFrame(&pf);
 	}

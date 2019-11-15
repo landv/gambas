@@ -83,7 +83,7 @@ typedef
 		char *name;
 		void *font;
 		}
-	PACKED
+//	PACKED
 	CWIDGET; // BEWARE: gb.qt.h MUST be updated accordingly!
 
 typedef

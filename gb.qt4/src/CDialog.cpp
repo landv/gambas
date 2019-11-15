@@ -273,7 +273,7 @@ BEGIN_METHOD(Dialog_OpenFile, GB_BOOLEAN multi)
     }
   }
   
-  dialog_title = QString::null;
+  dialog_title = QString();
 
 END_METHOD
 
@@ -292,7 +292,7 @@ BEGIN_METHOD_VOID(Dialog_SaveFile)
     GB.ReturnBoolean(false);
   }
   
-  dialog_title = QString::null;
+  dialog_title = QString();
 
 END_METHOD
 
@@ -311,7 +311,7 @@ BEGIN_METHOD_VOID(Dialog_SelectDirectory)
     GB.ReturnBoolean(false);
   }
 
-  dialog_title = QString::null;
+  dialog_title = QString();
 
 END_METHOD
 
