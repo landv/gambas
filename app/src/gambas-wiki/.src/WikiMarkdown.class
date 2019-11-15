@@ -209,6 +209,10 @@ Public Sub Command(sCommand As String) As String[]
     Endif
     
     Return MakeError(("This symbol does not exist."))
+    
+  Else If sCommand = "help" And If Main.Symbol Then
+    
+    Return Split(Main.GetDefaultPage(), "\n")
 
   Else If sCommand = "stat" Then
     

@@ -1510,6 +1510,8 @@ End
 
 Public Sub GetImageHTML(sPath As String) As String
 
+  If Not Main.ExistPage(sPath) Then Return "<i>" & ("Please upload a file") & "</i>"
+  
   If Main.GetContentTypeFrom(sPath) Begins "video/" Then
     Return "<video src=\"" & Html(Application.Root &/ sPath) & "?v\" autoplay></video>"
   Else

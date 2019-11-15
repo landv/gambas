@@ -645,6 +645,7 @@ Public Sub GetDescription() As String
   Dim iPos As Integer
   Dim sData As String
   Dim sDesc As String
+  Dim sSave As String
   
   sPath = Main.GetPagePathFrom(Main.SolvePath("/comp" &/ LCase(Component &/ Class &/ Replace(Name, ":", "."))))
   If Not Exist(sPath) Then Return
@@ -652,6 +653,14 @@ Public Sub GetDescription() As String
   aData = Split(File.Load(sPath), "\n")
   While iPos < aData.Count
     sData = aData[iPos]
+    If Trim(sData) = "@{help}" Then 
+      sSave = Main.Symbol
+      Main.Symbol = Me.Name
+      aData.Remove(iPos)
+      aData.Insert(Split(Main.GetDefaultPage(), "\n"), iPos)
+      Main.Symbol = sSave
+      Continue
+    Endif
     If sData Then
       If IsLetter(Left(sData)) Then
         sData = Replace(sData, "[../", "[./")

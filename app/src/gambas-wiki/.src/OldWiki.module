@@ -60,6 +60,10 @@ Public Sub GetPage(sPath As String) As String
   Dim bCode As Boolean
   Dim sTitle As String
   
+  If InStr(sPath, "/comp/gb.sdl2.audio") Then
+    sPath = Replace(sPath, "/comp/gb.sdl2.audio", "/comp/gb.sdl.sound")
+  Endif
+  
   OpenDatabase
   
   If Not sPath Then sPath = "/"
