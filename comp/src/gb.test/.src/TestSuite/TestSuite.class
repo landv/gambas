@@ -1,0 +1,128 @@
+' Gambas class file
+
+''' The TestSuite class represents a suite of different tests to be run.  The TestSuite contains
+''' a part-whole hierarchy of objects that implement the ITest interface --
+''' including TestCase objects and other TestSuite objects.  Executing the Run method for the
+''' TestSuite will execute all test cases that it contains.  The TestSuite class also provides
+''' methods for add all test cases contained in a test container object into the suite.
+
+Inherits ITest
+
+Property Read Tests As ITest[]
+Private $Tests As ITest[]
+
+Public Sub _new()
+
+    $Tests = New ITest[]
+
+End Sub
+
+'' Runs all tests contained within the collection and collects the result in the Track parameter.
+Public Sub Run()
+
+    Dim oTest As ITestCase
+    Dim CurrentContainer, LastContainer As UnitTest
+    Dim CurrentAction As String
+
+    Assert $Tests
+
+    Track.MethodCount = $Tests.Count
+
+    For Each oTest In $Tests
+        CurrentContainer = oTest.Container
+        If LastContainer Then
+            If LastContainer <> CurrentContainer Then
+                CurrentAction = LastContainer.Name & ":TearDownContainer"
+                LastContainer.TearDownContainer
+                CurrentAction = CurrentContainer.Name & ":SetupContainer"
+                CurrentContainer.SetupContainer
+            Endif
+        Else
+            'Assert.Note("-------------------- " & CurrentContainer.Name)
+            CurrentAction = CurrentContainer.Name & ":SetupContainer"
+            CurrentContainer.SetupContainer
+        Endif
+
+        With Track
+            .ContainerName = oTest.Container.Name
+            .TestName = oTest.Name
+        End With
+        
+        oTest.Run()
+
+        LastContainer = CurrentContainer
+    Next
+
+    If LastContainer Then
+        CurrentAction = LastContainer.Name & ":TearDownContainer"
+        LastContainer.TearDownContainer()
+    Endif
+
+Catch
+    'Bail out
+    Print "Bail out! " & "Unittest stopped with error \"" & Error.Text & "\" caused by " & CurrentAction & "."
+    Print "# ------- No success!  -------"
+    Quit
+
+End Sub
+
+'' Add a object implementing ITest (either a TestCase or TestSuite) to the suite.
+Public Sub AddTest(oTest As ITest)
+
+    Assert $Tests
+    $Tests.Add(oTest)
+
+End Sub
+
+'' Add a TestCase to the suite.
+Public Sub AddTestCase(oTestCase As ITestCase)
+
+    Assert $Tests
+    $Tests.Add(oTestCase, Object.Class(oTestCase).Name)
+
+End Sub
+
+'' Create a new test case and add it to the suite.
+Public Function AddNewTestCase(sName As String, oTestContainer As UnitTest)
+
+    Dim test As TestCase
+
+    Assert sName <> Null
+    Assert oTestContainer
+
+    test = New TestCase(sName, oTestContainer)
+    Assert $Tests
+    $Tests.Add(test)
+
+End
+
+'' Create all test cases that are contained in the specified TestContainer and add them to the suite.
+Public Function AddAllTestCases(oTestContainer As UnitTest, Optional NameProcedure As String)
+
+    Dim sTests As Variant
+    Dim i As Integer
+
+    Assert oTestContainer
+
+    oTestContainer.CaseNames.Sort
+    sTests = oTestContainer.CaseNames
+
+    If sTests Then
+        For i = 0 To sTests.Count - 1
+            If NameProcedure = Null Then
+                AddNewTestCase(CStr(sTests[i]), oTestContainer)
+            Else
+                If sTests[i] = NameProcedure Then
+                    AddNewTestCase(CStr(sTests[i]), oTestContainer)
+                Endif
+            Endif
+        Next
+    Endif
+
+End
+
+Private Function Tests_Read() As ITest[]
+
+    Return $Tests
+
+End

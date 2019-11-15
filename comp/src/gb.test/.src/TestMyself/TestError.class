@@ -1,0 +1,34 @@
+' Gambas class file
+
+Inherits UnitTest
+
+Public Const ThisIsAnUnitTestSelfTest As Boolean = True
+
+Public Sub TestError()
+
+    Dim a As Long
+
+    Try a = 3 / 0
+    Assert.Error("Wanted error. Ok if ok.")
+
+    Try a = 3 / 0 ' Throws Error.Code 26
+    Assert.ErrorWithCode(26, "Wanted error 26. Ok if ok.")
+    
+    Try a = 3 / 0
+    Assert.ErrorWithCode(5, "Wanted error 5. Ok if not ok.")
+    
+    ' No Error, AssertError has to report a failure
+    Assert.Error("No Error but error expected. Ok if not ok.")
+
+End
+'
+Public Sub TestDoACrash()
+
+    Dim a As Long
+
+    'Me.AddTrace("This will be a crash, then its ok")
+
+    'This is a crash
+    a = 3 / 0
+
+End

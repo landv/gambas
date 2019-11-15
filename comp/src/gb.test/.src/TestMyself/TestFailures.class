@@ -1,0 +1,17 @@
+' Gambas class file
+
+Inherits UnitTest
+
+Public Const ThisIsAnUnitTestSelfTest As Boolean = True
+
+Public Sub TestStringFailure()
+
+    Assert.EqualsString("Lisa", "Paul", "Intentional String failure.  Ok if not ok.")
+
+End
+
+Public Sub TestLongFailure()
+
+    Assert.EqualsLong(2, 3, "Intentional Long failure. Ok if not ok.")
+
+End

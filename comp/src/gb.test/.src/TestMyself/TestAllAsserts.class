@@ -1,0 +1,101 @@
+' Gambas class file
+
+Inherits UnitTest
+
+' Signal, that this is a selftest
+Public Const ThisIsAnUnitTestSelfTest As Boolean = True
+
+Public Sub TestAssert()
+
+    Assert.True(True, "Testing True")
+
+End
+
+Public Sub TestAssertEmpty()
+
+    Assert.Null("", "Empty with \"\"")
+    Assert.Null(Null, "Empty with Null")
+
+End
+
+Public Sub TestAssertEqualsFloat()
+
+    Dim f As Float
+
+    f = 0.55555555555555
+    Assert.EqualsFloat(f, 0.55555555555555, 0, "Check with equal floats")
+
+End
+
+Public Sub TestAssertEqualsLong()
+
+    Dim l As Long
+
+    l = 555555555555555555
+
+    Assert.EqualsLong(555555555555555555, l, "Check with two long")
+
+End
+
+Public Sub TestAssertEqualsDate()
+
+    Dim d As Date
+    Dim d2 As Date
+
+    d = Now()
+    d2 = d
+
+    Assert.EqualsDate(d, d2, "Check with equal dates")
+
+End
+
+Public Sub TestSkip()
+
+    Dim d As Date
+    Dim d2 As Date
+
+    d = Now()
+    d2 = d
+
+    Assert.EqualsDate(d, d2, "Check sth", Null, True, "Skipmessage")
+
+End
+
+
+Public Sub TestAssertEqualsObject()
+
+    Dim s As New TestCase("1", Me)
+    Dim s2 As Object
+
+    s2 = s
+
+    Assert.EqualsObject(s2, s, "Equal Objects")
+
+End
+ 
+Public Sub TestAssertEqualsString()
+
+    Dim s1, s2 As String
+
+    s1 = "blaahhh"
+    s2 = "blaahhh"
+
+    Assert.EqualsString(s1, s2, "Equal Strings")
+
+End
+
+Public Sub TestAssertNotNull()
+
+    Assert.NotNull("" & Null & 1, "String is not Null")
+    Assert.NotNull(Me, "Object is not Null")
+
+End
+
+Public Sub TestAssertError()
+
+    Dim r As Float
+    Try r = 2 / 0
+    Assert.Error("Test Error")
+
+End
+
