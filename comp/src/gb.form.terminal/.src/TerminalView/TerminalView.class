@@ -8,29 +8,61 @@ Public Const _Properties As String = "*,Border=True,AutoResize=True,Limit=1000,B
 Public Const _DrawWith As String = "-"
 Public Const _Group As String = "View"
 
+'' This event is raised when the process running in the terminal terminates.
 Event Kill
+'' This event is raised when the terminal wants to change its title.
 Event Title(Title As String)
+'' This event is raised when the terminal size has changed.
 Event Resize(W As Integer, H As Integer)
 
+'' Return or set if the terminal view has a border.
 Property Border As Boolean
+'' Return the current terminal screen attributes.
 Property Read Attr As TerminalAttr
 'Property Foreground As Integer
+'' Return the column position of the terminal cursor.
 Property Read Column As Integer
+'' Return the line position of the terminal cursor.
 Property Read Line As Integer
+'' Return or set the maximum size of the terminal screen buffer.
+''
+'' [[ warning
+'' The actual buffer size will not be lower than the screen lines count.
+'' ]]
 Property Limit As Integer
+'' Return or set the terminal type.
+''
+'' `"VT100"` is then only type that is supported at the moment.
 Property Type As String
+'' Return or set if the terminal displays its main screen or its alternate screen.
 Property AlternateScreen As Boolean
+'' Return or set if the terminal cursor blinks.
 Property Blink As Boolean
+'' Return the contents of the terminal.
 Property Read Text As String
+'' Return or set if the terminal view shows its scrollbar.
 Property ShowScrollBar As Boolean
+'' Return or set the terminal view background color.
 Property Background As Integer
+'' Return or set the terminal view foreground color.
 Property Foreground As Integer
+'' Return the terminal view lines count.
 Property Read Count As Integer
+'' Return or set the terminal title.
 Property Title As String
+'' Return of set if the terminal output is suspended.
 Property Suspended As Boolean
+'' Return or set if the terminal width automatically fits the terminal view.
 Property AutoResize As Boolean
+'' Return or set the terminal screen width in characters.
+''
+'' [[ warning
+'' If the [../autoresize] property is set, then the return value is the effective width, which may be different of what you have set.
+'' ]]
 Property ScreenWidth As Integer
+'' Return the terminal character width in pixels.
 Property Read CharWidth As Integer
+'' Return the terminal line height in pixels.
 Property Read LineHeight As Integer
 
 Private $hPanel As Panel
@@ -97,6 +129,8 @@ Private $bIgnoreNextAnimation As Boolean
 
 'Private $bDoubleFont As Boolean = True
 
+'' Create a new TerminalView control
+
 Public Sub _new()
   
   Me.Font = Font["monospace"]
@@ -145,6 +179,14 @@ Public Sub _new()
   
 End
 
+'' Reset the terminal.
+''
+'' - The terminal output is resumed if it was suspended.
+'' - The mouse mode is disabled.
+'' - All terminal modes are reset to their defaults.
+'' - The cursor position is reset, unless the ~KeepCursor~ argument is TRUE.
+'' - The terminal attributes are reset to their defaults.
+
 Public Sub Reset(Optional KeepCursor As Boolean)
   
   Dim X As Integer
@@ -169,12 +211,16 @@ Public Sub Reset(Optional KeepCursor As Boolean)
   
 End
 
+'' Clear the terminal screen contents, and reset the terminal.
+
 Public Sub Clear()
   
   $hScreen.Clear
   Reset()
   
 End
+
+'' Refresh the terminal contents.
 
 Public Sub Refresh()
   
@@ -408,6 +454,8 @@ Public Sub View_Draw()
   
 End
 
+'' Move the cursor to the specified position.
+
 Public Sub Goto(X As Integer, Y As Integer)
   
   $hScreen.Goto(X, Y)
@@ -446,6 +494,8 @@ Public Sub _EnsureVisibleAt((X) As Integer, Y As Integer)
   Endif
   
 End
+
+'' Ensure that the cursor position is visible, by scrolling the screen if necessary.
 
 Public Sub EnsureVisible()
   
@@ -831,7 +881,12 @@ Private Sub InitProcess()
   
 End
 
-' Running a command
+'' Execute a command inside the terminal view using the [/lang/exec] instruction and a virtual terminal.
+''
+'' - ~Command~ is the command string array passed to the EXEC instruction.
+'' - ~Environment~ is the command optional environment.
+''
+'' The [/comp/gb/process] object is returned.
 
 Public Sub Exec(Command As String[], Optional Environment As String[]) As Process
   
@@ -849,6 +904,13 @@ Public Sub Exec(Command As String[], Optional Environment As String[]) As Proces
   Return $hProcess
   
 End
+
+'' Execute a command inside the terminal view using the [/lang/shell] instruction and a virtual terminal.
+''
+'' - ~Command~ is the command string passed to the SHELL instruction.
+'' - ~Environment~ is the command optional environment.
+''
+'' The [/comp/gb/process] object is returned.
 
 Public Sub Shell(Command As String, Optional Environment As String[]) As Process
   
@@ -945,6 +1007,11 @@ Public Sub Process_Read()
   
 End
 
+'' Print something in the terminal output.
+''
+'' ## See also
+'' [../input]
+
 Public Sub Print(Text As String)
   
   UpdateScreen
@@ -1032,6 +1099,9 @@ Public Sub TimerScroll_Timer()
   
 End
 
+'' Kill the current process running inside the terminal.
+''
+'' It's the process run by the [../exec] or [../shell] command.
 
 Public Sub Kill()
   
@@ -1074,6 +1144,8 @@ Private Sub Blink_Write(Value As Boolean)
   
 End
 
+'' Copy the selected text of the terminal into the clipboard.
+
 Public Sub Copy()
   
   Dim sText As String
@@ -1082,6 +1154,8 @@ Public Sub Copy()
   If sText Then Clipboard.Copy(sText)
   
 End
+
+'' Paste the clipboard contents into the terminal, as if it has been entered through the keyboard.
 
 Public Sub Paste()
   
@@ -1094,6 +1168,11 @@ Public Sub Paste()
   Input(sText)
   
 End
+
+'' Send text to the terminal input.
+''
+'' ## See also
+'' [../print]
 
 Public Sub Input(Text As String)
 

@@ -1,17 +1,28 @@
 ' Gambas class file
 
+''' This class represents the attributes of a terminal character.
+
 Export
 Fast
 
 Private Enum FLAG_BG, FLAG_FG, FLAG_BOLD, FLAG_DIM, FLAG_REV, FLAG_UND, FLAG_BLK
 
+'' Return or set the character foreground color.
 Public Foreground As Integer = -1
+'' Return or set the character background color.
 Public Background As Integer = -1
+'' Return or set the character "bold" attribute.
 Public Bold As Boolean
+'' Return or set the character "dim" attribute.
 Public Dim As Boolean
+'' Return or set the character "underscore" attribute.
 Public Underscore As Boolean
+'' Return or set the character "reverse" attribute.
 Public Reverse As Boolean
+'' Return or set the character "blink" attribute.
 Public Blink As Boolean
+
+'' Reset the character flags.
 
 Public Sub Reset()
   
@@ -24,6 +35,8 @@ Public Sub Reset()
   Blink = False
   
 End
+
+'' Return if the character attributes are the default ones.
 
 Public Sub IsVoid() As Boolean
   

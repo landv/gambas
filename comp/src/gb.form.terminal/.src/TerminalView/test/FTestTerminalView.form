@@ -2,18 +2,20 @@
 
 { Form Form
   MoveScaled(0,0,140,98)
+  Background = &HFFFFFF&
   Icon = Picture["terminalview.png"]
   Arrangement = Arrange.Vertical
+  Margin = True
   { TerminalView1 TerminalView
     MoveScaled(3,3,62,37)
     Font = Font["Gambas,10"]
     Expand = True
-    Border = False
     Limit = 0
     Blink = True
   }
   { Panel1 HBox
     MoveScaled(2,45,120,5)
+    Visible = False
     { TextBox1 TextBox
       MoveScaled(1,0,43,5)
       Expand = True
