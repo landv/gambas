@@ -1,0 +1,42 @@
+' Gambas module file
+
+''' Keeps track of all tests
+
+'' Current Test Container
+Public ContainerName As String
+
+'' Current Test Method
+Public TestName As String
+
+'' Number of Testmethods
+Public MethodCount As Integer
+
+'' Number of Testmethods worked
+Public MethodDoneCount As Integer
+
+'' Counts single Tests(Asserts)
+Public Counter As Long
+
+'' Counts Not Ok
+Public NOKs As New Long[]
+'' Counts Ok
+Public OKs As New Long[]
+'' Counts Skip
+Public SKIPs As New Long[]
+'' Counts Todo
+Public TODOs As New Long[]
+
+'' If Bailout happened
+Public Bailout As Boolean
+
+Public Sub Reset()
+
+    MethodCount = 0
+    MethodDoneCount = 0
+    Counter = 0
+    NOKs.Clear
+    Oks.Clear
+    Skips.Clear
+    TODOs.Clear
+
+End

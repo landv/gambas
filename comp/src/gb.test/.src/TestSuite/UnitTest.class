@@ -1,0 +1,240 @@
+' Gambas class file
+
+Export
+
+Private Const MaxStringLen As Integer = 50
+Private Const MaxMessageLen As Integer = 200
+
+''' This class identifies a test container. A test container is a
+''' class that holds different TestMethods, it has to inherit UnitTest.
+''' The static procedure Unittest.Main() starts test(s).
+
+'' Name of this testcontainer
+Property Read Name As String
+
+'' The names of the different test case methods in this test container
+Property Read CaseNames As String[]
+Private $CaseNames As String[]
+
+'' Runs all tests in all testcontainers and prints the result to the console.
+'' With UnitTest.Main(NameTestcontainer) the tests can be restricted to only those of a single test container.
+'' With UnitTest.Main(NameTestcontainer, NameProcedure) only a single test can be accomplished.
+
+Static Public Sub Main(Optional NameTestContainer As String, Optional NameProcedure As String, Optional DoSelfTest As Boolean)
+
+    'Track.Initialize()
+    RunTests(NameTestContainer, NameProcedure, DoSelfTest)
+    PrintSummary()
+
+End
+
+Public Sub _new()
+
+    Dim sSymbols As String[]
+    Dim sSymbol As String
+
+    ' ------------------------------------------------- Fill Cases by listing all Testmethods
+    $CaseNames = New String[]
+    sSymbols = Object.Class(Me).Symbols
+
+    For Each sSymbol In sSymbols
+        If Left(sSymbol, 4) = "Test" Then
+            $CaseNames.Add(sSymbol)
+        Endif
+    Next
+
+End
+
+Static Private Sub PrintSummary()
+
+    Print ""
+
+    If Track.NOKs.Count > 0 Then Print "# Failed tests: " & PrintNumbers(Track.NOKs)
+    If Track.SKIPs.Count > 0 Then Print "# Skipped tests: " & PrintNumbers(Track.SKIPs)
+
+    'Plan
+    If Track.Counter > 0 Then
+        Print "# 1.." & Track.Counter
+    Else
+        Print "# 0.." & Track.Counter
+    Endif
+    
+    If Track.NOKs.Count > 0 Or If Track.Counter = 0 Then
+        Print "# ------- No success!  -------" & gb.Lf
+    Else If Track.Counter > 0 
+        Print "# ------- Success!  -------" & gb.Lf
+    Endif
+
+    Track.Reset()
+
+End
+
+Static Private Function PrintNumbers(Numbers As Long[]) As String
+
+    Dim Number As Long
+
+    Dim s As New String[]
+
+    For Each Number In Numbers
+        s.Add(Number)
+    Next
+
+    Return s.Join(",")
+
+End
+
+'
+'' Run all tests, optional limited by Container or TestCaseName. Track contains .
+
+Static Private Function RunTests(SingleTestContainer As String, Optional NameProcedure As String, Optional DoSelfTest As Boolean)
+
+    Dim ContainerName As String
+    Dim Container As UnitTest
+    Dim Suite As New TestSuite
+
+    'FIXME: If included as component then TestContainers can only be loaded if they contain the magic word Export
+
+    For Each ContainerName In GetAllTestContainerNames(SingleTestContainer, DoSelfTest)
+        Container = Object.New(ContainerName)
+        Suite.AddAllTestCases(Container, NameProcedure)
+    Next
+
+    Suite.Run()
+
+End
+
+Static Function GetAllTestContainerNames(Optional SingleTestContainer As String, Optional DoSelfTest As Boolean) As String[]
+
+    Dim TestClass As Class
+    Dim TestContainernames As New String[]
+    Dim sNames As New String[]
+    Dim sName As String
+
+    If Not DoSelfTest Then
+        sNames = Dir("../.gambas")
+    Else
+        sNames = Dir(".gambas")
+    Endif
+
+    Assert sNames
+
+    sNames.Sort
+    For Each sName In sNames
+        Try TestClass = Class.Load(sName)
+        If TestClass Then
+            If TestClass.Parent Then
+                If TestClass.Parent.Name = "UnitTest" Then
+                    'Print sName
+                    GoSub AddClass
+                Endif
+            Endif
+        Endif
+        ' FIXME: Class.Stat(sName).Parent = "UnitTest" if included as component
+        ' This does not work if gb.test is included as component
+        ' If Class.Stat(sName).Parent = "UnitTest" Then
+        '     GoSub AddClass
+        ' Endif
+    Next
+
+    Goto Done
+
+AddClass:
+
+    Try TestClass = Class.Load(sName)
+    If TestClass Then
+        'FIXME: Class.Stat(sName).Name does not work if included as component
+        'sName = Class.Stat(sName).Name
+        If Not TestContainernames.Exist(sName) Then
+            If testclass.Symbols.Exist("ThisIsAnUnitTestSelfTest")
+                If DoSelfTest = True Then
+                    GoSub AddTestContainer
+                Endif
+            Else
+                GoSub AddTestContainer
+            Endif
+        Endif
+    Endif
+
+    Return
+
+AddTestContainer:
+
+    If SingleTestContainer = Null Then
+        TestContainernames.Add(sName)
+    Else
+        If Lower(sName) = Lower(SingleTestContainer) Then
+            TestContainernames.Add(sName)
+        Endif
+    Endif
+
+    Return
+
+Done:
+    TestContainernames.Sort
+    ' Print "# These TestContainer will be executed:\n#\n# " & TestContainernames.Join("\n# ") & "\n"
+    Return TestContainernames
+
+End
+
+' Run the specified test case methods in this test container
+Public Sub _RunCase(oCase As ITestCase)
+
+    Dim MethodName As String
+    Dim hClass As Class
+
+    ' ------------------------------------------------- Iterate through test methods
+    hClass = Object.Class(Me)
+
+    Assert $CaseNames
+
+    For Each MethodName In $CaseNames
+        If hClass[MethodName].Kind = Class.Method Then
+            If MethodName = oCase.Name Then
+                Try Object.Call(Me, MethodName)
+                If Error Then
+                    If Error.Code > 0 Then
+                        Inc Track.Counter
+                        Track.NOKs.Add(Track.Counter)
+                        Print "not ok " & Track.Counter & " " &
+                            Track.ContainerName & ":" & Track.TestName & " crashed with " & Error.Text
+                        Error.Clear
+                    Endif
+                Endif
+            Endif
+        Endif
+    Next
+
+End Sub
+
+''Initialize the test fixture
+Public Sub SetupEach()
+
+End Sub
+
+''Destroy the test fixture
+Public Sub TearDownEach()
+
+End Sub
+
+''Initialize the test fixture for container
+Public Sub SetupContainer()
+
+End Sub
+
+''Destroy the test fixture for container
+Public Sub TearDownContainer()
+
+End Sub
+
+Private Function CaseNames_Read() As String[]
+
+    Return $CaseNames
+
+End
+
+'' Returns the classname of the TestContainer
+Private Function Name_Read() As String
+
+    Return Object.Class(Me).Name
+
+End

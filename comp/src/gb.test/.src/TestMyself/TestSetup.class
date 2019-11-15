@@ -1,0 +1,39 @@
+' Gambas class file
+
+Inherits UnitTest
+
+Public Const ThisIsAnUnitTestSelfTest As Boolean = True
+
+Public Sub SetupContainer()
+    Assert.Note("Setup Container")
+End
+
+Public Sub TeardownContainer()
+    Assert.Note("Teardown Container")
+End
+
+Public Sub SetupEach()
+    Assert.Note("Setup Each")
+End
+
+Public Sub TeardownEach()
+    Assert.Note("Teardown Each")
+End
+
+Public Sub TestStringNull()
+
+    Assert.Null(Null, "Test Null")
+
+End
+
+Public Sub TestStringOk()
+
+    Assert.EqualsString("ja", "ja", "discussion1")
+
+End
+
+Public Sub NameOfMethodDoesNotStartWithTest()
+
+    Assert.EqualsString("no", "no", "discussion2")
+
+End

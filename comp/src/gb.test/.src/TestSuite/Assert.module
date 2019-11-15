@@ -1,0 +1,207 @@
+' Gambas module file
+
+Export
+
+Public Sub Note(sMessage As String)
+
+    PrintBody(sMessage)
+
+End
+'' Asserts that Value equals Expected, sMessage contains Description, Body optional larger Text, Use Skipmessage also for Todo
+
+Public Sub Equals(Expected As Variant, Value As Variant, Optional sMessage As String, Optional Body As String, Optional Skip As Boolean, Optional Skipmessage As String, Optional Todo As Boolean)
+
+    Test(Value = Expected, sMessage, Body, Skip, Skipmessage, Todo)
+
+End
+
+'' Asserts that the expected Float value equals the actual Float value with delta precision.
+'' Expected: the expected value
+'' Value: the actual value
+'' Delta: tolerated precision
+'' sMessage: optional message describing the asserted condition
+
+Public Sub EqualsFloat(Expected As Float, Value As Float, Delta As Float, Optional sMessage As String, Optional Body As String, Optional Skip As Boolean, Optional Skipmessage As String, Optional Todo As Boolean)
+
+    Test(Abs(Expected - Value) <= Delta, sMessage, Body, Skip, Skipmessage, Todo)
+
+End
+
+Public Sub EqualsLong(Expected As Long, Value As Long, Optional sMessage As String, Optional Body As String, Optional Skip As Boolean, Optional Skipmessage As String, Optional Todo As Boolean)
+
+    Test(Expected = Value, sMessage, Body, Skip, Skipmessage, Todo)
+
+End
+
+Public Sub EqualsInteger(Expected As Integer, Value As Integer, Optional sMessage As String, Optional Body As String, Optional Skip As Boolean, Optional Skipmessage As String, Optional Todo As Boolean)
+
+    Test(Expected = Value, sMessage, Body, Skip, Skipmessage, Todo)
+
+End
+
+Public Sub EqualsDate(Expected As Date, Value As Date, Optional sMessage As String, Optional Body As String, Optional Skip As Boolean, Optional Skipmessage As String, Optional Todo As Boolean)
+
+    Test(Expected = Value, sMessage, Body, Skip, Skipmessage, Todo)
+
+End
+
+Public Sub EqualsObject(Expected As Object, Value As Object, Optional sMessage As String, Optional Body As String, Optional Skip As Boolean, Optional Skipmessage As String, Optional Todo As Boolean)
+
+    Test(Expected = Value, sMessage, Body, Skip, Skipmessage, Todo)
+
+End
+
+Public Sub EqualsString(Expected As String, Value As String, Optional sMessage As String, Optional Body As String, Optional Skip As Boolean, Optional Skipmessage As String, Optional Todo As Boolean)
+
+    Test(Expected = Value, sMessage, Body, Skip, Skipmessage, Todo)
+
+End
+
+Public Sub NotEquals(Expected As Variant, Value As Variant, Optional sMessage As String, Optional Body As String, Optional Skip As Boolean, Optional Skipmessage As String, Optional Todo As Boolean)
+
+    Test(Value <> Expected, sMessage, Body, Skip, Skipmessage, Todo)
+
+End
+
+Public Sub Null(Value As Variant, Optional sMessage As String, Optional Body As String, Optional Skip As Boolean, Optional Skipmessage As String, Optional Todo As Boolean)
+
+    Test(Value = Null, sMessage, Body, Skip, Skipmessage, Todo)
+
+End
+
+Public Sub NotNull(Value As Variant, Optional sMessage As String, Optional Body As String, Optional Skip As Boolean, Optional Skipmessage As String, Optional Todo As Boolean)
+
+    Test(Value <> Null, sMessage, Body, Skip, Skipmessage, Todo)
+
+End
+
+Public Sub True(Value As Variant, Optional sMessage As String, Optional Body As String, Optional Skip As Boolean, Optional Skipmessage As String, Optional Todo As Boolean)
+
+    Test(Value = True, sMessage, Body, Skip, Skipmessage, Todo)
+
+End
+
+Public Sub False(Value As Variant, Optional sMessage As String, Optional Body As String, Optional Skip As Boolean, Optional Skipmessage As String, Optional Todo As Boolean)
+
+    Test(Value = False, sMessage, Body, Skip, Skipmessage, Todo)
+
+End
+
+Public Sub Error(Optional sMessage As String, Optional Body As String, Optional Skip As Boolean, Optional Skipmessage As String, Optional Todo As Boolean)
+
+    If DetectError() <> 0 Then
+        Test(True, sMessage, Body, Skip, Skipmessage, Todo)
+    Else
+        Test(False, sMessage, Body, Skip, Skipmessage, Todo)
+    Endif
+
+End
+
+Public Sub ErrorWithCode(Code As Integer, Optional sMessage As String, Optional Body As String, Optional Skip As Boolean, Optional Skipmessage As String, Optional Todo As Boolean)
+
+    Dim ReceivedCode As Integer
+
+    ReceivedCode = DetectError()
+    Error.Clear
+
+    If ReceivedCode <> 0 Then
+        If ReceivedCode = Code Then
+            Test(True, sMessage, Body, Skip, Skipmessage, Todo)
+        Else
+            Body = "Wrong error code, expected " & Code & ", but got " & ReceivedCode & gb.lf
+            Test(False, sMessage, Body, Skip, Skipmessage, Todo)
+        Endif
+    Else
+        Test(False, sMessage, Body, Skip, Skipmessage, Todo)
+    Endif
+
+End
+
+Private Function DetectError() As Integer
+
+    Dim Errorcode As Integer
+
+    'If Error Then
+    Errorcode = Error.Code
+    Error.Clear
+    If Errorcode <> 0 Then
+        Return Errorcode
+    Endif
+    'Endif
+
+    Return 0
+
+End
+
+' ------------------------------------------------- End Of Assertions
+
+Private Sub Test(Evaluated As Boolean, sMessage As String, Body As String, Skip As Boolean, Skipmessage As String, Todo As Boolean)
+
+    Inc Track.Counter
+
+    If Error Then
+        If Error.Code > 0
+            Body = "Error found: " & Error.Text
+            Track.NOKs.Add(Track.Counter)
+            Error.Clear
+            Print "not ok " & Track.Counter & " - " & sMessage
+            Goto TheEnd
+        Endif
+    Endif
+
+    If Skip = True Then
+        SkipTest(sMessage, Skipmessage)
+        Goto TheEnd
+    Endif
+
+    If Todo = True Then
+        TodoTest(sMessage, Skipmessage)
+        Goto TheEnd
+    Endif
+
+    If Evaluated = True Then
+        Track.OKs.Add(Track.Counter)
+        Print "ok " & Track.Counter & " - " & sMessage
+    Else
+        Track.NOKs.Add(Track.Counter)
+        Print "not ok " & Track.Counter & " - " & sMessage
+        If Body <> Null Then
+            Body = "In " & Track.ContainerName & ":" & Track.TestName & gb.lf & Body
+        Else
+            Body = "In " & Track.ContainerName & ":" & Track.TestName & gb.lf
+        Endif
+    Endif
+
+TheEnd:
+
+    PrintBody(Body)
+
+End
+
+Private Sub SkipTest(sMessage As String, Skipmessage As String)
+
+    Track.Skips.Add(Track.Counter)
+    Print "ok " & Track.Counter & " - " & sMessage & " # skip " & Skipmessage
+
+End
+
+Private Sub TodoTest(sMessage As String, Skipmessage As String)
+
+    Track.OKs.Add(Track.Counter)
+    Track.TODOs.Add(Track.Counter)
+    Print "not ok " & Track.Counter & " - " & sMessage & " # TODO " & Skipmessage
+
+End
+
+Private Sub PrintBody(Body As String)
+
+    Dim sLines As String[]
+    Dim sLine As String
+
+    sLines = Split(Trim(Body), "\n")
+
+    For Each sLine In sLines
+        Print "# " & sLine
+    Next
+
+End

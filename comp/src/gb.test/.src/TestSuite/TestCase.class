@@ -1,0 +1,63 @@
+' Gambas class file
+
+''' The TestCase class is responsible for executing a specific test case.
+''' The test case to be executed is specified through the Name and TestContainer
+''' properties in the class. The Run method will call the appropriate Setup
+''' and TearDown methods for the test case as well as executing the test case
+''' method itself.
+
+Inherits ITestCase
+
+'' Name of the test case
+Property Read Name As String
+
+'' Reference to the test container containing the test methods to be executed.
+Property Read Container As UnitTest
+
+Private $Name As String
+Private $MyContainer As UnitTest
+
+'' Initializes the TestCase.  Used in lieu of a constructor.
+Public Sub _new(sName As String, oTestContainer As UnitTest)
+
+    Assert sName <> Null
+    $Name = sName
+    Assert oTestContainer
+    $MyContainer = oTestContainer
+
+End Sub
+
+'' Name of the test case
+Function Name_Read() As String
+
+    Assert $Name <> Null
+    Return $Name
+
+End
+
+'Create the fixture, run the test and collect the results in Track
+Public Sub Run()
+
+    'Track.StartTest(Me)
+
+    Assert $MyContainer
+    $MyContainer.SetupEach
+    $MyContainer._RunCase(Me)
+    $MyContainer.TearDownEach
+
+    'Track.EndTest
+
+Catch
+    
+    Print "Bail out! " & "Unittest stopped with error \"" & Error.Text & "\" caused by " & Track.ContainerName & "." & Track.TestName & "."
+    Print "# ------- No success!  -------"
+    Quit
+
+End Sub
+
+Private Function Container_Read() As UnitTest
+
+    Assert $MyContainer
+    Return $MyContainer
+
+End
