@@ -447,12 +447,12 @@ Private Sub SendHeaders()
 
   $hSession.PrintHeader("Date", FormatDate(Now))
 
-  $hSession.PrintHeader("From", FormatAddress($sFrom))
+  $hSession.PrintHeader("From", FormatAddress($sFrom), True)
 
   $hSession.PrintHeader("Subject", $sSubject)
 
-  If $aTo.Count Then $hSession.PrintHeader("To", $aTo.Join(","))
-  If $aCc.Count Then $hSession.PrintHeader("CC", $aCc.Join(","))
+  If $aTo.Count Then $hSession.PrintHeader("To", $aTo.Join(","), True)
+  If $aCc.Count Then $hSession.PrintHeader("CC", $aCc.Join(","), True)
 
   If $sInReplyTo Then
     $hSession.PrintHeader("References", "<" & $sInReplyTo & ">")

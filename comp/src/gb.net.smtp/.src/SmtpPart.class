@@ -69,7 +69,7 @@ Public Sub SetBoundary(hSession As SmtpSession)
   Next
   
   Inc hSession._Count
-  Boundary = "|" & sBoundary & Hex$(hSession._Count, 2) & "|"
+  Boundary = "|_=" & sBoundary & Hex$(hSession._Count, 2) & "=_|"
   
 End
 

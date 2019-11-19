@@ -88,61 +88,112 @@ Public Sub PrintQuoted(hStream As Stream, sStr As String, bDebug As Boolean)
 
 End
 
-Public Sub PrintQuotedHeader(hStream As Stream, sHeader As String, sStr As String, bDebug As Boolean)
+Public Sub PrintQuotedHeader(hStream As Stream, sHeader As String, sStr As String, bAddress As Boolean, bDebug As Boolean)
 
   Dim I As Integer
   Dim sCar As String
-  Dim J As Integer
-  Dim sEncode As String
+  'Dim J As Integer
+  'Dim sEncode As String
   Dim W As Integer
   Dim bEncode As Boolean
+  Dim bAddressMode As Boolean
+  Dim bEncoded As Boolean
   
-  sHeader &= ": =?utf-8?q?"
+
+  ' Try sStr = Conv(sStr, "utf-8", "iso-8859-1")
+  ' If Not Error Then
+  '   sHeader &= ": =?iso-8859-1?q?"
+  ' Else
+  ' sHeader &= ": =?utf-8?q?"
+  ' Endif
+  
+  sHeader &= ": "
   Print #hStream, sHeader;
   If bDebug Then Error sHeader;
   W = Len(sHeader)
 
-  For I = 1 To String.Len(sStr)
+  For I = 1 To Len(sStr)
+  
+    If bAddress Then
+      If Mid$(sStr, I, 2) = " <" Then 
+        GoSub CLOSE_ENCODED
+        bAddressMode = True
+      Endif
+    Endif
     
-    sCar = String.Mid$(sStr, I, 1)
+    sCar = Mid$(sStr, I, 1)
     
-    bEncode = False
-    If Len(sCar) = 1 Then
+    If bAddressMode And If IsAscii(sCar) Then
+      
+      If (W + Len(sCar)) > 72 Then
+        Print #hStream, "="
+        If bDebug Then Error "="
+        Print #hStream, " ";
+        If bDebug Then Error " ";
+        W = 1
+      Endif
+      
+    Else
+      
+      bEncode = False
       If sCar = " " Then
         sCar = "_"
       Else If Asc(sCar) < 33 Or If Asc(sCar) > 126 Or If sCar = "_" Or If sCar = "=" Or If sCar = "?" Then
         bEncode = True
       Endif
-    Else
-      bEncode = True
-    Endif
-    
-    If bEncode Then
-      sEncode = ""
-      For J = 1 To Len(sCar)
-        sEncode &= "=" & Hex$(Asc(sCar, J), 2)
-      Next
-      sCar = sEncode
-    Endif
-    
-    If (W + Len(sCar)) > 72 Then
-      Print #hStream, "?="
-      If bDebug Then Error "?="
-      Print #hStream, " =?utf-8?q?";
-      If bDebug Then Error " =?utf-8?q?";
-      W = Len(" =?utf-8?q?")
+      
+      If bEncode Then sCar = "=" & Hex$(Asc(sCar), 2)
+      
+      If (W + Len(sCar)) >= 62 Then
+        GoSub CLOSE_ENCODED
+        Print #hStream
+        Print #hStream, " ";
+        If bDebug Then 
+          Error
+          Error " ";
+        Endif
+        W = 1
+      Endif
+      
+      If Not bEncoded Then
+        bEncoded = True
+        Print #hStream, "=?utf-8?q?";
+        If bDebug Then Error "=?utf-8?q?";
+        W += Len("=?utf-8?q?")
+      Endif
+
     Endif
     
     Print #hStream, sCar;
     If bDebug Then Error sCar;
     W += Len(sCar)
     
+    If bAddress Then
+      If I > 1 And If Mid$(sStr, I - 1, 2) = ">," Then bAddressMode = False
+    Endif
+    
   Next
   
-  Print #hStream, "?="
-  If bDebug Then Error "?="
+  If bEncoded Then
+    Print #hStream, "?="
+    If bDebug Then Error "?="
+  Else
+    Print #hStream
+    If bDebug Then Error 
+  Endif
   
   Flush #hStream
+  Return
+  
+CLOSE_ENCODED:
+
+  If bEncoded Then
+    Print #hStream, "?=";
+    If bDebug Then Error "?=";
+    W += Len("?=")
+    bEncoded = False
+  Endif
+  Return
 
 End
 

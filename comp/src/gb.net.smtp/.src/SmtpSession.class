@@ -127,7 +127,7 @@ Private Function Connected_Read() As Boolean
 
 End
 
-Public Sub PrintHeader(sHeader As String, sStr As String)
+Public Sub PrintHeader(sHeader As String, sStr As String, Optional bAddress As Boolean)
   
   If Not sStr Or If IsAscii(sStr) Then
     If sStr Not Begins "=?utf-8?q?" Or If sStr Not Ends "?=" Then
@@ -136,7 +136,7 @@ Public Sub PrintHeader(sHeader As String, sStr As String)
     Endif
   Endif
 
-  Encode.PrintQuotedHeader($hStream, sHeader, sStr, _Debug)
+  Encode.PrintQuotedHeader($hStream, sHeader, sStr, bAddress, _Debug)
   
 End
 
