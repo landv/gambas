@@ -29,6 +29,7 @@ Property Border As Boolean
 Private $hDrawingArea As DrawingArea
 Private $hPicture As Picture
 Private $sText As String
+Private $sActualText As String
 Private $bBorder As Boolean
 Private $sMenu As String
 Private $hButton As Button
@@ -81,6 +82,8 @@ Private Sub Text_Write(Value As String)
   Dim iPos As Integer
 
   $sText = Value
+  $sActualText = $sText
+  
   $iShortcutPos = 0
   
   Do
@@ -97,8 +100,11 @@ Private Sub Text_Write(Value As String)
     Endif
     $hButton.Text = String.Mid$($sText, iPos, 2)
     $iShortcutPos = iPos
+    $sActualText = String.Left($sText, iPos - 1) & String.Mid($sText, iPos + 1)
     Break
   Loop
+  
+  $sActualText = Replace($sActualText, "&&", "&")
   
   UpdateSize
 
@@ -267,7 +273,7 @@ Private Sub UpdateSize()
   Dim W As Integer
   
   If $bAutoResize Then 
-    If $sText Then W = Me.Font.TextWidth($sText) + Desktop.Scale
+    If $sActualText Then W = Me.Font.TextWidth($sActualText) + Desktop.Scale
     If $hPicture Then W += $hPicture.W + Desktop.Scale
     If $bArrow Then W += Desktop.Scale * 2
     W += Desktop.Scale
@@ -451,15 +457,14 @@ Public Sub DrawingArea_Draw()
     Endif
   Endif
   
-  If $sText Then 
+  If $sActualText Then 
     
     iFg = Style.ForegroundOf(Me)
     If Not Me.Enabled Then iFg = Color.Merge(Color.ButtonBackground, iFg)
     If bMenu Then iFg = Color.SelectedForeground
     Paint.Background = iFg
     
-    sText = $sText
-    If $iShortcutPos Then sText = String.Left($sText, $iShortcutPos - 1) & String.Mid$($sText, $iShortcutPos + 1)
+    sText = $sActualText
     
     X = DS
     W = Me.W - DS * 2

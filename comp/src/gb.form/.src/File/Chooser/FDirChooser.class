@@ -286,7 +286,7 @@ End
 Private Sub UpdateBookmarkButton()
   
   If IsBookmarkVisible() And If $hCurrentBookmark Then
-    btnBookmark.Text = $hCurrentBookmark.Name
+    btnBookmark.Text = Replace($hCurrentBookmark.Name, "&", "&&")
     btnBookmark.Picture = Picture[$hCurrentBookmark.Icon]
     btnRoot.Picture = Picture["icon:/small/system"]
     mnuEditBookmark.Enabled = $hBookmarkList.GetEditableCount() > 0
@@ -935,7 +935,7 @@ Private Sub AddBookmarkMenu(hBookmark As CBookmark)
   
   hMenu = New Menu(mnuBookmark) As "mnuBookmark"
   hMenu.Tag = hBookmark.Link
-  hMenu.Text = hBookmark.Name
+  hMenu.Text = Replace(hBookmark.Name, "&", "&&")
   hMenu.Picture = Picture[hBookmark.Icon]
   hMenu.Enabled = hBookmark.Exist()
   
