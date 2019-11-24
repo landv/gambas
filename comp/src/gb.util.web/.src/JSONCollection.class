@@ -27,3 +27,16 @@ Public Sub _next() As Variant
   If Not Enum.Stopped Then Return _get(Me.Key)
   
 End
+
+Public Sub Copy() As JSONCollection
+  
+  Dim hCopy As New JSONCollection
+  Dim vVal As Variant
+  
+  For Each vVal In Me
+    hCopy[Me.Key] = vVal
+  Next
+  
+  Return hCopy
+  
+End
