@@ -1,5 +1,16 @@
 ' Gambas class file
 
+''' This class provides the constants that defined the arrangement mode of a container.
+
 Export
 
-Public Enum None, Vertical, Horizontal, Row, Column
+'' This constant is used when a container does not arrange its contents.
+Public Const None As Integer = 0
+'' This constant is used for a vertical arrangement.
+Public Const Vertical As Integer = 1
+'' This constant is used for an horizontal arrangement.
+Public Const Horizontal As Integer = 2
+'' This constant is used for arranging controls in rows.
+Public Const Row As Integer = 3
+'' This constant is used for arranging controls in columns.
+Public Const Column As Integer = 4

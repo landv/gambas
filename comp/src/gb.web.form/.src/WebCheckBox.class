@@ -1,5 +1,7 @@
 ' Gambas class file
 
+''' This class implements a check-box control.
+
 Export
 Inherits WebControl
 
@@ -9,14 +11,22 @@ Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "WebButton"
 Public Const _DefaultEvent As String = "Click"
 
+'' This event is raised when the check-box is toggled.
 Event Click
 
+'' Return or set if the control is checked.
 Property Value, Checked As Boolean
+'' Return or set the text displayed beside the check mark.
 Property Text As String
 
 Private $sText As String
 Private $bChecked As Boolean
 
+'' Create a new WebCheckBox control.
+
+Public Sub _new()
+  
+End
 
 Private Function Text_Read() As String
 

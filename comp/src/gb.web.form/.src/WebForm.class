@@ -6,7 +6,7 @@ Create Static
 Inherits WebContainer
 
 Public Const _IsForm As Boolean = True
-Public Const _HiddenControls As String = "WebControl,WebForm,WebWindow,Timer"
+Public Const _HiddenControls As String = "WebControl,WebForm,Timer"
 Public Const _Properties As String = "*,Title,Resizable,Persistent"
 Public Const _DefaultEvent As String = "Open"
 
@@ -215,10 +215,10 @@ Catch
   
   Response.Cancel
   Response.Begin
-  Print "<html><body><script type\"text/javascript\">"
+  If sPath <> "x" Then Print "<html><body><script type\"text/javascript\">"
   Print "console.log("; JS(sErr); ");"
   Print "alert("; JS(sErr); ");"
-  Print "</script></body></html>"
+  If sPath <> "x" Then Print "</script></body></html>"
   Response.End
   'System.Log("End request")
   
@@ -274,10 +274,17 @@ Public Sub _ready()
   Endif
   
   _Loaded = True
+  
+  'If Me.Parent And If Then Raise Open
 
 End
 
 Public Sub _BeforeRender()
+  
+  If Me.Parent Then 
+    Super._BeforeRender()
+    Return
+  Endif
   
   Print "<div class=\"gw-form";
   If Me.Class Then Print " "; Me.Class;
@@ -587,6 +594,11 @@ Public Sub Hide()
   
   Dim hWindow As WebControl
   
+  If Me.Parent Then
+    Super.Hide()
+    Return
+  Endif
+  
   If _Window = 0 Then Return
   
   hWindow = WebControl.FromId(_Window)
@@ -616,7 +628,7 @@ End
 
 Public Sub Show()
 
-  If Me.Parent Then Error.Raise("Form is embedded")
+  If Me.Parent Then Return
   DoShow  
   Raise Open
   
@@ -633,7 +645,7 @@ Public Sub ShowModal(Optional Parent As WebControl)
   If hWindow Then
     hWindow.Modal = True
     If IsMissing(Parent) Then Parent = Last
-    If Parent Then hWindow.ParentControl = Parent
+    If Parent Then hWindow.ParentControl = Parent.Name
   Endif
   
   Raise Open
@@ -651,7 +663,7 @@ Public Sub ShowPopup(Control As WebControl, Optional Alignment As Integer = Alig
   hWindow.Child = Me
   hWindow.Resizable = $bResizable
   hWindow.PopupAlignment = Alignment
-  hWindow.PopupControl = Control
+  hWindow.PopupControl = Control.Name
   hWindow.Modal = True  
   
   _Window = hWindow.Id
@@ -659,8 +671,6 @@ Public Sub ShowPopup(Control As WebControl, Optional Alignment As Integer = Alig
   Raise Open
   
 End
-
-
 
 Public Sub Move(X As String, Y As String, Optional Width As String, Optional Height As String)
   
@@ -788,7 +798,8 @@ Private Sub Height_Write(Value As String)
 End
 
 Public Sub _GetWindowContainer() As WebContainer
-  
+
+  'If Me.Parent Then Return Me.Form._GetWindowContainer()  
   Return $hWindowContainer
   
 End
@@ -817,7 +828,7 @@ End
 Private Function PopupParent_Read() As WebControl
 
   Dim hWindow As WebWindow = WebForm.FromId(Me._Window)
-  If hWindow Then Return hWindow.PopupControl
+  If hWindow Then Return WebControl.FromName(hWindow.PopupControl)
 
 End
 

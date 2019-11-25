@@ -10,8 +10,13 @@ Public Const _Properties As String = "Class,Width{WebCoord},Height{WebCoord},Vis
 Public Const _Family As String = "WebForm"
 Public Const _DefaultEvent As String = "Render"
 
+'' This event is raised just after the rendering of the control, so that you can add your own HTML contents.
 Event Render
+'' This event is raised after a message box has been closed.
+'' - ~Source~ is the source control, i.e. the control owning the method that opened the message box.
+'' - ~Action~ is the text of the message box button that has been clicked.
 Event Message(Source As WebControl, Action As String)
+
 Event Dialog(Dialog As WebForm, Result As Variant)
 
 '' Return the server control identifier.
@@ -110,6 +115,7 @@ Private $bNoBorder As Boolean
 Private $sClass As String
 Private $sTooltip As String
 
+'' Create a new WebControl.
 
 Public Sub _new(Optional Parent As WebContainer)
   
@@ -190,11 +196,15 @@ Private Function Id_Read() As Integer
 
 End
 
+'' Return a WebControl from its server identifier.
+
 Static Public Sub FromId(Id As Integer) As WebControl
   
   Return $cFromId[Id]
   
 End
+
+'' Return a WebControl from its name.
 
 Static Public Sub FromName(Name As String) As WebControl
   
@@ -375,8 +385,6 @@ Public Sub _EndStyleSheet()
   
 End
 
-
-
 Private Function Expand_Read() As Boolean
 
   Return $bExpand
@@ -471,6 +479,8 @@ Public Sub Style_Change()
   
 End
 
+'' Return if the control or one of its parent is hidden.
+
 Public Sub IsHidden() As Boolean
   
   Dim hCtrl As WebControl
@@ -494,6 +504,7 @@ Public Sub _CanRefresh() As Boolean
   
 End
 
+'' Refresh the control.
 
 Public Sub Refresh()
   
@@ -667,6 +678,10 @@ Private Sub Ignore_Write(Value As Boolean)
 
 End
 
+'' Set the focus on the control.
+''
+'' - ~Highlight~ is an optional argument that specify if the control contents must be highlighted. It usually works only for TextBox or TextArea controls.
+
 Public Sub SetFocus(Optional Highlight As Boolean)
 
   Dim sName As String
@@ -744,6 +759,8 @@ Static Public Sub _GetColor(iCol As Integer) As String
 
 End
 
+'' Raise the control.
+
 Public Sub Raise()
 
   Dim hParent As WebContainer
@@ -752,6 +769,8 @@ Public Sub Raise()
   If hParent Then hParent._Raise($sName)
   
 End
+
+'' Lower the control.
 
 Public Sub Lower()
 
@@ -774,6 +793,8 @@ Static Public Sub _GetNames() As String
   
 End
 
+'' Delete the control
+
 Public Sub Delete()
 
   Dim hParent As WebContainer
@@ -790,17 +811,27 @@ Public Sub Delete()
   
 End
 
+'' Show the control.
+''
+'' Setting the [../visible] property to TRUE has the same effect.
+
 Public Sub Show()
   
   Me.Visible = True
   
 End
 
+'' Hide the control.
+''
+'' Setting the [../visible] property to FALSE has the same effect.
+
 Public Sub Hide()
   
   Me.Visible = False
   
 End
+
+'' Return the custom data associated with the string ~Key~.
 
 Public Sub _get(Key As String) As Variant
   
@@ -813,6 +844,8 @@ Public Sub _get(Key As String) As Variant
   
 End
 
+'' Associate the some custom data with the string ~Key~.
+
 Public Sub _put(Value As Variant, Key As String)
   
   Dim cData As Collection
@@ -824,6 +857,8 @@ Public Sub _put(Value As Variant, Key As String)
   Session[$sName & ":data"] = cData
   
 End
+
+'' Clear all custom data associated with the control
 
 Public Sub Reset()
   
@@ -904,11 +939,14 @@ Private Sub Name_Write(Value As String)
 
 End
 
-Public Sub AddClass(sClass As String)
+'' Add a specific class to the [../class] property.
+
+Public Sub AddClass((Class) As String)
 
   Dim aClass As String[]
+  Dim sClass As String
   
-  sClass = Trim(sClass)
+  sClass = Trim(Class)
   If Not sClass Then Return
   
   aClass = Split($sClass, " ")
@@ -924,12 +962,15 @@ Public Sub AddClass(sClass As String)
   
 End
 
-Public Sub RemoveClass(sClass As String)
+'' Remove a specific class from the [../class] property.
+
+Public Sub RemoveClass((Class) As String)
   
   Dim aClass As String[]
   Dim iPos As Integer
+  Dim sClass As String
   
-  sClass = Trim(sClass)
+  sClass = Trim(Class)
   If Not sClass Then Return
   
   aClass = Split($sClass, " ")

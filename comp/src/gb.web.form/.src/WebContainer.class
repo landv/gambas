@@ -1,5 +1,9 @@
 ' Gambas class file
 
+''' This class implements a generic container for other controls.
+'''
+''' It is also the parent class of every other container.
+
 Export
 
 Inherits WebControl
@@ -10,12 +14,28 @@ Public Const _Properties As String = "*,Arrangement{Arrange.*},Margin,Spacing,In
 Public Const _DefaultArrangement As String = "F"
 Public Const _DefaultSize As String = "32,32"
 
+'' Return or set the how the container arrange its contents.
+''
+'' The value of that property can be one of the value of the [../arrange] class.
 Property Arrangement As Integer
+'' Return or set if there is a margin between the container border and all its children.
+''
+'' The margin size is 0.5em.
 Property Margin As Boolean
+'' Return or set if the children of the container are spaced out.
+''
+'' The amount of space is 0.5em.
 Property Spacing As Boolean
+'' Return or set if the container has a border.
 Property Border As Boolean
+'' Return or set if the children controls of the container are indented.
+''
+'' The direction of the indentation follows the direction of the container arrangement.
+''
+'' The amount of indentation is 0.5em.
 Property Indent As Boolean
 
+'' Return an array of all container's children.
 Property Read Children As WebControl[]
 
 Public _Container As WebContainer
@@ -27,6 +47,13 @@ Private $bMargin As Boolean
 Private $bSpacing As Boolean
 Private $bBorder As Boolean
 Private $bIndent As Boolean
+
+
+'' Create a new WebContainer.
+Public Sub _new()
+  
+End
+
 
 Public Sub _Add(hChild As WebControl)
   
@@ -383,6 +410,7 @@ Public Sub _Lower(sName As String)
   
 End
 
+'' Delete all container's children.
 
 Public Sub DeleteChildren()
   
@@ -391,6 +419,8 @@ Public Sub DeleteChildren()
   Wend
   
 End
+
+'' Delete the container with all its children.
 
 Public Sub Delete()
 

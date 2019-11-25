@@ -1,5 +1,7 @@
 ' Gambas class file
 
+''' This class implements a combo-box control.
+
 Export
 Inherits WebControl
 
@@ -9,15 +11,24 @@ Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "WebTextBox"
 Public Const _DefaultEvent As String = "Click"
 
+'' This event is raised when an item is selected in the list box.
 Event Click
+'' This event is raised when the combo-box text has changed. Works only if the combo-box is editable.
 Event Change
+'' This event is raised when the ENTER key is hit. Works only if the combo-box is editable.
 Event Activate
 
+'' Return or set the combo-box text.
 Property Text As String
+'' Return the number of items in the combo-box popup.
 Property Read Count As Integer
+'' Return or set the index of the current selected item.
 Property Index As Integer
+'' Return or set the contents of the combo-box popup as a string array.
 Property List As String[]
+'' Return or set if the combo-box is read-only, i.e. not editable.
 Property ReadOnly As Boolean
+'' Return or set the placeholder text displayed when the editable combo-box is empty.
 Property PlaceHolder As String
 
 Private $iIndex As Integer
@@ -25,6 +36,8 @@ Private $sText As String
 Private $aList As New String[]
 Private $bReadOnly As Boolean = True
 Private $sPlaceHolder As String
+
+'' Create a new WebComboBox control.
 
 Public Sub _new()
   
@@ -94,7 +107,6 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   
 End
 
-
 Private Function Index_Read() As Integer
 
   Return $iIndex
@@ -156,6 +168,7 @@ Private Sub List_Write(Value As String[])
 
 End
 
+'' Clear the contents of the combo-box and its popup.
 Public Sub Clear()
   
   $aList.Clear
@@ -183,6 +196,11 @@ Private Sub ReadOnly_Write(Value As Boolean)
 
 End
 
+'' Add an item to the popup list.
+''
+'' - ~Item~ is the text of the item to add.
+'' - ~Index~ is the position the item will be inserted from. If not specified, the item is added at the end of the popup list.
+
 Public Sub Add(Item As String, Optional Index As Integer = -1)
   
   $aList.Add(Item, Index)
@@ -191,6 +209,10 @@ Public Sub Add(Item As String, Optional Index As Integer = -1)
   
 End
 
+'' Remove an item from the popup list.
+''
+'' - ~Index~ is the index of the item to remove, between 0 and [../count] - 1.
+
 Public Sub Remove(Index As Integer)
   
   $aList.Remove(Index)
@@ -198,7 +220,6 @@ Public Sub Remove(Index As Integer)
   Me._SetProperty("List", $aList)
   
 End
-
 
 Private Function Text_Read() As String
 

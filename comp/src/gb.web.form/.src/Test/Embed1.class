@@ -1,0 +1,20 @@
+' Gambas class file
+
+Export
+
+Public Sub WebButton1_Click()
+
+  'Dim hForm As Embed2
+
+  'hForm = New Embed2(WebContainer1) ', Webform1)
+  Dim hChild As WebDateBox
+
+  hChild = New WebDateBox(WebContainer1)
+
+End
+
+Public Sub WebForm_Open()
+
+  WebForm.Debug = True
+
+End

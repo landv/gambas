@@ -1,5 +1,7 @@
 ' Gambas class file
 
+''' This class implements a push button.
+
 Export
 Inherits WebControl
 
@@ -8,15 +10,35 @@ Public Const _Properties As String = "*,Border=True,Text,Image{WebImage},Immedia
 Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "16,4"
 
+'' This event is raised when the button is pressed.
+''
+'' ### See also
+'' [../immediate]
 Event Click
 
+'' Return or set the button text.
 Property Text As String
+'' Return or set the button image relative path.
 Property Image As String
+'' If the Immediate property is set, the [../click] event is raised to generate javascript code that will be executed on the client side when
+'' the button is clicked.
+''
+'' In that case, the Click event handler should only call methods that generate javascript on the client side:
+'' - [../../webform/exec](WebForm.Exec)
+'' - [../../webtextbox/copy](WebTextBox.Copy)
+'' - ...
 Property Immediate As Boolean
 
 Private $sText As String
 Private $sImage As String
 Private $bImmediate As Boolean
+
+'' Create a new WebButton control.
+
+Public Sub _new()
+  
+End
+
 
 Private Function Text_Read() As String
 
@@ -95,6 +117,8 @@ Public Sub _AfterRender()
   Print "</button>"
   
 End
+
+'' Click on the button.
 
 Public Sub Click()
   

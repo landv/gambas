@@ -15,9 +15,9 @@ Property Child As WebForm
 Property Resizable As Boolean
 Property Modal As Boolean
 
-Property PopupControl As WebControl
+Property PopupControl As String
 Property PopupAlignment As Integer
-Property ParentControl As WebControl
+Property ParentControl As String
 
 Private $sX As String
 Private $sY As String
@@ -26,13 +26,13 @@ Private $sHeight As String
 Private $iFormId As Integer
 Private $bResizable As Boolean
 Private $bModal As Boolean
-Private $iPopupControlId As Integer
+Private $sPopupControl As String
 Private $iPopupAlignment As Integer
-Private $iParentControlId As Integer
+Private $sParentControl As String
 
 Public Sub IsPopup() As Boolean
 
-  Return $iPopupControlId
+  Return $sPopupControl
 
 End
 
@@ -108,7 +108,7 @@ Public Sub _Render()
   
   If IsPopup() Then
   
-    sOpen = "gw.window.popup(" & JS(Me.Name) & "," & JS($bResizable) & "," & JS(WebControl.FromId($iPopupControlId).Name) & "," & If($iPopupAlignment = Align.Right, "'right'", "'left'")
+    sOpen = "gw.window.popup(" & JS(Me.Name) & "," & JS($bResizable) & "," & JS($sPopupControl) & "," & If($iPopupAlignment = Align.Right, "'right'", "'left'")
     If Me["min-width"] Then sOpen &= "," & JS(Me["min-width"]) & "," & JS(Me["min-height"]) 
     sOpen &= ");"
     
@@ -310,21 +310,21 @@ Public Sub _RefreshReply() As Boolean
   
 End
 
-Private Function PopupControl_Read() As WebControl
+Private Function PopupControl_Read() As String
 
-  If $iPopupControlId Then Return WebControl.FromId($iPopupControlId)
+  Return $sPopupControl
 
 End
 
-Private Sub PopupControl_Write(Value As WebControl)
+Private Sub PopupControl_Write(Value As String)
 
-  $iPopupControlId = Value.Id
+  $sPopupControl = Value
   If IsPopup() Then
     Me.Class = "gw-popup"
   Else
     Me.Class = ""
   Endif
-  Me._SetProperty("PopupControl", Value)
+  Me._SetProperty("PopupControl", $sPopupControl)
 
 End
 
@@ -348,25 +348,21 @@ Public Sub Close(Optional vReturnValue As Variant)
   Endif
   WebForm._AddReplyBefore("gw.window.refresh()")
   
-  If IsPopup() Then PopupControl_Read().SetFocus
-  If $iParentControlId Then Object.Raise(WebControl.FromId($iParentControlId), "Dialog", [Child_Read(), vReturnValue])
+  If IsPopup() Then WebControl.FromName($sPopupControl).SetFocus
+  If $sParentControl Then Object.Raise(WebControl.FromName($sParentControl), "Dialog", [Child_Read(), vReturnValue])
   'If $iParentControlId Then WebForm._AddReply("gw.raise(" & JS(WebControl.FromId($iParentControlId).Name) & ",);")
   
 End
 
-Private Function ParentControl_Read() As WebControl
+Private Function ParentControl_Read() As String
 
-  If $iParentControlId Then Return WebControl.FromId($iParentControlId)
+  Return $sParentControl
 
 End
 
-Private Sub ParentControl_Write(Value As WebControl)
+Private Sub ParentControl_Write(Value As String)
 
-  If Value Then
-    $iParentControlId = Value.Id
-  Else
-    $iParentControlId = 0
-  Endif
+  $sParentControl = Value
   Me._SetProperty("ParentControl", Value)
 
 End
