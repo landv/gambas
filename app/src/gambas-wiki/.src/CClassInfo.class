@@ -529,13 +529,38 @@ Public Sub GetDescription() As String
   Dim sData As String
   Dim sDesc As String
   Dim sCar As String
+  Dim sSave As String
   
   sPath = Main.GetPagePathFrom("/comp" &/ LCase(Component &/ Name))
   If Not Exist(sPath) Then Return 
   
+  ' aData = Split(File.Load(sPath), "\n")
+  ' While iPos < aData.Count
+  '   sData = LTrim(aData[iPos])
+  '   If sData Then
+  '     sCar = String.Left(sData)
+  '     If Len(sCar) >= 2 Or If IsLetter(sCar) Then
+  '       sData = Replace(sData, "[../", "[./")
+  '       sData = Replace(sData, "[./../", "[../")
+  '       sDesc &= sData & "\n"
+  '     Endif
+  '   Else If sDesc Then
+  '     Break
+  '   Endif
+  '   Inc iPos
+  ' Wend
+  
   aData = Split(File.Load(sPath), "\n")
   While iPos < aData.Count
-    sData = LTrim(aData[iPos])
+    sData = aData[iPos]
+    If Trim(sData) = "@{help}" Then 
+      sSave = Main.Class
+      Main.Class = Me.Name
+      aData.Remove(iPos)
+      aData.Insert(Split(Main.GetDefaultPage(), "\n"), iPos)
+      Main.Class = sSave
+      Continue
+    Endif
     If sData Then
       sCar = String.Left(sData)
       If Len(sCar) >= 2 Or If IsLetter(sCar) Then
@@ -548,7 +573,7 @@ Public Sub GetDescription() As String
     Endif
     Inc iPos
   Wend
-  
+
   Return sDesc
   
 End

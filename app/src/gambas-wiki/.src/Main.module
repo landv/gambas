@@ -1233,25 +1233,37 @@ Public Sub GetDefaultPage() As String
   Dim iPos As Integer
   Dim sResult As String
   Dim iPos2 As Integer
+  Dim hClass As CClassInfo
   
-  Try hSymbol = CComponent.Get(Main.Component)[Main.Class].Symbols[Main.Symbol]
-  If Not hSymbol Then Return
+  Try hClass = CComponent.Get(Main.Component)[Main.Class]
+  If Not hClass Then Return
   
-  If hSymbol.Help Then Return hSymbol.Help
+  If Main.Symbol Then
   
-  sResult = "\n"
-  sSign = hSymbol.Signature
-  Do
+    Try hSymbol = hClass.Symbols[Main.Symbol]
+    If Not hSymbol Then Return
     
-    iPos = InStr(sSign, "(", iPos + 1)
-    If iPos = 0 Then Break
-    iPos2 = InStr(sSign, ")", iPos + 1)
-    If iPos2 = 0 Then Break
+    If hSymbol.Help Then Return hSymbol.Help
     
-    sResult &= "- ~" & Mid$(sSign, iPos + 1, iPos2 - iPos - 1) & "~\n"
-    iPos = iPos2
+    sResult = "\n"
+    sSign = hSymbol.Signature
+    Do
+      
+      iPos = InStr(sSign, "(", iPos + 1)
+      If iPos = 0 Then Break
+      iPos2 = InStr(sSign, ")", iPos + 1)
+      If iPos2 = 0 Then Break
+      
+      sResult &= "- ~" & Mid$(sSign, iPos + 1, iPos2 - iPos - 1) & "~\n"
+      iPos = iPos2
+      
+    Loop
     
-  Loop
+  Else
+    
+    If hClass.Help Then Return hClass.Help
+
+  Endif
   
   'If hSymbol.Help Then sResult = Trim(sResult) & "\n" & hSymbol.Help
   

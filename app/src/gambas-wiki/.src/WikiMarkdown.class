@@ -210,7 +210,7 @@ Public Sub Command(sCommand As String) As String[]
     
     Return MakeError(("This symbol does not exist."))
     
-  Else If sCommand = "help" And If Main.Symbol Then
+  Else If sCommand = "help" And If Main.Class Then
     
     Return Split(Main.GetDefaultPage(), "\n")
 
