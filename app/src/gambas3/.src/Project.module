@@ -53,6 +53,7 @@ Public Warnings As Boolean
 Public MajorVersion As Integer
 Public MinorVersion As Integer
 Public ReleaseVersion As Integer
+Public VersionAddBranch As Boolean
 Public Localize As Boolean
 Public Description As String
 Public Icon As String
@@ -1618,11 +1619,10 @@ Public Sub FormatVersion(Optional bStripReleaseIfNull As Boolean) As String
   
 End
 
-
 Public Sub UpdateTitle()
 
   Dim sTitle As String
-  Dim sCurrent As String
+  Dim sBranch As String
 
   If Path Then
     
@@ -1642,11 +1642,12 @@ Public Sub UpdateTitle()
     If Not IsFake() Then
       If sTitle Then sTitle &= " - "
       sTitle &= Name & " " & FormatVersion()
+      
+      VersionControl.GetBranches(ByRef sBranch)
+      If sBranch Then sTitle &= " (" & sBranch & ")"
+      
       If ReadOnly Then sTitle &= " [" & ("read-only") & "]"
     Endif
-    
-    VersionControl.GetBranches(ByRef sCurrent)
-    If sCurrent Then sTitle &= " (" & sCurrent & ")"
     
   Endif
   
@@ -3164,13 +3165,13 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Dim iPos As Integer
   Dim sKey As String
   Dim sVal As String
-  Dim cVer As String[]
   Dim sElt As String
   Dim iElt As Integer
   Dim aMissing As New String[]
   Dim sMsg As String
   Dim hComp As CComponent
   Dim bNewPackagerConfig As Boolean
+  Dim aVer As String[]
 
   hFic = Open Path For Input
 
@@ -3186,6 +3187,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   MajorVersion = 0
   MinorVersion = 0
   ReleaseVersion = 1
+  VersionAddBranch = False
   'SnapToGrid = TRUE
   'ShowGrid = TRUE
   ControlPublic = False
@@ -3305,13 +3307,18 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         Environment = Split(UnQuote(sVal), "\n")
 
       Case "version"
-        cVer = Split(sVal, ".")
-        Try MajorVersion = Val(cVer[0])
-        Try MinorVersion = Val(cVer[1])
-        Try ReleaseVersion = Val(cVer[2])
+        iPos = InStr(sVal, " ")
+        If iPos Then sVal = Left(sVal, iPos - 1)
+        aVer = Split(sVal, ".")
+        Try MajorVersion = Val(aVer[0])
+        Try MinorVersion = Val(aVer[1])
+        Try ReleaseVersion = Val(aVer[2])
 
       Case "versionfile"
         VersionFile = CInt(sVal) <> 0
+
+      Case "versionaddbranch"
+        VersionAddBranch = CInt(sVal) <> 0
 
       Case "localize", "translate"
         Localize = CInt(sVal) <> 0
@@ -3589,6 +3596,8 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   Dim sPath As String
   Dim sVal As String
   Dim hComp As CComponent
+  Dim sVer As String
+  Dim sBranch As String
 
   If Project.ReadOnly Then Return
 
@@ -3631,8 +3640,15 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If Icon Then Print #hFic, "Icon="; Icon
 
   GetVersion()
-  Print #hFic, "Version="; FormatVersion()
+  sVer = FormatVersion()
+  If VersionAddBranch Then
+    VersionControl.GetBranches(ByRef sBranch)
+    If sBranch Then sVer &= " (" & sBranch & ")"
+  Endif
+  
+  Print #hFic, "Version="; sVer
   If VersionFile Then Print #hFic, "VersionFile=1"
+  If VersionAddBranch Then Print #hFic, "VersionAddBranch=1"
 
   For Each hComp In Documentation.Components
     If Components.Find(hComp.Key) >= 0 Then

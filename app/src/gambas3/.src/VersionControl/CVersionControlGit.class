@@ -87,6 +87,16 @@ Public Sub GetBranches(ByRef sCurrent As String) As String[]
   
 End
 
+Public Sub GetCurrentBranch() As String
+  
+  Dim sCurrent As String
+  
+  GetBranches(ByRef sCurrent)
+  If sCurrent = "master" Then sCurrent = ""
+  Return sCurrent
+  
+End
+
 Public Sub Diff(sPath As String) As String
   
   Dim sDiff As String

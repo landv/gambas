@@ -18,7 +18,7 @@ Private $aLibraries As String[]
 Private Const COMPONENT_PROPERTIES_TAB As Integer = 1
 Private Const LIBRARY_TAB As Integer = 3
 Private Const ARGUMENT_TAB As Integer = 5
-Private Const VERSION_CONTROL_TAB As Integer = 8
+'Private Const VERSION_CONTROL_TAB As Integer = 8
 
 Private $bInitInfo As Boolean
 Private $aNeed As String[]
@@ -54,7 +54,9 @@ Public Sub Form_Open()
 
   Me.Title = ("Project properties") & " - " & Project.Name
 
-  txtName.Text = "<font size=\"+2\"><b>" & Project.Name & "</b></font><br>" & File.Dir(Project.Dir)
+  lblName.Text = Project.Name
+  txtPath.Text = File.Dir(Project.Dir)
+  'txtName.Text = "<font size=\"+2\"><b>" & Project.Name & "</b></font><br>" & File.Dir(Project.Dir)
 
   cmbDefaultLanguage.Clear
   For Each sLang In Language.GetAll()
@@ -118,7 +120,15 @@ Public Sub Form_Open()
   'chkShowUsed.Value = $bShowUsed
   $bCanInitComponents = True
   
-  ipnProject[VERSION_CONTROL_TAB].Visible = VersionControl.Enabled
+  'ipnProject[VERSION_CONTROL_TAB].Visible = VersionControl.Enabled
+  gvwVcInfo.Visible = VersionControl.Enabled
+  If VersionControl.Name = "Git" Then
+    btnVersionAddBranch.Enabled = True
+    btnVersionAddBranch.Value = Project.VersionAddBranch
+  Else
+    btnVersionAddBranch.Enabled = False
+    btnVersionAddBranch.Value = False
+  Endif
 
   ipnProject.Index = 0
 
@@ -267,6 +277,8 @@ Private Function DoApply() As Boolean
     .Libraries = $aLibraries
     
     .ExtraReferences = lstReferences.List
+    
+    If VersionControl.Enabled Then .VersionAddBranch = btnVersionAddBranch.Value
 
   End With
 
@@ -898,10 +910,9 @@ Public Sub ipnProject_Click()
       'panHttpServer.Enabled = choComponent.IsChecked("gb.web") 'Project.Components.Exist("gb.web")
     Case ("Statistics") 
       UpdateStat
+      UpdateVcInfo
     Case ("Information") 
       UpdateInfo
-    Case ("Version control")
-      UpdateVcInfo
   End Select
 
 End
@@ -1409,6 +1420,7 @@ Private Sub UpdateVcInfo()
   Dim iRow As Integer
   Dim I As Integer
   
+  If Not VersionControl.Enabled Then Return
   If gvwVcInfo.Rows.Count Then Return
   
   Inc Application.Busy
