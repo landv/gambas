@@ -685,18 +685,20 @@ Private Sub PrintDesktopFile(hFile As File, sExec As String, sIcon As String, Op
 End
 
 
-Private Sub RunCommand(sCmd As String, Optional sDir As String)
+Private Sub RunCommand(sCmd As String, Optional sDir As String, Optional bIgnoreStderr As Boolean)
+
+  Dim aCmd As New String[]
   
   $sOutput = ""
   $bEnd = False
   If sDir Then
     AddLog("cd " & Shell$(sDir))
-    AddLog(sCmd)
-    Shell "cd " & SConv(Shell$(sDir)) & " && " & sCmd & " 2>&1" For Input As "Process"
-  Else
-    AddLog(sCmd)
-    Shell sCmd & " 2>&1" For Input As "Process"
+    aCmd.Push("cd " & SConv(Shell$(sDir)))
   Endif
+  AddLog(sCmd)
+  aCmd.Push(sCmd)
+  If bIgnoreStderr = False Then aCmd.Last &= " 2>&1"
+  Shell aCmd.Join(" && ") For Input As "Process"
   Repeat
     Sleep 0.02 
     Wait
@@ -2420,9 +2422,10 @@ Private Function MakeArchPackage(sSys As String)
     Endif 
     Print #hFile, ")"
   Close #hFile
-  
-  RunCommand("makepkg -g >> PKGBUILD", sBuildDir)
-  
+
+  RunCommand("makepkg -m -g >> PKGBUILD", sBuildDir, True)
+  If Process.LastValue > 0 Then Error.Raise(("'makepkg' has failed."))
+
   hFile = Open sBuildDir &/ "PKGBUILD" For Append
   
     Print #hFile, ""
@@ -2483,8 +2486,12 @@ Private Function MakeArchPackage(sSys As String)
   
   AddLog(("Creating package...") & "\n")
   
-  For Each sCmd In ["makepkg --allsource", "makepkg -d"]
-     RunCommand(sCmd, sBuildDir)
+  For Each sCmd In ["makepkg -m --allsource", "makepkg -m -d"]
+    RunCommand(sCmd, sBuildDir)
+    If Process.LastValue > 0
+      Dec Application.Busy
+      Error.Raise(("'makepkg' has failed."))
+    Endif
   Next 
 
   RunCommand("cp " & sPackageName & "-" & $sVersion & "-1*.tar.* " & Shell$(Path) &/ "", sBuildDir)
@@ -2559,7 +2566,8 @@ Private Function MakeArchSupportPackage((sSys) As String, sSupport As String, aC
     'Print #hFile, ")"
   Close #hFile
   
-  RunCommand("makepkg -g >> PKGBUILD", sBuildDir)
+  RunCommand("makepkg -m -g >> PKGBUILD", sBuildDir, True)
+  If Process.LastValue > 0 Then Error.Raise(("'makepkg' has failed."))
   
   ' hFile = Open sBuildDir &/ "PKGBUILD" For Append
   ' 
@@ -2620,8 +2628,12 @@ Private Function MakeArchSupportPackage((sSys) As String, sSupport As String, aC
   
   AddLog(("Creating package...") & "\n")
   
-  For Each sCmd In ["makepkg --allsource", "makepkg -d"]
-     RunCommand(sCmd, sBuildDir)
+  For Each sCmd In ["makepkg -m --allsource", "makepkg -m -d"]
+    RunCommand(sCmd, sBuildDir)
+    If Process.LastValue > 0
+      Dec Application.Busy
+      Error.Raise(("'makepkg' has failed."))
+    Endif
   Next 
 
   RunCommand("cp " & sPackageName & "-" & $sVersion & "-" & CStr(Project.PackageVersion) & "*.tar.* " & Shell$(Path) &/ "", sBuildDir)
