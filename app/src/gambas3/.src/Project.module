@@ -5147,7 +5147,7 @@ Private Sub CreateGitIgnore()
   Endif
 
   sData = File.Load(sPath)
-  iPos = InStr(sData, "#---- Gambas files to ignore (v4)")
+  iPos = InStr(sData, "#---- Gambas files to ignore (v5)")
   If iPos Then Return
   
   iPos = InStr(sData, "#---- Gambas files to ignore")
@@ -6438,7 +6438,7 @@ Public Sub IsModified(sPath As String) As Boolean
   
 End
 
- Private Sub ApplyRename(sOld As String, sNew As String, sPath As String) As String
+Private Sub ApplyRename(sOld As String, sNew As String, sPath As String) As String
   
   Dim bRelative As Boolean
   
